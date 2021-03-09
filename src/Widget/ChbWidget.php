@@ -11,7 +11,7 @@ use AA\FormArray;
 use AA_Value;
 
 /** Check Box widget */
-class ChbWidget extends \AA\Widget\Widget
+class ChbWidget extends Widget
 {
 
     /** Creates base widget HTML, which will be surrounded by Live, Ajxax
@@ -73,9 +73,9 @@ class ChbWidget extends \AA\Widget\Widget
 
     /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
+     * @return array
      */
-    static function getClassProperties()
-    {
+    static function getClassProperties(): array {
         return [];
     }
 

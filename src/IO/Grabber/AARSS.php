@@ -19,7 +19,8 @@ use LastEditList;
  *   Defines AA\IO\AbstractGrabber\AbstractGrabber base class, which is used as abstraction for data input
  *   From this class we derive concrete data grabbers, like RSS, AARSS, CSV, ...
  */
-class AARSS extends \AA\IO\Grabber\AbstractGrabber {
+class AARSS extends AbstractGrabber
+{
     protected $feed_id;
     protected $feed;
     protected $name;

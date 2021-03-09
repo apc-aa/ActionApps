@@ -79,7 +79,7 @@ class AA_Slice_Exporter {
      */
     function exportOneSliceStruct($slobj, $new_slice_id, $temp_file) {
 
-        $slice = DB_AA::select1('SELECT * FROM `slice`', '', [['id', $slobj->getId(), 'l']]);
+        $slice = DB_AA::select1('', 'SELECT * FROM `slice`', [['id', $slobj->getId(), 'l']]);
         if (!$slice) {
             MsgPage(StateUrl(self_base())."index.php3", "ERROR - slice ".$slobj->getId() ." not found");
             exit;
@@ -360,7 +360,7 @@ class AA_Slice_Documentator extends AA_Slice_Exporter {
      */
     function exportOneSliceStruct($slobj, $new_slice_id, $temp_file) {
 
-        $slice = DB_AA::select1('SELECT * FROM `slice`', '', [['id', $slobj->getId(), 'l']]);
+        $slice = DB_AA::select1('', 'SELECT * FROM `slice`', [['id', $slobj->getId(), 'l']]);
         if (!$slice) {
             MsgPage(StateUrl(self_base())."index.php3", "ERROR - slice ".$slobj->getId() ." not found");
             exit;

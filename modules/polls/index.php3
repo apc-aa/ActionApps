@@ -30,7 +30,7 @@
 require_once __DIR__."/../../include/init_page.php3";
 require_once __DIR__."/../../include/varset.php3";
 require_once __DIR__."/../../include/formutil.php3";
-require_once __DIR__."/../../include/pagecache.php3";
+
 require_once __DIR__."/../../include/item.php3";
 require_once __DIR__."/../../include/actions.php3";
 require_once __DIR__."/../../modules/polls/include/actions.php3";
@@ -115,7 +115,7 @@ $r_state['bin_cnt']['appc']    = AA_Metabase::queryCount(['table'=>'polls'], $bi
 $r_state['bin_cnt']['folder2'] = AA_Metabase::queryCount(['table'=>'polls'], $bin_sets['folder2']);
 $r_state['bin_cnt']['folder3'] = AA_Metabase::queryCount(['table'=>'polls'], $bin_sets['folder3']);
 
-$zids  = AA_Metabase::queryZids(['table'=>'polls'], $bin_sets[$manager->getBin()]);
+$zids  = AA::Metabase()->queryZids(['table'=>'polls'], $bin_sets[$manager->getBin()]);
 
 $manager->displayPage($zids, 'pollsmanager', $manager->getBin());
 page_close();

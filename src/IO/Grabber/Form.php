@@ -51,7 +51,8 @@ use zids;
  *   where "dte" points to the AA\Widget\DteWidget. The method AA\Widget\DteWidget::getValue()
  *   is called to grab the value (or multivalues) from the submitted form
  */
-class Form extends \AA\IO\Grabber\AbstractGrabber {
+class Form extends AbstractGrabber
+{
     private $_items;
     private $_last_store_mode;
 

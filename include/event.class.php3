@@ -580,7 +580,7 @@ function Event_AddLinkGlobalCat( $type, $slice, $slice_type, &$ret_params, $para
     $translations = explode(':', $trans_string);             // parse
     if ( isset($translations) AND is_array($translations) ) {
         foreach ( $translations as $k ) {
-            list($from,$to) = explode('-', $k);
+            [$from,$to] = explode('-', $k);
             $trans[$from] = $to;
         }
     }

@@ -30,7 +30,6 @@
 require_once __DIR__."/../include/init_page.php3";
 require_once __DIR__."/../include/varset.php3";
 require_once __DIR__."/../include/formutil.php3";
-require_once __DIR__."/../include/pagecache.php3";
 require_once __DIR__."/../include/item.php3";
 require_once __DIR__."/../include/actions.php3";
 require_once __DIR__."/../central/include/actionapps.class.php";
@@ -71,7 +70,7 @@ $manager = new AA_Manager('searchlog', $manager_settings);
 $manager->performActions();
 
 $set  = $manager->getSet();
-$zids = AA_Metabase::queryZids(['table'=>'searchlog'], $set);
+$zids = AA::Metabase()->queryZids(['table'=>'searchlog'], $set);
 
 $manager->displayPage($zids, 'aaadmin', 'searchlog');
 page_close();

@@ -183,33 +183,33 @@ if ($preview) { // file preview
     <tr><td>
       <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
       <?php
-         $arr = [
-             ','  => 'comma ,',
-                      ';'  => 'semicolon ;',
-                      '\t' => 'tabulator \t',
-                      '|'  => 'pipe |',
-                      '~'  => 'tilde ~',
-                      ''   => 'other'
+          $arr = [
+              ','  => 'comma ,',
+              ';'  => 'semicolon ;',
+              '\t' => 'tabulator \t',
+              '|'  => 'pipe |',
+              '~'  => 'tilde ~',
+              ''   => 'other'
          ];
 
-     FrmInputPreSelect("delimiter", "Delimiter of fields", $arr, $preview ? $delimiter : ';' );
-     $arr = [
-         '"'  => 'double quote "',
-                  "'"  => 'single quote \''
-     ];
-     FrmInputPreSelect("enclosure", "Enclosure", $arr, $preview ? $enclosure : '"');
+      FrmInputPreSelect("delimiter", "Delimiter of fields", $arr, $preview ? $delimiter : ';' );
+      $arr = [
+          '"'  => 'double quote "',
+          "'"  => 'single quote \''
+      ];
+      FrmInputPreSelect("enclosure", "Enclosure", $arr, $preview ? $enclosure : '"');
 
-     FrmInputChBox("caption","Use first row as field names",$preview ? $caption : true);
+      FrmInputChBox("caption","Use first row as field names",$preview ? $caption : true);
 
-     $options      = [
-         'file' => _m('File'),
-                            'url'  => _m('URL'),
-                            'text' => _m('Text')
-     ];
-     $html_options = [
-         'file' => _m('File'),
-                            'url'  => _m('URL'),
-                            'text' => _m('Text')
+      $options      = [
+          'file' => _m('File'),
+          'url'  => _m('URL'),
+          'text' => _m('Text')
+      ];
+      $html_options = [
+          'file' => _m('File'),
+          'url'  => _m('URL'),
+          'text' => _m('Text')
      ];
 
      //echo getSelectWithParam('dataType', $options, "", $html_options);

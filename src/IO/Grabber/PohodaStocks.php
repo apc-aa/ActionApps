@@ -14,7 +14,8 @@ use ItemContent;
 
 /** AA\IO\AbstractGrabber\AbstractGrabber\PohodaStocks - Imports stock from POHODA accounting system
  */
-class PohodaStocks extends \AA\IO\Grabber\AbstractGrabber {
+class PohodaStocks extends AbstractGrabber
+{
 
     protected $file;
     /** list if files to grab - internal array */

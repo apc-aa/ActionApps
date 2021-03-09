@@ -93,7 +93,7 @@ class AA_Mailman {
      * @param $newvalue
      */
     static function constantsChanged( $constant_id, $oldvalue, $newvalue ) {
-        if ( !($group_id = DB_AA::select1('SELECT group_id FROM `constant`', 'group_id', [['id', $constant_id, 'l']])) ) {
+        if ( !($group_id = DB_AA::select1('group_id', 'SELECT group_id FROM `constant`', [['id', $constant_id, 'l']])) ) {
             return;
         }
         $db = getDB();

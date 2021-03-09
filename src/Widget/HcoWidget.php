@@ -9,7 +9,7 @@
 namespace AA\Widget;
 
 /** Hierachical constants widget */
-class HcoWidget extends \AA\Widget\Widget
+class HcoWidget extends Widget
 {
 
     /** - static member functions
@@ -25,10 +25,10 @@ class HcoWidget extends \AA\Widget\Widget
 
     /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
+     * @return array
      */
-    static function getClassProperties()
-    {
-        return \AA\Widget\Widget::propertiesShop(['const', 'level_count', 'box_width', 'target_size', 'horizontal', 'first_selectable_level', 'level_names', 'const_arr']);
+    static function getClassProperties(): array {
+        return Widget::propertiesShop(['const', 'level_count', 'box_width', 'target_size', 'horizontal', 'first_selectable_level', 'level_names', 'const_arr']);
     }
 
 

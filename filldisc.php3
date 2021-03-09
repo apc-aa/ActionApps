@@ -66,8 +66,6 @@ require_once __DIR__."/include/util.php3";
 require_once __DIR__."/include/varset.php3";
 /** discussion utility functions */
 require_once __DIR__."/include/discussion.php3";
-/** defines PageCache class used for caching informations into database */
-require_once __DIR__."/include/pagecache.php3";
 /** defines class that prints the items (news, discussions, calendar...) */
 require_once __DIR__."/include/itemview.php3";
 /**  Defines class for item manipulation (shows item in compact or fulltext format, replaces aliases ...) */

@@ -29,6 +29,7 @@
 // (c) Jakub Adamek, Econnect, December 2002
 
 use AA\IO\DB\DB_AA;
+use AA\Later\Toexecute;
 
 require_once __DIR__."/item.php3";
 require_once __DIR__."/item_content.php3";
@@ -75,7 +76,7 @@ class AA_Mailtemplate implements AA_iEditable {
     public        function save() {}
 }
 
-class AA_Mail extends htmlMimeMail implements \AA\Util\LaterInterface {
+class AA_Mail extends htmlMimeMail implements \AA\Later\LaterInterface {
 
     /** $template_id and $reader_id is mainly for getId() used in AA_Log after toexecute */
     protected $template_id = '';
@@ -84,7 +85,7 @@ class AA_Mail extends htmlMimeMail implements \AA\Util\LaterInterface {
     /** static getTemplate */
     static function getTemplate($mail_id) {
         // return GetTable2Array("SELECT * FROM email WHERE id = $mail_id", 'aa_first', 'aa_fields');
-        return DB_AA::select1("SELECT * FROM email", [], [['id', $mail_id]]);
+        return DB_AA::select1([], "SELECT * FROM email", [['id', $mail_id]]);
     }
 
     /** used in AA_Log after toexecute */
@@ -158,14 +159,14 @@ class AA_Mail extends htmlMimeMail implements \AA\Util\LaterInterface {
 
     /** sendLater function
      *  Send prepared e-mail to adresses specified in the $to array.
-     *  The e-mail is queued it AA_Toexecute queue before sending (not imediate)
+     *  The e-mail is queued it AA\Later\Toexecute queue before sending (not imediate)
      * @param $to
      * @return int
      */
     function sendLater($to) {
         static $send_mails_total = 0;
 
-        $toexecute = new AA_Toexecute;
+        $toexecute = new Toexecute;
 
         $tos  = array_unique(AA_Validate::filter((array)$to, 'email'));
         $sent = 0;
@@ -247,11 +248,11 @@ class AA_Mail extends htmlMimeMail implements \AA\Util\LaterInterface {
         $this->setTextCharset($charset);
     }
 
-    /** special function called from AA_Toexecute class - used for queued tasks (ran form cron)
+    /** special function called from AA\Later\Toexecute class - used for queued tasks (ran form cron)
      *  @param array $params - numeric array of additional parameters for the execution passed in time of call
      *                       - [0] - $to
      *  @return string - message about execution to be logged
-     *  @see \AA\Util\LaterInterface
+     *  @see \AA\Later\LaterInterface
      */
     public function toexecutelater($params= []) {
         [$to] = $params;
@@ -301,7 +302,7 @@ class AA_Mail extends htmlMimeMail implements \AA\Util\LaterInterface {
         } else {
             // more than 50 - plan scheduling
             // there was problems wit more than 1000 mails - it wasn't possible to plan it in one shot
-            $toexecute  = new AA_Toexecute;
+            $toexecute  = new Toexecute;
             foreach ($chunks as $chunk) {
                 $mail_scheduler = new AA_Mail_Scheduler($mail_id, $chunk);
                 $toexecute->later($mail_scheduler, [], "AA_Mail_Scheduler:$mail_id", 105);      // a bit higher priority than mail sending
@@ -315,7 +316,7 @@ class AA_Mail extends htmlMimeMail implements \AA\Util\LaterInterface {
  *  there was problems with more than 1000 mails - it wasn't possible to plan it in one shot
  *  @see AA_Mail::sendToReader();
  */
-class AA_Mail_Scheduler implements \AA\Util\LaterInterface {
+class AA_Mail_Scheduler implements \AA\Later\LaterInterface {
     protected $mail_id;
     protected $reader_ids;
 
@@ -341,10 +342,10 @@ class AA_Mail_Scheduler implements \AA\Util\LaterInterface {
         return $mail_count;
     }
 
-    /** special function called from AA_Toexecute class - used for queued tasks (ran form cron)
+    /** special function called from AA\Later\Toexecute class - used for queued tasks (ran form cron)
      *  @param array $params - numeric array of additional parameters for the execution passed in time of call
      *  @return string - message about execution to be logged
-     *  @see \AA\Util\LaterInterface
+     *  @see \AA\Later\LaterInterface
      */
     public function toexecutelater($params= []) {
         return $this->schedule();
@@ -377,9 +378,10 @@ function html2text($html, $encoding='utf-8') {
     reset($html_ahrefs[0]);
     $matches = [];
     // Take the first part before any <a href>
-    [, $html] = each ($html_parts);
-    while (list(, $html_part) = each($html_parts)) {
-        [, $html_ahref] = each($html_ahrefs[0]);
+    $html = array_shift($html_parts);
+    foreach ($html_parts as $html_part) {
+        $html_ahref = current($html_ahrefs[0]);
+        next($html_ahrefs[0]);
         preg_match ( "'$ahref(.*)</[ \t]*a[ \t]*>(.*)'si", $html_ahref. $html_part , $matches);
         if ( $matches[1] == $matches[2] ) {
             $html .= $matches[1]. $matches[3];

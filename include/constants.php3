@@ -443,10 +443,10 @@ define( "VIEW_FLAG_DISABLE", 4 );     // view is disabled - no content showed
 function inputFeedModes() {
   return [
       STATE_FEEDABLE               => _m("Feed"),
-                STATE_UNFEEDABLE             => _m("Do not feed"),
-                STATE_FEEDNOCHANGE           => _m("Feed locked"),
-                STATE_FEEDABLE_UPDATE        => _m("Feed & update"),
-                STATE_FEEDABLE_UPDATE_LOCKED => _m("Feed & update & lock")
+      STATE_UNFEEDABLE             => _m("Do not feed"),
+      STATE_FEEDNOCHANGE           => _m("Feed locked"),
+      STATE_FEEDABLE_UPDATE        => _m("Feed & update"),
+      STATE_FEEDABLE_UPDATE_LOCKED => _m("Feed & update & lock"),
   ];
 }
 /** GetViewFieldDef function
@@ -509,6 +509,7 @@ function getViewFields() {
     $VIEW_FIELDS["cond3cond"]       = GetViewFieldDef("text",  "quoted", "text",   "none"  );
     $VIEW_FIELDS["listlen"]         = GetViewFieldDef("number","quoted", "text",   "field" );
     $VIEW_FIELDS["flag"]            = GetViewFieldDef("",      "quoted", "bool",   "chbox" );
+    //$VIEW_FIELDS["flag"]            = GetViewFieldDef("",      "quoted", "bool",   "bitflag" );
     $VIEW_FIELDS["scroller"]        = GetViewFieldDef("",      "quoted", "bool",   "chbox" );
     $VIEW_FIELDS["aditional"]       = GetViewFieldDef("text",  "quoted", "text",   "area"  );
     $VIEW_FIELDS["aditional2"]      = GetViewFieldDef("text",  "quoted", "text",   "area"  );
@@ -527,16 +528,16 @@ function getViewFields() {
 function getViewGroupFunctions() {
     return [
         '0'   => _m("Whole text"),
-                  '1'   => _m("1st letter"),
-                  '2'   => '2 '._m("letters"),
-                  '3'   => '3 '._m("letters"),
-                  '4'   => '4 '._m("letters"),
-                  '5'   => '5 '._m("letters"),
-                  '6'   => '6 '._m("letters"),
-                  '7'   => '7 '._m("letters"),
-                  '8'   => '8 '._m("letters"),
-                  '9'   => '9 '._m("letters"),
-                  '127' => _m("all before "). '~'   // we could add 126, 125,...
+        '1'   => _m("1st letter"),
+        '2'   => '2 ' . _m("letters"),
+        '3'   => '3 ' . _m("letters"),
+        '4'   => '4 ' . _m("letters"),
+        '5'   => '5 ' . _m("letters"),
+        '6'   => '6 ' . _m("letters"),
+        '7'   => '7 ' . _m("letters"),
+        '8'   => '8 ' . _m("letters"),
+        '9'   => '9 ' . _m("letters"),
+        '127' => _m("all before ") . '~'   // we could add 126, 125,...
     ];
 }
 
@@ -961,76 +962,79 @@ function getViewTypesInfo() {
     // order  - 'easy' - show just Ascending/Descending
     // fields - which fields show in selectboxes (slice / 'constant')
     $VIEW_TYPES_INFO['list'] = [
-        'modification'=> [
-            '1'=>'search',
-                                                           '2'=>'parameter',
-                                                           '3'=>'statistic',
-                                                           '4'=>'all in thread',
-                                                           '5'=>'related',
-                                                           '6'=>'keyword related'
+        'modification' => [
+            '1' => 'search',
+            '2' => 'parameter',
+            '3' => 'statistic',
+            '4' => 'all in thread',
+            '5' => 'related',
+            '6' => 'keyword related',
         ],
-                                     'aliases' => 'field'
+        'aliases'      => 'field',
     ];
     $VIEW_TYPES_INFO['full'] = [
-        'modification'=> ['11'=>'newest',
-                                                            '12'=>'newest with condition',
-                                                            '13'=>'oldest with condition',
-                                                            '14'=>'id', '15'=>'parameter'],
-                                     'aliases' => 'field'
+        'modification' => [
+            '11' => 'newest',
+            '12' => 'newest with condition',
+            '13' => 'oldest with condition',
+            '14' => 'id',
+            '15' => 'parameter',
+        ],
+        'aliases'      => 'field',
     ];
     $VIEW_TYPES_INFO['digest'] = ['aliases' => 'field'];
     $VIEW_TYPES_INFO['discus'] = [
-        'modification'=> [
-            '21'=>'timeorder',
-                                                             '22'=>'reverse timeorder',
-                                                             '23'=>'thread'
+        'modification' => [
+            '21' => 'timeorder',
+            '22' => 'reverse timeorder',
+            '23' => 'thread',
         ],
-                                       'aditional' => ['default'=>'<img src="'.AA_INSTAL_PATH.'images/blank.gif" width=20 height=1 border="0">'],
-                                       'aditional2'=> ['default'=>'<input type=button name=sel_ids value="' ._m("Show selected"). '" onClick=showSelectedComments() class="discbuttons">'],
-                                       'aditional3'=> ['default'=>'<input type=button name=all_ids value="' ._m("Show all"). '" onClick=showAllComments() class="discbuttons">'],
-                                       'aditional4'=> ['default'=>'<input type=button name=add_disc value="' ._m("Add new"). '" onClick=showAddComments() class="discbuttons">'],
-                                       'aliases' => 'discus'
+        'aditional'    => ['default' => '<img src="' . AA_INSTAL_PATH . 'images/blank.gif" width=20 height=1 border="0">'],
+        'aditional2'   => ['default' => '<input type=button name=sel_ids value="' . _m("Show selected") . '" onClick=showSelectedComments() class="discbuttons">'],
+        'aditional3'   => ['default' => '<input type=button name=all_ids value="' . _m("Show all") . '" onClick=showAllComments() class="discbuttons">'],
+        'aditional4'   => ['default' => '<input type=button name=add_disc value="' . _m("Add new") . '" onClick=showAddComments() class="discbuttons">'],
+        'aliases'      => 'discus',
     ];
     $VIEW_TYPES_INFO['disc2mail'] = ['aliases' => 'disc2mail'];
-    $VIEW_TYPES_INFO['seetoo']     = [
-        'modification'=> [
-            '31'=>'related',
-                                                             '32'=>'keyword with OR',
-                                                             '33'=>'keyword with AND'
+    $VIEW_TYPES_INFO['seetoo'] = [
+        'modification' => [
+            '31' => 'related',
+            '32' => 'keyword with OR',
+            '33' => 'keyword with AND',
         ],
-                                     'aliases' => 'field'
+        'aliases'      => 'field',
     ];
-    $VIEW_TYPES_INFO['const']      = [
+    $VIEW_TYPES_INFO['const'] = [
         'aliases' => 'const',
-                                           'order' => 'easy',
-                                           'fields' => 'GetConstantFields'
+        'order'   => 'easy',
+        'fields'  => 'GetConstantFields',
     ];
-    $VIEW_TYPES_INFO['urls']       = ['aliases' => 'justids'];
-    $VIEW_TYPES_INFO['links']      = [
+    $VIEW_TYPES_INFO['urls'] = ['aliases' => 'justids'];
+    $VIEW_TYPES_INFO['links'] = [
         'aliases' => 'links',
-                                           'order' => 'easy',
-                                           'fields' => 'GetLinkFields'
+        'order'   => 'easy',
+        'fields'  => 'GetLinkFields',
     ];
     $VIEW_TYPES_INFO['categories'] = [
         'aliases' => 'categories',
-                                           'order' => 'easy',
-                                           'fields' => 'GetCategoryFields'
+        'order'   => 'easy',
+        'fields'  => 'GetCategoryFields',
     ];
-    $VIEW_TYPES_INFO['rss']        = ['aliases' => 'field'];
-    $VIEW_TYPES_INFO['calendar']   = [
-        'aliases' => 'field',
+    $VIEW_TYPES_INFO['rss'] = ['aliases' => 'field'];
+    $VIEW_TYPES_INFO['calendar'] = [
+        'aliases'            => 'field',
         'aliases_additional' => [
-            '_#CV_TST_1' => ['hlp'=>_m("Calendar: Time stamp at 0:00 of processed cell")],
-            '_#CV_TST_2' => ['hlp'=>_m("Calendar: Time stamp at 24:00 of processed cell")],
-            '_#CV_NUM_D' => ['hlp'=>_m("Calendar: Day in month of processed cell")],
-            '_#CV_NUM_M' => ['hlp'=>_m("Calendar: Month number of processed cell")],
-            '_#CV_NUM_Y' => ['hlp'=>_m("Calendar: Year number of processed cell")]
-        ]
+            '_#CV_TST_1' => ['hlp' => _m("Calendar: Time stamp at 0:00 of processed cell")],
+            '_#CV_TST_2' => ['hlp' => _m("Calendar: Time stamp at 24:00 of processed cell")],
+            '_#CV_NUM_D' => ['hlp' => _m("Calendar: Day in month of processed cell")],
+            '_#CV_NUM_M' => ['hlp' => _m("Calendar: Month number of processed cell")],
+            '_#CV_NUM_Y' => ['hlp' => _m("Calendar: Year number of processed cell")],
+        ],
     ];
 
-    $VIEW_TYPES_INFO['static']     = ['aliases' => 'none'];
+    $VIEW_TYPES_INFO['static'] = ['aliases' => 'none'];
     $VIEW_TYPES_INFO['javascript'] = ['aliases' => 'field'];
-    $VIEW_TYPES_INFO['inputform']  = ['aliases' => ''];
+    $VIEW_TYPES_INFO['inputform'] = ['aliases' => ''];
     return $VIEW_TYPES_INFO;
 }
 
@@ -1062,7 +1066,7 @@ define ("NOT_EMAIL_WELCOME", -1);
 // CountHit probability: how offen check, if the hit counter is planed
 define ("COUNTHIT_PROBABILITY", 10);
 
-// PagecachePurge probability: how offen remove old entries from pagecache table
+// AA\Later\PagecachePurge probability: how offen remove old entries from pagecache table
 define ("PAGECACHEPURGE_PROBABILITY", 1000); // each 1000-th pagecache store event
 
 // how much links check in one run (for links module link checker)
@@ -1081,6 +1085,7 @@ define("MGR_ALL",          127);  // show all
 /** constants for bins, used in new QueryZIDS function */
 define("AA_BIN_ACTIVE",   1);
 define("AA_BIN_PENDING",  2);
+define('AA_BIN_ACT_PEND', AA_BIN_ACTIVE|AA_BIN_PENDING );
 define("AA_BIN_EXPIRED",  4);
 define("AA_BIN_APPROVED", 7);   // AA_BIN_ACTIVE|AA_BIN_PENDING|AA_BIN_EXPIRED
 define("AA_BIN_HOLDING",  8);

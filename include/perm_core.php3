@@ -899,6 +899,7 @@ class AA_Permsystem {
 
 class AA_Permsystem_Reader extends AA_Permsystem {
 
+    /** restrict user search just to specific RM slice(s) */
     private $rm_slices = null;
 
     /** userIdFormatMatches - is user id in correct format?
@@ -960,7 +961,7 @@ class AA_Permsystem_Reader extends AA_Permsystem {
      * @return array|false|mixed|string
      */
     private function getSecret($user_id) {
-        return strlen($user_id) ? DB_AA::select1('SELECT content.text AS secret FROM content','secret', [['field_id',FIELDID_2FA_SECRET],['item_id',$user_id,'l']]) : '';
+        return strlen($user_id) ? DB_AA::select1('secret', 'SELECT content.text AS secret FROM content', [['field_id', FIELDID_2FA_SECRET], ['item_id', $user_id, 'l']]) : '';
     }
 
     /** true, if the hash is in old format and needs to be updated with new hash */

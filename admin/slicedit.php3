@@ -31,7 +31,6 @@ require_once __DIR__."/../include/init_page.php3";
 require_once __DIR__."/../include/formutil.php3";
 require_once __DIR__."/../include/date.php3";
 require_once __DIR__."/../include/varset.php3";
-require_once __DIR__."/../include/pagecache.php3";
 // add mlx functions
 require_once __DIR__."/../include/mlx.php";
 
@@ -88,7 +87,8 @@ require_once __DIR__."/../include/slicedit.php3";
 
 $foo_source = ( ( $slice_id=="" ) ? $set_template_id : $slice_id);
 
-$sarr = DB_AA::select1('SELECT slice.id, slice.name, reading_password, mailman_field_lists, auth_field_group, fileman_dir, fileman_access, slice.lang_file, permit_offline_fill,permit_anonymous_edit,permit_anonymous_post, d_listlen, slice.template, slice.deleted, LOWER(HEX(module.owner)) as owner, slice.slice_url, slice.flag, slice.mlxctrl, module.priority, module.created_by, module.created_at FROM `slice`, `module`', '', [['slice.id', 'module.id', 'j'], ['module.id',$foo_source, 'l']]);
+$sarr = DB_AA::select1('', 'SELECT slice.id, slice.name, reading_password, mailman_field_lists, auth_field_group, fileman_dir, fileman_access, slice.lang_file, permit_offline_fill,permit_anonymous_edit,permit_anonymous_post, d_listlen, slice.template, slice.deleted, LOWER(HEX(module.owner)) as owner, slice.slice_url, slice.flag, slice.mlxctrl, module.priority, module.created_by, module.created_at FROM `slice`, `module`',
+          [ [ 'slice.id', 'module.id', 'j' ], [ 'module.id', $foo_source, 'l' ]]);
 if (!$sarr) {
     $sarr = [];
 }
@@ -143,7 +143,6 @@ if ($slice AND ($slice->getProperty("type") == 'ReaderManagement')) {
     FrmInputSelect("auth_field_group", _m("Auth Group Field"), $slicefields, $sarr['auth_field_group'], false, "", "../doc/reader.html#auth_field_group");
     FrmInputSelect("mailman_field_lists",_m("Mailman Lists Field"), $slicefields, $sarr['mailman_field_lists'], false, "", "../doc/reader.html#mailman");
 }
-
 FrmInputText("reading_password", _m("Password for Reading"), $sarr['reading_password'], 100, 25, false, "", "http://apc-aa.sourceforge.net/faq/#slice_pwd");
 
 if ($slice_id) {
@@ -155,7 +154,7 @@ FrmStaticText(_m("Created"), date('Y-m-d H:i', $sarr['created_at']). ' ('. perm_
 FrmTabSeparator(_m("Settings for older AA - you will probably not use it for new slices"));
 FrmInputText("d_listlen", _m("Listing length"), $sarr['d_listlen'], 5, 5, false, _m('Used by slice.php3. Fill 0 to disable slice.php3 output for this slice (recommended for all newer slices - they are presented by Site Module).'));
 //mimo's MLX
-if ($slice_id && ($mlx_ctrl_for = DB_AA::select1('SELECT name FROM `slice`', 'name', [['mlxctrl', $slice_id, 'l']]))) {
+if ($slice_id && ($mlx_ctrl_for = DB_AA::select1('name', 'SELECT name FROM `slice`', [['mlxctrl', $slice_id, 'l']]))) {
     FrmStaticText(_m("MLX Control Slice for"), $mlx_ctrl_for, 0, "http://mimo.gn.apc.org/mlx/");
 } else {
     $mlx_slices = DB_AA::select(['unpackid'=>'name'], "SELECT LOWER(HEX(`id`)) AS unpackid, `name` FROM `slice` WHERE ((mlxctrl IS NULL) OR (mlxctrl='')) ORDER BY `name`");

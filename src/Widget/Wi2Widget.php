@@ -9,7 +9,7 @@
 namespace AA\Widget;
 
 /** Two Boxes widget */
-class Wi2Widget extends \AA\Widget\MchWidget
+class Wi2Widget extends MchWidget
 {
 
     /** - static member functions
@@ -45,10 +45,10 @@ class Wi2Widget extends \AA\Widget\MchWidget
 
     /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
+     * @return array
      */
-    static function getClassProperties()
-    {
-        return \AA\Widget\Widget::propertiesShop(['const', 'row_count', 'offer_label', 'selected_label', 'slice_field', 'bin_filter', 'filter_conds', 'sort_by', 'add_form', 'additional_slice_pwd', 'const_arr']);
+    static function getClassProperties(): array {
+        return Widget::propertiesShop(['const', 'row_count', 'offer_label', 'selected_label', 'slice_field', 'bin_filter', 'filter_conds', 'sort_by', 'add_form', 'additional_slice_pwd', 'const_arr']);
     }
 
     /** @inheritDoc */

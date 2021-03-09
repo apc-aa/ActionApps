@@ -105,7 +105,7 @@ function get_url($url, $params=[]) {
     if (($pos = strpos($url, '&')) !== false)  { return substr_replace($url, "&$param_string&", $pos, 1); }
     if (($pos = strrpos($url, '#')) !== false) { return substr_replace($url, "?$param_string#", $pos, 1); }
     return "$url?$param_string";
-    // list($path, $fragment) = explode( '#', $url, 2 );
+    // [$path, $fragment] = explode( '#', $url, 2 );
     // return $path . (strstr($path, '?') ? "&" : "?"). $param_string. ($fragment ? '#'.$fragment : '') ;
 }
 

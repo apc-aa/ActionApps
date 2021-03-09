@@ -31,6 +31,10 @@
  *
 */
 
+use AA\Cache\CacheStr2find;
+use AA\Cache\PageCache;
+use AA\Util\Hitcounter;
+
 require_once __DIR__."/stringexpand.php3";
 
 /**
@@ -546,7 +550,7 @@ class itemview {
     // count hit for random item - it is used for banners, so it is important
     // to count display number
     if ( $is_random AND ($this->zids->count()==1) ) {
-        AA_Hitcounter::hit($this->zids);
+        Hitcounter::hit($this->zids);
     }
 
     switch ( $view_type ) {

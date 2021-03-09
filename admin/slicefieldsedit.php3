@@ -39,7 +39,6 @@ require_once __DIR__."/../include/init_page.php3";     // This pays attention to
 require_once __DIR__."/../include/formutil.php3";
 require_once __DIR__."/../include/varset.php3";
 require_once __DIR__."/../include/feeding.php3";
-require_once __DIR__."/../include/pagecache.php3";
 require_once __DIR__."/../include/itemfunc.php3";
 require_once __DIR__."/../include/notify.php3";
 

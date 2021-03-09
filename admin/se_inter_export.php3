@@ -40,7 +40,7 @@ require_once __DIR__."/../include/formutil.php3";
 $p_slice_id = q_pack_id($slice_id);
 switch ($mode) {
     case "delete" :
-        list($sel_node, $sel_user) = explode("~",$perms);
+        [$sel_node, $sel_user] = explode("~",$perms);
         $db->query("DELETE FROM ef_permissions WHERE slice_id='$p_slice_id' AND  node='$sel_node' AND  user='$sel_user'");
         break;
     case "insert" :

@@ -15,7 +15,8 @@ use zids;
 /** AA\IO\AbstractGrabber\AbstractGrabber\Slice - grabs data from slice based on AA_Set
  *  Right now we use it mainly for apc-aa/admin/se_export.php
  */
-class Slice extends \AA\IO\Grabber\AbstractGrabber {
+class Slice extends AbstractGrabber
+{
 
     protected $set;
     /** AA_Set specifies the slice, conds and sort */

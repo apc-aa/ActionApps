@@ -15,7 +15,8 @@ use ItemContent;
  *  could be called like
  *     $a = new AA\IO\AbstractGrabber\AbstractGrabber\Ical('https://example.org/calendar.ics');
  */
-class Ical extends \AA\IO\Grabber\AbstractGrabber {
+class Ical extends AbstractGrabber
+{
 
     protected $url;
     /** URL of .ics file */

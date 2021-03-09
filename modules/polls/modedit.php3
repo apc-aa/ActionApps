@@ -33,7 +33,7 @@ if ($template['P'] ) {
 $directory_depth = "../";
 require_once __DIR__."/../../include/init_page.php3";
 require_once __DIR__."/../../include/formutil.php3";
-require_once __DIR__."/../../include/pagecache.php3";
+
 require_once __DIR__."/../../include/varset.php3";
 require_once __DIR__."/../../include/date.php3";
 require_once __DIR__."/../../include/modutils.php3";
@@ -165,10 +165,10 @@ $source_id   = ($template['P'] ? substr($template['P'],1) : $module_id );
 $p_source_id = q_pack_id( $source_id );
 
 // load module common data
-list( $name, $slice_url, $priority, $lang_file, $owner, $deleted, $slice_owners ) = GetModuleFields($source_id);
+[ $name, $slice_url, $priority, $lang_file, $owner, $deleted, $slice_owners ] = GetModuleFields($source_id);
 
 // load module specific data
-list( $status_code, $headline, $publish_date, $expiry_date, $logging, $ip_locking, $ip_lock_timeout, $set_cookies, $cookies_prefix, $design_id, $params) = array_values(DB_AA::select1("SELECT status_code, headline, publish_date, expiry_date, logging, ip_locking, ip_lock_timeout, set_cookies, cookies_prefix, design_id, params FROM polls", '', [
+[ $status_code, $headline, $publish_date, $expiry_date, $logging, $ip_locking, $ip_lock_timeout, $set_cookies, $cookies_prefix, $design_id, $params] = array_values(DB_AA::select1('', "SELECT status_code, headline, publish_date, expiry_date, logging, ip_locking, ip_lock_timeout, set_cookies, cookies_prefix, design_id, params FROM polls", [
     ['module_id', $source_id, 'l'],
     ['status_code', 0]
 ]));

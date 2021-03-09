@@ -30,7 +30,6 @@
 require_once __DIR__."/../include/init_page.php3";
 require_once __DIR__."/../include/varset.php3";
 require_once __DIR__."/../include/formutil.php3";
-require_once __DIR__."/../include/pagecache.php3";
 require_once __DIR__."/../include/item.php3";
 require_once __DIR__."/../include/actions.php3";
 require_once __DIR__."/../central/include/actionapps.class.php";
@@ -42,15 +41,15 @@ if ( !IsSuperadmin() ) {
 
 /** Test Task */
 
-//class AA_Task_Test implements \AA\Util\LaterInterface {
+//class AA_Task_Test implements \AA\Later\LaterInterface {
 //
 //    function __construct() {
 //    }
 //
-//    /** special function called from AA_Toexecute class - used for queued tasks (ran form cron)
+//    /** special function called from AA\Later\Toexecute class - used for queued tasks (ran form cron)
 //     *  @param array $params - numeric array of additional parameters for the execution passed in time of call
 //     *  @return string - message about execution to be logged
-//     *  @see \AA\Util\LaterInterface
+//     *  @see \AA\Later\LaterInterface
 //     */
 //    public function toexecutelater($params=array()) {
 //        // synchronize accepts array of sync_actions, so it is possible
@@ -61,7 +60,7 @@ if ( !IsSuperadmin() ) {
 //    }
 //}
 //
-//$toexecute = new AA_Toexecute;
+//$toexecute = new AA\Later\Toexecute;
 //$test_task = new AA_Task_Test();
 //$toexecute->userQueue($test_task, array(), 'AA_Task_Test');
 
@@ -75,7 +74,7 @@ $manager->performActions();
 $set  = $manager->getSet();
 $set->addCondition(new AA_Condition('execute_after', '==', TOEXECUTE_USER_TASK_TIME));
 $set->addCondition(new AA_Condition('aa_user',       '==', $auth->auth['uid']));
-$zids = AA_Metabase::queryZids(['table'=>'toexecute'], $set);
+$zids = AA::Metabase()->queryZids(['table'=>'toexecute'], $set);
 
 $manager->displayPage($zids, 'sliceadmin', 'taskmanager');
 page_close();

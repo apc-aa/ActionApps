@@ -343,7 +343,7 @@ class LastEditList {
     function getPairs() {
         $ret = [];
         foreach (explode(',', $this->lastlist) as $pair) {
-            list($id,$time) = explode('-', $pair);
+            [$id,$time] = explode('-', $pair);
             if ($id) {
                 $ret[$id]   = $time;
             }

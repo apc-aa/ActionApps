@@ -674,8 +674,7 @@ class Text_Diff_Engine_native {
              * sqrt(min($xlim - $xoff, $ylim - $yoff) / 2.5); $nchunks =
              * max(2,min(8,(int)$nchunks)); */
             $nchunks = min(7, $xlim - $xoff, $ylim - $yoff) + 1;
-            list($lcs, $seps)
-                = $this->_diag($xoff, $xlim, $yoff, $ylim, $nchunks);
+            [$lcs, $seps] = $this->_diag($xoff, $xlim, $yoff, $ylim, $nchunks);
         }
 
         if ($lcs == 0) {

@@ -29,7 +29,6 @@ use AA\IO\DB\DB_AA;
 require_once __DIR__."/../include/init_page.php3";
 require_once __DIR__."/../include/formutil.php3";
 require_once __DIR__."/../include/varset.php3";
-require_once __DIR__."/../include/pagecache.php3";
 require_once __DIR__."/../include/msgpage.php3";
 
 if ($cancel) {
@@ -50,7 +49,7 @@ if ($slice_id && $update) {
     DB_AA::update('slice', [['javascript',$_POST['javascript']]], [['id', $slice_id, 'l']]);
     $javascript = $_POST['javascript'];
 } else {
-    $javascript = DB_AA::select1('SELECT javascript FROM `slice`', 'javascript', [['id', $slice_id, 'l']]);
+    $javascript = DB_AA::select1('javascript', 'SELECT javascript FROM `slice`', [['id', $slice_id, 'l']]);
 }
 
 

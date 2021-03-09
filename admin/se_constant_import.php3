@@ -34,7 +34,6 @@
 require_once __DIR__."/../include/init_page.php3";
 require_once __DIR__."/../include/formutil.php3";
 require_once __DIR__."/../include/varset.php3";
-require_once __DIR__."/../include/pagecache.php3";
 require_once __DIR__."/../include/constedit_util.php3";
 require_once __DIR__."/../include/msgpage.php3";
 
@@ -68,7 +67,7 @@ if ($update) {
         $constants2import = [];
         foreach ($constants as $constant) {
             if ($delimiter) {
-                list($name,$value) = explode($delimiter, $constant);
+                [$name,$value] = explode($delimiter, $constant);
             } else {
                 $name = $value = $constant;
             }

@@ -12,7 +12,7 @@ use AA_Value;
 use zids;
 
 /** Related Item Manager widget */
-class RimWidget extends \AA\Widget\Widget
+class RimWidget extends Widget
 {
 
     /** - static member functions
@@ -34,10 +34,10 @@ class RimWidget extends \AA\Widget\Widget
 
     /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
+     * @return array
      */
-    static function getClassProperties()
-    {
-        return \AA\Widget\Widget::propertiesShop(['const', 'slice_field', 'show_buttons', 'item_template', 'bin_filter', 'filter_conds', 'sort_by', 'additional_slice_pwd', 'const_arr', 'filter_conds_rw']);
+    static function getClassProperties(): array {
+        return Widget::propertiesShop(['const', 'slice_field', 'show_buttons', 'item_template', 'bin_filter', 'filter_conds', 'sort_by', 'additional_slice_pwd', 'const_arr', 'filter_conds_rw']);
     }
 
     /** Creates base widget HTML, which will be surrounded by Live, Ajxax
@@ -190,7 +190,7 @@ HTML;
 
     public static function getValue($data4field): AA_Value
     {
-        return \AA\Widget\MchWidget::getValue($data4field);
+        return MchWidget::getValue($data4field);
     }
 
     /** @inheritDoc */

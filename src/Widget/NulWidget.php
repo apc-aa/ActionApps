@@ -9,7 +9,7 @@
 namespace AA\Widget;
 
 /** Do not show widget */
-class NulWidget extends \AA\Widget\Widget
+class NulWidget extends Widget
 {
 
     /** - static member functions
@@ -32,9 +32,9 @@ class NulWidget extends \AA\Widget\Widget
 
     /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
+     * @return array
      */
-    static function getClassProperties()
-    {
+    static function getClassProperties(): array {
         return [];
     }
 }

@@ -576,7 +576,7 @@ function is_packed_id($id) { return (strlen($id)==16); }
  *  @return string[] - array of non empty ids
  *  @param  string   - dash-separated-ids
  */
-function explode_ids($ids_string) {
+function explode_ids($ids_string): array {
     return array_filter(array_map('trim',explode('-',$ids_string)));
 }
 

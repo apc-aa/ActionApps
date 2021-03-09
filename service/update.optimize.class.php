@@ -1159,7 +1159,7 @@ class AA_Optimize_Add_Linkcheck_Cron_Entry extends AA_Optimize {
     }
 }
 
-/** Adds cron entry for Toexecute queue execution into AA cron **/
+/** Adds cron entry for AA\Later\Toexecute queue execution into AA cron **/
 class AA_Optimize_Add_Toexecute_Cron_Entry extends AA_Optimize {
 
     /** Name function @return a message */

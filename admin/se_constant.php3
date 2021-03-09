@@ -32,7 +32,6 @@ use AA\IO\DB\DB_AA;
 require_once __DIR__."/../include/init_page.php3";
 require_once __DIR__."/../include/formutil.php3";
 require_once __DIR__."/../include/varset.php3";
-require_once __DIR__."/../include/pagecache.php3";
 require_once __DIR__."/../include/constedit_util.php3";
 require_once __DIR__."/../include/msgpage.php3";
 
@@ -61,7 +60,7 @@ $varset      = new Cvarset();
 
 // Check permissions
 if ( $group_id ) {
-    $constant_info = DB_AA::select1('SELECT  LOWER(HEX(`slice_id`)) AS owner_id, name, propagate FROM constant_slice, slice','', [['constant_slice.slice_id', 'slice.id','j'], ['group_id',$group_id]]);
+    $constant_info = DB_AA::select1('', 'SELECT  LOWER(HEX(`slice_id`)) AS owner_id, name, propagate FROM constant_slice, slice', [['constant_slice.slice_id', 'slice.id', 'j'], ['group_id', $group_id]]);
     if ($constant_info && !CheckPerms( $auth->auth["uid"], "slice", $constant_info["owner_id"], PS_FIELDS)) {
         MsgPageMenu(StateUrl(self_base())."index.php3", _m("You have not permissions to change fields settings for the slice owning this group")." (".$constant_info['name'].")", "admin");
         exit;

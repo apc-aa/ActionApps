@@ -97,7 +97,7 @@ function add_fields_2_slice($collectionid, $slice_id) {
     $alerts_specific_fields = get_alerts_specific_fields ($collectionid);
 
     // find current Alerts Name
-    $alerts_name = DB_AA::select1('SELECT module.name FROM alerts_collection, module', 'name', [
+    $alerts_name = DB_AA::select1('name', 'SELECT module.name FROM alerts_collection, module', [
         ['alerts_collection.module_id', 'module.id', 'j'],
         ['alerts_collection.id', $collectionid]
     ]);
@@ -126,7 +126,7 @@ function add_fields_2_slice($collectionid, $slice_id) {
         $varset->addkey("id",       "text", $field_id);
 
         // don't add fields twice
-        $field_info = DB_AA::select1('SELECT * FROM field', '', [['slice_id', $slice_id, 'l'], ['id', $field_id]]);
+        $field_info = DB_AA::select1('', 'SELECT * FROM field', [['slice_id', $slice_id, 'l'], ['id', $field_id]]);
 
         if (! is_array($field_info) ) {
             $nadded ++;

@@ -107,7 +107,7 @@ class AA_Linkcheck {
         if (!preg_match("~^https?://~i", $url)) {
             if (preg_match("/^mailto:/i", $url)) {
                 $url = trim(preg_replace("/^mailto:(.+)/i", "\\1", $url));
-                list($brugernavn, $host) = explode("@", $url);
+                [$brugernavn, $host] = explode("@", $url);
                 $dnsCheck = checkdnsrr($host,"MX");
                 if ($dnsCheck) {
                     $return["code"] = "OK";

@@ -26,6 +26,9 @@
  * @link      https://www.apc.org/ APC
  *
 */
+
+use AA\Util\Hitcounter;
+
 require_once __DIR__."/mgettext.php3";
 require_once __DIR__."/itemview.php3";
 require_once __DIR__."/searchlib.php3";
@@ -222,7 +225,7 @@ class AA_View_Commands {
                 }
             }
 
-            list($command, $params) = explode("-", $cmd_part, 2);
+            [$command, $params] = explode("-", $cmd_part, 2);
             $splited = in_array($command, ['x', 'i', 'o']) ? explode("-", $params) : split_escaped("-", $params, "--");
             $this->addCommand($command, $splited);
 
@@ -322,7 +325,7 @@ function ParseViewParameters($query_string="") {
                        // This is bizarre code, just incrementing the first item, left as it is
                        // but questioned on apc-aa-coders - mitra
                        if (($command->getCommand()=='x') AND ($zids->count()>0)) {
-                           AA_Hitcounter::hit($zids->slice(0));
+                           Hitcounter::hit($zids->slice(0));
                        }
                        break;
 
@@ -432,7 +435,7 @@ function ParseViewParameters($query_string="") {
 function ParseBannerParam($banner_param) {
     $ret = [];
     if ( $banner_param ) {
-        list( $foo_pos, $foo_vid, $foo_fld ) = explode('-',$banner_param);
+        [ $foo_pos, $foo_vid, $foo_fld ] = explode('-',$banner_param);
         $ret['banner_position']   = $foo_pos;
         $ret['banner_parameters'] = "vid=$foo_vid";
         if ($foo_fld == 'norandom') {

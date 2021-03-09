@@ -9,7 +9,7 @@
 namespace AA\Widget;
 
 /** Rich Edit Text Area widget */
-class EdtWidget extends \AA\Widget\TxtWidget
+class EdtWidget extends TxtWidget
 {
     /** name function  */
     public function name(): string
@@ -19,10 +19,10 @@ class EdtWidget extends \AA\Widget\TxtWidget
 
     /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
+     * @return array
      */
-    static function getClassProperties()
-    {
-        return \AA\Widget\Widget::propertiesShop(['rows', 'cols', 'area_type']);
+    static function getClassProperties(): array {
+        return Widget::propertiesShop(['rows', 'cols', 'area_type']);
     }
 
     function requireLibs($aa_property, $winfo)

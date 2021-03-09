@@ -31,7 +31,6 @@ $require_default_lang = true;      // do not use module specific language file
 require_once __DIR__."/../include/init_page.php3";
 require_once __DIR__."/../include/itemfunc.php3";
 require_once __DIR__."/../include/varset.php3";
-require_once __DIR__."/../include/pagecache.php3";
 require_once __DIR__."/../include/feeding.php3";
 require_once __DIR__."/../include/notify.php3";
 require_once __DIR__."/../include/mgettext.php3";
@@ -279,8 +278,8 @@ if (is_uploaded_file($_FILES['slice_def_file']['tmp_name'])) {
 if ($conflicts_list) {
     $temp = explode("\n",$conflicts_list);
     foreach ($temp as $line) {
-        list(,$line)    = explode(":",$line);
-        list($old,$new) = explode("->",$line);
+        [,$line]    = explode(":",$line);
+        [$old,$new] = explode("->",$line);
         $resolve_conflicts[trim($old)] = trim($new);
     }
 }
@@ -288,8 +287,8 @@ if ($conflicts_list) {
 if ($view_conflicts_list) {
     $temp = explode("\n",$view_conflicts_list);
     foreach ($temp as $line) {
-        list(,$line)    = explode(":",$line);
-        list($old,$new) = explode("->",$line);
+        [,$line]    = explode(":",$line);
+        [$old,$new] = explode("->",$line);
         $view_resolve_conflicts[trim($old)] = trim($new);
     }
 }
@@ -297,8 +296,8 @@ if ($view_conflicts_list) {
 if ($data_conflicts_list) {
     $temp = explode("\n",$data_conflicts_list);
     foreach ($temp as $line) {
-        list(,$line)    = explode(":",$line);
-        list($old,$new) = explode("->",$line);
+        [,$line]    = explode(":",$line);
+        [$old,$new] = explode("->",$line);
         $data_resolve_conflicts[trim($old)] = trim($new);
     }
 }

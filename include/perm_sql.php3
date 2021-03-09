@@ -306,7 +306,7 @@ class AA_Permsystem_Sql extends AA_Permsystem {
      * @return false|string uid if user is authenticated, else false.
      */
     public function authenticateUsername($username, $password, $code2fa = '') {
-        if ($user = DB_AA::select1('SELECT id, password FROM `users`', '', [[strpos($username, "@") ? 'mail' : 'uid', $username]])) {
+        if ($user = DB_AA::select1('', 'SELECT id, password FROM `users`', [[strpos($username, "@") ? 'mail' : 'uid', $username]])) {
             return AA_Perm::comparePwds($password, $user['password']) ? $user['id'] : false;
         }
         return false;
@@ -318,7 +318,7 @@ class AA_Permsystem_Sql extends AA_Permsystem {
      * @return bool
      */
     function isUsernameFree($username) {
-        return !(DB_AA::select1('SELECT uid FROM `users`', '', [['uid', $username]]));
+        return !(DB_AA::select1('', 'SELECT uid FROM `users`', [['uid', $username]]));
     }
 
     /** findUsernames function
@@ -335,7 +335,7 @@ class AA_Permsystem_Sql extends AA_Permsystem {
      * @return array|bool
      */
     function findUserByLogin($user_login) {
-        return DB_AA::select1("SELECT id, CONCAT(givenname, ' ', sn) AS name, mail FROM `users`", ['id'=> ['name','mail']], [['uid', $user_login]]);
+        return DB_AA::select1(['id' => ['name', 'mail']], "SELECT id, CONCAT(givenname, ' ', sn) AS name, mail FROM `users`", [['uid', $user_login]]);
     }
 
 
@@ -352,7 +352,7 @@ class AA_Permsystem_Sql extends AA_Permsystem {
      *  @return array(uid, name, description) or false if not found
      */
     function getGroup($group_id) {
-        return DB_AA::select1('SELECT id AS uid, name, description FROM `users`', '', [['id', $group_id, 'i']]);
+        return DB_AA::select1('', 'SELECT id AS uid, name, description FROM `users`', [['id', $group_id, 'i']]);
     }
 
     /** getIDsInfo function
@@ -363,7 +363,7 @@ class AA_Permsystem_Sql extends AA_Permsystem {
      * array("mail" => $mail, "name" => $cn, "type" => "User" : "Group")
      */
     function getIDsInfo($id) {
-        if ($this->userIdFormatMatches($id) AND ($user = DB_AA::select1('SELECT id, name, givenname, uid AS login, sn, mail, type FROM `users`', '', [['id', $id, 'i']]))) {
+        if ($this->userIdFormatMatches($id) AND ($user = DB_AA::select1('', 'SELECT id, name, givenname, uid AS login, sn, mail, type FROM `users`', [['id', $id, 'i']]))) {
             if ($user['type'] == _m("User") OR ($user['type'] == "User")) {
                 $user['type'] = 'User';
                 $user['name'] = $user['givenname']." ".$user['sn'];

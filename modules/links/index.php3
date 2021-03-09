@@ -28,7 +28,7 @@ require_once __DIR__."/../../include/varset.php3";
 require_once __DIR__."/../../include/formutil.php3";
 require_once __DIR__."/../../include/itemview.php3";
 require_once __DIR__."/../../include/item.php3";
-require_once __DIR__."/../../include/pagecache.php3";
+
 require_once __DIR__."/../../modules/links/linksearch.php3";
 require_once __DIR__."/../../modules/links/constants.php3";
 require_once __DIR__."/../../modules/links/actions.php3";

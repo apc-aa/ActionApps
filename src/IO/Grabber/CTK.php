@@ -33,7 +33,8 @@ use ItemContent;
 
 /** AA\IO\AbstractGrabber\AbstractGrabber\CTK - Imports items from CTK xml export
  */
-class CTK extends \AA\IO\Grabber\AbstractGrabber {
+class CTK extends AbstractGrabber
+{
 
     protected $file;
     /** list if files to grab - internal array */

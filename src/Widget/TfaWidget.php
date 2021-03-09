@@ -11,7 +11,7 @@ use AA\FormArray;
 use AA_Value;
 
 /** 2FA Auth - generate secret widget */
-class TfaWidget extends \AA\Widget\Widget
+class TfaWidget extends Widget
 {
 
     /** name function
@@ -90,10 +90,10 @@ class TfaWidget extends \AA\Widget\Widget
 
     /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
+     * @return array
      */
-    static function getClassProperties()
-    {
-        return \AA\Widget\Widget::propertiesShop([]);
+    static function getClassProperties(): array {
+        return Widget::propertiesShop([]);
     }
 
     /**

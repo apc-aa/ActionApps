@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * PHP versions 5 and 7
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,7 @@ use ItemContent;
  * @param $transformations - defines, how the source item should be transformed
  *                            into destination item
  */
-class Saver implements AA\Util\LaterInterface {
+class Saver implements AA\Later\LaterInterface {
     protected $grabber;
     /** @var \AA\IO\Grabber\AbstractGrabber the object which deliveres the data */
     protected $transformations;
@@ -107,7 +107,6 @@ class Saver implements AA\Util\LaterInterface {
         $err_count = 0;
 
         while ($source_content4id = $this->grabber->getItem()) {
-
             if (!$fire) {
                 $this->message("AA\IO\Saver->run(): grabbed item: ");
                 $this->message($source_content4id);
@@ -169,6 +168,13 @@ class Saver implements AA\Util\LaterInterface {
                         $set = new AA_Set([$this->slice_id]);
                         if (($id_mode[0] == '[') AND is_array($flds = json_decode($id_mode))) {
                             foreach ($flds as $fld) {
+                                $condval = $content4id->getValue($fld);
+                                if (!strlen(trim($condval))) {
+                                    $err_count++;
+                                    $this->message("AA\IO\Saver->run(): key condition empty for $fld");
+                                    continue 3; // another item
+                                }
+
                                 $set->addCondition(new AA_Condition($fld, '==', $content4id->getValue($fld)));
                             }
                             $zids = $set->query(null, 1);
@@ -219,7 +225,8 @@ class Saver implements AA\Util\LaterInterface {
                 // (the $new_item_id should not be changed by storeItem)
                 if (!($new_item_id = $content4id->storeItem($store_mode))) {     // invalidatecache, feed
                     // AA\IO\Saver->run(): storeItem failed or skiped duplicate:
-                    $this->message(ItemContent::lastErrMsg());
+                    $err_count++;
+                    $this->message('AA\IO\Saver->run(): storeItem failed or skiped duplicate: '. ItemContent::lastErrMsg());
                 } else {
                     // @todo better check of new ids
                     if ($store_mode == 'insert') {
@@ -261,12 +268,12 @@ class Saver implements AA\Util\LaterInterface {
         return array_keys($this->_updated_slices);
     }
 
-    /** special function called from AA_Toexecute class - used for queued tasks (ran form cron)
+    /** special function called from AA\Later\Toexecute class - used for queued tasks (ran form cron)
      *  You can use $toexecute->later($saver, array(), 'feed_external') instead
      *  of calling $saver->run() - the saving will be planed for future
      *  @param array $params - numeric array of additional parameters for the execution passed in time of call
      *  @return string - message about execution to be logged
-     *  @see \AA\Util\LaterInterface
+     *  @see \AA\Later\LaterInterface
      */
     public function toexecutelater($params= []) {
         return $this->run();

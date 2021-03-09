@@ -90,6 +90,8 @@ https://www.apc.org/
               // mlx=ALL      turns of language extension
 
 
+use AA\Util\Hitcounter;
+
 function add2sort(&$sort, $sarr) {
     if (isset($sort) AND is_array($sort)) {
         foreach ($sort as $s) {
@@ -123,7 +125,6 @@ require_once __DIR__."/./include/config.php3";
 require_once __DIR__."/include/util.php3";
 require_once __DIR__."/include/item.php3";
 require_once __DIR__."/include/view.php3";
-require_once __DIR__."/include/pagecache.php3";
 require_once __DIR__."/include/searchlib.php3";
 require_once __DIR__."/include/discussion.php3";
 require_once __DIR__."/include/mgettext.php3";
@@ -191,10 +192,10 @@ $sess->register('slices');
 
 $r_state_vars = unserialize($r_packed_state_vars);
 
-// there was problems with storing too much ids in session veriable,
+// there was problems with storing too much ids in session variable,
 // so I commented it out. It is not necessary to have it in session. The only
 // reason to have it there is the display speed, but because of impementing
-// pagecache.php3, it is not so big problem now
+// pagecache, it is not so big problem now
 
 //$sess->register(item_ids);
 
@@ -334,17 +335,17 @@ if ( $sh_itm OR $x OR $o OR $seo ) {
     //  $r_state_vars = StoreVariables(array("sh_itm")); // store in session
     if ( $x ) {
         $zid = new zids((int)$x, 's');
-        AA_Hitcounter::hit($zid, 0);
+        Hitcounter::hit($zid, 0);
     }
     elseif ( $seo ) {
         $zid = new zids(explode_ids(StrExpand('AA_Stringexpand_Seo2ids', [$slice_id, $seo])), 'l');
-        AA_Hitcounter::hit($zid, 0);
+        Hitcounter::hit($zid, 0);
     }
     elseif ( $o ) {
         $zid = new zids((int)$o, 's');
     } else {
         $zid = new zids($sh_itm, 'l');
-        AA_Hitcounter::hit($zid, 0);
+        Hitcounter::hit($zid, 0);
     }
     
     if ( !is_object($item = AA_Items::getItem($zid)) OR ($item->getStatusCode()<>1) ) {

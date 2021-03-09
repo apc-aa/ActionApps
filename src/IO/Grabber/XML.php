@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * PHP versions 5 and 7
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,7 +35,8 @@ use ItemContent;
  * Class XML
  * @package AA\IO\Grabber
  */
-class XML extends \AA\IO\Grabber\AbstractGrabber {
+class XML extends AbstractGrabber
+{
 
     /** @var $file string url of the file */
     protected $file = '';

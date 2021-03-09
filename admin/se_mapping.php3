@@ -102,7 +102,7 @@ if ($from_slice_id == "") {
 $p_from_slice_id = q_pack_id($from_slice_id);
 
 // get mapping from table
-list($map_to,$field_map) = GetExternalMapping($slice_id, $from_slice_id );
+[$map_to,$field_map] = GetExternalMapping($slice_id, $from_slice_id );
 
 if (is_null($field_map) && ($remote_slices[$from_slice_id] == 2)) {
     $field_map = $DEFAULT_RSS_MAP;

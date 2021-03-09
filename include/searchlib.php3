@@ -28,7 +28,6 @@ use AA\IO\DB\DB_AA;
 
 require_once __DIR__."/sql_parser.php3";
 require_once __DIR__."/zids.php3";
-require_once __DIR__."/pagecache.php3";
 
 //define('AA_REGEXP_MAIL', '[a-z0-9!#$%&1*+/=?^_`{|}~-]+(?:.[a-z0-9!#$%&1*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?.)+(?:[A-Z]{2}|com|org|net|edu|gov|mil|biz|info|mobi|name|aero|asia|jobs|museum)');
 define('AA_REGEXP_MAIL', '(?:[a-z0-9!#$%&\'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&\'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])');
@@ -136,7 +135,7 @@ class AA_Condition extends AA_Object {
      *  Used parameter format (in fields.input_show_func table)
      * @return array
      */
-    static function getClassProperties()  {
+    static function getClassProperties(): array {
         return [                   //  id            name         type      multi  persistent validator, required, help,                                         morehelp, example
             /** Array of compared fields */
             'fields'   => new AA_Property( 'fields',   _m("Fields"),   'text',  true,  true, 'field' ),
@@ -303,7 +302,7 @@ class AA_Sortorder extends AA_Object {
      *  Used parameter format (in fields.input_show_func table)
      * @return array
      */
-    static function getClassProperties()  {
+    static function getClassProperties(): array {
         return [                   //  id            name         type      multi  persistent validator, required, help,                                         morehelp, example
             'field' => new AA_Property( 'field', _m("Field"),      'text',  false,  true, 'field' ),
             'desc'  => new AA_Property( 'desc',  _m("Descending"), 'text',  false,  true, 'bool' ),
@@ -707,7 +706,7 @@ class AA_Set extends AA_Object {
 
     /** _parseViewConds function
      *  Creates conditions from d-<fields>-<operator>-<value>-<fields>-<op....
-     * @param $string ie:   d-headline........,category.......1-BEGIN-Bio
+     * @param string $string - like:   d-headline........,category.......1-BEGIN-Bio
      * @return bool
      */
     function _parseViewConds($string) {
@@ -847,8 +846,9 @@ class AA_Set extends AA_Object {
 
     /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
+     * @return array
      */
-    static function getClassProperties()  {
+    static function getClassProperties(): array {
         return [                //  id            name         type          multi  persistent validator, required, help,                                         morehelp, example
             /** Array of AA_Condition */
             'conds'  => new AA_Property( 'conds',  _m("Conditions"), 'AA_Condition',  true, true ),
@@ -1706,7 +1706,10 @@ function QueryZids($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
                 next($srt);       // skip the 'limit' record in the array
             }
 
-            $fid   = key($srt);
+            $fid = trim(key($srt));
+            if (!$fid) {
+                continue;
+            }
 
             // random sorting by following url parameters:
             //    sort[0]=random

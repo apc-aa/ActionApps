@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * PHP versions 5 and 7
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,20 +25,20 @@
  *
  */
 
-namespace AA\Util;
+namespace AA\Later;
 
 
 /**
  * Interface LaterInterface - enable to plan this object execution for later time
  * Usage:
- *   $cache_purger  = new AA_Pagecache_Purge();
- *   $toexecute     = new AA_Toexecute;
- *   $toexecute->laterOnce($cache_purger, array($this->cacheTime), 'AA_Pagecache_Purge', 101, now() + 300);  // run it once in 5 minutes
+ *   $cache_purger  = new AA\Later\PagecachePurge();
+ *   $toexecute     = new AA\Later\Toexecute;
+ *   $toexecute->laterOnce($cache_purger, array($this->cacheTime), 'AA\Later\PagecachePurge', 101, now() + 300);  // run it once in 5 minutes
  * @package AA\Util
  */
 interface LaterInterface {
 
-    /** special function called from AA_Toexecute class - used for queued tasks (ran form cron)
+    /** special function called from AA\Later\Toexecute class - used for queued tasks (ran form cron)
      *  @param array $params - numeric array of additional parameters for the execution passed in time of call
      *  @return string - message about execution to be logged
      */

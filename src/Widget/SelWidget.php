@@ -10,7 +10,7 @@ namespace AA\Widget;
 use AA\FormArray;
 
 /** Select Box widget */
-class SelWidget extends \AA\Widget\Widget
+class SelWidget extends Widget
 {
 
     /** - static member functions
@@ -26,10 +26,10 @@ class SelWidget extends \AA\Widget\Widget
 
     /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
+     * @return array
      */
-    static function getClassProperties()
-    {
-        return \AA\Widget\Widget::propertiesShop(['const', 'slice_field', 'use_name', 'bin_filter', 'filter_conds', 'sort_by', 'additional_slice_pwd', 'const_arr', 'filter_conds_rw']);
+    static function getClassProperties(): array {
+        return Widget::propertiesShop(['const', 'slice_field', 'use_name', 'bin_filter', 'filter_conds', 'sort_by', 'additional_slice_pwd', 'const_arr', 'filter_conds_rw']);
     }
 
     /** Creates base widget HTML, which will be surrounded by Live, Ajxax
@@ -57,7 +57,7 @@ class SelWidget extends \AA\Widget\Widget
         $multiple = $this->multiple() ? ' multiple' : '';
 
         //$widget    = AA\Widget\Widget::_saveIcon($base_id, $type == 'live', 'left')."<select name=\"$input_name\" id=\"$input_id\"$multiple $required $widget_adds $autofocus>";
-        $widget = \AA\Widget\Widget::_saveIcon($base_id, $type == 'live') . "<select name=\"$input_name\" id=\"$input_id\"$multiple $required $widget_add $autofocus>";
+        $widget = Widget::_saveIcon($base_id, $type == 'live') . "<select name=\"$input_name\" id=\"$input_id\"$multiple $required $widget_add $autofocus>";
         $selected = $content->getAaValue($aa_property->getId());
         // empty select option for not required fields and also for live selectbox,
         // because people thinks, that the first value is filled in the database (which is not)

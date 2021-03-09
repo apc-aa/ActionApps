@@ -14,7 +14,7 @@ use AA_Validate;
 use AA_Value;
 
 /** File Upload widget */
-class FilWidget extends \AA\Widget\Widget
+class FilWidget extends Widget
 {
 
     /** - static member functions
@@ -30,10 +30,10 @@ class FilWidget extends \AA\Widget\Widget
 
     /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
+     * @return array
      */
-    static function getClassProperties()
-    {
-        return \AA\Widget\Widget::propertiesShop(['allowed_ftypes', 'label', 'hint', 'display_url', 'multiple']);
+    static function getClassProperties(): array {
+        return Widget::propertiesShop(['allowed_ftypes', 'label', 'hint', 'display_url', 'multiple']);
     }
 
 //    function requireLibs($aa_property, $winfo)
@@ -192,7 +192,7 @@ class FilWidget extends \AA\Widget\Widget
     }
 
     /** Get Live HTML widget (in place editing)
-     * @param \AA_Property $aa_property  - the variable
+     * @param AA_Property $aa_property  - the variable
      * @param \AA_Content  $content      - contain the value of property to display
      * @param null $function
      * @return string - widget HTML for using as Live component (in place editing)

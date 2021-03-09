@@ -10,7 +10,7 @@ namespace AA\Widget;
 use AA\FormArray;
 
 /** Radio Button widget */
-class RioWidget extends \AA\Widget\Widget
+class RioWidget extends Widget
 {
 
     /** - static member functions
@@ -26,10 +26,10 @@ class RioWidget extends \AA\Widget\Widget
 
     /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
+     * @return array
      */
-    static function getClassProperties()
-    {
-        return \AA\Widget\Widget::propertiesShop(['const', 'columns', 'move_right', 'slice_field', 'bin_filter', 'filter_conds', 'sort_by', 'additional_slice_pwd', 'const_arr']);
+    static function getClassProperties(): array {
+        return Widget::propertiesShop(['const', 'columns', 'move_right', 'slice_field', 'bin_filter', 'filter_conds', 'sort_by', 'additional_slice_pwd', 'const_arr']);
     }
 
     /** Returns one checkbox tag - Used in removed inputMultiChBox */

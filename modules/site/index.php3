@@ -27,7 +27,7 @@ use AA\IO\DB\DB_AA;
 require_once __DIR__."/../../include/init_page.php3";
 require_once __DIR__."/../../include/varset.php3";
 require_once __DIR__."/../../include/formutil.php3";
-require_once __DIR__."/../../include/pagecache.php3";
+
 require_once __DIR__."/../../modules/site/util.php3";   // module specific utils
 require_once __DIR__."/../../modules/site/sitetree.php3";   // module specific utils
 
@@ -113,7 +113,7 @@ if ($addcond) {
     $varset     = new CVarset();
     $varset->add("content", "quoted", $content);
 
-    $db_id = DB_AA::select1('SELECT `id` FROM `site_spot`', 'id', [
+    $db_id = DB_AA::select1('id', 'SELECT `id` FROM `site_spot`', [
         ['site_id', $module_id, 'l'],
         ['spot_id', $r_spot_id]
     ]);

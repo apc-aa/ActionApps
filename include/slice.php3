@@ -126,7 +126,7 @@ function PutSearchLog() {
     $httpquery = DeBackslash($httpquery);
     $httpquery = str_replace("'", "\\'", $httpquery);
     $found_count = count ($GLOBALS['item_ids']);
-    list($usec, $sec) = explode(" ",microtime());
+    [$usec, $sec] = explode(" ",microtime());
     $slice_time = 1000 * ((float)$usec + (float)$sec - $GLOBALS['slice_starttime']);
     $user = $_SERVER['PHP_AUTH_USER'];
     DB_AA::sql("INSERT INTO searchlog (date,query,user,found_count,search_time,additional1) VALUES (".time().",'$httpquery','$user',$found_count,$slice_time,'$searchlog')");

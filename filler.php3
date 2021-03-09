@@ -113,8 +113,6 @@ require_once __DIR__."/include/varset.php3";
 require_once __DIR__."/include/itemfunc.php3";
 /** utility for notifying people of events by email */
 require_once __DIR__."/include/notify.php3";
-/** defines PageCache class used for caching informations into database */
-require_once __DIR__."/include/pagecache.php3";
 /** date helper functions */
 require_once __DIR__."/include/date.php3";
 require_once __DIR__."/include/feeding.php3";
@@ -222,7 +220,7 @@ function SendOkPage($txt, $new_ids = []) {
             $retcode = $_REQUEST["ret_code"] ? $_REQUEST["ret_code"] : base64_decode($_REQUEST["ret_code_enc"]);
 
             if ( $retcode == 'AA_2FA_QR') {   // very special case for 2FA secret
-                $secret = strlen($GLOBALS['auth']->auth['uid']) ? DB_AA::select1('SELECT content.text AS secret FROM content','secret', [['field_id',FIELDID_2FA_SECRET],['item_id',$GLOBALS['auth']->auth['uid'],'l']]) : '';
+                $secret = strlen($GLOBALS['auth']->auth['uid']) ? DB_AA::select1('secret', 'SELECT content.text AS secret FROM content', [['field_id', FIELDID_2FA_SECRET], ['item_id', $GLOBALS['auth']->auth['uid'], 'l']]) : '';
 
                 $qr = '--';
                 if ($secret) {

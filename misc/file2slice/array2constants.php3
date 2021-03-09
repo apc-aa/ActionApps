@@ -11,7 +11,7 @@ require_once __DIR__."/../../include/varset.php3";
 require_once __DIR__."/../../include/itemfunc.php3";
 require_once __DIR__."/../../include/notify.php3";
 require_once __DIR__."/../../include/discussion.php3";
-require_once __DIR__."/../../include/pagecache.php3";
+
 require_once __DIR__."/../../include/date.php3";
 require_once __DIR__."/../../include/feeding.php3";
 

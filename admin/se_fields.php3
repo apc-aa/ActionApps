@@ -34,7 +34,6 @@ use AA\IO\DB\DB_AA;
 require_once __DIR__."/../include/init_page.php3";
 require_once __DIR__."/../include/formutil.php3";
 require_once __DIR__."/../include/varset.php3";
-require_once __DIR__."/../include/pagecache.php3";
 require_once __DIR__."/../include/msgpage.php3";
 
 if ($cancel) {
@@ -120,8 +119,8 @@ if ($update) {
                     continue;
                 }
 
-                list($field_slice, $field_type) = explode('-',$ftype,2);
-                $field_setting = DB_AA::select1("SELECT * FROM field", '', [
+                [$field_slice, $field_type] = explode('-',$ftype,2);
+                $field_setting = DB_AA::select1('', "SELECT * FROM field", [
                     ['slice_id', $field_slice, 'l'],
                     ['id', $field_type]
                 ]);

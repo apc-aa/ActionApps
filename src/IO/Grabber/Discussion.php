@@ -14,7 +14,8 @@ use zids;
 /** AA\IO\AbstractGrabber\AbstractGrabber\Discussion - grabs data from slices discussion based on AA_Set
  *  Right now we use it mainly for apc-aa/admin/se_export.php
  */
-class Discussion extends \AA\IO\Grabber\AbstractGrabber {
+class Discussion extends AbstractGrabber
+{
 
     protected $set;
     /** AA_Set specifies the slice, conds and sort */

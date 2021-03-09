@@ -31,7 +31,7 @@ use AA\IO\DB\DB_AA;
 $require_default_lang = true;      // do not use module specific language file
 require_once __DIR__."/../../include/init_page.php3";
 require_once __DIR__."/../../include/formutil.php3";
-require_once __DIR__."/../../include/pagecache.php3";
+
 require_once __DIR__."/../../include/varset.php3";
 
 // create the $jumps array:

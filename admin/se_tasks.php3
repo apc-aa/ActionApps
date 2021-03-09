@@ -27,11 +27,12 @@
  *
 */
 
+use AA\Later\PlannedTask;
+
 require_once __DIR__."/../include/init_page.php3";
 require_once __DIR__."/../include/formutil.php3";
 require_once __DIR__."/../include/varset.php3";
 require_once __DIR__."/../include/item.php3";     // GetAliasesFromField funct def
-require_once __DIR__."/../include/pagecache.php3";
 require_once __DIR__."/../include/msgpage.php3";
 
 if ($cancel) {
@@ -45,7 +46,7 @@ if (!IfSlPerm(PS_FORMS)) {
 
 $module_id = $slice_id;
 
-$manager_settings = AA_Plannedtask::getManagerConf(get_admin_url('se_tasks.php3'));
+$manager_settings = PlannedTask::getManagerConf(get_admin_url('se_tasks.php3'));
 $manager_settings['messages']['title'] = _m('Planed tasks');
 $manager_settings['messages']['about'] = _m('You can plan the a task for specified time, or as the reaction to some event. The task will be probably sending e-mails using {mail...} expression, or recounting some fields after update by {recount...}');
 
@@ -56,7 +57,7 @@ $aa_set = $manager->getSet();
 //$aa_set->setModules($module_id);
 //$aa_set->addCondition(new AA_Condition('aa_user',       '==', $auth->auth['uid']));
 
-$zids  = AA_Object::querySet('AA_Plannedtask', $aa_set);
+$zids  = AA_Object::querySet('AA\Later\PlannedTask', $aa_set);
 
 $manager->displayPage($zids, 'sliceadmin', 'tasks');
 page_close();

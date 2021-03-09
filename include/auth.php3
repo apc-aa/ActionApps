@@ -305,7 +305,7 @@ class AA_Mysqlauth {
         if (empty($newvalue) OR ($oldvalue == $newvalue)) {
             return;
         }
-        if (false === ($group_id = DB_AA::select1('SELECT group_id FROM `constant`', 'group_id', [['id', $constant_id, 'l']]))) {
+        if (false === ($group_id = DB_AA::select1('group_id', 'SELECT group_id FROM `constant`', [['id', $constant_id, 'l']]))) {
             return;
         }
 

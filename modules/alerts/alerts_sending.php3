@@ -30,7 +30,7 @@ use AA\IO\DB\DB_AA;
 
 require_once __DIR__."/../../include/item.php3";
 require_once __DIR__."/../../include/view.php3";
-require_once __DIR__."/../../include/pagecache.php3";
+
 require_once __DIR__."/../../include/searchlib.php3";
 require_once __DIR__."/../../include/mail.php3";
 require_once __DIR__."/../../include/item_content.php3";
@@ -59,7 +59,7 @@ class AA_Collection {
     function _get( $property ) {
         if ( is_null($this->reader_slice_id) ) {
             //$data = GetTable2Array('SELECT * FROM alerts_collection WHERE id = \''. $this->id .'\'', 'aa_first', 'aa_fields');
-            $data = DB_AA::select1('SELECT * FROM alerts_collection', [], [['id', $this->id]]);
+            $data = DB_AA::select1([], 'SELECT * FROM alerts_collection', [['id', $this->id]]);
             $this->reader_slice_id  = unpack_id($data['slice_id']);
             $this->alerts_module_id = unpack_id($data['module_id']);
             $this->email_id_welcome = $data['emailid_welcome'];
@@ -72,7 +72,7 @@ class AA_Collection {
 
     function getSliceUrl()       {
         if ( is_null($this->slice_url) ) {
-            $this->slice_url = DB_AA::select1("SELECT slice_url FROM `module`", 'slice_url', [['id',$this->_get('alerts_module_id'),'l']]);
+            $this->slice_url = DB_AA::select1('slice_url', "SELECT slice_url FROM `module`", [[ 'id', $this->_get('alerts_module_id'), 'l' ]]);
                               //GetTable2Array('SELECT slice_url FROM module WHERE id=\''.q_pack_id($alerts_id).'\'', 'aa_first', 'slice_url');
         }
         return $this->slice_url;

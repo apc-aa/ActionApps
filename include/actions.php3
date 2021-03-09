@@ -38,6 +38,7 @@
 */
 
 use AA\IO\DB\DB_AA;
+use AA\Later\Toexecute;
 
 
 /** AA_Manageraction - Item manager actions. Just create new class and assign
@@ -188,7 +189,7 @@ class AA_Manageraction_Item_Feed extends AA_Manageraction {
 
         foreach ($item_zids as $it_id ) {
             foreach ( $export_to as $exp_slice_pair ) {
-                list($status,$sid) = explode("-", $exp_slice_pair);
+                [$status,$sid] = explode("-", $exp_slice_pair);
                 FeedItemTo($it_id, $this->slice_id, $sid, ($status=='1' ? 'y':'n'), 0);
             }
         }
@@ -237,8 +238,9 @@ class AA_Manageraction_Item_Move2slice extends AA_Manageraction {
      *  We extending AA_Storable, because we want to get the state form some
      *  actions. Action selectbox is able to display settings by AJAX call, where
      *  we need to pass all parameters of the object
+     * @return array
      */
-    static function getClassProperties() {
+    static function getClassProperties(): array {
         $properties = parent::getClassProperties();
         //                                          id             name                              type    multi  persistent - validator, required, help, morehelp, example
         $properties['slice_id'] = new AA_Property( 'slice_id',  _m('Slice ID'),                    'text', false, true);
@@ -664,7 +666,7 @@ class AA_Manageraction_Taskmanager_Execute extends AA_Manageraction {
             return false;     // OK
         }
 
-        $toexecute = new AA_Toexecute;
+        $toexecute = new Toexecute;
         $toexecute->executeTask($item_zids->shortids());
         return $toexecute->report();
     }

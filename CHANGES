@@ -120,7 +120,7 @@ The changes could be tracked on:
            (the required scripts and CSS are loaded authomaticaly)
          - better requires control - now we are able to control the requires during AJAX calls
            (so {ajax} widgets are able to load its JS and CSS)
-         - quicker PageCache - better values for DB keys, quicker invaliadation (grouped for more slices)
+         - quicker AA\Cache\PageCache - better values for DB keys, quicker invaliadation (grouped for more slices)
          - The functions for inserting Item Fields to the DB was rewritten to classes
            (which also allows better validation functions)
          - Links Module converted to ManagerActions and secured
@@ -2099,7 +2099,7 @@ The changes could be tracked on:
          - fixed default widget for enumerated properities - selectbox
          - easier way, how to create new manageable objects in AA
            - see AA_Exportsetings for se_export.php or
-                 AA_Plannedtask in include/task.class.php3, for example
+                 AA\Later\PlannedTask in src/Util/Later/PlannedTask.php, for example
 12-08-15 - new paramater for Insert function "Compute INSERT/UPDATE" -
 (honzam)   "Recompute every" (minute|hour|day|week|month).
            The field will be recomputed every minute, hour, ... (using UPDATE code).
@@ -3425,7 +3425,7 @@ The changes could be tracked on:
            sql_update.php3 script, which duplicated the display_count... field.
            In such case you should go to "AA -> Optimize" page and run
            "Fix field definitions duplicates" repiar
-         - changed name of class from toexecute to AA_Toexecute
+         - changed name of class from toexecute to AA\Later\Toexecute
 07-11-12 - new {limit:<ids>:<offset>[:<length>[:<delimiter>]]} syntax
 (honzam)     Allows you to get only the part of ids (first, last, ...) from the
              list - like:
@@ -3481,7 +3481,7 @@ The changes could be tracked on:
          - updated prototype.js library to version 1.5.1.1
 07-08-29 - fixed typo in sql_update.php3
 (honzam)
-07-08-24 - New version of counting item hits (AA_Hitcounter) with ability
+07-08-24 - New version of counting item hits (AA\Util\Hitcounter) with ability
 (honzam)   to display "Most popular item last day/week/month". See
 !SQL!      http://www.actionapps.org/en/Designing_Output_Templates#Popular_Items_.28Hit_counting.29
            for more details.
@@ -4632,7 +4632,7 @@ The changes could be tracked on:
            Database update (sql_update.php3) for new table is needed.
          - fixed bug in Related Item Window input type - related items from
            trash are displayed correctly, now
-04-12-30 - new "Toexecute" class used for e-mail sending - e-mails are not send
+04-12-30 - new "AA\Later\Toexecute" class used for e-mail sending - e-mails are not send
 (honzam)   in one run of the script. It is rather send from AA cron, so the load
            of the server is lowered
          - slice name displayed on itemedit form
@@ -5547,7 +5547,7 @@ The changes could be tracked on:
          - fixed problem with language files in links module
 03-03-04 - added display of GD types in test.php3
 (mitra)  - remove warning on no picture in i_s - common when expanding
-         - Added some debugging to PageCache
+         - Added some debugging to AA\Cache\PageCache
          - Added stack of values for properly invalidating nested views
 03-02-27 - fixed bug of not storing related items
 (honzam) - fixed bug with wrong display multiple checkboxes input
@@ -6255,7 +6255,7 @@ The changes could be tracked on:
          - fixed bug in displaying admin pages (table caption not displayed)
 01-01-14 - modified db table constant (added id column - used with categories)
          - include/view.php3 modified to use page caching
-         - new include/pagecache.php3 with functions allowing caching of pages
+         - new include/pagecache.php3 (later PageCache) with functions allowing caching of pages
 01-01-13 - loging for change slice feeding settings
          - new include/logs.php3 with utilities for logging (log table modified)
 01-01-09 - located and fixed bug in in PHPLib. Fixed by patching ac_store()\

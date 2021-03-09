@@ -144,7 +144,7 @@ function translateCategories( $cat_field_id, &$item, &$ext_categs, &$l_categs ) 
         // should have value defined
         // This categories are set in special $item[categories] array
         foreach ( $item['categories'] as $r_cid ) {
-            list( $new_cat, $approved ) = translteFeedCatid2Value( $r_cid, $ext_categs[$r_cid]['value'], $ext_categs, $l_categs, $all_categories );
+            [ $new_cat, $approved ] = translteFeedCatid2Value( $r_cid, $ext_categs[$r_cid]['value'], $ext_categs, $l_categs, $all_categories );
             if ( is_null( $return_approved ) ) {
                 $return_approved = $approved ;
             }
@@ -161,7 +161,7 @@ function translateCategories( $cat_field_id, &$item, &$ext_categs, &$l_categs ) 
         // listed category - strange, but obvious (due feeding, importing, ...)
         foreach ( $item['fields_content'][$cat_field_id] as $r_value ) {
             if ( !$used_values[trim($r_value['value'])] ) {
-                list( $new_cat, $approved ) = translteFeedCatid2Value( UNPACKED_AA_OTHER_CATEGOR, $r_value['value'], $ext_categs, $l_categs, $all_categories );
+                [ $new_cat, $approved ] = translteFeedCatid2Value( UNPACKED_AA_OTHER_CATEGOR, $r_value['value'], $ext_categs, $l_categs, $all_categories );
                 if ( is_null( $return_approved ) ) {
                     $return_approved = $approved ;
                 }
@@ -240,7 +240,7 @@ function translateCategories( $cat_field_id, &$item, &$ext_categs, &$l_categs ) 
 function updateFieldsMapping($l_slice_id, $r_slice_id, $field_refs, $fields) {
     global $debugfeed;
 
-    list($ext_map,$field_map) = GetExternalMapping($l_slice_id, $r_slice_id);
+    [$ext_map,$field_map] = GetExternalMapping($l_slice_id, $r_slice_id);
     $p_l_slice_id = q_pack_id($l_slice_id);
     $p_r_slice_id = q_pack_id($r_slice_id);
 

@@ -32,7 +32,6 @@ require_once __DIR__."/../include/init_page.php3";
 require_once __DIR__."/../include/formutil.php3";
 require_once __DIR__."/../include/varset.php3";
 require_once __DIR__."/../include/item.php3";     // GetAliasesFromField funct def
-require_once __DIR__."/../include/pagecache.php3";
 require_once __DIR__."/../include/discussion.php3";  // GetDiscussionAliases funct def
 require_once __DIR__."/../include/msgpage.php3";
 
@@ -173,8 +172,6 @@ function OrderFrm($name, $txt, $val, $order_fields, $easy_order=false, $group=fa
  * @param $name
  * @param $txt
  * @param $val
- * @param $order_fields
- * @param $easy_order=false
  */
 function OrderAliasFrm($name, $txt, $val) {
     global $vw_data;
@@ -210,6 +207,19 @@ function ConditionFrm($name, $txt, $val) {
 
     // PrintHelp($hlp);
     echo "</td></tr>\n";
+}
+
+
+/** OrderFrm function
+ * @param $name
+ * @param $txt
+ * @param $val
+ */
+function BitFlagFrm($name, $txt, $val) {
+    FrmInputChBox( $name, $txt, $val&1);
+    FrmInputChBox( $name, $txt, $val&2);
+    FrmInputChBox( $name, $txt, $val&4);
+    FrmInputChBox( $name, $txt, $val&8);
 }
 
 $view_id = (int) $_REQUEST['view_id'];  // sanitize
@@ -316,18 +326,18 @@ if ( !$update ) {  // set variables from database
     $vw_data = [];
     if ( $view_id ) {
         // edit specified view data
-        $vw_data = DB_AA::select1('SELECT * FROM view', '', [['id', $view_id, 'i']]);
+        $vw_data = DB_AA::select1('', 'SELECT * FROM view', [['id', $view_id, 'i']]);
     } elseif ( $new_templ AND $view_view) {
         // new view from template
-        $vw_data = DB_AA::select1('SELECT * FROM view', '', [['id', $view_view, 'i']]);
+        $vw_data = DB_AA::select1('', 'SELECT * FROM view', [['id', $view_view, 'i']]);
     } elseif ( $view_type == 'inputform') {
         // new view - inputform
         $vw_data['odd'] = GetInputFormTemplate(); // get current input form template
     } elseif ( $view_type ) {
         // new view - get default values from view table -
         //            take first view of the same type
-        $vw_data = DB_AA::select1('SELECT * FROM view', '', [['type', $view_type]], ['id']);
-    } else {        // error - someone swith the slice or so
+        $vw_data = DB_AA::select1('', 'SELECT * FROM view', [['type', $view_type]], ['id']);
+    } else {        // error - someone switched the slice or so
         go_url($back_url);
     }
 
@@ -482,6 +492,7 @@ foreach ($VIEW_TYPES[$view_type] as $k => $v) {
         case "selgrp":  FrmInputSelect($k, $label, $lookup_groups, $value, false, $help); break;
         case "op":      FrmInputSelect($k, $label, $lookup_op, $value, false, $help); break;
         case "chbox":   FrmInputChBox( $k, $label, $value, false, '', 1, false, $help); break;
+        case "bitflag": BitFlagFrm( $k, $label, $value); break;
         case "cond":    ConditionFrm(  $k, $label, $value); break;
         case "order":   OrderFrm(      $k, $label, $value, $lookup_fields, $VIEW_TYPES_INFO[$view_type]['order'] == 'easy'); break;
         case "orderal": OrderAliasFrm( $k, $label, $value); break;

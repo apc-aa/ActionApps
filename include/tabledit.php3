@@ -292,7 +292,8 @@ class tabledit {
             $irow = 0;
             foreach ($records as $record) {
                 $new_record = $record == "new";
-                [,$key] = each($all_keys);
+                $key = current($all_keys);
+                next($all_keys);
                 // row number helps to use different CSS styles for even and odd rows
                 $irow ++;
                 // show new record in row 1 color always

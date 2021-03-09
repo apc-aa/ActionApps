@@ -33,7 +33,6 @@ require_once __DIR__."/../include/init_page.php3";
 require_once __DIR__."/../include/formutil.php3";
 require_once __DIR__."/../include/varset.php3";
 require_once __DIR__."/../include/item.php3";     // GetAliasesFromField funct def
-require_once __DIR__."/../include/pagecache.php3";
 require_once __DIR__."/../include/msgpage.php3";
 
 
@@ -95,7 +94,7 @@ if ( $update ) {
         $varset->add("fulltext_format_bottom", "quoted", $fulltext_format_bottom);
         $varset->add("fulltext_remove", "quoted", $fulltext_remove);
 
-        $discus_flag = DB_AA::select1('SELECT `flag` FROM `slice`', 'flag', [['id', $slice_id, 'l']]);
+        $discus_flag = DB_AA::select1('flag', 'SELECT `flag` FROM `slice`', [['id', $slice_id, 'l']]);
         $discus_flag &= ~ (DISCUS_HTML_FORMAT | DISCUS_ADD_DISABLED); // clear the bits
         $discus_flag |= $discus_htmlf ? DISCUS_HTML_FORMAT : 0;
         $discus_flag |= $discus_disabled ? DISCUS_ADD_DISABLED : 0;
@@ -118,7 +117,7 @@ if ( $update ) {
 }
 
 if ( $slice_id != "" ) {  // set variables from database
-    $rec = DB_AA::select1('SELECT fulltext_format, fulltext_format_top, fulltext_format_bottom, fulltext_remove, flag, vid FROM slice', '', [['id', $slice_id, 'l']]);
+    $rec = DB_AA::select1('', 'SELECT fulltext_format, fulltext_format_top, fulltext_format_bottom, fulltext_remove, flag, vid FROM slice', [['id', $slice_id, 'l']]);
     if ($rec) {
         $fulltext_format_top    =  $rec['fulltext_format_top'];
         $fulltext_format        =  $rec['fulltext_format'];

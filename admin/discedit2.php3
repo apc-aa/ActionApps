@@ -30,7 +30,6 @@
 
 require_once __DIR__."/../include/init_page.php3";
 require_once __DIR__."/../include/varset.php3";
-require_once __DIR__."/../include/pagecache.php3";
 
 if ($cancel) {
     go_url(StateUrl(self_base() . "discedit.php3?item_id=".$item_id));

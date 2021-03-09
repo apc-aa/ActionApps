@@ -50,7 +50,7 @@ require_once __DIR__."/util.php3";
 require_once __DIR__."/../../modules/alerts/lang.php3";
 require_once __DIR__."/../../include/item.php3";
 require_once __DIR__."/../../include/view.php3";
-require_once __DIR__."/../../include/pagecache.php3";
+
 require_once __DIR__."/../../include/searchlib.php3";
 require_once __DIR__."/../../modules/alerts/alerts_sending.php3";
 

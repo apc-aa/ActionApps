@@ -10,7 +10,7 @@ namespace AA\Widget;
 use AA\FormArray;
 
 /** Info text - just Output */
-class InfWidget extends \AA\Widget\Widget
+class InfWidget extends Widget
 {
 
     /** - static member functions
@@ -26,10 +26,10 @@ class InfWidget extends \AA\Widget\Widget
 
     /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
+     * @return array
      */
-    static function getClassProperties()
-    {
-        return \AA\Widget\Widget::propertiesShop(['code']);
+    static function getClassProperties(): array {
+        return Widget::propertiesShop(['code']);
     }
 
     /** Creates base widget HTML, which will be surrounded by Live, Ajxax

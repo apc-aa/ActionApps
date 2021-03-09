@@ -13,7 +13,7 @@ use AA_Formatters;
 use AA_Value;
 
 /** Multiple Text Field widget */
-class MflWidget extends \AA\Widget\Widget
+class MflWidget extends Widget
 {
     /** @var array  list of textareas for CodeMirror creation */
     protected $ids_4_editor = [];
@@ -60,10 +60,10 @@ class MflWidget extends \AA\Widget\Widget
 
     /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
+     * @return array
      */
-    static function getClassProperties()
-    {
-        $ret = \AA\Widget\Widget::propertiesShop(['show_buttons_txt', 'row_count', 'max_characters', 'width', 'rows']);
+    static function getClassProperties(): array {
+        $ret = Widget::propertiesShop(['show_buttons_txt', 'row_count', 'max_characters', 'width', 'rows']);
         $ret['rows']->setHelp(_m("if 1 (default), textfield used. for rows>1 textareas are used"))->setExample(1);
         return $ret;
     }

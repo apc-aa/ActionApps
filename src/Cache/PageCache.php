@@ -1,5 +1,9 @@
 <?php
 /**
+ * File contains definition of inputform class - used for displaying input form
+ * for item add/edit and other form utility functions
+ *
+ * Should be included to other scripts (as /admin/itemedit.php3)
  *
  * PHP version 7.2+
  *
@@ -17,17 +21,24 @@
  * along with this program (LICENSE); if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @package   Include
  * @version   $Id$
  * @author    Honza Malik <honza.malik@ecn.cz>
  * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
  * @link      https://www.apc.org/ APC
  *
-*/
+ */
+namespace AA\Cache;
 
+use AA;
+use AA\IO\DB\DB_AA;
+use AA\Later\PagecachePurge;
+use AA\Later\Toexecute;
+use AA\Util\SingletonTrait;
+use Cvarset;
+use Mobile_Detect;
 
-/** PageCache class used for caching informations into database
+/** AA\Cache\PageCache class used for caching informations into database
  *  uses table:
  *    CREATE TABLE pagecache (
  *      id varchar(32) NOT NULL,   (md5 crypted keystring used as database primary key (for quicker database searching)
@@ -39,59 +50,12 @@
  *   );
  */
 
-use AA\IO\DB\DB_AA;
-
-require_once __DIR__."/varset.php3";
-
-class AA_Cacheentry {
-    protected $c = '';      // content
-    protected $h = []; // headers array
-    protected $i = '';      // item id for page hit
-    protected $p = '';      // Cacheability - private/public/no-cache - private used for pages, where user is logged in
-    protected $t = 0;       // timestamp
-
-    function __construct($content, array $headers= [], $item_id='', $cacheability='public') {
-        $this->c = $content;
-        $this->h = $headers;
-        $this->i = $item_id;
-        $this->p = $cacheability;
-        $this->t = time();
-    }
-
-    /** send headers, print output and count hit */
-    function processPage($cached=0) {
-        $lastModified    = $this->t;     // get the last-modified-date of this very file
-        $etag            = hash('md5', 'x'.$this->c.'q'); // get a unique hash of this content (etag) (make it not the same as key in db for (maybe paranoid) security reasons)
-        $ifModifiedMatch = isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) ? (strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE'])==$lastModified) : false;
-        $etagMatch       = isset($_SERVER['HTTP_IF_NONE_MATCH'])     ? (trim($_SERVER['HTTP_IF_NONE_MATCH'])==$etag) : false;   //(etag: unique file hash)
-        $cacheability    = in_array($this->p, ['public','private','no_cache']) ? $this->p : 'public';
-
-        header("Last-Modified: ".gmdate("D, d M Y H:i:s", $lastModified)." GMT");   // set last-modified header
-        header("Etag: $etag");                                                      // set etag-header
-        // maybe we do not have to cache all pages
-        header("Cache-Control: $cacheability");                                     // make sure caching is turned on
-        // maybe we can add max-age=60   (minute helps a lot on big loads (catches 99%), but is nothing for reader)
-
-        // check if page has changed. If not, send 304 and exit
-        // Maybe we should check also $this->h, if they do not contain 404, 302 or other status code already
-        if ( $ifModifiedMatch OR $etagMatch ) {
-            header("HTTP/1.1 304 Not Modified");
-            $cached = 1000*$cached + 304;
-        } else {
-            AA::sendHeaders($this->h);
-            echo $this->c;
-        }
-        if ($this->i) {
-            AA_Hitcounter::hit(new zids($this->i, 'l'), $cached);
-        }
-    }
-}
-
 class PageCache  {
+
     protected $cacheTime     = 600; // number of seconds to store cached informations
 
-    /** PageCache function
-     *  PageCache class constructor
+    /** AA\Cache\PageCache function
+     *  AA\Cache\PageCache class constructor
      * @param $ct
      */
     function __construct($ct = 600) {
@@ -127,7 +91,7 @@ class PageCache  {
 
         // for JSON request the parameters are in body, but is not parsed into $_POST variable
         if ($_SERVER['CONTENT_TYPE'] == 'application/json') {
-           $ks["php-input"] = file_get_contents('php://input');
+            $ks["php-input"] = file_get_contents('php://input');
         }
 
         // for the websites using {detect} in the site
@@ -139,7 +103,7 @@ class PageCache  {
 
     /** get function
      *  Returns cached informations or false
-     * @param $keyId
+     * @param $key
      * @param $action
      * @return bool
      */
@@ -221,7 +185,7 @@ class PageCache  {
      * @return bool
      */
     function getById($keyid) {
-        $arr   = DB_AA::select1('SELECT stored, content FROM `pagecache`', '', [['id', $keyid]]);
+        $arr   = DB_AA::select1('', 'SELECT stored, content FROM `pagecache`', [['id', $keyid]]);
         return ( $arr AND ((time() - $this->cacheTime) < $arr['stored']) ) ? $arr['content'] : false;
     }
 
@@ -243,7 +207,7 @@ class PageCache  {
         AA::$debug&2 && AA::$dbg->log("Pagecache->store(key):$key", 'Pagecache str2find:'.join(',', $str2find->getStrings()), 'Pagecache content (length):'.strlen($content), 'Pagecache cache_nostore:'.$cache_nostore );
 
         if ($force OR (ENABLE_PAGE_CACHE AND !$cache_nostore)) {  // $cache_nostore used when
-                                                      // {user:xxxx} alias is used
+            // {user:xxxx} alias is used
             AA::$debug&2 && AA::$dbg->log("Pagecache->store(): - storing");
             $varset = new Cvarset( [['content', $content], ['stored', time()]]);
             $varset->addkey('id', 'text', $key);
@@ -259,13 +223,13 @@ class PageCache  {
 
             $varset->doTrueReplace('pagecache');  // true replace mean it calls REPLACE command and no SELECT+INSERT/UPDATE (which is better for tables with autoincremented columns, which is no
 
-            // it is not necessary to check, if the  AA_Pagecache_Purge is planed
+            // it is not necessary to check, if the  AA\Later\PagecachePurge is planed
             // store. We check it only once for 1000 (PAGECACHEPURGE_PROBABILITY)
             if (mt_rand(0,PAGECACHEPURGE_PROBABILITY) == 1) {
                 // purge only each PAGECACHEPURGE_PROBABILITY-th call of store
-                $cache_purger  = new AA_Pagecache_Purge();
-                $toexecute     = new AA_Toexecute;
-                $toexecute->laterOnce($cache_purger, [$this->cacheTime], 'AA_Pagecache_Purge', 101, now() + 300);  // run it once in 5 minutes
+                $cache_purger  = new PagecachePurge();
+                $toexecute     = new Toexecute;
+                $toexecute->laterOnce($cache_purger, [$this->cacheTime], 'AA\Later\PagecachePurge', 101, now() + 300);  // run it once in 5 minutes
             }
         }
         return $key;
@@ -276,7 +240,7 @@ class PageCache  {
      *  When page is stored with storePage(), then you have to use getPage()
      *  counterpart function
      */
-    function storePage($key, AA_Cacheentry $entry, $str2find, $force=false) {
+    function storePage($key, Cacheentry $entry, $str2find, $force=false) {
         // @todo - we can use json_encode, when $entry->$h['encoding']=='utf-8' which is quicker, than serialize
         $this->store($key, serialize($entry), $str2find, $force);
     }
@@ -311,8 +275,8 @@ class PageCache  {
      * @param $keys
      */
     static function invalidateOlder( $time ) {
-        $highest_old_pid = DB_AA::select1('SELECT id FROM pagecache','id', [['stored',$time,'<']], ['id-']);
-        $highest_old_id  = DB_AA::select1('SELECT id FROM pagecache_str2find','id', [['pagecache_id',$highest_old_pid]]);
+        $highest_old_pid = DB_AA::select1('id', 'SELECT id FROM pagecache', [['stored', $time, '<']], ['id-']);
+        $highest_old_id  = DB_AA::select1('id', 'SELECT id FROM pagecache_str2find', [['pagecache_id', $highest_old_pid]]);
         if ($highest_old_id) {
             DB_AA::delete_low_priority('pagecache_str2find', [['id',$highest_old_id,'<=']]);
             DB_AA::delete_low_priority('pagecache', [['stored',$time,'<']]);
@@ -354,95 +318,3 @@ class PageCache  {
         DB_AA::delete('pagecache');
     }
 }
-
-
-class AA_Pagecache_Purge implements \AA\Util\LaterInterface {
-
-    /** purge function  - Clears all old cached data
-     *  special function called from AA_Toexecute class - used for queued tasks (ran form cron)
-     *  @param array $params - numeric array of additional parameters for the execution passed in time of call
-     *  @return string - message about execution to be logged
-     *  @see \AA\Util\LaterInterface
-     */
-    public function toexecutelater($params= []) {
-        list($cache_time) = $params;
-        // $tm   = time();
-        // we tired to speed up the deletion by multi-table delete:
-        // DELETE pagecache, pagecache_str2find FROM pagecache, pagecache_str2find
-        //  WHERE pagecache.id = pagecache_str2find.pagecache_id AND pagecache.stored<'1200478499'
-        // (supported in MySQL >= 4.0), but it takes ages
-
-        return PageCache::invalidateOlder( time() - $cache_time );
-    }
-}
-
-
-/** CacheStr2find class - storage for str2find pairs used by pagecache
- *  to identify records to be deleted (invalidated) from cache
- */
-class CacheStr2find {
-    protected $strings = [];
-
-    /** CacheStr2find function
-     * @param string[]|null   $strings
-     * @param string $type
-     */
-    function __construct( $strings=null, $type='M') {   // it was $type=slice_id, but for cache it is better to use shorter - M
-        $this->strings = [];
-        $this->add($strings, $type);
-    }
-
-    /** add function
-     *  Add ids (array) of specified type (common to all added ids)
-     * @param string[] $strings
-     * @param string   $type
-     */
-    function add($strings, $type='M') {    // it was $type=slice_id, but for cache it is better to use shorter - M (like Module id)
-        if ( !$strings ) {
-            return;
-        }
-        $strings = array_filter((array)$strings, 'trim');
-        foreach ($strings as $str) {
-            $this->strings["$type=$str"] = true;   // match type-id pair
-        }
-    }
-
-    /**
-     * @return array
-     */
-    function getStrings() {
-        return array_keys($this->strings);
-    }
-
-    /** add_str2find function
-     * @param CacheStr2find $str2find
-     */
-    function add_str2find($str2find) {
-        if ( is_a($str2find,'CacheStr2find') ) {
-            foreach ($str2find->strings as $k => $v) {
-                $this->strings[$k] = true;   // copy all the $str2find ids to this
-            }
-        }
-    }
-
-    /** clear function
-     */
-    function clear() {
-        $this->strings = [];
-    }
-
-    /** store function
-     * @param $keyid
-     */
-    function store($keyid) {
-        $varset = new Cvarset( [['pagecache_id', $keyid], ['str2find','']]);
-        $varset->doDeleteWhere('pagecache_str2find', "pagecache_id='$keyid'" );
-        foreach ((array)$this->strings as $str => $v) {
-            $varset->set('str2find', $str);
-            $varset->doInsert('pagecache_str2find');
-        }
-    }
-}
-
-$GLOBALS['pagecache'] = new PageCache(CACHE_TTL);
-

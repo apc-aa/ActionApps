@@ -9,7 +9,7 @@
 namespace AA\Widget;
 
 /** Multiple Selectbox widget */
-class MseWidget extends \AA\Widget\MchWidget
+class MseWidget extends MchWidget
 {
 
     /** - static member functions
@@ -36,9 +36,9 @@ class MseWidget extends \AA\Widget\MchWidget
 
     /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
+     * @return array
      */
-    static function getClassProperties()
-    {
-        return \AA\Widget\Widget::propertiesShop(['const', 'row_count', 'slice_field', 'bin_filter', 'filter_conds', 'sort_by', 'additional_slice_pwd', 'const_arr']);
+    static function getClassProperties(): array {
+        return Widget::propertiesShop(['const', 'row_count', 'slice_field', 'bin_filter', 'filter_conds', 'sort_by', 'additional_slice_pwd', 'const_arr']);
     }
 }

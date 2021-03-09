@@ -28,7 +28,6 @@
 use AA\IO\DB\DB_AA;
 
 require_once __DIR__."/varset.php3";
-require_once __DIR__."/pagecache.php3";
 require_once __DIR__."/notify.php3";
 require_once __DIR__."/imagefunc.php3";
 require_once __DIR__."/date.php3";
@@ -114,8 +113,10 @@ class AA_Generator_Dte extends AA_Generator {
     /** Name of the component for selection */
     public function name(): string {  return _m("Date + 'Parameter' days");  }
 
-    /** getClassProperties function of AA_Serializable  */
-    static function getClassProperties()  {
+    /** getClassProperties function of AA_Serializable
+     * @return array
+     */
+    static function getClassProperties(): array {
         return [             //           id         name                        type    multi  persist validator, required, help, morehelp, example
             'plusdays' => new AA_Property( 'plusdays',  _m("Number of days"), 'int', false, true, 'int', false, '', '', '365')
         ];
@@ -133,8 +134,10 @@ class AA_Generator_Txt extends AA_Generator {
     /** Name of the component for selection */
     public function name(): string {  return _m("Text from 'Parameter'");  }
 
-    /** getClassProperties function of AA_Serializable  */
-    static function getClassProperties()  {
+    /** getClassProperties function of AA_Serializable
+     * @return array
+     */
+    static function getClassProperties(): array {
         return [      //           id         name     type    multi  persist validator, required, help, morehelp, example
             'text' => new AA_Property( 'text',  _m("Text"), 'text' )
         ];
@@ -167,8 +170,10 @@ class AA_Generator_Rnd extends AA_Generator {
     /** Decription  of the component for selection */
     public function description(): string {  return _m("Random alphanumeric [A-Z0-9] string.");  }
 
-    /** getClassProperties function of AA_Serializable  */
-    static function getClassProperties()  {
+    /** getClassProperties function of AA_Serializable
+     * @return array
+     */
+    static function getClassProperties(): array {
         return [             //           id         name                       type      multi  persist validator, required, help, morehelp, example
             'length'       => new AA_Property( 'length      ',  _m("String length"),  'int',    false, true, 'int', false, '', '', '5'),
             'checkfield'   => new AA_Property( 'checkfield  ',  _m("Field to check"), 'string', false, true, 'field', false, _m("If you need a unique code, you must send the field ID, the function will then look into this field to ensure uniqueness."), '', 'unspecified.....'),
@@ -192,13 +197,13 @@ class AA_Generator_Rnd extends AA_Generator {
         do {
             $randstring = gensalt($len);
             if ($slice_only) {
-                $rec = DB_AA::select1('SELECT item_id FROM content INNER JOIN item ON content.item_id = item.id', '', [
+                $rec = DB_AA::select1('', 'SELECT item_id FROM content INNER JOIN item ON content.item_id = item.id', [
                     ['item.slice_id', $slice_id, 'l'],
                     ['field_id', $field_id],
                     ['text', $randstring]
                 ]);
             } else {
-                $rec = DB_AA::select1('SELECT item_id FROM content', '', [
+                $rec = DB_AA::select1('', 'SELECT item_id FROM content', [
                     ['field_id', $field_id],
                     ['text', $randstring]
                 ]);
@@ -218,8 +223,10 @@ class AA_Generator_Variable extends AA_Generator {
     /** Decription  of the component for selection */
     public function description(): string {  return _m("any text with possible {AA expressions} like: {date:Y}");  }
 
-    /** getClassProperties function of AA_Serializable  */
-    static function getClassProperties()  {
+    /** getClassProperties function of AA_Serializable
+     * @return array
+     */
+    static function getClassProperties(): array {
         return [      //           id         name     type    multi  persist validator, required, help, morehelp, example
             'text' => new AA_Property( 'text',  _m("Text"), 'text', false, true, 'text', false, '', '', '{date:Y}')
         ];
@@ -240,8 +247,10 @@ class AA_Generator_Mul extends AA_Generator {
     /** Name of the component for selection */
     public function name(): string        {  return _m("Multivalue");  }
 
-    /** getClassProperties function of AA_Serializable  */
-    static function getClassProperties()  {
+    /** getClassProperties function of AA_Serializable
+     * @return array
+     */
+    static function getClassProperties(): array {
         return [      //           id         name     type                  multi  persist validator, required, help, morehelp, example
             'text'      => new AA_Property( 'text',       _m("Text"),      'text',   false, true, 'text', false, '', '', 'red|green|blue'),
             'delimiter' => new AA_Property( 'delimiter',  _m("Delimiter"), 'string', false, true, 'text', false, '', '', '|')
@@ -326,7 +335,7 @@ abstract class AA_Inserter extends AA_Serializable implements \AA\Util\NamedInte
         $fnc = ParseFnc($this->field->getProperty("input_show_func"));   // input show function
         if ($fnc AND ($fnc['fnc']=='pre')) {
             // get add2constant and constgroup (other parameters are irrelevant in here)
-            list($constgroup, $maxlength, $fieldsize,$slice_field, $usevalue, $adding, $secondfield, $add2constant) = explode(':', $fnc['param']);
+            [$constgroup, $maxlength, $fieldsize,$slice_field, $usevalue, $adding, $secondfield, $add2constant] = explode(':', $fnc['param']);
             // add2constant is used in $this->_store - adds new value to constant table
             if ($add2constant AND $constgroup AND (substr($constgroup,0,7) != "#sLiCe-") AND strlen(trim($value['value']))) {
                 $db = getDB();
@@ -376,7 +385,7 @@ abstract class AA_Inserter extends AA_Serializable implements \AA\Util\NamedInte
             return;
         }
 
-        $delete = $this->field->isSafeStored();  // safe stored fields are not ereased
+        $delete = $this->field->isSafeStored();  // safe stored fields are not erased
 
         // field in content table (function defined in util.php since we need it for display count
         StoreToContent($item_id, $this->field->getId(), $this->field->getProperty("text_stored"), $value, $additional, $delete);
@@ -436,7 +445,7 @@ class AA_Inserter_Ids extends AA_Inserter {
                     $fnc = ParseFnc($this->field->getProperty("input_show_func"));   // input show function
                     if ($fnc AND ($fnc['fnc']=='tag')) {
                         // get add2constant and constgroup (other parameters are irrelevant in here)
-                        list($constgroup, $others) = explode(':', $fnc['param']);
+                        [$constgroup, $others] = explode(':', $fnc['param']);
                         // add2constant is used in $this->_store - adds new value to constant table
                         if ((substr($constgroup,0,7) == "#sLiCe-") AND strlen(trim($v))) {
                             $sid = substr($constgroup,7);
@@ -561,8 +570,10 @@ class AA_Inserter_Co2 extends AA_Inserter {
     public function name(): string        { return _m("Computed field for INSERT/UPDATE");  }             // see NamedInterface
     public function description(): string { return _m('The field is the result of expression written in "Code for unaliasing". It is good solution for all values, which could be precomputed, since its computation on item-show-time would be slow. Yes, you can use {view...}, {include...}, {switch...} here');  }      // see NamedInterface
 
-    /** getClassProperties function of AA_Serializable  */
-    static function getClassProperties()  {
+    /** getClassProperties function of AA_Serializable
+     * @return array
+     */
+    static function getClassProperties():array {
         return [             //           id         name                       type      multi  persist validator, required, help, morehelp, example
             'code'       => new AA_Property( 'code',        _m("Code for unaliasing (INSERT)"),'text', false, true, 'text', false, _m("There you can write any string. The string will be unaliased on item store, so you can use any {...} construct as well as field aliases here"), '', '({publish_date....}) {headline........}'),
             'code_update'=> new AA_Property( 'code_update', _m("Code for unaliasing (UPDATE)"),'text', false, true, 'text', false, _m("The same as above, but just for UPDATE operation. If unfilled, the value of the field stays unchanged"), '', ''),
@@ -587,8 +598,10 @@ class AA_Inserter_Com extends AA_Inserter {
     public function name(): string        { return _m("Computed field");  }             // see NamedInterface
     public function description(): string { return _m('The field is the result of expression written in \"Code for unaliasing\". It is good solution for all values, which could be precomputed, since its computation on item-show-time would be slow. Yes, you can use {view...}, {include...}, {switch...} here');  }      // see NamedInterface
 
-    /** getClassProperties function of AA_Serializable  */
-    static function getClassProperties()  {
+    /** getClassProperties function of AA_Serializable
+     * @return array
+     */
+    static function getClassProperties():array {
         return [             //           id         name                       type      multi  persist validator, required, help, morehelp, example
             'code'   => new AA_Property( 'code',        _m("Code for unaliasing (INSERT+UPDATE"),    'text', false, true, 'text', false, _m("There you can write any string. The string will be unaliased on item store, so you can use any {...} construct as well as field aliases here"), '', '({publish_date....}) {headline........}')
         ];
@@ -612,8 +625,10 @@ class AA_Inserter_Seo extends AA_Inserter {
     public function name(): string        { return _m("SEO Name");  }             // see NamedInterface
     public function description(): string { return _m('If the field is not filled, compute seoname from _#HEADLINE alias (or another if specified) unique to all slices in sitemodules, where the slice is mentioned in "Uses slices" settings. Basically the SEO Name alias is shortcut for comuted field with {ifset:{seo.............}:_#1:{seoname:{_#HEADLINE}:all:CHARSET}}');  }      // see NamedInterface
 
-    /** getClassProperties function of AA_Serializable  */
-    static function getClassProperties()  {
+    /** getClassProperties function of AA_Serializable
+     * @return array
+     */
+    static function getClassProperties():array {
         return [             //           id         name                       type      multi  persist validator, required, help, morehelp, example
             'code'   => new AA_Property( 'code', _m("Alias to compute from"), 'text', false, true, 'text', false, _m("if not specified, the _#HEADLINE is used"), '', '_#HEADLINE')
         ];
@@ -655,8 +670,10 @@ class AA_Inserter_Fil extends AA_Inserter {
     public function name(): string        { return _m("File = uploaded file");  }             // see NamedInterface
     public function description(): string { return _m('Stores the uploaded file and a link to it, parameters only apply if type is image/something.');  }      // see NamedInterface
 
-    /** getClassProperties function of AA_Serializable  */
-    static function getClassProperties()  {
+    /** getClassProperties function of AA_Serializable
+     * @return array
+     */
+    static function getClassProperties():array {
         return [             //           id         name                       type      multi  persist validator, required, help, morehelp, example
             'type'          => new AA_Property( 'type',         _m("Mime types accepted"), 'text', false, true, 'text', false, _m('Only files of matching mime types will be accepted'), '', 'image/*'),
             'width'         => new AA_Property( 'width',        _m("Maximum image width"), 'int',  false, true, 'int',  false, '', '', '800'),
@@ -782,8 +799,10 @@ class AA_Inserter_Pwd extends AA_Inserter {
     public function name(): string        { return _m("Password and Change Password");  }             // see NamedInterface
     public function description(): string { return _m('Stores value from a "Password and Change Password" field type. First prooves the new password matches the retyped new password, and if so, encrypts the new password and stores it.');  }      // see NamedInterface
 
-    /** getClassProperties function of AA_Serializable  */
-    static function getClassProperties()  {
+    /** getClassProperties function of AA_Serializable
+     * @return array
+     */
+    static function getClassProperties():array {
         return [             //           id         name                       type      multi  persist validator, required, help, morehelp, example
             'bck_field'    => new AA_Property( 'bck_field',    _m("Copy of password"), 'text', false, true, 'field', false, _m('Field_id, where you want to store the copy of the password. Some times usefull if you want to allow people to get hir/her old password. It is strongly recommended to not store it in plaintext and encrypt it. See second parameter.'), '', 'password.......1'),
             'crypt_phrase' => new AA_Property( 'crypt_phrase', _m("Encrypt phrase"),   'text',  false, true, 'text', false, _m('If you specify the "Copy of password" field, it is recommended to ecrypt the password in the database. Fill there any string. If you then need the password, you can decrypt it from the field by using the same phrase - {decrypt:{password.......1}:Some Phrase}'), '', 'Some Phrase')
@@ -791,7 +810,7 @@ class AA_Inserter_Pwd extends AA_Inserter {
     }
 
     public function execute($fieldwriter, $item_id, $value, $additional= []) {
-        list ($aa_const, $password) = ParamExplode($value['value']);
+        [$aa_const, $password] = ParamExplode($value['value']);
 
         if ($aa_const == 'AA_PASSWD') {
             if ($this->bck_field AND ($slice = AA_Slice::getModule($fieldwriter->getSliceId())) AND $slice->isField($this->bck_field)) {
@@ -820,10 +839,12 @@ class AA_Inserter_2fa extends AA_Inserter {
     public function name(): string        { return _m("2FA Secret");  }             // see NamedInterface
     public function description(): string { return _m('Generates and stores secret for Two-factor authentication, possibly encrypted by password');  }      // see NamedInterface
 
-    /** getClassProperties function of AA_Serializable  */
-    static function getClassProperties()  {
+    /** getClassProperties function of AA_Serializable
+     * @return array
+     */
+    static function getClassProperties():array  {
         return [             //           id         name                       type      multi  persist validator, required, help, morehelp, example
-            'crypt_phrase' => new AA_Property( 'crypt_phrase',  _m("Encrypt phrase"), 'text', false, true, 'text', false, _m('Pasword to be applied for crypting this field value. Could contain AA expressions or aliases (for user item in Reader Management slice)'), '', 'SomeSecret784!*')
+                             'crypt_phrase' => new AA_Property( 'crypt_phrase',  _m("Encrypt phrase"), 'text', false, true, 'text', false, _m('Pasword to be applied for crypting this field value. Could contain AA expressions or aliases (for user item in Reader Management slice)'), '', 'SomeSecret784!*')
         ];
     }
 
@@ -990,7 +1011,7 @@ function StoreItem( $id, $slice_id, $content4id, $insert, $invalidatecache=true,
  *                       "edit" ... an "edit item" page (not form-called)
  *                       "insert" . call for inserting an item
  *                       "update" . call for updating an item
- * @param id $id is useful only for "update"
+ * @param string $id is useful only for "update"
  * @param bool $do_validate Should validate the fields?
  * @param array $notshown is an optional array ("field_id"=>1,...) of fields
  *                          not shown in the anonymous form
@@ -1114,7 +1135,7 @@ function ValidateContent4Id(&$err, $slice, $action, $id=0, $do_validate=true, $n
                     // add $id, so we do not find the currently edited item when
                     // we are looking for uniqueness
 
-                    list($v_func,$v_field,$v_scope) = ParamExplode($f["input_validate"]);
+                    [$v_func,$v_field,$v_scope] = ParamExplode($f["input_validate"]);
                     if (!$v_field) {
                         $v_field = $pri_field_id;
                     }

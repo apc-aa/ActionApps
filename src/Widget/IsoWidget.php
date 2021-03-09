@@ -9,7 +9,7 @@
 namespace AA\Widget;
 
 /** Related Item Window widget */
-class IsoWidget extends \AA\Widget\MchWidget
+class IsoWidget extends MchWidget
 {
 
     /** - static member functions
@@ -31,10 +31,10 @@ class IsoWidget extends \AA\Widget\MchWidget
 
     /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
+     * @return array
      */
-    static function getClassProperties()
-    {
-        $ret = \AA\Widget\Widget::propertiesShop(['const', 'row_count', 'show_actions', 'admin_design', 'tag_prefix', 'show_buttons', 'bin_filter', 'filter_conds', 'filter_conds_rw', 'slice_field', 'sort_by', 'additional_slice_pwd', 'const_arr']);
+    static function getClassProperties(): array {
+        $ret = Widget::propertiesShop(['const', 'row_count', 'show_actions', 'admin_design', 'tag_prefix', 'show_buttons', 'bin_filter', 'filter_conds', 'filter_conds_rw', 'slice_field', 'sort_by', 'additional_slice_pwd', 'const_arr']);
         $ret['filter_conds_rw']->setHelp(_m("Conditions for filtering items in related items window. This conds user can change."));
         return $ret;
     }

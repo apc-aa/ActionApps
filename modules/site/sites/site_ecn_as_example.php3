@@ -119,15 +119,15 @@ if ( !$apc ) {
 }
 
 if ( preg_match( "/^([a-zA-Z0-9_])([a-zA-Z0-9_])([a-zA-Z0-9_-])([a-zA-Z_]+)([-]|[0-9]+)([a-zA-Z_-])([0-9]*)/", $apc, $vars ))
-  list($old_state,$old_w,$old_s,$old_f,$old_r,$old_p,$old_t,$old_x) = $vars;
+  [$old_state,$old_w,$old_s,$old_f,$old_r,$old_p,$old_t,$old_x] = $vars;
  else
-  list($old_w,$old_s,$old_f,$old_r,$old_p,$old_t) = ['z', 'z', 'v', 'x', '-', '-'];
+  [$old_w,$old_s,$old_f,$old_r,$old_p,$old_t] = ['z', 'z', 'v', 'x', '-', '-'];
 
 if ( isset($w) ) {                          // w stands for WEB (like zpravodajstvi - z, econnect - e, nno - n
   switch($w) {
-    case 'z':   list($old_w,$old_s,$old_f,$old_r,$old_p,$old_t,$old_x) = ['z', 'z', 'v', 'x', '-', '-', '']; break;
-    case 'n':   list($old_w,$old_s,$old_f,$old_r,$old_p,$old_t,$old_x) = ['n', 'N', '1', '-', '-', '-', '']; break;
-    case 'e':   list($old_w,$old_s,$old_f,$old_r,$old_p,$old_t,$old_x) = ['e', '1', '1', '-', '-', '-', '73161']; break;
+    case 'z':   [$old_w,$old_s,$old_f,$old_r,$old_p,$old_t,$old_x] = ['z', 'z', 'v', 'x', '-', '-', '']; break;
+    case 'n':   [$old_w,$old_s,$old_f,$old_r,$old_p,$old_t,$old_x] = ['n', 'N', '1', '-', '-', '-', '']; break;
+    case 'e':   [$old_w,$old_s,$old_f,$old_r,$old_p,$old_t,$old_x] = ['e', '1', '1', '-', '-', '-', '73161']; break;
   }
 }
 if ( isset($s) ) {                          // s stands for SUBWEB (like zpravy - z, komentare - k, o Econnectu - 1) We use disjunct sets of subweb chracters, so zpravodajstvi uses [a-z], econnect uses [1-9], nno [A-Z]
@@ -178,7 +178,7 @@ $old_t = CheckT( $old_t );
 $old_x = CheckX( $old_x );
 
 // pomocne promenne pouzite pro vyhledavani a pro zobrazeni cesty
-list( $region_cesta, $region_z, $region_k ) = $regiony_arr[$old_r];
+[ $region_cesta, $region_z, $region_k ] = $regiony_arr[$old_r];
 $format_cesta = '&nbsp;&gt;&nbsp;'.$formaty_arr[$old_s];
 
 $apc_state = [

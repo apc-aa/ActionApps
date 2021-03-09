@@ -142,8 +142,9 @@ class AA_Property extends AA_Storable {
 
     /** getClassProperties function of AA_Serializable
      * Used parameter format (in fields.input_show_func table)
+     * @return array
      */
-    static function getClassProperties()  {
+    static function getClassProperties(): array {
         return [
             //                                                 id                            name                                 type    multi  persist validator, required, help, morehelp, example
             'id'                          => new AA_Property( 'id'                         , _m('id'                         ), 'string',   false),

@@ -27,7 +27,6 @@ require_once __DIR__."/../include/locsess.php3";
 require_once __DIR__."/../include/util.php3";
 require_once __DIR__."/../include/item.php3";
 require_once __DIR__."/../include/view.php3";
-require_once __DIR__."/../include/pagecache.php3";
 require_once __DIR__."/../include/locsess.php3";
 require_once __DIR__."/../include/itemfunc.php3";
 
@@ -43,7 +42,7 @@ class AA_V {
 /** field_content is AA_Value object */
 function UpdateFieldContent($item_id, $field_id, $field_content, $flags = []) {
     $changes       = new ChangesMonitor();
-    $changes->addHistory(new ChangeProposal($item_id, $field_id, [GetRepreValue($item_id, $field_id)]));
+    $changes->addHistory([new ChangeProposal($item_id, $field_id, [GetRepreValue($item_id, $field_id)])]);
 
     UpdateField($item_id, $field_id, $field_content, $flags);
 }
@@ -173,7 +172,7 @@ elseif ( AA_V::P('assignment') == 1 ) {
 // new approach using standard AA widgets and form variables
 /*elseif ($_POST['aaaction']=='DOCHANGE') {
 
-    list($item_id, $field_id) = AA\FormArray::parseId4Form($_POST['input_id']);
+    [$item_id, $field_id] = AA\FormArray::parseId4Form($_POST['input_id']);
     $item   = AA_Item::getItem(new zids($item_id));
     $slice  = AA_Slice::getModule($item->getSliceId());
 
@@ -221,7 +220,7 @@ elseif (AA_V::P('item_id') AND AA_V::P('field_id')) {
     $text = $encoder->Convert(AA_V::P('content'), 'utf-8', 'windows-1250');
 
     $changes = new ChangesMonitor();
-    $changes->addProposal(new ChangeProposal(AA_V::P('item_id'), AA_V::P('field_id'), [$text]));
+    $changes->addProposal([new ChangeProposal(AA_V::P('item_id'), AA_V::P('field_id'), [$text])]);
     echo $encoder->Convert($text, 'windows-1250', 'utf-8');
 }
 elseif (AA_V::P('change_id')) {

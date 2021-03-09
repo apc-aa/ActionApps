@@ -9,7 +9,7 @@
 namespace AA\Widget;
 
 /** Textarea with Presets widget */
-class TprWidget extends \AA\Widget\TxtWidget
+class TprWidget extends TxtWidget
 {
 
     /** - static member functions
@@ -25,10 +25,10 @@ class TprWidget extends \AA\Widget\TxtWidget
 
     /** getClassProperties function of AA_Serializable
      * Used parameter format (in fields.input_show_func table)
+     * @return array
      */
-    static function getClassProperties()
-    {
-        return \AA\Widget\Widget::propertiesShop(['rows', 'cols', 'const', 'const_arr']);
+    static function getClassProperties(): array {
+        return Widget::propertiesShop(['rows', 'cols', 'const', 'const_arr']);
     }
 
     /** @inheritDoc */

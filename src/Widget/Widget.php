@@ -545,7 +545,7 @@ class Widget extends AA_Object implements NamedInterface {
      *  usage:  return AA\Widget\Widget::propertiesShop(array('rows','max_characters'));
      *  most of widgets uses this shop (to coordinate labels and helps), but there is no problem, if you use your own properties in widget, however
      */
-    public static function propertiesShop($props = []) {
+    public static function propertiesShop($props = []): array {
         $ret = [];
         foreach ($props as $pid) {
             switch ($pid) {  //  id                                                    name                                    type   multi  persist validator, required, help, morehelp, example

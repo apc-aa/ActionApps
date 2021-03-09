@@ -152,7 +152,7 @@ function GetFeedingSlices( $node_name, $user) {
   * @return bool next_record from db of permissions
   */
 function CheckFeedingPermissions( $slice_id, $node_name, $user ) {
-    return (bool)DB_AA::select1("SELECT slice_id FROM ef_permissions", 'slice_id', [
+    return (bool)DB_AA::select1('slice_id', "SELECT slice_id FROM ef_permissions", [
         ['slice_id', $slice_id, 'l'],
         ['node', [$node_name, '']],
         ['user', [$user, '']]

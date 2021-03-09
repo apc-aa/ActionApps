@@ -33,7 +33,6 @@ mgettext_bind(get_mgettext_lang(), 'param_wizard');
 require_once __DIR__."/../include/constants_param_wizard.php3";
 require_once __DIR__."/../include/formutil.php3";
 require_once __DIR__."/../include/varset.php3";
-require_once __DIR__."/../include/pagecache.php3";
 require_once __DIR__."/../include/msgpage.php3";
 
 /** EditConstantURL function
@@ -252,7 +251,7 @@ foreach ($g_modules as $k => $v) {
     }
 }
   // lookup fields
-if ( !($fld = DB_AA::select1('SELECT * FROM field', '', [['slice_id', $slice_id, 'l'], ['id', $fid]]))) {
+if ( !($fld = DB_AA::select1('', 'SELECT * FROM field', [['slice_id', $slice_id, 'l'], ['id', $fid]]))) {
     $Msg = MsgErr(_m("No fields defined for this slice"));
     go_url($return_url ? expand_return_url(1) : $back_admin_url);  // back to field page
 }
@@ -427,8 +426,8 @@ echo "
          if ($fld['in_item_tbl']) {
              echo _m('Stored in <em>item</em> table - it is not possible to change store method');
          } else {
-             $text_rows    = DB_AA::select1("SELECT count(*) as cnt FROM content, item", 'cnt', [['content.item_id','item.id', 'j'], ['item.slice_id', $slice_id, 'l'], ['content.field_id', $fld['id']], ['content.flag', 64, 'set']]);
-             $numeric_rows = DB_AA::select1("SELECT count(*) as cnt FROM content, item", 'cnt', [['content.item_id','item.id', 'j'], ['item.slice_id', $slice_id, 'l'], ['content.field_id', $fld['id']], ['content.flag', 64, 'unset']]);
+             $text_rows    = DB_AA::select1('cnt', "SELECT count(*) as cnt FROM content, item", [['content.item_id', 'item.id', 'j'], ['item.slice_id', $slice_id, 'l'], ['content.field_id', $fld['id']], ['content.flag', 64, 'set']]);
+             $numeric_rows = DB_AA::select1('cnt', "SELECT count(*) as cnt FROM content, item", [['content.item_id', 'item.id', 'j'], ['item.slice_id', $slice_id, 'l'], ['content.field_id', $fld['id']], ['content.flag', 64, 'unset']]);
              FrmSelectEasy("text_stored", ['1'=>_m('Text'), '0'=>_m('Number')], $text_stored);
              echo "<div class=tabhlp>"._m('Text').": $text_rows, "._m('Number').": $numeric_rows</div>";
          }

@@ -30,7 +30,6 @@
 require_once __DIR__."/../include/init_page.php3";
 require_once __DIR__."/../include/varset.php3";
 require_once __DIR__."/../include/formutil.php3";
-require_once __DIR__."/../include/pagecache.php3";
 require_once __DIR__."/../include/item.php3";
 require_once __DIR__."/../include/actions.php3";
 
@@ -48,7 +47,7 @@ $manager->performActions();
 $aa_set  = $manager->getSet();
 
 //$aa_set->addCondition(new AA_Condition('params',       'LIKE', 'BMaFh'));
-$zids    = AA_Metabase::queryZids(['table'=>'log'], $aa_set);
+$zids    = AA::Metabase()->queryZids(['table'=>'log'], $aa_set);
 
 $manager->displayPage($zids, 'aaadmin', 'log');
 

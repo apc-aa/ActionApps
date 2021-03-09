@@ -20,12 +20,15 @@ https://www.apc.org/
 */
 
 // APC AA site Module main administration page
+use AA\Cache\Cacheentry;
+use AA\Cache\CacheStr2find;
+use AA\Cache\PageCache;
 use AA\IO\DB\DB_AA;
 
 require_once __DIR__."/../../include/config.php3";
 require_once __DIR__."/../../include/locsess.php3";
 require_once __DIR__."/../../include/zids.php3";
-require_once __DIR__."/../../include/pagecache.php3";
+
 require_once __DIR__."/../../include/locauth.php3";
 
 $auth4cache = '';
@@ -46,14 +49,14 @@ if ($_COOKIE['AA_Session'] AND !isset($_REQUEST['username'])) {   // do not auth
 //  28Apr05  - Honza - added also $all_ids, $add_disc, $disc_type, $sh_itm,
 //                     $parent_id, $ids, $sel_ids, $disc_ids - for discussions
 //                      - it is in fact all global variables used in view.php3
-$cache_key = get_hash('site', PageCache::globalKeyArray(), $_SERVER['REQUEST_URI'], $_SERVER['REQUEST_METHOD'], $_SERVER['REDIRECT_URL'],  $_SERVER['REDIRECT_QUERY_STRING_UNESCAPED'],$_SERVER['QUERY_STRING_UNESCAPED'], get_authorization_header(), $_POST, $_GET, $auth4cache);  // $_GET because $_SERVER['REQUEST_URI'] do not contain variables from Rewrite (site_id); *_STRING_UNESCAPED is for old sitemodule - see shtml_query_string(); PageCache::globalKeyArray - now only for _COOKIES and HTTP_HOST
+$cache_key = get_hash('site', PageCache::globalKeyArray(), $_SERVER['REQUEST_URI'], $_SERVER['REQUEST_METHOD'], $_SERVER['REDIRECT_URL'],  $_SERVER['REDIRECT_QUERY_STRING_UNESCAPED'],$_SERVER['QUERY_STRING_UNESCAPED'], get_authorization_header(), $_POST, $_GET, $auth4cache);  // $_GET because $_SERVER['REQUEST_URI'] do not contain variables from Rewrite (site_id); *_STRING_UNESCAPED is for old sitemodule - see shtml_query_string(); AA\Cache\PageCache::globalKeyArray - now only for _COOKIES and HTTP_HOST
 
 // store nocache to the variable (since it should be set for some view and we
 // do not want to have it set for whole site.
 // temporary solution - should be solved on view level (not global nocache) - TODO
 $site_nocache = ($_REQUEST['nocache'] OR isset($_POST['aa']) OR (isset($_REQUEST['username']) AND isset($_REQUEST['password'])) OR $_REQUEST['logout']);
 
-if ($cacheentry = $GLOBALS['pagecache']->getPage($cache_key,$site_nocache)) {
+if ($cacheentry = AA::Pagecache()->getPage($cache_key,$site_nocache)) {
     $cacheentry->processPage(1);
     if ( AA::$debug ) {
         echo '<br><br>Site cache hit!!!';
@@ -245,7 +248,7 @@ if ((AA::$headers['encoding'] != 'utf-8') && (AA::$encoding != 'utf-8') && IsAja
     AA::$headers['encoding'] = 'utf-8';
 }
 
-$cacheentry = new AA_Cacheentry($page_content, AA::getHeaders(), $hit_lid, ((is_object($auth) AND $auth->is_user()) ? 'private' : 'public'));
+$cacheentry = new Cacheentry($page_content, AA::getHeaders(), $hit_lid, ((is_object($auth) AND $auth->is_user()) ? 'private' : 'public'));
 $cacheentry->processPage(0);
 
 // changed the way, how to get $slices4cache - now we ask for module ids realy
@@ -259,7 +262,7 @@ if (empty($slices4cache)) {    // can't be combined empty() and assignment = for
 // do not cache for logged users
 if (!$site_nocache AND empty($apc_state['xuser'])) {
     $str2find = new CacheStr2find($slices4cache);
-    $GLOBALS['pagecache']->storePage($cache_key, $cacheentry, $str2find);
+    AA::Pagecache()->storePage($cache_key, $cacheentry, $str2find);
 }
 
 if (AA::$debug&2) {

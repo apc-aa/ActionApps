@@ -42,7 +42,7 @@ if ( IsCatPerm( PS_LINKS_EDIT_CATEGORY, $cpath ) ) {
 
 if ( !$updated ) {
     // get this category info (r_category_id must be set (see init_page.php3))
-    $dbarr = DB_AA::select1("SELECT * FROM links_categories", '', [['id', $r_state['cat_id'], 'i']]);
+    $dbarr = DB_AA::select1('', "SELECT * FROM links_categories", [['id', $r_state['cat_id'], 'i']]);
 
     if ($dbarr) {
         $cat_name       = $dbarr['name'];

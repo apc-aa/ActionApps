@@ -11,7 +11,7 @@ use AA\FormArray;
 use AA_Value;
 
 /** Multiple Checkboxes widget */
-class MchWidget extends \AA\Widget\Widget
+class MchWidget extends Widget
 {
 
     /** - static member functions
@@ -33,10 +33,10 @@ class MchWidget extends \AA\Widget\Widget
 
     /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
+     * @return array
      */
-    static function getClassProperties()
-    {
-        return \AA\Widget\Widget::propertiesShop(['const', 'columns', 'move_right', 'slice_field', 'bin_filter', 'filter_conds', 'sort_by', 'additional_slice_pwd', 'const_arr', 'height']);
+    static function getClassProperties(): array {
+        return Widget::propertiesShop(['const', 'columns', 'move_right', 'slice_field', 'bin_filter', 'filter_conds', 'sort_by', 'additional_slice_pwd', 'const_arr', 'height']);
     }
 
     /** Returns one checkbox tag - Used in removed inputMultiChBox */

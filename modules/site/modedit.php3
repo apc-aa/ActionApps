@@ -31,7 +31,7 @@ $no_slice_id   = $_REQUEST['template']['W'] ? true : false;       // message for
 require_once __DIR__."/../../include/init_page.php3";
 //require_once __DIR__."/../../include/en_site_lang.php3";
 require_once __DIR__."/../../include/formutil.php3";
-require_once __DIR__."/../../include/pagecache.php3";
+
 require_once __DIR__."/../../include/varset.php3";
 require_once __DIR__."/../../include/date.php3";
 require_once __DIR__."/../../include/modutils.php3";
@@ -128,7 +128,7 @@ if ($add || $update) {
             // prepare varset variables for setFromArray() function
             $varset->addArray(['id','structure','state_file'], ['flag']);
 
-            if (!($site = DB_AA::select1('SELECT * FROM `site`', '', [['id', $template_id, 'l']]))) {
+            if (!($site = DB_AA::select1('', 'SELECT * FROM `site`', [['id', $template_id, 'l']]))) {
                 $err["DB"] = MsgErr("Bad template id");
                 break;
             }
@@ -168,7 +168,7 @@ $source_id   = ($template['W'] ? $template_id : $module_id );
 $p_source_id = q_pack_id( $source_id );
 
 // load module common data
-list($name, $slice_url, $priority, $lang_file, $owner, $deleted, $slice_owners) = GetModuleFields($source_id);
+[$name, $slice_url, $priority, $lang_file, $owner, $deleted, $slice_owners] = GetModuleFields($source_id);
 
 // load module specific data
 $SQL= " SELECT * FROM site WHERE id='$p_source_id'";

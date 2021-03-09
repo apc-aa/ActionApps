@@ -259,7 +259,7 @@ function fillConds() {
     // TODO - it takes no care about multivalues
     //        (varname='jsjjs[]' and setControlArray())
     foreach (explode('&',shtml_query_string()) as $pair) {
-        list($var,$val) = explode('=',$pair);
+        [$var,$val] = explode('=',$pair);
         $val  = str_replace("\"", '\\"', urldecode($val));
         $var  = urldecode($var);
         $js  .= "setControl('$form','$var',\"$val\");\n";

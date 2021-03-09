@@ -31,7 +31,6 @@ require_once __DIR__."/../include/init_page.php3";
 require_once __DIR__."/../include/formutil.php3";
 require_once __DIR__."/../include/varset.php3";
 require_once __DIR__."/../include/item.php3";     // GetAliasesFromField funct def
-require_once __DIR__."/../include/pagecache.php3";
 require_once __DIR__."/../include/msgpage.php3";
 require_once __DIR__."/../include/actions.php3";
 
@@ -140,7 +139,7 @@ $aa_set  = $manager->getSet();
 // $aa_set->setModules($module_id);
 $aa_set->addCondition(new AA_Condition('slice_id', '==', q_pack_id($module_id)));
 
-$zids    = AA_Metabase::queryZids(['table'=>'view'], $aa_set);
+$zids    = AA::Metabase()->queryZids(['table'=>'view'], $aa_set);
 
 //$manager->displayPage($zids, 'aaadmin', 'views');
 $manager->display($zids);

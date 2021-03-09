@@ -19,6 +19,8 @@ https://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+use AA\Later\Toexecute;
+
 require_once __DIR__."/include/init_central.php";
 require_once __DIR__."/../include/formutil.php3";
 require_once __DIR__."/../include/msgpage.php3";
@@ -72,7 +74,7 @@ if ($_POST['compare']) {
 }
 
 if ($_POST['synchronize']) {
-    $toexecute = new AA_Toexecute;
+    $toexecute = new Toexecute;
 
     if (is_array($_POST['destination_aa']) ) {
         $no_sync_tasks = 0;

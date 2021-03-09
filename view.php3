@@ -54,6 +54,10 @@ https://www.apc.org/
 //  1) in $_POST,$_GET,$_COOKIE,$_REQUEST variables the values are not quoted
 //  2) the variables are imported in global scope and is quoted
 // We are trying to remove any dependecy on the point 2) and use only $_* superglobals
+use AA\Cache\Cacheentry;
+use AA\Cache\CacheStr2find;
+use AA\Cache\PageCache;
+
 function AddslashesDeep($value)   { return is_array($value) ? array_map('AddslashesDeep',   $value) : addslashes($value);   }
 
 foreach ($_REQUEST as $k => $v) {
@@ -67,7 +71,6 @@ require_once __DIR__."/include/util.php3";
 require_once __DIR__."/include/item.php3";
 require_once __DIR__."/include/view.php3";
 require_once __DIR__."/include/discussion.php3";
-require_once __DIR__."/include/pagecache.php3";
 require_once __DIR__."/include/searchlib.php3";
 require_once __DIR__."/include/locsess.php3";    // DB_AA object definition
 
@@ -121,7 +124,7 @@ if ($cacheentry = AA::Pagecache()->getPage($cache_key, $nocache)) {
     $showview     = new AA_Showview($view_param);
     $page_content = $showview->getViewOutput();
     $cache_sids   = $showview->lastUsedSliceIds();
-    $cacheentry = new AA_Cacheentry($page_content, AA::getHeaders());
+    $cacheentry = new Cacheentry($page_content, AA::getHeaders());
     $cacheentry->processPage(0);
 
     if (!$nocache AND $cache_sids) {

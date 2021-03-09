@@ -13,7 +13,7 @@ use AA_Langs;
 
 
 /** Text Field widget */
-class FldWidget extends \AA\Widget\Widget
+class FldWidget extends Widget
 {
 
     /** - static member functions
@@ -29,10 +29,10 @@ class FldWidget extends \AA\Widget\Widget
 
     /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
+     * @return array
      */
-    static function getClassProperties()
-    {
-        return \AA\Widget\Widget::propertiesShop(['max_characters', 'width']);
+    static function getClassProperties(): array {
+        return Widget::propertiesShop(['max_characters', 'width']);
     }
 
     /** libs to run after the page DOM is loaded */
@@ -45,7 +45,7 @@ class FldWidget extends \AA\Widget\Widget
     /** Creates base widget HTML, which will be surrounded by Live, Ajxax
      *  or normal decorations (added by _finalize*Html)
      *  @param \AA_Property $aa_property
-     *  @param \AA_Content  $content
+     *  @param AA_Content $content
      *  @param string       $type  normal|live|ajax
      *  @return array
      *  @throws \Exception

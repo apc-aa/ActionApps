@@ -16,7 +16,7 @@ use AA_Property;
 use Exception;
 
 /** Textarea widget */
-class TxtWidget extends \AA\Widget\Widget
+class TxtWidget extends Widget
 {
     /** @var array  list of textareas for CodeMirror creation */
     protected $ids_4_editor = [];
@@ -34,10 +34,10 @@ class TxtWidget extends \AA\Widget\Widget
 
     /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
+     * @return array
      */
-    static function getClassProperties()
-    {
-        return \AA\Widget\Widget::propertiesShop(['rows', 'max_characters', 'ajaxtype']);
+    static function getClassProperties(): array {
+        return Widget::propertiesShop(['rows', 'max_characters', 'ajaxtype']);
     }
 
     /** libs to run after the page DOM is loaded */

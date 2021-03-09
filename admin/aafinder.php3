@@ -34,7 +34,6 @@ require_once __DIR__."/../include/init_page.php3";
 require_once __DIR__."/../include/formutil.php3";
 require_once __DIR__."/../include/date.php3";
 require_once __DIR__."/../include/varset.php3";
-require_once __DIR__."/../include/pagecache.php3";
 require_once __DIR__."/../include/tabledit.php3";
 //require_once menu_include();      //show navigation column depending on $show
 require_once __DIR__."/../include/mgettext.php3";
@@ -173,12 +172,12 @@ function PrintItemInfo($item_id) {
             echo GetHtmlTable($res, 'key', _m('Log'));
         }
 
-        if ($sdata = DB_AA::select1('SELECT * FROM slice', '', [['id', $long_id, 'l']])) {
+        if ($sdata = DB_AA::select1('', 'SELECT * FROM slice', [['id', $long_id, 'l']])) {
             echo '<h3>'. _m('Slice') .'</h3><pre>';
             echo AafinderSliceLink($long_id). "<br>";
             echo "</pre>";
         }
-        if ($sdata = DB_AA::select1('SELECT * FROM module', '', [['id', $long_id, 'l']])) {
+        if ($sdata = DB_AA::select1('', 'SELECT * FROM module', [['id', $long_id, 'l']])) {
             echo '<h3>'. _m('Module') .'</h3><pre>';
             echo AafinderSliceLink($long_id). "<br>";
             echo "</pre>";

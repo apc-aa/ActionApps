@@ -11,7 +11,8 @@ namespace AA\IO\Grabber;
 use AA_Property;
 
 /** AA\IO\AbstractGrabber\AbstractGrabber\CSV - CSV (Comma Separated Values) format grabber */
-class CSV extends \AA\IO\Grabber\AbstractGrabber {
+class CSV extends AbstractGrabber
+{
 
      /** @var string url of the file */
     protected $file = '';

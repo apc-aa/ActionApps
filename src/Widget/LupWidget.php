@@ -9,7 +9,7 @@
 namespace AA\Widget;
 
 /** Local URL Picker widget */
-class LupWidget extends \AA\Widget\Widget
+class LupWidget extends Widget
 {
 
     /** - static member functions
@@ -25,10 +25,10 @@ class LupWidget extends \AA\Widget\Widget
 
     /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
+     * @return array
      */
-    static function getClassProperties()
-    {
-        return \AA\Widget\Widget::propertiesShop(['url']);
+    static function getClassProperties(): array {
+        return Widget::propertiesShop(['url']);
     }
 
     /**

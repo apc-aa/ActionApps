@@ -10,7 +10,8 @@ namespace AA\Widget;
 use AA\FormArray;
 
 /** Manager widget */
-class MngWidget extends \AA\Widget\Widget {
+class MngWidget extends Widget
+{
 
     /** \AA\Util\NamedInterface function */
     public function name(): string {
@@ -24,9 +25,10 @@ class MngWidget extends \AA\Widget\Widget {
 
     /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
+     * @return array
      */
-    static function getClassProperties() {
-        return \AA\Widget\Widget::propertiesShop(['const', 'related_field', 'row_code', 'row_edit', 'mng_buttons', 'sort_by']);
+    static function getClassProperties(): array {
+        return Widget::propertiesShop(['const', 'related_field', 'row_code', 'row_edit', 'mng_buttons', 'sort_by']);
     }
 
     /** Creates base widget HTML, which will be surrounded by Live, Ajxax

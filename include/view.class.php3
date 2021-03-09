@@ -68,7 +68,7 @@ class AA_View {
      */
     function load( $force=false ): bool {
         if (!isset($this->fields) OR $force) {
-            $this->fields = DB_AA::select1('SELECT view.*, module.deleted, module.lang_file FROM view, module', [], [['module.id', 'view.slice_id', 'j'],['view.id', $this->id]]);
+            $this->fields = DB_AA::select1([], 'SELECT view.*, module.deleted, module.lang_file FROM view, module', [['module.id', 'view.slice_id', 'j'], ['view.id', $this->id]]);
         }
         return $this->fields ? true : false;
     }

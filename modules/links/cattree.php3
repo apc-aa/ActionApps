@@ -31,6 +31,7 @@ https://www.apc.org/
 /** For Links_QueryZids() - called also from /misc/toexecute.php3 */
 
 use AA\IO\DB\DB_AA;
+use AA\Later\Toexecute;
 
 require_once __DIR__."/../../modules/links/linksearch.php3";
 
@@ -358,7 +359,7 @@ class cattree {
             $js_arr[$index_name] .= "a[$allId]=";
         }
         foreach ( $js_arr as $allName => $allIds) {
-            list(,$name) = explode('~', $allName, 2);
+            [,$name] = explode('~', $allName, 2);
             $js .= $allIds."\"$name\"\n";
         }
 
@@ -490,7 +491,7 @@ class cattree {
 
     function count_all_links() {
         $this->updateIfNeeded();
-        $toexecute   = new AA_Toexecute;
+        $toexecute   = new Toexecute;
         $linkcounter = new linkcounter;
 
         /** if we have already scheduled recounting of categories,
@@ -505,7 +506,7 @@ class cattree {
 }
 
 /** class used just for counting of links */
-class linkcounter implements \AA\Util\LaterInterface {
+class linkcounter implements \AA\Later\LaterInterface {
 
     /** constructor */
     function __construct() {}
@@ -526,13 +527,13 @@ class linkcounter implements \AA\Util\LaterInterface {
         return $count;
     }
 
-    /** special function called from AA_Toexecute class - used for queued tasks (ran form cron)
+    /** special function called from AA\Later\Toexecute class - used for queued tasks (ran form cron)
      *  @param array $params - numeric array of additional parameters for the execution passed in time of call
      *  @return string - message about execution to be logged
-     *  @see \AA\Util\LaterInterface
+     *  @see \AA\Later\LaterInterface
      */
     public function toexecutelater($params= []) {
-        list($cpath) = $params;
+        [$cpath] = $params;
         return $this->get_link_count($cpath, true);
     }
 }
@@ -543,7 +544,7 @@ class linkcounter implements \AA\Util\LaterInterface {
  */
 class bitfield {
     /** string which represents bitfield (for now are bits stored in the string
-     *  - each character represents one bit - itis not ideal solution, but
+     *  - each character represents one bit - it is not ideal solution, but
      *  better than nothing - you can change it
      */
     var $field   = '';

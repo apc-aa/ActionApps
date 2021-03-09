@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * PHP versions 5 and 7
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,25 +28,25 @@
 namespace AA\IO;
 
 
-class Importer implements \AA\Util\LaterInterface {
+class Importer implements \AA\Later\LaterInterface {
     protected $saver;
 
     /**
      * Importer constructor.
-     * (the params could be changed to saver_params, grabber_params, Transformaton_params later)
+     * (the params could be changed to saver_params, grabber_params, Transformation_params later)
      * @param $saver
      */
     public function __construct($saver) {
         $this->saver = $saver;
     }
 
-    /** special function called from AA_Toexecute class - used for queued tasks (ran form cron)
+    /** special function called from AA\Later\Toexecute class - used for queued tasks (ran form cron)
      *  @param array $params - numeric array of additional parameters for the execution passed in time of call
      *  @return string - message about execution to be logged
-     *  @see \AA\Util\LaterInterface
+     *  @see \AA\Later\LaterInterface
      */
     public function toexecutelater($params= []) {
-        list($ok,$err) = $this->saver->run(true);
+        [$ok,$err] = $this->saver->run(true);
         $ret = "changed items OK: $ok";
         if ($err) {
             $ret .= ", error items: $err, ". $this->saver->report();

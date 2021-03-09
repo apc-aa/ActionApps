@@ -46,7 +46,8 @@ use AA_Content;
  *   where "dte" points to the AA\Widget\DteWidget. The method AA\Widget\DteWidget::getValue()
  *   is called to grab the value (or multivalues) from the submitted form
  */
-class ObjectForm extends \AA\IO\Grabber\AbstractGrabber {
+class ObjectForm extends AbstractGrabber
+{
     private $_content = [];
     private $_last_store_mode;
 

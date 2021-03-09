@@ -1,4 +1,9 @@
 <?php
+
+use AA\Cache\Cacheentry;
+use AA\Cache\CacheStr2find;
+use AA\Cache\PageCache;
+
 /**
  * View discussions, parse search conditions (conds[discussion] array)
  * @package UserOutput
@@ -46,14 +51,14 @@ foreach ($_REQUEST as $k => $v) {
 function PutSearchLog() {
     global $searchlog, $view_param;
 
-    $httpquery        = $_SERVER['QUERY_STRING_UNESCAPED'].$_SERVER['REDIRECT_QUERY_STRING_UNESCAPED'];
-    $httpquery        = DeBackslash($httpquery);
-    $httpquery        = str_replace("'", "\\'", $httpquery);
-    $db               = getDb();
-    $found_count      = count($view_param["disc_ids"]);
-    list($usec, $sec) = explode(" ",microtime());
-    $slice_time       = 1000 * ((float)$usec + (float)$sec - $GLOBALS['disc_starttime']);
-    $user             = $_SERVER['PHP_AUTH_USER'];
+    $httpquery    = $_SERVER['QUERY_STRING_UNESCAPED'].$_SERVER['REDIRECT_QUERY_STRING_UNESCAPED'];
+    $httpquery    = DeBackslash($httpquery);
+    $httpquery    = str_replace("'", "\\'", $httpquery);
+    $db           = getDb();
+    $found_count  = count($view_param["disc_ids"]);
+    [$usec, $sec] = explode(" ",microtime());
+    $slice_time   = 1000 * ((float)$usec + (float)$sec - $GLOBALS['disc_starttime']);
+    $user         = $_SERVER['PHP_AUTH_USER'];
     $db->query("INSERT INTO searchlog (date,query,user,found_count,search_time,additional1) VALUES (".time().",'$httpquery','$user',$found_count,$slice_time,'discuss $searchlog')");
     freeDb($db);
 }
@@ -70,8 +75,6 @@ require_once __DIR__."/include/item.php3";
 require_once __DIR__."/include/view.php3";
 /** discussion utility functions */
 require_once __DIR__."/include/discussion.php3";
-/** defines PageCache class used for caching informations into database */
-require_once __DIR__."/include/pagecache.php3";
 /** functions for searching and filtering items */
 require_once __DIR__."/include/searchlib.php3";
 /** Main include file for using session management function on page */
@@ -81,8 +84,8 @@ add_vars();
 
 is_object( $db ) || ($db = getDB());
 
-list($usec, $sec) = explode(" ",microtime());
-$disc_starttime   = ((float)$usec + (float)$sec);
+[$usec, $sec]   = explode(" ",microtime());
+$disc_starttime = ((float)$usec + (float)$sec);
 
 $view_param              = ParseViewParameters();
 $view_param["disc_ids"]  = QueryDiscIDs($slice_id, $conds, $sort, $slices );
@@ -103,7 +106,7 @@ if ($cacheentry = AA::Pagecache()->getPage($cache_key, $nocache)) {
     $page_content = $showview->getViewOutput();
     $cache_sids   = $showview->lastUsedSliceIds();
 
-    $cacheentry = new AA_Cacheentry($page_content, AA::getHeaders());
+    $cacheentry = new Cacheentry($page_content, AA::getHeaders());
     $cacheentry->processPage(0);
 
     if (!$nocache) {

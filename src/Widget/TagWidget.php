@@ -12,7 +12,7 @@ use AA_Value;
 use zids;
 
 /** Tag input - in fact the result is very similar to related item window - it adds related items */
-class TagWidget extends \AA\Widget\Widget
+class TagWidget extends Widget
 {
 
     /** - static member functions
@@ -40,10 +40,10 @@ class TagWidget extends \AA\Widget\Widget
 
     /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
+     * @return array
      */
-    static function getClassProperties()
-    {
-        return \AA\Widget\Widget::propertiesShop(['const', 'bin_filter', 'filter_conds', 'slice_field', 'sort_by', 'additional_slice_pwd', 'max_values', 'disable_new', 'filter_conds_rw']);
+    static function getClassProperties(): array {
+        return Widget::propertiesShop(['const', 'bin_filter', 'filter_conds', 'slice_field', 'sort_by', 'additional_slice_pwd', 'max_values', 'disable_new', 'filter_conds_rw']);
     }
 
     /** Creates base widget HTML, which will be surrounded by Live, Ajax
@@ -114,7 +114,7 @@ class TagWidget extends \AA\Widget\Widget
         $widget =  "<input type=hidden name=\"$input_name\" value=\"\">";
 
         //$widget    = AA\Widget\Widget::_saveIcon($base_id, $type == 'live', 'left')."<select name=\"$input_name\" id=\"$input_id\"$multiple $required $widget_adds $autofocus>";
-        $widget .= \AA\Widget\Widget::_saveIcon($base_id, $type == 'live') . "<select name=\"$input_name\" id=\"$input_id\"$multiple $required $widget_add $autofocus style=\"width:95%\">";
+        $widget .= Widget::_saveIcon($base_id, $type == 'live') . "<select name=\"$input_name\" id=\"$input_id\"$multiple $required $widget_add $autofocus style=\"width:95%\">";
         //$selected = $content->getAaValue($aa_property->getId());
         // empty select option for not required fields and also for live selectbox,
         // because people thinks, that the first value is filled in the database (which is not)

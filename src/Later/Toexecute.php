@@ -23,17 +23,21 @@
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
  * @link      https://www.apc.org/ APC
  *
-*/
+ */
 
 /** User's tasks are planed for that time (2033-05-18 05:33:20) - it is never
  *  executed from cron
  **/
 
+namespace AA\Later;
+
 use AA\IO\DB\DB_AA;
+use AA_Log;
+use Cvarset;
 
-define( 'TOEXECUTE_USER_TASK_TIME', 2000000000);
+define('TOEXECUTE_USER_TASK_TIME', 2000000000);
 
-/** AA_Toexecute class - used for many short tasks, such as sending an e-mail for
+/** AA\Later\Toexecute class - used for many short tasks, such as sending an e-mail for
  *  alerts. Instead of sending thounsands of e-mails in one php script run (bad
  *  eperienses with 1000+ emails), we store just store the task in the database.
  *  Then we call misc/toexecute.php3 script from AA cron (say each 2 minutes)
@@ -43,7 +47,7 @@ define( 'TOEXECUTE_USER_TASK_TIME', 2000000000);
  *    Instead of calling:
  *        $object->function_name(param1, param2);
  *    we will use
- *        $toexecute = new AA_Toexecute;
+ *        $toexecute = new AA\Later\Toexecute;
  *        $toexecute->later($object, array(param1, param2));
  *
  *        Then we create method $object->toexecutelater(param1, param2)
@@ -53,14 +57,16 @@ define( 'TOEXECUTE_USER_TASK_TIME', 2000000000);
  *  We do not want to allow users to execute any method of any object just
  *  by inserting some data in the database.
  */
-class AA_Toexecute {
+class Toexecute
+{
 
     var $messages = [];
 
     /** Message function
-    * @param $text
-    */
-    function message($text) {
+     * @param $text
+     */
+    function message($text)
+    {
         if (is_array($text)) {
             $this->messages = array_merge($this->messages, $text);
         } else {
@@ -69,26 +75,29 @@ class AA_Toexecute {
     }
 
     /** Report function
-    * @return string - messages separated by <br>
-    */
-    function report()       {
+     * @return string - messages separated by <br>
+     */
+    function report()
+    {
         return join('<br>', $this->messages);
     }
 
     /** Clear report function - unsets all current messages  */
-    function clear_report() {
+    function clear_report()
+    {
         unset($this->messages);
         $this->messages = [];
     }
 
 
     /** global_instance function
-     *  "class function" obviously called as AA_Toexecute::global_instance();
+     *  "class function" obviously called as AA\Later\Toexecute::global_instance();
      *  This function makes sure, there is global instance of the class
      */
-    function global_instance() {
-        if ( !isset($GLOBALS['toexecute']) ) {
-            $GLOBALS['toexecute'] = new AA_Toexecute;
+    function global_instance()
+    {
+        if (!isset($GLOBALS['toexecute'])) {
+            $GLOBALS['toexecute'] = new Toexecute;
         }
     }
 
@@ -98,55 +107,64 @@ class AA_Toexecute {
      *  selector is used for identifying class of task - used for deletion
      *  of duplicated task
      * @param        $object
-     * @param array  $params
+     * @param array $params
      * @param string $selector
-     * @param int    $priority
+     * @param int $priority
      * @param        $time
      * @return bool|mixed|string
      * @example: we need to recount all links in allcategories (Links module),
      *           so we need to cancel all older "recount" tasks, since it will
      *           be doubled in the queue (we call cancel_all() method for it)
      */
-    function later( $object, $params= [], $selector='', $priority=100, $time=null ) {
+    function later($object, $params = [], $selector = '', $priority = 100, $time = null)
+    {
         global $auth;
         $varset = new Cvarset([
-            ['created'       , time()],
-            ['execute_after' , ((int)$time < time() ? time() : $time)],  // task for user queue uses TOEXECUTE_USER_TASK_TIME
-            ['aa_user'       , $auth->auth['uid']],
-            ['priority'      , $priority],
-            ['selector'      , ($selector ?: get_class($object))],
-            ['object'        , serialize($object)],
-            ['params'        , serialize($params)]
+            ['created', time()],
+            ['execute_after', ((int)$time < time() ? time() : $time)],  // task for user queue uses TOEXECUTE_USER_TASK_TIME
+            ['aa_user', $auth->auth['uid']],
+            ['priority', $priority],
+            ['selector', ($selector ?: get_class($object))],
+            ['object', serialize($object)],
+            ['params', serialize($params)]
         ]);
 
-         // store the task in the queue (toexecute table)
-         if ( !$varset->doInsert('toexecute') ) {
-             // if you can't store it in the queue (table not created?)
-             // - execute it directly
-             return $this->execute_one($object,$params);
-         }
-         return true;
+        // store the task in the queue (toexecute table)
+        if (!$varset->doInsert('toexecute')) {
+            // if you can't store it in the queue (table not created?)
+            // - execute it directly
+            return $this->execute_one($object, $params);
+        }
+        return true;
     }
 
     /** before the task is planed, it check, if it is not already scheduled
      *  (from previous time). The task is considered as planed, if the SELECTORs
      *  are the same
+     * @param object $object
+     * @param array $params
+     * @param string $selector
+     * @param int $priority
+     * @param int|null $time
      */
-    function laterOnce( $object, $params, $selector, $priority=100, $time=null ) {
-        if ( !self::scheduledTime($selector)) {
-        //if ( !GetTable2Array("SELECT selector FROM toexecute WHERE selector='".quote($selector)."' AND priority > 0", 'aa_first', 'aa_mark')) {
+    function laterOnce(object $object, array $params, string $selector, int $priority = 100, ?int $time = null)
+    {
+        if (!self::scheduledTime($selector)) {
+            //if ( !GetTable2Array("SELECT selector FROM toexecute WHERE selector='".quote($selector)."' AND priority > 0", 'aa_first', 'aa_mark')) {
             $this->later($object, $params, $selector, $priority, $time);
         }
     }
 
     /** returns scheduled time or false */
-    static function scheduledTime($selector) {
-        return DB_AA::select1("SELECT execute_after FROM toexecute", 'execute_after', [['selector',$selector], ['priority',0,'>']]);
+    static function scheduledTime($selector)
+    {
+        return DB_AA::select1('execute_after', "SELECT execute_after FROM toexecute", [['selector', $selector], ['priority', 0, '>']]);
     }
 
     /** returns id of scheduled task */
-    static function scheduledTaskId($selector) {
-        return DB_AA::select1("SELECT id FROM toexecute", 'id', [['selector',$selector], ['priority',0,'>']]);
+    static function scheduledTaskId($selector)
+    {
+        return DB_AA::select1('id', "SELECT id FROM toexecute", [['selector', $selector], ['priority', 0, '>']]);
     }
 
     /** User task queue - we use it for spliting one long task (which would take
@@ -157,31 +175,34 @@ class AA_Toexecute {
      *  toexecute table (which also means, that such task are never autoexecuted
      *  from the cron)
      */
-    function userQueue(&$object, $params, $selector, $priority=100 ) {
-        $this->later( $object, $params, $selector, $priority, TOEXECUTE_USER_TASK_TIME );
+    function userQueue(&$object, $params, $selector, $priority = 100)
+    {
+        $this->later($object, $params, $selector, $priority, TOEXECUTE_USER_TASK_TIME);
     }
 
     /** cancel_all function
      * @param $selector
      */
-    function cancel_all($selector) {
+    function cancel_all($selector)
+    {
         $varset = new Cvarset;
-        $varset->doDeleteWhere('toexecute',"selector='".quote($selector)."'");
+        $varset->doDeleteWhere('toexecute', "selector='" . quote($selector) . "'");
     }
 
     /** execute function - function called periodically from /misc/toexecute.php3
      */
-    function execute() {
+    function execute()
+    {
 
         // set_time_limit( 360 );   // try to set 360 seconds to run
-        $allowed_time = (float) (defined('TOEXECUTE_ALLOWED_TIME' ) ? TOEXECUTE_ALLOWED_TIME : ((ini_get('max_execution_time')>0) ? ini_get('max_execution_time')-9 : 16.0));
+        $allowed_time = (float)(defined('TOEXECUTE_ALLOWED_TIME') ? TOEXECUTE_ALLOWED_TIME : ((ini_get('max_execution_time') > 0) ? ini_get('max_execution_time') - 9 : 16.0));
         /** there we store the the time needed for last task of given type
          *  (selector) - this value we use in next round to determine, if we can
          *  run one more such task or if we left it for next time */
         $execute_times = [];
         $this->clear_report();
         $execute_start = microtime(true);
-        $count   = 0;
+        $count = 0;
         $started = 0;
 
         // get just ids - the task itself we will grab later, since the objects
@@ -190,7 +211,7 @@ class AA_Toexecute {
         // because the script tries execute it several times and without success.
         // @todo such task should be removed by some garbage collector
 
-        while ($task = DB_AA::select1('SELECT * FROM `toexecute`', '', [['execute_after', time(), '<'], ['priority',0,'>']], ['priority-'])) {
+        while ($task = DB_AA::select1('', 'SELECT * FROM `toexecute`', [['execute_after', time(), '<'], ['priority', 0, '>']], ['priority-'])) {
             ++$started;
             if ($this->_exeOne($task, $execute_times, $execute_start, $allowed_time)) {
                 ++$count;
@@ -198,31 +219,32 @@ class AA_Toexecute {
                 break;
             }
         }
-        AA_Log::write('TOEXECUTE', 'AA_Toexecute', "finished $count/$started in " . (microtime(true) - $execute_start) . "/$allowed_time");
+        AA_Log::write('TOEXECUTE', 'AA\Later\Toexecute', "finished $count/$started in " . (microtime(true) - $execute_start) . "/$allowed_time");
     }
 
     /** Executes as many tasks from the $tasks array as time allows
      * @param $tasks - array of ids of tasks to execute
      */
-    function executeTask($tasks) {
+    function executeTask($tasks)
+    {
 
-        if (!is_array($tasks) OR !count($tasks)) {
+        if (!is_array($tasks) or !count($tasks)) {
             return;
         }
 
-        set_time_limit( 360 );   // try to set 360 seconds to run
-        $allowed_time = (float) (defined('TOEXECUTE_ALLOWED_TIME' ) ? TOEXECUTE_ALLOWED_TIME : ((ini_get('max_execution_time')>0) ? ini_get('max_execution_time')-9 : 16.0));
+        set_time_limit(360);   // try to set 360 seconds to run
+        $allowed_time = (float)(defined('TOEXECUTE_ALLOWED_TIME') ? TOEXECUTE_ALLOWED_TIME : ((ini_get('max_execution_time') > 0) ? ini_get('max_execution_time') - 9 : 16.0));
         /** there we store the the time needed for last task of given type
          *  (selector) - this value we use in next round to determine, if we can
          *  run one more such task or if we left it for next time */
         $execute_times = [];
         $this->clear_report();
         $execute_start = microtime(true);
-        $count   = 0;
+        $count = 0;
         $started = 0;
 
         foreach ($tasks as $task_id) {
-            $task  = DB_AA::select1('SELECT * FROM toexecute', '', [['id', $task_id, 'i']]);
+            $task = DB_AA::select1('', 'SELECT * FROM toexecute', [['id', $task_id, 'i']]);
             ++$started;
             if ($this->_exeOne($task, $execute_times, $execute_start, $allowed_time)) {
                 ++$count;
@@ -230,31 +252,32 @@ class AA_Toexecute {
                 break;
             }
         }
-        AA_Log::write('TOEXECUTE', 'AA_Toexecute', "finished $count/$started in " . (microtime(true) - $execute_start) . "/$allowed_time");
+        AA_Log::write('TOEXECUTE', 'AA\Later\Toexecute', "finished $count/$started in " . (microtime(true) - $execute_start) . "/$allowed_time");
     }
 
-    function _exeOne($task, &$execute_times, $execute_start, $allowed_time) {
-        $task_type     = get_if($task['selector'],'aa_unspecified');
+    function _exeOne($task, &$execute_times, $execute_start, $allowed_time)
+    {
+        $task_type = get_if($task['selector'], 'aa_unspecified');
         $expected_time = get_if($execute_times[$task_type], 1.0);  // default time expected for one task is 1 second
-        $task_start    = microtime(true);
+        $task_start = microtime(true);
 
         // can we run next task? Does it (most probably) fit in allowed_time?
-        if ( (($task_start + $expected_time) - $execute_start) > $allowed_time) {
+        if ((($task_start + $expected_time) - $execute_start) > $allowed_time) {
             return 0;
         }
-        $varset = new Cvarset( [['priority', max( $task['priority']-1, 0 )]]);
+        $varset = new Cvarset([['priority', max($task['priority'] - 1, 0)]]);
         $varset->addkey('id', 'number', $task['id']);
         // We lower the priority for this task before the execution, so
         // if the task is not able to finish, then other tasks with the same
         // priority is called before this one (next time)
         $varset->doUpdate('toexecute');
 
-        $object  = unserialize($task['object']);
+        $object = unserialize($task['object']);
         if (is_object($object)) {
             $retcode = $this->execute_one($object, unserialize($task['params']));
             $this->message($retcode);
         } else {
-            $this->message('AA_Toexecute:execute - unserialize err:'. $task['object']);
+            $this->message('AA\Later\Toexecute:execute - unserialize err:' . $task['object']);
         }
 
         // Task is done - remove it from queue
@@ -269,11 +292,12 @@ class AA_Toexecute {
      * @param $params
      * @return mixed|string
      */
-    function execute_one($object, $params) {
-        if ( !is_object($object) ) {
-            return 'AA_Toexecute:execute_one: No object: '. serialize($object); // Error
+    function execute_one($object, $params)
+    {
+        if (!is_object($object)) {
+            return 'AA\Later\Toexecute:execute_one: No object: ' . serialize($object); // Error
         }
-        set_time_limit(max(30,ini_get('max_execution_time')));   // 30 seconds (at least) for each task
+        set_time_limit(max(30, ini_get('max_execution_time')));   // 30 seconds (at least) for each task
         return call_user_func([$object, 'toexecutelater'], (array)$params);
     }
 } // end of toexecute class

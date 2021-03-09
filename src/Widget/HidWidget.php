@@ -12,7 +12,7 @@ use AA_Content;
 use AA_Property;
 
 /** Hidden field widget */
-class HidWidget extends \AA\Widget\Widget
+class HidWidget extends Widget
 {
 
     /** - static member functions
@@ -28,9 +28,9 @@ class HidWidget extends \AA\Widget\Widget
 
     /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
+     * @return array
      */
-    static function getClassProperties()
-    {
+    static function getClassProperties(): array {
         return [];
     }
 

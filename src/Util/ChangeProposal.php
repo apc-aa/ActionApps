@@ -14,33 +14,36 @@ namespace AA\Util;
  *     $changes = new AA\Util\ChangeProposal($this->getId(), $field_id, $content4id->getValuesArray($field_id));
  */
 class ChangeProposal {
-    var $resource_id;
-    var $selector;
-    var $values;    // array of values
+    protected $resource_id;
+    protected $selector;
+    protected $values;    // array of values
 
     /** AA\Util\ChangeProposal function
-     * @param $resource_id
-     * @param $selector
-     * @param $values
+     * @param string $resource_id
+     * @param string $selector
+     * @param array $values
      */
-    function __construct($resource_id, $selector, $values) {
+    function __construct(string $resource_id, string $selector, array $values) {
         $this->resource_id = $resource_id;
         $this->selector = $selector;
         $this->values = $values;
     }
 
     /** getResourceId function */
-    function getResourceId() {
-        return ($this->resource_id);
+    function getResourceId(): string
+    {
+        return $this->resource_id;
     }
 
     /** getSelector function */
-    function getSelector() {
-        return ($this->selector);
+    function getSelector(): string
+    {
+        return $this->selector;
     }
 
     /** getValues function */
-    function getValues() {
-        return ($this->values);
+    function getValues(): array
+    {
+        return $this->values;
     }
 }

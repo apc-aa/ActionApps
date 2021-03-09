@@ -133,7 +133,7 @@ function cron($time = 0) {
                 }
 
                 if (strstr($value,'/')) {
-                    list($from,$to,$step) = preg_split('~[/-]~',$value);
+                    [$from,$to,$step] = preg_split('~[/-]~',$value);
                     for ($i = $from; $i <= $to; $i += $step)
                         if ($i <= $now_part && $i > $nearest_part)
                             $nearest_part = $i;
@@ -142,7 +142,7 @@ function cron($time = 0) {
                     $ranges = explode(',',$value);
                     foreach ($ranges as $range) {
                         if (strstr ($range,"-")) {
-                            list($from,$to) = explode('-',$value);
+                            [$from,$to] = explode('-',$value);
                                 for ($i = $from; $i <= $to; $i++)
                                 if ($i <= $now_part && $i > $nearest_part)
                                     $nearest_part = $i;

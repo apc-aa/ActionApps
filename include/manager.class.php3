@@ -71,8 +71,9 @@ class AA_Manager extends AA_Storable {
 
     /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
+     * @return array
      */
-    static function getClassProperties() {  //  id             name          type   multi  persistent - validator, required, help, morehelp, example
+    static function getClassProperties(): array {  //  id             name          type   multi  persistent - validator, required, help, morehelp, example
         return [
             'searchbar'   => new AA_Property( 'searchbar',   _m("Searchbar"),  'AA_Searchbar', false, true),
             'scroller'    => new AA_Property( 'scroller',    _m("Scroller"),   'AA_Scroller',  false, true),
@@ -647,8 +648,9 @@ class AA_Manageraction extends AA_Storable {
      *  We extending AA_Storable, because we want to get the state form some
      *  actions. Action selectbox is able to display settings by AJAX call, where
      *  we need to pass all parameters of the object
+     * @return array
      */
-    static function getClassProperties() {          //  id             name                              type    multi  persistent - validator, required, help, morehelp, example
+    static function getClassProperties(): array {          //  id             name                              type    multi  persistent - validator, required, help, morehelp, example
         return [
             'id'            => new AA_Property( 'id',           _m('Action ID'),                  'text', false, true),
             'open_url'      => new AA_Property( 'open_url',     _m('URL to open' ),               'text', false, true),

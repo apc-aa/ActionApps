@@ -30,6 +30,7 @@
 use AA\IO\DB\DB_AA;
 use AA\Util\ChangeProposal;
 use AA\Util\ChangesMonitor;
+use AA\Later\PlannedTask;
 
 require_once __DIR__."/locsess.php3";    // DB_AA object definition
 require_once __DIR__."/feeding.php3";
@@ -432,14 +433,15 @@ class AA_Content {
      * @param $field_id
      * @return array
      */
-    function getValuesArray($field_id) {
+    function getValuesArray($field_id): array
+    {
         return empty($this->content[$field_id]) ? [] : array_column($this->content[$field_id],'value');
     }
 
     /** computes difference between two AA_Contents
-     * @param            $object2compare AA_Content
+     * @param AA_Content $object2compare
      * @param array      $ignore
-     * @return array
+     * @return ChangeProposal[]
      */
     function diff($object2compare, array $ignore=[]): array {
         $changes = [];
@@ -583,7 +585,6 @@ class ItemContent extends AA_Content {
         }
 
         foreach ($fields as $pri_field_id => $field) {
-
             // to content array add just displayed fields (see ShowForm())
             if (!IsEditable($oldcontent4id[$pri_field_id], $field, $profile) AND !$insert) {
                 continue;
@@ -593,7 +594,7 @@ class ItemContent extends AA_Content {
                 $this->content[$pri_field_id] = $aacontent4id->getValues($pri_field_id);
                 continue;
             }
-
+            // if makes no sense - the value is always returned
             if ($field_value = $field->readValueFromOldtypeForm($oldcontent4id, $insert)) {
                 $this->content[$pri_field_id] = $field_value->getArray();
             }
@@ -646,7 +647,7 @@ class ItemContent extends AA_Content {
 
         // if there are predefined values in user profile, fill it.
         // Fill it only if $insert (new item). Otherwise left there filled value
-        if ($insert) {
+        if ($insert) {  
             // apply Profile To Content
             $this->setFieldsFromProfile($fields, $profile);
         }
@@ -687,7 +688,7 @@ class ItemContent extends AA_Content {
     }
 
     /** Without $bin returns true if the item is visible - not expired/trashed/pending/...
-     *  You can specify bin AA_BIN_ACTIVE or AA_BIN_HOLDING or AA_BIN_TRASH or AA_BIN_ALL or its bitwise combination (the trash and pending is not supprted, now)
+     *  You can specify bin AA_BIN_ACTIVE or AA_BIN_HOLDING or AA_BIN_TRASH or AA_BIN_ALL or its bitwise combination (the trash and pending is not supported, now)
      */
     function isActive($bin=AA_BIN_ACTIVE) {
 
@@ -1058,7 +1059,7 @@ class ItemContent extends AA_Content {
             /** @noinspection PhpMissingBreakStatementInspection */
             case 'insert_if_new': if (!$this->getItemID()) {
                                       ItemContent::lastErr(ITEMCONTENT_ERROR_NO_ID, _m("No Id specified (%1 - %2)", [$this->getItemID(), $this->getValue('headline........')]));  // set error code
-                                      if ($GLOBALS['errcheck']) huhl(ItemContent::lastErrMsg());
+                                      if ($GLOBALS['errcheck']) huhlS(ItemContent::lastErrMsg());
                                       return false;
                                   }
                                   if (itemIsDuplicate($this->getItemID())) {
@@ -1085,7 +1086,7 @@ class ItemContent extends AA_Content {
             ItemContent::lastErr(ITEMCONTENT_ERROR_BAD_PARAM, _m("StoreItem for slice %1 - failed parameter check for id = '%2'", [$slice->getName(), $id]));  // set error code
             if ($GLOBALS['errcheck']) huhl(ItemContent::lastErrMsg());
             return false;
-        }
+        }                                       
 
         // do not store item, if status_code==SC_NO_BIN
         if ($this->getStatusCode() == SC_NO_BIN) {
@@ -1128,7 +1129,7 @@ class ItemContent extends AA_Content {
                 // we store the skeleton item to the item table to get short_id in order we can use _#SITEM_ID in computed fields (filename change aliases)
                 // Most of the fields will be rewritten later (see below)
                 AA::Metabase()->doInsert('item', ['id'=>$id,'slice_id'=>$slice_id, 'status_code'=>$this->getStatusCode(), 'externally_fed'=>'']);
-                $this->setValue('short_id........',  DB_AA::select1("SELECT short_id FROM `item`", 'short_id', [['id',$id,'l']]));
+                $this->setValue('short_id........',  DB_AA::select1('short_id', "SELECT short_id FROM `item`", [['id', $id, 'l']]));
                 break;
         }
         // else 'add' do not clear the current content - the values are added
@@ -1224,7 +1225,7 @@ class ItemContent extends AA_Content {
         }
 
         // ignore last_edit change (there was quite a lot of such changes, where the only change was in this field (in import....))
-        if (($mode != 'insert') AND count($diff = $itemContent->diff($oldItemContent, ['last_edit.......']))) {
+        if (($mode != 'insert') AND ($slice->getProperty('historylog') !== '0') AND count($diff = $itemContent->diff($oldItemContent, ['last_edit.......']))) {
             ChangesMonitor::singleton()->addHistory($diff);
         }
         AA_Log::write( ($mode=='insert') ? 'ITEM_NEW' : 'ITEM_UPD', AA_Log::context($id), $function_params);
@@ -1232,10 +1233,10 @@ class ItemContent extends AA_Content {
         // events are after ChangeMonitor - sometimes we use {chenged:} in the events
         if ($throw_events) {
             if ($mode == 'insert') {
-                AA_Plannedtask::executeForEvent($slice_id, 'ITEM_NEW', $id);
+                PlannedTask::executeForEvent($slice_id, 'ITEM_NEW', $id);
                 $event->comes('ITEM_NEW', $slice_id, 'S', $itemContent);  // new form event
             } else {
-                AA_Plannedtask::executeForEvent($slice_id, 'ITEM_UPDATED', $id);
+                PlannedTask::executeForEvent($slice_id, 'ITEM_UPDATED', $id);
                 $event->comes('ITEM_UPDATED', $slice_id, 'S', $itemContent, $oldItemContent); // new form event
             }
         }
@@ -1445,7 +1446,7 @@ class ItemContent extends AA_Content {
      *  or in returned item_varset
      * @param $id
      * @param AA_Fields $aa_fields
-     * @param $context special parameter used for thumbnails - ''|feed
+     * @param string    $context  - special parameter used for thumbnails - ''|feed
      * @return Cvarset
      */
     function _store_fields($id, $aa_fields, $context='') {

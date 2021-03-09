@@ -85,7 +85,7 @@ function add_user_and_welcome($welcome_id, $user_login, $slice_id, $role) {
         return "";
     }
 
-    if ( ($slice_name = DB_AA::select1('SELECT name FROM `slice`', 'name', [['id', $slice_id, 'l']])) === false) {
+    if ( ($slice_name = DB_AA::select1('name', 'SELECT name FROM `slice`', [['id', $slice_id, 'l']])) === false) {
         return _m("Slice not found.");
     }
     $me = AA::$perm->getIDsInfo($auth->auth["uid"]);
@@ -240,7 +240,7 @@ if ( $add || $update ) {
             $varset->add("mailman_field_lists", "text", $mailman_field_lists);
             $varset->add("reading_password", "text", $reading_password);
 
-            $slice_flag  = DB_AA::select1('SELECT `flag` FROM `slice`', 'flag', [['id', $slice_id, 'l']]);
+            $slice_flag  = DB_AA::select1('flag', 'SELECT `flag` FROM `slice`', [['id', $slice_id, 'l']]);
             $slice_flag &= ~(SLICE_ALLOW_EXPIRED_CONTENT | SLICE_ALLOW_PENDING_CONTENT); // clear the bits
             $slice_flag |= $flag_allow_expired ? SLICE_ALLOW_EXPIRED_CONTENT : 0;
             $slice_flag |= $flag_allow_pending ? SLICE_ALLOW_PENDING_CONTENT : 0;
@@ -281,7 +281,7 @@ if ( $add || $update ) {
 
             // get template data
             $varset->addArray( $SLICE_FIELDS_TEXT, $SLICE_FIELDS_NUM );
-            if (! ($record = DB_AA::select1('SELECT * FROM slice', '', [['id', $set_template_id, 'l']]))) {
+            if (! ($record = DB_AA::select1('', 'SELECT * FROM slice', [['id', $set_template_id, 'l']]))) {
                 $err["DB"] = MsgErr("Bad template id");
                 break;
             }

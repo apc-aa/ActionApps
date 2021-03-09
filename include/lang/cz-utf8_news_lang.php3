@@ -2053,7 +2053,7 @@ $_m["No permission to set feeding for any slice"]
 // include/actions.php3, row 146
 // include/menu_aa.php3, row 55
 $_m["Export"]
- = "Výměna zpráv";
+ = "Export";
 
 // admin/index.php3, row 94
 $_m["You do not have permission to edit items in the slice:"]
@@ -3554,7 +3554,7 @@ $_m["Source of CSV data"]
 // admin/se_csv_import2.php3, row 332
 // include/actions.php3, row 387
 $_m["Preview"]
- = "Zobraz zprávu";
+ = "Náhled";
 
 // admin/se_csv_import.php3, row 252
 // include/easy_scroller.php3, row 164, 290

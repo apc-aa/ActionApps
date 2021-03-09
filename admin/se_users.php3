@@ -32,7 +32,6 @@ use AA\IO\DB\DB_AA;
 
 require_once __DIR__."/../include/init_page.php3";
 require_once __DIR__."/../include/formutil.php3";
-require_once __DIR__."/../include/pagecache.php3";
 require_once __DIR__."/../include/se_users.php3";
 require_once __DIR__."/../include/msgpage.php3";
 
@@ -107,7 +106,7 @@ function PrintUser($perm, $usr_id, $editor_perm) {
     IfLink( CanChangeRole($perm, $editor_perm, $perms_roles["AUTHOR"]['perm']),        get_admin_url("se_users.php3?UsrDel=$usr_id_enc&role=AUTHOR"), _m("Revoke"));
 
     // show profile button also for groups
-    $cnt = ($cnt = DB_AA::select1('SELECT count(*) as cnt FROM profile', 'cnt', [
+    $cnt = ($cnt = DB_AA::select1('cnt', 'SELECT count(*) as cnt FROM profile', [
         ['slice_id', $GLOBALS['slice_id'], 'l'],
         ['uid', $usr_id]
     ])) ? " ($cnt)" : '';
@@ -156,7 +155,7 @@ if ( $continue ) {
         PrintUser($prm, $usr_id, $editor_perms);
     }
 
-    $cnt = ($cnt = DB_AA::select1('SELECT count(*) as cnt FROM profile', 'cnt', [
+    $cnt = ($cnt = DB_AA::select1('cnt', 'SELECT count(*) as cnt FROM profile', [
         ['slice_id', $GLOBALS['slice_id'], 'l'],
         ['uid', '*']
     ])) ? " ($cnt)" : '';

@@ -821,7 +821,7 @@ class AA_File_FTP_Wrapper extends AA_File_Wrapper {
         if (!preg_match('/(\d+),(\d+),(\d+),(\d+),(\d+),(\d+)/', $line, $matches)) {
             return false;
         }
-        list(, $h1, $h2, $h3, $h4, $p1, $p2) = $matches;
+        [, $h1, $h2, $h3, $h4, $p1, $p2] = $matches;
 
         $host = "$h1.$h2.$h3.$h4";
         $port = ($p1 << 8) + $p2;

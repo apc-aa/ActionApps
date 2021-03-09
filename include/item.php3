@@ -443,7 +443,7 @@ class AA_Item {
     function isEmpty() { return $this->content4id->isEmpty(); }
 
     /** Without $bin returns true if the item is viseble - not expired/trashed/pending/...
-     *  You can specify bin AA_BIN_ACTIVE or AA_BIN_HOLDING or AA_BIN_TRASH or AA_BIN_ALL or its bitwise combination (the trash and pending is not supprted, now)
+     *  You can specify bin AA_BIN_ACTIVE or AA_BIN_HOLDING or AA_BIN_TRASH or AA_BIN_ALL or its bitwise combination (the trash and pending is not supported, now)
      * @return bool
      */
     function isActive($bin=AA_BIN_ACTIVE) {
@@ -1803,7 +1803,7 @@ class AA_Items {
     }
 
     /** returns output of Active items
-     * @param $bin - AA_BIN_ACTIVE or AA_BIN_HOLDING or AA_BIN_TRASH or AA_BIN_ALL or its bitwise combination (the trash and pending is not supprted, now)
+     * @param $bin - AA_BIN_ACTIVE or AA_BIN_HOLDING or AA_BIN_TRASH or AA_BIN_ALL or its bitwise combination (the trash and pending is not supported, now)
      * @return array
      */
     static function getFormatted($zids, $expression, $bin=AA_BIN_ACTIVE) {

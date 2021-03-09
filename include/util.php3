@@ -29,6 +29,7 @@
 //
 
 use AA\IO\DB\DB_AA;
+use AA\Util\SingletonTrait;
 
 require_once __DIR__. '/locsess.php3';
 require_once __DIR__. '/constants.php3';
@@ -40,8 +41,10 @@ require_once __DIR__. '/formutil.php3';
 
 /** identity function - used for chaining with constructor
  *  Usage: with(new AA_Some_Object())->set(something);
+ * @param object $object
+ * @return object
  */
-function with($object) {
+function with(object $object): object {
     return $object;
 }
 
@@ -53,10 +56,10 @@ function with($object) {
  * @param array  $attr    ['onclick' => "return confirm('Are you sure?')"]
  * @return string
  */
-function a_href($url, $txt, $class='', array $attr=[]) {
+function a_href($url, $txt, $class='', array $attr=[]): string {
     $add  = $class ? " class=\"$class\"" : '';
     $add .= array_reduce( array_keys($attr), function ($str, $key) use ($attr) { return $str . ' ' . $key . '="' . myspecialchars( $attr[$key] ) . '"'; });
-    return '<a href="'.myspecialchars($url) ."\"$add>$txt</a>";
+    return '<a href="'.myspecialchars($url) ."\" $add>$txt</a>";
 }
 
 /** expand_return_url function
@@ -64,7 +67,7 @@ function a_href($url, $txt, $class='', array $attr=[]) {
  * @param $session
  * @return mixed|string
  */
-function expand_return_url($session=true) {
+function expand_return_url($session=true): string {
     global $return_url, $sess;
     return ($session AND is_object($sess)) ? StateUrl($return_url) : $return_url;
 }
@@ -185,13 +188,13 @@ function shtml_query_string() {
     // param=a%26a&second=2 is returned as param=a\\&a\\&second=2 - we can't
     // expode it! - that's why we use $REQUEST_URI, if possible
 
-    $ret_string = ($_SERVER['REQUEST_URI'] AND strpos($_SERVER['REQUEST_URI'],'?')) ?
+    // get off magic quotes
+
+    return ($_SERVER['REQUEST_URI'] AND strpos($_SERVER['REQUEST_URI'],'?')) ?
                         substr($_SERVER['REQUEST_URI'],strpos($_SERVER['REQUEST_URI'], '?')+1) :
                   ( isset($_SERVER['REDIRECT_QUERY_STRING_UNESCAPED'])    ?
                         stripslashes($_SERVER['REDIRECT_QUERY_STRING_UNESCAPED']) :
                         stripslashes($_SERVER['QUERY_STRING_UNESCAPED']) );
-    // get off magic quotes
-    return $ret_string;
 }
 
 /** check, if the script was called as ajax call */
@@ -294,6 +297,7 @@ function NormalizeArrayIndex($arr) {
     if (!is_array($arr)) {
         return $arr;
     }
+    $ret = [];
     foreach ($arr as $k => $v) {
         if ( (($k{0}=='"') AND (substr($k,-1)=='"')) ||
              (($k{0}=="'") AND (substr($k,-1)=="'")) ) {
@@ -340,7 +344,7 @@ function recursive_array_replace($find, $replace, $array) {
 
 /** AddslashesArray function
  * function addslashes enhanced by array processing
- * @param $val
+ * @param $value
  * @return array|string
  */
 function AddslashesArray($value) {
@@ -456,7 +460,7 @@ function warn($msg) {
 /** huhe function
  * Report only if errcheck is set, this is used to test for errors to speed debugging
  * Use to catch cases in the code which shouldn't exist, but are handled anyway.
- * @param $var1, ...
+ * @param mixed ...$arg_list
  */
 function huhe(...$arg_list) {
     global $errcheck;
@@ -522,14 +526,14 @@ function MsgErr($txt){
 
 /** GetConstants function
  *  Function fills the array from constants table
- * @param $group
- * @param $order
- * @param $column - column used as values. We can use 'name' as well as
- *                   'const_name' for name of fields
- * @param $keycolumn
- * @return mixed
+ * @param        $group
+ * @param string $order
+ * @param string $column - column used as values. We can use 'name' as well as
+ *                       'const_name' for name of fields
+ * @param string $keycolumn
+ * @return array
  */
-function GetConstants($group, $order='pri', $column='name', $keycolumn='value') {
+function GetConstants($group, $order='pri', $column='name', $keycolumn='value'): array {
     // we can use 'const_name' instedad of real name of the column 'name' => translate
     $order     = str_replace( 'const_', '', $order);
     $column    = str_replace( 'const_', '', $column);
@@ -556,6 +560,8 @@ function GetConstants($group, $order='pri', $column='name', $keycolumn='value') 
     $SQL = "SELECT $fields FROM constant WHERE group_id='$group' $order_by";
     $db->query($SQL);
 
+    $already_key = [];
+    $arr = [];
     while ($db->next_record()) {
         $key = GrabConstantColumn($db, $keycolumn);
         $key = $key['value'];
@@ -586,7 +592,7 @@ function GetModuleInfo($module_id, $type) {
 
     // $SQL = "SELECT * FROM " .$MODULES[$type]['table']. " WHERE id = '$p_module_id'";
     // $ret = GetTable2Array($SQL, 'aa_first', 'aa_fields');
-    $ret = DB_AA::select1("SELECT * FROM " .$MODULES[$type]['table'], [], [['id', $module_id, 'l']]);
+    $ret = DB_AA::select1([], "SELECT * FROM " . $MODULES[$type]['table'], [['id', $module_id, 'l']]);
 
     if ( $ret AND $ret['reading_password'] ) {
         // do it more secure and do not store it plain
@@ -1038,7 +1044,7 @@ function StoreTable2Content(&$content, $SQL, $prefix, $id_field) {
  */
 function GetHeadlineFieldID($sid, $slice_field="headline.") {
     // first should be headline........, then headline.......1, etc.
-    return DB_AA::select1("SELECT id FROM field", 'id', [['slice_id', $sid, 'l'], ['id',"$slice_field%", 'LIKE']], ['id']);  // false if not found
+    return DB_AA::select1('id', "SELECT id FROM field", [['slice_id', $sid, 'l'], ['id', "$slice_field%", 'LIKE']], ['id']);  // false if not found
 }
 
 /** GetCategoryGroup function
@@ -1057,7 +1063,7 @@ function GetCategoryGroup($slice_id, $field='') {
         $conds[] = ['id', 'category%', 'LIKE'];
         $order   = ['id'];
     }
-    $arr = explode( ":", DB_AA::select1("SELECT input_show_func FROM field", 'input_show_func', $conds, $order));  // false if not found
+    $arr = explode( ":", DB_AA::select1('input_show_func', "SELECT input_show_func FROM field", $conds, $order));  // false if not found
     return $arr[1];
 }
 
@@ -1140,6 +1146,7 @@ function HtmlPageBegin($js_lib=false, $lang=null) {
 
 // use instead of </body></html> on pages which show menu
 function HtmlPageEnd() {
+    global $spareDBs, $slices4cache;
     AA::$debug&2 && AA::$dbg->info('time: '. timestartdiff());
     if (AA::$debug&16) {
         echo '<br>Page generation time: '. timestartdiff();
@@ -1415,7 +1422,7 @@ function GetModuleImage($module, $filename, $alt='', $width=0, $height=0, $add='
  */
 class AA_Credentials {
 
-    use \AA\Util\SingletonTrait;
+    use SingletonTrait;
 
     protected $_pwd = [];     // Array of all known slice passwords (md5 for better security)
 
@@ -1761,7 +1768,7 @@ class CookieManager {
 }
 
 class AA_GeneralizedArray {
-    var $arr;
+    protected $arr;
 
     /** AA_GeneralizedArray function
      */
@@ -1806,7 +1813,7 @@ class AA_GeneralizedArray {
 
     /** getArray function
      */
-    function getArray() {
+    function getArray(): array {
         return $this->arr;
     }
 }
@@ -1839,14 +1846,21 @@ function IsSpamText($text, $tolerance=4) {
 }
 
 /** checks, if the identifier looks like alias. Used in {ifset:{_#HEADLINE}:...}
-*  to check the string - for example - accepts _#HEADLINE and also _#P3 (for {_:...} functions)
+ *  to check the string - for example - accepts _#HEADLINE and also _#P3 (for {_:...} functions)
+ * @param string $identifier
+ * @return bool
  */
-function IsAlias($identifier) {
+function IsAlias($identifier): bool
+{
     return  ((substr($identifier,0,2)=='_#') AND ((strlen($identifier)==10) OR ((substr($identifier,0,3)=='_#P') AND ctype_digit((string)substr($identifier,3)))));
 }
 
-/** is signed int (ctype_digit do not allow signed numbers) */
-function IsSigInt($var) {
+/** is signed int (ctype_digit do not allow signed numbers)
+ * @param string $var
+ * @return bool
+ */
+function IsSigInt($var): bool
+{
     if (is_int(filter_var($var, FILTER_VALIDATE_INT))) {
         return true;
     }

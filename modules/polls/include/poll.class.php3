@@ -279,7 +279,7 @@ class AA_Poll {
             $poll_zids = new zids($request['poll_id']);
         } else {
             $set       = AA_Poll::generateSet($request['pid'],$request['conds'],$request['sort']);
-            $poll_zids = AA_Metabase::queryZids(['table'=>'polls'], $set);
+            $poll_zids = AA::Metabase()->queryZids(['table'=>'polls'], $set);
             $from      = $request['from'] ? $request['from']-1 : 0;
             $listlen   = get_if($request['listlen'], 1);
             $poll_zids = $poll_zids->slice($from, $listlen);

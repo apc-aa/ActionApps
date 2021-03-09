@@ -33,13 +33,13 @@ https://www.apc.org/
 /** APC-AA configuration file */
 
 use AA\IO\DB\DB_AA;
+use AA\Later\Toexecute;
 
 require_once __DIR__."/../include/config.php3";
 /** Main include file for using session management function on page */
 require_once __DIR__."/../include/locsess.php3";
 require_once __DIR__."/../include/varset.php3";
 require_once __DIR__."/../include/util.php3";
-require_once __DIR__."/../include/pagecache.php3";
 require_once __DIR__."/../include/mail.php3";
 require_once __DIR__."/../modules/links/cattree.php3";
 
@@ -54,7 +54,7 @@ require_once __DIR__."/../modules/links/cattree.php3";
  * The command above could be used from cron.
  */
 
-$toexecute = new AA_Toexecute;
+$toexecute = new Toexecute;
 
 /*
 $mail = new AA_Mail;

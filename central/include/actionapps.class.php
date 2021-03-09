@@ -28,6 +28,8 @@ https://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+use AA\Later\Toexecute;
+
 
 /**
  * AA_Actionapps class - holds information about one AA installation
@@ -318,7 +320,7 @@ class AA_Module_Definition {
     */
     function planModuleImport($aa, $replaces=null) {
         $chunks    = $this->_getChunks($replaces);
-        $toexecute = new AA_Toexecute;
+        $toexecute = new Toexecute;
         foreach ($chunks as $chunk) {
             $import_task = new AA_Task_Import_Module_Chunk($chunk, $aa);
             $toexecute->userQueue($import_task, [], 'AA_Task_Import_Module_Chunk');
@@ -661,7 +663,7 @@ class AA_Identifier {
      *  static member function - called like $idf = AA_Identifier::factoryFromString($idf_string)
      */
     function factoryFromString($idf) {
-        list($module_id, $table, $row, $column) = explode('->', $idf);
+        [$module_id, $table, $row, $column] = explode('->', $idf);
         return new AA_Identifier($module_id, $table, $row, $column);
     }
 
@@ -759,9 +761,9 @@ class AA_Sync_Action {
 
 
 /** Stores the synchronization action which should be performed on remote AA
- *  Objects are stored into AA_Toexecute queue for running from Task Manager
+ *  Objects are stored into AA\Later\Toexecute queue for running from Task Manager
  **/
-class AA_Task_Sync implements \AA\Util\LaterInterface {
+class AA_Task_Sync implements \AA\Later\LaterInterface {
     /** AA_Sync_Action object - Action to do */
     var $sync_action;
 
@@ -785,9 +787,9 @@ class AA_Task_Sync implements \AA\Util\LaterInterface {
 }
 
 /** Stores the synchronization action which should be performed on remote AA
- *  Objects are stored into AA_Toexecute queue for running from Task Manager
+ *  Objects are stored into AA\Later\Toexecute queue for running from Task Manager
  **/
-class AA_Task_Import_Module_Chunk implements \AA\Util\LaterInterface {
+class AA_Task_Import_Module_Chunk implements \AA\Later\LaterInterface {
 
     /** @var AA_Module_Definition $module_definition_chunk -  object or similar for import */
     protected $module_definition_chunk;
@@ -803,7 +805,7 @@ class AA_Task_Import_Module_Chunk implements \AA\Util\LaterInterface {
     /**
      * @param array $params - numeric array of additional parameters for the execution passed in time of call
      * @return string - message about execution to be logged
-     * @see \AA\Util\LaterInterface
+     * @see \AA\Later\LaterInterface
      */
     public function toexecutelater($params= []) {
         // synchronize accepts array of sync_actions, so it is possible

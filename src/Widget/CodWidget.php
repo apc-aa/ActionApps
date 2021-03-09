@@ -10,7 +10,7 @@ namespace AA\Widget;
 use AA\FormArray;
 
 /** Code editor */
-class CodWidget extends \AA\Widget\TxtWidget
+class CodWidget extends TxtWidget
 {
     /** @var array  list of textareas for CodeMirror creation */
     protected $ids_4_editor = [];
@@ -40,10 +40,10 @@ class CodWidget extends \AA\Widget\TxtWidget
 
     /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
+     * @return array
      */
-    static function getClassProperties()
-    {
-        return \AA\Widget\Widget::propertiesShop(['rows']);
+    static function getClassProperties(): array {
+        return Widget::propertiesShop(['rows']);
     }
 
     //    /** Creates base widget HTML, which will be surrounded by Live, Ajxax

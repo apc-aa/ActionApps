@@ -34,6 +34,7 @@
 // date_default_timezone_set(date_default_timezone_get());
 
 // supress PHP notices
+use AA\Cache\PageCache;
 use AA\IO\DB\DB_AA;
 
 error_reporting(error_reporting() & ~(E_WARNING | E_NOTICE | E_DEPRECATED | E_STRICT));
@@ -67,8 +68,6 @@ spl_autoload_register(function ($class_name) {
         'AA_Actionapps'                  => 'central/include/actionapps.class.php',
         'AA_Auth'                        => 'include/locauth.php3',
         'AA_Components'                  => 'include/statestore.php3',
-        'AA_Computedfields_Updater'      => 'include/hitcounter.class.php3',
-        'AA_ComputedfieldsItem_Updater'  => 'include/hitcounter.class.php3',
         'AA_Fields'                      => 'include/field.class.php3',
         'AA\FormArray'                   => 'include/widget.class.php3',
         'AA_Formatters'                  => 'include/widget.class.php3',
@@ -137,9 +136,6 @@ spl_autoload_register(function ($class_name) {
             return;
         case 'scroller':
             require_once __DIR__. '/scroller.php3';
-            return;
-        case 'plannedtask':
-            require_once __DIR__. '/task.class.php3';
             return;
         case 'bookmarks':
             require_once __DIR__. '/searchbar.class.php3';

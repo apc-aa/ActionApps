@@ -1,6 +1,7 @@
 <?php
 
 use AA\IO\DB\DB_AA;
+use AA\Later\Toexecute;
 
 /** Logging functions
  *
@@ -90,7 +91,7 @@ class AA_Log {
 
             // clean all older than 40 days
             //                                                    what to clean                                         when to run
-            with( new AA_Toexecute )->laterOnce(new AA_Log_Clenup(now() - (60*60*24*40)), [], "AA_Log_Clenup", 10, now() + (60*60*24));
+            with( new Toexecute )->laterOnce(new AA_Log_Clenup(now() - (60*60*24*40)), [], "AA_Log_Clenup", 10, now() + (60*60*24));
         }
         return true;
     }
@@ -161,12 +162,12 @@ class AA_Log {
         if ($selector != "") {
             $conds[] = ['selector',$selector];
         }
-        return DB_AA::select1('SELECT * FROM log', '', $conds, ['id-']);
+        return DB_AA::select1('', 'SELECT * FROM log', $conds, ['id-']);
     }
 
 }
 
-class AA_Log_Clenup implements \AA\Util\LaterInterface {
+class AA_Log_Clenup implements \AA\Later\LaterInterface {
 
     var $time;
     var $type;
@@ -177,10 +178,10 @@ class AA_Log_Clenup implements \AA\Util\LaterInterface {
     }
 
     /** just plan item updates in chunks
-     *  special function called from AA_Toexecute class - used for queued tasks (run form cron)
+     *  special function called from AA\Later\Toexecute class - used for queued tasks (run form cron)
      * @param array $params - numeric array of additional parameters for the execution passed in time of call
      * @return string - message about execution to be logged
-     * @see \AA\Util\LaterInterface
+     * @see \AA\Later\LaterInterface
      */
     public function toexecutelater($params= []) {
         $where = [['time', $this->time, '<']];

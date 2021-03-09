@@ -19,6 +19,8 @@ https://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+use AA\Later\Toexecute;
+
 require_once __DIR__."/include/init_central.php";
 require_once __DIR__."/../include/formutil.php3";
 require_once __DIR__."/../include/msgpage.php3";
@@ -36,7 +38,7 @@ set_time_limit(360);
 $aas = AA_Actionapps::getArray();
 
 if ($_POST['copy']) {
-    $toexecute = new AA_Toexecute;
+    $toexecute = new Toexecute;
     $no_sync_tasks = 0;
 
     $limit = [];

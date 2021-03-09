@@ -37,7 +37,7 @@ if ($template['Links']) {
 require_once __DIR__."/../../include/init_page.php3";
 //require_once __DIR__."/../../include/en_links_lang.php3";
 require_once __DIR__."/../../include/formutil.php3";
-require_once __DIR__."/../../include/pagecache.php3";
+
 require_once __DIR__."/../../include/varset.php3";
 require_once __DIR__."/../../include/date.php3";
 require_once __DIR__."/../../include/modutils.php3";
@@ -163,7 +163,7 @@ $source_id   = ($template['Links'] ? substr($template['Links'],1) : $module_id )
 $p_source_id = q_pack_id( $source_id );
 
 // load module common data
-list( $name, $slice_url, $priority, $lang_file, $owner, $deleted, $slice_owners ) = GetModuleFields($source_id);
+[ $name, $slice_url, $priority, $lang_file, $owner, $deleted, $slice_owners ] = GetModuleFields($source_id);
 
 // load module specific data
 $SQL= " SELECT * FROM links WHERE id='$p_source_id'";

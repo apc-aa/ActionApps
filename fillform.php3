@@ -99,8 +99,6 @@ require_once __DIR__."/include/util.php3";
 require_once __DIR__."/include/item.php3";
 /** parses view settings, gets view data and other functions */
 require_once __DIR__."/include/view.php3";
-/** defines PageCache class used for caching informations into database */
-require_once __DIR__."/include/pagecache.php3";
 /** functions for searching and filtering items */
 require_once __DIR__."/include/searchlib.php3";
 /** discussion utility functions */

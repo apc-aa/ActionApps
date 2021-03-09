@@ -30,7 +30,6 @@
 require_once __DIR__."/../include/init_page.php3";
 require_once __DIR__."/../include/varset.php3";
 require_once __DIR__."/../include/formutil.php3";
-require_once __DIR__."/../include/pagecache.php3";
 require_once __DIR__."/../include/item.php3";
 require_once __DIR__."/../include/actions.php3";
 
@@ -47,7 +46,7 @@ $manager = new AA_Manager('toexecute', $manager_settings);
 $manager->performActions();
 
 $aa_set  = $manager->getSet();
-$zids    = AA_Metabase::queryZids(['table'=>'toexecute'], $aa_set);
+$zids    = AA::Metabase()->queryZids(['table'=>'toexecute'], $aa_set);
 
 $manager->displayPage($zids, 'aaadmin', 'toexecute');
 

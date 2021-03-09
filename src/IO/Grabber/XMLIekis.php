@@ -12,7 +12,8 @@ use ItemContent;
 
 /** AA\IO\AbstractGrabber\AbstractGrabber\XMLIekis - grabs data from XML files in one directory
  */
-class XMLIekis extends \AA\IO\Grabber\AbstractGrabber {
+class XMLIekis extends AbstractGrabber
+{
 
     protected $dir;
     /** directory, where teh files are */

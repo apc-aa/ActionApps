@@ -12,7 +12,7 @@ use AA_Value;
 use datectrl;
 
 /** Date widget */
-class DteWidget extends \AA\Widget\Widget
+class DteWidget extends Widget
 {
 
     /** - static member functions
@@ -28,10 +28,10 @@ class DteWidget extends \AA\Widget\Widget
 
     /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
+     * @return array
      */
-    static function getClassProperties()
-    {
-        return \AA\Widget\Widget::propertiesShop(['start_year', 'end_year', 'relative', 'show_time']);
+    static function getClassProperties(): array {
+        return Widget::propertiesShop(['start_year', 'end_year', 'relative', 'show_time']);
     }
 
     /** Creates base widget HTML, which will be surrounded by Live, Ajxax

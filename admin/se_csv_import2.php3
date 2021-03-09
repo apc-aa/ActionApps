@@ -439,7 +439,7 @@ if ( $load ) {
     // $SQL      = "SELECT value FROM object_text WHERE object_id = '$load_id' AND property='importer'";
     // $ret      = GetTable2Array($SQL, 'aa_first', 'aa_fields');
     // $importer = unserialize($ret['value']);
-    $importer = DB_AA::select1("SELECT LOWER(HEX(`value`)) as val FROM object_text", 'val', [['object_id', $load_id],['property', 'importer']]);
+    $importer = DB_AA::select1('val', "SELECT LOWER(HEX(`value`)) as val FROM object_text", [['object_id', $load_id], ['property', 'importer']]);
     $importer->setFilename($_REQUEST['fileName']);
 } else {
     $importer = new AA_Csv_Importer();
