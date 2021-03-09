@@ -463,8 +463,7 @@ class AA_Manager extends AA_Storable {
             huhl($form);
             echo $form->getAjaxHtml('xxx'); // ($_GET['ret_code']);
         } else {
-            $this->
-            display($zids);
+            $this->display($zids);
         }
 
         $r_state['manager']    = $this->getState();

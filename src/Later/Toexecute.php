@@ -273,17 +273,20 @@ class Toexecute
         $varset->doUpdate('toexecute');
 
         $object = unserialize($task['object']);
-        if (is_object($object)) {
+        if (is_object($object) and !is_a($object, '__PHP_Incomplete_Class', false)) {
             $retcode = $this->execute_one($object, unserialize($task['params']));
             $this->message($retcode);
+            $selector = get_class($object) . (method_exists($object, 'getId') ? ":" . $object->getId() : '');
         } else {
-            $this->message('AA\Later\Toexecute:execute - unserialize err:' . $task['object']);
+            $this->message('Toexecute:execute - unserialize err:' . $task['object']);
+            $retcode = 'no execute, removed from queue';
+            $selector = 'no object:'.$task['object'];
         }
 
         // Task is done - remove it from queue
         $varset->doDelete('toexecute');
         $execute_times[$task_type] = microtime(true) - $task_start;
-        AA_Log::write('TOEXECUTE', get_class($object) . (method_exists($object, 'getId') ? ":" . $object->getId() : ''), $execute_times[$task_type] . ":$retcode:" . $task['params']);
+        AA_Log::write('TOEXECUTE', $selector, $execute_times[$task_type] . ":$retcode:" . $task['params']);
         return 1;
     }
 
@@ -294,8 +297,8 @@ class Toexecute
      */
     function execute_one($object, $params)
     {
-        if (!is_object($object)) {
-            return 'AA\Later\Toexecute:execute_one: No object: ' . serialize($object); // Error
+        if (!is_object($object) or is_a($object, '__PHP_Incomplete_Class', false)) {
+            return 'Toexecute:execute_one: No object: ' . serialize($object); // Error
         }
         set_time_limit(max(30, ini_get('max_execution_time')));   // 30 seconds (at least) for each task
         return call_user_func([$object, 'toexecutelater'], (array)$params);

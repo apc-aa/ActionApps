@@ -109,14 +109,14 @@ spl_autoload_register(function ($class_name) {
         case 'field':
         case 'form':
 //        case 'grabber':
-        case 'hitcounter':
+//        case 'hitcounter':
         case 'manager':
         case 'profile':
         case 'request':
         case 'searchbar':
         case 'slice':
         case 'table':
-        case 'toexecute':
+//        case 'toexecute':
         case 'transformation':
         case 'widget':
         case 'view':

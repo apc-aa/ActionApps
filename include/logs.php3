@@ -58,7 +58,7 @@ class AA_Log {
      *  Static function
      *
      * @param              $event
-     * @param string|array $selector - if array, stored as separate enties (for ITEM_DEL, ...)
+     * @param string|array $selector - if array, stored as separate entries (for ITEM_DEL, ...)
      * @param string|array $params - if array, joined
      * @return bool
      */
