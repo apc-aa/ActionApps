@@ -80,6 +80,11 @@ class AA_Exporter extends AA_Object {
     function _createTmpFile() {
         $temp_file = tmpfile();
 
+        if ( !$temp_file ) {
+            echo _m("Can't create temporary file.");
+            exit;
+        }
+
         $this->grabber->prepare();       // maybe some initialization in grabber
 
         $index = 0;
@@ -133,6 +138,16 @@ class AA_Exporter_Csv extends AA_Exporter {
      */
     function _createTmpFile() {
         $temp_file = tmpfile();
+
+        if ( !$temp_file ) {
+            echo _m("Can't create temporary file.");
+            exit;
+        }
+
+        if ( !$temp_file ) {
+            echo _m("Can't create temporary file.");
+            exit;
+        }
 
         $this->grabber->prepare();       // maybe some initialization in grabber
 
@@ -377,6 +392,11 @@ class AA_Exporter_Excel5 extends AA_Exporter {
 
         $temp_file = $this->_createTmpFile();
 
+        if ( !$temp_file ) {
+            echo _m("Can't create temporary file.");
+            exit;
+        }
+
         // Save Excel 5 file
         $objWriter = new PHPExcel_Writer_Excel5($this->sheet);
 
@@ -459,8 +479,9 @@ class AA_Exportsetings extends AA_Object {
 
     /** allows storing form in database
      *  AA_Object's method
+     * @return array
      */
-    static function getClassProperties() {
+    static function getClassProperties(): array {
 
         $bins_arr = [
             AA_BIN_ALL      => _m('All'),
@@ -513,10 +534,9 @@ class AA_Exportsetings extends AA_Object {
     function export($restict_zids=null) {
 
         $slice_id = $this->aa_owner;
-
         $slice  = AA_Slice::getModule($slice_id);
 
-        if (!$slice->isValid()) {
+        if (!$slice OR !$slice->isValid()) {
             echo _m('No slice specified');
             exit;
         }
@@ -556,7 +576,7 @@ class AA_Exportsetings extends AA_Object {
                     $field = $fields->getField($field_id);
                     if ($this->type == 'human') {
                         // try to convert the data to human readable form
-                        list($field_type,) = $field->getSearchType();
+                        [$field_type,] = $field->getSearchType();
                         switch ($field_type) {
                             case 'date':     $fs->addAlias('{date:Y-m-d H#:i:{'.$field_id.'}}', $field->getProperty('name')); break;
                             case 'relation': $fs->addAlias('{item:{@'.$field_id.':-}:_#HEADLINE:|}', $field->getProperty('name')); break;
