@@ -7,7 +7,7 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'Auth' => $baseDir . '/include/phplib/phplib.php',
-    'DB_USql' => $baseDir . '/include/phplib/db_usql.inc',
+    'Composer\\InstalledVersions' => $vendorDir . '/composer/InstalledVersions.php',
     'MLX' => $baseDir . '/include/mlx.php',
     'MLXCtrl' => $baseDir . '/include/mlx.php',
     'MLXEvents' => $baseDir . '/include/mlx.php',

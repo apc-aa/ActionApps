@@ -40,7 +40,7 @@ class ComposerStaticInit43e15006db6c3041e7b8c7c57cf04d54
 
     public static $classMap = array (
         'Auth' => __DIR__ . '/../..' . '/include/phplib/phplib.php',
-        'DB_USql' => __DIR__ . '/../..' . '/include/phplib/db_usql.inc',
+        'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
         'MLX' => __DIR__ . '/../..' . '/include/mlx.php',
         'MLXCtrl' => __DIR__ . '/../..' . '/include/mlx.php',
         'MLXEvents' => __DIR__ . '/../..' . '/include/mlx.php',
