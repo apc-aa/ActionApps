@@ -32,6 +32,7 @@
 
 use AA\IO\DB\DB_AA;
 use AA\IO\Grabber\ObjectForm;
+use AA\Later\PlannedTask;
 
 /** allows serialize objects */
 abstract class AA_Serializable {
@@ -98,11 +99,12 @@ abstract class AA_Serializable {
      *   - properties are used for two reasons
      *      - it could be stored in the database object storage when the object
      *        is stored (save()) (when persistent is set to true)
-     *      - the object could be edited on html page - the form is automaticaly
-     *        created using the properties (@see AA_Components)
-     *  static
+     *      - the object could be edited on html page - the form is automatically
+     *        created using the properties
+     * @return array
+     * @see AA_Components
      */
-    static function getClassProperties()  {
+    static function getClassProperties(): array {
         // array of AA parameters (can't be object's data, since we need
         // to call it statically (as class method)
         return [];
@@ -386,7 +388,8 @@ class AA_Object extends AA_Storable implements AA_iEditable {
 
     /** getObjectType */
     function getObjectType() {
-        return $this->aa_type;
+        // return $this->aa_type;     // no aa_type here
+        return get_called_class();
     }
 
     function getProperty($property_id, $default=null) {
@@ -535,7 +538,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
     }
 
     static function loadProperty($id, $property) {
-        return DB_AA::select1('SELECT value FROM `object_text`', 'value', [['object_id', $id], ['property', $property]]);
+        return DB_AA::select1('value', 'SELECT value FROM `object_text`', [['object_id', $id], ['property', $property]]);
     }
 
     /** called as AA_Object::loadProperties($ids, 'name')
@@ -906,7 +909,11 @@ class AA_Object extends AA_Storable implements AA_iEditable {
     protected static function getManagerRowHtml($fields, $aliases, $links) {
         return '
             <tr>
-              <td style="white-space:nowrap;">'. a_href($links['Edit'], _m('Edit'), 'aa-button-edit').' '.a_href($links['Delete'], _m('Delete'), 'aa-button-delete', ['onclick'=>"return confirm('". _m("Do you really want to delete this object?"). "')"]). '</td>          
+              <td style="white-space:nowrap;">'.
+                   a_href($links['Edit'], _m('Edit'), 'aa-button-edit').' '.
+                   a_href($links['Delete'], _m('Delete'), 'aa-button-delete', ['onclick'=>"return confirm('". _m("Do you really want to delete this object?"). "')"]).' '.
+                   a_href($links['Run'], _m('Export'), 'aa-button-show').
+             '</td>          
               <td>'.join("</td>\n<td>", array_keys($aliases)).'</td>
             </tr>
             ';
@@ -928,6 +935,12 @@ class AA_Object extends AA_Storable implements AA_iEditable {
 
         $search_fields = AA_Object::getSearchfields($properties);
         $new_link      = a_href(get_admin_url('oedit.php3', ['otype' => $object_class, 'ret_url' => $manager_url]), GetAAImage('icon_new.gif', _m('new'), 17, 17).' '. _m('Add'));
+
+        $links  = [
+                   'Edit'=>get_admin_url('oedit.php3', ['module_id=_#AA_OWNER', 'oid=_#AA_ID___', 'otype' => $object_class, 'ret_url' => $manager_url]),
+                   'Delete'=>get_admin_url('oedit.php3', ['module_id=_#AA_OWNER', 'oid=_#AA_ID___', 'otype' => $object_class, 'ret_url' => $manager_url, 'delete' => '1']),
+                   'Run'=>get_aa_url('export.php', ['id=_#AA_ID___'], false)
+        ];
 
         $manager_settings = [
              'show'      =>  MGR_ALL & ~MGR_SB_BOOKMARKS,    // MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS | MGR_SB_ALLTEXT | MGR_SB_ALLNUM
@@ -953,7 +966,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
                      'even_odd_differ'  => false,
                      'even_row_format'  => "",
 //                   'odd_row_format'   => static::getManagerRowHtml($search_fields, $aliases, array('Edit'=>get_admin_url('oedit.php3', array('module_id=_#AA_OWNER', 'oid=_#AA_ID___', 'otype' => $object_class, 'ret_url' => $manager_url)),'Delete'=>get_admin_url('oedit.php3', array('oid=_#AA_ID___', 'otype' => $object_class, 'ret_url' => $manager_url, 'delete' => '1')))),
-                     'odd_row_format'   => static::getManagerRowHtml($search_fields, $aliases, ['Edit'=>get_admin_url('oedit.php3', ['module_id=_#AA_OWNER', 'oid=_#AA_ID___', 'otype' => $object_class, 'ret_url' => $manager_url]),'Delete'=>get_admin_url('oedit.php3', ['module_id=_#AA_OWNER', 'oid=_#AA_ID___', 'otype' => $object_class, 'ret_url' => $manager_url, 'delete' => '1'])]),
+                     'odd_row_format'   => static::getManagerRowHtml($search_fields, $aliases, $links),
                      'compact_remove'   => "",
                      'compact_bottom'   => "</table></div><br>". $new_link,
                      'noitem_msg'       => _m('No object found'). '<br>'. $new_link
