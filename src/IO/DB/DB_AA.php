@@ -7,7 +7,8 @@ use AA;
 use AA_Http;
 
 /** proxy class for other db engines */
-class DB_AA extends \AA\IO\DB\AbstractDB {
+class DB_AA extends AbstractDB
+{
 
     /** @var string DB connection - host  */
     protected $Host;
@@ -28,33 +29,33 @@ class DB_AA extends \AA\IO\DB\AbstractDB {
         self::$_instances_no++;
         switch (mb_strtolower($connection['type'])) {
             case 'db_msql':
-                $this->dbase = new \AA\IO\DB\DB_mSQL($connection);
+                $this->dbase = new DB_mSQL($connection);
                 break;
             case 'db_mssql':
-                $this->dbase = new \AA\IO\DB\DB_MSSQL($connection);
+                $this->dbase = new DB_MSSQL($connection);
                 break;
             case 'db_oci8':
-                $this->dbase = new \AA\IO\DB\DB_OCI8($connection);
+                $this->dbase = new DB_OCI8($connection);
                 break;
             case 'db_odbc':
-                $this->dbase = new \AA\IO\DB\DB_ODBC($connection);
+                $this->dbase = new DB_ODBC($connection);
                 break;
             case 'db_oracle':
-                $this->dbase = new \AA\IO\DB\DB_Oracle($connection);
+                $this->dbase = new DB_Oracle($connection);
                 break;
             case 'db_pdo':
-                $this->dbase = new \AA\IO\DB\DB_PDO($connection);
+                $this->dbase = new DB_PDO($connection);
                 break;
             case 'db_pgsql':
-                $this->dbase = new \AA\IO\DB\DB_PgSQL($connection);
+                $this->dbase = new DB_PgSQL($connection);
                 break;
             case 'db_sybase':
-                $this->dbase = new \AA\IO\DB\DB_Sybase($connection);
+                $this->dbase = new DB_Sybase($connection);
                 break;
             case 'db_mysql':
             case 'db_mysqli':
             default:
-                $this->dbase = new \AA\IO\DB\DB_MySQL($connection);
+                $this->dbase = new DB_MySQL($connection);
         }
     }
 
@@ -76,20 +77,23 @@ class DB_AA extends \AA\IO\DB\AbstractDB {
      *           $chid  = DB_AA::select1("SELECT id FROM `change` WHERE ...", 'id');
      *                    DB_AA::select1("SELECT last_edit FROM `item`", 'last_edit', $where, ['last_edit-'])
      *                    DB_AA::select1("SELECT count(*) as cnt FROM content, item", 'cnt', [['content.item_id','item.id', 'j'], ['item.slice_id', $slice_id, 'l'], ['content.field_id', $fld['id']], ['content.flag', 64, 'set']]);
-     * @param string       $query
      * @param string|array $column
-     * @param array        $where
-     * @param array        $order
+     * @param string $query
+     * @param array $where
+     * @param array $order
+     * @param int $row
      * @return array|false|mixed
      */
-    public static function select1($query, $column = '', $where = [], $order = []) {
+    public static function select1($column, $query, $where = [], $order = [], int $row=1) {
         $db = getDB();
         $query .= $where ? ' ' . DB_AA::makeWhere($where) : '';
         $query .= $order ? ' ' . DB_AA::makeOrder($order) : '';
 
-        AA::$debug & 8 && AA::$dbg->log("$query LIMIT 1");
+        $offset = ($row>1) ? (($row-1).',') : '';
 
-        $db->query("$query LIMIT 1");
+        AA::$debug & 8 && AA::$dbg->log("$query LIMIT $offset 1");
+
+        $db->query("$query LIMIT $offset 1");
         $ret = false;
         if ($db->next_record()) {
             if (!is_array($column)) {
@@ -122,11 +126,11 @@ class DB_AA extends \AA\IO\DB\AbstractDB {
      *                   DB_AA::select('', 'SELECT source_id FROM relation', [['destination_id', $item_id, 'l'], ['flag', REL_FLAG_FEED, 'i']]);
      * @param        $column
      * @param        $query
-     * @param array? $where
-     * @param array? $order -  array of order fields - ['id','time-']
+     * @param null   $where
+     * @param null   $order
      * @return array
      */
-    static function select($column, $query, $where = null, $order = null) {
+    static function select($column, $query, $where = null, $order = null): array {
         $db = getDB();
         $query .= is_array($where) ? ' ' . DB_AA::makeWhere($where) : '';
         $query .= is_array($order) ? ' ' . DB_AA::makeOrder($order) : '';
@@ -209,28 +213,30 @@ class DB_AA extends \AA\IO\DB\AbstractDB {
         return $ret;
     }
 
-    /** used as: DB_AA::delete('perms', array(array('object_type', $object_type), array('objectid', $objectID), array('flag', REL_FLAG_FEED, 'i'))); */
+    /** used as: DB_AA::delete('perms', array(array('object_type', $object_type), array('objectid', $objectID), array('flag', REL_FLAG_FEED, 'i')));
+     * @param string $table
+     * @param array $where
+     * @return false|int
+     */
     static function delete($table, $where = null) {
         return DB_AA::sql("DELETE FROM `$table` ", $where);
     }
 
-    /** LOW PRIORITY version of DB_AA::delete() */
+    /** LOW PRIORITY version of DB_AA::delete()
+     * @param string $table
+     * @param array $where
+     * @return false|int
+     */
     static function delete_low_priority($table, $where = null) {
         return DB_AA::sql("DELETE LOW_PRIORITY FROM `$table` ", $where);
     }
 
-    /** check if Table exists */
+    /** check if Table exists
+     * @param string $table
+     * @return bool
+     */
     static function exists_table($table) {
-        return (false !== DB_AA::select1('SELECT table_schema FROM information_schema.tables', '', [
-                [
-                    'table_schema',
-                    DB_NAME,
-                ],
-                [
-                    'table_name',
-                    $table,
-                ],
-            ]));
+        return (false !== DB_AA::select1('', 'SELECT table_schema FROM information_schema.tables', [['table_schema', DB_NAME], ['table_name', $table]]));
     }
 
     /** creates cols string for INSERT or UPDATE
@@ -241,7 +247,7 @@ class DB_AA extends \AA\IO\DB\AbstractDB {
         $delim = '';
         $cols  = '';
         foreach ($varlist as $vardef) {
-            // $vardef is array(varname, type, value)
+            // $vardef is array(varname, value, type)
             [$name, $value, $type] = $vardef;
             switch ($type) {
                 case "i":
@@ -304,7 +310,7 @@ class DB_AA extends \AA\IO\DB\AbstractDB {
      */
     static function test($table, $where) {
         $tbl = is_array($table) ? '`' . join('`,`', $table) . '`' : "`$table`";
-        return (false !== DB_AA::select1("SELECT " . ($where[0][0]) . " FROM $tbl ", '', $where));
+        return (false !== DB_AA::select1('', "SELECT " . ($where[0][0]) . " FROM $tbl ", $where));
     }
 
     /** makeWhere function
@@ -328,9 +334,9 @@ class DB_AA extends \AA\IO\DB\AbstractDB {
      *     NOTNULL  -                   IS NOT NULL                         ['number', 'NOTNULL']
      *     LIKE     -                   LIKE             single             ['id', '\_%', 'LIKE']
      *     RLIKE    -                   LIKE             single             ['selector', $item_id, 'RLIKE']
-     *     BEGIN    -                   LIKE             single             ['selector', $item_id, 'BEGIN'] // exactly the same as RLIKE here
+     *     BEGIN    -                   LIKE             single             ['selector', $item_id, 'BEGIN'] // similar to RLIKE, but the value must begin with exact match of the string (including "%" and "_" characters)
      *     NOT LIKE -                   NOT LIKE         single             ['id', '\_%', 'NOT LIKE']
-     *     FILLED   -                   > ''             single             ['field3', 'FILLED']         // not null, not empty, not any whitespace character(s)
+     *     FILLED   -                   > ''             single             ['field3', '', 'FILLED']     // not null, not empty, not any whitespace character(s)
      *
      * @param $tablename
      * @return string
@@ -347,8 +353,11 @@ class DB_AA extends \AA\IO\DB\AbstractDB {
             } elseif (($type == 'LIKE') or ($type == 'NOT LIKE')) {
                 $where[] = "$name $type " . qquote($value);
                 continue;
-            } elseif (($type == 'RLIKE') or ($type == 'BEGIN')) {
+            } elseif ($type == 'RLIKE') {
                 $where[] = "$name LIKE " . qquote($value . '%');
+                continue;
+            } elseif ($type == 'BEGIN') {
+                $where[] = "$name LIKE '". addcslashes(quote($value),"_%") ."%'";
                 continue;
             } elseif (($type == 's<>') or ($type == 's!=')) {
                 if (is_array($value)) {
@@ -369,14 +378,14 @@ class DB_AA extends \AA\IO\DB\AbstractDB {
             } elseif (($type == 'l<>') or ($type == 'l!=')) {
                 $where[] = "$name <> " . xpack_id($value);
                 continue;
+            } elseif ($type == 'FILLED') {
+                $where[] = "$name > '' ";             // this is kind of trick for - not null, not empty, not any whitespace character(s) - thanks: https://stackoverflow.com/questions/1869264#42723975
+                continue;
             } elseif ((string)$value == 'ISNULL') {
                 $where[] = "$name IS NULL ";
                 continue;
             } elseif ((string)$value == 'NOTNULL') {
                 $where[] = "$name IS NOT NULL ";
-                continue;
-            } elseif ((string)$value == 'FILLED') {
-                $where[] = "$name > '' ";             // this is kind of trick for - not null, not empty, not any whitespace character(s) - thanks: https://stackoverflow.com/questions/1869264#42723975
                 continue;
             } else {
                 $operator = '=';
