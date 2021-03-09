@@ -1247,6 +1247,69 @@ class AA_Optimize_Set_Expirydate extends AA_Optimize {
     }
 }
 
+
+/**
+ *
+ */
+class AA_Optimize_Convert2utf8mb4 extends AA_Optimize {
+
+    /** Name function
+     * @return string - a name
+     */
+    public function name(): string {
+        return _m("Convert old database collation utf8 to utf8mb4");
+    }
+
+    /** Description function
+     * @return string - a description
+     */
+    public function description(): string {
+        return _m("Convert old database collation utf8 to utf8mb4 for all tables and set database default to utf8mb4");
+    }
+
+    /** Test function
+     * @return bool
+     */
+    public function test() : bool {
+        $collations  = DB_AA::select(['TABLE_NAME'=>'TABLE_COLLATION'], "SELECT * FROM information_schema.TABLES", [['TABLE_SCHEMA', DB_NAME], ['TABLE_COLLATION', 'NOTNULL'], ['TABLE_COLLATION', 'utf8_', 'BEGIN']]);
+        $count    = 0;
+        foreach ($collations as $tablename => $collation) {
+            if (substr($tablename,0,4) == 'bck_') {
+                continue;
+            }
+            $this->message(_m('collation for %1 table is %2', [$tablename, $collation]));
+            $count++;
+        }
+        $this->message(_m('We found %1 tables which needs to be converted', [$count]));
+        return true;
+    }
+
+    /**
+     */
+    public function repair() : bool {
+        $collations  = DB_AA::select(['TABLE_NAME'=>'TABLE_COLLATION'], "SELECT * FROM information_schema.TABLES", [['TABLE_SCHEMA', DB_NAME], ['TABLE_COLLATION', 'NOTNULL'], ['TABLE_COLLATION', 'utf8_', 'BEGIN']]);
+        $converted = 0;
+        $new_collation = '';
+        foreach ($collations as $tablename => $collation) {
+            if (substr($tablename,0,4) == 'bck_') {
+                continue;
+            }
+            $new_collation = str_replace('utf8_','utf8mb4_',$collation);
+            $this->message(_m('Convert table %1 (%2) to %3', [$tablename, $collation, $new_collation]));
+            $this->query("ALTER TABLE `$tablename`  CONVERT TO CHARACTER SET utf8mb4 COLLATE $new_collation");
+            $converted++;
+        }
+        if (!$new_collation) {
+            $new_collation = DB_AA::select1('TABLE_COLLATION', "SELECT TABLE_COLLATION FROM information_schema.TABLES", [['TABLE_SCHEMA', DB_NAME], ['TABLE_NAME', 'content']]);
+        }
+        $this->query("ALTER DATABASE ".DB_NAME." CHARACTER SET = utf8mb4 COLLATE = $new_collation;");
+        $this->message(_m('Database deafult set to %1', [$new_collation]));
+        return true;
+    }
+}
+
+
+
 /**
  *
  */
@@ -1272,13 +1335,13 @@ class AA_Optimize_Convert2innodb extends AA_Optimize {
     public function test() : bool {
         //$metabase = AA::Metabase();
         //$tables   = $metabase->getTableNames();
-        $engines  = GetTable2Array("SELECT TABLE_NAME,ENGINE FROM information_schema.TABLES WHERE TABLE_SCHEMA = '".DB_NAME."' AND ENGINE  IS NOT NULL AND ENGINE<>'InnoDB'", "TABLE_NAME", 'ENGINE');
+        $engines  = DB_AA::select(['TABLE_NAME'=>'ENGINE'], "SELECT TABLE_NAME,ENGINE FROM information_schema.TABLES", [['TABLE_SCHEMA', DB_NAME], ['ENGINE', 'NOTNULL'], ['ENGINE', 'InnoDB', 's<>']]);
         $count    = 0;
         foreach ($engines as $tablename => $engine) {
             if (substr($tablename,0,4) == 'bck_') {
                 continue;
             }
-            $this->message(_m('engine for %1 slice is %2', [$tablename, $engine]));
+            $this->message(_m('engine for %1 table is %2', [$tablename, $engine]));
             $count++;
         }
         $this->message(_m('We found %1 tables which needs to be converted', [$count]));
@@ -1291,7 +1354,7 @@ class AA_Optimize_Convert2innodb extends AA_Optimize {
      */
     public function repair() : bool {
         //$tables   = $metabase->getTableNames();
-        $engines  = GetTable2Array("SELECT TABLE_NAME,ENGINE FROM information_schema.TABLES WHERE TABLE_SCHEMA = '".DB_NAME."' AND ENGINE  IS NOT NULL AND ENGINE<>'InnoDB'", "TABLE_NAME", 'ENGINE');
+        $engines  = DB_AA::select(['TABLE_NAME'=>'ENGINE'], "SELECT TABLE_NAME,ENGINE FROM information_schema.TABLES", [['TABLE_SCHEMA', DB_NAME], ['ENGINE', 'NOTNULL'], ['ENGINE', 'InnoDB', 's<>']]);
         $converted = 0;
         foreach ($engines as $tablename => $engine) {
             if (substr($tablename,0,4) == 'bck_') {
