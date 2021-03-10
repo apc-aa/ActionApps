@@ -32,6 +32,8 @@
 
 use AA;
 use AA\IO\DB\DB_AA;
+use AA\Later\LaterInterface;
+use AA\Later\Toexecute;
 use AA_Condition;
 use AA_Formrow_Text;
 use AA_Items;
@@ -44,7 +46,7 @@ use zids;
 
 /** Task executed at planed time
  */
-class AA_Plannedtask extends AA_Object implements \AA\Later\LaterInterface
+class AA_Plannedtask extends AA_Object implements LaterInterface
 {
 
     protected $task = '';
@@ -96,7 +98,7 @@ class AA_Plannedtask extends AA_Object implements \AA\Later\LaterInterface
             <tr>
               <td style="white-space:nowrap;">' .
             a_href($links['Edit'], _m('Edit'), 'aa-button-edit') . ' ' .
-            a_href(get_admin_url('aa_log.php3?&srchbr_akce=1&srchbr_field%5B0%5D=selector&srchbr_oper%5B0%5D==&srchbr_value%5B0%5D=AA\Later\Plannedtask:_#AA_ID___&srchbr_order%5B0%5D=time&srchbr_order_dir%5B0%5D=on'), _m('Log'), 'aa-button-show') . ' ' .
+            a_href(get_admin_url('aa_log.php3?&srchbr_akce=1&srchbr_field%5B0%5D=selector&srchbr_oper%5B0%5D==&srchbr_value%5B0%5D=AA_Plannedtask:_#AA_ID___&srchbr_order%5B0%5D=time&srchbr_order_dir%5B0%5D=on'), _m('Log'), 'aa-button-show') . ' ' .
             a_href($links['Delete'], _m('Delete'), 'aa-button-delete') . '</td>
               <td>_#AA_NAME_</td>
               <td>_#EVENT___</td>
@@ -134,8 +136,8 @@ class AA_Plannedtask extends AA_Object implements \AA\Later\LaterInterface
         $task_id = $content->getId();
         switch ($info) {
             case 'scheduledto':
-                $time = \AA\Later\Toexecute::scheduledTime(self::toexecuteSelector($task_id));
-                return '<span title="task.id:' . \AA\Later\Toexecute::scheduledTaskId(self::toexecuteSelector($task_id)) . '">' . ($time ? date('Y-m-d H:i:s', $time) : '--') . '</span>';
+                $time = Toexecute::scheduledTime(self::toexecuteSelector($task_id));
+                return '<span title="task.id:' . Toexecute::scheduledTaskId(self::toexecuteSelector($task_id)) . '">' . ($time ? date('Y-m-d H:i:s', $time) : '--') . '</span>';
             case 'computedtime':
                 $task = AA_Object::load($task_id, 'AA_Plannedtask');
                 $time = $task->nexttime();
@@ -183,7 +185,7 @@ class AA_Plannedtask extends AA_Object implements \AA\Later\LaterInterface
     /** method called after save */
     function aftersave()
     {
-        $toexecute = new \AA\Later\Toexecute;
+        $toexecute = new Toexecute;
         $toexecute->cancel_all(self::toexecuteSelector($this->getId()));
         $this->schedule();
     }
@@ -193,7 +195,7 @@ class AA_Plannedtask extends AA_Object implements \AA\Later\LaterInterface
     {
         $time = is_null($force_time) ? $this->nexttime() : $force_time;
         if ($time >= time()) {
-            $toexecute = new \AA\Later\Toexecute;
+            $toexecute = new Toexecute;
             $toexecute->laterOnce($this, [], self::toexecuteSelector($this->getId()), 100, $time);
         }
         return "$time>=" . time() . ' ';
