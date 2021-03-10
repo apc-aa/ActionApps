@@ -143,9 +143,9 @@ spl_autoload_register(function ($class_name) {
         case 'views':
             require_once __DIR__. '/view.class.php3';
             return;
-
-
-
+        case 'plannedtask':
+            require_once __DIR__. '/../src/AA_Plannedtask.php';
+            return;
         case 'trees':
         case 'supertree':
             require_once __DIR__. '/tree.class.php3';

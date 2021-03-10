@@ -29,7 +29,6 @@
  *
  */
 
-namespace AA\Later;
 
 use AA;
 use AA\IO\DB\DB_AA;
@@ -45,7 +44,7 @@ use zids;
 
 /** Task executed at planed time
  */
-class PlannedTask extends AA_Object implements LaterInterface
+class AA_Plannedtask extends AA_Object implements \AA\Later\LaterInterface
 {
 
     protected $task = '';
@@ -135,10 +134,10 @@ class PlannedTask extends AA_Object implements LaterInterface
         $task_id = $content->getId();
         switch ($info) {
             case 'scheduledto':
-                $time = Toexecute::scheduledTime(self::toexecuteSelector($task_id));
-                return '<span title="task.id:' . Toexecute::scheduledTaskId(self::toexecuteSelector($task_id)) . '">' . ($time ? date('Y-m-d H:i:s', $time) : '--') . '</span>';
+                $time = \AA\Later\Toexecute::scheduledTime(self::toexecuteSelector($task_id));
+                return '<span title="task.id:' . \AA\Later\Toexecute::scheduledTaskId(self::toexecuteSelector($task_id)) . '">' . ($time ? date('Y-m-d H:i:s', $time) : '--') . '</span>';
             case 'computedtime':
-                $task = AA_Object::load($task_id, 'AA\Later\PlannedTask');
+                $task = AA_Object::load($task_id, 'AA_Plannedtask');
                 $time = $task->nexttime();
                 return $time ? date('Y-m-d H:i:s', $time) : '--';
         }
@@ -184,7 +183,7 @@ class PlannedTask extends AA_Object implements LaterInterface
     /** method called after save */
     function aftersave()
     {
-        $toexecute = new Toexecute;
+        $toexecute = new \AA\Later\Toexecute;
         $toexecute->cancel_all(self::toexecuteSelector($this->getId()));
         $this->schedule();
     }
@@ -194,7 +193,7 @@ class PlannedTask extends AA_Object implements LaterInterface
     {
         $time = is_null($force_time) ? $this->nexttime() : $force_time;
         if ($time >= time()) {
-            $toexecute = new Toexecute;
+            $toexecute = new \AA\Later\Toexecute;
             $toexecute->laterOnce($this, [], self::toexecuteSelector($this->getId()), 100, $time);
         }
         return "$time>=" . time() . ' ';
@@ -219,10 +218,10 @@ class PlannedTask extends AA_Object implements LaterInterface
         $aa_set->setModules($module_id);
         $aa_set->addCondition(new AA_Condition('event', '==', $event_id));
 
-        $zids = AA_Object::querySet('AA\Later\PlannedTask', $aa_set);
+        $zids = AA_Object::querySet('AA_Plannedtask', $aa_set);
 
         foreach ($zids as $id) {
-            $task = AA_Object::load($id, 'AA\Later\PlannedTask');
+            $task = AA_Object::load($id, 'AA_Plannedtask');
             if (is_long_id($item_id)) {
                 $task->setProperty('item_id', $item_id);
             }

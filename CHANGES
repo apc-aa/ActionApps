@@ -2099,7 +2099,7 @@ The changes could be tracked on:
          - fixed default widget for enumerated properities - selectbox
          - easier way, how to create new manageable objects in AA
            - see AA_Exportsetings for se_export.php or
-                 AA\Later\PlannedTask in src/Util/Later/PlannedTask.php, for example
+                 AA_Plannedtask in src/Util/Later/AA_Plannedtask.php, for example
 12-08-15 - new paramater for Insert function "Compute INSERT/UPDATE" -
 (honzam)   "Recompute every" (minute|hour|day|week|month).
            The field will be recomputed every minute, hour, ... (using UPDATE code).

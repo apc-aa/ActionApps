@@ -5,7 +5,7 @@ namespace AA\Later;
 use AA_Object;
 use AA_Set;
 
-/** Check all AA\Later\PlannedTask and schedule it for execution, if not scheduled
+/** Check all AA_Plannedtask and schedule it for execution, if not scheduled
  */
 class PlannedtaskSchedule implements LaterInterface
 {
@@ -23,13 +23,13 @@ class PlannedtaskSchedule implements LaterInterface
         //$aa_set->setModules($module_id);
         //$aa_set->addCondition(new AA_Condition('time', 'NOTNULL', 1));
 
-        $zids = AA_Object::querySet('AA\Later\PlannedTask', $aa_set);
+        $zids = AA_Object::querySet('AA_Plannedtask', $aa_set);
 
         $ret .= $zids->count() . ';';
 
         foreach ($zids as $id) {
             $ret .= $id . ';';
-            $task = AA_Object::load($id, 'AA\Later\PlannedTask');
+            $task = AA_Object::load($id, 'AA_Plannedtask');
             $ret .= get_class($task) . ';';
             $ret .= $task->schedule() . ';';
         }

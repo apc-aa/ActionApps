@@ -30,7 +30,7 @@
 use AA\IO\DB\DB_AA;
 use AA\Util\ChangeProposal;
 use AA\Util\ChangesMonitor;
-use AA\Later\PlannedTask;
+use AA_Plannedtask;
 
 require_once __DIR__."/locsess.php3";    // DB_AA object definition
 require_once __DIR__."/feeding.php3";
@@ -1233,10 +1233,10 @@ class ItemContent extends AA_Content {
         // events are after ChangeMonitor - sometimes we use {chenged:} in the events
         if ($throw_events) {
             if ($mode == 'insert') {
-                PlannedTask::executeForEvent($slice_id, 'ITEM_NEW', $id);
+                AA_Plannedtask::executeForEvent($slice_id, 'ITEM_NEW', $id);
                 $event->comes('ITEM_NEW', $slice_id, 'S', $itemContent);  // new form event
             } else {
-                PlannedTask::executeForEvent($slice_id, 'ITEM_UPDATED', $id);
+                AA_Plannedtask::executeForEvent($slice_id, 'ITEM_UPDATED', $id);
                 $event->comes('ITEM_UPDATED', $slice_id, 'S', $itemContent, $oldItemContent); // new form event
             }
         }
