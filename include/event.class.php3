@@ -759,7 +759,7 @@ function Event_AddLinkGlobalCat( $type, $slice, $slice_type, &$ret_params, $para
 //    return SendFilledItem($ret_params, 64);
 //}
 
-/* // now managed by Planed Task feature
+/* // now managed by Planned Task feature
 function Event_ItemAfterInsert_NszmAkce( $type, $slice_id, $slice_type, &$ret_params, $foo, $foo2 ) {
     $short_id  = $ret_params->getValue('short_id........');              // item's short_id is in params
     $akce_id   = trim($ret_params->getValue('unspecified.....'));              // akce_id

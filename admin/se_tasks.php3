@@ -47,7 +47,7 @@ if (!IfSlPerm(PS_FORMS)) {
 $module_id = $slice_id;
 
 $manager_settings = AA_Plannedtask::getManagerConf(get_admin_url('se_tasks.php3'));
-$manager_settings['messages']['title'] = _m('Planed tasks');
+$manager_settings['messages']['title'] = _m('Planned tasks');
 $manager_settings['messages']['about'] = _m('You can plan the a task for specified time, or as the reaction to some event. The task will be probably sending e-mails using {mail...} expression, or recounting some fields after update by {recount...}');
 
 $manager = new AA_Manager('task'.$module_id, $manager_settings);

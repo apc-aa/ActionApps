@@ -1142,7 +1142,7 @@ The changes could be tracked on:
          - new typesize parameter: {fileinfo:{file............}:typesize}
             - returns &nbsp;<span class="fileinfo"> [TXT, 3kB]</span>
          - new {internal:class_name:params} - internal AA possibility, how to
-           inject text form internal class to Manager item view (like in Planed
+           inject text form internal class to Manager item view (like in Planned
            Task for sheduled time). It returns output of class->internal_expand() method.
          - better https support - the scripts, ... are called through https,
            wherever possible
@@ -1164,7 +1164,7 @@ The changes could be tracked on:
            Textfield can use placeholder, numeric uses number input, the size
            of textfield is modified for short texts, ...
          - debug outputs now uses browser console
-         - Planed Tasks now shows currently sheduled time of the task and next time
+         - Planned Tasks now shows currently sheduled time of the task and next time
          - more information about each object in taskmanager
          - jQuery 3.0.0 now included in sitemodule Admin, which allows use mode
            widgets. jQuery is bundled in AA, now in javascript dir
@@ -1323,7 +1323,7 @@ The changes could be tracked on:
          - better parsing of JSON values - used standard parsing when possible
          - slice export now allows export also unpublished items
            (in holding bin and trash bin)
-         - you can use {var:aa_event_for} variable in Planed Tasks which holds
+         - you can use {var:aa_event_for} variable in Planned Tasks which holds
            the item-id of modified of inserted item
            (in case the Task is reaction to ADD of UPDATE item event)
          - new experimental possibility to analyze field content and display
@@ -1353,7 +1353,7 @@ The changes could be tracked on:
 (honzam)   works also with multidomain logins (see change 15-07-13)
          - better sortorder and serchfieds presets in AA -> Log and
            AA -> Sheduled Tasks
-15-08-26 - each Planed Task is now executed under the slice, in which the Task was created, so you can use it for {newitem} in those slices
+15-08-26 - each Planned Task is now executed under the slice, in which the Task was created, so you can use it for {newitem} in those slices
 (honzam) - new possibility to display AA -> Scheduled Tasks which is currently planned for execution
          - the length of admin pages with the listings of database tables or objects is increased to 100 items by default
          - fix for new CKEditor' include/formutil.php3
@@ -1398,19 +1398,19 @@ The changes could be tracked on:
            this will set the auth cookie in example-two.org.
 15-06-30 - new possibility to define reaction to events
 (honzam)     "New Item", "Item Updated".
-           It is done by Admin -> Planed Tasks. You can send mails by {mail:..},
+           It is done by Admin -> Planned Tasks. You can send mails by {mail:..},
            recount some fields by {recount:...} etc. You can also specify, if
            the task should be done directly, or it should be planed for future
            (by specifying "+ seconds" parameter)
-         - new "Condition" field in Planed Tasks where you can specify
+         - new "Condition" field in Planned Tasks where you can specify
            the Condition for which the task is performed
-         - nicer admin interface of Planed Tasks
+         - nicer admin interface of Planned Tasks
          - -- any text field -- search is the default for the Item Manager
          - more powerfull interface for AA -> Find
          - better searching for related item in widgets (try harder to find item
            for filled item, even if the item no longer matches filters)
          - fixed searchbar in item manager for fields using numeric constants
-         - fixed object search, so Planed task, logs, site aliases are now
+         - fixed object search, so Planned task, logs, site aliases are now
            searchable in admin interface
          - pagecache is valid just for one domain (there are sites, where
            content is based also on domain name
@@ -1588,7 +1588,7 @@ The changes could be tracked on:
          - removed old and unmaintained permission files
 14-01-31 - security fix - update recommended
 (honzam)   (thanks for report to Gert Steenssens)
-         - better design of ObjectManager in AA - Planed Tasks... '
+         - better design of ObjectManager in AA - Planned Tasks... '
          - all widgets which holds URL now shows clickable link icon [/]
          - with {ajax} and {live} you are now able to select another widget
            instead of the predefined one
@@ -1655,7 +1655,7 @@ The changes could be tracked on:
            (like &amp;quote;) - as oposite to {htmlspecialchars}
          - SetCookie() javascript function now accepts also the time
            SetCookie(name, value, plustime)
-13-09-02 - Planed Task interface now have "extra time offset" for planning - now
+13-09-02 - Planned Task interface now have "extra time offset" for planning - now
 (honzam)   it is possible to plan events also on 20th of the month, which was
            hard or impossible without this new paramater
          - fix for images transformed by {img:} command when sended by e-mail
@@ -1669,8 +1669,8 @@ The changes could be tracked on:
            formated mails as message body
          - file upload ajax and live widgets now allows to delete (remove link)
            to the file
-         - Planed tasks are now rescheduled, when the task is changed
-         - the UI for Planed Task list is improved
+         - Planned tasks are now rescheduled, when the task is changed
+         - the UI for Planned Task list is improved
          - fixed problem with unique user validation - now works
          - fixed problem http / https image links which was reported as unsecure
 13-08-01 - {header} could be used as {header:404} and now also {header:xml}
@@ -1796,7 +1796,7 @@ The changes could be tracked on:
          - fixed internal usage of floating points/commas in AA - we use point
            inside AA for all internal function, even in Czech lang, where we
            would normaly use comma
-         - improved Planed tasks and toexecute functionality - better prevention
+         - improved Planned tasks and toexecute functionality - better prevention
            for not running the same task twice - even for long running tasks
          - fixed html mail sending - the images linked through <a href="">
            is not included in the mail, which is correct
@@ -2118,7 +2118,7 @@ The changes could be tracked on:
          - better permission handling with anonymous insert
 12-08-14 - new experimental {array} and {table} syntax
 (honzam)
-12-07-25 - new Conditional Planed Tasks (Admin -> Planed Tasks)
+12-07-25 - new Conditional Planned Tasks (Admin -> Planned Tasks)
 (honzam) - condition parameter for Input widget Radio, multicheckbox and
            multiselect now could contain AA experssions and aliases
          - {foreach:<values>:<output>:<values-delimiter>:<output-delimiter>}

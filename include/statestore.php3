@@ -444,7 +444,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
     }
 
     /** will be called after saving of the object
-     *  could do some clenup work in child classes (like AA_Planedtask)
+     *  could do some clenup work in child classes (like AA_Plannedtask)
      **/
     function aftersave() {}
 
