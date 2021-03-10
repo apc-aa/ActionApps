@@ -52,7 +52,7 @@ class HitcounterGroup implements LaterInterface
         // run for all the days from $oldest to week ago
         $no_task = 0;
         for ($begin = $grouping_start; $begin + $step >= $oldest; $begin -= $step) {
-            $toexecute->laterOnce($this, [$begin, $step], "AA_Hitcounter_Group_$begin", 40, time() + 60 * 60 * 24); // once a day
+            $toexecute->laterOnce($this, [$begin, $step], "HitcounterGroup_$begin", 40, time() + 60 * 60 * 24); // once a day
 
             // by default we plan all the task
             if (++$no_task == $max_task) {

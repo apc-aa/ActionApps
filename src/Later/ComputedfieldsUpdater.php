@@ -48,7 +48,7 @@ class ComputedfieldsUpdater implements LaterInterface
                             $time = mktime(date("G"), date("i") + 1, mt_rand(0, 10), date("m"), date("d"), date("Y"));
                             break;
                     }
-                    $toexecute->laterOnce($this, [$sid], "AA_Computedfields_Updater_$sid", 100, $time); // once a day
+                    $toexecute->laterOnce($this, [$sid], "ComputedfieldsUpdater_$sid", 100, $time); // once a day
                 }
             }
         }

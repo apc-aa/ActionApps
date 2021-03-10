@@ -229,7 +229,7 @@ class PageCache  {
                 // purge only each PAGECACHEPURGE_PROBABILITY-th call of store
                 $cache_purger  = new PagecachePurge();
                 $toexecute     = new Toexecute;
-                $toexecute->laterOnce($cache_purger, [$this->cacheTime], 'AA\Later\PagecachePurge', 101, now() + 300);  // run it once in 5 minutes
+                $toexecute->laterOnce($cache_purger, [$this->cacheTime], 'PagecachePurge', 101, now() + 300);  // run it once in 5 minutes
             }
         }
         return $key;

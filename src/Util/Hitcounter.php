@@ -118,19 +118,19 @@ class Hitcounter
 
         // it is not necessary to check, if the  AA\Later\HitcounterUpdate is planed
         // on each hit. We check it only once for 1000 (COUNTHIT_PROBABILITY)
-        if (rand(0, COUNTHIT_PROBABILITY) == 1) {
+        if (COUNTHIT_PROBABILITY and rand(0, COUNTHIT_PROBABILITY) == 1) {
 
             $toexecute = new Toexecute;
             $display_counter = new HitcounterUpdate();
-            $toexecute->laterOnce($display_counter, [], 'AA\Later\HitcounterUpdate', 100, time() + 300);  // run it once in 5 minutes
+            $toexecute->laterOnce($display_counter, [], 'HitcounterUpdate', 100, time() + 300);  // run it once in 5 minutes
 
             $planned_task_scheduler = new PlannedtaskSchedule();
-            $toexecute->laterOnce($planned_task_scheduler, [], 'AA\Later\PlannedtaskSchedule', 100, time() + 120);  // run it once in 2 minutes
+            $toexecute->laterOnce($planned_task_scheduler, [], 'PlannedtaskSchedule', 100, time() + 120);  // run it once in 2 minutes
 
             $computedfields_updater = new ComputedfieldsUpdater;
             $computedfields_updater->plan();
 
-//            $toexecute->laterOnce($display_counter, array(), 'AA\Later\HitcounterUpdate', 100, time() + 3000);  // run it once in 50 minutes
+//            $toexecute->laterOnce($display_counter, array(), 'HitcounterUpdate', 100, time() + 3000);  // run it once in 50 minutes
         }
     }
 }
