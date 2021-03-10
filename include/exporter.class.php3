@@ -532,7 +532,6 @@ class AA_Exportsetings extends AA_Object {
     }
 
     function export($restict_zids=null) {
-
         $slice_id = $this->aa_owner;
         $slice  = AA_Slice::getModule($slice_id);
 
@@ -540,6 +539,9 @@ class AA_Exportsetings extends AA_Object {
             echo _m('No slice specified');
             exit;
         }
+
+        // cleanup fields
+        $this->fields = array_filter(array_map('trim', $this->fields), 'strlen');
 
         $set = new AA_Set($slice_id, AA::Stringexpander()->unalias($this->conds), AA::Stringexpander()->unalias($this->sort), $this->bins);
         $fs  = new AA_Fieldset;
@@ -602,6 +604,26 @@ class AA_Exportsetings extends AA_Object {
         $filename = $this->filename ? AA::Stringexpander()->unalias($this->filename) : date("ymd").'-'.StrExpand('AA_Stringexpand_Seoname', [$slice->getName(), '', $slice->getCharset()]). (($this->grabber_type== 'AA\IO\Grabber\Discussion') ? '-Disc' : ''). '.'.$exporter->getExtension();
 
         $exporter->sendFile($filename);
+    }
+
+    /** Manager row HTML
+     *  could be changed in child classes
+     * @param AA\Util\Searchfields $fields
+     * @param $aliases
+     * @param $links
+     * @return string
+     */
+    protected static function getManagerRowHtml($fields, $aliases, $links) {
+        return '
+            <tr>
+              <td style="white-space:nowrap;">'.
+            a_href($links['Edit'], _m('Edit'), 'aa-button-edit').' '.
+            a_href(get_aa_url('export.php', ['id=_#AA_ID___'], false), _m('Export'), 'aa-button-show') . ' ' .
+            a_href($links['Delete'], _m('Delete'), 'aa-button-delete', ['onclick'=>"return confirm('". _m("Do you really want to delete this object?"). "')"]).' '.
+            '</td>          
+              <td>'.join("</td>\n<td>", array_keys($aliases)).'</td>
+            </tr>
+            ';
     }
 
     // static function factoryFromForm($oowner, $otype=null)        ... could be redefined here, but we use the standard one from AA_Object
