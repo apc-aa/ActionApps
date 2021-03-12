@@ -30,7 +30,6 @@
 use AA\IO\DB\DB_AA;
 use AA\Util\ChangeProposal;
 use AA\Util\ChangesMonitor;
-use AA_Plannedtask;
 
 require_once __DIR__."/locsess.php3";    // DB_AA object definition
 require_once __DIR__."/feeding.php3";
@@ -629,7 +628,7 @@ class ItemContent extends AA_Content {
     /** setFromForm function
      *  Fills content4id - values in content4id are NOT quoted (addslashes)
      *  (new version of previous GetContentFromForm() function)
-     * @param string $slice
+     * @param AA_Slice $slice
      * @param string $id  - item/slice id or empty if item insert
      * @param array $oldcontent4id
      * @param bool $insert
@@ -1059,7 +1058,7 @@ class ItemContent extends AA_Content {
             /** @noinspection PhpMissingBreakStatementInspection */
             case 'insert_if_new': if (!$this->getItemID()) {
                                       ItemContent::lastErr(ITEMCONTENT_ERROR_NO_ID, _m("No Id specified (%1 - %2)", [$this->getItemID(), $this->getValue('headline........')]));  // set error code
-                                      if ($GLOBALS['errcheck']) huhlS(ItemContent::lastErrMsg());
+                                      if ($GLOBALS['errcheck']) huhl(ItemContent::lastErrMsg());
                                       return false;
                                   }
                                   if (itemIsDuplicate($this->getItemID())) {
@@ -1224,12 +1223,15 @@ class ItemContent extends AA_Content {
             FeedItem($id);
         }
 
+        $historylog = $slice->getProperty('historylog');
         // ignore last_edit change (there was quite a lot of such changes, where the only change was in this field (in import....))
-        if (($mode != 'insert') AND ($slice->getProperty('historylog') !== '0') AND count($diff = $itemContent->diff($oldItemContent, ['last_edit.......']))) {
+        if (($mode != 'insert') AND ($historylog !== '0') AND count($diff = $itemContent->diff($oldItemContent, ['last_edit.......']))) {
             ChangesMonitor::singleton()->addHistory($diff);
         }
-        AA_Log::write( ($mode=='insert') ? 'ITEM_NEW' : 'ITEM_UPD', AA_Log::context($id), $function_params);
-
+        // slice setting historylog applied to history as well as to log for item new/update
+        if ($historylog !== '0') {
+            AA_Log::write(($mode == 'insert') ? 'ITEM_NEW' : 'ITEM_UPD', AA_Log::context($id), $function_params);
+        }
         // events are after ChangeMonitor - sometimes we use {chenged:} in the events
         if ($throw_events) {
             if ($mode == 'insert') {

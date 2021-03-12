@@ -1008,7 +1008,7 @@ class AA_Modulesettings_Slice extends AA_Object {
             'translations' => new AA_Property( 'translations', _m("Languages for translation"), 'string', true, true, new AA_Validate_Regexp(['pattern'=>'/^[a-z]{2}$/', 'maxlength'=>2]), false, _m('specify language codes in which you want translate content - small caps, two letters - like: en, es, de, ...')),
             'autofields'   => new AA_Property( 'autofields',   _m("Automatic field creation"),  'bool',  false, true, 'bool', false, _m('If checked, slice allows storing values to text....* field, even if the appropriate text....* is not defined in the slice. The field will be created using field text............ as template.')),
             'fieldslice'   => new AA_Property( 'fieldslice',   _m("Fields defined by another slice"), 'string',  false, true, 'id', false, _m('You can use special slice for additional fields definition. There you can write slice ID, which define the fields.<br>Could be used for data slice, which stores values for user created forms.')),
-            'historylog'   => new AA_Property( 'historylog',   _m("Store item history for N days"), 'string',  false, true, '', false, _m('ALL - do not delele history log (default)<br>0 - do not sote item history<br><em>number</em> - days after which will be history of items deleted'))
+            'historylog'   => new AA_Property( 'historylog',   _m("Store item history for N days"), 'string',  false, true, '', false, _m('ALL - do not delele history log (default)<br>0 - do not store item history (nor ITEM_UPD/ITEM_NEW events in Log)<br><em>number</em> - days after which will be history of items deleted'))
              // do not forget to add new property to  isProperty!
         ];
     }
