@@ -112,7 +112,7 @@ class Toexecute
      * @param int $priority
      * @param        $time
      * @return bool|mixed|string
-     * @example: we need to recount all links in allcategories (Links module),
+     * @example: we need to recount all links in all categories (Links module),
      *           so we need to cancel all older "recount" tasks, since it will
      *           be doubled in the queue (we call cancel_all() method for it)
      */
@@ -167,8 +167,8 @@ class Toexecute
         return DB_AA::select1('id', "SELECT id FROM toexecute", [['selector', $selector], ['priority', 0, '>']]);
     }
 
-    /** User task queue - we use it for spliting one long task (which would take
-     *  ages) into subtasks, so it could be executed separatelly - one after
+    /** User task queue - we use it for splitting one long task (which would take
+     *  ages) into subtasks, so it could be executed separately - one after
      *  the another. Such tasks are dedicated to logged user and are displayed
      *  for him/her in Item Manager.
      *  Such task are marked with execute_after=TOEXECUTE_USER_TASK_TIME in the

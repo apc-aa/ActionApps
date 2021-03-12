@@ -1527,41 +1527,41 @@ class AA_Optimize_Redefine_Field_Templates extends AA_Optimize {
         $this->query("INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES( 'password',         '', 'AA_Core_Fields..', 'Password',           '2055', 'Password which user must know if (s)he want to edit item on public site', '', 'qte', '0', '0', '0', 'fld', '', '100', '', '', '', '', '0', '0', '0', '', 'f_i', '', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text', 'qte', '1', '1')");
         $this->query("INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES( 'relation',         '', 'AA_Core_Fields..', 'Relation',           '2055', '', '', 'txt:', '0', '0', '1', 'mse:#sLiCe-4e6577735f454e5f746d706c2e2e2e2e:', '', '100', '', '', '', '', '1', '1', '1', '', 'f_v:vid=243&cmd[243]=x-243-_#this', '', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text', 'qte', '1', '1')");
         // Jakub added auth_group and mail_lists on 6.3.2003
-        with (new AA_Optimize_Add_Auth_Group_Field_Template())->repair();
-        with (new AA_Optimize_Add_Mail_Lists_Field_Template())->repair();
+        (new AA_Optimize_Add_Auth_Group_Field_Template())->repair();
+        (new AA_Optimize_Add_Mail_Lists_Field_Template())->repair();
         // mimo added mlxctrl on 4.10.2004
-          //with (new AA_Optimize_Add_Mlxctrl_Field_Template())->repair();   // MLX feature is not maintained, so we do not create the field as default. You can still add it individually
+          //(new AA_Optimize_Add_Mlxctrl_Field_Template())->repair();   // MLX feature is not maintained, so we do not create the field as default. You can still add it individually
         // mimo added 2005-03-02
-        with (new AA_Optimize_Add_Integer_Field_Template())->repair();
+        (new AA_Optimize_Add_Integer_Field_Template())->repair();
         // honzam added 2005-08-15 (based on Philip King and Antonin Slejska suggestions)
-        with (new AA_Optimize_Add_Name_Field_Template())->repair();
-        with (new AA_Optimize_Add_Phone_Field_Template())->repair();
-        with (new AA_Optimize_Add_Fax_Field_Template())->repair();
-        with (new AA_Optimize_Add_Address_Field_Template())->repair();
-        with (new AA_Optimize_Add_Location_Field_Template())->repair();
-        with (new AA_Optimize_Add_City_Field_Template())->repair();
-        with (new AA_Optimize_Add_Country_Field_Template())->repair();
-        with (new AA_Optimize_Add_Range_Field_Template())->repair();
-        with (new AA_Optimize_Add_Real_Field_Template())->repair();
+        (new AA_Optimize_Add_Name_Field_Template())->repair();
+        (new AA_Optimize_Add_Phone_Field_Template())->repair();
+        (new AA_Optimize_Add_Fax_Field_Template())->repair();
+        (new AA_Optimize_Add_Address_Field_Template())->repair();
+        (new AA_Optimize_Add_Location_Field_Template())->repair();
+        (new AA_Optimize_Add_City_Field_Template())->repair();
+        (new AA_Optimize_Add_Country_Field_Template())->repair();
+        (new AA_Optimize_Add_Range_Field_Template())->repair();
+        (new AA_Optimize_Add_Real_Field_Template())->repair();
         // honzam added 2005-08-26 - computed fields templates
-        with (new AA_Optimize_Add_Computed_Num_Field_Template())->repair();
-        with (new AA_Optimize_Add_Computed_Txt_Field_Template())->repair();
+        (new AA_Optimize_Add_Computed_Num_Field_Template())->repair();
+        (new AA_Optimize_Add_Computed_Txt_Field_Template())->repair();
         // honzam added 2007-11-21 - _upload_url..... - slice field for setting the name of upload directory
-        with (new AA_Optimize_Add__Ip_Banned_Field_Template())->repair();
-        with (new AA_Optimize_Add__Msg_Banned_Field_Template())->repair();
-        with (new AA_Optimize_Add__Msg_Spam_Field_Template())->repair();
-        with (new AA_Optimize_Add__Upload_Url_Field_Template())->repair();
+        (new AA_Optimize_Add__Ip_Banned_Field_Template())->repair();
+        (new AA_Optimize_Add__Msg_Banned_Field_Template())->repair();
+        (new AA_Optimize_Add__Msg_Spam_Field_Template())->repair();
+        (new AA_Optimize_Add__Upload_Url_Field_Template())->repair();
         // honzam added 2008-07-15 - seo field for seo optimalization
-        with (new AA_Optimize_Add_Seo_Field_Template())->repair();
+        (new AA_Optimize_Add_Seo_Field_Template())->repair();
         // honzam added 2008-11-20 - hit_1, hit_7, hit_30 - count hits
-        with (new AA_Optimize_Add_Hit_1_Field_Template())->repair();
-        with (new AA_Optimize_Add_Hit_7_Field_Template())->repair();
-        with (new AA_Optimize_Add_Hit_30_Field_Template())->repair();
+        (new AA_Optimize_Add_Hit_1_Field_Template())->repair();
+        (new AA_Optimize_Add_Hit_7_Field_Template())->repair();
+        (new AA_Optimize_Add_Hit_30_Field_Template())->repair();
         // honzam added 2020-09-09 - mainly for 2FA, but also adding most missing fields
-        with (new AA_Optimize_Add_Secret_Field_Template())->repair();
-        with (new AA_Optimize_Add_Ip_Field_Template())->repair();
-        with (new AA_Optimize_Add_Code_Field_Template())->repair();
-        with (new AA_Optimize_Add_Date_Field_Template())->repair();
+        (new AA_Optimize_Add_Secret_Field_Template())->repair();
+        (new AA_Optimize_Add_Ip_Field_Template())->repair();
+        (new AA_Optimize_Add_Code_Field_Template())->repair();
+        (new AA_Optimize_Add_Date_Field_Template())->repair();
 
 
         // UPDATE ALSO AA_Optimize_Add_New_Field_Templates class

@@ -399,7 +399,7 @@ class AA_Adminpage_Table extends AA_Adminpage {
     /** AA_iEditable method - creates Object from the form data */
     public static function factoryFromForm($oowner, $otype=null) {
         $otype = get_called_class();
-        return with(new $otype($oowner))->setFromForm();
+        return (new $otype($oowner))->setFromForm();
     }
 
     protected function setFromForm() {
@@ -420,7 +420,7 @@ class AA_Adminpage_Table extends AA_Adminpage {
 
     public static function load($id, $type=null) {
         $otype = get_called_class();
-        return with(new $otype($id))->doLoad();  // or AA::$module_id ?
+        return (new $otype($id))->doLoad();  // or AA::$module_id ?
     }
 
     protected function doLoad() {

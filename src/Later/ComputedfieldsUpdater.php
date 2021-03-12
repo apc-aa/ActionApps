@@ -7,7 +7,7 @@ use AA_Set;
 class ComputedfieldsUpdater implements LaterInterface
 {
 
-    /** plan filed updater proces for future time based on field settings
+    /** plan filed updater process for future time based on field settings
      */
     function plan()
     {

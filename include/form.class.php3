@@ -307,11 +307,11 @@ class AA_Form extends AA_Object {
         $content = $this->_getContent();
 
         $html    = $this->getRowsHtml($content);
-        $html   .= with( new HidWidget )->getHtml(AA_Object::getPropertyObject('aa_owner'), $content);
-        $html   .= with( new HidWidget )->getHtml(AA_Object::getPropertyObject('aa_type'),  $content);
+        $html   .= (new HidWidget )->getHtml(AA_Object::getPropertyObject('aa_owner'), $content);
+        $html   .= (new HidWidget )->getHtml(AA_Object::getPropertyObject('aa_type'),  $content);
 
         if ($this->object_id) {
-            $html .= with( new HidWidget )->getHtml(AA_Object::getPropertyObject('aa_id'), $content);
+            $html .= (new HidWidget )->getHtml(AA_Object::getPropertyObject('aa_id'), $content);
         }
 
         return $html;

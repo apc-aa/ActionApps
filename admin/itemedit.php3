@@ -175,7 +175,7 @@ if ( $id ) {
 // --- Process all AJAX commandes and possibly EXIT ---------------------
 
 $content_function = function () use (&$content4id, $slice_id, $edit) {
-    return with(new inputform([]))->dryEvaluate($content4id, AA_Slice::getModule($slice_id), $edit);
+    return (new inputform([]))->dryEvaluate($content4id, AA_Slice::getModule($slice_id), $edit);
 };
 
 $page_changer = new \AA\IO\OnPageChanger($content_function);

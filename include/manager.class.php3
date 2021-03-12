@@ -389,7 +389,7 @@ class AA_Manager extends AA_Storable {
             $this->searchbar->update();
         }
 
-        $item_zids = with(new zids())->setFromItemArr($chb); // in some managers we use 'x' before the item id - remove it
+        $item_zids = (new zids())->setFromItemArr($chb); // in some managers we use 'x' before the item id - remove it
 
         // new approach uses AA_Manageractions
         if (is_object($this->actions)) {

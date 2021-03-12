@@ -1901,7 +1901,7 @@ class AA_Inputfield {
         if (is_null($item)) {
             $this->echovar($field->getWidgetNewHtml(null, null, null, null, $this->getAaValue()));
         } else {
-            $content = with( new AA_Content() )->setOwnerId($slice_id)->setId($item->getId())->setAaValue($this->id, $this->getAaValue());
+            $content = (new AA_Content() )->setOwnerId($slice_id)->setId($item->getId())->setAaValue($this->id, $this->getAaValue());
             // another approach would be $content = $item->getItemContent();
 
             $this->echovar($widget->getOnlyHtml($aa_property, $content));
@@ -3096,7 +3096,7 @@ function FrmItemGroupSelect( &$items, $searchbar, $list_type, $messages, $additi
 function getZidsFromGroupSelect($group, &$items, $searchbar) {
     global $slice_id;
     if ( (string)$group == 'sel_item' ) {  // user specified users
-        $zids = with(new zids())->setFromItemArr($items);
+        $zids = (new zids())->setFromItemArr($items);
     } else {                   // user defined by bookmark
         $conds = false;
         $sort  = false;

@@ -529,7 +529,7 @@ if ($view) {
     if ($view_conds   = $set->getCondsAsString()) {
         $view_sort    = $set->getSortAsString();
         $view_recipe1 = '&lcub;view:' . $view_id . ':-&lcub;ids:'. $view->getSliceId(). $view_id . ':'. $view_conds . ($view_sort ? ':'.$view_sort: '') . '&rcub;&rcub;';
-        $view_recipe2 = '&lcub;view.php3?vid=' . $view_id . '&cmd[' . $view_id . ']=' . with(new AA_Set(null, $view->getConds()))->getCondsAsString() . ($view_sort ? '&set[' . $view_id . ']=sort-'.$view_sort: '').'&rcub;';
+        $view_recipe2 = '&lcub;view.php3?vid=' . $view_id . '&cmd[' . $view_id . ']=' . (new AA_Set(null, $view->getConds()))->getCondsAsString() . ($view_sort ? '&set[' . $view_id . ']=sort-'.$view_sort: '').'&rcub;';
     }
 }
 

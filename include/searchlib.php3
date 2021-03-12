@@ -1250,7 +1250,7 @@ function MakeSQLConditions($fields_arr, $conds, $defaultCondsOperator, &$join_ta
                                 continue;
                             }
                         }
-                        $onecond[] = with(new AA_Dbcondition($finfo['field'], $cond['operator'], $cond['value']))->getWhereExp();
+                        $onecond[] = (new AA_Dbcondition($finfo['field'], $cond['operator'], $cond['value']))->getWhereExp();
                         if ( $finfo['table'] ) {
                             $join_tables[$finfo['table']] = true;
                         }
@@ -1544,7 +1544,7 @@ function QueryZids($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
                             $tbl2      = 'c'.$tbl_count++;
                             $select_tabs[] = "LEFT JOIN content as $tbl  ON ($tbl.item_id=item.id AND ($tbl.field_id=$rel_fld OR $tbl.field_id is NULL))
                                               LEFT JOIN content as $tbl2 ON ($tbl2.item_id=UNHEX($tbl.text))";
-                            $cur_cond = with(new AA_Dbcondition($tbl2 . '.text', $cond['operator'], $cond['value']))->getWhereExp();
+                            $cur_cond = (new AA_Dbcondition($tbl2 . '.text', $cond['operator'], $cond['value']))->getWhereExp();
                         } else {
                             $cond_field  = AA_Slice::getModule($rel_f_slice)->getField($cf);
                             if (!is_object($cond_field)) {
@@ -1563,7 +1563,7 @@ function QueryZids($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
                                 $select_tabs[] = "LEFT JOIN content as $tbl  ON ($tbl.item_id=item.id AND ($tbl.field_id=$rel_fld OR $tbl.field_id is NULL))
                                                   LEFT JOIN content as $tbl2 ON ($tbl2.item_id=UNHEX($tbl.text) AND ($tbl2.field_id=$cond_flds OR $tbl2.field_id is NULL))";
                             }
-                            $cur_cond = with(new AA_Dbcondition($tbl2 . '.' . $cond_field->storageColumn(), $cond['operator'], $cond['value']))->getWhereExp();
+                            $cur_cond = (new AA_Dbcondition($tbl2 . '.' . $cond_field->storageColumn(), $cond['operator'], $cond['value']))->getWhereExp();
                             if (in_array($cf, ['id..............', 'slice_id........'])) {
                                 $cur_cond =  preg_replace("/'([0-9a-f]{32})'/i", "0x\\1", $cur_cond);
                             }
@@ -1619,7 +1619,7 @@ function QueryZids($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
                             $select_tabs[] = "LEFT JOIN content as $tbl  ON ($tbl.field_id=$rel_fld AND HEX(item.id)=$tbl.text)
                                               LEFT JOIN content as $tbl2 ON ($tbl2.item_id=$tbl.item_id AND ($tbl2.field_id=$cond_flds OR $tbl2.field_id is NULL))";
                         }
-                        $cur_cond = with(new AA_Dbcondition($tbl2 . '.' . $cond_field->storageColumn(), $cond['operator'], $cond['value']))->getWhereExp();
+                        $cur_cond = (new AA_Dbcondition($tbl2 . '.' . $cond_field->storageColumn(), $cond['operator'], $cond['value']))->getWhereExp();
                         if (in_array($cond_flds, ['id..............', 'slice_id........'])) {
                             $cur_cond =  preg_replace("/'([0-9a-f]{32})'/i", "0x\\1", $cur_cond);
                         }
@@ -1639,7 +1639,7 @@ function QueryZids($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
 
                 if ( $field->storageTable() == 'item' ) {   // field is stored in table 'item'
                     // Long ID in conds should be specified as unpacked, but in db it is packed
-                    $cur_cond = with(new AA_Dbcondition('item.' . $field->storageColumn(), $cond['operator'], $cond['value']))->getWhereExp();
+                    $cur_cond = (new AA_Dbcondition('item.' . $field->storageColumn(), $cond['operator'], $cond['value']))->getWhereExp();
                     switch ($fid) {
                     case 'id..............':
                     case 'slice_id........':
@@ -1989,7 +1989,7 @@ function QueryDiscIDs($slice_id, $conds, $sort, $slices ) {
                     unset ($select_cond);
                     foreach ($vv as $fid2 => $foo) {
                         if ( in_array($fid2,$fields) AND $cond['value'] > "" ) {
-                            $select_cond[] = with(new AA_Dbcondition("discussion.$fid2", $cond['operator'], $cond['value']))->getWhereExp();
+                            $select_cond[] = (new AA_Dbcondition("discussion.$fid2", $cond['operator'], $cond['value']))->getWhereExp();
                         }
                     }
                     if (is_array($select_cond)) {

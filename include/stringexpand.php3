@@ -2655,7 +2655,7 @@ class AA_Stringexpand_View extends AA_Stringexpand {
             $view_param = array_merge($view_param, ParseSettings([$settings]));
         }
         // do not pagecache the view
-        return with(new AA_Showview($view_param))->getViewOutput();
+        return (new AA_Showview($view_param))->getViewOutput();
     }
 }
 
@@ -8489,7 +8489,7 @@ class AA_Stringexpand_Recompute extends AA_Stringexpand_Nevercache {
             if (!($iid = trim($iid))) {
                 continue;
             }
-            if (!with($item = new ItemContent($iid))->isEmpty()) {
+            if (!($item = new ItemContent($iid))->isEmpty()) {
                 $item->updateComputedFields(null, 'update', $field_arr);
             }
         }
@@ -9279,8 +9279,8 @@ class AA_Stringexpand_Aadocumentation extends AA_Stringexpand {
      */
     function expand($stringexpand='') {
         if (class_exists($class_name = AA_Serializable::constructClassName($stringexpand, 'AA_Stringexpand_'))) {
-            $comment_string= with(new ReflectionClass($class_name))->getDocComment();
-            $explode_string= with(new ReflectionClass($class_name))->getMethod('expand')->getDocComment();
+            $comment_string= (new ReflectionClass($class_name))->getDocComment();
+            $explode_string= (new ReflectionClass($class_name))->getMethod('expand')->getDocComment();
         }
         $pattern = "#@([a-zA-Z]+)\s*(.*)#";
 

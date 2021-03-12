@@ -838,7 +838,7 @@ class AA_Fields implements Iterator, Countable {
             if ($field_type=='relation') {
                 $field_type = 'constants';
                 if ($related_cnt) {
-                    $related_fields = with(new AA_Fields($values_slice_or_const))->getSearchfields(0);
+                    $related_fields = (new AA_Fields($values_slice_or_const))->getSearchfields(0);
                     $related += 1000;
                     $opt_group = $field_name;
 
@@ -882,7 +882,7 @@ class AA_Fields implements Iterator, Countable {
             // add all fields of slices which points to this sice
             $related_fields = DB_AA::select([], 'SELECT id, name, LOWER(HEX(slice_id)) as sid FROM `field`', [['input_show_func','___:#sLiCe-' . $this->master_id . '%','LIKE']]);
             foreach ($related_fields as $rf_def) {
-                $related_fields = with(new AA_Fields($rf_def['sid']))->getSearchfields(0);
+                $related_fields = (new AA_Fields($rf_def['sid']))->getSearchfields(0);
                 $related += 1000;
                 $opt_group = AA_Module::getModuleName($rf_def['sid']) . ' / ' . $rf_def['name'];
                 // add "-- any text field --" search option

@@ -40,9 +40,10 @@ require_once __DIR__. '/go_url.php3';
 require_once __DIR__. '/formutil.php3';
 
 /** identity function - used for chaining with constructor
- *  Usage: with(new AA_Some_Object())->set(something);
+ *  Usage: (new AA_Some_Object())->set(something);
  * @param object $object
  * @return object
+ * @deprecated no longer needed - in PHP 5.4 we have (new My_Object())->method() call
  */
 function with(object $object): object {
     return $object;
