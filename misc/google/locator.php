@@ -49,9 +49,9 @@ HtmlPageBegin();
 
 <h1>Google Map Locator</h1>
 
-<script type="text/javascript" src="//www.google.com/jsapi"></script>
-<script type="text/javascript" src="//maps.google.com/maps?file=api&amp;v=2&amp;key=<?php echo $_GET['key']; ?>"></script>
-<script type="text/javascript">
+<script src="//www.google.com/jsapi"></script>
+<script src="//maps.google.com/maps?file=api&amp;v=2&amp;key=<?php echo $_GET['key']; ?>"></script>
+<script>
 
 function mapload() {
     if (GBrowserIsCompatible()) {
