@@ -27,40 +27,26 @@
 
 namespace AA\Later;
 
-use AA\IO\DB\DB_AA;
-use AA_Log;
-
 class LogCleanup implements LaterInterface
 {
-
-    var $time;
-    var $type;
+    protected $time;
+    protected $type;
 
     function __construct($time, $type='') {
         $this->time = $time;
         $this->type = $type;
     }
 
-    /** just plan item updates in chunks
-     *  special function called from AA\Later\Toexecute class - used for queued tasks (run form cron)
+    /** special function called from AA\Later\Toexecute class - used for queued tasks (run form cron)
      * @param array $params - numeric array of additional parameters for the execution passed in time of call
      * @return string - message about execution to be logged
      * @see \AA\Later\LaterInterface
      */
     public function toexecutelater($params= []) {
         $where = [['time', $this->time, '<']];
-
-        // delete also old records post2shtml table
-        DB_AA::delete('post2shtml', $where);
-
         if ( $this->type ) {
             $where[] = ['type',$this->type];
         }
-        DB_AA::delete('log', $where);
-
-        // delete task with priority = 0 - considered as undoable (note the priority is decreased on each try of task execution.)
-        $undoable_tasks = GetTable2Array('SELECT * FROM toexecute WHERE priority=0', 'NoCoLuMn');
-        AA_Log::write('TOEXECUTE', 'cleanup', $undoable_tasks);
-        DB_AA::delete('toexecute', [['priority',0,'i']]);
+        return (new TableCleaner('log', $where))->clean();
     }
 }

@@ -33,6 +33,7 @@ https://www.apc.org/
 /** APC-AA configuration file */
 
 use AA\IO\DB\DB_AA;
+use AA\Later\ScheduleAaTasks;
 use AA\Later\Toexecute;
 
 require_once __DIR__."/../include/config.php3";
@@ -45,14 +46,18 @@ require_once __DIR__."/../modules/links/cattree.php3";
 
 /** This script is possible to run from commandline (so also from cron). The
  * benefit is, that the script then can run as long as you want - it is not
- * stoped be Apache after 2 minutes or whatever is set in TimeOut
+ * stopped be Apache after 2 minutes or whatever is set in TimeOut
  * The commandline could look like:
  *   # php toexecute.php3
- * or with 'nice' and allowing safe_mode (for set_time_limit) and skiping to
+ * or with 'nice' and allowing safe_mode (for set_time_limit) and skipping to
  * right directory for example:
  *   # cd /var/www/example.org/apc-aa/misc && nice php -d safe_mode=Off toexecute.php3
  * The command above could be used from cron.
  */
+
+
+// first of all - make sure all AA maintenance tasks are scheduled
+(new ScheduleAaTasks())->planAaTasks();
 
 $toexecute = new Toexecute;
 
@@ -66,7 +71,6 @@ $mail->setHtmlCharset('utf-8');
 huhl($mail);
 $toexecute->later($mail,array(array('rrrrrrrrrrrx@ecn.cz')));
 */
-
 
 // notify functions based on ANONYMOUS_EDIT_CRON permission
 AA::$perm->setPermMode('cron');

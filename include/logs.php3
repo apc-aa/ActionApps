@@ -54,6 +54,10 @@ AA_WARN
 
 class AA_Log {
 
+    static function warn($selector) {
+        AA_Log::write('AA_WARN', $selector, AA_Log::backtrack(2));
+    }
+
     /** AA_Log::write function - Write log entry
      *  Static function
      *
@@ -84,32 +88,7 @@ class AA_Log {
 
         AA::Metabase()->doInsertMulti('log', $rows);
 
-        // with probability 1:1000 set up log cleanup
-        if ( mt_rand(0,1000) == 1) {
-            // we plan this tasks for future (tomorrow)
-            // it should be enough to clean the logs once a day
-
-            // clean all older than 40 days
-            //                                                    what to clean                                         when to run
-            with( new Toexecute )->laterOnce(new \AA\Later\LogCleanup(now() - (60*60*24*40)), [], "LogClenup", 10, now() + (60*60*24));
-        }
         return true;
-    }
-
-    static function warn($selector) {
-        AA_Log::write('AA_WARN', $selector, AA_Log::backtrack(2));
-    }
-
-    static function backtrack($remove_steps=1) {
-        $ret = explode("\n", str_replace(AA_BASE_PATH, '', with( new Exception() )->getTraceAsString()));
-        for (; $remove_steps>0; --$remove_steps) {
-            array_shift($ret);
-        }
-        return join("\n", $ret);
-    }
-
-    static function context($selector='') {
-        return ParamImplode([$selector,str_replace(':','_',$_SERVER['REMOTE_ADDR']), ($_SERVER['HTTPS'] ? '' : 'http/'). "{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}"]);
     }
 
     /** Is the event logable?
@@ -149,6 +128,18 @@ class AA_Log {
            // PWD_REHASH
         ];
         return !in_array($event_type, $DO_NOT_LOG);
+    }
+
+    static function backtrack($remove_steps=1) {
+        $ret = explode("\n", str_replace(AA_BASE_PATH, '', (new Exception() )->getTraceAsString()));
+        for (; $remove_steps>0; --$remove_steps) {
+            array_shift($ret);
+        }
+        return join("\n", $ret);
+    }
+
+    static function context($selector='') {
+        return ParamImplode([$selector,str_replace(':','_',$_SERVER['REMOTE_ADDR']), ($_SERVER['HTTPS'] ? '' : 'http/'). "{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}"]);
     }
 
     /** getLastLogEvents function

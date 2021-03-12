@@ -32,6 +32,7 @@ namespace AA\Util;
 use AA\Later\ComputedfieldsUpdater;
 use AA\Later\HitcounterUpdate;
 use AA\Later\PlannedtaskSchedule;
+use AA\Later\ScheduleAaTasks;
 use AA\Later\Toexecute;
 use CVarset;
 use zids;
@@ -116,22 +117,12 @@ class Hitcounter
             $varset->doInsert('hit_long_id');
         }
 
+        // no longer necessary to plan it here - we plan the task in toexecute.php3 which must be called anyway if we want to tun tasks
         // it is not necessary to check, if the  AA\Later\HitcounterUpdate is planed
         // on each hit. We check it only once for 1000 (COUNTHIT_PROBABILITY)
-        if (COUNTHIT_PROBABILITY and rand(0, COUNTHIT_PROBABILITY) == 1) {
-
-            $toexecute = new Toexecute;
-            $display_counter = new HitcounterUpdate();
-            $toexecute->laterOnce($display_counter, [], 'HitcounterUpdate', 100, time() + 300);  // run it once in 5 minutes
-
-            $planned_task_scheduler = new PlannedtaskSchedule();
-            $toexecute->laterOnce($planned_task_scheduler, [], 'PlannedtaskSchedule', 100, time() + 120);  // run it once in 2 minutes
-
-            $computedfields_updater = new ComputedfieldsUpdater;
-            $computedfields_updater->plan();
-
-//            $toexecute->laterOnce($display_counter, array(), 'HitcounterUpdate', 100, time() + 3000);  // run it once in 50 minutes
-        }
+        // if (COUNTHIT_PROBABILITY and rand(0, COUNTHIT_PROBABILITY) == 1) {
+        //     (new Toexecute)->laterOnce(new ScheduleAaTasks, [], 'ScheduleAaTasks', 111, time());  // plan for now;  111 - quite urgent
+        // }
     }
 }
 
