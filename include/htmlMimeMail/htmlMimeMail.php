@@ -355,34 +355,34 @@ class htmlMimeMail {
 
         // str_ireplace make the regexp not match <a href="some-image.jpg"> (otherwise it add such image into the mail)
         $sanit_text = str_ireplace(['href="', "href='"], ['', ''], $this->html);
-        preg_match_all('/(?:"|\')([^"\']+\.('.implode('|', $extensions).'))(?:"|\')/Ui', $sanit_text, $images); // (?:x) - non capturing parenthes - matches, but not in the result
-        preg_match_all('~(?:"|\')([^"\']+/img\.php\?src\=[^"\']+)(?:"|\')~Ui', $sanit_text, $images2);
+        preg_match_all('/["\']([^"\']+\.('.implode('|', $extensions).'))["\']/Ui', $sanit_text, $images); // (?:x) - non capturing parentheses - matches, but not in the result
+        preg_match_all('~["\']([^"\']+/img\.php\?src=[^"\']+)["\']~Ui', $sanit_text, $images2);
 
         $images      = array_unique(array_merge($images[1], $images2[1]));
 
         $img_content = [];
         $img_name    = [];
         $html_images = [];
-
+        $i=0;  // counter to use different img_name for the same filename in different directory
         foreach ($images as $img) {
-
+            ++$i;
             if (strtolower(substr($img,0,4))=='http') {
                 if ($pos = strpos($img,'/img.php?src=')) {
                     $image_path            = $img;
-                    $img_name[$image_path] = basename( parse_url( substr($image_path, $pos+13, strpos($image_path,'&')-$pos-13), PHP_URL_PATH) );
+                    $img_name[$image_path] = (string)$i.basename( parse_url( substr($image_path, $pos+13, strpos($image_path,'&')-$pos-13), PHP_URL_PATH) );
                 } else {
                     $image_path            = $img;
-                    $img_name[$image_path] = basename( parse_url($image_path, PHP_URL_PATH) );
+                    $img_name[$image_path] = (string)$i.basename( parse_url($image_path, PHP_URL_PATH) );
                 }
             } else {
                 if (false !== ($pos = strpos($img,'/img.php?src='))) {
                     // this one is used in new versions of AA - Honza 14.8.2013
                     $image_path            = AA_INSTAL_URL . substr($img,$pos+1);
                     $pos                   = strpos($image_path,'/img.php?src='); // recompute for full url and use the same approach as above
-                    $img_name[$image_path] = basename( parse_url( substr($image_path, $pos+13, strpos($image_path,'&')-$pos-13), PHP_URL_PATH) );
+                    $img_name[$image_path] = (string)$i.basename( parse_url( substr($image_path, $pos+13, strpos($image_path,'&')-$pos-13), PHP_URL_PATH) );
                 } else {
                     $image_path            = $images_dir . $img;
-                    $img_name[$image_path] = basename( $image_path );
+                    $img_name[$image_path] = (string)$i.basename( $image_path );
                 }
             }
 
