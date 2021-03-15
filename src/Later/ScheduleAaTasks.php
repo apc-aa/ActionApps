@@ -42,7 +42,7 @@ class ScheduleAaTasks implements LaterInterface
         // $toexecute->laterOnce($display_counter, array(), 'HitcounterUpdate', 100, time() + 3000);  // run it once in 50 minutes
 
         $planned_task_scheduler = new PlannedtaskSchedule();
-        $toexecute->laterOnce($planned_task_scheduler, [], 'PlannedtaskSchedule', 100, time() + 120);  // run it once in 2 minutes
+        $toexecute->laterOnce($planned_task_scheduler, [], 'PlannedtaskSchedule', 150, time() + 120);  // run it once in 2 minutes - high priority - the schedule must run even if there is big queue of e-mails/imports/...
 
         $computedfields_updater = new ComputedfieldsUpdater;
         $computedfields_updater->plan();
