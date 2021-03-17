@@ -309,4 +309,3 @@ switch ($phase) {
 HtmlEnd();
 
 page_close();
-?>

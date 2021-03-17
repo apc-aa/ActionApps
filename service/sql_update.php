@@ -109,7 +109,7 @@ if (!$_GET['silent']) {
             Access Code
             <input type="password" name="acccode" value="'.myspecialchars($_GET['acccode']).'"><br>
 
-            Write to database <input type="checkbox" name="fire" value="1"'.($_GET['fire'] ? ' checked' : ''). '"><br>
+            Write to database <input type="checkbox" name="fire" value="1"'.($_GET['fire'] ? ' checked' : ''). '><br>
             <small>Check this for real work with writing to database</small>
             <br><br>
 

@@ -342,28 +342,29 @@ class AA_Optimize_Redefine_Core_Constants extends AA_Optimize {
         $ret = true;
 
         // Code-pages
-        $row_count   = GetTable2Array("SELECT count(*) as count FROM constant WHERE group_id='lt_codepages'", "aa_first", 'count');
+        $row_count   = DB_AA::select1('count', 'SELECT count(*) as count FROM constant', [['group_id', 'lt_codepages']]);
+
         if ($row_count < 9) {
             $this->message(_m('Code-pages constants (lt_codepages) are not up-to-date - found: %1 from 9', [$row_count]));
             $ret = false;
         }
 
         // Language
-        $row_count   = GetTable2Array("SELECT count(*) as count FROM constant WHERE group_id='lt_languages'", "aa_first", 'count');
+        $row_count   = DB_AA::select1('count', 'SELECT count(*) as count FROM constant', [['group_id', 'lt_languages']]);
         if ($row_count < 46) {
             $this->message(_m('Language constants (lt_languages) are not up-to-date - found: %1 from 46', [$row_count]));
             $ret = false;
         }
 
         // AA Bins
-        $row_count   = GetTable2Array("SELECT count(*) as count FROM constant WHERE group_id='AA_Core_Bins....'", "aa_first", 'count');
+        $row_count   = DB_AA::select1('count', 'SELECT count(*) as count FROM constant', [['group_id', 'AA_Core_Bins....']]);
         if ($row_count < 3) {
             $this->message(_m('AA Bins constants (AA_Core_Bins....) are not up-to-date - found: %1 from 3', [$row_count]));
             $ret = false;
         }
 
         // APC-wide categories
-        $row_count   = GetTable2Array("SELECT count(*) as count FROM constant WHERE group_id='lt_apcCategories'", "aa_first", 'count');
+        $row_count   = DB_AA::select1('count', 'SELECT count(*) as count FROM constant', [['group_id', 'lt_apcCategories']]);
         if ($row_count < 82) {
             $this->message(_m('APC-wide categories (lt_apcCategories) are not up-to-date - found: %1 from 82', [$row_count]));
             $ret = false;
@@ -567,7 +568,7 @@ class AA_Optimize_Redefine_Slice_News_Templates extends AA_Optimize {
     public function test() : bool {
         $ret = true;
 
-        $row_count   = GetTable2Array("SELECT count(*) as count FROM module WHERE id='News_EN_tmpl....'", "aa_first", 'count');
+        $row_count   = DB_AA::select1('count', 'SELECT count(*) as count FROM module', [['id', 'News_EN_tmpl....']]);
         if ($row_count <> 1) {
             $this->message(_m('News EN template slice is not defined'));
             $ret = false;
@@ -659,7 +660,7 @@ class AA_Optimize_Redefine_Slice_Reader_Templates extends AA_Optimize {
     public function test() : bool {
         $ret = true;
 
-        $row_count   = GetTable2Array("SELECT count(*) as count FROM module WHERE id='ReaderManagement'", "aa_first", 'count');
+        $row_count   = DB_AA::select1('count', 'SELECT count(*) as count FROM module', [['id', 'ReaderManagement']]);
         if ($row_count <> 1) {
             $this->message(_m('"Reader Management" template slice is not defined'));
             $ret = false;
@@ -681,7 +682,7 @@ class AA_Optimize_Redefine_Slice_Reader_Templates extends AA_Optimize {
 
         $this->message(_m('Make sure "Reader Management" slice exists and reset to defaults'));
         $this->query("REPLACE INTO module (id, name, deleted, type, slice_url, lang_file, created_at, created_by, owner, flag) VALUES ('ReaderManagement', 'Reader Management Minimal', 0, 'S', '', 'en_news_lang.php3', 1043151515, '', 'AA_Core.........', 0)");
-        $this->query("REPLACE INTO slice (id, name, owner, deleted, created_by, created_at, export_to_all, type, template, fulltext_format_top, fulltext_format, fulltext_format_bottom, odd_row_format, even_row_format, even_odd_differ, compact_top, compact_bottom, category_top, category_format, category_bottom, category_sort, slice_url, d_listlen, lang_file, fulltext_remove, compact_remove, email_sub_enable, exclude_from_dir, notify_sh_offer, notify_sh_accept, notify_sh_remove, notify_holding_item_s, notify_holding_item_b, notify_holding_item_edit_s, notify_holding_item_edit_b, notify_active_item_edit_s, notify_active_item_edit_b, notify_active_item_s, notify_active_item_b, noitem_msg, admin_format_top, admin_format, admin_format_bottom, admin_remove, permit_anonymous_post, permit_offline_fill, aditional, flag, vid, gb_direction, group_by, gb_header, gb_case, javascript, fileman_access, fileman_dir, auth_field_group, mailman_field_lists, permit_anonymous_edit) VALUES ('ReaderManagement', 'Reader Management Minimal', 'AA_Core.........', 0, '1', $now, 1, 'ReaderManagement', 1, '', '&nbsp;', '', '&nbsp;', '', 0, '', '', '', '', '', 0, '', 15, 'cz_news_lang.php3', '', '', 1, 0, '', '', '', '', '', '', '', '', '', '', '', ' ', '<table border=\"1\" bordercolor=\"white\" cellpadding=\"2\" cellspacing=\"0\">\r\n<tr align=\"center\">\r\n<td class=\"tabtit\">&nbsp;</td>\r\n<td class=\"tabtit\"><b>Username</b></td>\r\n<td class=\"tabtit\"><b>Email</b></td>\r\n<td class=\"tabtit\"><b>First</b></td>\r\n<td class=\"tabtit\"><b>Last</b></td>\r\n<td class=\"tabtit\"><b>Mail confirmed</b></td>\r\n</tr>', '<tr>\r\n<td><input type=checkbox name=\"chb[x_#ITEM_ID#]\" value=\"\"></td>\r\n<td class=\"tabtxt\">_#USERNAME</td>\r\n<td class=\"tabtxt\">_#EMAIL___</td>\r\n<td class=\"tabtxt\">_#FIRSTNAM</td>\r\n<td class=\"tabtxt\">_#LASTNAME</td>\r\n<td class=\"tabtxt\">_#MAILCONF</td>\r\n</tr>', '</table>', '', 2, 0, '', 0, 0, 2, '', 0, NULL, '', '0', '', '0', '0', 5);");
+        $this->query("REPLACE INTO slice (id, name, owner, deleted, created_by, created_at, export_to_all, type, template, fulltext_format_top, fulltext_format, fulltext_format_bottom, odd_row_format, even_row_format, even_odd_differ, compact_top, compact_bottom, category_top, category_format, category_bottom, category_sort, slice_url, d_listlen, lang_file, fulltext_remove, compact_remove, email_sub_enable, exclude_from_dir, notify_sh_offer, notify_sh_accept, notify_sh_remove, notify_holding_item_s, notify_holding_item_b, notify_holding_item_edit_s, notify_holding_item_edit_b, notify_active_item_edit_s, notify_active_item_edit_b, notify_active_item_s, notify_active_item_b, noitem_msg, admin_format_top, admin_format, admin_format_bottom, admin_remove, permit_anonymous_post, permit_offline_fill, aditional, flag, vid, gb_direction, group_by, gb_header, gb_case, javascript, fileman_access, fileman_dir, auth_field_group, mailman_field_lists, permit_anonymous_edit, reading_password) VALUES ('ReaderManagement', 'Reader Management Minimal', 'AA_Core.........', 0, '1', $now, 1, 'ReaderManagement', 1, '', '&nbsp;', '', '&nbsp;', '', 0, '', '', '', '', '', 0, '', 15, 'cz_news_lang.php3', '', '', 1, 0, '', '', '', '', '', '', '', '', '', '', '', ' ', '<table border=\"1\" bordercolor=\"white\" cellpadding=\"2\" cellspacing=\"0\">\r\n<tr align=\"center\">\r\n<td class=\"tabtit\">&nbsp;</td>\r\n<td class=\"tabtit\"><b>Username</b></td>\r\n<td class=\"tabtit\"><b>Email</b></td>\r\n<td class=\"tabtit\"><b>First</b></td>\r\n<td class=\"tabtit\"><b>Last</b></td>\r\n<td class=\"tabtit\"><b>Mail confirmed</b></td>\r\n</tr>', '<tr>\r\n<td><input type=checkbox name=\"chb[x_#ITEM_ID#]\" value=\"\"></td>\r\n<td class=\"tabtxt\">_#USERNAME</td>\r\n<td class=\"tabtxt\">_#EMAIL___</td>\r\n<td class=\"tabtxt\">_#FIRSTNAM</td>\r\n<td class=\"tabtxt\">_#LASTNAME</td>\r\n<td class=\"tabtxt\">_#MAILCONF</td>\r\n</tr>', '</table>', '', 2, 0, '', 0, 0, 2, '', 0, NULL, '', '0', '', '0', '0', 5, '');");
 
         $this->message(_m('Recreate field definitions for "Reader Management"'));
         $this->query("INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES ('con_email.......', '', 'ReaderManagement', 'Email', 200, 'Reader\'s e-mail, unique in the scope of this slice', '', 'txt:', 0, 0, 0, 'fld:', '', 100, '', '', '', '', 1, 1, 1, '_#EMAIL___', 'f_c:!:<a href=\"_#EDITITEM\" class=iheadline>:</a>:&nbsp;::', 'Email', '', 'f_0:', '', '', 'f_0:', '', '', '', 0, 0, 0, '', 'e-unique:con_email.......:1', 'qte:', 1, 1);");
@@ -742,7 +743,7 @@ class AA_Optimize_Redefine_Slice_Noticias_Templates extends AA_Optimize {
     public function test() : bool {
         $ret = true;
 
-        $row_count   = GetTable2Array("SELECT count(*) as count FROM module WHERE id='noticias-es.....'", "aa_first", 'count');
+        $row_count   = DB_AA::select1('count', 'SELECT count(*) as count FROM module', [['id', 'noticias-es.....']]);
         if ($row_count <> 1) {
             $this->message(_m('"Noticas - ES" template slice is not defined'));
             $ret = false;
@@ -764,7 +765,7 @@ class AA_Optimize_Redefine_Slice_Noticias_Templates extends AA_Optimize {
 
         $this->message(_m('Make sure "Noticas - ES" slice exists and reset to defaults'));
         $this->query("REPLACE INTO module (id, name, deleted, type, slice_url, lang_file, created_at, created_by, owner, flag) VALUES ('noticias-es.....', 'Noticias (ES) - Plantilla', 0, 'S', '', 'es_news_lang.php3', 1067835192, '', 'AA_Core.........', 0)");
-        $this->query("REPLACE INTO slice (id, name, owner, deleted, created_by, created_at, export_to_all, type, template, fulltext_format_top, fulltext_format, fulltext_format_bottom, odd_row_format, even_row_format, even_odd_differ, compact_top, compact_bottom, category_top, category_format, category_bottom, category_sort, slice_url, d_listlen, lang_file, fulltext_remove, compact_remove, email_sub_enable, exclude_from_dir, notify_sh_offer, notify_sh_accept, notify_sh_remove, notify_holding_item_s, notify_holding_item_b, notify_holding_item_edit_s, notify_holding_item_edit_b, notify_active_item_edit_s, notify_active_item_edit_b, notify_active_item_s, notify_active_item_b, noitem_msg, admin_format_top, admin_format, admin_format_bottom, admin_remove, permit_anonymous_post, permit_anonymous_edit, permit_offline_fill, aditional, flag, vid, gb_direction, group_by, gb_header, gb_case, javascript, fileman_access, fileman_dir, auth_field_group, mailman_field_lists, reading_password) VALUES ('noticias-es.....', 'Noticias (ES) - Plantilla', 'AA_Core.........', 0, '8', 1067835192, 0, 'noticias-es.....', 1, '', '<h2>_#TITULAR_</h2>\r\n<B>_#AUTOR___, _#LUGAR___</B> <BR>\r\n<img src=\"_#IMAGESRC\" width=\"_#IMGWIDTH\" height=\"_#IMG_HGHT\" align=\"right\">\r\n_#TEXTO___', '', '<div class=\"item\">_#FECHAPUB:\r\n<strong><a href=_#ENLACE__>_#TITULAR_</a>\r\n</strong>\r\n<br>_#LUGAR___ [_#FTE_URL_]<br>\r\n_#RESUMEN_\r\n</div>\r\n<br>', '', 0, '', '<br>', '', '<p>_#CATEGORi</p>', '', 0, '', 10000, 'es_news_lang.php3', '()', '[]', 1, 0, '', '', '', '', '', '', '', '', '', '', '', 'No se encontraron datos', '<tr class=tablename><td width=30>&nbsp;</td><td>Haga clic para editar</td><td>Fecha</td></tr>', '<tr class=tabtxt><td width=30><input type=checkbox name=\"chb[x_#ITEM_ID#]\" value=\"1\"></td><td><a href=\"_#EDITITEM\">_#TITULAR_</a></td><td>_#FECHAPUB</td></tr>', '', '', 2, 0, 2, '', 0, 0, 2, 'category........', 0, '', '', '0', '', '', '', '')");
+        $this->query("REPLACE INTO slice (id, name, owner, deleted, created_by, created_at, export_to_all, type, template, fulltext_format_top, fulltext_format, fulltext_format_bottom, odd_row_format, even_row_format, even_odd_differ, compact_top, compact_bottom, category_top, category_format, category_bottom, category_sort, slice_url, d_listlen, lang_file, fulltext_remove, compact_remove, email_sub_enable, exclude_from_dir, notify_sh_offer, notify_sh_accept, notify_sh_remove, notify_holding_item_s, notify_holding_item_b, notify_holding_item_edit_s, notify_holding_item_edit_b, notify_active_item_edit_s, notify_active_item_edit_b, notify_active_item_s, notify_active_item_b, noitem_msg, admin_format_top, admin_format, admin_format_bottom, admin_remove, permit_anonymous_post, permit_anonymous_edit, permit_offline_fill, aditional, flag, vid, gb_direction, group_by, gb_header, gb_case, javascript, fileman_access, fileman_dir, auth_field_group, mailman_field_lists, reading_password, mlxctrl) VALUES ('noticias-es.....', 'Noticias (ES) - Plantilla', 'AA_Core.........', 0, '8', 1067835192, 0, 'noticias-es.....', 1, '', '<h2>_#TITULAR_</h2>\r\n<B>_#AUTOR___, _#LUGAR___</B> <BR>\r\n<img src=\"_#IMAGESRC\" width=\"_#IMGWIDTH\" height=\"_#IMG_HGHT\" align=\"right\">\r\n_#TEXTO___', '', '<div class=\"item\">_#FECHAPUB:\r\n<strong><a href=_#ENLACE__>_#TITULAR_</a>\r\n</strong>\r\n<br>_#LUGAR___ [_#FTE_URL_]<br>\r\n_#RESUMEN_\r\n</div>\r\n<br>', '', 0, '', '<br>', '', '<p>_#CATEGORi</p>', '', 0, '', 10000, 'es_news_lang.php3', '()', '[]', 1, 0, '', '', '', '', '', '', '', '', '', '', '', 'No se encontraron datos', '<tr class=tablename><td width=30>&nbsp;</td><td>Haga clic para editar</td><td>Fecha</td></tr>', '<tr class=tabtxt><td width=30><input type=checkbox name=\"chb[x_#ITEM_ID#]\" value=\"1\"></td><td><a href=\"_#EDITITEM\">_#TITULAR_</a></td><td>_#FECHAPUB</td></tr>', '', '', 2, 0, 2, '', 0, 0, 2, 'category........', 0, '', '', '0', '', '', '', '', '')");
 
         $this->message(_m('Recreate field definitions for "Noticas - ES"'));
         $this->query("INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES ('abstract........', '', 'noticias-es.....', 'Resumen', 150, '', '', 'txt:', 0, 0, 0, 'txt:8', '', 100, '', '', '', '', 0, 1, 1, '_#RESUMEN_', 'f_a:80:full_text.......:1', 'resumen del item', '_#RSS_IT_D', 'f_r:80:full_text.......:1', 'resumen del item para RSS', '', 'f_0:', '', '', '', 0, 0, 1, '', 'text:', 'qte:', 1, 1)");
@@ -836,7 +837,7 @@ class AA_Optimize_Redefine_View_Discus_Templates extends AA_Optimize {
     public function test() : bool {
         $ret = true;
 
-        $row_count   = GetTable2Array("SELECT count(*) as count FROM view WHERE slice_id='AA_Core_Fields..' AND type='".$this->_viewType()."'", "aa_first", 'count');
+        $row_count   = DB_AA::select1('count', 'SELECT count(*) as count FROM view', [['slice_id', 'AA_Core_Fields..'], ['type', $this->_viewType()]]);
         if ($row_count <> 1) {
             $this->message(_m('"%1" template view is not defined', [$this->_viewType()]));
             $ret = false;
@@ -959,7 +960,7 @@ class AA_Optimize_Redefine_Site_Templates extends AA_Optimize {
     public function test() : bool {
         $ret = true;
 
-        $row_count   = GetTable2Array("SELECT count(*) as count FROM module WHERE id='SiteTemplate....'", "aa_first", 'count');
+        $row_count   = DB_AA::select1('count', 'SELECT count(*) as count FROM module', [['id', 'SiteTemplate....']]);
         if ($row_count <> 1) {
             $this->message(_m('Site Module template should be recreated'));
             $ret = false;
@@ -1008,7 +1009,7 @@ class AA_Optimize_Add_Alerts_Cron_Entry extends AA_Optimize {
     public function test() : bool {
         $ret = true;
 
-        $row_count   = GetTable2Array("SELECT count(*) as count FROM cron WHERE script='modules/alerts/alerts.php3'", "aa_first", 'count');
+        $row_count   = DB_AA::select1('count', 'SELECT count(*) as count FROM cron', [['script', 'modules/alerts/alerts.php3']]);
         if ($row_count < 1 ) {
             $this->message(_m('Cron entry for Alerts Sending is not installed in AA Cron'));
             $ret = false;
@@ -1051,7 +1052,7 @@ class AA_Optimize_Add_Feeding_Cron_Entry extends AA_Optimize {
     public function test() : bool {
         $ret = true;
 
-        $row_count   = GetTable2Array("SELECT count(*) as count FROM cron WHERE script='admin/xmlclient.php3'", "aa_first", 'count');
+        $row_count   = DB_AA::select1('count', 'SELECT count(*) as count FROM cron', [['script', 'admin/xmlclient.php3']]);
         if ($row_count < 1) {
             $this->message(_m('Cron entry for Feeding is not installed in AA Cron'));
             $ret = false;
@@ -1094,7 +1095,7 @@ class AA_Optimize_Add_Optimize_Cron_Entry extends AA_Optimize {
     public function test() : bool {
         $ret = true;
 
-        $row_count   = GetTable2Array("SELECT count(*) as count FROM cron WHERE script='misc/optimize.php3'", "aa_first", 'count');
+        $row_count   = DB_AA::select1('count', 'SELECT count(*) as count FROM cron', [['script', 'misc/optimize.php3']]);
         if ($row_count < 1) {
             $this->message(_m('Cron entry for Database Optimalization is not installed in AA Cron'));
             $ret = false;
@@ -1137,7 +1138,7 @@ class AA_Optimize_Add_Linkcheck_Cron_Entry extends AA_Optimize {
     public function test() : bool {
         $ret = true;
 
-        $row_count   = GetTable2Array("SELECT count(*) as count FROM cron WHERE script='modules/links/linkcheck.php3'", "aa_first", 'count');
+        $row_count   = DB_AA::select1('count', 'SELECT count(*) as count FROM cron', [['script', 'modules/links/linkcheck.php3']]);
         if ($row_count < 1) {
             $this->message(_m('Cron entry for "Checking link status in Links module" is not installed in AA Cron'));
             $ret = false;
@@ -1180,7 +1181,7 @@ class AA_Optimize_Add_Toexecute_Cron_Entry extends AA_Optimize {
     public function test() : bool {
         $ret = true;
 
-        $row_count   = GetTable2Array("SELECT count(*) as count FROM cron WHERE script='misc/toexecute.php3'", "aa_first", 'count');
+        $row_count   = DB_AA::select1('count', 'SELECT count(*) as count FROM cron', [['script', 'misc/toexecute.php3']]);
         if ($row_count < 1) {
             $this->message(_m('Cron entry for "Toexecute queue execution" is not installed in AA Cron'));
             $ret = false;
@@ -1226,6 +1227,7 @@ class AA_Optimize_Add_Email_Templates_Cron_Entry extends AA_Optimize {
         $ret = true;
 
         $row_count   = DB_AA::select1('count', 'SELECT count(*) as count FROM email', [['type', 'alerts welcome']]);
+
         if ($row_count < 1) {
             $this->message(_m('The e-mail templates are not complete'));
             $ret = false;
@@ -1239,34 +1241,41 @@ class AA_Optimize_Add_Email_Templates_Cron_Entry extends AA_Optimize {
         $std_row = array_merge($std_row, [
             'lang' => 'en',
             'html' => 1]);
+        unset($std_row['id']); // auto incremented key
 
-        $this->message(_m('Replacing the e-mail templates'));
-        $row = [
-            'description' => 'Generic Alerts Welcome',
-            'subject' => 'Welcome to Econnect Alerts',
-            'body' => 'Somebody requested to receive regularly new items from our web site \r\n<a href=\"http://www.ecn.cz\">www.ecn.cz</a>\r\n{switch({_#HOWOFTEN})instant:at the moment they are added\r\n:daily:once a day\r\n:weekly:once a week\r\n:monthly:once a month}.<br>\r\n<br>\r\nYou will not receive any emails until you confirm your subscription.\r\nTo confirm it or to change your personal info, please go to<br>\r\n<a href=\"_#COLLFORM\">_#COLLFORM</a>.<br><br>\r\nThank you for reading our alerts,<br>\r\nThe Econnect team\r\n',
-            'header_from' => 'somebody@example.cz',
-            'type' => 'alerts welcome'
-        ];
-        AA::Metabase()->doReplace('email', array_merge($std_row, $row));
+        if (!DB_AA::test('email', [['type', 'alerts welcome']])) {
+            $this->message(_m('Replacing the e-mail templates'));
+            $row = [
+                'description' => 'Generic Alerts Welcome',
+                'subject'     => 'Welcome to Econnect Alerts',
+                'body'        => 'Somebody requested to receive regularly new items from our web site \r\n<a href=\"http://www.ecn.cz\">www.ecn.cz</a>\r\n{switch({_#HOWOFTEN})instant:at the moment they are added\r\n:daily:once a day\r\n:weekly:once a week\r\n:monthly:once a month}.<br>\r\n<br>\r\nYou will not receive any emails until you confirm your subscription.\r\nTo confirm it or to change your personal info, please go to<br>\r\n<a href=\"_#COLLFORM\">_#COLLFORM</a>.<br><br>\r\nThank you for reading our alerts,<br>\r\nThe Econnect team\r\n',
+                'header_from' => 'somebody@example.cz',
+                'type'        => 'alerts welcome'
+            ];
+            AA::Metabase()->doInsert('email', array_merge($std_row, $row));
+        }
 
-        $row = [
-            'description' => 'Generic Alerts Alert',
-            'subject' => '{switch({_#HOWOFTEN})instant:News from Econnect::_#HOWOFTEN digest from Econnect}',
-            'body' => '_#FILTERS_\r\n<br><hr>\r\nTo change your personal info, please go to<br>\r\n<a href=\"_#COLLFORM\">_#COLLFORM</a>.<br><br>\r\nThank you for reading our alerts,<br>\r\nThe Econnect team\r\n',
-            'header_from' => 'ecn@example.cz',
-            'type' => 'alerts alert'
-        ];
-        AA::Metabase()->doReplace('email', array_merge($std_row, $row));
+        if (!DB_AA::test('email', [['type', 'alerts alert']])) {
+            $row = [
+                'description' => 'Generic Alerts Alert',
+                'subject'     => '{switch({_#HOWOFTEN})instant:News from Econnect::_#HOWOFTEN digest from Econnect}',
+                'body'        => '_#FILTERS_\r\n<br><hr>\r\nTo change your personal info, please go to<br>\r\n<a href=\"_#COLLFORM\">_#COLLFORM</a>.<br><br>\r\nThank you for reading our alerts,<br>\r\nThe Econnect team\r\n',
+                'header_from' => 'ecn@example.cz',
+                'type'        => 'alerts alert'
+            ];
+            AA::Metabase()->doInsert('email', array_merge($std_row, $row));
+        }
 
-        $row = [
-            'description' => 'Generic Item Manager Welcome',
-            'subject' => 'Welcome, AA _#ROLE____',
-            'body' => 'You have been assigned an Item Manager for the slice _#SLICNAME. Your username is _#LOGIN___. See <a href=\"http://apc-aa.sf.net/faq\">FAQ</a> for help.',
-            'header_from' => '\"_#ME_NAME_\" <_#ME_MAIL_>',
-            'type' => 'slice wizard welcome'
-        ];
-        AA::Metabase()->doReplace('email', array_merge($std_row, $row));
+        if (!DB_AA::test('email', [['type', 'slice wizard welcome']])) {
+            $row = [
+                'description' => 'Generic Item Manager Welcome',
+                'subject'     => 'Welcome, AA _#ROLE____',
+                'body'        => 'You have been assigned an Item Manager for the slice _#SLICNAME. Your username is _#LOGIN___. See <a href=\"http://apc-aa.sf.net/faq\">FAQ</a> for help.',
+                'header_from' => '\"_#ME_NAME_\" <_#ME_MAIL_>',
+                'type'        => 'slice wizard welcome'
+            ];
+            AA::Metabase()->doInsert('email', array_merge($std_row, $row));
+        }
 
         $this->message(_m('The e-mail templates updated'));
         return true;
@@ -1295,13 +1304,15 @@ class AA_Optimize_Redefine_Links_Templates extends AA_Optimize {
     public function test() : bool {
         $ret = true;
 
-        $row_count   = GetTable2Array("SELECT count(*) as count FROM module WHERE id LIKE '1Links%'", "aa_first", 'count');
+        $row_count   = DB_AA::select1('count', 'SELECT count(*) as count FROM module', [['id', '1Links%', 'LIKE']]);
         if ($row_count <> 1) {
             $this->message(_m('There is no root Link Module category - Links module should be recreted'));
             $ret = false;
         }
         return $ret;
     }
+
+
 
     /** Main update function @return bool */
     public function repair() : bool {
@@ -1312,8 +1323,25 @@ class AA_Optimize_Redefine_Links_Templates extends AA_Optimize {
         $plinks_test_id = substr( '2Links'.q_pack_id(AA_ID), 0, 16 ); // the same as q_pack_id(Links_Category2SliceID(2)); see /modules/links/util.php3
         $this->query("REPLACE INTO module (id, name, deleted, type, slice_url, lang_file, created_at, created_by, owner, flag) VALUES ('$plinks_root_id', 'Links root', 0, 'Links', 'https://example.org/index.shtml', 'en_links_lang.php3', $now, '', '', 0)");
         $this->query("REPLACE INTO module (id, name, deleted, type, slice_url, lang_file, created_at, created_by, owner, flag) VALUES ('$plinks_test_id', 'Links example', 0, 'Links', 'https://example.org/index.shtml', 'en_links_lang.php3', $now, '', '', 0)");
-        $this->query("REPLACE INTO links (id, start_id, tree_start, select_start) VALUES ('$plinks_root_id', 1, 1, 1)");
-        $this->query("REPLACE INTO links (id, start_id, tree_start, select_start) VALUES ('$plinks_test_id', 2, 2, 2)");
+
+
+        $std_row = AA::Metabase()->getEmptyRowArray('links');
+
+        $this->message(_m('Replacing the e-mail templates'));
+        $row = [
+            'id' => unpack_id($plinks_root_id),
+            'start_id' => 1,
+            'tree_start' => 1,
+            'select_start' => 1
+        ];
+        AA::Metabase()->doReplace('links', array_merge($std_row, $row));
+        $row = [
+            'id' => unpack_id($plinks_test_id),
+            'start_id' => 2,
+            'tree_start' => 2,
+            'select_start' => 2
+        ];
+        AA::Metabase()->doReplace('links', array_merge($std_row, $row));
 
         $this->query("REPLACE INTO links_categories (id, name, html_template, deleted, path, inc_file1, link_count) VALUES (1, 'Root', '', 'n', '1', '', 0)");
         $this->query("REPLACE INTO links_categories (id, name, html_template, deleted, path, inc_file1, link_count) VALUES (2, 'Example', '', 'n', '1,2', '', 0)");
@@ -1401,7 +1429,7 @@ class AA_Optimize_Add_Polls extends AA_Optimize {
     public function test() : bool {
         $ret = true;
 
-        $row_count   = GetTable2Array("SELECT count(*) as count FROM module WHERE id='PollsTemplate...'", "aa_first", 'count');
+        $row_count   = DB_AA::select1('count', 'SELECT count(*) as count FROM module', [['id', 'PollsTemplate...']]);
         if ($row_count <> 1) {
             $this->message(_m('Poll module is not installed'));
             $ret = false;
@@ -1474,7 +1502,7 @@ class AA_Optimize_Redefine_Field_Templates extends AA_Optimize {
     public function test() : bool {
         $ret = true;
 
-        $row_count   = GetTable2Array("SELECT count(*) as count FROM field WHERE id='headline' AND slice_id='AA_Core_Fields..'", "aa_first", 'count');
+        $row_count   = DB_AA::select1('count', 'SELECT count(*) as count FROM field', [['id', 'headline'],['slice_id','AA_Core_Fields..']]);
         if ($row_count <> 1) {
             $this->message(_m('teplate fields are not prenent'));
             $ret = false;
