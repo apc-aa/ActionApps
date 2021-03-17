@@ -368,20 +368,9 @@ class DB_OCI8 extends AbstractDB {
     }
 
     function halt($msg) {
-        if ($this->Halt_On_Error == "no") {
-            return;
-        }
-
-        $this->haltmsg($msg);
-
-        if ($this->Halt_On_Error != "report") {
-            die("Session halted.</body></html>");
-        }
-    }
-
-    function haltmsg($msg) {
-        printf("<p><b>Database error:</b> %s<br>\n", $msg);
-        printf("<b>Oracle Error</b>: %s</p>\n", $this->ErrArray["message"]);
+        $this->Error = $this->ErrArray["message"];
+        $this->Errno = $this->ErrArray["code"];
+        parent::halt($msg);
     }
 
     function lock($table, $mode = "write") {

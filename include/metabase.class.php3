@@ -917,7 +917,7 @@ class AA_Metabase {
         $this->tables[$tablename]->setFromSQL($tablename, $create_SQL);
     }
 
-    /** returns asociative array of table fields filled with '' or 0 (based on column type)
+    /** returns associative array of table fields filled with '' or 0 (based on column type)
      */
     function getEmptyRowArray($tablename) {
         return $this->tables[$tablename]->getEmptyRowArray();

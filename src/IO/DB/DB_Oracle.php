@@ -393,26 +393,6 @@ class DB_Oracle extends AbstractDB {
         $this->Query_ID = 0;
     }
 
-    /* private: error handling */
-    function halt($msg) {
-        if ("no" == $this->Halt_On_Error) {
-            return;
-        }
-
-        $this->haltmsg($msg);
-
-        if ("report" != $this->Halt_On_Error) {
-            die("Session halted.");
-        }
-    }
-
-    function haltmsg($msg) {
-        printf("<p><b>Database error:</b> %s<br>\n", $msg);
-        printf("<b>Oracle Error</b>: %s (%s)</p>\n",
-            $this->Errno,
-            $this->Error);
-    }
-
     function table_names() {
         $this->connect();
         $this->query("

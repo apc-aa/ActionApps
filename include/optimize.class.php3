@@ -502,10 +502,8 @@ class AA_Optimize_Db_Binary_Trailing_Zeros extends AA_Optimize {
     function _fixTable($table, $field, $definition) {
         $db  = getDb();
         $SQL = "ALTER TABLE `$table` CHANGE `$field` `$field` $definition";
-        $this->message($SQL);
         $db->query($SQL);
         $SQL = "UPDATE `$table` SET $field=TRIM(TRAILING '\0' FROM $field)";
-        $this->message($SQL);
         $db->query($SQL);
         freeDb($db);
     }
@@ -1111,7 +1109,6 @@ class AA_Optimize_Multivalue_Duplicates extends AA_Optimize {
             foreach ($err_text as $wrong) {
                 $SQL = "DELETE FROM `content` WHERE item_id='".quote($wrong['item_id'])."' AND field_id='".quote($wrong['field_id'])."' AND text='".quote($wrong['text'])."' LIMIT ".($wrong['cnt']-1);
                 $db->query($SQL);
-                $this->message($SQL);
             }
             $ret = false;
         }
@@ -1124,7 +1121,6 @@ class AA_Optimize_Multivalue_Duplicates extends AA_Optimize {
             foreach ($err_num as $wrong) {
                 $SQL = "DELETE FROM `content` WHERE item_id='".quote($wrong['item_id'])."' AND field_id='".quote($wrong['field_id'])."' AND number='".quote($wrong['number'])."' LIMIT ".($wrong['cnt']-1);
                 $db->query($SQL);
-                $this->message($SQL);
             }
             $ret = false;
         }
@@ -1181,10 +1177,8 @@ class AA_Optimize_Db_Relation_Startsxy extends AA_Optimize {
             $this->message( _m('%1 bad relation records found', [count($err_text)]));
             foreach ($err_text as $wrong) {
                 $SQL = "repair value: ".quote(substr($wrong['text'],1))." with item_id:".quote($wrong['item_id'])."<br>";
-                $this->message($SQL);
                 $SQL = "UPDATE `content` SET `text` = '".quote(substr($wrong['text'],1))."' WHERE item_id = '".quote($wrong['item_id'])."' AND `text` = '".quote($wrong['text'],1)."'";
                 $db->query($SQL);
-                #$this->message($SQL);
             }
         }
 
@@ -1425,13 +1419,11 @@ class AA_Optimize_Change_Module_Id extends AA_Optimize {
                 $SQL = "UPDATE `$table` SET $field='$new_id' WHERE $field='$current_id'";
             }
             $this->message(_m('Changing ID for table %1 (%2)', [$table, $field]));
-            $this->message($SQL);
             $this->query($SQL);
             $converted++;
         }
        //$this->message(_m('Changing ID for table %1 (%2)', array($table, $field)));
        //$SQL = "UPDATE `object_text` SET value='$new_id' WHERE value='$current_id'";
-       //$this->message($SQL);
        //$this->query($SQL);
        //$converted++;
 

@@ -71,7 +71,21 @@ abstract class AbstractDB {
     function table_names() {}
 
     /* private: error handling */
-    function halt($msg) {}
+    function halt($msg) {
+        if ($this->Halt_On_Error == "no") {
+            return;
+        }
 
-    function haltmsg($msg) {}
+        $this->haltmsg($msg);
+
+        if ($this->Halt_On_Error != "report") {
+            die("Session halted.");
+        }
+    }
+
+    function haltmsg($msg) {
+        huhl('err');
+        printf("<p><b>Database error:</b> %s<br>\n", $msg);
+        printf("<b>%s Error</b>: %s (%s)</p>\n", get_class_name($this), $this->Errno, $this->Error);
+    }
 }

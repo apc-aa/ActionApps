@@ -84,7 +84,7 @@ abstract class AA_Optimize implements \AA\Util\NamedInterface {
      *  display it, ...
      */
     function query($SQL) {
-        $this->message($SQL);
+        $this->message(safe($SQL));
         $just_print = AA_Optimize::justPrint();
 
         if ($just_print) {
@@ -807,12 +807,12 @@ class AA_Optimize_Redefine_Slice_Noticias_Templates extends AA_Optimize {
 /** Recreates the template view - discus **/
 class AA_Optimize_Redefine_View_Discus_Templates extends AA_Optimize {
 
-    /** Name function @return a message */
+    /**  {@inheritdoc} Implementation of \AA\Util\NamedInterface */
     public function name(): string {
         return _m("Redefine discus template view");
     }
 
-    /** Description function @return a message */
+    /**  {@inheritdoc} Implementation of \AA\Util\NamedInterface */
     public function description(): string {
         return _m("Deletes and recreates that view, which is used as template view of that type");
     }
@@ -941,12 +941,12 @@ class AA_Optimize_Redefine_View_Full_Templates extends AA_Optimize_Redefine_View
 /** Recreates the default site module template **/
 class AA_Optimize_Redefine_Site_Templates extends AA_Optimize {
 
-    /** Name function @return a message */
+    /**  {@inheritdoc} Implementation of \AA\Util\NamedInterface */
     public function name(): string {
         return _m("Recreate Site module template");
     }
 
-    /** Description function @return a message */
+    /**  {@inheritdoc} Implementation of \AA\Util\NamedInterface */
     public function description(): string {
         return _m("Deletes and recreates the default template for Site module");
     }
@@ -990,12 +990,12 @@ $SQL_update_modules[] = "REPLACE INTO module (id, name, deleted, type, slice_url
 /** Adds cron entry for Alerts Sending into AA cron **/
 class AA_Optimize_Add_Alerts_Cron_Entry extends AA_Optimize {
 
-    /** Name function @return a message */
+    /**  {@inheritdoc} Implementation of \AA\Util\NamedInterface */
     public function name(): string {
         return _m("Adds cron entry for Alerts Sending into AA cron");
     }
 
-    /** Description function @return a message */
+    /**  {@inheritdoc} Implementation of \AA\Util\NamedInterface */
     public function description(): string {
         return _m("It however do not install the system cron for AA - you should do it by yourself (see /misc/aa-http-request script)");
     }
@@ -1033,12 +1033,12 @@ class AA_Optimize_Add_Alerts_Cron_Entry extends AA_Optimize {
 /** Adds cron entry for Feeding into AA cron **/
 class AA_Optimize_Add_Feeding_Cron_Entry extends AA_Optimize {
 
-    /** Name function @return a message */
+    /**  {@inheritdoc} Implementation of \AA\Util\NamedInterface */
     public function name(): string {
         return _m("Adds cron entry for Feeding into AA cron");
     }
 
-    /** Description function @return a message */
+    /**  {@inheritdoc} Implementation of \AA\Util\NamedInterface */
     public function description(): string {
         return _m("It however do not install the system cron for AA - you should do it by yourself (see /misc/aa-http-request script)");
     }
@@ -1076,12 +1076,12 @@ class AA_Optimize_Add_Feeding_Cron_Entry extends AA_Optimize {
 /** Adds cron entry for Database Optimalization into AA cron **/
 class AA_Optimize_Add_Optimize_Cron_Entry extends AA_Optimize {
 
-    /** Name function @return a message */
+    /**  {@inheritdoc} Implementation of \AA\Util\NamedInterface */
     public function name(): string {
         return _m("Adds cron entry for Database Optimalization into AA cron");
     }
 
-    /** Description function @return a message */
+    /**  {@inheritdoc} Implementation of \AA\Util\NamedInterface */
     public function description(): string {
         return _m("It however do not install the system cron for AA - you should do it by yourself (see /misc/aa-http-request script)");
     }
@@ -1116,15 +1116,15 @@ class AA_Optimize_Add_Optimize_Cron_Entry extends AA_Optimize {
     }
 }
 
-/** Adds cron entry for Checking link stutus in Links module into AA cron **/
+/** Adds cron entry for Checking link status in Links module into AA cron **/
 class AA_Optimize_Add_Linkcheck_Cron_Entry extends AA_Optimize {
 
-    /** Name function @return a message */
+    /**  {@inheritdoc} Implementation of \AA\Util\NamedInterface  */
     public function name(): string {
         return _m("Adds cron entry for Link checking in Links Module into AA cron");
     }
 
-    /** Description function @return a message */
+    /**  {@inheritdoc} Implementation of \AA\Util\NamedInterface */
     public function description(): string {
         return _m("It however do not install the system cron for AA - you should do it by yourself (see /misc/aa-http-request script)");
     }
@@ -1139,7 +1139,7 @@ class AA_Optimize_Add_Linkcheck_Cron_Entry extends AA_Optimize {
 
         $row_count   = GetTable2Array("SELECT count(*) as count FROM cron WHERE script='modules/links/linkcheck.php3'", "aa_first", 'count');
         if ($row_count < 1) {
-            $this->message(_m('Cron entry for "Checking link stutus in Links module" is not installed in AA Cron'));
+            $this->message(_m('Cron entry for "Checking link status in Links module" is not installed in AA Cron'));
             $ret = false;
         }
         return $ret;
@@ -1148,13 +1148,13 @@ class AA_Optimize_Add_Linkcheck_Cron_Entry extends AA_Optimize {
     /** Main update function @return bool */
     public function repair() : bool {
 
-        $this->message(_m('Deleting AA Cron entry for Checking link stutus in Links module'));
+        $this->message(_m('Deleting AA Cron entry for Checking link status in Links module'));
         $this->query("DELETE FROM cron WHERE script='modules/links/linkcheck.php3'");
 
-        $this->message(_m('Adding AA cron entry for Checking link stutus in Links module'));
+        $this->message(_m('Adding AA cron entry for Checking link status in Links module'));
         $this->query("INSERT INTO cron (minutes, hours, mday, mon, wday, script, params, last_run) VALUES ('35',     '*', '*', '*', '*', 'modules/links/linkcheck.php3', '', NULL)");
 
-        $this->message(_m('AA cron entry for "Checking link stutus in Links module" - done.'));
+        $this->message(_m('AA cron entry for "Checking link status in Links module" - done.'));
         return true;
     }
 }
@@ -1162,12 +1162,12 @@ class AA_Optimize_Add_Linkcheck_Cron_Entry extends AA_Optimize {
 /** Adds cron entry for AA\Later\Toexecute queue execution into AA cron **/
 class AA_Optimize_Add_Toexecute_Cron_Entry extends AA_Optimize {
 
-    /** Name function @return a message */
+    /**  {@inheritdoc} Implementation of \AA\Util\NamedInterface */
     public function name(): string {
         return _m("Adds cron entry for Toexecute queue execution into AA cron");
     }
 
-    /** Description function @return a message */
+    /**  {@inheritdoc} Implementation of \AA\Util\NamedInterface */
     public function description(): string {
         return _m("It however do not install the system cron for AA - you should do it by yourself (see /misc/aa-http-request script)");
     }
@@ -1207,12 +1207,12 @@ class AA_Optimize_Add_Toexecute_Cron_Entry extends AA_Optimize {
 /** Adds email templates for Alerts module **/
 class AA_Optimize_Add_Email_Templates_Cron_Entry extends AA_Optimize {
 
-    /** Name function @return a message */
+    /**  {@inheritdoc} Implementation of \AA\Util\NamedInterface */
     public function name(): string {
         return _m("Adds email templates for Alerts module");
     }
 
-    /** Description function @return a message */
+    /**  {@inheritdoc} Implementation of \AA\Util\NamedInterface */
     public function description(): string {
         return _m("");
     }
@@ -1225,7 +1225,7 @@ class AA_Optimize_Add_Email_Templates_Cron_Entry extends AA_Optimize {
     public function test() : bool {
         $ret = true;
 
-        $row_count   = GetTable2Array("SELECT count(*) as count FROM email WHERE type='alerts welcome'", "aa_first", 'count');
+        $row_count   = DB_AA::select1('count', 'SELECT count(*) as count FROM email', [['type', 'alerts welcome']]);
         if ($row_count < 1) {
             $this->message(_m('The e-mail templates are not complete'));
             $ret = false;
@@ -1235,11 +1235,38 @@ class AA_Optimize_Add_Email_Templates_Cron_Entry extends AA_Optimize {
 
     /** Main update function @return bool */
     public function repair() : bool {
+        $std_row = AA::Metabase()->getEmptyRowArray('email');
+        $std_row = array_merge($std_row, [
+            'lang' => 'en',
+            'html' => 1]);
 
         $this->message(_m('Replacing the e-mail templates'));
-        $this->query("REPLACE INTO email (description, subject, body, header_from, reply_to, errors_to, sender, lang, html, type) VALUES ('Generic Alerts Welcome', 'Welcome to Econnect Alerts', 'Somebody requested to receive regularly new items from our web site \r\n<a href=\"http://www.ecn.cz\">www.ecn.cz</a>\r\n{switch({_#HOWOFTEN})instant:at the moment they are added\r\n:daily:once a day\r\n:weekly:once a week\r\n:monthly:once a month}.<br>\r\n<br>\r\nYou will not receive any emails until you confirm your subscription.\r\nTo confirm it or to change your personal info, please go to<br>\r\n<a href=\"_#COLLFORM\">_#COLLFORM</a>.<br><br>\r\nThank you for reading our alerts,<br>\r\nThe Econnect team\r\n', 'somebody@haha.cz', '', '', '', 'cz', 1, 'alerts welcome');");
-        $this->query("REPLACE INTO email (description, subject, body, header_from, reply_to, errors_to, sender, lang, html, type) VALUES ('Generic Alerts Alert', '{switch({_#HOWOFTEN})instant:News from Econnect::_#HOWOFTEN digest from Econnect}', '_#FILTERS_\r\n<br><hr>\r\nTo change your personal info, please go to<br>\r\n<a href=\"_#COLLFORM\">_#COLLFORM</a>.<br><br>\r\nThank you for reading our alerts,<br>\r\nThe Econnect team\r\n', 'econnect@team.cz', '', '', '', 'cz', 1, 'alerts alert');");
-        $this->query("REPLACE INTO email (description, subject, body, header_from, reply_to, errors_to, sender, lang, html, type) VALUES ('Generic Item Manager Welcome', 'Welcome, AA _#ROLE____', 'You have been assigned an Item Manager for the slice _#SLICNAME. Your username is _#LOGIN___. See <a href=\"http://apc-aa.sf.net/faq\">FAQ</a> for help.', '\"_#ME_NAME_\" <_#ME_MAIL_>', '', '', '', 'en', 1, 'slice wizard welcome');");
+        $row = [
+            'description' => 'Generic Alerts Welcome',
+            'subject' => 'Welcome to Econnect Alerts',
+            'body' => 'Somebody requested to receive regularly new items from our web site \r\n<a href=\"http://www.ecn.cz\">www.ecn.cz</a>\r\n{switch({_#HOWOFTEN})instant:at the moment they are added\r\n:daily:once a day\r\n:weekly:once a week\r\n:monthly:once a month}.<br>\r\n<br>\r\nYou will not receive any emails until you confirm your subscription.\r\nTo confirm it or to change your personal info, please go to<br>\r\n<a href=\"_#COLLFORM\">_#COLLFORM</a>.<br><br>\r\nThank you for reading our alerts,<br>\r\nThe Econnect team\r\n',
+            'header_from' => 'somebody@example.cz',
+            'type' => 'alerts welcome'
+        ];
+        AA::Metabase()->doReplace('email', array_merge($std_row, $row));
+
+        $row = [
+            'description' => 'Generic Alerts Alert',
+            'subject' => '{switch({_#HOWOFTEN})instant:News from Econnect::_#HOWOFTEN digest from Econnect}',
+            'body' => '_#FILTERS_\r\n<br><hr>\r\nTo change your personal info, please go to<br>\r\n<a href=\"_#COLLFORM\">_#COLLFORM</a>.<br><br>\r\nThank you for reading our alerts,<br>\r\nThe Econnect team\r\n',
+            'header_from' => 'ecn@example.cz',
+            'type' => 'alerts alert'
+        ];
+        AA::Metabase()->doReplace('email', array_merge($std_row, $row));
+
+        $row = [
+            'description' => 'Generic Item Manager Welcome',
+            'subject' => 'Welcome, AA _#ROLE____',
+            'body' => 'You have been assigned an Item Manager for the slice _#SLICNAME. Your username is _#LOGIN___. See <a href=\"http://apc-aa.sf.net/faq\">FAQ</a> for help.',
+            'header_from' => '\"_#ME_NAME_\" <_#ME_MAIL_>',
+            'type' => 'slice wizard welcome'
+        ];
+        AA::Metabase()->doReplace('email', array_merge($std_row, $row));
 
         $this->message(_m('The e-mail templates updated'));
         return true;
@@ -1250,12 +1277,12 @@ class AA_Optimize_Add_Email_Templates_Cron_Entry extends AA_Optimize {
 /** Recreates the default Links module template **/
 class AA_Optimize_Redefine_Links_Templates extends AA_Optimize {
 
-    /** Name function @return a message */
+    /**  {@inheritdoc} Implementation of \AA\Util\NamedInterface */
     public function name(): string {
         return _m("Recreate Links module template");
     }
 
-    /** Description function @return a message */
+    /**  {@inheritdoc} Implementation of \AA\Util\NamedInterface */
     public function description(): string {
         return _m("Deletes and recreates the default settings for Links module");
     }
@@ -2185,12 +2212,12 @@ class AA_Optimize_Backup_Tables extends AA_Optimize {
 /** Add mandtory fields to each slice where missing */
 class AA_Optimize_Add_Mandatory_Status_Code extends AA_Optimize {
 
-    /** Name function @return a message */
+    /**  {@inheritdoc} Implementation of \AA\Util\NamedInterface */
     public function name(): string {
         return _m("Fixing missing %1 field definitions in slices", ['status_code.....']);
     }
 
-    /** Description function @return a message */
+    /**  {@inheritdoc} Implementation of \AA\Util\NamedInterface */
     public function description(): string {
         return _m("Adds fields definitions for slices, where missing");
     }

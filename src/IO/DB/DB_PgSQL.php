@@ -217,25 +217,6 @@ class DB_PgSQL extends AbstractDB {
         return $this->Record[$Name];
     }
 
-    function halt($msg) {
-        if ("no" == $this->Halt_On_Error) {
-            return;
-        }
-
-        $this->haltmsg($msg);
-
-        if ("report" != $this->Halt_On_Error) {
-            die("Session halted.");
-        }
-    }
-
-    function haltmsg($msg) {
-        printf("<p><b>Database error:</b> %s<br>\n", $msg);
-        printf("<b>PostgreSQL Error</b>: %s (%s)</p>\n",
-            $this->Errno,
-            $this->Error);
-    }
-
     function table_names() {
         $this->query("select relname from pg_class where relkind = 'r' and not relname like 'pg_%'");
         $i = 0;

@@ -38,7 +38,8 @@
   "suggest": {
     "ext-ldap": "*",
     "ext-openssl": "*",
-    "ext-apache": "*"
+    "ext-apache": "*",
+    "ext-mysqli": "*"
   },
   "autoload": {
     "psr-4": {

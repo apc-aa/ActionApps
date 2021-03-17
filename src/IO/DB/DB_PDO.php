@@ -688,15 +688,7 @@ class DB_PDO extends AbstractDB {
         if (function_exists("EventLog")) {
             EventLog($this->Server . "(pdo) error(" . $this->ErrCode . "):" . $this->Errno . " " . $this->Error, $msg, "Error");
         }
-        if ($this->Halt_On_Error == "no") {
-            return;
-        }
-
-        $this->haltmsg($msg);
-
-        if ($this->Halt_On_Error != "report") {
-            die("Session halted.");
-        }
+        parent::halt($msg);
     }
 
     function haltmsg($msg) {

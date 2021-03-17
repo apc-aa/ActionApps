@@ -1414,6 +1414,16 @@ function GetModuleImage($module, $filename, $alt='', $width=0, $height=0, $add='
     return GetAAImage($filename, $alt, $width, $height, $add, "modules/$module/");
 }
 
+/** returns $object's class name without namespace
+ * @param $object
+ * @return false|string
+ */
+function get_class_name($object) {
+    $classname = get_class($object);
+    return ($pos = strrpos($classname, '\\')) ? substr($classname, $pos + 1) : $classname;
+}
+
+
 /**
  * Use as
  *   $credentials = AA_Credentials::singleton();

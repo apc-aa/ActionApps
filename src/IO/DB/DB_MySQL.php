@@ -389,19 +389,6 @@ class DB_MySQL extends AbstractDB {
     function halt($msg) {
         $this->Error = @mysqli_error($this->Link_ID);
         $this->Errno = @mysqli_errno($this->Link_ID);
-        if ($this->Halt_On_Error == "no") {
-            return;
-        }
-
-        $this->haltmsg($msg);
-
-        if ($this->Halt_On_Error != "report") {
-            die("Session halted.");
-        }
-    }
-
-    function haltmsg($msg) {
-        printf("<p><b>Database error:</b> %s<br>\n", $msg);
-        printf("<b>MySQL Error</b>: %s (%s)</p>\n", $this->Errno, $this->Error);
+        parent::halt($msg);
     }
 }

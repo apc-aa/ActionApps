@@ -541,22 +541,6 @@ class DB_ODBC extends AbstractDB {
     function halt($msg) {
         $this->Errno = 1;
         $this->Error = "General Error (The ODBC interface cannot return detailed error messages).";
-        if ($this->Halt_On_Error == "no") {
-            return;
-        }
-
-        $this->haltmsg($msg);
-
-        if ($this->Halt_On_Error != "report") {
-            die("Session halted.");
-        }
+        parent::halt($msg);
     }
-
-    function haltmsg($msg) {
-        printf("<p><b>Database error:</b> %s<br>\n", $msg);
-        printf("<b>ODBC Error</b>: %s (%s)</p>\n",
-            $this->Errno,
-            $this->Error);
-    }
-
 }
