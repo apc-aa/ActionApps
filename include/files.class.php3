@@ -199,7 +199,7 @@ class Files {
         // now change permissions (if we have to)
         $perms = (int)IMG_UPLOAD_FILE_MODE;
         if ($perms AND !chmod($dest_file, $perms)) {
-            Files::lastErr(FILE_ERROR_CHMOD, _m("Can't change permissions on uploaded file: %1 - %2. See IMG_UPLOAD_FILE_MODE in your config.php3", $dest_file, (int)IMG_UPLOAD_FILE_MODE));  // set error code
+            Files::lastErr(FILE_ERROR_CHMOD, _m("Can't change permissions on uploaded file: %1 - %2. See IMG_UPLOAD_FILE_MODE in your config.php3", [$dest_file, (int)IMG_UPLOAD_FILE_MODE]));  // set error code
             return false;
         }
 
@@ -221,13 +221,13 @@ class Files {
         }
 
         if (!($handle = fopen($dest_file, 'w'))) {
-            Files::lastErr(FILE_ERROR_WRITE, _m("Can't open file for writing: %1", $dest_file));  // set error code
+            Files::lastErr(FILE_ERROR_WRITE, _m("Can't open file for writing: %1", [$dest_file]));  // set error code
             return false;
         }
 
         // Write $somecontent to our opened file.
         if (fwrite($handle, $text) === false) {
-            Files::lastErr(FILE_ERROR_WRITE, _m("Can't write to file: %1", $dest_file));  // set error code
+            Files::lastErr(FILE_ERROR_WRITE, _m("Can't write to file: %1", [$dest_file]));  // set error code
             return false;
         }
         fclose($handle);

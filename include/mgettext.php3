@@ -88,24 +88,14 @@ function mgettext_bind($lang, $section, $cache=false) {
 /** _m function
  *  Translates given message.
  *
- *   @param string $id       Text to be translated.
- *   @param array $params    You may use %1,%2,... in $id and supply an array of params,
- *                           which are substituted for %i, e.g.
- *                           _m("Hello %1, how are you?",array($username))
- *   @return  if translation in the active language (get_mgettext_lang()) does not yet exist,
- *                 returns $id, i.e. the English version
- */
-/** _m function
- *  Translates given message.
- *
- *   @param string $id       Text to be translated. Escape % by backslash (\%).
- *   @param array $params    You may use %1,%2,... in $id and supply an array of params,
+ * @param string $id         Text to be translated. Escape % by backslash (\%).
+ * @param array  $params     You may use %1,%2,... in $id and supply an array of params,
  *                           which are substituted for %i, e.g.
  *                           _m("Hello %1, how are you?", [$username])
- *   @return  if translation in the active language (get_mgettext_lang()) does not yet exist,
- *                 returns $id, i.e. the English version
+ * @return string if translation in the active language (get_mgettext_lang()) does not yet exist,
+ *                           returns $id, i.e. the English version
  */
-function _m($id, $params = 0) {
+function _m($id, $params=[]): string {
     global $_m;
 
     //static $count = 0;
@@ -117,7 +107,7 @@ function _m($id, $params = 0) {
         $retval = $id;
     }
 
-    if (!is_array($params)) {
+    if (!$params or !is_array($params)) {
         return $retval;
     }
 
@@ -135,7 +125,10 @@ function _m($id, $params = 0) {
 /** _mdelayed function
  *  Works the same as _m() but is not parsed by xmgettext. This way it is
  *   useful to translate a non constant message, counted at run-time.
+ * @param string $id
+ * @param array  $params
+ * @return string
  */
-function _mdelayed($id, $params = 0) {
+function _mdelayed($id, $params=[]): string {
     return _m($id, $params);
 }

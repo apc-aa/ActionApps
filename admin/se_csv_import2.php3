@@ -131,7 +131,7 @@ class AA_Csv_Importer {
     }
 
 /** getSliceId function
- * @return slice ID
+ * @return string slice ID
  */
     function getSliceId() {
         return $this->slice_id;
