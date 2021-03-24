@@ -271,17 +271,20 @@ class AA_Router_Seo extends AA_Router {
          */
 
         $this->apc['xuser'] = $GLOBALS['auth']->auth["uname"];
+        $this->apc['xuid']  = $GLOBALS['auth']->auth["uid"];
 
         if (isset($_GET['logout'])) {
             $GLOBALS['auth']->logout();
             $GLOBALS['sess']->delete();
             $this->apc['xuser'] = '';
+            $this->apc['xuid']  = '';
         }
 
         if ( $_REQUEST['username'] ) {
             // not necessary - we alredy logged in by pageOpen() in site.php3
             //$GLOBALS['auth']->relogin();
             $this->apc['xuser'] = $GLOBALS['auth']->auth["uname"];
+            $this->apc['xuid']  = $GLOBALS['auth']->auth["uid"];
 
             if ($GLOBALS['auth']->auth["uname"] AND $_REQUEST["ok_url"]) {
                 go_url($_REQUEST["ok_url"]);
@@ -303,12 +306,14 @@ class AA_Router_Seo extends AA_Router {
         //    if (isset($_GET['logout'])) {
         //        $client_auth->logout();
         //        $this->apc['xuser'] = '';
+        //        $this->apc['xuid']  = '';
         //    }
         //    elseif ( $usr = $client_auth->checkAuth()) {
         //        // $auth = $client_auth->getRemoteAuth();
         //
         //
         //        $this->apc['xuser'] = $usr;
+        //        $this->apc['xuid']  = ???;
         //
         //        // Redirect to page. If not specified, then it continues to display
         //        // normal page as defined in "action" attribute of <form>

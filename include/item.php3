@@ -156,8 +156,8 @@ function make_return_url($r1="") {
 /** Inputform_url function
  *  helper function which create link to inputform from item manager
  * (_#EDITITEM, f_e:add, ...)
- * @param $add - bool - true|false
- * @param $iid
+ * @param bool $add
+ * @param string $iid
  * @param $sid - for edditing it is not necessary
  * @param $ret_url
  * @param $vid

@@ -292,6 +292,7 @@ if ( isset($_POST['aa']) OR isset($_FILES['aa']) ) {
         // this defines $auth object so, the "Last Changed By" is set to correct user
         pageOpen('nobody');
         $GLOBALS['apc_state']['xuser'] = $auth->auth["uname"];
+        $GLOBALS['apc_state']['xuid']  = $auth->auth["uid"];
     }
     // elseif ($_COOKIE['AA_Sess']) {
         // old unused approach
@@ -306,6 +307,7 @@ if ( isset($_POST['aa']) OR isset($_FILES['aa']) ) {
         // if ($usr = $client_auth->checkAuth()) {
         //     $auth = $client_auth->getRemoteAuth();
         //     $GLOBALS['apc_state']['xuser'] = $usr;
+        //     $GLOBALS['apc_state']['xuid']  = ???
         // }
     //}
 

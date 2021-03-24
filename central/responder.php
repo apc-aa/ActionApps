@@ -398,8 +398,9 @@ class AA_Responder_Alertitem extends AA_Responder {
 
 pageOpen('nobody');
 
-// in order {xuser:id} alias wors in widgets, for example
+// in order {xuser:id} alias works in widgets, for example
 $GLOBALS['apc_state']['xuser'] = $auth->auth["uname"];
+$GLOBALS['apc_state']['xuid']  = $auth->auth["uid"];
 
 $request = null;
 

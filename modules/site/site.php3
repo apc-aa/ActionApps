@@ -260,7 +260,7 @@ if (empty($slices4cache)) {    // can't be combined empty() and assignment = for
 }
 
 // do not cache for logged users
-if (!$site_nocache AND empty($apc_state['xuser'])) {
+if (!$site_nocache AND empty($apc_state['xuid'])) {
     $str2find = new CacheStr2find($slices4cache);
     AA::Pagecache()->storePage($cache_key, $cacheentry, $str2find);
 }

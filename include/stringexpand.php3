@@ -346,15 +346,16 @@ class AA_Stringexpand_Xuser extends AA_Stringexpand {
      * @return bool|mixed|null|string|string[]
      */
     function expand($field='') {
-        $xuser = $GLOBALS['apc_state']['xuser'];
+        $xuid  = $GLOBALS['apc_state']['xuid'];   // xuid now sholud be considered as primary
+        $xuser = $GLOBALS['apc_state']['xuser'];  // there culd be more than one user with the same xuser name from different slices
         if (!$xuser) {
             return '';
         }
         switch ($field) {
             case '':     return $xuser;
-            case 'id':   return AA_Reader::name2Id($xuser);
+            case 'id':   return $xuid;
         }
-        $item = AA_Items::getItem(new zids(AA_Reader::name2Id($xuser),'l'));
+        $item = AA_Items::getItem(new zids($xuid,'l'));
         return empty($item) ? '' : $item->subst_alias($field);
     }
 }
@@ -552,9 +553,9 @@ class AA_Stringexpand_Formbreakbottom extends AA_Stringexpand_Formbreak {
     /** expand function
      *
      */
-    function expand($part_names='') {
+    function expand(...$part_names) {
         $GLOBALS['g_formpart_pos'] = 2;  // bottom
-        StrExpand('AA_Stringexpand_Formbreak', [$part_names]);
+        StrExpand('AA_Stringexpand_Formbreak', $part_names);
     }
 }
 
@@ -565,9 +566,9 @@ class AA_Stringexpand_Formbreaktop extends AA_Stringexpand_Formbreak {
     /** expand function
      *
      */
-    function expand($part_names='') {
+    function expand(...$part_names) {
         $GLOBALS['g_formpart_pos'] = 1;  // top
-        StrExpand('AA_Stringexpand_Formbreak', [$part_names]);
+        StrExpand('AA_Stringexpand_Formbreak', $part_names);
     }
 }
 
@@ -6677,7 +6678,7 @@ class AA_Stringexpand_Str_replace extends AA_Stringexpand_Nevercache {
      */
     function expand($search='', $replace='', $text='') {
         $search  = json2arr($search,true);
-        $replace =  ($replace[0] == '[') ? json2arr($replace,true) : $replace; // the replace could be string (which then replaces all the occurences of $searches)
+        $replace =  ($replace[0] == '[') ? json2arr($replace,true) : $replace; // the replace could be string (which then replaces all the occurrences of $searches)
         return str_replace($search, $replace, $text);
     }
 }
