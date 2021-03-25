@@ -51,6 +51,7 @@ if ($_COOKIE['AA_Session'] AND !isset($_REQUEST['username'])) {   // do not auth
 //                      - it is in fact all global variables used in view.php3
 $cache_key = get_hash('site', PageCache::globalKeyArray(), $_SERVER['REQUEST_URI'], $_SERVER['REQUEST_METHOD'], $_SERVER['REDIRECT_URL'],  $_SERVER['REDIRECT_QUERY_STRING_UNESCAPED'],$_SERVER['QUERY_STRING_UNESCAPED'], get_authorization_header(), $_POST, $_GET, $auth4cache);  // $_GET because $_SERVER['REQUEST_URI'] do not contain variables from Rewrite (site_id); *_STRING_UNESCAPED is for old sitemodule - see shtml_query_string(); AA\Cache\PageCache::globalKeyArray - now only for _COOKIES and HTTP_HOST
 
+
 // store nocache to the variable (since it should be set for some view and we
 // do not want to have it set for whole site.
 // temporary solution - should be solved on view level (not global nocache) - TODO
@@ -260,7 +261,7 @@ if (empty($slices4cache)) {    // can't be combined empty() and assignment = for
 }
 
 // do not cache for logged users
-if (!$site_nocache AND empty($apc_state['xuid'])) {
+if (!$site_nocache AND (empty($apc_state['xuid']) or ($apc_state['xuid']=='nobody'))) {
     $str2find = new CacheStr2find($slices4cache);
     AA::Pagecache()->storePage($cache_key, $cacheentry, $str2find);
 }
