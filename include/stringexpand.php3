@@ -3186,7 +3186,11 @@ class AA_Stringexpand_Ids extends AA_Stringexpand {
     /** expand function
      * @param $slices
      * @param $conds
-     * @param $sort                                                                                                                 
+     * @param $sort  - headline........
+     *               - category.......1,publish_date....-,headline........
+     *               - category.......1+publish_date....-headline........
+     *               - _#HEADLINE
+     *               - _#HEADLINE-
      * @param $delimeter
      * @param $ids
      * @param $limit - could be negative for last $limit ids
@@ -3194,7 +3198,18 @@ class AA_Stringexpand_Ids extends AA_Stringexpand {
      */
     function expand($slices='', $conds=null, $sort=null, $delimiter=null, $ids=null, $limit=null) {
         $restrict_zids = $ids ? new zids(explode_ids($ids),'l') : false;
-        $set           = new AA_Set(explode_ids($slices), $conds, $sort);
+        $postsort = '';
+        if (mb_strpos($sort, '_#')===0) { // found on position 0 - we want to sort by alias here
+            if (mb_substr($sort, -1) == '-') {
+                $postsort = substr($sort, 0, -1);
+                $postsortdir = 'rlocale';
+            } else {
+                $postsort = $sort;
+                $postsortdir = 'locale';
+            }
+            $sort = '';
+        }
+        $set = new AA_Set(explode_ids($slices), $conds, $sort);
         if ($limit > 0) {
             $zids = $set->query($restrict_zids, $limit);
         } elseif ($limit < 0) {
@@ -3202,7 +3217,12 @@ class AA_Stringexpand_Ids extends AA_Stringexpand {
         } else {
             $zids = $set->query($restrict_zids);
         }
-        return AA_Stringexpand::joinWithDelimiter($zids->longids(), ($delimiter ?: '-'));
+        $delimiter = $delimiter ?: '-';
+        if ($postsort) {
+            $ret = StrExpand('AA_Stringexpand_Order', [join('-', $zids->longids()), $postsort, $postsortdir]);
+            return ($delimiter=='-') ? $ret : AA_Stringexpand::joinWithDelimiter(explode('-',$ret), $delimiter);
+        }
+        return AA_Stringexpand::joinWithDelimiter($zids->longids(), $delimiter);
     }
 }
 
@@ -3260,9 +3280,9 @@ class AA_Stringexpand_Backlinks extends AA_Stringexpand {
  *  {order:<ids>:<expression>[:<sort-type>]}
  *  {order:4785-4478-5789:_#YEAR_____#CATEGORY}
  *  {order:4785-4478-5789:_#HEADLINE:string}
- *  Usualy it is much better to use sorting by database - like you do in {ids},
+ *  Usually it is much better to use sorting by database - like you do in {ids},
  *  but sometimes it is necessary to sort concrete ids, so we use this
- *  You can sort numericaly (default), as string or using current locale
+ *  You can sort numerically (default), as string or using current locale
  *  in both directions: numeric | rnumeric | string | rstring | locale | rlocale
  */
 class AA_Stringexpand_Order extends AA_Stringexpand_Nevercache {

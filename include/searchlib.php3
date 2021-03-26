@@ -620,7 +620,7 @@ class AA_Set extends AA_Object {
     /** addSortFromString function accept various type of sort string:
      *           1)   headline........-
      *           2)   category.......1,publish_date....-,headline........
-     *           3)   category.......1+publish_date....-headline........    (this one is usefull for view's set[]=sort-category.......1+publish_date....-)
+     *           3)   category.......1+publish_date....-headline........    (this one is useful for view's set[]=sort-category.......1+publish_date....-)
      *           4)   sort[0]=headline........-
      *           5)   sort[0][headline........]=d
      *           6)   sort[0][headline........]=d&sort[1][publish_date....]=a
@@ -643,7 +643,7 @@ class AA_Set extends AA_Object {
     }
 
     /** addSortFromBasicString function
-     *  Transforms 'publish_date....-' like sort definition (used in prifiles, ...)
+     *  Transforms 'publish_date....-' like sort definition (used in profiles, ...)
      *  to $arr['publish_date....'] = 'd' as used in sort[] array
      *  It is also possible to specify "group limit" by the number at the begin
      *  of the string (like 4category........-), which means that we want maximum

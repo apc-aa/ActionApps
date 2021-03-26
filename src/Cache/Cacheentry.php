@@ -58,7 +58,7 @@ class Cacheentry
         $etag = hash('md5', 'x' . $this->c . 'q'); // get a unique hash of this content (etag) (make it not the same as key in db for (maybe paranoid) security reasons)
         $ifModifiedMatch = isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) ? (strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) == $lastModified) : false;
         $etagMatch = isset($_SERVER['HTTP_IF_NONE_MATCH']) ? (trim($_SERVER['HTTP_IF_NONE_MATCH']) == $etag) : false;   //(etag: unique file hash)
-        $cacheability = in_array($this->p, ['public', 'private', 'no_cache']) ? $this->p : 'public';
+        $cacheability = in_array($this->p, ['public', 'private', 'no-cache']) ? $this->p : 'public';
 
         header("Last-Modified: " . gmdate("D, d M Y H:i:s", $lastModified) . " GMT");   // set last-modified header
         header("Etag: $etag");                                                      // set etag-header
