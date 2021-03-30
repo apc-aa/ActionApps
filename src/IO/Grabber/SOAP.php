@@ -67,8 +67,9 @@ class SOAP extends XML
 
     /** getClassProperties function of AA_Serializable
      *  Used for importer and htmlSettings()
+     * @return array
      */
-    static function getClassProperties() {
+    public static function getClassProperties(): array {
         $properties = parent::getClassProperties(); //   id         name        type    multi  persistent - validator, required, help, morehelp, example
         $properties['body'] = new AA_Property('body', _m("SOAP body request"), 'string', false, true);
         return $properties;

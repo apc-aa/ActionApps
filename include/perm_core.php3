@@ -1234,6 +1234,8 @@ class AA_Reader {
     /** name2Id function
      *  Tries to find item id for the username in the Reader slices
      *  You can search all users or just the active (default)
+     *  BE CAREFUL with this - MAKE SURE YOU ARE SEARCHING RIGHT SLICES ONLY
+     *
      * @param               $username
      * @param null|string[] $slices
      * @param               $bin

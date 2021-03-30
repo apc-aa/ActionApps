@@ -70,15 +70,18 @@ class CSV extends AbstractGrabber
         return _m('Import data from CSV (Comma Separated Values) format');
     }
 
-    /** true, if grabber returns already prepared item. false, when just parsed source structure is returned which must be converted by transformations */
-    function isDirectfill() {
+    /** true, if grabber returns already prepared item. false, when just parsed source structure is returned which must be converted by transformations
+     * @return bool
+     */
+    public function isDirectfill(): bool {
         return false;
     }
 
     /** getClassProperties function of AA_Serializable
      *  Used for importer and htmlSettings()
+     * @return array
      */
-    static function getClassProperties() {
+    public static function getClassProperties(): array {
         $properties = [];   //                   id             name        type    multi  persistent - validator, required, help, morehelp, example
         $properties['file'] = new AA_Property('file', _m("URL of the file"), 'string', false, true);
         $properties['direct_input'] = new AA_Property('direct_input', _m("use direct text instead of file"), 'string', false, true);

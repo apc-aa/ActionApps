@@ -127,7 +127,7 @@ if ( (strlen($_GET['acccode'])<10) OR ($_GET['acccode']!=constant('ACCESS_CODE')
 require_once __DIR__."/update.optimize.class.php";
 
 class AA_SQL_Updater {
-    var $messages = [];
+    use \AA\Util\ReportTrait;
 
     function test() {
         $optimizers = $this->getOptimizers();
@@ -198,29 +198,6 @@ class AA_SQL_Updater {
         ksort($optimizers);
         return $optimizers;
     }
-
-    /** Message function
-    * @param $text
-    */
-    function message($text) {
-        $this->messages[] = $text;
-    }
-
-    /** Report function
-    * @return string - messages separated by <br>
-    */
-    function report()       {
-        return join('<br>', $this->messages);
-    }
-
-    /** Clear report function
-    * unsets all current messages
-    */
-    function clear_report() {
-        unset($this->messages);
-        $this->messages = [];
-    }
-
 }
 
 $updater = new AA_SQL_Updater();

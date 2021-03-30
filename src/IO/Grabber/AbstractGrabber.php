@@ -38,10 +38,10 @@ use ItemContent;
  *  From this class we derive concrete data grabbers, like RSS, AARSS, CSV, ...
  */
 abstract class AbstractGrabber implements \AA\Util\NamedInterface {
-    protected $_messages = [];
+    use \AA\Util\ReportTrait;
 
     /** @var array of domain and time of the last request to them - used with $load_frequency to  limit request frequency to domains*/
-    protected static $last_reqest_4_domain = [];
+    protected static $last_request_4_domain = [];
 
     /** @var float wait in order we do not contact the same domain more often than $load_frequency miliseconds */
     protected $load_frequency = null;
@@ -52,8 +52,10 @@ abstract class AbstractGrabber implements \AA\Util\NamedInterface {
         exit;
     }
 
-    /** true, if grabber returns already prepared item. false, when just parsed source structure is returned which must be converted by transformations */
-    function isDirectfill() {
+    /** true, if grabber returns already prepared item. false, when just parsed source structure is returned which must be converted by transformations
+     * @return bool
+     */
+    public function isDirectfill(): bool {
         return true;
     }
 
@@ -68,11 +70,31 @@ abstract class AbstractGrabber implements \AA\Util\NamedInterface {
      */
     public function description() : string { return ''; }
 
+
+    /** Called before loadUrl to make authentication - used in loadData() as higher level function
+     * @return bool
+     */
+    protected function loadAuth(): bool { return true; }
+
+    /** the real low level get data from url - used in loadData() as higher level function
+     * @param string      $url
+     * @param string|null $post_body
+     * @return false|string data
+     */
+    protected function loadUrl(string $url, string $post_body = ''): string {
+        $context = !($post_body) ? null : stream_context_create(['http' => ['method'  => 'POST', 'header'  => 'Content-Type: text/xml', 'content' => $post_body ]]);
+        return file_get_contents($url, false, $context);
+    }
+
     /** loads data form, url or direct input
+     * @param string $url
+     * @param string $direct_input
+     * @param string $post_body
+     * @param string $source_encoding
      * @return string
      * @throws \Exception
      */
-    protected function loadData($url, $direct_input='', $post_body='', $source_encoding='' ) {
+    protected function loadData($url, $direct_input='', $post_body='', $source_encoding='') {
         if (strlen($direct_input)) {
             return $direct_input;
         }
@@ -82,8 +104,11 @@ abstract class AbstractGrabber implements \AA\Util\NamedInterface {
             $this->waitForDomain($domain);
         }
 
-        $context = !($post_body) ? null : stream_context_create(['http' => ['method'=>'POST','header'=>'Content-Type: text/xml','content'=>$post_body]]);
-        if (false === ($data = file_get_contents($url, false, $context))) {
+        if (false === $this->loadAuth()) {
+            throw new \Exception('Authentication error: ' . $url);
+        }
+
+        if (false === ($data = $this->loadUrl($url, $post_body))) {
             throw new \Exception('file not loaded: ' . $url);
         }
         $this->message(__CLASS__.' -> '. __FUNCTION__);
@@ -116,8 +141,9 @@ abstract class AbstractGrabber implements \AA\Util\NamedInterface {
     }
 
     /** getClassProperties function of AA_Serializable - used for htmlSetting()
+     * @return array
      */
-    static function getClassProperties() {
+    public static function getClassProperties(): array {
         return [];
     }
 
@@ -163,29 +189,6 @@ abstract class AbstractGrabber implements \AA\Util\NamedInterface {
     function finish() {
     }
 
-    /** message function
-     *  Records Error/Information message
-     * @param $text
-     */
-    function message($text) {
-        $this->_messages[] = $text;
-    }
-
-    /** report function
-     * Print Error/Information messaages
-     */
-    function report() {
-        return join('<br>', $this->_messages);
-    }
-
-    /** clear_report function
-     *
-     */
-    function clear_report() {
-        unset($this->_messages);
-        $this->_messages = [];
-    }
-
     /**
      * @param float $load_frequency - how often we can contact domain in miliseconds - 1000.0 = 1s
      * @return AbstractGrabber
@@ -199,10 +202,10 @@ abstract class AbstractGrabber implements \AA\Util\NamedInterface {
      * @param string $domain
      */
     protected function waitForDomain($domain) {
-        $time_diff = microtime(true) - (self::$last_reqest_4_domain[$domain] ?: 0);
+        $time_diff = microtime(true) - (self::$last_request_4_domain[$domain] ?: 0);
         if ($time_diff < ($this->load_frequency / 1000.0)) {   // protect is in miliseconds, $time_diff in seconds
             usleep((int)(1000000 * (($this->load_frequency / 1000.0) - $time_diff)));
         }
-        self::$last_reqest_4_domain[$domain] = microtime(true);
+        self::$last_request_4_domain[$domain] = microtime(true);
     }
 }

@@ -57,38 +57,8 @@ define('TOEXECUTE_USER_TASK_TIME', 2000000000);
  *  We do not want to allow users to execute any method of any object just
  *  by inserting some data in the database.
  */
-class Toexecute
-{
-
-    var $messages = [];
-
-    /** Message function
-     * @param $text
-     */
-    function message($text)
-    {
-        if (is_array($text)) {
-            $this->messages = array_merge($this->messages, $text);
-        } else {
-            $this->messages[] = $text;
-        }
-    }
-
-    /** Report function
-     * @return string - messages separated by <br>
-     */
-    function report()
-    {
-        return join('<br>', $this->messages);
-    }
-
-    /** Clear report function - unsets all current messages  */
-    function clear_report()
-    {
-        unset($this->messages);
-        $this->messages = [];
-    }
-
+class Toexecute {
+    use \AA\Util\ReportTrait;
 
     /** global_instance function
      *  "class function" obviously called as AA\Later\Toexecute::global_instance();

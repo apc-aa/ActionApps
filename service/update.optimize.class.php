@@ -27,8 +27,10 @@
 
 use AA\IO\DB\DB_AA;
 
+
 abstract class AA_Optimize implements \AA\Util\NamedInterface {
-    protected $messages = [];
+    use \AA\Util\ReportTrait;
+
     protected $db;
 
     /** \AA\Util\NamedInterface function */
@@ -56,12 +58,6 @@ abstract class AA_Optimize implements \AA\Util\NamedInterface {
     /** the optimizers are ordered by priority when executed in chain (like for sql_update) */
     function priority()     { return 100; }
 
-    /** Message function
-    * @param string|array $row
-    */
-    function message($row) {
-        $this->messages[] = is_array($row) ? $row : ['txt' => $row];
-    }
 
     /** This function stores global state for all optimizations.
      *  You can call it with bool parameter which will switch the state
@@ -96,21 +92,6 @@ abstract class AA_Optimize implements \AA\Util\NamedInterface {
         }
         $db = $this->db;
         $db->query($SQL);
-    }
-
-    /** Report function
-    * @return string - messages in table
-    */
-    function report()       {
-        return GetHtmlTable($this->messages, 'key');
-    }
-
-    /** Clear report function
-    * unsets all current messages
-    */
-    function clear_report() {
-        unset($this->messages);
-        $this->messages = [];
     }
 }
 

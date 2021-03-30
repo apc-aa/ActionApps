@@ -39,6 +39,10 @@ use ItemContent;
  *                            into destination item
  */
 class Saver implements AA\Later\LaterInterface {
+    use \AA\Util\ReportTrait {
+        report as protected traitreport;
+    }
+
     protected $grabber;
     /** @var \AA\IO\Grabber\AbstractGrabber the object which deliveres the data */
     protected $transformations;
@@ -276,32 +280,14 @@ class Saver implements AA\Later\LaterInterface {
      *  @see \AA\Later\LaterInterface
      */
     public function toexecutelater($params= []) {
-        return $this->run();
+        $ret = $this->run();
+        return "OK: $ret[0], Err: $ret[1]";
     }
 
-    /** message function
-     *  Records Error/Information message
-     * @param $text
+    /** overrides the report from the trait - we are adding the Grabber report as well
+     * @return string - messages in table
      */
-    function message($text) {
-        $this->_messages[] = (is_object($text) && !is_callable([
-                $text,
-                "__toString"
-            ])) ? print_r($text, true) : $text;
-    }
-
-    /** report function
-     * Print Error/Information messaages
-     */
-    function report() {
-        return join("<br>\n", $this->_messages);
-    }
-
-    /** clear_report function
-     *
-     */
-    function clear_report() {
-        unset($this->_messages);
-        $this->_messages = [];
+    public function report(): string {
+        return $this->traitreport() . $this->grabber->report();
     }
 }

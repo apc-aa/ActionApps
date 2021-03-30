@@ -41,10 +41,10 @@ class XML extends AbstractGrabber
     /** @var $file string url of the file */
     protected $file = '';
 
-    /** @var if not null, POST request used using this body */
+    /** @var string if not null, POST request used using this body */
     protected $post_body = null;
 
-    /** @var use direct text instead of file */
+    /** @var string use direct text instead of file */
     protected $direct_input = '';
 
 
@@ -85,15 +85,18 @@ class XML extends AbstractGrabber
         return _m('General XML file');
     }
 
-    /** true, if grabber returns already prepared item. false, when just parsed source structure is returned which must be converted by transformations */
-    function isDirectfill() {
+    /** true, if grabber returns already prepared item. false, when just parsed source structure is returned which must be converted by transformations
+     * @return bool
+     */
+    public function isDirectfill(): bool {
         return false;
     }
 
     /** getClassProperties function of AA_Serializable
      *  Used for importer and htmlSettings()
+     * @return array
      */
-    static function getClassProperties() {
+    public static function getClassProperties(): array {
         $properties = [];//                        id             name        type    multi  persistent - validator, required, help, morehelp, example
         $properties['file']         = new AA_Property('file',         _m("URL of the file"), 'string', false, true);
         $properties['post_body']    = new AA_Property('post_body',    _m("POST request body"), 'string', false, true);
@@ -133,7 +136,7 @@ class XML extends AbstractGrabber
                 }
                 $data = str_replace($search, $replace, $data);
                 if (false === ($xml = simplexml_load_string($data))) {
-                    throw new Exception('xml parse of modiffied data error: ' . $data);
+                    throw new Exception('xml parse of modified data error: ' . $data);
                 }
             } else {
                 foreach ($nss as $prefix => $url) {

@@ -36,7 +36,8 @@
  *  Main method is transform(), which do the all work.
  */
 abstract class AA_Transformation implements \AA\Util\NamedInterface {
-    var $messages   = [];
+    use \AA\Util\ReportTrait;
+
     var $parameters = [];
 
     /** name function
@@ -93,27 +94,6 @@ abstract class AA_Transformation implements \AA\Util\NamedInterface {
         return $ret;
     }
 
-    /** message function
-     * Records Error/Information messaage
-     * @param $text
-     */
-    function message($text) {
-        $this->messages[] = $text;
-    }
-
-    /** report function
-     * Print Error/Information messaages
-     */
-    function report()       {
-        return join('<br>', $this->messages);
-    }
-    /** clear_report function
-     *
-     */
-    function clear_report() {
-        unset($this->messages);
-        $this->messages = [];
-    }
     /** getParam function
      * @param $param_name
      * @return $this->$param_name
