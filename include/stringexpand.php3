@@ -2046,11 +2046,28 @@ class AA_Stringexpand_Shuffle extends AA_Stringexpand_Nevercache {
      */
     function expand($ids='', $limit=null) {
         $arr = explode_ids($ids);
-        shuffle($arr);
+        $arr = $this->do_change_array($arr);
         if ($limit) {
             $arr = array_slice($arr, 0, $limit);
         }
         return join('-', $arr);
+    }
+
+    protected function do_change_array(array $arr): array {
+        shuffle($arr);
+        return $arr;
+    }
+}
+
+/** reverse the order of ids
+ *    {reverse:<ids>[:<limit>]}
+ */
+class AA_Stringexpand_Reverse extends AA_Stringexpand_Shuffle {
+
+    /** uses the same code as shuffle */
+
+    protected function do_change_array(array $arr): array {
+        return array_reverse($arr);
     }
 }
 
