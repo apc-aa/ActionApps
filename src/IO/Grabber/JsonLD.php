@@ -149,24 +149,19 @@ class JsonLD extends AbstractGrabber
         $next_url = $this->file;
 
         while ($next_url) {
-            huhl($next_url);
             $data = $this->loadData($next_url);
-            huhl('Data', $data);
             $json = json_decode($data, true);
-            huhl($json);
             if (is_array($json['hydra:member'])) {
-                huhl('ok', $json['hydra:member'], $json['hydra:member']);
                 $this->_items =  array_merge($this->_items, $json['hydra:member']);
-                huhl('pok', $this->_items);
             }
             $next_url = $this->nextPage($json);
         }
         
-//    [hydra:view] => Array
-//        (
-//            [@id] => /api/ukazatel?page=1
-//            [@type] => hydra:PartialCollectionView
-//            [hydra:next] => /api/ukazatel?page=2
+            //    [hydra:view] => Array
+            //        (
+            //            [@id] => /api/ukazatel?page=1
+            //            [@type] => hydra:PartialCollectionView
+            //            [hydra:next] => /api/ukazatel?page=2
 
         $this->message(__CLASS__.' -> '. __FUNCTION__);
         $this->message("parsed items ". count($this->_items));
@@ -180,13 +175,9 @@ class JsonLD extends AbstractGrabber
         }
         next($this->_items);
 
-        // if (!--$i) {
-        //     exit;
-        // }
-
         $item = new ItemContent();
         foreach ($data as $k => $v) {
-            $item->setValue($k, $v);    // stav importu
+            $item->setValue($k, $v);
         }
         return $item;
     }
