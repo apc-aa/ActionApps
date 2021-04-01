@@ -425,6 +425,9 @@ function AA_ReloadAjaxResponse(id, responseText) {
     var items  = (typeof responseText === 'string') ? responseText.evalJSON(true) : responseText;  // maybe we can remove "true"
     var res;
     for (var i in items) {
+        if (i == 'report') {
+          continue;
+        }
         res = items[i];
         $(valdivid).update(res.length>0 ? res : '--');
         break;

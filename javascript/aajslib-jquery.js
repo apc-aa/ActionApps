@@ -347,6 +347,9 @@ function AA_ReloadAjaxResponse(id, responseText) {
     var items  = (typeof responseText === 'string') ? jQuery.parseJSON(responseText) : responseText;
     var res;
     for (var i in items) {
+        if (i == 'report') {
+            continue;
+        }
         res = items[i];
         $(valdiv).html(res.length>0 ? res : '--');
         break;
