@@ -30,7 +30,7 @@
 // optionaly $Msg to show under <h1>Headline</h1>
 // (typicaly: Category update successful)
 
-$editor_perms = AA::$perm->getModulePerms($auth->auth["uid"], $slice_id);
+$editor_perms = AA::$perm->getModulePerms($auth->getUid(), $slice_id);
 
 /** CanChangeRole function
  *  decides whether current user can change role

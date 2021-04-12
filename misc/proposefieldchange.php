@@ -153,7 +153,7 @@ elseif ( AA_V::P('assignment') == 1 ) {
         if ($zids->count() > 0) {
             $now  = now();
 
-            $SQL  = "UPDATE item SET status_code = '3', last_edit   = '$now', edited_by   = '". quote(isset($auth) ? $auth->auth["uid"] : "9999999999")."'";
+            $SQL  = "UPDATE item SET status_code = '3', last_edit   = '$now', edited_by   = '". quote(isset($auth) ? $auth->getUid() : "9999999999")."'";
             $SQL .= " WHERE ". $zids->sqlin('id');
 
             DB_AA::sql($SQL);

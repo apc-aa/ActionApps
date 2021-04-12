@@ -95,7 +95,7 @@ class AA_Responder_Get_Modules extends AA_Responder {
     }
 
     function run() {
-        $type_sql = (count($this->types) == 0) ? '' : CVarset::sqlin('type', $this->types) . ' AND ';
+        $type_sql = (count($this->types) == 0) ? '' : Cvarset::sqlin('type', $this->types) . ' AND ';
         $modules  = GetTable2Array("SELECT id, name FROM module WHERE $type_sql deleted=0  ORDER BY type, priority, name", "unpack:id", 'name');
         return new AA_Response($modules);
     }
@@ -399,8 +399,8 @@ class AA_Responder_Alertitem extends AA_Responder {
 pageOpen('nobody');
 
 // in order {xuser:id} alias works in widgets, for example
-$GLOBALS['apc_state']['xuser'] = $auth->auth["uname"];
-$GLOBALS['apc_state']['xuid']  = $auth->auth["uid"];
+$GLOBALS['apc_state']['xuser'] = $auth->getUname();
+$GLOBALS['apc_state']['xuid']  = $auth->getUid();
 
 $request = null;
 
@@ -427,7 +427,7 @@ if ( empty($responder) ) {
 }
 
 if (!$responder->isPerm()) {
-    AA_Response::error(_m("You (%2) don't have permissions to run %1", [$responder->name(),$auth->auth["uid"]]), 101);  // error code > 0
+    AA_Response::error(_m("You (%2) don't have permissions to run %1", [$responder->name(),$auth->getUid()]), 101);  // error code > 0
     exit;
 }
 

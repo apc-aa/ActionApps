@@ -165,7 +165,7 @@ class AA_Manager extends AA_Storable {
             unset($r_state['manager']);
             // set default admin interface settings from user's profile
 
-            $profile = AA_Profile::getProfile($auth->auth["uid"], $this->module_id); // current user settings
+            $profile = AA_Profile::getProfile($auth->getUid(), $this->module_id); // current user settings
             $this->setFromProfile($profile);
         } elseif ($r_state['manager']) {        // do not set state for the first time calling
             $this->setFromState($r_state['manager']);
@@ -362,7 +362,7 @@ class AA_Manager extends AA_Storable {
     function performActions() {
 
         $akce = $_REQUEST['akce'];
-        $chb  = $_REQUEST['chb'];
+        $chb  = $_REQUEST['chb'] ?? [];
 
         /** used for AJAX display of action parameters */
         if ( $_GET['display_params'] ) {

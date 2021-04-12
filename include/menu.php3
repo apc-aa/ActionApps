@@ -57,7 +57,7 @@ function get_aamenus() {
            $r_state,
            $bookmarks;
 
-    $profile = AA_Profile::getProfile($auth->auth["uid"], $slice_id); // current user settings
+    $profile = AA_Profile::getProfile($auth->getUid(), $slice_id); // current user settings
     $aamenus = [];
 
     $aamenus["view"] = [
@@ -245,7 +245,7 @@ function AddAlertsModules(&$submenu, $collections, $header, $help) {
         $i = 100;
         foreach ($collections as $col) {
             $submenu["item".$i] = [
-                "cond"        => CheckPerms( $auth->auth["uid"], "slice", unpack_id($col['id']), PS_FIELDS),
+                "cond"        => CheckPerms( $auth->getUid(), "slice", unpack_id($col['id']), PS_FIELDS),
                 "href"        => "modules/alerts/index.php3?module_id=".unpack_id($col['id']),
                 "no_slice_id" => 1,
                 "label"       => $col['name']

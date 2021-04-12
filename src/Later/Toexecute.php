@@ -92,7 +92,7 @@ class Toexecute {
         $varset = new Cvarset([
             ['created', time()],
             ['execute_after', ((int)$time < time() ? time() : $time)],  // task for user queue uses TOEXECUTE_USER_TASK_TIME
-            ['aa_user', $auth->auth['uid']],
+            ['aa_user', $auth->getUid()],
             ['priority', $priority],
             ['selector', ($selector ?: get_class($object))],
             ['object', serialize($object)],

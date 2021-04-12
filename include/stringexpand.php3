@@ -116,7 +116,7 @@ if (ini_get('pcre.jit') == 1) {
  * @return array|mixed
  */
 function json2arr($string, $do_not_filter=false) {
-    if ($string{0} != '[') {
+    if ($string[0] != '[') {
         $values = [$string];
     } else {
         $values = aa_json_decode($string);
@@ -132,11 +132,11 @@ function json2asoc($string) {
     if (!strlen($string)) {
         return [];
     }
-    if ($string{0} == '{') {
+    if ($string[0] == '{') {
         return aa_json_decode($string, true);
     }
 
-    if ($string{0} == '[') {
+    if ($string[0] == '[') {
         // returns "one" => "one", "two" => "two" for ["one","two"]
         $values = json2arr($string, true);
         return array_combine($values, $values);
@@ -301,7 +301,7 @@ class AA_Stringexpand_User extends AA_Stringexpand {
         // slices), where we use {user:xxx} alias, into cache (AUTH_USER is not in
         // cache's keyString.
         $cache_nostore = true;             // GLOBAL!!!
-        $auth_user     = get_if($_SERVER['PHP_AUTH_USER'],$auth->auth["uname"],$_SERVER['REMOTE_USER']);
+        $auth_user     = get_if($_SERVER['PHP_AUTH_USER'],$auth->getUname(),$_SERVER['REMOTE_USER']);
         switch ($field) {
             case '':         return $auth_user;
             case 'password': return $_SERVER['PHP_AUTH_PW'];
@@ -3057,7 +3057,7 @@ class AA_Treecache {
      */
     function _get_item($item_id, $expression) {
         // cached subtree
-        if ($item_id{0} == 'g') {
+        if ($item_id[0] == 'g') {
             return $this->_cache[$item_id];
         }
 
@@ -5144,9 +5144,9 @@ class AA_Stringexpand_Dictionary extends AA_Stringexpand {
                 */
                 $search_kw = 'AA#@'. strtr($kw, $delimiters) .'AA#@';
                 $replace_pairs[$search_kw] = str_replace('_#KEYWORD_', $kw, $link);
-                if ( ($first_upper=strtoupper($kw{0})) != $kw{0} ) {
+                if ( ($first_upper=strtoupper($kw[0])) != $kw[0]) {
                     // do the same for the word with first letter in uppercase
-                    $kw{0} = $first_upper;
+                    $kw[0] = $first_upper;
                     $search_kw = 'AA#@'. strtr($kw, $delimiters) .'AA#@';
                     $replace_pairs[$search_kw] = str_replace('_#KEYWORD_', $kw, $link);
                 }
@@ -5261,7 +5261,7 @@ function expandFilenameWithHttp($parturl) {
     $headers  = [];
     // if no http request - add server name
     if (!(aa_substr($filename, 0, 7) == 'http://') AND !(aa_substr($filename, 0, 8) == 'https://')) {
-        $filename = self_server(). (($filename{0}=='/') ? '' : '/'). $filename;
+        $filename = self_server(). (($filename[0] =='/') ? '' : '/'). $filename;
         if (!empty($_SERVER["HTTP_COOKIE"])) {
             // we resend cookies only for local requests (It could be usefull for AA_Auth ...)
             $headers  = ['Cookie'=>$_SERVER["HTTP_COOKIE"]];
@@ -6479,7 +6479,7 @@ class AA_Requires {
         $ret['head'] = ['require',_m('version')];
         $defs = self::systemDefinitions();
         foreach ($defs as $name => $def) {
-            if ($name{0} !== '_') {
+            if ($name[0] !== '_') {
                 $base = strtok($name, '@');
                 if (!$ret[$base]) {
                     $ret[$base] = [$base, ''];
@@ -7611,7 +7611,7 @@ class AA_Stringexpand_Setsecret extends AA_Stringexpand_Nevercache {
      */
     function expand($username='', $password='', $code2fa='') {
         global $auth;
-        if (!strlen($username) OR !strlen($password) OR !($uid = AA::$perm->authenticateUsername($username, $password, $code2fa)) OR ($uid != $auth->auth['uid'])) {
+        if (!strlen($username) OR !strlen($password) OR !($uid = AA::$perm->authenticateUsername($username, $password, $code2fa)) OR ($uid != $auth->getUid())) {
             return '';
         }
         $ga = new PHPGangsta_GoogleAuthenticator();
@@ -8787,7 +8787,7 @@ class AA_Stringexpand_Manager extends AA_Stringexpand_Nevercache {
         $mode = $mode ?: 'ND'.($edit_code ? 'EB' : ''); // add here all possible options, which is ND currently
         $mode_arr = [];
 
-        if ($mode{0} == '{') { // we define buttons using asociative array - {jsonasoc:N:Add item:D:Delete item}
+        if ($mode[0] == '{') { // we define buttons using asociative array - {jsonasoc:N:Add item:D:Delete item}
             $mode_arr = json2asoc($mode);
             if (array_key_exists('S', $mode_arr) AND !strlen($mode_arr['S'])) {
                 $mode_arr['S'] = '&#x2261';

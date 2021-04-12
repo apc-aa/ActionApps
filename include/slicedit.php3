@@ -88,7 +88,7 @@ function add_user_and_welcome($welcome_id, $user_login, $slice_id, $role) {
     if ( ($slice_name = DB_AA::select1('name', 'SELECT name FROM `slice`', [['id', $slice_id, 'l']])) === false) {
         return _m("Slice not found.");
     }
-    $me = AA::$perm->getIDsInfo($auth->auth["uid"]);
+    $me = AA::$perm->getIDsInfo($auth->getUid());
 
     $aliases               = [];
     $aliases["_#SLICNAME"] = GetAliasDef( "f_t:$slice_name",      "id..............");
@@ -110,7 +110,7 @@ if ($slice_id) {  // edit slice
         exit;
     }
 } else {          // add slice
-    if (!CheckPerms( $auth->auth["uid"], "aa", AA_ID, PS_ADD)) {
+    if (!CheckPerms( $auth->getUid(), "aa", AA_ID, PS_ADD)) {
         MsgPage(StateUrl(self_base())."index.php3", _m("You have not permissions to add slice"));
         exit;
     }
@@ -260,7 +260,7 @@ if ( $add || $update ) {
 
             $slice_id = new_id();
             $varset->set("id", $slice_id, "unpacked");
-            $varset->set("created_by", $auth->auth["uid"], "text");
+            $varset->set("created_by", $auth->getUid(), "text");
             $varset->set("created_at", now(), "text");
             $varset->set("name", $name, "quoted");
             $varset->set("owner", $owner, "unpacked");
@@ -287,7 +287,7 @@ if ( $add || $update ) {
             }
             $varset->setFromArray($record);
             $varset->set("id", $slice_id, "unpacked");
-            $varset->set("created_by", $auth->auth["uid"], "text");
+            $varset->set("created_by", $auth->getUid(), "text");
             $varset->set("created_at", now(), "text");
             $varset->set("name", $name, "quoted");
             $varset->set("owner", $owner, "unpacked");

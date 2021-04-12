@@ -48,7 +48,7 @@ $p_module_id = q_pack_id($module_id); // packed to 16-digit as stored in databas
 
 // Check permissions for this page.
 
-if (!CheckPerms( $auth->auth["uid"], "slice", $module_id, PS_MODP_ADD_POLL)) {
+if (!CheckPerms( $auth->getUid(), "slice", $module_id, PS_MODP_ADD_POLL)) {
     MsgPageMenu(StateUrl(self_base())."index.php3", _m("No permission to add/edit poll."), "admin");
     exit;
 }

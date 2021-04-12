@@ -88,7 +88,7 @@ class AA_Generator_Uid extends AA_Generator {
     /** generate() - main function for generating the value */
     function generate() {
         global $auth;                                  // 9999999999 for anonymous
-        return new AA_Value(isset($auth) ? $auth->auth["uid"] : "9999999999");
+        return new AA_Value(isset($auth) ? $auth->getUid() : "9999999999");
     }
 }
 
@@ -101,7 +101,7 @@ class AA_Generator_Log extends AA_Generator {
     /** generate() - main function for generating the value */
     function generate() {
         global $auth;                                  // "anonymous" for anonymous
-        return new AA_Value(isset($auth) ? $auth->auth["uname"] : "anonymous");
+        return new AA_Value(isset($auth) ? $auth->getUname() : "anonymous");
     }
 }
 
@@ -502,7 +502,7 @@ class AA_Inserter_Uid extends AA_Inserter {
             $val = $value['value'];
         } else {
             // if not $auth, it is from anonymous posting - 9999999999 is anonymous user
-            $val = (isset($auth) ?  $auth->auth["uid"] : ((strlen($value['value'])>0) ? $value['value'] : "9999999999"));
+            $val = (isset($auth) ?  $auth->getUid() : ((strlen($value['value'])>0) ? $value['value'] : "9999999999"));
         }
         parent::execute($fieldwriter, $item_id, ['value' => $val], $additional);
     }
@@ -523,7 +523,7 @@ class AA_Inserter_Log extends AA_Inserter {
     public function execute($fieldwriter, $item_id, $value, $additional= []) {
         global $auth;
         // if not $auth, it is from anonymous posting
-        $val = (isset($auth) ?  $auth->auth["uname"] : ((strlen($value['value'])>0) ? $value['value'] : 'anonymous'));
+        $val = (isset($auth) ?  $auth->getUname() : ((strlen($value['value'])>0) ? $value['value'] : 'anonymous'));
 
         parent::execute($fieldwriter, $item_id, ['value' => $val], $additional);
     }
@@ -853,7 +853,7 @@ class AA_Inserter_2fa extends AA_Inserter {
 
         if ($aa_const == 'AA_2FASECRET') {
             global $auth;
-            if (!strlen($username) OR !($uid = AA::$perm->authenticateUsername($username, $password, $code2fa)) OR ($uid != $auth->auth['uid'])) {
+            if (!strlen($username) OR !($uid = AA::$perm->authenticateUsername($username, $password, $code2fa)) OR ($uid != $auth->getUid())) {
                 return '';
             }
             $ga = new PHPGangsta_GoogleAuthenticator();
@@ -1023,7 +1023,7 @@ function StoreItem( $id, $slice_id, $content4id, $insert, $invalidatecache=true,
 function ValidateContent4Id(&$err, $slice, $action, $id=0, $do_validate=true, $notshown="") {
     global $oldcontent4id, $auth;
 
-    $profile = AA_Profile::getProfile($auth->auth["uid"], $slice->getId()); // current user settings
+    $profile = AA_Profile::getProfile($auth->getUid(), $slice->getId()); // current user settings
 
     // error array (Init - just for initializing variable
     if (!is_array($err)) {

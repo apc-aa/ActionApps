@@ -753,9 +753,9 @@ class linkobj {
         if ( $GLOBALS['folder'] ) {
             $this->data['folder']     = max(1, trim($GLOBALS['folder']));
         }
-        $this->data['edited_by']  = $auth->auth["uid"];
+        $this->data['edited_by']  = $auth->getUid();
         $this->data['last_edit']  = $now_date;
-        $this->data['checked_by'] = $auth->auth["uid"];
+        $this->data['checked_by'] = $auth->getUid();
         $this->data['checked']    = $now_date;
         // fill regions and languages from the form
         foreach ( (array)$GLOBALS['reg'] as $r ) {
@@ -925,9 +925,9 @@ class linkobj {
         }
 
         $now_date = now();
-        $varset->add("checked_by", "quoted", $auth->auth["uid"]);
+        $varset->add("checked_by", "quoted", $auth->getUid());
         $varset->add("checked",    "date",   $now_date);
-        $varset->add("edited_by",  "quoted", $auth->auth["uid"]);
+        $varset->add("edited_by",  "quoted", $auth->getUid());
         $varset->add("last_edit",  "quoted", $now_date);
         if ( $this->data['folder'] ) {
             $varset->add("folder",  "quoted", max(1,$this->data['folder']));
@@ -936,7 +936,7 @@ class linkobj {
         if ( !$this->lid ) {  // insert
             $r_state['linkedit']['last_autors_email'] = $this->data['initiator'];
             $r_state['linkedit']['last_rate']         = $this->data['rate'];
-            $varset->add("created_by", "quoted", $auth->auth["uid"]);
+            $varset->add("created_by", "quoted", $auth->getUid());
             $varset->add("created",    "date",   $now_date);
             // default setting for votes
             $varset->add("rate",       "number", 4);

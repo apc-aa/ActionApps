@@ -84,8 +84,7 @@ pageOpen($nobody ? 'nobody': '');
 if ($nobody) {
     $_POST['username'] = $free;
     $_POST['password'] = $freepwd;
-    $auth->auth["uid"] = $auth->auth_validatelogin();
-    if ( !$auth->auth["uid"] ) {
+    if ( !$auth->auth_validatelogin()) {
         echo _m("Either your username or your password is not valid.");
         exit;
     }

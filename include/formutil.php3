@@ -174,7 +174,7 @@ class inputform {
             $remove_string = $view->f('remove_string');
         }
 
-        $profile       = AA_Profile::getProfile($auth->auth["uid"], $slice->getId()); // current user settings
+        $profile       = AA_Profile::getProfile($auth->getUid(), $slice->getId()); // current user settings
 
         // create buttons array for top (and lately for bottom of the form) ------------------
         $buttons = [];
@@ -318,7 +318,7 @@ class inputform {
     function getForm($content4id, $slice, $edit=false, $show=null, $slice_fields=false) {
         global $auth;
 
-        $profile   = AA_Profile::getProfile($auth->auth["uid"], $slice->getId()); // current user settings
+        $profile   = AA_Profile::getProfile($auth->getUid(), $slice->getId()); // current user settings
 
         $fields = $slice->getFields($slice_fields);
 

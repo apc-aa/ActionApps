@@ -34,7 +34,7 @@ require_once __DIR__."/../../include/locauth.php3";
 $auth4cache = '';
 if ($_COOKIE['AA_Session'] AND !isset($_REQUEST['username'])) {   // do not authenticate new user - we could restrict reader slices later
     pageOpen('nobody');   // define $sess and $auth; login user, if (s)he tries to; "nobody" allowed
-    $auth4cache = is_object($auth) ? $auth->auth['uname'] : '';
+    $auth4cache = is_object($auth) ? $auth->getUid() : '';
 }
 
 // -- CACHE -------------------------------------------------------------------

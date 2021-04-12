@@ -89,7 +89,7 @@ function get_aamenus() {
         ]
     ];
     
-    $profile = AA_Profile::getProfile($auth->auth["uid"], $slice_id); // current user settings
+    $profile = AA_Profile::getProfile($auth->getUid(), $slice_id); // current user settings
 
     // left menu for aaadmin is common to all modules, so it is shared
     return array_merge($aamenus, GetCommonMenu($profile));

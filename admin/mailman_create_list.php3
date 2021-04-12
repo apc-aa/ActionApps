@@ -123,7 +123,7 @@ function add_mailman_list() {
     echo _m("The list was successfully created.");
 }
 
-$me = AA::$perm->getIDsInfo($auth->auth["uid"]);
+$me = AA::$perm->getIDsInfo($auth->getUid());
 if (! $admin_email) {
     $admin_email = $me["mail"];
 }

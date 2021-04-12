@@ -110,7 +110,7 @@ class AA_Csv_Importer {
         $this->itemIdMappedParams  = $_REQUEST['itemIdMappedParams'];
         $this->actionIfItemExists  = $_REQUEST['actionIfItemExists'];
         $this->addParams           = unserialize(url2bin($_REQUEST['addParamsSerial']));
-        $this->auth_uid            = $auth->auth["uid"];
+        $this->auth_uid            = $auth->getUid();
     }
 
 /** loadFromDb function

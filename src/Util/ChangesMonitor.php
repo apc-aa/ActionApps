@@ -100,7 +100,7 @@ class ChangesMonitor {
         $varset = new Cvarset;
         $varset->addkey("id", "text", $change_id);
         $varset->add("time", "number", now());
-        $varset->add("user", "text", is_object($auth) ? $auth->auth["uid"] : '');
+        $varset->add("user", "text", is_object($auth) ? $auth->getUid() : '');
         $varset->add("type", "text", $type);
         $varset->add("resource_id", 'text', $change->getResourceId());
         $varset->doInsert('change');

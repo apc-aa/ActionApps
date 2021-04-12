@@ -47,6 +47,14 @@ class AA_Auth extends Auth {
         return strlen($this->auth["uid"]) and ($this->auth["uid"] != 'nobody');
     }
 
+    public function getUid(): string {
+        return $this->auth["uid"];
+    }
+
+    public function getUname(): string {
+        return $this->auth["uname"];
+    }
+
     function set_nobody($state = true) {
         $this->nobody = $state;
     }
@@ -92,12 +100,12 @@ class AA_Auth extends Auth {
         //     $this->auth["uname"]=$username;
         // }
 
-        $uid = $this->_validatelogin($username, $password, $code2fa);
-        return $uid;
+        return $this->_validatelogin($username, $password, $code2fa);
     }
 
     protected function _validatelogin($username, $password, $code2fa='') {
         $this->auth['uname'] = ($uid = AA::$perm->authenticateUsername($username, $password, $code2fa)) ? $username : '';
+        $this->auth['uid']   = $uid ?: '';
         AA_Log::write('LOGIN', AA_Log::context($uid), $username);
         return $uid;
     }

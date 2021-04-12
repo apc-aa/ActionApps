@@ -167,7 +167,7 @@ class AA_Field implements ArrayAccess {
         global $auth;
 
         if ($with_profile) {
-            $profile   = AA_Profile::getProfile($auth->auth['uid'], $this->getSliceId()); // current user settings
+            $profile   = AA_Profile::getProfile($auth->getUid(), $this->getSliceId()); // current user settings
             if ($profile_value = $profile->getProperty('predefine', $this->getId())) {
                 return $profile->parseContentProperty($profile_value);
             }
@@ -468,10 +468,10 @@ class AA_Field implements ArrayAccess {
             echo "<td><a href=\"javascript:DeleteField('$id')\">". _m("Delete") ."</a></td>";
         }
 
-        $alias_list = join(array_map(
+        $alias_list = join(' ', array_map(
             function($a) use ($id) {
                 return $this->linkToField($a, $id, substr($a,2), (substr($a,0,2)=='X#') ? ['disabled'] : []);
-            }, $aliases),' ');
+            }, $aliases));
         echo "<td class=\"tabhlp\">$alias_list</td>";
         echo "</tr>\n";
 
@@ -920,7 +920,7 @@ class AA_Fields implements Iterator, Countable {
      * @return bool
      */
     static function isSliceField($field_id) {
-        return $field_id AND ($field_id{0} == '_');
+        return $field_id AND ($field_id[0] == '_');
     }
 
     /** createFieldId function

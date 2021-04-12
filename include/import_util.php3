@@ -147,7 +147,7 @@ class Actions {
                      case 'publish_date....' : $done = 1; $fieldVal[]['value'] = time(); break;
                      case 'expiry_date.....' : $done = 1; $fieldVal[]['value'] = mktime(0,0,0,date("m"),date("d"),date("Y")+10) ; break;	// expiry in 10 years default : TODO
                      case 'edited_by.......':
-                     case 'posted_by.......' : $done = 1; $fieldVal[]['value'] = $auth->auth['uid']; break;	// todo
+                     case 'posted_by.......' : $done = 1; $fieldVal[]['value'] = $auth->getUid(); break;	// todo
                      // todo
                      case 'id..............' : $done = 1; $fieldVal[]['value'] = new_id(); break;
                      default :

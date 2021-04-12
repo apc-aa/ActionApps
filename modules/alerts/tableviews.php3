@@ -227,7 +227,7 @@ function GetAlertsTableView ($viewID, $processForm = false) {
             ],
             "created_by" => [
                 "caption" => _m("created by"),
-                "default"=>$auth->auth["uid"],
+                "default"=>$auth->getUid(),
                 "view"=> [
                     "type"=>"text",
                     "readonly" => 1

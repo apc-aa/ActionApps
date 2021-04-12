@@ -49,12 +49,12 @@ $superadmin  = IsSuperadmin();
 $module_id   = $slice_id;
 
 if ($template['P']) {        // add module
-    if (!CheckPerms( $auth->auth["uid"], "aa", AA_ID, PS_ADD)) {
+    if (!CheckPerms( $auth->getUid(), "aa", AA_ID, PS_ADD)) {
         MsgPage(StateUrl(self_base())."index.php3", _m("You have not permissions to add polls"));
         exit;
     }
 } else {                    // edit module
-    if (!CheckPerms( $auth->auth["uid"], "slice", $module_id, PS_MODP_SETTINGS)) {
+    if (!CheckPerms( $auth->getUid(), "slice", $module_id, PS_MODP_SETTINGS)) {
         MsgPage(StateUrl(self_base())."index.php3", _m("You have not permissions to edit this polls"));
         exit;
     }

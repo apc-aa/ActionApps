@@ -159,7 +159,7 @@ $id = $_REQUEST['id'];
 
 // link from public pages sometimes do not contain slice_id
 if ( $id ) {
-    if ((strlen($id)==33) AND strpos(' xyz', $id{0})) {
+    if ((strlen($id)==33) AND strpos(' xyz', $id[0])) {
         // x, y, z prefixed ids for new added related items
         $id = substr($id,1);
     }
@@ -200,6 +200,7 @@ $fields = $slice->getFields($slice_fields);
 //mimo changes
 $lang_control = MLXSlice($slice);
 
+$err = [];          // error array (Init - just for initializing variable
 
 //  update database
 if ( ($insert || $update) AND count($fields) ) {
@@ -299,7 +300,7 @@ if ($edit) {
     // authors have only permission to edit their own items
     $perm_edit_all  = IfSlPerm(PS_EDIT_ALL_ITEMS);
     $item_user = $content4id->getValue('posted_by.......');
-    $real_user = $auth->auth['uid'];
+    $real_user = $auth->getUid();
     if (!( $perm_edit_all || ( $item_user == $real_user ) )) {
         $err["DB"] = MsgErr(_m("Error: You have no rights to edit item."));
         MsgPage(con_url(StateUrl(self_base() ."index.php3")), $err);
@@ -310,7 +311,7 @@ if ($edit) {
     $content4id = new ItemContent;
 
     // not necessary - filled later
-    // $content4id->setFieldsFromProfile($fields, AA_Profile::getProfile($auth->auth["uid"], $slice->getId()));
+    // $content4id->setFieldsFromProfile($fields, AA_Profile::getProfile($auth->getUid(), $slice->getId()));
 }
 
 // mimo changes

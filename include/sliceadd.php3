@@ -26,7 +26,7 @@
 
 use AA\IO\DB\DB_AA;
 
-if (!CheckPerms($auth->auth["uid"], "aa", AA_ID, PS_ADD)) {
+if (!CheckPerms($auth->getUid(), "aa", AA_ID, PS_ADD)) {
     MsgPage(StateUrl(self_base())."index.php3", _m("You have not permissions to add slice"));
     exit;
 }

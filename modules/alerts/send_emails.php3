@@ -46,7 +46,7 @@ function ShowCollectionAddOns() {
         $example["howoftenr"] = "weekly";
     }
     if (!$example["email"]) {
-        $me = AA::$perm->getIDsInfo($auth->auth["uid"]);
+        $me = AA::$perm->getIDsInfo($auth->getUid());
         $example["email"] = $me["mail"];
     }
 
