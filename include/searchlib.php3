@@ -1993,7 +1993,7 @@ function QueryDiscIDs($slice_id, $conds, $sort, $slices ) {
                         }
                     }
                     if (is_array($select_cond)) {
-                        $select_conds[] = join ($select_cond, " OR ");
+                        $select_conds[] = join (" OR ", $select_cond);
                     }
                 }
             }

@@ -135,10 +135,10 @@ class zids implements Iterator, ArrayAccess, Countable {
     /** setFromItemArr function
      * Grabs long ids from array as posted from manager.class checkboxes
      *  $items[x767ab56353544242552637389a853673]=1
-     * @param $item_arr
+     * @param array $item_arr
      * @return zids
      */
-    public function setFromItemArr($item_arr) {
+    public function setFromItemArr(array $item_arr) {
         return $this->clear()->add(array_map(function ($k) {
             return ltrim($k, 'x');
         }, array_keys($item_arr)));   // in some managers we use 'x' before the item id - remove it
@@ -611,7 +611,7 @@ function get_short_hash(...$arg_list) {
     // We use Q as escape, so we replace Q as well to be able to convert back, if needed
     $hash = str_replace(['Q','+','/'], ['QA','QB','QC'], rtrim(base64_encode(hash('crc32b', serialize($arg_list), true)), '='));
     // we want to start with character so we change 1 to Q1, 2 to Q2, ... at the begin of the hash
-    return is_numeric($hash{0}) ? 'Q'.$hash : $hash;
+    return is_numeric($hash[0]) ? 'Q'.$hash : $hash;
 }
 
 /** pack_id function

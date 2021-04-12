@@ -300,8 +300,8 @@ function NormalizeArrayIndex($arr) {
     }
     $ret = [];
     foreach ($arr as $k => $v) {
-        if ( (($k{0}=='"') AND (substr($k,-1)=='"')) ||
-             (($k{0}=="'") AND (substr($k,-1)=="'")) ) {
+        if ( (($k[0] =='"') AND (substr($k,-1)=='"')) ||
+             (($k[0] =="'") AND (substr($k,-1)=="'")) ) {
             $k = substr($k, 1, -1);
         }
         $ret[$k] = NormalizeArrayIndex($v);

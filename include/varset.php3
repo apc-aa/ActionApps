@@ -546,22 +546,22 @@ class Cvarset {
      * @param $values
      * @return string
      */
-    function sqlin($column, $values) {
+    static function sqlin($column, $values) {
         if (!is_array($values)) {
             $values = [$values];
         }
         $arr = [];
         foreach ((array)$values as $v) {
-            if ($v!='') {
-                $arr[] = "'".quote($v)."'";
+            if ($v != '') {
+                $arr[] = "'" . quote($v) . "'";
             }
         }
         if (count($arr) == 1) {
-            return "$column = ". $arr[0];
-        } elseif ( count($arr) == 0 ) {
+            return "$column = " . $arr[0];
+        } elseif (count($arr) == 0) {
             return "2=1";
         }
-        return "$column IN (". join(',', $arr) .")";
+        return "$column IN (" . join(',', $arr) . ")";
     }
 }
 

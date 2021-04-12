@@ -132,7 +132,7 @@ class AA_Validate extends AA_Serializable {
     public static function doValidate(&$var, $type) {
         $validator = self::factoryCached($type);
         if ( is_null( $validator ) ) {
-            return self::bad(VALIDATE_ERROR_BAD_VALIDATOR, _m('Bad validator type: %1', [$type]));
+            return AA_Validate::bad(VALIDATE_ERROR_BAD_VALIDATOR, _m('Bad validator type: %1', [$type]));
         }
         return $validator->validate($var);
     }
@@ -170,7 +170,7 @@ class AA_Validate extends AA_Serializable {
      * @param $err_msg
      * @return bool
      */
-    protected function bad($err_id, $err_msg) : bool {
+    protected static function bad($err_id, $err_msg) : bool {
         self::lastErr($err_id, $err_msg);
         return false;
     }

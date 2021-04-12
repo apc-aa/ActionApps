@@ -6,10 +6,10 @@ namespace AA\Util;
 trait SingletonTrait {
     private static $instance;
 
-    final private function __construct() {}
-    final private function __clone()     {}
-    final private function __wakeup()    {}
-    final private function __sleep()     {}
+    private function __construct() {}
+    private function __clone()     {}
+    private function __wakeup()    {}
+    private function __sleep()     {}
 
     final public static function singleton() {
         if(!self::$instance) {

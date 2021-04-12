@@ -320,7 +320,7 @@ class AA_Langs {
      *  you can use any two (smallcaps) letter for language
      */
     public static function getLangName2Num($lang) {
-        return strlen($lang) ? AA_Value::MAX_INDEX * ((ord($lang{0}) - 97) * 26 + (ord($lang{1}) - 97 + 1)) : 0;
+        return strlen($lang) ? AA_Value::MAX_INDEX * ((ord($lang[0]) - 97) * 26 + (ord($lang[1]) - 97 + 1)) : 0;
     }
 
     /** reverse function to getLangNumber

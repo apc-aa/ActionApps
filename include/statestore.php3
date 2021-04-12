@@ -530,7 +530,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
         }
         $SQL = "SELECT o1.object_id, o3.value FROM object_text as o1 INNER JOIN object_text as o2 ON o2.object_id=o1.object_id INNER JOIN object_text as o3 ON o3.object_id=o1.object_id
                  WHERE o1.property = 'aa_type'  AND o1.value = '$obj_type'
-                   AND o2.property = 'aa_owner' AND ". CVarset::sqlin('o2.value', $owner) ."
+                   AND o2.property = 'aa_owner' AND ". Cvarset::sqlin('o2.value', $owner) ."
                    AND o3.property = 'aa_name'";
 
         $ret = GetTable2Array($SQL, 'object_id', 'value');
@@ -661,7 +661,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
         $tables['t0']['join'] = 'object_text as t0';
 
         if ( !empty($owners) ) {
-            $tables['t1']['cond'] = "t1.property='aa_owner' AND ". CVarset::sqlin('t1.value', $owners);
+            $tables['t1']['cond'] = "t1.property='aa_owner' AND ". Cvarset::sqlin('t1.value', $owners);
             $tables['t1']['join'] = "LEFT JOIN object_text as t1 ON (t1.object_id=t0.object_id AND t1.property='aa_owner')";
             $tables_counter['object_text']++;
         }
@@ -698,7 +698,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
 
                 // fill arrays to be able construct select command
                 $tables[$tbl]['cond'] = (new AA_Dbcondition("$tbl.value", $cond['operator'], $cond['value']))->getWhereExp();
-                $tables[$tbl]['join'] = "LEFT JOIN $store as $tbl ON ($tbl.object_id=t0.object_id AND ". CVarset::sqlin("$tbl.property", $cond_flds).')'; // OR $tbl.property is NULL))"; - like in content
+                $tables[$tbl]['join'] = "LEFT JOIN $store as $tbl ON ($tbl.object_id=t0.object_id AND ". Cvarset::sqlin("$tbl.property", $cond_flds) .')'; // OR $tbl.property is NULL))"; - like in content
                 if (count($cond_flds) == 1) {
                     // mark this field as sortable (store without apostrofs)
                     $sortable[ reset($cond_flds) ] = $tbl;
@@ -750,7 +750,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
                 }
 
                 $tbl = (($store == 'object_text') ? 't' : (($store == 'object_integer') ? 'i' : 'f')) . $tables_counter[$store]++;
-                $tables[$tbl]['join'] = "LEFT JOIN $store as $tbl ON ($tbl.object_id=t0.object_id AND ". CVarset::sqlin("$tbl.property", $fid).')'; // OR $tbl.property is NULL))"; - like in content
+                $tables[$tbl]['join'] = "LEFT JOIN $store as $tbl ON ($tbl.object_id=t0.object_id AND ". Cvarset::sqlin("$tbl.property", $fid) .')'; // OR $tbl.property is NULL))"; - like in content
 
                 // mark this field as sortable (store without apostrofs)
                 $sortable[$fid] = $tbl;

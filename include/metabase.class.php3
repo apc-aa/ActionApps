@@ -671,8 +671,12 @@ class AA_Metabase {
         return in_array($tablename, $SUPPORTED_TABLES);
     }
 
-    /** static method */
-    function isPacked($tablename, $column) {
+    /** static method
+     * @param $tablename
+     * @param $column
+     * @return bool
+     */
+    static function isPacked($tablename, $column) {
         return in_array($column, AA_Metabase::getPacked($tablename));
     }
 
@@ -847,7 +851,7 @@ class AA_Metabase {
                 $iskey = $coldef->isKey();
                 if ($coldef->getFieldType() == 'int') {
                     $varset->add($colname, 'number', (int)$value, $iskey);
-                } elseif ( AA_Metabase::isPacked($tablename, $colname) ) {
+                } elseif (AA_Metabase::isPacked($tablename, $colname)) {
                     $varset->add($colname, 'unpacked', $value, $iskey);
                 } else {
                     $value = ($maxlen = $coldef->getMaxLength()) ? substr($value, 0, $maxlen) : $value;
@@ -983,8 +987,8 @@ class AA_Metabase {
             $table_key = '';  // we do not use the key
         }
 
-        $module_val   = $this->isPacked($module_table, $module_field) ? q_pack_id($module_id) : $module_id;
-        $key_used     = !$table_key ? '' : ($this->isPacked($tablename, $table_key) ? "unpack:$table_key" : $table_key);
+        $module_val   = AA_Metabase::isPacked($module_table, $module_field) ? q_pack_id($module_id) : $module_id;
+        $key_used     = !$table_key ? '' : (AA_Metabase::isPacked($tablename, $table_key) ? "unpack:$table_key" : $table_key);
 
         $SQL = "SELECT $tablename.* FROM $tablename $join_sql WHERE $module_table.$module_field = '$module_val'";
 
@@ -1049,20 +1053,20 @@ class AA_Metabase {
      * Loads data from database for given table ids (called in itemview class)
      * and stores it in the 'Abstract Data Structure' for use with 'item' class
      *
-     * @see GetItemContent(), itemview class, item class
      * @param array $settings array - just one parameter: table, where to search
-     * @param array $zids array if ids to get from database
+     * @param zids $zids     array if ids to get from database
      * @return array - Abstract Data Structure containing the links data
-     *                 {@link http://apc-aa.sourceforge.net/faq/#1337}
+     *                        {@link http://apc-aa.sourceforge.net/faq/#1337}
      * @static
+     * @see GetItemContent(), itemview class, item class
      */
-    function getContent($settings, $zids) {
+    static function getContent($settings, $zids) {
         $content = [];
-        $ret     = [];
+        $ret = [];
 
-        $tablename   = $settings['table'];
-        $metabase    = AA::Metabase();
-        $keys        = $metabase->getKeys($tablename);
+        $tablename = $settings['table'];
+        $metabase = AA::Metabase();
+        $keys = $metabase->getKeys($tablename);
         if (count($keys) != 1) {
             // you can't use this function for that table - this is programmers mistake - correct the code
             echo "Missing key for table $tablename in AA_Metabase::getContent()";
@@ -1072,14 +1076,14 @@ class AA_Metabase {
 
 
         // construct WHERE clausule
-        $sel_in = $zids->sqlin( false , true);  // asis
+        $sel_in = $zids->sqlin(false, true);  // asis
         $SQL = "SELECT * FROM $tablename WHERE $key $sel_in";
         StoreTable2Content($content, $SQL, '', $key);
 
         // AA::$debug&2 && AA::$dbg->group('meta');
 
         // it is unordered, so we have to sort it:
-        for ($i=0, $ino=$zids->count(); $i<$ino; ++$i ) {
+        for ($i = 0, $ino = $zids->count(); $i < $ino; ++$i) {
             $id = $zids->id($i);
             $ret[(string)$id] = $content[$id];
         }
@@ -1141,18 +1145,18 @@ class AA_Metabase {
         return GetZidsFromSQL($SQL, $key, 'z');
     }
 
-    function queryCount($settings, $set) {
+    static function queryCount($settings, $set) {
         $tablename = $settings['table'];
-        $conds     = $set->getConds();
+        $conds = $set->getConds();
 
-        $metabase    = AA::Metabase();
+        $metabase = AA::Metabase();
 
-        $fields      = $metabase->getSearchArray($tablename);
+        $fields = $metabase->getSearchArray($tablename);
         $join_tables = [];   // not used in this function
 
-        $SQL    = "SELECT count(*) as count FROM $tablename ";
-        $where  = MakeSQLConditions($fields, $conds, $fields, $join_tables);
-        $SQL   .= ($where ? "WHERE (1=1) $where" : '');
+        $SQL = "SELECT count(*) as count FROM $tablename ";
+        $where = MakeSQLConditions($fields, $conds, $fields, $join_tables);
+        $SQL .= ($where ? "WHERE (1=1) $where" : '');
 
         return GetTable2Array($SQL, 'aa_first', 'count');
     }
@@ -1167,7 +1171,7 @@ class AA_Metabase {
 //          "submenu"   => "design",
             "readonly"  => false,
             "addrecord" => false,
-//          "cond"      => CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_MODP_EDIT_DESIGN),
+//          "cond"      => CheckPerms( $auth->getUid(), "slice", $slice_id, PS_MODP_EDIT_DESIGN),
 //          "title"     => $title,
 //          "caption"   => $title,
             "attrs"     => ["table"=>"border=0 cellpadding=3 cellspacing=0 bgcolor='".COLOR_TABBG."'"],

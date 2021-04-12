@@ -14,21 +14,22 @@ namespace AA\IO\DB;
 class DB_MySQL extends AbstractDB {
 
     /* public: connection parameters */
-    var $Host = "";
-    var $Database = "";
-    var $User = "";
-    var $Password = "";
+    protected $Host = "";
+    protected $Database = "";
+    protected $User = "";
+    protected $Password = "";
 
     /* public: result array and current row number */
-    var $Row;
+    protected $Row;
 
     /* public: this is an api revision, not a CVS revision. */
-    var $type = "mysqli";
-    var $revision = "0.1";
+    protected $type = "mysqli";
+    protected $revision = "0.1";
 
     /* private: link and query handles */
-    var $Link_ID = 0;
-    var $Query_ID = 0;
+    protected $Link_ID = 0;
+    /** @var null|object|bool */
+    protected $Result  = null;
 
     /**
      * DB_Mysql constructor.
@@ -86,10 +87,10 @@ class DB_MySQL extends AbstractDB {
 
     /* public: discard the query result */
     function free() {
-        if ($this->Query_ID) {
-            @mysqli_free_result($this->Query_ID);
+        if (is_object($this->Result)) {
+            @mysqli_free_result($this->Result);
         }
-        $this->Query_ID = 0;
+        $this->Result = null;
     }
 
     /* public: perform a query */
@@ -108,47 +109,47 @@ class DB_MySQL extends AbstractDB {
         };
 
         // New query, discard previous result.
-        if ($this->Query_ID) {
+        if (is_object($this->Result)) {
             $this->free();
         }
 
         //$this->Query_ID = @mysqli_query($this->Link_ID,$Query_String, MYSQLI_USE_RESULT);
-        $this->Query_ID = @mysqli_query($this->Link_ID, $Query_String);
+        $this->Result = @mysqli_query($this->Link_ID, $Query_String);
 
         // solution for "MySQL server has gone away" Eroor - Try to reconnect
         if (2006 == ($this->Errno = @mysqli_errno($this->Link_ID))) {
             mysqli_close($this->Link_ID);
             $this->Link_ID = 0;
             if ($this->connect()) {
-                $this->Query_ID = @mysqli_query($this->Link_ID, $Query_String);
+                $this->Result = @mysqli_query($this->Link_ID, $Query_String);
             }
             $this->Errno = @mysqli_errno($this->Link_ID);
         }
 
         $this->Row = 0;
         $this->Error = @mysqli_error($this->Link_ID);
-        if (!$this->Query_ID) {
+        if (!$this->Result) {
             $this->halt("Invalid SQL: " . $Query_String);
         }
 
         // Will return nada if it fails. That's fine.
-        return $this->Query_ID;
+        return $this->Result;
     }
 
 
     /* public: walk result set */
     function next_record() {
-        if (!$this->Query_ID) {
+        if (!is_object($this->Result)) {
             $this->halt("next_record called with no query pending.");
             return 0;
         }
 
         ++$this->Row;
-        if (is_null($this->Record = @mysqli_fetch_assoc($this->Query_ID))) {
+        if (is_null($this->Record = @mysqli_fetch_assoc($this->Result))) {
             $this->Errno = mysqli_errno($this->Link_ID);
             $this->Error = mysqli_error($this->Link_ID);
-            mysqli_free_result($this->Query_ID);
-            $this->Query_ID = 0;
+            mysqli_free_result($this->Result);
+            $this->Result = null;
             return false;
         }
         $this->Errno = 0;
@@ -158,12 +159,12 @@ class DB_MySQL extends AbstractDB {
 
     /* public: return all the results */
     function fetch_column($col) {
-        if (!$this->Query_ID) {
+        if (!is_object($this->Result)) {
             $this->halt("next_record called with no query pending.");
             return [];
         }
         $ret = [];
-        while (is_array($r = @mysqli_fetch_assoc($this->Query_ID))) {
+        while (is_array($r = @mysqli_fetch_assoc($this->Result))) {
             $ret[] = $r[$col];
         }
         return $ret;
@@ -172,7 +173,7 @@ class DB_MySQL extends AbstractDB {
 
     /* public: position in result set */
     function seek($pos = 0) {
-        $status = @mysqli_data_seek($this->Query_ID, $pos);
+        $status = @mysqli_data_seek($this->Result, $pos);
         if ($status) {
             $this->Row = $pos;
         } else {
@@ -182,7 +183,7 @@ class DB_MySQL extends AbstractDB {
             * but do not consider this documented or even
             * desireable behaviour.
             */
-            @mysqli_data_seek($this->Query_ID, $this->num_rows());
+            @mysqli_data_seek($this->Result, $this->num_rows());
             $this->Row = $this->num_rows();
             return 0;
         }
@@ -196,7 +197,7 @@ class DB_MySQL extends AbstractDB {
 
         $query = "lock tables ";
         if (is_array($table)) {
-            while (list($key, $value) = each($table)) {
+            foreach ($table as $key=>$value) {
                 if ($key == "read" && $key != 0) {
                     $query .= "$value read, ";
                 } else {
@@ -233,11 +234,11 @@ class DB_MySQL extends AbstractDB {
         }
 
         // New query, discard previous result.
-        if ($this->Query_ID) {
+        if (!is_object($this->Result)) {
             $this->free();
         }
 
-        $this->Query_ID = @mysqli_query($this->Link_ID, 'SELECT LAST_INSERT_ID()');  // any cheap query (maybe there is even quicker query)
+        $this->Result = @mysqli_query($this->Link_ID, 'SELECT LAST_INSERT_ID()');  // any cheap query (maybe there is even quicker query)
         if (mysqli_errno($this->Link_ID) == 2006) {
             mysqli_close($this->Link_ID);
             $this->Link_ID = 0;
@@ -252,11 +253,11 @@ class DB_MySQL extends AbstractDB {
     }
 
     function num_rows() {
-        return @mysqli_num_rows($this->Query_ID);
+        return @mysqli_num_rows($this->Result);
     }
 
     function num_fields() {
-        return @mysqli_num_fields($this->Query_ID);
+        return @mysqli_num_fields($this->Result);
     }
 
     function last_insert_id() {
@@ -376,7 +377,7 @@ class DB_MySQL extends AbstractDB {
         $this->query("SHOW TABLES");
         $i = 0;
         $return = [];
-        while ($info = @mysqli_fetch_row($this->Query_ID)) {
+        while ($info = @mysqli_fetch_row($this->Result)) {
             $return[$i]["table_name"] = $info[0];
             $return[$i]["tablespace_name"] = $this->Database;
             $return[$i]["database"] = $this->Database;

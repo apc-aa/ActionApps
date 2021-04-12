@@ -177,7 +177,7 @@ if ($update) {
 
         // the constants are packed in order it could be easily passed
         // to another script
-        $input_show_func_c_real = ($input_show_func_c{0} == 'v') ? pack_id(substr($input_show_func_c,1)) : $input_show_func_c;
+        $input_show_func_c_real = ($input_show_func_c[0] == 'v') ? pack_id(substr($input_show_func_c,1)) : $input_show_func_c;
         $isf_parameters = $widget_class::getClassProperties();
         $isf            = $input_show_func_f;
         if (isset($isf_parameters['const'])) {

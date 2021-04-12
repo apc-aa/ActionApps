@@ -426,7 +426,7 @@ class AA_Adminpage_Table extends AA_Adminpage {
     protected function doLoad() {
         $this->record = [];
         if ($this->module_id) {
-            $content = AA_Metabase::getContent( ['table'=>static::DB_TABLE], new zids($this->module_id, 'l'));
+            $content = AA_Metabase::getContent(['table' => static::DB_TABLE], new zids($this->module_id, 'l'));
             if ($content4id = $content[$this->module_id]) {
                 // filter only used columns
                 $cols = static::getTableColumns();

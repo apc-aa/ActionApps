@@ -130,7 +130,7 @@ class AA_Jstriggers {
 
     static function printSummary() {
         foreach (AA_Jstriggers::$CONTROL_TRIGGERS as $control => $trigs) {
-            echo '<tr><td class="tabtxt">'.$control.'</td><td class="tabtxt">'.join($trigs,", ").'</td></tr>';
+            echo '<tr><td class="tabtxt">'.$control.'</td><td class="tabtxt">'.join(", ", $trigs).'</td></tr>';
         }
     }
 

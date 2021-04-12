@@ -46,7 +46,7 @@ require_once __DIR__."/../include/tv_common.php3";
 require_once __DIR__."/../include/tv_misc.php3";
 
 // is tableview defined in special file (tableviews.php3)?
-if ( ($tview{0} == "a") OR ( substr($tview,0,5) =='polls') ) {
+if ( ($tview[0] == "a") OR ( substr($tview,0,5) =='polls') ) {
     $func = "GetTableView";
     require_once __DIR__."/../include/tableviews.php3";
 } else {

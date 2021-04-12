@@ -474,7 +474,7 @@ function send2mailList($d_item_id, $new_id) {
             $CurItem = new AA_Item($columns, $aliases);
 
             // newer version based on email templates
-            if ( $vid{0} == 't' ) {   // email template
+            if ($vid[0] == 't' ) {   // email template
                 $mail_id = substr($vid,1);
                 $mails   = explode(',', str_replace(' ','',$maillist));
                 AA_Mail::sendTemplate($mail_id, $mails, $CurItem);

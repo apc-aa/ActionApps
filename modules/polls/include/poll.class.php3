@@ -52,7 +52,7 @@ class AA_Poll {
             return;
         }
 
-        $content = AA_Metabase::getContent(['table'=>'polls'], new zids($this->poll_id));
+        $content = AA_Metabase::getContent(['table' => 'polls'], new zids($this->poll_id));
         $this->content = new ItemContent($content[$this->poll_id]);
     }
 

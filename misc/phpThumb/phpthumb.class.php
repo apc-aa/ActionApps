@@ -582,7 +582,7 @@ class phpthumb {
         // render thumbnail to this file only, do not cache, do not output to browser
         //$renderfilename = $this->ResolveFilenameToAbsolute(dirname($filename)).DIRECTORY_SEPARATOR.basename($filename);
         $renderfilename = $filename;
-        if (($filename{0} != '/') && ($filename{0} != '\\') && ($filename{1} != ':')) {
+        if (($filename[0] != '/') && ($filename[0] != '\\') && ($filename[1] != ':')) {
             $renderfilename = $this->ResolveFilenameToAbsolute($renderfilename);
         }
         if (!@is_writable(dirname($renderfilename))) {
@@ -1258,7 +1258,7 @@ class phpthumb {
             //$AbsoluteFilename = $filename;
             return $filename;
 
-        } elseif ($this->iswindows && isset($filename{1}) && ($filename{1} == ':')) {
+        } elseif ($this->iswindows && isset($filename[1]) && ($filename[1] == ':')) {
 
             // absolute pathname (Windows)
             $AbsoluteFilename = $filename;
@@ -1268,14 +1268,14 @@ class phpthumb {
             // absolute pathname (Windows)
             $AbsoluteFilename = $filename;
 
-        } elseif ($filename{0} == '/') {
+        } elseif ($filename[0] == '/') {
 
             if (@is_readable($filename) && !@is_readable($this->config_document_root.$filename)) {
 
                 // absolute filename (*nix)
                 $AbsoluteFilename = $filename;
 
-            } elseif (isset($filename{1}) && ($filename{1} == '~')) {
+            } elseif (isset($filename[1]) && ($filename[1] == '~')) {
 
                 // /~user/path
                 if ($ApacheLookupURIarray = phpthumb_functions::ApacheLookupURIarray($filename)) {
@@ -1435,7 +1435,7 @@ class phpthumb {
                 $which_convert = $this->ImageMagickWhichConvert();
                 $IMversion     = $this->ImageMagickVersion();
 
-                if ($which_convert && ($which_convert{0} == '/') && $this->file_exists_ignoreopenbasedir($which_convert)) {
+                if ($which_convert && ($which_convert[0] == '/') && $this->file_exists_ignoreopenbasedir($which_convert)) {
 
                     // `which convert` *should* return the path if "convert" exist, or nothing if it doesn't
                     // other things *may* get returned, like "sh: convert: not found" or "no convert in /usr/local/bin /usr/sbin /usr/bin /usr/ccs/bin"
@@ -1821,7 +1821,7 @@ if (false) {
 
                             if ($this->iar && (intval($this->w) > 0) && (intval($this->h) > 0)) {
 
-                                list($nw, $nh) = phpthumb_functions::TranslateWHbyAngle($this->w, $this->h, $this->ra);
+                                [$nw, $nh] = phpthumb_functions::TranslateWHbyAngle($this->w, $this->h, $this->ra);
                                 $nw = ((round($nw) != 0) ? round($nw) : '');
                                 $nh = ((round($nh) != 0) ? round($nh) : '');
                                 $commandline .= ' -'.$IMresizeParameter.' '.phpthumb_functions::escapeshellarg_replacement($nw.'x'.$nh.'!');
@@ -1845,7 +1845,7 @@ if (false) {
                                             $this->w = ceil($this->h * ($this->source_width / $this->source_height));
                                         }
                                     }
-                                    list($nw, $nh) = phpthumb_functions::TranslateWHbyAngle($this->w, $this->h, $this->ra);
+                                    [$nw, $nh] = phpthumb_functions::TranslateWHbyAngle($this->w, $this->h, $this->ra);
                                     $nw = ((round($nw) != 0) ? round($nw) : '');
                                     $nh = ((round($nh) != 0) ? round($nh) : '');
                                     $commandline .= ' -'.$IMresizeParameter.' '.phpthumb_functions::escapeshellarg_replacement($nw.'x'.$nh);
@@ -2059,7 +2059,7 @@ if (false) {
                                 // "wb" filter will have (almost) no effect. Therefore, if "wb" is enabled then
                                 // force the "lvl" filter to be processed by GD, not ImageMagick.
                                 foreach ($this->fltr as $fltr_key => $fltr_value) {
-                                    list($fltr_cmd) = explode('|', $fltr_value);
+                                    [$fltr_cmd] = explode('|', $fltr_value);
                                     if ($fltr_cmd == 'wb') {
                                         $this->DebugMessage('Setting "lvl" filter method to "0" (from "'.$method.'") because white-balance filter also enabled', __FILE__, __LINE__);
                                         $method = 0;
@@ -2476,7 +2476,7 @@ if (false) {
             $this->DebugMessage('AntiOffsiteLinking() checking $_SERVER[HTTP_REFERER] "'.@$_SERVER['HTTP_REFERER'].'"', __FILE__, __LINE__);
             foreach ($this->config_nooffsitelink_valid_domains as $key => $valid_domain) {
                 // $_SERVER['HTTP_HOST'] contains the port number, so strip it out here to make default configuration work
-                list($clean_domain) = explode(':', $valid_domain);
+                [$clean_domain] = explode(':', $valid_domain);
                 $this->config_nooffsitelink_valid_domains[$key] = $clean_domain;
             }
             $parsed_url = phpthumb_functions::ParseURLbetter(@$_SERVER['HTTP_REFERER']);
@@ -4011,8 +4011,6 @@ if (false) {
         $DebugOutput[] = 'getenv(DOCUMENT_ROOT)       = '.@getenv('DOCUMENT_ROOT');
         $DebugOutput[] = '';
 
-        $DebugOutput[] = 'get_magic_quotes_gpc()         = '.$this->phpThumbDebugVarDump(@get_magic_quotes_gpc());
-        $DebugOutput[] = 'get_magic_quotes_runtime()     = '.$this->phpThumbDebugVarDump(@get_magic_quotes_runtime());
         $DebugOutput[] = 'error_reporting()              = '.$this->phpThumbDebugVarDump(error_reporting());
         $DebugOutput[] = 'ini_get(error_reporting)       = '.$this->phpThumbDebugVarDump(@ini_get('error_reporting'));
         $DebugOutput[] = 'ini_get(display_errors)        = '.$this->phpThumbDebugVarDump(@ini_get('display_errors'));

@@ -206,7 +206,7 @@ function ChangeFieldID($old_id, $new_id)
     }
     freeDB($db);
     if (count($item_ids)) {
-        DB_AA::sql("UPDATE content SET field_id='$new_id' WHERE item_id IN ('".join($item_ids,"','")."') AND field_id='$old_id'");
+        DB_AA::sql("UPDATE content SET field_id='$new_id' WHERE item_id IN ('".join("','", $item_ids)."') AND field_id='$old_id'");
     }
 }
 

@@ -114,8 +114,11 @@ function cron($time = 0) {
                 print_r ($now); echo "<br>";
             }
 
-            reset ($parts);
-            while ((list($part) = each($parts)) && $nearest_part > -1) {
+            $part = reset($parts);
+            foreach ($parts as $part) {
+                if ($nearest_part < 0) {
+                    break;
+                }
                 $now_part = $now[$part];
 
                 $value = $db->f($part);

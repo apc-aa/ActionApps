@@ -267,7 +267,7 @@ class DB_PDO extends AbstractDB {
     function lock($table, $mode = "write") {
         $query = "lock tables ";
         if (is_array($table)) {
-            while (list($key, $value) = each($table)) {
+            foreach ($table as $key=>$value) {
                 if (!is_int($key)) {
                     // texts key are "read", "read local", "write", "low priority write"
                     $query .= "$value $key, ";

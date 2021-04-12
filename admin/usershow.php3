@@ -138,7 +138,7 @@ if (!$sort AND $default_sort_field) {
 }
 
 $zids = new zids(null, 'l');
-if ( $r_userstate['items'] ) {
+if ( is_array($r_userstate['items']) ) {
     $zids->setFromItemArr($r_userstate['items']);
 }
 
