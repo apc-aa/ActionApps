@@ -171,6 +171,10 @@ function SendErrorPage(array $txt) {
  * redirects to the specified URL, else returns to the calling page.
  */
 function SendOkPage($txt, $new_ids = []) {
+
+    /** @var AA_Auth $auth */
+    global $auth;
+
     // $wap variable if set in filler-wap.php
     if ($GLOBALS['wap']) {
         header("Content-type: text/vnd.wap.wml");
@@ -220,7 +224,7 @@ function SendOkPage($txt, $new_ids = []) {
             $retcode = $_REQUEST["ret_code"] ? $_REQUEST["ret_code"] : base64_decode($_REQUEST["ret_code_enc"]);
 
             if ( $retcode == 'AA_2FA_QR') {   // very special case for 2FA secret
-                $secret = strlen($GLOBALS['auth']->auth['uid']) ? DB_AA::select1('secret', 'SELECT content.text AS secret FROM content', [['field_id', FIELDID_2FA_SECRET], ['item_id', $GLOBALS['auth']->auth['uid'], 'l']]) : '';
+                $secret = strlen($auth->getUid()) ? DB_AA::select1('secret', 'SELECT content.text AS secret FROM content', [['field_id', FIELDID_2FA_SECRET], ['item_id', $auth->getUid(), 'l']]) : '';
 
                 $qr = '--';
                 if ($secret) {

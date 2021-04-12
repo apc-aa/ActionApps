@@ -253,6 +253,10 @@ class AA_Router_Seo extends AA_Router {
      * @return array
      */
     function parse($url='') {
+
+        /** @var AA_Auth $auth */
+        global $auth;
+
         $this->apc          = self::parseApc($url, $this->home, $this->web_languages);
         $this->apc['state'] = self::getState($this->apc);
 
@@ -270,11 +274,11 @@ class AA_Router_Seo extends AA_Router {
          *   </form>
          */
 
-        $this->apc['xuser'] = $GLOBALS['auth']->auth["uname"];
-        $this->apc['xuid']  = $GLOBALS['auth']->auth["uid"];
+        $this->apc['xuser'] = $auth->getUname();
+        $this->apc['xuid']  = $auth->getUid();
 
         if (isset($_GET['logout'])) {
-            $GLOBALS['auth']->logout();
+            $auth->logout();
             $GLOBALS['sess']->delete();
             $this->apc['xuser'] = '';
             $this->apc['xuid']  = '';
@@ -282,19 +286,19 @@ class AA_Router_Seo extends AA_Router {
 
         if ( $_REQUEST['username'] ) {
             // not necessary - we alredy logged in by pageOpen() in site.php3
-            //$GLOBALS['auth']->relogin();
-            $this->apc['xuser'] = $GLOBALS['auth']->auth["uname"];
-            $this->apc['xuid']  = $GLOBALS['auth']->auth["uid"];
+            //$auth->relogin();
+            $this->apc['xuser'] = $auth->getUname();
+            $this->apc['xuid']  = $auth->getUid();
 
-            if ($GLOBALS['auth']->auth["uname"] AND $_REQUEST["ok_url"]) {
+            if ($auth->getUname() AND $_REQUEST["ok_url"]) {
                 go_url($_REQUEST["ok_url"]);
-            } elseif (!$GLOBALS['auth']->auth["uname"] AND $_REQUEST["err_url"]) {
+            } elseif (!$auth->getUname() AND $_REQUEST["err_url"]) {
                 go_url($_REQUEST["err_url"]);
             }
         }
 
 
-        //huhl($GLOBALS['auth'], $GLOBALS['sess']);
+        //huhl($auth, $GLOBALS['sess']);
 
         //if ( $_COOKIE['AA_Sess'] OR $_REQUEST['username'] ) {
         //    $options = array(
