@@ -434,6 +434,15 @@ function now($step=false) {
     return (($step!='step') ? time() : ((int)(time()/QUERY_DATE_STEP)+1)*QUERY_DATE_STEP);     // round up
 }
 
+/** get current time in nanoseconds from 1970 
+ *  PHP int should be enough to year > 2200
+ *  the microtime is not precise enough, but we can update the function later to be more accurate
+ */
+function nanotime():int {
+    $t = explode(" ", microtime());
+    return (int)(1000000000*$t[0]) + (int)(1000000000*$t[1]);
+}
+
 /** debug function
  *  variable count of variables
  * @param mixed ...$messages
