@@ -26,7 +26,9 @@
 */
 
 use AA\IO\DB\DB_AA;
+use AA\Cache\CacheStr2find;
 use AA\Widget\Widget;
+
 
 /** for AA_Generator_*   */
 require_once __DIR__."/itemfunc.php3";
@@ -137,7 +139,7 @@ class AA_Field implements ArrayAccess {
             if ($widget_definition_string AND (strpos($widget_definition_string,'dte:')===0) AND strpos($widget_definition_string,"'")) {
                 $widget_definition_string = str_replace("'",":",$widget_definition_string);
             }
-            
+
             $params       = $widget_definition_string ? Widget::parseClassProperties($widget_definition_string) : $this->widget_params;
             $widget_class = $widget_type ? Widget::constructClassName($widget_type) : $params['class'];
             if (!class_exists($widget_class)) {
@@ -668,18 +670,25 @@ class AA_Fields implements Iterator, Countable {
         }
 
         if (is_long_id($fields_slice = AA_Slice::getModuleProperty($this->master_id, 'fieldslice'))) {
-            $set = new AA_Set($fields_slice);
-            $zids = $set->query();
-            AA_Items::preload($zids);
-            foreach ($zids as $zid) {
-                $field = new AA_Field_Slicedef(new zids($zid), $this->master_id);
-                $this->fields[$field->getId()] = $field;
-            }
+            $str2find = new CacheStr2find($fields_slice);
+            $sf = AA::Pagecache()->cacheDb(['AA_Fields','loadFieldFromSlice'], [$fields_slice, $this->master_id], $str2find);
+            $this->fields = array_merge($this->fields, $sf);
         }
 
         $this->loaded_all = true;
     }
 
+    static function loadFieldFromSlice($fields_slice, $actual_slice) {
+        $fields = [];
+        $set = new AA_Set($fields_slice);
+        $zids = $set->query();
+        AA_Items::preload($zids);
+        foreach ($zids as $zid) {
+            $field = new AA_Field_Slicedef(new zids($zid), $actual_slice);
+            $fields[$field->getId()] = $field;
+        }
+        return $fields;
+    }
 
 
     /** getField function
