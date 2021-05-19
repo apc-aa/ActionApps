@@ -3507,9 +3507,10 @@ class AA_Stringexpand_Menu extends AA_Stringexpand {
      *                           (not its submenu), which you can use for not displaying some items
      * @param $relation_field - tree relation field (default relation........)
      * @param $sort_string - order of tree leaves
+     * @param $type - <nothing>|all - if "all", the menu is expanded to all leaves
      * @return string
      */
-    function expand($item_ids=null, $code=null, $relation_field=null, $sort_string=null) {
+    function expand($item_ids=null, $code=null, $relation_field=null, $sort_string=null, $type=null) {
         if (empty($code)) {
             return '';
         }
@@ -3524,7 +3525,7 @@ class AA_Stringexpand_Menu extends AA_Stringexpand {
         $current_ids = explode_ids(AA::Stringexpander()->unalias('{xid:list}'));
 
         $supertree = AA_Trees::getSupertree(get_if($relation_field, 'relation........'), 1, $sort);
-        return $supertree->getMenu($long_ids, $current_ids, $code);
+        return $supertree->getMenu($long_ids, $current_ids, $code, false, $type=='all');
     }
 }
 
@@ -4991,8 +4992,6 @@ class AA_Stringexpand_Pagermore extends AA_Stringexpand_Nevercache {
     }
 }
 
-
-
 /** debugging
  */
 class AA_Stringexpand_Debug extends AA_Stringexpand_Nevercache {
@@ -5015,6 +5014,24 @@ class AA_Stringexpand_Debug extends AA_Stringexpand_Nevercache {
         return $ret;
     }
 }
+
+/** Writes message to AA Log 
+ */
+class AA_Stringexpand_Debuglog extends AA_Stringexpand_Nevercache {
+
+    /** expand function
+     * @param $text
+     * @return string
+     */
+    function expand( $text='' ) {
+        AA_Log::write('DEBUG', AA_Log::context(), $text);
+        return '';
+    }
+}
+
+
+
+
 
 /** Uses slice (or slices) ($dictionaries) and replace any word which matches a
  *  word in dictionary by the text specified in $format.
@@ -9297,8 +9314,8 @@ class AA_Stringexpand_Detect extends AA_Stringexpand {
 
         // for future extension
         if (!$test) {
-            if ($detect->isMobile()) return 'mobile';
             if ($detect->isTablet()) return 'tablet';
+            if ($detect->isMobile()) return 'mobile';  // must be after teblet test - isMobile() is true for mobile and tablets
             return 'desktop';
         }
         return '';

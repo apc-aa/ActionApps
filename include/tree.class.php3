@@ -118,17 +118,18 @@ class AA_Supertree {
         return $sub;
     }
 
-    function getMenu($ids, $current_ids, $code, $inner=false) {
+    function getMenu($ids, $current_ids, $code, $inner=false, $expanded=false) {
         $ret = '';
         $xid = end($current_ids);
 
         foreach($ids as $mid) {
             if ($item = AA_Items::getItem(new zids($mid, 'l'))) {
                 if ($menu_txt = trim($item->subst_alias($code))) {
-                    if (in_array($mid, $current_ids)) {
+                    $inpath = in_array($mid, $current_ids) ? 'inpath' : '';
+                    if ($expanded OR $inpath) {
                         $this->load($mid);
-                        $sub  = empty($this->_i[$mid]) ? '' : $this->getMenu($this->_i[$mid], $current_ids, $code, true);
-                        $ret .= '  <li id="menu-'.$mid.'" class="inpath'.($mid==$xid  ? ' xidmatch':'').'">';
+                        $sub  = empty($this->_i[$mid]) ? '' : $this->getMenu($this->_i[$mid], $current_ids, $code, true, $expanded);
+                        $ret .= '  <li id="menu-'.$mid.'" class="'.$inpath.($mid==$xid  ? ' xidmatch':'').'">';
                         $ret .= $menu_txt. $sub;
                         $ret .= "</li>\n";
                     } else {
