@@ -3479,11 +3479,13 @@ class AA_Stringexpand_Path extends AA_Stringexpand {
  *  - designed for SEO sitemodule with "Pages" slice with the relation field "Subpage of..."
  *  - the menu items with empty text is not printed (which you can use for not displaying some items)
  *
- *      {menu:<first-level-item-ids>:<menu-text>:[<relation-field>[:<sort-string>]]}
+ *      {menu:<first-level-item-ids>:<menu-text>:[<relation-field>[:<sort-string>[:<type>]]]}
  *  submenu for current item:
  *      {menu:{id..............}:_#MENULINK}
  *  whole real menu for the Pages slice:
  *      {menu:{ids:18a352366ea922738348478463536ea5:d-relation........-ISNULL-1:number..........}:_#MENULINK:relation........:number..........}
+ *  expanded menu tree for css dynamic menu
+ *      {menu:{ids:18a352366ea922738348478463536ea5:d-relation........-ISNULL-1:number..........}:_#MENULINK:relation........:number..........:all}
  *
  *  The menu then looks like:   <ul>
  *                                <li> one
