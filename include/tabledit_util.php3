@@ -152,7 +152,8 @@ function SetColumnTypes(&$columns, &$primary_aliases, $default_table, $join="", 
         }
         $column["view"]["readonly"]     = get_if($column["view"]["readonly"], $default_readonly || $column["view"]["type"] == "userdef" || $column["view"]["type"] == "calculated");
         if ($column["view"]["type"] == "date") {
-            $cols = strlen( date($column["view"]["format"], "31.12.1970") );
+            // $cols = strlen( date($column["view"]["format"], "31.12.1970") );
+            $cols = strlen( date($column["view"]["format"], 0) );
         }
         if (!is_array($column["view"]["size"])) {
             $column["view"]["size"] = [];

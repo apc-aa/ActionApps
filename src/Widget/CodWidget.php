@@ -16,7 +16,7 @@ class CodWidget extends TxtWidget
     protected $ids_4_editor = [];
 
     /** widget name  */
-    public function name(): string {
+    public static function name(): string {
         return _m('Code editor');
     }
 
@@ -85,7 +85,7 @@ class CodWidget extends TxtWidget
 //class AA\Widget\CodWidget extends AA\Widget\Widget {
 
 //    /** widget name  */
-//    public function name(): string {
+//    public static function name(): string {
 //        return _m('Code editor');
 //    }
 

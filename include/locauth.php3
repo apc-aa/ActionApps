@@ -59,8 +59,7 @@ class AA_Auth extends Auth {
         $this->nobody = $state;
     }
 
-    /** relogin_if function
-     * @param $t
+    /** former relogin_if function
      */
     function relogin() {
         $this->unauth();

@@ -600,7 +600,7 @@ class ConvertCharset {
      *
      * @param int $Group Message groupe: error - 0, notice - 1
      * @param int $Number Following message number
-     * @param mix $Value This walue is whatever you want, usualy it's some parameter value, for better message understanding.
+     * @param mixed $Value This walue is whatever you want, usualy it's some parameter value, for better message understanding.
      * @return string String with a proper message.
      **/
     function DebugOutput($Group, $Number, $Value = false) {

@@ -18,7 +18,7 @@ class NulWidget extends Widget
     /** name function
      *
      */
-    public function name(): string
+    public static function name(): string
     {
         return _m('Do not show');   // widget name
     }
@@ -26,7 +26,7 @@ class NulWidget extends Widget
     /**
      * @inheritDoc
      */
-    public function description(): string {
+    public static function description(): string {
         return ''; // TODO: Implement description() method.
     }
 

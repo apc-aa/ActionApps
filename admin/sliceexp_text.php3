@@ -356,7 +356,7 @@ class AA_Slice_Documentator extends AA_Slice_Exporter {
      * @param $slobj
      * @param $new_slice_id
      * @param $temp_file
-     * @return writes to file
+     * @return void - writes to file
      */
     function exportOneSliceStruct($slobj, $new_slice_id, $temp_file) {
 

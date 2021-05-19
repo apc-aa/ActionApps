@@ -61,9 +61,9 @@ class AA_Scroller extends AA_Storable {
 
     /** AA_Scroller function
      *  constructor
-     * @param $id identifies scroller on a web page
-     * @param $ulr
-     * @param $pgcnt is the number of pages to scroll
+     * @param string $id identifies scroller on a web page
+     * @param string $ulr
+     * @param int $pgcnt is the number of pages to scroll
      */
     function __construct($id = "", $url = "", $listlen = 10) {
         $this->id         = $id;

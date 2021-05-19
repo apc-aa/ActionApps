@@ -27,7 +27,8 @@ class DB_MySQL extends AbstractDB {
     protected $revision = "0.1";
 
     /* private: link and query handles */
-    protected $Link_ID = 0;
+    protected $Link_ID = null;
+
     /** @var null|object|bool */
     protected $Result  = null;
 
@@ -49,7 +50,7 @@ class DB_MySQL extends AbstractDB {
     /* public: connection management */
     function connect() {
         /* establish connection, select database */
-        if (0 == $this->Link_ID) {
+        if (is_null($this->Link_ID)) {
 
             /* Handle defaults */
             $Database = $this->Database;
@@ -104,7 +105,7 @@ class DB_MySQL extends AbstractDB {
             return 0;
         }
 
-        if ((0 == $this->Link_ID) and !$this->connect()) {
+        if (is_null($this->Link_ID) and !$this->connect()) {
             return 0; /* we already complained in connect() about that. */
         };
 
@@ -119,7 +120,7 @@ class DB_MySQL extends AbstractDB {
         // solution for "MySQL server has gone away" Eroor - Try to reconnect
         if (2006 == ($this->Errno = @mysqli_errno($this->Link_ID))) {
             mysqli_close($this->Link_ID);
-            $this->Link_ID = 0;
+            $this->Link_ID = null;
             if ($this->connect()) {
                 $this->Result = @mysqli_query($this->Link_ID, $Query_String);
             }
@@ -148,8 +149,7 @@ class DB_MySQL extends AbstractDB {
         if (is_null($this->Record = @mysqli_fetch_assoc($this->Result))) {
             $this->Errno = mysqli_errno($this->Link_ID);
             $this->Error = mysqli_error($this->Link_ID);
-            mysqli_free_result($this->Result);
-            $this->Result = null;
+            $this->free();
             return false;
         }
         $this->Errno = 0;
@@ -228,7 +228,7 @@ class DB_MySQL extends AbstractDB {
     }
 
     function ping() {
-        if (0 == $this->Link_ID) {
+        if (is_null($this->Link_ID)) {
             $this->connect();
             return;
         }
@@ -241,7 +241,7 @@ class DB_MySQL extends AbstractDB {
         $this->Result = @mysqli_query($this->Link_ID, 'SELECT LAST_INSERT_ID()');  // any cheap query (maybe there is even quicker query)
         if (mysqli_errno($this->Link_ID) == 2006) {
             mysqli_close($this->Link_ID);
-            $this->Link_ID = 0;
+            $this->Link_ID = null;
             $this->connect();
         }
     }
@@ -368,7 +368,7 @@ class DB_MySQL extends AbstractDB {
         }
 
         // free the result only if we were called on a table
-        @mysqli_free_result($id);
+        $this->free();
 
         return $res;
     }

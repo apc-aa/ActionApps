@@ -14,12 +14,12 @@ class MngWidget extends Widget
 {
 
     /** \AA\Util\NamedInterface function */
-    public function name(): string {
+    public static function name(): string {
         return _m('Manager');
     }   // widget name
 
     /** \AA\Util\NamedInterface function */
-    public function description(): string {
+    public static function description(): string {
         return _m('Best for galeries and other tabular data which is multivalue and different for each item');
     }   // widget name
 

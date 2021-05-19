@@ -15,8 +15,8 @@ namespace AA\Util;
 interface NamedInterface {
 
     /** name function     */
-    public function name(): string;
+    public static function name(): string;
 
     /** necessary for parameter wizard */
-    public function description(): string;
+    public static function description(): string;
 }

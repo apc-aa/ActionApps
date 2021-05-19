@@ -22,7 +22,7 @@ class FldWidget extends Widget
     /** name function
      *
      */
-    public function name(): string
+    public static function name(): string
     {
         return _m('Text Field');   // widget name
     }
@@ -135,7 +135,7 @@ class FldWidget extends Widget
     }
 
     /** @inheritDoc */
-    public function description(): string {
+    public static function description(): string {
 return ''; // TODO: Implement description() method.
     }
 }

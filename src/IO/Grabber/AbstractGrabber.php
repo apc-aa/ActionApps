@@ -62,13 +62,13 @@ abstract class AbstractGrabber implements \AA\Util\NamedInterface {
     /** name function
      *  Name of the grabber - used for grabber selection box
      */
-    public function name() : string { return ''; }
+    public static function name() : string { return ''; }
 
     /** description function
      *  Description of the grabber - used as help text for the users.
      *  Description is in in HTML
      */
-    public function description() : string { return ''; }
+    public static function description() : string { return ''; }
 
 
     /** Called before loadUrl to make authentication - used in loadData() as higher level function

@@ -26,7 +26,7 @@
  *
 */
 
-/** @param id  id of AA_Exportsetings object stored on admin/se_export.php page
+/** @param string id  id of AA_Exportsetings object stored on admin/se_export.php page
  *
  *  You can define export to CVS, HTML, XLS on the Admin -> Export file page
  *  and then call the the stored export by the id on /export.php?id=... page.

@@ -37,14 +37,14 @@ class AA_Optimize_Category_Sort2group_By extends AA_Optimize {
     /** Name function
     * @return string - name
     */
-    public function name(): string {
+    public static function name(): string {
         return _m("Convert slice.category_sort to slice.group_by");
     }
 
     /** Description function
     * @return string - description
     */
-    public function description(): string {
+    public static function description(): string {
         return _m("In older version of AA we used just category fields for grouping items. Now it is universal, so boolean category_sort is not enough. We use newer group_by field for quite long time s most probably all your slices are already conevrted.");
     }
 
@@ -99,14 +99,14 @@ class AA_Optimize_Db_Relation_Dups extends AA_Optimize {
     /** Name function
     * @return string - name
     */
-    public function name(): string {
+    public static function name(): string {
         return _m("Relation table duplicate records");
     }
 
     /** Description function
     * @return string - description
     */
-    public function description(): string {
+    public static function description(): string {
         return _m("Testing if relation table contain records, where values in both columns are identical (which was bug fixed in Jan 2006)");
     }
 
@@ -145,14 +145,14 @@ class AA_Optimize_Db_Feed_Inconsistency extends AA_Optimize {
     /** Name function
     * @return string - a name
     */
-    public function name(): string {
+    public static function name(): string {
         return _m("Feeds table inconsistent records");
     }
 
     /** Description function
     * @return string - a description
     */
-    public function description(): string {
+    public static function description(): string {
         return _m("Testing if feeds table do not contain relations to non existant slices (after slice deletion)");
     }
 
@@ -231,14 +231,14 @@ class AA_Optimize_Db_Inconsistency extends AA_Optimize {
     /** Name function
     * @return string - a name
     */
-    public function name(): string {
+    public static function name(): string {
         return _m("Check database consistency");
     }
 
     /** Description function
     * @return string - a description
     */
-    public function description(): string {
+    public static function description(): string {
         return _m("Test content table for records without item table reference, test discussion for the same, ...");
     }
 
@@ -339,19 +339,19 @@ class AA_Optimize_Db_Binary_Trailing_Zeros extends AA_Optimize {
     /** Name function
     * @return string - a name
     */
-    public function name(): string {
+    public static function name(): string {
         return _m("Fix user login problem, constants editing problem, ...");
     }
 
     /** Description function
     * @return string - a description
     */
-    public function description(): string {
+    public static function description(): string {
         return _m("Replaces binary fields by varbinary and removes trailing zeros. Needed for MySQL > 5.0.17");
     }
 
     /** implemented actions within this class */
-    function actions()      { return ['repair']; }
+    public static function actions(): array { return ['repair']; }
 
     /** Test function
     * @return true
@@ -515,14 +515,14 @@ class AA_Optimize_Readers_Login2id extends AA_Optimize {
     /** Name function
     * @return string - a name
     */
-    public function name(): string {
+    public static function name(): string {
         return _m("Convert Readers login to reader id");
     }
 
     /** Description function
     * @return string - a description
     */
-    public function description(): string {
+    public static function description(): string {
         return _m("There was change in Reader management functionality in AA v2.8.1, so readers are not internaly identified by its login, but by reader ID (item ID of reader in Reader slice). This is much more powerfull - you can create relations just as in normal slice. It works well without any change. The only problem is, if you set any slice to be editable by users from Reader slice. In that case the fields edited_by........ and posted_by........ are filled by readers login instead of reader id. You can fix it by \"Repair\".");
     }
 
@@ -602,14 +602,14 @@ class AA_Optimize_Database_Structure extends AA_Optimize {
     /** Name function
     * @return string - a name
     */
-    public function name(): string {
+    public static function name(): string {
         return _m("Checks if all tables have right columns and indexes");
     }
 
     /** Description function
     * @return string - a description
     */
-    public function description(): string {
+    public static function description(): string {
         return _m("We are time to time add new table or column to existing table in order we can support new features. This option will update the datastructure to the last one. No data will be lost.");
     }
 
@@ -646,19 +646,19 @@ class AA_Optimize_Clear_Pagecache extends AA_Optimize {
     /** Name function
     * @return string - a name
     */
-    public function name(): string {
+    public static function name(): string {
         return _m("Clear Pagecache");
     }
 
     /** Description function
     * @return string - a description
     */
-    public function description(): string {
+    public static function description(): string {
         return _m("Whole pagecache will be invalidated and deleted");
     }
 
     /** implemented actions within this class */
-    function actions()      { return ['repair']; }
+    public static function actions(): array { return ['repair']; }
 
     /** Test function
     * @return bool
@@ -697,14 +697,14 @@ class AA_Optimize_Fix_Pagecache extends AA_Optimize {
     /** Name function
     * @return string - a name
     */
-    public function name(): string {
+    public static function name(): string {
         return _m("Fix inconcistency in pagecache");
     }
 
     /** Description function
     * @return string - a description
     */
-    public function description(): string {
+    public static function description(): string {
         return _m("Delete not existant keys in pagecache_str2find table");
     }
 
@@ -745,19 +745,19 @@ class AA_Optimize_Copy_Content extends AA_Optimize {
     /** Name function
     * @return string - a name
     */
-    public function name(): string {
+    public static function name(): string {
         return _m("Copy Content Table");
     }
 
     /** Description function
     * @return string - a description
     */
-    public function description(): string {
+    public static function description(): string {
         return _m("Copy data for all items newer than short_id=1941629 from content table to content2 table. Used for recovery content table on Ecn server. Not usefull for any other users, I think.");
     }
 
     /** implemented actions within this class */
-    function actions()      { return ['repair']; }
+    public static function actions(): array { return ['repair']; }
 
     /** Test function
     * @return string - a message
@@ -810,19 +810,19 @@ class AA_Optimize_Create_Upload_Dir extends AA_Optimize {
     /** Name function
     * @return string - a name
     */
-    public function name(): string {
+    public static function name(): string {
         return _m("Create upload directory for current slice");
     }
 
     /** Description function
     * @return string - a description
     */
-    public function description(): string {
+    public static function description(): string {
         return _m("see IMG_UPLOAD_PATH parameter in config.php3 file");
     }
 
     /** implemented actions within this class */
-    function actions()      { return ['repair']; }
+    public static function actions(): array { return ['repair']; }
 
     /** Test function
     * @return string - a message
@@ -854,19 +854,19 @@ class AA_Optimize_Generate_Metabase_Row extends AA_Optimize {
     /** Name function
     * @return string - a name
     */
-    public function name(): string {
+    public static function name(): string {
         return _m("Generate metabase PHP row");
     }
 
     /** Description function
     * @return string - a description
     */
-    public function description(): string {
+    public static function description(): string {
         return _m("prints out the metabase row for include/metabase.class.php3 file (used by AA developers to update database definition tempate)");
     }
 
     /** implemented actions within this class */
-    function actions()      { return ['repair']; }
+    public static function actions(): array { return ['repair']; }
 
     /** Main update function
      *  @return bool
@@ -887,19 +887,19 @@ class AA_Optimize_Generate_Jslibs_Array extends AA_Optimize {
     /** Name function
      * @return string message
      */
-    public function name(): string {
+    public static function name(): string {
         return _m("Generate JS Library definition array");
     }
 
     /** Description function
      * @return string message
      */
-    public function description(): string {
+    public static function description(): string {
         return _m("Prints out the JS library definition array used in include/stringexpand.php for update to last version of libs on jsDeliver CDN (used by AA developers to update js libs in AA)");
     }
 
     /** implemented actions within this class */
-    function actions()      { return ['repair']; }
+    public static function actions(): array { return ['repair']; }
 
     /** Main update function
      *  @return bool
@@ -920,19 +920,19 @@ class AA_Optimize_Fix_Content_Column extends AA_Optimize {
     /** Name function
     * @return string - a name
     */
-    public function name(): string {
+    public static function name(): string {
         return _m("Set right content column for field");
     }
 
     /** Description function
     * @return string - a description
     */
-    public function description(): string {
+    public static function description(): string {
         return _m("Set flag FLAG_TEXT_STORED for all content, where field is marked as text field, and reset it for numer fields");
     }
 
     /** implemented actions within this class */
-    function actions()      { return ['test','repair']; }
+    public static function actions(): array { return ['test', 'repair']; }
 
     /** Test function
     * @return string - a message
@@ -991,14 +991,14 @@ class AA_Optimize_Item_Discussion extends AA_Optimize {
     /** Name function
     * @return string - a name
     */
-    public function name(): string {
+    public static function name(): string {
         return _m("Delete discussion comments for not existing items");
     }
 
     /** Description function
     * @return string - a description
     */
-    public function description(): string {
+    public static function description(): string {
         return _m("");
     }
 
@@ -1047,14 +1047,14 @@ class AA_Optimize_Multivalue_Duplicates extends AA_Optimize {
     /** Name function
     * @return string - a name
     */
-    public function name(): string {
+    public static function name(): string {
         return _m("Multivalue Duplicates");
     }
 
     /** Description function
     * @return string - a description
     */
-    public function description(): string {
+    public static function description(): string {
         return _m("Removes duplicate values in multivalue text fields");
     }
 
@@ -1140,14 +1140,14 @@ class AA_Optimize_Db_Relation_Startsxy extends AA_Optimize {
     /** Name function
     * @return string - a name
     */
-    public function name(): string {
+    public static function name(): string {
         return _m("Slices relation started by x or y records");
     }
 
     /** Description function
     * @return string - a description
     */
-    public function description(): string {
+    public static function description(): string {
         return _m("Testing if relation between slices are OK (without x or y chars on the begining)");
     }
 
@@ -1195,14 +1195,14 @@ class AA_Optimize_Set_Expirydate extends AA_Optimize {
     /** Name function
     * @return string - a name
     */
-    public function name(): string {
+    public static function name(): string {
         return _m("Set Expiry date to maximum value");
     }
 
     /** Description function
     * @return string - a description
     */
-    public function description(): string {
+    public static function description(): string {
         return _m("Set Expiry date to maximum value for items in slices, where expiry_date..... field is not shown. It also sets the field's default to that value.<br><b>Is it really what you want?</b>");
     }
 
@@ -1211,7 +1211,8 @@ class AA_Optimize_Set_Expirydate extends AA_Optimize {
     */
     public function test() : bool {
 
-        $slices   = GetTable2Array("SELECT slice_id, input_default FROM `field` WHERE id='expiry_date.....' AND input_show=0", "unpack:slice_id", 'input_default');
+//      $slices   = GetTable2Array("SELECT slice_id, input_default FROM `field` WHERE id='expiry_date.....' AND input_show=0", "unpack:slice_id", 'input_default');
+        $slices   = DB_AA::select(['sid'=>'input_default'], 'SELECT LOWER(HEX(`slice_id`)) AS sid, input_default FROM `field`', [['id','expiry_date.....'],['input_show',0,'i']]);
         foreach ($slices as $sid => $default) {
             $this->message([_m('Slice ID')=>$sid, _m('Slice Name')=>AA_Slice::getModuleName($sid), _m('default value for expiry_date.....')=>$default]);
         }
@@ -1226,7 +1227,8 @@ class AA_Optimize_Set_Expirydate extends AA_Optimize {
      */
     public function repair() : bool {
         $db  = getDb();
-        $slices   = GetTable2Array("SELECT slice_id, input_default FROM `field` WHERE id='expiry_date.....' AND input_show=0", "unpack:slice_id", 'input_default');
+//        $slices   = GetTable2Array("SELECT slice_id, input_default FROM `field` WHERE id='expiry_date.....' AND input_show=0", "unpack:slice_id", 'input_default');
+        $slices   = DB_AA::select(['sid'=>'input_default'], 'SELECT LOWER(HEX(`slice_id`)) AS sid, input_default FROM `field`', [['id','expiry_date.....'],['input_show',0,'i']]);
         foreach ($slices as $sid => $default) {
             $db->query("UPDATE item SET expiry_date=2145826800 WHERE slice_id='".q_pack_id($sid)."'");
             //huhl("UPDATE item SET expiry_date=2145826800 WHERE slice_id='".q_pack_id($sid)."'");
@@ -1250,14 +1252,14 @@ class AA_Optimize_Convert2utf8mb4 extends AA_Optimize {
     /** Name function
      * @return string - a name
      */
-    public function name(): string {
+    public static function name(): string {
         return _m("Convert old database collation utf8 to utf8mb4");
     }
 
     /** Description function
      * @return string - a description
      */
-    public function description(): string {
+    public static function description(): string {
         return _m("Convert old database collation utf8 to utf8mb4 for all tables and set database default to utf8mb4");
     }
 
@@ -1312,14 +1314,14 @@ class AA_Optimize_Convert2innodb extends AA_Optimize {
     /** Name function
     * @return string - a name
     */
-    public function name(): string {
+    public static function name(): string {
         return _m("Convert database engine to InnoDB");
     }
 
     /** Description function
     * @return string - a description
     */
-    public function description(): string {
+    public static function description(): string {
         return _m("Converts older MyISAM database storage engine to InnoDB for all tables");
     }
 
@@ -1372,19 +1374,19 @@ class AA_Optimize_Change_Module_Id extends AA_Optimize {
     /** Name function
     * @return string - a name
     */
-    public function name(): string {
+    public static function name(): string {
         return _m("Change current module ID to new one");
     }
 
     /** Description function
     * @return string - a description
     */
-    public function description(): string {
+    public static function description(): string {
         return _m("Used sometimes if you clone database or copy slices to another database for another client and do not want to use the same slice/site ids. You probably need to do it for all slices and site module.<br>IT CHANGES CURRENT SLICE ID!");
     }
 
     /** implemented actions within this class */
-    function actions()      { return ['repair']; }
+    public static function actions(): array { return ['repair']; }
 
     /** Test function
     * @return true
@@ -1441,19 +1443,19 @@ class AA_Optimize_Required_Checboxes extends AA_Optimize {
     /** Name function
     * @return string - a name
      */
-    public function name(): string {
+    public static function name(): string {
         return _m("List Checkbox fields marked as required");
     }
 
     /** Description function
     * @return string - a description
     */
-    public function description(): string {
+    public static function description(): string {
         return _m("AA are now more strict about Required field, so checkboxes marked as Required must be filled (=checked). This could be problem if you acidentaly have it set in history. This test just list all of such fields, in order you can check it.");
     }
 
     /** implemented actions within this class */
-    function actions()      { return ['test']; }
+    public static function actions(): array { return ['test']; }
 
     /** Test function
      * @return bool
@@ -1480,19 +1482,19 @@ class AA_Optimize_Seo_Duplicates extends AA_Optimize {
     /** Name function
      * @return string message
      */
-    public function name(): string {
+    public static function name(): string {
         return _m("SEO name duplicates");
     }
 
     /** Description function
      * @return string message
      */
-    public function description(): string {
+    public static function description(): string {
         return _m("Check items for duplicate SEO name inside sitemodule");
     }
 
     /** implemented actions within this class */
-    function actions()      { return ['test']; }
+    public static function actions(): array { return ['test']; }
 
     /** Test function
      * @return bool
@@ -1519,14 +1521,14 @@ class AA_Optimize_Fix_Datewidget extends AA_Optimize {
     /** Name function
     * @return string - a name
      */
-    public function name(): string {
+    public static function name(): string {
         return _m("Fix older format of date widget parameters");
     }
 
     /** Description function
     * @return string - a description
     */
-    public function description(): string {
+    public static function description(): string {
         return _m("AA used to use ' as parameter delimiter in some early stages instead of : - like date widget 1'10'1. This fixes it to current 1:10:1. Functionaly it is equal.");
     }
 
@@ -1568,14 +1570,14 @@ class AA_Optimize_Remove_Undefine_Alias extends AA_Optimize {
     /** Name function
     * @return string - a name
      */
-    public function name(): string {
+    public static function name(): string {
         return _m("Remove _#UNDEFINE alias and default help.html for more help text in field");
     }
 
     /** Description function
     * @return string - a description
     */
-    public function description(): string {
+    public static function description(): string {
         return _m("AA used to use _#UNDEFINE alias and some preset help text for field, which make litle sense for real fields in real project. The help text and alias weill be removed.");
     }
 

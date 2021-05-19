@@ -841,7 +841,7 @@ class AA_Item {
 
     /** f_d function
      * prints date in user defined format
-     * @param $param date format like in PHP (like "m-d-Y")
+     * @param string $param date format like in PHP (like "m-d-Y")
      * @return false|string
      */
     function f_d($col, $param="") {
@@ -1224,7 +1224,7 @@ class AA_Item {
     /** f_s function
      * print database field or default value if empty
      * @param $col
-     * @param $param default (like "javascript: window.alert('No source url specified')")
+     * @param string $param default (like "javascript: window.alert('No source url specified')")
      * @return bool|default|string
      */
     function f_s($col, $param="") {
@@ -1234,7 +1234,7 @@ class AA_Item {
     /** f_l function
      * prints $col as link, if field_id in $param is defined, else prints just $col
      * @param $col
-     * @param $param field_id         - of possible link (like "source_href.....")
+     * @param string $param field_id         - of possible link (like "source_href.....")
      *               additional atrib - for <a> tag
      * @return string
      */
@@ -1699,8 +1699,7 @@ class AA_Item {
      *
      *  Creates item object just from item id and fills all necessary structures
      *
-     * @param  zid     - an item id - zid object, unpacked or short id
-     * @param  renew   - regenerate the item form database
+     * @param  zids|string|string[] zid     - an item id - zid object, unpacked or short id
      * @return AA_Item|bool
      */
     static function getItem($zid) {

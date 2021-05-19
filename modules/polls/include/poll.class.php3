@@ -82,7 +82,7 @@ class AA_Poll {
 
     /** get_format_strings function
      *  Returns array of admin format strings as used in manager class
-     * @param $design  beforevote|aftervote|<design_id>
+     * @param string $design  beforevote|aftervote|<design_id>
      * @return array
      */
     function get_format_strings($design='beforevote') {

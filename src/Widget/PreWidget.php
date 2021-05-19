@@ -18,7 +18,7 @@ class PreWidget extends FldWidget
     /** name function
      *
      */
-    public function name(): string
+    public static function name(): string
     {
         return _m('Text Field with Presets');   // widget name
     }
@@ -32,7 +32,7 @@ class PreWidget extends FldWidget
     }
 
     /** @inheritDoc */
-    public function description(): string {
+    public static function description(): string {
         return ''; // TODO: Implement description() method.
     }
 }

@@ -27,7 +27,7 @@ class TxtWidget extends Widget
     /** name function
      *
      */
-    public function name(): string
+    public static function name(): string
     {
         return _m('Text Area');   // widget name
     }
@@ -175,7 +175,7 @@ class TxtWidget extends Widget
     }
 
     /** @inheritDoc */
-    public function description(): string {
+    public static function description(): string {
         return ''; // TODO: Implement description() method.
     }
 }

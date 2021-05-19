@@ -248,7 +248,7 @@ class zids implements Iterator, ArrayAccess, Countable {
     }
 
     /** onetype function
-     * @return one-character type for standard types
+     * @return string one-character type for standard types
      * be careful of how extension types are handled
      */
     function onetype() {

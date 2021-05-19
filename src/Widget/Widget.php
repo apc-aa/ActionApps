@@ -45,13 +45,13 @@ class Widget extends AA_Object implements NamedInterface {
     /** name function
      *
      */
-    public function name() : string         { return ''; }
+    public static function name(): string         { return ''; }
 
     /** necessary for parameter wizard */
-    public function description() : string  { return ''; }
+    public static function description(): string  { return ''; }
 
     /** returns if the widget handles multivalue or just single value   */
-    public function multiple() {
+    public static function multiple(): bool {
         return false;
     }
 

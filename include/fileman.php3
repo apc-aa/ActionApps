@@ -133,9 +133,10 @@ $filetypes = [
     _m("Parent") => ["img"=>"parent"],
     _m("Other") => ["img"=>"oth"]
 ];
-/** get_filetype function
- * @param $filepath
- * @return if|int|mixed|string
+
+/**
+ * @param string $filepath
+ * @return int|string
  */
 function get_filetype($filepath) {
     global $filetypes;

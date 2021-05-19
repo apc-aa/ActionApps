@@ -20,14 +20,13 @@ class MchWidget extends Widget
     /** name function
      *
      */
-    public function name(): string
+    public static function name(): string
     {
         return _m('Multiple Checkboxes');   // widget name
     }
 
     /** returns if the widget handles multivalue or just single value   */
-    function multiple()
-    {
+    public static function multiple(): bool {
         return true;
     }
 
@@ -124,7 +123,7 @@ class MchWidget extends Widget
     }
 
     /** @inheritDoc */
-    public function description(): string {
+    public static function description(): string {
         return ''; // TODO: Implement description() method.
     }
 }

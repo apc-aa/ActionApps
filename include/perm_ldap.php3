@@ -77,8 +77,8 @@ function AddUser($user, $flags = 0) {
 
 /** DelUser function
  *  Deletes an user in LDAP permission system
- * @param $user_id is DN
- * @param $flags
+ * @param string $user_id is DN
+ * @param int $flags
  * @return bool
  */
 function DelUser($user_id, $flags = 3) {
@@ -181,8 +181,8 @@ function AddGroup($group, $flags = 0) {
 
 /** DelGroup function
  *  Deletes a group in LDAP permission system
- * @param $group_id is DN
- * @param $flags
+ * @param string $group_id is DN
+ * @param int $flags
  * @return bool
  */
  function DelGroup($group_id, $flags = 3) {

@@ -743,7 +743,7 @@ class AA_File_HTTPS_Wrapper extends AA_File_HTTP_Wrapper {
  * FTP protocol class.
  */
 class AA_File_FTP_Wrapper extends AA_File_Wrapper {
-	/** @var Control socket */
+	/** @var resource Control socket */
     var $ctrl;
 	/**
 	 * Open the file.
@@ -921,7 +921,7 @@ class AA_Directory_Wrapper {
     /** @var $file_names array of file names */
     var $file_names;
 
-    /** @var $reg_file_filter aplied to file names */
+    /** @var string $reg_file_filter filter applied to file names */
     var $reg_file_filter;
 
     /**

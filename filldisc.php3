@@ -1,4 +1,7 @@
 <?php
+
+use AA\IO\DB\DB_AA;
+
 /**
  * filldisc.php3 - writes a discussion item into the discussion table
  * expected parameters (usually from a HTML form):

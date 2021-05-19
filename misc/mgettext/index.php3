@@ -56,7 +56,7 @@ $lang_list = [
 ];
 
 // $aadir is the source dir for updating translation files
-$aadir = AA_BASE_PATH;
+$aadir = AA_INSTAL_PATH;
 endslash($aadir);
 /* IMPORTANT:
    $destdir is the destination dir where are the copies of language files to which

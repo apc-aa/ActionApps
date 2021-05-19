@@ -125,8 +125,8 @@ function ChangeUser($user, $flags = 0) {
 
 /** AddGroup function
  * creates new group in permission system
- * @param $group is an array ("name", "description", ...)
- * @param $flags
+ * @param array $group is an array ("name", "description", ...)
+ * @param int $flags
  * @return
  */
 function AddGroup($group, $flags = 0) {
@@ -147,8 +147,8 @@ function AddGroup($group, $flags = 0) {
 
 /** DelGroup function
  *  deletes an group in permission system
- * @param $group_id is DN
- * @param $flags
+ * @param string $group_id is DN
+ * @param int $flags
  * @return bool
  */
 function DelGroup($group_id, $flags = 3) {
@@ -172,8 +172,8 @@ function DelGroup($group_id, $flags = 3) {
 
 /** ChangeGroup function
  *  changes fields about group
- * @param $group is an array ("name", "description", ...)
- * @param $flags
+ * @param array $group is an array ("name", "description", ...)
+ * @param int   $flags
  * @return bool
  */
 function ChangeGroup($group, $flags = 0) {

@@ -58,7 +58,7 @@ class AA_Manageraction_History_Apply extends AA_Manageraction {
 
     /** main executive function
      * @param        $manager
-     * @param        $item_zids    Items to delete (if 'selected' is $param)
+     * @param zids   $item_zids    Items to delete (if 'selected' is $param)
      * @param string $action_param Not used
      * @return false or error message
      */

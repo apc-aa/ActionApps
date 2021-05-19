@@ -55,14 +55,14 @@ class ObjectForm extends AbstractGrabber
     }
 
     /** Name of the grabber - used for grabber selection box */
-    public function name(): string {
+    public static function name(): string {
         return _m('Form');
     }
 
     /** Description of the grabber - used as help text for the users.
      *  Description is in in HTML
      */
-    public function description(): string {
+    public static function description(): string {
         return _m('Grabbs data POSTed by AA form');
     }
 

@@ -60,8 +60,8 @@ class AA_Formrow extends AA_Storable {
         return $widget->getHtml($this->getRowProperty(), $content);
     }
 
-    // in order we can dispaly row widget (used for editing forms)
-    function addFormrows($form) {
+    // in order we can display row widget (used for editing forms)
+    public static function addFormrows($form) {
         $slice  = AA_Slice::getModule($form->object_owner);
         $fields = $slice->getFields();
         $f_arr  = $fields->getNameArray();
@@ -122,7 +122,7 @@ class AA_Formrow_Field extends AA_Formrow {
     function getRowProperty(): AA_Property {
         $field  = $this->_getField();
         $widget = $field->getWidget();
-        return $field->getAaProperty(['multiple'=>$widget->multiple()]);
+        return $field->getAaProperty(['multiple'=>$widget::multiple()]);
     }
 
     function getWidget()      {
@@ -160,12 +160,12 @@ class FormrowWidget extends Widget {
      */
 
     /** name function */
-    public function name(): string {
+    public static function name(): string {
         return _m('Form Row - special widget for form setting');
     }   // widget name
 
-    /** multiple function */
-    function multiple() {
+    /** returns if the widget handles multivalue or just single value   */
+    public static function multiple(): bool {
         return true;   // returns multivalue or single value
     }
 
@@ -219,7 +219,7 @@ class FormrowWidget extends Widget {
     /**
      * @inheritDoc
      */
-    public function description(): string {
+    public static function description(): string {
         return ''; // TODO: Implement description() method.
     }
 }

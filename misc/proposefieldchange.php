@@ -66,12 +66,12 @@ class AbstractGrabberAssignmentform extends AA\IO\Grabber\AbstractGrabber {
     }
 
     /** Name of the grabber - used for grabber selection box */
-    public function name(): string { return _m('Assignment form'); }
+    public static function name(): string { return _m('Assignment form'); }
 
     /** Description of the grabber - used as help text for the users.
      *  Description is in in HTML
      */
-    public function description(): string { return _m('Grabbs item relations data POSTed by form'); } // snerovadlo
+    public static function description(): string { return _m('Grabbs item relations data POSTed by form'); } // snerovadlo
 
      /** Possibly preparation of grabber - it is called directly before getItem()
      *  method is called - it means "we are going really to grab the data
@@ -153,7 +153,7 @@ elseif ( AA_V::P('assignment') == 1 ) {
         if ($zids->count() > 0) {
             $now  = now();
 
-            $SQL  = "UPDATE item SET status_code = '3', last_edit   = '$now', edited_by   = '". quote(isset($auth) ? $auth->getUid() : "9999999999")."'";
+            $SQL  = "UPDATE item SET status_code = '3', last_edit   = '$now', edited_by   = '". quote(AA::Auth()->getUid() ?: "9999999999")."'";
             $SQL .= " WHERE ". $zids->sqlin('id');
 
             DB_AA::sql($SQL);

@@ -18,14 +18,13 @@ class Wi2Widget extends MchWidget
     /** name function
      *
      */
-    public function name(): string
+    public static function name(): string
     {
         return _m('Two Boxes');   // widget name
     }
 
     /** returns if the widget handles multivalue or just single value   */
-    function multiple()
-    {
+    public static function multiple(): bool {
         return true;
     }
 
@@ -52,7 +51,7 @@ class Wi2Widget extends MchWidget
     }
 
     /** @inheritDoc */
-    public function description(): string {
+    public static function description(): string {
         return ''; // TODO: Implement description() method.
     }
 }

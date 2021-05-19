@@ -19,7 +19,7 @@ class SelWidget extends Widget
     /** name function
      *
      */
-    public function name(): string
+    public static function name(): string
     {
         return _m('Select Box');   // widget name
     }
@@ -54,7 +54,7 @@ class SelWidget extends Widget
         $input_name = $base_name . "[]";
         $input_id = FormArray::formName2Id($input_name);
         $use_name = $this->getProperty('use_name', false);
-        $multiple = $this->multiple() ? ' multiple' : '';
+        $multiple = self::multiple() ? ' multiple' : '';
 
         //$widget    = AA\Widget\Widget::_saveIcon($base_id, $type == 'live', 'left')."<select name=\"$input_name\" id=\"$input_id\"$multiple $required $widget_adds $autofocus>";
         $widget = Widget::_saveIcon($base_id, $type == 'live') . "<select name=\"$input_name\" id=\"$input_id\"$multiple $required $widget_add $autofocus>";
@@ -73,7 +73,7 @@ class SelWidget extends Widget
     /**
      * @inheritDoc
      */
-    public function description(): string {
+    public static function description(): string {
         return ''; // TODO: Implement description() method.
     }
 }

@@ -501,7 +501,7 @@ function collect_messages_from_file($base_dir, $filename, &$messages, &$warnings
             // after _m
             case 1:
                 if (isspace($filetext[$pos]))
-                    continue;
+                    break;
                 elseif ($filetext[$pos] == '(') {
                     $find = 2;
                 } else {
@@ -511,7 +511,7 @@ function collect_messages_from_file($base_dir, $filename, &$messages, &$warnings
             // after _m (
             case 2:
                 if (isspace($filetext[$pos])) {
-                    continue;
+                    break;
                 }
                 if (strchr("\"'", $filetext[$pos])) {
                     $find = 3;

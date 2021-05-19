@@ -10,7 +10,7 @@
  *                   in this case it holds bin number, where the central_confs should go
  *  @param $item_arr array, where keys are unpacked ids of items prefixed by
  *                   'x' character (javascript purposes only)
- *  @param $akce_param additional parameter for the action - not used here
+ *  @param $akce_param mixed additional parameter for the action - not used here
  *
  *
  * PHP version 7.2+
@@ -231,8 +231,8 @@ class AA_Manageraction_Central_DeleteTrash extends AA_Manageraction {
 
     /** main executive function
      * @param AA_Manager $manager
-     * @param $item_zids    Items to delete (if 'selected' is $param)
-     * @param $action_param  Not used
+     * @param zids $item_zids  Items to delete (if 'selected' is $param)
+     * @param mixed $action_param  Not used
      * @return bool|if|mixed|void
      */
     function perform($manager, $item_zids, $action_param) {

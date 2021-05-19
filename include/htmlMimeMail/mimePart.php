@@ -229,10 +229,10 @@ class Mail_mimePart {
      * Adds a subpart to current mime part and returns
      * a reference to it
      *
-     * @param $body   The body of the subpart, if any.
-     * @param $params The parameters for the subpart, same
-     *                as the $params argument for constructor.
-     * @return A reference to the part you just added. It is
+     * @param string $body   The body of the subpart, if any.
+     * @param array  $params The parameters for the subpart, same
+     *                       as the $params argument for constructor.
+     * @return Mail_mimePart A reference to the part you just added. It is
      *         crucial if using multipart/* in your subparts that
      *         you use =& in your script when calling this function,
      *         otherwise you will not be able to add further subparts.
@@ -251,7 +251,7 @@ class Mail_mimePart {
      *
      * @param $data     string - The data to encode.
      * @param $encoding string - The encoding type to use, 7bit, base64, or quoted-printable.
-     * @return bool|string|The
+     * @return bool|string
      */
     private function _getEncodedData($data, $encoding)
     {
@@ -276,9 +276,8 @@ class Mail_mimePart {
      *
      * Encodes data to quoted-printable standard.
      *
-     * @param $input    The data to encode
-     * @param $line_max Optional max line length. Should
-     *                  not be more than 76 chars
+     * @param string $input    The data to encode
+     * @param int    $line_max Optional max line length. Should not be more than 76 chars
      *
      * @access private
      * @return bool|string

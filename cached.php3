@@ -8,7 +8,7 @@
  *  @author Honza Malik <honza.malik@ecn.cz>
  *  @copyright Econnect, Honza Malik, October 2004
  *
- *  @param keystr = 32-characters long hexadecimal number of chache record
+ *  @param string keystr = 32-characters long hexadecimal number of cache record
  */
 /*
 Copyright (C) 2002 Association for Progressive Communications

@@ -38,8 +38,9 @@ set_time_limit(max(300,ini_get('max_execution_time')));   // 300 seconds (at lea
 
 $Msg = '';
 $testresult = [];
+$err = [];          // error array (Init - just for initializing variable
 
-// php4 returns class names in lower case, so we need itin lower case
+// php4 returns class names in lower case, so we need it in lower case
 if ($_GET['test'] AND (strpos(strtolower($_GET['test']), 'aa_optimize_')===0)) {
     /** @var AA_Optimize $optimizer */
     $optimizer = AA_Serializable::factory($_GET['test']);

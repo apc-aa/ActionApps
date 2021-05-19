@@ -49,8 +49,8 @@ if ( !is_object($event) ) {
 
 abstract class AA_Generator extends AA_Serializable implements AA\Util\NamedInterface {
 
-    public function name(): string        { return _m('');  }      // see NamedInterface
-    public function description(): string { return _m('');  }      // see NamedInterface
+    public static function name(): string        { return _m('');  }      // see NamedInterface
+    public static function description(): string { return _m('');  }      // see NamedInterface
 
     /**
      * @return AA_Value
@@ -62,7 +62,7 @@ abstract class AA_Generator extends AA_Serializable implements AA\Util\NamedInte
 class AA_Generator_Now extends AA_Generator {
 
     /** Name of the component for selection */
-    public function name(): string { return _m("Now, i.e. current date");  }
+    public static function name(): string { return _m("Now, i.e. current date");  }
 
     /** generate() - main function for generating the value */
     function generate()    { return new AA_Value(now()); }
@@ -72,7 +72,7 @@ class AA_Generator_Now extends AA_Generator {
 class AA_Generator_Never extends AA_Generator {
 
     /** Name of the component for selection */
-    public function name(): string { return _m("Never, i.e. maximum date");  }
+    public static function name(): string { return _m("Never, i.e. maximum date");  }
 
     /** generate() - main function for generating the value */
     function generate()    { return new AA_Value(2145826800); }
@@ -83,12 +83,11 @@ class AA_Generator_Never extends AA_Generator {
 class AA_Generator_Uid extends AA_Generator {
 
     /** Name of the component for selection */
-    public function name(): string { return _m("User ID");  }
+    public static function name(): string { return _m("User ID");  }
 
     /** generate() - main function for generating the value */
     function generate() {
-        global $auth;                                  // 9999999999 for anonymous
-        return new AA_Value(isset($auth) ? $auth->getUid() : "9999999999");
+        return new AA_Value(AA::Auth()->getUid() ?: "9999999999");
     }
 }
 
@@ -96,12 +95,11 @@ class AA_Generator_Uid extends AA_Generator {
 class AA_Generator_Log extends AA_Generator {
 
     /** Name of the component for selection */
-    public function name(): string { return _m("Login name");  }
+    public static function name(): string { return _m("Login name");  }
 
     /** generate() - main function for generating the value */
     function generate() {
-        global $auth;                                  // "anonymous" for anonymous
-        return new AA_Value(isset($auth) ? $auth->getUname() : "anonymous");
+        return new AA_Value(AA::Auth()->getUid() ? AA::Auth()->getUname() : "anonymous");
     }
 }
 
@@ -111,7 +109,7 @@ class AA_Generator_Dte extends AA_Generator {
     protected $plusdays;         // see getClassProperties
 
     /** Name of the component for selection */
-    public function name(): string {  return _m("Date + 'Parameter' days");  }
+    public static function name(): string {  return _m("Date + 'Parameter' days");  }
 
     /** getClassProperties function of AA_Serializable
      * @return array
@@ -132,7 +130,7 @@ class AA_Generator_Txt extends AA_Generator {
     protected $text;         // see getClassProperties
 
     /** Name of the component for selection */
-    public function name(): string {  return _m("Text from 'Parameter'");  }
+    public static function name(): string {  return _m("Text from 'Parameter'");  }
 
     /** getClassProperties function of AA_Serializable
      * @return array
@@ -152,7 +150,7 @@ class AA_Generator_Txt extends AA_Generator {
 /** AA_Generator_Qte - only for backward complatibility. The same as Txt */
 class AA_Generator_Qte extends AA_Generator_Txt {
     /** Name of the component for selection */
-    public function name(): string {  return _m('');  }
+    public static function name(): string {  return _m('');  }
 }
 
 
@@ -166,9 +164,9 @@ class AA_Generator_Rnd extends AA_Generator {
     protected $wheretocheck;   // see getClassProperties
 
     /** Name of the component for selection */
-    public function name(): string        {  return _m("Random string");  }
+    public static function name(): string        {  return _m("Random string");  }
     /** Decription  of the component for selection */
-    public function description(): string {  return _m("Random alphanumeric [A-Z0-9] string.");  }
+    public static function description(): string {  return _m("Random alphanumeric [A-Z0-9] string.");  }
 
     /** getClassProperties function of AA_Serializable
      * @return array
@@ -219,9 +217,9 @@ class AA_Generator_Variable extends AA_Generator {
     protected $text;         // see getClassProperties
 
     /** Name of the component for selection */
-    public function name(): string        {  return _m("AA Expression");  }
+    public static function name(): string        {  return _m("AA Expression");  }
     /** Decription  of the component for selection */
-    public function description(): string {  return _m("any text with possible {AA expressions} like: {date:Y}");  }
+    public static function description(): string {  return _m("any text with possible {AA expressions} like: {date:Y}");  }
 
     /** getClassProperties function of AA_Serializable
      * @return array
@@ -245,7 +243,7 @@ class AA_Generator_Mul extends AA_Generator {
     protected $delimiter;          // see getClassProperties
 
     /** Name of the component for selection */
-    public function name(): string        {  return _m("Multivalue");  }
+    public static function name(): string        {  return _m("Multivalue");  }
 
     /** getClassProperties function of AA_Serializable
      * @return array
@@ -276,8 +274,8 @@ abstract class AA_Inserter extends AA_Serializable implements \AA\Util\NamedInte
     /** @var AA_Field */
     protected $field;         // additional variable common to all AA_Inserters - not filled by standard factoryByString
 
-    public function name(): string        { return _m('');  }      // see NamedInterface
-    public function description(): string { return _m('');  }      // see NamedInterface
+    public static function name(): string        { return _m('');  }      // see NamedInterface
+    public static function description(): string { return _m('');  }      // see NamedInterface
 
     // __construct()  // we use AA_Serializable::factoryByString + post initiation for $field
 
@@ -394,14 +392,14 @@ abstract class AA_Inserter extends AA_Serializable implements \AA\Util\NamedInte
 
 /** AA_Inserter_Qte - Just insert string (so quote it before storing to the DB) */
 class AA_Inserter_Qte extends AA_Inserter {
-    public function name(): string        { return _m("Text = don't modify");  }             // see NamedInterface
-    public function description(): string { return _m("Does not modify the value.");  }      // see NamedInterface
+    public static function name(): string        { return _m("Text = don't modify");  }             // see NamedInterface
+    public static function description(): string { return _m("Does not modify the value.");  }      // see NamedInterface
 }
 
 /** AA_Inserter_Dte - Just insert string (so quote it before storing to the DB) */
 class AA_Inserter_Dte extends AA_Inserter {
-    public function name(): string        { return _m("Date = don't modify");  }             // see NamedInterface
-    public function description(): string { return _m("Does not modify the value (just like Text), but it is better to separate it for future usage.");  }      // see NamedInterface
+    public static function name(): string        { return _m("Date = don't modify");  }             // see NamedInterface
+    public static function description(): string { return _m("Does not modify the value (just like Text), but it is better to separate it for future usage.");  }      // see NamedInterface
 }
 
 // not used. eventualy the same as Qte
@@ -409,14 +407,14 @@ class AA_Inserter_Dte extends AA_Inserter {
 
 /** AA_Inserter_Num - Just insert string (so quote it before storing to the DB) */
 class AA_Inserter_Num extends AA_Inserter {
-    public function name(): string        { return _m("Number = don't modify");  }             // see NamedInterface
-    public function description(): string { return _m("Does not modify the value (just like Text), but it is better to separate it for future usage.");  }      // see NamedInterface
+    public static function name(): string        { return _m("Number = don't modify");  }             // see NamedInterface
+    public static function description(): string { return _m("Does not modify the value (just like Text), but it is better to separate it for future usage.");  }      // see NamedInterface
 }
 
 /** AA_Inserter_Boo - 0 | 1 */
 class AA_Inserter_Boo extends AA_Inserter {
-    public function name(): string        { return _m("Boolean = store 0 or 1");  }             // see NamedInterface
-    public function description(): string { return _m('');  }      // see NamedInterface
+    public static function name(): string        { return _m("Boolean = store 0 or 1");  }             // see NamedInterface
+    public static function description(): string { return _m('');  }      // see NamedInterface
 
     public function execute($fieldwriter, $item_id, $value, $additional= []) {
         $value['value'] = ( $value['value'] ? 1 : 0 );
@@ -426,8 +424,8 @@ class AA_Inserter_Boo extends AA_Inserter {
 
 /** AA_Inserter_Ids - Just insert string (so quote it before storing to the DB) */
 class AA_Inserter_Ids extends AA_Inserter {
-    public function name(): string        { return _m("Item IDs");  }             // see NamedInterface
-    public function description(): string { return _m('');  }      // see NamedInterface
+    public static function name(): string        { return _m("Item IDs");  }             // see NamedInterface
+    public static function description(): string { return _m('');  }      // see NamedInterface
 
     public function execute($fieldwriter, $item_id, $value, $additional= []) {
 
@@ -492,17 +490,16 @@ class AA_Inserter_Ids extends AA_Inserter {
 
 /** AA_Inserter_Uid - User ID = always store current user ID */
 class AA_Inserter_Uid extends AA_Inserter {
-    public function name(): string        { return _m("User ID = always store current user ID");  }             // see NamedInterface
-    public function description(): string { return _m('Inserts the identity of the current user, no matter what the user sets.');  }      // see NamedInterface
+    public static function name(): string        { return _m("User ID = always store current user ID");  }             // see NamedInterface
+    public static function description(): string { return _m('Inserts the identity of the current user, no matter what the user sets.');  }      // see NamedInterface
 
     public function execute($fieldwriter, $item_id, $value, $additional= []) {
-        global $auth;
 
         if ( $value['value'] AND IsSuperadmin() ) {
             $val = $value['value'];
         } else {
             // if not $auth, it is from anonymous posting - 9999999999 is anonymous user
-            $val = (isset($auth) ?  $auth->getUid() : ((strlen($value['value'])>0) ? $value['value'] : "9999999999"));
+            $val = (AA::Auth()->getUid() ?: ((strlen($value['value'])>0) ? $value['value'] : "9999999999"));
         }
         parent::execute($fieldwriter, $item_id, ['value' => $val], $additional);
     }
@@ -517,13 +514,12 @@ class AA_Inserter_Uid extends AA_Inserter {
 
 /** AA_Inserter_Log - Login name */
 class AA_Inserter_Log extends AA_Inserter {
-    public function name(): string        { return _m("Login name");  }             // see NamedInterface
-    public function description(): string { return _m('');  }      // see NamedInterface
+    public static function name(): string        { return _m("Login name");  }             // see NamedInterface
+    public static function description(): string { return _m('');  }      // see NamedInterface
 
     public function execute($fieldwriter, $item_id, $value, $additional= []) {
-        global $auth;
         // if not $auth, it is from anonymous posting
-        $val = (isset($auth) ?  $auth->getUname() : ((strlen($value['value'])>0) ? $value['value'] : 'anonymous'));
+        $val = ( AA::Auth()->getUid() ?  AA::Auth()->getUname() : ((strlen($value['value'])>0) ? $value['value'] : 'anonymous'));
 
         parent::execute($fieldwriter, $item_id, ['value' => $val], $additional);
     }
@@ -538,8 +534,8 @@ class AA_Inserter_Log extends AA_Inserter {
 
 /** AA_Inserter_Now - Now = always store current time */
 class AA_Inserter_Now extends AA_Inserter {
-    public function name(): string        { return _m("Now = always store current time");  }             // see NamedInterface
-    public function description(): string { return _m('Inserts the current time, no matter what the user sets.');  }      // see NamedInterface
+    public static function name(): string        { return _m("Now = always store current time");  }             // see NamedInterface
+    public static function description(): string { return _m('Inserts the current time, no matter what the user sets.');  }      // see NamedInterface
 
     public function execute($fieldwriter, $item_id, $value, $additional= []) {
         parent::execute($fieldwriter, $item_id, ["value"=>time()], $additional);
@@ -567,8 +563,8 @@ class AA_Inserter_Co2 extends AA_Inserter {
     protected $delimiter;              // see getClassProperties
     protected $recompute;              // see getClassProperties
 
-    public function name(): string        { return _m("Computed field for INSERT/UPDATE");  }             // see NamedInterface
-    public function description(): string { return _m('The field is the result of expression written in "Code for unaliasing". It is good solution for all values, which could be precomputed, since its computation on item-show-time would be slow. Yes, you can use {view...}, {include...}, {switch...} here');  }      // see NamedInterface
+    public static function name(): string        { return _m("Computed field for INSERT/UPDATE");  }             // see NamedInterface
+    public static function description(): string { return _m('The field is the result of expression written in "Code for unaliasing". It is good solution for all values, which could be precomputed, since its computation on item-show-time would be slow. Yes, you can use {view...}, {include...}, {switch...} here');  }      // see NamedInterface
 
     /** getClassProperties function of AA_Serializable
      * @return array
@@ -595,8 +591,8 @@ class AA_Inserter_Com extends AA_Inserter {
 
     protected $code;                   // see getClassProperties
 
-    public function name(): string        { return _m("Computed field");  }             // see NamedInterface
-    public function description(): string { return _m('The field is the result of expression written in \"Code for unaliasing\". It is good solution for all values, which could be precomputed, since its computation on item-show-time would be slow. Yes, you can use {view...}, {include...}, {switch...} here');  }      // see NamedInterface
+    public static function name(): string        { return _m("Computed field");  }             // see NamedInterface
+    public static function description(): string { return _m('The field is the result of expression written in \"Code for unaliasing\". It is good solution for all values, which could be precomputed, since its computation on item-show-time would be slow. Yes, you can use {view...}, {include...}, {switch...} here');  }      // see NamedInterface
 
     /** getClassProperties function of AA_Serializable
      * @return array
@@ -622,8 +618,8 @@ class AA_Inserter_Seo extends AA_Inserter {
 
     protected $code;                   // see getClassProperties
 
-    public function name(): string        { return _m("SEO Name");  }             // see NamedInterface
-    public function description(): string { return _m('If the field is not filled, compute seoname from _#HEADLINE alias (or another if specified) unique to all slices in sitemodules, where the slice is mentioned in "Uses slices" settings. Basically the SEO Name alias is shortcut for comuted field with {ifset:{seo.............}:_#1:{seoname:{_#HEADLINE}:all:CHARSET}}');  }      // see NamedInterface
+    public static function name(): string        { return _m("SEO Name");  }             // see NamedInterface
+    public static function description(): string { return _m('If the field is not filled, compute seoname from _#HEADLINE alias (or another if specified) unique to all slices in sitemodules, where the slice is mentioned in "Uses slices" settings. Basically the SEO Name alias is shortcut for comuted field with {ifset:{seo.............}:_#1:{seoname:{_#HEADLINE}:all:CHARSET}}');  }      // see NamedInterface
 
     /** getClassProperties function of AA_Serializable
      * @return array
@@ -644,8 +640,8 @@ class AA_Inserter_Seo extends AA_Inserter {
 
 /** AA_Inserter_Seq */
 class AA_Inserter_Seq extends AA_Inserter {
-    public function name(): string        { return _m("Unique number for this field (from 1,..)");  }             // see NamedInterface
-    public function description(): string { return _m('Unique number in sequence 1,2,3,...');  }      // see NamedInterface
+    public static function name(): string        { return _m("Unique number for this field (from 1,..)");  }             // see NamedInterface
+    public static function description(): string { return _m('Unique number in sequence 1,2,3,...');  }      // see NamedInterface
 }
 
 /** AA_Inserter_Fil  - File = uploaded file
@@ -667,8 +663,8 @@ class AA_Inserter_Fil extends AA_Inserter {
     protected $exact;                  // see getClassProperties
     protected $nametemplate;           // see getClassProperties
 
-    public function name(): string        { return _m("File = uploaded file");  }             // see NamedInterface
-    public function description(): string { return _m('Stores the uploaded file and a link to it, parameters only apply if type is image/something.');  }      // see NamedInterface
+    public static function name(): string        { return _m("File = uploaded file");  }             // see NamedInterface
+    public static function description(): string { return _m('Stores the uploaded file and a link to it, parameters only apply if type is image/something.');  }      // see NamedInterface
 
     /** getClassProperties function of AA_Serializable
      * @return array
@@ -796,8 +792,8 @@ class AA_Inserter_Pwd extends AA_Inserter {
     protected $bck_field;                   // see getClassProperties
     protected $crypt_phrase;            // see getClassProperties
 
-    public function name(): string        { return _m("Password and Change Password");  }             // see NamedInterface
-    public function description(): string { return _m('Stores value from a "Password and Change Password" field type. First prooves the new password matches the retyped new password, and if so, encrypts the new password and stores it.');  }      // see NamedInterface
+    public static function name(): string        { return _m("Password and Change Password");  }             // see NamedInterface
+    public static function description(): string { return _m('Stores value from a "Password and Change Password" field type. First prooves the new password matches the retyped new password, and if so, encrypts the new password and stores it.');  }      // see NamedInterface
 
     /** getClassProperties function of AA_Serializable
      * @return array
@@ -836,8 +832,8 @@ class AA_Inserter_2fa extends AA_Inserter {
 
     protected $crypt_phrase;            // see getClassProperties
 
-    public function name(): string        { return _m("2FA Secret");  }             // see NamedInterface
-    public function description(): string { return _m('Generates and stores secret for Two-factor authentication, possibly encrypted by password');  }      // see NamedInterface
+    public static function name(): string        { return _m("2FA Secret");  }             // see NamedInterface
+    public static function description(): string { return _m('Generates and stores secret for Two-factor authentication, possibly encrypted by password');  }      // see NamedInterface
 
     /** getClassProperties function of AA_Serializable
      * @return array
@@ -852,8 +848,8 @@ class AA_Inserter_2fa extends AA_Inserter {
         [$aa_const, $username, $password, $code2fa] = ParamExplode($value['value']);
 
         if ($aa_const == 'AA_2FASECRET') {
-            global $auth;
-            if (!strlen($username) OR !($uid = AA::$perm->authenticateUsername($username, $password, $code2fa)) OR ($uid != $auth->getUid())) {
+
+            if (!strlen($username) OR !($uid = AA::$perm->authenticateUsername($username, $password, $code2fa)) OR ($uid != AA::Auth()->getUid())) {
                 return '';
             }
             $ga = new PHPGangsta_GoogleAuthenticator();
@@ -889,8 +885,8 @@ class AA_Inserter_2fa extends AA_Inserter {
 
 /** AA_Inserter_Unq - not tested, not used, yet*/
 class AA_Inserter_Unq extends AA_Inserter {
-    public function name(): string        { return _m("");  }             // see NamedInterface
-    public function description(): string { return _m('');  }      // see NamedInterface
+    public static function name(): string        { return _m("");  }             // see NamedInterface
+    public static function description(): string { return _m('');  }      // see NamedInterface
 
     public function execute($fieldwriter, $item_id, $value, $additional= []) {
         parent::execute($fieldwriter, $item_id, ["value"=>StrExpand('AA_Stringexpand_Finduniq', [$value['value'], $this->field->getId(), empty($unique_slices) ? $fieldwriter->getSliceId() : $unique_slices, $item_id])], $additional);
@@ -899,8 +895,8 @@ class AA_Inserter_Unq extends AA_Inserter {
 
 /** AA_Inserter_Null - insert nothing - not used */
 class AA_Inserter_Nul extends AA_Inserter {
-    public function name(): string        { return _m("");  }             // see NamedInterface
-    public function description(): string { return _m('');  }      // see NamedInterface
+    public static function name(): string        { return _m("");  }             // see NamedInterface
+    public static function description(): string { return _m('');  }      // see NamedInterface
 
     public function execute($fieldwriter, $item_id, $value, $additional= []) {
     }
@@ -982,7 +978,7 @@ function IsEditable($fieldcontent, $field, $profile): bool {
  * @param $invalidatecache
  * @param $feed
  * @param array $oldcontent4id if not sent, StoreItem finds it
- * @param $context special parameter used for thumbnails - ''|feed
+ * @param string $context special parameter used for thumbnails - ''|feed
  * @return true on success, false otherwise
  */
 function StoreItem( $id, $slice_id, $content4id, $insert, $invalidatecache=true, $feed=true, $context='' ) {
@@ -1021,9 +1017,9 @@ function StoreItem( $id, $slice_id, $content4id, $insert, $invalidatecache=true,
 //./filler.php3:               ValidateContent4Id($err_valid, $slice, $insert ? "insert" : "update", $my_item_id, !$notvalidate, $notshown);
 
 function ValidateContent4Id(&$err, $slice, $action, $id=0, $do_validate=true, $notshown="") {
-    global $oldcontent4id, $auth;
+    global $oldcontent4id;
 
-    $profile = AA_Profile::getProfile($auth->getUid(), $slice->getId()); // current user settings
+    $profile = AA_Profile::getProfile(AA::Auth()->getUid(), $slice->getId()); // current user settings
 
     // error array (Init - just for initializing variable
     if (!is_array($err)) {

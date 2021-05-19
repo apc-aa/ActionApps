@@ -34,7 +34,7 @@ use AA\IO\DB\DB_AA;
  *  Validate users input. Error is reported in $err array
  * @param $variableName
  * @param $inputName
- * @param $variable could be array or not
+ * @param string|array $variable could be array or not
  * @param $err
  * @param $needed
  * @param $validator (object of simple string)
@@ -687,7 +687,7 @@ class AA_Validate_Text extends AA_Validate {
  *  Validate users input. Error is reported in $err array
  * @param $variableName
  * @param $inputName
- * @param $variable is not array
+ * @param string $variable is not array
  * @param $err
  * @param $needed
  * @param $validator (object of simple string)

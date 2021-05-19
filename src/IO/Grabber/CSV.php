@@ -58,7 +58,7 @@ class CSV extends AbstractGrabber
     /** name function
      * Name of the grabber - used for grabber selection box
      */
-    public function name() : string {
+    public static function name() : string {
         return _m('CSV');
     }
 
@@ -66,7 +66,7 @@ class CSV extends AbstractGrabber
      *  Description of the grabber - used as help text for the users.
      *  Description is in in HTML
      */
-    public function description(): string {
+    public static function description(): string {
         return _m('Import data from CSV (Comma Separated Values) format');
     }
 

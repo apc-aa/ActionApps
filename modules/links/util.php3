@@ -190,7 +190,7 @@ function TestBaseCat($ctg, $base_cat, $ctg_path) {
 /**
  * Slice id for each category in Links module is not random - it is predictable:
  * <category_id>'Links'<shorted AA_ID>
- * @returns packed slice id
+ * @returns string - packed slice id
  */
 function Links_Category2SliceID($cid) {
     return unpack_id(substr( $cid.'Links'.pack_id(AA_ID), 0, 16 ));

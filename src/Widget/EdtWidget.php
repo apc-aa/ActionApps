@@ -12,7 +12,7 @@ namespace AA\Widget;
 class EdtWidget extends TxtWidget
 {
     /** name function  */
-    public function name(): string
+    public static function name(): string
     {
         return _m('Rich Edit Text Area');   // widget name
     }

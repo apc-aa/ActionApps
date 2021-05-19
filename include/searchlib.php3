@@ -1318,8 +1318,8 @@ function MakeSQLOrderBy($fields_arr, $sort, &$join_tables, $additional_field_con
  * @param string $SQL              - SQL query
  * @param string $col              - column in database containing id
  * @param $zid_type
- * @param bool   $empty_result_condition - have we return empty set?
- * @param arrray $group_limit      - array('field' => <grouping_column>,
+ * @param bool  $empty_result_condition - have we return empty set?
+ * @param array $group_limit      - array('field' => <grouping_column>,
  *                                         'limit' => <number>)
  *                                   Limits the number of returned ids from each
  *                                   group. Group is defined by 'field'. Used

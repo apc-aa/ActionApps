@@ -88,6 +88,7 @@ if ( $usr1_flt ) {  // group editation - list of all users
     $all_users = $users;  // in group editation is $rusr=="", so $users are list of all users
 }
 
+$sel_groups = [];
 if ( $selected_user ) {
     if ( $selected_user != "n" ) { // none user selected
         $user_groups = AA::$perm->getMembership($selected_user,1);   // get list of groups in which the user is (just first level groups)

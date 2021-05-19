@@ -54,14 +54,14 @@ class AARSS extends AbstractGrabber
     /** name function
      *
      */
-    public function name(): string {
+    public static function name(): string {
         return _m("AA RSS");
     }
 
     /** description function
      *
      */
-    public function description(): string {
+    public static function description(): string {
         return _m("Grabs data from generic RSS or AA RSS (used for item exchange between different AA installations)");
     }
 

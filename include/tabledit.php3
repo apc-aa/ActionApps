@@ -277,6 +277,7 @@ class tabledit {
                 echo "<form name=\"$formname\" method=\"post\" action=\"".$this->getAction($this->gotoview2())."\">\n";
             }
 
+            $all_keys = [];
             while ($db->next_record()) {
                 $records[] = $db->record();
                 $all_keys[] = GetKeyFromRecord($this->primary_aliases[$this->view["table"]], $this->cols, $db->record());

@@ -39,7 +39,8 @@
     "ext-ldap": "*",
     "ext-openssl": "*",
     "ext-apache": "*",
-    "ext-mysqli": "*"
+    "ext-mysqli": "*",
+    "ext-intl": "*"
   },
   "autoload": {
     "psr-4": {

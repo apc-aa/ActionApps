@@ -24,13 +24,13 @@ class MflWidget extends Widget
     /** name function
      *
      */
-    public function name(): string
+    public static function name(): string
     {
         return _m('Multiple Text Field');   // widget name
     }
 
     /** @inheritDoc */
-    public function description(): string { return ''; }
+    public static function description(): string { return ''; }
 
     // inherited from \AA\Widget\Widget
     function requireLibs($aa_property, $winfo)
@@ -53,8 +53,7 @@ class MflWidget extends Widget
     }
 
     /** returns if the widget handles multivalue or just single value   */
-    function multiple()
-    {
+    public static function multiple(): bool {
         return true;
     }
 

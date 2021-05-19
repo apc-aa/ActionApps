@@ -21,7 +21,7 @@ class DteWidget extends Widget
     /** name function
      *
      */
-    public function name(): string
+    public static function name(): string
     {
         return _m('Date');   // widget name
     }
@@ -212,7 +212,7 @@ class DteWidget extends Widget
     /**
      * @inheritDoc
      */
-    public function description(): string {
+    public static function description(): string {
         return ''; // TODO: Implement description() method.
     }
 }

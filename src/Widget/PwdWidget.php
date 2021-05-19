@@ -20,7 +20,7 @@ class PwdWidget extends Widget
     /** name function
      *
      */
-    public function name(): string
+    public static function name(): string
     {
         return _m('Password and Change password');
     }   // widget name
@@ -85,7 +85,7 @@ class PwdWidget extends Widget
     /**
      * @inheritDoc
      */
-    public function description(): string {
+    public static function description(): string {
         return ''; // TODO: Implement description() method.
     }
 }

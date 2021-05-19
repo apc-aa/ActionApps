@@ -19,7 +19,7 @@ class RioWidget extends Widget
     /** name function
      *
      */
-    public function name(): string
+    public static function name(): string
     {
         return _m('Radio Button');   // widget name
     }
@@ -80,7 +80,7 @@ class RioWidget extends Widget
     /**
      * @inheritDoc
      */
-    public function description(): string {
+    public static function description(): string {
         return ''; // TODO: Implement description() method.
     }
 }

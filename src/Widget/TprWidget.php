@@ -18,7 +18,7 @@ class TprWidget extends TxtWidget
     /** name function
      *
      */
-    public function name(): string
+    public static function name(): string
     {
         return _m('Textarea with Presets');   // widget name
     }
@@ -32,7 +32,7 @@ class TprWidget extends TxtWidget
     }
 
     /** @inheritDoc */
-    public function description(): string {
+    public static function description(): string {
         return ''; // TODO: Implement description() method.
     }
 }

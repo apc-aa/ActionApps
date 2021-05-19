@@ -18,7 +18,7 @@ class LupWidget extends Widget
     /** name function
      *
      */
-    public function name(): string
+    public static function name(): string
     {
         return _m('Local URL Picker');   // widget name
     }
@@ -34,7 +34,7 @@ class LupWidget extends Widget
     /**
      * @inheritDoc
      */
-    public function description(): string {
+    public static function description(): string {
         return ''; // TODO: Implement description() method.
     }
 }

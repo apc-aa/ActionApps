@@ -42,7 +42,7 @@ class httpCache {
     }
 
     /** Cache the given $content with $mtime modification time.
-      * @param binary $content
+      * @param string $content binary string
       * @param integer $mtime
       * @param string $type
       * @param integer $expire

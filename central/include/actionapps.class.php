@@ -117,7 +117,7 @@ class AA_Actionapps {
         return $this->getValue('ORG_NAME'). ' ('. $this->getValue('AA_HTTP_DOMAIN'). $this->getValue('AA_BASE_DIR'). ')';
     }
 
-    /** @return ORG_NAME of remote AAs
+    /** @return string ORG_NAME of remote AAs
      *  Currently this function is not needed, since name of AA is pased
      *  by constructor (which is much quicker)
      */
@@ -163,7 +163,7 @@ class AA_Actionapps {
     }
 
     /** This command synchronizes the slices base on sync[] array
-     *  @return the report on the synchronization
+     *  return the report on the synchronization
      */
     function synchronize($sync_commands) {
         // We will use rather one call which returns all the data for all the
@@ -173,7 +173,7 @@ class AA_Actionapps {
     }
 
     /** This command calls optimize method
-     *  @return the report on the optimize
+     *  return the report on the optimize
      */
     function doOptimize($optimize_class, $optimize_method) {
         $response = $this->getResponse( new AA_Request('Do_Optimize', ['class'=>$optimize_class, 'method'=>$optimize_method]) );

@@ -59,7 +59,6 @@ require_once __DIR__."/../include/xml_serializer.php3";
 // and to have an example
 /** bayfm_preimport function
  * @param $s
- * @return huhl($s)
  */
 function bayfm_preimport($s) {
     // Create a vid_translate table, and change ids while there

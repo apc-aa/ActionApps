@@ -325,7 +325,7 @@ function ColumnFunctions($cview, &$val, $function, $name="", $new_record=false, 
  * @param $cview
  * @param $show_val
  * @param $val
- * @param $name if given, a hidden box with the field value will be added
+ * @param string $name if given, a hidden box with the field value will be added
  */
 function ShowColumnValueReadOnly($cview, $show_val, $val, $name="") {
     if ($name) {

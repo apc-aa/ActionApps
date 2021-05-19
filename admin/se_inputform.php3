@@ -168,7 +168,7 @@ if ($update) {
         // mark as multiple
         // Mark field as multiple is not necessary - we can remove this
         // property in the future. Honza, 2006-10-17
-        // On the other hand we use it for marting the field as translateable
+        // On the other hand we use it for marking the field as translatable
         // Honza, 2014-03-24
         $widget_class = Widget::constructClassName($input_show_func_f);
         Qvarsetadd("multiple",      "quoted", ($onlyupdate ? $multiple : (($translation ? 2 : 0) + ($widget_class::multiple() ? 1 : 0))));
