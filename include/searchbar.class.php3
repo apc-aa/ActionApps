@@ -428,8 +428,8 @@ class AA_Searchbar extends AA_Storable {
     /** setDefaultOrder function
     */
     function setDefaultOrder() {
-        // global $auth, $slice_id;  // @todo - tried to set right order after searchbox is cleaned, but it shows some errors. I have to look on it later. Honza 6.9.2012
-        // $profile = AA_Profile::getProfile($auth->getUid(), $slice_id); // current user settings
+        // global $slice_id;  // @todo - tried to set right order after searchbox is cleaned, but it shows some errors. I have to look on it later. Honza 6.9.2012
+        // $profile = AA_Profile::getProfile(AA::Auth()->getUid(), $slice_id); // current user settings
         // $this->setFromProfile($profile);
         $order_fields = $this->fields->getOrderArray();
         if (($this->order_row_count_min > 0) AND isset( $order_fields['publish_date....'])) {
@@ -691,8 +691,8 @@ class AA_Bookmarks {
      * constructor
      */
     function __construct() {
-        global $auth, $slice_id;
-        $this->profile = AA_Profile::getProfile($auth->getUid(), $slice_id); // current user settings
+        global $slice_id;
+        $this->profile = AA_Profile::getProfile(AA::Auth()->getUid(), $slice_id); // current user settings
 
         $this->setFromProfile();
         $this->setLastUsed();

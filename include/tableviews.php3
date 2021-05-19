@@ -31,7 +31,7 @@
  * @return array
  */
 function GetTableView($viewID) {
-    global $auth, $slice_id;
+    global $slice_id;
 
     $attrs_edit = [
         "table"=>"border=0 cellpadding=3 cellspacing=0 bgcolor='".COLOR_TABBG."'"
@@ -55,7 +55,7 @@ function GetTableView($viewID) {
         "readonly"  => true,
         "addrecord" => false,
         "where"     => "(module_id='". q_pack_id($slice_id)."')",
-        "cond"      => CheckPerms( $auth->getUid(), "slice", $slice_id, PS_MODP_EDIT_DESIGN),
+        "cond"      => CheckPerms( AA::Auth()->getUid(), "slice", $slice_id, PS_MODP_EDIT_DESIGN),
         "title"     => _m("Polls Design"),
         "caption"   => _m("Polls Design"),
         "attrs"     => $attrs_browse,

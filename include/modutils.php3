@@ -79,10 +79,7 @@ function ValidateModuleFields( $name, $slice_url, $priority, $lang_file, $owner,
 /** WriteModuleFields function
  *  Updates or inserts all necessary fields to module table
  * @param $module_id
- * @param $db
- * @param $varset
  * @param $superadmin
- * @param $auth
  * @param $type
  * @param $name
  * @param $slice_url
@@ -93,7 +90,7 @@ function ValidateModuleFields( $name, $slice_url, $priority, $lang_file, $owner,
  * @return bool|mixed|string
  */
 function WriteModuleFields( $module_id, $superadmin, $type, $name, $slice_url, $priority, $lang_file, $owner, $deleted, $new_id="" ) {
-    global $auth, $err;
+    global $err;
     $varset     = new CVarset();
 
     if ( $module_id )  {
@@ -118,7 +115,7 @@ function WriteModuleFields( $module_id, $superadmin, $type, $name, $slice_url, $
         $module_id = ($new_id ? $new_id : new_id());   // sometimes we need specific
         // module_id (links module)
         $varset->set("id", $module_id, "unpacked");
-        $varset->set("created_by", $auth->getUid(), "text");
+        $varset->set("created_by", AA::Auth()->getUid(), "text");
         $varset->set("created_at", now(), "text");
         $varset->set("name", $name, "quoted");
         $varset->set("owner", $owner, "unpacked");

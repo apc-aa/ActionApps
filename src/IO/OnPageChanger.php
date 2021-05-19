@@ -35,19 +35,17 @@ use ConvertCharset;
 class OnPageChanger  {
 
     protected $content_function;
-    protected $auth;
 
     function __construct($content_function) {
         $this->content_function = $content_function;
-        $this->auth &= $GLOBALS['auth'];
     }
 
     public function checkAndProcessCall($additional_validity_check=true) {
         if (IsAjaxCall()) {
             header("Content-type: application/json");
             if (!$additional_validity_check) {
-                if ($this->auth->is_user()) {
-                    echo json_encode(['message'=>_m('No permission for current user.')]);  // .print_r($auth, true)));
+                if (AA::Auth()->is_user()) {
+                    echo json_encode(['message'=>_m('No permission for current user.')]);
                 } else {
                     // @todo - show login
                     echo json_encode(['message'=>_m('No permission - no user is authenticated. Try to relogin, please.')]);

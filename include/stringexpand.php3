@@ -296,12 +296,12 @@ class AA_Stringexpand_User extends AA_Stringexpand {
      * @return bool|mixed|null|string|string[]
      */
     function expand($field='') {
-        global $cache_nostore, $auth, $perms_roles;
+        global $cache_nostore, $perms_roles;
         // this GLOBAL :-( variable is message for pagecache to NOT store views (or
         // slices), where we use {user:xxx} alias, into cache (AUTH_USER is not in
         // cache's keyString.
         $cache_nostore = true;             // GLOBAL!!!
-        $auth_user     = get_if($_SERVER['PHP_AUTH_USER'],$auth->getUname(),$_SERVER['REMOTE_USER']);
+        $auth_user     = get_if($_SERVER['PHP_AUTH_USER'],AA::Auth()->getUname(),$_SERVER['REMOTE_USER']);
         switch ($field) {
             case '':         return $auth_user;
             case 'password': return $_SERVER['PHP_AUTH_PW'];
@@ -4384,7 +4384,7 @@ class AA_Stringexpand_Edit extends AA_Stringexpand_Nevercache {
                 $widget_prop = AA_Stringexpand_Edit::WidgetPropsString2Arr($widget_properties);
                 $widget      = $field->getWidget($widget_type, $widget_prop);
 
-                $widget_prop['multiple'] =  $widget->multiple();
+                $widget_prop['multiple'] =  $widget::multiple();
                 if ($required==1) {
                     $widget_prop['required'] =  $required;
                 }
@@ -5619,7 +5619,6 @@ class AA_Stringexpand_Preg_Match extends AA_Stringexpand_Nevercache {
     /** expand function
      * @param $pattern
      * @param $subject
-     * @return if|mixed
      */
     function expand($pattern='', $subject='') {
         preg_match($pattern, $subject, $matches);
@@ -7610,8 +7609,8 @@ class AA_Stringexpand_Setsecret extends AA_Stringexpand_Nevercache {
      * @return string|void
      */
     function expand($username='', $password='', $code2fa='') {
-        global $auth;
-        if (!strlen($username) OR !strlen($password) OR !($uid = AA::$perm->authenticateUsername($username, $password, $code2fa)) OR ($uid != $auth->getUid())) {
+
+        if (!strlen($username) OR !strlen($password) OR !($uid = AA::$perm->authenticateUsername($username, $password, $code2fa)) OR ($uid != AA::Auth()->getUid())) {
             return '';
         }
         $ga = new PHPGangsta_GoogleAuthenticator();

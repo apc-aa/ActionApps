@@ -52,12 +52,11 @@ require_once __DIR__."/mgettext.php3";
  *
  */
 function get_aamenus() {
-    global $auth,
-           $slice_id,
+    global $slice_id,
            $r_state,
            $bookmarks;
 
-    $profile = AA_Profile::getProfile($auth->getUid(), $slice_id); // current user settings
+    $profile = AA_Profile::getProfile(AA::Auth()->getUid(), $slice_id); // current user settings
     $aamenus = [];
 
     $aamenus["view"] = [
@@ -239,13 +238,13 @@ function get_aamenus() {
  * @param $help
  */
 function AddAlertsModules(&$submenu, $collections, $header, $help) {
-    global $auth;
+
     if (count($collections)) {
         $submenu["header3"] = $header."&nbsp;&nbsp;&nbsp;". GetAAImage('help50.gif', $help, 16, 12);
         $i = 100;
         foreach ($collections as $col) {
             $submenu["item".$i] = [
-                "cond"        => CheckPerms( $auth->getUid(), "slice", unpack_id($col['id']), PS_FIELDS),
+                "cond"        => CheckPerms( AA::Auth()->getUid(), "slice", unpack_id($col['id']), PS_FIELDS),
                 "href"        => "modules/alerts/index.php3?module_id=".unpack_id($col['id']),
                 "no_slice_id" => 1,
                 "label"       => $col['name']

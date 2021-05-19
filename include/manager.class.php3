@@ -92,7 +92,7 @@ class AA_Manager extends AA_Storable {
      * @param array  $settings - main manager settings
      */
     function __construct($manager_id, $settings) {
-        global $r_state, $sess, $auth;
+        global $r_state, $sess;
 
         $this->show        = isset($settings['show']) ? $settings['show'] : MGR_ALL ;
         $this->module_id   = $settings['module_id'];
@@ -165,7 +165,7 @@ class AA_Manager extends AA_Storable {
             unset($r_state['manager']);
             // set default admin interface settings from user's profile
 
-            $profile = AA_Profile::getProfile($auth->getUid(), $this->module_id); // current user settings
+            $profile = AA_Profile::getProfile(AA::Auth()->getUid(), $this->module_id); // current user settings
             $this->setFromProfile($profile);
         } elseif ($r_state['manager']) {        // do not set state for the first time calling
             $this->setFromState($r_state['manager']);
@@ -475,8 +475,8 @@ class AA_Manager extends AA_Storable {
     /** printHtmlPageBegin function
      * Print HTML start page tags (html begin, encoding, style sheet, title
      * and includes necessary javascripts for manager
-     * @param $head_end
-     * @param $css_add  adds custom css to the manager page
+     * @param bool $head_end
+     * @param string $css_add  adds custom css to the manager page
      */
     function printHtmlPageBegin( $head_end = false, $css_add='') {
         // Print HTML start page (html begin, encoding, style sheet, no title)

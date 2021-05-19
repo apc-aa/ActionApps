@@ -163,11 +163,8 @@ class AA_Field implements ArrayAccess {
      */
     function getDefault( $with_profile=false ) {
 
-        /** @var Auth $auth */
-        global $auth;
-
         if ($with_profile) {
-            $profile   = AA_Profile::getProfile($auth->getUid(), $this->getSliceId()); // current user settings
+            $profile   = AA_Profile::getProfile(AA::Auth()->getUid(), $this->getSliceId()); // current user settings
             if ($profile_value = $profile->getProperty('predefine', $this->getId())) {
                 return $profile->parseContentProperty($profile_value);
             }
@@ -324,7 +321,7 @@ class AA_Field implements ArrayAccess {
         return new AA_Property( $this->getId(),
                                 isset($widget_properties['name']) ? $widget_properties['name'] : $this->getName(),
                                 $this->getProperty('in_item_tbl') ? AA::Metabase()->getFieldType('item',$this->getProperty('in_item_tbl')) : ($this->getProperty('text_stored') ? 'text' : 'int'),
-                                isset($widget_properties['multiple']) ? $widget_properties['multiple'] : $this->getWidget()->multiple(),
+                                isset($widget_properties['multiple']) ? $widget_properties['multiple'] : $this->getWidget()::multiple(),
                                 false,                   // persistent @todo
                                 AA_Validate::factoryByString($this->data['input_validate']), // null,
                                 isset($widget_properties['required']) ? (bool)$widget_properties['required'] : $this->required(),
@@ -355,7 +352,7 @@ class AA_Field implements ArrayAccess {
     protected function _getWidget($type, $item_id, $required, $function, $widget_type, $widget_properties) {
         $widget      = $this->getWidget($widget_type, $widget_properties);
         $itemcontent = new ItemContent($item_id);
-        $widget_properties['multiple'] =  $widget->multiple();
+        $widget_properties['multiple'] =  $widget::multiple();
         $widget_properties['required'] =  $required;
         //$widget_properties['name'], $widget_properties['input_help'], ... could be set already in the $widget_properties array
         $aa_property = $this->getAaProperty($widget_properties);
@@ -392,7 +389,7 @@ class AA_Field implements ArrayAccess {
                 $content->setAaValue($this->getId(), $def);
             }
         }
-        $widget_properties['multiple'] =  $widget->multiple();
+        $widget_properties['multiple'] =  $widget::multiple();
         $widget_properties['required'] =  $required;
         //$widget_properties['name'], $widget_properties['input_help'], ... could be set already in the $widget_properties array
         $aa_property = $this->getAaProperty($widget_properties);

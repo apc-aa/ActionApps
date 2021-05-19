@@ -84,7 +84,7 @@ pageOpen($nobody ? 'nobody': '');
 if ($nobody) {
     $_POST['username'] = $free;
     $_POST['password'] = $freepwd;
-    if ( !$auth->auth_validatelogin()) {
+    if ( !AA::Auth()->auth_validatelogin()) {
         echo _m("Either your username or your password is not valid.");
         exit;
     }
@@ -92,7 +92,7 @@ if ($nobody) {
 
 // relogin if requested
 if ($_GET['relogin']) {
-    $auth->relogin();
+    AA::Auth()->relogin();
 }
 
 $slice_id      = AA::$module_id;   // @deprecated - use AA::$module_id instead
@@ -148,8 +148,8 @@ while ($db->next_record()) {
 
 if (!$no_slice_id) {
     if (!is_array($g_modules)) {
-        $auth->auth_loginform('<div style="color:red;"><b>'._m("No slice found for you").'</b></div>');
-        //$auth->relogin();
+        AA::Auth()->auth_loginform('<div style="color:red;"><b>'._m("No slice found for you").'</b></div>');
+        //AA::Auth()->relogin();
         exit;
     }
 

@@ -143,9 +143,8 @@ function GetLabel($profile, $property, $selector, $default_text) {
  */
 function PrintModuleSelection() {
     global $g_modules;
-    global $auth; // for profiles
 
-    $profile = AA_Profile::getProfile($auth->getUid(), AA::$module_id); // current user settings
+    $profile = AA_Profile::getProfile(AA::Auth()->getUid(), AA::$module_id); // current user settings
 
     if ( is_array($g_modules) AND (count($g_modules) > 1) AND ($profile->getProperty('ui_manager', 'top_moduleselection') === false)) {
         // create the modulesOptions content:
@@ -233,9 +232,9 @@ function PrintModuleSelection() {
  * @param bool $showSub -- show the submenu (left navigation bar) ?
  */
 function showMenu($activeMain, $activeSubmenu = "", $showMain = true, $showSub = true) {
-    global $slice_id, $auth;
+    global $slice_id;
 
-    $profile = AA_Profile::getProfile($auth->getUid(), $slice_id); // current user settings
+    $profile = AA_Profile::getProfile(AA::Auth()->getUid(), $slice_id); // current user settings
 
     // load the main AA menu (see menu.php3)
 
@@ -294,7 +293,7 @@ function showMenu($activeMain, $activeSubmenu = "", $showMain = true, $showSub =
             $logout_out = '<input type="submit" name="logout" value="'.$profile->getProperty('ui_manager', 'top_logout').'">';
         }
 
-        $user_out = GetLabel($profile, 'ui_manager', 'top_userinfo', GetMenuLink('userinfo' == $activeMain, $auth->getUname(), IfSlPerm(PS_EDIT_SELF_USER_DATA), 'admin/um_passwd.php3'));
+        $user_out = GetLabel($profile, 'ui_manager', 'top_userinfo', GetMenuLink('userinfo' == $activeMain, AA::Auth()->getUname(), IfSlPerm(PS_EDIT_SELF_USER_DATA), 'admin/um_passwd.php3'));
 
         // @todo change it to method=get (+ hiden fields or so) in ordef the Backe button in browser works there better
         $search_out = IsSuperadmin() ? "<form name=aaserchform method=post action=\"".get_admin_url('aafinder.php3?findinseo=1&findinview=1&findinslice=1&findinfield=1&findinspot=1&go_findtext=1')."\"><input type=search name=findtext value=\"".safe($_REQUEST['findtext'])."\" placeholder=\"". _m('Search..') ."\"></form>"  : '';

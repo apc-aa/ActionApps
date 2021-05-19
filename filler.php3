@@ -172,9 +172,6 @@ function SendErrorPage(array $txt) {
  */
 function SendOkPage($txt, $new_ids = []) {
 
-    /** @var AA_Auth $auth */
-    global $auth;
-
     // $wap variable if set in filler-wap.php
     if ($GLOBALS['wap']) {
         header("Content-type: text/vnd.wap.wml");
@@ -224,7 +221,7 @@ function SendOkPage($txt, $new_ids = []) {
             $retcode = $_REQUEST["ret_code"] ? $_REQUEST["ret_code"] : base64_decode($_REQUEST["ret_code_enc"]);
 
             if ( $retcode == 'AA_2FA_QR') {   // very special case for 2FA secret
-                $secret = strlen($auth->getUid()) ? DB_AA::select1('secret', 'SELECT content.text AS secret FROM content', [['field_id', FIELDID_2FA_SECRET], ['item_id', $auth->getUid(), 'l']]) : '';
+                $secret = strlen(AA::Auth()->getUid()) ? DB_AA::select1('secret', 'SELECT content.text AS secret FROM content', [['field_id', FIELDID_2FA_SECRET], ['item_id', AA::Auth()->getUid(), 'l']]) : '';
 
                 $qr = '--';
                 if ($secret) {
@@ -295,8 +292,8 @@ if ( isset($_POST['aa']) OR isset($_FILES['aa']) ) {
     if ($_COOKIE['AA_Session']) {
         // this defines $auth object so, the "Last Changed By" is set to correct user
         pageOpen('nobody');
-        $GLOBALS['apc_state']['xuser'] = $auth->getUname();
-        $GLOBALS['apc_state']['xuid']  = $auth->getUid();
+        $GLOBALS['apc_state']['xuser'] = AA::Auth()->getUname();
+        $GLOBALS['apc_state']['xuid']  = AA::Auth()->getUid();
     }
     // elseif ($_COOKIE['AA_Sess']) {
         // old unused approach

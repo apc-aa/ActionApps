@@ -8,6 +8,7 @@
 
 namespace AA\Util;
 
+use AA;
 use AA\IO\DB\DB_AA;
 use AA_GeneralizedArray;
 use Cvarset;
@@ -90,7 +91,7 @@ class ChangesMonitor {
      */
     function _add(array $change_proposals, $type): bool
     {
-        global $auth;
+
 
         if (!is_object($change = reset($change_proposals))) {
             return false;
@@ -100,7 +101,7 @@ class ChangesMonitor {
         $varset = new Cvarset;
         $varset->addkey("id", "text", $change_id);
         $varset->add("time", "number", now());
-        $varset->add("user", "text", is_object($auth) ? $auth->getUid() : '');
+        $varset->add("user", "text", AA::Auth()->getUid());
         $varset->add("type", "text", $type);
         $varset->add("resource_id", 'text', $change->getResourceId());
         $varset->doInsert('change');

@@ -9,10 +9,13 @@
 namespace AA\Module\Poll;
 
 
+use AA;
+use AA_Profile;
+
 class Menu
 {
     static public function get_menu() {
-        global $r_slice_view_url, $r_state, $auth, $polledit, $slice_id;
+        global $r_slice_view_url, $r_state, $polledit, $slice_id;
 
         $module_location = "modules/polls/";
 
@@ -110,7 +113,7 @@ class Menu
                 show_always don't include slice_id in cond
         */
 
-        $profile = AA_Profile::getProfile($auth->getUid(), $slice_id); // current user settings
+        $profile = AA_Profile::getProfile(AA::Auth()->getUid(), $slice_id); // current user settings
 
         // left menu for aaadmin is common to all modules, so it is shared
         return array_merge($aamenus, GetCommonMenu($profile));

@@ -300,7 +300,7 @@ if ($edit) {
     // authors have only permission to edit their own items
     $perm_edit_all  = IfSlPerm(PS_EDIT_ALL_ITEMS);
     $item_user = $content4id->getValue('posted_by.......');
-    $real_user = $auth->getUid();
+    $real_user = AA::Auth()->getUid();
     if (!( $perm_edit_all || ( $item_user == $real_user ) )) {
         $err["DB"] = MsgErr(_m("Error: You have no rights to edit item."));
         MsgPage(con_url(StateUrl(self_base() ."index.php3")), $err);
@@ -311,7 +311,7 @@ if ($edit) {
     $content4id = new ItemContent;
 
     // not necessary - filled later
-    // $content4id->setFieldsFromProfile($fields, AA_Profile::getProfile($auth->getUid(), $slice->getId()));
+    // $content4id->setFieldsFromProfile($fields, AA_Profile::getProfile(AA::Auth()->getUid(), $slice->getId()));
 }
 
 // mimo changes

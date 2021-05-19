@@ -91,7 +91,7 @@ $switches->addAction(new AA_Manageraction_Item_GoBookmark(   'GoBookmark'));
 //$switches->addAction(new AA_Manageraction_Item_Email('SendEmail'));
 
 
-$profile       = AA_Profile::getProfile($auth->getUid(), $module_id); // current user settings
+$profile       = AA_Profile::getProfile(AA::Auth()->getUid(), $module_id); // current user settings
 $show_settings = MGR_ALL;
 if ($profile->getProperty('ui_manager_hide', 'mgr_actions'))       { $show_settings -= MGR_ACTIONS; }
 if ($profile->getProperty('ui_manager_hide', 'mgr_sb_searchrows')) { $show_settings -= MGR_SB_SEARCHROWS; }
@@ -165,7 +165,7 @@ if ($perm_set_id) {
 
 // authors have only permission to edit its own items
 if (!$perm_edit_all AND !$perm_set_id) {
-    $aa_set->addCondition(new AA_Condition('posted_by.......', '==', $auth->getUid()));
+    $aa_set->addCondition(new AA_Condition('posted_by.......', '==', AA::Auth()->getUid()));
 }
 
 

@@ -940,9 +940,9 @@ class AA_Metabase {
         return $this->tables[$tablename]->getSearchfields();
     }
 
-    /** @return rows from $tablename for given $module_id in form
+    /** @return array rows from $tablename for given $module_id in form
      *          ret[id] = array('column'=>value, ...)
-     *  @param  ids are always UNPACKED (as keys as well as in values)
+     *          ids are always UNPACKED (as keys as well as in values)
      */
     function getModuleRows($tablename, $module_id) {
         $JOIN = [
@@ -1171,7 +1171,7 @@ class AA_Metabase {
 //          "submenu"   => "design",
             "readonly"  => false,
             "addrecord" => false,
-//          "cond"      => CheckPerms( $auth->getUid(), "slice", $slice_id, PS_MODP_EDIT_DESIGN),
+//          "cond"      => CheckPerms( AA::Auth()->getUid(), "slice", $slice_id, PS_MODP_EDIT_DESIGN),
 //          "title"     => $title,
 //          "caption"   => $title,
             "attrs"     => ["table"=>"border=0 cellpadding=3 cellspacing=0 bgcolor='".COLOR_TABBG."'"],

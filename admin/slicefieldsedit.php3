@@ -95,7 +95,7 @@ $fields = $slice->getFields(true);
 //  update database
 if ( $update AND !count($err) AND $fields->count() ) {
 
-    $profile = AA_Profile::getProfile($auth->getUid(), $slice->getId()); // current user settings
+    $profile = AA_Profile::getProfile(AA::Auth()->getUid(), $slice->getId()); // current user settings
 
 
     // prepare content4id array before call StoreItem function

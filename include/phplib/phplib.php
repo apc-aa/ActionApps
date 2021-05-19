@@ -32,7 +32,7 @@ class Session {
 
     /**
     *
-    * @var  strings
+    * @var  string
     */
     protected $cookiename = "";
 
@@ -115,7 +115,7 @@ class Session {
     /**
     * see if a variable is registered in the current session
     *
-    * @param  $var_name a string with the variable name
+    * @param  $var_name string - variable name
     * @return false if variable not registered true on success.
     * @access public
     */
@@ -188,7 +188,7 @@ class Session {
     * Don't use this function any more. Please use the PHP 4 build in
     * URL rewriting feature. This function is here only for compatibility reasons.
     *
-    * @param	$url	  URL to which the session id will be appended
+    * @param	$url string URL to which the session id will be appended
     * @return string  rewritten url with session id included
     * @deprec $Id$
     * @access public
@@ -531,15 +531,6 @@ class Auth {
         exit;
     }
 
-  function login_if( $t ) {
-    if ( $t ) {
-      $this->unauth();       // We have to relogin, so clear current auth info
-      $this->nobody = false; // We are forcing login, so default auth is
-                             // disabled
-      $this->start();        // Call authentication code
-    }
-  }
-
   function unauth($nobody = false) {
     $this->auth["uid"]   = "";
     $this->auth["uname"] = "";
@@ -629,29 +620,6 @@ class Auth {
 
     function auth_doregister() {
         ;
-    }
-}
-
-/*
-* $Id$
-*/
-function page_open($feature) {
-
-    // enable sess and all dependent features.
-    if (isset($feature["sess"])) {
-        global $sess;
-        $sess = new $feature["sess"];
-        $sess->start();
-
-        // the auth feature depends on sess
-        if (isset($feature["auth"])) {
-            global $auth;
-
-            if (!is_object($auth)) {
-                $auth = new $feature["auth"];
-            }
-            $auth->start();
-        }
     }
 }
 

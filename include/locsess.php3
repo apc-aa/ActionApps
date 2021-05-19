@@ -346,6 +346,10 @@ class AA {
     private static $pagecache      = null;
     /** @var  AA_Metabase $metabase */
     private static $metabase       = null;
+    /** @var  AA_Session $session  */
+    private static $session        = null;
+    /** @var  AA_Auth $auth */
+    private static $auth           = null;
 
     static function getHeaders() {
         $ret = [];
@@ -380,8 +384,7 @@ class AA {
         return $ret;
     }
 
-    /** @usage AA::Stringexpander()->unalias();
-     *  @return  AA_Stringexpander
+    /** @usage AA::setEncoding($module->getCharset());
      */
     static function setEncoding($encoding) {
         AA::$encoding = $encoding;
@@ -415,6 +418,21 @@ class AA {
      */
     static function Metabase() {
         return AA::$metabase ?: (AA::$metabase = AA_Metabase::singleton());
+    }
+
+    /** @usage AA::Session()->register("tview");
+     *  @return  AA_Session
+     */
+    static function Session() {
+        return AA::$session ?: (AA::$session = ($GLOBALS['sess'] ?: new AA_Session));
+    }
+
+    /** @usage AA::Auth()->getUid();
+     *  @return  AA_Auth
+     */
+    static function Auth() {
+        // return $GLOBALS['auth'] ;
+        return AA::$auth ?: (AA::$auth = ($GLOBALS['auth'] ?: new AA_Auth));  /// @todo change to:  return AA::$auth ?: (AA::$auth = new AA_Auth);
     }
 
     // typicaly called as AA::sendHeaders(AA::getHeaders());
@@ -495,29 +513,21 @@ function GetTable2Array($SQL, $key="id", $values='aa_all') {
 }
 
 class AA_Session extends Session {
-
     function __construct() {
         $this->lifetime  = defined('AA_LOGIN_TIMEOUT') ? constant('AA_LOGIN_TIMEOUT') : 1440;   // day
         parent::__construct();
+        // in AA_Session we also start it
+        $this->start();
     }
-
-    // add module_id=... to url. It is better to use StateUrl() directly, but we already use StateUrl() from older versions of $session management
-    // @deprecated - no longer used in the code
-    //    function url($url) {
-    //        return StateUrl($url);
-    //    }
 }
 
 function pageOpen($type = '') {
     global $sess, $auth;
 
     $sess = new AA_Session;
-    $sess->start();
 
     if ($type != 'noauth') {
-        if (!is_object($auth)) {
-            $auth = new AA_Auth;
-        }
+        $auth = AA::Auth();
         $auth->set_nobody($type=='nobody');
         $auth->start();
     }

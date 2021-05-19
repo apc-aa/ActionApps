@@ -57,14 +57,14 @@ class AA_Manageraction_Links_Check extends AA_Manageraction {
      * @return bool
      */
     function perform($manager, $item_zids, $action_param) {
-        global $auth;
-        DB_AA::sql("UPDATE links_links SET checked = '". time() ."', checked_by = '". $auth->getUid() ."' WHERE ". $item_zids->sqlin('id', true));
+
+        DB_AA::sql("UPDATE links_links SET checked = '". time() ."', checked_by = '". AA::Auth()->getUid() ."' WHERE ". $item_zids->sqlin('id', true));
         return false;                                     // OK - no error
     }
 
     /** Checks if the user have enough permission to perform the action
      * @param AA_Manager $manager
-     * @return bool|if|mixed
+     * @return bool
      */
     function isPerm4Action($manager) {
         return IsCatPerm( $this->perm, $GLOBALS['r_state']['cat_path'] );
@@ -74,7 +74,7 @@ class AA_Manageraction_Links_Check extends AA_Manageraction {
      * @param AA_Manager $manager
      * @param $item_zids
      * @param $action_param
-     * @return bool|if|mixed
+     * @return bool
      */
     function isPerm4Perform($manager, $item_zids, $action_param) {
         return $this->isPerm4Action($manager) AND self::permCheck($item_zids, $this->perm);       // _m('No permission to change state of the link');  // error

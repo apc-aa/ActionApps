@@ -22,7 +22,7 @@ https://www.apc.org/
 // anonymous authentication - locauth calls extauthnobody
 use AA\IO\DB\DB_AA;
 
-if ($_REQUEST['free']) {   // can't be just POST - we use it in live Tags, which sends GET request
+if (!empty($_REQUEST['free'])) {   // can't be just POST - we use it in live Tags, which sends GET request
     $nobody = true;
 }
 
@@ -37,7 +37,7 @@ class AA_Responder extends AA_Object {
     /** by default only superadmins are allowed to perform remote operations */
     function isPerm() { return IsSuperadmin(); }
 
-    public function name(): string   { return str_replace('AA_Responder_', '', get_class($this)); }
+    public static function name(): string   { return str_replace('AA_Responder_', '', get_called_class()); }
 }
 
 /** Used for autentication
@@ -51,7 +51,8 @@ class AA_Responder_Get_Sessionid extends AA_Responder {
     function isPerm() { return true; }
 
     function run() {
-        global $sess, $auth;
+        global $sess;
+        $auth = AA::Auth();
         return new AA_Response([$sess->id(), $auth]);
     }
 }
@@ -101,7 +102,7 @@ class AA_Responder_Get_Modules extends AA_Responder {
     }
 }
 
-/** @return structure which define all the definition of the slice (like slice
+/** return structure which define all the definition of the slice (like slice
  *  properties, fields, views, ...). It is returned for all the slices in array
  */
 class AA_Responder_Get_Module_Defs extends AA_Responder {
@@ -126,7 +127,7 @@ class AA_Responder_Get_Module_Defs extends AA_Responder {
     }
 }
 
-/** @return structure which define all the definition of the slice (like slice
+/** return structure which define all the definition of the slice (like slice
  *  properties, fields, views, ...). It is returned for all the slices in array
  */
 class AA_Responder_Do_Synchronize extends AA_Responder {
@@ -146,7 +147,7 @@ class AA_Responder_Do_Synchronize extends AA_Responder {
     }
 }
 
-/** @return imports the slice to the database */
+/** imports the slice to the database */
 class AA_Responder_Do_Import_Module_Chunk extends AA_Responder {
     var $definition_chunk;
 
@@ -162,7 +163,7 @@ class AA_Responder_Do_Import_Module_Chunk extends AA_Responder {
     }
 }
 
-/** @return html widget for the field of item */
+/** return html widget for the field of item */
 class AA_Responder_Get_Widget extends AA_Responder {
     protected $field_id;
     protected $item_id;
@@ -255,7 +256,7 @@ class AA_Responder_Get_Widget extends AA_Responder {
 //}
 
 
-/** @return html selectbox of fields in given slice */
+/** return html selectbox of fields in given slice */
 class AA_Responder_Get_Fields extends AA_Responder {
     /** array of module types to get */
     var $slice_id;
@@ -287,7 +288,7 @@ class AA_Responder_Get_Fields extends AA_Responder {
     }
 }
 
-/** @return html selectbox of fields in given slice */
+/** return html selectbox of fields in given slice */
 class AA_Responder_Tags extends AA_Responder {
     /** array of module types to get */
     var $slice_id;
@@ -333,7 +334,7 @@ class AA_Responder_Tags extends AA_Responder {
     }
 }
 
-/** @return html selectbox of fields in given slice */
+/** return html selectbox of fields in given slice */
 class AA_Responder_Widget_Selection extends AA_Responder {
     /** array of module types to get */
     var $slice_id;
@@ -359,7 +360,7 @@ class AA_Responder_Widget_Selection extends AA_Responder {
     }
 }
 
-/** @return sends one item in mail to alert irregular readers collection */
+/** return sends one item in mail to alert irregular readers collection */
 class AA_Responder_Alertitem extends AA_Responder {
     /** array of module types to get */
     protected $item_id;
@@ -399,8 +400,8 @@ class AA_Responder_Alertitem extends AA_Responder {
 pageOpen('nobody');
 
 // in order {xuser:id} alias works in widgets, for example
-$GLOBALS['apc_state']['xuser'] = $auth->getUname();
-$GLOBALS['apc_state']['xuid']  = $auth->getUid();
+$GLOBALS['apc_state']['xuser'] = AA::Auth()->getUname();
+$GLOBALS['apc_state']['xuid']  = AA::Auth()->getUid();
 
 $request = null;
 
@@ -427,7 +428,7 @@ if ( empty($responder) ) {
 }
 
 if (!$responder->isPerm()) {
-    AA_Response::error(_m("You (%2) don't have permissions to run %1", [$responder->name(),$auth->getUid()]), 101);  // error code > 0
+    AA_Response::error(_m("You (%2) don't have permissions to run %1", [$responder->name(),AA::Auth()->getUid()]), 101);  // error code > 0
     exit;
 }
 

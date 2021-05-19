@@ -27,6 +27,8 @@
 // @todo only_action option which prints on the output the result of the action
 // Then it could be used as AJAX call for this action!
 
+use AA\Later\Toexecute;
+
 require_once __DIR__."/../include/init_page.php3";
 require_once __DIR__."/../include/varset.php3";
 require_once __DIR__."/../include/formutil.php3";
@@ -68,12 +70,12 @@ if ( !IsSuperadmin() ) {
 // Common manager settings for Tasks 
 $manager_settings = GetToexecuteManagerSettings();
 
-$manager = new AA_Manager('task'.$auth->getUid(),  $manager_settings);
+$manager = new AA_Manager('task'.AA::Auth()->getUid(),  $manager_settings);
 $manager->performActions();
 
 $set  = $manager->getSet();
-$set->addCondition(new AA_Condition('execute_after', '==', TOEXECUTE_USER_TASK_TIME));
-$set->addCondition(new AA_Condition('aa_user',       '==', $auth->getUid()));
+$set->addCondition(new AA_Condition('execute_after', '==', Toexecute::TOEXECUTE_USER_TASK_TIME));
+$set->addCondition(new AA_Condition('aa_user',       '==', AA::Auth()->getUid()));
 $zids = AA::Metabase()->queryZids(['table'=>'toexecute'], $set);
 
 $manager->displayPage($zids, 'sliceadmin', 'taskmanager');

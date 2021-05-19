@@ -65,7 +65,7 @@ foreach ($f_slices as $f_slice) {
     $data = ['slice_id'          => AA::$module_id,
              'remote_slice_id'   => $remote_slice_id,
              'remote_slice_name' => $channel['title'],
-             'user_id'           => $auth->getUname(),
+             'user_id'           => AA::Auth()->getUname(),
              'node_name'         => $remote_node_name,
              'newest_item'       => unixstamp_to_iso8601(time()),
              'feed_mode'         => ($exact_copy ? 'exact' : '')

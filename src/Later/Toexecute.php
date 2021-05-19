@@ -31,11 +31,10 @@
 
 namespace AA\Later;
 
+use AA;
 use AA\IO\DB\DB_AA;
 use AA_Log;
 use Cvarset;
-
-define('TOEXECUTE_USER_TASK_TIME', 2000000000);
 
 /** AA\Later\Toexecute class - used for many short tasks, such as sending an e-mail for
  *  alerts. Instead of sending thounsands of e-mails in one php script run (bad
@@ -60,7 +59,9 @@ define('TOEXECUTE_USER_TASK_TIME', 2000000000);
 class Toexecute {
     use \AA\Util\ReportTrait;
 
-    /** global_instance function
+    const TOEXECUTE_USER_TASK_TIME =  2000000000;
+
+     /** global_instance function
      *  "class function" obviously called as AA\Later\Toexecute::global_instance();
      *  This function makes sure, there is global instance of the class
      */
@@ -88,11 +89,11 @@ class Toexecute {
      */
     function later($object, $params = [], $selector = '', $priority = 100, $time = null)
     {
-        global $auth;
+
         $varset = new Cvarset([
             ['created', time()],
             ['execute_after', ((int)$time < time() ? time() : $time)],  // task for user queue uses TOEXECUTE_USER_TASK_TIME
-            ['aa_user', $auth->getUid()],
+            ['aa_user', AA::Auth()->getUid()],
             ['priority', $priority],
             ['selector', ($selector ?: get_class($object))],
             ['object', serialize($object)],
@@ -147,7 +148,7 @@ class Toexecute {
      */
     function userQueue(&$object, $params, $selector, $priority = 100)
     {
-        $this->later($object, $params, $selector, $priority, TOEXECUTE_USER_TASK_TIME);
+        $this->later($object, $params, $selector, $priority, Toexecute::TOEXECUTE_USER_TASK_TIME);
     }
 
     /** cancel_all function
