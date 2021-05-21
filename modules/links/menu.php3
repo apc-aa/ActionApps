@@ -49,6 +49,7 @@ require_once __DIR__."/../../include/mgettext.php3";
 
 function get_aamenus() {
     global $r_slice_view_url,
+           $auth,
            $linkedit,
            $r_state,
            $bookmarks,
@@ -193,7 +194,7 @@ function get_aamenus() {
             func_param  Param to function (see above)
     */
     
-    $profile = AA_Profile::getProfile(AA::Auth()->getUid(), $slice_id); // current user settings
+    $profile = AA_Profile::getProfile($auth->getUid(), $slice_id); // current user settings
 
     // left menu for aaadmin is common to all modules, so it is shared
     return array_merge($aamenus, GetCommonMenu($profile));

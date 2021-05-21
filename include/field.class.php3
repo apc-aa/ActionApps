@@ -165,8 +165,11 @@ class AA_Field implements ArrayAccess {
      */
     function getDefault( $with_profile=false ) {
 
+        /** @var Auth $auth */
+        global $auth;
+
         if ($with_profile) {
-            $profile   = AA_Profile::getProfile(AA::Auth()->getUid(), $this->getSliceId()); // current user settings
+            $profile   = AA_Profile::getProfile($auth->getUid(), $this->getSliceId()); // current user settings
             if ($profile_value = $profile->getProperty('predefine', $this->getId())) {
                 return $profile->parseContentProperty($profile_value);
             }

@@ -635,10 +635,10 @@ class ItemContent extends AA_Content {
      * @return bool
      */
     function setFromForm($slice, $id, $oldcontent4id=[], bool $insert=true, $slice_fields=false): bool {
-
+        global $auth;
 
         $fields  = $slice->getFields($slice_fields);
-        $profile = AA_Profile::getProfile(AA::Auth()->getUid(), $slice->getId()); // current user settings
+        $profile = AA_Profile::getProfile($auth->getUid(), $slice->getId()); // current user settings
 
         if (!$this->setFieldsFromForm($oldcontent4id, $insert, $fields, $profile)) {
             return false;
@@ -860,7 +860,7 @@ class ItemContent extends AA_Content {
      * @return bool
      */
     function complete4Insert($validate='LOG') {
-
+        global $auth;
         $slice_id = $this->getSliceID();
         $slice = AA_Slice::getModule($slice_id);
         if (!$slice) {
@@ -887,7 +887,7 @@ class ItemContent extends AA_Content {
         // start from scretch with new content
         $new_content = new ItemContent;
         $fields      = $slice->getFields();
-        $profile     = AA_Profile::getProfile(AA::Auth()->getUid(), $slice->getId()); // current user settings
+        $profile     = AA_Profile::getProfile($auth->getUid(), $slice->getId()); // current user settings
 
         foreach ($fields as $field_id => $field) {
             $property = $field->getAaProperty();
@@ -909,7 +909,7 @@ class ItemContent extends AA_Content {
         $new_content->setSliceID($slice->getId());
         $this->content = $new_content->getContent();
         if ($status == SC_NO_BIN) {
-            ItemContent::lastErr(ITEMCONTENT_ERROR_NO_PERM, _m("No Permission to insert Item for user %1", [AA::Auth()->getUid()]));  // set error code
+            ItemContent::lastErr(ITEMCONTENT_ERROR_NO_PERM, _m("No Permission to insert Item for user %1", [$auth->getUid()]));  // set error code
             return false;
         }
         return true;
@@ -917,6 +917,7 @@ class ItemContent extends AA_Content {
 
     /** validates and fills content with default and hidden fields in order it could be stored into database */
     function validate4Update() {
+        // global $auth;
 
         $slice = AA_Slice::getModule($this->getSliceID());
         if (!$slice) {
@@ -931,7 +932,7 @@ class ItemContent extends AA_Content {
         // start from scretch with new content
         //$new_content = new ItemContent;
         //$fields      = $slice->getFields();
-        //$profile     = AA_Profile::getProfile(AA::Auth()->getUid(), $slice->getId()); // current user settings
+        //$profile     = AA_Profile::getProfile($auth->getUid(), $slice->getId()); // current user settings
         //
         //foreach ($fields as $field_id => $field) {
         //    $property = $field->getAaProperty();
@@ -953,7 +954,7 @@ class ItemContent extends AA_Content {
         //$new_content->setSliceID($slice->getId());
         //$this->content = $new_content->getContent();
         //if ($status == SC_NO_BIN) {
-        //    ItemContent::lastErr(ITEMCONTENT_ERROR_NO_PERM, _m("No Permission to insert Item for user %1", array(AA::Auth()->getUid())));  // set error code
+        //    ItemContent::lastErr(ITEMCONTENT_ERROR_NO_PERM, _m("No Permission to insert Item for user %1", array($auth->getUid())));  // set error code
         //    return false;
         //}
         return true;

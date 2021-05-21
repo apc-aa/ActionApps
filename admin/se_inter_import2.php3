@@ -46,7 +46,7 @@ if ($db->next_record()) {
     $password   = $db->f('password');
 }
 
-if (!($data = xml_fetch($server_url, ORG_NAME, $password, AA::Auth()->getUname(),"",0,""))) {
+if (!($data = xml_fetch($server_url, ORG_NAME, $password, $auth->getUname(),"",0,""))) {
     MsgPage(StateUrl(self_base() . "se_inter_import.php3"), _m("Unable to connect and/or retrieve data from the remote node. Contact the administrator of the local node.") );
 }
 

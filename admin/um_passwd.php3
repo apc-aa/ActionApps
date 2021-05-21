@@ -37,7 +37,6 @@ require_once __DIR__."/../include/um_util.php3";
 if ($cancel) {
     go_url( StateUrl(self_base() . "index.php3"));
 }
-$auth = AA::Auth();
 
 if (!IfSlPerm(PS_EDIT_SELF_USER_DATA) OR !AA::$perm->isUserEditable($auth->getUid())) {
     MsgPageMenu(StateUrl(self_base())."index.php3", _m("You have not permissions to change user data"), "admin");

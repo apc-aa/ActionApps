@@ -431,8 +431,9 @@ class AA {
      *  @return  AA_Auth
      */
     static function Auth() {
-        // return $GLOBALS['auth'] ;
-        return AA::$auth ?: (AA::$auth = ($GLOBALS['auth'] ?: new AA_Auth));  /// @todo change to:  return AA::$auth ?: (AA::$auth = new AA_Auth);
+        return $GLOBALS['auth'] ;
+        // not yet prepared
+        // return AA::$auth ?: (AA::$auth = ($GLOBALS['auth'] ?: new AA_Auth));
     }
 
     // typicaly called as AA::sendHeaders(AA::getHeaders());
@@ -527,7 +528,9 @@ function pageOpen($type = '') {
     $sess = new AA_Session;
 
     if ($type != 'noauth') {
-        $auth = AA::Auth();
+        if (!is_object($auth)) {
+            $auth = new AA_Auth;
+        }
         $auth->set_nobody($type=='nobody');
         $auth->start();
     }

@@ -159,7 +159,7 @@ class inputform {
      *                         which are stored in content table
      */
     function printForm($content4id, $slice, $edit, $slice_fields=false) {
-
+        global $auth;
 
         // Get the default form and FILL CONTENTCACHE with fields
         // This function also fills the $this->show_func_used and
@@ -174,7 +174,7 @@ class inputform {
             $remove_string = $view->f('remove_string');
         }
 
-        $profile       = AA_Profile::getProfile(AA::Auth()->getUid(), $slice->getId()); // current user settings
+        $profile       = AA_Profile::getProfile($auth->getUid(), $slice->getId()); // current user settings
 
         // create buttons array for top (and lately for bottom of the form) ------------------
         $buttons = [];
@@ -316,9 +316,9 @@ class inputform {
      * @return string
      */
     function getForm($content4id, $slice, $edit=false, $show=null, $slice_fields=false) {
+        global $auth;
 
-
-        $profile   = AA_Profile::getProfile(AA::Auth()->getUid(), $slice->getId()); // current user settings
+        $profile   = AA_Profile::getProfile($auth->getUid(), $slice->getId()); // current user settings
 
         $fields = $slice->getFields($slice_fields);
 

@@ -37,7 +37,7 @@ class TfaWidget extends Widget
      */
     function _getRawHtml($aa_property, $content, $type = 'normal')
     {
-
+        global $auth;
         $base_name = FormArray::getName4Form($aa_property->getId(), $content, $this->item_index);
         $base_id = FormArray::formName2Id($base_name);
 
@@ -46,7 +46,7 @@ class TfaWidget extends Widget
 
         $input_name = $base_name . "[tfa][usr]";
         $input_id = FormArray::formName2Id($input_name);
-        $widget .= "\n<div class=aa-2fa-username><input type=text readonly id=\"$input_id\" name=\"$input_name\" placeholder=\"" . _m('Username') . "\" value=\"". AA::Auth()->getUname() ."\"></div>";
+        $widget .= "\n<div class=aa-2fa-username><input type=text readonly id=\"$input_id\" name=\"$input_name\" placeholder=\"" . _m('Username') . "\" value=\"". $auth->getUname() ."\"></div>";
 
         $input_name = $base_name . "[tfa][pwd]";
         $input_id = FormArray::formName2Id($input_name);

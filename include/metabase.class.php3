@@ -1171,7 +1171,7 @@ class AA_Metabase {
 //          "submenu"   => "design",
             "readonly"  => false,
             "addrecord" => false,
-//          "cond"      => CheckPerms( AA::Auth()->getUid(), "slice", $slice_id, PS_MODP_EDIT_DESIGN),
+//          "cond"      => CheckPerms( $auth->getUid(), "slice", $slice_id, PS_MODP_EDIT_DESIGN),
 //          "title"     => $title,
 //          "caption"   => $title,
             "attrs"     => ["table"=>"border=0 cellpadding=3 cellspacing=0 bgcolor='".COLOR_TABBG."'"],

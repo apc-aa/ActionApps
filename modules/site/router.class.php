@@ -253,8 +253,7 @@ class AA_Router_Seo extends AA_Router {
      * @return array
      */
     function parse($url='') {
-
-        $auth = AA::Auth();
+        globals $auth;
 
         $this->apc          = self::parseApc($url, $this->home, $this->web_languages);
         $this->apc['state'] = self::getState($this->apc);

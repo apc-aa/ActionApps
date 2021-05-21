@@ -51,8 +51,7 @@ class AA_Responder_Get_Sessionid extends AA_Responder {
     function isPerm() { return true; }
 
     function run() {
-        global $sess;
-        $auth = AA::Auth();
+        global $sess, $auth;
         return new AA_Response([$sess->id(), $auth]);
     }
 }
@@ -400,8 +399,8 @@ class AA_Responder_Alertitem extends AA_Responder {
 pageOpen('nobody');
 
 // in order {xuser:id} alias works in widgets, for example
-$GLOBALS['apc_state']['xuser'] = AA::Auth()->getUname();
-$GLOBALS['apc_state']['xuid']  = AA::Auth()->getUid();
+$GLOBALS['apc_state']['xuser'] = $auth->getUname();
+$GLOBALS['apc_state']['xuid']  = $auth->getUid();
 
 $request = null;
 
@@ -428,7 +427,7 @@ if ( empty($responder) ) {
 }
 
 if (!$responder->isPerm()) {
-    AA_Response::error(_m("You (%2) don't have permissions to run %1", [$responder->name(),AA::Auth()->getUid()]), 101);  // error code > 0
+    AA_Response::error(_m("You (%2) don't have permissions to run %1", [$responder->name(),$auth->getUid()]), 101);  // error code > 0
     exit;
 }
 

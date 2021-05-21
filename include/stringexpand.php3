@@ -296,12 +296,12 @@ class AA_Stringexpand_User extends AA_Stringexpand {
      * @return bool|mixed|null|string|string[]
      */
     function expand($field='') {
-        global $cache_nostore, $perms_roles;
+        global $cache_nostore, $auth, $perms_roles;
         // this GLOBAL :-( variable is message for pagecache to NOT store views (or
         // slices), where we use {user:xxx} alias, into cache (AUTH_USER is not in
         // cache's keyString.
         $cache_nostore = true;             // GLOBAL!!!
-        $auth_user     = get_if($_SERVER['PHP_AUTH_USER'],AA::Auth()->getUname(),$_SERVER['REMOTE_USER']);
+        $auth_user     = get_if($_SERVER['PHP_AUTH_USER'],$auth->getUname(),$_SERVER['REMOTE_USER']);
         switch ($field) {
             case '':         return $auth_user;
             case 'password': return $_SERVER['PHP_AUTH_PW'];
@@ -2162,6 +2162,39 @@ class AA_Stringexpand_Unique extends AA_Stringexpand_Nevercache {
         return join($delimiter, array_unique(array_filter(explode($delimiter, $ids),'trim')));
     }
 }
+
+
+/** Lookup -
+ *    {lookup:<value>:<values>:<delimiter>:<text>}
+ *    {lookup:10:5-8-10-12-15} - returns 3 (_#pos)
+ *    {lookup:10:5-8-10-12-15:-:_#pos / _#count}  - returns 3 / 5 (_#pos)
+ */
+class AA_Stringexpand_Lookup extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+
+    /** Do not trim all parameters (the $delimiter parameter could contain space) */
+    static function doTrimParams() { return false; }
+
+    /** for offset and length parameters see PHP function array_slice()
+     * @param $value  // value to look for
+     * @param $values // values to be searched
+     * @param $delimiter // separator of the values - by default it is '-' or json (if it starts with '[') but you can use any one
+     * @param $text // returning text containing _#pos (position found in values 1-count), _#key (the same as _#pos starting with 0), _#count (number of values)
+     * @return string
+     */
+    function expand($value='', $values='', $delimiter='', $text='_#pos') {
+        if (!($values = trim($values))) {
+            return '';
+        }
+        $values = AA_Stringexpand::explode2array($values, $delimiter);
+        if (false === ($key = array_search($value, $values))) {
+            return '';
+        }
+        return str_replace(['_#pos', '_#key', '_#count'], [$key+1, $key, count($values)], $text ?: '_#pos');
+    }
+}
+
 
 /** Counts ids or other string parts separated by delimiter
  *  It is much quicker to use this function for counting of ids, than
@@ -7628,8 +7661,8 @@ class AA_Stringexpand_Setsecret extends AA_Stringexpand_Nevercache {
      * @return string|void
      */
     function expand($username='', $password='', $code2fa='') {
-
-        if (!strlen($username) OR !strlen($password) OR !($uid = AA::$perm->authenticateUsername($username, $password, $code2fa)) OR ($uid != AA::Auth()->getUid())) {
+        global $auth;
+        if (!strlen($username) OR !strlen($password) OR !($uid = AA::$perm->authenticateUsername($username, $password, $code2fa)) OR ($uid != $auth->getUid())) {
             return '';
         }
         $ga = new PHPGangsta_GoogleAuthenticator();

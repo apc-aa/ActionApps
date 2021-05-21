@@ -34,7 +34,7 @@ require_once __DIR__."/../../include/locauth.php3";
 $auth4cache = '';
 if ($_COOKIE['AA_Session'] AND !isset($_REQUEST['username'])) {   // do not authenticate new user - we could restrict reader slices later
     pageOpen('nobody');   // define $sess and $auth; login user, if (s)he tries to; "nobody" allowed
-    $auth4cache = AA::Auth()->getUid();
+    $auth4cache = is_object($auth) ? $auth->getUid() : '';
 }
 
 // -- CACHE -------------------------------------------------------------------
@@ -249,7 +249,7 @@ if ((AA::$headers['encoding'] != 'utf-8') && (AA::$encoding != 'utf-8') && IsAja
     AA::$headers['encoding'] = 'utf-8';
 }
 
-$cacheentry = new Cacheentry($page_content, AA::getHeaders(), $hit_lid, (AA::Auth()->is_user() ? 'private' : 'public'));
+$cacheentry = new Cacheentry($page_content, AA::getHeaders(), $hit_lid, ((is_object($auth) AND $auth->is_user()) ? 'private' : 'public'));
 $cacheentry->processPage(0);
 
 // changed the way, how to get $slices4cache - now we ask for module ids realy

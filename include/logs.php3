@@ -67,7 +67,7 @@ class AA_Log {
      * @return bool
      */
     static function write($event, $selector = "", $params = "") {
-
+        global $auth;
 
         if ( !AA_Log::isLogable($event) ) {
             return false;
@@ -80,10 +80,10 @@ class AA_Log {
         $rows = [];
         if (is_array($selector)) {
             foreach ($selector as $sel) {
-                $rows[] = ['time'=>time(), 'user'=>AA::Auth()->getUid(), 'type'=>$event, 'selector'=>$sel, 'params'=>$params];
+                $rows[] = ['time'=>time(), 'user'=>$auth->getUid(), 'type'=>$event, 'selector'=>$sel, 'params'=>$params];
             }
         } else {
-            $rows[] = ['time'=>time(), 'user'=>AA::Auth()->getUid(), 'type'=>$event, 'selector'=>$selector, 'params'=>$params];
+            $rows[] = ['time'=>time(), 'user'=>$auth->getUid(), 'type'=>$event, 'selector'=>$selector, 'params'=>$params];
         }
 
         AA::Metabase()->doInsertMulti('log', $rows);

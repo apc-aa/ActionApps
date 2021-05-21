@@ -42,7 +42,7 @@ require_once __DIR__."/../../modules/alerts/util.php3";
 set_collectionid();
 
 function get_aamenus() {
-    global $slice_id;
+    global $auth, $slice_id;
 
     $aamenus["admin"] = [
         "label" => _m("Alerts Settings"),
@@ -108,7 +108,7 @@ function get_aamenus() {
         ]
     ];
 
-    $profile = AA_Profile::getProfile(AA::Auth()->getUid(), $slice_id); // current user settings
+    $profile = AA_Profile::getProfile($auth->getUid(), $slice_id); // current user settings
 
     // left menu for aaadmin is common to all modules, so it is shared
     return array_merge($aamenus, GetCommonMenu($profile));

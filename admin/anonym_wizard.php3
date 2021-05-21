@@ -160,16 +160,16 @@ if ($show_form) {
 }
 
 if (!$form_url) {
-    $form_url = "http://FILL_YOUR_URL.shtml";
+    $form_url = "https://FILL_YOUR_URL.shtml";
 }
 if (!$ok_url) {
-    $ok_url = "http://THANK_YOU.shtml";
+    $ok_url = "https://THANK_YOU.shtml";
 }
 if (!$err_url) {
-    $err_url = "http://ERROR_OCCURED.shtml";
+    $err_url = "https://ERROR_OCCURED.shtml";
 }
 if (!$show_result) {
-    $show_result = "http://SHOW_RESULT.php3";
+    $show_result = "https://SHOW_RESULT.php";
 }
 
 // -----------------------------------------------------------------------------

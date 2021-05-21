@@ -87,7 +87,8 @@ class AA_Generator_Uid extends AA_Generator {
 
     /** generate() - main function for generating the value */
     function generate() {
-        return new AA_Value(AA::Auth()->getUid() ?: "9999999999");
+        global $auth;                                  // 9999999999 for anonymous
+        return new AA_Value(isset($auth) ? $auth->getUid() : "9999999999");
     }
 }
 
@@ -99,7 +100,8 @@ class AA_Generator_Log extends AA_Generator {
 
     /** generate() - main function for generating the value */
     function generate() {
-        return new AA_Value(AA::Auth()->getUid() ? AA::Auth()->getUname() : "anonymous");
+        global $auth;                                  // "anonymous" for anonymous
+        return new AA_Value(isset($auth) ? $auth->getUname() : "anonymous");
     }
 }
 
@@ -494,12 +496,13 @@ class AA_Inserter_Uid extends AA_Inserter {
     public static function description(): string { return _m('Inserts the identity of the current user, no matter what the user sets.');  }      // see NamedInterface
 
     public function execute($fieldwriter, $item_id, $value, $additional= []) {
+        global $auth;
 
         if ( $value['value'] AND IsSuperadmin() ) {
             $val = $value['value'];
         } else {
             // if not $auth, it is from anonymous posting - 9999999999 is anonymous user
-            $val = (AA::Auth()->getUid() ?: ((strlen($value['value'])>0) ? $value['value'] : "9999999999"));
+            $val = (isset($auth) ?  $auth->getUid() : ((strlen($value['value'])>0) ? $value['value'] : "9999999999"));
         }
         parent::execute($fieldwriter, $item_id, ['value' => $val], $additional);
     }
@@ -518,8 +521,9 @@ class AA_Inserter_Log extends AA_Inserter {
     public static function description(): string { return _m('');  }      // see NamedInterface
 
     public function execute($fieldwriter, $item_id, $value, $additional= []) {
+        global $auth;
         // if not $auth, it is from anonymous posting
-        $val = ( AA::Auth()->getUid() ?  AA::Auth()->getUname() : ((strlen($value['value'])>0) ? $value['value'] : 'anonymous'));
+        $val = (isset($auth) ?  $auth->getUname() : ((strlen($value['value'])>0) ? $value['value'] : 'anonymous'));
 
         parent::execute($fieldwriter, $item_id, ['value' => $val], $additional);
     }
@@ -848,8 +852,8 @@ class AA_Inserter_2fa extends AA_Inserter {
         [$aa_const, $username, $password, $code2fa] = ParamExplode($value['value']);
 
         if ($aa_const == 'AA_2FASECRET') {
-
-            if (!strlen($username) OR !($uid = AA::$perm->authenticateUsername($username, $password, $code2fa)) OR ($uid != AA::Auth()->getUid())) {
+            global $auth;
+            if (!strlen($username) OR !($uid = AA::$perm->authenticateUsername($username, $password, $code2fa)) OR ($uid != $auth->getUid())) {
                 return '';
             }
             $ga = new PHPGangsta_GoogleAuthenticator();
@@ -1017,9 +1021,9 @@ function StoreItem( $id, $slice_id, $content4id, $insert, $invalidatecache=true,
 //./filler.php3:               ValidateContent4Id($err_valid, $slice, $insert ? "insert" : "update", $my_item_id, !$notvalidate, $notshown);
 
 function ValidateContent4Id(&$err, $slice, $action, $id=0, $do_validate=true, $notshown="") {
-    global $oldcontent4id;
+    global $oldcontent4id, $auth;
 
-    $profile = AA_Profile::getProfile(AA::Auth()->getUid(), $slice->getId()); // current user settings
+    $profile = AA_Profile::getProfile($auth->getUid(), $slice->getId()); // current user settings
 
     // error array (Init - just for initializing variable
     if (!is_array($err)) {

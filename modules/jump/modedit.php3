@@ -74,7 +74,7 @@ if ($update) {
         $varset->add("type","quoted",'J');
         $varset->add("lang_file","quoted","en_news_lang.php3");
         $varset->add("owner","text",'');
-        $varset->add("created_by","text",AA::Auth()->getUid());
+        $varset->add("created_by","text",$auth->getUid());
         $varset->add("created_at","text",now());
 
 //        $varset->set("slice_url", $slice_url, "quoted");

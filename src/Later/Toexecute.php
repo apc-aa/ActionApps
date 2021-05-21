@@ -89,11 +89,11 @@ class Toexecute {
      */
     function later($object, $params = [], $selector = '', $priority = 100, $time = null)
     {
-
+        global $auth;
         $varset = new Cvarset([
             ['created', time()],
             ['execute_after', ((int)$time < time() ? time() : $time)],  // task for user queue uses TOEXECUTE_USER_TASK_TIME
-            ['aa_user', AA::Auth()->getUid()],
+            ['aa_user', $auth->getUid()],
             ['priority', $priority],
             ['selector', ($selector ?: get_class($object))],
             ['object', serialize($object)],

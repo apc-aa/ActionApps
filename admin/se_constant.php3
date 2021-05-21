@@ -61,7 +61,7 @@ $varset      = new Cvarset();
 // Check permissions
 if ( $group_id ) {
     $constant_info = DB_AA::select1('', 'SELECT  LOWER(HEX(`slice_id`)) AS owner_id, name, propagate FROM constant_slice, slice', [['constant_slice.slice_id', 'slice.id', 'j'], ['group_id', $group_id]]);
-    if ($constant_info && !CheckPerms( AA::Auth()->getUid(), "slice", $constant_info["owner_id"], PS_FIELDS)) {
+    if ($constant_info && !CheckPerms( $auth->getUid(), "slice", $constant_info["owner_id"], PS_FIELDS)) {
         MsgPageMenu(StateUrl(self_base())."index.php3", _m("You have not permissions to change fields settings for the slice owning this group")." (".$constant_info['name'].")", "admin");
         exit;
     }
