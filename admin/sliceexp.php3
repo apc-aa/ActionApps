@@ -41,7 +41,7 @@ require_once __DIR__."/../admin/sliceexp_text.php3";
 require_once __DIR__."/../include/formutil.php3";
 
 // Make sure you have permissions to do this
-if (!CheckPerms( $auth->getUid(), "aa", AA_ID, PS_ADD) ) {
+if (!CheckPerms( AuthGetUid(), "aa", AA_ID, PS_ADD) ) {
     MsgPage(StateUrl(self_base())."index.php3", _m("You are not allowed to export / import slices"));
     exit;
 }

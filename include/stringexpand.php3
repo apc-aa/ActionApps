@@ -296,12 +296,12 @@ class AA_Stringexpand_User extends AA_Stringexpand {
      * @return bool|mixed|null|string|string[]
      */
     function expand($field='') {
-        global $cache_nostore, $auth, $perms_roles;
+        global $cache_nostore, $perms_roles;
         // this GLOBAL :-( variable is message for pagecache to NOT store views (or
         // slices), where we use {user:xxx} alias, into cache (AUTH_USER is not in
         // cache's keyString.
         $cache_nostore = true;             // GLOBAL!!!
-        $auth_user     = get_if($_SERVER['PHP_AUTH_USER'],$auth->getUname(),$_SERVER['REMOTE_USER']);
+        $auth_user     = get_if($_SERVER['PHP_AUTH_USER'],AuthGetUname(),$_SERVER['REMOTE_USER']);
         switch ($field) {
             case '':         return $auth_user;
             case 'password': return $_SERVER['PHP_AUTH_PW'];
@@ -7661,8 +7661,7 @@ class AA_Stringexpand_Setsecret extends AA_Stringexpand_Nevercache {
      * @return string|void
      */
     function expand($username='', $password='', $code2fa='') {
-        global $auth;
-        if (!strlen($username) OR !strlen($password) OR !($uid = AA::$perm->authenticateUsername($username, $password, $code2fa)) OR ($uid != $auth->getUid())) {
+        if (!strlen($username) OR !strlen($password) OR !($uid = AA::$perm->authenticateUsername($username, $password, $code2fa)) OR ($uid != AuthGetUid())) {
             return '';
         }
         $ga = new PHPGangsta_GoogleAuthenticator();

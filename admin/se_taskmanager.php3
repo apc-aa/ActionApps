@@ -70,12 +70,12 @@ if ( !IsSuperadmin() ) {
 // Common manager settings for Tasks 
 $manager_settings = GetToexecuteManagerSettings();
 
-$manager = new AA_Manager('task'.$auth->getUid(),  $manager_settings);
+$manager = new AA_Manager('task'.AuthGetUid(),  $manager_settings);
 $manager->performActions();
 
 $set  = $manager->getSet();
 $set->addCondition(new AA_Condition('execute_after', '==', Toexecute::TOEXECUTE_USER_TASK_TIME));
-$set->addCondition(new AA_Condition('aa_user',       '==', $auth->getUid()));
+$set->addCondition(new AA_Condition('aa_user',       '==', AuthGetUid()));
 $zids = AA::Metabase()->queryZids(['table'=>'toexecute'], $set);
 
 $manager->displayPage($zids, 'sliceadmin', 'taskmanager');

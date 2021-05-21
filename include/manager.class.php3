@@ -92,7 +92,7 @@ class AA_Manager extends AA_Storable {
      * @param array  $settings - main manager settings
      */
     function __construct($manager_id, $settings) {
-        global $r_state, $sess, $auth;
+        global $r_state, $sess;
 
         $this->show        = isset($settings['show']) ? $settings['show'] : MGR_ALL ;
         $this->module_id   = $settings['module_id'];
@@ -165,7 +165,7 @@ class AA_Manager extends AA_Storable {
             unset($r_state['manager']);
             // set default admin interface settings from user's profile
 
-            $profile = AA_Profile::getProfile($auth->getUid(), $this->module_id); // current user settings
+            $profile = AA_Profile::getProfile(AuthGetUid(), $this->module_id); // current user settings
             $this->setFromProfile($profile);
         } elseif ($r_state['manager']) {        // do not set state for the first time calling
             $this->setFromState($r_state['manager']);

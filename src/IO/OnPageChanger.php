@@ -41,10 +41,11 @@ class OnPageChanger  {
     }
 
     public function checkAndProcessCall($additional_validity_check=true) {
+        global $auth;
         if (IsAjaxCall()) {
             header("Content-type: application/json");
             if (!$additional_validity_check) {
-                if (AA::Auth()->is_user()) {
+                if (is_object($auth) AND $auth->is_user()) {
                     echo json_encode(['message'=>_m('No permission for current user.')]);
                 } else {
                     // @todo - show login

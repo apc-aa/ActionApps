@@ -33,7 +33,7 @@ https://www.apc.org/
 require_once __DIR__."/alerts_sending.php3";
 
 function ShowCollectionAddOns() {
-    global $example, $fire, $auth, $collectionid;
+    global $example, $fire, $collectionid;
 
     initialize_last();
 
@@ -46,7 +46,7 @@ function ShowCollectionAddOns() {
         $example["howoftenr"] = "weekly";
     }
     if (!$example["email"]) {
-        $me = AA::$perm->getIDsInfo($auth->getUid());
+        $me = AA::$perm->getIDsInfo(AuthGetUid());
         $example["email"] = $me["mail"];
     }
 

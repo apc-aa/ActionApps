@@ -221,7 +221,7 @@ function SendOkPage($txt, $new_ids = []) {
             $retcode = $_REQUEST["ret_code"] ? $_REQUEST["ret_code"] : base64_decode($_REQUEST["ret_code_enc"]);
 
             if ( $retcode == 'AA_2FA_QR') {   // very special case for 2FA secret
-                $secret = strlen($GLOBALS['auth']->getUid()) ? DB_AA::select1('secret', 'SELECT content.text AS secret FROM content', [['field_id', FIELDID_2FA_SECRET], ['item_id', $GLOBALS['auth']->getUid(), 'l']]) : '';
+                $secret = strlen(AuthGetUid()) ? DB_AA::select1('secret', 'SELECT content.text AS secret FROM content', [['field_id', FIELDID_2FA_SECRET], ['item_id', AuthGetUid(), 'l']]) : '';
 
                 $qr = '--';
                 if ($secret) {
@@ -292,8 +292,8 @@ if ( isset($_POST['aa']) OR isset($_FILES['aa']) ) {
     if ($_COOKIE['AA_Session']) {
         // this defines $auth object so, the "Last Changed By" is set to correct user
         pageOpen('nobody');
-        $GLOBALS['apc_state']['xuser'] = $auth->getUname();
-        $GLOBALS['apc_state']['xuid']  = $auth->getUid();
+        $GLOBALS['apc_state']['xuser'] = AuthGetUname();
+        $GLOBALS['apc_state']['xuid']  = AuthGetUid();
     }
     // elseif ($_COOKIE['AA_Sess']) {
         // old unused approach

@@ -97,7 +97,6 @@ class AA_Csv_Importer {
  *
  */
     function loadFromRequest() {
-        global $auth;
         $this->slice_id            = AA::$module_id;
         $this->fileName            = $_REQUEST['fileName'];
         $this->actions             = $_REQUEST['actions'];
@@ -110,7 +109,7 @@ class AA_Csv_Importer {
         $this->itemIdMappedParams  = $_REQUEST['itemIdMappedParams'];
         $this->actionIfItemExists  = $_REQUEST['actionIfItemExists'];
         $this->addParams           = unserialize(url2bin($_REQUEST['addParamsSerial']));
-        $this->auth_uid            = $auth->getUid();
+        $this->auth_uid            = AuthGetUid();
     }
 
 /** loadFromDb function

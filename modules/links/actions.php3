@@ -57,8 +57,7 @@ class AA_Manageraction_Links_Check extends AA_Manageraction {
      * @return bool
      */
     function perform($manager, $item_zids, $action_param) {
-        global $auth;
-        DB_AA::sql("UPDATE links_links SET checked = '". time() ."', checked_by = '". $auth->getUid() ."' WHERE ". $item_zids->sqlin('id', true));
+        DB_AA::sql("UPDATE links_links SET checked = '". time() ."', checked_by = '". AuthGetUid() ."' WHERE ". $item_zids->sqlin('id', true));
         return false;                                     // OK - no error
     }
 

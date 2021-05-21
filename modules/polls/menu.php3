@@ -48,7 +48,7 @@ require_once __DIR__."/../../include/mgettext.php3";
 // I don't want to call AA menus as early as including menu.php3, because some permissions' functions are called. Hence I call get_aamenus in showMenu().
 
 function get_aamenus() {
-    global $r_slice_view_url, $r_state, $auth, $polledit, $slice_id;
+    global $r_slice_view_url, $r_state, $polledit, $slice_id;
 
     $module_location = "modules/polls/";
 
@@ -146,7 +146,7 @@ function get_aamenus() {
             show_always don't include slice_id in cond
     */
 
-    $profile = AA_Profile::getProfile($auth->getUid(), $slice_id); // current user settings
+    $profile = AA_Profile::getProfile(AuthGetUid(), $slice_id); // current user settings
 
     // left menu for aaadmin is common to all modules, so it is shared
     return array_merge($aamenus, GetCommonMenu($profile));

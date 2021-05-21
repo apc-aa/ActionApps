@@ -51,12 +51,12 @@ $superadmin  = IsSuperadmin();
 $module_id   = $slice_id;
 
 if ($template_id) {        // add module
-    if (!CheckPerms( $auth->getUid(), "aa", AA_ID, PS_ADD)) {
+    if (!CheckPerms( AuthGetUid(), "aa", AA_ID, PS_ADD)) {
         MsgPage(StateUrl(self_base())."index.php3", _m("You have not permissions to add slice"));
         exit;
     }
 } else {                    // edit module
-    if (!CheckPerms( $auth->getUid(), "slice", $module_id, PS_MODW_SETTINGS)) {
+    if (!CheckPerms( AuthGetUid(), "slice", $module_id, PS_MODW_SETTINGS)) {
         MsgPage(StateUrl(self_base())."index.php3", _m("You have not permissions to edit this slice"));
         exit;
     }

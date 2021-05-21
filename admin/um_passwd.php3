@@ -38,7 +38,7 @@ if ($cancel) {
     go_url( StateUrl(self_base() . "index.php3"));
 }
 
-if (!IfSlPerm(PS_EDIT_SELF_USER_DATA) OR !AA::$perm->isUserEditable($auth->getUid())) {
+if (!IfSlPerm(PS_EDIT_SELF_USER_DATA) OR !AA::$perm->isUserEditable(AuthGetUid())) {
     MsgPageMenu(StateUrl(self_base())."index.php3", _m("You have not permissions to change user data"), "admin");
     exit;
 }
@@ -47,17 +47,17 @@ $err = [];          // error array (Init - just for initializing variable
 $varset      = new Cvarset();
 $p_slice_id  = q_pack_id($slice_id);
 
-$user_data = AA::$perm->getIDsInfo($auth->getUid());
+$user_data = AA::$perm->getIDsInfo(AuthGetUid());
 if ( $update ) {
     // Procces user data -------------------------------------------------------
     ValidateInput("user_password_old", _m("Current password"), $user_password_old, $err, true, "password");
-    if ( !AA::$perm->authenticateUsername($auth->getUname(), $user_password_old, '') ) {
+    if ( !AA::$perm->authenticateUsername(AuthGetUname(), $user_password_old, '') ) {
         $err['Password'] = MsgErr(_m("Error in current password - pasword is not changed"));
     }
     $userrecord = FillUserRecord($err, 'nOnEwlOgiN', $user_surname, $user_firstname, $user_password1, $user_password2,  $user_mail1, $user_mail2, $user_mail3);
 
     if ( !count($err)) {
-        ChangeUserData($err, $auth->getUid(), $userrecord, 'AA_NO_CHANGE', $perms_roles);
+        ChangeUserData($err, AuthGetUid(), $userrecord, 'AA_NO_CHANGE', $perms_roles);
     }
 
     if ( !count($err) ) {

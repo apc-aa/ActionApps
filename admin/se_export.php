@@ -134,7 +134,7 @@ $manager->performActions();
 
 $aa_set = $manager->getSet();
 $aa_set->setModules($module_id);
-//$aa_set->addCondition(new AA_Condition('aa_user',       '==', $auth->getUid()));
+//$aa_set->addCondition(new AA_Condition('aa_user',       '==', AuthGetUid()));
 
 $zids  = AA_Object::querySet('AA_Exportsetings', $aa_set);
 

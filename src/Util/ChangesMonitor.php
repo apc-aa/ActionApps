@@ -91,8 +91,6 @@ class ChangesMonitor {
      */
     function _add(array $change_proposals, $type): bool
     {
-        global $auth;
-
         if (!is_object($change = reset($change_proposals))) {
             return false;
         }
@@ -104,7 +102,7 @@ class ChangesMonitor {
         // changed to nanotime(), which produces 1 000 000 000 * bigger values, but it shoud be ok for database 
         // there was problem with now() - some history records had the same time of change (the same second), so the order then could be wrong
         $varset->add("time", "number", nanotime());
-        $varset->add("user", "text", is_object($auth) ? $auth->getUid() : '');
+        $varset->add("user", "text", AuthGetUid());
         $varset->add("type", "text", $type);
         $varset->add("resource_id", 'text', $change->getResourceId());
         $varset->doInsert('change');

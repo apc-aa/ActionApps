@@ -346,10 +346,6 @@ class AA {
     private static $pagecache      = null;
     /** @var  AA_Metabase $metabase */
     private static $metabase       = null;
-    /** @var  AA_Session $session  */
-    private static $session        = null;
-    /** @var  AA_Auth $auth */
-    private static $auth           = null;
 
     static function getHeaders() {
         $ret = [];
@@ -421,19 +417,12 @@ class AA {
     }
 
     /** @usage AA::Session()->register("tview");
+     *  @deprecated 
      *  @return  AA_Session
      */
     static function Session() {
-        return AA::$session ?: (AA::$session = ($GLOBALS['sess'] ?: new AA_Session));
-    }
-
-    /** @usage AA::Auth()->getUid();
-     *  @return  AA_Auth
-     */
-    static function Auth() {
-        return $GLOBALS['auth'] ;
-        // not yet prepared
-        // return AA::$auth ?: (AA::$auth = ($GLOBALS['auth'] ?: new AA_Auth));
+        return $GLOBALS['sess'];
+        //return AA::$session ?: (AA::$session = ($GLOBALS['sess'] ?: new AA_Session));
     }
 
     // typicaly called as AA::sendHeaders(AA::getHeaders());
@@ -511,6 +500,18 @@ function GetTable2Array($SQL, $key="id", $values='aa_all') {
     }
     freeDB($db);
     return isset($arr) ? $arr : false;
+}
+
+function AuthGetUid(): string {
+    /** @var $auth AA_Auth */
+    global $auth;
+    return is_object($auth) ? $auth->getUid() : '';
+}
+
+function AuthGetUname(): string {
+    /** @var $auth AA_Auth */
+    global $auth;
+    return is_object($auth) ? $auth->getUname() : '';
 }
 
 class AA_Session extends Session {

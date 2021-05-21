@@ -399,8 +399,8 @@ class AA_Responder_Alertitem extends AA_Responder {
 pageOpen('nobody');
 
 // in order {xuser:id} alias works in widgets, for example
-$GLOBALS['apc_state']['xuser'] = $auth->getUname();
-$GLOBALS['apc_state']['xuid']  = $auth->getUid();
+$GLOBALS['apc_state']['xuser'] = AuthGetUname();
+$GLOBALS['apc_state']['xuid']  = AuthGetUid();
 
 $request = null;
 
@@ -427,7 +427,7 @@ if ( empty($responder) ) {
 }
 
 if (!$responder->isPerm()) {
-    AA_Response::error(_m("You (%2) don't have permissions to run %1", [$responder->name(),$auth->getUid()]), 101);  // error code > 0
+    AA_Response::error(_m("You (%2) don't have permissions to run %1", [$responder->name(),AuthGetUid()]), 101);  // error code > 0
     exit;
 }
 

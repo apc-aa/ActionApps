@@ -35,13 +35,12 @@ require_once __DIR__."/../include/formutil.php3";
  * @return void
  */
 function PrintExportRow( $sname, $sid, $odd) {
-    global $auth;
     echo '
     <tr>
       <td'. ($odd ? ' bgcolor="#EBDABE"' : '') . '>'. safe($sname). '</td>
       <td'. ($odd ? ' bgcolor="#EBDABE"' : '') . ' align="center"><input type="radio" name="x'. $sid .'" value="2"></td>
       <td'. ($odd ? ' bgcolor="#EBDABE"' : '') . ' align="center">'.
-      ( CheckPerms( $auth->getUid(), "slice", $sid, PS_ITEMS2ACT) ?
+      ( CheckPerms( AuthGetUid(), "slice", $sid, PS_ITEMS2ACT) ?
         '<input type="radio" name="x'. $sid .'" value="1">' : '&nbsp;') .'</td>
       <td'. ($odd ? ' bgcolor="#EBDABE"' : '') . ' align="center"><input type="radio" name="x'. $sid .'" value="0" checked></td>
     </tr>';
@@ -70,7 +69,7 @@ if ( is_array($g_modules) AND (count($g_modules) > 1) ) {
         if ( ($v['type'] == 'S') AND    //  we can feed just between slices ('S')
             ((string)$slice_id != (string)$sid) AND
             // we must have autor or editor perms in destination slices
-            CheckPerms( $auth->getUid(), "slice", $sid, PS_EDIT_SELF_ITEMS) ) {
+            CheckPerms( AuthGetUid(), "slice", $sid, PS_EDIT_SELF_ITEMS) ) {
             $odd = (gettype($i/2) == 'integer');
             PrintExportRow($v['name'], $sid, $odd);
             $i++;

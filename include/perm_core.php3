@@ -227,9 +227,9 @@ function CheckPerms( $user_id, $objType, $objID, $perm) {
  * @return array|string
  */
 function GetUserSlices( $user_id = "current") {
-    global $permission_uid, $permission_to, $auth;
+    global $permission_uid, $permission_to;
     if ($user_id == "current") {
-        $user_id = $auth->getUid();
+        $user_id = AuthGetUid();
     }
 
     if ($permission_uid != $user_id) {
@@ -249,18 +249,18 @@ function GetUserSlices( $user_id = "current") {
  * @return bool|string
  */
 function IfSlPerm($perm, $slice=null) {
-    global $auth, $slice_id;
-    return CheckPerms( $auth->getUid(), "slice", !is_null($slice) ? $slice : $slice_id, $perm);
+    global $slice_id;
+    return CheckPerms( AuthGetUid(), "slice", !is_null($slice) ? $slice : $slice_id, $perm);
 }
 
 /** IsSuperadmin function
  *  Checks if logged user is superadmin
  */
 function IsSuperadmin() {
-    global $auth, $r_superuser, $permission_uid;
+    global $r_superuser, $permission_uid;
     // check all superadmin's global permissions
-    if ($permission_uid != $auth->getUid()) {
-        AA::$perm->cache($auth->getUid());
+    if ($permission_uid != AuthGetUid()) {
+        AA::$perm->cache(AuthGetUid());
     }
     return $r_superuser[AA_ID] ? $r_superuser[AA_ID] : false;
 }
@@ -276,7 +276,7 @@ function IsSuperadmin() {
  * @return bool true if the user has specific $perm for $category
  */
 function IsCatPerm($perm, $cat_path) {
-    global $permission_uid, $permission_to, $auth;
+    global $permission_uid, $permission_to;
 
     //    if (IsPerm( PS_LINKS_COMMON_PERMS, $perm )) // check perms granted to anybody
     //        return true;
@@ -284,8 +284,8 @@ function IsCatPerm($perm, $cat_path) {
         return false;
     }
 
-    if ($permission_uid != $auth->getUid()) {
-        AA::$perm->cache($auth->getUid());
+    if ($permission_uid != AuthGetUid()) {
+        AA::$perm->cache(AuthGetUid());
     }
 
     // check for current category permissions
@@ -400,9 +400,8 @@ function FilemanPerms($slice_id) {
  * @return array (email id => description)
  */
 function GetUserEmails($type = "", $user_id = "current") {
-    global $auth;
     if ($user_id == "current") {
-        $user_id = $auth->getUid();
+        $user_id = AuthGetUid();
     }
     $slices = GetUserSlices($user_id);
     $where  = "WHERE (1=1)";
@@ -1195,7 +1194,6 @@ function getReaderSlices() {
  * @return ItemContent
  */
 function GetAuthData( $user_id = false ) {
-    global $auth;
     if ( !$user_id ) {
         if ( $_SERVER['PHP_AUTH_USER'] ) {
            $user_id = AA_Reader::name2Id($_SERVER['PHP_AUTH_USER']);
@@ -1204,7 +1202,7 @@ function GetAuthData( $user_id = false ) {
            $user_id = AA_Reader::name2Id($_SERVER['REMOTE_USER']);
         }
         else {
-           $user_id = $auth->getUid();
+           $user_id = AuthGetUid();
         }
     }
     return new ItemContent((guesstype($user_id) == 'l') ? $user_id : false);

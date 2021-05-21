@@ -253,7 +253,7 @@ class AA_Router_Seo extends AA_Router {
      * @return array
      */
     function parse($url='') {
-        globals $auth;
+        global $auth;
 
         $this->apc          = self::parseApc($url, $this->home, $this->web_languages);
         $this->apc['state'] = self::getState($this->apc);
@@ -272,8 +272,8 @@ class AA_Router_Seo extends AA_Router {
          *   </form>
          */
 
-        $this->apc['xuser'] = $auth->getUname();
-        $this->apc['xuid']  = $auth->getUid();
+        $this->apc['xuser'] = AuthGetUname();
+        $this->apc['xuid']  = AuthGetUid();
 
         if (isset($_GET['logout'])) {
             $auth->logout();
@@ -285,12 +285,12 @@ class AA_Router_Seo extends AA_Router {
         if ( $_REQUEST['username'] ) {
             // not necessary - we alredy logged in by pageOpen() in site.php3
             //$auth->relogin();
-            $this->apc['xuser'] = $auth->getUname();
-            $this->apc['xuid']  = $auth->getUid();
+            $this->apc['xuser'] = AuthGetUname();
+            $this->apc['xuid']  = AuthGetUid();
 
-            if ($auth->getUname() AND $_REQUEST["ok_url"]) {
+            if (AuthGetUname() AND $_REQUEST["ok_url"]) {
                 go_url($_REQUEST["ok_url"]);
-            } elseif (!$auth->getUname() AND $_REQUEST["err_url"]) {
+            } elseif (!AuthGetUname() AND $_REQUEST["err_url"]) {
                 go_url($_REQUEST["err_url"]);
             }
         }

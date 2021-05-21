@@ -44,7 +44,6 @@ function GetAlertsTableView ($viewID, $processForm = false) {
         return $tableview;
     }
 
-    global $auth;
     global $attrs_edit, $attrs_browse;
 
     // ------------------------------------------------------------------------------------
@@ -227,7 +226,7 @@ function GetAlertsTableView ($viewID, $processForm = false) {
             ],
             "created_by" => [
                 "caption" => _m("created by"),
-                "default"=>$auth->getUid(),
+                "default"=>AuthGetUid(),
                 "view"=> [
                     "type"=>"text",
                     "readonly" => 1

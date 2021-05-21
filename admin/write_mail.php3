@@ -60,7 +60,7 @@ if ( !$send ) {               // for the first time - directly from item manager
         // --- write the e-mail template to the table ---
         $varset = new Cvarset();
         $owner_module_id = q_pack_id($slice_id);
-        $description     = date('Y-m-d H:i:s'). ', '. $auth->getUid();
+        $description     = date('Y-m-d H:i:s'). ', '. AuthGetUid();
         $type            = 'bulk email';
         ValidateInput("subject",     _m("Subject"),            $subject,     $err, true,  "text");
         ValidateInput("body",        _m("Body"),               $body,        $err, true,  "text");

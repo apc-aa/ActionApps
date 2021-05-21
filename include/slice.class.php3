@@ -304,12 +304,11 @@ class AA_Module {
      *  @param $user_id
      */
     public static function getUserModules( $module_type = '') {
-        global $auth;
 
         $where_add = empty($module_type) ? '' : "AND type='$module_type'";
         $all_modules = GetTable2Array("SELECT id, name FROM module WHERE deleted=0 $where_add ORDER BY priority, name", 'unpack:id', 'name');
 
-        $user_id =  $auth->getUid();
+        $user_id =  AuthGetUid();
 
         return array_filter($all_modules, function ($mid) use ($user_id) {
             return CheckPerms($user_id, 'slice', $mid, PS_EDIT_SELF_ITEMS);
@@ -680,8 +679,7 @@ class AA_Slice extends AA_Module {
     public function get_show_func_used($id, array $shown_fields, $slice_fields=false): array {
         $show_func_used = [];
 
-        global $auth;
-        $profile = AA_Profile::getProfile($auth->getUid(), $this->getId()); // current user settings
+        $profile = AA_Profile::getProfile(AuthGetUid(), $this->getId()); // current user settings
 
         // get slice fields and its priorities in inputform
         $fields      = $this->getFields($slice_fields);

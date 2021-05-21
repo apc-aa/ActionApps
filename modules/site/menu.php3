@@ -39,7 +39,7 @@ require_once __DIR__."/../../include/mgettext.php3";
 // I don't want to call AA menus as early as including menu.php3, because some permissions' functions are called. Hence I call get_aamenus in showMenu().
 
 function get_aamenus() {
-    global $r_slice_view_url, $auth, $slice_id;
+    global $r_slice_view_url, $slice_id;
 
     $aamenus["view"] = [
         "label" => _m("View site"),
@@ -89,7 +89,7 @@ function get_aamenus() {
         ]
     ];
     
-    $profile = AA_Profile::getProfile($auth->getUid(), $slice_id); // current user settings
+    $profile = AA_Profile::getProfile(AuthGetUid(), $slice_id); // current user settings
 
     // left menu for aaadmin is common to all modules, so it is shared
     return array_merge($aamenus, GetCommonMenu($profile));
