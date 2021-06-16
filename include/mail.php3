@@ -161,9 +161,10 @@ class AA_Mail extends htmlMimeMail implements \AA\Later\LaterInterface {
      *  Send prepared e-mail to adresses specified in the $to array.
      *  The e-mail is queued it AA\Later\Toexecute queue before sending (not imediate)
      * @param $to
+     * @param bool $all_later Sends all mails later - otherwise, the first two mails are sent directly
      * @return int
      */
-    function sendLater($to) {
+    function sendLater($to, $all_later=false) {
         static $send_mails_total = 0;
 
         $toexecute = new Toexecute;
@@ -178,7 +179,7 @@ class AA_Mail extends htmlMimeMail implements \AA\Later\LaterInterface {
             }
 
             // first two mails in the script send directly (for better UX)
-            if (++$send_mails_total < 3) {
+            if (!$all_later AND (++$send_mails_total < 3)) {
                 $this->send([$to]);
                 ++$sent;
             } else {
@@ -265,21 +266,23 @@ class AA_Mail extends htmlMimeMail implements \AA\Later\LaterInterface {
      * @param $mail_id
      * @param $to   string|array
      * @param $item
+     * @param $later bool|null
      *
      * Called as AA_Mail::sendTemplate($mail_id,$to,$item=null)
      * @return bool|int|mixed
      */
-     static function sendTemplate($mail_id, $to, $item=null, $later=true) {
+     static function sendTemplate($mail_id, $to, $item=null, $later=null) {
         // email has the templates in it
         $mail = new AA_Mail;
         if (!$mail->setFromTemplate($mail_id, $item)) {
             return false;
         }
 
-        if ($later) {
-            return $mail->sendLater($to);
+        if (is_null($later)) {
+            return $mail->sendLater($to);  // standard - first two mails send, other queue
+        } elseif ($later === true) {
+            return $mail->sendLater($to, true);
         }
-
 
         $tos  = array_unique(array_map('trim', is_array($to) ? $to : [$to]));
         return $mail->send($tos);
@@ -301,7 +304,7 @@ class AA_Mail extends htmlMimeMail implements \AA\Later\LaterInterface {
             $mail_scheduler->schedule();  // right now
         } else {
             // more than 50 - plan scheduling
-            // there was problems wit more than 1000 mails - it wasn't possible to plan it in one shot
+            // there was problems with more than 1000 mails - it wasn't possible to plan it in one shot
             $toexecute  = new Toexecute;
             foreach ($chunks as $chunk) {
                 $mail_scheduler = new AA_Mail_Scheduler($mail_id, $chunk);
@@ -336,7 +339,7 @@ class AA_Mail_Scheduler implements \AA\Later\LaterInterface {
             foreach ( $this->reader_ids as $id ) {
                 $item = AA_Item::getItem($id);
                 $to   = $item->getval(FIELDID_EMAIL);
-                $mail_count += AA_Mail::sendTemplate($this->mail_id, $to, $item);
+                $mail_count += AA_Mail::sendTemplate($this->mail_id, $to, $item, true);
             }
         }
         return $mail_count;
