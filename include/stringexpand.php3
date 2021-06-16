@@ -3959,7 +3959,7 @@ class AA_Stringexpand_If extends AA_Stringexpand_Nevercache {
      * @return mixed
      */
     function expand(...$arg_list) {
-        $etalon   = (float)str_replace(',', '.', trim(array_shift($arg_list)));
+        $etalon   = AA_Stringexpand::clearFloat(array_shift($arg_list));
         switch (array_shift($arg_list)) {
             case '=' :
             case '==':
@@ -3993,7 +3993,7 @@ class AA_Stringexpand_If extends AA_Stringexpand_Nevercache {
         $ret      = false;
         $i        = 0;
         while (isset($arg_list[$i]) AND isset($arg_list[$i+1])) {  // regular option-text pair
-            if ($cmp($etalon, (float)str_replace(',', '.', trim($arg_list[$i])))) {
+            if ($cmp($etalon, AA_Stringexpand::clearFloat($arg_list[$i]))) {
                 $ret = $arg_list[$i+1];
                 break;
             }
@@ -4006,7 +4006,7 @@ class AA_Stringexpand_If extends AA_Stringexpand_Nevercache {
         // _#2 is not very usefull but we have it from the times the function was just for one option
         return str_replace(['_#1','_#2'], [PhpFloat($etalon), $arg_list[0]], $ret);
     }
-
+   
 }
 
 
@@ -6686,6 +6686,31 @@ class AA_Stringexpand {
     protected static function joinWithDelimiter($arr, $delimiter) {
         return empty($arr) ? '' : (($delimiter=='json') ? json_encode($arr) : join($delimiter, $arr));
     }
+    
+    /**
+     * @param string $values
+     * @param string $delimiter
+     * @return array
+     */
+    protected static function explode2array(string $values, string $delimiter=''): array {
+        if (empty($delimiter)) {
+            if ($values[0] == '[') {
+                $ret = json2arr($values);
+            }
+            $ret = explode('-', $values);
+        } else {
+            $ret = explode($delimiter, $values);
+        }
+        return $ret;
+    }
+    
+    /**
+     * @param string $numebr
+     * @return float
+     */
+    public static function clearFloat($number): float {
+        return (float)str_replace([' ','&#8239;',','], ['', '','.'], trim($number));
+    }
 }
 
 /** Special parent class for all stringexpand functions, where no cache
@@ -7440,6 +7465,8 @@ class AA_Stringexpand__ extends AA_Stringexpand {
 
         $name     = array_shift($arg_list);
 
+        AA::$debug&32 && AA::$dbg->tracestart('{_:.. load}', $name);
+        
         if ( isset($GLOBALS['STRINGEXPAND_SHORTCUTS'][$name]) ) { // old deprecated listing of aliases in custom file
             $text = $GLOBALS['STRINGEXPAND_SHORTCUTS'][$name];
         } else {
@@ -7465,12 +7492,16 @@ class AA_Stringexpand__ extends AA_Stringexpand {
             }
             $text = $saliases[$name];
         }
+        AA::$debug&32 && AA::$dbg->traceend('{_:.. load}', $text);
 
+        AA::$debug&8 && AA::$dbg->tracestart("_:$name", join(',',$arg_list));
         $text = AA_Stringexpand::replaceParams($text, $arg_list);
         if (strpos($text, '{(') !== false) {
             // we want to use inline aliases also inside {_:aliases...}
             $text = AA_Stringexpander::ApplyInlineAlias($text);
         }
+        AA::$debug&8 && AA::$dbg->traceend("_:$name", $text);
+        
         return $text;
     }
 }
