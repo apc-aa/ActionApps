@@ -301,7 +301,6 @@ class AA_Langs {
      *  usage: AA_Langs::getCharset();
      */
     public static function getCharset($lang_code=null) {
-
         if (!$lang_code OR !is_array($ret = self::$LANGS[$lang_code])) {
             $ret = self::$LANGS[get_mgettext_lang()];
         }

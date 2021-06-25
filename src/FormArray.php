@@ -46,7 +46,7 @@ class FormArray
      *                                    item at the time
      *          'f_long_slice_id' new item from file upload to slice
      *      modified_field_id is field_id, where all dots are replaced by '_'
-     *      we always add [] at the end, so it becames array at the end
+     *      we always add [] at the end, so it becomes array at the end
      *   Example:
      *       aa[u63556a45e4e67b654a3a986a548e8bc9][headline________][]
      *       aa[i63556a45e4e67b654a3a986a548e8bc9][relation_______1][]
@@ -56,7 +56,7 @@ class FormArray
      * @param $property_id string
      * @param $content \AA_Content
      * @param $item_index int
-     *@return string
+     * @return string
      * @throws Exception
      */
     static public function getName4Form($property_id, $content, $item_index = 1)
@@ -70,7 +70,7 @@ class FormArray
 
         $oowner = $content->getOwnerID();
         if (!$oowner) {
-            throw new Exception('No owner specifield for ' . $form_field_id);
+            throw new Exception('No owner specified for ' . $form_field_id);
         }
         $item_index = ctype_digit((string)$item_index) ? (int)$item_index : 1;
         return "aa[n${item_index}_$oowner][$form_field_id]";
