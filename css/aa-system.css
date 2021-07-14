@@ -656,10 +656,25 @@ i.ico.aa-tool-edit:hover {
     vertical-align: top;
 }
 /* events */
-.aa-updating {
+/*.aa-updating {
     background-image: url(data:image/gif;base64,R0lGODlhEAAQAPIAAP///2ZmZtra2o2NjWZmZqCgoLOzs729vSH/C05FVFNDQVBFMi4wAwEAAAAh/h1CdWlsdCB3aXRoIEdJRiBNb3ZpZSBHZWFyIDQuMAAh/hVNYWRlIGJ5IEFqYXhMb2FkLmluZm8AIfkECQoAAAAsAAAAABAAEAAAAzMIutz+MMpJaxNjCDoIGZwHTphmCUWxMcK6FJnBti5gxMJx0C1bGDndpgc5GAwHSmvnSAAAIfkECQoAAAAsAAAAABAAEAAAAzQIutz+TowhIBuEDLuw5opEcUJRVGAxGSBgTEVbGqh8HLV13+1hGAeAINcY4oZDGbIlJCoSACH5BAkKAAAALAAAAAAQABAAAAM2CLoyIyvKQciQzJRWLwaFYxwO9BlO8UlCYZircBzwCsyzvRzGqCsCWe0X/AGDww8yqWQan78EACH5BAkKAAAALAAAAAAQABAAAAMzCLpiJSvKMoaR7JxWX4WLpgmFIQwEMUSHYRwRqkaCsNEfA2JSXfM9HzA4LBqPyKRyOUwAACH5BAkKAAAALAAAAAAQABAAAAMyCLpyJytK52QU8BjzTIEMJnbDYFxiVJSFhLkeaFlCKc/KQBADHuk8H8MmLBqPyKRSkgAAIfkECQoAAAAsAAAAABAAEAAAAzMIuiDCkDkX43TnvNqeMBnHHOAhLkK2ncpXrKIxDAYLFHNhu7A195UBgTCwCYm7n20pSgAAIfkECQoAAAAsAAAAABAAEAAAAzIIutz+8AkR2ZxVXZoB7tpxcJVgiN1hnN00loVBRsUwFJBgm7YBDQTCQBCbMYDC1s6RAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P4wykmrZULUnCnXHggIwyCOx3EOBDEwqcqwrlAYwmEYB1bapQIgdWIYgp5bEZAAADsAAAAAAAAAAAA=);
     background-repeat: no-repeat;
     background-size: 50px;
     background-position: center;
     opacity: .6;
+} */
+
+.aa-updating {
+    -webkit-mask-image: linear-gradient(to right, transparent, #fff, transparent);
+    -webkit-mask-size: 300% 100%;
+    mask-image: linear-gradient(to right, transparent, #fff, transparent);
+    mask-size: 300% 100%;
+    animation: aa-loader 3s infinite alternate;
+}
+
+@keyframes aa-loader {
+    100% {
+        mask-position: right;
+        -webkit-mask-position: right;
+    }
 }

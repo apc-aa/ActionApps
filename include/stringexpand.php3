@@ -1365,9 +1365,19 @@ class AA_Stringexpand_Lazy extends AA_Stringexpand_Nevercache { // do not cache 
 
                 $script2run = <<<EOT
     var observer = new IntersectionObserver( function(entries, observer) {
-        entries.forEach( function(entry) {
-          if (entry.isIntersecting) {
-            AA_Ajax(entry.target.id, entry.target.dataset.aaUrl);
+      entries.forEach( function(entry) {
+        if (entry.isIntersecting) {   
+          entry.target.classList.add('aa-updating');
+          fetch(entry.target.dataset.aaUrl)
+            .then(function(response) {
+              return response.text();
+            })
+            .then(function(text) {
+              entry.target.innerHTML = text;
+            })
+            .catch(function(error) { console.error(error);  })
+            .finally(function() { entry.target.classList.remove('aa-updating') });
+            // AA_Ajax(entry.target.id, entry.target.dataset.aaUrl);
             observer.unobserve(entry.target);
           }
         });
