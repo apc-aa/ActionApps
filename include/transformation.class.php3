@@ -482,7 +482,7 @@ class AA_Transformation_ParseMulti extends AA_Transformation {
             }
             return $val;
         }
-        return new AA_Value(explode($this->delimiter, $item->subst_alias($this->source)), $flag);
+        return new AA_Value(array_filter(array_map('trim', explode($this->delimiter, $item->subst_alias($this->source))), 'strlen'), $flag); // trim and remove empty
     }
 
     /** htmlSetting function
