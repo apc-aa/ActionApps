@@ -54,6 +54,7 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
     /** AA_Value function
      * @param $value
      * @param null|int $flag  FLAG_HTML | FLAG_FEED | FLAG_FREEZE | FLAG_OFFLINE | FLAG_UPDATE | FLAG_TEXT_STORED
+     * for multilingual you can use: new AA_Value([AA_Langs::getLangName2Num($translations[0]) => $text], $html_flag));
      */
     function __construct($value = null, $flag = null) {
         $this->clear();
@@ -138,7 +139,9 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
         return count($this->val) < 1;
     }
 
-    /** Add Value */
+    /** Add Value
+     *  $ic->setAaValue('headline........', new AA_Value([AA_Langs::getLangName2Num($translations[0]) => $text], $html_flag));
+     */
     function addValue($value) {
         if (is_array($value)) {
             // normal array(val1, val2, ...) used or used AA array used
@@ -153,6 +156,20 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
             $this->val[] = $value;
         }
         return $this->removeDuplicates();
+    }
+
+    /** Add one string value possibly with language
+     *  If the value is set, it is added as multivalue
+     */
+    function addStringValue(string $val, string $lang=''): AA_Value {
+        if (strlen($val)) {
+            $index = AA_Langs::getLangName2Num($lang);
+            while (isset($this->val[$index])) {
+                $index++;
+            }
+            $this->val[$index] = $val;
+        }
+        return $this;
     }
 
     public function containValue(string $txt): bool {

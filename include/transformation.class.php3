@@ -452,13 +452,12 @@ class AA_Transformation_ParseMulti extends AA_Transformation {
      * @return string - message
      */
     public static function name(): string {
-        return _m("Divide the text to multiple values");
+        return _m("Divide the text to multiple values (also for multilingual values)");
     }
 
     /** description function
      * @return string - message
      */
-
     public static function description(): string {
         return _m("Parses the input text and looks for the delimiter. Separates the parts and store them as multiple values to destination field");
     }
@@ -471,6 +470,18 @@ class AA_Transformation_ParseMulti extends AA_Transformation {
     function transform($field_id, $itemcontent, $silent=true) {
         $item = GetItemFromContent($itemcontent);
         $flag = $this->getFlagFromForm($item->getFlag($field_id));
+        if (strpos($this->delimiter, 'AA_LANG') !== false) {   // multilangual
+            $delimiter = str_replace('AA_LANG', '([A-Za-z]{2})', preg_quote($this->delimiter, '/'));
+            $twos = preg_split("/$delimiter/", $item->subst_alias($this->source), -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
+            $i = 0;
+            $twoscount = count($twos);
+            $val = new AA_Value(null, $flag);
+            while ($i < $twoscount) {
+                $val->addStringValue(trim($twos[$i + 1]), trim($twos[$i]));
+                $i += 2;
+            }
+            return $val;
+        }
         return new AA_Value(explode($this->delimiter, $item->subst_alias($this->source)), $flag);
     }
 
@@ -482,8 +493,8 @@ class AA_Transformation_ParseMulti extends AA_Transformation {
     function htmlSetting($input_prefix, $params) {
         $flag_options = [
             'h' => _m('HTML'),
-                              't' => _m('Plain text'),
-                              'u' => _m('As for other values of this field')
+            't' => _m('Plain text'),
+            'u' => _m('As for other values of this field')
         ];
         ob_start();
         FrmTabCaption();
@@ -496,8 +507,8 @@ class AA_Transformation_ParseMulti extends AA_Transformation {
         FrmInputRadio($varname_new_flag, _m('Mark as'), $flag_options, get_if($_GET[$varname_new_flag],'u'));
         FrmTextarea(  $varname_source, _m('Source text'),  $_GET[$varname_source],  12, 80, false,
                _m('You can use also aliases, so the content "&lt;i&gt;{abstract........}&lt;/i&gt;&lt;br&gt;{full_text......1}" is perfectly OK'));
-        FrmTextarea( $varname_delimiter, _m('Delimiter'), $_GET[$varname_delimiter], 2, 80, false);
-
+        FrmTextarea( $varname_delimiter, _m('Delimiter'), $_GET[$varname_delimiter], 2, 80, false,
+            _m('use simple delimiter like | or longer like ---ENDTEXT---<br>use AA_LANG constant in delimiter to parse multilingual values like:   delimiter: |AA_LANG|   for Source text: |cz|text jedna|de|Ein text|en|text one'));
         FrmTabEnd();
         return ob_get_clean();
     }
