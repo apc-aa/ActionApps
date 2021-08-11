@@ -110,7 +110,7 @@ if (ini_get('pcre.jit') == 1) {
     ini_set('pcre.jit', 0);
 }
 
-/** creates array form JSON array or returns single value array if not valid json
+/** creates array from JSON array or returns single value array if not valid json
  * @param $string
  * @param bool $do_not_filter
  * @return array|mixed
@@ -3220,7 +3220,7 @@ class AA_Stringexpand_Fulltext extends AA_Stringexpand {
             $id_type    = guesstype($item_id);
             if ( $item_id AND (($id_type == 's') OR ($id_type == 'l'))) {
                 $item = AA_Items::getItem(new zids($item_id,$id_type));
-                if ($item) {
+                if ($item AND $item->isActive()) {
                     $slice = AA_Slice::getModule($item->getSliceID());
                     $text  = $slice->getProperty('fulltext_format_top'). $slice->getProperty('fulltext_format'). $slice->getProperty('fulltext_format_bottom');
                     $ret  .= AA::Stringexpander()->unalias($text, $slice->getProperty('fulltext_remove'), $item);
@@ -7004,7 +7004,7 @@ class AA_Stringexpand_Avatar extends AA_Stringexpand {
  *
  *  Usage:
  *     {img:_#this:w=168&h=127&zc=1:im:_#HEADLINE:width=168 height=127}  // this is the quickest - exact size (zc=1), no need to size check => im
- *     {img:_#this:w=168&h=127&zc=1:picture:_#HEADLINE}                  // preferred - create lazy loaded <picture> with quick WEBP picture alternative form current browsers
+ *     {img:_#this:w=168&h=127&zc=1:picture:_#HEADLINE}                  // preferred - create lazy loaded <picture> with quick WEBP picture alternative for current browsers
  *     <img src="{img:{img_url.........}:w=150&h=150}">  /"
  *     <img src="{img:{img_url.........}:w=150&h=150&iar=1}">  /"        // iar - ignore aspect ratio - deform the image to exact size
  *     <div>{img:{img_url.........}::imgb:Logo {_#HEADLINE}}</div>
@@ -7245,7 +7245,7 @@ class AA_Stringexpand_Fileinfo extends AA_Stringexpand {
 }
 
 /** get link to file for download (prints also file size and type)
- *  {filelink:<url>:<text>}
+ *  {filelink:<url>:<text>:<text-before>}
  *
  *  Usage:
  *     {filelink:{file............}:{text............}:Download#: }
