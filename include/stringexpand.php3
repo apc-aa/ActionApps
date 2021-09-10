@@ -9283,23 +9283,31 @@ class AA_Stringexpand_Sortable extends AA_Stringexpand {
 
 /** Adds EU cookies message to the page
  *  needs {generate:HEAD} and {generate:FOOT} in the site module
+ *  doc: https://github.com/jakubboucek/fucking-eu-cookies/tree/master#readme
+ *  {eucookies:Tento web pou&#x17E;&iacute;v&aacute; k nastaven&iacute; webov&yacute;ch str&aacute;nek a anal&yacute;ze n&aacute;v&#353;t&ecaron;vnosti soubory cookie. Pou&#x17E;&iacute;v&aacute;n&iacute;m webu s t&iacute;m souhlas&iacute;te.:Rozum&iacute;m:://www.example.cz/cz/cookies-strategy}
+ *  {eucookies:::::showMyAdds}
+ *    <script> function loadMyAdds(action, label) { if (action=='hide') { console.log(action, label);} } </script>
  */
 class AA_Stringexpand_Eucookies extends AA_Stringexpand {
     /** expand function
      * @param $selector
      * @return string
      */
-    function expand($text='', $accept='', $more='', $link='') {
+    function expand($text='', $accept='', $more='', $link='', $callback='') {
         $script2run = '';
         $conf       = [];
-        if (strlen($text))   { $conf['text']   = $text;   }
-        if (strlen($accept)) { $conf['accept'] = $accept; }
-        if (strlen($more))   { $conf['more']   = $more;   }
-        if (strlen($link))   { $conf['link']   = $link;   }
+        if (strlen($text))     { $conf['text']   = $text;   }
+        if (strlen($accept))   { $conf['accept'] = $accept; }
+        if (strlen($more))     { $conf['more']   = $more;   }
+        if (strlen($link))     { $conf['link']   = $link;   }
 
-        if ($conf) {
-            $json = json_encode(['l18n'=>$conf]) ?: "''";
-            $script2run .= "<script> var smart_eu_config = $json; </script>";
+        $confstr = $conf ? '"l18n":'.json_encode($conf) : '';
+        if (strlen($callback)) {
+            $confstr .= ($confstr ? ',':''). '"options":{"callback":'.$callback.'}';
+        }
+
+        if ($confstr) {
+            $script2run .= '<script> var smart_eu_config = {'.$confstr.'}; </script>';
         }
         $script2run .= "\n<script async src=\"https://cdn.jsdelivr.net/npm/eu-cookie-law@1.0.0/dist/index.min.js\" integrity=\"sha384-Aqd1v6PXDXY8z7z5qprmEjjFMZhqAMJCovJg2HrDMhBxYpALNSDVy5htLWzMO3fJ\" crossorigin=anonymous></script>";
         AA::Stringexpander()->addRequire($script2run, 'AA_Req_Footcode');
