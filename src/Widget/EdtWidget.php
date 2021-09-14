@@ -36,7 +36,7 @@ class EdtWidget extends TxtWidget
         $ret = '';
         // are there some textareas not converted to CodeMirror?
         if ($this->ids_4_editor) {
-            $ret .= "\n  document.querySelectorAll(\"". join(',',$this->ids_4_editor) ."\").forEach( function(el) { CKEDITOR.replace( el ).on('change', function(e) { e.editor.updateElement(); });} );";  // in order we can use AA_SendWidgetAjax() for sending bu ajax. Could be replaced by some custom event called from AA_SendWidgetAjax()
+            $ret .= "\n  document.querySelectorAll(\"". join(',',$this->ids_4_editor) ."\").forEach( function(el) { CKEDITOR.replace( el ).on('change', function(e) { e.editor.updateElement(); if (typeof el.onchange === 'function') { el.onchange() }; });} );";  // in order we can use AA_SendWidgetAjax() for sending bu ajax. Could be replaced by some custom event called from AA_SendWidgetAjax()
             // clean the list - all textareas are converted
             $this->ids_4_editor = [];
         }

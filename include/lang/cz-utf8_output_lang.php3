@@ -499,5 +499,7 @@ $_m["E-mail confirmed."]
 = "E-mail potvrzen";
 
 $_m["E-mail unsubscribed"]
-= "E-mail odhlášen";
+    = "E-mail odhlášen";
 
+$_m["drop files here or click to upload"]
+    = "přetáhněte soubory sem nebo klikněte pro nahrání";

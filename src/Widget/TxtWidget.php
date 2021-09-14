@@ -137,7 +137,7 @@ class TxtWidget extends Widget
         $htmlareaedit = '';
 
         if ($showhtmlarea OR $showcodeeditor) {
-            // arr this textarea to the list for CKEditor creation or CodeMirror
+            // add this textarea to the list for CKEditor creation or CodeMirror
             $this->ids_4_editor[] = '#'.$input_id;
             // $attrs['class'] = 'ckeditor';
 

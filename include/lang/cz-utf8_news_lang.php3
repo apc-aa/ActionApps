@@ -7352,4 +7352,6 @@ $_m["http#://www.ecn.cz/articles/solar.shtml"]
 $_m["WARNING: slice: %s doesn't look like an unpacked id"]
  = "POZOR: webík: %s nevypadá jako rozbalené id";
 
+$_m["drop files here or click to upload"]
+    = "přetáhněte soubory sem nebo klikněte pro nahrání";
 

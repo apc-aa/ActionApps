@@ -495,6 +495,8 @@ class Widget extends AA_Object implements NamedInterface {
         $widget_html = $winfo['html']; //. ($help ? "\n    <div class=\"aa-help\"><small>$help</small></div>\n" :'');
         $class = 'aa-widget aa-live';
         $class .= ' aa-widget-' . AA_Components::getClassType('Widget', get_called_class());
+
+        $this->registerRequires($aa_property, $winfo);
         return "<div class=\"$class\"" . ($winfo['required'] ? ' data-aa-required' : '') . " id=\"widget-$base_id\" style=\"display:inline; position:relative;\">" . $widget_html . "</div>";
     }
 

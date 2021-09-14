@@ -164,8 +164,8 @@ $script2run = '
    var opts = { lineWrapping:true, matchBrackets: true, matchTags: true, viewportMargin: 10000, mode: "htmlmixed" };
    window.cm_a1 = CodeMirror.fromTextArea(document.getElementById("content"), opts);
    ';
-
 $apage->addRequire($script2run, 'AA_Req_Load');
+
 $apage->setForm();
 $apage->printHead($err, $Msg);
 

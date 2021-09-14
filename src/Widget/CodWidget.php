@@ -12,9 +12,6 @@ use AA\FormArray;
 /** Code editor */
 class CodWidget extends TxtWidget
 {
-    /** @var array  list of textareas for CodeMirror creation */
-    protected $ids_4_editor = [];
-
     /** widget name  */
     public static function name(): string {
         return _m('Code editor');
@@ -30,8 +27,7 @@ class CodWidget extends TxtWidget
         $ret = '';
         // are there some textareas not converted to CodeMirror?
         if ($this->ids_4_editor) {
-            $ret .= "\n  document.querySelectorAll(\"". join(',',$this->ids_4_editor) .'").forEach( function(el) { CodeMirror.fromTextArea(el, { lineWrapping:true, matchBrackets: true, matchTags: true, viewportMargin: 10000, mode: "htmlmixed", spellcheck:true, inputStyle: "contenteditable" });});';
-
+            $ret .= "\n  document.querySelectorAll(\"". join(',',$this->ids_4_editor) .'").forEach( function(el) { CodeMirror.fromTextArea(el, { lineWrapping:true, matchBrackets: true, matchTags: true, viewportMargin: 10000, mode: "htmlmixed", spellcheck:true, inputStyle: "contenteditable" }).on("change", function(editor) {editor.save(); const ta = editor.getTextArea(); if (typeof ta.onchange === "function") { ta.onchange() }; }) });';
             // clean the list - all textareas are converted
             $this->ids_4_editor = [];
         }
@@ -46,7 +42,7 @@ class CodWidget extends TxtWidget
         return Widget::propertiesShop(['rows']);
     }
 
-    //    /** Creates base widget HTML, which will be surrounded by Live, Ajxax
+    //    /** Creates base widget HTML, which will be surrounded by Live, Ajax
     //     *  or normal decorations (added by _finalize*Html)
     //     *  @param \AA_Property $aa_property
     //     *  @param \AA_Content  $content

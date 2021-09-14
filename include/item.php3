@@ -1877,7 +1877,7 @@ class AA_Items {
 
     /** @returns AA_Item or null (if not cached)
      * @param $zid zids
-     * @return mixed|null
+     * @return AA_Item|null
      */
     function _getFromCache($zid) {
         if ( $zid->use_short_ids() ) {

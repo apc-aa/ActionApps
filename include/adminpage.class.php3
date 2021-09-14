@@ -54,6 +54,8 @@ class AA_Adminpageutil {
     {
         $this->menu    = $menu;
         $this->submenu = $submenu;
+        $formsetup = "document.querySelectorAll('form').forEach(function(el) { el.addEventListener('submit', function(e) { e.target.classList.add('aa-updating'); }); });";
+        $this->addRequire($formsetup, 'AA_Req_Load');
     }
 
     /**
