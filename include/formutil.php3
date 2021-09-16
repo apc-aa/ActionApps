@@ -1286,9 +1286,13 @@ class AA_Inputfield {
         }
 
         $attrs['size']      = get_if($size, $attrs['size']);
-        if (!$attrs['size'] AND $attrs['type']=='text') {
-            $attrs['style'] = 'width:95%';
+        if (!$attrs['size']) {
+            unset($attrs['size']);
+            if ( $attrs['type']=='text') {
+                $attrs['style'] = 'width:95%';
+            }
         }
+
         $attrs['maxlength'] = get_if($maxsize, $attrs['maxlength'], 255);
 
         // type number do not support size parameter, so ve have to set max and min (make no sence to do it for numbers > 11 characters - use default)
