@@ -89,7 +89,7 @@ class FldWidget extends Widget
         if ($value->isEmpty()) {
             $value->addValue('');   // display empty field at least
         }
-        $value->fixTranslations($translations);  // modify for tranclations if needed
+        $value->fixTranslations($translations);  // modify for translations if needed
 
         $base = [];
         foreach ($value as $i => $val) {

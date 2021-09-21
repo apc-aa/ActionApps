@@ -545,7 +545,7 @@ function AA_StateChange(id, state) {
     $('img.'+id+'ico').attr('src', AA_GetConf('path')+icoimg);
 }
 
-/** If condition, call callback directly. Otherwise - load js script from url and execute callcack after the script is loaded */
+/** If condition, call callback directly. Otherwise - load js script from url and execute callback after the script is loaded */
 function AA_LoadJs(condition, callback, url, sync) {
     if (condition && ((condition!='load_once') || (url && document.querySelector('script[src="'+url+'"]')))) {
         if (callback) {
@@ -585,7 +585,7 @@ function AA_IsLoaded() {
     if (AA_IsLoaded.cnt) {
         --AA_IsLoaded.cnt; // count to zero
     }
-    if (!AA_LoadJs.cnt && AA_IsLoaded.callback) {
+    if (!AA_IsLoaded.cnt && AA_IsLoaded.callback) {
         AA_IsLoaded.callback();
         AA_IsLoaded.callback = undefined;       // run it just once
     }

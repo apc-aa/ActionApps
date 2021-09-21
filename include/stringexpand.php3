@@ -5955,6 +5955,10 @@ class AA_Stringexpander {
                 }
             }
         }
+        if ($ret AND ($script = AA::Stringexpander()->getRequireScript())) {
+            end($ret);
+            $ret[key($ret)] .= '<script>'.$script.'</script>';
+        }
         return $ret;
     }
 }
@@ -6279,6 +6283,9 @@ class AA_Req_Headcode extends AA_Req_Run {
     function getCode(): string {
         return $this->script;
     }
+
+    /** the code is not script. Also, we should not need it for ajax widgets not manager */
+    function getScript() {}
 }
 
 /**
@@ -6452,10 +6459,13 @@ class AA_Requires {
     function getAsScript() {
         $req_arr  = array_merge($this->computeRequires('HEAD-A'),$this->computeRequires('HEAD-B'),$this->computeRequires('FOOT-A'),$this->computeRequires('FOOT-B'));
         $external = array_filter(array_map( function($req) {return $req->getExternal();}, $req_arr));
+        $js_count = array_reduce($external, function($count, $a) { $count += (strpos(trim($a),'AA_LoadJs(')===0) ? 1 : 0; return $count; },0);
+
         $scripts  = join("\n", array_map( function($req) {return $req->getScript();}, $req_arr));
+        //huhl($req_arr, $external, $scripts);
 
         /** @todo could be moved to Promise.all approach */
-        $scripts  = "\nAA_IsLoaded.callback = function() {\n$scripts\n}\nAA_IsLoaded.cnt=".count($external)."\n";
+        $scripts  = "\nAA_IsLoaded.callback = function() {\n$scripts\n}\nAA_IsLoaded.cnt=$js_count\n";
         return  $scripts. join("\n",$external);
     }
 

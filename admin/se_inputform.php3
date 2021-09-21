@@ -363,17 +363,15 @@ echo "
       echo "<div class=tabhlp>". _m("Input field type in Add / Edit item.") ."</div>
             <table border=0 cellspacing=0 cellpadding=4 bgcolor=\"". COLOR_TABBG ."\">
              <tr>
-              <td class=tabtit><b>". _m("Constants") ."</b> ";
+              <td><b>". _m("Constants") ."</b> ";
                FrmSelectEasy("input_show_func_c", $constants, $input_show_func_c);
       $constants_menu = explode('|', str_replace(" ","&nbsp;",_m("Edit|Use as new|New")));
-      echo "   <div class=tabtit>". _m("Choose a Constant Group or a Slice.") ."</div>
+      echo "   <div class=tabhlp>". _m("Choose a Constant Group or a Slice.") ."</div>
               </td>
-              <td class=tabtit>
-                <div class=tabtxt>
-                <b>&larr;&nbsp;<a href='javascript:CallConstantEdit(0)'>". $constants_menu[0] ."</a></b><br>
-                <b>&larr;&nbsp;<a href='javascript:CallConstantEdit(1)'>". $constants_menu[1] ."</a></b><br>
-                <b><a href='". con_url(EditConstantURL(),"return_url=se_inputform.php3&fid=$fid"). "'>". $constants_menu[2] ."</a></b>
-                </div>
+              <td>
+                <a href='javascript:CallConstantEdit(0)'>&larr;&nbsp;". $constants_menu[0] ."</a><br>
+                <a href='javascript:CallConstantEdit(1)'>&larr;&nbsp;". $constants_menu[1] ."</a><br>
+                <a href='". con_url(EditConstantURL(),"return_url=se_inputform.php3&fid=$fid"). "'>". $constants_menu[2] ."</a>
               </td>
              </tr>
             </table>

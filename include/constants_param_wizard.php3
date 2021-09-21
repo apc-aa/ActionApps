@@ -203,19 +203,6 @@ $FIELD_FUNCTIONS = [
     "name"=>_m("Function"),
 "hint"=>_m("How the formatting in the text on this page is used:<br><i>the field</i> in italics stands for the field edited in the \"configure Fields\" window,<br><b>parameter name</b> in bold stands for a parameter on this screen."),
 "items"=> [
-////alejo
-"f_z"=> [
-    "name"=>_m("file information"),
-   "desc"=>_m("prints <i>the field</i> as file information, its size or type"),
-   "params"=> [
-       [
-           "name"=>_m("information"),
-       "desc"=>_m("specifies returned information: <br> - <i>size</i> - returns size of file in kB o MB<br> - <i>type</i> - returns type of file)"),
-       "type"=>"STR",
-       "example"=>"size"
-       ]
-   ]
-],
 "f__"=> [
     "name"=>_m("just code"),
     "desc"=>_m("prints the code in parameter - _#this could be used - easier than f_t (no aditional parameter)")
@@ -806,6 +793,19 @@ $FIELD_FUNCTIONS = [
             "desc"=>_m("if specified then this string is expanded, if not specified then expands the contents of the field"),
             "type"=>"STR",
             "example"=>"{switch({href_url.........}).+:{href_url.........}}"
+        ]
+    ]
+],
+////alejo
+"f_z"=> [
+    "name"=>_m("file information"),
+    "desc"=>_m("prints <i>the field</i> as file information, its size or type"),
+    "params"=> [
+        [
+            "name"=>_m("information"),
+            "desc"=>_m("specifies returned information: <br> - <i>size</i> - returns size of file in kB o MB<br> - <i>type</i> - returns type of file)"),
+            "type"=>"STR",
+            "example"=>"size"
         ]
     ]
 ]

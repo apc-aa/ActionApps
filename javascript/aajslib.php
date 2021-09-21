@@ -742,7 +742,7 @@ function AA_IsLoaded() {
     if (AA_IsLoaded.cnt) {
         --AA_IsLoaded.cnt; // count to zero
     }
-    if (!AA_LoadJs.cnt && AA_IsLoaded.callback) {
+    if (!AA_IsLoaded.cnt && AA_IsLoaded.callback) {
         AA_IsLoaded.callback();
         AA_IsLoaded.callback = undefined;       // run it just once
     }
