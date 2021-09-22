@@ -658,33 +658,34 @@ function AA_SiteSendForm(form) {
 }
 
 function AA__SiteUpdateParts(data) {
-    var ckeditors = [];
-    var matches   = [];
-    var re = /contenteditable=true id="([^"]*)"/g;
+    // CKEditors (and CodeMirrors, ..) are now loaded automatically - no need to do any extra work here HM 2021-09-21
+    //var ckeditors = [];
+    //var matches   = [];
+    //var re = /contenteditable=true id="([^"]*)"/g;
     for (var i in data) {
         if (i == 'message') {
             $('article.aa-updating[data-aa-part]').removeClass('aa-updating');
             AA_Message(data[i], 'err');
         } else {
             $("[data-aa-part='"+i+"']").replaceWith(data[i]);
-            if (data[i].indexOf("contenteditable=true")) {
-                while (matches = re.exec(data[i])) {
-                    if (matches[1]) {
-                        ckeditors.push(matches[1]);
-                    }
-                }
-            }
+            // if (data[i].indexOf("contenteditable=true")) {
+            //     while (matches = re.exec(data[i])) {
+            //         if (matches[1]) {
+            //             ckeditors.push(matches[1]);
+            //         }
+            //     }
+            // }
         }
     }
-    if (ckeditors.length && (typeof CKEDITOR !== "undefined")) {
-        for(var i in ckeditors) {
-            var editor = CKEDITOR.instances[ckeditors[i]];
-            if (editor) {
-                editor.destroy(true);
-            }
-            CKEDITOR.inline(ckeditors[i]);
-        }
-    }
+    // if (ckeditors.length && (typeof CKEDITOR !== "undefined")) {
+    //     for(var i in ckeditors) {
+    //         var editor = CKEDITOR.instances[ckeditors[i]];
+    //         if (editor) {
+    //             editor.destroy(true);
+    //         }
+    //         CKEDITOR.inline(ckeditors[i]);
+    //     }
+    // }
 }
 
 function AA__doChange(params, type) {
