@@ -127,7 +127,7 @@ class Session {
     /**
      * Recall the session registration for named variable(s)
      *
-     * @param      mixed   String with the name of one or more variables seperated by comma
+     * @param      mixed   String with the name of one or more variables separated by comma
      *                   or a list of variables names: "foo"/"foo,bar,baz"/{"foo","bar","baz"}
      * @access public
      * @return bool
@@ -312,21 +312,17 @@ class Session {
      */
     protected function session_setup() {
         $ret = [];
-        if (version_compare(phpversion(), '7.0.0', '<')) {
-            ini_set("session.use_only_cookies", "1");
-        } else {
-            $ret['use_only_cookies'] = 1;
-            $ret['use_trans_sid']    = 0;
-            $ret['cookie_httponly']  = 1;
-            $ret['use_strict_mode']  = 1;
-            if (isset($_SERVER['HTTPS'])) {
-                $ret['cookie_secure'] = 1;
-            }
-            if (version_compare(phpversion(), '7.3.0', '>=')) {
-                $ret['cookie_samesite'] = 'Lax';   // we changed it from Strict, which do not accept links from e-mails to the site, where you are logged in (HM 2020-04-21)
-            }
-            // $ret['read_and_close'] = true;  // no locking - @todo - use it when we do not store to the session - just we read
+        $ret['use_only_cookies'] = 1;
+        $ret['use_trans_sid']    = 0;
+        $ret['cookie_httponly']  = 1;
+        $ret['use_strict_mode']  = 1;
+        if (isset($_SERVER['HTTPS'])) {
+            $ret['cookie_secure'] = 1;
         }
+        if (version_compare(phpversion(), '7.3.0', '>=')) {
+            $ret['cookie_samesite'] = 'Lax';   // we changed it from Strict, which do not accept links from e-mails to the site, where you are logged in (HM 2020-04-21)
+        }
+        // $ret['read_and_close'] = true;  // no locking - @todo - use it when we do not store to the session - just we read
         return $ret;
     }
 
@@ -432,11 +428,11 @@ class Session {
 
 class Auth {
 
-    var $lifetime = 200;            // Max allowed idle time before
+    protected $lifetime = 200;      // Max allowed idle time before
                                     // reauthentication is necessary.
                                     // If set to 0, auth never expires.
 
-    var $refresh = 0;               // Refresh interval in minutes.
+    protected $refresh = 0;         // Refresh interval in minutes.
                                     // When expires auth data is refreshed
                                     // from db using auth_refreshlogin()
                                     // method. Set to 0 to disable refresh
@@ -444,14 +440,14 @@ class Auth {
     //  var $mode = "log";          // "log" for login only systems,
                                     // "reg" for user self registration
 
-    var $nobody = false;            // If true, a default auth is created...
+    protected $nobody = false;      // If true, a default auth is created...
 
     // var $cancel_login = "cancel_login"; // The name of a button that can be
     //                                     // used to cancel a login form
     //
     // End of user qualifiable settings.
 
-    var $auth = [];            // Data array
+    protected $auth = [];            // Data array
 
     //
     // Initialization
@@ -548,7 +544,7 @@ class Auth {
 
 
   function logout() {
-    global $sess;
+        global $sess;
 
     $sess->unregister("auth");
     // unset($this->auth["uname"]);  - now in unauth

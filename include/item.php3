@@ -316,12 +316,12 @@ class AA_Aliasgenerator_Slice {
 
 class AA_Item {
     /** @var ItemContent  */
-    var $content4id;        // ItemContent array for this Item (like from GetItemContent)
-    var $format;            // format string with aliases
-    var $remove;            // remove string
-    var $aliases;           // array of usable aliases
-    protected $aliases_gen; // alias generator for alias lazy load
-    var $parameters;        // optional additional parameters - copied from itemview->parameters
+    protected $content4id;        // ItemContent array for this Item (like from GetItemContent)
+    protected $format;            // format string with aliases
+    protected $remove;            // remove string
+    protected $aliases;           // array of usable aliases
+    protected $aliases_gen;       // alias generator for alias lazy load
+    protected $parameters;        // optional additional parameters - copied from itemview->parameters
 
     /** item function
      *  Constructor
@@ -588,6 +588,18 @@ class AA_Item {
         return array_keys($this->aliases);
     }
 
+    /**
+     *  add new alias if not exist yet
+     */
+    public function addAlias(string $aliasname, array $aliasdef) {
+        if (!isset($this->aliases[$aliasname])) {
+            $this->aliases[$aliasname] = $aliasdef;
+        }
+    }
+
+    public function setAliases($aliases) {
+        $this->aliases = $aliases;
+    }
 
     /** getahref function
      * get link from url and text

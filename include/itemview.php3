@@ -192,23 +192,25 @@ class itemview {
      * @param $empty
      * @return string
      */
-  function get_disc_buttons($empty) {
-    if (!$empty) {
-      $out.= $this->slice_info['d_sel_butt'];
-      $out.= ' '. $this->slice_info['d_all_butt'];
+    function get_disc_buttons($empty) {
+        $out = '';
+        if (!$empty) {
+            $out .= $this->slice_info['d_sel_butt'];
+            $out .= ' '. $this->slice_info['d_all_butt'];
+        }
+        $out .= ' '. $this->slice_info['d_add_butt'];
+        return $out;
     }
-    $out.= ' '. $this->slice_info['d_add_butt'];
-    return $out;
-  }
 
   // show list of discussion items --- useful as search form return value
 
     /** get_disc_list function
-     * @param $CurItem
+     * @param AA_Item $CurItem
      * @return string
      */
-  function get_disc_list($CurItem) {
+  function get_disc_list(AA_Item $CurItem): string {
       $top_html_already_printed = false;
+      $out = '';
       if (is_array($this->disc['disc_ids'])) {
           $zids = new zids($this->disc['disc_ids'], 'l');
           $this->_content = GetDiscussionContent($zids, true, $this->disc['html_format'], $this->clean_url);
@@ -237,17 +239,17 @@ class itemview {
 
     /** get_disc_thread function
      *  show discussion comments in the thread mode
-     * @param $CurItem
+     * @param AA_Item $CurItem
      * @return string
      */
-  function get_disc_thread($CurItem) {
+  function get_disc_thread(AA_Item $CurItem): string {
       $top_html_already_printed = false;
 
       $zids           = QueryDiscussionZIDs($this->disc['item_id'], "", $this->slice_info['d_order']);
       $this->_content = GetDiscussionContent($zids, true, $this->disc['html_format'], $this->clean_url);
       $d_tree         = GetDiscussionTree($this->_content);
 
-      $out .= '<a name="disc"></a><form name="discusform" action="">';
+      $out = '<a name="disc"></a><form name="discusform" action="">';
       $cnt = 0;     // count of discussion comments
 
       if ($d_tree) {    // if not empty tree
@@ -338,10 +340,10 @@ class itemview {
 
     /** get_disc_fulltext function
      *  show discussion comments in the fulltext mode
-     * @param $CurItem
+     * @param AA_Item $CurItem
      * @return string
      */
-  function get_disc_fulltext($CurItem) {
+  function get_disc_fulltext(AA_Item $CurItem): string {
       $CurItem->setformat( $this->slice_info['d_fulltext']);      // set fulltext format
       $zids           = QueryDiscussionZIDs($this->disc['item_id'], $this->disc['ids']);
       $this->_content = GetDiscussionContent($zids, true, $this->disc['html_format'], $this->clean_url);
@@ -358,7 +360,7 @@ class itemview {
           GetDiscussionThread($d_tree, "0", 0, $outcome);
       }
 
-      $out.= '<a name="disc"></a>';
+      $out = '<a name="disc"></a>';
       if ( isset($outcome) AND is_array($outcome) ) {
           foreach( $outcome as $d_id => $images ) {
               $this->setColumns($CurItem, $d_id);
@@ -386,12 +388,12 @@ class itemview {
 
     /** get_disc_add function
      *  show the form for adding discussion comments
-     * @param $CurItem
+     * @param AA_Item $CurItem
      * @return string
      */
-  function get_disc_add($CurItem) {
+  function get_disc_add(AA_Item $CurItem): string {
       // if parent_id is set => show discussion comment
-      $out.= '<a name="disc"></a>';
+      $out = '<a name="disc"></a>';
       if ($this->disc['parent_id']) {
 
           $zids           = QueryDiscussionZIDs($this->disc['item_id'], $this->disc['ids']);
@@ -440,23 +442,23 @@ class itemview {
   // set the aliases from the slice of the item ... used to view items from
   // several slices at once: all slices have to define aliases with the same names
   /** setColumns function
-   * @param $CurItem
-   * @param $iid
+   * @param AA_Item $CurItem
+   * @param string  $iid
    */
-  function setColumns($CurItem, $iid) {
+  function setColumns(AA_Item $CurItem, string $iid) {
       // hack for searching in multiple slices. This is not so nice part
       // of code - we mix there $aliases[<alias>] with $aliases[<p_slice_id>][<alias>]
       // used (filled) in slice.php3
       $CurItem->set_data($this->_content[$iid]);
       // slice_id... in content is packed!!!
       $p_slice_id = addslashes($CurItem->getval('slice_id........'));
-      $CurItem->aliases = (is_array($this->aliases[$p_slice_id]) ? $this->aliases[$p_slice_id] : $this->aliases);
+      $CurItem->setAliases(is_array($this->aliases[$p_slice_id]) ? $this->aliases[$p_slice_id] : $this->aliases);
   }
 
   // ----------------------------------------------------------------------------------
 
     /** get_output
-     *  view_type used internaly for different view types
+     *  view_type used internally for different view types
      * @param $view_type
      * @return mixed|null|string|string[]|void
      */
@@ -638,9 +640,7 @@ class itemview {
                 } else {
                     // it shoudn't be set, but just in case - we do not want to redefine it
                     // @todo move it outside else - there it is just for first testing
-                    if (!isset($CurItem->aliases["_#GRP_NAME"])) {
-                        $CurItem->aliases["_#GRP_NAME"] = GetAliasDef( ParamImplode(["f_t", $catname]),  "id..............", _m("exact group name"));
-                    }
+                    $CurItem->addAlias('_#GRP_NAME', GetAliasDef( ParamImplode(["f_t", $catname]),  "id..............", _m("exact group name")));
                 }
                 if ($this->slice_info['gb_header']) {
                     if ($this->slice_info['gb_header'] == 127) {  // all before ~
