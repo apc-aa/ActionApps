@@ -21,6 +21,9 @@ class HitcounterGroup implements LaterInterface
      */
     public function toexecutelater($params = [])
     {
+        // possible new approach
+        // SELECT id, CONCAT(FROM_UNIXTIME(`time`, '%Y-%m-%d'),' ',`id`) as grp, sum(hits) as sum, count(*) as cnt FROM hit_archive WHERE time < 1250000000 GROUP BY grp HAVING cnt > 1
+
         [$begin, $step] = $params;
 
         $varset = new CVarset;

@@ -40,7 +40,7 @@ class AA_Field implements ArrayAccess {
      */
     protected $data;
 
-    /** asociative array of aliases
+    /** associative array of aliases
      * @var AA_Aliases
      */
     protected $aliases = null;

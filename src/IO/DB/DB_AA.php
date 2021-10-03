@@ -549,7 +549,7 @@ class DB_AA extends AbstractDB
      */
     function affected_rows() { return $this->dbase->affected_rows(); }
 
-    function num_rows() { return $this->dbase->unlock(); }
+    function num_rows() { return $this->dbase->num_rows(); }
 
     function num_fields() { return $this->dbase->num_fields(); }
 

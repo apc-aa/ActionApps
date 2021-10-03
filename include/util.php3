@@ -45,9 +45,9 @@ require_once __DIR__. '/formutil.php3';
  * @return object
  * @deprecated no longer needed - in PHP 5.4 we have (new My_Object())->method() call
  */
-function with(object $object): object {
-    return $object;
-}
+//function with(object $object): object {
+//    return $object;
+//}
 
 /** a_href function
  *  Get <a href> tag
@@ -226,8 +226,8 @@ function ParamImplode($param) {
 
 /** Converts float value into php form of float */
 function PhpFloat($value) {
-    // internaly uses PHP float always with decimal point so we have to convert
-    // twice, since (float) typecasting is unfortunatelly LOCALE dependent. Grr
+    // internally uses PHP float always with decimal point so we have to convert
+    // twice, since (float) typecasting is unfortunately LOCALE dependent. Grr
     return str_replace(',', '.',(float)str_replace(',', '.', trim($value)));
 }
 

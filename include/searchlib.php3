@@ -1028,9 +1028,7 @@ class AA_Dbcondition {
                 // ret will be quoted
                 $ret         = $syntax->S();
                 if ( $ret == "_SYNTAX_ERROR" ) {
-                    if ( $GLOBALS['debug'] ) {
-                        echo "<br>Query syntax error: ". $GLOBALS['syntax_error']. ','. $field. ','. ','. $querystring;
-                    }
+                    AA::$debug && AA::$dbg->warn("Query syntax error: ". $GLOBALS['syntax_error']. ','. $field. ','. ','. $querystring);
                     return ['ALL', '', "1=1"];
                 }
                 return ( $ret ? ['INNER', '', "($ret)"] : ['ALL', '', "1=1"]);   // maybe we can change LEFT to INNER
@@ -1530,12 +1528,12 @@ function QueryZids($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
 
                         $field = $fields->getField($rel_fld);
                         if (!is_object($field)) {
-                            if (AA::$debug) echo "Skipping $fid in conds[]: $rel_fld is not field.<br>";
+                            AA::$debug && AA::$dbg->warn("Skipping '$fid' in conds[]: '$rel_fld' is not field.");
                             continue;            // bad field_id or not defined condition - skip
                         }
                         [$rel_f_type, $rel_f_slice] = $field->getRelation();
                         if ($rel_f_type != 'relation') {
-                            if (AA::$debug) echo "Skipping $fid in conds[]: $rel_fld is not relation field.<br>";
+                            AA::$debug && AA::$dbg->warn("Skipping '$fid' in conds[]: '$rel_fld' is not relation field.");
                             continue;            // bad field_id or not defined condition - skip
                         }
                         $rel_fld   = "'$rel_fld'";
@@ -1548,7 +1546,7 @@ function QueryZids($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
                         } else {
                             $cond_field  = AA_Slice::getModule($rel_f_slice)->getField($cf);
                             if (!is_object($cond_field)) {
-                                if (AA::$debug) echo "Skipping $fid in conds[]: $fid is not field.<br>";
+                                AA::$debug && AA::$dbg->warn("Skipping '$fid' in conds[]: '$fid' is not field.");
                                 continue;            // bad field_id or not defined condition - skip
                             }
 
@@ -1590,19 +1588,19 @@ function QueryZids($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
                         }
                         $rel_slice   = AA_Slice::getModule($rel_slice_id);
                         if (!is_object($rel_slice)) {
-                            if (AA::$debug) echo "Skipping $fid in conds[]: $rel_slice_id is not slice.<br>";
+                            AA::$debug && AA::$dbg->warn("Skipping $fid in conds[]: $rel_slice_id is not slice.");
                             continue;            // bad field_id or not defined condition - skip
                         }
 
                         $cond_field  = $rel_slice->getField($cond_fld_id);
                         if (!is_object($cond_field)) {
-                            if (AA::$debug) echo "Skipping $fid in conds[]: $cond_fld_id is not field of $rel_slice_id.<br>";
+                            AA::$debug && AA::$dbg->warn("Skipping $fid in conds[]: $cond_fld_id is not field of $rel_slice_id.");
                             continue;            // bad field_id or not defined condition - skip
                         }
 
                         $rel_field = $rel_slice->getField($rel_fld_id);
                         if (!is_object($rel_field)) {
-                            if (AA::$debug) echo "Skipping $fid in conds[]: $rel_fld_id is not field of $rel_slice_id.<br>";
+                            AA::$debug && AA::$dbg->warn("Skipping $fid in conds[]: $rel_fld_id is not field of $rel_slice_id.");
                             continue;            // bad field_id or not defined condition - skip
                         }
 
@@ -1633,7 +1631,7 @@ function QueryZids($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
                 $field = $fields->getField($fid);
 
                 if ( is_null($field) OR $v=="") {
-                    if (AA::$debug) echo "Skipping $fid in conds[]: not known.<br>";
+                    AA::$debug && AA::$dbg->warn("Skipping '$fid' in conds[]: not known.");
                     continue;            // bad field_id or not defined condition - skip
                 }
 
@@ -1732,9 +1730,7 @@ function QueryZids($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
 
             $field = $fields->getField($fid);
             if ( is_null($field) ) { // bad field_id - skip
-                if (AA::$debug) {
-                    echo "Skipping sort[x][$fid], don't know $fid.<br>";
-                }
+                AA::$debug && AA::$dbg->warn("Skipping sort[x][$fid], don't know '$fid'.");
                 continue;
             }
 
@@ -1908,7 +1904,6 @@ function QueryConstantZIDs($group_id, $conds, $sort="", $restrict_zids=false, $d
     if (!trim($group_id)) {
         return new zids();
     }
-    global $debug;                 // displays debug messages
 
     // set default sortorder for constants if sortorder is not set
     if ( !isset($sort) OR !is_array($sort) OR count($sort)<1) {

@@ -1347,7 +1347,7 @@ class AA_Stringexpand_Htmlajaxtoggle extends AA_Stringexpand {
  *  displays <placeholder>, but when user scroll the placeholder to the screen, it loads view by ajax
  *  @param $url            - url, which will be called by AJAX and displayed
  *                           on demand (click on the link)
- *  @param $placeholder    - position of the link - top|bottom (top is default)
+ *  @param $placeholder    - the HTML code for the div before load
  */
 class AA_Stringexpand_Lazy extends AA_Stringexpand_Nevercache { // do not cache - we use another unique id
 
@@ -4013,10 +4013,10 @@ class AA_Stringexpand_If extends AA_Stringexpand_Nevercache {
             // else text
             $ret = isset($arg_list[$i]) ? $arg_list[$i] : '';
         }
-        // _#2 is not very usefull but we have it from the times the function was just for one option
+        // _#2 is not very useful but we have it from the times the function was just for one option
         return str_replace(['_#1','_#2'], [PhpFloat($etalon), $arg_list[0]], $ret);
     }
-   
+
 }
 
 
@@ -6706,7 +6706,7 @@ class AA_Stringexpand {
     protected static function joinWithDelimiter($arr, $delimiter) {
         return empty($arr) ? '' : (($delimiter=='json') ? json_encode($arr) : join($delimiter, $arr));
     }
-    
+
     /**
      * @param string $values
      * @param string $delimiter
@@ -6723,7 +6723,7 @@ class AA_Stringexpand {
         }
         return $ret;
     }
-    
+
     /**
      * @param string $numebr
      * @return float
@@ -7486,7 +7486,7 @@ class AA_Stringexpand__ extends AA_Stringexpand {
         $name     = array_shift($arg_list);
 
         AA::$debug&32 && AA::$dbg->tracestart('{_:.. load}', $name);
-        
+
         if ( isset($GLOBALS['STRINGEXPAND_SHORTCUTS'][$name]) ) { // old deprecated listing of aliases in custom file
             $text = $GLOBALS['STRINGEXPAND_SHORTCUTS'][$name];
         } else {
@@ -7521,7 +7521,7 @@ class AA_Stringexpand__ extends AA_Stringexpand {
             $text = AA_Stringexpander::ApplyInlineAlias($text);
         }
         AA::$debug&8 && AA::$dbg->traceend("_:$name", $text);
-        
+
         return $text;
     }
 }

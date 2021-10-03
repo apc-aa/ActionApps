@@ -44,8 +44,6 @@ require_once __DIR__."/../include/util.php3"; // tryquery
 
 set_time_limit(600);
 
-//$debug = 1;
-
 $reserved_ids = [
   "disc_app........",
   "disc_count......",
