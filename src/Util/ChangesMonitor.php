@@ -99,7 +99,7 @@ class ChangesMonitor {
         $varset = new Cvarset;
         $varset->addkey("id", "text", $change_id);
         //$varset->add("time", "number", now());
-        // changed to nanotime(), which produces 1 000 000 000 * bigger values, but it shoud be ok for database 
+        // changed to nanotime(), which produces 1 000 000 000 * bigger values, but it should be OK for database
         // there was problem with now() - some history records had the same time of change (the same second), so the order then could be wrong
         $varset->add("time", "number", nanotime());
         $varset->add("user", "text", AuthGetUid());
@@ -166,7 +166,9 @@ class ChangesMonitor {
      * @return array
      */
     static function getChangeList($resource_id): array {
-        return !trim($resource_id) ? [] : DB_AA::select(['id'=> ['time', 'user']], 'SELECT `id`, `time`, `user` from `change`', [['resource_id',$resource_id], ['type','h']], ['time-']);
+        $history_entries = !trim($resource_id) ? [] : DB_AA::select(['id'=> ['time', 'user']], 'SELECT `id`, `time`, `user` from `change`', [['resource_id',$resource_id], ['type','h']], ['time-']);
+        array_walk($history_entries, function (&$v, $k) {$v['time'] = ChangesMonitor::toTimestamp($v['time']);}); // if the change[time] is in nanoseconds convert it to seconds
+        return $history_entries;
     }
 
     /** timestamp of last change
@@ -179,7 +181,7 @@ class ChangesMonitor {
         if (trim($resource_id) AND trim($selector)) {
             $time = DB_AA::select1('time', "SELECT time FROM `change`, `change_record`", [['change.id', 'change_record.change_id', 'j'], ['change.resource_id', $resource_id], ['change.type', 'h'], ['change_record.selector', $selector]], ['time-']);
         }
-        return $time ? (int)$time : 0;
+        return $time ? self::toTimestamp($time) : 0;
     }
 
     /** value of the resource n steps back
@@ -293,7 +295,7 @@ class ChangesMonitor {
             $chid = '';
             foreach ($arr as $change) {
                 if ($chid != $change['change_id']) {
-                    echo "<tr><th colspan=6>" . date('Y-m-d H:i:s', $change['time']) . ' -' . perm_username($change['user']) . " <small>($change[type], uid:$change[user], res:$change[resource_id], change:$change[change_id])</small></th></tr>";
+                    echo "<tr><th colspan=6>" . date('Y-m-d H:i:s', self::toTimestamp($change['time'])) . ' -' . perm_username($change['user']) . " <small>($change[type], uid:$change[user], res:$change[resource_id], change:$change[change_id])</small></th></tr>";
                     $chid = $change['change_id'];
                 }
                 echo "<tr><td>&nbsp;</td><td>$change[selector]</td><td><pre>".safe($change['value'])."</pre></td><td>$change[priority]</td><td>$change[chtype]</td><td>".safe($change['resource_id'])."</td></tr>";
@@ -331,5 +333,13 @@ class ChangesMonitor {
             }
         }
         return $garr->getArray();
+    }
+
+    /**  if the change[time] is in nanoseconds convert it to seconds
+     * @param int $sometime  time in seconds or nanoseconds
+     * @return int
+     */
+    static function toTimestamp(int $sometime): int {
+        return ($sometime >	10000000000) ? ($sometime / 1000000000) : $sometime;
     }
 }
