@@ -599,35 +599,6 @@ class AA_Router_Seo extends AA_Router {
     }
 }
 
-/** {go:<query-string>}
- *  @return string url based on current state (apc) and query-string paramater
- *  Usage: {go:xseo1=faq&xseo2=questions}
- *  (we used {go2url} custom function in previous versions of AA. This function
- *  is however core function)
- */
-class AA_Stringexpand_Go extends AA_Stringexpand_Nevercache {
-    // Never cached (extends AA_Stringexpand_Nevercache)
-    /** expand function */
-    function expand($query_string='',$html_encode='') {
-        $router_class = $GLOBALS['apc_state']['router'];
-        if (empty($router_class)) {
-            return '<div class="aa-error">Err in {go} - router not found - {go} is designed for site modules</div>';
-        }
-        $router = AA_Router::singleton($router_class);
-        $url = $router->go2url($query_string);
-        // remove all internal system AA links
-        if (strpos($query_string,'err=')===false) {
-            $url = str_replace(['&err=1','?err=1&','?err=1'], ['','?',''], $url);
-
-        }
-        if (strpos($query_string,'logout=')===false) {
-            $url = str_replace(['&logout=1','?logout=1&','?logout=1'], ['','?',''], $url);
-
-        }
-        return ($html_encode=='1') ? myspecialchars($url) : $url;
-    }
-}
-
 /** {xid[:<level>]} - complement to {xseo1},.. variables of AA_Router_Seo
  *  @return string id of the current item on specifield level
  *  {xid}      - returns id of current item (the id of {xseo} item)

@@ -1360,20 +1360,33 @@ class AA_Stringexpand_Lazy extends AA_Stringexpand_Nevercache { // do not cache 
         if (!strlen($url)) {
             return '';
         }
+        $placeholder = $placeholder ?: '<span class="aa-defaultloader">'.  GetAAImage('loader.gif',  _m('loading...'), 16, 16) .'</span>';
         $uniqid = gensalt(8); // gensalt is shorter than mt_rand(100000000,999999999);  // mt_rand is quicker than uniqid()
         $ret    = "<div class=aa-lazydiv id=lazy_$uniqid data-aa-url=\"$url\">$placeholder</div>\n";
 
-                $script2run = <<<EOT
+        // @todo extract AA_setInnerHtml() and AA_Fetch to aajslib
+        $script2run = <<<EOT
+    var setInnerHtmlLazy = function(elm, html) {
+  elm.innerHTML = html;
+  Array.from(elm.querySelectorAll("script")).forEach( oldScript => {
+    const newScript = document.createElement("script");
+    Array.from(oldScript.attributes)
+      .forEach( attr => newScript.setAttribute(attr.name, attr.value) );
+    newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+    oldScript.parentNode.replaceChild(newScript, oldScript);
+  });
+}
+
     var observer = new IntersectionObserver( function(entries, observer) {
       entries.forEach( function(entry) {
         if (entry.isIntersecting) {   
           entry.target.classList.add('aa-updating');
-          fetch(entry.target.dataset.aaUrl)
+          fetch(entry.target.dataset.aaUrl, { method: "POST", headers: {"X-Requested-With": "XMLHttpRequest"}})
             .then(function(response) {
               return response.text();
             })
             .then(function(text) {
-              entry.target.innerHTML = text;
+              setInnerHtmlLazy(entry.target, text);
             })
             .catch(function(error) { console.error(error);  })
             .finally(function() { entry.target.classList.remove('aa-updating') });
@@ -1386,7 +1399,8 @@ class AA_Stringexpand_Lazy extends AA_Stringexpand_Nevercache { // do not cache 
 EOT;
         //$script2run = 'let observer = new IntersectionObserver((entries, observer) => { entries.forEach(entry => { if (entry.isIntersecting) { AA_Ajax(entry.target.id, entry.target.dataset.aaUrl); observer.unobserve(entry.target); } });}, {rootMargin: "0px 0px 0px 0px"}); document.querySelectorAll(\'.aa-lazydiv\').forEach(e => { observer.observe(e) });';
         AA::Stringexpander()->addRequire('aa-jslib');  // for {live...} - maybe we should distinguish
-        AA::Stringexpander()->addRequire($script2run, 'AA_Req_Run');        
+        AA::Stringexpander()->addRequire($script2run, 'AA_Req_Run');
+        AA::Stringexpander()->addRequire('css-aa-system');
         return $ret;
     }
 }
@@ -1905,6 +1919,7 @@ class AA_Stringexpand_Range extends AA_Stringexpand_Nevercache {
     function expand($intvalues='') {
         $ranges = [];
         $vals    = explode('-',$intvalues);
+        natsort($vals);
         $from    = null;
         $last    = null;
         foreach ($vals as $val) {
@@ -8939,7 +8954,7 @@ class AA_Stringexpand_Manager extends AA_Stringexpand_Nevercache {
             $footer     = $mode_arr['B'] ? '<footer><article><i class="ico back" onclick="AA_SiteEdit(\'\');">' . $mode_arr['B'] . '</i></article></footer>' : '';
         } else {
 
-            $item_id = $item_id ?: (($this AND $this->item) ? $this->item->getId() : null);
+            $item_id = strlen($item_id) ? $item_id : (($this AND $this->item) ? $this->item->getId() : null);
             if ($field AND ($s = AA_Slice::getModule(reset($slices_arr))) AND $s->isField($field) AND strlen($item_id)) {
                 $conds .= $conds ? "-$field-=-$item_id" : "d-$field-=-$item_id";
             }
@@ -9325,7 +9340,6 @@ class AA_Stringexpand_Eucookies extends AA_Stringexpand {
     }
 }
 
-
 /** Creates
  *    {tooltip:myinfoicon:<b>My tip</b><br>tip text}     // myinfoicon is ID of element
  *    {tooltip:#myinfoicon:<b>My tip</b><br>tip text}    // the same as above
@@ -9461,4 +9475,31 @@ class AA_Stringexpand_Aadocumentation extends AA_Stringexpand {
 
 }
 
+/** {go:<query-string>}
+ *  @return string url based on current state (apc) and query-string paramater
+ *  Usage: {go:xseo1=faq&xseo2=questions}
+ *  (we used {go2url} custom function in previous versions of AA. This function
+ *  is however core function)
+ */
+class AA_Stringexpand_Go extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    /** expand function */
+    function expand($query_string='',$html_encode='') {
+        $router_class = $GLOBALS['apc_state']['router'];
+        if (empty($router_class)) {
+            return '<div class="aa-error">Err in {go} - router not found - {go} is designed for site modules</div>';
+        }
+        $router = AA_Router::singleton($router_class);
+        $url = $router->go2url($query_string);
+        // remove all internal system AA links
+        if (strpos($query_string,'err=')===false) {
+            $url = str_replace(['&err=1','?err=1&','?err=1'], ['','?',''], $url);
 
+        }
+        if (strpos($query_string,'logout=')===false) {
+            $url = str_replace(['&logout=1','?logout=1&','?logout=1'], ['','?',''], $url);
+
+        }
+        return ($html_encode=='1') ? myspecialchars($url) : $url;
+    }
+}
