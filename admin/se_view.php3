@@ -127,7 +127,7 @@ function show_digest_filters() {
 //     }
 //     FrmStaticText("", _m("If you need more selections, use 'Update' and on next Edit two empty boxes appear."));
 //     freeDB($db);
-}
+//}
 
 
 /** store_digest_filters function
