@@ -44,6 +44,7 @@ class AA_Mailman {
         global $MAILMAN_SYNCHRO_DIR;
 
         if (! @is_dir($MAILMAN_SYNCHRO_DIR)) {
+	    huhl('Error: mailman dir not exists '.$MAILMAN_SYNCHRO_DIR);
             return;
         }
         endslash($MAILMAN_SYNCHRO_DIR);
@@ -80,7 +81,9 @@ class AA_Mailman {
             if ($fd = fopen($MAILMAN_SYNCHRO_DIR.$listname, "w")) {
                fwrite ($fd, $mails);
                fclose ($fd);
-            }
+	    } else {
+		    huhl('Error: mailman file write '.$MAILMAN_SYNCHRO_DIR.$listname);
+	    }
         }
     }
 
