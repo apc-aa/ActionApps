@@ -399,7 +399,7 @@ echo "
                 <tr><td class=tabtxt><b>"._m("Parameters")."</b></td>
                 <td class=tabhlp><a href='javascript:CallParamWizard (\"DEFAULT_VALUE_TYPES\",\"input_default_f\",\"input_default\")'><b>"
                  ._m("Help: Parameter Wizard")."</b></a></td></tr></table>
-            <input type=\"text\" name=\"input_default\" style=\"width: 95%;\" value=\"". myspecialchars($input_default) ."\">
+            <input type=\"text\" name=\"input_default\" class=aa-w-full value=\"". myspecialchars($input_default) ."\">
       </td>
      </tr>";
 echo $tab_separator;
@@ -412,7 +412,7 @@ echo "
              <tr><td class=tabtxt><b>"._m("Parameters")."</b></td>
              <td class=tabhlp><a href='javascript:CallParamWizard (\"VALIDATE_TYPES\",\"input_validate_f\",\"input_validate_p\")'><b>"
              ._m("Help: Parameter Wizard")."</b></a></td></tr></table>
-         <input type=\"text\" name=\"input_validate_p\"  style=\"width: 95%;\" value=\"". myspecialchars($input_validate_p) ."\">
+         <input type=\"text\" name=\"input_validate_p\" class=aa-w-full value=\"". myspecialchars($input_validate_p) ."\">
          </td>
       </td>
      </tr>";

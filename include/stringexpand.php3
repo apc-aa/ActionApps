@@ -3457,7 +3457,7 @@ class AA_Stringexpand_Treestring extends AA_Stringexpand {
      * @param $relation_field - tree relation field (default relation........)
      * @param $reverse - 1 for reverse trees (= child->parent relations)
      * @param $sort_string - order of tree leaves (currently works only for reverse trees. @todo)
-     * @param $slices - traverse only listed slices (sometimes usefull if your tree contain more than one slice and you want to count only with a subtree)
+     * @param $slices - traverse only listed slices (sometimes useful if your tree contain more than one slice and you want to count only with a subtree)
      * @return string
      */
     function expand($item_ids='', $relation_field=null, $reverse=null, $sort_string=null, $slices=null) {
@@ -3501,7 +3501,7 @@ class AA_Stringexpand_Treestring extends AA_Stringexpand {
  *  {tree:<item_id>[:<relation_field>]}
  *  {tree:2a4352366262227383484784635362ab:relation.......1}
  *  @return string - dash separated long ids of items which belongs to the tree under
- *          specifield item based on the relation field
+ *          specified item based on the relation field
  */
 class AA_Stringexpand_Tree extends AA_Stringexpand {
     /** expand function
@@ -9312,6 +9312,8 @@ class AA_Stringexpand_Sortable extends AA_Stringexpand {
  *  {eucookies:Tento web pou&#x17E;&iacute;v&aacute; k nastaven&iacute; webov&yacute;ch str&aacute;nek a anal&yacute;ze n&aacute;v&#353;t&ecaron;vnosti soubory cookie. Pou&#x17E;&iacute;v&aacute;n&iacute;m webu s t&iacute;m souhlas&iacute;te.:Rozum&iacute;m:://www.example.cz/cz/cookies-strategy}
  *  {eucookies:::::showMyAdds}
  *    <script> function loadMyAdds(action, label) { if (action=='hide') { console.log(action, label);} } </script>
+ *  Position bottom:
+ *   .smart-eu-cookies.smart-priority { position: fixed; left: 0; bottom: 0; width: 100%; box-sizing: border-box; }
  */
 class AA_Stringexpand_Eucookies extends AA_Stringexpand {
     /** expand function

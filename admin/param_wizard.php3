@@ -103,7 +103,7 @@ function GetWizardRow($name, $param) {
                       break;
         case 'str':                                                                             // old param wizard array
         case 'string':
-        default:      $ret = "<input type=text name=\"$name\" style=\"width:95%\" value=\"$example\">";
+        default:      $ret = "<input type=text name=\"$name\" class=aa-w-full value=\"$example\">";
                       break;
     }
     $ret .= "<span class=\"tabhlp\">$hlp<br>". processSlashes($param['desc']) . "</span>";

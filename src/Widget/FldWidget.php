@@ -55,8 +55,14 @@ class FldWidget extends Widget
         $base_name = FormArray::getName4Form($aa_property->getId(), $content, $this->item_index);
         $base_id = FormArray::formName2Id($base_name);
         $required = $aa_property->isRequired() ? 'required' : '';
-        $widget_add = ($type == 'live') ? " class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"" : '';   //style=\"padding-right:16px;\"" : '';
-        //$widget_adds = ($type == 'live') ? " class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"" : '';   //style=\"padding-left:16px;\"" : '';
+
+        $attrs = ['type' => 'text'];
+        if ($type == 'live') {
+            $attrs['class'] = 'live';
+            $attrs['onkeypress'] = "AA_StateChange('$base_id', 'dirty')";
+            $attrs['onchange'] = "AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)";
+        }
+        // $widget_add = ($type == 'live') ? " class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"" : '';   //style=\"padding-right:16px;\"" : '';
         $widget = '';
         $autofocus = ($type == 'ajax') ? 'autofocus' : '';
 
@@ -65,15 +71,17 @@ class FldWidget extends Widget
 
         $translations = $aa_property->getTranslations();
 
-        $attrs = ['type' => 'text'];
         $attrs = array_merge($attrs, $aa_property->getValidator()->getHtmlInputAttr());
 
         $attrs['size'] = get_if($this->getProperty('width'), $attrs['size']);
         if (!$attrs['size']) {
             unset($attrs['size']);
-            $attrs['style'] = (count($translations)>1) ? 'width:85%' : 'width:95%'; // for translations we need more space for buttons
+            if (count($translations)>1) {
+                $attrs['style'] = 'width:85%'; // for translations we need more space for buttons
+            } else {
+                $attrs['class'] = $attrs['class'] ? $attrs['class']. ' aa-w-full' : 'aa-w-full'; // $attrs['style'] = 'width:95%';
+            }
         }
-
         $attrs['maxlength'] = get_if($this->getProperty('max_characters'), $attrs['maxlength'], 255);
 
         // type number do not support size parameter, so ve have to set max and min (make no sence to do it for numbers > 11 characters - use default)
@@ -98,7 +106,7 @@ class FldWidget extends Widget
                 $base['id']       = FormArray::formName2Id($input_name);
                 $base['langcode'] = AA_Langs::getLangName2Code(AA_Langs::getLangNum2Name($i));
             }
-            $widget .= $delim . $this->getOneInput($input_name, $i, $val, $attr_string, $autofocus, $base_id, $type, $widget_add, $required, $base);
+            $widget .= $delim . $this->getOneInput($input_name, $i, $val, $attr_string, $autofocus, $base_id, $type, '', $required, $base);
             $delim = "\n<br />";
             $required = ''; // only one is required
             $autofocus = '';

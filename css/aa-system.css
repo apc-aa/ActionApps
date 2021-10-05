@@ -672,6 +672,10 @@ i.ico.aa-tool-edit:hover {
     animation: aa-loader 3s infinite alternate;
 }
 
+.aa-w-full {
+    width: 95%;
+}
+
 @keyframes aa-loader {
     100% {
         mask-position: right;

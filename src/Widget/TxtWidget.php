@@ -58,7 +58,14 @@ class TxtWidget extends Widget
     {
         $base_name = FormArray::getName4Form($aa_property->getId(), $content, $this->item_index);
         $base_id = FormArray::formName2Id($base_name);
-        $widget_add = ($type == 'live') ? "class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"" : '';  // : 'style="width:99%"' - duplicate with $attrs[style]
+
+        $attrs = [];
+        if ($type == 'live') {
+            $attrs['class'] = 'live';
+            $attrs['onkeypress'] = "AA_StateChange('$base_id', 'dirty')";
+            $attrs['onchange'] = "AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)";
+        }
+
         $widget_add2 = ($type == 'live') ? '<img width=16 height=16 border=0 title="' . _m('To save changes click here or outside the field.') . '" alt="' . _m('Save') . '" class="' . $base_id . 'ico" src="' . AA_INSTAL_PATH . 'images/px.gif" style="position:absolute; right:0;">' : '';
 
         $widget = '';
@@ -67,11 +74,10 @@ class TxtWidget extends Widget
         $value = $content->getAaValue($aa_property->getId());
         $def_rows = $this->getProperty('rows', 4);
 
-        $attrs = [];
         if ($maxlength = (int)$this->getProperty('max_characters', 0)) {
             $attrs['maxlength'] = $maxlength;
         }
-        $attrs['style'] = 'width:95%';
+        $attrs['class'] = $attrs['class'] ? $attrs['class']. ' aa-w-full' : 'aa-w-full';
 
         $required = $aa_property->isRequired() ? 'required' : '';
 
@@ -91,7 +97,7 @@ class TxtWidget extends Widget
                 $base['id']       = FormArray::formName2Id($input_name);
                 $base['langcode'] = AA_Langs::getLangName2Code(AA_Langs::getLangNum2Name($i));
             }
-            $widget .= $delim. $this->getOneInput($input_name, $i, $val, $attrs, $widget_add, $widget_add2, $required, !$aa_property->getContentTypeSwitches() OR ($type == 'live'), $base);
+            $widget .= $delim. $this->getOneInput($input_name, $i, $val, $attrs, '', $widget_add2, $required, !$aa_property->getContentTypeSwitches() OR ($type == 'live'), $base);
             $delim = "\n<br />";
             $required = ''; // only one is required
         }

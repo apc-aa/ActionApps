@@ -1288,8 +1288,8 @@ class AA_Inputfield {
         $attrs['size']      = get_if($size, $attrs['size']);
         if (!$attrs['size']) {
             unset($attrs['size']);
-            if ( $attrs['type']=='text') {
-                $attrs['style'] = 'width:95%';
+            if ( in_array($attrs['type'], ['text','search', 'email', 'url']) ) {
+                $attrs['class'] = $attrs['class'] ? $attrs['class']. ' aa-w-full' : 'aa-w-full'; // $attrs['style'] = 'width:95%';
             }
         }
 
@@ -1451,7 +1451,7 @@ class AA_Inputfield {
                 $parts["part$id2"] = [$lang, $classes];
 
                 $widg .= "<label class=\"aa-langtrans $lang\" id=\"part$id2\" ".($first ? '' : ' style="display:none;"')."><strong class=\"aa-langtrans-label\">$lang</strong>";
-                $widg .= "<textarea id=\"$id2\" name=\"$name2\"$areaclass rows=\"$rows\" ".$GLOBALS['mlxFormControlExtra']."$colsy$maxlen style=\"width:95%; height:${rows_css}em;\" $triggers>$value</textarea>\n";
+                $widg .= "<textarea id=\"$id2\" name=\"$name2\"$areaclass rows=\"$rows\" ".$GLOBALS['mlxFormControlExtra']."$colsy$maxlen class=aa-w-full style=\"height:${rows_css}em;\" $triggers>$value</textarea>\n";
                 $widg .= "</label>";
                 if (!$showhtmlarea AND $showrich_href ) {
                     AA::Stringexpander()->addRequire("if (CKEDITOR.env.isCompatible) { [].forEach.call(document.querySelectorAll('.aa-arealink'), function(e) { e.style.display=''; }); }", 'AA_Req_Run');
@@ -1467,7 +1467,7 @@ class AA_Inputfield {
             $rows     = max($rows, min(floor(substr_count($value,"\n")*1.35), 30));
             $rows_css = $rows*1.3;  // firefox adds extra line, so we specify the height in css as well. Not so important, can be changed later.
 
-            $widg    = "<textarea id=\"$name\" name=\"$name\"$areaclass". ($this->required ? " required": '') ." rows=\"$rows\" ".$GLOBALS['mlxFormControlExtra']."$colsy$maxlen style=\"width:95%; height:${rows_css}em;\" $triggers>$value</textarea>\n";
+            $widg    = "<textarea id=\"$name\" name=\"$name\"$areaclass". ($this->required ? " required": '') ." rows=\"$rows\" ".$GLOBALS['mlxFormControlExtra']."$colsy$maxlen class=aa-w-full style=\"height:${rows_css}em;\" $triggers>$value</textarea>\n";
         }
         $this->echovar($widg);
         $this->helps('plus');
@@ -1930,7 +1930,7 @@ class AA_Inputfield {
         $triggers   = $this->use_triggers ? AA_Jstriggers::get("input", $name, "") : '';
 
         $this->field_name('plus');
-        $this->echovar( "<input type=text name=\"$name\" style=\"width:95%\"". $GLOBALS['mlxFormControlExtra']." maxlength=255 value=\"$val\" $triggers>&nbsp;$link" );
+        $this->echovar( "<input type=text name=\"$name\" class=aa-w-full". $GLOBALS['mlxFormControlExtra']." maxlength=255 value=\"$val\" $triggers>&nbsp;$link" );
         $this->helps('plus');
 
         $this->name       = $text;

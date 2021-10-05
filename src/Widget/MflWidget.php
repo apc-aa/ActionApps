@@ -92,31 +92,37 @@ class MflWidget extends Widget
 
         $value = $content->getAaValue($aa_property->getId());
 
-        $widget_add      = '';
         $widget_add2     = '';
         $widget_onchange = '';
 
-        if ($inputtype == 'textfield') {
-            $attrs = ['type' => 'text'];
-            $attrs = array_merge($attrs, $aa_property->getValidator()->getHtmlInputAttr());
-            $attrs['size'] = get_if($this->getProperty('width'), $attrs['size'], 60);
-            $attrs['maxlength'] = get_if($this->getProperty('max_characters'), $attrs['maxlength'], ($inputtype == 'textarea') ? '' : 255);
-            $attr_string = join(' ', array_map(function ($k, $v) {
-                return "$k=\"$v\"";
-            }, array_keys($attrs), $attrs));
-            $widget_add .= $attrs['size'] ? '' : ' style="width:100%"';
-        }
-
-        AA::$debug&2 && AA::$dbg->log('mfl', $aa_property, $attrs, $this->getProperty('width'));
-
+        $attrs = [];
         if ($type == 'live') {
-            $widget_add      .= " class=live onkeypress=\"AA_StateChange('$base_id', 'dirty')\"";
+            $attrs['class'] = 'live';
+            $attrs['onkeypress'] = "AA_StateChange('$base_id', 'dirty')";
             $widget_onchange = "onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"";
             $widget_add2     = '<img width=16 height=16 border=0 title="' . _m('To save changes click here or outside the field.') . '" alt="' . _m('Save') . '" class="' . $base_id . 'ico" src="' . AA_INSTAL_PATH . 'images/px.gif" style="position:absolute; right:0;">';
         }
 
-        $widget = '';
-        $widget .= ($type == 'normal') ? AA_Formatters::getFormattersRadio($base_name, $aa_property, $value) : AA_Formatters::getHiddenFormatters($base_name, $aa_property, $value); // ajax, live
+        if ($inputtype == 'textfield') {
+            $attrs = ['type' => 'text'];
+            $attrs = array_merge($attrs, $aa_property->getValidator()->getHtmlInputAttr());
+            $attrs['size'] = get_if($this->getProperty('width'), $attrs['size']);
+            if (!$attrs['size']) {
+                unset($attrs['size']);
+            }
+            $attrs['maxlength'] = get_if($this->getProperty('max_characters'), $attrs['maxlength'], 255);
+            if (!$attrs['size']) {
+                $attrs['class'] = $attrs['class'] ? $attrs['class']. ' aa-w-full' : 'aa-w-full'; // $attrs['style'] = 'width:95%';
+            }
+        }
+
+        AA::$debug&2 && AA::$dbg->log('mfl', $aa_property, $attrs, $this->getProperty('width'));
+
+        $attr_string = join(' ', array_map(function ($k, $v) {
+            return "$k=\"$v\"";
+        }, array_keys($attrs), $attrs));
+
+        $widget = ($type == 'normal') ? AA_Formatters::getFormattersRadio($base_name, $aa_property, $value) : AA_Formatters::getHiddenFormatters($base_name, $aa_property, $value); // ajax, live
         // display at least one option
         for ($i = 0, $ino = max(1, $row_count, $value->count()); $i < $ino; ++$i) {
             $input_name = $base_name_add . "[$i]";
@@ -129,11 +135,11 @@ class MflWidget extends Widget
                 if ($i > 0) {
                     $widget .= '<br>';
                 }
-                $widget .= "<div><textarea name=\"$input_name\" id=\"$input_id\" rows=\"$rows\" $required $widget_add $widget_onchange>$input_value</textarea>$widget_add2</div>";  // do not insert \n here - javascript for sorting tables sorttable do not work then
+                $widget .= "<div><textarea $attr_string name=\"$input_name\" id=\"$input_id\" rows=\"$rows\" $required $widget_onchange>$input_value</textarea>$widget_add2</div>";  // do not insert \n here - javascript for sorting tables sorttable do not work then
                 // arr this textarea to the list for CodeMirror creation
                 $this->ids_4_editor[] = '#'.$input_id;
             } else {
-                $widget .= "<div><input $attr_string name=\"$input_name\" id=\"$input_id\" value=\"$input_value\" $required $widget_add $widget_onchange>$widget_add2</div>";  // do not insert \n here - javascript for sorting tables sorttable do not work then
+                $widget .= "<div><input $attr_string name=\"$input_name\" id=\"$input_id\" value=\"$input_value\" $required $widget_onchange>$widget_add2</div>";  // do not insert \n here - javascript for sorting tables sorttable do not work then
             }
             $widget_add2 = '';
             $widget_onchange = ($type == 'live') ? "onchange=\"document.getElementById('".FormArray::formName2Id($base_name_add . "[0]")."').onchange()\"" : '';     
@@ -141,12 +147,12 @@ class MflWidget extends Widget
         $widget = "<div id=\"allrows$base_id\">$widget</div>";
         $img = GetAAImage('icon_new.gif', _m('new'), 17, 17);
         $attr_string     = str_replace('"', '&quot;', $attr_string);
-        $widget_add      = str_replace(['"',"'"], ['&quot;',"\'"], $widget_add);
+        $attr_string     = str_replace(['"',"'"], ['&quot;',"\'"], $attr_string);
         $widget_onchange = str_replace(['"',"'"], ['&quot;',"\'"], $widget_onchange);
         if ($inputtype == 'textarea') {
-            $widget .= "\n<a href=\"javascript:void(0)\" onclick=\"var el=document.createElement('div'); el.innerHTML='<br><textarea $attr_string name=&quot;$base_name" . "[mfl][]&quot; rows=&quot;$rows&quot; $widget_add $widget_onchange></textarea>'; document.getElementById('allrows$base_id').appendChild(el); CodeMirror.fromTextArea(el.querySelector('textarea'), { lineWrapping:true, matchBrackets: true, matchTags: true, viewportMargin: 10000, mode: &quot;htmlmixed&quot; }); return false;\">$img</a>";
+            $widget .= "\n<a href=\"javascript:void(0)\" onclick=\"var el=document.createElement('div'); el.innerHTML='<br><textarea $attr_string name=&quot;$base_name" . "[mfl][]&quot; rows=&quot;$rows&quot; $widget_onchange></textarea>'; document.getElementById('allrows$base_id').appendChild(el); CodeMirror.fromTextArea(el.querySelector('textarea'), { lineWrapping:true, matchBrackets: true, matchTags: true, viewportMargin: 10000, mode: &quot;htmlmixed&quot; }); return false;\">$img</a>";
         } else {
-            $widget .= "\n<a href=\"javascript:void(0)\" onclick=\"var el=document.createElement('div'); el.innerHTML='<input $attr_string name=&quot;$base_name" . "[mfl][]&quot; value=&quot;&quot; $widget_add $widget_onchange>'; document.getElementById('allrows$base_id').appendChild(el); return false;\">$img</a>";
+            $widget .= "\n<a href=\"javascript:void(0)\" onclick=\"var el=document.createElement('div'); el.innerHTML='<input $attr_string name=&quot;$base_name" . "[mfl][]&quot; value=&quot;&quot; $widget_onchange>'; document.getElementById('allrows$base_id').appendChild(el); return false;\">$img</a>";
         }
 
         return ['html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired()];
