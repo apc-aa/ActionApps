@@ -5697,9 +5697,10 @@ class AA_Stringexpand_Preg_Match extends AA_Stringexpand_Nevercache {
      * @param $pattern
      * @param $subject
      */
-    function expand($pattern='', $subject='') {
+    function expand($pattern='', $subject='', $matched='') {
+        $matched = ctype_digit((string)$matched) ? (int)$matched : 0;
         preg_match($pattern, $subject, $matches);
-        return $matches[0];
+        return $matches[$matched];
     }
 }
 
