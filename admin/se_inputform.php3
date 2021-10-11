@@ -327,6 +327,15 @@ $headcode = '
     param_wizard = window.open(page,"somename","width=450,scrollbars=yes,menubar=no,hotkeys=no,resizable=yes");
     param_wizard.focus();
   }
+  
+  function ResetAlias(number) {
+      document.querySelector("input[name=alias"+number+"]").value = "";
+      document.querySelector("select[name=alias"+number+"_func_f]").value = "";
+      if (number == 1) { window.cm_a1.setValue(""); }
+      if (number == 2) { window.cm_a2.setValue(""); }
+      if (number == 3) { window.cm_a3.setValue(""); }
+      document.querySelector("textarea[name=alias"+number+"_help]").value = "";
+  }
 </script>';
 
 $apage = new AA_Adminpageutil('sliceadmin','fields');
@@ -483,7 +492,8 @@ for ($iAlias=1; $iAlias <= 3; ++$iAlias) {
     $alias_id_att  = strlen($alias_value) ? "id=\"alias$alias_value\"" : '';
     $alias_hlp     = "<strong><a href='javascript:CallParamWizard(\"FIELD_FUNCTIONS\", \"$alias_func_f\", \"$alias_func\")'>"._m("Help: Parameter Wizard")."</a></strong>";
     $disbled_chb   = FrmChBoxEasyCode($alias_disable, $$alias_disable, '', 1);
-    $aname_row     = "_#<input name=\"$alias_name\" $alias_id_att type=text size=16 maxlength=8 value=\"$alias_value\" pattern='[A-Z0-9_#]{8}'> <label>"._m('Disabled')."$disbled_chb</label>";
+    $reset_btn     = "<div style=\"float:right\"><input type=button value=\""._m('Reset')."\" onclick=\"ResetAlias($iAlias)\"></div>";
+    $aname_row     = "$reset_btn _#<input name=\"$alias_name\" $alias_id_att type=text size=16 maxlength=8 value=\"$alias_value\" pattern='[A-Z0-9_#]{8}'> <label>"._m('Disabled')."$disbled_chb</label>";
 
     FrmStaticText(_m("Alias")." $iAlias", $aname_row,"&nbsp; &nbsp; &nbsp; ". _m("8 UPPERCASE letters or _"),"", false);
     FrmInputSelect($alias_func_f, _m("Function"), $func_types, $$alias_func_f, false, $alias_hlp);
