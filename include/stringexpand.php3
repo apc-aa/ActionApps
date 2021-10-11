@@ -214,7 +214,7 @@ class AA_Stringexpand_Jsonasoc extends AA_Stringexpand_Nevercache {
     }
 }
 
-/** @return {colonescape:val1} - escapes colon as internaly used in AA. It is special case function - more internal one
+/** @return {colonescape:val1} - escapes colon as internally used in AA. It is special case function - more internal one
  *  usage:
  *    txt:{colonescape:_#this}  - 16:45  -->  16#:45
  */
@@ -4740,6 +4740,34 @@ class AA_Stringexpand_Newitem extends AA_Stringexpand_Nevercache {
             $i += 2;
         }
         return $transformations;
+    }
+}
+
+
+
+/** Returns ID of existing item or creates new one and returns its ID
+ *    {ensureitem:<existing_id>:<template_long_item_id>[:<field_1>:<new_value_1>:<field_2>:<new_value_2>:...]}
+ *    {ensureitem:{ids:5b4efb5892ca4f4329cb4c23267837a2:d-relation........-==-{id..............}}:c239cb267837a25b4efb5892ca4f4324:headline........:test item:category........:["enviro","social"]}
+ * Similar to {newitem}, but it allows to search for already existing item
+ * @see  AA_Stringexpand_Newitem
+ */
+class AA_Stringexpand_Ensureitem extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // It works with database, so it shoud always look in the database
+
+    /** expand function
+     * @param $existing_id
+     * @param $template_item_id
+     * @param $field_id1
+     * @param $value1
+     * @param ...
+     * @return string
+     */
+    function expand(...$arg_list) {
+        if (is_long_id($existing_id = array_shift($arg_list))) {
+            return $existing_id;
+        }
+        return StrExpand('AA_Stringexpand_Newitem', $arg_list);
     }
 }
 
