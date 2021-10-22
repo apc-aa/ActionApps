@@ -543,7 +543,11 @@ class AA_Field_Slicedef extends AA_Field {
         if (!($data = AA_Items::getItem($zid))) {
             return;
         }
-        $fid = AA_Fields::createFieldId('text',$data->getval(FIELDID_DYNAMIC_ID));
+        if (false === ($fnumber = $data->getval(FIELDID_DYNAMIC_ID))) {
+            warn("No FIELDID_DYNAMIC_ID - source.......... filed defined in field definition slice");
+            return;
+        }
+        $fid = AA_Fields::createFieldId('text',$fnumber);
 
         $this->data['id'] = $fid;
         $this->data['name'] = (($fname = $data->get_alias_subst('_#FLD_NAME', 'AA_NULL')) == 'AA_NULL') ? $data->get_alias_subst('_#HEADLINE', $fid) : $fname;
