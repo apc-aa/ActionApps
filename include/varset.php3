@@ -295,7 +295,7 @@ class Cvarset {
         }
         $this->last_used_db = getDB();
         if ( $nohalt=='nohalt' ) {
-            $retval = $this->last_used_db->query_nohalt($SQL);
+            $retval = $this->last_used_db->query_halt($SQL,'no');
         } else {
             $retval = $this->last_used_db->query($SQL);
         }

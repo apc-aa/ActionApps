@@ -77,7 +77,7 @@ class DB_Oracle extends AbstractDB {
                 printf("<br>connect() Link_ID: $this->Link_ID<br>\n");
             }
             if (!$this->Link_ID) {
-                $this->connect_failed();
+                $this->connect_failed("connect ($this->User, \$Password, $this->Database) failed");
             } else {
                 //echo "commit on<p>";
                 ora_commiton($this->Link_ID);
@@ -86,11 +86,6 @@ class DB_Oracle extends AbstractDB {
                 printf("<br>connect() Obtained the Link_ID: $this->Link_ID<br>\n");
             }
         }
-    }
-
-    function connect_failed($message = '') {
-        $this->Halt_On_Error = "yes";
-        $this->halt("connect ($this->User, \$Password, $this->Database) failed");
     }
 
     ## In order to increase the # of cursors per system/user go edit the

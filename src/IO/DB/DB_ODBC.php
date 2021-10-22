@@ -65,16 +65,11 @@ class DB_ODBC extends AbstractDB {
                 $this->Link_ID = odbc_pconnect($this->Database, $this->User, $this->Password, $this->UseODBCCursor);
             }
             if (!$this->Link_ID) {
-                $this->connect_failed();
+                $this->connect_failed("connect ($this->User, \$Password, $this->Database, $this->UseODBCCursor) failed");
             }
         }
 
         return $this->Link_ID;
-    }
-
-    function connect_failed($message = '') {
-        $this->Halt_On_Error = "yes";
-        $this->halt("connect ($this->User, \$Password, $this->Database, $this->UseODBCCursor) failed");
     }
 
     /* public: discard the query result */

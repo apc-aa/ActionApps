@@ -58,11 +58,6 @@ class DB_mSQL extends AbstractDB {
         }
     }
 
-    function connect_failed($message = '') {
-        $this->Halt_On_Error = "yes";
-        $this->halt($message);
-    }
-
     function query($Query_String) {
 
         /* No empty queries, please, since PHP4 chokes on them. */

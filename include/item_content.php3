@@ -382,7 +382,7 @@ class AA_Content {
     /** count internal index for n-th value taking into account the mulilingual fields
      * @param string $field_id
      * @param int $idx
-     * @return bool|int
+     * @return int | false
      */
     protected function getIndex($field_id, $idx=0) {
         if ( !is_array($a = $this->content[$field_id]) ) {

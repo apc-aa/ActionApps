@@ -90,7 +90,7 @@ abstract class AA_Optimize implements \AA\Util\NamedInterface {
         }
         if (!$this->db) {
             $this->db = getDb();
-            $this->db->Halt_On_Error = "report";
+            $this->db->set_halt('report');
         }
         $db = $this->db;
         $db->query($SQL);

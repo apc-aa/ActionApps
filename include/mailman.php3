@@ -44,7 +44,7 @@ class AA_Mailman {
         global $MAILMAN_SYNCHRO_DIR;
 
         if (! @is_dir($MAILMAN_SYNCHRO_DIR)) {
-	    huhl('Error: mailman dir not exists '.$MAILMAN_SYNCHRO_DIR);
+	        warn('Error: mailman dir not exists '.$MAILMAN_SYNCHRO_DIR);
             return;
         }
         endslash($MAILMAN_SYNCHRO_DIR);

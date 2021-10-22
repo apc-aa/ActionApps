@@ -388,7 +388,7 @@ class AA_Item {
      * shortcut for AA_Content->getValue()
      * @param $field_id
      * @param $what
-     * @return bool
+     * @return string | false
      */
     function getval($field_id, $index=0) {
         return $this->content4id->getValue($field_id, $index);

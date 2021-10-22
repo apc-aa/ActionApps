@@ -58,14 +58,9 @@ class DB_PgSQL extends AbstractDB {
                 $this->Link_ID = pg_pconnect($cstr);
             }
             if (!$this->Link_ID) {
-                $this->connect_failed();
+                $this->connect_failed("connect ($this->Host" . (($this->Port) ? ":$this->Port" : "") . ", $this->User, \$Password, $this->Database) failed");
             }
         }
-    }
-
-    function connect_failed($message='') {
-        $this->Halt_On_Error = "yes";
-        $this->halt("connect ($this->Host" . (($this->Port) ? ":$this->Port" : "") . ", $this->User, \$Password, $this->Database) failed");
     }
 
     function query($Query_String) {

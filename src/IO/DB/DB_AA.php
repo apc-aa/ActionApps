@@ -472,23 +472,11 @@ class DB_AA extends AbstractDB
         return $ret;
     }
 
-    /** query_nohalt function - do not halt on database error
-     * @param $SQL
-     * @return int
-     */
-    function query_nohalt($SQL) {
-        $store_halt = $this->Halt_On_Error;
-        $this->Halt_On_Error = 'no';
-        $retval = $this->dbase->query($SQL);
-        $this->Halt_On_Error = $store_halt;
-        return $retval;
-    }
-
     /** halt function
      * @param $msg
      */
     function halt($msg) {
-        if ($this->Halt_On_Error == "no") {
+        if ($this->get_halt() == "no") {
             return;
         }
 
@@ -501,7 +489,7 @@ class DB_AA extends AbstractDB
         // It works pretty well, but if you link the external css on that page,
         // then it is not found, which is unexpected behavior. So, you can't use
         // the variables on that page. Honza, 2007-12-05
-        if (defined('DB_ERROR_PAGE') and ($this->Halt_On_Error == "yes")) {
+        if (defined('DB_ERROR_PAGE') and ($this->get_halt() == "yes")) {
             ob_end_clean();
             // AA_Http::go(DB_ERROR_PAGE, array('Err'=>$this->Errno, 'ErrMsg'=>$this->Error, 'Msg'=>$msg), 'POST', false);
             // sending variables disabled - see the comment above
@@ -516,7 +504,7 @@ class DB_AA extends AbstractDB
         echo "\n<br><b>Error Number:</b>: " . $this->Errno;
         echo "\n<br><b>Error Description:</b>: " . $this->Error;
         echo "\n<br>Please contact " . ERROR_REPORTING_EMAIL . " and report the exact error message.<br>\n";
-        if ($this->Halt_On_Error == "yes") {
+        if ($this->get_halt() == "yes") {
             die("Session halted.");
         }
     }
@@ -526,6 +514,10 @@ class DB_AA extends AbstractDB
     function connect() { return $this->dbase->connect(); }
 
     function connect_failed($message = '') { $this->dbase->connect_failed($message); }
+
+    public function set_halt(string $mode): bool { return $this->dbase->set_halt($mode); }
+
+    public function get_halt(): string { return $this->dbase->get_halt(); }
 
     function free() { $this->dbase->free(); }
 

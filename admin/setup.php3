@@ -137,8 +137,8 @@ pageOpen('noauth');
 is_object( $db ) || ($db = getDB());
 
 // Check if database is already created
-$store_halt        = $db->Halt_On_Error;
-$db->Halt_On_Error = "report";
+$store_halt        = $db->get_halt();
+$db->set_halt('report');
 $info              = $db->metadata( 'content' );
 if ( !isset($info) OR !is_array($info) OR (count($info)<1) ) {
     HtmlStart();
@@ -149,7 +149,7 @@ if ( !isset($info) OR !is_array($info) OR (count($info)<1) ) {
     HtmlEnd();
     exit;
 }
-$db->Halt_On_Error = $store_halt;
+$db->set_halt($store_halt);
 
 $notusers    = [];
 $others      = [];

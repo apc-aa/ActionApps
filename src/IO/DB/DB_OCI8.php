@@ -73,7 +73,7 @@ class DB_OCI8 extends AbstractDB {
             $this->Link_ID = ociplogon($this->User, $this->Password, (($this->Host) ? sprintf($this->full_connection_string, $this->Host, $this->Port, $this->Database) : $this->Database));
 
             if (!$this->Link_ID) {
-                $this->connect_failed();
+                $this->connect_failed(sprintf("connect ($this->User, \$Password, $this->Database%s) failed", (($this->Host) ? ", $this->Host" : "")));
                 return false;
             }
             if ($this->share_connections) {
@@ -83,11 +83,6 @@ class DB_OCI8 extends AbstractDB {
                 printf("<br>Obtained the Link_ID: $this->Link_ID<br>\n");
             }
         }
-    }
-
-    function connect_failed($message = '') {
-        $this->Halt_On_Error = "yes";
-        $this->halt(sprintf("connect ($this->User, \$Password, $this->Database%s) failed", (($this->Host) ? ", $this->Host" : "")));
     }
 
     function free() {

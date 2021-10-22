@@ -8,7 +8,7 @@ abstract class AbstractDB {
     /* public: parameter */
 
     /** @var string - yes | no | report  */
-    public    $Halt_On_Error = "yes"; // "yes" (halt with message), "no" (ignore errors quietly), "report" (ignore error, but spit a warning)
+    protected $Halt_On_Error = 'yes'; // "yes" (halt with message), "no" (ignore errors quietly), "report" (ignore error, but spit a warning)
 
     protected $Record = [];
     protected $Errno  = 0;
@@ -22,8 +22,20 @@ abstract class AbstractDB {
     function connect() {}
 
     function connect_failed($message='') {
-        $this->Halt_On_Error = "yes";
+        $this->set_halt('yes');
         $this->halt($message);
+    }
+
+    public function set_halt(string $mode): bool {
+        if (!in_array($mode, ['yes','report','no'])) {
+            return false;
+        }
+        $this->Halt_On_Error = $mode;
+        return true;
+    }
+
+    public function get_halt(): string {
+        return $this->Halt_On_Error;
     }
 
     /* public: discard the query result */
@@ -31,6 +43,14 @@ abstract class AbstractDB {
 
     /* public: perform a query */
     public function query($Query_String) {}
+
+    public function query_halt(string $Query_String, string $mode) {
+        $store = $this->Halt_On_Error;
+        $this->set_halt($mode);
+        $ret = $this->query($Query_String);
+        $this->set_halt($store);
+        return $ret;
+    }
 
     /* public: walk result set */
     public function next_record() {}
@@ -72,13 +92,11 @@ abstract class AbstractDB {
 
     /* private: error handling */
     function halt($msg) {
-        if ($this->Halt_On_Error == "no") {
+        if ($this->get_halt() == 'no') {
             return;
         }
-
         $this->haltmsg($msg);
-
-        if ($this->Halt_On_Error != "report") {
+        if ($this->get_halt() != 'report') {
             die("Session halted.");
         }
     }

@@ -81,11 +81,6 @@ class DB_MySQL extends AbstractDB {
         return $this->Link_ID;
     }
 
-    function connect_failed($message = '') {
-        $this->Halt_On_Error = "yes";
-        $this->halt($message);
-    }
-
     /* public: discard the query result */
     function free() {
         if (is_object($this->Result)) {
