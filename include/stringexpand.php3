@@ -2564,7 +2564,7 @@ class AA_Stringexpand_Html2text extends AA_Stringexpand_Nevercache {
  *  id={bin2url:{encrypt:{id..............}:password}}
  */
 class AA_Stringexpand_Bin2url extends AA_Stringexpand_Nevercache {
-    /** Do not trim all parameters (the $delimiter parameter could contain space) */
+    /** Do not trim all parameters */
     static function doTrimParams() { return false; }
 
     /**
@@ -5781,8 +5781,8 @@ class AA_Stringexpander {
         'str_repeat'       => 'str_repeat',         // old  AA_Stringexpand_Str_repeat
         'strtoupper'       => 'strtoupper',         //      AA_Stringexpand_Strtoupper
         'strtolower'       => 'strtolower',         //      AA_Stringexpand_Strtolower
-        'ucfirst'          => 'ucfirst',            //
-        'ucwords'          => 'ucwords',            //
+        'ucfirst'          => 'ucfirst',            //      AA_Stringexpand_Ucfirst
+        'ucwords'          => 'ucwords',            //      AA_Stringexpand_Ucwords
         'striptags'        => 'strip_tags',         // old  AA_Stringexpand_Striptags
         'htmlspecialchars' => 'myspecialchars',     // old  AA_Stringexpand_Htmlspecialchars - similar to {safe}, but without double_escape
         'urlencode'        => 'urlencode',          // old  AA_Stringexpand_Urlencode
@@ -6073,7 +6073,7 @@ class AA_Req {
      */
     function getConstructor() {
         $sri = $this->integrity ? ",'".$this->integrity."'" : '';
-        return get_called_class().'(array('.join(',', array_map($this->depend, function($dep) { return "\"$dep\"";})). ')'. $sri;
+        return get_called_class().'(['.join(',', array_map($this->depend, function($dep) { return "\"$dep\"";})). ']'. $sri;
     }
 }
 
@@ -6201,7 +6201,7 @@ class AA_Req_Lib extends AA_Req {
         $param[] = "'". $this->url. ($this->loadtype ? ' '.$this->loadtype : '') ."'";
         $param[] = $this->integrity ? "'".$this->integrity."'" : "''";
         if ($this->depend) {
-            $param[] = "array(" . join(',', array_map(function ($dep) { return "'$dep'"; }, $this->depend)) . ')';
+            $param[] = "[" . join(',', array_map(function ($dep) { return "'$dep'"; }, $this->depend)) . ']';
         }
         return get_called_class()."(". join(', ', $param). ")";
     }
@@ -6531,33 +6531,34 @@ class AA_Requires {
     static function systemDefinitions() {
         return [
             //     <CDN URL>, <SRI hash - see srihash.org>, <requires - all of them must be below the line which do require in this list> example: array('jquery@3')
-            // all versions updated 2018-08-07 HM
+            // all versions updated 2021-10-14 by AA - Optimize - Generate JS Library definition array. HM
             'codemirror@5'                => new AA_Req_Lib('', '', ['_codemirror_core@5','_codemirror_htmlmixed@5','_codemirror_xml@5','_codemirror_css@5','_codemirror_javascript@5','_codemirror_matchbrackets@5','_codemirror_matchtags@5','_codemirror_xml-fold@5','_codemirror_search@5','_codemirror_searchcursor@5','_css-codemirror@5','css-aa-system@1']),
-            '_codemirror_htmlmixed@5'     => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.56.0/mode/htmlmixed/htmlmixed.js', 'sha256-f8d4CdOwbOelZ6ITbg0IfZXi5beKJ67Ptpo0INBjcGQ='),
-            '_codemirror_xml@5'           => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.56.0/mode/xml/xml.js', 'sha256-yhHPVEbMcHCb0TOtv6Leq8f3VEVe3+Ot0oCy83K+jvs='),
-            '_codemirror_css@5'           => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.56.0/mode/css/css.js', 'sha256-goJYt0tjnRX9eQdzebF4tCXastocagUR5T1mlLYjJsE='),
-            '_codemirror_javascript@5'    => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.56.0/mode/javascript/javascript.js', 'sha256-8LQLm+HOcnWgYYWvHqdYmydxGnMBr+JCv2QCDpvbJ9c='),
-            '_codemirror_matchbrackets@5' => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.56.0/addon/edit/matchbrackets.js', 'sha256-K7D6LI9nbO/+XqhfEDHcvOL0kIxYNfzn8aFynPOqDHY='),
-            '_codemirror_matchtags@5'     => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.56.0/addon/edit/matchtags.js', 'sha256-oCAwj6P1/BzATEuHMQxLOWONXkQHh4FLz8JFcIH/+hQ='),
-            '_codemirror_xml-fold@5'      => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.56.0/addon/fold/xml-fold.js', 'sha256-6qrza98BMjZqcPGsh7xpweWNL52WV7KmoCz6NUkA1qo='),
-            '_codemirror_search@5'        => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.56.0/addon/search/search.js', 'sha256-iUnNlgkrU5Jj8oKl2zBBCTmESI2xpXwZrTX+arxSEKc='),
-            '_codemirror_searchcursor@5'  => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.56.0/addon/search/searchcursor.js', 'sha256-SHh2Sh1WFMnvXvPxKjNUdx+VUlHHSfdPJGbJLiO8Cnk='),
-            '_codemirror_core@5'          => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.56.0/lib/codemirror.js', 'sha256-L7nkooMHwAuBKUsqddrNvqiac5r3evSKFmrOEyrjV30=', ['css-aa-system@1','_codemirror_htmlmixed@5','_codemirror_xml@5','_codemirror_css@5','_codemirror_javascript@5','_codemirror_matchbrackets@5','_codemirror_matchtags@5','_codemirror_xml-fold@5','_codemirror_search@5','_codemirror_searchcursor@5','_css-codemirror@5']),
-            'ace@1'                       => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/ace-builds@1.4.12/src-noconflict/ace.js', 'sha256-lwkZUZd/dJjX/JW77cvG3p9HLXboGEooPNcr0IQatCk=', ['jquery@3']),
+            '_codemirror_htmlmixed@5'     => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.63.3/mode/htmlmixed/htmlmixed.js', 'sha256-km7gfgjhuaEXSSLiRlVpFdE5a4N0ESY9t/mxMg1rOIY='),
+            '_codemirror_xml@5'           => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.63.3/mode/xml/xml.js', 'sha256-vgkykov7BQhdTmNiJQUj8FoTSSCR6deymTCal6MhLdM='),
+            '_codemirror_css@5'           => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.63.3/mode/css/css.js', 'sha256-0r8zQjE9N5uJZTlfpum3Spc23CakDb4EGrJ9BU3Riss='),
+            '_codemirror_javascript@5'    => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.63.3/mode/javascript/javascript.js', 'sha256-gl81JlOuvk5SHO45NPFA/vOkYypKLJDaw0QpQAORim0='),
+            '_codemirror_matchbrackets@5' => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.63.3/addon/edit/matchbrackets.js', 'sha256-RoNSBt4o9mmbhuzIv6XJzAatiSCEZAvu7VU9KVM4m1w='),
+            '_codemirror_matchtags@5'     => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.63.3/addon/edit/matchtags.js', 'sha256-oCAwj6P1/BzATEuHMQxLOWONXkQHh4FLz8JFcIH/+hQ='),
+            '_codemirror_xml-fold@5'      => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.63.3/addon/fold/xml-fold.js', 'sha256-6qrza98BMjZqcPGsh7xpweWNL52WV7KmoCz6NUkA1qo='),
+            '_codemirror_search@5'        => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.63.3/addon/search/search.js', 'sha256-/lgo+zWOIJB1iutVqlqWhvbMfKYNSa5VkUxL92/EOpM='),
+            '_codemirror_searchcursor@5'  => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.63.3/addon/search/searchcursor.js', 'sha256-JnDe2asI8M4h2oJpD81hT3Y9WoM3xMkFy9TwKKp/AFo='),
+            '_codemirror_core@5'          => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.63.3/lib/codemirror.js', 'sha256-2d2VvG2rLaHwEzKLKZpLbkWESQAiguRjtK9hPYCuXRk=', ['css-aa-system@1','_codemirror_htmlmixed@5','_codemirror_xml@5','_codemirror_css@5','_codemirror_javascript@5','_codemirror_matchbrackets@5','_codemirror_matchtags@5','_codemirror_xml-fold@5','_codemirror_search@5','_codemirror_searchcursor@5','_css-codemirror@5']),
+            'ace@1'                       => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/ace-builds@1.4.13/src-noconflict/ace.js', 'sha256-7RCmobi0Q1Znn12ri7WluU11BgfqKFo+gzLC8xoG/4Q=', ['jquery@3']),
             'tableexport@5'               => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/tableexport@5.2.0/dist/js/tableexport.min.js', 'sha256-2mlJMabqiyPb1w0ZdzOuuyOWeHkngxrYTowNETowwtI=', ['_css-tableexport@5','filesaver@1','js-xlsx@0']),
             'tableexport@4'               => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/tableexport@4.0.11/dist/js/tableexport.min.js', 'sha256-3njWp77R/1aA2AeJg4mxgOHejH9S5YodN/b28OzA35c=', ['_css-tableexport@4','filesaver@1','js-xlsx@0']),
-            'js-xlsx@0'                   => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/xlsx@0.16.5/dist/xlsx.core.min.js', 'sha256-N4sBNSWLQeW74v2Fhj7/r8lxcw96C/XLB/OW7bEyz8o='),
+            'js-xlsx@0'                   => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/xlsx@0.17.3/dist/xlsx.core.min.js', 'sha256-em3RDuTKTX0nyubrZvtj25roaSbGmOt083ZbuxlVRdU='),
             'filesaver@1'                 => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/file-saver@1.3.8/FileSaver.min.js', 'sha256-FPJJt8nA+xL4RU6/gsriA8p8xAeLGatoyTjldvQKGdE='),
-            'leaflet@1'                   => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/leaflet@1.6.0/dist/leaflet-src.js', 'sha256-wc8X54qvAHZGQY6nFv24TKlc3wtO0bgAfqj8AutTIu0=', ['_css-leaflet@1']),
-            'chartjs@2'                   => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js', 'sha256-R4pqcOYV8lt7snxMQO/HSbVCFRPMdrhAFMH+vr9giYI='),
-            'dropzone@5'                  => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/dropzone@5.7.2/dist/min/dropzone.min.js', 'sha256-VBW6wgQ/wqxKuy5M87Uhn5bvzBmeXgWVQiwAqPLUjfo=', ['_css-dropzone@5']),
-            'select2@4'                   => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.full.min.js', 'sha256-vjFnliBY8DzX9jsgU/z1/mOuQxk7erhiP0Iw35fVhTU=', ['jquery@3','_css-select2@4']),
+            'leaflet@1'                   => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet-src.js', 'sha256-dG7rUAec0UN0e3nlMEuYJzsbK0rpoz4hBbNp0ir9iF8=', ['_css-leaflet@1']),
+            'chartjs@2'                   => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js', 'sha256-t9UJPrESBeG2ojKTIcFLPGF7nHi2vEc7f5A2KpH/UBU='),
+            'dropzone@5'                  => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/dropzone@5.9.3/dist/min/dropzone.min.js', 'sha256-uCdT6FLkY6+68Xzm4f9O0usHnJPdKv0Q0rsoXvLchP4=', ['_css-dropzone@5']),
+            'select2@4'                   => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.full.min.js', 'sha256-gtZlnMWqbrBdDWvmCQCgfiA3kq8J4FMqQ4a8Tvmgopk=', ['jquery@3','_css-select2@4']),
             'select2@3'                   => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/Select2@3.5.7/select2.min.js', 'sha256-xd6tWPqy/mxhxXcvyda/fncm94RXOR6918/lDx6Ckb8=', ['jquery@3','_css-select2@3']),
             'sortable@1'                  => new AA_Req_Footlib('https://cdn.jsdelivr.net/gh/honzito/plain.sortable@1.2.1/sortable.min.js', 'sha256-GlPhZO8lQvwvtQjl1rtmm7K+ZG0ef9p11ONp989d2Ig=', ['_css-sortable@1']),
-            'datatable@1'                 => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/datatables.net@1.10.21/js/jquery.dataTables.min.js', 'sha256-s+IGOQWIhMyylwPABPBE89mzWrAmYL7J+XDfd8OFGkw=', ['jquery@3']),
+            'datatable@1'                 => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/datatables.net@1.11.3/js/jquery.dataTables.min.js', 'sha256-gOJ/T3VMQ0Brwz7VYrLoVAQ+NE0a5vHoj1vXI1HUIzY=', ['jquery@3']),
             'form-saver@1'                => new AA_Req_Footlib(get_aa_url('javascript/form-saver/form-saver.min.js?ver='.AA_JS_VERSION,'',false), '', ['deserialize@2']),
-            'deserialize@2'               => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/jquery-deserialize@2.0.0-rc1/src/jquery.deserialize.js', 'sha256-iQpPGsHQZs7cuArBkNIa6QOJlnnf8A1RBfMLxp/MLVI=', ['jquery@3']),
+            'deserialize@2'               => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/jquery-deserialize@2.0.0/src/jquery.deserialize.js', 'sha256-iQpPGsHQZs7cuArBkNIa6QOJlnnf8A1RBfMLxp/MLVI=', ['jquery@3']),
             //'lightgallery@1'              => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/lib/js/lightgallery.js', 'sha256-LwSUsCCIlbq0+vHbSFFbyO+BeMLnJ8gQecxLfgieuKM=', array('_css-lightgallery@1')),
+            'lightgallery@2'           => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/lightgallery@2.2.1/lightgallery.min.js', 'sha256-Dawo6shovc6mR+OrpnCxjnHYYp0655VrB0LShTAPM34=', ['_css-lightgallery@2']),
             'lightgallery@1'           => new AA_Req_Footlib('https://cdn.jsdelivr.net/lightgallery.js/1.0.1/js/lightgallery.min.js', 'sha384-HZ/iOnkYJdO5/U2ug7IPTgNZq61Jr+SMoJGCWsjVjNqwY/77YVNA/mZQ1tdfo2Xm', ['_css-lightgallery@1']), // v 1.1.1 do not work
             'tippy@2'                     => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/tippy.js@2.6.0/dist/tippy.all.min.js', 'sha256-H8z9OcYtNQgDyDRKu2H1XY/nq06+bY3cMyB3fSFEytk='),
             'aa-tools@1'                  => new AA_Req_Lib('', '', ['css-aa-system@1','aa-jslib@3|aa-jslib@1','htm-aa-system@1']),
@@ -6567,24 +6568,26 @@ class AA_Requires {
             'aa-jslib@2'                  => new AA_Req_Lib(get_aa_url('javascript/aajslib-jquery.php?v='.AA_JS_VERSION,'',false), '', ['jquery@3']),
             'aa-jslib@1'                  => new AA_Req_Lib(get_aa_url('javascript/aajslib-legacy.min.js?v='.AA_JS_VERSION,'',false)),
             'jquery-ui@1'                 => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/jquery-ui-dist@1.12.1/jquery-ui.min.js', 'sha256-KM512VNnjElC30ehFwehXjx1YCHPiQkOPmqnrWtpccM=', ['jquery@3','_css-jquery-ui@1']),
-            'jquery@3'                    => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js', 'sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0='),
-            'vue@2'                       => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/vue@2.6.11/dist/vue.min.js', 'sha256-ngFW3UnAN0Tnm76mDuu7uUtYEcG3G5H1+zioJw3t+68='),
-            'vue-test@2'                  => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/vue@2.6.11/dist/vue.js', 'sha256-NSuqgY2hCZJUN6hDMFfdxvkexI7+iLxXQbL540RQ/c4='),
+            'jquery@3'                    => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js', 'sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4='),
+            'vue@2'                       => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js', 'sha256-kXTEJcRFN330VirZFl6gj9+UM6gIKW195fYZeR3xDhc='),
+            'vue-test@2'                  => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js', 'sha256-abdUg7JwQh4aiUJt1ZOHugkHcjE1YcPp+kFTlqeOiTY='),
             '_css-jquery-ui@1'            => new AA_Req_Css('https://cdn.jsdelivr.net/npm/jquery-ui-dist@1.12.1/jquery-ui.min.css', 'sha256-rByPlHULObEjJ6XQxW/flG2r+22R5dKiAoef+aXWfik='),
             '_css-tableexport@5'          => new AA_Req_Css('https://cdn.jsdelivr.net/npm/tableexport@5.2.0/dist/css/tableexport.min.css', 'sha256-ljRB06PkvKJLniqOfPxxNfnIGgtF3gSWnLqYuFhWoDY='),
             '_css-tableexport@4'          => new AA_Req_Css('https://cdn.jsdelivr.net/npm/tableexport@4.0.11/dist/css/tableexport.min.css', 'sha256-nopPKGGZlhhMl96BF6etnX8zuKX2NPJbPJqZKXLtLMk='),
-            '_css-dropzone@5'             => new AA_Req_Css('https://cdn.jsdelivr.net/npm/dropzone@5.7.2/dist/min/dropzone.min.css', 'sha256-AgL8yEmNfLtCpH+gYp9xqJwiDITGqcwAbI8tCfnY2lw='),
-            '_css-select2@4'              => new AA_Req_Css('https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css', 'sha256-FdatTf20PQr/rWg+cAKfl6j4/IY3oohFAJ7gVC3M34E='),
+            '_css-dropzone@5'             => new AA_Req_Css('https://cdn.jsdelivr.net/npm/dropzone@5.9.3/dist/min/dropzone.min.css', 'sha256-n/Cuyrm+v15Nim0mJ2ZrElHlCk8raJs/57WeCsIzDr4='),
+            '_css-select2@4'              => new AA_Req_Css('https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css', 'sha256-zaSoHBhwFdle0scfGEFUCwggPN7F+ip9XRglo8IWb4w='),
             '_css-select2@3'              => new AA_Req_Css('https://cdn.jsdelivr.net/npm/Select2@3.5.7/select2.css', 'sha256-YxoY/Ov8dU2zQTW3WNFp25v+U1SBgVrOkiB8w3rupb4='),
+            '_css-lightgallery@2'         => new AA_Req_Css('https://cdn.jsdelivr.net/npm/lightgallery@2.2.1/css/lightgallery-bundle.min.css', 'sha256-Uxm/PH2he1eJjDjL9GpZSqxO3+ibyFsbhGupVTc9qLg='),
             '_css-lightgallery@1'         => new AA_Req_Css('https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/css/lightgallery.min.css', 'sha256-gU66VAEd73/e6tBq5c+WSiRcNH0PSXLnHMPeFIKxtHM='),
-            '_css-leaflet@1'              => new AA_Req_Css('https://cdn.jsdelivr.net/npm/leaflet@1.6.0/dist/leaflet.css', 'sha256-SHMGCYmST46SoyGgo4YR/9AlK1vf3ff84Aq9yK4hdqM='),
+            '_css-leaflet@1'              => new AA_Req_Css('https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.css', 'sha256-BPfK9M5v34c2XP6p0cxVz1mUQLst0gTLk0mlc7kuodA='),
             '_css-sortable@1'             => new AA_Req_Css('https://cdn.jsdelivr.net/gh/honzito/plain.sortable@1.2.1/sortable.css', 'sha256-TNKOtdeH1MmRdsujDukp9lYyndNf5qPvBHbWfKWGoX8='),
             'css-aa-system@1'             => new AA_Req_Css(get_aa_url('css/aa-system.css?v='.AA_JS_VERSION,'',false)),
             'css-normalize@7'             => new AA_Req_Css('https://cdn.jsdelivr.net/npm/normalize.css@7.0.0/normalize.css', 'sha384-Y+IEavQyTjgXgt7TL5nxVHI/DEuF6yoysy50puRyQDKmjfOZjY7+QvoRelSV4XvZ'),
             'css-normalize@8'             => new AA_Req_Css('https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.css', 'sha256-WAgYcAck1C1/zEl5sBl5cfyhxtLgKGdpI3oKyJffVRI='),
             'css-fontawesome@4'           => new AA_Req_Css('https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css', 'sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0='),
-            '_css-codemirror@5'           => new AA_Req_Css('https://cdn.jsdelivr.net/npm/codemirror@5.56.0/lib/codemirror.css', 'sha256-F8x+Z3ibZvrT6AYhdYRAhBaA77XYocFUTGA/lMGNVYE='),
-            'htm-aa-system@1'             => new AA_Req_Htm('AA_Tools::getBottomCode'),
+            '_css-codemirror@5'           => new AA_Req_Css('https://cdn.jsdelivr.net/npm/codemirror@5.63.3/lib/codemirror.css', 'sha256-utW7LD90DZW8tsURpPq7cabUGkha4Bf++sK4e7NC0+8='),
+            'htm-aa-system@1'             => new AA_Req_Htm('AA_Tools::getBottomCode')
+
             //'select2@4'                => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/select2@4.0.5/dist/js/select2.min.js', 'sha256-FA14tBI8v+/1BtcH9XtJpcNbComBEpdawUZA6BPXRVw=', array('jquery@3','_css-select2@4')),
             //'lightgallery@1'           => new AA_Req_Footlib('https://cdn.jsdelivr.net/lightgallery.js/1.0.1/js/lightgallery.min.js', 'sha384-HZ/iOnkYJdO5/U2ug7IPTgNZq61Jr+SMoJGCWsjVjNqwY/77YVNA/mZQ1tdfo2Xm', array('_css-lightgallery@1')), // v 1.1.1 do not work
             //'jspdf@1'                  => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/jspdf@1.5.3/dist/jspdf.min.js', 'sha256-gJWdmuCRBovJMD9D/TVdo4TIK8u5Sti11764sZT1DhI=', array('jquery@3')),
@@ -9282,7 +9285,8 @@ class AA_Stringexpand_Tableexport extends AA_Stringexpand {
             AA::Stringexpander()->addRequire('tableexport');
             //'TableExport.prototype.charset = "charset=utf-8";' . "\n" .    // possible addition
             //'TableExport.prototype.defaultButton = "big-button";' . "\n" . // possible addition
-            $script2run = "TableExport(document.querySelectorAll('$selector'),{ formats: ['xlsx'], position: 'bottom'}); \n";
+            $script2run = "TableExport.prototype.typeConfig.date.assert = function(value){return false;}; \n";  // do not convert cells to date (there are many mistakes in the date cells
+            $script2run .= "TableExport(document.querySelectorAll('$selector'),{ formats: ['xlsx'], position: 'bottom'}); \n";
             AA::Stringexpander()->addRequire($script2run, 'AA_Req_Load');
         }
         return '';
