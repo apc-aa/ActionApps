@@ -346,7 +346,7 @@ class DB_AA extends AbstractDB
         foreach ($varlist as $vardef) {
             // $vardef is array(varname, type, value)
             [$name, $value, $type] = $vardef;
-            $type = (string)$type;   // just normalize to RLIKE and LIKE (in this context we do not use expresion parsing as we do for RLIKE in public search)
+            $type = (string)$type;   // just normalize to RLIKE and LIKE (in this context we do not use expression parsing as we do for RLIKE in public search)
             if (in_array($type, ['>', '<', '<=', '>=', '<>', '!='])) {
                 $operator = $type;
                 $type = 'i';
