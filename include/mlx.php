@@ -224,10 +224,17 @@ class MLXCtrl {
 class MLX {
 
 //private:
-    var $ctrlFields = 0;
-    var $slice = 0;
-    var $langSlice = 0;
+    private $ctrlFields = 0;
+
+    /** @var AA_Slice   */
+    private $slice = null;
+
+    private $langSlice = 0;
 //public:
+
+    /**
+     * @param AA_Slice $slice
+     */
     function __construct($slice) {
         $this->slice = $slice;
         $this->langSlice  = MLXSlice($this->slice);

@@ -210,7 +210,7 @@ function Links_SliceID2Category($sl_id) {
  * and stores it in the 'Abstract Data Structure' for use with 'item' class
  *
  * @see GetItemContent(), itemview class, item class
- * @param array $zids array if ids to get from database
+ * @param zids $zids array if ids to get from database
  * @return array - Abstract Data Structure containing the links data
  *                 {@link http://apc-aa.sourceforge.net/faq/#1337}
  */

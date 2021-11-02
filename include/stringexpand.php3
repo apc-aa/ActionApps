@@ -1839,13 +1839,13 @@ class AA_Stringexpand_Removeids extends AA_Stringexpand {
  *   {date}                                     current timestamp
  *   {date:j.n.Y:_#this:--}
  *
- *   @param $format      - format - the same as PHP date() function
- *   @param $timestamp   - timestamp of the date (if not specified, current time
+ *   @param $format       - format - the same as PHP date() function
+ *   @param $timestamp    - timestamp of the date (if not specified, current time
  *                         is used)
  *                         The parameter could be also in yyyy-mm-dd hh:mm:ss
  *                         format
- *   @param $no_date_text- text, displayed for the unset date
- *   @param $zone        - 'GMT' - if the time should be recounted to GMT
+ *   @param $no_date_text - text, displayed for the unset date
+ *   @param $zone         - 'GMT' - if the time should be recounted to GMT
  *
  */
 class AA_Stringexpand_Date extends AA_Stringexpand_Nevercache {

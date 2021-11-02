@@ -1225,10 +1225,9 @@ function String2Sort( $sort_string ) {
  * @param          $fields_arr
  * @param          $conds
  * @param          $defaultCondsOperator
- * @param function $join_tables - if some table is needed to join,
+ * @param array $join_tables - if some table is needed to join,
  *                                          this function adds it to the array
- * @param function $additional_field_cond - aditional condition function
- * @param function $additional_field_cond - aditional condition function parameter
+ * @param string $additional_field_cond - additional condition function
  * @param          $add_param
  * @return string
  */
@@ -1272,10 +1271,9 @@ function MakeSQLConditions($fields_arr, $conds, $defaultCondsOperator, &$join_ta
  *  Creates array of SQL ORDER BY expresions based on $sort and fields array
  * @param          $fields_arr
  * @param array    $sort
- * @param function $join_tables - if some table is needed to join,
+ * @param array $join_tables - if some table is needed to join,
  *                                           this function adds it to the array
- * @param function $additional_field_cond - aditional condition function
- * @param function $additional_field_cond - aditional condition function parameter
+ * @param string $additional_field_cond - additional condition function
  * @param          $add_param
  * @return string
  */

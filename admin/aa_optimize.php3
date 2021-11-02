@@ -49,6 +49,7 @@ if ($_GET['test'] AND (strpos(strtolower($_GET['test']), 'aa_optimize_')===0)) {
 }
 
 if ($_GET['repair'] AND (strpos(strtolower($_GET['repair']), 'aa_optimize_')===0)) {
+    /** @var AA_Optimize $optimizer */
     $optimizer = AA_Serializable::factory($_GET['repair']);
     $optimizer->repair();
     $Msg .= $optimizer->report();
@@ -65,6 +66,8 @@ foreach (AA_Components::getClassNames('AA_Optimize_') as $optimize_class) {
     $actions                 = $optimize_class::actions();
 
     if ($_POST['testall']) {
+
+        /** @var AA_Optimize $optimizer */
         $optimizer = AA_Serializable::factory($optimize_class);
         if ($optimizer->hasAction('test')) {
             if ( !($testresult[$optimize_class] = $optimizer->test())) {

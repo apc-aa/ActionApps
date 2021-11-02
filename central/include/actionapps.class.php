@@ -822,7 +822,7 @@ class AA_Task_Import_Module_Chunk implements \AA\Later\LaterInterface {
  * and stores it in the 'Abstract Data Structure' for use with 'item' class
  *
  * @see GetItemContent(), itemview class, item class
- * @param array $zids array if ids to get from database
+ * @param zids $zids array if ids to get from database
  * @return array - Abstract Data Structure containing the links data
  *                 {@link http://apc-aa.sourceforge.net/faq/#1337}
  */
@@ -852,7 +852,7 @@ function Central_GetAaContent($zids) {
  * @global bool  $nocache - do not use cache, even if use_cache is set
  * @return zids
  */
-function Central_QueryZids($conds, $sort="", $type="app") {
+function Central_QueryZids($conds, $sort="", $type="app"): zids {
     global $debug;                 // displays debug messages
 
     if ( $debug ) huhl( "<br>Conds:", $conds, "<br>--<br>Sort:", $sort, "<br>--");

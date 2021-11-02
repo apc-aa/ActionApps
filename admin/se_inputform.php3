@@ -170,6 +170,8 @@ if ($update) {
         // property in the future. Honza, 2006-10-17
         // On the other hand we use it for marking the field as translatable
         // Honza, 2014-03-24
+
+        /** @var Widget $widget_class */
         $widget_class = Widget::constructClassName($input_show_func_f);
         Qvarsetadd("multiple",      "quoted", ($onlyupdate ? $multiple : (($translation ? 2 : 0) + ($widget_class::multiple() ? 1 : 0))));
 

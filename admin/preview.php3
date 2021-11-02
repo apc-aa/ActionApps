@@ -26,9 +26,9 @@
  *
 */
 
-/** @param slice_id   - long id of slice
- *  @param sh_itm     - long id of item
- *  @param return_url - where to go after hit OK button
+/** @param $slice_id   - long id of slice
+ *  @param $sh_itm     - long id of item
+ *  @param $return_url - where to go after hit OK button
  **/
 
 require_once __DIR__."/../include/init_page.php3";

@@ -4,9 +4,9 @@
  * Usage:
  * <!--#include virtual="/apc-aa/misc/charset/convert.php3?from=iso-8859-1&to=utf-8&source=http%3A%2F%2Fwww.apc.org%2Fpage.htm" -->
  *
- * @param from   - source encoding      (default is iso-8859-1)
- * @param to     - destination encoding (default is utf-8)
- * @param source - file (url) to be converted. In examle above we convert
+ * @param $from   - source encoding      (default is iso-8859-1)
+ * @param $to     - destination encoding (default is utf-8)
+ * @param $source - file (url) to be converted. In examle above we convert
  *                 https://www.apc.org/page.htm  (url encoded)
  *
  * @version $Id$

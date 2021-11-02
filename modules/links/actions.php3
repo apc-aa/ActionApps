@@ -50,13 +50,8 @@ class AA_Manageraction_Links_Check extends AA_Manageraction {
         return _m('Check Link');
     }
 
-    /** main executive function
-     * @param AA_Manager $manager
-     * @param $item_zids - array of id of AA records to check
-     * @param $action_param - not used
-     * @return bool
-     */
-    function perform($manager, $item_zids, $action_param) {
+    /** @inheritDoc */
+    function perform(AA_Manager $manager, zids $item_zids, $action_param) {
         DB_AA::sql("UPDATE links_links SET checked = '". time() ."', checked_by = '". AuthGetUid() ."' WHERE ". $item_zids->sqlin('id', true));
         return false;                                     // OK - no error
     }
@@ -130,13 +125,8 @@ class AA_Manageraction_Links_Move extends AA_Manageraction_Links_Check {
         return "";
     }
 
-    /** main executive function
-     * @param AA_Manager $manager
-     * @param $item_zids - array of id of AA records to check
-     * @param $action_param - not used
-     * @return bool
-     */
-    function perform($manager, $item_zids, $action_param) {
+    /** @inheritDoc */
+    function perform(AA_Manager $manager, zids $item_zids, $action_param) {
         $SQL = "UPDATE links_links SET folder = '".$this->to_bin."' WHERE ". $item_zids->sqlin('id', true);
         DB_AA::sql($SQL);
         return false;                                     // OK - no error
@@ -187,13 +177,8 @@ class AA_Manageraction_Links_Highlight extends AA_Manageraction {
         return ($this->highlight=='highlight') ? _m('Highlight Link') :  _m('Dehighlight Link');
     }
 
-    /** main executive function
-     * @param AA_Manager $manager
-     * @param $item_zids - array of id of AA records to check
-     * @param $action_param - not used
-     * @return bool
-     */
-    function perform($manager, $item_zids, $action_param) {
+    /** @inheritDoc */
+    function perform(AA_Manager $manager, zids $item_zids, $action_param) {
         global $r_state;
         foreach ($item_zids as $lid) {
             if ( !($aid = Links_GetAsociationId($lid, $r_state['cat_id']))) {
@@ -226,13 +211,8 @@ class AA_Manageraction_Links_Delete extends AA_Manageraction {
         return _m('Remove from category');
     }
 
-    /** main executive function
-     * @param AA_Manager $manager
-     * @param $item_zids - array of id of AA records to check
-     * @param $action_param - not used
-     * @return bool
-     */
-    function perform($manager, $item_zids, $action_param) {
+    /** @inheritDoc */
+    function perform(AA_Manager $manager, zids $item_zids, $action_param) {
         foreach ($item_zids as $lid) {
             Links_DeleteLink($lid);
         }
@@ -262,13 +242,8 @@ class AA_Manageraction_Links_Add2Cat extends AA_Manageraction {
         return _m('Add to category');
     }
 
-    /** main executive function
-     * @param AA_Manager $manager
-     * @param $item_zids - array of id of AA records to check
-     * @param $action_param - not used
-     * @return bool
-     */
-    function perform($manager, $item_zids, $action_param) {
+    /** @inheritDoc */
+   function perform(AA_Manager $manager, zids $item_zids, $action_param) {
         if ( ctype_digit((string)$action_param) ) {
             foreach ($item_zids as $lid) {
                 Links_Assign2Category($lid, $action_param);
@@ -293,13 +268,8 @@ class AA_Manageraction_Links_Move2Cat extends AA_Manageraction {
         return _m('Move to category');
     }
 
-    /** main executive function
-     * @param AA_Manager $manager
-     * @param $item_zids - array of id of AA records to check
-     * @param $action_param - not used
-     * @return bool
-     */
-    function perform($manager, $item_zids, $action_param) {
+    /** @inheritDoc */
+    function perform(AA_Manager $manager, zids $item_zids, $action_param) {
         if ( ctype_digit((string)$action_param) ) {
             foreach ($item_zids as $lid) {
                 Links_DeleteLink($lid);
@@ -326,13 +296,8 @@ class AA_Manageraction_Links_Move2Cat extends AA_Manageraction {
 /**  */
 class AA_Manageraction_Links_DeleteTrash extends AA_Manageraction {
 
-    /** main executive function
-     * @param AA_Manager $manager
-     * @param $item_zids - array of id of AA records to check
-     * @param $action_param - not used
-     * @return bool
-     */
-    function perform($manager, $item_zids, $action_param) {
+    /** @inheritDoc */
+    function perform(AA_Manager $manager, zids $item_zids, $action_param) {
         $db = getDB();
 
         // first delete the trashed links
@@ -376,13 +341,8 @@ class AA_Manageraction_Links_DeleteTrash extends AA_Manageraction {
 /**  */
 class AA_Manageraction_Links_GoCateg extends AA_Manageraction {
 
-    /** main executive function
-     * @param AA_Manager $manager
-     * @param $item_zids - array of id of AA records to check
-     * @param $action_param - not used
-     * @return bool
-     */
-    function perform($manager, $item_zids, $action_param) {
+    /** @inheritDoc */
+    function perform(AA_Manager $manager, zids $item_zids, $action_param) {
         global $r_state;
         // TODO - refresh permission for new category!!!
         $cpath = GetCategoryPath( $action_param );
@@ -398,13 +358,8 @@ class AA_Manageraction_Links_GoCateg extends AA_Manageraction {
 /**  */
 class AA_Manageraction_Links_Tab extends AA_Manageraction {
 
-    /** main executive function
-     * @param AA_Manager $manager
-     * @param $item_zids - array of id of AA records to check
-     * @param $action_param - not used
-     * @return bool
-     */
-    function perform($manager, $item_zids, $action_param) {
+    /** @inheritDoc */
+   function perform(AA_Manager $manager, zids $item_zids, $action_param) {
         $GLOBALS['r_state']['bin'] = $action_param;
         $manager->go2page(1);
     }
@@ -413,13 +368,8 @@ class AA_Manageraction_Links_Tab extends AA_Manageraction {
 /**  */
 class AA_Manageraction_Links_GoBookmark extends AA_Manageraction {
 
-    /** main executive function
-     * @param AA_Manager $manager
-     * @param $item_zids - array of id of AA records to check
-     * @param $action_param - not used
-     * @return bool
-     */
-    function perform($manager, $item_zids, $action_param) {
+    /** @inheritDoc */
+    function perform(AA_Manager $manager, zids $item_zids, $action_param) {
         global $manager, $links_info;
 
         $start_id   = $links_info['start_id'];

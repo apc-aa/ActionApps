@@ -56,13 +56,8 @@ class AA_Manageraction_History_Apply extends AA_Manageraction {
         return _m('Set again this old values');
     }
 
-    /** main executive function
-     * @param        $manager
-     * @param zids   $item_zids    Items to delete (if 'selected' is $param)
-     * @param string $action_param Not used
-     * @return false or error message
-     */
-    function perform($manager, $item_zids, $action_param) {
+    /** @inheritDoc */
+    function perform(AA_Manager $manager, zids $item_zids, $action_param) {
 
         if ( !IfSlPerm(PS_EDIT) ) {    // permission to delete items?
             /** @todo Should be changed to different permission */

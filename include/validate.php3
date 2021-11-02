@@ -816,13 +816,13 @@ function NEW_checkEmail($email) {
             // attempts a socket connection to mail server
             $fp = fsockopen($domain,25,$errno,$errstr,30);
             if ( $fp ) {
-                get_lines($fp);
+                NEW_get_lines($fp);
                 fwrite($fp, 'ehlo ecn.cz'."\r\n");
-                get_lines($fp);
+                NEW_get_lines($fp);
                 fwrite($fp, 'mail from: <>'."\r\n");
-                get_lines($fp);
+                NEW_get_lines($fp);
                 fwrite($fp, 'rcpt to: <'.$email.'>'."\r\n");
-                $odpoved = get_lines($fp);
+                $odpoved = NEW_get_lines($fp);
                 fwrite($fp, 'quit'."\r\n");
                 fclose($fp);
                 if ( intval(substr($odpoved, 0, 3)) == '250' ) {

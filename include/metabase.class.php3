@@ -435,29 +435,29 @@ class AA_MbT implements Iterator, ArrayAccess, Countable {
      * @param $tablename
      * @param $create_SQL
      */
-    function setFromSql($tablename, $create_SQL) {
-        $this->t = $tablename;
-        foreach (explode("\n", $create_SQL) as $row) {
-            $row = trim($row);
-            // first row - CREATE TABLE - no need to grab anything from it
-            if ( strpos($row, 'CREATE TABLE') === 0 ) {
-                continue;
-            }
-            // field definition row - grab it
-            if ( (strpos($row, 'KEY') === 0) OR
-                (strpos($row, 'UNIQUE KEY') === 0) OR
-                (strpos($row, 'PRIMARY KEY') === 0) ) {
-                $this->_setIndexFromSql($row);
-                continue;
-            }
-            if ( strpos($row, ')') === 0 ) {
-                $this->_setFlagFromSql($row);
-                continue;
-            }
-            // else urecognized row
-            echo $row;
-        }
-    }
+//    function setFromSql($tablename, $create_SQL) {
+//        $this->t = $tablename;
+//        foreach (explode("\n", $create_SQL) as $row) {
+//            $row = trim($row);
+//            // first row - CREATE TABLE - no need to grab anything from it
+//            if ( strpos($row, 'CREATE TABLE') === 0 ) {
+//                continue;
+//            }
+//            // field definition row - grab it
+//            if ( (strpos($row, 'KEY') === 0) OR
+//                (strpos($row, 'UNIQUE KEY') === 0) OR
+//                (strpos($row, 'PRIMARY KEY') === 0) ) {
+//                $this->_setIndexFromSql($row);
+//                continue;
+//            }
+//            if ( strpos($row, ')') === 0 ) {
+//                $this->_setFlagFromSql($row);
+//                continue;
+//            }
+//            // else urecognized row
+//            echo $row;
+//        }
+//    }
 
     /** generateAliases
      *
@@ -916,10 +916,10 @@ class AA_Metabase {
      * @param $tablename
      * @param $create_SQL
      */
-    function addTableFromSql($tablename, $create_SQL) {
-        $this->tables[$tablename] = new AA_MbT;
-        $this->tables[$tablename]->setFromSQL($tablename, $create_SQL);
-    }
+//    function addTableFromSql($tablename, $create_SQL) {
+//        $this->tables[$tablename] = new AA_MbT;
+//        $this->tables[$tablename]->setFromSQL($tablename, $create_SQL);
+//    }
 
     /** returns associative array of table fields filled with '' or 0 (based on column type)
      */

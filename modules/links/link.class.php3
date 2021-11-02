@@ -168,21 +168,6 @@ class linkassignment {
         return $this->category;      // it returns false if prent is not found
     }
 
-    function printobj($type='long', $class='linkassignment') {
-        cattree::global_instance();  // makes sure $cattree instance is created
-        global $cattree;
-        echo "<div class=\"$class\">";
-        echo "<span title=\"category\">".$this->category."</span>";
-        if ( $this->base )            echo "<span title=\"base\"><b>base</b></span>";
-        if ( $this->proposal )        echo "<span title=\"base\"><b>proposal</b></span>";
-        if ( $this->proposal_delete ) echo "<span title=\"base\"><b>proposal_delete</b></span>";
-        echo "<span title=\"state\">".$this->state."</span>";
-        echo "<span title=\"cat_name\" ". ($this->General() ? "class=\"general\"":"").">".
-              $cattree->getNamePath( $this->category )."</span>";
-        echo "<span title=\"id\">(".$this->id.")</span>";
-        echo "</div>\n";
-    }
-
     function getCategoryName() {
         cattree::global_instance();  // makes sure $cattree instance is created
         global $cattree;
@@ -283,8 +268,12 @@ class linkassignment {
 
 /** AssignmentSet */
 class assignmentset {
-    var $lid;         // link id
-    var $assignments; // stores in which categories links should appear
+    protected $lid;         // link id
+
+    /**
+     * @var linkassignment[]
+     */
+    protected $assignments; // stores in which categories links should appear
 
     function __construct($lid=null) {
         $this->lid = $lid;
@@ -994,20 +983,6 @@ class linkobj {
         $this->problem = $this->assignments->check_problems(); // array
         $this->check_changes();
         $this->check_general_categories();
-    }
-
-    function report_problems() {
-        $this->load();
-        if ( count($this->problem)<1 ) {
-            $this->printobj('short', 'linkok');
-        } else {
-            echo "<div class=\"link\">";
-            foreach ( $this->problem as $v ) {
-                print_problem($v[0]);
-            }
-            $this->printobj('long', 'linkerr');
-            echo "</div>";
-        }
     }
 
     function check_changes() {

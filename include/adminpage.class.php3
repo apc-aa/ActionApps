@@ -408,7 +408,7 @@ class AA_Adminpage_Table extends AA_Adminpage {
         $grabber = new Form();
         $grabber->prepare();    // maybe some initialization in grabber
         // we expect just one form - no need to loop through contents
-        $content    = $grabber->getContent();
+        $content    = $grabber->getContent();  // @todo
         //$store_mode = $grabber->getStoreMode();        // add | update | insert
         $grabber->finish();    // maybe some finalization in grabber
 

@@ -61,7 +61,8 @@ $apage->printFoot();
  *
  */
 function initSummarize() {
-    global $sao,$slicetablefields;
+    global /** @var AA_Slice[] $sao */
+    $sao,$slicetablefields;
     $db = getDB();
     $SQL = "SELECT id FROM slice ORDER BY created_at";
     $db -> query($SQL);
@@ -371,9 +372,9 @@ function compareFields($fn,$ft,$fm,$pr,$pre,$st,$sm) {
 }
 
 /** compareSliceTableFields function
- * @param $st sliceobj target
- * @param $sm sliceob master
- * @param $pr true if print difference
+ * @param AA_Slice $st - sliceobj target
+ * @param AA_Slice $sm - sliceob master
+ * @param bool $pr true if print difference
  * @return $score
  */
 function compareSliceTableFields($st,$sm,$pr) {

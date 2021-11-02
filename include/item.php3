@@ -523,15 +523,6 @@ class AA_Item {
         return nl2br(str_replace('  ', ' &ensp;', AA_Stringexpand_Text2html::htmlEscapeAndLinkUrls($txt)));
     }
 
-    /** getWidgetAjaxHtml function
-     *  returns HTML code for Ajaxian Html input for the field_id
-     * @param $field_id
-     * @return
-     */
-    function getWidgetAjaxHtml($field_id) {
-        return AA_Slice::getModule($this->getSliceID())->getWidgetAjaxHtml($field_id, $this->getItemID());
-    }
-
     /** getbaseurl function
      * @param $redirect
      * @param $no_sess
@@ -820,8 +811,8 @@ class AA_Item {
 
     /** f_h function
      * print due to html flag set (escape html special characters or just print)
-     * @param $col
-     * @param $param delimiter - used to separate values if the field is multi
+     * @param string $col
+     * @param string $param delimiter - used to separate values if the field is multi
      * @return string
      */
     function f_h($col, $param="") {
@@ -1237,7 +1228,7 @@ class AA_Item {
      * print database field or default value if empty
      * @param $col
      * @param string $param default (like "javascript: window.alert('No source url specified')")
-     * @return bool|default|string
+     * @return string
      */
     function f_s($col, $param="") {
         return ( $this->getval($col) ? $this->getval($col) : $param);

@@ -57,8 +57,7 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
      * for multilingual you can use: new AA_Value([AA_Langs::getLangName2Num($translations[0]) => $text], $html_flag));
      */
     function __construct($value = null, $flag = null) {
-        $this->clear();
-        $this->addValue($value);
+        $this->clear()->addValue($value);
         $this->setFlag(!is_null($flag) ? $flag : ((is_array($value) and is_array($value[0])) ? $value[0]['flag'] : 0));
     }
 
@@ -177,34 +176,38 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
     }
 
     /** Remove Value */
-    function removeValues(array $remove) {
+    function removeValues(array $remove): AA_Value {
         $this->val = array_diff($this->val, $remove);
         return $this;
     }
 
     /** Set $value - value is normal (numeric) array or string value */
-    function setValues($value) {
+    function setValues($value): AA_Value {
         $this->val = is_array($value) ? $value : (is_null($value) ? [] : [$value]);
         return $this;
     }
 
     /** Set the flag (for al the values the flag is common at this time) */
-    function setFlag($flag) {
+    function setFlag($flag): AA_Value {
         $this->flag = $flag;
         return $this;
     }
 
     /** clear function  */
-    function clear() {
+    function clear(): AA_Value {
         $this->val = [];
         $this->flag = 0;
+        return $this;
     }
 
-    /** Replaces the strings in all values  */
-    function replaceInValues($search, $replace) {
-        foreach ($this->val as $k => $v) {
-            $this->val[$k] = str_replace($search, $replace, $v);
-        }
+    /** Replaces the strings in all values
+     * @param string|array $search
+     * @param string|array $replace
+     * @return AA_Value
+     */
+    function replaceInValues($search, $replace): AA_Value {
+        array_walk($this->val, function (&$v) use ($search, $replace) { $v = str_replace($search, $replace, $v); });
+        return $this;
     }
 
     /** Makes sure the value contains all the translations.
@@ -212,7 +215,7 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
      * @param string[] $translations
      * @return AA_Value
      */
-    function fixTranslations($translations) {
+    function fixTranslations($translations): AA_Value {
         if ($translations) {
             $maxindex = 0;
             foreach ($this->val as $k => $v) {
@@ -241,7 +244,7 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
     }
 
     /** Remove duplicate values from the array */
-    function removeDuplicates() {
+    function removeDuplicates(): AA_Value {
         reset($this->val);
         if (key($this->val) < AA_Value::MAX_INDEX) {  // do not remove for multilingual
             $this->val = array_values(array_unique($this->val));

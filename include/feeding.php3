@@ -139,13 +139,13 @@ function IsItemFed($item_id, $destination) {
 
 /** FeedJoin function
  *  Returns the joined fields
- *  @param  columns - values of the processed item (db record)
- *  @param  fields  - source fields description (object)
- *  @param  params  - parameters of the "join" mapping function - separated by
+ *  @param  $columns - values of the processed item (db record)
+ *  @param  $fields  - source fields description (object)
+ *  @param  $params  - parameters of the "join" mapping function - separated by
  *                    ':', contains field names separated by HTML separator
  *                    description (the result will be the fields' content
  *                    separated by the separators)
- *  @param  result  - the value to be changed (see FeedItemTo)
+ *  @param  $result  - the value to be changed (see FeedItemTo)
  *  @return void - changed $result
  *  @author   Jakub Adamek
  */

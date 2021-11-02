@@ -50,13 +50,8 @@ class AA_Manageraction_Central_Linkcheck extends AA_Manageraction {
         return _m('Check the AA availability');
     }
 
-    /** main executive function
-     * @param AA_Manager $manager
-     * @param $item_zids - array of id of AA records to check
-     * @param $action_param - not used
-     * @return bool|string
-     */
-    function perform($manager, $item_zids, $action_param) {
+    /** @inheritDoc */
+    function perform(AA_Manager $manager, zids $item_zids, $action_param) {
         if (count($item_zids)<1) {
             return false;                                     // OK - no error
         }
@@ -103,13 +98,8 @@ class AA_Manageraction_Central_Sqlupdate extends AA_Manageraction {
         return _m('Update DB (sql_update)'). ' - '.  $this->update_action;
     }
 
-    /** main executive function
-     * @param AA_Manager $manager
-     * @param $item_zids - array of id of AA records to check
-     * @param $action_param - not used
-     * @return bool|string
-     */
-    function perform($manager, $item_zids, $action_param) {
+    /** @inheritDoc */
+    function perform(AA_Manager $manager, zids $item_zids, $action_param) {
         $item_ids = $item_zids->shortids();
 
         if (count($item_ids)<1) {
@@ -166,13 +156,8 @@ class AA_Manageraction_Central_MoveItem extends AA_Manageraction {
         return "";
     }
 
-    /** main executive function
-     * @param AA_Manager $manager
-     * @param $item_zids - array of id of AA records to check
-     * @param $action_param - not used
-     * @return bool
-     */
-    function perform($manager, $item_zids, $action_param) {
+    /** @inheritDoc */
+    function perform(AA_Manager $manager, zids $item_zids, $action_param) {
         $item_ids = $item_zids->shortids();
 
         if ($item_ids) {
@@ -229,13 +214,8 @@ class AA_Manageraction_Central_DeleteTrash extends AA_Manageraction {
         return _m('Remove (delete from database)');
     }
 
-    /** main executive function
-     * @param AA_Manager $manager
-     * @param zids $item_zids  Items to delete (if 'selected' is $param)
-     * @param mixed $action_param  Not used
-     * @return bool|if|mixed|void
-     */
-    function perform($manager, $item_zids, $action_param) {
+    /** @inheritDoc */
+    function perform(AA_Manager $manager, zids $item_zids, $action_param) {
         if ( !IsSuperadmin() ) {    // permission to delete items?
             return _m("You have not permissions to remove items");
         }
@@ -296,12 +276,8 @@ class AA_Manageraction_Central_Tab extends AA_Manageraction {
         parent::__construct($id);
     }
 
-    /** main executive function - Handler for Tab switch - switch between bins
-     * @param AA_Manager $manager
-     * @param $item_zids
-     * @param $action_param
-     */
-    function perform($manager, $item_zids, $action_param) {
+    /** @inheritDoc */
+    function perform(AA_Manager $manager, zids $item_zids, $action_param) {
         $manager->setBin($this->to_bin);
         $manager->go2page(1);
     }
@@ -341,13 +317,8 @@ class AA_Manageraction_Central_Optimize extends AA_Manageraction {
         return $class::name(). ' - '.  $this->optimize_method;
     }
 
-    /** main executive function
-     * @param AA_Manager $manager
-     * @param $item_zids - array of id of AA records to check
-     * @param $action_param - not used
-     * @return string
-     */
-    function perform($manager, $item_zids, $action_param) {
+    /** @inheritDoc */
+    function perform(AA_Manager $manager, zids $item_zids, $action_param) {
         $ret    = [];
 
         foreach ($item_zids as $aa_id) {

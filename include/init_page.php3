@@ -2,11 +2,11 @@
 /**
  * Basic script to be included into every Control Panel script
  *
- * @param $no_slice_id Used during creation of any module. Tells init_page
+ * @param $no_slice_id - Used during creation of any module. Tells init_page
  *                     no slice ID is yet defined. Replaces both $Add_slice
  *                     and $New_slice used before.
- * @param $slice_id  The same as $change_id.
- * @param $change_id Change to another slice / module. If $change_id == session
+ * @param $slice_id  - The same as $change_id.
+ * @param $change_id - Change to another slice / module. If $change_id == session
  *                   stored $slice_id, it is ignored.
  *
  * WARNING: The variable slice_id (p_slice_id respectively)

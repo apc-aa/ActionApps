@@ -6,11 +6,11 @@
  * Should be included to other scripts (admin/index.php3)
  *
  *   Move polls to app/hold/trash based on param
- *  @param $status    static function parameter defined in manager action
+ *  @param $status    - static function parameter defined in manager action
  *                   in this case it holds bin number, where the central_confs should go
- *  @param $item_arr array, where keys are unpacked ids of items prefixed by
+ *  @param $item_arr  - array, where keys are unpacked ids of items prefixed by
  *                   'x' character (javascript purposes only)
- *  @param $akce_param additional parameter for the action - not used here
+ *  @param $akce_param - additional parameter for the action - not used here
  *
  *
  * PHP version 7.2+
@@ -63,13 +63,8 @@ class AA_Manageraction_Polls_MoveItem extends AA_Manageraction {
         return "";
     }
 
-    /** main executive function
-     * @param AA_Manager $manager
-     * @param $item_zids - array of id of AA records to check
-     * @param $action_param - not used
-     * @return bool
-     */
-    function perform($manager, $item_zids, $action_param) {
+    /** @inheritDoc */
+    function perform(AA_Manager $manager, zids $item_zids, $action_param) {
         $SQL = "UPDATE polls SET status_code = '".$this->to_bin."' WHERE ". $item_zids->sqlin('id', true);
         DB_AA::sql($SQL);
         return false;                                     // OK - no error
@@ -120,13 +115,8 @@ class AA_Manageraction_Polls_DeleteTrash extends AA_Manageraction {
         return _m('Remove (delete from database)');
     }
 
-    /** main executive function
-     * @param AA_Manager $manager
-     * @param $item_zids    Items to delete (if 'selected' is $param)
-     * @param $action_param  Not used
-     * @return if|mixed|void
-     */
-    function perform($manager, $item_zids, $action_param) {
+    /** @inheritDoc */
+    function perform(AA_Manager $manager, zids $item_zids, $action_param) {
         if ( !IfSlPerm(PS_DELETE_ITEMS) ) {    // permission to delete items?
             return _m("You have not permissions to remove polls");
         }

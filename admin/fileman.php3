@@ -178,7 +178,7 @@ foreach ($sortable_columns as $sortk => $col) {
         $img = "";
     }
 
-    echo "<td><a href=\"".StateUrl("fileman.php3?sort_key=$sortk$so&fmset[directory]=$directory")."\">" . formatAction($col[label].$img) . "</a></td>";
+    echo "<td><a href=\"".StateUrl("fileman.php3?sort_key=$sortk$so&fmset[directory]=$directory")."\">" . formatAction($col['label'].$img) . "</a></td>";
 }
 if (!$sort_order) {
     $sort_order = $sortable_columns[$sort_key]["sort"];

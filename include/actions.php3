@@ -6,11 +6,11 @@
  * Should be included to other scripts (admin/index.php3)
  *
  *   Move item to app/hold/trash based on param
- *  @param $status    static function parameter defined in manager action
+ *  @param $status    - static function parameter defined in manager action
  *                   in this case it holds bin number, where the items should go
- *  @param $item_arr array, where keys are unpacked ids of items prefixed by
+ *  @param $item_arr  - array, where keys are unpacked ids of items prefixed by
  *                   'x' character (javascript purposes only)
- *  @param $akce_param additional parameter for the action - not used here
+ *  @param $akce_param - additional parameter for the action - not used here
  *
  *
  * PHP version 7.2+
@@ -77,13 +77,8 @@ class AA_Manageraction_Item_MoveItem extends AA_Manageraction {
         }
     }
 
-    /** main executive function
-     * @param AA_Manager $manager
-     * @param zids $item_zids - item ids for action
-     * @param $action_param - not used
-     * @return bool
-     */
-    function perform($manager, $item_zids, $action_param) {
+    /** @inheritDoc */
+    function perform(AA_Manager $manager, zids $item_zids, $action_param) {
         $sid = $manager->getModuleId();
         AA_Manageraction_Item_MoveItem::doMove($item_zids->itemFilter($sid), $this->to_bin);
         return false;                                     // OK - no error
@@ -123,13 +118,8 @@ class AA_Manageraction_Item_Duplicate extends AA_Manageraction {
         return _m('Duplicate Item');
     }
 
-    /** main executive function
-     * @param AA_Manager $manager
-     * @param $item_zids - array of id of AA records to check
-     * @param $action_param - not used
-     * @return bool
-     */
-    function perform($manager, $item_zids, $action_param) {
+    /** @inheritDoc */
+    function perform(AA_Manager $manager, zids $item_zids, $action_param) {
         $sid = $manager->getModuleId();
 
         $grabber = new AA\IO\Grabber\Slice( new AA_Set([$sid],null,null,AA_BIN_ALL), $item_zids->itemFilter($sid));
@@ -152,10 +142,10 @@ class AA_Manageraction_Item_Duplicate extends AA_Manageraction {
 
 /** AA_Manageraction_Item_Feed
  *  Export (Copy) items to another slice
- *  @param $slice      slice object - slice, from which we export
- *  @param $item_arr   array, where keys are unpacked ids of items prefixed by
+ *  @param $slice      - slice object - slice, from which we export
+ *  @param $item_arr   - array, where keys are unpacked ids of items prefixed by
  *                     'x' character (javascript purposes only)
- *  @param $akce_param Special string, where destination slices are coded.
+ *  @param $akce_param - Special string, where destination slices are coded.
  *                     The format is "<status>-<unpacked_slice_id>,<status>-.."
  * @return false or error message
  */
@@ -175,13 +165,8 @@ class AA_Manageraction_Item_Feed extends AA_Manageraction {
         return _m('Export to slice');
     }
 
-    /** main executive function
-     * @param AA_Manager $manager
-     * @param $item_zids - array of id of AA records to check
-     * @param $action_param - not used
-     * @return false or error message
-     */
-    function perform($manager, $item_zids, $action_param) {
+    /** @inheritDoc */
+    function perform(AA_Manager $manager, zids $item_zids, $action_param) {
         if (strlen($action_param) < 1) {
             return _m('No slice selected');
         }
@@ -208,10 +193,10 @@ class AA_Manageraction_Item_Feed extends AA_Manageraction {
 
 /** AA_Manageraction_Item_Move2slice
  *  Move items to another slice
- *  @param $slice      slice object - slice, from which we export
- *  @param $item_arr   array, where keys are unpacked ids of items prefixed by
+ *  @param $slice      - slice object - slice, from which we export
+ *  @param $item_arr   - array, where keys are unpacked ids of items prefixed by
  *                     'x' character (javascript purposes only)
- *  @param $akce_param unpacked id of slice, where items should be moved
+ *  @param $akce_param - unpacked id of slice, where items should be moved
  */
 class AA_Manageraction_Item_Move2slice extends AA_Manageraction {
 
@@ -270,13 +255,8 @@ class AA_Manageraction_Item_Move2slice extends AA_Manageraction {
         return ob_get_clean();
     }
 
-    /** main executive function
-     * @param  $manager
-     * @param  $item_zids - array of id of AA records to check
-     * @param  array $action_param
-     * @return false or error message
-     */
-    function perform($manager, $item_zids, $action_param) {
+    /** @inheritDoc */
+    function perform(AA_Manager $manager, zids $item_zids, $action_param) {
         if (strlen($action_param['dest_slice_id']) < 1) {
             return _m('No slice selected');
         }
@@ -320,10 +300,10 @@ class AA_Manageraction_Item_Move2slice extends AA_Manageraction {
 
 /** AA_Manageraction_Item_Move2slice
  *  Move items to another slice
- *  @param $slice      slice object - slice, from which we export
- *  @param $item_arr   array, where keys are unpacked ids of items prefixed by
+ *  @param $slice      - slice object - slice, from which we export
+ *  @param $item_arr   - array, where keys are unpacked ids of items prefixed by
  *                     'x' character (javascript purposes only)
- *  @param $akce_param unpacked id of slice, where items should be moved
+ *  @param $akce_param - unpacked id of slice, where items should be moved
  */
 class AA_Manageraction_View_Move2slice extends AA_Manageraction_Item_Move2slice {
 
@@ -332,13 +312,8 @@ class AA_Manageraction_View_Move2slice extends AA_Manageraction_Item_Move2slice 
         return _m('Move view to another slice');
     }
 
-    /** main executive function
-     * @param  $manager
-     * @param  zids $item_zids - array of id of AA records to check
-     * @param  $action_param - not used
-     * @return false or error message
-     */
-    function perform($manager, $item_zids, $action_param) {
+    /** @inheritDoc */
+    function perform(AA_Manager $manager, zids $item_zids, $action_param) {
         if (strlen($action_param['dest_slice_id']) < 1) {
             return _m('No slice selected');
         }
@@ -404,13 +379,8 @@ class AA_Manageraction_Item_DeleteTrash extends AA_Manageraction {
         return _m('Remove (delete from database)');
     }
 
-    /** main executive function
-     * @param AA_Manager $manager
-     * @param $item_zids    Items to delete (if 'selected' is $param)
-     * @param $action_param  Not used
-     * @return false or error message
-     */
-    function perform($manager, $item_zids, $action_param) {
+    /** @inheritDoc */
+    function perform(AA_Manager $manager, zids $item_zids, $action_param) {
         global $slice_id, $event;
 
         if ( !IfSlPerm(PS_DELETE_ITEMS) ) {    // permission to delete items?
@@ -526,13 +496,8 @@ class AA_Manageraction_Item_Export extends AA_Manageraction {
         return _m('Export to file');
     }
 
-    /** main executive function
-     * @param AA_Manager $manager
-     * @param $item_zids - array of id of AA records to check
-     * @param $action_param - not used
-     * @return bool
-     */
-    function perform($manager, $item_zids, $action_param) {
+    /** @inheritDoc */
+    function perform(AA_Manager $manager, zids $item_zids, $action_param) {
 
         if ($item_zids->count() > 0) {
             $exportset = AA_Object::factory('AA_Exportsetings', ['grabber_type'=> 'AA\IO\Grabber\Slice', 'format'=>'AA_Exporter_Excel', 'type' => 'human', 'bins'=>AA_BIN_ALL]);
@@ -563,13 +528,8 @@ class AA_Manageraction_Item_Tab extends AA_Manageraction {
         parent::__construct($id);
     }
 
-    /** main executive function - Handler for Tab switch - switch between bins
-     * @param AA_Manager $manager
-     * @param $item_zids
-     * @param $action_param
-     * @return false or error message
-     */
-    function perform($manager, $item_zids, $action_param) {
+    /** @inheritDoc */
+    function perform(AA_Manager $manager, zids $item_zids, $action_param) {
         $manager->setBin($this->to_bin);
         $manager->go2page(1);
         return false;        // OK
@@ -579,13 +539,8 @@ class AA_Manageraction_Item_Tab extends AA_Manageraction {
 /** AA_Manageraction_Item_Tab - Swith to another bin in Manager */
 class AA_Manageraction_Item_Gobookmark extends AA_Manageraction {
 
-    /** main executive function - Handler for Tab switch - switch between bins
-     * @param AA_Manager $manager
-     * @param $item_zids
-     * @param $action_param
-     * @return false or error message
-     */
-    function perform($manager, $item_zids, $action_param) {
+    /** @inheritDoc */
+    function perform(AA_Manager $manager, zids $item_zids, $action_param) {
         $manager->setFromBookmark($_GET['GoBookmark']);
         $manager->go2page(1);
         return false;        // OK
@@ -605,13 +560,8 @@ class AA_Manageraction_Taskmanager_Delete extends AA_Manageraction {
         return _m('Remove (cancel task)');
     }
 
-    /** main executive function
-     * @param AA_Manager $manager
-     * @param $item_zids    Items to delete (if 'selected' is $param)
-     * @param $action_param  Not used
-     * @return false or error message
-     */
-    function perform($manager, $item_zids, $action_param) {
+    /** @inheritDoc */
+    function perform(AA_Manager $manager, zids $item_zids, $action_param) {
 
         if ( !IfSlPerm(PS_EDIT) ) {    // permission to delete items?
             /** @todo Should be changed to different permission */
@@ -649,13 +599,8 @@ class AA_Manageraction_Taskmanager_Execute extends AA_Manageraction {
         return _m('Execute');
     }
 
-    /** main executive function
-     * @param AA_Manager $manager
-     * @param $item_zids    Items to delete (if 'selected' is $param)
-     * @param $action_param  Not used
-     * @return false|string - false or error message
-     */
-    function perform($manager, $item_zids, $action_param) {
+    /** @inheritDoc */
+    function perform(AA_Manager $manager, zids $item_zids, $action_param) {
 
         if ( !IfSlPerm(PS_EDIT) ) {    // permission to delete items?
             /** @todo Should be changed to different permission */

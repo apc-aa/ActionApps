@@ -29,6 +29,7 @@ class PlannedtaskSchedule implements LaterInterface
 
         foreach ($zids as $id) {
             $ret .= $id . ';';
+            /** @var \AA_Plannedtask $task */
             $task = AA_Object::load($id, 'AA_Plannedtask');
             $ret .= get_class($task) . ';';
             $ret .= $task->schedule() . ';';

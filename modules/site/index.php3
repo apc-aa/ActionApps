@@ -171,7 +171,7 @@ $apage->printHead($err, $Msg);
 
 // echo "<style>.CodeMirror { min-height: 500px; } </style>";
 
-function Links_PrintActionLink($r_spot_id, $action, $text, $img, $link=null) {
+function PrintSiteActionLink($r_spot_id, $action, $text, $img, $link=null) {
     if (!$link) {
         $link  = SiteAdminPage($r_spot_id, "akce=$action");
     }
@@ -183,24 +183,24 @@ echo '<table border=0 cellspacing=0 class=login width="98%"><tr><td id="sitetree
       <br>
       <table border=0 cellspacing=0 align="center">
         <tr>
-          <td>'. Links_PrintActionLink($r_spot_id, 's', _m("Add&nbsp;spot"), 'add_spot.gif') .'</td>
-          <td>&nbsp;'. Links_PrintActionLink($r_spot_id, 'c', _m("Add&nbsp;choice"), 'add_choice.gif') .'</td>
+          <td>'. PrintSiteActionLink($r_spot_id, 's', _m("Add&nbsp;spot"), 'add_spot.gif') .'</td>
+          <td>&nbsp;'. PrintSiteActionLink($r_spot_id, 'c', _m("Add&nbsp;choice"), 'add_choice.gif') .'</td>
         </tr>
         <tr>
-          <td>'. Links_PrintActionLink($r_spot_id, 'u', _m("Move&nbsp;up"), 'up.gif') .'</td>
-          <td>&nbsp;'. Links_PrintActionLink($r_spot_id, 'd', _m("Move&nbsp;down"), 'down.gif') .'</td>
+          <td>'. PrintSiteActionLink($r_spot_id, 'u', _m("Move&nbsp;up"), 'up.gif') .'</td>
+          <td>&nbsp;'. PrintSiteActionLink($r_spot_id, 'd', _m("Move&nbsp;down"), 'down.gif') .'</td>
         </tr>
         <tr>
-          <td>'. Links_PrintActionLink($r_spot_id, 'l', _m("Move&nbsp;left"), 'left.gif') .'</td>
-          <td>&nbsp;'. Links_PrintActionLink($r_spot_id, 'a', _m("Move&nbsp;right"), 'right.gif') .'</td>
+          <td>'. PrintSiteActionLink($r_spot_id, 'l', _m("Move&nbsp;left"), 'left.gif') .'</td>
+          <td>&nbsp;'. PrintSiteActionLink($r_spot_id, 'a', _m("Move&nbsp;right"), 'right.gif') .'</td>
         </tr>
         <tr>
-          <td>'. Links_PrintActionLink($r_spot_id, 'r', _m("Delete"), 'delete.gif', 'javascript:GoIfConfirmed(\''. SiteAdminPage($r_spot_id, "akce=r").'\', \''.
+          <td>'. PrintSiteActionLink($r_spot_id, 'r', _m("Delete"), 'delete.gif', 'javascript:GoIfConfirmed(\''. SiteAdminPage($r_spot_id, "akce=r").'\', \''.
                                             _m("Are you sure you want to delete the spot?") .'\')') .'</td>
           <td>&nbsp;'.
           (($tree->get('flag', $r_spot_id) & AA_Module_Site::FLAG_DISABLE) ?
-              Links_PrintActionLink($r_spot_id, 'e', _m("Enable"), 'enabled.gif') :
-              Links_PrintActionLink($r_spot_id, 'h', _m("Disable"), 'disabled.gif'))
+              PrintSiteActionLink($r_spot_id, 'e', _m("Enable"), 'enabled.gif') :
+              PrintSiteActionLink($r_spot_id, 'h', _m("Disable"), 'disabled.gif'))
               .'</td>
         </tr>
       </table>
@@ -209,8 +209,8 @@ echo '<table border=0 cellspacing=0 class=login width="98%"><tr><td id="sitetree
 // callback functions
 $functions = [
     'spot'          => 'ModW_PrintSpotName_Start',
-                    'before_choice' => 'ModW_PrintChoice_Start',
-                    'after_choice'  => 'ModW_PrintChoice_End'
+    'before_choice' => 'ModW_PrintChoice_Start',
+    'after_choice'  => 'ModW_PrintChoice_End'
 ];
 
 $tree->walkTree($apc_state, 1, $functions, 'collapsed', 0);

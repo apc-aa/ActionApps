@@ -69,7 +69,7 @@ function translate_files($old_lang_file, $src_dir, $dst_dir) {
         }
         echo $file."<br>";
         $content     = file($src_dir.$file);
-        $new_content = "";
+        $new_content = [];
 
         foreach ($content as $row) {
             for (reset($consts); $name = key($consts); next($consts)) {
@@ -86,7 +86,7 @@ function translate_files($old_lang_file, $src_dir, $dst_dir) {
         if (!$fd) {
             echo " write permission denied<br>";
         }
-        if (!is_array($new_content) || !$fd) {
+        if (!$new_content or !$fd) {
             continue;
         }
         foreach ($new_content as $row) {

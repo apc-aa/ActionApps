@@ -247,7 +247,7 @@ function xmgettext($lang_list, $logfile, $lang_files, $files_base_dir, $files, $
 
                 // other translations
                 if (is_array ($other_translations) && $other_translations[$message]) {
-                    $other_join = "";
+                    $other_join = [];
                     foreach ( $other_translations[$message] as $other => $foo) {
                         $other_join[] = $other;
                     }

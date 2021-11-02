@@ -389,6 +389,7 @@ class AA_Manager extends AA_Storable {
             $this->searchbar->update();
         }
 
+        /** @var zids $item_zids */
         $item_zids = (new zids())->setFromItemArr($chb); // in some managers we use 'x' before the item id - remove it
 
         // new approach uses AA_Manageractions
@@ -686,12 +687,8 @@ class AA_Manageraction extends AA_Storable {
         $this->open_url_add = $add;
     }
 
-    /** main executive function
-     * @param AA_Manager $manager - back link to the manager
-     * @param            $item_zids
-     * @param string     $action_param
-     */
-    function perform($manager, $item_zids, $action_param) {
+    /** @inheritDoc */
+    function perform(AA_Manager $manager, zids $item_zids, $action_param) {
     }
 
     /** Checks if the user have enough permission to PERFORM the action on items
