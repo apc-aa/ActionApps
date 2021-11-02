@@ -519,6 +519,8 @@ class Widget extends AA_Object implements NamedInterface {
      *       aa[n1_54343ea876898b6754e3578a8cc544e6][publish_date____][dte][d][]
      *       aa[n1_54343ea876898b6754e3578a8cc544e6][publish_date____][dte][m][]
      *       aa[n1_54343ea876898b6754e3578a8cc544e6][publish_date____][dte][y][]
+     *   if widget uses specific getValue, then it adds also
+     *       aa[n1_54343ea876898b6754e3578a8cc544e6][publish_date____][wi]=Cod
      *   where "dte" points to the AA\Widget\DteWidget. The method AA\Widget\DteWidget::getValue()
      *   is called to grab the value (or multivalues) from the submitted form
      */
@@ -529,18 +531,49 @@ class Widget extends AA_Object implements NamedInterface {
         foreach ((array)$data4field as $key => $value) {
             if (ctype_digit((string)$key)) {
                 $fld_value_arr[$key] = ['value' => $value, 'flag' => $flag];
-            } elseif (($key != 'flag') and class_exists($class = Widget::constructClassName($key))) {
-                // call function like AA\Widget\DteWidget::getValue($data)
-                // where $data depends on the widget - for example for
-                // date it is array('d'=>array(), 'm'=>array(), 'y'=>array())
-                $aa_value = $class::getValue($value);
-                $aa_value->setFlag($flag);
+            } else {
+                $class = '';
+                if ($key == 'wi') {
+                    $class = Widget::constructClassName($value);
+                } elseif ($key != 'flag') {
+                    $class = Widget::constructClassName($key);
+                }
+                if ($class and class_exists($class)) {
+                    // call function like AA\Widget\DteWidget::getValue($data)
+                    // where $data depends on the widget - for example for
+                    // date it is array('d'=>array(), 'm'=>array(), 'y'=>array())
 
-                // there is no need to go through array - we do not expect more widgets for one variable
-                return $aa_value;
+                    // there is no need to go through array - we do not expect more widgets for one variable
+                    return $class::getWidgetValue((array)$data4field);
+                }
             }
         }
         return new AA_Value($fld_value_arr, $flag);
+    }
+
+    /** @return AA_Value for the data send by the widget
+     *   Fallback for all the widgets (probably not used - widgets use standard getValue or widget specific getWidgetValue)
+     */
+    public static function getWidgetValue(array $data4field): AA_Value
+    {
+        $flag = $data4field['flag'] & FLAG_HTML;
+        $fld_value_arr = [];
+
+        foreach ($data4field as $key => $value) {
+            if (ctype_digit((string)$key)) {
+                $fld_value_arr[$key] = ['value' => $value, 'flag' => $flag];
+            }
+        }
+        return new AA_Value($fld_value_arr, $flag);
+    }
+
+    /** Add widget identification code to form, so specific widget's GetWidgetValue could be called for this widget
+     * @param string $base_name
+     * @param string $three_letters_id
+     * @return string
+     */
+    protected static function getWidgetIdentificationCode(string $base_name, string $three_letters_id): string {
+        return '<input type=hidden name="'.$base_name.'['.$three_letters_id.']" value=1>';
     }
 
     /** propertiesShop - repository of all used properties of Widgets

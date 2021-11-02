@@ -83,13 +83,15 @@ class ChbWidget extends Widget
      *   The data submitted by form usually looks like
      *       aa[n1_54343ea876898b6754e3578a8cc544e6][switch__________][chb][]=1
      *       aa[n1_54343ea876898b6754e3578a8cc544e6][headline________][chb][def]=0
-     * @param $data4field - array('def'=>val, '0'=>val)
+     * @param $data4field - ['chb'=>['def'=>val, '0'=>val]]
      *   This method coverts such data to AA_Value.
      *
      */
-    public static function getValue($data4field): AA_Value
+    public static function getWidgetValue(array $data4field): AA_Value
     {
         $flag = $data4field['flag'] & FLAG_HTML;
+        $data4field = $data4field['chb'];
+
         $fld_value_arr = [];
 
         foreach ((array)$data4field as $key => $value) {

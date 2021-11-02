@@ -69,6 +69,10 @@ class TxtWidget extends Widget
         $widget_add2 = ($type == 'live') ? '<img width=16 height=16 border=0 title="' . _m('To save changes click here or outside the field.') . '" alt="' . _m('Save') . '" class="' . $base_id . 'ico" src="' . AA_INSTAL_PATH . 'images/px.gif" style="position:absolute; right:0;">' : '';
 
         $widget = '';
+        if ( strpos(get_class($this), 'AA\Widget\CodWidget') !== false ) {
+            // use specific GetWidgetValue for CodeMirror (we need some non-breaking-space replacement there)
+            $widget .= Widget::getWidgetIdentificationCode($base_name, 'cod');
+        }
 
         $delim = '';
         $value = $content->getAaValue($aa_property->getId());

@@ -76,13 +76,14 @@ class FilWidget extends Widget
      *   Here we just mark the uploaded file by prefix AA_UPLOAD:, so
      *   insert_fnc_fil() knows about the new file for upload
      *
-     * @param $data4field - array('var'=>array(), 'url'=>array())
+     * @param $data4field - ['fil'=>['var'=>[], 'url'=>[]]
      */
-    public static function getValue($data4field): AA_Value
+    public static function getWidgetValue(array $data4field): AA_Value
     {
+        $data4field = $data4field['fil'];
         $uploads = (array)$data4field['var'];
         $urls = (array)$data4field['url'];
-        $add = $data4field['add']=='1';  // if the widget is multiple, then it behaves differntly with deletion - the old uploads are not cleaned
+        $add = $data4field['add']=='1';  // if the widget is multiple, then it behaves differently with deletion - the old uploads are not cleaned
 
         // upload could be also multivalue
         $max = max(count($uploads), count($urls));
@@ -104,7 +105,7 @@ class FilWidget extends Widget
                 $values[] = $url;
             }
         }
-        return new AA_Value($values);
+        return new AA_Value($values, FLAG_HTML);
     }
 
 

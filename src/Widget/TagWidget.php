@@ -147,13 +147,14 @@ class TagWidget extends Widget
      *
      *   The data submitted by form usually looks like
      *       aa[n1_54343ea876898b6754e3578a8cc544e6][switch__________][tag][]=bc9032bb4bd0751086ccc773a36ab936|||5893020f01ddaeedecc02588109daf8d|||test
-     * @param $data4field - array('0'=>values separated by |||)
+     * @param $data4field - ['tag'=>['0'=>values separated by |||]]
      *   This method coverts such data to AA_Value.
      *
      */
-    public static function getValue($data4field): AA_Value
+    public static function getWidgetValue(array $data4field): AA_Value
     {
         $flag = $data4field['flag'] & FLAG_HTML;
+        $data4field = $data4field['tag'];
         $fld_value_arr = [];
 
         foreach ((array)$data4field as $key => $value) {

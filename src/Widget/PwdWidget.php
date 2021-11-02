@@ -61,17 +61,17 @@ class PwdWidget extends Widget
     /** @return AA_Value for the data send by the widget
      *   The data submitted by form usually looks like
      *       aa[n1_54343ea876898b6754e3578a8cc544e6][password________][pwd][new]=MyPassword
-     * @param $data4field - array('pwd'=>MyPassword)
+     * @param $data4field - ['pwd'=>['new1'=>MyPassword]]
      *   This method coverts such data to AA_Value.
      */
-    public static function getValue($data4field): AA_Value
+    public static function getWidgetValue(array $data4field): AA_Value
     {
-        $flag = $data4field['flag'] & FLAG_HTML;
+        $data4field = $data4field['pwd'];
         if (is_array($data4field) AND isset($data4field['new1'])) {
-            return new AA_Value(ParamImplode(['AA_PASSWD', $data4field['new1'], $data4field['new2'], $data4field['old']]), $flag);
+            return new AA_Value(ParamImplode(['AA_PASSWD', $data4field['new1'], $data4field['new2'], $data4field['old']]), FLAG_HTML);
         }
         // older version without the possibility to provide old passwords
-        return new AA_Value(ParamImplode(['AA_PASSWD', reset($data4field)]), $flag);
+        return new AA_Value(ParamImplode(['AA_PASSWD', reset($data4field)]), FLAG_HTML);
     }
 
     /** getClassProperties function of AA_Serializable

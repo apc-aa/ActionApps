@@ -187,9 +187,11 @@ HTML;
         return $ret;
     }
 
-    public static function getValue($data4field): AA_Value
+    public static function getWidgetValue(array $data4field): AA_Value
     {
-        return MchWidget::getValue($data4field);
+        $data4field['mch'] = $data4field['rim'];
+        unset($data4field['rim']);
+        return MchWidget::getWidgetValue($data4field);
     }
 
     /** @inheritDoc */

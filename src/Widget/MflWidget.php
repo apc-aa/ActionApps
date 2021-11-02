@@ -169,9 +169,11 @@ class MflWidget extends Widget
      *
      *  static class method
      */
-    public static function getValue($data4field): AA_Value
+    public static function getWidgetValue(array $data4field): AA_Value
     {
         $flag = $data4field['flag'] & FLAG_HTML;
+        $data4field = $data4field['mfl'];
+
         $fld_value_arr = [];
 
         foreach ((array)$data4field as $key => $value) {

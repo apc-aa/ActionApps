@@ -75,17 +75,17 @@ class TfaWidget extends Widget
 
     /** @return AA_Value for the data send by the widget
      *   The data submitted by form usually looks like
-     *       aa[n1_54343ea876898b6754e3578a8cc544e6][password________][pwd][new]=MyPassword
-     * @param $data4field - array('pwd'=>MyPassword)
+     *       aa[n1_54343ea876898b6754e3578a8cc544e6][password________][tfa][gen]=1
+     * @param $data4field - ['tfa'=>['gen'=>1,'usr'=>,'pwd'=>,'otc'=>)
      *   This method coverts such data to AA_Value.
      */
-    public static function getValue($data4field): AA_Value
+    public static function getWidgetValue(array $data4field): AA_Value
     {
-        $flag = $data4field['flag'] & FLAG_HTML;
+        $data4field = $data4field['tfa'];
         if (is_array($data4field) AND isset($data4field['usr'])) {
-            return new AA_Value(ParamImplode([(($data4field['gen']==1) ? 'AA_2FASECRET' : 'AA_doNotGenerate'), $data4field['usr'], $data4field['pwd'], $data4field['otc']]), $flag);
+            return new AA_Value(ParamImplode([(($data4field['gen']==1) ? 'AA_2FASECRET' : 'AA_doNotGenerate'), $data4field['usr'], $data4field['pwd'], $data4field['otc']]), FLAG_HTML);
         }
-        return new AA_Value('', $flag); // ? or something else ?
+        return new AA_Value('', FLAG_HTML); // ? or something else ?
     }
 
     /** getClassProperties function of AA_Serializable

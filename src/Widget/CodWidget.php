@@ -8,6 +8,7 @@
 
 namespace AA\Widget;
 use AA\FormArray;
+use AA_Value;
 
 /** Code editor */
 class CodWidget extends TxtWidget
@@ -32,6 +33,13 @@ class CodWidget extends TxtWidget
             $this->ids_4_editor = [];
         }
         return $ret;
+    }
+
+    /** @return AA_Value for the data send by the widget
+     */
+    public static function getWidgetValue(array $data4field): AA_Value
+    {
+        return parent::getWidgetValue($data4field)->replaceInValues(["\xc2\xa0"], [' ']);
     }
 
     /** getClassProperties function of AA_Serializable

@@ -152,8 +152,6 @@ class DteWidget extends Widget
         return ['html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired()];
     }
 
-
-
     /** @return AA_Value for the data send by the widget
      *   This is compound widgets, which consists from more than one input, so
      *   the inputs looks like:
@@ -165,11 +163,12 @@ class DteWidget extends Widget
      *   This method AA\Widget\DteWidget::getValue() is called to grab the value
      *   (or multivalues) from the submitted form
      *
-     * @param $data4field - array('y'=>array(), 'm'=>array(), 'd'=>array(), 't'=>array())  - for select based date OR ...
-     *                      array('i'=>array())                                            - for <input type=date> based date
+     * @param $data4field - ['dte'=>['y'=>[], 'm'=>[], 'd'=>[], 't'=>[]]]  - for select based date OR ...
+     *                      ['dte'=>['i'=>[]]                              - for <input type=date> based date
      */
-    public static function getValue($data4field): AA_Value
+    public static function getWidgetValue(array $data4field): AA_Value
     {
+        $data4field = $data4field['dte'];
         $values = [];
 
         // special case - we use <input type=date
@@ -206,7 +205,7 @@ class DteWidget extends Widget
             }
         }
 
-        return new AA_Value($values);
+        return new AA_Value($values, FLAG_HTML);
     }
 
     /**
