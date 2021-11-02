@@ -1280,7 +1280,7 @@ function gensalt($saltlen) {
 // ---------------------------------------------------------------------------------------------
 
 /** split_escaped function
- *  like PHP split, but additionally provides $escape_pattern to stand for occurences of $pattern,
+ *  like PHP split, but additionally provides $escape_pattern to stand for occurrences of $pattern,
  *  e.g. split_escaped (":", "a#:b:c", "#:") returns array ("a:b","c")
  * @param $pattern
  * @param $string
@@ -1293,10 +1293,6 @@ function split_escaped($pattern, $string, $escape_pattern) {
         $dummy .= '^';   // add another strange character to the
     }
     return str_replace($dummy, $pattern, explode($pattern, str_replace($escape_pattern, $dummy, $string)));
-   // foreach ($strings as $key => $val) {
-   //     $strings[$key] = (string)str_replace($dummy, $pattern, $val);
-   // }
-   // return $strings;
 }
 
 /** join_escaped function
@@ -1330,6 +1326,14 @@ function join_and_quote( $pattern, $strings ) {
         $retval .= addslashes($string);
     }
     return $retval;
+}
+
+/** removes all whitespaces from the string
+ * @param $string
+ * @return string
+ */
+function inner_trim(string $string): string {
+    return str_replace([' ', "\n", "\t", "\r"], '', $string);
 }
 
 function ReadFileSafe($url) {

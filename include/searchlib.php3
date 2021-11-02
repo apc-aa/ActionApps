@@ -475,7 +475,7 @@ class AA_Set extends AA_Object {
      * @param $defaultCondsOperator
      */
     function addCondsFromString($string, $defaultCondsOperator='RLIKE') {
-        if (substr($string, 0, 2)== 'd-') {
+        if (substr(inner_trim($string), 0, 2)== 'd-') {
             $this->_parseViewConds($string);
         }
         $this->_parseCondsString($string, $defaultCondsOperator);
@@ -729,27 +729,30 @@ class AA_Set extends AA_Object {
         $i=0;
         $command_params = $command->getParameterArray();
         while ( $command_params[$i] ) {
-             if ( AA_Set::check($command_params[$i], $command_params[$i+2]) ) {
-                 $field_arr = explode(',',$command_params[$i]);
-                 $cond_str  = $command_params[$i+2];
+            $fld = inner_trim($command_params[$i]);
+            $op  = trim($command_params[$i+1]);
+            $val = $command_params[$i+2];
 
-                 // d- conds in {item:....:d-..} could be url encoded (as produced by {conds:...})
-                 // so if the first and last characetr is encoded quotes, let's decode it
-                 if ( (substr($cond_str,0,3) == '%22') AND (substr($cond_str,-3) == '%22')) {
-                     $cond_str = rawurldecode($cond_str);
-                 }
+            if ( AA_Set::check($fld, $val) ) {
+                $field_arr = explode(',',$fld);
 
-                 // well stripsplashes is bad - we never want the slashed text
-                 // here, but we do not know, if the command is not from url
-                 // so we will rather stripslash the string in most cases
-                 // However - if the string starts with ", then it is never
-                 // slashed, for sure
-                 // @todo remove stripslashes for AA3.0 - Honza
-                 if ( substr($cond_str,0,1) !='"') {
-                     $cond_str = stripslashes($cond_str);
-                 }
-                 $this->conds[] = new AA_Condition($field_arr, $command_params[$i+1], $cond_str);
-             }
+                // d- conds in {item:....:d-..} could be url encoded (as produced by {conds:...})
+                // so if the first and last characetr is encoded quotes, let's decode it
+                if ( (substr($val,0,3) == '%22') AND (substr($val,-3) == '%22')) {
+                    $val = rawurldecode($val);
+                }
+
+                // well stripsplashes is bad - we never want the slashed text
+                // here, but we do not know, if the command is not from url
+                // so we will rather stripslash the string in most cases
+                // However - if the string starts with ", then it is never
+                // slashed, for sure
+                // @todo remove stripslashes for AA3.0 - Honza
+                if ( substr($val,0,1) !='"') {
+                    $val = stripslashes($val);
+                }
+                $this->conds[] = new AA_Condition($field_arr, $op, $val);
+            }
              $i += 3;
          }
          return true;

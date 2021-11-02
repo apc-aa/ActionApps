@@ -190,7 +190,7 @@ class AA_View_Commands {
      * Parameters are separated by '-'. To escape '-' character use '--' (then it
      * is not used as parameter separator. If you use aliases inside cmd[], then
      * the aliases are expanded by this function (depending on als[] alias array)
-     * @param string $cmd cmd[<vid>] string from url
+     * @param string|array $cmd cmd[<vid>] string from url
      * @param array $als array of aliases used to expand inside cmd
      *                   (als[] obviously comes from url, as well)
      */
@@ -226,6 +226,8 @@ class AA_View_Commands {
             }
 
             [$command, $params] = explode("-", $cmd_part, 2);
+            $command = trim($command);
+            $params  = ltrim($params);
             $splited = in_array($command, ['x', 'i', 'o']) ? explode("-", $params) : split_escaped("-", $params, "--");
             $this->addCommand($command, $splited);
 

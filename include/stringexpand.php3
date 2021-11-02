@@ -3272,6 +3272,11 @@ class AA_Stringexpand_Ids extends AA_Stringexpand {
      * @return string
      */
     function expand($slices='', $conds=null, $sort=null, $delimiter=null, $ids=null, $limit=null) {
+        $conds = ltrim($conds);
+        $sort  = ltrim($sort);
+        $ids   = trim($ids);
+        $limit = trim($limit);
+
         $restrict_zids = $ids ? new zids(explode_ids($ids),'l') : false;
         $postsort = '';
         if (mb_strpos($sort, '_#')===0) { // found on position 0 - we want to sort by alias here
@@ -8980,6 +8985,7 @@ class AA_Stringexpand_Manager extends AA_Stringexpand_Nevercache {
             }
         }
 
+        $inner_code = '';
         if ($edit_code AND is_long_id($_GET['aaedit'])) {
             // @todo check slice of edited item to match $slices
             $inner_code = StrExpand('AA_Stringexpand_Item', [$_GET['aaedit'], $edit_code]);
@@ -8987,21 +8993,22 @@ class AA_Stringexpand_Manager extends AA_Stringexpand_Nevercache {
         } else {
 
             $item_id = strlen($item_id) ? $item_id : (($this AND $this->item) ? $this->item->getId() : null);
-            if ($field AND ($s = AA_Slice::getModule(reset($slices_arr))) AND $s->isField($field) AND strlen($item_id)) {
-                $conds .= $conds ? "-$field-=-$item_id" : "d-$field-=-$item_id";
-            }
-            if (!$conds) {
-                warn("No conditions");
-                return '';
-            }
 
             if (!$sort) {
                 $sort = 'publish_date....';
             }
 
-            // @todo check $slices to be from current site module
-            $set = new AA_Set($slices_arr, $conds, $sort);
-            $zids = $set->query();
+            if ($field AND ($s = AA_Slice::getModule(reset($slices_arr))) AND $s->isField($field) AND strlen($item_id)) {
+                $conds .= $conds ? "-$field-=-$item_id" : "d-$field-=-$item_id";
+            }
+            if (!$conds) {
+                warn("No conditions");
+                $inner_code .= "<!-- Err: manager - $field -  No conditions -->";
+                $zids = new zids();
+            } else {
+                // @todo check $slices to be from current site module
+                $zids = (new AA_Set($slices_arr, $conds, $sort))->query();
+            }
                 
             // load all mentioned items in one step
             AA_Items::preload($zids);
@@ -9021,7 +9028,7 @@ class AA_Stringexpand_Manager extends AA_Stringexpand_Nevercache {
                           </article>';
 
             // expired, ... are already filtered by query() above (if expiry_date is not in conds)
-            $inner_code = AA_Stringexpand_Item::itemJoin(AA_Items::getFormatted($zids, $list_code, AA_BIN_ALL), '');
+            $inner_code .= AA_Stringexpand_Item::itemJoin(AA_Items::getFormatted($zids, $list_code, AA_BIN_ALL), '');
 
             if ($mode_arr['F']) {
 
@@ -9059,7 +9066,6 @@ EOT;
                        '. ($footer ? "<footer>$footer</footer>" : '') .'
                  </article>';
         $ret .= "<script>$dz_setup_code</script>";
-
 
         AA::Stringexpander()->setDependentParts(array_merge($slices_arr, ['aaedit']), $hash, $ret);
         AA::Stringexpander()->addRequire('css-aa-system');

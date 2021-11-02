@@ -61,9 +61,7 @@ class OnPageChanger  {
                 [$saved_ok,$saved_err] = $saver->run();
 
                 $err_msg = $saved_err ? $saver->report() : '';
-
                 $this->sendPartsAndExit($saver->changedModules(),$err_msg);
-
             }
             if (isset($_GET['aaedit'])) {
                 $this->sendPartsAndExit(['aaedit']);
@@ -76,8 +74,6 @@ class OnPageChanger  {
         call_user_func($this->content_function);
 
         $parts = AA::Stringexpander()->getDependentParts($vars);
-        //echo $parts;
-        //echo AA::Stringexpander();
         if (AA::$encoding != 'utf-8') {
             $convertor = ConvertCharset::singleton();
             foreach ($parts as $k => $v) {
