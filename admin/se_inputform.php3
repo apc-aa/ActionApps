@@ -297,6 +297,9 @@ $script2run = '
    window.cm_a1 = CodeMirror.fromTextArea(document.getElementById("alias1_func"), opts);
    window.cm_a2 = CodeMirror.fromTextArea(document.getElementById("alias2_func"), opts);
    window.cm_a3 = CodeMirror.fromTextArea(document.getElementById("alias3_func"), opts);
+   window.cm_h1 = CodeMirror.fromTextArea(document.getElementById("alias1_help"), opts);
+   window.cm_h2 = CodeMirror.fromTextArea(document.getElementById("alias2_help"), opts);
+   window.cm_h3 = CodeMirror.fromTextArea(document.getElementById("alias3_help"), opts);
    window.cm_ih = CodeMirror.fromTextArea(document.getElementById("input_help"), opts);
    window.cm_ib = CodeMirror.fromTextArea(document.getElementById("input_before"), opts);
    ';
