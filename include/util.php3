@@ -1573,8 +1573,8 @@ class AA_Contentcache {
     }
 
 
-    /** Decides if the content should go to stable or soft chache - $content_stable - not deleted by clear_soft()
-     *  (we don want to invalidate the variables {(  )} when {newitem::} (so StoreItem()) is called  )
+    /** Decides if the content should go to stable or soft cache - $content_stable - not deleted by clear_soft()
+     *  (we don't want to invalidate the variables {(  )} when {newitem::} (so StoreItem()) is called  )
      * @param $access_code string  - access code to check
      * @return bool
      */

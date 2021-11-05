@@ -4138,7 +4138,9 @@ class AA_Stringexpand_Ifintersect extends AA_Stringexpand_Nevercache {
 }
 
 /** Tests type of the string
+ *  {iftype:<haystack>:<test1>:<text1>[:...]}
  *  Example: {iftype:{qs:id}:longid:_#1:shortid:warning - use long id:parameter is not id}
+ *   tests:  longid | shortid | mail | signed | number | positive
  */
 class AA_Stringexpand_Iftype extends AA_Stringexpand_Nevercache {
 
@@ -4161,9 +4163,12 @@ class AA_Stringexpand_Iftype extends AA_Stringexpand_Nevercache {
      */
     public function typeCompare($test_string, $test) {
         switch ($test) {
-            case 'longid' : return is_long_id($test_string);
-            case 'shortid': return is_short_id($test_string) AND ($test_string > 0);  // maybe we should update the is_short_id test
-            case 'mail':    return (bool)filter_var($test_string, FILTER_VALIDATE_EMAIL);
+            case 'longid' :  return is_long_id($test_string);
+            case 'shortid':  return is_short_id($test_string) AND ($test_string > 0);  // maybe we should update the is_short_id test
+            case 'mail':     return (bool)filter_var($test_string, FILTER_VALIDATE_EMAIL);
+            case 'signed':   return IsSigInt($test_string);                                     // any integer
+            case 'number':   return ctype_digit($test_string);                                  // integer >= 0
+            case 'positive': return (ctype_digit($test_string) and ((int)$test_string > 0));    // integer > 0
         }
         return false;
     }
