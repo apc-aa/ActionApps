@@ -6991,14 +6991,14 @@ class AA_Stringexpand_Hitcounter extends AA_Stringexpand {
     function expand($type='', $ids='') {
         $ret = '';
         switch ($type) {
-            case 'minutes':   $group_string = 'Y-m-d-H-i'; break;
-            case 'hours':     $group_string = 'Y-m-d-H';   break;
-            case 'days':      $group_string = 'Y-m-d';     break;
-            case 'dayhours':  $group_string = 'H';         break;
-            case 'weeks':     $group_string = 'o-W';       break;    // o - like Y but respects week numbering
-            case 'weekdays':  $group_string = 'N-D';       break;
-            case 'months':    $group_string = 'Y-m';       break;
-            case 'years':     $group_string = 'Y';         break;
+            case 'minutes':   $group_string = 'Y-m-d H:i';  break;
+            case 'hours':     $group_string = 'Y-m-d H:00'; break;
+            case 'days':      $group_string = 'Y-m-d';      break;
+            case 'dayhours':  $group_string = 'H';          break;
+            case 'weeks':     $group_string = 'o-W';        break;    // o - like Y but respects week numbering
+            case 'weekdays':  $group_string = 'N-D';        break;
+            case 'months':    $group_string = 'Y-m';        break;
+            case 'years':     $group_string = 'Y';          break;
             default:          return '';
         }
         $zids   = new zids(explode_ids($ids));
