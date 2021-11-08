@@ -7003,7 +7003,7 @@ class AA_Stringexpand_Hitcounter extends AA_Stringexpand {
         }
         $zids   = new zids(explode_ids($ids));
         $s_zids = new zids($zids->shortids(), 's');
-        $hits   = GetTable2Array('SELECT id, time, hits FROM hit_archive WHERE '. $s_zids->sqlin('id'), '');
+        $hits   = DB_AA::select([], 'SELECT id, time, hits FROM hit_archive', [['id', $s_zids->getArray(), 'i']]);
         $stat   = [];
         foreach ($hits as $hit) {
             $day        = date($group_string, $hit['time']);
