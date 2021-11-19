@@ -86,7 +86,6 @@ class FilWidget extends Widget
         $add = $data4field['add']=='1';  // if the widget is multiple, then it behaves differently with deletion - the old uploads are not cleaned
 
         // upload could be also multivalue
-        $max = max(count($uploads), count($urls));
 
         $values = [];
 
@@ -127,6 +126,7 @@ class FilWidget extends Widget
         $delim = '';
         $width = $this->getProperty('width', 60);            // @todo - width is not property of file widget, yet
         $max_characters = (int)$this->getProperty('max_characters', 254);  // @todo - width is not property of file widget, yet
+        $allowed_ftypes = $this->getProperty('allowed_ftypes', '');
         $display_url = (int)$this->getProperty('display_url', 0);
         $multiple = (int)$this->getProperty('multiple', 0) ? ' multiple' : '';
         $value = $content->getAaValue($aa_property->getId());
@@ -164,9 +164,11 @@ class FilWidget extends Widget
         $input_name = $base_name . "[fil][var][]";
         $input_id = FormArray::formName2Id($input_name);
         //$input_name = "testfileupload";
+        $accept  = $allowed_ftypes ? "accept=\"$allowed_ftypes\"" : '';
+
         if ($type == 'normal') {
             $required = ($aa_property->isRequired() AND !$value->count() AND ($display_url > 0)) ? 'required' : '';
-            $widget .= "    <br><input type=file class=filepond size=\"$width\"$multiple maxlength=\"$max_characters\" name=\"$input_name\" id=\"$input_id\" $required><!--$type -->";
+            $widget .= "    <br><input type=file class=filepond size=\"$width\"$multiple maxlength=\"$max_characters\" name=\"$input_name\" id=\"$input_id\" $required $accept><!--$type -->";
         } else {
             $url_params = [
                 'inline' => 1,
@@ -179,7 +181,7 @@ class FilWidget extends Widget
                     <input type="button" value="' . _m('Delete') . '" onclick="document.getElementById(\'fuf' . $base_id . '\').submit()"><br>';
             }
             $widget .= '
-                <input type="file" size="' . $width . '"'. $multiple.' maxlength="' . $max_characters . '" name="' . $input_name . '" id="' . $input_id . '" onchange="document.getElementById(\'' . $base_id . 'upload\').style.display = ((this.value == \'\') ? \'none\' : \'inline-block\');">
+                <input type="file" size="' . $width . '"'. $multiple.' maxlength="' . $max_characters . '" name="' . $input_name . '" id="' . $input_id . '" ' .$accept. ' onchange="document.getElementById(\'' . $base_id . 'upload\').style.display = ((this.value == \'\') ? \'none\' : \'inline-block\');">
                 <input type="hidden" name="ret_code_enc" id="ret_code_enc' . $base_id . '" value="">
                 <input type="submit" name="' . $base_id . 'upload" id="' . $base_id . 'upload" value="' . _m('Upload') . '" style="display:none;">
                 </form>

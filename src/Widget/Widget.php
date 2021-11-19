@@ -684,7 +684,7 @@ class Widget extends AA_Object implements NamedInterface {
                     $ret[$pid] = new AA_Property($pid, _m("Add Form"), 'string', false, true, 'string', false, _m("(for slices only) ID of the form for adding items into related slice"), '', '6f466be8fdf38d67ae8b4973f7c95761');
                     break;
                 case 'allowed_ftypes':
-                    $ret[$pid] = new AA_Property($pid, _m("Allowed file types"), 'string', false, true, 'string', false, '', '', "image/*");
+                    $ret[$pid] = new AA_Property($pid, _m("Allowed file types"), 'string', false, true, 'string', false, _m("Used for accept attribute - image/*,.doc,.docx,.pdf"), '', "image/*");
                     break;
                 case 'label':
                     $ret[$pid] = new AA_Property($pid, _m("Label"), 'string', false, true, 'string', false, _m("To be printed before the file upload field"), '', _m("File: "));
