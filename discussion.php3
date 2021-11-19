@@ -48,14 +48,11 @@ foreach ($_REQUEST as $k => $v) {
 /**
  * PutSearchLog
  */
-function PutSearchLog() {
-    global $searchlog, $view_param;
-
+function PutSearchLog($searchlog, $found_count=0) {
     $httpquery    = $_SERVER['QUERY_STRING_UNESCAPED'].$_SERVER['REDIRECT_QUERY_STRING_UNESCAPED'];
     $httpquery    = DeBackslash($httpquery);
     $httpquery    = str_replace("'", "\\'", $httpquery);
     $db           = getDb();
-    $found_count  = count($view_param["disc_ids"]);
     [$usec, $sec] = explode(" ",microtime());
     $slice_time   = 1000 * ((float)$usec + (float)$sec - $GLOBALS['disc_starttime']);
     $user         = $_SERVER['PHP_AUTH_USER'];
@@ -116,7 +113,7 @@ if ($cacheentry = AA::Pagecache()->getPage($cache_key, $nocache)) {
 }
 
 if ($searchlog) {
-    PutSearchLog();
+    PutSearchLog($searchlog, count($view_param["disc_ids"]));
 }
 exit;
 

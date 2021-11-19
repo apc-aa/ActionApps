@@ -82,7 +82,6 @@ function GetHidden($itemform_id) {
  *
  */
 function CloseDialog($zid = null, $openervar = null, $insert=true, $url2go=null) {
-    global $TPS; // defined in formutil.php3
     // Used for adding item to another slice from itemedit's popup.
     $js = '';
     if ($zid) {               // id of new item defined
@@ -93,7 +92,7 @@ function CloseDialog($zid = null, $openervar = null, $insert=true, $url2go=null)
         DefineBaseAliases($aliases, $content->getSliceID());  // _#JS_HEAD_, ...
         $item     = new AA_Item($content->getContent(),$aliases);
         $function = $insert ? 'SelectRelations' : 'UpdateRelations';
-        $item->setformat( "$function('$openervar','".$TPS['AMB']['A']['tag']."','".$TPS['AMB']['A']['prefix']."','".$TPS['AMB']['A']['tag']."_#ITEM_ID_','_#JS_HEAD_');" );
+        $item->setformat( "$function('$openervar','".TPS['AMB']['A']['tag']."','".TPS['AMB']['A']['prefix']."','".TPS['AMB']['A']['tag']."_#ITEM_ID_','_#JS_HEAD_');" );
 
         $js = $item->get_item() ."\n";
     }

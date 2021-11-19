@@ -190,7 +190,7 @@ class AA_Linkcheck {
      *  creates new valid_codes string (new is added as first)
      * @param $arr
      * @param $valid_codes
-     * @return string
+     * @return string                                                                   
      */
     function add_check($arr, $valid_codes) {
         $element = $this->remove_old($valid_codes);

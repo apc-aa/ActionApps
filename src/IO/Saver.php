@@ -63,7 +63,7 @@ class Saver implements AA\Later\LaterInterface {
     private $_updated_slices = [];
     /** array of slice ids with rewritten items (after run()) - the long ones */
 
-    protected $_messages = [];
+    // protected $_messages = [];
 
 
     /** AA\IO\Saver function

@@ -87,7 +87,7 @@ if (!$slice_field ) { $slice_field ='_#HEADLINE'; }
 
 for ( $i=0, $ino=strlen($mode); $i<$ino; ++$i) {
     $m1 = substr($mode,$i,1);
-    $mode_string .= "&nbsp;<a href=\"javascript:SelectRelations('$var_id','".$TPS['AMB'][$m1]['tag']."','".$TPS['AMB'][$m1]['prefix']."','".$TPS['AMB'][$m1]['tag']."_#ITEM_ID_','{safe:{javascript:{expand:".$slice_field."}}}')\">". _m($TPS['AMB'][$m1]['str']) ."</a>&nbsp;";
+    $mode_string .= "&nbsp;<a href=\"javascript:SelectRelations('$var_id','".TPS['AMB'][$m1]['tag']."','".TPS['AMB'][$m1]['prefix']."','".TPS['AMB'][$m1]['tag']."_#ITEM_ID_','{safe:{javascript:{expand:".$slice_field."}}}')\">". _m(TPS['AMB'][$m1]['str']) ."</a>&nbsp;";
 }
 
 $aliases = $slice->aliases();

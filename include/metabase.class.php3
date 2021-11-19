@@ -592,7 +592,7 @@ class AA_Metabase {
         return is_object($table) ? $table->isColumn($columnname) : false;
     }
 
-    /** returns asociative array of table columns as object, so we can work wit it (in varset INSERT, ...)
+    /** returns asociative array of table columns as object, so we can work with it (in varset INSERT, ...)
      * @param $tablename
      * @return AA_MbC[]
      */

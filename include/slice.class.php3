@@ -75,7 +75,7 @@ class AA_Module {
     /** get module - called as:
      *   $site        = AA_Module_Site::getModule($module_id)
      *   $slice       = AA_Slice::getModule($module_id)
-     *   $some_module = AA_Module::getModule($module_id)  // this is not recommended - we usualy know, which module it should be
+     *   $some_module = AA_Module::getModule($module_id)  // this is not recommended - we usually know, which module it should be
      *  @param $module_id
      * @return AA_Module|AA_Slice|AA_Module_Site|AA_Module_Alerts|AA_Module_Links|AA_Module_Polls
      */

@@ -66,6 +66,8 @@ https://www.apc.org/
 
 // post2shtml could be include from other files, where config.php3 is already
 // required (and probably is on another path)
+use AA\IO\DB\DB_AA;
+
 if ( !defined('DB_NAME') ) {
     require_once __DIR__."/./include/config.php3";
 }
@@ -94,12 +96,8 @@ function store_vars() {
         }
     }
 
-    $vars = addslashes( serialize($vars) );
-
     $id = new_id();
-    $db = getDB();
-    $db->query("INSERT INTO post2shtml (id, vars, time) VALUES ('$id', '$vars', ".time().")");
-    freeDB($db);
+    AA::Metabase()->doInsert('post2shtml', ['id'=>$id,'vars'=>serialize($vars),'time'=>time()]);
     if ($shtml_page) {
         $shtml_page  = stripslashes($shtml_page);
         $shtml_page .= (strchr ($shtml_page,"?") ? "&" : "?") . "post2shtml_id=$id";

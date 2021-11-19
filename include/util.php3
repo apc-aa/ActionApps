@@ -612,16 +612,6 @@ function GetModuleInfo($module_id, $type) {
     return $ret;
 }
 
-/** GetSliceInfo function
- *  gets slice fields
- * @param $slice_id
- * @deprecated - use AA_Slice::getModule($slice_id) and silmilar
- * @return array|bool|string
- */
-function GetSliceInfo($slice_id) {
-    return GetModuleInfo($slice_id,'S');
-}
-
 // -------------------------------------------------------------------------------
 
 /** CreateBinCondition function

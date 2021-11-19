@@ -25,13 +25,13 @@ function DeBackslash($txt) {
 }   
 
 function add_vars($query_string="") {
-  global $QUERY_STRING_UNESCAPED, $REDIRECT_QUERY_STRING_UNESCAPED;
-  if ( $query_string ) 
-    $varstring = $query_string;
-  elseif (isset($REDIRECT_QUERY_STRING_UNESCAPED))
-    $varstring = $REDIRECT_QUERY_STRING_UNESCAPED;
-  else
-    $varstring = $QUERY_STRING_UNESCAPED;
+  if ( $query_string ) {
+      $varstring = $query_string;
+  } elseif (isset($_SERVER['REDIRECT_QUERY_STRING_UNESCAPED'])) {
+      $varstring = $_SERVER['REDIRECT_QUERY_STRING_UNESCAPED'];
+  } else {
+      $varstring = $_SERVER['QUERY_STRING_UNESCAPED'];
+  }
 
   $a = explode("&",$varstring);
   $i = 0;

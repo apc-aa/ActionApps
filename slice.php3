@@ -250,7 +250,7 @@ require_once __DIR__."/include/javascript.php3";
 is_object( $db ) || ($db = getDB());
 
 $slice      = AA_Slice::getModule($slice_id);
-$slice_info = GetSliceInfo($slice_id);       // get slice info
+$slice_info = GetModuleInfo($slice_id, 'S');       // get slice info
 
 if (!$slice_info OR $slice_info['deleted']>0) {
     ExitPage(_m("Invalid slice number or slice was deleted") . " (ID: $slice_id)");
@@ -593,7 +593,7 @@ if ($zids->count() > 0) {
 }
 
 if ($searchlog) {
-    PutSearchLog();
+    PutSearchLog($searchlog);
 }
 
 if ($debug) {

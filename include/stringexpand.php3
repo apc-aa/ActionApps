@@ -1,4 +1,4 @@
-<?php
+    <?php
 /**
  *
  * PHP version 7.2+
@@ -3275,7 +3275,7 @@ class AA_Stringexpand_Ids extends AA_Stringexpand {
         $conds = ltrim($conds);
         $sort  = ltrim($sort);
         $ids   = trim($ids);
-        $limit = trim($limit);
+        $limit = (int)trim($limit);
 
         $restrict_zids = $ids ? new zids(explode_ids($ids),'l') : false;
         $postsort = '';

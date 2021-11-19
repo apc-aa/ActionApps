@@ -57,7 +57,7 @@ define('AA_WIDTHTOR_SHORT', '<option value="wIdThTor">&nbsp;</option>');
     // but any letters can be used, i.e. this table can be extended.
     // Next step might be to extend parameter recognition to load this table
     // Retaining backward compatibility with "[AMB]+" recognition
-$TPS = [
+const TPS = [
   'AMB' => [
     'A' => ['prefix' => '&rarr; ',   'tag' => '',  'str' => 'Add'],             // _m("Add") ),             - we call the translation later - here it is not translated
     'M' => ['prefix' => '&harr; ',   'tag' => 'y', 'str' => 'Add&nbsp;Mutual'], // _m("Add&nbsp;Mutual") ),
@@ -947,8 +947,7 @@ class AA_Inputfield {
                 case 'iso': [, $rows, $mode, $design, $tp, $actions, $whichitems, $conds, $condsrw, $slice_field] = $this->param;
                             $mode      = get_if($mode,'AMB');         // AMB - show 'Add', 'Add mutual' and 'Add backward' buttons
                             $tp        = get_if($tp,  'AMB');         // Default to use the AMP table
-                            $tagprefix = ( isset($GLOBALS['TPS'][$tp])              ? $GLOBALS['TPS'][$tp] :
-                                         ( isset($GLOBALS['apc_state']['TPS'][$tp]) ? $GLOBALS['apc_state']['TPS'][$tp] : null ));
+                            $tagprefix = TPS[$tp] ?? ( $GLOBALS['apc_state']['TPS'][$tp] ?? null );
                             if ( is_null($tagprefix) ) {
                                 $this->msg[] = _m("Unable to find tagprefix table %1", [$tp]);
                             }
@@ -1938,7 +1937,7 @@ class AA_Inputfield {
         $this->field_name('secrow');
         $file_field_name = $name.'x';
         //$triggers  = $this->use_triggers ? AA_Jstriggers::get("input", $file_field_name, "") : '';
-        $this->echovar( "<input type=file name=\"$file_field_name\" accept=\"$accepts\" $file_field_name>", 'file');
+        $this->echovar( "<input type=file name=\"$file_field_name\" accept=\"$accepts\">", 'file');
         $this->helps('plus');
     }
 

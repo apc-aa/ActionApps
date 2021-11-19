@@ -69,30 +69,30 @@ require_once __DIR__."/../include/csn_util.php3";
 
 //-------------------------- Constants -----------------------------------------
 
-$FORMATS = [
-    "HTML"  => "http://www.isi.edu/in-notes/iana/assignments/media-types/text/html",
-                 "PLAIN" => "http://www.isi.edu/in-notes/iana/assignments/media-types/text/plain"
+const MEDIAFORMATS = [
+    'HTML'  => 'http://www.isi.edu/in-notes/iana/assignments/media-types/text/html',
+    'PLAIN' => 'http://www.isi.edu/in-notes/iana/assignments/media-types/text/plain'
 ];
 
-$MAP_DC2AA = [
+const MAP_DC2AA = [
     "title"       => "headline",
-                   "creator"     => "author",
-                   "subject"     => "abstract",
-                   "description" => "abstract",
-                   "date"        => "publish_date",
-                   "source"      => "source",
-                   "language"    => "lang_code",
-                   "relation"    => "source_href",
-                   "coverage"    => "place"
+    "creator"     => "author",
+    "subject"     => "abstract",
+    "description" => "abstract",
+    "date"        => "publish_date",
+    "source"      => "source",
+    "language"    => "lang_code",
+    "relation"    => "source_href",
+    "coverage"    => "place"
 ];
 
-$XML_BEGIN = '<'.'?xml version="1.0" encoding="UTF-8"?'. ">\n".
+const XML_BEGIN = '<'.'?xml version="1.0" encoding="UTF-8"?'. ">\n".
 "<rdf:RDF
-        xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"
-        xmlns:aa=\"http://www.apc.org/rss/aa-module.html\"
-        xmlns:dc=\"http://purl.org/dc/elements/1.1/\"
-        xmlns:content=\"http://purl.org/rss/1.0/modules/content/\"
-        xmlns=\"http://purl.org/rss/1.0/\">\n";
+    xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"
+    xmlns:aa=\"http://www.apc.org/rss/aa-module.html\"
+    xmlns:dc=\"http://purl.org/dc/elements/1.1/\"
+    xmlns:content=\"http://purl.org/rss/1.0/modules/content/\"
+    xmlns=\"http://purl.org/rss/1.0/\">\n";
 
 //-------------------------- Function definitons -------------------------------
 
@@ -116,6 +116,7 @@ function code($v, $cdata=false) {
     // no htmlspecialchars, here
     return '<![CDATA['.$encoder->Convert($v, $GLOBALS['g_slice_encoding'], 'utf-8').']]>';
 }
+
 /** GetFlagFormat function
  * @param $flag
  * @return string - "HTML"/"PLAIN"
@@ -250,8 +251,6 @@ function GetBaseFieldContent($slice_fields, $ftype, $content4id) {
  * @return string - fielddata xml tags
  */
 function GetXMLFieldData($slice_id, $field_id, $content4id) {
-    global $FORMATS;
-
     $cont_vals = $content4id[$field_id];
 
     // the id should be unpacked for transmition
@@ -269,7 +268,7 @@ function GetXMLFieldData($slice_id, $field_id, $content4id) {
         $out .= "\t\t<rdf:li><aa:fielddata>\n".
                    "\t\t\t<aa:field rdf:resource=\"".AA_INSTAL_URL."field/$slice_id/$field_id\"/>\n".
                    "\t\t\t<aa:fieldflags>".$v['flag']."</aa:fieldflags>\n".
-                   "\t\t\t<aa:format rdf:resource=\"".$FORMATS[$flag_format]."\"/>\n".
+                   "\t\t\t<aa:format rdf:resource=\"". MEDIAFORMATS[$flag_format]."\"/>\n".
                    "\t\t\t<rdf:value>". code($v['value'], $flag_format=="HTML"). "</rdf:value>\n".
                 "\t\t</aa:fielddata></rdf:li>\n";
    }
@@ -285,7 +284,6 @@ function GetXMLFieldData($slice_id, $field_id, $content4id) {
  * @return string xml_items
  */
 function GetXMLItem($slice_id, $item_id, $content4id, $slice_fields) {
-    global $FORMATS, $MAP_DC2AA;
     static $value2const_id;
     static $slice_url;
 
@@ -319,7 +317,7 @@ function GetXMLItem($slice_id, $item_id, $content4id, $slice_fields) {
             $flag_format = GetFlagFormat($content4id[$f][0]['flag']);
             $xml_items .="\t<content:items><rdf:Bag>\n".
                            "\t\t<rdf:li><content:item>\n".
-                              "\t\t\t<content:format rdf:resource=\"".$FORMATS[$flag_format]."\"/>\n".
+                              "\t\t\t<content:format rdf:resource=\"". MEDIAFORMATS[$flag_format]."\"/>\n".
                               "\t\t\t<rdf:value>". code($content4id[$f][0]['value'], $flag_format=="HTML"). "</rdf:value>\n".
                            "\t\t</content:item></rdf:li>\n".
                          "\t</rdf:Bag></content:items>\n";
@@ -346,7 +344,7 @@ function GetXMLItem($slice_id, $item_id, $content4id, $slice_fields) {
     }
 
     // create Dublin Core elements
-    foreach ( $MAP_DC2AA as $k => $v) {
+    foreach ( MAP_DC2AA as $k => $v) {
         $cont = GetBaseFieldContent($slice_fields,$v,$content4id);
         if ($v == "publish_date") { // convert publish date
             $cont = unixstamp_to_iso8601 ($cont);
@@ -469,7 +467,7 @@ if (!$slice_id) {
     if (!$slice_ids) {
         Error(ERR_NO_SLICE);
     }
-    echo $XML_BEGIN;
+    echo XML_BEGIN;
     foreach ($slice_ids as $sl_id) {
         $sl = AA_Slice::getModule($sl_id);
         $GLOBALS['g_slice_encoding'] = $sl->getCharset();
@@ -570,7 +568,7 @@ if ($ids) {
     }
 }
 
-echo $XML_BEGIN;
+echo XML_BEGIN;
 GetXMLFields(     $slice_id, $slice->getFields(), $xml_fields_refs,  $xml_fields);   // get fields and fields refs
 GetXMLCategories( $slice_id, $xml_categories_refs, $xml_categories ); //get categories and cat refs
 echo GetXMLChannel( $slice_id, $xml_fields_refs, $xml_categories_refs,$xml_items_refs,$time); // echo channel

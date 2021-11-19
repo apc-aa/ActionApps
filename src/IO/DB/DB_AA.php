@@ -287,26 +287,12 @@ class DB_AA extends AbstractDB
         return $ret;
     }
 
-    /** used as: DB_AA::insert('slice', [['javascript', $_POST['javascript']]]);
-     * @param string $table
-     * @param array  $varlist
-     * @return false|int
+    /* DB_AA::insert('slice', [['javascript', $_POST['javascript']]]);
+     * @deprecated - consider use AA::Metabase()->doInsert('table', ['id'=>$id,'vars'=>$vars,'time'=>time()]);
      */
-    static function insert(string $table, array $varlist) {
-        $cols = DB_AA::makeCols($varlist);
-        $ret  = false;
-        if ($cols) {
-            $db = getDB();
-            $db->query("INSERT `$table` SET $cols");
-            $ret = $db->affected_rows();
-            freeDB($db);
-        }
-        return $ret;
-    }
 
     /** used as: DB_AA::test('perms', [['object_type', $object_type], ['objectid', $objectID], ['flag', REL_FLAG_FEED, 'i']]);
      *           DB_AA::test(['content','item'], [['content.item_id', 'item.id', 'j'],['item.slice_id', $slice_id, 'l']]);
-     * @return bool - true if the record exist
      */
     static function test($table, $where) {
         $tbl = is_array($table) ? '`' . join('`,`', $table) . '`' : "`$table`";
