@@ -341,6 +341,12 @@ class AA_Langs {
         $LANGS = ['cz' => 'cs'];
         return $LANGS[$lang] ?: $lang;
     }
+
+    /** is current (or provided) $charset Unicode?
+     */
+    public static function isUTF(string $charset = ''): bool {
+        return (stripos(($charset ?: AA_Langs::getCharset()), 'utf-8') !== false);
+    }
 }
 
 /** any string - used as parameter to included JS files in order browser can
@@ -1052,14 +1058,6 @@ define ('DISCUS_HTML_FORMAT',  1);  // discussion html format flag in slice tabl
 define ('DISCUS_ADD_DISABLED', 2);  // disbles filldisc adding on new comments
 define ('SLICE_ALLOW_EXPIRED_CONTENT', 4);  // when we reference expired item, the content could be shown on public pages
 define ('SLICE_ALLOW_PENDING_CONTENT', 8);  // pending items, when referenced, will be wisible - this allows you also to see preview of pending item
-
-// don't check whether these fields exist (in the conds[] array used by searchform):
-$CONDS_NOT_FIELD_NAMES = [
-    "operator"   => true,
-    "value"      => true,
-    "discussion" => true,
-    "valuejoin"  => true
-];
 
 // used in add slice wizard
 define ("NOT_EMAIL_WELCOME", -1);

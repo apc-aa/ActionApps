@@ -33,7 +33,7 @@ require_once __DIR__."/mail.php3";
 require_once __DIR__."/mlx.php";
 require_once __DIR__."/um_util.php3";
 
-$SLICE_FIELDS_TEXT = [
+define ('SLICE_FIELDS_TEXT', [
     "id", "name", "owner", "created_by", "created_at",
    "type", "fulltext_format_top", "fulltext_format", "fulltext_format_bottom",
    "odd_row_format", "even_row_format", "compact_top", "compact_bottom",
@@ -47,14 +47,14 @@ $SLICE_FIELDS_TEXT = [
    "admin_format_top", "admin_format", "admin_format_bottom", "admin_remove",
    "fileman_dir","fileman_access","javascript","aditional",
    "mailman_field_lists", "auth_field_group", "reading_password"
-];
+]);
 
-$SLICE_FIELDS_NUM  = [
+define ('SLICE_FIELDS_NUM', [
     "deleted", "export_to_all", "template",
    "even_odd_differ", "category_sort", "d_listlen",
    "email_sub_enable", "exclude_from_dir","permit_anonymous_post",
    "permit_anonymous_edit", "permit_offline_fill",
-];
+]);
 
 /** add_user_and_welcome function
  *  Assigns user privileges and sends a welcome email, if the email address is filled.
@@ -279,7 +279,7 @@ if ( $add || $update ) {
             $varset->clear();
 
             // get template data
-            $varset->addArray( $SLICE_FIELDS_TEXT, $SLICE_FIELDS_NUM );
+            $varset->addArray( SLICE_FIELDS_TEXT, SLICE_FIELDS_NUM );
             if (! ($record = DB_AA::select1('', 'SELECT * FROM slice', [['id', $set_template_id, 'l']]))) {
                 $err["DB"] = MsgErr("Bad template id");
                 break;

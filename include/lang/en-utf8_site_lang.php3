@@ -9,7 +9,7 @@
 // Before each message there are links to program code where it was used.
 
 $mgettext_lang = "en-utf8";
-define("DB_COLLATION", "utf8mb4_general_ci");
+define("DB_COLLATION", "utf8mb4_unicode_ci");  // *_unicode_* is better for most cases than *_general_*
 setlocale(LC_ALL, 'en_US.utf8', 'en_US');  // sort, date, uppercase, ..
 
 # Unused messages

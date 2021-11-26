@@ -2414,6 +2414,121 @@ class AA_Stringexpand_Text2html extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // No reason to cache this simple function
 
+    const TYPOGRAPH_NO_BREAK_LINE = [
+        //one-letter prepositions
+        ' a ' => ' a&nbsp;',
+        '(a ' => '(a&nbsp;',
+        ' A ' => ' A&nbsp;',
+        'A ' => 'A&nbsp;',
+        '(A ' => '(A&nbsp;',
+        ' i ' => ' i&nbsp;',
+        '(i ' => '(i&nbsp;',
+        ' I ' => ' I&nbsp;',
+        'I ' => 'I&nbsp;',
+        '(I ' => '(I&nbsp;',
+        ' o ' => ' o&nbsp;',
+        '(o ' => '(o&nbsp;',
+        ' O ' => ' O&nbsp;',
+        'O ' => 'O&nbsp;',
+        '(O ' => '(O&nbsp;',
+        ' u ' => ' u&nbsp;',
+        '(u ' => '(u&nbsp;',
+        ' U ' => ' U&nbsp;',
+        'U ' => 'U&nbsp;',
+        '(U ' => '(U&nbsp;',
+        ' s ' => ' s&nbsp;',
+        '(s ' => '(s&nbsp;',
+        ' S ' => ' S&nbsp;',
+        'S ' => 'S&nbsp;',
+        '(S ' => '(S&nbsp;',
+        ' z ' => ' z&nbsp;',
+        '(z ' => '(z&nbsp;',
+        ' Z ' => ' Z&nbsp;',
+        'Z ' => 'Z&nbsp;',
+        '(Z ' => '(Z&nbsp;',
+        ' k ' => ' k&nbsp;',
+        '(k ' => '(k&nbsp;',
+        ' K ' => ' K&nbsp;',
+        'K ' => 'K&nbsp;',
+        '(K ' => '(K&nbsp;',
+        ' v ' => ' v&nbsp;',
+        '(v ' => '(v&nbsp;',
+        '&nbsp;v ' => '&nbsp;v&nbsp;', //two prepositions can happen here
+        ' V ' => ' V&nbsp;',
+        'V ' => 'V&nbsp;',
+        '(V ' => '(V&nbsp;',
+        //shortenings
+        ' str. ' => ' str.&nbsp;',
+        ' hod.' => '&nbsp;hod.',
+        ' obr. ' => ' obr.&nbsp;',
+        ' tab. ' => ' tab.&nbsp;',
+        ' s. ' => ' s.&nbsp;',
+        ' č. ' => ' č.&nbsp;',
+        '§ ' =>'§&nbsp;',
+        '# ' =>'#&nbsp;',
+        ' * ' =>' *&nbsp;',
+        ' † ' =>' †&nbsp;',
+        //units
+        ' m²' =>'&nbsp;m²',
+        ' cm²' =>'&nbsp;cm²',
+        ' dm²' =>'&nbsp;dm²',
+        ' mm²' =>'&nbsp;dm²',
+        ' m³' =>'&nbsp;m³',
+        ' cm³' =>'&nbsp;cm³',
+        ' dm³' =>'&nbsp;dm³',
+        ' mm³' =>'&nbsp;dm³',
+        ' kg' =>'&nbsp;kg',
+        ' h' =>'&nbsp;h',
+        ' %' =>'&nbsp;%',
+        ' °C' =>'&nbsp;°C',
+        ' Kč' =>'&nbsp;Kč',
+        ' €' =>'&nbsp;€',
+        //abbreviations
+        ' a. ' => ' a.&nbsp;', //for a. s.
+        ' o. ' => '&nbsp;o. ',
+        ' mn. ' => ' mn.&nbsp;', //for mn. č.
+        ' př. ' => ' př.&nbsp;', //for př. n. l
+        ' l. ' => '&nbsp;l. ', //for př. n. l
+        'tj. ' =>'tj.&nbsp;',
+        'tzv. ' =>'tzv.&nbsp;',
+        'tzn. ' =>'tzn.&nbsp;',
+        //degrees
+        ' Bc. ' =>' Bc.&nbsp;',
+        ' BcA. ' =>' BcA.&nbsp;',
+        ' Ing. ' =>' Ing.&nbsp;',
+        ' Ing. arch. ' =>' Ing.&nbsp;arch.&nbsp;',
+        ' ICDr. ' =>' ICDr.&nbsp;',
+        ' JUDr. ' =>' JUDr.&nbsp;',
+        ' MDDr. ' =>' MDDr.&nbsp;',
+        ' Mgr. ' =>' Mgr.&nbsp;',
+        ' MgA. ' =>' MgA.&nbsp;',
+        ' MSDr. ' =>' MSDr.&nbsp;',
+        ' MUDr. ' =>' MUDr.&nbsp;',
+        ' MVDr. ' =>' MVDr.&nbsp;',
+        ' PaedDr. ' =>' PaedDr.&nbsp;',
+        ' PhDr. ' =>' PhDr.&nbsp;',
+        ' PhMr. ' =>' PhMr.&nbsp;',
+        ' RCDr. ' =>' RCDr.&nbsp;',
+        ' RNDr. ' =>' RNDr.&nbsp;',
+        ' RSDr. ' =>' RSDr.&nbsp;',
+        ' RTDr. ' =>' RTDr.&nbsp;',
+        ' ThDr. ' =>' ThDr.&nbsp;',
+        ' ThLic. ' =>' ThLic.&nbsp;',
+        ' ThMgr. ' =>' ThMgr.&nbsp;',
+        ' akad. ' =>' akad.&nbsp;',
+        ' ArtD. ' =>' ArtD.&nbsp;',
+        ' CSc. ' =>' CSc.&nbsp;',
+        ' Dr. ' =>' Dr.&nbsp;',
+        ' DrSc. ' =>' DrSc.&nbsp;',
+        ' DSc. ' =>' DSc.&nbsp;',
+        ' Ph.Dd. ' =>' Ph.D.&nbsp;',
+        ' Th.Dd. ' =>' Th.D.&nbsp;',
+        ' as. ' =>' as.&nbsp;',
+        ' odb. as. ' =>' odb.&nbsp;as.&nbsp;',
+        ' doc. ' =>' doc.&nbsp;',
+        ' prof. ' =>' prof.&nbsp;',
+    ];
+
     /** Do not trim all parameters (maybe we can?) */
     static function doTrimParams() { return false; }
 
@@ -2498,7 +2613,7 @@ class AA_Stringexpand_Text2html extends AA_Stringexpand_Nevercache {
                     $linkText = $url;
                 } else {
                     // Prepend http:// if no scheme is specified
-                    $completeUrl = $scheme ? $url : "http://$url";
+                    $completeUrl = $scheme ? $url : "https://$url";
                     $linkText = "$domain$port$path";
                 }
                 // Cheap e-mail obfuscation to trick the dumbest mail harvesters.
@@ -4572,7 +4687,7 @@ class AA_Stringexpand_Ajax extends AA_Stringexpand_Nevercache {
 
                     $container_class = ' aa-ajax-fld-'.AA_Fields::getVarFromFieldId($field_id);
                     if ($widget = $field ? $field->getWidget($widget_type, json2asoc($widget_properties)) : null) {
-                        if ($class_type = AA_Components::getClassType('Widget',get_class($widget))) {
+                        if ($class_type = strtolower(AA_Components::getClassType(get_class($widget), 'Widget'))) {
                             $container_class .= ' aa-ajax-widget-'.$class_type;
                         }
                     }
@@ -6842,10 +6957,8 @@ class AA_Stringexpand_Trim extends AA_Stringexpand_Nevercache {
      * @return string|void
      */
     function expand($string='', $chars='') {
-        if (empty($chars)) {
-            $chars = " \t\n\r\0\x0B\xA0";  // standard + chr(160) - hard space
-        }
-        return trim($string, $chars);
+        return (empty($chars) AND !AA_Langs::isUTF()) ? preg_replace("/^\s+|\s+$/u", "", $string) : trim($string, $chars);
+        // trim($string, " \t\n\r\0\x0B\xA0");  // standard + chr(160) - hard space   // does not work for UTF characters - the hardspace \xA0 can break some UTF chars - "MŠ" for example
     }
 }
 
@@ -9393,7 +9506,7 @@ class AA_Stringexpand_Eucookies extends AA_Stringexpand {
  *    {tooltip:#myinfoicon:<b>My tip</b><br>tip text}    // the same as above
  *    {tooltip:.myelements:<b>My tip</b><br>tip text}    // myelements je any selector
  *  All the JS libraries are automaticaly loaded
- *  You must using {generate:HEAD} and {generate:FOOT} in your site module!
+ *  You have to use {generate:HEAD} and {generate:FOOT} in your site module!
  *  We may replace the JS by another with the same functionality in the future,
  *  so do not count on the exact library in the code. The {tooltip} code
  *  will remain functional, however

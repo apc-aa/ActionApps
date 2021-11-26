@@ -47,7 +47,7 @@ abstract class AA_Serializable {
     }
 
     /** factoryByName function - creates any object based on mask and name:
-     *   AA_Stingexpand::factoryByName('', $params);
+     *   AA_Stringexpand::factoryByName('', $params);
      * @param string $name
      * @param array  $params
      * @param null $class_mask
@@ -1072,7 +1072,7 @@ class AA_Components {
                 $name = str_replace(['.php'], [''],$file);
 
                 // filter out other possible classes
-                if (!$name OR ($name=='Abstract')) {
+                if (!$name OR (strpos($name,'Abstract')===0)) {  // We do not want Abstract... classes
                     continue;
                 }
 
@@ -1095,14 +1095,15 @@ class AA_Components {
     }
 
     /** get 'cod' from AA\Widget\CodWidget
-     *  called as:  AA_Components::getClassType('Widget',get_called_class());
-     *              AA_Components::getClassType('Widget',get_class($widget))
-     * @param string $mask class start like
+     *  called as:  AA_Components::getClassType(get_called_class(),'Widget');
+     *              AA_Components::getClassType(get_class($widget),'Widget')
+     *              AA_Components::getClassType($class_name)
      * @param string $classname - probably from get_called_class()
+     * @param string $mask      - removed class start (like 'Widget' from 'CodWidget')
      * @return string
      */
-    static function getClassType($mask, $classname) {
-        return strtolower(str_replace($mask,'',substr($classname, strrpos($classname, '\\') + 1)));
+    static function getClassType(string $classname, string $mask = ''): string {
+        return $mask ? str_replace($mask,'',substr($classname, strrpos($classname, '\\') + 1)) : substr($classname, strrpos($classname, '\\') + 1);
     }
 
     /** returns sorted array for selectbox (class => name)

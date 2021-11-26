@@ -128,6 +128,15 @@ class AA_Condition extends AA_Object {
     var $operator;
     var $value;
 
+    // don't check whether these fields exist (in the conds[] array used by searchform):
+    public const CONDS_NOT_FIELD_NAMES = [
+        'operator'           => true,
+        'value'              => true,
+        'discussion'         => true,
+        'valuejoin'          => true,
+        'all_fields'         => true,
+        'all_fields_numeric' => true
+    ];
 
     /// Static ///
 
@@ -1075,7 +1084,6 @@ function ProoveFieldNames($slices, $conds) {
         return;
     }
 
-    global $CONDS_NOT_FIELD_NAMES;
     foreach ($slices as $slice_id) {
         if (!($slice = AA_Slice::getModule($slice_id))) {
             warn("Slice <b>$slice_id</b> do not exist");
@@ -1087,7 +1095,7 @@ function ProoveFieldNames($slices, $conds) {
             }
             foreach ($cond as $key => $foo) {
                 // @todo - we do not check the headline........@relation.......1 kind of fields
-                if (!$CONDS_NOT_FIELD_NAMES[$key] AND !strpos($key, '@') AND !$slice->isField($key)) {
+                if (!AA_Condition::CONDS_NOT_FIELD_NAMES[$key] AND !strpos($key, '@') AND !$slice->isField($key)) {
                     warn("Field <b>$key</b> does not exist in slice <b>$slice_id</b> (".q_pack_id($slice_id).").");
                 }
             }
@@ -1433,8 +1441,6 @@ function QueryZids($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
 
     // select * from item, content as c1, content as c2 where item.id=c1.item_id AND item.id=c2.item_id AND       c1.field_id IN ('fulltext........', 'abstract..........') AND c2.field_id = 'keywords........' AND c1.text like '%eufonie%' AND c2.text like '%eufonie%' AND item.highlight = '1';
 
-    global $CONDS_NOT_FIELD_NAMES; // list of special conds[] indexes (defined in constants.php3)
-
     if (!is_array($slices)) {
         $slices = empty($slices) ? [] : (array)$slices;
     }
@@ -1495,7 +1501,7 @@ function QueryZids($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
                                                 $store     = 'number';
                                                 continue;
                 }
-                if ( $CONDS_NOT_FIELD_NAMES[$fid] ) {
+                if ( AA_Condition::CONDS_NOT_FIELD_NAMES[$fid] ) {
                     continue;      // it is not field_id parameters - skip it for now
                 }
 

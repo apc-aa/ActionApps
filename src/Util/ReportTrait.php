@@ -24,7 +24,8 @@ trait ReportTrait {
      * @return string - messages in table
      */
     public function report(): string {
-        return $this->messages ? GetHtmlTable($this->messages, 'key') : '';
+        $caption =  is_callable([$this, "name"]) ? $this->name() : '';
+        return $this->messages ? GetHtmlTable($this->messages, 'key', $caption) : '';
     }
 
     /** Clear report function

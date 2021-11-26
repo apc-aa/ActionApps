@@ -35,6 +35,8 @@ https://www.apc.org/
  */
 
 use AA\IO\DB\DB_AA;
+use AA\Optimize\AbstractOptimize;
+use AA\Optimize\RestoreBckTables;
 
 define('ACCESS_CODE','');
 
@@ -148,7 +150,7 @@ class AA_SQL_Updater {
     }
 
     function restore() {
-        $optimizer = new AA_Optimize_Restore_Bck_Tables();
+        $optimizer = new RestoreBckTables();
         $optimizer->repair();
         $this->message($optimizer->report());
         return true;
@@ -178,7 +180,7 @@ class AA_SQL_Updater {
     }
 
     /** getOptimizers function
-     *  Return names of all known AA classes, which begins with AA_Optimize
+     *  Return names of all known AA classes, which begins with AA\Optimize\AA_Optimize
      */
     function getOptimizers() {
         $optimizers = [];
@@ -204,14 +206,14 @@ $updater = new AA_SQL_Updater();
 
 if ($_GET['update']) {
     if (!$_GET['fire']) {
-        AA_Optimize::justPrint(true);
+        AbstractOptimize::justPrint(true);
     }
     $status = $updater->update();
     echo ($status ? 'OK ' : 'Err ') . $updater->report();
 }
 elseif ( $_GET['restore']) {
     if (!$_GET['fire']) {
-        AA_Optimize::justPrint(true);
+        AbstractOptimize::justPrint(true);
     }
     $status = $updater->restore();
     echo ($status ? 'OK ' : 'Err ') . $updater->report();

@@ -50,6 +50,7 @@
     "exclude-from-classmap": ["include/custom/"]
   },
   "config": {
-    "discard-changes": true
+    "discard-changes": true,
+    "optimize-autoloader": true
   }
 }

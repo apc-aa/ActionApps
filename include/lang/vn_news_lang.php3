@@ -6254,263 +6254,263 @@ $_m["design description (for administrators only)"]
 $_m["Answer HTML"]
  = "";
 
-// include/optimize.class.php3, row 74
+// AA\Optimize\...
 $_m["Convert slice.category_sort to slice.group_by"]
  = "";
 
-// include/optimize.class.php3, row 81
+// AA\Optimize\... #xx81
 $_m["In older version of AA we used just category fields for grouping items. Now it is universal, so boolean category_sort is not enough. We use newer group_by field for quite long time s most probably all your slices are already conevrted."]
  = "";
 
-// include/optimize.class.php3, row 91
+// AA\Optimize\... #xx91
 $_m["%1 slices are not converted"]
  = "";
 
-// include/optimize.class.php3, row 94
+// AA\Optimize\... #xx94
 $_m["All slices are already converted"]
  = "";
 
-// include/optimize.class.php3, row 137
+// AA\Optimize\... #xx137
 $_m["Relation table duplicate records"]
  = "";
 
-// include/optimize.class.php3, row 144
+// AA\Optimize\... #xx144
 $_m["Testing if relation table contain records, where values in both columns are identical (which was bug fixed in Jan 2006)"]
  = "";
 
-// include/optimize.class.php3, row 155
+// AA\Optimize\... #xx155
 $_m["%1 duplicates found"]
  = "";
 
-// include/optimize.class.php3, row 158, 791, 806
+// AA\Optimize\... #xx158, 791, 806
 $_m["No duplicates found"]
  = "";
 
-// include/optimize.class.php3, row 183
+// AA\Optimize\... #xx183
 $_m["Feeds table inconsistent records"]
  = "";
 
-// include/optimize.class.php3, row 190
+// AA\Optimize\... #xx190
 $_m["Testing if feeds table do not contain relations to non existant slices (after slice deletion)"]
  = "";
 
-// include/optimize.class.php3, row 206
+// AA\Optimize\... #xx206
 $_m["Wrong destination slice id: %1 -> %2"]
  = "";
 
-// include/optimize.class.php3, row 217
+// AA\Optimize\... #xx217
 $_m["Wrong source slice id: %1 -> %2"]
  = "";
 
-// include/optimize.class.php3, row 222
+// AA\Optimize\... #xx222
 $_m["No wrong references found, hurray!"]
  = "";
 
-// include/optimize.class.php3, row 272
+// AA\Optimize\... #xx272
 $_m["Fix user login problem, constants editiong problem, ..."]
  = "";
 
-// include/optimize.class.php3, row 279
+// AA\Optimize\... #xx279
 $_m["Replaces binary fields by varbinary and removes trailing zeros. Needed for MySQL > 5.0.17"]
  = "";
 
-// include/optimize.class.php3, row 454
+// AA\Optimize\... #xx454
 $_m["Convert Readers login to reader id"]
  = "";
 
-// include/optimize.class.php3, row 461
-$_m["There was change in Reader management functionality in AA v2.8.1, so readers are not internaly identified by its login, but by reader ID (item ID of reader in Reader slice). This is much more powerfull - you can create relations just as in normal slice. It works well without any change. The only problem is, if you set any slice to be editable by users from Reader slice. In that case the fields edited_by........ and posted_by........ are filled by readers login instead of reader id. You can fix it by \"Repair\"."]
+// AA\Optimize\... #xx461
+$_m["There was change in Reader management functionality in AA v2.8.1, so readers are not internally identified by its login, but by reader ID (item ID of reader in Reader slice). This is much more powerful - you can create relations just as in normal slice. It works well without any change. The only problem is, if you set any slice to be editable by users from Reader slice. In that case the fields edited_by........ and posted_by........ are filled by readers login instead of reader id. You can fix it by \"Repair\"."]
  = "";
 
-// include/optimize.class.php3, row 475
+// AA\Optimize\... #xx475
 $_m["%1 login names from reader slice found as records in item.posted_by which is wrong (There should be reader ID from AA v2.8.1). \"Repair\" will correct it."]
  = "";
 
-// include/optimize.class.php3, row 480
+// AA\Optimize\... #xx480
 $_m["%1 login names from reader slice found as records in item.edited_by which is wrong (There should be reader ID from AA v2.8.1). \"Repair\" will correct it."]
  = "";
 
-// include/optimize.class.php3, row 518, 585
+// AA\Optimize\... #xx518, 585
 $_m["Column item.posted_by updated for %1 (id: %2)."]
  = "";
 
-// include/optimize.class.php3, row 525, 592
+// AA\Optimize\... #xx525, 592
 $_m["Column item.edited_by updated for %1 (id: %2)."]
  = "";
 
-// include/optimize.class.php3, row 539
+// AA\Optimize\... #xx539
 $_m["Checks if all tables have right columns and indexes"]
  = "";
 
-// include/optimize.class.php3, row 546
+// AA\Optimize\... #xx546
 $_m["We are time to time add new table or collumn to existing table in order we can support new features. This option will update the datastructure to the last one. No data will be lost."]
  = "";
 
-// include/optimize.class.php3, row 607
+// AA\Optimize\... #xx607
 $_m["Clear Pagecache"]
  = "";
 
-// include/optimize.class.php3, row 614
+// AA\Optimize\... #xx614
 $_m["Whole pagecache will be invalidated and deleted"]
  = "";
 
-// include/optimize.class.php3, row 624, 723, 871, 1042, 1097
+// AA\Optimize\... #xx624, 723, 871, 1042, 1097
 $_m["There is nothing to test."]
  = "";
 
-// include/optimize.class.php3, row 635
+// AA\Optimize\... #xx635
 $_m["Table pagecache_new created"]
  = "";
 
-// include/optimize.class.php3, row 637
+// AA\Optimize\... #xx637
 $_m["Table pagecache_str2find_new created"]
  = "";
 
-// include/optimize.class.php3, row 639
+// AA\Optimize\... #xx639
 $_m["Renamed tables pagecache_* to pagecache_*_bak"]
  = "";
 
-// include/optimize.class.php3, row 641
+// AA\Optimize\... #xx641
 $_m["Renamed tables pagecache_*_new to pagecache_*"]
  = "";
 
-// include/optimize.class.php3, row 643
+// AA\Optimize\... #xx643
 $_m["Old pagecache_*_bak tables dropped"]
  = "";
 
-// include/optimize.class.php3, row 658
+// AA\Optimize\... #xx658
 $_m["Fix inconcistency in pagecache"]
  = "";
 
-// include/optimize.class.php3, row 665
+// AA\Optimize\... #xx665
 $_m["Delete not existant keys in pagecache_str2find table"]
  = "";
 
-// include/optimize.class.php3, row 679
+// AA\Optimize\... #xx679
 $_m["id: %1, pagecache_id: %2, str2find: %3"]
  = "";
 
-// include/optimize.class.php3, row 681
+// AA\Optimize\... #xx681
 $_m["We found %1 inconsistent rows from %2 in pagecache_str2find"]
  = "";
 
-// include/optimize.class.php3, row 693
+// AA\Optimize\... #xx693
 $_m["Inconsistent rows in pagecache_str2find removed"]
  = "";
 
-// include/optimize.class.php3, row 706
+// AA\Optimize\... #xx706
 $_m["Copy Content Table"]
  = "";
 
-// include/optimize.class.php3, row 713
+// AA\Optimize\... #xx713
 $_m["Copy data for all items newer than short_id=1941629 from content table to content2 table. Used for recovery content table on Ecn server. Not usefull for any other users, I think."]
  = "";
 
-// include/optimize.class.php3, row 757
+// AA\Optimize\... #xx757
 $_m["Coppied"]
  = "";
 
-// include/optimize.class.php3, row 771
+// AA\Optimize\... #xx771
 $_m["Fix field definitions duplicates"]
  = "";
 
-// include/optimize.class.php3, row 778
+// AA\Optimize\... #xx778
 $_m["There should be only one slice_id - field_id pair in all slices, but sometimes there are more than one (mainly because of error in former sql_update.php3 script, where more than one display_count... fields were added)."]
  = "";
 
-// include/optimize.class.php3, row 795
+// AA\Optimize\... #xx795
 $_m["Duplicate in slice - field: %1 - %2"]
  = "";
 
-// include/optimize.class.php3, row 820
+// AA\Optimize\... #xx820
 $_m["Field %2 in slice %1 fixed"]
  = "";
 
-// include/optimize.class.php3, row 854
+// AA\Optimize\... #xx854
 $_m["Add Polls tables"]
  = "";
 
-// include/optimize.class.php3, row 861
+// AA\Optimize\... #xx861
 $_m["Create tables for new Polls module and adds first - template polls. It removes all current polls!"]
  = "";
 
-// include/optimize.class.php3, row 905
+// AA\Optimize\... #xx905
 $_m["Polls module created"]
  = "";
 
-// include/optimize.class.php3, row 925
+// AA\Optimize\... #xx925
 $_m["Update database structure"]
  = "";
 
-// include/optimize.class.php3, row 932, 1029
+// AA\Optimize\... #xx932, 1029
 $_m["[experimental] "]
  = "";
 
-// include/optimize.class.php3, row 932
+// AA\Optimize\... #xx932
 $_m["Updates the database structure for AA. It cheks all the tables in current system and compare it with the newest database structure. The new table is created as tmp_*, then the content from old table is copied and if everything is OK, then the old table is renamed to bck_* and tmp_* is renamed to new table. (new version based on the metabase structure)"]
  = "";
 
-// include/optimize.class.php3, row 950
+// AA\Optimize\... #xx950
 $_m["Tables %1 are identical."]
  = "";
 
-// include/optimize.class.php3, row 952
+// AA\Optimize\... #xx952
 $_m["Tables %1 are different: <br>Template:<br>%2<br>Current:<br>%3"]
  = "";
 
-// include/optimize.class.php3, row 971
+// AA\Optimize\... #xx971
 $_m["Tables %1 are identical. Skipping."]
  = "";
 
-// include/optimize.class.php3, row 975
+// AA\Optimize\... #xx975
 $_m["Deleting temporary table tmp_%1, if exist."]
  = "";
 
-// include/optimize.class.php3, row 977
+// AA\Optimize\... #xx977
 $_m["Creating temporary table tmp_%1."]
  = "";
 
-// include/optimize.class.php3, row 982
+// AA\Optimize\... #xx982
 $_m["Creating \"old\" data table %1 if not exists."]
  = "";
 
-// include/optimize.class.php3, row 987
+// AA\Optimize\... #xx987
 $_m["copying old values to new table %1 -> tmp_%1"]
  = "";
 
-// include/optimize.class.php3, row 1001
+// AA\Optimize\... #xx1001
 $_m["backup old table %1 -> bck_%1 and use new tables instead tmp_%1 -> %1"]
  = "";
 
-// include/optimize.class.php3, row 1006
+// AA\Optimize\... #xx1006
 $_m["%1 done."]
  = "";
 
-// include/optimize.class.php3, row 1022
+// AA\Optimize\... #xx1022
 $_m["Restore data from backup tables"]
  = "";
 
-// include/optimize.class.php3, row 1029
+// AA\Optimize\... #xx1029
 $_m["Deletes all the current tables (slice, item, ...) where we have bck_table and renames all backup tables (bck_slice, bck_item, ...) to right names (slice, item, ...)."]
  = "";
 
-// include/optimize.class.php3, row 1061
+// AA\Optimize\... #xx1061
 $_m["There is no bck_%1 table - %1 not restored."]
  = "";
 
-// include/optimize.class.php3, row 1064
+// AA\Optimize\... #xx1064
 $_m["Replace table bck_%1 -> %1"]
  = "";
 
-// include/optimize.class.php3, row 1080
+// AA\Optimize\... #xx1080
 $_m["Create upload directory for current slice"]
  = "";
 
-// include/optimize.class.php3, row 1087
+// AA\Optimize\... #xx1087
 $_m["see IMG_UPLOAD_PATH parameter in config.php3 file"]
  = "";
 
-// include/optimize.class.php3, row 1106
+// AA\Optimize\... #xx1106
 $_m["OK, %1 created"]
  = "";
 

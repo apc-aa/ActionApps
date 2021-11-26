@@ -384,7 +384,7 @@ class AA {
      */
     static function setEncoding($encoding) {
         AA::$encoding = $encoding;
-        mb_internal_encoding( (stripos($encoding, 'utf-8') === 0) ? 'UTF-8' : '8bit');
+        mb_internal_encoding(AA_Langs::isUTF($encoding) ? 'UTF-8' : '8bit');
     }
 
 

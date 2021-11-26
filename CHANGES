@@ -3027,7 +3027,7 @@ The changes could be tracked on:
 08-11-20 - new service/sql_update.php script - better structured, seprated
 (honzam)   to standalone directory, so you can copy the service directory
            to your old AA and update it from there. All actions have tests,
-           so it runs conditionaly. All actions was rewriten to AA_Optimize
+           so it runs conditionaly. All actions was rewriten to AA_Optimize (AA\Optimize\AA_Optimize)
            class, so you can run them separately from AA -> Optimize page
 08-11-12 - new "silent" possibility with "Modify content" tool - all the fields
 (honzam)   are updated but no other fields are touched (no last_edit,
@@ -3220,7 +3220,7 @@ The changes could be tracked on:
 (honzam)   value count at row 1" SQL Error apearing in some configurations
            should be fixed
 08-05-16 - improved version of sql_update script, which now allows to run
-(honzam)   specified AA_Optimize scripts. The key is the "Fix field definitions
+(honzam)   specified AA_Optimize (AA\Optimize\AA_Optimize) scripts. The key is the "Fix field definitions
            duplicates" optimalization, which should be run before any sql_update
          - AA -> Optimize shows only implemented actions for each optimalization
          - the same SPAM protection by "answer" field implemented to Links

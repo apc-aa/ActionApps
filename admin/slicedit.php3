@@ -34,13 +34,13 @@ require_once __DIR__."/../include/varset.php3";
 // add mlx functions
 require_once __DIR__."/../include/mlx.php";
 
-$PERMS_STATE = [
+define ('PERMS_STATE', [
     "0" => _m("Not allowed"),
-                      "1" => _m("Active"),
-                      "2" => _m("Hold bin")
-];
+    "1" => _m("Active"),
+    "2" => _m("Hold bin")
+]);
 
-$PERMS_ANONYMOUS_EDIT = [
+define ('PERMS_ANONYMOUS_EDIT', [
     ANONYMOUS_EDIT_NOT_ALLOWED      => _m("Not allowed"),
     ANONYMOUS_EDIT_ALL              => _m("All items"),
     ANONYMOUS_EDIT_ONLY_ANONYMOUS   => _m("Only items posted anonymously"),
@@ -48,7 +48,7 @@ $PERMS_ANONYMOUS_EDIT = [
     ANONYMOUS_EDIT_PASSWORD         => _m("Authorized by a password field"),
     ANONYMOUS_EDIT_HTTP_AUTH        => _m("Readers, authorized by HTTP auth"),
     ANONYMOUS_EDIT_CRON             => _m("Only by Planned tasks (cron-toexecute)")
-];
+]);
 
 if ($cancel) {
     go_url( StateUrl(self_base() . "index.php3"));
@@ -93,6 +93,10 @@ if (!$sarr) {
     $sarr = [];
 }
 
+if ($_GET['convert']=='utf') {
+    (new AA\Doit\ConvertSliceEncoding($slice_id))->doit();
+}
+
 $flag_allow_expired = ($sarr['flag'] & SLICE_ALLOW_EXPIRED_CONTENT) == SLICE_ALLOW_EXPIRED_CONTENT;
 $flag_allow_pending = ($sarr['flag'] & SLICE_ALLOW_PENDING_CONTENT) == SLICE_ALLOW_PENDING_CONTENT;
 
@@ -131,10 +135,10 @@ if ( $superadmin ) {
 }
 FrmInputChBox("flag_allow_expired", _m("Show content of expired items"), $flag_allow_expired);
 FrmInputChBox("flag_allow_pending", _m("Show content of pending items"), $flag_allow_pending);
-FrmInputSelect("permit_anonymous_post", _m("Allow anonymous posting of items"), $PERMS_STATE, $sarr['permit_anonymous_post'], false);
-FrmInputSelect("permit_anonymous_edit", _m("Allow anonymous editing of items"), $PERMS_ANONYMOUS_EDIT, $sarr['permit_anonymous_edit'], false, "", "../doc/anonym.html");
-FrmInputSelect("permit_offline_fill", _m("Allow off-line item filling"),        $PERMS_STATE, $sarr['permit_offline_fill'], false);
-FrmInputSelect("lang_file", _m("Language"), $biglangs, $sarr['lang_file'], false);
+FrmInputSelect("permit_anonymous_post", _m("Allow anonymous posting of items"), PERMS_STATE, $sarr['permit_anonymous_post'], false);
+FrmInputSelect("permit_anonymous_edit", _m("Allow anonymous editing of items"), PERMS_ANONYMOUS_EDIT, $sarr['permit_anonymous_edit'], false, "", "../doc/anonym.html");
+FrmInputSelect("permit_offline_fill", _m("Allow off-line item filling"),        PERMS_STATE, $sarr['permit_offline_fill'], false);
+FrmInputSelect("lang_file", _m("Language"), $biglangs, $sarr['lang_file'], false, 'convert to <a href='. StateUrl($_SERVER['PHP_SELF'].'?convert=utf').'>convert</a> xxx');
 
 // Reader Management specific settings (Jakub, 7.2.2003)
 $slice     = AA_Slice::getModule($slice_id);

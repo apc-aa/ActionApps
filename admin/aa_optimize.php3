@@ -25,9 +25,10 @@
  * @link      https://www.apc.org/ APC
 */
 
+use AA\Optimize\AbstractOptimize;
+
 require_once __DIR__."/../include/init_page.php3";
 require_once __DIR__."/../include/formutil.php3";
-require_once __DIR__."/../include/optimize.class.php3";
 
 if (!IsSuperadmin()) {
     MsgPageMenu(StateUrl(self_base())."index.php3", _m("You don't have permissions to do optimize tests."), "admin");
@@ -40,17 +41,14 @@ $Msg = '';
 $testresult = [];
 $err = [];          // error array (Init - just for initializing variable
 
-// php4 returns class names in lower case, so we need it in lower case
-if ($_GET['test'] AND (strpos(strtolower($_GET['test']), 'aa_optimize_')===0)) {
-    /** @var AA_Optimize $optimizer */
-    $optimizer = AA_Serializable::factory($_GET['test']);
+/** @var AbstractOptimize $optimizer */
+if ($_GET['test'] AND ($optimizer = AA_Serializable::factory('AA\\Optimize\\'.$_GET['test']))) {
     $testresult[$_GET['test']] = $optimizer->test();
     $Msg .= $optimizer->report();
 }
 
-if ($_GET['repair'] AND (strpos(strtolower($_GET['repair']), 'aa_optimize_')===0)) {
-    /** @var AA_Optimize $optimizer */
-    $optimizer = AA_Serializable::factory($_GET['repair']);
+/** @var AbstractOptimize $optimizer */
+if ($_GET['repair'] AND ($optimizer = AA_Serializable::factory('AA\\Optimize\\'.$_GET['repair']))) {
     $optimizer->repair();
     $Msg .= $optimizer->report();
     $testresult[$_GET['repair']] = $optimizer->test();
@@ -59,33 +57,35 @@ if ($_GET['repair'] AND (strpos(strtolower($_GET['repair']), 'aa_optimize_')===0
 $optimize_names        = [];
 $optimize_descriptions = [];
 
-foreach (AA_Components::getClassNames('AA_Optimize_') as $optimize_class) {
+foreach (AA_Components::getClassNames('AA\\Optimize\\') as $optimize_class) {
+
     // call static class methods
     $optimize_names[]        = $optimize_class::name();
     $description             = $optimize_class::description();
     $actions                 = $optimize_class::actions();
+    $class_type              = AA_Components::getClassType($optimize_class);
 
     if ($_POST['testall']) {
 
-        /** @var AA_Optimize $optimizer */
+        /** @var AbstractOptimize $optimizer */
         $optimizer = AA_Serializable::factory($optimize_class);
         if ($optimizer->hasAction('test')) {
-            if ( !($testresult[$optimize_class] = $optimizer->test())) {
+            if ( !($testresult[$class_type] = $optimizer->test())) {
                 $Msg .= $optimizer->report();
             }
         }
     }
 
-    $addclass = isset($testresult[$optimize_class]) ? ($testresult[$optimize_class] ? 'class=okmsg' : 'class=err') : '';
+    $addclass = isset($testresult[$class_type]) ? ($testresult[$class_type] ? 'class=okmsg' : 'class=err') : '';
 
     $row = "
     <div>
       <div style=\"float: right;\">";
     if (in_array('test', $actions)) {
-        $row .= "<a href=\"". StateUrl("?test=$optimize_class") ."\" class=aa-button-test>". _m('Test'). "</a> ";
+        $row .= "<a href=\"". StateUrl("?test=$class_type") ."\" class=aa-button-test>". _m('Test'). "</a> ";
     }
     if (in_array('repair', $actions)) {
-        $row .= "<a href=\"". StateUrl("?repair=$optimize_class") ."\" class=aa-button-run>". _m('Repair'). "</a> ";
+        $row .= "<a href=\"". StateUrl("?repair=$class_type") ."\" class=aa-button-run>". _m('Repair'). "</a> ";
     }
 
     $optimize_descriptions[] = $row ."

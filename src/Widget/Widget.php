@@ -425,7 +425,7 @@ class Widget extends AA_Object implements NamedInterface {
         $required = $winfo['required'];
         $help = $aa_property->getHelp();
         $class = $aa_property->getTranslations() ? 'aa-widget aa-langdiv' : 'aa-widget';
-        $class .= ' aa-widget-' . AA_Components::getClassType('Widget', get_called_class());
+        $class .= ' aa-widget-' . strtolower(AA_Components::getClassType(get_called_class(), 'Widget'));
         $class .= ' aa-stdwidget';
 
         $this->registerRequires($aa_property, $winfo);
@@ -462,7 +462,7 @@ class Widget extends AA_Object implements NamedInterface {
         $base_id = FormArray::formName2Id($base_name);
         $help = $aa_property->getHelp();
         $class = ($this->getProperty('ajaxtype', '') == 'inline') ? 'aa-widget aa-ajax-inline' : 'aa-widget aa-ajax-open';
-        $class .= ' aa-widget-' . AA_Components::getClassType('Widget', get_called_class());
+        $class .= ' aa-widget-' . strtolower(AA_Components::getClassType(get_called_class(), 'Widget'));
         $widget_html = "<div class=\"ajax_widget $class\" id=\"widget-$base_id\">";
         $widget_html .= "\n" . $winfo['html'] . ($help ? "\n    <div class=\"aa-help\"><small>$help</small></div>\n" : '');
         $widget_html .= "\n<div class=ajax_buttons>";
@@ -494,7 +494,7 @@ class Widget extends AA_Object implements NamedInterface {
         // $help = $aa_property->getHelp();  //not used
         $widget_html = $winfo['html']; //. ($help ? "\n    <div class=\"aa-help\"><small>$help</small></div>\n" :'');
         $class = 'aa-widget aa-live';
-        $class .= ' aa-widget-' . AA_Components::getClassType('Widget', get_called_class());
+        $class .= ' aa-widget-' . strtolower(AA_Components::getClassType(get_called_class(), 'Widget'));
 
         $this->registerRequires($aa_property, $winfo);
         return "<div class=\"$class\"" . ($winfo['required'] ? ' data-aa-required' : '') . " id=\"widget-$base_id\" style=\"display:inline; position:relative;\">" . $widget_html . "</div>";
