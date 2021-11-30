@@ -140,16 +140,16 @@ function PrintSetRule($n, $rule, $sfld, $func, $sparam, $shtml, $desc) {
            <td>". $PROPERTY_TYPES[$rule]. "<input type=\"hidden\" name=\"prop$n\" value=\"$rule\"></td>
            <td>";
     if ( is_array($sfld)) {
-        FrmSelectEasy("fld$n", $sfld, "");
+        FrmSelectEasy("fld$n", $sfld);
     } elseif ($sfld)  {
-        FrmSelectEasy("fld$n", $lookup_fields, "");
+        FrmSelectEasy("fld$n", $lookup_fields);
     } else {
         echo "&nbsp;";
     }
     echo " </td>
            <td>";
     if ($func) {
-        FrmSelectEasy("fnc$n", $func, "");
+        FrmSelectEasy("fnc$n", $func);
     } else {
         echo "&nbsp;";
     }

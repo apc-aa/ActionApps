@@ -829,8 +829,8 @@ $_m["Admin - configure Fields"]
     = "Administración - campos";
 
 // admin/se_inputform.php3, row 296
-$_m["You selected slice and not constant group. It is unpossible to change slice. Go up in the list."]
-    = "Usted seleccionó un canal y no un grupo de constantes. No es posible cambiar el canal. Vaya arriba en la lista.";
+$_m["You selected slice and not constant group. It is impossible to create slice from here."]
+    = "Usted seleccionó un canal y no un grupo de constantes. No es posible crear el canal aqí.";
 
 // admin/se_inputform.php3, row 326
 $_m["<p>WARNING: Do not change this setting if you are not sure what you're doing!</p>"]

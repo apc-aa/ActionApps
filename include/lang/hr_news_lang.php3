@@ -1529,7 +1529,7 @@ $_m["Admin - configure Fields"]
     = "Administracija - oblikujte polja";
 
 // admin/se_inputform.php3, row 296
-$_m["You selected slice and not constant group. It is unpossible to change slice. Go up in the list."]
+$_m["You selected slice and not constant group. It is impossible to create slice from here."]
     = "";
 
 // admin/se_inputform.php3, row 326

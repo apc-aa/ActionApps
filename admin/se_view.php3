@@ -80,7 +80,7 @@ function show_digest_filters() {
         $rowid   = ($irow < $rows) ? $data[$irow]['id'] : "new$irow";
         $rowdesc = ($irow < $rows) ? $data[$irow]['description'] : '';
         $rowcond = ($irow < $rows) ? $data[$irow]['conds'] : '';
-        FrmInputText("filters[$rowid][description]", _m("Alerts Selection")." ".($irow+1)." "._m("Description"), $rowdesc, 100, 50, false);
+        FrmInputText("filters[$rowid][description]", _m("Alerts Selection")." ".($irow+1)." "._m("Description"), $rowdesc, 100, 50);
         FrmTextarea("filters[$rowid][conds]", "conds[]", $rowcond,  get_row_count($rowcond, 50, 4), 50, false, "", "http://apc-aa.sourceforge.net/faq/#215");
     }
     FrmStaticText("", _m("If you need more selections, use 'Update' and on next Edit two empty boxes appear."));
@@ -534,7 +534,7 @@ foreach ($VIEW_TYPES[$view_type] as $k => $v) {
         case "order":   OrderFrm(      $k, $label, $value, $lookup_fields, $VIEW_TYPES_INFO[$view_type]['order'] == 'easy'); break;
         case "orderal": OrderAliasFrm( $k, $label, $value); break;
         case "group":   OrderFrm(      $k, $label, $value, $lookup_fields, $VIEW_TYPES_INFO[$view_type]['order'] == 'easy', true); break;
-        case "select":  FrmInputSelect($k, $label, $VIEW_FIELDS[$k]['value'], $vw_data[$k], false, $help, ''); break;
+        case "select":  FrmInputSelect($k, $label, $VIEW_FIELDS[$k]['value'], $vw_data[$k], false, $help); break;
         case "none":    break;
     }
 }

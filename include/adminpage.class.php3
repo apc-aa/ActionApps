@@ -325,7 +325,7 @@ class AA_Adminpage implements AA_iEditable {
         unset($r_err);
         unset($r_msg);
 
-        echo '<form name="f" method="post" action="'. StateUrl('') .'">';
+        echo '<form name="f" method="post" action="'. StateUrl() .'">';
 
         $form_buttons = [
             "update",

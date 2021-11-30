@@ -105,7 +105,7 @@ class Hitcounter
         $varset->add('info', 'text', substr($info, 0, 255)); // @todo - convert to metabase and check the length using metabase real field length
 
         if ($zids->use_short_ids()) {
-            $varset->add('id', 'number', $zids->id(0));
+            $varset->add('id', 'number', $zids->id());
             $varset->doInsert('hit_short_id');
         } else {
             $varset->add('id', 'unpacked', $zids->longids(0));

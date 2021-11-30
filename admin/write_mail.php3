@@ -98,8 +98,7 @@ if ( !$send ) {               // for the first time - directly from item manager
             'description', 'subject',
                                    'header_from', 'reply_to', 'errors_to', 'sender',
                                    'lang', 'owner_module_id', 'type', 'attachments'
-        ],
-                             'quoted');
+        ]);
 
         if ($template_id AND ($mailtemplate = AA_Mail::getTemplate((int)$template_id))) {
             $varset->add('body', 'text', str_replace(['_#BODYTEXT','_#SUBJECT_'], [$_POST['body'], $_POST['subject']],$mailtemplate['body']));
@@ -192,7 +191,7 @@ FrmInputText(  'subject',     _m('Subject'),           $_POST['subject'],     25
 //FrmTextarea(   'body',        _m('Body'),              $_POST['body'],         20, 80, true, '', '', '', true);  // enable rich text area
 
 if ($user_templates) {
-    FrmInputSelect('template_id', _m('Email template'), $user_templates,  $_POST['template_id'], false);
+    FrmInputSelect('template_id', _m('Email template'), $user_templates,  $_POST['template_id']);
 }
 
 FrmTextarea(   'body',        _m('Body'),              $_POST['body'],         30, 80, true , '', '', '', true);

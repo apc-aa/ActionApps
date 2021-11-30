@@ -213,7 +213,7 @@ $functions = [
     'after_choice'  => 'ModW_PrintChoice_End'
 ];
 
-$tree->walkTree($apc_state, 1, $functions, 'collapsed', 0);
+$tree->walkTree($apc_state, 1, $functions, 'collapsed');
 
 echo '</td><td valign="top">';
 

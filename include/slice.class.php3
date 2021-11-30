@@ -769,7 +769,7 @@ class AA_Module_Site extends AA_Module {
         $show_ids    = [];
 
         // it fills $show_ids array
-        $tree->walkTree($apc_state, 1, function ($spot_id) use (&$show_ids) { $show_ids[] = $spot_id; }, 'cond');
+        $tree->walkTree($apc_state, 1, function ($spot_id) use (&$show_ids) { $show_ids[] = $spot_id; });
 
         if (count($show_ids)<1) {
             exit;
@@ -845,7 +845,7 @@ class AA_Module_Site extends AA_Module {
         echo "<br><form method='post' name=fs action=\"". $_SERVER['PHP_SELF'] ."\">";
         FrmTabCaption('',$form_buttons);
         ModW_HiddenRSpotId();
-        FrmInputText('name', _m("Spot name"), $tree->get('name', $spot_id), 50, 50, true, false, false, false);
+        FrmInputText('name', _m("Spot name"), $tree->get('name', $spot_id), 50, 50, true, false, false);
         FrmTextarea('content', '', $spot_data['content'], 50, 80, false, AA_View::getViewJumpLinks($spot_data['content']), "", true);
         FrmTabEnd($form_buttons);
         echo "</form>";

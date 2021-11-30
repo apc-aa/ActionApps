@@ -102,7 +102,7 @@ function getHierConstBoxes($hcid, $levelCount, $horizontal=0, $targetBox="", $ad
        When you add a value in a hierarchicalConstant
        it does not respond to the onChange triger on the mainbox
     */
-    $this_triggers = AA_Jstriggers::get("select", $targetBox, "");
+    $this_triggers = AA_Jstriggers::get("select", $targetBox);
     $aa_onchange_exist = strstr($this_triggers,'aa_onChange(');
     $add_button_trigger = "";
     if( $aa_onchange_exist ){

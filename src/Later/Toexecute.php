@@ -177,7 +177,7 @@ class Toexecute {
 
         // get just ids - the task itself we will grab later, since the objects
         // in the database could be pretty big, so we want to grab it one by one
-        // If the priority is 0, we consider this task as unpossible to execute,
+        // If the priority is 0, we consider this task as impossible to execute,
         // because the script tries execute it several times and without success.
         // @todo such task should be removed by some garbage collector
 

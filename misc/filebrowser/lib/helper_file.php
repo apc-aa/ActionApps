@@ -146,7 +146,7 @@ class file {
                 return $mime;
             }
         }
-        $ext = self::getExtension($filename, true);
+        $ext = self::getExtension($filename);
         return isset(self::$MIME[$ext]) ? self::$MIME[$ext] : "application/octet-stream";
     }
 

@@ -80,7 +80,7 @@ $als['additem'] = '<a href="{alias::f_e:add}"><img src="' . AA_INSTAL_PATH . 'im
 function myfillform($txt) {
     global $result;
     if ($GLOBALS["post2shtml_id"]) {
-        add_post2shtml_vars(true);
+        add_post2shtml_vars();
         return $result['success'] ? '' : join("<br>", $result['validate']);
     } else {
         return "";

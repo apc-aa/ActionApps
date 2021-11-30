@@ -288,7 +288,7 @@ echo getFrmInputButtons([
     ]
 //                        'bookmark' => array('type'=>'button',
 //                                            'value'=>_m('Bookmark'))
-], 'bottom', true, COLOR_TABBG);
+], 'bottom');
 
 echo '<tr><td class=tabtxt>';
 FrmChBoxEasy("show_subtree", $r_state["show_subtree"]);

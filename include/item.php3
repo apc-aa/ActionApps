@@ -532,7 +532,7 @@ class AA_Item {
         global $sess;
 
         // redirecting to another page?
-        $url_base = ( $redirect ?: (($no_sess OR !is_object($sess))  ? '' : StateUrl('')) );
+        $url_base = ( $redirect ?: (($no_sess OR !is_object($sess))  ? '' : StateUrl()) );
 
         // add state variable, if defined (apc - AA Pointer Cache)
         if ( $GLOBALS['apc_state'] AND $GLOBALS['apc_state']['state'] ) {
@@ -1884,7 +1884,7 @@ class AA_Items {
      */
     function _getFromCache($zid) {
         if ( $zid->use_short_ids() ) {
-            $id = $zid->id(0);
+            $id = $zid->id();
             // is it cached under its id (we expect short id here)
             return isset($this->_i[$id]) ? $this->_i[$id] : null;
         }

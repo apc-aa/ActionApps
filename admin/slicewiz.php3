@@ -66,7 +66,7 @@ FrmInputPwd("user_password1", _m("Password"), "", 50, 50, true);
 FrmInputPwd("user_password2", _m("Retype password"), "", 50, 50, true);
 FrmInputText("user_firstname", _m("First name"), "", 50, 50, true);
 FrmInputText("user_surname", _m("Surname"), "", 50, 50, true);
-FrmInputText("user_mail1", _m("E-mail")." 1", "", 50, 50, false);
+FrmInputText("user_mail1", _m("E-mail")." 1", "", 50, 50);
 echo '<input type="hidden" name="add_submit" value="1">
 <input type="hidden" name="um_uedit_no_go_url" value="1">';
 
@@ -79,7 +79,7 @@ FrmTabEnd();
 
 echo '<br><br>';
 
-FrmTabCaption("");
+FrmTabCaption();
 FrmTabEnd([
     "no_slice"=> [
         "value"=>_m("Go: Add Slice"),

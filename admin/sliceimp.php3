@@ -162,7 +162,7 @@ function import_slice(&$slice){
           $slice["id"]=$new_slice_ids[$slice["id"]]["new_id"];
         }
         // inserting to table slice
-        $sqltext = create_SQL_insert_statement ($slice, "slice", ";id;owner;","","")."\n";
+        $sqltext = create_SQL_insert_statement ($slice, "slice", ";id;owner;")."\n";
 //		exit;
         $db->query($sqltext);
         // inserting to table module
@@ -172,7 +172,7 @@ function import_slice(&$slice){
         foreach ($fields as $curf) {
             $curf["slice_id"] = $slice["id"];
             // inserting to table fields
-            $sqltext = create_SQL_insert_statement ($curf, "field", ";slice_id;","","")."\n";
+            $sqltext = create_SQL_insert_statement ($curf, "field", ";slice_id;")."\n";
             $db->query($sqltext);
         }
         if ($overwrite) {

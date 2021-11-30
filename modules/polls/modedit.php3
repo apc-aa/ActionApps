@@ -197,16 +197,16 @@ $apage->printHead($err, $Msg);
     FrmInputText("name", _m("Name"), $name, 99, 25, true);
     $include_cmd = "<br>&lt;!--#include&nbsp;virtual=\"". AA_INSTAL_PATH ."modules/polls/poll.php3?pid=$module_id\"--&gt;";
     FrmInputText("slice_url", _m("URL"), $slice_url, 254, 25, false, _m("Use following SSI command to include the poll to the page: ". $include_cmd));
-    FrmInputText("priority", _m("Priority (order in slice-menu)"), $priority, 5, 5, false);
-    FrmInputSelect("owner", _m("Owner"), $slice_owners, $owner, false);
+    FrmInputText("priority", _m("Priority (order in slice-menu)"), $priority, 5, 5);
+    FrmInputSelect("owner", _m("Owner"), $slice_owners, $owner);
     if ( !$owner ) {
-        FrmInputText("new_owner", _m("New Owner"), $new_owner, 99, 25, false);
-        FrmInputText("new_owner_email", _m("New Owner's E-mail"), $new_owner_email, 99, 25, false);
+        FrmInputText("new_owner", _m("New Owner"), $new_owner, 99);
+        FrmInputText("new_owner_email", _m("New Owner's E-mail"), $new_owner_email, 99);
     }
     if ( $superadmin ) {
         FrmInputChBox("deleted", _m("Deleted"), $deleted);
     }
-    FrmInputSelect("lang_file", _m("Used Language File"), $MODULES['P']['language_files'], $lang_file, false);
+    FrmInputSelect("lang_file", _m("Used Language File"), $MODULES['P']['language_files'], $lang_file);
 
     // module specific...
 

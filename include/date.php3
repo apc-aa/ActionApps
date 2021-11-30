@@ -198,7 +198,7 @@ class datectrl {
      * @return string
      */
     function getdayselect() {
-        return "<select name=\"tdctr_" . $this->name . "_day\"". AA_Jstriggers::get("select", $this->name, "") .">".$this->getDayOptions()."</select>";
+        return "<select name=\"tdctr_" . $this->name . "_day\"". AA_Jstriggers::get("select", $this->name) .">".$this->getDayOptions()."</select>";
     }
 
 
@@ -218,7 +218,7 @@ class datectrl {
      * @return string
      */
     function getmonthselect() {
-        return "<select name=\"tdctr_" . $this->name . "_month\"". AA_Jstriggers::get("select", $this->name, "") .">".$this->getMonthOptions()."</select>";
+        return "<select name=\"tdctr_" . $this->name . "_month\"". AA_Jstriggers::get("select", $this->name) .">".$this->getMonthOptions()."</select>";
     }
 
     function isEmpty() {
@@ -260,7 +260,7 @@ class datectrl {
      * @return string
      */
     function getyearselect() {
-        return "<select name=\"tdctr_" . $this->name . "_year\"". AA_Jstriggers::get("select", $this->name, "") . ($this->required ? 'required' : '' ) .">".$this->getYearOptions()."</select>";
+        return "<select name=\"tdctr_" . $this->name . "_year\"". AA_Jstriggers::get("select", $this->name) . ($this->required ? 'required' : '' ) .">".$this->getYearOptions()."</select>";
     }
 
     function isTimeDisplayed() {
@@ -293,7 +293,7 @@ class datectrl {
         if (!$this->isTimeDisplayed()) {
             return "";
         }
-        return "<input type=\"text\" name=\"tdctr_". $this->name ."_time\"  value=\"". safe($this->getTimeString()). "\" size=\"8\" maxlength=\"8\"". AA_Jstriggers::get("input", $this->name, "") .">";
+        return "<input type=\"text\" name=\"tdctr_". $this->name ."_time\"  value=\"". safe($this->getTimeString()). "\" size=\"8\" maxlength=\"8\"". AA_Jstriggers::get("input", $this->name) .">";
     }
 }
 

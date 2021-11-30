@@ -255,13 +255,13 @@ if ( $grp_edit OR ($submit_action == "update_submit") ) {
 
 if ($grp_new OR ($selected_group AND AA::$perm->isUserEditable($selected_group))) {
     FrmInputText("group_name", _m("Name"), $group_name, 50, 50, true);
-    FrmInputText("group_description", _m("Description"), $group_description, 50, 50, false);
+    FrmInputText("group_description", _m("Description"), $group_description, 50, 50);
 } else {
     if ($group_name) { FrmStaticText(_m("Name"), $group_name); }
     if ($group_name) { FrmStaticText(_m("Description"), $group_description); }
 }
 
-FrmInputChBox("group_super", _m("Superadmin group"), $group_super, false, "", 1, false);
+FrmInputChBox("group_super", _m("Superadmin group"), $group_super);
 echo '</table></td></tr>';
 
 if ( !$add_submit AND !$grp_new ) {

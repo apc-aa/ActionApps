@@ -826,7 +826,7 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
 
     // Skip the rest if no items found
     if (empty($content)) {
-        AA::$debug&32 && AA::$dbg->traceend('GetItemContent', '');
+        AA::$debug&32 && AA::$dbg->traceend('GetItemContent');
         return null;
     }
 
@@ -1111,7 +1111,7 @@ function bin2url($data) {
  * @return bool|string
  */
 function url2bin($data) {
-    return base64_decode(str_pad(strtr($data, '-_', '+/'), strlen($data) % 4, '=', STR_PAD_RIGHT));
+    return base64_decode(str_pad(strtr($data, '-_', '+/'), strlen($data) % 4, '='));
 }
 
 /** HtmlPageBegin function
@@ -1222,7 +1222,7 @@ function StoreToContent($item_id, $field_id, $text_stored, $value, $additional= 
         if (ctype_digit((string)$additional["order"])) {
             $varset->add("number", "number", $additional["order"]);
         } else {
-            $varset->add("number","null", "");
+            $varset->add("number","null");
         }
     } else {
         $varset->add("number", "number", (int)$value['value']);

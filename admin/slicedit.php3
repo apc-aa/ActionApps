@@ -120,14 +120,14 @@ FrmTabCaption(_m("Slice"), $form_buttons);
 FrmStaticText(_m("Id"), $slice_id);
 
 FrmInputText("name", _m("Title"), $sarr['name'], 99, 25, true);
-FrmInputText("slice_url", _m("URL of .shtml page (often leave blank)"), $sarr['slice_url'], 254, 25, false);
-FrmInputText("priority", _m("Priority (order in slice-menu)"), $sarr['priority'], 5, 5, false);
+FrmInputText("slice_url", _m("URL of .shtml page (often leave blank)"), $sarr['slice_url']);
+FrmInputText("priority", _m("Priority (order in slice-menu)"), $sarr['priority'], 5, 5);
 // not functional, yet
 // FrmInputText("upload_url", _m("Upload URL"), $slice_url, 254, 25, false, _m('Url of uploaded files is %1 by default. You can change it by setting this parameter.<br>Note: This do not change the place, wheer the file is stored - you can just use another virtualhost name, for example.', array(IMG_UPLOAD_URL)));
-FrmInputSelect("owner", _m("Owner"), $slice_owners, $sarr['owner'], false);
+FrmInputSelect("owner", _m("Owner"), $slice_owners, $sarr['owner']);
 if ( !$sarr['owner'] ) {
-    FrmInputText("new_owner", _m("New Owner"), $new_owner, 99, 25, false);
-    FrmInputText("new_owner_email", _m("New Owner's E-mail"), $new_owner_email, 99, 25, false);
+    FrmInputText("new_owner", _m("New Owner"), $new_owner, 99);
+    FrmInputText("new_owner_email", _m("New Owner's E-mail"), $new_owner_email, 99);
 }
 if ( $superadmin ) {
     FrmInputChBox("template", _m("Template"), $sarr['template']);
@@ -135,9 +135,9 @@ if ( $superadmin ) {
 }
 FrmInputChBox("flag_allow_expired", _m("Show content of expired items"), $flag_allow_expired);
 FrmInputChBox("flag_allow_pending", _m("Show content of pending items"), $flag_allow_pending);
-FrmInputSelect("permit_anonymous_post", _m("Allow anonymous posting of items"), PERMS_STATE, $sarr['permit_anonymous_post'], false);
+FrmInputSelect("permit_anonymous_post", _m("Allow anonymous posting of items"), PERMS_STATE, $sarr['permit_anonymous_post']);
 FrmInputSelect("permit_anonymous_edit", _m("Allow anonymous editing of items"), PERMS_ANONYMOUS_EDIT, $sarr['permit_anonymous_edit'], false, "", "../doc/anonym.html");
-FrmInputSelect("permit_offline_fill", _m("Allow off-line item filling"),        PERMS_STATE, $sarr['permit_offline_fill'], false);
+FrmInputSelect("permit_offline_fill", _m("Allow off-line item filling"),        PERMS_STATE, $sarr['permit_offline_fill']);
 FrmInputSelect("lang_file", _m("Language"), $biglangs, $sarr['lang_file'], false, 'convert to <a href='. StateUrl($_SERVER['PHP_SELF'].'?convert=utf').'>convert</a> xxx');
 
 // Reader Management specific settings (Jakub, 7.2.2003)

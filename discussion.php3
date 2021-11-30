@@ -104,7 +104,7 @@ if ($cacheentry = AA::Pagecache()->getPage($cache_key, $nocache)) {
     $cache_sids   = $showview->lastUsedSliceIds();
 
     $cacheentry = new Cacheentry($page_content, AA::getHeaders());
-    $cacheentry->processPage(0);
+    $cacheentry->processPage();
 
     if (!$nocache) {
         $str2find = new CacheStr2find($cache_sids);

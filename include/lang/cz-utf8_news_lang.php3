@@ -846,8 +846,8 @@ $_m["Admin - configure Fields"]
  = "Správa webíku - Nastavení polí";
 
 // admin/se_inputform.php3, row 296
-$_m["You selected slice and not constant group. It is unpossible to change slice. Go up in the list."]
- = "Vybral jste webík a ne konstanty. Webík nelze odtud změnit. Konstanty se nalézají výše v seznamu";
+$_m["You selected slice and not constant group. It is impossible to create slice from here."]
+ = "Vybral jste webík a ne konstanty. Odtud nelze nový webík vytvořit.";
 
 // admin/se_inputform.php3, row 326
 $_m["<p>WARNING: Do not change this setting if you are not sure what you're doing!</p>"]

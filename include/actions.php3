@@ -175,7 +175,7 @@ class AA_Manageraction_Item_Feed extends AA_Manageraction {
         foreach ($item_zids as $it_id ) {
             foreach ( $export_to as $exp_slice_pair ) {
                 [$status,$sid] = explode("-", $exp_slice_pair);
-                FeedItemTo($it_id, $this->slice_id, $sid, ($status=='1' ? 'y':'n'), 0);
+                FeedItemTo($it_id, $this->slice_id, $sid, ($status=='1' ? 'y':'n'));
             }
         }
         return false;                                  // OK - no error

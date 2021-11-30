@@ -182,7 +182,7 @@ FrmTextarea("fulltext_format_bottom", _m("Bottom HTML code"), $fulltext_format_b
              _m("HTML code which appears at the bottom of slice area")
              .'<br>'.AA_View::getViewJumpLinks($fulltext_format_bottom), '', 1);
 FrmInputText("fulltext_remove", _m("Remove strings"), $fulltext_remove, 254, 50, false,
-             _m("Removes empty brackets etc. Use ## as delimiter."), '');
+             _m("Removes empty brackets etc. Use ## as delimiter."));
 if ($discus_vids) {
     FrmInputSelect("discus_sel", _m("Show discussion"), $discus_vids, $discus_vid, false, _m("The template for dicsussion you can set on \"Design\" -> \"View\" page"));
     FrmInputChBox("discus_htmlf", _m("Use HTML tags"), $discus_htmlf);

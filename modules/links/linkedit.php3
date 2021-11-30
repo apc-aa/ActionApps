@@ -515,17 +515,17 @@ echo      '</td>
 if ( !Links_IsPublic() OR ($r_state['link_id'] AND $type) ) {
        FrmTabSeparator(_m('Organization') . getFrmMoreHelp(get_help_url(AA_LINKS_HELP_LINK, "kontakt"),
                ["before" => "(", "text" => "?", "after" => ")"]));
-       FrmInputText( 'org_city', _m('City'), $org_city,  250, 50, false);
+       FrmInputText( 'org_city', _m('City'), $org_city,  250, 50);
        printChange( 'org_city', $org_city_change, $org_city );
-       FrmInputText( 'org_street', _m('Street'), $org_street,  250, 50, false);
+       FrmInputText( 'org_street', _m('Street'), $org_street,  250, 50);
        printChange( 'org_street', $org_street_change, $org_street );
-       FrmInputText( 'org_post_code', _m('Post code'), $org_post_code,  250, 50, false);
+       FrmInputText( 'org_post_code', _m('Post code'), $org_post_code,  250, 50);
        printChange( 'org_post_code', $org_post_code_change, $org_post_code );
-       FrmInputText( 'org_phone', _m('Phone'), $org_phone,  250, 50, false);
+       FrmInputText( 'org_phone', _m('Phone'), $org_phone,  250, 50);
        printChange( 'org_phone', $org_phone_change, $org_phone );
-       FrmInputText( 'org_fax', _m('Fax'), $org_fax,  250, 50, false);
+       FrmInputText( 'org_fax', _m('Fax'), $org_fax,  250, 50);
        printChange( 'org_fax', $org_fax_change, $org_fax );
-       FrmInputText( 'org_email', _m('E-mail'), $org_email,  250, 50, false);
+       FrmInputText( 'org_email', _m('E-mail'), $org_email,  250, 50);
        printChange( 'org_email', $org_email_change, $org_email );
 }
 

@@ -228,7 +228,7 @@ FrmTextarea("category_bottom", _m("Category bottom HTML"), $category_bottom, 4, 
            _m("HTML code which appears at the bottom of slice area")
            .'<br>'.AA_View::getViewJumpLinks($category_bottom), '', 1);
 FrmInputText("compact_remove", _m("Remove strings"), $compact_remove, 254, 50, false,
-           _m("Removes empty brackets etc. Use ## as delimiter."), '');
+           _m("Removes empty brackets etc. Use ## as delimiter."));
 FrmTextarea("noitem_msg", _m("'No item found' message"), $noitem_msg, 4, 50, false,
            _m("message to show in place of slice.php3, if no item matches the query")
            .'<br>'.AA_View::getViewJumpLinks($category_bottom), '', 1);
