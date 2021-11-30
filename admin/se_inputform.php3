@@ -35,20 +35,6 @@ require_once __DIR__."/../include/formutil.php3";
 require_once __DIR__."/../include/varset.php3";
 require_once __DIR__."/../include/msgpage.php3";
 
-/** EditConstantURL function
- * @return string - result of the con_url function
- */
-function EditConstantURL() {
-    global $fld;
-    if (substr($fld['id'],0,8)== "category") {
-        return get_admin_url('se_constant.php3', ['categ' => 1]);
-    } else {
-        // we are adding foo parameter in order we can add other parameters by
-        // & in javascript (and do not care about '?' or '&'
-        return get_admin_url('se_constant.php3', ['foo' => 1]);
-    }
-}
-
 if ($upd_edit) {
     $back_admin_url = get_admin_url('se_inputform.php3', ['fid'=>$fid]);
 } else {
@@ -309,15 +295,18 @@ $script2run = '
 $headcode = '
 <script>
   function CallConstantEdit(as_new) {
-    var url = "'. EditConstantURL() .'"
     var conid = document.f.input_show_func_c.value
     if ( conid.substring(0,7) == \'#sLiCe-\' ) {
-      alert(\''. _m("You selected slice and not constant group. It is unpossible to change slice. Go up in the list.") .'\');
+      if (as_new) {
+        alert(\''. _m("You selected slice and not constant group. It is impossible to create slice from here.") .'\');
+        return;
+      }
+      document.location = GetUrl("'. get_admin_url("index.php3"). '", ["change_id=" + conid.substring(7) ]);  
       return;
     }
     if ( conid != "" ) {
+      let url = "'. get_admin_url('se_constant.php3', ['return_url' => 'se_inputform.php3', 'fid' => $fid]). '";
       url += ( (as_new != 1) ? "&group_id=" : "&as_new=") + escape(conid);
-      url += "&return_url=se_inputform.php3&fid='. $fid .'";
       document.location=url;
     }
   }
@@ -385,7 +374,7 @@ echo "
               <td>
                 <a href='javascript:CallConstantEdit(0)'>&larr;&nbsp;". $constants_menu[0] ."</a><br>
                 <a href='javascript:CallConstantEdit(1)'>&larr;&nbsp;". $constants_menu[1] ."</a><br>
-                <a href='". con_url(EditConstantURL(),"return_url=se_inputform.php3&fid=$fid"). "'>". $constants_menu[2] ."</a>
+                <a href='". get_admin_url('se_constant.php3', ['return_url' => 'se_inputform.php3', 'fid' => $fid]). "'>". $constants_menu[2] ."</a>
               </td>
              </tr>
             </table>
