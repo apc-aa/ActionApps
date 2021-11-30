@@ -2314,7 +2314,7 @@ class AA_Stringexpand_Safe extends AA_Stringexpand_Nevercache {
     }
 }
 
-/** generates acsii only username or filename from the string */
+/** generates ascii only username or filename from the string */
 class AA_Stringexpand_Asciiname extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // No reason to cache this simple function
@@ -3942,6 +3942,8 @@ class AA_Stringexpand_Constants extends AA_Stringexpand {
 }
 
 /** {options:<group_id>:<selected>}
+ *  {options:My_Constants_grp:{qs:theme}}
+ *  <select name="theme">{options:My_Constants_grp:{qs:theme}}</select>
  *  {options:[1,2,5,7]:7}
  *  {options:[[1,"January"],[2,"Feb"],[3,"March"]]:7}
  *  {options:{sequence:num:1998:2012}:{date:Y}}
@@ -4035,9 +4037,8 @@ class AA_Stringexpand_Ifset extends AA_Stringexpand_Nevercache {
      * @param $else_text
      * @return mixed|string
      */
-    function expand($condition='', $text='', $else_text='') {
-        $trim_cond = trim($condition);
-        return ((strlen($trim_cond)<1) OR IsAlias($trim_cond)) ? $else_text : str_replace('_#1', $condition, $text);
+    function expand(...$arg_list) {
+        return AA_Stringexpand_Ifin::_resolveCompare(array_merge([''], $arg_list), function($a,$b) { $v = trim($b); return !((strlen($v)<1) OR IsAlias($v));}, true);
     }
 }
 
@@ -4078,7 +4079,7 @@ class AA_Stringexpand_Ifeq extends AA_Stringexpand_Nevercache {
             // else text
             $ret = isset($arg_list[$i]) ? $arg_list[$i] : '';
         }
-        // _#2 is not very usefull but we have it from the times the function was just for one option
+        // _#2 is not very useful, but we have it from the times the function was just for one option
         return str_replace(['_#1','_#2'], [$etalon, $arg_list[0]], $ret);
     }
 }
@@ -4204,8 +4205,8 @@ class AA_Stringexpand_Ifin extends AA_Stringexpand_Nevercache {
      * @param $else_text
      * @return mixed
      */
-    function expand() {
-        return AA_Stringexpand_Ifin::_resolveCompare(func_get_args(), function($a,$b) {return !strlen($b) OR strpos($a, $b) !== false;} );
+    function expand(...$arg_list) {
+        return AA_Stringexpand_Ifin::_resolveCompare($arg_list, function($a,$b) {return !strlen($b) OR strpos($a, $b) !== false;} );
     }
 
     /**
@@ -4213,7 +4214,7 @@ class AA_Stringexpand_Ifin extends AA_Stringexpand_Nevercache {
      * @param $cmp_function
      * @return mixed
      */
-    public static function _resolveCompare($arg_list, $cmp_function) {
+    public static function _resolveCompare($arg_list, $cmp_function, bool $replace_just_matched=false) {
         $haystack = array_shift($arg_list);
         $ret      = false;
         $i        = 0;
@@ -4229,9 +4230,9 @@ class AA_Stringexpand_Ifin extends AA_Stringexpand_Nevercache {
         if ($ret === false) {
             // else text
             $ret     = isset($arg_list[$i]) ? $arg_list[$i] : '';
-            $matched = $ret;
+            $matched = $replace_just_matched ? '' : $ret;
         }
-        return str_replace(['_#1','_#2'], [$haystack, $matched], $ret);
+        return $replace_just_matched ? strtr($ret, ['_#1'=>$matched]) : str_replace(['_#1','_#2'], [$haystack, $matched], $ret);
     }
 }
 
@@ -4247,8 +4248,8 @@ class AA_Stringexpand_Ifintersect extends AA_Stringexpand_Nevercache {
      * @param $else_text
      * @return mixed
      */
-    function expand() {
-        return AA_Stringexpand_Ifin::_resolveCompare(func_get_args(), function($a,$b) {return count(array_filter(array_intersect(array_map('trim', explode_ids($a)),array_map('trim',explode_ids($b))),'strlen'))>0;} );
+    function expand(...$arg_list) {
+        return AA_Stringexpand_Ifin::_resolveCompare($arg_list, function($a,$b) {return count(array_filter(array_intersect(array_map('trim', explode_ids($a)),array_map('trim',explode_ids($b))),'strlen'))>0;} );
     }
 }
 
@@ -4267,8 +4268,8 @@ class AA_Stringexpand_Iftype extends AA_Stringexpand_Nevercache {
      * @param $else_text
      * @return mixed
      */
-    function expand() {
-        return AA_Stringexpand_Ifin::_resolveCompare(func_get_args(), ['AA_Stringexpand_Iftype','typeCompare']);
+    function expand(...$arg_list) {
+        return AA_Stringexpand_Ifin::_resolveCompare($arg_list, ['AA_Stringexpand_Iftype','typeCompare']);
     }
 
     /** Compare function
@@ -4482,7 +4483,7 @@ class AA_Stringexpand_Input extends AA_Stringexpand_Field {
      * @return string
      */
     function expand($slice_id='', $field_id='', $required=null, $widget_type=null, $widget_properties=null, $preset_value=null, $item_index=null) {
-        return $this->inputCommon($slice_id, $field_id, $required, $widget_type, $widget_properties, $preset_value, $item_index, false);
+        return $this->inputCommon($slice_id, $field_id, $required, $widget_type, $widget_properties, $preset_value, $item_index);
     }
 
     function inputCommon($slice_id, $field_id, $required, $widget_type, $widget_properties, $preset_value, $item_index, $widget_only=false) {
@@ -7808,7 +7809,7 @@ class AA_Stringexpand_Jwtencode extends AA_Stringexpand {
      * @return string
      */
     function expand($key='', $username='', $password='', $lifetime='', $add_validity='') {
-        if (!strlen($key) OR !strlen($username) OR !strlen($password) OR !($uid = AA::$perm->authenticateUsername($username, $password, ''))) {
+        if (!strlen($key) OR !strlen($username) OR !strlen($password) OR !($uid = AA::$perm->authenticateUsername($username, $password))) {
             return '';
         }
 
@@ -9619,7 +9620,7 @@ class AA_Stringexpand_Aadocumentation extends AA_Stringexpand {
     static function parseDoc($string) {
         $ret = [];
         // remove initial /**, *, */
-        preg_match_all("#\n\s*/?[*]+/?\s*(.*)#", "\n".$string, $matches, PREG_PATTERN_ORDER);
+        preg_match_all("#\n\s*/?[*]+/?\s*(.*)#", "\n".$string, $matches);
         $string = join("\n", array_map( function ($s) { return ltrim($s,'* \t');}, $matches[1]));
         $blocks = explode("\n@", $string);
         $blocks[0] = 'text '.$blocks[0];
