@@ -286,7 +286,7 @@ define("DOCUMENTATION_URL", "https://actionapps.org/aa/doc");
 
   if (defined ("SITE_CONFIG")) {
     // require does not work as expected inside control structures!
-    include (AA_INC_PATH . SITE_CONFIG);
+    include (__DIR__ . SITE_CONFIG);
   }
 */
 

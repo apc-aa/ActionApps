@@ -42,7 +42,6 @@ function checkdir($name,$dir,$mustendslash, $mustwritable) {
     }
 }
 checkdir("AA_SITE_PATH",    AA_SITE_PATH,     true, false);
-checkdir("AA_INC_PATH",     AA_INC_PATH,      true, false);
 //checkdir("FILEMAN_BASE_DIR",FILEMAN_BASE_DIR, true, true);  // it is old and no necessary functionality in AA - no need to test it
 ?>
 
