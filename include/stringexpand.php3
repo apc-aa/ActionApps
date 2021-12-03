@@ -5912,6 +5912,7 @@ class AA_Stringexpander {
         'striptags'        => 'strip_tags',         // old  AA_Stringexpand_Striptags
         'htmlspecialchars' => 'myspecialchars',     // old  AA_Stringexpand_Htmlspecialchars - similar to {safe}, but without double_escape
         'urlencode'        => 'urlencode',          // old  AA_Stringexpand_Urlencode
+        'urldecode'        => 'urldecode',          // old  AA_Stringexpand_Urldecode
         'ord'              => 'ord',                // old  AA_Stringexpand_Ord
         'rand'             => 'rand',               // old  AA_Stringexpand_Rand
         'fmod'             => 'fmod',               // old  AA_Stringexpand_Fmod
