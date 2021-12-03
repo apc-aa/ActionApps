@@ -783,8 +783,8 @@ class AA_Module_Site extends AA_Module {
 
     public function getTree() {
         $tree = null;
-        if ($structre = $this->getProperty('structure')) {
-            $tree = unserialize($structre);
+        if ($structure = $this->getProperty('structure')) {
+            $tree = unserialize($structure);
         } elseif ($spotrow = DB_AA::select1('', "SELECT * FROM site_spot", [
             ['site_id', $this->module_id, 'l'],
             ['spot_id', '1']

@@ -82,6 +82,7 @@ spl_autoload_register(function ($class_name) {
         'AA_Property'                    => 'include/widget.class.php3',
         'AA_Poll'                        => 'modules/polls/include/poll.class.php3',
         'AA_Polls'                       => 'modules/polls/include/poll.class.php3',
+        'sitetree'                       => 'modules/site/sitetree.php3',
         'AA_Serializable'                => 'include/statestore.php3',
         'AA_Storable'                    => 'include/statestore.php3',
         'FormrowWidget'                  => 'include/form.class.php3',

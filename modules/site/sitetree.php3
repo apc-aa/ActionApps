@@ -33,19 +33,6 @@ function normalize_arr($arr) {
     return $ret;
 }
 
-
-// SiteTree and Spot class definition
-$SPOT_VAR_NAMES = [
-    'id'         => 'id',      // translation from long variable
-                         'name'       => 'n',       // names to the current - shorter
-                         'conditions' => 'c',
-                         'variables'  => 'v',
-                         'parent'     => 'p',
-                         'positions'  => 'po',
-                         'choices'    => 'ch',
-                         'flag'       => 'f'
-];
-
 class AA_Site_Spot_Match {
     public $op;
     public $val;
@@ -90,6 +77,20 @@ class spot {
     var $f;           // flags
     // the names of variables are short in order the outpot of serialize() function
     // would be as short as possible
+
+    /** @var string[] translation from long variable names to the current - shorter
+     *  @todo grab it form AA_Metabase
+     */
+    public const SPOT_VAR_NAMES =  [
+        'id'         => 'id',
+        'name'       => 'n',
+        'conditions' => 'c',
+        'variables'  => 'v',
+        'parent'     => 'p',
+        'positions'  => 'po',
+        'choices'    => 'ch',
+        'flag'       => 'f'
+    ];
 
     function __construct($id=false, $name=false, $conditions=false, $variables=false, $parent=false, $positions=false, $choices=false, $flag=0) {
         $this->id = $id;
@@ -235,10 +236,10 @@ class spot {
     function Variables()                   { return $this->v; }
 
     function get_translated($what)         { return $this->$what; }
-    function get($what)                    { return $this->get_translated($GLOBALS['SPOT_VAR_NAMES'][$what]); }
+    function get($what)                    { return $this->get_translated(spot::SPOT_VAR_NAMES[$what]); }
 
     function set_translated($what, $value) { $this->$what = $value; }
-    function set($what,$value)             { $this->set_translated($GLOBALS['SPOT_VAR_NAMES'][$what], $value); }
+    function set($what,$value)             { $this->set_translated(spot::SPOT_VAR_NAMES[$what], $value); }
 
     function conditionMatches($state) {
         if ( isset($this->c) AND is_array($this->c) ) {  //c is array of conditions

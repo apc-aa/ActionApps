@@ -98,8 +98,13 @@ function AafinderSliceLink($slice_id) {
     return a_href(get_admin_url("index.php3?change_id=$slice_id"), "$slice_id"). ' ('. AA_Module::getModuleName($slice_id) .')  &nbsp; '. ChangesMonitor::getHistoryLink($slice_id);
 }
 
-function AafinderSiteLink($spot_id, $slice_id) {
-    return a_href(get_aa_url("modules/site/index.php3?slice_id=$slice_id&module_id=$slice_id&spot_id=$spot_id&go_sid=$spot_id"), "$spot_id"). ' ('. AA_Module_Site::getModuleName($slice_id) .') &nbsp; '. ChangesMonitor::getHistoryLink("S.$spot_id");
+function AafinderSiteLink($spot_id, $module_id) {
+    if ( ($module = AA_Module_Site::getModule($module_id)) AND ($tree = $module->getTree()) ) {
+        $spot_code =  ($tree->get('flag', $spot_id) & AA_Module_Site::FLAG_DISABLE) ? "<s>$spot_id</s>" : "<b>$spot_id</b>";
+    } else {
+        $spot_code = "??? $spot_id";
+    }
+    return a_href(get_aa_url("modules/site/index.php3?slice_id=$module_id&module_id=$module_id&spot_id=$spot_id&go_sid=$spot_id"), $spot_code). ' ('. AA_Module_Site::getModuleName($module_id) .') &nbsp; '. ChangesMonitor::getHistoryLink("S.$spot_id");
 }
 
 function AafinderViewLink($view_id) {
