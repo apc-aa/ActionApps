@@ -1210,10 +1210,7 @@ class AA_Item {
             $text  = $p[0] ?: $this->getval($col);
             $modif = $p[1];
             if (in_array($modif, ['csv', 'safe', 'javascript', 'urlencode', 'striptags', 'rss', 'conds', 'asis', 'substitute', 'debug'])) {
-                if ( $fnc = AA_Stringexpander::$php_functions[$modif] ) {
-                    // special php functions aliases
-                    return $fnc($text);
-                }
+                // if ( $fnc = PHP_FUNCTIONS[$modif] ) {  return $fnc($text); }               // special php functions aliases
                 return AA_Serializable::factoryByName($modif, null, 'AA_Stringexpand_')->expand($text);
 //                return call_user_func( array( AA_Stringexpand::constructClassName($modif), 'expand'), $text);
             }

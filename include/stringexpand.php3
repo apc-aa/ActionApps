@@ -164,12 +164,9 @@ function aa_json_decode($string, $asoc=false) {
 /** @return string - JSON array form string where values are delimited by $delimiter.
  *  Input text must be in utf8
  */
-class AA_Stringexpand_Jsonarray extends AA_Stringexpand_Nevercache {
+class AA_Stringexpand_Jsonarray extends AA_Stringexpand_Nevercachenotrim {
     /** Do not trim all parameters ($delimiter could be space) */
-    static function doTrimParams() { return false; }
 
-    // Never cached (extends AA_Stringexpand_Nevercache)
-    // No reason to cache this simple function
     /** expand function
      * @param $text
      * @param $delimiter ...
@@ -186,12 +183,9 @@ class AA_Stringexpand_Jsonarray extends AA_Stringexpand_Nevercache {
  *    {input:82d37e966fcdc9d1cac49a7e49406601:text............:1:fld:{jsonasoc:name:Surname:input_help:just surname, please}}
  *  params text must be in utf8
  */
-class AA_Stringexpand_Jsonasoc extends AA_Stringexpand_Nevercache {
+class AA_Stringexpand_Jsonasoc extends AA_Stringexpand_Nevercachenotrim {
     /** Do not trim all parameters ($delimiter could be space) */
-    static function doTrimParams() { return false; }
 
-    // Never cached (extends AA_Stringexpand_Nevercache)
-    // No reason to cache this simple function
     /**
      * @return string|void
      */
@@ -218,10 +212,7 @@ class AA_Stringexpand_Jsonasoc extends AA_Stringexpand_Nevercache {
  *  usage:
  *    txt:{colonescape:_#this}  - 16:45  -->  16#:45
  */
-class AA_Stringexpand_Colonescape extends AA_Stringexpand_Nevercache {
-    /** Do not trim all parameters ($delimiter could be space) */
-    static function doTrimParams() { return false; }
-
+class AA_Stringexpand_Colonescape extends AA_Stringexpand_Nevercachenotrim {
     /**
      * @param string $text
      * @return mixed|void
@@ -452,10 +443,7 @@ class AA_Stringexpand_Inputvar extends AA_Stringexpand_Nevercache {
  *  stored already in the pagecache
  *  @param $parameters - field id and other modifiers to the field
  */
-class AA_Stringexpand_Define extends AA_Stringexpand_Nevercache {
-    /** Do not trim all parameters (maybe we can?) */
-    static function doTrimParams() { return false; }
-
+class AA_Stringexpand_Define extends AA_Stringexpand_Nevercachenotrim {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // cache is used by expand function itself
 
@@ -480,10 +468,7 @@ class AA_Stringexpand_Define extends AA_Stringexpand_Nevercache {
  *  @see AA_Stringexpand_Define for more info
  *  @param $parameters - field id and other modifiers to the field
  */
-class AA_Stringexpand_Var extends AA_Stringexpand_Nevercache {
-    /** Do not trim all parameters (maybe we can?) */
-    static function doTrimParams() { return false; }
-
+class AA_Stringexpand_Var extends AA_Stringexpand_Nevercachenotrim {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // cache is used by expand function itself
 
@@ -1153,7 +1138,9 @@ class AA_Stringexpand_Formsaver extends AA_Stringexpand_Nevercache {
  *  @param $add            - text added in case the text shorten
  *                           (so the resulting text will be at maximum length+add long)
  */
-class AA_Stringexpand_Shorten extends AA_Stringexpand_Nevercache {
+class AA_Stringexpand_Shorten extends AA_Stringexpand_Nevercachenotrim {
+    /** Do not trim all parameters (the $add parameter could contain space) */
+
     // Never cache this code - it is most probably not repeating on the page
     /**
      * @param $text
@@ -1167,9 +1154,6 @@ class AA_Stringexpand_Shorten extends AA_Stringexpand_Nevercache {
         $ret = aa_substr($text, 0, $length / 2 - 1) . '...';
         return $ret . aa_substr($text, aa_strlen($ret) - $length);
     }
-
-    /** Do not trim all parameters (the $add parameter could contain space) */
-    static function doTrimParams() { return false; }
 
     /**
      * @param string $text
@@ -1236,11 +1220,9 @@ class AA_Stringexpand_Shorten extends AA_Stringexpand_Nevercache {
  *  @param $more           - "see all text" link text
  *  @param $less           - "hide" link text
  */
-class AA_Stringexpand_Expandable extends AA_Stringexpand_Nevercache {
+class AA_Stringexpand_Expandable extends AA_Stringexpand_Nevercachenotrim {
     // Never cache this code, since we need unique divs with uniqid()
-
     /** Do not trim all parameters (the $add parameter could contain space) */
-    static function doTrimParams() { return false; }
 
     /**
      * @param string $text
@@ -1755,12 +1737,8 @@ class AA_Stringexpand_Cookie extends AA_Stringexpand_Nevercache {
  *    {math:478778:1:FR}        - correct French SI type of number format with thin space
  *    {math:478778:1:EN}        - correct English SI type of number format with thin space and decimal point
  */
-class AA_Stringexpand_Math extends AA_Stringexpand_Nevercache {
-    // Never cached (extends AA_Stringexpand_Nevercache)
-    // No reason to cache this simple function
-
+class AA_Stringexpand_Math extends AA_Stringexpand_Nevercachenotrim {
     /** Do not trim all parameters (the $add parameter could contain space) */
-    static function doTrimParams() { return false; }
 
     /** expand function  */
     function expand($expression='', $decimals='', $dec_point='', $thousands_sep = '') {
@@ -2005,12 +1983,7 @@ class AA_Stringexpand_Distance extends AA_Stringexpand_Nevercache {
 /**
  * Class AA_Stringexpand_Substr
  */
-class AA_Stringexpand_Substr extends AA_Stringexpand_Nevercache {
-    // Never cached (extends AA_Stringexpand_Nevercache)
-    // No reason to cache this simple function
-
-    /** Do not trim all parameters (the $add parameter could contain space) */
-    static function doTrimParams() { return false; }
+class AA_Stringexpand_Substr extends AA_Stringexpand_Nevercachenotrim {
 
     /** expand function
      * @param $string
@@ -2035,12 +2008,8 @@ class AA_Stringexpand_Substr extends AA_Stringexpand_Nevercache {
  *  offset and length parameters follows the array_slice() PHP function
  *  @see http://php.net/array_slice
  */
-class AA_Stringexpand_Limit extends AA_Stringexpand_Nevercache {
-    // Never cached (extends AA_Stringexpand_Nevercache)
-    // No reason to cache this simple function
-
+class AA_Stringexpand_Limit extends AA_Stringexpand_Nevercachenotrim {
     /** Do not trim all parameters (the $delimiter parameter could contain space) */
-    static function doTrimParams() { return false; }
 
     /** for offset and length parameters see PHP function array_slice()
      * @param $ids // parts separated by $delimiter
@@ -2099,12 +2068,8 @@ class AA_Stringexpand_Reverse extends AA_Stringexpand_Shuffle {
 /** sorts the values
  *    {sort:<values>[:<order-type>[:<unique>[:<delimiter>[:<limit>]]]}
  */
-class AA_Stringexpand_Sort extends AA_Stringexpand_Nevercache {
-    // Never cached (extends AA_Stringexpand_Nevercache)
-    // No reason to cache this simple function
-
+class AA_Stringexpand_Sort extends AA_Stringexpand_Nevercachenotrim {
     /** Do not trim all parameters (the $delimiter parameter could contain space) */
-    static function doTrimParams() { return false; }
 
     /**
      */
@@ -2161,12 +2126,8 @@ class AA_Stringexpand_Next extends AA_Stringexpand_Nevercache {
 
 /** Unique - removes duplicate ids form the string
  */
-class AA_Stringexpand_Unique extends AA_Stringexpand_Nevercache {
-    // Never cached (extends AA_Stringexpand_Nevercache)
-    // No reason to cache this simple function
-
+class AA_Stringexpand_Unique extends AA_Stringexpand_Nevercachenotrim {
     /** Do not trim all parameters (the $delimiter parameter could contain space) */
-    static function doTrimParams() { return false; }
 
     /** for offset and length parameters see PHP function array_slice()
      * @param $ids // item ids (or any other values) separated by '-'
@@ -2194,12 +2155,8 @@ class AA_Stringexpand_Unique extends AA_Stringexpand_Nevercache {
  *    {lookup:10:5-8-10-12-15} - returns 3 (_#pos)
  *    {lookup:10:5-8-10-12-15:-:_#pos / _#count}  - returns 3 / 5 (_#pos)
  */
-class AA_Stringexpand_Lookup extends AA_Stringexpand_Nevercache {
-    // Never cached (extends AA_Stringexpand_Nevercache)
-    // No reason to cache this simple function
-
+class AA_Stringexpand_Lookup extends AA_Stringexpand_Nevercachenotrim {
     /** Do not trim all parameters (the $delimiter parameter could contain space) */
-    static function doTrimParams() { return false; }
 
     /** for offset and length parameters see PHP function array_slice()
      * @param $value  // value to look for
@@ -2229,12 +2186,8 @@ class AA_Stringexpand_Lookup extends AA_Stringexpand_Nevercache {
  *    {count:12324-353443-58921}   // returns 3
  *    {count:{ids:6353428288a923:d-category........-=-Dodo}}
  */
-class AA_Stringexpand_Count extends AA_Stringexpand_Nevercache {
-    // Never cached (extends AA_Stringexpand_Nevercache)
-    // No reason to cache this simple function
-
+class AA_Stringexpand_Count extends AA_Stringexpand_Nevercachenotrim {
     /** Do not trim all parameters (the $delimiter parameter could contain space) */
-    static function doTrimParams() { return false; }
 
     /** for offset and length parameters see PHP function array_slice()
      * @param $ids // item ids separated by '-' (long or short)
@@ -2350,9 +2303,7 @@ class AA_Stringexpand_Jsonstring extends AA_Stringexpand_Nevercache {
  *  "plaintext" is set for the field. The {asis:abstract........} returns the
  *  exact value as inserted in the database
  */
-class AA_Stringexpand_Asis extends AA_Stringexpand_Nevercache {
-    // Never cached (extends AA_Stringexpand_Nevercache)
-    // No reason to cache this simple function
+class AA_Stringexpand_Asis extends AA_Stringexpand_Nevercachenotrim {
 
     // not needed right now for Nevercached functions, but who knows in the future
     /** additionalCacheParam function
@@ -2363,9 +2314,6 @@ class AA_Stringexpand_Asis extends AA_Stringexpand_Nevercache {
         /** output is different for different items - place item id into cache search */
         return !is_object($this->item) ? '' : $this->item->getId();
     }
-
-    /** Do not trim all parameters (maybe we can?) */
-    static function doTrimParams() { return false; }
 
     /** expand function
      * @param $text
@@ -2381,12 +2329,8 @@ class AA_Stringexpand_Asis extends AA_Stringexpand_Nevercache {
 /** Escape apostrophes and convert HTML entities
  *  If you want to put the JS code in HTML: tag attribute, consider using onclick="{safe:{javascript:code...}}"
  */
-class AA_Stringexpand_Javascript extends AA_Stringexpand_Nevercache {
-    // Never cached (extends AA_Stringexpand_Nevercache)
-    // No reason to cache this simple function
-
+class AA_Stringexpand_Javascript extends AA_Stringexpand_Nevercachenotrim {
     /** Do not trim all parameters (maybe we can?) */
-    static function doTrimParams() { return false; }
 
     /** expand function
      * @param $text
@@ -2410,9 +2354,8 @@ class AA_Stringexpand_Utfnormalize extends AA_Stringexpand_Nevercache {
 }
 
 /** Used for sending text e-mails by {mail...} function */
-class AA_Stringexpand_Text2html extends AA_Stringexpand_Nevercache {
-    // Never cached (extends AA_Stringexpand_Nevercache)
-    // No reason to cache this simple function
+class AA_Stringexpand_Text2html extends AA_Stringexpand_Nevercachenotrim {
+    /** Do not trim all parameters (maybe we can?) */
 
     const TYPOGRAPH_NO_BREAK_LINE = [
         //one-letter prepositions
@@ -2528,9 +2471,6 @@ class AA_Stringexpand_Text2html extends AA_Stringexpand_Nevercache {
         ' doc. ' =>' doc.&nbsp;',
         ' prof. ' =>' prof.&nbsp;',
     ];
-
-    /** Do not trim all parameters (maybe we can?) */
-    static function doTrimParams() { return false; }
 
     /** expand function
      * @param $text
@@ -2657,12 +2597,8 @@ class AA_Stringexpand_Field2html extends AA_Stringexpand_Text2html {
 }
 
 /** converts html to text */
-class AA_Stringexpand_Html2text extends AA_Stringexpand_Nevercache {
-    // Never cached (extends AA_Stringexpand_Nevercache)
-    // No reason to cache this simple function
-
+class AA_Stringexpand_Html2text extends AA_Stringexpand_Nevercachenotrim {
     /** Do not trim all parameters (maybe we can?) */
-    static function doTrimParams() { return false; }
 
     /** expand function
      * @param $html string
@@ -2678,9 +2614,8 @@ class AA_Stringexpand_Html2text extends AA_Stringexpand_Nevercache {
  *  name={bin2url:Mojžíš}
  *  id={bin2url:{encrypt:{id..............}:password}}
  */
-class AA_Stringexpand_Bin2url extends AA_Stringexpand_Nevercache {
+class AA_Stringexpand_Bin2url extends AA_Stringexpand_Nevercachenotrim {
     /** Do not trim all parameters */
-    static function doTrimParams() { return false; }
 
     /**
      * @param string $data
@@ -2703,12 +2638,8 @@ class AA_Stringexpand_Url2bin extends AA_Stringexpand_Nevercache {
 }
 
 /** Just escape apostrophs ' => \' */
-class AA_Stringexpand_Quote extends AA_Stringexpand_Nevercache {
-    // Never cached (extends AA_Stringexpand_Nevercache)
-    // No reason to cache this simple function
-
+class AA_Stringexpand_Quote extends AA_Stringexpand_Nevercachenotrim {
     /** Do not trim all parameters (the $delimiter parameter could contain space) */
-    static function doTrimParams() { return false; }
 
     /** expand function
      * @param $text
@@ -2722,12 +2653,8 @@ class AA_Stringexpand_Quote extends AA_Stringexpand_Nevercache {
 /**
  * Class AA_Stringexpand_Rss
  */
-class AA_Stringexpand_Rss extends AA_Stringexpand_Nevercache {
-    // Never cached (extends AA_Stringexpand_Nevercache)
-    // No reason to cache this simple function
-
+class AA_Stringexpand_Rss extends AA_Stringexpand_Nevercachenotrim {
     /** Do not trim all parameters (the $delimiter parameter could contain space) */
-    static function doTrimParams() { return false; }
 
     /** expand function
      * @param $text
@@ -3123,11 +3050,9 @@ class AA_Stringexpand_Item extends AA_Stringexpand {
  *               delimeter
  *               3 content
  */
-class AA_Stringexpand_Itree extends AA_Stringexpand_Nevercache {
+class AA_Stringexpand_Itree extends AA_Stringexpand_Nevercachenotrim {
     // cached in AA_Stringexpand_Item
-
     /** Do not trim all parameters (the $delimiter parameter could contain space) */
-    static function doTrimParams() { return false; }
 
     /** expand function
      * @param $ids_string  string - ids (long or short (or mixed) separated by dash '-')
@@ -3779,7 +3704,7 @@ class AA_Stringexpand_Seo2ids extends AA_Stringexpand {
 
         $set  = new AA_Set($sarr, new AA_Condition('seo.............', '==', $seo_string), null, $bins);
         $zids = $set->query();
-        return join($zids->longids(), '-');
+        return join('-', $zids->longids());
         // added expiry date in order we can get ids also for expired items
         // return StrExpand('AA_Stringexpand_Ids', array($slices, 'd-expiry_date.....->-0-seo.............-=-"'. str_replace('-', '--', $seo_string) .'"'));
     }
@@ -4025,12 +3950,9 @@ class AA_Stringexpand_Sequence extends AA_Stringexpand_Nevercache {
  *  The $condition with undefined alias is considered as empty as well
  *    ($condition=_#.{8} (exactly) - like '_#HEADLINE')
  */
-class AA_Stringexpand_Ifset extends AA_Stringexpand_Nevercache {
+class AA_Stringexpand_Ifset extends AA_Stringexpand_Nevercachenotrim {
     /** Do not trim all parameters (maybe we can?) */
-    static function doTrimParams() { return false; }
 
-    // Never cached (extends AA_Stringexpand_Nevercache)
-    // No reason to cache this simple function
     /** expand function
      * @param $condition
      * @param $text
@@ -4049,12 +3971,9 @@ class AA_Stringexpand_Ifset extends AA_Stringexpand_Nevercache {
  *  Now you can use as many $options as you want
  *  Example: {ifeq:{xlang}:en:English:cz:Czech:Unknown language}
  */
-class AA_Stringexpand_Ifeq extends AA_Stringexpand_Nevercache {
+class AA_Stringexpand_Ifeq extends AA_Stringexpand_Nevercachenotrim {
     /** Do not trim all parameters (the $text parameter at least could contain space) */
-    static function doTrimParams() { return false; }
 
-    // Never cached (extends AA_Stringexpand_Nevercache)
-    // No reason to cache this simple function
     /** expand function
      * @param $etalon
      * @param $option1
@@ -4089,12 +4008,9 @@ class AA_Stringexpand_Ifeq extends AA_Stringexpand_Nevercache {
  *  Example: {if:{_#IMGCOUNT}:>:10:big:6:medium:small}
  *  Comparison is always numeric (also for security reasons)
  */
-class AA_Stringexpand_If extends AA_Stringexpand_Nevercache {
+class AA_Stringexpand_If extends AA_Stringexpand_Nevercachenotrim {
     /** Do not trim all parameters (maybe we can?) */
-    static function doTrimParams() { return false; }
 
-    // Never cached (extends AA_Stringexpand_Nevercache)
-    // No reason to cache this simple function
     /** expand function
      * @param $etalon
      * @param $operator
@@ -4194,9 +4110,8 @@ class AA_Stringexpand_Ifeqfield extends AA_Stringexpand {
  *  Now you can use as many $needles as you want - only the first matched wins
  *  Example: {Ifin:de,ru,cz,pl,en:en:English:cz:Czech:Unknown language}
  */
-class AA_Stringexpand_Ifin extends AA_Stringexpand_Nevercache {
+class AA_Stringexpand_Ifin extends AA_Stringexpand_Nevercachenotrim {
     /** Do not trim all parameters (maybe we can?) */
-    static function doTrimParams() { return false; }
 
     /** expand function
      * @param $haystack
@@ -4277,7 +4192,7 @@ class AA_Stringexpand_Iftype extends AA_Stringexpand_Nevercache {
      * @param $test string - test type - one of longid|shortid|mail...   (we have just those, at this moment, but there will be more...)
      * @return bool     - if the string is of type $b
      */
-    public function typeCompare($test_string, $test) {
+    public static function typeCompare($test_string, $test): bool {
         switch ($test) {
             case 'longid' :  return is_long_id($test_string);
             case 'shortid':  return is_short_id($test_string) AND ($test_string > 0);  // maybe we should update the is_short_id test
@@ -4295,12 +4210,9 @@ class AA_Stringexpand_Iftype extends AA_Stringexpand_Nevercache {
  *  string ussing first parameter as delimiter
  *  Example: {join:, :{_#YEAR____}:{_#SIZE____}:{_#SOURCE___}}
  */
-class AA_Stringexpand_Join extends AA_Stringexpand_Nevercache {
+class AA_Stringexpand_Join extends AA_Stringexpand_Nevercachenotrim {
     /** Do not trim all parameters ($delimiter could be space) */
-    static function doTrimParams() { return false; }
 
-    // Never cached (extends AA_Stringexpand_Nevercache)
-    // No reason to cache this simple function
     /** expand function
      * @param $delimiter
      * @param $strings ...
@@ -5208,9 +5120,8 @@ class AA_Stringexpand_Pagermore extends AA_Stringexpand_Nevercache {
 
 /** debugging
  */
-class AA_Stringexpand_Debug extends AA_Stringexpand_Nevercache {
+class AA_Stringexpand_Debug extends AA_Stringexpand_Nevercachenotrim {
     /** Do not trim all parameters  */
-    static function doTrimParams() { return false; }
 
     /** expand function
      * @param $property
@@ -5590,7 +5501,6 @@ class AA_Unalias_Callback {
         // {formpart:}
         // {view.php3?vid=12&cmd[12]=x-12-34}
         // {dequote:already expanded and quoted string}
-        // {fnctn:xxx:yyyy}   - expand AA_Stringexpander::$php_functions[fnctn]
         // {unpacked_id.....}
         // {mlx_view:view format in html} mini view of translatiosn available for this article
         //                                does substitutions %lang, %itemid
@@ -5742,9 +5652,7 @@ class AA_Unalias_Callback {
             if (class_exists($class_name = AA_Serializable::constructClassName($outcmd, 'AA_Stringexpand_'))) {
                 return StrExpand($class_name, $class_name::parseParam($outparam), ['item'=>$this->item, 'itemview'=> $this->itemview], true);
             }
-            elseif ( ($fnctn = AA_Stringexpander::$php_functions[$outcmd]) OR is_callable($fnctn = "stringexpand_$outcmd") ) {
-                // eb functions - call allowed php functions directly
-
+            elseif ( is_callable($fnctn = "stringexpand_$outcmd") ) {  // old version of stringexpand_ functions (could be in old custom aa setups)
                 if (!strlen($outparam)) {
                     $ebres = @$fnctn();
                 } else {
@@ -5840,12 +5748,8 @@ class AA_Stringexpand_Slice_Comments extends AA_Stringexpand {
 /**
  * Class AA_Stringexpand_Preg_Match
  */
-class AA_Stringexpand_Preg_Match extends AA_Stringexpand_Nevercache {
-    // Never cached (extends AA_Stringexpand_Nevercache)
+class AA_Stringexpand_Preg_Match extends AA_Stringexpand_Nevercachenotrim {
     /** Do not trim all parameters (maybe we can?) */
-    static function doTrimParams() { return false; }
-
-    // No reason to cache this simple function
 
     /** expand function
      * @param $pattern
@@ -5900,35 +5804,6 @@ class AA_Stringexpander {
         $ret .= print_r($this->requires, true);
         return $ret;
     }
-
-    /** In this array are set functions from PHP or elsewhere that can usefully go in {xxx:yyy:zzz} syntax */
-    public static $php_functions = [
-        'strlen'           => 'strlen',             // old  AA_Stringexpand_Strlen
-        'str_repeat'       => 'str_repeat',         // old  AA_Stringexpand_Str_repeat
-        'strtoupper'       => 'strtoupper',         //      AA_Stringexpand_Strtoupper
-        'strtolower'       => 'strtolower',         //      AA_Stringexpand_Strtolower
-        'ucfirst'          => 'ucfirst',            //      AA_Stringexpand_Ucfirst
-        'ucwords'          => 'ucwords',            //      AA_Stringexpand_Ucwords
-        'striptags'        => 'strip_tags',         // old  AA_Stringexpand_Striptags
-        'htmlspecialchars' => 'myspecialchars',     // old  AA_Stringexpand_Htmlspecialchars - similar to {safe}, but without double_escape
-        'urlencode'        => 'urlencode',          // old  AA_Stringexpand_Urlencode
-        'urldecode'        => 'urldecode',          // old  AA_Stringexpand_Urldecode
-        'ord'              => 'ord',                // old  AA_Stringexpand_Ord
-        'rand'             => 'rand',               // old  AA_Stringexpand_Rand
-        'fmod'             => 'fmod',               // old  AA_Stringexpand_Fmod
-        /** math function log() */
-        'log'              => 'log',                // old  AA_Stringexpand_Log
-        'unpack'           => 'unpack_id',          // old  AA_Stringexpand_Unpack
-        // 'packid'           => 'packid',             // see  AA_Stringexpand_Packid
-        'string2id'        => 'string2id',          // old  AA_Stringexpand_String2id
-        'base64'           => 'base64_encode',      // old  AA_Stringexpand_Base64
-
-        /** Prints version of AA as fullstring, AA version (2.11.0), or svn revision (2368)
-         *  {version[:aa|svn]}
-         **/
-        'version'          => 'aa_version'         // old AA_Stringexpand_Version'
-    ];
-
 
     /** replaces inline aliasses {(....)} with {var:...} references (which will be later expanded into {...}) and defines appropriate contentcache entries
      *  this allows to write expressions like
@@ -6919,6 +6794,20 @@ class AA_Stringexpand_Nevercache extends AA_Stringexpand {
     }
 }
 
+/** Special parent class for all stringexpand functions, where no cache
+ *  is needed and no Trim (nainly for PHP based functions - formely
+ *      public static $php_functions = [ 'strlen'           => 'strlen', ...
+ */
+class AA_Stringexpand_Nevercachenotrim extends AA_Stringexpand {
+    /** @return bool */
+    function doCache() {  return false;  }
+
+    /** Do not trim all parameters (maybe we can?) */
+    static function doTrimParams() { return false; }
+}
+
+
+
 /** unaliases the text - replaces {views} and other constructs */
 class AA_Stringexpand_Expand extends AA_Stringexpand {
     /** Do not trim all parameters (maybe we can?) */
@@ -6947,12 +6836,8 @@ class AA_Stringexpand_Expand extends AA_Stringexpand {
 
 
 /** trims whitespaces form begin and end of the string */
-class AA_Stringexpand_Trim extends AA_Stringexpand_Nevercache {
-    /** Do not trim all parameters ($chars could contain space) */
-    static function doTrimParams() { return false; }
+class AA_Stringexpand_Trim extends AA_Stringexpand_Nevercachenotrim {
 
-    // Never cached (extends AA_Stringexpand_Nevercache)
-    // No reason to cache this simple function
     /**
      * @param string $string
      * @param string $chars
@@ -6969,12 +6854,7 @@ class AA_Stringexpand_Trim extends AA_Stringexpand_Nevercache {
  *   {str_replace:uno:one:text with uno inside}
  *   {str_replace:["�","�","�"]:["c","s","r"]:text �esky with accents}
  */
-class AA_Stringexpand_Str_replace extends AA_Stringexpand_Nevercache {
-    /** Do not trim all parameters ($search and $replace could be spaces) */
-    static function doTrimParams() { return false; }
-
-    // Never cached (extends AA_Stringexpand_Nevercache)
-    // No reason to cache this simple function
+class AA_Stringexpand_Str_replace extends AA_Stringexpand_Nevercachenotrim {
     /**
      * @param string $search
      * @param string $replace
@@ -6988,27 +6868,167 @@ class AA_Stringexpand_Str_replace extends AA_Stringexpand_Nevercache {
     }
 }
 
-/** replaces string with REGEXP
- *      {replace:<!-- .* -->::{full_text.......}}
- *   The usage is as PHP preg_replace, but we do not allow you to specify
- *   delimiters and modifiers because of dangerous /e modifier
- */
-class AA_Stringexpand_Replace extends AA_Stringexpand_Nevercache {
-    /** Do not trim all parameters ($search and $replace could be spaces) */
-    static function doTrimParams() { return false; }
+/** AA counterpart of PHP strlen() */
+class AA_Stringexpand_Strlen extends AA_Stringexpand_Nevercachenotrim {
 
-    // Never cached (extends AA_Stringexpand_Nevercache)
-    // No reason to cache this simple function
-    /**
-     * @param string $search
-     * @param string $replace
-     * @param string $text
-     * @return null|string|string[]|void
-     */
-    function expand($search='', $replace='', $text='') {
-        //$search  = json2arr($search,true);
-        //$replace = json2arr($replace,true);
-        return preg_replace('`'.str_replace('`','\`',$search).'`', $replace, $text);
+    /** @param string $string  */
+    function expand($string='') {
+        return (string)strlen($string);
+    }
+}
+
+/** AA counterpart of PHP strtoupper() */
+class AA_Stringexpand_Strtoupper extends AA_Stringexpand_Nevercachenotrim {
+
+    /** @param string $string  */
+    function expand($string='') {
+        return strtoupper($string);
+    }
+}
+
+/** AA counterpart of PHP strtolower() */
+class AA_Stringexpand_Strtolower extends AA_Stringexpand_Nevercachenotrim {
+
+    /** @param string $string  */
+    function expand($string='') {
+        return strtolower($string);
+    }
+}
+
+/** AA counterpart of PHP ucfirst() */
+class AA_Stringexpand_Ucfirst extends AA_Stringexpand_Nevercachenotrim {
+
+    /** @param string $string  */
+    function expand($string='') {
+        return ucfirst($string);
+    }
+}
+
+/** AA counterpart of PHP ucwords() */
+class AA_Stringexpand_Ucwords extends AA_Stringexpand_Nevercachenotrim {
+
+    /** @param string $string  */
+    function expand($string='') {
+        return ucwords($string);
+    }
+}
+
+/** AA counterpart of PHP htmlspecialchars() */
+class AA_Stringexpand_Htmlspecialchars extends AA_Stringexpand_Nevercachenotrim {
+
+    /** @param string $string  */
+    function expand($string='') {
+        return myspecialchars($string);
+    }
+}
+
+/** AA counterpart of PHP urlencode() */
+class AA_Stringexpand_Urlencode extends AA_Stringexpand_Nevercachenotrim {
+
+    /** @param string $string  */
+    function expand($string='') {
+        return urlencode($string);
+    }
+}
+
+/** AA counterpart of PHP urldecode() */
+class AA_Stringexpand_Urldecode extends AA_Stringexpand_Nevercachenotrim {
+
+    /** @param string $string  */
+    function expand($string='') {
+        return urldecode($string);
+    }
+}
+
+/** AA counterpart of PHP ord() */
+class AA_Stringexpand_Ord extends AA_Stringexpand_Nevercachenotrim {
+
+    /** @param string $string  */
+    function expand($string='') {
+        return ord($string);
+    }
+}
+
+/** AA counterpart of AA unpack_id() */
+class AA_Stringexpand_Unpack extends AA_Stringexpand_Nevercachenotrim {
+
+    /** @param string $string  */
+    function expand($string='') {
+        return unpack_id($string);
+    }
+}
+
+/** AA counterpart of AA string2id() */
+class AA_Stringexpand_String2id extends AA_Stringexpand_Nevercachenotrim {
+
+    /** @param string $string  */
+    function expand($string='') {
+        return string2id($string);
+    }
+}
+
+/** AA counterpart of PHP base64_encode() */
+class AA_Stringexpand_Base64 extends AA_Stringexpand_Nevercachenotrim {
+
+    /** @param string $string  */
+    function expand($string='') {
+        return base64_encode($string);
+    }
+}
+
+/** AA counterpart of PHP str_repeat() */
+class AA_Stringexpand_Str_repeat extends AA_Stringexpand_Nevercachenotrim {
+
+    /** @param string $string  */
+    function expand($string='', $times='') {
+        return str_repeat($string, (int)$times);
+    }
+}
+
+/** AA counterpart of PHP rand() */
+class AA_Stringexpand_Rand extends AA_Stringexpand_Nevercachenotrim {
+
+    /** @param string $string  */
+    function expand($min='', $max='') {
+        return rand((int)$min, (int)$max);
+    }
+}
+
+/** AA counterpart of PHP fmod() */
+class AA_Stringexpand_Fmod extends AA_Stringexpand_Nevercachenotrim {
+
+    /** @param string $string  */
+    function expand($num1='', $num2='') {
+        return fmod($num1, $num2);
+    }
+}
+
+/** AA counterpart of PHP log() */
+class AA_Stringexpand_Log extends AA_Stringexpand_Nevercachenotrim {
+
+    /** @param string $string  */
+    function expand($num='', $base='') {
+        return log($num, $base);
+    }
+}
+
+/** AA counterpart of PHP strip_tags() */
+class AA_Stringexpand_striptags extends AA_Stringexpand_Nevercachenotrim {
+
+    /** @param string $string  */
+    function expand($string='', $allowed_tags='') {
+        return strip_tags($string, $allowed_tags);
+    }
+}
+
+/** Prints version of AA as fullstring, AA version (2.11.0), or svn revision (2368)
+ *  {version[:aa|svn|svn2]}
+ **/
+class AA_Stringexpand_Version extends AA_Stringexpand_Nevercachenotrim {
+
+    /** @param string $string full|svn|svn2|aa */
+    function expand($type='') {
+        return aa_version($type);
     }
 }
 
@@ -7313,12 +7333,8 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
  *  for phpThumb params see http://phpthumb.sourceforge.net/demo/demo/phpThumb.demo.demo.php
  *  (phpThumb library is the part of AA)
  **/
-class AA_Stringexpand_Imgtext extends AA_Stringexpand_Nevercache {
-    /** Do not trim all parameters ($text coul contain spaces at the begin) */
-    static function doTrimParams() { return false; }
+class AA_Stringexpand_Imgtext extends AA_Stringexpand_Nevercachenotrim {
 
-    // Never cached (extends AA_Stringexpand_Nevercache)
-    // No reason to cache this simple function
     /** expand function
      * @param $phpthumb_params - parameters as you would put to url for phpThumb
      *                           see http://phpthumb.sourceforge.net/demo/demo/phpThumb.demo.demo.php
@@ -7521,11 +7537,7 @@ class AA_Stringexpand_Credentials extends AA_Stringexpand_Nevercache {
  *   {qs:aa[n1000_3130303132312d726d2d7361736f762d][con_email_______][]}
  *                   - returns the value of the variable - exactly as posted
  */
-class AA_Stringexpand_Qs extends AA_Stringexpand_Nevercache {
-    // Never cached (extends AA_Stringexpand_Nevercache)
-
-    /** Do not trim all parameters ($delimiter could be space) */
-    static function doTrimParams() { return false; }
+class AA_Stringexpand_Qs extends AA_Stringexpand_Nevercachenotrim {
 
     /** expand function
      * @param $ids_string
@@ -7916,9 +7928,7 @@ class AA_Stringexpand_Setsecret extends AA_Stringexpand_Nevercache {
 }
 
 /** computes MD5 hash */
-class AA_Stringexpand_Md5 extends AA_Stringexpand_Nevercache {
-    /** Do not trim all parameters (maybe we can?) */
-    static function doTrimParams() { return false; }
+class AA_Stringexpand_Md5 extends AA_Stringexpand_Nevercachenotrim {
 
     /**
      * @param string $text
@@ -7930,9 +7940,7 @@ class AA_Stringexpand_Md5 extends AA_Stringexpand_Nevercache {
 }
 
 /** crypt text as AA password */
-class AA_Stringexpand_Pwdcrypt extends AA_Stringexpand_Nevercache {
-    /** Do not trim all parameters (maybe we can?) */
-    static function doTrimParams() { return false; }
+class AA_Stringexpand_Pwdcrypt extends AA_Stringexpand_Nevercachenotrim {
 
     /**
      * @param string $text
@@ -7947,9 +7955,7 @@ class AA_Stringexpand_Pwdcrypt extends AA_Stringexpand_Nevercache {
  *  (nevercached - because it caches also "set" and "addset" commands, so
  *  ignores the second same "set"/"addset" command )
  */
-class AA_Stringexpand_Table extends AA_Stringexpand_Nevercache {
-    /** Do not trim all parameters ($val and $param could begin with space) */
-    static function doTrimParams() { return false; }
+class AA_Stringexpand_Table extends AA_Stringexpand_Nevercachenotrim {
 
     /**
      * @param string $id
@@ -8003,9 +8009,7 @@ class AA_Stringexpand_Table extends AA_Stringexpand_Nevercache {
  *  {array:mygrp:joinset:{_#GRP_INDX}:_#HEADLINE}
  *  {array:mygrp:get:{_#GRP_INDX}}
  */
-class AA_Stringexpand_Array extends AA_Stringexpand_Nevercache {
-    /** Do not trim all parameters ($val and $param could begin with space) */
-    static function doTrimParams() { return false; }
+class AA_Stringexpand_Array extends AA_Stringexpand_Nevercachenotrim {
 
     /**
      * @param string $id
@@ -9374,14 +9378,12 @@ class AA_Stringexpand_Require extends AA_Stringexpand {
  * Class AA_Stringexpand_Postreplace
  */
 //class AA_Stringexpand_Post_Replace extends AA_Stringexpand_Nevercache {      // regexp - like {replace}
-class AA_Stringexpand_Post_Str_Replace extends AA_Stringexpand_Nevercache {  // stringreplace - like {str_replace}
+class AA_Stringexpand_Post_Str_Replace extends AA_Stringexpand_Nevercachenotrim {  // stringreplace - like {str_replace}
 //class AA_Stringexpand_Post_Insert extends AA_Stringexpand_Nevercache {  // {post_insert:needle in output:code to insert if needle is found in the output}
 //class AA_Stringexpand_Post_Insert extends AA_Stringexpand_Nevercache {  // {post_insert:/needle in output/:code to insert if REGEXP needle is found in the output}
 
     // no reason to cache it - it is quick processing function
-
     /** Do not trim all parameters ($search and $replace could be spaces) */
-    static function doTrimParams() { return false; }
 
     /** expand function
      * @param $search
