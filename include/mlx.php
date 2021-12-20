@@ -425,7 +425,7 @@ class MLX {
              // $mlxout .= "<a href='javascript:mlx_saveOnSwitch($mlx_url$href)'>";
             }
             $langName = $GLOBALS['g_const_Lang'][$v['name']];
-            $mlxout  .= $modstr.($langName ? $langName : $v['name']). ($href ? "</a>" : ""). $extra;
+            $mlxout  .= $modstr.($langName ?: $v['name']). ($href ? "</a>" : ""). $extra;
             $mlxout  .= "&nbsp;</td>\n ";
         }
         //this is a hack

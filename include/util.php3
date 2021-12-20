@@ -259,7 +259,7 @@ function ConvertEncoding($str, $from, $to='UTF-8') {
  * @return array|mixed
  */
 function add_vars($query_string="", $where='GLOBALS') {
-    $varstring = ( $query_string ? $query_string : shtml_query_string() );
+    $varstring = ( $query_string ?: shtml_query_string() );
 
     if ( !$varstring ) {
         return [];

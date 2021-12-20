@@ -3700,7 +3700,7 @@ class AA_Stringexpand_Seo2ids extends AA_Stringexpand {
             return '';
         }
 
-        $bins = $bins ? $bins : AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING;
+        $bins = $bins ?: AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING;
 
         $set  = new AA_Set($sarr, new AA_Condition('seo.............', '==', $seo_string), null, $bins);
         $zids = $set->query();
@@ -4332,7 +4332,7 @@ class AA_Stringexpand_Field extends AA_Stringexpand {
             return '';
         }
 
-        return (string) $field->getProperty($property ? $property : 'name');
+        return (string) $field->getProperty($property ?: 'name');
     }
 
     /**
@@ -7465,7 +7465,7 @@ class AA_Stringexpand_Filelink extends AA_Stringexpand {
         if (empty($url)) {
             return '';
         }
-        $filename = $text ? $text : basename(parse_url($url, PHP_URL_PATH));
+        $filename = $text ?: basename(parse_url($url, PHP_URL_PATH));
         $fileinfo = join(' - ', [StrExpand('AA_Stringexpand_Fileinfo', [$url,'type']), StrExpand('AA_Stringexpand_Fileinfo', [$url,'size'])]);
         $fileinfo = $fileinfo ? " [$fileinfo]" : '';
         $fielinfo_htm = $fileinfo ? "&nbsp;<span class=\"fileinfo\">". str_replace(' ','&nbsp;', $fileinfo).'</span>' : '';
@@ -8364,7 +8364,7 @@ class AA_Stringexpand_Changepwd  extends AA_Stringexpand_Nevercache {
         if (!is_long_id($reader_slice_id)) {
             return '';
         }
-        $from_email = $from_email ? $from_email : ERROR_REPORTING_EMAIL;
+        $from_email = $from_email ?: ERROR_REPORTING_EMAIL;
 
         if (isset($_POST['aapwd3'])) {    // Change Password
             return AA_Password_Manager_Reader::changePassword($_POST['aapwd3'], $_POST['aapwd3b'], $_POST['aakey'], $_POST['aauser'],$from_email);
@@ -8393,7 +8393,7 @@ class AA_Stringexpand_Changepwdsendmail  extends AA_Stringexpand_Nevercache {
         if (!is_long_id($reader_slice_id)) {
             return '';
         }
-        $from_email = $from_email ? $from_email : ERROR_REPORTING_EMAIL;
+        $from_email = $from_email ?: ERROR_REPORTING_EMAIL;
         return AA_Password_Manager_Reader::is_ok(AA_Password_Manager_Reader::askForMail($username, $reader_slice_id, $from_email)) ? '1' : 'err';
     }
 }
@@ -8754,7 +8754,7 @@ class AA_Stringexpand_Rotator extends AA_Stringexpand_Nevercache {
             return '';
         }
 
-        $interval   = (int)$interval ? (int)$interval : 3000;
+        $interval   = (int)$interval ?: 3000;
         $extrastyle = ($effect == 'fade') ? 'position:absolute;' : '';
         $showfirst  = '';
         $div_id     = 'rot'.get_hash($ids, $code, $interval, $speed, $effect);

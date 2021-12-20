@@ -652,7 +652,7 @@ function Event_AddLinkGlobalCat( $type, $slice, $slice_type, &$ret_params, $para
             Links_AssignCategory($cid, $sub_cat_id, $general_cat['pri']);
         }
         // result set of categories to assign link
-        $ret_params[] = $sub_cat_id ? $sub_cat_id : $cid;
+        $ret_params[] = $sub_cat_id ?: $cid;
     }
     return true;
 }

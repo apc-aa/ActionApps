@@ -268,7 +268,7 @@ function GetFormatedConstants($constgroup, $format, $restrict_zids, $conds, $sor
     }
 
     $conds = String2Conds( $conds );
-    $sort  = String2Sort( $sort ? $sort : 'sort[0][const_pri]=a');
+    $sort  = String2Sort( $sort ?: 'sort[0][const_pri]=a');
     $zids  = QueryConstantZIDs($constgroup, $conds, $sort, $restrict_zids);
     if ( $zids->count() <= 0 ) {
         return [];
@@ -346,7 +346,7 @@ class AA_Item {
         }
         $this->format       = $format;
         $this->remove       = $remove;
-        $this->parameters   = ( $param ? $param : []);
+        $this->parameters   = ( $param ?: []);
     }
 
     /** setformat function
@@ -878,7 +878,7 @@ class AA_Item {
      * @return mixed|null|string|string[]
      */
     function f_y($col, $param="") {
-        $str2unalias = $param ? $param : $this->text2Html($this->getval($col), $this->getFlag($col));
+        $str2unalias = $param ?: $this->text2Html($this->getval($col), $this->getFlag($col));
         return $this->unalias( $str2unalias );
     }
 
@@ -1054,12 +1054,12 @@ class AA_Item {
         */
 
         $p = ParamExplode($param);
-        $stringToMatch_Raw = $p[0] ? $p[0] : $col;
+        $stringToMatch_Raw = $p[0] ?: $col;
         // can use either the 'headline......' format or "You static text here"
         $stringToMatch   = get_if( $this->getval($stringToMatch_Raw), $stringToMatch_Raw);
 
-        $fieldToMatch    = quote(     $p[2] ? $p[2] : BLURB_FIELD_TO_MATCH  );
-        $fieldToReturn   = quote(     $p[3] ? $p[3] : BLURB_FIELD_TO_RETURN );
+        $fieldToMatch    = quote(     $p[2] ?: BLURB_FIELD_TO_MATCH  );
+        $fieldToReturn   = quote(     $p[3] ?: BLURB_FIELD_TO_RETURN );
         /*
         This SQL effectively narrows down through three sets:
         a) all the items from our blurb slice
@@ -1082,14 +1082,14 @@ class AA_Item {
                          c2.item_id     = '$fqsqlid'";
 
         } elseif ($fieldToMatch == "short_id........") {
-            $p_blurbSliceId  = q_pack_id( $p[1] ? $p[1] : BLURB_SLICE_ID  );
+            $p_blurbSliceId  = q_pack_id( $p[1] ?: BLURB_SLICE_ID  );
             $SQL = "SELECT c2.text AS text
                     FROM item LEFT JOIN content c2 ON item.id = c2.item_id
                     WHERE slice_id  = '$p_blurbSliceId' AND
                          item.short_id = '$stringToMatch' AND
                          c2.field_id    = '$fieldToReturn'";
         } else {
-            $p_blurbSliceId  = q_pack_id( $p[1] ? $p[1] : BLURB_SLICE_ID  );
+            $p_blurbSliceId  = q_pack_id( $p[1] ?: BLURB_SLICE_ID  );
             $SQL = "SELECT c2.text AS text
                     FROM item LEFT JOIN content c1 ON item.id = c1.item_id
                               LEFT JOIN content c2 ON item.id = c2.item_id
@@ -1177,7 +1177,7 @@ class AA_Item {
         $p = ParamExplode($param);
 
         if ($col == 'hl_href.........' && strlen($p[0]) == 16) {
-            $redirect  = $p[1] ? $p[1] :
+            $redirect  = $p[1] ?:
                                         strtr(AA_INSTAL_URL, ':', '#:') .
                                         "slice.php3?slice_id=$slice_id&encap=false";
             //      return strtr( $this->f_f($col, $p[0] . ':' . $redirect), '#/', ':/') ;
@@ -1589,7 +1589,7 @@ class AA_Item {
     function l_b($col, $param="") {
         $p   = $this->subst_aliases( ParamExplode($param) );
         $way = explode(',', $this->getval($col)); // to get parent category
-        return ( $way[count($way)-2] == $this->parameters['category_id']) ? '' : ($p[0] ? $p[0] : '@' );
+        return ( $way[count($way)-2] == $this->parameters['category_id']) ? '' : ($p[0] ?: '@' );
     }
 
     /** l_g function

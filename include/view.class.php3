@@ -123,7 +123,7 @@ class AA_View {
      * @return string
      */
     function jumpLink($name = null) {
-        return "<a href=\"".$this->jumpUrl(). "\">".($name ? $name: $this->id)."</a>";
+        return "<a href=\"".$this->jumpUrl(). "\">".($name ?: $this->id)."</a>";
     }
 
     /** jumpUrl function

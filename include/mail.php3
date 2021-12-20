@@ -213,9 +213,7 @@ class AA_Mail extends htmlMimeMail implements \AA\Later\LaterInterface {
             }
         }
         // bounces are going to errors_to (if defined) or ...
-        $return_path = ( $record['sender']    ? $record['sender'] :
-                        ( $record['header_from'] ? $record['header_from'] :
-                          ERROR_REPORTING_EMAIL));
+        $return_path = $record['sender'] ?: ( $record['header_from'] ?: ERROR_REPORTING_EMAIL );
         $extracted_return_path = $this->extractEmails($return_path);
         if (isset($extracted_return_path[0])) {
             $this->setReturnPath($extracted_return_path[0]);

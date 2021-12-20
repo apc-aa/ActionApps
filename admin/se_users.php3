@@ -97,7 +97,7 @@ function PrintUser($perm, $usr_id, $editor_perm) {
 
     echo "<td class=\"tabtxt\">". $usr_code ."</td>\n";
     echo "<td class=\"tabtxt\">". $username ."</td>\n";
-    echo "<td class=\"tabtxt\">". (($usrinfo['mail']) ? $usrinfo['mail'] : "&nbsp;") ."</td>\n";
+    echo "<td class=\"tabtxt\">". (($usrinfo['mail']) ?: "&nbsp;") ."</td>\n";
     echo "<td class=\"tabtxt\">". _mdelayed($usrinfo['type']) ."</td>\n";
 
     IfLink( CanChangeRole($perm, $editor_perm, $perms_roles["AUTHOR"]['perm']),        get_admin_url("se_users.php3?UsrAdd=$usr_id_enc&role=AUTHOR"), _m("Author"));

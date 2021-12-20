@@ -112,7 +112,7 @@ function WriteModuleFields( $module_id, $superadmin, $type, $name, $slice_url, $
         $GLOBALS['r_lang_file']      = stripslashes($lang_file);
         $GLOBALS['r_slice_view_url'] = stripslashes($slice_url);
     } else {  // insert (add)
-        $module_id = ($new_id ? $new_id : new_id());   // sometimes we need specific
+        $module_id = ($new_id ?: new_id());   // sometimes we need specific
         // module_id (links module)
         $varset->set("id", $module_id, "unpacked");
         $varset->set("created_by", AuthGetUid(), "text");

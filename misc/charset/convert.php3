@@ -34,8 +34,8 @@ https://www.apc.org/
 
 require_once __DIR__."/../../include/convert_charset.class.php3";
 
-$from   = ($_REQUEST['from'] ? $_REQUEST['from'] : 'iso-8859-1');
-$to     = ($_REQUEST['to']   ? $_REQUEST['to']   : 'utf-8');
+$from   = ($_REQUEST['from'] ?: 'iso-8859-1');
+$to     = ($_REQUEST['to']   ?: 'utf-8');
 $source = $_REQUEST['source'];
 if ( !$source ) {
     echo "<--! source not specified -->";

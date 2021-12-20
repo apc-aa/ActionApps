@@ -485,7 +485,7 @@ class Widget extends AA_Object implements NamedInterface {
      */
     public function getLiveHtml($aa_property, $content, $function = null) {
         // add JS OK Function
-        return str_replace('AA_LIVE_OK_FUNC', $function ? $function : "''", $this->_finalizeLiveHtml($this->_getRawHtml($aa_property, $content, 'live'), $aa_property));
+        return str_replace('AA_LIVE_OK_FUNC', $function ?: "''", $this->_finalizeLiveHtml($this->_getRawHtml($aa_property, $content, 'live'), $aa_property));
     }
 
     /* Decorates Live Widget. Prepared for overriding in subclasses */

@@ -121,7 +121,7 @@ foreach ($list["items"] as $name => $item) {
 echo "</body></html>";
 
 function nl($s) {
-    return $s ? $s : "&nbsp;";
+    return $s ?: "&nbsp;";
 }
 
 function processSlashes($s) {

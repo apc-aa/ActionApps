@@ -70,7 +70,7 @@ if ( $update ) {
                 $set->setName($name);
                 $set->setOwnerId($slice_id);
                 // those id are marked so we can use it as group in Reader permissions
-                $set->setId($objid ? $objid : new_id(1));
+                $set->setId($objid ?: new_id(1));
                 $set->save();
             }
         }

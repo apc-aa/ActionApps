@@ -32,13 +32,14 @@ use AA\IO\DB\DB_AA;
 require_once __DIR__."/mail.php3";
 
 // discussion images
-define ("D_EXPAND_IMG", 0);
-define ("D_HLINE_IMG",  1);
-define ("D_VLINE_IMG",  2);
-define ("D_CORNER_IMG", 3);
-define ("D_SPACE_IMG",  4);
-define ("D_T_IMG",      5);
-define ("D_ITEM",       6);
+const D_EXPAND_IMG = 0;
+const D_HLINE_IMG = 1;
+const D_VLINE_IMG = 2;
+const D_CORNER_IMG = 3;
+const D_SPACE_IMG = 4;
+const D_T_IMG = 5;
+const D_ITEM = 6;
+
 /** PrintImg function
  * @param $src
  * @param $width = 0
@@ -244,14 +245,10 @@ function GetDiscussionFormat($view_info) {
     $format['d_order']      = $VIEW_TYPES_INFO['discus']['modification'][$view_info['modification']];
     $format['slice_id']     = $view_info['slice_id'];
     $format['d_form']       = $view_info['remove_string'];
-    $format['d_spacer']     = ($view_info['aditional']  ? $view_info['aditional'] :
-                                                         '<img src="'.AA_INSTAL_PATH.'images/blank.gif" width="20" height="1" border="0">');
-    $format['d_sel_butt']   = ($view_info['aditional2'] ? $view_info['aditional2'] :
-                                                         '<input type="button" name="sel_ids" value="' ._m("Show selected"). '" onClick="showSelectedComments()" class="discbuttons">');
-    $format['d_all_butt']   = ($view_info['aditional3'] ? $view_info['aditional3'] :
-                                                         '<input type="button" name="all_ids" value="' ._m("Show all"). '" onClick="showAllComments()" class="discbuttons">');
-    $format['d_add_butt']   = ($view_info['aditional4'] ? $view_info['aditional4'] :
-                                                         '<input type="button" name="add_disc" value="' ._m("Add new"). '" onClick="showAddComments()" class="discbuttons">');
+    $format['d_spacer']     = ($view_info['aditional']  ?: '<img src="'.AA_INSTAL_PATH.'images/blank.gif" width="20" height="1" border="0">');
+    $format['d_sel_butt']   = ($view_info['aditional2'] ?: '<input type="button" name="sel_ids" value="' ._m("Show selected"). '" onClick="showSelectedComments()" class="discbuttons">');
+    $format['d_all_butt']   = ($view_info['aditional3'] ?: '<input type="button" name="all_ids" value="' ._m("Show all"). '" onClick="showAllComments()" class="discbuttons">');
+    $format['d_add_butt']   = ($view_info['aditional4'] ?: '<input type="button" name="add_disc" value="' ._m("Add new"). '" onClick="showAddComments()" class="discbuttons">');
     $format['images'] = [
                            D_VLINE_IMG  => $view_info['img1'],
                            D_CORNER_IMG => $view_info['img2'],
@@ -263,11 +260,11 @@ function GetDiscussionFormat($view_info) {
 
 /** Create discussion tree from d_content
  * @param $d_content
- * @return bool
+ * @return array
  */
 function GetDiscussionTree($d_content) {
     if (!$d_content) {
-        return false;
+        return [];
     }
     foreach($d_content as $d_id => $val) {
         if ($val["hide"] == true) {                  // if hidden => skip
@@ -497,30 +494,30 @@ function send2mailList($d_item_id, $new_id) {
                     "body"      => "even"
                 ];
 
-                $mail = "";
+                $maildef = [];
                 foreach ($mail_parts as $part => $field) {
                     $s = $view_info[$field];
                     for ($i=2; $i < 9; ++$i) {
-                        $s = str_replace("_#ITEMPAR".($i+1), $item_params [$i], $s);
+                        $s = str_replace("_#ITEMPAR".($i+1), $item_params[$i], $s);
                     }
                     $CurItem->setformat($s);
-                    $mail[$part] = $CurItem->get_item();
+                    $maildef[$part] = $CurItem->get_item();
                 }
 
                 $mail = new AA_Mail;
-                $mail->setSubject($mail["subject"]);
-                $mail->setHtml($mail["body"], html2text($mail["body"]));
+                $mail->setSubject($maildef["subject"]);
+                $mail->setHtml($maildef["body"], html2text($maildef["body"]));
                 if ($mail["from"]) {
-                    $mail->setHeader("From",      $mail["from"]);
+                    $mail->setHeader("From",      $maildef["from"]);
                 }
                 if ($mail["reply_to"]) {
-                    $mail->setHeader("Reply-To",  $mail["reply_to"]);
+                    $mail->setHeader("Reply-To",  $maildef["reply_to"]);
                 }
                 if ($mail["errors_to"]) {
-                    $mail->setHeader("Errors-To", $mail["errors_to"]);
+                    $mail->setHeader("Errors-To", $maildef["errors_to"]);
                 }
                 if ($mail["sender"]) {
-                    $mail->setHeader("Sender",    $mail["sender"]);
+                    $mail->setHeader("Sender",    $maildef["sender"]);
                 }
 
                 $db->query("SELECT lang_file FROM slice INNER JOIN item ON item.slice_id = slice.id WHERE item.id='".q_pack_id($d_item_id)."'");

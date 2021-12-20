@@ -262,7 +262,7 @@ function IsSuperadmin() {
     if ($permission_uid != AuthGetUid()) {
         AA::$perm->cache(AuthGetUid());
     }
-    return $r_superuser[AA_ID] ? $r_superuser[AA_ID] : false;
+    return $r_superuser[AA_ID] ?: false;
 }
 
 /** IsCatPerm function
@@ -802,7 +802,7 @@ class AA_Perm {
         if (AA_Perm::compare($aa_perm, $perms_roles["SUPER"]['perm']) == "E") {
             return $aa_perm;
         } else {
-            return ($slice_perm ? $slice_perm : $aa_perm);
+            return ($slice_perm ?: $aa_perm);
         }
     }
 

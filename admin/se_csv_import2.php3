@@ -385,7 +385,7 @@ class AA_Csv_Importer {
                <td class="tabtxt" align="center"><input type="radio" <?php if ($this->itemId == "old") echo "CHECKED"; ?> name="itemId" value="old"></td>
                <td class="tabtxt"><?php
                  echo _m("Map item id from"). '&nbsp';
-                 FrmSelectEasy("itemIdMappedFrom",$inFields, $this->itemIdMappedFrom ? $this->itemIdMappedFrom : ( !$set_default ? '' : $inFields[0]));
+                 FrmSelectEasy("itemIdMappedFrom",$inFields, $this->itemIdMappedFrom ?: ( !$set_default ? '' : $inFields[0]));
                  echo '<br>';
                  $mapping_options = [
                      'store'     => _m('unpacked long id (32 chracters)'),

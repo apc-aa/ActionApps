@@ -88,7 +88,7 @@ $manager_settings = [
          'default_bookmark'     => $group
      ],
      'scroller'  => [
-         'listlen'              => ($listlen ? $listlen : EDIT_ITEM_COUNT)
+         'listlen'              => ($listlen ?: EDIT_ITEM_COUNT)
      ],
      'itemview'  => [
          'manager_vid'          => false,    // $slice_info['manager_vid'],      // id of view which controls the design

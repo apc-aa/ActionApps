@@ -218,7 +218,7 @@ function SendOkPage($txt, $new_ids = []) {
             if ($txt['report']) {
                 $ret['report'] = $txt['report'];
             }
-            $retcode = $_REQUEST["ret_code"] ? $_REQUEST["ret_code"] : base64_decode($_REQUEST["ret_code_enc"]);
+            $retcode = $_REQUEST["ret_code"] ?: base64_decode($_REQUEST["ret_code_enc"]);
 
             if ( $retcode == 'AA_2FA_QR') {   // very special case for 2FA secret
                 $secret = strlen(AuthGetUid()) ? DB_AA::select1('secret', 'SELECT content.text AS secret FROM content', [['field_id', FIELDID_2FA_SECRET], ['item_id', AuthGetUid(), 'l']]) : '';

@@ -79,7 +79,7 @@ if ( $update ) {
         $varset->add("category_sort", "number", $category_sort ? 1 : 0);
           // if not filled, store " " - the empty value displays "No item found" for
           // historical reasons
-        $varset->add("noitem_msg", "quoted", $noitem_msg ? $noitem_msg : " " );
+        $varset->add("noitem_msg", "quoted", $noitem_msg ?: " " );
 
         if ( !$db->query("UPDATE slice SET ". $varset->makeUPDATE() . "
                           WHERE id='".q_pack_id($slice_id)."'")) {

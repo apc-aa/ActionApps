@@ -292,7 +292,7 @@ class AA_Poll {
         $ret = '';
         for ( $i=0; $i < $zid_count; $i++ ) {
             $poll   = AA_Polls::getPoll($poll_zids->id($i));
-            $design = $request['design_id'] ? $request['design_id'] : ($request['vote_id'] ? 'aftervote' : 'beforevote');
+            $design = $request['design_id'] ?: ($request['vote_id'] ? 'aftervote' : 'beforevote');
             $ret   .= $poll->getOutput($design);
         }
 

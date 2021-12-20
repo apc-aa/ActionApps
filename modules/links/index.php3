@@ -166,7 +166,7 @@ $manager_settings = [
          'hint_url'             => get_help_url(AA_LINKS_HELP_MAIN,"hledat-radit")
      ],
      'scroller'  => [
-         'listlen'              => ($listlen ? $listlen : EDIT_ITEM_COUNT),
+         'listlen'              => ($listlen ?: EDIT_ITEM_COUNT),
          'slice_id'             => $slice_id
      ],
      'itemview'  => [

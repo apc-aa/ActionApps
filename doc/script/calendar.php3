@@ -111,7 +111,7 @@ echo "</form>";
 
 /* show the (day and) month and year heading */
 
-echo "<h1>".($day ? $day : "").$L_MONTH[$month]." ".$year."</h1>";
+echo "<h1>".($day ?: ""). $L_MONTH[$month]." ".$year."</h1>";
 ?>
 
 <script>

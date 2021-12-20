@@ -196,10 +196,10 @@ class DteWidget extends Widget
                 if (!(int)$years[$i] AND !(int)$months[$i] AND !(int)$days[$i] AND !$times[$i]) {
                     continue;
                 }
-                $year = $years[$i] ? $years[$i] : date('Y'); // specified year or current
-                $month = $months[$i] ? $months[$i] : 1;         // specified month or January
-                $day = $days[$i] ? $days[$i] : 1;         // specified day or 1st
-                $time = explode(':', $times[$i] ? $times[$i] : "0:0:0");         // specified time or midnight
+                $year = $years[$i] ?: date('Y'); // specified year or current
+                $month = $months[$i] ?: 1;         // specified month or January
+                $day = $days[$i] ?: 1;         // specified day or 1st
+                $time = explode(':', $times[$i] ?: "0:0:0");         // specified time or midnight
 
                 $values[] = mktime($time[0], $time[1], $time[2], (int)$month, (int)$day, (int)$year);
             }

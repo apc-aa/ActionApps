@@ -146,11 +146,11 @@ if ( isset($r) ) {
     }
     $max_index = max( $max_index, strlen($old_r)-1 );
     for ( $i=0; $i<=$max_index; $i++) {
-      $new_r .= ($r[$i] ? $r[$i] : ( $old_r[$i] ? $old_r[$i] : 'x' ));
+      $new_r .= ($r[$i] ?: ($old_r[$i] ?: 'x' ));
     }
     $old_r = $new_r;
   } else {
-    $old_r = ($r ? $r : 'x');
+    $old_r = ($r ?: 'x');
   }
   $old_x='';
   $old_p='1';
@@ -183,19 +183,19 @@ $format_cesta = '&nbsp;&gt;&nbsp;'.$formaty_arr[$old_s];
 
 $apc_state = [
     'state' => "$old_w$old_s$old_f$old_r$old_p$old_t$old_x",
-                    'w' => $old_w,
-                    's' => $old_s,
-                    'f' => $old_f,
-                    'r' => $old_r,
-                    't' => $old_t,
-                    'p' => $old_p,
-                    'x' => $old_x,
-  // pomocne promenne pouzite pro vyhledavani a pro zobrazeni cesty
-                    'texty' =>        ($texty ? $texty : ''),
-                    'region_cesta' => ($region_cesta ? $region_cesta : ''),
-                    'region_z' =>     ($region_z ? $region_z : ''),
-                    'region_k' =>     ($region_k ?$region_k : ''),
-                    'format_cesta' => ($format_cesta ? $format_cesta : '')
+    'w' => $old_w,
+    's' => $old_s,
+    'f' => $old_f,
+    'r' => $old_r,
+    't' => $old_t,
+    'p' => $old_p,
+    'x' => $old_x,
+    // pomocne promenne pouzite pro vyhledavani a pro zobrazeni cesty
+    'texty' =>        ($texty ?: ''),
+    'region_cesta' => ($region_cesta ?: ''),
+    'region_z' =>     ($region_z ?: ''),
+    'region_k' =>     ($region_k ?: ''),
+    'format_cesta' => ($format_cesta ?: '')
 ];
 
 // $r variable is could be array, so create variables like r0, r1, .. to be used in site

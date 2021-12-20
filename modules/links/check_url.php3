@@ -32,7 +32,7 @@ $format_strings = [
 ];
 
 $out = Links_getUrlReport($url, $format_strings, $checked_id, $tree_start);
-echo ($out ? $out : _m('Page with the specified Url is not in database, yet'));
+echo ($out ?: _m('Page with the specified Url is not in database, yet'));
 
 echo '
     <div align="center">

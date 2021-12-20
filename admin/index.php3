@@ -109,7 +109,7 @@ $manager_settings = [
          'function'             => false  // name of function for aditional action hooked on standard filter action
      ],
      'scroller'  => [
-         'listlen'              => ($listlen ? $listlen : EDIT_ITEM_COUNT)
+         'listlen'              => ($listlen ?: EDIT_ITEM_COUNT)
      ],
      'itemview'  => [
          'manager_vid'          => false,    // $slice_info['manager_vid'],      // id of view which controls the design

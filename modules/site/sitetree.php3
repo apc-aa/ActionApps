@@ -260,7 +260,7 @@ class sitetree {
     protected $start_id;
 
     function __construct($spot=false) {
-        $this->tree[1]  = new spot( $spot['spot_id'], $spot['name'] ? $spot['name']:'start', $spot['conditions'], $spot['variables'], $spot['spot_id'], [$spot['spot_id']], $spot['flag'] );
+        $this->tree[1]  = new spot( $spot['spot_id'], $spot['name'] ?:'start', $spot['conditions'], $spot['variables'], $spot['spot_id'], [$spot['spot_id']], $spot['flag'] );
         $this->start_id = $spot['spot_id'];
     }
 

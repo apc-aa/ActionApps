@@ -41,7 +41,7 @@ function PrintAddableUser($usr, $usr_id, $editor_role, $new_usr=true) {
     echo "<tr><td class=\"tabtxt\" width=\"25%\">". $usr['name'] ."</td>\n";
     echo "<td class=\"tabtxt\">$username</td>\n";
     echo "<td class=\"tabtxt\" width=\"25%\">".
-       (($usr['mail']) ? $usr['mail'] : "&nbsp;") ."</td>\n";
+       (($usr['mail']) ?: "&nbsp;") ."</td>\n";
 
     IfLink(($editor_role > $perms_roles["AUTHOR"]['id']) && $new_usr,
          StateUrl(self_base() . "se_users.php3") .

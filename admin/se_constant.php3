@@ -232,7 +232,7 @@ if ($update) {
             $varset->clear();
             $varset->set("name",  $name[$key], "quoted");
             $varset->set("value", $value[$key], "quoted");
-            $varset->set("pri", ( $pri[$key] ? $pri[$key] : 1000), "number");
+            $varset->set("pri", ( $pri[$key] ?: 1000), "number");
             $db->query("SELECT * FROM constant WHERE id='$p_cid'");
             if ($db->next_record()) {
                 if ($propagate_changes) {
@@ -262,7 +262,7 @@ if ($update) {
 
 // lookup constants
 if ($group_id OR $as_new) {
-    $gid = ( $as_new ? $as_new : $group_id );
+    $gid = ( $as_new ?: $group_id );
     $SQL = "SELECT id, name, value, pri FROM constant  WHERE group_id='$gid' ORDER BY pri, name";
     $s_constants = GetTable2Array($SQL, "NoCoLuMn");
 }

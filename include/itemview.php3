@@ -108,7 +108,7 @@ class itemview {
     // we fill the ID_COUNT now, because the global $GLOBALS['QueryIDsCount'] variable is
     // most probably filled by the right value. Later the $QueryIDsCount could be damaged
     // mainly if you use nested views, ... {view.php3?vid=} which makes new queries
-    $idcount = (string)($GLOBALS['QueryIDsCount'] ? $GLOBALS['QueryIDsCount'] : ' 0');
+    $idcount = (string)($GLOBALS['QueryIDsCount'] ?: ' 0');
     $this->aliases["_#ID_COUNT"] = GetAliasDef( "f_t:$idcount",  "id..............", _m("number of found items"));
 
     $this->fields            = '';
@@ -137,7 +137,7 @@ class itemview {
    */
   function assign_items($zids) {
       // redefine number of items
-      $idcount = (string)($GLOBALS['QueryIDsCount'] ? $GLOBALS['QueryIDsCount'] : ' 0');
+      $idcount = (string)($GLOBALS['QueryIDsCount'] ?: ' 0');
       $this->aliases["_#ID_COUNT"] = GetAliasDef( "f_t:$idcount",  "id..............", _m("number of found items"));
       $this->zids = $zids;
   }

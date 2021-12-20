@@ -210,7 +210,7 @@ function AddUserModulePerms( $new_module, $new_module_role, $selected_user, $per
 function GetModuleLetter($type) {
     global $MODULES;
     // get 'letter' or first letter of MODULE type
-    return ($MODULES[$type]['letter'] ? $MODULES[$type]['letter'] : substr($type,0,1));
+    return ($MODULES[$type]['letter'] ?: substr($type,0,1));
 }
 
 /** PrintPermUmPageEnd function

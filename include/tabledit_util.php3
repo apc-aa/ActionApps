@@ -272,7 +272,7 @@ function TableDelete($table, $key, $columns, $primary_aliases, $error_msg="", $t
     if ($be_cautious) {
         $db->query($varset->makeSELECT($table));
         if ($db->num_rows() != 1) {
-            $err[] = $error_msg ? $error_msg : "Error deleting from $table. ".$varset->makeSELECT($table)." returned ".$db->num_rows()." rows instead of 1.";
+            $err[] = $error_msg ?: "Error deleting from $table. ".$varset->makeSELECT($table)." returned ".$db->num_rows()." rows instead of 1.";
             freeDB($db);
             return false;
         }
@@ -342,7 +342,7 @@ function TableUpdate($val, $columns, $primary_aliases, $error_msg="", $triggers 
         if ($be_cautious) {
             $db->query($varset->makeSELECT ($table));
             if ($db->num_rows() != 1) {
-                $err[] = $error_msg ? $error_msg : "Error in TableUpdate ".$varset->makeSELECT($table).", row count is ".$db->num_rows()." instead of 1.";
+                $err[] = $error_msg ?: "Error in TableUpdate ".$varset->makeSELECT($table).", row count is ".$db->num_rows()." instead of 1.";
                 freeDB($db);
                 return false;
             }
@@ -422,7 +422,7 @@ function TableInsert(&$newkey, &$where, $key_table, $val, $columns, $primary_ali
         if (!$auto_inc && $be_cautious) {
             $db->query($varset->makeSELECT($table));
             if ($db->num_rows() > 0) {
-                $err[] = $error_msg ? $error_msg : "Error in TableInsert ".$varset->makeSELECT($table).", row count is ".$db->num_rows()." instead of 0.";
+                $err[] = $error_msg ?: "Error in TableInsert ".$varset->makeSELECT($table).", row count is ".$db->num_rows()." instead of 0.";
                 freeDB($db);
                 return "";
             }
@@ -606,7 +606,7 @@ function GetKeyValues($key_val, $primary, $columns) {
     reset ($keys);
 
     foreach ($primary as $alias => $foo) {
-        list (,$value) = each ($keys);
+        [,$value] = each ($keys);
         $colname = $columns[$alias]["field"];
         if ($columns[$alias]["view"]["unpacked"]) {
             $value = pack_id($value);

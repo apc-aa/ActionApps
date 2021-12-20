@@ -71,7 +71,7 @@ class AA_Stringexpand_Poll_Share extends AA_Stringexpand_Nevercache {
     function expand($max='') {
         $poll     = AA_Polls::getPoll($this->item->getVal('poll_id'));
         $sum      = $poll->getVotesSum();
-        $quotient = $max ? $max : 100;
+        $quotient = $max ?: 100;
 
         return $sum==0 ? 0 : round(($this->item->getVal('votes')/$sum) * $quotient);
     }

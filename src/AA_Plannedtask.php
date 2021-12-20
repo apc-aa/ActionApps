@@ -119,7 +119,7 @@ class AA_Plannedtask extends AA_Object implements LaterInterface
         if (!strlen($time = trim($this->getProperty('time')))) {
             return 0;
         }
-        return strtotime($this->getProperty('time')) + (int)$this->getProperty('shift');
+        return strtotime($time) + (int)$this->getProperty('shift');
     }
 
     /** The possibility, how to implement internal aliases for Admin interface

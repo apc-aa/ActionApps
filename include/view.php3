@@ -443,7 +443,7 @@ function ParseBannerParam($banner_param) {
         if ($foo_fld == 'norandom') {
             return $ret;
         }
-        $ret['banner_parameters'] .= "&set[$foo_vid]=random-". ($foo_fld ? $foo_fld : 1);
+        $ret['banner_parameters'] .= "&set[$foo_vid]=random-". ($foo_fld ?: 1);
     }
     return $ret;
 }
@@ -617,7 +617,7 @@ class AA_Showview {
 
                 // special url parameter disc_url - tell us, where we have to show
                 // discussion fulltext (good for discussion search)
-                $durl = ( $this->_view_param["disc_url"] ? $this->_view_param["disc_url"] : shtml_url());
+                $durl = ( $this->_view_param["disc_url"] ?: shtml_url());
                 // add state variable, if defined (apc - AA Pointer Cache)
                 if ( $GLOBALS['apc_state'] AND !$GLOBALS['apc_state']['router'] ) {
                     $durl = con_url($durl,'apc='.$GLOBALS['apc_state']['state']);
@@ -678,7 +678,7 @@ class AA_Showview {
                     if ( $zids->count() > 0 ) {
                         //mlx stuff
                         if ($mlxslice = MLXSlice($slice)) {  //mlx stuff, display the item's translation
-                            $mlx = ($this->_view_param["mlx"]?$this->_view_param["mlx"]:$this->_view_param["MLX"]);
+                            $mlx = ($this->_view_param["mlx"]?: $this->_view_param["MLX"]);
                             //make sure the lang info doesnt get reused with different view
                             $GLOBALS['mlxView'] = new MLXView($mlx,$mlxslice);
                             $GLOBALS['mlxView']->preQueryZIDs($mlxslice,$conds);

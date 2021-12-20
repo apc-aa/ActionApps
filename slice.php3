@@ -524,7 +524,7 @@ if ($mlxslice = MLXSlice($slice)) {
     $mlxView->preQueryZIDs($mlxslice,$conds);
 }
 
-$zids = QueryZids( ($slices ? $slices : [$slice_id]), $conds, $sort, "ACTIVE", $neverAllItems, 0, $defaultCondsOperator );
+$zids = QueryZids( ($slices ?: [$slice_id]), $conds, $sort, "ACTIVE", $neverAllItems, 0, $defaultCondsOperator );
 
 if ($mlxslice) {
     $mlxView->postQueryZIDs($zids,$mlxslice,$slice_id);

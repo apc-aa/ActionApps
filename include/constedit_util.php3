@@ -436,7 +436,7 @@ function hcUpdate()
             $varset->clear();
             $varset->set("name",  $change[0], "quoted");
             $varset->set("value", $change[1], "quoted");
-            $varset->set("pri", ( $change[2] ? $change[2] : 1000), "number");
+            $varset->set("pri", ( $change[2] ?: 1000), "number");
             $varset->set("description", $change[3], "quoted");
 
             $newvalue = $change[1];

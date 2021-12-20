@@ -421,7 +421,7 @@ class tabledit {
             foreach ($this->view["buttons_left"] as $button => $use) {
                 $bt = $this->ButtonsText(false);
                 $bt = $bt[$button];
-                $alt = $bt["alt"] ? $bt["alt"] : "&nbsp;";
+                $alt = $bt["alt"] ?: "&nbsp;";
                 $img = '<img border="0" src="'.$this->imagepath.$bt["img"].$big.'.gif" alt="'.$bt["alt"].'">';
                 echo "<span class=\"te_button_text\">$img = $alt</span><br>";
             }
@@ -718,7 +718,7 @@ class tabledit {
      * gotoview = edit in browse view; update in edit view
      */
     function gotoview() {
-        return $this->view["gotoview"] ? $this->view["gotoview"] : $this->viewID;
+        return $this->view["gotoview"] ?: $this->viewID;
     }
 
     /** gotoview2 function
@@ -949,7 +949,7 @@ class tabledit {
             $text = "";
         }
 
-        echo $text ? $text : "&nbsp;";
+        echo $text ?: "&nbsp;";
         // show the text label for bottom buttons and for insert
         if ($text && ($place == "down" || $new_record)) {
             echo "<br><a href=\"$url\"><span class=\"te_button_text\">".$bt["alt"]."</span></a>";

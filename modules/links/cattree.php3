@@ -416,7 +416,7 @@ class cattree {
         $ret .= $this->getFrmCatTree($on, $width, 'tree', $rows);
         $ret .= ($form ? '</form>' : '' );
 
-        $used_form = ($form ? $form : $in_form);
+        $used_form = ($form ?: $in_form);
         $ret .= $this->goCategory($cat2show, $pathDiv, $cat_id_fld, $used_form);
 
         // for selectbox which use doubleclick we have to print also 'GO' button,

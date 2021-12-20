@@ -433,7 +433,7 @@ function showSubMenuRows( $aamenuitems, $active ) {
 //                echo "<span class=\"leftmenua\">".$item["label"]."</span>\n";
 //            } elseif (($slice_id || $item["show_always"]) && $item["cond"]) {
             if (($slice_id || $item["show_always"]) && $item["cond"]) {
-                $href = ($item["exact_href"] ? $item["exact_href"] : get_aa_url($item["href"]));
+                $href = ($item["exact_href"] ?: get_aa_url($item["href"]));
                 if ($slice_id && !$item["no_slice_id"]) {
                     $href = con_url($href, "slice_id=$slice_id");
                 }
