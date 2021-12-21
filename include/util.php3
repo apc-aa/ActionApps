@@ -1490,9 +1490,9 @@ class AA_Credentials {
 class AA_Contentcache {
     // used for global cache of contents
     /** @var $content string[] - array of cache entry - 'key'=>[result, generation_time, uses, identification] */
-    protected $content;
+    protected $content = [];
     /** @var $content_stable string[] - the same as $content, but for special content, which is not deleted by clear_soft() */
-    protected $content_stable;
+    protected $content_stable = [];
 
     /** get_result function
      *  Calls $function with $params and returns its return value. The result

@@ -61,7 +61,7 @@ function ModW_PrintSpotName_Start($spot_id, $depth) {
 
     // variables defined? - print it
     if (!$tree->isFlag($spot_id, AA_Module_Site::FLAG_COLLAPSE) AND ($vars = $tree->get('variables', $spot_id))) {
-        echo "\n  <div class=\"variables\">(". implode($vars, ',') .')</div>';
+        echo "\n  <div class=\"variables\">(". implode(',',$vars) .')</div>';
     }
 }
 

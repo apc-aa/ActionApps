@@ -857,9 +857,9 @@ class AA_Object extends AA_Storable implements AA_iEditable {
     }
 
     /**
-     *  @static
+     *  
      */
-    function getContent($settings, $zids) {
+    static function getContent($settings, $zids) {
         $ret        = [];
         $class      = $settings['class'];
         $properties = $class::getClassProperties();
