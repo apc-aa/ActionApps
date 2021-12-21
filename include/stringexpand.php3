@@ -6868,6 +6868,31 @@ class AA_Stringexpand_Str_replace extends AA_Stringexpand_Nevercachenotrim {
     }
 }
 
+
+/** replaces string with REGEXP
+ *      {replace:<!-- .* -->::{full_text.......}}
+ *   The usage is as PHP preg_replace, but we do not allow you to specify
+ *   delimiters and modifiers because of dangerous /e modifier
+ */
+class AA_Stringexpand_Replace extends AA_Stringexpand_Nevercache {
+    /** Do not trim all parameters ($search and $replace could be spaces) */
+    static function doTrimParams() { return false; }
+
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+    /**
+     * @param string $search
+     * @param string $replace
+     * @param string $text
+     * @return null|string|string[]|void
+     */
+    function expand($search='', $replace='', $text='') {
+        //$search  = json2arr($search,true);
+        //$replace = json2arr($replace,true);
+        return preg_replace('`'.str_replace('`','\`',$search).'`', $replace, $text);
+    }
+}
+
 /** AA counterpart of PHP strlen() */
 class AA_Stringexpand_Strlen extends AA_Stringexpand_Nevercachenotrim {
 
