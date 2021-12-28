@@ -43,7 +43,9 @@ class SQL extends AbstractGrabber
     protected $dbresult;
 
     /**
-     * CSV constructor.
+     * SQL constructor.
+     * new AA\IO\Grabber\SQL('SELECT * FROM data', 'DBname', 'DBuser', 'DBPasswd', 'mysql', '127.0.0.1');
+     * new AA\IO\Grabber\SQL('SELECT * FROM data', 'DBname', 'DBuser', 'DBPasswd', 'mysql', 'mydbserver');
      */
     function __construct($sql='', $dbname='', $username='', $password='', $type='', $host='', $port='', $charset='') {
         $this->sql  = $sql;
@@ -52,7 +54,7 @@ class SQL extends AbstractGrabber
         if ( ctype_alnum($dbname) ) {
             $arr[] = 'dbname=' . $dbname;
         }
-        if ( filter_var($host, FILTER_VALIDATE_IP) ) {
+        if ( filter_var($host, FILTER_VALIDATE_IP) or ctype_alnum($host) ) {
             $arr[] = 'host=' . $host;
         }
         if ( ctype_digit($port) ) {
@@ -111,15 +113,21 @@ class SQL extends AbstractGrabber
      *  method is called - it means "we are going really to grab the data
      */
     function prepare() {
-        $this->db       = new PDO($this->dsn, $this->username, $this->password);
-        $this->dbresult = $this->db->query($this->sql);
-        // $this->message(__CLASS__.' -> '. __FUNCTION__);
+        try {
+            $this->db       = new PDO($this->dsn, $this->username, $this->password);
+        } catch (\PDOException $e) {
+            $this->message('not possible to connect');
+            return;
+	}    
+        $this->message('connected');
+	$this->dbresult = $this->db->query($this->sql);
+ 
         // $this->message("parsed items ". count($this->_items));
     }
 
     /** Method called by the AA\IO\Saver to get next item from the data input */
     function getItem() {
-        if (false === ($data = $this->dbresult->fetch(PDO::FETCH_ASSOC))) {
+        if (!$this->dbresult or (false === ($data = $this->dbresult->fetch(PDO::FETCH_ASSOC)))) {
             return false;
         }
         $item = new \ItemContent();
