@@ -6844,8 +6844,7 @@ class AA_Stringexpand_Trim extends AA_Stringexpand_Nevercachenotrim {
      * @return string|void
      */
     function expand($string='', $chars='') {
-        return (empty($chars) AND AA_Langs::isUTF()) ? preg_replace("/^\s+|\s+$/u", "", $string) : trim($string, $chars);
-        // trim($string, " \t\n\r\0\x0B\xA0");  // standard + chr(160) - hard space   // does not work for UTF characters - the hardspace \xA0 can break some UTF chars - "MŠ" for example
+        return aa_trim($string, $chars);
     }
 }
 

@@ -276,7 +276,7 @@ class sitetree {
     }
 
     /** Adds already created spot object into sequence (positions array) */
-    function _addInSequence(&$spot, $where) {
+    function _addInSequence($spot, $where) {
         //get real parent
         $parent_spot =& $this->tree[$where];
 
@@ -318,7 +318,7 @@ class sitetree {
     }
 
     /** Adds already created spot object in the choices array */
-    function _addChoice(&$spot, $where) {
+    function _addChoice($spot, $where) {
         //get real parent
         $where_spot =& $this->tree[$where];
         if (!$where_spot->get('variables')) {  // before creating choice must be defined the list of dependency variables
@@ -590,7 +590,7 @@ class sitetree {
         return $s->isLeaf();
     }
 
-    function conditionMatches( $id, &$state ) {
+    function conditionMatches( $id, $state ) {
         $s =& $this->tree[$id];
         return $s ? $s->conditionMatches($state) : false;
     }

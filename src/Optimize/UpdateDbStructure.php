@@ -26,7 +26,7 @@ class UpdateDbStructure extends \AA\Optimize\AbstractOptimize {
      * @return string - a description
      */
     public static function description(): string {
-        return _m("[experimental] ") . _m("Updates the database structure for AA. It cheks all the tables in current system and compare it with the newest database structure. The new table is created as tmp_*, then the content from old table is copied and if everything is OK, then the old table is renamed to bck_* and tmp_* is renamed to new table. (new version based on the metabase structure)");
+        return _m("[experimental] ") . _m("Updates the database structure for AA. It checks all the tables in current system and compare it with the newest database structure. The new table is created as tmp_*, then the content from old table is copied and if everything is OK, then the old table is renamed to bck_* and tmp_* is renamed to new table. (new version based on the metabase structure)");
     }
 
     /** checks if the this Optimize class belongs to specified type (like "sql_update") */
@@ -55,6 +55,14 @@ class UpdateDbStructure extends \AA\Optimize\AbstractOptimize {
             if ($diff['equal']) {
                 //huhl($diff);
                 $this->message(_m('<em>Tables %1 are identical.</em><br>', [$tablename]));
+            } else if ($diff['table1'] == '') {
+                $this->message(_m('<em>Table <b>%1</b> is <b>not needed</b>. You can <b>manually</b> delete it.</em><br>', [$tablename]));
+                $this->message(AA_Difftext::renderHtml($diff['table2'], $diff['table1']));
+                $different = true;
+            } else if ($diff['table2'] == '') {
+                $this->message(_m('<em>Table <b>%1</b> is <b>new</b>.</em><br>', [$tablename]));
+                $this->message(AA_Difftext::renderHtml($diff['table2'], $diff['table1']));
+                $different = true;
             } else {
                 $this->message(AA_Difftext::renderHtml($diff['table2'], $diff['table1']));
                 $different = true;
@@ -75,6 +83,11 @@ class UpdateDbStructure extends \AA\Optimize\AbstractOptimize {
             if ($diff['equal']) {
                 $this->message(_m('Tables %1 are identical. Skipping.', [$tablename]));
                 continue;
+            } else if ($diff['table1'] == '') {
+                $this->message(_m('Table <b>%1</b> is <b>not needed</b>. You can <b>manually</b> delete it. Skipping.</em><br>', [$tablename]));
+                continue;
+            } else if ($diff['table2'] == '') {
+                $this->message(_m('<em>Table <b>%1</b> is <b>new</b>.</em><br>', [$tablename]));
             }
             // create temporary table
             $this->message(_m('Deleting temporary table tmp_%1, if exist.', [$tablename]));

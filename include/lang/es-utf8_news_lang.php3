@@ -6824,7 +6824,7 @@ $_m["[experimental] "]
  = "";
 
 // AA\Optimize\... #xx932
-$_m["Updates the database structure for AA. It cheks all the tables in current system and compare it with the newest database structure. The new table is created as tmp_*, then the content from old table is copied and if everything is OK, then the old table is renamed to bck_* and tmp_* is renamed to new table. (new version based on the metabase structure)"]
+$_m["Updates the database structure for AA. It checks all the tables in current system and compare it with the newest database structure. The new table is created as tmp_*, then the content from old table is copied and if everything is OK, then the old table is renamed to bck_* and tmp_* is renamed to new table. (new version based on the metabase structure)"]
  = "";
 
 // AA\Optimize\... #xx950

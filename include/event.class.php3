@@ -379,7 +379,7 @@ function Event_ItemNewComment( $type, $item_id, $slice_type, $disc_id, $foo, $fo
  * @param             $foo2
  * @return bool
  */
-function Event_ItemAfterInsert( $type, $slice_id, $slice_type, &$itemContent, $foo, $foo2 ) {
+function Event_ItemAfterInsert( $type, $slice_id, $slice_type, $itemContent, $foo, $foo2 ) {
     $item_id = $itemContent->getItemID();
     AA_Mysqlauth::updateReaders( [pack_id( $item_id )], $slice_id );
     AlertsSendWelcome( $slice_id, $itemContent );
@@ -477,7 +477,7 @@ function Event_ItemBeforeInsert( $type, $slice_id, $slice_type, &$itemContent, $
  * @param        $foo2
  * @return bool
  */
-function Event_ItemsBeforeDelete( $type, $slice_id, $slice_type, &$item_ids, $foo, $foo2 ) {
+function Event_ItemsBeforeDelete( $type, $slice_id, $slice_type, $item_ids, $foo, $foo2 ) {
     /* It is not really necessary to delete the readers from Auth tables,
        because they should be deleted on moving to Trash bin. But it is
        perhaps better to make sure. */

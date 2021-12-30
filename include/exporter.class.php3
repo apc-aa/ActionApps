@@ -34,13 +34,13 @@ use AA\IO\Grabber\Slice;
 //require_once __DIR__."/PHPExcel/PHPExcel.php";
 //require_once __DIR__."/PHPExcel/PHPExcel/Writer/Excel5.php";
 
-class AA_Exporter extends AA_Object {
-    var $field_set;
+abstract class AA_Exporter extends AA_Object {
+    protected $field_set;
 
     /**
      * @var AbstractGrabber
      */
-    var $grabber;
+    protected $grabber;
 
     function __construct($params) {
         // params: field_set, grabber

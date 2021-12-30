@@ -44,7 +44,7 @@ set_time_limit(160);
 
 if ( substr( DB_PASSWORD, 0, 5 ) != $_GET['key'] ) {
     exit;                 // We need first five characters of database password
-}                         // Noone then can run the script icidentaly (or with
+}                         // No-one then can run the script incidentally (or with
                           // bad thoughts)
 
 $template_metabase = AA::Metabase();
@@ -54,7 +54,7 @@ $this_metabase = new AA_Metabase;
 $this_metabase->loadFromDb();
 $this_tables = $this_metabase->getTableNames();
 
-// stert with different table each time to minimize impact of corrupted/bigb/... tables
+// start with different table each time to minimize impact of corrupted/big/... tables
 shuffle($template_tables);
     
 // optimize only current AA tables (not bck_* tables ...    )

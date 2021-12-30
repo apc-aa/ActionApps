@@ -844,7 +844,7 @@ class AA_Set extends AA_Object {
      * @todo allow to compare not only fields, but also aliases
      * @return bool
      */
-    function matches(&$itemcontent) {
+    function matches($itemcontent) {
         foreach ( $this->conds as $condition ) {
             if ( !$condition->matches($itemcontent) ) {
                 // we must met all the conditions criteria

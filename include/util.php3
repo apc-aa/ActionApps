@@ -1089,7 +1089,6 @@ function myspecialchars( $var='', $double_encode=true) {
     return htmlspecialchars( $var, ENT_QUOTES | ENT_HTML5, 'ISO-8859-1', $double_encode);
 }
 
-
 /** safe function
  * @param string $var
  * @return string - html safe code (used for preparing variable to print in form)
@@ -1908,6 +1907,11 @@ function aa_strrpos($haystack , $needle , $offset = 0) {
     return mb_strrpos($haystack , $needle , $offset);
 }
 
+/** trim  with utf in mind */
+function aa_trim(string $string='', string $chars=''): string {
+    return (empty($chars) and AA_Langs::isUTF()) ? preg_replace("/^\s+|\s+$/u", "", $string) : trim($string, $chars);
+    // trim($string, " \t\n\r\0\x0B\xA0");  // standard + chr(160) - hard space   // does not work for UTF characters - the hardspace \xA0 can break some UTF chars - "MŠ" for example
+}
 
 /** Get Authorization Header
  * @return string

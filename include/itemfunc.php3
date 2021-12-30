@@ -55,7 +55,7 @@ abstract class AA_Generator extends AA_Serializable implements AA\Util\NamedInte
     /**
      * @return AA_Value
      */
-    abstract function generate();
+    abstract function generate(): AA_Value;
 }
 
 /** AA_Generator_Now - current timestamp */
@@ -65,7 +65,7 @@ class AA_Generator_Now extends AA_Generator {
     public static function name(): string { return _m("Now, i.e. current date");  }
 
     /** generate() - main function for generating the value */
-    function generate()    { return new AA_Value(now()); }
+    function generate(): AA_Value    { return new AA_Value(now()); }
 }
 
 /** AA_Generator_Never - the biggest date possible */
@@ -75,7 +75,7 @@ class AA_Generator_Never extends AA_Generator {
     public static function name(): string { return _m("Never, i.e. maximum date");  }
 
     /** generate() - main function for generating the value */
-    function generate()    { return new AA_Value(2145826800); }
+    function generate(): AA_Value    { return new AA_Value(2145826800); }
 }
 
 
@@ -86,7 +86,7 @@ class AA_Generator_Uid extends AA_Generator {
     public static function name(): string { return _m("User ID");  }
 
     /** generate() - main function for generating the value */
-    function generate() {
+    function generate(): AA_Value {
         return new AA_Value(AuthGetUid() ?: '9999999999');  // 9999999999 for anonymous
     }
 }
@@ -98,7 +98,7 @@ class AA_Generator_Log extends AA_Generator {
     public static function name(): string { return _m("Login name");  }
 
     /** generate() - main function for generating the value */
-    function generate() {
+    function generate(): AA_Value {
         return new AA_Value(AuthGetUname() ?: 'anonymous'); // "anonymous" for anonymous
     }
 }
@@ -121,7 +121,7 @@ class AA_Generator_Dte extends AA_Generator {
     }
 
     /** generate() value of currrent timestamp */    // checks maximum date bounds
-    function generate()    {  return new AA_Value(min(2145826800, mktime(0,0,0,date("m"),date("d")+(int)$this->plusdays,date("Y"))));  }
+    function generate(): AA_Value    {  return new AA_Value(min(2145826800, mktime(0,0,0,date("m"),date("d")+(int)$this->plusdays,date("Y"))));  }
 }
 
 /** AA_Generator_Txt - Text from 'Parameter' */
@@ -142,7 +142,7 @@ class AA_Generator_Txt extends AA_Generator {
     }
 
     /** generate() - main function for generating the value */
-    function generate() {
+    function generate(): AA_Value {
         return strlen($this->text) ? new AA_Value($this->text) : new AA_Value();
     }
 }
@@ -180,7 +180,7 @@ class AA_Generator_Rnd extends AA_Generator {
     }
 
     /** generate() - main function for generating the value */
-    function generate() {
+    function generate(): AA_Value {
         global $slice_id;
 
         $len        = $this->length ?: 5;   // default is 5
@@ -231,7 +231,7 @@ class AA_Generator_Variable extends AA_Generator {
     }
 
     /** getClassProperties function of AA_Serializable  */
-    function generate() {
+    function generate(): AA_Value {
         return new AA_Value(AA::Stringexpander()->unalias($this->text));
     }
 }
@@ -256,7 +256,7 @@ class AA_Generator_Mul extends AA_Generator {
     }
 
     /** getClassProperties function of AA_Serializable  */
-    function generate() {
+    function generate(): AA_Value {
         return new AA_Value(array_filter(explode(($this->delimiter ?: '|'), $this->text),'strlen'));
     }
 }
@@ -322,7 +322,7 @@ abstract class AA_Inserter extends AA_Serializable implements \AA\Util\NamedInte
     /**
      * @param AA_Field_Writer $fieldwriter
      * @param string          $item_id
-     * @param array           $value
+     * @param array           $value  ['value'=>.., 'flag'=>..]
      * @param array          $additional
      */
     public function execute($fieldwriter, $item_id, $value, $additional= []) {
@@ -418,6 +418,17 @@ class AA_Inserter_Boo extends AA_Inserter {
 
     public function execute($fieldwriter, $item_id, $value, $additional= []) {
         $value['value'] = ( $value['value'] ? 1 : 0 );
+        parent::execute($fieldwriter, $item_id, $value, $additional);
+    }
+}
+
+/** AA_Inserter_Trm - trim and normalize */
+class AA_Inserter_Trm extends AA_Inserter {
+    public static function name(): string        { return _m("Trim");  }             // see NamedInterface
+    public static function description(): string { return _m('Remove whitespaces from begin and end and also normalize UTF (NFC)');  }      // see NamedInterface
+
+    public function execute($fieldwriter, $item_id, $value, $additional= []) {
+        $value['value'] = aa_trim(AA_Langs::isUTF() ? Normalizer::normalize($value['value']) : aa_trim($value['value']));
         parent::execute($fieldwriter, $item_id, $value, $additional);
     }
 }
@@ -966,16 +977,14 @@ function IsEditable($fieldcontent, $field, $profile): bool {
  *   $GLOBALS[err][field_id] should be set on error in function
  *   It looks like it will return true even if inset_fnc_xxx fails
  *
- * @param $id
- * @param $slice_id
- * @param array $content4id   array (field_id => array of values
- *						      (usually just a single value, but still an array))
- * @param $fields
- * @param $insert
- * @param $invalidatecache
- * @param $feed
- * @param array $oldcontent4id if not sent, StoreItem finds it
- * @param string $context special parameter used for thumbnails - ''|feed
+ * @param        $id
+ * @param        $slice_id
+ * @param array  $content4id    array (field_id => array of values
+ *                              (usually just a single value, but still an array))
+ * @param        $insert
+ * @param bool   $invalidatecache
+ * @param bool   $feed
+ * @param string $context       special parameter used for thumbnails - ''|feed
  * @return true on success, false otherwise
  */
 function StoreItem( $id, $slice_id, $content4id, $insert, $invalidatecache=true, $feed=true, $context='' ) {

@@ -130,7 +130,7 @@ function translteFeedCatid2Value($remote_cat_id, $remote_cat_value, $ext_categs,
  * @param $l_categs - local categories array [id] => (name, value, parent_id)
  * @return mixed|null
  */
-function translateCategories( $cat_field_id, &$item, &$ext_categs, &$l_categs ) {
+function translateCategories( $cat_field_id, &$item, $ext_categs, $l_categs ) {
 
     $return_approved = null;
 

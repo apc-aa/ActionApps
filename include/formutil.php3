@@ -3091,7 +3091,7 @@ function FrmItemGroupSelect( &$items, $searchbar, $list_type, $messages, $additi
  * @param AA_Searchbar $searchbar
  * @return zids
  */
-function getZidsFromGroupSelect($group, &$items, $searchbar) {
+function getZidsFromGroupSelect($group, $items, $searchbar) {
     global $slice_id;
     if ( (string)$group == 'sel_item' ) {  // user specified users
         $zids = (new zids())->setFromItemArr($items);
