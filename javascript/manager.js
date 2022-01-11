@@ -29,12 +29,11 @@ function MarkedActionSelect(sb) {
     // which contain serialized state of the AA object, which should be
     // instatnionated in AA and asked for displaying htmlSetting of the action
     if( sb.value && (sb.value != 'nothing') && (markedactionsetting[sb.selectedIndex] != null) ) {
-        AA_Ajax('markedactionparams', AA_Config.AA_INSTAL_PATH + 'admin/index.php3?display_params='+markedactionsetting[sb.selectedIndex]);
+        AA_Ajax('markedactionparams', AA_GetConf('path') + 'admin/index.php3?display_params='+markedactionsetting[sb.selectedIndex]);
     } else {
         document.getElementById('markedactionparams').innerHTML = '';
     }
 }
-
 
 function WriteEmailGo() {
   var iftarget = document.itemsform.target;
