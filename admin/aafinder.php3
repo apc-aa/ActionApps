@@ -172,8 +172,8 @@ function PrintIdsInfo($l_or_s_id) {
 function PrintItemInfo($item_id) {
     $zid = new zids($item_id);
     $item = AA_Items::getItem($zid);
+    PrintIdsInfo($item_id);
     if (!$item) {
-        PrintIdsInfo($item_id);
         return;
     }
     $long_id = $item->getItemID();
