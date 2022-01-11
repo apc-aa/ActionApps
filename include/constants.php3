@@ -352,7 +352,7 @@ class AA_Langs {
 /** any string - used as parameter to included JS files in order browser can
  *  use newer version of JS libs. Feel free to increase it
  */
-define('AA_JS_VERSION', 8);
+define('AA_JS_VERSION', 9);
 
 /** API url used for JS libs updates */
 define('JS_UPDATE_API_URL', 'https://data.jsdelivr.com/v1/package/');
