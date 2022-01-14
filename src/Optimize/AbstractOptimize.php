@@ -21,14 +21,20 @@ abstract class AbstractOptimize implements \AA\Util\NamedInterface {
      */
     // public static function isOptimizing(): bool { return true; }  // not used - better to use isType() here
 
+    /** @return bool - true if everything is OK - no action needed */
     public function test(): bool { return true; }
 
     public function repair(): bool { return true; }
 
+    /** @return bool - true if everything is OK - no action needed */
+    public function test4modules(array $modules): bool { return true; }   // test just for specified modules
+
+    public function repair4modules(array $modules): bool { return true; } // repair just for specified modules
+
     /** implemented actions within this class
      * @return string[]
      */
-    public static function actions(): array { return ['test', 'repair']; }
+    public static function actions(): array { return ['test', 'repair']; }  // full set is ['test', 'repair', 'test4modules', 'repair4modules']
 
     /** is action present in this class
      * @param string $action

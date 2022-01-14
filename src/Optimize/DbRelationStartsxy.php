@@ -51,7 +51,7 @@ class DbRelationStartsxy extends AbstractOptimize {
         if (is_array($err_text) and count($err_text) > 0) {
             $this->message(_m('%1 bad relation records found', [count($err_text)]));
             foreach ($err_text as $wrong) {
-                $SQL = "repair value: " . quote(substr($wrong['text'], 1)) . " with item_id:" . quote($wrong['item_id']) . "<br>";
+                $this->message(_m('repair value: %1 with item_id: %2',[ substr($wrong['text'], 1), $wrong['item_id'] ]));
                 $SQL = "UPDATE `content` SET `text` = '" . quote(substr($wrong['text'], 1)) . "' WHERE item_id = '" . quote($wrong['item_id']) . "' AND `text` = '" . quote($wrong['text'], 1) . "'";
                 $db->query($SQL);
             }
