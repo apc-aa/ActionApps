@@ -96,6 +96,27 @@ class AA_Module {
         return AA_Module::$_modules[$module_id];
     }
 
+
+    /** AA_Module::getModules() function
+     * @param string $type      - S | W | Alerts | J | P | Links
+     * @param bool   $validonly - not deleted or all
+     * @param array  $sort      - default ['priority','name']
+     * @return array module id => name
+     */
+    static public function getModules(string $type, bool $validonly=false, array $sort=[]): array {
+        $conds = [];
+        if ($type) {
+            $conds[] = ['type', $type];
+        }
+        if ($validonly) {
+            $conds[] = ['deleted', 0, 'i'];
+        }
+        if (!$sort) {
+           $sort = ['priority','name'];
+        }
+        return DB_AA::select(['unpackid'=>'name'], 'SELECT LOWER(HEX(`id`)) AS unpackid, `name` FROM `module`', $conds, $sort);
+    }
+
     /** AA_Module::getModuleInfo function
      * @param $info string
      * @param $module_id
@@ -135,7 +156,7 @@ class AA_Module {
 
     /** AA_Module::getModuleType function
      * @param $module_id
-     * @return string
+     * @return string     - S | W | Alerts | J | P | Links
      */
     static public function getModuleType($module_id) {
         return self::getModuleInfo('type', $module_id);
@@ -305,9 +326,7 @@ class AA_Module {
      */
     public static function getUserModules( $module_type = '') {
 
-        $where_add = empty($module_type) ? '' : "AND type='$module_type'";
-        $all_modules = GetTable2Array("SELECT id, name FROM module WHERE deleted=0 $where_add ORDER BY priority, name", 'unpack:id', 'name');
-
+        $all_modules = AA_Module::getModules($module_type, true);
         $user_id =  AuthGetUid();
 
         return array_filter($all_modules, function ($mid) use ($user_id) {
@@ -322,7 +341,7 @@ class AA_Module {
     public static function filterActive( array $module_ids) {
         static $active_modules = null;
         if ( is_null($active_modules)) {
-            $active_modules = DB_AA::select('', 'SELECT LOWER(HEX(`id`)) AS unpackid FROM module', [['deleted', 0, 'i']], ['created_at-']);
+            $active_modules = array_keys(AA_Module::getModules('', true, ['created_at-']));
         }
         return array_intersect($active_modules, $module_ids);    // do not change the order - this way it is always unique
     }
@@ -866,17 +885,17 @@ class AA_Module_Site extends AA_Module {
     }
 
     /**
-     * @param string $type
-     * @return array
+     * @param string $slice_type - filter just this SLICE! type
+     * @return array - slices and polls
      */
-    function getRelatedSlices($type='') {
+    function getRelatedSlices($slice_type='') {
         if (is_null($this->_related_slices)) {
             // could be rewritten to form:  DB_AA::select(array('unpackid'=>'name'), 'SELECT LOWER(HEX(`id`)) AS unpackid, `name` FROM `slice_owner` ORDER BY `name`');
             $this->_related_slices = AA_Module::filterActive(DB_AA::select('', 'SELECT LOWER(HEX(`destination_id`)) AS unpackid FROM relation', [['source_id', $this->module_id, 'l'], ['flag', REL_FLAG_MODULE_DEPEND, 'i']]));
         }
-        if ($type) {
+        if ($slice_type) {
             // we need to preserve order!
-            $type_slices  = DB_AA::select('', 'SELECT LOWER(HEX(`id`)) AS unpackid FROM slice', [['id', $this->_related_slices, 'l'], ['type', $type]]);
+            $type_slices  = DB_AA::select('', 'SELECT LOWER(HEX(`id`)) AS unpackid FROM slice', [['id', $this->_related_slices, 'l'], ['type', $slice_type]]);
             $ret = [];
             foreach ($this->_related_slices as $sl) {
                 if (in_array($sl,$type_slices)) {
@@ -888,7 +907,7 @@ class AA_Module_Site extends AA_Module {
         return $this->_related_slices;
     }
 
-    /** translate view name to view id within all slices of curent sitemodule
+    /** translate view name to view id within all slices of current sitemodule
      * @param string $vid
      * @return int - 0 if not found
      */

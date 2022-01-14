@@ -145,7 +145,7 @@ class Toexecute {
      *  toexecute table (which also means, that such task are never autoexecuted
      *  from the cron)
      */
-    function userQueue(&$object, $params, $selector, $priority = 100)
+    function userQueue($object, $params, $selector, $priority = 100)
     {
         $this->later($object, $params, $selector, $priority, Toexecute::TOEXECUTE_USER_TASK_TIME);
     }

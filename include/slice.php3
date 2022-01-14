@@ -119,13 +119,10 @@ function StoreVariables( array $vars ) {
 /** PutSearchLog function
  *
  */
-function PutSearchLog() {
-    global $searchlog;
-
+function PutSearchLog($searchlog, $found_count=0) {
     $httpquery = $_SERVER['QUERY_STRING_UNESCAPED'].$_SERVER['REDIRECT_QUERY_STRING_UNESCAPED'];
     $httpquery = DeBackslash($httpquery);
     $httpquery = str_replace("'", "\\'", $httpquery);
-    $found_count = count ($GLOBALS['item_ids']);
     [$usec, $sec] = explode(" ",microtime());
     $slice_time = 1000 * ((float)$usec + (float)$sec - $GLOBALS['slice_starttime']);
     $user = $_SERVER['PHP_AUTH_USER'];

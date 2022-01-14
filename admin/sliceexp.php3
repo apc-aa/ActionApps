@@ -76,7 +76,7 @@ FrmTabCaption(_m("Export slice structure"));
 if ($_POST['b_export_type']) {
     $exporter->exportToForm( $slice_id, $export_slices, $SliceID );
 } else {
-    $all_slices = DB_AA::select(['unpackid'=>'name'], 'SELECT LOWER(HEX(`id`)) AS unpackid, `name` FROM `module`', [['type', 'S']], ['priority','name']);
+    $all_slices = AA_Module::getModules('S');
 ?>
     <tr><td class="tabtxt" colspan="2">
     <table width="100%" border="0" cellspacing="0" cellpadding="0">
