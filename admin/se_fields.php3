@@ -211,40 +211,32 @@ $apage->addRequire('aa-jslib');
 $apage->addRequire("DisplayAaResponse('fieldselection', 'Get_Fields', {slice_id:'". get_if($from_slice, unpack_id('AA_Core_Fields..')) ."'});", 'AA_Req_Load');
 $apage->printHead($err, $Msg);
 
-if ($_REQUEST['analyze'] or $_REQUEST['fix']) {
-// check duplicated aliases
-    $all_aliasses = [];
+if ($_REQUEST['analyze']) {
     $to_fix = false;
-    foreach ($s_fields as $fld) {
-        foreach (['alias1','alias2','alias3',] as $fldname) {
-            $alias = $fld[$fldname];
-            $func  = $fld[$fldname.'_func'];
-            if (!trim($alias) OR ($alias =='_#UNDEFINE')) {
-                continue;
-            }
-            if (($func == 'f_h:') AND ((($fld['html_default']==1) AND ($fld['html_show']==0) AND ($fld['multiple']==0)) OR (strlen($fld['in_item_tbl'])>1) OR ($fld['text_stored']==0))) {
-                if ($_REQUEST['analyze']) {
-                    echo "<br>$alias - f_h: used with field marked as non multiple and html - consider using quicker f_1 function for direct content print";
-                    $to_fix = true;
-                } elseif ($_REQUEST['fix']) {
-                    $changed = DB_AA::sql("UPDATE field SET `${fldname}_func`='f_1:'", [['slice_id', $slice_id, 'l'], ['id', $fld['id']]]);
-                    echo "<br>$alias changed to f_1 ($changed change)";
-                }
-            }
-            if (($func == 'f_t:') AND ((($fld['html_default']==1) AND ($fld['html_show']==0) AND ($fld['multiple']==0)) OR (strlen($fld['in_item_tbl'])>1) OR ($fld['text_stored']==0))) {
-                if ($_REQUEST['analyze']) {
-                    echo "<br>$alias - f_t: used with field marked as non multiple and html - consider using quicker f_1 function for direct content print";
-                    $to_fix = true;
-                } elseif ($_REQUEST['fix']) {
-                    $changed = DB_AA::sql("UPDATE field SET `${fldname}_func`='f_1:'", [['slice_id', $slice_id, 'l'], ['id', $fld['id']]]);
-                    echo "<br>$alias changed to f_1 ($changed change)";
-                }
-            }
-        }
+    if ( !($optimizer = new \AA\Optimize\ChangeF_h2F_1())->test4modules([$slice_id])) {
+        echo $optimizer->report();
+        $to_fix = true;
+    }
+    if ( !($optimizer = new \AA\Optimize\ChangeF_t2F_1())->test4modules([$slice_id])) {
+        echo $optimizer->report();
+        $to_fix = true;
+    }
+    if ( !($optimizer = new \AA\Optimize\ChangeF_t2F__())->test4modules([$slice_id])) {
+        echo $optimizer->report();
+        $to_fix = true;
     }
     if ($to_fix) {
         echo "<div><input type='submit' value='"._m('change all')."' name='fix'>";
     }
+}
+
+if ($_REQUEST['fix']) {
+    ($optimizer = new \AA\Optimize\ChangeF_h2F_1())->repair4modules([$slice_id]);
+    echo $optimizer->report();
+    ($optimizer = new \AA\Optimize\ChangeF_t2F_1())->repair4modules([$slice_id]);
+    echo $optimizer->report();
+    ($optimizer = new \AA\Optimize\ChangeF_t2F__())->repair4modules([$slice_id]);
+    echo $optimizer->report();
 }
 
 $form_buttons = ["update", "analyze" => ["type"=>"submit", "value"=>_m("Analyze")], "cancel"=> ["url"=>"se_fields.php3"]];
