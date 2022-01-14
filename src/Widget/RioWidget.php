@@ -40,7 +40,7 @@ class RioWidget extends Widget
         if ($option['selected']) {
             $ret .= " checked";
         }
-        $ret .= ">" . myspecialchars($option['v']) . '</label>';
+        $ret .= "><span>" . myspecialchars($option['v']) . '</span></label>';
         return $ret;
     }
 
