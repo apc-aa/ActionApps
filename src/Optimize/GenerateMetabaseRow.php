@@ -32,7 +32,7 @@ class GenerateMetabaseRow extends AbstractOptimize {
      */
     public function repair(): bool {
         $metabase = new AA_Metabase;
-        $metabase->loadFromDb();
+        $metabase->loadFromDb(true);
         echo '$instance = unserialize(\'' . str_replace("'", '\\\'', serialize($metabase)) . '\');';
         exit;
     }
