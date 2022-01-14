@@ -97,7 +97,7 @@ if (window.NodeList && !NodeList.prototype.forEach) {
 // switch current item in gallery
 function AA_GalleryGoto(photo_div, viewid, sitemid, galeryid, thumb_id) {
     $(photo_div).show();
-    AA_Ajax(photo_div, AA_Config.AA_INSTAL_PATH + 'view.php3?vid=' + viewid + '&cmd[' + viewid + ']=x-' + viewid + '-' + sitemid + '&convertto=utf-8&als[GALERYID]=' + galeryid);
+    AA_Ajax(photo_div, AA_GetConf('path') + 'view.php3?vid=' + viewid + '&cmd[' + viewid + ']=x-' + viewid + '-' + sitemid + '&convertto=utf-8&als[GALERYID]=' + galeryid);
     $$('div.switcher img.active').invoke('removeClassName', 'active');
     if ($(thumb_id)) {
         $(thumb_id).addClassName('active');
@@ -175,12 +175,12 @@ function AA_HtmlAjaxToggleCss(link_id, link_text_1, link_text_2, selector_hide, 
  *     echo '<div id="fieldselection"></div>';
  **/
 function DisplayAaResponse(div_id, method, params) {
-    $(div_id).update(AA_Config.loader);
-    new Ajax.Updater(div_id, AA_Config.AA_INSTAL_PATH + 'central/responder.php?command='+ method, {parameters: params});
+    $(div_id).update(AA_GetConf('loader'));
+    new Ajax.Updater(div_id, AA_GetConf('path') + 'central/responder.php?command='+ method, {parameters: params});
 }
 
 function AA_Response(method, resp_params, ok_func, err_func) {
-    new Ajax.Request(AA_Config.AA_INSTAL_PATH + 'central/responder.php?command='+ method, {
+    new Ajax.Request(AA_GetConf('path') + 'central/responder.php?command='+ method, {
          parameters: resp_params,
          onSuccess: function(transport) {
              if( transport.responseText.substring(0,5) == 'Error' ) {
@@ -204,7 +204,7 @@ function displayInput(valdivid, item_id, fid, widget_type, widget_properties) {
     $(valdivid).setAttribute("data-aa-oldval", $(valdivid).innerHTML);
     var width = $(valdivid).getWidth();
 
-    $(valdivid).update(AA_Config.loader);
+    $(valdivid).update(AA_GetConf('loader'));
     AA_Response('Get_Widget', { "field_id": fid, "item_id": item_id, "widget_type": widget_type, "widget_properties": widget_properties}, function(responseText) {
             // var style = 'position:absolute;background:#f6f6f6;padding:10px;border:solid 1px #c7c7c7;box-shadow:0 0 8px rgba(0,0,0,0.19);z-index:100;';
             if (width>200) {
@@ -235,7 +235,7 @@ function DisplayInputBack(input_id) {
 }
 
 function AA_Ajax(div, url, param, onload) {
-    $(div).update(AA_Config.loader);
+    $(div).update(AA_GetConf('loader'));
     if( onload && typeof onload === "function" ) {
         if (param && typeof param === 'object' ) {
             param['onSuccess'] = onload;
@@ -247,7 +247,7 @@ function AA_Ajax(div, url, param, onload) {
 }
 
 function AA_AjaxCss(selector, url, param) {
-    $$(selector).invoke('update', AA_Config.loader);
+    $$(selector).invoke('update', AA_GetConf('loader'));
     new Ajax.Request(url, {
         onSuccess: function(transport) {
             $$(selector).invoke('update', transport.responseText);  // new value
@@ -280,7 +280,7 @@ function AA_AjaxInsert(a_obj, form_url) {
  *  Note, that the form action atribute must be RELATIVE (not with 'http://...')
  */
 function SendAjaxForm(id, refresh, ok_func) {
-    $(id).insert(AA_Config.loader);
+    $(id).insert(AA_GetConf('loader'));
     $(id).request({encoding:   'windows-1250',
                    onComplete: function(transport){
                        if (typeof refresh != "undefined") {
@@ -301,7 +301,7 @@ function SendAjaxForm(id, refresh, ok_func) {
  *  Note, that the form action atribute must be RELATIVE (not with 'http://...')
  */
 function AA_SendForm(id, refresh, ok_func) {
-    $(id).insert(AA_Config.loader);
+    $(id).insert(AA_GetConf('loader'));
     $(id).request({onComplete: function(transport){
                        if (typeof refresh != "undefined") {
                            AA_Refresh(refresh,false,ok_func);
@@ -315,10 +315,10 @@ function AA_SendForm(id, refresh, ok_func) {
 function AA_AjaxSendForm(form_id, url) {
     var filler_url = url || 'modules/polls/poll.php3';  // by default it is used for Polls
     if (filler_url.charAt(0)!='/') {
-        filler_url = AA_Config.AA_INSTAL_PATH + filler_url;   // AA link
+        filler_url = AA_GetConf('path') + filler_url;   // AA link
     }
     var code       = Form.serialize(form_id);
-    $(form_id).insert(AA_Config.loader);
+    $(form_id).insert(AA_GetConf('loader'));
 
     new Ajax.Request(filler_url, {
         parameters: code,
@@ -346,7 +346,7 @@ function AA_Refresh(id,inside,ok_func) {
         refresh_id  = $(id).up('*[data-aa-url]');
         refresh_url = $(refresh_id).readAttribute('data-aa-url');
     }
-    $(refresh_id).update(AA_Config.loader);
+    $(refresh_id).update(AA_GetConf('loader'));
 
     new Ajax.Request(refresh_url, {
         onSuccess: function(transport) {
@@ -375,9 +375,9 @@ function AA_up(el, css) { return $(el).up(css); }
 function AA_AjaxSendAddForm(id) {
     var code = Form.serialize(id);
     var sb   = $(id).up('div').previous('a').identify().substring(1);
-    $(id).insert(AA_Config.loader);
+    $(id).insert(AA_GetConf('loader'));
 
-    new Ajax.Request(AA_Config.AA_INSTAL_PATH + 'filler.php3', {
+    new Ajax.Request(AA_GetConf('path') + 'filler.php3', {
         parameters: code,
         requestHeaders: {Accept: 'application/json'},
         onSuccess: function(transport) {
@@ -403,11 +403,11 @@ function AA_SendWidgetAjax(id) {
     $(valdivid).querySelectorAll('.CodeMirror').forEach(function(el) { el.CodeMirror.save()});
     var code = Form.serialize(valdivid);
     var alias_name = $(valdivid).readAttribute('data-aa-alias');
-    $(valdivid).insert(AA_Config.loader);
+    $(valdivid).insert(AA_GetConf('loader'));
 
     code += '&inline=1&ret_code_enc='+alias_name;
 
-    new Ajax.Request(AA_Config.AA_INSTAL_PATH + 'filler.php3', {
+    new Ajax.Request(AA_GetConf('path') + 'filler.php3', {
         parameters: code,
         requestHeaders: {Accept: 'application/json'},
         onSuccess: function(transport) {
@@ -461,7 +461,7 @@ function AA_SendWidgetLive(id, liveinput, fnc) {
     var code = Form.serialize(valdivid);
     code += '&inline=1';  // do not send us whole page as result
 
-    new Ajax.Request(AA_Config.AA_INSTAL_PATH + 'filler.php3', {
+    new Ajax.Request(AA_GetConf('path') + 'filler.php3', {
         parameters: code,
         requestHeaders: {Accept: 'application/json'},
         onSuccess: function(transport) {
@@ -507,7 +507,7 @@ function AA_StateChange(id, state) {
     $$('select[id ^="'+id+'"]').invoke('setStyle', outstyle);
     $$('input[id ^="'+id+'"]').invoke('setStyle', outstyle);
     $$('textarea[id ^="'+id+'"]').invoke('setStyle', outstyle);
-    $$('img.'+id+'ico').each(function(img) {img.setAttribute('src', AA_Config.AA_INSTAL_PATH+icoimg); });
+    $$('img.'+id+'ico').each(function(img) {img.setAttribute('src', AA_GetConf('path')+icoimg); });
 }
 
 /** Deprecated
@@ -527,7 +527,7 @@ function proposeChange(combi_id, item_id, fid, change) {
         do_change = 1;
     }
 
-    new Ajax.Request(AA_Config.AA_INSTAL_PATH + 'misc/proposefieldchange.php', {
+    new Ajax.Request(AA_GetConf('path') + 'misc/proposefieldchange.php', {
         parameters: { field_id:   fid,
                       item_id:    item_id,
                       alias_name: alias_name,
@@ -572,7 +572,7 @@ function proposeChange(combi_id, item_id, fid, change) {
 //}
 
 function AcceptChange(change_id, divid) {
-   new Ajax.Request(AA_Config.AA_INSTAL_PATH + 'misc/proposefieldchange.php', {
+   new Ajax.Request(AA_GetConf('path') + 'misc/proposefieldchange.php', {
         parameters: { change_id:  change_id },
         onSuccess: function(transport) {
             $(divid).update(transport.responseText);  // new value
@@ -583,7 +583,7 @@ function AcceptChange(change_id, divid) {
 }
 
 function CancelChanges(item_id, fid, divid) {
-   new Ajax.Request(AA_Config.AA_INSTAL_PATH + 'misc/proposefieldchange.php', {
+   new Ajax.Request(AA_GetConf('path') + 'misc/proposefieldchange.php', {
         parameters: { cancel_changes: 1,
                       field_id:       fid,
                       item_id:        item_id
@@ -643,7 +643,7 @@ function AA__liveSearch(id, viewparam, deflt) {
     if (!val.length && deflt.length) {
         val=deflt;
     }
-    fnc = function(t,v,q) { AA_AjaxCss(t, AA_Config.AA_INSTAL_PATH + 'view.php3?vid=' + viewparam.replace('AA_LS_QUERY', q));}
+    fnc = function(t,v,q) { AA_AjaxCss(t, AA_GetConf('path') + 'view.php3?vid=' + viewparam.replace('AA_LS_QUERY', q));}
     if (AA__liveSearch.timer) {
        if (AA__liveSearch.searchval != val) {
            clearTimeout(AA__liveSearch.timer);
@@ -692,7 +692,7 @@ function AA__systemDiv(id, attrs, text) {
         if (!$('aa-bottom-toolbar')) {
             AA_Toolbar(''); // we need toolbar defined, we need it to test styles
             if (AA_GetStyle('aa-bottom-toolbar', 'position')!='fixed') {
-                AA_LoadCss(AA_Config.AA_INSTAL_PATH + 'css/aa-system.css');
+                AA_LoadCss(AA_GetConf('path') + 'css/aa-system.css');
             }
         }
         box.show();
@@ -777,7 +777,7 @@ function AA_SaveEditors() {
     }
   }
 
-  new Ajax.Request(AA_Config.AA_INSTAL_PATH + 'filler.php3', {
+  new Ajax.Request(AA_GetConf('path') + 'filler.php3', {
       parameters: params,
       requestHeaders: {Accept: 'application/json'},
       onSuccess: function(transport) {
