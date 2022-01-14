@@ -70,8 +70,8 @@ if ($cancel) {
 }
 
 // get lid via url
-if ( $lid ) {
-    $r_state['link_id'] = $lid;
+if ( ctype_digit($lid) ) {
+    $r_state['link_id'] = (int)$lid;
     $pagename = _m('Edit Link');
 } else {
     // adding new link

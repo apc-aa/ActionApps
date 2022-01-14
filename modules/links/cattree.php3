@@ -375,7 +375,7 @@ class cattree {
      * There must be already includede js_lib_links.min.js file on the page
      * in order ClearListbox(), GoCategory() and ChangeCategory() are defined
      *
-     * @param int $cat_path path of category to switch to (this->treeStart must
+     * @param int $cid id of category to switch to (this->treeStart must
      *                      be on the path
      * @param int $pathDiv <div> //id where the path should be displayed
      * @param int $cat_id_field hidden form field which stores selected category
