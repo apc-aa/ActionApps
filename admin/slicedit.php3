@@ -94,7 +94,14 @@ if (!$sarr) {
 }
 
 if ($_GET['convert']=='utf') {
-    (new AA\Doit\ConvertSliceEncoding($slice_id))->doit();
+    $optimizer = new AA\Optimize\ConvertSliceEncoding();
+    $optimizer->test4modules([$slice_id]);
+    $Msg = $optimizer->report();
+}
+if ($_GET['convert']=='doutf') {
+    $optimizer = new AA\Optimize\ConvertSliceEncoding();
+    $optimizer->repair4modules([$slice_id]);
+    $Msg = $optimizer->report();
 }
 
 $flag_allow_expired = ($sarr['flag'] & SLICE_ALLOW_EXPIRED_CONTENT) == SLICE_ALLOW_EXPIRED_CONTENT;
@@ -138,7 +145,11 @@ FrmInputChBox("flag_allow_pending", _m("Show content of pending items"), $flag_a
 FrmInputSelect("permit_anonymous_post", _m("Allow anonymous posting of items"), PERMS_STATE, $sarr['permit_anonymous_post']);
 FrmInputSelect("permit_anonymous_edit", _m("Allow anonymous editing of items"), PERMS_ANONYMOUS_EDIT, $sarr['permit_anonymous_edit'], false, "", "../doc/anonym.html");
 FrmInputSelect("permit_offline_fill", _m("Allow off-line item filling"),        PERMS_STATE, $sarr['permit_offline_fill']);
-FrmInputSelect("lang_file", _m("Language"), $biglangs, $sarr['lang_file'], false, 'convert to <a href='. StateUrl($_SERVER['PHP_SELF'].'?convert=utf').'>convert</a> xxx');
+$convert_action = '';
+if ((DB_CHARACTER_SET == "cp1250") and $slice_id and (AA_Slice::getModule($slice_id)->getCharset() == 'windows-1250')) {
+    $convert_action = 'Convert encoding of this slice to utf <a href=' . StateUrl($_SERVER['PHP_SELF'] . '?convert=utf') . '>test</a> <a href=' . StateUrl($_SERVER['PHP_SELF'] . '?convert=doutf') . '>convert</a>';
+}
+FrmInputSelect("lang_file", _m("Language"), $biglangs, $sarr['lang_file'], false, $convert_action);
 
 // Reader Management specific settings (Jakub, 7.2.2003)
 $slice     = AA_Slice::getModule($slice_id);
