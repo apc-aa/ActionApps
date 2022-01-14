@@ -6209,7 +6209,9 @@ class AA_Req_Lib extends AA_Req {
     }
 }
 
-/** {require:/css/myprintstyle.css print} */
+/** {require:/css/myprintstyle.css print}
+ * {require:/css/myprintstyle.css async}   - loaded asynchronously
+ */
 class AA_Req_Css extends AA_Req_Lib {
     /**
      *
@@ -6220,10 +6222,11 @@ class AA_Req_Css extends AA_Req_Lib {
      * @return string
      */
     function getCode(): string {
-        return "<link rel=stylesheet type=\"text/css\"" .$this->getIntegrity(). " href=\"{$this->url}\"" .($this->loadtype ? " media=\"{$this->loadtype}\">" : '>');
+        $loadtype = (($this->loadtype == 'async') ? "media=print onload=\"this.media='all'\"" : ( $this->loadtype ? "media=\"{$this->loadtype}\"" : ''));  // onload - trick to load css asynchronously - https://stackoverflow.com/questions/32759272/how-to-load-css-asynchronously
+        return "<link rel=stylesheet type=\"text/css\"" .$this->getIntegrity(). " href=\"{$this->url}\" $loadtype >";
     }
 
-    /**  getExternal and getScript is conterpart to getCode, but used in AJAX calls - external for libs to load before the script is called
+    /**  getExternal and getScript is counterpart to getCode, but used in AJAX calls - external for libs to load before the script is called
      * @return string
      */
     function getExternal() {
@@ -6560,7 +6563,7 @@ class AA_Requires {
             'form-saver@1'                => new AA_Req_Footlib(get_aa_url('javascript/form-saver/form-saver.min.js?ver='.AA_JS_VERSION,'',false), '', ['deserialize@2']),
             'deserialize@2'               => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/jquery-deserialize@2.0.0/src/jquery.deserialize.js', 'sha256-iQpPGsHQZs7cuArBkNIa6QOJlnnf8A1RBfMLxp/MLVI=', ['jquery@3']),
             //'lightgallery@1'              => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/lib/js/lightgallery.js', 'sha256-LwSUsCCIlbq0+vHbSFFbyO+BeMLnJ8gQecxLfgieuKM=', array('_css-lightgallery@1')),
-            'lightgallery@2'           => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/lightgallery@2.2.1/lightgallery.min.js', 'sha256-Dawo6shovc6mR+OrpnCxjnHYYp0655VrB0LShTAPM34=', ['_css-lightgallery@2']),
+            'lightgallery@2'           => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/lightgallery@2.2.1/lightgallery.min.js async', 'sha256-Dawo6shovc6mR+OrpnCxjnHYYp0655VrB0LShTAPM34=', ['_css-lightgallery@2']),
             'lightgallery@1'           => new AA_Req_Footlib('https://cdn.jsdelivr.net/lightgallery.js/1.0.1/js/lightgallery.min.js', 'sha384-HZ/iOnkYJdO5/U2ug7IPTgNZq61Jr+SMoJGCWsjVjNqwY/77YVNA/mZQ1tdfo2Xm', ['_css-lightgallery@1']), // v 1.1.1 do not work
             'tippy@2'                     => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/tippy.js@2.6.0/dist/tippy.all.min.js', 'sha256-H8z9OcYtNQgDyDRKu2H1XY/nq06+bY3cMyB3fSFEytk='),
             'aa-tools@1'                  => new AA_Req_Lib('', '', ['css-aa-system@1','aa-jslib@3|aa-jslib@1','htm-aa-system@1']),
@@ -6579,7 +6582,7 @@ class AA_Requires {
             '_css-dropzone@5'             => new AA_Req_Css('https://cdn.jsdelivr.net/npm/dropzone@5.9.3/dist/min/dropzone.min.css', 'sha256-n/Cuyrm+v15Nim0mJ2ZrElHlCk8raJs/57WeCsIzDr4='),
             '_css-select2@4'              => new AA_Req_Css('https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css', 'sha256-zaSoHBhwFdle0scfGEFUCwggPN7F+ip9XRglo8IWb4w='),
             '_css-select2@3'              => new AA_Req_Css('https://cdn.jsdelivr.net/npm/Select2@3.5.7/select2.css', 'sha256-YxoY/Ov8dU2zQTW3WNFp25v+U1SBgVrOkiB8w3rupb4='),
-            '_css-lightgallery@2'         => new AA_Req_Css('https://cdn.jsdelivr.net/npm/lightgallery@2.2.1/css/lightgallery-bundle.min.css', 'sha256-Uxm/PH2he1eJjDjL9GpZSqxO3+ibyFsbhGupVTc9qLg='),
+            '_css-lightgallery@2'         => new AA_Req_Css('https://cdn.jsdelivr.net/npm/lightgallery@2.2.1/css/lightgallery-bundle.min.css async', 'sha256-Uxm/PH2he1eJjDjL9GpZSqxO3+ibyFsbhGupVTc9qLg='),
             '_css-lightgallery@1'         => new AA_Req_Css('https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/css/lightgallery.min.css', 'sha256-gU66VAEd73/e6tBq5c+WSiRcNH0PSXLnHMPeFIKxtHM='),
             '_css-leaflet@1'              => new AA_Req_Css('https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.css', 'sha256-BPfK9M5v34c2XP6p0cxVz1mUQLst0gTLk0mlc7kuodA='),
             '_css-sortable@1'             => new AA_Req_Css('https://cdn.jsdelivr.net/gh/honzito/plain.sortable@1.2.1/sortable.css', 'sha256-TNKOtdeH1MmRdsujDukp9lYyndNf5qPvBHbWfKWGoX8='),
