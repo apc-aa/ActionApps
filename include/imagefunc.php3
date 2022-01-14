@@ -151,12 +151,9 @@ function ResampleImage($simage,$dimage,$new_w,$new_h,$exact) {
             if (!$src_img) {
                 return _m("ResampleImage unable to %1", [$f]);
             }
-            if (function_exists('imagecopyresampled')) {
-                // better quality resizing - works with GD 2.0.1
-                imagecopyresampled($dst_img,$src_img,0,0,$offset_w,$offset_h,$new_width,$new_height,$imginfo[0],$imginfo[1]);
-            } else {
-                imagecopyresized($dst_img,$src_img,0,0,$offset_w,$offset_h,$new_width,$new_height,$imginfo[0],$imginfo[1]);
-            }
+            // imagecopyresampled - better quality resizing - works with GD 2.0.1
+            imagecopyresampled($dst_img,$src_img,0,0,$offset_w,$offset_h,$new_width,$new_height,$imginfo[0],$imginfo[1]);
+            //    imagecopyresized($dst_img,$src_img,0,0,$offset_w,$offset_h,$new_width,$new_height,$imginfo[0],$imginfo[1]);
             $f="Image".$imagetype;
             if ($imagetype == 'jpeg'){
                 $f($dst_img,$dimage,'100');
@@ -224,6 +221,6 @@ function GetSupportedTypes($type) { //type 1-gif, 2-jpeg, 3-png;
  */
 function imgU($type) {
     global $imageTable;
-    return ($imageTable[$type]["u"] ? $imageTable[$type]["u"] : ("Type ".$type));
+    return ($imageTable[$type]["u"] ?: ("Type ".$type));
 }
 
