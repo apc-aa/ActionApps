@@ -93,7 +93,7 @@ class UpdateDbStructure extends \AA\Optimize\AbstractOptimize {
             $this->message(_m('Deleting temporary table tmp_%1, if exist.', [$tablename]));
             $this->query("DROP TABLE IF EXISTS `tmp_$tablename`");
             $this->message(_m('Creating temporary table tmp_%1.', [$tablename]));
-            $this->query($template_metabase->getCreateSql($tablename, 'tmp_'));
+            $this->query($template_metabase->getCreateSql($tablename, 'tmp_', $tablename));
 
             // create new tables that do not exist in database
             // (we need it for next data copy, else it ends up with db error)

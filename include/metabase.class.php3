@@ -403,15 +403,15 @@ class AA_MbT implements Iterator, ArrayAccess, Countable {
         return $this->c[$columnname];
     }
 
-    function getKeys() {
+    function getKeys(): array {
         return array_keys($this->k);
     }
 
-    function isKey($columnname) {
+    function isKey($columnname): bool {
         return ($this->k[$columnname] ? true : false);
     }
 
-    function getCreateSql($prefix='') {
+    function getCreateSql(string $prefix='', string $engine_template_table=''): string {
         $sql_parts = [];
         foreach ($this->c as $column) {
             $sql_parts[] = $column->getCreateSql();
@@ -419,7 +419,18 @@ class AA_MbT implements Iterator, ArrayAccess, Countable {
         foreach ($this->i as $index) {
             $sql_parts[] = $index->getCreateSql();
         }
-        return "CREATE TABLE IF NOT EXISTS `$prefix".$this->t."` (\n". join(",\n",$sql_parts) ."\n)";
+
+        $table_details = [];
+        if ($engine_template_table) {
+            ['ENGINE'=>$engine, 'TABLE_COLLATION' => $collation] = \AA\IO\DB\DB_AA::select1(['ENGINE','TABLE_COLLATION'],'SELECT ENGINE, TABLE_COLLATION FROM information_schema.TABLES', [['TABLE_NAME',$engine_template_table]]);
+            if ($engine) {
+                $table_details[] = "ENGINE=$engine";
+            }
+            if ($collation) {
+                $table_details[] = "COLLATE='$collation'";
+            }
+        }
+        return "CREATE TABLE IF NOT EXISTS `$prefix".$this->t."` (\n". join(",\n",$sql_parts) ."\n) ". join(',', $table_details);
     }
 
     /** returns database structure definition as PHP code (array) */
@@ -897,12 +908,12 @@ class AA_Metabase {
         freeDb($db);
     }
 
-    function getCreateSql($tablename='', $prefix='') {
+    function getCreateSql(string $tablename='', string $prefix='', string $engine_template_table=''): string {
         $sql_parts = [];
         $tables = $tablename ? [$this->tables[$tablename]] : $this->tables;
         foreach ($tables as $table) {
             if ( is_object($table) ) {
-                $sql_parts[] = $table->getCreateSql($prefix);
+                $sql_parts[] = $table->getCreateSql($prefix, $engine_template_table);
             }
         }
         return join("\n",$sql_parts);

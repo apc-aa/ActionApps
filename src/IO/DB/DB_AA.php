@@ -73,10 +73,11 @@ class DB_AA extends AbstractDB
 
 
     /**
-     *  used as: $sdata = DB_AA::select1('SELECT * FROM `slice`', '', [['id',$long_id, 'l']]));
-     *           $chid  = DB_AA::select1("SELECT id FROM `change` WHERE ...", 'id');
-     *                    DB_AA::select1("SELECT last_edit FROM `item`", 'last_edit', $where, ['last_edit-'])
-     *                    DB_AA::select1("SELECT count(*) as cnt FROM content, item", 'cnt', [['content.item_id','item.id', 'j'], ['item.slice_id', $slice_id, 'l'], ['content.field_id', $fld['id']], ['content.flag', 64, 'set']]);
+     *  used as: $sdata = DB_AA::select1('', 'SELECT * FROM `slice`', [['id',$long_id, 'l']]));
+     *           $chid  = DB_AA::select1('id', "SELECT id FROM `change` WHERE ...");
+     *                    DB_AA::select1('last_edit', "SELECT last_edit FROM `item`", $where, ['last_edit-'])
+     *                    DB_AA::select1('cnt', "SELECT count(*) as cnt FROM content, item", [['content.item_id','item.id', 'j'], ['item.slice_id', $slice_id, 'l'], ['content.field_id', $fld['id']], ['content.flag', 64, 'set']]);
+     *          ['ENGINE'=>$engine, 'TABLE_COLLATION' => $collation] = DB_AA::select1(['ENGINE','TABLE_COLLATION'],'SELECT ENGINE, TABLE_COLLATION FROM information_schema.TABLES', [['TABLE_NAME',$engine_template_table]]);
      * @param string|array $column
      * @param string $query
      * @param array $where
