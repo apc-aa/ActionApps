@@ -27,6 +27,11 @@ class ChangeF_h2F_1 extends AbstractOptimize {
         return _m("Replaces f_h alias for field marked as non multiple and html by quicker f_1 function for direct content print");
     }
 
+    /** implemented actions within this class
+     * @return string[]
+     */
+    public static function actions(): array { return ['test', 'repair', 'test4modules', 'repair4modules']; }
+
     /** Test function
      * @return bool - true if everything is OK - no action needed
      */

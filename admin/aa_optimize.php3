@@ -42,16 +42,29 @@ $testresult = [];
 $err = [];          // error array (Init - just for initializing variable
 
 /** @var AbstractOptimize $optimizer */
-if ($_GET['test'] AND ($optimizer = AA_Serializable::factory('AA\\Optimize\\'.$_GET['test']))) {
+if ($_GET['test'] AND ($optimizer = AA_Serializable::factory('AA\\Optimize\\'.$_GET['test'])) AND $optimizer->hasAction('test')) {
     $testresult[$_GET['test']] = $optimizer->test();
     $Msg .= $optimizer->report();
 }
 
 /** @var AbstractOptimize $optimizer */
-if ($_GET['repair'] AND ($optimizer = AA_Serializable::factory('AA\\Optimize\\'.$_GET['repair']))) {
+if ($_GET['test4modules'] AND ($optimizer = AA_Serializable::factory('AA\\Optimize\\'.$_GET['test4modules'])) AND $optimizer->hasAction('test4modules')) {
+    $testresult[$_GET['test4modules']] = $optimizer->test4modules([$module_id]);
+    $Msg .= $optimizer->report();
+}
+
+/** @var AbstractOptimize $optimizer */
+if ($_GET['repair'] AND ($optimizer = AA_Serializable::factory('AA\\Optimize\\'.$_GET['repair'])) AND $optimizer->hasAction('repair')) {
     $optimizer->repair();
     $Msg .= $optimizer->report();
     $testresult[$_GET['repair']] = $optimizer->test();
+}
+
+/** @var AbstractOptimize $optimizer */
+if ($_GET['repair4modules'] AND ($optimizer = AA_Serializable::factory('AA\\Optimize\\'.$_GET['repair4modules'])) AND $optimizer->hasAction('repair4modules')) {
+    $optimizer->repair4modules([$module_id]);
+    $Msg .= $optimizer->report();
+    $testresult[$_GET['repair4modules']] = $optimizer->test4modules([$module_id]);
 }
 
 $optimize_names        = [];
@@ -81,6 +94,13 @@ foreach (AA_Components::getClassNames('AA\\Optimize\\') as $optimize_class) {
     $row = "
     <div>
       <div style=\"float: right;\">";
+    if (in_array('test4modules', $actions)) {
+        $row .= "<a href=\"". StateUrl("?test4modules=$class_type") ."\" class=aa-button-test title=\"". _m('Test for current module')."\">". _m('Test current'). "</a> ";
+    }
+    if (in_array('repair4modules', $actions)) {
+        $row .= "<a href=\"". StateUrl("?repair4modules=$class_type") ."\" class=aa-button-run title=\"". _m('Repair current module')."\">". _m('Repair current'). "</a> ";
+    }
+
     if (in_array('test', $actions)) {
         $row .= "<a href=\"". StateUrl("?test=$class_type") ."\" class=aa-button-test>". _m('Test'). "</a> ";
     }

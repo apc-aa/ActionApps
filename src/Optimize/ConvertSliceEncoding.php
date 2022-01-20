@@ -23,6 +23,11 @@ class ConvertSliceEncoding extends AA\Optimize\AbstractOptimize {
         return _m("[experimental] probably useless for most AA installs - good only for AA where you mix 1B (cp1250) encoded and UTF encoded slices, use 1B database and want to convert data to (fake) UTF in order you can then switch it to real UTF on database level");
     }
 
+    /** implemented actions within this class
+     * @return string[]
+     */
+    public static function actions(): array { return ['test', 'repair', 'test4modules', 'repair4modules']; }
+
     /** done
         (-) alerts_collection
         (-) alerts_collection_filter

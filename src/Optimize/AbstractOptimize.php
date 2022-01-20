@@ -41,7 +41,7 @@ abstract class AbstractOptimize implements \AA\Util\NamedInterface {
      * @return bool
      */
     public function hasAction(string $action): bool {
-        return in_array($action, self::actions());
+        return in_array($action, static::actions());
     }
 
     /** checks if the this Optimize class belongs to specified type (like "sql_update") */
