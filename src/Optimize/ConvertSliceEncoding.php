@@ -376,8 +376,8 @@ class ConvertSliceEncoding extends AA\Optimize\AbstractOptimize {
         }
 
         $SQLs = $this->getModuleUpdateSqls($modules2modify);
-        $SQLs += $this->getSliceUpdateSqls($this->getRelatedModulesOfType($modules2modify, 'S'));
-        $SQLs += $this->getSiteUpdateSqls($this->getRelatedModulesOfType($modules2modify, 'W'));
+        $SQLs = array_merge($SQLs, $this->getSliceUpdateSqls($this->getRelatedModulesOfType($modules2modify, 'S')));
+        $SQLs = array_merge($SQLs, $this->getSiteUpdateSqls($this->getRelatedModulesOfType($modules2modify, 'W')));
 
         $this->message(_m('SQL commands to be performed: <br>%1.', [join('<br>', $SQLs)]));
 
