@@ -425,7 +425,6 @@ class ConvertSliceEncoding extends AA\Optimize\AbstractOptimize {
             $ret[] = "UPDATE `email` SET " . $this->constructSet($this->getTextCols('email')) . " WHERE " . sqlin('owner_module_id', $modules, true);
             $ret[] = "UPDATE `module` SET " . $this->constructSet($this->getTextCols('module')) . " WHERE " . sqlin('id', $modules, true);
             $ret[] = "UPDATE `slice_owner` SET " . $this->constructSet($this->getTextCols('slice_owner')) . " WHERE `id` IN ( SELECT `owner` FROM `module` WHERE " . sqlin('id', $modules, true) . ")";  // unpack_id($module->getProperty('owner'));  // SELECT * FROM `module` LEFT JOIN slice_owner ON module.owner=slice_owner.id;
-            $ret[] = "UPDATE `slice_owner` SET " . $this->constructSet($this->getTextCols('slice_owner')) . " WHERE `id` IN ( SELECT `owner` FROM `module` WHERE " . sqlin('id', $modules, true) . ")";  // unpack_id($module->getProperty('owner'));  // SELECT * FROM `module` LEFT JOIN slice_owner ON module.owner=slice_owner.id;
         }
         return $ret;
     }
@@ -441,7 +440,7 @@ class ConvertSliceEncoding extends AA\Optimize\AbstractOptimize {
             $ret[] = "UPDATE `content` SET " . $this->constructSet($this->getTextCols('content')) . " WHERE `item_id` IN ( SELECT `id` FROM `item` WHERE " . sqlin('slice_id', $modules, true) . ")";
             $ret[] = "UPDATE `view` SET " . $this->constructSet($this->getTextCols('view')) . " WHERE " . sqlin('slice_id', $modules, true);
             $ret[] = "UPDATE `alerts_filter` SET " . $this->constructSet($this->getTextCols('alerts_filter')) . " WHERE `vid` IN ( SELECT `id` FROM `view` WHERE " . sqlin('slice_id', $modules, true) . ")";;
-            $ret[] = "UPDATE `change_record` SET " . $this->constructSet($this->getTextCols('change_record')) . " WHERE `change_id` IN ( SELECT `id` FROM `change` WHERE `resource_id` IN ( SELECT `id` FROM `item` WHERE " . sqlin('slice_id', $modules, true) . "))";
+            $ret[] = "UPDATE `change_record` SET " . $this->constructSet($this->getTextCols('change_record')) . " WHERE `change_id` IN ( SELECT `id` FROM `change` WHERE `resource_id` IN ( SELECT LOWER(HEX(`id`)) FROM `item` WHERE " . sqlin('slice_id', $modules, true) . "))";
             $ret[] = "UPDATE `constant` SET " . $this->constructSet($this->getTextCols('constant')) . " WHERE `group_id` IN ( SELECT `group_id` FROM `constant_slice` WHERE " . sqlin('slice_id', $modules, true) . ")";
             $ret[] = "UPDATE `discussion` SET " . $this->constructSet($this->getTextCols('discussion')) . " WHERE `item_id` IN ( SELECT `id` FROM `item` WHERE " . sqlin('slice_id', $modules, true) . ")";
             $ret[] = "UPDATE `ef_categories` SET " . $this->constructSet($this->getTextCols('ef_categories')) . " WHERE `target_category_id` IN ( SELECT `id` FROM `constant` WHERE `group_id` IN ( SELECT `group_id` FROM `constant_slice` WHERE " . sqlin('slice_id', $modules, true) . "))";
