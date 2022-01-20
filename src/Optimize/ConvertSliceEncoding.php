@@ -451,6 +451,7 @@ class ConvertSliceEncoding extends AA\Optimize\AbstractOptimize {
             $ret[] = "UPDATE `feedmap` SET " . $this->constructSet($this->getTextCols('feedmap')) . " WHERE " . sqlin('to_slice_id', $modules, true);
 
             $ret[] = "UPDATE `module` SET `lang_file` = 'cz-utf8_news_lang.php3' WHERE " . sqlin('id', $modules, true);
+            $ret[] = "UPDATE `slice` SET `lang_file` = 'cz-utf8_news_lang.php3' WHERE " . sqlin('id', $modules, true);
         }
         return $ret;
     }
