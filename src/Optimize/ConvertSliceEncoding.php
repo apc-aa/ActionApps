@@ -401,8 +401,8 @@ class ConvertSliceEncoding extends AA\Optimize\AbstractOptimize {
         }
 
         $SQLs = $this->getModuleUpdateSqls($modules2modify);
-        $SQLs += $this->getSliceUpdateSqls($this->getRelatedModulesOfType($modules2modify, 'S'));
-        $SQLs += $this->getSiteUpdateSqls($this->getRelatedModulesOfType($modules2modify, 'W'));
+        $SQLs = array_merge($SQLs, $this->getSliceUpdateSqls($this->getRelatedModulesOfType($modules2modify, 'S')));
+        $SQLs = array_merge($SQLs, $this->getSiteUpdateSqls($this->getRelatedModulesOfType($modules2modify, 'W')));
 
         DB_AA::sql('START TRANSACTION');
         foreach ($SQLs as $sql) {
@@ -434,7 +434,7 @@ class ConvertSliceEncoding extends AA\Optimize\AbstractOptimize {
      * @return array
      */
     protected function getSliceUpdateSqls(array $modules): array {
-        $ret = [];
+        $ret = [];                                                                                                  
         if ($modules) {
             $ret[] = "UPDATE `item` SET " . $this->constructSet($this->getTextCols('item')) . " WHERE " . sqlin('slice_id', $modules, true);
             $ret[] = "UPDATE `content` SET " . $this->constructSet($this->getTextCols('content')) . " WHERE `item_id` IN ( SELECT `id` FROM `item` WHERE " . sqlin('slice_id', $modules, true) . ")";
