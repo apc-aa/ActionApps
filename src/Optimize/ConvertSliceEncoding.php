@@ -359,8 +359,6 @@ class ConvertSliceEncoding extends AA\Optimize\AbstractOptimize {
      * @return bool - true if everything is OK - no action needed
      */
     public function test4modules(array $modules): bool {
-        $all_ok = true;
-
         // $this->justTablecolumsTest($modules);
 
         if ( DB_CHARACTER_SET != "cp1250") {
@@ -368,25 +366,22 @@ class ConvertSliceEncoding extends AA\Optimize\AbstractOptimize {
             return true;  // all OK - can't do anything
         }
 
-        foreach ($modules as $module_id) {
-            $module = \AA_Module::getModule($module_id);
-            $modules2modify = [];
-            if ($module->getCharset() == 'windows-1250') {
-                $this->message(_m('"<b>%1</b>" module <b>could</b> be converted.', [$module->getName()]));
-                $all_ok = false;
-                $modules2modify[] = $module_id;
-            } else {
-                $this->message(_m('"%1" module is not in windows-1250 encoding. Skipping.', [$module->getName()]));
-            }
+        // now get also slices of possible site modules
+        $slicemodules = $this->getRelatedModulesOfType($modules, 'S', 'windows-1250');
+        $sitemodules  = $this->getRelatedModulesOfType($modules, 'W', 'windows-1250');
+        $allmodules   = array_merge($slicemodules, $sitemodules);
+
+
+        $SQLs = $this->getModuleUpdateSqls($allmodules);
+        $SQLs = array_merge($SQLs, $this->getSliceUpdateSqls($slicemodules));
+        $SQLs = array_merge($SQLs, $this->getSiteUpdateSqls($sitemodules));
+        if ($slicemodules) {
+            $SQLs[] = "UPDATE `change_record` SET " . $this->constructSet($this->getTextCols('change_record')) . " WHERE `change_id` IN ( SELECT `id` FROM `change` WHERE `resource_id` IN ( SELECT LOWER(HEX(`id`)) FROM `item` WHERE " . sqlin('slice_id', $slicemodules, true) . "))";
         }
 
-        $SQLs = $this->getModuleUpdateSqls($modules2modify);
-        $SQLs = array_merge($SQLs, $this->getSliceUpdateSqls($this->getRelatedModulesOfType($modules2modify, 'S')));
-        $SQLs = array_merge($SQLs, $this->getSiteUpdateSqls($this->getRelatedModulesOfType($modules2modify, 'W')));
+        $this->message(_m('SQL commands to be performed: <br>%1.', [join(';<br>', $SQLs).";"]));
 
-        $this->message(_m('SQL commands to be performed: <br>%1.', [join('<br>', $SQLs)]));
-
-        return $all_ok;
+        return empty($allmodules);
     }
 
     /** Repair function
@@ -394,20 +389,22 @@ class ConvertSliceEncoding extends AA\Optimize\AbstractOptimize {
      * @return bool
      */
     public function repair4modules(array $modules): bool {
-        // $all_ok = true;
-        $modules2modify = [];
-        foreach ($modules as $module_id) {
-            $module = \AA_Module::getModule($module_id);
-            if ($this->test4modules([$module_id])) {
-                $this->message(_m('"%1" module is not in windows-1250 encoding. Skipping.', [$module->getName()]));
-            } else {
-                $modules2modify[] = $module_id;
-            }
+        if ( DB_CHARACTER_SET != "cp1250") {
+            $this->message(_m('Database (DB_CHARACTER_SET) is not in cp1250 encoding. Skipping.'));
+            return true;  // all OK - can't do anything
         }
 
-        $SQLs = $this->getModuleUpdateSqls($modules2modify);
-        $SQLs = array_merge($SQLs, $this->getSliceUpdateSqls($this->getRelatedModulesOfType($modules2modify, 'S')));
-        $SQLs = array_merge($SQLs, $this->getSiteUpdateSqls($this->getRelatedModulesOfType($modules2modify, 'W')));
+        // now get also slices of possible site modules
+        $slicemodules = $this->getRelatedModulesOfType($modules, 'S', 'windows-1250');
+        $sitemodules  = $this->getRelatedModulesOfType($modules, 'W', 'windows-1250');
+        $allmodules   = array_merge($slicemodules, $sitemodules);
+
+
+        $SQLs = $this->getModuleUpdateSqls($allmodules);
+        $SQLs = array_merge($SQLs, $this->getSliceUpdateSqls($slicemodules));
+        $SQLs = array_merge($SQLs, $this->getSiteUpdateSqls($sitemodules));
+
+        $this->message(_m('SQL commands to be performed: <br>%1.', [join(';<br>', $SQLs).";"]));
 
         DB_AA::sql('START TRANSACTION');
         foreach ($SQLs as $sql) {
@@ -416,11 +413,18 @@ class ConvertSliceEncoding extends AA\Optimize\AbstractOptimize {
             $this->message(_m('changed %1 rows', [$changed]));
         }
         DB_AA::sql('COMMIT');
-        $this->message(_m('Done - COMMIT'));
+        $this->message(_m('Done 1/2 - COMMIT (without change_record)'));
+        if ($slicemodules) {
+            $sql = "UPDATE `change_record` SET " . $this->constructSet($this->getTextCols('change_record')) . " WHERE `change_id` IN ( SELECT `id` FROM `change` WHERE `resource_id` IN ( SELECT LOWER(HEX(`id`)) FROM `item` WHERE " . sqlin('slice_id', $slicemodules, true) . "))";
+            $this->message($sql);
+            $changed = DB_AA::sql($sql);
+            $this->message(_m('changed %1 rows', [$changed]));
+        }
+        $this->message(_m('Done 2/2 - all'));
         return true;
     }
 
-    /** SQL queries to update common tables for all modules
+     /** SQL queries to update common tables for all modules
      * @param array $modules
      * @return array
      */
@@ -445,7 +449,8 @@ class ConvertSliceEncoding extends AA\Optimize\AbstractOptimize {
             $ret[] = "UPDATE `content` SET " . $this->constructSet($this->getTextCols('content')) . " WHERE `item_id` IN ( SELECT `id` FROM `item` WHERE " . sqlin('slice_id', $modules, true) . ")";
             $ret[] = "UPDATE `view` SET " . $this->constructSet($this->getTextCols('view')) . " WHERE " . sqlin('slice_id', $modules, true);
             $ret[] = "UPDATE `alerts_filter` SET " . $this->constructSet($this->getTextCols('alerts_filter')) . " WHERE `vid` IN ( SELECT `id` FROM `view` WHERE " . sqlin('slice_id', $modules, true) . ")";;
-            $ret[] = "UPDATE `change_record` SET " . $this->constructSet($this->getTextCols('change_record')) . " WHERE `change_id` IN ( SELECT `id` FROM `change` WHERE `resource_id` IN ( SELECT LOWER(HEX(`id`)) FROM `item` WHERE " . sqlin('slice_id', $modules, true) . "))";
+            // change_record takes too much time to convert - moved outside of the transaction as the last SQL
+            //$ret[] = "UPDATE `change_record` SET " . $this->constructSet($this->getTextCols('change_record')) . " WHERE `change_id` IN ( SELECT `id` FROM `change` WHERE `resource_id` IN ( SELECT LOWER(HEX(`id`)) FROM `item` WHERE " . sqlin('slice_id', $modules, true) . "))";
             $ret[] = "UPDATE `constant` SET " . $this->constructSet($this->getTextCols('constant')) . " WHERE `group_id` IN ( SELECT `group_id` FROM `constant_slice` WHERE " . sqlin('slice_id', $modules, true) . ")";
             $ret[] = "UPDATE `discussion` SET " . $this->constructSet($this->getTextCols('discussion')) . " WHERE `item_id` IN ( SELECT `id` FROM `item` WHERE " . sqlin('slice_id', $modules, true) . ")";
             $ret[] = "UPDATE `ef_categories` SET " . $this->constructSet($this->getTextCols('ef_categories')) . " WHERE `target_category_id` IN ( SELECT `id` FROM `constant` WHERE `group_id` IN ( SELECT `group_id` FROM `constant_slice` WHERE " . sqlin('slice_id', $modules, true) . "))";
@@ -475,14 +480,29 @@ class ConvertSliceEncoding extends AA\Optimize\AbstractOptimize {
     }
 
     /** go through all modules and return only modules of the $type. Look also into all related slices of site module */
-    protected function getRelatedModulesOfType(array $modules, string $type): array {
+    protected function getRelatedModulesOfType(array $modules, string $type, string $filter_charset=''): array {
         if ($type != 'W') {
-            $sites = $this->getRelatedModulesOfType($modules, 'W');
+            $sites = $this->getRelatedModulesOfType($modules, 'W', $filter_charset);
             foreach ($sites as $site_id) {
-                $modules += AA_Module_Site::getModule($site_id)->getRelatedSlices();
+                $modules += AA_Module_Site::getModule($site_id)->getRelatedSlices();  // slices and polls..
             }
         }
-        return DB_AA::select('', 'SELECT LOWER(HEX(`id`)) AS unpackid FROM module', [['id', $modules, 'l'], ['type', $type]]);
+        $modules = DB_AA::select('', 'SELECT LOWER(HEX(`id`)) AS unpackid FROM module', [['id', $modules, 'l'], ['type', $type]]);
+        $ret = [];
+        if ($filter_charset) {
+            foreach ($modules as $module_id) {
+                $module = \AA_Module::getModule($module_id);
+                if ($module->getCharset() == $filter_charset) {
+                    $this->message(_m('"<b>%1</b>" module <b>could</b> be converted.', [$module->getName()]));
+                    $ret[] = $module_id;
+                } else {
+                    $this->message(_m('"%1" module is not in %2 encoding. Skipping.', [$module->getName(), $filter_charset]));
+                }
+            }
+        } else {
+            $ret = $modules;
+        }
+        return $ret;
     }
 
     protected function constructSet(array $cols): string {

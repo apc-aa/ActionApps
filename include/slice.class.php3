@@ -518,6 +518,11 @@ class AA_Slice extends AA_Module {
         DB_AA::delete_low_priority('slice',              [['id',              $module_ids, 'l']]);
         DB_AA::delete_low_priority('view',               [['slice_id',        $module_ids, 'l']]);
 
+        // consider also to delete this - see ConvertSliceEncoding.php
+        // $ret[] = "UPDATE `alerts_filter` SET " . $this->constructSet($this->getTextCols('alerts_filter')) . " WHERE `vid` IN ( SELECT `id` FROM `view` WHERE " . sqlin('slice_id', $modules, true) . ")";;
+        // $ret[] = "UPDATE `constant` SET " . $this->constructSet($this->getTextCols('constant')) . " WHERE `group_id` IN ( SELECT `group_id` FROM `constant_slice` WHERE " . sqlin('slice_id', $modules, true) . ")";
+        // $ret[] = "UPDATE `ef_categories` SET " . $this->constructSet($this->getTextCols('ef_categories')) . " WHERE `target_category_id` IN ( SELECT `id` FROM `constant` WHERE `group_id` IN ( SELECT `group_id` FROM `constant_slice` WHERE " . sqlin('slice_id', $modules, true) . "))";
+
         return true;
     }
 
