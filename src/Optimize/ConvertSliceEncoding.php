@@ -376,7 +376,15 @@ class ConvertSliceEncoding extends AA\Optimize\AbstractOptimize {
         $SQLs = array_merge($SQLs, $this->getSliceUpdateSqls($slicemodules));
         $SQLs = array_merge($SQLs, $this->getSiteUpdateSqls($sitemodules));
         if ($slicemodules) {
-            $SQLs[] = "UPDATE `change_record` SET " . $this->constructSet($this->getTextCols('change_record')) . " WHERE `change_id` IN ( SELECT `id` FROM `change` WHERE `resource_id` IN ( SELECT LOWER(HEX(`id`)) FROM `item` WHERE " . sqlin('slice_id', $slicemodules, true) . "))";
+            // slower - 33s vs 23s
+            // even quicker would be following, but I do not know, how to make it as UPDATE:
+            // SELECT b.* FROM ( SELECT DISTINCT `id` FROM `change` WHERE `resource_id` IN SELECT LOWER(HEX(`id`)) FROM `item` WHERE slice_id 0xbd59e0725c1d2855dde1ac8fd992df7d)) JOIN `change_record` ON b.`change_id` = a.`id`;
+            //
+            // $SQLs[] = "UPDATE `change_record` SET " . $this->constructSet($this->getTextCols('change_record')) . " WHERE `change_id` IN ( SELECT `id` FROM `change` WHERE `resource_id` IN ( SELECT LOWER(HEX(`id`)) FROM `item` WHERE " . sqlin('slice_id', $slicemodules, true) . "))";
+            //
+            $SQLs[] = "UPDATE `change_record` INNER JOIN `change` ON (change_record.change_id = `change`.id) INNER JOIN item ON (`change`.resource_id = LOWER(HEX(item.id))) SET " . $this->constructSet($this->getTextCols('change_record')) . " WHERE ". sqlin('item.slice_id', $slicemodules, true);
+            // SELECT * FROM `change_record` INNER JOIN `change` ON (change_record.change_id = change.id) INNER JOIN item ON (change.resource_id = LOWER(HEX(item.id))) WHERE  item.slice_id = 0xbd59e0725c1d2855dde1ac8fd992df7d;
+
         }
 
         $this->message(_m('SQL commands to be performed: <br>%1.', [join(';<br>', $SQLs).";"]));
