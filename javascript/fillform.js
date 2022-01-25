@@ -214,7 +214,6 @@ function setControlOrAADate(formName, controlName, newValue, datePrefix, html, t
 
 /*  E N D  O F  A A   D A T E   F U N C T I O N S  */
 
-
 /* gets a control by name in IE and Netscape */
 function getControlByName(formName, controlName) {
     return (document.forms[formName] == null) ? null : document.forms[formName][controlName];
@@ -223,30 +222,36 @@ function getControlByName(formName, controlName) {
 /* sets a control value to the given one - works fine with text fields, hidden fields,
     select boxes (multiple not tried, but should be OK) and check boxes (multiple OK) */
 function setControl(formName, controlName, newValue) {
-    var myControl = getControlByName(formName, controlName);
-    if (myControl != null) {
-        if (typeof(myControl.type) == "undefined") {
+    setThisControl(getControlByName(formName, controlName), newValue);
+}
+
+function setThisControl(myControl, newValue) {
+        if (myControl != null) {
+            if (typeof(myControl.type) == "undefined") {
             // multiple checkboxes or radio buttons
             for (var iCtrl = 0; iCtrl < myControl.length; ++iCtrl) {
                 if (myControl[iCtrl].value == newValue) {
-                    if (myControl[iCtrl].type == "checkbox" || myControl[iCtrl].type == "radio")
+                    if (myControl[iCtrl].type == "checkbox" || myControl[iCtrl].type == "radio") {
                         myControl[iCtrl].checked = 1;
+                    }
                     break;
                 }
             }
         }
         else if (myControl.type.substr(0,6) == "select")
             for (var i = 0; i < myControl.options.length; i++) {
-                if ( (myControl.options[i].value == newValue) ||
-                    ((myControl.options[i].value == "") && (myControl.options[i].text == newValue)))
+                if ( (myControl.options[i].value == newValue) || ((myControl.options[i].value == "") && (myControl.options[i].text == newValue))) {
                     myControl.options[i].selected = true;
+                }
             }
-        else if (myControl.type == "checkbox")
+        else if (myControl.type == "checkbox") {
             myControl.checked = newValue != 0;
-        else
+        } else {
             myControl.value = newValue;
+        }
     }
 }
+
 
 /* Function: setControlArray
    Purpose: sets multiple control types in a common way (multiple select box)
@@ -296,15 +301,13 @@ function setControlArray(formName, controlName, newArray) {
    Works with: see getControlValue + AA three-select-boxes-date
 */
 function getControlOrAADate(formName, controlName, datePrefix, emptyValue) {
-    var myControl = getControlByName(formName, controlName);
-    if (myControl != null)
+    if (getControlByName(formName, controlName) != null) {
         return getControlValue(formName, controlName);
-    else {
-        var myControl = getControlByName(formName, datePrefix + controlName + '_day');
-        if (myControl != null)
-            return getAADate(formName, datePrefix + controlName, emptyValue) / 1000;
-        else return null;
     }
+    if (getControlByName(formName, datePrefix + controlName + '_day') != null) {
+        return getAADate(formName, datePrefix + controlName, emptyValue) / 1000;
+    }
+    return null;
 }
 
 /* Function: getControlValue
@@ -314,16 +317,33 @@ function getControlOrAADate(formName, controlName, datePrefix, emptyValue) {
 
 function getControlValue(formName, controlName) {
     var myControl = getControlByName(formName, controlName);
-    if (myControl != null) {
-        return (myControl.type == "checkbox") ? (myControl.checked ? 1 : 0) : myControl.value;
+    try {
+        var ret = (new FormData(document.querySelector('form[name="'+ formName +'"]'))).get(controlName);
+    } catch (e) {
+        return null;
     }
-    return null;
+    if (((ret === 'on') || (ret === null)) && (myControl !== null) &&  (myControl.type === "checkbox")) { // for backward compatibility
+        ret =  (myControl.checked ? 1 : 0);
+    }
+    return ret;
 }
+
+/*
+function getWidgetByName(formName, field) {
+    var el = document.querySelector('form[name="'+formName+'"] input[name*="['+field.replaceAll('.','_')+']"');
+    return el ? el.closest('.aa-widget') : null;
+}
+function getWidgetValue(widget) {
+    var inp = null;
+    return (widget && (inp = widget.querySelector('input,select,textarea'))) ? inp.value : null;
+}
+*/
 
 /* ITEMEDIT.PHP3 field JavaScript functions - AA API */
 
 function getField(fieldID) {
-    return getControlOrAADate('inputform','v'+unpackID(fieldID), 'tdctr_', '');
+    var val = getControlOrAADate('inputform','v'+unpackID(fieldID), 'tdctr_', ''); // old AA forms
+    return (val != null) ? val : getControlValue('inputform', document.querySelector('form[name="'+'inputform'+'"] :is(input,select,textarea)[name*="['+fieldID.replaceAll('.','_')+']"').getAttribute('name'));
 }
 
 function setField(fieldID, newValue) {
