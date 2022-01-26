@@ -43,25 +43,32 @@ class Saver implements AA\Later\LaterInterface {
         report as protected traitreport;
     }
 
+    /** @var \AA\IO\Grabber\AbstractGrabber the object which delivers the data */
     protected $grabber;
-    /** @var \AA\IO\Grabber\AbstractGrabber the object which deliveres the data */
-    protected $transformations;
+
     /** describes, what to do with data before storing */
-    protected $slice_id;
+    protected $transformations;
+
     /** id of destination slice */
+    protected $slice_id;
+
+    /** store-policy - how to store - by_grabber | update | update_silent | update/insert | add | overwrite | insert_as_new | insert_new | insert | insert_if_new */
     protected $store_mode;
+
+    /** id-policy    - how to construct id - old | new | combined | ["<field_id.......1>",...] */
+    protected $id_mode;
+
     /** how to deal with errors LOG | STRICT */
     protected $error_mode;
-    /** store-policy - how to store - by_grabber | update | update_silent | update/insert | add | overwrite | insert_as_new | insert_new | insert | insert_if_new */
-    protected $id_mode;
-    /** id-policy    - how to construct id - old | new | combined */
 
-    private $_new_ids = [];
     /** array of newly inserted ids (after run()) - the long ones */
-    private $_updated_ids = [];
+    private $_new_ids = [];
+
     /** array of ids of rewritten items (after run()) - the long ones */
-    private $_updated_slices = [];
+    private $_updated_ids = [];
+
     /** array of slice ids with rewritten items (after run()) - the long ones */
+    private $_updated_slices = [];
 
     // protected $_messages = [];
 
@@ -70,7 +77,7 @@ class Saver implements AA\Later\LaterInterface {
      * @param \AA\IO\Grabber\AbstractGrabber $grabber
      * @param AA_Transformation[]            $transformations
      * @param string                         $slice_id
-     * @param string                         $store_mode
+     * @param string                         $store_mode          @see  Saver::$store_mode
      * @param string                         $id_mode
      * @param string                         $error_mode
      */
@@ -163,34 +170,42 @@ class Saver implements AA\Later\LaterInterface {
                 // ["relation.......1","year............"]
                 default         :
                     // should be allowed just to slice admins (for security reasons)
-                    if ($store_mode == 'update/insert') {
+                    if (($id_mode[0] == '[') AND is_array($flds = json_decode($id_mode))) {
                         // this allows you to update item based on the key fields.
                         // if $id_mode is ["relation.......1","year............"], then saver searches the slice for the item matching the two fields.
                         // If found, then the item is updated
-                        // If not found, the item is_a created, but only with fields if $content4id (not whole insert)
+                        // If not found, the item is created, but only with fields if $content4id (not whole insert)
+                        // update and insert_if_new restrict previous just for updates or inserts
 
                         $set = new AA_Set([$this->slice_id]);
-                        if (($id_mode[0] == '[') AND is_array($flds = json_decode($id_mode))) {
-                            foreach ($flds as $fld) {
-                                $condval = $content4id->getValue($fld);
-                                if (!strlen(trim($condval))) {
-                                    $err_count++;
-                                    $this->message("AA\IO\Saver->run(): key condition empty for $fld");
-                                    continue 3; // another item
-                                }
-
-                                $set->addCondition(new AA_Condition($fld, '==', $content4id->getValue($fld)));
+                        foreach ($flds as $fld) {
+                            $condval = $content4id->getValue($fld);
+                            if (!strlen(trim($condval))) {
+                                $err_count++;
+                                $this->message("AA\IO\Saver->run(): key condition empty for $fld");
+                                continue 3; // another item
                             }
-                            $zids = $set->query(null, 1);
-                            if (!$fire) {
-                                $this->message("AA\IO\Saver->run(): update/insert - condition:");
-                                $this->message($set);
-                                $this->message($zids);
-                            }
-                            $new_item_id = $zids->count() ? $zids->longids(0) : new_id();
 
-                            break;
+                            $set->addCondition(new AA_Condition($fld, '==', $content4id->getValue($fld)));
                         }
+                        $zids = $set->query(null, 1);
+                        if (!$fire) {
+                            $this->message("AA\IO\Saver->run(): update/insert - condition:");
+                            $this->message($set);
+                            $this->message($zids);
+                        }
+                        if ($zids->count()) {
+                            if (strpos($store_mode, 'update') === false) {
+                                continue 2; // another item
+                            }
+                            $new_item_id = $zids->longids(0);
+                        } else {
+                            if (strpos($store_mode, 'insert') === false) {
+                                continue 2; // another item
+                            }
+                            $new_item_id = new_id();
+                        }
+                        break;
                     }
                     $new_item_id = new_id();
             }
