@@ -385,7 +385,11 @@ class ConvertSliceEncoding extends AA\Optimize\AbstractOptimize {
             // $SQLs[] = "UPDATE `change_record` INNER JOIN `change` ON (change_record.change_id = `change`.id) INNER JOIN item ON (`change`.resource_id = LOWER(HEX(item.id))) SET " . $this->constructSet($this->getTextCols('change_record')) . " WHERE ". sqlin('item.slice_id', $slicemodules, true);
 
             // Ohoo, this one seams to be the fastest - 4s
-            $SQLs[] = "UPDATE `change_record` INNER JOIN `change` ON (change_record.change_id = `change`.id) SET " . $this->constructSet($this->getTextCols('change_record')) ." WHERE EXISTS ( SELECT * FROM `item` WHERE (LOWER(HEX(`id`)) = change.resource_id) AND (". sqlin('item.slice_id', $slicemodules, true). "))";
+            // $SQLs[] = "UPDATE `change_record` INNER JOIN `change` ON (change_record.change_id = `change`.id) SET " . $this->constructSet($this->getTextCols('change_record')) ." WHERE EXISTS ( SELECT * FROM `item` WHERE (LOWER(HEX(`id`)) = change.resource_id) AND (". sqlin('item.slice_id', $slicemodules, true). "))";
+            // still not enough
+
+            //trying by temporary table
+            $SQLs = array_merge($SQLs, $this->getSliceUpdateSlowFinalSqls($slicemodules));
         }
 
         $this->message(_m('SQL commands to be performed: <br>%1.', [join(';<br>', $SQLs).";"]));
@@ -423,13 +427,18 @@ class ConvertSliceEncoding extends AA\Optimize\AbstractOptimize {
         }
         DB_AA::sql('COMMIT');
         $this->message(_m('Done 1/2 - COMMIT (without change_record)'));
-        if ($slicemodules) {
-            $sql = "UPDATE `change_record` INNER JOIN `change` ON (change_record.change_id = `change`.id) SET " . $this->constructSet($this->getTextCols('change_record')) ." WHERE EXISTS ( SELECT * FROM `item` WHERE (LOWER(HEX(`id`)) = change.resource_id) AND (". sqlin('item.slice_id', $slicemodules, true). "))";
-            $this->message($sql);
-            $changed = DB_AA::sql($sql);
-            $this->message(_m('changed %1 rows', [$changed]));
+
+        $SQLs = $this->getSliceUpdateSlowFinalSqls($slicemodules);
+        if ($SQLs) {
+            DB_AA::sql('START TRANSACTION');
+            foreach ($SQLs as $sql) {
+                $this->message($sql);
+                $changed = DB_AA::sql($sql);
+                $this->message(_m('changed %1 rows', [$changed]));
+            }
+            DB_AA::sql('COMMIT');
         }
-        $this->message(_m('Done 2/2 - all'));
+        $this->message(_m('Done 2/2 - COMMIT all'));
         return true;
     }
 
@@ -471,6 +480,21 @@ class ConvertSliceEncoding extends AA\Optimize\AbstractOptimize {
 
             $ret[] = "UPDATE `module` SET `lang_file` = 'cz-utf8_news_lang.php3' WHERE " . sqlin('id', $modules, true);
             $ret[] = "UPDATE `slice` SET `lang_file` = 'cz-utf8_news_lang.php3' WHERE " . sqlin('id', $modules, true);
+        }
+        return $ret;
+    }
+
+    /** SQL queries to update slice related tables for all modules
+     * @param array $modules
+     * @return array
+     */
+    protected function getSliceUpdateSlowFinalSqls(array $modules): array {
+        $ret = [];
+        if ($modules) {
+            $ret[] = "CREATE TEMPORARY TABLE IF NOT EXISTS `tmp_change_id_tmp` (`change_id` varbinary(32) NOT NULL DEFAULT '                                ') ENGINE=InnoDB DEFAULT CHARSET=cp1250";
+            $ret[] = "INSERT INTO tmp_change_id_tmp SELECT DISTINCT `change`.`id` FROM `item`,`change` WHERE (LOWER(HEX(`item`.`id`)) = `change`.`resource_id`) AND " . sqlin('item.slice_id', $modules, true);
+            $ret[] = "UPDATE `change_record` INNER JOIN `tmp_change_id_tmp` ON (`change_record`.`change_id` = `tmp_change_id_tmp`.`change_id`) SET " . $this->constructSet($this->getTextCols('change_record'));
+            $ret[] = "TRUNCATE `tmp_change_id_tmp`";
         }
         return $ret;
     }
