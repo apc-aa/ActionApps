@@ -328,6 +328,14 @@ function getControlValue(formName, controlName) {
     return ret;
 }
 
+function aa_runevent(e) {
+    var func = "aa_on" + e.type.charAt(0).toUpperCase() + e.type.slice(1);
+    var fld = e.target.name.match(/aa\[[^\]]*\]\[([a-z0-9_]*)\]/)[1];
+    if (fld && (typeof window[func] === "function")) {
+        window[func](fld.replaceAll('_', '.')); // call aa_onChange('headline.......1') or similar standard user aa event handling function
+    }
+}
+
 /*
 function getWidgetByName(formName, field) {
     var el = document.querySelector('form[name="'+formName+'"] input[name*="['+field.replaceAll('.','_')+']"');

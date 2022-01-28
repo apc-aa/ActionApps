@@ -245,7 +245,7 @@ class Saver implements AA\Later\LaterInterface {
                 if (!($new_item_id = $content4id->storeItem($store_mode))) {     // invalidatecache, feed
                     // AA\IO\Saver->run(): storeItem failed or skiped duplicate:
                     $err_count++;
-                    $this->message('AA\IO\Saver->run(): storeItem failed or skiped duplicate: '. ItemContent::lastErrMsg());
+                    $this->message('AA\IO\Saver->run(): storeItem failed or skipped duplicate: '. ItemContent::lastErrMsg());
                 } else {
                     // @todo better check of new ids
                     if ($store_mode == 'insert') {

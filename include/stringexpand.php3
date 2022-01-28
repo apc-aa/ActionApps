@@ -6568,6 +6568,7 @@ class AA_Requires {
             'tippy@2'                     => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/tippy.js@2.6.0/dist/tippy.all.min.js', 'sha256-H8z9OcYtNQgDyDRKu2H1XY/nq06+bY3cMyB3fSFEytk='),
             'aa-tools@1'                  => new AA_Req_Lib('', '', ['css-aa-system@1','aa-jslib@3|aa-jslib@1','htm-aa-system@1']),
             'ckeditor@4'                  => new AA_Req_Footlib(get_aa_url('misc/htmleditor/ckeditor.js', '', false),'', ['css-aa-system@1','aa-jslib@3|aa-jslib@2|aa-jslib@1']),
+            'aa-fillform@1'               => new AA_Req_Lib(get_aa_url('javascript/fillform.min.js?v='.AA_JS_VERSION,'',false)),
             'aa-constedit@1'              => new AA_Req_Lib(get_aa_url('javascript/constedit.min.js?v='.AA_JS_VERSION,'',false)),
             'aa-jslib@3'                  => new AA_Req_Lib(get_aa_url('javascript/aajslib-jquery.min.js?v='.AA_JS_VERSION,'',false), '', ['jquery@3']),
             'aa-jslib@2'                  => new AA_Req_Lib(get_aa_url('javascript/aajslib-jquery.php?v='.AA_JS_VERSION,'',false), '', ['jquery@3']),

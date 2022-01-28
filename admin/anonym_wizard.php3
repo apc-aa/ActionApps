@@ -26,6 +26,7 @@
 */
 
 use AA\IO\DB\DB_AA;
+use AA\Util\JsTriggers;
 
 require_once __DIR__."/../include/init_page.php3";
 require_once __DIR__."/../include/formutil.php3";
@@ -96,8 +97,10 @@ function GetAnonymousForm($slice, $s_fields, $show, $ok_url, $err_url, $use_show
         }
     }
 
+    $jstriggers  = JsTriggers::singleton4id($slice_id);
+
     $ret .= $additional. "\n";
-    $ret .= $form->getFormJavascript();
+    $ret .= $form->getFormJavascript($jstriggers);
     $ret .= "\n    <table border=\"0\" cellspacing=\"0\" cellpadding=\"4\" align=\"center\" class=\"tabtxt\">\n";
     $ret .=  AA::Stringexpander()->postprocess(AA::Stringexpander()->unalias($form_code)); // to replace  {generate:HEAD} with dynamic javascripts needed by inputform
 

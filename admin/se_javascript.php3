@@ -25,6 +25,7 @@
 */
 
 use AA\IO\DB\DB_AA;
+use AA\Util\JsTriggers;
 
 require_once __DIR__."/../include/init_page.php3";
 require_once __DIR__."/../include/formutil.php3";
@@ -92,9 +93,11 @@ echo '</table>
 <td valign="top"><table border="0" cellspacing="0" cellpadding="1" bgcolor="'.COLOR_TABBG.'">
 <tr><td class="tabtit">'._m("Triggers").':</td></tr>
 <tr><td class="tabtxt">'._m("Write trigger functions like").' "aa_onSubmit (fieldid) { }", <a href="https://actionapps.org/faq/detail.shtml?x=1706" target="_blank">'._m("see FAQ</a> for more details and examples").'</td></td></tr>
+<tr><td class="tabtxt">'._m("You can place {require:...} anywhere in the code to load any js library. If you do not use any {require:...}, AA will use default {require:aa-fillform@1} {require:aa-jslib@1}. Feel free to use just {require:aa-fillform} if you do not need old {require:aa-jslib@1}.").'</td></td></tr>
+<tr><td class="tabtxt">'._m("If you want to use javascript without any library, use {require:} or // {require:}.").'</td></td></tr>
 <tr><td class="tabtxt"><table border="1" cellspacing="0" cellpadding="1" bgcolor="'.COLOR_TABBG.'">';
 echo '<tr><td class="tabtit"><b>'._m("Field Type").'</b></td><td class=tabtit><b>'._m("Triggers Available -- see some JavaScript help for when a trigger is run").'</b></td></tr>';
-AA_Jstriggers::printSummary();
+JsTriggers::printSummary();
 echo '
 </table></td></tr>
 </table></td>

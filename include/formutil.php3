@@ -30,6 +30,7 @@
 */
 
 use AA\Cache\CacheStr2find;
+use AA\Util\JsTriggers;
 use AA\Widget\Widget;
 
 
@@ -172,7 +173,8 @@ class inputform {
             $remove_string = $view->f('remove_string');
         }
 
-        $profile       = AA_Profile::getProfile(AuthGetUid(), $slice->getId()); // current user settings
+        $slice_id = $slice->getId();
+        $profile  = AA_Profile::getProfile(AuthGetUid(), $slice_id); // current user settings
 
         // create buttons array for top (and lately for bottom of the form) ------------------
         $buttons = [];
@@ -211,12 +213,14 @@ class inputform {
             // get validation and gui javascripts for used fields
             // getFormJavascript must be called after getForm since
             // $this->show_func_used, $this->js_proove_fields must be already filled
-            $html_start  = $this->getFormJavascript();
+
+            $jstriggers  = JsTriggers::singleton4id($slice_id);
+            $html_start  = $this->getFormJavascript($jstriggers);
             $html_start .= '
                 <title>'. $page_title .'</title>
                 {generate:HEAD}
               </head>
-              <body '. AA_Jstriggers::get('body') .' class="aa-ui">
+              <body '. $jstriggers->get('body') .' class="aa-ui">
                 <h1><b>' . $page_title .'</b></h1>';
 
             // you can add some html code by user profiles, above the form
@@ -388,9 +392,10 @@ class inputform {
      *  Get validation, triggers and gui javascript for used fields on Add/Edit Form
      *  Must be called after getForm since $this->show_func_used and
      *  $this->js_proove_fields must be already filled
+     * @param JsTriggers $jstriggers
+     * @return string
      */
-    function getFormJavascript() {
-        global $slice_id;
+    function getFormJavascript(JsTriggers $jsTriggers): string {
         $retval = '';
 
         AA::Stringexpander()->addRequire(get_aa_url('javascript/inputform.min.js?v='.AA_JS_VERSION,'',false));
@@ -403,11 +408,7 @@ class inputform {
         $jscode = $this->js_proove_fields;
 
         // field javascript feature - triggers (see /include/javascript.php3)
-        if ($javascript = AA_Slice::getModuleProperty($slice_id,'javascript')) {
-            $jscode .= $javascript;
-            AA::Stringexpander()->addRequire('aa-jslib@1');
-            AA::Stringexpander()->addRequire(get_aa_url('javascript/fillform.min.js?v='.AA_JS_VERSION,'',false));
-        }
+        $jscode .= $jsTriggers->getJavascriptAndRegisterRequires();
 
         $retval .= getFrmJavascript( $jscode );
         $retval .= getFrmJavascriptFile('misc/htmleditor/ckeditor.js');
@@ -426,7 +427,7 @@ class inputform {
         // uses fileupload?
         $html_form_type = $this->show_func_used['fil'] ? 'enctype="multipart/form-data"' : '';
         return "<form name=\"inputform\" $html_form_type method=\"post\" action=\"" . $this->form_action .'"'.
-            AA_Jstriggers::get("form", "v" . unpack_id("inputform"), ["onSubmit" => "return BeforeSubmit()"]) .'>';
+            JsTriggers::getFromGlobalSliceId("form", "v" . unpack_id("inputform"), ["onSubmit" => "return BeforeSubmit()"]) .'>';
     }
 } // inputform class
 
@@ -487,7 +488,7 @@ class AA_Inputfield {
     var $const_arr;        // array of constants used for selections (selectbox, radio, ...)
     var $msg;                         // stores return code from functions
 
-    protected $use_triggers = false;  // shall the input contain aa_onXxxx() triggers? used for item-editing widgets
+    protected $use_triggers_4_slice = 0;  // shall the input contain aa_onXxxx() triggers? used for item-editing widgets
 
     /** AA_Inputfield function
      * Constructor - initializes AA_Inputfield
@@ -827,7 +828,7 @@ class AA_Inputfield {
         $this->result_mode = 'template';
         $this->echoo($this->input_before);
 
-        $this->use_triggers = true;  // we are in item editing mode - add triggers
+        $this->use_triggers_4_slice = $slice_id;  // we are in item editing mode - add triggers
 
         if ($this->mode == 'freeze') {
             switch ($this->input_type) {
@@ -985,7 +986,7 @@ class AA_Inputfield {
                     break;
                 //case 'txt': $this->textarea(get_if($this->param[0], 4));   // not yet prepared for standard widget - Triggers - SetField, GetField do not work. @TODO
                 //            break;
-                //case 'txt': if (AA_Jstriggers::isTriggers()) {
+                //case 'txt': if (AA\Util\JsTriggers::singleton4id($slice_id)->isTriggers()) {
                 //                $this->textarea(get_if($this->param[0], 4));   // not yet prepared for standard widget - Triggers - SetField, GetField do not work. @TODO
                 //            } else {
                 //                $this->inputWidget($item, $slice_id);          // standard
@@ -1181,7 +1182,7 @@ class AA_Inputfield {
      */
     function getRadioButtonTag($k, $v, $add='', $labeladd='') {
         $name  = $this->varname();
-        $triggers  = $this->use_triggers ? AA_Jstriggers::get("input", $name) : '';
+        $triggers  = $this->use_triggers_4_slice ? JsTriggers::getFromGlobalSliceId("input", $name) : '';
         $ret   = "<label $labeladd><input type=radio name='$name' value='". myspecialchars($k) ."' $add $triggers";
         $ret  .= $this->if_selected($k, " checked");
         $ret  .= '>'.myspecialchars($v).'</label>';
@@ -1222,7 +1223,7 @@ class AA_Inputfield {
             $this->field_name(false, $colspan);
         }
         $this->echoo("<td>");
-        $triggers  = $this->use_triggers ? AA_Jstriggers::get("input", $name) : '';
+        $triggers  = $this->use_triggers_4_slice ? JsTriggers::singleton4id($this->use_triggers_4_slice)->get("input", $name) : '';
 
         $this->echovar("<input type=\"checkbox\" name=\"$name\" $add ". ($this->required ? " required": ''). ($val ? " checked" : ''). " $triggers>");
         $this->helps();
@@ -1301,7 +1302,7 @@ class AA_Inputfield {
         }
         $attr_string = join(' ', array_map( function($k, $v) {return "$k=\"$v\"";}, array_keys($attrs), $attrs));
 
-        $triggers  = $this->use_triggers ? AA_Jstriggers::get("input", $name) : '';
+        $triggers  = $this->use_triggers_4_slice ? JsTriggers::singleton4id($this->use_triggers_4_slice)->get("input", $name) : '';
 
         $this->field_name('plus');
         $this->html_radio();
@@ -1425,7 +1426,7 @@ class AA_Inputfield {
         }
 
         $areaclass = $showhtmlarea ? ' class=ckeditor' : '';
-        $triggers  = $this->use_triggers ? AA_Jstriggers::get("textarea", $name) : '';
+        $triggers  = $this->use_triggers_4_slice ? JsTriggers::singleton4id($this->use_triggers_4_slice)->get("textarea", $name) : '';
 
         if ($this->translations) {
             $first = true;
@@ -1602,7 +1603,7 @@ class AA_Inputfield {
     function inputMultiSelect($rows=6) {
         [$name,$val,$add] = $this->prepareVars('multi');
         $rows                 = get_if($rows, 6);
-        $triggers  = $this->use_triggers ? AA_Jstriggers::get("select", $name) : '';
+        $triggers  = $this->use_triggers_4_slice ? JsTriggers::singleton4id($this->use_triggers_4_slice)->get("select", $name) : '';
 
         $this->field_name('plus');
         $ret       = "<select name=\"$name\" size=\"$rows\" multiple $triggers". ($this->required ? " required": '') .">";
@@ -1647,7 +1648,7 @@ class AA_Inputfield {
         $actions              = get_if($actions, 'DR');
         $actions              = str_replace(['0','1'], ['DR','MDR'],(string)$actions);
         $movebuttons          = (strpos($actions,'M') !== false);
-        $triggers  = $this->use_triggers ? AA_Jstriggers::get("select", $name) : '';
+        $triggers  = $this->use_triggers_4_slice ? JsTriggers::singleton4id($this->use_triggers_4_slice)->get("select", $name) : '';
 
         if ( $whichitems < 1 ) {
             $whichitems = AA_BIN_ACT_PEND;              // fix for older (bool) format
@@ -1828,7 +1829,7 @@ class AA_Inputfield {
            When you delete a value from a hierarchicalConstant mainbox
            it does not respond to the onChange triger
         */
-        $triggers  = $this->use_triggers ? AA_Jstriggers::get("select", $name) : '';
+        $triggers  = $this->use_triggers_4_slice ? JsTriggers::singleton4id($this->use_triggers_4_slice)->get("select", $name) : '';
         $aa_onchange_exist = strstr($triggers,'aa_onChange(');
         $delete_button_trigger = "";
         if( $aa_onchange_exist ){
@@ -1872,7 +1873,7 @@ class AA_Inputfield {
     function inputSelect($usevalue=false) {
         [$name,$val,$add] = $this->prepareVars();
         $this->fill_const_arr();
-        $triggers  = $this->use_triggers ? AA_Jstriggers::get("select", $name) : '';
+        $triggers  = $this->use_triggers_4_slice ? JsTriggers::singleton4id($this->use_triggers_4_slice)->get("select", $name) : '';
 
         $this->field_name('plus');
         $out = "<select name=\"$name\" $triggers>";
@@ -1926,7 +1927,7 @@ class AA_Inputfield {
         }
         $val  = myspecialchars($val);
         $link = $val ? a_href($val, GetAAImage('external-link.png', _m('Show'), 16, 16), '', ['target'=>'_blank']) : '';
-        $triggers   = $this->use_triggers ? AA_Jstriggers::get("input", $name) : '';
+        $triggers   = $this->use_triggers_4_slice ? JsTriggers::singleton4id($this->use_triggers_4_slice)->get("input", $name) : '';
 
         $this->field_name('plus');
         $this->echovar( "<input type=text name=\"$name\" class=aa-w-full". $GLOBALS['mlxFormControlExtra']." maxlength=255 value=\"$val\" $triggers>&nbsp;$link" );
@@ -1936,7 +1937,7 @@ class AA_Inputfield {
         $this->input_help = $hlp;
         $this->field_name('secrow');
         $file_field_name = $name.'x';
-        //$triggers  = $this->use_triggers ? AA_Jstriggers::get("input", $file_field_name, "") : '';
+        //$triggers  = $this->use_triggers ? AA\Util\JsTriggers::get("input", $file_field_name, "") : '';
         $this->echovar( "<input type=file name=\"$file_field_name\" accept=\"$accepts\">", 'file');
         $this->helps('plus');
     }
@@ -1957,7 +1958,7 @@ class AA_Inputfield {
         $val=safe($val);
         $maxsize = get_if( $maxsize, 254 );
         $size    = get_if( $size   , 25 );
-        $triggers  = $this->use_triggers ? AA_Jstriggers::get("input", $name) : '';
+        $triggers  = $this->use_triggers_4_slice ? JsTriggers::singleton4id($this->use_triggers_4_slice)->get("input", $name) : '';
 
         $this->field_name('plus');
         $this->html_radio();
@@ -1986,7 +1987,7 @@ class AA_Inputfield {
         [$name,$val,$add] = $this->prepareVars();
         $this->fill_const_arr();
         $val=safe($val);
-        $triggers  = $this->use_triggers ? AA_Jstriggers::get("input", $name) : '';
+        $triggers  = $this->use_triggers_4_slice ? JsTriggers::singleton4id($this->use_triggers_4_slice)->get("input", $name) : '';
 
         $this->field_name('plus');
         $this->html_radio();
@@ -2031,7 +2032,7 @@ class AA_Inputfield {
           <tr align=left>
             <td align=\"center\" valign='TOP' rowspan=\"2\">");
 
-        $triggers  = $this->use_triggers ? AA_Jstriggers::get("select", $name) : '';
+        $triggers  = $this->use_triggers_4_slice ? JsTriggers::singleton4id($this->use_triggers_4_slice)->get("select", $name) : '';
         $offername = str_replace("[]", "", $name). '_1';
         $out  = "<select multiple name=\"".$offername."\" size=\"$rows\" $triggers ondblclick=\"MoveSelected(this,this.parentNode.parentNode.querySelector(&quot;select[name='$name']&quot;))\">";  // do not put newlines here in order select:empty css selector works
         $out .= get_if( $this->get_options( $this->const_arr, false, false, 'unselected'), '' );
@@ -2100,7 +2101,7 @@ class AA_Inputfield {
         $retype_pwd_label = get_if($retype_pwd_label, _m("Retype Password"));
         $delete_pwd_label = get_if($delete_pwd_label, _m("Delete Password"));
         $fieldsize        = get_if($fieldsize,        60);
-        $triggers  = $this->use_triggers ? AA_Jstriggers::get("input", $name) : '';
+        $triggers  = $this->use_triggers_4_slice ? JsTriggers::singleton4id($this->use_triggers_4_slice)->get("input", $name) : '';
 
         $this->field_name('plus');
         if ( $this->mode == 'anonym' ) {
@@ -2114,7 +2115,7 @@ class AA_Inputfield {
         if (!$this->required) {
             $this->field_name('secrow',1,$delete_pwd_label);
             $ch_name = $name."d";
-            $triggers  = $this->use_triggers ? AA_Jstriggers::get("input", $ch_name) : '';
+            $triggers  = $this->use_triggers_4_slice ? JsTriggers::singleton4id($this->use_triggers_4_slice)->get("input", $ch_name) : '';
             $this->echovar("<input type=\"checkbox\" name=\"$ch_name\" $triggers>", 'delete');
             $this->helps('plus');
         }
@@ -2122,14 +2123,14 @@ class AA_Inputfield {
         // change pwd
         $this->field_name('secrow',1,$change_pwd_label);
         $ch_name = $name."a";
-        $triggers  = $this->use_triggers ? AA_Jstriggers::get("input", $ch_name) : '';
+        $triggers  = $this->use_triggers_4_slice ? JsTriggers::singleton4id($this->use_triggers_4_slice)->get("input", $ch_name) : '';
         $this->echovar("<input type=\"password\" name=\"$ch_name\" size=\"$fieldsize\" maxlength=\"255\" autocomplete=\"new-password\" value=\"\" $triggers>", 'change' );
         $this->helps('plus',$change_pwd_help );
 
         // retype pwd
         $this->field_name('secrow',1,$retype_pwd_label);
         $ch_name = $name."b";
-        $triggers  = $this->use_triggers ? AA_Jstriggers::get("input", $ch_name) : '';
+        $triggers  = $this->use_triggers_4_slice ? JsTriggers::singleton4id($this->use_triggers_4_slice)->get("input", $ch_name) : '';
         $this->echovar("<input type=\"password\" name=\"$ch_name\" size=\"$fieldsize\" maxlength=\"255\" autocomplete=\"new-password\" value=\"\" $triggers>", 'retype' );
         $this->helps('plus',$retype_pwd_help );
     }
@@ -2142,7 +2143,7 @@ class AA_Inputfield {
     function inputLocalURLPick($url) {
         [$name,$val] = $this->prepareVars();
         $this->field_name('plus');
-        $triggers  = $this->use_triggers ? AA_Jstriggers::get("input", $name) : '';
+        $triggers  = $this->use_triggers_4_slice ? JsTriggers::singleton4id($this->use_triggers_4_slice)->get("input", $name) : '';
         $ret ="<input type=\"text\" name=\"$name\" size=\"60\" value=\"".myspecialchars($val)."\" $triggers>";
 
         $this->echoo('<table border="0" cellspacing="0"><tr>');

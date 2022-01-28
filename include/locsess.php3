@@ -76,20 +76,19 @@ spl_autoload_register(function ($class_name) {
         'AA_Mailman'                     => 'include/mailman.php3',
         'AA_Mysqlauth'                   => 'include/auth.php3',
         'AA_Object'                      => 'include/statestore.php3',
-        'AA_Perm'                        => 'include/perm_core.php3',
-        'AA_Permsystem_Ldap'             => 'include/perm_ldap.php3',
-        'AA_Permsystem_Sql'              => 'include/perm_sql.php3',
-        'AA_Property'                    => 'include/widget.class.php3',
-        'AA_Poll'                        => 'modules/polls/include/poll.class.php3',
-        'AA_Polls'                       => 'modules/polls/include/poll.class.php3',
-        'sitetree'                       => 'modules/site/sitetree.php3',
-        'AA_Serializable'                => 'include/statestore.php3',
-        'AA_Storable'                    => 'include/statestore.php3',
-        'FormrowWidget'                  => 'include/form.class.php3',
-        'AA_Jstriggers'                  => 'include/javascript.php3',
-        'ConvertCharset'                 => 'include/convert_charset.class.php3',
-        'Files'                          => 'include/files.class.php3',
-        'zids'                           => 'include/zids.php3'
+        'AA_Perm'            => 'include/perm_core.php3',
+        'AA_Permsystem_Ldap' => 'include/perm_ldap.php3',
+        'AA_Permsystem_Sql'  => 'include/perm_sql.php3',
+        'AA_Property'        => 'include/widget.class.php3',
+        'AA_Poll'            => 'modules/polls/include/poll.class.php3',
+        'AA_Polls'           => 'modules/polls/include/poll.class.php3',
+        'sitetree'           => 'modules/site/sitetree.php3',
+        'AA_Serializable'    => 'include/statestore.php3',
+        'AA_Storable'        => 'include/statestore.php3',
+        'FormrowWidget'      => 'include/form.class.php3',
+        'ConvertCharset'     => 'include/convert_charset.class.php3',
+        'Files'              => 'include/files.class.php3',
+        'zids'               => 'include/zids.php3'
     ];
 
     if ($PAIRS[$class_name]) {

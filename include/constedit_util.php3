@@ -32,6 +32,8 @@
  *
 */
 
+use AA\Util\JsTriggers;
+
 $hcCol = [
     "Name"  => 0,
                "Value" => 1,
@@ -91,9 +93,7 @@ function getHierConstInitJavaScript($hcid, $group_id, $levelCount=3, $formName='
  * @param  $levelNames = array() - names for the level boxes (if you don't like Level 0, Level 1, etc.)
  * @return string
  */
-function getHierConstBoxes($hcid, $levelCount, $horizontal=0, $targetBox="", $admin=true,
-    $minLevelSelect=0, $boxWidth=0, $levelNames= []) {
-
+function getHierConstBoxes($hcid, $levelCount, $horizontal=0, $targetBox="", $admin=true, $minLevelSelect=0, $boxWidth=0, $levelNames= []) {
     $admin = $admin ? 1 : 0;
     if ($boxWidth == 0) $boxWidth = $horizontal ? 30 : 70;
 
@@ -102,7 +102,7 @@ function getHierConstBoxes($hcid, $levelCount, $horizontal=0, $targetBox="", $ad
        When you add a value in a hierarchicalConstant
        it does not respond to the onChange triger on the mainbox
     */
-    $this_triggers = AA_Jstriggers::get("select", $targetBox);
+    $this_triggers = JsTriggers::getFromGlobalSliceId("select", $targetBox);
     $aa_onchange_exist = strstr($this_triggers,'aa_onChange(');
     $add_button_trigger = "";
     if( $aa_onchange_exist ){
