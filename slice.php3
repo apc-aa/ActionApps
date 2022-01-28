@@ -245,7 +245,6 @@ if (!$slice_id AND is_array($slices)) {
 // (or other variables) could contain \n. Should be fixed more generaly -
 // We will do it during rewrite AA to $_GET[] variable handling (probably)
 $slice_id   = trim($slice_id);
-require_once __DIR__."/include/javascript.php3";
 
 is_object( $db ) || ($db = getDB());
 
