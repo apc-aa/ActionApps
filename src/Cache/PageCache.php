@@ -34,7 +34,6 @@ use AA;
 use AA\IO\DB\DB_AA;
 use AA\Later\PagecachePurge;
 use AA\Later\Toexecute;
-use AA\Util\SingletonTrait;
 use Cvarset;
 use Mobile_Detect;
 
