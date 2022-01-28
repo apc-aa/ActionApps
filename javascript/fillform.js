@@ -330,9 +330,12 @@ function getControlValue(formName, controlName) {
 
 function aa_runevent(e) {
     var func = "aa_on" + e.type.charAt(0).toUpperCase() + e.type.slice(1);
-    var fld = e.target.name.match(/aa\[[^\]]*\]\[([a-z0-9_]*)\]/)[1];
+    var fld = e.target.name.match(/aa\[[^\]]*\]\[([a-z0-9_]*)\]/);
+    if( fld && (fld.length) > 0 ) {
+       fld = fld[1].replaceAll('_', '.');
+    }
     if (fld && (typeof window[func] === "function")) {
-        window[func](fld.replaceAll('_', '.')); // call aa_onChange('headline.......1') or similar standard user aa event handling function
+        window[func](fld); // call aa_onChange('headline.......1') or similar standard user aa event handling function
     }
 }
 

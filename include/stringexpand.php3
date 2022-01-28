@@ -9381,6 +9381,7 @@ class AA_Stringexpand_Generate extends AA_Stringexpand_Nevercache {
  * {require:https#://cdn.jsdelivr.net/npm/@iconfu/svg-inject@1.2.3/dist/svg-inject.min.js sha256-ri1AEoNtgONXOIJ0k7p9HoQHGq6MEDsjPPYZh7NWpu0=} - js with SRI integrity
  * {require:/js/myscript.js defer} - js with defer
  * {require:/js/myscript.js defer sha256-ri1AEoNtgONXOIJ0k7p9HoQHGq6MEDsjPPYZh7NWpu0=} - js with defer and SRI integrity
+ * {require::document.querySelector('#mydiv').innerHTML='Hi';}
  */
 class AA_Stringexpand_Require extends AA_Stringexpand {
     /** expand function
