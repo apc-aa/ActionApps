@@ -7221,8 +7221,8 @@ class AA_Stringexpand_Avatar extends AA_Stringexpand {
             return $img;
         }
         $nplus    = $title . '--';
-        $second   = strcspn($title,' -_.');
-        $initials = $nplus[0].$nplus[strlen($title)==$second ? 1 : $second+1];
+        $match    = [];
+        $initials = aa_substr($nplus,0,1). (preg_match('/.[ ._-]+([^ ._-])/u', $title, $match) ? $match[1] : aa_substr($nplus,1,1))  ;
         $color    = (crc32($name) % 8) + 1;
         return "<div class=\"dis-color$color\" title=\"$title\">$initials</div>";
     }
