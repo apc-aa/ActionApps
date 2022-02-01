@@ -410,8 +410,11 @@ class ConvertSliceEncoding extends AA\Optimize\AbstractOptimize {
         // now get also slices of possible site modules
         $slicemodules = $this->getRelatedModulesOfType($modules, 'S', 'windows-1250');
         $sitemodules  = $this->getRelatedModulesOfType($modules, 'W', 'windows-1250');
-        $allmodules   = array_merge($slicemodules, $sitemodules);
-
+        $alertmodules = $this->getRelatedModulesOfType($modules, 'Alerts', 'windows-1250');
+        $linksmodules = $this->getRelatedModulesOfType($modules, 'Links', 'windows-1250');
+        $pollsmodules = $this->getRelatedModulesOfType($modules, 'P', 'windows-1250');
+        $jumpmodules  = $this->getRelatedModulesOfType($modules, 'J', 'windows-1250');
+        $allmodules   = array_merge($slicemodules, $sitemodules, $alertmodules, $linksmodules, $pollsmodules, $jumpmodules);
 
         $SQLs = $this->getModuleUpdateSqls($allmodules);
         $SQLs = array_merge($SQLs, $this->getSliceUpdateSqls($slicemodules));
