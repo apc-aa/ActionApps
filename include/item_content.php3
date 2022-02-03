@@ -501,12 +501,12 @@ class AA_Content {
     }
 }
 
-define('ITEMCONTENT_ERROR_BAD_PARAM',   200);
-define('ITEMCONTENT_ERROR_DUPLICATE',   201);
-define('ITEMCONTENT_ERROR_NO_ID',       202);
-define('ITEMCONTENT_ERROR_NO_SLICE_ID', 203);
-define('ITEMCONTENT_ERROR_NO_PERM',     204);
-define('ITEMCONTENT_ERROR_INVALID',     205);
+const ITEMCONTENT_ERROR_BAD_PARAM   = 200;
+const ITEMCONTENT_ERROR_DUPLICATE   = 201;
+const ITEMCONTENT_ERROR_NO_ID       = 202;
+const ITEMCONTENT_ERROR_NO_SLICE_ID = 203;
+const ITEMCONTENT_ERROR_NO_PERM     = 204;
+const ITEMCONTENT_ERROR_INVALID     = 205;
 
 /**
  *  ItemContent class is an abstract data structure, used mostly for storing

@@ -25,15 +25,15 @@
  *
 */
 
-define("SHOW_FILE_SIZE",         65536);
-define("IMPORTFILE_PREVIEW_ROWS",5);
-define("IMPORTFILE_TIME_LIMIT",  6000);
+const SHOW_FILE_SIZE          = 65536;
+const IMPORTFILE_PREVIEW_ROWS = 5;
+const IMPORTFILE_TIME_LIMIT   = 6000;
 
-define("NOT_STORE",        0);
-define("STORE_WITH_NEW_ID",1);
+const NOT_STORE         = 0;
+const STORE_WITH_NEW_ID = 1;
 
-define("INSERT", 1);
-define("UPDATE", 2);
+const INSERT = 1;
+const UPDATE = 2;
 
 /** getCSV function
  * @param        $handle

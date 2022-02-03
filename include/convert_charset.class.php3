@@ -24,8 +24,8 @@
  *
 */
 
-define ('CONVERT_TABLES_DIR', __DIR__."/ConvertTables/");
-define ('DEBUG_MODE', -1);
+const CONVERT_TABLES_DIR = __DIR__ . "/ConvertTables/";
+const DEBUG_MODE         = -1;
 
 /**
  * -- You should know about... --

@@ -315,7 +315,7 @@ class AA_Module {
         return $this->getLang();
     }
 
-    static function getUsedModules() {
+    static function getUsedModules(): array {
         return array_keys(AA_Module::$_modules);
     }
 

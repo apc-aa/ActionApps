@@ -57,7 +57,7 @@
 require_once __DIR__."/../include/init_page.php3";
 require_once __DIR__."/../include/import_util.php3";
 
-define("FILE_PREFIX", 'importdata');
+const FILE_PREFIX = 'importdata';
 
 $text      = $_REQUEST['text'];
 $upfile    = $_REQUEST['upfile'];

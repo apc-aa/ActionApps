@@ -352,46 +352,46 @@ class AA_Langs {
 /** any string - used as parameter to included JS files in order browser can
  *  use newer version of JS libs. Feel free to increase it
  */
-define('AA_JS_VERSION', 10);
+const AA_JS_VERSION = 10;
 
 /** API url used for JS libs updates */
-define('JS_UPDATE_API_URL', 'https://data.jsdelivr.com/v1/package/');
+const JS_UPDATE_API_URL = 'https://data.jsdelivr.com/v1/package/';
 
 /** Standard Reader Management field IDs defined in Reader Minimal Template */
-define ("FIELDID_USERNAME",      "headline........");
-define ("FIELDID_PASSWORD",      "password........");
-define ("FIELDID_EMAIL",         "con_email.......");
-define ("FIELDID_MAIL_CONFIRMED","switch..........");
-define ("FIELDID_ACCESS_CODE",   "text...........3");
-define ("FIELDID_HOWOFTEN",      "alerts1");
-define ("FIELDID_FILTERS",       "alerts2");
-define ("FIELDID_2FA_SECRET",    "secret..........");
+const FIELDID_USERNAME       = "headline........";
+const FIELDID_PASSWORD       = "password........";
+const FIELDID_EMAIL          = "con_email.......";
+const FIELDID_MAIL_CONFIRMED = "switch..........";
+const FIELDID_ACCESS_CODE    = "text...........3";
+const FIELDID_HOWOFTEN       = "alerts1";
+const FIELDID_FILTERS        = "alerts2";
+const FIELDID_2FA_SECRET     = "secret..........";
 
 /** field id for slice-defined fields  */
-define ("FIELDID_DYNAMIC_ID",    "source..........");
+const FIELDID_DYNAMIC_ID = "source..........";
 
 /** Number of items in editor window */
-define("EDIT_ITEM_COUNT", 20);
+const EDIT_ITEM_COUNT = 20;
 
 /** Constant used in QueryZids() - defines time steps in query (seconds). We do
  *  not want to ask database with current timestamp, because then each query is
  *  completely different and MySQL can't use its cache.
  */
-define("QUERY_DATE_STEP", 1000);
+const QUERY_DATE_STEP = 1000;
 
-define("ANONYMOUS_EDIT_NOT_ALLOWED", 0);
-define("ANONYMOUS_EDIT_ALL", 1);
-define("ANONYMOUS_EDIT_ONLY_ANONYMOUS", 2);
-define("ANONYMOUS_EDIT_NOT_EDITED_IN_AA", 3);
-define("ANONYMOUS_EDIT_PASSWORD", 4);
-define("ANONYMOUS_EDIT_HTTP_AUTH", 5);
-define("ANONYMOUS_EDIT_CRON", 6);
+const ANONYMOUS_EDIT_NOT_ALLOWED      = 0;
+const ANONYMOUS_EDIT_ALL              = 1;
+const ANONYMOUS_EDIT_ONLY_ANONYMOUS   = 2;
+const ANONYMOUS_EDIT_NOT_EDITED_IN_AA = 3;
+const ANONYMOUS_EDIT_PASSWORD         = 4;
+const ANONYMOUS_EDIT_HTTP_AUTH        = 5;
+const ANONYMOUS_EDIT_CRON             = 6;
 
 // MAX_NO_OF_ITEMS_4_GROUP is used with group_n slice.php3 parameter and
 // specifies how many items from the begining we have to search
-define( 'MAX_NO_OF_ITEMS_4_GROUP', 1000 );
+const MAX_NO_OF_ITEMS_4_GROUP = 1000;
 
-define('NO_PICTURE_URL', AA_INSTAL_URL.'images/blank.gif');
+const NO_PICTURE_URL = AA_INSTAL_URL . 'images/blank.gif';
 
 function GetConstantFields() {  // function - we need translate _m() on use (not at include time)
     return [
@@ -409,39 +409,39 @@ function GetConstantFields() {  // function - we need translate _m() on use (not
 }
 
 /** content table flags */
-define( "FLAG_HTML",         1 );   // content is in HTML
-define( "FLAG_FEED",         2 );   // item is fed
-define( "FLAG_FREEZE",       4 );   // content can't be changed
-define( "FLAG_OFFLINE",      8 );   // off-line filled
-define( "FLAG_UPDATE",      16 );   // content should be updated if source is changed (after feeding)
-define( "FLAG_TEXT_STORED", 64 );   // value is stored in the text field (and not number field of content table) (added 05/15/2004)
+const FLAG_HTML        = 1;   // content is in HTML
+const FLAG_FEED        = 2;   // item is fed
+const FLAG_FREEZE      = 4;   // content can't be changed
+const FLAG_OFFLINE     = 8;   // off-line filled
+const FLAG_UPDATE      = 16;   // content should be updated if source is changed (after feeding)
+const FLAG_TEXT_STORED = 64;   // value is stored in the text field (and not number field of content table) (added 05/15/2004)
 
 /** item table flags (numbers - just to be compatible with content table) */
-define( "ITEM_FLAG_FEED",                2 );   // item is fed
-define( "ITEM_FLAG_OFFLINE",             8 );   // off-line filled or imported from file
-define( "ITEM_FLAG_ANONYMOUS_EDITABLE", 32);    // anonymously added and thus anonymously editable (reset on every use of itemedit.php3)
+const ITEM_FLAG_FEED               = 2;   // item is fed
+const ITEM_FLAG_OFFLINE            = 8;   // off-line filled or imported from file
+const ITEM_FLAG_ANONYMOUS_EDITABLE = 32;    // anonymously added and thus anonymously editable (reset on every use of itemedit.php3)
 
 /** states of feed field of field table */
-define( "STATE_FEEDABLE",              0 );
-define( "STATE_UNFEEDABLE",            1 );
-define( "STATE_FEEDNOCHANGE",          2 );
-define( "STATE_FEEDABLE_UPDATE",       3);
-define( "STATE_FEEDABLE_UPDATE_LOCKED",4);
+const STATE_FEEDABLE               = 0;
+const STATE_UNFEEDABLE             = 1;
+const STATE_FEEDNOCHANGE           = 2;
+const STATE_FEEDABLE_UPDATE        = 3;
+const STATE_FEEDABLE_UPDATE_LOCKED = 4;
 
 /** bites of content_edit field of field table */
-define( "FIELD_UNREADABLE",            1 );
+const FIELD_UNREADABLE = 1;
 // define( "FIELD_..",                 2 );
 // define( "FIELD_..",                 4 );
 
 /** relation table flags */
-define( "REL_FLAG_MODULE_DEPEND", 1 );  // specifies dependency between site modue and used slices
-define( "REL_FLAG_FEED",          2 );  // item is fed using AA feeding (value 2 - compatible with content table)
-define( "REL_FLAG_SOURCE",        4 );  // item is derived from other item ({newitem }, ...)
+const REL_FLAG_MODULE_DEPEND = 1;  // specifies dependency between site modue and used slices
+const REL_FLAG_FEED          = 2;  // item is fed using AA feeding (value 2 - compatible with content table)
+const REL_FLAG_SOURCE        = 4;  // item is derived from other item ({newitem }, ...)
 
 /** view table flags */
-define( "VIEW_FLAG_COMMENTS", 1 );    // display HTML comments before and after the view
-define( "VIEW_FLAG_LOG", 2 );         // write every use to database
-define( "VIEW_FLAG_DISABLE", 4 );     // view is disabled - no content showed
+const VIEW_FLAG_COMMENTS         = 1;    // display HTML comments before and after the view
+const VIEW_FLAG_LOG              = 2;         // write every use to database
+const VIEW_FLAG_DISABLE          = 4;     // view is disabled - no content showed
 
 
 /** inputFeedModes function
@@ -1046,55 +1046,55 @@ function getViewTypesInfo() {
 }
 
 /** flag in the feedmap table */
-define ('FEEDMAP_FLAG_MAP',    0);
-define ('FEEDMAP_FLAG_VALUE',  1);
-define ('FEEDMAP_FLAG_EMPTY',  2);
-define ('FEEDMAP_FLAG_EXTMAP', 3);
-define ('FEEDMAP_FLAG_JOIN',   4);
-define ('FEEDMAP_FLAG_RSS',    5);
+const FEEDMAP_FLAG_MAP    = 0;
+const FEEDMAP_FLAG_VALUE  = 1;
+const FEEDMAP_FLAG_EMPTY  = 2;
+const FEEDMAP_FLAG_EXTMAP = 3;
+const FEEDMAP_FLAG_JOIN   = 4;
+const FEEDMAP_FLAG_RSS    = 5;
 
 /** flag in the slice table */
-define ('DISCUS_HTML_FORMAT',  1);  // discussion html format flag in slice table
-define ('DISCUS_ADD_DISABLED', 2);  // disbles filldisc adding on new comments
-define ('SLICE_ALLOW_EXPIRED_CONTENT', 4);  // when we reference expired item, the content could be shown on public pages
-define ('SLICE_ALLOW_PENDING_CONTENT', 8);  // pending items, when referenced, will be wisible - this allows you also to see preview of pending item
+const DISCUS_HTML_FORMAT          = 1;  // discussion html format flag in slice table
+const DISCUS_ADD_DISABLED         = 2;  // disbles filldisc adding on new comments
+const SLICE_ALLOW_EXPIRED_CONTENT = 4;  // when we reference expired item, the content could be shown on public pages
+const SLICE_ALLOW_PENDING_CONTENT = 8;  // pending items, when referenced, will be wisible - this allows you also to see preview of pending item
 
 // used in add slice wizard
-define ("NOT_EMAIL_WELCOME", -1);
+const NOT_EMAIL_WELCOME = -1;
 
 // CountHit probability: how offen check, if the hit counter is planed
-define ("COUNTHIT_PROBABILITY", 10);
+const COUNTHIT_PROBABILITY = 10;
 
 // AA\Later\PagecachePurge probability: how offen remove old entries from pagecache table
-define ("PAGECACHEPURGE_PROBABILITY", 1000); // each 1000-th pagecache store event
+const PAGECACHEPURGE_PROBABILITY = 1000; // each 1000-th pagecache store event
 
 // how much links check in one run (for links module link checker)
-define ("LINKS_VALIDATION_COUNT", 100);
+const LINKS_VALIDATION_COUNT = 100;
 
 /** constants for manager class used in $manager->show */
-define("MGR_ITEMS",          1);  // 1 reserved - used to pass 'show' minimal (0 means default)
-define("MGR_ACTIONS",        2);  // show actions
-define("MGR_SB_SEARCHROWS",  4);  // show search rows in searchbar
-define("MGR_SB_ORDERROWS",   8);  // show order rows in searchbar
-define("MGR_SB_BOOKMARKS",  16);  // show bookmarks in searchbar
-define("MGR_SB_ALLTEXT"  ,  32);  // show '-- any text field --' option in search fieds
-define("MGR_SB_ALLNUM"   ,  64);  // show '-- any numeric field --' option in search fieds
-define("MGR_ALL",          127);  // show all
+const MGR_ITEMS         = 1;  // 1 reserved - used to pass 'show' minimal (0 means default)
+const MGR_ACTIONS       = 2;  // show actions
+const MGR_SB_SEARCHROWS = 4;  // show search rows in searchbar
+const MGR_SB_ORDERROWS  = 8;  // show order rows in searchbar
+const MGR_SB_BOOKMARKS  = 16;  // show bookmarks in searchbar
+const MGR_SB_ALLTEXT    = 32;  // show '-- any text field --' option in search fieds
+const MGR_SB_ALLNUM     = 64;  // show '-- any numeric field --' option in search fieds
+const MGR_ALL           = 127;  // show all
 
 /** constants for bins, used in new QueryZIDS function */
-define("AA_BIN_ACTIVE",   1);
-define("AA_BIN_PENDING",  2);
-define('AA_BIN_ACT_PEND', AA_BIN_ACTIVE|AA_BIN_PENDING );
-define("AA_BIN_EXPIRED",  4);
-define("AA_BIN_APPROVED", 7);   // AA_BIN_ACTIVE|AA_BIN_PENDING|AA_BIN_EXPIRED
-define("AA_BIN_HOLDING",  8);
-define("AA_BIN_TRASH",   16);
-define("AA_BIN_ALL",     31);   // all bins (AA_BIN_ACTIVE|AA_BIN_PENDING|...)
+const AA_BIN_ACTIVE   = 1;
+const AA_BIN_PENDING  = 2;
+const AA_BIN_ACT_PEND = AA_BIN_ACTIVE | AA_BIN_PENDING;
+const AA_BIN_EXPIRED  = 4;
+const AA_BIN_APPROVED = 7;   // AA_BIN_ACTIVE|AA_BIN_PENDING|AA_BIN_EXPIRED
+const AA_BIN_HOLDING  = 8;
+const AA_BIN_TRASH    = 16;
+const AA_BIN_ALL      = 31;   // all bins (AA_BIN_ACTIVE|AA_BIN_PENDING|...)
 
 /** status codes - in itemContent */
-define("SC_ACTIVE",      1);
-define("SC_HOLDING_BIN", 2);
-define("SC_NO_BIN",      4);
+const SC_ACTIVE      = 1;
+const SC_HOLDING_BIN = 2;
+const SC_NO_BIN      = 4;
 
 /** getFilemanAccesses function
  * @return array

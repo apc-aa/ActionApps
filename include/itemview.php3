@@ -614,10 +614,10 @@ class itemview {
             if (!$GLOBALS['QueryIDsPageIndex'])      { $GLOBALS['QueryIDsPageIndex']      = []; }
             if (!$GLOBALS['QueryIDsGroupIndex'])     { $GLOBALS['QueryIDsGroupIndex']     = []; }
             if (!$GLOBALS['QueryIDsItemGroupIndex']) { $GLOBALS['QueryIDsItemGroupIndex'] = []; }
-            array_push($GLOBALS['QueryIDsIndex'],         $zidx);          // So that _#ITEMINDX = f_e:itemindex can find it
-            array_push($GLOBALS['QueryIDsPageIndex'],     $i);             // So that _#PAGEINDX = f_e:pageindex can find it
-            array_push($GLOBALS['QueryIDsGroupIndex'],    $group_index);   // So that _#GRP_INDX = f_e:groupindex can find it
-            array_push($GLOBALS['QueryIDsItemGroupIndex'],$ingroup_index); // So that _#IGRPINDX = f_e:itemgroupindex can find it
+            $GLOBALS['QueryIDsIndex'][]          = $zidx;          // So that _#ITEMINDX = f_e:itemindex can find it
+            $GLOBALS['QueryIDsPageIndex'][]      = $i;             // So that _#PAGEINDX = f_e:pageindex can find it
+            $GLOBALS['QueryIDsGroupIndex'][]     = $group_index;   // So that _#GRP_INDX = f_e:groupindex can find it
+            $GLOBALS['QueryIDsItemGroupIndex'][] = $ingroup_index; // So that _#IGRPINDX = f_e:itemgroupindex can find it
 
             $iid = $this->zids->short_or_longids($zidx);
             if ( !$iid ) {
@@ -725,10 +725,10 @@ class itemview {
             $last_gi  = array_pop($GLOBALS['QueryIDsGroupIndex']);
             $last_igi = array_pop($GLOBALS['QueryIDsItemGroupIndex']);
         }
-        array_push($GLOBALS['QueryIDsIndex'],         $last_ii );  // So that _#ITEMINDX = f_e:itemindex can find it
-        array_push($GLOBALS['QueryIDsPageIndex'],     $last_pi );  // So that _#PAGEINDX = f_e:pageindex can find it
-        array_push($GLOBALS['QueryIDsGroupIndex'],    $last_gi );  // So that _#GRP_INDX = f_e:groupindex can find it
-        array_push($GLOBALS['QueryIDsItemGroupIndex'],$last_igi);  // So that _#IGRPINDX = f_e:itemgroupindex can find it
+          $GLOBALS['QueryIDsIndex'][]          = $last_ii;  // So that _#ITEMINDX = f_e:itemindex can find it
+          $GLOBALS['QueryIDsPageIndex'][]      = $last_pi;  // So that _#PAGEINDX = f_e:pageindex can find it
+          $GLOBALS['QueryIDsGroupIndex'][]     = $last_gi;  // So that _#GRP_INDX = f_e:groupindex can find it
+          $GLOBALS['QueryIDsItemGroupIndex'][] = $last_igi;  // So that _#IGRPINDX = f_e:itemgroupindex can find it
         if ($category_top_html_printed) {
             $out .= $this->unaliasWithScroller($this->slice_info['category_bottom'], $CurItem);
         }

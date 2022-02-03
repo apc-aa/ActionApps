@@ -27,19 +27,19 @@
  *
 */
 
-DEFINE('FILE_ERROR_NO_SOURCE',        100);
-define('FILE_ERROR_COPY_FAILED',      101);
-define('FILE_ERROR_DST_DIR_FAILED',   102);
-define('FILE_ERROR_NOT_UPLOADED',     104);
-define('FILE_ERROR_TYPE_NOT_ALLOWED', 105); // type of uploaded file not allowed
-define('FILE_ERROR_DIR_CREATE',       106); // can't create directory for image uploads
-define('FILE_ERROR_CHMOD',            107);
-define('FILE_ERROR_WRITE',            108);
-define('FILE_ERROR_NO_DESTINATION',   109);
-define('FILE_ERROR_READ',             110);
-define('FILE_COPY_OK',                199);
+const FILE_ERROR_NO_SOURCE        = 100;
+const FILE_ERROR_COPY_FAILED      = 101;
+const FILE_ERROR_DST_DIR_FAILED   = 102;
+const FILE_ERROR_NOT_UPLOADED     = 104;
+const FILE_ERROR_TYPE_NOT_ALLOWED = 105; // type of uploaded file not allowed
+const FILE_ERROR_DIR_CREATE       = 106; // can't create directory for image uploads
+const FILE_ERROR_CHMOD            = 107;
+const FILE_ERROR_WRITE            = 108;
+const FILE_ERROR_NO_DESTINATION   = 109;
+const FILE_ERROR_READ             = 110;
+const FILE_COPY_OK                = 199;
 
-define('AA_DIRECTORY_WRAPPER_ERROR_NOT_DIR', 150);
+const AA_DIRECTORY_WRAPPER_ERROR_NOT_DIR = 150;
 
 
 class Files {

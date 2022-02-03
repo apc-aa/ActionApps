@@ -46,8 +46,8 @@ require_once __DIR__."/validate.php3";
 // IsUserNameFree() function definition here
 require_once __DIR__."/perm_" . PERM_LIB . ".php3";
 
-define('AA_WIDTHTOR', '<option value="wIdThTor"> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </option>');
-define('AA_WIDTHTOR_SHORT', '<option value="wIdThTor">&nbsp;</option>');
+const AA_WIDTHTOR       = '<option value="wIdThTor"> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </option>';
+const AA_WIDTHTOR_SHORT = '<option value="wIdThTor">&nbsp;</option>';
 
 // Deprecated GYR tagged ids - it adds letter before item id in related item, which is not practical for joined tables, ...
     // Easy to redefine this functionality by changing the array below
@@ -407,7 +407,7 @@ class inputform {
 
         $jscode = $this->js_proove_fields;
 
-        // field javascript feature - triggers (see /include/javascript.php3)
+        // field javascript feature - triggers see JsTriggers class
         $jscode .= $jsTriggers->getJavascriptAndRegisterRequires();
 
         $retval .= getFrmJavascript( $jscode );

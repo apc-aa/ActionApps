@@ -140,9 +140,9 @@ class xml_unserializer {
         if ($this->debug) {
             huhl("\n:start='".$name."'",$attrs,$this);
         }
-        array_push($this->stack,$this->top);
-        array_push($this->namestack,$this->name);
-        array_push($this->codingstack,$this->coding);
+        $this->stack[]       = $this->top;
+        $this->namestack[]   = $this->name;
+        $this->codingstack[] = $this->coding;
         if ($attrs["CODING"]) {
             $this->coding = $attrs["CODING"];
             unset($attrs["CODING"]);

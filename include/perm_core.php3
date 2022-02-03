@@ -33,81 +33,81 @@
 
 use AA\IO\DB\DB_AA;
 
-define("MAX_GROUPS_DEEP", 16);   // Maximum number of nested groups (user belongs to group1, group1 to group2 ...)
-define("MAX_ENTRIES_SHOWN",10);   // Maximum number of shown users in search for users/groups
+const MAX_GROUPS_DEEP   = 16;   // Maximum number of nested groups (user belongs to group1, group1 to group2 ...)
+const MAX_ENTRIES_SHOWN = 10;   // Maximum number of shown users in search for users/groups
 
 // permission letter definition
 //---------- Slice -----------------
 // author        - possibly letters 'abcdefg'
-define("PS_EDIT_SELF_ITEMS",      "a");   // slice | change self-written items
-define("PS_EDIT_SELF_USER_DATA",  "b");   // slice | change data for current user self-written items
+const PS_EDIT_SELF_ITEMS     = "a";   // slice | change self-written items
+const PS_EDIT_SELF_USER_DATA = "b";   // slice | change data for current user self-written items
 // editor        - possibly letters 'hijklmnopqrs'
-define("PS_ITEMS2ACT",            "h");   // slice | move item to approved bin
-define("PS_ITEMS2HOLD",           "i");   // slice | move item to holding bin
-define("PS_ITEMS2TRASH",          "j");   // slice | move item to trash bin
-define("PS_EDIT_ALL_ITEMS",       "k");   // slice | change all items
-define("PS_DELETE_ITEMS",         "l");   // slice | delete items
+const PS_ITEMS2ACT           = "h";   // slice | move item to approved bin
+const PS_ITEMS2HOLD          = "i";   // slice | move item to holding bin
+const PS_ITEMS2TRASH         = "j";   // slice | move item to trash bin
+const PS_EDIT_ALL_ITEMS      = "k";   // slice | change all items
+const PS_DELETE_ITEMS        = "l";   // slice | delete items
 // administrator - possibly letters 'ABCDEFGHIJKLMNOP'
-define("PS_EDIT",                 "A");   // slice | set slice properties
-define("PS_CATEGORYxxx",          "B");   // slice | change slice categories - now free (not used - you can rename it - honza 2009-11-3)
-define("PS_FIELDS",               "C");   // slice | edit fields defaults
-define("PS_BOOKMARK",             "D");   // slice | change search form settings
-define("PS_USERS",                "E");   // slice | manage users (change perms
-                                          //         to slice, set profile)
-define("PS_COMPACT",              "F");   // slice | change slice compact view
-define("PS_FULLTEXT",             "G");   // slice | change item fulltext view
-define("PS_FEEDING",              "H");   // slice | change properties
-define("PS_ADD_USER",             "I");   // slice | add existing user to slice
-define("PS_CONFIG",               "J");   // slice | configure slice (show/hide columns in admin interface)
-define("PS_FORMS",                "K");   // slice | edit forms
+const PS_EDIT                = "A";   // slice | set slice properties
+const PS_CATEGORYxxx         = "B";   // slice | change slice categories - now free (not used - you can rename it - honza 2009-11-3)
+const PS_FIELDS              = "C";   // slice | edit fields defaults
+const PS_BOOKMARK            = "D";   // slice | change search form settings
+const PS_USERS               = "E";   // slice | manage users (change perms
+//         to slice, set profile)
+const PS_COMPACT             = "F";   // slice | change slice compact view
+const PS_FULLTEXT            = "G";   // slice | change item fulltext view
+const PS_FEEDING             = "H";   // slice | change properties
+const PS_ADD_USER            = "I";   // slice | add existing user to slice
+const PS_CONFIG              = "J";   // slice | configure slice (show/hide columns in admin interface)
+const PS_FORMS               = "K";   // slice | edit forms
 
 // super         - possibly letters 'QRSTUVW'
-define("PS_ADD",                  "Q");   // aa    | add slice
-define("PS_NEW_USER",             "R");   // aa    | create new user
-define("PS_MANAGE_ALL_SLICES",    "S");   // aa    | edit all slices (this
-                                          //         permission is usable, when
-                                          //         you want credit some rights
-define("PS_HISTORY",              "T");   // slice | access history log
+const PS_ADD                 = "Q";   // aa    | add slice
+const PS_NEW_USER            = "R";   // aa    | create new user
+const PS_MANAGE_ALL_SLICES   = "S";   // aa    | edit all slices (this
+//         permission is usable, when
+//         you want credit some rights
+const PS_HISTORY             = "T";   // slice | access history log
 
 //---------- Polls -----------------
 // author        - possibly letters 'abcdefg'
-define("PS_MODP_ADD_POLL",        "a");   // slice | add poll
+const PS_MODP_ADD_POLL       = "a";   // slice | add poll
 // editor        - possibly letters 'hijklmnopqrs'
-define("PS_MODP_POLLS2ACT",       "h");   // slice | move poll to approved bin
-define("PS_MODP_POLLS2HOLD",      "i");   // slice | move poll to holding bin
-define("PS_MODP_POLLS2TRASH",     "j");   // slice | move poll to trash bin
-define("PS_MODP_EDIT_POLLS",      "k");   // slice |
-define("PS_MODP_DELETE_POLLS",    "l");   // slice | delete poll
+const PS_MODP_POLLS2ACT      = "h";   // slice | move poll to approved bin
+const PS_MODP_POLLS2HOLD     = "i";   // slice | move poll to holding bin
+const PS_MODP_POLLS2TRASH    = "j";   // slice | move poll to trash bin
+const PS_MODP_EDIT_POLLS     = "k";   // slice |
+const PS_MODP_DELETE_POLLS   = "l";   // slice | delete poll
 // administrator - possibly letters 'ABCDEFGHIJKLMNOP'
-define("PS_MODP_SETTINGS",        "A");   // slice | set polls properties
-define("PS_MODP_EDIT_DESIGN",     "B");   // slice | change polls design
+const PS_MODP_SETTINGS       = "A";   // slice | set polls properties
+const PS_MODP_EDIT_DESIGN    = "B";   // slice | change polls design
 // super         - possibly letters 'QRSTUVW'
 
 //---------- Links -----------------
 // author        - possibly letters 'abcdefg'
-define("PS_LINKS_INHERIT",        "a");   // slice | user have also the rights to subcategories
+const PS_LINKS_INHERIT = "a";   // slice | user have also the rights to subcategories
 // editor        - possibly letters 'hijklmnopqrs'
-define("PS_LINKS_CHECK_LINK",     "h");   // slice | check link
-define("PS_LINKS_HIGHLIGHT_LINK", "i");   // slice | highlight/de-highlight link
-define("PS_LINKS_DELETE_LINK",    "j");   // slice | move link to trash bin
-define("PS_LINKS_EDIT_CATEGORY",  "k");   // slice |
-define("PS_LINKS_EDIT_LINKS",     "l");   // slice | edit links
-define("PS_LINKS_ADD_SUBCATEGORY","m");   // slice | add subcategory to category
-define("PS_LINKS_DEL_SUBCATEGORY","n");   // slice | delete subcategory from category
-define("PS_LINKS_ADD_LINK",       "o");   // slice | add new link
-define("PS_LINKS_LINK2FOLDER",    "p");
-define("PS_LINKS_LINK2ACT",       "q");
+const PS_LINKS_CHECK_LINK      = "h";   // slice | check link
+const PS_LINKS_HIGHLIGHT_LINK  = "i";   // slice | highlight/de-highlight link
+const PS_LINKS_DELETE_LINK     = "j";   // slice | move link to trash bin
+const PS_LINKS_EDIT_CATEGORY   = "k";   // slice |
+const PS_LINKS_EDIT_LINKS      = "l";   // slice | edit links
+const PS_LINKS_ADD_SUBCATEGORY = "m";   // slice | add subcategory to category
+const PS_LINKS_DEL_SUBCATEGORY = "n";   // slice | delete subcategory from category
+const PS_LINKS_ADD_LINK        = "o";   // slice | add new link
+const PS_LINKS_LINK2FOLDER     = "p";
+const PS_LINKS_LINK2ACT        = "q";
 // administrator - possibly letters 'ABCDEFGHIJKLMNOP'
-define("PS_LINKS_SETTINGS",       "A");
-define("PS_LINKS_EDIT_DESIGN",    "B");
+const PS_LINKS_SETTINGS        = "A";
+const PS_LINKS_EDIT_DESIGN     = "B";
 // super         - possibly letters 'QRSTUVW'
 
 //---------- Site -----------------
 // author        - possibly letters 'abcdefg'
 // editor        - possibly letters 'hijklmnopqrs'
-define("PS_MODW_EDIT_CODE", "h");         //
+const PS_MODW_EDIT_CODE        = "h";         //
 // administrator - possibly letters 'ABCDEFGHIJKLMNOP'
-define("PS_MODW_SETTINGS",  "A");         //       | set site module properties
+const PS_MODW_SETTINGS         = "A";         //       | set site module properties
 // super         - possibly letters 'QRSTUVW'
 
 

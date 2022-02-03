@@ -293,7 +293,7 @@ if ($fview || $iview) {
         }
     }
 }
-define("DEFAULT_CODEPAGE","windows-1250");
+const DEFAULT_CODEPAGE = "windows-1250";
 
 if (!$encap) {
     Page_HTML_Begin($slice_info['name']);

@@ -50,18 +50,18 @@ function ValidateInput($variableName, $inputName, $variable, &$err, $needed=fals
     return $valid;
 }
 
-define('VALIDATE_ERROR_BAD_TYPE',         400);
-define('VALIDATE_ERROR_BAD_VALIDATOR',    401);
-define('VALIDATE_ERROR_OUT_OF_RANGE',     402);
-define('VALIDATE_ERROR_NOT_MATCH',        403);
-define('VALIDATE_ERROR_BAD_PARAMETER',    404);
-define('VALIDATE_ERROR_NOT_UNIQUE',       405);
-define('VALIDATE_ERROR_TOO_LONG',         406);
-define('VALIDATE_ERROR_TOO_SHORT',        407);
-define('VALIDATE_ERROR_WRONG_CHARACTERS', 408);
-define('VALIDATE_ERROR_NOT_IN_LIST',      409);
+const VALIDATE_ERROR_BAD_TYPE         = 400;
+const VALIDATE_ERROR_BAD_VALIDATOR    = 401;
+const VALIDATE_ERROR_OUT_OF_RANGE     = 402;
+const VALIDATE_ERROR_NOT_MATCH        = 403;
+const VALIDATE_ERROR_BAD_PARAMETER    = 404;
+const VALIDATE_ERROR_NOT_UNIQUE       = 405;
+const VALIDATE_ERROR_TOO_LONG         = 406;
+const VALIDATE_ERROR_TOO_SHORT        = 407;
+const VALIDATE_ERROR_WRONG_CHARACTERS = 408;
+const VALIDATE_ERROR_NOT_IN_LIST      = 409;
 
-define('VALIDATE_ERROR_NOT_FILLED',       410);
+const VALIDATE_ERROR_NOT_FILLED = 410;
 
 /** AA user input validation class
  *  usage (for standard validators):

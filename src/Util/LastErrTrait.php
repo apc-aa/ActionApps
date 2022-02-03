@@ -3,19 +3,23 @@
 
 namespace AA\Util;
 
-
 trait LastErrTrait {
 
     /** lastErrMsg function
      * @return string - last error message - it is grabbed from static variable
      *  of lastErr() method */
-    public static function lastErrMsg() {
+    public static function lastErrMsg(): string {
         return self::lastErr(null, null, true);
     }
 
     /** lastErr function
      *  Method returns or sets last itemContent error
      *  The trick for static class variables is used
+     *  Use as:
+     *    MyClass::lastErr(NO_SLICE_ID, _m(|"No Slice Id specified"));   // set error code
+     *    MyClass::lastErr();      // get last Error ID (int)
+     *    MyClass::lastErrMsg();   // get last Error Message (string)
+     *
      * @param int    $err_id
      * @param string $err_msg
      * @param bool   $getmsg

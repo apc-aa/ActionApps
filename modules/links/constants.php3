@@ -29,13 +29,13 @@ https://www.apc.org/
 */
 
 /** Number of categories to show on linkedit page */
-define('CATEGORIES_COUNT_TO_MANAGE', 15);
+const CATEGORIES_COUNT_TO_MANAGE = 15;
 
 /** Category group used for special link field 'type' */
 $LINK_TYPE_CONSTANTS = 'Ekolink_obecne_k';
 
-define('LINKS_BASE_CAT','y');
-define('LINKS_NOT_BASE_CAT','n');
+const LINKS_BASE_CAT     = 'y';
+const LINKS_NOT_BASE_CAT = 'n';
 
 /** List of fields, which will be listed in searchbar in Links Manager (search)
  *  (modules/links/index.php3)

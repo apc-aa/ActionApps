@@ -46,12 +46,12 @@ $mlxScriptsTable = [
     the field type in the Control Slice whose name sets the
     field in the item in Content Slice that links to the Control Item **/
 //define ('MLX_ITEM2MLX_FIELD','lang_code.......');
-define ('MLX_CTRLIDFIELD','mlxctrl.........');
+const MLX_CTRLIDFIELD = 'mlxctrl.........';
 
 
 /** what field type stores <lang> => <item id> info
    ('text' means anything beginning with 'mlxctrl' **/
-define ('MLX_LANG2ID_TYPE','mlxctrl');
+const MLX_LANG2ID_TYPE = 'mlxctrl';
 
 /** the following settings are for debugging, performance
     you can overwrite them in your config.php3
@@ -104,7 +104,7 @@ define ('MLX_HTML_TABFT',"\n"
 ."  </td>\n"
 ."</tr>\n");
 
-define('MLX_NOTRANSLATION','eMpTy');
+const MLX_NOTRANSLATION = 'eMpTy';
 /** __mlx_dbg function
  * @param $v
  * @param $label

@@ -29,16 +29,16 @@ require_once __DIR__."/searchlib.php3";
 require_once __DIR__."/itemview.php3";
 require_once __DIR__."/item.php3";
 
-define("HTML", 0);
-define("PLAIN",1);
+const HTML  = 0;
+const PLAIN = 1;
 
-define("FEEDTYPE_RSS",  1);
-define("FEEDTYPE_APC",  2);
-define("FEEDTYPE_EXACT",3);
+const FEEDTYPE_RSS   = 1;
+const FEEDTYPE_APC   = 2;
+const FEEDTYPE_EXACT = 3;
 
 // server module's error message
-define("ERR_NO_SLICE","Error 1");
-define("ERR_PASSWORD","Error 2");
+const ERR_NO_SLICE = "Error 1";
+const ERR_PASSWORD = "Error 2";
 
 define( 'UNPACKED_AA_THE_SAME_CATE', unpack_id('AA_The_Same_Cate') );
 define( 'UNPACKED_AA_OTHER_CATEGOR', unpack_id('AA_Other_Categor') );

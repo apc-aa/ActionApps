@@ -916,7 +916,7 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
     }
 
 
-    AA::$debug&32 && AA::$dbg->traceend('GetItemContent', $content);
+    AA::$debug&32 && AA::$dbg->traceend('GetItemContent', count($content));
 
     // $use_short_ids && AA_Log::warn('use_short_ids');
 
@@ -1151,7 +1151,9 @@ function HtmlPageEnd() {
         echo '<br>Page generation time: '. timestartdiff();
         echo '<br>Dababase instances: '. DB_AA::$_instances_no;
         echo '<br>  (spareDBs): '. count($spareDBs);
-        echo '<br>UsedModules:<br> - '. join('<br> - ', array_map(function($mid) {return AA_Module::getModuleName($mid);}, $slices4cache));
+        if ($slices4cache) {
+            echo '<br>UsedModules:<br> - ' . join('<br> - ', array_map(function ($mid) { return AA_Module::getModuleName($mid); }, $slices4cache));
+        }
         AA::$dbg->duration_stat();
     }
 
@@ -1912,6 +1914,15 @@ function aa_trim(string $string='', string $chars=''): string {
     return (empty($chars) and AA_Langs::isUTF()) ? preg_replace("/^\s+|\s+$/u", "", $string) : trim($string, $chars);
     // trim($string, " \t\n\r\0\x0B\xA0");  // standard + chr(160) - hard space   // does not work for UTF characters - the hardspace \xA0 can break some UTF chars - "MŠ" for example
 }
+
+/** alternative to stripslashes - it do not remove slashes not added by addslashes - 'x\y' --> 'x\y'
+ *
+ */
+function reverse_addslashes($string): string {
+    return strtr(["\\'" => "'", '\"' => '"', '\\\\' => '\\', "\\\0" => "\0"], $string);
+}
+
+
 
 /** Get Authorization Header
  * @return string

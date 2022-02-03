@@ -198,12 +198,12 @@ class AA_Debug {
 
     // we return true, just to be able to write:
     //   AA::$debug&2 && AA::$dbg->info("OK") && exit;
-    function log()      {$v=func_get_args(); $this->_do('log',     $v); return true;}
-    function info()     {$v=func_get_args(); $this->_do('info',    $v); return true;}
-    function warn()     {$v=func_get_args(); $this->tracepoint('warn',    $v[0]); $this->_do('warn',    $v); return true;}
-    function error()    {$v=func_get_args(); $this->tracepoint('error',   $v[0]); $this->_do('error',   $v); return true;}
+    function log(...$v): bool { $this->_do('log',     $v); return true;}
+    function info(...$v): bool { $this->_do('info',    $v); return true;}
+    function warn(...$v): bool { $this->tracepoint('warn', $v[0]); $this->_do('warn',    $v); return true;}
+    function error(...$v): bool { $this->tracepoint('error', $v[0]); $this->_do('error',   $v); return true;}
 
-    function group(...$v)    {
+    function group(...$v): bool {
         $group = array_shift($v);
         $this->_starttime[$group] = microtime(true);
         $this->_groupstart($group);
@@ -211,7 +211,7 @@ class AA_Debug {
         return true;
     }
 
-    function groupend(...$v) {
+    function groupend(...$v): bool {
         $group = array_shift($v);
         $this->_do('log', $v);
         $this->_logtime($group);
@@ -229,7 +229,7 @@ class AA_Debug {
         $this->_tracestack[] = count($this->_calls)-1;
     }
 
-    function traceend($func, $text='') {
+    function traceend(string $func, string $text='') {
         $time = microtime(true);
         $indx = array_pop($this->_tracestack);
         array_push($this->_calls[$indx], $time, substr($text,0,20), strlen($text));
@@ -449,12 +449,12 @@ function getDB() {
     }
     return $db;
 }
+
 /** freeDB function
  * @param $db
  */
 function freeDB($db) {
-    global $spareDBs;
-    array_push($spareDBs,$db);
+    $GLOBALS['spareDBs'][] = $db;
 }
 
 /** @deprecated GetTable2Array function
