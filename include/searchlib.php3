@@ -30,7 +30,7 @@ require_once __DIR__."/sql_parser.php3";
 require_once __DIR__."/zids.php3";
 
 //define('AA_REGEXP_MAIL', '[a-z0-9!#$%&1*+/=?^_`{|}~-]+(?:.[a-z0-9!#$%&1*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?.)+(?:[A-Z]{2}|com|org|net|edu|gov|mil|biz|info|mobi|name|aero|asia|jobs|museum)');
-define('AA_REGEXP_MAIL', '(?:[a-z0-9!#$%&\'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&\'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])');
+const AA_REGEXP_MAIL = '(?:[a-z0-9!#$%&\'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&\'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])';
 
 class AA_Operators {
 
@@ -754,10 +754,13 @@ class AA_Set extends AA_Object {
                 // well stripsplashes is bad - we never want the slashed text
                 // here, but we do not know, if the command is not from url
                 // so we will rather stripslash the string in most cases
-                // However - if the string starts with ", then it is never
+                // However - a) if the string starts with ", then it is never
                 // slashed, for sure
+                // However - b) if the string do not match addsleshed string
+                //   - like x\y, "hi", ... then it is never slashed, for sure
                 // @todo remove stripslashes for AA3.0 - Honza
-                if ( substr($val,0,1) !='"') {
+                // if ( substr($val,0,1) !='"' ) {   // this one is already in following condition
+                if (addslashes(stripslashes($val)) == $val ) {
                     $val = stripslashes($val);
                 }
                 $this->conds[] = new AA_Condition($field_arr, $op, $val);
@@ -1005,6 +1008,13 @@ class AA_Dbcondition {
             case 'BEGIN':   return ['INNER', '', "($field LIKE '".  addcslashes(quote($querystring),"_%") ."%')"];
             case 'CONTAIN': return ['INNER', '', "($field LIKE '%". addcslashes(quote($querystring),"_%") ."%')"];
             case 'BITSET':  return ['INNER', '', "($field & ". (int)$querystring ." = ". (int)$querystring .")"];
+            case 'XLIKE':
+                $ret = (new Syntax($field, $operator, SQL_Lex::lex(trim($querystring))))->S();
+                if ( $ret == "_SYNTAX_ERROR" ) {
+                    AA::$debug && AA::$dbg->warn("Query syntax error: ". Syntax::lastErrMsg(). ','. $field. ','. ','. $querystring);
+                    return ['ALL', '', "1=1"];
+                }
+                return ( $ret ? ['INNER', '', "($ret)"] : ['ALL', '', "1=1"]);
         }
 
         // query string could be slashed - sometimes :-(
@@ -1016,8 +1026,6 @@ class AA_Dbcondition {
         //    }
 
         $querystring = stripslashes( $querystring );
-
-
         $querystring =  (string)$querystring;   // to be able to do string operations
         $cleanstr    = quote( (($querystring[0] == '"') OR ($querystring[0] == "'")) ? substr( $querystring, 1, -1 ) : $querystring);
 
@@ -1025,7 +1033,7 @@ class AA_Dbcondition {
             case 'LIKE':
             case 'RLIKE':
             case 'LLIKE':
-            case 'XLIKE':
+            //case 'XLIKE':
                 // @todo - I do not like this part of code, which means, that you
                 // can use '%' as well as '*'
                 // I think we should escape all the % and _ and allow it only for
@@ -1035,12 +1043,12 @@ class AA_Dbcondition {
                 // continue!
             case '=':
                 // it is not possible to use wildcard characers with '='
-                $syntax      = new Syntax($field, $operator, lex( trim($querystring) ) );
+                $syntax      = new Syntax($field, $operator, SQL_Lex::lex(trim($querystring)));
 
                 // ret will be quoted
                 $ret         = $syntax->S();
                 if ( $ret == "_SYNTAX_ERROR" ) {
-                    AA::$debug && AA::$dbg->warn("Query syntax error: ". $GLOBALS['syntax_error']. ','. $field. ','. ','. $querystring);
+                    AA::$debug && AA::$dbg->warn("Query syntax error: ". Syntax::lastErrMsg(). ','. $field. ','. ','. $querystring);
                     return ['ALL', '', "1=1"];
                 }
                 return ( $ret ? ['INNER', '', "($ret)"] : ['ALL', '', "1=1"]);   // maybe we can change LEFT to INNER
