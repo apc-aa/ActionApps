@@ -134,7 +134,7 @@ class spot {
     }
 
     function isLeaf() {
-        return ((!is_array($this->ch) OR (count($this->ch)<1)) AND (count($this->po)<2));
+        return ((!is_array($this->ch) OR (count($this->ch)<1)) AND (!is_array($this->po) OR (count($this->po)<2)));
     }
 
     /** Returns true, if the $spot_id is in sequence of this spot (position) */

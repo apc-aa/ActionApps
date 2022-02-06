@@ -6558,7 +6558,8 @@ class AA_Requires {
             'dropzone@5'                  => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/dropzone@5.9.3/dist/min/dropzone.min.js', 'sha256-uCdT6FLkY6+68Xzm4f9O0usHnJPdKv0Q0rsoXvLchP4=', ['_css-dropzone@5']),
             'select2@4'                   => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.full.min.js', 'sha256-gtZlnMWqbrBdDWvmCQCgfiA3kq8J4FMqQ4a8Tvmgopk=', ['jquery@3','_css-select2@4']),
             'select2@3'                   => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/Select2@3.5.7/select2.min.js', 'sha256-xd6tWPqy/mxhxXcvyda/fncm94RXOR6918/lDx6Ckb8=', ['jquery@3','_css-select2@3']),
-            'sortable@1'                  => new AA_Req_Footlib('https://cdn.jsdelivr.net/gh/honzito/plain.sortable@1.2.1/sortable.min.js', 'sha256-GlPhZO8lQvwvtQjl1rtmm7K+ZG0ef9p11ONp989d2Ig=', ['_css-sortable@1']),
+            'eucookies@1'                 => new AA_Req_Footlib('https://cdn.jsdelivr.net/gh/honzito/smart-eu-cookies@0.9.0/src/smart-eu-cookies.min.js async', 'sha384-UduDV9uWMKOfKT56AR+4zzHYTkpPT7c801TAJ7DWXsU6QzwNxMCPq+cE1H0QNDDc'),
+            'sortable@1'                  => new AA_Req_Footlib('https://cdn.jsdelivr.net/gh/honzito/plain.sortable@1.2.1/sortable.min.js async', 'sha256-GlPhZO8lQvwvtQjl1rtmm7K+ZG0ef9p11ONp989d2Ig=', ['_css-sortable@1']),
             'datatable@1'                 => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/datatables.net@1.11.3/js/jquery.dataTables.min.js', 'sha256-gOJ/T3VMQ0Brwz7VYrLoVAQ+NE0a5vHoj1vXI1HUIzY=', ['jquery@3']),
             'form-saver@1'                => new AA_Req_Footlib(get_aa_url('javascript/form-saver/form-saver.min.js?ver='.AA_JS_VERSION,'',false), '', ['deserialize@2']),
             'deserialize@2'               => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/jquery-deserialize@2.0.0/src/jquery.deserialize.js', 'sha256-iQpPGsHQZs7cuArBkNIa6QOJlnnf8A1RBfMLxp/MLVI=', ['jquery@3']),
@@ -9500,36 +9501,42 @@ class AA_Stringexpand_Sortable extends AA_Stringexpand {
 
 /** Adds EU cookies message to the page
  *  needs {generate:HEAD} and {generate:FOOT} in the site module
- *  doc: https://github.com/jakubboucek/fucking-eu-cookies/tree/master#readme
- *  {eucookies:Tento web pou&#x17E;&iacute;v&aacute; k nastaven&iacute; webov&yacute;ch str&aacute;nek a anal&yacute;ze n&aacute;v&#353;t&ecaron;vnosti soubory cookie. Pou&#x17E;&iacute;v&aacute;n&iacute;m webu s t&iacute;m souhlas&iacute;te.:Rozum&iacute;m:://www.example.cz/cz/cookies-strategy}
+ *  doc: https://github.com/honzito/smart-eu-cookies/tree/master#readme
+ *  {eucookies:This website uses cookies:OK:more://www.example.cz/cz/cookies-strategy::top}
  *  {eucookies:::::showMyAdds}
  *    <script> function loadMyAdds(action, label) { if (action=='hide') { console.log(action, label);} } </script>
- *  Position bottom:
- *   .smart-eu-cookies.smart-priority { position: fixed; left: 0; bottom: 0; width: 100%; box-sizing: border-box; }
+ *  <type> = top | block | topblock
  */
 class AA_Stringexpand_Eucookies extends AA_Stringexpand {
     /** expand function
      * @param $selector
      * @return string
      */
-    function expand($text='', $accept='', $more='', $link='', $callback='') {
+    function expand($text='', $accept='', $more='', $link='', $callback='', $disagree='', $type='') {
         $script2run = '';
         $conf       = [];
-        if (strlen($text))     { $conf['text']   = $text;   }
-        if (strlen($accept))   { $conf['accept'] = $accept; }
-        if (strlen($more))     { $conf['more']   = $more;   }
-        if (strlen($link))     { $conf['link']   = $link;   }
+        if (strlen($text))     { $conf['text']     = $text;   }
+        if (strlen($accept))   { $conf['accept']   = $accept; }
+        if (strlen($disagree)) { $conf['disagree'] = $disagree; }
+        if (strlen($more))     { $conf['more']     = $more;   }
+        if (strlen($link))     { $conf['link']     = $link;   }
 
         $confstr = $conf ? '"l18n":'.json_encode($conf) : '';
         if (strlen($callback)) {
             $confstr .= ($confstr ? ',':''). '"options":{"callback":'.$callback.'}';
         }
-
         if ($confstr) {
             $script2run .= '<script> var smart_eu_config = {'.$confstr.'}; </script>';
         }
-        $script2run .= "\n<script async src=\"https://cdn.jsdelivr.net/npm/eu-cookie-law@1.0.0/dist/index.min.js\" integrity=\"sha384-Aqd1v6PXDXY8z7z5qprmEjjFMZhqAMJCovJg2HrDMhBxYpALNSDVy5htLWzMO3fJ\" crossorigin=anonymous></script>";
+        $css_add  = strpos($type, 'top') !== false ? '.smart-eu-cookies {position:relative}' : '';
+        $css_add .= strpos($type, 'block') !== false ? '.smart-eu-cookies span {flex: 1 0 100%}' : '';
+        if ($css_add) {
+            $script2run .= "<style>$css_add</style>";
+        }
+        //$script2run .= "\n<script async src=\"https://cdn.jsdelivr.net/npm/eu-cookie-law@1.0.0/dist/index.min.js\" integrity=\"sha384-Aqd1v6PXDXY8z7z5qprmEjjFMZhqAMJCovJg2HrDMhBxYpALNSDVy5htLWzMO3fJ\" crossorigin=anonymous></script>";
+        //$script2run .= "\n<script async src=\"https://cdn.jsdelivr.net/gh/honzito/smart-eu-cookies@0.9.0/src/smart-eu-cookies.min.js\" integrity=\"sha384-UduDV9uWMKOfKT56AR+4zzHYTkpPT7c801TAJ7DWXsU6QzwNxMCPq+cE1H0QNDDc\" crossorigin=anonymous></script>";
         AA::Stringexpander()->addRequire($script2run, 'AA_Req_Footcode');
+        AA::Stringexpander()->addRequire('eucookies');
         return '';
     }
 }
