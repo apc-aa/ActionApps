@@ -2,6 +2,7 @@
 
 namespace AA\Optimize;
 
+use AA_Slice;
 use function _m;
 use function freeDB;
 use function getDB;

@@ -8,7 +8,7 @@ use function getDB;
 use function GetTable2Array;
 use function q_pack_id;
 
-/** Testing if feeds table do not contain relations to non existant slices
+/** Testing if feeds table do not contain relations to non-existent slices
  */
 class DbInconsistency extends AbstractOptimize {
 
