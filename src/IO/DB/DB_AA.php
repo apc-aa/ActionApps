@@ -322,6 +322,7 @@ class DB_AA extends AbstractDB
      *     LIKE     -                   LIKE             single             ['id', '\_%', 'LIKE']
      *     RLIKE    -                   LIKE             single             ['selector', $item_id, 'RLIKE']
      *     BEGIN    -                   LIKE             single             ['selector', $item_id, 'BEGIN'] // similar to RLIKE, but the value must begin with exact match of the string (including "%" and "_" characters)
+     *     CONTAIN  -                   LIKE             single             ['selector', $item_id, 'CONTAIN'] // similar to LIKE, but the value must contain exact match of the string (including "%" and "_" characters)
      *     NOT LIKE -                   NOT LIKE         single             ['id', '\_%', 'NOT LIKE']
      *     FILLED   -                   > ''             single             ['field3', '', 'FILLED']     // not null, not empty, not any whitespace character(s)
      *
@@ -345,6 +346,9 @@ class DB_AA extends AbstractDB
                 continue;
             } elseif ($type == 'BEGIN') {
                 $where[] = "$name LIKE '". addcslashes(quote($value),"_%") ."%'";
+                continue;
+            } elseif ($type == 'CONTAIN') {
+                $where[] = "$name LIKE '%". addcslashes(quote($value),"_%") ."%'";
                 continue;
             } elseif (($type == 's<>') or ($type == 's!=')) {
                 if (is_array($value)) {

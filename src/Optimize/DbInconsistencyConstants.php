@@ -28,7 +28,18 @@ class DbInconsistencyConstants extends AbstractOptimize {
         $not_used = [];
         $all_groups = DB_AA::select('group_id', "SELECT DISTINCT group_id FROM `constant`");
         foreach ($all_groups as $grp) {
-            if ($grp AND ($grp!='lt_groupNames') AND !DB_AA::test('field', [['input_show_func',"%:$grp",'LIKE']]) AND !DB_AA::test('field', [['input_show_func',"%:$grp:%",'LIKE']])) {
+            if ($grp AND
+                ($grp!='lt_groupNames') AND
+                !DB_AA::test('field', [['input_show_func',":$grp",'CONTAIN']]) AND
+                !DB_AA::test('field', [['alias1_func',":$grp",'CONTAIN']]) AND
+                !DB_AA::test('field', [['alias2_func',":$grp",'CONTAIN']]) AND
+                !DB_AA::test('field', [['alias3_func',":$grp",'CONTAIN']]) AND
+                !DB_AA::test('view',  [['odd',":$grp",'CONTAIN']]) AND
+                !DB_AA::test('view',  [['even',":$grp",'CONTAIN']]) AND
+                !DB_AA::test('view',  [['`before`',":$grp",'CONTAIN']]) AND
+                !DB_AA::test('view',  [['after',":$grp",'CONTAIN']]) AND
+                !DB_AA::test('view',  [['group_title',":$grp",'CONTAIN']])
+            ) {
                 $not_used[] = $grp;
             }
         }
@@ -48,6 +59,7 @@ class DbInconsistencyConstants extends AbstractOptimize {
             $this->message(['problem'=>_m('Not used constant group'),'group'=>$grp, 'values'=>join(', ', DB_AA::select('c', "SELECT CONCAT(`name`,'->',`value`) as c FROM `constant`", [['group_id',$grp]]))]);
             $ret = false;
         }
+        $this->message(_m('Found %1 unused constant groups',[count($not_used)]));
         return $ret;
     }
 

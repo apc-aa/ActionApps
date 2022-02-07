@@ -5002,7 +5002,7 @@ class AA_Stringexpand_Scroller extends AA_Stringexpand {
      */
     function expand($begin='', $end='', $add='', $nopage='') {
         $itemview = $this->itemview;
-        if (!isset($itemview) OR ($itemview->num_records < 0) ) {   //negative is for n-th grou display
+        if (!isset($itemview) OR ($itemview->num_records < 0) ) {   //negative is for n-th group display
             return "Scroller not valid without a view, or for group display";
         }
         $viewScr = new AA_Scroller_Sitemodule($itemview->slice_info['vid'], $itemview->num_records, $itemview->idcount(), $itemview->from_record);
@@ -5044,7 +5044,7 @@ class AA_Stringexpand_Pager extends AA_Stringexpand_Nevercache {
         global $apc_state;
 
         $itemview = $this->itemview;
-        if (!isset($itemview) OR ($itemview->num_records < 0) ) {   //negative is for n-th grou display
+        if (!isset($itemview) OR ($itemview->num_records < 0) ) {   //negative is for n-th group display
             return "Err in {pager} - pager not valid without a view, or for group display";
         }
 
@@ -5105,7 +5105,7 @@ class AA_Stringexpand_Pagermore extends AA_Stringexpand_Nevercache {
         global $apc_state;
 
         $itemview = $this->itemview;
-        if (!isset($itemview) OR ($itemview->num_records < 0) ) {   //negative is for n-th grou display
+        if (!isset($itemview) OR ($itemview->num_records < 0) ) {   //negative is for n-th group display
             return "Err in {pager} - pager not valid without a view, or for group display";
         }
 
