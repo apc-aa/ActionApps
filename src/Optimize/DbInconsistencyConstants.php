@@ -34,6 +34,7 @@ class DbInconsistencyConstants extends AbstractOptimize {
                 !DB_AA::test('field', [['alias1_func',":$grp",'CONTAIN']]) AND
                 !DB_AA::test('field', [['alias2_func',":$grp",'CONTAIN']]) AND
                 !DB_AA::test('field', [['alias3_func',":$grp",'CONTAIN']]) AND
+                !DB_AA::test('view',  [['parameter',$grp]]) AND
                 !DB_AA::test('view',  [['odd',":$grp",'CONTAIN']]) AND
                 !DB_AA::test('view',  [['even',":$grp",'CONTAIN']]) AND
                 !DB_AA::test('view',  [['`before`',":$grp",'CONTAIN']]) AND
