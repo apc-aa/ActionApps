@@ -5953,6 +5953,10 @@ class AA_Stringexpander {
     function postprocess($out) {
         $search_arr  = [];
         $replace_arr = [];
+
+        // second round
+        $search_arr2  = [];
+        $replace_arr2 = [];
         foreach ($this->postprocesess as $search => $replace) {
             switch ($search) {
                 case '':
@@ -5965,12 +5969,30 @@ class AA_Stringexpander {
                     $search_arr[]  = $search;
                     $replace_arr[] = "\n<!--AA-Generated-FOOT start-->\n".$this->getRequireFoot(). "\n<!--/AA-Generated-FOOT end-->\n";
                     break;
+                case '// AAGenerateGACONSENT //':
+                    $search_arr2[]  = $search;
+                    if ( strpos($this->getRequireFoot(), 'smart-eu-cookies') !== false) {
+                        $rep = "// AA-Generated-GACONSENT - start";
+                        $rep .= "\nvar aa_ga_storage = (document.cookie.indexOf('smart-eu-cookies') !== -1 && document.cookie.includes('smart-eu-cookies=1')) ? 'granted' : 'denied';";
+                        $rep .= "\ngtag('consent', 'default', {'ad_storage': aa_ga_storage,'analytics_storage': aa_ga_storage,'personalization_storage': aa_ga_storage});";
+                        $rep .= "\n// AA-Generated-GACONSENT - end\n";
+                        $replace_arr2[] = $rep;
+                    } else {
+                        $replace_arr2[] = "// AA-Generated-GACONSENT - no consent";
+                    }
+                    break;
                 default:
                     $search_arr[]  = $search;
                     $replace_arr[] = $replace;
             }
         }
-        return count($search_arr) ? str_replace($search_arr, $replace_arr, $out) : $out;
+        if (count($search_arr))  {
+            $out = str_replace($search_arr, $replace_arr, $out);
+        }
+        if (count($search_arr2)) {
+            $out = str_replace($search_arr2, $replace_arr2, $out);
+        }
+        return $out;
     }
 
     /**
@@ -9502,7 +9524,7 @@ class AA_Stringexpand_Sortable extends AA_Stringexpand {
 /** Adds EU cookies message to the page
  *  needs {generate:HEAD} and {generate:FOOT} in the site module
  *  doc: https://github.com/honzito/smart-eu-cookies/tree/master#readme
- *  {eucookies:This website uses cookies:OK:more://www.example.cz/cz/cookies-strategy::top}
+ *  {eucookies:This website uses cookies:OK:more://www.example.cz/cz/cookies-strategy::No:top}
  *  {eucookies:::::showMyAdds}
  *    <script> function loadMyAdds(action, label) { if (action=='hide') { console.log(action, label);} } </script>
  *  <type> = top | block | topblock

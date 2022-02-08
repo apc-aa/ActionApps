@@ -96,7 +96,7 @@ function Die404($page=null) {
 // ----------------- function definition end -----------------------------------
 
 // change the state
-add_vars();                 // get variables pased to stm page
+// add_vars();                 // get variables pased to stm page
 
 require_once __DIR__."/../../modules/site/router.class.php";
 
@@ -154,10 +154,12 @@ if ($ga_id = (string)$module->getProperty('ga_id')) {
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
+      // AAGenerateGACONSENT //
       gtag('js', new Date());
       gtag('config', '$ga_id');
     </script>";
     AA::Stringexpander()->addRequire($ga_code, 'AA_Req_Headcode');
+    AA::Stringexpander()->addPostpocess("// AAGenerateGACONSENT //");
 }
 
 
