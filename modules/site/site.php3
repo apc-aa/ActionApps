@@ -96,7 +96,7 @@ function Die404($page=null) {
 // ----------------- function definition end -----------------------------------
 
 // change the state
-// add_vars();                 // get variables pased to stm page
+add_vars();                 // get variables passed to stm page
 
 require_once __DIR__."/../../modules/site/router.class.php";
 
