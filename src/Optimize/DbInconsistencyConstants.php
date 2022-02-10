@@ -52,10 +52,10 @@ class DbInconsistencyConstants extends AbstractOptimize {
         $ret = [];
         $all_groups = DB_AA::select('group_id', "SELECT DISTINCT group_id FROM `constant`");
         foreach ($all_groups as $grp) {
-            $ok = true;
-            $chrArray = preg_split('//u', $grp, -1, PREG_SPLIT_NO_EMPTY);
-            foreach($chrArray as $ch) {
-                if (mb_ord($ch, "UTF-8")>127) {
+            $len = strlen($grp);
+            for($i=0; $i<$len; $i++) {
+                $ch = $grp[$i];
+                if (ord($ch)>127) {
                     $ret[] = $grp;
                     break;
                 }
