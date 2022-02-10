@@ -47,12 +47,37 @@ class DbInconsistencyConstants extends AbstractOptimize {
         return array_filter(array_map('trim', $not_used), 'strlen');
     }
 
+    /**  */
+    protected function getNonAsciiGroups() : array {
+        $ret = [];
+        $all_groups = DB_AA::select('group_id', "SELECT DISTINCT group_id FROM `constant`");
+        foreach ($all_groups as $grp) {
+            $ok = true;
+            $chrArray = preg_split('//u', $grp, -1, PREG_SPLIT_NO_EMPTY);
+            foreach($chrArray as $ch) {
+                if (mb_ord($ch, "UTF-8")>127) {
+                    $ret[] = $grp;
+                    break;
+                }
+            }
+        }
+        return array_filter(array_map('trim', $ret), 'strlen');
+    }
+
     /** Test function
      * tests for never used constants
      * @return bool
      */
     public function test(): bool {
         $ret = true;
+
+        $non_ascii = $this->getNonAsciiGroups();
+
+        foreach ($non_ascii as $grp) {
+            $this->message(['problem'=>_m('Non ASCII chars in group_id'),'group'=>$grp, 'values'=>join(', ', DB_AA::select('c', "SELECT CONCAT(`name`,'->',`value`) as c FROM `constant`", [['group_id',$grp]]))]);
+            $ret = false;
+        }
+        $this->message(_m('Found %1 Non ASCII',[count($non_ascii)]));
 
         $not_used = $this->getNotUsedGroups();
 

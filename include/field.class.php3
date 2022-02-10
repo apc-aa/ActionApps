@@ -434,7 +434,7 @@ class AA_Field implements ArrayAccess {
     /** prints admin row for the field in AA UI
      * @param bool $analyze
      */
-    public function showFieldAdminRow($analyze) {
+    public function showFieldAdminRow(bool $analyze) {
         $slice_id    = $this->getSliceId();
         $id          = $this->getId();
         $name        = $this->getName();
@@ -484,13 +484,19 @@ class AA_Field implements ArrayAccess {
                 ['content.item_id', 'item.id', 'j'],
                 ['item.slice_id', $slice_id, 'l'],
                 ['field_id', $id],
-                ['(content.flag & 64)', 64, 'i']
+                ['(content.flag & '. FLAG_TEXT_STORED .')', 64, 'i']
             ]);
             $num_rows    = DB_AA::select1('cnt', 'SELECT count(*) as cnt FROM content, item', [
                 ['content.item_id', 'item.id', 'j'],
                 ['item.slice_id', $slice_id, 'l'],
                 ['field_id', $id],
-                ['(content.flag & 64)', 0, 'i']
+                ['(content.flag & '. FLAG_TEXT_STORED .')', 0, 'i']
+            ]);
+            $num_html    = DB_AA::select1('cnt', 'SELECT count(*) as cnt FROM content, item', [
+                ['content.item_id', 'item.id', 'j'],
+                ['item.slice_id', $slice_id, 'l'],
+                ['field_id', $id],
+                ['(content.flag & '. FLAG_HTML .')', 1, 'i']
             ]);
             $empty       = DB_AA::select1('cnt', 'SELECT count(*) as cnt FROM content, item', [
                 ['content.item_id', 'item.id', 'j'],
@@ -507,7 +513,8 @@ class AA_Field implements ArrayAccess {
             }
             $distinct_val  = ($text_stored == 1) ? "<u title='field is marked as text stored'>text:$items_field[cntval]</u>$text_vals,num:$items_field[cntnum]" : "text:$items_field[cntval]$text_vals,<u title='field is marked as number stored'>num:$items_field[cntnum]</u>";
             $distinct_text = (($items_field['cntitm']==$items) AND ($items_field[$text_stored==1 ? 'cntval':'cntnum']==1) AND ($items>1)) ? "<b title=\"All the values are the same - maybe you can delete the field\">Distinct values</b>:$distinct_val":"Distinct values:$distinct_val";
-            echo "<tr><td colspan=8><small title=\"Items\">Items:$items</small> / <small title=\"Items with field\">Fields:$items_field[cnt]</small> / <small>$distinct_text</small> / <small title=\"Distinct Items with field\">Distinct Items with field:$items_field[cntitm]</small> / <small title=\"Text fields\">Text fields:$text_rows</small> / <small title=\"Numeric fields\">Numeric fields:$num_rows</small> / <small title=\"Empty fields\">$empty_text:$empty</small></td></tr>";
+            $distinct_html = (($items_field['cntitm']==$items) AND ($items==$num_html) AND ($items>1)) ? "<b title=\"All values marked as HTML\">HTML</b>:$num_html" : "HTML:$num_html";
+            echo "<tr><td colspan=8><small title=\"Items\">Items:$items</small> / <small title=\"Items with field\">Fields:$items_field[cnt]</small> / <small>$distinct_text</small> / <small title=\"Distinct Items with field\">Distinct Items with field:$items_field[cntitm]</small> / <small title=\"Text fields\">Text fields:$text_rows</small> / <small title=\"Numeric fields\">Numeric fields:$num_rows</small> / <small title=\"Empty fields\">$empty_text:$empty</small> / <small title=\"fields amrked as HTML\">$distinct_html</small></td></tr>";
         }
     }
 
@@ -579,7 +586,7 @@ class AA_Field_Slicedef extends AA_Field {
     /** prints admin row for the field in AA UI
      * @param bool $analyze
      */
-    public function showFieldAdminRow($analyze) {  // do nothing - this field is not editable this way (at least now)
+    public function showFieldAdminRow(bool $analyze) {  // do nothing - this field is not editable this way (at least now)
     }
 }
 
