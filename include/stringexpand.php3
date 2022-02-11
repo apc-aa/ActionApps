@@ -7366,8 +7366,8 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
         if (AA_HTTP_DOMAIN !== "/") {
             $image = str_replace(AA_HTTP_DOMAIN, '', $image);
         }
-        if (aa_substr($image,0,4)=="http") {
-            $image = preg_replace("~http(s?)://(www\.)?(.+)\.([a-z]{1,6})/(.+)~", "\\5", $image);
+        if ((aa_substr($image,0,4)=="http") OR (aa_substr($image,0,2)=="//")) {
+            $image = preg_replace("~^(http[s]?:)?//(www\.)?(.+)\.([a-z]{1,6})/(.+)~", "\\5", $image);
         }
 
         return [AA_INSTAL_URL. "img.php?src=/$image&amp;$phpthumb_params", AA_INSTAL_PATH. "img.php?src=/$image&amp;$phpthumb_params"];
