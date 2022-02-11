@@ -26,7 +26,8 @@ https://www.apc.org/
 
 $LINKS_LANGUAGE_FILES = [
     "en_links_lang.php3" => "en_links_lang.php3",
-                               "cz_links_lang.php3" => "cz_links_lang.php3"
+    "cz_links_lang.php3" => "cz_links_lang.php3",
+    "cz-utf8_links_lang.php3" => "cz-utf8_links_lang.php3"
 ];
 
 

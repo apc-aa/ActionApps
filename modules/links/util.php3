@@ -16,7 +16,7 @@ function Links_CountAllLinks() {
  * @return string|array
  */
 function GetLinkInfo( $lid ) {
-    $ret = DB_AA::select([], 'SELECT * FROM `links_links`', [['id', $lid, 'i']]);
+    $ret = DB_AA::select1([], 'SELECT * FROM `links_links`', [['id', $lid, 'i']]);
     return $ret ?: '';
 }
 
