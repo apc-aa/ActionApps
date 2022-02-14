@@ -3186,7 +3186,7 @@ class AA_Stringexpand_Aggregate extends AA_Stringexpand {
      * @return float|int|mixed|string
      */
     function expand($function='', $ids_string='', $expression=null, $parameter='') {
-        if ( !in_array($function, ['sum', 'max', 'min', 'avg', 'concat', 'count', 'order', 'filter', 'filter_not', 'filter_contain', 'filter_notcontain']) ) {
+        if ( !in_array($function, ['sum', 'max', 'min', 'avg', 'concat', 'count', 'order', 'filter', 'filter_not', 'filter_contain', 'filter_notcontain', 'filter_isset', 'filter_notset']) ) {
             return '';
         }
 
@@ -3254,6 +3254,12 @@ class AA_Stringexpand_Aggregate extends AA_Stringexpand {
                 break;
             case 'filter_notcontain':
                 $ret = join('-', array_keys(array_filter($results, function($v) use ($parameter) { return aa_strpos((string)$v, $parameter) === false; })));
+                break;
+            case 'filter_isset':
+                $ret = join('-', array_keys(array_filter($results, function($v) { return (bool)strlen(trim((string)$v)); })));
+                break;
+            case 'filter_notset':
+                $ret = join('-', array_keys(array_filter($results, function($v) { return !strlen(trim((string)$v)); })));
                 break;
         }
         return $ret;
@@ -3435,11 +3441,11 @@ class AA_Stringexpand_Filter extends AA_Stringexpand_Nevercache {
      * @param $ids - dash separated item ids
      * @param $expression - expression for filtering
      * @param $equals - value to match expression
-     * @param $operator - = | != | contain | !contain
+     * @param $operator - = | != | contain | !contain | isset | notset
      * @return string
      */
     function expand($ids=null, $expression=null, $equals=null, $operator=null) {
-        $OPERATORS = ['contain' => 'filter_contain', '!contain' => 'filter_notcontain', '!=' => 'filter_not'];
+        $OPERATORS = ['contain' => 'filter_contain', '!contain' => 'filter_notcontain', '!=' => 'filter_not', 'isset' => 'filter_isset', 'notset' => 'filter_notset'];
         $fnc = ($operator AND $OPERATORS[$operator]) ? $OPERATORS[$operator] : 'filter';
         return StrExpand('AA_Stringexpand_Aggregate', [$fnc, $ids, $expression, $equals]);
     }

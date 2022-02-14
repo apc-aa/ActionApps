@@ -24,10 +24,6 @@ use AA\IO\DB\DB_AA;
 require_once __DIR__."/../../include/mail.php3";
 require_once __DIR__."/../../include/mgettext.php3";
 
-// we tried to remove all global $db, so let's try to comment out following global object
-// honza 2015-12-30
-//is_object( $db ) || ($db = getDB());
-
 function GetCollection($slice_id) {
     $SQL =  "SELECT AC.*, module.name, module.lang_file, module.slice_url
               FROM alerts_collection AC INNER JOIN module ON AC.module_id = module.id
