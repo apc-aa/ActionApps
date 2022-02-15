@@ -106,7 +106,7 @@ AA::$headers['type']  = 'application/javascript';
 //create keystring from values, which exactly identifies resulting content
 $cache_key = get_hash($view_param, PageCache::globalKeyArray());
 
-if ($cacheentry = AA::Pagecache()->getPage($cache_key, $nocache)) {
+if ($cacheentry = AA::Pagecache()->getPage($cache_key, $nocache & 1)) {  // nocache=1 or nocache=3, ... - first bit set
     $cacheentry->processPage(1);
 } else {
     $showview     = new AA_Showview($view_param);
