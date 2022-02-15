@@ -6667,6 +6667,9 @@ class AA_Tools {
  */
 class AA_Stringexpand {
 
+    /** @var bool switches caching ON and OFF for cacheable stringexpands - default is true - Cache  */
+    protected static $doCache = true;
+
     /**
      * @var AA_Item - item, for which we are stringexpanding (Not used in many expand functions)
      */
@@ -6683,6 +6686,10 @@ class AA_Stringexpand {
     function __construct($param) {
         $this->item     = $param['item'];
         $this->itemview = $param['itemview'];
+    }
+
+    public static function switchCacheOff() {
+        AA_Stringexpand::$doCache = false;
     }
 
     /** @deprecated - use AA::Stringexpander()->unalias() directly
@@ -6731,7 +6738,7 @@ class AA_Stringexpand {
      * @return bool
      */
     function doCache() {
-        return true;
+        return AA_Stringexpand::$doCache;     // true in most cases, but could be switched OFF (by ?nocache=1 parameter);
     }
 
     /** Marks rare cases, when we do not want to qoute results - like for

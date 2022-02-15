@@ -218,6 +218,10 @@ require_once __DIR__."/../../include/view.php3";
 require_once __DIR__."/../../include/discussion.php3";
 require_once __DIR__."/../../include/item.php3";
 
+if ($_REQUEST['nocache'] & 2) {  // nocahce=2 or nocache=3, ... - second bit set
+    AA_Stringexpand::switchCacheOff();
+}
+
 if ($lang_file) {
     mgettext_bind(AA_Langs::getLang($lang_file), 'output');
     AA::$lang    = strtolower(substr($lang_file,0,2));   // actual language - two letter shortcut cz / es / en

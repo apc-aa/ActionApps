@@ -116,6 +116,10 @@ if ($convertto) {
 //create keystring from values, which exactly identifies resulting content
 $cache_key = get_hash($view_param, PageCache::globalKeyArray(), $GLOBALS['apc_state']['xpage']);
 
+if ($nocache & 2) {  // nocahce=2 or nocache=3, ... - second bit set
+    AA_Stringexpand::switchCacheOff();
+}
+
 if ($cacheentry = AA::Pagecache()->getPage($cache_key, $nocache)) {
     AA::$debug&2 && AA::$dbg->log("view from cache");
     $cacheentry->processPage(1);

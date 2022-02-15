@@ -29,6 +29,7 @@
 //
 
 use AA\IO\DB\DB_AA;
+use AA\Util\InputVars;
 use AA\Util\SingletonTrait;
 
 require_once __DIR__. '/locsess.php3';
@@ -281,7 +282,7 @@ function add_vars($query_string="", $where='GLOBALS') {
             case '_REQUEST': array_merge_append($_REQUEST, $aa_query_arr);
                              break;
             case 'return':   break;
-            default:         array_merge_append($GLOBALS, $aa_query_arr);
+            default:         array_merge_append_global($aa_query_arr);
         }
         return $aa_query_arr;
     }
@@ -331,6 +332,18 @@ function array_merge_append(&$array, $newValues) {
     return $array;
 }
 
+/** the same as array_merge_append but operates on $GLOBALS which is not possible to pass as reference in PHP>=8.1 */
+function array_merge_append_global($newValues) {
+    foreach ($newValues as $key => $value ) {
+        if ( !isset($GLOBALS[$key]) || !is_array($GLOBALS[$key]) || !is_array($value)) {
+            $GLOBALS[$key] = $value;
+        } else {
+            $tmp = $GLOBALS[$key];
+            $GLOBALS[$key] = array_merge_append($tmp, $value);
+        }
+    }
+}
+
 
 function recursive_array_replace($find, $replace, $array) {
     if (!is_array($array)) {
@@ -341,35 +354,6 @@ function recursive_array_replace($find, $replace, $array) {
         $newArray[$key] = recursive_array_replace($find, $replace, $value);
     }
     return $newArray;
-}
-
-/** AddslashesArray function
- * function addslashes enhanced by array processing
- * @param $value
- * @return array|string
- */
-function AddslashesArray($value) {
-    return is_array($value) ? array_map('AddslashesArray', $value) : addslashes($value);
-}
-
-function StripslashesArray($value) {
-    return is_array($value) ? array_map('StripslashesArray', $value) : stripslashes($value);
-}
-
-/** QuoteVars function
- * function for processing posted or get variables
- * adds quotes, if magic_quotes are switched off
- * except of variables in $skip array (usefull for 'encap' for example)
- * @param $method
- * @param $skip
- */
-function QuoteVars($method="get", $skip='') {
-    $arr = ($method == "get") ? $_GET : $_POST;
-    foreach ($arr as $k => $v) {
-        if ( !is_array($skip) OR !isset($skip[$k]) ) {
-            $GLOBALS[$k] = AddslashesArray($v);
-        }
-    }
 }
 
 /** new_id function
