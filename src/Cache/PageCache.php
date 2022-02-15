@@ -114,7 +114,7 @@ class PageCache  {
                 $this->invalidateById( $key );
                 AA::$debug&2 && AA::$dbg->log("Pagecache: return false - invlaidating");
                 return false;
-            } elseif (ctype_digit((string)$action) ) {  // nocache=1
+                } elseif ( (string)$action == '1' ) {  // nocache=1
                 AA::$debug&2 && AA::$dbg->log("Pagecache: return false - nocache");
                 return false;
             }

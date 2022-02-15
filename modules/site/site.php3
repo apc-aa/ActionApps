@@ -55,9 +55,9 @@ $cache_key = get_hash('site', PageCache::globalKeyArray(), $_SERVER['REQUEST_URI
 // store nocache to the variable (since it should be set for some view and we
 // do not want to have it set for whole site.
 // temporary solution - should be solved on view level (not global nocache) - TODO
-$site_nocache = ($_REQUEST['nocache'] OR isset($_POST['aa']) OR (isset($_REQUEST['username']) AND isset($_REQUEST['password'])) OR $_REQUEST['logout']);
+$site_nocache = (($_REQUEST['nocache'] & 1) OR isset($_POST['aa']) OR (isset($_REQUEST['username']) AND isset($_REQUEST['password'])) OR $_REQUEST['logout']);
 
-if ($cacheentry = AA::Pagecache()->getPage($cache_key,$site_nocache)) {
+if ($cacheentry = AA::Pagecache()->getPage($cache_key, (string)$site_nocache)) {
     $cacheentry->processPage(1);
     if ( AA::$debug ) {
         echo '<br><br>Site cache hit!!!';
@@ -218,7 +218,7 @@ require_once __DIR__."/../../include/view.php3";
 require_once __DIR__."/../../include/discussion.php3";
 require_once __DIR__."/../../include/item.php3";
 
-if ($_REQUEST['nocache'] & 2) {  // nocahce=2 or nocache=3, ... - second bit set
+if ($_REQUEST['nocache'] & 2) {  // nocache=2 or nocache=3, ... - second bit set
     AA_Stringexpand::switchCacheOff();
 }
 
