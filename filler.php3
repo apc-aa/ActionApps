@@ -59,6 +59,7 @@ https://www.apc.org/
  */
 
 use AA\IO\DB\DB_AA;
+use AA\Util\InputVars;
 
 // ----- input variables normalization - start --------------------------------
 
@@ -123,7 +124,7 @@ function UseShowResult($txt,$url) {
     // allows to call a script showing the error results from fillform
     $_POST["result"]        = $txt;
     // allows fillform to use this data
-    $_POST["oldcontent4id"] = StripslashesArray($GLOBALS["content4id"]);
+    $_POST["oldcontent4id"] = InputVars::StripslashesArray($GLOBALS["content4id"]);
     if (!$url) huhe("Warning: no Url on anonymous form (could be  ok_url or err_url missing");
     $GLOBALS["shtml_page"] = $url;
     require_once __DIR__."/post2shtml.php3"; // Beware this doesn't just define functions!

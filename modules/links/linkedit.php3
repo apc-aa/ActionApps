@@ -368,7 +368,7 @@ FrmJavascriptFile('javascript/js_lib_links.min.js');   // js for category select
 $tree->printTreeData($links_info['tree_start']);
 
 if ( !$r_state['link_id'] ) {  // add new link
-    $url = "http://";
+    $url = "https://";
     // select current caterory
     $on_load = 'onLoad="GoToCategoryID(\''.$r_state['cat_id'].'\', eval(document.f.tree), \'patharea\', \'\');'.
                'MoveCategoryTo(\''.$r_state['cat_id'].'\', \'selcat0\', \'document.f.selcatSelect0\');"';

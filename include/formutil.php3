@@ -2944,7 +2944,7 @@ function getFrmJavascriptCached( $jscode, $name, $loadtype = 'async defer' ) {
  * @return string
  */
 function getFrmCSS( $stylecode ) {
-    return "\n<style type=\"text/css\">\n  $stylecode \n</style>\n";
+    return "\n<style>\n  $stylecode \n</style>\n";
 }
 /** FrmJavascript function
  * @param $jscode
