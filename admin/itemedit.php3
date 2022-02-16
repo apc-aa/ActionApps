@@ -43,6 +43,8 @@
 //   reset       - reset  - "Reset form"
 //   cancel      - button - "Cancel"
 
+use AA\Util\InputVars;
+
 $encap = ( ($encap=="false") ? false : true );
 
 if ($edit OR $add) {         // parameter for init_page - we edited new item so
@@ -109,7 +111,7 @@ if ($encap) {
     add_vars();        // adds values from QUERY_STRING_UNESCAPED
 }                      // and REDIRECT_STRING_UNESCAPED - from url
 
-QuoteVars("post", ['encap'=>1]);  // if magicquotes are not set, quote variables
+InputVars::QuoteVars("post", ['encap' => 1]);  // if magicquotes are not set, quote variables
                                         // but skip (already edited) encap variable
 AA::setEncoding(AA_Langs::getCharset());
 
