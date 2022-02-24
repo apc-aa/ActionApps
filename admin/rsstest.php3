@@ -23,6 +23,7 @@
  *
 */
 
+const AA_REGISTER_GLOBALS = true;
 require_once __DIR__."/../include/init_page.php3";
 require_once __DIR__."/../include/tabledit.php3";
 require_once __DIR__."/../include/tv_common.php3";

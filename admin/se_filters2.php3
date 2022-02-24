@@ -36,6 +36,7 @@
 
 use AA\IO\DB\DB_AA;
 
+const AA_REGISTER_GLOBALS = true;
 require_once __DIR__."/../include/init_page.php3";
 require_once __DIR__."/../include/varset.php3";
 require_once __DIR__."/../include/csn_util.php3";

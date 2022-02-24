@@ -27,6 +27,7 @@
 // expected $slice_id for edit slice, nothing for adding slice
 
 $require_default_lang = true;      // do not use module specific language file
+const AA_REGISTER_GLOBALS = true;
 require_once __DIR__."/../include/init_page.php3";
 require_once __DIR__."/../include/formutil.php3";
 require_once __DIR__."/../include/msgpage.php3";

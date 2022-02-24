@@ -27,8 +27,8 @@
  *
 */
 
+const AA_REGISTER_GLOBALS = true;
 require_once __DIR__."/../include/init_page.php3";
-
 $sess->delete();
 
 // go to url - we can't use go_url() function since it call page_close().

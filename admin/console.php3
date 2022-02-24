@@ -27,6 +27,7 @@
 
 $require_default_lang = true;      // do not use module specific language file
                                    // (message for init_page.php3)
+const AA_REGISTER_GLOBALS = true;
 require_once __DIR__."/../include/init_page.php3";
 require_once __DIR__."/../include/formutil.php3";
 require_once __DIR__."/../include/mgettext.php3";

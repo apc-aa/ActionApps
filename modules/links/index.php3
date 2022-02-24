@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 // used in init_page.php3 script to include config.php3 from the right directory
 
+const AA_REGISTER_GLOBALS = true;
 require_once __DIR__."/../../include/init_page.php3";
 require_once __DIR__."/../../include/varset.php3";
 require_once __DIR__."/../../include/formutil.php3";

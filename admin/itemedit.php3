@@ -51,6 +51,7 @@ if ($edit OR $add) {         // parameter for init_page - we edited new item so
     $unset_r_hidden = true;  // clear stored content
 }
 
+const AA_REGISTER_GLOBALS = true;
 require_once __DIR__."/../include/init_page.php3";     // This pays attention to $change_id
 require_once __DIR__."/../include/formutil.php3";
 require_once __DIR__."/../include/varset.php3";

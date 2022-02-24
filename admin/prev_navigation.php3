@@ -26,8 +26,8 @@
  *
 */
 
+const AA_REGISTER_GLOBALS = true;
 require_once __DIR__."/../include/init_page.php3";
-
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
 </head>

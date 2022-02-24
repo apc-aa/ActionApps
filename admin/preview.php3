@@ -31,8 +31,8 @@
  *  @param $return_url - where to go after hit OK button
  **/
 
+const AA_REGISTER_GLOBALS = true;
 require_once __DIR__."/../include/init_page.php3";
-
 // already stripslashed in init_page.php3
 
 $sh_itm     = $_GET['sh_itm'];

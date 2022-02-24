@@ -31,6 +31,7 @@
 // optionaly encap="false" if this form is not encapsulated into *.shtml file
 // optionaly free and freepwd for anonymous user login (free == login, freepwd == password)
 
+const AA_REGISTER_GLOBALS = true;
 require_once __DIR__."/../include/init_page.php3";
 require_once __DIR__."/../include/formutil.php3";
 require_once __DIR__."/../include/varset.php3";

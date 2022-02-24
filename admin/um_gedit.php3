@@ -34,13 +34,59 @@
 */
 
 
+use AA\Util\InputVars;
+
 $require_default_lang = true;      // do not use module specific language file
                                    // (message for init_page.php3)
+
+//const AA_REGISTER_GLOBALS = true;
 require_once __DIR__."/../include/init_page.php3";
 require_once __DIR__."/../include/formutil.php3";
 require_once __DIR__."/../include/varset.php3";
 require_once __DIR__."/../include/msgpage.php3";
 require_once __DIR__."/../include/um_util.php3";
+
+try {
+    // array ( 1 => 4, )-array ( 1 => 2, )
+    $GrpSrch = InputVars::boolGETPOST('GrpSrch'); // -
+    // array ( 'Přidat [^…' => 1, )
+    $add_submit = InputVars::boolPOST('add_submit');
+    // array ( 'd2be4ff5625…' => 1, '36445fffe87…' => 2, '1bc21a04f1e…' => 1, )
+    $all_users_sel = InputVars::idPOST('all_users_sel');
+    // array ( 'Jeď!' => 3, )
+    $go_findgroup = InputVars::boolGET('go_findgroup');
+    // array ( 'test group …' => 2, 'Kachny jsou…' => 1, 'o!:"/(?ˇ' => 1, 'o!:\\"/(?ˇ' => 1, )
+    $group_description = InputVars::stringSlashedPOST('group_description');
+    // array ( 'test group' => 2, '🦆🦆�…' => 1, 'Bbbbbbbbbbb…' => 2, )
+    $group_name = InputVars::stringSlashedPOST('group_name');
+    // array ( 'on' => 2, )
+    $group_super = InputVars::boolPOST('group_super'); // alpha
+    // array ( 'Bbbbbbbbbbb…' => 1, 'kvaq' => 3, )-array ( 'o' => 1, '' => 1, )
+    $grp = InputVars::stringSlashedGETPOST('grp'); // alpha-alpha
+    // array ( 1 => 4, )-array ( 'Editace' => 4, 1 => 4, )
+    $grp_edit = InputVars::boolGETPOST('grp_edit'); // -alnum
+    // array ( 1 => 2, )-array ( 1 => 1, )
+    $grp_new = InputVars::boolGETPOST('grp_new'); // -
+    // array ( )
+    $new_module = InputVars::arrayPOST('new_module');
+    // array ( )
+    $new_module_role = InputVars::arrayPOST('new_module_role');
+    // array ( )
+    $perm_mod = InputVars::arrayPOST('perm_mod'); // alpha
+    // array ( '1,4b108926e…' => 3, 0 => 1, 6 => 1, )
+    $posted_users = InputVars::stringSlashedPOST('posted_users');
+    // array ( '4b108926e80…' => 1, )
+    $sel_users_sel = InputVars::idPOST('sel_users_sel');
+    // array ( 3 => 3, 7 => 1, )-array ( 3 => 6, '011ba695b78…' => 1, '' => 1, 7 => 1, )
+    $selected_group = InputVars::stringSlashedGETPOST('selected_group'); // -alnum
+    // array ( 0 => 5, 'update_subm…' => 4, )
+    $submit_action = InputVars::stringSlashedPOST('submit_action');
+    // array ( '' => 4, )
+    $usr1_flt = InputVars::stringSlashedPOST('usr1_flt'); // empty
+    $cancel = InputVars::boolGETPOST('cancel');
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
 
 if ($cancel) {
     go_url( StateUrl(self_base() . "index.php3"));

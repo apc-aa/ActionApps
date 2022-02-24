@@ -30,17 +30,53 @@
 // optional slice_fields = 1 (for slice fields)
 
 use AA\IO\DB\DB_AA;
+use AA\Util\InputVars;
 
+//const AA_REGISTER_GLOBALS = true;
 require_once __DIR__."/../include/init_page.php3";
 require_once __DIR__."/../include/formutil.php3";
 require_once __DIR__."/../include/varset.php3";
 require_once __DIR__."/../include/msgpage.php3";
 
+try {
+    // array ( '' => 7, )-array ( 'Analyze' => 2, )
+    $analyze = InputVars::boolGETPOST('analyze'); // -alpha
+    // array ( '1f5e8011cce…' => 1, )
+    $change_id = InputVars::idGET('change_id');
+    // array ( 1 => 7, )
+    $del = InputVars::boolGET('del');
+    // array ( 'source.....…' => 1, 'start_date.…' => 1, 'category...…' => 1, '_abstract..…' => 2, '_place.....…' => 1, '_cp_code...…' => 1, )
+    $fid = InputVars::stringGET('fid');
+    // array ( 'change all' => 2, )
+    $fix = InputVars::boolPOST('fix');
+    // array ( '41415f436f7…' => 30, '4085d9fe61e…' => 5, '4429a8e44bb…' => 1, )
+    $from_slice = InputVars::idPOST('from_slice');
+    // array ( '41415f436f7…' => 30, '4085d9fe61e…' => 5, '4429a8e44bb…' => 1, )
+    $ftype = InputVars::stringPOST('ftype');
+    // array ( )
+    $name = InputVars::arrayPOST('name');
+    // array ( )
+    $pri = InputVars::arrayPOST('pri');
+    // array ( )
+    $req = InputVars::arrayPOST('req'); // alpha
+    // array ( )
+    $shw = InputVars::arrayPOST('shw'); // alpha
+    // array ( 1 => 9, )-array ( 0 => 30, 1 => 6, )
+    $slice_fields = InputVars::boolGETPOST('slice_fields'); // -
+    // array ( 'Přihlásit' => 3, )
+    $submit = InputVars::boolPOST('submit');
+    // array ( ' Změnit [^…' => 32, )
+    $update = InputVars::boolPOST('update');
+    $cancel = InputVars::boolPOST('cancel');
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
+
 if ($cancel) {
     go_url( StateUrl(self_base() . "index.php3"));
 }
 
-$slice = AA_Slice::getModule($slice_id);
+$slice = AA_Slice::getModule(AA::$module_id);
 
 if (!IfSlPerm(PS_FIELDS) OR !$slice) {
     MsgPageMenu(StateUrl(self_base())."index.php3", _m("You have not permissions to change fields settings"), "admin");
@@ -83,12 +119,12 @@ function ShowNewField($from_slice, $slice_id) {
 }
 
 
-if ($_REQUEST['del']) {
-    if (!DB_AA::delete('field', [['id',$fid], ['slice_id',$slice_id,'l']])) {  // not necessary - we have set the halt_on_error
+if ($del) {
+    if (!DB_AA::delete('field', [['id',$fid], ['slice_id',AA::$module_id,'l']])) {  // not necessary - we have set the halt_on_error
         $err["DB"] = MsgErr("Can't change field");
         exit;
     }
-    AA::Pagecache()->invalidateFor($slice_id);  // invalidate old cached values
+    AA::Pagecache()->invalidateFor(AA::$module_id);  // invalidate old cached values
 
     $Msg = MsgOk(_m("Field delete OK"));
 }
@@ -141,10 +177,7 @@ if ($update) {
 
                 // get new field id
                 $max = -1;  // Was 0
-                $arr = DB_AA::select('id',"SELECT id FROM field", [
-                    ['slice_id', $slice_id, 'l'],
-                    ['id',$ftype_base."%", 'LIKE']
-                ]);
+                $arr = DB_AA::select('id',"SELECT id FROM field", [['slice_id', AA::$module_id, 'l'], ['id',$ftype_base."%", 'LIKE']]);
                 foreach ($arr as $arr_fid) {
                     $max = max( $max, AA_Fields::getFieldNo($arr_fid), 0);
                 }
@@ -152,7 +185,7 @@ if ($update) {
                 //create name like "time...........2"
                 $fieldid = AA_Fields::createFieldId($ftype_base, $max);
 
-                $varset->set("slice_id", $slice_id, "unpacked" );
+                $varset->set("slice_id", AA::$module_id, "unpacked" );
                 $varset->set("id", $fieldid, "quoted" );
                 $varset->set("name",  $val, "quoted");
                 $varset->set("input_pri", $pri[$key], "number");
@@ -168,7 +201,7 @@ if ($update) {
                 $varset->add("input_pri", "number", $pri[$key]);
                 $varset->add("required", "number", ($req[$key] ? 1 : 0));
                 $varset->add("input_show", "number", ($shw[$key] ? 1 : 0));
-                $SQL = "UPDATE field SET ". $varset->makeUPDATE() ." WHERE id='$key' AND slice_id=". xpack_id($slice_id);
+                $SQL = "UPDATE field SET ". $varset->makeUPDATE() ." WHERE id='$key' AND slice_id=". xpack_id(AA::$module_id);
                 if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
                     $err["DB"] = MsgErr("Can't change field");
                     break;
@@ -176,7 +209,7 @@ if ($update) {
             }
         }
         freeDB($db);
-        AA::Pagecache()->invalidateFor($slice_id);  // invalidate old cached values
+        AA::Pagecache()->invalidateFor(AA::$module_id);  // invalidate old cached values
 
         if (!count($err)) {
             $Msg = MsgOk(_m("Fields update successful"));
@@ -211,17 +244,17 @@ $apage->addRequire('aa-jslib');
 $apage->addRequire("DisplayAaResponse('fieldselection', 'Get_Fields', {slice_id:'". get_if($from_slice, unpack_id('AA_Core_Fields..')) ."'});", 'AA_Req_Load');
 $apage->printHead($err, $Msg);
 
-if ($_REQUEST['analyze']) {
+if ($analyze) {
     $to_fix = false;
-    if ( !($optimizer = new \AA\Optimize\ChangeF_h2F_1())->test4modules([$slice_id])) {
+    if ( !($optimizer = new \AA\Optimize\ChangeF_h2F_1())->test4modules([AA::$module_id])) {
         echo $optimizer->report();
         $to_fix = true;
     }
-    if ( !($optimizer = new \AA\Optimize\ChangeF_t2F_1())->test4modules([$slice_id])) {
+    if ( !($optimizer = new \AA\Optimize\ChangeF_t2F_1())->test4modules([AA::$module_id])) {
         echo $optimizer->report();
         $to_fix = true;
     }
-    if ( !($optimizer = new \AA\Optimize\ChangeF_t2F__())->test4modules([$slice_id])) {
+    if ( !($optimizer = new \AA\Optimize\ChangeF_t2F__())->test4modules([AA::$module_id])) {
         echo $optimizer->report();
         $to_fix = true;
     }
@@ -230,12 +263,12 @@ if ($_REQUEST['analyze']) {
     }
 }
 
-if ($_REQUEST['fix']) {
-    ($optimizer = new \AA\Optimize\ChangeF_h2F_1())->repair4modules([$slice_id]);
+if ($fix) {
+    ($optimizer = new \AA\Optimize\ChangeF_h2F_1())->repair4modules([AA::$module_id]);
     echo $optimizer->report();
-    ($optimizer = new \AA\Optimize\ChangeF_t2F_1())->repair4modules([$slice_id]);
+    ($optimizer = new \AA\Optimize\ChangeF_t2F_1())->repair4modules([AA::$module_id]);
     echo $optimizer->report();
-    ($optimizer = new \AA\Optimize\ChangeF_t2F__())->repair4modules([$slice_id]);
+    ($optimizer = new \AA\Optimize\ChangeF_t2F__())->repair4modules([AA::$module_id]);
     echo $optimizer->report();
 }
 
@@ -254,12 +287,12 @@ FrmTabCaption(_m("Fields"), $form_buttons);
 <tr><td colspan="8"><hr></td></tr>
 <?php
 foreach ( $s_fields as $fld) {
-    $fld->showFieldAdminRow($_REQUEST['analyze'] OR $_REQUEST['fix']);
+    $fld->showFieldAdminRow($analyze OR $fix);
 }
 $form_buttons['slice_fields'] = ['value' => ($slice_fields ? 1 : 0)];
 
 // one row for possible new field
-ShowNewField($from_slice, $slice_id);
+ShowNewField($from_slice, AA::$module_id);
 FrmTabEnd( $form_buttons);
 
 ?>
@@ -268,7 +301,7 @@ FrmTabEnd( $form_buttons);
         if ( !confirm("<?php echo _m("Do you really want to delete this field from this slice?"); ?>")) {
             return;
         }
-        var url="<?php echo StateUrl(get_url('', ["del"=>1,"analyze"=>($_REQUEST['analyze'] OR $_REQUEST['fix'])])); ?>"
+        var url="<?php echo StateUrl(get_url('', ["del"=>1,"analyze"=>($analyze OR $fix)])); ?>"
         document.location=url + "&fid=" + escape(id);
     }
 </script>

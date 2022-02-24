@@ -26,6 +26,9 @@
  *
 */
 
+use AA\Util\InputVars;
+
+//const AA_REGISTER_GLOBALS = true;
 require_once __DIR__."/../include/init_page.php3";
 require_once __DIR__."/../include/varset.php3";
 require_once __DIR__."/../include/view.php3";
@@ -37,6 +40,46 @@ require_once __DIR__."/../include/searchlib.php3";
 require_once __DIR__."/../include/formutil.php3";
 require_once __DIR__."/../include/msgpage.php3";
 require_once __DIR__."/../include/actions.php3";
+
+try {
+    // array ( 'app' => 82, )
+    $Tab = InputVars::stringGET('Tab'); // alpha
+    // array ( 1 => 1, )
+    $Tab2 = InputVars::boolGET('Tab2');
+    // array ( 'Folder3' => 2, )
+    $akce = InputVars::stringPOST('akce'); // alnum
+    // array ( '' => 2, )
+    $akce_param = InputVars::stringPOST('akce_param'); // empty
+    // array ( 1 => 49, )
+    $cancel = InputVars::boolGET('cancel');
+    // array ( '4085d9fe61e…' => 1, )
+    $change_id = InputVars::idGET('change_id');
+    // array ( )
+    $chb = InputVars::arrayPOST('chb');
+    // array ( 99999 => 1, )
+    $listlen = InputVars::intGET('listlen');
+    // array ( 'Folder3' => 2, )
+    $markedaction_select = InputVars::stringPOST('markedaction_select'); // alnum
+    // array ( 1 => 2, 'clearsearch' => 1, )
+    $srchbr_akce = InputVars::stringGET('srchbr_akce'); // alnum
+    // array ( )
+    $srchbr_field = InputVars::arrayGET('srchbr_field');
+    // array ( )
+    $srchbr_oper = InputVars::arrayGET('srchbr_oper'); // alpha
+    // array ( )
+    $srchbr_order = InputVars::arrayGET('srchbr_order');
+    // array ( )
+    $srchbr_order_dir = InputVars::arrayGET('srchbr_order_dir'); // alpha
+    // array ( )
+    $srchbr_value = InputVars::arrayGET('srchbr_value'); // alpha
+    // array ( 'Přihlásit' => 12, )
+    $submit = InputVars::boolPOST('submit');
+    $cancel = InputVars::boolPOST('cancel');
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
+
+
 
 // Allow edit current slice without slice_pwd
 AA_Credentials::singleton()->loadFromSlice($slice_id);

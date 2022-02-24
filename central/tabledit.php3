@@ -31,6 +31,7 @@
 // (c) Econnect, Jakub Adamek, December 2002
 // DOCUMENTATION: doc/tabledit.html, doc/tabledit_developer.html, doc/tableview.html
 
+const AA_REGISTER_GLOBALS = true;
 require_once __DIR__."/../include/init_page.php3";
 require_once __DIR__."/../include/tabledit.php3";
 

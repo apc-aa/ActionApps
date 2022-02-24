@@ -23,6 +23,7 @@ https://www.apc.org/
 
 // used in init_page.php3 script to include config.php3 from the right directory
 
+const AA_REGISTER_GLOBALS = true;
 require_once __DIR__."/../../include/init_page.php3";
 require_once __DIR__."/../../include/varset.php3";
 require_once __DIR__."/../../include/view.php3";

@@ -26,14 +26,94 @@
 */
 
 use AA\IO\DB\DB_AA;
+use AA\Util\InputVars;
 use AA\Widget\Widget;
 
+//const AA_REGISTER_GLOBALS = true;
 require_once __DIR__."/../include/init_page.php3";
 mgettext_bind(get_mgettext_lang(), 'param_wizard');
 require_once __DIR__."/../include/constants_param_wizard.php3";
 require_once __DIR__."/../include/formutil.php3";
 require_once __DIR__."/../include/varset.php3";
 require_once __DIR__."/../include/msgpage.php3";
+
+try {
+    // array ( 'PUB_DATE' => 1, 'USERNAME' => 5, 'EMAIL___' => 1, 'HEADLINE' => 5, '' => 20, 'NENENENE' => 6, 'MOUCHAAA' => 1, 'UNDEFINE' => 4, )
+    $alias1 = InputVars::stringSlashedPOST('alias1'); // empty
+    // array ( 'j. n. Y' => 1, '<a href="_#…' => 5, '!:<a href="…' => 1, '' => 31, 'Kvakoš 765…' => 5, )
+    $alias1_func = InputVars::stringSlashedPOST('alias1_func'); // empty
+    // array ( 'f_d' => 1, 'f_t' => 7, 'f_c' => 1, 'f_h' => 8, '' => 21, 'f_w' => 5, )
+    $alias1_func_f = InputVars::stringSlashedPOST('alias1_func_f'); // empty
+    // array ( 'alias pro D…' => 1, 'Username' => 5, 'Email' => 1, '- Nadpis' => 2, 'alias for I…' => 3, '' => 22, 'Kvakoš 765…' => 4, 'alias for S…' => 1, 'alias undef…' => 4, )
+    $alias1_help = InputVars::stringSlashedPOST('alias1_help'); // empty
+    // array ( '' => 34, 'EN_TRANS' => 2, 'HEADLINK' => 3, 'MAMHLADA' => 1, 'LKNCJAKL' => 2, 'SRC_URL#' => 1, )
+    $alias2 = InputVars::stringSlashedPOST('alias2'); // empty
+    // array ( '' => 36, '{index:head…' => 2, '<a href="_#…' => 3, 'Kvakoš 765…' => 1, 'source_href…' => 1, )
+    $alias2_func = InputVars::stringSlashedPOST('alias2_func'); // empty
+    // array ( 'f_a' => 6, 'f_0' => 1, 'f__' => 2, 'f_t' => 3, '' => 29, 'f_k' => 1, 'f_l' => 1, )
+    $alias2_func_f = InputVars::stringSlashedPOST('alias2_func_f'); // empty
+    // array ( '' => 38, 'item title,…' => 3, 'Kvakoš 765…' => 1, 'alias for S…' => 1, )
+    $alias2_help = InputVars::stringSlashedPOST('alias2_help'); // empty
+    // array ( '' => 40, 'SEO_URL_' => 3, )
+    $alias3 = InputVars::stringSlashedPOST('alias3'); // empty
+    // array ( '' => 40, 'https://eko…' => 3, )
+    $alias3_func = InputVars::stringSlashedPOST('alias3_func'); // empty
+    // array ( 'f_a' => 6, 'f_0' => 1, 'f_t' => 5, '' => 31, )
+    $alias3_func_f = InputVars::stringSlashedPOST('alias3_func_f'); // empty
+    // array ( '' => 43, )
+    $alias3_help = InputVars::stringSlashedPOST('alias3_help'); // empty
+    // array ( 0 => 37, 3 => 6, )
+    $feed = InputVars::intPOST('feed');
+    // array ( 'publish_dat…' => 3, 'headline...…' => 13, 'con_email..…' => 3, 'time.......…' => 1, 'seo........…' => 33, 'relation...…' => 4, 'source.....…' => 1, 'category...…' => 4, )-array ( 'publish_dat…' => 1, 'headline...…' => 10, 'con_email..…' => 1, 'seo........…' => 26, 'source.....…' => 1, 'category...…' => 4, )
+    $fid = InputVars::stringSlashedGETPOST('fid'); // -
+    // array ( 'on' => 10, )
+    $html_default = InputVars::boolPOST('html_default'); // alpha
+    // array ( 'on' => 10, )
+    $html_show = InputVars::boolPOST('html_show'); // alpha
+    // array ( '' => 36, 'Kvakoš 765…' => 7, )
+    $input_before = InputVars::stringSlashedPOST('input_before'); // empty
+    // array ( '' => 23, 'Kvakoš 765…' => 20, )
+    $input_default = InputVars::stringSlashedPOST('input_default'); // empty
+    // array ( 'now' => 1, 'txt' => 21, 'log' => 21, )
+    $input_default_f = InputVars::stringSlashedPOST('input_default_f'); // alpha
+    // array ( 'Datum uve' => 1, 'Reader\'s Us…' => 5, 'Reader\'s e-…' => 1, '' => 20, 'Headline of…' => 3, 'Kvakoš 765…' => 8, 'Source of t…' => 1, 'Category' => 4, )
+    $input_help = InputVars::stringSlashedPOST('input_help'); // empty
+    // array ( 'qte' => 31, 'num' => 1, 'co2' => 11, )
+    $input_insert_func_f = InputVars::stringSlashedPOST('input_insert_func_f'); // alnum
+    // array ( '' => 31, 'Kvakoš 765…' => 12, )
+    $input_insert_func_p = InputVars::stringSlashedPOST('input_insert_func_p'); // empty
+    // array ( '' => 36, 'Kvakoš 765…' => 7, )
+    $input_morehlp = InputVars::stringSlashedPOST('input_morehlp'); // empty
+    // array ( 0 => 41, '#sLiCe-4429…' => 1, 'v486f77206f…' => 1, )
+    $input_show_func_c = InputVars::stringSlashedPOST('input_show_func_c');
+    // array ( 'dte' => 1, 'fld' => 35, 'sel' => 1, 'txt' => 2, 'mch' => 3, 'mse' => 1, )
+    $input_show_func_f = InputVars::stringSlashedPOST('input_show_func_f'); // alpha
+    // array ( '1:10:1:2' => 1, '' => 12, 'Džusík s …' => 2, 'Kvakoš 765…' => 24, '::::::{"1"#…' => 3, ':::::::{"1"…' => 1, )
+    $input_show_func_p = InputVars::stringSlashedPOST('input_show_func_p'); // empty
+    // array ( 'date' => 1, 'unique' => 5, 'e-unique' => 3, 'text' => 17, 'bool' => 1, 'pwd' => 16, )
+    $input_validate_f = InputVars::stringSlashedPOST('input_validate_f');
+    // array ( '' => 21, ':' => 1, 'con_email..…' => 1, 'headline...…' => 2, 'Kvakoš 765…' => 18, )
+    $input_validate_p = InputVars::stringSlashedPOST('input_validate_p'); // empty
+    // array ( 'Přihlásit' => 4, )
+    $submit = InputVars::boolPOST('submit');
+    // array ( 1 => 27, 0 => 15, )
+    $text_stored = InputVars::boolPOST('text_stored');
+    // array ( 'on' => 15, )
+    $translation = InputVars::boolPOST('translation'); // alpha
+
+    //  onlyupdate feature from summarize.php
+    $onlyupdate = InputVars::boolGET('onlyupdate');
+    $name       = InputVars::stringSlashedGET('name');
+    $input_pri  = InputVars::boolGET('input_pri');
+    $input_show = InputVars::boolGET('input_show');
+
+    $upd_edit = InputVars::boolPOST('upd_edit');
+    // array ( 1 => 42, ' Změnit [^…' => 1, )
+    $update = InputVars::boolPOST('update');
+    $cancel = InputVars::boolPOST('cancel');
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
 
 if ($upd_edit) {
     $back_admin_url = get_admin_url('se_inputform.php3', ['fid'=>$fid]);
@@ -159,7 +239,7 @@ if ($update) {
 
         /** @var Widget $widget_class */
         $widget_class = Widget::constructClassName($input_show_func_f);
-        Qvarsetadd("multiple",      "quoted", ($onlyupdate ? $multiple : (($translation ? 2 : 0) + ($widget_class::multiple() ? 1 : 0))));
+        Qvarsetadd("multiple",      "quoted", ($translation ? 2 : 0) + ($widget_class::multiple() ? 1 : 0));
 
         // setting input show function
 

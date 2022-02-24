@@ -30,8 +30,8 @@
 */
 
 
+const AA_REGISTER_GLOBALS = true;
 require_once __DIR__."/../include/init_page.php3";
-
 if (!IfSlPerm(PS_FEEDING)) {
     MsgPage(StateUrl(self_base()."index.php3"), _m("You have not permissions to change feeding setting"));
     exit;

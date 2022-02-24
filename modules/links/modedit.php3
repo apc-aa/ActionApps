@@ -35,6 +35,7 @@ if ($template['Links']) {
     $no_slice_id = true;       // message for init_page.php3
 }
 
+const AA_REGISTER_GLOBALS = true;
 require_once __DIR__."/../../include/init_page.php3";
 //require_once __DIR__."/../../include/en_links_lang.php3";
 require_once __DIR__."/../../include/formutil.php3";

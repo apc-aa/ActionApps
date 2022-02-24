@@ -50,8 +50,10 @@ $free  = $free  ?? $_REQUEST['free']  ?? false;
 // We are trying to remove any dependecy on the point 2) and use only $_* superglobals
 function AddslashesDeep($value)   { return is_array($value) ? array_map('AddslashesDeep',   $value) : addslashes($value);   }
 
-foreach ($_REQUEST as $k => $v) {
-    $$k = AddslashesDeep($v);
+if (defined('AA_REGISTER_GLOBALS')) {
+    foreach ($_REQUEST as $k => $v) {
+        $$k = AddslashesDeep($v);
+    }
 }
 // ----- input variables normalization - end
 

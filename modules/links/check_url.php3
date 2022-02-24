@@ -5,6 +5,7 @@
  */
  //$Id$
 
+const AA_REGISTER_GLOBALS = true;
 require_once __DIR__."/../../include/init_page.php3";
 require_once __DIR__."/../../include/formutil.php3";
 require_once __DIR__."/../../include/itemview.php3";

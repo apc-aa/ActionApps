@@ -29,6 +29,7 @@
 $no_slice_id          = true;
 $require_default_lang = true;
 
+const AA_REGISTER_GLOBALS = true;
 require_once __DIR__."/../include/init_page.php3";
 // the parts used by the slice wizard are in the included file
 require_once __DIR__."/../include/formutil.php3";
