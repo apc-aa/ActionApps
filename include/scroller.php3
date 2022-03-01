@@ -136,7 +136,6 @@ class AA_Scroller extends AA_Storable {
 
     /** updateScr function
      *  process query string and execute commands for this scroller
-     *  query string is taken from global variables
      * @param $url
      */
     function updateScr($url = "") {
@@ -144,14 +143,14 @@ class AA_Scroller extends AA_Storable {
         if ($url) {
             $this->urldefault = $url;
         }
-        if (isset($GLOBALS["scr_" . $this->id . "_Vi"])) {
-            $this->visible = $GLOBALS["scr_" . $this->id . "_Vi"];
+        if (isset($_GET["scr_" . $this->id . "_Vi"])) {
+            $this->visible = $_GET["scr_" . $this->id . "_Vi"];
         }
-        if ($GLOBALS["scr_" . $this->id . "_Go"]) {
-            $this->current = $GLOBALS["scr_" . $this->id . "_Go"];
+        if ($_GET["scr_" . $this->id . "_Go"]) {
+            $this->current = $_GET["scr_" . $this->id . "_Go"];
         }
-        if ($GLOBALS["scr_" . $this->id . "_Mv"]) {
-            $this->current += $GLOBALS["scr_" . $this->id . "_Mv"];
+        if ($_GET["scr_" . $this->id . "_Mv"]) {
+            $this->current += $_GET["scr_" . $this->id . "_Mv"];
         }
         $this->checkBounds();
     }
@@ -307,15 +306,14 @@ class AA_Scroller_Easy {
 
     /** update function
      *  Process query string and execute commands for this scroller
-     *  Query string is taken from global variables
      *  (based on $itmcnt)
      */
     function update() {
-        if ($GLOBALS["scr_{$this->id}_Go"]) {
-            $this->current = $GLOBALS["scr_{$this->id}_Go"];
+        if ($_GET["scr_{$this->id}_Go"]) {
+            $this->current = $_GET["scr_{$this->id}_Go"];
         }
-        if ($GLOBALS["scr_{$this->id}_Mv"]) {
-            $this->current += $GLOBALS["scr_{$this->id}_Mv"];
+        if ($_GET["scr_{$this->id}_Mv"]) {
+            $this->current += $_GET["scr_{$this->id}_Mv"];
         }
         $this->checkBounds();
     }
