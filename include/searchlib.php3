@@ -1069,10 +1069,15 @@ class AA_Dbcondition {
             case '!=' :       return $this->joined ? ['LEFT', "($field = '$cleanstr')", "($field IS NULL)"] :
                                                      ['LEFT', "", "($field <> '$cleanstr')"];
 
-            case '<=' :       return ['LEFT',     '', "($field $operator '$cleanstr')"];
-            case '<'  :       return ['LEFT',     '', "($field $operator '$cleanstr')"];
-            case '>=' :       return ['LEFT',     '', "($field $operator '$cleanstr')"];
-            case '>'  :       return ['LEFT',     '', "($field $operator '$cleanstr')"];
+            case '<=' :
+            case '<'  :
+            case '>=' :
+            case '>'  :
+                if ( IsSigInt($cleanstr) ) {
+                    // it allows comparing also text stored fields - like d-number..........-lt-22 when number.......... is stored as text
+                    return ['LEFT',     '', "($field $operator $cleanstr)"];
+                }
+                return ['LEFT',     '', "($field $operator '$cleanstr')"];
         }
         return ['ALL', '', "1=1"];
     }
