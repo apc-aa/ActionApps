@@ -6592,8 +6592,8 @@ class AA_Requires {
             'form-saver@1'                => new AA_Req_Footlib(get_aa_url('javascript/form-saver/form-saver.min.js?ver='.AA_JS_VERSION,'',false), '', ['deserialize@2']),
             'deserialize@2'               => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/jquery-deserialize@2.0.0/src/jquery.deserialize.js', 'sha256-iQpPGsHQZs7cuArBkNIa6QOJlnnf8A1RBfMLxp/MLVI=', ['jquery@3']),
             //'lightgallery@1'              => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/lib/js/lightgallery.js', 'sha256-LwSUsCCIlbq0+vHbSFFbyO+BeMLnJ8gQecxLfgieuKM=', array('_css-lightgallery@1')),
-            'lightgallery@2'           => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/lightgallery@2.2.1/lightgallery.min.js async', 'sha256-Dawo6shovc6mR+OrpnCxjnHYYp0655VrB0LShTAPM34=', ['_css-lightgallery@2']),
-            'lightgallery@1'           => new AA_Req_Footlib('https://cdn.jsdelivr.net/lightgallery.js/1.0.1/js/lightgallery.min.js', 'sha384-HZ/iOnkYJdO5/U2ug7IPTgNZq61Jr+SMoJGCWsjVjNqwY/77YVNA/mZQ1tdfo2Xm', ['_css-lightgallery@1']), // v 1.1.1 do not work
+            'lightgallery@2'              => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/lightgallery@2.2.1/lightgallery.min.js', 'sha256-Dawo6shovc6mR+OrpnCxjnHYYp0655VrB0LShTAPM34=', ['_css-lightgallery@2']),  // async do not work for foot lib - it is used before it is loaded
+            'lightgallery@1'              => new AA_Req_Footlib('https://cdn.jsdelivr.net/lightgallery.js/1.0.1/js/lightgallery.min.js', 'sha384-HZ/iOnkYJdO5/U2ug7IPTgNZq61Jr+SMoJGCWsjVjNqwY/77YVNA/mZQ1tdfo2Xm', ['_css-lightgallery@1']), // v 1.1.1 do not work
             'tippy@2'                     => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/tippy.js@2.6.0/dist/tippy.all.min.js', 'sha256-H8z9OcYtNQgDyDRKu2H1XY/nq06+bY3cMyB3fSFEytk='),
             'aa-tools@1'                  => new AA_Req_Lib('', '', ['css-aa-system@1','aa-jslib@3|aa-jslib@1','htm-aa-system@1']),
             'ckeditor@4'                  => new AA_Req_Footlib(get_aa_url('misc/htmleditor/ckeditor.js', '', false),'', ['css-aa-system@1','aa-jslib@3|aa-jslib@2|aa-jslib@1']),
