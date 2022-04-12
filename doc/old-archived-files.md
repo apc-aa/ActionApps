@@ -1,4 +1,7 @@
 ### List of removed, no longer maintained files in ActionApps
+/admin/**sumarize.php3**  
+  Generates a human readable output page that summarizes the slices on a system, compare slices and sync its settings  
+  _No longer maintained. Removed 2022-02-25 - honzam (see older apc-aa branches to get the code)_
 
 /misc/**txt2fields**  
  .../txt2fields.pl                   - Replaces fields for a slice, based on a text file  
@@ -33,5 +36,5 @@
   /offline.php3  
   Java based tool for sending prepared WDDX files from a local computer to ActionApps - AA/offline.php3
   Developed in the time of expensive dialup connection when it was too expensive to fill and edit the item form on the internet
-  Files in  /misc/offline2slice was ment to be copied to user's computer
+  Files in  /misc/offline2slice was ment to be copied to user's computer  
   _No longer maintained. Removed 2021-01-29 - honzam (see older apc-aa branches to get the code)_     

@@ -89,7 +89,6 @@ function GetCommonMenu($profile) {
         "aafinder"    => ["label"=>_m("AA finder"),       "cond"=>IsSuperadmin(),        "href"=>"admin/aafinder.php3"],
         "xmgettext"   => ["label"=>_m("Mgettext"),        "cond"=>IsSuperadmin(),        "exact_href"=>"../misc/mgettext/index.php3"],
         'optimize'    => ["label"=>_m("Optimize"),        "cond"=>IsSuperadmin(),        "href"=>"admin/aa_optimize.php3"],
-        "summarize"   => ["label"=>_m("Summarize"),       "cond"=>IsSuperadmin(),        "href"=>"admin/summarize.php3"],
         "history"     => ["label"=>_m("History"),         "cond"=>IfSlPerm(PS_HISTORY),  "href"=>"admin/se_history.php3"]
     //    "oneoff" => array("label"=>_m("One Off Code"), "cond"=>IsSuperadmin(), "href"=>"admin/oneoff.php3"),
     //    "console" => array("label"=>_m("Console"), "cond"=>IsSuperadmin(), "href"=>"admin/console.php3"),

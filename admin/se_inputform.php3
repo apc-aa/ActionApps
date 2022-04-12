@@ -101,12 +101,7 @@ try {
     // array ( 'on' => 15, )
     $translation = InputVars::boolPOST('translation'); // alpha
 
-    //  onlyupdate feature from summarize.php
-    $onlyupdate = InputVars::boolGET('onlyupdate');
-    $name       = InputVars::stringSlashedGET('name');
-    $input_pri  = InputVars::boolGET('input_pri');
-    $input_show = InputVars::boolGET('input_show');
-
+    $return_url = InputVars::stringGETPOST('return_url');
     $upd_edit = InputVars::boolPOST('upd_edit');
     // array ( 1 => 42, ' Změnit [^…' => 1, )
     $update = InputVars::boolPOST('update');
@@ -133,18 +128,6 @@ if (!IfSlPerm(PS_FIELDS)) {
 $err = [];          // error array (Init - just for initializing variable
 $varset = new Cvarset();
 
-
-// If $onlyupdate is set, then just set fields defined Note exceptiosn
-//      $input_default is as to store in the database, i.e. input_default_f:$input_default
-//      $alias1_func is as to store in database ie alias1_func_f:alias1_func (same for 2 and 3)
-//      $input_show_func instead of $input_show_func_f:$input_show_func_p (and some other variations)
-//      $input_insert_func instead of $input_insert_func_f:$input_insert_func_p etc
-//      $input_validate instead of $input_validate_f:$input_validate_p
-//      $html_show as in db, not as returned by HTML check
-//      $text_stored instead of function of $input_validate_f
-
-// Extend ValidateInput to NOT check if field is not present
-
 /** QVaidateInput function
  * @param $variabeName
  * @param $inputName
@@ -154,8 +137,7 @@ $varset = new Cvarset();
  * @param $type
  */
 function QValidateInput($variableName, $inputName, $variable, &$err, $needed, $type) {
-    global $onlyupdate;
-    if (! $onlyupdate || ($variable !== null)) {
+    if ($variable !== null) {
         ValidateInput($variableName, $inputName, $variable, $err, $needed, $type);
     }
 }
@@ -166,8 +148,8 @@ function QValidateInput($variableName, $inputName, $variable, &$err, $needed, $t
  * @param $value
  */
 function Qvarsetadd($varname, $type, $value) {
-    global $varset,$onlyupdate;
-    if (! $onlyupdate || ($value !== null)) {
+    global $varset;
+    if ($value !== null) {
         $varset->add($varname, $type, $value);
     }
 }
@@ -211,9 +193,7 @@ if ($update) {
 
             Qvarsetadd("alias".$iAlias, "quoted", $alias_name);
             Qvarsetadd("alias".$iAlias."_help", "quoted", $GLOBALS["alias".$iAlias."_help"]);
-            Qvarsetadd("alias".$iAlias."_func", "quoted",
-                ($onlyupdate ? $GLOBALS["alias".$iAlias."_func"]
-                    : $GLOBALS["alias".$iAlias."_func_f"].":".$GLOBALS["alias".$iAlias."_func"]));
+            Qvarsetadd("alias".$iAlias."_func", "quoted", $GLOBALS["alias".$iAlias."_func_f"].":".$GLOBALS["alias".$iAlias."_func"]);
         }
 
         
@@ -221,16 +201,10 @@ if ($update) {
         if (count($err)) {
             break;
         }
-        // A group that only appear with onlyupdate, normally edited in se_fields
-        if ($onlyupdate) {
-            Qvarsetadd("name",      "quoted", $name);
-            Qvarsetadd("input_pri", "number", $input_pri);
-            Qvarsetadd("input_show","number", $input_show);
-        }
         Qvarsetadd("input_before",  "quoted", $input_before);
         Qvarsetadd("input_help",    "quoted", $input_help);
         Qvarsetadd("input_morehlp", "quoted", $input_morehlp);
-        Qvarsetadd("input_default", "quoted", ($onlyupdate ? $input_default : "$input_default_f:$input_default"));
+        Qvarsetadd("input_default", "quoted", "$input_default_f:$input_default");
         // mark as multiple
         // Mark field as multiple is not necessary - we can remove this
         // property in the future. Honza, 2006-10-17
@@ -266,19 +240,15 @@ if ($update) {
         }
         $isf     .= ':'.$input_show_func_p;
 
-        Qvarsetadd("input_show_func", "quoted", ($onlyupdate ? $input_show_func : $isf));
-        Qvarsetadd("input_validate", "quoted", ($onlyupdate ? $input_validate : "$input_validate_f:$input_validate_p"));
-        if (!($onlyupdate && is_null($feed))) {
-            Qvarsetadd("feed", "quoted", "$feed");
-        }
+        Qvarsetadd("input_show_func", "quoted", $isf);
+        Qvarsetadd("input_validate", "quoted", "$input_validate_f:$input_validate_p");
+        Qvarsetadd("feed", "quoted", "$feed");
 
         // setting input insert function
         $iif="$input_insert_func_f:$input_insert_func_p";
-        Qvarsetadd("input_insert_func", "quoted", ($onlyupdate ? $input_insert_func : "$iif"));
-        if (!($onlyupdate && is_null($html_default))) {
-            Qvarsetadd("html_default", "number", ($html_default ? 1 : 0));
-        }
-        Qvarsetadd("html_show", "number", ($onlyupdate ? $html_show : ($html_show ? 1 : 0)));
+        Qvarsetadd("input_insert_func", "quoted", "$iif");
+        Qvarsetadd("html_default", "number", ($html_default ? 1 : 0));
+        Qvarsetadd("html_show", "number", ($html_show ? 1 : 0));
         Qvarsetadd("text_stored", "number", $text_stored);
 
         $varset->addkey('id', 'text', $fid);

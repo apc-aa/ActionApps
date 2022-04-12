@@ -2862,14 +2862,6 @@ $_m["Feed mode"]
 $_m["Feed url"]
     = "";
 
-// admin/summarize.php3, row 51
-$_m["Summarize slice differences"]
-    = "Nabrojite razlike stranica";
-
-// admin/summarize.php3, row 58
-$_m["AA - Summarize"]
-    = "AA- nabrojite";
-
 // admin/se_import2.php3, row 134, 136
 // admin/se_filters2.php3, row 163
 $_m["Content Pooling update successful"]

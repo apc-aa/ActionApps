@@ -2164,14 +2164,6 @@ $_m["Feed mode"]
 $_m["Feed url"]
     = "Url alimentación";
 
-// admin/summarize.php3, row 51
-$_m["Summarize slice differences"]
-    = "Resumir diferencias de canales";
-
-// admin/summarize.php3, row 58
-$_m["AA - Summarize"]
-    = "AA - Resumir";
-
 // admin/se_import2.php3, row 134, 136
 // admin/se_filters2.php3, row 163
 $_m["Content Pooling update successful"]
