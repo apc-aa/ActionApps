@@ -165,7 +165,7 @@ function self_base(): string {
  *   (canaca.com 2003-09-19 - Apache/1.3.27 (Unix) (Red-Hat/Linux), Honza)
  */
 function document_uri(): string {
-    return get_if($_SERVER['DOCUMENT_URI'],$_SERVER['REDIRECT_URL'],$_SERVER['SCRIPT_URL']);
+    return get_if($_SERVER['DOCUMENT_URI'],$_SERVER['REDIRECT_URL'],$_SERVER['SCRIPT_URL'],'');
 }
 
 /** shtml_base function
