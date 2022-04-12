@@ -1723,8 +1723,8 @@ class AA_Contentcache {
  * @param $else2
  * @return string
  */
-function get_if($value, $else, $else2='aa_NoNe') {
-    return $value ?: ($else ?: (($else2=='aa_NoNe') ? $else : $else2));
+function get_if($value, $else, $else2='aa_NoNe', $else3='aa_NoNe') {
+    return $value ?: ($else ?: (($else2=='aa_NoNe') ? $else : (($else3=='aa_NoNe') ? $else2 : $else3)));
 }
 
 /** aa_version function
