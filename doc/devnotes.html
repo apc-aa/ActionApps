@@ -427,7 +427,7 @@ for slice compact view.</P>
   &lt;body&gt;
   &lt;h1&gt;Slice title&lt;/h1&gt;
   ...
-  <p class=hlight>&lt;!--#includevirtual="/apc-aa/slice.php3?slice_id=e2f6b2bf9c1687de7acccdb0f570209e"--&gt;</p>
+  <p class=hlight>&lt;!--#includevirtual="/apc-aa/slice.php3?encap=true&amp;slice_id=e2f6b2bf9c1687de7acccdb0f570209e"--&gt;</p>
   ...
   &lt;/body&gt;
  &lt;/html&gt;</pre></td>
@@ -636,7 +636,7 @@ Main column --&gt;<BR>&lt;TABLE width=440&gt;<BR>&nbsp;
 &lt;TR&gt;<BR>&nbsp;&nbsp;&nbsp; &lt;TD&gt;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 &lt;H1&gt;Example NGO's Slice&lt;/H1&gt;&lt;/TD&gt;&lt;/TR&gt;<BR>&nbsp;
 &lt;TR&gt;<BR>&nbsp;&nbsp;&nbsp; &lt;TD&gt;</P>
-<P><FONT color=#0000ff>&lt;!--#include&nbsp;virtual="/apc-aa/slice.php3?slice_id=e2f6b2bf9c1687de7acccdb0f570209e"--&gt;</FONT></P>
+<P><FONT color=#0000ff>&lt;!--#include&nbsp;virtual="/apc-aa/slice.php3?encap=true&amp;slice_id=e2f6b2bf9c1687de7acccdb0f570209e"--&gt;</FONT></P>
 <P>&nbsp;&nbsp;&nbsp;
 &lt;/TD&gt;<BR>&nbsp;&nbsp;&lt;/TR&gt;<BR>&lt;/TABLE&gt;&lt;BR&gt;<BR>&lt;/BODY&gt;<BR>&lt;/HTML&gt;</P></CODE>In this short example you can see,
 how encapsulate slice.php3 into shtml page. Important commands I highlighted in
@@ -656,6 +656,12 @@ added to URL. Here are the list of them: <BR><BR>
     <td>required</td>
     <td>determines, which slice to use</td>
  <td>slice_id=e2f6b2bf9c1687de7acccdb0f570209e</td>
+</tr>
+<tr>
+    <td>encap</td>
+    <td>required</td>
+    <td>if slice is encapsulated, this parameter must be set to 1 (or true)</td>
+ <td>encap=1</td>
 </tr>
 <tr>
     <td>sh_itm</td>

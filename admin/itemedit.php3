@@ -28,6 +28,7 @@
 
 // expected at least $slice_id
 // user calling is with $edit for edit item
+// optionaly encap="false" if this form is not encapsulated into *.shtml file
 // optionaly free and freepwd for anonymous user login (free == login, freepwd == password)
 
 
@@ -43,6 +44,8 @@
 //   cancel      - button - "Cancel"
 
 use AA\Util\InputVars;
+
+$encap = ( ($encap=="false") ? false : true );
 
 if ($edit OR $add) {         // parameter for init_page - we edited new item so
     $unset_r_hidden = true;  // clear stored content
@@ -105,7 +108,6 @@ function CloseDialog($zid = null, $openervar = null, $insert=true, $url2go=null)
 // Allow edit current slice without slice_pwd
 AA_Credentials::singleton()->loadFromSlice($slice_id);
 
-$encap = ($_SERVER['SERVER_PROTOCOL']=='INCLUDED');   // SSI encapsulated (was $encap)
 if ($encap) {
     add_vars();        // adds values from QUERY_STRING_UNESCAPED
 }                      // and REDIRECT_STRING_UNESCAPED - from url
@@ -131,7 +133,7 @@ $add = !( $update OR $cancel OR $insert OR $edit );
 
 if ($cancel) {
     if ($anonymous) { // anonymous login
-        go_url( $r_slice_view_url);
+        go_url( $r_slice_view_url, '', $encap );
     } elseif ($return_url=='close_dialog') {
         // Used for adding item to another slice from itemedit's popup.
         CloseDialog();
@@ -258,7 +260,7 @@ if ( ($insert || $update) AND count($fields) ) {
             $preview_url = get_url(get_admin_url("preview.php3"), "slice_id=$slice_id&sh_itm=$id&return_url=$return_url");
         }
         if ($anonymous) { // anonymous login
-            go_url( $r_slice_view_url);
+            go_url( $r_slice_view_url, '', $encap );
         } elseif ($return_url=='close_dialog') {
             // Used for adding item to another slice from itemedit's popup.
             CloseDialog(new zids($added_to_db, 'l'), $openervar, $insert, $preview_url);
@@ -322,7 +324,7 @@ if ($lang_control) {
     if (empty($mlx)) {
         $mlx = new MLX($slice);
     }
-    [$mlx_formheading,$mlxl,$mlxid] = $mlx->itemform($content4id->getContent(), $action, $mlxl, $mlxid);
+    [$mlx_formheading,$mlxl,$mlxid] = $mlx->itemform(['encap'=>$encap], $content4id->getContent(),$action,$mlxl,$mlxid);
 }
 // end mimo changes
 
@@ -332,7 +334,7 @@ if ( !$encap ) {
         'display_aa_begin_end' => true,
         'page_title'           => (($edit=="") ? _m("Add Item") : _m("Edit Item")). " (". trim($slice->getName()).")",
         'formheading'          => $mlx_formheading
-    ];
+    ]; //added MLX
 }
 $inputform_settings['messages']            = ['err' => $err];
 $inputform_settings['form_action']         = ($_SERVER['DOCUMENT_URI'] != "" ? $_SERVER['DOCUMENT_URI'] :

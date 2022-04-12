@@ -59,6 +59,7 @@ if (empty($_REQUEST['lock'])) {
     add_vars('', '_REQUEST');
 }
 
+$encap = ( ($encap=="false") ? false : true );
 require_once __DIR__."/../../include/locsess.php3";
 
 echo AA_Poll::processPoll($_REQUEST);

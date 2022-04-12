@@ -314,11 +314,12 @@ class MLX {
     }
 
     /** itemform function
+     * @param $lang_control
+     * @param $params
      * @param $content4id
      * @param $action
      * @param $lang
      * @param $mlxid
-     * @param $lang_control
      *   Returns array of:
      *     - HTML code which will be displayed at the top of the form with
      *       language selections,
@@ -326,13 +327,13 @@ class MLX {
      *     - mlxid - id of the main mlx artice (where other items are joined)
      * @return array
      */
-    function itemform($content4id, $action, $lang, $mlxid)
+    function itemform($params, $content4id, $action, $lang, $mlxid)
     {
         global $DOCUMENT_URI;
         global $PHP_SELF;
         $mlxout   = MLX_HTML_TABHD;
         $mlx_url  = ($DOCUMENT_URI != "" ? $DOCUMENT_URI : $PHP_SELF . ($return_url ? "?return_url=".urlencode($return_url) : ''));
-        $mlx_url .= "?";
+        $mlx_url .= "?".$this->getparamstring($params);
         switch ($action) {
             case "update":
             case "edit":
@@ -472,6 +473,25 @@ class MLX {
         return false;
     }
 
+    /** getparamstring function
+     * @param $params
+     * @return string
+     */
+    function getparamstring($params)
+    {
+        foreach($params as $k => $v) {
+            $mlx_url .= "$k=";
+            switch(gettype($v)) {
+                case 'boolean':
+                    $mlx_url .= ($v)?"true":"false";
+                    break;
+                default:
+                    $mlx_url .= $v;
+            }
+            $mlx_url .= "&";
+        }
+        return $mlx_url;
+    }
     /** fatal function
      * @param $msg
      */

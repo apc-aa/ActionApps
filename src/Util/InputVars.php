@@ -122,7 +122,7 @@ class InputVars {
     /** QuoteVars function
      * function for processing posted or get variables
      * adds quotes, if magic_quotes are switched off
-     * except of variables in $skip array
+     * except of variables in $skip array (usefull for 'encap' for example)
      * @param $method
      * @param $skip
      */

@@ -1,6 +1,7 @@
 <?php
 /**  expected at least $slice_id
  *   user calling is with $edit for edit item
+ *   optionaly encap="false" if this form is not encapsulated into *.shtml file
  *   optionaly free and freepwd for anonymous user login (free == login, freepwd == password)
  *
  * PHP version 7.2+
@@ -30,6 +31,8 @@
 
 use AA\Util\InputVars;
 
+$encap = ( ($encap=="false") ? false : true );
+
 if ($edit) {         // parameter for init_page - we edited new item so
     $unset_r_hidden = true;  // clear stored content
 }
@@ -49,8 +52,7 @@ if ( file_exists( "../include/usr_validate.php3" ) ) {
 // Allow edit current slice without slice_pwd
 AA_Credentials::singleton()->loadFromSlice($slice_id);
 
-$encap = ($_SERVER['SERVER_PROTOCOL']=='INCLUDED');   // SSI encapsulated (was $encap)
-if ($encap) {  // do we use somewhere this encap??? Honza 3/2009
+if ($encap) {  // do we use somewhere this ensap??? Honza 3/2009
     add_vars();        // adds values from QUERY_STRING_UNESCAPED
 }                             //       and REDIRECT_STRING_UNESCAPED - from url
 
@@ -71,7 +73,7 @@ InputVars::QuoteVars("post", ['encap' => 1]);  // if magicquotes are not set, qu
 
 if ($cancel) {
     if ($anonymous) { // anonymous login
-        go_url( $r_slice_view_url);
+        go_url( $r_slice_view_url, '', $encap );
     } else {
         go_return_or_url(self_base() . "index.php3?slice_id=$slice_id",true,true);
     }
@@ -110,7 +112,7 @@ if ( $update AND !count($err) AND $fields->count() ) {
     if (!count($err)) {
         page_close();
         if ($anonymous) { // anonymous login
-            go_url( $r_slice_view_url);
+            go_url( $r_slice_view_url, '', $encap );
         } else {
             go_return_or_url(self_base() . "index.php3?slice_id=$slice_id",true,true);
         }
