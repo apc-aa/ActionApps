@@ -284,8 +284,6 @@ class inputform {
         }
 
         // add rest "hidden buttons" to the end of form
-        // $buttons['MAX_FILE_SIZE']       = array('value' => IMG_UPLOAD_MAX_SIZE );   // browsers do not use this variable - removed
-        $buttons['encap']               = ['value' => "false"];
 
         //$buttons['vid']                 = array('value' => $vid);   // ?? $vid is not defined here ?? - @todo
 

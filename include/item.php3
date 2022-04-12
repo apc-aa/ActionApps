@@ -184,7 +184,6 @@ function Inputform_url($add, $iid, $sid='', $ret_url='', $vid = null, $var = nul
         $param[] = "id=$iid";
     }
     $param[] = ($add ? 'add=1' : 'edit=1');
-    $param[] = "encap=false";
     if ($sid) {
         $param[] = "slice_id=$sid";
     }
@@ -1177,9 +1176,7 @@ class AA_Item {
         $p = ParamExplode($param);
 
         if ($col == 'hl_href.........' && strlen($p[0]) == 16) {
-            $redirect  = $p[1] ?:
-                                        strtr(AA_INSTAL_URL, ':', '#:') .
-                                        "slice.php3?slice_id=$slice_id&encap=false";
+            $redirect  = $p[1] ?: strtr(AA_INSTAL_URL, ':', '#:') . "slice.php3?slice_id=$slice_id";
             //      return strtr( $this->f_f($col, $p[0] . ':' . $redirect), '#/', ':/') ;
             return $this->RSS_restrict(strtr( $this->f_f($col, $p[0] . ':' . $redirect), '#/', ':/'),500) ;
         }

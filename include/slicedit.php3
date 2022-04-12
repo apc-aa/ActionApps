@@ -233,8 +233,7 @@ if ( $add || $update ) {
                 break;
             }
 
-            $r_slice_view_url = ($slice_url=="" ? StateUrl("../slice.php3"). "&slice_id=$slice_id&encap=false"
-                                                : stripslashes($slice_url));
+            $r_slice_view_url = ($slice_url=="" ? StateUrl("../slice.php3"). "&slice_id=$slice_id" : stripslashes($slice_url));
         } else { // insert (add)
 
             $slice_id = new_id();

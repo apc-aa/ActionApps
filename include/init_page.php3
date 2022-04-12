@@ -39,7 +39,6 @@
  * @return array|string
  */
 
-$encap = $encap ?? $_REQUEST['encap'] ?? false;
 $free  = $free  ?? $_REQUEST['free']  ?? false;
 
 // ----- input variables normalization - start
@@ -56,10 +55,6 @@ if (defined('AA_REGISTER_GLOBALS')) {
     }
 }
 // ----- input variables normalization - end
-
-if ($encap == "false") {   // used in itemedit for anonymous form
-    $encap = false;        // it must be here, because the variable is rewriten (see above)
-}
 
 require_once __DIR__."/config.php3";
 require_once __DIR__."/mgettext.php3";

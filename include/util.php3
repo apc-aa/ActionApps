@@ -154,24 +154,24 @@ function self_server() {
 /** self_base function
  * returns server name with protocol, port and current directory of php script
  */
-function self_base() {
+function self_base(): string {
     return (self_server(). preg_replace('~/[^/]*$~', '', $_SERVER['PHP_SELF']) . '/');
 }
 
 /** document_uri function
  *  On some servers isn't defined DOCUMENT_URI
  *   Ecn - when rewrite is applied - http://privatizacepraha2.cz/cz/aktuality/2084368
- *   and somwhere nor REDIRECT_URL
+ *   and somewhere nor REDIRECT_URL
  *   (canaca.com 2003-09-19 - Apache/1.3.27 (Unix) (Red-Hat/Linux), Honza)
  */
-function document_uri() {
+function document_uri(): string {
     return get_if($_SERVER['DOCUMENT_URI'],$_SERVER['REDIRECT_URL'],$_SERVER['SCRIPT_URL']);
 }
 
 /** shtml_base function
  *  returns server name with protocol, port and current directory of shtml file
  */
-function shtml_base() {
+function shtml_base(): string {
     return (self_server(). preg_replace('~/[^/]*$~', '', document_uri()) . '/');
 }
 
@@ -188,7 +188,7 @@ function shtml_url() {
 function shtml_query_string() {
     // there is problem (at least with QUERY_STRING_UNESCAPED), when
     // param=a%26a&second=2 is returned as param=a\\&a\\&second=2 - we can't
-    // expode it! - that's why we use $REQUEST_URI, if possible
+    // explode it! - that's why we use $REQUEST_URI, if possible
 
     // get off magic quotes
 
@@ -200,7 +200,7 @@ function shtml_query_string() {
 }
 
 /** check, if the script was called as ajax call */
-function IsAjaxCall() {
+function IsAjaxCall(): bool {
     return (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) AND strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest');
 }
 
@@ -1858,7 +1858,7 @@ function IsAlias($identifier): bool
  * @param string $var
  * @return bool
  */
-function IsSigInt($var): bool
+function IsSigInt($var): bool  // like function is_signed(),function is_number(), function is_positove(),
 {
     if (is_int(filter_var($var, FILTER_VALIDATE_INT))) {
         return true;

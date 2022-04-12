@@ -126,67 +126,6 @@ function NamePath($skip, $path, $translate, $separator = " > ", $url="", $whole=
     return $name;
 }
 
-// Returns HTML code for image link to specified url
-function AHrefImg($url, $src, $width="", $height="", $alt="") {
-    if ($url) {
-        return "<a href=\"$url\"><img src=\"$src\" width=\"$width\" height=\"$height\" alt=\"$alt\" border=\"0\"></a>";
-    }
-    return "<img src=\"$src\" width=\"$width\" height=\"$height\" alt=\"$alt\" border=\"0\">";
-}
-
-// returns url of requested file
-function ThisFileName() {
-    return ($_SERVER['SERVER_PROTOCOL']=='INCLUDED') ? $_SERVER['DOCUMENT_URI'] : $_SERVER['PHP_SELF'];
-}
-
-function FillCategoryInfo($category) {
-    global $r_category_id, $r_category_path;
-    $db = getDB();
-    $db->query("SELECT * FROM links_categories WHERE id = $category");
-    if ($db->next_record()) {
-        $r_category_id       = $db->f('id');
-        $r_category_path     = $db->f('path');
-    }
-    freeDB($db);
-}
-
-// get information from profile table, where user setting are stored
-function GetProfileInfo($uid) {
-    if ( !$uid ) {
-        $uid = "nobody";
-    }
-
-    $db = getDB();
-    $db->query("SELECT * FROM links_profiles WHERE uid = '$uid'");
-    if ($db->next_record()) {
-        $ret = $db->record();
-        freeDB($db);
-        return $ret;
-    }
-
-    // if user not exist - get nobody's settings
-    $db->query("SELECT * FROM links_profiles WHERE uid = 'nobody'");
-    if ($db->next_record()) {
-        $ret = $db->record();
-        freeDB($db);
-        return $ret;
-    }
-    freeDB($db);
-    return false;
-}
-
-function TestBaseCat($ctg, $base_cat, $ctg_path) {
-    $cats = explode(",", $ctg_path);
-    for ($found = false, reset($cats); current($cats); next($cats)) {
-        if (current($cats) == $base_cat) {
-            $found = true;
-            break;
-        }
-    }
-
-    return ($found ? $ctg : $base_cat);
-}
-
 /**
  * Slice id for each category in Links module is not random - it is predictable:
  * <category_id>'Links'<shorted AA_ID>

@@ -58,7 +58,7 @@ class itemview {
   var $aliases;            // array of alias definitions. If used with multi-slice,
                            // this variable contains an array of aliases for all slices
                            // aliases[slice_id0] are aliases for slice 0 etc.
-  var $clean_url;          // url of slice page with session id and encap..
+  var $clean_url;          // url of slice page with session id..
   var $group_fld;          // id of field for grouping
   var $disc;               // array of discussion parameters (see apc-aa/view.php3)
   var $get_content_funct;  // function to call, if we want to get content

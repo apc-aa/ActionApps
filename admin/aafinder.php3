@@ -165,7 +165,7 @@ function query_search(array $where, string $phrase): string {
         $slice_name = AA_Slice::getModuleName($slice_id);
         $long_id    = $f['iid'];
 
-        $items[]    = ["<a href=\"itemedit.php3?id=$long_id&edit=1&encap=false&slice_id=$slice_id\">"._m('Edit')."</a>", $slice_name, $f['short_id'], $f['status_code'], date('Y-m-d H:i',$f['post_date']), date('Y-m-d H:i',$f['last_edit']),$f['edited_by']];
+        $items[]    = ["<a href=\"itemedit.php3?id=$long_id&edit=1&slice_id=$slice_id\">"._m('Edit')."</a>", $slice_name, $f['short_id'], $f['status_code'], date('Y-m-d H:i',$f['post_date']), date('Y-m-d H:i',$f['last_edit']),$f['edited_by']];
     }
 
     return $output. GetHtmlTable($items, 'th'). '<br><br>';
@@ -217,7 +217,7 @@ function PrintItemInfo($item_id) {
     }
     $long_id = $item->getItemID();
     $sid     = $item->getSliceID();
-    echo "<br>Item ID: $long_id (". $item->getval('short_id........') .") | <a href=\"".StateUrl("itemedit.php3?id=$long_id&edit=1&encap=false&change_id=$sid")."\" target=\"_blank\">"._m('Edit')."</a>". ' | '. ChangesMonitor::getHistoryLink($item_id);
+    echo "<br>Item ID: $long_id (". $item->getval('short_id........') .") | <a href=\"".StateUrl("itemedit.php3?id=$long_id&edit=1&change_id=$sid")."\" target=\"_blank\">"._m('Edit')."</a>". ' | '. ChangesMonitor::getHistoryLink($item_id);
     echo "<br>Item slice: $sid (". AA_Slice::getModuleName($sid). ')';
     $format = '_#HEADLINE';
     echo "<br>_#HEADLINE: ". $item->unalias($format);

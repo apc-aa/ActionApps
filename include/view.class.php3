@@ -257,8 +257,6 @@ class AA_View {
         $format['odd_row_format']      = $this->fields['odd'];
         $format['row_delimiter']       = $this->fields['row_delimiter'];
         $format['even_odd_differ']     = $this->fields['even_odd_differ'];
-        $format['banner_position']     = $this->fields['banner_position'];
-        $format['banner_parameters']   = $this->fields['banner_parameters'];
         $format['selected_item']       = $selected_item;
         $format['id']                  = $this->fields['slice_id'];
         $format['vid']                 = $this->fields['id'];
@@ -280,9 +278,9 @@ class AA_View {
      *  in the template code
      *  static method
      * @param $text
-     * @return if|mixed|string
+     * @return string
      */
-    static function getViewJumpLinks($text) {
+    static function getViewJumpLinks($text): string {
         $ret = '';
         $matches = [];
         if ($text) {

@@ -2873,8 +2873,9 @@ class AA_Stringexpand_Conds extends AA_Stringexpand_Nevercache {
  * Main usage is to display some field or alias of given item:
  *   {item:171055:_#HEADLINE}
  *
- * You can also display it for more than one item and use the delimeter
+ * You can also display it for more than one item and use the delimiter
  *   {item:53443-54322-53553:_#HEADLINE:, }
+ *   {item:{@relation........:-}:_#KEY_____->_#VALUE___:jsonasoc}
  *
  * You can also use it to display item in tree. In fact, the {item} with
  * trees works exactly the same way, as {itree}, but {itree} has more logical
@@ -2900,7 +2901,7 @@ class AA_Stringexpand_Item extends AA_Stringexpand {
      *                     - now you can also use tree representation like:
      *                     3234(3443-3678(3872-3664)-3223)-4045  (see above)
      * @param $content    string
-     * @param $delimeter  string
+     * @param $delimeter  string   - coud be also 'json' or jsonasoc -  {item:{@relation........:-}:_#KEY_____->_#VALUE___:jsonasoc}
      * @param $top        string
      * @param $bottom     string
      * @param $bin        string - allowed bins dash separated: ACTIVE-HOLDING-TRASH. Default is ACTIVE (pending and expired is not available, for now)

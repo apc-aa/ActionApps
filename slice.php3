@@ -20,7 +20,6 @@ https://www.apc.org/
 */
 
 //expected  slice_id
-//expected  encap     // determines wheather this file is ssi included or called directly
 //optionaly sh_itm    // if specified - selected item is shown in full text
 //optionaly x         // the same as sh_itm, but short_id is used instead
                      // implemented for shorter item url (see _#SITEM_ID alias)
@@ -118,9 +117,6 @@ foreach ($_REQUEST as $k => $v) {
 }
 // ----- input variables normalization - end ----------------------------------
 
-
-$encap = ( ($encap=="false") ? false : true );
-
 require_once __DIR__."/./include/config.php3";
 require_once __DIR__."/include/util.php3";
 require_once __DIR__."/include/item.php3";
@@ -136,7 +132,7 @@ require_once __DIR__."/include/locsess.php3";
 /** MyUrl function - was in sessions before, but now it is used just in this script, so moved here and rewritten to handle encap (=shtml)/not encap version
  *  rewriten to return URL of shtml page that includes this script instead to return self url of this script.
  */
-function MyUrl($encap, $scr_url) {  //sliceID is here just for compatibility with MyUrl function in extsess.php3
+function MyUrl($scr_url) {  //sliceID is here just for compatibility with MyUrl function in extsess.php3
 
     $server  = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https' : 'http';
     $server .= '://'. $_SERVER['HTTP_HOST'];
@@ -148,7 +144,8 @@ function MyUrl($encap, $scr_url) {  //sliceID is here just for compatibility wit
     }
 
     $ret = $server;
-    if ($encap) {
+
+    if ($_SERVER['SERVER_PROTOCOL']=='INCLUDED') {    // SSI encapsulated (was $encap)
         if (isset($_SERVER['REDIRECT_DOCUMENT_URI'])) {  // CGI --enable-force-cgi-redirect
             $ret .= $_SERVER['REDIRECT_DOCUMENT_URI'];
         } elseif (isset($_SERVER['DOCUMENT_URI'])) {
@@ -164,16 +161,6 @@ function MyUrl($encap, $scr_url) {  //sliceID is here just for compatibility wit
     } else {
         $ret .= $_SERVER['SCRIPT_NAME'];
     }
-
-    // // not executed - mode is cookie. Could be removed (Honza 16-03-31)
-    // if ( ($this->mode == 'get') AND (!$noquery) ) {
-    //    if ($encap) {
-    //        $ret .= "?".urlencode($this->name)."=".$this->id;
-    //    } else {
-    //        $ret .= "?slice_id=$sliceID" . ($encap?"":"&encap=false"). "&".urlencode($this->name)."=".$this->id;
-    //    }
-    // }
-
     return $ret;
 }
 
@@ -198,6 +185,8 @@ $r_state_vars = unserialize($r_packed_state_vars);
 // pagecache, it is not so big problem now
 
 //$sess->register(item_ids);
+
+$encap = ($_SERVER['SERVER_PROTOCOL']=='INCLUDED');   // SSI encapsulated (was $encap)
 
 if ($encap) {                    // adds values from QUERY_STRING_UNESCAPED
     add_vars("");                //       and REDIRECT_STRING_UNESCAPED
@@ -352,7 +341,7 @@ if ( $sh_itm OR $x OR $o OR $seo ) {
     }
 
     if (!isset($hideFulltext)) {
-        $itemview = new itemview($slice_info, $aliases, $zid, 0, 1, MyUrl($encap, $scr_url));
+        $itemview = new itemview($slice_info, $aliases, $zid, 0, 1, MyUrl($scr_url));
         echo $itemview->get_output_cached("fulltext");
     }
 
@@ -379,7 +368,7 @@ if ( $sh_itm OR $x OR $o OR $seo ) {
             $format  = GetDiscussionFormat($view_info);
             $format['id'] = q_pack_id($slice_id);                  // set slice_id because of caching
 
-            $itemview = new itemview($format, $aliases, null, "", "", MyUrl($encap, $scr_url), $disc);
+            $itemview = new itemview($format, $aliases, null, "", "", MyUrl($scr_url), $disc);
             echo $itemview->get_output("discussion");
             // discussions should not be
             // cached or even better (TODO) discussions should have its separate slice
@@ -398,7 +387,7 @@ if ( $items AND is_array($items) ) {   // shows all $items[] as fulltext one aft
         $ids[] = substr($k,1);    //delete starting character ('x') - used for interpretation of index as string, not number (by PHP)
     }
     $zids     = new zids($ids,"l");
-    $itemview = new itemview($slice_info, $aliases, $zids, 0, $zids->count(), MyUrl($encap, $scr_url));
+    $itemview = new itemview($slice_info, $aliases, $zids, 0, $zids->count(), MyUrl($scr_url));
     ExitPage($itemview->get_output_cached("itemlist"));
 }
 
@@ -533,7 +522,7 @@ if ($mlxslice) {
 
 if (!is_object($scr)) {
     $sess->register('scr');
-    $scr_url_param = get_url(($scr_url ? StateUrl("$scr_url") : MyUrl($encap, $scr_url)), is_array($als) ? ['als'=>$als] : '');
+    $scr_url_param = get_url(($scr_url ? StateUrl("$scr_url") : MyUrl($scr_url)), is_array($als) ? ['als' =>$als] : '');
     $scr = new AA_Scroller_Easy( 'scr', $scr_url_param, $slice_info['d_listlen'], $zids->count());
 }
 
@@ -569,16 +558,9 @@ if ( !$scrl ) {
     $scr->current = $scr_go;
 }
 
-
-if ( !$srch AND !$encap AND !$easy_query ) {
-    $cur_cats=GetCategories($db, q_pack_id($slice_id));     // get list of categories
-    pCatSelector(MyUrl($encap, $scr_url), $cur_cats, $scr->filters['category_id']['value'], $slice_id, $encap);
-}
-
-
 if ($zids->count() > 0) {
 
-    $itemview = new itemview($slice_info, $aliases, $zids, $scr->metapage * ($scr->current - 1), ($group_n ? -$group_n : $scr->metapage), MyUrl($encap, $scr_url));
+    $itemview = new itemview($slice_info, $aliases, $zids, $scr->metapage * ($scr->current - 1), ($group_n ? -$group_n : $scr->metapage), MyUrl($scr_url));
 
     echo $itemview->get_output_cached("view");
 
