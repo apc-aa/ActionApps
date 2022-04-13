@@ -5106,10 +5106,6 @@ $_m["translate from"]
 $_m["Jabber Online Status Indicator"]
     = "";
 
-// include/stringexpand.php3, row 2214
-$_m["PHP patterns in Preg_Match aro not allowed"]
-    = "";
-
 // include/stringexpand.php3, row 2450
 $_m["Date \\ Item ID"]
     = "";

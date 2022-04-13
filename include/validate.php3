@@ -168,14 +168,15 @@ class AA_Validate extends AA_Serializable {
      *  Protected static method - used only from AA_Validate_* objects
      * @param $err_id
      * @param $err_msg
+     * @param string $var_id
      * @return bool
      */
-    protected static function bad($err_id, $err_msg) : bool {
-        self::lastErr($err_id, $err_msg);
+    protected static function bad($err_id, $err_msg, string $var_id = '') : bool {
+        self::lastErr($err_id, $var_id ? ($err_msg." [$var_id]") : $err_msg);
         return false;
     }
 
-    /** returns the type attribute for the HTML 5 <input> tag with possible some more attributtes (like min, max, step, pattern, ...) */
+    /** returns the type attribute for the HTML 5 <input> tag with possible some more attributes (like min, max, step, pattern, ...) */
     public function getHtmlInputAttr() {
         return [];
     }
@@ -188,7 +189,7 @@ class AA_Validate extends AA_Serializable {
  *  @param   $step
  */
 class AA_Validate_Signed extends AA_Validate {
-    /** Minum number */
+    /** Minimum number */
     var $min;
 
     /** Maximum number */
@@ -219,14 +220,14 @@ class AA_Validate_Signed extends AA_Validate {
      */
     public function validate(string &$var, AA_Content $content_context = null, string $var_id = ''): bool {
         if (!IsSigInt($var)) {
-            return AA_Validate::bad(VALIDATE_ERROR_BAD_TYPE, _m('No integer value') . "'$var'");
+            return AA_Validate::bad(VALIDATE_ERROR_BAD_TYPE, _m('No integer value') . "'$var'", $var_id);
         }
         $var = (int)$var;
         if (IsSigInt($this->max) and ($var > $this->max)) {
-            return AA_Validate::bad(VALIDATE_ERROR_OUT_OF_RANGE, _m('Out of range - too big'));
+            return AA_Validate::bad(VALIDATE_ERROR_OUT_OF_RANGE, _m('Out of range - too big'), $var_id);
         }
         if (IsSigInt($this->min) and ($var < $this->min)) {
-            return AA_Validate::bad(VALIDATE_ERROR_OUT_OF_RANGE, _m('Out of range - too small'));
+            return AA_Validate::bad(VALIDATE_ERROR_OUT_OF_RANGE, _m('Out of range - too small'), $var_id);
         }
         return true;
     }
@@ -313,12 +314,12 @@ class AA_Validate_Regexp extends AA_Validate {
      */
     public function validate(string &$var, AA_Content $content_context = null, string $var_id = ''): bool {
         if ( ($this->maxlength > 0) AND (strlen($var) > $this->maxlength) ) {
-            return AA_Validate::bad(VALIDATE_ERROR_TOO_LONG, _m('Too long'));
+            return AA_Validate::bad(VALIDATE_ERROR_TOO_LONG, _m('Too long'), $var_id);
         }
         if ( strlen($this->pattern) < 3 ) {
             return true;
         }
-        return  preg_match($this->pattern, $var) ? true : AA_Validate::bad(VALIDATE_ERROR_OUT_OF_RANGE, _m('Do not match the pattern'));
+        return  preg_match($this->pattern, $var) ? true : AA_Validate::bad(VALIDATE_ERROR_OUT_OF_RANGE, _m('Do not match the pattern'), $var_id);
     }
 
     /** checks if the variable is empty
@@ -394,7 +395,7 @@ class AA_Validate_Id extends AA_Validate {
      */
     public function validate(string &$var, AA_Content $content_context = null, string $var_id = ''): bool {
         if (!is_long_id($var)) {
-            return AA_Validate::bad(VALIDATE_ERROR_BAD_TYPE, _m('No ID value'));
+            return AA_Validate::bad(VALIDATE_ERROR_BAD_TYPE, _m('No ID value'), $var_id);
         }
         return true;
     }
@@ -426,14 +427,14 @@ class AA_Validate_Float extends AA_Validate {
      */
     public function validate(string &$var, AA_Content $content_context = null, string $var_id = ''): bool {
         if ( !is_float($var) ) {
-            return AA_Validate::bad(VALIDATE_ERROR_BAD_TYPE, _m('No float value'));
+            return AA_Validate::bad(VALIDATE_ERROR_BAD_TYPE, _m('No float value'), $var_id);
         }
         $var = (float)$var;
         if ( !is_null($this->f_max) AND ($var > $this->f_max) ) {
-            return AA_Validate::bad(VALIDATE_ERROR_OUT_OF_RANGE, _m('Out of range - too big'));
+            return AA_Validate::bad(VALIDATE_ERROR_OUT_OF_RANGE, _m('Out of range - too big'), $var_id);
         }
         if ( !is_null($this->f_min) AND ($var < $this->f_min) ) {
-            return AA_Validate::bad(VALIDATE_ERROR_OUT_OF_RANGE, _m('Out of range - too small'));
+            return AA_Validate::bad(VALIDATE_ERROR_OUT_OF_RANGE, _m('Out of range - too small'), $var_id);
         }
         return true;
     }
@@ -456,7 +457,7 @@ class AA_Validate_Enum extends AA_Validate {
      * @return bool
      */
     public function validate(string &$var, AA_Content $content_context = null, string $var_id = ''): bool {
-        return isset($this->possible_values[$var]) ? true : AA_Validate::bad(VALIDATE_ERROR_NOT_IN_LIST, _m('Out of range - not in the list'));
+        return isset($this->possible_values[$var]) ? true : AA_Validate::bad(VALIDATE_ERROR_NOT_IN_LIST, _m('Out of range - not in the list'), $var_id);
     }
 }
 
@@ -472,12 +473,12 @@ class AA_Validate_Login extends AA_Validate {
     public function validate(string &$var, AA_Content $content_context = null, string $var_id = ''): bool {
         $len = strlen($var);
         if ( $len<3 ) {
-            return AA_Validate::bad(VALIDATE_ERROR_TOO_SHORT, _m('Too short'));
+            return AA_Validate::bad(VALIDATE_ERROR_TOO_SHORT, _m('Too short'), $var_id);
         }
         if ( $len>32 ) {
-            return AA_Validate::bad(VALIDATE_ERROR_TOO_LONG, _m('Too long'));
+            return AA_Validate::bad(VALIDATE_ERROR_TOO_LONG, _m('Too long'), $var_id);
         }
-        return preg_match('/^[a-zA-Z0-9]*$/', $var) ? true : AA_Validate::bad(VALIDATE_ERROR_WRONG_CHARACTERS, _m("Wrong characters - you should use a-z, A-Z and 0-9 characters"));
+        return preg_match('/^[a-zA-Z0-9]*$/', $var) ? true : AA_Validate::bad(VALIDATE_ERROR_WRONG_CHARACTERS, _m("Wrong characters - you should use a-z, A-Z and 0-9 characters"), $var_id);
     }
 
     /** returns the type attribute for the HTML 5 <input> tag with possible some
@@ -500,10 +501,10 @@ class AA_Validate_Pwd extends AA_Validate {
     public function validate(string &$var, AA_Content $content_context = null, string $var_id = ''): bool {
         $len = strlen($var);
         if ( $len<5 ) {
-            return AA_Validate::bad(VALIDATE_ERROR_TOO_SHORT, _m('Too short'));
+            return AA_Validate::bad(VALIDATE_ERROR_TOO_SHORT, _m('Too short'), $var_id);
         }
         if ( $len>255 ) {
-            return AA_Validate::bad(VALIDATE_ERROR_TOO_LONG, _m('Too long'));
+            return AA_Validate::bad(VALIDATE_ERROR_TOO_LONG, _m('Too long'), $var_id);
         }
         return true;
     }
@@ -560,14 +561,14 @@ class AA_Validate_Unique extends AA_Validate {
 
         if ( $this->scope == 'username') {
             if ( !AA::$perm->isUsernameFree($var) AND ( !$this->item_id OR (AA_Reader::name2Id($var) != $this->item_id))) {
-                return AA_Validate::bad(VALIDATE_ERROR_NOT_UNIQUE, _m('Username is not unique'));
+                return AA_Validate::bad(VALIDATE_ERROR_NOT_UNIQUE, _m('Username is not unique'), $var_id);
             }
             return true;
         }
 
         $field_to_check = $this->field_id ?: $var_id;
         if (!$field_to_check) {
-            return AA_Validate::bad(VALIDATE_ERROR_BAD_PARAMETER, _m('Wrong parameter field_id for unique check'));
+            return AA_Validate::bad(VALIDATE_ERROR_BAD_PARAMETER, _m('Wrong parameter field_id for unique check'), $var_id);
         }
         $tables = ['content', 'item'];
         $conds  = [['content.item_id', 'item.id', 'j'], ['item.status_code',1]];  // only approved items
@@ -575,7 +576,7 @@ class AA_Validate_Unique extends AA_Validate {
             $slice = null;
             $slice_id = AA::$slice_id ?: AA::$module_id;   // AA\IO\Saver or itemedit.php tells us the current slice
             if ( !$slice_id OR !($slice = AA_Slice::getModule($slice_id)) OR !$slice->getField($field_to_check) ) {
-                return AA_Validate::bad(VALIDATE_ERROR_BAD_PARAMETER, _m('Wrong parameter field_id for unique check'));
+                return AA_Validate::bad(VALIDATE_ERROR_BAD_PARAMETER, _m('Wrong parameter field_id for unique check'), $var_id);
             }
             $conds[] = ['item.slice_id', $slice_id, 'l'];
         }
@@ -587,7 +588,7 @@ class AA_Validate_Unique extends AA_Validate {
             $conds[] = ['item.id', $iid, 'l<>'];
         }
         if (DB_AA::test($tables, $conds)) {
-            return AA_Validate::bad(VALIDATE_ERROR_NOT_UNIQUE, _m('Not unique - value already used'));
+            return AA_Validate::bad(VALIDATE_ERROR_NOT_UNIQUE, _m('Not unique - value already used'), $var_id);
         }
         return true;
     }
@@ -666,7 +667,7 @@ class AA_Validate_Text extends AA_Validate {
      */
     public function validate(string &$var, AA_Content $content_context = null, string $var_id = ''): bool {
         if ( ($this->maxlength > 0) AND (strlen($var) > $this->maxlength) ) {
-            return AA_Validate::bad(VALIDATE_ERROR_TOO_LONG, _m('Too long'));
+            return AA_Validate::bad(VALIDATE_ERROR_TOO_LONG, _m('Too long'), $var_id);
         }
         return true;
     }
@@ -730,7 +731,6 @@ function get_javascript_field_validation() {
     */
     return /** @lang JavaScript */ "
         function validate (myform, txtfield, type, required, add) {
-            var ble;
             var invalid_email = /(@.*@)|(\\.\\.)|(@\\.)|(\\.@)|(^\\.)/;
             var valid_email = /^.+@[a-zA-Z0-9\\-\\.]+\\.([a-zA-Z]{2,6}|[0-9]{1,3})$/;
 

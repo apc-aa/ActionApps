@@ -233,7 +233,7 @@ if ($lang_file) {
 $is_valid = ($perm_alias = $module->getProperty('perm_alias')) ? AA::Stringexpander()->unalias("{item:$hit_lid:{($perm_alias)}}") : 'Valid';
 
 
-// --- Process all AJAX commandes and possibly EXIT ---------------------
+// --- Process all AJAX commands and possibly EXIT ---------------------
 
 $content_function = function () use (&$module, &$apc_state) {
     // we need to evaluate $page_content in order to reevaluate DependentParts
