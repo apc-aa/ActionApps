@@ -56,7 +56,9 @@ $select_start = get_if( (int)$_GET['select_start'], (int)$links_info['select_sta
 $select_depth = substr_count(Links_GetCategoryColumn( $select_start, 'path' ), ',');  // count tree start category depth
 
 // load right langfile, if it is not loaded
-bind_mgettext_domain($r_lang_file);
+if ($r_lang_file) {
+    bind_mgettext_domain($r_lang_file);
+}
 
 // r_err and r_msg - passes messages between scripts
 if ( !isset($r_err) ) {

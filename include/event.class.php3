@@ -840,11 +840,12 @@ function Event_ItemInserted_Efekt( $type, $slice_id, $slice_type, $ret_params, $
     $item     = AA_Items::getItem(new zids($short_id, 's'));
 
     if ($email1) {
-        return AA_Mail::sendTemplate(4, [$email1], $item, false) > 0;
+        $sent = AA_Mail::sendTemplate(4, [$email1], $item, false);
+        AA_Log::write('DEBUG', AA_Log::context(), "SID:$short_id, EKIS:$ekis_id, MAIL:$email1 - $sent");
+        return $sent > 0;
     }
     return false;
 }
-
 
 ///**
 // * @param $type
