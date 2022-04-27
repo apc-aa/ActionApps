@@ -4003,7 +4003,7 @@ class AA_Stringexpand_Ifeq extends AA_Stringexpand_Nevercachenotrim {
         }
         if ($ret === false) {
             // else text
-            $ret = isset($arg_list[$i]) ? $arg_list[$i] : '';
+            $ret = $arg_list[$i] ?? '';
         }
         // _#2 is not very useful, but we have it from the times the function was just for one option
         return str_replace(['_#1','_#2'], [$etalon, $arg_list[0]], $ret);
@@ -4070,7 +4070,7 @@ class AA_Stringexpand_If extends AA_Stringexpand_Nevercachenotrim {
         }
         if ($ret === false) {
             // else text
-            $ret = isset($arg_list[$i]) ? $arg_list[$i] : '';
+            $ret = $arg_list[$i] ?? '';
         }
         // _#2 is not very useful but we have it from the times the function was just for one option
         return str_replace(['_#1','_#2'], [PhpFloat($etalon), $arg_list[0]], $ret);
@@ -4151,7 +4151,7 @@ class AA_Stringexpand_Ifin extends AA_Stringexpand_Nevercachenotrim {
         }
         if ($ret === false) {
             // else text
-            $ret     = isset($arg_list[$i]) ? $arg_list[$i] : '';
+            $ret     = $arg_list[$i] ?? '';
             $matched = $replace_just_matched ? '' : $ret;
         }
         return $replace_just_matched ? strtr($ret, ['_#1'=>$matched]) : str_replace(['_#1','_#2'], [$haystack, $matched], $ret);
@@ -6987,7 +6987,9 @@ class AA_Stringexpand_Htmlspecialchars extends AA_Stringexpand_Nevercachenotrim 
     }
 }
 
-/** AA counterpart of PHP urlencode() */
+/** AA counterpart of PHP urlencode()
+ * @deprecated - use RFC 3986 compliant {rawurlencode}
+ */
 class AA_Stringexpand_Urlencode extends AA_Stringexpand_Nevercachenotrim {
 
     /** @param string $string  */
@@ -6996,12 +6998,32 @@ class AA_Stringexpand_Urlencode extends AA_Stringexpand_Nevercachenotrim {
     }
 }
 
-/** AA counterpart of PHP urldecode() */
+/** AA counterpart of PHP rawurlencode()
+ */
+class AA_Stringexpand_Rawurlencode extends AA_Stringexpand_Nevercachenotrim {
+
+    /** @param string $string  */
+    function expand($string='') {
+        return rawurlencode($string);
+    }
+}
+
+/** AA counterpart of PHP urldecode()
+ * @see AA_Stringexpand_Rawurldecode (RFC compliant version)  */
 class AA_Stringexpand_Urldecode extends AA_Stringexpand_Nevercachenotrim {
 
     /** @param string $string  */
     function expand($string='') {
         return urldecode($string);
+    }
+}
+
+/** AA counterpart of PHP rawurldecode() */
+class AA_Stringexpand_Rawurldecode extends AA_Stringexpand_Nevercachenotrim {
+
+    /** @param string $string  */
+    function expand($string='') {
+        return rawurldecode($string);
     }
 }
 
@@ -7225,7 +7247,7 @@ class AA_Stringexpand_Hitcounter extends AA_Stringexpand {
             foreach ( $stat as $day => $counts ) {
                 $ret .= "\n  <tr>\n    <td>$day</td>";
                 foreach ($s_ids as $sid) {
-                    $ret .= "\n    <td>".(isset($counts[$sid]) ? $counts[$sid] : '0') ."</td>";
+                    $ret .= "\n    <td>".($counts[$sid] ?? '0') ."</td>";
                 }
                 $ret .= "\n  </tr>";
             }
