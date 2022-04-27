@@ -280,7 +280,7 @@ class AA_ClientAuth {
         }
         $this->_aa_responder_script = $options['aa_url'] . 'central/responder.php';
         $this->_cookie_lifetime     = isset($options['cookie_lifetime']) ? (time() + $options['cookie_lifetime']) : 0;
-        $this->_reader_slices       = isset($options['reader_slices'])   ? $options['reader_slices'] : [];
+        $this->_reader_slices       = $options['reader_slices'] ?? [];
     }
 
     function checkAuth() {

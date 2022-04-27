@@ -554,10 +554,9 @@ class AA_Showview {
             AA::$langnum = [AA_Langs::getLangName2Num(AA::$lang)];   // array of prefered languages in priority order.
         }
 
-        $noitem_msg = (isset($this->_view_param["noitem"]) ? $this->_view_param["noitem"] :
-                       ( ((strlen($view->f('noitem_msg')) > 0) ) ?
-                       str_replace( '<!--Vacuum-->', '', $view->f('noitem_msg')) :
-                                         ("<div>"._m("No item found") ."</div>")));
+        $noitem_msg = ($this->_view_param["noitem"] ?? (((strlen($view->f('noitem_msg')) > 0)) ?
+                str_replace('<!--Vacuum-->', '', $view->f('noitem_msg')) :
+                ("<div>" . _m("No item found") . "</div>")));
 
         $view->setBannerParam(ParseBannerParam($this->_view_param["banner"]));  // if banner set format
 

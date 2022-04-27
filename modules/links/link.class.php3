@@ -80,7 +80,7 @@ class linkassignment {
      *  and possibly sets category
      */
     function create_new($cid=null, $priority=null) {
-        return new linkassignment(isset($cid) ? $cid : $this->category, $this->link, $this->base, $this->state, $this->proposal, $this->proposal_delete, isset($priority) ? $priority : $this->priority);
+        return new linkassignment($cid ?? $this->category, $this->link, $this->base, $this->state, $this->proposal, $this->proposal_delete, $priority ?? $this->priority);
     }
 
     /** Returns if the assignment is OK - if category exists */

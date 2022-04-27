@@ -632,7 +632,7 @@ function add_constant_group($group_id, $constants2import)
     $priority_step = 10;
     $priority      = 0;
     foreach ($constants2import as $constant) {
-        $priority = isset($constant['pri']) ? $constant['pri'] : $priority + $priority_step;
+        $priority = $constant['pri'] ?? $priority + $priority_step;
         $varset->clear();
         $varset->add("value",    "text",     $constant['value']);
         $varset->add("name",     "text",     $constant['name']);

@@ -319,22 +319,23 @@ class AA_Field implements ArrayAccess {
         $translations = $this->getTranslations();
 
         // AA_Property($id='', $name='', $type='text', $multi=false, $persistent=true, $validator=null, $required=false, $input_help='', $input_morehlp='', $example='', $show_content_type_switch=0, $content_type_switch_default=FLAG_HTML, $perms=null, $default=null, $translations=null) {
-        return new AA_Property( $this->getId(),
-                                isset($widget_properties['name']) ? $widget_properties['name'] : $this->getName(),
-                                $this->getProperty('in_item_tbl') ? AA::Metabase()->getFieldType('item',$this->getProperty('in_item_tbl')) : ($this->getProperty('text_stored') ? 'text' : 'int'),
-                                isset($widget_properties['multiple']) ? $widget_properties['multiple'] : $this->getWidget()::multiple(),
-                                false,                   // persistent @todo
-                                AA_Validate::factoryByString($this->data['input_validate']), // null,
-                                isset($widget_properties['required']) ? (bool)$widget_properties['required'] : $this->required(),
-                                isset($widget_properties['input_help']) ? $widget_properties['input_help'] : $this->getProperty('input_help'),
-                                isset($widget_properties['input_morehlp']) ? $widget_properties['input_morehlp'] : $this->getProperty('input_morehlp'),
-                                null,               // $example;
-                                isset($widget_properties['show_formatters']) ? (int)$widget_properties['show_formatters'] : ($this->getProperty('html_show') ? AA_Formatters::STANDARD_FORMATTERS : 0),
-                                isset($widget_properties['default_formatter']) ? (int)$widget_properties['default_formatter'] : $this->getDefaultFormatterFlag(),
-                                null,               // perms
-                                isset($widget_properties['default']) ? $widget_properties['default'] : $this->getDefault(),
-                                $translations
-                               );
+        return new AA_Property(
+            $this->getId(),
+            $widget_properties['name'] ?? $this->getName(),
+            $this->getProperty('in_item_tbl') ? AA::Metabase()->getFieldType('item',$this->getProperty('in_item_tbl')) : ($this->getProperty('text_stored') ? 'text' : 'int'),
+            $widget_properties['multiple'] ?? $this->getWidget()::multiple(),
+            false,                   // persistent @todo
+            AA_Validate::factoryByString($this->data['input_validate']), // null,
+            isset($widget_properties['required']) ? (bool)$widget_properties['required'] : $this->required(),
+            $widget_properties['input_help'] ?? $this->getProperty('input_help'),
+            $widget_properties['input_morehlp'] ?? $this->getProperty('input_morehlp'),
+            null,               // $example;
+            isset($widget_properties['show_formatters']) ? (int)$widget_properties['show_formatters'] : ($this->getProperty('html_show') ? AA_Formatters::STANDARD_FORMATTERS : 0),
+            isset($widget_properties['default_formatter']) ? (int)$widget_properties['default_formatter'] : $this->getDefaultFormatterFlag(),
+            null,               // perms
+            $widget_properties['default'] ?? $this->getDefault(),
+            $translations
+        );
     }
 
     /** getWidgetAjaxHtml function
@@ -535,7 +536,7 @@ class AA_Field implements ArrayAccess {
     }
     /** implements ArrayAccess */
     public function offsetGet($offset) {
-        return isset($this->data[$offset]) ? $this->data[$offset] : null;
+        return $this->data[$offset] ?? null;
     }
 }
 

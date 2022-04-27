@@ -1882,7 +1882,7 @@ class AA_Items {
         if ( $zid->use_short_ids() ) {
             $id = $zid->id();
             // is it cached under its id (we expect short id here)
-            return isset($this->_i[$id]) ? $this->_i[$id] : null;
+            return $this->_i[$id] ?? null;
         }
 
         // long or packed

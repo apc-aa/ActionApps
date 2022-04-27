@@ -34,7 +34,7 @@
  */
 function get_mgettext_lang() {
     global $mgettext_lang;
-    return isset($mgettext_lang) ? $mgettext_lang : 'en';
+    return $mgettext_lang ?? 'en';
 }
 
 /** bind_mgettext_domain function

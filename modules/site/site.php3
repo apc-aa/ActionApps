@@ -258,7 +258,7 @@ if ((AA::$headers['encoding'] != 'utf-8') && (AA::$encoding != 'utf-8') && IsAja
 $cacheentry = new Cacheentry($page_content, AA::getHeaders(), $hit_lid, ((is_object($auth) AND $auth->is_user()) ? 'private' : 'public'));
 $cacheentry->processPage();
 
-// changed the way, how to get $slices4cache - now we ask for module ids realy
+// changed the way, how to get $slices4cache - now we ask for module ids really
 // used during page generation. Honza 2015-12-29
 $slices4cache = AA_Module::getUsedModules();
 if (empty($slices4cache)) {    // can't be combined empty() and assignment = for php 5.3

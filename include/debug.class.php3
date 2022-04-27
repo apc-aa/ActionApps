@@ -419,9 +419,9 @@ class PhpConsole {
                 }
 
                 $event = new PhpConsoleEvent();
-                $event->tags = 'error,' . (isset($this->codesTags[$code]) ? $this->codesTags[$code] : 'warning');
+                $event->tags = 'error,' . ($this->codesTags[$code] ?? 'warning');
                 $event->message = $message;
-                $event->type = isset($this->codesNames[$code]) ? $this->codesNames[$code] : $code;
+                $event->type = $this->codesNames[$code] ?? $code;
                 $event->file = $file;
                 $event->line = $line;
                 $event->trace = debug_backtrace();

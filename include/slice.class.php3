@@ -207,7 +207,7 @@ class AA_Module {
                 $this->module_setting = [];
             }
         }
-        return isset($this->module_setting[$prop]) ? $this->module_setting[$prop] : false;
+        return $this->module_setting[$prop] ?? false;
     }
 
     protected function _isSpecificTableProperty($prop) {
@@ -223,7 +223,7 @@ class AA_Module {
                 unset($this->table_setting['id']);  // do not use it from here - it is packed - use $this->module_id instead
             }
         }
-        return isset($this->table_setting[$prop]) ? $this->table_setting[$prop] : false;
+        return $this->table_setting[$prop] ?? false;
     }
 
     protected function _isModuleObjectProperty($prop) {
@@ -382,7 +382,7 @@ class AA_Slice extends AA_Module {
                 $this->table_setting['reading_password'] =  AA_Credentials::encrypt($this->table_setting['reading_password']);
             }
         }
-        return isset($this->table_setting[$prop]) ? $this->table_setting[$prop] : false;
+        return $this->table_setting[$prop] ?? false;
     }
 
     /** loadsettingfields function

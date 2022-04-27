@@ -94,7 +94,7 @@ class AA_Manager extends AA_Storable {
     function __construct($manager_id, $settings) {
         global $r_state, $sess;
 
-        $this->show        = isset($settings['show']) ? $settings['show'] : MGR_ALL ;
+        $this->show        = $settings['show'] ?? MGR_ALL;
         $this->module_id   = $settings['module_id'];
         $this->_manager_id = $manager_id;
 
@@ -127,8 +127,8 @@ class AA_Manager extends AA_Storable {
             }
         }
 
-        $this->bin           = isset($settings['bin']) ? $settings['bin'] : 'app';
-        $this->managed_class = isset($settings['managed_class']) ? $settings['managed_class'] : '';
+        $this->bin           = $settings['bin'] ?? 'app';
+        $this->managed_class = $settings['managed_class'] ?? '';
 
         // create page scroller -----------------------------------------------
         // could be redefined by view (see ['itemview']['manager_vid'])

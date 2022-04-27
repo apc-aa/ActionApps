@@ -539,7 +539,7 @@ class zids implements Iterator, ArrayAccess, Countable {
     public function offsetSet($offset, $value) { $this->a[$offset] = $value;      }
     public function offsetExists($offset)      { return isset($this->a[$offset]); }
     public function offsetUnset($offset)       { unset($this->a[$offset]);        }
-    public function offsetGet($offset)         { return isset($this->a[$offset]) ? $this->a[$offset] : null; }
+    public function offsetGet($offset)         { return $this->a[$offset] ?? null; }
 } // class zids
 
 /** guesstype function

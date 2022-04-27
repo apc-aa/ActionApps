@@ -541,7 +541,7 @@ class AA_MbT implements Iterator, ArrayAccess, Countable {
     public function offsetSet($offset, $value) { $this->c[$offset] = $value;      }
     public function offsetExists($offset)      { return isset($this->c[$offset]); }
     public function offsetUnset($offset)       { unset($this->c[$offset]);        }
-    public function offsetGet($offset)         { return isset($this->c[$offset]) ? $this->c[$offset] : null; }
+    public function offsetGet($offset)         { return $this->c[$offset] ?? null; }
 }
 
 /** @todo convert to static class variables after move to PHP5 */
@@ -769,7 +769,7 @@ class AA_Metabase {
             'slice_owner'         => ['id'],
             'view'                => ['slice_id']
         ];
-        return isset($PACKED[$tablename]) ? $PACKED[$tablename] : [];
+        return $PACKED[$tablename] ?? [];
     }
 
     /** The best (most safe) low-level approach to update data in the AA table - the data are checked before storing against database schema

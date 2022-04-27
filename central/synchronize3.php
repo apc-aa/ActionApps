@@ -162,7 +162,7 @@ if ( isset($differences) ) {
 FrmTabSeparator(_m('Synchronize'));
 FrmStaticText(_m('Template ActionApps'), $aas[$_POST['template_aa']]->getName());
 FrmStaticText(_m('Compared and Updated ActionApps'), $aas[$_POST['comparation_aa']]->getName());
-$aa2update = isset($_POST['destination_aa']) ? $_POST['destination_aa'] : $_POST['comparation_aa'];
+$aa2update = $_POST['destination_aa'] ?? $_POST['comparation_aa'];
 FrmHidden("destination_aa[]", $aa2update);
 
 //FrmInputMultiSelect('destination_aa[]', _m('AA to update'), $aas_array, $aa2update, 20, false, true, _m('ActionApps installation to update'));

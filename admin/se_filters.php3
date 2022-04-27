@@ -215,7 +215,7 @@ function PrintOneRow($id, $cat_name, $i) {
     echo "</td>\n<td class=\"tabtxt\">". $cat_name. "</td><td>";
     $selectname = "categ_". $i;
     if ( isset($to_categories) AND is_array($to_categories) ) {
-        FrmSelectEasy($selectname, $to_categories, isset($selcat[$id]) ? $selcat[$id] : $id);
+        FrmSelectEasy($selectname, $to_categories, $selcat[$id] ?? $id);
     } else {
         echo "<span class=\"tabtxt\">". _m("No category defined") ."</span>";
     }

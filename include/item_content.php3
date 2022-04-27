@@ -229,7 +229,7 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
             foreach ($translations as $lang) {
                 $lang_id = AA_Langs::getLangName2Num($lang);  // converts two letter lang code into number used for translation fields (cz -> 78000000, en -> 118000000, ...)
                 for ($i = 0; $i <= $maxindex; $i++) {
-                    $value = isset($this->val[$lang_id + $i]) ? $this->val[$lang_id + $i] : '';
+                    $value = $this->val[$lang_id + $i] ?? '';
                     if (!strlen($value) and $first and isset($this->val[$i])) {
                         // if the translation is not set try to use standard value (possibly filled before we set the translations for the field)
                         $value = $this->val[$i];
@@ -288,7 +288,7 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
 
     public function offsetUnset($offset) { unset($this->val[$offset]); }
 
-    public function offsetGet($offset) { return isset($this->val[$offset]) ? $this->val[$offset] : null; }
+    public function offsetGet($offset) { return $this->val[$offset] ?? null; }
 }
 
 
@@ -1025,7 +1025,7 @@ class ItemContent extends AA_Content {
      *                  $flags[0] - invalidatecache - should we invalidate the cache for the slice?
      *                  $flags[1] - feed            - process feeding (as in in the slice setting)?
      *                  $flags[2] - throw_events    - issue update/insert event?
-     *                  $flags[3] - allow_last_edit - issue update/insert event?
+     *                  $flags[3] - allow_last_edit - allow rewrite last_edit field from $this content
      * @param string $context special parameter used for thumbnails - ''|feed
      * @return bool|mixed|string
      */
@@ -1092,9 +1092,9 @@ class ItemContent extends AA_Content {
                                   break;
         }
 
-        $invalidatecache         = isset($flags[0]) ? $flags[0] : !$silent;
-        $feed                    = isset($flags[1]) ? $flags[1] : !$silent;
-        $throw_events            = isset($flags[2]) ? $flags[2] : !$silent;
+        $invalidatecache         = $flags[0] ?? !$silent;
+        $feed                    = $flags[1] ?? !$silent;
+        $throw_events            = $flags[2] ?? !$silent;
         $allow_edit              = [];
         $allow_edit['last_edit'] = ($flags[3] AND $silent);
 
@@ -1581,7 +1581,7 @@ function itemIsDuplicate($item_id) {
  */
 function UpdateField($item_id, $field_id, $field_content, $flags = []) {
     if (!$flags) {
-        $flags = [true, false, true];   // invalidate cache, not feed, throw events
+        $flags = [true, false, true];   // invalidate cache, not feed, throw events, not allow edit last_edit
     }
     $content4id = new ItemContent();
     $content4id->setByItemID($item_id, true);     // ignore password
@@ -1600,7 +1600,7 @@ function UpdateField($item_id, $field_id, $field_content, $flags = []) {
     $newcontent4id->setSliceID($sli_id);
     $updated_items = 0;
 
-    if ($newcontent4id->storeItem( 'update', $flags )) {    // invalidatecache, not feed, throw_events
+    if ($newcontent4id->storeItem( 'update', $flags )) {    // invalidatecache, not feed, throw_events, not allow edit last_edit
         $updated_items = 1;
     }
     return $updated_items;

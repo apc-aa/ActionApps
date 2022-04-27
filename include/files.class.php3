@@ -659,9 +659,9 @@ class AA_File_HTTP_Wrapper extends AA_File_Wrapper {
      * @return AA_File_Wrapper|bool
      */
     function open($mode = 'r') {
-        $host = isset($this->info['host']) ? $this->info['host'] : $this->defaultHost;
+        $host = $this->info['host'] ?? $this->defaultHost;
         $port = isset($this->info['port']) ? (int)$this->info['port'] : $this->defaultPort;
-        $path = isset($this->info['path']) ? $this->info['path'] : $this->defaultPath;
+        $path = $this->info['path'] ?? $this->defaultPath;
         if (isset($this->info['query'])) {
             $path .= '?' . $this->info['query'];
         }
@@ -714,9 +714,9 @@ class AA_File_HTTP_Wrapper extends AA_File_Wrapper {
         if (!is_array($parsed)) return false;
         $uri = isset($parsed['scheme']) ? $parsed['scheme'] . ':' . ((strtolower($parsed['scheme']) == 'mailto') ? '' : '//') : '';
         $uri .= isset($parsed['user']) ? $parsed['user'] . ($parsed['pass'] ? ':' . $parsed['pass'] : '') . '@' : '';
-        $uri .= isset($parsed['host']) ? $parsed['host'] : '';
+        $uri .= $parsed['host'] ?? '';
         $uri .= isset($parsed['port']) ? ':' . $parsed['port'] : '';
-        $uri .= isset($parsed['path']) ? $parsed['path'] : '';
+        $uri .= $parsed['path'] ?? '';
         $uri .= isset($parsed['query']) ? '?' . $parsed['query'] : '';
         $uri .= isset($parsed['fragment']) ? '#' . $parsed['fragment'] : '';
         return $uri;
@@ -753,11 +753,11 @@ class AA_File_FTP_Wrapper extends AA_File_Wrapper {
 	 * @return boolean True iff success.
      */
     function open($mode = 'r') {
-        $user = isset($this->info['user']) ? $this->info['user'] : 'anonymous';
-        $pass = isset($this->info['pass']) ? $this->info['pass'] : 'user@example.com';
-        $host = isset($this->info['host']) ? $this->info['host'] : 'localhost';
+        $user = $this->info['user'] ?? 'anonymous';
+        $pass = $this->info['pass'] ?? 'user@example.com';
+        $host = $this->info['host'] ?? 'localhost';
         $port = isset($this->info['port']) ? (int)$this->info['port'] : 21;
-        $path = isset($this->info['path']) ? $this->info['path'] : '/';
+        $path = $this->info['path'] ?? '/';
 		if (!($this->ctrl = fsockopen($host, $port))) {
             return false;
         }

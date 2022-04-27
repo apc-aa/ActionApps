@@ -320,7 +320,7 @@ function showMenu($activeMain, $activeSubmenu = "", $showMain = true, $showSub =
             if ($aamenuprop["level"] == "main") {
                 $link  = GetMenuLink($aamenu == $activeMain,
                                      $aamenuprop['label'],
-                                     isset($aamenuprop["cond"]) ? $aamenuprop["cond"] : true,
+                                     $aamenuprop["cond"] ?? true,
                                      $aamenuprop["href"],
                                      $aamenuprop["exact_href"]);
 
