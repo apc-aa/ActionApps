@@ -3840,7 +3840,9 @@ class AA_Stringexpand_Constant extends AA_Stringexpand {
 }
 
 /** {constants:<group_id>:<format>:<delimiter>}
- *  {constants:ekolist-category}
+ *  @example {constants:ekolist-category}
+ *  @example {constants:lt_languages:_#NAME###_->_#VALUE##_:jsonasoc}
+ *  @example {constants:lt_languages:_#VALUE##_:json}
  *  @return string - prints all constants delimited by <delimiter>. Only _#NAME###_ and _#VALUE##_ aliases could be used
  */
 class AA_Stringexpand_Constants extends AA_Stringexpand {
@@ -3866,7 +3868,7 @@ class AA_Stringexpand_Constants extends AA_Stringexpand {
                 }
             }
         }
-        return join($delimiter, $ret);
+        return AA_Stringexpand_Item::itemJoin($ret, $delimiter);
     }
 }
 
