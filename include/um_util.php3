@@ -62,25 +62,27 @@ function GetFiltered($type, $filter, $to_much, $none) {
     }
     return $list;
 }
-
 /** PrintModulePermModificator function
  * @param $selected_user
  * @return string
  */
 function PrintModulePermModificator($selected_user) {
     $perm_slices = AA::$perm->getUserPerms($selected_user, "slice", 1);  // there are not only Slices, but other Modules too
-    $all_modules = DB_AA::select(['unid'=> []],'SELECT LOWER(HEX(`id`)) AS unid, name, type FROM module', '', ['type', 'name']);
+    $all_modules = AA_Module::getModules('', false, ['deleted','type', 'name']);
+
     $i=0;
     $current_perm_table = '';
-    foreach ( $all_modules as $mid => $mod ) {
+    foreach ( $all_modules as $mid => $foo ) {
+        $name = AA_Module::getModuleName($mid);
+        $type = AA_Module::getModuleType($mid);
         if ( $perm_slices[$mid] ) {
             $odd = ((gettype($i/2) == "integer") ? true : false);
-            $current_perm_table .= GetModulePermRow($mid, $mod['type'], $mod['name'], $perm_slices[$mid], $odd);
+            $current_perm_table .= GetModulePermRow($mid, $type, $name, $perm_slices[$mid], $odd);
             $i++;
         } else {               // no permission to this module
             // this module should be listed in 'Add perm' listbox
-            $mod_2B_add .= "<option value=\"$mid\">". safe($mod['name']) .'</option>';
-            $mod_types .= GetModuleLetter($mod['type']);  // string for javascript
+            $mod_2B_add .= "<option value=\"$mid\">$name</option>";
+            $mod_types .= GetModuleLetter($type);  // string for javascript
         }                       // to know, what type of module the $mod_2B_add is
     }
 
@@ -95,23 +97,27 @@ function PrintModulePermModificator($selected_user) {
 
     FrmTabSeparator(_m("Assign new permissions"));
     ?>
-   <tr><td>
-    <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
-    <?php
-    if ( isset($mod_2B_add) ) {          // there is some module to add
-        PrintModuleAddRow($mod_2B_add, 1);
-        PrintModuleAddRow($mod_2B_add, 2);
-        PrintModuleAddRow($mod_2B_add, 3);
-        PrintModuleAddRow($mod_2B_add, 4);
-        PrintModuleAddRow($mod_2B_add, 5);
-        PrintModuleAddRow($mod_2B_add, 6);
-        PrintModuleAddRow($mod_2B_add, 7);
-    }
-    ?>
-    </table></td></tr>
+    <tr><td>
+            <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
+                <?php
+                if ( isset($mod_2B_add) ) {          // there is some module to add
+                    PrintModuleAddRow($mod_2B_add, 1);
+                    PrintModuleAddRow($mod_2B_add, 2);
+                    PrintModuleAddRow($mod_2B_add, 3);
+                    PrintModuleAddRow($mod_2B_add, 4);
+                    PrintModuleAddRow($mod_2B_add, 5);
+                    PrintModuleAddRow($mod_2B_add, 6);
+                    PrintModuleAddRow($mod_2B_add, 7);
+                }
+                ?>
+            </table></td></tr>
     <?php
     return $mod_types;
 }
+
+
+
+
 
 /** GetModulePermRow function
  * @param $mid

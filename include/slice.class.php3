@@ -129,7 +129,7 @@ class AA_Module {
             'W'      => ['AA_Module_Site',  'modules/site/index.php3',   'modules/site/menu.php3'],
             'S'      => ['AA_Slice',        'admin/index.php3',          'include/menu.php3'],
             'Alerts' => ['AA_Module_Alerts','modules/alerts/index.php3', 'modules/alerts/menu.php3'],
-            'J'      => ['',                'modules/jump/index.php3',   'include/menu.php3'],
+            'J'      => ['AA_Module_Jump',  'modules/jump/index.php3',   'include/menu.php3'],
             'P'      => ['AA_Module_Polls', 'modules/polls/index.php3',  'modules/polls/menu.php3'],
             'Links'  => ['AA_Module_Links', 'modules/links/index.php3',  'modules/links/menu.php3']
         ];
@@ -924,7 +924,7 @@ class AA_Module_Site extends AA_Module {
         return $this->_related_views[$vid] ?: 0;
     }
 
-    /** AA_Module_Site::_deleteModules() function - called automaticaly form AA_Module::deleteModules()
+    /** AA_Module_Site::_deleteModules() function - called automatically form AA_Module::deleteModules()
      * @param $module_id
      * @return bool
      */
@@ -945,7 +945,7 @@ class AA_Module_Alerts extends AA_Module {
     // !!! this will not work - id in alerts_collection is not module ID
     const SETTING_TABLE = 'alerts_collection';
 
-    /** AA_Module_Alerts::_deleteModules() function - called automaticaly form AA_Module::deleteModules()
+    /** AA_Module_Alerts::_deleteModules() function - called automatically form AA_Module::deleteModules()
      * @param $module_id
      * @return bool
      */
@@ -969,7 +969,7 @@ class AA_Module_Links extends AA_Module {
     // const SETTING_CLASS = 'AA_Modulesettings_Site';
     // const SETTING_TABLE = 'alerts_collection';
 
-    /** AA_Module_Links::_deleteModules() function - called automaticaly form AA_Module::deleteModules()
+    /** AA_Module_Links::_deleteModules() function - called automatically form AA_Module::deleteModules()
      * @param $module_id
      * @return bool
      */
@@ -982,11 +982,25 @@ class AA_Module_Links extends AA_Module {
     }
 }
 
+class AA_Module_Jump extends AA_Module {
+    // const SETTING_CLASS = 'AA_Modulesettings_Site';
+    // const SETTING_TABLE = 'alerts_collection';
+
+    /** AA_Module_Jump::_deleteModules() function - called automatically form AA_Module::deleteModules()
+     * @param $module_id
+     * @return bool
+     */
+    static public function _deleteModules($module_ids) {
+        // @todo
+        return true;
+    }
+}
+
 class AA_Module_Polls extends AA_Module {
     // const SETTING_CLASS = 'AA_Modulesettings_Site';
     // const SETTING_TABLE = 'alerts_collection';
 
-    /** AA_Module_Polls::_deleteModules() function - called automaticaly form AA_Module::deleteModules()
+    /** AA_Module_Polls::_deleteModules() function - called automatically form AA_Module::deleteModules()
      * @param $module_id
      * @return bool
      */
