@@ -772,8 +772,9 @@ class AA_Stringexpand_Twitter extends AA_Stringexpand_Nevercache {
 
 /** Expands {protectmail:<email>[:<text>]} - hides mail into javascript
  *  <a href="mailto:<email>"><text></a>   (but encocded in javascript)
- *  @param $email    - e-mail to protect
- *  @param $text     - text to be linked (if not specified, the $email is used)
+ *
+ *  @param string $email e-mail to protect
+ *  @param string $text  text to be linked (if not specified, the $email is used)
  */
 class AA_Stringexpand_Protectmail extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
@@ -799,20 +800,17 @@ class AA_Stringexpand_Protectmail extends AA_Stringexpand_Nevercache {
     //}
 }
 
-/** Expands {lastedit:[<date_format>:[<slice_id>]]} and displays the date of
- *  last modificaton of any item in the slice
- *  @param $date_format - the format in which you want to see the date
- *                        @see date() function of php http://php.net/date
- *                        like {lastedit:m/d/y H#:i}
- *  @param $slice_id    - the slice which should be checked for last
- *                        modification. If no slice is specified, then check
- *                        all the slices
+/** Expands {lastedit:[<date_format>:[<slice_id>]]} and displays the date of last modification of any item in the slice
+ *
+ * @example  {lastedit:m/d/y H#:i}  Date in format 12/24/2010 14:57
+ * @param string $date_format The format in which you want to see the date (see date() function of php http://php.net/date
+ * @param string $slice_id    The slice which should be checked for last modification. If no slice is specified, then check all the slices
  */
 class AA_Stringexpand_Lastedit extends AA_Stringexpand {
 
     /** expand function
-     * @param $format
-     * @param $slice_id
+     * @param string $format
+     * @param string $slice_id
      * @return false|string
      */
     function expand($format='', $slice_id='') {
@@ -867,18 +865,17 @@ class AA_Stringexpand_Lastdisc extends AA_Stringexpand {
 
 
 /** Expands {htmltoggle:<toggle1>:<text1>:<toggle2>:<text2>[:<position>][:<persistent-id>]} like:
- *          {htmltoggle:more >>>:Econnect:less <<<:Econnect is ISP for NGOs...:bottom}
- *  It creates the link text1 (or text2) and two divs, where only one is visible
- *  at the time
- *  The /javscript/aajslib.php shoud be included to the page
+ *
+ * @example {htmltoggle:more >>>:Econnect:less <<<:Econnect is ISP for NGOs...:bottom}  It creates the link text1 (or text2) and two divs, where only one is visible at the time
+ *
+ *  The /javscript/aajslib.php should be included to the page
  *  (by <script src="">)
- *  @param $switch_state_1 - default link text
- *  @param $code_1         - HTML code displayed as default (in div)
- *  @param $switch_state_2 - link text 2
- *  @param $code_2         - HTML code displayed as alternative after clicking
- *                           on the link
- *  @param $position       - position of the link - top|bottom (top is default)
- *  @param $persistent_id  - identifier [a-z-]* - if provided, the toggle state will be persistent between page loads
+ *  @param string $switch_state_1 Default link text
+ *  @param string $code_1         HTML code displayed as default (in div)
+ *  @param string $switch_state_2 Link text 2
+ *  @param string $code_2         HTML code displayed as alternative after clicking on the link
+ *  @param string $position       Position of the link - top|bottom (top is default)
+ *  @param string $persistent_id  Identifier [a-z-]* - if provided, the toggle state will be persistent between page loads
  */
 class AA_Stringexpand_Htmltoggle extends AA_Stringexpand_Nevercache {
     // Never cache this code, since we need unique divs with uniqid()
@@ -6587,7 +6584,7 @@ class AA_Requires {
             'dropzone@5'                  => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/dropzone@5.9.3/dist/min/dropzone.min.js', 'sha256-uCdT6FLkY6+68Xzm4f9O0usHnJPdKv0Q0rsoXvLchP4=', ['_css-dropzone@5']),
             'select2@4'                   => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.full.min.js', 'sha256-gtZlnMWqbrBdDWvmCQCgfiA3kq8J4FMqQ4a8Tvmgopk=', ['jquery@3','_css-select2@4']),
             'select2@3'                   => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/Select2@3.5.7/select2.min.js', 'sha256-xd6tWPqy/mxhxXcvyda/fncm94RXOR6918/lDx6Ckb8=', ['jquery@3','_css-select2@3']),
-            'eucookies@1'                 => new AA_Req_Footlib('https://cdn.jsdelivr.net/gh/honzito/smart-eu-cookies@0.9.0/src/smart-eu-cookies.min.js async', 'sha384-UduDV9uWMKOfKT56AR+4zzHYTkpPT7c801TAJ7DWXsU6QzwNxMCPq+cE1H0QNDDc'),
+            'eucookies@1'                 => new AA_Req_Footlib('https://cdn.jsdelivr.net/gh/honzito/smart-eu-cookies@0.9.1/src/smart-eu-cookies.min.js async', 'sha384-ESGQ19ZSv9WUxaaWLIxkexv+zRypuAgRNasYVdiRrGNdjp7xv1X6GkKau2pqqRCM'),
             'sortable@1'                  => new AA_Req_Footlib('https://cdn.jsdelivr.net/gh/honzito/plain.sortable@1.3.0/sortable.min.js', 'sha384-Ykq5gOjnWMRB6SAvIl0EnfHZLxYXGM0NIVT6GKOfpIidUn1nhK0EIAHxDqhIAoTF', ['_css-sortable@1']),  // no async - script needs to be loaded to run Sortable.find()...
             'datatable@1'                 => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/datatables.net@1.11.3/js/jquery.dataTables.min.js', 'sha256-gOJ/T3VMQ0Brwz7VYrLoVAQ+NE0a5vHoj1vXI1HUIzY=', ['jquery@3']),
             'form-saver@1'                => new AA_Req_Footlib(get_aa_url('javascript/form-saver/form-saver.min.js?ver='.AA_JS_VERSION,'',false), '', ['deserialize@2']),
