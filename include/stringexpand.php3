@@ -1952,9 +1952,9 @@ class AA_Stringexpand_Daterange extends AA_Stringexpand_Nevercache {
     }
 }
 
-/** Converts GPS coordinates to decimal Latitide / Longitude
- *   {gps:<any-gps>[:<format>]}
- *   {gps:50.0898689:14.4000936:48.8940964:13.8241719}
+/** Distance between two Latitude/Longitude coordinates on Earth in meters
+ *   {distance:<lat1>:<lon1>:<lat2>:<lon2>}
+ *   {distance:50.0898689:14.4000936:48.8940964:13.8241719}
  *   @param $lat1 - Latitude of first coordinate
  *   @param $lon1 - Longitude of first coordinate
  *   @param $lat2 - Latitude of second coordinate
@@ -1977,10 +1977,10 @@ class AA_Stringexpand_Distance extends AA_Stringexpand_Nevercache {
     }
 }
 
-/** Distance between two Latitude/Longitude coordinates on Earth in meters
- *   {gps:<gps-coords>[:<format>]}
+/** Converts GPS coordinates to decimal Latitide / Longitude
+ *   {gps:<any-gps>[:<format>]}
  *   @example {gps: 49°58'4.508"N, 12°30'10.790"E}
- *   @param string $gps-coords coords in different formats - 49.9679189N, 12.5029972E; N 49°58.07513', E 12°30.17983'; 49°58'4.508"N, 12°30'10.790"E; 41.40338, 2.17403; 41°24'12.2"N 2°10'26.5"E; later maybe 3CHX+F6 Praha,...
+ *   @param string $any-gps coords in different formats - 49.9679189N, 12.5029972E; N 49°58.07513', E 12°30.17983'; 49°58'4.508"N, 12°30'10.790"E; 41.40338, 2.17403; 41°24'12.2"N 2°10'26.5"E; later maybe 3CHX+F6 Praha,...
  */
 class AA_Stringexpand_Gps extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
@@ -1988,14 +1988,18 @@ class AA_Stringexpand_Gps extends AA_Stringexpand_Nevercache {
 
     /** expand function  */
     function expand($gps='', $format='') {
-        $gps_in = inner_trim($gps);
+        $gps_in = aa_html_entity_decode(inner_trim($gps));
 
         // 49°58'4.508"N, 12°30'10.790"E
-        if ( preg_match('/^(\d)°(\d)\'([0-9.]*)"([NSns]),(\d)°(\d)\'([0-9.]*)"([EWew])$/', $gps_in, $p) ) {
-            $lat = (strtoupper($p[4])=='S') ? '-' : '';
-            $lat .= (int)$p[1] + ((int)$p[2]/60) + ((int)$p[3]/3600);
-            $lon = (strtoupper($p[8])=='W') ? '-' : '';
-            $lon .= (int)$p[5] + ((int)$p[6]/60) + ((int)$p[7]/3600);
+        // 12° 30' 10.790'' E 49° 58' 4.508'' N
+        // 49°58'4.508"N, 12°30'10.790"E
+        // -49°58'4.508"N, -12°30'10.790"E
+        // 49°58'4.508"S, 12°30'10.790"W
+        if ( preg_match('/^([-+])?(\d+)°(\d+)\'(\d+\.?\,?\d*?)("|\'\')(N|W|S|E),?([-+])?(\d+)°(\d+)\'(\d+\.?\,?\d*?)("|\'\')(N|W|S|E)$/', $gps_in, $p) ) {
+            $num1 = (($p[1]=='-' OR strtoupper($p[6])=='S' OR strtoupper($p[6])=='W') ? '-' : '') .((int)$p[2] + ((int)$p[3]/60) + ((float)$p[4]/3600));
+            $num2 = (($p[7]=='-' OR strtoupper($p[12])=='S' OR strtoupper($p[12])=='W') ? '-' : '') .((int)$p[8] + ((int)$p[9]/60) + ((float)$p[10]/3600));
+            $lat = (strtoupper($p[6])=='N' OR strtoupper($p[6])=='S') ? $num1 : $num2;
+            $lon = (strtoupper($p[6])=='E' OR strtoupper($p[6])=='W') ? $num1 : $num2;
         }
 
         if (!strlen($format)) {
@@ -2294,7 +2298,7 @@ class AA_Stringexpand_Safe extends AA_Stringexpand_Nevercache {
      * @return string
      */
     function expand($text='') {
-        return myspecialchars($text,false);
+        return safe($text);
     }
 }
 
@@ -2552,7 +2556,7 @@ class AA_Stringexpand_Text2html extends AA_Stringexpand_Nevercachenotrim {
 
             // Add the text leading up to the URL.
             if ($escape) {
-                $html .= myspecialchars(substr($text, $position, $urlPosition - $position));     // no use aa_substr! - the  $urlPosition is in BYTES, not characters
+                $html .= safe(substr($text, $position, $urlPosition - $position));     // no use aa_substr! - the  $urlPosition is in BYTES, not characters
             } else {
                 $html .= substr($text, $position, $urlPosition - $position);
             }
@@ -2571,7 +2575,7 @@ class AA_Stringexpand_Text2html extends AA_Stringexpand_Nevercachenotrim {
                 // Do not permit implicit scheme if a password is specified, as
                 // this causes too many errors (e.g. "my email:foo@example.org").
                 if (!$scheme && $password) {
-                    $html .= myspecialchars($username);
+                    $html .= safe($username);
 
                     // Continue text parsing at the ':' following the "username".
                     $position = $urlPosition + strlen($username);        // no use aa_substr! - the  $urlPosition is in BYTES, not characters
@@ -2588,10 +2592,10 @@ class AA_Stringexpand_Text2html extends AA_Stringexpand_Nevercachenotrim {
                     $linkText = "$domain$port$path";
                 }
                 // Cheap e-mail obfuscation to trick the dumbest mail harvesters.
-                $html .= str_replace('@', '&#64;', '<a href="' . myspecialchars($completeUrl) . '">' . myspecialchars($linkText) . '</a>');
+                $html .= str_replace('@', '&#64;', '<a href="' . safe($completeUrl) . '">' . safe($linkText) . '</a>');
             } else {
                 // Not a valid URL.
-                $html .= myspecialchars($url);
+                $html .= safe($url);
             }
 
             // Continue text parsing from after the URL.
@@ -2599,7 +2603,7 @@ class AA_Stringexpand_Text2html extends AA_Stringexpand_Nevercachenotrim {
         }
 
         // Add the remainder of the text.
-        $html .= myspecialchars(substr($text, $position));      // no use aa_substr! - the  $urlPosition is in BYTES, not characters
+        $html .= safe(substr($text, $position));      // no use aa_substr! - the  $urlPosition is in BYTES, not characters
         return $html;
     }
 }
@@ -4661,8 +4665,8 @@ class AA_Stringexpand_Ajax extends AA_Stringexpand_Nevercache {
                     }
 
                     //$ret .= "<div class=\"ajax_container\" id=\"ajaxc_$input_id\" onclick=\"displayInput('ajaxv_$input_id', '$iid', '$field_id', '$widget_type', '$widget_properties')\" style=\"display:inline-block;width:100%\">";
-                    $data_onsuccess = $onsuccess ? 'data-aa-onsuccess="'.myspecialchars($onsuccess).'"' : '';
-                    $ret .= "<div class=\"ajax_value\" id=\"ajaxv_$input_id\" data-aa-alias=\"".myspecialchars(base64_encode($show_alias))."\" $data_onsuccess style=\"display:inline\">$repre_value</div>";
+                    $data_onsuccess = $onsuccess ? 'data-aa-onsuccess="'.safe($onsuccess).'"' : '';
+                    $ret .= "<div class=\"ajax_value\" id=\"ajaxv_$input_id\" data-aa-alias=\"".safe(base64_encode($show_alias))."\" $data_onsuccess style=\"display:inline\">$repre_value</div>";
                     $ret .= "<div class=\"ajax_changes\" id=\"ajaxch_$input_id\" style=\"display:inline\"></div>";
                     $ret .= "</div>";
                     AA::Stringexpander()->addRequire('css-aa-system');
@@ -6628,7 +6632,9 @@ class AA_Requires {
             //'lightgallery@1'              => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/lib/js/lightgallery.js', 'sha256-LwSUsCCIlbq0+vHbSFFbyO+BeMLnJ8gQecxLfgieuKM=', array('_css-lightgallery@1')),
             'lightgallery@2'              => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/lightgallery@2.2.1/lightgallery.min.js', 'sha256-Dawo6shovc6mR+OrpnCxjnHYYp0655VrB0LShTAPM34=', ['_css-lightgallery@2']),  // async do not work for foot lib - it is used before it is loaded
             'lightgallery@1'              => new AA_Req_Footlib('https://cdn.jsdelivr.net/lightgallery.js/1.0.1/js/lightgallery.min.js', 'sha384-HZ/iOnkYJdO5/U2ug7IPTgNZq61Jr+SMoJGCWsjVjNqwY/77YVNA/mZQ1tdfo2Xm', ['_css-lightgallery@1']), // v 1.1.1 do not work
+            'tippy@6'                     => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/tippy.js@6.3.7/dist/tippy-bundle.umd.min.js', 'sha256-Pw/nDrJszyj2iHoZLinTjdfvfC8HmnMwStQt3HvtN94=', ['popper@2']),
             'tippy@2'                     => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/tippy.js@2.6.0/dist/tippy.all.min.js', 'sha256-H8z9OcYtNQgDyDRKu2H1XY/nq06+bY3cMyB3fSFEytk='),
+            'popper@2'                    => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.5/dist/umd/popper.min.js', 'sha256-2neWyvk1kBWvTs34xsy9U3BupGE5Mqm2+B5ELknV9iY='),
             'aa-tools@1'                  => new AA_Req_Lib('', '', ['css-aa-system@1','aa-jslib@3|aa-jslib@1','htm-aa-system@1']),
             'ckeditor@4'                  => new AA_Req_Footlib(get_aa_url('misc/htmleditor/ckeditor.js', '', false),'', ['css-aa-system@1','aa-jslib@3|aa-jslib@2|aa-jslib@1']),
             'aa-fillform@1'               => new AA_Req_Lib(get_aa_url('javascript/fillform.min.js?v='.AA_JS_VERSION,'',false)),
@@ -7016,7 +7022,7 @@ class AA_Stringexpand_Htmlspecialchars extends AA_Stringexpand_Nevercachenotrim 
 
     /** @param string $string  */
     function expand($string='') {
-        return myspecialchars($string);
+        return safe($string);
     }
 }
 
@@ -7709,7 +7715,7 @@ class AA_Stringexpand_Qss extends AA_Stringexpand_Qs {
 
     //  expand($variable_name='', $delimiter=null) {
     function expand(...$arg_list) {
-        return myspecialchars(call_user_func_array('parent::' . __FUNCTION__, $arg_list),false);
+        return safe(call_user_func_array('parent::' . __FUNCTION__, $arg_list));
     }
 }
 
@@ -9467,6 +9473,7 @@ class AA_Stringexpand_Generate extends AA_Stringexpand_Nevercache {
  * usage:
  * {require:aa-jslib}
  * {require:aa-jslib@2}
+ * {require:tippy:tippy('footer', {content: 'call <b>+420 111 222 333</b>.'})}  - run script after load of library
  * {require:/css/style.css}
  * {require:/css/style.css print} - media print css
  * {require:["/css/common.css", "https://www.example.org/flex.css"]}
@@ -9635,8 +9642,8 @@ class AA_Stringexpand_Eucookies extends AA_Stringexpand {
 /** Creates
  *    {tooltip:myinfoicon:<b>My tip</b><br>tip text}     // myinfoicon is ID of element
  *    {tooltip:#myinfoicon:<b>My tip</b><br>tip text}    // the same as above
- *    {tooltip:.myelements:<b>My tip</b><br>tip text}    // myelements je any selector
- *  All the JS libraries are automaticaly loaded
+ *    {tooltip:.myelements:<b>My tip</b><br>tip text}    // myelements is any selector
+ *  All the JS libraries are automatically loaded
  *  You have to use {generate:HEAD} and {generate:FOOT} in your site module!
  *  We may replace the JS by another with the same functionality in the future,
  *  so do not count on the exact library in the code. The {tooltip} code
@@ -9652,7 +9659,7 @@ class AA_Stringexpand_Tooltip extends AA_Stringexpand {
         if ($element AND $html) {
             AA::Stringexpander()->addRequire('tippy');
             $selector = preg_match('/[^A-Za-z0-9_-]/', $element) ? $element : '#'.$element;
-            $script2run = "tippy('".escape4js($selector)."', {html: function() { el = document.createElement('div'); el.innerHTML='".escape4js($html)."'; return el; } }); \n";
+            $script2run = "tippy('".escape4js($selector)."', {content: '".escape4js($html)."', allowHTML:true, delay: 50, size:\"small\", duration: 50, theme: \"aa\", interactive: true}); \n";
             AA::Stringexpander()->addRequire($script2run, 'AA_Req_Run');
             AA::Stringexpander()->addRequire('AA_Stringexpand_Tooltip::getBottomCode', 'AA_Req_Htm');
         }
@@ -9665,30 +9672,15 @@ class AA_Stringexpand_Tooltip extends AA_Stringexpand {
     static function getBottomCode() {
         return '
 <script>
-  tippy.defaults.arrow = true;
-  tippy.defaults.size = "small";
-  tippy.defaults.duration = 50;
-  tippy.defaults.theme = "aa";
-  tippy.defaults.interactive = true;
+  tippy.setDefaultProps({allowHTML:true,duration:50, theme: "aa", interactive: true, maxWidth:"50vw"});
 </script>
 <style>
-  .tippy-popper[x-placement^=\'top\'] .tippy-tooltip.aa-theme .tippy-arrow {  border-top: 7px solid #FFFED8;  border-right: 7px solid transparent;  border-left: 7px solid transparent; }
-  .tippy-popper[x-placement^=\'bottom\'] .tippy-tooltip.aa-theme .tippy-arrow {  border-bottom: 7px solid #FFFED8;  border-right: 7px solid transparent;  border-left: 7px solid transparent; }
-  .tippy-popper[x-placement^=\'left\'] .tippy-tooltip.aa-theme .tippy-arrow {  border-left: 7px solid #FFFED8;  border-top: 7px solid transparent;  border-bottom: 7px solid transparent; }
-  .tippy-popper[x-placement^=\'right\'] .tippy-tooltip.aa-theme .tippy-arrow {  border-right: 7px solid #FFFED8;  border-top: 7px solid transparent;  border-bottom: 7px solid transparent; }
-  .tippy-tooltip.aa-theme {
-    color: black;
-    background-color: #FFFED8;
-    box-shadow: 0 0 20px 4px rgba(154, 161, 177, 0.15), 0 4px 80px -8px rgba(36, 40, 47, 0.25), 0 4px 4px -2px rgba(91, 94, 105, 0.15);
-    border: 1px solid rgba(80, 80, 80, 0.5);
-  }
-  .tippy-tooltip.aa-theme .tippy-backdrop { background-color: #FFFED8; }
-  .tippy-tooltip.aa-theme .tippy-roundarrow { fill: #FFFED8; }
-  .tippy-tooltip.aa-theme[data-animatefill] { background-color: transparent; }
-  .tippy-popper > div {
-     max-width: 50vw;
-     text-align: left !important;
-  }
+    .tippy-box[data-theme~=\'aa\'] {
+        color: black;
+        background-color: #FFFED8;
+        box-shadow: 0 0 20px 4px rgba(154, 161, 177, 0.15), 0 4px 80px -8px rgba(36, 40, 47, 0.25), 0 4px 4px -2px rgba(91, 94, 105, 0.15);
+        border: 1px solid rgba(80, 80, 80, 0.5);
+    }
 </style>
 ';
     }
@@ -9792,6 +9784,6 @@ class AA_Stringexpand_Go extends AA_Stringexpand_Nevercache {
             $url = str_replace(['&logout=1','?logout=1&','?logout=1'], ['','?',''], $url);
 
         }
-        return ($html_encode=='1') ? myspecialchars($url) : $url;
+        return ($html_encode=='1') ? safe($url) : $url;
     }
 }
