@@ -486,7 +486,7 @@ function AA_Message(text, type) {
         AA__systemDiv('aa-message-box', attrs, text.length ? '<div id="aa-message-box-in">'+text+'</div>' : '');
     }
     if (type != 'text') {
-        setTimeout(function() { $('aa-message-box').hide(); }, 5000);
+        setTimeout(function() { $('#aa-message-box').hide(); }, 3000);
     }
 }
 

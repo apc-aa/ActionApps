@@ -386,7 +386,10 @@ $apage = new AA_Adminpageutil('sliceadmin','fields');
 $apage->setTitle(_m("Admin - configure Fields"));
 $apage->setSubtitle(_m("WARNING: Do not change this setting if you are not sure what you're doing!"));
 $apage->addRequire('codemirror@5');
+$apage->addRequire('aa-jslib');   // just for AA_Message() copy to clipboard
 $apage->addRequire(get_aa_url('javascript/js_lib.min.js?v='.AA_JS_VERSION, '', false));
+$apage->addRequire(get_aa_url('css/aa-responsive.css?v='.AA_JS_VERSION, '', false )); // for clipboard button positions
+
 
 $apage->addRequire($script2run, 'AA_Req_Load');
 $apage->addRequire($headcode, 'AA_Req_Headcode');
@@ -401,7 +404,7 @@ $form_buttons = [
                       "cancel"   => ["url"=>"se_fields.php3" .(AA_Fields::isSliceField($fid) ? '?slice_fields=1':'')]
 ];
 
-FrmTabCaption(_m("Field properties") . ': ' . myspecialchars($fld['name'] . ' (' . $fld['id'] . ')'), $form_buttons);
+FrmTabCaption(_m("Field properties") . ': ' . safe($fld['name'] . ' (' . $fld['id'] . ')'), $form_buttons);
 
 $isc_arr = AA_Components::getClassArray('AA\\Widget\\Widget');
 
@@ -432,7 +435,7 @@ echo "
                 <tr><td class=tabtxt><b>"._m("Parameters")."</b></td>
                 <td class=tabhlp><a href='javascript:CallParamWizard (\"INPUT_TYPES\",\"input_show_func_f\",\"input_show_func_p\")'><b>"
                  ._m("Help: Parameter Wizard")."</b></a></td></tr></table>
-                <textarea name=\"input_show_func_p\" rows=4 cols=50 wrap=\"virtual\">". myspecialchars($input_show_func_p) ."</textarea>
+                <textarea name=\"input_show_func_p\" rows=4 cols=50 wrap=\"virtual\">". safe($input_show_func_p) ."</textarea>
       </td>
       </tr>";
 FrmInputChBox("translation", _m("Allow translation"), $translation, false, '', 1, false, _m('Only Text Area and Text Field widgets allows translation. Languages should be set on Slice Setting page.'));
@@ -452,7 +455,7 @@ echo "
                 <tr><td class=tabtxt><b>"._m("Parameters")."</b></td>
                 <td class=tabhlp><a href='javascript:CallParamWizard (\"DEFAULT_VALUE_TYPES\",\"input_default_f\",\"input_default\")'><b>"
                  ._m("Help: Parameter Wizard")."</b></a></td></tr></table>
-            <input type=\"text\" name=\"input_default\" class=aa-w-full value=\"". myspecialchars($input_default) ."\">
+            <input type=\"text\" name=\"input_default\" class=aa-w-full value=\"". safe($input_default) ."\">
       </td>
      </tr>";
 echo $tab_separator;
@@ -465,7 +468,7 @@ echo "
              <tr><td class=tabtxt><b>"._m("Parameters")."</b></td>
              <td class=tabhlp><a href='javascript:CallParamWizard (\"VALIDATE_TYPES\",\"input_validate_f\",\"input_validate_p\")'><b>"
              ._m("Help: Parameter Wizard")."</b></a></td></tr></table>
-         <input type=\"text\" name=\"input_validate_p\" class=aa-w-full value=\"". myspecialchars($input_validate_p) ."\">
+         <input type=\"text\" name=\"input_validate_p\" class=aa-w-full value=\"". safe($input_validate_p) ."\">
          </td>
       </td>
      </tr>";
@@ -497,7 +500,7 @@ echo "
              <tr><td class=tabtxt><b>"._m("Parameters")."</b></td>
              <td class=tabhlp><a href='javascript:CallParamWizard (\"INSERT_TYPES\",\"input_insert_func_f\",\"input_insert_func_p\")'><b>"
              ._m("Help: Parameter Wizard")."</b></a></td></tr></table>
-         <textarea name=\"input_insert_func_p\" rows=3 cols=50 wrap=\"virtual\">". myspecialchars($input_insert_func_p) ."</textarea>
+         <textarea name=\"input_insert_func_p\" rows=3 cols=50 wrap=\"virtual\">". safe($input_insert_func_p) ."</textarea>
          </td>
      </tr>";
 echo $tab_separator;
@@ -536,10 +539,17 @@ for ($iAlias=1; $iAlias <= 3; ++$iAlias) {
     $alias_id_att  = strlen($alias_value) ? "id=\"alias$alias_value\"" : '';
     $alias_hlp     = "<strong><a href='javascript:CallParamWizard(\"FIELD_FUNCTIONS\", \"$alias_func_f\", \"$alias_func\")'>"._m("Help: Parameter Wizard")."</a></strong>";
     $disbled_chb   = FrmChBoxEasyCode($alias_disable, $$alias_disable, '', 1);
-    $reset_btn     = "<div style=\"float:right\"><input type=button value=\""._m('Reset')."\" onclick=\"ResetAlias($iAlias)\"></div>";
-    $aname_row     = "$reset_btn _#<input name=\"$alias_name\" $alias_id_att type=text size=16 maxlength=8 value=\"$alias_value\" pattern='[A-Z0-9_#]{8}'> <label>"._m('Disabled')."$disbled_chb</label>";
 
-    FrmStaticText(_m("Alias")." $iAlias", $aname_row,"&nbsp; &nbsp; &nbsp; ". _m("8 UPPERCASE letters or _"),"", false);
+    $aname_row     = "<div class=\"flex f-baseline\">";
+    $aname_row    .=  "<div>_#<input name=\"$alias_name\" $alias_id_att type=text size=16 maxlength=8 value=\"$alias_value\" pattern=\"[A-Z0-9_#]{8}\" placeholder=\""._m("8 CHARS"). "\" title=\""._m("8 UPPERCASE letters or _")."\"></div>";
+    $aname_row    .=  "<label class=\"sz-xs pr-1 pl-1\">$disbled_chb"._m('Disabled')."</label>";
+    $aname_row    .=  "<button type=button onclick=\"navigator.clipboard.writeText('_#'+document.querySelector('input[name=$alias_name]').value).then(() => { AA_Message('Copied to clipboard','info'); });\" class=\"btn-s\" title=\""._m('Copy to clipboard')."\">";
+    $aname_row    .=   '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#584011" viewBox="0 0 16 16"><path d="M9.5 0a.5.5 0 0 1 .5.5.5.5 0 0 0 .5.5.5.5 0 0 1 .5.5V2a.5.5 0 0 1-.5.5h-5A.5.5 0 0 1 5 2v-.5a.5.5 0 0 1 .5-.5.5.5 0 0 0 .5-.5.5.5 0 0 1 .5-.5h3Z"></path><path d="M3 2.5a.5.5 0 0 1 .5-.5H4a.5.5 0 0 0 0-1h-.5A1.5 1.5 0 0 0 2 2.5v12A1.5 1.5 0 0 0 3.5 16h9a1.5 1.5 0 0 0 1.5-1.5v-12A1.5 1.5 0 0 0 12.5 1H12a.5.5 0 0 0 0 1h.5a.5.5 0 0 1 .5.5v12a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5v-12Z"></path><path d="M10.854 7.854a.5.5 0 0 0-.708-.708L7.5 9.793 6.354 8.646a.5.5 0 1 0-.708.708l1.5 1.5a.5.5 0 0 0 .708 0l3-3Z"></path></svg>'; // https://icons.getbootstrap.com/
+    $aname_row    .=  "</button>";
+    $aname_row    .=  "<input type=button value=\""._m('Reset')."\" class=\"btn-s\" onclick=\"ResetAlias($iAlias)\">";
+    $aname_row    .= "</div>";
+
+    FrmStaticText(_m("Alias")." $iAlias", $aname_row,'',"", false);
     FrmInputSelect($alias_func_f, _m("Function"), $func_types, $$alias_func_f, false, $alias_hlp);
     FrmTextarea($alias_func, _m("Parameters"), $$alias_func, 8, 60, false, AA_View::getViewJumpLinks('view.php3?'.$$alias_func)); // added for f_v parameters
     FrmTextarea($alias_help, _m("Description"), $$alias_help, 2, 0);
