@@ -131,7 +131,7 @@ class FldWidget extends Widget
     protected function getOneInput($input_name, $i, $val, $attr_string, $autofocus, $base_id, $type, $widget_add, $required, $base)
     {
         $input_id = FormArray::formName2Id($input_name);
-        $input_value = myspecialchars($val);
+        $input_value = safe($val);
         $link = ((substr($input_value, 0, 7) === 'http://') OR (substr($input_value, 0, 8) === 'https://')) ? '&nbsp;' . a_href($input_value, GetAAImage('external-link.png', _m('Show'), 16, 16)) : '';
         $ret = "<input $attr_string name=\"$input_name\" id=\"$input_id\" value=\"$input_value\" $required $widget_add $autofocus>$link" . Widget::_saveIcon($base_id, $type == 'live'); //, 'right', $link ? 16 : 0);
         if ($lang = AA_Langs::getLangNum2Name($i)) {

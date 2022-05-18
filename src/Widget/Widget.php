@@ -309,7 +309,7 @@ class Widget extends AA_Object implements NamedInterface {
             $selected = $option['selected'] ? $select_string : '';
             $missing = $option['mis'] ? ' class="sel_missing"' : '';
             $default = $option['justdefault'] ? ' hidden disabled' : '';
-            $ret .= "<option value=\"" . myspecialchars($option['k']) . "\"$selected$missing$default>" . myspecialchars($option['v']) . "</option>";
+            $ret .= "<option value=\"" . safe($option['k']) . "\"$selected$missing$default>" . safe($option['v']) . "</option>";
         }
         return $ret;
     }

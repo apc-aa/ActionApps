@@ -172,7 +172,7 @@ echo '<div class="aa-table"><table><tbody>
         <td align="right"><select name="view_type">';
 
 foreach ( $VIEW_TYPES as $k => $v) {
-    echo "<option value=\"$k\"> ". myspecialchars($v["name"]) ." </option>";
+    echo "<option value=\"$k\"> ". safe($v["name"]) ." </option>";
 }
 echo "</select></td>
         <td><input type=\"submit\" name=\"new\" value=\"". _m("New") ."\"></td>

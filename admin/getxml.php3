@@ -111,7 +111,7 @@ function code($v, $cdata=false) {
         $encoder = new ConvertCharset;
     }
     if ( !$cdata ) {
-        return $encoder->Convert(myspecialchars($v), $GLOBALS['g_slice_encoding'], 'utf-8');
+        return $encoder->Convert(safe($v), $GLOBALS['g_slice_encoding'], 'utf-8');
     }
     // no htmlspecialchars, here
     return '<![CDATA['.$encoder->Convert($v, $GLOBALS['g_slice_encoding'], 'utf-8').']]>';

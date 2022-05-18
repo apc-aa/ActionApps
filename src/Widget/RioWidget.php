@@ -36,11 +36,11 @@ class RioWidget extends Widget
     function getRadioButtonTag($option, $input_name, $input_id, $add = '')
     {
         $missing = $option['mis'] ? ' class=aa-missing-option' : '';
-        $ret = "\n<label$missing><input type=radio name=\"$input_name\" id=\"$input_id\" value='" . myspecialchars($option['k']) . "' $add";
+        $ret = "\n<label$missing><input type=radio name=\"$input_name\" id=\"$input_id\" value='" . safe($option['k']) . "' $add";
         if ($option['selected']) {
             $ret .= " checked";
         }
-        $ret .= "><span>" . myspecialchars($option['v']) . '</span></label>';
+        $ret .= "><span>" . safe($option['v']) . '</span></label>';
         return $ret;
     }
 

@@ -141,7 +141,7 @@ class TxtWidget extends Widget
         //}
 
         $input_id = FormArray::formName2Id($input_name);
-        $input_value = myspecialchars($val);
+        $input_value = safe($val);
 
         $areaclass = '';
         $htmlareaedit = '';

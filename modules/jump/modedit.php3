@@ -110,7 +110,7 @@ if ($jump_id) {
             <td>
                 <select name="jump_id" onchange="document.forms.choose.submit();">';
                 foreach ($jumps as $id => $name) {
-                    echo "<option value=\"$id\"" .($id == $jump_id ? " selected" : "") .">".myspecialchars($name);
+                    echo "<option value=\"$id\"" .($id == $jump_id ? " selected" : "") .">".safe($name);
                 }
 
                 echo '</select>&nbsp;</td><td>
@@ -137,9 +137,9 @@ echo '
 //        <option value=''>* * * Don't change slice * * *";
      if ( is_array($g_modules) AND (count($g_modules) > 1) ) {
         foreach ($g_modules as $k => $v) {
-            echo "<option value=\"". myspecialchars($k)."\"";
+            echo "<option value=\"". safe($k)."\"";
             if ( $dest_id == $k ) echo " selected";
-            echo ">". myspecialchars($v['name']);
+            echo ">". safe($v['name']);
         }
      }
      else echo "<option>No module exists";

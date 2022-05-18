@@ -334,7 +334,7 @@ function ShowColumnValueReadOnly($cview, $show_val, $val, $name="") {
     }
     if ($show_val) {
         if (!$cview["html"]) {
-            $show_val = myspecialchars($show_val);
+            $show_val = safe($show_val);
         }
     }
     elseif (($show_val == 0) && is_field_type_numerical($cview["dbtype"]) && ($cview["type"] != "date")) {

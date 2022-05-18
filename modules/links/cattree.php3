@@ -126,7 +126,7 @@ class cattree {
         $db->query($SQL);
         while ($db->next_record()) {
             $cid = $db->f('id');
-            $this->catnames[$cid]   = myspecialchars($db->f('name'));
+            $this->catnames[$cid]   = safe($db->f('name'));
             $this->catpaths[$cid]   = $db->f('path');
             $this->catnolinks[$cid] = $db->f('nolinks');
         }

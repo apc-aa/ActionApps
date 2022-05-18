@@ -179,10 +179,10 @@ foreach ($to_fields as $f_id => $f_name) {
     switch ($field_map[$f_id]['feedmap_flag']) {
         case FEEDMAP_FLAG_VALUE :
             $sel = _m("-- Value --");
-            $val = myspecialchars($field_map[$f_id]['value']); break;
+            $val = safe($field_map[$f_id]['value']); break;
         case FEEDMAP_FLAG_JOIN :
             $sel = _m("-- Joined fields --");
-            $val = myspecialchars($field_map[$f_id]['value']); break;
+            $val = safe($field_map[$f_id]['value']); break;
         case FEEDMAP_FLAG_EMPTY:
             $sel =  _m("-- Not map --");
             break;
@@ -193,7 +193,7 @@ foreach ($to_fields as $f_id => $f_name) {
         case FEEDMAP_FLAG_RSS :
             $v = $field_map[$f_id]['value'];
             $sel =  ($from_fields[$v]) ? $v : _m("-- RSS field or expr --");
-            $val = myspecialchars($field_map[$f_id]['value']);
+            $val = safe($field_map[$f_id]['value']);
             break;
     }
     FrmSelectEasy("fmap[$f_id]",$from_fields,$sel);

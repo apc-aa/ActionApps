@@ -55,8 +55,8 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
  *          e.g. <A ....> is written \<A ...\>
  */
 function processSlashes($s) {
-    $s = str_replace("\\<", myspecialchars("<"), $s);
-    $s = str_replace("\\>", myspecialchars(">"), $s);
+    $s = str_replace("\\<", safe("<"), $s);
+    $s = str_replace("\\>", safe(">"), $s);
     return $s;
 }
 

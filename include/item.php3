@@ -509,7 +509,7 @@ class AA_Item {
             return $txt;
         }
         // converts plain text to basic html
-        return (strpos($txt, '&') === false) ? nl2br(myspecialchars($txt)) : nl2br(preg_replace('/&amp;#(\d+);/', "&#\\1;", myspecialchars($txt)));
+        return (strpos($txt, '&') === false) ? nl2br(safe($txt)) : nl2br(preg_replace('/&amp;#(\d+);/', "&#\\1;", safe($txt)));
     }
 
     /** col2Html function - better txt2html function - it replaces also urls...
@@ -922,7 +922,7 @@ class AA_Item {
             $out = preg_replace( "/height[[:space:]]*=[[:space:]]*[\"]?^/i", "", $out );  // delete height = x
             return false;
         }
-        return myspecialchars($this->getval($col));
+        return safe($this->getval($col));
     }
 
     /** f_w function
@@ -938,7 +938,7 @@ class AA_Item {
             $out = preg_replace( "/width[[:space:]]*=[[:space:]]*[\"]?^/i", "", $out );  // delete width = x
             return false;
         }
-        return myspecialchars($this->getval($col));
+        return safe($this->getval($col));
     }
 
     /** f_a function
@@ -1121,8 +1121,8 @@ class AA_Item {
      * @return string
      */
     function RSS_restrict($txt, $len) {
-        //    return utf8_encode(myspecialchars(substr($txt,0,$len)));
-        return myspecialchars(substr($txt,0,$len));
+        //    return utf8_encode(safe(substr($txt,0,$len)));
+        return safe(substr($txt,0,$len));
     }
 
     /** f_r function

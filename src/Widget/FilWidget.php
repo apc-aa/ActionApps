@@ -134,7 +134,7 @@ class FilWidget extends Widget
         for ($i = 0, $ino = $value->count(); $i < $ino; ++$i) {
             $input_name = $base_name . "[fil][url][$i]";
             $input_id = FormArray::formName2Id($input_name);
-            $input_value = myspecialchars($value->getValue($i));
+            $input_value = safe($value->getValue($i));
             $link = $input_value ? a_href($input_value, GetAAImage('external-link.png', _m('Show'), 16, 16)) : '';
             if (($display_url < 2) AND ($type == 'normal')) {
                 $widget .= $delim . "\n<input type=\"text\" size=\"$width\" maxlength=\"$max_characters\" name=\"$input_name\" id=\"$input_id\" value=\"$input_value\"$widget_add>&nbsp;$link";
@@ -175,7 +175,7 @@ class FilWidget extends Widget
                 'ret_code_js' => 'parent.AA_ReloadAjaxResponse(\'' . $base_id . '\', AA_ITEM_JSON)'
             ];
             $widget .= '
-                <form id="fuf' . $base_id . '" method="POST" enctype="multipart/form-data" action="' . myspecialchars(get_aa_url('filler.php3', $url_params)) . '" target="iframe' . $base_id . '">';
+                <form id="fuf' . $base_id . '" method="POST" enctype="multipart/form-data" action="' . safe(get_aa_url('filler.php3', $url_params)) . '" target="iframe' . $base_id . '">';
             if ($link) {
                 $widget .= '
                     <input type="button" value="' . _m('Delete') . '" onclick="document.getElementById(\'fuf' . $base_id . '\').submit()"><br>';

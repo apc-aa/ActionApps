@@ -332,7 +332,7 @@ elseif ($chown AND is_array($g_modules) AND (count($g_modules) > 1) ) {
     // display the select box to change group owner if requested ($chown)
     echo "<select name=\"new_owner_id\">";
     foreach ($g_modules as $k => $v) {
-        echo "<option value='". myspecialchars($k)."'". ($constant_info["owner_id"] == $k ? " selected" : ""). "> ". myspecialchars($v["name"]);
+        echo "<option value='". safe($k)."'". ($constant_info["owner_id"] == $k ? " selected" : ""). "> ". safe($v["name"]);
     }
     echo "</select>\n";
 }

@@ -127,7 +127,7 @@ class MflWidget extends Widget
         for ($i = 0, $ino = max(1, $row_count, $value->count()); $i < $ino; ++$i) {
             $input_name = $base_name_add . "[$i]";
             $input_id = FormArray::formName2Id($input_name);
-            $input_value = myspecialchars($value->getValue($i));
+            $input_value = safe($value->getValue($i));
             $rows = (($my_rows = substr_count($input_value, "\n")) > $def_rows) ? min($my_rows + 2, 30) : $def_rows;
             $required = ($aa_property->isRequired() AND ($i == 0)) ? 'required' : '';
 

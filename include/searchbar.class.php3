@@ -917,7 +917,7 @@ class AA_Bookmarks {
         foreach ($this->bookmarks as $k => $book) {
             $class = $this->is_global($k)  ? 'class="sel_title"' : '';
             $sel   = $this->isSelected($k) ? 'selected' : '';
-            $ret  .= "\n<option value=\"$k\" $sel $class>".myspecialchars($book['name'])."</option>";
+            $ret  .= "\n<option value=\"$k\" $sel $class>".safe($book['name'])."</option>";
         }
         $ret .= '</select>';
         return $ret;

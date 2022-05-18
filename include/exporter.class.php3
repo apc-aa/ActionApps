@@ -296,7 +296,7 @@ class AA_Exporter_Html extends AA_Exporter {
     }
 
     function _valueSanity(&$value, $key, $entity) {
-        $value = "<$entity>". myspecialchars($value) ."</$entity>";
+        $value = "<$entity>". safe($value) ."</$entity>";
     }
 
     function _outputItem($item)  {

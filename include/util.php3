@@ -60,8 +60,8 @@ require_once __DIR__. '/formutil.php3';
  */
 function a_href($url, $txt, $class='', array $attr=[]): string {
     $add  = $class ? " class=\"$class\"" : '';
-    $add .= array_reduce( array_keys($attr), function ($str, $key) use ($attr) { return $str . ' ' . $key . '="' . myspecialchars( $attr[$key] ) . '"'; });
-    return '<a href="'.myspecialchars($url) ."\" $add>$txt</a>";
+    $add .= array_reduce( array_keys($attr), function ($str, $key) use ($attr) { return $str . ' ' . $key . '="' . safe($attr[$key]) . '"'; });
+    return '<a href="'.safe($url) ."\" $add>$txt</a>";
 }
 
 /** expand_return_url function
@@ -1067,18 +1067,18 @@ function ParseFnc($s) {
     return $arr;
 }
 
-/** replaces htmlspecialchars because of changes in php 5.4
- */
-function myspecialchars( $var='', $double_encode=true) {
-    return htmlspecialchars( $var, ENT_QUOTES | ENT_HTML5, 'ISO-8859-1', $double_encode);
-}
-
 /** safe function
+ * identical to old myspecialchars() which replaced htmlspecialchars because of changes in php 5.4
  * @param string $var
  * @return string - html safe code (used for preparing variable to print in form)
  */
-function safe( $var ) {
-    return htmlspecialchars( $var, ENT_QUOTES | ENT_HTML5, 'ISO-8859-1');  // stripslashes function added because of quote varibles sended to form before
+function safe( $var='' ) {
+    return htmlspecialchars( $var, ENT_QUOTES | ENT_HTML5, 'ISO-8859-1');
+}
+
+/** replaces all the &apos;, ... html entities */
+function aa_html_entity_decode(string $text) {
+    return html_entity_decode($text, ENT_QUOTES | ENT_HTML5);
 }
 
 /** Base64url version of base64

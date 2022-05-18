@@ -1546,7 +1546,7 @@ class ItemContent extends AA_Content {
                 unset($s);
                 foreach ($v as $v2) {
                     $v2['value'] = stripslashes($v2['value']);
-                    $s[] = $v2['html'] ? $v2['value'] : myspecialchars($v2['value']);
+                    $s[] = $v2['html'] ? $v2['value'] : safe($v2['value']);
                 }
                 if (count($s) == 1) {
                     echo $s[0];

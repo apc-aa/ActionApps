@@ -66,7 +66,7 @@ class CodWidget extends TxtWidget
     //        $input_name = $base_name . "[0]";
     //        $input_flag = $base_name . "[flag]";
     //        $value = $content->getAaValue($aa_property->getId());
-    //        $input_value = myspecialchars($value->getValue(0));
+    //        $input_value = safe($value->getValue(0));
     //        $rows = $this->getProperty('rows', min(substr_count($value[0], "\n") + 4, 60));
     //
     //
@@ -148,7 +148,7 @@ class CodWidget extends TxtWidget
 //        $input_name   = $base_name."[0]";
 //        $input_flag   = $base_name."[flag]";
 //        $value        = $content->getAaValue($aa_property->getId());
-//        $input_value  = myspecialchars($value->getValue(0));
+//        $input_value  = safe($value->getValue(0));
 //        $rows         = $this->getProperty('rows', min(substr_count($value[0],"\n")+4, 60));
 
 

@@ -1165,7 +1165,7 @@ class Text_Diff_Renderer_inline extends Text_Diff_Renderer {
     }
 
     function _encode(&$string) {
-        $string = myspecialchars($string);
+        $string = safe($string);
     }
 
 }

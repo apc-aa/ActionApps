@@ -28,7 +28,7 @@ function SiteAdminPage($spot_id, $add = null) {
         $url = get_url($url, $add);
     }
     // Don't add AA_Session if already there (it isn't in PHP_SELF)
-    return myspecialchars( StateUrl($url) );
+    return safe(StateUrl($url));
 }
 
 function ModW_HiddenRSpotId() {

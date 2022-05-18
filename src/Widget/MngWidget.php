@@ -46,7 +46,7 @@ class MngWidget extends Widget
         $base_id     = FormArray::formName2Id($base_name);
         $input_name  = $base_name . "[0]";
         $value = $content->getAaValue($property_id);
-        $input_value = myspecialchars($value->getValue());
+        $input_value = safe($value->getValue());
 
         // we store the connector id to cookie in order we have it during AJAX call - Parts renewal
         $sess_var = get_short_hash($base_id);

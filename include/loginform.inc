@@ -47,7 +47,7 @@ echo '<title>ActionApps - '.ORG_NAME.'</title>';
  <tr valign="top" align="left">
   <td><?php echo _m("Username:") ?></td>
   <td>
-      <input type="text" name="username" value="<?php if (isset($this->auth["uname"])) { myspecialchars(print $this->auth["uname"]); }?>" size="32" maxlength="60" autocomplete="username">
+      <input type="text" name="username" value="<?php if (isset($this->auth["uname"])) { safe(print $this->auth["uname"]); }?>" size="32" maxlength="60" autocomplete="username">
       <br><small><?php echo _m("Type your username or mail") ?></small>
   </td>
  </tr>

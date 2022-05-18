@@ -62,7 +62,7 @@ class HidWidget extends Widget
         $base_id     = FormArray::formName2Id($base_name);
         $input_name  = $base_name . "[0]";
         $input_id    = FormArray::formName2Id($input_name);
-        $input_value = myspecialchars($content->getValue($property_id));
+        $input_value = safe($content->getValue($property_id));
         $widget      = "\n<input type=hidden name=\"$input_name\" id=\"$input_id\" value=\"$input_value\">";
         
         return ['html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired()];

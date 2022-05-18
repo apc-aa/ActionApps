@@ -558,8 +558,8 @@ class AA_Manager extends AA_Storable {
 
                 foreach( $action_arr as $action_id => $action ) {
                     if ( $action->isPerm4Action($this)) {
-                        $options .= '<option value="'. myspecialchars($action->getId()).'"> '.
-                                                       myspecialchars($action->getName() . ($action->getOpenUrl() ? '...' : ''));
+                        $options .= '<option value="'. safe($action->getId()).'"> '.
+                                                       safe($action->getName() . ($action->getOpenUrl() ? '...' : ''));
                         // we have to open window?
                         if ( $action->getOpenUrl() )  {
                             $javascr .= "\n markedactionurl[$i] = '". $action->getOpenUrl() ."';";

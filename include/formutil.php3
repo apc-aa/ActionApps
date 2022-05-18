@@ -1183,9 +1183,9 @@ class AA_Inputfield {
     function getRadioButtonTag($k, $v, $add='', $labeladd='') {
         $name  = $this->varname();
         $triggers  = $this->use_triggers_4_slice ? JsTriggers::getFromGlobalSliceId("input", $name) : '';
-        $ret   = "<label $labeladd><input type=radio name='$name' value='". myspecialchars($k) ."' $add $triggers";
+        $ret   = "<label $labeladd><input type=radio name='$name' value='". safe($k) ."' $add $triggers";
         $ret  .= $this->if_selected($k, " checked");
-        $ret  .= '>'.myspecialchars($v).'</label>';
+        $ret  .= '>'.safe($v).'</label>';
         return $ret;
     }
 
@@ -1279,7 +1279,7 @@ class AA_Inputfield {
             $attrs['type'] = $type;
         }
         if ($placeholder) {
-            $attrs['placeholder'] = myspecialchars($placeholder);
+            $attrs['placeholder'] = safe($placeholder);
         }
         if (strlen($pattern)) {
             $attrs['pattern'] = $pattern;
@@ -1313,7 +1313,7 @@ class AA_Inputfield {
             $widg = "<div class=\"aa-langdiv\">";
             foreach($this->translations as $lang) {
                 $lang_id           = AA_Langs::getLangName2Num($lang);  // converts two letter lang code into number used for translation fields (cz -> 78000000, en -> 118000000, ...)
-                $value             = myspecialchars($val[$lang_id]['value']);
+                $value             = safe($val[$lang_id]['value']);
                 if ( !strlen($value) AND $first) {
                     // if the translation is not set try to use standard value (possibly filled before we set the translations for the field)
                     $value = $val[0]['value'];
@@ -1341,7 +1341,7 @@ class AA_Inputfield {
             $widg .= "\n</div>";
 
         } else {
-            $value     = myspecialchars($val[0]['value']);
+            $value     = safe($val[0]['value']);
             $link    = ((substr($value,0,7)==='http://') OR (substr($value,0,8)==='https://')) ? '&nbsp;'.a_href($value, GetAAImage('external-link.png', _m('Show'), 16, 16)) : '';
 
             $widg =  "<input name=\"$name\" $attr_string ". ($this->required ? " required": '').
@@ -1363,7 +1363,7 @@ class AA_Inputfield {
     */
     function staticText($safing=true, $type='first') {
         [$name,$val,$add] = $this->prepareVars($type);
-        if ( $safing ) $val   = myspecialchars($val);
+        if ( $safing ) $val   = safe($val);
         $this->field_name('plus');
         $this->echovar( $val );
         $this->helps('plus');
@@ -1377,7 +1377,7 @@ class AA_Inputfield {
     function hidden($safing=true) {
         [$name,$val,$add] = $this->prepareVars();
         if ( $safing ) {
-            $val=myspecialchars($val);
+            $val=safe($val);
         }
         $this->echoo('<tr><td height="1" colspan="2">');
         $this->echovar( "<input type=\"hidden\" name=\"$name\" value=\"$val\">" );
@@ -1434,7 +1434,7 @@ class AA_Inputfield {
             $widg = "<div class=\"aa-langdiv\">";
             foreach($this->translations as $lang) {
                 $lang_id           = AA_Langs::getLangName2Num($lang);  // converts two letter lang code into number used for translation fields (cz -> 78000000, en -> 118000000, ...)
-                $value             = myspecialchars($val[$lang_id]['value']);
+                $value             = safe($val[$lang_id]['value']);
                 if ( !strlen($value) AND $first) {
                     // if the translation is not set try to use standard value (possibly filled before we set the translations for the field)
                     $value = $val[0]['value'];
@@ -1463,7 +1463,7 @@ class AA_Inputfield {
             $widg .= "\n</div>";
         } else {
 
-            $value    = myspecialchars($val[0]['value']);
+            $value    = safe($val[0]['value']);
             $rows     = max($rows, min(floor(substr_count($value,"\n")*1.35), 30));
             $rows_css = $rows*1.3;  // firefox adds extra line, so we specify the height in css as well. Not so important, can be changed later.
 
@@ -1571,7 +1571,7 @@ class AA_Inputfield {
                 if ( ($restrict == 'unselected') AND $selected  ){
                     continue;  // do not print this option
                 }
-                $ret .= "<option value=\"". myspecialchars($k) ."\" $selected>".myspecialchars($v);    // do not put newlines here in order select:epty css selector works
+                $ret .= "<option value=\"". safe($k) ."\" $selected>".safe($v);    // do not put newlines here in order select:epty css selector works
             }
         }
         // now add all values, which is not in the array, but field has this value
@@ -1579,7 +1579,7 @@ class AA_Inputfield {
         if ( isset( $this->selected ) AND is_array( $this->selected ) AND ($restrict != 'unselected')) {
             foreach ( $this->selected as $k =>$v ) {
                 if ( !$already_selected[$k] ) {
-                    $ret .= "<option value=\"". myspecialchars($k) ."\" selected class=\"sel_missing\">".myspecialchars($k);
+                    $ret .= "<option value=\"". safe($k) ."\" selected class=\"sel_missing\">".safe($k);
                     $selectedused = true;
                 }
             }
@@ -1745,7 +1745,7 @@ class AA_Inputfield {
     //        foreach ( (array)$this->const_arr as $id => $text) {
     //            $tr_id     = 'rel'.$varname.'old'.($i++);
     //            $var_code .= '<tr id="'.$tr_id.'">
-    //            <td>'.myspecialchars($text).'<input type="hidden" name="'.$name.'" value="'.myspecialchars($id).'"></td>
+    //            <td>'.safe($text).'<input type="hidden" name="'.$name.'" value="'.safe($id).'"></td>
     //            <td>'.
     //              GetAAImage("edit.gif", _m('Edit'), 16, 16).
     //              GetAAImage("delete.gif", _m('Delete'), 16, 16).
@@ -1847,7 +1847,7 @@ class AA_Inputfield {
                 $constants_names = GetConstants($group_id);
                 foreach ( $val as $v) {
                     if ($v['value']) {
-                        $out .= "\n  <option value=\"".myspecialchars($v['value'])."\">".myspecialchars($constants_names[$v['value']])."\n";
+                        $out .= "\n  <option value=\"".safe($v['value'])."\">".safe($constants_names[$v['value']])."\n";
                     }
                 }
             }
@@ -1925,7 +1925,7 @@ class AA_Inputfield {
         if ( !$accepts ) {
             $accepts = '*/*';
         }
-        $val  = myspecialchars($val);
+        $val  = safe($val);
         $link = $val ? a_href($val, GetAAImage('external-link.png', _m('Show'), 16, 16), '', ['target'=>'_blank']) : '';
         $triggers   = $this->use_triggers_4_slice ? JsTriggers::singleton4id($this->use_triggers_4_slice)->get("input", $name) : '';
 
@@ -2144,7 +2144,7 @@ class AA_Inputfield {
         [$name,$val] = $this->prepareVars();
         $this->field_name('plus');
         $triggers  = $this->use_triggers_4_slice ? JsTriggers::singleton4id($this->use_triggers_4_slice)->get("input", $name) : '';
-        $ret ="<input type=\"text\" name=\"$name\" size=\"60\" value=\"".myspecialchars($val)."\" $triggers>";
+        $ret ="<input type=\"text\" name=\"$name\" size=\"60\" value=\"".safe($val)."\" $triggers>";
 
         $this->echoo('<table border="0" cellspacing="0"><tr>');
         $this->echoo("\n <td>");
@@ -2183,21 +2183,21 @@ class AA_Inputfield {
  */
 function getFrmMoreHelp($hlp, $text="", $hint="", $image=false) {
     if ($image) {
-        $img = GetAAImage('help50.gif', myspecialchars($hint), 16, 12);
+        $img = GetAAImage('help50.gif', safe($hint), 16, 12);
     }
     if ( $hlp ) {
         if (is_array($text) || ($image)) {
           return "&nbsp;".($image ? "&nbsp;&nbsp;" : $text["before"])."<a href=".safe($hlp)." target='_blank' ".
-            (($hint != "") ? "title=\"".myspecialchars($hint)."\"" : "") .">".($image ? $img : $text["text"])."</a>".($image ? "" : $text["after"]);
+            (($hint != "") ? "title=\"".safe($hint)."\"" : "") .">".($image ? $img : $text["text"])."</a>".($image ? "" : $text["after"]);
         } elseif (is_string($text) && ($text != "")) {
             return "&nbsp;<a href=\"".safe($hlp)."\" target='_blank'>".($image ? $img : $text)."</a>";
         } else {
-            return "&nbsp;<a href=\"".safe($hlp)."\" target='_blank' ".(($hint != "") ? "title=\"".myspecialchars($hint)."\"" : "").
+            return "&nbsp;<a href=\"".safe($hlp)."\" target='_blank' ".(($hint != "") ? "title=\"".safe($hint)."\"" : "").
                ">".($image ? $img : "?")."</a>";
         }
     } else {
         if (($text == "") && ($image)) {
-          return "&nbsp;<abbr title=\"".myspecialchars($hint)."\">".$img."</abbr>";
+          return "&nbsp;<abbr title=\"".safe($hint)."\">".$img."</abbr>";
         }
     }
 
@@ -2574,10 +2574,10 @@ function getFrmSelectEasy($name, $arr, $selected="", $add="", $showempty=false) 
     $selectedused = false;
     foreach ((array)$arr as $k => $v) {
         if (0===strpos($k,'AA_OPTGROUP')) {  // begins with AA_OPTGROUP
-            $retval .= "\n<optgroup label=\"".myspecialchars($v).'">';
+            $retval .= "\n<optgroup label=\"".safe($v).'">';
             continue;
         }
-        $retval .= "\n <option value=\"". myspecialchars($k)."\"";
+        $retval .= "\n <option value=\"". safe($k)."\"";
         if ((string)$selected == (string)$k) {
             $retval .= ' selected class="sel_on"';
             $selectedused = true;
@@ -2588,15 +2588,15 @@ function getFrmSelectEasy($name, $arr, $selected="", $add="", $showempty=false) 
             $val = strip_tags($val);
         }
         if (strlen($val) > 100) {
-            $title = ' title="'. myspecialchars( $val ) .'"';
+            $title = ' title="'. safe($val) .'"';
             $val   = AA_Stringexpand_Shorten::shorten_middle($val, 100);
         }
-        $retval .= "$title>". myspecialchars( $val );
+        $retval .= "$title>". safe($val);
     }
 
     // now add all values, which is not in the array, but field has this value
     if ($selected AND !$selectedused) {
-        $retval .= "\n <option value=\"". myspecialchars($selected) ."\" selected class=\"sel_missing\">".myspecialchars($selected);
+        $retval .= "\n <option value=\"". safe($selected) ."\" selected class=\"sel_missing\">".safe($selected);
     }
 
     $retval .= "</select>\n";
@@ -2907,7 +2907,7 @@ function GetHtmlTable( array $content, $mode='td', $caption='', $clasic=false ) 
  * @return string
  */
 function getFrmJavascriptFile( $src, $add='') {
-    return "\n <script $add src=\"". myspecialchars(get_aa_url($src, '', false)) . "\"></script>";
+    return "\n <script $add src=\"". safe(get_aa_url($src, '', false)) . "\"></script>";
 }
 
 /** getFrmJavascript function

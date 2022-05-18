@@ -445,7 +445,7 @@ if ($IDconflict || $data_IDconflict) { ?>
 // Which the browser will convert to <xxx><BR>some content</xxx>
 // which is invalid XML. So, convert & to &amp; first, so pass through
 // htmlspecialchars, which browser will undo.
-echo myspecialchars($slice_def_bck) ?></textarea>
+echo safe($slice_def_bck) ?></textarea>
     <p>
     <?php if (!$IDconflict || !$data_IDconflict) { ?>
 <?php if (!$GLOBALS["Submit"]) { ?>

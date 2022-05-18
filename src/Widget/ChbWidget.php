@@ -39,7 +39,7 @@ class ChbWidget extends Widget
         for ($i = 0, $ino = $value->count(); $i < $ino; ++$i) {
             $input_name = $base_name_add . "[$i]";
             $input_id = FormArray::formName2Id($input_name);
-            $input_value = myspecialchars($value->getValue($i));
+            $input_value = safe($value->getValue($i));
             $widget .= "$delim<input type=\"checkbox\" name=\"$input_name\" id=\"$input_id\" value=\"1\"$required" . ($input_value ? " checked" : '') . "$widget_add>";  // do not insert \n here - javascript for sorting tables sorttable do not work then
             $delim = '<br />';
             $required = '';

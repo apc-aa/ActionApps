@@ -72,7 +72,7 @@ function GetAlertsTableView ($viewID, $processForm = false) {
         $db->query ($SQL);
         $myslices = GetUserSlices();
         while ($db->next_record()) {
-            $txt = myspecialchars($db->f("fdesc"));
+            $txt = safe($db->f("fdesc"));
             if (IsSuperadmin() || strchr($myslices[unpack_id($db->f("slice_id"))], PS_FULLTEXT)) {
                 $new_filters[$db->f("filterid")] = $txt;
                 $txt = "<a href='".StateUrl(AA_INSTAL_PATH

@@ -543,7 +543,7 @@ function ProoveVals($val, $columns) {
 function GetKey($primary, $columns, $varset) {
     foreach ($primary as $alias => $foo) {
         $val   = $varset->get($columns[$alias]["field"]);
-        $key[] = $columns[$alias]["view"]["unpacked"] ? unpack_id($val) : myspecialchars($val);
+        $key[] = $columns[$alias]["view"]["unpacked"] ? unpack_id($val) : safe($val);
     }
     return join_escaped(":",$key,"#:");
 }
@@ -561,7 +561,7 @@ function GetKeyFromRecord($primary, $columns, $record) {
     }
     foreach ($primary as $alias => $v) {
         $val   = $record[$alias];
-        $key[] = ($columns[$alias]["view"]["unpacked"] ? unpack_id($val) : myspecialchars($val));
+        $key[] = ($columns[$alias]["view"]["unpacked"] ? unpack_id($val) : safe($val));
     }
     return join_escaped(":",$key,"#:");
 }

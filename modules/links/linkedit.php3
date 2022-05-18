@@ -107,7 +107,7 @@ if ( $r_state['link_id'] ) {
 
 // lookup - all categories names
 $tmp_translate = DB_AA::select(['id'=>'name'], 'SELECT id, name FROM `links_categories`', [['deleted', 'n']]);
-$tmp_translate = array_map('myspecialchars', $tmp_translate);
+$tmp_translate = array_map('safe', $tmp_translate);
 
 // This link specific data -----------------------------------------------------
 
@@ -245,7 +245,7 @@ while ($db->next_record()) {
     $fid           = $db->f('id');
     $regId[]       = $fid;
     $regName[]     = (($db->f('level')==2) ? "&nbsp;&nbsp;&nbsp;" : "").
-                     myspecialchars($db->f('name'));
+                     safe($db->f('name'));
     $reg_changes[] = (($region[$fid]) ?            // was this checkbox checked?
         (($region_changes[$fid] == $change_no ) ? "" : MarkChanged(_m('Proposal to uncheck'))) :    // "" means 'Unchanged'
         (($region_changes[$fid] == 0 )          ? "" : MarkChanged(_m('Proposal to check'))));    // "" means 'Unchanged'
@@ -263,7 +263,7 @@ $db->query($SQL);
 while ($db->next_record()) {
     $fid            = $db->f('id');
     $langId[]       = $fid;
-    $langName[]     = myspecialchars($db->f('name'));
+    $langName[]     = safe($db->f('name'));
     $lang_changes[] = (($language[$fid]) ?        // was this checkbox checked?
         (($language_changes[$fid] == $change_no ) ? "" : MarkChanged(_m('Proposal to uncheck')) ) :   // "" means 'Unchanged'
         (($language_changes[$fid] == 0 )          ? "" : MarkChanged(_m('Proposal to check')) ));            // "" means 'Unchanged'

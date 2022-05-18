@@ -231,7 +231,7 @@ class AARSS extends AbstractGrabber
             return false;
         }
         if ($debugfeed >= 8) {
-            huhl("Fetched data=", myspecialchars($xml_data));
+            huhl("Fetched data=", safe($xml_data));
         }
 
         // if an error occured, write it to the LOG
@@ -249,7 +249,7 @@ class AARSS extends AbstractGrabber
         if (!($this->aa_rss = aa_rss_parse($xml_data))) {
             AA_Log::write("CSN", '', "Feeding mode ($feed_debug_name): Unable to parse XML data");
             if ($debugfeed >= 1) {
-                print("\n<br>$feed_debug_name:" . $this->feed['server_url'] . ":unparsable: <hr>" . myspecialchars($xml_data) . "<hr>");
+                print("\n<br>$feed_debug_name:" . $this->feed['server_url'] . ":unparsable: <hr>" . safe($xml_data) . "<hr>");
             }
             return false;
         }

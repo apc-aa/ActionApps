@@ -41,11 +41,11 @@ class MchWidget extends Widget
     /** Returns one checkbox tag - Used in removed inputMultiChBox */
     function getOneChBoxTag($option, $input_name, $input_id, $add = '')
     {
-        $ret = "\n<label class=\"aa-chb\"><input type=\"checkbox\" name=\"$input_name\" id=\"$input_id\" value=\"" . myspecialchars($option['k']) . "\" $add";
+        $ret = "\n<label class=\"aa-chb\"><input type=\"checkbox\" name=\"$input_name\" id=\"$input_id\" value=\"" . safe($option['k']) . "\" $add";
         if ($option['selected']) {
             $ret .= " checked";
         }
-        $ret .= ">" . myspecialchars($option['v']) . '</label>';
+        $ret .= ">" . safe($option['v']) . '</label>';
         return $ret;
     }
 
@@ -82,7 +82,7 @@ class MchWidget extends Widget
         $selection = [];
         foreach ($options as $o) {
             if ($o['selected']) {
-                $selection[] = '<span data-aa-mchval="' . myspecialchars($o['k']) . '" onclick="var el=document.querySelector(\'#widget-' . $base_id . ' input[type=checkbox][value=&quot;' . $o['k'] . '&quot;]\');el.checked=!el.checked;this.style.opacity=el.checked?1:.3;el.dispatchEvent(new Event(\'change\', { \'bubbles\': true }));">' . $o['v'] . '</span>';
+                $selection[] = '<span data-aa-mchval="' . safe($o['k']) . '" onclick="var el=document.querySelector(\'#widget-' . $base_id . ' input[type=checkbox][value=&quot;' . $o['k'] . '&quot;]\');el.checked=!el.checked;this.style.opacity=el.checked?1:.3;el.dispatchEvent(new Event(\'change\', { \'bubbles\': true }));">' . $o['v'] . '</span>';
             }
         }
 

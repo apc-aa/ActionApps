@@ -109,7 +109,7 @@ require_once __DIR__."/../include/varset.php3";
 if (!$_GET['silent']) {
     echo '<form name="f" action="' .$_SERVER['PHP_SELF'] .'">
             Access Code
-            <input type="password" name="acccode" value="'.myspecialchars($_GET['acccode']).'"><br>
+            <input type="password" name="acccode" value="'.safe($_GET['acccode']).'"><br>
 
             Write to database <input type="checkbox" name="fire" value="1"'.($_GET['fire'] ? ' checked' : ''). '><br>
             <small>Check this for real work with writing to database</small>

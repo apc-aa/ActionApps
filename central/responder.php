@@ -278,7 +278,7 @@ class AA_Responder_Get_Fields extends AA_Responder {
             $current_types = DB_AA::select(['id' => 'name'], 'SELECT `id`, `name` FROM `field`', [['slice_id', $this->slice_id, 'l'], ['id', '\_%', 'NOT LIKE'], ['in_item_tbl', ['',0]]], ['name']);
             $ret = "\n <select name=\"ftype\">";
             foreach ($current_types as $k => $v) {
-                $ret .= "\n  <option value=\"" . $this->slice_id . '-' . myspecialchars($k) . '"> ' . myspecialchars($v) . " </option>";
+                $ret .= "\n  <option value=\"" . $this->slice_id . '-' . safe($k) . '"> ' . safe($v) . " </option>";
             }
             $ret .= "\n </select>";
             $ret = $encoder->Convert($ret, $slice->getCharset(), 'utf-8');

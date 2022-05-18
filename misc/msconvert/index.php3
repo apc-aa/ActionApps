@@ -125,7 +125,7 @@ if (!$userfile) {
         // we need to remove added background color, ...
         $stringoutput=preg_replace("/<\/?div.*>/i","",$stringoutput); // remove all DIVs
         $stringoutput=preg_replace("/ style=\".+\"/i","",$stringoutput); // remove all styles
-        $stringoutput=myspecialchars($stringoutput);
+        $stringoutput=safe($stringoutput);
         echo $stringoutput;
         echo "\"></form>";
         ?>

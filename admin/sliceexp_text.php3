@@ -223,7 +223,7 @@ class AA_Slice_Exporter {
 
             fwrite($temp_file, "<slice id=\"");
             fwrite($temp_file, ($this->type != 'backup' ? $new_slice_idunpack : $slobj->getId()));
-            fwrite($temp_file, "\" name=\"".myspecialchars($slobj->getName())."\">\n");
+            fwrite($temp_file, "\" name=\"".safe($slobj->getName())."\">\n");
 
             if ($this->struct) {
                 // export of slice structure
@@ -326,7 +326,7 @@ class AA_Slice_Exporter {
             if ($this->gzip) {
                 $content = gzcompress($content);
             }
-            $content = myspecialchars(base64_encode($content));
+            $content = safe(base64_encode($content));
         } else {
             $content = xml_serialize($type, $content, "\n", "    ", $add);
         }
@@ -429,7 +429,7 @@ class AA_Slice_Documentator extends AA_Slice_Exporter {
             $slobj = AA_Slice::getModule($sid);
             $this->prepareEncoder($slobj->getCharset());
 
-            fwrite($temp_file, "<h2>".myspecialchars($slobj->getName())."</h2>\n");
+            fwrite($temp_file, "<h2>".safe($slobj->getName())."</h2>\n");
             fwrite($temp_file, "<p><b>ID:</b> ".$slobj->getId(). "</p>\n");
 
             if ($this->struct) {
