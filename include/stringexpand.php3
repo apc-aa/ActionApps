@@ -1952,9 +1952,9 @@ class AA_Stringexpand_Daterange extends AA_Stringexpand_Nevercache {
     }
 }
 
-/** Distance between two Latitude/Longitude coordinates on Earth in meters
- *   {distance:<lat1>:<lon1>:<lat2>:<lon2>}
- *   {distance:50.0898689:14.4000936:48.8940964:13.8241719}
+/** Converts GPS coordinates to decimal Latitide / Longitude
+ *   {gps:<any-gps>[:<format>]}
+ *   {gps:50.0898689:14.4000936:48.8940964:13.8241719}
  *   @param $lat1 - Latitude of first coordinate
  *   @param $lon1 - Longitude of first coordinate
  *   @param $lat2 - Latitude of second coordinate
@@ -1974,6 +1974,40 @@ class AA_Stringexpand_Distance extends AA_Stringexpand_Nevercache {
         $lonTo   = deg2rad(calculate($lon2));
         //huhl($lat1, $latFrom, $lon1, $lonFrom, $lat2, $latTo, $lon2, $lonTo);
         return (int)($EARTHRADIUS * 2 * asin(sqrt(pow(sin(($latTo - $latFrom) / 2), 2) + cos($latFrom) * cos($latTo) * pow(sin(($lonTo - $lonFrom) / 2), 2))));
+    }
+}
+
+/** Distance between two Latitude/Longitude coordinates on Earth in meters
+ *   {gps:<gps-coords>[:<format>]}
+ *   @example {gps: 49°58'4.508"N, 12°30'10.790"E}
+ *   @param string $gps-coords coords in different formats - 49.9679189N, 12.5029972E; N 49°58.07513', E 12°30.17983'; 49°58'4.508"N, 12°30'10.790"E; 41.40338, 2.17403; 41°24'12.2"N 2°10'26.5"E; later maybe 3CHX+F6 Praha,...
+ */
+class AA_Stringexpand_Gps extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+
+    /** expand function  */
+    function expand($gps='', $format='') {
+        $gps_in = inner_trim($gps);
+
+        // 49°58'4.508"N, 12°30'10.790"E
+        if ( preg_match('/^(\d)°(\d)\'([0-9.]*)"([NSns]),(\d)°(\d)\'([0-9.]*)"([EWew])$/', $gps_in, $p) ) {
+            $lat = (strtoupper($p[4])=='S') ? '-' : '';
+            $lat .= (int)$p[1] + ((int)$p[2]/60) + ((int)$p[3]/3600);
+            $lon = (strtoupper($p[8])=='W') ? '-' : '';
+            $lon .= (int)$p[5] + ((int)$p[6]/60) + ((int)$p[7]/3600);
+        }
+
+        if (!strlen($format)) {
+            if (strlen($lat)) {
+                $arr[] = '_#LAT';
+            }
+            if (strlen($lon)) {
+                $arr[] = '_#LON';
+            }
+            $format = join(',',$arr);
+        }
+        return str_replace(['_#LAT','_#LON'],[$lat,$lon],$format);
     }
 }
 
