@@ -85,7 +85,7 @@ if (!IsSuperadmin()) {
 
 
 function AafinderFieldLink($field_id, $slice_id): string {
-    return a_href(get_admin_url("se_inputform.php3?change_id=$slice_id&fid=$field_id"), "$field_id"). ' ('.AA_Slice::getModuleName($slice_id).')';
+    return a_href(get_admin_url("se_inputform.php?change_id=$slice_id&fid=$field_id"), "$field_id"). ' ('.AA_Slice::getModuleName($slice_id).')';
 }
 
 function AdminLink($table, $row): string

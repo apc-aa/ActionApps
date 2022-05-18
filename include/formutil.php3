@@ -3168,7 +3168,7 @@ function getSelectWithParam($name, $arr, $selected="", $html_setting=null) {
      if (is_array($aliases)) {
          foreach ($aliases as $ali => $v ) {
              // if it is possible point to alias editing page
-             $aliasedit = ( !$v["fld"] ? "&nbsp;" : "<a href=\"". StateUrl(con_url("./se_inputform.php3", "fid=".urlencode($v["fld"]))) ."\">". _m("Edit") . "</a>");
+             $aliasedit = ( !$v["fld"] ? "&nbsp;" : "<a href=\"". StateUrl(con_url("./se_inputform.php", "fid=".urlencode($v["fld"]))) ."\">". _m("Edit") . "</a>");
              if ($fields AND $fields[$v["fld"]] AND !$fields[$v["fld"]]['input_show']) {
                  $ali = "<span class=\"disabled\">$ali</span>";
              }

@@ -39,7 +39,7 @@ class ChangeF_t2F__ extends ChangeF_h2F_1 {
             if ( !isset($p[1]) or !in_array($p[1], ['csv', 'safe', 'javascript', 'urlencode', 'striptags', 'rss', 'conds', 'asis', 'substitute', 'debug', ''])) { // added '' since in f_t it takes different formula
                 $slice_id = $fld->getSliceId();
                 $slicename = AA_Module::getModuleName($slice_id);
-                $aliaslink = a_href(get_admin_url('se_inputform.php3', ['change_id'=>$slice_id, 'fid'=>$fld['id']]).'#alias'.substr($alias,2), $alias);
+                $aliaslink = a_href(get_admin_url('se_inputform.php', ['change_id'=>$slice_id, 'fid'=>$fld['id']]).'#alias'.substr($alias,2), $alias);
                 return "<br>$aliaslink ($slicename) - f_t: used for code - consider using quicker f__ function";
             }
         }

@@ -100,7 +100,7 @@ $_m["Show all"]
 $_m["Add new"]
  = "Přidej nový";
 
-// admin/se_inputform.php3, row 411
+// admin/se_inputform.php, row 411
 // admin/sliceimp.php3, row 484
 // include/formutil.php3, row 202, 2698
 $_m["Insert"]

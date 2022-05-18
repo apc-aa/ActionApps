@@ -111,7 +111,7 @@ try {
 } catch (Exception $e) {}
 
 if ($upd_edit) {
-    $back_admin_url = get_admin_url('se_inputform.php3', ['fid'=>$fid]);
+    $back_admin_url = get_admin_url('se_inputform.php', ['fid'=>$fid]);
 } else {
     $back_admin_url = get_admin_url('se_fields.php3', (AA_Fields::isSliceField($fid) ? ['slice_fields'=>1] : []));
 }
@@ -355,7 +355,7 @@ $headcode = '
       return;
     }
     if ( conid != "" ) {
-      let url = "'. get_admin_url('se_constant.php3', ['return_url' => 'se_inputform.php3', 'fid' => $fid]). '";
+      let url = "'. get_admin_url('se_constant.php3', ['return_url' => 'se_inputform.php', 'fid' => $fid]). '";
       url += ( (as_new != 1) ? "&group_id=" : "&as_new=") + escape(conid);
       document.location=url;
     }
@@ -427,7 +427,7 @@ echo "
               <td>
                 <a href='javascript:CallConstantEdit(0)'>&larr;&nbsp;". $constants_menu[0] ."</a><br>
                 <a href='javascript:CallConstantEdit(1)'>&larr;&nbsp;". $constants_menu[1] ."</a><br>
-                <a href='". get_admin_url('se_constant.php3', ['return_url' => 'se_inputform.php3', 'fid' => $fid]). "'>". $constants_menu[2] ."</a>
+                <a href='". get_admin_url('se_constant.php3', ['return_url' => 'se_inputform.php', 'fid' => $fid]). "'>". $constants_menu[2] ."</a>
               </td>
              </tr>
             </table>

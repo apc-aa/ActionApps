@@ -455,7 +455,7 @@ $_m["Bad slice ID"]
     = "Chybné ID webíku";
 
 // ./filler.php3, row 278
-// admin/se_inputform.php3, row 234
+// admin/se_inputform.php, row 234
 // include/formutil.php3, row 289, 377
 // include/itemfunc.php3, row 678
 $_m["No fields defined for this slice"]
@@ -780,7 +780,7 @@ $_m["Exact copy"]
 $_m["The slice will be exact copy of the remote slice. All items will be copied including holdingbin and trash bin items. Also on anychange in the remote item, the content will be copied to local copy of the item. The items will have the same long ids (not the short ones!). It make no sence to change items in local copy - it will be overwriten from remote master."]
     = "Webík bude pøesnou kopií vzdáleného - kopírovat se budou jak vystavené èlánky, tak i èlánky v zásobníku a koši. Kopírovat se budou i veškeré zmìny ve zdrojovém webíku. Jediná zmìnìná položka je short_id. Nedává valný smysl mìnit takto získané èlánky, protože je velká pravdìpodobnost, že budou pøepsány ze vzdáleného webíku.";
 
-// admin/se_inputform.php3, row 57
+// admin/se_inputform.php, row 57
 // admin/se_javascript.php3, row 38
 // admin/mailman_create_list.php3, row 55
 // admin/se_fields.php3, row 43
@@ -791,167 +791,167 @@ $_m["The slice will be exact copy of the remote slice. All items will be copied 
 $_m["You have not permissions to change fields settings"]
     = "Nemáte právo mìnit nastavení položek";
 
-// admin/se_inputform.php3, row 72
+// admin/se_inputform.php, row 72
 $_m["Field delete OK"]
     = "Pole odstranìno";
 
-// admin/se_inputform.php3, row 116, 446
+// admin/se_inputform.php, row 116, 446
 $_m["Before HTML code"]
     = "HTML kód pøed tímto polem";
 
-// admin/se_inputform.php3, row 117, 434
+// admin/se_inputform.php, row 117, 434
 $_m["Help for this field"]
     = "Nápovìda";
 
-// admin/se_inputform.php3, row 118, 440
+// admin/se_inputform.php, row 118, 440
 $_m["More help"]
     = "Více informací";
 
-// admin/se_inputform.php3, row 119, 379
+// admin/se_inputform.php, row 119, 379
 // admin/se_admin.php3, row 138
 // admin/se_compact.php3, row 189
 // admin/se_fulltext.php3, row 136
 $_m["Default"]
     = "Implicitní";
 
-// admin/se_inputform.php3, row 120
+// admin/se_inputform.php, row 120
 $_m["Input show function"]
     = "Zobrazovací funkce";
 
-// admin/se_inputform.php3, row 122
+// admin/se_inputform.php, row 122
 $_m["Alias must be always _# + 8 UPPERCASE letters, e.g. _#SOMTHING."]
     = "Alias musí být vždy _# + 8 VELKÝCH písmen, napø. _#MUJALIAS.";
 
-// admin/se_inputform.php3, row 128, 475
+// admin/se_inputform.php, row 128, 475
 $_m["Alias"]
     = "";
 
-// admin/se_inputform.php3, row 132, 476
+// admin/se_inputform.php, row 132, 476
 // admin/se_profile.php3, row 160
 $_m["Function"]
     = "Funkce";
 
-// admin/se_inputform.php3, row 200
+// admin/se_inputform.php, row 200
 // admin/se_fields.php3, row 188
 $_m["Fields update successful"]
     = "Nastavení položek úspìšnì zmìnìno";
 
-// admin/se_inputform.php3, row 290, 323
+// admin/se_inputform.php, row 290, 323
 // admin/se_fields.php3, row 210, 226
 $_m["Admin - configure Fields"]
     = "Správa webíku - Nastavení polí";
 
-// admin/se_inputform.php3, row 296
+// admin/se_inputform.php, row 296
 $_m["You selected slice and not constant group. It is impossible to create slice from here."]
     = "Vybral jste webík a ne konstanty. Odtud nelze nový webík vytvoøit.";
 
-// admin/se_inputform.php3, row 326
+// admin/se_inputform.php, row 326
 $_m["<p>WARNING: Do not change this setting if you are not sure what you're doing!</p>"]
     = "<p>POZOR: Tato nastavení by mìl mìnit jen ten, kdo ví co dìlá!</p>";
 
-// admin/se_inputform.php3, row 336
+// admin/se_inputform.php, row 336
 $_m["Field properties"]
     = "Vlastnosti políèka";
 
-// admin/se_inputform.php3, row 348
+// admin/se_inputform.php, row 348
 $_m["Input type"]
     = "Typ Vstupu";
 
-// admin/se_inputform.php3, row 352
+// admin/se_inputform.php, row 352
 $_m["Input field type in Add / Edit item."]
     = "Typ políèka v Pøidat / Upravit zprávu.";
 
-// admin/se_inputform.php3, row 355
+// admin/se_inputform.php, row 355
 // admin/se_constant_import.php3, row 58, 113, 122
 // admin/se_constant.php3, row 340
 $_m["Constants"]
     = "Hodnoty";
 
-// admin/se_inputform.php3, row 357
+// admin/se_inputform.php, row 357
 $_m["Edit|Use as new|New"]
     = "Upravit|Upravit kopii|Nová skupina";
 
-// admin/se_inputform.php3, row 358
+// admin/se_inputform.php, row 358
 $_m["Choose a Constant Group or a Slice."]
     = "Vyberte Skupinu Konstant nebo Webík.";
 
-// admin/se_inputform.php3, row 371, 388, 401, 417, 477
+// admin/se_inputform.php, row 371, 388, 401, 417, 477
 $_m["Parameters"]
     = "Parametry";
 
-// admin/se_inputform.php3, row 373, 390, 403, 419, 474
+// admin/se_inputform.php, row 373, 390, 403, 419, 474
 // admin/se_csv_import2.php3, row 375
 $_m["Help: Parameter Wizard"]
     = "Nápovìda: Prùvodce Parametry";
 
-// admin/se_inputform.php3, row 386
+// admin/se_inputform.php, row 386
 $_m["How to generate the default value"]
     = "Jak vytvoøit implicitní hodnotu";
 
-// admin/se_inputform.php3, row 396
+// admin/se_inputform.php, row 396
 $_m["Validate"]
     = "Zkontrolovat";
 
-// admin/se_inputform.php3, row 405
+// admin/se_inputform.php, row 405
 $_m["Stored as"]
     = "";
 
-// admin/se_inputform.php3, row 405
+// admin/se_inputform.php, row 405
 // admin/se_csv_import.php3, row 216, 220
 $_m["Text"]
     = "";
 
-// admin/se_inputform.php3, row 405
+// admin/se_inputform.php, row 405
 $_m["Number"]
     = "";
 
-// admin/se_inputform.php3, row 411
+// admin/se_inputform.php, row 411
 // admin/sliceimp.php3, row 484
 // include/formutil.php3, row 202, 2698
 $_m["Insert"]
     = "Vložit";
 
-// admin/se_inputform.php3, row 415
+// admin/se_inputform.php, row 415
 $_m["Defines how value is stored in database."]
     = "Urèuje zpùsob uložení hodnoty v databázi";
 
-// admin/se_inputform.php3, row 428
+// admin/se_inputform.php, row 428
 $_m["Show 'HTML' / 'plain text' option"]
     = "Zobrazit volbu 'HTML' / 'prostý text'";
 
-// admin/se_inputform.php3, row 430
+// admin/se_inputform.php, row 430
 $_m["'HTML' as default"]
     = "'HTML' implicitnì";
 
-// admin/se_inputform.php3, row 436
+// admin/se_inputform.php, row 436
 $_m["Shown help for this field"]
     = "Nápovìda zobrazená pro toto pole ve vstupním formuláøi";
 
-// admin/se_inputform.php3, row 442
+// admin/se_inputform.php, row 442
 $_m["Text shown after user click on '?' in input form"]
     = "Nápovìda, která se zobrazí po stisku '?' ve vstupním formuláøi";
 
-// admin/se_inputform.php3, row 448
+// admin/se_inputform.php, row 448
 $_m["Code shown in input form before this field"]
     = "HTML kód, který se zobrazí ve vstupním formuláøi pøed tímto polem";
 
-// admin/se_inputform.php3, row 453
+// admin/se_inputform.php, row 453
 $_m["Feeding mode"]
     = "Sdílení tohoto pole";
 
-// admin/se_inputform.php3, row 456
+// admin/se_inputform.php, row 456
 $_m["Should the content of this field be copied to another slice if it is fed?"]
     = "Má se kopírovat obsah tohoto políèka do dalších webíkù pøi výmìnì zpráv mezi webíky?";
 
-// admin/se_inputform.php3, row 459
+// admin/se_inputform.php, row 459
 $_m["ALIASES used in views to print field content (%1)"]
     = "";
 
-// admin/se_inputform.php3, row 475
+// admin/se_inputform.php, row 475
 $_m["8 UPPERCASE letters or _"]
     = "8 VELKÝCH písmen nebo _";
 
-// admin/se_inputform.php3, row 478
+// admin/se_inputform.php, row 478
 // admin/um_gedit.php3, row 256
 // admin/se_view.php3, row 87
 // include/constants.php3, row 364
