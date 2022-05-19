@@ -100,11 +100,12 @@ class ObjectForm extends AbstractGrabber
 
     /** Possibly preparation of grabber - it is called directly before getObject()
      *  method is called - it means "we are going really to grab the data
+     * @throws \Exception
      */
     function prepare() {
         $this->_content = [];
         if (!isset($_POST['aa']) OR !is_array($_POST['aa'])) {
-            return;
+            throw new \Exception('No data in POST');
         }
 
         /** the object ids are in the form of i<object_id> for edited objects,

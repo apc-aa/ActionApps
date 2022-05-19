@@ -561,9 +561,9 @@ class AA_Slice extends AA_Module {
 
     /** find default field for upload to - first file...........x or img_source.....x field
      */
-    function getDefaultUploadField() {
+    function getDefaultUploadField(): string {
         $flds = $this->getFields();
-        return (($fid = $flds->getCategoryFieldId('file')) OR ($fid = $flds->getCategoryFieldId('img_upload'))) ? $fid : '';
+        return (($fid = $flds->getCategoryFieldId('file')) OR ($fid = $flds->getCategoryFieldId('img_upload')) OR ($fid = $flds->getCategoryFieldId('img_src'))) ? $fid : '';
     }
 
     /** sql_id function - removed - use DB_AA::select1('SELECT * FROM `slice`', '', array(array('id',$slobj->getId(), 'l'))); */
@@ -578,7 +578,7 @@ class AA_Slice extends AA_Module {
      * wanted by Storeitem etc, [1] is array of fields in priority order
      * @deprecated - use getFields() and getField() instead
      */
-    function fields( $return_type = null, $slice_fields = false ) {
+    function fields( $return_type = null, $slice_fields = false ): array {
 
         $fields = $slice_fields ? $this->dynamic_fields : $this->fields;
 
@@ -1032,7 +1032,7 @@ class AA_Modulesettings_Slice extends AA_Object {
 
     /** check, if the $prop is the property of this object */
     static function isProperty($prop) {
-        return in_array($prop, ['translations', 'autofields', 'fieldslice', 'historylog']);
+        return in_array($prop, ['spamprotect', 'translations', 'autofields', 'fieldslice', 'historylog']);
     }
 
     /** allows storing object in database
@@ -1041,6 +1041,7 @@ class AA_Modulesettings_Slice extends AA_Object {
      */
     static function getClassProperties(): array {
         return [ //                        id             name                            type     multi  persist validator, required, help, morehelp, example
+            'spamprotect'  => new AA_Property( 'spamprotect',  _m("Languages for translation"), 'string', true, true, new AA_Validate_Regexp(['pattern'=>'/^[a-z]{2}$/', 'maxlength'=>2]), false, _m('specify language codes in which you want translate content - small caps, two letters - like: en, es, de, ...')),
             'translations' => new AA_Property( 'translations', _m("Languages for translation"), 'string', true, true, new AA_Validate_Regexp(['pattern'=>'/^[a-z]{2}$/', 'maxlength'=>2]), false, _m('specify language codes in which you want translate content - small caps, two letters - like: en, es, de, ...')),
             'autofields'   => new AA_Property( 'autofields',   _m("Automatic field creation"),  'bool',  false, true, 'bool', false, _m('If checked, slice allows storing values to text....* field, even if the appropriate text....* is not defined in the slice. The field will be created using field text............ as template.')),
             'fieldslice'   => new AA_Property( 'fieldslice',   _m("Fields defined by another slice"), 'string',  false, true, 'id', false, _m('You can use special slice for additional fields definition. There you can write slice ID, which define the fields.<br>Could be used for data slice, which stores values for user created forms.')),

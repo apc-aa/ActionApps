@@ -51,8 +51,7 @@ use zids;
  *   where "dte" points to the AA\Widget\DteWidget. The method AA\Widget\DteWidget::getValue()
  *   is called to grab the value (or multivalues) from the submitted form
  */
-class Form extends AbstractGrabber
-{
+class Form extends AbstractGrabber {
     private $_items;
     private $_last_store_mode;
 
@@ -99,11 +98,10 @@ class Form extends AbstractGrabber
         $ret = [];
         foreach ($files as $type => $items) {
             foreach ($items as $item => $fields) {
-                foreach ($fields as $field => $f) {                                                                     
+                foreach ($fields as $field => $f) {
                     foreach ((array)$f['fil']['var'] as $k => $value) {
                         $arr = [$item => [$field => ['fil' => ['var' => ["_$k" => [$type => $value]]]]]];
                         $ret = array_merge_recursive($ret, $arr);
-
                     }
                 }
             }
@@ -113,6 +111,7 @@ class Form extends AbstractGrabber
 
     /** process the   aa[f_54343ea876898b6754e3578a8cc544e6][file][fil][var][] type of upload produced by {manager} and
      *  convert it to aa[n1_54343ea876898b6754e3578a8cc544e6][file............][fil][var][]
+     * @return true|string - string is error
      */
     private function fileUploadToNewItem(array &$aa) {
         $i = 0;
@@ -120,13 +119,20 @@ class Form extends AbstractGrabber
             [$letter, $sid] = explode('_', $type);
             if ($letter[0] == 'f') {
                 unset($aa[$type]);   // remove old form and add new one
-                if (is_array($file['file']['fil']['var']) AND ($s = AA_Slice::getModule($sid)) AND ($fid = $s->getDefaultUploadField())) {
+                if (is_array($file['file']['fil']['var'])) {
+                    if (!($s = AA_Slice::getModule($sid))) {
+                        return _m('No slice found: %1', [$sid]);
+                    }
+                    if (!($fid = $s->getDefaultUploadField())) {
+                        return _m('No file, img_upload, or img_src field type found in slice %1', [$sid]);
+                    }
                     foreach ($file['file']['fil']['var'] as $f) {
                         $aa['n' . (++$i) . "_$sid"] = [$fid => ['fil' => ['var' => [$f]]]];
                     }
                 }
             }
         }
+        return true;
     }
 
 
@@ -142,13 +148,15 @@ class Form extends AbstractGrabber
 
     /** Possibly preparation of grabber - it is called directly before getItem()
      *  method is called - it means "we are going really to grab the data
+     * @throws \Exception
      */
     function prepare() {
 
         $this->_items = [];
-        if (!isset($_POST['aa']) OR !is_array($_POST['aa'])) {
-            if (!isset($_FILES['aa']) OR !is_array($_FILES['aa'])) {
-                return;
+        if (!isset($_POST['aa']) or !is_array($_POST['aa'])) {
+            if (!isset($_FILES['aa']) or !is_array($_FILES['aa'])) {
+                $this->message(['err' => _m('no POST nor FILES sent')]);
+                return false;
             }
         }
 
@@ -173,7 +181,9 @@ class Form extends AbstractGrabber
 
             // now process the aa[f_54343ea876898b6754e3578a8cc544e6][file][] type of upload and convert it
             // to aa[n1_54343ea876898b6754e3578a8cc544e6][file............][]
-            $this->fileUploadToNewItem($files);
+            if (($msg = $this->fileUploadToNewItem($files)) !== true) {
+                throw new \Exception($msg);
+            }
 
             // add it to POSTed variables
             $aa = array_merge_recursive($aa, $files);
@@ -188,7 +198,7 @@ class Form extends AbstractGrabber
             }
         }
         $trans_item_alias = array_keys($id_trans_table);
-        $trans_item_ids = array_values($id_trans_table);
+        $trans_item_ids   = array_values($id_trans_table);
 
         $UPDATE_MODES = ['u' => 'update', 'i' => 'add', 'r' => 'update'];
         foreach ($aa as $dirty_item_id => $item_fields) {
@@ -202,12 +212,12 @@ class Form extends AbstractGrabber
             // 'r': edited item - remove value from field
             // 'i': edited item - insert = field content is added to the existing content of the field
             if ($store_mode = $UPDATE_MODES[$dirty_item_id[0]]) {
-                $item_id = substr($dirty_item_id, 1);
-                $item = AA_Item::getItem($item_id);
+                $item_id                         = substr($dirty_item_id, 1);
+                $item                            = AA_Item::getItem($item_id);
                 $item_fields['slice_id________'] = [pack_id($item->getSliceID())];
             } // new items
             else {
-                $item_id = $id_trans_table['_#' . $dirty_item_id];
+                $item_id    = $id_trans_table['_#' . $dirty_item_id];
                 $store_mode = 'new';
 
                 //grab slice_id of new item
@@ -229,7 +239,7 @@ class Form extends AbstractGrabber
             if ($dirty_item_id[0] == 'r') {
                 $oldcontent4id = new ItemContent();
                 $oldcontent4id->setByItemID(new zids($item_id), true);     // ignore password
-                if (!$oldcontent4id->getSliceID() OR !$oldcontent4id->getItemID()) {
+                if (!$oldcontent4id->getSliceID() or !$oldcontent4id->getItemID()) {
                     continue;
                 }
             }
@@ -242,7 +252,7 @@ class Form extends AbstractGrabber
                 $aa_value = Widget::getValue($val_array);
                 $aa_value->replaceInValues($trans_item_alias, $trans_item_ids);
 
-                if ( ($dirty_item_id[0] == 'r') AND ($field_id != 'slice_id........') ) {
+                if (($dirty_item_id[0] == 'r') and ($field_id != 'slice_id........')) {
                     $aa_value = $oldcontent4id->getAaValue($field_id)->removeValues($aa_value->getValues());
                 }
                 $item->setAaValue($field_id, $aa_value);

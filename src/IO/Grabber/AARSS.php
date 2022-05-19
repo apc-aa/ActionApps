@@ -304,7 +304,6 @@ class AARSS extends AbstractGrabber
         if (is_array($this->aa_rss['items'])) {
             reset($this->aa_rss['items']);
         }
-
     }
 
     /** getItem function

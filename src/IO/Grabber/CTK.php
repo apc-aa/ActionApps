@@ -50,10 +50,10 @@ class CTK extends AbstractGrabber
     }
 
     /** Description of the grabber - used as help text for the users.
-     *  Description is in in HTML
+     *  Description is in the HTML
      */
     public static function description(): string {
-        return _m('Process import xml file xported from CTK');
+        return _m('Process import xml file exported from CTK');
     }
 
     /** Possibly preparation of grabber - it is called directly before getItem()
@@ -69,7 +69,6 @@ class CTK extends AbstractGrabber
         foreach ($xml->NewsItem as $v) {
             $this->_items[] = $v;
         }
-
     }
 
     /** Method called by the AA\IO\Saver to get next item from the data input */

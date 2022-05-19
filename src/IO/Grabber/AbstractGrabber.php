@@ -173,6 +173,7 @@ abstract class AbstractGrabber implements \AA\Util\NamedInterface {
     /** prepare function
      *  Possibly preparation of grabber - it is called directly before getItem()
      *  method is called - it means "we are going really to grab the data
+     *  @throws \Exception
      */
     function prepare() {
     }

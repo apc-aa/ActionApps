@@ -49,7 +49,6 @@ class PohodaOrdersResult extends AA\IO\Grabber\AbstractGrabber {
         foreach ($xml as $v) {
             $this->_items[] = $v;
         }
-
     }
 
     /** Method called by the AA\IO\Saver to get next item from the data input */

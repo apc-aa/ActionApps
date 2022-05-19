@@ -16,7 +16,7 @@ trait LastErrTrait {
      *  Method returns or sets last itemContent error
      *  The trick for static class variables is used
      *  Use as:
-     *    MyClass::lastErr(NO_SLICE_ID, _m(|"No Slice Id specified"));   // set error code
+     *    MyClass::lastErr(NO_SLICE_ID, _m("No Slice Id specified"));   // set error code
      *    MyClass::lastErr();      // get last Error ID (int)
      *    MyClass::lastErrMsg();   // get last Error Message (string)
      *

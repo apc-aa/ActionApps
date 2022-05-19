@@ -111,17 +111,16 @@ class SQL extends AbstractGrabber
 
     /** Possibly preparation of grabber - it is called directly before getItem()
      *  method is called - it means "we are going really to grab the data
+     * @throws \Exception
      */
     function prepare() {
         try {
             $this->db       = new PDO($this->dsn, $this->username, $this->password);
         } catch (\PDOException $e) {
-            $this->message('not possible to connect');
-            return;
-	}    
+            throw new \Exception('not possible to connect to DB');
+	    }
         $this->message('connected');
-	$this->dbresult = $this->db->query($this->sql);
- 
+	    $this->dbresult = $this->db->query($this->sql);
         // $this->message("parsed items ". count($this->_items));
     }
 
