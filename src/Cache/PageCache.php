@@ -101,7 +101,7 @@ class PageCache  {
     }
 
     /** get function
-     *  Returns cached informations or false
+     *  Returns cached information or false
      * @param $key
      * @param $action
      * @return bool
@@ -114,7 +114,7 @@ class PageCache  {
                 $this->invalidateById( $key );
                 AA::$debug&2 && AA::$dbg->log("Pagecache: return false - invlaidating");
                 return false;
-                } elseif ( (string)$action == '1' ) {  // nocache=1
+            } elseif ( (string)$action == '1' ) {  // nocache=1
                 AA::$debug&2 && AA::$dbg->log("Pagecache: return false - nocache");
                 return false;
             }
@@ -181,7 +181,7 @@ class PageCache  {
     /** getById function
      *  Get cache content by ID (not keystring)
      * @param $keyid
-     * @return bool
+     * @return string|false
      */
     function getById($keyid) {
         $arr   = DB_AA::select1('', 'SELECT stored, content FROM `pagecache`', [['id', $keyid]]);
@@ -246,6 +246,7 @@ class PageCache  {
 
     function getPage($key, $action='get') {
         $entry = $this->get($key, $action);
+        AA::$debug&2 && AA::$dbg->log("Pagecache->getPage(output): ".($entry ? 'cached text' : 'not found'), 'Pagecache action:'.$action);
         return $entry ? unserialize($entry) : false;
     }
 

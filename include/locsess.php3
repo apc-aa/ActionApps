@@ -356,26 +356,10 @@ class AA {
         if (isset(AA::$headers['disposition'])) {
             $ret['disposition'] = 'Content-Disposition: '.AA::$headers['disposition'];
         }
-        if (isset(AA::$headers['CSP'])) {
-            $ret['CSP'] = AA::$headers['CSP'];
-        }
-        if (isset(AA::$headers['CSP-RO'])) {
-            $ret['CSP-RO'] = AA::$headers['CSP-RO'];
-        }
-        if (isset(AA::$headers['RT'])) {
-            $ret['RT'] = AA::$headers['RT'];
-        }
-        if (isset(AA::$headers['NEL'])) {
-            $ret['NEL'] = AA::$headers['NEL'];
-        }
-        if (isset(AA::$headers['XSS'])) {
-            $ret['XSS'] = AA::$headers['XSS'];
-        }
-        if (isset(AA::$headers['XCTO'])) {
-            $ret['XCTO'] = AA::$headers['XCTO'];
-        }
-        if (isset(AA::$headers['RP'])) {
-            $ret['RP'] = AA::$headers['RP'];
+        foreach (['CSP','CSP-RO','RT','NEL','XSS','XCTO','RP','CORS'] as $posibleheader) {  // @todo CORS
+            if (isset(AA::$headers[$posibleheader])) {
+                $ret[$posibleheader] = AA::$headers[$posibleheader];
+            }
         }
         return $ret;
     }
@@ -499,7 +483,7 @@ function GetTable2Array($SQL, $key="id", $values='aa_all') {
         }
     }
     freeDB($db);
-    return isset($arr) ? $arr : false;
+    return $arr ?? false;
 }
 
 function AuthGetUid(): string {
