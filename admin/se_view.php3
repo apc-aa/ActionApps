@@ -480,9 +480,10 @@ $apage->printHead($err, $Msg);
 
 $form_buttons = [
     'update',
-                       'cancel'    => ["url"=>"se_views.php3"],
-                       'view_id'   => ['value'=> $view_id],
-                       'view_type' => ['value'=> $view_type],
+    'cancel2'   => ['value'=>_m('Show History'), "url"=>\AA\Util\ChangesMonitor::getHistoryUrl("V.".$view_id)],
+    'cancel'    => ["url"=>"se_views.php3"],
+    'view_id'   => ['value'=> $view_id],
+    'view_type' => ['value'=> $view_type],
 ];
 
 // Print View Form ----------

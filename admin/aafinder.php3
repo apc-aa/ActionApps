@@ -62,7 +62,7 @@ try {
     $findtext = InputVars::stringGETPOST('findtext'); // -
     // array ( 'Jeď!' => 2, 1 => 2, )
     $go_findtext = InputVars::boolGET('go_findtext'); // convert submit to bool
-    $showhistory = InputVars::idGET('showhistory');
+    $showhistory = InputVars::stringGET('showhistory');
     $finditem = InputVars::stringGET('finditem'); // alpha, empty
     // array ( 'Jeď!' => 3, )
     $go_finditem = InputVars::boolGET('go_finditem'); // convert submit to bool

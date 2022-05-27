@@ -84,8 +84,8 @@ class AA_Aliasfunc extends AA_Object {
         return [          //           id       name       type        multi   persist validator, required, help, morehelp, example
             'alias'  => new AA_Property( 'alias',  _m("Alias"),          'string', false, true, '', true,  _m('Alias will be called as {_:&lt;Alias_name&gt;[:&lt;Possible parameters - colon separated&gt;]}'),'', 'Message_box'),
             'code'   => new AA_Property( 'code',   _m("Code"),           'text',   false, true, '', false,  _m('Code printed by the alias. Alias could have parameters and you can use it by _#P1, _#P2, ... variables'),'', '&lt;div class=mybox style="color:_#P2"&gt;_#P1&lt;/div&gt;'),
-            'desc'   => new AA_Property( 'desc',   _m("Description"),    'text',   false, true, '', false),
-            'ussage' => new AA_Property( 'ussage', _m("Usage example"), 'string',  true,  true, '', false, '', '', '{_:Message_box:Update successfull:green}')
+            'desc'   => new AA_Property( 'desc',   _m("Description"),    'text',   true, true, '', false),
+            'ussage' => new AA_Property( 'ussage', _m("Usage example"), 'string',  true,  true, '', false, '', '', '{_:Message_box:Update successful:green}')
         ];
     }
 
@@ -1763,8 +1763,8 @@ class AA_Stringexpand_Math extends AA_Stringexpand_Nevercachenotrim {
     }
 }
 
-/** {intersect:<ids>:<ids>}
- *  @returns string - set of intersect of two set of ids (dash separated)
+/** {specialstring:BOM}
+ *  @returns string - special string - currently only utf-8 BOM (Byte order mark) character is supported
  */
 class AA_Stringexpand_Specialstring extends AA_Stringexpand {
     // Never cached (extends AA_Stringexpand_Nevercache)
@@ -1880,7 +1880,7 @@ class AA_Stringexpand_Timestamp extends AA_Stringexpand_Nevercache {
     }
 }
 
-/** return current timestamp based on the textual date provided
+/** @return string rewrites list of values to range
  *   {range:2008-2009-2010-2011}   - 2008-2011
  *   {range:1-4-5-6}               - 1, 4-6
  *   {range:{@year............:-}}
@@ -2219,7 +2219,7 @@ class AA_Stringexpand_Lookup extends AA_Stringexpand_Nevercachenotrim {
  *  the database
  *    {count:<ids>[:<delimiter>]}
  *    {count:12324-353443-58921}   // returns 3
- *    {count:{ids:6353428288a923:d-category........-=-Dodo}}
+ *    {count:{ids:6353428288a923:d-category........-==-Dodo}}
  */
 class AA_Stringexpand_Count extends AA_Stringexpand_Nevercachenotrim {
     /** Do not trim all parameters (the $delimiter parameter could contain space) */
@@ -2245,7 +2245,7 @@ class AA_Stringexpand_Count extends AA_Stringexpand_Nevercachenotrim {
 /** Previous item for the current item in the list
  *    {previous:<ids>:<current_id>}
  *    {previous:12324-353443-58921:353443}   // returns 12324
- *    {previous:{ids:6353428288a923:d-category........-=-Dodo}:566a655e7787b564b8b6565b}
+ *    {previous:{ids:6353428288a923:d-category........-==-Dodo}:566a655e7787b564b8b6565b}
  */
 class AA_Stringexpand_Previous extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
@@ -2288,7 +2288,7 @@ class AA_Stringexpand_Csv extends AA_Stringexpand_Nevercache {
 
 
 /** Escapes the HTML special chars (>,<,&,...) and also prevents to double_encode
- *  already encoded entities (like &amp;quote;) - as oposite to {htmlspecialchars}
+ *  already encoded entities (like &amp;quote;) - as opposite to {htmlspecialchars}
  */
 class AA_Stringexpand_Safe extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
@@ -2332,7 +2332,7 @@ class AA_Stringexpand_Jsonstring extends AA_Stringexpand_Nevercache {
 }
 
 /** Returns Text as is.
- *  Looks funny, but it is usefull. If you write {abstract........}, then it
+ *  Looks funny, but it is useful. If you write {abstract........}, then it
  *  is NOT the same as {asis:abstract........}, since {abstract........} counts
  *  with HTML/plaintext setting, so maybe the \n are replaced by <br> if
  *  "plaintext" is set for the field. The {asis:abstract........} returns the

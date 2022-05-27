@@ -262,7 +262,11 @@ class AA_Property extends AA_Storable {
         $widget = '';
         if ($this->isMulti()) {
             if (empty($values)) {
-                $widget = new \AA\Widget\MflWidget();
+                if ($this->type == 'text') {
+                    $widget = new \AA\Widget\MflWidget(['rows' => 2, 'row_count' => 1]);
+                } else {
+                    $widget = new \AA\Widget\MflWidget(['row_count' => 1]);
+                }
             }
             elseif (count($values) < 5) {
                 $widget = new \AA\Widget\MchWidget(['const_arr' => $values]);
