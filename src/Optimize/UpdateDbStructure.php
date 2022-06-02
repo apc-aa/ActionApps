@@ -3,7 +3,7 @@
 namespace AA\Optimize;
 
 use AA;
-use AA_Difftext;
+use AA\Util\Difftext;
 use AA_Metabase;
 use function _m;
 
@@ -49,7 +49,7 @@ class UpdateDbStructure extends \AA\Optimize\AbstractOptimize {
         $diffs = $template_metabase->compare($this_metabase);
         $different = false;
 
-        $this->message(AA_Difftext::renderHtml(" Actual Database ", " AA Template "));
+        $this->message(Difftext::renderHtml(" Actual Database ", " AA Template "));
 
         foreach ($diffs as $tablename => $diff) {
             if ($diff['equal']) {
@@ -57,14 +57,14 @@ class UpdateDbStructure extends \AA\Optimize\AbstractOptimize {
                 $this->message(_m('<em>Tables %1 are identical.</em><br>', [$tablename]));
             } else if ($diff['table1'] == '') {
                 $this->message(_m('<em>Table <b>%1</b> is <b>not needed</b>. You can <b>manually</b> delete it.</em><br>', [$tablename]));
-                $this->message(AA_Difftext::renderHtml($diff['table2'], $diff['table1']));
+                $this->message(Difftext::renderHtml($diff['table2'], $diff['table1']));
                 $different = true;
             } else if ($diff['table2'] == '') {
                 $this->message(_m('<em>Table <b>%1</b> is <b>new</b>.</em><br>', [$tablename]));
-                $this->message(AA_Difftext::renderHtml($diff['table2'], $diff['table1']));
+                $this->message(Difftext::renderHtml($diff['table2'], $diff['table1']));
                 $different = true;
             } else {
-                $this->message(AA_Difftext::renderHtml($diff['table2'], $diff['table1']));
+                $this->message(Difftext::renderHtml($diff['table2'], $diff['table1']));
                 $different = true;
             }
         }

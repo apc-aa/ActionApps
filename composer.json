@@ -26,6 +26,7 @@
     "firebase/php-jwt": "v5.0.0",
     "mobiledetect/mobiledetectlib": "2.8.33",
     "phpgangsta/googleauthenticator": "dev-master",
+    "hearst-digital/horde-text-diff": "dev-master",
     "ext-iconv": "*",
     "ext-zlib": "*",
     "ext-gd": "*",

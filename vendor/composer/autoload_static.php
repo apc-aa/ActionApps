@@ -29,6 +29,13 @@ class ComposerStaticInit43e15006db6c3041e7b8c7c57cf04d54
     );
 
     public static $prefixesPsr0 = array (
+        'H' => 
+        array (
+            'Horde' => 
+            array (
+                0 => __DIR__ . '/..' . '/hearst-digital/horde-text-diff/lib',
+            ),
+        ),
         'D' => 
         array (
             'Detection' => 
@@ -42,7 +49,7 @@ class ComposerStaticInit43e15006db6c3041e7b8c7c57cf04d54
         'AA\\Cache\\CacheStr2find' => __DIR__ . '/../..' . '/src/Cache/CacheStr2find.php',
         'AA\\Cache\\Cacheentry' => __DIR__ . '/../..' . '/src/Cache/Cacheentry.php',
         'AA\\Cache\\PageCache' => __DIR__ . '/../..' . '/src/Cache/PageCache.php',
-        'AA\\Doit\\RequestMonitor' => __DIR__ . '/../..' . '/src/Doit/RequestMonitor.php',
+        'AA\\Dev\\RequestMonitor' => __DIR__ . '/../..' . '/src/Dev/RequestMonitor.php',
         'AA\\FormArray' => __DIR__ . '/../..' . '/src/FormArray.php',
         'AA\\IO\\DB\\AbstractDB' => __DIR__ . '/../..' . '/src/IO/DB/AbstractDB.php',
         'AA\\IO\\DB\\DB_AA' => __DIR__ . '/../..' . '/src/IO/DB/DB_AA.php',
@@ -146,6 +153,7 @@ class ComposerStaticInit43e15006db6c3041e7b8c7c57cf04d54
         'AA\\Optimize\\DbBinaryTrailingZeros' => __DIR__ . '/../..' . '/src/Optimize/DbBinaryTrailingZeros.php',
         'AA\\Optimize\\DbFeedInconsistency' => __DIR__ . '/../..' . '/src/Optimize/DbFeedInconsistency.php',
         'AA\\Optimize\\DbInconsistency' => __DIR__ . '/../..' . '/src/Optimize/DbInconsistency.php',
+        'AA\\Optimize\\DbInconsistencyConstants' => __DIR__ . '/../..' . '/src/Optimize/DbInconsistencyConstants.php',
         'AA\\Optimize\\DbRelationDups' => __DIR__ . '/../..' . '/src/Optimize/DbRelationDups.php',
         'AA\\Optimize\\DbRelationStartsxy' => __DIR__ . '/../..' . '/src/Optimize/DbRelationStartsxy.php',
         'AA\\Optimize\\DropBackupTables' => __DIR__ . '/../..' . '/src/Optimize/DropBackupTables.php',
@@ -196,6 +204,7 @@ class ComposerStaticInit43e15006db6c3041e7b8c7c57cf04d54
         'AA\\Util\\Searchfields' => __DIR__ . '/../..' . '/src/Util/Searchfields.php',
         'AA\\Util\\Singleton4idTrait' => __DIR__ . '/../..' . '/src/Util/Singleton4idTrait.php',
         'AA\\Util\\SingletonTrait' => __DIR__ . '/../..' . '/src/Util/SingletonTrait.php',
+        'AA\\Util\\VarImport' => __DIR__ . '/../..' . '/src/Util/VarImport.php',
         'AA\\Widget\\ChbWidget' => __DIR__ . '/../..' . '/src/Widget/ChbWidget.php',
         'AA\\Widget\\CodWidget' => __DIR__ . '/../..' . '/src/Widget/CodWidget.php',
         'AA\\Widget\\DteWidget' => __DIR__ . '/../..' . '/src/Widget/DteWidget.php',
@@ -225,10 +234,31 @@ class ComposerStaticInit43e15006db6c3041e7b8c7c57cf04d54
         'AA\\Widget\\Widget' => __DIR__ . '/../..' . '/src/Widget/Widget.php',
         'Auth' => __DIR__ . '/../..' . '/include/phplib/phplib.php',
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
+        'Detection\\MobileDetect' => __DIR__ . '/..' . '/mobiledetect/mobiledetectlib/namespaced/Detection/MobileDetect.php',
         'Firebase\\JWT\\BeforeValidException' => __DIR__ . '/..' . '/firebase/php-jwt/src/BeforeValidException.php',
         'Firebase\\JWT\\ExpiredException' => __DIR__ . '/..' . '/firebase/php-jwt/src/ExpiredException.php',
         'Firebase\\JWT\\JWT' => __DIR__ . '/..' . '/firebase/php-jwt/src/JWT.php',
         'Firebase\\JWT\\SignatureInvalidException' => __DIR__ . '/..' . '/firebase/php-jwt/src/SignatureInvalidException.php',
+        'Horde_Text_Diff' => __DIR__ . '/..' . '/hearst-digital/horde-text-diff/lib/Horde/Text/Diff.php',
+        'Horde_Text_Diff_Engine_Native' => __DIR__ . '/..' . '/hearst-digital/horde-text-diff/lib/Horde/Text/Diff/Engine/Native.php',
+        'Horde_Text_Diff_Engine_Shell' => __DIR__ . '/..' . '/hearst-digital/horde-text-diff/lib/Horde/Text/Diff/Engine/Shell.php',
+        'Horde_Text_Diff_Engine_String' => __DIR__ . '/..' . '/hearst-digital/horde-text-diff/lib/Horde/Text/Diff/Engine/String.php',
+        'Horde_Text_Diff_Engine_Xdiff' => __DIR__ . '/..' . '/hearst-digital/horde-text-diff/lib/Horde/Text/Diff/Engine/Xdiff.php',
+        'Horde_Text_Diff_Exception' => __DIR__ . '/..' . '/hearst-digital/horde-text-diff/lib/Horde/Text/Diff/Exception.php',
+        'Horde_Text_Diff_Mapped' => __DIR__ . '/..' . '/hearst-digital/horde-text-diff/lib/Horde/Text/Diff/Mapped.php',
+        'Horde_Text_Diff_Op_Add' => __DIR__ . '/..' . '/hearst-digital/horde-text-diff/lib/Horde/Text/Diff/Op/Add.php',
+        'Horde_Text_Diff_Op_Base' => __DIR__ . '/..' . '/hearst-digital/horde-text-diff/lib/Horde/Text/Diff/Op/Base.php',
+        'Horde_Text_Diff_Op_Change' => __DIR__ . '/..' . '/hearst-digital/horde-text-diff/lib/Horde/Text/Diff/Op/Change.php',
+        'Horde_Text_Diff_Op_Copy' => __DIR__ . '/..' . '/hearst-digital/horde-text-diff/lib/Horde/Text/Diff/Op/Copy.php',
+        'Horde_Text_Diff_Op_Delete' => __DIR__ . '/..' . '/hearst-digital/horde-text-diff/lib/Horde/Text/Diff/Op/Delete.php',
+        'Horde_Text_Diff_Renderer' => __DIR__ . '/..' . '/hearst-digital/horde-text-diff/lib/Horde/Text/Diff/Renderer.php',
+        'Horde_Text_Diff_Renderer_Context' => __DIR__ . '/..' . '/hearst-digital/horde-text-diff/lib/Horde/Text/Diff/Renderer/Context.php',
+        'Horde_Text_Diff_Renderer_Inline' => __DIR__ . '/..' . '/hearst-digital/horde-text-diff/lib/Horde/Text/Diff/Renderer/Inline.php',
+        'Horde_Text_Diff_Renderer_Unified' => __DIR__ . '/..' . '/hearst-digital/horde-text-diff/lib/Horde/Text/Diff/Renderer/Unified.php',
+        'Horde_Text_Diff_ThreeWay' => __DIR__ . '/..' . '/hearst-digital/horde-text-diff/lib/Horde/Text/Diff/ThreeWay.php',
+        'Horde_Text_Diff_ThreeWay_BlockBuilder' => __DIR__ . '/..' . '/hearst-digital/horde-text-diff/lib/Horde/Text/Diff/ThreeWay/BlockBuilder.php',
+        'Horde_Text_Diff_ThreeWay_Op_Base' => __DIR__ . '/..' . '/hearst-digital/horde-text-diff/lib/Horde/Text/Diff/ThreeWay/Op/Base.php',
+        'Horde_Text_Diff_ThreeWay_Op_Copy' => __DIR__ . '/..' . '/hearst-digital/horde-text-diff/lib/Horde/Text/Diff/ThreeWay/Op/Copy.php',
         'MLX' => __DIR__ . '/../..' . '/include/mlx.php',
         'MLXCtrl' => __DIR__ . '/../..' . '/include/mlx.php',
         'MLXEvents' => __DIR__ . '/../..' . '/include/mlx.php',
