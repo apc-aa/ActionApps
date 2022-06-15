@@ -49,7 +49,7 @@ function add_user_and_welcome($welcome_id, $user_login, $slice_id, $role) {
 
     // 1. Assign user privileges
     $userinfo = AA::$perm->findUserByLogin($user_login);
-    if (!is_array($userinfo) || count ($userinfo) != 1) {
+    if (count($userinfo) != 1) {
         return _m("User not found");
     }
 

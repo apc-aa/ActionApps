@@ -134,7 +134,7 @@ class AA_Manageraction_Polls_DeleteTrash extends AA_Manageraction {
 
         $items_to_delete = GetTable2Array("SELECT id FROM polls WHERE status_code=3 $wherein", '', 'id');
         if (count($items_to_delete) < 1) {
-            return;
+            return false;     // OK - no errors
         }
 
         // delete content of all fields
@@ -142,6 +142,7 @@ class AA_Manageraction_Polls_DeleteTrash extends AA_Manageraction {
         $wherein = "IN ('".join_and_quote("','", $items_to_delete)."')";
 
         DB_AA::sql("DELETE FROM polls WHERE id ".$wherein);
+        return false;     // OK - no errors
     }
 
     /** Checks if the user have enough permission to perform the action

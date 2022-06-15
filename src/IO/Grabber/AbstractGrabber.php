@@ -46,7 +46,7 @@ abstract class AbstractGrabber implements \AA\Util\NamedInterface {
     /** @var float wait in order we do not contact the same domain more often than $load_frequency miliseconds */
     protected $load_frequency = null;
 
-    /** */
+    /** @todo - not yet implemented */
     static function factoryFromFile($file) {
         $grabbers = AA_Components::getClassNames('AA\\IO\\Grabber\\AbstractGrabber');
         exit;

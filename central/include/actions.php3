@@ -242,7 +242,7 @@ class AA_Manageraction_Central_DeleteTrash extends AA_Manageraction {
         }
         if (count($items_to_delete) < 1) {
             freeDB($db);
-            return;
+            return false;     // OK - no errors
         }
 
         // delete content of all fields
@@ -250,6 +250,7 @@ class AA_Manageraction_Central_DeleteTrash extends AA_Manageraction {
         $wherein = "IN ('".join_and_quote("','", $items_to_delete)."')";
         $db->query("DELETE FROM central_conf WHERE id ".$wherein);
         freeDB($db);
+        return false;     // OK - no errors
     }
 
     /** Checks if the user have enough permission to perform the action
@@ -279,6 +280,7 @@ class AA_Manageraction_Central_Tab extends AA_Manageraction {
     function perform(AA_Manager $manager, zids $item_zids, $action_param) {
         $manager->setBin($this->to_bin);
         $manager->go2page(1);
+        return false;     // OK - no errors
     }
 
     /** Checks if the user have enough permission to perform the action

@@ -41,7 +41,7 @@ class TxtWidget extends Widget
     }
 
     /** libs to run after the page DOM is loaded */
-    function requireLibs($aa_property, $winfo)
+    protected function requireLibs($aa_property, $winfo)
     {
         return ( count($aa_property->getTranslations())>1 ) ? ['aa-jslib@3'] : [];
     }

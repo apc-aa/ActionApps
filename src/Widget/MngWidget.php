@@ -23,6 +23,10 @@ class MngWidget extends Widget
         return _m('Best for galeries and other tabular data which is multivalue and different for each item');
     }   // widget name
 
+    protected function requireLibs($aa_property, $winfo) {
+        return array_merge(['aa-jslib@3'], parent::requireLibs($aa_property, $winfo));  // aa-jslib@3 for  AA__SiteUpdateParts
+    }
+
     /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
      * @return array

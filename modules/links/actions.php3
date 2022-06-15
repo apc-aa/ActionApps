@@ -327,6 +327,7 @@ class AA_Manageraction_Links_DeleteTrash extends AA_Manageraction {
         $db->query($SQL);
 
         freeDB($db);
+        return false;     // OK - no errors
     }
 
     /** Checks if the user have enough permission to perform the action
@@ -351,6 +352,7 @@ class AA_Manageraction_Links_GoCateg extends AA_Manageraction {
             $r_state['cat_id']       = $action_param;
             $r_state['cat_path']     = $cpath;
         }
+        return false;     // OK - no errors
     }
 }
 
@@ -360,9 +362,10 @@ class AA_Manageraction_Links_Tab extends AA_Manageraction {
 
     /** @inheritDoc */
    function perform(AA_Manager $manager, zids $item_zids, $action_param) {
-        $GLOBALS['r_state']['bin'] = $action_param;
-        $manager->go2page(1);
-    }
+       $GLOBALS['r_state']['bin'] = $action_param;
+       $manager->go2page(1);
+       return false;     // OK - no errors
+   }
 }
 
 /**  */
@@ -410,6 +413,7 @@ class AA_Manageraction_Links_GoBookmark extends AA_Manageraction {
                 $manager->addSearchBar( [0=> ['name'=>1, 'value'=>'', 'operator'=>'RLIKE']]);
                 break;
         }
+        return false;     // OK - no errors
     }
 }
 

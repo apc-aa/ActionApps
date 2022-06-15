@@ -66,7 +66,7 @@ class AA_Manageraction_History_Apply extends AA_Manageraction {
         }
 
         if ($item_zids->count()< 1) {
-            return false;     // OK
+            return false;     // OK - no errors
         }
 
         // AA::$debug = 255;

@@ -687,8 +687,14 @@ class AA_Manageraction extends AA_Storable {
         $this->open_url_add = $add;
     }
 
-    /** @inheritDoc */
+    /** Perform the action - main function
+     * @param AA_Manager $manager       nn which AA_Manager
+     * @param zids       $item_zids     with what Items
+     * @param array      $action_param  additional parameters to the action
+     * @return string|false false is OK, string contain Error message
+     */
     function perform(AA_Manager $manager, zids $item_zids, $action_param) {
+        return false;
     }
 
     /** Checks if the user have enough permission to PERFORM the action on items

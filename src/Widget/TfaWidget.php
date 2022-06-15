@@ -23,7 +23,7 @@ class TfaWidget extends Widget
         return _m('2FA Secret generator');
     }
 
-    function requireLibs($aa_property, $winfo) {
+    protected function requireLibs($aa_property, $winfo) {
         return ['aa-jslib'];  // for AA_SendWidgetAjax
     }
 

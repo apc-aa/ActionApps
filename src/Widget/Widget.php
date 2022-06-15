@@ -42,31 +42,32 @@ class Widget extends AA_Object implements NamedInterface {
      */
     public $item_index = 1;
 
-    /** name function
+    /** name function - part of Widget API
      *
      */
     public static function name(): string         { return ''; }
 
-    /** necessary for parameter wizard */
+    /** necessary for parameter wizard  - part of Widget API */
     public static function description(): string  { return ''; }
 
-    /** returns if the widget handles multivalue or just single value   */
+    /** returns if the widget handles multivalue or just single value - part of Widget API */
     public static function multiple(): bool {
         return false;
     }
 
-    /** array of libs needed for the widget - automaticaly inserted to the inputform */
-    public function requireLibs($aa_property, $winfo) {
+    /** array of libs needed for the widget - automatically inserted to the inputform - part of Widget API */
+    protected function requireLibs($aa_property, $winfo) {
         return [];
     }
 
-    /** script to run after the page DOM is loaded */
-    public function requireRun($aa_property, $winfo) {
+    /** script to run after the page DOM is loaded - part of Widget API */
+    protected function requireRun($aa_property, $winfo) {
         return '';
     }
 
-    /** register Requires */
-    public function registerRequires($aa_property, $winfo) {
+
+    /** register Requires - internal */
+    protected function registerRequires($aa_property, $winfo) {
         $libs = $this->requireLibs($aa_property, $winfo);
         foreach ($libs as $lib) {
             AA::Stringexpander()->addRequire($lib);

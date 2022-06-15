@@ -25,13 +25,13 @@ class EdtWidget extends TxtWidget
         return Widget::propertiesShop(['rows', 'cols', 'area_type']);
     }
 
-    function requireLibs($aa_property, $winfo)
+    protected function requireLibs($aa_property, $winfo)
     {
         return array_merge(['ckeditor'], parent::requireLibs($aa_property, $winfo));
     }
 
     /** script to run after the page DOM is loaded */
-    function requireRun($aa_property, $winfo)
+    protected function requireRun($aa_property, $winfo)
     {
         $ret = '';
         // are there some textareas not converted to CodeMirror?

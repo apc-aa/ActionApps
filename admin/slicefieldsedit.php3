@@ -107,7 +107,7 @@ if ( $update AND !count($err) AND $fields->count() ) {
 
     // added_to_db contains id
     // removed $oldcontent4id (see ItemContent::storeItem)
-    $added_to_db = $content4id->storeSliceFields( $slice_id, $fields );
+    $content4id->storeSliceFields( $slice_id, $fields );
 
     if (!count($err)) {
         page_close();

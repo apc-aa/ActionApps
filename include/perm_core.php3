@@ -488,7 +488,7 @@ class AA_Perm {
     /**
      * usage: AA::$perm->isUsernameFree($var)
      */
-    public function isUsernameFree($username) {
+    public function isUsernameFree($username): bool {
         foreach ($this->perm_systems as $perm_sys) {
             if (!$perm_sys->isUsernameFree($username)) {
                 return false;
@@ -509,7 +509,7 @@ class AA_Perm {
         return $users;
     }
 
-    public function findUserByLogin($user_login) {
+    public function findUserByLogin($user_login): array {
         foreach ($this->perm_systems as $perm_sys) {
             if ($user = $perm_sys->findUserByLogin($user_login)) {
                 return $user;
@@ -844,10 +844,16 @@ class AA_Permsystem {
      *  (it MUST be clear, which perm system is used just from the format of UID)
      */
     function userIdFormatMatches($uid)                          {}
-    public function authenticateUsername($username, $password, $code2fa = '')         {}
-    function isUsernameFree($username)                          {}
-    function findUsernames($pattern)                            {}
-    function findUserByLogin($user_login)                       {}
+
+    /** @return string|false */
+    public function authenticateUsername($username, $password, $code2fa = '') { return false; }
+
+    function isUsernameFree($username): bool                                  { return false; }
+
+    function findUsernames($pattern): array                                   { return []; }
+
+    function findUserByLogin($user_login): array                              { return []; }
+
     function findGroups($pattern)                               {}
 
     /** getGroup function
@@ -982,7 +988,7 @@ class AA_Permsystem_Reader extends AA_Permsystem {
      * @param $username
      * @return bool
      */
-    function isUsernameFree($username) {
+    function isUsernameFree($username): bool {
         // search not only Active bin, but also Holding bin, Pending, ...
         return AA_Reader::name2Id($username, null, AA_BIN_ALL) ? false : true;
     }
@@ -993,11 +999,11 @@ class AA_Permsystem_Reader extends AA_Permsystem {
     }
 
 
-    public function findUsernames($pattern) {
+    public function findUsernames($pattern): array {
         return $this->_findUserPattern('%'. quote($pattern) .'%');
     }
 
-    public function findUserByLogin($user_login) {
+    public function findUserByLogin($user_login): array {
         return $this->_findUserPattern(quote($user_login));
     }
 

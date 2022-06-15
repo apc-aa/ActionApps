@@ -529,7 +529,7 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
      * @param        $username
      * @param        $password
      * @param string $code2fa
-     * @return false|string - uid if user is authentificied, else false.
+     * @return false|string - uid if user is authenticated, else false.
      */
     public function authenticateUsername($username, $password, $code2fa = '') {
         if (!$username or !$password) {         // no password => anonymous in LDAP
@@ -576,7 +576,7 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
      * @param $username
      * @return bool
      */
-    function isUsernameFree($username) {
+    function isUsernameFree($username): bool {
         $aa_default_ldap = AA_Permsystem_Ldap::getLdap();
         // search not only Active bin, but also Holding bin, Pending, ...
         return ! $this->getIDsInfo("uid=$username,".$aa_default_ldap['people']);
@@ -584,9 +584,9 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
 
     /** findUsers function
      *  @param $pattern
-     *  @return string|array - list of users which corresponds to mask $pattern
+     *  @return array - list of users which corresponds to mask $pattern
      */
-    function findUsernames($pattern) {
+    function findUsernames($pattern): array {
         $aa_default_ldap = AA_Permsystem_Ldap::getLdap();
         if ( !($ds=InitLDAP()) ) {
             return [];
@@ -611,13 +611,13 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
 
     /** find_user_by_login function
      * @param $login
-     * @return array|bool
+     * @return array
      */
-    function findUserByLogin($user_login) {
+    function findUserByLogin($user_login): array {
         $aa_default_ldap = AA_Permsystem_Ldap::getLdap();
         $user_id         = "uid=$user_login,".$aa_default_ldap['people'];
         $user            = $this->getIDsInfo($user_id);
-        return $user ? [$user_id=>$user] : false;
+        return $user ? [$user_id=>$user] : [];
     }
 
     /** findGroups function

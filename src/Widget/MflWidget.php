@@ -33,13 +33,13 @@ class MflWidget extends Widget
     public static function description(): string { return ''; }
 
     // inherited from \AA\Widget\Widget
-    function requireLibs($aa_property, $winfo)
+    protected function requireLibs($aa_property, $winfo)
     {
         return ['codemirror@5'];
     }
 
     /** script to run after the page DOM is loaded */
-    function requireRun($aa_property, $winfo)
+    protected function requireRun($aa_property, $winfo)
     {
         $ret = '';
         // are there some textareas not converted to CodeMirror?

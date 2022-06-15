@@ -360,7 +360,7 @@ class AA_Adminpage implements AA_iEditable {
      *    @return string|bool - id of saved data or false
      */
     public        function save() {}
-    public        function validateData() {}
+    public        function validateData(): bool { return true; }
 }
 
 class AA_Adminpage_Table extends AA_Adminpage {
