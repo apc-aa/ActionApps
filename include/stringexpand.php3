@@ -6928,10 +6928,36 @@ class AA_Stringexpand_Trim extends AA_Stringexpand_Nevercachenotrim {
     }
 }
 
+/** trims whitespaces form begin of the string */
+class AA_Stringexpand_Ltrim extends AA_Stringexpand_Nevercachenotrim {
+
+    /**
+     * @param string $string
+     * @param string $chars
+     * @return string|void
+     */
+    function expand($string='', $chars='') {
+        return ltrim($string, $chars);
+    }
+}
+
+/** trims whitespaces form end of the string */
+class AA_Stringexpand_Rtrim extends AA_Stringexpand_Nevercachenotrim {
+
+    /**
+     * @param string $string
+     * @param string $chars
+     * @return string|void
+     */
+    function expand($string='', $chars='') {
+        return rtrim($string, $chars);
+    }
+}
+
 /** replaces string or strings - you can use single string replacement
  *  or array in JSON form:
  *   {str_replace:uno:one:text with uno inside}
- *   {str_replace:["�","�","�"]:["c","s","r"]:text �esky with accents}
+ *   {str_replace:["č","š","ř"]:["c","s","r"]:text česky with accents}
  */
 class AA_Stringexpand_Str_replace extends AA_Stringexpand_Nevercachenotrim {
     /**
