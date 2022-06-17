@@ -186,7 +186,10 @@ class inputform {
             }
             // if we edit dynamic slice setting fields, we do not need such buttons
             if (!$slice_fields) {
-                $buttons += inputform::_getButton('insert', 'submit', _m("Insert as new"), $profile->getProperty('ui_inputform', 'edit_btn_insert'));
+                $fields = $slice->getFields($slice_fields);
+                if (!array_find_fnc($fields, function ($f) { return $f->disable_insert_as_new(); })) {
+                    $buttons += inputform::_getButton('insert', 'submit', _m("Insert as new"), $profile->getProperty('ui_inputform', 'edit_btn_insert'));
+                }
                 if (strlen($profile->getProperty('ui_inputform', 'edit_btn_reset')) > 0) {
                     // reset button display just if it is defined in profile
                     $buttons += inputform::_getButton('reset', 'reset', _m("Reset form"), $profile->getProperty('ui_inputform', 'edit_btn_reset'));
@@ -324,7 +327,6 @@ class inputform {
         if ( !$fields->count() ) {
             return MsgErr(_m("No fields defined for this slice"));
         }
-
         $form4anonymous_wizard = is_array($show);
 
         // holds array of fields, which we will use on the form, so we have

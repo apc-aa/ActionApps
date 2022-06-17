@@ -1899,13 +1899,18 @@ function aa_trim(string $string='', string $chars=''): string {
     // trim($string, " \t\n\r\0\x0B\xA0");  // standard + chr(160) - hard space   // does not work for UTF characters - the hardspace \xA0 can break some UTF chars - "MŠ" for example
 }
 
-/** alternative to stripslashes - it do not remove slashes not added by addslashes - 'x\y' --> 'x\y'
- *
+/** test if any array member passes the callback test - implements missing PHP function
+ *  @usage array_find_fnc([1,2,3,4,5,6], function($x) { return $x > 4; });  // 5
+ *  @usage array_find_fnc(['x', 'y', 'z', 1, 2, 3], ['Foo', 'match']);
  */
-function reverse_addslashes($string): string {
-    return strtr(["\\'" => "'", '\"' => '"', '\\\\' => '\\', "\\\0" => "\0"], $string);
+function array_find_fnc(iterable $arr, callable $comparator) {
+    foreach ($arr as $x) {
+        if (call_user_func($comparator, $x)) {
+            return $x;
+        }
+    }
+    return null;
 }
-
 
 
 /** Get Authorization Header
