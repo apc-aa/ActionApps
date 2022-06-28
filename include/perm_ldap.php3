@@ -584,9 +584,9 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
 
     /** findUsers function
      *  @param $pattern
-     *  @return array - list of users which corresponds to mask $pattern
+     *  @return - list of users which corresponds to mask $pattern
      */
-    function findUsernames($pattern): array {
+    function findUsernames($pattern) {
         $aa_default_ldap = AA_Permsystem_Ldap::getLdap();
         if ( !($ds=InitLDAP()) ) {
             return [];
@@ -735,17 +735,17 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
 
     /** getGroupMembers function
      * @param $group_id
-     * @return array|bool
+     * @return array
      */
     function getGroupMembers($group_id) {
         if ( !($ds=InitLDAP()) ) {
-            return false;
+            return [];
         }
 
         $filter = "objectclass=groupOfNames";
         $result = @ldap_read($ds, $group_id, $filter, ["member"]);
         if (!$result) {
-            return false;
+            return [];
         }
         $entry  = ldap_first_entry ($ds, $result);
         $arr    = ldap_get_attributes($ds, $entry);

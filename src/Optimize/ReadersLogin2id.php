@@ -33,7 +33,10 @@ class ReadersLogin2id extends AbstractOptimize {
 
         // get all readers in array: id => arrary( name => ...)
         $perm_reader = new AA_Permsystem_Reader();
-        $readers = $perm_reader->findUsernames('');
+        if (!is_array($readers = $perm_reader->findUsernames(''))) {
+            $this->message(_m('Can\'t test - list of all usernames is not allowed by your permission system (LDAP?)'));
+            return false;
+        }
         $posted_by_found = $this->_test_field($readers, 'posted_by');
         if (count($posted_by_found) > 0) {
             $this->message(_m('%1 login names from reader slice found as records in item.posted_by which is wrong (There should be reader ID from AA v2.8.1). "Repair" will correct it.', [count($posted_by_found)]));
@@ -72,7 +75,10 @@ class ReadersLogin2id extends AbstractOptimize {
 
         // get all readers in array: id => arrary( name => ...)
         $perm_reader = new AA_Permsystem_Reader();
-        $readers = $perm_reader->findUsernames('');
+        if (!is_array($readers = $perm_reader->findUsernames(''))) {
+            $this->message(_m('Can\'t test - list of all usernames is not allowed by your permission system (LDAP?)'));
+            return false;
+        }
         $posted_by_found = $this->_test_field($readers, 'posted_by');
         $edited_by_found = $this->_test_field($readers, 'edited_by');
         $db = getDb();

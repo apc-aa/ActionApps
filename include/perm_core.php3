@@ -497,13 +497,18 @@ class AA_Perm {
         return true;
     }
 
+    /**
+     * @param string $pattern
+     * @return array|string - string "too much" if too much users should be listed (LDAP returns it sometimes)
+    */
     public function findUsernames($pattern) {
         $users = [];
         foreach ($this->perm_systems as $perm_sys) {
-            $new_users = $perm_sys->findUsernames($pattern);
-            if (is_array($new_users) AND count($new_users)) {
+            if (is_array($new_users = $perm_sys->findUsernames($pattern))) {
                 // + operator preserves the numeric keys (used in SQL perm), which is crucial
                 $users += $new_users;
+            } elseif ($new_users == 'too much') {  // LDAP can give this answer
+                return 'too much';  // probably
             }
         }
         return $users;
@@ -515,14 +520,13 @@ class AA_Perm {
                 return $user;
             }
         }
-        return false;
+        return [];
     }
 
     public function findGroups($pattern) {
         $groups = [];
         foreach ($this->perm_systems as $perm_sys) {
-            $new_groups = $perm_sys->findGroups($pattern);
-            if (is_array($new_groups) AND count($new_groups)) {
+            if (is_array($new_groups = $perm_sys->findGroups($pattern))) {
                 // + operator preserves the numeric keys (used in SQL perm), which is crucial
                 $groups += $new_groups;
             }
@@ -850,7 +854,8 @@ class AA_Permsystem {
 
     function isUsernameFree($username): bool                                  { return false; }
 
-    function findUsernames($pattern): array                                   { return []; }
+    /** @return string|array - string "too much" if too much users should be listed (LDAP returns it sometimes) */
+    function findUsernames($pattern) { return []; }
 
     function findUserByLogin($user_login): array                              { return []; }
 
@@ -896,7 +901,7 @@ class AA_Permsystem {
      * flags & 1 -> do not involve membership in groups
      */
     function getUserPerms($uid, $objectType, $flags = 0) {
-        return $this->getJoinedPerms($uid, $objectType, ($flags & 1) ? [] : $this->getMembership($uid));
+        return $this->getJoinedPerms($uid, $objectType, ($flags & 1) ? [] : ( is_array($grps = $this->getMembership($uid)) ? $grps : []));
     }
 }
 
@@ -999,7 +1004,7 @@ class AA_Permsystem_Reader extends AA_Permsystem {
     }
 
 
-    public function findUsernames($pattern): array {
+    public function findUsernames($pattern) {
         return $this->_findUserPattern('%'. quote($pattern) .'%');
     }
 

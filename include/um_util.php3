@@ -57,8 +57,9 @@ function GetFiltered($type, $filter, $to_much, $none) {
         case "G": $list = AA::$perm->findGroups($filter); break;
     }
     if ( !is_array($list) OR !count($list)) {
+        $msg = (( $list == "too much" ) ? $to_much : $none);
         unset($list);
-        $list["n"]['name'] = (( $list == "too much" ) ? $to_much : $none);
+        $list["n"]['name'] = $msg;
     }
     return $list;
 }

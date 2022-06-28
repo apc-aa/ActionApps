@@ -323,9 +323,9 @@ class AA_Permsystem_Sql extends AA_Permsystem {
 
     /** findUsernames function
      * @param $pattern
-     * @return array - list of users which corresponds to mask $pattern
+     * @return - list of users which corresponds to mask $pattern
      */
-    function findUsernames($pattern): array {
+    function findUsernames($pattern) {
         $pattern = quote($pattern);
         return DB_AA::select(['id'=> ['name','mail']], "SELECT id, CONCAT(givenname, ' ', sn) AS name, mail FROM `users` WHERE ( name  LIKE '%$pattern%' OR mail LIKE '%$pattern%' OR uid LIKE '%$pattern%') AND ( type = '".quote(_m("User"))."' OR type = 'User')");
     }
@@ -335,7 +335,8 @@ class AA_Permsystem_Sql extends AA_Permsystem {
      * @return array
      */
     function findUserByLogin($user_login): array {
-        return DB_AA::select1(['id' => ['name', 'mail']], "SELECT id, CONCAT(givenname, ' ', sn) AS name, mail FROM `users`", [['uid', $user_login]]);
+        $ret = DB_AA::select1(['id' => ['name', 'mail']], "SELECT id, CONCAT(givenname, ' ', sn) AS name, mail FROM `users`", [['uid', $user_login]]);
+        return is_array($ret) ? $ret : [];
     }
 
 

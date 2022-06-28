@@ -24,6 +24,7 @@ abstract class AbstractOptimize implements \AA\Util\NamedInterface {
     /** @return bool - true if everything is OK - no action needed */
     public function test(): bool { return true; }
 
+    /** @return bool - true if everything is OK */
     public function repair(): bool { return true; }
 
     /** @return bool - true if everything is OK - no action needed */
