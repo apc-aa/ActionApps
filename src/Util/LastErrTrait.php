@@ -32,6 +32,6 @@ trait LastErrTrait {
             $lastErr = $err_id;
             $lastErrMsg = $err_msg;
         }
-        return $getmsg ? $lastErrMsg : $lastErr;
+        return $getmsg ? (string)$lastErrMsg : (int)$lastErr;
     }
 }
