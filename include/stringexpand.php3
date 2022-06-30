@@ -3960,7 +3960,8 @@ class AA_Stringexpand_Options extends AA_Stringexpand {
  *    {sequence:num:min:max:step:delimiter}
  *    {options:{sequence:num:1998:2012}:{date:Y}}
  *    {options:{sequence:num:2012:1998}:{date:Y}}   // could be descending
- *    {options:{sequence:string:A:H}:{date:Y}}
+ *    {options:{sequence:string:A:H}:D}
+ *    {sequence:day:{now}:{timestamp:2022-06-30}}
  */
 class AA_Stringexpand_Sequence extends AA_Stringexpand_Nevercache {
     /** expand function
@@ -3978,6 +3979,24 @@ class AA_Stringexpand_Sequence extends AA_Stringexpand_Nevercache {
             case 'string':
                 if (strlen($min) AND strlen($max)) {
                     $arr = range($min, $max);
+                }
+                break;
+            case 'day':
+                if (ctype_digit((string)$min) AND ctype_digit((string)$max)) {
+                    $from = strtotime('today', (int)$min);
+                    $to   = strtotime('today', (int)$max);
+                    $add = ($from <= $to) ? '+1 day' : '-1 day';
+                    if ($from <= $to) {
+                        while ($from <= $to) {
+                            $arr[] = $from;
+                            $from = strtotime($add, $from);
+                        }
+                    } else {
+                        while ($from >= $to) {
+                            $arr[] = $from;
+                            $from = strtotime($add, $from);
+                        }
+                    }
                 }
                 break;
         }
