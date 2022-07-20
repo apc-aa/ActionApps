@@ -341,8 +341,9 @@ class inputform {
         $content_from_form->setFieldsFromForm($content4id->getContent(), !$edit, $fields, $profile);
 
         $ret = '';
-
-        foreach ($fields as $fid => $field) {
+        $fids = $fields->getPriorityArray();
+        foreach ($fids as $fid) {
+            $field = $fields->getField($fid);
 
             if ( ($form4anonymous_wizard  AND !$show[$fid]) OR
                  (!$form4anonymous_wizard AND (!$field->getProperty('input_show') OR
