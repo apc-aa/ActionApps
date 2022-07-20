@@ -125,7 +125,7 @@ function Links_QueryZIDs($cat_path, $conds, $sort="", $subcat=false, $type="app"
         case 'unasigned3': $SQL .= ' WHERE (links_link_cat.category_id IS NULL) AND (links_links.folder=3)';
                            break;
         case 'app':        $SQL .= " AND (links_link_cat.proposal = 'n') ";
-                           break; //?
+                           // no break;
         default:           $folder = Links_GetFolder($type);
                            // folder string (like folder3) contains folder number
 

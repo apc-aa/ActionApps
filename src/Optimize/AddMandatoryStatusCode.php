@@ -27,8 +27,8 @@ class AddMandatoryStatusCode extends \AA\Optimize\AbstractOptimize {
         return "REPLACE INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES( 'status_code.....', '', '" . quote($sid) . "', 'Status', '5020', '', '', 'qte:1', '1', '0', '0', 'sel:AA_Core_Bins....', '', '100', '', '', '', '', '0', '0', '0', '', '', '', '', '', '', '', '', '', '', '', '0', '0', '0', 'status_code', 'number', 'num', '0', '0')";
     }
 
-    /** checks if the this Optimize class belongs to specified type (like "sql_update") */
-    function isType($type) { return in_array($type, ['sql_update']); }
+    /** checks if this Optimize class belongs to specified type (like "sql_update") */
+    function isType($type): bool { return in_array($type, ['sql_update']); }
 
     /** Test function @return string message */
     public function test(): bool {

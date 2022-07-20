@@ -78,8 +78,8 @@ class AddSeoFieldTemplate extends \AA\Optimize\AbstractOptimize {
         return array_merge($field_standard, $this->fieldSpecialSetting());
     }
 
-    /** checks if the this Optimize class belongs to specified type (like "sql_update") */
-    function isType($type) { return in_array($type, ['sql_update']); }
+    /** checks if this Optimize class belongs to specified type (like "sql_update") */
+    function isType($type): bool { return in_array($type, ['sql_update']); }
 
 
     /** Test function

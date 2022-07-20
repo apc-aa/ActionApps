@@ -27,7 +27,7 @@ class DropBackupTables extends \AA\Optimize\AbstractOptimize {
     }
 
     /** checks if this Optimize class belongs to specified type (like "sql_update") */
-    function isType($type) { return in_array($type, []); }
+    function isType($type): bool { return in_array($type, []); }
 
     public static function actions(): array { return ['repair']; }
 

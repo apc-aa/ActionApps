@@ -27,8 +27,8 @@ class RestoreBckTables extends \AA\Optimize\AbstractOptimize {
         return _m("[experimental] ") . _m("Deletes all the current tables (slice, item, ...) where we have bck_table and renames all backup tables (bck_slice, bck_item, ...) to right names (slice, item, ...).");
     }
 
-    /** checks if the this Optimize class belongs to specified type (like "sql_update") */
-    function isType($type) { return in_array($type, []); }
+    /** checks if this Optimize class belongs to specified type (like "sql_update") */
+    function isType($type): bool { return in_array($type, []); }
 
     /** Test function
      * @return string - a message

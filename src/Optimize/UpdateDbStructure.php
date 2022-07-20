@@ -29,8 +29,8 @@ class UpdateDbStructure extends \AA\Optimize\AbstractOptimize {
         return _m("[experimental] ") . _m("Updates the database structure for AA. It checks all the tables in current system and compare it with the newest database structure. The new table is created as tmp_*, then the content from old table is copied and if everything is OK, then the old table is renamed to bck_* and tmp_* is renamed to new table. (new version based on the metabase structure)");
     }
 
-    /** checks if the this Optimize class belongs to specified type (like "sql_update") */
-    function isType($type) { return in_array($type, ['sql_update']); }
+    /** checks if this Optimize class belongs to specified type (like "sql_update") */
+    function isType($type): bool { return in_array($type, ['sql_update']); }
 
     /** the optimizers are ordered by priority (less first) when executed
      *  in chain (like for sql_update)

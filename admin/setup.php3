@@ -134,7 +134,7 @@ function HtmlEnd() {
 
 pageOpen('noauth');
 
-is_object( $db ) || ($db = getDB());
+$db = getDB();
 
 // Check if database is already created
 $store_halt        = $db->get_halt();

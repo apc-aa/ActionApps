@@ -28,9 +28,6 @@ class DB_AA extends AbstractDB
     function __construct(array $connection) {
         self::$_instances_no++;
         switch (mb_strtolower($connection['type'])) {
-            case 'db_msql':
-                $this->dbase = new DB_mSQL($connection);
-                break;
             case 'db_mssql':
                 $this->dbase = new DB_MSSQL($connection);
                 break;
@@ -39,9 +36,6 @@ class DB_AA extends AbstractDB
                 break;
             case 'db_odbc':
                 $this->dbase = new DB_ODBC($connection);
-                break;
-            case 'db_oracle':
-                $this->dbase = new DB_Oracle($connection);
                 break;
             case 'db_pdo':
                 $this->dbase = new DB_PDO($connection);
@@ -52,6 +46,13 @@ class DB_AA extends AbstractDB
             case 'db_sybase':
                 $this->dbase = new DB_Sybase($connection);
                 break;
+// removed - the database classes are unmaintained
+//            case 'db_msql':
+//                $this->dbase = new DB_mSQL($connection);
+//                break;
+//            case 'db_oracle':
+//                $this->dbase = new DB_Oracle($connection);
+//                break;
             case 'db_mysql':
             case 'db_mysqli':
             default:
@@ -295,7 +296,7 @@ class DB_AA extends AbstractDB
     /** used as: DB_AA::test('perms', [['object_type', $object_type], ['objectid', $objectID], ['flag', REL_FLAG_FEED, 'i']]);
      *           DB_AA::test(['content','item'], [['content.item_id', 'item.id', 'j'],['item.slice_id', $slice_id, 'l']]);
      */
-    static function test($table, $where) {
+    static function test($table, $where): bool {
         $tbl = is_array($table) ? '`' . join('`,`', $table) . '`' : "`$table`";
         return (false !== DB_AA::select1('', "SELECT " . ($where[0][0]) . " FROM $tbl ", $where));
     }

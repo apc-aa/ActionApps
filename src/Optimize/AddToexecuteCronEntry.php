@@ -18,8 +18,8 @@ class AddToexecuteCronEntry extends \AA\Optimize\AbstractOptimize {
         return _m("It however do not install the system cron for AA - you should do it by yourself (see /misc/aa-http-request script)");
     }
 
-    /** checks if the this Optimize class belongs to specified type (like "sql_update") */
-    function isType($type) { return in_array($type, ['sql_update']); }
+    /** checks if this Optimize class belongs to specified type (like "sql_update") */
+    function isType($type): bool { return in_array($type, ['sql_update']); }
 
 
     /** Test function @return bool */

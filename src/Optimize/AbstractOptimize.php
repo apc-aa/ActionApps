@@ -45,8 +45,8 @@ abstract class AbstractOptimize implements \AA\Util\NamedInterface {
         return in_array($action, static::actions());
     }
 
-    /** checks if the this Optimize class belongs to specified type (like "sql_update") */
-    function isType($type) { return in_array($type, []); }
+    /** checks if this Optimize class belongs to specified type (like "sql_update") */
+    function isType($type): bool { return in_array($type, []); }
 
     /** the optimizers are ordered by priority when executed in chain (like for sql_update) */
     function priority() { return 100; }

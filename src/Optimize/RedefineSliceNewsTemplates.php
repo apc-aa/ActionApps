@@ -24,8 +24,8 @@ class RedefineSliceNewsTemplates extends \AA\Optimize\AbstractOptimize {
         return _m("Deletes and recreates the News EN slice, used as template or example slice");
     }
 
-    /** checks if the this Optimize class belongs to specified type (like "sql_update") */
-    function isType($type) { return in_array($type, ['sql_update']); }
+    /** checks if this Optimize class belongs to specified type (like "sql_update") */
+    function isType($type): bool { return in_array($type, ['sql_update']); }
 
 
     /** Test function

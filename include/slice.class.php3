@@ -559,7 +559,7 @@ class AA_Slice extends AA_Module {
         return is_array($translations = $this->getTranslations()) ? $translations[0] : $this->getLang();
     }
 
-    /** find default field for upload to - first file...........x or img_source.....x field
+    /** find default field for upload to - first file...........x or img_upload.....x or img_src........x field
      */
     function getDefaultUploadField(): string {
         $flds = $this->getFields();
@@ -604,7 +604,7 @@ class AA_Slice extends AA_Module {
      */
     function get_dynamic_setting_content($ignore_reading_password = false) {
         if (!$ignore_reading_password) {
-            if (!AA_Credentials::singleton()->checkCryptedPassword($this->getProperty('reading_password'))) {
+            if (!AA_Credentials::singleton()->checkCryptedPassword($this->getProperty('reading_password'))) {   // $this->getProperty('reading_password') is encrypted
                 if ($GLOBALS['errcheck'] OR $GLOBALS['debug']) {
                     huhe(_m("Error: Missing Reading Password"));
                 }

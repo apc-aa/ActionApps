@@ -1118,18 +1118,16 @@ function ProoveFieldNames($slices, $conds) {
 
 // -------------------------------------------------------------------------------------------
 
-/* parses the conds from a multiple select box: e.g.
-    conds[1][value][0] = 'apple'
-    conds[1][value][1] = 'cherry'
-    conds[1][valuejoin] = 'AND'
-
-    => creates two conds: conds[7] and conds[8] for example,
-        fill conds[7][value] = 'apple', conds[8][value] = 'cherry'
-
-    with conds[1][valuejoin] = 'OR' only changes conds[1][value] to '"apple" OR "cherry"'
-    (c) Jakub, May 2002
+/*
 */
-/** ParseMultiSelectConds function
+/** parses the conds from a multiple select box: e.g.
+ *     conds[1][value][0] = 'apple'
+ *     conds[1][value][1] = 'cherry'
+ *     conds[1][valuejoin] = 'AND'
+ *       => creates two conds: conds[7] and conds[8] for example,
+ *     fill conds[7][value] = 'apple', conds[8][value] = 'cherry'
+ *     with conds[1][valuejoin] = 'OR' only changes conds[1][value] to '"apple" OR "cherry"'
+ * @author (c) Jakub, May 2002
  * @param $conds
  */
 function ParseMultiSelectConds(&$conds) {
@@ -1171,7 +1169,7 @@ function ParseMultiSelectConds(&$conds) {
  *
  * @param array $conds input/output - transformed conditions
  * @param array $defaultCondsOperator - could be scalar (default), but also
- *              array: field_id => array('operator'=>'LIKE')
+ *              array: field_id => array('operator'=>'LIKE') or object Searchfields
  */
 function ParseEasyConds(&$conds, $defaultCondsOperator = "LIKE") {
     if (is_array($conds)) {

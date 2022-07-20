@@ -26,8 +26,8 @@ class AddPolls extends \AA\Optimize\AbstractOptimize {
     /** implemented actions within this class */
     public static function actions(): array { return ['repair']; }
 
-    /** checks if the this Optimize class belongs to specified type (like "sql_update") */
-    function isType($type) { return in_array($type, ['sql_update']); }
+    /** checks if this Optimize class belongs to specified type (like "sql_update") */
+    function isType($type): bool { return in_array($type, ['sql_update']); }
 
     /** Test function
      * @return string - a message
