@@ -606,7 +606,7 @@ function GetKeyValues($key_val, $primary, $columns) {
     reset ($keys);
 
     foreach ($primary as $alias => $foo) {
-        [,$value] = each ($keys);
+        $value   = current($keys); next($keys); // [,$value] = each($keys);
         $colname = $columns[$alias]["field"];
         if ($columns[$alias]["view"]["unpacked"]) {
             $value = pack_id($value);

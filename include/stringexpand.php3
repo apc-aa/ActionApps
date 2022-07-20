@@ -3360,17 +3360,6 @@ class AA_Stringexpand_Ids extends AA_Stringexpand {
         $limit = (int)trim($limit);
 
         $restrict_zids = $ids ? new zids(explode_ids($ids),'l') : false;
-        $postsort = '';
-        if (mb_strpos($sort, '_#')===0) { // found on position 0 - we want to sort by alias here
-            if (mb_substr($sort, -1) == '-') {
-                $postsort = substr($sort, 0, -1);
-                $postsortdir = 'rlocale';
-            } else {
-                $postsort = $sort;
-                $postsortdir = 'locale';
-            }
-            $sort = '';
-        }
         $set = new AA_Set(explode_ids($slices), $conds, $sort);
         if ($limit > 0) {
             $zids = $set->query($restrict_zids, $limit);
@@ -3380,10 +3369,6 @@ class AA_Stringexpand_Ids extends AA_Stringexpand {
             $zids = $set->query($restrict_zids);
         }
         $delimiter = $delimiter ?: '-';
-        if ($postsort) {
-            $ret = StrExpand('AA_Stringexpand_Order', [join('-', $zids->longids()), $postsort, $postsortdir]);
-            return ($delimiter=='-') ? $ret : AA_Stringexpand::joinWithDelimiter(explode('-',$ret), $delimiter);
-        }
         return AA_Stringexpand::joinWithDelimiter($zids->longids(), $delimiter);
     }
 }

@@ -340,7 +340,7 @@ class AA_Sortorder extends AA_Object {
     }
 
     /** getArray function
-     *  @return array - clasic $sort array - array('field'  => a|d [,limit => <group_no>])
+     *  @return array - classic $sort array - array('field'  => a|d [,limit => <group_no>])
      *
      *  Mainly for backward compatibility with old - array approach
      */
@@ -363,18 +363,21 @@ class AA_Sortorder extends AA_Object {
 
 class AA_Set extends AA_Object {
     /** @var string[] slice_ids (unpacked_ids) */
-    var $slices;
+    protected $slices;
 
     /** @var AA_Condition[] */
-    var $conds;
+    protected $conds;
 
     /** @var AA_Sortorder[] objects */
-    var $sort;
+    protected $sort;
+
+    /** @var AA_Sortorder[] objects */
+    protected $postsort;
 
     /** bitfield representing the bins - like Holding Bin, Approved, Trash, ...
      *  AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING | AA_BIN_TRASH
      */
-    var $bins;
+    protected $bins;
 
 
     /** AA_Set function
@@ -420,17 +423,22 @@ class AA_Set extends AA_Object {
      *  @return zids
      */
     public function query($restrict_zids=null, $limit=null): zids {
-        return QueryZids($this->getModules(), $this->getConds(), $this->getSort(), $this->getBins(), 0, $restrict_zids, 'LIKE', $limit);
+        $zids = QueryZids($this->getModules(), $this->getConds(), $this->getSort(), $this->getBins(), 0, $restrict_zids, 'LIKE', $limit);
+        if ($this->postsort) {
+            return new zids(explode_ids(StrExpand('AA_Stringexpand_Order', [join('-', $zids->longids()), $this->postsort[0]['alias'], $this->postsort[0]['order']])), 'l');
+        }
+        return $zids;
     }
 
     /** clear function
      *
      */
     function clear(): AA_Set {
-        $this->conds  = [];
-        $this->sort   = [];
-        $this->slices = [];
-        $this->bins   = AA_BIN_ACTIVE;
+        $this->conds    = [];
+        $this->sort     = [];
+        $this->postsort = [];
+        $this->slices   = [];
+        $this->bins     = AA_BIN_ACTIVE;
         return $this;
     }
 
@@ -663,7 +671,7 @@ class AA_Set extends AA_Object {
     function addSortFromBasicString( $sort_string ) {
         if ($sort_string) {
             $sorts = array_filter(explode(',', str_replace(['-','+',' '], ['-,','+,','+,'], $sort_string))); // ' ' comes from url category.......1+publish_date.... where + is translated to ' '
-            foreach ($sorts as $number => $sort) {
+            foreach ($sorts as $sort) {
                 $retone = [];
                 // is defined group limit?
                 if (($limit_len = strspn($sort,'0123456789')) > 0) {
@@ -675,7 +683,13 @@ class AA_Set extends AA_Object {
                     case '+':  $retone[substr($sort,0,-1)] = 'a'; break;
                     default:   $retone[$sort]              = 'a';
                 }
-                $this->sort[] = new AA_Sortorder($retone);
+
+                if (mb_strpos($sort, '_#')===0) { // found on position 0 - we want to sort by alias here
+                    // post sort - alias based sort
+                    $this->postsort[] = ['alias' => $sort, 'order' => (current($retone)=='d' ? 'rlocale' : 'locale')];
+                } else {
+                    $this->sort[] = new AA_Sortorder($retone);
+                }
             }
         }
     }
@@ -1889,7 +1903,7 @@ function QueryZids($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
 
     AA::$debug&2 && AA::$dbg->log("QueryZids: SQL: $SQL");
 
-    // @todo - replace LEFT JOIN with INNER JOIN for conditions where posiible (for speedup)
+    // @todo - replace LEFT JOIN with INNER JOIN for conditions where possible (for speedup)
     // if ($_GET['dd']>70) {
     //     $SQL = str_replace('LEFT JOIN', 'INNER JOIN', $SQL);
     // }
