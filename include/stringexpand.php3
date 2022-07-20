@@ -2908,7 +2908,7 @@ class AA_Stringexpand_Conds extends AA_Stringexpand_Nevercache {
  * Main usage is to display some field or alias of given item:
  *   {item:171055:_#HEADLINE}
  *
- * You can also display it for more than one item and use the delimiter
+ * You can also display it for more than one item and use the delimeter
  *   {item:53443-54322-53553:_#HEADLINE:, }
  *   {item:{@relation........:-}:_#KEY_____->_#VALUE___:jsonasoc}
  *
@@ -2936,7 +2936,7 @@ class AA_Stringexpand_Item extends AA_Stringexpand {
      *                     - now you can also use tree representation like:
      *                     3234(3443-3678(3872-3664)-3223)-4045  (see above)
      * @param $content    string
-     * @param $delimeter  string   - coud be also 'json' or jsonasoc -  {item:{@relation........:-}:_#KEY_____->_#VALUE___:jsonasoc}
+     * @param $delimeter  string - coud be also 'json' or jsonasoc -  {item:{@relation........:-}:_#KEY_____->_#VALUE___:jsonasoc}
      * @param $top        string
      * @param $bottom     string
      * @param $bin        string - allowed bins dash separated: ACTIVE-HOLDING-TRASH. Default is ACTIVE (pending and expired is not available, for now)
@@ -8357,6 +8357,9 @@ class AA_Stringexpand_Header extends AA_Stringexpand {
             case 'XSS':       AA::$headers['XSS']         = 'X-Xss-Protection: '.$parameter;         break;
             case 'XCTO':      AA::$headers['XCTO']        = 'X-Content-Type-Options: '.$parameter;   break;
             case 'RP':        AA::$headers['RP']          = 'Referrer-Policy: '.$parameter;          break;
+            case 'CORS':      AA::$headers['CORS']        = 'Access-Control-Allow-Origin: '.$parameter;
+                              AA::$headers['CORSH']       = 'Access-Control-Allow-Headers: *';              // we need at least X-Requested-With header allowed - see {lazy ...}
+                                                                                                     break;
         }
         return '';
     }
@@ -9220,6 +9223,8 @@ class AA_Stringexpand_Formedit extends AA_Stringexpand_Nevercache {
  *           - D - delete (with json you can specify also Dconfirm:<question> - see below)
  *           - S - setting (edit item in Toolbox)
  *           - E - edit - used with <edit_code> parameter
+ *           - X - eXternale edit - the same as Edit, but it peloads all page for edit form
+ *                     - used with <edit_code> parameter
  *           - B - back - used with <edit_code> parameter
  *           - F - file upload to first file...........x or img_upload.....x or img_src........x field
  *           - - - no manage (just view)
@@ -9241,6 +9246,8 @@ class AA_Stringexpand_Manager extends AA_Stringexpand_Nevercache {
      */
     function expand($slices='', $field=null, $item_id=null, $code=null, $conds=null, $sort=null, $mode=null, $edit_code=null) {
         $hash       = get_short_hash('manager', $slices, $field, $item_id, $code, $conds, $sort, $mode, $edit_code);
+        $cmdvar     = 'aamng_'.$hash;
+        
         $slices_arr = explode_ids($slices);
 
         $mode = $mode ?: 'ND'.($edit_code ? 'EB' : ''); // add here all possible options, which is ND currently
@@ -9263,6 +9270,9 @@ class AA_Stringexpand_Manager extends AA_Stringexpand_Nevercache {
             if (array_key_exists('E', $mode_arr) AND !strlen($mode_arr['E'])) {
                 $mode_arr['E'] = _m('edit');
             }
+            if (array_key_exists('X', $mode_arr) AND !strlen($mode_arr['X'])) {
+                $mode_arr['X'] = _m('edit');
+            }
             if (array_key_exists('B', $mode_arr) AND !strlen($mode_arr['B'])) {
                 $mode_arr['B'] = _m('back');
             }
@@ -9283,6 +9293,9 @@ class AA_Stringexpand_Manager extends AA_Stringexpand_Nevercache {
             if (strpos($mode, 'E') !== false) {
                 $mode_arr['E'] = _m('edit');
             }
+            if (strpos($mode, 'X') !== false) {
+                $mode_arr['X'] = _m('edit');
+            }
             if (strpos($mode, 'B') !== false) {
                 $mode_arr['B'] = _m('back');
             }
@@ -9292,10 +9305,15 @@ class AA_Stringexpand_Manager extends AA_Stringexpand_Nevercache {
         }
 
         $inner_code = '';
-        if ($edit_code AND is_long_id($_GET['aaedit'])) {
+        if ($edit_code AND (is_long_id($_GET['aaedit']) OR (is_long_id($_GET[$cmdvar])) )) {
+            
             // @todo check slice of edited item to match $slices
-            $inner_code = StrExpand('AA_Stringexpand_Item', [$_GET['aaedit'], $edit_code]);
-            $footer     = $mode_arr['B'] ? '<footer><article><i class="ico back" onclick="AA_SiteEdit(\'\');">' . $mode_arr['B'] . '</i></article></footer>' : '';
+            $inner_code = StrExpand('AA_Stringexpand_Item', [(is_long_id($_GET['aaedit']) ? $_GET['aaedit'] : $_GET[$cmdvar]), $edit_code]);
+            $footer     = '';
+            if ( $mode_arr['B'] ) {
+                $footer .= $mode_arr['X'] ? '<footer><article><i class="ico back" onclick="history.back();">' . $mode_arr['B'] . '</i></article></footer>' 
+                                          : '<footer><article><i class="ico back" onclick="AA_SiteEdit(\'\');">' . $mode_arr['B'] . '</i></article></footer>';
+            }
         } else {
 
             $item_id = strlen($item_id) ? $item_id : (($this AND $this->item) ? $this->item->getId() : null);
@@ -9309,7 +9327,7 @@ class AA_Stringexpand_Manager extends AA_Stringexpand_Nevercache {
             }
             if (!$conds) {
                 warn("No conditions");
-                $inner_code .= "<!-- Err: manager - $field -  No conditions -->";
+                $inner_code .= "<!-- Err: manager - $field [first slice of: $slices,item: $item_id] -  No conditions -->";
                 $zids = new zids();
             } else {
                 // @todo check $slices to be from current site module
@@ -9320,6 +9338,7 @@ class AA_Stringexpand_Manager extends AA_Stringexpand_Nevercache {
             AA_Items::preload($zids);
 
             $code_actions  = $mode_arr['E'] ? ('<article><i class="ico edit" onclick="AA_SiteEdit(\'{id..............}\');">' . $mode_arr['E'] . '</i></article>') : '';
+            $code_actions .= $mode_arr['X'] ? ('<article><i class="ico edit" onclick="document.location=\'{go:xqs='.$cmdvar.'={id..............}}\';">' . $mode_arr['X'] . '</i></article>') : '';
             $code_actions .= $mode_arr['S'] ? ('<article><i class="ico setting" onclick="AA_ToolboxEdit(\'{id..............}\');">' . $mode_arr['S'] . '</i></article>') : '';
             $code_actions .= $mode_arr['D'] ? ('<article><i class="ico delete"  onclick="if (confirm(\'' . $mode_arr['Dconfirm'] . '\')) { document.querySelector(\'article[data-aa-part=&quot;' . $hash . '&quot;]\').classList.add(\'aa-updating\');  AA_SiteUpdate(\'{id..............}\',\'status_code.....\',3);}">' . $mode_arr['D'] . '</i></article>') : '';
             $footer  = $mode_arr['N'] ? ('<article><i class="ico new" onclick="document.querySelector(\'article[data-aa-part=&quot;' . $hash . '&quot;]\').classList.add(\'aa-updating\'); AA_SiteNewitem(\'' . $slices_arr[0] . '\',\'\',\'' . $field . '\',\'' . $item_id . '\');">' . $mode_arr['N'] . '</i></article>') : '';
