@@ -23,6 +23,11 @@ https://www.apc.org/
 // this script updates the database to last structure, create all tables, ...
 // can be used for upgrade from apc-aa v. >= 1.5 or for create new database
 
+use AA\IO\DB\DB_AA;
+use AA\Optimize\AbstractOptimize;
+use AA\Optimize\RestoreBckTables;
+
+
 /** FILL SOME ACCESS CODE HERE !!!
  *  example:
  *     define('ACCESS_CODE','de46272*_!%@*dhje-rty362ddj');
@@ -33,13 +38,7 @@ https://www.apc.org/
  *  It is recommended to delete the access code after you finish your setup, to
  *  disable access code guessing from attackers.
  */
-
-use AA\IO\DB\DB_AA;
-use AA\Optimize\AbstractOptimize;
-use AA\Optimize\RestoreBckTables;
-
-define('ACCESS_CODE','');
-
+const ACCESS_CODE = '';
 
 /** INSTRUCTIONS BEFORE USE
  *  This script is written to be not destructive. It updates the database to
@@ -47,7 +46,7 @@ define('ACCESS_CODE','');
  *  It can be used for upgrade from previous versions of apc-aa or for creating
  *  new database.
  *  It creates temporary tables first, then copies data from old tables to the
- *  temporary ones (tmp_*) and after successfull copy it drops old tables and
+ *  temporary ones (tmp_*) and after successful copy it drops old tables and
  *  renames temporary ones to right names. Then it possibly updates common
  *  records (like default field definitions, module templates, constants and
  *  templates).</p>
@@ -65,8 +64,9 @@ error_reporting(E_ERROR | E_WARNING | E_PARSE);
 // sleep one second to make any brute force attacks harder
 sleep(1);
 
+$silent = $_GET['silent'] ?? false;
 
-if (!$_GET['silent']) {
+if (!$silent) {
     echo '
       <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
       <html>
@@ -126,7 +126,7 @@ if ( (strlen($_GET['acccode'])<10) OR ($_GET['acccode']!=constant('ACCESS_CODE')
     exit;
 }
 
-require_once __DIR__."/update.optimize.class.php";
+//require_once __DIR__."/update.optimize.class.php";
 
 class AA_SQL_Updater {
     use \AA\Util\ReportTrait;
@@ -182,7 +182,7 @@ class AA_SQL_Updater {
     /** getOptimizers function
      *  Return names of all known AA classes, which begins with AA\Optimize\AA_Optimize
      */
-    function getOptimizers() {
+    function getOptimizers(): array {
         $optimizers = [];
 
         // php4 returns classes all in lower case :-(

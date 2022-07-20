@@ -58,6 +58,9 @@ class DB_MySQL extends AbstractDB {
             $User     = $this->User;
             $Password = $this->Password;
 
+            // set the reporting as was before PHP 8.1
+            mysqli_report(MYSQLI_REPORT_OFF);
+
             $method = (defined('AA_USE_NON_PERSISTENT_CONNECT') and AA_USE_NON_PERSISTENT_CONNECT) ? '' : 'p:';
             $this->Link_ID = mysqli_connect($method . $Host, $User, $Password, $Database);
 
@@ -302,7 +305,7 @@ class DB_MySQL extends AbstractDB {
         if ($table) {
             $id = $this->query("SHOW FIELDS FROM $table");
             if (!$id) {
-                $this->halt("Metadata query failed (table $table)." . $this->Link_ID);
+                $this->halt("Metadata query failed (table $table).");
                 return false;
             }
         } else {
