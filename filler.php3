@@ -88,6 +88,9 @@ $_REQUEST['slice_id'] = trim($_REQUEST['slice_id']);
 
 AA::$debug = $_REQUEST['debug'];
 
+if ($_REQUEST['context'] ?? '') {
+    AA_Credentials::singleton()->importFromToken($_REQUEST['context']);
+}
 
 if ($_REQUEST['convertfrom'] OR $_REQUEST['convertto']) {
     $_POST   = ConvertEncodingDeep($_POST, $_REQUEST['convertfrom'], $_REQUEST['convertto']);

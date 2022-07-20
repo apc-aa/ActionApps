@@ -4678,7 +4678,7 @@ class AA_Stringexpand_Ajax extends AA_Stringexpand_Nevercache {
                     $enc_credentials = AA_Credentials::singleton()->getAsToken();
 
                     // the whole content works as button by default. You can redefine it using _#AA_AJAX_ alias like:   The text which works with value <button _#AA_AJAX_>Change it</button>
-                    $ajax_on     = "onclick=\"displayInput('ajaxv_$input_id', '$iid', '$field_id', '$widget_type', '$widget_properties', $enc_credentials)\"";
+                    $ajax_on     = "onclick=\"displayInput('ajaxv_$input_id', '$iid', '$field_id', '$widget_type', '$widget_properties', '$enc_credentials')\"";
                     if (strpos($repre_value, '_#AA_AJAX_')!==false) {
                         $repre_value = str_replace('_#AA_AJAX_', $ajax_on, $repre_value);
                         $show_alias  = str_replace('_#AA_AJAX_', $ajax_on, $show_alias);
