@@ -356,7 +356,7 @@ class AA {
         if (isset(AA::$headers['disposition'])) {
             $ret['disposition'] = 'Content-Disposition: '.AA::$headers['disposition'];
         }
-        foreach (['CSP','CSP-RO','RT','NEL','XSS','XCTO','RP','CORS'] as $posibleheader) {  // @todo CORS
+        foreach (['CSP','CSP-RO','RT','NEL','XSS','XCTO','RP','CORS','CORSH'] as $posibleheader) {  // @todo CORS
             if (isset(AA::$headers[$posibleheader])) {
                 $ret[$posibleheader] = AA::$headers[$posibleheader];
             }

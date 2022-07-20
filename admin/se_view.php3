@@ -416,11 +416,13 @@ $lookup_op = [
 // lookup group of constatnts
 $lookup_groups = GetConstants('lt_groupNames', 'name');
 
+
 // lookup slice fields
 $lookup_fields[''] = " ";  // default - none
 if ( $VIEW_TYPES_INFO[$view_type]['fields'] ) {
     $field_func = $VIEW_TYPES_INFO[$view_type]['fields'];
-    $lookup_fields += $field_func();
+    $lf = $field_func();
+    $lookup_fields += (is_object($lf) ? $lf->getSearchArray() : $lf);
 } else {
     $serchbar = new AA_Searchbar();
 
