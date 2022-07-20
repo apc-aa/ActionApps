@@ -2,6 +2,10 @@
 
 namespace AA\Optimize;
 
+use AA;
+use AA\IO\DB\DB_AA;
+use AA_Metabase;
+use AA_Module_Site;
 use function _m;
 use function freeDB;
 use function getDB;
@@ -27,14 +31,47 @@ class DbBinaryTrailingZeros extends AbstractOptimize {
     }
 
     /** implemented actions within this class */
-    public static function actions(): array { return ['repair']; }
+    public static function actions(): array { return ['repair','test']; }
 
     /** Test function
      * @return true
      */
     public function test(): bool {
+        $metabase = AA::Metabase();
+        
+        $tablenames = $metabase->getTableNames();
+
+        foreach ($tablenames as $tablename) {
+                //echo "<br><br>$tablename";
+                if (substr($tablename, 0, 4) == 'bck_') {
+                    continue;
+                }
+                if ( !($cols = $metabase->getColumns($tablename))) {
+                    continue;
+                }
+                foreach ($cols as $colname => $coldef) {
+                    if (strpos($coldef->c[1],'char(')===0) {
+//                        echo "<br> &nbsp; $tablename . $colname ";
+                        $this->_fixCol($tablename,$colname);
+                    }
+                    if (($coldef->getFieldType() == 'text') and !$coldef->isBinary()) {
+                       // echo "<br> &nbsp; $colname ". (AA_Metabase::isPacked($tablename, $colname) ? 'P' : '.'). ($coldef->isBinary() ? 'B' : '.'). ($coldef->isKey() ? 'K' : '.');
+                    }
+                }
+            }
         return true;
     }
+    
+    /** Helper _fixTable function */
+    function _fixCol($table, $field) {
+        $db = getDb();
+        $SQL = "UPDATE `$table` SET `$field`=TRIM(TRAILING '\0' FROM `$field`)";
+        echo "<br>$SQL";
+        //$db->query($SQL);
+        freeDb($db);
+    }
+    
+    
 
     /** Repair function
      * repairs tables
