@@ -58,9 +58,10 @@ class OnPageChanger  {
                 $grabber = new AA\IO\Grabber\Form();
                 $saver   = new AA\IO\Saver($grabber, null, null, 'by_grabber');
                 // $saver - > check Perms @todo
+                
                 [$saved_ok,$saved_err] = $saver->run();
 
-                $err_msg = $saved_err ? $saver->report() : '';
+                $err_msg = $saved_err ? $saver->report() : ''; //"$saved_ok,$saved_err"; // ''
                 $this->sendPartsAndExit($saver->changedModules(),$err_msg);
             }
             if (isset($_GET['aaedit'])) {

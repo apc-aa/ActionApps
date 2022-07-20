@@ -293,6 +293,7 @@ if ($fview || $iview) {
         }
     }
 }
+
 const DEFAULT_CODEPAGE = "windows-1250";
 
 if (!$encap) {

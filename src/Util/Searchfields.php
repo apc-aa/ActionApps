@@ -165,5 +165,5 @@ class Searchfields implements \Iterator, \ArrayAccess, \Countable {
     public function offsetSet($offset, $value) { $this->fields[$offset] = $value;      }
     public function offsetExists($offset)      { return isset($this->fields[$offset]); }
     public function offsetUnset($offset)       { unset($this->fields[$offset]);        }
-    public function offsetGet($offset)         { return isset($this->a[$offset]) ? $this->fields[$offset] : null; }
+    public function offsetGet($offset)         { return isset($this->fields[$offset]) ? $this->fields[$offset] : null; }
 }

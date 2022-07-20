@@ -175,6 +175,7 @@ class Form extends AbstractGrabber {
         // Also it is stored as array...[name][file___________1][...] array...[type][file___________1][...]
         // so the information about one file is quite far in the structure
         if (isset($_FILES['aa'])) {
+            
             // collect together the informations about one file - array(name, type, tmp_name, error, size)
             //$files = array_merge_recursive($_FILES['aa']['name'], $_FILES['aa']['type'], $_FILES['aa']['tmp_name'], $_FILES['aa']['error'], $_FILES['aa']['size']);
             $files = $this->rearangeAaFilesArray($_FILES['aa']);

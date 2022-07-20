@@ -77,7 +77,6 @@ AA::$perm->setPermMode('cron');
 
 $toexecute->execute();
 
-
 if (AA::$debug) {
     echo '<br>Dababase instances: '. DB_AA::$_instances_no;
     echo '<br>UsedModules:<br> - '. join('<br> - ', array_map(function($mid) {return AA_Module::getModuleName($mid);}, AA_Module::getUsedModules()));
