@@ -583,7 +583,7 @@ class AA_Set extends AA_Object {
                 $conds[$k]['value'] = reset($cond);
             }
             if ( !isset($cond['operator']) ) {
-                if ( is_array($defaultCondsOperator) ) {
+                if ( is_array($defaultCondsOperator) or ($defaultCondsOperator instanceof ArrayAccess) ) {
                     if ( is_array($defaultCondsOperator[key($cond)] )) {
                         $conds[$k]['operator'] = get_if($defaultCondsOperator[key($cond)]['operator'], 'LIKE');
                     } else {
@@ -594,7 +594,7 @@ class AA_Set extends AA_Object {
                 }
             }
             if (!($cond['operator'] == 'ISNULL') AND !($cond['operator'] == 'NOTNULL') AND !($cond['operator'] == 'ISMAIL') AND !($cond['operator'] == 'NOTMAIL')) {
-                // The value could be empty for ISNULL or NOTNULL operators
+                // The value could be empty for ISNULL, NOTNULL, ISMAIL or NOTMAIL operators
                 if (!isset($conds[$k]['value']) OR ($conds[$k]['value']=="")) {
                     // For other operators we should remove all conditions without value
                     unset ($conds[$k]);
@@ -1184,7 +1184,7 @@ function ParseEasyConds(&$conds, $defaultCondsOperator = "LIKE") {
                 $conds[$k]['value'] = reset($cond);
             }
             if ( !isset($cond['operator']) ) {
-                if ( is_array($defaultCondsOperator) ) {
+                if ( is_array($defaultCondsOperator) or ($defaultCondsOperator instanceof ArrayAccess) ) {
                     if ( is_array($defaultCondsOperator[key($cond)] )) {
                         $conds[$k]['operator'] = get_if($defaultCondsOperator[key($cond)]['operator'], 'LIKE');
                     } else {
@@ -1195,7 +1195,7 @@ function ParseEasyConds(&$conds, $defaultCondsOperator = "LIKE") {
                 }
             }
             if (!($cond['operator'] == 'ISNULL') AND !($cond['operator'] == 'NOTNULL') AND !($cond['operator'] == 'ISMAIL') AND !($cond['operator'] == 'NOTMAIL')) {
-                // The value could be empty for ISNULL or NOTNULL operators
+                // The value could be empty for ISNULL, NOTNULL, ISMAIL or NOTMAIL operators
                 if (!isset($conds[$k]['value']) OR ($conds[$k]['value']=="")) {
                     // For other operators we should remove all conditions without value
                     unset ($conds[$k]);
