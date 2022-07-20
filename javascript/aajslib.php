@@ -1,6 +1,6 @@
 <?php
 /** @deprecated - use aajslib-legacy.min.js directly or even better aajslib-jquery.min.js with jQuery
- *  This file is used also to generate aajslib-legacy.js (manualy through http://.../apc-aa/javascript/aajslib.php )
+ *  This file is used also to generate aajslib-legacy.js (manually through https://.../apc-aa/javascript/aajslib.php )
  *  which is then compressed to aajslib-legacy.min.js by UglifyJS
  *
  *  AA Javascripts library usable on the public pages, just like:

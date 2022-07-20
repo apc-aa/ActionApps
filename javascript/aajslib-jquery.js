@@ -186,7 +186,7 @@ function AA_Refresh(id,inside,ok_func) {
  *  @param id        - form id
  *  @param refresh   - id of the html element, which you want to refresh.
  *                   - Such element must have data-aa-url attributes
- *  @param ok_html   - function to call after the page update
+ *  @param ok_func   - function to call after the page update
  *  Note, that the form action atribute must be RELATIVE (not with 'http://...')
  */
 function AA_SendForm(id, refresh, ok_func) {
@@ -241,7 +241,7 @@ function AA_AjaxSendForm(form_id, url) {
 function displayInput(valdivid, item_id, fid, widget_type, widget_properties, context) {
     var valdiv = jqid(valdivid);
 
-    // already editing ?
+    // already editing?
     switch ($(valdiv).attr('data-aa-edited')) {
        case '1': return;
        //case '2': $(valdiv).attr("data-aa-edited", "0");  // the state 2 is needed for Firefox 3.0 - Storno not works
