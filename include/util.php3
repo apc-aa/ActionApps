@@ -678,14 +678,16 @@ function CreateBinCondition($bin, $table, $ignore_expiry_date=false) {
 /** GetItemContent function
  * Basic function to get item content. Use this function, not direct SQL queries.
  * @param       $zids
- * @param       $unused_use_short_ids // no longer used
+ * @param bool  $unused_use_short_ids // no longer used
  * @param bool  $ignore_reading_password
- *       Use carefully only when you are sure the data is used safely and not viewed
- *       to unauthorized persons.
- * @param array $fields2get
- *       restrict return fields only to listed fields (so the content4id array
- *       is not so big)
- *       like: array('headline........', 'category.......1')
+ *                                    Use carefully only when you are sure the data is used safely and not viewed
+ *                                    to unauthorized persons.
+ * @param bool  $fields2get
+ *                                    restrict return fields only to listed fields (so the content4id array
+ *                                    is not so big)
+ *                                    like: array('headline........', 'category.......1')
+ * @param null  $crypted_additional_slice_pwd
+ * @param null  $bin
  * @return array
  */
 function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_password=false, $fields2get=false, $crypted_additional_slice_pwd=null, $bin=null) {
@@ -1425,11 +1427,21 @@ class AA_Credentials {
 
     protected $_pwd = [];     // Array of all known slice passwords (md5 for better security)
 
-    /** main method for checking the slice_pwd */
+    /** main method for checking the slice_pwd
+     * @param string $slice_id
+     * @param string $crypted_additional_slice_pwd
+     * @return bool
+     */
     function checkSlice($slice_id, $crypted_additional_slice_pwd=null) {
+        // AA_Slice::getModuleProperty($slice_id,'reading_password') is encrypted
         return $this->checkCryptedPassword(AA_Slice::getModuleProperty($slice_id,'reading_password'), $crypted_additional_slice_pwd);
     }
 
+    /**
+     * @param string $crypted_slice_pwd
+     * @param string $crypted_additional_slice_pwd
+     * @return bool
+     */
     function checkCryptedPassword($crypted_slice_pwd, $crypted_additional_slice_pwd=null) {
         if (!$crypted_slice_pwd OR $this->_pwd[$crypted_slice_pwd] OR $crypted_slice_pwd == $crypted_additional_slice_pwd) {
             return true;
@@ -1444,12 +1456,26 @@ class AA_Credentials {
      * @param $slice_id
      */
     function loadFromSlice($slice_id) {
-        $this->register(AA_Slice::getModuleProperty($slice_id,'reading_password'));
+        $this->register(AA_Slice::getModuleProperty($slice_id,'reading_password'));  // AA_Slice::getModuleProperty($slice_id,'reading_password') is encrypted
     }
 
     function register($crypted_slice_pwd) {
         if (!empty($crypted_slice_pwd)) {
             $this->_pwd[$crypted_slice_pwd] = true;
+        }
+    }
+
+    /** we are sending collected slice passwords to {ajax...} */
+    public function getAsToken(): string {
+        return AA_Stringexpand_Encrypt::get_time_token(['spwd'=> array_keys($this->_pwd)]);
+    }
+
+    public function importFromToken(string $timetoken) {
+        $arr = AA_Stringexpand_Encrypt::decrypt_time_token($timetoken);
+        if ( is_array($arr['spwd']) ) {
+            foreach ($arr['spwd'] as $crypted_slice_pwd) {
+                $this->register($crypted_slice_pwd);
+            }
         }
     }
 

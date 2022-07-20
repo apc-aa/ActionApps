@@ -3960,8 +3960,10 @@ class AA_Stringexpand_Options extends AA_Stringexpand {
  *    {sequence:num:min:max:step:delimiter}
  *    {options:{sequence:num:1998:2012}:{date:Y}}
  *    {options:{sequence:num:2012:1998}:{date:Y}}   // could be descending
+ *    {foreach:{sequence:num::2020:{date:Y}::-}:<a href="?rok=_#loop">_#loop</a>}
  *    {options:{sequence:string:A:H}:D}
- *    {sequence:day:{now}:{timestamp:2022-06-30}}
+ *    {sequence:day:{now}:{timestamp:2022-06-30}}  // times could be as timestamp (when numeric)...
+ *    {sequence:day:2022-06-30:today}              // ... or as string
  */
 class AA_Stringexpand_Sequence extends AA_Stringexpand_Nevercache {
     /** expand function
@@ -3982,9 +3984,9 @@ class AA_Stringexpand_Sequence extends AA_Stringexpand_Nevercache {
                 }
                 break;
             case 'day':
-                if (ctype_digit((string)$min) AND ctype_digit((string)$max)) {
-                    $from = strtotime('today', (int)$min);
-                    $to   = strtotime('today', (int)$max);
+                if (strlen($min) AND strlen($max)) {
+                    $from = strtotime('today', IsSigInt((string)$min) ? (int)$min : strtotime($min));
+                    $to   = strtotime('today', IsSigInt((string)$max) ? (int)$max : strtotime($max));
                     $add = ($from <= $to) ? '+1 day' : '-1 day';
                     if ($from <= $to) {
                         while ($from <= $to) {
@@ -4673,8 +4675,10 @@ class AA_Stringexpand_Ajax extends AA_Stringexpand_Nevercache {
                     $input_name  = FormArray::getName4Form($field_id, $item);
                     $input_id    = FormArray::formName2Id($input_name);
 
+                    $enc_credentials = AA_Credentials::singleton()->getAsToken();
+
                     // the whole content works as button by default. You can redefine it using _#AA_AJAX_ alias like:   The text which works with value <button _#AA_AJAX_>Change it</button>
-                    $ajax_on     = "onclick=\"displayInput('ajaxv_$input_id', '$iid', '$field_id', '$widget_type', '$widget_properties')\"";
+                    $ajax_on     = "onclick=\"displayInput('ajaxv_$input_id', '$iid', '$field_id', '$widget_type', '$widget_properties', $enc_credentials)\"";
                     if (strpos($repre_value, '_#AA_AJAX_')!==false) {
                         $repre_value = str_replace('_#AA_AJAX_', $ajax_on, $repre_value);
                         $show_alias  = str_replace('_#AA_AJAX_', $ajax_on, $show_alias);
@@ -7904,14 +7908,19 @@ class AA_Stringexpand_Encrypt extends AA_Stringexpand {
      * @param $data
      * @return string
      */
-    static function get_time_token($data) {
+    static function get_time_token($data): string {
+        /** @todo use other constant form config.php - like AA_ENCRYPT_CREDENTIALS if defined instead of AA_ID */
         return AA\Util\Crypt::encryptAesGcm(serialize($data), 'aa-sul'.AA_ID.date('j.n.y H'));
     }
 
     /** Try to decode sent token - not older than $hours
      *  $hours must count with cache - the tokens on the form could be in the cache
+     * @param string $token
+     * @param int    $hours
+     * @return mixed
+     * @throws Exception
      */
-    static function decrypt_time_token($token, $hours=24) {
+    static function decrypt_time_token(string $token, int $hours=24) {
         for ($i=0; $i<$hours; ++$i) {
             if (strlen($serialized = AA\Util\Crypt::decryptAesGcm($token, 'aa-sul'.AA_ID.date('j.n.y H',strtotime("-$i hour"))))) {
                 return unserialize($serialized);
@@ -9212,7 +9221,7 @@ class AA_Stringexpand_Formedit extends AA_Stringexpand_Nevercache {
  *           - S - setting (edit item in Toolbox)
  *           - E - edit - used with <edit_code> parameter
  *           - B - back - used with <edit_code> parameter
- *           - F - file upload to first file...........x or img_source.....x field
+ *           - F - file upload to first file...........x or img_upload.....x or img_src........x field
  *           - - - no manage (just view)
  *         - could be also defined as asoc array: {jsonasoc:N:Add item:D:Delete item:Dconfirm:Are you sure to delete item?}
  *  <edit_code> - code for edit - like _#EDIT_ITM - displays _#EDIT_ITM for item defined in {qss:aaedit}

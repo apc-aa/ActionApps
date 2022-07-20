@@ -169,6 +169,7 @@ class AA_Responder_Get_Widget extends AA_Responder {
     protected $widget_type;
     protected $widget_properties;
     protected $lang;
+    protected $context;   // slice_pwd (spwd) for now
 
     function __construct($param=null) {
         $this->field_id             = $param['field_id'];
@@ -176,6 +177,7 @@ class AA_Responder_Get_Widget extends AA_Responder {
         $this->widget_type          = $param['widget_type'];
         $this->widget_properties    = $param['widget_properties'];
         $this->lang                 = $param['lang'];
+        $this->context              = $param['context'];
     }
 
     function isPerm() { return true; }  //return true;
@@ -208,6 +210,10 @@ class AA_Responder_Get_Widget extends AA_Responder {
         AA::$lang     = strtolower(substr($lang,0,2));   // actual language - two letter shortcut cz / es / en
         AA::$langnum  = [AA_Langs::getLangName2Num(AA::$lang)];   // array of preferred languages in priority order.
         AA::setEncoding(AA_Langs::getCharset($lang));
+
+        if ($this->context) {
+            AA_Credentials::singleton()->importFromToken($this->context);
+        }
 
         $field = $slice->getField($this->field_id);
         $widget_html = $field ? $field->getWidgetAjaxHtml($iid, null, null, $this->widget_type, json2asoc($this->widget_properties)) : '';
