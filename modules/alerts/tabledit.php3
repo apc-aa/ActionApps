@@ -90,7 +90,7 @@ if ($tableview["children"]) {
 }
 echo "</TD></TR></TABLE>";
 
-$script = StateUrl("tabledit.php3");
+$script = StateUrl("tabledit.php");
 
 // fixed bug when inner table is not updated to new module_id
 if (!$cmd) {

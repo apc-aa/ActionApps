@@ -216,7 +216,7 @@ $_m["alias used on admin page index.php3 for itemedit url"]
 
 // include/item.php3, row 104
 $_m["Alias used on admin page index.php3 for edit discussion url"]
- = "Alias používaný v administratívnych stránkách index.php3 pre URL discedit.php3";
+ = "Alias používaný v administratívnych stránkách index.php3 pre URL discedit.php";
 
 // include/item.php3, row 105
 $_m["Title of Slice for RSS"]

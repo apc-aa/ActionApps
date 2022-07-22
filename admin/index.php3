@@ -107,14 +107,14 @@ $actions->addAction(new AA_Manageraction_Item_MoveItem('Folder2',  2));
 $actions->addAction(new AA_Manageraction_Item_MoveItem('Folder3',  3));
 
 $new_action = new AA_Manageraction_Item_Feed('Feed', $slice->getId());
-$new_action->setOpenUrl(StateUrl("feed_to.php3"));
+$new_action->setOpenUrl(StateUrl("feed_to.php"));
 $actions->addAction($new_action);
 
 // rXn=1 is foo parameter to make sure, we can use '&' to join items[] parameter (see open_url_add below)
 // '&'    add items[] array to open_url url which will hold checked items
 $actions->addAction(new AA_Manageraction_Item_Preview(      'Preview',       con_url($slice->getProperty('slice_url'),'rXn=1'), '&'));
-$actions->addAction(new AA_Manageraction_Item_Modifycontent('ModifyContent', StateUrl("search_replace.php3"), '&'));
-$actions->addAction(new AA_Manageraction_Item_Email(        'Email',         StateUrl("write_mail.php3"),     '&'));
+$actions->addAction(new AA_Manageraction_Item_Modifycontent('ModifyContent', StateUrl("search_replace.php"), '&'));
+$actions->addAction(new AA_Manageraction_Item_Email(        'Email',         StateUrl("write_mail.php"),     '&'));
 $actions->addAction(new AA_Manageraction_Item_DeleteTrash(  'DeleteTrashAction',true));
 $actions->addAction(new AA_Manageraction_Item_Duplicate(    'Duplicate'));
 $actions->addAction(new AA_Manageraction_Item_Move2slice(   'Move2slice',    $module_id));

@@ -64,63 +64,63 @@ $_m["prints <i>the field</i> as image width (height='xxx' width='yyy') empty str
  = "Función anticuada. Use mejor la función f_c";
 
 # End of unused messages
-// admin/param_wizard.php3, row 94
+// admin/param_wizard.php, row 94
 $_m["Wizard"]
  = " - Asistente";
 
-// admin/param_wizard.php3, row 174
+// admin/param_wizard.php, row 174
 $_m["This is an undocumented %s. We don't recommend to use it."]
  = "Esta %s no está documentada. No se recomienda su uso.";
 
-// admin/param_wizard.php3, row 175
+// admin/param_wizard.php, row 175
 $_m["Close the wizard"]
  = "Cerrar asistente";
 
-// admin/param_wizard.php3, row 189
+// admin/param_wizard.php, row 189
 $_m["Available parameters: "]
  = "Parámetros disponibles: ";
 
-// admin/param_wizard.php3, row 201
+// admin/param_wizard.php, row 201
 $_m["integer&nbsp;number"]
  = "número&nbsp;entero";
 
-// admin/param_wizard.php3, row 202
+// admin/param_wizard.php, row 202
 $_m["any&nbsp;text"]
  = "cuarquier&nbsp;texto";
 
-// admin/param_wizard.php3, row 203
+// admin/param_wizard.php, row 203
 $_m["field&nbsp;id"]
  = "id&nbsp;campo";
 
-// admin/param_wizard.php3, row 204
+// admin/param_wizard.php, row 204
 $_m["boolean:&nbsp;0=false,1=true"]
  = "booleano:&nbsp;0=falso,1=verdadero";
 
-// admin/param_wizard.php3, row 217
+// admin/param_wizard.php, row 217
 $_m["This %s has no parameters."]
  = "Esta %s no tiene parámetros.";
 
-// admin/param_wizard.php3, row 227
+// admin/param_wizard.php, row 227
 $_m["Have a look at these examples of parameters sets:"]
  = "Puede tomar ideas de estos ejemplos:";
 
-// admin/param_wizard.php3, row 234
+// admin/param_wizard.php, row 234
 $_m["Show"]
  = "Mostrar";
 
-// admin/param_wizard.php3, row 244
+// admin/param_wizard.php, row 244
 $_m["OK - Save"]
  = "OK - Guardar";
 
-// admin/param_wizard.php3, row 245
+// admin/param_wizard.php, row 245
 $_m["Cancel"]
  = "Cancelar";
 
-// admin/param_wizard.php3, row 246
+// admin/param_wizard.php, row 246
 $_m["Show example params"]
  = "Mostrar ejemplo";
 
-// admin/param_wizard.php3, row 248
+// admin/param_wizard.php, row 248
 $_m["OK"]
  = "";
 

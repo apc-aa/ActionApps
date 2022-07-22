@@ -1019,7 +1019,7 @@ function StoreItem( $id, $slice_id, $content4id, $insert, $invalidatecache=true,
  *                          not shown in the anonymous form
  */
 //./admin/itemedit.php3:       ValidateContent4Id($err, $slice, $action, $id);
-//./admin/slicefieldsedit.php3:ValidateContent4Id($err, $slice, $action, $id);
+//./admin/slicefieldsedit.php:ValidateContent4Id($err, $slice, $action, $id);
 //./filler.php3:               ValidateContent4Id($err_valid, $slice, $insert ? "insert" : "update", $my_item_id, !$notvalidate, $notshown);
 
 function ValidateContent4Id(&$err, $slice, $action, $id=0, $do_validate=true, $notshown="") {

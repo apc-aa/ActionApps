@@ -77,7 +77,7 @@ function ShowEmailAliases() {
         ]
     ];
 
-    // these aliases are used in include/slicewiz.php3
+    // these aliases are used in include/slicewiz.php
     $ali[] = [
         "group" => _m("Aliases for Slice Wizard Welcome"),
         "aliases" => [

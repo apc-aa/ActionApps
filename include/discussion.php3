@@ -423,7 +423,7 @@ function updateDiscussionCount($item_id) {
 // -----------------------------------------------------------------------------------------
 
 /** GetDiscussion2MailAliases function
- *  used just for help display in admin/se_view.php3
+ *  used just for help display in admin/se_view.php
  */
 function GetDiscussion2MailAliases() {
     $aliases["_#ITEMPAR3"] = GetAliasDef("", "", _m("3rd parameter filled in DiscussionMailList field"));

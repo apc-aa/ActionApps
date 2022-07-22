@@ -1688,7 +1688,7 @@ class AA_Inputfield {
         }
         $this->echoo("</tr>\n <tr><td valign=\"bottom\" align=\"center\">\n");
         if (strpos($actions,'R') !== false) {
-            $this->echoo("<input type='button' value='". _m("Add") ."' onclick='OpenRelated(\"$name\", \"$sid\", \"$mode\", \"$design\", \"$whichitems\",\"".rawurlencode($conds)."\",\"".rawurlencode($condsrw)."\", \"".rawurlencode($slice_field)."\",\"".get_admin_url('related_sel.php3')."\" )'>\n");
+            $this->echoo("<input type='button' value='". _m("Add") ."' onclick='OpenRelated(\"$name\", \"$sid\", \"$mode\", \"$design\", \"$whichitems\",\"".rawurlencode($conds)."\",\"".rawurlencode($condsrw)."\", \"".rawurlencode($slice_field)."\",\"".get_admin_url('related_sel.php')."\" )'>\n");
         }
         if (strpos($actions,'N') !== false) {
             $this->echoo("&nbsp;&nbsp;<input type='button' value='". _m("New") ."' onclick=\"OpenWindowTop('". Inputform_url(true, null, $sid, 'close_dialog', null, $name) .  "');\">\n");
@@ -1761,7 +1761,7 @@ class AA_Inputfield {
     //        $this->echovar( $var_code );
     //        $var_code = '
     //        <div>
-    //          <input type="button" value="'. _m("Add") ."\" onclick=\"OpenRelated('".$this->varname."', '$sid', '$mode', '$design', '$whichitems','".rawurlencode($conds)."','".rawurlencode($condsrw)."','".get_admin_url('related_sel.php3')."' )\">
+    //          <input type="button" value="'. _m("Add") ."\" onclick=\"OpenRelated('".$this->varname."', '$sid', '$mode', '$design', '$whichitems','".rawurlencode($conds)."','".rawurlencode($condsrw)."','".get_admin_url('related_sel.php')."' )\">
     //        </div>
     //        ";
     //        $this->echovar( $var_code, 'buttons' );
@@ -1794,7 +1794,7 @@ class AA_Inputfield {
     //             $this->echoo("</td>");
     //        }
     //        $this->echoo("</tr>\n <tr><td valign=\"bottom\" align=\"center\">
-    //          <input type='button' value='". _m("Add") ."' onclick='OpenRelated(\"$name\", \"$sid\", \"$mode\", \"$design\", \"$whichitems\",\"".rawurlencode($conds)."\",\"".rawurlencode($condsrw)."\",\"".get_admin_url('related_sel.php3')."\" )'>
+    //          <input type='button' value='". _m("Add") ."' onclick='OpenRelated(\"$name\", \"$sid\", \"$mode\", \"$design\", \"$whichitems\",\"".rawurlencode($conds)."\",\"".rawurlencode($condsrw)."\",\"".get_admin_url('related_sel.php')."\" )'>
     //          &nbsp;&nbsp;");
     //        $this->echoo("<input type='button' value='". _m("Delete") ."' onclick=\"sb_RemoveItem(document.inputform['".$name."']);\">\n");
     //        $this->echoo(getFrmJavascript("if (typeof listboxes == 'undefined') { var listboxes = []; };  listboxes[listboxes.length] = '$name';"));
@@ -2984,7 +2984,7 @@ function IncludeManagerJavascript() {
  * @param      $name - dislpayed name of this option
  * @param      $count
  * @param      $value - value for this option
- * @param      $list_type - items preview type ('items' | 'users') @see usershow.php3
+ * @param      $list_type - items preview type ('items' | 'users') @see usershow.php
  * @param      $list_text
  * @param bool $safe - escape html entities in name?
  * @param null $bookmark_id
@@ -3032,7 +3032,7 @@ function getRadioBookmarkRow( $name, $count, $value, $list_type, $list_text, $sa
     $out .= "<td>";
     if ((string)$value != (string)"testuser") {
         $grp = $value;
-        $js = "OpenUsershowPopup('".get_admin_url("usershow.php3")."&slice_id=$slice_id&group=$grp&type=$list_type')";
+        $js = "OpenUsershowPopup('".get_admin_url("usershow.php")."&slice_id=$slice_id&group=$grp&type=$list_type')";
         $out .= "<a href=\"javascript:$js;\">$list_text</a>";
     }
     $out .=  "</td>
@@ -3045,7 +3045,7 @@ function getRadioBookmarkRow( $name, $count, $value, $list_type, $list_text, $sa
  *   Allows select items group (used for bulk e-mails as well as for Find&Replace)
  *  @param array $items - array of item ids with 'x' prefix
  *  @param AA_Searchbar $searchbar
- *  @param string list_type - items preview type ('items' | 'users') @see usershow.php3
+ *  @param string list_type - items preview type ('items' | 'users') @see usershow.php
  *  @param array messages['view_items']     = _m("View Recipients")
  *               messages['selected_items'] = _m('Selected users')
  *  @param array additional = array( 'text' => 'Test', 'varname'=>'testuser');

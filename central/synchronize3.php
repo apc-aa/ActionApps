@@ -90,7 +90,7 @@ if ($_POST['synchronize']) {
         }
     }
     echo _m("%1 synchronization actions planed. See", [$no_sync_tasks]). ' ';
-    echo a_href(get_admin_url('se_taskmanager.php3'), _m('Task Manager'));
+    echo a_href(get_admin_url('se_taskmanager.php'), _m('Task Manager'));
 }
 
 $apage = new AA_Adminpageutil('central', 'synchronize');

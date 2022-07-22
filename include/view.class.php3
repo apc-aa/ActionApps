@@ -130,7 +130,7 @@ class AA_View {
      *  Returns Url of view edit
      */
     function jumpUrl() {
-        return get_admin_url("se_view.php3?change_id=".unpack_id($this->f('slice_id')). "&view_id=". $this->id);
+        return get_admin_url("se_view.php?change_id=".unpack_id($this->f('slice_id')). "&view_id=". $this->id);
     }
 
     /** setfields function

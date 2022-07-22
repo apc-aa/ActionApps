@@ -88,7 +88,7 @@ function get_aamenus() {
     $aamenus["sliceadmin"] = [
         "label"   => get_if($profile->getProperty('ui_manager', 'top_sliceadmin'), _m("Slice Admin")),
         "title"   => _m("Slice Administration"),
-        "href"    => "admin/se_fields.php3",
+        "href"    => "admin/se_fields.php",
         "cond"    => (IfSlPerm(PS_FIELDS) AND ($profile->getProperty('ui_manager', 'top_sliceadmin') !== '')) OR IsSuperadmin(),
         "level"   => "main",
         "submenu" => "sliceadmin_submenu"
@@ -120,44 +120,44 @@ function get_aamenus() {
         "items"     => [
 
         "header1"       => _m("Main settings"),
-        "main"          => ["cond"=>IfSlPerm(PS_EDIT),     "href"=>"admin/slicedit.php3",                 "label"=>_m("Slice"), "show_always"=>1], //"href"=>"admin/tabledit.php3?set_tview=sl_edit&cmd[sl_edit][edit][".$slice_id."]=1&slice_id=".$slice_id
-        "fields"        => ["cond"=>IfSlPerm(PS_FIELDS),   "href"=>"admin/se_fields.php3",                "label"=>_m("Fields")],
-        "slice_fields"  => ["cond"=>IfSlPerm(PS_FIELDS),   "href"=>"admin/se_fields.php3?slice_fields=1", "label"=>_m("Slice Fields")],
-        "notify"        => ["cond"=>IfSlPerm(PS_EDIT),     "href"=>"admin/se_notify.php3",                "label"=>_m("Email Notification")],
-        //"te_emails"   => array("cond"=>IfSlPerm(PS_FULLTEXT), "href"=>"admin/tabledit.php3?set_tview=email", "label"=>_m("Emails")),
+        "main"          => ["cond"=>IfSlPerm(PS_EDIT),     "href"=>"admin/slicedit.php",                 "label"=>_m("Slice"), "show_always"=>1], //"href"=>"admin/tabledit.php?set_tview=sl_edit&cmd[sl_edit][edit][".$slice_id."]=1&slice_id=".$slice_id
+        "fields"        => ["cond"=>IfSlPerm(PS_FIELDS),   "href"=>"admin/se_fields.php",                "label"=>_m("Fields")],
+        "slice_fields"  => ["cond"=>IfSlPerm(PS_FIELDS),   "href"=>"admin/se_fields.php?slice_fields=1", "label"=>_m("Slice Fields")],
+        "notify"        => ["cond"=>IfSlPerm(PS_EDIT),     "href"=>"admin/se_notify.php",                "label"=>_m("Email Notification")],
+        //"te_emails"   => array("cond"=>IfSlPerm(PS_FULLTEXT), "href"=>"admin/tabledit.php?set_tview=email", "label"=>_m("Emails")),
 
         "header2"       => _m("Permissions"),
-        "addusers"      => ["cond"=>IfSlPerm(PS_ADD_USER), "href"=>"admin/se_users.php3?adduser=1",       "label"=>_m("Assign")],
-        "users"         => ["cond"=>IfSlPerm(PS_USERS),    "href"=>"admin/se_users.php3",                 "label"=>_m("Change")],
+        "addusers"      => ["cond"=>IfSlPerm(PS_ADD_USER), "href"=>"admin/se_users.php?adduser=1",       "label"=>_m("Assign")],
+        "users"         => ["cond"=>IfSlPerm(PS_USERS),    "href"=>"admin/se_users.php",                 "label"=>_m("Change")],
 
         "header3"       => _m("Design"),
-        "compact"       => ["cond"=>IfSlPerm(PS_COMPACT),  "href"=>"admin/se_compact.php3",               "label"=>_m("Index")],
-        "fulltext"      => ["cond"=>IfSlPerm(PS_FULLTEXT), "href"=>"admin/se_fulltext.php3",              "label"=>_m("Fulltext")],
-        "views"         => ["cond"=>IfSlPerm(PS_FULLTEXT), "href"=>"admin/se_views.php3",                 "label"=>_m("Views")],
-        "forms"         => ["cond"=>IfSlPerm(PS_FULLTEXT), "href"=>"admin/se_forms.php3",                 "label"=>_m("Forms")],
-        "config"        => ["cond"=>IfSlPerm(PS_CONFIG),   "href"=>"admin/se_admin.php3",                 "label"=>_m("Item Manager")],
-        "sets"          => ["cond"=>IfSlPerm(PS_FULLTEXT), "href"=>"admin/se_sets.php3",                  "label"=>_m("Sets of Items")],
+        "compact"       => ["cond"=>IfSlPerm(PS_COMPACT),  "href"=>"admin/se_compact.php",               "label"=>_m("Index")],
+        "fulltext"      => ["cond"=>IfSlPerm(PS_FULLTEXT), "href"=>"admin/se_fulltext.php",              "label"=>_m("Fulltext")],
+        "views"         => ["cond"=>IfSlPerm(PS_FULLTEXT), "href"=>"admin/se_views.php",                 "label"=>_m("Views")],
+        "forms"         => ["cond"=>IfSlPerm(PS_FULLTEXT), "href"=>"admin/se_forms.php",                 "label"=>_m("Forms")],
+        "config"        => ["cond"=>IfSlPerm(PS_CONFIG),   "href"=>"admin/se_admin.php",                 "label"=>_m("Item Manager")],
+        "sets"          => ["cond"=>IfSlPerm(PS_FULLTEXT), "href"=>"admin/se_sets.php",                  "label"=>_m("Sets of Items")],
 
         "header4"       => _m("Content Pooling"),
-        "nodes"         => ["cond"=>IsSuperadmin(),        "href"=>"admin/se_nodes.php3",                 "label"=>_m("Nodes")],
-        "import"        => ["cond"=>IfSlPerm(PS_FEEDING),  "href"=>"admin/se_import.php3",                "label"=>_m("Inner Node Feeding")],
-        "n_import"      => ["cond"=>IfSlPerm(PS_FEEDING),  "href"=>"admin/se_inter_import.php3",          "label"=>_m("Inter Node Import")],
-        "n_export"      => ["cond"=>IfSlPerm(PS_FEEDING),  "href"=>"admin/se_inter_export.php3",          "label"=>_m("Inter Node Export")],
-        "rssfeeds"      => ["cond"=>IfSlPerm(PS_FEEDING),  "href"=>"admin/se_rssfeeds.php3",              "label"=>_m("RSS Feeds")],
-        "filters"       => ["cond"=>IfSlPerm(PS_FEEDING),  "href"=>"admin/se_filters.php3",               "label"=>_m("Filters")],
-        "mapping"       => ["cond"=>IfSlPerm(PS_FEEDING),  "href"=>"admin/se_mapping.php3",               "label"=>_m("Mapping")],
-        "CSVimport"     => ["cond"=>IfSlPerm(PS_FEEDING),  "href"=>"admin/se_csv_import.php3",            "label"=>_m("Import CSV")],
+        "nodes"         => ["cond"=>IsSuperadmin(),        "href"=>"admin/se_nodes.php",                 "label"=>_m("Nodes")],
+        "import"        => ["cond"=>IfSlPerm(PS_FEEDING),  "href"=>"admin/se_import.php",                "label"=>_m("Inner Node Feeding")],
+        "n_import"      => ["cond"=>IfSlPerm(PS_FEEDING),  "href"=>"admin/se_inter_import.php",          "label"=>_m("Inter Node Import")],
+        "n_export"      => ["cond"=>IfSlPerm(PS_FEEDING),  "href"=>"admin/se_inter_export.php",          "label"=>_m("Inter Node Export")],
+        "rssfeeds"      => ["cond"=>IfSlPerm(PS_FEEDING),  "href"=>"admin/se_rssfeeds.php",              "label"=>_m("RSS Feeds")],
+        "filters"       => ["cond"=>IfSlPerm(PS_FEEDING),  "href"=>"admin/se_filters.php",               "label"=>_m("Filters")],
+        "mapping"       => ["cond"=>IfSlPerm(PS_FEEDING),  "href"=>"admin/se_mapping.php",               "label"=>_m("Mapping")],
+        "CSVimport"     => ["cond"=>IfSlPerm(PS_FEEDING),  "href"=>"admin/se_csv_import.php",            "label"=>_m("Import CSV")],
         "export"        => ["cond"=>IfSlPerm(PS_FEEDING),  "href"=>"admin/se_export.php",                 "label"=>_m("Export to file")],
 
         "header5"       => _m("Misc"),
-        "history"       => ["cond"=>IfSlPerm(PS_HISTORY),   "href"=>"admin/se_history.php3",              "label"=>_m("History")],
-        "field_ids"     => ["cond"=>IfSlPerm(PS_FIELDS),   "href"=>"admin/se_fieldid.php3",               "label"=>_m("Change field IDs")],
-        "javascript"    => ["cond"=>IfSlPerm(PS_FIELDS),   "href"=>"admin/se_javascript.php3",            "label"=>_m("Field Triggers")],
-        "fileman"       => ["cond"=>FilemanPerms($slice_id), "href"=>"admin/fileman.php3",                "label"=>_m("File Manager")],
-        "anonym_wizard" => ["cond"=>IfSlPerm(PS_FIELDS),   "href"=>"admin/anonym_wizard.php3",            "label"=>_m("Anonymous Form Wizard")],
-        "email"         => ["cond"=>IfSlPerm(PS_USERS),    "href"=>"admin/tabledit.php3?set_tview=email", "label"=>_m("Email templates")],
-        "taskmanager"   => ["cond"=>IfSlPerm(PS_EDIT),     "href"=>"admin/se_taskmanager.php3",           "label"=>_m("Task Manager")],
-        "tasks"         => ["cond"=>IsSuperadmin(),        "href"=>"admin/se_tasks.php3",                 "label"=>_m("Planned Tasks")],
+        "history"       => ["cond"=>IfSlPerm(PS_HISTORY),   "href"=>"admin/se_history.php",              "label"=>_m("History")],
+        "field_ids"     => ["cond"=>IfSlPerm(PS_FIELDS),   "href"=>"admin/se_fieldid.php",               "label"=>_m("Change field IDs")],
+        "javascript"    => ["cond"=>IfSlPerm(PS_FIELDS),   "href"=>"admin/se_javascript.php",            "label"=>_m("Field Triggers")],
+        "fileman"       => ["cond"=>FilemanPerms($slice_id), "href"=>"admin/fileman.php",                "label"=>_m("File Manager")],
+        "anonym_wizard" => ["cond"=>IfSlPerm(PS_FIELDS),   "href"=>"admin/anonym_wizard.php",            "label"=>_m("Anonymous Form Wizard")],
+        "email"         => ["cond"=>IfSlPerm(PS_USERS),    "href"=>"admin/tabledit.php?set_tview=email", "label"=>_m("Email templates")],
+        "taskmanager"   => ["cond"=>IfSlPerm(PS_EDIT),     "href"=>"admin/se_taskmanager.php",           "label"=>_m("Task Manager")],
+        "tasks"         => ["cond"=>IsSuperadmin(),        "href"=>"admin/se_tasks.php",                 "label"=>_m("Planned Tasks")],
         ]
     ];
 
@@ -194,9 +194,9 @@ function get_aamenus() {
 
     $aamenus["itemmanager_submenu"]['items'] += [
             "header2"     => GetLabel($profile,'ui_manager', 'itemmanager_submenu_header2', _m("Misc")),
-            "slice_fld"   => ["cond"=>(IfSlPerm(PS_EDIT_ALL_ITEMS) AND ($profile->getProperty('ui_manager', 'itemmanager_submenu_slice_fld') !== '')), 'hide' => ($profile->getProperty('ui_manager', 'itemmanager_submenu_slice_fld')   === ''), "href"=>"admin/slicefieldsedit.php3?edit=1&encap=false&id=$slice_id",   "label"=>GetLabel($profile,'ui_manager','itemmanager_submenu_slice_fld', _m("Setting"))],
+            "slice_fld"   => ["cond"=>(IfSlPerm(PS_EDIT_ALL_ITEMS) AND ($profile->getProperty('ui_manager', 'itemmanager_submenu_slice_fld') !== '')), 'hide' => ($profile->getProperty('ui_manager', 'itemmanager_submenu_slice_fld')   === ''), "href"=>"admin/slicefieldsedit.php?edit=1&encap=false&id=$slice_id",   "label"=>GetLabel($profile,'ui_manager','itemmanager_submenu_slice_fld', _m("Setting"))],
             "empty_trash" => ["cond"=>(IfSlPerm(PS_DELETE_ITEMS) AND ($profile->getProperty('ui_manager', 'itemmanager_submenu_empty_trash') !== '')), 'hide' => ($profile->getProperty('ui_manager', 'itemmanager_submenu_empty_trash')   === ''), "href"=>"admin/index.php3?DeleteTrash=1",                             "label"=>GetLabel($profile,'ui_manager','itemmanager_submenu_empty_trash', "<img src='../images/empty_trash.gif' border=0>"._m("Empty trash")), "js"=>"EmptyTrashQuestion('{href}','"._m("Are You sure to empty trash?")."')"],
-            "CSVimport"   => ["cond"=>(IfSlPerm(PS_EDIT_ALL_ITEMS) AND ($profile->getProperty('ui_manager', 'itemmanager_submenu_CSVimport') !== '')), 'hide' => ($profile->getProperty('ui_manager', 'itemmanager_submenu_CSVimport')   === ''), "href"=>"admin/se_csv_import.php3",                                     "label"=>GetLabel($profile,'ui_manager','itemmanager_submenu_CSVimport', _m("Import CSV"))],
+            "CSVimport"   => ["cond"=>(IfSlPerm(PS_EDIT_ALL_ITEMS) AND ($profile->getProperty('ui_manager', 'itemmanager_submenu_CSVimport') !== '')), 'hide' => ($profile->getProperty('ui_manager', 'itemmanager_submenu_CSVimport')   === ''), "href"=>"admin/se_csv_import.php",                                     "label"=>GetLabel($profile,'ui_manager','itemmanager_submenu_CSVimport', _m("Import CSV"))],
             "debug"       => ["cond"=>(IsSuperadmin() AND ($profile->getProperty('ui_manager', 'itemmanager_submenu_debug')   !== '')),                'hide' => ($profile->getProperty('ui_manager', 'itemmanager_submenu_debug')   === '') AND !IsSuperadmin(),                  "js"  =>"ToggleCookie('aa_debug','1')","label"=>GetLabel($profile,'ui_manager','itemmanager_submenu_debug',  ($_COOKIE['aa_debug'] ? _m("Set Debug OFF") : _m("Set Debug ON")))]
     //        "line"        => ""
     ];

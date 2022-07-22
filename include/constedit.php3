@@ -1,7 +1,7 @@
 <?php
 /**
  * Hiearchical constant editor - allows to edit constants organized
- *   in a multi-level hierarchy. Called from the se_constant.php3 page.
+ *   in a multi-level hierarchy. Called from the se_constant.php page.
  *
  * PHP version 7.2+
  *
@@ -29,7 +29,7 @@
 /*  Author: Jakub Ad�mek, February 2002
 
     Hiearchical constant editor - allows to edit constants organized
-    in a multi-level hierarchy. Called from the se_constant.php3 page.
+    in a multi-level hierarchy. Called from the se_constant.php page.
 */
 
 /*  Params:

@@ -47,7 +47,7 @@ function get_aamenus() {
     $aamenus["admin"] = [
         "label" => _m("Alerts Settings"),
         "title" => _m("Alerts Settings"),
-        "href" => "modules/alerts/tabledit.php3?set_tview=modedit&cmd[modedit][edit][" .urlencode($GLOBALS["slice_id"])."]=1",
+        "href" => "modules/alerts/tabledit.php?set_tview=modedit&cmd[modedit][edit][" .urlencode($GLOBALS["slice_id"])."]=1",
         "cond" => IfSlPerm(PS_USERS),
         "level" => "main",
         "submenu" => "admin_submenu"
@@ -56,7 +56,7 @@ function get_aamenus() {
     $aamenus["filters"] = array (
         "label" => _m("Filters"),
         "title" => _m("Filters"),
-        "href"=>"modules/alerts/tabledit.php3?set_tview=acf",
+        "href"=>"modules/alerts/tabledit.php?set_tview=acf",
         "cond" => IfSlPerm (PS_USERS),
         "level" => "main",
         "submenu"=>"admin_submenu");
@@ -64,7 +64,7 @@ function get_aamenus() {
     $aamenus["send_emails"] = array (
         "label" => _m("Send emails"),
         "title" => _m("Send emails"),
-        "href"=>"modules/alerts/tabledit.php3?set_tview=send_emails&cmd[send_emails][edit]["
+        "href"=>"modules/alerts/tabledit.php?set_tview=send_emails&cmd[send_emails][edit]["
                 .$GLOBALS["collectionid"]."]=1",
         "cond" => IfSlPerm (PS_USERS),
         "level" => "main",
@@ -86,13 +86,13 @@ function get_aamenus() {
         "header1"=>_m("Alerts Admin"),
   //      "formwizard"=>array ("cond"=>IfSlPerm(PS_USERS), "href"=>"modules/alerts/cf_wizard.php3", "label"=>_m("Form Wizard")),
         "settings"=> ["cond"=>IfSlPerm(PS_USERS),
-            "href" => "modules/alerts/tabledit.php3?set_tview=modedit&cmd[modedit][edit]["
+            "href" => "modules/alerts/tabledit.php?set_tview=modedit&cmd[modedit][edit]["
                 .$GLOBALS["slice_id"]."]=1", "label"=>_m("Settings")],
         "filters"=> ["cond"=>IfSlPerm(PS_USERS),
-            "href"=>"modules/alerts/tabledit.php3?set_tview=acf",
+            "href"=>"modules/alerts/tabledit.php?set_tview=acf",
             "label"=>_m("Selections")],
         "send_emails"=> ["cond"=>IfSlPerm(PS_USERS),
-            "href"=>"modules/alerts/tabledit.php3?set_tview=send_emails&cmd[send_emails][edit]["
+            "href"=>"modules/alerts/tabledit.php?set_tview=send_emails&cmd[send_emails][edit]["
                 .$GLOBALS["collectionid"]."]=1",
             "label"=>_m("Send emails")],
         "synchro"=> [
@@ -104,7 +104,7 @@ function get_aamenus() {
 
         "header2" => _m("Common"),
         "email"=> ["cond"=>IfSlPerm(PS_USERS),
-            "href" => "modules/alerts/tabledit.php3?set_tview=email", "label"=>_m("Email templates")]
+            "href" => "modules/alerts/tabledit.php?set_tview=email", "label"=>_m("Email templates")]
         ]
     ];
 

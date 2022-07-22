@@ -366,7 +366,7 @@ class AA_Field implements ArrayAccess {
      * @param null  $function
      * @param       $widget_type - wi2|sel|...
      *                       used, when we want to use another widget, than the default one
-     *                       usualy not used - right now we use it just for constants_sel.php3
+     *                       usualy not used - right now we use it just for constants_sel.php
      * @param array $widget_properties - array of properties to redefine for $widget_type
      * @param AA_Value|null $preset_value
      * @param int|null      $item_index - used to identify number of the item - aa[n1_...], aa[n2_...]

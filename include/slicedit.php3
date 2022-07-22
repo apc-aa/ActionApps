@@ -56,7 +56,7 @@ function add_user_and_welcome($welcome_id, $user_login, $slice_id, $role) {
     reset($userinfo);
     $GLOBALS["UsrAdd"] = key ($userinfo);
     $GLOBALS["role"]   = $role;
-    ChangeRole(); // in include/se_users.php3
+    ChangeRole(); // in include/se_users.php
 
     // 2. Send a welcome email message
     $user = current($userinfo);
@@ -344,6 +344,6 @@ if ( $add || $update ) {
     } while(false);
 
     if ( !count($err) ) {
-        go_return_or_url(StateUrl(self_base() . "slicedit.php3"),0,0);
+        go_return_or_url(StateUrl(self_base() . "slicedit.php"),0,0);
     }
 }

@@ -194,7 +194,7 @@ $VALIDATE_TYPES["items"]["pwd"] = [
 // --------------------------------------------------------------------------------
 
 /** It is important the input types are 3 letter acronyms, because
-*   this is used e.g. in admin/se_constant.php3, function propagateChanges(). */
+*   this is used e.g. in admin/se_constant.php, function propagateChanges(). */
 
 // $INPUT_TYPES[...] - now uses class approach with AA\Util\Paramwizard
 

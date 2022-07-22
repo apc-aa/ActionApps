@@ -131,7 +131,7 @@ echo '
         <td class=tabtxt><input type=text name="jump_name" size=20 value="'.$jump_name.'"></td></tr>
      <tr><td class=tabtxt><b>'._m("Jump to").' (URL):</b></td>
         <td class=tabtxt><input type=text name="jump_url" size=60 value="'.$jump_url.'"></td></tr>
-     <tr><td colspan=2 class=tabtxt>'._m("Type in an AA-relative path, e.g.").' <code>admin/se_constant.php3?group_id=something</code></td></tr>
+     <tr><td colspan=2 class=tabtxt>'._m("Type in an AA-relative path, e.g.").' <code>admin/se_constant.php?group_id=something</code></td></tr>
      <tr><td class=tabtxt><b>'._m("Jump to slice").":</b></td>
         <td class=tabtxt><select name=dest_id>";
 //        <option value=''>* * * Don't change slice * * *";
@@ -148,7 +148,7 @@ echo '
      <tr><td class=tabtxt><b>"._m("Module ID").":</b></td><td>$jump_id</td></tr>";
 FrmTabEnd([
     "update"=> ["value"=>($jump_id ? _m("Update") : _m("Create"))],
-                "cancel"=> ["url"=>AA_INSTAL_PATH."admin/um_uedit.php3"]
+                "cancel"=> ["url"=>AA_INSTAL_PATH."admin/um_uedit.php"]
 ]);
 echo "</form>";
 

@@ -85,7 +85,7 @@ $lang_groups ["news"] =
            "central/",
            "include/",
            "-./slice.php3",
-           "-admin/param_wizard.php3",
+           "-admin/param_wizard.php",
            "-include/view.php3",
            "-include/constants_param_wizard.php3",
            "-include/mgettext.php3"
@@ -121,7 +121,7 @@ $lang_groups ["output"] =
 // _param_wizard_lang.php3 language files, used only in the parameter wizard
 $lang_groups ["param_wizard"] =
     [
-        "admin/param_wizard.php3",
+        "admin/param_wizard.php",
            "include/constants_param_wizard.php3"
     ];
 

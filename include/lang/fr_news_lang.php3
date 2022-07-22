@@ -268,14 +268,14 @@ $_m["Use these aliases for database fields"]
  = "Utiliser ces alias pour les champs de la base de donn�es";
 
 // ./diff.diff, row 140, 159
-// admin/um_uedit.php3, row 240
-// admin/discedit.php3, row 175
-// admin/um_gedit.php3, row 187
-// admin/se_fields.php3, row 97
-// admin/se_rssfeeds.php3, row 186
-// admin/se_views.php3, row 76
-// admin/prev_navigation.php3, row 40
-// admin/se_nodes.php3, row 171
+// admin/um_uedit.php, row 240
+// admin/discedit.php, row 175
+// admin/um_gedit.php, row 187
+// admin/se_fields.php, row 97
+// admin/se_rssfeeds.php, row 186
+// admin/se_views.php, row 76
+// admin/prev_navigation.php, row 40
+// admin/se_nodes.php, row 171
 // include/um_gsrch.php3, row 52
 // include/formutil.php3, row 1611, 1667, 3115
 // include/mlx.php, row 404
@@ -292,7 +292,7 @@ $_m["Problem reading data from url: %1"]
  = "";
 
 // ./diff.diff, row 1092
-// include/sliceadd.php3, row 58
+// include/sliceadd.php, row 58
 $_m["To create the new Slice, please choose a template.\n"
    ."        The new slice will inherit the template's default fields.  \n"
    ."        You can also choose a non-template slice to base the new slice on, \n"
@@ -303,27 +303,27 @@ $_m["To create the new Slice, please choose a template.\n"
    ."        si elle poss�de les champs que vous souhaitez.";
 
 // ./diff.diff, row 1099
-// admin/slicedit.php3, row 167
-// include/sliceadd.php3, row 65
+// admin/slicedit.php, row 167
+// include/sliceadd.php, row 65
 $_m["Template"]
  = "Mod�le";
 
 // ./diff.diff, row 1102
-// admin/um_uedit.php3, row 333
-// admin/um_gedit.php3, row 237
-// admin/se_newuser.php3, row 127
-// admin/se_rssfeeds.php3, row 188
-// admin/sliceadd.php3, row 94
-// admin/se_nodes.php3, row 173
+// admin/um_uedit.php, row 333
+// admin/um_gedit.php, row 237
+// admin/se_newuser.php, row 127
+// admin/se_rssfeeds.php, row 188
+// admin/sliceadd.php, row 94
+// admin/se_nodes.php, row 173
 // include/formutil.php3, row 62, 1605, 1678, 1711, 1992
 // include/profile.php3, row 156
 // include/mlx.php, row 408
-// include/sliceadd.php3, row 75, 98
+// include/sliceadd.php, row 75, 98
 $_m["Add"]
  = "Ajouter";
 
 // ./diff.diff, row 1107
-// include/sliceadd.php3, row 79
+// include/sliceadd.php, row 79
 $_m["No templates"]
  = "Sans mod�le";
 
@@ -394,24 +394,24 @@ $_m["Database checkers"]
  = "";
 
 // ./sql_update.php3, row 1563
-// admin/aa_optimize.php3, row 65
-// admin/se_rssfeeds.php3, row 189
+// admin/aa_optimize.php, row 65
+// admin/se_rssfeeds.php, row 189
 $_m["Test"]
  = "";
 
 // ./sql_update.php3, row 1566
-// admin/aa_optimize.php3, row 68
+// admin/aa_optimize.php, row 68
 $_m["Repair"]
  = "";
 
 // ./sql_update.php3, row 1579
-// admin/um_uedit.php3, row 339
-// admin/se_mapping.php3, row 199
+// admin/um_uedit.php, row 339
+// admin/se_mapping.php, row 199
 // admin/se_search.php3, row 180
-// admin/um_gedit.php3, row 241
+// admin/um_gedit.php, row 241
 // admin/discedit2.php3, row 136
-// admin/se_filters.php3, row 256
-// admin/se_import.php3, row 126
+// admin/se_filters.php, row 256
+// admin/se_import.php, row 126
 // include/searchbar.class.php3, row 642
 // include/formutil.php3, row 191, 2684
 $_m["Update"]
@@ -425,100 +425,100 @@ $_m["Run Update"]
 $_m["Restore Data from Backup Tables"]
  = "";
 
-// admin/um_uedit.php3, row 53
-// admin/um_gedit.php3, row 50
-// admin/se_newuser.php3, row 42
+// admin/um_uedit.php, row 53
+// admin/um_gedit.php, row 50
+// admin/se_newuser.php, row 42
 $_m["No permission to create new user"]
  = "Pas de permission pour cr�er un nouvel usager";
 
-// admin/um_uedit.php3, row 71, 86, 109
-// admin/um_gedit.php3, row 75, 83
-// admin/se_users_add.php3, row 119
+// admin/um_uedit.php, row 71, 86, 109
+// admin/um_gedit.php, row 75, 83
+// admin/se_users_add.php, row 119
 // include/um_gsrch.php3, row 31
 $_m["Too many users or groups found."]
  = "Trop d'usagers ou de groupes trouv�s";
 
-// admin/um_uedit.php3, row 71, 86
-// admin/um_gedit.php3, row 75
-// admin/se_users_add.php3, row 121
+// admin/um_uedit.php, row 71, 86
+// admin/um_gedit.php, row 75
+// admin/se_users_add.php, row 121
 // include/um_gsrch.php3, row 34
 $_m["No user (group) found"]
  = "Pas d'usager (groupe) trouv�";
 
-// admin/um_uedit.php3, row 77, 80, 96
-// admin/um_gedit.php3, row 68
+// admin/um_uedit.php, row 77, 80, 96
+// admin/um_gedit.php, row 68
 $_m["Too much groups found."]
  = "Trop de groupes trouv�s";
 
-// admin/um_uedit.php3, row 77, 80
-// admin/um_gedit.php3, row 68
+// admin/um_uedit.php, row 77, 80
+// admin/um_gedit.php, row 68
 $_m["No groups found"]
  = "Aucun groupe trouv�";
 
-// admin/um_uedit.php3, row 151
-// admin/se_newuser.php3, row 83
+// admin/um_uedit.php, row 151
+// admin/se_newuser.php, row 83
 // include/um_util.php3, row 358
 $_m["User successfully added to permission system"]
  = "Utilisateur ajout� avec succ�s aux permissions du syst�me";
 
-// admin/um_uedit.php3, row 151
-// admin/um_passwd.php3, row 65
+// admin/um_uedit.php, row 151
+// admin/um_passwd.php, row 65
 $_m["User data modified"]
  = "";
 
-// admin/um_uedit.php3, row 161
+// admin/um_uedit.php, row 161
 $_m["User management - Users"]
  = "Gestion des usagers - usagers";
 
-// admin/um_uedit.php3, row 171
+// admin/um_uedit.php, row 171
 $_m["Are you sure you want to delete selected user from whole permission system?"]
  = "";
 
-// admin/um_uedit.php3, row 208
+// admin/um_uedit.php, row 208
 // include/menu_aa.php3, row 48
 $_m["New User"]
  = "Nouvel usager";
 
-// admin/um_uedit.php3, row 208, 288
-// admin/um_passwd.php3, row 103
+// admin/um_uedit.php, row 208, 288
+// admin/um_passwd.php, row 103
 // include/menu_aa.php3, row 47
 $_m["Edit User"]
  = "Modifier usager";
 
-// admin/um_uedit.php3, row 215
-// admin/um_gedit.php3, row 261
-// admin/se_users_add.php3, row 68
+// admin/um_uedit.php, row 215
+// admin/um_gedit.php, row 261
+// admin/se_users_add.php, row 68
 // include/menu_aa.php3, row 46
 $_m["Users"]
  = "Usager";
 
-// admin/um_uedit.php3, row 223, 314
-// admin/um_gedit.php3, row 171, 273
-// admin/se_newuser.php3, row 85
-// admin/se_users_add.php3, row 70, 75
+// admin/um_uedit.php, row 223, 314
+// admin/um_gedit.php, row 171, 273
+// admin/se_newuser.php, row 85
+// admin/se_users_add.php, row 70, 75
 // include/um_gsrch.php3, row 47
-// include/tabledit.php3, row 574
+// include/tabledit.php, row 574
 // include/searchbar.class.php3, row 553, 616
 $_m["Search"]
  = "Rechercher";
 
-// admin/um_uedit.php3, row 237
-// admin/aarsstest.php3, row 154
-// admin/se_history.php3, row 68, 88
+// admin/um_uedit.php, row 237
+// admin/aarsstest.php, row 154
+// admin/se_history.php, row 68, 88
 // include/perm_sql.php3, row 216, 689
 $_m["User"]
  = "Usager";
 
-// admin/um_uedit.php3, row 242
-// admin/se_inter_export.php3, row 130
-// admin/discedit.php3, row 173
-// admin/se_inter_import.php3, row 136
-// admin/um_gedit.php3, row 189
-// admin/slicedel.php3, row 59
-// admin/se_fields.php3, row 99, 101
-// admin/se_rssfeeds.php3, row 187
-// admin/se_views.php3, row 80
-// admin/se_nodes.php3, row 172
+// admin/um_uedit.php, row 242
+// admin/se_inter_export.php, row 130
+// admin/discedit.php, row 173
+// admin/se_inter_import.php, row 136
+// admin/um_gedit.php, row 189
+// admin/slicedel.php, row 59
+// admin/se_fields.php, row 99, 101
+// admin/se_rssfeeds.php, row 187
+// admin/se_views.php, row 80
+// admin/se_nodes.php, row 172
 // include/um_gsrch.php3, row 53
 // include/searchbar.class.php3, row 644
 // include/formutil.php3, row 1622, 1668, 1713, 1759
@@ -527,159 +527,159 @@ $_m["User"]
 $_m["Delete"]
  = "Supprimer";
 
-// admin/um_uedit.php3, row 289, 293
-// admin/um_passwd.php3, row 104
-// admin/se_newuser.php3, row 52, 113
-// admin/slicewiz.php3, row 82
-// admin/setup.php3, row 101, 237
+// admin/um_uedit.php, row 289, 293
+// admin/um_passwd.php, row 104
+// admin/se_newuser.php, row 52, 113
+// admin/slicewiz.php, row 82
+// admin/setup.php, row 101, 237
 // include/um_util.php3, row 310
 $_m["Login name"]
  = "nom d'utilisateur";
 
-// admin/um_uedit.php3, row 290
-// admin/um_passwd.php3, row 105
+// admin/um_uedit.php, row 290
+// admin/um_passwd.php, row 105
 $_m["User Id"]
  = "Identit� de l'usager ";
 
-// admin/um_uedit.php3, row 292
-// admin/se_newuser.php3, row 107
+// admin/um_uedit.php, row 292
+// admin/se_newuser.php, row 107
 $_m["New user"]
  = "Nouvel utilisateur";
 
-// admin/um_uedit.php3, row 295
-// admin/aarsstest.php3, row 151
-// admin/um_passwd.php3, row 107
-// admin/se_newuser.php3, row 53, 114
-// admin/slicewiz.php3, row 83
-// admin/se_nodes.php3, row 185
-// admin/setup.php3, row 102, 238
+// admin/um_uedit.php, row 295
+// admin/aarsstest.php, row 151
+// admin/um_passwd.php, row 107
+// admin/se_newuser.php, row 53, 114
+// admin/slicewiz.php, row 83
+// admin/se_nodes.php, row 185
+// admin/setup.php, row 102, 238
 // include/um_util.php3, row 315
 $_m["Password"]
  = "Mot de passe";
 
-// admin/um_uedit.php3, row 296
-// admin/um_passwd.php3, row 108
-// admin/se_newuser.php3, row 54, 115
-// admin/slicewiz.php3, row 84
+// admin/um_uedit.php, row 296
+// admin/um_passwd.php, row 108
+// admin/se_newuser.php, row 54, 115
+// admin/slicewiz.php, row 84
 // include/um_util.php3, row 316
 $_m["Retype password"]
  = "Retapez le mot de passe";
 
-// admin/um_uedit.php3, row 297
-// admin/um_passwd.php3, row 109
-// admin/se_newuser.php3, row 59, 116
-// admin/slicewiz.php3, row 85
-// admin/setup.php3, row 104, 242
+// admin/um_uedit.php, row 297
+// admin/um_passwd.php, row 109
+// admin/se_newuser.php, row 59, 116
+// admin/slicewiz.php, row 85
+// admin/setup.php, row 104, 242
 // include/um_util.php3, row 312
 $_m["First name"]
  = "Pr�nom";
 
-// admin/um_uedit.php3, row 298
-// admin/um_passwd.php3, row 110
-// admin/se_newuser.php3, row 58, 117
-// admin/slicewiz.php3, row 86
+// admin/um_uedit.php, row 298
+// admin/um_passwd.php, row 110
+// admin/se_newuser.php, row 58, 117
+// admin/slicewiz.php, row 86
 // include/um_util.php3, row 311
 $_m["Surname"]
  = "Nom de famille";
 
-// admin/um_uedit.php3, row 299
-// admin/um_passwd.php3, row 111
+// admin/um_uedit.php, row 299
+// admin/um_passwd.php, row 111
 // admin/discedit2.php3, row 55, 123
-// admin/se_newuser.php3, row 55, 118
-// admin/slicewiz.php3, row 87
-// admin/setup.php3, row 106, 244
+// admin/se_newuser.php, row 55, 118
+// admin/slicewiz.php, row 87
+// admin/setup.php, row 106, 244
 // include/um_util.php3, row 322, 323, 324
 $_m["E-mail"]
  = "Courriel";
 
-// admin/um_uedit.php3, row 302
-// admin/setup.php3, row 96
+// admin/um_uedit.php, row 302
+// admin/setup.php, row 96
 $_m["Superadmin account"]
  = "compte super-administrateur";
 
-// admin/um_uedit.php3, row 308
-// admin/um_gedit.php3, row 162
-// admin/se_users_add.php3, row 73
+// admin/um_uedit.php, row 308
+// admin/um_gedit.php, row 162
+// admin/se_users_add.php, row 73
 // include/um_gsrch.php3, row 41
 // include/menu_aa.php3, row 50
 $_m["Groups"]
  = "Groupe";
 
-// admin/um_uedit.php3, row 310
+// admin/um_uedit.php, row 310
 $_m["All Groups"]
  = "Tous les groupes";
 
-// admin/um_uedit.php3, row 312
+// admin/um_uedit.php, row 312
 $_m["User's Groups"]
  = "Groupes d'usagers";
 
-// admin/se_inter_import2.php3, row 34
-// admin/se_mapping.php3, row 36
-// admin/se_inter_export.php3, row 33
-// admin/se_import2.php3, row 36
-// admin/se_inter_import3.php3, row 36
-// admin/se_inter_import.php3, row 37
-// admin/se_mapping2.php3, row 39
-// admin/se_rssfeeds.php3, row 39
-// admin/se_filters2.php3, row 43
-// admin/se_filters.php3, row 44
-// admin/se_import.php3, row 39
+// admin/se_inter_import2.php, row 34
+// admin/se_mapping.php, row 36
+// admin/se_inter_export.php, row 33
+// admin/se_import2.php, row 36
+// admin/se_inter_import3.php, row 36
+// admin/se_inter_import.php, row 37
+// admin/se_mapping2.php, row 39
+// admin/se_rssfeeds.php, row 39
+// admin/se_filters2.php, row 43
+// admin/se_filters.php, row 44
+// admin/se_import.php, row 39
 $_m["You have not permissions to change feeding setting"]
  = "Vous n'avez pas la permission de changer la configuration de l'information";
 
-// admin/se_inter_import2.php3, row 50, 67
+// admin/se_inter_import2.php, row 50, 67
 $_m["Unable to connect and/or retrieve data from the remote node. Contact the administrator of the local node."]
  = "Imcapable de connecter et/ou de retrouver les informations du serveur distant. Contacter l'administrateur du serveur local.";
 
-// admin/se_inter_import2.php3, row 57
+// admin/se_inter_import2.php, row 57
 $_m["No slices available. You have not permissions to import any data of that node. Contact the administrator of the remote slice and check, that he obtained your correct username."]
  = "Pas de section disponible.  Vous n'avez pas la permission d'importer des informations de ce serveur.  Contactez l'administrateur de la section distant et v�rifiez  qu'il vous a obtenu un nom d'utilisateur valide.";
 
-// admin/se_inter_import2.php3, row 58
+// admin/se_inter_import2.php, row 58
 $_m["Invalid password for the node name:"]
  = "Mauvais mot de passe sur ce serveur";
 
-// admin/se_inter_import2.php3, row 58
+// admin/se_inter_import2.php, row 58
 $_m["Contact the administrator of the local node."]
  = "Contactez l'administrateur du serveur local";
 
-// admin/se_inter_import2.php3, row 59
+// admin/se_inter_import2.php, row 59
 $_m["Remote server returns following error:"]
  = "";
 
-// admin/se_inter_import2.php3, row 77, 85
-// admin/se_inter_import.php3, row 84, 126
+// admin/se_inter_import2.php, row 77, 85
+// admin/se_inter_import.php, row 84, 126
 $_m["Inter node import settings"]
  = "Configuration d'importation entre les noeuds";
 
-// admin/se_inter_import2.php3, row 89
+// admin/se_inter_import2.php, row 89
 $_m["Choose slice"]
  = "";
 
-// admin/se_inter_import2.php3, row 98
+// admin/se_inter_import2.php, row 98
 $_m["List of available slices from the node "]
  = "Liste des sections disponibles sur le noeud";
 
-// admin/se_inter_import2.php3, row 99
+// admin/se_inter_import2.php, row 99
 $_m["Slice to import"]
  = "";
 
-// admin/se_inter_import2.php3, row 100
+// admin/se_inter_import2.php, row 100
 $_m["Exact copy"]
  = "";
 
-// admin/se_inter_import2.php3, row 101
+// admin/se_inter_import2.php, row 101
 $_m["The slice will be exact copy of the remote slice. All items will be copied including holdingbin and trash bin items. Also on anychange in the remote item, the content will be copied to local copy of the item. The items will have the same long ids (not the short ones!). It make no sence to change items in local copy - it will be overwriten from remote master."]
  = "";
 
 // admin/se_inputform.php, row 57
-// admin/se_javascript.php3, row 38
+// admin/se_javascript.php, row 38
 // admin/mailman_create_list.php3, row 55
-// admin/se_fields.php3, row 43
-// admin/se_constant_import.php3, row 46
-// admin/se_constant.php3, row 45
-// admin/anonym_wizard.php3, row 125
-// admin/se_fieldid.php3, row 134
+// admin/se_fields.php, row 43
+// admin/se_constant_import.php, row 46
+// admin/se_constant.php, row 45
+// admin/anonym_wizard.php, row 125
+// admin/se_fieldid.php, row 134
 $_m["You have not permissions to change fields settings"]
  = "Vous n'avez pas la permission de changer les configurations des champs";
 
@@ -700,9 +700,9 @@ $_m["More help"]
  = "Davantage d'assistance";
 
 // admin/se_inputform.php, row 119, 379
-// admin/se_admin.php3, row 138
-// admin/se_compact.php3, row 189
-// admin/se_fulltext.php3, row 136
+// admin/se_admin.php, row 138
+// admin/se_compact.php, row 189
+// admin/se_fulltext.php, row 136
 $_m["Default"]
  = "Par d� faut";
 
@@ -724,12 +724,12 @@ $_m["Function"]
  = "Founction";
 
 // admin/se_inputform.php, row 200
-// admin/se_fields.php3, row 188
+// admin/se_fields.php, row 188
 $_m["Fields update successful"]
  = "Champs mis � jour avec succ�s";
 
 // admin/se_inputform.php, row 290, 323
-// admin/se_fields.php3, row 210, 226
+// admin/se_fields.php, row 210, 226
 $_m["Admin - configure Fields"]
  = "Administration - Configurer les champs";
 
@@ -754,8 +754,8 @@ $_m["Input field type in Add / Edit item."]
  = "Type de champ d,entr�e pour Ajouter / modifier item.";
 
 // admin/se_inputform.php, row 355
-// admin/se_constant_import.php3, row 58, 113, 122
-// admin/se_constant.php3, row 340
+// admin/se_constant_import.php, row 58, 113, 122
+// admin/se_constant.php, row 340
 $_m["Constants"]
  = "Valeurs constantes";
 
@@ -772,7 +772,7 @@ $_m["Parameters"]
  = "Param�tres";
 
 // admin/se_inputform.php, row 373, 390, 403, 419, 474
-// admin/se_csv_import2.php3, row 375
+// admin/se_csv_import2.php, row 375
 $_m["Help: Parameter Wizard"]
  = "Assistance: Param�tre assistant";
 
@@ -789,7 +789,7 @@ $_m["Stored as"]
  = "";
 
 // admin/se_inputform.php, row 405
-// admin/se_csv_import.php3, row 216, 220
+// admin/se_csv_import.php, row 216, 220
 $_m["Text"]
  = "";
 
@@ -798,7 +798,7 @@ $_m["Number"]
  = "";
 
 // admin/se_inputform.php, row 411
-// admin/sliceimp.php3, row 484
+// admin/sliceimp.php, row 484
 // include/formutil.php3, row 202, 2698
 $_m["Insert"]
  = "Ins�rer";
@@ -844,348 +844,348 @@ $_m["8 UPPERCASE letters or _"]
  = "8 lettres MAJUSCULES ou _";
 
 // admin/se_inputform.php, row 478
-// admin/um_gedit.php3, row 256
-// admin/se_view.php3, row 87
+// admin/um_gedit.php, row 256
+// admin/se_view.php, row 87
 // include/constants.php3, row 364
 // include/constedit.php3, row 84
-// include/um_gedit.php3, row 32
+// include/um_gedit.php, row 32
 // include/tv_email.php3, row 107, 166
 $_m["Description"]
  = "D�inscription";
 
-// admin/sliceexp.php3, row 44
-// admin/sliceimp.php3, row 41
+// admin/sliceexp.php, row 44
+// admin/sliceimp.php, row 41
 $_m["You are not allowed to export / import slices"]
  = "Vous n'avez pas la permission d'importer ou exporter des sections";
 
-// admin/sliceexp.php3, row 68, 145, 149
+// admin/sliceexp.php, row 68, 145, 149
 $_m["Export slice structure"]
  = "Exporter la structure de la section";
 
-// admin/sliceexp.php3, row 99, 104
+// admin/sliceexp.php, row 99, 104
 $_m["Date export error"]
  = "Erreur de date dans l'exportation";
 
-// admin/sliceexp.php3, row 113
+// admin/sliceexp.php, row 113
 $_m["The identificator should be 16 characters long, not "]
  = "L'identificateur doit avoir 16 caract�res";
 
-// admin/sliceexp.php3, row 129
+// admin/sliceexp.php, row 129
 $_m["You must select one or more slices to backup"]
  = "Vous devez s�lectionner au moins une section pour sauvegarder";
 
-// admin/sliceexp.php3, row 167
+// admin/sliceexp.php, row 167
 $_m["Choose, if you want export slices structure, data or both."]
  = "Choisir si vous souhaiter exporter la structure ou les informations (ou les deux) de la section";
 
-// admin/sliceexp.php3, row 168
+// admin/sliceexp.php, row 168
 $_m["Export structure"]
  = "Exporter la structure";
 
-// admin/sliceexp.php3, row 169
+// admin/sliceexp.php, row 169
 $_m["Export data"]
  = "Exporter les informations";
 
-// admin/sliceexp.php3, row 170
+// admin/sliceexp.php, row 170
 $_m["Export views"]
  = "Exporter les vues";
 
-// admin/sliceexp.php3, row 173
+// admin/sliceexp.php, row 173
 $_m["Use compression"]
  = "Compresser";
 
-// admin/sliceexp.php3, row 175
+// admin/sliceexp.php, row 175
 $_m["HEX output"]
  = "Sortie hexad�cimale";
 
-// admin/sliceexp.php3, row 176
+// admin/sliceexp.php, row 176
 $_m["Store exported data in file"]
  = "Exporter les informations dans fichier";
 
-// admin/sliceexp.php3, row 177
+// admin/sliceexp.php, row 177
 $_m["Convert to UTF"]
  = "";
 
-// admin/sliceexp.php3, row 180
+// admin/sliceexp.php, row 180
 $_m["Export data from specified dates: "]
  = "Exporter les informations de dates sp�cifiques";
 
-// admin/sliceexp.php3, row 181
+// admin/sliceexp.php, row 181
 $_m["From "]
  = "De";
 
-// admin/sliceexp.php3, row 182
-// admin/se_fieldid.php3, row 271
+// admin/sliceexp.php, row 182
+// admin/se_fieldid.php, row 271
 $_m["to"]
  = "de";
 
-// admin/sliceexp.php3, row 188
+// admin/sliceexp.php, row 188
 $_m["Choose one of two export kinds:"]
  = "Choisir 1 ou 2 mani�re d'exporter";
 
-// admin/sliceexp.php3, row 194
+// admin/sliceexp.php, row 194
 $_m["When exporting \"to Backup\" you may choose more slices at once."]
  = "En exportant \"pour sauvegarde de s�curit�\" il est possible de choisir plusieurs sections du m�me coup";
 
-// admin/sliceexp.php3, row 195
+// admin/sliceexp.php, row 195
 $_m["Select slices which you WANT to export:"]
  = "S�lectionner les sections que vous voulez exporter";
 
-// admin/sliceexp.php3, row 211
+// admin/sliceexp.php, row 211
 $_m["When exporting \"to another ActionApps\" only the current slice will be exported and you choose its new identificator."]
  = "En exportant \"vers un autre ActionApps\" seulement la section courante sera export�e et vous choisissez son nouvel identificateur";
 
-// admin/sliceexp.php3, row 212
+// admin/sliceexp.php, row 212
 $_m["Choose a new slice identificator exactly 16 characters long: "]
  = "Choississez un nouvel identificateur de section de pr�cis�ment 16 caract�res";
 
-// admin/sliceexp.php3, row 218
-// admin/sliceexp_text.php3, row 106, 204, 211, 229, 239
+// admin/sliceexp.php, row 218
+// admin/sliceexp_text.php, row 106, 204, 211, 229, 239
 $_m["Export to Backup"]
  = "Exporter vers la sauvegarde de s�curit�";
 
-// admin/sliceexp.php3, row 219
+// admin/sliceexp.php, row 219
 $_m["Export to another ActionApps"]
  = "";
 
-// admin/constants_sel.php3, row 51
+// admin/constants_sel.php, row 51
 $_m["Editor window - item manager"]
  = "Fen�tre Editeur - Gestionnaire d'item";
 
-// admin/constants_sel.php3, row 51
+// admin/constants_sel.php, row 51
 $_m["select constants window"]
  = "S�lectionner fen�tre de valeurs constantes";
 
-// admin/constants_sel.php3, row 128
+// admin/constants_sel.php, row 128
 $_m["Select constants"]
  = "S�lectionner valeurs constantes";
 
-// admin/constants_sel.php3, row 135
-// admin/prev_navigation.php3, row 50
+// admin/constants_sel.php, row 135
+// admin/prev_navigation.php, row 50
 // include/formutil.php3, row 67
 $_m["OK"]
  = "Confirmer";
 
-// admin/se_admin.php3, row 44
+// admin/se_admin.php, row 44
 $_m["You have no permission to set configuration parameters of this slice"]
  = "Vous n'avez pas la permission de configurer les param�tres  de cette section";
 
-// admin/se_admin.php3, row 56, 145
-// admin/se_compact.php3, row 57, 200
+// admin/se_admin.php, row 56, 145
+// admin/se_compact.php, row 57, 200
 // include/constants.php3, row 505, 547, 565, 614, 646, 673, 695, 735, 762, 786, 818
 // include/tableviews.php3, row 158
 $_m["Top HTML"]
  = "D�but  HTML";
 
-// admin/se_admin.php3, row 57, 148
+// admin/se_admin.php, row 57, 148
 $_m["Item format"]
  = "Format de l'item";
 
-// admin/se_admin.php3, row 58, 151
-// admin/se_compact.php3, row 58, 210
+// admin/se_admin.php, row 58, 151
+// admin/se_compact.php, row 58, 210
 // include/constants.php3, row 510, 549, 567, 618, 648, 675, 698, 740, 764, 791, 823
 // include/tableviews.php3, row 162
 $_m["Bottom HTML"]
  = "HTML final";
 
-// admin/se_admin.php3, row 59, 154
-// admin/se_compact.php3, row 59, 233
-// admin/se_fulltext.php3, row 58, 152
+// admin/se_admin.php, row 59, 154
+// admin/se_compact.php, row 59, 233
+// admin/se_fulltext.php, row 58, 152
 // include/constants.php3, row 511, 550, 619, 699, 741, 765, 792, 824, 853
 $_m["Remove strings"]
  = "Enlever la chaine de caract�res";
 
-// admin/se_admin.php3, row 60, 156
+// admin/se_admin.php, row 60, 156
 // include/constants.php3, row 540, 560, 640, 663, 690, 721, 752, 780, 812, 844
 $_m["HTML code for \"No item found\" message"]
  = "Code HTML pour le message \"Aucun item trouv�\"";
 
-// admin/se_admin.php3, row 61
-// admin/se_fulltext.php3, row 59, 154
+// admin/se_admin.php, row 61
+// admin/se_fulltext.php, row 59, 154
 $_m["Show discussion"]
  = "Montrer la discussion";
 
-// admin/se_admin.php3, row 74
-// admin/se_compact.php3, row 92
-// admin/se_fulltext.php3, row 77
-// admin/se_view.php3, row 134, 259
+// admin/se_admin.php, row 74
+// admin/se_compact.php, row 92
+// admin/se_fulltext.php, row 77
+// admin/se_view.php, row 134, 259
 $_m["Can't change slice settings"]
  = "Chamgement de configuration de section impossible";
 
-// admin/se_admin.php3, row 89
+// admin/se_admin.php, row 89
 $_m["Admin fields update successful"]
  = "Champs administratifs mis � jour avec succ�s ";
 
-// admin/se_admin.php3, row 115, 132
+// admin/se_admin.php, row 115, 132
 $_m["Admin - design Item Manager view"]
  = "Administration - D�finir la pr� sentation du gestionnaire d'items";
 
-// admin/se_admin.php3, row 143
+// admin/se_admin.php, row 143
 $_m["Listing of items in Admin interface"]
  = "Liste des items dans l'interface Administration";
 
-// admin/se_admin.php3, row 146
-// admin/se_compact.php3, row 201, 225
-// admin/se_fulltext.php3, row 144
+// admin/se_admin.php, row 146
+// admin/se_compact.php, row 201, 225
+// admin/se_fulltext.php, row 144
 $_m["HTML code which appears at the top of slice area"]
  = "Code HTML apparaissant en haut de la section";
 
-// admin/se_admin.php3, row 149
-// admin/se_compact.php3, row 204, 228
-// admin/se_fulltext.php3, row 147
+// admin/se_admin.php, row 149
+// admin/se_compact.php, row 204, 228
+// admin/se_fulltext.php, row 147
 $_m["Put here the HTML code combined with aliases form bottom of this page\n"
    ."                     <br>The aliases will be substituted by real values from database when it will be posted to page"]
  = "Mettre ici le code HTML combin� avec les alias des fomulaires au bas de cette\n"
    ."                     <br>Les valeurs r�elles provenant de la base de donn�es se subtitueront\n"
    ."aux alias quant elles seront post�es ";
 
-// admin/se_admin.php3, row 152
-// admin/se_compact.php3, row 211, 231
-// admin/se_fulltext.php3, row 150
+// admin/se_admin.php, row 152
+// admin/se_compact.php, row 211, 231
+// admin/se_fulltext.php, row 150
 $_m["HTML code which appears at the bottom of slice area"]
  = "Code HTML apparaissant au bas de la section";
 
-// admin/se_admin.php3, row 155
-// admin/se_compact.php3, row 234
-// admin/se_fulltext.php3, row 153
+// admin/se_admin.php, row 155
+// admin/se_compact.php, row 234
+// admin/se_fulltext.php, row 153
 $_m["Removes empty brackets etc. Use ## as delimiter."]
  = "Enlever les crochets vides. Utiliser ## pour limiter";
 
-// admin/se_admin.php3, row 157
+// admin/se_admin.php, row 157
 $_m["Code to be printed when no item is filled (or user have no permission to any item in the slice)"]
  = "Code qui sera imprim� quand aucun item n'est rempli (ou quand l'utilisateur n'a pas les permissions pour les items dans la section";
 
-// admin/se_admin.php3, row 159
+// admin/se_admin.php, row 159
 $_m["Use special view"]
  = "";
 
-// admin/se_admin.php3, row 160
+// admin/se_admin.php, row 160
 $_m["You can set special view - template for the Inputform on \"Design\" -> \"View\" page (inputform view)"]
  = "";
 
-// admin/sliceexp_text.php3, row 108
+// admin/sliceexp_text.php, row 108
 $_m["Wrong slice ID length: "]
  = "Mauvaise longueur dans l'identit� de la section";
 
-// admin/sliceexp_text.php3, row 200
+// admin/sliceexp_text.php, row 200
 $_m["Can't create temporary file."]
  = "";
 
-// admin/sliceexp_text.php3, row 231
+// admin/sliceexp_text.php, row 231
 $_m["Wrong slice ID length:"]
  = "Mauvaise longueur dans l'identit� de la section";
 
-// admin/sliceexp_text.php3, row 308
+// admin/sliceexp_text.php, row 308
 $_m["Save this text. You may use it to import the slices into any ActionApps:"]
  = "Sauvegarder ce texte. Vous pourrez l'utiliser pour importer les sections dans n'importe quel ActionApps:";
 
-// admin/se_mapping.php3, row 93
-// admin/se_filters.php3, row 75
+// admin/se_mapping.php, row 93
+// admin/se_filters.php, row 75
 $_m["There are no imported slices"]
  = "Il n'y a pas de sections import�es";
 
-// admin/se_mapping.php3, row 115, 115, 236
-// admin/se_mapping2.php3, row 64
+// admin/se_mapping.php, row 115, 115, 236
+// admin/se_mapping2.php, row 64
 $_m["-- Not map --"]
  = "-- Pas rep�r� --";
 
-// admin/se_mapping.php3, row 116, 116, 230
-// admin/se_mapping2.php3, row 67
+// admin/se_mapping.php, row 116, 116, 230
+// admin/se_mapping2.php, row 67
 $_m["-- Value --"]
  = "Valeur";
 
-// admin/se_mapping.php3, row 117, 117, 233
-// admin/se_mapping2.php3, row 70
+// admin/se_mapping.php, row 117, 117, 233
+// admin/se_mapping2.php, row 70
 $_m["-- Joined fields --"]
  = "Champs joint";
 
-// admin/se_mapping.php3, row 118, 118, 244
-// admin/se_mapping2.php3, row 73
+// admin/se_mapping.php, row 118, 118, 244
+// admin/se_mapping2.php, row 73
 $_m["-- RSS field or expr --"]
  = "-- Champs RSS ou expr --";
 
-// admin/se_mapping.php3, row 139, 192
+// admin/se_mapping.php, row 139, 192
 $_m["Admin - Content Pooling - Fields' Mapping"]
  = "Administration - mise en commun du contenu - rep�rage des champs";
 
-// admin/se_mapping.php3, row 206
+// admin/se_mapping.php, row 206
 $_m["Content Pooling - Fields' mapping"]
  = "Mise en commun de contenu - Rep�rage des champs";
 
-// admin/se_mapping.php3, row 209
+// admin/se_mapping.php, row 209
 $_m["Mapping from slice"]
  = "Rep�rage dans la section";
 
-// admin/se_mapping.php3, row 213
+// admin/se_mapping.php, row 213
 $_m["Fields' mapping"]
  = "Rep�rage des champs";
 
-// admin/se_mapping.php3, row 218
-// admin/se_csv_import2.php3, row 353
-// admin/se_filters.php3, row 277
+// admin/se_mapping.php, row 218
+// admin/se_csv_import2.php, row 353
+// admin/se_filters.php, row 277
 $_m["To"]
  = "Vers";
 
-// admin/se_mapping.php3, row 219
-// admin/se_csv_import2.php3, row 354
-// admin/se_filters.php3, row 276
+// admin/se_mapping.php, row 219
+// admin/se_csv_import2.php, row 354
+// admin/se_filters.php, row 276
 // include/tv_email.php3, row 176
 $_m["From"]
  = "De";
 
-// admin/se_mapping.php3, row 220
+// admin/se_mapping.php, row 220
 // admin/se_profile.php3, row 161
-// admin/se_history.php3, row 72, 85
-// admin/se_constant.php3, row 182, 414
+// admin/se_history.php, row 72, 85
+// admin/se_constant.php, row 182, 414
 // include/constants.php3, row 358
 // include/constedit.php3, row 76
 // include/searchlib.php3, row 127
 $_m["Value"]
  = "Valeur";
 
-// admin/se_javascript.php3, row 63, 70
+// admin/se_javascript.php, row 63, 70
 // include/menu.php3, row 166
 $_m["Field Triggers"]
  = "Mode de d�clenchement des Champs";
 
-// admin/se_javascript.php3, row 76
+// admin/se_javascript.php, row 76
 $_m["JavaScript for fields"]
  = "JavaScript pour champs";
 
-// admin/se_javascript.php3, row 78
+// admin/se_javascript.php, row 78
 $_m["Enter code in the JavaScript language. It will be included in the Add / Edit item page (itemedit.php3)."]
  = "Entrer le code dans le langage JavaScript. Il sera inclut dans la page ajouter / modifier les items (itemedit.php3).";
 
-// admin/se_javascript.php3, row 83
+// admin/se_javascript.php, row 83
 $_m["Available fields and triggers"]
  = "Champs et Mode de d�clenchement disponibles";
 
-// admin/se_javascript.php3, row 95
+// admin/se_javascript.php, row 95
 $_m["Field IDs"]
  = "Identit� des champs";
 
-// admin/se_javascript.php3, row 102
+// admin/se_javascript.php, row 102
 $_m["Triggers"]
  = "Mode de d�clenchement";
 
-// admin/se_javascript.php3, row 103
+// admin/se_javascript.php, row 103
 $_m["Write trigger functions like"]
  = "�crire les fonctions du Mode de d�clenchement";
 
-// admin/se_javascript.php3, row 103
+// admin/se_javascript.php, row 103
 $_m["see FAQ</a> for more details and examples"]
  = "Voir FAQ</a>  pour des d�tails et des exemples";
 
-// admin/se_javascript.php3, row 105
+// admin/se_javascript.php, row 105
 $_m["Field Type"]
  = "Genre de champ";
 
-// admin/se_javascript.php3, row 105
+// admin/se_javascript.php, row 105
 $_m["Triggers Available -- see some JavaScript help for when a trigger is run"]
  = "Mode de d�clenchement disponibles -- voir l'assistant JavaScript pour savoir quand le Mode de d�clenchement est en fonction";
 
 // admin/se_profile.php3, row 42
-// admin/se_users.php3, row 38
+// admin/se_users.php, row 38
 $_m["You have not permissions to manage users"]
  = "Vous n'avez pas la permission de g�rer les usagers";
 
@@ -1227,7 +1227,7 @@ $_m["Hide and Fill"]
  = "Cacher et remplir";
 
 // admin/se_profile.php3, row 89
-// admin/search_replace.php3, row 761
+// admin/search_replace.php, row 761
 $_m["Fill field"]
  = "Remplir le champ";
 
@@ -1256,14 +1256,14 @@ $_m["UI - inputform - hide"]
  = "";
 
 // admin/se_profile.php3, row 98
-// admin/se_compact.php3, row 219
-// admin/se_view.php3, row 154, 155
+// admin/se_compact.php, row 219
+// admin/se_view.php, row 154, 155
 $_m["Ascending"]
  = "Croissant";
 
 // admin/se_profile.php3, row 98
-// admin/se_compact.php3, row 219
-// admin/se_view.php3, row 154, 155
+// admin/se_compact.php, row 219
+// admin/se_view.php, row 154, 155
 // include/searchbar.class.php3, row 606
 $_m["Descending"]
  = "D�croissant";
@@ -1290,15 +1290,15 @@ $_m["Rule"]
 
 // admin/se_profile.php3, row 159
 // admin/se_search.php3, row 147, 164
-// admin/se_fields.php3, row 119, 240
-// admin/search_replace.php3, row 762
-// admin/anonym_wizard.php3, row 208
-// admin/se_fieldid.php3, row 305
+// admin/se_fields.php, row 119, 240
+// admin/search_replace.php, row 762
+// admin/anonym_wizard.php, row 208
+// admin/se_fieldid.php, row 305
 $_m["Field"]
  = "Champ";
 
 // admin/se_profile.php3, row 162
-// admin/search_replace.php3, row 262, 335, 419, 570
+// admin/search_replace.php, row 262, 335, 419, 570
 // include/formutil.php3, row 1151, 1168
 $_m["HTML"]
  = "";
@@ -1551,49 +1551,49 @@ $_m["hide this UI element"]
 $_m["redefine inputform UI - (empty values = do not show)"]
  = "";
 
-// admin/se_users.php3, row 99
-// admin/discedit.php3, row 133
+// admin/se_users.php, row 99
+// admin/discedit.php, row 133
 // admin/discedit2.php3, row 54, 122
-// admin/se_users_add.php3, row 48
+// admin/se_users_add.php, row 48
 $_m["Author"]
  = "Auteur";
 
-// admin/se_users.php3, row 101
-// admin/slicewiz.php3, row 81
-// admin/se_users_add.php3, row 51
+// admin/se_users.php, row 101
+// admin/slicewiz.php, row 81
+// admin/se_users_add.php, row 51
 $_m["Editor"]
  = "Editeur";
 
-// admin/se_users.php3, row 103
-// admin/se_users_add.php3, row 54
+// admin/se_users.php, row 103
+// admin/se_users_add.php, row 54
 $_m["Administrator"]
  = "Administrateur";
 
-// admin/se_users.php3, row 105
+// admin/se_users.php, row 105
 // include/um_util.php3, row 100, 162
 $_m["Revoke"]
  = "Retirer";
 
-// admin/se_users.php3, row 107, 173
+// admin/se_users.php, row 107, 173
 $_m["Profile"]
  = "Profil";
 
-// admin/se_users.php3, row 117, 124
+// admin/se_users.php, row 117, 124
 $_m["Admin - Permissions"]
  = "Administration - Permissions";
 
-// admin/se_users.php3, row 137
+// admin/se_users.php, row 137
 $_m["Change current permisions"]
  = "Changer les permission courantes";
 
-// admin/se_users.php3, row 172
+// admin/se_users.php, row 172
 $_m["Default user profile"]
  = "Profil d'usager par d�faut";
 
-// admin/tabledit.php3, row 63
-// admin/aarsstest.php3, row 38
-// admin/rsstest.php3, row 39
-// central/tabledit.php3, row 46
+// admin/tabledit.php, row 63
+// admin/aarsstest.php, row 38
+// admin/rsstest.php, row 39
+// central/tabledit.php, row 46
 $_m["You have not permissions to this page"]
  = "Vous n'avez pas de permission pour cette page";
 
@@ -1640,162 +1640,162 @@ $_m["Admin password"]
  = "Mot de passe Administration";
 
 // admin/mailman_create_list.php3, row 162
-// admin/setup.php3, row 111, 230
+// admin/setup.php, row 111, 230
 $_m["Create"]
  = "Cr�er";
 
-// admin/write_mail.php3, row 56, 144
+// admin/write_mail.php, row 56, 144
 // admin/discedit2.php3, row 53, 121
 // include/tv_email.php3, row 114, 168
 $_m["Subject"]
  = "Sujet";
 
-// admin/write_mail.php3, row 57, 145
+// admin/write_mail.php, row 57, 145
 // include/tv_email.php3, row 118, 170
 $_m["Body"]
  = "Corp";
 
-// admin/write_mail.php3, row 58, 146
+// admin/write_mail.php, row 58, 146
 // include/tv_email.php3, row 122
 $_m["From (email)"]
  = "De (courriel)";
 
-// admin/write_mail.php3, row 59, 147
+// admin/write_mail.php, row 59, 147
 // include/tv_email.php3, row 124
 $_m["Reply to (email)"]
  = "R�pondre (Courriel)";
 
-// admin/write_mail.php3, row 60, 148
+// admin/write_mail.php, row 60, 148
 // include/tv_email.php3, row 126
 $_m["Errors to (email)"]
  = "Erreur � (Courriel)";
 
-// admin/write_mail.php3, row 61, 149
+// admin/write_mail.php, row 61, 149
 // include/tv_email.php3, row 128
 $_m["Sender (email)"]
  = "Envoyeur (Courriel)";
 
-// admin/write_mail.php3, row 62, 150
+// admin/write_mail.php, row 62, 150
 // include/tv_email.php3, row 130
 $_m["Language (charset)"]
  = "Langue (charset)";
 
-// admin/write_mail.php3, row 63, 151
+// admin/write_mail.php, row 63, 151
 // include/tv_email.php3, row 134
 $_m["Use HTML"]
  = "Utliser HTML";
 
-// admin/write_mail.php3, row 79
+// admin/write_mail.php, row 79
 $_m["No template set (which is strange - template was just written to the database"]
  = "";
 
-// admin/write_mail.php3, row 95
+// admin/write_mail.php, row 95
 $_m["Email sucessfully sent (Users: %1, Emails sent (valid e-mails...): %2)"]
  = "";
 
-// admin/write_mail.php3, row 110
+// admin/write_mail.php, row 110
 $_m["Can't delete email template"]
  = "Impossible de supprimer le mod�le du Courriel";
 
-// admin/write_mail.php3, row 121
+// admin/write_mail.php, row 121
 $_m["Write email to users"]
  = "Ecrire un courriel aux usagers";
 
-// admin/write_mail.php3, row 126
+// admin/write_mail.php, row 126
 $_m["Bulk Email Wizard"]
  = "Envoyer l'assistant courriel";
 
-// admin/write_mail.php3, row 134
+// admin/write_mail.php, row 134
 $_m["Recipients"]
  = "Destinataires";
 
-// admin/write_mail.php3, row 134
-// admin/search_replace.php3, row 755
+// admin/write_mail.php, row 134
+// admin/search_replace.php, row 755
 $_m["Stored searches for "]
  = "Recherches enregistr�es pour";
 
-// admin/write_mail.php3, row 136
+// admin/write_mail.php, row 136
 $_m["View Recipients"]
  = "Voir les Destinataires";
 
-// admin/write_mail.php3, row 137
+// admin/write_mail.php, row 137
 $_m["Selected users"]
  = "Usagers s�lectionn�s";
 
-// admin/write_mail.php3, row 138
+// admin/write_mail.php, row 138
 $_m["Test email address"]
  = "Tester le courriel";
 
-// admin/write_mail.php3, row 142
+// admin/write_mail.php, row 142
 $_m["Write the email"]
  = "Ecrire le courriel";
 
-// admin/write_mail.php3, row 151
-// admin/slicewiz.php3, row 66
+// admin/write_mail.php, row 151
+// admin/slicewiz.php, row 66
 // include/tabledit_column.php3, row 158, 161
 // include/tableviews.php3, row 176
 $_m["no"]
  = "Non";
 
-// admin/write_mail.php3, row 151
-// admin/slicewiz.php3, row 66
+// admin/write_mail.php, row 151
+// admin/slicewiz.php, row 66
 // include/tabledit_column.php3, row 158, 161
 // include/tableviews.php3, row 176
 $_m["yes"]
  = "Oui";
 
-// admin/write_mail.php3, row 153
-// admin/se_rssfeeds.php3, row 205
-// admin/anonym_wizard.php3, row 103
+// admin/write_mail.php, row 153
+// admin/se_rssfeeds.php, row 205
+// admin/anonym_wizard.php, row 103
 $_m["Send"]
  = "Envoyer";
 
-// admin/write_mail.php3, row 154
-// admin/search_replace.php3, row 768
-// admin/usershow.php3, row 154
+// admin/write_mail.php, row 154
+// admin/search_replace.php, row 768
+// admin/usershow.php, row 154
 $_m["Close"]
  = "Fermer";
 
-// admin/se_inter_export.php3, row 70, 102, 110
+// admin/se_inter_export.php, row 70, 102, 110
 $_m["Inter node export settings"]
  = "Configuration d'importation entre les noeuds";
 
-// admin/se_inter_export.php3, row 84
+// admin/se_inter_export.php, row 84
 $_m["No selected export"]
  = "";
 
-// admin/se_inter_export.php3, row 87
+// admin/se_inter_export.php, row 87
 $_m["Are you sure you want to delete the export?"]
  = "";
 
-// admin/se_inter_export.php3, row 112
+// admin/se_inter_export.php, row 112
 $_m["Existing exports of the slice "]
  = "Exportations existantes pour la section";
 
-// admin/se_inter_export.php3, row 133
+// admin/se_inter_export.php, row 133
 $_m["Insert new item"]
  = "Ins�rer un nouvel item";
 
-// admin/se_inter_export.php3, row 135
+// admin/se_inter_export.php, row 135
 $_m["Remote Nodes"]
  = "Noeuds distants";
 
-// admin/se_inter_export.php3, row 146
+// admin/se_inter_export.php, row 146
 $_m["User name"]
  = "Nom d'usager";
 
 // admin/itemedit.php3, row 90
-// admin/related_sel.php3, row 181
+// admin/related_sel.php, row 181
 $_m["There are too many related items. The number of related items is limited."]
  = "Il y a trop d'items reli�s. Le nombre d'items reli�s est limit�. ";
 
 // admin/itemedit.php3, row 232
-// admin/slicefieldsedit.php3, row 128
+// admin/slicefieldsedit.php, row 128
 $_m["Error: no fields."]
  = "Erreur: pas de champs";
 
 // admin/itemedit.php3, row 240
-// admin/slicefieldsedit.php3, row 136
+// admin/slicefieldsedit.php, row 136
 $_m["Bad item ID id=%1"]
  = "";
 
@@ -1812,134 +1812,134 @@ $_m["Add Item"]
 $_m["Edit Item"]
  = "Modifier les items";
 
-// admin/se_sets.php3, row 44
+// admin/se_sets.php, row 44
 $_m["You have not permissions to change sets"]
  = "";
 
-// admin/se_sets.php3, row 52
+// admin/se_sets.php, row 52
 $_m["Name 1"]
  = "";
 
-// admin/se_sets.php3, row 53
+// admin/se_sets.php, row 53
 // include/constants.php3, row 530, 551, 630, 653, 680, 711, 770, 802, 834
 $_m["Condition 1"]
  = "";
 
-// admin/se_sets.php3, row 54
+// admin/se_sets.php, row 54
 $_m["Object ID 1"]
  = "";
 
-// admin/se_sets.php3, row 56
+// admin/se_sets.php, row 56
 $_m["Name 2"]
  = "";
 
-// admin/se_sets.php3, row 57
+// admin/se_sets.php, row 57
 // include/constants.php3, row 533, 554, 633, 656, 683, 714, 773, 805, 837
 $_m["Condition 2"]
  = "";
 
-// admin/se_sets.php3, row 58
+// admin/se_sets.php, row 58
 $_m["Object ID 2"]
  = "";
 
-// admin/se_sets.php3, row 60
+// admin/se_sets.php, row 60
 $_m["Name 3"]
  = "";
 
-// admin/se_sets.php3, row 61
+// admin/se_sets.php, row 61
 // include/constants.php3, row 536, 557, 636, 659, 686, 717, 776, 808, 840
 $_m["Condition 3"]
  = "Condition 2";
 
-// admin/se_sets.php3, row 62
+// admin/se_sets.php, row 62
 $_m["Object ID 3"]
  = "";
 
-// admin/se_sets.php3, row 64
+// admin/se_sets.php, row 64
 $_m["Name 4"]
  = "";
 
-// admin/se_sets.php3, row 65
+// admin/se_sets.php, row 65
 $_m["Condition 4"]
  = "";
 
-// admin/se_sets.php3, row 66
+// admin/se_sets.php, row 66
 $_m["Object ID 4"]
  = "";
 
-// admin/se_sets.php3, row 117
+// admin/se_sets.php, row 117
 $_m["Sets stored successfully"]
  = "";
 
-// admin/se_sets.php3, row 123, 130
+// admin/se_sets.php, row 123, 130
 $_m["Admin - Item Sets"]
  = "";
 
-// admin/se_sets.php3, row 141
+// admin/se_sets.php, row 141
 $_m["Sets"]
  = "";
 
-// admin/se_sets.php3, row 142
+// admin/se_sets.php, row 142
 $_m["Conditions are in \"d-...\" or \"conds[]\" form - just like:<br> &nbsp; d-headline........,category.......1-BEGIN-Bio (d-&lt;fields&gt;-&lt;operator&gt;-&lt;value&gt;-&lt;fields&gt;-&lt;op...)<br> &nbsp; conds[0][category........]=first&conds[1][switch.........1]=1 (default operator is RLIKE, here!)"]
  = "";
 
-// admin/se_sets.php3, row 153
+// admin/se_sets.php, row 153
 $_m["ID"]
  = "";
 
-// admin/se_sets.php3, row 154, 159
+// admin/se_sets.php, row 154, 159
 $_m["Set name %1"]
  = "";
 
-// admin/se_sets.php3, row 154, 159
+// admin/se_sets.php, row 154, 159
 $_m["use alphanumeric characters only"]
  = "";
 
-// admin/se_sets.php3, row 155, 160
+// admin/se_sets.php, row 155, 160
 $_m["Conditions %1"]
  = "";
 
-// admin/se_sets.php3, row 155, 160
+// admin/se_sets.php, row 155, 160
 $_m["Use \"d-...\" or \"conds[]\" conditions"]
  = "";
 
-// admin/feed_to.php3, row 54
+// admin/feed_to.php, row 54
 $_m["Export Item to Selected Slice"]
  = "Exporter les items vers la section s�lectionn� ";
 
-// admin/feed_to.php3, row 59
+// admin/feed_to.php, row 59
 $_m["Export selected items to selected slice"]
  = "Exporter les items s�lectionn�s vers les sections s�lectionn�es ";
 
-// admin/feed_to.php3, row 62
-// admin/slicedit.php3, row 148
+// admin/feed_to.php, row 62
+// admin/slicedit.php, row 148
 // include/constants.php3, row 152
 // include/menu_util.php3, row 70
 // include/menu.php3, row 136
-// include/sliceadd.php3, row 55, 84
+// include/sliceadd.php, row 55, 84
 $_m["Slice"]
  = "Section";
 
-// admin/feed_to.php3, row 63
+// admin/feed_to.php, row 63
 $_m["Holding bin"]
  = "Casier de stockage";
 
-// admin/feed_to.php3, row 64
-// admin/slicedit.php3, row 42
-// admin/se_filters.php3, row 278
+// admin/feed_to.php, row 64
+// admin/slicedit.php, row 42
+// admin/se_filters.php, row 278
 // include/menu.php3, row 187, 243
 $_m["Active"]
  = "Activer";
 
-// admin/feed_to.php3, row 65
+// admin/feed_to.php, row 65
 $_m["Do not export to this slice"]
  = "Ne pas exporter cette section";
 
-// admin/feed_to.php3, row 81
+// admin/feed_to.php, row 81
 $_m["No permission to set feeding for any slice"]
  = "Pas de permission de configurer l'alimentation d'aucune section";
 
-// admin/feed_to.php3, row 84
+// admin/feed_to.php, row 84
 // include/actions.php3, row 146
 // include/menu_aa.php3, row 55
 $_m["Export"]
@@ -1950,7 +1950,7 @@ $_m["You do not have permission to edit items in the slice:"]
  = "Vous n'avez pas la permission de mettre �  jour les items dans cette section";
 
 // admin/index.php3, row 162
-// admin/se_history.php3, row 213
+// admin/se_history.php, row 213
 $_m["ActionApps - Reader Manager"]
  = "APC Action Apps - Gestionnaire des visiteurs";
 
@@ -1958,120 +1958,120 @@ $_m["ActionApps - Reader Manager"]
 $_m["ActionApps - Item Manager"]
  = "ActionApps - Gestionnaire des items";
 
-// admin/sliceimp_xml.php3, row 131
+// admin/sliceimp_xml.php, row 131
 $_m["\n"
    ."ERROR: File doesn't contain SLICEEXPORT"]
  = "ERREUR: le fichier ne contient pas SLICEEXPORT";
 
-// admin/sliceimp_xml.php3, row 146, 172, 210
+// admin/sliceimp_xml.php, row 146, 172, 210
 $_m["ERROR: Text is not OK. Check whether you copied it well from the Export."]
  = "ERREUR: le Texte n'est pas conforme.  V�rifiez s'il fut copi� correctement � partir de l'exportation";
 
-// admin/sliceimp_xml.php3, row 222
+// admin/sliceimp_xml.php, row 222
 $_m["ERROR: Unsupported version for import"]
  = "ERREUR: Version non-support�e pour l'importation";
 
-// admin/sliceimp_xml.php3, row 281
-// admin/sliceimp.php3, row 93, 140, 483
+// admin/sliceimp_xml.php, row 281
+// admin/sliceimp.php, row 93, 140, 483
 $_m["Overwrite"]
  = "Recouvrez";
 
-// admin/sliceimp_xml.php3, row 284
+// admin/sliceimp_xml.php, row 284
 $_m["<br>Overwriting view %1"]
  = "�craser la vue";
 
-// admin/sliceimp_xml.php3, row 293
-// admin/se_view.php3, row 264
+// admin/sliceimp_xml.php, row 293
+// admin/se_view.php, row 264
 $_m["Can't insert into view."]
  = "Impossible d'ins�rer dans la vue";
 
-// admin/aarsstest.php3, row 66
-// admin/rsstest.php3, row 67
+// admin/aarsstest.php, row 66
+// admin/rsstest.php, row 67
 $_m["feed"]
  = "";
 
-// admin/aarsstest.php3, row 67
-// admin/rsstest.php3, row 68
+// admin/aarsstest.php, row 67
+// admin/rsstest.php, row 68
 $_m["validate"]
  = "";
 
-// admin/aarsstest.php3, row 68
-// admin/rsstest.php3, row 69
+// admin/aarsstest.php, row 68
+// admin/rsstest.php, row 69
 $_m["show"]
  = "";
 
-// admin/aarsstest.php3, row 101, 102
+// admin/aarsstest.php, row 101, 102
 $_m["ActionApps RSS Content Exchange"]
  = "";
 
-// admin/aarsstest.php3, row 103
-// admin/rsstest.php3, row 106
+// admin/aarsstest.php, row 103
+// admin/rsstest.php, row 106
 $_m["RSS feeds testing page."]
  = "";
 
-// admin/aarsstest.php3, row 105
+// admin/aarsstest.php, row 105
 $_m["No ActionApps RSS Exchange is set."]
  = "";
 
-// admin/aarsstest.php3, row 111
-// admin/discedit.php3, row 139
-// admin/rsstest.php3, row 114
+// admin/aarsstest.php, row 111
+// admin/discedit.php, row 139
+// admin/rsstest.php, row 114
 // include/formutil.php3, row 1659
 // include/manager.class.php3, row 198
 $_m["Actions"]
  = "Action";
 
-// admin/aarsstest.php3, row 114
+// admin/aarsstest.php, row 114
 $_m["Newest Item"]
  = "";
 
-// admin/aarsstest.php3, row 115
+// admin/aarsstest.php, row 115
 $_m["change this value if you want to get older items"]
  = "";
 
-// admin/aarsstest.php3, row 118
-// admin/rsstest.php3, row 117
+// admin/aarsstest.php, row 118
+// admin/rsstest.php, row 117
 $_m["Messages"]
  = "";
 
-// admin/aarsstest.php3, row 123
-// admin/rsstest.php3, row 122
+// admin/aarsstest.php, row 123
+// admin/rsstest.php, row 122
 $_m["Write"]
  = "";
 
-// admin/aarsstest.php3, row 124
-// admin/rsstest.php3, row 123
+// admin/aarsstest.php, row 124
+// admin/rsstest.php, row 123
 $_m["update database"]
  = "";
 
-// admin/aarsstest.php3, row 129
-// admin/rsstest.php3, row 131
+// admin/aarsstest.php, row 129
+// admin/rsstest.php, row 131
 $_m["Node"]
  = "";
 
-// admin/aarsstest.php3, row 132
+// admin/aarsstest.php, row 132
 $_m["Remote slice"]
  = "";
 
-// admin/aarsstest.php3, row 135
+// admin/aarsstest.php, row 135
 $_m["Remote slice ID"]
  = "";
 
-// admin/aarsstest.php3, row 138
+// admin/aarsstest.php, row 138
 $_m["Local slice ID"]
  = "";
 
-// admin/aarsstest.php3, row 141
+// admin/aarsstest.php, row 141
 $_m["Feed mode"]
  = "";
 
-// admin/aarsstest.php3, row 146
-// admin/rsstest.php3, row 128
+// admin/aarsstest.php, row 146
+// admin/rsstest.php, row 128
 $_m["Feed url"]
  = "";
 
-// admin/se_import2.php3, row 134, 136
-// admin/se_filters2.php3, row 163
+// admin/se_import2.php, row 134, 136
+// admin/se_filters2.php, row 163
 $_m["Content Pooling update successful"]
  = "Mise en commun du contenu mis � jour avec succ�s";
 
@@ -2092,136 +2092,136 @@ $_m["You don't have permissions to synchronize slices."]
 $_m["No such command"]
  = "";
 
-// admin/se_inter_import3.php3, row 55
+// admin/se_inter_import3.php, row 55
 $_m["The import was already created"]
  = "L'importation est d�j� cr��";
 
-// admin/se_inter_import3.php3, row 116
+// admin/se_inter_import3.php, row 116
 $_m["The import was successfully created"]
  = "L'importation fut cr�� avec succ�s";
 
-// admin/slicefieldsedit.php3, row 149
+// admin/slicefieldsedit.php, row 149
 $_m["Slice Setting"]
  = "";
 
-// admin/se_history.php3, row 43
+// admin/se_history.php, row 43
 $_m["You have not permissions to view history"]
  = "";
 
-// admin/se_history.php3, row 65
-// admin/se_fields.php3, row 241
-// admin/slicedit.php3, row 150
-// admin/se_view.php3, row 391
-// admin/anonym_wizard.php3, row 209
-// admin/se_fieldid.php3, row 304
+// admin/se_history.php, row 65
+// admin/se_fields.php, row 241
+// admin/slicedit.php, row 150
+// admin/se_view.php, row 391
+// admin/anonym_wizard.php, row 209
+// admin/se_fieldid.php, row 304
 // include/constants.php3, row 363
 // include/scroller.php3, row 80
 // include/tableviews.php3, row 130, 144
 $_m["Id"]
  = "Identit�";
 
-// admin/se_history.php3, row 66
+// admin/se_history.php, row 66
 $_m["Resource ID"]
  = "";
 
-// admin/se_history.php3, row 67
-// include/fileman.php3, row 34
+// admin/se_history.php, row 67
+// include/fileman.php, row 34
 // include/widget.class.php3, row 458
 $_m["Type"]
  = "";
 
-// admin/se_history.php3, row 69
+// admin/se_history.php, row 69
 $_m["Time"]
  = "";
 
-// admin/se_history.php3, row 70
+// admin/se_history.php, row 70
 $_m["Selector"]
  = "";
 
-// admin/se_history.php3, row 71
-// admin/se_fields.php3, row 120, 242
-// admin/se_constant.php3, row 183, 415
+// admin/se_history.php, row 71
+// admin/se_fields.php, row 120, 242
+// admin/se_constant.php, row 183, 415
 // include/constants.php3, row 359
 // include/constedit.php3, row 82
 $_m["Priority"]
  = "Priorit�";
 
-// admin/se_history.php3, row 73
+// admin/se_history.php, row 73
 $_m["Value Type"]
  = "";
 
-// admin/se_history.php3, row 83
+// admin/se_history.php, row 83
 $_m["Change ID"]
  = "";
 
-// admin/se_history.php3, row 84
+// admin/se_history.php, row 84
 $_m["Field selector"]
  = "";
 
-// admin/se_history.php3, row 86
+// admin/se_history.php, row 86
 $_m["Type of value"]
  = "";
 
-// admin/se_history.php3, row 87
+// admin/se_history.php, row 87
 $_m["Time of change"]
  = "";
 
-// admin/se_history.php3, row 89
+// admin/se_history.php, row 89
 $_m["Item ID"]
  = "";
 
-// admin/discedit.php3, row 61
+// admin/discedit.php, row 61
 $_m["You don't have permissions to edit all items."]
  = "Vous n'avez pas la permission de modifier tous les items";
 
-// admin/discedit.php3, row 99
+// admin/discedit.php, row 99
 $_m["Admin - Discussion comments management"]
  = "";
 
-// admin/discedit.php3, row 104
+// admin/discedit.php, row 104
 $_m["Are you sure you want to delete selected comment?"]
  = "";
 
-// admin/discedit.php3, row 115
+// admin/discedit.php, row 115
 $_m["Discussion comments management"]
  = "Gestion des commentaires";
 
-// admin/discedit.php3, row 125
+// admin/discedit.php, row 125
 $_m["Item: "]
  = "Item";
 
-// admin/discedit.php3, row 131
-// admin/slicedit.php3, row 151
+// admin/discedit.php, row 131
+// admin/slicedit.php, row 151
 // include/modutils.php3, row 72
-// include/slicedit.php3, row 154
+// include/slicedit.php, row 154
 $_m["Title"]
  = "Titre";
 
-// admin/discedit.php3, row 135
+// admin/discedit.php, row 135
 $_m["IP Address"]
  = "";
 
-// admin/discedit.php3, row 137
+// admin/discedit.php, row 137
 // admin/discedit2.php3, row 125
 // include/widget.class.php3, row 706
 $_m["Date"]
  = "";
 
-// admin/discedit.php3, row 148
+// admin/discedit.php, row 148
 $_m["No discussion comments"]
  = "Sans commentaire";
 
-// admin/discedit.php3, row 176
+// admin/discedit.php, row 176
 $_m["Hide"]
  = "cacher";
 
-// admin/discedit.php3, row 176
+// admin/discedit.php, row 176
 $_m["Approve"]
  = "Accepter";
 
-// admin/discedit.php3, row 186
-// admin/related_sel.php3, row 202
-// admin/se_users_add.php3, row 60
+// admin/discedit.php, row 186
+// admin/related_sel.php, row 202
+// admin/se_users_add.php, row 60
 // include/util.php3, row 1383
 // include/item.php3, row 1583
 // include/msgpage.php3, row 84
@@ -2245,9 +2245,9 @@ $_m["Search form criteria"]
  = "Rechercher le formulaire de crit�res";
 
 // admin/se_search.php3, row 147, 165
-// admin/se_fields.php3, row 244
-// admin/anonym_wizard.php3, row 210
-// admin/se_views.php3, row 77
+// admin/se_fields.php, row 244
+// admin/anonym_wizard.php, row 210
+// admin/se_views.php, row 77
 $_m["Show"]
  = "Montrer";
 
@@ -2260,80 +2260,80 @@ $_m["Default settings"]
  = "Configuration par d�faut";
 
 // admin/se_search.php3, row 181
-// admin/sliceimp.php3, row 486, 521
+// admin/sliceimp.php, row 486, 521
 // admin/discedit2.php3, row 138
-// admin/se_newuser.php3, row 128
+// admin/se_newuser.php, row 128
 // include/formutil.php3, row 200, 204, 2720
 // include/widget.class.php3, row 285
 $_m["Cancel"]
  = "Abandonner";
 
-// admin/se_inter_import.php3, row 73
+// admin/se_inter_import.php, row 73
 $_m["Missing!!!"]
  = "Manquant!!!";
 
-// admin/se_inter_import.php3, row 98
+// admin/se_inter_import.php, row 98
 $_m["No selected import"]
  = "";
 
-// admin/se_inter_import.php3, row 101
+// admin/se_inter_import.php, row 101
 $_m["Are you sure you want to delete the import?"]
  = "";
 
-// admin/se_inter_import.php3, row 111
-// admin/se_nodes.php3, row 112
+// admin/se_inter_import.php, row 111
+// admin/se_nodes.php, row 112
 $_m["No selected node"]
  = "";
 
-// admin/se_inter_import.php3, row 129
+// admin/se_inter_import.php, row 129
 $_m["Create new feed from node"]
  = "Cr�er une nouvelle source d'alimentation du Noeud";
 
-// admin/se_inter_import.php3, row 134
+// admin/se_inter_import.php, row 134
 $_m["Existing remote imports into the slice"]
  = "";
 
-// admin/se_inter_import.php3, row 135
+// admin/se_inter_import.php, row 135
 $_m["Imported slices"]
  = "";
 
-// admin/se_inter_import.php3, row 135
+// admin/se_inter_import.php, row 135
 $_m["feeds prefixed by (=) are \"exact copy\" feeds"]
  = "";
 
-// admin/se_inter_import.php3, row 136
+// admin/se_inter_import.php, row 136
 $_m["All remote nodes"]
  = "Tout les noeuds distants";
 
-// admin/se_inter_import.php3, row 137
+// admin/se_inter_import.php, row 137
 $_m["Remote node"]
  = "";
 
-// admin/um_gedit.php3, row 102
-// include/um_gedit.php3, row 49
+// admin/um_gedit.php, row 102
+// include/um_gedit.php, row 49
 $_m["Group successfully added to permission system"]
  = "Groupe ajout� avec succ�s aux permission du syst�me";
 
-// admin/um_gedit.php3, row 111
+// admin/um_gedit.php, row 111
 $_m["User management - Groups"]
  = "Gestion des usagers - Groupes";
 
-// admin/um_gedit.php3, row 121
+// admin/um_gedit.php, row 121
 $_m["Are you sure you want to delete selected group from whole permission system?"]
  = "";
 
-// admin/um_gedit.php3, row 158
+// admin/um_gedit.php, row 158
 // include/menu_aa.php3, row 52
 $_m["New Group"]
  = "Nouveau groupe";
 
-// admin/um_gedit.php3, row 158
+// admin/um_gedit.php, row 158
 // include/menu_aa.php3, row 51
 $_m["Edit Group"]
  = "Modifier groupe";
 
-// admin/um_gedit.php3, row 184
-// admin/setup.php3, row 167
+// admin/um_gedit.php, row 184
+// admin/setup.php, row 167
 // include/um_gsrch.php3, row 50
 // include/constants.php3, row 360
 // include/perm_emailsql.php3, row 166, 523
@@ -2341,37 +2341,37 @@ $_m["Edit Group"]
 $_m["Group"]
  = "groupe";
 
-// admin/um_gedit.php3, row 221
+// admin/um_gedit.php, row 221
 $_m["Edit group"]
  = "Modifier groupe";
 
-// admin/um_gedit.php3, row 223
+// admin/um_gedit.php, row 223
 $_m["New group"]
  = "Nouveau groupe";
 
-// admin/um_gedit.php3, row 253
+// admin/um_gedit.php, row 253
 $_m["Group Id"]
  = "Identit� de groupe";
 
-// admin/um_gedit.php3, row 255
-// admin/se_constant.php3, row 181, 413
+// admin/um_gedit.php, row 255
+// admin/se_constant.php, row 181, 413
 // include/constants.php3, row 357
 // include/constedit.php3, row 73
-// include/um_gedit.php3, row 31
-// include/fileman.php3, row 32
+// include/um_gedit.php, row 31
+// include/fileman.php, row 32
 // include/tableviews.php3, row 131, 152
 $_m["Name"]
  = "Nom";
 
-// admin/um_gedit.php3, row 257
+// admin/um_gedit.php, row 257
 $_m["Superadmin group"]
  = "Groupe super-administrateur";
 
-// admin/um_gedit.php3, row 269
+// admin/um_gedit.php, row 269
 $_m["All Users"]
  = "tous les usagers";
 
-// admin/um_gedit.php3, row 271
+// admin/um_gedit.php, row 271
 $_m["Group's Users"]
  = "usagers groupe";
 
@@ -2410,123 +2410,123 @@ $_m["Remote Superadmin Username"]
 $_m["Remote Superadmin Password"]
  = "";
 
-// admin/um_passwd.php3, row 43
+// admin/um_passwd.php, row 43
 $_m["You have not permissions to change user data"]
  = "";
 
-// admin/um_passwd.php3, row 54, 106
+// admin/um_passwd.php, row 54, 106
 $_m["Current password"]
  = "";
 
-// admin/um_passwd.php3, row 56
+// admin/um_passwd.php, row 56
 $_m["Error in current password - pasword is not changed"]
  = "";
 
-// admin/um_passwd.php3, row 85, 92
+// admin/um_passwd.php, row 85, 92
 $_m["Change user data"]
  = "";
 
-// admin/sliceimp.php3, row 67
+// admin/sliceimp.php, row 67
 $_m["Slice_ID (%1) has wrong length (%2, should be 32)"]
  = "Identit�_section(%1) mauvaise longueur (%2, doit �tre 32)";
 
-// admin/sliceimp.php3, row 173, 178, 240, 246, 485
+// admin/sliceimp.php, row 173, 178, 240, 246, 485
 $_m["Insert with new ids"]
  = "Ins�rer avec de nouvelles identit�s";
 
-// admin/sliceimp.php3, row 305, 312
+// admin/sliceimp.php, row 305, 312
 $_m["Can't upload Import file"]
  = "Impossible de t�l�charger (recevoir) le fichier d'importation";
 
-// admin/sliceimp.php3, row 360, 372
+// admin/sliceimp.php, row 360, 372
 $_m["Import exported data (slice structure and content)"]
  = "Importer les informations export�s (structure et informations de la section)";
 
-// admin/sliceimp.php3, row 374
+// admin/sliceimp.php, row 374
 $_m["Import exported data"]
  = "Importer les informations export�s";
 
-// admin/sliceimp.php3, row 379
+// admin/sliceimp.php, row 379
 $_m["Count of imported slices: %d."]
  = "Nombre de sections import�es: %d.";
 
-// admin/sliceimp.php3, row 381, 398
+// admin/sliceimp.php, row 381, 398
 $_m["Added were:"]
  = "Ajout�es furent";
 
-// admin/sliceimp.php3, row 388, 405
+// admin/sliceimp.php, row 388, 405
 $_m["Overwritten were:"]
  = "�cras�es furent";
 
-// admin/sliceimp.php3, row 395
+// admin/sliceimp.php, row 395
 $_m["Count of imported stories: %d."]
  = "Nombre d'histoires import�es: %d.";
 
-// admin/sliceimp.php3, row 412
+// admin/sliceimp.php, row 412
 $_m["Failed were:"]
  = "�checs furent";
 
-// admin/sliceimp.php3, row 426
+// admin/sliceimp.php, row 426
 $_m["Here you can import exported data to toolkit. You can use two types of import:"]
  = "Ici, vous pouvez importer les information export�es vers le kit d'outils. Vous pouvez utiliser 2 types d'importation";
 
-// admin/sliceimp.php3, row 431
+// admin/sliceimp.php, row 431
 $_m["Slices with some of the IDs exist already. Change the IDs on the right side of the arrow.<br> Use only hexadecimal characters 0-9,a-f. If you do something wrong (wrong characters count, wrong characters, or if you change the ID on the arrow's left side), that ID will be considered unchanged.</p>"]
  = "Des sections avec certaines identit�s existent d�j�. Changer les identit�s � la droite de la fl�che. <br> Utilisez seulement des caract�res hexadecimal 0-9, a-f. Si vous faites quelques chose de mauvais (mauvais caract�re, ou si vous changez l'identit� � la gauche de la fl�che), cette identit� ne sera pas chang�e.</p>";
 
-// admin/sliceimp.php3, row 446
+// admin/sliceimp.php, row 446
 $_m["<p>Views with some of the same IDs exist already. Please edit on the right hands side of the arrow</p>"]
  = "<p>Des vues avec certains identit�s existent d�j�. Modifiez � la droite de la fl�che</p>";
 
-// admin/sliceimp.php3, row 461
+// admin/sliceimp.php, row 461
 $_m["<p>Slice content with some of the IDs exist already. Change the IDs on the right side of the arrow.<br> Use only hexadecimal characters 0-9,a-f. </p>"]
  = "<p>Le contenu de la section avec certains identit�s existent d�j�.Changez les identit�s � la droite de la fl�che<br> Utilisez seulement des caract�res hexad�cimals 0-9,a-f. </p>";
 
-// admin/sliceimp.php3, row 475
+// admin/sliceimp.php, row 475
 $_m["<p>If you choose OVERWRITE, the slices and data with unchanged ID will be overwritten and the new ones added. <br>If you choose INSERT, the slices and data with ID conflict will be ignored and the new ones added.<br>And finally, if you choose \"Insert with new ids\", slice structures gets new ids and it's content too.</p>"]
  = "<p>Si vous choisissez ECRASER, les section et information avec des identit�s non-chang�es seront �cras�es et les nouvelles ajout�es. <br>Si vous choisissez INS�RER, les sections et informations dont les identit�s sont conflictuelles seront ignor�es et les nouvelles ajout�es added.<br>Finalement, si vous choisissez \"Ins�rer avec de nouvelles identit�s\", les stuctures et informations des section auront de nouvelles identit�s.</p>";
 
-// admin/sliceimp.php3, row 494
+// admin/sliceimp.php, row 494
 $_m["1) If you have exported data in file, insert it's name here (eg. D:\\data\\apc_aa_slice.aaxml):"]
  = "Si vous avez export� des informations dans un fichier, ins�rez son nom ici ( ex: D:\\data\\apc_aa_slice.aaxml):";
 
-// admin/sliceimp.php3, row 496
+// admin/sliceimp.php, row 496
 $_m["Send file with slice structure and data"]
  = "";
 
-// admin/sliceimp.php3, row 502
+// admin/sliceimp.php, row 502
 $_m["2) If you have exported data in browser's window, insert the exported text into the textarea below:"]
  = "Si vous avez export� des informations dans la fen�tre du fereteur, ins�rer le texte export� dans la zone de texte ci-bas";
 
-// admin/sliceimp.php3, row 515
+// admin/sliceimp.php, row 515
 $_m["Here specify, what do you want to import:"]
  = "Sp�cifiez ici ce que vous souhaitez importer";
 
-// admin/sliceimp.php3, row 516
+// admin/sliceimp.php, row 516
 $_m["Import slice definition"]
  = "Importer la d�finition de la section";
 
-// admin/sliceimp.php3, row 517
+// admin/sliceimp.php, row 517
 $_m["Import slice items"]
  = "Importer les items de la sections";
 
-// admin/sliceimp.php3, row 518
+// admin/sliceimp.php, row 518
 $_m["Import into this slice - whatever file says"]
  = "Importez dans cette section - quoi que dise le fichier";
 
-// admin/sliceimp.php3, row 520
+// admin/sliceimp.php, row 520
 $_m["Send the slice structure and data"]
  = "Envoyer la structure et les informations de la section";
 
-// admin/rsstest.php3, row 104, 105
+// admin/rsstest.php, row 104, 105
 $_m["RSS Feed import test"]
  = "";
 
-// admin/rsstest.php3, row 108
+// admin/rsstest.php, row 108
 $_m["No RSS Feeds set."]
  = "";
 
-// admin/rsstest.php3, row 134
+// admin/rsstest.php, row 134
 $_m["Local slice"]
  = "";
 
@@ -2575,607 +2575,607 @@ $_m["Free 1"]
 $_m["Reset form"]
  = "Effacer le formulaire";
 
-// admin/se_compact.php3, row 42
+// admin/se_compact.php, row 42
 $_m["You have not permissions to change compact view formatting"]
  = "Vous n'avez pas la permission de changer le format de vue rapide";
 
-// admin/se_compact.php3, row 56, 203
+// admin/se_compact.php, row 56, 203
 // include/constants.php3, row 506, 548, 615, 647, 674, 736, 787, 819
 $_m["Odd Rows"]
  = "Colonnes impaires";
 
-// admin/se_compact.php3, row 60, 235
+// admin/se_compact.php, row 60, 235
 $_m["'No item found' message"]
  = "Message 'Aucun item trouv�'";
 
-// admin/se_compact.php3, row 62, 207
+// admin/se_compact.php, row 62, 207
 // include/constants.php3, row 508, 616, 738, 789, 821
 $_m["Even Rows"]
  = "Colonnes paires";
 
-// admin/se_compact.php3, row 65, 224
+// admin/se_compact.php, row 65, 224
 $_m["Category top HTML"]
  = "Cat�gorie Top HTML";
 
-// admin/se_compact.php3, row 66, 227
+// admin/se_compact.php, row 66, 227
 $_m["Category Headline"]
  = "Cat�gorie manchette";
 
-// admin/se_compact.php3, row 67, 230
+// admin/se_compact.php, row 67, 230
 $_m["Category bottom HTML"]
  = "Cat�gorie HTML final";
 
-// admin/se_compact.php3, row 99
+// admin/se_compact.php, row 99
 $_m["Design of compact design successfully changed"]
  = "Conception du design compact chang� avec succes";
 
-// admin/se_compact.php3, row 142, 181
-// admin/se_newuser.php3, row 93
+// admin/se_compact.php, row 142, 181
+// admin/se_newuser.php, row 93
 $_m["Admin - design Index view"]
  = "Administration - Conception de la vue de l'index";
 
-// admin/se_compact.php3, row 181
+// admin/se_compact.php, row 181
 $_m["Use these boxes ( and the tags listed below ) to control what appears on summary page"]
  = "Utiliser ces bo�tes ( et les labels list�s au bas) pour contr�ler ce qui appara�t sur la page du sommaire";
 
-// admin/se_compact.php3, row 195
+// admin/se_compact.php, row 195
 $_m["HTML code for index view"]
  = "Code HTML pour la vue de l'index";
 
-// admin/se_compact.php3, row 206
+// admin/se_compact.php, row 206
 // include/constants.php3, row 507, 641, 737, 788, 820
 $_m["Use different HTML code for even rows"]
  = "Utiliser diff�rents codes HTML pour les colonnes paires";
 
-// admin/se_compact.php3, row 208
+// admin/se_compact.php, row 208
 $_m["You can define different code for odd and ever rows\n"
    ."                         <br>first red, second black, for example"]
  = "Vous pouvez d�finir diff�rents codes pour les colonnes paires et impaires\n"
    ."                         <br>Par exemple les 1eres rouges et les 2emes noires.";
 
-// admin/se_compact.php3, row 213
+// admin/se_compact.php, row 213
 // include/constants.php3, row 522, 625, 746, 797, 829
 $_m["Group by"]
  = "Grouper par";
 
-// admin/se_compact.php3, row 218
-// admin/se_view.php3, row 165
+// admin/se_compact.php, row 218
+// admin/se_view.php, row 165
 $_m["Whole text"]
  = "Tout le texte";
 
-// admin/se_compact.php3, row 218
-// admin/se_view.php3, row 165
+// admin/se_compact.php, row 218
+// admin/se_view.php, row 165
 $_m["1st letter"]
  = "1ere lettre";
 
-// admin/se_compact.php3, row 218, 218
-// admin/se_view.php3, row 165, 165
+// admin/se_compact.php, row 218, 218
+// admin/se_view.php, row 165, 165
 $_m["letters"]
  = "lettres";
 
-// admin/se_compact.php3, row 219
-// admin/se_view.php3, row 155
+// admin/se_compact.php, row 219
+// admin/se_view.php, row 155
 $_m["Ascending by Priority"]
  = "Croissant par priorit�";
 
-// admin/se_compact.php3, row 219
-// admin/se_view.php3, row 155
+// admin/se_compact.php, row 219
+// admin/se_view.php, row 155
 $_m["Descending by Priority"]
  = "D�croissant par priorit�";
 
-// admin/se_compact.php3, row 221
+// admin/se_compact.php, row 221
 $_m["'by Priority' is usable just for fields using constants (like category)"]
  = "'Par priorit�'utile seulement pour les champs de valeurs constantes (comme cat�gorie)";
 
-// admin/se_compact.php3, row 236
+// admin/se_compact.php, row 236
 $_m["message to show in place of slice.php3, if no item matches the query"]
  = "Message � pr�senter � la place de slice.php3, si aucun item n'est trouv� par la requ�te";
 
-// admin/se_newuser.php3, row 61
-// admin/setup.php3, row 247
+// admin/se_newuser.php, row 61
+// admin/setup.php, row 247
 // include/um_util.php3, row 318
 $_m["Retyped password is not the same as the first one"]
  = "Le second mot de passe retap� est diff�rent du premier";
 
-// admin/se_newuser.php3, row 79
-// admin/setup.php3, row 273
+// admin/se_newuser.php, row 79
+// admin/setup.php, row 273
 // include/um_util.php3, row 352
 $_m["It is impossible to add user to permission system"]
  = "Impossible d'ajouter des utilisateurs aux permissions du syst�me";
 
-// admin/se_newuser.php3, row 101
+// admin/se_newuser.php, row 101
 $_m["New user in permission system"]
  = "Nouvel utilisateur dans le syst�me de permission";
 
-// admin/related_sel.php3, row 134
+// admin/related_sel.php, row 134
 $_m["Editor window - item manager, related selection window"]
  = "Fen�tre de l'�diteur ";
 
-// admin/slicedel.php3, row 40
-// admin/slicedel2.php3, row 40, 44
+// admin/slicedel.php, row 40
+// admin/slicedel2.php, row 40, 44
 $_m["You don't have permissions to delete slice."]
  = "Vous n'avez pas de permission de supprimer la section";
 
-// admin/slicedel.php3, row 66, 84
+// admin/slicedel.php, row 66, 84
 $_m["Admin - Delete Slice"]
  = "Administration - supprimer la section";
 
-// admin/slicedel.php3, row 69
+// admin/slicedel.php, row 69
 $_m["Do you really want to delete this slice and all its fields and all its items?"]
  = "";
 
-// admin/slicedel.php3, row 93
-// admin/fileman.php3, row 177
+// admin/slicedel.php, row 93
+// admin/fileman.php, row 177
 $_m["Delete selected"]
  = "Supprimer la s� lection";
 
-// admin/slicedel.php3, row 99
+// admin/slicedel.php, row 99
 $_m["Select slice to delete"]
  = "S�lectionner la section � supprimer";
 
-// admin/slicedel.php3, row 100
+// admin/slicedel.php, row 100
 $_m["Slices to show"]
  = "";
 
-// admin/slicedel.php3, row 100
+// admin/slicedel.php, row 100
 $_m["Marked as \"Deleted\""]
  = "";
 
-// admin/slicedel.php3, row 101
+// admin/slicedel.php, row 101
 $_m["This option allows you to display all the slices and delete them, so be careful!"]
  = "";
 
-// admin/slicedel.php3, row 103
+// admin/slicedel.php, row 103
 $_m["Slices to delete"]
  = "";
 
-// admin/slicedel.php3, row 118
+// admin/slicedel.php, row 118
 $_m["No slice marked for deletion"]
  = "Aucune section marqu�e pour destruction";
 
-// admin/slicewiz.php3, row 53, 56
+// admin/slicewiz.php, row 53, 56
 $_m["Add Slice Wizard"]
  = "Ajouter l'assistant de section";
 
-// admin/slicewiz.php3, row 66
+// admin/slicewiz.php, row 66
 $_m["Copy Views"]
  = "Copier les vues";
 
-// admin/slicewiz.php3, row 67
+// admin/slicewiz.php, row 67
 $_m["Categories/Constants"]
  = "Cat�gorie/valeurs constantes";
 
-// admin/slicewiz.php3, row 68
+// admin/slicewiz.php, row 68
 $_m["Share with Template"]
  = "Partager avec le mod�le";
 
-// admin/slicewiz.php3, row 68
+// admin/slicewiz.php, row 68
 $_m["Copy from Template"]
  = "Copier le mod�le";
 
-// admin/slicewiz.php3, row 77
+// admin/slicewiz.php, row 77
 $_m["[Optional] Create New User"]
  = "[OptionelCr�er nouvel usager]";
 
-// admin/slicewiz.php3, row 80
+// admin/slicewiz.php, row 80
 $_m["Level of Access"]
  = "Niveau d'acc�s";
 
-// admin/slicewiz.php3, row 81
+// admin/slicewiz.php, row 81
 // include/constants.php3, row 974
 $_m["Slice Administrator"]
  = "Administrateur de section";
 
-// admin/slicewiz.php3, row 92
+// admin/slicewiz.php, row 92
 $_m["Do Not Email Welcome"]
  = "PAs de courriel de bienvenue";
 
-// admin/slicewiz.php3, row 94
+// admin/slicewiz.php, row 94
 $_m["Email Welcome"]
  = "Courriel de bienvenue";
 
-// admin/slicewiz.php3, row 104
+// admin/slicewiz.php, row 104
 $_m["Go: Add Slice"]
  = "Allez: Ajouter section";
 
-// admin/se_fields.php3, row 213
+// admin/se_fields.php, row 213
 $_m["Do you really want to delete this field from this slice?"]
  = "";
 
-// admin/se_fields.php3, row 237
-// admin/anonym_wizard.php3, row 204
-// admin/se_fieldid.php3, row 290
+// admin/se_fields.php, row 237
+// admin/anonym_wizard.php, row 204
+// admin/se_fieldid.php, row 290
 // include/menu.php3, row 138
 // include/searchlib.php3, row 123
 $_m["Fields"]
  = "Champs";
 
-// admin/se_fields.php3, row 243
+// admin/se_fields.php, row 243
 $_m["Required"]
  = "Requis";
 
-// admin/se_fields.php3, row 246
+// admin/se_fields.php, row 246
 $_m["Aliases"]
  = "Alias";
 
-// admin/se_fulltext.php3, row 43
+// admin/se_fulltext.php, row 43
 $_m["You have not permissions to change fulltext formatting"]
  = "Vous n'avez pas la permission de changer le format texte";
 
-// admin/se_fulltext.php3, row 55, 143
+// admin/se_fulltext.php, row 55, 143
 $_m["Top HTML code"]
  = "Code HTML du d�but";
 
-// admin/se_fulltext.php3, row 56, 146
+// admin/se_fulltext.php, row 56, 146
 $_m["Fulltext HTML code"]
  = "Code HTML texte";
 
-// admin/se_fulltext.php3, row 57, 149
+// admin/se_fulltext.php, row 57, 149
 $_m["Bottom HTML code"]
  = "Code HTML du bas";
 
-// admin/se_fulltext.php3, row 88
+// admin/se_fulltext.php, row 88
 $_m["Fulltext format update successful"]
  = "Format texte mis � jour avec succ�s";
 
-// admin/se_fulltext.php3, row 112, 128
+// admin/se_fulltext.php, row 112, 128
 $_m["Admin - design Fulltext view"]
  = "Administration - Concevoir la vue texte";
 
-// admin/se_fulltext.php3, row 128
+// admin/se_fulltext.php, row 128
 $_m["Use these boxes ( with the tags listed below ) to control what appears on full text view of each item"]
  = "Utiliser ces boites (avec les labels ci-bas ) pour controler la vue texte des chaque item";
 
-// admin/se_fulltext.php3, row 142
+// admin/se_fulltext.php, row 142
 $_m["HTML code for fulltext view"]
  = "Code HTML pour la vue texte";
 
-// admin/se_fulltext.php3, row 155
+// admin/se_fulltext.php, row 155
 $_m["The template for dicsussion you can set on \"Design\" -> \"View\" page"]
  = "";
 
-// admin/se_fulltext.php3, row 156
+// admin/se_fulltext.php, row 156
 $_m["Use HTML tags"]
  = "Utiliser les labels HTML";
 
-// admin/se_notify.php3, row 83
-// include/slicedit.php3, row 85
+// admin/se_notify.php, row 83
+// include/slicedit.php, row 85
 $_m["You have not permissions to edit this slice"]
  = "Vous n'avez pas la permission de modifier cette section";
 
-// admin/se_notify.php3, row 187, 191, 204
+// admin/se_notify.php, row 187, 191, 204
 $_m["Email Notifications of Events"]
  = "Notification d'�v�nement par courriel";
 
-// admin/se_notify.php3, row 217
+// admin/se_notify.php, row 217
 $_m["<h4>New Item in Holding Bin</h4> People can be notified by email when an item is created and put into the Holding Bin.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive."]
  = "<h4>Nouvel item dans le casier de stockage</h4> On peut recevoir un courriel quand un item est cr�� et mis dans le casier de stockage. Pour utiliser cette fonction, entrer le courriel ci-bas. Il est possible d'adapter le format du courriel dans les champs suivants. ";
 
-// admin/se_notify.php3, row 218, 223, 228, 233
+// admin/se_notify.php, row 218, 223, 228, 233
 $_m["Email addresses, one per line"]
  = "Courriels, une adresse par ligne";
 
-// admin/se_notify.php3, row 219, 224, 229, 234
+// admin/se_notify.php, row 219, 224, 229, 234
 $_m["Subject of the Email message"]
  = "Sujet du courriel";
 
-// admin/se_notify.php3, row 220, 225, 230, 235
+// admin/se_notify.php, row 220, 225, 230, 235
 $_m["Body of the Email message"]
  = "Corps du message";
 
-// admin/se_notify.php3, row 222
+// admin/se_notify.php, row 222
 $_m["<h4>Item Changed in Holding Bin</h4>  People can be notified by email when an item in the Holding Bin is modified.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive."]
  = "<h4>Item chang� dans le casier de stockage</h4> On peut recevoir un courriel quand un item est chang�. Pour utiliser cette fonction, entrer le courriel ci-bas. Il est possible d'adapter le format du courriel dans les champs suivants. ";
 
-// admin/se_notify.php3, row 227
+// admin/se_notify.php, row 227
 $_m["<h4>New Item in Approved Bin</h4>  People can be notified by email when an item is created and put into the Approved Bin.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive."]
  = "<h4>Nouvel item dans le casier approuv�</h4> On peut recevoir un courriel quand un item est cr�� et mis dans le casier approuv�. Pour utiliser cette foonction, entrer le courriel ci-bas. Il est possible d'adapter le format du courriel dans les champs suivants. ";
 
-// admin/se_notify.php3, row 232
+// admin/se_notify.php, row 232
 $_m["<h4>Item Changed in Approved Bin</h4>  People can be notified by email when an item in the Approved Bin is modified.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive."]
  = "<h4>Nouvel item dans le casier approuv�</h4> On peut recevoir un courriel quand un item est cr�� et mis dans le casier approuv�. Pour utiliser cette foonction, entrer le courriel ci-bas. Il est possible d'adapter le format du courriel dans les champs suivants. ";
 
-// admin/slicedit.php3, row 41, 46
+// admin/slicedit.php, row 41, 46
 $_m["Not allowed"]
  = "Interdit";
 
-// admin/slicedit.php3, row 43
+// admin/slicedit.php, row 43
 // include/menu.php3, row 190, 244
 $_m["Hold bin"]
  = "Casier de stockage";
 
-// admin/slicedit.php3, row 47
+// admin/slicedit.php, row 47
 // include/formutil.php3, row 3014
 $_m["All items"]
  = "Tous les items";
 
-// admin/slicedit.php3, row 48
+// admin/slicedit.php, row 48
 $_m["Only items posted anonymously"]
  = "Seulement les items post�s anonymement";
 
-// admin/slicedit.php3, row 49
+// admin/slicedit.php, row 49
 $_m["-\"- and not edited in AA"]
  = "-\"- et non �dit� dans AA";
 
-// admin/slicedit.php3, row 50
+// admin/slicedit.php, row 50
 $_m["Authorized by a password field"]
  = "Autoris� par le champ mot de passe";
 
-// admin/slicedit.php3, row 51
+// admin/slicedit.php, row 51
 $_m["Readers, authorized by HTTP auth"]
  = "lecteurs, autoris�s par HTTP";
 
-// admin/slicedit.php3, row 115
+// admin/slicedit.php, row 115
 // include/modutils.php3, row 147
 $_m["Select owner"]
  = "S�lectionner Ma�tre";
 
-// admin/slicedit.php3, row 128
-// admin/sliceadd.php3, row 60
-// admin/se_import.php3, row 86
+// admin/slicedit.php, row 128
+// admin/sliceadd.php, row 60
+// admin/se_import.php, row 86
 // include/menu.php3, row 88
 $_m["Slice Administration"]
  = "Administration de la section";
 
-// admin/slicedit.php3, row 134
-// admin/setup.php3, row 289
+// admin/slicedit.php, row 134
+// admin/setup.php, row 289
 $_m["Add Slice"]
  = "Ajouter une section";
 
-// admin/slicedit.php3, row 134
+// admin/slicedit.php, row 134
 $_m["Admin - Slice settings"]
  = "Administration - Configuration de section";
 
-// admin/slicedit.php3, row 152
+// admin/slicedit.php, row 152
 // include/modutils.php3, row 74
-// include/slicedit.php3, row 156
+// include/slicedit.php, row 156
 $_m["URL of .shtml page (often leave blank)"]
  = "URL de la page .shtml (souvent vide)";
 
-// admin/slicedit.php3, row 153
-// include/slicedit.php3, row 158
+// admin/slicedit.php, row 153
+// include/slicedit.php, row 158
 $_m["Priority (order in slice-menu)"]
  = "";
 
-// admin/slicedit.php3, row 155
-// admin/se_view.php3, row 459
-// admin/se_views.php3, row 193
+// admin/slicedit.php, row 155
+// admin/se_view.php, row 459
+// admin/se_views.php, row 193
 $_m["<br>To include slice in your webpage type next line \n"
    ."                         to your shtml code: "]
  = "<br>Pour inclure la section dans votre page Web, tapez � la ligne suivante \n"
    ."                         dans le code shtml: ";
 
-// admin/slicedit.php3, row 160
+// admin/slicedit.php, row 160
 // include/modutils.php3, row 73
 // include/tv_email.php3, row 138
-// include/slicedit.php3, row 155
+// include/slicedit.php, row 155
 $_m["Owner"]
  = "Ma�tre";
 
-// admin/slicedit.php3, row 162
+// admin/slicedit.php, row 162
 // include/modutils.php3, row 42
-// include/slicedit.php3, row 134
+// include/slicedit.php, row 134
 $_m["New Owner"]
  = "Nouveau ma�tre";
 
-// admin/slicedit.php3, row 163
+// admin/slicedit.php, row 163
 // include/modutils.php3, row 43
-// include/slicedit.php3, row 135
+// include/slicedit.php, row 135
 $_m["New Owner's E-mail"]
  = "Courriel du nouveau ma�tre";
 
-// admin/slicedit.php3, row 165
+// admin/slicedit.php, row 165
 // include/constants.php3, row 539, 639, 662, 689, 720, 779, 811, 843
-// include/slicedit.php3, row 159
+// include/slicedit.php, row 159
 $_m["Listing length"]
  = "liste des longueurs";
 
-// admin/slicedit.php3, row 168
+// admin/slicedit.php, row 168
 $_m["Deleted"]
  = "Supprim�e";
 
-// admin/slicedit.php3, row 170
-// include/slicedit.php3, row 160
+// admin/slicedit.php, row 170
+// include/slicedit.php, row 160
 $_m["Allow anonymous posting of items"]
  = "Permettre l'envoi anonyme d'item";
 
-// admin/slicedit.php3, row 171
-// include/slicedit.php3, row 161
+// admin/slicedit.php, row 171
+// include/slicedit.php, row 161
 $_m["Allow anonymous editing of items"]
  = "Permettre d'�dition anonyme des items";
 
-// admin/slicedit.php3, row 172
-// include/slicedit.php3, row 162
+// admin/slicedit.php, row 172
+// include/slicedit.php, row 162
 $_m["Allow off-line item filling"]
  = "Permettre le remplissage offline des items ";
 
-// admin/slicedit.php3, row 173
+// admin/slicedit.php, row 173
 $_m["Language"]
  = "Langue";
 
-// admin/slicedit.php3, row 178
+// admin/slicedit.php, row 178
 $_m["MLX Control Slice for"]
  = "";
 
-// admin/slicedit.php3, row 180
+// admin/slicedit.php, row 180
 $_m["MLX: Language Control Slice"]
  = "";
 
-// admin/slicedit.php3, row 185
-// include/slicedit.php3, row 167
+// admin/slicedit.php, row 185
+// include/slicedit.php, row 167
 $_m["File Manager Access"]
  = "Acc�s au Gestionnaire de fichiers";
 
-// admin/slicedit.php3, row 186
-// include/slicedit.php3, row 168
+// admin/slicedit.php, row 186
+// include/slicedit.php, row 168
 $_m["File Manager Directory"]
  = "R�pertoire du Gestionnaire de fichiers";
 
-// admin/slicedit.php3, row 195
+// admin/slicedit.php, row 195
 $_m["Auth Group Field"]
  = "Champs de groupe d'auteurs";
 
-// admin/slicedit.php3, row 196
+// admin/slicedit.php, row 196
 $_m["Mailman Lists Field"]
  = "Champ de liste Mailman";
 
-// admin/slicedit.php3, row 199
+// admin/slicedit.php, row 199
 $_m["Password for Reading"]
  = "Mot de passe pour lecture";
 
-// admin/se_view.php3, row 66
+// admin/se_view.php, row 66
 $_m["Group by selections"]
  = "Groupez par s�lection ";
 
-// admin/se_view.php3, row 69
+// admin/se_view.php, row 69
 $_m["Yes. Write sort[] to the conds[] field for each Selection."]
  = "Oui. Ecrivez dans le champs sort[] to the conds[] pour chaque s�lection ";
 
-// admin/se_view.php3, row 72
+// admin/se_view.php, row 72
 $_m["No. Use this sort[]:"]
  = "Non.  Utilisez ce tri[]:";
 
-// admin/se_view.php3, row 87
+// admin/se_view.php, row 87
 $_m["Alerts Selection"]
  = "Alerte s�lection ";
 
-// admin/se_view.php3, row 92
+// admin/se_view.php, row 92
 $_m["If you need more selections, use 'Update' and on next Edit two empty boxes appear."]
  = "Si vous souhaitez faire plus de s�lection, Utilisez 'Mise � jour' et deux nouveaux champs appara�tront ";
 
-// admin/se_view.php3, row 219
-// admin/se_views.php3, row 40
+// admin/se_view.php, row 219
+// admin/se_views.php, row 40
 $_m["You do not have permission to change views"]
  = "Vous n'avez pas la permission de changer les vues";
 
-// admin/se_view.php3, row 281
+// admin/se_view.php, row 281
 $_m["View successfully changed"]
  = "vue chang�e avec succ�s ";
 
-// admin/se_view.php3, row 350, 376
-// admin/se_views.php3, row 91, 118
+// admin/se_view.php, row 350, 376
+// admin/se_views.php, row 91, 118
 $_m["Admin - design View"]
  = "Administration - d�finir la vue";
 
-// admin/se_view.php3, row 388
-// admin/se_views.php3, row 124
+// admin/se_view.php, row 388
+// admin/se_views.php, row 124
 $_m["Defined Views"]
  = "vues d�finies";
 
-// admin/se_view.php3, row 391
-// admin/se_views.php3, row 77
+// admin/se_view.php, row 391
+// admin/se_views.php, row 77
 $_m["show this view"]
  = "";
 
-// admin/aa_optimize.php3, row 33
+// admin/aa_optimize.php, row 33
 $_m["You don't have permissions to do optimize tests."]
  = "";
 
-// admin/aa_optimize.php3, row 79, 91
+// admin/aa_optimize.php, row 79, 91
 $_m["Admin - Optimize a Repair ActionApps"]
  = "";
 
-// admin/aa_optimize.php3, row 102
+// admin/aa_optimize.php, row 102
 $_m["Optimalizations"]
  = "";
 
-// admin/se_mapping2.php3, row 112
+// admin/se_mapping2.php, row 112
 $_m["Fields' mapping update succesful"]
  = "Rep�rage des champs mis � jour avec succ�s";
 
-// admin/se_rssfeeds.php3, row 113, 165, 172
+// admin/se_rssfeeds.php, row 113, 165, 172
 $_m["Remote RSS Feed administration"]
  = "Services �loign� de s�lection de routes pour l'alimentation";
 
-// admin/se_rssfeeds.php3, row 133
+// admin/se_rssfeeds.php, row 133
 $_m["No selected rssfeed"]
  = "";
 
-// admin/se_rssfeeds.php3, row 136
+// admin/se_rssfeeds.php, row 136
 $_m["Are you sure you want to delete the rssfeed?"]
  = "";
 
-// admin/se_rssfeeds.php3, row 149
+// admin/se_rssfeeds.php, row 149
 $_m["Error: RSS node empty"]
  = "";
 
-// admin/se_rssfeeds.php3, row 174
+// admin/se_rssfeeds.php, row 174
 $_m["Current remote rssfeeds"]
  = "Services courants de s�lection de routes pour l'alimentation";
 
-// admin/se_rssfeeds.php3, row 190
+// admin/se_rssfeeds.php, row 190
 $_m["Map"]
  = "";
 
-// admin/se_rssfeeds.php3, row 193
+// admin/se_rssfeeds.php, row 193
 $_m["Add new rssfeed"]
  = "Ajouter un Services s�lection de routes pour l'alimentation";
 
-// admin/se_rssfeeds.php3, row 193
+// admin/se_rssfeeds.php, row 193
 $_m["Edit rssfeed data"]
  = "Modifier les informations du Services s�lection de routes";
 
-// admin/se_rssfeeds.php3, row 195
+// admin/se_rssfeeds.php, row 195
 $_m["RSS Feed name"]
  = "Nom du Services s�lection de routes";
 
-// admin/se_rssfeeds.php3, row 196
+// admin/se_rssfeeds.php, row 196
 $_m["New rssfeed name"]
  = "Nouveau Services s�lection de routes";
 
-// admin/se_rssfeeds.php3, row 197
+// admin/se_rssfeeds.php, row 197
 $_m["URL of the feed"]
  = "URL du Services s�lection de routes";
 
-// admin/se_rssfeeds.php3, row 198
+// admin/se_rssfeeds.php, row 198
 $_m["e.g. https://www.someplace.com/rss/index.xml"]
  = "ex: http://www.quelquepart.com/rss/index.xml";
 
-// admin/slicedel2.php3, row 63
+// admin/slicedel2.php, row 63
 $_m["Slice successfully deleted, tables are optimized"]
  = "Section supprim�e.  tables optimis�es";
 
-// admin/sliceadd.php3, row 63
+// admin/sliceadd.php, row 63
 $_m["Create New Slice / Module"]
  = "Cr�er nouvelle section / module";
 
-// admin/sliceadd.php3, row 79
+// admin/sliceadd.php, row 79
 $_m["Modules"]
  = "module";
 
-// admin/aafinder.php3, row 43
-// admin/console.php3, row 36
-// include/slicedit.php3, row 90
-// include/sliceadd.php3, row 35
+// admin/aafinder.php, row 43
+// admin/console.php, row 36
+// include/slicedit.php, row 90
+// include/sliceadd.php, row 35
 $_m["You have not permissions to add slice"]
  = "Vous n'avez pas la permission d'ajouter des sections";
 
-// admin/aafinder.php3, row 49, 51, 186
+// admin/aafinder.php, row 49, 51, 186
 // include/menu_aa.php3, row 71
 $_m["AA finder"]
  = "Localisateur AA";
 
-// admin/aafinder.php3, row 128
+// admin/aafinder.php, row 128
 $_m["Jump"]
  = "Sautez";
 
-// admin/aafinder.php3, row 189
+// admin/aafinder.php, row 189
 $_m["Find all VIEWS containing in any field the string:"]
  = "Trouver toutes les pr� sentations contenant, dans n'importe quel champ, la ligne suivante";
 
-// admin/aafinder.php3, row 191, 197, 203, 209
+// admin/aafinder.php, row 191, 197, 203, 209
 $_m["Go!"]
  = "Allez";
 
-// admin/aafinder.php3, row 195
+// admin/aafinder.php, row 195
 $_m["Find all SLICES containing in any field the string:"]
  = "Trouvez toutes les section contenant, dns n'importe quel champ, la ligne suivante";
 
-// admin/aafinder.php3, row 201
+// admin/aafinder.php, row 201
 $_m["Find all FIELDS containing in ites definition the string:"]
  = "";
 
-// admin/aafinder.php3, row 207
+// admin/aafinder.php, row 207
 $_m["Get all informations about the item"]
  = "";
 
@@ -3183,464 +3183,464 @@ $_m["Get all informations about the item"]
 $_m["Administrative view"]
  = "";
 
-// admin/se_constant_import.php3, row 57, 114
-// admin/se_constant.php3, row 189, 348
+// admin/se_constant_import.php, row 57, 114
+// admin/se_constant.php, row 189, 348
 // include/constants.php3, row 620
 $_m["Constant Group"]
  = "Groupe de valeurs constantes";
 
-// admin/se_constant_import.php3, row 65
+// admin/se_constant_import.php, row 65
 // include/constedit_util.php3, row 612
 $_m["No constants specified"]
  = "";
 
-// admin/se_constant_import.php3, row 86
-// admin/se_constant.php3, row 280
+// admin/se_constant_import.php, row 86
+// admin/se_constant.php, row 280
 $_m["Constants update successful"]
  = "Valeurs constantes mises � jour avec succ�s";
 
-// admin/se_constant_import.php3, row 95, 102
+// admin/se_constant_import.php, row 95, 102
 $_m["Admin - Constants Import"]
  = "";
 
-// admin/se_constant_import.php3, row 121
+// admin/se_constant_import.php, row 121
 $_m["Name - Value delimiter"]
  = "";
 
-// admin/se_constant_import.php3, row 122
+// admin/se_constant_import.php, row 122
 $_m["write each constant to new row in form <name><delimiter><value> (or just <name> if the values should be the same as names)"]
  = "";
 
-// admin/fileman.php3, row 56
+// admin/fileman.php, row 56
 $_m["No permissions for file manager."]
  = "Pas de permission pour le Gestionnaire de fichiers";
 
-// admin/fileman.php3, row 62
+// admin/fileman.php, row 62
 $_m["Unable to run File Manager"]
  = "Incapable de d�marrer le Gestionnaire de fichiers";
 
-// admin/fileman.php3, row 63
+// admin/fileman.php, row 63
 $_m["doesn't exist"]
  = "N'existe pas";
 
-// admin/fileman.php3, row 71
+// admin/fileman.php, row 71
 $_m["Unable to mkdir"]
  = "Incapable de mkdir";
 
-// admin/fileman.php3, row 99, 105
+// admin/fileman.php, row 99, 105
 // include/filedit.php3, row 69, 75
 // include/menu.php3, row 167
 $_m["File Manager"]
  = "Gestionnaire de fichiers";
 
-// admin/fileman.php3, row 106
-// include/fileman.php3, row 111, 123
+// admin/fileman.php, row 106
+// include/fileman.php, row 111, 123
 $_m["Directory"]
  = "R� pertoire";
 
-// admin/fileman.php3, row 176
+// admin/fileman.php, row 176
 $_m["Unselect all"]
  = "D� -s� lectionner tout";
 
-// admin/fileman.php3, row 220
+// admin/fileman.php, row 220
 $_m["Create new file"]
  = "Cr� er un nouveau fichier";
 
-// admin/fileman.php3, row 223
+// admin/fileman.php, row 223
 $_m["Upload file"]
  = "T�l�charger le fichier";
 
-// admin/fileman.php3, row 232
+// admin/fileman.php, row 232
 $_m["Copy template dir"]
  = "Copier le mod�le dir";
 
-// admin/fileman.php3, row 235
+// admin/fileman.php, row 235
 $_m["Create new directory"]
  = "Cr� er un nouveau r� pertoire";
 
-// admin/search_replace.php3, row 230
+// admin/search_replace.php, row 230
 $_m["Fill by value"]
  = "";
 
-// admin/search_replace.php3, row 236
+// admin/search_replace.php, row 236
 $_m["Returns single value (not multivalue) which is created as result of AA expression specified in Expression. You can use any AA expressions like {ifset:{_#HEADLINE}:...}, ..."]
  = "";
 
-// admin/search_replace.php3, row 263, 336, 420, 571
+// admin/search_replace.php, row 263, 336, 420, 571
 // include/formutil.php3, row 1153, 1170
 $_m["Plain text"]
  = "texte";
 
-// admin/search_replace.php3, row 264, 337, 421
+// admin/search_replace.php, row 264, 337, 421
 $_m["As for other values of this field"]
  = "";
 
-// admin/search_replace.php3, row 272, 345, 430, 580
+// admin/search_replace.php, row 272, 345, 430, 580
 $_m["Mark as"]
  = "";
 
-// admin/search_replace.php3, row 273, 346
+// admin/search_replace.php, row 273, 346
 $_m["New content"]
  = "";
 
-// admin/search_replace.php3, row 274, 347, 432
+// admin/search_replace.php, row 274, 347, 432
 $_m["You can use also aliases, so the content \"&lt;i&gt;{abstract........}&lt;/i&gt;&lt;br&gt;{full_text......1}\" is perfectly OK"]
  = "";
 
-// admin/search_replace.php3, row 304
+// admin/search_replace.php, row 304
 $_m["Add value to field"]
  = "";
 
-// admin/search_replace.php3, row 310
+// admin/search_replace.php, row 310
 $_m["Add new value to current content of field, so the field becames multivalue.<br>You can use any AA expressions like {ifset:{_#HEADLINE}:...}, ... for new value."]
  = "";
 
-// admin/search_replace.php3, row 376
+// admin/search_replace.php, row 376
 $_m["Divide the text to multiple values"]
  = "";
 
-// admin/search_replace.php3, row 384
+// admin/search_replace.php, row 384
 $_m["Parses the input text and looks for the delimiter. Separates the parts and store them as multiple values to destination field"]
  = "";
 
-// admin/search_replace.php3, row 431
+// admin/search_replace.php, row 431
 $_m["Source text"]
  = "";
 
-// admin/search_replace.php3, row 433
+// admin/search_replace.php, row 433
 $_m["Delimiter"]
  = "";
 
-// admin/search_replace.php3, row 500
+// admin/search_replace.php, row 500
 $_m["Translate"]
  = "";
 
-// admin/search_replace.php3, row 506
+// admin/search_replace.php, row 506
 $_m["Translates one value after other according to translation table. The result is multivalue, since each value of multivalue field is translated seperately."]
  = "";
 
-// admin/search_replace.php3, row 515
+// admin/search_replace.php, row 515
 $_m["No translations specified."]
  = "";
 
-// admin/search_replace.php3, row 572
+// admin/search_replace.php, row 572
 $_m["Unchanged"]
  = "";
 
-// admin/search_replace.php3, row 581
+// admin/search_replace.php, row 581
 $_m["Translations"]
  = "";
 
-// admin/search_replace.php3, row 582
+// admin/search_replace.php, row 582
 $_m["Each translation on new line, translations separated by colon : (escape character for colon is #:).<br>You can use also aliases in the translation. There is also special alias _#0, which contain matching text - following translation is perfectly OK:<br><code> Bio:&lt;img src=\"_#0.jpg\"&gt; ({publish_date....})</code><br>You can also use Regular Expressions - in such case the line would be \"<code>:regexp:<regular expression>:<output></code>\". You can use _#0 alias in <output>, which contains whole matching text.<br>Sometimes you want to remove specific value. In such case use <code>AA_NULL</code> text as translated text:<br> <code>Bio:AA_NULL</code><br>You may want also create more than one value from a value. Then separate the values by colon:<br> <code>Bio:Environment:Ecology</code> (\"Bio\" is replaced by two values). You can use any number of values here."]
  = "";
 
-// admin/search_replace.php3, row 605, 635
+// admin/search_replace.php, row 605, 635
 $_m["Copy field"]
  = "";
 
-// admin/search_replace.php3, row 611, 636
+// admin/search_replace.php, row 611, 636
 $_m["If you select the field here, the \"New content\" text is not used. Selected field will be copied to the \"Field\" (including multivalues)"]
  = "";
 
-// admin/search_replace.php3, row 619
+// admin/search_replace.php, row 619
 $_m["Source or destination field is not specified."]
  = "";
 
-// admin/search_replace.php3, row 699
+// admin/search_replace.php, row 699
 $_m["Items selected: %1, Items sucessfully updated: %2"]
  = "";
 
-// admin/search_replace.php3, row 716, 722
+// admin/search_replace.php, row 716, 722
 $_m["Modify items"]
  = "";
 
-// admin/search_replace.php3, row 739
+// admin/search_replace.php, row 739
 $_m["Select field..."]
  = "";
 
-// admin/search_replace.php3, row 755
+// admin/search_replace.php, row 755
 $_m["Items"]
  = "";
 
-// admin/search_replace.php3, row 757
+// admin/search_replace.php, row 757
 $_m["View items"]
  = "";
 
-// admin/search_replace.php3, row 758
+// admin/search_replace.php, row 758
 // include/manager.class.php3, row 590
 $_m["Selected items"]
  = "Item s�lectionn�";
 
-// admin/search_replace.php3, row 763
+// admin/search_replace.php, row 763
 $_m["Be very carefull with this. Changes in some fields (Status Code, Publish Date, Slice ID, ...) could be very crucial for your item's data. There is no data validity check - what you will type will be written to the database.<br>You should also know there is no UNDO operation (at least now)."]
  = "";
 
-// admin/search_replace.php3, row 765
-// admin/se_csv_import2.php3, row 355
+// admin/search_replace.php, row 765
+// admin/se_csv_import2.php, row 355
 $_m["Action"]
  = "";
 
-// admin/search_replace.php3, row 767
+// admin/search_replace.php, row 767
 $_m["Fill"]
  = "";
 
-// admin/se_csv_import.php3, row 70
+// admin/se_csv_import.php, row 70
 $_m["You have not permissions to import files"]
  = "Vous n'avez pas les permissions d'importer des fichiers";
 
-// admin/se_csv_import.php3, row 75
+// admin/se_csv_import.php, row 75
 $_m["Missing slice"]
  = "Section manquante";
 
-// admin/se_csv_import.php3, row 109
+// admin/se_csv_import.php, row 109
 $_m["Cannot read input url"]
  = "";
 
-// admin/se_csv_import.php3, row 142
-// admin/se_csv_import2.php3, row 476
+// admin/se_csv_import.php, row 142
+// admin/se_csv_import2.php, row 476
 $_m["Admin - Import .CSV file"]
  = "Administration - importer le fichier .CVS";
 
-// admin/se_csv_import.php3, row 154
+// admin/se_csv_import.php, row 154
 $_m["Admin - Import CSV (1/2) - Source data"]
  = "Administration - importer le CVS (1/2)  - information d'alimentation";
 
-// admin/se_csv_import.php3, row 160
+// admin/se_csv_import.php, row 160
 $_m["Cannot open a file for preview"]
  = "Impossible d'ouvrir le fichier de pr�-visualisation";
 
-// admin/se_csv_import.php3, row 162
+// admin/se_csv_import.php, row 162
 $_m["File preview"]
  = "Fichier de pr�-visualisation";
 
-// admin/se_csv_import.php3, row 195
+// admin/se_csv_import.php, row 195
 $_m["CSV format settings"]
  = "Configuration de format CVS";
 
-// admin/se_csv_import.php3, row 214, 218
+// admin/se_csv_import.php, row 214, 218
 // include/filedit.php3, row 75
 $_m["File"]
  = "Dossier";
 
-// admin/se_csv_import.php3, row 215, 219
+// admin/se_csv_import.php, row 215, 219
 // include/widget.class.php3, row 1281
 $_m["URL"]
  = "";
 
-// admin/se_csv_import.php3, row 228
+// admin/se_csv_import.php, row 228
 $_m["Source of CSV data"]
  = "Alimentation des informations CSV";
 
-// admin/se_csv_import.php3, row 251
-// admin/se_csv_import2.php3, row 332
+// admin/se_csv_import.php, row 251
+// admin/se_csv_import2.php, row 332
 // include/actions.php3, row 387
 $_m["Preview"]
  = "Aper�u";
 
-// admin/se_csv_import.php3, row 252
+// admin/se_csv_import.php, row 252
 // include/easy_scroller.php3, row 164, 290
 $_m["Next"]
  = "Suivant";
 
-// admin/usershow.php3, row 93
+// admin/usershow.php, row 93
 $_m["Show selected users"]
  = "Montrer les usagers s�lectionn�s";
 
-// admin/se_constant.php3, row 51
+// admin/se_constant.php, row 51
 $_m["You have not permissions to change category settings"]
  = "Vous n'avez pas la permission de changer les configurations des cat�gories";
 
-// admin/se_constant.php3, row 79
+// admin/se_constant.php, row 79
 $_m["You have not permissions to change fields settings for the slice owning this group"]
  = "Vous n'avez pas la permission de changer les configurations des champs pour la section poss�dant ce groupe";
 
-// admin/se_constant.php3, row 163
+// admin/se_constant.php, row 163
 $_m[" items changed to new value "]
  = "Items chang�s pour la nouvelle valeur";
 
-// admin/se_constant.php3, row 196
+// admin/se_constant.php, row 196
 // include/constedit_util.php3, row 608
 $_m["This constant group already exists"]
  = "Ce groupe de valeurs constantes existe d�j�";
 
-// admin/se_constant.php3, row 291
+// admin/se_constant.php, row 291
 $_m["No category field defined in this slice.<br>Add category field to this slice first (see Field page)."]
  = "Aucun champs de cat�gorie d�fini dans cette section.<br> Ajouter d'abord un champs de cat�gorie (voir la page des champs). ";
 
-// admin/se_constant.php3, row 311, 318
+// admin/se_constant.php, row 311, 318
 $_m["Admin - Constants Setting"]
  = "Administration - Configuration des valeurs constantes";
 
-// admin/se_constant.php3, row 325
+// admin/se_constant.php, row 325
 $_m["Delete whole group"]
  = "Supprimer tout le groupe";
 
-// admin/se_constant.php3, row 356
+// admin/se_constant.php, row 356
 $_m["Import Constants..."]
  = "";
 
-// admin/se_constant.php3, row 372
+// admin/se_constant.php, row 372
 $_m["Constants used in slice"]
  = "Valeurs constantes utilis�es dans la section";
 
-// admin/se_constant.php3, row 387
+// admin/se_constant.php, row 387
 $_m["Constant group owner - slice"]
  = "Ma�tre du groupe des valeurs constantes - section";
 
-// admin/se_constant.php3, row 391
+// admin/se_constant.php, row 391
 $_m["Whoever first updates values becomes owner."]
  = "Est ma�tre celui qui le premier met � jour les valeurs";
 
-// admin/se_constant.php3, row 403
+// admin/se_constant.php, row 403
 $_m["Change owner"]
  = "Changer le ma�tre";
 
-// admin/se_constant.php3, row 409
+// admin/se_constant.php, row 409
 $_m["Propagate changes into current items"]
  = "Propager les changements dans les items courants";
 
-// admin/se_constant.php3, row 411
+// admin/se_constant.php, row 411
 $_m["Edit in Hierarchical editor (allows to create constant hierarchy)"]
  = "Editer par l'�diteur hi�rarchique (permet de cr�er une hi�rarchie de valeurs constantes";
 
-// admin/se_constant.php3, row 413
+// admin/se_constant.php, row 413
 // include/constedit.php3, row 73
 $_m["shown&nbsp;on&nbsp;inputpage"]
  = "";
 
-// admin/se_constant.php3, row 414
+// admin/se_constant.php, row 414
 // include/constedit.php3, row 76
 $_m["stored&nbsp;in&nbsp;database"]
  = "";
 
-// admin/se_constant.php3, row 415
+// admin/se_constant.php, row 415
 // include/constedit.php3, row 82
 $_m["constant&nbsp;order"]
  = "";
 
-// admin/se_constant.php3, row 416
-// include/fileman.php3, row 112, 121
+// admin/se_constant.php, row 416
+// include/fileman.php, row 112, 121
 $_m["Parent"]
  = "";
 
-// admin/se_constant.php3, row 416
+// admin/se_constant.php, row 416
 $_m["categories&nbsp;only"]
  = "";
 
-// admin/se_constant.php3, row 448
+// admin/se_constant.php, row 448
 $_m["Are you sure you want to PERMANENTLY DELETE this group?"]
  = "";
 
-// admin/se_filters2.php3, row 89
+// admin/se_filters2.php, row 89
 // include/csn_util.php3, row 95
 $_m["Other categories"]
  = "";
 
-// admin/anonym_wizard.php3, row 64
+// admin/anonym_wizard.php, row 64
 $_m["ActionApps Anonymous form"]
  = "";
 
-// admin/anonym_wizard.php3, row 65
+// admin/anonym_wizard.php, row 65
 $_m["Note: If you are using HTMLArea editor in your form, you have to add: %1 to your page.  -->"]
  = "";
 
-// admin/anonym_wizard.php3, row 142
+// admin/anonym_wizard.php, row 142
 $_m["WARNING: You did not permit anonymous posting in slice settings."]
  = "ATTENTION: Vous n'avez pas permis les envois anonymes dans les configurations de la section";
 
-// admin/anonym_wizard.php3, row 145
+// admin/anonym_wizard.php, row 145
 $_m["WARNING: You did not permit anonymous editing in slice settings. A form allowing only anonymous posting will be shown."]
  = "";
 
-// admin/anonym_wizard.php3, row 153
+// admin/anonym_wizard.php, row 153
 $_m["WARNING: You want to show password, but you did not set 'Authorized by a password field' in Settings - Anonymous editing."]
  = "";
 
-// admin/anonym_wizard.php3, row 179, 185
+// admin/anonym_wizard.php, row 179, 185
 $_m["Admin - Anonymous Form Wizard"]
  = "Administration - Assistant de formulaire anonyme";
 
-// admin/anonym_wizard.php3, row 191
+// admin/anonym_wizard.php, row 191
 $_m["Show Form"]
  = "Montrer le formulaire";
 
-// admin/anonym_wizard.php3, row 198
+// admin/anonym_wizard.php, row 198
 $_m["Help"]
  = "Assistance";
 
-// admin/anonym_wizard.php3, row 198
+// admin/anonym_wizard.php, row 198
 $_m["Help - Documentation"]
  = "Assistance - Documentation";
 
-// admin/anonym_wizard.php3, row 199
+// admin/anonym_wizard.php, row 199
 $_m["URLs shown after the form was sent"]
  = "URL montr� apr�s l'envoi du formulaire";
 
-// admin/anonym_wizard.php3, row 200
+// admin/anonym_wizard.php, row 200
 $_m["OK page"]
  = "Page OK";
 
-// admin/anonym_wizard.php3, row 201
+// admin/anonym_wizard.php, row 201
 $_m["Error page"]
  = "Page d'erreur";
 
-// admin/anonym_wizard.php3, row 202
+// admin/anonym_wizard.php, row 202
 $_m["Use a PHP script to show the result on the OK and Error pages:"]
  = "Utiliser un script PHP pour montrer les r�sultats sur les pages d'erreurs et OK";
 
-// admin/anonym_wizard.php3, row 211
+// admin/anonym_wizard.php, row 211
 $_m["Field Id in Form"]
  = "Champ d'identit� dans le formulaire";
 
-// admin/anonym_wizard.php3, row 235
+// admin/anonym_wizard.php, row 235
 $_m["Only fields marked as \"Show\" on the \"Fields\" page\n"
    ."         are offered on this page."]
  = "Seulement les champs marqu�s \"Montrer\" sur les \"champs\" page\n"
    ."         sont pr�sent�s sur cette page.";
 
-// admin/se_views.php3, row 57
+// admin/se_views.php, row 57
 $_m["View successfully deleted"]
  = "Visualisation supprim�e avec succ�s";
 
-// admin/se_views.php3, row 80
+// admin/se_views.php, row 80
 $_m["Are you sure you want to delete selected view?"]
  = "";
 
-// admin/se_views.php3, row 144
+// admin/se_views.php, row 144
 $_m["Create new view"]
  = "Cr�er nouvelle visualisation";
 
-// admin/se_views.php3, row 147
+// admin/se_views.php, row 147
 $_m["by&nbsp;type:"]
  = "";
 
-// admin/se_views.php3, row 154, 174
+// admin/se_views.php, row 154, 174
 // include/formutil.php3, row 1608, 1615
 $_m["New"]
  = "Nouveau";
 
-// admin/se_views.php3, row 159
+// admin/se_views.php, row 159
 $_m["by&nbsp;template:"]
  = "by&nbsp;template";
 
-// admin/se_fieldid.php3, row 215
+// admin/se_fieldid.php, row 215
 $_m["This ID is reserved"]
  = "Cette identit� est r�serv�";
 
-// admin/se_fieldid.php3, row 221
+// admin/se_fieldid.php, row 221
 $_m["This ID is already used"]
  = "Cette identit� existe d�j�";
 
-// admin/se_fieldid.php3, row 240, 247, 256
+// admin/se_fieldid.php, row 240, 247, 256
 $_m["Admin - change Field IDs"]
  = "Administration - Changer les identit�s des champs";
 
-// admin/se_fieldid.php3, row 251
+// admin/se_fieldid.php, row 251
 $_m["field IDs were changed"]
  = "Identit�s des champs chang�es";
 
-// admin/se_fieldid.php3, row 258
+// admin/se_fieldid.php, row 258
 $_m["This page allows to change field IDs. It is a bit dangerous operation and may last long.\n"
    ."    You need to do it only in special cases, like using search form for multiple slices. <br><br>\n"
    ."    Choose a field ID to be changed and the new name and number, the dots ..... will be\n"
@@ -3650,7 +3650,7 @@ $_m["This page allows to change field IDs. It is a bit dangerous operation and m
    ."    Choisisez une identit� de champs � changer puis ses nouveaux nom et chiffre, les points ..... seront\n"
    ."    ajout�s automatiquement.<br>";
 
-// admin/se_fieldid.php3, row 259
+// admin/se_fieldid.php, row 259
 $_m["Change from"]
  = "Changer de";
 
@@ -3662,267 +3662,267 @@ $_m["Select destination ActionApps"]
 $_m["The list is taken from config.php3 file of ActionApps"]
  = "";
 
-// admin/se_csv_import2.php3, row 144
+// admin/se_csv_import2.php, row 144
 $_m["You have not permissions to setting "]
  = "Vous n'avez pas les permissiones de configuration";
 
-// admin/se_csv_import2.php3, row 155
+// admin/se_csv_import2.php, row 155
 $_m["Invalid additional parameters for import"]
  = "Param�tres additionnaux invalides pour l'importation";
 
-// admin/se_csv_import2.php3, row 219
+// admin/se_csv_import2.php, row 219
 $_m["Item:"]
  = "Item";
 
-// admin/se_csv_import2.php3, row 225
+// admin/se_csv_import2.php, row 225
 $_m["Cannot store item to DB"]
  = "impossible de ranger l'item dans la base de donn�es";
 
-// admin/se_csv_import2.php3, row 230
+// admin/se_csv_import2.php, row 230
 $_m["Transformation error:"]
  = "Erreur de transformation";
 
-// admin/se_csv_import2.php3, row 232
+// admin/se_csv_import2.php, row 232
 $_m["Ok: Item %1 stored"]
  = "";
 
-// admin/se_csv_import2.php3, row 248
+// admin/se_csv_import2.php, row 248
 // include/files.class.php3, row 282
 $_m["Ok : file deleted "]
  = "Ok : fichier supprim�";
 
-// admin/se_csv_import2.php3, row 250
+// admin/se_csv_import2.php, row 250
 // include/files.class.php3, row 284
 $_m["Error: Cannot delete file"]
  = "ERREUR: Impossible de supprimer le fichier";
 
-// admin/se_csv_import2.php3, row 254
+// admin/se_csv_import2.php, row 254
 $_m["Added to slice"]
  = "Ajout� � la section";
 
-// admin/se_csv_import2.php3, row 281
+// admin/se_csv_import2.php, row 281
 $_m["Mapping preview"]
  = "Pr�-visualisation du rep�rage";
 
-// admin/se_csv_import2.php3, row 335
+// admin/se_csv_import2.php, row 335
 $_m["Finish"]
  = "";
 
-// admin/se_csv_import2.php3, row 338
+// admin/se_csv_import2.php, row 338
 $_m["Save"]
  = "";
 
-// admin/se_csv_import2.php3, row 341
+// admin/se_csv_import2.php, row 341
 $_m["Load"]
  = "";
 
-// admin/se_csv_import2.php3, row 350
+// admin/se_csv_import2.php, row 350
 $_m["Mapping settings"]
  = "Configuration du rep�rage";
 
-// admin/se_csv_import2.php3, row 356
+// admin/se_csv_import2.php, row 356
 $_m["Html"]
  = "";
 
-// admin/se_csv_import2.php3, row 357
+// admin/se_csv_import2.php, row 357
 $_m["Action parameters"]
  = "Param�tres d'action";
 
-// admin/se_csv_import2.php3, row 358
+// admin/se_csv_import2.php, row 358
 $_m["Parameter wizard"]
  = "Assistant param�tre";
 
-// admin/se_csv_import2.php3, row 378
+// admin/se_csv_import2.php, row 378
 $_m["Import options"]
  = "";
 
-// admin/se_csv_import2.php3, row 389
+// admin/se_csv_import2.php, row 389
 $_m["Map item id from"]
  = "Rep�rer l'identit� de l'item de";
 
-// admin/se_csv_import2.php3, row 392
+// admin/se_csv_import2.php, row 392
 $_m["unpacked long id (pack_id)"]
  = "";
 
-// admin/se_csv_import2.php3, row 393
+// admin/se_csv_import2.php, row 393
 $_m["packed long id (store)"]
  = "";
 
-// admin/se_csv_import2.php3, row 394
+// admin/se_csv_import2.php, row 394
 $_m["string to be converted (string2id) - with param:"]
  = "";
 
-// admin/se_csv_import2.php3, row 402
+// admin/se_csv_import2.php, row 402
 $_m["Select, how to store the items"]
  = "";
 
-// admin/se_csv_import2.php3, row 403
+// admin/se_csv_import2.php, row 403
 $_m["Do not store the item"]
  = "Ne pas ranger l'item";
 
-// admin/se_csv_import2.php3, row 404
+// admin/se_csv_import2.php, row 404
 $_m["Store the item with new id"]
  = "Ranger l'item avec une nouvelle identit�";
 
-// admin/se_csv_import2.php3, row 405
+// admin/se_csv_import2.php, row 405
 $_m["Update the item (overwrite)"]
  = "";
 
-// admin/se_csv_import2.php3, row 406
+// admin/se_csv_import2.php, row 406
 $_m["Add the values in paralel to current values (the multivalues are stored, where possible)"]
  = "";
 
-// admin/se_csv_import2.php3, row 407
+// admin/se_csv_import2.php, row 407
 $_m["Rewrite only the fields, for which the action is defined"]
  = "";
 
-// admin/se_csv_import2.php3, row 409
+// admin/se_csv_import2.php, row 409
 $_m["If the item id is already in the slice"]
  = "";
 
-// admin/se_csv_import2.php3, row 410
+// admin/se_csv_import2.php, row 410
 $_m["Data source"]
  = "";
 
-// admin/se_csv_import2.php3, row 411
+// admin/se_csv_import2.php, row 411
 $_m["Source"]
  = "";
 
-// admin/se_csv_import2.php3, row 413
+// admin/se_csv_import2.php, row 413
 $_m["Store settings..."]
  = "";
 
-// admin/se_csv_import2.php3, row 419
+// admin/se_csv_import2.php, row 419
 $_m["Load setting"]
  = "";
 
-// admin/se_csv_import2.php3, row 421
+// admin/se_csv_import2.php, row 421
 $_m["Save setting as"]
  = "";
 
-// admin/se_csv_import2.php3, row 424
+// admin/se_csv_import2.php, row 424
 $_m["Upload periodicaly"]
  = "";
 
-// admin/se_csv_import2.php3, row 504
+// admin/se_csv_import2.php, row 504
 $_m["Admin - Import CSV (2/2) - Mapping and Actions"]
  = "Administration - Importer le CSV (2/2) - Rep�rage et Action";
 
-// admin/se_nodes.php3, row 39
+// admin/se_nodes.php, row 39
 $_m["You have not permissions to manage nodes"]
  = "Vous n'avez pas les permission de g�rer les noeuds";
 
-// admin/se_nodes.php3, row 93, 145, 156
+// admin/se_nodes.php, row 93, 145, 156
 $_m["Remote node administration"]
  = "Administration des noeuds distants";
 
-// admin/se_nodes.php3, row 115
+// admin/se_nodes.php, row 115
 $_m["Are you sure you want to delete the node?"]
  = "";
 
-// admin/se_nodes.php3, row 126
+// admin/se_nodes.php, row 126
 $_m["Node empty"]
  = "";
 
-// admin/se_nodes.php3, row 158
+// admin/se_nodes.php, row 158
 $_m["Known remote nodes"]
  = "Noeuds distants connus";
 
-// admin/se_nodes.php3, row 178
+// admin/se_nodes.php, row 178
 $_m["Add new node"]
  = "Ajouter de nouveaux noeuds";
 
-// admin/se_nodes.php3, row 178
+// admin/se_nodes.php, row 178
 $_m["Edit node data"]
  = "Editer les informations du noeud";
 
-// admin/se_nodes.php3, row 181
+// admin/se_nodes.php, row 181
 $_m["Node name"]
  = "Nom du noeud";
 
-// admin/se_nodes.php3, row 182
+// admin/se_nodes.php, row 182
 $_m["Your node name"]
  = "Nom de votre noeud";
 
-// admin/se_nodes.php3, row 183
+// admin/se_nodes.php, row 183
 $_m["URL of the getxml.php3"]
  = "URL de getxml.php3";
 
-// admin/se_nodes.php3, row 184
+// admin/se_nodes.php, row 184
 $_m["Your getxml is"]
  = "Votre getxml est";
 
-// admin/se_filters.php3, row 95
+// admin/se_filters.php, row 95
 $_m["-- The same --"]
  = "-- Le m�me --";
 
-// admin/se_filters.php3, row 152, 251
+// admin/se_filters.php, row 152, 251
 $_m["Admin - Content Pooling - Filters"]
  = "Administration - mise en commun du contenu - Filtre";
 
-// admin/se_filters.php3, row 225
+// admin/se_filters.php, row 225
 $_m["No From category selected!"]
  = "";
 
-// admin/se_filters.php3, row 264
+// admin/se_filters.php, row 264
 $_m["Content Pooling - Configure Filters"]
  = "Mise en commun du contenu - Filtre";
 
-// admin/se_filters.php3, row 267
+// admin/se_filters.php, row 267
 $_m["Filter for imported slice"]
  = "Filtre pour section import�e";
 
-// admin/se_filters.php3, row 271
+// admin/se_filters.php, row 271
 $_m["Categories"]
  = "Cat�gories";
 
-// admin/se_filters.php3, row 289
+// admin/se_filters.php, row 289
 $_m["All Categories"]
  = "Toutes les cat�gories";
 
-// admin/se_filters.php3, row 296, 319
+// admin/se_filters.php, row 296, 319
 $_m["No category defined"]
  = "Pas de cat�gories d�finie";
 
-// admin/se_filters.php3, row 355, 355
+// admin/se_filters.php, row 355, 355
 // include/manager.class.php3, row 585
 $_m["Select all"]
  = "S�lectionner tout";
 
-// admin/setup.php3, row 66, 69
+// admin/setup.php, row 66, 69
 $_m["AA Setup"]
  = "Configuation AA";
 
-// admin/setup.php3, row 75
+// admin/setup.php, row 75
 $_m["This script can't be used on a configured system."]
  = "Ce script ne peut pas �tre utilis� sur un syst�me configur�.";
 
-// admin/setup.php3, row 103, 240
+// admin/setup.php, row 103, 240
 // include/formutil.php3, row 1944
 $_m["Retype Password"]
  = "Retapez le mot de passe";
 
-// admin/setup.php3, row 105, 243
+// admin/setup.php, row 105, 243
 $_m["Last name"]
  = "Nom";
 
-// admin/setup.php3, row 122
+// admin/setup.php, row 122
 $_m["Welcome! Use this script to create the superadmin account.<p>If you are installing a new copy of AA, press <b>Init</b>.<br>"]
  = "Utilisez ce script pour cr�er un compte super-administrateur.<p>Si vous installez une nouvelle copie de AA, faites <b>Initialiser</b>.<br> ";
 
-// admin/setup.php3, row 123
+// admin/setup.php, row 123
 $_m["If you deleted your superadmin account by mistake, press <b>Recover</b>.<br>"]
  = "Si vous avez supprim� votre compte super-administrateur par erreur, faites <b>R�tablir</b>.<br>";
 
-// admin/setup.php3, row 127, 191
+// admin/setup.php, row 127, 191
 $_m[" Init "]
  = "Initialiser";
 
-// admin/setup.php3, row 128, 205
+// admin/setup.php, row 128, 205
 $_m["Recover"]
  = "R�tablir";
 
-// admin/setup.php3, row 154
+// admin/setup.php, row 154
 $_m["Database is not configured correctly or the database is empty.<br>\n"
    ."             Check please the database credentials in <b>include/config.php3</b>\n"
    ."             file <br>or run <a href=\"../sql_update.php3\">sql_update.php3</a> script,\n"
@@ -3932,102 +3932,102 @@ $_m["Database is not configured correctly or the database is empty.<br>\n"
    ."             fichier <br>ou ex�cute <a href=\"../sql_update.php3\">sql_update.php3</a> script,\n"
    ."             pour cr��er des tables AA.";
 
-// admin/setup.php3, row 200
+// admin/setup.php, row 200
 $_m["Can't add primary permission object.<br>Please check the access settings to your permission system.<br>If you just deleted your superadmin account, use <b>Recover</b>"]
  = "Impossible de cr�er des permissions primaires.<br>V�rifier les configurations d'acc�s dans votre syst�me de permissions. <br> Si vous venez de supprimer votre compte de super-administrateur, faites <b>R�tablir</b>";
 
-// admin/setup.php3, row 215
+// admin/setup.php, row 215
 $_m["Can't delete invalid permission."]
  = "Impossible de supprimer une permission invalide";
 
-// admin/setup.php3, row 217
+// admin/setup.php, row 217
 $_m["Invalid permission deleted (no such user/group): "]
  = "Permission invalide supprim�e";
 
-// admin/setup.php3, row 286
+// admin/setup.php, row 286
 $_m["Congratulations! The account was created."]
  = "F�licitations! Le compte est cr��";
 
-// admin/setup.php3, row 288
+// admin/setup.php, row 288
 $_m["Use this account to login and add your first slice:"]
  = "Utilisez ce compte pour vous connecter et ajouter votre premi�re section";
 
-// admin/setup.php3, row 292
+// admin/setup.php, row 292
 $_m["Can't assign super access permission."]
  = "Impossible d'assigner les permissions de super-accc�s.";
 
-// admin/se_users_add.php3, row 65
+// admin/se_users_add.php, row 65
 $_m["Search user or group"]
  = "Recherche usager ou groupe";
 
-// admin/se_users_add.php3, row 82
+// admin/se_users_add.php, row 82
 // include/um_util.php3, row 118
 $_m["Assign new permissions"]
  = "Assignez de nouvelles permissions";
 
-// admin/se_users_add.php3, row 119
+// admin/se_users_add.php, row 119
 $_m["Try to be more specific."]
  = "Soyez plus pr�cis";
 
-// admin/se_users_add.php3, row 140
+// admin/se_users_add.php, row 140
 $_m["List is limitted to %1 users.<br>If some user is not in list, try to be more specific in your query"]
  = "la liste est limit�e � %1 usagers. <br> Si des usagers ne sont pas dans la liste, soyez plus pr�cis dans la requ�te. ";
 
-// admin/se_import.php3, row 122
+// admin/se_import.php, row 122
 $_m["Admin - configure Content Pooling"]
  = "Adminstration - Configurer la mise en commun de contenu";
 
-// admin/se_import.php3, row 133
+// admin/se_import.php, row 133
 $_m["Enable export to slice:"]
  = "Permettre d'exporter vers la section";
 
-// admin/se_import.php3, row 136
+// admin/se_import.php, row 136
 $_m["Export disable"]
  = "Exportation interdite";
 
-// admin/se_import.php3, row 138
+// admin/se_import.php, row 138
 $_m["Export enable"]
  = "Exportation permise";
 
-// admin/se_import.php3, row 172
+// admin/se_import.php, row 172
 $_m["Enable export to any slice"]
  = "Exportation permise vers n'importe quelle sections";
 
-// admin/se_import.php3, row 174
+// admin/se_import.php, row 174
 $_m["Currently exported to"]
  = "";
 
-// admin/se_import.php3, row 177
+// admin/se_import.php, row 177
 $_m["Wrong export (non existant slice!):"]
  = "";
 
-// admin/se_import.php3, row 182
+// admin/se_import.php, row 182
 $_m["Import from slice:"]
  = "Importer de la section";
 
-// admin/se_import.php3, row 191
+// admin/se_import.php, row 191
 $_m["Do not import"]
  = "Ne pas importer";
 
-// admin/se_import.php3, row 193
+// admin/se_import.php, row 193
 // include/menu_aa.php3, row 56
 $_m["Import"]
  = "Importer";
 
-// admin/console.php3, row 40
-$_m["comment out following \"exit;\" line in admin/console.php3"]
+// admin/console.php, row 40
+$_m["comment out following \"exit;\" line in admin/console.php"]
  = "";
 
-// admin/console.php3, row 45
+// admin/console.php, row 45
 $_m["ActionApps onsole"]
  = "";
 
-// admin/console.php3, row 48
+// admin/console.php, row 48
 $_m["ActionApps Cosole"]
  = "";
 
-// admin/se_taskmanager.php3, row 40
-$_m["You do not have permission to manage ActioApps tasks"]
+// admin/se_taskmanager.php, row 40
+$_m["You do not have permission to manage ActionApps tasks"]
  = "";
 
 // central/synchronize.php, row 39, 47
@@ -4088,7 +4088,7 @@ $_m["Central - Copy Slice (1/2) - Select Source ActionApps"]
  = "";
 
 // central/index.php3, row 62
-$_m["You do not have permission to manage ActioApps instalations"]
+$_m["You do not have permission to manage ActionApps instalations"]
  = "";
 
 // central/index.php3, row 135
@@ -4099,7 +4099,7 @@ $_m["sql_upadte NOW!"]
 $_m["ActionApps Central"]
  = "";
 
-// central/tabledit.php3, row 61, 63
+// central/tabledit.php, row 61, 63
 $_m["ActionApps Central - Edit"]
  = "";
 
@@ -4641,59 +4641,59 @@ $_m["Duplicated ID - skiped (%1 - %2)"]
 $_m["StoreItem for slice %1 - failed parameter check for id = '%2'"]
  = "";
 
-// include/tabledit.php3, row 263
+// include/tabledit.php, row 263
 $_m["No record matches your search condition."]
  = "recherche sans r�sultat";
 
-// include/tabledit.php3, row 396
+// include/tabledit.php, row 396
 $_m["order ascending"]
  = "ordre ascendant";
 
-// include/tabledit.php3, row 397
+// include/tabledit.php, row 397
 $_m["order descending"]
  = "ordre descendant";
 
-// include/tabledit.php3, row 478
+// include/tabledit.php, row 478
 $_m["Nothing to be shown."]
  = "Rien � montrer";
 
-// include/tabledit.php3, row 580
+// include/tabledit.php, row 580
 $_m["search"]
  = "Recherche";
 
-// include/tabledit.php3, row 699, 797
+// include/tabledit.php, row 699, 797
 $_m["edit"]
  = "Modifier";
 
-// include/tabledit.php3, row 803
+// include/tabledit.php, row 803
 $_m["add"]
  = "Ajouter";
 
-// include/tabledit.php3, row 809, 817
+// include/tabledit.php, row 809, 817
 $_m["delete"]
  = "Supprimer";
 
-// include/tabledit.php3, row 817, 830
+// include/tabledit.php, row 817, 830
 $_m["insert"]
  = "ins�rer";
 
-// include/tabledit.php3, row 824
+// include/tabledit.php, row 824
 $_m["delete checked"]
  = "Supprimer les choix";
 
-// include/tabledit.php3, row 830
+// include/tabledit.php, row 830
 $_m["update"]
  = "Mettre � jour";
 
-// include/tabledit.php3, row 836
+// include/tabledit.php, row 836
 $_m["update all"]
  = "Tout mettre � jour";
 
-// include/tabledit.php3, row 842
+// include/tabledit.php, row 842
 $_m["browse"]
  = "Parcourir";
 
-// include/tabledit.php3, row 906
+// include/tabledit.php, row 906
 $_m["Are you sure you want to permanently DELETE all the checked records?"]
  = "�tes vous certains de vouloir supprimer tous les enregistrements choisis";
 
@@ -4828,7 +4828,7 @@ $_m["Select one..."]
  = "S�lectionner un";
 
 // include/modutils.php3, row 75
-// include/slicedit.php3, row 163
+// include/slicedit.php, row 163
 $_m["Used Language File"]
  = "Fichier de langue utilis�";
 
@@ -5207,11 +5207,11 @@ $_m["Please try again!"]
 $_m["If you are sure you have typed the correct password, please e-mail <a href=mailto:%1>%1</a>."]
  = "Si vous n'�tes pas certain d'avoir le bon mot de passe, envoyez un courriel � <a href=mailto:%1>%1</a>";
 
-// include/um_gedit.php3, row 43
+// include/um_gedit.php, row 43
 $_m["It is impossible to add group to permission system"]
  = "Il est impossible d'ajouter des groupes aux permissions du syst�me";
 
-// include/um_gedit.php3, row 55
+// include/um_gedit.php, row 55
 $_m["Can't change group"]
  = "Incapable de changer le groupe";
 
@@ -5550,17 +5550,17 @@ $_m["Rename to"]
  = "Renommer �";
 
 // include/filedit.php3, row 96
-// include/fileman.php3, row 110, 465
+// include/fileman.php, row 110, 465
 $_m["Text file"]
  = "fichier texte";
 
 // include/filedit.php3, row 96
-// include/fileman.php3, row 108
+// include/fileman.php, row 108
 $_m["Web file"]
  = "fichier Web";
 
 // include/filedit.php3, row 96
-// include/fileman.php3, row 107, 465
+// include/fileman.php, row 107, 465
 $_m["HTML file"]
  = "Fichier HTML";
 
@@ -5577,7 +5577,7 @@ $_m["File content"]
  = "Fichier de contenu";
 
 // include/filedit.php3, row 151
-// include/fileman.php3, row 109
+// include/fileman.php, row 109
 $_m["Image file"]
  = "fichier image";
 
@@ -5601,39 +5601,39 @@ $_m["Select Category "]
 $_m["All categories"]
  = "Toute les categories";
 
-// include/slicedit.php3, row 48
+// include/slicedit.php, row 48
 $_m["User not found"]
  = "Usager non trouv�";
 
-// include/slicedit.php3, row 65
+// include/slicedit.php, row 65
 $_m["Slice not found."]
  = "Section non trouv�e";
 
-// include/slicedit.php3, row 79
+// include/slicedit.php, row 79
 $_m["Error mailing"]
  = "Erreur en envoyant le(les) courriel";
 
-// include/slicedit.php3, row 157
+// include/slicedit.php, row 157
 $_m["Upload URL"]
  = "";
 
-// include/slicedit.php3, row 165
+// include/slicedit.php, row 165
 $_m["Language Control Slice"]
  = "";
 
-// include/slicedit.php3, row 172
+// include/slicedit.php, row 172
 $_m["This File Manager Directory is already used by another slice."]
  = "Ce dossier gestionnaire de r�pertoire est d�j� utilis� par une autre section";
 
-// include/slicedit.php3, row 306
+// include/slicedit.php, row 306
 $_m["Error when copying constants."]
  = "Erreur en copiant les constantes";
 
-// include/slicedit.php3, row 315
+// include/slicedit.php, row 315
 $_m["Error when copying views."]
  = "erreur en copiant les vues";
 
-// include/slicedit.php3, row 322
+// include/slicedit.php, row 322
 $_m["Internal error when changing user role."]
  = "Erreur interne en changeant les r�les des usagers";
 
@@ -5944,83 +5944,83 @@ $_m["Form"]
 $_m["Grabbs data POSTed by AA form"]
  = "";
 
-// include/sliceadd.php3, row 103
+// include/sliceadd.php, row 103
 $_m["No slices"]
  = "Sans section";
 
-// include/fileman.php3, row 33
+// include/fileman.php, row 33
 $_m["Size"]
  = "Volume";
 
-// include/fileman.php3, row 35
+// include/fileman.php, row 35
 $_m["Last modified"]
  = "Modifi�";
 
-// include/fileman.php3, row 113, 135
+// include/fileman.php, row 113, 135
 $_m["Other"]
  = "Autre";
 
-// include/fileman.php3, row 297
+// include/fileman.php, row 297
 $_m["Wrong file name."]
  = "mauvais nom de fichier";
 
-// include/fileman.php3, row 305
+// include/fileman.php, row 305
 $_m["File already exists"]
  = "Fichier d�j� existant";
 
-// include/fileman.php3, row 309, 468
+// include/fileman.php, row 309, 468
 $_m["Unable to create file"]
  = "Incapable de cr�er le fichier";
 
-// include/fileman.php3, row 320
+// include/fileman.php, row 320
 $_m["Wrong directory name."]
  = "mauvais nom de r�pertoire";
 
-// include/fileman.php3, row 326
+// include/fileman.php, row 326
 $_m["Unable to create directory"]
  = "Incapable de cr�er le r�pertoire";
 
-// include/fileman.php3, row 337
+// include/fileman.php, row 337
 $_m["First delete all files from directory"]
  = "Supprimez d,abord tous les fichiers du r�pertoire";
 
-// include/fileman.php3, row 339
+// include/fileman.php, row 339
 $_m["Unable to delete directory"]
  = "Incapable de supprimer le r�pertoire";
 
-// include/fileman.php3, row 344
+// include/fileman.php, row 344
 $_m["Unable to delete file"]
  = "Incapable de supprimer le fichier";
 
-// include/fileman.php3, row 363
+// include/fileman.php, row 363
 $_m["Error: "]
  = "Erreur";
 
-// include/fileman.php3, row 375
+// include/fileman.php, row 375
 $_m["Unable to open file for writing"]
  = "Incapable d'ouvrir le fichier pour �crire";
 
-// include/fileman.php3, row 383
+// include/fileman.php, row 383
 $_m["Error writing to file"]
  = "Erreur en �crivant le fichier";
 
-// include/fileman.php3, row 394
+// include/fileman.php, row 394
 $_m["File with this name already exists"]
  = "Un fichier avec ce nom existe d�j�";
 
-// include/fileman.php3, row 397
+// include/fileman.php, row 397
 $_m["Unable to rename"]
  = "Incapable de renommer";
 
-// include/fileman.php3, row 450
+// include/fileman.php, row 450
 $_m["Wrong directory name"]
  = "Mauvais nom de r�pertoire";
 
-// include/fileman.php3, row 460
+// include/fileman.php, row 460
 $_m["Files with the same names as some in the template already exist. Please change the file names first."]
  = "Des fichiers avec le m�me nom ainsi que dans le mod�le existe d�j�.  Changez d,abord le nom du fichier";
 
-// include/fileman.php3, row 515
+// include/fileman.php, row 515
 $_m["Are you sure you want to delete the selected files and folders?"]
  = "�tes vous certain de vouloir supprimer les fichiers et r�pertoire s�lectionn�es";
 

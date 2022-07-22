@@ -29,4 +29,4 @@ https://www.apc.org/
 const AA_REGISTER_GLOBALS = true;
 require_once __DIR__."/../../include/init_page.php3";
 require_once __DIR__."/../../include/go_url.php3";
-go_url(AA_INSTAL_PATH ."modules/alerts/tabledit.php3?set_tview=modedit&cmd[modedit][edit][" .AA::$module_id."]=1&module_id=".AA::$module_id);
+go_url(AA_INSTAL_PATH ."modules/alerts/tabledit.php?set_tview=modedit&cmd[modedit][edit][" .AA::$module_id."]=1&module_id=".AA::$module_id);

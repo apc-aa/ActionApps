@@ -72,7 +72,7 @@ class ChangesMonitor {
      * @return string url to history table in AA Admin interface
      */
     static function getHistoryUrl($resource_id) {
-        return get_admin_url('aafinder.php3', ['showhistory' => $resource_id]);
+        return get_admin_url('aafinder.php', ['showhistory' => $resource_id]);
     }
 
     /** link to history table in AA Admin interface

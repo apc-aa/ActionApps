@@ -85,7 +85,7 @@ if ($_POST['copy']) {
         }
     }
     echo _m("%1 import actions planed. See", [$no_sync_tasks]). ' ';
-    echo a_href(get_admin_url('se_taskmanager.php3'), _m('Task Manager'));
+    echo a_href(get_admin_url('se_taskmanager.php'), _m('Task Manager'));
 } else {
     // init values for form
     $sync_defs  = true;

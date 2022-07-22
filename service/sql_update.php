@@ -185,16 +185,11 @@ class AA_SQL_Updater {
     function getOptimizers(): array {
         $optimizers = [];
 
-        // php4 returns classes all in lower case :-(
-        $mask          = 'aa_optimize_';
-        $mask_length   = strlen($mask);
-        foreach (get_declared_classes() as $classname) {
-            if ( substr(strtolower($classname),0,$mask_length) == $mask ) {
-                $instance = new $classname();
-                if ($instance->isType('sql_update')) {
-                    // we need the optimizers sorted by its priority - that's why the $key
-                    $optimizers[sprintf("%05s",$instance->priority()).$classname] = $instance;
-                }
+        foreach (AA_Components::getClassNames('AA\\Optimize\\') as $optimize_class) {
+            /** @var AbstractOptimize $optimizer */
+            $optimizer = AA_Serializable::factory($optimize_class);
+            if ($optimizer->isType('sql_update')) {
+                $optimizers[sprintf("%05s",$optimizer->priority()).$optimize_class] = $optimizer;
             }
         }
         ksort($optimizers);

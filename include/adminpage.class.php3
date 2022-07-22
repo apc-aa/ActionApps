@@ -330,7 +330,7 @@ class AA_Adminpage implements AA_iEditable {
         $form_buttons = [
             "update",
                        "update" => ['type' => 'hidden', 'value'=>'1'],
-                       "cancel" => ["url"=>"se_fields.php3"],
+                       "cancel" => ["url"=>"se_fields.php"],
                        "default" => [
                            'type'  => 'button',
                                           'value' => _m("Default"),

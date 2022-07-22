@@ -15,63 +15,63 @@ $_m["prints <i>the field</i> content (or <i>unalias string</i>) depending on the
  = "prints <i>the field</i> content depending on the html flag (if html flag is not set, it converts the content to html. In difference to f_h function, it converts to html line-breaks, too. Obviously this function is used for fultexts.)";
 
 # End of unused messages
-// admin/param_wizard.php3, row 94
+// admin/param_wizard.php, row 94
 $_m["Wizard"]
  = "Assistent";
 
-// admin/param_wizard.php3, row 174
+// admin/param_wizard.php, row 174
 $_m["This is an undocumented %s. We don't recommend to use it."]
  = "";
 
-// admin/param_wizard.php3, row 175
+// admin/param_wizard.php, row 175
 $_m["Close the wizard"]
  = "";
 
-// admin/param_wizard.php3, row 189
+// admin/param_wizard.php, row 189
 $_m["Available parameters: "]
  = "";
 
-// admin/param_wizard.php3, row 201
+// admin/param_wizard.php, row 201
 $_m["integer&nbsp;number"]
  = "";
 
-// admin/param_wizard.php3, row 202
+// admin/param_wizard.php, row 202
 $_m["any&nbsp;text"]
  = "";
 
-// admin/param_wizard.php3, row 203
+// admin/param_wizard.php, row 203
 $_m["field&nbsp;id"]
  = "";
 
-// admin/param_wizard.php3, row 204
+// admin/param_wizard.php, row 204
 $_m["boolean:&nbsp;0=false,1=true"]
  = "";
 
-// admin/param_wizard.php3, row 217
+// admin/param_wizard.php, row 217
 $_m["This %s has no parameters."]
  = "";
 
-// admin/param_wizard.php3, row 227
+// admin/param_wizard.php, row 227
 $_m["Have a look at these examples of parameters sets:"]
  = "";
 
-// admin/param_wizard.php3, row 234
+// admin/param_wizard.php, row 234
 $_m["Show"]
  = "";
 
-// admin/param_wizard.php3, row 244
+// admin/param_wizard.php, row 244
 $_m["OK - Save"]
  = "";
 
-// admin/param_wizard.php3, row 245
+// admin/param_wizard.php, row 245
 $_m["Cancel"]
  = "";
 
-// admin/param_wizard.php3, row 246
+// admin/param_wizard.php, row 246
 $_m["Show example params"]
  = "";
 
-// admin/param_wizard.php3, row 248
+// admin/param_wizard.php, row 248
 $_m["OK"]
  = "";
 

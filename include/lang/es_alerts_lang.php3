@@ -116,7 +116,7 @@ $_m["%1 field(s) and %2 constant group(s) deleted"]
 $_m["not set"]
  = "no activado";
 
-// modules/alerts/tabledit.php3, row 68
+// modules/alerts/tabledit.php, row 68
 $_m["You have not permissions to add slice"]
  = "Usted no tiene permisos en este canal";
 

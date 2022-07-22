@@ -720,7 +720,7 @@ function _ValidateSingleInput($variableName, $inputName, $variable, &$err, $need
 }
 
 /** get_javascript_field_validation function
-* used in tabledit.php3 and itemedit.php3
+* used in tabledit.php and itemedit.php3
 */
 function get_javascript_field_validation() {
     /* javascript params:

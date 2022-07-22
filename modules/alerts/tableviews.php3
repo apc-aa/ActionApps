@@ -76,7 +76,7 @@ function GetAlertsTableView ($viewID, $processForm = false) {
             if (IsSuperadmin() || strchr($myslices[unpack_id($db->f("slice_id"))], PS_FULLTEXT)) {
                 $new_filters[$db->f("filterid")] = $txt;
                 $txt = "<a href='".StateUrl(AA_INSTAL_PATH
-                    ."admin/se_view.php3?slice_id=".unpack_id($db->f("slice_id"))
+                    ."admin/se_view.php?slice_id=".unpack_id($db->f("slice_id"))
                     ."&view_id=".$db->f("view_id")
                     ."&view_type=".$db->f("view_type"))
                     ."'>".$txt." ("."f".$db->f("filterid").")"."</a>";

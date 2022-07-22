@@ -476,7 +476,7 @@ function GetViewFieldDef( $validate, $insert, $type, $input, $value=false ) {
  */
 function getViewFields() {
     $VIEW_FIELDS = [];
-    // se_views.php3 - view field definition
+    // se_views.php - view field definition
     /* Jakub added a special field "function:function_name" which calls function show_function_name() to show a special form part and store_function_name() to store form data. */
                                                  // $validate, $insert,  $type,   $input,  $value
     $VIEW_FIELDS["name"]            = GetViewFieldDef("text",  "quoted", "text",  "field50");
@@ -815,7 +815,7 @@ function getViewTypes() {
         ],
 
         // this view uses also "aditonal" and "aditional3" for the "Group by"
-        // radio buttons and for the sort[] box, see se_view.php3
+        // radio buttons and for the sort[] box, see se_view.php
 
         'digest' => [
                            "field3" => $field3def,

@@ -448,7 +448,7 @@ class AA_Manageraction_Item_Modifycontent extends AA_Manageraction {
         return _m('Modify content');
     }
 
-    // uses setOpenUrl() method to open search_replace.php3 window
+    // uses setOpenUrl() method to open search_replace.php window
 
     /** Checks if the user have enough permission to perform the action
      * @param AA_Manager $manager
@@ -470,7 +470,7 @@ class AA_Manageraction_Item_Email extends AA_Manageraction {
         return _m('Send email');
     }
 
-    // uses setOpenUrl() method to open search_replace.php3 window
+    // uses setOpenUrl() method to open search_replace.php window
 
     /** Checks if the user have enough permission to perform the action
      * @param AA_Manager $manager
@@ -628,7 +628,7 @@ class AA_Manageraction_Taskmanager_Execute extends AA_Manageraction {
 }
 
 
-/** Generates manager settings for aa_toexecute.php3 and se_taskmanager.php3
+/** Generates manager settings for aa_toexecute.php and se_taskmanager.php
  * @return array - manager settings
  */
 function GetToexecuteManagerSettings() {

@@ -81,7 +81,7 @@ class Menu
             "items"=> [
                 "header1"=>_m("Main settings"),
                 "main"=> ["cond"=>IfSlPerm(PS_MODP_SETTINGS), "href"=>"modules/polls/modedit.php3", "label"=>_m("Polls")],
-                "design"=> ["cond"=>IfSlPerm(PS_MODP_EDIT_DESIGN), "href"=>"admin/tabledit.php3?set_tview=polls_design", "label"=>_m("Designs")],
+                "design"=> ["cond"=>IfSlPerm(PS_MODP_EDIT_DESIGN), "href"=>"admin/tabledit.php?set_tview=polls_design", "label"=>_m("Designs")],
             ]
         ];
 

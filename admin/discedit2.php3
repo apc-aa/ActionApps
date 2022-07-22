@@ -33,7 +33,7 @@ require_once __DIR__."/../include/init_page.php3";
 require_once __DIR__."/../include/varset.php3";
 
 if ($cancel) {
-    go_url(StateUrl(self_base() . "discedit.php3?item_id=".$item_id));
+    go_url(StateUrl(self_base() . "discedit.php?item_id=".$item_id));
 }
 
 if (!IfSlPerm(PS_EDIT_ALL_ITEMS)) {
@@ -82,7 +82,7 @@ if ($update) {
 
         AA::Pagecache()->invalidateFor($slice_id);  // invalidate old cached values
 
-        go_url(StateUrl(self_base() . "discedit.php3?item_id=".$item_id));
+        go_url(StateUrl(self_base() . "discedit.php?item_id=".$item_id));
     }
 }
 

@@ -98,7 +98,7 @@ class AA_Plannedtask extends AA_Object implements LaterInterface
             <tr>
               <td style="white-space:nowrap;">' .
             a_href($links['Edit'], _m('Edit'), 'aa-button-edit') . ' ' .
-            a_href(get_admin_url('aa_log.php3?&srchbr_akce=1&srchbr_field%5B0%5D=selector&srchbr_oper%5B0%5D==&srchbr_value%5B0%5D=AA_Plannedtask:_#AA_ID___&srchbr_order%5B0%5D=time&srchbr_order_dir%5B0%5D=on'), _m('Log'), 'aa-button-show') . ' ' .
+            a_href(get_admin_url('aa_log.php?&srchbr_akce=1&srchbr_field%5B0%5D=selector&srchbr_oper%5B0%5D==&srchbr_value%5B0%5D=AA_Plannedtask:_#AA_ID___&srchbr_order%5B0%5D=time&srchbr_order_dir%5B0%5D=on'), _m('Log'), 'aa-button-show') . ' ' .
             a_href($links['Delete'], _m('Delete'), 'aa-button-delete') . '</td>
               <td>_#AA_NAME_</td>
               <td>_#EVENT___</td>

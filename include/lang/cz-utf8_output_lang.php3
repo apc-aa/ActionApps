@@ -101,7 +101,7 @@ $_m["Add new"]
  = "Přidej nový";
 
 // admin/se_inputform.php, row 411
-// admin/sliceimp.php3, row 484
+// admin/sliceimp.php, row 484
 // include/formutil.php3, row 202, 2698
 $_m["Insert"]
  = "Vložit";
@@ -229,7 +229,7 @@ $_m["alias used on admin page index.php3 for itemedit url"]
 
 // include/item.php3, row 104
 $_m["Alias used on admin page index.php3 for edit discussion url"]
- = "Alias používaný v administrativních stránkách index.php3 pro URL discedit.php3";
+ = "Alias používaný v administrativních stránkách index.php3 pro URL discedit.php";
 
 // include/item.php3, row 105
 $_m["Title of Slice for RSS"]

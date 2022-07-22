@@ -1059,8 +1059,7 @@ class AA_Components {
      * @param $mask
      * @return array
      */
-    static function getClassNames($mask)
-    {
+    static function getClassNames($mask): array {
         $right_classes = [];
         if (false !== $pos = strrpos($mask, '\\')) {  // new composer approach with autoload - we can't use  get_declared_classes()
             $classfilter = substr($mask,$pos+1);

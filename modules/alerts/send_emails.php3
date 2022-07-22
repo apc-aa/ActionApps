@@ -151,7 +151,7 @@ function showSelectionTable() {
                 $first_view = false;
                 echo "<TD class=tabtxt>
                     <a href=\"".StateUrl(AA_INSTAL_PATH
-                    ."admin/se_view.php3?slice_id=".unpack_id($slice_id)
+                    ."admin/se_view.php?slice_id=".unpack_id($slice_id)
                     ."&view_id=".$vid."&view_type=".$view["type"])
                     ."\">".$view["name"]."</A></TD><TD class=tabtxt>";
                 foreach ($view["filters"] as $fid => $filter) {

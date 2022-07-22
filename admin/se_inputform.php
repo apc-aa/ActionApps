@@ -113,7 +113,7 @@ try {
 if ($upd_edit) {
     $back_admin_url = get_admin_url('se_inputform.php', ['fid'=>$fid]);
 } else {
-    $back_admin_url = get_admin_url('se_fields.php3', (AA_Fields::isSliceField($fid) ? ['slice_fields'=>1] : []));
+    $back_admin_url = get_admin_url('se_fields.php', (AA_Fields::isSliceField($fid) ? ['slice_fields'=>1] : []));
 }
 
 if ($cancel) {
@@ -355,7 +355,7 @@ $headcode = '
       return;
     }
     if ( conid != "" ) {
-      let url = "'. get_admin_url('se_constant.php3', ['return_url' => 'se_inputform.php', 'fid' => $fid]). '";
+      let url = "'. get_admin_url('se_constant.php', ['return_url' => 'se_inputform.php', 'fid' => $fid]). '";
       url += ( (as_new != 1) ? "&group_id=" : "&as_new=") + escape(conid);
       document.location=url;
     }
@@ -367,7 +367,7 @@ $headcode = '
   */
   function CallParamWizard(list, combo_list, text_param ) {
     combo_list_el = document.f.elements[combo_list];
-    page = GetUrl("'. get_admin_url('param_wizard.php3') .'", ["list=" + list, "combo_list=" + combo_list, "text_param=" + text_param, "item=" + combo_list_el.value]);
+    page = GetUrl("'. get_admin_url('param_wizard.php') .'", ["list=" + list, "combo_list=" + combo_list, "text_param=" + text_param, "item=" + combo_list_el.value]);
     param_wizard = window.open(page,"somename","width=450,scrollbars=yes,menubar=no,hotkeys=no,resizable=yes");
     param_wizard.focus();
   }
@@ -401,7 +401,7 @@ $form_buttons = [
                       "update",
                       "upd_edit" => ["type"=>"submit", "value"=>_m("Update & Edit")],
                       "cancel2"   => ['value'=>_m('Show History'), "url"=>\AA\Util\ChangesMonitor::getHistoryUrl("F".AA_Fields::createShortId($fid).'@'.pack_id($slice_id))],
-                      "cancel"   => ["url"=>"se_fields.php3" .(AA_Fields::isSliceField($fid) ? '?slice_fields=1':'')]
+                      "cancel"   => ["url"=>"se_fields.php" .(AA_Fields::isSliceField($fid) ? '?slice_fields=1':'')]
 ];
 
 FrmTabCaption(_m("Field properties") . ': ' . safe($fld['name'] . ' (' . $fld['id'] . ')'), $form_buttons);
@@ -427,7 +427,7 @@ echo "
               <td>
                 <a href='javascript:CallConstantEdit(0)'>&larr;&nbsp;". $constants_menu[0] ."</a><br>
                 <a href='javascript:CallConstantEdit(1)'>&larr;&nbsp;". $constants_menu[1] ."</a><br>
-                <a href='". get_admin_url('se_constant.php3', ['return_url' => 'se_inputform.php', 'fid' => $fid]). "'>". $constants_menu[2] ."</a>
+                <a href='". get_admin_url('se_constant.php', ['return_url' => 'se_inputform.php', 'fid' => $fid]). "'>". $constants_menu[2] ."</a>
               </td>
              </tr>
             </table>

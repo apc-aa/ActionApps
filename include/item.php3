@@ -1260,7 +1260,7 @@ class AA_Item {
                 return $sess->id();
             case "disc":
                 // _#DISCEDIT used on admin page index.php3 for edit discussion comments
-                return con_url(StateUrl("discedit.php3"), "item_id=". $this->getItemID());
+                return con_url(StateUrl("discedit.php"), "item_id=". $this->getItemID());
                 // These next two return values from globals that would actually be better coming froom the item or itemview,
                 // otherwise won't work if there are nested views.
             case "itemcount":

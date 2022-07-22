@@ -162,12 +162,12 @@ function get_aamenus() {
         ],
         "newcatview" =>  [
             "cond"  => IfSlPerm(PS_LINKS_EDIT_DESIGN),
-                                "href"  => 'admin/se_view.php3?new=1&view_type=categories',
+                                "href"  => 'admin/se_view.php?new=1&view_type=categories',
                                 "label" => _m('New Category View')
         ],
         "newlinkview" => [
             "cond"  => IfSlPerm(PS_LINKS_EDIT_DESIGN),
-                                "href"  => 'admin/se_view.php3?new=1&view_type=links',
+                                "href"  => 'admin/se_view.php?new=1&view_type=links',
                                 "label" => _m('New Link View')
         ]
         ]
@@ -214,7 +214,7 @@ function CreateMenu4Views( $foo ) {
     $db->query( $SQL );
     while ($db->next_record()) {
         $menu['view'.$db->f('id')] = CreateMenuItem( $db->f('name'),  // label, href [, cond]
-            'admin/se_view.php3?view_id='.$db->f('id').'&view_type='.$db->f('type'));
+            'admin/se_view.php?view_id='.$db->f('id').'&view_type='.$db->f('type'));
     }
     freeDB($db);
     return $menu;

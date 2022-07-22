@@ -58,7 +58,7 @@ DB_AA::sql('DELETE LOW_PRIORITY FROM `site_spot`', [['site_id', $del, 'l']]);
 DelPermObject($del, "slice");  // the word 'slice' is not mistake - do not change
 
 page_close();                                // to save session variables
-go_url(con_url(StateUrl(AA_INSTAL_PATH . "admin/slicedel.php3"), "Msg=".rawurlencode(_m("Slice successfully deleted, tables are optimized"))));
+go_url(con_url(StateUrl(AA_INSTAL_PATH . "admin/slicedel.php"), "Msg=".rawurlencode(_m("Slice successfully deleted, tables are optimized"))));
 
 
 

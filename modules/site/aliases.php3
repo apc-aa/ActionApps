@@ -1,5 +1,5 @@
 <?php
-/** se_fulltext.php3 - assigns html format for fulltext view
+/** se_fulltext.php - assigns html format for fulltext view
  *   expected $slice_id for edit slice
  *   optionaly $Msg to show under <h1>Hedline</h1> (typicaly: update successful)
  *
