@@ -8,7 +8,7 @@ How to create new module in ActionApps?
 Done - module is created. Optional but probale next steps are:
 
 a) insert new language file to /include/ directory (just like
-   en_site_lang.php3), if you want to use module specific texts
+   en_site_lang.php), if you want to use module specific texts
    (you probably will)
    (Note: all language files should be in /include/ directory)
 

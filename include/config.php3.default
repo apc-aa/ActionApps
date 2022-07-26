@@ -147,10 +147,10 @@ define("PERM_LIB", "sql");
 
 /** Default language file
  *  Language files are stored in include/lang/ directory. At this time you can
- *  use any *_news_lang.php3, where '*' is one of cz, de, en, es, ja, ro, sk
+ *  use any *_news_lang.php, where '*' is one of cz, de, en, es, ja, ro, sk
  *  ( @see http://apc-aa.sourceforge.net/faq/index.shtml#1180 )
  */
-define("DEFAULT_LANG_INCLUDE", "en-utf8_news_lang.php3");
+define("DEFAULT_LANG_INCLUDE", "en-utf8_news_lang.php");
 
 /** e-mail for bug reporting contact */
 define("ERROR_REPORTING_EMAIL", "webmaster@my.domain.org");

@@ -44,7 +44,7 @@ $lists = ["INPUT_TYPES", "FIELD_FUNCTIONS", "INSERT_TYPES", "DEFAULT_VALUE_TYPES
 
 if (!is_array($list)) {
     echo "<h1>" . _m("Choose a Parameter Wizard") . "</h1>";
-    echo '<FORM action="param_wizard_list.php3" method="get">';
+    echo '<FORM action="param_wizard_list.php" method="get">';
     echo '<SELECT name=mylist MULTIPLE size="' . count($list) . '" style=".">';
     foreach ($lists as $mylist) {
         $list = $$mylist;
@@ -59,7 +59,7 @@ if (!is_array($list)) {
 echo "<a id='top'> </a>";
 echo "<h1>" . $list["name"] . "s</h1>\n";
 
-echo '<FORM action="param_wizard_list.php3" method="get">' . "\n";
+echo '<FORM action="param_wizard_list.php" method="get">' . "\n";
 echo _m("Change to: ") . "<SELECT name=mylist>\n";
 foreach ($lists as $xlist) {
     if ($xlist == $mylist)

@@ -74,10 +74,10 @@ endslash($destdir);
 
    Why so many groups? To save time on reading language translations. */
 
-// _alerts_lang.php3 language files, used in the Alerts module
+// _alerts_lang.php language files, used in the Alerts module
 $lang_groups ["alerts"] =
     ["modules/alerts/"];
-// _news_lang.php3 language files, used almost everywhere in Control panel
+// _news_lang.php language files, used almost everywhere in Control panel
 $lang_groups ["news"] =
     [
         "./",
@@ -90,10 +90,10 @@ $lang_groups ["news"] =
            "-include/constants_param_wizard.php3",
            "-include/mgettext.php3"
     ];
-// _site_lang.php3 language files, used in the Site module
+// _site_lang.php language files, used in the Site module
 $lang_groups ["site"] =
     ["modules/site/"];
-// _links_lang.php3 language files, used in the Links module
+// _links_lang.php language files, used in the Links module
 $lang_groups ["links"] =
     [
         "modules/links/",
@@ -101,10 +101,10 @@ $lang_groups ["links"] =
            "include/searchbar.class.php3",
            "include/util.php3"
     ];
-// _polls_lang.php3 language files, used in the Links module
+// _polls_lang.php language files, used in the Links module
 $lang_groups ["polls"] =
     ["modules/polls/"];
-// _output_lang.php3 language files, used in the output, i.e. slice.php3 and view.php3
+// _output_lang.php language files, used in the output, i.e. slice.php3 and view.php3
 $lang_groups ["output"] =
     [
         "./slice.php3",
@@ -118,7 +118,7 @@ $lang_groups ["output"] =
            "include/scroller.php3",
            "include/itemview.php3"
     ];
-// _param_wizard_lang.php3 language files, used only in the parameter wizard
+// _param_wizard_lang.php language files, used only in the parameter wizard
 $lang_groups ["param_wizard"] =
     [
         "admin/param_wizard.php",
@@ -144,8 +144,8 @@ if (!$addlogs) $addlogs = false;
 /* $old_group, $old_lang_files and $log_files are used when creating log files
    which enable to include language constants into mgettext language files. */
 $old_group = "common";
-$old_lang_files = $aadir."include/??_".$old_group."_lang.php3";
-$log_files = $destdir."log_??_".$old_group."_lang.php3";
+$old_lang_files = $aadir."include/??_".$old_group."_lang.php";
+$log_files = $destdir."log_??_".$old_group."_lang.php";
 
 // directories from which to translate files (replace language constants by _m() calls)
 $translate_dirlist = [
@@ -158,8 +158,8 @@ $translate_dirlist = [
 /*
 // special settings for converting the site module
 $old_group = "site";
-$old_lang_files = $aadir."include/??_".$old_group."_lang.php3";
-$log_files = $destdir."log_??_".$old_group."_lang.php3";
+$old_lang_files = $aadir."include/??_".$old_group."_lang.php";
+$log_files = $destdir."log_??_".$old_group."_lang.php";
 $translate_dirlist = array ("modules/site");
 // end of special
 */
@@ -205,9 +205,9 @@ function update_language_files($aadir, $destdir)
             fclose ($fd);
             chmod ($logfile, 0664);
             if (!$addlogs) {
-                xmgettext($lang_list, $xmgettext_logfile, $destdir."??_".$langfiles."_lang.php3", $aadir, $srcfiles, 0666, false, '', true, $file_type);
+                xmgettext($lang_list, $xmgettext_logfile, $destdir."??_".$langfiles."_lang.php", $aadir, $srcfiles, 0666, false, '', true, $file_type);
             } else {
-                xmgettext($lang_list, $xmgettext_logfile, $destdir."??_".$langfiles."_lang.php3", $aadir, $srcfiles, 0666, false, $destdir."log_??_".$langfiles."_lang.php3", true, $file_type);
+                xmgettext($lang_list, $xmgettext_logfile, $destdir."??_".$langfiles."_lang.php", $aadir, $srcfiles, 0666, false, $destdir."log_??_".$langfiles."_lang.php", true, $file_type);
             }
         }
     }
@@ -284,7 +284,7 @@ echo '</p>
 foreach ( $lang_groups as $group => $members) {
     echo '<tr><td>
         <input type="checkbox" name="update['.$group.']" checked>
-        ??_'.$group.'_lang.php3</td><td>'.join (", ", $members).'</td></tr>';
+        ??_'.$group.'_lang.php</td><td>'.join (", ", $members).'</td></tr>';
 }
 
 echo '</table>';

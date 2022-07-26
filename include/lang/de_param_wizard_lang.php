@@ -1,6 +1,6 @@
 <?php
 // $Id$
-// Language: FR
+// Language: DE
 // This file was created automatically by the Mini GetText environment
 // on 5.9.2008 16:32
 
@@ -8,13 +8,16 @@
 
 // Before each message there are links to program code where it was used.
 
-$mgettext_lang = "fr";
+$mgettext_lang = "de";
 
 # Unused messages
+$_m["prints <i>the field</i> content (or <i>unalias string</i>) depending on the html flag (if html flag is not set, it converts the content to html. In difference to f_h function, it converts to html line-breaks, too. Obviously this function is used for fultexts.)"]
+ = "prints <i>the field</i> content depending on the html flag (if html flag is not set, it converts the content to html. In difference to f_h function, it converts to html line-breaks, too. Obviously this function is used for fultexts.)";
+
 # End of unused messages
 // admin/param_wizard.php, row 94
 $_m["Wizard"]
- = "";
+ = "Assistent";
 
 // admin/param_wizard.php, row 174
 $_m["This is an undocumented %s. We don't recommend to use it."]
@@ -484,7 +487,7 @@ $_m["column count"]
  = "";
 
 // include/constants_param_wizard.php3, row 306, 843
-// doc/param_wizard_list.php3, row 96
+// doc/param_wizard_list.php, row 96
 $_m["type"]
  = "";
 
@@ -1193,7 +1196,7 @@ $_m["text to print before <i>field</i>, if condition is true"]
 
 // include/constants_param_wizard.php3, row 809
 $_m["Yes"]
- = "";
+ = "Yes<!--";
 
 // include/constants_param_wizard.php3, row 810
 $_m["end"]
@@ -1237,7 +1240,7 @@ $_m["This example is usable e.g. for Highlight field - it shows Yes or No depend
 
 // include/constants_param_wizard.php3, row 828
 $_m["1:Yes::No::1"]
- = "";
+ = "1:Yes<!--:-->:No";
 
 // include/constants_param_wizard.php3, row 829
 $_m["When e-mail field is filled, prints something like \"Email: email@apc.org\", when it is empty, prints nothing"]
@@ -1245,7 +1248,7 @@ $_m["When e-mail field is filled, prints something like \"Email: email@apc.org\"
 
 // include/constants_param_wizard.php3, row 830
 $_m["!:Email#:&nbsp;"]
- = "";
+ = "!:Email#";
 
 // include/constants_param_wizard.php3, row 831
 $_m["Print image height attribute, if <i>the field</i> is filled, nothing otherwise."]
@@ -1253,7 +1256,7 @@ $_m["Print image height attribute, if <i>the field</i> is filled, nothing otherw
 
 // include/constants_param_wizard.php3, row 832
 $_m["!:height="]
- = "";
+ = ":height=";
 
 // include/constants_param_wizard.php3, row 833
 $_m["date"]
@@ -1437,7 +1440,7 @@ $_m["e-mail or link"]
 
 // include/constants_param_wizard.php3, row 920
 $_m["mailto link - prints: <br>\"<b>begin</b>\\<a href=\"(mailto:)<i>the field</i>\" <b>tag adition</b>\\><b>field/text</b>\\</a\\>. If <i>the field</i> is not filled, prints <b>else_field/text</b>."]
- = "";
+ = "mailto link - prints: \"<b>begin</b>\\<a href=\"(mailto:)<i>the field</i>\"\\><b>field/text</b>\\</a\\>. If <i>the field</i> is not filled, prints <b>else_field/text</b>.";
 
 // include/constants_param_wizard.php3, row 923
 $_m["text before the link"]
@@ -1681,7 +1684,7 @@ $_m["user function"]
 
 // include/constants_param_wizard.php3, row 1098
 $_m["calls a user defined function (see How to create new aliases in <a href='http://apc-aa.sourceforge.net/faq/#aliases'>FAQ</a>)"]
- = "";
+ = "calls a user defined function (see How to create new aliases in /doc/faq.html)";
 
 // include/constants_param_wizard.php3, row 1100
 $_m["function"]
@@ -1831,55 +1834,55 @@ $_m["Store these default values for the following output fields. The other outpu
    ."    "]
  = "";
 
-// doc/param_wizard_list.php3, row 36
+// doc/param_wizard_list.php, row 36
 $_m["Param Wizard Summary"]
  = "";
 
-// doc/param_wizard_list.php3, row 45
+// doc/param_wizard_list.php, row 45
 $_m["Choose a Parameter Wizard"]
  = "";
 
-// doc/param_wizard_list.php3, row 54, 71
+// doc/param_wizard_list.php, row 54, 71
 $_m["Go"]
  = "";
 
-// doc/param_wizard_list.php3, row 63
+// doc/param_wizard_list.php, row 63
 $_m["Change to: "]
  = "";
 
-// doc/param_wizard_list.php3, row 78
+// doc/param_wizard_list.php, row 78
 $_m["TOP"]
  = "";
 
-// doc/param_wizard_list.php3, row 92
+// doc/param_wizard_list.php, row 92
 $_m["Parameters:"]
  = "";
 
-// doc/param_wizard_list.php3, row 95
+// doc/param_wizard_list.php, row 95
 $_m["name"]
  = "";
 
-// doc/param_wizard_list.php3, row 97
+// doc/param_wizard_list.php, row 97
 $_m["description"]
  = "";
 
-// doc/param_wizard_list.php3, row 98
+// doc/param_wizard_list.php, row 98
 $_m["example"]
  = "";
 
-// doc/param_wizard_list.php3, row 104
+// doc/param_wizard_list.php, row 104
 $_m["integer number"]
  = "";
 
-// doc/param_wizard_list.php3, row 105
+// doc/param_wizard_list.php, row 105
 $_m["any text"]
  = "";
 
-// doc/param_wizard_list.php3, row 106
+// doc/param_wizard_list.php, row 106
 $_m["field id"]
  = "";
 
-// doc/param_wizard_list.php3, row 107
+// doc/param_wizard_list.php, row 107
 $_m["boolean: 0=false,1=true"]
  = "";
 

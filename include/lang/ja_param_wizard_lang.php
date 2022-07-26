@@ -1,6 +1,6 @@
 <?php
 // $Id$
-// Language: CZ-UTF8
+// Language: JA
 // This file was created automatically by the Mini GetText environment
 // on 5.9.2008 16:32
 
@@ -8,13 +8,7 @@
 
 // Before each message there are links to program code where it was used.
 
-$mgettext_lang = "cz-utf8";
-define("DB_COLLATION", "utf8mb4_czech_ci");
-setlocale(LC_ALL, 'cs_CZ.utf8', 'cs_CZ');  // sort, date, uppercase, ..
-setlocale(LC_NUMERIC, 'en_US');            // use numeric with dot - there is problem, when
-                                           // used Czech numeric comma for example in AA_Stringexpand_If:
-                                           //   $cmp  = create_function('$b', "return ($etalon $operator". ' $b);');
-                                           // float!! value $etalon is then with comma which leads to syntax error
+$mgettext_lang = "ja";
 
 # Unused messages
 # End of unused messages
@@ -490,7 +484,7 @@ $_m["column count"]
  = "";
 
 // include/constants_param_wizard.php3, row 306, 843
-// doc/param_wizard_list.php3, row 96
+// doc/param_wizard_list.php, row 96
 $_m["type"]
  = "";
 
@@ -1837,55 +1831,55 @@ $_m["Store these default values for the following output fields. The other outpu
    ."    "]
  = "";
 
-// doc/param_wizard_list.php3, row 36
+// doc/param_wizard_list.php, row 36
 $_m["Param Wizard Summary"]
  = "";
 
-// doc/param_wizard_list.php3, row 45
+// doc/param_wizard_list.php, row 45
 $_m["Choose a Parameter Wizard"]
  = "";
 
-// doc/param_wizard_list.php3, row 54, 71
+// doc/param_wizard_list.php, row 54, 71
 $_m["Go"]
  = "";
 
-// doc/param_wizard_list.php3, row 63
+// doc/param_wizard_list.php, row 63
 $_m["Change to: "]
  = "";
 
-// doc/param_wizard_list.php3, row 78
+// doc/param_wizard_list.php, row 78
 $_m["TOP"]
  = "";
 
-// doc/param_wizard_list.php3, row 92
+// doc/param_wizard_list.php, row 92
 $_m["Parameters:"]
  = "";
 
-// doc/param_wizard_list.php3, row 95
+// doc/param_wizard_list.php, row 95
 $_m["name"]
  = "";
 
-// doc/param_wizard_list.php3, row 97
+// doc/param_wizard_list.php, row 97
 $_m["description"]
  = "";
 
-// doc/param_wizard_list.php3, row 98
+// doc/param_wizard_list.php, row 98
 $_m["example"]
  = "";
 
-// doc/param_wizard_list.php3, row 104
+// doc/param_wizard_list.php, row 104
 $_m["integer number"]
  = "";
 
-// doc/param_wizard_list.php3, row 105
+// doc/param_wizard_list.php, row 105
 $_m["any text"]
  = "";
 
-// doc/param_wizard_list.php3, row 106
+// doc/param_wizard_list.php, row 106
 $_m["field id"]
  = "";
 
-// doc/param_wizard_list.php3, row 107
+// doc/param_wizard_list.php, row 107
 $_m["boolean: 0=false,1=true"]
  = "";
 

@@ -486,8 +486,8 @@ class ConvertSliceEncoding extends AA\Optimize\AbstractOptimize {
             $ret[] = "UPDATE `profile` SET " . $this->constructSet($this->getTextCols('profile')) . " WHERE " . sqlin('slice_id', $modules, true);
             $ret[] = "UPDATE `feedmap` SET " . $this->constructSet($this->getTextCols('feedmap')) . " WHERE " . sqlin('to_slice_id', $modules, true);
 
-            $ret[] = "UPDATE `module` SET `lang_file` = 'cz-utf8_news_lang.php3' WHERE " . sqlin('id', $modules, true);
-            $ret[] = "UPDATE `slice` SET `lang_file` = 'cz-utf8_news_lang.php3' WHERE " . sqlin('id', $modules, true);
+            $ret[] = "UPDATE `module` SET `lang_file` = 'cz-utf8_news_lang.php' WHERE " . sqlin('id', $modules, true);
+            $ret[] = "UPDATE `slice` SET `lang_file` = 'cz-utf8_news_lang.php' WHERE " . sqlin('id', $modules, true);
         }
         return $ret;
     }
@@ -515,7 +515,7 @@ class ConvertSliceEncoding extends AA\Optimize\AbstractOptimize {
         $ret = [];
         if ($modules) {
             $ret[] = "UPDATE `site_spot` SET " . $this->constructSet($this->getTextCols('site_spot')) . " WHERE " . sqlin('site_id', $modules, true);
-            $ret[] = "UPDATE `module` SET `lang_file` = 'cz-utf8_site_lang.php3' WHERE " . sqlin('id', $modules, true);
+            $ret[] = "UPDATE `module` SET `lang_file` = 'cz-utf8_site_lang.php' WHERE " . sqlin('id', $modules, true);
         }
         return $ret;
     }

@@ -93,7 +93,7 @@ This is the commented <b>aadb</b> database dump (see <a href="AAdb_ER.html">AAdb
    <code><b>id</b> varchar(16) NOT NULL,</code><br><div class="description">Slice id</div>
    <code><b>headline</b> varchar(255) NOT NULL,</code><br><div class="description">the full name of slice</div>
    <code><b>short_name</b> varchar(255) NOT NULL,</code><br><div class="description">Short name of slice used in administration interface (in select lists ...)</div>
-   <code><b>type</b> varchar(20) DEFAULT 'en_news' NOT NULL,</code><br><div class="description">Type of this slice (like "News EN") - on this field depends which aplication language file is loaded (see en_news_lang.php3 for example)</div>
+   <code><b>type</b> varchar(20) DEFAULT 'en_news' NOT NULL,</code><br><div class="description">Type of this slice (like "News EN") - on this field depends which aplication language file is loaded (see en_news_lang.php for example)</div>
    <code><b>slice_url</b> varchar(255),</code><br><div class="description">The url of public - live page. It is used from admin interface to preview slice.</div>
    <code><b>grab_len</b> smallint(5) unsigned DEFAULT '0' NOT NULL,</code><br><div class="description">The number of characters to be grabed from fulltext in user do not fill abstract</div>
    <code><b>post_enabled</b> smallint(5) unsigned DEFAULT '0' NOT NULL,</code><br><div class="description">not used (should be removed)</div>
@@ -117,10 +117,10 @@ This is the commented <b>aadb</b> database dump (see <a href="AAdb_ER.html">AAdb
     <li>At the end we substitute all remaining aliases with database fields.</li>
 </ul> </div>
    <code><b>fulltext_remove</b> varchar(255),</code><br><div class="description">The remove strings for fulltext view. (see compact_remove)</div>
-   <code><b>edit_fields</b> varchar(40),</code><br><div class="description">This is the string field, but the sense of this string should be interpretted as array of boolean values. Each boolean value ("y" / "n") corresponds to one field of item table. The value of "y" (yes) means "show corresponding field on itemedit.php3 page (input item form)". For corresponding fields see en_news_lang.php3.</div>
-   <code><b>needed_fields</b> varchar(40),</code><br><div class="description">Boolean array as in case edit_fields field (see above). The value of "y" (yes) means "corresponding field will be required on itemedit.php3 page (input item form) - user must fill it in". For corresponding fields see en_news_lang.php3.</div>
-   <code><b>search_show</b> varchar(15),</code><br><div class="description">The same as edit_fields but for search form. For corresponding fields see en_news_lang.php3.</div>
-   <code><b>search_default</b> varchar(10),</code><br><div class="description">The same as search_show. Each value sets a field which is searched by default (title, abstract, fulltext, editor's note). For corresponding fields see en_news_lang.php3.</div>
+   <code><b>edit_fields</b> varchar(40),</code><br><div class="description">This is the string field, but the sense of this string should be interpretted as array of boolean values. Each boolean value ("y" / "n") corresponds to one field of item table. The value of "y" (yes) means "show corresponding field on itemedit.php3 page (input item form)". For corresponding fields see en_news_lang.php.</div>
+   <code><b>needed_fields</b> varchar(40),</code><br><div class="description">Boolean array as in case edit_fields field (see above). The value of "y" (yes) means "corresponding field will be required on itemedit.php3 page (input item form) - user must fill it in". For corresponding fields see en_news_lang.php.</div>
+   <code><b>search_show</b> varchar(15),</code><br><div class="description">The same as edit_fields but for search form. For corresponding fields see en_news_lang.php.</div>
+   <code><b>search_default</b> varchar(10),</code><br><div class="description">The same as search_show. Each value sets a field which is searched by default (title, abstract, fulltext, editor's note). For corresponding fields see en_news_lang.php.</div>
 
    <code><b>d_link_only</b> smallint(5) unsigned DEFAULT '0',</code><br><div class="description"></div>
    <code><b>d_highlight</b> smallint(5) unsigned DEFAULT '0',</code><br><div class="description"></div>

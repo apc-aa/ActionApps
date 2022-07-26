@@ -39,7 +39,7 @@ class RedefineSiteTemplates extends \AA\Optimize\AbstractOptimize {
 
         $now = time();
         $this->message(_m('Replacing module definition'));
-        $this->query("REPLACE INTO module  (id, name, deleted, type, slice_url, lang_file, created_at, created_by, owner, flag) VALUES ('SiteTemplate....', 'Site Template', 0, 'W', 'https://example.org', 'en-utf8_site_lang.php3', $now, '', '', 1)");
+        $this->query("REPLACE INTO module  (id, name, deleted, type, slice_url, lang_file, created_at, created_by, owner, flag) VALUES ('SiteTemplate....', 'Site Template', 0, 'W', 'https://example.org', 'en-utf8_site_lang.php', $now, '', '', 1)");
         $this->query("REPLACE INTO site    (id, state_file, structure, flag) VALUES ('SiteTemplate....', '/en/home', '" . 'O:8:"sitetree":2:{s:4:"tree";a:1:{i:1;O:4:"spot":8:{s:2:"id";s:1:"1";s:1:"n";s:5:"start";s:1:"c";N;s:1:"v";N;s:1:"p";s:1:"1";s:2:"po";a:1:{i:0;s:1:"1";}s:2:"ch";N;s:1:"f";i:0;}}s:8:"start_id";s:1:"1";}' . "', 0)");
 
         $this->message(_m('Site Module template recreation - done.'));

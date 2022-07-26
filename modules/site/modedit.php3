@@ -30,7 +30,7 @@ $no_slice_id   = $_REQUEST['template']['W'] ? true : false;       // message for
 
 const AA_REGISTER_GLOBALS = true;
 require_once __DIR__."/../../include/init_page.php3";
-//require_once __DIR__."/../../include/en_site_lang.php3";
+//require_once __DIR__."/../../include/en_site_lang.php";
 require_once __DIR__."/../../include/formutil.php3";
 
 require_once __DIR__."/../../include/varset.php3";

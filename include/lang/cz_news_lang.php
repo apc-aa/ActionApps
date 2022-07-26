@@ -4061,7 +4061,7 @@ $_m["Congratulations! The account was created."]
 $_m["Use this account to login and add your first slice:"]
     = "Použijte tento úèet k pøihlášení a vytvoøte první webík:";
 
-// admin/setup.php, row 292
+// admin/   setup.php, row 292
 $_m["Can't assign super access permission."]
     = "Nemohu pøidat superuživatelské právo.";
 

@@ -3693,7 +3693,7 @@ The changes could be tracked on:
          - fixed bug of not working user administration, when all reader slices
            are marked as deleted
          - new possibility to use utf8 encoding in site module
-           (en-utf8_site_lang.php3)
+           (en-utf8_site_lang.php)
 07-02-28 - AA synchronization script in AA Central now is able to synchronize
 (honzam)   two remote slices. It works, but we need UI improvements and testing
 07-02-25 - started work on Central - the place, from which you can control many
@@ -5606,7 +5606,7 @@ The changes could be tracked on:
            allow to view them in a table (jakub)
 03-02-17 - finished the Alert module which cooperates with the Reader management
            slice, added events to event_handler (jakub)
-03-02-16 - removed include of nonexistant en_site_lang.php3 from modedit (mitra)
+03-02-16 - removed include of nonexistant en_site_lang.php from modedit (mitra)
          - added roles to um_util.php3.PrintModuleAddRow - possibly wrong
          - fixed bug in init_page stopping non-superusers logging in
          - fixed warning in view.php3 from packing empty slice_id
@@ -5701,7 +5701,7 @@ The changes could be tracked on:
            and width (mitra)
 03-01-26 - fixed bad url from slicedel2 to slicedel
 03-01-25 - added warnings to GD tests (controlled by errcheck=1) (mitra)
-03-01-25 - restored en_site_lang.php3 since _m conversion not done completely
+03-01-25 - restored en_site_lang.php since _m conversion not done completely
            (mitra)
 03-01-24 - bug fix in slicedit.php3, mistyped URL sliceEdit.php3 (Jakub)
 03-01-24 - changed design of se_inputform.php3 (Jakub)
@@ -5729,7 +5729,7 @@ The changes could be tracked on:
            *** More changes to related item window coming
            * duplicates pack_id and unpack_id to pack_id128 and unpack_id128
              which check type
-         - commented out require of  _lang.php3 files from config.php3
+         - commented out require of  _lang.php files from config.php3
 03-01-21 - changed {....} expansion to use f_h for fields, allowing multi-value
            fields
          - fixed bug in stringexpand for scroller (mitra)
@@ -5743,7 +5743,7 @@ The changes could be tracked on:
             * Finished the scripts in misc/mgettext and include/mgettext.php3
             * In almost every script: All language constants replaced by _m()
               calls
-            * All language files include/??_????_lang.php3 removed.
+            * All language files include/??_????_lang.php removed.
             * Updated language files in include/lang.
             * Added new item into config.php3: $XMGETTEXT_DESTINATION_DIR
             * Updated doc/install-5.html
@@ -5831,7 +5831,7 @@ The changes could be tracked on:
 03-01-02 - fixed bug in site/index.php3 where cache not invalidated when site
            updated
 02-12-30 - spelling correction in _m("There are too many related items.
-           The number of related items is limited.") all *news_lang.php3 still
+           The number of related items is limited.") all *news_lang.php still
            in english (mitra)
 02-12-30 - warning comment on slice special case in item.php3 (mitra)
 02-12-29 - Added some comments in site/site and added simple example from sf.net
@@ -6053,7 +6053,7 @@ The changes could be tracked on:
          - removed logs from files
 02-03-12 - new romanian language support (Thanks to Mih�ly Bak�, StrawberryNet
            Foundation),
-         - new_news_lang.php3 file introduced for better support of many
+         - new_news_lang.php file introduced for better support of many
            language versions
          - fixed bug with file-upload in php 4.1.2
          - aliases added to pagecache lookup for views - bugfix
@@ -6173,7 +6173,7 @@ The changes could be tracked on:
          - fixed bug in LDAP install documentation
 01-06-11 - feeding improved - new feeding mode "Feed & update" and
            "Feed & update & lock"
-01-06-08 - new slovak language support sk_*_lang.php3 (by Norbert Brazda)
+01-06-08 - new slovak language support sk_*_lang.php (by Norbert Brazda)
 01-06-07 - fixed bug of not displayed top and bottom html code for fulltext
 01-06-05 - default codepage for slice not hardcoded now - moved to *_common_lang
          - minor changes in design (new logo and some colors)
@@ -6205,7 +6205,7 @@ The changes could be tracked on:
 01-05-17 - fixed problem vith "No slices listed in Content Pooling page"
 01-05-16 - fixed problem of bad Netscape's view of user manegement pages
 01-05-13 - link to alias editing page in listing of aliases (se_fulltext, ...)
-         - spanish language added (es_news.lang.php3 and es_common_lang.php3)
+         - spanish language added (es_news_lang.php and es_common_lang.php)
 01-04-17 - new script go.php3 for finding links to asiciated items (fed from...)
          - corrected LDIF.init and slapd.conf for LDAP permissions system
          - fixed bug of not displayed top/bottom HTML code in fulltext

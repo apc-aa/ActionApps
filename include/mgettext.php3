@@ -54,7 +54,7 @@ function bind_mgettext_domain($filename, $cache = false, $lang = "") {
 
     static $_m_backup = [];
 
-    $filename = __DIR__.'/lang/'.$filename;
+    $filename = __DIR__.'/lang/'.str_replace('.php3','.php',$filename); // old config could contain old php3 file extension
 
     if ( $mgettext_domain == $filename ) {
         return;                             // allready loaded
@@ -82,7 +82,7 @@ function bind_mgettext_domain($filename, $cache = false, $lang = "") {
 }
 
 function mgettext_bind($lang, $section, $cache=false) {
-    bind_mgettext_domain( $lang.'_'.$section.'_lang.php3', $cache, $lang);
+    bind_mgettext_domain( $lang.'_'.$section.'_lang.php', $cache, $lang);
 }
 
 /** _m function

@@ -32,16 +32,16 @@
   um_uedit.php3      User management - edit/cerate group - add/delete member ...
 
 /aa/include
-  *_lang.php3        Language files - there are two types language files - common and others
+  *_lang.php        Language files - there are two types language files - common and others
                         common - there are stored all language constants common to all action aplications
-                               - there is only one *_common_lang.php3 file per AA instalation
+                               - there is only one *_common_lang.php file per AA instalation
                         others - each file defines one action aplication (or its language mutation)
-  cz_common_lang.php3 Common language file - Czech - used by all aplications in czech version
-  en_common_lang.php3 Common language file - English - used by all aplications in english version
-  cz_news_lang.php3   News listing language file - Czech - defines news listing action aplication
-  en_news_lang.php3   News listing language file - English - defines news listing action aplication
-  en_press_lang.php3  Press releases publisher language file - English - defines press releases publisher action aplication
-  en_all_lang.php3    Maximalistic language fiel - English - used as base file to create new action aplication
+  cz_common_lang.php Common language file - Czech - used by all aplications in czech version
+  en_common_lang.php Common language file - English - used by all aplications in english version
+  cz_news_lang.php   News listing language file - Czech - defines news listing action aplication
+  en_news_lang.php   News listing language file - English - defines news listing action aplication
+  en_press_lang.php  Press releases publisher language file - English - defines press releases publisher action aplication
+  en_all_lang.php    Maximalistic language fiel - English - used as base file to create new action aplication
 
   perm_*.php3        Permission system files - there is two parts of permission system:
                        1) Action aplication independent Perm API (based on LDAP, SQL or none permission)

@@ -73,7 +73,7 @@ if ($update) {
         $varset->add("id","unpacked",$jump_id);
         $varset->add("name","quoted",$jump_name);
         $varset->add("type","quoted",'J');
-        $varset->add("lang_file","quoted","en_news_lang.php3");
+        $varset->add("lang_file","quoted","en_news_lang.php");
         $varset->add("owner","text",'');
         $varset->add("created_by","text",AuthGetUid());
         $varset->add("created_at","text",now());

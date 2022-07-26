@@ -8,60 +8,54 @@
 
 // Before each message there are links to program code where it was used.
 
-$mgettext_lang = "es-utf8";
-define("DB_COLLATION", "utf8mb4_spanish_ci");
-setlocale(LC_ALL, 'es_ES.utf8', 'es_ES');  // sort, date, uppercase, ..
-setlocale(LC_NUMERIC, 'en_US');            // use numeric with dot - there is problem, when
-                                           // used Czech numeric comma for example in AA_Stringexpand_If:
-                                           //   $cmp  = create_function('$b', "return ($etalon $operator". ' $b);');
-                                           // float!! value $etalon is then with comma which leads to syntax error
+$mgettext_lang = "es";
 
 # Unused messages
 $_m["Do you want to check for uniqueness this slice only \n"
    ."                  or all slices?"]
- = "¿Quiere verificar unicidad en este canal solamente o en todos los canales?";
+ = "�Quiere verificar unicidad en este canal solamente o en todos los canales?";
 
 $_m["<b>1</b> = This slice only. \n"
    ."                <b>2</b> = All slices.<br>\n"
    ."                <b>0</b> = (default) Username, special: Checks uniqueness in reader management\n"
    ."                slices and in the permission system. Always uses field ID %1"]
- = "<b>1</b> = Sólo este canal. \n"
+ = "<b>1</b> = S�lo este canal. \n"
    ."<b>2</b> = Todos los canales.<br>\n"
    ."<b>0</b> = Usuario. Comprueba unicidad en canales de Suscriptores y \n"
    ."sistema de permisos. Siempre usa el ID %1";
 
 $_m["PHP-like format - see <a href=\"http://www.php.cz/manual/en/function.date.php\" target=_blank>PHP manual</a>"]
- = "especificar formato según sintaxis de PHP: ver <a href=\"http://www.php.cz/manual/en/function.date.php\" target=_blank>el manual de PHP</a";
+ = "especificar formato seg�n sintaxis de PHP: ver <a href=\"http://www.php.cz/manual/en/function.date.php\" target=_blank>el manual de PHP</a";
 
 $_m["print HTML"]
  = "mostrar HTML";
 
 $_m["prints <i>the field</i> content (or <i>unalias string</i>) depending on the html flag (if html flag is not set, it converts the content to html. In difference to f_h function, it converts to html line-breaks, too. Obviously this function is used for fultexts.)"]
- = "muestra <i>el campo</i> (o la <b>cadena</b>), alterando o no su contenido dependiendo de la selección hecha en 'HTML / texto plano': si se seleccionó 'texto plano', convierte el contenido a HTML, añadiendo cambios de linea etc.";
+ = "muestra <i>el campo</i> (o la <b>cadena</b>), alterando o no su contenido dependiendo de la selecci�n hecha en 'HTML / texto plano': si se seleccion� 'texto plano', convierte el contenido a HTML, a�adiendo cambios de linea etc.";
 
 $_m["field will be displayed in select box. if not specified, in select box are displayed headlines. (only for constants input type: slice)"]
- = "(solo para cuando seleccione un canal para mostrar en la caja de selección) mostrar este campo en vez del campo por defecto (titulares)";
+ = "(solo para cuando seleccione un canal para mostrar en la caja de selecci�n) mostrar este campo en vez del campo por defecto (titulares)";
 
 $_m["show all"]
  = "mostrar todo";
 
 $_m["used only for slices - if set (=1), then all items are shown (including expired and pending ones)"]
- = "(solo para cuando seleccione un canal para mostrar en la caja de selección) si es '1', se muestran en la lista todos los ítems del canal, incluyendo los caducados y los pendientes";
+ = "(solo para cuando seleccione un canal para mostrar en la caja de selecci�n) si es '1', se muestran en la lista todos los �tems del canal, incluyendo los caducados y los pendientes";
 
 $_m["Defines, which buttons to show in item selection:<br>A - 'Add'<br>M - 'Add Mutual<br>B - 'Backward'.<br> Use 'AMB' (default), 'MA', just 'A' or any other combination. The order of letters A,M,B is important."]
- = "Define qué botones se muestran en la lista de items:<br>A - 'Añadir'<br>M - 'Añadir mutuo'<br>B - 'Viceversa'. El orden de las letras A,M,B es importante.";
+ = "Define qu� botones se muestran en la lista de items:<br>A - 'A�adir'<br>M - 'A�adir mutuo'<br>B - 'Viceversa'. El orden de las letras A,M,B es importante.";
 
 $_m["number of characters from the <b>fulltext</b> field"]
- = "número de caracteres del campo <b>texto completo</b>";
+ = "n�mero de caracteres del campo <b>texto completo</b>";
 
 $_m["field id of fulltext field (like full_text.......)"]
  = "id del campo de texto completo (por ejemplo full_text.......)";
 
 $_m["take first paragraph (text until \\<BR\\> or \\<P\\> or \\</P\\) if shorter then <b>length</b>"]
- = "tomar sólo el primer párrafo (el texto hasta \\<BR\\> or \\<P\\> or \\</P\\) si es más corto que <b>longitud</b>";
+ = "tomar s�lo el primer p�rrafo (el texto hasta \\<BR\\> or \\<P\\> or \\</P\\) si es m�s corto que <b>longitud</b>";
 
 $_m["prints <i>the field</i> as image width (height='xxx' width='yyy') empty string if cant work out, does not special case URLs from uploads directory, might do later! "]
- = "Función anticuada. Use mejor la función f_c";
+ = "Funci�n anticuada. Use mejor la funci�n f_c";
 
 # End of unused messages
 // admin/param_wizard.php, row 94
@@ -70,7 +64,7 @@ $_m["Wizard"]
 
 // admin/param_wizard.php, row 174
 $_m["This is an undocumented %s. We don't recommend to use it."]
- = "Esta %s no está documentada. No se recomienda su uso.";
+ = "Esta %s no est� documentada. No se recomienda su uso.";
 
 // admin/param_wizard.php, row 175
 $_m["Close the wizard"]
@@ -78,11 +72,11 @@ $_m["Close the wizard"]
 
 // admin/param_wizard.php, row 189
 $_m["Available parameters: "]
- = "Parámetros disponibles: ";
+ = "Par�metros disponibles: ";
 
 // admin/param_wizard.php, row 201
 $_m["integer&nbsp;number"]
- = "número&nbsp;entero";
+ = "n�mero&nbsp;entero";
 
 // admin/param_wizard.php, row 202
 $_m["any&nbsp;text"]
@@ -98,7 +92,7 @@ $_m["boolean:&nbsp;0=false,1=true"]
 
 // admin/param_wizard.php, row 217
 $_m["This %s has no parameters."]
- = "Esta %s no tiene parámetros.";
+ = "Esta %s no tiene par�metros.";
 
 // admin/param_wizard.php, row 227
 $_m["Have a look at these examples of parameters sets:"]
@@ -126,7 +120,7 @@ $_m["OK"]
 
 // include/constants_param_wizard.php3, row 59
 $_m["Insert Function"]
- = "Función de Inserción";
+ = "Funci�n de Inserci�n";
 
 // include/constants_param_wizard.php3, row 61
 $_m["Text = don't modify"]
@@ -154,7 +148,7 @@ $_m["File = uploaded file"]
 
 // include/constants_param_wizard.php3, row 70
 $_m["Stores the uploaded file and a link to it, parameters only apply if type is image/something."]
- = "Coloca el archivo en la carpeta de archivos de las AA, y almacena el URL que permite acceder a él. Los parámetros sólo sirven si el tipo MIME es image/*.";
+ = "Coloca el archivo en la carpeta de archivos de las AA, y almacena el URL que permite acceder a �l. Los par�metros s�lo sirven si el tipo MIME es image/*.";
 
 // include/constants_param_wizard.php3, row 72
 $_m["Mime types accepted"]
@@ -162,19 +156,19 @@ $_m["Mime types accepted"]
 
 // include/constants_param_wizard.php3, row 73
 $_m["Only files of matching mime types will be accepted"]
- = "Solo se aceptarán los tipos de archivo que coincidan";
+ = "Solo se aceptar�n los tipos de archivo que coincidan";
 
 // include/constants_param_wizard.php3, row 76
 $_m["Maximum image width"]
- = "Ancho máximo de imágen";
+ = "Ancho m�ximo de im�gen";
 
 // include/constants_param_wizard.php3, row 79
 $_m["Maximum image height"]
- = "Altura máxima imágen";
+ = "Altura m�xima im�gen";
 
 // include/constants_param_wizard.php3, row 80
 $_m["The image will be resampled to be within these limits, while retaining aspect ratio."]
- = "La imágen será redimensionada para que esté dentro de estos límites, manteniendo su proporción.";
+ = "La im�gen ser� redimensionada para que est� dentro de estos l�mites, manteniendo su proporci�n.";
 
 // include/constants_param_wizard.php3, row 83
 $_m["Other fields"]
@@ -182,7 +176,7 @@ $_m["Other fields"]
 
 // include/constants_param_wizard.php3, row 84
 $_m["List of other fields to receive this image, separated by ##"]
- = "Lista de otros campos que reciben esta imágen, separados por ##";
+ = "Lista de otros campos que reciben esta im�gen, separados por ##";
 
 // include/constants_param_wizard.php3, row 87
 $_m["Upload policy"]
@@ -215,7 +209,7 @@ $_m["Login name"]
 
 // include/constants_param_wizard.php3, row 107
 $_m["Item IDs"]
- = "IDs ítems";
+ = "IDs �tems";
 
 // include/constants_param_wizard.php3, row 109
 $_m["Now = always store current time"]
@@ -234,7 +228,7 @@ $_m["Stores value from a 'Password and Change Password' field type.\n"
    ."           First prooves the new password matches the retyped new password,\n"
    ."           and if so, MD5-encrypts the new password and stores it."]
  = "Almacena el valor de un tipo de entrada 'Clave y Cambio de Clave'.\n"
-   ."Primero comprueba que las dos claves coinciden, y si es así,\n"
+   ."Primero comprueba que las dos claves coinciden, y si es as�,\n"
    ."inserta la clave encriptada con MD5.";
 
 // include/constants_param_wizard.php3, row 117
@@ -279,7 +273,7 @@ $_m["Default Value Type"]
 
 // include/constants_param_wizard.php3, row 148
 $_m["Text from 'Parameter'"]
- = "Texto de 'parámetro'";
+ = "Texto de 'par�metro'";
 
 // include/constants_param_wizard.php3, row 149
 $_m["Text"]
@@ -287,11 +281,11 @@ $_m["Text"]
 
 // include/constants_param_wizard.php3, row 151
 $_m["Date + 'Parameter' days"]
- = "Fecha + 'parámetro' días";
+ = "Fecha + 'par�metro' d�as";
 
 // include/constants_param_wizard.php3, row 152
 $_m["Number of days"]
- = "Número de días";
+ = "N�mero de d�as";
 
 // include/constants_param_wizard.php3, row 154
 $_m["User ID"]
@@ -307,15 +301,15 @@ $_m["Variable"]
 
 // include/constants_param_wizard.php3, row 161
 $_m["A dangerous function. Do not use."]
- = "Función peligrosa. No la use.";
+ = "Funci�n peligrosa. No la use.";
 
 // include/constants_param_wizard.php3, row 163
 $_m["Random string"]
- = "Cadena aleatória";
+ = "Cadena aleat�ria";
 
 // include/constants_param_wizard.php3, row 164
 $_m["Random alphanumeric [A-Z0-9] string."]
- = "Una cadena alfanumérica [A-Z0-9] elegida al azar.";
+ = "Una cadena alfanum�rica [A-Z0-9] elegida al azar.";
 
 // include/constants_param_wizard.php3, row 166
 $_m["String length"]
@@ -328,11 +322,11 @@ $_m["Field to check"]
 // include/constants_param_wizard.php3, row 171
 $_m["If you need a unique code, you must send the field ID,\n"
    ."                  the function will then look into this field to ensure uniqueness."]
- = "Si necesita un código único, rellene el ID del camp, y la función asegurará que el valor sea único para ese campo.";
+ = "Si necesita un c�digo �nico, rellene el ID del camp, y la funci�n asegurar� que el valor sea �nico para ese campo.";
 
 // include/constants_param_wizard.php3, row 174, 239
 $_m["Slice only"]
- = "Sólo en el canal";
+ = "S�lo en el canal";
 
 // include/constants_param_wizard.php3, row 176, 241
 $_m["Do you want to check for uniqueness this slice only\n"
@@ -341,7 +335,7 @@ $_m["Do you want to check for uniqueness this slice only\n"
 
 // include/constants_param_wizard.php3, row 183
 $_m["Input Validate Type"]
- = "Tipo de validación de entrada";
+ = "Tipo de validaci�n de entrada";
 
 // include/constants_param_wizard.php3, row 185
 $_m["No validation"]
@@ -357,11 +351,11 @@ $_m["E-mail"]
 
 // include/constants_param_wizard.php3, row 191
 $_m["Number = positive integer number"]
- = "Número = entero positivo";
+ = "N�mero = entero positivo";
 
 // include/constants_param_wizard.php3, row 193
 $_m["Id = 1-32 hexadecimal digits [0-9a-f]"]
- = "Id = 1-32 dígitos hexadecimales";
+ = "Id = 1-32 d�gitos hexadecimales";
 
 // include/constants_param_wizard.php3, row 195
 $_m["Date = store as date"]
@@ -382,7 +376,7 @@ $_m["Unique = proove uniqueness"]
 // include/constants_param_wizard.php3, row 203
 $_m["Validates only if the value is not yet used. Useful e.g.\n"
    ."        for emails or user names."]
- = "Validar si el valor no está en uso todavía. Util para nombres de usuario o e-mails";
+ = "Validar si el valor no est� en uso todav�a. Util para nombres de usuario o e-mails";
 
 // include/constants_param_wizard.php3, row 205, 235
 $_m["Field ID"]
@@ -436,11 +430,11 @@ $_m["Wrong value"]
 
 // include/constants_param_wizard.php3, row 232
 $_m["Unique e-mail"]
- = "e-mail único";
+ = "e-mail �nico";
 
 // include/constants_param_wizard.php3, row 233
 $_m["Combines the e-mail and unique validations. Validates only if the value is a valid email address and not yet used."]
- = "Combina las validaciones de email y unicidad. Admite sólo los valores que sean direcciones válidas y que no estén en uso.";
+ = "Combina las validaciones de email y unicidad. Admite s�lo los valores que sean direcciones v�lidas y que no est�n en uso.";
 
 // include/constants_param_wizard.php3, row 250
 $_m["Validates the passwords do not differ when changing password.\n"
@@ -448,7 +442,7 @@ $_m["Validates the passwords do not differ when changing password.\n"
    ."        because the insert\n"
    ."        function does the validation again before inserting the new password.</i>"]
  = "Verifica que las claves no sean distintas al cambiar la clave.\n"
-   ."<i>La validación se hace por JavaScript y no en el servidor porque la función de inserción no valida antes de insertar la nueva clave</i>.";
+   ."<i>La validaci�n se hace por JavaScript y no en el servidor porque la funci�n de inserci�n no valida antes de insertar la nueva clave</i>.";
 
 // include/constants_param_wizard.php3, row 257
 $_m["Input Type"]
@@ -456,7 +450,7 @@ $_m["Input Type"]
 
 // include/constants_param_wizard.php3, row 259
 $_m["Hierarchical constants"]
- = "Constantes jerárquicas";
+ = "Constantes jer�rquicas";
 
 // include/constants_param_wizard.php3, row 260
 $_m["A view with level boxes allows to choose constants."]
@@ -480,11 +474,11 @@ $_m["Width in characters"]
 
 // include/constants_param_wizard.php3, row 270
 $_m["Size of target"]
- = "Tamaño del destino";
+ = "Tama�o del destino";
 
 // include/constants_param_wizard.php3, row 271
 $_m["Lines in the target select box"]
- = "Número de lineas visibles en la caja de selección";
+ = "N�mero de lineas visibles en la caja de selecci�n";
 
 // include/constants_param_wizard.php3, row 274
 $_m["Horizontal"]
@@ -500,7 +494,7 @@ $_m["First selectable"]
 
 // include/constants_param_wizard.php3, row 279
 $_m["First level which will have a Select button"]
- = "Primer nivel a tener un botón de selección";
+ = "Primer nivel a tener un bot�n de selecci�n";
 
 // include/constants_param_wizard.php3, row 282
 $_m["Level names"]
@@ -535,14 +529,14 @@ $_m["Rich edit text area. This operates the same way as Text Area in browsers wh
    ."Another possibility is to use the <b>iframe</b> version which should work in IE on Windows and Mac (set the 3rd parameter to \"iframe\").<br><br>\n"
    ."The code for this editor is taken from the Wysiwyg open project (http://www.unica.edu/uicfreesoft/) and changed to fullfill our needs. See http://www.unica.edu/uicfreesoft/wysiwyg_web_edit/Readme_english.txt on details how to prepare Netscape.<br><br>\n"
    ."The javascript code needed to provide the editor is saved in two HTML files, so that the user doesn't have to load it every time she reloads the Itemedit web page."]
- = "Editor de HTML in situ. En IE 5.0 o superior, así como en Netscape 4.76 o superior con los plugins necesarios, muestra un editor de HTML en el formulario. En navegadores que no lo soportan, muestra un area de texto normal.<br> Otra posibilidad es usar la versión <b>iframe</b> que debería  funcionar en IE para Windows y MAC (poner \"iframe\" en el tercer  parámetro)<br><br> <b>ATENCION: no olvide marcar <i>las dos</i> opciones 'Mostrar HTML/texto plano' y 'HTML por defecto' cuando use este tipo de entrada</b>";
+ = "Editor de HTML in situ. En IE 5.0 o superior, as� como en Netscape 4.76 o superior con los plugins necesarios, muestra un editor de HTML en el formulario. En navegadores que no lo soportan, muestra un area de texto normal.<br> Otra posibilidad es usar la versi�n <b>iframe</b> que deber�a  funcionar en IE para Windows y MAC (poner \"iframe\" en el tercer  par�metro)<br><br> <b>ATENCION: no olvide marcar <i>las dos</i> opciones 'Mostrar HTML/texto plano' y 'HTML por defecto' cuando use este tipo de entrada</b>";
 
 // include/constants_param_wizard.php3, row 302
 $_m["column count"]
  = "columnas";
 
 // include/constants_param_wizard.php3, row 306, 843
-// doc/param_wizard_list.php3, row 96
+// doc/param_wizard_list.php, row 96
 $_m["type"]
  = "tipo";
 
@@ -564,11 +558,11 @@ $_m["A text field."]
 
 // include/constants_param_wizard.php3, row 314, 378
 $_m["max characters"]
- = "máx. caracteres";
+ = "m�x. caracteres";
 
 // include/constants_param_wizard.php3, row 315
 $_m["max count of characters entered (maxlength parameter)"]
- = "número máximo de caracteres que se pueden introducir";
+ = "n�mero m�ximo de caracteres que se pueden introducir";
 
 // include/constants_param_wizard.php3, row 318, 382
 $_m["width"]
@@ -580,11 +574,11 @@ $_m["width of the field in characters (size parameter)"]
 
 // include/constants_param_wizard.php3, row 324
 $_m["Multiple Text Field"]
- = "Campo de Texto Múltiple";
+ = "Campo de Texto M�ltiple";
 
 // include/constants_param_wizard.php3, row 325
 $_m["Text field input type which allows you to enter more than one (multiple) values into one field (just like if you select multiple values from Multiple Selectbox). The new values are filled by popup box."]
- = "Tipo de entrada de campo que permite entrar más de un (múltiple) valor dentro de un campo (tal como se realiza cuando se utilizan casillas de selección múltiple). Los nuevos valores son llenados por la caja popup.";
+ = "Tipo de entrada de campo que permite entrar m�s de un (m�ltiple) valor dentro de un campo (tal como se realiza cuando se utilizan casillas de selecci�n m�ltiple). Los nuevos valores son llenados por la caja popup.";
 
 // include/constants_param_wizard.php3, row 327, 607
 $_m["Show Actions"]
@@ -597,12 +591,12 @@ $_m["Which action buttons to show:\n"
    ."                       <br>A - Add new value\n"
    ."                       <br>C - Change the value\n"
    ."                       <br>Use 'MDAC' (default), 'DAC', just 'M' or any other combination. The order of letters M,D,A,C is not important."]
- = "Qué botones de acción mostrar:\n"
+ = "Qu� botones de acci�n mostrar:\n"
    ."                       <br>M - Mover (arriba y abajo)\n"
    ."                       <br>D - Borrar un valor,\n"
-   ."                       <br>A - Añadir un valor,\n"
+   ."                       <br>A - A�adir un valor,\n"
    ."                       <br>C - Cambiar un valor\n"
-   ."                       <br>Use 'MDAC' (por defecto), 'DAC', solamente 'M' u otra combinación. El orden de las letras M,D,A,C no es importante.";
+   ."                       <br>Use 'MDAC' (por defecto), 'DAC', solamente 'M' u otra combinaci�n. El orden de las letras M,D,A,C no es importante.";
 
 // include/constants_param_wizard.php3, row 336, 538, 587, 647
 $_m["Row count"]
@@ -610,15 +604,15 @@ $_m["Row count"]
 
 // include/constants_param_wizard.php3, row 337
 $_m["Number of rows (values) displayed at once"]
- = "Número de columnas (valores) mostrados a la vez";
+ = "N�mero de columnas (valores) mostrados a la vez";
 
 // include/constants_param_wizard.php3, row 343
 $_m["Select Box"]
- = "Caja selección";
+ = "Caja selecci�n";
 
 // include/constants_param_wizard.php3, row 344
 $_m["A selectbox field with a values list.<br><br>It uses the Constants select box - if you choose a constant group there, the constants of this group will be printed, if you choose a slice name, the headlines of all items will be printed (used for related stories or for setting relation to another slice, usually with the f_v alias function)"]
- = "Una caja de selección con una lista de valores.<br><br>Utiliza la caja de selección de constantes: si usted selecciona ahí un grupo de constantes, ese grupo se mostrará en la lista de valores; si selecciona un nombre de canal se mostrarán los títulos de los ítems (útil para hacer relaciones con otro canal, normalmente usando un alias con la función f_v)";
+ = "Una caja de selecci�n con una lista de valores.<br><br>Utiliza la caja de selecci�n de constantes: si usted selecciona ah� un grupo de constantes, ese grupo se mostrar� en la lista de valores; si selecciona un nombre de canal se mostrar�n los t�tulos de los �tems (�til para hacer relaciones con otro canal, normalmente usando un alias con la funci�n f_v)";
 
 // include/constants_param_wizard.php3, row 346, 386
 $_m["slice field"]
@@ -626,7 +620,7 @@ $_m["slice field"]
 
 // include/constants_param_wizard.php3, row 347, 387, 543
 $_m["field (or format string) that will be displayed in select box (from related slice). if not specified, in select box are displayed headlines. you can use also any AA formatstring here (like: _#HEADLINE - _#PUB_DATE). (only for constants input type: slice)"]
- = "campo (o cadena de formato) que se mostrará en la caja de selección (del canal relacionado). Si no se especifica, en la caja de selección se mostrarán los encabezados. Usted puede utilizar acá un formato de las AA (como: _#HEADLINE - _#PUB_DATE). (solamente para constantes de tipo entrada: slice)";
+ = "campo (o cadena de formato) que se mostrar� en la caja de selecci�n (del canal relacionado). Si no se especifica, en la caja de selecci�n se mostrar�n los encabezados. Usted puede utilizar ac� un formato de las AA (como: _#HEADLINE - _#PUB_DATE). (solamente para constantes de tipo entrada: slice)";
 
 // include/constants_param_wizard.php3, row 349, 389, 453, 512, 545, 662, 969
 $_m["category........"]
@@ -638,15 +632,15 @@ $_m["use name"]
 
 // include/constants_param_wizard.php3, row 351, 391
 $_m["if set (=1), then the name of selected constant is used, insted of the value. Default is 0"]
- = "si es '1', se usará el nombre de las constantes en vez del valor";
+ = "si es '1', se usar� el nombre de las constantes en vez del valor";
 
 // include/constants_param_wizard.php3, row 354, 406, 454, 513, 546, 663
 $_m["Show items from bins"]
- = "Mostrar ítems desde las carpetas";
+ = "Mostrar �tems desde las carpetas";
 
 // include/constants_param_wizard.php3, row 362, 414, 462, 521, 554, 671
 $_m["(for slices only) To show items from selected bins, use following values:<br>Active bin - '%1'<br>Pending bin - '%2'<br>Expired bin - '%3'<br>Holding bin - '%4'<br>Trash bin - '%5'<br>Value is created as follows: eg. You want show headlines from Active, Expired and Holding bins. Value for this combination is counted like %1+%3+%4&nbsp;=&nbsp;13"]
- = "(para canales solamente). Para mostrar ítems seleccionados de las carpetas utilice los siguientes valores:<br>Aprobados -  '%1'<br>Pendientes - '%2'<br>Expirados - '%3'<br>Por aprobar - '%4'<br>Papelera - '%5'<br>El valor se genera como se muestra a continuación: p.e. Si Usted desea mostrar los encabezados desde Aprobados, Caducados y Por Aprobar. El valor de esta combinación se cuentas así %1+%3+%4&nbsp;=&nbsp;13";
+ = "(para canales solamente). Para mostrar �tems seleccionados de las carpetas utilice los siguientes valores:<br>Aprobados -  '%1'<br>Pendientes - '%2'<br>Expirados - '%3'<br>Por aprobar - '%4'<br>Papelera - '%5'<br>El valor se genera como se muestra a continuaci�n: p.e. Si Usted desea mostrar los encabezados desde Aprobados, Caducados y Por Aprobar. El valor de esta combinaci�n se cuentas as� %1+%3+%4&nbsp;=&nbsp;13";
 
 // include/constants_param_wizard.php3, row 365, 417, 465, 524, 557, 674
 $_m["Filtering conditions"]
@@ -654,7 +648,7 @@ $_m["Filtering conditions"]
 
 // include/constants_param_wizard.php3, row 366, 418, 466, 525, 558, 675
 $_m["(for slices only) Conditions for filtering items in selection. Use conds[] array."]
- = "(para canales solamente) Condiciones de filtrado de ítems en la selección. Utilice el arreglo conds[]";
+ = "(para canales solamente) Condiciones de filtrado de �tems en la selecci�n. Utilice el arreglo conds[]";
 
 // include/constants_param_wizard.php3, row 369, 421, 469, 528, 561, 678
 $_m["Sort by"]
@@ -662,11 +656,11 @@ $_m["Sort by"]
 
 // include/constants_param_wizard.php3, row 370, 422, 470, 529, 562, 679
 $_m["(for slices only) Sort the items in specified order. Use sort[] array"]
- = "(para canales solamente) Ordenar los ítems en un orden específico. Utilice el arreglo sort[]";
+ = "(para canales solamente) Ordenar los �tems en un orden espec�fico. Utilice el arreglo sort[]";
 
 // include/constants_param_wizard.php3, row 375
 $_m["Text Field with Presets"]
- = "Campo de texto con preselección";
+ = "Campo de texto con preselecci�n";
 
 // include/constants_param_wizard.php3, row 376
 $_m["Text field with values names list. When you choose a name from the list, the appropriate value is printed in the text field"]
@@ -674,19 +668,19 @@ $_m["Text field with values names list. When you choose a name from the list, th
 
 // include/constants_param_wizard.php3, row 379
 $_m["max count of characteres entered in the text field (maxlength parameter)"]
- = "número máximo de caracteres que acepta el campo de texto";
+ = "n�mero m�ximo de caracteres que acepta el campo de texto";
 
 // include/constants_param_wizard.php3, row 383
 $_m["width of the text field in characters (size parameter)"]
- = "ancho del campo de texto a mostra (número de columnas de texto)r";
+ = "ancho del campo de texto a mostra (n�mero de columnas de texto)r";
 
 // include/constants_param_wizard.php3, row 394
 $_m["adding"]
- = "añadir";
+ = "a�adir";
 
 // include/constants_param_wizard.php3, row 395
 $_m["adding the selected items to input field comma separated"]
- = "en vez de sobreescribir, ir añadiendo los valores separados por comas";
+ = "en vez de sobreescribir, ir a�adiendo los valores separados por comas";
 
 // include/constants_param_wizard.php3, row 398
 $_m["secondfield"]
@@ -694,7 +688,7 @@ $_m["secondfield"]
 
 // include/constants_param_wizard.php3, row 399
 $_m["field_id of another text field, where value of this selectbox will be propagated too (in main text are will be text and there will be value)"]
- = "identificador de otro campo de texto donde propagar el valor de esta selección";
+ = "identificador de otro campo de texto donde propagar el valor de esta selecci�n";
 
 // include/constants_param_wizard.php3, row 401, 918
 $_m["source_href....."]
@@ -706,11 +700,11 @@ $_m["add2constant"]
 
 // include/constants_param_wizard.php3, row 403
 $_m["if set to 1, user typped value in inputform is stored into constants (only if the value is not already there)"]
- = "si es '1' y el texto que se entra no se encuentra ya en la lista de valores, se añade una nueva constante";
+ = "si es '1' y el texto que se entra no se encuentra ya en la lista de valores, se a�ade una nueva constante";
 
 // include/constants_param_wizard.php3, row 427
 $_m["Text Area with Presets"]
- = "Area de texto con Preselección";
+ = "Area de texto con Preselecci�n";
 
 // include/constants_param_wizard.php3, row 428
 $_m["Text area with values names list. When you choose a name from the list, the appropriate value is printed in the text area"]
@@ -722,7 +716,7 @@ $_m["rows"]
 
 // include/constants_param_wizard.php3, row 431
 $_m["Textarea rows"]
- = "número de filas del area de texto";
+ = "n�mero de filas del area de texto";
 
 // include/constants_param_wizard.php3, row 434
 $_m["cols"]
@@ -730,7 +724,7 @@ $_m["cols"]
 
 // include/constants_param_wizard.php3, row 435
 $_m["Text area columns"]
- = "número de columnas del area de texto";
+ = "n�mero de columnas del area de texto";
 
 // include/constants_param_wizard.php3, row 439
 $_m["Radio Button"]
@@ -738,7 +732,7 @@ $_m["Radio Button"]
 
 // include/constants_param_wizard.php3, row 440
 $_m["Radio button group - the user may choose one value of the list. <br><br>It uses the Constants select box - if you choose a constant group there, the constants of this group will be printed, if you choose a slice name, the headlines of all items will be printed (used for related stories or for setting relation to another slice - it is obviously used with f_v alias function then)"]
- = "Grupo de botones para chequear, donde el usuario sólo puede seleccionar uno a la vez de entre toda la lista. <br><br>Usa la caja de selección de constantes para determinar la lista de botones (puede seleccionar ahí un grupo de constantes o un canal)";
+ = "Grupo de botones para chequear, donde el usuario s�lo puede seleccionar uno a la vez de entre toda la lista. <br><br>Usa la caja de selecci�n de constantes para determinar la lista de botones (puede seleccionar ah� un grupo de constantes o un canal)";
 
 // include/constants_param_wizard.php3, row 442, 501
 $_m["Columns"]
@@ -746,7 +740,7 @@ $_m["Columns"]
 
 // include/constants_param_wizard.php3, row 443, 502
 $_m["Number of columns. If unfilled, the checkboxes are all on one line. If filled, they are formatted in a table."]
- = "Número de columnas. Si no se especifica, todos los ítems aparecen en linea. Si se pone aquí un valor, se formatean como una tabla";
+ = "N�mero de columnas. Si no se especifica, todos los �tems aparecen en linea. Si se pone aqu� un valor, se formatean como una tabla";
 
 // include/constants_param_wizard.php3, row 446, 505
 $_m["Move right"]
@@ -762,7 +756,7 @@ $_m["Slice field"]
 
 // include/constants_param_wizard.php3, row 451
 $_m["Field (or format string) that will be displayed as radiobuton's option (from related slice). if not specified, in select box are displayed headlines. you can use also any AA formatstring here (like: _#HEADLINE - _#PUB_DATE). (only for constants input type: slice)"]
- = "Campo (o cadena de formato) que será mostrada como una opción de botón de selección (desde un canal relacionado). Si no se especifica, en la caja de selección se mostrarán los encabezados. Usted puede utilizar acá un formato de las AA (como: _#HEADLINE - _#PUB_DATE). (solamente para constantes de tipo entrada: slice)";
+ = "Campo (o cadena de formato) que ser� mostrada como una opci�n de bot�n de selecci�n (desde un canal relacionado). Si no se especifica, en la caja de selecci�n se mostrar�n los encabezados. Usted puede utilizar ac� un formato de las AA (como: _#HEADLINE - _#PUB_DATE). (solamente para constantes de tipo entrada: slice)";
 
 // include/constants_param_wizard.php3, row 475
 $_m["Date"]
@@ -770,23 +764,23 @@ $_m["Date"]
 
 // include/constants_param_wizard.php3, row 476
 $_m["you can choose an interval from which the year will be offered"]
- = "puede seleccionar un intervalo de años a ofrecer";
+ = "puede seleccionar un intervalo de a�os a ofrecer";
 
 // include/constants_param_wizard.php3, row 478
 $_m["Starting Year"]
- = "Año de inicio";
+ = "A�o de inicio";
 
 // include/constants_param_wizard.php3, row 479
 $_m["The (relative) start of the year interval"]
- = "El primer año del rango (relativo al año actual)";
+ = "El primer a�o del rango (relativo al a�o actual)";
 
 // include/constants_param_wizard.php3, row 482
 $_m["Ending Year"]
- = "Año final";
+ = "A�o final";
 
 // include/constants_param_wizard.php3, row 483
 $_m["The (relative) end of the year interval"]
- = "El último año del rango (relativo al actual)";
+ = "El �ltimo a�o del rango (relativo al actual)";
 
 // include/constants_param_wizard.php3, row 486
 $_m["Relative"]
@@ -794,7 +788,7 @@ $_m["Relative"]
 
 // include/constants_param_wizard.php3, row 487
 $_m["If this is 1, the starting and ending year will be taken as relative - the interval will start at (this year - starting year) and end at (this year + ending year). If this is 0, the starting and ending years will be taken as absolute."]
- = "Si es '1', los años de inicio y final se tomarán relativos al año en curso, es decir, el año inicial será este año menos el año inicial, y el final será este año más el final. Si es '0', los valores de año inicial y final se tomarán como absolutos";
+ = "Si es '1', los a�os de inicio y final se tomar�n relativos al a�o en curso, es decir, el a�o inicial ser� este a�o menos el a�o inicial, y el final ser� este a�o m�s el final. Si es '0', los valores de a�o inicial y final se tomar�n como absolutos";
 
 // include/constants_param_wizard.php3, row 490
 $_m["Show time"]
@@ -806,31 +800,31 @@ $_m["show the time box? (1 means Yes, undefined means No)"]
 
 // include/constants_param_wizard.php3, row 495
 $_m["Checkbox"]
- = "Selección";
+ = "Selecci�n";
 
 // include/constants_param_wizard.php3, row 496
 $_m["The field value will be represented by a checkbox."]
- = "Mostrar una cajita de selección que permita 'activar' o 'desactivar' el valor de este campo. Sirve para los campos de tipo booleano (cierto o falso)";
+ = "Mostrar una cajita de selecci�n que permita 'activar' o 'desactivar' el valor de este campo. Sirve para los campos de tipo booleano (cierto o falso)";
 
 // include/constants_param_wizard.php3, row 498
 $_m["Multiple Checkboxes"]
- = "Selección Múltiple";
+ = "Selecci�n M�ltiple";
 
 // include/constants_param_wizard.php3, row 499
 $_m["Multiple choice checkbox group. <br><br>It uses the Constants select box - if you choose a constant group there, the constants of this group will be printed, if you choose a slice name, the headlines of all items will be printed (used for related stories or for setting relation to another slice - it is obviously used with f_v alias function then)"]
- = "Mostrar una lista de valores con cajitas para seleccionarlos individualmente.<br><br>La lista de valores se especifica en la caja de selección de constantes, y puede ser un grupo de constantes o un canal.";
+ = "Mostrar una lista de valores con cajitas para seleccionarlos individualmente.<br><br>La lista de valores se especifica en la caja de selecci�n de constantes, y puede ser un grupo de constantes o un canal.";
 
 // include/constants_param_wizard.php3, row 510
 $_m["Field (or format string) that will be displayed as checbox options (from related slice). if not specified, in select box are displayed headlines. you can use also any AA formatstring here (like: _#HEADLINE - _#PUB_DATE). (only for constants input type: slice)"]
- = "Campo (o cadena de formato) que será mostrada como una opción de botón de selección (desde un canal relacionado). Si no se especifica, en la caja de selección se mostrarán los encabezados. Usted puede utilizar acá un formato de las AA (como: _#HEADLINE - _#PUB_DATE). (solamente para constantes de tipo entrada: slice)";
+ = "Campo (o cadena de formato) que ser� mostrada como una opci�n de bot�n de selecci�n (desde un canal relacionado). Si no se especifica, en la caja de selecci�n se mostrar�n los encabezados. Usted puede utilizar ac� un formato de las AA (como: _#HEADLINE - _#PUB_DATE). (solamente para constantes de tipo entrada: slice)";
 
 // include/constants_param_wizard.php3, row 535
 $_m["Multiple Selectbox"]
- = "Caja de selección múltiple";
+ = "Caja de selecci�n m�ltiple";
 
 // include/constants_param_wizard.php3, row 536
 $_m["Multiple choice select box. <br><br>It uses the Constants select box - if you choose a constant group there, the constants of this group will be printed, if you choose a slice name, the headlines of all items will be printed (used for related stories or for setting relation to another slice - it is obviously used with f_v alias function then)"]
- = "Muestra una caja de selección de donde se puede seleccionar más de un valor a la vez (con la tecla control o shift).<br><br>La lista de valores se especifica en la caja de selección de constantes, y puede ser un grupo de constantes o un canal.";
+ = "Muestra una caja de selecci�n de donde se puede seleccionar m�s de un valor a la vez (con la tecla control o shift).<br><br>La lista de valores se especifica en la caja de selecci�n de constantes, y puede ser un grupo de constantes o un canal.";
 
 // include/constants_param_wizard.php3, row 568
 $_m["File"]
@@ -838,7 +832,7 @@ $_m["File"]
 
 // include/constants_param_wizard.php3, row 569
 $_m["File upload - a text field with the file find button"]
- = "Campo para subir archivo: un campo de texto con un botón que permite buscar un archivo en el disco local";
+ = "Campo para subir archivo: un campo de texto con un bot�n que permite buscar un archivo en el disco local";
 
 // include/constants_param_wizard.php3, row 571
 $_m["Allowed file types"]
@@ -870,15 +864,15 @@ $_m["appears beneath the file upload field"]
 
 // include/constants_param_wizard.php3, row 582
 $_m["You can select a file ..."]
- = "Solo se aceptan imágenes en formato JPG.";
+ = "Solo se aceptan im�genes en formato JPG.";
 
 // include/constants_param_wizard.php3, row 584
 $_m["Related Item Window"]
- = "Ventana para relacionar ítems";
+ = "Ventana para relacionar �tems";
 
 // include/constants_param_wizard.php3, row 585
 $_m["List of items connected with the active one - by using the buttons Add and Delete you show a window, where you can search in the items list"]
- = "Abre otra ventana para interrelacionar ítems, mediatne los botones Añadir y Borrar";
+ = "Abre otra ventana para interrelacionar �tems, mediatne los botones A�adir y Borrar";
 
 // include/constants_param_wizard.php3, row 588
 $_m["Row count in the list"]
@@ -894,11 +888,11 @@ $_m["Defines, which buttons to show in item selection:\n"
    ."                       <br>M - add Mutual\n"
    ."                       <br>B - Backward\n"
    ."                       <br> Use 'AMB' (default), 'MA', just 'A' or any other combination. The order of letters A,M,B is important."]
- = "Define que botones se muestran en la selección de un ítem:\n"
-   ."                       <br>A - Añadir\n"
+ = "Define que botones se muestran en la selecci�n de un �tem:\n"
+   ."                       <br>A - A�adir\n"
    ."                       <br>M - Mutuo\n"
    ."                       <br>B - Inverso\n"
-   ."                       <br> Utilice 'AMB' (por defecto), 'MA', solo 'A' u otra combinación. El orden de las letras A,M,B es importante.";
+   ."                       <br> Utilice 'AMB' (por defecto), 'MA', solo 'A' u otra combinaci�n. El orden de las letras A,M,B es importante.";
 
 // include/constants_param_wizard.php3, row 598, 606
 $_m["AMB"]
@@ -906,11 +900,11 @@ $_m["AMB"]
 
 // include/constants_param_wizard.php3, row 599
 $_m["Admin design"]
- = "diseño administrador";
+ = "dise�o administrador";
 
 // include/constants_param_wizard.php3, row 600
 $_m["If set (=1), the items in related selection window will be listed in the same design as in the Item manager - 'Design - Item Manager' settings will be used. Only the checkbox will be replaced by the buttons (see above). It is important that the checkbox must be defined as:<br> <i>&lt;input type=checkbox name=\"chb[x_#ITEM_ID#]\" value=\"1\"&gt;</i> (which is default).<br> If unset (=0), just headline is shown (default)."]
- = "Si es verdadero (1), la lista de items se muestra usando el diseño del administrador de ítems ('Diseño - Administrador de ítems'), solo que reemplazando la caja de selección por los botones.<br><b>Importante:</b> el diseño de la caja de selección debe ser  <i>&lt;input type=checkbox name=\"chb[x_#ITEM_ID#]\" value=\"1\"&gt;</i> (es así por defecto).<br> Si es falso (0), mostrar solo los títulos.";
+ = "Si es verdadero (1), la lista de items se muestra usando el dise�o del administrador de �tems ('Dise�o - Administrador de �tems'), solo que reemplazando la caja de selecci�n por los botones.<br><b>Importante:</b> el dise�o de la caja de selecci�n debe ser  <i>&lt;input type=checkbox name=\"chb[x_#ITEM_ID#]\" value=\"1\"&gt;</i> (es as� por defecto).<br> Si es falso (0), mostrar solo los t�tulos.";
 
 // include/constants_param_wizard.php3, row 603
 $_m["Tag Prefix"]
@@ -928,13 +922,13 @@ $_m["Which action buttons to show:\n"
    ."                       <br>N - insert new item in related slice and make it related\n"
    ."                       <br>E - Edit related item\n"
    ."                       <br>Use 'DR' (default), 'MDRNE', just 'N' or any other combination. The order of letters M,D,R,N,E is not important."]
- = "Qué botones de acción mostrar:\n"
+ = "Qu� botones de acci�n mostrar:\n"
    ."                       <br>M - Mover (arriba y abajo)\n"
-   ."                       <br>D - Borrar relación,\n"
-   ."                       <br>R - añadir relación al ítem actual\n"
-   ."                       <br>N - insertar nuevo ítem en el canal relacionado y haga la relación\n"
-   ."                       <br>E - Editar el ítem relacionado\n"
-   ."                       <br>Use 'DR' (por defecto), 'MDRNE', solo 'N' u otra combinación. El orden de las letras M,D,R,N,E no es importante.";
+   ."                       <br>D - Borrar relaci�n,\n"
+   ."                       <br>R - a�adir relaci�n al �tem actual\n"
+   ."                       <br>N - insertar nuevo �tem en el canal relacionado y haga la relaci�n\n"
+   ."                       <br>E - Editar el �tem relacionado\n"
+   ."                       <br>Use 'DR' (por defecto), 'MDRNE', solo 'N' u otra combinaci�n. El orden de las letras M,D,R,N,E no es importante.";
 
 // include/constants_param_wizard.php3, row 617
 $_m["Show headlines from selected bins"]
@@ -942,7 +936,7 @@ $_m["Show headlines from selected bins"]
 
 // include/constants_param_wizard.php3, row 626
 $_m["To show headlines in related window from selected bins.<br>Use this values for bins:<br>Active bin - '%1'<br>Pending bin - '%2'<br>Expired bin - '%3'<br>Holding bin - '%4'<br>Trash bin - '%5'<br>Value is created as follows: eg. You want show headlines from Active, Expired and Holding bins. Value for this combination is counted like %1+%3+%4&nbsp;=&nbsp;13"]
- = "Para mostrar ítems seleccionados de las carpetas utilice los siguientes valores:<br>Aprobados -  '%1'<br>Pendientes - '%2'<br>Expirados - '%3'<br>Por aprobar - '%4'<br>Papelera - '%5'<br>El valor se genera como se muestra a continuación: p.e. Si Usted desea mostrar los encabezados desde Aprobados, Caducados y Por Aprobar. El valor de esta combinación se cuentas así %1+%3+%4&nbsp;=&nbsp;13";
+ = "Para mostrar �tems seleccionados de las carpetas utilice los siguientes valores:<br>Aprobados -  '%1'<br>Pendientes - '%2'<br>Expirados - '%3'<br>Por aprobar - '%4'<br>Papelera - '%5'<br>El valor se genera como se muestra a continuaci�n: p.e. Si Usted desea mostrar los encabezados desde Aprobados, Caducados y Por Aprobar. El valor de esta combinaci�n se cuentas as� %1+%3+%4&nbsp;=&nbsp;13";
 
 // include/constants_param_wizard.php3, row 629
 $_m["Filtering conditions - unchangeable"]
@@ -950,7 +944,7 @@ $_m["Filtering conditions - unchangeable"]
 
 // include/constants_param_wizard.php3, row 630
 $_m["Conditions for filtering items in related items window. This conds user can't change."]
- = "Condiciones para filtrado de ítems en la ventana de ítems relacionados. Estas condiniones no pueden ser cambiadas por el usuario";
+ = "Condiciones para filtrado de �tems en la ventana de �tems relacionados. Estas condiniones no pueden ser cambiadas por el usuario";
 
 // include/constants_param_wizard.php3, row 633
 $_m["Filtering conditions - changeable"]
@@ -958,7 +952,7 @@ $_m["Filtering conditions - changeable"]
 
 // include/constants_param_wizard.php3, row 634
 $_m["Conditions for filtering items in related items window. This conds user can change."]
- = "Condiciones para filtrado de ítems en la ventana de ítems relacionados. Estas condiniones no pueden ser cambiadas por el usuario";
+ = "Condiciones para filtrado de �tems en la ventana de �tems relacionados. Estas condiniones no pueden ser cambiadas por el usuario";
 
 // include/constants_param_wizard.php3, row 638
 $_m["field (or format string) that will be displayed in the boxes (from related slice). if not specified, in select box are displayed headlines. you can use also any AA formatstring here (like: _#HEADLINE - {publish_date....})."]
@@ -974,11 +968,11 @@ $_m["Two Windows"]
 
 // include/constants_param_wizard.php3, row 645
 $_m["Two Windows. <br><br>It uses the Constants select box - if you choose a constant group there, the constants of this group will be printed, if you choose a slice name, the headlines of all items will be printed (used for related stories or for setting relation to another slice - it is obviously used with f_v alias function then)"]
- = "Muestra dos cajas con botones para intercambiar entre los valores ofrecidos y seleccionados. La lista de valores se especifica en la caja de selección de constantes, y puede ser un grupo de constantes o un canal.";
+ = "Muestra dos cajas con botones para intercambiar entre los valores ofrecidos y seleccionados. La lista de valores se especifica en la caja de selecci�n de constantes, y puede ser un grupo de constantes o un canal.";
 
 // include/constants_param_wizard.php3, row 651
 $_m["Title of \"Offer\" selectbox"]
- = "Título de la caja \"oferta\"";
+ = "T�tulo de la caja \"oferta\"";
 
 // include/constants_param_wizard.php3, row 654
 $_m["Our offer"]
@@ -986,7 +980,7 @@ $_m["Our offer"]
 
 // include/constants_param_wizard.php3, row 655
 $_m["Title of \"Selected\" selectbox"]
- = "Título de la caja \"seleccionados\"";
+ = "T�tulo de la caja \"seleccionados\"";
 
 // include/constants_param_wizard.php3, row 658
 $_m["Selected"]
@@ -994,7 +988,7 @@ $_m["Selected"]
 
 // include/constants_param_wizard.php3, row 660
 $_m["field (or format string) that will be displayed in the boxes (from related slice). if not specified, in select box are displayed headlines. you can use also any AA formatstring here (like: _#HEADLINE - _#PUB_DATE). (only for constants input type: slice)"]
- = "Campo (o cadena de formato) que será mostrada como una opción de botón de selección (desde un canal relacionado). Si no se especifica, en la caja de selección se mostrarán los encabezados. Usted puede utilizar acá un formato de las AA (como: _#HEADLINE - _#PUB_DATE). (solamente para constantes de tipo entrada: slice)";
+ = "Campo (o cadena de formato) que ser� mostrada como una opci�n de bot�n de selecci�n (desde un canal relacionado). Si no se especifica, en la caja de selecci�n se mostrar�n los encabezados. Usted puede utilizar ac� un formato de las AA (como: _#HEADLINE - _#PUB_DATE). (solamente para constantes de tipo entrada: slice)";
 
 // include/constants_param_wizard.php3, row 685
 $_m["Hidden field"]
@@ -1002,7 +996,7 @@ $_m["Hidden field"]
 
 // include/constants_param_wizard.php3, row 686
 $_m["The field value will be shown as &lt;input type='hidden'. You will probably set this filed by javascript trigger used on any other field."]
- = "El valor de este campo no aparecerá en el formulario, sino que estará ahi en la forma &lt;input type='hidden'&gt;. Este tipo de entrada es útil para usar Verificadores de Campos con JavaScript sobre cualquier otro campo.";
+ = "El valor de este campo no aparecer� en el formulario, sino que estar� ahi en la forma &lt;input type='hidden'&gt;. Este tipo de entrada es �til para usar Verificadores de Campos con JavaScript sobre cualquier otro campo.";
 
 // include/constants_param_wizard.php3, row 694
 $_m["Password input boxes allowing to send password (for password-protected items)\n"
@@ -1010,15 +1004,15 @@ $_m["Password input boxes allowing to send password (for password-protected item
    ."        When a user fills new password, it is checked against the retyped password,\n"
    ."        MD5-encrypted so that nobody may learn it and stored in the database.<br><br>\n"
    ."        If the field is not Required, shows a 'Delete Password' checkbox."]
- = "Campos de texto para claves. Si el campo no es obligatorio, también muestra una caja para 'Borrar Clave'";
+ = "Campos de texto para claves. Si el campo no es obligatorio, tambi�n muestra una caja para 'Borrar Clave'";
 
 // include/constants_param_wizard.php3, row 696
 $_m["Field size"]
- = "Tamaño del campo";
+ = "Tama�o del campo";
 
 // include/constants_param_wizard.php3, row 697
 $_m["Size of the three fields"]
- = "Tamaño de los campos";
+ = "Tama�o de los campos";
 
 // include/constants_param_wizard.php3, row 700
 $_m["Label for Change Password"]
@@ -1066,19 +1060,19 @@ $_m["Help text under the Change Password box (default: no text)"]
 
 // include/constants_param_wizard.php3, row 715
 $_m["To change password, enter the new password here and below"]
- = "Para cambiar su clave, escribala aquí y debajo para confirmar";
+ = "Para cambiar su clave, escribala aqu� y debajo para confirmar";
 
 // include/constants_param_wizard.php3, row 716
 $_m["Help for Retype New Password"]
- = "Ayuda para Confirmación";
+ = "Ayuda para Confirmaci�n";
 
 // include/constants_param_wizard.php3, row 717
 $_m["Help text under the Retype New Password box (default: no text)"]
- = "Texto a mostrar debajo de la caja de confirmación de clave";
+ = "Texto a mostrar debajo de la caja de confirmaci�n de clave";
 
 // include/constants_param_wizard.php3, row 720
 $_m["Retype the new password exactly the same as you entered into \"Change Password\"."]
- = "Reescriba aquí su clave exactamente como la introdujo en el campo anterior";
+ = "Reescriba aqu� su clave exactamente como la introdujo en el campo anterior";
 
 // include/constants_param_wizard.php3, row 724
 $_m["Do not show"]
@@ -1086,7 +1080,7 @@ $_m["Do not show"]
 
 // include/constants_param_wizard.php3, row 725
 $_m["This option hides the input field"]
- = "Esta opción esconde el campo de entrada";
+ = "Esta opci�n esconde el campo de entrada";
 
 // include/constants_param_wizard.php3, row 729
 $_m["Local URL Pick"]
@@ -1102,11 +1096,11 @@ $_m["http#://www.ecn.cz/articles/solar.shtml"]
 
 // include/constants_param_wizard.php3, row 740
 $_m["Function"]
- = "Función";
+ = "Funci�n";
 
 // include/constants_param_wizard.php3, row 741
 $_m["How the formatting in the text on this page is used:<br><i>the field</i> in italics stands for the field edited in the \"configure Fields\" window,<br><b>parameter name</b> in bold stands for a parameter on this screen."]
- = "Convenciones de presentación: <br><i>el campo</i> en cursiva significa el valor del campo.,<br><b>parámetro</b> en negrilla se refiera a uno de los parámetros de esta ventana";
+ = "Convenciones de presentaci�n: <br><i>el campo</i> en cursiva significa el valor del campo.,<br><b>par�metro</b> en negrilla se refiera a uno de los par�metros de esta ventana";
 
 // include/constants_param_wizard.php3, row 744
 $_m["file information"]
@@ -1118,7 +1112,7 @@ $_m["prints <i>the field</i> as file information, its size or type"]
 
 // include/constants_param_wizard.php3, row 747, 880
 $_m["information"]
- = "información";
+ = "informaci�n";
 
 // include/constants_param_wizard.php3, row 748
 $_m["specifies returned information: <br> - <i>size</i> - returns size of file in kB o MB<br> - <i>type</i> - returns type of file)"]
@@ -1126,7 +1120,7 @@ $_m["specifies returned information: <br> - <i>size</i> - returns size of file i
 
 // include/constants_param_wizard.php3, row 751
 $_m["null function"]
- = "función nula";
+ = "funci�n nula";
 
 // include/constants_param_wizard.php3, row 752
 $_m["prints nothing"]
@@ -1138,7 +1132,7 @@ $_m["abstract"]
 
 // include/constants_param_wizard.php3, row 754
 $_m["prints abstract (if exists) or the beginning of the <b>fulltext</b>"]
- = "muestra el resúmen (si existe), o el principio del <b>texto completo</b>";
+ = "muestra el res�men (si existe), o el principio del <b>texto completo</b>";
 
 // include/constants_param_wizard.php3, row 756
 $_m["length"]
@@ -1146,7 +1140,7 @@ $_m["length"]
 
 // include/constants_param_wizard.php3, row 757
 $_m["max number of characters grabbed from the <b>fulltext</b> field"]
- = "máximo número de caracteres tomados del campo de <b>texto completo</b>";
+ = "m�ximo n�mero de caracteres tomados del campo de <b>texto completo</b>";
 
 // include/constants_param_wizard.php3, row 760
 $_m["fulltext"]
@@ -1154,7 +1148,7 @@ $_m["fulltext"]
 
 // include/constants_param_wizard.php3, row 761
 $_m["field id of fulltext field (like full_text.......), from which the text is grabbed. If empty, the text is grabbed from <i>the field</i> itself."]
- = "id de campo o campo de texto completo (como full_text.......), desde donde el texto es tomado. Si se deja vacío, el texto se tomará del <i>mismo</i> campo.";
+ = "id de campo o campo de texto completo (como full_text.......), desde donde el texto es tomado. Si se deja vac�o, el texto se tomar� del <i>mismo</i> campo.";
 
 // include/constants_param_wizard.php3, row 763, 790, 981
 $_m["full_text......."]
@@ -1162,11 +1156,11 @@ $_m["full_text......."]
 
 // include/constants_param_wizard.php3, row 764
 $_m["paragraph"]
- = "párrafo";
+ = "p�rrafo";
 
 // include/constants_param_wizard.php3, row 765
 $_m["take first paragraph (text until \\<BR\\> or \\<P\\> or \\</P\\> or at least '.' (dot)) if shorter then <b>length</b>"]
- = "tome el primer párrafo (texto hasta  \\<BR\\> o \\<P\\> o \\</P\\> o al menos '.' (punto)) si es más corto entonces <b>longitud</b>";
+ = "tome el primer p�rrafo (texto hasta  \\<BR\\> o \\<P\\> o \\</P\\> o al menos '.' (punto)) si es m�s corto entonces <b>longitud</b>";
 
 // include/constants_param_wizard.php3, row 768
 $_m["extended fulltext link"]
@@ -1174,7 +1168,7 @@ $_m["extended fulltext link"]
 
 // include/constants_param_wizard.php3, row 769
 $_m["Prints some <b>text</b> (or field content) with a link to the fulltext. A more general version of the f_f function. This function doesn't use <i>the field</i>."]
- = "Esta es una versión más genérica de la función f_f que no usa <i>el campo</i>. Muestra el <i>texto</i> (o su contenido) como un enlace al texto completo.";
+ = "Esta es una versi�n m�s gen�rica de la funci�n f_f que no usa <i>el campo</i>. Muestra el <i>texto</i> (o su contenido) como un enlace al texto completo.";
 
 // include/constants_param_wizard.php3, row 771, 854
 $_m["link only"]
@@ -1202,11 +1196,11 @@ $_m["hl_href........."]
 
 // include/constants_param_wizard.php3, row 779, 858
 $_m["redirect"]
- = "redirección";
+ = "redirecci�n";
 
 // include/constants_param_wizard.php3, row 780, 859
 $_m["The URL of another page which shows the content of the item. (That page should contain SSI include ../slice.php3.). If unfilled, the same page as for item index is used for fulltext (which is obvious behavior)."]
- = "URL de la página que sabe mostrar el texto completo (esta página es la que contiene el SSI include de slice.php3). Si no se pone nada, se asume la página actual.";
+ = "URL de la p�gina que sabe mostrar el texto completo (esta p�gina es la que contiene el SSI include de slice.php3). Si no se pone nada, se asume la p�gina actual.";
 
 // include/constants_param_wizard.php3, row 783
 $_m["text"]
@@ -1214,19 +1208,19 @@ $_m["text"]
 
 // include/constants_param_wizard.php3, row 784
 $_m["The text to be surrounded by the link. If this parameter is a field id, the field's content is used, else it is used verbatim"]
- = "El texto del enlace. Puede poner un identificador de campo aquí, en cuyo caso se muestra el contenido de dicho campo. De lo contrario, se muestra este texto literalmente.";
+ = "El texto del enlace. Puede poner un identificador de campo aqu�, en cuyo caso se muestra el contenido de dicho campo. De lo contrario, se muestra este texto literalmente.";
 
 // include/constants_param_wizard.php3, row 787
 $_m["condition field"]
- = "campo condición";
+ = "campo condici�n";
 
 // include/constants_param_wizard.php3, row 788
 $_m["when the specified field hasn't any content, no link is printed, but only the <b>text</b>"]
- = "cuando el campo especificado no tenga contenido no se va a generar un enlace, sólo se va a mostrar el <b>texto</b>";
+ = "cuando el campo especificado no tenga contenido no se va a generar un enlace, s�lo se va a mostrar el <b>texto</b>";
 
 // include/constants_param_wizard.php3, row 791, 938
 $_m["tag addition"]
- = "añadir al tag";
+ = "a�adir al tag";
 
 // include/constants_param_wizard.php3, row 792, 939
 $_m["additional text to the \"\\<a\\>\" tag"]
@@ -1238,23 +1232,23 @@ $_m["target=_blank"]
 
 // include/constants_param_wizard.php3, row 795, 862
 $_m["no session id"]
- = "sin sesión";
+ = "sin sesi�n";
 
 // include/constants_param_wizard.php3, row 796, 863
 $_m["If 1, the session id (AA_SL_Session=...) is not added to url"]
- = "Si es '1', se omite el identificador de sesión al generar los enlaces a texto completo";
+ = "Si es '1', se omite el identificador de sesi�n al generar los enlaces a texto completo";
 
 // include/constants_param_wizard.php3, row 799, 802
 $_m["condition"]
- = "condición";
+ = "condici�n";
 
 // include/constants_param_wizard.php3, row 800
 $_m["This is a very powerful function. It may be used as a better replace of some previous functions. If <b>cond_field</b> = <b>condition</b>, prints <b>begin</b> <i>field</i> <b>end</b>, else prints <b>else</b>. If <b>cond_field</b> is not specified, <i>the field</i> is used. Condition may be reversed (negated) by the \"!\" character at the beginning of it."]
- = "Esta función es muy poderosa. Entre otras cosas, puede remplazar a otras funciones. Si <b>campo_condición</b> = <b>condición</b>, muestra <b>inicio</b> <i>el campo</i> <b>fin</b>, de lo contrario muestra <b>si_no</b>. Si no se especifica <b>campo_condición</b>, se usa <i>el campo</i>. La condición se puede invertir (negar) poniendo un signo de admiración (\"!\") al principio.";
+ = "Esta funci�n es muy poderosa. Entre otras cosas, puede remplazar a otras funciones. Si <b>campo_condici�n</b> = <b>condici�n</b>, muestra <b>inicio</b> <i>el campo</i> <b>fin</b>, de lo contrario muestra <b>si_no</b>. Si no se especifica <b>campo_condici�n</b>, se usa <i>el campo</i>. La condici�n se puede invertir (negar) poniendo un signo de admiraci�n (\"!\") al principio.";
 
 // include/constants_param_wizard.php3, row 803
 $_m["you may use \"!\" to reverse (negate) the condition"]
- = "puede usar \"!\" para invertir (negar) la condición";
+ = "puede usar \"!\" para invertir (negar) la condici�n";
 
 // include/constants_param_wizard.php3, row 806, 922
 $_m["begin"]
@@ -1262,7 +1256,7 @@ $_m["begin"]
 
 // include/constants_param_wizard.php3, row 807
 $_m["text to print before <i>field</i>, if condition is true"]
- = "texto a mostrar antes de <i>el campo</i> si la condición es cierta";
+ = "texto a mostrar antes de <i>el campo</i> si la condici�n es cierta";
 
 // include/constants_param_wizard.php3, row 809
 $_m["Yes"]
@@ -1274,7 +1268,7 @@ $_m["end"]
 
 // include/constants_param_wizard.php3, row 811
 $_m["text to print after <i>field</i>, if condition is true"]
- = "texto a mostrar después de <i>el campo</i> si la condición es cierta";
+ = "texto a mostrar despu�s de <i>el campo</i> si la condici�n es cierta";
 
 // include/constants_param_wizard.php3, row 814
 $_m["else"]
@@ -1294,7 +1288,7 @@ $_m["cond_field"]
 
 // include/constants_param_wizard.php3, row 819
 $_m["field to compare with the <b>condition</b> - if not filled, <i>field</i> is used"]
- = "campo sobre el que evaluar la <b>condición</b>. Si no se pone nada, se compara la condición con <i>el campo</i>";
+ = "campo sobre el que evaluar la <b>condici�n</b>. Si no se pone nada, se compara la condici�n con <i>el campo</i>";
 
 // include/constants_param_wizard.php3, row 822
 $_m["skip_the_field"]
@@ -1314,7 +1308,7 @@ $_m["1:Yes::No::1"]
 
 // include/constants_param_wizard.php3, row 829
 $_m["When e-mail field is filled, prints something like \"Email: email@apc.org\", when it is empty, prints nothing"]
- = "Si se rellena el campo 'Fuente', muestra algo así: \"Fuente: Reuters\"; de lo contrario, no muestra nada";
+ = "Si se rellena el campo 'Fuente', muestra algo as�: \"Fuente: Reuters\"; de lo contrario, no muestra nada";
 
 // include/constants_param_wizard.php3, row 830
 $_m["!:Email#:&nbsp;"]
@@ -1350,15 +1344,15 @@ $_m["m-d-Y"]
 
 // include/constants_param_wizard.php3, row 840
 $_m["edit item"]
- = "editar ítem";
+ = "editar �tem";
 
 // include/constants_param_wizard.php3, row 841
 $_m["_#EDITITEM used on admin page index.php3 for itemedit url"]
- = "alias _#EDITITEM usado en la página de administración index.php3 para el enlace para editar el ítem";
+ = "alias _#EDITITEM usado en la p�gina de administraci�n index.php3 para el enlace para editar el �tem";
 
 // include/constants_param_wizard.php3, row 844
 $_m["disc - for editing a discussion<br>itemcount - to output an item count<br>safe - for safe html<br>slice_info - select a field from the slice info<br>edit - URL to edit the item<br>add - URL to add a new item"]
- = "disc - para editar comentarios<br>itemcount - recuento de ítems<br>safe - HTML seguro<br>slice_info - seleccionar un campo del canal<br>edit - URL para editar el ítem<br>add - URL para añadir un ítem";
+ = "disc - para editar comentarios<br>itemcount - recuento de �tems<br>safe - HTML seguro<br>slice_info - seleccionar un campo del canal<br>edit - URL para editar el �tem<br>add - URL para a�adir un �tem";
 
 // include/constants_param_wizard.php3, row 846
 $_m["edit"]
@@ -1370,7 +1364,7 @@ $_m["return url"]
 
 // include/constants_param_wizard.php3, row 848
 $_m["Return url being called from, usually leave blank and allow default"]
- = "URL de la página a regresar. Si no se especifica, regresa a la actual.";
+ = "URL de la p�gina a regresar. Si no se especifica, regresa a la actual.";
 
 // include/constants_param_wizard.php3, row 850
 $_m["/mysite.shtml"]
@@ -1382,27 +1376,27 @@ $_m["fulltext link"]
 
 // include/constants_param_wizard.php3, row 852
 $_m["Prints the URL name inside a link to the fulltext - enables using external items. To be used immediately after \"\\<a href=\""]
- = "URL para el texto completo del ítem. Permite usar enlaces externos. Para usar dentro de \"\\<a href=\"";
+ = "URL para el texto completo del �tem. Permite usar enlaces externos. Para usar dentro de \"\\<a href=\"";
 
 // include/constants_param_wizard.php3, row 855
 $_m["field id (like 'link_only.......') where switch between external and internal item is stored. Usually this field is represented as checkbox. If the checkbox is checked, <i>the field</i> is printed, if unchecked, link to fulltext is printed (it depends on <b>redirect</b> parameter, too)."]
- = "identificador del campo que determina si el enlace es externo o interno (normalmente este campo se muestra como un checkbox). Si el checkbox está seleccionado, se muestra <i>el campo</i>, y si no está seleccionado se genera un enlace al texto completo (que depende del parámetro <b>redirección</b>).";
+ = "identificador del campo que determina si el enlace es externo o interno (normalmente este campo se muestra como un checkbox). Si el checkbox est� seleccionado, se muestra <i>el campo</i>, y si no est� seleccionado se genera un enlace al texto completo (que depende del par�metro <b>redirecci�n</b>).";
 
 // include/constants_param_wizard.php3, row 866
 $_m["image height"]
- = "alto imágen";
+ = "alto im�gen";
 
 // include/constants_param_wizard.php3, row 867
 $_m["An old-style function. Prints <i>the field</i> as image height value (\\<img height=...\\>) or erases the height tag. To be used immediately after \"height=\".The f_c function provides a better way of doing this with parameters \":height=\". "]
- = "Función anticuada. Use mejor la función f_c";
+ = "Funci�n anticuada. Use mejor la funci�n f_c";
 
 // include/constants_param_wizard.php3, row 868
 $_m["print HTML multiple"]
- = "múltiples - HTML";
+ = "m�ltiples - HTML";
 
 // include/constants_param_wizard.php3, row 869
 $_m["prints <i>the field</i> content depending on the html flag (escape html special characters or just print)"]
- = "Muestra <i>el campo</i>, adminitiendo que éste tenga múltiples valores. Además, dependiendo del flag 'HTML / texto plano', puede preformatear la salida";
+ = "Muestra <i>el campo</i>, adminitiendo que �ste tenga m�ltiples valores. Adem�s, dependiendo del flag 'HTML / texto plano', puede preformatear la salida";
 
 // include/constants_param_wizard.php3, row 871
 $_m["delimiter"]
@@ -1410,7 +1404,7 @@ $_m["delimiter"]
 
 // include/constants_param_wizard.php3, row 872
 $_m["if specified, a field with multiple values is displayed with the values delimited by it"]
- = "Si se especifica, cuando hay múltiples valores se muestran separados por este delimitador";
+ = "Si se especifica, cuando hay m�ltiples valores se muestran separados por este delimitador";
 
 // include/constants_param_wizard.php3, row 875
 $_m["image src"]
@@ -1418,19 +1412,19 @@ $_m["image src"]
 
 // include/constants_param_wizard.php3, row 876
 $_m["prints <i>the field</i> as image source (\\<img src=...\\>) - NO_PICTURE for none. The same could be done by the f_c function with parameters :::NO_PICTURE. "]
- = "Función anticuada. Use mejor la función f_c";
+ = "Funci�n anticuada. Use mejor la funci�n f_c";
 
 // include/constants_param_wizard.php3, row 877
 $_m["image size"]
- = "tamaño imágen";
+ = "tama�o im�gen";
 
 // include/constants_param_wizard.php3, row 878
 $_m["prints <i>the field</i> as image size (height='xxx' width='yyy') (or other image information) or empty string if cant work out, does not special case URLs from uploads directory, might do later! "]
- = "imprima <i>el campo</i> como tamaño de imagen (height='xxx' width='yyy') (u otra información de la imagen).";
+ = "imprima <i>el campo</i> como tama�o de imagen (height='xxx' width='yyy') (u otra informaci�n de la imagen).";
 
 // include/constants_param_wizard.php3, row 881
 $_m["specifies returned information: <br> - <i>html</i> - (default) - returns image size as HTML atributes (height='xxx' width='yyy')<br> - <i>width</i> - returns width of image in pixels<br> - <i>height</i> - returns height of image in pixels<br> - <i>imgtype</i> - returns flag indicating the type of the image: 1 = GIF, 2 = JPG, 3 = PNG, 4 = SWF, 5 = PSD, 6 = BMP, 7 = TIFF(intel byte order), 8 = TIFF(motorola byte order), 9 = JPC, 10 = JP2, 11 = JPX, 12 = JB2, 13 = SWC, 14 = IFF, 15 = WBMP, 16 = XBM<br> - <i>mime</i> - returns mimetype of the image (like 'image/gif', 'application/x-shockwave-flash', ...)"]
- = "especifica la información regresada: <br> - <i>html</i> - (por defecto) - retorna el tamaño de la imagen como atributos de HTML (height='xxx' width='yyy')<br> - <i>width</i> - retorna el ancho de la imagen en pixels.<br> - <i>height</i> - retorna el alto de la imagen en pixels<br> - <i>imgtype</i> - retorna una bandera indicando el tipo de la imagen: 1 = GIF, 2 = JPG, 3 = PNG, 4 = SWF, 5 = PSD, 6 = BMP, 7 = TIFF(orden byte intel), 8 = TIFF(orden byte motorola), 9 = JPC, 10 = JP2, 11 = JPX, 12 = JB2, 13 = SWC, 14 = IFF, 15 = WBMP, 16 = XBM<br> - <i>mime</i> - retorna el mimetype de la imagen (como 'image/gif', 'application/x-shockwave-flash', ...)";
+ = "especifica la informaci�n regresada: <br> - <i>html</i> - (por defecto) - retorna el tama�o de la imagen como atributos de HTML (height='xxx' width='yyy')<br> - <i>width</i> - retorna el ancho de la imagen en pixels.<br> - <i>height</i> - retorna el alto de la imagen en pixels<br> - <i>imgtype</i> - retorna una bandera indicando el tipo de la imagen: 1 = GIF, 2 = JPG, 3 = PNG, 4 = SWF, 5 = PSD, 6 = BMP, 7 = TIFF(orden byte intel), 8 = TIFF(orden byte motorola), 9 = JPC, 10 = JP2, 11 = JPX, 12 = JB2, 13 = SWC, 14 = IFF, 15 = WBMP, 16 = XBM<br> - <i>mime</i> - retorna el mimetype de la imagen (como 'image/gif', 'application/x-shockwave-flash', ...)";
 
 // include/constants_param_wizard.php3, row 885
 $_m["expanded string"]
@@ -1438,7 +1432,7 @@ $_m["expanded string"]
 
 // include/constants_param_wizard.php3, row 886
 $_m["expands the string in the parameter"]
- = "expande la cadena del parámetro";
+ = "expande la cadena del par�metro";
 
 // include/constants_param_wizard.php3, row 888
 $_m["string to expand"]
@@ -1462,7 +1456,7 @@ $_m["start"]
 
 // include/constants_param_wizard.php3, row 896
 $_m["position of substring start (0=first, 1=second, -1=last,-2=two from end)"]
- = "posición para empezar a escribir: 0=primer caracter. 1=segundo, -1=último, -2=penúltimo";
+ = "posici�n para empezar a escribir: 0=primer caracter. 1=segundo, -1=�ltimo, -2=pen�ltimo";
 
 // include/constants_param_wizard.php3, row 899
 $_m["count"]
@@ -1470,7 +1464,7 @@ $_m["count"]
 
 // include/constants_param_wizard.php3, row 900
 $_m["count of characters (0=until the end)"]
- = "número de caracteres a mostrar (0=hasta el final)";
+ = "n�mero de caracteres a mostrar (0=hasta el final)";
 
 // include/constants_param_wizard.php3, row 903
 $_m["case"]
@@ -1478,19 +1472,19 @@ $_m["case"]
 
 // include/constants_param_wizard.php3, row 904
 $_m["upper - convert to UPPERCASE, lower - convert to lowercase, first - convert to First Upper; default is don't change"]
- = "upper - convertir a MAYUSCULAS<br>lower - convertir a minúsculas<br>first - convertir Primera Mayúscula<br>si no se pone nada, no cambia la caja";
+ = "upper - convertir a MAYUSCULAS<br>lower - convertir a min�sculas<br>first - convertir Primera May�scula<br>si no se pone nada, no cambia la caja";
 
 // include/constants_param_wizard.php3, row 907
 $_m["add string"]
- = "añadir cadena";
+ = "a�adir cadena";
 
 // include/constants_param_wizard.php3, row 908
 $_m["if string is shorted, <i>add string</i> is appended to the string (probably something like [...])"]
- = "si la cadena es recortada, <i>añadir cadena</i> será adicionada a la cadena (probablemente algo como [...])";
+ = "si la cadena es recortada, <i>a�adir cadena</i> ser� adicionada a la cadena (probablemente algo como [...])";
 
 // include/constants_param_wizard.php3, row 911
 $_m["Auto Update Checkbox"]
- = "auto-actualización";
+ = "auto-actualizaci�n";
 
 // include/constants_param_wizard.php3, row 912
 $_m["linked field"]
@@ -1498,7 +1492,7 @@ $_m["linked field"]
 
 // include/constants_param_wizard.php3, row 913
 $_m["prints <i>the field</i> as a link if the <b>link URL</b> is not NULL, otherwise prints just <i>the field</i>"]
- = "muestra <i>el campo</i> como un enlace si el <b>URL</b> no está vacío. De lo contrario, muestra solamente <i>el campo</i>";
+ = "muestra <i>el campo</i> como un enlace si el <b>URL</b> no est� vac�o. De lo contrario, muestra solamente <i>el campo</i>";
 
 // include/constants_param_wizard.php3, row 915
 $_m["link URL"]
@@ -1510,7 +1504,7 @@ $_m["e-mail or link"]
 
 // include/constants_param_wizard.php3, row 920
 $_m["mailto link - prints: <br>\"<b>begin</b>\\<a href=\"(mailto:)<i>the field</i>\" <b>tag adition</b>\\><b>field/text</b>\\</a\\>. If <i>the field</i> is not filled, prints <b>else_field/text</b>."]
- = "enlace a correo - muestra:<br>\"<b>inicio</b>\\<a href=\"(mailto:)<i>el campo</i>\" <b>añadir al tag</b>\\><b>campo/texto</b>\\</a\\>. Si <i>el campo</i> no tiene contenido, muestra <b>si_no/texto</b>.";
+ = "enlace a correo - muestra:<br>\"<b>inicio</b>\\<a href=\"(mailto:)<i>el campo</i>\" <b>a�adir al tag</b>\\><b>campo/texto</b>\\</a\\>. Si <i>el campo</i> no tiene contenido, muestra <b>si_no/texto</b>.";
 
 // include/constants_param_wizard.php3, row 923
 $_m["text before the link"]
@@ -1534,7 +1528,7 @@ $_m["else_field/text"]
 
 // include/constants_param_wizard.php3, row 931
 $_m["if <i>the field</i> is empty, only this text (or field content) is printed"]
- = "si <i>el campo</i> está vacío, muestra solo este texto (si escribe un id de campo, se mostrará el contenido de ese campo)";
+ = "si <i>el campo</i> est� vac�o, muestra solo este texto (si escribe un id de campo, se mostrar� el contenido de ese campo)";
 
 // include/constants_param_wizard.php3, row 934
 $_m["linktype"]
@@ -1542,7 +1536,7 @@ $_m["linktype"]
 
 // include/constants_param_wizard.php3, row 935
 $_m["mailto / href (default is mailto) - it is possible to use f_m function for links, too - just type 'href' as this parameter"]
- = "mailto / href (por defecto es mailto). Si quiere usar esta función para enlaces normales, escriba href en este parámetro";
+ = "mailto / href (por defecto es mailto). Si quiere usar esta funci�n para enlaces normales, escriba href en este par�metro";
 
 // include/constants_param_wizard.php3, row 937
 $_m["href"]
@@ -1562,7 +1556,7 @@ $_m["'New' sign"]
 
 // include/constants_param_wizard.php3, row 947
 $_m["prints 'New' or 'Old' or any other text in <b>newer text</b> or <b>older text</b> depending on <b>time</b>. Time is specified in minutes from current time."]
- = "para mostrar 'Nuevo' o 'Viejo' o cualquier otro texto en <b>texto nuevo</b> o <b>texto viejo</b> en función del <b>tiempo</b>, relativo a la fecha y hora actuales.";
+ = "para mostrar 'Nuevo' o 'Viejo' o cualquier otro texto en <b>texto nuevo</b> o <b>texto viejo</b> en funci�n del <b>tiempo</b>, relativo a la fecha y hora actuales.";
 
 // include/constants_param_wizard.php3, row 949
 $_m["time"]
@@ -1582,11 +1576,11 @@ $_m["newer text"]
 
 // include/constants_param_wizard.php3, row 954
 $_m["Text to be printed, if the date in <i>the filed</i> is newer than <i>current_time</i> - <b>time</b>."]
- = "Texto que se muestra si la fecha en <i>el campo</i> es más reciente que la hora actual menos <b>tiempo</b>";
+ = "Texto que se muestra si la fecha en <i>el campo</i> es m�s reciente que la hora actual menos <b>tiempo</b>";
 
 // include/constants_param_wizard.php3, row 956
 $_m["NEW"]
- = "<b>¡NUEVO!</b>";
+ = "<b>�NUEVO!</b>";
 
 // include/constants_param_wizard.php3, row 957
 $_m["older text"]
@@ -1614,7 +1608,7 @@ $_m["text (blurb) from another slice"]
 
 // include/constants_param_wizard.php3, row 964
 $_m["prints 'blurb' (piece of text) from another slice, based on a simple condition.<br>If <i>the field</i> (or the field specifield by <b>stringToMatch</b>) in current slice matches the content of <b>fieldToMatch</b> in <b>blurbSliceId</b>, it returns the content of <b>fieldToReturn</b> in <b>blurbSliceId</b>."]
- = "muestra un pedazo de texto de otro canal, basándose en una codición simple.<br>Si <i>el campo</i> (o el campo especificado en <b>cadenaAComparar</b>) del canal actual coincide con el contenido de <b>campoAComparar</b> en <b>canalPedazo</b>, muestra el contenido de <b>campoContenido</b> del <b>canalContenido</b>";
+ = "muestra un pedazo de texto de otro canal, bas�ndose en una codici�n simple.<br>Si <i>el campo</i> (o el campo especificado en <b>cadenaAComparar</b>) del canal actual coincide con el contenido de <b>campoAComparar</b> en <b>canalPedazo</b>, muestra el contenido de <b>campoContenido</b> del <b>canalContenido</b>";
 
 // include/constants_param_wizard.php3, row 966
 $_m["stringToMatch"]
@@ -1622,7 +1616,7 @@ $_m["stringToMatch"]
 
 // include/constants_param_wizard.php3, row 967
 $_m["By default it is <i>the field</i>.  It can be formatted either as the id of a field (headline........) OR as static text."]
- = "Por defecto es <i>el campo</i>. Puede ser formateado tanto como id de un campo (headline........) O como texto estático.";
+ = "Por defecto es <i>el campo</i>. Puede ser formateado tanto como id de un campo (headline........) O como texto est�tico.";
 
 // include/constants_param_wizard.php3, row 970
 $_m["blurbSliceId"]
@@ -1662,7 +1656,7 @@ $_m["RSS tag"]
 
 // include/constants_param_wizard.php3, row 983
 $_m["serves for internal purposes of the predefined RSS aliases (e.g. _#RSS_TITL). Adds the RSS 0.91 compliant tags."]
- = "función usada internamente para los alias de RSS predefinidos (ej. _#RSS_TITL). Añade los tags RSS 0.91";
+ = "funci�n usada internamente para los alias de RSS predefinidos (ej. _#RSS_TITL). A�ade los tags RSS 0.91";
 
 // include/constants_param_wizard.php3, row 984, 987, 1093
 $_m["default"]
@@ -1670,7 +1664,7 @@ $_m["default"]
 
 // include/constants_param_wizard.php3, row 985
 $_m["prints <i>the field</i> or a default value if <i>the field</i> is empty. The same could be done by the f_c function with parameters :::<b>default</b>."]
- = "muestra <i>el campo</i> o un valor por defecto si <i>el campo</i> está vacío. Se puede hacer exactamente lo mismo con la función f_c con los parámetros :::<b>valor por defecto</b>.";
+ = "muestra <i>el campo</i> o un valor por defecto si <i>el campo</i> est� vac�o. Se puede hacer exactamente lo mismo con la funci�n f_c con los par�metros :::<b>valor por defecto</b>.";
 
 // include/constants_param_wizard.php3, row 988
 $_m["default value"]
@@ -1678,7 +1672,7 @@ $_m["default value"]
 
 // include/constants_param_wizard.php3, row 990
 $_m["javascript: window.alert('No source url specified')"]
- = "javascript#:window.alert(\"No se especificó URL de la fuente\")";
+ = "javascript#:window.alert(\"No se especific� URL de la fuente\")";
 
 // include/constants_param_wizard.php3, row 991
 $_m["print field"]
@@ -1686,7 +1680,7 @@ $_m["print field"]
 
 // include/constants_param_wizard.php3, row 992
 $_m["prints <i>the field</i> content (or <i>unalias string</i>) depending on the html flag (if html flag is not set, it converts the content to html. In difference to f_h function, it converts to html line-breaks, too (in its basic variant)"]
- = "imprima el contenido <i>del campo</i> (o <i>cadena alias</i>) dependiendo de la bandera HTML (si la bandera HTML no está asignada, convierte el contenido a HTML. En diferencia a la función f_h, ésta convierte a HTML los saltos de página, también (en su variante básica)";
+ = "imprima el contenido <i>del campo</i> (o <i>cadena alias</i>) dependiendo de la bandera HTML (si la bandera HTML no est� asignada, convierte el contenido a HTML. En diferencia a la funci�n f_h, �sta convierte a HTML los saltos de p�gina, tambi�n (en su variante b�sica)";
 
 // include/constants_param_wizard.php3, row 994
 $_m["unalias string"]
@@ -1694,7 +1688,7 @@ $_m["unalias string"]
 
 // include/constants_param_wizard.php3, row 995
 $_m["if the <i>unalias string</i> is defined, then the function ignores <i>the field</i> and it rather prints the <i>unalias string</i>. You can of course use any aliases (or fields like {headline.........}) in this string"]
- = "si está definida, la función ignora <i>el campo</i> y muestra esta cadena. Tenga en cuenta que puede escribir aquí otros alias.";
+ = "si est� definida, la funci�n ignora <i>el campo</i> y muestra esta cadena. Tenga en cuenta que puede escribir aqu� otros alias.";
 
 // include/constants_param_wizard.php3, row 997
 $_m["<img src={img_src.........1} _#IMG_WDTH _#IMG_HGHT>"]
@@ -1715,22 +1709,22 @@ $_m["You can use some output modifications:<br>\n"
    ."                   &nbsp; - <i>asis</i>  - prints field content 'as is' - it do not add &lt;br&gt; at line ends even if field is marked as 'Plain text'. 'asis' parameter is good for Item Manager's 'Modify content...' feature, for example<br>\n"
    ."                   "]
  = "Usted puede utilizar algunas modificaciones de salida:<br>\n"
-   ."                   &nbsp; - [<i>empty</i>] - sin modificación<br>\n"
-   ."                   &nbsp; - <i>csv</i>  - imprime el campo para exportación a un archivo CSV (Comma Separated Values - Valores Separados por Coma)<br>\n"
-   ."                   &nbsp; - <i>urlencode</i> - cadenas de URL-encodes (vea función <a href=\"http://php.net/urlencode\">urlencode<a> de PHP)<br>\n"
-   ."                   &nbsp; - <i>safe</i> - convierte caracteres especiales a entidades de HTML (vea la función <a href=\"http://php.net/htmlspecialchars\">htmlspecialchars<a> de PHP)<br>\n"
+   ."                   &nbsp; - [<i>empty</i>] - sin modificaci�n<br>\n"
+   ."                   &nbsp; - <i>csv</i>  - imprime el campo para exportaci�n a un archivo CSV (Comma Separated Values - Valores Separados por Coma)<br>\n"
+   ."                   &nbsp; - <i>urlencode</i> - cadenas de URL-encodes (vea funci�n <a href=\"http://php.net/urlencode\">urlencode<a> de PHP)<br>\n"
+   ."                   &nbsp; - <i>safe</i> - convierte caracteres especiales a entidades de HTML (vea la funci�n <a href=\"http://php.net/htmlspecialchars\">htmlspecialchars<a> de PHP)<br>\n"
    ."                   &nbsp; - <i>javascript</i> - escape ' (reemplazar ' con \\')<br>\n"
    ."                   &nbsp; - <i>striptags</i>  - quitar etiquetas de HTML y PHP de la cadena<br>\n"
-   ."                   &nbsp; - <i>asis</i>  - imprime los contenidos del campo 'como son' - no añade &lt;br&gt; al final de la línea aunque el campo esté marcado como 'Texto plano'. El parámetro 'asis' es bueno para la función de modificar contenido 'Modify content...' del administrador de ítems.<br>\n"
+   ."                   &nbsp; - <i>asis</i>  - imprime los contenidos del campo 'como son' - no a�ade &lt;br&gt; al final de la l�nea aunque el campo est� marcado como 'Texto plano'. El par�metro 'asis' es bueno para la funci�n de modificar contenido 'Modify content...' del administrador de �tems.<br>\n"
    ."                   ";
 
 // include/constants_param_wizard.php3, row 1010
 $_m["transformation"]
- = "transformación";
+ = "transformaci�n";
 
 // include/constants_param_wizard.php3, row 1011
 $_m["Allows to transform the field value to another value.<br>Usage: <b>content_1</b>:<b>return_value_1</b>:<b>content_1</b>:<b>return_value_1</b>:<b>default</b><br>If the content <i>the field</i> is equal to <b>content_1</b> the <b>return_value_1</b> is returned. If the content <i>the field</i> is equal to <b>content_2</b> the <b>return_value_2</b> is returned. If <i>the field is not equal to any <b>content_x</b>, <b>default</b> is returned</i>."]
- = "Permite transformar el valor del campo en otro valor.<br>Uso: <b>contenido_1</b>:<b>valor_retorno_1</b>:<b>contenido_1</b>:<b>valor_retorno_1</b>:<b>por_defecto</b><br>Si el contenido <i>del campo</i> es igual a <b>contenido_1</b> el <b>valor_retorno_1</b> es mostrado. Si el contenido <i>del campo</i> es igual a <b>contenido_2</b> el <b>valor_retorno_2</b> es mostrado. Si <i>el campo no es igual a ningún <b>contenido_x</b>, <b>por_defecto</b> es mostrado</i>.";
+ = "Permite transformar el valor del campo en otro valor.<br>Uso: <b>contenido_1</b>:<b>valor_retorno_1</b>:<b>contenido_1</b>:<b>valor_retorno_1</b>:<b>por_defecto</b><br>Si el contenido <i>del campo</i> es igual a <b>contenido_1</b> el <b>valor_retorno_1</b> es mostrado. Si el contenido <i>del campo</i> es igual a <b>contenido_2</b> el <b>valor_retorno_2</b> es mostrado. Si <i>el campo no es igual a ning�n <b>contenido_x</b>, <b>por_defecto</b> es mostrado</i>.";
 
 // include/constants_param_wizard.php3, row 1013, 1021, 1029, 1037, 1045, 1053, 1061, 1069, 1077, 1085
 $_m["content"]
@@ -1746,11 +1740,11 @@ $_m["return value"]
 
 // include/constants_param_wizard.php3, row 1018, 1026, 1034, 1042, 1050, 1058, 1066, 1074, 1082, 1090
 $_m["string to return if previous content matches - You can use field_id too"]
- = "texto a retornar si el contenido anterior coincide - También puede usar id_campo para mostrar el contenido de otro campo";
+ = "texto a retornar si el contenido anterior coincide - Tambi�n puede usar id_campo para mostrar el contenido de otro campo";
 
 // include/constants_param_wizard.php3, row 1020, 1028, 1036, 1044, 1052, 1060, 1068, 1076, 1084, 1092
 $_m["Environment"]
- = "Educación";
+ = "Educaci�n";
 
 // include/constants_param_wizard.php3, row 1094
 $_m["if no content matches, use this string as return value"]
@@ -1762,15 +1756,15 @@ $_m["user function"]
 
 // include/constants_param_wizard.php3, row 1098
 $_m["calls a user defined function (see How to create new aliases in <a href='http://apc-aa.sourceforge.net/faq/#aliases'>FAQ</a>)"]
- = "hace un llamado a una función definida por el administrador de este sistema (vea <em>How to create new aliases</em> en el <a href='http://apc-aa.sourceforge.net/faq/#aliases' target=_blank>FAQ</a>)";
+ = "hace un llamado a una funci�n definida por el administrador de este sistema (vea <em>How to create new aliases</em> en el <a href='http://apc-aa.sourceforge.net/faq/#aliases' target=_blank>FAQ</a>)";
 
 // include/constants_param_wizard.php3, row 1100
 $_m["function"]
- = "función";
+ = "funci�n";
 
 // include/constants_param_wizard.php3, row 1101
 $_m["name of the function in the include/usr_aliasfnc.php3 file"]
- = "nombre de la función en el archivo include/usr_aliasfnc.php3";
+ = "nombre de la funci�n en el archivo include/usr_aliasfnc.php3";
 
 // include/constants_param_wizard.php3, row 1103
 $_m["usr_start_end_date_cz"]
@@ -1778,11 +1772,11 @@ $_m["usr_start_end_date_cz"]
 
 // include/constants_param_wizard.php3, row 1104
 $_m["parameter"]
- = "parámetro";
+ = "par�metro";
 
 // include/constants_param_wizard.php3, row 1105
 $_m["a parameter passed to the function"]
- = "un parámetro a pasar a la función";
+ = "un par�metro a pasar a la funci�n";
 
 // include/constants_param_wizard.php3, row 1108
 $_m["view"]
@@ -1790,15 +1784,15 @@ $_m["view"]
 
 // include/constants_param_wizard.php3, row 1109
 $_m["allows to manipulate the views. This is a complicated and powerful function, described in <a href=\"../doc/FAQ.html#viewparam\" target=_blank>FAQ</a>, which allows to display any view in place of the alias. It can be used for 'related stories' table or for dislaying content of related slice."]
- = "permite mostrar vistas. Esta función es potente y complicada, y está descrita en el <a href=\"http://apc-aa.sourceforge.net/faq#viewparam\" target=_blank>FAQ</a>. Muestra una vista en el lugar del alias. Es útil, entre otras cosas, para hacer enlaces a items relacionados de otros canales.";
+ = "permite mostrar vistas. Esta funci�n es potente y complicada, y est� descrita en el <a href=\"http://apc-aa.sourceforge.net/faq#viewparam\" target=_blank>FAQ</a>. Muestra una vista en el lugar del alias. Es �til, entre otras cosas, para hacer enlaces a items relacionados de otros canales.";
 
 // include/constants_param_wizard.php3, row 1111
 $_m["complex parameter"]
- = "parámetro complejo";
+ = "par�metro complejo";
 
 // include/constants_param_wizard.php3, row 1112
 $_m["this parameter is the same as we use in view.php3 url parameter - see the FAQ"]
- = "este parámetro sigue la sintaxis de los parámetros de view.php3";
+ = "este par�metro sigue la sintaxis de los par�metros de view.php3";
 
 // include/constants_param_wizard.php3, row 1114
 $_m["vid=4&amp;cmd[23]=v-25"]
@@ -1806,15 +1800,15 @@ $_m["vid=4&amp;cmd[23]=v-25"]
 
 // include/constants_param_wizard.php3, row 1115
 $_m["image width"]
- = "ancho imágen";
+ = "ancho im�gen";
 
 // include/constants_param_wizard.php3, row 1116
 $_m["An old-style function. Prints <i>the field</i> as image width value (\\<img width=...\\>) or erases the width tag. To be used immediately after \"width=\".The f_c function provides a better way of doing this with parameters \":width=\". "]
- = "Función anterior. Muestra <i>el campo</i> como el valor del ancho de la imagen (\\<img width=...\\>) o borra la etiqueta de ancho de imagen. A ser utilizada inmediatamente después \"width=\". La función f_c provee a una mejor manera de realizar esta función con los parámetros \":width=\".";
+ = "Funci�n anterior. Muestra <i>el campo</i> como el valor del ancho de la imagen (\\<img width=...\\>) o borra la etiqueta de ancho de imagen. A ser utilizada inmediatamente despu�s \"width=\". La funci�n f_c provee a una mejor manera de realizar esta funci�n con los par�metros \":width=\".";
 
 // include/constants_param_wizard.php3, row 1121
 $_m["Transformation action"]
- = "Acción de transformación";
+ = "Acci�n de transformaci�n";
 
 // include/constants_param_wizard.php3, row 1123
 $_m["Store"]
@@ -1834,7 +1828,7 @@ $_m["Remove all occurences of a string from the input field."]
 
 // include/constants_param_wizard.php3, row 1131, 1149, 1166
 $_m["string parameter"]
- = "parámetro de cadena";
+ = "par�metro de cadena";
 
 // include/constants_param_wizard.php3, row 1132
 $_m["Removed string"]
@@ -1846,23 +1840,23 @@ $_m["Format date"]
 
 // include/constants_param_wizard.php3, row 1137
 $_m["Parse the date in the input field expected to be in English date format. In case of error, the transformation fails"]
- = "Coloca la fecha en el campo de entrada que se espera sea en formato de fecha Inglés. En caso de error, la transformación falla";
+ = "Coloca la fecha en el campo de entrada que se espera sea en formato de fecha Ingl�s. En caso de error, la transformaci�n falla";
 
 // include/constants_param_wizard.php3, row 1141
 $_m["Add http prefix"]
- = "Añade el prefijo http";
+ = "A�ade el prefijo http";
 
 // include/constants_param_wizard.php3, row 1142
 $_m["Adds 'http://' prefix to the field if not beginning with 'http://' and not empty."]
- = "Añade el prefijo 'http://' al campo que no comienza con 'http://' y no es vacío.";
+ = "A�ade el prefijo 'http://' al campo que no comienza con 'http://' y no es vac�o.";
 
 // include/constants_param_wizard.php3, row 1146
 $_m["Store parameter"]
- = "Almacene el parámetro";
+ = "Almacene el par�metro";
 
 // include/constants_param_wizard.php3, row 1147
 $_m["Store parameter instead of the input field"]
- = "Almacene el parámetro en lugar del campo de entrada";
+ = "Almacene el par�metro en lugar del campo de entrada";
 
 // include/constants_param_wizard.php3, row 1153
 $_m["Store as long id"]
@@ -1870,15 +1864,15 @@ $_m["Store as long id"]
 
 // include/constants_param_wizard.php3, row 1154
 $_m["Creates long id from the string. The string is combined with the parameter!! or with slice_id (if the parameter is not provided. From the same string (and the same parameter) we create always the same id."]
- = "Crea un id largo desde la cadena. La cadena es combinada con el parámetro!! o con el identificador de canal slice_id (si el parámatro no se incluye. Desde la misma cadena (y el mismo parámetro) se crea siempre el mismo id.";
+ = "Crea un id largo desde la cadena. La cadena es combinada con el par�metro!! o con el identificador de canal slice_id (si el par�matro no se incluye. Desde la misma cadena (y el mismo par�metro) se crea siempre el mismo id.";
 
 // include/constants_param_wizard.php3, row 1156
 $_m["string to add"]
- = "cadena a añadir";
+ = "cadena a a�adir";
 
 // include/constants_param_wizard.php3, row 1157
 $_m["this parameter will be added to the string before conversion (the reason is to aviod empty strings and also in order we do not generate always the same id for common strings (in different imports). If this param is not specified, slice_id is used istead."]
- = "Este parámetro será añadido a la cadena antes de la conversión (la razon es para abolir cadenas vacias y también para no generar siempre el mismo id para cadenas similares (desde diferentes importaciones). Si este parámetro no se especifica, el identificador del canal slice_id será utilizado.";
+ = "Este par�metro ser� a�adido a la cadena antes de la conversi�n (la razon es para abolir cadenas vacias y tambi�n para no generar siempre el mismo id para cadenas similares (desde diferentes importaciones). Si este par�metro no se especifica, el identificador del canal slice_id ser� utilizado.";
 
 // include/constants_param_wizard.php3, row 1163
 $_m["Split input field by string"]
@@ -1886,7 +1880,7 @@ $_m["Split input field by string"]
 
 // include/constants_param_wizard.php3, row 1164
 $_m["Split input field by string parameter and store the result as multi-value."]
- = "Dividir el campo de entrada por el parámetro de la cadena y almacena el resultado como un valor múltiple";
+ = "Dividir el campo de entrada por el par�metro de la cadena y almacena el resultado como un valor m�ltiple";
 
 // include/constants_param_wizard.php3, row 1167
 $_m["string which separates the values of the input field"]
@@ -1910,69 +1904,69 @@ $_m["Store these default values for the following output fields. The other outpu
    ."    <tr><td>Edited by</td><td>Active user</td><td></td></tr>\n"
    ."      </table>\n"
    ."    "]
- = "Almacena estos valores por defecto para los siguientes campos de salida. Los demás campos de salida serán alimentados desde el campo <i>Desde - From</i> (si se especifica). De lo contrario será alimentado por la cadena de <i>los parámetros de acción</i>.\n"
+ = "Almacena estos valores por defecto para los siguientes campos de salida. Los dem�s campos de salida ser�n alimentados desde el campo <i>Desde - From</i> (si se especifica). De lo contrario ser� alimentado por la cadena de <i>los par�metros de acci�n</i>.\n"
    ."    <table>\n"
-   ."        <tr><td><b>Campo de salida</b></td><td><b>Valor</b></td><td><b>Descripción</b></td></tr></b>\n"
-   ."    <tr><td>Código de estado</td><td>1</td><td>El ítem será almacenado en la carpeta Aprobados (Truco: dejelo en 2 para la carpeta Por abrobar)</td></tr>\n"
+   ."        <tr><td><b>Campo de salida</b></td><td><b>Valor</b></td><td><b>Descripci�n</b></td></tr></b>\n"
+   ."    <tr><td>C�digo de estado</td><td>1</td><td>El �tem ser� almacenado en la carpeta Aprobados (Truco: dejelo en 2 para la carpeta Por abrobar)</td></tr>\n"
    ."    <tr><td>Contador de visitas</td><td>0</td><td></td></tr>\n"
    ."        <tr><td>Fecha de documento</td><td>Fecha actual</td><td></td></tr>\n"
-   ."    <tr><td>Fecha de publicación</td><td>Fecha actual</td><td></td></tr>\n"
-   ."    <tr><td>Ultima edición</td><td>Fecha actual</td><td></td></tr>\n"
-   ."    <tr><td>Fecha de expiración</td><td>Fecha actual + 10 años</td><td></td></tr>\n"
+   ."    <tr><td>Fecha de publicaci�n</td><td>Fecha actual</td><td></td></tr>\n"
+   ."    <tr><td>Ultima edici�n</td><td>Fecha actual</td><td></td></tr>\n"
+   ."    <tr><td>Fecha de expiraci�n</td><td>Fecha actual + 10 a�os</td><td></td></tr>\n"
    ."    <tr><td>Publicado por</td><td>Usuario actual</td><td></td></tr>\n"
    ."    <tr><td>Editado por</td><td>Usuario actual</td><td></td></tr>\n"
    ."      </table>\n"
    ."    ";
 
-// doc/param_wizard_list.php3, row 36
+// doc/param_wizard_list.php, row 36
 $_m["Param Wizard Summary"]
- = "Resumen de Asistentes de parámetros";
+ = "Resumen de Asistentes de par�metros";
 
-// doc/param_wizard_list.php3, row 45
+// doc/param_wizard_list.php, row 45
 $_m["Choose a Parameter Wizard"]
- = "Escoja un Asistente de parámetros";
+ = "Escoja un Asistente de par�metros";
 
-// doc/param_wizard_list.php3, row 54, 71
+// doc/param_wizard_list.php, row 54, 71
 $_m["Go"]
  = "Ir";
 
-// doc/param_wizard_list.php3, row 63
+// doc/param_wizard_list.php, row 63
 $_m["Change to: "]
  = "Cambiar a: ";
 
-// doc/param_wizard_list.php3, row 78
+// doc/param_wizard_list.php, row 78
 $_m["TOP"]
  = "ARRIBA";
 
-// doc/param_wizard_list.php3, row 92
+// doc/param_wizard_list.php, row 92
 $_m["Parameters:"]
- = "Parámetros:";
+ = "Par�metros:";
 
-// doc/param_wizard_list.php3, row 95
+// doc/param_wizard_list.php, row 95
 $_m["name"]
  = "nombre";
 
-// doc/param_wizard_list.php3, row 97
+// doc/param_wizard_list.php, row 97
 $_m["description"]
- = "descripción";
+ = "descripci�n";
 
-// doc/param_wizard_list.php3, row 98
+// doc/param_wizard_list.php, row 98
 $_m["example"]
  = "ejemplo";
 
-// doc/param_wizard_list.php3, row 104
+// doc/param_wizard_list.php, row 104
 $_m["integer number"]
- = "número entero";
+ = "n�mero entero";
 
-// doc/param_wizard_list.php3, row 105
+// doc/param_wizard_list.php, row 105
 $_m["any text"]
  = "cualquier texto";
 
-// doc/param_wizard_list.php3, row 106
+// doc/param_wizard_list.php, row 106
 $_m["field id"]
  = "id campo";
 
-// doc/param_wizard_list.php3, row 107
+// doc/param_wizard_list.php, row 107
 $_m["boolean: 0=false,1=true"]
  = "booleano: 0=falso,1=verdadero";
 

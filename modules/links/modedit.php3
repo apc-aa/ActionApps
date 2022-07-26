@@ -25,9 +25,9 @@ https://www.apc.org/
 */
 
 $LINKS_LANGUAGE_FILES = [
-    "en_links_lang.php3" => "en_links_lang.php3",
-    "cz_links_lang.php3" => "cz_links_lang.php3",
-    "cz-utf8_links_lang.php3" => "cz-utf8_links_lang.php3"
+    "en_links_lang.php" => "en_links_lang.php",
+    "cz_links_lang.php" => "cz_links_lang.php",
+    "cz-utf8_links_lang.php" => "cz-utf8_links_lang.php"
 ];
 
 
@@ -37,7 +37,7 @@ if ($template['Links']) {
 
 const AA_REGISTER_GLOBALS = true;
 require_once __DIR__."/../../include/init_page.php3";
-//require_once __DIR__."/../../include/en_links_lang.php3";
+//require_once __DIR__."/../../include/en_links_lang.php";
 require_once __DIR__."/../../include/formutil.php3";
 
 require_once __DIR__."/../../include/varset.php3";

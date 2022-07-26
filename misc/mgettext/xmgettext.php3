@@ -173,7 +173,7 @@ class mgettext_writer_po extends mgettext_writer {
 * @param string $logfile File name where xmgettext stores info allowing to continue
 *                        its work on page reload.
 * @param string $lang_files Full path to language files, with ?? instead of language name,
-*                           e.g. /www/htdocs/aa.ecn.cz/apc-aa/include/lang/??_news_lang.php3.
+*                           e.g. /www/htdocs/aa.ecn.cz/apc-aa/include/lang/??_news_lang.php.
 *                           Goes through all languages from @c $mgettext_langs_list.
 *                 WARNING:  PHP read-write access must be enabled to these lang files.
 * @param string $files_base_dir Base dir used for $files.

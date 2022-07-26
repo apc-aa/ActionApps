@@ -34,7 +34,7 @@ else {
 
 // config file identifier
 // must correspond with this file name
-define("LANG_FILE", "en_polls_lang.php3");
+define("LANG_FILE", "en_polls_lang.php");
 
 // HTML begin of admin page
 // You should set language of admin pages and possibly any meta tags

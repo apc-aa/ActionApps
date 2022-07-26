@@ -194,13 +194,13 @@ $MODULES = [
                                 'directory' => "modules/site/",
                                 'menu' => "modules/site/menu.php3",
                                 'language_files' => [
-                                    'en-utf8_site_lang.php3' => 'en-utf8_site_lang.php3',
-                                    'en_site_lang.php3' => 'en_site_lang.php3',
-                                    'es_site_lang.php3' => 'es_site_lang.php3',
-                                    'es-utf8_site_lang.php3' => 'es-utf8_site_lang.php3',
-                                    'cz_site_lang.php3' => 'cz_site_lang.php3',
-                                    'cz-utf8_site_lang.php3' => 'cz-utf8_site_lang.php3',
-                                    'sk-utf8_site_lang.php3' => 'sk-utf8_site_lang.php3'
+                                    'en-utf8_site_lang.php' => 'en-utf8_site_lang.php',
+                                    'en_site_lang.php' => 'en_site_lang.php',
+                                    'es_site_lang.php' => 'es_site_lang.php',
+                                    'es-utf8_site_lang.php' => 'es-utf8_site_lang.php',
+                                    'cz_site_lang.php' => 'cz_site_lang.php',
+                                    'cz-utf8_site_lang.php' => 'cz-utf8_site_lang.php',
+                                    'sk-utf8_site_lang.php' => 'sk-utf8_site_lang.php'
                                 ]
                   ],
                   'J' => [
@@ -216,12 +216,12 @@ $MODULES = [
                                 'directory' => "modules/polls/",
                                 'menu' => "modules/polls/menu.php3",
                                 'language_files' => [
-                                    "en_polls_lang.php3" => "en_polls_lang.php3",
-                                    "es_polls_lang.php3" => "es_polls_lang.php3",
-                                    "es-utf8_polls_lang.php3" => "es-utf8_polls_lang.php3",
-                                    "cz_polls_lang.php3" => "cz_polls_lang.php3",
-                                    "cz-utf8_polls_lang.php3" => "cz-utf8_polls_lang.php3",
-                                    "sk-utf8_polls_lang.php3" => "sk-utf8_polls_lang.php3",
+                                    "en_polls_lang.php" => "en_polls_lang.php",
+                                    "es_polls_lang.php" => "es_polls_lang.php",
+                                    "es-utf8_polls_lang.php" => "es-utf8_polls_lang.php",
+                                    "cz_polls_lang.php" => "cz_polls_lang.php",
+                                    "cz-utf8_polls_lang.php" => "cz-utf8_polls_lang.php",
+                                    "sk-utf8_polls_lang.php" => "sk-utf8_polls_lang.php",
                                 ]
                   ],
 
@@ -273,7 +273,7 @@ class AA_Langs {
     public static function getFiles($type='news') {
         $arr = [];
         foreach (self::$LANGS as $k => $l) {
-            $arr[$k.'_'.$type.'_lang.php3'] = $l[1];
+            $arr[$k.'_'.$type.'_lang.php'] = $l[1];
         }
         return $arr;
     }

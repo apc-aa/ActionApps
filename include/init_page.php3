@@ -72,8 +72,8 @@ if ($free) {
 require_once __DIR__."/locauth.php3";
 
 // Save before getting the session stored variables
-// Now it should not be in session so mayby the $pass_sliceid is not necessary and we van use just slice_id
-// At least it do sanity check.
+// Now it should not be in session so maybe the $pass_sliceid is not necessary and we can use just slice_id
+// At least it does sanity check.
 //                               AA::$module_id - could be set on new Alterts module - see AlertsModeditAfterInsert()
 if (!is_long_id(AA::$module_id = AA::$module_id ?: $_POST['change_id'] ?: $_GET['change_id'] ?: $_POST['module_id'] ?: $_GET['module_id'] ?: $_POST['slice_id'] ?: $_GET['slice_id'])) {
     AA::$module_id = '';

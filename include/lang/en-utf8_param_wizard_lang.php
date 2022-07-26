@@ -1,6 +1,6 @@
 <?php
 // $Id$
-// Language: EN
+// Language: EN-UTF8
 // This file was created automatically by the Mini GetText environment
 // on 5.9.2008 16:32
 
@@ -8,7 +8,9 @@
 
 // Before each message there are links to program code where it was used.
 
-$mgettext_lang = "en";
+$mgettext_lang = "en-utf8";
+define("DB_COLLATION", "utf8mb4_unicode_ci");  // *_unicode_* is better for most cases than *_general_*
+setlocale(LC_ALL, 'en_US.utf8', 'en_US');  // sort, date, uppercase, ..
 
 # Unused messages
 # End of unused messages
@@ -484,7 +486,7 @@ $_m["column count"]
  = "";
 
 // include/constants_param_wizard.php3, row 306, 843
-// doc/param_wizard_list.php3, row 96
+// doc/param_wizard_list.php, row 96
 $_m["type"]
  = "";
 
@@ -1831,55 +1833,55 @@ $_m["Store these default values for the following output fields. The other outpu
    ."    "]
  = "";
 
-// doc/param_wizard_list.php3, row 36
+// doc/param_wizard_list.php, row 36
 $_m["Param Wizard Summary"]
  = "";
 
-// doc/param_wizard_list.php3, row 45
+// doc/param_wizard_list.php, row 45
 $_m["Choose a Parameter Wizard"]
  = "";
 
-// doc/param_wizard_list.php3, row 54, 71
+// doc/param_wizard_list.php, row 54, 71
 $_m["Go"]
  = "";
 
-// doc/param_wizard_list.php3, row 63
+// doc/param_wizard_list.php, row 63
 $_m["Change to: "]
  = "";
 
-// doc/param_wizard_list.php3, row 78
+// doc/param_wizard_list.php, row 78
 $_m["TOP"]
  = "";
 
-// doc/param_wizard_list.php3, row 92
+// doc/param_wizard_list.php, row 92
 $_m["Parameters:"]
  = "";
 
-// doc/param_wizard_list.php3, row 95
+// doc/param_wizard_list.php, row 95
 $_m["name"]
  = "";
 
-// doc/param_wizard_list.php3, row 97
+// doc/param_wizard_list.php, row 97
 $_m["description"]
  = "";
 
-// doc/param_wizard_list.php3, row 98
+// doc/param_wizard_list.php, row 98
 $_m["example"]
  = "";
 
-// doc/param_wizard_list.php3, row 104
+// doc/param_wizard_list.php, row 104
 $_m["integer number"]
  = "";
 
-// doc/param_wizard_list.php3, row 105
+// doc/param_wizard_list.php, row 105
 $_m["any text"]
  = "";
 
-// doc/param_wizard_list.php3, row 106
+// doc/param_wizard_list.php, row 106
 $_m["field id"]
  = "";
 
-// doc/param_wizard_list.php3, row 107
+// doc/param_wizard_list.php, row 107
 $_m["boolean: 0=false,1=true"]
  = "";
 

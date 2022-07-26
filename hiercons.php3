@@ -6,7 +6,7 @@
  *  $varname - name of the select box with selected constants, defaults to "hiercons"
  *  $param - like in Field Input Type "hierarchical constants" but preceded with "group_name:"
  *          minimum is just "group_name"
- *  $lang_file - name of language file to be used, defaults to "en_news_lang.php3"
+ *  $lang_file - name of language file to be used, defaults to "en_news_lang.php"
  *
  * @package UserOutput
  * @version $Id$
