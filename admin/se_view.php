@@ -29,12 +29,12 @@
 use AA\IO\DB\DB_AA;
 
 const AA_REGISTER_GLOBALS = true;
-require_once __DIR__."/../include/init_page.php3";
-require_once __DIR__."/../include/formutil.php3";
-require_once __DIR__."/../include/varset.php3";
-require_once __DIR__."/../include/item.php3";     // GetAliasesFromField funct def
-require_once __DIR__."/../include/discussion.php3";  // GetDiscussionAliases funct def
-require_once __DIR__."/../include/msgpage.php3";
+require_once __DIR__ . "/../include/init_page.php";
+require_once __DIR__ . "/../include/formutil.php";
+require_once __DIR__ . "/../include/varset.php";
+require_once __DIR__ . "/../include/item.php";     // GetAliasesFromField funct def
+require_once __DIR__ . "/../include/discussion.php";  // GetDiscussionAliases funct def
+require_once __DIR__ . "/../include/msgpage.php";
 
 // ----------------------------------------------------------------------------
 /** get_row_count function
@@ -273,7 +273,7 @@ if ($view_id) {
 
 
 $back_url = ( (($view_type == 'categories') OR ($view_type == 'links')) ?
-                get_aa_url('modules/links/modedit.php3') :
+                get_aa_url('modules/links/modedit.php') :
                 get_admin_url('se_views.php') );
 
 if ($cancel) {
@@ -499,7 +499,7 @@ foreach ($VIEW_TYPES[$view_type] as $k => $v) {
         $show_fn = "show_".substr($k,strlen("function:"));
         $show_fn();
     }
-    // we can define default values for fields (see constants.php3)
+    // we can define default values for fields (see constants.php)
     if ( !($value = $vw_data[$k]) && $VIEW_TYPES_INFO[$view_type][$k]['default'] ) {
         $value = $VIEW_TYPES_INFO[$view_type][$k]['default'];
     }
@@ -569,7 +569,7 @@ if ($view) {
     $set = $view->getSet();
     if ($view_conds   = $set->getCondsAsString()) {
         $view_sort    = $set->getSortAsString();
-        $view_recipe1 = '&lcub;view:' . $view_id . ':-&lcub;ids:'. $view->getSliceId(). $view_id . ':'. $view_conds . ($view_sort ? ':'.$view_sort: '') . '&rcub;&rcub;';
+        $view_recipe1 = '&lcub;view:' . $view_id . ':-&lcub;ids:'. $view->getSliceId() . ':'. $view_conds . ($view_sort ? ':'.$view_sort: '') . '&rcub;&rcub;';
         $view_recipe2 = '&lcub;view.php3?vid=' . $view_id . '&cmd[' . $view_id . ']=' . (new AA_Set(null, $view->getConds()))->getCondsAsString() . ($view_sort ? '&set[' . $view_id . ']=sort-'.$view_sort: '').'&rcub;';
     }
 }
