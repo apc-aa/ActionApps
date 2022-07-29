@@ -55,8 +55,8 @@
 // todo - work with global variable $err??
 
 const AA_REGISTER_GLOBALS = true;
-require_once __DIR__."/../include/init_page.php3";
-require_once __DIR__."/../include/import_util.php3";
+require_once __DIR__ . "/../include/init_page.php";
+require_once __DIR__ . "/../include/import_util.php";
 
 const FILE_PREFIX = 'importdata';
 
@@ -136,7 +136,7 @@ if ($upload) {
     go_url(StateUrl(self_base()."se_csv_import2.php"). "&fileName=".urlencode($dest_file)."&slice_id=$slice_id&addParamsSerial=" .bin2url(serialize($addParams)));
 }
 
-require_once __DIR__."/../include/formutil.php3";
+require_once __DIR__ . "/../include/formutil.php";
 
 
 $apage = new AA_Adminpageutil('sliceadmin','CSVimport');

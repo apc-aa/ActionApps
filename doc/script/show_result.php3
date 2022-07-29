@@ -2,7 +2,7 @@
 /** This is an example of the SHOW RESULT script used in anonymous
 *   forms to show the result of an action when a reader added or updated an item.
 *   Add a parameter "show_result=http://complete_URL_to_this_script" to
-*   the SSI include of fillform.php3 to use this script in your anonymous form.
+*   the SSI include of fillform.php to use this script in your anonymous form.
 *
 *   See more documentation in doc/anonym.html.
 *

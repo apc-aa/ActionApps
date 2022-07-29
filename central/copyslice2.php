@@ -22,8 +22,8 @@ https://www.apc.org/
 use AA\Later\Toexecute;
 
 require_once __DIR__."/include/init_central.php";
-require_once __DIR__."/../include/formutil.php3";
-require_once __DIR__."/../include/msgpage.php3";
+require_once __DIR__ . "/../include/formutil.php";
+require_once __DIR__ . "/../include/msgpage.php";
 
 pageOpen();
 

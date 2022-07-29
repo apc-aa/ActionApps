@@ -17,12 +17,12 @@
  *    into the database, table post2shtml, with a new unique ID post2shtml_id
  * 2. The web server is redirected to "some_page.shtml?post2sthml_id=aa45db3d345de..."
  * 3. The web server parses the page "some_page.shtml" and comes to some
- *    SSI include like <!--#include virtual="/aa/some_script.php3"-->. It calls
+ *    SSI include like <!--#include virtual="/aa/some_script.php"-->. It calls
  *    the PHP script some_script.php3.
  * 4. some_script.php3 knows it may be called this way and thus uses the post2shtml_id
  *    to find the right row in the post2shtml table and thus
  *    retrieve the form data with the function add_post2shtml_vars()
- *    from include/util.php3.
+ *    from include/util.php.
  *
  * One additional feature:
  * You can send passwords, which are stored encrypted by MD5: all members of
@@ -71,8 +71,8 @@ use AA\IO\DB\DB_AA;
 if ( !defined('DB_NAME') ) {
     require_once __DIR__."/./include/config.php3";
 }
-require_once __DIR__."/include/locsess.php3";
-require_once __DIR__."/include/util.php3";
+require_once __DIR__ . "/include/locsess.php";
+require_once __DIR__ . "/include/util.php";
 
 store_vars();
 

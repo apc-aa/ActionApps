@@ -10,9 +10,9 @@ use AA\Later\Toexecute;
 
 require_once __DIR__."/../../include/config.php3";
 /** Main include file for using session management function on a page */
-require_once __DIR__."/../../include/locsess.php3";
-require_once __DIR__."/../../include/util.php3";
-require_once __DIR__."/../../include/formutil.php3";
+require_once __DIR__ . "/../../include/locsess.php";
+require_once __DIR__ . "/../../include/util.php";
+require_once __DIR__ . "/../../include/formutil.php";
 
 
 // call the script like https://example.org/apc-aa/misc/file2slice/importer_sql_example.php?someSecret=1 - just to not run it by accident

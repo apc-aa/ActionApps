@@ -38,12 +38,12 @@ if ($edit) {         // parameter for init_page - we edited new item so
 }
 
 const AA_REGISTER_GLOBALS = true;
-require_once __DIR__."/../include/init_page.php3";     // This pays attention to $change_id
-require_once __DIR__."/../include/formutil.php3";
-require_once __DIR__."/../include/varset.php3";
-require_once __DIR__."/../include/feeding.php3";
-require_once __DIR__."/../include/itemfunc.php3";
-require_once __DIR__."/../include/notify.php3";
+require_once __DIR__ . "/../include/init_page.php";     // This pays attention to $change_id
+require_once __DIR__ . "/../include/formutil.php";
+require_once __DIR__ . "/../include/varset.php";
+require_once __DIR__ . "/../include/feeding.php";
+require_once __DIR__ . "/../include/itemfunc.php";
+require_once __DIR__ . "/../include/notify.php";
 
 if ( file_exists( "../include/usr_validate.php3" ) ) {
     require_once __DIR__."/../include/usr_validate.php3";

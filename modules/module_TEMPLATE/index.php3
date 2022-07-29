@@ -21,12 +21,12 @@ https://www.apc.org/
 
 // APC AA - Module main administration page
 
-// used in init_page.php3 script to include config.php3 from the right directory
+// used in init_page.php script to include config.php3 from the right directory
 
 const AA_REGISTER_GLOBALS = true;
-require_once __DIR__."/../../include/init_page.php3";
-require_once __DIR__."/../../include/varset.php3";
-require_once __DIR__."/../../include/formutil.php3";
+require_once __DIR__ . "/../../include/init_page.php";
+require_once __DIR__ . "/../../include/varset.php";
+require_once __DIR__ . "/../../include/formutil.php";
 
 // id of the editted module
 $module_id = $slice_id;               // id in long form (32-digit hexadecimal
@@ -36,7 +36,7 @@ $p_module_id = q_pack_id($module_id); // packed to 16-digit as stored in databas
 
 // Check permissions for this page.
 // You should change PS_MODW_EDIT_CODE permission to match the permission in your
-// module. See /include/perm_core.php3 for more details
+// module. See /include/perm_core.php for more details
 
 if ( !IfSlPerm(PS_MODW_EDIT_CODE) ) {
   MsgPage(StateUrl(self_base())."index.php3", _m("You do not have permission to edit items in this slice"));
@@ -52,8 +52,8 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 <title><?php echo _m("Editor window - item manager") ?></title>
 </head> <?php
 
-require_once __DIR__."/navbar.php3"; // module specific navigation bar
-require_once __DIR__."/util.php3";   // module specific utils
+require_once __DIR__ . "/navbar.php"; // module specific navigation bar
+require_once __DIR__ . "/util.php";   // module specific utils
 
 
 // fill code for the main admin page layout

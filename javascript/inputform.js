@@ -213,7 +213,7 @@ function OpenLocalURLPick(varname, url, aa_instal_path, value) {
     if ((urlpickerwindow != null) && (!urlpickerwindow.closed)) {
         urlpickerwindow.close()    // in order to preview go on top after open
     }
-    page = aa_instal_path + "/localurlpick.php3?var_id=" + varname + "&url=" + url + "&value=" + value
+    page = aa_instal_path + "/localurlpick.php?var_id=" + varname + "&url=" + url + "&value=" + value
     urlpickerwindow = open(page, "urlpickerwindow", "scrollbars=1, resizable=1, height=600 width=800 menubar=no");
 }
 

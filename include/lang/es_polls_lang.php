@@ -24,165 +24,165 @@ $_m["Poll Question"]
  = "Pregunta para encuesta";
 
 // modules/polls/index.php3, row 75
-// modules/polls/polledit.php3, row 188, 195
+// modules/polls/polledit.php, row 188, 195
 $_m["Publish Date"]
- = "Fecha de publicación";
+ = "Fecha de publicaciï¿½n";
 
 // modules/polls/index.php3, row 75
-// modules/polls/polledit.php3, row 189, 196
+// modules/polls/polledit.php, row 189, 196
 $_m["Expiry Date"]
- = "Fecha de expiración";
+ = "Fecha de expiraciï¿½n";
 
-// modules/polls/polledit.php3, row 52
+// modules/polls/polledit.php, row 52
 $_m["No permission to add/edit poll."]
- = "Sin permisos para añadir o editar encuestas.";
+ = "Sin permisos para aï¿½adir o editar encuestas.";
 
-// modules/polls/polledit.php3, row 95
+// modules/polls/polledit.php, row 95
 $_m["Can't insert new poll"]
  = "No es posible insertar una nueva encuesta";
 
-// modules/polls/polledit.php3, row 137
+// modules/polls/polledit.php, row 137
 $_m["Edit poll"]
  = "Editar encuesta";
 
-// modules/polls/polledit.php3, row 137, 151
+// modules/polls/polledit.php, row 137, 151
 $_m["Add poll"]
- = "Añadir encuesta";
+ = "Aï¿½adir encuesta";
 
-// modules/polls/polledit.php3, row 143
+// modules/polls/polledit.php, row 143
 $_m["There are too many related items. The number of related items is limited."]
- = "Hay demasiados ítems relacionados. El número de ítems es limitado";
+ = "Hay demasiados ï¿½tems relacionados. El nï¿½mero de ï¿½tems es limitado";
 
-// modules/polls/polledit.php3, row 169
+// modules/polls/polledit.php, row 169
 $_m["Insert question and answers"]
  = "Introduzca la pregunta y respuestas";
 
-// modules/polls/polledit.php3, row 186, 193
+// modules/polls/polledit.php, row 186, 193
 $_m["Headline"]
  = "Encabezado";
 
-// modules/polls/polledit.php3, row 186, 193
+// modules/polls/polledit.php, row 186, 193
 $_m["Question"]
  = "Pregunta";
 
-// modules/polls/polledit.php3, row 187, 194
+// modules/polls/polledit.php, row 187, 194
 $_m["Insert new answers and choose their order"]
  = "Inserte nuevas respuestas y seleccione su orden";
 
-// modules/polls/polledit.php3, row 199
+// modules/polls/polledit.php, row 199
 $_m["Polls settings"]
- = "Configuración de encuestas";
+ = "Configuraciï¿½n de encuestas";
 
-// modules/polls/polledit.php3, row 201
+// modules/polls/polledit.php, row 201
 $_m["Poll is locked"]
  = "Encuesta bloqueada";
 
-// modules/polls/polledit.php3, row 202
-// modules/polls/modedit.php3, row 213
+// modules/polls/polledit.php, row 202
+// modules/polls/modedit.php, row 213
 $_m["Use logging"]
  = "Utilice log de acceso";
 
-// modules/polls/polledit.php3, row 203
-// modules/polls/modedit.php3, row 214
+// modules/polls/polledit.php, row 203
+// modules/polls/modedit.php, row 214
 $_m["Use IP locking"]
  = "Utilice bloqueo de IP";
 
-// modules/polls/polledit.php3, row 204
-// modules/polls/modedit.php3, row 74, 215
+// modules/polls/polledit.php, row 204
+// modules/polls/modedit.php, row 74, 215
 $_m["IP Locking timeout"]
  = "Utilice bloqueo de IP por tiempo";
 
-// modules/polls/polledit.php3, row 204
+// modules/polls/polledit.php, row 204
 $_m["time in seconds"]
  = "tiempo en segundos";
 
-// modules/polls/polledit.php3, row 205
-// modules/polls/modedit.php3, row 216
+// modules/polls/polledit.php, row 205
+// modules/polls/modedit.php, row 216
 $_m["Use cookies"]
  = "Utilice cookies";
 
-// modules/polls/polledit.php3, row 207
-// modules/polls/modedit.php3, row 76
+// modules/polls/polledit.php, row 207
+// modules/polls/modedit.php, row 76
 $_m["Parameters"]
- = "Parámetros";
+ = "Parï¿½metros";
 
-// modules/polls/polledit.php3, row 209
+// modules/polls/polledit.php, row 209
 $_m["Polls design templates"]
- = "Plantillas de Diseño de encuestas";
+ = "Plantillas de Diseï¿½o de encuestas";
 
-// modules/polls/polledit.php3, row 214
+// modules/polls/polledit.php, row 214
 $_m["Select design type - before vote"]
- = "Seleccione tipo de diseño - antes de votar";
+ = "Seleccione tipo de diseï¿½o - antes de votar";
 
-// modules/polls/polledit.php3, row 215
+// modules/polls/polledit.php, row 215
 $_m["Select design type - after vote"]
- = "Seleccione tipo de diseño - después de votar";
+ = "Seleccione tipo de diseï¿½o - despuï¿½s de votar";
 
-// modules/polls/polledit.php3, row 215
+// modules/polls/polledit.php, row 215
 $_m["If the design after vote should look differently, then specify it here."]
- = "Si el diseño después de votar debe verse diferente, especifíquelo aquí";
+ = "Si el diseï¿½o despuï¿½s de votar debe verse diferente, especifï¿½quelo aquï¿½";
 
-// modules/polls/modedit.php3, row 51
+// modules/polls/modedit.php, row 51
 $_m["You have not permissions to add polls"]
- = "Usted no tiene permisos para añadir encuestas";
+ = "Usted no tiene permisos para aï¿½adir encuestas";
 
-// modules/polls/modedit.php3, row 56
+// modules/polls/modedit.php, row 56
 $_m["You have not permissions to edit this polls"]
  = "Usted no tiene permisos de editar esta encuesta";
 
-// modules/polls/modedit.php3, row 75, 217
+// modules/polls/modedit.php, row 75, 217
 $_m["Cookies prefix"]
  = "Prefijo de cookies";
 
-// modules/polls/modedit.php3, row 182
+// modules/polls/modedit.php, row 182
 $_m["Polls Admin"]
- = "Administración de encuestas";
+ = "Administraciï¿½n de encuestas";
 
-// modules/polls/modedit.php3, row 188
+// modules/polls/modedit.php, row 188
 $_m["Add Polls"]
- = "Añadir encuestas";
+ = "Aï¿½adir encuestas";
 
-// modules/polls/modedit.php3, row 188
+// modules/polls/modedit.php, row 188
 $_m["Edit Polls"]
  = "Editar encuestas";
 
-// modules/polls/modedit.php3, row 195
+// modules/polls/modedit.php, row 195
 $_m["Polls Module general data"]
- = "Módulo de datos generales de encuestas";
+ = "Mï¿½dulo de datos generales de encuestas";
 
-// modules/polls/modedit.php3, row 196
+// modules/polls/modedit.php, row 196
 $_m["Id"]
  = "Id";
 
-// modules/polls/modedit.php3, row 197
+// modules/polls/modedit.php, row 197
 $_m["Name"]
  = "Nombre";
 
-// modules/polls/modedit.php3, row 199
+// modules/polls/modedit.php, row 199
 $_m["URL"]
  = "URL";
 
-// modules/polls/modedit.php3, row 200
-$_m["Owner"] =  "Dueño";
+// modules/polls/modedit.php, row 200
+$_m["Owner"] =  "Dueï¿½o";
 
-// modules/polls/modedit.php3, row 202
+// modules/polls/modedit.php, row 202
 $_m["New Owner"]
- = "Nuevo dueño";
+ = "Nuevo dueï¿½o";
 
-// modules/polls/modedit.php3, row 203
+// modules/polls/modedit.php, row 203
 $_m["New Owner's E-mail"]
- = "Correo de nuevo dueño";
+ = "Correo de nuevo dueï¿½o";
 
-// modules/polls/modedit.php3, row 206
+// modules/polls/modedit.php, row 206
 $_m["Deleted"]
  = "Borrado";
 
-// modules/polls/modedit.php3, row 208
+// modules/polls/modedit.php, row 208
 $_m["Used Language File"]
  = "Archivo de idioma utilizado";
 
-// modules/polls/modedit.php3, row 212
+// modules/polls/modedit.php, row 212
 $_m["Defaults for polls in this module"]
- = "Predeterminados para módulo de encuestas";
+ = "Predeterminados para mï¿½dulo de encuestas";
 
 

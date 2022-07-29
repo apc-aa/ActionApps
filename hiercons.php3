@@ -36,17 +36,17 @@ https://www.apc.org/
 /** APC-AA configuration file */
 require_once __DIR__."/./include/config.php3";
 /** APC-AA constant definitions */
-require_once __DIR__."/include/constants.php3";
-require_once __DIR__."/include/mgettext.php3";
+require_once __DIR__ . "/include/constants.php";
+require_once __DIR__ . "/include/mgettext.php";
 
 mgettext_bind(AA_Langs::getLang($lang_file), 'news');
 
 /** Main include file for using session management function on a page */
-require_once __DIR__."/include/locsess.php3";
+require_once __DIR__ . "/include/locsess.php";
 /** Set of useful functions used on most pages */
-require_once __DIR__."/include/util.php3";
-require_once __DIR__."/include/formutil.php3";
-require_once __DIR__."/include/itemfunc.php3";
+require_once __DIR__ . "/include/util.php";
+require_once __DIR__ . "/include/formutil.php";
+require_once __DIR__ . "/include/itemfunc.php";
 
 FrmJavascript('var listboxes = new Array();');
 if (!$varname) $varname = "hiercons";

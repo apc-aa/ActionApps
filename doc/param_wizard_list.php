@@ -28,10 +28,10 @@
  */
 
 require_once __DIR__."/../include/config.php3";
-require_once __DIR__."/../include/util.php3";
-require_once __DIR__."/../include/mgettext.php3";
+require_once __DIR__ . "/../include/util.php";
+require_once __DIR__ . "/../include/mgettext.php";
 mgettext_bind(get_mgettext_lang(), 'param_wizard');
-require_once __DIR__."/../include/constants_param_wizard.php3";
+require_once __DIR__ . "/../include/constants_param_wizard.php";
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 echo "<TITLE>" . _m("Param Wizard Summary") . "</TITLE>";

@@ -1,4 +1,4 @@
-// Scripts used in manager.class.php3
+// Scripts used in manager.class.php
 // - folloving global javascript variables should be set before calling
 //   AA_Config structure - see javascript/aajslib.php
 
@@ -8,7 +8,7 @@ function MarkedActionGo() {
     var add_items;
     if( ms.value && (ms.value != 'nothing') ) {
         document.itemsform.akce.value = ms.value
-        // markedactionur is global variable defined in manager.class.php3
+        // markedactionur is global variable defined in manager.class.php
         if( markedactionurl[ms.selectedIndex] != null ) {
             var iftarget = document.itemsform.target;
             var ifaction = document.itemsform.action;
@@ -25,7 +25,7 @@ function MarkedActionGo() {
 //  Fills 'akce' hidden field and submits the form or opens popup window
 // @todo get rid of prototype.js in this function, so manager.js do not need it
 function MarkedActionSelect(sb) {
-    // markedactionsetting is global variable defined in manager.class.php3
+    // markedactionsetting is global variable defined in manager.class.php
     // which contain serialized state of the AA object, which should be
     // instatnionated in AA and asked for displaying htmlSetting of the action
     if( sb.value && (sb.value != 'nothing') && (markedactionsetting[sb.selectedIndex] != null) ) {

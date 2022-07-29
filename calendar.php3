@@ -17,7 +17,7 @@
 */
 
 /* First you need to add variables from URL --- this is not automatical when including PHP from .shtml 
-    The function add_vars is copied from in aaa/include/util.php3 */
+    The function add_vars is copied from in aaa/include/util.php */
 
 # skips terminating backslashes
 function DeBackslash($txt) {

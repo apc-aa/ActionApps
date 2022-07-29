@@ -30,12 +30,12 @@
 use AA\IO\DB\DB_AA;
 
 const AA_REGISTER_GLOBALS = true;
-require_once __DIR__."/../include/init_page.php3";
+require_once __DIR__ . "/../include/init_page.php";
 if (!IfSlPerm(PS_FEEDING)) {
    MsgPage(StateUrl(self_base()."index.php3"), _m("You have not permissions to change feeding setting"));
    exit;
 }
-require_once __DIR__."/../include/formutil.php3";
+require_once __DIR__ . "/../include/formutil.php";
 
 $p_slice_id = q_pack_id($slice_id);
 switch ($mode) {

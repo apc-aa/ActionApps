@@ -52,7 +52,7 @@ class GenerateMetabase extends \AA\Optimize\AbstractOptimize {
      * @return string - a description
      */
     public static function description(): string {
-        return _m("For programmers only - Generate metabace definition row from current database bo be placed in /service/metabase.class.php3 and /include/metabase.class.php3 scripts");
+        return _m("For programmers only - Generate metabace definition row from current database bo be placed in /service/metabase.class.php and /include/metabase.class.php scripts");
     }
 
     /** implemented actions within this class */

@@ -28,14 +28,14 @@
 // Then it could be used as AJAX call for this action!
 
 const AA_REGISTER_GLOBALS = true;
-require_once __DIR__."/../../include/init_page.php3";
-require_once __DIR__."/../../include/varset.php3";
-require_once __DIR__."/../../include/formutil.php3";
+require_once __DIR__ . "/../../include/init_page.php";
+require_once __DIR__ . "/../../include/varset.php";
+require_once __DIR__ . "/../../include/formutil.php";
 
-require_once __DIR__."/../../include/item.php3";
-require_once __DIR__."/../../include/actions.php3";
-require_once __DIR__."/../../modules/polls/include/actions.php3";
-require_once __DIR__."/../../modules/polls/include/util.php3";
+require_once __DIR__ . "/../../include/item.php";
+require_once __DIR__ . "/../../include/actions.php";
+require_once __DIR__ . "/../../modules/polls/include/actions.php";
+require_once __DIR__ . "/../../modules/polls/include/util.php";
 
 if ( !IfSlPerm(PS_EDIT_ALL_ITEMS) ) {
     MsgPage(StateUrl(self_base())."index.php3", _m("You do not have permission to manage Polls"));

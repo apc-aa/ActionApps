@@ -29,11 +29,11 @@
 */
 
 const AA_REGISTER_GLOBALS = true;
-require_once __DIR__."/../include/init_page.php3";
-require_once __DIR__."/../include/formutil.php3";
-require_once __DIR__."/../include/varset.php3";
-require_once __DIR__."/../include/msgpage.php3";
-require_once __DIR__."/../include/um_util.php3";
+require_once __DIR__ . "/../include/init_page.php";
+require_once __DIR__ . "/../include/formutil.php";
+require_once __DIR__ . "/../include/varset.php";
+require_once __DIR__ . "/../include/msgpage.php";
+require_once __DIR__ . "/../include/um_util.php";
 
 if ($cancel) {
     go_url( StateUrl(self_base() . "index.php3"));
@@ -99,7 +99,7 @@ FrmInputPwd("user_password2", _m("Retype password"),$user_password2, 50, 50, tru
 FrmInputText("user_firstname",_m("First name"),     $user_firstname, 50, 50, true);
 FrmInputText("user_surname",  _m("Surname"),        $user_surname, 50, 50, true);
 FrmInputText("user_mail1",    _m("E-mail")." 1",    $user_mail1, 50, 50, true);
-//  FrmInputText("user_mail2", _m("E-mail")." 2",    $user_mail2, 50, 50, false);  // removed for compatibility with perm_sql.php3
+//  FrmInputText("user_mail2", _m("E-mail")." 2",    $user_mail2, 50, 50, false);  // removed for compatibility with perm_sql.php
 //  FrmInputText("user_mail3", _m("E-mail")." 3",    $user_mail3, 50, 50, false);
 //  FrmInputChBox("user_super", _m("Superadmin account"), $user_super, false, "", 1, false); // can't be changed by user itself
 

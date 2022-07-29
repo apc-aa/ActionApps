@@ -30,7 +30,7 @@ class Menu
         $aamenus["polledit"] = [
             "label" => ($polledit ? _m("Edit poll") : _m("Add poll")),
             "title" => ($polledit ? _m("Edit poll") : _m("Add new poll")),
-            "href"  => $module_location."polledit.php3",
+            "href"  => $module_location."polledit.php",
             "level" => "main",
             "submenu" => "polledit_submenu"
         ];
@@ -46,7 +46,7 @@ class Menu
         $aamenus["modadmin"] = [
             "label" => _m("Polls admin"),
             "title" => _m("Polls admin"),
-            "href"  => $module_location."modedit.php3",
+            "href"  => $module_location."modedit.php",
             "cond"  => IfSlPerm(PS_MODP_SETTINGS),
             "level" => "main",
             "submenu"=>"modadmin_submenu"
@@ -80,7 +80,7 @@ class Menu
             "level"=>"submenu",
             "items"=> [
                 "header1"=>_m("Main settings"),
-                "main"=> ["cond"=>IfSlPerm(PS_MODP_SETTINGS), "href"=>"modules/polls/modedit.php3", "label"=>_m("Polls")],
+                "main"=> ["cond"=>IfSlPerm(PS_MODP_SETTINGS), "href"=>"modules/polls/modedit.php", "label"=>_m("Polls")],
                 "design"=> ["cond"=>IfSlPerm(PS_MODP_EDIT_DESIGN), "href"=>"admin/tabledit.php?set_tview=polls_design", "label"=>_m("Designs")],
             ]
         ];

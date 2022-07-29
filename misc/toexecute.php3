@@ -38,11 +38,11 @@ use AA\Later\Toexecute;
 
 require_once __DIR__."/../include/config.php3";
 /** Main include file for using session management function on page */
-require_once __DIR__."/../include/locsess.php3";
-require_once __DIR__."/../include/varset.php3";
-require_once __DIR__."/../include/util.php3";
-require_once __DIR__."/../include/mail.php3";
-require_once __DIR__."/../modules/links/cattree.php3";
+require_once __DIR__ . "/../include/locsess.php";
+require_once __DIR__ . "/../include/varset.php";
+require_once __DIR__ . "/../include/util.php";
+require_once __DIR__ . "/../include/mail.php";
+require_once __DIR__ . "/../modules/links/cattree.php";
 
 /** This script is possible to run from commandline (so also from cron). The
  * benefit is, that the script then can run as long as you want - it is not

@@ -67,15 +67,15 @@ foreach ($_REQUEST as $k => $v) {
 
 
 require_once __DIR__."/../include/config.php3";
-require_once __DIR__."/../include/locsess.php3";
-require_once __DIR__."/../include/util.php3";
-require_once __DIR__."/../include/varset.php3";
-require_once __DIR__."/../include/csn_util.php3"; // defines HTML and PLAIN as well as other functions
-require_once __DIR__."/../include/xml_fetch.php3";
-require_once __DIR__."/../include/xml_rssparse.php3";
-require_once __DIR__."/../include/itemfunc.php3";
-require_once __DIR__."/../include/notify.php3";
-require_once __DIR__."/../include/feeding.php3";
+require_once __DIR__ . "/../include/locsess.php";
+require_once __DIR__ . "/../include/util.php";
+require_once __DIR__ . "/../include/varset.php";
+require_once __DIR__ . "/../include/csn_util.php"; // defines HTML and PLAIN as well as other functions
+require_once __DIR__ . "/../include/xml_fetch.php";
+require_once __DIR__ . "/../include/xml_rssparse.php";
+require_once __DIR__ . "/../include/itemfunc.php";
+require_once __DIR__ . "/../include/notify.php";
+require_once __DIR__ . "/../include/feeding.php";
 
 if ($debugfeed >= 8) {
     print("\n<br>XMLCLIENT STARTING");

@@ -47,9 +47,9 @@ use AA\IO\DB\DB_AA;
 
 require_once __DIR__."/./include/config.php3";
 /** Main include file for using session management function on page */
-require_once __DIR__."/include/locsess.php3";
+require_once __DIR__ . "/include/locsess.php";
 /** Defines class for inserting and updating database fields */
-require_once __DIR__."/include/varset.php3";
+require_once __DIR__ . "/include/varset.php";
 
 # zvetseni limitu - neprojde rozeslani vsech emailu
 if( !ini_get('safe_mode') ){

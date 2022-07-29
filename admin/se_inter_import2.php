@@ -29,16 +29,16 @@
 */
 
 const AA_REGISTER_GLOBALS = true;
-require_once __DIR__."/../include/init_page.php3";
+require_once __DIR__ . "/../include/init_page.php";
 if (!IfSlPerm(PS_FEEDING)) {
     MsgPage(StateUrl(self_base()."index.php3"), _m("You have not permissions to change feeding setting"));
     exit;
 }
 
-require_once __DIR__."/../include/formutil.php3";
-require_once __DIR__."/../include/xml_fetch.php3";
-require_once __DIR__."/../include/xml_rssparse.php3";
-require_once __DIR__."/../include/csn_util.php3";
+require_once __DIR__ . "/../include/formutil.php";
+require_once __DIR__ . "/../include/xml_fetch.php";
+require_once __DIR__ . "/../include/xml_rssparse.php";
+require_once __DIR__ . "/../include/csn_util.php";
 
 $db->query("SELECT server_url, password FROM nodes WHERE name='$rem_nodes'");
 if ($db->next_record()) {

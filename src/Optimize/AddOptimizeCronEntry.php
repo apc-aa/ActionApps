@@ -26,7 +26,7 @@ class AddOptimizeCronEntry extends \AA\Optimize\AbstractOptimize {
     public function test(): bool {
         $ret = true;
 
-        $row_count = DB_AA::select1('count', 'SELECT count(*) as count FROM cron', [['script', 'misc/optimize.php3']]);
+        $row_count = DB_AA::select1('count', 'SELECT count(*) as count FROM cron', [['script', 'misc/optimize.php']]);
         if ($row_count < 1) {
             $this->message(_m('Cron entry for Database Optimalization is not installed in AA Cron'));
             $ret = false;
@@ -38,10 +38,10 @@ class AddOptimizeCronEntry extends \AA\Optimize\AbstractOptimize {
     public function repair(): bool {
 
         $this->message(_m('Deleting AA Cron entry for Database Optimalization'));
-        $this->query("DELETE FROM cron WHERE script='misc/optimize.php3'");
+        $this->query("DELETE FROM cron WHERE script='misc/optimize.php'");
 
         $this->message(_m('Adding AA cron entry for Database Optimalization'));
-        $this->query("INSERT INTO cron (minutes, hours, mday, mon, wday, script, params, last_run) VALUES ('38',     '2', '*', '*', '2', 'misc/optimize.php3', 'key=" . substr(DB_PASSWORD, 0, 5) . "', NULL)");
+        $this->query("INSERT INTO cron (minutes, hours, mday, mon, wday, script, params, last_run) VALUES ('38',     '2', '*', '*', '2', 'misc/optimize.php', 'key=" . substr(DB_PASSWORD, 0, 5) . "', NULL)");
 
         $this->message(_m('AA cron entry for Database Optimalization - done.'));
         return true;

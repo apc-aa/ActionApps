@@ -97,13 +97,13 @@ if ( !constant('ACCESS_CODE') OR (strlen(constant('ACCESS_CODE'))<10) ) {
 
 // need config.php3 to set db access, and phplib, and probably other stuff
 require_once __DIR__."/../include/config.php3";
-require_once __DIR__."/../include/locsess.php3";   // DB_AA definition
-require_once __DIR__."/../include/util.php3";
-require_once __DIR__."/../include/zids.php3";   // qquote, is_long_id, ...
-require_once __DIR__."/../include/formutil.php3";   // GetHtmlTable
+require_once __DIR__ . "/../include/locsess.php";   // DB_AA definition
+require_once __DIR__ . "/../include/util.php";
+require_once __DIR__ . "/../include/zids.php";   // qquote, is_long_id, ...
+require_once __DIR__ . "/../include/formutil.php";   // GetHtmlTable
 // do not reorder those requires because of metabase and varset dependency
-require_once __DIR__."/../include/metabase.class.php3";
-require_once __DIR__."/../include/varset.php3";
+require_once __DIR__ . "/../include/metabase.class.php";
+require_once __DIR__ . "/../include/varset.php";
 
 
 if (!$_GET['silent']) {

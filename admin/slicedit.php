@@ -28,10 +28,10 @@
 use AA\IO\DB\DB_AA;
 
 const AA_REGISTER_GLOBALS = true;
-require_once __DIR__."/../include/init_page.php3";
-require_once __DIR__."/../include/formutil.php3";
-require_once __DIR__."/../include/date.php3";
-require_once __DIR__."/../include/varset.php3";
+require_once __DIR__ . "/../include/init_page.php";
+require_once __DIR__ . "/../include/formutil.php";
+require_once __DIR__ . "/../include/date.php";
+require_once __DIR__ . "/../include/varset.php";
 // add mlx functions
 require_once __DIR__."/../include/mlx.php";
 
@@ -61,7 +61,7 @@ if ($cancel) {
 if (is_array($create = $_POST['create'])) {
     reset($create);
     if ($type = key($create)) {
-        $url = StateUrl(AA_INSTAL_PATH. $MODULES[$type]["directory"] . "modedit.php3?no_slice_id=1");
+        $url = StateUrl(AA_INSTAL_PATH. $MODULES[$type]["directory"] . "modedit.php?no_slice_id=1");
         if ( $_POST['template'][$type] ) {
             $url = get_url( $url, "template%5B$type%5D=". $_POST['template'][$type]);
         }
@@ -71,7 +71,7 @@ if (is_array($create = $_POST['create'])) {
 
 //foreach ($MODULES as $type => $module) {
 //     if ($create[$type]) {
-//         $url = StateUrl(AA_INSTAL_PATH. $module["directory"] . "modedit.php3?no_slice_id=1");
+//         $url = StateUrl(AA_INSTAL_PATH. $module["directory"] . "modedit.php?no_slice_id=1");
 //         if ( $template[$type] ) {
 //             $url = get_url( $url, "template%5B$type%5D=". $template[$type]);
 //         }
@@ -84,7 +84,7 @@ $superadmin  = IsSuperadmin();
 
 $set_template_id = $_POST['template_from_slice'] ? $_POST['template_id2'] : $_POST['template_id'];
 
-require_once __DIR__."/../include/slicedit.php3";
+require_once __DIR__ . "/../include/slicedit.php";
 
 $foo_source = ( ( $slice_id=="" ) ? $set_template_id : $slice_id);
 

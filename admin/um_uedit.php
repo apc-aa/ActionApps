@@ -38,13 +38,13 @@
 
 
 $require_default_lang = true;      // do not use module specific language file
-                                   // (message for init_page.php3)
+                                   // (message for init_page.php)
 const AA_REGISTER_GLOBALS = true;
-require_once __DIR__."/../include/init_page.php3";
-require_once __DIR__."/../include/formutil.php3";
-require_once __DIR__."/../include/varset.php3";
-require_once __DIR__."/../include/msgpage.php3";
-require_once __DIR__."/../include/um_util.php3";
+require_once __DIR__ . "/../include/init_page.php";
+require_once __DIR__ . "/../include/formutil.php";
+require_once __DIR__ . "/../include/varset.php";
+require_once __DIR__ . "/../include/msgpage.php";
+require_once __DIR__ . "/../include/um_util.php";
 
 if ($cancel) {
     go_url( StateUrl(self_base() . "index.php3"));
@@ -294,7 +294,7 @@ if ( !($usr_edit OR ($submit_action == "update_submit")) OR AA::$perm->isUserEdi
     FrmInputText("user_mail1",    _m("E-mail")." 1",    $user_mail1, 50, 50, true);
 }
 
-//  FrmInputText("user_mail2",_m("E-mail")." 2",    $user_mail2, 50, 50, false);  // removed for compatibility with perm_sql.php3
+//  FrmInputText("user_mail2",_m("E-mail")." 2",    $user_mail2, 50, 50, false);  // removed for compatibility with perm_sql.php
 //  FrmInputText("user_mail3",_m("E-mail")." 3",    $user_mail3, 50, 50, false);
 FrmInputChBox("user_super",   _m("Superadmin account"), $user_super);
 

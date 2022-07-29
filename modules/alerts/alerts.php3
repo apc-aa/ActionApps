@@ -34,25 +34,25 @@ use AA\IO\DB\DB_AA;
 if (!defined ("AA_ID")) {
     require_once __DIR__."/../../include/config.php3";
 }
-require_once __DIR__."/../../include/locsess.php3";
-require_once __DIR__."/../../include/util.php3";
-require_once __DIR__."/../../include/varset.php3";
+require_once __DIR__ . "/../../include/locsess.php";
+require_once __DIR__ . "/../../include/util.php";
+require_once __DIR__ . "/../../include/varset.php";
 // mini gettext language environment (the _m() function)
-require_once __DIR__."/../../include/mgettext.php3";
+require_once __DIR__ . "/../../include/mgettext.php";
 
 if (!$lang) {
     $lang = "en";
 }
 mgettext_bind($lang, 'alerts');
-require_once __DIR__."/util.php3";
+require_once __DIR__ . "/util.php";
 
 
-require_once __DIR__."/../../modules/alerts/lang.php3";
-require_once __DIR__."/../../include/item.php3";
+require_once __DIR__ . "/../../modules/alerts/lang.php";
+require_once __DIR__ . "/../../include/item.php";
 require_once __DIR__."/../../include/view.php3";
 
-require_once __DIR__."/../../include/searchlib.php3";
-require_once __DIR__."/../../modules/alerts/alerts_sending.php3";
+require_once __DIR__ . "/../../include/searchlib.php";
+require_once __DIR__ . "/../../modules/alerts/alerts_sending.php";
 
 
 /** This script is possible to run from commandline (so also from cron). The

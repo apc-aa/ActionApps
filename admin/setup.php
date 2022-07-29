@@ -43,12 +43,12 @@ foreach ($_REQUEST as $k => $v) {
 // ----- input variables normalization - end ----------------------------------
 
 require_once __DIR__."/../include/config.php3";
-require_once __DIR__."/../include/locsess.php3";
-require_once __DIR__."/../include/perm_core.php3";
-require_once __DIR__."/../include/perm_" . PERM_LIB . ".php3";
-require_once __DIR__."/../include/util.php3";
-require_once __DIR__."/../include/formutil.php3";
-require_once __DIR__."/../include/mgettext.php3";
+require_once __DIR__ . "/../include/locsess.php";
+require_once __DIR__ . "/../include/perm_core.php";
+require_once __DIR__."/../include/perm_" . PERM_LIB . ".php";
+require_once __DIR__ . "/../include/util.php";
+require_once __DIR__ . "/../include/formutil.php";
+require_once __DIR__ . "/../include/mgettext.php";
 bind_mgettext_domain(DEFAULT_LANG_INCLUDE);
 
 /** HtmlStart function

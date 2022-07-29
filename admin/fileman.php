@@ -35,7 +35,7 @@
  *   The code is divided into
  *       admin/fileman.php -- basic file table page interface
  *       include/fileman.php -- file table creation, all file actions (commands)
- *       include/filedit.php3 -- single file part of the manager (another page)
+ *       include/filedit.php -- single file part of the manager (another page)
  *
  *   The variable $basedir is the base directory to the parent of which the user can't go.
  *   All paths are relative to this directory. It is set in the slices settings and if it does
@@ -44,14 +44,14 @@
 */
 
 const AA_REGISTER_GLOBALS = true;
-require_once __DIR__."/../include/init_page.php3";
-require_once __DIR__."/../include/formutil.php3";
-require_once __DIR__."/../include/date.php3";
-require_once __DIR__."/../include/varset.php3";
-require_once __DIR__."/../include/fileman.php3";
-require_once __DIR__."/../include/msgpage.php3";
+require_once __DIR__ . "/../include/init_page.php";
+require_once __DIR__ . "/../include/formutil.php";
+require_once __DIR__ . "/../include/date.php";
+require_once __DIR__ . "/../include/varset.php";
+require_once __DIR__ . "/../include/fileman.php";
+require_once __DIR__ . "/../include/msgpage.php";
 
-// FilemanPerms() is defined in perm_core.php3, it sets $fileman_dir
+// FilemanPerms() is defined in perm_core.php, it sets $fileman_dir
 if (!FilemanPerms($slice_id)) {
     MsgPageMenu ("index.php3", _m("No permissions for file manager."), "admin", "fileman");
 }
@@ -86,7 +86,7 @@ if ($cmd == 'edit' || $cmd == 'createfile') {
     $fe_script = StateUrl("fileman.php");
     $fe_wwwpath = FILEMAN_BASE_URL;
     // NOTE require_once outputs text, its not just defining functions
-    require_once __DIR__."/../include/filedit.php3";
+    require_once __DIR__ . "/../include/filedit.php";
     page_close ();
     exit;
 }

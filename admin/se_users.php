@@ -31,10 +31,10 @@
 use AA\IO\DB\DB_AA;
 
 const AA_REGISTER_GLOBALS = true;
-require_once __DIR__."/../include/init_page.php3";
-require_once __DIR__."/../include/formutil.php3";
-require_once __DIR__."/../include/se_users.php3";
-require_once __DIR__."/../include/msgpage.php3";
+require_once __DIR__ . "/../include/init_page.php";
+require_once __DIR__ . "/../include/formutil.php";
+require_once __DIR__ . "/../include/se_users.php";
+require_once __DIR__ . "/../include/msgpage.php";
 
 if (!IfSlPerm(PS_USERS)) {
     MsgPageMenu(StateUrl(self_base())."index.php3", _m("You have not permissions to manage users"), "admin");

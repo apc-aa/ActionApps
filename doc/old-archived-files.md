@@ -3,6 +3,15 @@
   Generates a human readable output page that summarizes the slices on a system, compare slices and sync its settings  
   _No longer maintained. Removed 2022-02-25 - honzam (see older apc-aa branches to get the code)_
 
+/include/  
+ .../extsess.php3                    - session management extension for AA  
+ .../extsessi.php3                   - session management extension for AA  
+  _No longer needed. Removed 2022-07-26 - honzam (see older apc-aa branches to get the code)_
+
+  .../slicewiz.php  
+  _No longer needed. Removed 2006-06-06 - honzam (see older apc-aa branches to get the code)_
+
+
 /misc/**txt2fields**  
  .../txt2fields.pl                   - Replaces fields for a slice, based on a text file  
  .../fields2txt.pl                   - Exports field structure to text file, in a format that txt2fields.pl can use  

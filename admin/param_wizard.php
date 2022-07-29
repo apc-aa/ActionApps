@@ -2,7 +2,7 @@
 /**
  * Author: Jakub Adamek
  *
- *   Params: $list = name of an array defined in constants_param_wizard.php3
+ *   Params: $list = name of an array defined in constants_param_wizard.php
  *                   (or anywhere else, but must be included into this script)
  *           $item = name of the first index in the $$list array
  *
@@ -14,7 +14,7 @@
  *   It is capable of showing a table of examples as well.
  *
  *   It's an independent tool which can be used to produce another wizards.
- *   You just need to define the appropriate array structure in constants_param_wizard.php3.
+ *   You just need to define the appropriate array structure in constants_param_wizard.php.
  *   See se_inputform and the JavaScript callParamWizard function for an example how to call the wizard.
  *
  *  PHP version 7.2+
@@ -43,9 +43,9 @@
  */
 
 const AA_REGISTER_GLOBALS = true;
-require_once __DIR__."/../include/init_page.php3";
+require_once __DIR__ . "/../include/init_page.php";
 mgettext_bind(get_mgettext_lang(), 'param_wizard');
-require_once __DIR__."/../include/constants_param_wizard.php3";
+require_once __DIR__ . "/../include/constants_param_wizard.php";
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 

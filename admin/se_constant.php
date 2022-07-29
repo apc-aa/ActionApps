@@ -30,11 +30,11 @@
 use AA\IO\DB\DB_AA;
 
 const AA_REGISTER_GLOBALS = true;
-require_once __DIR__."/../include/init_page.php3";
-require_once __DIR__."/../include/formutil.php3";
-require_once __DIR__."/../include/varset.php3";
-require_once __DIR__."/../include/constedit_util.php3";
-require_once __DIR__."/../include/msgpage.php3";
+require_once __DIR__ . "/../include/init_page.php";
+require_once __DIR__ . "/../include/formutil.php";
+require_once __DIR__ . "/../include/varset.php";
+require_once __DIR__ . "/../include/constedit_util.php";
+require_once __DIR__ . "/../include/msgpage.php";
 
 if ($cancel) {
     go_url( StateUrl(self_base() . "index.php3"));
@@ -287,7 +287,7 @@ $form_buttons = [
 
 // load the HIERARCHICAL EDITOR
 if ($hierarch) {
-    require_once __DIR__."/../include/constedit.php3";
+    require_once __DIR__ . "/../include/constedit.php";
     // it exits here
 }
 

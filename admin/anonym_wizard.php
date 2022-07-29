@@ -29,11 +29,11 @@ use AA\IO\DB\DB_AA;
 use AA\Util\JsTriggers;
 
 const AA_REGISTER_GLOBALS = true;
-require_once __DIR__."/../include/init_page.php3";
-require_once __DIR__."/../include/formutil.php3";
-require_once __DIR__."/../include/varset.php3";
-require_once __DIR__."/../include/msgpage.php3";
-require_once __DIR__."/../include/itemfunc.php3";
+require_once __DIR__ . "/../include/init_page.php";
+require_once __DIR__ . "/../include/formutil.php";
+require_once __DIR__ . "/../include/varset.php";
+require_once __DIR__ . "/../include/msgpage.php";
+require_once __DIR__ . "/../include/itemfunc.php";
 
 /** GetAnonymousForm function
  * @param $slice
@@ -56,7 +56,7 @@ function GetAnonymousForm($slice, $s_fields, $show, $ok_url, $err_url, $use_show
     $form_type = $slice->getProperty('permit_anonymous_edit');
 
     if ($form_type != ANONYMOUS_EDIT_NOT_ALLOWED) {
-        $fillform_url = AA_INSTAL_PATH .'fillform.php3?form=inputform&notrun=1&slice_id='.$slice_id;
+        $fillform_url = AA_INSTAL_PATH .'fillform.php?form=inputform&notrun=1&slice_id='.$slice_id;
         if ($use_show_result) {
             $fillform_url .= "&show_result=$show_result";
         }

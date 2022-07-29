@@ -25,8 +25,8 @@
  * @link      https://www.apc.org/ APC
 */
 const AA_REGISTER_GLOBALS = true;
-require_once __DIR__."/../include/init_page.php3";
-require_once __DIR__."/../include/formutil.php3";
+require_once __DIR__ . "/../include/init_page.php";
+require_once __DIR__ . "/../include/formutil.php";
 
 /** PrintExportRow function
  * Print one row with one 'sliceexport' radiobuttons

@@ -258,12 +258,12 @@ $_m["height of poll bar"]
 // ./diff.diff, row 1323, 1382
 // central/responder.php, row 150
 // include/loginform.inc, row 70
-// include/init_page.php3, row 131
+// include/init_page.php, row 131
 $_m["Either your username or your password is not valid."]
  = "Votre nom d'usager ou votre mot de passe ne sont pas valides";
 
 // ./diff.diff, row 128, 153
-// include/formutil.php3, row 3109
+// include/formutil.php, row 3109
 $_m["Use these aliases for database fields"]
  = "Utiliser ces alias pour les champs de la base de donn�es";
 
@@ -276,10 +276,10 @@ $_m["Use these aliases for database fields"]
 // admin/se_views.php, row 76
 // admin/prev_navigation.php, row 40
 // admin/se_nodes.php, row 171
-// include/um_gsrch.php3, row 52
-// include/formutil.php3, row 1611, 1667, 3115
+// include/um_gsrch.php, row 52
+// include/formutil.php, row 1611, 1667, 3115
 // include/mlx.php, row 404
-// include/filedit.php3, row 122
+// include/filedit.php, row 122
 $_m["Edit"]
  = "Modifier";
 
@@ -315,8 +315,8 @@ $_m["Template"]
 // admin/se_rssfeeds.php, row 188
 // admin/sliceadd.php, row 94
 // admin/se_nodes.php, row 173
-// include/formutil.php3, row 62, 1605, 1678, 1711, 1992
-// include/profile.php3, row 156
+// include/formutil.php, row 62, 1605, 1678, 1711, 1992
+// include/profile.php, row 156
 // include/mlx.php, row 408
 // include/sliceadd.php, row 75, 98
 $_m["Add"]
@@ -348,8 +348,8 @@ $_m["Bad slice ID"]
 
 // ./filler.php3, row 278
 // admin/se_inputform.php, row 234
-// include/formutil.php3, row 289, 377
-// include/itemfunc.php3, row 678
+// include/formutil.php, row 289, 377
+// include/itemfunc.php, row 678
 $_m["No fields defined for this slice"]
  = "Aucun champ n'est d�fini  sur cette section";
 
@@ -409,11 +409,11 @@ $_m["Repair"]
 // admin/se_mapping.php, row 199
 // admin/se_search.php3, row 180
 // admin/um_gedit.php, row 241
-// admin/discedit2.php3, row 136
+// admin/discedit2.php, row 136
 // admin/se_filters.php, row 256
 // admin/se_import.php, row 126
-// include/searchbar.class.php3, row 642
-// include/formutil.php3, row 191, 2684
+// include/searchbar.class.php, row 642
+// include/formutil.php, row 191, 2684
 $_m["Update"]
  = "Mise � jour";
 
@@ -434,14 +434,14 @@ $_m["No permission to create new user"]
 // admin/um_uedit.php, row 71, 86, 109
 // admin/um_gedit.php, row 75, 83
 // admin/se_users_add.php, row 119
-// include/um_gsrch.php3, row 31
+// include/um_gsrch.php, row 31
 $_m["Too many users or groups found."]
  = "Trop d'usagers ou de groupes trouv�s";
 
 // admin/um_uedit.php, row 71, 86
 // admin/um_gedit.php, row 75
 // admin/se_users_add.php, row 121
-// include/um_gsrch.php3, row 34
+// include/um_gsrch.php, row 34
 $_m["No user (group) found"]
  = "Pas d'usager (groupe) trouv�";
 
@@ -457,7 +457,7 @@ $_m["No groups found"]
 
 // admin/um_uedit.php, row 151
 // admin/se_newuser.php, row 83
-// include/um_util.php3, row 358
+// include/um_util.php, row 358
 $_m["User successfully added to permission system"]
  = "Utilisateur ajout� avec succ�s aux permissions du syst�me";
 
@@ -496,16 +496,16 @@ $_m["Users"]
 // admin/um_gedit.php, row 171, 273
 // admin/se_newuser.php, row 85
 // admin/se_users_add.php, row 70, 75
-// include/um_gsrch.php3, row 47
+// include/um_gsrch.php, row 47
 // include/tabledit.php, row 574
-// include/searchbar.class.php3, row 553, 616
+// include/searchbar.class.php, row 553, 616
 $_m["Search"]
  = "Rechercher";
 
 // admin/um_uedit.php, row 237
 // admin/aarsstest.php, row 154
 // admin/se_history.php, row 68, 88
-// include/perm_sql.php3, row 216, 689
+// include/perm_sql.php, row 216, 689
 $_m["User"]
  = "Usager";
 
@@ -519,10 +519,10 @@ $_m["User"]
 // admin/se_rssfeeds.php, row 187
 // admin/se_views.php, row 80
 // admin/se_nodes.php, row 172
-// include/um_gsrch.php3, row 53
-// include/searchbar.class.php3, row 644
-// include/formutil.php3, row 1622, 1668, 1713, 1759
-// include/profile.php3, row 69
+// include/um_gsrch.php, row 53
+// include/searchbar.class.php, row 644
+// include/formutil.php, row 1622, 1668, 1713, 1759
+// include/profile.php, row 69
 // include/menu_aa.php3, row 41
 $_m["Delete"]
  = "Supprimer";
@@ -532,7 +532,7 @@ $_m["Delete"]
 // admin/se_newuser.php, row 52, 113
 // admin/slicewiz.php, row 82
 // admin/setup.php, row 101, 237
-// include/um_util.php3, row 310
+// include/um_util.php, row 310
 $_m["Login name"]
  = "nom d'utilisateur";
 
@@ -553,7 +553,7 @@ $_m["New user"]
 // admin/slicewiz.php, row 83
 // admin/se_nodes.php, row 185
 // admin/setup.php, row 102, 238
-// include/um_util.php3, row 315
+// include/um_util.php, row 315
 $_m["Password"]
  = "Mot de passe";
 
@@ -561,7 +561,7 @@ $_m["Password"]
 // admin/um_passwd.php, row 108
 // admin/se_newuser.php, row 54, 115
 // admin/slicewiz.php, row 84
-// include/um_util.php3, row 316
+// include/um_util.php, row 316
 $_m["Retype password"]
  = "Retapez le mot de passe";
 
@@ -570,7 +570,7 @@ $_m["Retype password"]
 // admin/se_newuser.php, row 59, 116
 // admin/slicewiz.php, row 85
 // admin/setup.php, row 104, 242
-// include/um_util.php3, row 312
+// include/um_util.php, row 312
 $_m["First name"]
  = "Pr�nom";
 
@@ -578,17 +578,17 @@ $_m["First name"]
 // admin/um_passwd.php, row 110
 // admin/se_newuser.php, row 58, 117
 // admin/slicewiz.php, row 86
-// include/um_util.php3, row 311
+// include/um_util.php, row 311
 $_m["Surname"]
  = "Nom de famille";
 
 // admin/um_uedit.php, row 299
 // admin/um_passwd.php, row 111
-// admin/discedit2.php3, row 55, 123
+// admin/discedit2.php, row 55, 123
 // admin/se_newuser.php, row 55, 118
 // admin/slicewiz.php, row 87
 // admin/setup.php, row 106, 244
-// include/um_util.php3, row 322, 323, 324
+// include/um_util.php, row 322, 323, 324
 $_m["E-mail"]
  = "Courriel";
 
@@ -600,7 +600,7 @@ $_m["Superadmin account"]
 // admin/um_uedit.php, row 308
 // admin/um_gedit.php, row 162
 // admin/se_users_add.php, row 73
-// include/um_gsrch.php3, row 41
+// include/um_gsrch.php, row 41
 // include/menu_aa.php3, row 50
 $_m["Groups"]
  = "Groupe";
@@ -799,7 +799,7 @@ $_m["Number"]
 
 // admin/se_inputform.php, row 411
 // admin/sliceimp.php, row 484
-// include/formutil.php3, row 202, 2698
+// include/formutil.php, row 202, 2698
 $_m["Insert"]
  = "Ins�rer";
 
@@ -846,10 +846,10 @@ $_m["8 UPPERCASE letters or _"]
 // admin/se_inputform.php, row 478
 // admin/um_gedit.php, row 256
 // admin/se_view.php, row 87
-// include/constants.php3, row 364
-// include/constedit.php3, row 84
+// include/constants.php, row 364
+// include/constedit.php, row 84
 // include/um_gedit.php, row 32
-// include/tv_email.php3, row 107, 166
+// include/tv_email.php, row 107, 166
 $_m["Description"]
  = "D�inscription";
 
@@ -962,7 +962,7 @@ $_m["Select constants"]
 
 // admin/constants_sel.php, row 135
 // admin/prev_navigation.php, row 50
-// include/formutil.php3, row 67
+// include/formutil.php, row 67
 $_m["OK"]
  = "Confirmer";
 
@@ -972,8 +972,8 @@ $_m["You have no permission to set configuration parameters of this slice"]
 
 // admin/se_admin.php, row 56, 145
 // admin/se_compact.php, row 57, 200
-// include/constants.php3, row 505, 547, 565, 614, 646, 673, 695, 735, 762, 786, 818
-// include/tableviews.php3, row 158
+// include/constants.php, row 505, 547, 565, 614, 646, 673, 695, 735, 762, 786, 818
+// include/tableviews.php, row 158
 $_m["Top HTML"]
  = "D�but  HTML";
 
@@ -983,20 +983,20 @@ $_m["Item format"]
 
 // admin/se_admin.php, row 58, 151
 // admin/se_compact.php, row 58, 210
-// include/constants.php3, row 510, 549, 567, 618, 648, 675, 698, 740, 764, 791, 823
-// include/tableviews.php3, row 162
+// include/constants.php, row 510, 549, 567, 618, 648, 675, 698, 740, 764, 791, 823
+// include/tableviews.php, row 162
 $_m["Bottom HTML"]
  = "HTML final";
 
 // admin/se_admin.php, row 59, 154
 // admin/se_compact.php, row 59, 233
 // admin/se_fulltext.php, row 58, 152
-// include/constants.php3, row 511, 550, 619, 699, 741, 765, 792, 824, 853
+// include/constants.php, row 511, 550, 619, 699, 741, 765, 792, 824, 853
 $_m["Remove strings"]
  = "Enlever la chaine de caract�res";
 
 // admin/se_admin.php, row 60, 156
-// include/constants.php3, row 540, 560, 640, 663, 690, 721, 752, 780, 812, 844
+// include/constants.php, row 540, 560, 640, 663, 690, 721, 752, 780, 812, 844
 $_m["HTML code for \"No item found\" message"]
  = "Code HTML pour le message \"Aucun item trouv�\"";
 
@@ -1129,7 +1129,7 @@ $_m["To"]
 // admin/se_mapping.php, row 219
 // admin/se_csv_import2.php, row 354
 // admin/se_filters.php, row 276
-// include/tv_email.php3, row 176
+// include/tv_email.php, row 176
 $_m["From"]
  = "De";
 
@@ -1137,14 +1137,14 @@ $_m["From"]
 // admin/se_profile.php3, row 161
 // admin/se_history.php, row 72, 85
 // admin/se_constant.php, row 182, 414
-// include/constants.php3, row 358
-// include/constedit.php3, row 76
-// include/searchlib.php3, row 127
+// include/constants.php, row 358
+// include/constedit.php, row 76
+// include/searchlib.php, row 127
 $_m["Value"]
  = "Valeur";
 
 // admin/se_javascript.php, row 63, 70
-// include/menu.php3, row 166
+// include/menu.php, row 166
 $_m["Field Triggers"]
  = "Mode de d�clenchement des Champs";
 
@@ -1190,7 +1190,7 @@ $_m["You have not permissions to manage users"]
  = "Vous n'avez pas la permission de g�rer les usagers";
 
 // admin/se_profile.php3, row 57
-// include/profile.class.php3, row 303
+// include/profile.class.php, row 303
 $_m["Rule deleted"]
  = "R�gle �limin�e";
 
@@ -1264,7 +1264,7 @@ $_m["Ascending"]
 // admin/se_profile.php3, row 98
 // admin/se_compact.php, row 219
 // admin/se_view.php, row 154, 155
-// include/searchbar.class.php3, row 606
+// include/searchbar.class.php, row 606
 $_m["Descending"]
  = "D�croissant";
 
@@ -1299,7 +1299,7 @@ $_m["Field"]
 
 // admin/se_profile.php3, row 162
 // admin/search_replace.php, row 262, 335, 419, 570
-// include/formutil.php3, row 1151, 1168
+// include/formutil.php, row 1151, 1168
 $_m["HTML"]
  = "";
 
@@ -1553,7 +1553,7 @@ $_m["redefine inputform UI - (empty values = do not show)"]
 
 // admin/se_users.php, row 99
 // admin/discedit.php, row 133
-// admin/discedit2.php3, row 54, 122
+// admin/discedit2.php, row 54, 122
 // admin/se_users_add.php, row 48
 $_m["Author"]
  = "Auteur";
@@ -1570,7 +1570,7 @@ $_m["Administrator"]
  = "Administrateur";
 
 // admin/se_users.php, row 105
-// include/um_util.php3, row 100, 162
+// include/um_util.php, row 100, 162
 $_m["Revoke"]
  = "Retirer";
 
@@ -1645,43 +1645,43 @@ $_m["Create"]
  = "Cr�er";
 
 // admin/write_mail.php, row 56, 144
-// admin/discedit2.php3, row 53, 121
-// include/tv_email.php3, row 114, 168
+// admin/discedit2.php, row 53, 121
+// include/tv_email.php, row 114, 168
 $_m["Subject"]
  = "Sujet";
 
 // admin/write_mail.php, row 57, 145
-// include/tv_email.php3, row 118, 170
+// include/tv_email.php, row 118, 170
 $_m["Body"]
  = "Corp";
 
 // admin/write_mail.php, row 58, 146
-// include/tv_email.php3, row 122
+// include/tv_email.php, row 122
 $_m["From (email)"]
  = "De (courriel)";
 
 // admin/write_mail.php, row 59, 147
-// include/tv_email.php3, row 124
+// include/tv_email.php, row 124
 $_m["Reply to (email)"]
  = "R�pondre (Courriel)";
 
 // admin/write_mail.php, row 60, 148
-// include/tv_email.php3, row 126
+// include/tv_email.php, row 126
 $_m["Errors to (email)"]
  = "Erreur � (Courriel)";
 
 // admin/write_mail.php, row 61, 149
-// include/tv_email.php3, row 128
+// include/tv_email.php, row 128
 $_m["Sender (email)"]
  = "Envoyeur (Courriel)";
 
 // admin/write_mail.php, row 62, 150
-// include/tv_email.php3, row 130
+// include/tv_email.php, row 130
 $_m["Language (charset)"]
  = "Langue (charset)";
 
 // admin/write_mail.php, row 63, 151
-// include/tv_email.php3, row 134
+// include/tv_email.php, row 134
 $_m["Use HTML"]
  = "Utliser HTML";
 
@@ -1732,15 +1732,15 @@ $_m["Write the email"]
 
 // admin/write_mail.php, row 151
 // admin/slicewiz.php, row 66
-// include/tabledit_column.php3, row 158, 161
-// include/tableviews.php3, row 176
+// include/tabledit_column.php, row 158, 161
+// include/tableviews.php, row 176
 $_m["no"]
  = "Non";
 
 // admin/write_mail.php, row 151
 // admin/slicewiz.php, row 66
-// include/tabledit_column.php3, row 158, 161
-// include/tableviews.php3, row 176
+// include/tabledit_column.php, row 158, 161
+// include/tableviews.php, row 176
 $_m["yes"]
  = "Oui";
 
@@ -1804,7 +1804,7 @@ $_m["Error: You have no rights to edit item."]
  = "";
 
 // admin/itemedit.php3, row 284
-// include/menu.php3, row 73
+// include/menu.php, row 73
 $_m["Add Item"]
  = "Ajouter des items";
 
@@ -1821,7 +1821,7 @@ $_m["Name 1"]
  = "";
 
 // admin/se_sets.php, row 53
-// include/constants.php3, row 530, 551, 630, 653, 680, 711, 770, 802, 834
+// include/constants.php, row 530, 551, 630, 653, 680, 711, 770, 802, 834
 $_m["Condition 1"]
  = "";
 
@@ -1834,7 +1834,7 @@ $_m["Name 2"]
  = "";
 
 // admin/se_sets.php, row 57
-// include/constants.php3, row 533, 554, 633, 656, 683, 714, 773, 805, 837
+// include/constants.php, row 533, 554, 633, 656, 683, 714, 773, 805, 837
 $_m["Condition 2"]
  = "";
 
@@ -1847,7 +1847,7 @@ $_m["Name 3"]
  = "";
 
 // admin/se_sets.php, row 61
-// include/constants.php3, row 536, 557, 636, 659, 686, 717, 776, 808, 840
+// include/constants.php, row 536, 557, 636, 659, 686, 717, 776, 808, 840
 $_m["Condition 3"]
  = "Condition 2";
 
@@ -1913,9 +1913,9 @@ $_m["Export selected items to selected slice"]
 
 // admin/feed_to.php, row 62
 // admin/slicedit.php, row 148
-// include/constants.php3, row 152
-// include/menu_util.php3, row 70
-// include/menu.php3, row 136
+// include/constants.php, row 152
+// include/menu_util.php, row 70
+// include/menu.php, row 136
 // include/sliceadd.php, row 55, 84
 $_m["Slice"]
  = "Section";
@@ -1927,7 +1927,7 @@ $_m["Holding bin"]
 // admin/feed_to.php, row 64
 // admin/slicedit.php, row 42
 // admin/se_filters.php, row 278
-// include/menu.php3, row 187, 243
+// include/menu.php, row 187, 243
 $_m["Active"]
  = "Activer";
 
@@ -1940,7 +1940,7 @@ $_m["No permission to set feeding for any slice"]
  = "Pas de permission de configurer l'alimentation d'aucune section";
 
 // admin/feed_to.php, row 84
-// include/actions.php3, row 146
+// include/actions.php, row 146
 // include/menu_aa.php3, row 55
 $_m["Export"]
  = "Exporter";
@@ -2016,8 +2016,8 @@ $_m["No ActionApps RSS Exchange is set."]
 // admin/aarsstest.php, row 111
 // admin/discedit.php, row 139
 // admin/rsstest.php, row 114
-// include/formutil.php3, row 1659
-// include/manager.class.php3, row 198
+// include/formutil.php, row 1659
+// include/manager.class.php, row 198
 $_m["Actions"]
  = "Action";
 
@@ -2114,9 +2114,9 @@ $_m["You have not permissions to view history"]
 // admin/se_view.php, row 391
 // admin/anonym_wizard.php, row 209
 // admin/se_fieldid.php, row 304
-// include/constants.php3, row 363
-// include/scroller.php3, row 80
-// include/tableviews.php3, row 130, 144
+// include/constants.php, row 363
+// include/scroller.php, row 80
+// include/tableviews.php, row 130, 144
 $_m["Id"]
  = "Identit�";
 
@@ -2126,7 +2126,7 @@ $_m["Resource ID"]
 
 // admin/se_history.php, row 67
 // include/fileman.php, row 34
-// include/widget.class.php3, row 458
+// include/widget.class.php, row 458
 $_m["Type"]
  = "";
 
@@ -2141,8 +2141,8 @@ $_m["Selector"]
 // admin/se_history.php, row 71
 // admin/se_fields.php, row 120, 242
 // admin/se_constant.php, row 183, 415
-// include/constants.php3, row 359
-// include/constedit.php3, row 82
+// include/constants.php, row 359
+// include/constedit.php, row 82
 $_m["Priority"]
  = "Priorit�";
 
@@ -2192,7 +2192,7 @@ $_m["Item: "]
 
 // admin/discedit.php, row 131
 // admin/slicedit.php, row 151
-// include/modutils.php3, row 72
+// include/modutils.php, row 72
 // include/slicedit.php, row 154
 $_m["Title"]
  = "Titre";
@@ -2202,8 +2202,8 @@ $_m["IP Address"]
  = "";
 
 // admin/discedit.php, row 137
-// admin/discedit2.php3, row 125
-// include/widget.class.php3, row 706
+// admin/discedit2.php, row 125
+// include/widget.class.php, row 706
 $_m["Date"]
  = "";
 
@@ -2222,9 +2222,9 @@ $_m["Approve"]
 // admin/discedit.php, row 186
 // admin/related_sel.php, row 202
 // admin/se_users_add.php, row 60
-// include/util.php3, row 1383
-// include/item.php3, row 1583
-// include/msgpage.php3, row 84
+// include/util.php, row 1383
+// include/item.php, row 1583
+// include/msgpage.php, row 84
 $_m["Back"]
  = "Retour";
 
@@ -2261,10 +2261,10 @@ $_m["Default settings"]
 
 // admin/se_search.php3, row 181
 // admin/sliceimp.php, row 486, 521
-// admin/discedit2.php3, row 138
+// admin/discedit2.php, row 138
 // admin/se_newuser.php, row 128
-// include/formutil.php3, row 200, 204, 2720
-// include/widget.class.php3, row 285
+// include/formutil.php, row 200, 204, 2720
+// include/widget.class.php, row 285
 $_m["Cancel"]
  = "Abandonner";
 
@@ -2334,10 +2334,10 @@ $_m["Edit Group"]
 
 // admin/um_gedit.php, row 184
 // admin/setup.php, row 167
-// include/um_gsrch.php3, row 50
-// include/constants.php3, row 360
+// include/um_gsrch.php, row 50
+// include/constants.php, row 360
 // include/perm_emailsql.php3, row 166, 523
-// include/perm_sql.php3, row 177
+// include/perm_sql.php, row 177
 $_m["Group"]
  = "groupe";
 
@@ -2355,11 +2355,11 @@ $_m["Group Id"]
 
 // admin/um_gedit.php, row 255
 // admin/se_constant.php, row 181, 413
-// include/constants.php3, row 357
-// include/constedit.php3, row 73
+// include/constants.php, row 357
+// include/constedit.php, row 73
 // include/um_gedit.php, row 31
 // include/fileman.php, row 32
-// include/tableviews.php3, row 131, 152
+// include/tableviews.php, row 131, 152
 $_m["Name"]
  = "Nom";
 
@@ -2530,48 +2530,48 @@ $_m["No RSS Feeds set."]
 $_m["Local slice"]
  = "";
 
-// admin/discedit2.php3, row 40
+// admin/discedit2.php, row 40
 $_m["You do not have permission to edit items in this slice"]
  = "Vous n'avez pas la permission de mettre � jour les items dans cette section";
 
-// admin/discedit2.php3, row 56, 124
+// admin/discedit2.php, row 56, 124
 $_m["Text of discussion comment"]
  = "Texte de commentaires";
 
-// admin/discedit2.php3, row 57, 126
+// admin/discedit2.php, row 57, 126
 $_m["Authors's WWW  - URL"]
  = "Sur les auteurs";
 
-// admin/discedit2.php3, row 58, 127
+// admin/discedit2.php, row 58, 127
 $_m["Authors's WWW - description"]
  = "Les auteurs sur le Web";
 
-// admin/discedit2.php3, row 59, 128
+// admin/discedit2.php, row 59, 128
 $_m["Remote address"]
  = "Adresse distante";
 
-// admin/discedit2.php3, row 60
+// admin/discedit2.php, row 60
 $_m["Free1"]
  = "";
 
-// admin/discedit2.php3, row 100
+// admin/discedit2.php, row 100
 $_m["Edit discussion"]
  = "Modifier la discussion";
 
-// admin/discedit2.php3, row 110
+// admin/discedit2.php, row 110
 $_m["Items managment - Discussion comments managment - Edit comment"]
  = "Gestion des items - Gestion des commentaires - Modification des commentaires";
 
-// admin/discedit2.php3, row 116
+// admin/discedit2.php, row 116
 $_m["Edit comment"]
  = "Modifier les commentaires";
 
-// admin/discedit2.php3, row 129
+// admin/discedit2.php, row 129
 $_m["Free 1"]
  = "";
 
-// admin/discedit2.php3, row 137
-// include/formutil.php3, row 198, 2727
+// admin/discedit2.php, row 137
+// include/formutil.php, row 198, 2727
 $_m["Reset form"]
  = "Effacer le formulaire";
 
@@ -2580,7 +2580,7 @@ $_m["You have not permissions to change compact view formatting"]
  = "Vous n'avez pas la permission de changer le format de vue rapide";
 
 // admin/se_compact.php, row 56, 203
-// include/constants.php3, row 506, 548, 615, 647, 674, 736, 787, 819
+// include/constants.php, row 506, 548, 615, 647, 674, 736, 787, 819
 $_m["Odd Rows"]
  = "Colonnes impaires";
 
@@ -2589,7 +2589,7 @@ $_m["'No item found' message"]
  = "Message 'Aucun item trouv�'";
 
 // admin/se_compact.php, row 62, 207
-// include/constants.php3, row 508, 616, 738, 789, 821
+// include/constants.php, row 508, 616, 738, 789, 821
 $_m["Even Rows"]
  = "Colonnes paires";
 
@@ -2623,7 +2623,7 @@ $_m["HTML code for index view"]
  = "Code HTML pour la vue de l'index";
 
 // admin/se_compact.php, row 206
-// include/constants.php3, row 507, 641, 737, 788, 820
+// include/constants.php, row 507, 641, 737, 788, 820
 $_m["Use different HTML code for even rows"]
  = "Utiliser diff�rents codes HTML pour les colonnes paires";
 
@@ -2634,7 +2634,7 @@ $_m["You can define different code for odd and ever rows\n"
    ."                         <br>Par exemple les 1eres rouges et les 2emes noires.";
 
 // admin/se_compact.php, row 213
-// include/constants.php3, row 522, 625, 746, 797, 829
+// include/constants.php, row 522, 625, 746, 797, 829
 $_m["Group by"]
  = "Grouper par";
 
@@ -2673,13 +2673,13 @@ $_m["message to show in place of slice.php3, if no item matches the query"]
 
 // admin/se_newuser.php, row 61
 // admin/setup.php, row 247
-// include/um_util.php3, row 318
+// include/um_util.php, row 318
 $_m["Retyped password is not the same as the first one"]
  = "Le second mot de passe retap� est diff�rent du premier";
 
 // admin/se_newuser.php, row 79
 // admin/setup.php, row 273
-// include/um_util.php3, row 352
+// include/um_util.php, row 352
 $_m["It is impossible to add user to permission system"]
  = "Impossible d'ajouter des utilisateurs aux permissions du syst�me";
 
@@ -2762,7 +2762,7 @@ $_m["Level of Access"]
  = "Niveau d'acc�s";
 
 // admin/slicewiz.php, row 81
-// include/constants.php3, row 974
+// include/constants.php, row 974
 $_m["Slice Administrator"]
  = "Administrateur de section";
 
@@ -2785,8 +2785,8 @@ $_m["Do you really want to delete this field from this slice?"]
 // admin/se_fields.php, row 237
 // admin/anonym_wizard.php, row 204
 // admin/se_fieldid.php, row 290
-// include/menu.php3, row 138
-// include/searchlib.php3, row 123
+// include/menu.php, row 138
+// include/searchlib.php, row 123
 $_m["Fields"]
  = "Champs";
 
@@ -2880,12 +2880,12 @@ $_m["Not allowed"]
  = "Interdit";
 
 // admin/slicedit.php, row 43
-// include/menu.php3, row 190, 244
+// include/menu.php, row 190, 244
 $_m["Hold bin"]
  = "Casier de stockage";
 
 // admin/slicedit.php, row 47
-// include/formutil.php3, row 3014
+// include/formutil.php, row 3014
 $_m["All items"]
  = "Tous les items";
 
@@ -2906,14 +2906,14 @@ $_m["Readers, authorized by HTTP auth"]
  = "lecteurs, autoris�s par HTTP";
 
 // admin/slicedit.php, row 115
-// include/modutils.php3, row 147
+// include/modutils.php, row 147
 $_m["Select owner"]
  = "S�lectionner Ma�tre";
 
 // admin/slicedit.php, row 128
 // admin/sliceadd.php, row 60
 // admin/se_import.php, row 86
-// include/menu.php3, row 88
+// include/menu.php, row 88
 $_m["Slice Administration"]
  = "Administration de la section";
 
@@ -2927,7 +2927,7 @@ $_m["Admin - Slice settings"]
  = "Administration - Configuration de section";
 
 // admin/slicedit.php, row 152
-// include/modutils.php3, row 74
+// include/modutils.php, row 74
 // include/slicedit.php, row 156
 $_m["URL of .shtml page (often leave blank)"]
  = "URL de la page .shtml (souvent vide)";
@@ -2946,26 +2946,26 @@ $_m["<br>To include slice in your webpage type next line \n"
    ."                         dans le code shtml: ";
 
 // admin/slicedit.php, row 160
-// include/modutils.php3, row 73
-// include/tv_email.php3, row 138
+// include/modutils.php, row 73
+// include/tv_email.php, row 138
 // include/slicedit.php, row 155
 $_m["Owner"]
  = "Ma�tre";
 
 // admin/slicedit.php, row 162
-// include/modutils.php3, row 42
+// include/modutils.php, row 42
 // include/slicedit.php, row 134
 $_m["New Owner"]
  = "Nouveau ma�tre";
 
 // admin/slicedit.php, row 163
-// include/modutils.php3, row 43
+// include/modutils.php, row 43
 // include/slicedit.php, row 135
 $_m["New Owner's E-mail"]
  = "Courriel du nouveau ma�tre";
 
 // admin/slicedit.php, row 165
-// include/constants.php3, row 539, 639, 662, 689, 720, 779, 811, 843
+// include/constants.php, row 539, 639, 662, 689, 720, 779, 811, 843
 // include/slicedit.php, row 159
 $_m["Listing length"]
  = "liste des longueurs";
@@ -3185,12 +3185,12 @@ $_m["Administrative view"]
 
 // admin/se_constant_import.php, row 57, 114
 // admin/se_constant.php, row 189, 348
-// include/constants.php3, row 620
+// include/constants.php, row 620
 $_m["Constant Group"]
  = "Groupe de valeurs constantes";
 
 // admin/se_constant_import.php, row 65
-// include/constedit_util.php3, row 612
+// include/constedit_util.php, row 612
 $_m["No constants specified"]
  = "";
 
@@ -3228,8 +3228,8 @@ $_m["Unable to mkdir"]
  = "Incapable de mkdir";
 
 // admin/fileman.php, row 99, 105
-// include/filedit.php3, row 69, 75
-// include/menu.php3, row 167
+// include/filedit.php, row 69, 75
+// include/menu.php, row 167
 $_m["File Manager"]
  = "Gestionnaire de fichiers";
 
@@ -3267,7 +3267,7 @@ $_m["Returns single value (not multivalue) which is created as result of AA expr
  = "";
 
 // admin/search_replace.php, row 263, 336, 420, 571
-// include/formutil.php3, row 1153, 1170
+// include/formutil.php, row 1153, 1170
 $_m["Plain text"]
  = "texte";
 
@@ -3368,7 +3368,7 @@ $_m["View items"]
  = "";
 
 // admin/search_replace.php, row 758
-// include/manager.class.php3, row 590
+// include/manager.class.php, row 590
 $_m["Selected items"]
  = "Item s�lectionn�";
 
@@ -3419,12 +3419,12 @@ $_m["CSV format settings"]
  = "Configuration de format CVS";
 
 // admin/se_csv_import.php, row 214, 218
-// include/filedit.php3, row 75
+// include/filedit.php, row 75
 $_m["File"]
  = "Dossier";
 
 // admin/se_csv_import.php, row 215, 219
-// include/widget.class.php3, row 1281
+// include/widget.class.php, row 1281
 $_m["URL"]
  = "";
 
@@ -3434,7 +3434,7 @@ $_m["Source of CSV data"]
 
 // admin/se_csv_import.php, row 251
 // admin/se_csv_import2.php, row 332
-// include/actions.php3, row 387
+// include/actions.php, row 387
 $_m["Preview"]
  = "Aper�u";
 
@@ -3460,7 +3460,7 @@ $_m[" items changed to new value "]
  = "Items chang�s pour la nouvelle valeur";
 
 // admin/se_constant.php, row 196
-// include/constedit_util.php3, row 608
+// include/constedit_util.php, row 608
 $_m["This constant group already exists"]
  = "Ce groupe de valeurs constantes existe d�j�";
 
@@ -3505,17 +3505,17 @@ $_m["Edit in Hierarchical editor (allows to create constant hierarchy)"]
  = "Editer par l'�diteur hi�rarchique (permet de cr�er une hi�rarchie de valeurs constantes";
 
 // admin/se_constant.php, row 413
-// include/constedit.php3, row 73
+// include/constedit.php, row 73
 $_m["shown&nbsp;on&nbsp;inputpage"]
  = "";
 
 // admin/se_constant.php, row 414
-// include/constedit.php3, row 76
+// include/constedit.php, row 76
 $_m["stored&nbsp;in&nbsp;database"]
  = "";
 
 // admin/se_constant.php, row 415
-// include/constedit.php3, row 82
+// include/constedit.php, row 82
 $_m["constant&nbsp;order"]
  = "";
 
@@ -3533,7 +3533,7 @@ $_m["Are you sure you want to PERMANENTLY DELETE this group?"]
  = "";
 
 // admin/se_filters2.php, row 89
-// include/csn_util.php3, row 95
+// include/csn_util.php, row 95
 $_m["Other categories"]
  = "";
 
@@ -3616,7 +3616,7 @@ $_m["by&nbsp;type:"]
  = "";
 
 // admin/se_views.php, row 154, 174
-// include/formutil.php3, row 1608, 1615
+// include/formutil.php, row 1608, 1615
 $_m["New"]
  = "Nouveau";
 
@@ -3687,12 +3687,12 @@ $_m["Ok: Item %1 stored"]
  = "";
 
 // admin/se_csv_import2.php, row 248
-// include/files.class.php3, row 282
+// include/files.class.php, row 282
 $_m["Ok : file deleted "]
  = "Ok : fichier supprim�";
 
 // admin/se_csv_import2.php, row 250
-// include/files.class.php3, row 284
+// include/files.class.php, row 284
 $_m["Error: Cannot delete file"]
  = "ERREUR: Impossible de supprimer le fichier";
 
@@ -3885,7 +3885,7 @@ $_m["No category defined"]
  = "Pas de cat�gories d�finie";
 
 // admin/se_filters.php, row 355, 355
-// include/manager.class.php3, row 585
+// include/manager.class.php, row 585
 $_m["Select all"]
  = "S�lectionner tout";
 
@@ -3898,7 +3898,7 @@ $_m["This script can't be used on a configured system."]
  = "Ce script ne peut pas �tre utilis� sur un syst�me configur�.";
 
 // admin/setup.php, row 103, 240
-// include/formutil.php3, row 1944
+// include/formutil.php, row 1944
 $_m["Retype Password"]
  = "Retapez le mot de passe";
 
@@ -3961,7 +3961,7 @@ $_m["Search user or group"]
  = "Recherche usager ou groupe";
 
 // admin/se_users_add.php, row 82
-// include/um_util.php3, row 118
+// include/um_util.php, row 118
 $_m["Assign new permissions"]
  = "Assignez de nouvelles permissions";
 
@@ -4109,7 +4109,7 @@ $_m["%1 import actions planed. See"]
 
 // central/copyslice2.php, row 66
 // central/synchronize3.php, row 93
-// include/menu.php3, row 170
+// include/menu.php, row 170
 $_m["Task Manager"]
  = "";
 
@@ -4186,458 +4186,458 @@ $_m["Previous"]
  = "Pr�c�dent";
 
 // include/easy_scroller.php3, row 167
-// include/scroller.php3, row 314
+// include/scroller.php, row 314
 $_m["All"]
  = "Tout";
 
-// include/scroller.php3, row 314
+// include/scroller.php, row 314
 $_m["found"]
     = "";
 
-// include/files.class.php3, row 97
+// include/files.class.php, row 97
 $_m["Can't create directory for image uploads"]
  = "impossible de cr�er le r�pertoire de t�l�chargement d'images";
 
-// include/files.class.php3, row 146
+// include/files.class.php, row 146
 $_m["Can't read the file %1"]
  = "";
 
-// include/files.class.php3, row 175
+// include/files.class.php, row 175
 $_m["No destination file specified"]
  = "";
 
-// include/files.class.php3, row 189
+// include/files.class.php, row 189
 $_m["type of uploaded file not allowed"]
  = "";
 
-// include/files.class.php3, row 211
+// include/files.class.php, row 211
 $_m["Can't move image  %1 to %2"]
  = "";
 
-// include/files.class.php3, row 218
+// include/files.class.php, row 218
 $_m["Can't change permissions on uploaded file: %1 - %2. See IMG_UPLOAD_FILE_MODE in your config.php3"]
  = "";
 
-// include/files.class.php3, row 239
+// include/files.class.php, row 239
 $_m["Can't open file for writing: %1"]
  = "";
 
-// include/files.class.php3, row 245
+// include/files.class.php, row 245
 $_m["Can't write to file: %1"]
  = "";
 
-// include/files.class.php3, row 290
+// include/files.class.php, row 290
 $_m["Error: Invalid directory"]
  = "Erreur: r�pertoire invalide";
 
-// include/files.class.php3, row 313
+// include/files.class.php, row 313
 $_m["can't create backup of the file"]
  = "";
 
-// include/files.class.php3, row 1311
+// include/files.class.php, row 1311
 $_m[": No such directory"]
  = "";
 
-// include/perm_core.php3, row 614
+// include/perm_core.php, row 614
 $_m["Reader Slice"]
  = "";
 
-// include/perm_core.php3, row 621
+// include/perm_core.php, row 621
 $_m["Reader Set"]
  = "";
 
-// include/constants.php3, row 169
+// include/constants.php, row 169
 $_m["MySQL Auth"]
  = "Auteur MySQL";
 
-// include/constants.php3, row 174
+// include/constants.php, row 174
 $_m["Jump inside AA control panel"]
  = "Aller au panneau de contr�le AA";
 
-// include/constants.php3, row 178
+// include/constants.php, row 178
 $_m["Polls for AA"]
  = "MIse en commun de AA";
 
-// include/constants.php3, row 192
-// include/menu_util.php3, row 64, 169
-// include/menu.php3, row 220
+// include/constants.php, row 192
+// include/menu_util.php, row 64, 169
+// include/menu.php, row 220
 $_m["Alerts"]
  = "Alerte";
 
-// include/constants.php3, row 201
-// include/menu_util.php3, row 66
+// include/constants.php, row 201
+// include/menu_util.php, row 66
 $_m["Links"]
  = "Liens";
 
-// include/constants.php3, row 356
+// include/constants.php, row 356
 $_m["Short Id"]
  = "Courte Identit�";
 
-// include/constants.php3, row 361
+// include/constants.php, row 361
 $_m["Class"]
  = "Classe";
 
-// include/constants.php3, row 365
-// include/constedit_util.php3, row 124
+// include/constants.php, row 365
+// include/constedit_util.php, row 124
 $_m["Level"]
  = "Niveau";
 
-// include/constants.php3, row 407
+// include/constants.php, row 407
 $_m["Feed"]
  = "Alimentation";
 
-// include/constants.php3, row 408
+// include/constants.php, row 408
 $_m["Do not feed"]
  = "N'alimentez pas";
 
-// include/constants.php3, row 409
+// include/constants.php, row 409
 $_m["Feed locked"]
  = "Alimentation verrouill�e";
 
-// include/constants.php3, row 410
+// include/constants.php, row 410
 $_m["Feed & update"]
  = "Alimentation et mise � jour";
 
-// include/constants.php3, row 411
+// include/constants.php, row 411
 $_m["Feed & update & lock"]
  = "Alimentation et mise � jour et verrou";
 
-// include/constants.php3, row 484
+// include/constants.php, row 484
 $_m["Month List"]
  = "Liste de mois";
 
-// include/constants.php3, row 484
+// include/constants.php, row 484
 $_m["Month Table"]
  = "Table de mois";
 
-// include/constants.php3, row 504
+// include/constants.php, row 504
 $_m["Item listing"]
  = "Liste d'item";
 
-// include/constants.php3, row 509, 617, 739, 790, 822
+// include/constants.php, row 509, 617, 739, 790, 822
 $_m["Row Delimiter"]
  = "";
 
-// include/constants.php3, row 518, 621, 649, 676, 700, 742, 766, 793, 825
+// include/constants.php, row 518, 621, 649, 676, 700, 742, 766, 793, 825
 $_m["Sort primary"]
  = "Tri primaire";
 
-// include/constants.php3, row 520, 623, 651, 678, 702, 744, 768, 795, 827
+// include/constants.php, row 520, 623, 651, 678, 702, 744, 768, 795, 827
 $_m["Sort secondary"]
  = "Tri secondaire";
 
-// include/constants.php3, row 527, 628, 749, 800, 832
+// include/constants.php, row 527, 628, 749, 800, 832
 $_m["Group title format"]
  = "Grouper les formats de titre";
 
-// include/constants.php3, row 528, 629, 750, 801, 833
+// include/constants.php, row 528, 629, 750, 801, 833
 $_m["Group bottom format"]
  = "Grouper les format finaux";
 
-// include/constants.php3, row 541, 561, 584, 642, 668, 722, 753, 781, 813, 845, 855
+// include/constants.php, row 541, 561, 584, 642, 668, 722, 753, 781, 813, 845, 855
 $_m["Add view ID as HTML comment"]
  = "";
 
-// include/constants.php3, row 546
+// include/constants.php, row 546
 $_m["Fulltext view"]
  = "Vue de tout le texte";
 
-// include/constants.php3, row 564
+// include/constants.php, row 564
 $_m["Discussion"]
  = "";
 
-// include/constants.php3, row 566
+// include/constants.php, row 566
 $_m["HTML code for index view of the comment"]
  = "Code HTML pour la vue de l'index et commentaire";
 
-// include/constants.php3, row 568
+// include/constants.php, row 568
 $_m["HTML code for \"Show selected\" button"]
  = "Code HTML pour \"Montre s�lectionn�\"bouton";
 
-// include/constants.php3, row 569
+// include/constants.php, row 569
 $_m["HTML code for \"Show all\" button"]
  = "Code HTML pour \"Montrer tout\\bouton";
 
-// include/constants.php3, row 570
+// include/constants.php, row 570
 $_m["HTML code for \"Add\" button"]
  = "Code HTML pour\"Ajouter\\bouton";
 
-// include/constants.php3, row 571
+// include/constants.php, row 571
 $_m["Show images"]
  = "MOntrer image";
 
-// include/constants.php3, row 572
+// include/constants.php, row 572
 $_m["Order by"]
  = "Ordonner par";
 
-// include/constants.php3, row 573
+// include/constants.php, row 573
 $_m["View image 1"]
  = "Voir image 1";
 
-// include/constants.php3, row 574
+// include/constants.php, row 574
 $_m["View image 2"]
  = "Voir image 2";
 
-// include/constants.php3, row 575
+// include/constants.php, row 575
 $_m["View image 3"]
  = "Voir image 3";
 
-// include/constants.php3, row 576
+// include/constants.php, row 576
 $_m["View image 4"]
  = "Voir image 4";
 
-// include/constants.php3, row 577
+// include/constants.php, row 577
 $_m["HTML code for fulltext view of the comment"]
  = "Code HTML pour vue de texte de commentaire";
 
-// include/constants.php3, row 578
+// include/constants.php, row 578
 $_m["HTML code for space before comment"]
  = "Code HTML pour l'espace devant le commentaire";
 
-// include/constants.php3, row 579
+// include/constants.php, row 579
 $_m["HTML code of the form for posting comment"]
  = "Code HTML pour le formulaire de commentaire";
 
-// include/constants.php3, row 581
+// include/constants.php, row 581
 $_m["E-mail template"]
  = "";
 
-// include/constants.php3, row 583
+// include/constants.php, row 583
 $_m["Number of e-mail template used for posting new comments to users"]
  = "";
 
-// include/constants.php3, row 588
+// include/constants.php, row 588
 $_m["Discussion To Mail"]
  = "Discussion vers courrier";
 
-// include/constants.php3, row 589
+// include/constants.php, row 589
 $_m["From: (email header)"]
  = "De: (ent�te courriel)";
 
-// include/constants.php3, row 590
+// include/constants.php, row 590
 $_m["Reply-To:"]
  = "R�pondre �";
 
-// include/constants.php3, row 591
+// include/constants.php, row 591
 $_m["Errors-To:"]
  = "Erreur-�";
 
-// include/constants.php3, row 592
+// include/constants.php, row 592
 $_m["Sender:"]
  = "Ebnvoyeur";
 
-// include/constants.php3, row 593
+// include/constants.php, row 593
 $_m["Mail Subject:"]
  = "Sujet de courriel";
 
-// include/constants.php3, row 594
+// include/constants.php, row 594
 $_m["Mail Body:"]
  = "Corp du courriel";
 
-// include/constants.php3, row 613
+// include/constants.php, row 613
 $_m["View of Constants"]
  = "Voir les valeurs constantes";
 
-// include/constants.php3, row 645
+// include/constants.php, row 645
 $_m["RSS exchange"]
  = "/change de services s�lection de route";
 
-// include/constants.php3, row 666
+// include/constants.php, row 666
 $_m["Static page"]
  = "Page statique";
 
-// include/constants.php3, row 667
+// include/constants.php, row 667
 $_m["HTML code"]
  = "Code HTML";
 
-// include/constants.php3, row 672
+// include/constants.php, row 672
 $_m["Javascript item exchange"]
  = "�change d'item JavaScript";
 
-// include/constants.php3, row 693
+// include/constants.php, row 693
 $_m["Calendar"]
  = "Calendrier";
 
-// include/constants.php3, row 694
+// include/constants.php, row 694
 $_m["Calendar Type"]
  = "Type de calendrier";
 
-// include/constants.php3, row 696
+// include/constants.php, row 696
 $_m["Additional attribs to the TD event tag"]
  = "Attributions additionnelles pour les labels d'�v�nements TD";
 
-// include/constants.php3, row 697
+// include/constants.php, row 697
 $_m["Event format"]
  = "Format d'�v�nement";
 
-// include/constants.php3, row 704
+// include/constants.php, row 704
 $_m["Start date field"]
  = "Commencer le champ de date";
 
-// include/constants.php3, row 705
+// include/constants.php, row 705
 $_m["End date field"]
  = "Terminer le champ de datee";
 
-// include/constants.php3, row 706
+// include/constants.php, row 706
 $_m["Day cell top format"]
  = "D�but Format cellule jour";
 
-// include/constants.php3, row 707
+// include/constants.php, row 707
 $_m["Day cell bottom format"]
  = "Fin Format cellule jour";
 
-// include/constants.php3, row 708
+// include/constants.php, row 708
 $_m["Use other header for empty cells"]
  = "Utiliser autre ent�te pour les cellules vides";
 
-// include/constants.php3, row 709
+// include/constants.php, row 709
 $_m["Empty day cell top format"]
  = "Vider le Format de D�but de la cellule jour";
 
-// include/constants.php3, row 710
+// include/constants.php, row 710
 $_m["Empty day cell bottom format"]
  = "Vider le Format de fin de la cellule jour";
 
-// include/constants.php3, row 728
+// include/constants.php, row 728
 $_m["Alerts Selection Set"]
  = "Alerte � l'ensemble de s�lection";
 
-// include/constants.php3, row 731
+// include/constants.php, row 731
 $_m["Fulltext URL"]
  = "Texte URL";
 
-// include/constants.php3, row 734
+// include/constants.php, row 734
 $_m["Link to the .shtml page used\n"
    ."                                 to create headline links."]
  = "Lien � l apage .shtml utilis�e\n"
    ."                                 pour cr�er le lien en manchette.";
 
-// include/constants.php3, row 751
+// include/constants.php, row 751
 $_m["Max number of items"]
  = "Nombre maximum de vues";
 
-// include/constants.php3, row 761
+// include/constants.php, row 761
 $_m["URL listing"]
  = "Liste URL";
 
-// include/constants.php3, row 763
+// include/constants.php, row 763
 $_m["Row HTML"]
  = "Rang�e HTML";
 
-// include/constants.php3, row 785
+// include/constants.php, row 785
 $_m["Link listing"]
  = "Liste de liens";
 
-// include/constants.php3, row 817
+// include/constants.php, row 817
 $_m["Category listing"]
  = "Liste de cat�gories";
 
-// include/constants.php3, row 848
+// include/constants.php, row 848
 $_m["Input Form"]
  = "Formulaire d'entr�e";
 
-// include/constants.php3, row 850
+// include/constants.php, row 850
 $_m["New item form template"]
  = "Nouveau mod�le de formulaire d'item";
 
-// include/constants.php3, row 851
+// include/constants.php, row 851
 $_m["Use different template for editing"]
  = "Utiliser diff�rent mod�le pour les modifications";
 
-// include/constants.php3, row 852
+// include/constants.php, row 852
 $_m["Edit item form template"]
  = "modifier le mod�le pour les modifications des items";
 
-// include/constants.php3, row 884
-// include/discussion.php3, row 206, 253
+// include/constants.php, row 884
+// include/discussion.php, row 206, 253
 $_m["Show selected"]
  = "Montrer s�lection";
 
-// include/constants.php3, row 885
-// include/discussion.php3, row 207, 255
+// include/constants.php, row 885
+// include/discussion.php, row 207, 255
 $_m["Show all"]
  = "Montrer tout";
 
-// include/constants.php3, row 886
-// include/discussion.php3, row 209, 257
-// include/constedit_util.php3, row 116
+// include/constants.php, row 886
+// include/discussion.php, row 209, 257
+// include/constedit_util.php, row 116
 $_m["Add new"]
  = "Ajouter nouveau";
 
-// include/constants.php3, row 906
+// include/constants.php, row 906
 $_m["Calendar: Time stamp at 0:00 of processed cell"]
  = "Calendrier: Marquer le temps � 0:00 de la cellule proc�d�e";
 
-// include/constants.php3, row 907
+// include/constants.php, row 907
 $_m["Calendar: Time stamp at 24:00 of processed cell"]
  = "Calendrier: Marquer le temps � 24:00 de la cellule proc�d�e";
 
-// include/constants.php3, row 908
+// include/constants.php, row 908
 $_m["Calendar: Day in month of processed cell"]
  = "Calendrier: jour du mois de la cellule proc�d�e";
 
-// include/constants.php3, row 909
+// include/constants.php, row 909
 $_m["Calendar: Month number of processed cell"]
  = "Calendrier: num�ro du mois de la cellule proc�d�e";
 
-// include/constants.php3, row 910
+// include/constants.php, row 910
 $_m["Calendar: Year number of processed cell"]
  = "Calendrier: ann�e de la cellule proc�d�e";
 
-// include/constants.php3, row 972
+// include/constants.php, row 972
 $_m["Superadmin"]
  = "Super-administrateur";
 
-// include/scroller.php3, row 78
+// include/scroller.php, row 78
 $_m["Pgcnt"]
  = "";
 
-// include/scroller.php3, row 79
+// include/scroller.php, row 79
 $_m["Current"]
  = "";
 
-// include/scroller.php3, row 81
+// include/scroller.php, row 81
 $_m["Visible"]
  = "";
 
-// include/scroller.php3, row 82
+// include/scroller.php, row 82
 $_m["Sortdir"]
  = "";
 
-// include/scroller.php3, row 83
+// include/scroller.php, row 83
 $_m["Sortcol"]
  = "";
 
-// include/scroller.php3, row 84
-// include/menu.php3, row 160
+// include/scroller.php, row 84
+// include/menu.php, row 160
 $_m["Filters"]
  = "Filtres";
 
-// include/scroller.php3, row 85
+// include/scroller.php, row 85
 $_m["Itmcnt"]
  = "";
 
-// include/scroller.php3, row 86
+// include/scroller.php, row 86
 $_m["Metapage"]
  = "";
 
-// include/scroller.php3, row 87
+// include/scroller.php, row 87
 $_m["Urldefault"]
  = "";
 
-// include/item_content.php3, row 579
+// include/item_content.php, row 579
 $_m["No Slice Id specified"]
  = "";
 
-// include/item_content.php3, row 764
+// include/item_content.php, row 764
 $_m["No Id specified (%1 - %2)"]
  = "";
 
-// include/item_content.php3, row 769
+// include/item_content.php, row 769
 $_m["Duplicated ID - skiped (%1 - %2)"]
  = "";
 
-// include/item_content.php3, row 783
+// include/item_content.php, row 783
 $_m["StoreItem for slice %1 - failed parameter check for id = '%2'"]
  = "";
 
@@ -4697,439 +4697,439 @@ $_m["browse"]
 $_m["Are you sure you want to permanently DELETE all the checked records?"]
  = "�tes vous certains de vouloir supprimer tous les enregistrements choisis";
 
-// include/constedit.php3, row 55
+// include/constedit.php, row 55
 $_m["Constants - Hiearchical editor"]
  = "Constantes - Editeur hi�rarchique";
 
-// include/constedit.php3, row 58
+// include/constedit.php, row 58
 $_m["Changes are not saved into database until you click on the button at the bottom of this page.<br>Constants are sorted first by Priority, second by Name."]
  = "Les changements ne seront pas sauvegard�s dans la database tant que vous n'aurez pas cliqu� sur le bouton au bas de cette page<br> Les constantes sont d'abord tri�es par priorit� puis par nom.";
 
-// include/constedit.php3, row 79
+// include/constedit.php, row 79
 $_m["Copy value from name"]
  = "Copier la valeur � partir du nom";
 
-// include/constedit.php3, row 92
+// include/constedit.php, row 92
 $_m["Check to confirm deleting"]
  = "Pointer pour confirmer la suppression";
 
-// include/constedit.php3, row 95
+// include/constedit.php, row 95
 $_m["Save all changes to database"]
  = "";
 
-// include/constedit.php3, row 96
+// include/constedit.php, row 96
 $_m["View settings"]
  = "Voir les configurations";
 
-// include/constedit.php3, row 96
+// include/constedit.php, row 96
 $_m["Hierarchical"]
  = "Hi�rarchique";
 
-// include/constedit.php3, row 97
+// include/constedit.php, row 97
 $_m["Hide value"]
  = "Cacher valeur";
 
-// include/constedit.php3, row 98
+// include/constedit.php, row 98
 $_m["Levels horizontal"]
  = "Niveaux horizontaux";
 
-// include/constedit.php3, row 99
-// include/widget.class.php3, row 1168
+// include/constedit.php, row 99
+// include/widget.class.php, row 1168
 $_m["Level count"]
  = "Comptage de niveau";
 
-// include/statestore.php3, row 669
-// include/searchlib.php3, row 101
+// include/statestore.php, row 669
+// include/searchlib.php, row 101
 $_m["select ..."]
  = "S�lectionner ...";
 
-// include/searchbar.class.php3, row 82
+// include/searchbar.class.php, row 82
 $_m["Condition"]
  = "";
 
-// include/searchbar.class.php3, row 83
+// include/searchbar.class.php, row 83
 $_m["Readonly"]
  = "";
 
-// include/searchbar.class.php3, row 176
+// include/searchbar.class.php, row 176
 $_m["Search row"]
  = "";
 
-// include/searchbar.class.php3, row 177
+// include/searchbar.class.php, row 177
 $_m["Order row"]
  = "";
 
-// include/searchbar.class.php3, row 558
+// include/searchbar.class.php, row 558
 $_m["And"]
  = "Et";
 
-// include/searchbar.class.php3, row 567
-// include/searchlib.php3, row 39, 92, 101
+// include/searchbar.class.php, row 567
+// include/searchlib.php, row 39, 92, 101
 $_m["contains"]
  = "Contien";
 
-// include/searchbar.class.php3, row 568
-// include/searchlib.php3, row 40, 92, 101
+// include/searchbar.class.php, row 568
+// include/searchlib.php, row 40, 92, 101
 $_m["begins with"]
  = "Commence par";
 
-// include/searchbar.class.php3, row 569
-// include/searchlib.php3, row 92, 101
+// include/searchbar.class.php, row 569
+// include/searchlib.php, row 92, 101
 $_m["is"]
  = "est";
 
-// include/searchbar.class.php3, row 598
+// include/searchbar.class.php, row 598
 $_m["Order"]
  = "ordre";
 
-// include/searchbar.class.php3, row 617
-// include/formutil.php3, row 1993
+// include/searchbar.class.php, row 617
+// include/formutil.php, row 1993
 $_m["Clear"]
  = "Effacer";
 
-// include/searchbar.class.php3, row 620
+// include/searchbar.class.php, row 620
 $_m["Stored search name"]
  = "Ranger le nom de la recherche";
 
-// include/searchbar.class.php3, row 621
+// include/searchbar.class.php, row 621
 $_m["You have the permission to add stored search globaly. Do you want to add this query as global (common to all slice users)?"]
  = "Vous avez la permission de consid�rer des recherche globalement.  Voulez-vous consid�rer cette requ�te comme globale (commune � tous les usagers de la section)?";
 
-// include/searchbar.class.php3, row 621
+// include/searchbar.class.php, row 621
 $_m["Store"]
  = "Ranger";
 
-// include/searchbar.class.php3, row 636
+// include/searchbar.class.php, row 636
 $_m["Stored searches"]
  = "Recherche rang�es";
 
-// include/searchbar.class.php3, row 639
+// include/searchbar.class.php, row 639
 $_m["View"]
  = "Vues";
 
-// include/searchbar.class.php3, row 642
+// include/searchbar.class.php, row 642
 $_m["Are you sure to refine current search?"]
  = "";
 
-// include/searchbar.class.php3, row 643
+// include/searchbar.class.php, row 643
 $_m["Enter new name"]
  = "Entrer nouveau nom";
 
-// include/searchbar.class.php3, row 643
+// include/searchbar.class.php, row 643
 $_m["Rename"]
  = "Renommer";
 
-// include/searchbar.class.php3, row 644
+// include/searchbar.class.php, row 644
 $_m["Are you sure to delete selected search?"]
  = "Etes vous certain de vouloir supprimer la recherche s�lectionn�e";
 
-// include/searchbar.class.php3, row 935
+// include/searchbar.class.php, row 935
 $_m["Select one..."]
  = "S�lectionner un";
 
-// include/modutils.php3, row 75
+// include/modutils.php, row 75
 // include/slicedit.php, row 163
 $_m["Used Language File"]
  = "Fichier de langue utilis�";
 
-// include/modutils.php3, row 179
+// include/modutils.php, row 179
 $_m["No such module."]
  = "Aucun module ainsi";
 
-// include/formutil.php3, row 63
+// include/formutil.php, row 63
 $_m["Add&nbsp;Mutual"]
  = "";
 
-// include/formutil.php3, row 64
+// include/formutil.php, row 64
 $_m["Backward"]
  = "Arri�re";
 
-// include/formutil.php3, row 66
+// include/formutil.php, row 66
 $_m["Good"]
  = "Bon";
 
-// include/formutil.php3, row 68
+// include/formutil.php, row 68
 $_m["Bad"]
  = "Mauvais";
 
-// include/formutil.php3, row 193
+// include/formutil.php, row 193
 $_m["Update & View"]
  = "Mise �a jour et vue";
 
-// include/formutil.php3, row 197
+// include/formutil.php, row 197
 $_m["Insert as new"]
  = "Ins�rer comme nouveau";
 
-// include/formutil.php3, row 203
+// include/formutil.php, row 203
 $_m["Insert & View"]
  = "ins�rer et voir";
 
-// include/formutil.php3, row 220
+// include/formutil.php, row 220
 $_m["Part"]
  = "";
 
-// include/formutil.php3, row 475
+// include/formutil.php, row 475
 $_m["There are too many items."]
  = "";
 
-// include/formutil.php3, row 892
+// include/formutil.php, row 892
 $_m["set"]
  = "D�signer";
 
-// include/formutil.php3, row 892
+// include/formutil.php, row 892
 $_m["unset"]
  = "d�-d�signer";
 
-// include/formutil.php3, row 1004
+// include/formutil.php, row 1004
 $_m["Unable to find tagprefix table %1"]
  = "Incapable de trouver tagprefix table %1";
 
-// include/formutil.php3, row 1127
+// include/formutil.php, row 1127
 $_m["import"]
  = "importer";
 
-// include/formutil.php3, row 1144
+// include/formutil.php, row 1144
 $_m["Edit in HTMLArea"]
  = "Modifier dans la zone HTML";
 
-// include/formutil.php3, row 1615, 1619
+// include/formutil.php, row 1615, 1619
 $_m["Enter the value"]
  = "";
 
-// include/formutil.php3, row 1619
-// include/menu.php3, row 145
+// include/formutil.php, row 1619
+// include/menu.php, row 145
 $_m["Change"]
  = "Changer";
 
-// include/formutil.php3, row 1658
+// include/formutil.php, row 1658
 $_m["Item"]
  = "";
 
-// include/formutil.php3, row 1669
+// include/formutil.php, row 1669
 $_m["Move up"]
  = "";
 
-// include/formutil.php3, row 1670
+// include/formutil.php, row 1670
 $_m["Move down"]
  = "";
 
-// include/formutil.php3, row 1759, 1893
-// include/widget.class.php3, row 977
+// include/formutil.php, row 1759, 1893
+// include/widget.class.php, row 977
 $_m["Selected"]
  = "S�lectionn�";
 
-// include/formutil.php3, row 1892
+// include/formutil.php, row 1892
 $_m["Offer"]
  = "Offrir";
 
-// include/formutil.php3, row 1943
+// include/formutil.php, row 1943
 $_m["Change Password"]
  = "Changer le mot de passe";
 
-// include/formutil.php3, row 1945
+// include/formutil.php, row 1945
 $_m["Delete Password"]
  = "Supprimer le mot de passe";
 
-// include/formutil.php3, row 1953
-// include/searchlib.php3, row 44, 92, 95, 98, 101
+// include/formutil.php, row 1953
+// include/searchlib.php, row 44, 92, 95, 98, 101
 $_m["not set"]
  = "non-d�sign�";
 
-// include/formutil.php3, row 2734
+// include/formutil.php, row 2734
 $_m["Submit"]
  = "Porposer";
 
-// include/formutil.php3, row 2973
+// include/formutil.php, row 2973
 $_m["Not used, yet"]
  = "";
 
-// include/formutil.php3, row 3006
+// include/formutil.php, row 3006
 $_m["Group Name"]
  = "Nom du groupe";
 
-// include/formutil.php3, row 3006
+// include/formutil.php, row 3006
 $_m["Created by"]
  = "Cr�� par";
 
-// include/formutil.php3, row 3007
+// include/formutil.php, row 3007
 $_m["Created on"]
  = "Cr�� le";
 
-// include/formutil.php3, row 3007
+// include/formutil.php, row 3007
 $_m["Last updated"]
  = "Mis � jour le";
 
-// include/formutil.php3, row 3007
+// include/formutil.php, row 3007
 $_m["Last used"]
  = "Derni�re utilisation le";
 
-// include/formutil.php3, row 3013
+// include/formutil.php, row 3013
 $_m["All active items"]
  = "";
 
-// include/formutil.php3, row 3015
+// include/formutil.php, row 3015
 $_m["All pending items"]
  = "";
 
-// include/formutil.php3, row 3016
+// include/formutil.php, row 3016
 $_m["All expired items"]
  = "";
 
-// include/formutil.php3, row 3017
+// include/formutil.php, row 3017
 $_m["All items in holding bin"]
  = "";
 
-// include/formutil.php3, row 3018
+// include/formutil.php, row 3018
 $_m["All items in trash bin"]
  = "";
 
-// include/stringexpand.php3, row 417
+// include/stringexpand.php, row 417
 $_m["Jabber Online Status Indicator"]
  = "";
 
-// include/stringexpand.php3, row 2450
+// include/stringexpand.php, row 2450
 $_m["Date \\ Item ID"]
  = "";
 
-// include/util.php3, row 981, 1038
-// include/slice.class.php3, row 247
+// include/util.php, row 981, 1038
+// include/slice.class.php, row 247
 $_m["Error: Missing Reading Password"]
  = "Erreur: mot de passe de lecture manquant";
 
-// include/util.php3, row 1375
-// include/msgpage.php3, row 63
+// include/util.php, row 1375
+// include/msgpage.php, row 63
 $_m["Toolkit news message"]
  = "message de Kit d'outils de nouvelles";
 
-// include/util.php3, row 1608
+// include/util.php, row 1608
 $_m["Internal error. File upload: Dir does not exist?!"]
  = "Erreur interne. Fichier t�l�charg�: r�pertoire inexistant?!";
 
-// include/util.php3, row 1612
+// include/util.php, row 1612
 $_m["File with this name already exists."]
  = "Un fichier avec ce nom existe d�j�";
 
-// include/util.php3, row 1619
+// include/util.php, row 1619
 $_m["Can't move image  %s to %s"]
  = "impossible de bouger l'image de %s � %s";
 
-// include/util.php3, row 1867
+// include/util.php, row 1867
 $_m["alerts alert"]
  = "Alertes Alerte";
 
-// include/util.php3, row 1868
+// include/util.php, row 1868
 $_m["alerts welcome"]
  = "Alerte bienvenue";
 
-// include/util.php3, row 1869
+// include/util.php, row 1869
 $_m["slice wizard welcome"]
  = "Bienvenue assistant de section";
 
-// include/util.php3, row 1870
+// include/util.php, row 1870
 $_m["other"]
  = "autre";
 
-// include/util.php3, row 1878
+// include/util.php, row 1878
 $_m["January"]
  = "Janvier";
 
-// include/util.php3, row 1878
+// include/util.php, row 1878
 $_m["February"]
  = "F�vrier";
 
-// include/util.php3, row 1878
+// include/util.php, row 1878
 $_m["March"]
  = "Mars";
 
-// include/util.php3, row 1878
+// include/util.php, row 1878
 $_m["April"]
  = "Avril";
 
-// include/util.php3, row 1878
+// include/util.php, row 1878
 $_m["May"]
  = "Mai";
 
-// include/util.php3, row 1878
+// include/util.php, row 1878
 $_m["June"]
  = "Juin";
 
-// include/util.php3, row 1879
+// include/util.php, row 1879
 $_m["July"]
  = "Juillet";
 
-// include/util.php3, row 1879
+// include/util.php, row 1879
 $_m["August"]
  = "Ao�t";
 
-// include/util.php3, row 1879
+// include/util.php, row 1879
 $_m["September"]
  = "Septembre";
 
-// include/util.php3, row 1879
+// include/util.php, row 1879
 $_m["October"]
  = "Octobre";
 
-// include/util.php3, row 1879
+// include/util.php, row 1879
 $_m["November"]
  = "Novembre";
 
-// include/util.php3, row 1879
+// include/util.php, row 1879
 $_m["December"]
  = "D�cembre";
 
-// include/discussion.php3, row 215
+// include/discussion.php, row 215
 $_m["Alias for subject of the discussion comment"]
  = "Alias pour le sujet du commentaire";
 
-// include/discussion.php3, row 216
+// include/discussion.php, row 216
 $_m["Alias for text of the discussion comment"]
  = "Alias pour le texte du commentaire";
 
-// include/discussion.php3, row 217
+// include/discussion.php, row 217
 $_m["Alias for written by"]
  = "Alais pour auteur";
 
-// include/discussion.php3, row 218
+// include/discussion.php, row 218
 $_m["Alias for author's e-mail"]
  = "Alias pour le courriel de l'auteur";
 
-// include/discussion.php3, row 219
+// include/discussion.php, row 219
 $_m["Alias for url address of author's www site"]
  = "Alias pour l'URL du site web de l'auteur";
 
-// include/discussion.php3, row 220
+// include/discussion.php, row 220
 $_m["Alias for description of author's www site"]
  = "Alias pour la description du site web de l'auteur";
 
-// include/discussion.php3, row 221
+// include/discussion.php, row 221
 $_m["Alias for publish date"]
  = "Alais pour la date de publication";
 
-// include/discussion.php3, row 222
+// include/discussion.php, row 222
 $_m["Alias for IP address of author's computer"]
  = "Alias pour adresse IP de l'ordinateur de l'auteur";
 
-// include/discussion.php3, row 223
+// include/discussion.php, row 223
 $_m["Alias for checkbox used for choosing discussion comment"]
  = "Alias pour la bo�te de contr�le utilis�e pour choisir le commentaire";
 
-// include/discussion.php3, row 224
+// include/discussion.php, row 224
 $_m["Alias for images"]
  = "Alias pour images";
 
-// include/discussion.php3, row 225
+// include/discussion.php, row 225
 $_m["Alias for comment ID<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=d_item_id value=\"_#DITEM_ID\">"]
  = "";
 
-// include/discussion.php3, row 226
+// include/discussion.php, row 226
 $_m["Alias for comment ID (the same as _#DITEM_ID<br>)\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=d_item_id value=\"_#ITEM_ID#\">"]
  = "";
 
-// include/discussion.php3, row 227
+// include/discussion.php, row 227
 $_m["Alias for item ID<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=d_parent value=\"_#DISC_ID#\">"]
@@ -5137,7 +5137,7 @@ $_m["Alias for item ID<br>\n"
    ."                             <i>Usage: </i>dans le code du formulaire<br>\n"
    ."                             <i>Exemple: </i>&lt;input type=hidden name=d_parent value=\"_#DISC_ID#\">";
 
-// include/discussion.php3, row 228
+// include/discussion.php, row 228
 $_m["Alias for link to text of the discussion comment<br>\n"
    ."                             <i>Usage: </i>in HTML code for index view of the comment<br>\n"
    ."                             <i>Example: </i>&lt;a href=_#URL_BODY>_#SUBJECT#&lt;/a>"]
@@ -5145,7 +5145,7 @@ $_m["Alias for link to text of the discussion comment<br>\n"
    ."                             <i>Usage: </i>dans le code HTML pour vue de l'index du commentaire<br>\n"
    ."                             <i>Exemple: </i>&lt;a href=_#URL_BODY>_#SUBJECT#&lt;/a>";
 
-// include/discussion.php3, row 229
+// include/discussion.php, row 229
 $_m["Alias for link to a form<br>\n"
    ."                             <i>Usage: </i>in HTML code for fulltext view of the comment<br>\n"
    ."                             <i>Example: </i>&lt;a href=_#URLREPLY&gt;Reply&lt;/a&gt;"]
@@ -5153,7 +5153,7 @@ $_m["Alias for link to a form<br>\n"
    ."                             <i>Usage: </i>dans le cade HTML pour une vue compl�te du commentaire<br>\n"
    ."                             <i>Exemple: </i>&lt;a href=_#URLREPLY&gt;Reply&lt;/a&gt";
 
-// include/discussion.php3, row 230
+// include/discussion.php, row 230
 $_m["Alias for link to discussion<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=url value=\"_#DISC_URL\">"]
@@ -5161,17 +5161,17 @@ $_m["Alias for link to discussion<br>\n"
    ."                             <i>Usage: </i>dans le code du formulaire<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=url value=\"_#DISC_URL\">";
 
-// include/discussion.php3, row 231
+// include/discussion.php, row 231
 $_m["Alias for buttons Show all, Show selected, Add new<br>\n"
    ."                             <i>Usage: </i> in the Bottom HTML code"]
  = "Alias pour les boutons Montrer tout, montrer s�lection, Ajouter nouveau<br>\n"
    ."                             <i>Usage: </i> � la fi ndu code HTML";
 
-// include/discussion.php3, row 413
+// include/discussion.php, row 413
 $_m["3rd parameter filled in DiscussionMailList field"]
  = "3e param�tre rempli dans le champ de discussion de liste courrier";
 
-// include/discussion.php3, row 415
+// include/discussion.php, row 415
 $_m["%1th parameter filled in DiscussionMailList field"]
  = "%eme param�tre rempli dans le champ de discussion de liste courrier";
 
@@ -5227,369 +5227,369 @@ $_m["Bad item ID %1"]
 $_m["No ID for MLX"]
  = "";
 
-// include/item.php3, row 92
-// include/itemview.php3, row 108
-// include/field.class.php3, row 394
+// include/item.php, row 92
+// include/itemview.php, row 108
+// include/field.class.php, row 394
 $_m["number of found items"]
  = "Nombre d'items trouv�s";
 
-// include/item.php3, row 93
-// include/field.class.php3, row 395
+// include/item.php, row 93
+// include/field.class.php, row 395
 $_m["index of item within whole listing (begins with 0)"]
  = "";
 
-// include/item.php3, row 94
-// include/field.class.php3, row 396
+// include/item.php, row 94
+// include/field.class.php, row 396
 $_m["index of item within a page (it begins from 0 on each page listed by pagescroller)"]
  = "";
 
-// include/item.php3, row 95
-// include/field.class.php3, row 397
+// include/item.php, row 95
+// include/field.class.php, row 397
 $_m["alias for Item ID"]
  = "alia pour l'identit� des items";
 
-// include/item.php3, row 96
-// include/field.class.php3, row 398
+// include/item.php, row 96
+// include/field.class.php, row 398
 $_m["alias for Short Item ID"]
  = "alais pour les courtes identit� des items";
 
-// include/item.php3, row 102, 103
-// include/field.class.php3, row 404, 405
+// include/item.php, row 102, 103
+// include/field.class.php, row 404, 405
 $_m["alias used on admin page index.php3 for itemedit url"]
  = "Alias utilis� sur la page administrative index.php3 pour itemedit url";
 
-// include/item.php3, row 104
-// include/field.class.php3, row 406
+// include/item.php, row 104
+// include/field.class.php, row 406
 $_m["Alias used on admin page index.php3 for edit discussion url"]
  = "Alias utilis� sur la page administrative index.php3 pour modifier l'URL de la discussion";
 
-// include/item.php3, row 105
-// include/field.class.php3, row 407
+// include/item.php, row 105
+// include/field.class.php, row 407
 $_m["Title of Slice for RSS"]
  = "Titre de la s�lection pour le services de s�lection de route";
 
-// include/item.php3, row 106
-// include/field.class.php3, row 408
+// include/item.php, row 106
+// include/field.class.php, row 408
 $_m["Link to the Slice for RSS"]
  = "lien vers la s�lection pour le services de s�lection de route";
 
-// include/item.php3, row 107
-// include/field.class.php3, row 409
+// include/item.php, row 107
+// include/field.class.php, row 409
 $_m["Short description (owner and name) of slice for RSS"]
  = "Courte description (ma�tre et nom) de la s�lection pour le services de s�lection de route";
 
-// include/item.php3, row 108
-// include/field.class.php3, row 410
+// include/item.php, row 108
+// include/field.class.php, row 410
 $_m["Date RSS information is generated, in RSS date format"]
  = "Date de l'information du service de s�lection de route, en format RSS";
 
-// include/item.php3, row 109
-// include/tv_email.php3, row 57
-// include/field.class.php3, row 411
+// include/item.php, row 109
+// include/tv_email.php, row 57
+// include/field.class.php, row 411
 $_m["Slice name"]
  = "Nom de la section";
 
-// include/item.php3, row 111
-// include/field.class.php3, row 413
+// include/item.php, row 111
+// include/field.class.php, row 413
 $_m["Current MLX language"]
  = "";
 
-// include/item.php3, row 112
-// include/field.class.php3, row 414
+// include/item.php, row 112
+// include/field.class.php, row 414
 $_m["HTML markup direction tag (e.g. DIR=RTL)"]
  = "";
 
-// include/item.php3, row 140
+// include/item.php, row 140
 $_m["Constant name"]
  = "Nom constant";
 
-// include/item.php3, row 141
+// include/item.php, row 141
 $_m["Constant value"]
  = "Valeur constante";
 
-// include/item.php3, row 142
+// include/item.php, row 142
 $_m["Constant priority"]
  = "priorit� constante";
 
-// include/item.php3, row 143
+// include/item.php, row 143
 $_m["Constant group id"]
  = "Identit� constante du groupe";
 
-// include/item.php3, row 144
+// include/item.php, row 144
 $_m["Category class (for categories only)"]
  = "Cat�gorie de classe (pour cat�gories seulement)";
 
-// include/item.php3, row 145
+// include/item.php, row 145
 $_m["Constant number"]
  = "Nombre constant";
 
-// include/item.php3, row 146
+// include/item.php, row 146
 $_m["Constant unique id (32-haxadecimal characters)"]
  = "Identit� constante unique (32 caract�res hexad�cimals)";
 
-// include/item.php3, row 147
+// include/item.php, row 147
 $_m["Constant unique short id (autoincremented from '1' for each constant in the system)"]
  = "Courte identit� unique et constante (incr�ment� automatiquement de '1' pour chaque constante dans le syst�me";
 
-// include/item.php3, row 148
+// include/item.php, row 148
 $_m["Constant description"]
  = "Decription constante";
 
-// include/item.php3, row 149
+// include/item.php, row 149
 $_m["Constant level (used for hierachical constants)"]
  = "Niveau constant (utilis� pour les constantes hierarchiques)";
 
-// include/item.php3, row 189
+// include/item.php, row 189
 $_m["Alias for %1"]
  = "Alias pour %1";
 
-// include/item.php3, row 1415
+// include/item.php, row 1415
 $_m["on"]
  = "marche";
 
-// include/item.php3, row 1415
+// include/item.php, row 1415
 $_m["off"]
  = "arr�t";
 
-// include/item.php3, row 1584
+// include/item.php, row 1584
 $_m["Home"]
  = "accueil";
 
-// include/actions.php3, row 60
+// include/actions.php, row 60
 $_m["Move to Active"]
  = "Avancer en mode Active";
 
-// include/actions.php3, row 61
+// include/actions.php, row 61
 $_m["Move to Holding bin"]
  = "D�placer vers le casier de stockage";
 
-// include/actions.php3, row 62
+// include/actions.php, row 62
 $_m["Move to Trash"]
  = "Supprimer";
 
-// include/actions.php3, row 157, 250
+// include/actions.php, row 157, 250
 $_m["No slice selected"]
  = "Aucune section choisie";
 
-// include/actions.php3, row 201
+// include/actions.php, row 201
 $_m["Move to another slice"]
  = "";
 
-// include/actions.php3, row 214
+// include/actions.php, row 214
 $_m["Slice ID"]
  = "";
 
-// include/actions.php3, row 236
+// include/actions.php, row 236
 $_m["Move to slice"]
  = "";
 
-// include/actions.php3, row 256
+// include/actions.php, row 256
 $_m["You have not permissions to move items"]
  = "";
 
-// include/actions.php3, row 311
+// include/actions.php, row 311
 $_m["Remove (delete from database)"]
  = "";
 
-// include/actions.php3, row 325, 544
+// include/actions.php, row 325, 544
 $_m["You have not permissions to remove items"]
  = "Vous n,avez pas les permission pour retirer des items";
 
-// include/actions.php3, row 401
+// include/actions.php, row 401
 $_m["Modify content"]
  = "";
 
-// include/actions.php3, row 419
+// include/actions.php, row 419
 $_m["Send email"]
  = "Envoyer un courriel";
 
-// include/actions.php3, row 483
+// include/actions.php, row 483
 $_m["Remove (cancel task)"]
  = "";
 
-// include/actions.php3, row 497
+// include/actions.php, row 497
 $_m["You have not permissions to remove tasks"]
  = "";
 
-// include/actions.php3, row 529
+// include/actions.php, row 529
 $_m["Execute"]
  = "";
 
-// include/tv_email.php3, row 37
+// include/tv_email.php, row 37
 $_m["Aliases for Alerts Alert"]
  = "Alias pour Alertes Alerte";
 
-// include/tv_email.php3, row 39
+// include/tv_email.php, row 39
 $_m["complete filter text"]
  = "Filtre de texte complet";
 
-// include/tv_email.php3, row 40, 48
+// include/tv_email.php, row 40, 48
 $_m["howoften"]
  = "combien de fois";
 
-// include/tv_email.php3, row 41
+// include/tv_email.php, row 41
 $_m["Anonym Form URL (set in Alerts Admin - Settings)"]
  = "Formulaire URL Anonyme (choisi dans administration des alertes - configurations)";
 
-// include/tv_email.php3, row 42
+// include/tv_email.php, row 42
 $_m["Unsubscribe Form URL"]
  = "URL du formulaire de d�sabonnment";
 
-// include/tv_email.php3, row 46
+// include/tv_email.php, row 46
 $_m["Aliases for Alerts Welcome"]
  = "Alias pour alerte de bienvenue";
 
-// include/tv_email.php3, row 49
+// include/tv_email.php, row 49
 $_m["Collection Form URL (set in Alerts Admin - Settings)"]
  = "Formulaire URL de collection (choisi dans administration des alertes - configurations)";
 
-// include/tv_email.php3, row 50
+// include/tv_email.php, row 50
 $_m["email confirmed"]
  = "Courriel confirm�";
 
-// include/tv_email.php3, row 55
+// include/tv_email.php, row 55
 $_m["Aliases for Slice Wizard Welcome"]
  = "Alias pour l'assistant de bienvenue � la section";
 
-// include/tv_email.php3, row 58
+// include/tv_email.php, row 58
 $_m["New user name"]
  = "Nouveau nom d'usager";
 
-// include/tv_email.php3, row 59
+// include/tv_email.php, row 59
 $_m["New user login name"]
  = "Nouveau nom d'usager";
 
-// include/tv_email.php3, row 60
+// include/tv_email.php, row 60
 $_m["New user role (editor / admin)"]
  = "Nouveau r�le pour l'usager (�diteur / administrateur)";
 
-// include/tv_email.php3, row 61
+// include/tv_email.php, row 61
 $_m["My name"]
  = "Mon nom";
 
-// include/tv_email.php3, row 62
+// include/tv_email.php, row 62
 $_m["My email"]
  = "Mon courriel";
 
-// include/tv_email.php3, row 97
+// include/tv_email.php, row 97
 $_m["Email template"]
  = "Mod�le de courriel";
 
-// include/tv_email.php3, row 110
+// include/tv_email.php, row 110
 $_m["Email type"]
  = "";
 
-// include/tv_email.php3, row 158
-// include/menu.php3, row 169
+// include/tv_email.php, row 158
+// include/menu.php, row 169
 $_m["Email templates"]
  = "Mod�les de courriel";
 
-// include/tv_email.php3, row 178
+// include/tv_email.php, row 178
 $_m["Reply to"]
  = "";
 
-// include/tv_email.php3, row 180
+// include/tv_email.php, row 180
 $_m["Errors to"]
  = "";
 
-// include/tv_email.php3, row 182
+// include/tv_email.php, row 182
 $_m["Sender"]
  = "";
 
-// include/menu_util.php3, row 65
+// include/menu_util.php, row 65
 $_m["Jump inside control panel"]
  = "Aller au panneau de contr�le";
 
-// include/menu_util.php3, row 67
+// include/menu_util.php, row 67
 $_m["MySQL Auth (old version)"]
  = "Auteur MySQL (ancienne version)";
 
-// include/menu_util.php3, row 68
+// include/menu_util.php, row 68
 $_m["Polls"]
  = "mise en commun";
 
-// include/menu_util.php3, row 69
+// include/menu_util.php, row 69
 $_m["Site"]
  = "";
 
-// include/menu_util.php3, row 71
+// include/menu_util.php, row 71
 $_m["Reader Management Slice"]
  = "Section de gestion des lecteurs";
 
-// include/menu_util.php3, row 106, 182
+// include/menu_util.php, row 106, 182
 $_m["New slice"]
  = "Nouvelle section";
 
-// include/menu_util.php3, row 173
+// include/menu_util.php, row 173
 $_m["Reader management"]
  = "gestion des lecteurs";
 
-// include/menu_util.php3, row 188
+// include/menu_util.php, row 188
 $_m["logout"]
  = "";
 
-// include/menu_util.php3, row 371
+// include/menu_util.php, row 371
 $_m["Copyright (C) 2001 the <a href=\"https://www.apc.org\">Association for Progressive Communications (APC)</a>"]
  = "Copyright (C) 2001 � <a href=\"https://www.apc.org\">Association for Progressive Communications (APC)</a>";
 
-// include/date.php3, row 161
-// include/validate.php3, row 450, 505
+// include/date.php, row 161
+// include/validate.php, row 450, 505
 $_m["Error in"]
  = "Erreur dans";
 
-// include/filedit.php3, row 89
+// include/filedit.php, row 89
 $_m["Back to file list"]
  = "Retourner � la liste des fichiers";
 
-// include/filedit.php3, row 90
+// include/filedit.php, row 90
 $_m["Download (right-click)"]
  = "T�l�charger (bouton droit)";
 
-// include/filedit.php3, row 91
+// include/filedit.php, row 91
 $_m["Rename to"]
  = "Renommer �";
 
-// include/filedit.php3, row 96
+// include/filedit.php, row 96
 // include/fileman.php, row 110, 465
 $_m["Text file"]
  = "fichier texte";
 
-// include/filedit.php3, row 96
+// include/filedit.php, row 96
 // include/fileman.php, row 108
 $_m["Web file"]
  = "fichier Web";
 
-// include/filedit.php3, row 96
+// include/filedit.php, row 96
 // include/fileman.php, row 107, 465
 $_m["HTML file"]
  = "Fichier HTML";
 
-// include/filedit.php3, row 135
+// include/filedit.php, row 135
 $_m["Save changes"]
  = "SAuvegarder les changements";
 
-// include/filedit.php3, row 136
+// include/filedit.php, row 136
 $_m["Reset content"]
  = "Restaurer les informations";
 
-// include/filedit.php3, row 142
+// include/filedit.php, row 142
 $_m["File content"]
  = "Fichier de contenu";
 
-// include/filedit.php3, row 151
+// include/filedit.php, row 151
 // include/fileman.php, row 109
 $_m["Image file"]
  = "fichier image";
 
-// include/filedit.php3, row 154
+// include/filedit.php, row 154
 $_m["This is a file of type"]
  = "Ceci est un fichier de type";
 
-// include/filedit.php3, row 154
+// include/filedit.php, row 154
 $_m["I can't view it. If you want to view or edit it, change it's extension."]
  = "Je ne parviens pas � l avoir. Si vous souhaitez le voir ou le modifier, changez l'extention";
 
-// include/metabase.class.php3, row 883
+// include/metabase.class.php, row 883
 $_m["Manage %1"]
  = "";
 
@@ -5637,205 +5637,205 @@ $_m["Error when copying views."]
 $_m["Internal error when changing user role."]
  = "Erreur interne en changeant les r�les des usagers";
 
-// include/menu.php3, row 64
+// include/menu.php, row 64
 $_m["View site"]
  = "Voir le site";
 
-// include/menu.php3, row 79, 80, 151
+// include/menu.php, row 79, 80, 151
 $_m["Item Manager"]
  = "Gestionnaire d'Item";
 
-// include/menu.php3, row 87
+// include/menu.php, row 87
 $_m["Slice Admin"]
  = "Administration de section";
 
-// include/menu.php3, row 95
+// include/menu.php, row 95
 $_m["AA"]
  = "";
 
-// include/menu.php3, row 96
+// include/menu.php, row 96
 $_m["AA Administration"]
  = "Administration AA";
 
-// include/menu.php3, row 103
+// include/menu.php, row 103
 $_m["Central"]
  = "";
 
-// include/menu.php3, row 104
+// include/menu.php, row 104
 $_m["AA Central"]
  = "";
 
-// include/menu.php3, row 135
+// include/menu.php, row 135
 $_m["Main settings"]
  = "Configuration principales";
 
-// include/menu.php3, row 137
+// include/menu.php, row 137
 $_m["Category"]
  = "Cat�gorie";
 
-// include/menu.php3, row 139
+// include/menu.php, row 139
 $_m["Slice Fields"]
  = "";
 
-// include/menu.php3, row 140
+// include/menu.php, row 140
 $_m["Email Notification"]
  = "Notification par courriel";
 
-// include/menu.php3, row 143
-// include/um_util.php3, row 90, 99
+// include/menu.php, row 143
+// include/um_util.php, row 90, 99
 $_m["Permissions"]
  = "";
 
-// include/menu.php3, row 144
+// include/menu.php, row 144
 $_m["Assign"]
  = "Assigner";
 
-// include/menu.php3, row 147
+// include/menu.php, row 147
 $_m["Design"]
  = "Concevoir";
 
-// include/menu.php3, row 148
+// include/menu.php, row 148
 $_m["Index"]
  = "Intex";
 
-// include/menu.php3, row 149
+// include/menu.php, row 149
 $_m["Fulltext"]
  = "Tout le texte";
 
-// include/menu.php3, row 150
+// include/menu.php, row 150
 $_m["Views"]
  = "Vues";
 
-// include/menu.php3, row 152
+// include/menu.php, row 152
 $_m["Sets of Items"]
  = "";
 
-// include/menu.php3, row 154
+// include/menu.php, row 154
 $_m["Content Pooling"]
  = "Mise en commun du contenu";
 
-// include/menu.php3, row 155
+// include/menu.php, row 155
 $_m["Nodes"]
  = "Noeuds";
 
-// include/menu.php3, row 156
+// include/menu.php, row 156
 $_m["Inner Node Feeding"]
  = "Alimentation inter-noeud";
 
-// include/menu.php3, row 157
+// include/menu.php, row 157
 $_m["Inter Node Import"]
  = "Importation inter-noeud";
 
-// include/menu.php3, row 158
+// include/menu.php, row 158
 $_m["Inter Node Export"]
  = "Exportation inter-noeud";
 
-// include/menu.php3, row 159
+// include/menu.php, row 159
 $_m["RSS Feeds"]
  = "Services de s�lection des routes pour l'alimentation";
 
-// include/menu.php3, row 161
+// include/menu.php, row 161
 $_m["Mapping"]
  = "Rep�rage";
 
-// include/menu.php3, row 162, 205
+// include/menu.php, row 162, 205
 $_m["Import CSV"]
  = "Importer CSV";
 
-// include/menu.php3, row 164, 202, 247
+// include/menu.php, row 164, 202, 247
 // include/menu_aa.php3, row 67
 $_m["Misc"]
  = "Divers";
 
-// include/menu.php3, row 165
+// include/menu.php, row 165
 $_m["Change field IDs"]
  = "Changer l'identit� des champs";
 
-// include/menu.php3, row 168
+// include/menu.php, row 168
 $_m["Anonymous Form Wizard"]
  = "Assistant de formulaire anonyme";
 
-// include/menu.php3, row 178
+// include/menu.php, row 178
 $_m["Mailman: create list"]
  = "Mailman: cr�er liste";
 
-// include/menu.php3, row 185, 242
+// include/menu.php, row 185, 242
 $_m["Folders"]
  = "Dossiers";
 
-// include/menu.php3, row 188
+// include/menu.php, row 188
 $_m["... pending"]
  = "...en suspens";
 
-// include/menu.php3, row 189
+// include/menu.php, row 189
 $_m["... expired"]
  = "... expir�";
 
-// include/menu.php3, row 191, 245
+// include/menu.php, row 191, 245
 $_m["Trash bin"]
  = "casier d�tritus";
 
-// include/menu.php3, row 194
+// include/menu.php, row 194
 $_m["Bookmarks"]
  = "";
 
-// include/menu.php3, row 203
+// include/menu.php, row 203
 $_m["Setting"]
  = "";
 
-// include/menu.php3, row 204, 251
+// include/menu.php, row 204, 251
 $_m["Empty trash"]
  = "Supprimer d�tritus";
 
-// include/menu.php3, row 204, 251
+// include/menu.php, row 204, 251
 $_m["Are You sure to empty trash?"]
  = "�tes vous sur de vouloir supprimer les d�tritus";
 
-// include/menu.php3, row 206, 252
+// include/menu.php, row 206, 252
 $_m["Set Debug OFF"]
  = "";
 
-// include/menu.php3, row 206, 252
+// include/menu.php, row 206, 252
 $_m["Set Debug ON"]
  = "";
 
-// include/menu.php3, row 221
+// include/menu.php, row 221
 $_m["List of Alerts modules using this slice as Reader Management."]
  = "Liste des modules d'alerte utilisant la section pour la gestion des lecteurs";
 
-// include/menu.php3, row 223
+// include/menu.php, row 223
 $_m["Bulk Emails"]
  = "Envoyer courriels";
 
-// include/menu.php3, row 223
+// include/menu.php, row 223
 $_m["Send bulk email to selected users or to users in Stored searches"]
  = "Envoyer des courriels aux usagers s�lectionn�s ou aux usagers stock�s dans les recherches";
 
-// include/menu.php3, row 226
+// include/menu.php, row 226
 $_m["Send emails"]
  = "Envoyer courriels";
 
-// include/menu.php3, row 235
+// include/menu.php, row 235
 $_m["Alerts Sent"]
  = "Alertes envoy�es";
 
-// include/menu.php3, row 235
+// include/menu.php, row 235
 $_m["List of Alerts modules sending items from this slice."]
  = "Liste des modules d'alertes envoyant des items � cette section";
 
-// include/menu.php3, row 248
+// include/menu.php, row 248
 $_m["Add AA"]
  = "";
 
-// include/menu.php3, row 249
+// include/menu.php, row 249
 $_m["Synchronize..."]
  = "";
 
-// include/menu.php3, row 250
+// include/menu.php, row 250
 $_m["Copy Slice..."]
  = "";
 
-// include/profile.class.php3, row 300, 310, 319, 328, 337, 345
+// include/profile.class.php, row 300, 310, 319, 328, 337, 345
 $_m["Rule added"]
  = "R�gle ajout�e";
 
@@ -5888,7 +5888,7 @@ $_m["Run feeding"]
  = "";
 
 // include/menu_aa.php3, row 68
-// include/tv_misc.php3, row 129, 130
+// include/tv_misc.php, row 129, 130
 $_m["Cron"]
  = "";
 
@@ -6024,459 +6024,459 @@ $_m["Files with the same names as some in the template already exist. Please cha
 $_m["Are you sure you want to delete the selected files and folders?"]
  = "�tes vous certain de vouloir supprimer les fichiers et r�pertoire s�lectionn�es";
 
-// include/manager.class.php3, row 83
+// include/manager.class.php, row 83
 $_m["Searchbar"]
  = "";
 
-// include/manager.class.php3, row 84
+// include/manager.class.php, row 84
 $_m["Scroller"]
  = "";
 
-// include/manager.class.php3, row 85
+// include/manager.class.php, row 85
 $_m["Msg"]
  = "";
 
-// include/manager.class.php3, row 86
+// include/manager.class.php, row 86
 $_m["Bin"]
  = "";
 
-// include/manager.class.php3, row 87
+// include/manager.class.php, row 87
 $_m["Module ID"]
  = "";
 
-// include/manager.class.php3, row 147
+// include/manager.class.php, row 147
 $_m["No item found"]
  = "Pas d'item trouv�";
 
-// include/manager.class.php3, row 198
+// include/manager.class.php, row 198
 $_m["Publish date"]
  = "Publier la date";
 
-// include/manager.class.php3, row 198
+// include/manager.class.php, row 198
 $_m["Headline"]
  = "Manchette";
 
-// include/manager.class.php3, row 597
+// include/manager.class.php, row 597
 $_m["Go"]
  = "Allez";
 
-// include/manager.class.php3, row 614
+// include/manager.class.php, row 614
 $_m["Items Page"]
  = "Page item";
 
-// include/manager.class.php3, row 663
+// include/manager.class.php, row 663
 $_m["Action ID"]
  = "";
 
-// include/manager.class.php3, row 664
+// include/manager.class.php, row 664
 $_m["URL to open"]
  = "";
 
-// include/manager.class.php3, row 665
+// include/manager.class.php, row 665
 $_m["Additional URL parameters"]
  = "";
 
-// include/um_util.php3, row 98
+// include/um_util.php, row 98
 $_m["Object"]
  = "Objet";
 
-// include/um_util.php3, row 158, 179
+// include/um_util.php, row 158, 179
 $_m["ADMINISTRATOR"]
  = "";
 
-// include/um_util.php3, row 177
+// include/um_util.php, row 177
 $_m["AUTHOR"]
  = "";
 
-// include/um_util.php3, row 178
+// include/um_util.php, row 178
 $_m["EDITOR"]
  = "";
 
-// include/um_util.php3, row 374
+// include/um_util.php, row 374
 $_m["Can't change user"]
  = "Incapable de changer l'usager";
 
-// include/tabledit_util.php3, row 72, 453
+// include/tabledit_util.php, row 72, 453
 $_m["Insert was successfull."]
  = "Ins�r� avec succ�s";
 
-// include/tabledit_util.php3, row 80, 107, 364
+// include/tabledit_util.php, row 80, 107, 364
 $_m["Update was successfull."]
  = "Mis � jour avec succ�s";
 
-// include/tabledit_util.php3, row 122, 128
+// include/tabledit_util.php, row 122, 128
 $_m["Delete was successfull."]
  = "Supprim� avec succ�s";
 
-// include/tabledit_util.php3, row 537
+// include/tabledit_util.php, row 537
 $_m["Value of %1 should be between %2 and %3."]
  = "Valeur de %1 doit �tre entre %2 et %3.";
 
-// include/tabledit_util.php3, row 576
+// include/tabledit_util.php, row 576
 $_m["Table do not have set primary key on single column. You can specify primary key by primary => array (field1, field2, ...) parameter for tableedit"]
  = "";
 
-// include/tabledit_util.php3, row 677
+// include/tabledit_util.php, row 677
 $_m["Wrong value: a number between %1 and %2 is expected."]
  = "mauvaise valeur: un nombre entre %1 et %2 est attendu";
 
-// include/tabledit_util.php3, row 687
+// include/tabledit_util.php, row 687
 $_m["Are you sure you want to permanently DELETE this record?"]
  = "Souhaitez-vous vraiment supprimer de fa�on permanente cet enregistrement";
 
-// include/constedit_util.php3, row 117, 122
+// include/constedit_util.php, row 117, 122
 $_m["Select"]
  = "S�lectionner";
 
-// include/constedit_util.php3, row 602
+// include/constedit_util.php, row 602
 $_m["No group id specified"]
  = "";
 
-// include/itemview.php3, row 332
+// include/itemview.php, row 332
 $_m["No comment was selected"]
  = "Aucun commentaire s�lectionn�";
 
-// include/validate.php3, row 89
+// include/validate.php, row 89
 $_m["Wrong characters - you should use a-z, A-Z, 0-9 . _ and - characters"]
  = "";
 
-// include/validate.php3, row 116
+// include/validate.php, row 116
 $_m["Bad validator type: %1"]
  = "";
 
-// include/validate.php3, row 187
+// include/validate.php, row 187
 $_m["No integer value"]
  = "";
 
-// include/validate.php3, row 191, 228
+// include/validate.php, row 191, 228
 $_m["Out of range - too big"]
  = "";
 
-// include/validate.php3, row 194, 231
+// include/validate.php, row 194, 231
 $_m["Out of range - too small"]
  = "";
 
-// include/validate.php3, row 224
+// include/validate.php, row 224
 $_m["No float value"]
  = "";
 
-// include/validate.php3, row 257
+// include/validate.php, row 257
 $_m["Wrong value"]
  = "";
 
-// include/validate.php3, row 308, 330
+// include/validate.php, row 308, 330
 $_m["Too short"]
  = "";
 
-// include/validate.php3, row 311, 333
+// include/validate.php, row 311, 333
 $_m["Too long"]
  = "";
 
-// include/validate.php3, row 313
+// include/validate.php, row 313
 $_m["Wrong characters - you should use a-z, A-Z and 0-9 characters"]
  = "";
 
-// include/validate.php3, row 363
+// include/validate.php, row 363
 $_m["Wrong parameter field_id for unique check"]
  = "";
 
-// include/validate.php3, row 369
+// include/validate.php, row 369
 $_m["Username is not unique"]
  = "";
 
-// include/validate.php3, row 382
+// include/validate.php, row 382
 $_m["Not unique - value already used"]
  = "";
 
-// include/validate.php3, row 450
+// include/validate.php, row 450
 $_m["it must be filled"]
  = "cela doit �tre rempli";
 
-// include/validate.php3, row 540
+// include/validate.php, row 540
 $_m["This field is required."]
  = "Ce champ est requis";
 
-// include/validate.php3, row 541
+// include/validate.php, row 541
 $_m["This field is required (marked by *)."]
  = "Ce champ est requis (marqu� par*)";
 
-// include/validate.php3, row 550
+// include/validate.php, row 550
 $_m["Not a valid integer number."]
  = "Pas un nombre entier valide";
 
-// include/validate.php3, row 554
+// include/validate.php, row 554
 $_m["Not a valid file name."]
  = "Pas un nom de fichier valide";
 
-// include/validate.php3, row 559
+// include/validate.php, row 559
 $_m["Not a valid email address."]
  = "PAs un courriel valide";
 
-// include/validate.php3, row 563
+// include/validate.php, row 563
 $_m["The two password copies differ."]
  = "Les deux mots de passe copi�s diff�rent";
 
-// include/view.class.php3, row 164
+// include/view.class.php, row 164
 $_m["Jump to view:"]
  = "";
 
-// include/searchlib.php3, row 41
+// include/searchlib.php, row 41
 $_m["LLIKE"]
  = "";
 
-// include/searchlib.php3, row 42
+// include/searchlib.php, row 42
 $_m["XLIKE"]
  = "";
 
-// include/searchlib.php3, row 43
+// include/searchlib.php, row 43
 $_m["BETWEEN"]
  = "";
 
-// include/searchlib.php3, row 45, 92, 95, 98, 101
+// include/searchlib.php, row 45, 92, 95, 98, 101
 $_m["is set"]
  = "";
 
-// include/searchlib.php3, row 46
+// include/searchlib.php, row 46
 $_m["=="]
  = "";
 
-// include/searchlib.php3, row 47
+// include/searchlib.php, row 47
 $_m["="]
  = "";
 
-// include/searchlib.php3, row 48
+// include/searchlib.php, row 48
 $_m["<"]
  = "";
 
-// include/searchlib.php3, row 49
+// include/searchlib.php, row 49
 $_m[">"]
  = "";
 
-// include/searchlib.php3, row 50, 51, 52, 53
+// include/searchlib.php, row 50, 51, 52, 53
 $_m["<>"]
  = "";
 
-// include/searchlib.php3, row 54
+// include/searchlib.php, row 54
 $_m["d:<"]
  = "";
 
-// include/searchlib.php3, row 55
+// include/searchlib.php, row 55
 $_m["d:>"]
  = "";
 
-// include/searchlib.php3, row 56
+// include/searchlib.php, row 56
 $_m["d:<="]
  = "";
 
-// include/searchlib.php3, row 57
+// include/searchlib.php, row 57
 $_m["d:>="]
  = "";
 
-// include/searchlib.php3, row 58
+// include/searchlib.php, row 58
 $_m["d:="]
  = "";
 
-// include/searchlib.php3, row 59
+// include/searchlib.php, row 59
 $_m["d:!="]
  = "";
 
-// include/searchlib.php3, row 60
+// include/searchlib.php, row 60
 $_m["d:<>"]
  = "";
 
-// include/searchlib.php3, row 61
+// include/searchlib.php, row 61
 $_m["e:<"]
  = "";
 
-// include/searchlib.php3, row 62
+// include/searchlib.php, row 62
 $_m["e:>"]
  = "";
 
-// include/searchlib.php3, row 63
+// include/searchlib.php, row 63
 $_m["e:<="]
  = "";
 
-// include/searchlib.php3, row 64
+// include/searchlib.php, row 64
 $_m["e:>="]
  = "";
 
-// include/searchlib.php3, row 65
+// include/searchlib.php, row 65
 $_m["e:="]
  = "";
 
-// include/searchlib.php3, row 66
+// include/searchlib.php, row 66
 $_m["e:!="]
  = "";
 
-// include/searchlib.php3, row 67
+// include/searchlib.php, row 67
 $_m["e:<>"]
  = "";
 
-// include/searchlib.php3, row 68
+// include/searchlib.php, row 68
 $_m["m:<"]
  = "";
 
-// include/searchlib.php3, row 69
+// include/searchlib.php, row 69
 $_m["m:>"]
  = "";
 
-// include/searchlib.php3, row 70
+// include/searchlib.php, row 70
 $_m["m:<="]
  = "";
 
-// include/searchlib.php3, row 71
+// include/searchlib.php, row 71
 $_m["m:>="]
  = "";
 
-// include/searchlib.php3, row 72
+// include/searchlib.php, row 72
 $_m["m:="]
  = "";
 
-// include/searchlib.php3, row 73
+// include/searchlib.php, row 73
 $_m["m:!="]
  = "";
 
-// include/searchlib.php3, row 74
+// include/searchlib.php, row 74
 $_m["m:<>"]
  = "";
 
-// include/searchlib.php3, row 75
+// include/searchlib.php, row 75
 $_m["-:<"]
  = "";
 
-// include/searchlib.php3, row 76
+// include/searchlib.php, row 76
 $_m["-:>"]
  = "";
 
-// include/searchlib.php3, row 77
+// include/searchlib.php, row 77
 $_m["-:<="]
  = "";
 
-// include/searchlib.php3, row 78
+// include/searchlib.php, row 78
 $_m["-:>="]
  = "";
 
-// include/searchlib.php3, row 79
+// include/searchlib.php, row 79
 $_m["-:="]
  = "";
 
-// include/searchlib.php3, row 80
+// include/searchlib.php, row 80
 $_m["-:!="]
  = "";
 
-// include/searchlib.php3, row 81
+// include/searchlib.php, row 81
 $_m["-:<>"]
  = "";
 
-// include/searchlib.php3, row 125
+// include/searchlib.php, row 125
 $_m["Operator"]
  = "";
 
-// include/searchlib.php3, row 617
+// include/searchlib.php, row 617
 $_m["Conditions"]
  = "";
 
-// include/searchlib.php3, row 619
+// include/searchlib.php, row 619
 $_m["Sort"]
  = "";
 
-// include/imagefunc.php3, row 57
+// include/imagefunc.php, row 57
 $_m["Cannot copy %1 to %2"]
  = "Incapable de copier %1 � %2";
 
-// include/imagefunc.php3, row 161
+// include/imagefunc.php, row 161
 $_m["ResampleImage unable to %1"]
  = "ResampleImage incapable de %1";
 
-// include/imagefunc.php3, row 180
+// include/imagefunc.php, row 180
 $_m["Type not supported for resize"]
  = "Type non support� pour redimensionage";
 
-// include/init_page.php3, row 173
+// include/init_page.php, row 173
 $_m["You do not have permission to edit items in the slice"]
  = "Vous n'avez pas les permission pour modifier les items dans la section";
 
-// include/init_page.php3, row 198
+// include/init_page.php, row 198
 $_m["No slice found for you"]
  = "Aucune section trouv�e pour vous";
 
-// include/tv_misc.php3, row 66, 67
+// include/tv_misc.php, row 66, 67
 $_m["Wizard Welcomes"]
  = "Bienvenue de l'Assistant";
 
-// include/tv_misc.php3, row 73
+// include/tv_misc.php, row 73
 $_m["mail body"]
  = "corp du courriel";
 
-// include/tv_misc.php3, row 75
+// include/tv_misc.php, row 75
 $_m["From: mail header"]
  = "De: ent�te de courriel";
 
-// include/tv_misc.php3, row 99, 100
+// include/tv_misc.php, row 99, 100
 $_m["Wizard Templates"]
  = "Mod�les d'assistant";
 
-// include/tv_misc.php3, row 125
+// include/tv_misc.php, row 125
 $_m["For help see FAQ: "]
  = "Pour assistance, voyez la FAQ";
 
-// include/tv_misc.php3, row 152
+// include/tv_misc.php, row 152
 $_m["COUNT_HIT events will be used for counting item hits. After a while it will be automaticaly deleted."]
  = "";
 
-// include/tv_misc.php3, row 160, 161
+// include/tv_misc.php, row 160, 161
 $_m["Log view"]
  = "";
 
-// include/tv_misc.php3, row 183
+// include/tv_misc.php, row 183
 $_m["See searchlog=1 parameter for slice.php3 in FAQ: "]
  = "";
 
-// include/tv_misc.php3, row 191, 192
+// include/tv_misc.php, row 191, 192
 $_m["SearchLog view"]
  = "";
 
-// include/tv_misc.php3, row 196
+// include/tv_misc.php, row 196
 $_m["items found"]
  = "";
 
-// include/tv_misc.php3, row 197
+// include/tv_misc.php, row 197
 $_m["search time"]
  = "";
 
-// include/tv_misc.php3, row 198
+// include/tv_misc.php, row 198
 $_m["addition"]
  = "";
 
-// include/tv_misc.php3, row 219, 220
+// include/tv_misc.php, row 219, 220
 $_m["Configure Fields"]
  = "";
 
-// include/tableviews.php3, row 59, 60
+// include/tableviews.php, row 59, 60
 $_m["Alerts Admin"]
  = "Administration Alerte";
 
-// include/tableviews.php3, row 72
+// include/tableviews.php, row 72
 $_m["confirm mail"]
  = "Confirmer courriel";
 
-// include/tableviews.php3, row 73, 80
+// include/tableviews.php, row 73, 80
 $_m["number of days, 0 = off"]
  = "Nombre de jours, 0 = arr�t";
 
-// include/tableviews.php3, row 79
+// include/tableviews.php, row 79
 $_m["delete not confirmed"]
  = "supprim� non confirm�";
 
-// include/tableviews.php3, row 86
+// include/tableviews.php, row 86
 $_m["last confirm mail"]
  = "dernier courriel confirm�";
 
-// include/tableviews.php3, row 93
+// include/tableviews.php, row 93
 $_m["last delete not confirmed"]
  = "derni�re suppression non confirm�e";
 
-// include/tableviews.php3, row 109
+// include/tableviews.php, row 109
 $_m["This table sets handling of not confirmed users. It's accessible only\n"
    ."            to superadmins.\n"
    ."            You can delete not confirmed users after a number of days and / or send them an email\n"
@@ -6498,23 +6498,23 @@ $_m["This table sets handling of not confirmed users. It's accessible only\n"
    ."            misc/alerts/admin_mails.php3.<br>\n"
    ."            POur plus d'informations, voir <a href='http://apc-aa.sourceforge.net/faq/#1389'>the FAQ</a>.";
 
-// include/tableviews.php3, row 125, 126
+// include/tableviews.php, row 125, 126
 $_m["Polls Design"]
  = "Conception de la mise en commun";
 
-// include/tableviews.php3, row 132, 155
+// include/tableviews.php, row 132, 155
 $_m["Comment"]
  = "Commentaire";
 
-// include/tableviews.php3, row 148
+// include/tableviews.php, row 148
 $_m["Module Id"]
  = "";
 
-// include/tableviews.php3, row 157
+// include/tableviews.php, row 157
 $_m["design description (for administrators only)"]
  = "Concevoir la description (pour administrateurs seulement)";
 
-// include/tableviews.php3, row 160
+// include/tableviews.php, row 160
 $_m["Answer HTML"]
  = "R�pondre HTML";
 
@@ -6778,451 +6778,451 @@ $_m["see IMG_UPLOAD_PATH parameter in config.php3 file"]
 $_m["OK, %1 created"]
  = "";
 
-// include/widget.class.php3, row 284
+// include/widget.class.php, row 284
 $_m["SAVE CHANGE"]
  = "";
 
-// include/widget.class.php3, row 349
+// include/widget.class.php, row 349
 $_m["Text Area"]
  = "Zone de texte";
 
-// include/widget.class.php3, row 363, 421, 456, 559, 935, 975
+// include/widget.class.php, row 363, 421, 456, 559, 935, 975
 $_m["Row count"]
  = "";
 
-// include/widget.class.php3, row 409
+// include/widget.class.php, row 409
 $_m["Textarea with Presets"]
  = "Zone de texte avec pr�-configuration";
 
-// include/widget.class.php3, row 420, 594, 639, 679, 858, 934, 974, 1092, 1167
+// include/widget.class.php, row 420, 594, 639, 679, 858, 934, 974, 1092, 1167
 $_m["Constants or slice"]
  = "";
 
-// include/widget.class.php3, row 420, 594, 639, 679, 858, 934, 974, 1092, 1167
+// include/widget.class.php, row 420, 594, 639, 679, 858, 934, 974, 1092, 1167
 $_m["Constants (or slice) which is used for value selection"]
  = "";
 
-// include/widget.class.php3, row 422, 457
+// include/widget.class.php, row 422, 457
 $_m["Column count"]
  = "";
 
-// include/widget.class.php3, row 445
+// include/widget.class.php, row 445
 $_m["Rich Edit Text Area"]
  = "Zone de modification de texte";
 
-// include/widget.class.php3, row 458
+// include/widget.class.php, row 458
 $_m["type: class (default) / iframe"]
  = "";
 
-// include/widget.class.php3, row 508
+// include/widget.class.php, row 508
 $_m["Text Field"]
  = "Champ texte";
 
-// include/widget.class.php3, row 522
+// include/widget.class.php, row 522
 $_m["Max characters"]
  = "";
 
-// include/widget.class.php3, row 522, 595
+// include/widget.class.php, row 522, 595
 $_m["max count of characters entered (maxlength parameter)"]
  = "";
 
-// include/widget.class.php3, row 523, 1208
+// include/widget.class.php, row 523, 1208
 $_m["Width"]
  = "";
 
-// include/widget.class.php3, row 523, 596
+// include/widget.class.php, row 523, 596
 $_m["width of the field in characters (size parameter)"]
  = "";
 
-// include/widget.class.php3, row 544
+// include/widget.class.php, row 544
 $_m["Multiple Text Field"]
  = "";
 
-// include/widget.class.php3, row 558, 1097
+// include/widget.class.php, row 558, 1097
 $_m["Buttons to show"]
  = "";
 
-// include/widget.class.php3, row 558
+// include/widget.class.php, row 558
 $_m["Which action buttons to show:<br>M - Move (up and down)<br>D - Delete value,<br>A - Add new value<br>C - Change the value<br>Use 'MDAC' (default), 'DAC', just 'M' or any other combination. The order of letters M,D,A,C is not important."]
  = "";
 
-// include/widget.class.php3, row 580
+// include/widget.class.php, row 580
 $_m["Text Field with Presets"]
  = "Champ texte avec pr�-configuration";
 
-// include/widget.class.php3, row 595
+// include/widget.class.php, row 595
 $_m["max characters"]
  = "";
 
-// include/widget.class.php3, row 596
+// include/widget.class.php, row 596
 $_m["width"]
  = "";
 
-// include/widget.class.php3, row 597, 640, 682, 861, 936, 978, 1102
+// include/widget.class.php, row 597, 640, 682, 861, 936, 978, 1102
 $_m["slice field"]
  = "";
 
-// include/widget.class.php3, row 597, 640, 682, 861, 936, 978, 1102
+// include/widget.class.php, row 597, 640, 682, 861, 936, 978, 1102
 $_m["field (or format string) that will be displayed in select box (from related slice). if not specified, in select box are displayed headlines. you can use also any AA formatstring here (like: _#HEADLINE - _#PUB_DATE). (only for constants input type: slice)"]
  = "";
 
-// include/widget.class.php3, row 598, 641
+// include/widget.class.php, row 598, 641
 $_m["Use name"]
  = "";
 
-// include/widget.class.php3, row 598, 641
+// include/widget.class.php, row 598, 641
 $_m["if set (=1), then the name of selected constant is used, insted of the value. Default is 0"]
  = "";
 
-// include/widget.class.php3, row 599
+// include/widget.class.php, row 599
 $_m["Adding"]
  = "";
 
-// include/widget.class.php3, row 599
+// include/widget.class.php, row 599
 $_m["adding the selected items to input field comma separated"]
  = "";
 
-// include/widget.class.php3, row 600
+// include/widget.class.php, row 600
 $_m["Second Field"]
  = "";
 
-// include/widget.class.php3, row 600
+// include/widget.class.php, row 600
 $_m["field_id of another text field, where value of this selectbox will be propagated too (in main text are will be text and there will be value)"]
  = "";
 
-// include/widget.class.php3, row 601
+// include/widget.class.php, row 601
 $_m["Add to Constant"]
  = "";
 
-// include/widget.class.php3, row 601
+// include/widget.class.php, row 601
 $_m["if set to 1, user typped value in inputform is stored into constants (only if the value is not already there)"]
  = "";
 
-// include/widget.class.php3, row 602, 642, 683, 862, 937, 979, 1098
+// include/widget.class.php, row 602, 642, 683, 862, 937, 979, 1098
 $_m["Show items from bins"]
  = "";
 
-// include/widget.class.php3, row 602, 642, 683, 862, 937, 979, 1098
+// include/widget.class.php, row 602, 642, 683, 862, 937, 979, 1098
 $_m["(for slices only) To show items from selected bins, use following values:<br>Active bin - '%1'<br>Pending bin - '%2'<br>Expired bin - '%3'<br>Holding bin - '%4'<br>Trash bin - '%5'<br>Value is created as follows: eg. You want show headlines from Active, Expired and Holding bins. Value for this combination is counted like %1+%3+%4&nbsp;=&nbsp;13"]
  = "";
 
-// include/widget.class.php3, row 603, 643, 684, 863, 938, 980, 1099
+// include/widget.class.php, row 603, 643, 684, 863, 938, 980, 1099
 $_m["Filtering conditions"]
  = "";
 
-// include/widget.class.php3, row 603, 643, 684, 863, 938, 980, 1099
+// include/widget.class.php, row 603, 643, 684, 863, 938, 980, 1099
 $_m["(for slices only) Conditions for filtering items in selection. Use conds[] array."]
  = "";
 
-// include/widget.class.php3, row 604, 644, 685, 864, 939, 981, 1100
+// include/widget.class.php, row 604, 644, 685, 864, 939, 981, 1100
 $_m["Sort by"]
  = "";
 
-// include/widget.class.php3, row 604, 644, 685, 864, 939, 981, 1100
+// include/widget.class.php, row 604, 644, 685, 864, 939, 981, 1100
 $_m["(for slices only) Sort the items in specified order. Use sort[] array"]
  = "";
 
-// include/widget.class.php3, row 625
+// include/widget.class.php, row 625
 $_m["Select Box"]
  = "Bo�te de s�lection";
 
-// include/widget.class.php3, row 665
+// include/widget.class.php, row 665
 $_m["Radio Button"]
  = "Boutton radio";
 
-// include/widget.class.php3, row 680, 859
+// include/widget.class.php, row 680, 859
 $_m["Columns"]
  = "";
 
-// include/widget.class.php3, row 680, 859
+// include/widget.class.php, row 680, 859
 $_m["Number of columns. If unfilled, the checkboxes are all on one line. If filled, they are formatted in a table."]
  = "";
 
-// include/widget.class.php3, row 681, 860
+// include/widget.class.php, row 681, 860
 $_m["Move right"]
  = "";
 
-// include/widget.class.php3, row 681, 860
+// include/widget.class.php, row 681, 860
 $_m["Should the function move right or down to the next value?"]
  = "";
 
-// include/widget.class.php3, row 720
+// include/widget.class.php, row 720
 $_m["Starting Year"]
  = "";
 
-// include/widget.class.php3, row 720
+// include/widget.class.php, row 720
 $_m["The (relative) start of the year interval"]
  = "";
 
-// include/widget.class.php3, row 721
+// include/widget.class.php, row 721
 $_m["Ending Year"]
  = "";
 
-// include/widget.class.php3, row 721
+// include/widget.class.php, row 721
 $_m["The (relative) end of the year interval"]
  = "";
 
-// include/widget.class.php3, row 722
+// include/widget.class.php, row 722
 $_m["Relative"]
  = "";
 
-// include/widget.class.php3, row 722
+// include/widget.class.php, row 722
 $_m["If this is 1, the starting and ending year will be taken as relative - the interval will start at (this year - starting year) and end at (this year + ending year). If this is 0, the starting and ending years will be taken as absolute."]
  = "";
 
-// include/widget.class.php3, row 723
+// include/widget.class.php, row 723
 $_m["Show time"]
  = "";
 
-// include/widget.class.php3, row 723
+// include/widget.class.php, row 723
 $_m["show the time box? (1 means Yes, undefined means No)"]
  = "";
 
-// include/widget.class.php3, row 811
+// include/widget.class.php, row 811
 $_m["Check Box"]
  = "Bo�te De Contr�le";
 
-// include/widget.class.php3, row 844
+// include/widget.class.php, row 844
 $_m["Multiple Checkboxes"]
  = "Bo�tes de Contr�le multiples";
 
-// include/widget.class.php3, row 920
+// include/widget.class.php, row 920
 $_m["Multiple Selectbox"]
  = "Bo�te de s�lection multiples";
 
-// include/widget.class.php3, row 960
+// include/widget.class.php, row 960
 $_m["Two Boxes"]
  = "Deux bo�tes";
 
-// include/widget.class.php3, row 976
+// include/widget.class.php, row 976
 $_m["Title of \"Offer\" selectbox"]
  = "";
 
-// include/widget.class.php3, row 976
+// include/widget.class.php, row 976
 $_m["Our offer"]
  = "";
 
-// include/widget.class.php3, row 977
+// include/widget.class.php, row 977
 $_m["Title of \"Selected\" selectbox"]
  = "";
 
-// include/widget.class.php3, row 1002
+// include/widget.class.php, row 1002
 $_m["File Upload"]
  = "T�l�chargement de fichier";
 
-// include/widget.class.php3, row 1016
+// include/widget.class.php, row 1016
 $_m["Allowed file types"]
  = "";
 
-// include/widget.class.php3, row 1017
+// include/widget.class.php, row 1017
 $_m["Label"]
  = "";
 
-// include/widget.class.php3, row 1017
+// include/widget.class.php, row 1017
 $_m["To be printed before the file upload field"]
  = "";
 
-// include/widget.class.php3, row 1017
+// include/widget.class.php, row 1017
 $_m["File: "]
  = "";
 
-// include/widget.class.php3, row 1018
+// include/widget.class.php, row 1018
 $_m["Hint"]
  = "";
 
-// include/widget.class.php3, row 1018
+// include/widget.class.php, row 1018
 $_m["appears beneath the file upload field"]
  = "";
 
-// include/widget.class.php3, row 1018
+// include/widget.class.php, row 1018
 $_m["You can select a file ..."]
  = "";
 
-// include/widget.class.php3, row 1081
+// include/widget.class.php, row 1081
 $_m["Related Item Window"]
  = "Fen�tre d'item li�";
 
-// include/widget.class.php3, row 1093
+// include/widget.class.php, row 1093
 $_m["Row count in the list"]
  = "";
 
-// include/widget.class.php3, row 1094
+// include/widget.class.php, row 1094
 $_m["Actions to show"]
  = "";
 
-// include/widget.class.php3, row 1094
+// include/widget.class.php, row 1094
 $_m["Defines, which buttons to show in item selection:<br>A - Add<br>M - add Mutual<br>B - Backward<br> Use 'AMB' (default), 'MA', just 'A' or any other combination. The order of letters A,M,B is important."]
  = "";
 
-// include/widget.class.php3, row 1095
+// include/widget.class.php, row 1095
 $_m["Admin design"]
  = "";
 
-// include/widget.class.php3, row 1095
+// include/widget.class.php, row 1095
 $_m["If set (=1), the items in related selection window will be listed in the same design as in the Item manager - 'Design - Item Manager' settings will be used. Only the checkbox will be replaced by the buttons (see above). It is important that the checkbox must be defined as:<br> <i>&lt;input type=checkbox name=\"chb[x_#ITEM_ID#]\" value=\"1\"&gt;</i> (which is default).<br> If unset (=0), just headline is shown (default)."]
  = "";
 
-// include/widget.class.php3, row 1096
+// include/widget.class.php, row 1096
 $_m["Tag Prefix"]
  = "";
 
-// include/widget.class.php3, row 1096
+// include/widget.class.php, row 1096
 $_m["Deprecated: selects tag set ('AMB' / 'GYR'). Ask Mitra for more details."]
  = "";
 
-// include/widget.class.php3, row 1097
+// include/widget.class.php, row 1097
 $_m["Which action buttons to show:<br>M - Move (up and down)<br>D - Delete relation,<br>R - add Relation to existing item<br>N - insert new item in related slice and make it related<br>E - Edit related item<br>Use 'DR' (default), 'MDRNE', just 'N' or any other combination. The order of letters M,D,R,N,E is not important."]
  = "";
 
-// include/widget.class.php3, row 1101
+// include/widget.class.php, row 1101
 $_m["Filtering conditions - changeable"]
  = "";
 
-// include/widget.class.php3, row 1101
+// include/widget.class.php, row 1101
 $_m["Conditions for filtering items in related items window. This conds user can change."]
  = "";
 
-// include/widget.class.php3, row 1123
+// include/widget.class.php, row 1123
 $_m["Do not show"]
  = "Ne pas montrer";
 
-// include/widget.class.php3, row 1153
+// include/widget.class.php, row 1153
 $_m["Hierachical constants"]
  = "Constantes hi�rarchiques";
 
-// include/widget.class.php3, row 1168
+// include/widget.class.php, row 1168
 $_m["Count of level boxes"]
  = "";
 
-// include/widget.class.php3, row 1169
+// include/widget.class.php, row 1169
 $_m["Box width"]
  = "";
 
-// include/widget.class.php3, row 1169
+// include/widget.class.php, row 1169
 $_m["Width in characters"]
  = "";
 
-// include/widget.class.php3, row 1170
+// include/widget.class.php, row 1170
 $_m["Size of target"]
  = "";
 
-// include/widget.class.php3, row 1170
+// include/widget.class.php, row 1170
 $_m["Lines in the target select box"]
  = "";
 
-// include/widget.class.php3, row 1171
+// include/widget.class.php, row 1171
 $_m["Horizontal"]
  = "";
 
-// include/widget.class.php3, row 1171
+// include/widget.class.php, row 1171
 $_m["Show levels horizontally"]
  = "";
 
-// include/widget.class.php3, row 1172
+// include/widget.class.php, row 1172
 $_m["First selectable"]
  = "";
 
-// include/widget.class.php3, row 1172
+// include/widget.class.php, row 1172
 $_m["First level which will have a Select button"]
  = "";
 
-// include/widget.class.php3, row 1173
+// include/widget.class.php, row 1173
 $_m["Level names"]
  = "";
 
-// include/widget.class.php3, row 1173
+// include/widget.class.php, row 1173
 $_m["Names of level boxes, separated by tilde (~). Replace the default Level 0, Level 1, ..."]
  = "";
 
-// include/widget.class.php3, row 1173
+// include/widget.class.php, row 1173
 $_m["Top level~Second level~Keyword"]
  = "";
 
-// include/widget.class.php3, row 1194
+// include/widget.class.php, row 1194
 $_m["Password and Change password"]
  = "Mot de passe et changement de mot de passe";
 
-// include/widget.class.php3, row 1208
+// include/widget.class.php, row 1208
 $_m["width of the three fields in characters (size parameter)"]
  = "";
 
-// include/widget.class.php3, row 1209
+// include/widget.class.php, row 1209
 $_m["Label for Change Password"]
  = "";
 
-// include/widget.class.php3, row 1209
+// include/widget.class.php, row 1209
 $_m["Replaces the default 'Change Password'"]
  = "";
 
-// include/widget.class.php3, row 1209
+// include/widget.class.php, row 1209
 $_m["Change your password"]
  = "";
 
-// include/widget.class.php3, row 1210
+// include/widget.class.php, row 1210
 $_m["Label for Retype New Password"]
  = "";
 
-// include/widget.class.php3, row 1210
+// include/widget.class.php, row 1210
 $_m["Replaces the default \"Retype New Password\""]
  = "";
 
-// include/widget.class.php3, row 1210
+// include/widget.class.php, row 1210
 $_m["Retype the new password"]
  = "";
 
-// include/widget.class.php3, row 1211
+// include/widget.class.php, row 1211
 $_m["Label for Delete Password"]
  = "";
 
-// include/widget.class.php3, row 1211
+// include/widget.class.php, row 1211
 $_m["Replaces the default \"Delete Password\""]
  = "";
 
-// include/widget.class.php3, row 1211
+// include/widget.class.php, row 1211
 $_m["Delete password (set to empty)"]
  = "";
 
-// include/widget.class.php3, row 1212
+// include/widget.class.php, row 1212
 $_m["Help for Change Password"]
  = "";
 
-// include/widget.class.php3, row 1212
+// include/widget.class.php, row 1212
 $_m["Help text under the Change Password box (default: no text)"]
  = "";
 
-// include/widget.class.php3, row 1212
+// include/widget.class.php, row 1212
 $_m["To change password, enter the new password here and below"]
  = "";
 
-// include/widget.class.php3, row 1213
+// include/widget.class.php, row 1213
 $_m["Help for Retype New Password"]
  = "";
 
-// include/widget.class.php3, row 1213
+// include/widget.class.php, row 1213
 $_m["Help text under the Retype New Password box (default: no text)"]
  = "";
 
-// include/widget.class.php3, row 1213
+// include/widget.class.php, row 1213
 $_m["Retype the new password exactly the same as you entered into \"Change Password\"."]
  = "";
 
-// include/widget.class.php3, row 1234
+// include/widget.class.php, row 1234
 $_m["Hidden field"]
  = "Champ cach�";
 
-// include/widget.class.php3, row 1267
+// include/widget.class.php, row 1267
 $_m["Local URL Picker"]
  = "";
 
-// include/widget.class.php3, row 1281
+// include/widget.class.php, row 1281
 $_m["The URL of your local web server from where you want to start browsing for a particular URL."]
  = "";
 
-// include/widget.class.php3, row 1281
+// include/widget.class.php, row 1281
 $_m["http#://www.ecn.cz/articles/solar.shtml"]
  = "";
 
-// include/slice.class.php3, row 61
+// include/slice.class.php, row 61
 $_m["WARNING: slice: %s doesn't look like an unpacked id"]
  = "ATTENTION: section: l'identit� de %s n'est pas d�ball�e";
 

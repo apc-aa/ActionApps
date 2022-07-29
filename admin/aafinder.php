@@ -30,16 +30,16 @@ use AA\Util\ChangesMonitor;
 use AA\Util\InputVars;
 
 $require_default_lang = true;      // do not use module specific language file
-                                   // (message for init_page.php3)
+                                   // (message for init_page.php)
 //const AA_REGISTER_GLOBALS = true;
-require_once __DIR__."/../include/init_page.php3";
-require_once __DIR__."/../include/formutil.php3";
-require_once __DIR__."/../include/date.php3";
-require_once __DIR__."/../include/varset.php3";
-require_once __DIR__."/../include/tabledit.php3";
+require_once __DIR__ . "/../include/init_page.php";
+require_once __DIR__ . "/../include/formutil.php";
+require_once __DIR__ . "/../include/date.php";
+require_once __DIR__ . "/../include/varset.php";
+require_once __DIR__ . "/../include/tabledit.php";
 //require_once menu_include();      //show navigation column depending on $show
-require_once __DIR__."/../include/mgettext.php3";
-require_once __DIR__."/../modules/alerts/util.php3";
+require_once __DIR__ . "/../include/mgettext.php";
+require_once __DIR__ . "/../modules/alerts/util.php";
 
 try {
     $searchinview = InputVars::boolGET('searchinview');
@@ -118,7 +118,7 @@ function AafinderObjectLink($object_id): string {
             'module_id' => $obj->getOwnerId(),
             'oid'       => $object_id,
             'otype'     => $obj->getObjectType(),
-            'ret_url'   => get_aa_url('modules/site/aliases.php3',['module_id'=>$obj->getOwnerId()],false)
+            'ret_url'   => get_aa_url('modules/site/aliases.php',['module_id'=>$obj->getOwnerId()],false)
         ]), $name). ' ('. AA_Slice::getModuleName($obj->getOwnerId()) .') &nbsp; '. ChangesMonitor::getHistoryLink($object_id);
     }
     return '';
@@ -477,7 +477,7 @@ if (strlen($findtext)) {
         $zids->union( AA_Object::querySet('AA_Aliasfunc', new AA_Set(null, new AA_Condition('aa_name', 'CONTAIN', $findtext))) );
 
         if (!$zids->isEmpty()) {
-            $manager_settings = AA_Aliasfunc::getManagerConf(get_aa_url('modules/site/aliases.php3',[],false));  // we should provide: ['module_id'=>$obj->getOwnerId()]
+            $manager_settings = AA_Aliasfunc::getManagerConf(get_aa_url('modules/site/aliases.php',[],false));  // we should provide: ['module_id'=>$obj->getOwnerId()]
             $manager_settings['show'] = MGR_ITEMS;
             $manager = new AA_Manager('aafindaliases'.AA::$module_id, $manager_settings);
             $manager->performActions();

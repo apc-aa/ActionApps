@@ -31,9 +31,9 @@
 
 
 const AA_REGISTER_GLOBALS = true;
-require_once __DIR__."/../include/init_page.php3";
-require_once __DIR__."/../include/varset.php3";
-require_once __DIR__."/../include/csn_util.php3";
+require_once __DIR__ . "/../include/init_page.php";
+require_once __DIR__ . "/../include/varset.php";
+require_once __DIR__ . "/../include/csn_util.php";
 
 if (!IfSlPerm(PS_FEEDING)) {
   MsgPage(StateUrl(self_base())."index.php3", _m("You have not permissions to change feeding setting"));

@@ -29,11 +29,11 @@
 //           $h
 
 const AA_REGISTER_GLOBALS = true;
-require_once __DIR__."/../include/init_page.php3";
-require_once __DIR__."/../include/formutil.php3";
-require_once __DIR__."/../include/discussion.php3";
-require_once __DIR__."/../include/item.php3";
-require_once __DIR__."/../include/msgpage.php3";
+require_once __DIR__ . "/../include/init_page.php";
+require_once __DIR__ . "/../include/formutil.php";
+require_once __DIR__ . "/../include/discussion.php";
+require_once __DIR__ . "/../include/item.php";
+require_once __DIR__ . "/../include/msgpage.php";
 
 /** getHeadline function
  * get a headline of the item
@@ -185,7 +185,7 @@ if (!$outcome) {
         echo $item->get_item();
 
         echo "<td align=\"center\">&nbsp;&nbsp;&nbsp;<a href=\"javascript:DeleteComment('".$d_id."')\"><small>". _m("Delete") ."</small></a>";
-        echo "&nbsp;<a href=". con_url(StateUrl("discedit2.php3"),"d_id=".
+        echo "&nbsp;<a href=". con_url(StateUrl("discedit2.php"),"d_id=".
              $d_id."&item_id=".$item_id) ."><small>". _m("Edit") ."</small></a>";
         $s = ($h = !$dcontent[$d_id]["d_state........."][0]['value']) ? _m("Hide") : _m("Approve");
         echo "&nbsp;<a href=" . con_url(StateUrl("discedit.php"), "mode=hide&h=".$h.

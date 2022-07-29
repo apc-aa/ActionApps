@@ -37,15 +37,15 @@ $_m["Cancel"]
  = "Cancelar";
 
 # End of unused messages
-// modules/site/moddelete.php3, row 34
+// modules/site/moddelete.php, row 34
 $_m["You don't have permissions to delete a site."]
  = "Ud. no tiene permisos para borrar el sitio.";
 
-// modules/site/moddelete.php3, row 38
+// modules/site/moddelete.php, row 38
 $_m["Module not found."]
  = "No se encontró el módulo";
 
-// modules/site/moddelete.php3, row 63
+// modules/site/moddelete.php, row 63
 $_m["Slice successfully deleted, tables are optimized"]
  = "Canal borrado con éxito; tablas optimizados";
 
@@ -86,7 +86,7 @@ $_m["Move&nbsp;right"]
  = "Mover&nbsp;Izquierda";
 
 // modules/site/index.php3, row 173
-// modules/site/util.php3, row 136, 154
+// modules/site/util.php, row 136, 154
 $_m["Delete"]
  = "Borrar";
 
@@ -102,107 +102,107 @@ $_m["Enable"]
 $_m["Disable"]
  = "Desactivar";
 
-// modules/site/util.php3, row 133
+// modules/site/util.php, row 133
 $_m["Spot&nbsp;variables"]
  = "Variables&nbsp;nodo";
 
-// modules/site/util.php3, row 139, 158
+// modules/site/util.php, row 139, 158
 $_m["Add"]
  = "Añadir";
 
-// modules/site/util.php3, row 149
+// modules/site/util.php, row 149
 $_m["Spot&nbsp;conditions"]
  = "Condiciones&nbsp;nodo";
 
-// modules/site/util.php3, row 187
+// modules/site/util.php, row 187
 $_m["Spot name"]
  = "Nombre del nodo";
 
-// modules/site/menu.php3, row 49
+// modules/site/menu.php, row 49
 $_m["View site"]
  = "Ver sitio";
 
-// modules/site/menu.php3, row 55, 56
+// modules/site/menu.php, row 55, 56
 $_m["Code&nbsp Manager"]
  = "Código&nbsp;del&nbsp;sitio";
 
-// modules/site/menu.php3, row 61, 62
+// modules/site/menu.php, row 61, 62
 $_m["Module Settings"]
  = "Propiedades del módulo";
 
-// modules/site/menu.php3, row 68
+// modules/site/menu.php, row 68
 $_m["AA"]
  = "";
 
-// modules/site/menu.php3, row 69
+// modules/site/menu.php, row 69
 $_m["AA Administration"]
  = "Administración AA";
 
-// modules/site/modedit.php3, row 52
+// modules/site/modedit.php, row 52
 $_m["You have not permissions to add slice"]
  = "No tiene permisos para añadir un canal";
 
-// modules/site/modedit.php3, row 57
+// modules/site/modedit.php, row 57
 $_m["You have not permissions to edit this slice"]
  = "Ud. no tiene permisos para editar este canal";
 
-// modules/site/modedit.php3, row 75, 214
+// modules/site/modedit.php, row 75, 214
 $_m["State file"]
  = "Archivo de estado";
 
-// modules/site/modedit.php3, row 185
+// modules/site/modedit.php, row 185
 $_m["Site Admin"]
  = "Adminstrador Sitio";
 
-// modules/site/modedit.php3, row 191
+// modules/site/modedit.php, row 191
 $_m["Add Site"]
  = "Añadir sitio";
 
-// modules/site/modedit.php3, row 191
+// modules/site/modedit.php, row 191
 $_m["Edit Site"]
  = "Editar sitio";
 
-// modules/site/modedit.php3, row 197
+// modules/site/modedit.php, row 197
 $_m["Site"]
  = "Sitio";
 
-// modules/site/modedit.php3, row 200
+// modules/site/modedit.php, row 200
 $_m["Id"]
  = "";
 
-// modules/site/modedit.php3, row 201
+// modules/site/modedit.php, row 201
 $_m["Name"]
  = "Nombre";
 
-// modules/site/modedit.php3, row 203
+// modules/site/modedit.php, row 203
 $_m["URL"]
  = "";
 
-// modules/site/modedit.php3, row 204
+// modules/site/modedit.php, row 204
 $_m["The file will probably contain just the following include:"]
  = "Este archivo probablemente sólo contendrá la siguente linea de código:";
 
-// modules/site/modedit.php3, row 205
+// modules/site/modedit.php, row 205
 $_m["Owner"]
  = "Propietario";
 
-// modules/site/modedit.php3, row 207
+// modules/site/modedit.php, row 207
 $_m["New Owner"]
  = "Nuevo propietario";
 
-// modules/site/modedit.php3, row 208
+// modules/site/modedit.php, row 208
 $_m["New Owner's E-mail"]
  = "Correo-e nuevo propietario";
 
-// modules/site/modedit.php3, row 211
+// modules/site/modedit.php, row 211
 $_m["Deleted"]
  = "Borrar";
 
-// modules/site/modedit.php3, row 213
+// modules/site/modedit.php, row 213
 $_m["Used Language File"]
  = "Idioma";
 
-// modules/site/modedit.php3, row 214
+// modules/site/modedit.php, row 214
 $_m["Site control file - will be placed in /modules/site/sites/ directory. The name you specify will be prefixed by 'site_' prefix, so if you for example name the file as 'apc.php', the site control file will be /modules/site/sites/site_apc.php."]
  = "Archivo de control del sito - debe estar en la carpeta modules/site/sites. El nombre que especifique será precedido por 'site_', de modo que si escribe por ejemplo 'apc.php', el archivo será modules/site/sites/site_apc.php.";
 

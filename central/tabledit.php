@@ -32,8 +32,8 @@
 // DOCUMENTATION: doc/tabledit.html, doc/tabledit_developer.html, doc/tableview.html
 
 const AA_REGISTER_GLOBALS = true;
-require_once __DIR__."/../include/init_page.php3";
-require_once __DIR__."/../include/tabledit.php3";
+require_once __DIR__ . "/../include/init_page.php";
+require_once __DIR__ . "/../include/tabledit.php";
 
 // ----------------------------------------------------------------------------------------
 
@@ -49,8 +49,8 @@ if ( !IsSuperadmin() ) {
 $sess->register("tview");
 $tview = 'centraledit';
 
-//require_once __DIR__."/../include/tv_common.php3";
-//require_once __DIR__."/../include/tv_misc.php3";
+//require_once __DIR__."/../include/tv_common.php";
+//require_once __DIR__."/../include/tv_misc.php";
 
 $tableview = GetCentalEditTableView();
 

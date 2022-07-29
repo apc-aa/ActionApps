@@ -12,15 +12,15 @@ $mgettext_lang = "vn";
 
 # Unused messages
 # End of unused messages
-// modules/site/moddelete.php3, row 34
+// modules/site/moddelete.php, row 34
 $_m["You don't have permissions to delete a site."]
  = "";
 
-// modules/site/moddelete.php3, row 38
+// modules/site/moddelete.php, row 38
 $_m["Module not found."]
  = "";
 
-// modules/site/moddelete.php3, row 63
+// modules/site/moddelete.php, row 63
 $_m["Slice successfully deleted, tables are optimized"]
  = "";
 
@@ -61,7 +61,7 @@ $_m["Move&nbsp;right"]
  = "";
 
 // modules/site/index.php3, row 173
-// modules/site/util.php3, row 136, 154
+// modules/site/util.php, row 136, 154
 $_m["Delete"]
  = "";
 
@@ -77,107 +77,107 @@ $_m["Enable"]
 $_m["Disable"]
  = "";
 
-// modules/site/util.php3, row 133
+// modules/site/util.php, row 133
 $_m["Spot&nbsp;variables"]
  = "";
 
-// modules/site/util.php3, row 139, 158
+// modules/site/util.php, row 139, 158
 $_m["Add"]
  = "";
 
-// modules/site/util.php3, row 149
+// modules/site/util.php, row 149
 $_m["Spot&nbsp;conditions"]
  = "";
 
-// modules/site/util.php3, row 187
+// modules/site/util.php, row 187
 $_m["Spot name"]
  = "";
 
-// modules/site/menu.php3, row 49
+// modules/site/menu.php, row 49
 $_m["View site"]
  = "";
 
-// modules/site/menu.php3, row 55, 56
+// modules/site/menu.php, row 55, 56
 $_m["Code&nbsp Manager"]
  = "";
 
-// modules/site/menu.php3, row 61, 62
+// modules/site/menu.php, row 61, 62
 $_m["Module Settings"]
  = "";
 
-// modules/site/menu.php3, row 68
+// modules/site/menu.php, row 68
 $_m["AA"]
  = "";
 
-// modules/site/menu.php3, row 69
+// modules/site/menu.php, row 69
 $_m["AA Administration"]
  = "";
 
-// modules/site/modedit.php3, row 52
+// modules/site/modedit.php, row 52
 $_m["You have not permissions to add slice"]
  = "";
 
-// modules/site/modedit.php3, row 57
+// modules/site/modedit.php, row 57
 $_m["You have not permissions to edit this slice"]
  = "";
 
-// modules/site/modedit.php3, row 75, 214
+// modules/site/modedit.php, row 75, 214
 $_m["State file"]
  = "";
 
-// modules/site/modedit.php3, row 185
+// modules/site/modedit.php, row 185
 $_m["Site Admin"]
  = "";
 
-// modules/site/modedit.php3, row 191
+// modules/site/modedit.php, row 191
 $_m["Add Site"]
  = "";
 
-// modules/site/modedit.php3, row 191
+// modules/site/modedit.php, row 191
 $_m["Edit Site"]
  = "";
 
-// modules/site/modedit.php3, row 197
+// modules/site/modedit.php, row 197
 $_m["Site"]
  = "";
 
-// modules/site/modedit.php3, row 200
+// modules/site/modedit.php, row 200
 $_m["Id"]
  = "";
 
-// modules/site/modedit.php3, row 201
+// modules/site/modedit.php, row 201
 $_m["Name"]
  = "";
 
-// modules/site/modedit.php3, row 203
+// modules/site/modedit.php, row 203
 $_m["URL"]
  = "";
 
-// modules/site/modedit.php3, row 204
+// modules/site/modedit.php, row 204
 $_m["The file will probably contain just the following include:"]
  = "";
 
-// modules/site/modedit.php3, row 205
+// modules/site/modedit.php, row 205
 $_m["Owner"]
  = "";
 
-// modules/site/modedit.php3, row 207
+// modules/site/modedit.php, row 207
 $_m["New Owner"]
  = "";
 
-// modules/site/modedit.php3, row 208
+// modules/site/modedit.php, row 208
 $_m["New Owner's E-mail"]
  = "";
 
-// modules/site/modedit.php3, row 211
+// modules/site/modedit.php, row 211
 $_m["Deleted"]
  = "";
 
-// modules/site/modedit.php3, row 213
+// modules/site/modedit.php, row 213
 $_m["Used Language File"]
  = "";
 
-// modules/site/modedit.php3, row 214
+// modules/site/modedit.php, row 214
 $_m["Site control file - will be placed in /modules/site/sites/ directory. The name you specify will be prefixed by 'site_' prefix, so if you for example name the file as 'apc.php', the site control file will be /modules/site/sites/site_apc.php."]
  = "";
 

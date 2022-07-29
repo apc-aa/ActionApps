@@ -19,7 +19,7 @@
  *   notshown[] - array (form field ID => 1) of unpacked IDs, e.g. v7075626c6973685f646174652e2e2e2e
  *                which are shown in the control panel but not in the anonym form
  *   bool use_post2shtml If true, use the post2shtml script to send the error
- *          description and the values filled to fillform.php3.
+ *          description and the values filled to fillform.php.
  *   bool text_password If true, the password is stored in text form (not encrypted).
  * </pre>
  *

@@ -1,4 +1,4 @@
-/* JavaScript functions to be used with constedit.php3
+/* JavaScript functions to be used with constedit.php
     Hierarchical constant editor */
 
 var hcEasyDelete = [];

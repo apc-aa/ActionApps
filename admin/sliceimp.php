@@ -27,15 +27,15 @@
 
 
 $require_default_lang = true;      // do not use module specific language file
-                                   // (message for init_page.php3)
+                                   // (message for init_page.php)
 const AA_REGISTER_GLOBALS = true;
-require_once __DIR__."/../include/init_page.php3";
-require_once __DIR__."/../include/itemfunc.php3";
-require_once __DIR__."/../include/varset.php3";
-require_once __DIR__."/../include/feeding.php3";
-require_once __DIR__."/../include/notify.php3";
-require_once __DIR__."/../include/mgettext.php3";
-require_once __DIR__."/../include/formutil.php3";
+require_once __DIR__ . "/../include/init_page.php";
+require_once __DIR__ . "/../include/itemfunc.php";
+require_once __DIR__ . "/../include/varset.php";
+require_once __DIR__ . "/../include/feeding.php";
+require_once __DIR__ . "/../include/notify.php";
+require_once __DIR__ . "/../include/mgettext.php";
+require_once __DIR__ . "/../include/formutil.php";
 
 if (!CheckPerms( AuthGetUid(), "aa", AA_ID, PS_ADD) ) {
     MsgPage(StateUrl(self_base())."index.php3", _m("You are not allowed to export / import slices"));

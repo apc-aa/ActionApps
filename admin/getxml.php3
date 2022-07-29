@@ -62,10 +62,10 @@ foreach ($_REQUEST as $k => $v) {
 
 
 require_once __DIR__."/../include/config.php3";
-require_once __DIR__."/../include/locsess.php3";
-require_once __DIR__."/../include/util.php3";
-require_once __DIR__."/../include/varset.php3";
-require_once __DIR__."/../include/csn_util.php3";
+require_once __DIR__ . "/../include/locsess.php";
+require_once __DIR__ . "/../include/util.php";
+require_once __DIR__ . "/../include/varset.php";
+require_once __DIR__ . "/../include/csn_util.php";
 
 //-------------------------- Constants -----------------------------------------
 

@@ -32,9 +32,9 @@ https://www.apc.org/
 */
 
 require_once __DIR__."/../../include/config.php3";
-require_once __DIR__."/../../misc/mgettext/xmgettext.php3";
-require_once __DIR__."/../../misc/mgettext/translate.php3";
-require_once __DIR__."/../../misc/mgettext/createlogs.php3";
+require_once __DIR__ . "/../../misc/mgettext/xmgettext.php";
+require_once __DIR__ . "/../../misc/mgettext/translate.php";
+require_once __DIR__ . "/../../misc/mgettext/createlogs.php";
 
 // list of all languages. Useful if you want e.g. to update only one language file.
 $lang_list = [
@@ -67,7 +67,7 @@ endslash($destdir);
 /* IMPORTANT:
    Groups of directories / files assigned to individual language files.
    Assign individual files or whole directories (must be terminated by '/').
-   Skip files by adding minus sign before the file name (e.g. "-include/mgettext.php3").
+   Skip files by adding minus sign before the file name (e.g. "-include/mgettext.php").
 
    A file may appear in several groups (like files from "output" do),
    but than the translations must be entered several times in the language files.
@@ -87,8 +87,8 @@ $lang_groups ["news"] =
            "-./slice.php3",
            "-admin/param_wizard.php",
            "-include/view.php3",
-           "-include/constants_param_wizard.php3",
-           "-include/mgettext.php3"
+           "-include/constants_param_wizard.php",
+           "-include/mgettext.php"
     ];
 // _site_lang.php language files, used in the Site module
 $lang_groups ["site"] =
@@ -97,9 +97,9 @@ $lang_groups ["site"] =
 $lang_groups ["links"] =
     [
         "modules/links/",
-           "include/manager.class.php3",
-           "include/searchbar.class.php3",
-           "include/util.php3"
+           "include/manager.class.php",
+           "include/searchbar.class.php",
+           "include/util.php"
     ];
 // _polls_lang.php language files, used in the Links module
 $lang_groups ["polls"] =
@@ -109,20 +109,20 @@ $lang_groups ["output"] =
     [
         "./slice.php3",
            "./view.php3",
-           "./discussion.php3",
-           "include/util.php3",
-           "include/slice.php3",
+           "./discussion.php",
+           "include/util.php",
+           "include/slice.php",
            "include/view.php3",
-           "include/discussion.php3",
-           "include/item.php3",
-           "include/scroller.php3",
-           "include/itemview.php3"
+           "include/discussion.php",
+           "include/item.php",
+           "include/scroller.php",
+           "include/itemview.php"
     ];
 // _param_wizard_lang.php language files, used only in the parameter wizard
 $lang_groups ["param_wizard"] =
     [
         "admin/param_wizard.php",
-           "include/constants_param_wizard.php3"
+           "include/constants_param_wizard.php"
     ];
 
 /* ----------------------------------------------------------------------------

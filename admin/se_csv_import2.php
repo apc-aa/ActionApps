@@ -36,12 +36,12 @@
 use AA\IO\DB\DB_AA;
 
 const AA_REGISTER_GLOBALS = true;
-require_once __DIR__."/../include/init_page.php3";
-require_once __DIR__."/../include/util.php3";
-require_once __DIR__."/../include/import_util.php3";
-require_once __DIR__."/../include/constants_param_wizard.php3";
-require_once __DIR__."/../include/formutil.php3";
-require_once __DIR__."/../include/feeding.php3";
+require_once __DIR__ . "/../include/init_page.php";
+require_once __DIR__ . "/../include/util.php";
+require_once __DIR__ . "/../include/import_util.php";
+require_once __DIR__ . "/../include/constants_param_wizard.php";
+require_once __DIR__ . "/../include/formutil.php";
+require_once __DIR__ . "/../include/feeding.php";
 
 /** findNearestText function
  * Returns key of the $array, which value is most similar to given $text

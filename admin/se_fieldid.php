@@ -37,11 +37,11 @@
 use AA\IO\DB\DB_AA;
 
 const AA_REGISTER_GLOBALS = true;
-require_once __DIR__."/../include/init_page.php3";
-require_once __DIR__."/../include/formutil.php3";
-require_once __DIR__."/../include/varset.php3";
-require_once __DIR__."/../include/msgpage.php3";
-require_once __DIR__."/../include/util.php3"; // tryquery
+require_once __DIR__ . "/../include/init_page.php";
+require_once __DIR__ . "/../include/formutil.php";
+require_once __DIR__ . "/../include/varset.php";
+require_once __DIR__ . "/../include/msgpage.php";
+require_once __DIR__ . "/../include/util.php"; // tryquery
 
 set_time_limit(600);
 

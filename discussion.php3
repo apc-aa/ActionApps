@@ -63,19 +63,19 @@ function PutSearchLog($searchlog, $found_count=0) {
 /** APC-AA configuration file */
 require_once __DIR__."/./include/config.php3";
 /** Set of usefull functions used on most pages */
-require_once __DIR__."/include/util.php3";
+require_once __DIR__ . "/include/util.php";
 /** Mail sending functions */
-require_once __DIR__."/include/mail.php3";
+require_once __DIR__ . "/include/mail.php";
 /**  Defines class for item manipulation (shows item in compact or fulltext format, replaces aliases ...) */
-require_once __DIR__."/include/item.php3";
+require_once __DIR__ . "/include/item.php";
 /** parses view settings, gets view data and other functions */
 require_once __DIR__."/include/view.php3";
 /** discussion utility functions */
-require_once __DIR__."/include/discussion.php3";
+require_once __DIR__ . "/include/discussion.php";
 /** functions for searching and filtering items */
-require_once __DIR__."/include/searchlib.php3";
+require_once __DIR__ . "/include/searchlib.php";
 /** Main include file for using session management function on page */
-require_once __DIR__."/include/locsess.php3";    // DB_AA object definition
+require_once __DIR__ . "/include/locsess.php";    // DB_AA object definition
 
 add_vars();
 

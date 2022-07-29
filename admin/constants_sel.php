@@ -22,7 +22,7 @@
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
  * @link      https://www.apc.org/ APC
 */
-/** constants select - for searchbar.class.php3, pavelji@ecn.cz
+/** constants select - for searchbar.class.php, pavelji@ecn.cz
  *
  * field_name - expected - field id from which we want take the constants
  * var_id     - expected - id of variable in calling form, which should be filled
@@ -33,10 +33,10 @@
 $save_hidden = true;   // do not delete r_hidden session variable in init_page!
 
 const AA_REGISTER_GLOBALS = true;
-require_once __DIR__."/../include/init_page.php3";
-require_once __DIR__."/../include/item.php3";
-require_once __DIR__."/../include/itemfunc.php3";
-require_once __DIR__."/../include/formutil.php3";
+require_once __DIR__ . "/../include/init_page.php";
+require_once __DIR__ . "/../include/item.php";
+require_once __DIR__ . "/../include/itemfunc.php";
+require_once __DIR__ . "/../include/formutil.php";
 
 $module_id   = $slice_id; // get from session
 $slice       = AA_Slice::getModule($module_id);

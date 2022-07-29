@@ -29,11 +29,11 @@
 
 use AA\Util\Hitcounter;
 
-require_once __DIR__."/mgettext.php3";
-require_once __DIR__."/itemview.php3";
-require_once __DIR__."/searchlib.php3";
-require_once __DIR__."/../modules/links/util.php3";
-require_once __DIR__."/../modules/links/linksearch.php3";
+require_once __DIR__ . "/mgettext.php";
+require_once __DIR__ . "/itemview.php";
+require_once __DIR__ . "/searchlib.php";
+require_once __DIR__ . "/../modules/links/util.php";
+require_once __DIR__ . "/../modules/links/linksearch.php";
 // add mlx functions
 require_once __DIR__."/mlx.php";
 

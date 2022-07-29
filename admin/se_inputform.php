@@ -30,12 +30,12 @@ use AA\Util\InputVars;
 use AA\Widget\Widget;
 
 //const AA_REGISTER_GLOBALS = true;
-require_once __DIR__."/../include/init_page.php3";
+require_once __DIR__ . "/../include/init_page.php";
 mgettext_bind(get_mgettext_lang(), 'param_wizard');
-require_once __DIR__."/../include/constants_param_wizard.php3";
-require_once __DIR__."/../include/formutil.php3";
-require_once __DIR__."/../include/varset.php3";
-require_once __DIR__."/../include/msgpage.php3";
+require_once __DIR__ . "/../include/constants_param_wizard.php";
+require_once __DIR__ . "/../include/formutil.php";
+require_once __DIR__ . "/../include/varset.php";
+require_once __DIR__ . "/../include/msgpage.php";
 
 try {
     // array ( 'PUB_DATE' => 1, 'USERNAME' => 5, 'EMAIL___' => 1, 'HEADLINE' => 5, '' => 20, 'NENENENE' => 6, 'MOUCHAAA' => 1, 'UNDEFINE' => 4, )

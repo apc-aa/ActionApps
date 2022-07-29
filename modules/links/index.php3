@@ -21,25 +21,25 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 // APC AA - Module links main administration page
 
-// used in init_page.php3 script to include config.php3 from the right directory
+// used in init_page.php script to include config.php3 from the right directory
 
 const AA_REGISTER_GLOBALS = true;
-require_once __DIR__."/../../include/init_page.php3";
-require_once __DIR__."/../../include/varset.php3";
-require_once __DIR__."/../../include/formutil.php3";
-require_once __DIR__."/../../include/itemview.php3";
-require_once __DIR__."/../../include/item.php3";
+require_once __DIR__ . "/../../include/init_page.php";
+require_once __DIR__ . "/../../include/varset.php";
+require_once __DIR__ . "/../../include/formutil.php";
+require_once __DIR__ . "/../../include/itemview.php";
+require_once __DIR__ . "/../../include/item.php";
 
-require_once __DIR__."/../../modules/links/linksearch.php3";
-require_once __DIR__."/../../modules/links/constants.php3";
-require_once __DIR__."/../../modules/links/actions.php3";
-require_once __DIR__."/../../modules/links/cattree.php3";
-require_once __DIR__."/../../modules/links/util.php3";      // module specific utils
+require_once __DIR__ . "/../../modules/links/linksearch.php";
+require_once __DIR__ . "/../../modules/links/constants.php";
+require_once __DIR__ . "/../../modules/links/actions.php";
+require_once __DIR__ . "/../../modules/links/cattree.php";
+require_once __DIR__ . "/../../modules/links/util.php";      // module specific utils
 
 
 // Check permissions for this page.
 // You should change PS_MODP_EDIT_POLLS permission to match the permission in your
-// module. See /include/perm_core.php3 for more details
+// module. See /include/perm_core.php for more details
 
 if ( !IfSlPerm(PS_LINKS_EDIT_LINKS) ) {
     MsgPage(StateUrl(self_base())."index.php3", _m("No permissions to edit links"));
@@ -144,8 +144,8 @@ $actions->addAction(new AA_Manageraction_Links_Check('Check'));
 $actions->addAction(new AA_Manageraction_Links_Highlight('Highlight',true));
 $actions->addAction(new AA_Manageraction_Links_Highlight('DeHighlight', false));
 $actions->addAction(new AA_Manageraction_Links_Delete('Delete'));
-$actions->addAction(new AA_Manageraction_Links_Add2Cat('Add2Cat',   StateUrl("getcat.php3?start=".GetCategoryFromPath($links_info['tree_start']))));
-$actions->addAction(new AA_Manageraction_Links_Move2Cat('Move2Cat', StateUrl("getcat.php3?start=".GetCategoryFromPath($links_info['tree_start']))));
+$actions->addAction(new AA_Manageraction_Links_Add2Cat('Add2Cat',   StateUrl("getcat.php?start=".GetCategoryFromPath($links_info['tree_start']))));
+$actions->addAction(new AA_Manageraction_Links_Move2Cat('Move2Cat', StateUrl("getcat.php?start=".GetCategoryFromPath($links_info['tree_start']))));
 
 
 $switches  = new AA_Manageractions;
@@ -239,7 +239,7 @@ echo '<script>
   }
 
   function EditCurrentCat() {
-      document.location = "'.StateUrl('catedit.php3').'&cid=" + document.filterform.cat_id.value;
+      document.location = "'.StateUrl('catedit.php').'&cid=" + document.filterform.cat_id.value;
   }
 </script>
 </head>';

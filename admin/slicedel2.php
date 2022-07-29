@@ -26,10 +26,10 @@
 // expected $del - unpacked id of slice to delete
 
 const AA_REGISTER_GLOBALS = true;
-require_once __DIR__."/../include/init_page.php3";
-require_once __DIR__."/../include/feeding.php3";
-require_once __DIR__."/../include/msgpage.php3";
-require_once __DIR__."/../include/modutils.php3";
+require_once __DIR__ . "/../include/init_page.php";
+require_once __DIR__ . "/../include/feeding.php";
+require_once __DIR__ . "/../include/msgpage.php";
+require_once __DIR__ . "/../include/modutils.php";
 
 
 if ($cancel) {

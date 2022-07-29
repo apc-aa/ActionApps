@@ -1049,7 +1049,7 @@ class MLXGetText
         __mlx_dbg($args,__function__);
         $old_varset = $GLOBALS['varset'];
         if(!is_callable('StoreItem')) {
-            require_once('itemfunc.php3');
+            require_once('itemfunc.php');
         }
         $array = array_keys($this->currentDomainRef['slices']);  // variable is neccessary - end() need call by reference
         $sliceid = end($array);

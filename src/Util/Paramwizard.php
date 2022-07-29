@@ -37,7 +37,7 @@ use AA_Serializable;
 class Paramwizard {
 
     /** getParamWizardArr - get array for ParamWizard from widgets
-     *  (replaces array in constants_param_wizard.php3)
+     *  (replaces array in constants_param_wizard.php)
      *  called as AA\Widget\Widget::getParamWizardArr('fld');
      */
     public function getParamWizardArr($type, $class_mask) {

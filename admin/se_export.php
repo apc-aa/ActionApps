@@ -39,13 +39,13 @@
  */
 
 const AA_REGISTER_GLOBALS = true;
-require_once __DIR__."/../include/init_page.php3";
-require_once __DIR__."/../include/util.php3";
-require_once __DIR__."/../include/item.php3";
-require_once __DIR__."/../include/discussion.php3";
-require_once __DIR__."/../include/searchlib.php3";
-require_once __DIR__."/../include/locsess.php3";    // DB_AA object definition
-require_once __DIR__."/../include/exporter.class.php3";
+require_once __DIR__ . "/../include/init_page.php";
+require_once __DIR__ . "/../include/util.php";
+require_once __DIR__ . "/../include/item.php";
+require_once __DIR__ . "/../include/discussion.php";
+require_once __DIR__ . "/../include/searchlib.php";
+require_once __DIR__ . "/../include/locsess.php";    // DB_AA object definition
+require_once __DIR__ . "/../include/exporter.class.php";
 
 if (!IfSlPerm(PS_FEEDING)) {
     MsgPage(StateUrl(self_base()."index.php3"), _m("You have not permissions to export"));

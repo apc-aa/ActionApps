@@ -44,13 +44,13 @@
 
 
 require_once __DIR__."/../../include/config.php3";
-require_once __DIR__."/../../include/util.php3";
-require_once __DIR__."/../../include/mgettext.php3";
-require_once __DIR__."/../../include/searchlib.php3";
-require_once __DIR__."/../../include/item.php3";
-require_once __DIR__."/../../include/itemview.php3";
-require_once __DIR__."/../../modules/polls/include/util.php3";
-require_once __DIR__."/../../modules/polls/include/stringexpand.php3";
+require_once __DIR__ . "/../../include/util.php";
+require_once __DIR__ . "/../../include/mgettext.php";
+require_once __DIR__ . "/../../include/searchlib.php";
+require_once __DIR__ . "/../../include/item.php";
+require_once __DIR__ . "/../../include/itemview.php";
+require_once __DIR__ . "/../../modules/polls/include/util.php";
+require_once __DIR__ . "/../../modules/polls/include/stringexpand.php";
 
 // special case - if we want something like view for polls, so we want to be
 // constant and not to react to URL parameters, then we add &lock=1 as parameter
@@ -60,7 +60,7 @@ if (empty($_REQUEST['lock'])) {
 }
 
 $encap = ( ($encap=="false") ? false : true );
-require_once __DIR__."/../../include/locsess.php3";
+require_once __DIR__ . "/../../include/locsess.php";
 
 echo AA_Poll::processPoll($_REQUEST);
 

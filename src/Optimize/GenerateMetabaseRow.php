@@ -5,7 +5,7 @@ namespace AA\Optimize;
 use AA_Metabase;
 use function _m;
 
-/** Prints out the metabase row for include/metabase.class.php3 file
+/** Prints out the metabase row for include/metabase.class.php file
  *  (used by AA developers to update database definition tempate)"
  **/
 class GenerateMetabaseRow extends AbstractOptimize {
@@ -21,7 +21,7 @@ class GenerateMetabaseRow extends AbstractOptimize {
      * @return string - a description
      */
     public static function description(): string {
-        return _m("prints out the metabase row for include/metabase.class.php3 file (used by AA developers to update database definition tempate)");
+        return _m("prints out the metabase row for include/metabase.class.php file (used by AA developers to update database definition tempate)");
     }
 
     /** implemented actions within this class */

@@ -45,11 +45,11 @@ foreach ($_REQUEST as $k => $v) {
 
 
 require_once __DIR__."/./include/config.php3";
-require_once __DIR__."/include/util.php3";
-require_once __DIR__."/include/item.php3";
-require_once __DIR__."/include/searchlib.php3";
+require_once __DIR__ . "/include/util.php";
+require_once __DIR__ . "/include/item.php";
+require_once __DIR__ . "/include/searchlib.php";
 $encap = true; // just for calling extsessi.php
-require_once __DIR__."/include/locsess.php3";    // DB_AA object definition
+require_once __DIR__ . "/include/locsess.php";    // DB_AA object definition
 
 if (!$_GET['form_id']) {
     echo '<!-- no form_id defined in /form.php -->';

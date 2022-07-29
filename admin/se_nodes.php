@@ -36,13 +36,13 @@
 use AA\IO\DB\DB_AA;
 
 const AA_REGISTER_GLOBALS = true;
-require_once __DIR__."/../include/init_page.php3";
+require_once __DIR__ . "/../include/init_page.php";
 if ( !IsSuperadmin() ) {
     MsgPage(StateUrl(self_base()."index.php3"), _m("You have not permissions to manage nodes"));
     exit;
 }
 $err = [];
-require_once __DIR__."/../include/formutil.php3";
+require_once __DIR__ . "/../include/formutil.php";
 
 if ($mode == "edit") {
     $db->query("SELECT * FROM nodes WHERE name='$sel_node_name'");

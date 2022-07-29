@@ -62,19 +62,19 @@ foreach ($_REQUEST as $k => $v) {
 /** APC-AA configuration file */
 require_once __DIR__."/./include/config.php3";
 /** Main include file for using session management function on a page */
-require_once __DIR__."/include/locsess.php3";
+require_once __DIR__ . "/include/locsess.php";
 /** Set of useful functions used on most pages */
-require_once __DIR__."/include/util.php3";
+require_once __DIR__ . "/include/util.php";
 /** Defines class for inserting and updating database fields */
-require_once __DIR__."/include/varset.php3";
+require_once __DIR__ . "/include/varset.php";
 /** discussion utility functions */
-require_once __DIR__."/include/discussion.php3";
+require_once __DIR__ . "/include/discussion.php";
 /** defines class that prints the items (news, discussions, calendar...) */
-require_once __DIR__."/include/itemview.php3";
+require_once __DIR__ . "/include/itemview.php";
 /**  Defines class for item manipulation (shows item in compact or fulltext format, replaces aliases ...) */
-require_once __DIR__."/include/item.php3";
-require_once __DIR__."/include/event.class.php3";
-require_once __DIR__."/include/validate.php3";
+require_once __DIR__ . "/include/item.php";
+require_once __DIR__ . "/include/event.class.php";
+require_once __DIR__ . "/include/validate.php";
 
 $err = [];       // error array (Init - just for initializing variable)
 

@@ -32,8 +32,8 @@
  **/
 
 const AA_REGISTER_GLOBALS = true;
-require_once __DIR__."/../include/init_page.php3";
-// already stripslashed in init_page.php3
+require_once __DIR__ . "/../include/init_page.php";
+// already stripslashed in init_page.php
 
 $sh_itm     = $_GET['sh_itm'];
 $slice_id   = $_GET['slice_id'];

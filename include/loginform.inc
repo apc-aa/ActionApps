@@ -27,7 +27,7 @@
 */
 
 bind_mgettext_domain(DEFAULT_LANG_INCLUDE);
-require_once __DIR__."/util.php3";
+require_once __DIR__ . "/util.php";
 
 HtmlPageBegin();
 

@@ -122,21 +122,21 @@ foreach ($_REQUEST as $k => $v) {
 $encap = ( ($encap=="false") ? false : true );
 
 require_once __DIR__."/./include/config.php3";
-require_once __DIR__."/include/util.php3";
-require_once __DIR__."/include/item.php3";
+require_once __DIR__ . "/include/util.php";
+require_once __DIR__ . "/include/item.php";
 require_once __DIR__."/include/view.php3";
-require_once __DIR__."/include/searchlib.php3";
-require_once __DIR__."/include/discussion.php3";
-require_once __DIR__."/include/mgettext.php3";
+require_once __DIR__ . "/include/searchlib.php";
+require_once __DIR__ . "/include/discussion.php";
+require_once __DIR__ . "/include/mgettext.php";
 // function definitions:
-require_once __DIR__."/include/slice.php3";
+require_once __DIR__ . "/include/slice.php";
 
-require_once __DIR__."/include/locsess.php3";
+require_once __DIR__ . "/include/locsess.php";
 
 /** MyUrl function - was in sessions before, but now it is used just in this script, so moved here and rewritten to handle encap (=shtml)/not encap version
  *  rewriten to return URL of shtml page that includes this script instead to return self url of this script.
  */
-function MyUrl($encap, $scr_url) {  //sliceID is here just for compatibility with MyUrl function in extsess.php3
+function MyUrl($encap, $scr_url) {  //sliceID is here just for compatibility with MyUrl function
 
     $server  = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https' : 'http';
     $server .= '://'. $_SERVER['HTTP_HOST'];
@@ -324,7 +324,7 @@ if (!is_array($slices)) {
     foreach ($slices as $sid) {
         // hack for searching in multiple slices. This is not so nice part
         // of code - we mix there $aliases[<alias>] with $aliases[<p_slice_id>][<alias>]
-        // it is needed by itemview::set_column() (see include/itemview.php3)
+        // it is needed by itemview::set_column() (see include/itemview.php)
         $aliases[q_pack_id($sid)] = AA_Slice::getModule($sid)->aliases($als);
         array_add($add_aliases, $aliases[q_pack_id($sid)]);
     }
@@ -561,7 +561,7 @@ if (!is_array($slices)) {
     foreach ($slices as $sid) {
         // hack for searching in multiple slices. This is not so nice part
         // of code - we mix there $aliases[<alias>] with $aliases[<p_slice_id>][<alias>]
-        // it is needed by itemview::set_column() (see include/itemview.php3)
+        // it is needed by itemview::set_column() (see include/itemview.php)
         array_add($scr_aliases, $aliases[q_pack_id($sid)]);
     }
 }

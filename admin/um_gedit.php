@@ -37,14 +37,14 @@
 use AA\Util\InputVars;
 
 $require_default_lang = true;      // do not use module specific language file
-                                   // (message for init_page.php3)
+                                   // (message for init_page.php)
 
 //const AA_REGISTER_GLOBALS = true;
-require_once __DIR__."/../include/init_page.php3";
-require_once __DIR__."/../include/formutil.php3";
-require_once __DIR__."/../include/varset.php3";
-require_once __DIR__."/../include/msgpage.php3";
-require_once __DIR__."/../include/um_util.php3";
+require_once __DIR__ . "/../include/init_page.php";
+require_once __DIR__ . "/../include/formutil.php";
+require_once __DIR__ . "/../include/varset.php";
+require_once __DIR__ . "/../include/msgpage.php";
+require_once __DIR__ . "/../include/um_util.php";
 
 try {
     // array ( 1 => 4, )-array ( 1 => 2, )
@@ -142,7 +142,7 @@ if ( $add_submit OR ($submit_action == "update_submit")) {
 
     // all the actions are in following require_once (we reuse this part of code for
     // slice wizard ...
-    require_once __DIR__."/../include/um_gedit.php3";
+    require_once __DIR__ . "/../include/um_gedit.php";
 
     if (!count($err)) {
         $Msg = MsgOk(_m("Group successfully added to permission system"));

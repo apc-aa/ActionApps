@@ -51,7 +51,7 @@
 
 use AA\IO\DB\DB_AA;
 
-require_once __DIR__."/../include/xml_serializer.php3";
+require_once __DIR__ . "/../include/xml_serializer.php";
 
 //$dry_run = 1;
 

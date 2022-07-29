@@ -29,7 +29,7 @@ class AddLinkcheckCronEntry extends \AA\Optimize\AbstractOptimize {
         $row_count = DB_AA::select1('count', 'SELECT count(*) as count FROM cron', [
             [
                 'script',
-                'modules/links/linkcheck.php3',
+                'modules/links/linkcheck.php',
             ],
         ]);
         if ($row_count < 1) {
@@ -43,10 +43,10 @@ class AddLinkcheckCronEntry extends \AA\Optimize\AbstractOptimize {
     public function repair(): bool {
 
         $this->message(_m('Deleting AA Cron entry for Checking link status in Links module'));
-        $this->query("DELETE FROM cron WHERE script='modules/links/linkcheck.php3'");
+        $this->query("DELETE FROM cron WHERE script='modules/links/linkcheck.php'");
 
         $this->message(_m('Adding AA cron entry for Checking link status in Links module'));
-        $this->query("INSERT INTO cron (minutes, hours, mday, mon, wday, script, params, last_run) VALUES ('35',     '*', '*', '*', '*', 'modules/links/linkcheck.php3', '', NULL)");
+        $this->query("INSERT INTO cron (minutes, hours, mday, mon, wday, script, params, last_run) VALUES ('35',     '*', '*', '*', '*', 'modules/links/linkcheck.php', '', NULL)");
 
         $this->message(_m('AA cron entry for "Checking link status in Links module" - done.'));
         return true;

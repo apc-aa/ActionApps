@@ -23,7 +23,7 @@
  *   notshown[] - array (form field ID => 1) of unpacked IDs, e.g. v7075626c6973685f646174652e2e2e2e
  *                which are shown in the control panel but not in the anonym form
  *   bool use_post2shtml If true, use the post2shtml script to send the error
- *          description and the values filled to fillform.php3.
+ *          description and the values filled to fillform.php.
  *   bool text_password If true, the password is stored in text form (not encrypted).
  *   bool wap           Variable is set in filler-wap.php
  * </pre>
@@ -79,9 +79,9 @@ foreach ($_REQUEST as $k => $v) {
 /** APC-AA configuration file */
 require_once __DIR__."/include/config.php3";
 /** Main include file for using session management function on a page */
-require_once __DIR__."/include/locsess.php3";
+require_once __DIR__ . "/include/locsess.php";
 /** Set of useful functions used on most pages */
-require_once __DIR__."/include/util.php3";
+require_once __DIR__ . "/include/util.php";
 
 // not sure if the line bellow works...
 $_REQUEST['slice_id'] = trim($_REQUEST['slice_id']);
@@ -111,16 +111,16 @@ if ($_REQUEST['convertfrom'] OR $_REQUEST['convertto']) {
     }
 }
 
-require_once __DIR__."/include/formutil.php3";
+require_once __DIR__ . "/include/formutil.php";
 /** Defines class for inserting and updating database fields */
-require_once __DIR__."/include/varset.php3";
-require_once __DIR__."/include/itemfunc.php3";
+require_once __DIR__ . "/include/varset.php";
+require_once __DIR__ . "/include/itemfunc.php";
 /** utility for notifying people of events by email */
-require_once __DIR__."/include/notify.php3";
+require_once __DIR__ . "/include/notify.php";
 /** date helper functions */
-require_once __DIR__."/include/date.php3";
-require_once __DIR__."/include/feeding.php3";
-require_once __DIR__."/include/zids.php3";
+require_once __DIR__ . "/include/date.php";
+require_once __DIR__ . "/include/feeding.php";
+require_once __DIR__ . "/include/zids.php";
 
 
 function UseShowResult($txt,$url) {
@@ -428,7 +428,7 @@ if ($insert) {
         $content4id["flags..........."][0]['value'] = $oldflags;
         break;
     case ANONYMOUS_EDIT_HTTP_AUTH:
-        // For HTTP_AUTH permissions the reader is found in fillform.php3.
+        // For HTTP_AUTH permissions the reader is found in fillform.php.
         // Here we don't get the $_SERVER["PHP_AUTH_USER"] information.
         $permok = true;
         break;
@@ -453,7 +453,7 @@ if ($insert) {
 }
 
 // See doc/anonym.html for structure of $result, which is intended
-// for fillform.php3 to interpret and display
+// for fillform.php to interpret and display
 
 // Going to Store Item
 if (is_array($result)) {

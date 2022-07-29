@@ -75,12 +75,12 @@ foreach ($_REQUEST as $k => $v) {
 
 
 require_once __DIR__."/./include/config.php3";
-require_once __DIR__."/include/util.php3";
-require_once __DIR__."/include/item.php3";
+require_once __DIR__ . "/include/util.php";
+require_once __DIR__ . "/include/item.php";
 require_once __DIR__."/include/view.php3";
-require_once __DIR__."/include/discussion.php3";
-require_once __DIR__."/include/searchlib.php3";
-require_once __DIR__."/include/locsess.php3";    // DB_AA object definition
+require_once __DIR__ . "/include/discussion.php";
+require_once __DIR__ . "/include/searchlib.php";
+require_once __DIR__ . "/include/locsess.php";    // DB_AA object definition
 
 // we tried to remove all global $db, so let's try to comment out following global object
 // honza 2017-04-19

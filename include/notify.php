@@ -1,0 +1,84 @@
+<?php
+/**
+ *
+ * PHP version 7.2+
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @package   Include
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      https://www.apc.org/ APC
+ *
+*/
+
+//
+// utility for notifying people of events by email
+//
+
+use AA\IO\DB\DB_AA;
+
+require_once __DIR__ . "/item.php";
+require_once __DIR__."/view.php3";
+require_once __DIR__ . "/mail.php";
+
+/** email_notify function
+ *  notify users of an event
+ * @param string $slice_id
+ * @param int    $event
+ * @param string $item_id
+ */
+function email_notify($slice_id, $event, $item_id) {
+    $p_slice_id = q_pack_id($slice_id);
+    $slice      = AA_Slice::getModule($slice_id);
+
+    // select the text templates
+    switch ($event){
+        case 1: $prefix = 'notify_holding_item';      break;
+        case 2: $prefix = 'notify_holding_item_edit'; break;
+        case 3: $prefix = 'notify_active_item';       break;
+        case 4: $prefix = 'notify_active_item_edit';  break;
+    }
+
+    // $SQL    = "SELECT ${prefix}_s as s, ${prefix}_b as b FROM slice WHERE id = '$p_slice_id'";
+    // $notify = GetTable2Array($SQL, 'aa_first', 'aa_fields');
+    $notify = DB_AA::select1([], "SELECT ${prefix}_s as s, ${prefix}_b as b FROM slice", [['id', $slice_id, 'l']]);
+
+    $SQL    = "SELECT uid FROM email_notify WHERE slice_id = '$p_slice_id' AND function = '$event'";
+    $emails = GetTable2Array($SQL, '', 'uid');
+
+    if ( $notify AND $emails) {
+
+        // ignore reading password
+        $item = AA_Items::getItem(new zids($item_id), $slice->getProperty('reading_password'));
+
+        if ($item) {
+            $body = $item->unalias($notify['b']);
+            if (trim($body)) {
+                $subject = $item->unalias($notify['s']);
+
+                $mail = new AA_Mail();
+                $mail->setBasicHeaders(['sender'=>ALERTS_EMAIL]);
+                $mail->setSubject($subject);
+                $mail->setHtml($body, html2text($body));
+                $mail->setCharset($slice->getCharset());
+                $mail->send($emails);
+            }
+        }
+    }
+}
+

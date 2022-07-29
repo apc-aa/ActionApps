@@ -94,25 +94,25 @@ $encap = ( ($encap=="false") ? false : true );
 /** APC-AA configuration file */
 require_once __DIR__."/include/config.php3";
 /** Set of useful functions used on most pages */
-require_once __DIR__."/include/util.php3";
+require_once __DIR__ . "/include/util.php";
 /**  Defines class for item manipulation (shows item in compact or fulltext format, replaces aliases ...) */
-require_once __DIR__."/include/item.php3";
+require_once __DIR__ . "/include/item.php";
 /** parses view settings, gets view data and other functions */
 require_once __DIR__."/include/view.php3";
 /** functions for searching and filtering items */
-require_once __DIR__."/include/searchlib.php3";
+require_once __DIR__ . "/include/searchlib.php";
 /** discussion utility functions */
-require_once __DIR__."/include/discussion.php3";
+require_once __DIR__ . "/include/discussion.php";
 /** Defines class for inserting and updating database fields */
-require_once __DIR__."/include/varset.php3";
+require_once __DIR__ . "/include/varset.php";
 /** Main include file for using session management function on a page */
-require_once __DIR__."/include/locsess.php3";
+require_once __DIR__ . "/include/locsess.php";
 
-require_once __DIR__."/modules/alerts/util.php3";
+require_once __DIR__ . "/modules/alerts/util.php";
 /** Used for getFrmJavascript() */
-require_once __DIR__."/include/formutil.php3";
+require_once __DIR__ . "/include/formutil.php";
 /** Some functions pulled from here to allow inclusion elsewhere */
-require_once __DIR__."/include/fillform.php3";
+require_once __DIR__ . "/include/fillform.php";
 
 pageOpen('noauth');
 

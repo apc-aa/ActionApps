@@ -285,7 +285,7 @@ function ChangeStateCateg(listbox) {
     }
 }
 
-// js for linkedit.php3
+// js for linkedit.php
 function DeleteField(index) {
     document.getElementById('selcat'+index).innerHTML = '';
     field = "document.f.selcatSelect"+index

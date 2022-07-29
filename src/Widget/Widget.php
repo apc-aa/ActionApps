@@ -185,7 +185,7 @@ class Widget extends AA_Object implements NamedInterface {
     // }
 
     /** returns $ret_val if given $option is selected for current field
-     *  This method is rewritten if_selected() method form formutil.php3
+     *  This method is rewritten if_selected() method form formutil.php
      */
     public function ifSelected($option, $ret_val) {
         if (!strlen($option)) {
@@ -195,7 +195,7 @@ class Widget extends AA_Object implements NamedInterface {
     }
 
     /**
-     *  This method is rewritten _fillSelected() method form formutil.php3
+     *  This method is rewritten _fillSelected() method form formutil.php
      * @param $aa_value AA_Value
      */
     public function _fillSelected($aa_value) {
@@ -213,7 +213,7 @@ class Widget extends AA_Object implements NamedInterface {
     }
 
     /** returns options array with marked selected options, missing options,...
-     *  This method is rewritten get_options() method form formutil.php3
+     *  This method is rewritten get_options() method form formutil.php
      * @param AA_Value   $selected
      * @param AA_Content $content
      * @param bool       $use_name
@@ -289,7 +289,7 @@ class Widget extends AA_Object implements NamedInterface {
     }
 
     /** returns select options created from given array
-     *  This method is rewritten get_options() method form formutil.php3
+     *  This method is rewritten get_options() method form formutil.php
      * @param        $options []
      * @param string $restrict
      * @param bool   $do_not_select

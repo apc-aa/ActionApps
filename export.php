@@ -38,13 +38,13 @@
  *  */
 
 require_once __DIR__."/./include/config.php3";
-require_once __DIR__."/include/util.php3";
-require_once __DIR__."/include/item.php3";
-require_once __DIR__."/include/searchlib.php3";
-require_once __DIR__."/include/locsess.php3";    // DB_AA object definition
+require_once __DIR__ . "/include/util.php";
+require_once __DIR__ . "/include/item.php";
+require_once __DIR__ . "/include/searchlib.php";
+require_once __DIR__ . "/include/locsess.php";    // DB_AA object definition
 
-require_once __DIR__."/include/discussion.php3";
-require_once __DIR__."/include/exporter.class.php3";
+require_once __DIR__ . "/include/discussion.php";
+require_once __DIR__ . "/include/exporter.class.php";
 
 if (!$_GET['id']) {
     echo 'No export id defined';

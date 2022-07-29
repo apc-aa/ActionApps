@@ -43,8 +43,8 @@ foreach ($_REQUEST as $k => $v) {
 // ----- input variables normalization - end ----------------------------------
 
 require_once __DIR__."/../../include/config.php3";
-require_once __DIR__."/../../include/mgettext.php3";
-require_once __DIR__."/../../include/locauth.php3";
+require_once __DIR__ . "/../../include/mgettext.php";
+require_once __DIR__ . "/../../include/locauth.php";
 require_once __DIR__."/actionapps.class.php";
 
 if (!is_long_id(AA::$module_id = $_POST['change_id'] ?: $_GET['change_id'] ?: $_POST['module_id'] ?: $_GET['module_id'] ?: $_POST['slice_id'] ?: $_GET['slice_id'])) {

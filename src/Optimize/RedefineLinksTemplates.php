@@ -42,8 +42,8 @@ class RedefineLinksTemplates extends \AA\Optimize\AbstractOptimize {
 
         $now = time();
         $this->message(_m('Replacing module definition'));
-        $plinks_root_id = substr('1Links' . q_pack_id(AA_ID), 0, 16); // the same as q_pack_id(Links_Category2SliceID(1)); see /modules/links/util.php3
-        $plinks_test_id = substr('2Links' . q_pack_id(AA_ID), 0, 16); // the same as q_pack_id(Links_Category2SliceID(2)); see /modules/links/util.php3
+        $plinks_root_id = substr('1Links' . q_pack_id(AA_ID), 0, 16); // the same as q_pack_id(Links_Category2SliceID(1)); see /modules/links/util.php
+        $plinks_test_id = substr('2Links' . q_pack_id(AA_ID), 0, 16); // the same as q_pack_id(Links_Category2SliceID(2)); see /modules/links/util.php
         $this->query("REPLACE INTO module (id, name, deleted, type, slice_url, lang_file, created_at, created_by, owner, flag) VALUES ('$plinks_root_id', 'Links root', 0, 'Links', 'https://example.org/index.shtml', 'en_links_lang.php', $now, '', '', 0)");
         $this->query("REPLACE INTO module (id, name, deleted, type, slice_url, lang_file, created_at, created_by, owner, flag) VALUES ('$plinks_test_id', 'Links example', 0, 'Links', 'https://example.org/index.shtml', 'en_links_lang.php', $now, '', '', 0)");
 

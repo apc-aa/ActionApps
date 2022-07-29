@@ -32,8 +32,8 @@
 // DOCUMENTATION: doc/tabledit.html, doc/tabledit_developer.html, doc/tableview.html
 
 const AA_REGISTER_GLOBALS = true;
-require_once __DIR__."/../include/init_page.php3";
-require_once __DIR__."/../include/tabledit.php3";
+require_once __DIR__ . "/../include/init_page.php";
+require_once __DIR__ . "/../include/tabledit.php";
 //require_once menu_include();   //show navigation column depending on $show
 
 // ----------------------------------------------------------------------------------------
@@ -43,13 +43,13 @@ if ($set_tview) {
     $tview = $set_tview;
 }
 
-require_once __DIR__."/../include/tv_common.php3";
-require_once __DIR__."/../include/tv_misc.php3";
+require_once __DIR__ . "/../include/tv_common.php";
+require_once __DIR__ . "/../include/tv_misc.php";
 
-// is tableview defined in special file (tableviews.php3)?
+// is tableview defined in special file (tableviews.php)?
 if ( ($tview[0] == "a") OR ( substr($tview,0,5) =='polls') ) {
     $func = "GetTableView";
-    require_once __DIR__."/../include/tableviews.php3";
+    require_once __DIR__ . "/../include/tableviews.php";
 } else {
     $func = "GetMiscTableView";
 }

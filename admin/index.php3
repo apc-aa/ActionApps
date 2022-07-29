@@ -29,17 +29,17 @@
 use AA\Util\InputVars;
 
 //const AA_REGISTER_GLOBALS = true;
-require_once __DIR__."/../include/init_page.php3";
-require_once __DIR__."/../include/varset.php3";
+require_once __DIR__ . "/../include/init_page.php";
+require_once __DIR__ . "/../include/varset.php";
 require_once __DIR__."/../include/view.php3";
-require_once __DIR__."/../include/item.php3";
-require_once __DIR__."/../include/feeding.php3";
-require_once __DIR__."/../include/itemfunc.php3";
-require_once __DIR__."/../include/notify.php3";
-require_once __DIR__."/../include/searchlib.php3";
-require_once __DIR__."/../include/formutil.php3";
-require_once __DIR__."/../include/msgpage.php3";
-require_once __DIR__."/../include/actions.php3";
+require_once __DIR__ . "/../include/item.php";
+require_once __DIR__ . "/../include/feeding.php";
+require_once __DIR__ . "/../include/itemfunc.php";
+require_once __DIR__ . "/../include/notify.php";
+require_once __DIR__ . "/../include/searchlib.php";
+require_once __DIR__ . "/../include/formutil.php";
+require_once __DIR__ . "/../include/msgpage.php";
+require_once __DIR__ . "/../include/actions.php";
 
 try {
     // array ( 'app' => 82, )

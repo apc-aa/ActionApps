@@ -28,9 +28,9 @@
 
 $require_default_lang = true;      // do not use module specific language file
 const AA_REGISTER_GLOBALS = true;
-require_once __DIR__."/../include/init_page.php3";
-require_once __DIR__."/../include/formutil.php3";
-require_once __DIR__."/../include/msgpage.php3";
+require_once __DIR__ . "/../include/init_page.php";
+require_once __DIR__ . "/../include/formutil.php";
+require_once __DIR__ . "/../include/msgpage.php";
 
 if ($cancel) {
     go_url( StateUrl(self_base() . "index.php3"));
@@ -50,7 +50,7 @@ function PrintSlice($id, $name, $type) {
     global $MODULES;
 
     $name = safe($name); $id = safe($id);
-    $url  = (($type=='S') ? './slicedel2.php' : AA_INSTAL_PATH.$MODULES[$type]['directory']."moddelete.php3" );
+    $url  = (($type=='S') ? './slicedel2.php' : AA_INSTAL_PATH.$MODULES[$type]['directory']."moddelete.php" );
 
     echo "<tr class=\"tabtxt\">
             <td><input type=\"checkbox\" name=\"deletearr[]\" value=\"$id\"></td>

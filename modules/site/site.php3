@@ -26,10 +26,10 @@ use AA\Cache\PageCache;
 use AA\IO\DB\DB_AA;
 
 require_once __DIR__."/../../include/config.php3";
-require_once __DIR__."/../../include/locsess.php3";
-require_once __DIR__."/../../include/zids.php3";
+require_once __DIR__."/../../include/locsess.php";
+require_once __DIR__."/../../include/zids.php";
 
-require_once __DIR__."/../../include/locauth.php3";
+require_once __DIR__."/../../include/locauth.php";
 
 $auth4cache = '';
 if ($_COOKIE['AA_Session'] AND !isset($_REQUEST['username'])) {   // do not authenticate new user - we could restrict reader slices later
@@ -73,7 +73,7 @@ if ($cacheentry = AA::Pagecache()->getPage($cache_key, (string)$site_nocache)) {
 
 // -- /CACHE ------------------------------------------------------------------
 
-require_once __DIR__."/../../include/util.php3";
+require_once __DIR__."/../../include/util.php";
 
 /**
  * @param $domain
@@ -213,12 +213,12 @@ if ( !isset($apc_state) )  {
     exit;
 }
 
-require_once __DIR__."/../../modules/site/util.php3";                      // module specific utils
-require_once __DIR__."/../../modules/site/sitetree.php3";
-require_once __DIR__."/../../include/searchlib.php3";
-require_once __DIR__."/../../include/view.php3";
-require_once __DIR__."/../../include/discussion.php3";
-require_once __DIR__."/../../include/item.php3";
+require_once __DIR__ . "/../../modules/site/util.php";                      // module specific utils
+require_once __DIR__ . "/../../modules/site/sitetree.php";
+require_once __DIR__."/../../include/searchlib.php";
+require_once __DIR__."/../../include/view.php";
+require_once __DIR__."/../../include/discussion.php";
+require_once __DIR__."/../../include/item.php";
 
 if ($_REQUEST['nocache'] & 2) {  // nocache=2 or nocache=3, ... - second bit set
     AA_Stringexpand::switchCacheOff();

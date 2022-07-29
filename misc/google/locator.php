@@ -29,13 +29,13 @@
 /** APC-AA configuration file */
 require_once __DIR__."/../../include/config.php3";
 /** APC-AA constant definitions */
-require_once __DIR__."/../../include/constants.php3";
-require_once __DIR__."/../../include/mgettext.php3";
+require_once __DIR__ . "/../../include/constants.php";
+require_once __DIR__ . "/../../include/mgettext.php";
 
 mgettext_bind(AA_Langs::getLang($lang_file), 'news');
 
 /** Set of useful functions used on most pages */
-require_once __DIR__."/../../include/util.php3";
+require_once __DIR__ . "/../../include/util.php";
 
 bind_mgettext_domain(DEFAULT_LANG_INCLUDE);
 

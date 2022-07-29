@@ -1,9 +1,9 @@
 <?php
 
 require_once __DIR__."/../../include/config.php3";    // scripts do so (/misc/x.php3)
-require_once __DIR__."/../../include/locsess.php3";
-require_once __DIR__."/../../include/util.php3";
-require_once __DIR__."/../../include/varset.php3";
+require_once __DIR__ . "/../../include/locsess.php";
+require_once __DIR__ . "/../../include/util.php";
+require_once __DIR__ . "/../../include/varset.php";
 
 /** This is the file used in Colnodo to fill central_conf table for AA Central.
  *  We expect the AA config files for all the AAs in /data/www/aa-config 
