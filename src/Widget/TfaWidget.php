@@ -1,4 +1,20 @@
 <?php
+/** 2FA - how to
+ * The 2FA field on AA login page is shown when the first user in the AA installation use 2FA.
+ *
+ * In order you can use it, you have to:
+ *
+ *    1) Add field Secret (secret..........) to the Reader Management slice
+ *       (if the field type Secret in not in the list, you have to add the template for this field in AA -> Optimize -> "Add secret field template")
+ *
+ *    2) Let users to edit this field (probably on some "My Profile" page) by placing edit code for this field and logged user:
+ *       {edit:{user:id}:secret..........}
+ *
+ *    3) Go to the "My Profile" page on your site for any user and generate 2FA there.
+ *
+ * Then you will see  2FA login field also on AA login.
+ */
+
 /**
  * Created by PhpStorm.
  * User: honzama
