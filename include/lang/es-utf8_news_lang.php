@@ -3279,7 +3279,7 @@ $_m["Find all FIELDS containing in ites definition the string:"]
 $_m["Get all informations about the item"]
  = "";
 
-// admin/view.php3, row 39
+// admin/view.php, row 39
 $_m["Administrative view"]
  = "Vista de administración";
 

@@ -1718,7 +1718,7 @@ $_m["complex parameter"]
  = "";
 
 // include/constants_param_wizard.php, row 1112
-$_m["this parameter is the same as we use in view.php3 url parameter - see the FAQ"]
+$_m["this parameter is the same as we use in view.php url parameter - see the FAQ"]
  = "";
 
 // include/constants_param_wizard.php, row 1114

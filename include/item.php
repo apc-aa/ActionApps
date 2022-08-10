@@ -1316,7 +1316,7 @@ class AA_Item {
                 $red = $this->getval('valid_rank')*0.255;
                 return sprintf("%02X%02X%02X",$red,255-$red,0);
             case 'selected':  // returns true, if current item is the selected one
-                // (given by set[]=selected-454343 view.php3 parameter)
+                // (given by set[]=selected-454343 view.php parameter)
                 // we can compare short_ids as well as long ones
                 $data2compare = false;
                 if (($guesstype = guesstype($p[1])) == 's') {

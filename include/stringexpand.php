@@ -983,7 +983,7 @@ class AA_Stringexpand_Htmltogglecss extends AA_Stringexpand_Nevercache {
 }
 
 /** Expands {htmlajaxtogglecss:<toggle1>:<toggle2>:<css_rule_hide>:<url_of_text>[:<css_rule_update>]} like:
- *          {htmlajaxtogglecss:+:-:#id_#SITEM_ID:/apc-aa/view.php3?vid=33&cmd[33]=x-33-{_#SITEM_ID}}
+ *          {htmlajaxtogglecss:+:-:#id_#SITEM_ID:/apc-aa/view.php?vid=33&cmd[33]=x-33-{_#SITEM_ID}}
  *  It creates the link text1 (or text2) +/- toggle which loads+displays/hides all
  *  elements matching the css_rule (#id82422) in our example
  *  The /javscript/aajslib.php shoud be included to the page
@@ -1031,9 +1031,9 @@ class AA_Stringexpand_Htmlajaxtogglecss extends AA_Stringexpand_Nevercache {
         $switches    = str_replace(['[+]','[-]'], [$plusimg, $minusimg], [$switch_state_1, $switch_state_2]);
         $switches_js = str_replace(["'", '"', "\n", "\r"], ["\'", "\'", ' ', ' '], $switches);
 
-        // automaticaly add conversion to utf-8 for AA view.php3 calls
+        // automaticaly add conversion to utf-8 for AA view.php calls
         // -- removed - view.php now check for AJAX call automaticaly
-        //if ((strpos($url_of_text,'/view.php3?') !== false) AND (strpos($url_of_text,'convert')===false)) {
+        //if ((strpos($url_of_text,'/view.php?') !== false) AND (strpos($url_of_text,'convert')===false)) {
         //    $url_of_text = get_url($url_of_text,array('convertto' => 'utf-8'));
         //}
 
@@ -1083,7 +1083,7 @@ class AA_Stringexpand_Livesearch extends AA_Stringexpand_Nevercache {
                 </form>
               </header>
               <section class=itemgroup onkeydown=AA__Keynavigate>";
-        $ret .= AA::Stringexpander()->unalias("{view.php3?vid=". str_replace('AA_LS_QUERY', $default, $view_param). "}");
+        $ret .= AA::Stringexpander()->unalias("{view.php?vid=". str_replace('AA_LS_QUERY', $default, $view_param). "}");
         $ret .= "      </section>
             </article>";
         return $ret;
@@ -1306,9 +1306,9 @@ class AA_Stringexpand_Htmlajaxtoggle extends AA_Stringexpand {
         $switches    = str_replace(['[+]','[-]'], [$plusimg, $minusimg], [$switch_state_1, $switch_state_2]);
         $switches_js = str_replace(["'", '"', "\n", "\r"], ["\'", "\'", ' ', ' '], $switches);
 
-        // automatically add conversion to utf-8 for AA view.php3 calls
+        // automatically add conversion to utf-8 for AA view.php calls
         // -- removed - view.php now check for AJAX call automatically
-        //if ((strpos($url,'/view.php3?') !== false) AND (strpos($url,'convert')===false)) {
+        //if ((strpos($url,'/view.php?') !== false) AND (strpos($url,'convert')===false)) {
         //    $url = get_url($url,array('convertto' => 'utf-8'));
         //}
 
@@ -1322,7 +1322,7 @@ class AA_Stringexpand_Htmlajaxtoggle extends AA_Stringexpand {
 
 
 /** Expands {lazy:<url_of_text2>[:<placeholder>]} like:
- *          {lazy:/apc-aa/view.php3?vid=22}
+ *          {lazy:/apc-aa/view.php?vid=22}
  *  displays <placeholder>, but when user scroll the placeholder to the screen, it loads view by ajax
  *  @param $url            - url, which will be called by AJAX and displayed
  *                           on demand (click on the link)
@@ -2787,6 +2787,8 @@ class AA_Stringexpand_Convert extends AA_Stringexpand {
  *    {view:57::page-{xpage}}
  *    {view:57:{ids:0497ac46076bf257d15f3e030170da92:d-category........-=-Env}}
  *    {view:45::group_by-}   // switches off grouping in the view
+ *    {view:45:{ids:0497ac46076bf257d15f3e030170da92:d-category........-=-Env}:sort-} or
+ *    {view:45:{ids:0497ac46076bf257d15f3e030170da92:d-category........-=-Env}:sort-AAnoSORT}  // switches off view sorting - the items stays in the same order as ids
  *    {view:45::listlen-3,sort-headline........-,from-2}}
  */
 class AA_Stringexpand_View extends AA_Stringexpand {
@@ -2837,9 +2839,9 @@ class AA_Stringexpand_Polls extends AA_Stringexpand_Nevercache {
 
 
 /** Allows you to call view with conds:
- *    {view.php3?vid=9&cmd[9]=c-1-{conds:{_#VALUE___}}}
+ *    {view.php?vid=9&cmd[9]=c-1-{conds:{_#VALUE___}}}
  *  or
- *    {view.php3?vid=9&cmd[9]=c-1-{conds:category.......1}}
+ *    {view.php?vid=9&cmd[9]=c-1-{conds:category.......1}}
  *  or
  *    {ids:5367e68a88b82887baac311c30544a71:d-headline........-=-{conds:category.......3:1}}
  *  see the third parameter (1) in the last example!
@@ -5551,7 +5553,7 @@ class AA_Unalias_Callback {
         // {inputvar:<field_id>:part:param}
         // {formbreak:part_name}
         // {formpart:}
-        // {view.php3?vid=12&cmd[12]=x-12-34}
+        // {view.php?vid=12&cmd[12]=x-12-34}
         // {dequote:already expanded and quoted string}
         // {unpacked_id.....}
         // {mlx_view:view format in html} mini view of translatiosn available for this article
@@ -5679,8 +5681,8 @@ class AA_Unalias_Callback {
                 return QuoteColons($fileout);
                 // QuoteColons used to mark colons, which is not parameter separators.
             }
-            elseif ( aa_substr($out, 0,10) == "view.php3?" ) {
-                // Xinha editor replaces & with &amp; so we need to change it back
+            elseif ( (aa_substr($out,0,9) == 'view.php?') OR (aa_substr($out,0,10) == 'view.php3?') ) {
+                // CKEditor editor replaces & with &amp; so we need to change it back
                 $param      = str_replace(['&amp;','-&lt;','-&gt;','&lt;-','&gt;-'], ['&','-<','->','<-','>-'], aa_substr($out,10));
                 // do not store in the pagecache, but store into contentcache
 

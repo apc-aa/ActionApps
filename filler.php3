@@ -15,7 +15,7 @@
  *                  validation of data, ...)
  *   inline       - the ok url will be send to output directly (by readfile)
  *                  (for AJAX editing)
- *                  ok_url = "https://example.org/aa/view.php3?vid=1374&cmd[1374]=x-1374-_#N1_ID___"
+ *                  ok_url = "https://example.org/aa/view.php?vid=1374&cmd[1374]=x-1374-_#N1_ID___"
  *   ret_code     - AA expression used as return code for inline (AJAX edit)
  *   force_status_code - you may add this to force to change the status code
  *                       but the new status code must always be higher than bin2fill
@@ -191,7 +191,7 @@ function SendOkPage($txt, $new_ids = []) {
     }
 
     // we can use something like:
-    //    ok_url = "/aa/view.php3?vid=1374&cmd[1374]=x-1374-_#N1_ID___"
+    //    ok_url = "/aa/view.php?vid=1374&cmd[1374]=x-1374-_#N1_ID___"
     // You can use also _#N1_ID___, _#N2_ID___,.., _#N245_ID___, ...)
     //    the ids goes from N1, 2, 3..  in order of filling in the database and
     //    DO NOT correspond with nXXX in aa[n100_536366d6ee723][..]

@@ -946,8 +946,8 @@ $_m["a parameter passed to the function"]
 $_m["complex parameter"]
     = "Slo�eni parametar";
 
-$_m["this parameter is the same as we use in view.php3 url parameter - see the FAQ"]
-    = "ovaj parametar je isti kao onaj koji se koristi u parametrima od view.php3 - pogledajte �esto postavljana pitanja";
+$_m["this parameter is the same as we use in view.php url parameter - see the FAQ"]
+    = "ovaj parametar je isti kao onaj koji se koristi u parametrima od view.php - pogledajte �esto postavljana pitanja";
 
 $_m["image width"]
     = "�irina slikovne datoteke";
@@ -3969,7 +3969,7 @@ $_m["Find all FIELDS containing in ites definition the string:"]
 $_m["Get all informations about the item"]
     = "";
 
-// admin/view.php3, row 39
+// admin/view.php, row 39
 $_m["Administrative view"]
     = "";
 

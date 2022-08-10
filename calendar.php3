@@ -10,7 +10,7 @@
     
     <html><body>
     <!--#include virtual="/apc-aa/doc/script/calendar.php3"-->
-    <!--#include virtual="/apc-aa/view.php3?vid=317"-->
+    <!--#include virtual="/apc-aa/view.php?vid=317"-->
     </body></html>
     
     (c) Jakub Adamek, May 2002

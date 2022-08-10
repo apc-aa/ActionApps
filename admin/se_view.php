@@ -491,7 +491,7 @@ $form_buttons = [
 // Print View Form ----------
 FrmTabCaption(_m("Defined Views"), $form_buttons);
 
-$view_url = AA_INSTAL_URL. "view.php3?vid=$view_id";
+$view_url = AA_INSTAL_URL. "view.php?vid=$view_id";
 //FrmStaticText(_m("Id"), "<a href=\"$view_url\" title=\"". _m('show this view') ."\">$view_id</a>", false, '', '', false );
 
 foreach ($VIEW_TYPES[$view_type] as $k => $v) {
@@ -570,13 +570,13 @@ if ($view) {
     if ($view_conds   = $set->getCondsAsString()) {
         $view_sort    = $set->getSortAsString();
         $view_recipe1 = '&lcub;view:' . $view_id . ':-&lcub;ids:'. $view->getSliceId() . ':'. $view_conds . ($view_sort ? ':'.$view_sort: '') . '&rcub;&rcub;';
-        $view_recipe2 = '&lcub;view.php3?vid=' . $view_id . '&cmd[' . $view_id . ']=' . (new AA_Set(null, $view->getConds()))->getCondsAsString() . ($view_sort ? '&set[' . $view_id . ']=sort-'.$view_sort: '').'&rcub;';
+        $view_recipe2 = '&lcub;view.php?vid=' . $view_id . '&cmd[' . $view_id . ']=' . (new AA_Set(null, $view->getConds()))->getCondsAsString() . ($view_sort ? '&set[' . $view_id . ']=sort-'.$view_sort: '').'&rcub;';
     }
 }
 
 $apage->addHelpbox(_m('To include view in your sitemodule webpage use'), '<pre>
        &lcub;view:'.$view_id2show.'&rcub;
-       &lcub;view.php3?vid='.$view_id2show.'&rcub;
+       &lcub;view.php?vid='.$view_id2show.'&rcub;
        '.$view_recipe1.'
        '.$view_recipe2.'
      </pre>

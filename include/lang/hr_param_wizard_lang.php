@@ -1752,8 +1752,8 @@ $_m["complex parameter"]
  = "Slo�eni parametar";
 
 // include/constants_param_wizard.php, row 1112
-$_m["this parameter is the same as we use in view.php3 url parameter - see the FAQ"]
- = "ovaj parametar je isti kao onaj koji se koristi u view.php3 parametru- vidi �PP";
+$_m["this parameter is the same as we use in view.php url parameter - see the FAQ"]
+ = "ovaj parametar je isti kao onaj koji se koristi u view.php parametru- vidi �PP";
 
 // include/constants_param_wizard.php, row 1114
 $_m["vid=4&amp;cmd[23]=v-25"]

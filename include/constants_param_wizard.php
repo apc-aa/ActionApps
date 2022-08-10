@@ -642,7 +642,7 @@ $FIELD_FUNCTIONS = [
     "params"=> [
         [
             "name"=>_m("complex parameter"),
-            "desc"=>_m("this parameter is the same as we use in view.php3 url parameter - see the FAQ"),
+            "desc"=>_m("this parameter is the same as we use in view.php url parameter - see the FAQ"),
             "type"=>"STR",
             "example"=>_m("vid=4&amp;cmd[23]=v-25")
         ]

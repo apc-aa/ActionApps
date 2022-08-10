@@ -36,7 +36,7 @@ $save_hidden = true;   // do not delete r_hidden session variable in init_page!
 const AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/varset.php";
-require_once __DIR__."/../include/view.php3";
+require_once __DIR__ . "/../include/view.php";
 require_once __DIR__ . "/../include/item.php";
 require_once __DIR__ . "/../include/feeding.php";
 require_once __DIR__ . "/../include/itemfunc.php";

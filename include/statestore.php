@@ -720,10 +720,10 @@ class AA_Object extends AA_Storable implements AA_iEditable {
             // random sorting by following url parameters:
             //    sort[0]=random
             //    sort[0]=category........&sort[1]=random
-            //    /apc-aa/view.php3?vid=13&cmd[13]=c-1-1&set[13]=sort-random
+            //    /apc-aa/view.php?vid=13&cmd[13]=c-1-1&set[13]=sort-random
             // This operatin is quite slow in MySQL, so if you need just
             // one random item (for banner, ...), you should rather use
-            // set[]=random-1 parameter for view.php3
+            // set[]=random-1 parameter for view.php
             if ( $fid == 'random' ) {
                 $select_order[] = 'RAND()';
 

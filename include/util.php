@@ -893,7 +893,7 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
     if ($use_short_ids) {
         // if $zids->onetype() == 's' we should return $content constructed using short_id (to be backward compatible)
         // it is deprecated, so maybe rather update calling code to accept $content with unpacked_id keys
-        // (there is problem with calling after zids->short_or_longids - say: view.php3?vid=26&cmd[26]=x-26-23074  ) Honza 2016-09-30
+        // (there is problem with calling after zids->short_or_longids - say: view.php?vid=26&cmd[26]=x-26-23074  ) Honza 2016-09-30
         $content_long = $content;
         $content = [];
         foreach ($content_long as $c4id) {

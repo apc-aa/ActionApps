@@ -207,7 +207,7 @@ class AA_View_Commands {
             if (isset($als) AND is_array($als)) {
                 foreach ($als as $k => $v) {
                     // we are replacing the aliases in the url, so you can write
-                    // something like {view.php3?vid=12&cmd[]=x-34-CAMPAIGN&als[CAMPAIGN]=42525}
+                    // something like {view.php?vid=12&cmd[]=x-34-CAMPAIGN&als[CAMPAIGN]=42525}
                     // which displays item 42525. als[] could come through url, also.
                     // Be carefull with alias names - It is good idea to use longer
                     // aliases (say 8 characters), because you can come into trouble
@@ -215,7 +215,7 @@ class AA_View_Commands {
                     // cmd including the first x in cmd[]=x-34-..
 
                     // you can use also _#CAMPAIGN in url:
-                    // {view.php3?vid=12&cmd[]=x-34-_%23CAMPAIGN&als[CAMPAIGN]=42525}
+                    // {view.php?vid=12&cmd[]=x-34-_%23CAMPAIGN&als[CAMPAIGN]=42525}
                     // (%23 is urlencoded #)
                     if (substr($k,0,2) != '_#') {
                         $cmd_part = str_replace('_#'.$k, $v, $cmd_part);
@@ -270,7 +270,7 @@ function ParseSettings($set_arr) {
  */
 function ParseViewParameters($query_string="") {
     if ($use_globals = (!$query_string OR !preg_match("/vid=[a-z]/", $query_string))) {
-        // old behavior - we do not want to use global dependecy with {view.php3} but we do not removed it in times when we wrote {view.php3..}{ alias, so we are removing it at least for new "named views"
+        // old behavior - we do not want to use global dependecy with {view.php} but we do not removed it in times when we wrote {view.php..}{ alias, so we are removing it at least for new "named views"
         global $cmd, $set, $vid, $als;
         global $x;   // url parameter - used for cmd[]=x-111-url view parameter
     }
@@ -286,7 +286,7 @@ function ParseViewParameters($query_string="") {
 
             // we no not want older calls to ParseViewParameters() will infect this call
             // @todo - make two versions - one for url parameters, second for
-            // {view.php3...} parameters, where we do not want to read global data
+            // {view.php...} parameters, where we do not want to read global data
             unset($cmd[$vid]);
             unset($set[$vid]);
         }
@@ -367,7 +367,7 @@ function ParseViewParameters($query_string="") {
     // Following line is here just for caching purposes - we are creating cache
     // keystring from view parameters and we need to add all set[] and cmd[]
     // in the keystring, because of cases like:
-    //     view.php3?vid=1781&set[997]=selected-759644
+    //     view.php?vid=1781&set[997]=selected-759644
     // (view 997 is called inside 1781)
     $arr['forcache'] = [$new_params];
 
@@ -430,7 +430,7 @@ function ParseViewParameters($query_string="") {
 
 
 /** ParseBannerParam function
- *  Parses banner url parameter (for view.php3 as well as for slice.php3
+ *  Parses banner url parameter (for view.php as well as for slice.php3
  *  (banner parameter format: banner-<position in list>-<banner vid>-[<weight_field>]
  *  (@see {@link http://apc-aa.sourceforge.net/faq/#219})
  */
@@ -488,7 +488,6 @@ function GetListLength($listlen, $to, $from, $page, $idscount, $random) {
 class AA_Showview {
     protected $_view_param     = [];
     protected $_used_slice_ids = [];
-    protected $_hit_id         = null;
 
     function __construct($view_param) {
         $this->_view_param = $view_param;
@@ -549,7 +548,7 @@ class AA_Showview {
         if (!isset($GLOBALS['apc_state']['router'])) {
             mgettext_bind($view->getLang(), 'output');
         }
-        if (!AA::$langnum) { // for multilingual content (not defined when called from view.php3, or cron.php3 mail, ...)
+        if (!AA::$langnum) { // for multilingual content (not defined when called from view.php, or cron.php3 mail, ...)
             AA::$lang    = strtolower(substr($view->getLang(),0,2));   // actual language - two letter shortcut cz / es / en
             AA::$langnum = [AA_Langs::getLangName2Num(AA::$lang)];   // array of prefered languages in priority order.
         }

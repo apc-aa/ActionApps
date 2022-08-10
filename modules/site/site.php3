@@ -48,7 +48,7 @@ if ($_COOKIE['AA_Session'] AND !isset($_REQUEST['username'])) {   // do not auth
 //       $apc_state['state'] (we store browser agent in state in kormidlo.cz)
 //  28Apr05  - Honza - added also $all_ids, $add_disc, $disc_type, $sh_itm,
 //                     $parent_id, $ids, $sel_ids, $disc_ids - for discussions
-//                      - it is in fact all global variables used in view.php3
+//                      - it is in fact all global variables used in view.php
 $cache_key = get_hash('site', PageCache::globalKeyArray(), $_SERVER['REQUEST_URI'], $_SERVER['REQUEST_METHOD'], $_SERVER['REDIRECT_URL'],  $_SERVER['REDIRECT_QUERY_STRING_UNESCAPED'],$_SERVER['QUERY_STRING_UNESCAPED'], get_authorization_header(), $_POST, $_GET, $auth4cache);  // $_GET because $_SERVER['REQUEST_URI'] do not contain variables from Rewrite (site_id); *_STRING_UNESCAPED is for old sitemodule - see shtml_query_string(); AA\Cache\PageCache::globalKeyArray - now only for _COOKIES and HTTP_HOST
 
 

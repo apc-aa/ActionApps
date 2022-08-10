@@ -849,7 +849,7 @@ class AA_Inserter_2fa extends AA_Inserter {
      */
     static function getClassProperties():array  {
         return [             //           id         name                       type      multi  persist validator, required, help, morehelp, example
-                             'crypt_phrase' => new AA_Property( 'crypt_phrase',  _m("Encrypt phrase"), 'text', false, true, 'text', false, _m('Pasword to be applied for crypting this field value. Could contain AA expressions or aliases (for user item in Reader Management slice)'), '', 'SomeSecret784!*')
+                             'crypt_phrase' => new AA_Property( 'crypt_phrase',  _m("Encrypt phrase"), 'text', false, true, 'text', false, _m('Password to be applied for encrypting this field value. Could contain AA expressions or aliases (for user item in Reader Management slice)'), '', 'SomeSecret784!*')
         ];
     }
 

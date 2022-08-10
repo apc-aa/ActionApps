@@ -114,7 +114,7 @@ $_m["page length (number of items)"]
  = "longitud de la página (número de ítems)";
 
 // ./slice.php3, row 569
-// include/view.php3, row 593
+// include/view.php, row 593
 $_m["No item found"]
  = "No se encontraron items";
 

@@ -56,7 +56,7 @@ function AA_GalleryGoto(photo_div, viewid, sitemid, galeryid, thumb_id) {
         $(jqid(thumb_id)).addClass('active');
        // $(jqid(thumb_id)).parentNode.scrollTop = $(jqid(thumb_id)).offsetTop - $(jqid(thumb_id)).parentNode.offsetTop - 50;
     }
-    $(jqid(photo_div)).load(AA_GetConf('path') + 'view.php3?vid=' + viewid + '&cmd[' + viewid + ']=x-' + viewid + '-' + sitemid + '&convertto=utf-8&als[GALERYID]=' + galeryid);
+    $(jqid(photo_div)).load(AA_GetConf('path') + 'view.php?vid=' + viewid + '&cmd[' + viewid + ']=x-' + viewid + '-' + sitemid + '&convertto=utf-8&als[GALERYID]=' + galeryid);
 }
 
 // now AA specific functions

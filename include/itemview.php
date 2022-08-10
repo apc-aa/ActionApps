@@ -60,7 +60,7 @@ class itemview {
                            // aliases[slice_id0] are aliases for slice 0 etc.
   var $clean_url;          // url of slice page with session id and encap..
   var $group_fld;          // id of field for grouping
-  var $disc;               // array of discussion parameters (see apc-aa/view.php3)
+  var $disc;               // array of discussion parameters (see apc-aa/view.php)
   var $get_content_funct;  // function to call, if we want to get content
                            // (using "Abstract Data Structure" described also
                            // in {@link http://apc-aa.sourceforge.net/faq/#1337})
@@ -100,14 +100,14 @@ class itemview {
 
     $this->aliases    = $aliases;
     // add special alias, which is = 1 for selected item (given by
-    // set[34]=selected-43535 view.php3 parameter
+    // set[34]=selected-43535 view.php parameter
     if ( !$aliases['_#SELECTED'] AND $slice_info['selected_item'] ) {
         $this->aliases['_#SELECTED'] = ['fce'=>'f_e:selected:'.$slice_info['selected_item'], "param"=>"", "hlp"=>""];
     }
 
     // we fill the ID_COUNT now, because the global $GLOBALS['QueryIDsCount'] variable is
     // most probably filled by the right value. Later the $QueryIDsCount could be damaged
-    // mainly if you use nested views, ... {view.php3?vid=} which makes new queries
+    // mainly if you use nested views, ... {view.php?vid=} which makes new queries
     $idcount = (string)($GLOBALS['QueryIDsCount'] ?: ' 0');
     $this->aliases["_#ID_COUNT"] = GetAliasDef( "f_t:$idcount",  "id..............", _m("number of found items"));
 

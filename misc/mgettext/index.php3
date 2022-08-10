@@ -86,7 +86,7 @@ $lang_groups ["news"] =
            "include/",
            "-./slice.php3",
            "-admin/param_wizard.php",
-           "-include/view.php3",
+           "-include/view.php",
            "-include/constants_param_wizard.php",
            "-include/mgettext.php"
     ];
@@ -104,15 +104,15 @@ $lang_groups ["links"] =
 // _polls_lang.php language files, used in the Links module
 $lang_groups ["polls"] =
     ["modules/polls/"];
-// _output_lang.php language files, used in the output, i.e. slice.php3 and view.php3
+// _output_lang.php language files, used in the output, i.e. slice.php3 and view.php
 $lang_groups ["output"] =
     [
         "./slice.php3",
-           "./view.php3",
+           "./view.php",
            "./discussion.php",
            "include/util.php",
            "include/slice.php",
-           "include/view.php3",
+           "include/view.php",
            "include/discussion.php",
            "include/item.php",
            "include/scroller.php",

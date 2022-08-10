@@ -551,7 +551,7 @@ for ($iAlias=1; $iAlias <= 3; ++$iAlias) {
 
     FrmStaticText(_m("Alias")." $iAlias", $aname_row,'',"", false);
     FrmInputSelect($alias_func_f, _m("Function"), $func_types, $$alias_func_f, false, $alias_hlp);
-    FrmTextarea($alias_func, _m("Parameters"), $$alias_func, 8, 60, false, AA_View::getViewJumpLinks('view.php3?'.$$alias_func)); // added for f_v parameters
+    FrmTextarea($alias_func, _m("Parameters"), $$alias_func, 8, 60, false, AA_View::getViewJumpLinks('view.php?'.$$alias_func)); // added for f_v parameters
     FrmTextarea($alias_help, _m("Description"), $$alias_help, 2, 0);
     if ($iAlias != 3) {
         echo "\n    <tr><td colspan=2><hr></td></tr>";

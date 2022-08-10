@@ -15,7 +15,7 @@ class AddSecretFieldTemplate extends \AA\Optimize\AddSeoFieldTemplate {
     /** field settings different from standard field setting  */
     protected function fieldSpecialSetting(): array {
         return [
-            'input_help' => 'Secret key for 2FA - encrypted, not acessible as normal field',
+            'input_help' => 'Secret key for 2FA - encrypted, not accessible as normal field',
             'input_pri'  => '2056',
         ];
     }

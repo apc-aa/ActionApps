@@ -49,7 +49,7 @@ require_once __DIR__ . "/util.php";
 
 require_once __DIR__ . "/../../modules/alerts/lang.php";
 require_once __DIR__ . "/../../include/item.php";
-require_once __DIR__."/../../include/view.php3";
+require_once __DIR__ . "/../../include/view.php";
 
 require_once __DIR__ . "/../../include/searchlib.php";
 require_once __DIR__ . "/../../modules/alerts/alerts_sending.php";

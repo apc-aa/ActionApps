@@ -33,7 +33,7 @@
 use AA\IO\DB\DB_AA;
 
 require_once __DIR__ . "/item.php";
-require_once __DIR__."/view.php3";
+require_once __DIR__ . "/view.php";
 require_once __DIR__ . "/mail.php";
 
 /** email_notify function

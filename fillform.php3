@@ -98,7 +98,7 @@ require_once __DIR__ . "/include/util.php";
 /**  Defines class for item manipulation (shows item in compact or fulltext format, replaces aliases ...) */
 require_once __DIR__ . "/include/item.php";
 /** parses view settings, gets view data and other functions */
-require_once __DIR__."/include/view.php3";
+require_once __DIR__ . "/include/view.php";
 /** functions for searching and filtering items */
 require_once __DIR__ . "/include/searchlib.php";
 /** discussion utility functions */

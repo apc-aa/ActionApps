@@ -29,7 +29,7 @@ https://www.apc.org/
 use AA\IO\DB\DB_AA;
 
 require_once __DIR__ . "/../../include/item.php";
-require_once __DIR__."/../../include/view.php3";
+require_once __DIR__ . "/../../include/view.php";
 
 require_once __DIR__ . "/../../include/searchlib.php";
 require_once __DIR__ . "/../../include/mail.php";
