@@ -162,7 +162,7 @@ if ($perms = AA::$perm->getObjectsPerms(AA_ID, "aa")) {
         $uinfo = AA::$perm->getIDsInfo($uid);
         if (!$uinfo) {
             $notusers[]    = $uid;      // non-existent user/group
-        } elseif ($perm != $perms_roles["SUPER"]['id']) {
+        } elseif ($perm != AA_Perm::ROLES["SUPER"]['id']) {
             $others[]      = $uid;        // other than super privilege
         } elseif ($uinfo["type"] == 'Group') {
             $supergroups[] = $uid;   // groups with super privileges
@@ -275,7 +275,7 @@ switch ($phase) {
 
       // Assign super admin privilege
 
-      AddPerm($superid, AA_ID, "aa", $perms_roles["SUPER"]['id']);
+      AddPerm($superid, AA_ID, "aa", AA_Perm::ROLES["SUPER"]['id']);
 
       // Check whether succefful
 

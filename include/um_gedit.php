@@ -44,7 +44,7 @@ do  {
         }
         if ( !count($err) ) {
             if ($group_super) {	// set super admin privilege
-                AddPerm($newgroupid, AA_ID, "aa", $perms_roles["SUPER"]['id']);
+                AddPerm($newgroupid, AA_ID, "aa", AA_Perm::ROLES["SUPER"]['id']);
             }
             $Msg = MsgOk(_m("Group successfully added to permission system"));
             go_url( get_url(StateUrl($_SERVER['PHP_SELF']), 'GrpSrch=1&grp='. urlencode($group_name)), $Msg);
@@ -55,7 +55,7 @@ do  {
             $err["LDAP"] = MsgErr( _m("Can't change group") );
         }
         if ($group_super) {		// set or revoke super admin privilege
-            AddPerm($grouprecord["uid"], AA_ID, "aa", $perms_roles["SUPER"]['id']);
+            AddPerm($grouprecord["uid"], AA_ID, "aa", AA_Perm::ROLES["SUPER"]['id']);
         } else {
             DelPerm($grouprecord["uid"], AA_ID, "aa");
         }
@@ -82,9 +82,9 @@ do  {
     // Procces module permissions ----------------------------------------------
 
     // Change module permissions if user wants
-    ChangeUserModulePerms( $perm_mod, $selected_group, $perms_roles );
+    ChangeUserModulePerms($perm_mod, $selected_group);
 
     // Add new modules for this user
-    AddUserModulePerms( $new_module, $new_module_role, $selected_group, $perms_roles);
+    AddUserModulePerms($new_module, $new_module_role, $selected_group);
 
 } while (false);

@@ -287,7 +287,7 @@ class AA_Stringexpand_User extends AA_Stringexpand {
      * @return bool|mixed|null|string|string[]
      */
     function expand($field='') {
-        global $cache_nostore, $perms_roles;
+        global $cache_nostore;
         // this GLOBAL :-( variable is message for pagecache to NOT store views (or
         // slices), where we use {user:xxx} alias, into cache (AUTH_USER is not in
         // cache's keyString.
@@ -298,13 +298,13 @@ class AA_Stringexpand_User extends AA_Stringexpand {
             case 'password': return $_SERVER['PHP_AUTH_PW'];
             case 'role' : // returns users permission to slice
             case 'permission' :
-                if ( IfSlPerm($perms_roles['SUPER']['perm']) ) {
+                if ( IfSlPerm(AA_Perm::ROLES['SUPER']['perm']) ) {
                     return 'super';
-                } elseif ( IfSlPerm($perms_roles['ADMINISTRATOR']['perm'] ) ) {
+                } elseif ( IfSlPerm(AA_Perm::ROLES['ADMINISTRATOR']['perm'] ) ) {
                     return 'administrator';
-                } elseif ( IfSlPerm($perms_roles['EDITOR']['perm'] ) ) {
+                } elseif ( IfSlPerm(AA_Perm::ROLES['EDITOR']['perm'] ) ) {
                     return 'editor';
-                } elseif ( IfSlPerm($perms_roles['AUTHOR']['perm'] ) ) {
+                } elseif ( IfSlPerm(AA_Perm::ROLES['AUTHOR']['perm'] ) ) {
                     return 'author';
                 }
                 return 'undefined';

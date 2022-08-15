@@ -49,15 +49,15 @@ function CanChangeRole($user_perm, $editor_perm, $role_perm) {
  *
  */
 function ChangeRole() {
-    global $UsrAdd, $UsrDel, $slice_id, $editor_perms, $role, $perms_roles;
+    global $UsrAdd, $UsrDel, $slice_id, $editor_perms, $role;
 
     if ( $UsrAdd ) {
-        if ( CanChangeRole( AA::$perm->getModulePerms($UsrAdd, $slice_id, false), $editor_perms, $perms_roles[$role]['perm']) ) {
-            AddPerm($UsrAdd, $slice_id, "slice", $perms_roles[$role]['id']);
+        if ( CanChangeRole( AA::$perm->getModulePerms($UsrAdd, $slice_id, false), $editor_perms, AA_Perm::ROLES[$role]['perm']) ) {
+            AddPerm($UsrAdd, $slice_id, "slice", AA_Perm::ROLES[$role]['id']);
             AA::Pagecache()->invalidateFor($slice_id);  // invalidate old cached values
         }
     } elseif ( $UsrDel ) {
-        if ( CanChangeRole(AA::$perm->getModulePerms($UsrDel, $slice_id, false), $editor_perms, $perms_roles["AUTHOR"]['perm']) ) { // smallest permission
+        if ( CanChangeRole(AA::$perm->getModulePerms($UsrDel, $slice_id, false), $editor_perms, AA_Perm::ROLES["AUTHOR"]['perm']) ) { // smallest permission
             DelPerm($UsrDel, $slice_id, "slice");
         }
 

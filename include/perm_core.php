@@ -111,38 +111,6 @@ const PS_MODW_SETTINGS         = "A";         //       | set site module propert
 // super         - possibly letters 'QRSTUVW'
 
 
-// $perms_roles[role]['id'] is number stored to permission system for specified
-// role. On usege time the number is replaced by set of letters defined in
-// $perms_roles[role]['perm']. However, it is possible to store the permission
-// letters into perm system directly (in case you want user with specific rights)
-
-$perms_roles = [
-  "AUTHOR" => [         // AUTHOR can write items and edit his items (is true for 'slice' module)
-     'id' => '1',
-     'perm' => 'abcdefg'
-  ],                // author
-  "EDITOR" => [         // EDITOR = AUTHOR + can edit and manage all items (is true for 'slice' module)
-     'id' => '2',
-     'perm' => 'abcdefg'.                 // author
-               'hijklmnopqrs'
-  ],           // editor
-  "ADMINISTRATOR" => [  // ADMINISTRATOR = EDITOR + can change slice properties (is true for 'slice' module)
-     'id' => '3',
-     'perm' => 'abcdefg'.                 // author
-               'hijklmnopqrs'.            // editor
-               'ABCDEFGHIJKLMNOP'
-  ],       // administrator
-  "SUPER" => [          // SUPER = ADMINISTRATOR + can set any properties for any slice (is true for 'slice' module)
-     'id' => '4',
-     'perm' => 'abcdefg'.                 // author
-               'hijklmnopqrs'.            // editor
-               'ABCDEFGHIJKLMNOP'.        // administrator
-               'QRSTUVW'
-  ]
-];               // super
-// reserve: tuvwxyzXYZ and special characters like +-/*@... (but no numbers!!!)
-
-
 // defines, which roles youcan use with each module
 $perms_roles_modules = [
   'S'     => ["AUTHOR","EDITOR","ADMINISTRATOR"],  // S - slice
@@ -448,6 +416,37 @@ class AA_Perm {
     /** @var $perm_mode - '' | 'cron' - currently used only for toexecute task for ANONYMOUS_EDIT_CRON permission  */
     private $perm_mode;
 
+    /** AA_Perm::ROLES[role]['id'] is number stored to permission system for specified
+     * role. On usege time the number is replaced by set of letters defined in
+     * AA_Perm::ROLES[role]['perm']. However, it is possible to store the permission
+     * letters into perm system directly (in case you want user with specific rights)
+     */
+    public const ROLES = [
+        "AUTHOR" => [         // AUTHOR can write items and edit his items (is true for 'slice' module)
+            'id'   => '1',
+            'perm' => 'abcdefg'
+        ],
+        "EDITOR" => [         // EDITOR = AUTHOR + can edit and manage all items (is true for 'slice' module)
+            'id'   => '2',
+            'perm' => 'abcdefg'.                 // author
+                      'hijklmnopqrs'
+        ],
+        "ADMINISTRATOR" => [  // ADMINISTRATOR = EDITOR + can change slice properties (is true for 'slice' module)
+            'id'   => '3',
+            'perm' => 'abcdefg'.                 // author
+                      'hijklmnopqrs'.            // editor
+                      'ABCDEFGHIJKLMNOP'
+        ],
+        "SUPER" => [          // SUPER = ADMINISTRATOR + can set any properties for any slice (is true for 'slice' module)
+             'id'   => '4',
+             'perm' => 'abcdefg'.                 // author
+                       'hijklmnopqrs'.            // editor
+                       'ABCDEFGHIJKLMNOP'.        // administrator
+                       'QRSTUVW'
+        ]
+    ];               // super
+    // reserve: tuvwxyzXYZ and special characters like +-/*@... (but no numbers!!!)
+
     function __construct($systems) {
         $this->perm_systems = [];
         foreach ($systems as $system_name) {
@@ -735,7 +734,7 @@ class AA_Perm {
      * @param $user_id
      */
     function cache($user_id) {
-        global $permission_uid, $permission_to, $sess, $perms_roles, $r_superuser;
+        global $permission_uid, $permission_to, $sess, $r_superuser;
 
         if (is_object($sess)) {
             $sess->register('permission_uid');
@@ -753,7 +752,7 @@ class AA_Perm {
         }
 
         foreach ($permission_to["aa"] as $key => $val) {
-            if ( IsPerm($val, $perms_roles['SUPER']['id']) ) {
+            if ( IsPerm($val, AA_Perm::ROLES['SUPER']['id']) ) {
                 $r_superuser[$key] = true;
             }
             $permission_to["aa"][$key] = AA_Perm::_resolve($val);
@@ -802,8 +801,7 @@ class AA_Perm {
      * @return mixed
      */
     public static function joinSliceAndAAPerm($slice_perm, $aa_perm) {
-        global $perms_roles;
-        if (AA_Perm::compare($aa_perm, $perms_roles["SUPER"]['perm']) == "E") {
+        if (AA_Perm::compare($aa_perm, AA_Perm::ROLES["SUPER"]['perm']) == "E") {
             return $aa_perm;
         } else {
             return ($slice_perm ?: $aa_perm);
@@ -814,12 +812,10 @@ class AA_Perm {
      *  Replaces roles with apropriate perms
      *  substitute role identifiers (1,2,3,4) with his permissions (E,A,R ...)
      * @param $perms
-     * @return mixed
+     * @return string
      */
     private static function _resolve($perms) {
-        global $perms_roles;
-
-        foreach ($perms_roles as $arr) {
+        foreach (AA_Perm::ROLES as $arr) {
             $perms = str_replace($arr['id'], $arr['perm'], $perms);
         }
         return $perms;

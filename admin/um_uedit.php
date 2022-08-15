@@ -133,9 +133,9 @@ if ( $add_submit OR ($submit_action == "update_submit")) {
         }
 
         if ( $add_submit ) {      // -------------------- new user ------------------
-            NewUserData($err, $user_login, $userrecord, $user_super, $perms_roles, $um_uedit_no_go_url);
+            NewUserData($err, $user_login, $userrecord, $user_super, $um_uedit_no_go_url);
         } elseif (AA::$perm->isUserEditable($selected_user))  {      // ----------------- update user ------------------
-            ChangeUserData($err, $selected_user, $userrecord, $user_super, $perms_roles);
+            ChangeUserData($err, $selected_user, $userrecord, $user_super);
         }
 
         // Procces group data ------------------------------------------------------
@@ -144,10 +144,10 @@ if ( $add_submit OR ($submit_action == "update_submit")) {
         // Procces module permissions ----------------------------------------------
 
         // Change module permissions if user wants
-        ChangeUserModulePerms( $perm_mod, $selected_user, $perms_roles );
+        ChangeUserModulePerms($perm_mod, $selected_user);
 
         // Add new modules for this user
-        AddUserModulePerms( $new_module, $new_module_role, $selected_user, $perms_roles);
+        AddUserModulePerms($new_module, $new_module_role, $selected_user);
 
     } while (false);
 
@@ -262,7 +262,7 @@ do {
                 $user_mail3 = $user_data['mails'][2];
             }
             $aa_users = AA::$perm->getObjectsPerms(AA_ID, "aa");
-            if (IsPerm($aa_users[$selected_user], $perms_roles["SUPER"]['id'])) {
+            if (IsPerm($aa_users[$selected_user], AA_Perm::ROLES["SUPER"]['id'])) {
                 $user_super = true;
             }
         }

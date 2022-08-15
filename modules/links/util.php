@@ -244,7 +244,7 @@ function Links_GetCategoryContent($zids) {
  * @return boolean true or false
  */
 function Links_IsPublic() {
-    return $GLOBALS['perms_roles']['AUTHOR']['perm'] == $GLOBALS['permission_to']["slice"][$GLOBALS['slice_id']];
+    return AA_Perm::ROLES['AUTHOR']['perm'] == $GLOBALS['permission_to']["slice"][$GLOBALS['slice_id']];
 }
 
 /**

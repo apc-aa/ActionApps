@@ -34,7 +34,6 @@
  */
 function PrintAddableUser($usr, $usr_id, $editor_role, $new_usr=true) {
     // $usr_id is DN in LDAP
-    global $perms_roles;
     $username = perm_username($usr_id);
     $usr_id   = rawurlencode($usr_id);
 
@@ -43,13 +42,13 @@ function PrintAddableUser($usr, $usr_id, $editor_role, $new_usr=true) {
     echo "<td class=\"tabtxt\" width=\"25%\">".
        (($usr['mail']) ?: "&nbsp;") ."</td>\n";
 
-    IfLink(($editor_role > $perms_roles["AUTHOR"]['id']) && $new_usr,
+    IfLink(($editor_role > AA_Perm::ROLES["AUTHOR"]['id']) && $new_usr,
          StateUrl(self_base() . "se_users.php") .
                "&UsrAdd=$usr_id&role=AUTHOR", _m("Author"));
-    IfLink(($editor_role > $perms_roles["EDITOR"]['id']) && $new_usr,
+    IfLink(($editor_role > AA_Perm::ROLES["EDITOR"]['id']) && $new_usr,
          StateUrl(self_base() . "se_users.php") .
                "&UsrAdd=$usr_id&role=EDITOR", _m("Editor"));
-    IfLink(($editor_role > $perms_roles["ADMINISTRATOR"]['id']) && $new_usr,
+    IfLink(($editor_role > AA_Perm::ROLES["ADMINISTRATOR"]['id']) && $new_usr,
          StateUrl(self_base() . "se_users.php") .
                "&UsrAdd=$usr_id&role=ADMINISTRATOR", _m("Administrator"));
     echo "</tr>\n";
@@ -85,15 +84,15 @@ if ($GrpSrch || $UsrSrch) {
 
     FrmTabSeparator(_m("Assign new permissions"));
     // determine role of this user
-    if (AA_Perm::compare($editor_perms, $perms_roles["SUPER"]['perm'])!="L") {
-        $curr_role = $perms_roles["SUPER"]['id'];
+    if (AA_Perm::compare($editor_perms, AA_Perm::ROLES["SUPER"]['perm'])!="L") {
+        $curr_role = AA_Perm::ROLES["SUPER"]['id'];
     }
-    elseif (AA_Perm::compare($editor_perms, $perms_roles["ADMINISTRATOR"]['perm'])!="L") {
-        $curr_role = $perms_roles["ADMINISTRATOR"]['id'];
-    } elseif (AA_Perm::compare($editor_perms, $perms_roles["EDITOR"]['perm'])!="L") {
-        $curr_role = $perms_roles["EDITOR"]['id'];
-    } elseif (AA_Perm::compare($editor_perms, $perms_roles["AUTHOR"]['perm'])!="L") {
-        $curr_role = $perms_roles["AUTHOR"]['id'];
+    elseif (AA_Perm::compare($editor_perms, AA_Perm::ROLES["ADMINISTRATOR"]['perm'])!="L") {
+        $curr_role = AA_Perm::ROLES["ADMINISTRATOR"]['id'];
+    } elseif (AA_Perm::compare($editor_perms, AA_Perm::ROLES["EDITOR"]['perm'])!="L") {
+        $curr_role = AA_Perm::ROLES["EDITOR"]['id'];
+    } elseif (AA_Perm::compare($editor_perms, AA_Perm::ROLES["AUTHOR"]['perm'])!="L") {
+        $curr_role = AA_Perm::ROLES["AUTHOR"]['id'];
     } else {
         $curr_role=0;
     }

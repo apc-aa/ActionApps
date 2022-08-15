@@ -2,7 +2,7 @@
 /**
  *  se_compact.php - assigns html format for compact view
  * expected $slice_id for edit slice
- * optionaly $Msg to show under <h1>Hedline</h1> (typicaly: update successful)
+ * optionally $Msg to show under <h1>Headline</h1> (typically: update successful)
  * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify

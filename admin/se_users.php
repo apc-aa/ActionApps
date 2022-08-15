@@ -58,7 +58,6 @@ function IfLink( $cond, $url, $txt ) {
  * @param $editor_perm
  */
 function PrintUser($perm, $usr_id, $editor_perm) {
-    global $perms_roles;
 
     $username   = perm_username($usr_id);
     $usr_id_enc = rawurlencode($usr_id);
@@ -72,13 +71,13 @@ function PrintUser($perm, $usr_id, $editor_perm) {
     ];
     $role = 0;
 
-    if (      IsPerm($perm,$perms_roles["SUPER"]['id']) ) {
+    if (      IsPerm($perm,AA_Perm::ROLES["SUPER"]['id']) ) {
         $role = 4;
-    } elseif (IsPerm($perm,$perms_roles["ADMINISTRATOR"]['id'] ) ) {
+    } elseif (IsPerm($perm,AA_Perm::ROLES["ADMINISTRATOR"]['id'] ) ) {
         $role = 3;
-    } elseif (IsPerm($perm,$perms_roles["EDITOR"]['id'] ) ) {
+    } elseif (IsPerm($perm,AA_Perm::ROLES["EDITOR"]['id'] ) ) {
         $role = 2;
-    } elseif (IsPerm($perm,$perms_roles["AUTHOR"]['id'] ) ) {
+    } elseif (IsPerm($perm,AA_Perm::ROLES["AUTHOR"]['id'] ) ) {
         $role = 1;
     }
 
@@ -101,10 +100,10 @@ function PrintUser($perm, $usr_id, $editor_perm) {
     echo "<td class=\"tabtxt\">". (($usrinfo['mail']) ?: "&nbsp;") ."</td>\n";
     echo "<td class=\"tabtxt\">". _mdelayed($usrinfo['type']) ."</td>\n";
 
-    IfLink( CanChangeRole($perm, $editor_perm, $perms_roles["AUTHOR"]['perm']),        get_admin_url("se_users.php?UsrAdd=$usr_id_enc&role=AUTHOR"), _m("Author"));
-    IfLink( CanChangeRole($perm, $editor_perm, $perms_roles["EDITOR"]['perm']),        get_admin_url("se_users.php?UsrAdd=$usr_id_enc&role=EDITOR"), _m("Editor"));
-    IfLink( CanChangeRole($perm, $editor_perm, $perms_roles["ADMINISTRATOR"]['perm']), get_admin_url("se_users.php?UsrAdd=$usr_id_enc&role=ADMINISTRATOR"), _m("Administrator"));
-    IfLink( CanChangeRole($perm, $editor_perm, $perms_roles["AUTHOR"]['perm']),        get_admin_url("se_users.php?UsrDel=$usr_id_enc&role=AUTHOR"), _m("Revoke"));
+    IfLink( CanChangeRole($perm, $editor_perm, AA_Perm::ROLES["AUTHOR"]['perm']),        get_admin_url("se_users.php?UsrAdd=$usr_id_enc&role=AUTHOR"), _m("Author"));
+    IfLink( CanChangeRole($perm, $editor_perm, AA_Perm::ROLES["EDITOR"]['perm']),        get_admin_url("se_users.php?UsrAdd=$usr_id_enc&role=EDITOR"), _m("Editor"));
+    IfLink( CanChangeRole($perm, $editor_perm, AA_Perm::ROLES["ADMINISTRATOR"]['perm']), get_admin_url("se_users.php?UsrAdd=$usr_id_enc&role=ADMINISTRATOR"), _m("Administrator"));
+    IfLink( CanChangeRole($perm, $editor_perm, AA_Perm::ROLES["AUTHOR"]['perm']),        get_admin_url("se_users.php?UsrDel=$usr_id_enc&role=AUTHOR"), _m("Revoke"));
 
     // show profile button also for groups
     $cnt = ($cnt = DB_AA::select1('cnt', 'SELECT count(*) as cnt FROM profile', [

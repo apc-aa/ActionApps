@@ -409,7 +409,7 @@ class AA {
         //return AA::$session ?: (AA::$session = ($GLOBALS['sess'] ?: new AA_Session));
     }
 
-    // typicaly called as AA::sendHeaders(AA::getHeaders());
+    // typically called as AA::sendHeaders(AA::getHeaders());
     static function sendHeaders(array $headers) {
         foreach ($headers as $header) { header($header); }
     }

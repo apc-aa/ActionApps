@@ -129,14 +129,14 @@ function PrintModulePermModificator($selected_user) {
  * @return string
  */
 function GetModulePermRow($mid, $type, $name, $perm, $odd=false) {
-    global $MODULES, $perms_roles_modules, $perms_roles;
+    global $MODULES, $perms_roles_modules;
     $ret = "<tr>
         <td ".($odd ? " bgcolor=\"".COLOR_BACKGROUND."\"" : "")." align='top'>".$MODULES[$type]['name'] .":&nbsp;$name<br>&nbsp;&nbsp;&nbsp;&nbsp;($mid)</td>
         <td ".($odd ? " bgcolor=\"".COLOR_BACKGROUND."\"" : "")." nowrap align='top'>";
     if ( isset($perms_roles_modules[$type]) AND is_array($perms_roles_modules[$type]) ) {
         foreach ($perms_roles_modules[$type] as $role) {
             $ret .= "<label><input type=\"radio\" name=\"perm_mod[x$mid]\" value=\"$role\"";
-            $ret .= ( AA_Perm::compare($perm,$perms_roles[$role]['id'])=='E' ) ? ' checked>' : '>';
+            $ret .= ( AA_Perm::compare($perm,AA_Perm::ROLES[$role]['id'])=='E' ) ? ' checked>' : '>';
             $ret .= _mdelayed($role). '</label> ';
         }
     } else {
@@ -173,9 +173,8 @@ function PrintModuleAddRow($mod_options, $no) {
  * Works not only with users, but with groups too
  * @param $perm_mod
  * @param $selected_user
- * @param $perms_roles
  */
-function ChangeUserModulePerms( $perm_mod, $selected_user, $perms_roles ) {
+function ChangeUserModulePerms($perm_mod, $selected_user) {
     if ( isset($perm_mod) AND is_array($perm_mod) ) {
         $perm_slices = AA::$perm->getUserPerms($selected_user, "slice", 1);  // there are not only Slices, but other Modules too
         foreach ($perm_mod as $xmid => $role) {
@@ -183,8 +182,8 @@ function ChangeUserModulePerms( $perm_mod, $selected_user, $perms_roles ) {
             if ( $role == 'REVOKE' ) {
                 DelPerm($selected_user, $mid, 'slice');
             }
-            elseif ( AA_Perm::compare($perm_slices[$mid], $perms_roles[$role]['id']) != 'E' ) {
-                ChangePerm($selected_user, $mid, 'slice', $perms_roles[$role]['id']);
+            elseif ( AA_Perm::compare($perm_slices[$mid], AA_Perm::ROLES[$role]['id']) != 'E' ) {
+                ChangePerm($selected_user, $mid, 'slice', AA_Perm::ROLES[$role]['id']);
             }
         }
     }
@@ -196,13 +195,12 @@ function ChangeUserModulePerms( $perm_mod, $selected_user, $perms_roles ) {
  * @param $new_module
  * @param $new_module_role
  * @param $selected_user
- * @param $perms_roles
  */
-function AddUserModulePerms( $new_module, $new_module_role, $selected_user, $perms_roles) {
+function AddUserModulePerms($new_module, $new_module_role, $selected_user) {
     if ( isset($new_module) AND is_array($new_module) ) {
         foreach ($new_module as $no => $mid) {
-            if ( (trim($mid) != "") AND isset($perms_roles[$new_module_role[$no]]) ) {
-                AddPerm($selected_user, $mid, 'slice', $perms_roles[$new_module_role[$no]]['id']);
+            if ( (trim($mid) != "") AND isset(AA_Perm::ROLES[$new_module_role[$no]]) ) {
+                AddPerm($selected_user, $mid, 'slice', AA_Perm::ROLES[$new_module_role[$no]]['id']);
             }
         }
     }
@@ -326,17 +324,16 @@ function FillUserRecord(&$err, $user_login, $user_surname, $user_firstname, $use
  * @param $uid
  * @param $userrecord
  * @param $user_super
- * @param $perms_roles
  * @param $um_uedit_no_go_url
  */
-function NewUserData( &$err, $uid, &$userrecord, $user_super, $perms_roles, $um_uedit_no_go_url) {
+function NewUserData(&$err, $uid, &$userrecord, $user_super, $um_uedit_no_go_url) {
     $userrecord["uid"] = $uid;
     if (!($newuserid = AddUser($userrecord))) {
         $err["LDAP"] = MsgErr( _m("It is impossible to add user to permission system") );
     }
     if ( !count($err) ) {
         if ($user_super) {	// set super admin privilege
-            AddPerm($newuserid, AA_ID, "aa", $perms_roles["SUPER"]['id']);
+            AddPerm($newuserid, AA_ID, "aa", AA_Perm::ROLES["SUPER"]['id']);
         }
         $Msg = MsgOk(_m("User successfully added to permission system"));
         if (!$um_uedit_no_go_url) {
@@ -349,15 +346,14 @@ function NewUserData( &$err, $uid, &$userrecord, $user_super, $perms_roles, $um_
  * @param $uid
  * @param $userrecord
  * @param $user_super
- * @param $perms_roles
  */
-function ChangeUserData( &$err, $uid, &$userrecord, $user_super, $perms_roles) {
+function ChangeUserData(&$err, $uid, &$userrecord, $user_super) {
       $userrecord["uid"] = $uid;
       if (!ChangeUser($userrecord)) {
           $err["LDAP"] = MsgErr( _m("Can't change user") );
       } elseif ($user_super != 'AA_NO_CHANGE') {
           if ($user_super) {		// set or revoke super admin privilege
-              AddPerm($userrecord["uid"], AA_ID, "aa", $perms_roles["SUPER"]['id']);
+              AddPerm($userrecord["uid"], AA_ID, "aa", AA_Perm::ROLES["SUPER"]['id']);
           } else {
               DelPerm($userrecord["uid"], AA_ID, "aa");
           }
