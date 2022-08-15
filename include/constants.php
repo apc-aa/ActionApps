@@ -184,15 +184,13 @@ $MODULES = [
         'table' => 'slice',
                                 'name' => _m('Slice'),
                                 'hide_create_module' => 1,
-                                'directory' => "admin/",
-                                'menu' => "include/menu.php"
+                                'directory' => "admin/"
     ],
                   'W' => [
                       'table' => 'site',
                                 'name' => 'Site',
                                 'show_templates' => 1,  // show list of sites on 'create new' - used as templates
                                 'directory' => "modules/site/",
-                                'menu' => "modules/site/menu.php",
                                 'language_files' => [
                                     'en-utf8_site_lang.php' => 'en-utf8_site_lang.php',
                                     'en_site_lang.php' => 'en_site_lang.php',
@@ -206,15 +204,13 @@ $MODULES = [
                   'J' => [
                       'table' => 'jump',
                                 'name' => _m('Jump inside AA control panel'),
-                                'directory' => "modules/jump/",
-                                'menu' => "menu.php"
+                                'directory' => "modules/jump/"
                   ],
                   'P' => [
                       'table' => 'polls',
                                 'name' => _m('Polls for AA'),
                                 'show_templates' => 1,
                                 'directory' => "modules/polls/",
-                                'menu' => "modules/polls/menu.php",
                                 'language_files' => [
                                     "en_polls_lang.php" => "en_polls_lang.php",
                                     "es_polls_lang.php" => "es_polls_lang.php",
@@ -232,7 +228,6 @@ $MODULES['Alerts'] = [
     'table' => 'module',
                             'name' => _m('Alerts'),
                             'directory' => "modules/alerts/",
-                            'menu' => "modules/alerts/menu.php",
                             'letter' => 'A'
 ];  // letter is used for the modules
                                                // which indentificator is not 1
@@ -244,7 +239,6 @@ $MODULES['Links'] =  [
                             'name' => _m('Links'),
                             'show_templates' => 1,
                             'directory' => "modules/links/",
-                            'menu' => "modules/links/menu.php",
                             'letter' => 'L'
 ];
 

@@ -28,6 +28,14 @@ https://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+// make sure LINKS module specific constants are defined - should be defined in config.php
+defined('AA_LINKS_HELP_CATEGORY') OR define('AA_LINKS_HELP_CATEGORY', '');
+defined('AA_LINKS_HELP_MAIN')     OR define('AA_LINKS_HELP_MAIN', '');
+defined('AA_LINKS_HELP_LINK')     OR define('AA_LINKS_HELP_LINK', '');
+defined('AA_LINKS_VOTE_THANKS')   OR define('AA_LINKS_VOTE_THANKS', '');
+defined('AA_LINKS_VOTE_NOVOTE')   OR define('AA_LINKS_VOTE_NOVOTE', '');
+defined('AA_LINKS_VOTE_ERROR')    OR define('AA_LINKS_VOTE_ERROR', '');
+
 /** Number of categories to show on linkedit page */
 const CATEGORIES_COUNT_TO_MANAGE = 15;
 
