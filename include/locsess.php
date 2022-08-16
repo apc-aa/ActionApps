@@ -48,12 +48,12 @@ if ($_SERVER['HTTP_X_FORWARDED_SERVER']) {
     }
 }
 
-// should be set in config.php3
+// should be set in config.php
 if (!defined(AA_INSTAL_PATH)) {
     $url_components = parse_url(AA_INSTAL_URL);
     define('AA_INSTAL_PATH', $url_components['path']);
 }
-// now it is not necessary to have this constant in config.php3 - we count it from current file path
+// now it is not necessary to have this constant in config.php - we count it from current file path
 if (!defined('AA_BASE_PATH')) {
     define('AA_BASE_PATH', substr(__DIR__, 0, -7));
 }

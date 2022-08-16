@@ -60,7 +60,7 @@ foreach ($_REQUEST as $k => $v) {
 
 
 /** APC-AA configuration file */
-require_once __DIR__."/./include/config.php3";
+require_once __DIR__."/./include/config.php";
 /** Main include file for using session management function on a page */
 require_once __DIR__ . "/include/locsess.php";
 /** Set of useful functions used on most pages */

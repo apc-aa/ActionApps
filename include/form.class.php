@@ -340,7 +340,7 @@ class AA_Form extends AA_Object {
         switch ($type) {
             case 'add':      $html .= "\n    <input id=\"ajaxsend$id\" name=\"ajaxsend$id\" value=\"". _m('Insert'). "\" onclick=\"AA_AjaxSendAddForm('form$id')\" type=\"button\">";
                              break;
-            case 'inplace':  $html .= "\n    <input id=\"ajaxsend$id\" name=\"ajaxsend$id\" value=\"". _m('Insert'). "\" onclick=\"AA_AjaxSendForm('form$id', 'filler.php3')\" type=\"button\">";
+            case 'inplace':  $html .= "\n    <input id=\"ajaxsend$id\" name=\"ajaxsend$id\" value=\"". _m('Insert'). "\" onclick=\"AA_AjaxSendForm('form$id', 'filler.php')\" type=\"button\">";
                              break;
         }
         $html .= "\n  </fieldset>";

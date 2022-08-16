@@ -259,7 +259,7 @@ $USE_SHORT_URL = true;
 // You probably do not need to change this
 
 if ( !defined('AA_SITE_PATH') OR (strlen(AA_SITE_PATH) < 1)) {
-    echo "you must set AA_SITE_PATH and other variables in config.php3 !";
+    echo "you must set AA_SITE_PATH and other variables in config.php !";
 }
 
 /** URL of aa instalation */

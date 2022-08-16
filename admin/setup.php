@@ -42,7 +42,7 @@ foreach ($_REQUEST as $k => $v) {
 }
 // ----- input variables normalization - end ----------------------------------
 
-require_once __DIR__."/../include/config.php3";
+require_once __DIR__."/../include/config.php";
 require_once __DIR__ . "/../include/locsess.php";
 require_once __DIR__ . "/../include/perm_core.php";
 require_once __DIR__."/../include/perm_" . PERM_LIB . ".php";
@@ -143,7 +143,7 @@ $info              = $db->metadata( 'content' );
 if ( !isset($info) OR !is_array($info) OR (count($info)<1) ) {
     HtmlStart();
     echo _m('Database is not configured correctly or the database is empty.<br>
-             Check please the database credentials in <b>include/config.php3</b>
+             Check please the database credentials in <b>include/config.php</b>
              file <br>or run <a href="../service/sql_update.php">/service/sql_update.php</a> script,
              which creates AA tables for you.');
     HtmlEnd();

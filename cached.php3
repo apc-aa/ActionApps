@@ -30,7 +30,7 @@ https://www.apc.org/
 */
 
 /** APC-AA configuration file */
-require_once __DIR__."/./include/config.php3";
+require_once __DIR__."/./include/config.php";
 /** Main include file for using session management function on page */
 require_once __DIR__ . "/include/locsess.php";
 /** Caching functions */

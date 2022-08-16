@@ -31,7 +31,7 @@ https://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-require_once __DIR__."/../../include/config.php3";
+require_once __DIR__."/../../include/config.php";
 require_once __DIR__ . "/../../misc/mgettext/xmgettext.php";
 require_once __DIR__ . "/../../misc/mgettext/translate.php";
 require_once __DIR__ . "/../../misc/mgettext/createlogs.php";
@@ -60,7 +60,7 @@ $aadir = AA_INSTAL_PATH;
 endslash($aadir);
 /* IMPORTANT:
    $destdir is the destination dir where are the copies of language files to which
-   PHP has read-write access. By default, it is set in config.php3. */
+   PHP has read-write access. By default, it is set in config.php. */
 $destdir = $XMGETTEXT_DESTINATION_DIR;
 endslash($destdir);
 

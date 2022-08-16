@@ -234,40 +234,40 @@ $_m["No templates"]
  = "Žiadna šablóna";
 
 // ./filldisc.php3, row 89, 110
-// ./filler.php3, row 301
+// ./filler.php, row 301
 $_m["Not accepted, sorry. Looks like spam."]
  = "";
 
-// ./filler.php3, row 229
+// ./filler.php, row 229
 $_m["Not allowed to post comments"]
  = "";
 
-// ./filler.php3, row 250
+// ./filler.php, row 250
 // ./offline.php3, row 82
 $_m["Slice ID not defined"]
  = "";
 
-// ./filler.php3, row 257
+// ./filler.php, row 257
 // ./offline.php3, row 112
 $_m["Bad slice ID"]
  = "";
 
-// ./filler.php3, row 278
+// ./filler.php, row 278
 // admin/se_inputform.php, row 234
 // include/formutil.php, row 289, 377
 // include/itemfunc.php, row 678
 $_m["No fields defined for this slice"]
  = "V tomto module nie sú definované žiadne polia (čo je čudné)";
 
-// ./filler.php3, row 322
+// ./filler.php, row 322
 $_m["Anonymous posting not admitted."]
  = "";
 
-// ./filler.php3, row 373
+// ./filler.php, row 373
 $_m["You are not allowed to update this item."]
  = "";
 
-// ./filler.php3, row 390
+// ./filler.php, row 390
 $_m["Some error in store item."]
  = "";
 
@@ -3558,7 +3558,7 @@ $_m["Select destination ActionApps"]
  = "";
 
 // admin/aa_synchronize2.php3, row 94
-$_m["The list is taken from config.php3 file of ActionApps"]
+$_m["The list is taken from config.php file of ActionApps"]
  = "";
 
 // admin/se_csv_import2.php, row 144
@@ -3823,7 +3823,7 @@ $_m["Recover"]
 
 // admin/setup.php, row 154
 $_m["Database is not configured correctly or the database is empty.<br>\n"
-   ."             Check please the database credentials in <b>include/config.php3</b>\n"
+   ."             Check please the database credentials in <b>include/config.php</b>\n"
    ."             file <br>or run <a href=\"../sql_update.php3\">sql_update.php3</a> script,\n"
    ."             which creates AA tables for you."]
  = "";
@@ -4111,7 +4111,7 @@ $_m["Can't move image  %1 to %2"]
  = "";
 
 // include/files.class.php, row 218
-$_m["Can't change permissions on uploaded file: %1 - %2. See IMG_UPLOAD_FILE_MODE in your config.php3"]
+$_m["Can't change permissions on uploaded file: %1 - %2. See IMG_UPLOAD_FILE_MODE in your config.php"]
  = "";
 
 // include/files.class.php, row 239
@@ -6658,7 +6658,7 @@ $_m["Create upload directory for current slice"]
  = "";
 
 // AA\Optimize\... #xx1087
-$_m["see IMG_UPLOAD_PATH parameter in config.php3 file"]
+$_m["see IMG_UPLOAD_PATH parameter in config.php file"]
  = "";
 
 // AA\Optimize\... #xx1106

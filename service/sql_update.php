@@ -54,7 +54,7 @@ const ACCESS_CODE = '';
  *  However, it is strongly recommended backup your current database !!!
  *  Use something like:
  *     mysqldump --lock-tables -h DB_HOST -u DB_USER -p --opt DB_NAME > ./aadbbackup.sql
- *  (replace DB_HOST, DB_USER and B_NAME with values from your config.php3 file)
+ *  (replace DB_HOST, DB_USER and B_NAME with values from your config.php file)
  */
 
 
@@ -95,8 +95,8 @@ if ( !constant('ACCESS_CODE') OR (strlen(constant('ACCESS_CODE'))<10) ) {
     exit;
 }
 
-// need config.php3 to set db access, and phplib, and probably other stuff
-require_once __DIR__."/../include/config.php3";
+// need config.php to set db access, and phplib, and probably other stuff
+require_once __DIR__."/../include/config.php";
 require_once __DIR__ . "/../include/locsess.php";   // DB_AA definition
 require_once __DIR__ . "/../include/util.php";
 require_once __DIR__ . "/../include/zids.php";   // qquote, is_long_id, ...

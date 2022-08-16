@@ -21,7 +21,7 @@ https://www.apc.org/
 
 // APC AA - Module main administration page
 
-// used in init_page.php script to include config.php3 from the right directory
+// used in init_page.php script to include config.php from the right directory
 
 const AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../../include/init_page.php";

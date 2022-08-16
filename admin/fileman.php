@@ -56,7 +56,7 @@ if (!FilemanPerms($slice_id)) {
     MsgPageMenu ("index.php3", _m("No permissions for file manager."), "admin", "fileman");
 }
 
-// FILEMAN_BASE_DIR defined in config.php3
+// FILEMAN_BASE_DIR defined in config.php
 if (!is_dir (FILEMAN_BASE_DIR)) {
     MsgPageMenu ("index.php3", _m("Unable to run File Manager")." '" . FILEMAN_BASE_DIR . "' "  ._m("doesn't exist"), "admin", "fileman");
 }

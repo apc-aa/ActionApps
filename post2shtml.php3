@@ -64,12 +64,12 @@ https://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-// post2shtml could be include from other files, where config.php3 is already
+// post2shtml could be include from other files, where config.php is already
 // required (and probably is on another path)
 use AA\IO\DB\DB_AA;
 
 if ( !defined('DB_NAME') ) {
-    require_once __DIR__."/./include/config.php3";
+    require_once __DIR__."/./include/config.php";
 }
 require_once __DIR__ . "/include/locsess.php";
 require_once __DIR__ . "/include/util.php";

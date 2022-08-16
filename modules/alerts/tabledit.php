@@ -30,7 +30,7 @@ https://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-require_once __DIR__."/../../include/config.php3";
+require_once __DIR__."/../../include/config.php";
 require_once __DIR__ . "/../../include/constants.php";
 require_once __DIR__ . "/../../include/locsess.php";
 require_once __DIR__ . "/../../include/tabledit.php";

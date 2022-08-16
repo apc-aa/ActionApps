@@ -175,7 +175,7 @@ class FilWidget extends Widget
                 'ret_code_js' => 'parent.AA_ReloadAjaxResponse(\'' . $base_id . '\', AA_ITEM_JSON)'
             ];
             $widget .= '
-                <form id="fuf' . $base_id . '" method="POST" enctype="multipart/form-data" action="' . safe(get_aa_url('filler.php3', $url_params)) . '" target="iframe' . $base_id . '">';
+                <form id="fuf' . $base_id . '" method="POST" enctype="multipart/form-data" action="' . safe(get_aa_url('filler.php', $url_params)) . '" target="iframe' . $base_id . '">';
             if ($link) {
                 $widget .= '
                     <input type="button" value="' . _m('Delete') . '" onclick="document.getElementById(\'fuf' . $base_id . '\').submit()"><br>';

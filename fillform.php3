@@ -20,7 +20,7 @@
  *  @param string show_result Name of a PHP script which receives the array
  *        result created by filler. The script than usually shows some info
  *        about the errors occured to the user.
- *  @param array result Array with error messages passed from filler.php3.
+ *  @param array result Array with error messages passed from filler.php.
  *
  *  @param string ac  Access Code to be used with Reader Management to
  *        find the correct reader data.
@@ -92,7 +92,7 @@ if (!isset ($form)) $form = "f";
 $encap = ( ($encap=="false") ? false : true );
 
 /** APC-AA configuration file */
-require_once __DIR__."/include/config.php3";
+require_once __DIR__."/include/config.php";
 /** Set of useful functions used on most pages */
 require_once __DIR__ . "/include/util.php";
 /**  Defines class for item manipulation (shows item in compact or fulltext format, replaces aliases ...) */

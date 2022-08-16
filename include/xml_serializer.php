@@ -244,7 +244,7 @@ class xml_unserializer {
  * Testing
  */
 /*function test_xmlserializer() {
-    require_once __DIR__."/config.php3";
+    require_once __DIR__."/config.php";
     require_once __DIR__."/zids.php";
     $aa = new zids("12345678901234567890123456789012");
     print_r($a);

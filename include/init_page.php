@@ -61,7 +61,7 @@ if ($encap == "false") {   // used in itemedit for anonymous form
     $encap = false;        // it must be here, because the variable is rewriten (see above)
 }
 
-require_once __DIR__."/config.php3";
+require_once __DIR__."/config.php";
 require_once __DIR__ . "/mgettext.php";
 
 if ($free) {

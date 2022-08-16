@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 // APC AA site Module main administration page
 
-// used in initpage.php3 script to include config.php3 from the right directory
+// used in initpage.php3 script to include config.php from the right directory
 
 use AA\IO\DB\DB_AA;
 

@@ -32,7 +32,7 @@ require_once __DIR__ . "/locsess.php";
 require_once __DIR__ . "/perm_core.php"; // always included!
 
 // choice of the permission system library
-// PERM_LIB is defined in config.php3
+// PERM_LIB is defined in config.php
 require_once __DIR__."/perm_" . PERM_LIB . ".php";
 
 class AA_Auth extends Auth {

@@ -418,45 +418,45 @@ $_m["No templates"]
     = "Sin plantillas";
 
 // ./filldisc.php3, row 89, 110
-// ./filler.php3, row 301
+// ./filler.php, row 301
 $_m["Not accepted, sorry. Looks like spam."]
     = "";
 
 // ./filldisc.php3
-// ./filler.php3
+// ./filler.php
 $_m["Wrong result, not posible to post comments."]
     = "El resultado de la suma no es correcto";
 
-// ./filler.php3, row 229
+// ./filler.php, row 229
 $_m["Not allowed to post comments"]
     = "";
 
-// ./filler.php3, row 250
+// ./filler.php, row 250
 // ./offline.php3, row 82
 $_m["Slice ID not defined"]
     = "ID del Canal no definido";
 
-// ./filler.php3, row 257
+// ./filler.php, row 257
 // ./offline.php3, row 112
 $_m["Bad slice ID"]
     = "ID del Canal inv�lido";
 
-// ./filler.php3, row 278
+// ./filler.php, row 278
 // admin/se_inputform.php, row 234
 // include/formutil.php, row 289, 377
 // include/itemfunc.php, row 678
 $_m["No fields defined for this slice"]
     = "No hay campos definidos para este canal";
 
-// ./filler.php3, row 322
+// ./filler.php, row 322
 $_m["Anonymous posting not admitted."]
     = "No est� permitida la publiaci�n an�nima";
 
-// ./filler.php3, row 373
+// ./filler.php, row 373
 $_m["You are not allowed to update this item."]
     = "Usted no tiene permiso para modificar este �tem.";
 
-// ./filler.php3, row 390
+// ./filler.php, row 390
 $_m["Some error in store item."]
     = "Ocurri� un error al guardar el item.";
 
@@ -3749,7 +3749,7 @@ $_m["Select destination ActionApps"]
     = "";
 
 // admin/aa_synchronize2.php3, row 94
-$_m["The list is taken from config.php3 file of ActionApps"]
+$_m["The list is taken from config.php file of ActionApps"]
     = "";
 
 // admin/se_csv_import2.php, row 144
@@ -4014,11 +4014,11 @@ $_m["Recover"]
 
 // admin/setup.php, row 154
 $_m["Database is not configured correctly or the database is empty.<br>\n"
-."             Check please the database credentials in <b>include/config.php3</b>\n"
+."             Check please the database credentials in <b>include/config.php</b>\n"
 ."             file <br>or run <a href=\"../sql_update.php3\">sql_update.php3</a> script,\n"
 ."             which creates AA tables for you."]
     = "La base de datos no est� creada o est� vac�a.<br>\n"
-    ."             Por favor, verifique la configuraci�n de la base de datos en el archivo <b>include/config.php3</b>\n"
+    ."             Por favor, verifique la configuraci�n de la base de datos en el archivo <b>include/config.php</b>\n"
     ."             <br>y ejecute el script<a href=\"../sql_update.php3\">sql_update.php3</a>,\n"
     ."             que crear� las tablas necesarias para ud..";
 
@@ -4305,8 +4305,8 @@ $_m["Can't move image  %1 to %2"]
     = "No es posible mover la imagen de %1 a %2";
 
 // include/files.class.php, row 218
-$_m["Can't change permissions on uploaded file: %1 - %2. See IMG_UPLOAD_FILE_MODE in your config.php3"]
-    = "No se puede cambiar los permisos del archivo copiado: %1 - %2. Vea el par�metro IMG_UPLOAD_FILE_MODE en el archivo de configuraci�n config.php3";
+$_m["Can't change permissions on uploaded file: %1 - %2. See IMG_UPLOAD_FILE_MODE in your config.php"]
+    = "No se puede cambiar los permisos del archivo copiado: %1 - %2. Vea el par�metro IMG_UPLOAD_FILE_MODE en el archivo de configuraci�n config.php";
 
 // include/files.class.php, row 239
 $_m["Can't open file for writing: %1"]
@@ -6860,7 +6860,7 @@ $_m["Create upload directory for current slice"]
     = "";
 
 // AA\Optimize\... #xx1087
-$_m["see IMG_UPLOAD_PATH parameter in config.php3 file"]
+$_m["see IMG_UPLOAD_PATH parameter in config.php file"]
     = "";
 
 // AA\Optimize\... #xx1106

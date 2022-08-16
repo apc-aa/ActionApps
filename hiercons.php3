@@ -34,7 +34,7 @@ https://www.apc.org/
 */
 
 /** APC-AA configuration file */
-require_once __DIR__."/./include/config.php3";
+require_once __DIR__."/./include/config.php";
 /** APC-AA constant definitions */
 require_once __DIR__ . "/include/constants.php";
 require_once __DIR__ . "/include/mgettext.php";

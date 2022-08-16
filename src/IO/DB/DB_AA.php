@@ -473,7 +473,7 @@ class DB_AA extends AbstractDB
         }
 
         // if you want to display special error page, then define DB_ERROR_PAGE
-        // in config.php3 file. You can use following variables on that page
+        // in config.php file. You can use following variables on that page
         // (in case you will use php page):
         // $_POST['Err'], $_POST['ErrMsg'] and $_POST['Msg'] variables
         // --- Disabled -- AA_Http::go() for POST works in the way, that the
@@ -491,7 +491,7 @@ class DB_AA extends AbstractDB
 
         // If you do not want (for security reasons) display messages like:
         // "Database error: mysql_pconnect(mysqldbserver, aadbuser, $Password) failed."
-        // then just define DB_ERROR_PAGE constant in your config.php3 file
+        // then just define DB_ERROR_PAGE constant in your config.php file
         echo "\n<br><b>Database error:</b> $msg";
         echo "\n<br><b>Error Number:</b>: " . $this->Errno;
         echo "\n<br><b>Error Description:</b>: " . $this->Error;

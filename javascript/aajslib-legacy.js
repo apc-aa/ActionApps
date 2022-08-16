@@ -8067,7 +8067,7 @@ function AA_AjaxSendAddForm(id) {
     var sb   = $(id).up('div').previous('a').identify().substring(1);
     $(id).insert(AA_GetConf('loader'));
 
-    new Ajax.Request(AA_GetConf('path') + 'filler.php3', {
+    new Ajax.Request(AA_GetConf('path') + 'filler.php', {
         parameters: code,
         requestHeaders: {Accept: 'application/json'},
         onSuccess: function(transport) {
@@ -8097,7 +8097,7 @@ function AA_SendWidgetAjax(id) {
 
     code += '&inline=1&ret_code_enc='+alias_name;
 
-    new Ajax.Request(AA_GetConf('path') + 'filler.php3', {
+    new Ajax.Request(AA_GetConf('path') + 'filler.php', {
         parameters: code,
         requestHeaders: {Accept: 'application/json'},
         onSuccess: function(transport) {
@@ -8151,7 +8151,7 @@ function AA_SendWidgetLive(id, liveinput, fnc) {
     var code = Form.serialize(valdivid);
     code += '&inline=1';  // do not send us whole page as result
 
-    new Ajax.Request(AA_GetConf('path') + 'filler.php3', {
+    new Ajax.Request(AA_GetConf('path') + 'filler.php', {
         parameters: code,
         requestHeaders: {Accept: 'application/json'},
         onSuccess: function(transport) {
@@ -8467,7 +8467,7 @@ function AA_SaveEditors() {
     }
   }
 
-  new Ajax.Request(AA_GetConf('path') + 'filler.php3', {
+  new Ajax.Request(AA_GetConf('path') + 'filler.php', {
       parameters: params,
       requestHeaders: {Accept: 'application/json'},
       onSuccess: function(transport) {

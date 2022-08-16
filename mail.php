@@ -26,7 +26,7 @@ https://www.apc.org/
  *  @param object_id - optional item_id (for edit)
  */
 
-require_once __DIR__."/./include/config.php3";
+require_once __DIR__."/./include/config.php";
 require_once __DIR__ . "/include/util.php";
 require_once __DIR__ . "/include/item.php";
 require_once __DIR__ . "/include/searchlib.php";

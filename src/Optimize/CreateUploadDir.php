@@ -20,7 +20,7 @@ class CreateUploadDir extends AbstractOptimize {
      * @return string - a description
      */
     public static function description(): string {
-        return _m("see IMG_UPLOAD_PATH parameter in config.php3 file");
+        return _m("see IMG_UPLOAD_PATH parameter in config.php file");
     }
 
     /** implemented actions within this class */

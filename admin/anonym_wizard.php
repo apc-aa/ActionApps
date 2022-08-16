@@ -67,7 +67,7 @@ function GetAnonymousForm($slice, $s_fields, $show, $ok_url, $err_url, $use_show
 
     // get form - we need to call $form->getForm() before we call
     // $form->getFormStart(), $form->getFormJavascript
-    $inputform_settings = ['form_action' => AA_INSTAL_URL.'filler.php3'];
+    $inputform_settings = ['form_action' => AA_INSTAL_URL.'filler.php'];
     $form               = new inputform($inputform_settings);
     $content4id       = new ItemContent;
     $form_code          = '{generate:HEAD}'.$form->getForm($content4id, $slice, false, $show).'{generate:FOOT}';

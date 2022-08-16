@@ -54,7 +54,7 @@ const MLX_CTRLIDFIELD = 'mlxctrl.........';
 const MLX_LANG2ID_TYPE = 'mlxctrl';
 
 /** the following settings are for debugging, performance
-    you can overwrite them in your config.php3
+    you can overwrite them in your config.php
 **/
 
 /** set to 1 to display trace info **/

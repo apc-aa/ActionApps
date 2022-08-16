@@ -49,6 +49,6 @@ https://www.apc.org/
 
 $GLOBALS['wap'] = true;
 
-require_once __DIR__."/filler.php3";
+require_once __DIR__ . "/filler.php";
 
 

@@ -6,7 +6,7 @@
  *                  32  2  *  *  2    misc/optimize.php   key=passw
  *
  * The script must be called with key=passw parameter, where passw is first five
- * chracters of database password (see DB_PASSWORD variable in config.php3).
+ * chracters of database password (see DB_PASSWORD variable in config.php).
  * This is security check - noone then can run the script icidentaly (or with
  * bad thoughts). The setting above runs the script each Monday 2:38 AM
  *
@@ -33,10 +33,10 @@ https://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-// need config.php3 to set db access, and phplib, and probably other stuff
+// need config.php to set db access, and phplib, and probably other stuff
 use AA\IO\DB\DB_AA;
 
-require_once __DIR__."/../include/config.php3";
+require_once __DIR__."/../include/config.php";
 require_once __DIR__ . "/../include/locsess.php";   // DB_AA definition
 require_once __DIR__ . "/../include/util.php";
 

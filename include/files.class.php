@@ -201,7 +201,7 @@ class Files {
         // now change permissions (if we have to)
         $perms = defined('IMG_UPLOAD_FILE_MODE') ? (int)IMG_UPLOAD_FILE_MODE : 0;
         if ($perms AND !chmod($dest_file, $perms)) {
-            Files::lastErr(FILE_ERROR_CHMOD, _m("Can't change permissions on uploaded file: %1 - %2. See IMG_UPLOAD_FILE_MODE in your config.php3", [$dest_file, $perms]));  // set error code
+            Files::lastErr(FILE_ERROR_CHMOD, _m("Can't change permissions on uploaded file: %1 - %2. See IMG_UPLOAD_FILE_MODE in your config.php", [$dest_file, $perms]));  // set error code
             return false;
         }
 

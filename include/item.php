@@ -1050,7 +1050,7 @@ class AA_Item {
         [1] blurbSliceId  is by default the non-packed id in BLURB_SLICE_ID
         [2] fieldToMatch  is by default BLURB_FIELD_TO_MATCH
         [3] fieldToReturn is by default BLURB_FIELD_TO_RETURN
-        these constants should be defined in include/config.php3
+        these constants should be defined in include/config.php
         */
 
         $p = ParamExplode($param);

@@ -31,7 +31,7 @@
    Rewrite and APC-AA integration as module by pavelji (pavel@cetoraz.info)
 
 */
- // used in init_page.php script to include config.php3 from the right directory
+ // used in init_page.php script to include config.php from the right directory
 $directory_depth = '../';
 
 const AA_REGISTER_GLOBALS = true;

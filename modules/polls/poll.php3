@@ -43,7 +43,7 @@
 */
 
 
-require_once __DIR__."/../../include/config.php3";
+require_once __DIR__."/../../include/config.php";
 require_once __DIR__ . "/../../include/util.php";
 require_once __DIR__ . "/../../include/mgettext.php";
 require_once __DIR__ . "/../../include/searchlib.php";

@@ -37,7 +37,7 @@
  *  you will be able to call it like /apc-aa/export.php?id=5357...&year=2012)
  *  */
 
-require_once __DIR__."/./include/config.php3";
+require_once __DIR__."/./include/config.php";
 require_once __DIR__ . "/include/util.php";
 require_once __DIR__ . "/include/item.php";
 require_once __DIR__ . "/include/searchlib.php";

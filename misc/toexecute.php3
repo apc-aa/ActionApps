@@ -36,7 +36,7 @@ use AA\IO\DB\DB_AA;
 use AA\Later\ScheduleAaTasks;
 use AA\Later\Toexecute;
 
-require_once __DIR__."/../include/config.php3";
+require_once __DIR__."/../include/config.php";
 /** Main include file for using session management function on page */
 require_once __DIR__ . "/../include/locsess.php";
 require_once __DIR__ . "/../include/varset.php";

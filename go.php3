@@ -39,7 +39,7 @@ $sh_itm = (string)$_REQUEST['sh_itm'];
 $url    = (string)$_REQUEST['url'];
 
 /** APC-AA configuration file */
-require_once __DIR__."/./include/config.php3";
+require_once __DIR__."/./include/config.php";
 /** Set of useful functions used on most pages */
 require_once __DIR__ . "/include/util.php";
 /** Main include file for using session management function on a page */

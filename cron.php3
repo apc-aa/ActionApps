@@ -45,7 +45,7 @@ https://www.apc.org/
 
 use AA\IO\DB\DB_AA;
 
-require_once __DIR__."/./include/config.php3";
+require_once __DIR__."/./include/config.php";
 /** Main include file for using session management function on page */
 require_once __DIR__ . "/include/locsess.php";
 /** Defines class for inserting and updating database fields */

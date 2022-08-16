@@ -189,40 +189,40 @@ $_m["No templates"]
  = "Keine Vorlagen";
 
 // ./filldisc.php3, row 89, 110
-// ./filler.php3, row 301
+// ./filler.php, row 301
 $_m["Not accepted, sorry. Looks like spam."]
  = "";
 
-// ./filler.php3, row 229
+// ./filler.php, row 229
 $_m["Not allowed to post comments"]
  = "";
 
-// ./filler.php3, row 250
+// ./filler.php, row 250
 // ./offline.php3, row 82
 $_m["Slice ID not defined"]
  = "";
 
-// ./filler.php3, row 257
+// ./filler.php, row 257
 // ./offline.php3, row 112
 $_m["Bad slice ID"]
  = "";
 
-// ./filler.php3, row 278
+// ./filler.php, row 278
 // admin/se_inputform.php, row 234
 // include/formutil.php, row 289, 377
 // include/itemfunc.php, row 678
 $_m["No fields defined for this slice"]
  = "Keine Felder f�r diese Rurik definiert";
 
-// ./filler.php3, row 322
+// ./filler.php, row 322
 $_m["Anonymous posting not admitted."]
  = "";
 
-// ./filler.php3, row 373
+// ./filler.php, row 373
 $_m["You are not allowed to update this item."]
  = "";
 
-// ./filler.php3, row 390
+// ./filler.php, row 390
 $_m["Some error in store item."]
  = "";
 

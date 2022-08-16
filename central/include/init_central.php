@@ -42,7 +42,7 @@ foreach ($_REQUEST as $k => $v) {
 }
 // ----- input variables normalization - end ----------------------------------
 
-require_once __DIR__."/../../include/config.php3";
+require_once __DIR__."/../../include/config.php";
 require_once __DIR__ . "/../../include/mgettext.php";
 require_once __DIR__ . "/../../include/locauth.php";
 require_once __DIR__."/actionapps.class.php";
