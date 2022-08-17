@@ -20,6 +20,7 @@ table.mgr_table th {
 
 .tabtxt, td, .tabtxteven, .tabtitlight {
   font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: 10pt;
  }
 
  .tabtxteven {
