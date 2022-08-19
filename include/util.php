@@ -1884,7 +1884,7 @@ function IsAlias($identifier): bool
  * @param string $var
  * @return bool
  */
-function IsSigInt($var): bool  // like function is_signed(),function is_number(), function is_positove(),
+function IsSigInt($var): bool  // like function is_signed(),function is_number(), function is_positive(), function is_numeric(),
 {
     if (is_int(filter_var($var, FILTER_VALIDATE_INT))) {
         return true;

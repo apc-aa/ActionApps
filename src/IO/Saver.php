@@ -143,7 +143,8 @@ class Saver implements AA\Later\LaterInterface {
             $store_mode = ($this->store_mode == 'by_grabber') ? $this->grabber->getStoreMode() : $this->store_mode;
 
             if (!$fire) {
-                $this->message("AA\IO\Saver->run(): id_mode: $id_mode, store_mode: $store_mode");
+                $this->message("AA\IO\Saver->run(): id_mode: $id_mode, store_mode: $store_mode, transformed item: ");
+                $this->message($content4id);
             }
 
             switch ($id_mode) {

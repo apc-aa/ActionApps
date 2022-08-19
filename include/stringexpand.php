@@ -5183,12 +5183,11 @@ class AA_Stringexpand_Debug extends AA_Stringexpand_Nevercachenotrim {
      */
     function expand( $text='' ) {
         $ret = '';
-        switch ($text) {
-            case '0':  $GLOBALS['debug'] = 0; break;
-            case '1':  $GLOBALS['debug'] = 1; break;
-
+        if ( ctype_digit($text) ) {
+            AA::$debug = (int)$text;
+        } else {
             // do not rely on this - could be changed. If you want specific format, then add any text parameter
-            default:   $ret = "\nDababase instances: ". DB_AA::$_instances_no;
+            $ret = "\nDababase instances: ". DB_AA::$_instances_no;
         }
         return $ret;
     }
@@ -8598,9 +8597,15 @@ class AA_Stringexpand_Xpath extends AA_Stringexpand {
         if (!$query) {
             return '';
         }
+        // We first try with loadXML - it is less tolerant but more correct.
+        // The loadHTML is too HTML specific (<link>xxx</link> tag in XML is parsed as always empty since in HTML is always empty)
         $doc = new DOMDocument();
-        if (!$doc->loadHTML(trim($string))) {   // I tried to contentcached this load to save time on parsing document, but it had absolutely no effect - PHP 7.0 - Honza 2017-01-25
-            return 'Error parsing';
+        if (!$doc->loadXML( ($string = trim($string)), LIBXML_PARSEHUGE)) {
+            warn('loadXML() failed - trying to use loadHTML()'. var_export(libxml_get_last_error(),true));
+            if (!$doc->loadHTML($string)) {   // I tried to contentcached this load to save time on parsing document, but it had absolutely no effect - PHP 7.0 - Honza 2017-01-25
+                warn('Not possible to parse XML - loadXML() and loadHTML failed.'. var_export(libxml_get_last_error(),true));
+                return 'Error XML parsing: '. var_export(libxml_get_last_error(),true);
+            }
         }
         $xpath = new DOMXPath($doc);
 
