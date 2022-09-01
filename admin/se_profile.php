@@ -218,7 +218,16 @@ PrintSetRule( 9,'ui_manager',     $menu_entries,       [],                1,    
 PrintSetRule(10,'ui_manager_hide',$manager_hide,       [],                0,                 0,                 _m('hide this UI element'));
 PrintSetRule(11,'ui_inputform',   $inputform_entries,  [],                1,                 0,                 _m('redefine inputform UI - (empty values = do not show)'));
 
-echo ">" .
+echo "</table>
+    </form>
+    <form name=\"sf\" action='se_profile.php'>
+      <input type=\"hidden\" name=\"uid\" value='$uid'>
+      <input type=\"hidden\" name=\"add\" value='1'>
+      <input type=\"hidden\" name=\"property\">
+      <input type=\"hidden\" name=\"param\">
+      <input type=\"hidden\" name=\"field_id\">
+      <input type=\"hidden\" name=\"fnction\">
+      <input type=\"hidden\" name=\"html\">".
       StateHidden();
 echo '</form>
     </td>

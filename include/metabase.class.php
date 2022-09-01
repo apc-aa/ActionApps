@@ -277,7 +277,7 @@ class AA_MbC {
             case 'longblob':
             case 'longtext'  : //return GetAliasDef( "f_t:{expandable:{".$this->c[0]."}:30:...:&raquo;:&laquo;}", $this->c[0], $this->c[0]);
         }
-        return GetAliasDef( "f_1", $this->c[0], $this->c[0]);
+        return GetAliasDef( "f_t::safe", $this->c[0], $this->c[0]); // was f_1 but aa_log.php then showed messed HTML
         // return GetAliasDef( "f_t:{expandable:_#this:30:...:&raquo;:&laquo;}", $this->c[0], $this->c[0]);
     }
 
