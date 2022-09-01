@@ -568,9 +568,9 @@ function guesstype($str) {
 }
 
 /** type validating functions */
-function is_short_id($id)  { return (strlen($id) < 12) AND ctype_digit((string) $id); }
-function is_long_id($id)   { return ((strlen($id)==32) AND ctype_xdigit($id)); }
-function is_packed_id($id) { return (strlen($id)==16); }
+function is_short_id($id): bool  { return (strlen($id) < 12) AND ctype_digit((string) $id); }
+function is_long_id($id): bool   { return ((strlen($id)==32) AND ctype_xdigit($id)); }
+function is_packed_id($id): bool { return (strlen($id)==16); }
 
 /** used instead of explode ('-'... which returns [0 => ''] for empty string and not empty string
  *  @return string[] - array of non empty ids

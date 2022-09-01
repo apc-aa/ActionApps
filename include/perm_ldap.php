@@ -470,7 +470,7 @@ function GetApcAciPerm($str) {
 function GetUserType( $user_id ) {
     if (substr($user_id,0,4)      == 'uid=') return 'User';
     if (substr($user_id,0,3)      == 'cn=')  return 'Group';
-    if (guesstype($user_id) == 'l')    return 'ReaderGroup';
+    if (is_long_id($user_id))    return 'ReaderGroup';
     return 'Reader';
 }
 */
@@ -499,10 +499,10 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
 
     /** true, if the system is able to store permissins for groups and users (even foreign users and groups)
      *  SQL and LDAP is able to store it, Reader not. */
-    function storesGeneralPerms()                               { return true; }
+    function storesGeneralPerms(): bool { return true; }
 
     /** true, if the User data (name, mail, ..) could be edited on AA Permission page */
-    function isUserEditable()                                   { return true; }
+    function isUserEditable(): bool { return true; }
 
     /** Creates a password hash for given Permsystem */
     public static function generatePasswordHash($password) {
@@ -519,7 +519,7 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
      *  we MUST use specific UIDs for every single Permission Type
      *  (it MUST be clear, which perm system is used just from the format of UID)
      */
-    function userIdFormatMatches($uid) {
+    function userIdFormatMatches($uid): bool  {
         // LDAP perms - starting with uid (Users) od cn (Groups)
         return  ((substr($uid,0,4) == 'uid=') OR (substr($uid,0,3) == 'cn='));
     }

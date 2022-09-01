@@ -262,16 +262,16 @@ class AA_Stringexpand_Switch extends AA_Stringexpand_Nevercache {
     }
 }
 
-/** Expands {user:xxxxxx} alias - auth user informations (of current user)
+/** Expands {user:xxxxxx} alias - auth user information (of current user)
  *   @param $field - field to show ('headline........', 'alerts1....BWaFs' ...).
- *                   empty for username (of curent logged user)
+ *                   empty for username (of current logged user)
  *                   'password' for plain text password of current user
  *                   'permission'
  *                   'role'  -> returns super|administrator|editor|author|undefined
  */
 class AA_Stringexpand_User extends AA_Stringexpand {
 
-    /** $auth_user_info caches user's informations */
+    /** $auth_user_info caches user's information */
     private static $auth_user_info = [];
 
     /** additionalCacheParam function
@@ -309,14 +309,15 @@ class AA_Stringexpand_User extends AA_Stringexpand {
                 }
                 return 'undefined';
             default:
-                // $auth_user_info caches user's informations
+                $user_id = (!$_SERVER['PHP_AUTH_USER'] AND !$_SERVER['REMOTE_USER']) ? AuthGetUid() : AA_Reader::name2Id(get_if($_SERVER['PHP_AUTH_USER'],$_SERVER['REMOTE_USER']));
+                if ($field=='id') {
+                    return $user_id;
+                }
+
                 if ( !isset(AA_Stringexpand_User::$auth_user_info[$auth_user]) ) {
-                    AA_Stringexpand_User::$auth_user_info[$auth_user] = GetAuthData();
+                    AA_Stringexpand_User::$auth_user_info[$auth_user] = AA_Reader::getReaderItemContent($user_id);
                 }
                 $item_user = GetItemFromContent(AA_Stringexpand_User::$auth_user_info[$auth_user]);
-                if ($field=='id') {
-                    return $item_user->getItemID();
-                }
                 return $item_user->subst_alias($field);
         }
     }
@@ -1487,7 +1488,7 @@ function parseLoop($out, $item) {
 
     $val = [];
     // special - {@fieldlist...} - lists all the fields
-    // (good for authomatic CSV generation, for example:
+    // (good for automatic CSV generation, for example:
     //        Odd HTML is: {@fieldlist(_#CSV_FMTD):,:_#1}, where
     //        _#CSV_FMTD is defined as f_t and with parameter: {alias:{loop............}:f_t::csv}.
     if ( $field == 'fieldlist' ) {
@@ -4607,7 +4608,7 @@ class AA_Stringexpand_Live extends AA_Stringexpand_Edit {
  *  {ajax:{_#ITEM_ID_}:switch.........1:_#IS_CHECK<button _#AA_AJAX_>Change it</button>}
  *  {ajax:{_#ITEM_ID_}:file............:<img src="/img/edit.gif" title="Upload new file"> :AA_Refresh('stickerdiv1')}
  *  {ajax:{_#ITEM_ID_}:file............:<img src="/img/edit.gif" title="Upload new file"> :AA_Refresh(this)}   // updates the first element with data-aa-url in DOM up
- *  {ajax::number..........::_#ANSWER__::sel:{"const_arr":{"0":"no","1":"yes"}}}
+ *  {ajax::number..........:_#ANSWER__::sel:{"const_arr":{"0":"no","1":"yes"}}}
  **/
 class AA_Stringexpand_Ajax extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
@@ -8071,11 +8072,6 @@ class AA_Stringexpand_Setsecret extends AA_Stringexpand_Nevercache {
         $secret = $ga->createSecret();
 
 
-
-
-
-
-
         $qrCodeUrl = $ga->getQRCodeGoogleUrl('Blog', $secret);
         echo "Google Charts URL for the QR-Code: ".$qrCodeUrl."\n\n";
 
@@ -8254,7 +8250,7 @@ class AA_Stringexpand_Changed extends AA_Stringexpand {
      * @return string|void
      */
     function expand($item_id=null) {
-        return (guesstype($item_id) != 'l') ? '' : ChangesMonitor::singleton()->lastChanged($item_id);
+        return is_long_id($item_id) ? ChangesMonitor::singleton()->lastChanged($item_id) : '';
     }
 }
 
@@ -8269,7 +8265,7 @@ class AA_Stringexpand_Changedate extends AA_Stringexpand {
      * @return string
      */
     function expand($item_id=null, $field_id=null, $format=null): string {
-        $time = ((guesstype($item_id) != 'l') OR !$field_id) ? '0' : (string)ChangesMonitor::singleton()->lastChangeDate($item_id,$field_id);
+        $time = ( !is_long_id($item_id) OR !$field_id) ? '0' : (string)ChangesMonitor::singleton()->lastChangeDate($item_id,$field_id);
         return StrExpand('AA_Stringexpand_Date', [$format, $time, '--']);
     }
 }
@@ -8393,7 +8389,7 @@ class AA_Password_Manager_Reader {
                 return self::bad(_m("Unable to find user - please check if it has been misspelled."));
             }
         }
-        $user_info = GetAuthData($user_id);
+        $user_info = AA_Reader::getReaderItemContent($user_id);
 
         // generate MD5 hash
         $email     = $user_info->getValue(FIELDID_EMAIL);
@@ -8487,7 +8483,7 @@ class AA_Password_Manager_Reader {
         if (!$key OR !$user_id) {
             return false;
         }
-        if (!($user_info = GetAuthData($user_id))) {
+        if (($user_info = AA_Reader::getReaderItemContent($user_id))->isEmpty()) {
             return false;
         }
         // Check the key

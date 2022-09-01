@@ -110,7 +110,7 @@ class AA_Auth extends Auth {
     }
 
     public static function use2FA() {
-        $readerslices = getReaderSlices();
+        $readerslices = AA_Reader::getReaderSlices();
 
         return DB_AA::test(['content', 'item'], [
             ['content.item_id', 'item.id', 'j'],

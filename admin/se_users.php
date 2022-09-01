@@ -61,27 +61,20 @@ function PrintUser($perm, $usr_id, $editor_perm) {
 
     $username   = perm_username($usr_id);
     $usr_id_enc = rawurlencode($usr_id);
-    // select role icon
-    $role_images = [
-        0 => "rolex.gif",
-                         1 => "role1.gif",
-                         2 => "role2.gif",
-                         3 => "role3.gif",
-                         4 => "role4.gif"
-    ];
-    $role = 0;
 
+    // select role icon
+    $role_img = 'rolex.gif';
     if (      IsPerm($perm,AA_Perm::ROLES["SUPER"]['id']) ) {
-        $role = 4;
+        $role_img = 'role4.gif';
     } elseif (IsPerm($perm,AA_Perm::ROLES["ADMINISTRATOR"]['id'] ) ) {
-        $role = 3;
+        $role_img = 'role3.gif';
     } elseif (IsPerm($perm,AA_Perm::ROLES["EDITOR"]['id'] ) ) {
-        $role = 2;
+        $role_img = 'role2.gif';
     } elseif (IsPerm($perm,AA_Perm::ROLES["AUTHOR"]['id'] ) ) {
-        $role = 1;
+        $role_img = 'role1.gif';
     }
 
-    echo "<tr><td><img src=\"../images/". $role_images[$role] ."\" width=50 height=25 border=0></td>\n";
+    echo "<tr><td><img src=\"../images/$role_img\" width=50 height=25 border=0></td>\n";
 
     $go_url_arr = [
         'User'        => "um_uedit.php?usr_edit=1&selected_user=$usr_id_enc",

@@ -126,17 +126,17 @@ class Widget extends AA_Object implements NamedInterface {
         $sort_by = $this->getProperty('sort_by');
         $slice_field = $this->getProperty('slice_field');
 
-
         // AA::$debug&2 && AA::$dbg->log($filter_conds);
         // if variable is for some item, then we can use _#ALIASES_ in conds
         // and sort
         if (is_object($content)) {
             // is the conds contain aliases, unalias it - Just for speedup for the cases the unaliasing is not needed
             $check = " $filter_conds $filter_conds_rw $sort_by";
-            if ((strpos($check, '{') or strpos($check, '_#')) and ($item = AA_Items::getItem(new zids($content->getId())))) {
-                $filter_conds = $item->unalias($filter_conds);
-                $filter_conds_rw = $item->unalias($filter_conds_rw);
-                $sort_by = $item->unalias($sort_by);
+            if (strpos($check, '{') or strpos($check, '_#')) {
+                $item = AA_Items::getItem(new zids($content->getId()));
+                $filter_conds    = AA::Stringexpander()->unalias($filter_conds,'',$item);
+                $filter_conds_rw = AA::Stringexpander()->unalias($filter_conds_rw,'',$item);
+                $sort_by         = AA::Stringexpander()->unalias($sort_by,'',$item);
             }
         }
 
@@ -268,7 +268,7 @@ class Widget extends AA_Object implements NamedInterface {
         foreach ($this->_selected as $k => $foo) {
             if (!$already_selected[$k]) {
                 $val_txt = $k;
-                if ($this->getProperty('const') and (guesstype($k) == 'l')) {
+                if ($this->getProperty('const') and is_long_id($k)) {
                     $opt = $this->getFormattedOptions(null, new zids($k, 'l'), '', true);
                     if (!strlen($val_txt = $opt[$k])) {
                         $val_txt = $k;

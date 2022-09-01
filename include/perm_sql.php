@@ -282,19 +282,19 @@ function ChangePerm($id, $objectID, $objectType, $perm, $flags = 0) {
 
 class AA_Permsystem_Sql extends AA_Permsystem {
 
-    /** true, if the system is able to store permissins for groups and users (even foreign users and groups)
+    /** true, if the system is able to store permissions for groups and users (even foreign users and groups)
      *  SQL and LDAP is able to store it, Reader not. */
-    function storesGeneralPerms()                               { return true; }
+    function storesGeneralPerms(): bool { return true; }
 
     /** true, if the User data (name, mail, ..) could be edited on AA Permission page */
-    function isUserEditable()                                   { return true; }
+    function isUserEditable(): bool { return true; }
 
 
     /** userIdFormatMatches - is user id in correct format?
      *  we MUST use specific UIDs for every single Permission Type
      *  (it MUST be clear, which perm system is used just from the format of UID)
      */
-    function userIdFormatMatches($uid) {
+    function userIdFormatMatches($uid): bool  {
         // SQL perms - we are using numbers
         return ctype_digit((string) $uid);
     }

@@ -628,8 +628,7 @@ class AA_Searchbar extends AA_Storable {
         $empty = false;   // flag - true if the last printed searchrow is empty
 
         if ($this->show & MGR_SB_SEARCHROWS) {
-            while ( ($count_sb < $this->order_row_count_min) OR
-                   ($this->add_empty_search_row AND !$empty) ) {
+            while ( ($count_sb < $this->order_row_count_min) OR ($this->add_empty_search_row AND !$empty) ) {
                 $empty = !$this->print_search_bar($count_sb++);
             }
         }
@@ -640,7 +639,6 @@ class AA_Searchbar extends AA_Storable {
                 $this->print_order_bar($i++);
             }
         }
-
 
         if ($this->show & MGR_SB_BOOKMARKS) {
             $this->print_bar_actions();
