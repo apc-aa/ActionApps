@@ -304,7 +304,7 @@ if ($bigsrch OR $easy_query) {  // big search form or authomatical search form
     ExitPage('<!-- bigsrch parameter is NOT SUPPORTED IN AA v 1.5+ <br>easy_query is  NOT SUPPORTED IN AA v 2.50+ <br>See <a href="http://apc-aa.sourceforge.net/faq/index.shtml#215">AA FAQ</a> for more details. -->');
 }
 
-$add_aliases = $aliases    = GetAliasesFromUrl($als);
+$add_aliases = $aliases    = AA_View::getAliasesFromUrl($als);
 
 // this is not good way - aliases are then different on each call, so it isn't
 // cached. The better way is below
@@ -313,7 +313,7 @@ $add_aliases = $aliases    = GetAliasesFromUrl($als);
 $add_aliases['_#SESSION_'] = GetAliasDef( 'f_e:session', 'id..............', _m('session id'));
 
 // if banner parameter supplied => set format
-$slice_info = array_merge( $slice_info, ParseBannerParam($banner));
+$slice_info = array_merge( $slice_info, AA_View::parseBannerParam($banner));
 
 // get alias list from database and possibly from url
 // if working with multi-slice, get aliases for all slices

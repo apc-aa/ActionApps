@@ -102,7 +102,7 @@ if ($filename) {
    header('Content-Transfer-Encoding: binary');
 }
 
-$view_param = ParseViewParameters();
+$view_param = AA_View::parseViewParameters();
 
 if ($convertfrom) {
     $view_param['convertfrom'] = $convertfrom;

@@ -315,6 +315,292 @@ class AA_View {
         $f = $this->getViewInfo();
         return xml_serialize("view",$f,$i.$ii,$ii,"tname=\"$t\" ".$a);
     }
+
+    /** GetListLength function
+     * @param $listlen
+     * @param $to
+     * @param $from
+     * @param $page
+     * @param $idscount
+     * @param $random
+     * @return array
+     */
+    public static function getListLength($listlen, $to, $from, $page, $idscount, $random) {
+        $list_from = max(0, $from - 1);    // user counts items from 1, we from 0
+        $list_to   = max(0, $to - 1);      // user counts items from 1, we from 0
+
+        if ($to > 0) {
+            $listlen = max(0, $list_to - $list_from + 1);
+        }
+
+        if ($page) {      // split listing to pages
+            // Format:  <page>-<number of pages>
+            $pos = strpos($page, '-');
+            if ($pos) {
+                $no_of_pages = substr($page, $pos + 1);
+                $page_n      = substr($page, 0, $pos) - 1;    // count from zero
+                // to be last page shorter than others if there is bad number of items
+                $list_from = $page_n * floor($idscount / $no_of_pages);
+                $listlen   = floor(($idscount * ($page_n + 1)) / $no_of_pages) - floor(($idscount * $page_n) / $no_of_pages);
+            } else {
+                // second parameter is not specified - take listlen parameter
+                // we can also specify both - page and from, which means from the item xy on the page p
+                $list_from += $listlen * ($page - 1);
+            }
+        }
+        return [$listlen, $random ?: ($list_from ?: 0)];
+    }
+
+    /** ParseBannerParam function
+     *  Parses banner url parameter (for view.php as well as for slice.php3
+     *  (banner parameter format: banner-<position in list>-<banner vid>-[<weight_field>]
+     *  (@see {@link http://apc-aa.sourceforge.net/faq/#219})
+     */
+    public static function parseBannerParam($banner_param) {
+        $ret = [];
+        if ($banner_param) {
+            [$foo_pos, $foo_vid, $foo_fld] = explode('-', $banner_param);
+            $ret['banner_position']   = $foo_pos;
+            $ret['banner_parameters'] = "vid=$foo_vid";
+            if ($foo_fld == 'norandom') {
+                return $ret;
+            }
+            $ret['banner_parameters'] .= "&set[$foo_vid]=random-" . ($foo_fld ?: 1);
+        }
+        return $ret;
+    }
+
+    /** ParseSettings function
+     * Separates 'set' parameters for current view into array. To escape ','
+     *                 character uses ',,'.
+     * @param array $set_arr set[<vid>][] array of strings from url. 'set' parameters are in form
+     *                      set[<vid>]=property1-value1,property2-value2
+     *                   or
+     *                      set[<vid>][]=property1-value1&set[<vid>][]=property2-value2[,...]
+     * @return array asociative array of properties
+     */
+    public static function parseSettings($set_arr) {
+        //$ALLOW_MULTIPLE = ['banner' => true];
+        $ALLOW_MULTIPLE = []; // not yet
+
+        $ret = [];
+        foreach ($set_arr as $set) {
+            $sets = split_escaped(",", $set, ",,");
+            foreach ($sets as $v) {
+                $pos = strpos($v, '-');
+                if ($pos) {
+                    $seting_name = substr($v, 0, $pos);
+                    if ($ALLOW_MULTIPLE[$seting_name]) {
+                        $ret[$seting_name][] = substr($v, $pos + 1);  // always array (for banner for example)
+                    } else {
+                        $ret[$seting_name] = substr($v, $pos + 1);
+                    }
+                }
+            }
+        }
+        return $ret;
+    }
+
+    /** ParseViewParameters function
+     *  Converts a query string into a data view_params data structure
+     * @param $query_string
+     * @return array
+     */
+    public static function parseViewParameters($query_string = "") {
+        if ($use_globals = (!$query_string or !preg_match("/vid=[a-z]/", $query_string))) {
+            // old behavior - we do not want to use global dependecy with {view.php} but we do not removed it in times when we wrote {view.php..}{ alias, so we are removing it at least for new "named views"
+            global $cmd, $set, $vid, $als;
+            global $x;   // url parameter - used for cmd[]=x-111-url view parameter
+        }
+
+        if ($query_string) {
+            // Parse parameters
+            // if view in cmd[] or set[] is not specified - fill it from vid
+            if (preg_match("/vid=\s*(\w+)/", $query_string, $parts)) {              // a-z, A-Z, 0-9, including the _
+                $vid = $parts[1];
+
+                // it is possible to write vid=574&cmd[]=c-1-test&cmd[]=c-2-1
+                $query_string = str_replace(['cmd[][]', 'cmd[]', 'set[][]', 'set[]'], [
+                    "cmd[$vid][]",
+                    "cmd[$vid][]",
+                    "set[$vid][]",
+                    "set[$vid][]"
+                ], $query_string);
+
+                // we no not want older calls to ParseViewParameters() will infect this call
+                // @todo - make two versions - one for url parameters, second for
+                // {view.php...} parameters, where we do not want to read global data
+                unset($cmd[$vid]);
+                unset($set[$vid]);
+            }
+
+            $new_params = add_vars($query_string, 'return');  // adds values from url (it's not automatic in SSIed script)
+            if ($use_globals) {
+                add_vars($query_string);   // import it also globaly
+                $vid = trim($vid);
+            }
+        } else {
+            $new_params['cmd'] = $GLOBALS['cmd'];
+            $new_params['set'] = $GLOBALS['set'];
+            $new_params['als'] = $GLOBALS['als'];
+        }
+
+        AA::$debug & 2 && AA::$dbg->log("ParseViewParameters: vid=$vid, query_string=" . str_replace("slice_pwd=" . $GLOBALS['slice_pwd'], 'slice_pwd=*****', $query_string), "cmd:", $new_params['cmd'], "set:", $new_params['set'], "als:", $new_params['als']);
+
+        // Splits on "-" and subsitutes aliases
+        $commands = new AA_View_Commands($new_params['cmd'][$vid], $new_params['als']);
+        $v_conds  = new AA_Set;
+        $c_conds  = new AA_Set;
+
+        AA::$debug & 2 && AA::$dbg->log("<br>ParseViewParameters - command:", $commands);
+
+        $commands->reset();
+        while ($command = $commands->current()) {
+            $commands->next();
+            switch ($command->getCommand()) {
+                case 'v':
+                    $vid = $command->getParameter(0);
+                    break;
+
+                case 'o':  // the same as x, but no hit for item is added
+                case 'i':  // i is exactly the same as o, now
+                case 'x':
+                    $vid  = $command->getParameter(0);
+                    $zids = new zids();
+                    $zids->addDirty(($command->getParameter(1) == 'url') ? $x : $command->getParameterArray(1));
+
+                    // This is bizarre code, just incrementing the first item, left as it is
+                    // but questioned on apc-aa-coders - mitra
+                    if (($command->getCommand() == 'x') and ($zids->count() > 0)) {
+                        \AA\Util\Hitcounter::hit($zids->slice(0));
+                    }
+                    break;
+
+                case 'c':  // Check for experimental c-OR-1-aaa-2-bbb-3-ccc syntax
+                    // Note param_conds[0] is not otherwise used
+                    // It is converted into conds in AA_View->getConds
+                    // which is consumed in ParseMultiSelectConds
+                    if ($command->getParameter(0) == 'OR') {
+                        $param_conds[0] = 'OR';
+                        $command_params = $command->getParameterArray(1);
+                    } else {
+                        $command_params = $command->getParameterArray();
+                    }
+
+//                       if (ctype_digit((string)$command_params[0])) {
+//
+//                       }
+
+                    if (AA_Set::check($command_params[0], $command_params[1])) {
+                        $param_conds[$command_params[0]] = stripslashes($command_params[1]);
+                    }
+                    if (AA_Set::check($command_params[2], $command_params[3])) {
+                        $param_conds[$command_params[2]] = stripslashes($command_params[3]);
+                    }
+                    if (AA_Set::check($command_params[4], $command_params[5])) {
+                        $param_conds[$command_params[4]] = stripslashes($command_params[5]);
+                    }
+                    break;
+
+                case 'd':
+                    $v_conds->addFromCommand($command);
+                    break;
+            }
+        }
+
+        $arr = isset($new_params['set'][$vid]) ? AA_View::parseSettings((array)$new_params['set'][$vid]) : [];
+
+        // Following line is here just for caching purposes - we are creating cache
+        // keystring from view parameters and we need to add all set[] and cmd[]
+        // in the keystring, because of cases like:
+        //     view.php?vid=1781&set[997]=selected-759644
+        // (view 997 is called inside 1781)
+        $arr['forcache'] = [$new_params];
+
+        if ($arr['slices']) {
+            $arr['slices'] = array_filter(explode_ids($arr['slices']), 'is_long_id');
+        }
+
+
+        // the parameters for discussion comes (quite not standard way) from globals
+        if ($use_globals) {
+            if (!$arr["all_ids"]) {
+                $arr["all_ids"] = $GLOBALS['all_ids'];
+            }
+            if (!$arr["ids"]) {
+                $arr["ids"] = $GLOBALS['ids'];
+            }
+            if (!$arr["sel_ids"]) {
+                $arr["sel_ids"] = $GLOBALS['sel_ids'];
+            }
+            if (!$arr["add_disc"]) {
+                $arr["add_disc"] = $GLOBALS['add_disc'];
+            }
+            if (!$arr["sh_itm"]) {
+                $arr["sh_itm"] = $GLOBALS['sh_itm'];
+            }
+            if (!$arr["parent_id"]) {
+                $arr["parent_id"] = $GLOBALS['parent_id'];
+            }
+
+            // IDs of discussion items for discussion list
+            if (!$arr["disc_ids"]) {
+                $arr["disc_ids"] = $GLOBALS['disc_ids'];
+            }
+
+            // used for discussion list view
+            if (!$arr["disc_type"]) {
+                $arr["disc_type"] = $GLOBALS['disc_type'];
+            }
+
+            // used for Links module - categories and links
+            if (!$arr["cat"]) {
+                $arr["cat"] = $GLOBALS['cat'];
+            }
+            if (!$arr["show_subcat"]) {
+                $arr["show_subcat"] = $GLOBALS['show_subcat'];
+            }
+
+            $arr['als'] = self::getAliasesFromUrl($GLOBALS['als']);
+        }
+
+        $arr['vid']         = $vid;
+        $arr['conds']       = $v_conds->getConds();
+        $arr['param_conds'] = $param_conds;
+        //  $arr['item_ids'] = $item_ids;
+        $arr['zids'] = $zids;
+
+        AA::$debug & 2 && AA::$dbg->log($arr);
+        return $arr;
+    }
+
+    /** GetViewAliases function
+     * @param $als
+     * @return array
+     */
+    public static function getViewAliases($conds) {
+        $ret = [];
+        if (is_array($conds)) {
+            foreach ($conds as $k => $v) {
+                $ret[str_pad('_#VIEW_C' . ($k + 1), 10, '_')] = GetAliasDef('f_s:' . $v['value']);
+            }
+        }
+        return $ret;
+    }
+
+    /** GetAliasesFromUrl function
+     * @param $als
+     * @return array
+     */
+    public static function getAliasesFromUrl($als) {
+        $ret = [];
+        if (is_array($als)) {
+            foreach ($als as $k => $v) {
+                $ret["_#" . $k] = GetAliasDef("f_s:$v");
+            }
+        }
+        return $ret;
+    }
 }
 
 /** usually called as $view = AA_Views::getView($vid);

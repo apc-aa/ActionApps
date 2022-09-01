@@ -84,7 +84,7 @@ is_object( $db ) || ($db = getDB());
 [$usec, $sec]   = explode(" ",microtime());
 $disc_starttime = ((float)$usec + (float)$sec);
 
-$view_param              = ParseViewParameters();
+$view_param              = AA_View::parseViewParameters();
 $view_param["disc_ids"]  = QueryDiscIDs($slice_id, $conds, $sort, $slices );
 $view_param["disc_type"] = "list";
 // special url parameter disc_url - tell us, where we have to show

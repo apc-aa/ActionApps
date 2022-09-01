@@ -1262,9 +1262,9 @@ function gensalt($saltlen) {
  * @param $pattern
  * @param $string
  * @param $escape_pattern
- * @return mixed
+ * @return array
  */
-function split_escaped($pattern, $string, $escape_pattern) {
+function split_escaped($pattern, $string, $escape_pattern): array {
     $dummy = chr(0x1E);  // record separator ASCII character - we can use any other, however
     while (strpos($string, $dummy) !== false) {
         $dummy .= '^';   // add another strange character to the

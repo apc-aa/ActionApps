@@ -2808,7 +2808,7 @@ class AA_Stringexpand_View extends AA_Stringexpand {
             $view_param['zids'] = $zids;
         }
         if (isset($settings)) {
-            $view_param = array_merge($view_param, ParseSettings([$settings]));
+            $view_param = array_merge($view_param, AA_View::parseSettings([$settings]));
         }
         // do not pagecache the view
         return (new AA_Showview($view_param))->getViewOutput();
@@ -5686,7 +5686,7 @@ class AA_Unalias_Callback {
                 $param      = str_replace(['&amp;','-&lt;','-&gt;','&lt;-','&gt;-'], ['&','-<','->','<-','>-'], aa_substr($out,10));
                 // do not store in the pagecache, but store into contentcache
 
-                $showview   = new AA_Showview(ParseViewParameters(DeQuoteColons($param)));
+                $showview   = new AA_Showview(AA_View::parseViewParameters(DeQuoteColons($param)));
 
                 return QuoteColons(AA::Contentcache()->get_result([$showview,'getViewOutput']));
             }

@@ -92,7 +92,7 @@ if (ctype_digit((string)$time_limit)) {
 
 AA::$debug&2 && AA::$dbg->group("/jsview.php", "Start");
 
-$view_param = ParseViewParameters();
+$view_param = AA_View::parseViewParameters();
 
 if ($convertfrom) {
     $view_param['convertfrom'] = $convertfrom;
