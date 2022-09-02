@@ -21,7 +21,7 @@ class FieldDuplicates extends \AA\Optimize\AbstractOptimize {
      * @return string - a description
      */
     public static function description(): string {
-        return _m("There should be only one slice_id - field_id pair in all slices, but sometimes there are more than one (mainly because of error in former sql_update.php3 script, where more than one display_count... fields were added).");
+        return _m("There should be only one slice_id - field_id pair in all slices, but sometimes there are more than one (mainly because of error in former sql_update.php script, where more than one display_count... fields were added).");
     }
 
     /** checks if this Optimize class belongs to specified type (like "sql_update") */

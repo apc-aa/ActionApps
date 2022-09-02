@@ -141,7 +141,7 @@ class AA_View {
     }
 
     /** setBannerParam function
-     *  sets ['banner_position'] and ['banner_parameters']
+     *  sets ['banners']
      * @param $banner_param
      */
     function setBannerParam($banner_param) {
@@ -261,8 +261,7 @@ class AA_View {
         $format['id']                  = $this->fields['slice_id'];
         $format['vid']                 = $this->fields['id'];
 
-        $format['banner_position']     = $this->fields['banner_position'];
-        $format['banner_parameters']   = $this->fields['banner_parameters'];
+        $format['banners']             = $this->fields['banners'];
 
         $format['calendar_start_date'] = $this->fields['field1'];
         $format['calendar_end_date']   = $this->fields['field2'];
@@ -356,16 +355,19 @@ class AA_View {
      *  (banner parameter format: banner-<position in list>-<banner vid>-[<weight_field>]
      *  (@see {@link http://apc-aa.sourceforge.net/faq/#219})
      */
-    public static function parseBannerParam($banner_param) {
+    public static function parseBannerParam($banner_arr): array {
         $ret = [];
-        if ($banner_param) {
-            [$foo_pos, $foo_vid, $foo_fld] = explode('-', $banner_param);
-            $ret['banner_position']   = $foo_pos;
-            $ret['banner_parameters'] = "vid=$foo_vid";
-            if ($foo_fld == 'norandom') {
-                return $ret;
+        if ($banner_arr) {
+            foreach ((array)$banner_arr as $banner) {
+                [$foo_pos, $foo_vid, $foo_fld] = explode('-', $banner);
+                if (ctype_digit($foo_pos) AND strlen($foo_vid)) {
+                    $bparam = "vid=$foo_vid";
+                    if ($foo_fld != 'norandom') {
+                        $bparam .= "&set[$foo_vid]=random-" . ($foo_fld ?: 1);
+                    }
+                    $ret['banners'][$foo_pos] = $bparam;
+                }
             }
-            $ret['banner_parameters'] .= "&set[$foo_vid]=random-" . ($foo_fld ?: 1);
         }
         return $ret;
     }
@@ -380,8 +382,7 @@ class AA_View {
      * @return array asociative array of properties
      */
     public static function parseSettings($set_arr) {
-        //$ALLOW_MULTIPLE = ['banner' => true];
-        $ALLOW_MULTIPLE = []; // not yet
+        $ALLOW_MULTIPLE = ['banner' => true];  // you can use set[245]=banner-2-260,banner-10-261
 
         $ret = [];
         foreach ($set_arr as $set) {

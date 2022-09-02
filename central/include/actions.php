@@ -78,7 +78,7 @@ class AA_Manageraction_Central_Linkcheck extends AA_Manageraction {
     }
 }
 
-/** AA_Manageraction_Central_Sqlupdate - Runs sql_update.php3 script on selected
+/** AA_Manageraction_Central_Sqlupdate - Runs sql_update.php script on selected
  *  AAs
  */
 class AA_Manageraction_Central_Sqlupdate extends AA_Manageraction {

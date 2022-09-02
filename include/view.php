@@ -276,7 +276,9 @@ class AA_Showview {
                 str_replace('<!--Vacuum-->', '', $view->f('noitem_msg')) :
                 ("<div>" . _m("No item found") . "</div>")));
 
-        $view->setBannerParam(AA_View::parseBannerParam($this->_view_param["banner"]));  // if banner set format
+        if ( $this->_view_param["banner"] ) {
+            $view->setBannerParam(AA_View::parseBannerParam($this->_view_param["banner"]));  // if banner set format
+        }
 
         $listlen    = $this->_view_param["listlen"] ?: $view->f('listlen');
 

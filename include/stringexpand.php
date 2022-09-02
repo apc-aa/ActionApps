@@ -5683,7 +5683,7 @@ class AA_Unalias_Callback {
             }
             elseif ( (aa_substr($out,0,9) == 'view.php?') OR (aa_substr($out,0,10) == 'view.php3?') ) {
                 // CKEditor editor replaces & with &amp; so we need to change it back
-                $param      = str_replace(['&amp;','-&lt;','-&gt;','&lt;-','&gt;-'], ['&','-<','->','<-','>-'], aa_substr($out,10));
+                $param      = str_replace(['&amp;','-&lt;','-&gt;','&lt;-','&gt;-'], ['&','-<','->','<-','>-'], aa_substr($out, (aa_substr($out,0,9) == 'view.php?') ? 9 : 10));
                 // do not store in the pagecache, but store into contentcache
 
                 $showview   = new AA_Showview(AA_View::parseViewParameters(DeQuoteColons($param)));
@@ -5801,13 +5801,18 @@ class AA_Stringexpand_Slice_Comments extends AA_Stringexpand {
 
 /**
  * Class AA_Stringexpand_Preg_Match
+ *  @usage {preg_match:/[0-9]{4}/:{headline........}} - extracts year from headline
+ *  @usage {preg_match:/\D(\d{4})[\D]/:{headline........}x:1} - extracts year from headline - more accurate
+ *
  */
 class AA_Stringexpand_Preg_Match extends AA_Stringexpand_Nevercachenotrim {
     /** Do not trim all parameters (maybe we can?) */
 
     /** expand function
-     * @param $pattern
-     * @param $subject
+     * @param string $pattern
+     * @param string $subject
+     * @param string $matched (number - which match to take)
+     * @return string
      */
     function expand($pattern='', $subject='', $matched='') {
         $matched = ctype_digit((string)$matched) ? (int)$matched : 0;

@@ -94,7 +94,7 @@ class itemview {
                                       //   fulltext_format, fulltext_remove,
                                       //   fulltext_format_top,
                                       //   fulltext_format_bottom,
-                                      //   banner_position, banner_parameters
+                                      //   banners
 
     $this->group_fld  = $slice_info['group_by'];
 
@@ -601,8 +601,8 @@ class itemview {
         $zidscount = $this->zids->count();
         for ( $i=0; $i<$number_of_ids; ++$i ) {
             // display banner, if you have to
-            if ( $this->slice_info['banner_parameters'] && ($this->slice_info['banner_position']==$i) ) {
-                $out .= (new AA_Showview(AA_View::parseViewParameters($this->slice_info['banner_parameters'])))->getViewOutput();
+            if ( $this->slice_info['banners'] AND ($this->slice_info['banners'][$i]) ) {
+                $out .= (new AA_Showview(AA_View::parseViewParameters($this->slice_info['banners'][$i])))->getViewOutput();
             }
 
             $zidx = $this->from_record+$i;
