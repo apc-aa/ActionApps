@@ -1430,11 +1430,11 @@ class ItemContent extends AA_Content {
             if ($fld AND !$fld->getProperty('in_item_tbl') AND !$fld->isSafeStored()) {   // do not delete 'secret....* ',  'password....', ... fields (the content should be rewritten in Inserter, if all conditions matches)
                 // deal with translations. if only translated values are present, then delete just the specific translation
                 // however - if also basic 0-1000000 indexes are present, clear all the field content
-                $keys = (is_array($cont) AND $cont) ? array_keys($cont) : [0]; // sometimes we want delete field so no AA_Value is_a passed (delete file...)
+                $keys = (is_array($cont) AND $cont) ? array_keys($cont) : [0]; // sometimes we want to delete field so no AA_Value is passed (delete file...)
                 foreach ($keys as $k) {
                     $in[$ind = ($k / AA_Value::MAX_INDEX)][] = $fid;
                     if ($ind==0) {
-                        continue;
+                        continue 2;
                     }
                 }
             }

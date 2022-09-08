@@ -982,7 +982,7 @@ class AA_Inputfield {
                             break;
                             //END// Local URL Picker | Omar/Jaime | 11-06-2005
                 case 'txt': if (!$this->translations) {
-                                $this->textarea(get_if($this->param[0], 4));   // not yet prepared for standard widget - Triggers - SetField, GetField do not work. @TODO
+                                $this->textarea(get_if($this->param[0], 4));   // not yet prepared for standard widget - Triggers - SetField, GetField do not work. Also the converters are not implemented @TODO
                             } else {
                                 $this->inputWidget($item, $slice_id);          // standard
                             }

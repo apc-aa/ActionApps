@@ -101,7 +101,7 @@ The changes could be tracked on:
 19-11-05 - fixed language setting - setlocale() added to all utf8 languages in order {order:...:locale} works well
 (honzam) - the default DB_COLLATION is preset to correct utf8mb4_***_ci version of utf
 19-10-30 - [+] and [-] images in {toggle...} are surrounded by span.aa-img-plus or span.aa-img-minus so we can
-(honzam)   redefine then using CSS bofre/after
+(honzam)   redefine then using CSS before/after
          - in {ajax} the whole content works as button by default. Now you can redefine it using _#AA_AJAX_
            alias like:
               The text which works with value <button _#AA_AJAX_>Change it</button>
@@ -117,16 +117,16 @@ The changes could be tracked on:
          - Manager Widget fixed, when displayed in many instances on the same page
            (used sessions, more complete hashes)
          - fixed Tags widget - now could be used in {ajax} displayed widgets
-           (the required scripts and CSS are loaded authomaticaly)
+           (the required scripts and CSS are loaded automatically)
          - better requires control - now we are able to control the requires during AJAX calls
            (so {ajax} widgets are able to load its JS and CSS)
-         - quicker AA\Cache\PageCache - better values for DB keys, quicker invaliadation (grouped for more slices)
+         - quicker AA\Cache\PageCache - better values for DB keys, quicker invalidation (grouped for more slices)
          - The functions for inserting Item Fields to the DB was rewritten to classes
            (which also allows better validation functions)
          - Links Module converted to ManagerActions and secured
-           (better parametrer checks, better SQL calls)
+           (better parameter checks, better SQL calls)
          - better zids filtering - better zids consistence
-         - optimalizded manageractions code
+         - optimized manageractions code
 19-10-01 - new possibility to redefine just selected variables in the query string by {go:xqs_<variable>=<value>}
 (honzam)   like:
             {go:xqs_year=2019&xqs_type=enviro}  ==> example.org/...?year=2019&type=enviro&some_other_params_from_old_url
