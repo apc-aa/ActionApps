@@ -3903,6 +3903,8 @@ class AA_Stringexpand_Constants extends AA_Stringexpand {
  *  <select name="theme">{options:My_Constants_grp:{qs:theme}}</select>
  *  {options:[1,2,5,7]:7}
  *  {options:[[1,"January"],[2,"Feb"],[3,"March"]]:7}
+ *  {options:[[1,"January"],[2,"Feb"],[3,"March"]]:["7","8"]}     - use multiple selected options
+ *  {options:[[1,"January"],[2,"Feb"],[3,"March"]]:{qs:months}}   - works also with multivalues - <select name="months[]" multiple>
  *  {options:{sequence:num:1998:2012}:{date:Y}}
  *  @return string - html <option>s for given constant group with selected option
  */
@@ -3916,7 +3918,7 @@ class AA_Stringexpand_Options extends AA_Stringexpand {
      */
     function expand($group='', $selected='') {
         $ret      = '';
-        $selected = (string)$selected;
+        $selected = json2arr((string)$selected);
         if ($group[0] == '[') {
             $constants = json2arr($group, true);
             foreach ($constants as $v) {
@@ -3928,7 +3930,7 @@ class AA_Stringexpand_Options extends AA_Stringexpand {
                     $k     = $v;
                 }
 
-                $sel  = ((string)$k == $selected) ? ' selected' : '';
+                $sel  = in_array((string)$k,$selected) ? ' selected' : '';
                 $ret .= "\n  <option $khtml $sel>".safe($v)."</option>";
             }
         } else {
