@@ -155,6 +155,7 @@ $switches->addAction(new AA_Manageraction_Links_Tab('Tab'));
 $switches->addAction(new AA_Manageraction_Links_GoBookmark('GoBookmark'));
 
 
+// function - we need trnslate _m() on use (not at include time)
 $manager_settings = [
      'searchbar' => [
          'fields'               => GetLinkFields(),
@@ -187,7 +188,7 @@ $manager_settings = [
              'id'               => $link_info['id']
          ],
          'fields'               => '',
-         'aliases'              => GetLinkAliases(),
+         'aliases'              => new AA_Aliases(new AA_Aliasgenerator_Constant()),
          'get_content_funct'    => 'Links_GetLinkContent'
      ],
      'actions_hint' => _m("Perform action on selected items"),

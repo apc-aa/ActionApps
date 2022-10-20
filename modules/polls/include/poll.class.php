@@ -121,15 +121,6 @@ class AA_Poll {
         ]; // we need id for invalidating cache in itemview
     }
 
-    /** aliases function
-     *  Get standard aliases definition from poll's fields
-     * @param $additional_aliases
-     * @return array
-     */
-    function aliases() {
-        return GetPollsAliases();
-    }
-
     /** @return true, if the string is column in polls table */
     function isField($string) {
         static $columns = null;
@@ -145,7 +136,7 @@ class AA_Poll {
         if ($this->isField($expression)) {
             return $this->getProperty($expression);
         }
-        $item = new AA_Item($this->content->getContent(), $this->aliases(), $expression);
+        $item = new AA_Item($this->content->getContent(), new AA_Aliases(new AA_Aliasgenerator_Polls), $expression);
         return $item->get_item();
     }
 
@@ -202,14 +193,12 @@ class AA_Poll {
     function getOutput($design='beforevote') {
         $format   = $this->get_format_strings($design);
 
-        $aliases  = GetAnswerAliases();
-
         $set = new AA_Set;
         $set->addCondition(new AA_Condition('poll_id', '==', $this->id()));
         $set->addSortorder(new AA_Sortorder(['priority' => 'a']));
 
         $zids     = AA::Metabase()->queryZids(['table'=>'polls_answer'], $set);
-        $itemview = new itemview($format, $aliases, $zids, 0, $zids->count(), shtml_url(), "", [
+        $itemview = new itemview($format, new AA_Aliases(new AA_Aliasgenerator_Answer), $zids, 0, $zids->count(), shtml_url(), "", [
             [
                 'AA_Metabase',
                 'getContent'

@@ -29,6 +29,8 @@ https://www.apc.org/
 */
 
 // make sure LINKS module specific constants are defined - should be defined in config.php
+use AA\Util\AbstractAliasgenerator;
+
 defined('AA_LINKS_HELP_CATEGORY') OR define('AA_LINKS_HELP_CATEGORY', '');
 defined('AA_LINKS_HELP_MAIN')     OR define('AA_LINKS_HELP_MAIN', '');
 defined('AA_LINKS_HELP_LINK')     OR define('AA_LINKS_HELP_LINK', '');
@@ -101,53 +103,61 @@ function GetLinkFields() {  // function - we need trnslate _m() on use (not at i
     return $searchfields;
 }
 
-/** Predefined aliases for links. For another aliases use 'inline' aliases. */
-function GetLinkAliases() {  // function - we need trnslate _m() on use (not at include time)
-  return [
-    "_#LINK_ID_" => GetAliasDef( "f_t",               "id",              _m('Link id')),
-    "_#L_NAME__" => GetAliasDef( "f_t",               "name",            _m('Link name')),
-    "_#L_O_NAME" => GetAliasDef( "f_t",               "original_name",   _m('Link original name')),
-    "_#L_DESCRI" => GetAliasDef( "f_t",               "description",     _m('Link description')),
-    "_#L_TYPE__" => GetAliasDef( "f_t",               "type",            _m('Link type')),
-    "_#L_RATE__" => GetAliasDef( "f_t",               "rate",            _m('Link rate')),
-    "_#L_VOTES_" => GetAliasDef( "f_t",               "vote",            _m('Link votes')),
-    "_#L_VO_DTE" => GetAliasDef( "f_d:n/j/Y",         "voted",           _m('Link - last vote date')),
-    "_#L_CR_BY_" => GetAliasDef( "f_t",               "created_by",      _m('Link - created by')),
-    "_#L_CR_DTE" => GetAliasDef( "f_d:n/j/Y",         "created",         _m('Link creation date')),
-    "_#L_ED_BY_" => GetAliasDef( "f_t",               "edited_by",       _m('Link - last edited by')),
-    "_#L_ED_DTE" => GetAliasDef( "f_d:n/j/Y",         "last_edit",       _m('Link - last edit date')),
-    "_#L_CH_BY_" => GetAliasDef( "f_t",               "checked_by",      _m('Link - checked by')),
-    "_#L_CH_DTE" => GetAliasDef( "f_d:n/j/Y",         "checked",         _m('Link - last checked date')),
-    "_#L_EMAIL_" => GetAliasDef( "f_m::::mailto:",    "initiator",       _m('Link author\'s e-mail')),
-    "_#L_URL___" => GetAliasDef( "f_t",               "url",             _m('Link url')),
-    "_#L_LINK__" => GetAliasDef( "f_m::::href:",      "url",             _m('Link link')),
-    "_#L_FLAG__" => GetAliasDef( "f_t",               "flag",            _m('Link flag')),
-    "_#L_VALID_" => GetAliasDef( "f_t",               "valid_rank",      _m('Link - validity rank')),
-    "_#L_VA_DTE" => GetAliasDef( "f_d:n/j/Y",         "validated",       _m('Link - last validation date')),
-    "_#L_NOTE__" => GetAliasDef( "f_t",               "note",            _m('Link editor\'s note')),
-    "_#L_O_CITY" => GetAliasDef( "f_t",               "org_city",        _m('Link organization city')),
-    "_#L_O_STRE" => GetAliasDef( "f_t",               "org_street",      _m('Link organization street')),
-    "_#L_O_POST" => GetAliasDef( "f_t",               "org_post_code",   _m('Link organization post code')),
-    "_#L_O_PHON" => GetAliasDef( "f_t",               "org_phone",       _m('Link organization phone')),
-    "_#L_O_FAX_" => GetAliasDef( "f_t",               "org_fax",         _m('Link organization fax')),
-    "_#L_O_EMIL" => GetAliasDef( "f_t",               "org_email",       _m('Link organization e-mail')),
-    "_#L_FOLDER" => GetAliasDef( "f_t",               "folder",          _m('Link folder (status code) - 1~Active, 2~Holding, 3~Trash')),
-    "_#L_R_ID__" => GetAliasDef( "f_h:, ",            "reg_id",          _m('Link - ids of regions (comma separated)')),
-    "_#L_R_NAME" => GetAliasDef( "f_h:, ",            "reg_name",        _m('Link - names of regions (comma separated)')),
-    "_#L_L_ID__" => GetAliasDef( "f_h:, ",            "lang_id",         _m('Link - ids of languages (comma separated)')),
-    "_#L_L_NAME" => GetAliasDef( "f_h:, ",            "lang_name",       _m('Link - names of languages (comma separated)')),
-    "_#L_L_SNAM" => GetAliasDef( "f_h:, ",            "lang_short_name", _m('Link - short names of languages (comma separated)')),
-    "_#L_CATIDS" => GetAliasDef( "f_h:, ",            "cat_id",          _m('Category ids (comma separated)')),
-    "_#L_CATNAM" => GetAliasDef( "f_h:, ",            "cat_name",        _m('Category names (comma separated)')),
-    "_#L_STATE_" => GetAliasDef( "f_t",               "cat_state",       _m('State of link in this category (visible/highlighted)')),
-    "_#L_VCOLOR" => GetAliasDef( "f_e:link_valid",    "cat_id",          _m('Link - validity color')),
-    "_#L_C_PATH" => GetAliasDef( "l_p:1:::<br>",      "cat_id",          _m('Paths to the categories')),
-    "_#ID_COUNT" => GetAliasDef( "f_e:itemcount",     "cat_id",          _m("Number of found Links")),
-    "_#EDITLINK" => GetAliasDef( "f_e:link_edit",     "cat_id",          _m('Link to link editing page (for admin interface only)')),
-    "_#CATEG_GO" => GetAliasDef( "f_e:link_go_categ", "cat_id",          _m('Category listing with links (for admin interface only)'))
-  ];
-}
 
+/** cached link aliases
+ *  @usage new AA_Aliases(new AA_Aliasgenerator_Link())
+ */
+class AA_Aliasgenerator_Link extends AbstractAliasgenerator {
+
+    public static function getAliasesFromParams(array $params): AA_Aliases {
+        $aliases = new AA_Aliases;
+
+        //  Standard aliases
+        $aliases->addAlias(new AA_Alias('_#LINK_ID_', 'f_t', 'id', _m('Link id')));
+        $aliases->addAlias(new AA_Alias('_#L_NAME__', 'f_t', 'name', _m('Link name')));
+        $aliases->addAlias(new AA_Alias('_#L_O_NAME', 'f_t', 'original_name', _m('Link original name')));
+        $aliases->addAlias(new AA_Alias('_#L_DESCRI', 'f_t', 'description', _m('Link description')));
+        $aliases->addAlias(new AA_Alias('_#L_TYPE__', 'f_t', 'type', _m('Link type')));
+        $aliases->addAlias(new AA_Alias('_#L_RATE__', 'f_t', 'rate', _m('Link rate')));
+        $aliases->addAlias(new AA_Alias('_#L_VOTES_', 'f_t', 'vote', _m('Link votes')));
+        $aliases->addAlias(new AA_Alias('_#L_VO_DTE', 'f_d:n/j/Y', 'voted', _m('Link - last vote date')));
+        $aliases->addAlias(new AA_Alias('_#L_CR_BY_', 'f_t', 'created_by', _m('Link - created by')));
+        $aliases->addAlias(new AA_Alias('_#L_CR_DTE', 'f_d:n/j/Y', 'created', _m('Link creation date')));
+        $aliases->addAlias(new AA_Alias('_#L_ED_BY_', 'f_t', 'edited_by', _m('Link - last edited by')));
+        $aliases->addAlias(new AA_Alias('_#L_ED_DTE', 'f_d:n/j/Y', 'last_edit', _m('Link - last edit date')));
+        $aliases->addAlias(new AA_Alias('_#L_CH_BY_', 'f_t', 'checked_by', _m('Link - checked by')));
+        $aliases->addAlias(new AA_Alias('_#L_CH_DTE', 'f_d:n/j/Y', 'checked', _m('Link - last checked date')));
+        $aliases->addAlias(new AA_Alias('_#L_EMAIL_', 'f_m::::mailto:', 'initiator', _m('Link author\'s e-mail')));
+        $aliases->addAlias(new AA_Alias('_#L_URL___', 'f_t', 'url', _m('Link url')));
+        $aliases->addAlias(new AA_Alias('_#L_LINK__', 'f_m::::href:', 'url', _m('Link link')));
+        $aliases->addAlias(new AA_Alias('_#L_FLAG__', 'f_t', 'flag', _m('Link flag')));
+        $aliases->addAlias(new AA_Alias('_#L_VALID_', 'f_t', 'valid_rank', _m('Link - validity rank')));
+        $aliases->addAlias(new AA_Alias('_#L_VA_DTE', '_d:n/j/Y', 'validated', _m('Link - last validation date')));
+        $aliases->addAlias(new AA_Alias('_#L_NOTE__', 'f_t', 'note', _m('Link editor\'s note')));
+        $aliases->addAlias(new AA_Alias('_#L_O_CITY', 'f_t', 'org_city', _m('Link organization city')));
+        $aliases->addAlias(new AA_Alias('_#L_O_STRE', 'f_t', 'org_street', _m('Link organization street')));
+        $aliases->addAlias(new AA_Alias('_#L_O_POST', 'f_t', 'org_post_code', _m('Link organization post code')));
+        $aliases->addAlias(new AA_Alias('_#L_O_PHON', 'f_t', 'org_phone', _m('Link organization phone')));
+        $aliases->addAlias(new AA_Alias('_#L_O_FAX_', 'f_t', 'org_fax', _m('Link organization fax')));
+        $aliases->addAlias(new AA_Alias('_#L_O_EMIL', 'f_t', 'org_email', _m('Link organization e-mail')));
+        $aliases->addAlias(new AA_Alias('_#L_FOLDER', 'f_t', 'folder', _m('Link folder (status code) - 1~Active, 2~Holding, 3~Trash')));
+        $aliases->addAlias(new AA_Alias('_#L_R_ID__', 'f_h:, ', 'reg_id', _m('Link - ids of regions (comma separated)')));
+        $aliases->addAlias(new AA_Alias('_#L_R_NAME', 'f_h:, ', 'reg_name', _m('Link - names of regions (comma separated)')));
+        $aliases->addAlias(new AA_Alias('_#L_L_ID__', 'f_h:, ', 'lang_id', _m('Link - ids of languages (comma separated)')));
+        $aliases->addAlias(new AA_Alias('_#L_L_NAME', 'f_h:, ', 'lang_name', _m('Link - names of languages (comma separated)')));
+        $aliases->addAlias(new AA_Alias('_#L_L_SNAM', 'f_h:, ', 'lang_short_name', _m('Link - short names of languages (comma separated)')));
+        $aliases->addAlias(new AA_Alias('_#L_CATIDS', 'f_h:, ', 'cat_id', _m('Category ids (comma separated)')));
+        $aliases->addAlias(new AA_Alias('_#L_CATNAM', 'f_h:, ', 'cat_name', _m('Category names (comma separated)')));
+        $aliases->addAlias(new AA_Alias('_#L_STATE_', 'f_t', 'cat_state', _m('State of link in this category (visible/highlighted)')));
+        $aliases->addAlias(new AA_Alias('_#L_VCOLOR', 'f_e:link_valid', 'cat_id', _m('Link - validity color')));
+        $aliases->addAlias(new AA_Alias('_#L_C_PATH', 'l_p:1:::<br>', 'cat_id', _m('Paths to the categories')));
+        $aliases->addAlias(new AA_Alias('_#ID_COUNT', 'f_e:itemcount', 'cat_id', _m("Number of found Links")));
+        $aliases->addAlias(new AA_Alias('_#EDITLINK', 'f_e:link_edit', 'cat_id', _m('Link to link editing page (for admin interface only)')));
+        $aliases->addAlias(new AA_Alias('_#CATEG_GO', 'f_e:link_go_categ', 'cat_id', _m('Category listing with links (for admin interface only)')));
+
+        return $aliases;
+    }
+}
 
 /** List of fields, which will be listed in searchbar in Links Manager (search)
  * (modules/links/index.php3)
@@ -165,19 +175,27 @@ function GetCategoryFields() {  // function - we need trnslate _m() on use (not 
     ];
 }
 
-/** Predefined aliases for links. For another aliases use 'inline' aliases. */
-function GetCategoryAliases() {  // function - we need trnslate _m() on use (not at include time)
-    return [
-    "_#CATEG_ID" => GetAliasDef( "f_t", "id",          _m('Category id')),
-    "_#C_NAME__" => GetAliasDef( "f_t", "name",        _m('Category name')),
-    "_#C_LCOUNT" => GetAliasDef( "f_t", "link_count",  _m('Number of links in category')),
-    "_#C_DESCRI" => GetAliasDef( "f_t", "description", _m('Category description')),
-    "_#C_NOTE__" => GetAliasDef( "f_t", "note",        _m('Category editor\'s note')),
-    "_#C_CROSS_" => GetAliasDef( "l_b", "path",        _m('Crossreferenced category')),
-    "_#C_PATH__" => GetAliasDef( "l_p:1:: / :", "path",        _m('Path to current category')),
-    "_#C_GENERL" => GetAliasDef( "l_g", "name",        _m('Is this category general one? (1/0)')),
-    "_#C_GENPRI" => GetAliasDef( "l_o", "name",        _m('Print category priority, if category is general one.'))
-    ];
+/** cached category aliases
+ *  @usage new AA_Aliases(new AA_Aliasgenerator_Category())
+ */
+class AA_Aliasgenerator_Category extends AbstractAliasgenerator {
+
+    public static function getAliasesFromParams(array $params): AA_Aliases {
+        $aliases = new AA_Aliases;
+
+        //  Standard aliases
+        $aliases->addAlias(new AA_Alias('_#CATEG_ID', 'f_t', 'id', _m('Category id')));
+        $aliases->addAlias(new AA_Alias('_#C_NAME__', 'f_t', 'name', _m('Category name')));
+        $aliases->addAlias(new AA_Alias('_#C_LCOUNT', 'f_t', 'link_count', _m('Number of links in category')));
+        $aliases->addAlias(new AA_Alias('_#C_DESCRI', 'f_t', 'description', _m('Category description')));
+        $aliases->addAlias(new AA_Alias('_#C_NOTE__', 'f_t', 'note', _m('Category editor\'s note')));
+        $aliases->addAlias(new AA_Alias('_#C_CROSS_', 'l_b', 'path', _m('Crossreferenced category')));
+        $aliases->addAlias(new AA_Alias('_#C_PATH__', 'l_p:1:: / :', 'path', _m('Path to current category')));
+        $aliases->addAlias(new AA_Alias('_#C_GENERL', 'l_g', 'name', _m('Is this category general one? (1/0)')));
+        $aliases->addAlias(new AA_Alias('_#C_GENPRI', 'l_o', 'name', _m('Print category priority, if category is general one.')));
+
+        return $aliases;
+    }
 }
 
 

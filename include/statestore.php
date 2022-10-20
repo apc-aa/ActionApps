@@ -32,6 +32,7 @@
 
 use AA\IO\DB\DB_AA;
 use AA\IO\Grabber\ObjectForm;
+use AA\Util\AbstractAliasgenerator;
 use AA_Plannedtask;
 
 /** allows serialize objects */
@@ -838,24 +839,6 @@ class AA_Object extends AA_Storable implements AA_iEditable {
         return $searchfields;
     }
 
-    /** generateAliases
-     */
-    static function _generateAliases($properties) {
-        // the order is important - must be in the same order as search fields (for getManagerConf)
-        $aliases["_#AA_NAME_"] = GetAliasDef( "f_1", 'aa_name', 'aa_name');
-        foreach ($properties as $prop_id => $property) {
-            if ($property->isObject()) {
-                continue;
-            }
-            // @todo - make alias field type aware
-            $aliases["_#". substr(str_pad(strtoupper($prop_id),8,'_'),0,8)] = GetAliasDef( 'f_h:, ', $prop_id, $prop_id);
-        }
-        $aliases["_#AA_ID___"] = GetAliasDef( "f_1", 'aa_id',   'aa_id');
-        $aliases["_#AA_OWNER"] = GetAliasDef( "f_1", 'aa_owner','aa_owner');
-        $aliases["_#AA_OW_NM"] = GetAliasDef( "f_t:{modulefield:{_#AA_OWNER}:name}", 'aa_owner','aa_owner');
-        return $aliases;
-    }
-
     /**
      *  
      */
@@ -928,11 +911,9 @@ class AA_Object extends AA_Storable implements AA_iEditable {
      */
     static function getManagerConf($manager_url, $actions=null, $switches=null) {
         $object_class  = get_called_class();
+        $aliases       = new AA_Aliases(new AA_Aliasgenerator_Object(static::class));
+
         $properties    = static::getClassProperties();
-
-        $aliases       = AA_Object::_generateAliases($properties);
-
-
         $search_fields = AA_Object::getSearchfields($properties);
         $new_link      = a_href(get_admin_url('oedit.php3', ['otype' => $object_class, 'ret_url' => $manager_url]), GetAAImage('icon_new.gif', _m('new'), 17, 17).' '. _m('Add'));
 
@@ -966,7 +947,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
                      'even_odd_differ'  => false,
                      'even_row_format'  => "",
 //                   'odd_row_format'   => static::getManagerRowHtml($search_fields, $aliases, array('Edit'=>get_admin_url('oedit.php3', array('module_id=_#AA_OWNER', 'oid=_#AA_ID___', 'otype' => $object_class, 'ret_url' => $manager_url)),'Delete'=>get_admin_url('oedit.php3', array('oid=_#AA_ID___', 'otype' => $object_class, 'ret_url' => $manager_url, 'delete' => '1')))),
-                     'odd_row_format'   => static::getManagerRowHtml($search_fields, $aliases, $links),
+                     'odd_row_format'   => static::getManagerRowHtml($search_fields, $aliases->getArray(), $links),
                      'compact_remove'   => "",
                      'compact_bottom'   => "</table></div><br>". $new_link,
                      'noitem_msg'       => _m('No object found'). '<br>'. $new_link
@@ -1026,6 +1007,42 @@ class AA_Object extends AA_Storable implements AA_iEditable {
             $property->addPropertyFormrows($form);
         }
         return $form;
+    }
+}
+
+/** cached object aliases
+ *  @usage new AA_Aliases(new AA_Aliasgenerator_Object($slice_id))
+ */
+class AA_Aliasgenerator_Object extends AbstractAliasgenerator {
+    protected $object_type;
+
+    public function __construct(string $object_type) {
+        $this->object_type = $object_type;
+    }
+
+    /** generate params array for getAliasesFromParams from real generator object */
+    protected function getParamsArray(): array {
+        return ['object_type'=>$this->object_type];
+    }
+
+    public static function getAliasesFromParams(array $params): AA_Aliases {
+
+        $properties = $params['object_type']::getClassProperties();
+        $aliases = new AA_Aliases();
+
+        // the order is important - must be in the same order as search fields (for getManagerConf)
+        $aliases->addAlias(new AA_Alias('_#AA_NAME_', 'f_1', 'aa_name', 'aa_name'));
+        foreach ($properties as $prop_id => $property) {
+            if ($property->isObject()) {
+                continue;
+            }
+            // @todo - make alias field type aware
+            $aliases->addAlias(new AA_Alias('_#'. substr(str_pad(strtoupper($prop_id),8,'_'),0,8), 'f_h:, ', $prop_id, $prop_id));
+        }
+        $aliases->addAlias(new AA_Alias('_#AA_ID___', 'f_1', 'aa_id',   'aa_id'));
+        $aliases->addAlias(new AA_Alias('_#AA_OWNER', 'f_1', 'aa_owner','aa_owner'));
+        $aliases->addAlias(new AA_Alias('_#AA_OW_NM', 'f_t:{modulefield:{_#AA_OWNER}:name}', 'aa_owner','aa_owner'));
+        return $aliases;
     }
 }
 

@@ -71,9 +71,6 @@ function GetAnonymousForm($slice, $s_fields, $show, $ok_url, $err_url, $use_show
     $form               = new inputform($inputform_settings);
     $content4id       = new ItemContent;
     $form_code          = '{generate:HEAD}'.$form->getForm($content4id, $slice, false, $show).'{generate:FOOT}';
-    //$CurItem    = new AA_Item($content4id, $slice->aliases(), $form_code);   // just prepare
-    //$form_code  = $CurItem->get_item();
-
 
     $ret .= $form->getFormStart();
 

@@ -193,7 +193,7 @@ if ($discus_vids) {
 };
 
 $slice = AA_Slice::getModule($slice_id);
-PrintAliasHelp($slice->aliases(), $slice->getFields()->getRecordArray(), false, $form_buttons);
+PrintAliasHelp(new AA_Aliases(new AA_Aliasgenerator_Slice($slice_id)), $slice->getFields()->getRecordArray(), false, $form_buttons);
 
 FrmTabEnd();
 

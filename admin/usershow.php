@@ -78,7 +78,7 @@ switch( $type ) {
 }
 
 $manager_settings = [
-     'module_id' => $slice_id,
+     'module_id' => $module_id,
      'show'      => MGR_SB_ORDERROWS,      //     // MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS
      'searchbar' => [
          'fields'               => $slice->getSearchfields(),
@@ -95,7 +95,7 @@ $manager_settings = [
          'manager_vid'          => false,    // $slice_info['manager_vid'],      // id of view which controls the design
          'format'               => $format,
          'fields'               => $slice->getFields()->getRecordArray(),
-         'aliases'              => $slice->aliases(),
+         'aliases'              => new AA_Aliases(new AA_Aliasgenerator_Slice($module_id)),
          'get_content_funct'    => 'GetItemContent'
      ],
      'messages' => [

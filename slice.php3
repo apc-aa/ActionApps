@@ -375,12 +375,12 @@ if ( $sh_itm OR $x OR $o OR $seo ) {
                           'html_format' => $view_info['flag'] & DISCUS_HTML_FORMAT,
                           'parent_id'   => $parent_id
             ];
-            $aliases = GetDiscussionAliases();
 
             $format  = GetDiscussionFormat($view_info);
             $format['id'] = q_pack_id($slice_id);                  // set slice_id because of caching
 
-            $itemview = new itemview($format, $aliases, null, "", "", MyUrl($encap, $scr_url), $disc);
+
+            $itemview = new itemview($format, new AA_Aliases(new AA_Aliasgenerator_Discussion()), null, "", "", MyUrl($encap, $scr_url), $disc);
             echo $itemview->get_output("discussion");
             // discussions should not be
             // cached or even better (TODO) discussions should have its separate slice

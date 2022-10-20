@@ -26,54 +26,58 @@
 *
 */
 
-require_once __DIR__ . "/../../../include/mgettext.php";
-require_once __DIR__ . "/../../../include/varset.php";
+use AA\Util\AbstractAliasgenerator;
+
+require_once __DIR__ . '/../../../include/mgettext.php';
+require_once __DIR__ . '/../../../include/varset.php';
 
 // Miscellaneous utility functions for the module
 
-/** Predefined aliases for polls. For another aliases use 'inline' aliases. */
-function GetAnswerAliases() {
-    $aliases = [
-        "_#QUESTION" => GetAliasDef( "f_t:{poll:{_#POLL_ID_}:_#QUESTION}",   "", _m('Prints poll question')),
-        "_#POLLQUES" => GetAliasDef( "f_t:{poll:{_#POLL_ID_}:_#QUESTION}",   "", _m('Prints poll question')),  // @deprecated
-        "_#PUB_DATE" => GetAliasDef( "f_t:{poll:{_#POLL_ID_}:_#PUB_DATE}",   "", _m('Poll publish date')),
-        "_#EXP_DATE" => GetAliasDef( "f_t:{poll:{_#POLL_ID_}:_#EXP_DATE}",   "", _m('Poll expiry date')),
-        "_#PARAMS__" => GetAliasDef( "f_t:{poll:{_#POLL_ID_}:_#PARAMS__}",   "", _m('Poll params')),
-        "_#MODULEID" => GetAliasDef( "f_t:{poll:{_#POLL_ID_}:_#MODULEID}",   "", _m('Module ID')),
+/** cached polls aliases
+ *  @usage new AA_Aliases(new AA_Aliasgenerator_Polls())
+ */
+class AA_Aliasgenerator_Polls extends AbstractAliasgenerator {
 
-        "_#POLL_ID_" => GetAliasDef( "f_1",           "poll_id",                _m('Poll id (32 characters hexadecimal number - the same for all answers)')), // generated automaticaly form the table column using metabase methods
+    public static function getAliasesFromParams(array $params): AA_Aliases {
+        $aliases = new AA_Aliases;
 
-        "_#ANS_NO__" => GetAliasDef( "f_1",          "priority",                _m('Nubmer of answer')),
-        "_#ANS_VOTE" => GetAliasDef( "f_1",             "votes",                _m('Nubmer of votes for this answer')),
-        "_#ANSWER__" => GetAliasDef( "f_1",            "answer",                _m('Text of answer')), // generated automaticaly form the table column using metabase methods
-        "_#ANS_ID__" => GetAliasDef( "f_1",                "id",                _m('ID of answer (32 characters hexadecimal number)')),
-        "_#ANS_PERC" => GetAliasDef( "f_t:{poll_share}",     "",                _m('Votes for this answer in percent. You can use also {poll_share}.')),
-        "_#ANS_SUM_" => GetAliasDef( "f_t:{poll_sum}",       "",                _m('Sum of all votes. You can use also {poll_sum}.')),
-    ];
-//    return array_merge($metabase->generateAliases('polls_answer'), $aliases);
-    return $aliases;
+        $aliases->addAlias(new AA_Alias('_#POLL_ID_', 'f_1', 'id', _m('Poll ID')));
+        $aliases->addAlias(new AA_Alias('_#MODULEID', 'f_n', 'module_id', _m('Module ID')));
+        $aliases->addAlias(new AA_Alias('_#QUESTION', 'f_1', 'headline', _m('Prints poll question')));
+        $aliases->addAlias(new AA_Alias('_#PUB_DATE', 'f_d:n/j/Y', 'publish_date', _m('Publish Date')));
+        $aliases->addAlias(new AA_Alias('_#EXP_DATE', 'f_d:n/j/Y', 'expiry_date', _m('Expiry Date')));
+        $aliases->addAlias(new AA_Alias('_#PARAMS__', 'f_1', 'params', _m('Prints poll params')));
+        $aliases->addAlias(new AA_Alias('_#EDITPOLL', 'f_e:poll_edit', 'id', _m('Link to poll editing page (for admin interface only)')));
+
+        return $aliases;
+    }
 }
+/** cached polls answer aliases
+ *  @usage new AA_Aliases(new AA_Aliasgenerator_Answer())
+ */
+class AA_Aliasgenerator_Answer extends AbstractAliasgenerator {
 
-/** Predefined aliases for polls. For another aliases use 'inline' aliases. */
-function GetPollsAliases() {  // function - we need trnslate _m() on use (not at include time)
-    $aliases = [
-        "_#POLL_ID_" => GetAliasDef( "f_1",               "id",           _m('Poll ID')),
-        "_#MODULEID" => GetAliasDef( "f_n",               "module_id",    _m('Module ID')),
-        "_#QUESTION" => GetAliasDef( "f_1",               "headline",     _m('Prints poll question')),
-        "_#PUB_DATE" => GetAliasDef( "f_d:n/j/Y",         "publish_date", _m('Publish Date')),
-        "_#EXP_DATE" => GetAliasDef( "f_d:n/j/Y",         "expiry_date",  _m('Expiry Date')),
-        "_#PARAMS__" => GetAliasDef( "f_1",               "params",       _m('Prints poll params')),
-        "_#EDITPOLL" => GetAliasDef( "f_e:poll_edit",     "id",           _m('Link to poll editing page (for admin interface only)')),
-    ];
-    return $aliases;
-    // array_merge($metabase->generateAliases('polls'), $aliases);
-}
+    public static function getAliasesFromParams(array $params): AA_Aliases {
+        $aliases = new AA_Aliases;
 
-function printAliases() {
-    $aliases = GetPollsAliases();
-    echo "<center><table>";
-    PrintAliasHelp($aliases);
-    echo "</table></center>";
+        $aliases->addAlias(new AA_Alias('_#QUESTION', 'f_t:{poll:{_#POLL_ID_}:_#QUESTION}', '', _m('Prints poll question')));
+        $aliases->addAlias(new AA_Alias('_#POLLQUES', 'f_t:{poll:{_#POLL_ID_}:_#QUESTION}', '', _m('Prints poll question')));  // @deprecated
+        $aliases->addAlias(new AA_Alias('_#PUB_DATE', 'f_t:{poll:{_#POLL_ID_}:_#PUB_DATE}', '', _m('Poll publish date')));
+        $aliases->addAlias(new AA_Alias('_#EXP_DATE', 'f_t:{poll:{_#POLL_ID_}:_#EXP_DATE}', '', _m('Poll expiry date')));
+        $aliases->addAlias(new AA_Alias('_#PARAMS__', 'f_t:{poll:{_#POLL_ID_}:_#PARAMS__}', '', _m('Poll params')));
+        $aliases->addAlias(new AA_Alias('_#MODULEID', 'f_t:{poll:{_#POLL_ID_}:_#MODULEID}', '', _m('Module ID')));
+
+        $aliases->addAlias(new AA_Alias('_#POLL_ID_', 'f_1', 'poll_id', _m('Poll id (32 characters hexadecimal number - the same for all answers)'))); // generated automatically form the table column using metabase methods
+
+        $aliases->addAlias(new AA_Alias('_#ANS_NO__', 'f_1', 'priority', _m('Nubmer of answer')));
+        $aliases->addAlias(new AA_Alias('_#ANS_VOTE', 'f_1', 'votes', _m('Nubmer of votes for this answer')));
+        $aliases->addAlias(new AA_Alias('_#ANSWER__', 'f_1', 'answer', _m('Text of answer'))); // generated automaticaly form the table column using metabase methods
+        $aliases->addAlias(new AA_Alias('_#ANS_ID__', 'f_1', 'id', _m('ID of answer (32 characters hexadecimal number)')));
+        $aliases->addAlias(new AA_Alias('_#ANS_PERC', 'f_t:{poll_share}', '', _m('Votes for this answer in percent. You can use also {poll_share}.')));
+        $aliases->addAlias(new AA_Alias('_#ANS_SUM_', 'f_t:{poll_sum}', '', _m('Sum of all votes. You can use also {poll_sum}.')));
+
+        return $aliases;
+    }
 }
 
 

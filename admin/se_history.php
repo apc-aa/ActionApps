@@ -28,6 +28,7 @@
 */
 
 use AA\IO\DB\DB_AA;
+use AA\Util\AbstractAliasgenerator;
 
 const AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
@@ -131,22 +132,26 @@ function GetHistoryFields() {  // function - we need trnslate _m() on use (not a
     return $searchfields;
 }
 
-/** GetHistoryAliases function
- * Predefined aliases for links. For another aliases use 'inline' aliases.
- * @return array
+/** cached History aliases
+ *  @usage (new AA_Aliasgenerator_History())->getAliases()
  */
-function GetHistoryAliases() {  // function - we need trnslate _m() on use (not at include time)
-    return [
-    "_#HI_CH_ID" => GetAliasDef( "f_1", "id",  _m('Change ID')),
-//    "_#HI_FIELD" => GetAliasDef( "f_t", "selector",   _m('Field selector')),
-//    "_#HI_VALUE" => GetAliasDef( "f_t", "value",      _m('Value')),
-//    "_#HI_TYPE_" => GetAliasDef( "f_t", "vtype",       _m('Type of value')),
-    "_#HI_TIME_" => GetAliasDef( "f_d:j.n.Y H:i:s", "time", _m('Time of change')),
-    "_#HI_USER_" => GetAliasDef( "f_1", "user",        _m('User')),
-    "_#HI_UNAME" => GetAliasDef( "f_t:{userinfo:{_#HI_USER_}}", "user",        _m('User')),
-    "_#HI_ITEM_" => GetAliasDef( "f_1", "resource_id", _m('Item ID')),
-    ];
+class AA_Aliasgenerator_History extends AbstractAliasgenerator {
+
+    public static function getAliasesFromParams(array $params): AA_Aliases {
+        $aliases = new AA_Aliases;
+        $aliases->addAlias(new AA_Alias('_#HI_CH_ID', 'f_1', 'id',  _m('Change ID')));
+        // $aliases->addAlias(new AA_Alias('_#HI_FIELD', 'f_t', 'selector',   _m('Field selector')));
+        // $aliases->addAlias(new AA_Alias('_#HI_VALUE', 'f_t', 'value',      _m('Value')));
+        // $aliases->addAlias(new AA_Alias('_#HI_TYPE_', 'f_t', 'vtype',       _m('Type of value')));
+        $aliases->addAlias(new AA_Alias('_#HI_TIME_', 'f_d:j.n.Y H:i:s', 'time', _m('Time of change')));
+        $aliases->addAlias(new AA_Alias('_#HI_USER_', 'f_1', 'user',        _m('User')));
+        $aliases->addAlias(new AA_Alias('_#HI_UNAME', 'f_t:{userinfo:{_#HI_USER_}}', 'user',        _m('User')));
+        $aliases->addAlias(new AA_Alias('_#HI_ITEM_', 'f_1', 'resource_id', _m('Item ID')));
+        return $aliases;
+    }
 }
+
+
 
 /**
  * Loads data from database for given link ids (called in itemview class)
@@ -249,7 +254,7 @@ $manager_settings = [
              'id'               => $slice_id
          ],
          'fields'               => '',
-         'aliases'              => GetHistoryAliases(),
+         'aliases'              => new AA_Aliases(new AA_Aliasgenerator_History()),
          'get_content_funct'    => 'GetHistoryContent'
      ],
      'actions'   => $actions,

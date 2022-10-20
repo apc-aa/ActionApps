@@ -546,16 +546,18 @@ foreach ($VIEW_TYPES[$view_type] as $k => $v) {
 $slice = AA_Slice::getModule($slice_id);
 
 switch( $VIEW_TYPES_INFO[$view_type]['aliases'] ) {
-    case 'disc2mail':   PrintAliasHelp(GetDiscussion2MailAliases(), false, false, $form_buttons);
-    case 'discus':      PrintAliasHelp(GetDiscussionAliases(), false, false, $form_buttons);
+    case 'disc2mail':   PrintAliasHelp(new AA_Aliases(new AA_Aliasgenerator_Discussion2mail()), false, false, $form_buttons);
+    case 'discus':      PrintAliasHelp(new AA_Aliases(new AA_Aliasgenerator_Discussion()), false, false, $form_buttons);
                         break;
-    case 'field':       PrintAliasHelp($slice->aliases($VIEW_TYPES_INFO[$view_type]['aliases_additional']), $slice->getFields()->getRecordArray(), false, $form_buttons);
+    case 'field':       PrintAliasHelp(new AA_Aliases((new AA_Aliasgenerator_Slice($slice_id))->addAliases($VIEW_TYPES_INFO[$view_type]['aliases_additional'])), $slice->getFields()->getRecordArray(), false, $form_buttons);
                         break;
-    case 'justids':     PrintAliasHelp($slice->aliases(false, 'justids'), false, false, $form_buttons);
+    case 'justids':     PrintAliasHelp(new AA_Aliases(new AA_Aliasgenerator_Slicejustids($slice_id)), false, false, $form_buttons);
                         break;
-    case 'links':
-    case 'categories':
-    case 'const':       PrintAliasHelp(GetAliases4Type($VIEW_TYPES_INFO[$view_type]['aliases']), false, false, $form_buttons);
+    case 'links':       PrintAliasHelp(new AA_Aliases(new AA_Aliasgenerator_Link()), false, false, $form_buttons);
+                        break;
+    case 'categories':  PrintAliasHelp(new AA_Aliases(new AA_Aliasgenerator_Category()), false, false, $form_buttons);
+                        break;
+    case 'const':       PrintAliasHelp(new AA_Aliases(new AA_Aliasgenerator_Constant()), false, false, $form_buttons);
                         break;
     case 'none':        break;
 }

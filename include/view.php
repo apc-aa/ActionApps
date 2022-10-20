@@ -323,7 +323,6 @@ class AA_Showview {
                 } else {
                     $disc['type'] = "thread";
                 }
-                $aliases = GetDiscussionAliases();
 
                 $format = GetDiscussionFormat($view_info);
                 // This is probably a bug, I think it should be
@@ -342,7 +341,7 @@ class AA_Showview {
                     $durl = con_url($durl,'apc='.$GLOBALS['apc_state']['state']);
                 }
 
-                $itemview = new itemview($format, $aliases, null, "", "", $durl, $disc);
+                $itemview = new itemview($format, new AA_Aliases(new AA_Aliasgenerator_Discussion()), null, "", "", $durl, $disc);
                 $ret      = $itemview->get_output("discussion");
                 break;
 
@@ -375,7 +374,7 @@ class AA_Showview {
                 [ $listlen, $list_from ] = AA_View::getListLength($listlen, $this->_view_param["to"], $this->_view_param["from"], $list_page, $zids->count(), $random);
 
                 $itemview = new itemview( $format, $aliases, $zids, $list_from, $listlen, shtml_url(), "", $content_function);
-            $itemview->parameter('category_id', $category_id);
+                $itemview->parameter('category_id', $category_id);
                 $itemview->parameter('start_cat',   $this->_view_param['start_cat']);
 
                 if ( !isset($zids) || $zids->count() <= 0) {

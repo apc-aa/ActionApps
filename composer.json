@@ -35,13 +35,13 @@
     "ext-xsl": "*",
     "ext-simplexml": "*",
     "ext-xml": "*",
-    "ext-pdo": "*",
     "ext-intl": "*"
   },
   "suggest": {
     "ext-ldap": "*",
     "ext-openssl": "*",
     "ext-apache": "*",
+    "ext-pdo": "*",
     "ext-mysqli": "*"
   },
   "autoload": {

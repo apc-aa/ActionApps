@@ -129,11 +129,13 @@ class Widget extends AA_Object implements NamedInterface {
         // AA::$debug&2 && AA::$dbg->log($filter_conds);
         // if variable is for some item, then we can use _#ALIASES_ in conds
         // and sort
+        $for_id = '';
         if (is_object($content)) {
+            $for_id = $content->getId();
             // is the conds contain aliases, unalias it - Just for speedup for the cases the unaliasing is not needed
             $check = " $filter_conds $filter_conds_rw $sort_by";
             if (strpos($check, '{') or strpos($check, '_#')) {
-                $item = AA_Items::getItem(new zids($content->getId()));
+                $item = AA_Items::getItem(new zids($for_id));
                 $filter_conds    = AA::Stringexpander()->unalias($filter_conds,'',$item);
                 $filter_conds_rw = AA::Stringexpander()->unalias($filter_conds_rw,'',$item);
                 $sort_by         = AA::Stringexpander()->unalias($sort_by,'',$item);
@@ -170,7 +172,7 @@ class Widget extends AA_Object implements NamedInterface {
             }
             return GetFormattedItems($set->query($restrict_zids), $format, $crypted_additional_slice_pwd, $tag_prefix);
         }
-        return GetFormatedConstants($constgroup, $slice_field, $ids_arr, $filter_conds, $sort_by);
+        return GetFormatedConstants($constgroup, $slice_field, $ids_arr, $filter_conds, $sort_by, $for_id);
     }
 
 

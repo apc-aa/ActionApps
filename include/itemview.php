@@ -98,7 +98,7 @@ class itemview {
 
     $this->group_fld  = $slice_info['group_by'];
 
-    $this->aliases    = $aliases;
+    $this->aliases    = is_object($aliases) ? $aliases->getArray() : $aliases;
     // add special alias, which is = 1 for selected item (given by
     // set[34]=selected-43535 view.php parameter
     if ( !$aliases['_#SELECTED'] AND $slice_info['selected_item'] ) {
@@ -181,7 +181,7 @@ class itemview {
         $str2find_save   = $str2find_passon;    // Save str2find from same level
         $str2find_passon = new CacheStr2find(); // clear it for caches stored further down
         $res             = $this->get_output($view_type);
-        $str2find_passon->add(unpack_id($this->slice_info["id"]));
+        $str2find_passon->add([unpack_id($this->slice_info["id"])]);
         AA::Pagecache()->store($key, $res, $str2find_passon);
         $str2find_passon->add_str2find($str2find_save); // and append saved for above
 

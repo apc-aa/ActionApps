@@ -359,7 +359,7 @@ function Event_ItemNewComment( $type, $item_id, $slice_type, $disc_id, $foo, $fo
     $zids      = new zids($disc_id, 'l');
     $d_content = GetDiscussionContent($zids);
     $columns   = reset($d_content);  // get first element
-    $CurItem   = new AA_Item($columns, GetDiscussionAliases());
+    $CurItem   = new AA_Item($columns, new AA_Aliases(new AA_Aliasgenerator_Discussion()));
 
     $mail = new AA_Mail;
     $mail->setFromTemplate($mail_id, $CurItem);

@@ -1342,9 +1342,8 @@ class ItemContent extends AA_Content {
             if ($computed_field_exist === false) {
                 $computed_field_exist = true;
                 // prepare item for computing
-                $item  = new AA_Item($this->getContent(),$slice->aliases());
+                $item  = new AA_Item($this->getContent(),new AA_Aliases(new AA_Aliasgenerator_Slice($this->getSliceID())));
             }
-
 
             // compute new value for this computed field
             $new_computed_value = $item->unalias($expand_string);

@@ -146,7 +146,7 @@ class AA_Manager extends AA_Storable {
 
         $manager_vid    = $settings['itemview']['manager_vid'];
         $format_strings = $settings['itemview']['format'];
-        $aliases        = $settings['itemview']['aliases'];
+        $aliases        = is_object($settings['itemview']['aliases']) ? $settings['itemview']['aliases']->getArray() : $settings['itemview']['aliases'];
 
         // modify $format_strings and $aliases (passed by reference)
         $this->setDesign($format_strings, $aliases, $manager_vid);

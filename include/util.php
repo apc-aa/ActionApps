@@ -1562,7 +1562,7 @@ class AA_Contentcache {
     }
 
 
-    /** sometimes it is quicker to not count the key automaticaly (in case of object call)
+    /** sometimes it is quicker to not count the key automatically (in case of object call)
      * @param $function
      * @param $params
      * @param $classname_hint

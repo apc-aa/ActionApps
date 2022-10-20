@@ -206,29 +206,6 @@ function SetImagesContent(&$content, $d_id, $images, $showimages, $imgtags) {
     $content[$d_id]["d_treeimages...."][0]['value'] = $imgs;
 }
 
-function GetDiscussionAliases() {
-    //  Standard aliases
-    $aliases["_#SUBJECT_"] = GetAliasDef("f_h",          "d_subject.......", _m("Alias for subject of the discussion comment"));
-    $aliases["_#BODY###_"] = GetAliasDef("f_t",          "d_body..........", _m("Alias for text of the discussion comment"));
-    $aliases["_#AUTHOR#_"] = GetAliasDef("f_h",          "d_author........", _m("Alias for written by"));
-    $aliases["_#EMAIL##_"] = GetAliasDef("f_h",          "d_e_mail........", _m("Alias for author's e-mail"));
-    $aliases["_#WWW_URL_"] = GetAliasDef("f_h",          "d_url_address...", _m("Alias for url address of author's www site"));
-    $aliases["_#WWW_DESC"] = GetAliasDef("f_h",          "d_url_descript..", _m("Alias for description of author's www site"));
-    $aliases["_#DATE###_"] = GetAliasDef("f_d:d M Y H:i","d_date..........", _m("Alias for publish date"));
-    $aliases["_#IP_ADDR_"] = GetAliasDef("f_h",          "d_remote_addr...", _m("Alias for IP address of author's computer"));
-    $aliases["_#CHECKBOX"] = GetAliasDef("f_h",          "d_checkbox......", _m("Alias for checkbox used for choosing discussion comment"));
-    $aliases["_#TREEIMGS"] = GetAliasDef("f_h",          "d_treeimages....", _m("Alias for images"));
-    $aliases["_#DITEM_ID"] = GetAliasDef("f_h",          "d_item_id.......", _m("Alias for comment ID<br>\n                             <i>Usage: </i>in form code<br>\n                             <i>Example: </i>&lt;input type=hidden name=d_item_id value=\"_#DITEM_ID\">"));
-    $aliases["_#ITEM_ID_"] = GetAliasDef("f_h",          "d_item_id.......", _m("Alias for comment ID (the same as _#DITEM_ID<br>)\n                             <i>Usage: </i>in form code<br>\n                             <i>Example: </i>&lt;input type=hidden name=d_item_id value=\"_#ITEM_ID#\">"));
-    $aliases["_#DISC_ID_"] = GetAliasDef("f_h",          "d_id............", _m("Alias for item ID<br>\n                             <i>Usage: </i>in form code<br>\n                             <i>Example: </i>&lt;input type=hidden name=d_parent value=\"_#DISC_ID#\">"));
-    $aliases["_#URL_BODY"] = GetAliasDef("f_h",          "d_url_fulltext..", _m("Alias for link to text of the discussion comment<br>\n                             <i>Usage: </i>in HTML code for index view of the comment<br>\n                             <i>Example: </i>&lt;a href=_#URL_BODY>_#SUBJECT#&lt;/a>"));
-    $aliases["_#URLREPLY"] = GetAliasDef("f_h",          "d_url_reply.....", _m("Alias for link to a form<br>\n                             <i>Usage: </i>in HTML code for fulltext view of the comment<br>\n                             <i>Example: </i>&lt;a href=_#URLREPLY&gt;Reply&lt;/a&gt;"));
-    $aliases["_#DISC_URL"] = GetAliasDef("f_h",          "d_disc_url......", _m("Alias for link to discussion<br>\n                             <i>Usage: </i>in form code<br>\n                             <i>Example: </i>&lt;input type=hidden name=url value=\"_#DISC_URL\">"));
-    $aliases["_#BUTTONS_"] = GetAliasDef("f_h",          "d_buttons.......", _m("Alias for buttons Show all, Show selected, Add new<br>\n                             <i>Usage: </i> in the Bottom HTML code"));
-
-    return $aliases;
-}
-
 /** GetdiscussionFormat function
  * @param $view_info
  * @return mixed
@@ -421,19 +398,6 @@ function updateDiscussionCount($item_id) {
 }
 
 // -----------------------------------------------------------------------------------------
-
-/** GetDiscussion2MailAliases function
- *  used just for help display in admin/se_view.php
- */
-function GetDiscussion2MailAliases() {
-    $aliases["_#ITEMPAR3"] = GetAliasDef("", "", _m("3rd parameter filled in DiscussionMailList field"));
-    for ($i = 4; $i < 10; ++$i) {
-        $aliases["_#ITEMPAR$i"] = GetAliasDef("", "", _m("%1th parameter filled in DiscussionMailList field", [$i]));
-    }
-    return $aliases;
-}
-
-// -----------------------------------------------------------------------------------------
 /** send2mailList function
  *  Sends new discussion items to one mail address
  *   if a field with name DiscussionMailList
@@ -463,7 +427,7 @@ function send2mailList($d_item_id, $new_id) {
             $columns   = reset($d_content);  // get first element
 
             // get aliases
-            $aliases = GetDiscussionAliases();
+            $aliases = (new AA_Aliases(new AA_Aliasgenerator_Discussion))->getArray();
             for ($i=2, $ino=count($item_params); $i<$ino; ++$i) {
                 FillFakeAlias($columns, $aliases, "_#ITEMPAR".($i+1), $item_params[$i]);
             }

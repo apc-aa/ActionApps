@@ -79,11 +79,11 @@ class AA_Alias {
 
     /** AA_Alias function
      * @param string $alias
-     * @param string $field_id
      * @param string $funct
+     * @param string $field_id
      * @param string $hlp = ''
      */
-    function __construct($alias, $field_id, $funct, $hlp = '') {
+    function __construct($alias, $funct, $field_id, $hlp = '') {
         $this->alias       = '_#'.strtoupper(substr($alias.'________',2,8));  // just make sure the alias is in correct _#SOME_ALS format
         $this->field_id    = $field_id;
         $this->funct       = $funct;
@@ -92,14 +92,14 @@ class AA_Alias {
 
     /** conditional create
      * @param string|null $alias
-     * @param string|null $field_id
      * @param string|null $funct
+     * @param string|null $field_id
      * @param string|null $hlp
      * @return AA_Alias|null
      */
-    public static function factory(?string $alias, ?string $field_id, ?string $funct, ?string $hlp='') {
+    public static function factory(?string $alias, ?string $funct, ?string $field_id, ?string $hlp='') {
         if ($alias AND (substr($alias,0,2)=='_#')) {
-            return new AA_Alias($alias, $field_id, $funct, $hlp);
+            return new AA_Alias($alias, $funct, $field_id, $hlp);
         }
         return null;
     }
@@ -120,45 +120,104 @@ class AA_Alias {
     }
 }
 
+
+/**   */
+interface LazyloaderInterface {
+    /** loads object */
+    public function lazyLoad();
+}
+
+/**
+ * @usage in constructor or like (new AA_Aliases())->addLoader('lazy_aliases', new AA_Aliasgenerator_Slice($slice_id));
+ */
+trait LazyloadTrait {
+    private $lazy_loaders = [];
+
+    final public function addLoader(string $var, LazyloaderInterface $loader) {
+        $this->lazy_loaders[$var] = $loader;
+        return $this;
+    }
+
+    final public function lazyGet($var) {
+        if ( array_key_exists($var, $this->lazy_loaders)) {
+            $this->$var = $this->lazy_loaders[$var]->lazyLoad();
+            unset($this->lazy_loaders[$var]);   // loader is used once and then removed, so we will not use it next time
+        }
+    }
+}
+
 class AA_Aliases {
 
-    /**
-     * @var AA_Alias[]
-     */
+    use LazyloadTrait;
 
-    private $aliases;
+    /**
+     * @var AA_Alias[] - using LazyloadTrait so always called $this->lazyGet('lazy_aliases') before use
+     */
+    private $lazy_aliases = [];
+
     /** AA_Aliases function
      *
      */
-    function __construct() {
-        $this->aliases = [];
+    function __construct($loader=null) {
+        if (is_object($loader)) {
+            $this->addLoader('lazy_aliases', $loader);
+        }
     }
 
     /** addAlias function
      * @param AA_Alias|null $alias
      */
-    function addAlias(?AA_Alias $alias) {
+    function addAlias(?AA_Alias $alias): AA_Aliases {
+        $this->lazyGet('lazy_aliases');
         if ($alias) {
-            $this->aliases[] = $alias;
+            $this->lazy_aliases[$alias->getAlias()] = $alias;
         }
+        return $this;
+    }
+
+    /** adds another AA_Aliases */
+    public function add(AA_Aliases $aliases): AA_Aliases {
+        $this->lazyGet('lazy_aliases');
+        $this->lazy_aliases = array_merge($this->lazy_aliases, $aliases->getAliases());
+        return $this;
     }
 
     /** addTextAlias
      * @param $alias_name
      * @param $text
      */
-    function addTextAlias($alias_name, $text) {
-        $this->addAlias(new AA_Alias($alias_name, "id..............", ParamImplode(['f_p',$text])));
+    function addTextAlias($alias_name, $text): AA_Aliases {
+        $this->addAlias(new AA_Alias($alias_name, ParamImplode(['f_p', $text]), "id.............."));
+        return $this;
     }
-    /** getArray function
-     *
+
+    /** addFromArray adds aliases from old deprecated array
+     * @deprecated
+     * @param $alias_name
+     * @param $text
      */
-    function getArray() {
+    function addFromArray(array $alias_arr): AA_Aliases {
+        foreach ($alias_arr as $aid => $als) {
+            $this->addAlias(new AA_Alias($aid, $als['fce'], $als['param'], $als['hlp']));
+        }
+        return $this;
+    }
+
+    /** getArray function
+     * @deprecated convert the AA code to use AA_Aliases
+     */
+    public function getArray(): array {
+        $this->lazyGet('lazy_aliases');
         $ret = [];
-        foreach ($this->aliases as $alias) {
+        foreach ($this->lazy_aliases as $alias) {
             $ret[$alias->getAlias()] = $alias->getArray();
         }
         return $ret;
+    }
+
+    function getAliases() {
+        $this->lazyGet('lazy_aliases');
+        return $this->lazy_aliases;
     }
 }
 
@@ -1024,13 +1083,12 @@ function getViewTypesInfo() {
     $VIEW_TYPES_INFO['rss'] = ['aliases' => 'field'];
     $VIEW_TYPES_INFO['calendar'] = [
         'aliases'            => 'field',
-        'aliases_additional' => [
-            '_#CV_TST_1' => ['hlp' => _m("Calendar: Time stamp at 0:00 of processed cell")],
-            '_#CV_TST_2' => ['hlp' => _m("Calendar: Time stamp at 24:00 of processed cell")],
-            '_#CV_NUM_D' => ['hlp' => _m("Calendar: Day in month of processed cell")],
-            '_#CV_NUM_M' => ['hlp' => _m("Calendar: Month number of processed cell")],
-            '_#CV_NUM_Y' => ['hlp' => _m("Calendar: Year number of processed cell")],
-        ],
+        'aliases_additional' => (new AA_Aliases())
+            ->addAlias(new AA_Alias('_#CV_TST_1','','',_m("Calendar: Time stamp at 0:00 of processed cell")))
+            ->addAlias(new AA_Alias('_#CV_TST_2','','',_m("Calendar: Time stamp at 24:00 of processed cell")))
+            ->addAlias(new AA_Alias('_#CV_NUM_D','','',_m("Calendar: Day in month of processed cell")))
+            ->addAlias(new AA_Alias('_#CV_NUM_M','','',_m("Calendar: Month number of processed cell")))
+            ->addAlias(new AA_Alias('_#CV_NUM_Y','','',_m("Calendar: Year number of processed cell")))
     ];
 
     $VIEW_TYPES_INFO['static'] = ['aliases' => 'none'];

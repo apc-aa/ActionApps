@@ -142,7 +142,7 @@ if ($profile->getProperty('ui_manager_hide', 'mgr_sb_orderrows'))  { $show_setti
 if ($profile->getProperty('ui_manager_hide', 'mgr_sb_bookmarks'))  { $show_settings -= MGR_SB_BOOKMARKS; }
 
 $manager_settings = [
-     'module_id' => $slice_id,
+     'module_id' => $module_id,
      'show'      => $show_settings,    // MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS
      'searchbar' => [
          'fields'               => $slice->getSearchfields(),
@@ -158,7 +158,7 @@ $manager_settings = [
          'manager_vid'          => false,    // $slice_info['manager_vid'],      // id of view which controls the design
          'format'               => $slice->get_format_strings(),   // optionaly to manager_vid you can set format array
          'fields'               => $slice->getFields()->getRecordArray(),
-         'aliases'              => $slice->aliases(),
+         'aliases'              => new AA_Aliases(new AA_Aliasgenerator_Slice($module_id)),
          'get_content_funct'    => 'GetItemContent'
      ],
      'actions'   => $actions,

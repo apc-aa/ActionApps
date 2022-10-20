@@ -69,7 +69,8 @@ $p_module_id = q_pack_id($module_id); // packed to 16-digit as stored in databas
 
 $metabase         = AA::Metabase();
 $manager_settings = $metabase->getManagerConf('polls', $actions, $switches);
-$manager_settings['itemview']['aliases'] = GetPollsAliases();
+// function - we need trnslate _m() on use (not at include time)
+$manager_settings['itemview']['aliases'] = new AA_Aliases(new AA_Aliasgenerator_Polls);
 
 $manager_settings['itemview']['format']['compact_top'] = '
                                       <table border="0" cellspacing="0" cellpadding="5">

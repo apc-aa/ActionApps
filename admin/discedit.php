@@ -97,7 +97,6 @@ if ($mode == "hide" || $mode=="delete" || $mode=="deleteall" || $mode=="deletesh
     $tree     = GetDiscussionTree($dcontent);
 }
 
-$aliases = GetDiscussionAliases();
 GetDiscussionThread($tree, "0", 0, $outcome);         // get array of images
 
 
@@ -156,7 +155,7 @@ echo getTabStart();
       <tr><td colspan="9">&nbsp;</td></tr>
 
 <?php
-$item = new AA_Item("",$aliases);
+$item = new AA_Item('', new AA_Aliases(new AA_Aliasgenerator_Discussion()));
 $i = 0;
 if (!$outcome) {
     echo "<tr><td colspan=\"9\" align=\"center\" class=\"tabtxt\">". _m("No discussion comments") ."<br><br></td></tr>";

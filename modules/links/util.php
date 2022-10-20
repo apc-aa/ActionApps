@@ -427,8 +427,9 @@ function Links_getUrlReport($url, $format_strings, $checked_id, $tree_start=fals
     // zarazeno v kategorii
     $out = "";
     if ( $links_zids->count() != 0 ) {
-        $itemview = new itemview($format_strings, GetLinkAliases(), $links_zids, 0, 100, '', '', 'Links_GetLinkContent');
-        $out = $itemview->get_output("view");
+        // function - we need trnslate _m() on use (not at include time)
+        $itemview = new itemview($format_strings, new AA_Aliases(new AA_Aliasgenerator_Constant), $links_zids, 0, 100, '', '', 'Links_GetLinkContent');
+        $out      = $itemview->get_output("view");
     }
     return $out;
 }

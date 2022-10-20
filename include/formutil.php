@@ -249,8 +249,6 @@ class inputform {
         $html_start = AA::Stringexpander()->postprocess($html_start);
         $html_end   = AA::Stringexpander()->unalias($html_end);
         $html_end   = AA::Stringexpander()->postprocess($html_end);
-           //$CurItem = new AA_Item($content4id, $slice->aliases(), $form, $remove_string.'##{generate:FOOT}');   // just prepare
-           //$out = $CurItem->get_item();
 
         echo $html_start;
 
@@ -3160,26 +3158,25 @@ function getSelectWithParam($name, $arr, $selected="", $html_setting=null) {
 
 /** PrintAliasHelp function
  *  Prints alias names as help for fulltext and compact format page
- * @param        $aliases
+ * @param        $aliases_arr
  * @param bool   $fields
  * @param bool   $endtable
  * @param string $buttons
  */
- function PrintAliasHelp($aliases, $fields = false, $endtable = true, $buttons = '') {
-     FrmTabSeparator(_m("Use these aliases for database fields"), $buttons);
+function PrintAliasHelp(AA_Aliases $aliases, $fields = false, $endtable = true, $buttons = '') {
+    FrmTabSeparator(_m("Use these aliases for database fields"), $buttons);
 
-     if (is_array($aliases)) {
-         foreach ($aliases as $ali => $v ) {
-             // if it is possible point to alias editing page
-             $aliasedit = ( !$v["fld"] ? "&nbsp;" : "<a href=\"". StateUrl(con_url("./se_inputform.php", "fid=".urlencode($v["fld"]))) ."\">". _m("Edit") . "</a>");
-             if ($fields AND $fields[$v["fld"]] AND !$fields[$v["fld"]]['input_show']) {
-                 $ali = "<span class=\"disabled\">$ali</span>";
-             }
-             echo "<tr><td nowrap>$ali</td><td>". $v['hlp'] ."</td><td>$aliasedit</td></tr>";
-         }
-     }
+    $aliases_arr = $aliases->getArray();
+    foreach ($aliases_arr as $ali => $v ) {
+        // if it is possible point to alias editing page
+        $aliasedit = ( !$v["fld"] ? "&nbsp;" : "<a href=\"". StateUrl(con_url("./se_inputform.php", "fid=".urlencode($v["fld"]))) ."\">". _m("Edit") . "</a>");
+        if ($fields AND $fields[$v["fld"]] AND !$fields[$v["fld"]]['input_show']) {
+            $ali = "<span class=\"disabled\">$ali</span>";
+        }
+        echo "<tr><td nowrap>$ali</td><td>". $v['hlp'] ."</td><td>$aliasedit</td></tr>";
+    }
 
-     if ($endtable) {
-         echo "\n        </table></td></tr>";
-     }
+    if ($endtable) {
+        echo "\n        </table></td></tr>";
+    }
 }

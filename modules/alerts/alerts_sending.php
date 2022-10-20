@@ -184,15 +184,13 @@ class AA_Collection {
             $als->addTextAlias("_#HOWOFTEN", $ho);
             $als->addTextAlias("_#COLLFORM", alerts_con_url($this->getSliceUrl(), "ac=ABCDE"));
             $als->addTextAlias("_#UNSBFORM", alerts_con_url($this->getSliceUrl(), "au=ABCDE&c=".$this->id));
-            $aliases = $als->getArray();
-
-            $item = new AA_Item('', $aliases);
-
+            $item = new AA_Item('', $als);
             foreach ( (array)$emails as $email ) {
                 if (AA_Mail::sendTemplate($this->_get('email_id_alert'), $email, $item)) {
                     $email_count++;
                 }
             }
+            $aliases = $als->getArray();
         }
         AA_Log::write("ALERTS", $ho, "Sent for collection " . $this->id . ": " . ((int)$email_count));
         AA_Log::write("ALERTS", $ho, join('; ', [
@@ -505,11 +503,11 @@ function get_view_settings_cached($vid) {
     }
     if (!$cached_view_settings[$vid]) {
         $view         = AA_Views::getViewNumeric($vid);
-        $slice        = AA_Slice::getModule(unpack_id($view->f("slice_id")));
+        $slice        = AA_Slice::getModule($module_id = unpack_id($view->f("slice_id")));
         $cached_view_settings[$vid] = [
             "lang"    => substr($slice->getProperty('lang_file'),0,2),
             "info"    => $view,
-            "aliases" => $slice->aliases(),
+            "aliases" => new AA_Aliases(new AA_Aliasgenerator_Slice($module_id)),
             "format"  => $view->getViewFormat()
         ];
     }

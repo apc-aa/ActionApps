@@ -259,9 +259,9 @@ class AA_Field implements ArrayAccess {
         $f = $this->data;
 
         // fld used in PrintAliasHelp to point to alias editing page
-        $this->aliases->addAlias(AA_Alias::factory($f['alias1'], $f['id'], $f['alias1_func'], $f['alias1_help']));
-        $this->aliases->addAlias(AA_Alias::factory($f['alias2'], $f['id'], $f['alias2_func'], $f['alias2_help']));
-        $this->aliases->addAlias(AA_Alias::factory($f['alias3'], $f['id'], $f['alias3_func'], $f['alias3_help']));
+        $this->aliases->addAlias(AA_Alias::factory($f['alias1'], $f['alias1_func'], $f['id'], $f['alias1_help']));
+        $this->aliases->addAlias(AA_Alias::factory($f['alias2'], $f['alias2_func'], $f['id'], $f['alias2_help']));
+        $this->aliases->addAlias(AA_Alias::factory($f['alias3'], $f['alias3_func'], $f['id'], $f['alias3_help']));
         return $this->aliases->getArray();
     }
 
@@ -584,7 +584,7 @@ class AA_Field_Slicedef extends AA_Field {
         $field_aliases = array_filter($data->getAliasNames(), function ($name) { return (0 === strpos($name, '_#FLD_AN')); });   // $filtered_array = array_filter($array, function ($element) use ($my_value) { return ($element != $my_value); } );
         foreach ($field_aliases as $al) {
             if (IsAlias($als = '_#' . $data->get_alias_subst($al, ''))) {
-                $this->aliases->addAlias(new AA_Alias($data->get_alias_subst($als), $fid, 'f_t:' . $data->get_alias_subst(str_replace('_#FLD_AN', '_#FLD_AV', $al))));
+                $this->aliases->addAlias(new AA_Alias($data->get_alias_subst($als), 'f_t:' . $data->get_alias_subst(str_replace('_#FLD_AN', '_#FLD_AV', $al)), $fid));
             }
         }
     }

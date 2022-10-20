@@ -65,24 +65,15 @@ function GetAliases4Type( $type, $additional="" ) {
     $aliases = [];
     switch ( $type ) {
         case 'const':
-            //  Standard aliases
-            $aliases["_#NAME###_"] = GetAliasDef( "f_1", "const_name",        _m("Constant name"));
-            $aliases["_#TR_NAME_"] = GetAliasDef( "f__:{tr:{_#NAME###_}}", "const_name",        _m("Translated constant name"));
-            $aliases["_#VALUE##_"] = GetAliasDef( "f_1", "const_value",       _m("Constant value"));
-            $aliases["_#PRIORITY"] = GetAliasDef( "f_1", "const_pri",         _m("Constant priority"));
-            $aliases["_#GROUP##_"] = GetAliasDef( "f_1", "const_group",       _m("Constant group id"));
-            $aliases["_#CLASS##_"] = GetAliasDef( "f_1", "const_class",       _m("Category class (for categories only)"));
-            $aliases["_#COUNTER_"] = GetAliasDef( "f_1", "const_counter",     _m("Constant number"));
-            $aliases["_#CONST_ID"] = GetAliasDef( "f_1", "const_id",          _m("Constant unique id (32-haxadecimal characters)"));
-            $aliases["_#SHORT_ID"] = GetAliasDef( "f_1", "const_short_id",    _m("Constant unique short id (autoincremented from '1' for each constant in the system)"));
-            $aliases["_#DESCRIPT"] = GetAliasDef( "f_1", "const_description", _m("Constant description"));
-            $aliases["_#LEVEL##_"] = GetAliasDef( "f_1", "const_level",       _m("Constant level (used for hierachical constants)"));
+            $aliases = (new AA_Aliases(new AA_Aliasgenerator_Constant()))->getArray();
             break;
         case 'links':
-            $aliases = GetLinkAliases();       // defined in modules/links/constant.php3
+            // function - we need trnslate _m() on use (not at include time)
+            $aliases = (new AA_Aliases(new AA_Aliasgenerator_Link()))->getArray();       // defined in modules/links/constant.php3
             break;
         case 'categories':
-            $aliases = GetCategoryAliases();   // defined in modules/links/constant.php3
+            // function - we need trnslate _m() on use (not at include time)
+            $aliases = (new AA_Aliases(new AA_Aliasgenerator_Category()))->getArray();   // defined in modules/links/constant.php3
             break;
     }
 
@@ -252,17 +243,18 @@ function GetFormattedItems($zids, $format, $crypted_additional_slice_pwd=null, $
 }
 
 /** GetFormatedConstants function
- * @param $constgroup
- * @param $format
- * @param $restrict_zids
- * @param $conds
- * @param $sort
+ * @param        $constgroup
+ * @param        $format
+ * @param        $restrict_zids
+ * @param        $conds
+ * @param        $sort
+ * @param string $for_id   if created for some item andd _#ITEM_ID_ alias
+ * @return array
  * @todo Teach itemview to return array (instead of whole listing) and convert
  *        those functions (GetFormattedConstants() and GetFormattedItems())
  *        to itemview
- * @return array
  */
-function GetFormatedConstants($constgroup, $format, $restrict_zids, $conds, $sort) {
+function GetFormatedConstants($constgroup, $format, $restrict_zids, $conds, $sort, string $for_id='') {
     if (!trim($constgroup)) {
         return [];
     }
@@ -275,8 +267,12 @@ function GetFormatedConstants($constgroup, $format, $restrict_zids, $conds, $sor
     }
 
     $content = GetConstantContent($zids);
-    $aliases = GetAliases4Type('const');
-    $item    = new AA_Item('',$aliases);
+    if ($for_id) {
+        $aliases = new AA_Aliases((new AA_Aliasgenerator_Constant())->addAliases((new AA_Aliases)->addTextAlias('_#ITEM_ID_', $for_id)));
+    } else {
+        $aliases = new AA_Aliases(new AA_Aliasgenerator_Constant);
+    }
+    $item    = new AA_Item('', $aliases);
     $format  = $format ?: 'const_name';
     $ret     = [];
     for ( $i=0, $ino=$zids->count(); $i<$ino; ++$i) {
@@ -296,19 +292,113 @@ function GetItemFromContent($content) {
     if ( !is_object($content) ) {
         return null;
     }
-    return new AA_Item($content, new AA_Aliasgenerator_Slice($content->getSliceID()));
+    return new AA_Item($content, new AA_Aliases(new AA_Aliasgenerator_Slice($content->getSliceID())));
 }
 
-class AA_Aliasgenerator_Slice {
+
+/** cached slice aliases
+ *  @usage new AA_Aliases(new AA_Aliasgenerator_Slice($slice_id))
+ */
+class AA_Aliasgenerator_Slice extends \AA\Util\AbstractAliasgenerator {
     protected $slice_id;
 
     public function __construct(string $slice_id) {
         $this->slice_id = $slice_id;
     }
 
-    public function getAliases() {
-        $slice = AA_Slice::getModule($this->slice_id);
-        return $slice ? $slice->aliases() : [];
+    /** generate params array for getAliasesFromParams from real generator object */
+    protected function getParamsArray(): array {
+        return ['slice_id'=>$this->slice_id];
+    }
+
+    public static function getAliasesFromParams(array $params): AA_Aliases {
+        $slice = AA_Slice::getModule($params['slice_id']);
+        return $slice ? (new AA_Aliases())->addFromArray($slice->aliases()) : new AA_Aliases();
+    }
+}
+
+/** cached slicejustids aliases
+ *  @usage new AA_Aliases(new AA_Aliasgenerator_Slicejustids($slice_id))
+ */
+class AA_Aliasgenerator_Slicejustids extends AA_Aliasgenerator_Slice {
+    public static function getAliasesFromParams(array $params): AA_Aliases {
+        $slice = AA_Slice::getModule($params['slice_id']);
+        return $slice ? (new AA_Aliases())->addFromArray($slice->aliases(false, 'justids')) : new AA_Aliases();
+    }
+}
+
+
+
+/** cached discussion aliases
+ *  @usage new AA_Aliases(new AA_Aliasgenerator_Discussion())
+ */
+class AA_Aliasgenerator_Discussion extends \AA\Util\AbstractAliasgenerator {
+
+    public static function getAliasesFromParams(array $params): AA_Aliases {
+
+        $aliases = new AA_Aliases;
+
+        $aliases->addAlias(new AA_Alias('_#SUBJECT_', 'f_h', 'd_subject.......', _m("Alias for subject of the discussion comment")));
+        $aliases->addAlias(new AA_Alias('_#BODY###_', 'f_t', 'd_body..........', _m("Alias for text of the discussion comment")));
+        $aliases->addAlias(new AA_Alias('_#AUTHOR#_', 'f_h', 'd_author........', _m("Alias for written by")));
+        $aliases->addAlias(new AA_Alias('_#EMAIL##_', 'f_h', 'd_e_mail........', _m("Alias for author's e-mail")));
+        $aliases->addAlias(new AA_Alias('_#WWW_URL_', 'f_h', 'd_url_address...', _m("Alias for url address of author's www site")));
+        $aliases->addAlias(new AA_Alias('_#WWW_DESC', 'f_h', 'd_url_descript..', _m("Alias for description of author's www site")));
+        $aliases->addAlias(new AA_Alias('_#DATE###_', 'f_d:d M Y H:i', 'd_date..........', _m("Alias for publish date")));
+        $aliases->addAlias(new AA_Alias('_#IP_ADDR_', 'f_h', 'd_remote_addr...', _m("Alias for IP address of author's computer")));
+        $aliases->addAlias(new AA_Alias('_#CHECKBOX', 'f_h', 'd_checkbox......', _m("Alias for checkbox used for choosing discussion comment")));
+        $aliases->addAlias(new AA_Alias('_#TREEIMGS', 'f_h', 'd_treeimages....', _m("Alias for images")));
+        $aliases->addAlias(new AA_Alias('_#DITEM_ID', 'f_h', 'd_item_id.......', _m("Alias for comment ID<br>\n                             <i>Usage: </i>in form code<br>\n                             <i>Example: </i>&lt;input type=hidden name=d_item_id value=\"_#DITEM_ID\">")));
+        $aliases->addAlias(new AA_Alias('_#ITEM_ID_', 'f_h', 'd_item_id.......', _m("Alias for comment ID (the same as _#DITEM_ID<br>)\n                             <i>Usage: </i>in form code<br>\n                             <i>Example: </i>&lt;input type=hidden name=d_item_id value=\"_#ITEM_ID#\">")));
+        $aliases->addAlias(new AA_Alias('_#DISC_ID_', 'f_h', 'd_id............', _m("Alias for item ID<br>\n                             <i>Usage: </i>in form code<br>\n                             <i>Example: </i>&lt;input type=hidden name=d_parent value=\"_#DISC_ID#\">")));
+        $aliases->addAlias(new AA_Alias('_#URL_BODY', 'f_h', 'd_url_fulltext..', _m("Alias for link to text of the discussion comment<br>\n                             <i>Usage: </i>in HTML code for index view of the comment<br>\n                             <i>Example: </i>&lt;a href=_#URL_BODY>_#SUBJECT#&lt;/a>")));
+        $aliases->addAlias(new AA_Alias('_#URLREPLY', 'f_h', 'd_url_reply.....', _m("Alias for link to a form<br>\n                             <i>Usage: </i>in HTML code for fulltext view of the comment<br>\n                             <i>Example: </i>&lt;a href=_#URLREPLY&gt;Reply&lt;/a&gt;")));
+        $aliases->addAlias(new AA_Alias('_#DISC_URL', 'f_h', 'd_disc_url......', _m("Alias for link to discussion<br>\n                             <i>Usage: </i>in form code<br>\n                             <i>Example: </i>&lt;input type=hidden name=url value=\"_#DISC_URL\">")));
+        $aliases->addAlias(new AA_Alias('_#BUTTONS_', 'f_h', 'd_buttons.......', _m("Alias for buttons Show all, Show selected, Add new<br>\n                             <i>Usage: </i> in the Bottom HTML code")));
+
+        return $aliases;
+    }
+}
+
+
+/** cached discussion2mail aliases
+ *  @usage new AA_Aliases(new AA_Aliasgenerator_Discussion2mail())
+ */
+class AA_Aliasgenerator_Discussion2mail extends \AA\Util\AbstractAliasgenerator {
+
+    public static function getAliasesFromParams(array $params): AA_Aliases {
+        $aliases = new AA_Aliases;
+
+        $aliases->addAlias(new AA_Alias('_#ITEMPAR3', '', '', _m("3rd parameter filled in DiscussionMailList field")));
+        for ($i = 4; $i < 10; ++$i) {
+            $aliases->addAlias(new AA_Alias("_#ITEMPAR$i", '', '', _m("%1th parameter filled in DiscussionMailList field", [$i])));
+        }
+        return $aliases;
+    }
+}
+
+/** cached constants aliases
+ *  @usage new AA_Aliases(new AA_Aliasgenerator_Constant())
+ */
+class AA_Aliasgenerator_Constant extends \AA\Util\AbstractAliasgenerator {
+
+    public static function getAliasesFromParams(array $params): AA_Aliases {
+        $aliases = new AA_Aliases;
+
+        //  Standard aliases
+        $aliases->addAlias(new AA_Alias('_#NAME###_', 'f_1', 'const_name', _m("Constant name")));
+        $aliases->addAlias(new AA_Alias('_#TR_NAME_', 'f__:{tr:{_#NAME###_}}', 'const_name', _m("Translated constant name")));
+        $aliases->addAlias(new AA_Alias('_#VALUE##_', 'f_1', 'const_value', _m("Constant value")));
+        $aliases->addAlias(new AA_Alias('_#PRIORITY', 'f_1', 'const_pri', _m("Constant priority")));
+        $aliases->addAlias(new AA_Alias('_#GROUP##_', 'f_1', 'const_group', _m("Constant group id")));
+        $aliases->addAlias(new AA_Alias('_#CLASS##_', 'f_1', 'const_class', _m("Category class (for categories only)")));
+        $aliases->addAlias(new AA_Alias('_#COUNTER_', 'f_1', 'const_counter', _m("Constant number")));
+        $aliases->addAlias(new AA_Alias('_#CONST_ID', 'f_1', 'const_id', _m("Constant unique id (32-haxadecimal characters)")));
+        $aliases->addAlias(new AA_Alias('_#SHORT_ID', 'f_1', 'const_short_id', _m("Constant unique short id (autoincremented from '1' for each constant in the system)")));
+        $aliases->addAlias(new AA_Alias('_#DESCRIPT', 'f_1', 'const_description', _m("Constant description")));
+        $aliases->addAlias(new AA_Alias('_#LEVEL##_', 'f_1', 'const_level', _m("Constant level (used for hierachical constants)")));
+
+        return $aliases;
     }
 }
 
@@ -320,6 +410,7 @@ class AA_Item {
     protected $format;            // format string with aliases
     protected $remove;            // remove string
     protected $aliases;           // array of usable aliases
+    /** @var AA_Aliases|null  */
     protected $aliases_gen;       // alias generator for alias lazy load
     protected $parameters;        // optional additional parameters - copied from itemview->parameters
 
@@ -567,7 +658,7 @@ class AA_Item {
 
     protected function loadAliases() {
         if (is_null($this->aliases)) {
-            $this->aliases = $this->aliases_gen ? $this->aliases_gen->getAliases() : [];
+            $this->aliases = $this->aliases_gen ? $this->aliases_gen->getArray() : [];
         }
     }
 
