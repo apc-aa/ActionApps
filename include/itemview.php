@@ -101,7 +101,7 @@ class itemview {
     $this->aliases    = is_object($aliases) ? $aliases->getArray() : $aliases;
     // add special alias, which is = 1 for selected item (given by
     // set[34]=selected-43535 view.php parameter
-    if ( !$aliases['_#SELECTED'] AND $slice_info['selected_item'] ) {
+    if ( !$this->aliases['_#SELECTED'] AND $slice_info['selected_item'] ) {
         $this->aliases['_#SELECTED'] = ['fce'=>'f_e:selected:'.$slice_info['selected_item'], "param"=>"", "hlp"=>""];
     }
 
