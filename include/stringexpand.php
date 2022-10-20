@@ -3205,7 +3205,7 @@ class AA_Treecache {
 
 /** Aggregate information from specified set of items. The function, which could
  *  be used for aggregated values are:
- * @param $function   string - sum | max | min | avg | concat | count | order | filter | filter_contain
+ * @param $function   string - sum | max | min | avg | concat | count | order | filter | filter_contain | filter_intersect
  * @param $ids_string string - list of item ids, which we take into account
  * @param $expression string - the value, we are counting with (like _#NUMBER_E)
  * @param $parameter  string - posible additional parameter for the function (like delimiter for the "concat" function)
@@ -3225,10 +3225,9 @@ class AA_Stringexpand_Aggregate extends AA_Stringexpand {
      * @return float|int|mixed|string
      */
     function expand($function='', $ids_string='', $expression=null, $parameter='') {
-        if ( !in_array($function, ['sum', 'max', 'min', 'avg', 'concat', 'count', 'order', 'filter', 'filter_not', 'filter_contain', 'filter_notcontain', 'filter_isset', 'filter_notset']) ) {
+        if ( !in_array($function, ['sum', 'max', 'min', 'avg', 'concat', 'count', 'order', 'filter', 'filter_not', 'filter_contain', 'filter_notcontain', 'filter_isset', 'filter_notset', 'filter_intersect']) ) {
             return '';
         }
-
 
         $results = AA_Items::getFormatted(new zids(explode_ids($ids_string)), $expression, AA_BIN_ALL);
 
@@ -3299,6 +3298,9 @@ class AA_Stringexpand_Aggregate extends AA_Stringexpand {
                 break;
             case 'filter_notset':
                 $ret = join('-', array_keys(array_filter($results, function($v) { return !strlen(trim((string)$v)); })));
+                break;
+            case 'filter_intersect':
+                $ret = join('-', array_keys(array_filter($results, function($v) use ($parameter) { return (bool)strlen(StrExpand('AA_Stringexpand_Intersect', [(string)$v, $parameter])); })));
                 break;
         }
         return $ret;
@@ -3465,11 +3467,11 @@ class AA_Stringexpand_Filter extends AA_Stringexpand_Nevercache {
      * @param $ids - dash separated item ids
      * @param $expression - expression for filtering
      * @param $equals - value to match expression
-     * @param $operator - = | != | contain | !contain | isset | notset
+     * @param $operator - = | != | contain | !contain | isset | notset | intersect
      * @return string
      */
     function expand($ids=null, $expression=null, $equals=null, $operator=null) {
-        $OPERATORS = ['contain' => 'filter_contain', '!contain' => 'filter_notcontain', '!=' => 'filter_not', 'isset' => 'filter_isset', 'notset' => 'filter_notset'];
+        $OPERATORS = ['contain' => 'filter_contain', '!contain' => 'filter_notcontain', '!=' => 'filter_not', 'isset' => 'filter_isset', 'notset' => 'filter_notset', 'intersect'=>'filter_intersect'];
         $fnc = ($operator AND $OPERATORS[$operator]) ? $OPERATORS[$operator] : 'filter';
         return StrExpand('AA_Stringexpand_Aggregate', [$fnc, $ids, $expression, $equals]);
     }
@@ -3573,22 +3575,27 @@ class AA_Stringexpand_Treestring extends AA_Stringexpand {
 }
 
 /** returns long ids of subitems items based on the relations between items
- *  {tree:<item_id>[:<relation_field>]}
+ *  {tree:<item_ids>[:<relation_field>]}
  *  {tree:2a4352366262227383484784635362ab:relation.......1}
  *  @return string - dash separated long ids of items which belongs to the tree under
  *          specified item based on the relation field
  */
 class AA_Stringexpand_Tree extends AA_Stringexpand {
     /** expand function
-     * @param string $item_id - item id of the tree root (short or long)
+     * @param string $item_ids - item id(s) of the tree root (short or long)
      * @param        $relation_field - tree relation field (default relation........)
      * @param null   $reverse
      * @param null   $sort_string
      * @param null   $slices
      * @return string
      */
-    function expand($item_id='', $relation_field=null, $reverse=null, $sort_string=null, $slices=null) {
-        return join('-', AA_Stringexpand_Treestring::treefunc('getIds', $item_id, $relation_field, $reverse, $sort_string, $slices));
+    function expand($item_ids='', $relation_field=null, $reverse=null, $sort_string=null, $slices=null) {
+        $in_ids  = explode_ids($item_ids);
+        $ret = [];
+        foreach ($in_ids as $item_id) {
+            array_push( $ret, ...AA_Stringexpand_Treestring::treefunc('getIds', $item_id, $relation_field, $reverse, $sort_string, $slices));
+        }
+        return join('-', array_unique(array_filter($ret,'strlen')));
     }
 }
 
