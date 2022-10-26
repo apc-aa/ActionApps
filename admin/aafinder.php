@@ -47,6 +47,7 @@ try {
     $searchinfield = InputVars::boolGET('searchinfield');
     $searchinobject = InputVars::boolGET('searchinobject');
     $searchinitems = InputVars::boolGET('searchinitems');
+    $searchincodeitems = InputVars::boolGET('searchincodeitems');
     $searchinhistory = InputVars::boolGET('searchinhistory');
     $searchindiscus = InputVars::boolGET('searchindiscus');
     $searchinspot = InputVars::boolGET('searchinspot');
@@ -566,6 +567,11 @@ if ( strlen($go_search) OR strlen($go_replace) ) {
         if ($searchinitems) {
             $table2search['content'] = ['id' => 'LOWER(HEX(`item_id`))'];
         }
+        if ($searchincodeitems) {
+            $codeslices = DB_AA::select('lid','SELECT LOWER(HEX(`id`)) as lid FROM `slice`',[['type', '___Code', 'BEGIN']]) ?: ['90112233001122330011223300112233'];
+            $codeslicesquery = sqlin( 'item.slice_id', $codeslices, true );
+            $table2search['content'] = ['id' => 'LOWER(HEX(`item_id`))', 'addtables' => ',`item`', 'addconds' => 'item.id=content.item_id AND '.$codeslicesquery.' AND '];
+        }
         if ($searchinobject) {
             $table2search['object_text'] = ['id' => '`object_id`'];
         }
@@ -594,11 +600,14 @@ if ( strlen($go_search) OR strlen($go_replace) ) {
             $addfields = $tblinfo['id'] ? (', ' . $tblinfo['id']) . ' as iid' : '';
             $addfields .= $tblinfo['slice_id'] ? (', ' . $tblinfo['slice_id']) . ' as sid' : '';
 
+            $addtables = $tblinfo['addtables'] ?? '';
+            $addconds  = $tblinfo['addconds']  ?? '';
+
             foreach ($fields as $fld) {
                 $row = [];
 
                 if (strlen($go_search)) {
-                    $SQL = "SELECT `$fld` as txt, INSTR(`$fld`,\"" . quote($search) . "\") as pos $addfields FROM `$tbl` WHERE INSTR(`$fld`,\"" . quote($search) . "\")>0";
+                    $SQL = "SELECT `$fld` as txt, INSTR(`$fld`,\"" . quote($search) . "\") as pos $addfields FROM `$tbl` $addtables WHERE $addconds INSTR(`$fld`,\"" . quote($search) . "\")>0";
                     $txt = DB_AA::select([], $SQL);
                     if (!$txt) {
                         continue;
@@ -689,14 +698,15 @@ echo '</td></tr><tr><td>';
 
 echo '<form name="f_replace" action="">';
 echo '<b>'._m('Search and Replace in').'</b>
-      <label><input type="checkbox" name="searchinview"    value="1" '. ((!$search OR $searchinview)? 'checked':'').'>'._m("Views").'</label>&nbsp;&nbsp;
-      <label><input type="checkbox" name="searchinslice"   value="1" '. ((!$search OR $searchinslice)? 'checked':'').'>'._m("Slices").'</label>&nbsp;&nbsp;
-      <label><input type="checkbox" name="searchinfield"   value="1" '. ((!$search OR $searchinfield)? 'checked':'').'>'._m("Fields").'</label>&nbsp;&nbsp;
-      <label><input type="checkbox" name="searchinspot"    value="1" '. ((!$search OR $searchinspot)? 'checked':'').'>'._m("Site spots").'</label>&nbsp;&nbsp;
-      <label><input type="checkbox" name="searchinobject"  value="1" '. ((!$search OR $searchinobject)? 'checked':'').'>'._m("Objects").'</label>&nbsp;&nbsp;
-      <label><input type="checkbox" name="searchinitems"   value="1" '. ((                    $searchinitems)? 'checked':'').'>'._m("Items").'</label>&nbsp;&nbsp;
-      <label><input type="checkbox" name="searchinhistory" value="1" '. ((                    $searchinhistory)? 'checked':'').'>'._m("History").'</label>&nbsp;&nbsp;
-      <label><input type="checkbox" name="searchindiscus"  value="1" '. ((                    $searchindiscus)? 'checked':'').'>'._m("Discussion comments").'</label>&nbsp;&nbsp;
+      <label><input type="checkbox" name="searchinview"      value="1" '. ((!$search OR $searchinview)? 'checked':'').'>'._m("Views").'</label>&nbsp;&nbsp;
+      <label><input type="checkbox" name="searchinslice"     value="1" '. ((!$search OR $searchinslice)? 'checked':'').'>'._m("Slices").'</label>&nbsp;&nbsp;
+      <label><input type="checkbox" name="searchinfield"     value="1" '. ((!$search OR $searchinfield)? 'checked':'').'>'._m("Fields").'</label>&nbsp;&nbsp;
+      <label><input type="checkbox" name="searchinspot"      value="1" '. ((!$search OR $searchinspot)? 'checked':'').'>'._m("Site spots").'</label>&nbsp;&nbsp;
+      <label><input type="checkbox" name="searchinobject"    value="1" '. ((!$search OR $searchinobject)? 'checked':'').'>'._m("Objects").'</label>&nbsp;&nbsp;
+      <label><input type="checkbox" name="searchincodeitems" value="1" '. ((                $searchincodeitems)? 'checked':'').' title="'._m("Items from slices with 'Slice Type' like Code... ").'">'._m("Code Items").'</label>&nbsp;&nbsp;
+      <label><input type="checkbox" name="searchinitems"     value="1" '. ((                    $searchinitems)? 'checked':'').'>'._m("All Items").'</label>&nbsp;&nbsp;
+      <label><input type="checkbox" name="searchinhistory"   value="1" '. ((                    $searchinhistory)? 'checked':'').'>'._m("History").'</label>&nbsp;&nbsp;
+      <label><input type="checkbox" name="searchindiscus"    value="1" '. ((                    $searchindiscus)? 'checked':'').'>'._m("Discussion comments").'</label>&nbsp;&nbsp;
     <br>
     <textarea name="search" placeholder="'._m('minimum 2 chracters for replace function').'" rows=6 style="width:40%">'.safe($search).'</textarea>&nbsp;&nbsp;
     <textarea name="replace" placeholder="'._m('minimum 6 chracters for replace function (or use {#AAA} value which will be replaced by empty string)').'" rows=6 style="width:40%">'.safe($replace).'</textarea>&nbsp;&nbsp;

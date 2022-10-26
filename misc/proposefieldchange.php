@@ -57,7 +57,7 @@ function GetRepreValue($item_id, $field_id, $alias_name='') {
 
 /** AA\IO\AbstractGrabber\AbstractGrabber\Form - Grabbs data POSTed by AA form
 */
-class AbstractGrabberAssignmentform extends AA\IO\Grabber\AbstractGrabber {
+class GrabberAssignmentform extends AA\IO\Grabber\AbstractGrabber {
     var $_items;            /** list if files to grab - internal array */
     var $_index;              /**  */
 
@@ -159,7 +159,7 @@ elseif ( AA_V::P('assignment') == 1 ) {
             DB_AA::sql($SQL);
         }
 
-        $grabber      = new AbstractGrabberAssignmentform();
+        $grabber      = new GrabberAssignmentform();
         $saver        = new AA\IO\Saver($grabber, null, 'de6a767322ed6040d4b745f5c16a7683', 'insert_if_new', 'new');
         $saver->run();
 

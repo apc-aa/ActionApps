@@ -3449,7 +3449,7 @@ class AA_Stringexpand_Order extends AA_Stringexpand_Nevercache {
 }
 
 /** Filter ids by the expression
- *  {filter:<ids>:<expression>:<equals-to>}
+ *  {filter:<ids>:<expression>:<equals-to>:<operator>}
  *  {filter:4785-4478-5789:_#SLICE_ID:879e87a4546abe23879e87a4546abe23}
  *  {filter:4785-4478-5789:{({item:{relation........}:_#APPROVED})}:1}
  *  {filter:{ids:{_#SLICE_ID}}:_#CATEGORY:blue:!contain}
@@ -3515,7 +3515,7 @@ class AA_Stringexpand_Sortid extends AA_Stringexpand_Nevercache {
 }
 
 
-/** @return string representation of the tree (with long ids) under specifield
+/** @return string representation of the tree (with long ids) under specified
  *          item based on the relation field
  *  @see {itree: } for more info about the stringtree syntax
  *  {treestring:<item_id>[:<relation_field>[:<reverse>[:<sort_string>[:<slices>]]]]}

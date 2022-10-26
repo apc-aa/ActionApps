@@ -146,22 +146,22 @@ $_m["Now you can dalete local file. "]
 $_m[" Delete "]
  = "";
 
-// ./sql_update.php3, row 1543
+// ./sql_update.php, row 1543
 $_m["Database checkers"]
  = "";
 
-// ./sql_update.php3, row 1563
+// ./sql_update.php, row 1563
 // admin/aa_optimize.php, row 65
 // admin/se_rssfeeds.php, row 189
 $_m["Test"]
  = "";
 
-// ./sql_update.php3, row 1566
+// ./sql_update.php, row 1566
 // admin/aa_optimize.php, row 68
 $_m["Repair"]
  = "";
 
-// ./sql_update.php3, row 1579
+// ./sql_update.php, row 1579
 // admin/um_uedit.php, row 339
 // admin/se_mapping.php, row 199
 // admin/se_search.php3, row 180
@@ -174,11 +174,11 @@ $_m["Repair"]
 $_m["Update"]
  = "";
 
-// ./sql_update.php3, row 1626
+// ./sql_update.php, row 1626
 $_m["Run Update"]
  = "";
 
-// ./sql_update.php3, row 1628
+// ./sql_update.php, row 1628
 $_m["Restore Data from Backup Tables"]
  = "";
 
@@ -3673,7 +3673,7 @@ $_m["Recover"]
 // admin/setup.php, row 154
 $_m["Database is not configured correctly or the database is empty.<br>\n"
    ."             Check please the database credentials in <b>include/config.php</b>\n"
-   ."             file <br>or run <a href=\"../sql_update.php3\">sql_update.php3</a> script,\n"
+   ."             file <br>or run <a href=\"../sql_update.php\">sql_update.php</a> script,\n"
    ."             which creates AA tables for you."]
  = "";
 
@@ -5059,7 +5059,7 @@ $_m["Constant number"]
  = "";
 
 // include/item.php, row 146
-$_m["Constant unique id (32-haxadecimal characters)"]
+$_m["Constant unique id (32-hexadecimal characters)"]
  = "";
 
 // include/item.php, row 147
@@ -5071,7 +5071,7 @@ $_m["Constant description"]
  = "";
 
 // include/item.php, row 149
-$_m["Constant level (used for hierachical constants)"]
+$_m["Constant level (used for hierarchical constants)"]
  = "";
 
 // include/item.php, row 189
@@ -6405,7 +6405,7 @@ $_m["Fix field definitions duplicates"]
  = "";
 
 // AA\Optimize\... #xx778
-$_m["There should be only one slice_id - field_id pair in all slices, but sometimes there are more than one (mainly because of error in former sql_update.php3 script, where more than one display_count... fields were added)."]
+$_m["There should be only one slice_id - field_id pair in all slices, but sometimes there are more than one (mainly because of error in former sql_update.php script, where more than one display_count... fields were added)."]
  = "";
 
 // AA\Optimize\... #xx795
@@ -6589,7 +6589,7 @@ $_m["slice field"]
  = "";
 
 // include/widget.class.php, row 597, 640, 682, 861, 936, 978, 1102
-$_m["field (or format string) that will be displayed in select box (from related slice). if not specified, in select box are displayed headlines. you can use also any AA formatstring here (like: _#HEADLINE - _#PUB_DATE). (only for constants input type: slice)"]
+$_m["field (or format string) that will be displayed in select box (from related slice). if not specified, in select box are displayed headlines. you can use also any AA formatstring here (like: _#HEADLINE, _#PUB_DATE (for slices) or _#NAME###_, _#TR_NAME_, _#VALUE##_, _#PRIORITY, _#GROUP##_, _#CLASS##_, _#COUNTER_, _#CONST_ID, _#SHORT_ID (for constants))."]
  = "";
 
 // include/widget.class.php, row 598, 641
@@ -6813,7 +6813,7 @@ $_m["Do not show"]
  = "";
 
 // include/widget.class.php, row 1153
-$_m["Hierachical constants"]
+$_m["hierarchical constants"]
  = "";
 
 // include/widget.class.php, row 1168

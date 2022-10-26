@@ -8,7 +8,7 @@
 
 namespace AA\Widget;
 
-/** Hierachical constants widget */
+/** hierarchical constants widget */
 class HcoWidget extends Widget
 {
 
@@ -20,7 +20,7 @@ class HcoWidget extends Widget
      */
     public static function name(): string
     {
-        return _m('Hierachical constants');   // widget name
+        return _m('hierarchical constants');   // widget name
     }
 
     /** getClassProperties function of AA_Serializable

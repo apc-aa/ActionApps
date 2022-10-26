@@ -622,7 +622,7 @@ class Widget extends AA_Object implements NamedInterface {
                     $ret[$pid] = new AA_Property($pid, _m("Row count"), 'int', false, true, 'int', false, '', '', 10);
                     break;
                 case 'slice_field':
-                    $ret[$pid] = new AA_Property($pid, _m("Slice field"), 'string', false, true, 'string', false, _m("field (or format string) that will be displayed in select box. if not specified, in select box are displayed headlines or constant name for constants. you can use also any AA formatstring here (like: _#HEADLINE - _#PUB_DATE). (only for constants input type: slice)"), '', 'category........');
+                    $ret[$pid] = new AA_Property($pid, _m("Slice field"), 'string', false, true, 'string', false, _m("field (or format string) that will be displayed in select box. if not specified, in select box are displayed headlines or constant name for constants. you can use also any AA formatstring here (like: _#HEADLINE, _#PUB_DATE (for slices) or _#NAME###_, _#TR_NAME_, _#VALUE##_, _#PRIORITY, _#GROUP##_, _#CLASS##_, _#COUNTER_, _#CONST_ID, _#SHORT_ID (for constants))."), '', 'category........');
                     break;
                 case 'use_name':
                     $ret[$pid] = new AA_Property($pid, _m("Use name"), 'bool', false, true, 'bool', false, _m("if set (=1), then the name of selected constant is used, insted of the value. Default is 0"), '', '0');

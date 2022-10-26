@@ -240,7 +240,7 @@ $_m["Constant number"]
  = "Broj konstante";
 
 // include/item.php, row 146
-$_m["Constant unique id (32-haxadecimal characters)"]
+$_m["Constant unique id (32-hexadecimal characters)"]
  = "Jedinstvena oznaka konstante (32 -  heksadicimalne znamenke";
 
 // include/item.php, row 147
@@ -252,7 +252,7 @@ $_m["Constant description"]
  = "Opis konstanti";
 
 // include/item.php, row 149
-$_m["Constant level (used for hierachical constants)"]
+$_m["Constant level (used for hierarchical constants)"]
  = "Nivo konstante (kori�ten za konstante po va�nosti)";
 
 // include/item.php, row 189

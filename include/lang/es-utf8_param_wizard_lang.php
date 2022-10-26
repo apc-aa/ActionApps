@@ -625,7 +625,7 @@ $_m["slice field"]
  = "campo del otro canal";
 
 // include/constants_param_wizard.php, row 347, 387, 543
-$_m["field (or format string) that will be displayed in select box (from related slice). if not specified, in select box are displayed headlines. you can use also any AA formatstring here (like: _#HEADLINE - _#PUB_DATE). (only for constants input type: slice)"]
+$_m["field (or format string) that will be displayed in select box (from related slice). if not specified, in select box are displayed headlines. you can use also any AA formatstring here (like: _#HEADLINE, _#PUB_DATE (for slices) or _#NAME###_, _#TR_NAME_, _#VALUE##_, _#PRIORITY, _#GROUP##_, _#CLASS##_, _#COUNTER_, _#CONST_ID, _#SHORT_ID (for constants))."]
  = "campo (o cadena de formato) que se mostrará en la caja de selección (del canal relacionado). Si no se especifica, en la caja de selección se mostrarán los encabezados. Usted puede utilizar acá un formato de las AA (como: _#HEADLINE - _#PUB_DATE). (solamente para constantes de tipo entrada: slice)";
 
 // include/constants_param_wizard.php, row 349, 389, 453, 512, 545, 662, 969
@@ -761,7 +761,7 @@ $_m["Slice field"]
  = "Campo de canal";
 
 // include/constants_param_wizard.php, row 451
-$_m["Field (or format string) that will be displayed as radiobuton's option (from related slice). if not specified, in select box are displayed headlines. you can use also any AA formatstring here (like: _#HEADLINE - _#PUB_DATE). (only for constants input type: slice)"]
+$_m["Field (or format string) that will be displayed as radiobuton's option (from related slice). if not specified, in select box are displayed headlines. you can use also any AA formatstring here (like: _#HEADLINE, _#PUB_DATE (for slices) or _#NAME###_, _#TR_NAME_, _#VALUE##_, _#PRIORITY, _#GROUP##_, _#CLASS##_, _#COUNTER_, _#CONST_ID, _#SHORT_ID (for constants))."]
  = "Campo (o cadena de formato) que será mostrada como una opción de botón de selección (desde un canal relacionado). Si no se especifica, en la caja de selección se mostrarán los encabezados. Usted puede utilizar acá un formato de las AA (como: _#HEADLINE - _#PUB_DATE). (solamente para constantes de tipo entrada: slice)";
 
 // include/constants_param_wizard.php, row 475
@@ -821,7 +821,7 @@ $_m["Multiple choice checkbox group. <br><br>It uses the Constants select box - 
  = "Mostrar una lista de valores con cajitas para seleccionarlos individualmente.<br><br>La lista de valores se especifica en la caja de selección de constantes, y puede ser un grupo de constantes o un canal.";
 
 // include/constants_param_wizard.php, row 510
-$_m["Field (or format string) that will be displayed as checbox options (from related slice). if not specified, in select box are displayed headlines. you can use also any AA formatstring here (like: _#HEADLINE - _#PUB_DATE). (only for constants input type: slice)"]
+$_m["Field (or format string) that will be displayed as checbox options (from related slice). if not specified, in select box are displayed headlines. you can use also any AA formatstring here (like: _#HEADLINE, _#PUB_DATE (for slices) or _#NAME###_, _#TR_NAME_, _#VALUE##_, _#PRIORITY, _#GROUP##_, _#CLASS##_, _#COUNTER_, _#CONST_ID, _#SHORT_ID (for constants))."]
  = "Campo (o cadena de formato) que será mostrada como una opción de botón de selección (desde un canal relacionado). Si no se especifica, en la caja de selección se mostrarán los encabezados. Usted puede utilizar acá un formato de las AA (como: _#HEADLINE - _#PUB_DATE). (solamente para constantes de tipo entrada: slice)";
 
 // include/constants_param_wizard.php, row 535
@@ -993,7 +993,7 @@ $_m["Selected"]
  = "Seleccionados";
 
 // include/constants_param_wizard.php, row 660
-$_m["field (or format string) that will be displayed in the boxes (from related slice). if not specified, in select box are displayed headlines. you can use also any AA formatstring here (like: _#HEADLINE - _#PUB_DATE). (only for constants input type: slice)"]
+$_m["field (or format string) that will be displayed in the boxes (from related slice). if not specified, in select box are displayed headlines. you can use also any AA formatstring here (like: _#HEADLINE, _#PUB_DATE (for slices) or _#NAME###_, _#TR_NAME_, _#VALUE##_, _#PRIORITY, _#GROUP##_, _#CLASS##_, _#COUNTER_, _#CONST_ID, _#SHORT_ID (for constants))."]
  = "Campo (o cadena de formato) que será mostrada como una opción de botón de selección (desde un canal relacionado). Si no se especifica, en la caja de selección se mostrarán los encabezados. Usted puede utilizar acá un formato de las AA (como: _#HEADLINE - _#PUB_DATE). (solamente para constantes de tipo entrada: slice)";
 
 // include/constants_param_wizard.php, row 685

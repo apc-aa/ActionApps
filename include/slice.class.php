@@ -153,7 +153,6 @@ class AA_Module {
         return '';
     }
 
-
     /** AA_Module::getModuleType function
      * @param $module_id
      * @return string     - S | W | Alerts | J | P | Links
@@ -161,7 +160,6 @@ class AA_Module {
     static public function getModuleType($module_id) {
         return self::getModuleInfo('type', $module_id);
     }
-
 
     /** AA_Module::deleteModules function
      * @param $module_id
@@ -445,6 +443,22 @@ class AA_Slice extends AA_Module {
      */
     function type() {
         return $this->getProperty('type');
+    }
+
+    /** AA_Slice::getSliceTypes()
+     * @return array [type => type name]
+     */
+    static public function getSliceTypes(): array {
+        return [
+            'News_EN_tmpl....' => _m('Items'),
+            'ReaderManagement' => _m('Reader management'),
+            '___CodePage' => _m('Code - Pages'),
+            '___CodeView' => _m('Code - Views / Snippets'),
+            '___Constant' => _m('Constant'),
+            '___Translate' => _m('Translations'),
+            '___Field' => _m('Field definitions')
+            // 'AA_Core_Fields..' => _m('AA Core'),   // do not return it - it should not be selected
+            ];
     }
 
     /**
@@ -1041,7 +1055,7 @@ class AA_Modulesettings_Slice extends AA_Object {
      */
     static function getClassProperties(): array {
         return [ //                        id             name                            type     multi  persist validator, required, help, morehelp, example
-            'spamprotect'  => new AA_Property( 'spamprotect',  _m("Languages for translation"), 'string', true, true, new AA_Validate_Regexp(['pattern'=>'/^[a-z]{2}$/', 'maxlength'=>2]), false, _m('specify language codes in which you want translate content - small caps, two letters - like: en, es, de, ...')),
+            // 'spamprotect'  => new AA_Property( 'spamprotect',  _m("Languages for translation"), 'string', true, true, new AA_Validate_Regexp(['pattern'=>'/^[a-z]{2}$/', 'maxlength'=>2]), false, _m('specify language codes in which you want translate content - small caps, two letters - like: en, es, de, ...')),
             'translations' => new AA_Property( 'translations', _m("Languages for translation"), 'string', true, true, new AA_Validate_Regexp(['pattern'=>'/^[a-z]{2}$/', 'maxlength'=>2]), false, _m('specify language codes in which you want translate content - small caps, two letters - like: en, es, de, ...')),
             'autofields'   => new AA_Property( 'autofields',   _m("Automatic field creation"),  'bool',  false, true, 'bool', false, _m('If checked, slice allows storing values to text....* field, even if the appropriate text....* is not defined in the slice. The field will be created using field text............ as template.')),
             'fieldslice'   => new AA_Property( 'fieldslice',   _m("Fields defined by another slice"), 'string',  false, true, 'id', false, _m('You can use special slice for additional fields definition. There you can write slice ID, which define the fields.<br>Could be used for data slice, which stores values for user created forms.')),

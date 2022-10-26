@@ -1,4 +1,4 @@
-<?php
+zip<?php
 /**
  * PHP version 7.2+
  *
@@ -88,7 +88,7 @@ require_once __DIR__ . "/../include/slicedit.php";
 
 $foo_source = ( ( $slice_id=="" ) ? $set_template_id : $slice_id);
 
-$sarr = DB_AA::select1('', 'SELECT slice.id, slice.name, reading_password, mailman_field_lists, auth_field_group, fileman_dir, fileman_access, slice.lang_file, permit_offline_fill,permit_anonymous_edit,permit_anonymous_post, d_listlen, slice.template, slice.deleted, LOWER(HEX(module.owner)) as owner, slice.slice_url, slice.flag, slice.mlxctrl, module.priority, module.created_by, module.created_at FROM `slice`, `module`',
+$sarr = DB_AA::select1('', 'SELECT slice.id, slice.name, slice.type, reading_password, mailman_field_lists, auth_field_group, fileman_dir, fileman_access, slice.lang_file, permit_offline_fill,permit_anonymous_edit,permit_anonymous_post, d_listlen, slice.template, slice.deleted, LOWER(HEX(module.owner)) as owner, slice.slice_url, slice.flag, slice.mlxctrl, module.priority, module.created_by, module.created_at FROM `slice`, `module`',
           [ [ 'slice.id', 'module.id', 'j' ], [ 'module.id', $foo_source, 'l' ]]);
 if (!$sarr) {
     $sarr = [];
@@ -132,6 +132,10 @@ FrmInputText("slice_url", _m("URL of .shtml page (often leave blank)"), $sarr['s
 FrmInputText("priority", _m("Priority (order in slice-menu)"), $sarr['priority'], 5, 5);
 // not functional, yet
 // FrmInputText("upload_url", _m("Upload URL"), $slice_url, 254, 25, false, _m('Url of uploaded files is %1 by default. You can change it by setting this parameter.<br>Note: This do not change the place, wheer the file is stored - you can just use another virtualhost name, for example.', array(IMG_UPLOAD_URL)));
+
+if ( $sarr['type'] !== 'AA_Core_Fields..') {  // we do not want change type for AA_Core_Fields.. slice
+    FrmInputSelect("type", _m("Slice Type"), AA_Slice::getSliceTypes(), $sarr['type']);
+}
 FrmInputSelect("owner", _m("Owner"), $slice_owners, $sarr['owner']);
 if ( !$sarr['owner'] ) {
     FrmInputText("new_owner", _m("New Owner"), $new_owner, 99);

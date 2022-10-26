@@ -77,7 +77,7 @@ function GetAliases4Type( $type, $additional="" ) {
             break;
     }
 
-    // add additoinal aliases
+    // add additional aliases
     if ( isset( $additional ) AND is_array( $additional ) ) {
         $aliases = array_merge($aliases, $additional);
     }
@@ -87,7 +87,7 @@ function GetAliases4Type( $type, $additional="" ) {
 
 /** FillFakeAlias function
  * Adds new $alias to $aliases array and creates fake field for it
- *  (to $content4id array). The vaule for the field is set to $value (and $flag)
+ *  (to $content4id array). The value for the field is set to $value (and $flag)
  * @param $content4id
  * @param $aliases
  * @param $alias
@@ -393,10 +393,10 @@ class AA_Aliasgenerator_Constant extends \AA\Util\AbstractAliasgenerator {
         $aliases->addAlias(new AA_Alias('_#GROUP##_', 'f_1', 'const_group', _m("Constant group id")));
         $aliases->addAlias(new AA_Alias('_#CLASS##_', 'f_1', 'const_class', _m("Category class (for categories only)")));
         $aliases->addAlias(new AA_Alias('_#COUNTER_', 'f_1', 'const_counter', _m("Constant number")));
-        $aliases->addAlias(new AA_Alias('_#CONST_ID', 'f_1', 'const_id', _m("Constant unique id (32-haxadecimal characters)")));
+        $aliases->addAlias(new AA_Alias('_#CONST_ID', 'f_1', 'const_id', _m("Constant unique id (32-hexadecimal characters)")));
         $aliases->addAlias(new AA_Alias('_#SHORT_ID', 'f_1', 'const_short_id', _m("Constant unique short id (autoincremented from '1' for each constant in the system)")));
         $aliases->addAlias(new AA_Alias('_#DESCRIPT', 'f_1', 'const_description', _m("Constant description")));
-        $aliases->addAlias(new AA_Alias('_#LEVEL##_', 'f_1', 'const_level', _m("Constant level (used for hierachical constants)")));
+        $aliases->addAlias(new AA_Alias('_#LEVEL##_', 'f_1', 'const_level', _m("Constant level (used for hierarchical constants)")));
 
         return $aliases;
     }

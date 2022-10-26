@@ -265,7 +265,7 @@ $_m["Constant number"]
  = "Num�r constante";
 
 // include/item.php, row 146
-$_m["Constant unique id (32-haxadecimal characters)"]
+$_m["Constant unique id (32-hexadecimal characters)"]
  = "";
 
 // include/item.php, row 147
@@ -277,7 +277,7 @@ $_m["Constant description"]
  = "";
 
 // include/item.php, row 149
-$_m["Constant level (used for hierachical constants)"]
+$_m["Constant level (used for hierarchical constants)"]
  = "";
 
 // include/item.php, row 189
