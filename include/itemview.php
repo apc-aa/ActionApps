@@ -429,9 +429,9 @@ class itemview {
     /** unaliasWithScroller function
      * @param string $txt
      * @param AA_Item $item
-     * @return mixed|null|string|string[]
+     * @return string
      */
-  function unaliasWithScroller($txt, $item=null) {
+  function unaliasWithScroller($txt, $item=null): string {
       // If no item is specified, then still try and expand aliases using parameters
       if (!$item) {
           $item = new AA_Item(null,$this->aliases,null,null,$this->parameters);
@@ -452,7 +452,7 @@ class itemview {
       $CurItem->set_data($this->_content[$iid]);
       // slice_id... in content is packed!!!
       $p_slice_id = addslashes($CurItem->getval('slice_id........'));
-      $CurItem->setAliases(is_array($this->aliases[$p_slice_id]) ? $this->aliases[$p_slice_id] : $this->aliases);
+      $CurItem->setAliases((new AA_Aliases())->addFromArray(is_array($this->aliases[$p_slice_id]) ? $this->aliases[$p_slice_id] : $this->aliases));
   }
 
   // ----------------------------------------------------------------------------------
@@ -460,9 +460,9 @@ class itemview {
     /** get_output
      *  view_type used internally for different view types
      * @param $view_type
-     * @return mixed|null|string|string[]|void
+     * @return string
      */
-  function get_output($view_type="") {
+  function get_output($view_type=""): string {
     if ($view_type == "discussion") {
       $CurItem = new AA_Item("", $this->aliases);   // just prepare
       $CurItem->set_parameters($this->parameters);
@@ -478,7 +478,7 @@ class itemview {
      // other view_type than discussion
 
     if ( !( isset($this->zids) AND is_object($this->zids) )) {
-      return;
+      return '';
     }
 
     $is_random = $this->is_random();
@@ -640,7 +640,7 @@ class itemview {
                 } else {
                     // it shoudn't be set, but just in case - we do not want to redefine it
                     // @todo move it outside else - there it is just for first testing
-                    $CurItem->addAlias('_#GRP_NAME', GetAliasDef( ParamImplode(["f_t", $catname]),  "id..............", _m("exact group name")));
+                    $CurItem->addAlias(new AA_Alias('_#GRP_NAME', ParamImplode(["f_t", $catname]), 'id..............', _m("exact group name")));
                 }
                 if ($this->slice_info['gb_header']) {
                     if ($this->slice_info['gb_header'] == 127) {  // all before ~

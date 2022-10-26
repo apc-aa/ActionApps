@@ -136,7 +136,7 @@ function fileAction($name,$value) {
  *   @return string two columns of input and action, can flip and table
  */
 function uilr($inp,$act) : string {
-    return ("<tr><td class=\"tabtxt\">$inp</td><td class=\"tabtxt\">$act</td></tr>\n");
+    return "<tr><td class=\"tabtxt\">$inp</td><td class=\"tabtxt\">$act</td></tr>\n";
 }
 
 /** inputplusaction function

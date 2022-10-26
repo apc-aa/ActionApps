@@ -812,8 +812,8 @@ class MLXView {
     /** getCurrentLang function
      *
      */
-    function getCurrentLang() {
-        return $this->language[0];
+    function getCurrentLang(): string {
+        return (string)$this->language[0];
     }
 }
 class MLXEvents {

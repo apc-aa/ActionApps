@@ -633,7 +633,7 @@ function xpack_id($id) {
  * @param $packed_id
  * @return string unpacked md5 id
  */
-function unpack_id($packed_id=''){
+function unpack_id($packed_id=''): string {
     return ((string)$packed_id != '0') ? bin2hex($packed_id) : '0';
 }
 
@@ -642,7 +642,7 @@ function unpack_id($packed_id=''){
  * @param $str
  * @return string
  */
-function quote($str) {
+function quote($str): string {
     return addslashes($str);
 }
 
@@ -651,7 +651,7 @@ function quote($str) {
  * @param $unpacked_id
  * @return string
  */
-function q_pack_id($unpacked_id){
+function q_pack_id($unpacked_id): string {
     $foo = pack_id($unpacked_id);
     return quote($foo);
 }
@@ -660,7 +660,7 @@ function q_pack_id($unpacked_id){
  * @param $str
  * @return string
  */
-function qquote($str) {
+function qquote($str): string {
     return "'".quote($str)."'";
 }
 
@@ -672,7 +672,7 @@ function qquote($str) {
  * @param $values - array of values
  * @return string
  */
-function sqlin( $column, $values, $long=false ) {
+function sqlin( $column, $values, $long=false ): string {
     $fce = $long ? 'xpack_id' : 'qquote';
     switch (count($values)) {
     case 0: return '0';
@@ -696,5 +696,4 @@ function id_t2l($str) {
     }
     warn("Unable to parse tagged id '$str' - tell mitra");
 }
-
 

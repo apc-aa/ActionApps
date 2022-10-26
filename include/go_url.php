@@ -37,7 +37,7 @@
  * @param  array|string $params
  * @return string
  */
-function con_url($url, $params=[]) {
+function con_url($url, $params=[]): string {
     return htmlspecialchars(get_url($url, $params), ENT_QUOTES | ENT_HTML5, 'ISO-8859-1');
 }
 
@@ -76,7 +76,7 @@ function HttpGetParameters($parameters) {
  * @param string $url
  * @return string
  */
-function StateUrl($url='') {
+function StateUrl($url=''): string {
     return ((strpos($url, 'module_id=')===false) AND is_long_id(AA::$module_id)) ? get_url($url, ['module_id'=>AA::$module_id]) : $url;
 }
 
@@ -94,7 +94,7 @@ function StateHidden() {
  * @param array|string $params
  * @return string
  */
-function get_url($url, $params=[]) {
+function get_url($url, $params=[]): string {
     if (empty($params)) {
         return $url;
     }
@@ -116,7 +116,7 @@ function get_url($url, $params=[]) {
  * @param bool         $state
  * @return string
  */
-function get_aa_url($href, $params='', $state=true) {
+function get_aa_url($href, $params='', $state=true): string {
     $url = get_url(AA_INSTAL_PATH.$href, $params);
     return $state ? StateUrl($url) : $url;
 }
@@ -127,7 +127,7 @@ function get_aa_url($href, $params='', $state=true) {
  * @param bool         $state
  * @return string
  */
-function get_admin_url($href, $params='', $state=true) {
+function get_admin_url($href, $params='', $state=true): string {
     return get_aa_url("admin/$href", $params, $state);
 }
 

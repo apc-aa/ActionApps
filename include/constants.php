@@ -112,7 +112,7 @@ class AA_Alias {
         return ['fce' => $this->funct, 'param' => $this->field_id, 'hlp' => $this->hlp];
     }
 
-    /** getAlias function
+    /** get alias name
      * @return string
      */
     function getAlias() {
@@ -215,9 +215,19 @@ class AA_Aliases {
         return $ret;
     }
 
+    function getAlias(string $name): ?AA_Alias {
+        $this->lazyGet('lazy_aliases');
+        return $this->lazy_aliases[$name];
+    }
+
     function getAliases() {
         $this->lazyGet('lazy_aliases');
         return $this->lazy_aliases;
+    }
+
+    function getNames() {
+        $this->lazyGet('lazy_aliases');
+        return array_keys($this->lazy_aliases);
     }
 }
 

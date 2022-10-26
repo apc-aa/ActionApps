@@ -182,11 +182,11 @@ function CheckPerms( $user_id, $objType, $objID, $perm) {
     switch($objType) {
         case "aa":
             $ret = IsPerm($permission_to["aa"][$objID], $perm);
-            return($ret);
+            return $ret;
         case "slice":
             // huhl($objID, $permission_to["slice"][$objID], $permission_to["aa"][AA_ID], AA_Perm::joinSliceAndAAPerm($permission_to["slice"][$objID], $permission_to["aa"][AA_ID]), $perm);
             $ret = IsPerm(AA_Perm::joinSliceAndAAPerm($permission_to["slice"][$objID], $permission_to["aa"][AA_ID]), $perm);
-            return($ret);
+            return $ret;
         default: return false;
     }
 }

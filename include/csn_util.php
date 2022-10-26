@@ -263,7 +263,7 @@ function attr2id($str) {
     if (preg_match("~/(items|cat|slices)/([0-9a-f]{32})~",$str,$regs)) { // Looks like an APC id
         return $regs[2]; // Maybe this should be 0 ?
     } else {
-        return(string2id($str));
+        return string2id($str);
     }
 }
 

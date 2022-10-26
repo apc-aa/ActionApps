@@ -212,12 +212,11 @@ class AA_Showview {
         $this->_view_param = $view_param;
     }
 
-    function getViewOutput()
-    {
+    function getViewOutput(): string {
         $dbgtime = microtime(true);
 
         if (!($view = AA_Views::getView($this->_view_param["vid"]))) {
-            return false;
+            return '';
         }
         $vid = $view->getId();
 
@@ -257,7 +256,7 @@ class AA_Showview {
 
         if (!$view->isValid()) {
             AA::$debug&2 && AA::$dbg->groupend("view_$vid".'_'.$dbgtime);
-            return false;
+            return '';
         }
 
         // Use right language (from slice settings) - languages are used for

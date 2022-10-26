@@ -1648,10 +1648,9 @@ $QUOTED_ARRAY   = ["|~@_a", "|~@_b", "|~@_c", "|~@_d", "|~@_e", "_AA_ReMoVe"];
 /** QuoteColons function
  *  Substitutes all colons and othe special syntax characters with special AA
  *  string. Used to mark characters :{}() which are content, not syntax elements
- * @param $text
- * @return mixed
+ * @param $text string
  */
-function QuoteColons($text) {
+function QuoteColons($text): string {
     return str_replace($GLOBALS['UNQUOTED_ARRAY'], $GLOBALS['QUOTED_ARRAY'], $text);
 }
 
@@ -1659,19 +1658,17 @@ function QuoteColons($text) {
 /** DeQuoteColons function
  *  Substitutes special AA 'colon' string back to colon ':' character
  *  Used for parameters, where is no need colons are not parameter separators
- * @param $text
- * @return mixed
+ * @param $text string
  */
-function DeQuoteColons($text) {
+function DeQuoteColons($text): string {
     return str_replace($GLOBALS['QUOTED_ARRAY'], $GLOBALS['UNQUOTED_ARRAY'], $text);
 }
 
 /* just for speedup stringexpand parameter parsing */
 /**
- * @param $text
- * @return mixed
+ * @param $text string
  */
-function DeQuoteColonsTrim($text) {
+function DeQuoteColonsTrim($text): string {
     return str_replace($GLOBALS['QUOTED_ARRAY'], $GLOBALS['UNQUOTED_ARRAY'], trim($text));
 }
 
@@ -5443,7 +5440,7 @@ class AA_Stringexpand_Include extends AA_Stringexpand {
                 break;
             default:
                 // if ($errcheck) huhl("Trying to expand include, but no valid type: $type");
-                return("");
+                return '';
         }
         return $fileout;
     }
@@ -5894,14 +5891,14 @@ class AA_Stringexpander {
     }
 
     /** called as AA::Stringexpander()->unalias();
-     * @param $text
+     * @param $text string
      * @param $item AA_Item
      * @param $remove string
      * @param $dequote bool
      * @param $itemview itemview
-     * @return mixed|null|string|string[]
+     * @return string
      */
-    function unalias($text, $remove='', $item=null, $dequote=true, $itemview=null ) {
+    function unalias($text, $remove='', $item=null, $dequote=true, $itemview=null ): string {
 
         if (++$this->recursion_count > 5000) {
             --$this->recursion_count;
@@ -5975,7 +5972,9 @@ class AA_Stringexpander {
     function unaliasArray(&$arr) {
         if (is_array( $arr )) {
             foreach ( $arr as $k => $text ) {
-                $arr[$k] = $this->unalias($text);
+                if (is_string($text)) {
+                    $arr[$k] = $this->unalias($text);
+                }
             }
         }
     }
@@ -7067,7 +7066,9 @@ class AA_Stringexpand_Ucwords extends AA_Stringexpand_Nevercachenotrim {
     }
 }
 
-/** AA counterpart of PHP htmlspecialchars() */
+/** AA counterpart of PHP htmlspecialchars()
+ * @deprecated - use {safe:...} instead (it is the same)
+ */
 class AA_Stringexpand_Htmlspecialchars extends AA_Stringexpand_Nevercachenotrim {
 
     /** @param string $string  */

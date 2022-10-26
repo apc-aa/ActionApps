@@ -61,7 +61,7 @@ function mkcolor($color){
     $out["green"] = hexdec(substr($color,2,2));
     $out["blue"]  = hexdec(substr($color,4,2));
     
-    return($out);
+    return $out;
 }
 
 if (isset($width) && isset($height) && isset($color)){

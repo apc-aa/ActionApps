@@ -415,7 +415,7 @@ class ConvertCharset {
      * @return string Converted string in brand new encoding :)
      * @version 1.1 BETA 2003-10-21 01:09
      **/
-    function Convert($StringToChange, $FromCharset = null, $ToCharset = null, $TurnOnEntities = false) {
+    function Convert($StringToChange, $FromCharset = null, $ToCharset = null, $TurnOnEntities = false): string {
 
         // get default conversions, if it is not specified in parameter
         if ( is_null($FromCharset) ) {
@@ -487,7 +487,7 @@ class ConvertCharset {
                 'ď'=>'d', 'ň'=>'n', 'Ň'=>'N', 'ů'=>'u', 'Ů'=>'U'
             ];
 
-            return iconv("utf-8", "us-ascii//TRANSLIT", strtr($StringToChange, $table));
+            return (string)iconv("utf-8", "us-ascii//TRANSLIT", strtr($StringToChange, $table));
         }
 
         /*
