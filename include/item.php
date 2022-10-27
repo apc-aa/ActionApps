@@ -430,7 +430,10 @@ class AA_Item {
         if (is_object($aliases)) {
             $this->aliases = $aliases;
         } else {
-            $this->aliases = (new AA_Aliases())->addFromArray($aliases);
+            $this->aliases = new AA_Aliases();
+            if ($aliases) {
+                $this->aliases->addFromArray($aliases);
+            }
         }
         $this->format       = $format;
         $this->remove       = $remove;
@@ -1462,7 +1465,7 @@ class AA_Item {
         if (!$pskip_col) {
             $coltxt = $this->text2Html($this->getval($col), $this->getFlag($col));
         }
-        return  ($negate ? $pnone : $pbegin. $coltxt .$pend);
+        return (string)($negate ? $pnone : $pbegin. $coltxt .$pend);
     }
 
     /** f_u function

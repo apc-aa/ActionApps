@@ -5190,7 +5190,7 @@ class AA_Stringexpand_Debug extends AA_Stringexpand_Nevercachenotrim {
      */
     function expand( $text='' ) {
         $ret = '';
-        if ( ctype_digit($text) ) {
+        if ( !$text OR is_numeric($text) ) {
             AA::$debug = (int)$text;
         } else {
             // do not rely on this - could be changed. If you want specific format, then add any text parameter
