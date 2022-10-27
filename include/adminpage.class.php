@@ -320,8 +320,8 @@ class AA_Adminpage implements AA_iEditable {
         echo $html_start;
 
         showMenu("sliceadmin", "fulltext");
-        PrintArray($r_err);
-        PrintArray($r_msg);
+        echo GetPrintArray($r_err);
+        echo GetPrintArray($r_msg);
         unset($r_err);
         unset($r_msg);
 

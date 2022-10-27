@@ -1185,7 +1185,7 @@ $_m["Stored search name"]
  = "Nombre de búsqueda";
 
 // include/searchbar.class.php, row 621
-$_m["You have the permission to add stored search globaly. Do you want to add this query as global (common to all slice users)?"]
+$_m["You have the permission to add stored search globally. Do you want to add this query as global (common to all slice users)?"]
  = "Usted tiene permisos para añadir búsquedas globalmente. Desea añadir esta búsqueda como global (común a todos los usuarios)?";
 
 // include/searchbar.class.php, row 621

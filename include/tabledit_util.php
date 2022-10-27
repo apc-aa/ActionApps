@@ -71,7 +71,7 @@ function ProcessFormData($getTableViewsFn, $val, &$cmd) {
                         }
                     }
                     if (!$ok) {
-                        PrintArray($err);
+                        echo GetPrintArray($err);
                         $err = "";
                     }
                 }
@@ -86,7 +86,7 @@ function ProcessFormData($getTableViewsFn, $val, &$cmd) {
                         }
                     }
                     if (!$ok) {
-                        PrintArray($err);
+                        echo GetPrintArray($err);
                         $err = "";
                     }
                     else {
@@ -117,7 +117,7 @@ function ProcessFormData($getTableViewsFn, $val, &$cmd) {
             }
         }
     }
-    PrintArray($err);
+    echo GetPrintArray($err);
 }
 
 // -----------------------------------------------------------------------------------

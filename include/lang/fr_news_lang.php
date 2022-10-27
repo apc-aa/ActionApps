@@ -3924,8 +3924,8 @@ $_m["Recover"]
 
 // admin/setup.php, row 154
 $_m["Database is not configured correctly or the database is empty.<br>\n"
-   ."             Check please the database credentials in <b>include/config.php</b>\n"
-   ."             file <br>or run <a href=\"../sql_update.php\">sql_update.php</a> script,\n"
+   ."             Check please the database credentials in <b>include/config.php3</b>\n"
+   ."             file <br>or run <a href=\"../sql_update.php3\">sql_update.php3</a> script,\n"
    ."             which creates AA tables for you."]
  = "La base de donn�es n'est pas configur�e correctement ou est vide<br>\n"
    ."             v�rifiez les qualifications de la base de donn�es dans <b>include/config.php</b>\n"
@@ -4792,7 +4792,7 @@ $_m["Stored search name"]
  = "Ranger le nom de la recherche";
 
 // include/searchbar.class.php, row 621
-$_m["You have the permission to add stored search globaly. Do you want to add this query as global (common to all slice users)?"]
+$_m["You have the permission to add stored search globally. Do you want to add this query as global (common to all slice users)?"]
  = "Vous avez la permission de consid�rer des recherche globalement.  Voulez-vous consid�rer cette requ�te comme globale (commune � tous les usagers de la section)?";
 
 // include/searchbar.class.php, row 621

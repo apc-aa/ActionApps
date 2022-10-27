@@ -35,17 +35,10 @@ require_once __DIR__ . "/../../include/item.php";     // GetAliasesFromField fun
 
 require_once __DIR__ . "/../../include/msgpage.php";
 
-
-if ($cancel) {
-    go_url( StateUrl(self_base() . "index.php3"));
-}
-
 if (!IfSlPerm(PS_MODW_SETTINGS)) {
     MsgPageMenu(StateUrl(self_base())."index.php3", _m("You have not permissions to manage tasks"), "admin");
     exit;
 }
-
-$module_id = $slice_id;
 
 $manager_settings = AA_Aliasfunc::getManagerConf(get_aa_url('modules/site/aliases.php'));
 //$manager_settings['searchbar']['default_sort'] =  array( 0 => array('aa_name' => 'a'));

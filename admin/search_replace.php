@@ -86,7 +86,7 @@ echo '
   <h1>'. _m("Modify items") .'</h1>
   <form name="modifyitemsform" method="post">';
 
-PrintArray($err);
+echo GetPrintArray($err);
 echo $Msg;
 
 $slice  = AA_Slice::getModule($slice_id);

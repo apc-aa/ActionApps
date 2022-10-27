@@ -261,7 +261,7 @@ $sort  = $manager->getSort();
 
 $link_zids=Links_QueryZIDs($r_state['cat_path'], $conds, $sort, $r_state["show_subtree"], $r_state['bin']);
 
-$manager->printSearchbarBegin();
+echo $manager->getSearchbarBegin();
 
 // special code extending searchbar - category selection
 echo '<table width="100%" border="0" cellspacing="0" cellpadding="3"
@@ -301,17 +301,17 @@ echo "</table></td></tr>";
 echo "<tr><td>".getFrmMoreHelp(get_help_url(AA_LINKS_HELP_MAIN,"seznamkat"))."</td></tr>";
 echo "</table>";
 
-$manager->printSearchbarEnd();   // close the searchbar form
+echo $manager->getSearchbarEnd();   // close the searchbar form
 
 // prints JavaScript which changes tree to current cat.
 echo $tree->goCategory($r_state['cat_id'], 'patharea', 'document.filterform.cat_id', 'filterform');
 
-PrintArray($r_err);
-PrintArray($r_msg);
+echo GetPrintArray($r_err);
+echo GetPrintArray($r_msg);
 unset($r_err);
 unset($r_msg);
 
-$manager->printItems($link_zids);   // print links and actions
+echo $link_zids->getItems();   // print links and actions
 $r_state['manager']    = $manager->getState();
 $r_state['manager_id'] = $manager_id;  // no special meaning - just manager id
 

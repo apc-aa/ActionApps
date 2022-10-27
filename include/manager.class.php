@@ -431,46 +431,68 @@ class AA_Manager extends AA_Storable {
      *  even more methods here
      * @param zids $zids
      */
-    function display($zids) {
+    function getManagerCode($zids): string {
         global $r_err, $r_msg;          // @todo - check if it is still needed
+        $ret = '';
 
         // if ($this->messages['title']) {
         //     echo '<h1>'. $this->messages['title'] .'</h1>';
         // }
         if ($this->messages['about']) {
-            echo '<div class="aa-about"><small>'. $this->messages['about'] .'<br><br></small></div>';
+            $ret .= '<div class="aa-about"><small>'. $this->messages['about'] .'<br><br></small></div>';
         }
 
-        $this->printSearchbarBegin();
-        $this->printSearchbarEnd();     // close the searchbar form
-        $this->printAndClearMessages();
+        $ret .= $this->getSearchbarBegin();
+        $ret .= $this->getSearchbarEnd();     // close the searchbar form
+        $ret .= $this->getAndClearMessages();
 
-        PrintArray($r_err);
-        PrintArray($r_msg);
+        $ret .= GetPrintArray($r_err);
+        $ret .= GetPrintArray($r_msg);
         unset($r_err);
         unset($r_msg);
-        $this->printItems($zids);       // print items and actions
+        $ret .= $this->getItems($zids);       // print items and actions
+        return $ret;
     }
 
     function displayPage($zids, $menu_top, $menu_left, $css_add='') {
         global $r_state;
-        $this->printHtmlPageBegin(true, $css_add);  // html, head, css, title, javascripts
 
-        showMenu($menu_top, $menu_left);
+        $apage = new AA_Adminpageutil($menu_top, $menu_left);
+        // $apage->setTitle( _m("Admin - Object Edit") );
+// for widgets
+        $apage->addRequire(get_aa_url('javascript/aajslib-legacy.min.js?v='.AA_JS_VERSION, '', false ));
+        $apage->addRequire(get_aa_url('javascript/manager.min.js?v='.AA_JS_VERSION, '', false ));
+        if ($css_add) {
+            $apage->addRequire($css_add);
+        }
+
 
         if ($_GET['id'] AND $this->managed_class) {
             //huhl('sss1',$this->module_id);
             $form = AA_Form::factoryForm($this->managed_class, $_GET['id'], $this->module_id);
-            huhl($form);
-            echo $form->getAjaxHtml('xxx'); // ($_GET['ret_code']);
+            $form_buttons = [
+                "update",
+                "cancel",
+            ];
+
+            $html  = getFrmTabCaption(_m("Object Edit"), $form_buttons);
+            $html .= '<tr><td colspan="2">';
+            $html .= $form->getObjectEditHtml();
+            $html .= '</td></tr>';
+
+            $html .= getFrmTabEnd($form_buttons);
+
+
+            // echo $form->getAjaxHtml('xxx'); // ($_GET['ret_code']);
         } else {
-            $this->display($zids);
+            $html = $this->getManagerCode($zids);
         }
+
+        // this allows to automatically load codemirror in the head (printHead is called after $form->getObjectEditHtml)
+        $apage->printAllPage($html, $err, $Msg);
 
         $r_state['manager']    = $this->getState();
         $r_state['manager_id'] = $this->_manager_id;
-
-        HtmlPageEnd();
     }
 
     /** printHtmlPageBegin function
@@ -494,37 +516,38 @@ class AA_Manager extends AA_Storable {
         }
     }
 
-    /** printSearchbarBegin function
-     * Prints begin of search form with searchbar (you can then add more code
-     * to searchbar after callin this function. Then you MUST close the form
-     * with printSearchbarEnd() function
+    /** getSearchbarBegin function
+     * Return begin of search form with searchbar (you can then add more code
+     * to searchbar after calling this function. Then you MUST close the form
+     * with getSearchbarEnd() function
      */
-    function printSearchbarBegin() {
-        echo '<form name="filterform" action="'.StateUrl().'" class="noprint">'.StateHidden();
+    function getSearchbarBegin(): string {
+        $ret = '<form name="filterform" action="'.StateUrl().'" class="noprint">'.StateHidden();
         if ( isset($this->searchbar) ) {
-            $this->searchbar->printBar();
+            $ret .= $this->searchbar->getBar();
         }
+        return $ret;
     }
 
-    /** printSearchbarEnd function
+    /**
      * Prints end of search form with searchbar (@see printSearchbarBegin())
      */
-    function printSearchbarEnd() {
-        echo "</form><p></p>"; // workaround for align=left bug
+    function getSearchbarEnd(): string {
+        return "</form><p></p>"; // workaround for align=left bug
     }
 
-    /** printItems function
-     * Prints item/link/... table with scroller, actions, ...
+     /**
+     * get item/link/... table with scroller, actions, ... for printing
      * @param $zids
      * @return mixed
      */
-    function printItems($zids) {
-        echo '<form name="itemsform" id="itemsform" method="post" action="'. StateUrl() .'">';
+    function getItems($zids): string {
+        $ret = '<form name="itemsform" id="itemsform" method="post" action="'. StateUrl() .'">';
 
         $ids_count = $zids->count();
         if ( $ids_count == 0 ) {
-            echo "<div class=\"tabtxt\">". $this->itemview->unaliasWithScroller($this->messages['noitem_msg']). "</div></form><br>";
-            return $ids_count;
+            $ret .= "<div class=\"tabtxt\">". $this->itemview->unaliasWithScroller($this->messages['noitem_msg']). "</div></form><br>";
+            return $ret;
         }
 
         $this->scroller->countPages( $ids_count );
@@ -538,14 +561,14 @@ class AA_Manager extends AA_Storable {
         // (links to itemedit.php3 would stay with session ids in cache
         // - you bacame another user !!!)
 
-        echo $this->itemview->get_output('view');
+        $ret .= $this->itemview->get_output('view');
 
-        echo '<table border="0" cellpadding="3" class="aa_manager_actions">
+        $ret .= '<table border="0" cellpadding="3" class="aa_manager_actions">
                 <tr class="aa_manager_actions_tr"><td>';
 
         if ($this->show & MGR_ACTIONS) {
-            echo '<input type="hidden" name="akce" value="">';          // filled by javascript - contains action to perform
-            echo '<input type="hidden" name="akce_param" value="">';  // if we need some parameteres to the action, store it here
+            $ret .= '<input type="hidden" name="akce" value="">';          // filled by javascript - contains action to perform
+            $ret .= '<input type="hidden" name="akce_param" value="">';  // if we need some parameteres to the action, store it here
 
             $javascr = '';
             $options = '';
@@ -578,46 +601,44 @@ class AA_Manager extends AA_Storable {
             }
 
             if ( $options ) {
-                echo "<img src=\"".AA_INSTAL_PATH."images/arrow_ltr.gif\">
+                $ret .= "<img src=\"".AA_INSTAL_PATH."images/arrow_ltr.gif\">
                     <a href=\"javascript:SelectVis()\">". _m('Select all')."</a>&nbsp;&nbsp;&nbsp;&nbsp;";
 
                   // click "go" does not use markedform, it uses itemsfrom above...
                   // maybe this action is not used.
-                echo '<select name="markedaction_select" id="markedaction_select" onchange="MarkedActionSelect(this)" class="markedaction_select">
+                $ret .= '<select name="markedaction_select" id="markedaction_select" onchange="MarkedActionSelect(this)" class="markedaction_select">
                       <option value="nothing">'. _m('Selected items') .':'.
                       $options .'</select>';
                 if ($this->actions_hint_url || $this->actions_hint) {
-                    echo getFrmMoreHelp($this->actions_hint_url, "", $this->actions_hint);
+                    $ret .= getFrmMoreHelp($this->actions_hint_url, "", $this->actions_hint);
                 }
 
-                echo '&nbsp;&nbsp;<a href="javascript:MarkedActionGo()" class="leftmenuy">'. _m('Go') . '</a>';
+                $ret .= '&nbsp;&nbsp;<a href="javascript:MarkedActionGo()" class="leftmenuy">'. _m('Go') . '</a>';
 
                   // we store open_url parameter to js variable for
                   // MarkedActionGo() function
-                echo '<script>
+                $ret .= '<script>
                          var markedactionurl     = [];
                          var markedactionurladd  = [];
                          var markedactionsetting = [];
                             '. $javascr .'
                       </script>';
             }
-            echo "</td>\n</tr>\n<tr><td id=\"markedactionparams\"></td></tr>\n<tr><td>";
+            $ret .= "</td>\n</tr>\n<tr><td id=\"markedactionparams\"></td></tr>\n<tr><td>";
         }
-
-        $this->scroller->pnavbar();
-        
-        echo '</td></tr></table>';
-
-        echo '</form><br>';
-        return $ids_count;
+        $ret .= $this->scroller->getNavbar();
+        $ret .= '</td></tr></table>';
+        $ret .= '</form><br>';
+        return $ret;
     }
 
-    /** printAndClearMessages function
-     *  Prints return values from action functions and clears the messages
+    /**
+     *  get return values from action functions and clears the messages for printing
      */
-    function printAndClearMessages() {
-        PrintArray( $this->msg );
+    function getAndClearMessages() {
+        $ret = GetPrintArray($this->msg);
         unset( $this->msg );
+        return $ret;
     }
 }
 

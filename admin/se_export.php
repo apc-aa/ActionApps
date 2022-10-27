@@ -139,7 +139,7 @@ $aa_set->setModules($module_id);
 
 $zids  = AA_Object::querySet('AA_Exportsetings', $aa_set);
 
-$manager->display($zids);
+echo $manager->getManagerCode($zids);
 $r_state['manager']    = $manager->getState();
 $r_state['manager_id'] = $manager_id;
 

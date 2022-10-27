@@ -191,13 +191,13 @@ class AA_Scroller extends AA_Storable {
         return $arr;
     }
 
-    /** pnavbar function
+    /**
      *  convert array provided by navarray into HTML code
      *  commands are added to $url
      */
-    function pnavbar() {
+    function getNavbar(): string {
         if (!$this->visible) {
-            return;
+            return '';
         }
         $delimiter = '';
         $arr = $this->navarray();
@@ -217,7 +217,7 @@ class AA_Scroller extends AA_Storable {
             }
             $ret .= "| <a href=\"" . get_url($url, ["listlen=99999"]) . "\">" . _m("All") . "</a> &nbsp; ";
         }
-        echo "<div class=pager>$ret <span class=found>(". _m('found').' '. $this->itmcnt .")</span></div>";
+        return "<div class=pager>$ret <span class=found>(". _m('found').' '. $this->itmcnt .")</span></div>";
     }
 }
 

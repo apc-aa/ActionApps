@@ -915,11 +915,11 @@ class AA_Object extends AA_Storable implements AA_iEditable {
 
         $properties    = static::getClassProperties();
         $search_fields = AA_Object::getSearchfields($properties);
-        $new_link      = a_href(get_admin_url('oedit.php3', ['otype' => $object_class, 'ret_url' => $manager_url]), GetAAImage('icon_new.gif', _m('new'), 17, 17).' '. _m('Add'));
+        $new_link      = a_href('', GetAAImage('icon_new.gif', _m('new'), 17, 17).' '. _m('Add'));
 
         $links  = [
-                   'Edit'=>get_admin_url('oedit.php3', ['module_id=_#AA_OWNER', 'oid=_#AA_ID___', 'otype' => $object_class, 'ret_url' => $manager_url]),
-                   'Delete'=>get_admin_url('oedit.php3', ['module_id=_#AA_OWNER', 'oid=_#AA_ID___', 'otype' => $object_class, 'ret_url' => $manager_url, 'delete' => '1']),
+                   'Edit'   => get_url('', ['id=_#AA_ID___'], true),
+                   'Delete' => get_url('', ['id=_#AA_ID___', 'delete' => '1'], true),
 //                   'Run'=>get_aa_url('export.php', ['id=_#AA_ID___'], false)
         ];
 
@@ -959,6 +959,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
              ],
              'actions'   => $actions,
              'switches'  => $switches,
+             'managed_class' => static::class,
              'bin'       => 'app',
              'messages'  => [
                  'title'       => _m('Manage %1', [$object_class])

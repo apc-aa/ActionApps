@@ -94,9 +94,9 @@ function StateHidden() {
  * @param array|string $params
  * @return string
  */
-function get_url($url, $params=[]): string {
+function get_url($url, $params=[], $state=false): string {
     if (empty($params)) {
-        return $url;
+        return $state ? StateUrl($url) : $url;
     }
 
     // be careful - sometimes we pass url with aliases (like oedit.php3?oid=_#AA_ID___...)
@@ -104,7 +104,8 @@ function get_url($url, $params=[]): string {
     if (($pos = strpos($url, '?')) !== false)  { return substr_replace($url, "?$param_string&", $pos, 1); }
     if (($pos = strpos($url, '&')) !== false)  { return substr_replace($url, "&$param_string&", $pos, 1); }
     if (($pos = strrpos($url, '#')) !== false) { return substr_replace($url, "?$param_string#", $pos, 1); }
-    return "$url?$param_string";
+
+    return $state ? StateUrl("$url?$param_string") : "$url?$param_string";
     // [$path, $fragment] = explode( '#', $url, 2 );
     // return $path . (strstr($path, '?') ? "&" : "?"). $param_string. ($fragment ? '#'.$fragment : '') ;
 }
@@ -116,9 +117,8 @@ function get_url($url, $params=[]): string {
  * @param bool         $state
  * @return string
  */
-function get_aa_url($href, $params='', $state=true): string {
-    $url = get_url(AA_INSTAL_PATH.$href, $params);
-    return $state ? StateUrl($url) : $url;
+function get_aa_url($href, $params=[], $state=true): string {
+    return get_url(AA_INSTAL_PATH.$href, $params, $state);
 }
 
 /** get_admin_url function

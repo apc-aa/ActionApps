@@ -145,16 +145,16 @@ if ( is_array($r_userstate['items']) ) {
 
 $zids = QueryZids( [$slice_id], $conds, $sort, 'ACTIVE', 0, $r_userstate['items'] ? $zids : false);
 
-$manager->printSearchbarBegin();
-$manager->printSearchbarEnd();   // close the searchbar form
+echo $manager->getSearchbarBegin();
+echo $manager->getSearchbarEnd();   // close the searchbar form
 
-$manager->printAndClearMessages();
-PrintArray($r_err);
-PrintArray($r_msg);
+echo $manager->getAndClearMessages();
+echo GetPrintArray($r_err);
+echo GetPrintArray($r_msg);
 unset($r_err);
 unset($r_msg);
 
-$manager->printItems($zids);   // print links and actions
+echo $zids->getItems();   // print links and actions
 $r_userstate['usershowmanager'] = $manager->getState();
 
 echo '<table width="100%" border="0" cellspacing="0" cellpadding="1" bgcolor="'. COLOR_TABTITBG ."\" align=\"center\">

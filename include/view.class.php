@@ -437,7 +437,7 @@ class AA_View {
 
             $new_params = add_vars($query_string, 'return');  // adds values from url (it's not automatic in SSIed script)
             if ($use_globals) {
-                add_vars($query_string);   // import it also globaly
+                add_vars($query_string);   // import it also globally
                 $vid = trim($vid);
             }
         } else {

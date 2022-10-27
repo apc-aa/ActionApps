@@ -143,12 +143,7 @@ $aa_set->addCondition(new AA_Condition('slice_id', '==', q_pack_id($module_id)))
 $zids    = AA::Metabase()->queryZids(['table'=>'view'], $aa_set);
 
 //$manager->displayPage($zids, 'aaadmin', 'views');
-$manager->display($zids);
-
-
-
-
-
+echo $manager->getManagerCode($zids);
 
 
 // -- get all views --

@@ -482,6 +482,10 @@ function huhl(...$vars) {
     }
 }
 
+/**
+ * @param $a
+ * Gets all values from array for printing
+ */
 function GetPrintArray($a) {
     $ret = '';
     if (is_array($a)) {
@@ -490,14 +494,6 @@ function GetPrintArray($a) {
         }
     }
     return $ret;
-}
-
-/** PrintArray function
- * @param $a
- * Prints all values from array
- */
-function PrintArray($a) {
-    echo GetPrintArray($a);
 }
 
 /** MsgOK function
@@ -1175,7 +1171,7 @@ function MsgPage($url, $msg) {
     <body>";
 
     if (isset($msg) AND is_array($msg)) {
-        PrintArray($msg);
+        echo GetPrintArray($msg);
     } else {
         echo "<p>$msg</p><br><br>";
     }

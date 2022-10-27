@@ -180,6 +180,9 @@ class AA_Stringexpand_Jsonarray extends AA_Stringexpand_Nevercachenotrim {
 /** @return string - JSON object of key-value pairs {jsonasoc:key1:val1:key2:val2:...}
  *  usage:
  *    {jsonasoc:name:{headline........}:input_help:{subtitle........}}
+ *    {jsonasoc:
+ *       name:{headline........}:
+ *       input_help:{subtitle........}}    // keys are trimmed, values not
  *    {input:82d37e966fcdc9d1cac49a7e49406601:text............:1:fld:{jsonasoc:name:Surname:input_help:just surname, please}}
  *  params text must be in utf8
  */

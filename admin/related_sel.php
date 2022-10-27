@@ -191,16 +191,16 @@ FrmJavascriptFile('javascript/inputform.min.js?v='.AA_JS_VERSION);  // for Selec
 
 $zids = $manager->getSet()->setBins($frombins)->query();
 
-$manager->printSearchbarBegin();
-$manager->printSearchbarEnd();   // close the searchbar form
+echo $manager->getSearchbarBegin();
+echo $manager->getSearchbarEnd();   // close the searchbar form
 
-$manager->printAndClearMessages();
-PrintArray($r_err);
-PrintArray($r_msg);
+echo $manager->getAndClearMessages();
+echo GetPrintArray($r_err);
+echo GetPrintArray($r_msg);
 unset($r_err);
 unset($r_msg);
 
-$manager->printItems($zids);   // print links and actions
+echo $zids->getItems();   // print links and actions
 $r_state['related']['manager'] = $manager->getState();
 
 echo '<table width="100%" border="0" cellspacing="0" cellpadding="1" bgcolor="'. COLOR_TABTITBG ."\" align=\"center\">

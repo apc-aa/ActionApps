@@ -501,12 +501,16 @@ class AA_Searchbar extends AA_Storable {
         return isset($this->bookmarks) ? $this->bookmarks->getBookmarkParams($key) : false;
     }
 
-    /** print_search_bar function
-     * Prints one search bar (one row)
+    public function isEmpty($bar):bool {
+        return empty($this->search_row[$bar]);
+    }
+
+    /** get_search_bar function
+     * Get one search bar (one row)
      * @param int $bar which bar to print (index)
      * @return bool true, if the printed searchrow is not empty
      */
-    function print_search_bar($bar) {
+    function get_search_bar($bar): string {
 
         $search_arr = $this->fields->getSearchArray($this->show & MGR_SB_ALLTEXT, $this->show & MGR_SB_ALLNUM);
 
@@ -532,35 +536,35 @@ class AA_Searchbar extends AA_Storable {
         }
 
         // filter
-        echo "<tr class=\"leftmenuy\"><td class=\"search\">$searchimage</td><td><b>$searchtext</b></td>";
+        $ret = "<tr class=\"leftmenuy\"><td class=\"search\">$searchimage</td><td><b>$searchtext</b></td>";
         if ($readonly) {
-            echo "<td class=\"tabtxteven\">".$this->fields[$fld]['name']."</td>";
-            echo "<td class=\"tabtxteven\">";
+            $ret .= "<td class=\"tabtxteven\">".$this->fields[$fld]['name']."</td>";
+            $ret .= "<td class=\"tabtxteven\">";
             switch ($oper) {
-                case "LIKE":  echo _m('contains');    break;
-                case "RLIKE": echo _m('begins with'); break;
-                case "=":     echo _m('is');          break;
+                case "LIKE":  $ret .= _m('contains');    break;
+                case "RLIKE": $ret .= _m('begins with'); break;
+                case "=":     $ret .= _m('is');          break;
             }
-            echo "</td>";
-            echo "<td class=\"tabtxteven\">".$val."</td><td>$searchimage</td><td width=\"99%\"> &nbsp; </td>";
+            $ret .= "</td>";
+            $ret .= "<td class=\"tabtxteven\">".$val."</td><td>$searchimage</td><td width=\"99%\"> &nbsp; </td>";
         } else {
-            echo "<td>";
-            FrmSelectEasy("srchbr_field[$bar]", $search_arr, $fld, 'onchange="ChangeOperators(\''.$this->form_name.'\','.$bar.', \'\')"' );
-            echo '</td><td>';
-            FrmSelectEasy("srchbr_oper[$bar]", [' ' => ' '], null, 'onchange="OpenWindowIfRequest(\''.$this->form_name.'\',\''.$bar.'\',\''.get_admin_url("constants_sel.php").'\')" ');
-            echo '</td><td>';
-            echo "<input type=\"text\" name=\"srchbr_value[$bar]\" size=\"20\" onkeypress=\"if (event.keyCode == 13) document.".$this->form_name. ".submit();\"
+            $ret .= "<td>";
+            $ret .= getFrmSelectEasy("srchbr_field[$bar]", $search_arr, $fld, 'onchange="ChangeOperators(\''.$this->form_name.'\','.$bar.', \'\')"' );
+            $ret .= '</td><td>';
+            $ret .= getFrmSelectEasy("srchbr_oper[$bar]", [' ' => ' '], null, 'onchange="OpenWindowIfRequest(\''.$this->form_name.'\',\''.$bar.'\',\''.get_admin_url("constants_sel.php").'\')" ');
+            $ret .= '</td><td>';
+            $ret .= "<input type=\"text\" name=\"srchbr_value[$bar]\" size=\"20\" onkeypress=\"if (event.keyCode == 13) document.".$this->form_name. ".submit();\"
               value=\"$val\"></td><td>$searchimage</td><td width=\"99%\"> &nbsp; </td>";
         }
-        echo '</tr>';
-        return $val != "";
+        $ret .= '</tr>';
+        return $ret;
     }
 
-    /** print_bar_actions function
+    /** get_bar_actions function
      *
      */
-    function print_bar_actions() {
-        echo "<tr class=\"leftmenuy\">
+    function get_bar_actions(): string {
+        $ret = "<tr class=\"leftmenuy\">
 
                <td colspan=\"3\">
                <input type=\"submit\" value=\"submit\" style=\"display:none\">
@@ -569,37 +573,41 @@ class AA_Searchbar extends AA_Storable {
                </td>
                <td colspan=\"2\">
                 <a href=\"javascript:SearchBarAction('".$this->form_name. "', 'bookmark', '"._m('Stored search name') ."',".
-                    ( !IfSlPerm(PS_BOOKMARK) ? "false" : "'". _m('You have the permission to add stored search globaly. Do you want to add this query as global (common to all slice users)?')."'") .")\">". _m('Store') ."</a>";
-              echo "</td>";
+                    ( !IfSlPerm(PS_BOOKMARK) ? "false" : "'". _m('You have the permission to add stored search globally. Do you want to add this query as global (common to all slice users)?')."'") .")\">". _m('Store') ."</a>";
+        $ret .= "</td>";
 
-              if ($this->hint != "") {
-                  echo "<td>";
-                  echo getFrmMoreHelp($this->hint_url,"",$this->hint, true);
-                  echo "</td>";
-              }
-              echo "</tr>";
+        if ($this->hint != "") {
+            $ret .= "<td>";
+            $ret .= getFrmMoreHelp($this->hint_url,"",$this->hint, true);
+            $ret .= "</td>";
+        }
+        $ret .= "</tr>";
+        return $ret;
     }
-    /** print_order_bar function
+
+    /** get_order_bar function
      * Prints one order bar (one row)
      * @param int $bar which bar to print (index)
      */
-    function print_order_bar($bar) {
+    function get_order_bar($bar) {
         $order_fields = $this->fields->getOrderArray();
         [$dir, $fld] = ( isset($this->order_row[$bar]) AND is_array($this->order_row[$bar]) ) ?  [safe($this->order_row[$bar]['dir']), $this->order_row[$bar]['field']] :  ["a", $order_fields[0]];
 
         $searchtext  = _m('Order');
         $searchimage = "<a href=\"javascript:document.".$this->form_name. ".submit()\">". GetAAImage('order.gif', $searchtext, 15, 15) .'</a>';
-        echo "<tr class=\"leftmenuy\"><td class=\"search\">$searchimage</td><td><b>". str_replace(' ','&nbsp;',$searchtext). "</b></td><td>";
-        FrmSelectEasy("srchbr_order[$bar]", $order_fields, $fld);
-        echo '</td><td colspan="2" class="leftmenuy"><label>';
-        FrmChBoxEasy("srchbr_order_dir[$bar]", $dir=='d');
-        echo _m('Descending'). "</label></td><td>$searchimage</td><td width=\"99%\"> &nbsp; </td></tr>";
+        $ret = "<tr class=\"leftmenuy\"><td class=\"search\">$searchimage</td><td><b>". str_replace(' ','&nbsp;',$searchtext). "</b></td><td>";
+        $ret .= getFrmSelectEasy("srchbr_order[$bar]", $order_fields, $fld);
+        $ret .= '</td><td colspan="2" class="leftmenuy"><label>';
+        $ret .= getFrmChBoxEasy("srchbr_order_dir[$bar]", $dir=='d');
+        $ret .= _m('Descending'). "</label></td><td>$searchimage</td><td width=\"99%\"> &nbsp; </td></tr>";
+        return $ret;
     }
-    /** print_bar_bookmarks function
+
+    /** get_bar_bookmarks function
      *
      */
-    function print_bar_bookmarks() {
-        echo "<tr class=\"leftmenuy\">
+    function get_bar_bookmarks(): string {
+        return "<tr class=\"leftmenuy\">
                <td colspan=\"2\"><b>". _m('Stored searches') ."</b></td>
                <td>".
                $this->bookmarks->getSelectbox() .
@@ -613,13 +621,12 @@ class AA_Searchbar extends AA_Storable {
               </tr>";
     }
 
-
-    /** printBar function
-     * Prints searchbar (search rows and order rows - based on current settings)
+    /** getBar function
+     * Get searchbar (search rows and order rows - based on current settings)
      */
-    function printBar() {
+    function getBar(): string {
 
-        echo '<input type="hidden" name="srchbr_akce" value="1">
+        $ret = '<input type="hidden" name="srchbr_akce" value="1">
               <table width="100%" border="0" cellspacing="5" cellpadding="0"
               class="noprint" bgcolor="'. COLOR_TABBG .'">';
 
@@ -629,50 +636,52 @@ class AA_Searchbar extends AA_Storable {
 
         if ($this->show & MGR_SB_SEARCHROWS) {
             while ( ($count_sb < $this->order_row_count_min) OR ($this->add_empty_search_row AND !$empty) ) {
-                $empty = !$this->print_search_bar($count_sb++);
+                $empty = $this->isEmpty($count_sb);
+                $ret  .= $this->get_search_bar($count_sb++);
             }
         }
 
         if ($this->show & MGR_SB_ORDERROWS) {
             $i = 0;
             while ( $i < $this->order_row_count_min ) {
-                $this->print_order_bar($i++);
+                $ret .= $this->get_order_bar($i++);
             }
         }
 
         if ($this->show & MGR_SB_BOOKMARKS) {
-            $this->print_bar_actions();
+            $ret .= $this->get_bar_actions();
             if ( $this->bookmarks->count() > 0 ) {
-                $this->print_bar_bookmarks();
+                $ret .= $this->get_bar_bookmarks();
             }
         }
 
-        echo '</table>
+        $ret .= '</table>
               <script>
              ';
-        echo AA_Operators::getJsDefinition();
-        echo '
+        $ret .= AA_Operators::getJsDefinition();
+        $ret .= '
                 var field_types    = "';
 
         // print string like "120021020010" which defines field type (charAt())
         $oper_translate = ['text' => 0, 'numeric' => 1, 'date' => 2, 'constants' => 3, 'numconstants' => 4];
         $search_operators = $this->fields->getOperatorsArray($this->show & MGR_SB_ALLTEXT, $this->show & MGR_SB_ALLNUM);
         foreach ($search_operators as $v) {
-            echo $oper_translate[$v];
+            $ret .= $oper_translate[$v];
         }
-        echo "\";\n";
+        $ret .= "\";\n";
 
         for ( $i=0; $i<$count_sb; $i++ ) {
             $row = $this->search_row[$i];
             if ( empty($row) ) {
-                echo "   ChangeOperators('".$this->form_name."','$i','');\n";
+                $ret .= "   ChangeOperators('".$this->form_name."','$i','');\n";
             }
             elseif (!$row->isReadonly()) {
-                echo "   ChangeOperators('".$this->form_name."','$i','".$row->getOperator()."');\n";
+                $ret .= "   ChangeOperators('".$this->form_name."','$i','".$row->getOperator()."');\n";
             }
         }
-        echo '
+        $ret .= '
             </script>';
+        return $ret;
     }
 }
 

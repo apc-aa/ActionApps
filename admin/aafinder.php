@@ -482,7 +482,7 @@ if (strlen($findtext)) {
             $manager_settings['show'] = MGR_ITEMS;
             $manager = new AA_Manager('aafindaliases'.AA::$module_id, $manager_settings);
             $manager->performActions();
-            $manager->display($zids);
+            echo $manager->getManagerCode($zids);
         }
     }
 

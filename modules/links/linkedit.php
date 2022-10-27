@@ -388,8 +388,8 @@ echo '
      echo '<div style="padding: 0 20px 10px;">'. _m('<!--NewPublicLinkText-->'). '</div>';
  }
 
-PrintArray($r_err);
-PrintArray($r_msg);
+echo GetPrintArray($r_err);
+echo GetPrintArray($r_msg);
 unset($r_err);
 unset($r_msg);
 

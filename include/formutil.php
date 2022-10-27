@@ -2525,10 +2525,10 @@ function PrintHelp( $txt ) {
  * @param string $id
  */
 function FrmChBoxEasy($name, $checked=true, $add="", $value='', $id='') {
-    echo FrmChBoxEasyCode($name, $checked, $add, $value, $id);
+    echo getFrmChBoxEasy($name, $checked, $add, $value, $id);
 }
 
-/** FrmChBoxEasyCode function
+/** getFrmChBoxEasy function
  * @param        $name
  * @param bool   $checked
  * @param string $add
@@ -2536,7 +2536,7 @@ function FrmChBoxEasy($name, $checked=true, $add="", $value='', $id='') {
  * @param string $id
  * @return string
  */
-function FrmChBoxEasyCode($name, $checked=true, $add="", $value='', $id='') {
+function getFrmChBoxEasy($name, $checked=true, $add="", $value='', $id=''): string {
   $name  = safe($name);
   $value = safe($value); // $add=safe($add); NO!!
 

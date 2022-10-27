@@ -85,8 +85,8 @@ echo '
 <body id="body_white_color">
  <H1><B>'. _m('Category Edit') .'</B></H1>';
 
-PrintArray($r_err);
-PrintArray($r_msg);
+echo GetPrintArray($r_err);
+echo GetPrintArray($r_msg);
 
 echo '<form name=f method=post action="catedit2.php">';
     FrmTabCaption(_m('Category') . getFrmMoreHelp(get_help_url(AA_LINKS_HELP_LINK, "formular-kategorie"),

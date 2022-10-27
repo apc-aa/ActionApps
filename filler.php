@@ -158,7 +158,7 @@ function SendErrorPage(array $txt) {
     if ( !$_REQUEST["err_url"] ) {
         HtmlPageBegin();
         echo "</head><body>";
-        PrintArray($txt);
+        echo GetPrintArray($txt);
         echo "</body></html>";
     } else {
         if (!$_REQUEST["use_post2shtml"]) {

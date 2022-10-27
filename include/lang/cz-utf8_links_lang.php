@@ -1236,7 +1236,7 @@ $_m["Stored search name"]
  = "Jméno filtru";
 
 // include/searchbar.class.php, row 621
-$_m["You have the permission to add stored search globaly. Do you want to add this query as global (common to all slice users)?"]
+$_m["You have the permission to add stored search globally. Do you want to add this query as global (common to all slice users)?"]
  = "Uložit globálně? Filtr můžete uložit tak, že bude viditelný pro všechny uživatele tohoto webíku - tedy globálně [ OK ], či pouze jako váš osobní filtr [ Storno ]. Má-li být filtr globální - klikněte na OK, má-li být váš osobní - klikněte na Storno (popř. Cancel).";
 
 // include/searchbar.class.php, row 621

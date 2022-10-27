@@ -4642,7 +4642,7 @@ $_m["Stored search name"]
  = "";
 
 // include/searchbar.class.php, row 621
-$_m["You have the permission to add stored search globaly. Do you want to add this query as global (common to all slice users)?"]
+$_m["You have the permission to add stored search globally. Do you want to add this query as global (common to all slice users)?"]
  = "";
 
 // include/searchbar.class.php, row 621
