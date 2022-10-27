@@ -597,7 +597,7 @@ class AA_Item {
      */
     function text2Html($txt, $flag): string {
         if ($flag & FLAG_HTML) {
-            return $txt;
+            return (string)$txt;
         }
         // converts plain text to basic html
         return (strpos($txt, '&') === false) ? nl2br(safe($txt)) : nl2br(preg_replace('/&amp;#(\d+);/', "&#\\1;", safe($txt)));
