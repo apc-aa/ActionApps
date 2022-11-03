@@ -29,11 +29,6 @@
 
 const AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
-require_once __DIR__ . "/../include/varset.php";
-require_once __DIR__ . "/../include/formutil.php";
-require_once __DIR__ . "/../include/item.php";
-require_once __DIR__ . "/../include/actions.php";
-require_once __DIR__."/../central/include/actionapps.class.php";
 
 if ( !IsSuperadmin() ) {
     MsgPage(StateUrl(self_base())."index.php3", _m("You do not have permission to manage ActionApps logs"));
@@ -67,11 +62,7 @@ $manager_settings['itemview']['format']['odd_row_format'] = '
                                               <td>_#USER____</td>
                                            </tr>';
 
-$manager = new AA_Manager('searchlog', $manager_settings);
-$manager->performActions();
+$apage = new AA_Adminpageutil('aaadmin', 'searchlog');
+$apage->setTitle(_m("View SearchLog"));
+$apage->printWithManager(new AA_Manager('searchlog', $manager_settings), false);
 
-$set  = $manager->getSet();
-$zids = AA::Metabase()->queryZids(['table'=>'searchlog'], $set);
-
-$manager->displayPage($zids, 'aaadmin', 'searchlog');
-page_close();

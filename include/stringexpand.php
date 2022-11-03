@@ -43,7 +43,7 @@ require_once __DIR__ . "/perm_core.php";    // needed for GetAuthData();
 /**
  * Class AA_Aliasfunc for storing functions like {_:Message_box:Update successfull:green}
  */
-class AA_Aliasfunc extends AA_Object {
+class AA_Aliasfunc extends AA_Object implements \AA\Util\NamedInterface {
 
     /**
      * @var string
@@ -91,6 +91,21 @@ class AA_Aliasfunc extends AA_Object {
 
     // static function factoryFromForm($oowner, $otype=null)        ... could be redefined here, but we use the standard one from AA_Object
     // static function getForm($oid=null, $owner=null, $otype=null) ... could be redefined here, but we use the standard one from AA_Object
+
+    /**
+     * @inheritDoc
+     * needed as title to Alias manager page /modules/site/aliases.php
+     */
+    public static function name(): string {
+        return _m('Aliases');
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public static function description(): string {
+        return '';
+    }
 }
 
 

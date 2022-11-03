@@ -610,17 +610,17 @@ class AA_Exportsetings extends AA_Object {
      *  could be changed in child classes
      * @param AA\Util\Searchfields $fields
      * @param $aliases
-     * @param $links
+     * @param $buttons
      * @return string
      */
-    protected static function getManagerRowHtml($fields, $aliases, $links) {
+    protected static function getManagerRowHtml($fields, $aliases, $buttons) {
         return '
             <tr>
               <td style="white-space:nowrap;">'.
-            a_href($links['Edit'], _m('Edit'), 'aa-button-edit').' '.
+            $buttons['Edit'].' '.
             a_href(get_aa_url('export.php', ['id=_#AA_ID___'], false), _m('Export'), 'aa-button-show') . ' ' .
-            a_href($links['Delete'], _m('Delete'), 'aa-button-delete', ['onclick'=>"return confirm('". _m("Do you really want to delete this object?"). "')"]).' '.
-            '</td>          
+            $buttons['Delete'].' 
+            </td>          
               <td>'.join("</td>\n<td>", array_keys($aliases)).'</td>
             </tr>
             ';

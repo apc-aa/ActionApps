@@ -1291,7 +1291,8 @@ class AA_Metabase {
                 'fields'               => $search_fields,
                 'aliases'              => $aliases,
                 //    static class method               , first parameter to the method
-                'get_content_funct'    => [['AA_Metabase', 'getContent'], ['table'=>$tablename]]
+                'get_content_funct'    => [['AA_Metabase', 'getContent'], ['table'=>$tablename]],
+                'query_funct'          => [[AA::Metabase(), 'queryZids'], ['table'=>$tablename]]
             ],
             'actions'   => $actions,
             'switches'  => $switches,

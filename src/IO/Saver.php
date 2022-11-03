@@ -81,7 +81,7 @@ class Saver implements AA\Later\LaterInterface {
      * @param string                         $id_mode
      * @param string                         $error_mode
      */
-    function __construct($grabber, $transformations = null, $slice_id = null, $store_mode = '', $id_mode = '', $error_mode = '') {
+    function __construct(AA\IO\Grabber\AbstractGrabber $grabber, $transformations = null, $slice_id = null, $store_mode = '', $id_mode = '', $error_mode = '') {
         $this->grabber         = $grabber;
         $this->transformations = is_array($transformations) ? $transformations : [];
         $this->slice_id        = $slice_id;
@@ -183,7 +183,7 @@ class Saver implements AA\Later\LaterInterface {
                             $condval = $content4id->getValue($fld);
                             if (!strlen(trim($condval))) {
                                 $err_count++;
-                                $this->message("AA\IO\Saver->run(): key condition empty for $fld");
+                                $this->message(['err'=>"AA\IO\Saver->run(): key condition empty for $fld in ". print_r($source_content4id->getContent(),true)]);
                                 continue 3; // another item
                             }
 
@@ -227,13 +227,13 @@ class Saver implements AA\Later\LaterInterface {
             if (($store_mode == 'overwrite') OR (substr($store_mode, 0, 6) == 'insert')) {
                 if (!$content4id->complete4Insert($this->error_mode)) {
                     $err_count++;
-                    $this->message("AA\IO\Saver->run(): complete4Insert failed: " . ItemContent::lastErrMsg());
+                    $this->message(['err'=>"AA\IO\Saver->run(): complete4Insert failed: " . ItemContent::lastErrMsg()]);
                     continue;
                 }
             } else { // @todo do validation for updates
                 if (!$content4id->validate4Update()) {
                     $err_count++;
-                    $this->message("AA\IO\Saver->run(): validate4Update failed: " . ItemContent::lastErrMsg());
+                    $this->message(['err'=>"AA\IO\Saver->run(): validate4Update failed: " . ItemContent::lastErrMsg()]);
                     continue;
                 }
             }
@@ -246,7 +246,7 @@ class Saver implements AA\Later\LaterInterface {
                 if (!($new_item_id = $content4id->storeItem($store_mode))) {     // invalidatecache, feed
                     // AA\IO\Saver->run(): storeItem failed or skiped duplicate:
                     $err_count++;
-                    $this->message('AA\IO\Saver->run(): storeItem failed or skipped duplicate: '. ItemContent::lastErrMsg());
+                    $this->message(['err'=>'AA\IO\Saver->run(): storeItem failed or skipped duplicate: '. ItemContent::lastErrMsg()]);
                 } else {
                     // @todo better check of new ids
                     if ($store_mode == 'insert') {
@@ -301,9 +301,15 @@ class Saver implements AA\Later\LaterInterface {
     }
 
     /** overrides the report from the trait - we are adding the Grabber report as well
+     * @param string $type
      * @return string - messages in table
      */
-    public function report(): string {
-        return $this->traitreport() . $this->grabber->report();
+    public function report(string $type='html'): string {
+        return $this->traitreport($type) . $this->grabber->report($type);
+    }
+
+    /** loads all the data based on grabber setting and return it */
+    public function getSources(): array {
+        return $this->grabber->getSources();
     }
 }

@@ -229,7 +229,7 @@ class FormrowWidget extends Widget {
  *  The code could be a bit confusing since this class manages forms, but the
  *  forms are also manageable as form - that's why it must implement some
  *  AA_Object's methods */
-class AA_Form extends AA_Object {
+class AA_Form extends AA_Object implements \AA\Util\NamedInterface {
 
     /** @var AA_Formrow[] */
     protected $rows = [];
@@ -250,6 +250,21 @@ class AA_Form extends AA_Object {
             'rows'        => new AA_Property( 'rows',        _m("Rows"),         'AA_Formrow', true, true),
             'object_type' => new AA_Property( 'object_type', _m("Object Type"),  'text', false, true)
         ];
+    }
+
+    /**
+     * @inheritDoc
+     * needed as title to Alias manager page /modules/site/aliases.php
+     */
+    public static function name(): string {
+        return _m('Forms');
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public static function description(): string {
+        return '';
     }
 
     // add default property's row(s)
@@ -291,9 +306,7 @@ class AA_Form extends AA_Object {
             // update or insert
             $object = call_user_func_array([$this->object_type, 'factoryFromForm'], [$this->object_owner, $this->object_type]);
             // @todo check permissions, validation, $store_mode state (see readFromForm)
-
             $object->save();
-
             return AA_Form::SAVED;
         }
         return AA_Form::PREPARED;

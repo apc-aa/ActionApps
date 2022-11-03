@@ -139,6 +139,19 @@ class JsonLD extends AbstractGrabber
         return $url;
     }
 
+    /** loads all the data based on grabber setting and return it */
+    public function getSources(): array {
+        $ret = [];
+        $next_url = $this->file;
+        while ($next_url) {
+            $data = $this->loadData($next_url);
+            $next_url = $this->nextPage(json_decode($data, true));
+            $ret[] = $data;
+        }
+        return $ret;
+    }
+
+
     /** Possibly preparation of grabber - it is called directly before getItem()
      *  method is called - it means "we are going really to grab the data
      * @throws Exception
@@ -146,15 +159,12 @@ class JsonLD extends AbstractGrabber
     function prepare() {
         $this->_items = [];
 
-        $next_url = $this->file;
-
-        while ($next_url) {
-            $data = $this->loadData($next_url);
-            $json = json_decode($data, true);
+        $data = $this->getSources();
+        foreach ($data as $chunk) {
+            $json = json_decode($chunk, true);
             if (is_array($json['hydra:member'])) {
                 $this->_items =  array_merge($this->_items, $json['hydra:member']);
             }
-            $next_url = $this->nextPage($json);
         }
         
             //    [hydra:view] => Array

@@ -104,6 +104,10 @@ class CSV extends AbstractGrabber
         return $properties;
     }
 
+    /** loads all the data based on grabber setting and return it */
+    public function getSources(): array {
+        return [$this->loadData($this->file, $this->direct_input, '', $this->source_encoding)];
+    }
 
     /** Possibly preparation of grabber - it is called directly before getItem()
      *  method is called - it means "we are going really to grab the data
@@ -111,7 +115,7 @@ class CSV extends AbstractGrabber
     function prepare() {
         $this->_items    = [];
         $this->_colnames = [];
-        $data = $this->loadData($this->file, $this->direct_input, '', $this->source_encoding);
+        $data = $this->getSources();
 
         // fgetcsv works on streams - we have to use stream (we do not want to use str_getcsv() - it is hard to work with \n inside fields)
         $stream = fopen('php://memory', 'r+');

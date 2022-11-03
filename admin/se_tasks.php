@@ -26,35 +26,18 @@
 
 const AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
-require_once __DIR__ . "/../include/formutil.php";
-require_once __DIR__ . "/../include/varset.php";
-require_once __DIR__ . "/../include/item.php";     // GetAliasesFromField funct def
+// require_once __DIR__ . "/../include/formutil.php";
+// require_once __DIR__ . "/../include/varset.php";
+// require_once __DIR__ . "/../include/item.php";     // GetAliasesFromField funct def
 require_once __DIR__ . "/../include/msgpage.php";
-
-if ($cancel) {
-    go_url( StateUrl(self_base() . "index.php3"));
-}
 
 if (!IfSlPerm(PS_FORMS)) {
     MsgPageMenu(StateUrl(self_base())."index.php3", _m("You have not permissions to manage tasks"), "admin");
     exit;
 }
 
-$module_id = $slice_id;
-
-$manager_settings = AA_Plannedtask::getManagerConf(get_admin_url('se_tasks.php'));
-$manager_settings['messages']['title'] = _m('Planned tasks');
-$manager_settings['messages']['about'] = _m('You can plan the a task for specified time, or as the reaction to some event. The task will be probably sending e-mails using {mail...} expression, or recounting some fields after update by {recount...}');
-
-$manager = new AA_Manager('task'.$module_id, $manager_settings);
-$manager->performActions();
-
-$aa_set = $manager->getSet();
-//$aa_set->setModules($module_id);
-//$aa_set->addCondition(new AA_Condition('aa_user',       '==', AuthGetUid()));
-
-$zids  = AA_Object::querySet('AA_Plannedtask', $aa_set);
-
-$manager->displayPage($zids, 'sliceadmin', 'tasks');
-page_close();
+$apage = new AA_Adminpageutil('sliceadmin', 'tasks');
+$apage->setTitle(_m('Manage %1', [AA_Plannedtask::name()]));
+$apage->setSubtitle( _m('You can plan the a task for specified time, or as the reaction to some event. The task will be probably sending e-mails using {mail...} expression, or recounting some fields after update by {recount...}') );
+$apage->printWithManager(new AA_Manager('task' . AA::$module_id, AA_Plannedtask::getManagerConf()));
 

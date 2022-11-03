@@ -84,6 +84,7 @@ function GetCommonMenu($profile) {
         "header9"     =>_m("Misc"),
         "te_cron"     => ["label"=>_m("Cron"),            "cond"=>IsSuperadmin(),        "href"=>"admin/tabledit.php?set_tview=cron"],
         "toexecute"   => ["label"=>_m("Scheduled Tasks"), "cond"=>IsSuperadmin(),        "href"=>"admin/aa_toexecute.php"],
+        "tasks"       => ["label"=>_m("Planned Tasks"),   "cond"=>IsSuperadmin(),        "href"=>"admin/aa_tasks.php"],
         "log"         => ["label"=>_m("View Log"),        "cond"=>IsSuperadmin(),        "href"=>"admin/aa_log.php?srchbr_akce=1&srchbr_field%5B0%5D=time&srchbr_oper%5B0%5D=%3E&srchbr_value%5B0%5D=".(time()-8*24*3600)."&srchbr_order%5B0%5D=time&srchbr_order_dir%5B0%5D=on"],
         "searchlog"   => ["label"=>_m("View SearchLog"),  "cond"=>IsSuperadmin(),        "href"=>"admin/aa_searchlog.php"],
         "aafinder"    => ["label"=>_m("AA finder"),       "cond"=>IsSuperadmin(),        "href"=>"admin/aafinder.php"],
@@ -147,10 +148,10 @@ function PrintModuleSelection() {
 
     if ( is_array($g_modules) AND (count($g_modules) > 1) AND ($profile->getProperty('ui_manager', 'top_moduleselection') === false)) {
         // create the modulesOptions content:
-        $modules_cond = (($permitted = GetUserSlices())=='all') ? [] : [['module.id', array_keys($permitted), 'l']];
+        $permitted_slices = GetUserSlices();
+        $modules_cond = ($permitted_slices=='all') ? [] : [['module.id', array_keys($permitted_slices), 'l']];
 
         $mymodules =  DB_AA::select([], 'SELECT LOWER(HEX(module.id)) AS unpackid, module.type, module.deleted, module.name, slice.type AS slice_type FROM `module` LEFT JOIN `slice` ON module.id=slice.id', $modules_cond, ['module.deleted','module.priority','module.name']);
-
 
         $module_types = [
             "Alerts" => [5, _m("Alerts")],
@@ -163,8 +164,17 @@ function PrintModuleSelection() {
             "RM"=> [1, _m("Reader Management Slice")]
         ];
 
-       $modules = [];
-       foreach ($mymodules as $mymodule) {
+        // do not print deleted modules when you ase not admin of the slice or superadmin
+        if($permitted_slices != 'all') {
+            huhl($_SESSION, AuthGetUid(), $GLOBALS['permission_uid'], AA::$perm->getUserPerms($GLOBALS['permission_uid'], "slice"), AA_Perm::ROLES, $GLOBALS['permission_to']);
+            $mymodules = array_filter($mymodules, function ($slice) {
+                huhl($slice['name'], $slice['deleted'],  $slice['unpackid'], IfSlPerm(PS_FIELDS, $slice['unpackid']));
+                return (!$slice['deleted'] OR IfSlPerm(PS_FIELDS, $slice['unpackid']));
+            });
+        }
+
+        $modules = [];
+        foreach ($mymodules as $mymodule) {
             if (($order = $module_types[$mymodule['type']][0]) === 0) {
                 $order = $mymodule['slice_type'] == "ReaderManagement" ? 1 : 0;
             }
@@ -432,10 +442,7 @@ function showSubMenuRows( $aamenuitems, $active ) {
 //                echo "<span class=\"leftmenua\">".$item["label"]."</span>\n";
 //            } elseif (($slice_id || $item["show_always"]) && $item["cond"]) {
             if (($slice_id || $item["show_always"]) && $item["cond"]) {
-                $href = ($item["exact_href"] ?: get_aa_url($item["href"]));
-                if ($slice_id && !$item["no_slice_id"]) {
-                    $href = con_url($href, "slice_id=$slice_id");
-                }
+                $href = ($item["exact_href"] ?: get_aa_url($item["href"],[],!$item["no_slice_id"]));
                 if ($item['js']) {
                     $item['js'] = str_replace("{href}",$href,$item['js']);
                     $item['js'] = str_replace("{exact_href}",$href,$item['js']);

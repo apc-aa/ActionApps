@@ -59,10 +59,16 @@ class AA_Manager extends AA_Storable {
     /** @var AA_Manageractions  */
     var $switches;
 
+    protected $query_funct = [];
+
     var $messages;        // various language messages (title, noitem_msg, about)
     var $itemview;        // itemview object
     var $show;            // what controls show (scroller, searchbar, ...)
     var $bin;             // stores the bin in which we are - string
+
+    /** @var AA_Condition[] */
+    protected $restrict_conds; // restriction
+
     var $module_id;       // for which module is manager used (slice_id, ...)
     var $managed_class;   // name of the class which are managed / edited
     var $_manager_id;     // ID of manager
@@ -96,6 +102,7 @@ class AA_Manager extends AA_Storable {
 
         $this->show        = $settings['show'] ?? MGR_ALL;
         $this->module_id   = $settings['module_id'];
+
         $this->_manager_id = $manager_id;
 
         if ( $settings['actions'] ) {      // define actions, if we have to
@@ -129,6 +136,7 @@ class AA_Manager extends AA_Storable {
 
         $this->bin           = $settings['bin'] ?? 'app';
         $this->managed_class = $settings['managed_class'] ?? '';
+        $this->query_funct   = $settings['itemview']['query_funct'] ?? [];
 
         // create page scroller -----------------------------------------------
         // could be redefined by view (see ['itemview']['manager_vid'])
@@ -161,12 +169,15 @@ class AA_Manager extends AA_Storable {
         }
         // user switched to another page with different manager?
         if ($r_state["manager_id"] != $this->_manager_id) {
-            // we are here for the first time or we are switching to another slice
+            // we are here for the first time, or we are switching to another slice
             unset($r_state['manager']);
-            // set default admin interface settings from user's profile
 
-            $profile = AA_Profile::getProfile(AuthGetUid(), $this->module_id); // current user settings
-            $this->setFromProfile($profile);
+            // we use profile just for main Item manager
+            if ($settings['use_profile']) {
+                // set default admin interface settings from user's profile
+                $profile = AA_Profile::getProfile(AuthGetUid(), $this->module_id); // current user settings
+                $this->setFromProfile($profile);
+            }
         } elseif ($r_state['manager']) {        // do not set state for the first time calling
             $this->setFromState($r_state['manager']);
         }
@@ -223,12 +234,18 @@ class AA_Manager extends AA_Storable {
         return $this->bin;
     }
 
+    /** setRestrictionConds */
+    function setRestrictionConds(array $conds) {
+        //huhl($conds);
+        $this->restrict_conds = $conds;
+        //huhl($this->restrict_conds);
+    }
+
     /** setFromProfile function
      *  initial manager setting from user's profile
      * @param AA_Profile $profile
      */
     function setFromProfile($profile) {
-
         // set default admin interface settings from user's profile
 
         // get default number of listed items from user's profile
@@ -256,6 +273,14 @@ class AA_Manager extends AA_Storable {
         if ($BIN_CONDS[$this->bin]) {
             $set->setBins($BIN_CONDS[$this->bin]);
         }
+        //huhl($this->restrict_conds);
+        if ($this->restrict_conds) {
+            foreach ($this->restrict_conds as $cond) {
+                huhl($cond);
+                $set->addCondition($cond);
+            }
+        }
+        //huhl($this->restrict_conds, $set, $this);
         return $set;
     }
 
@@ -393,10 +418,10 @@ class AA_Manager extends AA_Storable {
         $item_zids = (new zids())->setFromItemArr($chb); // in some managers we use 'x' before the item id - remove it
 
         // new approach uses AA_Manageractions
-        if (is_object($this->actions)) {
+        if ($akce AND is_object($this->actions)) {
             $actions   = $this->actions;
             $action2do = $actions->getAction($akce);
-            if ( $akce AND $action2do AND $action2do->isPerm4Perform($this, $item_zids, $_REQUEST['akce_param'])) {
+            if ( $action2do AND $action2do->isPerm4Perform($this, $item_zids, $_REQUEST['akce_param'])) {
                 $this->msg[] = $action2do->perform($this, $item_zids, $_REQUEST['akce_param']);
             }
         }
@@ -424,6 +449,33 @@ class AA_Manager extends AA_Storable {
             }
         }
 
+
+        // for managed class
+        if ($this->managed_class) {
+            if (($_GET['delete'] == 1) AND is_long_id($_GET['id'])) {
+                if ($obj = AA_Object::load($_GET['id'], $this->managed_class)) {
+                    $obj->delete();
+                }
+                unset($_GET['id']);  // to not try to display the deleted item later in displayPage()
+            }
+
+            if ($_POST['aa']) {
+                $form = AA_Form::factoryForm($this->managed_class, $_GET['id'], $this->module_id);
+
+                $err        = [];          // error array (Init - just for initializing variable
+                $form_state = $form->process($_POST['aa']);
+
+                if ($form_state == AA_Form::SAVED) {
+                    // go_url($ret_url);
+                }
+            }
+        }
+    }
+
+    function getZids(AA_Set $set): zids {
+        return is_array($this->query_funct) ?
+            call_user_func_array($this->query_funct[0], [$this->query_funct[1], $set]) :
+            call_user_func_array($this->query_funct, [$set]);
     }
 
     /** Displays the manager. This function joins together some common method
@@ -454,6 +506,7 @@ class AA_Manager extends AA_Storable {
         return $ret;
     }
 
+    /** @deprecated - use getDisplayPage */
     function displayPage($zids, $menu_top, $menu_left, $css_add='') {
         global $r_state;
 
@@ -465,7 +518,6 @@ class AA_Manager extends AA_Storable {
         if ($css_add) {
             $apage->addRequire($css_add);
         }
-
 
         if ($_GET['id'] AND $this->managed_class) {
             //huhl('sss1',$this->module_id);
@@ -494,6 +546,38 @@ class AA_Manager extends AA_Storable {
         $r_state['manager']    = $this->getState();
         $r_state['manager_id'] = $this->_manager_id;
     }
+
+
+    function getDisplayPage($zids): string {
+        global $r_state;
+        $html = '';
+
+        if (($_GET['id'] OR $_GET['add']) AND $this->managed_class) {
+            //huhl('sss1',$this->module_id);
+            $form         = AA_Form::factoryForm($this->managed_class, $_GET['id'], $this->module_id);
+            $form_buttons = [
+                "update",
+                "cancel",
+            ];
+
+            $html = '<form name="f" method="post" action="'. StateUrl() .'">';
+            $html .= getFrmTabCaption(_m("Object Edit"), $form_buttons);
+            $html .= '<tr><td colspan="2">';
+            $html .= $form->getObjectEditHtml();
+            $html .= '</td></tr>';
+
+            $html .= getFrmTabEnd($form_buttons);
+            $html .= '</form>';
+
+            // echo $form->getAjaxHtml('xxx'); // ($_GET['ret_code']);
+        } else {
+            $html = $this->getManagerCode($zids);
+        }
+        $r_state['manager']    = $this->getState();
+        $r_state['manager_id'] = $this->_manager_id;
+        return $html;
+    }
+
 
     /** printHtmlPageBegin function
      * Print HTML start page tags (html begin, encoding, style sheet, title

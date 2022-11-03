@@ -46,7 +46,7 @@ use zids;
 
 /** Task executed at planed time
  */
-class AA_Plannedtask extends AA_Object implements LaterInterface
+class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedInterface
 {
 
     protected $task = '';
@@ -79,6 +79,21 @@ class AA_Plannedtask extends AA_Object implements LaterInterface
     // static function getForm($oid=null, $owner=null, $otype=null) ... could be redefined here, but we use the standard one from AA_Object
 
 
+    /**
+     * @inheritDoc
+     * needed as title to Alias manager page /modules/site/aliases.php
+     */
+    public static function name(): string {
+        return _m('Planned tasks');
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public static function description(): string {
+        return '';
+    }
+
     /** Manager top HTML  */
     protected static function getManagerTopHtml($fields)
     {
@@ -92,14 +107,14 @@ class AA_Plannedtask extends AA_Object implements LaterInterface
     }
 
     /** Manager row HTML  */
-    protected static function getManagerRowHtml($fields, $aliases, $links)
+    protected static function getManagerRowHtml($fields, $aliases, $buttons)
     {
         return '
             <tr>
               <td style="white-space:nowrap;">' .
-            a_href($links['Edit'], _m('Edit'), 'aa-button-edit') . ' ' .
+            $buttons['Edit'].' '.
             a_href(get_admin_url('aa_log.php?&srchbr_akce=1&srchbr_field%5B0%5D=selector&srchbr_oper%5B0%5D==&srchbr_value%5B0%5D=AA_Plannedtask:_#AA_ID___&srchbr_order%5B0%5D=time&srchbr_order_dir%5B0%5D=on'), _m('Log'), 'aa-button-show') . ' ' .
-            a_href($links['Delete'], _m('Delete'), 'aa-button-delete') . '</td>
+            $buttons['Delete'].' </td>
               <td>_#AA_NAME_</td>
               <td>_#EVENT___</td>
               <td>_#TIME____<br>{ifeq:{_#SHIFT___}:::0::+_#1s}</td>

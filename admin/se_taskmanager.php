@@ -31,11 +31,7 @@ use AA\Later\Toexecute;
 
 const AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
-require_once __DIR__ . "/../include/varset.php";
-require_once __DIR__ . "/../include/formutil.php";
-require_once __DIR__ . "/../include/item.php";
 require_once __DIR__ . "/../include/actions.php";
-require_once __DIR__."/../central/include/actionapps.class.php";
 
 if ( !IsSuperadmin() ) {
     MsgPage(StateUrl(self_base())."index.php3", _m("You do not have permission to manage ActionApps tasks"));
@@ -71,15 +67,17 @@ if ( !IsSuperadmin() ) {
 // Common manager settings for Tasks 
 $manager_settings = GetToexecuteManagerSettings();
 
+not finished
+
 $manager = new AA_Manager('task'.AuthGetUid(),  $manager_settings);
-$manager->performActions();
+$manager->setRestrictionConds([
+    new AA_Condition('execute_after', '==', Toexecute::TOEXECUTE_USER_TASK_TIME),
+    new AA_Condition('aa_user',       '==', AuthGetUid())
+    ]);
 
-$set  = $manager->getSet();
-$set->addCondition(new AA_Condition('execute_after', '==', Toexecute::TOEXECUTE_USER_TASK_TIME));
-$set->addCondition(new AA_Condition('aa_user',       '==', AuthGetUid()));
-$zids = AA::Metabase()->queryZids(['table'=>'toexecute'], $set);
+$apage = new AA_Adminpageutil('sliceadmin', 'taskmanager');
+$apage->setTitle(_m('Manage %1', [_m("Scheduled Tasks")]));
+$apage->printWithManager(new AA_Manager('task'.AuthGetUid(), $manager_settings), false);
 
-$manager->displayPage($zids, 'sliceadmin', 'taskmanager');
-page_close();
 
 

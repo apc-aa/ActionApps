@@ -29,21 +29,12 @@
 
 const AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
-require_once __DIR__ . "/../include/formutil.php";
-require_once __DIR__ . "/../include/varset.php";
-require_once __DIR__ . "/../include/item.php";     // GetAliasesFromField funct def
 require_once __DIR__ . "/../include/msgpage.php";
-
-if ($cancel) {
-    go_url( StateUrl(self_base() . "index.php3"));
-}
 
 if (!IfSlPerm(PS_FORMS)) {
     MsgPageMenu(StateUrl(self_base())."index.php3", _m("You have not permissions to manage forms"), "admin");
     exit;
 }
-
-$module_id = $slice_id;
 
 //$actions   = new AA_Manageractions;
 //$actions->addAction(new AA_Manageraction_Taskmanager_Execute('ExecuteTaskAction'));
@@ -51,32 +42,8 @@ $module_id = $slice_id;
 
 //$switches  = new AA_Manageractions;  // we do not need switches here
 
-$manager_settings = AA_Form::getManagerConf(get_admin_url('se_forms.php'));
-//$manager_settings['itemview']['aliases'] = GetPollsAliases();
+$apage = new AA_Adminpageutil('sliceadmin', 'forms');
+// $apage->setTitle( _m("Admin - Object Edit") );
 
-//$manager_settings['itemview']['format']['compact_top'] =
-//                                         '<table border="0" cellpadding="5" cellspacing="0">
-//                                            <tbody><tr>
-//                                              <th width="30">&nbsp;</th>
-//                                              <th>name</th>
-//                                              <th>id</th>
-//                                            </tr>';
-//$manager_settings['itemview']['format']['odd_row_format'] =
-//                                           '<tr>
-//                                              <td width="30"><input name="chb[x_#ID______]" value="" type="checkbox"></td>
-//                                              <td>_#NAME____</td>
-//                                              <td>_#ID______</td>
-//                                            </tr>';
-
-$manager = new AA_Manager('form'.$module_id, $manager_settings);
-$manager->performActions();
-
-$aa_set = $manager->getSet();
-$aa_set->setModules($module_id);
-//$aa_set->addCondition(new AA_Condition('aa_user',       '==', AuthGetUid()));
-
-$zids  = AA_Object::querySet('AA_Form', $aa_set);
-
-$manager->displayPage($zids, 'sliceadmin', 'forms');
-page_close();
-
+$apage->setTitle(_m('Manage %1', [AA_Form::name()]));
+$apage->printWithManager(new AA_Manager('form' . AA::$module_id, AA_Form::getManagerConf()));

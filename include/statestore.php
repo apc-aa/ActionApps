@@ -221,6 +221,7 @@ class AA_Storable extends AA_Serializable {
         // first - deal with versioning
         // convert state to last version
         $object_version = max($state['aa_version'], 1);
+
         if ( static::version() > $object_version) {
             // if some object uses version > 1,then method convertState()
             // should be defined
@@ -629,7 +630,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
    ///** query function
    // * Finds object IDs for objects given by conditions
    // *
-   // *   @param string        $type   - object type
+   // *   @param string|array  $type   - object type - could by in array ['class'=>$type] - for compatibility with AA_Manager query_funct
    // *   @param $set
    // *   @param zids          $restrict_zids - use it if you want to choose only from a set of ids
    // *   @return A zids object with a list of the ids that match the query.
@@ -640,6 +641,8 @@ class AA_Object extends AA_Storable implements AA_iEditable {
    //    // @todo !!! - rewrite it.
    //    // do the same as in queryZids for any object
     static function querySet($type, $set, $restrict_zids=null) {
+
+        $type = is_array($type) ? $type['class'] : $type;
 
         $owners = $set->getModules();
         $conds  = $set->getConds();
@@ -675,7 +678,14 @@ class AA_Object extends AA_Storable implements AA_iEditable {
             $cond_flds   = [];
             $store       = '';
             foreach ( $cond as $fid => $v ) {
-                if ( $GLOBALS['CONDS_NOT_FIELD_NAMES'][$fid] ) {
+                if ( AA_Condition::CONDS_NOT_FIELD_NAMES[$fid] ) {
+                    if ($fid == 'all_fields') {
+                        $cond_flds[] = $fid;
+                        $store = 'object_text';
+                    } elseif ($fid == 'all_fields_numeric') {
+                        $cond_flds[] = $fid;
+                        $store = 'object_integer';
+                    }
                     continue;      // it is not field_id parameters - skip it for now
                 }
 
@@ -685,21 +695,24 @@ class AA_Object extends AA_Storable implements AA_iEditable {
                     continue;
                 }
 
-                $field_store = AA_Property::storageType($field->getType());
-                if ( empty($field_store) ) {
+                $store = AA_Property::storageType($field->getType());
+                if ( empty($store) ) {
                     AA::$debug&2 && AA::$dbg->log("skipping $fid in conds[]: no storage table (is it object?)");
                     continue;
                 }
                 // will not work with one condition for columns of different types (text/int/...) - which is right, I think.
-                $store = $field_store;
                 $cond_flds[] = $fid;
             }
             if ( !empty($cond_flds) ) {
                 $tbl = (($store == 'object_text') ? 't' : (($store == 'object_integer') ? 'i' : 'f')) . $tables_counter[$store]++;
 
-                // fill arrays to be able construct select command
+                // fill arrays to be able to construct select command
                 $tables[$tbl]['cond'] = (new AA_Dbcondition("$tbl.value", $cond['operator'], $cond['value']))->getWhereExp();
-                $tables[$tbl]['join'] = "LEFT JOIN $store as $tbl ON ($tbl.object_id=t0.object_id AND ". Cvarset::sqlin("$tbl.property", $cond_flds) .')'; // OR $tbl.property is NULL))"; - like in content
+                if ( in_array('all_fields', $cond_flds) OR in_array('all_fields_numeric', $cond_flds) ) {
+                    $tables[$tbl]['join'] = "LEFT JOIN $store as $tbl ON ($tbl.object_id=t0.object_id)";
+                } else {
+                    $tables[$tbl]['join'] = "LEFT JOIN $store as $tbl ON ($tbl.object_id=t0.object_id AND " . Cvarset::sqlin("$tbl.property", $cond_flds) . ')'; // OR $tbl.property is NULL))"; - like in content
+                }
                 if (count($cond_flds) == 1) {
                     // mark this field as sortable (store without apostrofs)
                     $sortable[ reset($cond_flds) ] = $tbl;
@@ -801,7 +814,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
      * @param $properties
      * @return \AA\Util\Searchfields
      */
-    protected static function getSearchfields($properties) {
+    protected static function getSearchfields($properties): \AA\Util\Searchfields {
         $i   = 0;
         $searchfields = new AA\Util\Searchfields();
         $props = array_merge(['aa_name' => self::getPropertyObject('aa_name')], $properties);
@@ -886,16 +899,15 @@ class AA_Object extends AA_Storable implements AA_iEditable {
      *  could be changed in child classes
      * @param AA\Util\Searchfields $fields
      * @param $aliases
-     * @param $links
+     * @param $buttons
      * @return string
      */
-    protected static function getManagerRowHtml($fields, $aliases, $links) {
+    protected static function getManagerRowHtml($fields, $aliases, $buttons) {
         return '
             <tr>
               <td style="white-space:nowrap;">'.
-                   a_href($links['Edit'], _m('Edit'), 'aa-button-edit').' '.
-                   a_href($links['Delete'], _m('Delete'), 'aa-button-delete', ['onclick'=>"return confirm('". _m("Do you really want to delete this object?"). "')"]).' '.
-//                   a_href($links['Run'], _m('Export'), 'aa-button-show').
+                   $buttons['Edit'].' '.
+                   $buttons['Delete'].' '.
              '</td>          
               <td>'.join("</td>\n<td>", array_keys($aliases)).'</td>
             </tr>
@@ -904,27 +916,31 @@ class AA_Object extends AA_Storable implements AA_iEditable {
 
     /** generate manager from object structure
      * @static
-     * @param string                 $manager_url
+     * @param string                 $manager_url - empty in most cases - editing on the same url
      * @param AA_Manageractions? $actions
      * @param AA_Manageractions? $switches
      * @return array
      */
-    static function getManagerConf($manager_url, $actions=null, $switches=null) {
+    static function getManagerConf($manager_url='', $actions=null, $switches=null) {
         $object_class  = get_called_class();
         $aliases       = new AA_Aliases(new AA_Aliasgenerator_Object(static::class));
 
         $properties    = static::getClassProperties();
         $search_fields = AA_Object::getSearchfields($properties);
-        $new_link      = a_href('', GetAAImage('icon_new.gif', _m('new'), 17, 17).' '. _m('Add'));
+        $new_link      = a_href(StateUrl("$manager_url?add=1"), GetAAImage('icon_new.gif', _m('new'), 17, 17).' '. _m('Add'));
 
-        $links  = [
-                   'Edit'   => get_url('', ['id=_#AA_ID___'], true),
-                   'Delete' => get_url('', ['id=_#AA_ID___', 'delete' => '1'], true),
+        $buttons  = [
+                   'Edit'   => a_href(get_url($manager_url, ['id=_#AA_ID___', 'module_id=_#AA_OWNER'], true), _m('Edit'), 'aa-button-edit'),
+                   'Delete' => a_href(get_url($manager_url, ['id=_#AA_ID___', 'module_id=_#AA_OWNER', 'delete' => '1'], true), _m('Delete'), 'aa-button-delete', ['onclick' =>"return confirm('". _m("Do you really want to delete this object?"). "')"])
 //                   'Run'=>get_aa_url('export.php', ['id=_#AA_ID___'], false)
         ];
 
+        // MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS | MGR_SB_ALLTEXT | MGR_SB_ALLNUM
+        $show              = $search_fields->containNumeric() ? (MGR_ALL & ~MGR_SB_BOOKMARKS) : (MGR_ALL & ~MGR_SB_BOOKMARKS & ~MGR_SB_ALLNUM);
+
         $manager_settings = [
-             'show'      =>  MGR_ALL & ~MGR_SB_BOOKMARKS,    // MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS | MGR_SB_ALLTEXT | MGR_SB_ALLNUM
+             'module_id' => AA::$module_id,
+             'show'      =>  $show,
              'searchbar' => [
                  'fields'               => $search_fields,
                  'search_row_count_min' => 1,
@@ -939,31 +955,28 @@ class AA_Object extends AA_Storable implements AA_iEditable {
              'itemview'  => [
                  'manager_vid'          => false,    // $slice_info['manager_vid'],      // id of view which controls the design
                  'format'               => [    // optionaly to manager_vid you can set format array
-                     'compact_top'      => '<div class="aa-table aa-items-manager">'. static::getManagerTopHtml($search_fields),
-                     'category_sort'    => false,
-                     'category_format'  => "",
-                     'category_top'     => "",
-                     'category_bottom'  => "",
-                     'even_odd_differ'  => false,
-                     'even_row_format'  => "",
-//                   'odd_row_format'   => static::getManagerRowHtml($search_fields, $aliases, array('Edit'=>get_admin_url('oedit.php3', array('module_id=_#AA_OWNER', 'oid=_#AA_ID___', 'otype' => $object_class, 'ret_url' => $manager_url)),'Delete'=>get_admin_url('oedit.php3', array('oid=_#AA_ID___', 'otype' => $object_class, 'ret_url' => $manager_url, 'delete' => '1')))),
-                     'odd_row_format'   => static::getManagerRowHtml($search_fields, $aliases->getArray(), $links),
-                     'compact_remove'   => "",
-                     'compact_bottom'   => "</table></div><br>". $new_link,
-                     'noitem_msg'       => _m('No object found'). '<br>'. $new_link
+                                                'compact_top'      => '<div class="aa-table aa-items-manager">'. static::getManagerTopHtml($search_fields),
+                                                'category_sort'    => false,
+                                                'category_format'  => "",
+                                                'category_top'     => "",
+                                                'category_bottom'  => "",
+                                                'even_odd_differ'  => false,
+                                                'even_row_format'  => "",
+                                                'odd_row_format'   => static::getManagerRowHtml($search_fields, $aliases->getArray(), $buttons),
+                                                'compact_remove'   => "",
+                                                'compact_bottom'   => "</table></div><br>". $new_link,
+                                                'noitem_msg'       => _m('No object found'). '<br>'. $new_link
                  ],
                  'fields'               => $search_fields,
                  'aliases'              => $aliases,
                                            //    static class method               , first parameter to the method
-                 'get_content_funct'    => [['AA_Object', 'getContent'], ['class'=>$object_class]]
+                 'get_content_funct'    => [['AA_Object', 'getContent'], ['class'=>$object_class]],
+                 'query_funct'          => [['AA_Object', 'querySet'], ['class'=>$object_class]]
              ],
              'actions'   => $actions,
              'switches'  => $switches,
              'managed_class' => static::class,
-             'bin'       => 'app',
-             'messages'  => [
-                 'title'       => _m('Manage %1', [$object_class])
-             ]
+             'bin'       => 'app'
         ];
 
         return $manager_settings;
@@ -982,6 +995,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
 
         // specific part for form
         $object = new $otype;
+
         $object->setNew($content->getId(), $oowner, $content->getName());
 
         // self didn't give us the calling class and we do not have late statis bindings in PHP < 5.3

@@ -29,10 +29,6 @@
 
 const AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../../include/init_page.php";
-require_once __DIR__ . "/../../include/formutil.php";
-require_once __DIR__ . "/../../include/varset.php";
-require_once __DIR__ . "/../../include/item.php";     // GetAliasesFromField funct def
-
 require_once __DIR__ . "/../../include/msgpage.php";
 
 if (!IfSlPerm(PS_MODW_SETTINGS)) {
@@ -40,17 +36,6 @@ if (!IfSlPerm(PS_MODW_SETTINGS)) {
     exit;
 }
 
-$manager_settings = AA_Aliasfunc::getManagerConf(get_aa_url('modules/site/aliases.php'));
-//$manager_settings['searchbar']['default_sort'] =  array( 0 => array('aa_name' => 'a'));
-
-$manager = new AA_Manager('aliases'.$module_id, $manager_settings);
-$manager->performActions();
-
-$aa_set = $manager->getSet();
-$aa_set->setModules($module_id);
-
-$zids  = AA_Object::querySet('AA_Aliasfunc', $aa_set);
-
-$manager->displayPage($zids, 'modadmin', 'aliases');
-page_close();
-
+$apage = new AA_Adminpageutil('modadmin', 'aliases');
+$apage->setTitle(_m('Manage %1', [AA_Aliasfunc::name()]));
+$apage->printWithManager(new AA_Manager('aliasfunc' . AA::$module_id, AA_Aliasfunc::getManagerConf()));

@@ -110,12 +110,17 @@ class XML extends AbstractGrabber
         return $this;
     }
 
+    /** loads all the data based on grabber setting and return it */
+    public function getSources(): array {
+        return [$this->loadData($this->file, $this->direct_input, $this->post_body)];
+    }
+
     /** Possibly preparation of grabber - it is called directly before getItem()
      *  method is called - it means "we are going really to grab the data
      * @throws Exception
      */
     function prepare() {
-        $data = $this->loadData($this->file, $this->direct_input, $this->post_body);
+        $data = $this->getSources();
 
         // remove namespaces (it is pain to work with it in simple XML interface)
         // $data = str_replace(array('<rsp:', '</rsp:'), array('<rsp_', '</rsp_'), $data);

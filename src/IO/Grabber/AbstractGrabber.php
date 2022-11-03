@@ -112,7 +112,7 @@ abstract class AbstractGrabber implements \AA\Util\NamedInterface {
             throw new \Exception('file not loaded: ' . $url);
         }
         $this->message(__CLASS__.' -> '. __FUNCTION__);
-        $this->message("read ". strlen($data). "Bytes of data <br><pre>".safe(substr($data,0,1000))."...</pre>");
+        $this->message("read ". strlen($data). " Bytes of data <br><pre>".safe(substr($data,0,1000))."...</pre>");
 
         if ($source_encoding AND ($source_encoding!='utf-8')) {
             $data = \ConvertCharset::singleton()->Convert($data, $source_encoding, 'utf-8');
@@ -120,6 +120,11 @@ abstract class AbstractGrabber implements \AA\Util\NamedInterface {
         }
 
         return $data;
+    }
+
+    /** loads all the data based on grabber setting and return it */
+    public function getSources(): array {
+        return [];
     }
 
     /** htmlSetting function

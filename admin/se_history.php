@@ -48,8 +48,8 @@ if (!IfSlPerm(PS_HISTORY)) {
 
 //------------------ Actions for History Manager --------------------------------
 
-/** AA_Manageraction_Item_DeleteTrash - Handler for DeleteTrash switch
- *  Delete all items in the trash bin
+/**
+ *
  */
 class AA_Manageraction_History_Apply extends AA_Manageraction {
 
@@ -190,7 +190,11 @@ function GetHistoryContent($zids) {
  * @param string $sort - sort fields (see FAQ)
  * @return zids
  */
-function QueryHistoryZIDs($slice_id, $conds, $sort="") {
+function QueryHistoryZIDs(AA_Set $set): zids {
+
+    $slice_id = $set->getModules()[0];
+    $conds    = $set->getConds();
+    $sort     = $set->getSort();
 
     $HISTORY_FIELDS = GetHistoryFields()->getArrayDeprecated();
 
@@ -208,32 +212,22 @@ function QueryHistoryZIDs($slice_id, $conds, $sort="") {
 }
 
 
-// id of the editted module (id in long form (32-digit hexadecimal number))
-$module_id = $slice_id;
-// module_id is the same as slice_id (slice_id was used before AA introduced
-// modules. Now it is better to use module_id, because in other modules
-// (like Links, ...) it is not so confusing
-
-$p_module_id = q_pack_id($module_id); // packed to 16-digit as stored in database
-$slice       = AA_Slice::getModule($module_id);
-
 $actions   = new AA_Manageractions;
 $actions->addAction(new AA_Manageraction_History_Apply('ApplyHistory'));
 
-
 $manager_settings = [
-     'module_id' => $slice_id,
-     'show'      =>  MGR_ALL, //  & ~MGR_ACTIONS,    // MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS | MGR_SB_ALLTEXT | MGR_SB_ALLNUM
+     'module_id' => AA::$module_id,
+     'show'      =>  MGR_ALL & ~MGR_SB_BOOKMARKS,    // MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS | MGR_SB_ALLTEXT | MGR_SB_ALLNUM
      'searchbar' => [
          'fields'               => GetHistoryFields(),
          'search_row_count_min' => 1,
          'order_row_count_min'  => 1,
          'add_empty_search_row' => true,
-         'function'             => false,  // name of function for aditional action hooked on standard filter action
+             'function'             => false,  // name of function for aditional action hooked on standard filter action
          'default_sort'         =>  [0 => ['time' => 'd']]
      ],
      'scroller'  => [
-         'listlen'              => ($listlen ?: EDIT_ITEM_COUNT)
+         'listlen'              => EDIT_ITEM_COUNT
      ],
      'itemview'  => [
          'manager_vid'          => false,    // $slice_info['manager_vid'],      // id of view which controls the design
@@ -251,11 +245,12 @@ $manager_settings = [
              ',
              'compact_remove'   => '',
              'compact_bottom'   => "</table>",
-             'id'               => $slice_id
+             'id'               => AA::$module_id
          ],
          'fields'               => '',
          'aliases'              => new AA_Aliases(new AA_Aliasgenerator_History()),
-         'get_content_funct'    => 'GetHistoryContent'
+         'get_content_funct'    => 'GetHistoryContent',
+         'query_funct'          => 'QueryHistoryZIDs'
      ],
      'actions'   => $actions,
      'switches'  => [],
@@ -264,15 +259,10 @@ $manager_settings = [
      ]
 ];
 
-$manager = new AA_Manager('history'.$slice_id, $manager_settings);
-$manager->performActions();
+$apage = new AA_Adminpageutil('sliceadmin', 'history');
+$apage->setTitle(_m('ActionApps - History Manager'));
+$apage->printWithManager(new AA_Manager('history'. AA::$module_id, $manager_settings));
 
-$conds = $manager->getConds();
-$sort  = $manager->getSort();
-$zids=QueryHistoryZIDs($slice_id, $conds, $sort);
 
-$manager->displayPage($zids, 'sliceadmin', 'history');
-
-page_close();
 
 

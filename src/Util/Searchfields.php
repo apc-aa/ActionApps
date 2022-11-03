@@ -14,9 +14,16 @@ class Searchfields implements \Iterator, \ArrayAccess, \Countable {
     protected $fields = [];
 
     /**  Valid searchfield properties  */
-    private static function FLDPROPS() {
-        return  ['name', 'field', 'operators', 'table', 'search_pri', 'order_pri', 'opt_group'];
-    }
+    protected const FLDPROPS = [
+        'name'       => true,
+        'field'      => true,
+        'operators'  => true,
+        'table'      => true,
+        'search_pri' => true,
+        'order_pri'  => true,
+        'opt_group'  => true
+    ];
+
 
     /**  add search field to Searchfields
      * @param string $id
@@ -40,7 +47,7 @@ class Searchfields implements \Iterator, \ArrayAccess, \Countable {
             return;
         }
         // copy just existing properties
-        $this->fields[$id] = array_intersect_key($fld, array_flip(self::FLDPROPS()));
+        $this->fields[$id] = array_intersect_key($fld, self::FLDPROPS);
     }
 
     /**
@@ -99,7 +106,6 @@ class Searchfields implements \Iterator, \ArrayAccess, \Countable {
         return array_column($this->fields,'name');
     }
 
-
     /**
      * @param string $type      search | operators
      * @param bool $add_alltext
@@ -140,6 +146,10 @@ class Searchfields implements \Iterator, \ArrayAccess, \Countable {
         return ($type == 'search') ? $search_fields : $search_operators;
     }
 
+    public function containNumeric() {
+        return in_array('numeric', array_column($this->fields,'operators'));
+    }
+
     /**
      * @deprecated
      * @todo - replace all calls with Searfield object
@@ -148,8 +158,6 @@ class Searchfields implements \Iterator, \ArrayAccess, \Countable {
     public function getArrayDeprecated() {
         return $this->fields;
     }
-
-
 
     /** Iterator interface */
     public function rewind()  { reset($this->fields);                        }
@@ -166,4 +174,5 @@ class Searchfields implements \Iterator, \ArrayAccess, \Countable {
     public function offsetExists($offset)      { return isset($this->fields[$offset]); }
     public function offsetUnset($offset)       { unset($this->fields[$offset]);        }
     public function offsetGet($offset)         { return isset($this->fields[$offset]) ? $this->fields[$offset] : null; }
+
 }

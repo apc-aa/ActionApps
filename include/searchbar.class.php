@@ -259,7 +259,7 @@ class AA_Searchbar extends AA_Storable {
         $search_row = [];
         foreach ( $this->search_row as $k => $row ) {
             if ($row->isReadonly()) {
-                // wee need to use keys from 0..
+                // we need to use keys from 0..
                 $search_row[] = $row;
             }
         }
@@ -295,10 +295,9 @@ class AA_Searchbar extends AA_Storable {
         if (is_array($_GET['srchbr_field'])) {
             foreach ( $_GET['srchbr_field'] as $k => $fld ) {
                 $this->addSearch( [
-                    0 => [
-                        $fld       => 1,
-                                                 'operator' => $_GET["srchbr_oper"][$k],
-                                                 'value'    => $_GET["srchbr_value"][$k]
+                    0 => [ $fld       => 1,
+                           'operator' => $_GET["srchbr_oper"][$k],
+                           'value'    => $_GET["srchbr_value"][$k]
                     ]
                 ]);
             }
@@ -502,7 +501,7 @@ class AA_Searchbar extends AA_Storable {
     }
 
     public function isEmpty($bar):bool {
-        return empty($this->search_row[$bar]);
+        return empty($this->search_row[$bar]) OR !strlen($this->search_row[$bar]->getValue());
     }
 
     /** get_search_bar function
@@ -635,7 +634,7 @@ class AA_Searchbar extends AA_Storable {
         $empty = false;   // flag - true if the last printed searchrow is empty
 
         if ($this->show & MGR_SB_SEARCHROWS) {
-            while ( ($count_sb < $this->order_row_count_min) OR ($this->add_empty_search_row AND !$empty) ) {
+            while ( ($count_sb < $this->search_row_count_min) OR ($this->add_empty_search_row AND !$empty) OR !$this->isEmpty($count_sb) ) {
                 $empty = $this->isEmpty($count_sb);
                 $ret  .= $this->get_search_bar($count_sb++);
             }

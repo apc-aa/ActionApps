@@ -28,16 +28,33 @@
 namespace AA\IO;
 
 
+use AA\Util\NamedInterface;
+
 class Importer implements \AA\Later\LaterInterface {
+    protected $name;
+
+    /** @var Saver  */
     protected $saver;
+
+    protected $run=true;
 
     /**
      * Importer constructor.
      * (the params could be changed to saver_params, grabber_params, Transformation_params later)
-     * @param $saver
+     * @param      $saver
+     * @param bool $run
      */
-    public function __construct($saver) {
+    public function __construct(Saver $saver, bool $run=true, string $name='') {
+        $this->name =  $name;
         $this->saver = $saver;
+        $this->run   = $run;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSources(): array {
+        return $this->saver->getSources();
     }
 
     /** special function called from AA\Later\Toexecute class - used for queued tasks (ran form cron)
@@ -46,12 +63,18 @@ class Importer implements \AA\Later\LaterInterface {
      *  @see \AA\Later\LaterInterface
      */
     public function toexecutelater($params= []) {
-        [$ok,$err] = $this->saver->run(true);
+        [$ok,$err] = $this->saver->run($this->run);
         $ret = "changed items OK: $ok";
         if ($err) {
-            $ret .= ", error items: $err, ". $this->saver->report();
+            $ret .= ", error items: $err";
         }
-        return $ret;
+        return $ret . (($p = $this->saver->report('plain')) ? ", $p" : '');
     }
 
+    /** used in Report to identify the Importer in the log
+     * @return string
+     */
+    public function objName(): string {
+        return $this->name;
+    }
 }

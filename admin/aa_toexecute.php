@@ -29,9 +29,6 @@
 
 const AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
-require_once __DIR__ . "/../include/varset.php";
-require_once __DIR__ . "/../include/formutil.php";
-require_once __DIR__ . "/../include/item.php";
 require_once __DIR__ . "/../include/actions.php";
 
 if ( !IsSuperadmin() ) {
@@ -39,16 +36,7 @@ if ( !IsSuperadmin() ) {
     exit;
 }
 
+$apage = new AA_Adminpageutil('aaadmin', 'toexecute');
+$apage->setTitle(_m('Manage %1', [_m("Scheduled Tasks")]));
+$apage->printWithManager(new AA_Manager('toexecute', GetToexecuteManagerSettings()), false);
 
-/** Common manager settings for Tasks */
-$manager_settings = GetToexecuteManagerSettings();
-
-$manager = new AA_Manager('toexecute', $manager_settings);
-$manager->performActions();
-
-$aa_set  = $manager->getSet();
-$zids    = AA::Metabase()->queryZids(['table'=>'toexecute'], $aa_set);
-
-$manager->displayPage($zids, 'aaadmin', 'toexecute');
-
-page_close();

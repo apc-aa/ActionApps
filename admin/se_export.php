@@ -128,7 +128,7 @@ FrmTabEnd($form_buttons);
 $module_id  = $slice_id;
 $manager_id = 'exportsetings'.$module_id;
 
-$manager_settings = AA_Exportsetings::getManagerConf(get_admin_url('se_export.php'));
+$manager_settings = AA_Exportsetings::getManagerConf();
 
 $manager = new AA_Manager($manager_id, $manager_settings);
 $manager->performActions();
@@ -136,13 +136,10 @@ $manager->performActions();
 $aa_set = $manager->getSet();
 $aa_set->setModules($module_id);
 //$aa_set->addCondition(new AA_Condition('aa_user',       '==', AuthGetUid()));
-
 $zids  = AA_Object::querySet('AA_Exportsetings', $aa_set);
 
-echo $manager->getManagerCode($zids);
+echo $manager->getDisplayPage($zids);
 $r_state['manager']    = $manager->getState();
 $r_state['manager_id'] = $manager_id;
-
-//$manager->displayPage($zids, 'sliceadmin', 'exportsetings');
 
 $apage->printFoot();

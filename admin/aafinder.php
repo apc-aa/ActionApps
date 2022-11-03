@@ -115,11 +115,9 @@ function AdminLink($table, $row): string
 function AafinderObjectLink($object_id): string {
     if ($obj = AA_Object::load($object_id)) {
         $name = ($obj->getName()==$obj->getProperty('alias')) ? $obj->getName() : $obj->getName(). ' ('. $obj->getProperty('alias').')';
-        return a_href(get_admin_url('oedit.php3', [
+        return a_href(get_aa_url('modules/site/aliases.php', [
             'module_id' => $obj->getOwnerId(),
-            'oid'       => $object_id,
-            'otype'     => $obj->getObjectType(),
-            'ret_url'   => get_aa_url('modules/site/aliases.php',['module_id'=>$obj->getOwnerId()],false)
+            'id'       => $object_id
         ]), $name). ' ('. AA_Slice::getModuleName($obj->getOwnerId()) .') &nbsp; '. ChangesMonitor::getHistoryLink($object_id);
     }
     return '';

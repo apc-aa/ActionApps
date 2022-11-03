@@ -21,11 +21,21 @@ trait ReportTrait {
 
     /** Report function
      *  Print Error/Information messages
+     * @param string $type html | plain
      * @return string - messages in table
      */
-    public function report(): string {
-        $caption =  is_callable([$this, "name"]) ? $this->name() : '';
-        return $this->messages ? GetHtmlTable($this->messages, 'key', $caption) : '';
+    public function report(string $type='html'): string {
+        $ret = '';
+        if ($this->messages) {
+            $caption =  is_callable([$this, "objName"]) ? $this->objName() : '';
+            if ($type=='html') {
+                $ret = GetHtmlTable($this->messages, 'key', $caption);
+            } elseif ($type=='plain') {
+                $msgs = $caption ? array_merge([['name'=>$caption]], $this->messages) : $this->messages;
+                $ret = json_encode($msgs);
+            }
+        }
+        return $ret;
     }
 
     /** Clear report function
