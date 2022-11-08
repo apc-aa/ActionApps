@@ -533,7 +533,7 @@ class zids implements Iterator, ArrayAccess, Countable {
     public function valid()   { return (current($this->a) !== false);   }
 
     /** Countable interface */
-    public function count()   { return count($this->a);                 }
+    public function count(): int { return count($this->a);                 }
 
     /** ArrayAccess interface */
     public function offsetSet($offset, $value) { $this->a[$offset] = $value;      }

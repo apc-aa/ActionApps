@@ -188,7 +188,7 @@ class tabledit {
         $db = getDB();
         $db->query("SELECT COUNT(*) AS mycount FROM ".$this->getSelectFrom()." WHERE ".$where);
         $db->next_record();
-        $rowcount = $db->f("mycount");
+        $rowcount = (int)$db->f("mycount");
 
         // scroller stuff
         $scrname = "te_".$this->viewID;
