@@ -160,7 +160,7 @@ if ( $add || $update ) {
         ValidateInput("name", _m("Title"), $name, $err, true, "text");
         ValidateInput("owner", _m("Owner"), $owner, $err, false, "id");
         ValidateInput("slice_url", _m("URL of .shtml page (often leave blank)"), $slice_url, $err, false, "url");
-        ValidateInput("type", _m("Slice Type"), $type, $err, false, "text");
+        ValidateInput("slice_type", _m("Slice Type"), $slice_type, $err, false, "text");
         ValidateInput("upload_url", _m("Upload URL"), $upload_url, $err, false, "url");
         ValidateInput("priority", _m("Priority (order in slice-menu)"), $priority, $err, false, "number");
         ValidateInput("permit_anonymous_post", _m("Allow anonymous posting of items"), $permit_anonymous_post, $err, false, "number");
@@ -193,7 +193,6 @@ if ( $add || $update ) {
             $varset->add("owner", "unpacked", $owner);
             //echo $owner; exit;  // problem was in VARCHAR of owner field in database. It must be BINARY
             $varset->add("slice_url", "quoted", $slice_url);
-            $varset->add("type", "quoted", $type);
             $varset->add("priority", "number", $priority);
             if ( $superadmin ) {
                 $varset->add("deleted", "number", $deleted);
@@ -246,7 +245,6 @@ if ( $add || $update ) {
             $varset->set("name", $name, "quoted");
             $varset->set("owner", $owner, "unpacked");
             $varset->set("slice_url", $slice_url, "quoted");
-            $varset->set("type", $type, "quoted");
             $varset->set("priority", $priority, "number");
             $varset->set("deleted", $deleted, "number");
             $varset->set("lang_file", $lang_file, "quoted");
@@ -274,7 +272,7 @@ if ( $add || $update ) {
             $varset->set("name", $name, "quoted");
             $varset->set("owner", $owner, "unpacked");
             $varset->set("slice_url", $slice_url, "quoted");
-            $varset->set("type", $type, "quoted");
+            $varset->set("type", $slice_type, "quoted");
             $varset->set("deleted", $deleted, "number");
             $varset->set("lang_file", $lang_file, "quoted");
             $varset->set("d_listlen", $d_listlen, "number");
