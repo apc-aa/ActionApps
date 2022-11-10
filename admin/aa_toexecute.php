@@ -38,5 +38,5 @@ if ( !IsSuperadmin() ) {
 
 $apage = new AA_Adminpageutil('aaadmin', 'toexecute');
 $apage->setTitle(_m('Manage %1', [_m("Scheduled Tasks")]));
-$apage->printWithManager(new AA_Manager('toexecute', GetToexecuteManagerSettings()), false);
+$apage->printWithManager((new AA_Manager('toexecute', GetToexecuteManagerSettings()))->setAllModules());
 

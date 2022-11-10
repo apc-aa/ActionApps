@@ -143,15 +143,6 @@ class zids implements Iterator, ArrayAccess, Countable {
             return ltrim($k, 'x');
         }, array_keys($item_arr)));   // in some managers we use 'x' before the item id - remove it
     }
-//    function setFromItemArr($item_arr, $type='l') {
-//        $this->clear($type);
-//        if ( isset($item_arr) AND is_array($item_arr) ) {
-//            foreach ( $item_arr as $it_id => $foo ) {
-//                $this->a[] = substr($it_id,1);      // remove initial 'x'
-//            }
-//        }
-//        return $this;
-//    }
 
     /** clear function - removes all zids and resets
      * @param $inittype

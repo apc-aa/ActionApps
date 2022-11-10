@@ -77,7 +77,7 @@ $manager->setRestrictionConds([
 
 $apage = new AA_Adminpageutil('sliceadmin', 'taskmanager');
 $apage->setTitle(_m('Manage %1', [_m("Scheduled Tasks")]));
-$apage->printWithManager(new AA_Manager('task'.AuthGetUid(), $manager_settings), false);
+$apage->printWithManager((new AA_Manager('task'.AuthGetUid(), $manager_settings))->setAllModules());
 
 
 

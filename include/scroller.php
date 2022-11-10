@@ -37,7 +37,7 @@ class AA_Scroller extends AA_Storable {
     var $visible          = 1;
     var $sortdir          = 1;
     var $sortcol          = "";
-    var $itmcnt;                    // total item count
+    var $itmcnt           = 0;      // total item count
     var $metapage         = 10;	    // "metapage" size
     var $urldefault;		        // cache self url
 
@@ -109,11 +109,16 @@ class AA_Scroller extends AA_Storable {
         return $this->metapage;
     }
 
+    /** get current number of items  */
+    public function getItemCount(): int {
+        return $this->itmcnt;
+    }
+
     /** countPages function
      *  adjust number of pages depends on item count and metapage
      * @param $itmcnt
      */
-    function countPages($itmcnt) {
+    function countPages(int $itmcnt) {
         $this->pgcnt = floor(($itmcnt - 1) / $this->metapage) + 1;
         $this->checkBounds();
         $this->itmcnt = $itmcnt;

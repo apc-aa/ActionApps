@@ -166,9 +166,9 @@ function PrintModuleSelection() {
 
         // do not print deleted modules when you ase not admin of the slice or superadmin
         if($permitted_slices != 'all') {
-            huhl($_SESSION, AuthGetUid(), $GLOBALS['permission_uid'], AA::$perm->getUserPerms($GLOBALS['permission_uid'], "slice"), AA_Perm::ROLES, $GLOBALS['permission_to']);
+            // huhl($_SESSION, AuthGetUid(), $GLOBALS['permission_uid'], AA::$perm->getUserPerms($GLOBALS['permission_uid'], "slice"), AA_Perm::ROLES, $GLOBALS['permission_to']);
             $mymodules = array_filter($mymodules, function ($slice) {
-                huhl($slice['name'], $slice['deleted'],  $slice['unpackid'], IfSlPerm(PS_FIELDS, $slice['unpackid']));
+                // huhl($slice['name'], $slice['deleted'],  $slice['unpackid'], IfSlPerm(PS_FIELDS, $slice['unpackid']));
                 return (!$slice['deleted'] OR IfSlPerm(PS_FIELDS, $slice['unpackid']));
             });
         }

@@ -1,11 +1,16 @@
+if (!window.aa$)  { var aa$  = document.querySelector.bind(document);     }
+if (!window.aa$$) { var aa$$ = document.querySelectorAll.bind(document);  }
+if (!window.aa$N) { var aa$N = function (n) { let ret; return (ret = document.getElementsByName(n)) ? ret[0] : null; } }
+
 // Scripts used in manager.class.php
-// - folloving global javascript variables should be set before calling
+// - following global javascript variables should be set before calling
 //   AA_Config structure - see javascript/aajslib.php
 
 //  Fills 'akce' hidden field and submits the form or opens popup window
 function MarkedActionGo() {
     var ms = document.itemsform.markedaction_select;
     var add_items;
+
     if( ms.value && (ms.value != 'nothing') ) {
         document.itemsform.akce.value = ms.value
         // markedactionur is global variable defined in manager.class.php
@@ -17,7 +22,11 @@ function MarkedActionGo() {
             document.itemsform.action = ifaction;
             document.itemsform.target = iftarget;
         } else {
-            document.itemsform.submit()
+            if (!GetItemsArrayString() && !aa$N('aa_akce_all').value) {
+                aa$('.aa_manager_actions_all').style.display = '';
+            } else {
+                document.itemsform.submit();
+            }
         }
     }
 }

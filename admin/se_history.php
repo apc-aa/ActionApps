@@ -184,10 +184,8 @@ function GetHistoryContent($zids) {
 }
 
 
-/** Links_QueryCatZIDs - Finds category IDs according to given conditions
- * @param        $slice_id
- * @param array  $conds - search conditions (see FAQ)
- * @param string $sort - sort fields (see FAQ)
+/**
+ * @param AA_Set $set
  * @return zids
  */
 function QueryHistoryZIDs(AA_Set $set): zids {

@@ -212,9 +212,14 @@ if (!$perm_edit_all AND !$perm_set_id) {
     $aa_set->addCondition(new AA_Condition('posted_by.......', '==', AuthGetUid()));
 }
 
+$apage = new AA_Adminpageutil('itemmanager',$manager->getBin());
+$apage->setForm();
+if ($css_add = $profile->getProperty('ui_manager', 'css_add')) {
+    $apage->addRequire($css_add);
+}
 
-$zids = $aa_set->query();
-$manager->displayPage($zids, 'itemmanager', $manager->getBin(), $profile->getProperty('ui_manager', 'css_add'));
+$html = $manager->getDisplayPage($aa_set->query());
 
-page_close();
+// this allows to automatically load codemirror in the head (printHead is called after $form->getObjectEditHtml)
+$apage->printAllPage($html, $err, $Msg);
 

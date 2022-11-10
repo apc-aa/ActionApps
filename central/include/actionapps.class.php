@@ -843,23 +843,23 @@ function Central_GetAaContent($zids) {
 }
 
 /** Central_QueryZids - Finds link IDs for links according to given  conditions
- * @param array  $conds - search conditions (see FAQ)
- * @param array  $sort - sort fields (see FAQ)
- * @param string $type - bins as known from items
- *       AA_BIN_ACTIVE | AA_BIN_HOLDING | AA_BIN_TRASH | AA_BIN_ALL
- * @global int   $QueryIDsCount - set to the count of IDs returned
- * @global bool  $debug =1       - many debug messages
- * @global bool  $nocache - do not use cache, even if use_cache is set
+ * @param AA_Set $set
  * @return zids
  */
-function Central_QueryZids($conds, $sort="", $type="app"): zids {
-    global $debug;                 // displays debug messages
+function Central_QueryZids(AA_Set $set): zids {
+   // @param array  $conds - search conditions (see FAQ)
+   // @param array  $sort - sort fields (see FAQ)
+   // @param string $type - bins as known from items AA_BIN_ACTIVE | AA_BIN_HOLDING | AA_BIN_TRASH | AA_BIN_ALL
 
-    if ( $debug ) huhl( "<br>Conds:", $conds, "<br>--<br>Sort:", $sort, "<br>--");
+    $conds = $set->getConds();
+    $sort  = $set->getSort();
+    $type  = $set->getBins();
 
-    $metabase    = AA::Metabase();
+    if ($type == AA_BIN_ACTIVE) {
+          $type = AA_BIN_APPROVED;   // we do not work with dates, here
+    }
 
-    $fields      = $metabase->getSearchArray('central_conf');
+    $fields      = AA::Metabase()->getSearchArray('central_conf');
     $join_tables = [];   // not used in this function
 
     $SQL  = 'SELECT DISTINCT id FROM central_conf WHERE ';
@@ -869,5 +869,4 @@ function Central_QueryZids($conds, $sort="", $type="app"): zids {
 
     return GetZidsFromSQL($SQL, 'id');
 }
-
 

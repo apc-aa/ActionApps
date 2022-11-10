@@ -679,7 +679,7 @@ input.cancel-button {
 }
 
 @media print {
-  .noprint, .aa_manager_actions {
+  .noprint {
       display: none;
   }
   body, #hlavnitbl {

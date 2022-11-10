@@ -33,7 +33,7 @@
  *
 */
 
-require_once __DIR__ . "/menu_util.php";  // for showMenu()
+// require_once __DIR__ . "/menu_util.php";  // for showMenu()
 
 /**
  * AA_Manager class - used for 'item' manipulation 'managers' pages
@@ -68,6 +68,8 @@ class AA_Manager extends AA_Storable {
 
     /** @var AA_Condition[] */
     protected $restrict_conds; // restriction
+
+    protected $all_modules = false; // do not restrict for one module
 
     var $module_id;       // for which module is manager used (slice_id, ...)
     var $managed_class;   // name of the class which are managed / edited
@@ -241,6 +243,12 @@ class AA_Manager extends AA_Storable {
         //huhl($this->restrict_conds);
     }
 
+    /** do not restrict the manager just to one module */
+    function setAllModules(): self {
+        $this->all_modules = true;
+        return $this;
+    }
+
     /** setFromProfile function
      *  initial manager setting from user's profile
      * @param AA_Profile $profile
@@ -260,7 +268,7 @@ class AA_Manager extends AA_Storable {
      */
     function getSet() {
         $set = $this->searchbar ? $this->searchbar->getSet() :  new AA_Set;
-        if ($this->module_id) {
+        if (!$this->all_modules AND $this->module_id) {
             $set->setModules([$this->module_id]);
         }
         $BIN_CONDS   = [
@@ -318,7 +326,7 @@ class AA_Manager extends AA_Storable {
         }
     }
 
-    /** reserSearchBar function
+    /** resetSearchBar function
      *  Resets the searchbar (both - Search as well as Order)
      */
     function resetSearchBar() {
@@ -382,12 +390,21 @@ class AA_Manager extends AA_Storable {
         return $this->actions->getAction($akce);
     }
 
+    /**
+     * @return zids
+     */
+    public function getPostedItems(): zids {
+        if (!is_array($_POST['chb']) AND ($_POST['aa_akce_all']=='1')) {
+            $this->getZids();
+        }
+        return (new zids())->setFromItemArr($_POST['chb'] ?? []);
+    }
+
     /** performActions function
      */
     function performActions() {
 
         $akce = $_REQUEST['akce'];
-        $chb  = $_REQUEST['chb'] ?? [];
 
         /** used for AJAX display of action parameters */
         if ( $_GET['display_params'] ) {
@@ -415,7 +432,8 @@ class AA_Manager extends AA_Storable {
         }
 
         /** @var zids $item_zids */
-        $item_zids = (new zids())->setFromItemArr($chb); // in some managers we use 'x' before the item id - remove it
+        $item_zids = $this->getPostedItems(); // in some managers we use 'x' before the item id - remove it
+
 
         // new approach uses AA_Manageractions
         if ($akce AND is_object($this->actions)) {
@@ -472,10 +490,11 @@ class AA_Manager extends AA_Storable {
         }
     }
 
-    function getZids(AA_Set $set): zids {
+    /** zids directly from manager, which is a right way! */
+    function getZids(): zids {
         return is_array($this->query_funct) ?
-            call_user_func_array($this->query_funct[0], [$this->query_funct[1], $set]) :
-            call_user_func_array($this->query_funct, [$set]);
+            call_user_func_array($this->query_funct[0], [$this->query_funct[1], $this->getSet()]) :
+            call_user_func_array($this->query_funct, [$this->getSet()]);
     }
 
     /** Displays the manager. This function joins together some common method
@@ -506,51 +525,17 @@ class AA_Manager extends AA_Storable {
         return $ret;
     }
 
-    /** @deprecated - use getDisplayPage */
-    function displayPage($zids, $menu_top, $menu_left, $css_add='') {
-        global $r_state;
 
-        $apage = new AA_Adminpageutil($menu_top, $menu_left);
-        // $apage->setTitle( _m("Admin - Object Edit") );
-// for widgets
-        $apage->addRequire(get_aa_url('javascript/aajslib-legacy.min.js?v='.AA_JS_VERSION, '', false ));
-        $apage->addRequire(get_aa_url('javascript/manager.min.js?v='.AA_JS_VERSION, '', false ));
-        if ($css_add) {
-            $apage->addRequire($css_add);
-        }
-
-        if ($_GET['id'] AND $this->managed_class) {
-            //huhl('sss1',$this->module_id);
-            $form = AA_Form::factoryForm($this->managed_class, $_GET['id'], $this->module_id);
-            $form_buttons = [
-                "update",
-                "cancel",
-            ];
-
-            $html  = getFrmTabCaption(_m("Object Edit"), $form_buttons);
-            $html .= '<tr><td colspan="2">';
-            $html .= $form->getObjectEditHtml();
-            $html .= '</td></tr>';
-
-            $html .= getFrmTabEnd($form_buttons);
-
-
-            // echo $form->getAjaxHtml('xxx'); // ($_GET['ret_code']);
-        } else {
-            $html = $this->getManagerCode($zids);
-        }
-
-        // this allows to automatically load codemirror in the head (printHead is called after $form->getObjectEditHtml)
-        $apage->printAllPage($html, $err, $Msg);
-
-        $r_state['manager']    = $this->getState();
-        $r_state['manager_id'] = $this->_manager_id;
-    }
-
-
-    function getDisplayPage($zids): string {
+    /**
+     * @param zids|null $zids  @deprecated - manager should generate the zids from its own settings
+     * @return string
+     * @throws Exception
+     */
+    function getDisplayPage(zids $zids=null): string {
         global $r_state;
         $html = '';
+
+        $zids = $zids ?? $this->getZids();
 
         if (($_GET['id'] OR $_GET['add']) AND $this->managed_class) {
             //huhl('sss1',$this->module_id);
@@ -571,6 +556,8 @@ class AA_Manager extends AA_Storable {
 
             // echo $form->getAjaxHtml('xxx'); // ($_GET['ret_code']);
         } else {
+            AA::Stringexpander()->addRequire(get_aa_url('javascript/manager.min.js?v='.AA_JS_VERSION));
+            AA::Stringexpander()->addRequire('aa-jslib@1');
             $html = $this->getManagerCode($zids);
         }
         $r_state['manager']    = $this->getState();
@@ -583,18 +570,13 @@ class AA_Manager extends AA_Storable {
      * Print HTML start page tags (html begin, encoding, style sheet, title
      * and includes necessary javascripts for manager
      * @param bool $head_end
-     * @param string $css_add  adds custom css to the manager page
      */
-    function printHtmlPageBegin( $head_end = false, $css_add='') {
+    function printHtmlPageBegin($head_end = false) {
         // Print HTML start page (html begin, encoding, style sheet, no title)
         HtmlPageBegin();
         // manager javascripts - must be included
         echo '<title>'. $this->messages['title'] .'</title>';
         IncludeManagerJavascript();
-        if ($css_add) {
-             echo "\n  <link rel=\"StyleSheet\" href=\"$css_add\" type=\"text/css\">";
-
-        }
         if ( $head_end ) {
             echo "\n</head>\n";
         }
@@ -647,7 +629,7 @@ class AA_Manager extends AA_Storable {
 
         $ret .= $this->itemview->get_output('view');
 
-        $ret .= '<table border="0" cellpadding="3" class="aa_manager_actions">
+        $ret .= '<table border="0" cellpadding="3" class="aa_manager_actions noprint">
                 <tr class="aa_manager_actions_tr"><td>';
 
         if ($this->show & MGR_ACTIONS) {
@@ -686,7 +668,7 @@ class AA_Manager extends AA_Storable {
 
             if ( $options ) {
                 $ret .= "<img src=\"".AA_INSTAL_PATH."images/arrow_ltr.gif\">
-                    <a href=\"javascript:SelectVis()\">". _m('Select all')."</a>&nbsp;&nbsp;&nbsp;&nbsp;";
+                    <a href=\"javascript:SelectVis()\" class=\"aa-button\">". _m('Select all')."</a>&nbsp;&nbsp;&nbsp;&nbsp;";
 
                   // click "go" does not use markedform, it uses itemsfrom above...
                   // maybe this action is not used.
@@ -697,7 +679,7 @@ class AA_Manager extends AA_Storable {
                     $ret .= getFrmMoreHelp($this->actions_hint_url, "", $this->actions_hint);
                 }
 
-                $ret .= '&nbsp;&nbsp;<a href="javascript:MarkedActionGo()" class="leftmenuy">'. _m('Go') . '</a>';
+                $ret .= '&nbsp;&nbsp;<a href="javascript:MarkedActionGo()" class="aa-button">'. _m('Go') . '</a>';
 
                   // we store open_url parameter to js variable for
                   // MarkedActionGo() function
@@ -708,6 +690,7 @@ class AA_Manager extends AA_Storable {
                             '. $javascr .'
                       </script>';
             }
+            $ret .= '<div class="aa_manager_actions_all" style="display: none">'._m("No item selected. Perform action for all filtered items? ").'<input type="hidden" name="aa_akce_all" value=""><button class="aa-button" onclick="aa$N(\'aa_akce_all\').value=1;MarkedActionGo();">'._m('Run for %1 items',[$this->scroller->getItemCount()]).'</button></div>';
             $ret .= "</td>\n</tr>\n<tr><td id=\"markedactionparams\"></td></tr>\n<tr><td>";
         }
         $ret .= $this->scroller->getNavbar();
@@ -729,7 +712,7 @@ class AA_Manager extends AA_Storable {
 /** AA_Manageraction - Item manager actions. Just create new class and assign
  *  it to your manager
  *
- *  We extending AA_Storable, because we want to get the state form some
+ *  We are extending AA_Storable, because we want to get the state form some
  *  actions. Action selectbox is able to display settings by AJAX call, where
  *  we need to pass all parameters of the object
  */
@@ -750,7 +733,7 @@ class AA_Manageraction extends AA_Storable {
     /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
      *
-     *  We extending AA_Storable, because we want to get the state form some
+     *  We are extending AA_Storable, because we want to get the state form some
      *  actions. Action selectbox is able to display settings by AJAX call, where
      *  we need to pass all parameters of the object
      * @return array

@@ -621,19 +621,22 @@ input.cancel-button {
 .aa-table tr:hover {
     background-color: #F0E8DC;
 }
-[class^="aa-button-"] {
+[class^="aa-button"] {
     box-shadow: #000 0 0 3px;
-    padding: 1px 8px 2px 18px;
+    padding: 1px 8px 2px;
     display: inline-block;
     border-radius: 7px;
     background-color: #FFF;
     text-decoration: none;
     color: #812A0F;
 }
-[class^="aa-button-"]:hover {
+[class^="aa-button"]:hover {
     background-color: #FAF2D9;
     color: #494949;
     box-shadow: 0 0 6px #000;
+}
+[class^="aa-button-"] {
+    padding-left: 18px;
 }
 .aa-button-edit {
     background: #FFF url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAYAAABWdVznAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAKdJREFUeNpi/P//PwMMtGfqMWABPEA8B4ibgPgaEwNhUA3E4UB8CYhbCGmQBuJ8KJsZiJ8S0tAFxJxQ9gUgnoVPgw0QRyHxc4H4Ly4NIOsnI/G3AvEREAOXBn4gvg9l/wLiApgECxbFbEAsB8RBQGwPxFpAfAcmic0GFSA+D8TTgPgyEE9HlsSlAQS8kdgM+JykDsTHoU56gS6JzYazQOyATTEIAAQYAH+NG5PbUXGeAAAAAElFTkSuQmCC) no-repeat 2px center;
@@ -801,7 +804,7 @@ input.cancel-button {
 .dis-color8 { background-color: #c46f87; }
 
 @media print {
-  .noprint, .aa_manager_actions {
+  .noprint {
       display: none;
   }
   body, #hlavnitbl {

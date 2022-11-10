@@ -124,22 +124,15 @@ FrmTabEnd($form_buttons);
 <br>
 <?php
 
-
-$module_id  = $slice_id;
-$manager_id = 'exportsetings'.$module_id;
-
-$manager_settings = AA_Exportsetings::getManagerConf();
-
-$manager = new AA_Manager($manager_id, $manager_settings);
+$manager = new AA_Manager('exportsetings'.AA::$module_id, AA_Exportsetings::getManagerConf());
 $manager->performActions();
 
-$aa_set = $manager->getSet();
-$aa_set->setModules($module_id);
+//$aa_set = $manager->getSet();
+//$aa_set->setModules($module_id);
 //$aa_set->addCondition(new AA_Condition('aa_user',       '==', AuthGetUid()));
-$zids  = AA_Object::querySet('AA_Exportsetings', $aa_set);
 
-echo $manager->getDisplayPage($zids);
-$r_state['manager']    = $manager->getState();
-$r_state['manager_id'] = $manager_id;
+//$zids  = AA_Object::querySet('AA_Exportsetings', $aa_set);
+echo $manager->getDisplayPage(); // zids should be generated in manager now.
+
 
 $apage->printFoot();

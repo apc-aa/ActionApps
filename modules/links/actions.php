@@ -373,7 +373,7 @@ class AA_Manageraction_Links_GoBookmark extends AA_Manageraction {
 
     /** @inheritDoc */
     function perform(AA_Manager $manager, zids $item_zids, $action_param) {
-        global $manager, $links_info;
+        global $links_info;
 
         $start_id   = $links_info['start_id'];
         $start_path = GetCategoryPath( $start_id );

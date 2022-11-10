@@ -64,5 +64,5 @@ $manager_settings['itemview']['format']['odd_row_format'] = '
 
 $apage = new AA_Adminpageutil('aaadmin', 'searchlog');
 $apage->setTitle(_m("View SearchLog"));
-$apage->printWithManager(new AA_Manager('searchlog', $manager_settings), false);
+$apage->printWithManager((new AA_Manager('searchlog', $manager_settings))->setAllModules());
 

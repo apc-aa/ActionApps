@@ -88,7 +88,7 @@ $manager_settings['itemview']['format']['compact_top'] = '
 $manager_settings['itemview']['format']['odd_row_format'] = '
                                     <tr class=tabtxt>
                                       <td width="30"><input type="checkbox" name="chb[_#ID______]" value=""></td>
-                                      <td class=tabtxt><a href="'.StateUrl('tabledit.php?cmd[centraledit][edit][_#ID______]=1').'"> _#ORG_NAME </a></td>
+                                      <td class=tabtxt><a href="'.StateUrl('tabledit.php?cmd[centraledit][edit][_#ID______]=1').'"> {ifset:{_#ORG_NAME}:_#1:--} </a></td>
                                       <td class=tabtxt>_#AA_ID___</td>
                                       <td class=tabtxt>_#DB_SERVE - _#DB_NAME_</td>
                                       <td class=tabtxt>_#AA_HTTP__#AA_BASE_</td>
@@ -98,25 +98,22 @@ $manager_settings['itemview']['format']['odd_row_format'] = '
                                       <td class="tabtxt" colspan="4"><a href="{sessurl:?akce=Sqlupdate_Test&chb[_#ID______]=1}">'._m('sql_upadte TEST') .'</a> &nbsp; &nbsp; <a href="{sessurl:?akce=Sqlupdate_Update&chb[_#ID______]=1}">'._m('sql_upadte NOW!') .'</a></td>
                                     </tr>
                                    ';
+$manager_settings['itemview']['query_funct'] = 'Central_QueryZids';
 $manager_settings['messages']['title'] = _m('ActionApps Central');
-
 //         'get_content_funct'    => 'Central_GetAaContent'
+
 
 $manager = new AA_Manager('central', $manager_settings);
 $manager->performActions();
 
 // need for menu
 $r_state['bin_cnt'] = CountItemsInBins();
-$conds = $manager->getConds();
-$sort  = $manager->getSort();
-$BIN_CONDS   = [
-    'app'    => AA_BIN_APPROVED,
-                      'hold'   => AA_BIN_HOLDING,
-                      'trash'  => AA_BIN_TRASH
-];
-$zids = Central_QueryZids($conds, $sort, $BIN_CONDS[$manager->getBin()]);
 
-$manager->displayPage($zids, 'central', $manager->getBin());
+$apage = new AA_Adminpageutil('central',$manager->getBin());
+$apage->setForm();
 
-page_close();
+$html = $manager->getDisplayPage();
+
+// this allows to automatically load codemirror in the head (printHead is called after $form->getObjectEditHtml)
+$apage->printAllPage($html, $err, $Msg);
 

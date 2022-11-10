@@ -117,7 +117,20 @@ $r_state['bin_cnt']['appc']    = AA_Metabase::queryCount(['table' => 'polls'], $
 $r_state['bin_cnt']['folder2'] = AA_Metabase::queryCount(['table' => 'polls'], $bin_sets['folder2']);
 $r_state['bin_cnt']['folder3'] = AA_Metabase::queryCount(['table' => 'polls'], $bin_sets['folder3']);
 
+
+
 $zids  = AA::Metabase()->queryZids(['table'=>'polls'], $bin_sets[$manager->getBin()]);
 
-$manager->displayPage($zids, 'pollsmanager', $manager->getBin());
-page_close();
+//$manager_settings['itemview']['query_funct'] = 'Central_QueryZids';
+//$manager_settings['messages']['title'] = _m('ActionApps Central');
+//         'get_content_funct'    => 'Central_GetAaContent'
+
+$apage = new AA_Adminpageutil('pollsmanager',$manager->getBin());
+$apage->setForm();
+
+$html = $manager->getDisplayPage($zids);
+
+
+// this allows to automatically load codemirror in the head (printHead is called after $form->getObjectEditHtml)
+$apage->printAllPage($html, $err, $Msg);
+

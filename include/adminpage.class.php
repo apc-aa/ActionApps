@@ -98,21 +98,13 @@ class AA_Adminpageutil {
 
     /**
      * @param string $class
-     * @param bool   $restict4module
      */
-    public function printWithManager(AA_Manager $manager, bool $restict4module=true) {
+    public function printWithManager(AA_Manager $manager) {
         $manager->performActions();
 
-        $aa_set = $manager->getSet();
-        if (!$restict4module) {
-            $aa_set->setModules([]);  // remove restriction to specific module
-        }
+        //$zids = $manager->getZids();
+        $html = $manager->getDisplayPage();
 
-        $zids = $manager->getZids($aa_set);
-        $html = $manager->getDisplayPage($zids);
-
-        $this->addRequire(get_aa_url('javascript/aajslib-legacy.min.js?v=' . AA_JS_VERSION, '', false));
-        $this->addRequire(get_aa_url('javascript/manager.min.js?v=' . AA_JS_VERSION, '', false));
         $this->setForm();
 
         // this allows to automatically load codemirror in the head (printHead is called after $form->getObjectEditHtml)

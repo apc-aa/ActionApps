@@ -44,4 +44,4 @@ $manager_settings['searchbar']['default_sort'] =  [0 => ['time' => 'd']];
 
 $apage = new AA_Adminpageutil('aaadmin', 'log');
 $apage->setTitle(_m("View Log"));
-$apage->printWithManager(new AA_Manager('log', $manager_settings), false);
+$apage->printWithManager((new AA_Manager('log', $manager_settings))->setAllModules());
