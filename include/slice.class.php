@@ -167,6 +167,7 @@ class AA_Module {
      */
     static public function deleteModules($module_ids) {
         foreach ($module_ids as $module_id) {
+            /** @var class-string<AA_Module> $class name - it is string name of class */
             if (!is_long_id($module_id) OR !($class = AA_Module::getModuleInfo('class', $module_id))) {
                 return false;     // _m("No such module.")
             }
@@ -225,6 +226,7 @@ class AA_Module {
     }
 
     protected function _isModuleObjectProperty($prop) {
+        /** @var class-string<AA_AbstractModulesettings> $class name - it is string name of class */
         $class = static::SETTING_CLASS;
         return empty($class) ? null : $class::isProperty($prop);
     }
@@ -232,6 +234,7 @@ class AA_Module {
     protected function _getModuleObjectProperty($prop) {
         if ($this->moduleobject_setting === false) {
             // tho object id is derived from SETTING_CLASS name and module_id
+            /** @var class-string<AA_AbstractModulesettings> $class name - it is string name of class */
             $class = static::SETTING_CLASS;
             $this->moduleobject_setting = empty($class) ? null : $class::load(string2id($class.$this->module_id));
         }
@@ -239,6 +242,7 @@ class AA_Module {
     }
 
     public static function processModuleObject($module_id) {
+        /** @var class-string<AA_AbstractModulesettings> $class name - it is string name of class */
         $class = static::SETTING_CLASS;
         if ($module_id AND !empty($class)) {
             // make sure the slicesettings object for this slice exists
@@ -255,6 +259,7 @@ class AA_Module {
     }
 
     public static function getModuleObjectForm($module_id) {
+        /** @var class-string<AA_AbstractModulesettings> $class name - it is string name of class */
         $class = static::SETTING_CLASS;
         if ($module_id AND !empty($class)) {
             return AA_Form::factoryForm($class, string2id($class.$module_id), $module_id)->getObjectEditHtml();
@@ -819,7 +824,7 @@ class AA_Module_Site extends AA_Module {
         return trim(AA::Stringexpander()->postprocess($out));
     }
 
-    public function getTree() {
+    public function getTree(): ?sitetree {
         $tree = null;
         if ($structure = $this->getProperty('structure')) {
             $tree = unserialize($structure);
@@ -867,9 +872,9 @@ class AA_Module_Site extends AA_Module {
         FrmTabCaption();
         FrmStaticText(_m('Spot ID'), "[$spot_id] - " . _m('You can include this spot code in another spot by using {sitespot:%1}', [$spot_id]));
 
-        ModW_PrintVariables($spot_id, $tree->get('variables',$spot_id));
+        $tree->printVariables($spot_id, $tree->get('variables',$spot_id));
         if (($vars=$tree->isOption($spot_id))) {
-            ModW_PrintConditions($spot_id, $tree->get('conditions',$spot_id), $vars);
+            $tree->printConditions($spot_id, $tree->get('conditions',$spot_id), $vars);
         }
         FrmTabEnd();
 
@@ -882,7 +887,7 @@ class AA_Module_Site extends AA_Module {
 
         echo "<br><form method='post' name=fs action=\"". $_SERVER['PHP_SELF'] ."\">";
         FrmTabCaption('',$form_buttons);
-        ModW_HiddenRSpotId();
+        sitetree::printHiddenRSpotId();
         FrmInputText('name', _m("Spot name"), $tree->get('name', $spot_id), 50, 50, true, false, false);
         FrmTextarea('content', '', $spot_data['content'], 50, 80, false, AA_View::getViewJumpLinks($spot_data['content']), "", true);
         FrmTabEnd($form_buttons);
@@ -1035,8 +1040,11 @@ class AA_Module_Polls extends AA_Module {
     }
 }
 
+/** Module settings */
+abstract class AA_AbstractModulesettings extends AA_Object {}
+
 /** Slice settings */
-class AA_Modulesettings_Slice extends AA_Object {
+class AA_Modulesettings_Slice extends AA_AbstractModulesettings {
 
     // must be protected or public - AA_Object needs to read it
     protected $translations;
@@ -1066,7 +1074,7 @@ class AA_Modulesettings_Slice extends AA_Object {
 }
 
 /** Slice settings */
-class AA_Modulesettings_Site extends AA_Object {
+class AA_Modulesettings_Site extends AA_AbstractModulesettings {
 
     // must be protected or public - AA_Object needs to read it
     protected $translation_slice;

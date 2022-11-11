@@ -213,7 +213,6 @@ if ( !isset($apc_state) )  {
     exit;
 }
 
-require_once __DIR__ . "/../../modules/site/util.php";                      // module specific utils
 require_once __DIR__ . "/../../modules/site/sitetree.php";
 require_once __DIR__."/../../include/searchlib.php";
 require_once __DIR__."/../../include/view.php";

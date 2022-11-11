@@ -181,7 +181,7 @@ class AA_Property extends AA_Storable {
     function getContentTypeSwitches() { return $this->show_content_type_switch;    }
     function getContentTypeDefault()  { return $this->content_type_switch_default; }
 
-    public function getValidator() {
+    public function getValidator(): AA_Validate {
         if (!is_object($this->_validator)) {
             if (is_null($this->_validator = AA_Validate::factoryCached($this->_validator))) {
                 $this->_validator = AA_Validate::factoryCached('all');
@@ -319,7 +319,12 @@ class AA_Property extends AA_Storable {
         if ($empty AND $this->isRequired()) {
             return [VALIDATE_ERROR_NOT_FILLED, _m("Not filled (%1)", [$this->getId()])];
         }
-        return $valid ? [] : [get_class($validator)::lastErr(), get_class($validator)::lastErrMsg()];
+        if ( $valid ) {
+            return [];
+        }
+        /** @var class-string<AA_Validate> $class_name */
+        $class_name = get_class($validator);
+        return [$class_name::lastErr(), $class_name::lastErrMsg()];
     }
 
     /** isObject function */

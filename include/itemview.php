@@ -516,8 +516,8 @@ class itemview {
         // Get content function should be also method of some class. In that
         // case it is passed as two members array(method,params), where both
         // method as well as params are arrays again, so in fact it looks like:
-        // array(array('classname', method),array(param1, param2))
-        // Example array(array('AA_Metabase','getContent'),array(table=>'toexecute'))
+        // [['classname', method],[param1, param2]]
+        // Example [['AA_Metabase','getContent'],[table=>'toexecute']]
         // getContent is in this case static class method
         // parameter array (if supplied) is passed as FIRST parameter of the method
         $this->_content = call_user_func_array($this->get_content_funct[0], [$this->get_content_funct[1], $foo_zids]);

@@ -29,7 +29,6 @@ require_once __DIR__ . "/../../include/init_page.php";
 require_once __DIR__ . "/../../include/varset.php";
 require_once __DIR__ . "/../../include/formutil.php";
 
-require_once __DIR__ . "/../../modules/site/util.php";   // module specific utils
 require_once __DIR__ . "/../../modules/site/sitetree.php";   // module specific utils
 
 // ----------------- function definition end -----------------------------------
@@ -143,7 +142,7 @@ if ($addcond) {
 // and remove corruption, ideally should fix the cause of the corruption!
 // - Mitra
 if ($sitefix) {
-    $tree->walkTree($apc_state, 1, 'ModW_DoNothing', 'all');
+    $tree->walkTree($apc_state, 1, function (...$args) {} , 'all');  // ModW_DoNothing
 }
 
 if ($addcond OR $delcond OR $content OR $name OR $akce) {
@@ -174,7 +173,7 @@ $apage->printHead($err, $Msg);
 
 function PrintSiteActionLink($r_spot_id, $action, $text, $img, $link=null) {
     if (!$link) {
-        $link  = SiteAdminPage($r_spot_id, "akce=$action");
+        $link  = sitetree::siteAdminPageUrl($r_spot_id, "akce=$action");
     }
     $image = GetModuleImage('site', $img, '', 16, 12);
     return "<a href=\"$link\">$image</a>&nbsp;<a href=\"$link\">$text</a>";
@@ -196,7 +195,7 @@ echo '<table border=0 cellspacing=0 class=login width="98%"><tr><td id="sitetree
           <td>&nbsp;'. PrintSiteActionLink($r_spot_id, 'a', _m("Move&nbsp;right"), 'right.gif') .'</td>
         </tr>
         <tr>
-          <td>'. PrintSiteActionLink($r_spot_id, 'r', _m("Delete"), 'delete.gif', 'javascript:GoIfConfirmed(\''. SiteAdminPage($r_spot_id, "akce=r").'\', \''.
+          <td>'. PrintSiteActionLink($r_spot_id, 'r', _m("Delete"), 'delete.gif', 'javascript:GoIfConfirmed(\''. sitetree::siteAdminPageUrl($r_spot_id, "akce=r") .'\', \''.
                                             _m("Are you sure you want to delete the spot?") .'\')') .'</td>
           <td>&nbsp;'.
           (($tree->get('flag', $r_spot_id) & AA_Module_Site::FLAG_DISABLE) ?
@@ -209,9 +208,9 @@ echo '<table border=0 cellspacing=0 class=login width="98%"><tr><td id="sitetree
 
 // callback functions
 $functions = [
-    'spot'          => 'ModW_PrintSpotName_Start',
-    'before_choice' => 'ModW_PrintChoice_Start',
-    'after_choice'  => 'ModW_PrintChoice_End'
+    'spot'          => [$tree,'printSpotName_Start'],
+    'before_choice' => [$tree,'printChoice_Start'],
+    'after_choice'  => [$tree,'printChoice_End']
 ];
 
 $tree->walkTree($apc_state, 1, $functions, 'collapsed');

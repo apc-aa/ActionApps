@@ -35,7 +35,9 @@ use AA\IO\Grabber\ObjectForm;
 use AA\Util\AbstractAliasgenerator;
 use AA_Plannedtask;
 
-/** allows serialize objects */
+/** allows serialize objects
+ * @method expand(false|mixed|string $param)
+ */
 abstract class AA_Serializable {
 
     /** factory function

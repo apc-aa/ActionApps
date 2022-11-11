@@ -604,7 +604,7 @@ class AA_Manager extends AA_Storable {
 
      /**
      * get item/link/... table with scroller, actions, ... for printing
-     * @param $zids
+     * @param zids $zids
      * @return mixed
      */
     function getItems($zids): string {

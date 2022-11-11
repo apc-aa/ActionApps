@@ -36,7 +36,6 @@ require_once __DIR__ . "/../../include/formutil.php";
 require_once __DIR__ . "/../../include/varset.php";
 require_once __DIR__ . "/../../include/date.php";
 require_once __DIR__ . "/../../include/modutils.php";
-require_once __DIR__ . "/../../modules/site/util.php";
 
 $template_id = $template['W'] ? substr($template['W'],1) : unpack_id('SiteTemplate....');
 
@@ -231,7 +230,7 @@ $apage->printHead($err, $Msg);
 <?php
     FrmTabCaption(_m("Site"), $form_buttons);
 
-    ModW_HiddenRSpotId();
+    sitetree::printHiddenRSpotId();
     FrmStaticText(_m("Id"), $module_id);
     FrmInputText("name", _m("Name"), $name, 99, 25, true);
     //$include_cmd = "<br>&lt;!--#include&nbsp;virtual=\"". AA_INSTAL_PATH ."modules/site/site.php3?site_id=$module_id\"--&gt;";

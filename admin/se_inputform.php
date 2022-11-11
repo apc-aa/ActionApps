@@ -314,6 +314,7 @@ if ( !$update ) {      // load defaults
     get_params($fld["input_show_func"], $input_show_func_f, $input_show_func_p);
 
     // which parameters uses this widget?
+    /** @var class-string<Widget> $widget_class */
     $widget_class   = Widget::constructClassName($input_show_func_f);
     $isf_parameters = $widget_class::getClassProperties();
 

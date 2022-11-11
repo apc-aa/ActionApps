@@ -75,9 +75,9 @@ class AA_Validate extends AA_Serializable {
     /** factoryCached function
      *  Returns validators for standard data types
      * @param string|array $v_type - string, or array($type,$parameter)
-     * @return mixed|null
+     * @return AA_Validate|null
      */
-    static function factoryCached($v_type) {
+    static function factoryCached($v_type): ? AA_Validate {
         static $standard_validators = [];
 
         [$type, $parameters] = is_array($v_type) ? $v_type : [$v_type, []];

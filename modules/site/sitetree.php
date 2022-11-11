@@ -614,12 +614,9 @@ class sitetree {
         // $functions could be array which defines the callback functions,
         // or nonarray - just main - spot -  function
         if (!is_array($functions)) {
-            $foo['spot'] = $functions;
             // functions are array now
-            $functions = $foo;
+            $functions = ['spot'=>$functions];
         }
-        $function_spot = $functions['spot'];
-
         $current =& $this->tree[$id];
         $positions = $current->get("positions");
         if (!$positions) {
@@ -631,8 +628,8 @@ class sitetree {
                 // There is a bug that introduced empty positions
                 // this is to skip them.
                 if (($method=='all') OR ($method=='collapsed') OR (($method=='cond') AND !$this->isFlag($pos, AA_Module_Site::FLAG_DISABLE))) {
-                    $function_spot($pos, $depth);
-                }
+                    call_user_func_array($functions['spot'], [$pos, $depth]);
+               }
 
                 // if this position is collapsed, then print only first position
                 // and skip the others as well as all the choices
@@ -656,16 +653,14 @@ class sitetree {
 
                                 // sometimes it is usefull to call a function before the choice
                                 if ($functions['before_choice']) {
-                                    $functions_before_choice = $functions['before_choice'];
-                                    $functions_before_choice($cho, $depth, $choices_index, $choices_count);
+                                    call_user_func_array($functions['before_choice'], [$cho, $depth, $choices_index, $choices_count]);
                                 }
 
                                 $this->walkTree($state, $cho, $functions, $method, $depth+1);
 
                                 // and sometimes it is usefull to call a function after the choice
                                 if ($functions['after_choice']) {
-                                    $functions_after_choice = $functions['after_choice'];
-                                    $functions_after_choice($cho, $depth, $choices_index, $choices_count);
+                                    call_user_func_array($functions['after_choice'], [$cho, $depth, $choices_index, $choices_count]);
                                 }
                                 $choices_index++;
 
@@ -695,5 +690,126 @@ class sitetree {
             }
         } // each position
     } // function
-};
 
+
+    function printSpotName_Start($spot_id, $depth) {
+        global $r_spot_id;
+
+        // print the spot itself
+        $this->printSpotHtml($spot_id, $this->getName($spot_id), $spot_id == $r_spot_id, ($this->get('flag', $spot_id) & AA_Module_Site::FLAG_DISABLE));
+
+        // variables defined? - print it
+        if (!$this->isFlag($spot_id, AA_Module_Site::FLAG_COLLAPSE) AND ($vars = $this->get('variables', $spot_id))) {
+            echo "\n  <div class=\"variables\">(". implode(',',$vars) .')</div>';
+        }
+    }
+
+    function printChoice_Start($spot_id, $depth, $choices_index, $choices_count) {
+        // begin of the choice (open <div>)
+
+        // last choice in the list is special
+        $last  = ($choices_index == $choices_count-1);    // just shortcut variable
+        $class = $last ? 'lastchoice' : 'choice';
+
+        if ($this->isLeaf($spot_id)) {
+            $colaps = GetModuleImage('site', $last ? 'l.gif' : 't.gif', '', 21, 13);
+        } elseif ($this->get('flag', $spot_id) & AA_Module_Site::FLAG_COLLAPSE) {
+            $colaps = '<a href="'. self::siteAdminPageUrl($spot_id, "akce=m") .'">'. GetModuleImage('site', 'plus.gif', '', 21, 13) .'</a> ';
+        } else {
+            $colaps = '<a href="'. self::siteAdminPageUrl($spot_id, "akce=p") .'">'. GetModuleImage('site', 'minus.gif', '', 21, 13) .'</a> ';
+        }
+        echo "\n<div class=\"$class\">$colaps";
+
+        // print conditions
+        $conditions = '';
+        if ($conds = $this->get('conditions', $spot_id)) {
+            $delim = ' ';
+            foreach ($conds as $k => $v) {
+                $match = AA_Site_Spot_Match::factoryByString($v,$k);
+                $conditions .= "$delim$k: <strong>$match->val</strong> <small>($match->op)</small>";
+                $delim = ', ';
+            }
+        }
+        if ($conditions == '') {
+            $conditions = '&nbsp;';
+        }
+        echo "\n  <div class=\"conditions\"><a href=\"". self::siteAdminPageUrl($spot_id, "go_sid=$spot_id") . "\">$conditions</a></div>";
+    }
+
+    function printChoice_End($spot_id, $depth, $choices_index, $choices_count) {
+        // close previously opened <div class="choice">
+        echo "\n</div>";
+    }
+
+    function printVariables( $spot_id, $vars ) {
+        echo "<tr><td valign=top><b>"._m("Spot&nbsp;variables")."</b></td><td>";
+        if (isset($vars) AND is_array($vars)) {
+            foreach ($vars as $k => $v) {
+                echo "$v <span><a href=\"". self::siteAdminPageUrl($spot_id, "delvar=" . urlencode($k)) ."\" class=\"aa-button\">"._m("Delete")."</a></span><br>";
+            }
+        }
+        echo "<form name=fvar action=\"".$_SERVER['PHP_SELF']."\"><input type='text' name='addvar' value='' size='50'><span><a href='javascript:document.fvar.submit()' class=\"aa-button\">"._m("Add")."</a></span>";
+        self::printHiddenRSpotId();
+        echo StateHidden();
+        echo "</form></td></tr>";
+    }
+
+    function printConditions($spot_id, $conds, $vars) {
+        echo "<tr><td valign=top><b>"._m("Spot&nbsp;conditions")."</b></td><td>";
+        if ( isset($vars) AND is_array($vars) ) {
+            $i=0;
+            foreach ($vars as $k => $v) {
+                if ($conds[$v]) {
+                    $match = AA_Site_Spot_Match::factoryByString($conds[$v],$v);
+                    $warning = (trim($match->val) == $match->val) ? '' : '<div style="color:red;"><small>'._m('Warning: the condition starts or ends with whitespace character. Please check, if it is OK in your expression.').'</small></div>';
+                    echo "$v ($match->op) <strong>$match->val</strong> <span><a href=\"". self::siteAdminPageUrl($spot_id, 'delcond=' . urlencode($v)) ."\" class=\"aa-button\">"._m("Delete")."</a></span>$warning<br>";
+                } else {
+                    echo "<form name=fcond$i action=\"". $_SERVER['PHP_SELF'] ."\">
+                         $k
+                         <select name=addcondop>
+                           <option>=</option>
+                           <option value=contains>"._m('contains')."</option>
+                           <option value=REGEXP>"._m('Regular Expression')."</option>
+                         </select>
+                         <input type='text' name='addcond' value='' size='50'>
+                     <input type='hidden' name='addcondvar' value='$v'>
+                     <span><a href='javascript:document.fcond$i.submit()' class=\"aa-button\">"._m("Add")."</a></span>";
+                    echo StateHidden();
+                    self::printHiddenRSpotId();
+                    echo "</form>";
+                }
+                $i++;
+            }
+        }
+        echo "</td></tr>";
+    }
+
+    public function printSpotHtml($spot_id, $spot_name, $selected, $disabled) {
+        // get class for this spot div
+        $class = ($selected) ? ' class="selected"' : '';
+
+        // get actions (eye for disable/enable, at this moment
+        $action = $disabled ?
+            '<a href="' . self::siteAdminPageUrl($spot_id, 'akce=e') . '">' . GetModuleImage('site', 'disabled.gif', '', 16, 12, 'class="eye"') . '</a>' :
+            '<a href="' . self::siteAdminPageUrl($spot_id, 'akce=h') . '">' . GetModuleImage('site', 'enabled.gif', '', 16, 12, 'class="eye"') . '</a>';
+
+        // print the spot <div>
+        echo "<div$class title=\"spot ID: $spot_id\">${action}<a href=\"" . self::siteAdminPageUrl($spot_id, "go_sid=$spot_id") . "\" class=\"spot\">$spot_name</a></div>";
+    }
+
+    public static function printHiddenRSpotId() {
+        print('<input type="hidden" name="spot_id" value="' . $GLOBALS['r_spot_id'] . '">');
+    }
+
+    public static function siteAdminPageUrl($spot_id, $add = null) {
+        global $slice_id;
+        $url = get_url($_SERVER['PHP_SELF'], ['spot_id'  => $spot_id,
+                                              'slice_id' => $slice_id
+        ]);   // Always used this way
+        if ($add) {
+            $url = get_url($url, $add);
+        }
+        // Don't add AA_Session if already there (it isn't in PHP_SELF)
+        return safe(StateUrl($url));
+    }
+};

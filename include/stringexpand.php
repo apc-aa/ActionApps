@@ -5728,6 +5728,7 @@ class AA_Unalias_Callback {
         if ( $outcmd   = aa_substr($out,0,$initiallen) ) {
             $outparam = aa_substr($out,$initiallen+1);  // skip one more char - delimiter
 
+            /** @var class-string<AA_Stringexpand> $class_name */
             if (class_exists($class_name = AA_Serializable::constructClassName($outcmd, 'AA_Stringexpand_'))) {
                 return StrExpand($class_name, $class_name::parseParam($outparam), ['item'=>$this->item, 'itemview'=> $this->itemview], true);
             }
