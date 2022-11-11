@@ -311,7 +311,7 @@ echo GetPrintArray($r_msg);
 unset($r_err);
 unset($r_msg);
 
-echo $link_zids->getItems();   // print links and actions
+echo $manager->getItems($link_zids);   // print links and actions
 $r_state['manager']    = $manager->getState();
 $r_state['manager_id'] = $manager_id;  // no special meaning - just manager id
 

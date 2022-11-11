@@ -200,7 +200,7 @@ echo GetPrintArray($r_msg);
 unset($r_err);
 unset($r_msg);
 
-echo $zids->getItems();   // print links and actions
+echo $manager->getItems($zids);   // print links and actions
 $r_state['related']['manager'] = $manager->getState();
 
 echo '<table width="100%" border="0" cellspacing="0" cellpadding="1" bgcolor="'. COLOR_TABTITBG ."\" align=\"center\">
