@@ -83,7 +83,7 @@ function GetCommonMenu($profile) {
 
         "header9"     =>_m("Misc"),
         "te_cron"     => ["label"=>_m("Cron"),            "cond"=>IsSuperadmin(),        "href"=>"admin/tabledit.php?set_tview=cron"],
-        "toexecute"   => ["label"=>_m("Scheduled Tasks"), "cond"=>IsSuperadmin(),        "href"=>"admin/aa_toexecute.php"],
+        "toexecute"   => ["label"=>_m("Task Manager"),    "cond"=>IsSuperadmin(),        "href"=>"admin/aa_toexecute.php"],
         "tasks"       => ["label"=>_m("Planned Tasks"),   "cond"=>IsSuperadmin(),        "href"=>"admin/aa_tasks.php"],
         "log"         => ["label"=>_m("View Log"),        "cond"=>IsSuperadmin(),        "href"=>"admin/aa_log.php?srchbr_akce=1&srchbr_field%5B0%5D=time&srchbr_oper%5B0%5D=%3E&srchbr_value%5B0%5D=".(time()-8*24*3600)."&srchbr_order%5B0%5D=time&srchbr_order_dir%5B0%5D=on"],
         "searchlog"   => ["label"=>_m("View SearchLog"),  "cond"=>IsSuperadmin(),        "href"=>"admin/aa_searchlog.php"],
