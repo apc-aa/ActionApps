@@ -758,7 +758,7 @@ class AA_Item {
      * @param $remove_arr
      * @return string
      */
-    function substitute_alias_and_remove( $text, $remove_arr=null ) {
+    function substitute_alias_and_remove( $text, $remove_arr=null ): string {
         if (empty($remove_arr)) {
             // no removal, we can use easier and more accurate replacement
             $rest = $text;
