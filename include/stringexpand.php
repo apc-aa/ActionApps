@@ -5919,6 +5919,8 @@ class AA_Stringexpander {
      * @return string
      */
     function unalias($text, $remove='', $item=null, $dequote=true, $itemview=null ): string {
+        
+        $text = (string)$text;
 
         if (++$this->recursion_count > 5000) {
             --$this->recursion_count;
@@ -5938,7 +5940,7 @@ class AA_Stringexpander {
                 // replace all {(.....)} with {var:...}, which will be expanded into {...}
                 // this alows to write expressions like
                 //   {item:6625:{(some text {headline........}...etc.)}}
-                $text = AA_Stringexpander::ApplyInlineAlias($text);
+                $text = (string)AA_Stringexpander::ApplyInlineAlias($text);
             }
 
             $last_replacements  = 0;
