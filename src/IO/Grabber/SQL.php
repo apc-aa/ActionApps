@@ -78,7 +78,7 @@ class SQL extends AbstractGrabber
 
     /** description function
      *  Description of the grabber - used as help text for the users.
-     *  Description is in in HTML
+     *  Description is in HTML
      */
     public static function description(): string {
         return _m('Import data from SQL database');

@@ -30,14 +30,14 @@ $require_default_lang = true;      // do not use module specific language file
 const AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
-require_once __DIR__ . "/../include/msgpage.php";
+
 
 if ($cancel) {
     go_url( StateUrl(self_base() . "index.php3"));
 }
 
 if (!IsSuperadmin()) {
-    MsgPageMenu(StateUrl(self_base())."index.php3", _m("You don't have permissions to delete slice."), "admin");
+    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php3", _m("You don't have permissions to delete slice."), "admin");
     exit;
 }
 /** PrintSlice function

@@ -187,7 +187,7 @@ function AA_Refresh(id,inside,ok_func) {
  *  @param refresh   - id of the html element, which you want to refresh.
  *                   - Such element must have data-aa-url attributes
  *  @param ok_func   - function to call after the page update
- *  Note, that the form action atribute must be RELATIVE (not with 'http://...')
+ *  Note, that the form action attribute must be RELATIVE (not with 'http://...')
  */
 function AA_SendForm(id, refresh, ok_func) {
     var form_id = jqid(id);

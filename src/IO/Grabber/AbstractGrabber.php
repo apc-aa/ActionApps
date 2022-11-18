@@ -66,7 +66,7 @@ abstract class AbstractGrabber implements \AA\Util\NamedInterface {
 
     /** description function
      *  Description of the grabber - used as help text for the users.
-     *  Description is in in HTML
+     *  Description is in HTML
      */
     public static function description() : string { return ''; }
 
@@ -158,6 +158,20 @@ abstract class AbstractGrabber implements \AA\Util\NamedInterface {
      */
     function getItem() {
     }
+
+    /** getAllItems function
+     *  Shortcut method to get array of all the Itms
+     * @return ItemContent[]
+     */
+    public function getAllItems(): array {
+        $this->prepare();
+        $ret = [];
+        while ($item = $this->getItem()) {
+            $ret[] = $item;
+        }
+        return $ret;
+    }
+
 
     /** If AA\IO\Saver::store_mode is 'by_grabber' then this method tells Saver,
      *  how to store the item.

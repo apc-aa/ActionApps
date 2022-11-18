@@ -64,7 +64,7 @@ class JsonLD extends AbstractGrabber
     }
 
     /** Description of the grabber - used as help text for the users.
-     *  Description is in in HTML
+     *  Description is in HTML
      */
     public static function description(): string {
         return _m('General JSON-LD file');
@@ -133,8 +133,7 @@ class JsonLD extends AbstractGrabber
         if ($next = $json['hydra:view']['hydra:next']) {
             $needle = substr($next,0,(max(3,strlen($next)/2)));
             $url = substr($this->file,0,strrpos($this->file,$needle)).$next;
-            huhl('NP',$next, $needle, $url);
-            
+//            huhl('NP',$next, $needle, $url);
         }
         return $url;
     }

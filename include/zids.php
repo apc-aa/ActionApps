@@ -48,7 +48,7 @@ use AA\IO\DB\DB_AA;
  *       quotedpackedid   NOT YET SUPPORTED ON INPUT
  *       longid  type=l
  *       taggedid type=t
- * The type of an id, is the first letter of these, or any other string
+ * The type of id, is the first letter of these, or any other string
  *
  * Hints on integrating this with other code
  *

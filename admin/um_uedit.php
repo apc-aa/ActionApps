@@ -43,7 +43,7 @@ const AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/varset.php";
-require_once __DIR__ . "/../include/msgpage.php";
+
 require_once __DIR__ . "/../include/um_util.php";
 
 if ($cancel) {
@@ -51,7 +51,7 @@ if ($cancel) {
 }
 
 if (!IfSlPerm(PS_NEW_USER)) {
-    MsgPageMenu(StateUrl(self_base())."index.php3", _m("No permission to create new user"), "admin");
+    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php3", _m("No permission to create new user"), "admin");
     exit;
 }
 

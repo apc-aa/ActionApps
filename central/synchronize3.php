@@ -23,7 +23,7 @@ use AA\Later\Toexecute;
 
 require_once __DIR__."/include/init_central.php";
 require_once __DIR__ . "/../include/formutil.php";
-require_once __DIR__ . "/../include/msgpage.php";
+
 
 
 function CompareSliceDefs($template_slice_defs, $comp_slice_defs, $mapping) {
@@ -45,7 +45,7 @@ function CompareSliceDefs($template_slice_defs, $comp_slice_defs, $mapping) {
 pageOpen();
 
 if (!IsSuperadmin()) {
-    MsgPageMenu(StateUrl(self_base())."index.php3", _m("You don't have permissions to synchronize slices."), "admin");
+    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php3", _m("You don't have permissions to synchronize slices."), "admin");
     exit;
 }
 

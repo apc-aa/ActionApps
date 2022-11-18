@@ -152,11 +152,14 @@ if ($preview) { // file preview
 
         $numRows = IMPORTFILE_PREVIEW_ROWS; // number of showed items(rows)
         $csvRec = getCSV($handle,$delimiter,$enclosure);
+
+
         if (!$caption) {
+            $head_row = [];
             for ( $i=0, $ino=count($csvRec); $i<$ino; ++$i) {
-                $caption[] = "Field ".($i+1);
+                $head_row[] = "Field ".($i+1);
             }
-            FrmTabRow($caption);
+            FrmTabRow($head_row);
             FrmTabRow($csvRec);
             $numRows--;
         } else {

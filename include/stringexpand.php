@@ -4604,7 +4604,7 @@ class AA_Stringexpand_Editfull extends AA_Stringexpand_Edit {
  *
  *   <required>    explicitly mark the live field as required (0|1)
  *   <function>    specify javascript function, which is executed after the widget
- *                  is sumbitted
+ *                  is submitted
  *   <widget_type> which widget to show
  *  {live::start_date......:::dte:{"show_time":"1"}}
  *  {live::number..........:::sel:{"const_arr":{"0":"no","1":"yes"}}}

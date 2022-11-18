@@ -34,7 +34,7 @@ require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/varset.php";
 require_once __DIR__ . "/../include/item.php";     // GetAliasesFromField funct def
-require_once __DIR__ . "/../include/msgpage.php";
+
 
 
 

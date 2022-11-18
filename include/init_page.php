@@ -116,8 +116,8 @@ require_once __DIR__ . "/event.class.php";
 // array of variables - used to transport variables between pages (instead of dangerous hidden tag)
 $sess->register('r_hidden');
 
-// sometimes we need not to unset hidden - popup for related stories ...
-// only acceptor can read values. For others they are destroyed.
+// sometimes we need to not unset hidden - popup for related stories ...
+// only acceptor can read values. For others, they are destroyed.
 $my_document_uri = $_SERVER['DOCUMENT_URI'] ?: $_SERVER['PHP_SELF'];
 if ( !$save_hidden AND ($unset_r_hidden OR $r_hidden["hidden_acceptor"] != $my_document_uri)) {
     unset( $r_hidden );

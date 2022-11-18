@@ -38,7 +38,7 @@ require_once __DIR__ . "/../include/itemfunc.php";
 require_once __DIR__ . "/../include/notify.php";
 require_once __DIR__ . "/../include/searchlib.php";
 require_once __DIR__ . "/../include/formutil.php";
-require_once __DIR__ . "/../include/msgpage.php";
+
 require_once __DIR__ . "/../include/actions.php";
 
 try {

@@ -22,12 +22,12 @@ https://www.apc.org/
 
 require_once __DIR__."/include/init_central.php";
 require_once __DIR__ . "/../include/formutil.php";
-require_once __DIR__ . "/../include/msgpage.php";
+
 
 pageOpen();
 
 if (!IsSuperadmin()) {
-  MsgPageMenu(StateUrl(self_base())."index.php3", _m("You don't have permissions to import sites from CSV."), "admin");
+  AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php3", _m("You don't have permissions to import sites from CSV."), "admin");
   exit;
 }
 

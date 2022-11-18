@@ -253,6 +253,31 @@ class AA_Adminpageutil {
         echo $body_html;
         $this->printFoot();
     }
+
+    /** MsgPageMenu function
+     *  Displays page with message and link to $url
+     * @param $url - where to go if user clicks on Back link on this message page
+     * @param $msg - displayed message
+     * @param $mode - items/admin/standalone for surrounding of message
+     * @param $menu
+     */
+    public static function MsgPageMenu($url, $msg, $mode, $menu = "") {
+        global $sess;
+
+        if (!isset($sess)) {
+            require_once __DIR__ . "/locauth.php";
+            pageOpen();
+        }
+
+        $apage = new AA_Adminpageutil($mode == 'admin' ? 'aaadmin' : 'sliceadmin', $menu);
+        $apage->setForm();
+        $apage->printHead($err, $msg);
+
+        echo "<a href=\"$url\">" . _m("Back") . "</a>";
+        $apage->printFoot();
+
+        exit;
+    }
 }
 
 
@@ -286,7 +311,7 @@ class AA_Adminpage implements AA_iEditable {
             go_url($this->getCancelUrl());
         }
         if (!$this->isPerm()) {
-            MsgPageMenu($this->getCancelUrl(), _m('You have not permissions to this page').': '.$this->getName(), 'admin');
+            AA_Adminpageutil::MsgPageMenu($this->getCancelUrl(), _m('You have not permissions to this page') . ': ' . $this->getName(), 'admin');
         }
         if ($_POST['update'] AND !empty($_POST['aa'])) {
             $err = [];          // error array (Init - just for initializing variable

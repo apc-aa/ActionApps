@@ -281,9 +281,13 @@ class AA_Showview {
 
         $listlen    = $this->_view_param["listlen"] ?: $view->f('listlen');
 
-        if ($this->_view_param["slice_id"]) {
-            $view_info["slice_id"] = pack_id($this->_view_param["slice_id"]);  // packed,not quoted
-            $slice_id = $this->_view_param["slice_id"]; // unpacked
+        if ($slice_id = $this->_view_param["slice_id"]) {
+            if (!is_long_id($slice_id)) { // unpacked
+                AA::$debug && AA::$dbg->warn("View parameter slice_id is not slice ID. If you want to use more slices, use parameter slices.");
+                AA::$debug&2 && AA::$dbg->groupend("view_$vid".'_'.$dbgtime);
+                return '';
+            }
+            $view_info["slice_id"] = pack_id($slice_id);  // packed,not quoted
         } else {
             $slice_id = unpack_id($view_info["slice_id"]);
         }

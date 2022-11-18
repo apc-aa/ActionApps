@@ -69,7 +69,7 @@ class GrabberAssignmentform extends AA\IO\Grabber\AbstractGrabber {
     public static function name(): string { return _m('Assignment form'); }
 
     /** Description of the grabber - used as help text for the users.
-     *  Description is in in HTML
+     *  Description is in HTML
      */
     public static function description(): string { return _m('Grabbs item relations data POSTed by form'); } // snerovadlo
 

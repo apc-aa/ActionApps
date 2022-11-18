@@ -79,7 +79,7 @@ try {
 } catch (Exception $e) {}
 
 if (!IsSuperadmin()) {
-    MsgPageMenu(StateUrl(self_base())."index.php3", _m("You don't have permissions to do search."), "admin");
+    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php3", _m("You don't have permissions to do search."), "admin");
     exit;
 }
 // ----------------------------------------------------------------------------------------

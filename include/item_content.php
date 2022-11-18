@@ -291,12 +291,11 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
     public function offsetGet($offset) { return $this->val[$offset] ?? null; }
 }
 
-
 /** Class holds any data (AA_Values)
  *  Universal data structure interface - it could hold item data as well as
  *  data from the form
  */
-class AA_Content {
+class AA_Content implements Iterator, ArrayAccess, Countable {
     protected $content      = [];
     protected $id_field     = 'aa_id';
     protected $owner_field  = 'aa_owner';
@@ -305,7 +304,17 @@ class AA_Content {
         return AA::Stringexpander()->unalias($text);
     }
 
+    /** is_set function
+     * @todo  rename to more standard isSet after switch to PHP version 7
+     * @param $field_id
+     * @return bool
+     */
+    function is_set($field_id): bool {
+        return is_array($this->content[$field_id]);
+    }
+
     /** isField function
+     *  @deprecated - kind of confusing here in AA_Content - isField in sucessor ItemContent do different thing - use rather is_set()
      *  Returns true, if the passed field_id is field id
      * @param $field_id
      * @return bool
@@ -499,6 +508,22 @@ class AA_Content {
             return array_filter(array_map('trim', $this->getValuesArray($fid)), 'strlen');
         }, ARRAY_FILTER_USE_KEY);
     }
+
+    /** Iterator interface */
+    public function rewind()      { reset($this->content); }
+    public function current()     { return $this->getAaValue(key($this->content)); }
+    public function key()         { return key($this->content); }
+    public function next()        { next($this->content); }
+    public function valid(): bool { return (current($this->content) !== false); }
+
+    /** Countable interface - Returns number of values  */
+    public function count(): int                { return count($this->content); }
+
+    /** ArrayAccess interface */
+    public function offsetSet($offset, $value)  { $this->setAaValue($offset, $value); }
+    public function offsetExists($offset): bool { return is_array($this->content[$offset]); }
+    public function offsetUnset($offset)        { unset($this->content[$offset]); }
+    public function offsetGet($offset)          { return is_array($this->content[$offset]) ? $this->getAaValue($offset) : null; }
 }
 
 const ITEMCONTENT_ERROR_BAD_PARAM   = 200;
@@ -694,15 +719,6 @@ class ItemContent extends AA_Content {
      */
     function isEmpty() {
         return !$this->content;
-    }
-
-    /** is_set function
-     * @todo  rename to more standard isSet after switch to PHP version 7
-     * @param $field_id
-     * @return bool
-     */
-    function is_set($field_id) {
-        return is_array($this->content[$field_id]);
     }
 
     /** Without $bin returns true if the item is visible - not expired/trashed/pending/...

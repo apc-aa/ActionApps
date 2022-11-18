@@ -49,23 +49,23 @@ require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/date.php";
 require_once __DIR__ . "/../include/varset.php";
 require_once __DIR__ . "/../include/fileman.php";
-require_once __DIR__ . "/../include/msgpage.php";
+
 
 // FilemanPerms() is defined in perm_core.php, it sets $fileman_dir
 if (!FilemanPerms($slice_id)) {
-    MsgPageMenu ("index.php3", _m("No permissions for file manager."), "admin", "fileman");
+    AA_Adminpageutil::MsgPageMenu("index.php3", _m("No permissions for file manager."), "admin", "fileman");
 }
 
 // FILEMAN_BASE_DIR defined in config.php
 if (!is_dir (FILEMAN_BASE_DIR)) {
-    MsgPageMenu ("index.php3", _m("Unable to run File Manager")." '" . FILEMAN_BASE_DIR . "' "  ._m("doesn't exist"), "admin", "fileman");
+    AA_Adminpageutil::MsgPageMenu("index.php3", _m("Unable to run File Manager") . " '" . FILEMAN_BASE_DIR . "' " . _m("doesn't exist"), "admin", "fileman");
 }
 
 $basedir = FILEMAN_BASE_DIR.$fileman_dir;
 
 if (!is_dir ($basedir) && !file_exists ($basedir)) {
     if (!mkdir ($basedir, FILEMAN_MODE_DIR)) {
-        MsgPageMenu("index.php3", _m("Unable to mkdir")." '".$basedir."'", "admin", "fileman");
+        AA_Adminpageutil::MsgPageMenu("index.php3", _m("Unable to mkdir") . " '" . $basedir . "'", "admin", "fileman");
     }
 }
 

@@ -35,14 +35,14 @@ require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/varset.php";
 require_once __DIR__ . "/../include/item.php";     // GetAliasesFromField funct def
-require_once __DIR__ . "/../include/msgpage.php";
+
 
 if ($cancel) {
     go_url( StateUrl(self_base() . "index.php3"));
 }
 
 if (!IfSlPerm(PS_HISTORY)) {
-    MsgPageMenu(StateUrl(self_base())."index.php3", _m("You have not permissions to view history"), "admin");
+    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php3", _m("You have not permissions to view history"), "admin");
     exit;
 }
 

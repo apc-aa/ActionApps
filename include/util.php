@@ -1162,7 +1162,6 @@ function getHtmlPage($code) {
  * Displays page with message and link to $url
  * @param $url - where to go if user clicks on Back link on this message page
  * @param $msg - displayed message
- * @param $dummy - was used in past, now you should use MsgPageMenu from msgpage.php
  */
 function MsgPage($url, $msg) {
     HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)

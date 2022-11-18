@@ -33,14 +33,14 @@ const AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/csn_util.php";
-require_once __DIR__ . "/../include/msgpage.php";
+
 
 if ($cancel) {
     go_url( StateUrl(self_base() . "index.php3"));
 }
 
 if (!IfSlPerm(PS_FEEDING)) {
-    MsgPageMenu(StateUrl(self_base())."index.php3", _m("You have not permissions to change feeding setting"), "sliceadmin", "filters");
+    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php3", _m("You have not permissions to change feeding setting"), "sliceadmin", "filters");
     exit;
 }
 
@@ -70,7 +70,7 @@ while ($db->next_record()) {
 }
 
 if ( !isset($impslices) OR !is_array($impslices)){
-    MsgPageMenu(con_url(StateUrl(self_base()."se_import.php"), "slice_id=$slice_id"), _m("There are no imported slices"), "sliceadmin", "filters");
+    AA_Adminpageutil::MsgPageMenu(con_url(StateUrl(self_base() . "se_import.php"), "slice_id=$slice_id"), _m("There are no imported slices"), "sliceadmin", "filters");
     exit;
 }
 

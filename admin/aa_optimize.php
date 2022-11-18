@@ -32,7 +32,7 @@ require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
 
 if (!IsSuperadmin()) {
-    MsgPageMenu(StateUrl(self_base())."index.php3", _m("You don't have permissions to do optimize tests."), "admin");
+    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php3", _m("You don't have permissions to do optimize tests."), "admin");
     exit;
 }
 

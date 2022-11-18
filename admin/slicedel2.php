@@ -28,7 +28,7 @@
 const AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/feeding.php";
-require_once __DIR__ . "/../include/msgpage.php";
+
 require_once __DIR__ . "/../include/modutils.php";
 
 

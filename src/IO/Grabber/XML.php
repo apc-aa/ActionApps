@@ -79,7 +79,7 @@ class XML extends AbstractGrabber
     }
 
     /** Description of the grabber - used as help text for the users.
-     *  Description is in in HTML
+     *  Description is in HTML
      */
     public static function description(): string {
         return _m('General XML file');

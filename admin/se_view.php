@@ -34,7 +34,7 @@ require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/varset.php";
 require_once __DIR__ . "/../include/item.php";     // GetAliasesFromField funct def
 require_once __DIR__ . "/../include/discussion.php";  // GetDiscussionAliases funct def
-require_once __DIR__ . "/../include/msgpage.php";
+
 
 // ----------------------------------------------------------------------------
 /** get_row_count function
@@ -288,7 +288,7 @@ if ($view_id) {
 }
 
 if (!IfSlPerm(PS_FULLTEXT)) {
-    MsgPageMenu(StateUrl(self_base())."index.php3", _m("You do not have permission to change views"), "admin");
+    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php3", _m("You do not have permission to change views"), "admin");
     exit;
 }
 
