@@ -141,7 +141,7 @@ function __mlx_fatal($msg) {
         $msg = implode("<br>",$msg);
     }
     $err["MLX"] = MsgErr($msg);
-    MsgPage(con_url(StateUrl(self_base() ."index.php3")), $err);
+    MsgPage($err);
     die;
 }
 

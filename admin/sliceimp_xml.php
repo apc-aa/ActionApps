@@ -101,7 +101,7 @@ exit;
  * @param $str
  */
 function si_err($str) {
-    MsgPage(StateUrl(self_base())."index.php3", $str);
+    MsgPage($str);
     exit;
 }
 

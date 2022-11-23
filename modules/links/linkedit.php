@@ -87,7 +87,7 @@ if ( ctype_digit($lid) ) {
 
 if ( $r_state['link_id'] ) {
     if ( !($db_link = GetLinkInfo( $r_state['link_id']))) {
-        MsgPage(StateUrl(self_base()."index.php3"), _m('Link do not exist or the base category is not set'));
+        MsgPage(_m('Link do not exist or the base category is not set'));
         exit;
     }
 

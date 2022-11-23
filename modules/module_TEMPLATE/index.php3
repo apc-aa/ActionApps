@@ -39,7 +39,7 @@ $p_module_id = q_pack_id($module_id); // packed to 16-digit as stored in databas
 // module. See /include/perm_core.php for more details
 
 if ( !IfSlPerm(PS_MODW_EDIT_CODE) ) {
-  MsgPage(StateUrl(self_base())."index.php3", _m("You do not have permission to edit items in this slice"));
+  MsgPage(_m("You do not have permission to edit items in this slice"));
   exit;
 }
 

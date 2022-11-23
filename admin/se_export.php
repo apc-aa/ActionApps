@@ -48,7 +48,7 @@ require_once __DIR__ . "/../include/locsess.php";    // DB_AA object definition
 require_once __DIR__ . "/../include/exporter.class.php";
 
 if (!IfSlPerm(PS_FEEDING)) {
-    MsgPage(StateUrl(self_base()."index.php3"), _m("You have not permissions to export"));
+    MsgPage(_m("You have not permissions to export"));
     exit;
 }
 

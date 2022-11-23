@@ -81,7 +81,7 @@ class AA_Slice_Exporter {
 
         $slice = DB_AA::select1('', 'SELECT * FROM `slice`', [['id', $slobj->getId(), 'l']]);
         if (!$slice) {
-            MsgPage(StateUrl(self_base())."index.php3", "ERROR - slice ".$slobj->getId() ." not found");
+            MsgPage("ERROR - slice " . $slobj->getId() . " not found");
             exit;
         }
         $uid = unpack_id($slice['id']);
@@ -93,7 +93,7 @@ class AA_Slice_Exporter {
 
         if ($this->type != 'backup') {
             if (strlen ($new_slice_id) != 16) {
-                MsgPage(StateUrl(self_base())."index.php3", _m("Wrong slice ID length: ").strlen($new_slice_id));
+                MsgPage(_m("Wrong slice ID length: ") . strlen($new_slice_id));
                 exit;
             } else {
                 $uid = unpack_id($new_slice_id);
@@ -214,7 +214,7 @@ class AA_Slice_Exporter {
 
             if ($this->type != 'backup') {
                 if (strlen ($new_slice_id) != 16) {
-                    MsgPage(StateUrl(self_base())."index.php3", _m("Wrong slice ID length:").strlen($new_slice_id));
+                    MsgPage(_m("Wrong slice ID length:") . strlen($new_slice_id));
                     exit;
                 } else {
                     $new_slice_idunpack = unpack_id($new_slice_id);
@@ -362,7 +362,7 @@ class AA_Slice_Documentator extends AA_Slice_Exporter {
 
         $slice = DB_AA::select1('', 'SELECT * FROM `slice`', [['id', $slobj->getId(), 'l']]);
         if (!$slice) {
-            MsgPage(StateUrl(self_base())."index.php3", "ERROR - slice ".$slobj->getId() ." not found");
+            MsgPage("ERROR - slice " . $slobj->getId() . " not found");
             exit;
         }
         $uid = unpack_id($slice['id']);

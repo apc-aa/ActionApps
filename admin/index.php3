@@ -96,9 +96,18 @@ $perm_edit_all  = IfSlPerm(PS_EDIT_ALL_ITEMS);
 $perm_edit_self = IfSlPerm(PS_EDIT_SELF_ITEMS);
 
 if ( !$perm_edit_all && !$perm_edit_self) {
-    MsgPage(StateUrl(self_base())."index.php3", _m("You do not have permission to edit items in the slice:").AA_Slice::getModuleName(AA::$module_id));
+    MsgPage(_m("You do not have permission to edit items in the slice:") . AA_Slice::getModuleName(AA::$module_id));
     exit;
 }
+
+
+//$url_param = [
+//    'Msg' => MsgOk(_m("User successfully added to permission system")),
+//    'UsrSrch' => _m("Search"),
+//    'usr'     => $user_login
+//];
+//huhl(get_url(StateUrl(self_base() . "se_users.php"), $url_param));
+
 
 
 $actions   = new AA_Manageractions;

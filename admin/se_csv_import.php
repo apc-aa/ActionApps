@@ -67,12 +67,12 @@ $enclosure = $_REQUEST['enclosure'];
 $delimiter = $_REQUEST['delimiter'];
 
 if (!IfSlPerm(PS_EDIT_ALL_ITEMS)) {
-    MsgPage(StateUrl(self_base()."index.php3"), _m("You have not permissions to import files"));
+    MsgPage(_m("You have not permissions to import files"));
     exit;
 }
 
 if (!isset(AA::$module_id)) {
-    MsgPage(StateUrl(self_base()."index.php3"), _m("Missing slice"));
+    MsgPage(_m("Missing slice"));
     exit;
 }
 
@@ -119,7 +119,7 @@ if ($upload OR $preview) {
             }
     }
     if ($err != "") {
-         MsgPage(StateUrl(self_base()."se_csv_import.php"), $err);
+         MsgPage($err, StateUrl(self_base() . "se_csv_import.php"));
     }
 }
 

@@ -38,11 +38,11 @@ if ($cancel) {
 
 if ($del OR $deletearr) {
     if (!IsSuperadmin()) {
-        MsgPage(StateUrl(self_base())."index.php3", _m("You don't have permissions to delete slice."));
+        MsgPage(_m("You don't have permissions to delete slice."));
         exit;
     }
 } else {
-    MsgPage(StateUrl(self_base())."index.php3", _m("You don't have permissions to delete slice."));
+    MsgPage(_m("You don't have permissions to delete slice."));
     exit;
 }
 

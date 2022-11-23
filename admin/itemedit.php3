@@ -286,7 +286,7 @@ unset( $content );       // used in another context for storing item to db
 if ($edit) {
     if ( !count($fields) ) {
         $err["DB"] = MsgErr(_m("Error: no fields."));
-        MsgPage(con_url(StateUrl(self_base() ."index.php3")), $err);
+        MsgPage($err);
         exit;
     }
 
@@ -294,7 +294,7 @@ if ($edit) {
     $content = GetItemContent($id);
     if ( !$content ) {
         $err["DB"] = MsgErr(_m("Bad item ID id=%1", [$id]));
-        MsgPage(con_url(StateUrl(self_base() ."index.php3"), ''), $err);
+        MsgPage($err);
         exit;
     }
 
@@ -306,7 +306,7 @@ if ($edit) {
     $real_user = AuthGetUid();
     if (!( $perm_edit_all || ( $item_user == $real_user ) )) {
         $err["DB"] = MsgErr(_m("Error: You have no rights to edit item."));
-        MsgPage(con_url(StateUrl(self_base() ."index.php3")), $err);
+        MsgPage($err);
         exit;
     }
 } elseif (!is_object($content4id)) {  // form is submitted

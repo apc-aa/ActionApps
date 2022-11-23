@@ -142,18 +142,18 @@ class AA_Csv_Importer {
  */
     function check() {
         if (!CheckPerms( $this->auth_uid, "slice", $this->slice_id, PS_EDIT_ALL_ITEMS)) {
-            MsgPage(StateUrl(self_base()."index.php3"), _m("You have not permissions to setting "));
+            MsgPage(_m("You have not permissions to setting "));
             exit;
         }
 
         // check parameters
 /*
         if (!file_exists($fileName)) {
-            MsgPage(StateUrl(self_base()."se_csv_import.php"), _m("File for import does not exists:").$fileName );
+            MsgPage(StateUrl(_m("File for import does not exists:", self_base()."se_csv_import.php").$fileName );
         }
 */
         if (!$this->addParams) {
-            MsgPage(StateUrl(self_base()."se_csv_import.php"), _m("Invalid additional parameters for import"));
+            MsgPage(_m("Invalid additional parameters for import"));
             exit;
         }
     }
@@ -252,7 +252,7 @@ class AA_Csv_Importer {
         }
 
         $msg = _m("Added to slice"). $this->slice_id ." :<br><br>\n". $msg." <br><br>\n";
-        MsgPage(StateUrl(self_base()."se_csv_import.php"), $msg.$logMsg );
+        MsgPage($msg . $logMsg, StateUrl(self_base() . "se_csv_import.php"));
     }
 
 /** preview function

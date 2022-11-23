@@ -37,7 +37,7 @@ if ($cancel) {
 }
 
 if (!IfSlPerm(PS_EDIT_ALL_ITEMS)) {
-    MsgPage(StateUrl(self_base())."index.php3", _m("You do not have permission to edit items in this slice"));
+    MsgPage(_m("You do not have permission to edit items in this slice"));
     exit;
 }
 

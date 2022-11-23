@@ -138,7 +138,7 @@ if ($edit) {
     $content4id = $slice->get_dynamic_setting_content(true);
     if ( !$content4id ) {
         $err["DB"] = MsgErr(_m("Bad item ID id=%1", [$id]));
-        MsgPage(StateUrl(self_base() ."index.php3"), $err);
+        MsgPage($err);
         exit;
     }
 } else {

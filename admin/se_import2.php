@@ -133,7 +133,7 @@ if ( !count($err) ) {
         go_url( StateUrl(self_base() . "se_import.php") ."&Msg=" . rawurlencode(MsgOk(_m("Content Pooling update successful"))));
     }
 } else {
-  MsgPage(StateUrl(self_base()."se_import.php"), $err);
+  MsgPage($err, StateUrl(self_base() . "se_import.php"));
 }
 
 page_close();

@@ -31,7 +31,7 @@
 const AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 if (!IfSlPerm(PS_FEEDING)) {
-    MsgPage(StateUrl(self_base()."index.php3"), _m("You have not permissions to change feeding setting"));
+    MsgPage(_m("You have not permissions to change feeding setting"));
     exit;
 }
 
@@ -47,7 +47,7 @@ if ($db->next_record()) {
 }
 
 if (!($data = xml_fetch($server_url, ORG_NAME, $password, AuthGetUname(),"",0,""))) {
-    MsgPage(StateUrl(self_base() . "se_inter_import.php"), _m("Unable to connect and/or retrieve data from the remote node. Contact the administrator of the local node.") );
+    MsgPage(_m("Unable to connect and/or retrieve data from the remote node. Contact the administrator of the local node."), self_base() . "se_inter_import.php");
 }
 
 // find out first character of fetched data: if it is not '<' exit
@@ -58,13 +58,13 @@ if (substr($data,0,1) != "<") {
         case ERR_PASSWORD : $err_msg = _m("Invalid password for the node name:") . " ".ORG_NAME . ". "._m("Contact the administrator of the local node."); break;
         default:            $err_msg = _m("Remote server returns following error:") . " $data"; break;
     }
-    MsgPage(StateUrl(self_base() . "se_inter_import.php"), $err_msg); // $data contains error message
+    MsgPage($err_msg, StateUrl(self_base() . "se_inter_import.php")); // $data contains error message
 }                                                                   // from the server module
 
 // try to parse xml document
 if (!($aa_rss = aa_rss_parse($data))) {
     AA_Log::write("CSN", AA_Log::context(), "Establishing mode: Unable to parse XML data");
-    MsgPage(StateUrl(self_base() . "se_inter_import.php"), _m("Unable to connect and/or retrieve data from the remote node. Contact the administrator of the local node.") );
+    MsgPage(_m("Unable to connect and/or retrieve data from the remote node. Contact the administrator of the local node."), self_base() . "se_inter_import.php");
 }
 
 foreach ($aa_rss['channels'] as $id => $foo) {

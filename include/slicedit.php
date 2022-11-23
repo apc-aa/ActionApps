@@ -85,12 +85,12 @@ function add_user_and_welcome($welcome_id, $user_login, $slice_id, $role) {
 
 if ($slice_id) {  // edit slice
     if (!IfSlPerm(PS_EDIT)) {
-        MsgPage(StateUrl(self_base())."index.php3", _m("You have not permissions to edit this slice"));
+        MsgPage(_m("You have not permissions to edit this slice"));
         exit;
     }
 } else {          // add slice
     if (!CheckPerms( AuthGetUid(), "aa", AA_ID, PS_ADD)) {
-        MsgPage(StateUrl(self_base())."index.php3", _m("You have not permissions to add slice"));
+        MsgPage(_m("You have not permissions to add slice"));
         exit;
     }
 }

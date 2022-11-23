@@ -33,11 +33,11 @@ if ($cancel)
 
 if ($del) {
   if (!IsSuperadmin()) {
-    MsgPage(StateUrl(self_base())."index.php3", _m("You don't have permissions to delete a site."));
+    MsgPage(_m("You don't have permissions to delete a site."));
     exit;
   }
 } else {
-  MsgPage(StateUrl(self_base())."index.php3", _m("Module not found."));
+  MsgPage(_m("Module not found."));
   exit;
 }
 

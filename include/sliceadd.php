@@ -27,7 +27,7 @@
 use AA\IO\DB\DB_AA;
 
 if (!CheckPerms(AuthGetUid(), "aa", AA_ID, PS_ADD)) {
-    MsgPage(StateUrl(self_base())."index.php3", _m("You have not permissions to add slice"));
+    MsgPage(_m("You have not permissions to add slice"));
     exit;
 }
 

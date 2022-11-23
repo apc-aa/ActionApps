@@ -39,7 +39,7 @@ $searchbar = new AA_Searchbar();   // mainly for bookmarks
 $items     = $chb;
 
 //if ( IfSlPerm(PS_EDIT_ALL_ITEMS) ) {
-//    MsgPage(StateUrl(self_base())."index.php3", _m("You do not have permission to send mails from this slice: ").AA_Slice::getModuleName($slice_id));
+//    MsgPage(_m("You do not have permission to send mails from this slice: ").AA_Slice::getModuleName($slice_id));
 //    exit;
 //}
 

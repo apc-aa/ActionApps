@@ -61,7 +61,7 @@ if (!is_array($tableview)) {
     exit;
 }
 if (! $tableview["cond"] ) {
-    MsgPage(StateUrl(self_base()."index.php3"), _m("You have not permissions to this page"));
+    MsgPage(_m("You have not permissions to this page"));
     exit;
 }
 

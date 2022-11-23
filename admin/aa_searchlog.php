@@ -31,7 +31,7 @@ const AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 
 if ( !IsSuperadmin() ) {
-    MsgPage(StateUrl(self_base())."index.php3", _m("You do not have permission to manage ActionApps logs"));
+    MsgPage(_m("You do not have permission to manage ActionApps logs"));
     exit;
 }
 

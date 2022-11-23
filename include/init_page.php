@@ -126,7 +126,7 @@ $after_login = !$no_slice_id && !AA::$module_id;
 $perm_slices = GetUserSlices();
 
 if ( !$no_slice_id AND !IsSuperadmin() AND !$perm_slices[AA::$module_id] AND !$after_login ) {
-    MsgPage(StateUrl(self_base())."index.php3", _m("You do not have permission to edit items in the slice").": ".AA_Slice::getModuleName(AA::$module_id));
+    MsgPage(_m("You do not have permission to edit items in the slice") . ": " . AA_Slice::getModuleName(AA::$module_id));
     exit;
 }
 

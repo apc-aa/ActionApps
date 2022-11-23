@@ -33,7 +33,7 @@
 const AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 if (!IfSlPerm(PS_FEEDING)) {
-    MsgPage(StateUrl(self_base()."index.php3"), _m("You have not permissions to change feeding setting"));
+    MsgPage(_m("You have not permissions to change feeding setting"));
     exit;
 }
 
@@ -87,7 +87,7 @@ foreach ($g_modules as  $k => $v) {
 }
 
 if (!isset($impslices) OR !is_array($impslices)){
-    MsgPage(StateUrl(self_base()."se_import.php"), _m("There are no imported slices"));
+    MsgPage(_m("There are no imported slices"), self_base() . "se_import.php");
     exit;
 }
 

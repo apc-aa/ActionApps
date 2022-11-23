@@ -38,7 +38,7 @@ require_once __DIR__ . "/../include/mgettext.php";
 require_once __DIR__ . "/../include/formutil.php";
 
 if (!CheckPerms( AuthGetUid(), "aa", AA_ID, PS_ADD) ) {
-    MsgPage(StateUrl(self_base())."index.php3", _m("You are not allowed to export / import slices"));
+    MsgPage(_m("You are not allowed to export / import slices"));
     exit;
 }
 

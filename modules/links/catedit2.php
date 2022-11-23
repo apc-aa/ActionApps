@@ -168,7 +168,7 @@ $cpath = GetCategoryPath( $cid );
 if ( IsCatPerm( PS_LINKS_EDIT_CATEGORY, $cpath ) ) {
     $r_state['cat_path']  = $cpath;
 } else {
-    MsgPage(StateUrl(self_base())."index.php3", _m('No permission to edit category'));
+    MsgPage(_m('No permission to edit category'));
     exit;
 }
 

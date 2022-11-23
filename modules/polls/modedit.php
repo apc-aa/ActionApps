@@ -51,12 +51,12 @@ $module_id   = $slice_id;
 
 if ($template['P']) {        // add module
     if (!CheckPerms( AuthGetUid(), "aa", AA_ID, PS_ADD)) {
-        MsgPage(StateUrl(self_base())."index.php3", _m("You have not permissions to add polls"));
+        MsgPage(_m("You have not permissions to add polls"));
         exit;
     }
 } else {                    // edit module
     if (!CheckPerms( AuthGetUid(), "slice", $module_id, PS_MODP_SETTINGS)) {
-        MsgPage(StateUrl(self_base())."index.php3", _m("You have not permissions to edit this polls"));
+        MsgPage(_m("You have not permissions to edit this polls"));
         exit;
     }
 }

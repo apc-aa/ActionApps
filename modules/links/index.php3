@@ -42,7 +42,7 @@ require_once __DIR__ . "/../../modules/links/util.php";      // module specific 
 // module. See /include/perm_core.php for more details
 
 if ( !IfSlPerm(PS_LINKS_EDIT_LINKS) ) {
-    MsgPage(StateUrl(self_base())."index.php3", _m("No permissions to edit links"));
+    MsgPage(_m("No permissions to edit links"));
     exit;
 }
 

@@ -53,7 +53,7 @@ $module_id = AA::$module_id;
 $slice       = AA_Slice::getModule($module_id);
 
 if ( !IfSlPerm(PS_EDIT_ALL_ITEMS)) {
-    MsgPage(StateUrl(self_base())."index.php3", _m("You do not have permission see the users in this slice:").AA_Slice::getModuleName(AA::$module_id));
+    MsgPage(_m("You do not have permission see the users in this slice:") . AA_Slice::getModuleName(AA::$module_id));
     exit;
 }
 

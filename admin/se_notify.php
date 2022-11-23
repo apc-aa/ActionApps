@@ -76,12 +76,12 @@ if ($cancel){
 }
 
 if (! AA::$module_id){
-    MsgPage(StateUrl(self_base())."index.php3", "error on se_notify.php");
+    MsgPage("error on se_notify.php");
     exit;
 }
 
 if (!IfSlPerm(PS_EDIT)) {
-    MsgPage(StateUrl(self_base())."index.php3", _m("You have not permissions to edit this slice"));
+    MsgPage(_m("You have not permissions to edit this slice"));
     exit;
 }
 

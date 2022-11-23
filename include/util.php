@@ -501,7 +501,7 @@ function GetPrintArray($a) {
  * @param $txt
  * @return string
  */
-function MsgOk($txt){
+function MsgOk($txt): string {
     return "<div class=\"okmsg\">$txt</div>";
 }
 
@@ -510,7 +510,7 @@ function MsgOk($txt){
  * @param $txt
  * @return string
  */
-function MsgErr($txt){
+function MsgErr($txt): string {
     return "<div class=\"err\">$txt</div>";
 }
 
@@ -1160,10 +1160,10 @@ function getHtmlPage($code) {
 
 /** MsgPage function
  * Displays page with message and link to $url
- * @param $url - where to go if user clicks on Back link on this message page
- * @param $msg - displayed message
+ * @param $msg        - displayed message
+ * @param string $url - where to go if user clicks on Back link on this message page
  */
-function MsgPage($url, $msg) {
+function MsgPage($msg, string $url = '') {
     HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
     echo "<title>" . _m("Toolkit news message") . "</title>
       </head>
@@ -1174,6 +1174,10 @@ function MsgPage($url, $msg) {
     } else {
         echo "<p>$msg</p><br><br>";
     }
+    if (!$url) {
+        $url = self_base(). "index.php3";
+    }
+    $url = safe(StateUrl($url));
     echo "<a href=\"$url\">"._m("Back")."</a>";
     echo "</body></html>";
     page_close();

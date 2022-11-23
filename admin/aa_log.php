@@ -35,7 +35,7 @@ require_once __DIR__ . "/../include/item.php";
 require_once __DIR__ . "/../include/actions.php";
 
 if ( !IsSuperadmin() ) {
-    MsgPage(StateUrl(self_base())."index.php3", _m("You do not have permission to manage ActionApps logs"));
+    MsgPage(_m("You do not have permission to manage ActionApps logs"));
     exit;
 }
 

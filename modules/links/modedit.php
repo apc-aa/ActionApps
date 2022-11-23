@@ -58,12 +58,12 @@ $module_id   = $slice_id;
 
 if ($template['Links']) {        // add module
     if (!CheckPerms( AuthGetUid(), "aa", AA_ID, PS_ADD)) {
-        MsgPage(StateUrl(self_base())."index.php3", _m('No permission to add module'));
+        MsgPage(_m('No permission to add module'));
         exit;
     }
 } else {                    // edit module
     if (!CheckPerms( AuthGetUid(), "slice", $module_id, PS_LINKS_SETTINGS)) {
-        MsgPage(StateUrl(self_base())."index.php3", _m('No permission to edit module'));
+        MsgPage(_m('No permission to edit module'));
         exit;
     }
 }

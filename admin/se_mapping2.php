@@ -36,7 +36,7 @@ require_once __DIR__ . "/../include/varset.php";
 require_once __DIR__ . "/../include/csn_util.php";
 
 if (!IfSlPerm(PS_FEEDING)) {
-  MsgPage(StateUrl(self_base())."index.php3", _m("You have not permissions to change feeding setting"));
+  MsgPage(_m("You have not permissions to change feeding setting"));
   exit;
 }
 

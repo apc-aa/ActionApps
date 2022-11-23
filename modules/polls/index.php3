@@ -38,7 +38,7 @@ require_once __DIR__ . "/../../modules/polls/include/actions.php";
 require_once __DIR__ . "/../../modules/polls/include/util.php";
 
 if ( !IfSlPerm(PS_EDIT_ALL_ITEMS) ) {
-    MsgPage(StateUrl(self_base())."index.php3", _m("You do not have permission to manage Polls"));
+    MsgPage(_m("You do not have permission to manage Polls"));
     exit;
 }
 

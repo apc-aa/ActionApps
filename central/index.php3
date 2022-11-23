@@ -53,7 +53,7 @@ function CountItemsInBins() {
 }
 
 if ( !IsSuperadmin() ) {
-    MsgPage(StateUrl(self_base())."index.php3", _m("You do not have permission to manage ActionApps instalations"));
+    MsgPage(_m("You do not have permission to manage ActionApps instalations"));
     exit;
 }
 
