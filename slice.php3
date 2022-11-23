@@ -584,7 +584,7 @@ if ($zids->count() > 0) {
     echo $itemview->get_output_cached("view");
 
     if (($scr->pageCount() > 1) AND !$no_scr AND !$group_n) {
-        $scr->pnavbar();
+        echo $scr->getNavbar();
     }
 } else {
     // test if the the noitem_msg is filled (be carefull - "0" should be considered as filled)

@@ -342,7 +342,7 @@ class tabledit {
             // scroller
             if ($scroll->pageCount() > 1) {
                 echo "<p align=\"center\">";
-                $scroll->pnavbar();
+                echo $scroll->getNavbar();
                 echo "</p>";
             }
         }
@@ -422,7 +422,7 @@ class tabledit {
                 $bt = $this->ButtonsText(false);
                 $bt = $bt[$button];
                 $alt = $bt["alt"] ?: "&nbsp;";
-                $img = '<img border="0" src="'.$this->imagepath.$bt["img"].$big.'.gif" alt="'.$bt["alt"].'">';
+                $img = '<img border="0" src="'.$this->imagepath.$bt["img"].'.gif" alt="'.$bt["alt"].'">';
                 echo "<span class=\"te_button_text\">$img = $alt</span><br>";
             }
         }
@@ -433,7 +433,7 @@ class tabledit {
         // scroller
         if ($scroll->pageCount() > 1) {
             echo "<td>";
-            $scroll->pnavbar();
+            echo $scroll->getNavbar();
             echo "</td><td width=\"20\">&nbsp;</td>";
         }
         echo "<td>";
@@ -640,6 +640,7 @@ class tabledit {
      */
     function ShowColumnValues($record, $new_record, $key, $irow)
     {
+        $td ='';
         if ($this->type == "browse") {
             $td = "<td class=\"te_b_row".($irow % 2 ? "1" : "2")."\">";
         } else {

@@ -361,28 +361,30 @@ class AA_Scroller_Easy {
         return $arr;
     }
 
-    /** pnavbar function
+    /** getNavbar function
      *  Convert array provided by navarray into HTML code
      *  Commands are added to $url
      */
-    function pnavbar() {
+    function getNavbar(): string {
+        $ret = '';
         $url = con_url($this->urldefault, ['scrl'=>1]);
         $i   = 0;
         $arr = $this->navarray();
         if ( count($arr) > 0 ) {
-            echo "\n<div class=\"enclose-scroller\" id=\"scroller-{$this->id}\">";
+            $ret .= "\n<div class=\"enclose-scroller\" id=\"scroller-{$this->id}\">";
             foreach($arr as $k => $v) {
                 if ($i++) {
-                    echo " | ";
+                    $ret .=  " | ";
                 }
                 if ($v) {
-                    echo "<a href=\"". $url. "&amp;". $v. "\" class=\"scroller\">$k</a>";
+                    $ret .=  "<a href=\"". $url. "&amp;". $v. "\" class=\"scroller\">$k</a>";
                 } else {
-                    echo "<span class=\"scroller_actual\">$k</span>";
+                    $ret .=  "<span class=\"scroller_actual\">$k</span>";
                 }
             }
-            echo "\n<!--/scroller-{$this->id}--></div>";
+            $ret .= "\n<!--/scroller-{$this->id}--></div>";
         }
+        return $ret;
     }
 }
 

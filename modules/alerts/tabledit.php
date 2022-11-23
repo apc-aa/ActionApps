@@ -34,7 +34,9 @@ require_once __DIR__."/../../include/config.php";
 require_once __DIR__ . "/../../include/constants.php";
 require_once __DIR__ . "/../../include/locsess.php";
 require_once __DIR__ . "/../../include/tabledit.php";
+require_once __DIR__ . "/../../include/tabledit_util.php";
 require_once __DIR__ . "/../../include/tv_common.php";
+require_once __DIR__ . "/../../include/tv_email.php";
 require_once __DIR__ . "/../../include/util.php";
 require_once __DIR__ . "/send_emails.php";
 require_once __DIR__ . "/tableviews.php";
@@ -50,6 +52,8 @@ if ($_POST['cmd']['modedit']['update']) {
 
 const AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../../include/init_page.php";
+
+$slice_id = AA::$module_id;
 
 // ----------------------------------------------------------------------------------------
 
