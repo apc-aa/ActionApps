@@ -789,7 +789,7 @@ class AA_Stringexpand_Twitter extends AA_Stringexpand_Nevercache {
     }
 }
 
-/** Expands {protectmail:<email>[:<text>]} - hides mail into javascript
+/** Expands {protectmail:<email>[:<text>]} - hides mail into javascript to protect against spammers
  *  <a href="mailto:<email>"><text></a>   (but encocded in javascript)
  *
  *  @param string $email e-mail to protect

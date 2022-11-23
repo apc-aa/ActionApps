@@ -211,6 +211,7 @@ if ( $add || $update ) {
             if ( $superadmin ) {
                 $varset->add("template", "number", $template);
             }
+            $varset->add("type", "quoted", $slice_type);
             $varset->add("permit_anonymous_post", "number", $permit_anonymous_post);
             $varset->add("permit_anonymous_edit", "number", $permit_anonymous_edit);
             $varset->add("permit_offline_fill", "number", $permit_offline_fill);
