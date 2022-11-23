@@ -37,7 +37,6 @@ if (!IfSlPerm(PS_FEEDING)) {
 }
 require_once __DIR__ . "/../include/formutil.php";
 
-$p_slice_id = q_pack_id($slice_id);
 switch ($mode) {
     case "delete" :
         [$sel_node, $sel_user] = explode("~",$perms);
@@ -53,7 +52,7 @@ switch ($mode) {
       break;
 }
 
-$perms = DB_AA::select([], "SELECT `node`, `user` FROM `ef_permissions`", [['slice_id',$slice_id, 'l']], ['node','user']);
+$perms = DB_AA::select([], "SELECT `node`, `user` FROM `ef_permissions`", [['slice_id',AA::$module_id, 'l']], ['node','user']);
 //$db->query("SELECT * FROM ef_permissions WHERE slice_id='$p_slice_id' ORDER BY node,user ");
 //$perms="";
 //while ($db->next_record()) {
@@ -98,7 +97,7 @@ $apage->printHead($err, $Msg);
 
 FrmTabCaption(_m("Inter node export settings"));
 ?>
-      <tr><td colspan="2"><?php echo _m("Existing exports of the slice "). "<b>".AA_Slice::getModuleName($slice_id)."</b>"; ?></td></tr>
+      <tr><td colspan="2"><?php echo _m("Existing exports of the slice "). "<b>".AA_Slice::getModuleName(AA::$module_id)."</b>"; ?></td></tr>
       <tr><td colspan="2" align="center">
         <select name="perms" size="5">
          <?php

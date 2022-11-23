@@ -44,19 +44,18 @@ $err = [];          // error array (Init - just for initializing variable
 $catVS       = new Cvarset();
 $expVS       = new Cvarset();
 
-$p_slice_id = q_pack_id($slice_id);
-$slice      = AA_Slice::getModule($slice_id);
+$slice      = AA_Slice::getModule(AA::$module_id);
 
 // update export_to_all switch
 if ( ($slice->getProperty('export_to_all') ? 1:0) != ($to_all ? 1:0) ) {
     $SQL = "UPDATE slice SET export_to_all=". ($to_all ? 1 : 0) ." WHERE id='$p_slice_id'";
     $db->query($SQL);
-    AA_Log::write(($to_all ? "FEED2ALL_1" : "FEED2ALL_0"), $slice_id);
+    AA_Log::write(($to_all ? "FEED2ALL_1" : "FEED2ALL_0"), AA::$module_id);
 }
 
 // ------------------------ Export --------------------------
 // feeding lookup
-$feedto = DB_AA::select(['unid'=>true], "SELECT LOWER(HEX(`to_id`)) AS unid FROM `feedperms`", [['from_id',$slice_id,'l']]);
+$feedto = DB_AA::select(['unid'=>true], "SELECT LOWER(HEX(`to_id`)) AS unid FROM `feedperms`", [['from_id',AA::$module_id,'l']]);
 
 //$feedto["Init"] = false;  // create array
 //$SQL= "SELECT to_id FROM feedperms WHERE from_id='$p_slice_id'";
@@ -73,13 +72,13 @@ do {
                 continue;
             }
             $expVS->clear();
-            $expVS->add("from_id", "unpacked", $slice_id);
+            $expVS->add("from_id", "unpacked", AA::$module_id);
             $expVS->add("to_id", "unpacked", $val);
             if ( !$expVS->doINSERT('feedperms')) {
                 $err["DB"] .= MsgErr("Can't add export to $val");
                 break;    // not necessary - we have set the halt_on_error
             }
-            AA_Log::write("FEED_ENBLE", "$slice_id:$val");
+            AA_Log::write("FEED_ENBLE", AA::$module_id.":$val");
         }
   }
   foreach ($feedto as $to => $val) {
@@ -94,7 +93,7 @@ do {
 // ------------------------ Import --------------------------
 // feeding lookup
 
-$feedfrom = DB_AA::select(['unid'=>true], "SELECT LOWER(HEX(`from_id`)) AS unid FROM `feeds`", [['to_id',$slice_id,'l']]);
+$feedfrom = DB_AA::select(['unid'=>true], "SELECT LOWER(HEX(`from_id`)) AS unid FROM `feeds`", [['to_id',AA::$module_id,'l']]);
 
 do {
     if ( isset($I) AND is_array($I) ) {  // insert to categories
@@ -104,7 +103,7 @@ do {
                 continue;
             }
             $catVS->clear();
-            $catVS->add("to_id", "unpacked", $slice_id);
+            $catVS->add("to_id", "unpacked", AA::$module_id);
             $catVS->add("from_id", "unpacked", $val);
             $catVS->add("all_categories", "number", 1);
             $catVS->add("to_approved", "number", 0);
@@ -113,7 +112,7 @@ do {
                 $err["DB"] .= MsgErr("Can't add import from $val");
                 break;  // not necessary - we have set the halt_on_error
             }
-            AA_Log::write("FEED_ADD", "$slice_id:$val");
+            AA_Log::write("FEED_ADD", AA::$module_id.":$val");
         }
     }
 
@@ -121,7 +120,7 @@ do {
       if ( $val ) {
             $SQL = "DELETE FROM feeds WHERE to_id = '$p_slice_id' AND from_id='". q_pack_id($from). "'";
             $db->query( $SQL );
-            AA_Log::write("FEED_DEL", "$slice_id:$val");
+            AA_Log::write("FEED_DEL", AA::$module_id.":$val");
         }
     }
 } while (false);

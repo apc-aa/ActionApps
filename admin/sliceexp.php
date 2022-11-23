@@ -62,7 +62,7 @@ if ($_POST['b_export_type']=='doc') {
 }
 
 if (isset($b_export_to_file)) {
-    $exporter->exportToFile($slice_id, $export_slices, $SliceID);
+    $exporter->exportToFile(AA::$module_id, $export_slices, $SliceID);
     exit;
 }
 
@@ -75,7 +75,7 @@ $apage->printHead($err, $Msg);
 FrmTabCaption(_m("Export slice structure"));
 
 if ($_POST['b_export_type']) {
-    $exporter->exportToForm( $slice_id, $export_slices, $SliceID );
+    $exporter->exportToForm( AA::$module_id, $export_slices, $SliceID );
 } else {
     $all_slices = AA_Module::getModules('S');
 ?>

@@ -42,10 +42,10 @@ require_once __DIR__ . "/../include/actions.php";
 // new manager class approach ------------------------------------------------
 
 // Allow edit current slice without slice_pwd
-AA_Credentials::singleton()->loadFromSlice($slice_id);
+AA_Credentials::singleton()->loadFromSlice(AA::$module_id);
 
 // id of the editted module (id in long form (32-digit hexadecimal number))
-$module_id = $slice_id;
+$module_id = AA::$module_id;
 // module_id is the same as slice_id (slice_id was used before AA introduced
 // modules. Now it is better to use module_id, because in other modules
 // (like Links, ...) it is not so confusing
@@ -53,7 +53,7 @@ $module_id = $slice_id;
 $slice       = AA_Slice::getModule($module_id);
 
 if ( !IfSlPerm(PS_EDIT_ALL_ITEMS)) {
-    MsgPage(StateUrl(self_base())."index.php3", _m("You do not have permission see the users in this slice:").AA_Slice::getModuleName($slice_id));
+    MsgPage(StateUrl(self_base())."index.php3", _m("You do not have permission see the users in this slice:").AA_Slice::getModuleName(AA::$module_id));
     exit;
 }
 
@@ -103,7 +103,7 @@ $manager_settings = [
      ]
 ];
 
-$manager = new AA_Manager('users'.$slice_id, $manager_settings);
+$manager = new AA_Manager('users'.AA::$module_id, $manager_settings);
 
 // r_userstate array holds all configuration of Manager
 // the configuration then could be Bookmarked
@@ -143,7 +143,7 @@ if ( is_array($r_userstate['items']) ) {
     $zids->setFromItemArr($r_userstate['items']);
 }
 
-$zids = QueryZids( [$slice_id], $conds, $sort, 'ACTIVE', 0, $r_userstate['items'] ? $zids : false);
+$zids = QueryZids( [AA::$module_id], $conds, $sort, 'ACTIVE', 0, $r_userstate['items'] ? $zids : false);
 
 echo $manager->getSearchbarBegin();
 echo $manager->getSearchbarEnd();   // close the searchbar form

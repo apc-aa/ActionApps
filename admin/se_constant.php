@@ -105,11 +105,11 @@ function ShowConstant($id, $name, $value, $cid, $pri, ?array $using_slices_arr=n
  *   @param $oldvalue
  */
 function propagateChanges($constant_id, $newvalue, $oldvalue) {
-    global $group_id, $Msg, $event, $slice_id;
+    global $group_id, $Msg, $event;
 
     if ($oldvalue == $newvalue) return;
 
-    $event->comes('CONSTANT_BEFORE_UPDATE', $slice_id, 'S', $newvalue, $oldvalue, $constant_id);
+    $event->comes('CONSTANT_BEFORE_UPDATE', AA::$module_id, 'S', $newvalue, $oldvalue, $constant_id);
 
     $cnt = 0;
     $items2update = [];
@@ -144,7 +144,7 @@ function propagateChanges($constant_id, $newvalue, $oldvalue) {
         $Msg .= $cnt . _m(" items changed to new value ") . "'$newvalue'<br>";
     }
 
-    $event->comes('CONSTANT_UPDATED', $slice_id, 'S', $newvalue, $oldvalue, $constant_id);
+    $event->comes('CONSTANT_UPDATED', AA::$module_id, 'S', $newvalue, $oldvalue, $constant_id);
 }
 
 hcUpdate();
@@ -191,7 +191,7 @@ if ($update) {
             if (!$db->next_record()) {
                 $db->query("
                 INSERT INTO constant_slice (slice_id,group_id,propagate)
-                VALUES ( ".xpack_id($slice_id) .",'$group_id',".($propagate_changes ? 1 : 0).");");
+                VALUES ( ".xpack_id(AA::$module_id) .",'$group_id',".($propagate_changes ? 1 : 0).");");
             } else {
                 $db->query("
                 UPDATE constant_slice SET propagate=".($propagate_changes ? 1 : 0)."
@@ -252,7 +252,7 @@ if ($update) {
                 }
             }
         }
-        AA::Pagecache()->invalidateFor($slice_id);  // invalidate old cached values
+        AA::Pagecache()->invalidateFor(AA::$module_id);  // invalidate old cached values
 
         if (!count($err)) {
             $from_form = false;

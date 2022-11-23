@@ -68,7 +68,7 @@ $i=1;     // slice checkbox counter
 if ( is_array($g_modules) AND (count($g_modules) > 1) ) {
     foreach ( $g_modules as $sid => $v) {
         if ( ($v['type'] == 'S') AND    //  we can feed just between slices ('S')
-            ((string)$slice_id != (string)$sid) AND
+            ((string)AA::$module_id != (string)$sid) AND
             // we must have autor or editor perms in destination slices
             CheckPerms( AuthGetUid(), "slice", $sid, PS_EDIT_SELF_ITEMS) ) {
             $odd = (gettype($i/2) == 'integer');

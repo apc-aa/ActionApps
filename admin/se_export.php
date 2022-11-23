@@ -65,7 +65,7 @@ if ($_GET['export']) {
     ];
 
     $exportset = new AA_Exportsetings($exportset_params);
-    $exportset->setOwnerId($slice_id);
+    $exportset->setOwnerId(AA::$module_id);
 
     $exportset->export();
 

@@ -50,7 +50,7 @@ if ( file_exists( "../include/usr_validate.php3" ) ) {
 }
 
 // Allow edit current slice without slice_pwd
-AA_Credentials::singleton()->loadFromSlice($slice_id);
+AA_Credentials::singleton()->loadFromSlice(AA::$module_id);
 
 if ($encap) {  // do we use somewhere this ensap??? Honza 3/2009
     add_vars();        // adds values from QUERY_STRING_UNESCAPED
@@ -75,7 +75,7 @@ if ($cancel) {
     if ($anonymous) { // anonymous login
         go_url( $r_slice_view_url, '', $encap );
     } else {
-        go_return_or_url(self_base() . "index.php3?slice_id=$slice_id",true,true);
+        go_return_or_url(self_base()."index.php3",true,true);
     }
 }
 
@@ -114,7 +114,7 @@ if ( $update AND !count($err) AND $fields->count() ) {
         if ($anonymous) { // anonymous login
             go_url( $r_slice_view_url, '', $encap );
         } else {
-            go_return_or_url(self_base() . "index.php3?slice_id=$slice_id",true,true);
+            go_return_or_url(self_base()."index.php3",true,true);
         }
     }
 }
@@ -131,14 +131,14 @@ if ($edit) {
     if ( !is_array($fields) ) {
         $err["DB"] = MsgErr(_m("Error: no fields."));
         // do not quit - just go back.
-        go_return_or_url(self_base() . "index.php3?slice_id=$slice_id",true,true);
+        go_return_or_url(self_base()."index.php3",true,true);
     }
 
     // fill content array from item and content tables
     $content4id = $slice->get_dynamic_setting_content(true);
     if ( !$content4id ) {
         $err["DB"] = MsgErr(_m("Bad item ID id=%1", [$id]));
-        MsgPage(con_url(StateUrl(self_base() ."index.php3"), "slice_id=$slice_id"), $err);
+        MsgPage(StateUrl(self_base() ."index.php3"), $err);
         exit;
     }
 } else {
@@ -150,7 +150,7 @@ if ($edit) {
 if (!$encap) {
     $inputform_settings = [
         'display_aa_begin_end' => true,
-        'page_title'           => _m("Slice Setting"). " (". AA_Slice::getModuleName($slice_id).")",
+        'page_title'           => _m("Slice Setting"). " (". AA_Slice::getModuleName(AA::$module_id).")",
     ];
 }
 
@@ -159,9 +159,9 @@ $inputform_settings['form_action']         = ($_SERVER['DOCUMENT_URI'] != "" ? $
                                              $_SERVER['PHP_SELF'] . ($return_url ? "?return_url=".urlencode($return_url) : ''));
 $inputform_settings['form4update']         = true;
 $inputform_settings['cancel_url']          =  ($anonymous  ? $r_slice_view_url :
-                                              ($return_url=='close_dialog' ? get_admin_url("itemedit.php3?slice_id=$slice_id&cancel=1&return_url=close_dialog") :
+                                              ($return_url=='close_dialog' ? get_admin_url("itemedit.php3?cancel=1&return_url=close_dialog") :
                                               ($return_url ? expand_return_url(1) :
-                                              get_admin_url("index.php3?cancel=1&slice_id=$slice_id"))));
+                                              get_admin_url("index.php3?cancel=1"))));
 
 $inputform_settings['hidden']              = [
                              'anonymous'   => (($free OR $anonymous) ? true : ""),

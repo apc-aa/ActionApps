@@ -16,16 +16,16 @@ use AA_Slice;
 use ItemContent;
 use zids;
 
-/** AA\IO\AbstractGrabber\AbstractGrabber\Form - Grabbs data POSTed by AA form
+/** AA\IO\AbstractGrabber\AbstractGrabber\Form - Grabs data POSTed by AA form
  *
- *  The format of the data is followiing
+ *  The format of the data is following
  *  (this is new format, which allows to fill or modify more items at once
  *
  *   Format is:
  *       aa[i<long_item_id>][modified_field_id][]
  *   Note:
  *      first brackets contain
- *          'u'+long_item_id when item is edited (the field is rewriten, rest
+ *          'u'+long_item_id when item is edited (the field is rewritten, rest
  *                           of item is untouched)
  *          'i'+long_item_id when item is edited (the value is added to current
  *                           value of the field, rest of item is untouched)
@@ -36,7 +36,7 @@ use zids;
  *                                    item at the time
  *          'f_long_slice_id' new item form file upload to slice
  *      modified_field_id is field_id, where all dots are replaced by '_'
- *      we always add [] at the end, so it becames array at the end
+ *      we always add [] at the end, so it became array at the end
  *   Example:
  *       aa[u63556a45e4e67b654a3a986a548e8bc9][headline________][]
  *       aa[i63556a45e4e67b654a3a986a548e8bc9][relation_______1][]
@@ -172,11 +172,11 @@ class Form extends AbstractGrabber {
         }
 
         // uploaded files are not $_POST variable.
-        // Also it is stored as array...[name][file___________1][...] array...[type][file___________1][...]
+        // Also, it is stored as array...[name][file___________1][...] array...[type][file___________1][...]
         // so the information about one file is quite far in the structure
         if (isset($_FILES['aa'])) {
             
-            // collect together the informations about one file - array(name, type, tmp_name, error, size)
+            // collect together the information about one file - array(name, type, tmp_name, error, size)
             //$files = array_merge_recursive($_FILES['aa']['name'], $_FILES['aa']['type'], $_FILES['aa']['tmp_name'], $_FILES['aa']['error'], $_FILES['aa']['size']);
             $files = $this->rearangeAaFilesArray($_FILES['aa']);
 
@@ -269,7 +269,6 @@ class Form extends AbstractGrabber {
     function finish() {
         $this->_items = [];
     }
-
 
     public static function grab() {
     }

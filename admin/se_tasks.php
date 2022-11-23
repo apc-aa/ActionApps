@@ -24,11 +24,22 @@
  *
 */
 
-const AA_REGISTER_GLOBALS = true;
+use AA\Util\InputVars;
+
+//const AA_REGISTER_GLOBALS = true;
+
 require_once __DIR__ . "/../include/init_page.php";
 // require_once __DIR__ . "/../include/formutil.php";
 // require_once __DIR__ . "/../include/varset.php";
 // require_once __DIR__ . "/../include/item.php";     // GetAliasesFromField funct def
+
+try {
+    // array ( 'Přihlásit' => 2, )
+    // $submit = InputVars::stringSlashedPOST('submit');
+    // $cancel = InputVars::boolPOST('cancel');
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
 
 
 if (!IfSlPerm(PS_FORMS)) {

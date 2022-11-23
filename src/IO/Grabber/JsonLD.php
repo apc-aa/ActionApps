@@ -90,6 +90,7 @@ class JsonLD extends AbstractGrabber
         return $properties;
     }
 
+    /** You can get token dynamically, so you weill set it through  setAuth, or you already have token, then you setToken directly */
     protected function loadAuth(): bool {
         if (!$this->token) {
             $post_body = json_encode(["username"=>$this->authdata['username'], "password"=>$this->authdata['password']]);
@@ -100,11 +101,18 @@ class JsonLD extends AbstractGrabber
         return (bool)$this->token;
     }
 
+    /** You can get token dynamically, so you weill set it through  setAuth, or you already have token, then you setToken directly */
     public function setAuth(array $authdata) {
         $this->authdata['username'] = $authdata['username'];
         $this->authdata['password'] = $authdata['password'];
         $this->authdata['tokenurl'] = $authdata['tokenurl'];
     }
+
+    /** You can get token dynamically, so you weill set it through  setAuth, or you already have token, then you setToken directly */
+    public function setToken(string $token) {
+        $this->token = $token;
+    }
+
 
     /** the real low level get data from url - used in loadData() as higher level function
      * @param string      $url

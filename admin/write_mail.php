@@ -44,9 +44,9 @@ $items     = $chb;
 //}
 
 // Allow to use current slice data without slice_pwd
-AA_Credentials::singleton()->loadFromSlice($slice_id);
+AA_Credentials::singleton()->loadFromSlice(AA::$module_id);
 
-$slice       = AA_Slice::getModule($slice_id);
+$slice       = AA_Slice::getModule(AA::$module_id);
 
 if ( !$send ) {               // for the first time - directly from item manager
     $sess->register('r_wm_state');
@@ -60,7 +60,7 @@ if ( !$send ) {               // for the first time - directly from item manager
     do {
         // --- write the e-mail template to the table ---
         $varset = new Cvarset();
-        $owner_module_id = q_pack_id($slice_id);
+        $owner_module_id = q_pack_id(AA::$module_id);
         $description     = date('Y-m-d H:i:s'). ', '. AuthGetUid();
         $type            = 'bulk email';
         ValidateInput("subject",     _m("Subject"),            $subject,     $err, true,  "text");

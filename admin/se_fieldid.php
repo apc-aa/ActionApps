@@ -126,7 +126,7 @@ $maintain_fields = [
     ]
 ];
 
-$xslice_id = xpack_id($slice_id);
+$xslice_id = xpack_id(AA::$module_id);
 
 $maintain_sql = [
     "UPDATE feedmap SET to_field_id=':new_id:' WHERE to_field_id=':old_id:' AND to_slice_id = $xslice_id" ,
@@ -209,7 +209,7 @@ function ChangeFieldID($old_id, $new_id)
     }
 }
 
-if ($update && $new_id_text && $slice_id) {
+if ($update && $new_id_text && AA::$module_id) {
     $nchanges = 0;
     if (strlen($new_id_text) + strlen($new_id_number) <= 16) {
         $new_id = $new_id_text;
@@ -238,7 +238,7 @@ if ($update && $new_id_text && $slice_id) {
 }
 
 // lookup source fields
-$s_fields = AA_Fields::getFields4Select($slice_id, 'all', 'id');
+$s_fields = AA_Fields::getFields4Select(AA::$module_id, 'all', 'id');
 // lookup destination fields
 $d_fields = AA_Fields::getFields4Select(unpack_id('AA_Core_Fields..'), 'all', 'id');
 
@@ -289,7 +289,7 @@ FrmTabSeparator(_m("Fields"), [
     "update" => ["type" => "hidden", "value" => "1"],
     "update",
     "cancel" => ["url" => "se_fields.php"]
-], $slice_id);
+], AA::$module_id);
 /*
     <input type=hidden name=\"update\" value=1>
     <input type=submit name=update value='". _m("Update") ."'>&nbsp;&nbsp;

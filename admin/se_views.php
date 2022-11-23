@@ -49,11 +49,11 @@ $varset      = new Cvarset();
 
 if ( $del ) {
     // check if deleted view is from this slice (for security)
-    if (!AA::Metabase()->doDelete('view', ['id'=>$vid, 'slice_id'=>$slice_id])) {
+    if (!AA::Metabase()->doDelete('view', ['id'=>$vid, 'slice_id'=>AA::$module_id])) {
         $err["DB"] = MsgErr("Can't delete view");
         exit;
     }
-    AA::Pagecache()->invalidateFor($slice_id);  // invalidate old cached values
+    AA::Pagecache()->invalidateFor(AA::$module_id);  // invalidate old cached values
 
     $Msg = MsgOk(_m("View successfully deleted"));
 }
@@ -183,7 +183,7 @@ foreach ( $g_modules as $k => $v) {
     if ( ($v['type'] != 'S') OR !$sliceWview[$k] ) {
         continue;                      // we can feed just between slices ('S')
     }
-    $selected = ( (string)$slice_id == (string)$k ) ? "selected" : "";
+    $selected = ( (string)AA::$module_id == (string)$k ) ? "selected" : "";
     echo "<option value=\"x$k\" $selected>". safe($v['name']) ."</option>\n";
 }
 echo "   </select>&nbsp;<select name=\"view_view\">

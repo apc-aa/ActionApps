@@ -69,14 +69,14 @@ if ( $update ) {
             if ($cond AND $name) {
                 $set = new AA_Set($sli, $cond, $sort);
                 $set->setName($name);
-                $set->setOwnerId($slice_id);
+                $set->setOwnerId(AA::$module_id);
                 // those id are marked so we can use it as group in Reader permissions
                 $set->setId($objid ?: new_id(1));
                 $set->save();
             }
         }
 
-        AA::Pagecache()->invalidateFor($slice_id);  // invalidate old cached values
+        AA::Pagecache()->invalidateFor(AA::$module_id);  // invalidate old cached values
 
     } while (false);
 
@@ -97,7 +97,7 @@ $form_buttons = [
 FrmTabCaption(_m("Sets"), $form_buttons);
 FrmStaticText('', _m('Conditions are in "d-..." or "conds[]" form - just like:<br> &nbsp; d-headline........,category.......1-BEGIN-Bio (d-&lt;fields&gt;-&lt;operator&gt;-&lt;value&gt;-&lt;fields&gt;-&lt;op...)<br> &nbsp; conds[0][category........]=first&conds[1][switch.........1]=1 (default operator is RLIKE, here!)'), '', '', false);
 
-$set_ids = AA_Object::querySet('AA_Set', new AA_Set([$slice_id]));
+$set_ids = AA_Object::querySet('AA_Set', new AA_Set([AA::$module_id]));
 $k = 0;
 foreach( $set_ids as $i => $set_id ) {
     $set = AA_Object::load($set_id, 'AA_Set');    /** @var AA_Set $set */

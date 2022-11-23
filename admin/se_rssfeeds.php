@@ -47,10 +47,10 @@ require_once __DIR__ . "/../include/xml_fetch.php";
 
 $err = [];
 require_once __DIR__ . "/../include/formutil.php";
-$qp_slice_id=q_pack_id($slice_id);
+$qp_slice_id=q_pack_id(AA::$module_id);
 
 if ($mode == "map") {
-    $feed = name2rssfeed($slice_id,$sel_rssfeed_name);
+    $feed = name2rssfeed(AA::$module_id,$sel_rssfeed_name);
     go_url(StateUrl(self_base() . "se_mapping.php?from_slice_id=".$feed["remote_slice_id"]));
 }
 
@@ -77,7 +77,7 @@ if ($mode == "edit" || $mode == "test") {
                 $err["DB"] .= MsgErr("Can't add RSS Feed $rssfeed_name");
             } else {
                 $catVS = new Cvarset();
-                $catVS->add("slice_id",  "unpacked", $slice_id);
+                $catVS->add("slice_id",  "unpacked", AA::$module_id);
                 $catVS->add("name",      "quoted",   $rssfeed_name);
                 $catVS->add("server_url","quoted",   $server_url);
                 if ( !$catVS->doINSERT('rssfeeds')) {
@@ -101,7 +101,7 @@ if ($mode == "edit" || $mode == "test") {
 
 }
 
-$rssfeeds = DB_AA::select('',"SELECT `name` FROM rssfeeds", [['slice_id',$slice_id,'l']], ['name']);
+$rssfeeds = DB_AA::select('',"SELECT `name` FROM rssfeeds", [['slice_id',AA::$module_id,'l']], ['name']);
 //$db->query("SELECT * FROM rssfeeds WHERE slice_id = '$qp_slice_id' ORDER BY name ");
 //$rssfeeds=array();
 //while ($db->next_record()) {

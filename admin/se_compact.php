@@ -83,24 +83,24 @@ if ( $update ) {
         $varset->add("noitem_msg", "quoted", $noitem_msg ?: " " );
 
         if ( !$db->query("UPDATE slice SET ". $varset->makeUPDATE() . "
-                          WHERE id='".q_pack_id($slice_id)."'")) {
+                          WHERE id='".q_pack_id(AA::$module_id)."'")) {
             $err["DB"] = MsgErr( _m("Can't change slice settings") );
             break;   // not necessary - we have set the halt_on_error
         }
 
-        AA::Pagecache()->invalidateFor($slice_id);  // invalidate old cached values
+        AA::Pagecache()->invalidateFor(AA::$module_id);  // invalidate old cached values
     }while(false);
     if ( !count($err) ) {
         $Msg = MsgOk(_m("Design of compact design successfully changed"));
     }
 }
 
-if ( $slice_id!="" ) {  // set variables from database - always
+if ( AA::$module_id!="" ) {  // set variables from database - always
 /*  $SQL= " SELECT odd_row_format, even_row_format, even_odd_differ, compact_top,
                  compact_bottom, compact_remove, category_sort, category_format,
                  category_top, category_bottom, noitem_msg */
     $SQL = " SELECT *
-          FROM slice WHERE id='". q_pack_id($slice_id)."'";
+          FROM slice WHERE id='". q_pack_id(AA::$module_id)."'";
   $db->query($SQL);
     if ($db->next_record()) {
         $odd_row_format  = $db->f('odd_row_format');
@@ -121,7 +121,7 @@ if ( $slice_id!="" ) {  // set variables from database - always
         }
         $noitem_msg      = $db->f('noitem_msg');
         if (!$group_by && $category_sort) {
-            $db->query("SELECT id FROM field WHERE id LIKE 'category.......%' AND slice_id='".q_pack_id($slice_id)."'");
+            $db->query("SELECT id FROM field WHERE id LIKE 'category.......%' AND slice_id='".q_pack_id(AA::$module_id)."'");
             if ($db->next_record()) {
                 $group_by = $db->f("id");
                 $gb_direction  = "2";      // number 2 represents 'a' - ascending (because gb_direction in number)
@@ -193,7 +193,7 @@ $form_buttons = [
 FrmTabCaption(_m("HTML code for index view"), $form_buttons);
 
 // lookup slice fields
-$lookup_fields = AA_Fields::getFields4Select($slice_id, false, 'name', true);
+$lookup_fields = AA_Fields::getFields4Select(AA::$module_id, false, 'name', true);
 
 FrmTextarea("compact_top", _m("Top HTML"), $compact_top, 4, 50, false,
            _m("HTML code which appears at the top of slice area")
@@ -234,8 +234,8 @@ FrmTextarea("noitem_msg", _m("'No item found' message"), $noitem_msg, 4, 50, fal
            _m("message to show in place of slice.php3, if no item matches the query")
            .'<br>'.AA_View::getViewJumpLinks($category_bottom), '', 1);
 
-$slice = AA_Slice::getModule($slice_id);
-PrintAliasHelp(new AA_Aliases(new AA_Aliasgenerator_Slice($slice_id)), $slice->getFields()->getRecordArray(), false, $form_buttons);
+$slice = AA_Slice::getModule(AA::$module_id);
+PrintAliasHelp(new AA_Aliases(new AA_Aliasgenerator_Slice(AA::$module_id)), $slice->getFields()->getRecordArray(), false, $form_buttons);
 
 FrmTabEnd();
 

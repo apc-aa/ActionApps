@@ -40,7 +40,6 @@ require_once __DIR__ . "/../../include/varset.php";
 require_once __DIR__ . "/../../include/formutil.php";
 require_once __DIR__ . "/../../include/varset.php";
 require_once __DIR__ . "/../../include/mgettext.php";
-require_once __DIR__ . "/../../include/msgpage.php";
 
 // id of the editted module
 $module_id = $slice_id;               // id in long form (32-digit hexadecimal

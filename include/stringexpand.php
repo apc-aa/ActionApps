@@ -4900,7 +4900,7 @@ class AA_Stringexpand_Ensureitem extends AA_Stringexpand_Nevercache {
  * c239cb267837a25b4efb5892ca4f4324 is ID of the updated item
  * The values could be single (for headline........), or multiple - written in JSON format.
  *
- * If you want to update the item conditionaly just do not fill <long_item_id> in cases you do not want update
+ * If you want to update the item conditionally just do not fill <long_item_id> in cases you do not want update
  *
  * @return <long_item_id> if updated, nothing if item is not updated
  *

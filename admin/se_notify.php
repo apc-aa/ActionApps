@@ -75,7 +75,7 @@ if ($cancel){
     go_url( StateUrl(self_base() . "index.php3"));
 }
 
-if (! $slice_id){
+if (! AA::$module_id){
     MsgPage(StateUrl(self_base())."index.php3", "error on se_notify.php");
     exit;
 }
@@ -133,10 +133,10 @@ if ( $update ) {
 
   // insert all the records into email_notify
 
-    save_notify2db($slice_id, 1, $notify_holding_item_e);
-    save_notify2db($slice_id, 2, $notify_holding_item_edit_e);
-    save_notify2db($slice_id, 3, $notify_active_item_e);
-    save_notify2db($slice_id, 4, $notify_active_item_edit_e);
+    save_notify2db(AA::$module_id, 1, $notify_holding_item_e);
+    save_notify2db(AA::$module_id, 2, $notify_holding_item_edit_e);
+    save_notify2db(AA::$module_id, 3, $notify_active_item_e);
+    save_notify2db(AA::$module_id, 4, $notify_active_item_edit_e);
 
   // delete the backed-up users
     $SQL    = "DELETE FROM email_notify WHERE slice_id='not_transition'";
@@ -155,14 +155,14 @@ SELECT notify_holding_item_s,      notify_holding_item_b,
        notify_holding_item_edit_s, notify_holding_item_edit_b,
        notify_active_item_s,       notify_active_item_b,
        notify_active_item_edit_s,  notify_active_item_edit_b
- FROM slice WHERE id='".q_pack_id($slice_id)."'";
+ FROM slice WHERE id='".q_pack_id(AA::$module_id)."'";
 $db->query($SQL);
 if ($db->next_record()) {
     RestoreVariables($db->record());
 }
 
 // grab variables from email_notify
-$SQL                       = "SELECT uid, function FROM email_notify WHERE slice_id='".q_pack_id($slice_id)."'";
+$SQL                       = "SELECT uid, function FROM email_notify WHERE slice_id='".q_pack_id(AA::$module_id)."'";
 $notify_active_item_edit_e = $notify_active_item_e = $notify_holding_item_edit_e = $notify_holding_item_e = '';
 
 $result = $db->query($SQL);

@@ -60,7 +60,7 @@ $apage = new AA_Adminpageutil('sliceadmin','mailman_create_list');
 $apage->setTitle(_m("Admin - Create Mailman List"));
 $apage->printHead($err, $Msg);
 
-$slice = AA_Slice::getModule($slice_id);
+$slice = AA_Slice::getModule(AA::$module_id);
 if (! $slice->getProperty("mailman_field_lists")) {
     echo _m('First set Mailman Lists Field in Slice Settings.');
 
@@ -69,7 +69,7 @@ if (! $slice->getProperty("mailman_field_lists")) {
 }
 
 $db = getDB();
-$db->query("SELECT field.input_show_func, field.name FROM field WHERE slice_id='".q_pack_id($slice_id)."' AND id='" .$slice->getProperty("mailman_field_lists")."'");
+$db->query("SELECT field.input_show_func, field.name FROM field WHERE slice_id='".q_pack_id(AA::$module_id)."' AND id='" .$slice->getProperty("mailman_field_lists")."'");
 $db->next_record();
 $field_name = $db->f("name");
 list (,$groupid) = explode(":", $db->f("input_show_func"));
@@ -140,7 +140,7 @@ echo '
 <form name="mailman_create_list" method="post" action="'.StateUrl().'"
     onsubmit="return this.list_name.value != \'\' && this.admin_email.value != \'\'
     && this.admin_password.value != \'\'">
-<input type="hidden" name="slice_id" value="'.$slice_id.'">
+<input type="hidden" name="slice_id" value="'.AA::$module_id.'">
 <table width="440" border="0" cellspacing="0" cellpadding="5" bgcolor="'.COLOR_TABTITBG.'" align="center">
 <tr><td class="tabtit" colspan="2"><b>'._m("List Settings").'</b></td></tr>
 <tr><td class="tabtxt" colspan="2">'._m("The list will be added to mailman and also

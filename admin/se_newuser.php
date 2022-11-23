@@ -114,9 +114,9 @@ $apage->printHead($err, $Msg);
 <tr><td align="center">
 <?php
   echo "<input type=\"hidden\" name=\"update\" value=1>";
-  echo "<input type=\"hidden\" name=\"slice_id\" value=$slice_id>";
   echo '<input type="submit" name="update" value="'. _m("Add") .'">&nbsp;&nbsp;';
   echo '<input type="submit" name="cancel" value="'. _m("Cancel") .'">&nbsp;&nbsp;';
+  echo StateHidden();
 ?>
 </td></tr></table>
 <?php

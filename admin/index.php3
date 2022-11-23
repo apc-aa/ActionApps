@@ -82,10 +82,10 @@ try {
 
 
 // Allow edit current slice without slice_pwd
-AA_Credentials::singleton()->loadFromSlice($slice_id);
+AA_Credentials::singleton()->loadFromSlice(AA::$module_id);
 
 // id of the editted module (id in long form (32-digit hexadecimal number))
-$module_id = $slice_id;
+$module_id = AA::$module_id;
 // module_id is the same as slice_id (slice_id was used before AA introduced
 // modules. Now it is better to use module_id, because in other modules
 // (like Links, ...) it is not so confusing
@@ -96,7 +96,7 @@ $perm_edit_all  = IfSlPerm(PS_EDIT_ALL_ITEMS);
 $perm_edit_self = IfSlPerm(PS_EDIT_SELF_ITEMS);
 
 if ( !$perm_edit_all && !$perm_edit_self) {
-    MsgPage(StateUrl(self_base())."index.php3", _m("You do not have permission to edit items in the slice:").AA_Slice::getModuleName($slice_id));
+    MsgPage(StateUrl(self_base())."index.php3", _m("You do not have permission to edit items in the slice:").AA_Slice::getModuleName(AA::$module_id));
     exit;
 }
 
@@ -173,7 +173,7 @@ $manager_settings = [
 $manager = new AA_Manager('item'.$module_id, $manager_settings);
 
 if ( $change_id OR ($r_state["module_id"] != $module_id)) {
-    // we are here for the first time or we are switching to another slice
+    // we are here for the first time, or we are switching to another slice
     unset($r_state);
     // set default admin interface settings from user's profile
     $r_state["module_id"]       = $module_id;

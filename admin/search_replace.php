@@ -89,7 +89,7 @@ echo '
 echo GetPrintArray($err);
 echo $Msg;
 
-$slice  = AA_Slice::getModule($slice_id);
+$slice  = AA_Slice::getModule(AA::$module_id);
 
 if ( !IsSuperadmin() ) {
     $restricted_fields = [

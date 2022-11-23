@@ -57,11 +57,11 @@ if ( ($tview[0] == "a") OR ( substr($tview,0,5) =='polls') ) {
 $tableview = $func($tview);
 
 if (!is_array($tableview)) {
-    go_url (StateUrl(self_base()."index.php3?slice_id=$slice_id&Msg=Bad table view ID: $tview"));
+    go_url(StateUrl(self_base()."index.php3?Msg=Bad table view ID: $tview"));
     exit;
 }
 if (! $tableview["cond"] ) {
-    MsgPage (StateUrl(self_base()."index.php3"), _m("You have not permissions to this page"));
+    MsgPage(StateUrl(self_base()."index.php3"), _m("You have not permissions to this page"));
     exit;
 }
 

@@ -73,15 +73,15 @@ if ($update) {
         $varset->add("admin_remove",        "quoted", $admin_remove);
         $varset->add("admin_noitem_msg",    "quoted", $admin_noitem_msg);
         if ( !$db->query("UPDATE slice SET ". $varset->makeUPDATE() .
-                         "WHERE id='".q_pack_id($slice_id)."'")) {
+                         "WHERE id='".q_pack_id(AA::$module_id)."'")) {
             $err["DB"] = MsgErr( _m("Can't change slice settings") );
             break;    // not necessary - we have set the halt_on_error
         }
 
-        AA::Pagecache()->invalidateFor($slice_id);  // invalidate old cached values
+        AA::Pagecache()->invalidateFor(AA::$module_id);  // invalidate old cached values
 
         // set the
-        AA_Profile::addProfileProperty('*', $slice_id, 'input_view', '', '', $inputform_sel, '');
+        AA_Profile::addProfileProperty('*', AA::$module_id, 'input_view', '', '', $inputform_sel, '');
 
     } while(false);
 
@@ -90,10 +90,10 @@ if ($update) {
     }
 }
 
-if ( $slice_id!="" ) {  // set variables from database
+if ( AA::$module_id!="" ) {  // set variables from database
     $SQL = "SELECT admin_format, admin_format_top, admin_format_bottom,
                    admin_remove, admin_noitem_msg
-            FROM slice WHERE id='". q_pack_id($slice_id)."'";
+            FROM slice WHERE id='". q_pack_id(AA::$module_id)."'";
     $db->query($SQL);
     if ($db->next_record()) {
         $admin_format_top    = $db->f('admin_format_top');
@@ -103,13 +103,13 @@ if ( $slice_id!="" ) {  // set variables from database
         $admin_noitem_msg    = $db->f('admin_noitem_msg');
     }
 
-    $default_profile = AA_Profile::getProfile('*', $slice_id);
+    $default_profile = AA_Profile::getProfile('*', AA::$module_id);
     $inputform_vid   = $default_profile->getProperty('input_view');
 }
 
 // lookup inputform views
 $inputform_vids = DB_AA::select(['id'=>'name'], "SELECT id, name FROM view", [
-    ['slice_id', $slice_id, 'l'],
+    ['slice_id', AA::$module_id, 'l'],
     ['type', 'inputform']
 ]);
 
@@ -160,8 +160,8 @@ FrmTextarea("admin_noitem_msg", _m("HTML code for \"No item found\" message"), $
             .'<br>'.AA_View::getViewJumpLinks($admin_noitem_msg), '', 1);
 FrmInputSelect("inputform_sel", _m("Use special view"), $inputform_vids, $inputform_vid, false,
              _m("You can set special view - template for the Inputform on \"Design\" -> \"View\" page (inputform view)"));
-$slice = AA_Slice::getModule($slice_id);
-PrintAliasHelp(new AA_Aliases(new AA_Aliasgenerator_Slice($slice_id)), $slice->getFields()->getRecordArray(), false, $form_buttons);
+$slice = AA_Slice::getModule(AA::$module_id);
+PrintAliasHelp(new AA_Aliases(new AA_Aliasgenerator_Slice(AA::$module_id)), $slice->getFields()->getRecordArray(), false, $form_buttons);
 FrmTabEnd();
 
 $apage->printFoot();

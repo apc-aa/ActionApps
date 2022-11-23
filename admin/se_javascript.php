@@ -47,11 +47,11 @@ $err = [];          // error array (Init - just for initializing variable
 // update database or get the value
 
 
-if ($slice_id && $update) {
-    DB_AA::update('slice', [['javascript',$_POST['javascript']]], [['id', $slice_id, 'l']]);
+if (AA::$module_id && $update) {
+    DB_AA::update('slice', [['javascript',$_POST['javascript']]], [['id', AA::$module_id, 'l']]);
     $javascript = $_POST['javascript'];
 } else {
-    $javascript = DB_AA::select1('javascript', 'SELECT javascript FROM `slice`', [['id', $slice_id, 'l']]);
+    $javascript = DB_AA::select1('javascript', 'SELECT javascript FROM `slice`', [['id', AA::$module_id, 'l']]);
 }
 
 
@@ -81,7 +81,7 @@ FrmTabSeparator(_m("Available fields and triggers"), [
     "cancel" => ["url" => "se_fields.php"]
 ]);
 
-$fields = AA_Slice::getModule($slice_id)->getFields()->getPriorityArray();
+$fields = AA_Slice::getModule(AA::$module_id)->getFields()->getPriorityArray();
 
 echo '
 <tr><td valign="top"><table border="0" cellspacing="0" cellpadding="1" bgcolor="'.COLOR_TABBG.'">

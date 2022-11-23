@@ -36,10 +36,9 @@ require_once __DIR__ . "/../include/init_page.php";
 // already stripslashed in init_page.php
 
 $sh_itm     = $_GET['sh_itm'];
-$slice_id   = $_GET['slice_id'];
 $return_url = $_GET['return_url'];
 
-$slice = AA_Slice::getModule($slice_id);
+$slice = AA_Slice::getModule(AA::$module_id);
 if (empty($slice)) {
      echo _m("Wrong slice_id.");
      exit;

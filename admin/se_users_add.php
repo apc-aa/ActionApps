@@ -97,7 +97,7 @@ if ($GrpSrch || $UsrSrch) {
         $curr_role=0;
     }
 
-    $slice_users = AA::$perm->getObjectsPerms($slice_id, "slice");
+    $slice_users = AA::$perm->getObjectsPerms(AA::$module_id, "slice");
     $aa_users    = AA::$perm->getObjectsPerms(AA_ID, "aa");   // higher than slice
 
     // add aa users too

@@ -48,7 +48,7 @@ $err = [];          // error array (Init - just for initializing variable
 $varset = new Cvarset();
 
 if ( $del ) {
-    DB_AA::delete('profile', [['id', $del], ['slice_id', $slice_id, 'l']]);
+    DB_AA::delete('profile', [['id', $del], ['slice_id', AA::$module_id, 'l']]);
     // slice identification is not neccessry
        // $SQL = "DELETE FROM profile WHERE id='$del' AND slice_id='$p_slice_id'";
        // if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
@@ -60,22 +60,22 @@ if ( $del ) {
 }
 
 if ( $add ) {
-    if (!AA_Profile::addProfileProperty($uid, $slice_id, $property, $field_id, $fnction, $param, $html)) {
+    if (!AA_Profile::addProfileProperty($uid, AA::$module_id, $property, $field_id, $fnction, $param, $html)) {
         $Msg = MsgOk(_m("Error: Can't add rule"));
     }
 }
 
 if ( $set_as ) {
-    AA_Profile::copyProfile($slice_id, $set_as_uid, $uid);
+    AA_Profile::copyProfile(AA::$module_id, $set_as_uid, $uid);
 }
 
 // prepare forms ---------------------------------------------------------------
 
 // get current profiles
-$rules = DB_AA::select([], "SELECT * FROM profile", [['slice_id', $slice_id, 'l'], ['uid', $uid]], ['property', 'selector']);
+$rules = DB_AA::select([], "SELECT * FROM profile", [['slice_id', AA::$module_id, 'l'], ['uid', $uid]], ['property', 'selector']);
 
 // get fields for this slice
-$lookup_fields = AA_Slice::getModule($slice_id)->getFields()->getNameArray();
+$lookup_fields = AA_Slice::getModule(AA::$module_id)->getFields()->getNameArray();
 
 // set property names array
 $PROPERTY_TYPES = [

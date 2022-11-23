@@ -71,7 +71,7 @@ if (!IfSlPerm(PS_EDIT_ALL_ITEMS)) {
     exit;
 }
 
-if (!isset($slice_id)) {
+if (!isset(AA::$module_id)) {
     MsgPage(StateUrl(self_base()."index.php3"), _m("Missing slice"));
     exit;
 }
@@ -80,7 +80,7 @@ if (!isset($dataType)) {
     $dataType = "file";
 }
 
-$slice = AA_Slice::getModule($slice_id);
+$slice = AA_Slice::getModule(AA::$module_id);
 
 // Upload a data to the server. The file name is generated automaticly
 // by unique id function. The path is upload_directory/csv_data.
@@ -133,7 +133,7 @@ if ($upload) {
     $addParams['caption']   = $caption;
 
     // continue with settings transformation actions
-    go_url(StateUrl(self_base()."se_csv_import2.php"). "&fileName=".urlencode($dest_file)."&slice_id=$slice_id&addParamsSerial=" .bin2url(serialize($addParams)));
+    go_url(StateUrl(self_base()."se_csv_import2.php"). "&fileName=".urlencode($dest_file)."&addParamsSerial=" .bin2url(serialize($addParams)));
 }
 
 require_once __DIR__ . "/../include/formutil.php";
@@ -240,7 +240,7 @@ if ($preview) { // file preview
         </td></tr>
     <tr><td align="center">
             <input type="hidden" name="previous_upload" value="<?php echo $dest_file ?>">
-            <input type="hidden" name="slice_id" value="<?php echo $slice_id ?>">
+            <input type="hidden" name="slice_id" value="<?php echo AA::$module_id ?>">
             <input type="submit" name="preview" value="<?php echo _m("Preview")?>">
             <input type="submit" name="upload" value="<?php echo _m("Next") ?>" align="center">&nbsp;&nbsp;
         </td></tr>

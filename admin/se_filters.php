@@ -70,7 +70,7 @@ while ($db->next_record()) {
 }
 
 if ( !isset($impslices) OR !is_array($impslices)){
-    AA_Adminpageutil::MsgPageMenu(con_url(StateUrl(self_base() . "se_import.php"), "slice_id=$slice_id"), _m("There are no imported slices"), "sliceadmin", "filters");
+    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base() . "se_import.php"), _m("There are no imported slices"), "sliceadmin", "filters");
     exit;
 }
 
@@ -82,7 +82,7 @@ $p_import_id = q_pack_id($import_id);
 
 
 // lookup (to_categories)
-$group = GetCategoryGroup($slice_id);
+$group = GetCategoryGroup(AA::$module_id);
 if ( $group ) {
     $db->query("SELECT id, name FROM constant
                  WHERE group_id='$group'
@@ -157,7 +157,7 @@ $form_buttons= [
         "type"  =>"button",
                                "value"       =>_m("Update"),
                                "accesskey"   =>"S",
-                               "add"         =>"onclick=\"UpdateFilters('".$slice_id."','".$import_id."')\""
+                               "add"         =>"onclick=\"UpdateFilters('".AA::$module_id."','".$import_id."')\""
     ],
                     "cancel" => ["url"   =>"se_fields.php"]
 ];
@@ -262,7 +262,7 @@ FrmTabEnd($form_buttons);
     function ChangeImport()
     {
         var url = "<?php echo StateUrl(self_base() . "se_filters.php")?>"
-        url += "&slice_id=<?php echo $slice_id ?>"
+        url += "&slice_id=<?php echo AA::$module_id ?>"
         url += "&import_id=" + document.f.import_id.value
         document.location=url
     }

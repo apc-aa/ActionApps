@@ -1,6 +1,6 @@
 <?php
 /** se_import.php - feeding settings
- *   expected $slice_id for edit slice
+ *   expected AA::$module_id for edit slice
  *   optionaly $Msg to show under <h1>Hedline</h1> (typicaly: Category update successful)
  *
  *
@@ -120,7 +120,7 @@ $apage->printHead($err, $Msg);
 $form_buttons = [
     "upd" => [
         "type"=>"button", "value"=>_m("Update"), "accesskey"=>"S",
-                                      "add" =>"onClick=\"UpdateImportExport('".$slice_id."')\""
+                                      "add" =>"onClick=\"UpdateImportExport('".AA::$module_id."')\""
     ],
                        "cancel"=> ["url"=>"se_fields.php"]
 ];
@@ -220,8 +220,8 @@ FrmTabCaption(_m("Enable export to slice:"));
 <tr><td colspan=3>&nbsp;</td></tr>
 </table></tr></td>
 <tr><td align="center">
-<input type=hidden name="slice_id" value="<?php echo $slice_id ?>">
-<input type="button" VALUE="<?php echo _m("Update") ?>" onClick = "UpdateImportExport('<?php echo $slice_id ?>')" align=center>&nbsp;&nbsp;
+<input type=hidden name="slice_id" value="<?php echo AA::$module_id ?>">
+<input type="button" VALUE="<?php echo _m("Update") ?>" onClick = "UpdateImportExport('<?php echo AA::$module_id ?>')" align=center>&nbsp;&nbsp;
 <input type=submit name=cancel value="<?php echo _m("Cancel") ?>">
 </td></tr></table>*/
 

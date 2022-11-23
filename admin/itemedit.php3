@@ -106,7 +106,7 @@ function CloseDialog($zid = null, $openervar = null, $insert=true, $url2go=null)
 }
 
 // Allow edit current slice without slice_pwd
-AA_Credentials::singleton()->loadFromSlice($slice_id);
+AA_Credentials::singleton()->loadFromSlice(AA::$module_id);
 
 if ($encap) {
     add_vars();        // adds values from QUERY_STRING_UNESCAPED
@@ -138,7 +138,7 @@ if ($cancel) {
         // Used for adding item to another slice from itemedit's popup.
         CloseDialog();
     } else {
-        go_return_or_url(StateUrl(self_base()."index.php3"),true,true);
+        go_return_or_url(self_base()."index.php3",true,true);
     }
 }
 
@@ -158,6 +158,7 @@ if ($add) {
 //   $oldcontent4id
 
 $id = $_REQUEST['id'];
+$slice_id = AA::$module_id;
 
 // link from public pages sometimes do not contain slice_id
 if ( $id ) {
@@ -271,7 +272,7 @@ if ( ($insert || $update) AND count($fields) ) {
         } elseif ($go_edit) {   // if go_edit - continue to edit again
             go_url( Inputform_url(false, $added_to_db, $slice_id, '', null, null, false) );
         } else {
-            go_return_or_url(StateUrl(self_base() . "index.php3"),true,true);
+            go_return_or_url(self_base() . "index.php3",true,true);
         }
     }
 }

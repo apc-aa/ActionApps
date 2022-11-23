@@ -134,10 +134,10 @@ if (!IfSlPerm(PS_FIELDS)) {
 // get all warnings
 $warning = [];
 $err = [];          // error array (Init - just for initializing variable
-$slice   = AA_Slice::getModule($slice_id);
+$slice   = AA_Slice::getModule(AA::$module_id);
 
 $s_fields = DB_AA::select(['id'=> []],'SELECT id, name, input_pri, required, input_show, in_item_tbl FROM field', [
-    ['slice_id', $slice_id, 'l'],
+    ['slice_id', AA::$module_id, 'l'],
     ['id', '\_%', 'NOT LIKE']
 ], ['input_pri']);
 

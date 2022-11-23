@@ -45,7 +45,7 @@ $p_from_slice_id = q_pack_id($from_slice_id);
 $err = [];       // error array (Init - just for initializing variable)
 
 // save old values
-[$map_to,$field_map] = GetExternalMapping($slice_id, $from_slice_id );
+[$map_to,$field_map] = GetExternalMapping(AA::$module_id, $from_slice_id );
 
 // First we DELETE current fields mapping and then INSERT new.
 $db->query("DELETE FROM feedmap WHERE from_slice_id = '$p_from_slice_id' AND to_slice_id = '$p_slice_id' ");
@@ -56,7 +56,7 @@ foreach ($fmap as $to_field_id => $val) {
 
     $catVS->clear();
     $catVS->add("from_slice_id", "unpacked", $from_slice_id);
-    $catVS->add("to_slice_id", "unpacked", $slice_id);
+    $catVS->add("to_slice_id", "unpacked", AA::$module_id);
     $catVS->add("to_field_id", "text",$to_field_id);
     $catVS->add("from_field_name", "text", $map_to[$val]);
 
@@ -95,7 +95,7 @@ if ($map_to && is_array($map_to)) {
     foreach ($map_to as $from_field_id => $foo) {
         $catVS->clear();
         $catVS->add("from_slice_id", "unpacked", $from_slice_id);
-        $catVS->add("to_slice_id", "unpacked", $slice_id);
+        $catVS->add("to_slice_id", "unpacked", AA::$module_id);
         $catVS->add("from_field_id",   "text", $from_field_id );
         $catVS->add("from_field_name", "text", $map_to[$from_field_id] );
         $catVS->add("flag", "quoted",FEEDMAP_FLAG_EXTMAP);

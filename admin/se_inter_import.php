@@ -39,8 +39,6 @@ if (!IfSlPerm(PS_FEEDING)) {
 }
 require_once __DIR__ . "/../include/formutil.php";
 
-$p_slice_id = q_pack_id($slice_id);
-
 if (isset($feed_id)) {
     // delete mode
 
@@ -89,7 +87,7 @@ $form_buttons = [
     "submit"=> ["value" => _m("Create new feed from node")],
                       "cancel"=> ["url"=>"se_fields.php"]
 ];
-  FrmTabCaption(_m("Existing remote imports into the slice") . " <b>" . AA_Slice::getModuleName($slice_id) . "</b>");
+  FrmTabCaption(_m("Existing remote imports into the slice") . " <b>" . AA_Slice::getModuleName(AA::$module_id) . "</b>");
   FrmInputMultiSelect('feed_id', _m('Imported slices'), $ext_feeds, '', 5, false, false, _m('feeds prefixed by (=) are "exact copy" feeds'));
   FrmTabSeparator(_m("All remote nodes"), [
       "delete" => [

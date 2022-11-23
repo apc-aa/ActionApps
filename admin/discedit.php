@@ -81,15 +81,15 @@ if ($mode == "hide" || $mode=="delete" || $mode=="deleteall" || $mode=="deletesh
             DeleteNode($tree, $dcontent, $d_id);
             break;
         case "deleteall":
-            DeleteDiscForItem($item_id, $slice_id);
+            DeleteDiscForItem($item_id, AA::$module_id);
             break;
         case "deleteshown":
-            DeleteDiscForItem($item_id, $slice_id, 0);
+            DeleteDiscForItem($item_id, AA::$module_id, 0);
             break;
     }
     updateDiscussionCount($item_id);        // update a count of the comments belong to the item
 
-    AA::Pagecache()->invalidateFor($slice_id);  // invalidate old cached values
+    AA::Pagecache()->invalidateFor(AA::$module_id);  // invalidate old cached values
 
     // refresh the content and the tree because of delete node
     $zids     = QueryDiscussionZIDs($item_id);

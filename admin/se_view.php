@@ -282,7 +282,7 @@ if ($cancel) {
 
 // If you try to edit a view in different slice, you should jump there
 if ($view_id) {
-    if (unpack_id($view->f('slice_id')) != $slice_id) {
+    if (unpack_id($view->f('slice_id')) != AA::$module_id) {
         go_url($view->jumpUrl());
     }
 }
@@ -294,7 +294,7 @@ if (!IfSlPerm(PS_FULLTEXT)) {
 
 $err = [];          // error array (Init - just for initializing variable
 $varset      = new Cvarset();
-$p_slice_id  = q_pack_id($slice_id);
+$p_slice_id  = q_pack_id(AA::$module_id);
 
 
 $VIEW_FIELDS     = getViewFields();
@@ -312,7 +312,7 @@ if ( $update ) {
             break;
         }
 
-        $varset->add("slice_id", "unpacked", $slice_id);
+        $varset->add("slice_id", "unpacked", AA::$module_id);
         //$varset->add("name", "quoted", substr($name,0,30));
         $varset->add("type", "quoted", $view_type);
 
@@ -342,7 +342,7 @@ if ( $update ) {
             }
             $view_id = $varset->last_insert_id();
         }
-        AA::Pagecache()->invalidateFor($slice_id);  // invalidate old cached values
+        AA::Pagecache()->invalidateFor(AA::$module_id);  // invalidate old cached values
 
         foreach ($VIEW_TYPES[$view_type] as $k => $v) {
             if (substr ($k,0,strlen("function:")) == "function:") {
@@ -426,9 +426,9 @@ if ( $VIEW_TYPES_INFO[$view_type]['fields'] ) {
 } else {
     $serchbar = new AA_Searchbar();
 
-    $lookup_fields = AA_Fields::getFields4Select($slice_id, false, 'name', true, true);
+    $lookup_fields = AA_Fields::getFields4Select(AA::$module_id, false, 'name', true, true);
 }
-$slice = AA_Slice::getModule($slice_id);
+$slice = AA_Slice::getModule(AA::$module_id);
 //huhl($lookup_fields, $slice->getSearchfields());
 
 
@@ -543,15 +543,15 @@ foreach ($VIEW_TYPES[$view_type] as $k => $v) {
     }
 }
 
-$slice = AA_Slice::getModule($slice_id);
+$slice = AA_Slice::getModule(AA::$module_id);
 
 switch( $VIEW_TYPES_INFO[$view_type]['aliases'] ) {
     case 'disc2mail':   PrintAliasHelp(new AA_Aliases(new AA_Aliasgenerator_Discussion2mail()), false, false, $form_buttons);
     case 'discus':      PrintAliasHelp(new AA_Aliases(new AA_Aliasgenerator_Discussion()), false, false, $form_buttons);
                         break;
-    case 'field':       PrintAliasHelp(new AA_Aliases((new AA_Aliasgenerator_Slice($slice_id))->addAliases($VIEW_TYPES_INFO[$view_type]['aliases_additional'])), $slice->getFields()->getRecordArray(), false, $form_buttons);
+    case 'field':       PrintAliasHelp(new AA_Aliases((new AA_Aliasgenerator_Slice(AA::$module_id))->addAliases($VIEW_TYPES_INFO[$view_type]['aliases_additional'])), $slice->getFields()->getRecordArray(), false, $form_buttons);
                         break;
-    case 'justids':     PrintAliasHelp(new AA_Aliases(new AA_Aliasgenerator_Slicejustids($slice_id)), false, false, $form_buttons);
+    case 'justids':     PrintAliasHelp(new AA_Aliases(new AA_Aliasgenerator_Slicejustids(AA::$module_id)), false, false, $form_buttons);
                         break;
     case 'links':       PrintAliasHelp(new AA_Aliases(new AA_Aliasgenerator_Link()), false, false, $form_buttons);
                         break;

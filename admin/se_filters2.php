@@ -118,7 +118,7 @@ if ($feed_id) { // cross server feeding
     // We could UPDATE existing rows and INSERT new, but DELETE/INSERT is simpler.
     // A transaction would be nice.
 
-    DB_AA::delete('feeds', [['to_id', $slice_id, 'l'], ['from_id', $import_id, 'l']]);
+    DB_AA::delete('feeds', [['to_id', AA::$module_id, 'l'], ['from_id', $import_id, 'l']]);
 
     if ($all) {                                         // all_categories
         $id = ParseIdA($C, $app);
@@ -126,7 +126,7 @@ if ($feed_id) { // cross server feeding
             $id = 0;
         }
         $catVS->clear();
-        $catVS->add("to_id",          "unpacked", $slice_id);
+        $catVS->add("to_id",          "unpacked", AA::$module_id);
         $catVS->add("from_id",        "unpacked", $import_id);
         $catVS->add("all_categories", "number",   1);
         $catVS->add("to_approved",    "number",   $app);
@@ -142,7 +142,7 @@ if ($feed_id) { // cross server feeding
                 $to_cat = $from_cat;
             }
             $catVS->clear();
-            $catVS->add("to_id",          "unpacked", $slice_id);
+            $catVS->add("to_id",          "unpacked", AA::$module_id);
             $catVS->add("from_id",        "unpacked", $import_id);
             $catVS->add("all_categories", "number",   0);
             $catVS->add("to_approved",    "number",   $app);

@@ -127,7 +127,7 @@ if ( $continue ) {
 
     FrmTabCaption(_m("Change current permisions"));
 
-    $slice_users = AA::$perm->getObjectsPerms($slice_id, "slice");
+    $slice_users = AA::$perm->getObjectsPerms(AA::$module_id, "slice");
     $aa_users    = AA::$perm->getObjectsPerms(AA_ID, "aa");   // higher than slice
 
     // if conflicts slice perms and aa perms - solve it

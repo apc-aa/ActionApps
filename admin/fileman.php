@@ -52,7 +52,7 @@ require_once __DIR__ . "/../include/fileman.php";
 
 
 // FilemanPerms() is defined in perm_core.php, it sets $fileman_dir
-if (!FilemanPerms($slice_id)) {
+if (!FilemanPerms(AA::$module_id)) {
     AA_Adminpageutil::MsgPageMenu("index.php3", _m("No permissions for file manager."), "admin", "fileman");
 }
 

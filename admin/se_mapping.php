@@ -40,10 +40,7 @@ if (!IfSlPerm(PS_FEEDING)) {
 require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/csn_util.php";
 
-
 $err = [];          // error array (Init - just for initializing variable
-
-$p_slice_id = q_pack_id($slice_id);
 
 // lookup internal fed slices
 $SQL= "SELECT name, id FROM feeds, slice
@@ -79,7 +76,7 @@ while ($db->next_record()) {
 // which is only manualy fed)
 $first=true;
 foreach ($g_modules as  $k => $v) {
-    if ($impslices[$k] OR $v['type']!='S' OR $k==$slice_id) {
+    if ($impslices[$k] OR $v['type']!='S' OR $k==AA::$module_id) {
         continue;
     }
     if ($first AND isset($impslices) AND is_array($impslices)) {
@@ -90,7 +87,7 @@ foreach ($g_modules as  $k => $v) {
 }
 
 if (!isset($impslices) OR !is_array($impslices)){
-    MsgPage(con_url(StateUrl(self_base()."se_import.php"), "slice_id=$slice_id"), _m("There are no imported slices"));
+    MsgPage(StateUrl(self_base()."se_import.php"), _m("There are no imported slices"));
     exit;
 }
 
@@ -102,14 +99,14 @@ if ($from_slice_id == "") {
 $p_from_slice_id = q_pack_id($from_slice_id);
 
 // get mapping from table
-[$map_to,$field_map] = GetExternalMapping($slice_id, $from_slice_id );
+[$map_to,$field_map] = GetExternalMapping(AA::$module_id, $from_slice_id );
 
 if (is_null($field_map) && ($remote_slices[$from_slice_id] == 2)) {
     $field_map = $DEFAULT_RSS_MAP;
 }
 
 // find out list of "to fields"
-$to_fields = AA_Fields::getFields4Select($slice_id);
+$to_fields = AA_Fields::getFields4Select(AA::$module_id);
 
 // find out list of "from fields"
 $from_fields[_m("-- Not map --")]           = _m("-- Not map --");
@@ -217,7 +214,7 @@ FrmTabEnd($form_buttons);
         if (from_sl == 0) {
             return;
         }
-        url += "&slice_id=<?php echo $slice_id ?>"
+        url += "&slice_id=<?php echo AA::$module_id ?>"
         url += "&from_slice_id=" + from_sl
         document.location=url
     }

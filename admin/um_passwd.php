@@ -46,7 +46,6 @@ if (!IfSlPerm(PS_EDIT_SELF_USER_DATA) OR !AA::$perm->isUserEditable(AuthGetUid()
 
 $err = [];          // error array (Init - just for initializing variable
 $varset      = new Cvarset();
-$p_slice_id  = q_pack_id($slice_id);
 
 $user_data = AA::$perm->getIDsInfo(AuthGetUid());
 if ( $update ) {

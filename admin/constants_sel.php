@@ -38,8 +38,8 @@ require_once __DIR__ . "/../include/item.php";
 require_once __DIR__ . "/../include/itemfunc.php";
 require_once __DIR__ . "/../include/formutil.php";
 
-$module_id   = $slice_id; // get from session
-$slice       = AA_Slice::getModule($module_id);
+//$module_id   = AA::$module_id; // get from session
+$slice       = AA_Slice::getModule(AA::$module_id);
 
 // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 // Include also js_lib.min.js javascript library

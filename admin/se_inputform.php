@@ -252,15 +252,15 @@ if ($update) {
         Qvarsetadd("text_stored", "number", $text_stored);
 
         $varset->addkey('id', 'text', $fid);
-        $varset->addkey('slice_id', 'unpacked', $slice_id);
-        $varset->doUpdate('field', null, "F".AA_Fields::createShortId($fid).'@'.pack_id($slice_id));
+        $varset->addkey('slice_id', 'unpacked', AA::$module_id);
+        $varset->doUpdate('field', null, "F".AA_Fields::createShortId($fid).'@'.pack_id(AA::$module_id));
 //        $SQL = "UPDATE field SET ". $varset->makeUPDATE() ." WHERE id='$fid' AND slice_id='$p_slice_id'";
 //
 //        if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
 //            $err["DB"] = MsgErr("Can't change field");
 //            break;
 //        }
-        AA::Pagecache()->invalidateFor($slice_id);  // invalidate old cached values
+        AA::Pagecache()->invalidateFor(AA::$module_id);  // invalidate old cached values
 
         if ( !count($err) ) {
             $Msg = MsgOk(_m("Fields update successful"));
@@ -289,7 +289,7 @@ foreach ($g_modules as $k => $v) {
     }
 }
   // lookup fields
-if ( !($fld = DB_AA::select1('', 'SELECT * FROM field', [['slice_id', $slice_id, 'l'], ['id', $fid]]))) {
+if ( !($fld = DB_AA::select1('', 'SELECT * FROM field', [['slice_id', AA::$module_id, 'l'], ['id', $fid]]))) {
     $Msg = MsgErr(_m("No fields defined for this slice"));
     go_url($return_url ? expand_return_url(1) : $back_admin_url);  // back to field page
 }
@@ -401,7 +401,7 @@ $form_buttons = [
                       "fid"      => ["type"=>"hidden", "value"=>$fid],
                       "update",
                       "upd_edit" => ["type"=>"submit", "value"=>_m("Update & Edit")],
-                      "cancel2"   => ['value'=>_m('Show History'), "url"=>\AA\Util\ChangesMonitor::getHistoryUrl("F".AA_Fields::createShortId($fid).'@'.pack_id($slice_id))],
+                      "cancel2"   => ['value'=>_m('Show History'), "url"=>\AA\Util\ChangesMonitor::getHistoryUrl("F".AA_Fields::createShortId($fid).'@'.pack_id(AA::$module_id))],
                       "cancel"   => ["url"=>"se_fields.php" .(AA_Fields::isSliceField($fid) ? '?slice_fields=1':'')]
 ];
 
@@ -481,8 +481,8 @@ echo "
          if ($fld['in_item_tbl']) {
              echo _m('Stored in <em>item</em> table - it is not possible to change store method');
          } else {
-             $text_rows    = DB_AA::select1('cnt', "SELECT count(*) as cnt FROM content, item", [['content.item_id', 'item.id', 'j'], ['item.slice_id', $slice_id, 'l'], ['content.field_id', $fld['id']], ['content.flag', 64, 'set']]);
-             $numeric_rows = DB_AA::select1('cnt', "SELECT count(*) as cnt FROM content, item", [['content.item_id', 'item.id', 'j'], ['item.slice_id', $slice_id, 'l'], ['content.field_id', $fld['id']], ['content.flag', 64, 'unset']]);
+             $text_rows    = DB_AA::select1('cnt', "SELECT count(*) as cnt FROM content, item", [['content.item_id', 'item.id', 'j'], ['item.slice_id', AA::$module_id, 'l'], ['content.field_id', $fld['id']], ['content.flag', 64, 'set']]);
+             $numeric_rows = DB_AA::select1('cnt', "SELECT count(*) as cnt FROM content, item", [['content.item_id', 'item.id', 'j'], ['item.slice_id', AA::$module_id, 'l'], ['content.field_id', $fld['id']], ['content.flag', 64, 'unset']]);
              FrmSelectEasy("text_stored", ['1'=>_m('Text'), '0'=>_m('Number')], $text_stored);
              echo "<div class=tabhlp>"._m('Text').": $text_rows, "._m('Number').": $numeric_rows</div>";
          }
