@@ -95,7 +95,8 @@ class AA_Validate extends AA_Serializable {
                 case 'email':    $standard_validators[$sv_key] = new AA_Validate_Email($parameters);  break;
                 case 'alpha':    $standard_validators[$sv_key] = new AA_Validate_Regexp(['pattern'=>'/^[a-zA-Z]+$/']);          break;
                 case 'id':
-                case 'long_id':  $standard_validators[$sv_key] = new AA_Validate_Id();    break;  // empty = "" or "0"
+                case 'long_id':  $standard_validators[$sv_key] = new AA_Validate_Id();        break;  // empty = "" or "0"
+                case 'markedid': $standard_validators[$sv_key] = new AA_Validate_Markedid();  break;
                 case 'short_id': $standard_validators[$sv_key] = new AA_Validate_Number(['min'=>0]);           break;
                 case 'alias':    $standard_validators[$sv_key] = new AA_Validate_Regexp(['pattern'=>'/^[_X]#[0-9_#a-zA-Z]{8}$/']); break;
                 case 'filename': $standard_validators[$sv_key] = new AA_Validate_Regexp(['pattern'=>'/^[-.0-9a-zA-Z_]+$/']); break;
@@ -400,6 +401,24 @@ class AA_Validate_Id extends AA_Validate {
         return true;
     }
 }
+
+/** Test for long item id with x,y,z in front of ID (for iso widget) */
+class AA_Validate_Markedid extends AA_Validate_Id {
+
+    /** validate function
+     * @param string          $var
+     * @param AA_Content|null $content_context
+     * @param string          $var_id
+     * @return bool
+     */
+    public function validate(string &$var, AA_Content $content_context = null, string $var_id = ''): bool {
+        if (!is_long_id(ltrim($var,'xyz'))) {
+            return AA_Validate::bad(VALIDATE_ERROR_BAD_TYPE, _m('No ID value'), $var_id);
+        }
+        return true;
+    }
+}
+
 
 /** Test for float value
  *  @param   $min

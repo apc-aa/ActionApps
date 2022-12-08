@@ -318,6 +318,11 @@ class AA_Field implements ArrayAccess {
 
         $translations = $this->getTranslations();
 
+        $validator_string = $this->data['input_validate']; // ids for iso widget could be marked - prepended by x, y or z
+        if ( (substr($validator_string,0,2)=='id') AND (substr($this->data['input_show_func'],0,3)=='iso') ) {
+            $validator_string = 'markedid';
+        }
+
         // AA_Property($id='', $name='', $type='text', $multi=false, $persistent=true, $validator=null, $required=false, $input_help='', $input_morehlp='', $example='', $show_content_type_switch=0, $content_type_switch_default=FLAG_HTML, $perms=null, $default=null, $translations=null) {
         return new AA_Property(
             $this->getId(),
@@ -325,7 +330,7 @@ class AA_Field implements ArrayAccess {
             $this->getProperty('in_item_tbl') ? AA::Metabase()->getFieldType('item',$this->getProperty('in_item_tbl')) : ($this->getProperty('text_stored') ? 'text' : 'int'),
             $widget_properties['multiple'] ?? $this->getWidget()::multiple(),
             false,                   // persistent @todo
-            AA_Validate::factoryByString($this->data['input_validate']), // null,
+            AA_Validate::factoryByString($validator_string), // null,
             isset($widget_properties['required']) ? (bool)$widget_properties['required'] : $this->required(),
             $widget_properties['input_help'] ?? $this->getProperty('input_help'),
             $widget_properties['input_morehlp'] ?? $this->getProperty('input_morehlp'),
@@ -717,11 +722,11 @@ class AA_Fields implements Iterator, Countable {
         return is_object($this->fields[$field_id]) ? $this->fields[$field_id] : null;
     }
 
-    /** isField function
+    /**
      *  @return bool - if the field exists
      *  @param $field_id
      */
-    function isField(string $field_id) {
+    function isField(string $field_id): bool {
         $this->loadField($field_id);
         return is_object($this->fields[$field_id]);
     }
