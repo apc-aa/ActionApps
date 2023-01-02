@@ -365,7 +365,7 @@ class inputform {
                 $fval = $field->getDefault(true);   // cont with profile
 
                 // get values from form (values are filled when error on form occurs
-                if ($content_from_form->is_set($fid)) {
+                if ($content_from_form->isSet($fid)) {
                     $fval = $content_from_form->getAaValue($fid);
                 }
             }            // Display the field
@@ -753,7 +753,7 @@ class AA_Inputfield {
     }
 
     /** echoo function
-     *  Echo wrapper - prints output to string insted of to output
+     *  Echo wrapper - prints output to string instead of to output
      * @param $txt
      */
     function echoo($txt) {
@@ -823,8 +823,7 @@ class AA_Inputfield {
      * @param string  $slice_id
      */
     function get( $item, $slice_id ) {
-        // @todo check, how to do it better - this do not work if
-        // "slice_field" parameter uses {subst...} for examle
+        // @todo check, how to do it better - this do not work if "slice_field" parameter uses {subst...} for example
         AA::Stringexpander()->unaliasArray($this->param);
         $this->result_mode = 'template';
         $this->echoo($this->input_before);
@@ -886,7 +885,7 @@ class AA_Inputfield {
                 //            foreach ( $this->value as $content ) {
                 //                $this->const_arr[$content['value']] = $content['value'];
                 //            }
-                //            $this->inputRelation($rows, '', MAX_RELATED_COUNT, '', '', $actions);
+                //            $this->inputRelation($rows, '', '', '', $actions);
                 //            break;
                 //case 'edt': $this->richEditTextarea(
                 //                       get_if($this->param[0],10),       // rows
@@ -946,7 +945,7 @@ class AA_Inputfield {
                 case 'tpr': $this->textareaPreSelect(get_if($this->param[1],4),    // rows
                                                      get_if($this->param[2],60));  // cols
                             break;
-                case 'iso': [, $rows, $mode, $design, $tp, $actions, $whichitems, $conds, $condsrw, $slice_field] = $this->param;
+                case 'iso': [, $rows, $mode, $design, $tp, $actions, $whichitems, $conds, $condsrw, $slice_field, $sort_by, $additional_slice_pwd, $const_arr, $listlen] = $this->param;
                             $mode      = get_if($mode,'AMB');         // AMB - show 'Add', 'Add mutual' and 'Add backward' buttons
                             $tp        = get_if($tp,  'AMB');         // Default to use the AMP table
                             $tagprefix = TPS[$tp] ?? ( $GLOBALS['apc_state']['TPS'][$tp] ?? null );
@@ -957,7 +956,7 @@ class AA_Inputfield {
                             // read related items for selected items
                             $sid = $this->fill_const_arr($slice_field, false, false, AA_BIN_ALL, $this->value, null, $tagprefix);  // if we fill it there, it is not refilled in inputSel()
                             //$sid = (substr($this->param[0],0,7) == "#sLiCe-") ? substr($this->param[0], 7) : '';
-                            $this->inputRelation($rows, $sid, MAX_RELATED_COUNT, $mode, $design, $actions, $whichitems, $conds, $condsrw, $slice_field);
+                            $this->inputRelation($rows, $sid, $mode, $design, $actions, $whichitems, $conds, $condsrw, $slice_field, $sort_by, $listlen);
                             break;
                 case 'hco': [$constgroup, $levelCount, $boxWidth, $rows, $horizontalLevels, $firstSelectable, $levelNames] = $this->param;
                             $this->varname_modify('[]');         // use slightly modified varname
@@ -1626,8 +1625,7 @@ class AA_Inputfield {
      * to 2-column table for use within <form> and <table> tag
      * @param int    $rows
      * @param string $sid
-     * @param int    $minrows
-     * @param string $mode - which buttons to show in related item window:
+     * @param string $mode    - which buttons to show in related item window:
      *                     'A'dd, add 'M'utual, 'B'ackward
      * @param bool   $design
      * @param string $actions - which action to show:
@@ -1643,9 +1641,10 @@ class AA_Inputfield {
      * @param string $condsrw
      * @param string $slice_field
      */
-    function inputRelation($rows=6, $sid='', $minrows=0, $mode='AMB', $design=false, $actions='MDR', $whichitems=AA_BIN_ACT_PEND, $conds="", $condsrw="", $slice_field='') {
+    function inputRelation($rows=6, $sid='', $mode='AMB', $design=false, $actions='MDR', $whichitems=AA_BIN_ACT_PEND, $conds="", $condsrw="", $slice_field='', $sort_by='', $listlen=0) {
         [$name,$val,$add] = $this->prepareVars('multi');
         // backward compatibility - 0 means "not show move buttons", 1 - "show"
+        $listlen              = get_if($listlen, EDIT_ITEM_COUNT);
         $actions              = get_if($actions, 'DR');
         $actions              = str_replace(['0','1'], ['DR','MDR'],(string)$actions);
         $movebuttons          = (strpos($actions,'M') !== false);
@@ -1658,7 +1657,7 @@ class AA_Inputfield {
         $this->field_name('plus');
         $option_no = count($this->const_arr) + ($this->required ? 0:1);
         $rows      = get_if($rows, 6);
-        if ($rows < $option_no) {   // we can make the select bigger, if it contain more options, not more than 3 times bigger, however
+        if ($rows < $option_no) {   // we can make the select bigger, if it contains more options, not more than 3 times bigger, however
             $rows = min($option_no, 3*$rows);
         }
         $ret       ="<select name=\"$name\" size=\"$rows\" multiple $triggers>";
@@ -1686,7 +1685,7 @@ class AA_Inputfield {
         }
         $this->echoo("</tr>\n <tr><td valign=\"bottom\" align=\"center\">\n");
         if (strpos($actions,'R') !== false) {
-            $this->echoo("<input type='button' value='". _m("Add") ."' onclick='OpenRelated(\"$name\", \"$sid\", \"$mode\", \"$design\", \"$whichitems\",\"".rawurlencode($conds)."\",\"".rawurlencode($condsrw)."\", \"".rawurlencode($slice_field)."\",\"".get_admin_url('related_sel.php')."\" )'>\n");
+            $this->echoo("<input type='button' value='". _m("Add") ."' onclick='OpenRelated(\"$name\", \"$sid\", \"$mode\", \"$design\", \"$whichitems\",\"".rawurlencode($conds)."\",\"".rawurlencode($condsrw)."\", \"".rawurlencode($slice_field)."\",\"".get_admin_url('related_sel.php')."\", \"".rawurlencode($sort_by)."\", \"".rawurlencode($listlen)."\" )'>\n");
         }
         if (strpos($actions,'N') !== false) {
             $this->echoo("&nbsp;&nbsp;<input type='button' value='". _m("New") ."' onclick=\"OpenWindowTop('". Inputform_url(true, null, $sid, 'close_dialog', null, $name) .  "');\">\n");
@@ -2373,7 +2372,6 @@ function FrmInputRadio($name, $txt, $arr, $selected="", $needed=false, $hlp="", 
  * @param        $arr
  * @param string $selected
  * @param int    $rows
- * @param bool   $relation
  * @param bool   $needed
  * @param string $hlp
  * @param string $morehlp
@@ -2381,15 +2379,11 @@ function FrmInputRadio($name, $txt, $arr, $selected="", $needed=false, $hlp="", 
  * @param string $mode
  * @param bool   $design
  */
-function FrmInputMultiSelect($name, $txt, $arr, $selected="", $rows=5, $relation=false, $needed=false, $hlp="", $morehlp="", $minrows=0, $mode='AMB', $design=false) {
+function FrmInputMultiSelect($name, $txt, $arr, $selected="", $rows=5, $needed=false, $hlp="", $morehlp="", $minrows=0, $mode='AMB', $design=false) {
     $html  = false;   // in parameter, but never filled. Honza 24.4.2013
     $add   = false;   // in parameter, but never filled. Honza 24.4.2013
     $input = new AA_Inputfield($selected, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp, $arr);
-    if ( $relation ) {
-        $input->inputRelation($rows, $relation, $minrows, $mode, $design);
-    } else {
-        $input->inputMultiSelect($rows);
-    }
+    $input->inputMultiSelect($rows);
     $input->print_result();
 }
 
@@ -2411,7 +2405,7 @@ function FrmInputMultiText($name, $txt, $arr, $selected="", $rows=5, $needed=fal
     $html  = false;   // in parameter, but never filled. Honza 24.4.2013
     $add   = false;   // in parameter, but never filled. Honza 24.4.2013
     $input = new AA_Inputfield($selected, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp, $arr);
-    $input->inputRelation($rows, '', MAX_RELATED_COUNT, '', '', $actions);
+    $input->inputRelation($rows, '', '', '', $actions);
     $input->print_result();
 }
 

@@ -29,27 +29,27 @@
 // @todo only_action option which prints on the output the result of the action
 // Then it could be used as AJAX call for this action!
 
+use AA\Manager;
+use AA\Manageraction\Central_DeleteTrash;
+use AA\Manageraction\Central_Linkcheck;
+use AA\Manageraction\Central_MoveItem;
+use AA\Manageraction\Central_Optimize;
+use AA\Manageraction\Central_Sqlupdate;
+use AA\Manageraction\Central_Tab;
+use AA\Manageraction\Manageractions;
+
 const AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/varset.php";
 require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/item.php";
 require_once __DIR__."/../central/include/actionapps.class.php";
-require_once __DIR__ . "/../central/include/actions.php";
 
 /**
  * @return int[]
  */
 function CountItemsInBins() {
-    $db = getDB();
-
-    $ret = ['folder1'=>0, 'folder2'=>0, 'folder3' => 0];
-    $db->query("SELECT status_code, count(*) as cnt FROM central_conf
-                 GROUP BY status_code");
-                 while ( $db->next_record() ) {
-                     $ret[ 'folder'. $db->f('status_code') ] = $db->f('cnt');
-                 }
-    return $ret;
+    return \AA\IO\DB\DB_AA::select(['folder'=>'cnt'], "SELECT CONCAT('folder', status_code) as folder, count(*) as cnt  FROM central_conf GROUP BY status_code");
 }
 
 if ( !IsSuperadmin() ) {
@@ -61,49 +61,49 @@ if ( !IsSuperadmin() ) {
 $module_id = '43656e7472616c2d41412d61646d696e';
 $metabase  = AA::Metabase();
 
-$actions   = new AA_Manageractions;
-$actions->addAction(new AA_Manageraction_Central_MoveItem('Activate', 1));
-$actions->addAction(new AA_Manageraction_Central_MoveItem('Folder2',  2));
-$actions->addAction(new AA_Manageraction_Central_MoveItem('Folder3',  3));
-$actions->addAction(new AA_Manageraction_Central_Sqlupdate('Sqlupdate_Test',   'dotest'));
-$actions->addAction(new AA_Manageraction_Central_Sqlupdate('Sqlupdate_Update', 'update'));
-$actions->addAction(new AA_Manageraction_Central_Linkcheck('Linkcheck'));
-$actions->addAction(new AA_Manageraction_Central_Optimize('Update_Db_Structure_Test', 'AA\Optimize\UpdateDbStructure', 'test'));
-$actions->addAction(new AA_Manageraction_Central_Optimize('Update_Db_Structure_Repair', 'AA\Optimize\UpdateDbStructure', 'repair'));
-$actions->addAction(new AA_Manageraction_Central_Optimize('Field_Duplicates_Test', 'AA\Optimize\FieldDuplicates', 'test'));
-$actions->addAction(new AA_Manageraction_Central_Optimize('Field_Duplicates_Repair', 'AA\Optimize\FieldDuplicates', 'repair'));
-$actions->addAction(new AA_Manageraction_Central_DeleteTrash('DeleteTrashAction',true));
+$actions   = new Manageractions;
+$actions->addAction(new Central_MoveItem('Activate', 1));
+$actions->addAction(new Central_MoveItem('Folder2',  2));
+$actions->addAction(new Central_MoveItem('Folder3',  3));
+$actions->addAction(new Central_Sqlupdate('Sqlupdate_Test',   'dotest'));
+$actions->addAction(new Central_Sqlupdate('Sqlupdate_Update', 'update'));
+$actions->addAction(new Central_Linkcheck('AA\Util\Linkcheck'));
+$actions->addAction(new Central_Optimize('Update_Db_Structure_Test', 'AA\Optimize\UpdateDbStructure', 'test'));
+$actions->addAction(new Central_Optimize('Update_Db_Structure_Repair', 'AA\Optimize\UpdateDbStructure', 'repair'));
+$actions->addAction(new Central_Optimize('Field_Duplicates_Test', 'AA\Optimize\FieldDuplicates', 'test'));
+$actions->addAction(new Central_Optimize('Field_Duplicates_Repair', 'AA\Optimize\FieldDuplicates', 'repair'));
+$actions->addAction(new Central_DeleteTrash('DeleteTrashAction',true));
 
-$switches  = new AA_Manageractions;
+$switches  = new Manageractions;
 
 // no problem to write tabs as one action, but we use 3
-$switches->addAction(new AA_Manageraction_Central_Tab('Tab1', 'app'));
-$switches->addAction(new AA_Manageraction_Central_Tab('Tab2', 'hold'));
-$switches->addAction(new AA_Manageraction_Central_Tab('Tab3', 'trash'));
-$switches->addAction(new AA_Manageraction_Central_DeleteTrash('DeleteTrash',false));
+$switches->addAction(new Central_Tab('Tab1', 'app'));
+$switches->addAction(new Central_Tab('Tab2', 'hold'));
+$switches->addAction(new Central_Tab('Tab3', 'trash'));
+$switches->addAction(new Central_DeleteTrash('DeleteTrash',false));
 
-$manager_settings = $metabase->getManagerConf('central_conf', $actions, $switches);
-$manager_settings['itemview']['format']['compact_top'] = '
-                                          <table border=0 cellspacing=0 cellpadding=5>';
-$manager_settings['itemview']['format']['odd_row_format'] = '
-                                    <tr class=tabtxt>
-                                      <td width="30"><input type="checkbox" name="chb[_#ID______]" value=""></td>
-                                      <td class=tabtxt><a href="'.StateUrl('tabledit.php?cmd[centraledit][edit][_#ID______]=1').'"> {ifset:{_#ORG_NAME}:_#1:--} </a></td>
-                                      <td class=tabtxt>_#AA_ID___</td>
-                                      <td class=tabtxt>_#DB_SERVE - _#DB_NAME_</td>
-                                      <td class=tabtxt>_#AA_HTTP__#AA_BASE_</td>
-                                    </tr>
-                                    <tr class="tabtxt">
-                                      <td>&nbsp;</td>
-                                      <td class="tabtxt" colspan="4"><a href="{sessurl:?akce=Sqlupdate_Test&chb[_#ID______]=1}">'._m('sql_upadte TEST') .'</a> &nbsp; &nbsp; <a href="{sessurl:?akce=Sqlupdate_Update&chb[_#ID______]=1}">'._m('sql_upadte NOW!') .'</a></td>
-                                    </tr>
-                                   ';
-$manager_settings['itemview']['query_funct'] = 'Central_QueryZids';
-$manager_settings['messages']['title'] = _m('ActionApps Central');
+$managed = $metabase->getManagerConf('central_conf', $actions, $switches);
+//$manager_settings['itemview']['format']['compact_top'] = '
+//                                          <table border=0 cellspacing=0 cellpadding=5>';
+//$manager_settings['itemview']['format']['odd_row_format'] = '
+//                                    <tr class=tabtxt>
+//                                      <td width="30"><input type="checkbox" name="chb[_#ID______]" value=""></td>
+//                                      <td class=tabtxt><a href="'.StateUrl('tabledit.php?cmd[centraledit][edit][_#ID______]=1').'"> {ifset:{_#ORG_NAME}:_#1:--} </a></td>
+//                                      <td class=tabtxt>_#AA_ID___</td>
+//                                      <td class=tabtxt>_#DB_SERVE - _#DB_NAME_</td>
+//                                      <td class=tabtxt>_#AA_HTTP__#AA_BASE_</td>
+//                                    </tr>
+//                                    <tr class="tabtxt">
+//                                      <td>&nbsp;</td>
+//                                      <td class="tabtxt" colspan="4"><a href="{sessurl:?akce=Sqlupdate_Test&chb[_#ID______]=1}">'._m('sql_upadte TEST') .'</a> &nbsp; &nbsp; <a href="{sessurl:?akce=Sqlupdate_Update&chb[_#ID______]=1}">'._m('sql_upadte NOW!') .'</a></td>
+//                                    </tr>
+//                                   ';
+// $manager_settings['itemview']['query_funct'] = 'Central_QueryZids';
+$managed->settings['messages']['title'] = _m('ActionApps Central');
 //         'get_content_funct'    => 'Central_GetAaContent'
 
-
-$manager = new AA_Manager('central', $manager_settings);
+$managed->setColumns2show(['ORG_NAME','AA_HTTP_DOMAIN','AA_BASE_DIR']);
+$manager = new Manager('central', $managed);
 $manager->performActions();
 
 // need for menu

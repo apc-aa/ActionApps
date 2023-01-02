@@ -28,6 +28,7 @@
 // Then it could be used as AJAX call for this action!
 
 use AA\Later\Toexecute;
+use AA\Manager;
 
 const AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
@@ -65,19 +66,15 @@ if ( !IsSuperadmin() ) {
 
 
 // Common manager settings for Tasks 
-$manager_settings = GetToexecuteManagerSettings();
-
-not finished
-
-$manager = new AA_Manager('task'.AuthGetUid(),  $manager_settings);
+$manager = new Manager('task'.AuthGetUid(), GetToexecuteManagerSettings());
 $manager->setRestrictionConds([
     new AA_Condition('execute_after', '==', Toexecute::TOEXECUTE_USER_TASK_TIME),
     new AA_Condition('aa_user',       '==', AuthGetUid())
     ]);
 
 $apage = new AA_Adminpageutil('sliceadmin', 'taskmanager');
-$apage->setTitle(_m('Manage %1', [_m("Scheduled Tasks")]));
-$apage->printWithManager((new AA_Manager('task'.AuthGetUid(), $manager_settings))->setAllModules());
+$apage->setTitle(_m('Manage %1', [_m("User Tasks")]));
+$apage->printWithManager($manager);
 
 
 
