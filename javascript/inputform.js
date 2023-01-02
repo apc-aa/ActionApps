@@ -37,12 +37,11 @@ function BeforeSubmit() {
     return true;  // proove_fields();
 }
 
-
-function OpenRelated(varname, sid, mode, design, frombins, conds, condsrw, slice_field, relwind_url) {
+function OpenRelated(varname, sid, mode, design, frombins, conds, condsrw, slice_field, relwind_url, sort, listlen) {
     if ((relatedwindow != null) && (!relatedwindow.closed)) {
         relatedwindow.close()    // in order to preview go on top after open
     }
-    var url = GetUrl(relwind_url, ["sid=" + sid, "var_id=" + varname, "mode=" + mode, "design=" + design, "frombins=" + frombins, "showcondsro=" + conds, "showcondsrw=" + condsrw, "slice_field=" + slice_field]);
+    var url = GetUrl(relwind_url, ["sid=" + sid, "var_id=" + varname, "mode=" + mode, "design=" + design, "frombins=" + frombins, "showcondsro=" + conds, "showcondsrw=" + condsrw, "slice_field=" + slice_field, "sort=" + sort, "listlen="+listlen]);
     relatedwindow = open( url, "relatedwindow", "scrollbars=1, resizable=1, width=570");
 }
 

@@ -31,6 +31,9 @@
 */
 
 
+use AA\Manager;
+use AA\Util\InputVars;
+
 $save_hidden = true;   // do not delete r_hidden session variable in init_page!
 
 const AA_REGISTER_GLOBALS = true;
@@ -48,37 +51,68 @@ require_once __DIR__ . "/../include/util.php";
 
 /** RELATED SELECTION WINDOW - managed by MANAGER CLASS */
 
+$sess->register('r_state'); // make sure it is _SESSION variable
+
 /* use stored values from session, if we call related window
-   for secnd time (eg. after search or filtering data) */
-if ( isset($r_state) && !$_GET['sid'])  {
-//  $sid         = $r_state['related']['sid'];
-    $mode        = $r_state['related']['mode'];
+   for secnd time (e.g. after search or filtering data) */
+if ( isset($_GET['sid']) )  {
+    $sid         = InputVars::idGET('sid');
+    $var_id      = InputVars::stringGET('var_id');
+    $mode        = InputVars::stringGET('mode');
+    $design      = InputVars::boolGET('design');
+    $frombins    = InputVars::stringGET('frombins');
+    $showcondsro = InputVars::stringGET('showcondsro');
+    $showcondsrw = InputVars::stringGET('showcondsrw');
+    $sort        = InputVars::stringGET('sort');
+    $slice_field = InputVars::stringGET('slice_field');
+    $listlen     = InputVars::intGET('listlen');
+    $r_state['related'] = [
+       'sid'         => $sid,
+       'var_id'      => $var_id,
+       'mode'        => $mode,
+       'design'      => $design,
+       'frombins'    => $frombins,
+       'showcondsro' => $showcondsro,
+       'showcondsrw' => $showcondsrw,
+       'slice_field' => $slice_field,
+       'listlen'     => $slice_field
+        ];
+} else {
+    // it is not stored inside Manager - we have to store it in session
+    $sid         = $r_state['related']['sid'];
     $var_id      = $r_state['related']['var_id'];
+    $mode        = $r_state['related']['mode'];
     $design      = $r_state['related']['design'];
     $frombins    = $r_state['related']['frombins'];
-//  $conds_ro    = $r_state['related']['conds_ro'];
-//  $conds_rw    = $r_state['related']['conds_rw'];
+    $showcondsro = $r_state['related']['showcondsro'];
+    $showcondsrw = $r_state['related']['showcondsrw'];
+    $short       = $r_state['related']['sort'];
     $slice_field = $r_state['related']['slice_field'];
+    $listlen     = $r_state['related']['slice_fiel'];
+}
+
+$manager_id = 'related'. $sid.$var_id;
+
+if ( isset($_GET['sid']) )  {
+    unset($r_state['manager'][$manager_id]);
 }
 
 // id of the editted module (id in long form (32-digit hexadecimal number))
-$related_sid = get_if( $_GET['sid'], $r_state['related']['sid'] );
-$slice       = AA_Slice::getModule($related_sid);
+$slice       = AA_Slice::getModule($sid);
 
 if (!$slice) {
-    echo "Error - no slice found<br>";
-    echo "<hr>sid<br>";
+    echo "<Error - no slice found<br>";
+    echo "<hr>sid<br><pre>";
     print_r($sid);
     echo "<hr>r_state<br>";
     print_r($r_state);
-    echo "<hr><br>";
-    print_r($_GET);
     echo "<hr>GET<br>";
     print_r($_GET);
     echo "<hr>SESSION<br>";
     print_r($_SESSION);
     echo "<hr>POST<br>";
     print_r($_POST);
+    echo "</pre>";
     exit;
 }
 
@@ -88,7 +122,7 @@ if (!$slice_field ) { $slice_field ='_#HEADLINE'; }
 
 for ( $i=0, $ino=strlen($mode); $i<$ino; ++$i) {
     $m1 = substr($mode,$i,1);
-    $mode_string .= "&nbsp;<a href=\"javascript:SelectRelations('$var_id','".TPS['AMB'][$m1]['tag']."','".TPS['AMB'][$m1]['prefix']."','".TPS['AMB'][$m1]['tag']."_#ITEM_ID_','{safe:{javascript:{expand:".$slice_field."}}}')\">". _m(TPS['AMB'][$m1]['str']) ."</a>&nbsp;";
+    $mode_string .= "&nbsp;<a href=\"javascript:SelectRelations('$var_id','".TPS['AMB'][$m1]['tag']."','".TPS['AMB'][$m1]['prefix']."','".TPS['AMB'][$m1]['tag']."_#ITEM_ID_','{safe:{javascript:{expand:".$slice_field."}}}')\" class=\"aa-button\">". _m(TPS['AMB'][$m1]['str']) ."</a>&nbsp;";
 }
 
 $aliases = $slice->aliases();
@@ -123,18 +157,15 @@ if ($design) {
     $format['compact_bottom']  = '</table>';
 }
 
-$conds_ro = String2Conds( rawurldecode($showcondsro) );
-$conds_rw = String2Conds( rawurldecode($showcondsrw) );
-
 $manager_settings = [
-     'module_id' => $related_sid,
+     'module_id' => $sid,
      'show'      =>  MGR_ALL & ~MGR_ACTIONS,    // MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS | MGR_SB_ALLTEXT | MGR_SB_ALLNUM
      'searchbar'  => [
          'fields'               => $slice->getSearchfields(),
          'search_row_count_min' => 1,
          'order_row_count_min'  => 1,
          'add_empty_search_row' => true,
-         'function'             => false  // name of function for aditional action hooked on standard filter action
+         'function'             => false  // name of function for additional action hooked on standard filter action
      ],
      'scroller'  => [
          'listlen'              => ($listlen ?: EDIT_ITEM_COUNT)
@@ -144,69 +175,39 @@ $manager_settings = [
          'format'               => $format,
          'fields'               => $slice->getFields()->getRecordArray(),
          'aliases'              => $aliases,
-         'get_content_funct'    => 'GetItemContent'
+         'get_content_funct'    => 'GetItemContent',
+         'query_funct'          => 'QueryZidsSet'
      ],
      'messages'  => [
          'title'       => _m("Editor window - item manager, related selection window")
      ]
 ];
 
-$manager = new AA_Manager('related'. $related_sid, $manager_settings);
-if ((isset($conds_ro)) && (isset($showcondsro))) {
-    $manager->searchbar->addSearch($conds_ro, true);
+$manager = new Manager($manager_id, (new \AA\Managed())->setSettings($manager_settings));
+if ( isset($_GET['sid']) ) {
+
+    if ( isset($showcondsro) ) {
+        $manager->addSearchBar( String2Conds(rawurldecode($showcondsro)), true );
+    }
+    if (isset($conds_rw)) {
+        $manager->addSearchBar( String2Conds(rawurldecode($showcondsrw)));
+    }
+    if (isset($sort)) {
+        $manager->addOrderBar( String2Sort(rawurldecode($sort)));
+    }
 }
-if ((isset($conds_rw)) && (isset($showcondsrw))) {
-    $manager->searchbar->addSearch($conds_rw);
-}
+
+$apage = new AA_Adminpageutil();
+//$apage->setTitle(_m('Manage %1', [AA_Plannedtask::name()]));
+//$apage->setSubtitle( _m('You can plan the task for specified time, or as the reaction to some event. The task will be probably sending e-mails using {mail...} expression, or recounting some fields after update by {recount...}') );
+$apage->addRequire(get_aa_url('javascript/js_lib.min.js?v='.AA_JS_VERSION ));
+$apage->addRequire(get_aa_url('javascript/inputform.min.js?v='.AA_JS_VERSION ));
+
+$apage->printWithManager($manager);
+
 
 // r_state array holds all configuration of Links Manager
 // the configuration then could be Bookmarked
-if ( !isset($r_state['related']) OR $_GET['sid'] OR ($r_state['related']['sid'] != $related_sid)) {
-//    huhl(" 1:", $r_state['related'], " sid:",$_GET['sid'] , " m:",$r_state['related']['module_id'], " mi:",$module_id);
-    // we are here for the first time or we are switching to another slice
-    unset($r_state['related']);
-    // set default admin interface settings from user's profile
-    // $r_state["module_id"]         = $related_sid;
-    // $r_state['bin']               = 'app';
-    $frombins = get_if( $frombins, AA_BIN_ACTIVE | AA_BIN_PENDING ) ;
-    $r_state['related']['sid']       = $related_sid;
-    $r_state['related']['mode']      = $mode;
-    $r_state['related']['var_id']    = $var_id;
-    $r_state['related']['design']    = $design;
-    $r_state['related']['frombins']  = $frombins;
-//    $r_state['related']['conds_ro'] = $conds_ro;
-//    $r_state['related']['conds_rw'] = $conds_rw;
-    $r_state['related']['slice_field'] = $slice_field;
-}
 
-if ($r_state['related']['manager'] ) {        // do not set state for the first time calling
-    $manager->setFromState($r_state['related']['manager']);
-}
-
-$manager->performActions();
-
-$manager->printHtmlPageBegin(true);  // html, head, css, title, javascripts
-FrmJavascriptFile('javascript/js_lib.min.js?v='.AA_JS_VERSION);
-FrmJavascriptFile('javascript/inputform.min.js?v='.AA_JS_VERSION);  // for SelectRelations() function
-
-$zids = $manager->getSet()->setBins($frombins)->query();
-
-echo $manager->getSearchbarBegin();
-echo $manager->getSearchbarEnd();   // close the searchbar form
-
-echo $manager->getAndClearMessages();
-echo GetPrintArray($r_err);
-echo GetPrintArray($r_msg);
-unset($r_err);
-unset($r_msg);
-
-echo $manager->getItems($zids);   // print links and actions
-$r_state['related']['manager'] = $manager->getState();
-
-echo '<table width="100%" border="0" cellspacing="0" cellpadding="1" bgcolor="'. COLOR_TABTITBG ."\" align=\"center\">
-<tr><td align=\"center\"><input type=\"button\" value='". _m("Back") ."' onclick='window.close()'></td></tr></table>";
-
-HtmlPageEnd();
-page_close();
 
 
