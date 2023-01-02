@@ -24,6 +24,7 @@
  *
 */
 
+use AA\Manager;
 use AA\Util\InputVars;
 
 //const AA_REGISTER_GLOBALS = true;
@@ -50,5 +51,4 @@ if (!IfSlPerm(PS_FORMS)) {
 $apage = new AA_Adminpageutil('sliceadmin', 'tasks');
 $apage->setTitle(_m('Manage %1', [AA_Plannedtask::name()]));
 $apage->setSubtitle( _m('You can plan the a task for specified time, or as the reaction to some event. The task will be probably sending e-mails using {mail...} expression, or recounting some fields after update by {recount...}') );
-$apage->printWithManager(new AA_Manager('task' . AA::$module_id, AA_Plannedtask::getManagerConf()));
-
+$apage->printWithManager(new Manager('task' . AA::$module_id, AA_Plannedtask::getManagerConf()));

@@ -27,6 +27,12 @@
 // @todo only_action option which prints on the output the result of the action
 // Then it could be used as AJAX call for this action!
 
+use AA\Manager;
+use AA\Manageraction\Item_Tab;
+use AA\Manageraction\Manageractions;
+use AA\Manageraction\Polls_DeleteTrash;
+use AA\Manageraction\Polls_MoveItem;
+
 const AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../../include/init_page.php";
 require_once __DIR__ . "/../../include/varset.php";
@@ -34,7 +40,6 @@ require_once __DIR__ . "/../../include/formutil.php";
 
 require_once __DIR__ . "/../../include/item.php";
 require_once __DIR__ . "/../../include/actions.php";
-require_once __DIR__ . "/../../modules/polls/include/actions.php";
 require_once __DIR__ . "/../../modules/polls/include/util.php";
 
 if ( !IfSlPerm(PS_EDIT_ALL_ITEMS) ) {
@@ -42,21 +47,21 @@ if ( !IfSlPerm(PS_EDIT_ALL_ITEMS) ) {
     exit;
 }
 
-$actions   = new AA_Manageractions;
-$actions->addAction(new AA_Manageraction_Polls_MoveItem('Activate', 1));
-$actions->addAction(new AA_Manageraction_Polls_MoveItem('Folder2',  2));
-$actions->addAction(new AA_Manageraction_Polls_MoveItem('Folder3',  3));
-$actions->addAction(new AA_Manageraction_Polls_DeleteTrash('DeleteTrashAction',true));
+$actions   = new Manageractions;
+$actions->addAction(new Polls_MoveItem('Activate', 1));
+$actions->addAction(new Polls_MoveItem('Folder2',  2));
+$actions->addAction(new Polls_MoveItem('Folder3',  3));
+$actions->addAction(new Polls_DeleteTrash('DeleteTrashAction',true));
 
-$switches  = new AA_Manageractions;
+$switches  = new Manageractions;
 
 // no problem to write tabs as one action, but we use 3
-$switches->addAction(new AA_Manageraction_Item_Tab('Folder1a', 'app'));      // we use the same action as for Items!
-$switches->addAction(new AA_Manageraction_Item_Tab('Folder1b', 'appb'));     // we use the same action as for Items!
-$switches->addAction(new AA_Manageraction_Item_Tab('Folder1c', 'appc'));     // we use the same action as for Items!
-$switches->addAction(new AA_Manageraction_Item_Tab('Folder2',  'folder2'));  // we use the same action as for Items!
-$switches->addAction(new AA_Manageraction_Item_Tab('Folder3',  'folder3'));  // we use the same action as for Items!
-$switches->addAction(new AA_Manageraction_Polls_DeleteTrash('DeleteTrash',false));
+$switches->addAction(new Item_Tab('Folder1a', 'app'));      // we use the same action as for Items!
+$switches->addAction(new Item_Tab('Folder1b', 'appb'));     // we use the same action as for Items!
+$switches->addAction(new Item_Tab('Folder1c', 'appc'));     // we use the same action as for Items!
+$switches->addAction(new Item_Tab('Folder2',  'folder2'));  // we use the same action as for Items!
+$switches->addAction(new Item_Tab('Folder3',  'folder3'));  // we use the same action as for Items!
+$switches->addAction(new Polls_DeleteTrash('DeleteTrash',false));
 
 
 // id of the editted module (id in long form (32-digit hexadecimal number))
@@ -79,7 +84,7 @@ $manager_settings['itemview']['format']['compact_top'] = '
 $manager_settings['itemview']['format']['odd_row_format'] = '<tr class=tabtxt><td width="30"><input type="checkbox" name="chb[x_#POLL_ID_]" value=""></td><td>_#POLL_ID_</td><td><a href="_#EDITPOLL">_#QUESTION</a></td><td>_#PUB_DATE</td><td>_#EXP_DATE</td></tr>
                                       ';
 
-$manager = new AA_Manager('poll'.$module_id, $manager_settings);   // no special meaningof the manager_id, just some ID
+$manager = new Manager('poll'.$module_id, (new \AA\Managed())->setSettings($manager_settings));   // no special meaning of the manager_id, just some ID
 $manager->performActions();
 
 $aa_set = $manager->getSet();

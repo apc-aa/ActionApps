@@ -32,10 +32,13 @@
 
 use AA\IO\DB\DB_AA;
 use AA\IO\Grabber\ObjectForm;
+use AA\Managed;
+use AA\Manageraction\Manageractions;
+use AA\Manageraction\Object_Delete;
 use AA\Util\AbstractAliasgenerator;
 use AA_Plannedtask;
 
-/** allows serialize objects
+/** allows to serialize objects
  * @method expand(false|mixed|string $param)
  */
 abstract class AA_Serializable {
@@ -79,7 +82,7 @@ abstract class AA_Serializable {
      *  @param $params array of parameters in form 'property_name' => 'value'
      */
     function __construct($params= []) {
-        // ask class, which parameters uses and fill it
+        // ask class which parameters uses and fill it
         // call AA\Widget\TxtWidget::getClassProperties()), for example
         $this->setProperties($params);
     }
@@ -139,20 +142,20 @@ abstract class AA_Serializable {
      */
     static function parseClassProperties($string) {
         // we do not use ParamExplode() - I  do not like the http:// replacement there
-        $splited = explode('##Sx', str_replace(['#:', ':', '~@|_'], ['~@|_', '##Sx', ':'], $string));
+        $split = explode('##Sx', str_replace(['#:', ':', '~@|_'], ['~@|_', '##Sx', ':'], $string));
 
         // first parameter is the class identifier - the parameters starts then
-        $class  = self::constructClassName(array_shift($splited), get_called_class().'_');
+        $class  = self::constructClassName(array_shift($split), get_called_class().'_');
         $params = ['class' => $class];
 
         if ( class_exists($class) ) {
-            // ask class, which parameters uses
+            // ask class which parameters uses
             // call AA\Widget\TxtWidget::getClassProperties()), for example
             $props = $class::getClassProperties();
             $name  = '';
 
             foreach ($props as $name =>$property) {
-                $value = array_shift($splited);
+                $value = array_shift($split);
                 if (isset($value)) {
                     $params[$name] = $property->isMulti() ? json2asoc($value) : $value;  // const_arr for widget uses this, for example
                     //$params[$name] = $property->isMulti() ? json2arr($value,true) : $value;  // const_arr for widget uses this, for example
@@ -161,9 +164,9 @@ abstract class AA_Serializable {
             }
             // is there rest? Add all the values to the last parameter
             // It isthere for older 1-parameter classes, where we do not escape ":"
-            // like AA_Generator_Txt - we want it as it was written - not splitted
-            if (count($splited) AND $name) {
-                $params[$name] .= ':'.join(':',$splited);
+            // like AA_Generator_Txt - we want it as it was written - not split
+            if (count($split) AND $name) {
+                $params[$name] .= ':'.join(':',$split);
             }
         }
         return $params;
@@ -177,7 +180,7 @@ abstract class AA_Serializable {
  * restoring class data (used in searchbar class, manager class, ...).
  *
  * If you want to use storable methods in your class, you should derive the new
- * class from AA_Storable. Then the property shoul be marked as persistent
+ * class from AA_Storable. Then the property should be marked as persistent
  * where you specify all the variables you want to store. Then you just call
  * getState() and setFromState() methods for storing and restoring object's data
  */
@@ -186,7 +189,7 @@ class AA_Storable extends AA_Serializable {
 
     /** getPersistentProperties function
      *  Returns array of persistent slots (AA_property)
-     *  Uses getClassProperties() method of the classes from which it grabs all
+     *  Uses getClassProperties() method of the classes from which it grabs
      *  all persistent properties
      * @param $class
      * @return array
@@ -304,7 +307,7 @@ class AA_Storable extends AA_Serializable {
         if ( ($version = static::version()) > 1) {
             $ret['aa_version'] = $version;
         }
-        // we need the exact class in order we can factory the object from state
+        // we need the exact class in order we can factor the object from state
         $ret['aa_class']   = get_called_class();
         return $ret;
     }
@@ -632,7 +635,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
    ///** query function
    // * Finds object IDs for objects given by conditions
    // *
-   // *   @param string|array  $type   - object type - could by in array ['class'=>$type] - for compatibility with AA_Manager query_funct
+   // *   @param string|array  $type   - object type - could by in array ['class'=>$type] - for compatibility with Manager query_funct
    // *   @param $set
    // *   @param zids          $restrict_zids - use it if you want to choose only from a set of ids
    // *   @return A zids object with a list of the ids that match the query.
@@ -642,7 +645,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
    // */
    //    // @todo !!! - rewrite it.
    //    // do the same as in queryZids for any object
-    static function querySet($type, $set, $restrict_zids=null) {
+    static function querySet($type, $set, ?zids $restrict_zids=null) {
 
         $type = is_array($type) ? $type['class'] : $type;
 
@@ -665,6 +668,12 @@ class AA_Object extends AA_Storable implements AA_iEditable {
 
         $tables['t0']['cond'] = "t0.property='aa_type' AND t0.value='".quote($type)."'";
         $tables['t0']['join'] = 'object_text as t0';
+
+        if (is_object($restrict_zids)) {
+            $tables['t0']['cond'] .= " AND ". $restrict_zids->sqlin('t0.object_id', true);
+            // just to keep order
+            // $select_order[] = "field(objectid,". implode(",",array_map("qquote", $restrict_zids->longids())). ')';
+        }
 
         if ( !empty($owners) ) {
             $tables['t1']['cond'] = "t1.property='aa_owner' AND ". Cvarset::sqlin('t1.value', $owners);
@@ -791,12 +800,6 @@ class AA_Object extends AA_Storable implements AA_iEditable {
 
         $SQL .= " WHERE ";
 
-        if (is_object($restrict_zids)) {
-            $SQL .= $restrict_zids->sqlin() ." AND ";
-            // just to keep order
-            $select_order[] = "field(objectid,". implode(",",array_map("qquote", $restrict_zids->longids())). ')';
-        }
-
         $delim = '';
         foreach ($tables as $tbl => $table ) {
             if ($table['cond']) {
@@ -855,9 +858,9 @@ class AA_Object extends AA_Storable implements AA_iEditable {
     }
 
     /**
-     *  
+     *
      */
-    static function getContent($settings, $zids) {
+    public static function getContent($zids, $settings=[]) {
         $ret        = [];
         $class      = $settings['class'];
         $properties = $class::getClassProperties();
@@ -892,7 +895,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
         return '
           <table>
             <tr>
-              <th>'.join("</th>\n<th>", array_merge( [_m('Action')], $fields->getFieldnamesArray(), [_m('ID'), _m('Owner ID'), _m('Owner')])).'</th>
+              <th>'.join("</th>\n<th>", array_merge( ['',_m('Action')], $fields->getFieldnamesArray(), [_m('ID'), _m('Owner ID'), _m('Owner')])).'</th>
             </tr>
             ';
     }
@@ -900,45 +903,48 @@ class AA_Object extends AA_Storable implements AA_iEditable {
     /** Manager row HTML
      *  could be changed in child classes
      * @param AA\Util\Searchfields $fields
-     * @param $aliases
+     * @param $aliases AA_Aliases
      * @param $buttons
      * @return string
      */
     protected static function getManagerRowHtml($fields, $aliases, $buttons) {
         return '
             <tr>
-              <td style="white-space:nowrap;">'.
-                   $buttons['Edit'].' '.
-                   $buttons['Delete'].' '.
-             '</td>          
-              <td>'.join("</td>\n<td>", array_keys($aliases)).'</td>
+              <td><input name="chb[x_#AA_ID___]" value="" type="checkbox"></td>
+              <td style="white-space:nowrap;"> '. join(' ', $buttons) .' </td>          
+              <td>'.join("</td>\n<td>", $aliases->getNames()).'</td>
             </tr>
             ';
     }
 
     /** generate manager from object structure
      * @static
-     * @param string                 $manager_url - empty in most cases - editing on the same url
-     * @param AA_Manageractions? $actions
-     * @param AA_Manageractions? $switches
-     * @return array
+     * @param Manageractions? $actions
+     * @param Manageractions? $switches
+     * @return Managed
      */
-    static function getManagerConf($manager_url='', $actions=null, $switches=null) {
+    static function getManagerConf(Manageractions $actions=null, Manageractions $switches=null): Managed {
         $object_class  = get_called_class();
         $aliases       = new AA_Aliases(new AA_Aliasgenerator_Object(static::class));
 
         $properties    = static::getClassProperties();
         $search_fields = AA_Object::getSearchfields($properties);
-        $new_link      = a_href(StateUrl("$manager_url?add=1"), GetAAImage('icon_new.gif', _m('new'), 17, 17).' '. _m('Add'));
 
-        $buttons  = [
-                   'Edit'   => a_href(get_url($manager_url, ['id=_#AA_ID___', 'module_id=_#AA_OWNER'], true), _m('Edit'), 'aa-button-edit'),
-                   'Delete' => a_href(get_url($manager_url, ['id=_#AA_ID___', 'module_id=_#AA_OWNER', 'delete' => '1'], true), _m('Delete'), 'aa-button-delete', ['onclick' =>"return confirm('". _m("Do you really want to delete this object?"). "')"])
-//                   'Run'=>get_aa_url('export.php', ['id=_#AA_ID___'], false)
-        ];
+
 
         // MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS | MGR_SB_ALLTEXT | MGR_SB_ALLNUM
         $show              = $search_fields->containNumeric() ? (MGR_ALL & ~MGR_SB_BOOKMARKS) : (MGR_ALL & ~MGR_SB_BOOKMARKS & ~MGR_SB_ALLNUM);
+
+        if (!is_object($actions)) {
+            $actions   = new Manageractions;
+        }
+        $actions->addAction(new Object_Delete('DeleteObject'));
+
+        $buttons  = [
+            'Edit'   => a_href(get_url(Managed::MANGED_URL, ['id=_#AA_ID___', 'module_id=_#AA_OWNER'], true), _m('Edit'), 'aa-button-edit'),
+            //                   'Run'=>get_aa_url('export.php', ['id=_#AA_ID___'], false)
+        ];
+        $buttons = array_merge($buttons, $actions->getManagerButtons(Managed::MANGED_URL,'_#AA_ID___', '_#AA_OWNER'));
 
         $manager_settings = [
              'module_id' => AA::$module_id,
@@ -948,7 +954,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
                  'search_row_count_min' => 1,
                  'order_row_count_min'  => 1,
                  'add_empty_search_row' => true,
-                 'function'             => false  // name of function for aditional action hooked on standard filter action
+                 'function'             => false  // name of function for additional action hooked on standard filter action
 //                 'default_sort'         => array( 0 => array('time' => 'd'))  // it would be nice to add default sort, but we do not have creation_time or something like that
              ],
              'scroller'  => [
@@ -964,10 +970,10 @@ class AA_Object extends AA_Storable implements AA_iEditable {
                                                 'category_bottom'  => "",
                                                 'even_odd_differ'  => false,
                                                 'even_row_format'  => "",
-                                                'odd_row_format'   => static::getManagerRowHtml($search_fields, $aliases->getArray(), $buttons),
+                                                'odd_row_format'   => static::getManagerRowHtml($search_fields, $aliases, $buttons),
                                                 'compact_remove'   => "",
-                                                'compact_bottom'   => "</table></div><br>". $new_link,
-                                                'noitem_msg'       => _m('No object found'). '<br>'. $new_link
+                                                'compact_bottom'   => "</table></div><br>",
+                                                'noitem_msg'       => _m('No object found'). '<br>'
                  ],
                  'fields'               => $search_fields,
                  'aliases'              => $aliases,
@@ -977,11 +983,10 @@ class AA_Object extends AA_Storable implements AA_iEditable {
              ],
              'actions'   => $actions,
              'switches'  => $switches,
-             'managed_class' => static::class,
              'bin'       => 'app'
         ];
 
-        return $manager_settings;
+        return (new \AA\Managed_Object(static::class))->setSettings($manager_settings);
     }
 
     /** AA_iEditable method - creates Object from the form data */
@@ -989,7 +994,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
         $grabber = new ObjectForm();
         $grabber->prepare();    // maybe some initialization in grabber
         // we expect just one form - no need to loop through contents
-        $content    = $grabber->getContent();
+        $content    = $grabber->getItem();
         // while ($content = $grabber->getContent())
         $store_mode = $grabber->getStoreMode();        // add | update | insert
         $grabber->finish();    // maybe some finalization in grabber
@@ -1000,7 +1005,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
 
         $object->setNew($content->getId(), $oowner, $content->getName());
 
-        // self didn't give us the calling class and we do not have late statis bindings in PHP < 5.3
+        // self didn't give us the calling class and we do not have late static bindings in PHP < 5.3
         $props = is_null($otype) ? static::getClassProperties() : $otype::getClassProperties();
 
         foreach ($props as $name => $property) {
@@ -1083,7 +1088,7 @@ class AA_Components {
     /** Used parameter format (in fields.input_show_func table)
      *  @todo - specify the parameters better - value type, used widget, ... so
      *          we could generate Parameter wizard (and validation) from those
-     *          informations
+     *          information
      */
 
 
@@ -1168,5 +1173,3 @@ class AA_Components {
         return getSelectWithParam($input_id, $options, "", $html_options);
     }
 }
-
-

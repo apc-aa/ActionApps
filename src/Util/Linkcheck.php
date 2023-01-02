@@ -1,5 +1,7 @@
 <?php
 
+namespace AA\Util;
+
 use AA\IO\DB\DB_AA;
 
 /** linkcheck class - link validation for links module
@@ -41,59 +43,57 @@ use AA\IO\DB\DB_AA;
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
  * @link      https://www.apc.org/ APC
  *
-*/
-
-
-class AA_Linkcheck {
+ */
+class Linkcheck {
 
     // http codes, error names and their weight
     private static $HTTP_ERROR_CODES = [
-    // first 3 are for checking domain from email
-        'N/A' => ["comment" => "Non HTTP", "weight" => "5"],
-        'OK'  => ["comment" => "Valid hostname", "weight" => "0"],
+        // first 3 are for checking domain from email
+        'N/A'   => ["comment" => "Non HTTP", "weight" => "5"],
+        'OK'    => ["comment" => "Valid hostname", "weight" => "0"],
         'ERROR' => ["comment" => "Invalid hostname", "weight" => "5"],
-    // http error codes
-        '999' => ["comment" => "No response", "weight" => "5"],
-        '100' => ["comment" => "Continue", "weight" => "0"],
-        '101' => ["comment" => "Switching Protocols", "weight" => "0"],
-        '200' => ["comment" => "OK", "weight" => "0"],
-        '201' => ["comment" => "Created", "weight" => "0"],
-        '202' => ["comment" => "Accepted", "weight" => "0"],
-        '203' => ["comment" => "Non-Authoritative Information", "weight" => "0"],
-        '204' => ["comment" => "No Content", "weight" => "1"],
-        '205' => ["comment" => "Reset Content", "weight" => "0"],
-        '206' => ["comment" => "Partial Content", "weight" => "0"],
-        '300' => ["comment" => "Multiple Choices", "weight" => "2"],
-        '301' => ["comment" => "Moved Permanently", "weight" => "1"],
-        '302' => ["comment" => "Found", "weight" => "1"],
-        '303' => ["comment" => "See Other", "weight" => "2"],
-        '304' => ["comment" => "Not Modified", "weight" => "2"],
-        '305' => ["comment" => "Use Proxy", "weight" => "3"],
-        '307' => ["comment" => "Temporary Redirect", "weight" => "1"],
-        '400' => ["comment" => "Bad Request", "weight" => "5"],
-        '401' => ["comment" => "Unauthorized", "weight" => "4"],
-        '402' => ["comment" => "Payment Required", "weight" => "3"],
-        '403' => ["comment" => "Forbidden", "weight" => "5"],
-        '404' => ["comment" => "Not Found", "weight" => "5"],
-        '405' => ["comment" => "Method Not Allowed", "weight" => "5"],
-        '406' => ["comment" => "Not Acceptable", "weight" => "5"],
-        '407' => ["comment" => "Proxy Authentication Required", "weight" => "5"],
-        '408' => ["comment" => "Request Timeout", "weight" => "5"],
-        '409' => ["comment" => "Conflict", "weight" => "5"],
-        '410' => ["comment" => "Gone", "weight" => "5"],
-        '411' => ["comment" => "Length Required", "weight" => "5"],
-        '412' => ["comment" => "Precondition Failed", "weight" => "5"],
-        '413' => ["comment" => "Request Entity Too Large", "weight" => "5"],
-        '414' => ["comment" => "Request-URI Too Long", "weight" => "5"],
-        '415' => ["comment" => "Unsupported Media Type", "weight" => "5"],
-        '416' => ["comment" => "Requested Range Not Satisfiable", "weight" => "5"],
-        '417' => ["comment" => "Expectation Failed", "weight" => "5"],
-        '500' => ["comment" => "Internal Server Error", "weight" => "5"],
-        '501' => ["comment" => "Not Implemented", "weight" => "5"],
-        '502' => ["comment" => "Bad Gateway", "weight" => "5"],
-        '503' => ["comment" => "Service Unavailable", "weight" => "5"],
-        '504' => ["comment" => "Gateway Timeout", "weight" => "5"],
-        '505' => ["comment" => "HTTP Version Not Supported", "weight" => "5"]
+        // http error codes
+        '999'   => ["comment" => "No response", "weight" => "5"],
+        '100'   => ["comment" => "Continue", "weight" => "0"],
+        '101'   => ["comment" => "Switching Protocols", "weight" => "0"],
+        '200'   => ["comment" => "OK", "weight" => "0"],
+        '201'   => ["comment" => "Created", "weight" => "0"],
+        '202'   => ["comment" => "Accepted", "weight" => "0"],
+        '203'   => ["comment" => "Non-Authoritative Information", "weight" => "0"],
+        '204'   => ["comment" => "No Content", "weight" => "1"],
+        '205'   => ["comment" => "Reset Content", "weight" => "0"],
+        '206'   => ["comment" => "Partial Content", "weight" => "0"],
+        '300'   => ["comment" => "Multiple Choices", "weight" => "2"],
+        '301'   => ["comment" => "Moved Permanently", "weight" => "1"],
+        '302'   => ["comment" => "Found", "weight" => "1"],
+        '303'   => ["comment" => "See Other", "weight" => "2"],
+        '304'   => ["comment" => "Not Modified", "weight" => "2"],
+        '305'   => ["comment" => "Use Proxy", "weight" => "3"],
+        '307'   => ["comment" => "Temporary Redirect", "weight" => "1"],
+        '400'   => ["comment" => "Bad Request", "weight" => "5"],
+        '401'   => ["comment" => "Unauthorized", "weight" => "4"],
+        '402'   => ["comment" => "Payment Required", "weight" => "3"],
+        '403'   => ["comment" => "Forbidden", "weight" => "5"],
+        '404'   => ["comment" => "Not Found", "weight" => "5"],
+        '405'   => ["comment" => "Method Not Allowed", "weight" => "5"],
+        '406'   => ["comment" => "Not Acceptable", "weight" => "5"],
+        '407'   => ["comment" => "Proxy Authentication Required", "weight" => "5"],
+        '408'   => ["comment" => "Request Timeout", "weight" => "5"],
+        '409'   => ["comment" => "Conflict", "weight" => "5"],
+        '410'   => ["comment" => "Gone", "weight" => "5"],
+        '411'   => ["comment" => "Length Required", "weight" => "5"],
+        '412'   => ["comment" => "Precondition Failed", "weight" => "5"],
+        '413'   => ["comment" => "Request Entity Too Large", "weight" => "5"],
+        '414'   => ["comment" => "Request-URI Too Long", "weight" => "5"],
+        '415'   => ["comment" => "Unsupported Media Type", "weight" => "5"],
+        '416'   => ["comment" => "Requested Range Not Satisfiable", "weight" => "5"],
+        '417'   => ["comment" => "Expectation Failed", "weight" => "5"],
+        '500'   => ["comment" => "Internal Server Error", "weight" => "5"],
+        '501'   => ["comment" => "Not Implemented", "weight" => "5"],
+        '502'   => ["comment" => "Bad Gateway", "weight" => "5"],
+        '503'   => ["comment" => "Service Unavailable", "weight" => "5"],
+        '504'   => ["comment" => "Gateway Timeout", "weight" => "5"],
+        '505'   => ["comment" => "HTTP Version Not Supported", "weight" => "5"],
     ];
 
     /** check_irl function
@@ -108,7 +108,7 @@ class AA_Linkcheck {
             if (preg_match("/^mailto:/i", $url)) {
                 $url = trim(preg_replace("/^mailto:(.+)/i", "\\1", $url));
                 [$brugernavn, $host] = explode("@", $url);
-                $dnsCheck = checkdnsrr($host,"MX");
+                $dnsCheck = checkdnsrr($host, "MX");
                 if ($dnsCheck) {
                     $return["code"] = "OK";
                 } else {
@@ -126,27 +126,27 @@ class AA_Linkcheck {
                 $urlArray["path"] = "/";
             }
             $return["url"] = $url;
-            $sock = @fsockopen($urlArray["host"], $urlArray["port"], $errnum, $errstr, 10);
+            $sock          = @fsockopen($urlArray["host"], $urlArray["port"], $errnum, $errstr, 10);
             if (!$sock) {
                 $return["code"] = "999";
             } else {
-               $dump  = "HEAD ".$urlArray["path"]." HTTP/1.1\r\n";
-               $dump .= "User-Agent: APC-AA Link Checker (http://www.ecn.cz/)\r\n";
-               $dump .= "Host: ".$urlArray["host"]."\r\nConnection: close\r\n";
-               $dump .= "Connection: close\r\n\r\n";
-               fputs($sock, $dump);
-               while (($str = fgets($sock, 1024)) && (($return["code"] == "") || ($return["contentType"] == ""))) {
-                   $match = [];
-                   if (preg_match("~^http/[0-9]+.[0-9]+ ([0-9]{3})~i", $str, $match)) {
-                       $return["code"] = $match[1];
-                   }
-                   if (preg_match("~^Content-Type: (.*)~", $str, $match)) {
-                       $return["contentType"] = $match[1];
-                   }
+                $dump = "HEAD " . $urlArray["path"] . " HTTP/1.1\r\n";
+                $dump .= "User-Agent: APC-AA Link Checker (http://www.ecn.cz/)\r\n";
+                $dump .= "Host: " . $urlArray["host"] . "\r\nConnection: close\r\n";
+                $dump .= "Connection: close\r\n\r\n";
+                fputs($sock, $dump);
+                while (($str = fgets($sock, 1024)) && (($return["code"] == "") || ($return["contentType"] == ""))) {
+                    $match = [];
+                    if (preg_match("~^http/[0-9]+.[0-9]+ ([0-9]{3})~i", $str, $match)) {
+                        $return["code"] = $match[1];
+                    }
+                    if (preg_match("~^Content-Type: (.*)~", $str, $match)) {
+                        $return["contentType"] = $match[1];
+                    }
                 }
                 fclose($sock);
                 flush();
-             }
+            }
         }
         $return["comment"]   = self::$HTTP_ERROR_CODES[$return["code"]]["comment"];
         $return["weight"]    = self::$HTTP_ERROR_CODES[$return["code"]]["weight"];
@@ -172,15 +172,15 @@ class AA_Linkcheck {
             $l_vc  = $links['valid_codes'];
             $l_vr  = $links['valid_rank'];
 
-            $val = $this->check_url($l_url); // check url
+            $val                = $this->check_url($l_url); // check url
             $val["valid_codes"] = $this->add_check($val, $l_vc); // add this check into valid_codes
             $val["valid_rank"]  = $this->count_weight($val["valid_codes"]); // count rank for link
 
             // update values in db
-            $SQL = "UPDATE links_links SET valid_codes='".$val["valid_codes"]."',
-                                           valid_rank='" .$val["valid_rank"]. "',
-                                           validated='"  .$val["timestamp"].  "'
-                    WHERE id = '".$l_id."'";
+            $SQL = "UPDATE links_links SET valid_codes='" . $val["valid_codes"] . "',
+                                           valid_rank='" . $val["valid_rank"] . "',
+                                           validated='" . $val["timestamp"] . "'
+                    WHERE id = '" . $l_id . "'";
             $db->query($SQL);
         }
         freeDB($db);
@@ -190,11 +190,11 @@ class AA_Linkcheck {
      *  creates new valid_codes string (new is added as first)
      * @param $arr
      * @param $valid_codes
-     * @return string                                                                   
+     * @return string
      */
     function add_check($arr, $valid_codes) {
         $element = $this->remove_old($valid_codes);
-        $element = $arr["timestamp"]. ",". $arr["code"]. ":". $element;
+        $element = $arr["timestamp"] . "," . $arr["code"] . ":" . $element;
         return $element;
     }
 
@@ -208,8 +208,8 @@ class AA_Linkcheck {
         rsort($dummy);
         $valid_codes2 = "";
         if (count($dummy) > 9) {
-            for ($i=0; $i < 10; ++$i) {
-                $valid_codes2 .= $dummy[$i]. ($i==9 ? "" : ":");
+            for ($i = 0; $i < 10; ++$i) {
+                $valid_codes2 .= $dummy[$i] . ($i == 9 ? "" : ":");
             }
         } else {
             $valid_codes2 = $valid_codes;
@@ -225,8 +225,8 @@ class AA_Linkcheck {
     function count_weight($valid_codes) {
         $dummy = explode(":", $valid_codes);
         rsort($dummy); // sort descend (newest is first)
-        for ( $i=0, $ino=count($dummy); $i<$ino; ++$i) {
-            list($arr[$i]["time"],$arr[$i]["code"]) = explode(",", $dummy[$i]); // split to array
+        for ($i = 0, $ino = count($dummy); $i < $ino; ++$i) {
+            [$arr[$i]["time"], $arr[$i]["code"]] = explode(",", $dummy[$i]); // split to array
             /*
             if ($i == 0) { // latest timestamp
                 $latest = $arr[$i]["time"];
@@ -239,17 +239,17 @@ class AA_Linkcheck {
             $count = 10;
         }
         $num = 0;
-        for ($i=0; $i<$count; ++$i) {
+        for ($i = 0; $i < $count; ++$i) {
             /* exponential function - too fast near zero :(
             // $num =  exp((-1)*($arr[$i]["reltime"]/60/60/24))*self::$HTTP_ERROR_CODES[$arr[$i]["code"]]["weight"];
             */
             // linear function
-            $n1 = (self::$HTTP_ERROR_CODES[$arr[$i]["code"]]["weight"]/($i+1));
+            $n1  = (self::$HTTP_ERROR_CODES[$arr[$i]["code"]]["weight"] / ($i + 1));
             $num += $n1;
         }
         // returned number - 1000 is the biggest number, with worst error codes, we want to return
         // 14.64... is the count of linear function with the worst error code weights
-        $ret = round($num * (1000/14.644841269841));
+        $ret = round($num * (1000 / 14.644841269841));
 
         return $ret;
     }

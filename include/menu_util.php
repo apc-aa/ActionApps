@@ -73,7 +73,8 @@ function GetCommonMenu($profile) {
         "sliceimp"    => ["label"=>_m("Import"),          "cond"=>IfSlPerm(PS_ADD),      "href"=>"admin/sliceimp.php"],
 
         "header7"     =>_m("Wizard"),
-        "te_wizard_welcome" => ["label"=>_m("Welcomes"),  "cond"=>IsSuperadmin(),        "href"=>"admin/tabledit.php?set_tview=email"],
+        "te_wizard_welcome"  => ["label"=>_m("Welcomes"),  "cond"=>IsSuperadmin(),        "href"=>"admin/tabledit.php?set_tview=email"],
+        "te_wizard_welcome2" => ["label"=>_m("Welcomes"),  "cond"=>IsSuperadmin(),        "href"=>"admin/aa_emails.php"],
         "te_wizard_template"=> ["label"=>_m("Templates"), "cond"=>IsSuperadmin(),        "href"=>"admin/tabledit.php?set_tview=wt"],
 
         "header8"     =>_m("Feeds"),
@@ -110,9 +111,9 @@ function GetCommonMenu($profile) {
         "level"     => "submenu",
         "items"     => [
             "header1"     => _m("Folders"),
-            "app"         => ["cond"=>1,                           "href"=>"central/index.php3?Tab1=1",                                 "label"=>"<img src='../images/ok.gif' border=0>"._m("Active")." (". $r_state['bin_cnt']['folder1'] .")"],
-            "hold"        => ["cond"=>1,                           "href"=>"central/index.php3?Tab2=1",                                 "label"=>"<img src='../images/edit.gif' border=0>"._m("Hold bin")." (". $r_state['bin_cnt']['folder2'] .")"],
-            "trash"       => ["cond"=>1,                           "href"=>"central/index.php3?Tab3=1",                                 "label"=>"<img src='../images/delete.gif' border=0>"._m("Trash bin")." (". $r_state['bin_cnt']['folder3'] .")"],
+            "app"         => ["cond"=>1,                           "href"=>"central/index.php3?Tab1=1",                                 "label"=>"<img src='../images/ok.gif' border=0>"._m("Active")." (". (int)$r_state['bin_cnt']['folder1'] .")"],
+            "hold"        => ["cond"=>1,                           "href"=>"central/index.php3?Tab2=1",                                 "label"=>"<img src='../images/edit.gif' border=0>"._m("Hold bin")." (". (int)$r_state['bin_cnt']['folder2'] .")"],
+            "trash"       => ["cond"=>1,                           "href"=>"central/index.php3?Tab3=1",                                 "label"=>"<img src='../images/delete.gif' border=0>"._m("Trash bin")." (". (int)$r_state['bin_cnt']['folder3'] .")"],
 
             "header2"     => _m("Misc"),
             "addaa"       => ["cond"=>IsSuperadmin(),              "href"=>"central/tabledit.php?cmd[centraledit][show_new]=1",         "label"=>"<img src='../images/add.gif' border=0>"._m("Add AA")],

@@ -26,6 +26,11 @@
  *
  */
 
+use AA\Managed;
+use AA\Manager;
+use AA\Manageraction\AbstractManageraction;
+use AA\Manageraction\Manageractions;
+
 /** AA_Metabase holds the database structure of AA
  *  The database structure in metabase is used for
  *    1) creating database
@@ -82,8 +87,8 @@ class AA_MbC {
         return substr($dbtype, 0, strspn($dbtype, "abcdefghijklmnopqrstuvwxyz"));
     }
 
-    /** it return max length of the field if we know it */
-    public function getMaxLength() {
+    /** @return int max length of the field if we know it */
+    public function getMaxLength(): int {
         $part = [];
         return preg_match("/\(([0-9]*)\)/", $this->c[1], $part) ? (int)$part[1] : 0;
     }
@@ -171,11 +176,13 @@ class AA_MbC {
             case 'timestamp':
                 $type = 'int'; break;
 
-            // case 'binary':
-            // case 'varbinary':
-            // case 'char':
-            // case 'varchar':
-            // case 'enum':
+            case 'binary':
+            case 'varbinary':
+            case 'char':
+            case 'varchar':
+            case 'enum':
+                $type = 'string'; break;
+
             // case 'longtext':
             // case 'mediumtext':
             // case 'text':
@@ -219,10 +226,15 @@ class AA_MbC {
         return $type;
     }
 
-    function getAsProperty() {
+    function getAsProperty(): ?AA_Property {
+        if ($this->isKey() OR (strtolower($this->c[5]) == 'auto_increment')) {
+            return null;
+        }
         $type = $this->getFieldType();
         // $id,       $name,     $type, $multi, $persistent, $validator, $required, $input_help, $input_morehlp='', $example='', $show_content_type_switch=0, $content_type_switch_default=, $perms=null, $default=null) {
-        return  new AA_Property( $this->c[0], $this->c[0], $type, false,  true,        $type,  !($this->c[2]), $this->c[6]);
+        $validator = ($len = $this->getMaxLength()) ? [$type,['maxlength'=>$len]] : $type;
+        $required  = false; //  !($this->c[2]) - nonsense
+        return  new AA_Property( $this->c[0], $this->c[0], $type, false,  true, $validator, $required, $this->c[6]);
     }
 
     function getCreateSql() {
@@ -264,20 +276,26 @@ class AA_MbC {
         return $ret;
     }
 
-    function getAlias() {
+    /** generate alias from column */
+    function getAlias(string $name): AA_Alias {
         switch ($this->c[0]) {
             case 'created':
             case 'execute_after':
-            case 'time': return GetAliasDef( "f_d:Y-m-d H:i:s", $this->c[0], $this->c[0]);
+            case 'time':
+                return new AA_Alias($name, "f_d:Y-m-d H:i:s", $this->c[0], $this->c[0]);
         }
         switch ($this->_getBaseType()) {
-            case 'timestamp' : return GetAliasDef( "f_d:Y-m-d H:i:s", $this->c[0], $this->c[0]);
+            case 'timestamp' :
+                return new AA_Alias($name, "f_d:Y-m-d H:i:s", $this->c[0], $this->c[0]);
+
             case 'mediumtext':
             case 'mediumblob':
             case 'longblob':
-            case 'longtext'  : //return GetAliasDef( "f_t:{expandable:{".$this->c[0]."}:30:...:&raquo;:&laquo;}", $this->c[0], $this->c[0]);
+            case 'longtext'  :
+                return new AA_Alias($name, "f__:{safe:{shorten:_#this:250:3}}", $this->c[0], $this->c[0]);
+                //return GetAliasDef( "f_t:{expandable:{".$this->c[0]."}:30:...:&raquo;:&laquo;}", $this->c[0], $this->c[0]);
         }
-        return GetAliasDef( "f_t::safe", $this->c[0], $this->c[0]); // was f_1 but aa_log.php then showed messed HTML
+        return new AA_Alias($name, "f_t::safe", $this->c[0], $this->c[0]); // was f_1 but aa_log.php then showed messed HTML
         // return GetAliasDef( "f_t:{expandable:_#this:30:...:&raquo;:&laquo;}", $this->c[0], $this->c[0]);
     }
 
@@ -479,21 +497,19 @@ class AA_MbT implements Iterator, ArrayAccess, Countable {
     /** generateAliases
      *
      */
-    function generateAliases() {
-        $aliases = [];
+    function generateAliases(): AA_Aliases {
+        $aliases = new AA_Aliases;
         foreach ($this->c as $column_name => $column) {
-            // @todo - make alias field type aware
             $aliasname = "_#".substr(str_pad(strtoupper($column_name),8,'_'),0,8);
             $i=2;
-            while (isset($aliases[$aliasname])) {
+            while ($aliases->getAlias($aliasname)) { // already defined
                 $aliasname = substr($aliasname,0,-strlen((string)$i)).(string)$i;
                 ++$i;
             }
-            $aliases[$aliasname] = $column->getAlias();
+            $aliases->addAlias($column->getAlias($aliasname));
         }
         return $aliases;
     }
-
 
     /** getSearchArray function
      *
@@ -1085,15 +1101,14 @@ class AA_Metabase {
      * Loads data from database for given table ids (called in itemview class)
      * and stores it in the 'Abstract Data Structure' for use with 'item' class
      *
-     * @param array $settings array - just one parameter: table, where to search
      * @param zids $zids     array if ids to get from database
-     * @return array - Abstract Data Structure containing the links data
+     * @param array $settings array - just one parameter: table (or owner), where to search
+     * @return AA_Content[] - Abstract Data Structure containing the links data
      *                        {@link http://apc-aa.sourceforge.net/faq/#1337}
      * @static
      * @see GetItemContent(), itemview class, item class
      */
-    static function getContent($settings, $zids) {
-        $content = [];
+    static function getContent($zids, $settings): array {
         $ret = [];
 
         $tablename = $settings['table'];
@@ -1110,7 +1125,7 @@ class AA_Metabase {
         // construct WHERE clausule
         $sel_in = $zids->sqlin(false, true);  // asis
         $SQL = "SELECT * FROM $tablename WHERE $key $sel_in";
-        StoreTable2Content($content, $SQL, '', $key);
+        $content = AA_Content::StoreTable2AaContent($SQL, '', $key);
 
         // AA::$debug&2 && AA::$dbg->group('meta');
 
@@ -1131,7 +1146,7 @@ class AA_Metabase {
         $packed_columns = AA_Metabase::getPacked($tablename);
         foreach ($packed_columns as $column) {
             foreach ($ret as $k => $v) {
-                $ret[$k][$column][0]['value'] = unpack_id($v[$column][0]['value']);
+                $ret[$k]->setValue($column, unpack_id($v->getValue($column)));
             }
         }
         return $ret;
@@ -1236,21 +1251,53 @@ class AA_Metabase {
         $table = $this->tables[$tablename];
         $ret   = [];
         foreach ($table as $column) { // in priority order
-            $ret[$column->getName()] = $column->getAsProperty();
+            if ($prop = $column->getAsProperty()) {
+                $ret[$column->getName()] = $prop;
+            }
         }
         return $ret;
     }
 
     /** generate manager from database structure
-     * @param string                 $tablename
-     * @param AA_Manageractions? $actions
-     * @param AA_Manageractions? $switches
-     * @return array
+     * @param string              $tablename
+     * @param Manageractions|null $actions
+     * @param Manageractions|null $switches
+     * @return Managed
      */
-    function getManagerConf($tablename, $actions=null, $switches=null) {
+    function getManagerConf(string $tablename, Manageractions $actions=null, Manageractions $switches=null): Managed {
         $table         = $this->tables[$tablename];
         $aliases       = $table->generateAliases();
         $search_fields = $this->getSearchfields($tablename);
+
+        $keys = $table->getKeys();
+
+        if (!is_object($actions)) {
+            $actions   = new Manageractions;
+        }
+
+        $buttons = [];
+        $key_alias = '';
+        // for now, we support only tables with 1-column key, but it could be extended to id|module type of id later
+        if (count($keys)==1) {
+            $actions->addAction(new \AA\Manageraction\Table_Row_Delete('DeleteTRow'));
+            $key_alias = $aliases->getNamesForField($keys[0])[0];
+            $buttons = ['Edit'   => a_href(get_url('', ["id=$key_alias"], true), _m('Edit'), 'aa-button-edit')];
+        }
+        $buttons = array_merge($buttons, $actions->getManagerButtons('', $key_alias, AA::$module_id));
+
+        $columns = [];
+        if (count($actions)) {
+            $columns['_aa_chb'] = ['',"<input name=\"chb[x$key_alias]\" value=\"\" type=checkbox>"];
+        }
+        if ($buttons) {
+            $columns['_aa_action'] = [_m('Action'), join(' ', $buttons)];
+        }
+
+        $aliasnames = $aliases->getNames();
+        $i=0;
+        foreach ($search_fields as $fid => $fld) {
+            $columns[$fid] = [$fld['name'], $aliasnames[$i++]];
+        }
 
         $manager_settings = [
             'show'      =>  MGR_ALL & ~(MGR_SB_BOOKMARKS | MGR_SB_ALLTEXT | MGR_SB_ALLNUM),
@@ -1259,35 +1306,12 @@ class AA_Metabase {
                 'search_row_count_min' => 1,
                 'order_row_count_min'  => 1,
                 'add_empty_search_row' => true,
-                'function'             => false  // name of function for aditional action hooked on standard filter action
+                'function'             => false  // name of function for additional action hooked on standard filter action
             ],
             'scroller'  => [
                 'listlen'              => 100
             ],
             'itemview'  => [
-                'manager_vid'          => false,    // $slice_info['manager_vid'],      // id of view which controls the design
-                'format'               => [    // optionaly to manager_vid you can set format array
-                    'compact_top'      => '<div class="aa-table aa-items-manager"><table>
-                                            <tr>
-                                              <th width="30">&nbsp;</td>
-                                              <th>'.join("</th>\n<th>", $search_fields->getFieldnamesArray()).'</th>
-                                            </tr>
-                                            ',
-                    'category_sort'    => false,
-                    'category_format'  => "",
-                    'category_top'     => "",
-                    'category_bottom'  => "",
-                    'even_odd_differ'  => false,
-                    'even_row_format'  => "",
-                    'odd_row_format'   => '
-                                            <tr class=tabtxt>
-                                              <td width="30"><input type="checkbox" name="chb[x_#ID______]" value=""></td>
-                                              <td class=tabtxt>'.join("</td>\n<td class=tabtxt>", array_keys($aliases)).'</td>
-                                            </tr>
-                                           ',
-                    'compact_remove'   => "",
-                    'compact_bottom'   => "</table></div><br>"
-                ],
                 'fields'               => $search_fields,
                 'aliases'              => $aliases,
                 //    static class method               , first parameter to the method
@@ -1302,8 +1326,15 @@ class AA_Metabase {
             ]
         ];
 
-        return $manager_settings;
+        return (new \AA\Managed_Table($tablename))->setSettings($manager_settings)->setColumns($columns);
     }
+
+    /** AA_iEditable method - adds Object's editable properties to the $form */
+    public static function addFormrows(AA_Form $form) {
+        $table = $form->getObjectOwner();
+        return $form->addProperties(AA_MetabaseTableEdit::defaultGetClassProperties($table));
+    }
+
 }
 
 class AA_MetabaseTableEdit {
@@ -1322,6 +1353,5 @@ class AA_MetabaseTableEdit {
     //public static function defaultFactoryFromForm($tablename, $oowner, $otype=null) {}
     /** helps other classes to implement AA_iEditable method save - save the object to the database */
     //public        function defaultSave($tablename) {}
-
-
 }
+

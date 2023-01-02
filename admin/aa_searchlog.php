@@ -27,6 +27,8 @@
 // @todo only_action option which prints on the output the result of the action
 // Then it could be used as AJAX call for this action!
 
+use AA\Manager;
+
 const AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 
@@ -35,11 +37,11 @@ if ( !IsSuperadmin() ) {
     exit;
 }
 
-$manager_settings = AA::Metabase()->getManagerConf('searchlog');
+$managed = AA::Metabase()->getManagerConf('searchlog');
 
 // 	id, date, query, found_count, search_time, user, additional1
 
-$manager_settings['itemview']['format']['compact_top'] = '
+$managed->settings['itemview']['format']['compact_top']    = '
                                           <table border="0" cellpadding="5" cellspacing="0">
                                             <tbody><tr>
                                               <th width="30">&nbsp;</th>
@@ -51,7 +53,7 @@ $manager_settings['itemview']['format']['compact_top'] = '
                                               <th>id</th>
                                               <th>user</th>
                                             </tr>';
-$manager_settings['itemview']['format']['odd_row_format'] = '
+$managed->settings['itemview']['format']['odd_row_format'] = '
                                             <tr><td width="30"><input name="chb[x_#ID______]" value="" type="checkbox"></td>
                                               <td>{date:y-m-d H#:i:{_#DATE____}}</td>
                                               <td>_#QUERY___</td>
@@ -64,5 +66,5 @@ $manager_settings['itemview']['format']['odd_row_format'] = '
 
 $apage = new AA_Adminpageutil('aaadmin', 'searchlog');
 $apage->setTitle(_m("View SearchLog"));
-$apage->printWithManager((new AA_Manager('searchlog', $manager_settings))->setAllModules());
+$apage->printWithManager((new Manager('searchlog', $managed))->setAllModules());
 

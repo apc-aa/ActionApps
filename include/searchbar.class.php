@@ -66,8 +66,9 @@ function orderfields_cmp($a, $b) {
  * AA_Searchbar_Row class - handles one search row
  */
 class AA_Searchbar_Row extends AA_Storable {
-    var $condition;
-    var $readonly;
+    /** @var AA_Condition|null  */
+    protected $condition;
+    protected $readonly;
 
     /** getClassProperties function of AA_Serializable
      * @return array
@@ -79,10 +80,10 @@ class AA_Searchbar_Row extends AA_Storable {
         ];
     }
     /** AA_Searchbar_Row function
-     * @param $condition
-     * @param $readonly
+     * @param $condition AA_Condition
+     * @param $readonly bool
      */
-    function __construct($condition=null, $readonly=false) {
+    function __construct(AA_Condition $condition=null, $readonly=false) {
         $this->condition = $condition;
         $this->readonly  = $readonly;
     }
@@ -113,14 +114,6 @@ class AA_Searchbar_Row extends AA_Storable {
         return ( is_null($this->condition) ? '' : $this->condition->getValue() );
     }
 
-    /** getCondsArray function
-     *  Get old conds[] array - for backward compatibility only
-     *  @deprecated
-     */
-    function getCondArray() {
-        return ( is_null($this->condition) ? [] : $this->condition->getArray() );
-    }
-
     /** getCondsArray function - @return AA_Condition object or null  */
     function getCondition() {
         return $this->condition;
@@ -140,19 +133,21 @@ class AA_Searchbar_Row extends AA_Storable {
  * (on Links Manager page, for example)
  */
 class AA_Searchbar extends AA_Storable {
-    var $fields;          // fields definitions
-    var $form_name;       // name of the form (for submit)
+    protected $fields;          // fields definitions
+    protected $form_name;       // name of the form (for submit)
 
-    var $search_row;     // internal array - stores current state of search rows
-    var $order_row;      // internal array - stores current state of order rows
-    var $bookmarks;      // internal object - stores bookmarks (stored queries)
+    /** @var AA_Searchbar_Row[]   */
+    protected $search_row;     // internal array - stores current state of search rows
+    protected $order_row;      // internal array - stores current state of order rows
+    protected $bookmarks;      // internal object - stores bookmarks (stored queries)
 
     // state variables (class settings)
-    var $search_row_count_min;
-    var $order_row_count_min;
-    var $add_empty_search_row;
-    var $show;           //
-    var $hint, $hint_url;
+    protected $search_row_count_min;
+    protected $order_row_count_min;
+    protected $add_empty_search_row;
+    protected $show;           //
+    protected $hint;
+    protected $hint_url;
 
     /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
@@ -257,7 +252,7 @@ class AA_Searchbar extends AA_Storable {
      */
     function resetSearch() {
         $search_row = [];
-        foreach ( $this->search_row as $k => $row ) {
+        foreach ( $this->search_row as $row ) {
             if ($row->isReadonly()) {
                 // we need to use keys from 0..
                 $search_row[] = $row;
@@ -540,9 +535,14 @@ class AA_Searchbar extends AA_Storable {
             $ret .= "<td class=\"tabtxteven\">".$this->fields[$fld]['name']."</td>";
             $ret .= "<td class=\"tabtxteven\">";
             switch ($oper) {
-                case "LIKE":  $ret .= _m('contains');    break;
-                case "RLIKE": $ret .= _m('begins with'); break;
-                case "=":     $ret .= _m('is');          break;
+                case "LIKE":
+                case "CONTAIN":  $ret .= _m('contains');    break;
+                case "RLIKE":
+                case "BEGIN":
+                                 $ret .= _m('begins with'); break;
+                case "=":
+                case "==":
+                                 $ret .= _m('is');          break;
             }
             $ret .= "</td>";
             $ret .= "<td class=\"tabtxteven\">".$val."</td><td>$searchimage</td><td width=\"99%\"> &nbsp; </td>";

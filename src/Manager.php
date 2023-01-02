@@ -1,6 +1,6 @@
 <?php
 /**
- * File contains definition of AA_Manager class - used for 'item' manipulation
+ * File contains definition of Manager class - used for 'item' manipulation
  * 'managers' pages (like Item Manager, Link Manager, Discussion comments,
  * Related Items, ...) It takes care about searchber, scroller, actions, ...
  *
@@ -33,49 +33,319 @@
  *
 */
 
+namespace AA;
+
 // require_once __DIR__ . "/menu_util.php";  // for showMenu()
+use AA;
+use AA\IO\Grabber\ObjectForm;
+use AA\Manageraction\Manageractions;
+use AA_Condition;
+use AA_Content;
+use AA_Form;
+use AA_Metabase;
+use AA_MetabaseTableEdit;
+use AA_Object;
+use AA_Profile;
+use AA_Property;
+use AA_Scroller;
+use AA_Searchbar;
+use AA_Set;
+use AA_Storable;
+use AA_Views;
+use itemview;
+use zids;
+
+class Managed {
+
+    //  it is public for now, in order we can easily change the setting - $managed->settings[...] == ...
+    const MANGED_URL        = 'AA_MaNaGeD_UrL';
+    public $settings        = [];
+    protected $add_action   = [];
+    protected $url          = '';
+    protected $columns      = [];
+    protected $columns2show = [];
+
+    /** Create Managed object based on the specific (unique) string submitted by form...
+     *  necessary for Edit and Add
+     * @param string|null $type
+     * @return Managed
+     */
+    public static function factoryFromType(?string $type): Managed {
+        switch (substr($type,0,2)) {
+            case '_T': return new Managed_Table(substr($type,2));
+        }
+        return new Managed_Object($type);
+    }
+
+    /** Create specific (unique) string submitted by form from which we can factory right Managed object  */
+    public function getType(): string { return ''; }
+
+
+    public function setAction(string $action, $state = true): Managed {
+        $this->add_action[$action] = $state;
+        return $this;
+    }
+
+    public function isAction(string $action): bool {
+        return (bool)$this->add_action[$action];
+    }
+
+    /** Generates AA_Form for the managed data
+     *  necessary for Edit and Add
+     * @param string|null $id
+     * @param string|null $module_id
+     * @return AA_Form|null
+     */
+    public function getForm(?string $id, ?string $module_id): ?AA_Form { return null; }
+
+    /** Grabs and saves the data submitted by the AA_Form
+     *  necessary for Edit and Add
+     * @param string|null $owner
+     * @return void
+     */
+    public function save(?string $owner): void {}
+
+    /** Get content for zids from the storage
+     *  necessary for Edit and Add
+     * @param zids $zids
+     * @return AA_Content[]
+     */
+    public function getContent(zids $zids): array { return []; }
+
+    /**
+     * @return array
+     */
+    public function getSettings(): array {
+        return $this->settings;
+    }
+
+    /**
+     * @param array $settings
+     */
+    public function setSettings(array $settings): Managed {
+        $this->settings = $settings;
+        return $this;
+    }
+
+    public function getItemview(zids $zids, $module_id, $listlen): itemview {
+
+        $format_strings = $this->settings['itemview']['format'];
+        $aliases        = is_object($this->settings['itemview']['aliases']) ? $this->settings['itemview']['aliases']->getArray() : $this->settings['itemview']['aliases'];
+
+        // modify $format_strings and $aliases (passed by reference)
+        if ( $manager_vid = $this->settings['itemview']['manager_vid'] ) {
+            $view = AA_Views::getViewNumeric($manager_vid);
+            if ( $view AND !($view->f('deleted')>0) ) {
+                $format_strings = $view->getViewFormat();
+                $this->messages['noitem_msg'] = $view->f('noitem_msg');
+                if ( isset($this->scroller) ) {
+                    $this->scroller->metapage = $view->f('listlen');
+                }
+            }
+        } else {
+            // define JS_HEAD_, HEADLINE, SITEM_ID, ITEM_ID_ (if not set)
+            DefineBaseAliases($aliases, $module_id);
+
+            if ($this->columns) {
+                $cols = $this->columns2show ? array_merge(['_aa_chb','_aa_action'], $this->columns2show) : array_keys($this->columns);
+                $td = '';
+                $th = '';
+                foreach ($cols as $col) {
+                    $th .= "<th class=\"aacol$col\">".$this->columns[$col][0].'</th>';
+                    $td .= "<td class=\"aacol$col\">".$this->columns[$col][1].'</td>';   //<td style="white-space:nowrap;"> for .aacol_aa_action
+                }
+
+                $format_strings = [    // optionaly to manager_vid you can set format array
+                    'compact_top'      => '<div class="aa-table aa-items-manager"><table><tr>'.$th.'</tr>',
+                    'odd_row_format'   => '<tr>'. $td .'</tr>',
+                    'compact_bottom'   => "</table></div><br>"
+                ];
+            } elseif ( !$format_strings ) {
+                $row = '<td>_#PUB_DATE&nbsp;</td><td>_#HEADLINE</td>'. (isset($aliases["_#AA_ACTIO"]) ? '<td>_#AA_ACTIO</td>': '');
+                $format_strings["odd_row_format"]  = '<tr class="tabtxt">'.$row.'</tr>';
+                $format_strings["even_row_format"] = '<tr class="tabtxteven">'.$row.'</tr>';
+                $format_strings["even_odd_differ"] = 1;
+                $format_strings["compact_top"]     = '<table border="0" cellspacing="0" cellpadding="0" bgcolor="#F5F0E7" width="100%">
+                    <tr class="tabtitlight"><td>'._m("Publish date").'</td><td>'._m("Headline").'</td>'. (isset($aliases["_#AA_ACTIO"]) ? '<td>'._m("Actions").'</td>' : ''). '</tr>';
+                $format_strings["compact_bottom"]  = '</table>';
+            }
+        }
+        $format_strings['odd_row_format'] = str_replace(Managed::MANGED_URL, $this->getUrl(), $format_strings['odd_row_format']);
+
+        if ($this->isAction('add')) {
+            $new_link = a_href(StateUrl($this->getUrl(). '?add=1'), GetAAImage('icon_new.gif', _m('new'), 17, 17) . ' ' . _m('Add'));
+            $format_strings['compact_bottom'] .= $new_link;
+            $format_strings['noitem_msg']     .= $new_link;
+        }
+
+        return new itemview($format_strings, $aliases, $zids, 0, $listlen, '', '', $this->settings['itemview']['get_content_funct']);
+    }
+
+    /**
+     * @param string $url
+     */
+    public function setUrl(string $url): Managed {
+        $this->url = $url;
+        return $this;
+    }
+
+    public function getUrl(): string {
+        return $this->url;
+    }
+
+    /** Set definition of the column
+     * @param array $columns
+     */
+    public function setColumns(array $columns): Managed  {
+        $this->columns = $columns;
+        return $this;
+    }
+
+    /**
+     * @param array $columns2show
+     */
+    public function setColumns2show(array $columns2show): void
+    {
+        $this->columns2show = $columns2show;
+    }
+}
+
+class Managed_Object extends Managed {
+    protected $class = '';
+
+    function __construct(string $class) {
+        $this->class = $class;
+        $this->add_action = ['edit'=>true, 'add'=>true]; // default
+    }
+
+    /** @inheritDoc */
+    public function getType(): string {
+        return $this->class;
+    }
+
+    /** @inheritDoc */
+    public function getForm(?string $id, ?string $module_id): ?AA_Form {
+        return AA_Form::factoryForm($this->getType(), $id, $module_id);
+    }
+
+    /** @inheritDoc */
+    public function save(?string $owner): void {
+        $object = call_user_func_array([$this->class, 'factoryFromForm'], [$owner, $this->class]);
+        // @todo check permissions, validation, $store_mode state (see readFromForm)
+        $object->save();
+    }
+
+    /** @inheritDoc */
+    public function getContent(zids $zids): array  {
+        return AA_Object::getContent($zids, ['class' => $this->class]);
+    }
+
+    /**
+     * @return string
+     */
+    public function getClass(): string {
+        return $this->class;
+    }
+}
+
+class Managed_Table extends Managed {
+    protected $table = '';
+
+    function __construct(string $table) {
+        $this->table = $table;
+        $this->add_action = ['edit'=>true, 'add'=>true]; // default
+    }
+
+    /** @inheritDoc */
+    function getType(): string {
+        return '_T'.$this->table;
+    }
+
+    /** @inheritDoc */
+    public function getForm(?string $id, ?string $module_id): ?AA_Form {
+        $form = (new AA_Form())->addProperties(AA_MetabaseTableEdit::defaultGetClassProperties($this->table));
+        $form->setObject($this->getType(), $id, $module_id);  //$module_id not used here
+        return $form;
+    }
+
+    /** @inheritDoc */
+    public function save(?string $owner): void {
+        ($grabber = new ObjectForm())->prepare();    // maybe some initialization in grabber
+        // we expect just one form - no need to loop through contents
+        $content    = $grabber->getItem();
+
+        // while ($content = $grabber->getContent())
+        $store_mode = $grabber->getStoreMode();        // add | update | insert
+        $grabber->finish();    // maybe some finalization in grabber
+
+        if (($store_mode == 'update') AND $this->isAction('edit')) {
+            // key is stored in aa_id field
+            $content[AA::Metabase()->getKeys($this->table)[0]] = $content['aa_id']; // assign using ArrayAccess
+            unset($content['aa_id']);
+            AA::Metabase()->doUpdate($this->table, $content->getAllAsScalar());
+        } elseif (($store_mode == 'insert') AND $this->isAction('add')) {
+            AA::Metabase()->doInsert($this->table, $content->getAllAsScalar());
+        }
+    }
+
+    /** @inheritDoc */
+    public function getContent(zids $zids): array {
+        return AA_Metabase::getContent($zids, ['table' => $this->table]);
+    }
+
+    /**
+     * @return string
+     */
+    public function getTable(): string {
+        return $this->table;
+    }
+}
+
+
 
 /**
- * AA_Manager class - used for 'item' manipulation 'managers' pages
+ * Manager class - used for 'item' manipulation 'managers' pages
  * (like Item Manager, Link Manager, Discussion comments, Related Items, ...)
- * It takes care about searchber, scroller, actions, ...
+ * It takes care about searchbar, scroller, actions, ...
  */
-class AA_Manager extends AA_Storable {
+class Manager extends AA_Storable {
     /** @var AA_Searchbar  */
-    var $searchbar;
+    protected $searchbar;
 
     /** @var string searchbar aditional function name */
-    var $searchbar_funct;
+    protected $searchbar_funct;
 
     /** @var AA_Scroller */
-    var $scroller;
+    protected $scroller;
 
-    /** @var AA_Manageractions  */
-    var $actions;
+    /** @var Manageractions  */
+    protected $actions;
 
-    var $actions_hint;
-    var $actions_hint_url;
+    protected $actions_hint;
+    protected $actions_hint_url;
 
-    /** @var AA_Manageractions  */
-    var $switches;
+    /** @var Manageractions  */
+    protected $switches;
 
     protected $query_funct = [];
 
-    var $messages;        // various language messages (title, noitem_msg, about)
-    var $itemview;        // itemview object
-    var $show;            // what controls show (scroller, searchbar, ...)
-    var $bin;             // stores the bin in which we are - string
+    protected $messages;        // various language messages (title, noitem_msg, about)
+    protected $itemview;        // itemview object
+    protected $show;            // what controls show (scroller, searchbar, ...)
+    protected $bin;             // stores the bin in which we are - string
 
     /** @var AA_Condition[] */
     protected $restrict_conds; // restriction
 
     protected $all_modules = false; // do not restrict for one module
 
-    var $module_id;       // for which module is manager used (slice_id, ...)
-    var $managed_class;   // name of the class which are managed / edited
-    var $_manager_id;     // ID of manager
+    protected $module_id;          // for which module is manager used (slice_id, ...)
 
-    var $msg;             // stores return code from action functions
+    /** @var Managed */
+    protected $managed;            // object describing managed data ['class'=>.., 'table'=>, settings...]
+    protected $_manager_id;        // ID of manager
+
+    protected $msg;                // stores return code from action functions
 
     /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
@@ -92,20 +362,22 @@ class AA_Manager extends AA_Storable {
         ];
     }
 
-    /** AA_Manager function
+    /** Manager function
      * constructor - initializes manager - creates scroller, searchbar, ...
      * based on $settings structure
      *
      * @param string $manager_id
-     * @param array  $settings - main manager settings
+     * @param Managed $managed - main manager settings
      */
-    function __construct($manager_id, $settings) {
+    function __construct($manager_id, Managed $managed) {
         global $r_state, $sess;
+
+        $this->managed     = $managed;
+        $this->_manager_id = $manager_id;
+        $settings          = $managed->getSettings();
 
         $this->show        = $settings['show'] ?? MGR_ALL;
         $this->module_id   = $settings['module_id'];
-
-        $this->_manager_id = $manager_id;
 
         if ( $settings['actions'] ) {      // define actions, if we have to
             $this->actions = $settings['actions'];
@@ -137,7 +409,6 @@ class AA_Manager extends AA_Storable {
         }
 
         $this->bin           = $settings['bin'] ?? 'app';
-        $this->managed_class = $settings['managed_class'] ?? '';
         $this->query_funct   = $settings['itemview']['query_funct'] ?? [];
 
         // create page scroller -----------------------------------------------
@@ -152,17 +423,6 @@ class AA_Manager extends AA_Storable {
             $this->messages['noitem_msg'] = get_if( $settings['itemview']['format']['noitem_msg'], _m('No item found'));
         }
 
-        // create itemview ----------------------------------------------------
-
-        $manager_vid    = $settings['itemview']['manager_vid'];
-        $format_strings = $settings['itemview']['format'];
-        $aliases        = is_object($settings['itemview']['aliases']) ? $settings['itemview']['aliases']->getArray() : $settings['itemview']['aliases'];
-
-        // modify $format_strings and $aliases (passed by reference)
-        $this->setDesign($format_strings, $aliases, $manager_vid);
-
-        $this->itemview = new itemview($format_strings, $aliases, false, 0, $this->scroller->getListlen(), '', '', $settings['itemview']['get_content_funct']);
-
         // r_state array holds all configuration of Manager
         // the configuration then could be Bookmarked
         if ( !isset($r_state) ) {
@@ -170,9 +430,8 @@ class AA_Manager extends AA_Storable {
             $sess->register('r_state');
         }
         // user switched to another page with different manager?
-        if ($r_state["manager_id"] != $this->_manager_id) {
+        if (!$r_state["manager"][$manager_id]) {
             // we are here for the first time, or we are switching to another slice
-            unset($r_state['manager']);
 
             // we use profile just for main Item manager
             if ($settings['use_profile']) {
@@ -180,42 +439,8 @@ class AA_Manager extends AA_Storable {
                 $profile = AA_Profile::getProfile(AuthGetUid(), $this->module_id); // current user settings
                 $this->setFromProfile($profile);
             }
-        } elseif ($r_state['manager']) {        // do not set state for the first time calling
-            $this->setFromState($r_state['manager']);
-        }
-    }
-
-    /** setDesing function
-     *  Fills format array with manager default design and ensures, the aliases are
-     *  properly. If aliases there are not needed aliases, the function will add it
-     * @param $format_strings
-     * @param $aliases
-     * @param $manager_vid
-     */
-    function setDesign(&$format_strings, &$aliases, $manager_vid = null) {
-
-        if ( $manager_vid ) {
-            $view = AA_Views::getViewNumeric($manager_vid);
-            if ( $view AND !($view->f('deleted')>0) ) {
-                $format_strings = $view->getViewFormat();
-                $this->messages['noitem_msg'] = $view->f('noitem_msg');
-                if ( isset($this->scroller) ) {
-                    $this->scroller->metapage = $view->f('listlen');
-                }
-            }
-        } else {
-            // define JS_HEAD_, HEADLINE, SITEM_ID, ITEM_ID_ (if not set)
-            DefineBaseAliases($aliases, $this->module_id);
-
-            if ( !$format_strings ) {
-                $row = '<td>_#PUB_DATE&nbsp;</td><td>_#HEADLINE</td>'. (isset($aliases["_#AA_ACTIO"]) ? '<td>_#AA_ACTIO</td>': '');
-                $format_strings["odd_row_format"]  = '<tr class="tabtxt">'.$row.'</tr>';
-                $format_strings["even_row_format"] = '<tr class="tabtxteven">'.$row.'</tr>';
-                $format_strings["even_odd_differ"] = 1;
-                $format_strings["compact_top"]     = '<table border="0" cellspacing="0" cellpadding="0" bgcolor="#F5F0E7" width="100%">
-                    <tr class="tabtitlight"><td>'._m("Publish date").'</td><td>'._m("Headline").'</td>'. (isset($aliases["_#AA_ACTIO"]) ? '<td>'._m("Actions").'</td>' : ''). '</tr>';
-                $format_strings["compact_bottom"]  = '</table>';
-            }
+        } else {        // do not set state for the first time calling
+            $this->setFromState($r_state['manager'][$manager_id]);
         }
     }
 
@@ -238,9 +463,7 @@ class AA_Manager extends AA_Storable {
 
     /** setRestrictionConds */
     function setRestrictionConds(array $conds) {
-        //huhl($conds);
         $this->restrict_conds = $conds;
-        //huhl($this->restrict_conds);
     }
 
     /** do not restrict the manager just to one module */
@@ -281,19 +504,16 @@ class AA_Manager extends AA_Storable {
         if ($BIN_CONDS[$this->bin]) {
             $set->setBins($BIN_CONDS[$this->bin]);
         }
-        //huhl($this->restrict_conds);
         if ($this->restrict_conds) {
             foreach ($this->restrict_conds as $cond) {
-                huhl($cond);
                 $set->addCondition($cond);
             }
         }
-        //huhl($this->restrict_conds, $set, $this);
         return $set;
     }
 
     /** getConds function
-     * Get conditios (conds[] array) for *_QueryIDs from scroller
+     * Get conditios (conds[] array) for *_QueryIDs from set
      * @deprecated - use getSet() instead
      */
     function getConds() {
@@ -302,7 +522,7 @@ class AA_Manager extends AA_Storable {
     }
 
     /** getSort function
-     * Get sort[] array for *_QueryIDs from scroller
+     * Get sort[] array for *_QueryIDs from set
      * @deprecated - use getSet() instead
      */
     function getSort() {
@@ -327,7 +547,7 @@ class AA_Manager extends AA_Storable {
     }
 
     /** resetSearchBar function
-     *  Resets the searchbar (both - Search as well as Order)
+     *  Resets the searchbar (both - Search and Order)
      */
     function resetSearchBar() {
         if ( $this->searchbar ) {
@@ -350,13 +570,15 @@ class AA_Manager extends AA_Storable {
 
     /** addSearchBar function
      * Adds new Search bar(s)
-     * @param  array $conds[] = array ( <field> => 1, 'operator' => <operator>,
-     *                                  'value' => <search_string> )
-     * for description @see searchbar.class.php3
+     * @param array $conds [] = array ( <field> => 1, 'operator' => <operator>,'value' => <search_string> )
+     *
+     * @param bool $readonly
+     * @see searchbar.class.php3 for description
      */
-    function addSearchBar($conds) {
-        if ( $this->searchbar )
-            $this->searchbar->addSearch($conds);
+    function addSearchBar($conds, bool $readonly=false) {
+        if ( $this->searchbar ) {
+            $this->searchbar->addSearch($conds, $readonly);
+        }
     }
 
     /** setListlen function
@@ -381,7 +603,7 @@ class AA_Manager extends AA_Storable {
 
     /**
      * @param string $akce
-     * @return AA_Manageraction
+     * @return null|Manageraction\AbstractManageraction
      */
     function getAction($akce) {
         if (!is_object($this->actions)) {
@@ -397,7 +619,7 @@ class AA_Manager extends AA_Storable {
         if (!is_array($_POST['chb']) AND ($_POST['aa_akce_all']=='1')) {
             $this->getZids();
         }
-        return (new zids())->setFromItemArr($_POST['chb'] ?? []);
+        return (new zids())->setFromItemArr($_POST['chb'] ?? $_GET['chb'] ?? []);
     }
 
     /** performActions function
@@ -435,7 +657,7 @@ class AA_Manager extends AA_Storable {
         $item_zids = $this->getPostedItems(); // in some managers we use 'x' before the item id - remove it
 
 
-        // new approach uses AA_Manageractions
+        // new approach uses AA\Manageractions
         if ($akce AND is_object($this->actions)) {
             $actions   = $this->actions;
             $action2do = $actions->getAction($akce);
@@ -444,11 +666,10 @@ class AA_Manager extends AA_Storable {
             }
         }
 
-        // new approach uses AA_Manageractions
+        // new approach uses AA\Manageractions
         if (is_object($this->switches)) {
             $switches     = $this->switches;
-            $switches_arr = $switches->getArray();
-            foreach ( $switches_arr as $sw => $switch ) {
+            foreach ( $switches as $sw => $switch ) {
                 if ( isset($_GET[$sw]) AND $switch->isPerm4Perform($this, $item_zids, $_GET[$sw])) {
                     $this->msg[] = $switch->perform($this, $item_zids, $_GET[$sw]);
                 }
@@ -469,16 +690,9 @@ class AA_Manager extends AA_Storable {
 
 
         // for managed class
-        if ($this->managed_class) {
-            if (($_GET['delete'] == 1) AND is_long_id($_GET['id'])) {
-                if ($obj = AA_Object::load($_GET['id'], $this->managed_class)) {
-                    $obj->delete();
-                }
-                unset($_GET['id']);  // to not try to display the deleted item later in displayPage()
-            }
-
+        if ($this->managed->isAction('edit') OR $this->managed->isAction('add')) {
             if ($_POST['aa']) {
-                $form = AA_Form::factoryForm($this->managed_class, $_GET['id'], $this->module_id);
+                $form = $this->managed->getForm($_GET['id'], $this->module_id);
 
                 $err        = [];          // error array (Init - just for initializing variable
                 $form_state = $form->process($_POST['aa']);
@@ -537,9 +751,9 @@ class AA_Manager extends AA_Storable {
 
         $zids = $zids ?? $this->getZids();
 
-        if (($_GET['id'] OR $_GET['add']) AND $this->managed_class) {
-            //huhl('sss1',$this->module_id);
-            $form         = AA_Form::factoryForm($this->managed_class, $_GET['id'], $this->module_id);
+        if (($_GET['id'] AND $this->managed->isAction('edit')) OR ($_GET['add'] AND $this->managed->isAction('add'))) {
+
+            $form = $this->managed->getForm($_GET['id'], $this->module_id);
             $form_buttons = [
                 "update",
                 "cancel",
@@ -549,6 +763,7 @@ class AA_Manager extends AA_Storable {
             $html .= getFrmTabCaption(_m("Object Edit"), $form_buttons);
             $html .= '<tr><td colspan="2">';
             $html .= $form->getObjectEditHtml();
+//            $html .= $form->getEditFormHtml();
             $html .= '</td></tr>';
 
             $html .= getFrmTabEnd($form_buttons);
@@ -560,8 +775,8 @@ class AA_Manager extends AA_Storable {
             AA::Stringexpander()->addRequire('aa-jslib@1');
             $html = $this->getManagerCode($zids);
         }
-        $r_state['manager']    = $this->getState();
-        $r_state['manager_id'] = $this->_manager_id;
+        $r_state['manager'][$this->_manager_id]    = $this->getState();
+        // $r_state['manager_id'] = $this->_manager_id;
         return $html;
     }
 
@@ -610,24 +825,25 @@ class AA_Manager extends AA_Storable {
     function getItems($zids): string {
         $ret = '<form name="itemsform" id="itemsform" method="post" action="'. StateUrl() .'">';
 
+        $itemview = $this->managed->getItemview($zids, $this->module_id, $this->scroller->getListlen());
+
         $ids_count = $zids->count();
         if ( $ids_count == 0 ) {
-            $ret .= "<div class=\"tabtxt\">". $this->itemview->unaliasWithScroller($this->messages['noitem_msg']). "</div></form><br>";
+            $ret .= "<div class=\"tabtxt\">". $itemview->unaliasWithScroller($this->messages['noitem_msg']). "</div></form><br>";
             return $ret;
         }
 
         $this->scroller->countPages( $ids_count );
 
         // update itemview
-        $this->itemview->assign_items($zids);                // ids to show
-        $this->itemview->from_record = $this->scroller->metapage * ($this->scroller->current-1);                // from which index begin showing items
-        $this->itemview->num_records = $this->scroller->metapage;
+        $itemview->from_record = $this->scroller->metapage * ($this->scroller->current-1);                // from which index begin showing items
+        $itemview->num_records = $this->scroller->metapage;
 
         // big security hole is open if we cache it
         // (links to itemedit.php3 would stay with session ids in cache
         // - you bacame another user !!!)
 
-        $ret .= $this->itemview->get_output('view');
+        $ret .= $itemview->get_output('view');
 
         $ret .= '<table border="0" cellpadding="3" class="aa_manager_actions noprint">
                 <tr class="aa_manager_actions_tr"><td>';
@@ -639,13 +855,11 @@ class AA_Manager extends AA_Storable {
             $javascr = '';
             $options = '';
 
-            // new approach uses AA_Manageractions
+            // new approach uses AA\Manageractions
             if (is_object($this->actions)) {
-                $actions    = $this->actions;
-                $action_arr = $actions->getArray();
                 $i       = 1;  // we start on 1 because first option is "Select action:"
 
-                foreach( $action_arr as $action_id => $action ) {
+                foreach( $this->actions as $action ) {
                     if ( $action->isPerm4Action($this)) {
                         $options .= '<option value="'. safe($action->getId()).'"> '.
                                                        safe($action->getName() . ($action->getOpenUrl() ? '...' : ''));
@@ -707,138 +921,9 @@ class AA_Manager extends AA_Storable {
         unset( $this->msg );
         return $ret;
     }
-}
 
-/** AA_Manageraction - Item manager actions. Just create new class and assign
- *  it to your manager
- *
- *  We are extending AA_Storable, because we want to get the state form some
- *  actions. Action selectbox is able to display settings by AJAX call, where
- *  we need to pass all parameters of the object
- */
-class AA_Manageraction extends AA_Storable {
-
-    var $id;             /** @var string */
-    var $open_url;       /** @var string */
-    var $open_url_add;   /** @var string */
-
-    /** constructor - assigns identifier of action */
-    function __construct($id, $open_url=null, $open_url_add=null) {
-        $this->id = $id;
-        if ($open_url) {
-            $this->setOpenUrl($open_url, $open_url_add);
-        }
-    }
-
-    /** getClassProperties function of AA_Serializable
-     *  Used parameter format (in fields.input_show_func table)
-     *
-     *  We are extending AA_Storable, because we want to get the state form some
-     *  actions. Action selectbox is able to display settings by AJAX call, where
-     *  we need to pass all parameters of the object
-     * @return array
-     */
-    static function getClassProperties(): array {          //  id             name                              type    multi  persistent - validator, required, help, morehelp, example
-        return [
-            'id'            => new AA_Property( 'id',           _m('Action ID'),                  'text', false, true),
-            'open_url'      => new AA_Property( 'open_url',     _m('URL to open' ),               'text', false, true),
-            'open_url_add'  => new AA_Property( 'open_url_add', _m('Additional URL parameters' ), 'text', false, true)
-        ];
-    }
-
-    /** Name of this Manager's action
-     *  @return string
-     */
-    function getName() {}
-
-    /** ID of this Manager's action
-     *  @return string
-     */
-    function getId()         { return $this->id; }
-
-    /** Should this action open new window? And if so, which one?
-     *  @return string
-     */
-    function getOpenUrl()    { return $this->open_url; }
-
-    /** Any addition to url
-     *  @return string
-     */
-    function getOpenUrlAdd() { return $this->open_url_add; }
-
-    /**
-     * @param string      $url
-     * @param string|null $add
-     */
-    function setOpenUrl($url, $add=null) {
-        $this->open_url     = $url;
-        $this->open_url_add = $add;
-    }
-
-    /** Perform the action - main function
-     * @param AA_Manager $manager       nn which AA_Manager
-     * @param zids       $item_zids     with what Items
-     * @param array      $action_param  additional parameters to the action
-     * @return string|false false is OK, string contain Error message
-     */
-    function perform(AA_Manager $manager, zids $item_zids, $action_param) {
-        return false;
-    }
-
-    /** Checks if the user have enough permission to PERFORM the action on items
-     * @param AA_Manager $manager
-     * @param $item_zids
-     * @param $action_param
-     * @return bool
-     */
-    function isPerm4Perform($manager, $item_zids, $action_param) {
-        return $this->isPerm4Action($manager);  // in most cases it is enough
-    }
-
-    /** Checks if the user have enough permission to allow him/her to SELECT the action
-     * @param AA_Manager $manager
-     * @return bool
-     */
-    function isPerm4Action($manager) {
-        return true;
-    }
-
-    /** Do this action have some settings, which should be displayed? */
-    function isSetting() {
-        return is_callable([$this, 'htmlSettings']);
-    }
-}
-
-class AA_Manageractions {
-    /** @var AA_Manageraction[] */
-    var $actions;
-
-    function __construct() {
-        $this->actions = [];
-    }
-
-    /**
-     * @param $id
-     * @return AA_Manageraction|null
-     */
-    function getAction($id) {
-        return $this->actions[$id] ?: null;
-    }
-
-    /** We unfortunately need this function, because in manager.class.php
-     *  we have to loop through all switches and the Iterator is not available
-     *  for PHP4
-     */
-    function &getArray() {
-        return $this->actions;
-    }
-
-    /**
-     * @param AA_Manageraction $action
-     * @return AA_Manageraction
-     */
-    function addAction($action) {
-        return $this->actions[$action->getId()] = $action;
+    public function getManaged(): ?Managed {
+        return $this->managed;
     }
 }
 

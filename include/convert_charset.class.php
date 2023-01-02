@@ -411,8 +411,8 @@ class ConvertCharset {
      * @param string $StringToChange The string you want to change :)
      * @param string $FromCharset Name of $StringToChange encoding, you have to know it.
      * @param string $ToCharset Name of a charset you want to get for $StringToChange.
-     * @param boolean $TurnOnEntities Set to true or 1 if you want to use numeric entities insted of regular chars.
-     * @return string Converted string in brand new encoding :)
+     * @param boolean $TurnOnEntities Set to true or 1 if you want to use numeric entities instead of regular chars.
+     * @return string Converted string in brand-new encoding :)
      * @version 1.1 BETA 2003-10-21 01:09
      **/
     function Convert($StringToChange, $FromCharset = null, $ToCharset = null, $TurnOnEntities = false): string {

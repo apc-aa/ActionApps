@@ -678,7 +678,7 @@ class AA_Views {
     /** getSliceViews function
      *  Returns an array of slice views, caching results in allknownviews
      * @param $slice_id
-     * @return array
+     * @return AA_View[]
      */
     static function getSliceViews($slice_id) {
         $a = [];

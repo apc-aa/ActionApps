@@ -191,13 +191,15 @@ class AA_Validate extends AA_Serializable {
  */
 class AA_Validate_Signed extends AA_Validate {
     /** Minimum number */
-    var $min;
+    protected $min;
 
     /** Maximum number */
-    var $max;
+    protected $max;
 
     /** Step */
-    var $step;
+    protected $step;
+
+    protected $maxlength;
 
     /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_validate table)
@@ -206,10 +208,11 @@ class AA_Validate_Signed extends AA_Validate {
      */
     static function getClassProperties(): array {
         return [
-            //           id                        name                        type    multi  persist validator, required, help, morehelp, example
-            'min'  => new AA_Property('min', _m("Alloved minimum value"), 'int', false, true, 'int', false, _m(""), '', 1),
-            'max'  => new AA_Property('max', _m("Alloved maximum value"), 'int', false, true, 'int', false, _m(""), '', 12),
-            'step' => new AA_Property('step', _m("Step"), 'int', false, true, 'int', false, _m(""), '', 1),
+            //           id                             name                        type    multi  persist validator, required, help, morehelp, example
+            'min'       => new AA_Property('min',       _m("Alloved minimum value"), 'int', false, true, 'int', false, _m(""), '', 1),
+            'max'       => new AA_Property('max',       _m("Alloved maximum value"), 'int', false, true, 'int', false, _m(""), '', 12),
+            'step'      => new AA_Property('step',      _m("Step"),                  'int', false, true, 'int', false, _m(""), '', 1),
+            'maxlength' => new AA_Property('maxlength', _m("Maximum length"),        'int', false, true, 'int', false, _m(""), '', 15)
         ];
     }
 
@@ -246,6 +249,14 @@ class AA_Validate_Signed extends AA_Validate {
         }
         if (IsSigInt($this->step) and ($this->step > 1)) {
             $ret['step'] = $this->step;
+        }
+        if ($this->maxlength > 0) {
+            $ret['maxlength']  = (int)$this->maxlength;
+        } elseif ($this->max > 0) {
+            $ret['maxlength']  = (int)($this->max/10+1);
+        }
+        if ($ret['maxlength'] AND ($ret['maxlength'] < 60)) {
+            $ret['size']       = ((int)$ret['maxlength']+2);
         }
         return $ret;
     }
@@ -295,9 +306,9 @@ class AA_Validate_Date extends AA_Validate_Signed {
  */
 class AA_Validate_Regexp extends AA_Validate {
     /** Regular Expression */
-    var $pattern;
-    var $empty_expression = '/^\s*$/';
-    var $maxlength;
+    protected $pattern;
+    protected $empty_expression = '/^\s*$/';
+    protected $maxlength;
 
     static function getClassProperties(): array {
         return [                      //           id            name              type    multi  persist validator, required, help, morehelp, example
@@ -332,7 +343,7 @@ class AA_Validate_Regexp extends AA_Validate {
     }
 
     /** returns the type attribute for the HTML 5 <input> tag with possible some
-     *  more attributtes (like min, max, step, pattern, ...)
+     *  more attributes (like min, max, step, pattern, ...)
      */
     function getHtmlInputAttr() {
         $ret = ['type'=>'text'];
@@ -425,11 +436,11 @@ class AA_Validate_Markedid extends AA_Validate_Id {
  *  @param   $max
  */
 class AA_Validate_Float extends AA_Validate {
-    /** Minum number */
-    var $f_min;
+    /** Minimum number */
+    protected $f_min;
 
     /** Maximum number */
-    var $f_max;
+    protected $f_max;
 
     static function getClassProperties(): array {
         return [                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
@@ -461,7 +472,7 @@ class AA_Validate_Float extends AA_Validate {
 
 class AA_Validate_Enum extends AA_Validate {
     /** Enumeration array (array of possible values). Values are stored as keys. */
-    var $possible_values;
+    protected $possible_values;
 
     static function getClassProperties(): array {
         return [                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
@@ -543,13 +554,13 @@ class AA_Validate_Pwd extends AA_Validate {
  */
 class AA_Validate_Unique extends AA_Validate {
     /** Search in which field */
-    var $field_id;
+    protected $field_id;
 
     /** Scope, where to search - username | slice | allslices */
-    var $scope = 'slice';
+    protected $scope = 'slice';
 
     /** Item, which we do not count (current item) */
-    var $item_id;
+    protected $item_id;
 
     /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_validate table)
@@ -621,13 +632,13 @@ class AA_Validate_Unique extends AA_Validate {
 class AA_Validate_Eunique extends AA_Validate {
 
     /** Search in which field */
-    var $field_id;
+    protected $field_id;
 
     /** Scope, where to search - username | slice | allslices */
-    var $scope = 'slice';
+    protected $scope = 'slice';
 
     /** Item, which we do not count (current item) */
-    var $item_id;
+    protected $item_id;
 
     /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_validate table)
@@ -670,7 +681,7 @@ class AA_Validate_Eunique extends AA_Validate {
 /** Test for text (any characters allowed)
  */
 class AA_Validate_Text extends AA_Validate {
-    var $maxlength;
+    protected $maxlength;
 
     static function getClassProperties(): array {
         return [                      //           id            name              type    multi  persist validator, required, help, morehelp, example

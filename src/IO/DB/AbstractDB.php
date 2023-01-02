@@ -103,7 +103,7 @@ abstract class AbstractDB {
 
     function haltmsg($msg) {
         huhl('err');
-        printf("<p><b>Database error:</b> %s<br>\n", $msg);
+        printf("<p><b>Database error:</b> %s<br>\n", safe($msg));
         printf("<b>%s Error</b>: %s (%s)</p>\n", get_class_name($this), $this->Errno, $this->Error);
     }
 }

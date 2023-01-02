@@ -175,14 +175,14 @@ if ($poll_id) {
     }
 
     FrmInputText("headline",      _m("Headline"),                                  $headline, 255, 40, true,  _m("Question"));
-    FrmInputMultiText('answers[]',_m("Insert new answers and choose their order"), $polltext,  "", 10, true, "", "", 'MDAC');
+    FrmInputMultiText('answers[]',_m("Insert new answers and choose their order"), $polltext,  "", 10, true);
     FrmDate('publish_date',       _m('Publish Date'),                              $publish_date, true, "", "", true);
     FrmDate('expiry_date',        _m('Expiry Date'),                               $expiry_date,   true, "", "", true);
 
 } else {
 
     FrmInputText("headline",       _m("Headline"),                                  "", 255, 40, true,  _m("Question"));
-    FrmInputMultiText('answers[]', _m("Insert new answers and choose their order"), [], "", 10, true, "", "", 'MDAC');
+    FrmInputMultiText('answers[]', _m("Insert new answers and choose their order"), [], "", 10, true);
     FrmDate('publish_date',        _m('Publish Date'),                              now(), true, "", "", true);
     FrmDate('expiry_date',         _m('Expiry Date'),                               now()+604800, true, "", "", true);   // 604800 - 60*60*24*7 - week
 }

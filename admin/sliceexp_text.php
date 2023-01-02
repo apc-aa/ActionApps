@@ -52,6 +52,9 @@ class AA_Slice_Exporter {
     var $to_utf;
 
     // used for conversion data to utf-8
+    /**
+     * @var ConvertCharset|null
+     */
     var $_encoder;
 
     /** Constructor */
@@ -127,12 +130,14 @@ class AA_Slice_Exporter {
      * @return void - writes to file
      */
     function exportOneSliceViews(AA_Slice $slobj, $temp_file) {
-        if (!($views_data = AA_Views::getSliceViews($slobj->getId()))) {
+        if (!($views = AA_Views::getSliceViews($slobj->getId()))) {
             return;
         }
-        foreach ($views_data as $k => $v) {
-            $views_data[$k]->load();
-            unset($views_data[$k]->fields['deleted']);
+
+        $views_data = [];
+        foreach ($views as $k => $view) {
+            $views_data[$k] = $view->getViewInfo();
+            unset($views_data[$k]['deleted']);  // ?
         }
         $views_data = $this->encode($views_data, 'views', ' ');
         if ($this->hex) {

@@ -27,6 +27,8 @@
  *
 */
 
+use AA\Manager;
+
 const AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 
@@ -36,14 +38,14 @@ if (!IfSlPerm(PS_FORMS)) {
     exit;
 }
 
-//$actions   = new AA_Manageractions;
-//$actions->addAction(new AA_Manageraction_Taskmanager_Execute('ExecuteTaskAction'));
-//$actions->addAction(new AA_Manageraction_Taskmanager_Delete('DeleteTaskAction'));
+//$actions   = new AA\Manageractions;
+//$actions->addAction(new  AA\Manageraction\Taskmanager_Execute('ExecuteTaskAction'));
+//$actions->addAction(new  AA\Manageraction\Taskmanager_Delete('DeleteTaskAction'));
 
-//$switches  = new AA_Manageractions;  // we do not need switches here
+//$switches  = new AA\Manageractions;  // we do not need switches here
 
 $apage = new AA_Adminpageutil('sliceadmin', 'forms');
 // $apage->setTitle( _m("Admin - Object Edit") );
 
 $apage->setTitle(_m('Manage %1', [AA_Form::name()]));
-$apage->printWithManager(new AA_Manager('form' . AA::$module_id, AA_Form::getManagerConf()));
+$apage->printWithManager(new Manager('form' . AA::$module_id, AA_Form::getManagerConf()));

@@ -625,7 +625,7 @@ class Widget extends AA_Object implements NamedInterface {
                     $ret[$pid] = new AA_Property($pid, _m("Slice field"), 'string', false, true, 'string', false, _m("field (or format string) that will be displayed in select box. if not specified, in select box are displayed headlines or constant name for constants. you can use also any AA formatstring here (like: _#HEADLINE, _#PUB_DATE (for slices) or _#NAME###_, _#TR_NAME_, _#VALUE##_, _#PRIORITY, _#GROUP##_, _#CLASS##_, _#COUNTER_, _#CONST_ID, _#SHORT_ID (for constants))."), '', 'category........');
                     break;
                 case 'use_name':
-                    $ret[$pid] = new AA_Property($pid, _m("Use name"), 'bool', false, true, 'bool', false, _m("if set (=1), then the name of selected constant is used, insted of the value. Default is 0"), '', '0');
+                    $ret[$pid] = new AA_Property($pid, _m("Use name"), 'bool', false, true, 'bool', false, _m("if set (=1), then the name of selected constant is used, instead of the value. Default is 0"), '', '0');
                     break;
                 case 'adding':
                     $ret[$pid] = new AA_Property($pid, _m("Adding"), 'bool', false, true, 'bool', false, _m("adding the selected items to input field comma separated"), '', '0');
@@ -655,7 +655,10 @@ class Widget extends AA_Object implements NamedInterface {
                     $ret[$pid] = new AA_Property($pid, _m("Slice password"), 'string', false, true, 'string', false, _m("(for slices only) If the related slice is protected by 'Slice Password', fill it here"), '', 'ExtraSecure');
                     break;
                 case 'filter_conds_rw':
-                    $ret[$pid] = new AA_Property($pid, _m("Filtering conditions - changeable"), 'string', false, true, 'string', false, _m("Conditions for filtering items. This conds site admin change through widget_property parameter."), '', "d-source..........-BEGIN-Econnect");
+                    $ret[$pid] = new AA_Property($pid, _m("Filtering conditions - changeable"), 'string', false, true, 'string', false, _m("Conditions for filtering items. This conds site admin change through widget_property parameter."), '', "d-source..........-BEGIN-Ecn");
+                    break;
+                case 'listlen':
+                    $ret[$pid] = new AA_Property($pid, _m("Listing length"), 'string', false, true, 'int', false, _m("Items per page. Default is 20."), '', 100);
                     break;
                 case 'columns':
                     $ret[$pid] = new AA_Property($pid, _m("Columns"), 'int', false, true, 'int', false, _m("Number of columns. If unfilled, the checkboxes are all on one line. If filled, they are formatted in a table."), '', 3);

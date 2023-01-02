@@ -81,8 +81,8 @@ $apage->printHead($err, $Msg);
 
 
 $form_buttons= [
-    "submit" => ['name' => _m('Delete selected')],
-                    "cancel" => ["url"  => "um_uedit.php"]
+    "delete" => ["type"=>"submit", "value" => _m('Delete selected')],
+    "cancel" => ["url"  => "um_uedit.php"]
 ];
 
 if ( !isset($slices2show) ) {

@@ -45,10 +45,7 @@
     "ext-mysqli": "*"
   },
   "autoload": {
-    "psr-4": {
-      "AA\\": "src/"
-    },
-    "classmap": ["include/"],
+    "classmap": ["include/","src/"],
     "exclude-from-classmap": ["include/custom/"]
   },
   "config": {

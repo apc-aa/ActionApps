@@ -235,11 +235,9 @@ class AA_Actionapps {
     /// Static methods
     /** create array of all Approved AAs from central database */
     static function getArray() {
-
         $ret    = [];
-        $conds  = [];
-        $sort[] = ['ORG_NAME' => 'a'];
-        $zids   = Central_QueryZids($conds, $sort, AA_BIN_APPROVED);
+        $set = new AA_Set(null, null, ['ORG_NAME' => 'a'], AA_BIN_APPROVED);
+        $zids   = Central_QueryZids($set);
         $aa_ic  = Central_GetAaContent($zids);
 
         foreach ($aa_ic as $k => $content4id) {
@@ -313,9 +311,9 @@ class AA_Module_Definition {
     }
 
     /** used when you want to export module to another AA
-        - could be used for the same AA as well, but we insted now have
+        - could be used for the same AA as well, but we instead now have
         moduleImport() method, which do not need special http requests and is
-        quicker. Also there was some problem when there was different encoding
+        quicker. Also, there was some problem when there was different encoding
         in the modules.
     */
     function planModuleImport($aa, $replaces=null) {

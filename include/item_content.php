@@ -304,23 +304,21 @@ class AA_Content implements Iterator, ArrayAccess, Countable {
         return AA::Stringexpander()->unalias($text);
     }
 
-    /** is_set function
-     * @todo  rename to more standard isSet after switch to PHP version 7
+    /**
      * @param $field_id
      * @return bool
      */
-    function is_set($field_id): bool {
+    function isSet($field_id): bool {
         return is_array($this->content[$field_id]);
     }
 
-    /** isField function
-     *  @deprecated - kind of confusing here in AA_Content - isField in sucessor ItemContent do different thing - use rather is_set()
-     *  Returns true, if the passed field_id is field id
+    /**
+     * for stringexpand - in ItemContent it return all possible fields, not only the set
      * @param $field_id
      * @return bool
      */
-    function isField($field_id) {
-        return isset($this->content[$field_id]);
+    function isField($field_id): bool {
+        return $this->isSet($field_id);
     }
 
     /** setAaValue function
@@ -351,6 +349,24 @@ class AA_Content implements Iterator, ArrayAccess, Countable {
     /** set object id based on id_field setting for this content */
     function addValue($field_id, $value) {
         $this->content[$field_id][] = ['value'=>$value, 'flag'=>0];
+        return $this;
+    }
+
+    /** setFromArray function
+     * @param array $content4id
+     * @return AA_Content
+     */
+    function setFromArray(array $content4id): self {
+        $this->content = $content4id;
+        return $this;
+    }
+
+    /**
+     * @param string $id_field
+     * @return AA_Content
+     */
+    public function setIdField(string $id_field): self  {
+        $this->id_field = $id_field;
         return $this;
     }
 
@@ -391,7 +407,7 @@ class AA_Content implements Iterator, ArrayAccess, Countable {
         return is_array($a = $this->content[$field_id]) && (key($a) >= AA_Value::MAX_INDEX);
     }
 
-    /** count internal index for n-th value taking into account the mulilingual fields
+    /** count internal index for n-th value taking into account the multilingual fields
      * @param string $field_id
      * @param int $idx
      * @return int | false
@@ -425,6 +441,15 @@ class AA_Content implements Iterator, ArrayAccess, Countable {
      */
     function getValue($field_id, $idx=0) {
         return (($index = $this->getIndex($field_id, $idx)) === false ) ? false : $this->content[$field_id][$index]['value'];
+    }
+
+    /** setValue function
+     * @param string $field_id
+     * @param string $val
+     * @param int    $idx
+     */
+    function setValue($field_id, $val, $idx=0) {
+        $this->content[$field_id][$idx]['value'] = $val;
     }
 
     private function _getDefaultLangNum() {
@@ -464,6 +489,28 @@ class AA_Content implements Iterator, ArrayAccess, Countable {
     function getValuesArray($field_id): array
     {
         return empty($this->content[$field_id]) ? [] : array_column($this->content[$field_id],'value');
+    }
+
+    /** use mainly for reporting
+     * @return array
+     */
+    function getAllAsArray(): array {
+        $ret = [];
+        foreach ($this->content as $fid => $val) {
+            $ret[$fid] = array_column($val,'value');
+        }
+        return $ret;
+    }
+
+    /** use mainly for table data save
+     * @return array
+     */
+    function getAllAsScalar(): array {
+        $ret = [];
+        foreach ($this->content as $fid => $val) {
+            $ret[$fid] = array_column($val,'value')[0];
+        }
+        return $ret;
     }
 
     /** computes difference between two AA_Contents
@@ -509,7 +556,24 @@ class AA_Content implements Iterator, ArrayAccess, Countable {
         }, ARRAY_FILTER_USE_KEY);
     }
 
-    /** Iterator interface */
+    /** Just helper function for storing data from database to AA_Content
+     *  Counterpart of deprecated StoreTable2Content()
+     * @param $SQL
+     * @param $prefix
+     * @param $id_field
+     * @return AA_Content[]
+     */
+    static function StoreTable2AaContent($SQL, $prefix, $id_field): array {
+        $ret = [];
+        $content = [];
+        StoreTable2Content($content, $SQL, $prefix, $id_field);
+        foreach ($content as $id => $arr) {
+            $ret[$id] = (new AA_Content())->setFromArray($arr)->setIdField($id_field);
+        }
+        return $ret;
+    }
+
+/** Iterator interface */
     public function rewind()      { reset($this->content); }
     public function current()     { return $this->getAaValue(key($this->content)); }
     public function key()         { return key($this->content); }
@@ -563,14 +627,14 @@ class ItemContent extends AA_Content {
         }
     }
 
-    /** isField function
+    /**
      *  Returns true, if the passed field id looks like field id
      * @param $field_id
      * @todo - look directly into module, if the field is really field in specific slice/module
      * @todo - this function is not compatible to AA_Content->isField() - one of them should be renamed
      * @return bool
      */
-    function isField($field_id) {
+    function isField($field_id): bool {
         static $f_def;
         if ( !isset($f_def) ) {
             $f_def = array_flip(array_merge(GetLinkFields()->getFieldidsArray(), array_keys(GetCategoryFields()), array_keys(GetConstantFields())));
@@ -578,13 +642,6 @@ class ItemContent extends AA_Content {
 
         // changed this from [a-z_]+\.+[0-9]*$ because of alerts[12]....abcde
         return (((strlen($field_id)==16) AND preg_match('/^[a-z0-9_]+\.+[0-9A-Za-z]*$/',$field_id)) OR $f_def[$field_id]);
-    }
-
-    /** setFromArray function
-     * @param array $content4id
-     */
-    function setFromArray(array $content4id) {
-        $this->content = $content4id;
     }
 
     /** setByItemID function
@@ -634,7 +691,7 @@ class ItemContent extends AA_Content {
                 continue;
             }
 
-            if ($aacontent4id AND $aacontent4id->is_set($pri_field_id) AND (!in_array($pri_field_id, ['id..............','slice_id........']))) {
+            if ($aacontent4id AND $aacontent4id->isSet($pri_field_id) AND (!in_array($pri_field_id, ['id..............', 'slice_id........']))) {
                 $this->content[$pri_field_id] = $aacontent4id->getValues($pri_field_id);
                 continue;
             }
@@ -801,15 +858,6 @@ class ItemContent extends AA_Content {
         return (int)$this->getValue("expiry_date.....");
     }
 
-    /** setValue function
-     * @param string $field_id
-     * @param string $val
-     * @param int    $num
-     */
-    function setValue($field_id,$val,$num=0) {
-        $this->content[$field_id][$num]['value'] = $val;
-    }
-
     /** setItemID function
      * @param $value
      * @return bool
@@ -860,7 +908,7 @@ class ItemContent extends AA_Content {
             if (($type=='visible' AND !$field->getProperty('input_show'))) {
                 continue;
             }
-            if (($type=='present' AND !$this->is_set($field_id))) {
+            if (($type=='present' AND !$this->isSet($field_id))) {
                 continue;
             }
             $property    = $field->getAaProperty();

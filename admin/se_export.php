@@ -38,6 +38,8 @@
  *  @example https://example.org/apc-aa/export.php?id=353399822763422617723728a7787b77&name=Jane
  */
 
+use AA\Manager;
+
 const AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/util.php";
@@ -124,7 +126,7 @@ FrmTabEnd($form_buttons);
 <br>
 <?php
 
-$manager = new AA_Manager('exportsetings'.AA::$module_id, AA_Exportsetings::getManagerConf());
+$manager = new Manager('exportsetings'.AA::$module_id, AA_Exportsetings::getManagerConf());
 $manager->performActions();
 
 //$aa_set = $manager->getSet();

@@ -576,7 +576,7 @@ $_m["use name"]
  = "";
 
 // include/constants_param_wizard.php, row 351, 391
-$_m["if set (=1), then the name of selected constant is used, insted of the value. Default is 0"]
+$_m["if set (=1), then the name of selected constant is used, instead of the value. Default is 0"]
  = "";
 
 // include/constants_param_wizard.php, row 354, 406, 454, 513, 546, 663

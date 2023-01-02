@@ -13,7 +13,7 @@ trait ReportTrait {
         if (is_array($row)) {
             $this->messages[] = $row;
         } elseif (is_object($row)) {
-            $this->messages[] = ['txt' => is_callable([$row, "__toString"]) ? $row : print_r($row, true)];
+            $this->messages[] = ['txt' => is_callable([$row, "__toString"]) ? $row : '<pre>'.safe(print_r($row, true)).'</pre>'];
         } else {
             $this->messages[] = ['txt' => $row];
         }

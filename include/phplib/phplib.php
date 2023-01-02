@@ -105,9 +105,9 @@ class Session {
         }
 
         // If register_globals is off -> store session variables values
-        foreach ($var_names as $key => $value ) {
-            if (!isset($_SESSION[$value])) {
-                $_SESSION[$value]= $GLOBALS[$value];
+        foreach ($var_names as $var_name ) {
+            if (!isset($_SESSION[$var_name])) {
+                $_SESSION[$var_name] = $GLOBALS[$var_name];
             }
         }
     }

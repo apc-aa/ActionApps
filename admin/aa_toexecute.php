@@ -27,6 +27,8 @@
 // @todo only_action option which prints on the output the result of the action
 // Then it could be used as AJAX call for this action!
 
+use AA\Manager;
+
 const AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/actions.php";
@@ -38,5 +40,5 @@ if ( !IsSuperadmin() ) {
 
 $apage = new AA_Adminpageutil('aaadmin', 'toexecute');
 $apage->setTitle(_m('Manage %1', [_m("Scheduled Tasks")]));
-$apage->printWithManager((new AA_Manager('toexecute', GetToexecuteManagerSettings()))->setAllModules());
+$apage->printWithManager((new Manager('toexecute', GetToexecuteManagerSettings()))->setAllModules());
 

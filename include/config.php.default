@@ -247,9 +247,6 @@ define("CACHE_TTL", 10800 ); // 3 hours
  *  (good for archive display). If false, expired items are never shown */
 define("ALLOW_DISPLAY_EXPIRED_ITEMS", true);
 
-/** Maximum number of items, which can be related to some item */
-define( "MAX_RELATED_COUNT", 128 );
-
 /** Since v1.8 you can use short id for item identification
  *  (x instead of sh_itm) */
 $USE_SHORT_URL = true;

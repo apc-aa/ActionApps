@@ -72,6 +72,14 @@ class AA_Module {
         return $module ? $module->getName() : '';
     }
 
+    /** Module switch url
+     * @param $module_id
+     * @return string
+     */
+    static public function getModuleUrl($module_id) {
+        return get_aa_url(AA_Module::getModuleInfo('url',$module_id),['change_id'=>$module_id]);
+    }
+
     /** get module - called as:
      *   $site        = AA_Module_Site::getModule($module_id)
      *   $slice       = AA_Slice::getModule($module_id)
@@ -428,7 +436,7 @@ class AA_Slice extends AA_Module {
         return null;
     }
 
-    /** isField function
+    /**
      * @param bool $fname
      * @return bool
      */
@@ -694,7 +702,8 @@ class AA_Slice extends AA_Module {
 
     /** aliases function
      *  Get standard aliases definition from slice's fields
-     * @param $additional_aliases
+     * @param bool   $additional_aliases
+     * @param string $type
      * @return array|null|string
      */
     function aliases($additional_aliases = false, $type='') {

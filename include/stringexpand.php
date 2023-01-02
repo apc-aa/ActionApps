@@ -2318,6 +2318,18 @@ class AA_Stringexpand_Safe extends AA_Stringexpand_Nevercache {
     }
 }
 
+/** AA counterpart of PHP htmlspecialchars()
+ * @deprecated - use {safe:...} instead
+ */
+class AA_Stringexpand_Htmlspecialchars extends AA_Stringexpand_Nevercachenotrim {
+
+    /** @param string $string  */
+    function expand($string='') {
+        return safe($string);
+    }
+}
+
+
 /** generates ascii only username or filename from the string */
 class AA_Stringexpand_Asciiname extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
@@ -5634,31 +5646,37 @@ class AA_Unalias_Callback {
                 break;
         }
 
-        if (($outlen == 16) AND isset($this->item)) {
-            switch ($out) {
-                case 'unpacked_id.....':
-                case 'id..............':
-                    return $this->item->getItemID();   // should be called in QuoteColons(), but we don't need it
-                case 'slice_id........':
-                    return $this->item->getSliceID();
-                case 'short_id........':
-                case 'status_code.....':
-                case 'post_date.......':
-                case 'publish_date....':
-                case 'expiry_date.....':
-                case 'highlight.......':
-                case 'posted_by.......':
-                case 'edited_by.......':
-                case 'last_edit.......':
-                case 'display_count...':
-                    return $this->item->f_1($out);               // for speedup - we know it is not multivalue and not needed quoting
-                case 'seo.............':
-                    return QuoteColons($this->item->f_1($out));  // for speedup and safety - ignore, if it is multivalue
-                default:
-                    if ( $this->item->isField($out) ) {
-                        return QuoteColons($this->item->f_h($out,'AA_DashOrLanG'));
-                        // QuoteColons used to mark colons, which is not parameter separators.
-                    }
+        if (is_object($this->item)) {
+            if ($outlen == 16) {
+                switch ($out) {
+                    case 'unpacked_id.....':
+                    case 'id..............':
+                        return $this->item->getItemID();   // should be called in QuoteColons(), but we don't need it
+                    case 'slice_id........':
+                        return $this->item->getSliceID();
+                    case 'short_id........':
+                    case 'status_code.....':
+                    case 'post_date.......':
+                    case 'publish_date....':
+                    case 'expiry_date.....':
+                    case 'highlight.......':
+                    case 'posted_by.......':
+                    case 'edited_by.......':
+                    case 'last_edit.......':
+                    case 'display_count...':
+                        return $this->item->f_1($out);               // for speedup - we know it is not multivalue and not needed quoting
+                    case 'seo.............':
+                        return QuoteColons($this->item->f_1($out));  // for speedup and safety - ignore, if it is multivalue
+                    default:
+                        if ($this->item->isField($out)) {
+                            return QuoteColons($this->item->f_h($out, 'AA_DashOrLanG'));
+                            // QuoteColons used to mark colons, which is not parameter separators.
+                        }
+                }
+              // this in not AA Item - it is probably AA_Content of table, ...
+            } elseif ($this->item->isField($out)) {
+                return QuoteColons($this->item->f_1($out)); // we use f_1 because for not AA Items we probably do not use multivalues, ...
+                // QuoteColons used to mark colons, which is not parameter separators.
             }
         }
 
@@ -5666,7 +5684,7 @@ class AA_Unalias_Callback {
         if (in_array(aa_substr($out, 0, 5), ['const', 'alias', 'math(', 'inclu', 'view.', 'dequo', 'list:'])) {
             // look for {const_*:} for changing viewing type of constants
             if ((aa_substr($out, 0, 6) == "const_") AND isset($this->item)) {
-                // $what - name of column (eg. from const_name we get name)
+                // $what - name of column (e.g. from const_name we get name)
                 $what = aa_substr($out, aa_strpos($out, "_")+1, aa_strpos($out, ":") - aa_strpos($out, "_")-1);
                 // parameters - first is field
                 $parts = ParamExplode(aa_substr($out,aa_strpos($out,":")+1));
@@ -5679,7 +5697,7 @@ class AA_Unalias_Callback {
 
                 return QuoteColons($value);
             }
-            // s - multiline - without it it does not work for expressions across multiple lines
+            // s - multiline - without it, it does not work for expressions across multiple lines
             elseif ( (aa_substr($out, 0, 5)=='alias') AND isset($this->item) AND preg_match('/^alias:([^:]*):([a-zA-Z0-9_]{1,3}):?(.*)$/s', $out, $parts) ) {
                 // call function (called by function reference (pointer))
                 // like f_d("start_date......", "m-d")
@@ -5721,7 +5739,7 @@ class AA_Unalias_Callback {
                 return DeQuoteColons(aa_substr($out,8));
             }
         }
-        // OK - its not a known fixed string, look in various places for the whole string
+        // OK - it's not a known fixed string, look in various places for the whole string
         // if ( preg_match('/^([a-zA-Z_0-9]+):?([^}]*)$/', $out, $parts) ) {
         // the longest php function name in whole PHP is 38 chars - test 40 should be enough
         $initiallen = strspn(strtolower(aa_substr($out,0,40)), 'abcdefghijklmnopqrstuvwxyz0123456789_');
@@ -5766,7 +5784,7 @@ class AA_Unalias_Callback {
         }
         // Put the braces back around the text and quote them if we can't match
         else {
-            // Don't warn if { followed by non alphabetic, e.g. in Javascript
+            // Don't warn if { followed by non-alphabetic, e.g. in Javascript
             // Fix javascript to avoid this warning, typically add space after {
             // if ($errcheck && preg_match("/^[a-zA-Z_]/",$out)) {
             //     huhl("Couldn't expand: \"{$out}\"");
@@ -7085,17 +7103,6 @@ class AA_Stringexpand_Ucwords extends AA_Stringexpand_Nevercachenotrim {
     /** @param string $string  */
     function expand($string='') {
         return ucwords($string);
-    }
-}
-
-/** AA counterpart of PHP htmlspecialchars()
- * @deprecated - use {safe:...} instead (it is the same)
- */
-class AA_Stringexpand_Htmlspecialchars extends AA_Stringexpand_Nevercachenotrim {
-
-    /** @param string $string  */
-    function expand($string='') {
-        return safe($string);
     }
 }
 

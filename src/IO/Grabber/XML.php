@@ -41,7 +41,7 @@ class XML extends AbstractGrabber
     /** @var $file string url of the file */
     protected $file = '';
 
-    /** @var string if not null, POST request used using this body */
+    /** @var string if not null, POST request using this body */
     protected $post_body = null;
 
     /** @var string use direct text instead of file */
@@ -124,7 +124,7 @@ class XML extends AbstractGrabber
 
         // remove namespaces (it is pain to work with it in simple XML interface)
         // $data = str_replace(array('<rsp:', '</rsp:'), array('<rsp_', '</rsp_'), $data);
-        //   - now nort necessary - we  registerXPathNamespace so we can use //rsp:xxx  in the xpath ...
+        //   - now not necessary - we  registerXPathNamespace so we can use //rsp:xxx  in the xpath ...
         if (false === ($xml = simplexml_load_string($data))) {
             throw new Exception('xml parse error: ' . $data);
         }

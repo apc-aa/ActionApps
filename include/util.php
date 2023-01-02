@@ -53,15 +53,15 @@ require_once __DIR__ . '/formutil.php';
 /** a_href function
  *  Get <a href> tag
  * @param        $url
- * @param        $txt
+ * @param        $label
  * @param string $class
  * @param array  $attr    ['onclick' => "return confirm('Are you sure?')"]
  * @return string
  */
-function a_href($url, $txt, $class='', array $attr=[]): string {
+function a_href($url, $label, $class='', array $attr=[]): string {
     $add  = $class ? " class=\"$class\"" : '';
     $add .= array_reduce( array_keys($attr), function ($str, $key) use ($attr) { return $str . ' ' . $key . '="' . safe($attr[$key]) . '"'; });
-    return '<a href="'.safe($url) ."\" $add>$txt</a>";
+    return '<a href="'.safe($url) ."\" $add>$label</a>";
 }
 
 /** expand_return_url function
@@ -475,10 +475,24 @@ function timestartdiff() {
 /** huhl function
  * Debug function to print debug messages recursively - handles arrays
  */
-function huhl(...$vars) {
+function huhl(...$vars): void {
     AA::$dbg->log(AA_Log::backtrack());
     foreach ($vars as $var) {
         AA::$dbg->log($var);
+    }
+}
+
+/** Print messages to screen recursively - handles arrays
+ */
+function huh(...$vars): void {
+    foreach ($vars as $var) {
+        if (is_array($var)) {
+            echo "\n<pre>".safe(print_r($var, true)).'</pre>';
+        } elseif (is_object($var)) {
+            echo is_callable([$var, "__toString"]) ? $var : "\n<pre>".safe(print_r($var, true)).'</pre>';
+        } else {
+            echo "\n<pre>".safe(print_r($var, true)).'</pre>';
+        }
     }
 }
 
@@ -496,8 +510,7 @@ function GetPrintArray($a) {
     return $ret;
 }
 
-/** MsgOK function
- * Prepare OK Message
+/** Prepare OK Message
  * @param $txt
  * @return string
  */
@@ -505,8 +518,7 @@ function MsgOk($txt): string {
     return "<div class=\"okmsg\">$txt</div>";
 }
 
-/** MsgERR function
- * Prepare Err Message
+/** Prepare Err Message
  * @param $txt
  * @return string
  */
@@ -514,8 +526,7 @@ function MsgErr($txt): string {
     return "<div class=\"err\">$txt</div>";
 }
 
-/** GetConstants function
- *  Function fills the array from constants table
+/** Fills the array from constants table
  * @param        $group
  * @param string $order
  * @param string $column - column used as values. We can use 'name' as well as
@@ -524,7 +535,7 @@ function MsgErr($txt): string {
  * @return array
  */
 function GetConstants($group, $order='pri', $column='name', $keycolumn='value'): array {
-    // we can use 'const_name' instedad of real name of the column 'name' => translate
+    // we can use 'const_name' insteadad of real name of the column 'name' => translate
     $order     = str_replace( 'const_', '', $order);
     $column    = str_replace( 'const_', '', $column);
     $keycolumn = str_replace( 'const_', '', $keycolumn);
@@ -1005,6 +1016,7 @@ function GetConstantContent( $zids ) {
  * @param $SQL
  * @param $prefix
  * @param $id_field
+ * @deprecated use directly AA_Content::StoreTable2AaContent()
  */
 function StoreTable2Content(&$content, $SQL, $prefix, $id_field) {
     $data = GetTable2Array($SQL, 'NoCoLuMn', 'aa_fields');
@@ -1754,7 +1766,7 @@ function get_if($value, $else, $else2='aa_NoNe', $else3='aa_NoNe') {
 
 /** aa_version function
  *  Version of AA - automaticaly included also date and revision of util.php
- *  file, for better version informations
+ *  file, for better version information
  */
 function aa_version($format='full') {
     $version = '2.90.0';

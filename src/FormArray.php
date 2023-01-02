@@ -70,7 +70,7 @@ class FormArray
 
         $oowner = $content->getOwnerID();
         if (!$oowner) {
-            throw new Exception('No owner specified for ' . $form_field_id);
+        //    throw new Exception('No owner specified for ' . $form_field_id);
         }
         $item_index = ctype_digit((string)$item_index) ? (int)$item_index : 1;
         return "aa[n${item_index}_$oowner][$form_field_id]";

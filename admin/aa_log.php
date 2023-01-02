@@ -27,6 +27,8 @@
 // @todo only_action option which prints on the output the result of the action
 // Then it could be used as AJAX call for this action!
 
+use AA\Manager;
+
 const AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/varset.php";
@@ -39,9 +41,9 @@ if ( !IsSuperadmin() ) {
     exit;
 }
 
-$manager_settings = AA::Metabase()->getManagerConf('log');
-$manager_settings['searchbar']['default_sort'] =  [0 => ['time' => 'd']];
+$managed = AA::Metabase()->getManagerConf('log');
+$managed->settings['searchbar']['default_sort'] =  [0 => ['time' => 'd']];
 
 $apage = new AA_Adminpageutil('aaadmin', 'log');
 $apage->setTitle(_m("View Log"));
-$apage->printWithManager((new AA_Manager('log', $manager_settings))->setAllModules());
+$apage->printWithManager((new Manager('log', $managed))->setAllModules());

@@ -27,6 +27,8 @@
  *
 */
 
+use AA\Manager;
+
 const AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../../include/init_page.php";
 
@@ -37,4 +39,4 @@ if (!IfSlPerm(PS_MODW_SETTINGS)) {
 
 $apage = new AA_Adminpageutil('modadmin', 'aliases');
 $apage->setTitle(_m('Manage %1', [AA_Aliasfunc::name()]));
-$apage->printWithManager(new AA_Manager('aliasfunc' . AA::$module_id, AA_Aliasfunc::getManagerConf()));
+$apage->printWithManager(new Manager('aliasfunc' . AA::$module_id, AA_Aliasfunc::getManagerConf()));

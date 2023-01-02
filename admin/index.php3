@@ -26,6 +26,19 @@
  *
 */
 
+use AA\Manager;
+use AA\Manageraction\Item_DeleteTrash;
+use AA\Manageraction\Item_Duplicate;
+use AA\Manageraction\Item_Email;
+use AA\Manageraction\Item_Export;
+use AA\Manageraction\Item_Feed;
+use AA\Manageraction\Item_Gobookmark;
+use AA\Manageraction\Item_Modifycontent;
+use AA\Manageraction\Item_Move2Slice;
+use AA\Manageraction\Item_MoveItem;
+use AA\Manageraction\Item_Preview;
+use AA\Manageraction\Item_Tab;
+use AA\Manageraction\Manageractions;
 use AA\Util\InputVars;
 
 //const AA_REGISTER_GLOBALS = true;
@@ -110,37 +123,37 @@ if ( !$perm_edit_all && !$perm_edit_self) {
 
 
 
-$actions   = new AA_Manageractions;
-$actions->addAction(new AA_Manageraction_Item_MoveItem('Activate', 1));
-$actions->addAction(new AA_Manageraction_Item_MoveItem('Folder2',  2));
-$actions->addAction(new AA_Manageraction_Item_MoveItem('Folder3',  3));
+$actions   = new Manageractions;
+$actions->addAction(new Item_MoveItem('Activate', 1));
+$actions->addAction(new Item_MoveItem('Folder2',  2));
+$actions->addAction(new Item_MoveItem('Folder3',  3));
 
-$new_action = new AA_Manageraction_Item_Feed('Feed', $slice->getId());
+$new_action = new Item_Feed('Feed', $slice->getId());
 $new_action->setOpenUrl(StateUrl("feed_to.php"));
 $actions->addAction($new_action);
 
 // rXn=1 is foo parameter to make sure, we can use '&' to join items[] parameter (see open_url_add below)
 // '&'    add items[] array to open_url url which will hold checked items
-$actions->addAction(new AA_Manageraction_Item_Preview(      'Preview',       con_url($slice->getProperty('slice_url'),'rXn=1'), '&'));
-$actions->addAction(new AA_Manageraction_Item_Modifycontent('ModifyContent', StateUrl("search_replace.php"), '&'));
-$actions->addAction(new AA_Manageraction_Item_Email(        'Email',         StateUrl("write_mail.php"),     '&'));
-$actions->addAction(new AA_Manageraction_Item_DeleteTrash(  'DeleteTrashAction',true));
-$actions->addAction(new AA_Manageraction_Item_Duplicate(    'Duplicate'));
-$actions->addAction(new AA_Manageraction_Item_Move2slice(   'Move2slice',    $module_id));
-$actions->addAction(new AA_Manageraction_Item_Export(       'Export2File'));
+$actions->addAction(new Item_Preview(      'Preview',       con_url($slice->getProperty('slice_url'),'rXn=1'), '&'));
+$actions->addAction(new Item_Modifycontent('ModifyContent', StateUrl("search_replace.php"), '&'));
+$actions->addAction(new Item_Email(        'Email',         StateUrl("write_mail.php"),     '&'));
+$actions->addAction(new Item_DeleteTrash(  'DeleteTrashAction',true));
+$actions->addAction(new Item_Duplicate(    'Duplicate'));
+$actions->addAction(new Item_Move2Slice(   'Move2slice',    $module_id));
+$actions->addAction(new Item_Export(       'Export2File'));
 
 
-$switches  = new AA_Manageractions;
+$switches  = new Manageractions;
 
 // no problem to write tabs as one action, but we use 3
-$switches->addAction(new AA_Manageraction_Item_Tab('Tab1a', 'app'));
-$switches->addAction(new AA_Manageraction_Item_Tab('Tab1b', 'appb'));
-$switches->addAction(new AA_Manageraction_Item_Tab('Tab1c', 'appc'));
-$switches->addAction(new AA_Manageraction_Item_Tab('Tab2',  'hold'));
-$switches->addAction(new AA_Manageraction_Item_Tab('Tab3',  'trash'));
-$switches->addAction(new AA_Manageraction_Item_DeleteTrash('DeleteTrash',false));
-$switches->addAction(new AA_Manageraction_Item_GoBookmark(   'GoBookmark'));
-//$switches->addAction(new AA_Manageraction_Item_Email('SendEmail'));
+$switches->addAction(new Item_Tab('Tab1a', 'app'));
+$switches->addAction(new Item_Tab('Tab1b', 'appb'));
+$switches->addAction(new Item_Tab('Tab1c', 'appc'));
+$switches->addAction(new Item_Tab('Tab2',  'hold'));
+$switches->addAction(new Item_Tab('Tab3',  'trash'));
+$switches->addAction(new Item_DeleteTrash('DeleteTrash',false));
+$switches->addAction(new Item_Gobookmark(   'GoBookmark'));
+//$switches->addAction(new  AA\Manageraction\Item_Email('SendEmail'));
 
 
 $profile       = AA_Profile::getProfile(AuthGetUid(), $module_id); // current user settings
@@ -179,7 +192,7 @@ $manager_settings = [
      ]
 ];
 
-$manager = new AA_Manager('item'.$module_id, $manager_settings);
+$manager = new Manager('item'.$module_id, (new \AA\Managed())->setSettings($manager_settings));
 
 if ( $change_id OR ($r_state["module_id"] != $module_id)) {
     // we are here for the first time, or we are switching to another slice

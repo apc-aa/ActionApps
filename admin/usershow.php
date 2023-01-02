@@ -26,6 +26,8 @@
  *
 */
 
+use AA\Manager;
+
 const AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/varset.php";
@@ -103,7 +105,7 @@ $manager_settings = [
      ]
 ];
 
-$manager = new AA_Manager('users'.AA::$module_id, $manager_settings);
+$manager = new Manager('users'.AA::$module_id, (new \AA\Managed())->setSettings($manager_settings));
 
 // r_userstate array holds all configuration of Manager
 // the configuration then could be Bookmarked

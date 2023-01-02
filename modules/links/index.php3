@@ -23,6 +23,19 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 // used in init_page.php script to include config.php from the right directory
 
+use AA\Manager;
+use AA\Manageraction\Links_Add2Cat;
+use AA\Manageraction\Links_Check;
+use AA\Manageraction\Links_Delete;
+use AA\Manageraction\Links_DeleteTrash;
+use AA\Manageraction\Links_GoBookmark;
+use AA\Manageraction\Links_GoCateg;
+use AA\Manageraction\Links_Highlight;
+use AA\Manageraction\Links_Move;
+use AA\Manageraction\Links_Move2Cat;
+use AA\Manageraction\Links_Tab;
+use AA\Manageraction\Manageractions;
+
 const AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../../include/init_page.php";
 require_once __DIR__ . "/../../include/varset.php";
@@ -136,23 +149,23 @@ $module_id   = $slice_id;
 $p_module_id = q_pack_id($module_id); // packed to 16-digit as stored in database
 $links_info  = GetModuleInfo($module_id,'Links');
 
-$actions   = new AA_Manageractions;
-$actions->addAction(new AA_Manageraction_Links_Move('Activate', 1));
-$actions->addAction(new AA_Manageraction_Links_Move('Folder2',  2));
-$actions->addAction(new AA_Manageraction_Links_Move('Folder3',  3));
-$actions->addAction(new AA_Manageraction_Links_Check('Check'));
-$actions->addAction(new AA_Manageraction_Links_Highlight('Highlight',true));
-$actions->addAction(new AA_Manageraction_Links_Highlight('DeHighlight', false));
-$actions->addAction(new AA_Manageraction_Links_Delete('Delete'));
-$actions->addAction(new AA_Manageraction_Links_Add2Cat('Add2Cat',   StateUrl("getcat.php?start=".GetCategoryFromPath($links_info['tree_start']))));
-$actions->addAction(new AA_Manageraction_Links_Move2Cat('Move2Cat', StateUrl("getcat.php?start=".GetCategoryFromPath($links_info['tree_start']))));
+$actions   = new Manageractions;
+$actions->addAction(new Links_Move('Activate', 1));
+$actions->addAction(new Links_Move('Folder2',  2));
+$actions->addAction(new Links_Move('Folder3',  3));
+$actions->addAction(new Links_Check('Check'));
+$actions->addAction(new Links_Highlight('Highlight',true));
+$actions->addAction(new Links_Highlight('DeHighlight', false));
+$actions->addAction(new Links_Delete('Delete'));
+$actions->addAction(new Links_Add2Cat('Add2Cat',   StateUrl("getcat.php?start=".GetCategoryFromPath($links_info['tree_start']))));
+$actions->addAction(new Links_Move2Cat('Move2Cat', StateUrl("getcat.php?start=".GetCategoryFromPath($links_info['tree_start']))));
 
 
-$switches  = new AA_Manageractions;
-$switches->addAction(new AA_Manageraction_Links_DeleteTrash('DeleteTrash'));
-$switches->addAction(new AA_Manageraction_Links_GoCateg('GoCateg'));
-$switches->addAction(new AA_Manageraction_Links_Tab('Tab'));
-$switches->addAction(new AA_Manageraction_Links_GoBookmark('GoBookmark'));
+$switches  = new Manageractions;
+$switches->addAction(new Links_DeleteTrash('DeleteTrash'));
+$switches->addAction(new Links_GoCateg('GoCateg'));
+$switches->addAction(new Links_Tab('Tab'));
+$switches->addAction(new Links_GoBookmark('GoBookmark'));
 
 
 // function - we need trnslate _m() on use (not at include time)
@@ -217,7 +230,7 @@ if ( $change_id OR ($r_state["module_id"] != $module_id)) {
 
 $manager_id = 'links'. $module_id;  // no special meaning - just manager id
 
-$manager = new AA_Manager($manager_id, $manager_settings);
+$manager = new Manager($manager_id, (new \AA\Managed())->setSettings($manager_settings));
 $manager->performActions();
 $manager->printHtmlPageBegin();  // html, head, css, title, javascripts
 
@@ -312,8 +325,8 @@ unset($r_err);
 unset($r_msg);
 
 echo $manager->getItems($link_zids);   // print links and actions
-$r_state['manager']    = $manager->getState();
-$r_state['manager_id'] = $manager_id;  // no special meaning - just manager id
+$r_state['manager'][$manager_id]    = $manager->getState();
+// $r_state['manager_id'] = $manager_id;  // no special meaning - just manager id
 
 HtmlPageEnd();
 page_close();

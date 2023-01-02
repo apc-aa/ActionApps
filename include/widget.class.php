@@ -73,7 +73,7 @@ class AA_Property extends AA_Storable {
     /** Help text for the property */
     var $input_help;
 
-    /** Url, where user can get more informations about the property */
+    /** Url, where user can get more information about the property */
     var $input_morehlp;
 
     /** Value example */

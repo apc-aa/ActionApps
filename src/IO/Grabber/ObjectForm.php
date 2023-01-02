@@ -89,7 +89,7 @@ class ObjectForm extends AbstractGrabber
     }
 
     /** Method called by the AA\IO\Saver to get next object from the data input */
-    function getContent() {
+    function getItem() {
         if (!($tostore = current($this->_content))) {
             return false;
         }
@@ -138,9 +138,8 @@ class ObjectForm extends AbstractGrabber
 
             $id_trans_table[$dirty_obj_id] = $ident['id'];
 
-            // now fill the AA_Content for each obj and tepmorary store it into $this->_content[]
+            // now fill the AA_Content for each obj and temporary store it into $this->_content[]
             $content = new AA_Content();
-            $content->setId($ident['id']);
 
             // join common fields (the specific fields win in the battle of common and specific content)
             if (isset($aa['all'])) {
@@ -152,9 +151,10 @@ class ObjectForm extends AbstractGrabber
                 $aa_value->replaceInValues($trans_obj_alias, $trans_obj_ids);
                 $content->setAaValue($field_id, $aa_value);
             }
+
+            $content->setId($ident['id']);
             $this->_content[] = [$content, $ident['store_mode']];
         }
-
         reset($this->_content);
     }
 
@@ -177,24 +177,19 @@ class ObjectForm extends AbstractGrabber
         switch ($dirty_obj_id[0]) {
             case 'u':
                 $ret['store_mode'] = 'update';
-            // no break!
+                $ret['id'] = substr($dirty_obj_id, 1, 32);
+                break;
             case 'i':
                 $ret['store_mode'] = 'add';
                 $ret['id'] = substr($dirty_obj_id, 1, 32);
-//            $ret['class']      = substr($dirty_obj_id, 34);
                 break;
             case 'n':
                 $ret['store_mode'] = 'new';
                 $ret['id'] = $id_trans_table['_#' . $dirty_obj_id];
                 $owner_start_char = strpos($dirty_obj_id, '_') + 1;
                 $ret['owner'] = substr($dirty_obj_id, $owner_start_char, 32);
-//            $ret['class']      = substr($dirty_obj_id, $owner_start_char+33);
                 break;
         }
-        // deafult class is AA_Item
-//        if (!$ret['class']) {
-//            $ret['class'] = 'AA_Item';
-//        }
         return $ret;
     }
 }

@@ -44,9 +44,9 @@ class AA_Mailtemplate implements AA_iEditable {
     function __construct($id=null) {
         $this->record = [];
         if ($id and ctype_digit((string)$id)) {
-            $template = AA_Metabase::getContent(['table' => 'email'], new zids($id, 's'));
+            $template = AA_Metabase::getContent(new zids($id, 's'), ['table' => 'email']);
             if ($template[$id]) {
-                $this->record = $template[$id];
+                $this->record = $template[$id]->getAllAsArray(); // @todo - it is wrong> key => [] - we need key -> value1
             }
         }
     }
@@ -289,7 +289,7 @@ class AA_Mail extends htmlMimeMail implements \AA\Later\LaterInterface {
     /** sendToReader function
      *  Sends mail defined in e-mail template id $mail_id to all zids (Readers).
      *  Mail template is unaliased using aliases and data form item identified by
-     *  $zids (often Reader item). The recipients are Reders itself, by default.
+     *  $zids (often Reader item). The recipients are Readers itself, by default.
      * @param $mail_id
      * @param $zids
      * @return

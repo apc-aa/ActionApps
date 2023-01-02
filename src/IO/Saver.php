@@ -144,7 +144,7 @@ class Saver implements AA\Later\LaterInterface {
 
             if (!$fire) {
                 $this->message("AA\IO\Saver->run(): id_mode: $id_mode, store_mode: $store_mode, transformed item: ");
-                $this->message($content4id);
+                $this->message($content4id->getAllAsArray());
             }
 
             switch ($id_mode) {

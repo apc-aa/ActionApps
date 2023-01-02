@@ -19,7 +19,7 @@ https://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 /**
- * Linkcheck cron module - link validation for links module
+ * AA\Util\Linkcheck cron module - link validation for links module
  * This script should be started from AA cron - say twice a day. It checks
  * LINKS_VALIDATION_COUNT links from LINKS module and counts the health if each
  * checked link (valid_rank)
@@ -28,6 +28,9 @@ https://www.apc.org/
  * @author Pavel Jisl <pavelji@ecn.cz>
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
 */
+
+use AA\Util\Linkcheck;
+
 require_once __DIR__."/../../include/config.php";
 require_once __DIR__ . "/../../include/locsess.php";   // DB_AA definition
 require_once __DIR__ . "/../../include/zids.php";
@@ -37,7 +40,7 @@ is_object( $db ) || ($db = getDB());
 
 require_once __DIR__ . "/../../include/linkcheck.class.php";
 
-$check_links = new AA_Linkcheck;
+$check_links = new Linkcheck;
 
 $check_links->checking();
 

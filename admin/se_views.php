@@ -26,6 +26,8 @@
 // expected $view_id for editing specified view
 
 use AA\IO\DB\DB_AA;
+use AA\Manager;
+use AA\Manageraction\Manageractions;
 
 const AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
@@ -96,10 +98,10 @@ $apage->addRequire($headcode, 'AA_Req_Headcode');
 $apage->printHead($err, $Msg);
 
 
-$actions   = new AA_Manageractions;
-$actions->addAction(new AA_Manageraction_View_Move2slice(   'Move2slice',    $module_id));
+$actions   = new Manageractions;
+$actions->addAction(new  AA\Manageraction\View_Move2slice(   'Move2slice',    $module_id));
 
-//$switches  = new AA_Manageractions;  // we do not need switches here
+//$switches  = new AA\Manageractions;  // we do not need switches here
 
 $VIEW_TYPES = getViewTypes();
 
@@ -133,7 +135,7 @@ $manager_settings['show'] = MGR_ALL & ~MGR_SB_BOOKMARKS & ~MGR_SB_SEARCHROWS & ~
 $manager_settings['searchbar']['default_sort'] =  [0 => ['id' => 'd']];
 $manager_settings['actions'] =  $actions;
 
-$manager = new AA_Manager('views', $manager_settings);
+$manager = new Manager('views', (new \AA\Managed())->setSettings($manager_settings));
 $manager->performActions();
 
 $aa_set  = $manager->getSet();

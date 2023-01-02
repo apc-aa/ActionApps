@@ -551,7 +551,7 @@ class AA_Item {
 
 
     /** checks, if the field looks like the field ID */
-    function isField($text) {
+    function isField($text): bool {
         return $this->content4id->isField($text);
     }
 
@@ -780,7 +780,7 @@ class AA_Item {
         }
 
         // we have to remove stings
-        // In this case we use older approach of substitution - it has problems with stringsl like "link:_#SEO_URL_#_#LASTEDIT"
+        // In this case we use older approach of substitution - it has problems with strings like "link:_#SEO_URL_#_#LASTEDIT"
         $piece = explode( "_#", $text );
         $out   = array_shift($piece);   // initial sequence
         $clear_output = '';
@@ -1100,7 +1100,7 @@ class AA_Item {
 
         // last parameter - condition field
         $url = $this->getitemurl($plink_only, $purl_field, $predirect, $pcondition, $pno_sess);
-        $flg = ( $this->content4id->is_set($p[3]) ? $this->getFlag($p[3]) : true );
+        $flg = ( $this->content4id->isSet($p[3]) ? $this->getFlag($p[3]) : true );
         return $this->getahref($url,$ptxt,$paddition,$flg);
     }
 
@@ -1552,7 +1552,7 @@ class AA_Item {
         if ( !$this->getval($col) ) {
             return $pelse ? $pbegin.$pelse : "";
         }
-        if ( $this->content4id->is_set($p[1]) ) {
+        if ( $this->content4id->isSet($p[1]) ) {
             $field_id = ($pfield ? $p[1] : $col);
             $txt = $this->getval($field_id);
             $flg = $this->getFlag($field_id);

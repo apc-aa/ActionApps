@@ -88,7 +88,7 @@ $form_buttons = [
                       "cancel"=> ["url"=>"se_fields.php"]
 ];
   FrmTabCaption(_m("Existing remote imports into the slice") . " <b>" . AA_Slice::getModuleName(AA::$module_id) . "</b>");
-  FrmInputMultiSelect('feed_id', _m('Imported slices'), $ext_feeds, '', 5, false, false, _m('feeds prefixed by (=) are "exact copy" feeds'));
+  FrmInputMultiSelect('feed_id', _m('Imported slices'), $ext_feeds, '', 5, false, _m('feeds prefixed by (=) are "exact copy" feeds'));
   FrmTabSeparator(_m("All remote nodes"), [
       "delete" => [
           'value' => _m("Delete"),
@@ -96,7 +96,7 @@ $form_buttons = [
           'add'   => 'onClick="Delete()"'
       ]
   ]);
-  FrmInputMultiSelect('rem_nodes', _m('Remote node'), $nodes, $node, 5, false, true);
+  FrmInputMultiSelect('rem_nodes', _m('Remote node'), $nodes, $node, 5, true);
   FrmTabEnd($form_buttons);
 ?>
 <script>

@@ -52,8 +52,9 @@ class AA_Poll {
             return;
         }
 
-        $content = AA_Metabase::getContent(['table' => 'polls'], new zids($this->poll_id));
-        $this->content = new ItemContent($content[$this->poll_id]);
+        $content = AA_Metabase::getContent(new zids($this->poll_id), ['table' => 'polls']);
+//        $this->content = new ItemContent($content[$this->poll_id]);
+        $this->content = $content[$this->poll_id];  // this is AA_Content
     }
 
     /** getProperty function
@@ -198,13 +199,7 @@ class AA_Poll {
         $set->addSortorder(new AA_Sortorder(['priority' => 'a']));
 
         $zids     = AA::Metabase()->queryZids(['table'=>'polls_answer'], $set);
-        $itemview = new itemview($format, new AA_Aliases(new AA_Aliasgenerator_Answer), $zids, 0, $zids->count(), shtml_url(), "", [
-            [
-                'AA_Metabase',
-                'getContent'
-            ],
-            ['table' => 'polls_answer']
-        ]);
+        $itemview = new itemview($format, new AA_Aliases(new AA_Aliasgenerator_Answer), $zids, 0, $zids->count(), shtml_url(), "", [['AA_Metabase', 'getContent'], ['table' => 'polls_answer']]);
 
         return $itemview->get_output();
     }

@@ -47,6 +47,16 @@ class JsonLD extends AbstractGrabber
     /** @var $token string JWT token */
     protected $token = '';
 
+    /**
+     * @var callable function to return item array form the grabbed json
+     */
+    protected $item_splitter = null;
+
+    /**
+     * @var callable - function for getting next url gor grabber
+     */
+    protected $next_func = null;
+
     /** file to grab - internal array */
     protected $_items;
 
@@ -90,6 +100,22 @@ class JsonLD extends AbstractGrabber
         return $properties;
     }
 
+    /**
+     * @param callable $item_splitter
+     */
+    public function setItemSplitter(callable $item_splitter = null): self {
+        $this->item_splitter = $item_splitter;
+        return $this;
+    }
+
+    /**
+     * @param callable|null $next_func
+     */
+    public function setNextFunc(callable $next_func = null): self {
+        $this->next_func = $next_func;
+        return $this;
+    }
+
     /** You can get token dynamically, so you weill set it through  setAuth, or you already have token, then you setToken directly */
     protected function loadAuth(): bool {
         if (!$this->token) {
@@ -102,15 +128,17 @@ class JsonLD extends AbstractGrabber
     }
 
     /** You can get token dynamically, so you weill set it through  setAuth, or you already have token, then you setToken directly */
-    public function setAuth(array $authdata) {
+    public function setAuth(array $authdata): self {
         $this->authdata['username'] = $authdata['username'];
         $this->authdata['password'] = $authdata['password'];
         $this->authdata['tokenurl'] = $authdata['tokenurl'];
+        return $this;
     }
 
     /** You can get token dynamically, so you weill set it through  setAuth, or you already have token, then you setToken directly */
-    public function setToken(string $token) {
+    public function setToken(string $token): self {
         $this->token = $token;
+        return $this;
     }
 
 
@@ -121,11 +149,13 @@ class JsonLD extends AbstractGrabber
      */
     protected function loadUrl(string $url, string $post_body = ''): string {
         $header =  "Content-Type: application/json";
+        $header .= "\r\nAccept: application/json";
         if ($this->token) {
             //$header .= "\r\nAuthorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE2MTY5ODYwMjMsImV4cCI6MTYxNzA3MjQyMywicm9sZXMiOlsiUk9MRV9VU0VSIl0sInVzZXJuYW1lIjoibWFsaWtAbnN6bS5jeiJ9.oRpPze6fLueBpySTGo_m4NrZl5dFBhj7NyJ1HHZL5RjOaREXCiMB1z15j4UPwLaWVH8sUi2h74bCLs3KY1yeiZoIBGKcvU1663JqiT2V6OjpUJKLlIHz2cEMeOVTVD4Lps-LQ7elKc91GMqzEuAHitnoKQ-ys6vMyIL1slJgooO8hugUzFi7YZ91nCn040VYfu0It3O9dzAkCl6E35aA-pz_5B01D9GdFHf-ZQ5CxAuJwvzlNTPArRK6CCrSVDQqx_gdMz04rm8vsDhnqHkPpKLHIFdfV0wIjtbWwGl8fDC4B_-fYN61B1sdyhdAiduvMdTV5fq8qKNrECTVfvottwpXFsMlMTO0durs4WHIsR-jy7wPUtmWLf4N5KRjWi03hqljuw3Pi4F_Jth5EdO23eWXtm74u9EU2pALcTHXBfYw8_80Jkmbd1Aweck57eeNR_uWJEIJN94Ms4lSxhh7KGYi17vcoecVPXdQSYAXVd8ETyzRnV6IOneoA1tyfihyihk8b3bPsLyCd2jeH6-S0hDRiztMSfDX4M-EoW1ISC8cm1oMTO9W519TT3RI6Lt_1yXiq60iCInKZokvHjwCy580wBHwKO4iOSvtWm1yQAd7lVPH42kePCgqj22YKKlWGe78e-PjrtWh-zRBxQIPBtpSK2utANz1s5ZSYJVk6LU";
             $header .= "\r\nAuthorization: Bearer {$this->token}";
         }
         $context_opts = ['http' => ['method'  => 'GET', 'header'  => $header]];
+
 
         if ($post_body) {
             $context_opts['http']['content'] = $post_body;
@@ -137,6 +167,9 @@ class JsonLD extends AbstractGrabber
     }
 
     protected function nextPage($json): string {
+        if ($this->next_func) {
+            return call_user_func($this->next_func, $json);
+        }
         $url = '';
         if ($next = $json['hydra:view']['hydra:next']) {
             $needle = substr($next,0,(max(3,strlen($next)/2)));
@@ -165,13 +198,22 @@ class JsonLD extends AbstractGrabber
      */
     function prepare() {
         $this->_items = [];
-
         $data = $this->getSources();
         foreach ($data as $chunk) {
             $json = json_decode($chunk, true);
-            if (is_array($json['hydra:member'])) {
-                $this->_items =  array_merge($this->_items, $json['hydra:member']);
+            if ($this->item_splitter) {
+                $this->_items = array_merge($this->_items, call_user_func($this->item_splitter, $json));
+            } else {
+                $this->_items = array_merge($this->_items, $json);
             }
+
+
+            //  //old code
+            //          else {
+            //                if (is_array($json['hydra:member'])) {
+            //                    $this->_items = array_merge($this->_items, $json['hydra:member']);
+            //                }
+            //            }
         }
         
             //    [hydra:view] => Array

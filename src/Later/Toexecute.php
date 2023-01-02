@@ -141,7 +141,7 @@ class Toexecute {
      *  ages) into subtasks, so it could be executed separately - one after
      *  the another. Such tasks are dedicated to logged user and are displayed
      *  for him/her in Item Manager.
-     *  Such task are marked with execute_after=TOEXECUTE_USER_TASK_TIME in the
+     *  Such tasks are marked with execute_after=TOEXECUTE_USER_TASK_TIME in the
      *  toexecute table (which also means, that such task are never autoexecuted
      *  from the cron)
      */

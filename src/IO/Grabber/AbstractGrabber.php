@@ -154,15 +154,15 @@ abstract class AbstractGrabber implements \AA\Util\NamedInterface {
 
     /** getItem function
      *  Method called by the AA\IO\Saver to get next item from the data input
-     * @return ItemContent
+     * @return ItemContent|AA_Content
      */
     function getItem() {
     }
 
     /** getAllItems function
-     *  Shortcut method to get array of all the Itms
+     *  Shortcut method to get array of all the Items
      * @param string $key if you want to get items as indexed array
-     * @return ItemContent
+     * @return ItemContent[]|AA_Content[]
      * @throws \Exception
      */
     public function getAllItems(string $key=''): array {
@@ -177,6 +177,8 @@ abstract class AbstractGrabber implements \AA\Util\NamedInterface {
                 $ret[] = $item;
             }
         }
+        //huhl($ret);
+        $this->finish();
         return $ret;
     }
 
@@ -210,10 +212,7 @@ abstract class AbstractGrabber implements \AA\Util\NamedInterface {
         return 'UTF-8';
     }
 
-    /** finish function
-     *  Function called by AA\IO\Saver after we get the last item from the data
-     *  input
-     */
+    /** Function called by AA\IO\Saver after we get the last item from the data input  */
     function finish() {
     }
 

@@ -1357,7 +1357,7 @@ The changes could be tracked on:
 (honzam) - new possibility to display AA -> Scheduled Tasks which is currently planned for execution
          - the length of admin pages with the listings of database tables or objects is increased to 100 items by default
          - fix for new CKEditor' include/formutil.php3
-15-08-25 - CKEditor used as WYSIWYG editor insted of Xinha
+15-08-25 - CKEditor used as WYSIWYG editor instead of Xinha
 (honzam) - new {newitem:<template_long_item_id>[:<field_1>:<new_value_1>:<field_2>:<new_value_2>:...]}
            which creates new item. The new item  it is based on template item,
            which is normal item which you can put in HoldingBin/TrashBin... and
@@ -2745,15 +2745,15 @@ The changes could be tracked on:
            mentioned forms, called through AJAX
            (Two Boxes widget has this feature, now)
          - removed maxcount restriction for number of related items
-         - easier usage of AA_Manager class
+         - easier usage of Manager class
          - generalized usage of AA_Object (and its storage into database)
            and AA_Content. Any AA_Object is now very easiy editable
-           by AA_Manager; refactoring a bit
+           by AA\Manager; refactoring a bit
          - zids now uses Iterator (PHP 5 needed)
          - started usage of class autoloading
          - new AA\IO\AbstractGrabber\AbstractGrabber\Form which uses the new standard way of input
            the items to the database
-         - log viewer and searchlog viewer rewriten to AA_Manager class
+         - log viewer and searchlog viewer rewriten to Manager class
            instead of old tabeedit
          - merged changes from v2.50.x branch ------------------------
 09-08-22 - new possibility to copy the field definition from ANY slice
@@ -3183,7 +3183,7 @@ The changes could be tracked on:
          - search bar improvement - hitting enter always submits the form
                                   - stored searches are sorted alphabeticaly
                                   - bookmarks (stored searches) in Item Manager
-                                    moved to standard AA_Manageraction API
+                                    moved to standard AA\Manageraction API
          - new "Computed field for INSERT/UPDATE" Input function
              alows to define different compute methods for INSERT and UPDATE.
              The older "Computed field" Input function marked as deprecated
@@ -3256,7 +3256,7 @@ The changes could be tracked on:
               <form id="myform1" name="myform1" method="post" action="/apc-aa/filler.php3">
                 <input id="inline" name="inline" value="1" type="hidden">
                 <input name="slice_id" value="5e4576289e988c756b5525bacc78987b" type="hidden">
-                <!-- text displayed insted of the form after the submittion (inserted item in our case) -->
+                <!-- text displayed instead of the form after the submittion (inserted item in our case) -->
                 <input id="ok_url" name="ok_url" value="https://example.org/apc-aa/view_php3?vid=12&amp;cmd[12]=x-12-_#N1_ID___&amp;convertfrom=windows-1250" type="hidden">
                 <!-- convertto is optional (you need it if you are not using utf-8 encoding) -->
                 <input id="convertto" name="convertto" value="windows-1250" type="hidden">
@@ -3382,7 +3382,7 @@ The changes could be tracked on:
            Cedric Knight, GreenNet)
          - site module Setting page converted to more generalized (module) version
          - refactoring to use AA_Set instead of AA_Sortorder and also changes
-           in AA_Manager class - method display()
+           in Manager class - method display()
          - AA_Views and AA_Slices uses singleton pattern
          - better support for synchronizatin slices in AA_Metabase, ...
          - synchronization script in AA Central updated
@@ -3516,9 +3516,9 @@ The changes could be tracked on:
 (honzam)
 07-08-04 - Central upgraded to new version with less bugs
 (honzam) - other small fixes
-07-08-03 - AA_Manager class which takes care about all managers - Item Manager,
-(honzam)   Links Manager, ... now support new API for actions (AA_Manageraction)
-         - Central manager switched to use new acion API - AA_Manageraction.
+07-08-03 - Manager class which takes care about all managers - Item Manager,
+(honzam)   Links Manager, ... now support new API for actions (AA\Manageraction)
+         - Central manager switched to use new acion API - AA\Manageraction.
            We plan to rewrite all the actions (for item and links) to that new
            API and remove the code for the old approach
          - synchronize scripts added to central admin interface
@@ -3559,7 +3559,7 @@ The changes could be tracked on:
          - small refactoring of QuoteColons() in strinexpand.php3 - moved
            to AA_Stringexpand::quoteColons($text) where it belongs.
          - small refactoring in ItemManager - bins internaly uses bit
-           representation insted of string
+           representation instead of string
          - fixes in AA synchronization script
          - fixed some SQL queries in sql_update.php3, to not produce errors
            in last versions of MySQL
@@ -3857,7 +3857,7 @@ The changes could be tracked on:
          - GUI improvement in view setting - link to view is not in popup
          - Cleanup
             - class names now uses standard naming convention - prefix AA_ and
-              name with all first letters in upper case (manager => AA_Manager)
+              name with all first letters in upper case (manager => AA\Manager)
             - global functions now rewritten to static class methods, where
               appropriate (sliceid2name() => AA_Slices::getName())
             - class methods begins with lower caps letter

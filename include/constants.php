@@ -118,6 +118,13 @@ class AA_Alias {
     function getAlias() {
         return $this->alias;
     }
+
+    /**
+     * @return string
+     */
+    public function getField(): string {
+        return $this->field_id;
+    }
 }
 
 
@@ -225,9 +232,22 @@ class AA_Aliases {
         return $this->lazy_aliases;
     }
 
-    function getNames() {
+    /** get alias names - ['_#HEADLINE', ...] */
+    function getNames(): array {
         $this->lazyGet('lazy_aliases');
         return array_keys($this->lazy_aliases);
+    }
+
+    /** get alias names for specified field - ['_#HEADLINE', ...] */
+    function getNamesForField(string $fld): array {
+        $this->lazyGet('lazy_aliases');
+        $ret = [];
+        foreach ($this->lazy_aliases as $name => $a) {
+            if ($a->getField() == $fld) {
+                $ret[] = $name;
+            }
+        }
+        return $ret;
     }
 }
 
@@ -250,45 +270,45 @@ class AA_Aliases {
 */
 $MODULES = [
     'S' => [
-        'table' => 'slice',
-                                'name' => _m('Slice'),
-                                'hide_create_module' => 1,
-                                'directory' => "admin/"
+        'table'              => 'slice',
+        'name'               => _m('Slice'),
+        'hide_create_module' => 1,
+        'directory'          => "admin/",
     ],
-                  'W' => [
-                      'table' => 'site',
-                                'name' => 'Site',
-                                'show_templates' => 1,  // show list of sites on 'create new' - used as templates
-                                'directory' => "modules/site/",
-                                'language_files' => [
-                                    'en-utf8_site_lang.php' => 'en-utf8_site_lang.php',
-                                    'en_site_lang.php' => 'en_site_lang.php',
-                                    'es_site_lang.php' => 'es_site_lang.php',
-                                    'es-utf8_site_lang.php' => 'es-utf8_site_lang.php',
-                                    'cz_site_lang.php' => 'cz_site_lang.php',
-                                    'cz-utf8_site_lang.php' => 'cz-utf8_site_lang.php',
-                                    'sk-utf8_site_lang.php' => 'sk-utf8_site_lang.php'
-                                ]
-                  ],
-                  'J' => [
-                      'table' => 'jump',
-                                'name' => _m('Jump inside AA control panel'),
-                                'directory' => "modules/jump/"
-                  ],
-                  'P' => [
-                      'table' => 'polls',
-                                'name' => _m('Polls for AA'),
-                                'show_templates' => 1,
-                                'directory' => "modules/polls/",
-                                'language_files' => [
-                                    "en_polls_lang.php" => "en_polls_lang.php",
-                                    "es_polls_lang.php" => "es_polls_lang.php",
-                                    "es-utf8_polls_lang.php" => "es-utf8_polls_lang.php",
-                                    "cz_polls_lang.php" => "cz_polls_lang.php",
-                                    "cz-utf8_polls_lang.php" => "cz-utf8_polls_lang.php",
-                                    "sk-utf8_polls_lang.php" => "sk-utf8_polls_lang.php",
-                                ]
-                  ],
+    'W' => [
+        'table'          => 'site',
+        'name'           => 'Site',
+        'show_templates' => 1,  // show list of sites on 'create new' - used as templates
+        'directory'      => "modules/site/",
+        'language_files' => [
+            'en-utf8_site_lang.php' => 'en-utf8_site_lang.php',
+            'en_site_lang.php'      => 'en_site_lang.php',
+            'es_site_lang.php'      => 'es_site_lang.php',
+            'es-utf8_site_lang.php' => 'es-utf8_site_lang.php',
+            'cz_site_lang.php'      => 'cz_site_lang.php',
+            'cz-utf8_site_lang.php' => 'cz-utf8_site_lang.php',
+            'sk-utf8_site_lang.php' => 'sk-utf8_site_lang.php',
+        ],
+    ],
+    'J' => [
+        'table'     => 'jump',
+        'name'      => _m('Jump inside AA control panel'),
+        'directory' => "modules/jump/",
+    ],
+    'P' => [
+        'table'          => 'polls',
+        'name'           => _m('Polls for AA'),
+        'show_templates' => 1,
+        'directory'      => "modules/polls/",
+        'language_files' => [
+            "en_polls_lang.php"      => "en_polls_lang.php",
+            "es_polls_lang.php"      => "es_polls_lang.php",
+            "es-utf8_polls_lang.php" => "es-utf8_polls_lang.php",
+            "cz_polls_lang.php"      => "cz_polls_lang.php",
+            "cz-utf8_polls_lang.php" => "cz-utf8_polls_lang.php",
+            "sk-utf8_polls_lang.php" => "sk-utf8_polls_lang.php",
+        ],
+    ],
 
 ];
 

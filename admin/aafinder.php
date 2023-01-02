@@ -26,6 +26,7 @@
 */
 
 use AA\IO\DB\DB_AA;
+use AA\Manager;
 use AA\Util\ChangesMonitor;
 use AA\Util\InputVars;
 
@@ -476,9 +477,10 @@ if (strlen($findtext)) {
         $zids->union( AA_Object::querySet('AA_Aliasfunc', new AA_Set(null, new AA_Condition('aa_name', 'CONTAIN', $findtext))) );
 
         if (!$zids->isEmpty()) {
-            $manager_settings = AA_Aliasfunc::getManagerConf(get_aa_url('modules/site/aliases.php',[],false));  // we should provide: ['module_id'=>$obj->getOwnerId()]
-            $manager_settings['show'] = MGR_ITEMS;
-            $manager = new AA_Manager('aafindaliases'.AA::$module_id, $manager_settings);
+            $managed         = AA_Aliasfunc::getManagerConf();  // we should provide: ['module_id'=>$obj->getOwnerId()]
+            $managed->setUrl(get_aa_url('modules/site/aliases.php',[],false));
+            $managed->settings['show'] = MGR_ITEMS;
+            $manager         = new Manager('aafindaliases'.AA::$module_id, $managed);
             $manager->performActions();
             echo $manager->getManagerCode($zids);
         }

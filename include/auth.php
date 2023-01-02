@@ -88,7 +88,7 @@ class AA_Mysqlauth {
         if ( is_array( $readers )) {
             foreach ($readers as $reader) {
                 $reader_obj = new ItemContent($reader);
-                if (AA_Mysqlauth::isActive($reader_obj) AND $reader_obj->is_set($sl_auth_field_group)) {
+                if (AA_Mysqlauth::isActive($reader_obj) AND $reader_obj->isSet($sl_auth_field_group)) {
                     AA_Mysqlauth::updateReader($reader_obj->getValue(FIELDID_USERNAME), $reader_obj->getValue(FIELDID_PASSWORD), $reader_obj->getValues($sl_auth_field_group));
                 } else {
                     AA_Mysqlauth::deleteReader($reader_obj->getValue(FIELDID_USERNAME));
@@ -147,7 +147,7 @@ class AA_Mysqlauth {
 
                     // Add readers which should be in auth_user but are not
                     // (perhaps moved recently from Pending to Active)
-                    if (AA_Mysqlauth::isActive($reader_obj) AND $reader_obj->is_set($slice["auth_field_group"])) {
+                    if (AA_Mysqlauth::isActive($reader_obj) AND $reader_obj->isSet($slice["auth_field_group"])) {
                         if (! $olduser_exists) {
                             $result["readers added"]++;
                             AA_Mysqlauth::updateReader($reader_obj->getValue(FIELDID_USERNAME), $reader_obj->getValue(FIELDID_PASSWORD), $reader_obj->getValues($slice["auth_field_group"]));

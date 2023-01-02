@@ -609,19 +609,20 @@ class AA_Exportsetings extends AA_Object {
     /** Manager row HTML
      *  could be changed in child classes
      * @param AA\Util\Searchfields $fields
-     * @param $aliases
+     * @param $aliases AA_Aliases
      * @param $buttons
      * @return string
      */
     protected static function getManagerRowHtml($fields, $aliases, $buttons) {
         return '
             <tr>
+              <td><input name="chb[x_#AA_ID___]" value="" type="checkbox"></td>
               <td style="white-space:nowrap;">'.
             $buttons['Edit'].' '.
             a_href(get_aa_url('export.php', ['id=_#AA_ID___'], false), _m('Export'), 'aa-button-show') . ' ' .
-            $buttons['Delete'].' 
+            $buttons['DeleteObject'].' 
             </td>          
-              <td>'.join("</td>\n<td>", array_keys($aliases)).'</td>
+              <td>'.join("</td>\n<td>", $aliases->getNames()).'</td>
             </tr>
             ';
     }

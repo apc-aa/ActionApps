@@ -578,6 +578,11 @@ div.ajax_value[data-aa-edited="1"]:hover {
     background: none;
 }
 
+div[data-aa-required] label:after {
+  content:" *";
+  color: red;
+}
+
 input.save-button, input.cancel-button {
     border: 1px solid #D6C4A9;
     border-right-color: #A0988D;

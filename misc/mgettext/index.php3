@@ -97,7 +97,7 @@ $lang_groups ["site"] =
 $lang_groups ["links"] =
     [
         "modules/links/",
-           "include/manager.class.php",
+           "src/Manager.php",
            "include/searchbar.class.php",
            "include/util.php"
     ];

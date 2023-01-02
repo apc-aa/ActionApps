@@ -177,12 +177,12 @@ $tabledit = new tabledit('aarsstest', StateUrl("aarsstest.php"), $cmd, $aarss_tv
 $err = $tabledit->view($where);
 if ($err) echo "<b>$err</b>";
 
-// @todo - rewrite tabledit to AA_Manager (better to do it on configured AAs)
+// @todo - rewrite tabledit to Manager (better to do it on configured AAs)
 
-//    $actions   = new AA_Manageractions;
-//    // $actions->addAction(new AA_Manageraction_View_Move2slice(   'Move2slice',    $module_id));
+//    $actions   = new AA\Manageractions;
+//    // $actions->addAction(new  AA\Manageraction\View_Move2slice(   'Move2slice',    $module_id));
 //
-//    //$switches  = new AA_Manageractions;  // we do not need switches here
+//    //$switches  = new AA\Manageractions;  // we do not need switches here
 //
 //    $manager_settings = AA::Metabase()->getManagerConf('external_feeds', $actions);
 //    //$manager_settings['itemview']['format']['compact_top'] = '
@@ -212,7 +212,7 @@ if ($err) echo "<b>$err</b>";
 //    //$manager_settings['searchbar']['default_sort'] =  [0 => ['id' => 'd']];
 //    //$manager_settings['actions'] =  $actions;
 //
-//    $manager = new AA_Manager('external_feeds', $manager_settings);
+//    $manager = new AA\Manager('external_feeds', $manager_settings);
 //    $manager->performActions();
 //
 //    $aa_set  = $manager->getSet();

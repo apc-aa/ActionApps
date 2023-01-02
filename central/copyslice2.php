@@ -127,7 +127,7 @@ FrmInputChBox('sync_defs',  _m('Copy definitions'), $sync_defs, false, '', 1, fa
 FrmInputChBox('sync_items', _m('Copy also items'), $sync_items, false, '', 1, false, _m('Copy also item data (items, content, discussions tables) of selected slices above - You can also check only this checkbox to copy the content of the slice into previously prepared (and empty) slice'));
 FrmInputMultiSelect('sync_sites[]', _m('Site modules to copy'), $template_sites, @reset($_POST['sync_sites']), 10);
 FrmInputMultiSelect('sync_alerts[]', _m('Alerts modules to copy'), $template_alerts, @reset($_POST['sync_alerts']), 10);
-FrmInputMultiSelect('destination_aa[]', _m('Destination AAs'), $aas_array, @reset($_POST['destination_aa']), 20, false, true, _m('ActionApps installation to update'));
+FrmInputMultiSelect('destination_aa[]', _m('Destination AAs'), $aas_array, @reset($_POST['destination_aa']), 20, true, _m('ActionApps installation to update'));
 FrmTabEnd($form_buttons);
 
 $apage->printFoot();

@@ -33,7 +33,7 @@ class IsoWidget extends MchWidget
      * @return array
      */
     static function getClassProperties(): array {
-        $ret = Widget::propertiesShop(['const', 'row_count', 'show_actions', 'admin_design', 'tag_prefix', 'show_buttons', 'bin_filter', 'filter_conds', 'filter_conds_rw', 'slice_field', 'sort_by', 'additional_slice_pwd', 'const_arr']);
+        $ret = Widget::propertiesShop(['const', 'row_count', 'show_actions', 'admin_design', 'tag_prefix', 'show_buttons', 'bin_filter', 'filter_conds', 'filter_conds_rw', 'slice_field', 'sort_by', 'additional_slice_pwd', 'const_arr', 'listlen']);
         $ret['filter_conds_rw']->setHelp(_m("Conditions for filtering items in related items window. This conds user can change."));
         return $ret;
     }

@@ -1913,7 +1913,7 @@ $_m["No ActionApps RSS Exchange is set."]
 // admin/discedit.php, row 139
 // admin/rsstest.php, row 114
 // include/formutil.php, row 1659
-// include/manager.class.php, row 198
+// src/Manager.php, row 198
 $_m["Actions"]
     = "Akcia";
 
@@ -2363,7 +2363,7 @@ $_m["Failed were:"]
     = "";
 
 // admin/sliceimp.php, row 426
-$_m["Here you can import exported data to toolkit. You can use two types of import:"]
+$_m["Here you can import exported data to ActionApps. You can use two types of import:"]
     = "";
 
 // admin/sliceimp.php, row 431
@@ -3263,7 +3263,7 @@ $_m["View items"]
     = "";
 
 // admin/search_replace.php, row 758
-// include/manager.class.php, row 590
+// src/Manager.php, row 590
 $_m["Selected items"]
     = "Zmeni� vybran�";
 
@@ -3776,7 +3776,7 @@ $_m["No category defined"]
     = "Kateg�rie neboli definovan�";
 
 // admin/se_filters.php, row 355, 355
-// include/manager.class.php, row 585
+// src/Manager.php, row 585
 $_m["Select all"]
     = "Vybra� zobrazen�";
 
@@ -5909,55 +5909,55 @@ $_m["Files with the same names as some in the template already exist. Please cha
 $_m["Are you sure you want to delete the selected files and folders?"]
     = "";
 
-// include/manager.class.php, row 83
+// src/Manager.php, row 83
 $_m["Searchbar"]
     = "";
 
-// include/manager.class.php, row 84
+// src/Manager.php, row 84
 $_m["Scroller"]
     = "";
 
-// include/manager.class.php, row 85
+// src/Manager.php, row 85
 $_m["Msg"]
     = "";
 
-// include/manager.class.php, row 86
+// src/Manager.php, row 86
 $_m["Bin"]
     = "";
 
-// include/manager.class.php, row 87
+// src/Manager.php, row 87
 $_m["Module ID"]
     = "";
 
-// include/manager.class.php, row 147
+// src/Manager.php, row 147
 $_m["No item found"]
     = "Nenalezena ��dn� zpr�va";
 
-// include/manager.class.php, row 198
+// src/Manager.php, row 198
 $_m["Publish date"]
     = "";
 
-// include/manager.class.php, row 198
+// src/Manager.php, row 198
 $_m["Headline"]
     = "";
 
-// include/manager.class.php, row 597
+// src/Manager.php, row 597
 $_m["Go"]
     = "Cho�";
 
-// include/manager.class.php, row 614
+// src/Manager.php, row 614
 $_m["Items Page"]
     = "";
 
-// include/manager.class.php, row 663
+// src/Manager.php, row 663
 $_m["Action ID"]
     = "";
 
-// include/manager.class.php, row 664
+// src/Manager.php, row 664
 $_m["URL to open"]
     = "";
 
-// include/manager.class.php, row 665
+// src/Manager.php, row 665
 $_m["Additional URL parameters"]
     = "";
 
@@ -6747,7 +6747,7 @@ $_m["Use name"]
     = "";
 
 // include/widget.class.php, row 598, 641
-$_m["if set (=1), then the name of selected constant is used, insted of the value. Default is 0"]
+$_m["if set (=1), then the name of selected constant is used, instead of the value. Default is 0"]
     = "";
 
 // include/widget.class.php, row 599

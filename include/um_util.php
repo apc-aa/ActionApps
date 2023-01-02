@@ -131,7 +131,7 @@ function PrintModulePermModificator($selected_user) {
 function GetModulePermRow($mid, $type, $name, $perm, $odd=false) {
     global $MODULES, $perms_roles_modules;
     $ret = "<tr>
-        <td ".($odd ? " bgcolor=\"".COLOR_BACKGROUND."\"" : "")." align='top'>".$MODULES[$type]['name'] .":&nbsp;$name<br>&nbsp;&nbsp;&nbsp;&nbsp;($mid)</td>
+        <td ".($odd ? " bgcolor=\"".COLOR_BACKGROUND."\"" : "")." align='top'>". $MODULES[$type]['name'] .":&nbsp;". a_href(AA_Module::getModuleUrl($mid),$name). "<br>&nbsp;&nbsp;&nbsp;&nbsp;($mid)</td>
         <td ".($odd ? " bgcolor=\"".COLOR_BACKGROUND."\"" : "")." nowrap align='top'>";
     if ( isset($perms_roles_modules[$type]) AND is_array($perms_roles_modules[$type]) ) {
         foreach ($perms_roles_modules[$type] as $role) {
@@ -148,6 +148,7 @@ function GetModulePermRow($mid, $type, $name, $perm, $odd=false) {
     </tr>";
     return $ret;
 }
+
 
 /** PrintModuleAddRow function
  * @param $mod_options

@@ -294,7 +294,7 @@ class AA_Form extends AA_Object implements \AA\Util\NamedInterface {
         $this->object_owner = $oowner;
     }
 
-    static public function factoryForm($otype, $oid, $oowner) {
+    static public function factoryForm($otype, $oid, $oowner): AA_Form {
         $form = new AA_Form();
         $form->setObject($otype, $oid, $oowner);
         $otype::addFormrows($form);
@@ -304,9 +304,9 @@ class AA_Form extends AA_Object implements \AA\Util\NamedInterface {
     function process($aa) {
         if ( !empty($aa) ) {
             // update or insert
-            $object = call_user_func_array([$this->object_type, 'factoryFromForm'], [$this->object_owner, $this->object_type]);
+            $managed = \AA\Managed::factoryFromType($this->object_type);
+            $managed->save($this->object_owner);
             // @todo check permissions, validation, $store_mode state (see readFromForm)
-            $object->save();
             return AA_Form::SAVED;
         }
         return AA_Form::PREPARED;
@@ -399,12 +399,17 @@ class AA_Form extends AA_Object implements \AA\Util\NamedInterface {
      * @throws Exception
      */
     private function _getContent() {
+        huhl('eee', $this);
 
         if (empty($this->object_id)) {
             $content = new AA_Content();
             $content->setOwnerId($this->object_owner);
         } else {
-            $contents = AA_Object::getContent(['class'=>$this->object_type], new zids($this->object_id));
+            $managed  = \AA\Managed::factoryFromType($this->object_type);
+            $contents = $managed->getContent(new zids($this->object_id));
+
+            // $contents = call_user_func_array([$this->object_type, 'getContent'], [['class'=>$this->object_type, 'owner'=>$this->object_owner], new zids($this->object_id)]);
+            //$contents = AA_Object::getContent(['class'=>$this->object_type], new zids($this->object_id));
             $content = $contents[$this->object_id];
         }
         $content->setAaValue('aa_type', new AA_Value($this->object_type));
@@ -416,7 +421,7 @@ class AA_Form extends AA_Object implements \AA\Util\NamedInterface {
         $grabber = new ObjectForm();
         $grabber->prepare();    // maybe some initialization in grabber
         // we expect just one form - no need to loop through contents
-        $content    = $grabber->getContent();
+        $content    = $grabber->getItem();
         // while ($content = $grabber->getContent())
         // $store_mode = $grabber->getStoreMode();        // add | update | insert
         $grabber->finish();    // maybe some finalization in grabber
@@ -433,6 +438,13 @@ class AA_Form extends AA_Object implements \AA\Util\NamedInterface {
             $object->addRow( new AA_Formrow_Field($field, $oowner));   // use default widget for the field (@todo - make possible to change the widget)
         }
         return $object;
+    }
+
+    /**
+     * @return string
+     */
+    public function getObjectOwner(): string {
+        return $this->object_owner;
     }
 
     /** AA_iEditable method - adds Object's editable properties to the $form */

@@ -153,10 +153,6 @@ spl_autoload_register(function ($class_name) {
         case 'array':
             require_once __DIR__ . '/table.class.php';
             return;
-        case 'manageraction':
-        case 'manageractions':
-            require_once __DIR__ . '/manager.class.php';
-            return;
         case 'validate':
             require_once __DIR__ . '/validate.php';
             return;

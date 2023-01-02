@@ -27,6 +27,7 @@
 
 
 use AA\IO\Grabber\Form;
+use AA\Manager;
 
 require_once __DIR__ . "/menu_util.php";
 
@@ -99,7 +100,7 @@ class AA_Adminpageutil {
     /**
      * @param string $class
      */
-    public function printWithManager(AA_Manager $manager) {
+    public function printWithManager(Manager $manager) {
         $manager->performActions();
 
         //$zids = $manager->getZids();
@@ -468,13 +469,13 @@ class AA_Adminpage_Table extends AA_Adminpage {
     protected function doLoad() {
         $this->record = [];
         if ($this->module_id) {
-            $content = AA_Metabase::getContent(['table' => static::DB_TABLE], new zids($this->module_id, 'l'));
+            $content = AA_Metabase::getContent(new zids($this->module_id, 'l'), ['table' => static::DB_TABLE]);
             if ($content4id = $content[$this->module_id]) {
                 // filter only used columns
                 $cols = static::getTableColumns();
 
                 foreach ($cols as $name) {
-                    $this->record[$name] = $content4id[$name][0]['value'];
+                    $this->record[$name] = $content4id->getValue($name);
                 }
             }
         }

@@ -2,7 +2,7 @@ if (!window.aa$)  { var aa$  = document.querySelector.bind(document);     }
 if (!window.aa$$) { var aa$$ = document.querySelectorAll.bind(document);  }
 if (!window.aa$N) { var aa$N = function (n) { let ret; return (ret = document.getElementsByName(n)) ? ret[0] : null; } }
 
-// Scripts used in manager.class.php
+// Scripts used in Manager.php
 // - following global javascript variables should be set before calling
 //   AA_Config structure - see javascript/aajslib.php
 
@@ -13,7 +13,7 @@ function MarkedActionGo() {
 
     if( ms.value && (ms.value != 'nothing') ) {
         document.itemsform.akce.value = ms.value
-        // markedactionur is global variable defined in manager.class.php
+        // markedactionur is global variable defined in Manager.php
         if( markedactionurl[ms.selectedIndex] != null ) {
             var iftarget = document.itemsform.target;
             var ifaction = document.itemsform.action;
@@ -34,7 +34,7 @@ function MarkedActionGo() {
 //  Fills 'akce' hidden field and submits the form or opens popup window
 // @todo get rid of prototype.js in this function, so manager.js do not need it
 function MarkedActionSelect(sb) {
-    // markedactionsetting is global variable defined in manager.class.php
+    // markedactionsetting is global variable defined in Manager.php
     // which contain serialized state of the AA object, which should be
     // instatnionated in AA and asked for displaying htmlSetting of the action
     if( sb.value && (sb.value != 'nothing') && (markedactionsetting[sb.selectedIndex] != null) ) {

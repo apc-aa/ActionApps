@@ -22,7 +22,7 @@ https://www.apc.org/
 
 require_once __DIR__."/include/init_central.php";
 require_once __DIR__ . "/../include/formutil.php";
-
+require_once __DIR__ . "/include/actionapps.class.php";
 
 pageOpen();
 

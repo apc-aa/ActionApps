@@ -28,6 +28,9 @@
 */
 
 use AA\IO\DB\DB_AA;
+use AA\Manager;
+use AA\Manageraction\AbstractManageraction;
+use AA\Manageraction\Manageractions;
 use AA\Util\AbstractAliasgenerator;
 
 const AA_REGISTER_GLOBALS = true;
@@ -51,7 +54,7 @@ if (!IfSlPerm(PS_HISTORY)) {
 /**
  *
  */
-class AA_Manageraction_History_Apply extends AA_Manageraction {
+class Manageraction_History_Apply extends AbstractManageraction {
 
     /** Name of this Manager's action */
     function getName() {
@@ -59,7 +62,7 @@ class AA_Manageraction_History_Apply extends AA_Manageraction {
     }
 
     /** @inheritDoc */
-    function perform(AA_Manager $manager, zids $item_zids, $action_param) {
+    function perform(Manager $manager, zids $item_zids, $action_param) {
 
         if ( !IfSlPerm(PS_EDIT) ) {    // permission to delete items?
             /** @todo Should be changed to different permission */
@@ -101,7 +104,7 @@ class AA_Manageraction_History_Apply extends AA_Manageraction {
     }
 
     /** Checks if the user have enough permission to perform the action
-     * @param AA_Manager $manager
+     * @param \AA\Manager $manager
      * @return bool|string
      */
     function isPerm4Action($manager) {
@@ -210,8 +213,8 @@ function QueryHistoryZIDs(AA_Set $set): zids {
 }
 
 
-$actions   = new AA_Manageractions;
-$actions->addAction(new AA_Manageraction_History_Apply('ApplyHistory'));
+$actions   = new Manageractions;
+$actions->addAction(new Manageraction_History_Apply('ApplyHistory'));
 
 $manager_settings = [
      'module_id' => AA::$module_id,
@@ -259,7 +262,7 @@ $manager_settings = [
 
 $apage = new AA_Adminpageutil('sliceadmin', 'history');
 $apage->setTitle(_m('ActionApps - History Manager'));
-$apage->printWithManager(new AA_Manager('history'. AA::$module_id, $manager_settings));
+$apage->printWithManager(new Manager('history'. AA::$module_id, (new \AA\Managed())->setSettings($manager_settings)));
 
 
 

@@ -82,16 +82,11 @@ function xml_serialize($k, $v, $i, $ii, $a=null) {
     }
 }
 
-// A class to unserialize from XML to a PHP structure,
-/** xml_unserialize function
- * @param $xml_data
- * @return null|string
+//
+/** A class to unserialize from XML to a PHP structure,
+ *  Note this matches the xml_serializer above,
+ * @usage $data = (new xml_unserializer())->parse($xml_data);
  */
-function xml_unserialize($xml_data) {
-    $x = new xml_unserializer();
-    return $x->parse($xml_data);
-}
-// Note this matches the xml_serializer above,
 class xml_unserializer {
     var $stack;          // stack of items above oen being worked on
     var $chardata;          // Current string of CDATA
@@ -257,4 +252,3 @@ class xml_unserializer {
 }*/
 
 //test_xmlserializer();
-
