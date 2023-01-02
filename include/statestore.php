@@ -1016,7 +1016,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
     }
 
     /** AA_iEditable method - adds Object's editable properties to the $form */
-    public static function addFormrows($form) {
+    public static function addFormrows(AA_Form $form): void {
 
 //        $form->addRow(new AA_Formrow_Defaultwidget(AA_Object::getPropertyObject('aa_name')));  // use default widget for the field
         if (static::USES_NAME) {
@@ -1028,7 +1028,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
         foreach ($props as $name => $property) {
             $property->addPropertyFormrows($form);
         }
-        return $form;
+        // return $form;  // it is void method, for now
     }
 }
 
@@ -1071,7 +1071,7 @@ class AA_Aliasgenerator_Object extends AbstractAliasgenerator {
 /** With this interface the object can be edited by AA_Form */
 interface AA_iEditable {
     /** AA_iEditable method - adds Object's editable properties to the $form */
-    public static function addFormrows($form);
+    public static function addFormrows(AA_Form $form): void;
     /** AA_iEditable method - creates Object from the form data */
     public static function factoryFromForm($oowner, $otype=null);
     /** AA_iEditable method - save the object to the database

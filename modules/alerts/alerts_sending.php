@@ -408,6 +408,21 @@ class AA_Collection {
         }
         return $user_text;
     }
+
+    /** get_email_types function
+     *  List of email types with translated description.
+     *  You should never list email types directly, always call this function.
+     */
+    public static function get_email_types() {
+        return [
+            "alerts alert"         => _m("alerts alert"),
+            "alerts welcome"       => _m("alerts welcome"),
+            "slice wizard welcome" => _m("slice wizard welcome"),
+            "user template"        => _m("user template"),
+            "password change"      => _m("password change"),
+            "other"                => _m("other")
+        ];
+    }
 }
 
 // -------------------------------------------------------------------------------------

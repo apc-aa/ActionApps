@@ -394,7 +394,7 @@ class AA_Adminpage implements AA_iEditable {
     }
 
     /** AA_iEditable method - adds Object's editable properties to the $form */
-    public static function addFormrows($form) {}
+    public static function addFormrows(AA_Form $form): void {}
     /** AA_iEditable method - creates Object from the form data */
     public static function factoryFromForm($oowner, $otype=null) {}
     /** AA_iEditable method - save the object to the database
@@ -421,13 +421,13 @@ class AA_Adminpage_Table extends AA_Adminpage {
     public static function getTableColumns() { return []; }
 
     /** AA_iEditable method - adds Object's editable properties to the $form */
-    public static function addFormrows($form) {
-        return $form->addProperties(static::getClassProperties());
+    public static function addFormrows(AA_Form $form): void {
+        $form->addProperties(static::getClassProperties());
     }
 
     // needed by /data/www/aaa/include/form.class.php(339): AA_Object->getContent(Array, Object(zids))
     public static function getClassProperties()  {
-        $props = AA_MetabaseTableEdit::defaultGetClassProperties(static::DB_TABLE);
+        $props = AA::Metabase()->getColumnProperties(static::DB_TABLE);
         if (count($cols = static::getTableColumns())) {
             // restrict table columns
             $props = array_intersect_key($props, array_flip($cols));

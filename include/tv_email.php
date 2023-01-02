@@ -31,21 +31,6 @@
 require_once __DIR__ . "/../modules/alerts/util.php";
 
 
-/** get_email_types function
- *  List of email types with translated description.
- *  You should never list email types directly, always call this function.
- */
-function get_email_types() {
-    return [
-        "alerts alert"         => _m("alerts alert"),
-        "alerts welcome"       => _m("alerts welcome"),
-        "slice wizard welcome" => _m("slice wizard welcome"),
-        "user template"        => _m("user template"),
-        "password change"      => _m("password change"),
-        "other"                => _m("other")
-    ];
-}
-
 /** ShowRefreshWizardJavaScript function
  *  Shows JavaScript which updates the Wizard frame, if it exists.
  */
@@ -150,7 +135,7 @@ function GetEmailTableView($viewID) {
             "type" => [
                 "required" => true,
                 "caption" => _m("Email type"),
-                "view" => ["type"=>"select","source"=>get_email_types()]
+                "view" => ["type"=>"select","source"=> AA_Collection::get_email_types()]
             ],
             "subject" => [
                 "required" => true,

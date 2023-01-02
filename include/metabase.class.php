@@ -234,7 +234,7 @@ class AA_MbC {
         // $id,       $name,     $type, $multi, $persistent, $validator, $required, $input_help, $input_morehlp='', $example='', $show_content_type_switch=0, $content_type_switch_default=, $perms=null, $default=null) {
         $validator = ($len = $this->getMaxLength()) ? [$type,['maxlength'=>$len]] : $type;
         $required  = false; //  !($this->c[2]) - nonsense
-        return  new AA_Property( $this->c[0], $this->c[0], $type, false,  true, $validator, $required, $this->c[6]);
+        return  new AA_Property( $this->c[0], _mdelayed($this->c[0]), $type, false,  true, $validator, $required, $this->c[6]);
     }
 
     function getCreateSql() {
@@ -1246,8 +1246,11 @@ class AA_Metabase {
         return (is_object($table = $this->tables[$tablename]) AND is_object($column = $table[$columnname])) ? $column->getAsProperty() : null;
     }
 
-    /** AA_Propery array - for form generation */
-    function getColumnProperties($tablename) {
+    /** AA_Propery array - for form generation
+     * @param $tablename
+     * @return AA_Property[]
+     */
+    function getColumnProperties($tablename): array {
         $table = $this->tables[$tablename];
         $ret   = [];
         foreach ($table as $column) { // in priority order
@@ -1329,29 +1332,11 @@ class AA_Metabase {
         return (new \AA\Managed_Table($tablename))->setSettings($manager_settings)->setColumns($columns);
     }
 
-    /** AA_iEditable method - adds Object's editable properties to the $form */
-    public static function addFormrows(AA_Form $form) {
-        $table = $form->getObjectOwner();
-        return $form->addProperties(AA_MetabaseTableEdit::defaultGetClassProperties($table));
-    }
+//    /** AA_iEditable method - adds Object's editable properties to the $form */
+//    public static function addFormrows(AA_Form $form) {
+//        $table = $form->getObjectOwner();
+//        return $form->addProperties(AA::Metabase()->getColumnProperties($table));
+//    }
 
-}
-
-class AA_MetabaseTableEdit {
-
-    /** helps other classes to implement AA_iEditable method addFormrow - adds Object's editable properties to the $form */
-    // public static function defaultAddFormrows($tablename, $form) {
-    //     return $form->addProperties(static::getClassProperties());
-    // }
-
-    /** helps other classes to implement AA_iEditable method addFormrow - adds Object's editable properties to the $form */
-    public static function defaultGetClassProperties($tablename) {
-        return AA::Metabase()->getColumnProperties($tablename);
-    }
-
-    /** helps other classes to implement AA_iEditable method factoryFromForm - creates Object from the form data */
-    //public static function defaultFactoryFromForm($tablename, $oowner, $otype=null) {}
-    /** helps other classes to implement AA_iEditable method save - save the object to the database */
-    //public        function defaultSave($tablename) {}
 }
 

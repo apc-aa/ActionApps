@@ -194,6 +194,8 @@ class AA_Property extends AA_Storable {
     function setHelp($val)     { $this->input_help = (string)$val; return $this; }
     function setExample($val)  { $this->example    =         $val; return $this; }
 
+    public function setValidator($validator)  { $this->_validator = $validator; }   // we do not create AA_Validator object here, because then it makes infinite loop - AA_Property contains validator...        $val; return $this; }
+
     /** set the Values array and also the validator */
     function setConstants($arr) {
         $this->const_arr = (array) $arr;
@@ -201,7 +203,7 @@ class AA_Property extends AA_Storable {
     }
 
     /** called before StoreItem to fill the field with correct data
-     * @param AA_Content $context_content   // we apss here whole AA_Content in order we know the context - Item_id (for Unique, ...)
+     * @param AA_Content $context_content   // we pass here whole AA_Content in order we know the context - Item_id (for Unique, ...)
      * @param AA_Profile $profile
      * @return mixed|null
      */
@@ -243,18 +245,18 @@ class AA_Property extends AA_Storable {
     /** returns default widget for given property - it tries to identify,
      *  if it is multiple, uses constants, is bool, ...
      * @param $form AA_Form
-     * @return mixed|void
      * @throws Exception
      */
-    function addPropertyFormrows($form) {
-        if ($this->isObject()) {
+    function addPropertyFormrows(AA_Form $form): void {
+        if ($this->isObject()) {  // not string, int, bool...
             if (is_callable([$this->type, 'addFormrows'])) {
-                return call_user_func_array([$this->type, 'addFormrows'], [$form]);
+                call_user_func_array([$this->type, 'addFormrows'], [$form]);
+                return;
             }
             throw new Exception('Can\'t generate widget for '.$this->type.' object property');
         }
 
-        return $form->addRow(new AA_Formrow_Full($this, $this->defaultWidget()));
+        $form->addRow(new AA_Formrow_Full($this, $this->defaultWidget()));
     }
 
     function defaultWidget() {

@@ -43,7 +43,6 @@ use AA_Condition;
 use AA_Content;
 use AA_Form;
 use AA_Metabase;
-use AA_MetabaseTableEdit;
 use AA_Object;
 use AA_Profile;
 use AA_Property;
@@ -64,6 +63,8 @@ class Managed {
     protected $url          = '';
     protected $columns      = [];
     protected $columns2show = [];
+
+    protected $widget_setting = [];
 
     /** Create Managed object based on the specific (unique) string submitted by form...
      *  necessary for Edit and Add
@@ -208,6 +209,14 @@ class Managed {
     {
         $this->columns2show = $columns2show;
     }
+
+    /**
+     * @param string $id
+     * @param array  $setting  ['type'=>bool|enum|string, 'enum'=>['x','y']]
+     */
+    public function setWidgetSetting(string $id, array $setting): void {
+        $this->widget_setting[$id] = $setting;
+    }
 }
 
 class Managed_Object extends Managed {
@@ -263,7 +272,20 @@ class Managed_Table extends Managed {
 
     /** @inheritDoc */
     public function getForm(?string $id, ?string $module_id): ?AA_Form {
-        $form = (new AA_Form())->addProperties(AA_MetabaseTableEdit::defaultGetClassProperties($this->table));
+        $props = AA::Metabase()->getColumnProperties($this->table);
+        foreach ($props as $k => $prop) {
+            if ($this->widget_setting[$k]) {
+                if (isset($this->widget_setting[$k]['type'])) {
+                    $prop->type = $this->widget_setting[$k]['type'];
+                }
+                if (isset($this->widget_setting[$k]['enum'])) {
+                    $prop->setConstants($this->widget_setting[$k]['enum']);
+                    $prop->required = true;
+                }
+                // $props['html']->setHelp('xxx');
+            }
+        }
+        $form = (new AA_Form())->addProperties($props);
         $form->setObject($this->getType(), $id, $module_id);  //$module_id not used here
         return $form;
     }

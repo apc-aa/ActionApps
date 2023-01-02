@@ -57,12 +57,12 @@ class AA_Mailtemplate implements AA_iEditable {
     public function getProperty($property_id, $default=null) { return $this->record[$property_id]; }
 
         /** AA_iEditable method - adds Object's editable properties to the $form */
-    public static function addFormrows($form) {
-        return $form->addProperties(static::getClassProperties());
+    public static function addFormrows(AA_Form $form): void {
+        $form->addProperties(static::getClassProperties());
     }
 
     public static function getClassProperties()  {
-        return AA_MetabaseTableEdit::defaultGetClassProperties('email');
+        return AA::Metabase()->getColumnProperties('email');
     }
 
     public static function load($id, $type=null) {

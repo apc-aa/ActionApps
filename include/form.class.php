@@ -267,25 +267,20 @@ class AA_Form extends AA_Object implements \AA\Util\NamedInterface {
         return '';
     }
 
-    // add default property's row(s)
-    function addProperty($prop) {
-        $prop->addPropertyFormrows($this);
-    }
-
-    // add default property's row(s) for all props in array
-    function addProperties(array $props) {
+    /** add default property's row(s) for all props in array
+     * @param AA_Property[] $props
+     * @return $this
+     * @throws Exception
+     */
+    function addProperties(array $props): self {
         foreach ($props as $prop ) {
             $prop->addPropertyFormrows($this);
         }
         return $this;
     }
 
-    function addRow($row) {
+    function addRow(AA_Formrow $row) {
         $this->rows[] = $row;
-    }
-
-    function addRows($rows) {
-        $this->rows = array_merge($this->rows,$rows);
     }
 
     function setObject($otype, $oid, $oowner) {
@@ -399,8 +394,6 @@ class AA_Form extends AA_Object implements \AA\Util\NamedInterface {
      * @throws Exception
      */
     private function _getContent() {
-        huhl('eee', $this);
-
         if (empty($this->object_id)) {
             $content = new AA_Content();
             $content->setOwnerId($this->object_owner);

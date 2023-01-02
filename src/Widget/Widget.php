@@ -582,7 +582,7 @@ class Widget extends AA_Object implements NamedInterface {
 
     /** propertiesShop - repository of all used properties of Widgets
      *  usage:  return AA\Widget\Widget::propertiesShop(array('rows','max_characters'));
-     *  most of widgets uses this shop (to coordinate labels and helps), but there is no problem, if you use your own properties in widget, however
+     *  most of the widgets uses this shop (to coordinate labels and helps), but there is no problem, if you use your own properties in widget, however
      */
     public static function propertiesShop($props = []): array {
         $ret = [];

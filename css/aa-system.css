@@ -492,8 +492,7 @@ i.ico.aa-tool-edit:hover {
 }
 
 /*aa-tools - end---------------------------*/
-
-.CodeMirror { height:auto; min-height: 100px; font-size: 12px;}
+.CodeMirror { height:auto; min-height: 42px; font-size: 12px;}
 .CodeMirror-scroll { height: auto; overflow-y: hidden !important; overflow-x: auto !important; }
 .CodeMirror div[contenteditable] { color: inherit; }
 
