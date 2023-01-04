@@ -3789,7 +3789,7 @@ class AA_Stringexpand_Seo2ids extends AA_Stringexpand {
  *  returns about-us
  *  If you specify the unique_slices parameter, then the id is created as unique
  *  for those slices. Slices are separated by dash
- *  Encoding parameter helps convert the name to acsii. You shoud write here
+ *  Encoding parameter helps convert the name to ASCII. You should write here
  *  the character encoding from the slice setting. The default is utf-8, but you
  *  can use any (windows-1250, iso-8859-2, iso-8859-1, ...)
  */
@@ -7031,7 +7031,7 @@ class AA_Stringexpand_Str_replace extends AA_Stringexpand_Nevercachenotrim {
      */
     function expand($search='', $replace='', $text='') {
         $search  = json2arr($search,true);
-        $replace =  ($replace[0] == '[') ? json2arr($replace,true) : $replace; // the replace could be string (which then replaces all the occurrences of $searches)
+        $replace =  ($replace[0] == '[') ? json2arr($replace,true) : $replace; // the replacement could be string (which then replaces all the occurrences of $searches)
         return str_replace($search, $replace, $text);
     }
 }

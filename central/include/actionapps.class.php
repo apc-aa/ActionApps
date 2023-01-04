@@ -177,7 +177,7 @@ class AA_Actionapps {
      */
     function doOptimize($optimize_class, $optimize_method) {
         $response = $this->getResponse( new AA_Request('Do_Optimize', ['class'=>$optimize_class, 'method'=>$optimize_method]) );
-        return ($response->isError()) ? $response->getError() : $response->getResponse();
+        return ($response->isError()) ? $response->getError().' '.$response->getResponse() : $response->getResponse();
     }
 
     /** Imports slice to the current AA. The id of slice is the same as in
