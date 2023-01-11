@@ -61,18 +61,11 @@ function EmptyTrashQuestion(url, question) {
 }
 
 
-// Selects/deselect all item chckboxes on the page
+// Selects/deselect all item checkboxes on the page
 function SelectVis() {
-    var len = document.itemsform.elements.length
-    state = 2
-    for( var i=0; i<len; i++ ) {
-        if( document.itemsform.elements[i].name.substring(0,3) == 'chb') { // checkboxes
-            if (state == 2) {
-                state = ! document.itemsform.elements[i].checked;
-            }
-            document.itemsform.elements[i].checked = state;
-        }
-    }
+    let sel   = 'form[name=itemsform] input[name=^chb]';
+    let state = !document.querySelector(sel).checked;
+    document.querySelectorAll(sel).forEach(el => { el.checked = state; } );
 }
 
 function GetItemsArrayString() {
