@@ -2302,6 +2302,81 @@ class AA_Stringexpand_Csv extends AA_Stringexpand_Nevercache {
     }
 }
 
+/** Escapes the XML special chars (>,<,&,",') which could be used in XML attribute as well as in text
+ */
+class AA_Stringexpand_Safexml extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+    /** expand function
+     * @param $text string - string in UTF-8 to escape
+     * @return string
+     */
+    function expand($text='') {
+        // @todo it probably should escape also vertical tab \xB ...
+        return htmlspecialchars($text, ENT_XML1 | ENT_QUOTES, 'UTF-8');
+    }
+}
+
+/**  */
+class AA_Stringexpand_Xmlfield extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+    /** expand function
+     * @param $text string - string in UTF-8 to escape
+     * @return string
+     */
+    function expand($tags='', $field='') {
+        $ret = '';
+
+        $item = $this ? $this->item : null;
+        if (is_object($item)) {
+            if ($slice = AA_Slice::getModule($item->getSliceID())) {
+                if ($field = $slice->getField($field)) {
+                    $field->getTranslations();
+                    $field->getFormatters();
+                    $field->getAaProperty()->isMulti();
+                    $item->getval();
+                    $translations = AA_Slice::getModuleProperty($this->getSliceID(),'translations');
+
+                    if ($this->isMultilingual($col)) {
+                        return $this->text2Html($this->getval($col), $this->getFlag($col));
+                    } else {
+                        $param = '-';
+                    }
+
+                }
+            }
+        }// AND $item->isField($field)) {
+
+
+
+        // first_child try translation to right language
+        if (!strlen($txt = $this->getval($col, AA_Langs::getLangName2Num(AA::$lang)))) {
+            // if not present - translate to default language of the slice
+            $translations = AA_Slice::getModuleProperty($this->getSliceID(),'translations');
+            if (!strlen($txt = $this->getval($col, AA_Langs::getLangName2Num($translations[0])))) {
+                // last try the 0 index (if the field was not set to translation)
+                $txt = $this->getval($col);
+            }
+        }
+        return $this->text2Html($txt, $this->getFlag($col));
+
+
+        // ($s = new AA_Slice)->getField()
+
+
+
+        // if ($this AND is_object($item) AND $item->isField($text)) ? $item->getval($text) : join(':', $params);
+
+
+        // $item->isField($field_id))
+
+        // @todo it probably should escape also vertical tab \xB ...
+        return htmlspecialchars($text, ENT_XML1 | ENT_QUOTES, 'UTF-8');
+    }
+}
+
+
 
 /** Escapes the HTML special chars (>,<,&,...) and also prevents to double_encode
  *  already encoded entities (like &amp;quote;) - as opposite to {htmlspecialchars}

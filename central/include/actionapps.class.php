@@ -274,9 +274,9 @@ class AA_Actionapps {
 
 class AA_Module_Definition {
     /** module id is unpacked */
-    var $module_id;
+    protected $module_id;
     /** data for the module */
-    var $data;
+    protected $data;
 
     function __construct() {
         $this->clear();

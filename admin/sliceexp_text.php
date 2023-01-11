@@ -200,9 +200,9 @@ class AA_Slice_Exporter {
         fwrite($temp_file, "<sliceexport version=\"1.1\">\n");
         fwrite($temp_file, "<comment>\nThis text contains exported slices definitions (and/or slices data). You may import them to any ActionApps.\n");
         if ($this->type != 'backup') {
-            fwrite($temp_file, "This text is exported slice data for use in another ActionApps instalation (new slice_id)\n");
+            fwrite($temp_file, "This text is exported slice data for use in another ActionApps installation (new slice_id)\n");
         } else {
-            fwrite($temp_file, "This text is backuped slice data with the same slice_id as is in the source slice\n");
+            fwrite($temp_file, "This text is backed up slice data with the same slice_id as is in the source slice\n");
         }
         if ($this->spec_date && $this->data) {
             fwrite($temp_file, "Exported data from ".$this->from_date." to ".$this->to_date."\n");

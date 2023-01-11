@@ -107,8 +107,9 @@ $VIEW_TYPES = getViewTypes();
 
 $view_types_ifeq = array_reduce( array_keys($VIEW_TYPES), function ($str, $key) use ($VIEW_TYPES) { return "$str:$key:".str_replace(':','#:',$VIEW_TYPES[$key]['name']); });
 
-$manager_settings = AA::Metabase()->getManagerConf('view', $actions);
-$manager_settings['itemview']['format']['compact_top'] = '
+$managed = AA::Metabase()->getManagerConf('view', $actions);
+$managed->setColumns([]); // reset columns - use format strings bellow
+$managed->settings['itemview']['format']['compact_top'] = '
                                         <div class="aa-table">
                                           <table border="0" cellpadding="5" cellspacing="0">
                                             <tbody><tr>
@@ -118,7 +119,7 @@ $manager_settings['itemview']['format']['compact_top'] = '
                                               <th>'._m('Name').'</th>
                                               <th>'._m('Type').'</th>
                                             </tr>';
-$manager_settings['itemview']['format']['odd_row_format'] = '
+$managed->settings['itemview']['format']['odd_row_format'] = '
                                       <tr><td width="30"><input name="chb[x_#ID______]" value="" type="checkbox"></td>
                                         <td>
                                           <a href="se_view.php?module_id=_#SLICE_ID&view_id=_#ID______" class="aa-button-edit">' . _m('Edit') .'</a>
@@ -130,12 +131,13 @@ $manager_settings['itemview']['format']['odd_row_format'] = '
                                         <td>_#NAME____</td>
                                         <td>{ifeq:{_#TYPE____}' . $view_types_ifeq.'}</td>
                                     </tr>';                      // <td>_#OBJECT__</td><td>_#EXECUTE_</td>
+$managed->settings['itemview']['format']['compact_bottom'] = '</table></div>';
 
-$manager_settings['show'] = MGR_ALL & ~MGR_SB_BOOKMARKS & ~MGR_SB_SEARCHROWS & ~MGR_SB_ORDERROWS;    // MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS | MGR_SB_ALLTEXT | MGR_SB_ALLNUM
-$manager_settings['searchbar']['default_sort'] =  [0 => ['id' => 'd']];
-$manager_settings['actions'] =  $actions;
+$managed->settings['show'] = MGR_ALL & ~MGR_SB_BOOKMARKS & ~MGR_SB_SEARCHROWS & ~MGR_SB_ORDERROWS;    // MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS | MGR_SB_ALLTEXT | MGR_SB_ALLNUM
+$managed->settings['searchbar']['default_sort'] =  [0 => ['id' => 'd']];
+$managed->settings['actions'] =  $actions;
 
-$manager = new Manager('views', (new \AA\Managed())->setSettings($manager_settings));
+$manager = new Manager('views', $managed);
 $manager->performActions();
 
 $aa_set  = $manager->getSet();

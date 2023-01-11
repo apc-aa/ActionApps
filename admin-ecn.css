@@ -1,3 +1,6 @@
+html {
+    font-size: 16px;
+}
 td.scroller {background: #a0a0a0;}
 
 .scrhead {
@@ -6,8 +9,9 @@ td.scroller {background: #a0a0a0;}
   color: #4A4A4A;
 }
 
-body { margin: 0;
-       background: #F5F0E7;
+body {
+       margin: 0;
+       background: #f5f0e7;
        font-family: Verdana, Arial, Helvetica, sans-serif;
        font-size: 0.8125rem;
 }
@@ -44,9 +48,15 @@ textarea {
   width: 100%;
  }
 
-input, select {
-  font-family: Verdana, Arial, Helvetica, sans-serif;
-  font-size: 0.6875rem;
+input[type="text"], select {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 0.6875rem;
+     border: 1px solid #BAB4AB;
+     margin: 2px;
+     padding: 2px 3px;
+}
+select {
+     padding: 1px 3px;
 }
 
 select:empty {
@@ -395,8 +405,8 @@ tr.leftmenuy a {
      text-decoration: none;
      font-size: 11px;
      background-color: #F2E4CB;
-     padding: 1px 7px;
-     box-shadow: 0 0 1px;
+     padding: 2px 7px;
+     border: solid 1px rgb(108 26 26 / 30%);
      border-radius: 5px;
      display: inline-block;
      color: #61454A;
@@ -603,52 +613,57 @@ input.cancel-button {
 
 /* -- common -- */
 .aa-table table {
-    border: 1px solid #86682D;
-    box-shadow: inset 0 0 16px #96805D;
     color: #000;
-    padding: 15px;
     border-collapse: collapse;
 }
 .aa-table th {
     text-align: left;
     padding: 7px 10px 4px;
-    font-size: 0.9em;
+    font-size: 0.6875rem;
     background-color: #A8977A;
     color: #FFF;
-    text-shadow: 1px 1px 1px #464545;
     font-weight: normal;
 }
+.aa-table table tr:nth-of-type(odd) {
+    background-color: rgb(255 255 255 / 30%);
+}
+.aa-table table tr:nth-of-type(even) {
+    background-color: rgb(0 0 0 / 0.05);
+}
+
 .aa-table td {
-    border-top: 1px solid #BEB29F;
-    padding: 5px 10px;
-    font-size: 0.85em;
+    padding: 10px 10px;
+    font-size: 0.71rem;
 }
 .aa-table tr:hover {
     background-color: #F0E8DC;
 }
 .aa-table-foot td {text-align: center;}
 [class^="aa-button"] {
-    box-shadow: #000 0 0 3px;
-    padding: 1px 8px 2px;
-    display: inline-block;
-    border-radius: 7px;
-    background-color: #FFF;
+    border: solid 1px rgb(26 4 4 / 30%);
     text-decoration: none;
-    color: #812A0F;
+    font-size: 0.6875rem;
+    background-color: #F2E4CB;
+    padding: 2px 7px;
+    border-radius: 5px;
+    display: inline-block;
+    color: #61454A;
+    height: 15px;
 }
 [class^="aa-button"]:hover {
-    background-color: #FAF2D9;
-    color: #494949;
-    box-shadow: 0 0 6px #000;
+    box-shadow: 0 0 6px rgb(0 0 0 / 23%);
 }
 [class^="aa-button-"] {
     padding-left: 18px;
 }
+.aa-table [class^="aa-button"] {
+    background-color: #fff;
+}
 .aa-button-edit {
-    background: #FFF url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAYAAABWdVznAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAKdJREFUeNpi/P//PwMMtGfqMWABPEA8B4ibgPgaEwNhUA3E4UB8CYhbCGmQBuJ8KJsZiJ8S0tAFxJxQ9gUgnoVPgw0QRyHxc4H4Ly4NIOsnI/G3AvEREAOXBn4gvg9l/wLiApgECxbFbEAsB8RBQGwPxFpAfAcmic0GFSA+D8TTgPgyEE9HlsSlAQS8kdgM+JykDsTHoU56gS6JzYazQOyATTEIAAQYAH+NG5PbUXGeAAAAAElFTkSuQmCC) no-repeat 2px center;
+    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAYAAABWdVznAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAKdJREFUeNpi/P//PwMMtGfqMWABPEA8B4ibgPgaEwNhUA3E4UB8CYhbCGmQBuJ8KJsZiJ8S0tAFxJxQ9gUgnoVPgw0QRyHxc4H4Ly4NIOsnI/G3AvEREAOXBn4gvg9l/wLiApgECxbFbEAsB8RBQGwPxFpAfAcmic0GFSA+D8TTgPgyEE9HlsSlAQS8kdgM+JykDsTHoU56gS6JzYazQOyATTEIAAQYAH+NG5PbUXGeAAAAAElFTkSuQmCC) no-repeat 2px center;
 }
 .aa-button-delete {
-    background: #FFF url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAYAAADgkQYQAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAJpJREFUeNpibLPSdWJgYGgB4gggfsSAAJZA3AXEKSxAYhEQSwPxYSC2hSoEKdgOxPxAPJkJasIXIJaDKowC4l1QBU+BOAuk6AgQeyIpXArEPFATQSbfYYLaD1JYyYAK4oD4PojBhOTIdjRFi6AmgxXBHAmzIhrNjXIg361AcqQD1IpHUI0ghTNBJqUA8VkkBQxInrkAxMUAAQYA8e4jlr/c7HIAAAAASUVORK5CYII=) no-repeat 5px center;
+    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAYAAADgkQYQAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAJpJREFUeNpibLPSdWJgYGgB4gggfsSAAJZA3AXEKSxAYhEQSwPxYSC2hSoEKdgOxPxAPJkJasIXIJaDKowC4l1QBU+BOAuk6AgQeyIpXArEPFATQSbfYYLaD1JYyYAK4oD4PojBhOTIdjRFi6AmgxXBHAmzIhrNjXIg361AcqQD1IpHUI0ghTNBJqUA8VkkBQxInrkAxMUAAQYA8e4jlr/c7HIAAAAASUVORK5CYII=) no-repeat 5px center;
 }
 
 /* message-boxes css */

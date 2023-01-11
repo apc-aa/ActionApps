@@ -310,6 +310,20 @@ class AA_Field implements ArrayAccess {
         return ($this->data['multiple'] & 2) ? AA_Slice::getModule($this->getSliceId())->getTranslations() : [];
     }
 
+    /**
+     *  @return int bitfield of all shown formatters set for this field
+     */
+    function getFormatters(): int {
+        return ($this->getProperty('html_show') ? AA_Formatters::STANDARD_FORMATTERS : 0);
+    }
+
+    /**
+     *  @return bool if the field is multivalue (not multilingual - it is independent)
+     */
+    function isMultiple(): bool {
+        return $this->getWidget()::multiple();
+    }
+
     /** getAaProperty function
      * @param array $widget_properties ['multiple'=> , 'required'=> , 'name'=> , 'input_help'=> , 'html_show' => , 'html_default' => ]
      * @return AA_Property
@@ -328,20 +342,22 @@ class AA_Field implements ArrayAccess {
             $this->getId(),
             $widget_properties['name'] ?? $this->getName(),
             $this->getProperty('in_item_tbl') ? AA::Metabase()->getFieldType('item',$this->getProperty('in_item_tbl')) : ($this->getProperty('text_stored') ? 'text' : 'int'),
-            $widget_properties['multiple'] ?? $this->getWidget()::multiple(),
+            $widget_properties['multiple'] ?? $this->isMultiple(),
             false,                   // persistent @todo
             AA_Validate::factoryByString($validator_string), // null,
             isset($widget_properties['required']) ? (bool)$widget_properties['required'] : $this->required(),
             $widget_properties['input_help'] ?? $this->getProperty('input_help'),
             $widget_properties['input_morehlp'] ?? $this->getProperty('input_morehlp'),
             null,               // $example;
-            isset($widget_properties['show_formatters']) ? (int)$widget_properties['show_formatters'] : ($this->getProperty('html_show') ? AA_Formatters::STANDARD_FORMATTERS : 0),
+            isset($widget_properties['show_formatters']) ? (int)$widget_properties['show_formatters'] : $this->getFormatters(),
             isset($widget_properties['default_formatter']) ? (int)$widget_properties['default_formatter'] : $this->getDefaultFormatterFlag(),
             null,               // perms
             $widget_properties['default'] ?? $this->getDefault(),
             $translations
         );
     }
+
+
 
     /** getWidgetAjaxHtml function
      * @param $item_id

@@ -566,7 +566,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
         //    - get used tables from properties,
         //    - load object from database in one step using aa_subobjects property of the objects
 
-        if ( !$type AND !($type = self::loadProperty($id, 'aa_type')) ) {
+        if ( (!$type AND !($type = self::loadProperty($id, 'aa_type'))) OR !class_exists($type)) {
             return null;
         }
 
