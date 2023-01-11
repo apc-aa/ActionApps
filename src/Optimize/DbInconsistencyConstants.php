@@ -75,7 +75,15 @@ class DbInconsistencyConstants extends AbstractOptimize {
 
         foreach ($non_ascii as $grp) {
             $this->message(['problem'=>_m('Non ASCII chars in group_id'),
-                            'group'=> a_href(get_admin_url('aafinder.php', ['search'=>$grp, 'searchinview'=>1,'searchinslice'=>1,'searchinfield'=>1,'searchinspot'=>1,'searchinobject'=>1,'go_search'=>1]),$grp),
+                            'group'=> a_href(get_admin_url('aafinder.php', [
+                                'search'         => $grp,
+                                'searchinview'   => 1,
+                                'searchinslice'  => 1,
+                                'searchinfield'  => 1,
+                                'searchinspot'   => 1,
+                                'searchinobject' => 1,
+                                'go_search'      => 1
+                            ]), $grp),
                             'values'=>join(', ', DB_AA::select('c', "SELECT CONCAT(`name`,'->',`value`) as c FROM `constant`", [['group_id',$grp]]))]);
             $ret = false;
         }
@@ -85,7 +93,15 @@ class DbInconsistencyConstants extends AbstractOptimize {
 
         foreach ($not_used as $grp) {
             $this->message(['problem'=>_m('Not used constant group'),
-                            'group'=> a_href(get_admin_url('aafinder.php', ['search'=>$grp, 'searchinview'=>1,'searchinslice'=>1,'searchinfield'=>1,'searchinspot'=>1,'searchinobject'=>1,'go_search'=>1]),$grp),
+                            'group'=> a_href(get_admin_url('aafinder.php', [
+                                'search'         => $grp,
+                                'searchinview'   => 1,
+                                'searchinslice'  => 1,
+                                'searchinfield'  => 1,
+                                'searchinspot'   => 1,
+                                'searchinobject' => 1,
+                                'go_search'      => 1
+                            ]), $grp),
                             'values'=>join(', ', DB_AA::select('c', "SELECT CONCAT(`name`,'->',`value`) as c FROM `constant`", [['group_id',$grp]]))]);
             $ret = false;
         }

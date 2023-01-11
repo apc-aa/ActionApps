@@ -26,14 +26,34 @@
 // expected $uid - user id we have to edit profile for
 
 use AA\IO\DB\DB_AA;
+use AA\Util\InputVars;
 
-const AA_REGISTER_GLOBALS = true;
+// const AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/varset.php";
 
 require_once __DIR__ . "/../include/profile.php";
 require_once __DIR__ . "/../include/constants_param_wizard.php";
+
+try {
+    $uid        = InputVars::stringGET('uid');
+    $add        = InputVars::boolGET('add');
+    $del        = InputVars::boolGET('del');
+    $set_as     = InputVars::boolGET('set_as');
+    $set_as_uid = InputVars::stringGET('set_as_uid');
+    $property   = InputVars::stringGET('property');
+    $param      = InputVars::stringGET('param');
+    $field_id   = InputVars::stringGET('field_id');
+    $fnction    = InputVars::stringGET('fnction');
+    $html       = InputVars::boolGET('html');
+
+    // array ( 2 => 1, )
+    $uid = InputVars::intGET('uid', true);
+    $cancel = InputVars::boolPOST('cancel');
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
 
 if ($cancel) {
     go_url( StateUrl(self_base() . "./se_users.php"));

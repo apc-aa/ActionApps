@@ -29,11 +29,31 @@
  *
 */
 
-const AA_REGISTER_GLOBALS = true;
+// const AA_REGISTER_GLOBALS = true;
+use AA\Util\InputVars;
+
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/varset.php";
 require_once __DIR__ . "/../include/item.php";     // GetAliasesFromField funct def
+
+try {
+    // array ( )
+    //$cond = InputVars::arrayPOST('cond');
+    // array ( )
+    //$name = InputVars::arrayPOST('name');
+    // array ( 1 => 23, )
+    //$setcount = InputVars::intPOST('setcount');
+    // array ( )
+    //$sli = InputVars::arrayPOST('sli');
+    // array ( )
+    //$sort = InputVars::arrayPOST('sort');
+    // array ( ' Změnit [^…' => 23, )
+    $update = InputVars::boolPOST('update');
+    $cancel = InputVars::boolPOST('cancel');
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
 
 
 if ($cancel) {

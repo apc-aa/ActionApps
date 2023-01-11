@@ -28,9 +28,17 @@
  *
 */
 
-const AA_REGISTER_GLOBALS = true;
+// const AA_REGISTER_GLOBALS = true;
+use AA\Util\InputVars;
+
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
+
+try {
+    $cancel = InputVars::boolPOST('cancel');
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
 
 if ($cancel) {
     go_url( StateUrl(self_base() . "index.php3"));

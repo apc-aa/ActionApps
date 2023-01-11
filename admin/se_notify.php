@@ -46,10 +46,45 @@
 // I) Standard initialization and sanity checks
 ////////////////////////////////////////////////////////////////////
 
-const AA_REGISTER_GLOBALS = true;
+// const AA_REGISTER_GLOBALS = true;
+use AA\Util\InputVars;
+
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/varset.php";
+
+try {
+    // array ( '' => 2, 'Kvakoš 765…' => 3, )
+    $notify_active_item_b = InputVars::stringSlashedPOST('notify_active_item_b'); // empty
+    // array ( '' => 2, 'mati.hejny@…' => 2, 'jjjjjjjjjj�…' => 1, )
+    $notify_active_item_e = InputVars::stringSlashedPOST('notify_active_item_e'); // empty
+    // array ( '' => 2, 'Kvakoš 765…' => 3, )
+    $notify_active_item_edit_b = InputVars::stringSlashedPOST('notify_active_item_edit_b'); // empty
+    // array ( '' => 4, 'Kvakoš 765…' => 1, )
+    $notify_active_item_edit_e = InputVars::stringSlashedPOST('notify_active_item_edit_e'); // empty
+    // array ( '' => 5, )
+    $notify_active_item_edit_s = InputVars::stringSlashedPOST('notify_active_item_edit_s'); // empty
+    // array ( '' => 2, 'Kvakoš 765…' => 3, )
+    $notify_active_item_s = InputVars::stringSlashedPOST('notify_active_item_s'); // empty
+    // array ( '' => 2, 'Kvakoš 765…' => 3, )
+    $notify_holding_item_b = InputVars::stringSlashedPOST('notify_holding_item_b'); // empty
+    // array ( 'Kvakoš 765…' => 2, '' => 3, )
+    $notify_holding_item_e = InputVars::stringSlashedPOST('notify_holding_item_e'); // empty
+    // array ( '' => 2, 'Kvakoš 765…' => 3, )
+    $notify_holding_item_edit_b = InputVars::stringSlashedPOST('notify_holding_item_edit_b'); // empty
+    // array ( '' => 4, 'Kvakoš 765…' => 1, )
+    $notify_holding_item_edit_e = InputVars::stringSlashedPOST('notify_holding_item_edit_e'); // empty
+    // array ( '' => 2, 'Kvakoš 765…' => 3, )
+    $notify_holding_item_edit_s = InputVars::stringSlashedPOST('notify_holding_item_edit_s'); // empty
+    // array ( '' => 2, 'Kvakoš 765…' => 3, )
+    $notify_holding_item_s = InputVars::stringSlashedPOST('notify_holding_item_s'); // empty
+    // array ( 1 => 5, )
+    $update = InputVars::boolPOST('update');
+    $cancel = InputVars::boolPOST('cancel');
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
+
 /** save_notify2db function
  * @param $slice_id
  * @param $function

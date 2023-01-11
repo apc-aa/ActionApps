@@ -54,13 +54,11 @@ require_once __DIR__ . '/formutil.php';
  *  Get <a href> tag
  * @param        $url
  * @param        $label
- * @param string $class
- * @param array  $attr    ['onclick' => "return confirm('Are you sure?')"]
+ * @param array  $attr ['onclick' => "return confirm('Are you sure?')"]
  * @return string
  */
-function a_href($url, $label, $class='', array $attr=[]): string {
-    $add  = $class ? " class=\"$class\"" : '';
-    $add .= array_reduce( array_keys($attr), function ($str, $key) use ($attr) { return $str . ' ' . $key . '="' . safe($attr[$key]) . '"'; });
+function a_href($url, $label, array $attr=[]): string {
+    $add = array_reduce( array_keys($attr), function ($str, $key) use ($attr) { return $str . ' ' . $key . '="' . safe($attr[$key]) . '"'; });
     return '<a href="'.safe($url) ."\" $add>$label</a>";
 }
 

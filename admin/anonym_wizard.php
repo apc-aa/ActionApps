@@ -26,14 +26,32 @@
 */
 
 use AA\IO\DB\DB_AA;
+use AA\Util\InputVars;
 use AA\Util\JsTriggers;
 
-const AA_REGISTER_GLOBALS = true;
+// const AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/varset.php";
 
 require_once __DIR__ . "/../include/itemfunc.php";
+
+try {
+    // array ( 'http://ERRO…' => 3, )
+    $err_url = InputVars::stringPOST('err_url');
+    // array ( 'http://THAN…' => 3, )
+    $ok_url = InputVars::stringPOST('ok_url');
+    // array ( )
+    $show = InputVars::arrayPOST('show');
+    // array ( 'Zobraz form…' => 3, )
+    $show_form = InputVars::boolPOST('show_form');
+    // array ( 'http://SHOW…' => 3, )
+    $show_result = InputVars::stringPOST('show_result');
+    $cancel = InputVars::boolPOST('cancel');
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
+
 
 /** GetAnonymousForm function
  * @param $slice

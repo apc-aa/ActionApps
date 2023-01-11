@@ -26,14 +26,105 @@
 // expected $slice_id for edit slice, no_slice_id=1 for adding slice
 
 use AA\IO\DB\DB_AA;
+use AA\Util\InputVars;
 
-const AA_REGISTER_GLOBALS = true;
+// const AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/date.php";
 require_once __DIR__ . "/../include/varset.php";
 // add mlx functions
 require_once __DIR__."/../include/mlx.php";
+
+try {
+    // array ( )
+    $aa = InputVars::arrayPOST('aa');
+    // array ( 1 => 7, )
+    $add = InputVars::boolPOST('add');
+    // array ( 1 => 2, )
+    $add_submit = InputVars::boolPOST('add_submit');
+    // array ( '' => 1, )
+    $auth_field_group = InputVars::stringPOST('auth_field_group'); // empty
+    // array ( )
+    $create = InputVars::arrayPOST('create');
+    // array ( 'pppp' => 1, 10000 => 43, 99999 => 1, 11111 => 2, 22222 => 1, 33333 => 1, 29999 => 1, 30000 => 1, 30001 => 1, 31000 => 1, 32000 => 1, 33000 => 1, 32999 => 2, 5 => 32, 'H' => 1, '🐖' => 1, 36000 => 1, 15 => 2, )
+    $d_listlen = InputVars::intPOST('d_listlen');
+    // array ( 'on' => 19, )
+    $deleted = InputVars::boolPOST('deleted'); // alpha
+    // array ( '' => 61, 'ADMINISTRAT…' => 30, 0 => 3, )
+    $fileman_access = InputVars::stringPOST('fileman_access'); // alnum, empty
+    // array ( '' => 86, 38 => 1, 'B' => 2, 'Džusík s …' => 4, '🐸' => 1, )
+    $fileman_dir = InputVars::stringPOST('fileman_dir'); // empty
+    // array ( 'on' => 19, )
+    $flag_allow_expired = InputVars::boolPOST('flag_allow_expired'); // alpha
+    // array ( 'on' => 18, )
+    $flag_allow_pending = InputVars::boolPOST('flag_allow_pending'); // alpha
+    // array ( ' Vložit […' => 7, )
+    $insert = InputVars::boolPOST('insert');
+    // array ( 'cz-utf8_new…' => 79, 'fr_news_lan…' => 5, 'sk-utf8_new…' => 1, 'ru_news_lan…' => 2, 'de_news_lan…' => 1, 'es_news_lan…' => 1, 'es-utf8_new…' => 1, 'en_news_lan…' => 1, 'cz_news_lan…' => 2, 'hr_news_lan…' => 1, )
+    $lang_file = InputVars::stringPOST('lang_file');
+    // array ( '' => 1, )
+    $mailman_field_lists = InputVars::stringPOST('mailman_field_lists'); // empty
+    // array ( '' => 58, '4429a8e44bb…' => 32, )
+    $mlxctrl = InputVars::idPOST('mlxctrl'); // empty
+    // array ( 'adamsbeauty…' => 1, 'testtesttes…' => 1, ' …' => 1, 'test' => 25, 'test2' => 3, 'test 3' => 1, 5 => 49, 'Džusík s …' => 4, 'testos' => 1, 'News (EN) T…' => 1, 'Test2 was i…' => 1, 'Naštvanej …' => 2, 'test2 win12…' => 4, )
+    $name = InputVars::stringPOST('name');
+    // array ( 'Jeď: Přid…' => 2, )
+    $no_slice = InputVars::boolGETPOST('no_slice');
+    // array ( 1 => 14, )
+    $no_slice_id = InputVars::boolPOST('no_slice_id');
+    // array ( 'b6849ffd5ce…' => 90, '41415f436f7…' => 2, '96ab12bbeae…' => 2, )
+    $owner = InputVars::idPOST('owner');
+    $new_owner = InputVars::stringPOST('new_owner');
+    $new_owner_email = InputVars::stringPOST('new_owner_email');
+    // array ( 0 => 93, '' => 1, )
+    $permit_anonymous_edit = InputVars::boolPOST('permit_anonymous_edit'); // empty
+    // array ( 0 => 4, 1 => 89, 2 => 1, )
+    $permit_anonymous_post = InputVars::intPOST('permit_anonymous_post');
+    // array ( 1 => 89, 0 => 4, 2 => 1, )
+    $permit_offline_fill = InputVars::intPOST('permit_offline_fill');
+    // array ( 0 => 76, '' => 2, 44444 => 8, 99999 => 3, 'aaaa' => 1, 'Fň' => 1, 'I am ' => 1, 'hfdkd' => 1, 66666 => 1, )
+    $priority = InputVars::intPOST('priority'); // empty
+    // array ( '' => 92, 'asdfghjkl"_…' => 1, 'asdfghjkl\\"…' => 1, )
+    $reading_password = InputVars::stringPOST('reading_password'); // empty
+    // array ( 'https://ada…' => 2, '' => 87, 'www' => 1, 'B' => 1, 3 => 1, 'Kvakoš 765…' => 1, 'He said tha…' => 1, )
+    $slice_url = InputVars::stringPOST('slice_url'); // empty
+    // array ( 'on' => 18, )
+    $template = InputVars::arrayPOST('template'); // alnum
+    // array ( 'Přidat' => 3, )
+    $template_from_slice = InputVars::boolPOST('template_from_slice');
+    // array ( 'Přidat' => 1, )
+    $template_from_template = InputVars::boolPOST('template_from_template');
+    // array ( '011ba695b78…' => 2, '4085d9fe61e…' => 2, '4e6577735f4…' => 2, '52656164657…' => 4, '4429a8e44bb…' => 3, '6e6f7469636…' => 1, )
+    $template_id = InputVars::idPOST('template_id');
+    // array ( '4085d9fe61e…' => 2, '6c81ec28dd4…' => 1, '4429a8e44bb…' => 4, )
+    $template_id2 = InputVars::idPOST('template_id2');
+    // array ( 'slice' => 2, )
+    $template_slice_radio = InputVars::stringPOST('template_slice_radio'); // alpha
+    // array ( 1 => 2, )
+    $um_uedit_no_go_url = InputVars::boolPOST('um_uedit_no_go_url');
+    // array ( ' Změnit [^…' => 79, ' Mise � j…' => 3, ' Zmeniť [^…' => 1, ' Update [^S…' => 1, ' Aktualisie…' => 1, ' Zm�nit […' => 1, ' Obnovi [^S…' => 1, )
+    $update = InputVars::boolPOST('update');
+    // array ( 'She was a l…' => 1, 'Největší ' => 1, )
+    $user_firstname = InputVars::stringPOST('user_firstname');
+    // array ( '' => 6, 'He said tha…' => 2, 'Největší…' => 1, )
+    $user_login = InputVars::stringPOST('user_login'); // empty
+    // array ( 'Myš@krtek.…' => 2, )
+    $user_mail1 = InputVars::stringPOST('user_mail1');
+    // array ( 'Jsem krtek!' => 1, 'Kachna85?!' => 1, )
+    $user_password1 = InputVars::stringPOST('user_password1');
+    // array ( 'Jsem krtek!' => 1, 'Kachna85?!' => 1, )
+    $user_password2 = InputVars::stringPOST('user_password2');
+    // array ( '' => 6, 'ADMINISTRAT…' => 3, )
+    $user_role = InputVars::stringPOST('user_role'); // alpha, empty
+    // array ( 'I am not go…' => 1, 'Borec' => 1, )
+    $user_surname = InputVars::stringPOST('user_surname');
+    // array ( )
+    $wiz = InputVars::arrayPOST('wiz');
+    $cancel = InputVars::boolPOST('cancel');
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
 
 define ('PERMS_STATE', [
     "0" => _m("Not allowed"),

@@ -26,16 +26,24 @@
 
 
 // messages for init_page:
+use AA\Util\InputVars;
+
 $no_slice_id          = true;
 $require_default_lang = true;
 
-const AA_REGISTER_GLOBALS = true;
+// const AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
+
+try {
+    $cancel = InputVars::boolPOST('cancel');
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
 
 /** GetModuleTemplateSelecbox function
  * @param $type
  * @param $g_modules
- * @return string - an html select box or false if g_modules is null or not an array
+ * @return string - a html select box or false if g_modules is null or not an array
  */
 function GetModuleTemplateSelecbox($type, $g_modules) {
     $ret = '';

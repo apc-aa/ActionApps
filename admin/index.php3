@@ -71,20 +71,6 @@ try {
     $chb = InputVars::arrayPOST('chb');
     // array ( 99999 => 1, )
     $listlen = InputVars::intGET('listlen');
-    // array ( 'Folder3' => 2, )
-    $markedaction_select = InputVars::stringPOST('markedaction_select'); // alnum
-    // array ( 1 => 2, 'clearsearch' => 1, )
-    $srchbr_akce = InputVars::stringGET('srchbr_akce'); // alnum
-    // array ( )
-    $srchbr_field = InputVars::arrayGET('srchbr_field');
-    // array ( )
-    $srchbr_oper = InputVars::arrayGET('srchbr_oper'); // alpha
-    // array ( )
-    $srchbr_order = InputVars::arrayGET('srchbr_order');
-    // array ( )
-    $srchbr_order_dir = InputVars::arrayGET('srchbr_order_dir'); // alpha
-    // array ( )
-    $srchbr_value = InputVars::arrayGET('srchbr_value'); // alpha
     // array ( 'Přihlásit' => 12, )
     $submit = InputVars::boolPOST('submit');
     $cancel = InputVars::boolPOST('cancel');
@@ -186,13 +172,12 @@ $manager_settings = [
      ],
      'actions'     => $actions,
      'switches'    => $switches,
-     'bin'         => 'app',
-     'messages'    => [
-         'title'       => $slice->getName(). ' - '. (($slice->type() == 'ReaderManagement') ? _m('ActionApps - Reader Manager') : _m('ActionApps - Item Manager'))
-     ]
+     'bin'         => 'app'
 ];
 
-$manager = new Manager('item'.$module_id, (new \AA\Managed())->setSettings($manager_settings));
+$managed = (new \AA\Managed())->setSettings($manager_settings);
+$managed->setTitle($slice->getName(). ' - '. (($slice->type() == 'ReaderManagement') ? _m('ActionApps - Reader Manager') : _m('ActionApps - Item Manager')));
+$manager = new Manager('item'.$module_id, $managed);
 
 if ( $change_id OR ($r_state["module_id"] != $module_id)) {
     // we are here for the first time, or we are switching to another slice

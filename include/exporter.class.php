@@ -619,7 +619,7 @@ class AA_Exportsetings extends AA_Object {
               <td><input name="chb[x_#AA_ID___]" value="" type="checkbox"></td>
               <td style="white-space:nowrap;">'.
             $buttons['Edit'].' '.
-            a_href(get_aa_url('export.php', ['id=_#AA_ID___'], false), _m('Export'), 'aa-button-show') . ' ' .
+            a_href(get_aa_url('export.php', ['id=_#AA_ID___'], false), _m('Export'), ['class' => 'aa-button-show']) . ' ' .
             $buttons['DeleteObject'].' 
             </td>          
               <td>'.join("</td>\n<td>", $aliases->getNames()).'</td>

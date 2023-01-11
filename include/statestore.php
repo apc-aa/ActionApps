@@ -941,7 +941,10 @@ class AA_Object extends AA_Storable implements AA_iEditable {
         $actions->addAction(new Object_Delete('DeleteObject'));
 
         $buttons  = [
-            'Edit'   => a_href(get_url(Managed::MANGED_URL, ['id=_#AA_ID___', 'module_id=_#AA_OWNER'], true), _m('Edit'), 'aa-button-edit'),
+            'Edit'   => a_href(get_url(Managed::MANGED_URL, [
+                'id=_#AA_ID___',
+                'module_id=_#AA_OWNER'
+            ], true), _m('Edit'), ['class' => 'aa-button-edit']),
             //                   'Run'=>get_aa_url('export.php', ['id=_#AA_ID___'], false)
         ];
         $buttons = array_merge($buttons, $actions->getManagerButtons(Managed::MANGED_URL,'_#AA_ID___', '_#AA_OWNER'));

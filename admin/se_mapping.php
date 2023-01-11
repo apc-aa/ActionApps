@@ -30,8 +30,19 @@
 */
 
 
-const AA_REGISTER_GLOBALS = true;
+// const AA_REGISTER_GLOBALS = true;
+use AA\IO\Grabber\AARSS;
+use AA\Util\InputVars;
+
 require_once __DIR__ . "/../include/init_page.php";
+
+try {
+    // array ( '4429a8e44bb…' => 4, 'dcf6f197e02…' => 1, 'e1f2cde4860…' => 1, '164ced40da0…' => 6, )
+    $from_slice_id = InputVars::idGET('from_slice_id');
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
+
 if (!IfSlPerm(PS_FEEDING)) {
     MsgPage(_m("You have not permissions to change feeding setting"));
     exit;
@@ -102,7 +113,7 @@ $p_from_slice_id = q_pack_id($from_slice_id);
 [$map_to,$field_map] = GetExternalMapping(AA::$module_id, $from_slice_id );
 
 if (is_null($field_map) && ($remote_slices[$from_slice_id] == 2)) {
-    $field_map = $DEFAULT_RSS_MAP;
+    $field_map = AARSS::getDefaultRssMap();
 }
 
 // find out list of "to fields"

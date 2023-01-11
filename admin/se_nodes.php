@@ -34,8 +34,9 @@
 */
 
 use AA\IO\DB\DB_AA;
+use AA\Util\InputVars;
 
-const AA_REGISTER_GLOBALS = true;
+// const AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 if ( !IsSuperadmin() ) {
     MsgPage(_m("You have not permissions to manage nodes"));
@@ -43,6 +44,27 @@ if ( !IsSuperadmin() ) {
 }
 $err = [];
 require_once __DIR__ . "/../include/formutil.php";
+
+try {
+    // array ( 'add' => 3, 'insert' => 11, 'edit' => 12, 'update' => 9, 'delete' => 1, )
+    $mode = InputVars::stringPOST('mode'); // alpha
+    // array ( '' => 14, '"Kečup"' => 3, '"Párek"' => 1, 'Rohlík' => 3, 'Rohlík🌭' => 2, 'Řízek' => 1, 'ActionApps.…' => 3, 'Econnect' => 2, 'Econnect Ec…' => 1, 'ChangeNet' => 2, 'Econnect h1' => 1, 'Econnect h1…' => 2, 'adamsbeauty…' => 1, )
+    $node_name = InputVars::stringSlashedPOST('node_name'); // empty
+    // array ( '' => 4, 'Rohlík' => 3, 'ActionApps.…' => 2, 'ChangeNet' => 1, 'Econnect' => 2, 'Econnect Ec…' => 1, 'Econnect h1' => 1, 'Econnect h1…' => 2, 'Rohlík🌭' => 1, )
+    $nodes = []; // empty  // not used as variable
+    // array ( '' => 21, 'Rohlík' => 4, 'ActionApps.…' => 3, 'ChangeNet' => 2, 'Econnect' => 2, 'Econnect Ec…' => 1, 'Econnect h1' => 1, 'Econnect h1…' => 2, )
+    $old_node_name = InputVars::stringSlashedPOST('old_node_name'); // empty
+    // array ( '' => 23, 'Rohlík' => 3, 'ActionApps.…' => 2, 'ChangeNet' => 1, 'Econnect' => 2, 'Econnect Ec…' => 1, 'Econnect h1' => 1, 'Econnect h1…' => 2, 'Rohlík🌭' => 1, )
+    $sel_node_name = InputVars::stringSlashedPOST('sel_node_name'); // empty
+    // array ( '' => 14, 'https://ada…' => 8, 123456789 => 4, '🐖' => 2, 'http://acti…' => 1, 'http://aa.e…' => 1, 'http://work…' => 1, 'http://web.…' => 1, 'https://act…' => 2, 'http://chan…' => 1, 'https://too…' => 1, )
+    $server_url = InputVars::stringSlashedPOST('server_url'); // empty
+    $password = InputVars::stringSlashedPOST('password');
+    // array ( ' Poslat [^…' => 20, )
+    $submitbtn = InputVars::boolPOST('submitbtn');
+    $cancel = InputVars::boolPOST('cancel');
+    // $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
 
 if ($mode == "edit") {
     $db->query("SELECT * FROM nodes WHERE name='$sel_node_name'");

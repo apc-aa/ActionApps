@@ -177,13 +177,13 @@ $manager_settings = [
          'aliases'              => $aliases,
          'get_content_funct'    => 'GetItemContent',
          'query_funct'          => 'QueryZidsSet'
-     ],
-     'messages'  => [
-         'title'       => _m("Editor window - item manager, related selection window")
      ]
 ];
 
-$manager = new Manager($manager_id, (new \AA\Managed())->setSettings($manager_settings));
+$managed = (new \AA\Managed())->setSettings($manager_settings);
+$managed->setTitle(_m("Editor window - item manager, related selection window"));
+$manager = new Manager($manager_id, $managed);
+
 if ( isset($_GET['sid']) ) {
 
     if ( isset($showcondsro) ) {

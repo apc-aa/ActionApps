@@ -1451,7 +1451,7 @@ class AA_Inputfield {
                 $parts["part$id2"] = [$lang, $classes];
 
                 $widg .= "<label class=\"aa-langtrans $lang\" id=\"part$id2\" ".($first ? '' : ' style="display:none;"')."><strong class=\"aa-langtrans-label\">$lang</strong>";
-                $widg .= "<textarea id=\"$id2\" name=\"$name2\"$areaclass rows=\"$rows\" ".$GLOBALS['mlxFormControlExtra']."$colsy$maxlen class=aa-w-full style=\"height:${rows_css}em;\" $triggers>$value</textarea>\n";
+                $widg .= "<textarea id=\"$id2\" name=\"$name2\"$areaclass rows=\"$rows\" ".$GLOBALS['mlxFormControlExtra']."$colsy$maxlen class=aa-w-full style=\"height:{$rows_css}em;\" $triggers>$value</textarea>\n";
                 $widg .= "</label>";
                 if (!$showhtmlarea AND $showrich_href ) {
                     AA::Stringexpander()->addRequire("if (CKEDITOR.env.isCompatible) { [].forEach.call(document.querySelectorAll('.aa-arealink'), function(e) { e.style.display=''; }); }", 'AA_Req_Run');
@@ -1467,7 +1467,7 @@ class AA_Inputfield {
             $rows     = max($rows, min(floor(substr_count($value,"\n")*1.35), 30));
             $rows_css = $rows*1.3;  // firefox adds extra line, so we specify the height in css as well. Not so important, can be changed later.
 
-            $widg    = "<textarea id=\"$name\" name=\"$name\"$areaclass". ($this->required ? " required": '') ." rows=\"$rows\" ".$GLOBALS['mlxFormControlExtra']."$colsy$maxlen class=aa-w-full style=\"height:${rows_css}em;\" $triggers>$value</textarea>\n";
+            $widg    = "<textarea id=\"$name\" name=\"$name\"$areaclass". ($this->required ? " required": '') ." rows=\"$rows\" ".$GLOBALS['mlxFormControlExtra']."$colsy$maxlen class=aa-w-full style=\"height:{rows_css}em;\" $triggers>$value</textarea>\n";
         }
         $this->echovar($widg);
         $this->helps('plus');
@@ -1508,7 +1508,7 @@ class AA_Inputfield {
                 $height    = (int)$height;
                 $nrows     = ceil( count($records) / $ncols);
                 if ($height > 0) {
-                    $this->echoo("<div style=\"max-height:${height}px; overflow:auto;\">");
+                    $this->echoo("<div style=\"max-height:{$height}px; overflow:auto;\">");
                 }
                 $this->echoo('<table border="0" cellspacing="0">');
                 for ($irow = 0; $irow < $nrows; ++$irow) {
@@ -1926,7 +1926,7 @@ class AA_Inputfield {
             $accepts = '*/*';
         }
         $val  = safe($val);
-        $link = $val ? a_href($val, GetAAImage('external-link.png', _m('Show'), 16, 16), '', ['target'=>'_blank']) : '';
+        $link = $val ? a_href($val, GetAAImage('external-link.png', _m('Show'), 16, 16), ['target' => '_blank']) : '';
         $triggers   = $this->use_triggers_4_slice ? JsTriggers::singleton4id($this->use_triggers_4_slice)->get("input", $name) : '';
 
         $this->field_name('plus');
@@ -2854,7 +2854,7 @@ function getFrmTabs( $tabs, $tabsId ) {
         $ret = "\n <tr id=\"$tabsId\"><td colspan=\"2\" class=\"tabsrow\">";
         $non = '';
         foreach ( $tabs as $class => $name ) {
-            $ret .= "<a href=\"javascript:TabWidgetToggle('$class')\" id=\"${tabsId}${class}\" class=\"tabs${non}activ\">$name</a>";
+            $ret .= "<a href=\"javascript:TabWidgetToggle('$class')\" id=\"$tabsId$class\" class=\"tabs{$non}activ\">$name</a>";
             $non = 'non';
         }
         $ret .= "</td></tr>";

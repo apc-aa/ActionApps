@@ -26,13 +26,22 @@
 // set template id (changes language file => must be here):
 
 // messages for init_page:
+use AA\Util\InputVars;
+
 $no_slice_id          = true;
 $require_default_lang = true;
 
-const AA_REGISTER_GLOBALS = true;
+// const AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 // the parts used by the slice wizard are in the included file
 require_once __DIR__ . "/../include/formutil.php";
+
+try {
+    $add = InputVars::boolPOST('add');   // ??? from where it could come?
+    $cancel = InputVars::boolPOST('cancel');
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
 
 if ($cancel) {
     go_url( StateUrl(self_base() . "index.php3"));

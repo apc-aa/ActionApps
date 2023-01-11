@@ -23,7 +23,7 @@
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
  * @link      https://www.apc.org/ APC
  *
-*/
+ */
 
 require_once __DIR__ . "/mgettext.php";
 
@@ -35,22 +35,22 @@ require_once __DIR__ . "/mgettext.php";
  * Field definition shortcut (used in constants.php for CONSTANT_FILEDS)
  * @param $name
  * @param $field
- * @param $operators = 'text'
- * @param $table = false
+ * @param $operators  = 'text'
+ * @param $table      = false
  * @param $search_pri = false
- * @param $order_pri = false
+ * @param $order_pri  = false
  * @return array
  */
-function GetFieldDef( $name, $field, $operators='text', $table=false, $search_pri=false, $order_pri=false) {
+function GetFieldDef($name, $field, $operators = 'text', $table = false, $search_pri = false, $order_pri = false) {
     $ret = ['name' => $name, 'field' => $field, 'operators' => $operators];
-    if ( $table ) {
-        $ret['table']      = $table;
+    if ($table) {
+        $ret['table'] = $table;
     }
-    if ( $search_pri ) {
+    if ($search_pri) {
         $ret['search_pri'] = $search_pri;  // searchbar priority (false = "do not show in searchbar")
     }
-    if ( $order_pri ) {
-        $ret['order_pri']  = $order_pri;   // orderbar  priority (false = "do not show in orderbar")
+    if ($order_pri) {
+        $ret['order_pri'] = $order_pri;   // orderbar  priority (false = "do not show in orderbar")
     }
     return $ret;
 }
@@ -59,22 +59,22 @@ function GetFieldDef( $name, $field, $operators='text', $table=false, $search_pr
  * Alias definition shortcut
  * @param $fce
  * @param $field = ''
- * @param $hlp = ''
+ * @param $hlp   = ''
  * @return array
  */
-function GetAliasDef( $fce, $field='', $hlp='') {
+function GetAliasDef($fce, $field = '', $hlp = '') {
     return ['fce' => $fce, 'param' => $field, 'hlp' => $hlp];
 }
 
 
 class AA_Alias {
-    /** @var string  */
+    /** @var string */
     private $alias;
-    /** @var string  */
+    /** @var string */
     private $funct;
-    /** @var string  */
+    /** @var string */
     private $field_id;
-    /** @var string  */
+    /** @var string */
     private $hlp;
 
     /** AA_Alias function
@@ -84,10 +84,10 @@ class AA_Alias {
      * @param string $hlp = ''
      */
     function __construct($alias, $funct, $field_id, $hlp = '') {
-        $this->alias       = '_#'.strtoupper(substr($alias.'________',2,8));  // just make sure the alias is in correct _#SOME_ALS format
-        $this->field_id    = $field_id;
-        $this->funct       = $funct;
-        $this->hlp         = $hlp;
+        $this->alias    = '_#' . strtoupper(substr($alias . '________', 2, 8));  // just make sure the alias is in correct _#SOME_ALS format
+        $this->field_id = $field_id;
+        $this->funct    = $funct;
+        $this->hlp      = $hlp;
     }
 
     /** conditional create
@@ -97,8 +97,8 @@ class AA_Alias {
      * @param string|null $hlp
      * @return AA_Alias|null
      */
-    public static function factory(?string $alias, ?string $funct, ?string $field_id, ?string $hlp='') {
-        if ($alias AND (substr($alias,0,2)=='_#')) {
+    public static function factory(?string $alias, ?string $funct, ?string $field_id, ?string $hlp = '') {
+        if ($alias and (substr($alias, 0, 2) == '_#')) {
             return new AA_Alias($alias, $funct, $field_id, $hlp);
         }
         return null;
@@ -146,7 +146,7 @@ trait LazyloadTrait {
     }
 
     final public function lazyGet($var) {
-        if ( array_key_exists($var, $this->lazy_loaders)) {
+        if (array_key_exists($var, $this->lazy_loaders)) {
             $this->$var = $this->lazy_loaders[$var]->lazyLoad();
             unset($this->lazy_loaders[$var]);   // loader is used once and then removed, so we will not use it next time
         }
@@ -165,7 +165,7 @@ class AA_Aliases {
     /** AA_Aliases function
      *
      */
-    function __construct($loader=null) {
+    function __construct($loader = null) {
         if (is_object($loader)) {
             $this->addLoader('lazy_aliases', $loader);
         }
@@ -199,9 +199,9 @@ class AA_Aliases {
     }
 
     /** addFromArray adds aliases from old deprecated array
-     * @deprecated
      * @param $alias_name
      * @param $text
+     * @deprecated
      */
     function addFromArray(array $alias_arr): AA_Aliases {
         foreach ($alias_arr as $aid => $als) {
@@ -252,22 +252,20 @@ class AA_Aliases {
 }
 
 
+// There we can mention $FIELD_TYPES, but they are not defined in this file,
+// but in database as special slice with id 'AA_Core_Fields..'
 
-
-  // There we can mention $FIELD_TYPES, but they are not defined in this file,
-  // but in database as special slice with id 'AA_Core_Fields..'
-
-  // Field types - each field in slice is one of this type.
-  // The types are defined APC wide for easy item interchanging between APC nodes
-  // (on the other hand, new type can be added just by placing new fileld
-  // in database table fields as for 'AA_Core_Fields..' slice).
+// Field types - each field in slice is one of this type.
+// The types are defined APC wide for easy item interchanging between APC nodes
+// (on the other hand, new type can be added just by placing new fileld
+// in database table fields as for 'AA_Core_Fields..' slice).
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-* @global array $MODULES
-*     "name" is a description of the module,
-*     "hide_create_module" doesn't show the module in the Create Slice / Module page
-*     @todo convert to AA_Module (AA_Module_site, ...)
-*/
+ * @global array $MODULES
+ *     "name" is a description of the module,
+ *     "hide_create_module" doesn't show the module in the Create Slice / Module page
+ * @todo convert to AA_Module (AA_Module_site, ...)
+ */
 $MODULES = [
     'S' => [
         'table'              => 'slice',
@@ -314,49 +312,49 @@ $MODULES = [
 
 
 $MODULES['Alerts'] = [
-    'table' => 'module',
-                            'name' => _m('Alerts'),
-                            'directory' => "modules/alerts/",
-                            'letter' => 'A'
+    'table'     => 'module',
+    'name'      => _m('Alerts'),
+    'directory' => "modules/alerts/",
+    'letter'    => 'A',
 ];  // letter is used for the modules
-                                               // which indentificator is not 1
-                                               // letter long (we need 1-letter
-                                               // identification for some
-                                               // javascripts in um_util.php
-$MODULES['Links'] =  [
-    'table' => 'links',
-                            'name' => _m('Links'),
-                            'show_templates' => 1,
-                            'directory' => "modules/links/",
-                            'letter' => 'L'
+// which indentificator is not 1
+// letter long (we need 1-letter
+// identification for some
+// javascripts in um_util.php
+$MODULES['Links'] = [
+    'table'          => 'links',
+    'name'           => _m('Links'),
+    'show_templates' => 1,
+    'directory'      => "modules/links/",
+    'letter'         => 'L',
 ];
 
 
 class AA_Langs {
     protected static $LANGS = [
-        'cz-utf8' => ['utf-8'       , 'Cestina (Unicode)'],
-        'en-utf8' => ['utf-8'       , 'English (Unicode)'],
-        'es-utf8' => ['utf-8'       , 'Espanol (Unicode)'],
-        'sk-utf8' => ['utf-8'       , 'Slovencina (Unicode)'],
-        'vn'      => ['utf-8'       , 'Vietnamese (Unicode)'],
+        'cz-utf8' => ['utf-8', 'Cestina (Unicode)'],
+        'en-utf8' => ['utf-8', 'English (Unicode)'],
+        'es-utf8' => ['utf-8', 'Espanol (Unicode)'],
+        'sk-utf8' => ['utf-8', 'Slovencina (Unicode)'],
+        'vn'      => ['utf-8', 'Vietnamese (Unicode)'],
         'bg'      => ['windows-1251', 'Bulgarian (windows-1251)'],
         'cz'      => ['windows-1250', 'Cestina (windows-1250)'],
-        'de'      => ['iso-8859-1'  , 'Deutsch (iso-8859-1)'],
-        'en'      => ['iso-8859-1'  , 'English (iso-8859-1)'],
-        'es'      => ['iso-8859-1'  , 'Espanol (iso-8859-1)'],
-        'fr'      => ['iso-8859-1'  , 'Fran�ais (iso-8859-1)'],
+        'de'      => ['iso-8859-1', 'Deutsch (iso-8859-1)'],
+        'en'      => ['iso-8859-1', 'English (iso-8859-1)'],
+        'es'      => ['iso-8859-1', 'Espanol (iso-8859-1)'],
+        'fr'      => ['iso-8859-1', 'Fran�ais (iso-8859-1)'],
         'hr'      => ['windows-1250', 'Hrvatski (windows-1250)'],
-        'ja'      => ['EUC-JP'      , 'Japanian (EUC-JP)'],
-        'hu'      => ['iso-8859-2'  , 'Magyar (iso-8859-2)'],
-        'ro'      => ['iso-8859-2'  , 'Romanian (iso-8859-2)'],
+        'ja'      => ['EUC-JP', 'Japanian (EUC-JP)'],
+        'hu'      => ['iso-8859-2', 'Magyar (iso-8859-2)'],
+        'ro'      => ['iso-8859-2', 'Romanian (iso-8859-2)'],
         'ru'      => ['windows-1251', 'Russian (windows-1251)'],
-        'sk'      => ['windows-1250', 'Slovencina (windows-1250)']
+        'sk'      => ['windows-1250', 'Slovencina (windows-1250)'],
     ];
 
-    public static function getFiles($type='news') {
+    public static function getFiles($type = 'news') {
         $arr = [];
         foreach (self::$LANGS as $k => $l) {
-            $arr[$k.'_'.$type.'_lang.php'] = $l[1];
+            $arr[$k . '_' . $type . '_lang.php'] = $l[1];
         }
         return $arr;
     }
@@ -370,21 +368,21 @@ class AA_Langs {
     }
 
     public static function getNames() {
-        return array_map( function($l) { return $l[1]; }, self::$LANGS);
+        return array_map(function ($l) { return $l[1]; }, self::$LANGS);
     }
 
     /** returns lang code ('cz', 'en', 'en-utf8', 'de',...) from given $lang_file or from default
      */
     public static function getLang($lang_file) {
-        $lang_code = substr($lang_file, 0, strpos($lang_file.'_','_'));
-        return isset(self::$LANGS[$lang_code]) ? $lang_code : substr(DEFAULT_LANG_INCLUDE, 0, strpos(DEFAULT_LANG_INCLUDE,'_'));
+        $lang_code = substr($lang_file, 0, strpos($lang_file . '_', '_'));
+        return isset(self::$LANGS[$lang_code]) ? $lang_code : substr(DEFAULT_LANG_INCLUDE, 0, strpos(DEFAULT_LANG_INCLUDE, '_'));
     }
 
     /** returns charset - like 'windows-1250' from given lang code or current lang
      *  usage: AA_Langs::getCharset();
      */
-    public static function getCharset($lang_code=null) {
-        if (!$lang_code OR !is_array($ret = self::$LANGS[$lang_code])) {
+    public static function getCharset($lang_code = null) {
+        if (!$lang_code or !is_array($ret = self::$LANGS[$lang_code])) {
             $ret = self::$LANGS[get_mgettext_lang()];
         }
         return $ret[0];
@@ -404,7 +402,7 @@ class AA_Langs {
     public static function getLangName2Num($lang) {
         $lang = strtolower($lang);
         $ret  = strlen($lang) ? AA_Value::MAX_INDEX * ((ord($lang[0]) - 97) * 26 + (ord($lang[1]) - 97 + 1)) : 0;
-        return max(0,$ret);
+        return max(0, $ret);
     }
 
     /** reverse function to getLangNumber
@@ -478,16 +476,16 @@ const NO_PICTURE_URL = AA_INSTAL_URL . 'images/blank.gif';
 
 function GetConstantFields() {  // function - we need translate _m() on use (not at include time)
     return [
-        'const_short_id'    => GetFieldDef( _m('Short Id'),    'constant.short_id',   'numeric'),
-        'const_name'        => GetFieldDef( _m('Name'),        'constant.name',       'text'),
-        'const_value'       => GetFieldDef( _m('Value'),       'constant.value',      'text'),
-        'const_pri'         => GetFieldDef( _m('Priority'),    'constant.pri',        'numeric'),
-        'const_group'       => GetFieldDef( _m('Group'),       'constant.group',      'text'),
-        'const_class'       => GetFieldDef( _m('Class'),       'constant.class',      'text'),
-    //  'const_counter'     => GetFieldDef( _m('Counter'),     '',                    'numeric'),
-        'const_id'          => GetFieldDef( _m('Id'),          'constant.id',         'text'),   // 'id'
-        'const_description' => GetFieldDef( _m('Description'), 'constant.description','text'),
-        'const_level'       => GetFieldDef( _m('Level'),       'constant.level',      'numeric')
+        'const_short_id'    => GetFieldDef(_m('Short Id'), 'constant.short_id', 'numeric'),
+        'const_name'        => GetFieldDef(_m('Name'), 'constant.name', 'text'),
+        'const_value'       => GetFieldDef(_m('Value'), 'constant.value', 'text'),
+        'const_pri'         => GetFieldDef(_m('Priority'), 'constant.pri', 'numeric'),
+        'const_group'       => GetFieldDef(_m('Group'), 'constant.group', 'text'),
+        'const_class'       => GetFieldDef(_m('Class'), 'constant.class', 'text'),
+        //  'const_counter'     => GetFieldDef( _m('Counter'),     '',                    'numeric'),
+        'const_id'          => GetFieldDef(_m('Id'), 'constant.id', 'text'),   // 'id'
+        'const_description' => GetFieldDef(_m('Description'), 'constant.description', 'text'),
+        'const_level'       => GetFieldDef(_m('Level'), 'constant.level', 'numeric'),
     ];
 }
 
@@ -522,23 +520,24 @@ const REL_FLAG_FEED          = 2;  // item is fed using AA feeding (value 2 - co
 const REL_FLAG_SOURCE        = 4;  // item is derived from other item ({newitem }, ...)
 
 /** view table flags */
-const VIEW_FLAG_COMMENTS         = 1;    // display HTML comments before and after the view
-const VIEW_FLAG_LOG              = 2;         // write every use to database
-const VIEW_FLAG_DISABLE          = 4;     // view is disabled - no content showed
+const VIEW_FLAG_COMMENTS = 1;    // display HTML comments before and after the view
+const VIEW_FLAG_LOG      = 2;         // write every use to database
+const VIEW_FLAG_DISABLE  = 4;     // view is disabled - no content showed
 
 
 /** inputFeedModes function
  * @return array
  */
 function inputFeedModes() {
-  return [
-      STATE_FEEDABLE               => _m("Feed"),
-      STATE_UNFEEDABLE             => _m("Do not feed"),
-      STATE_FEEDNOCHANGE           => _m("Feed locked"),
-      STATE_FEEDABLE_UPDATE        => _m("Feed & update"),
-      STATE_FEEDABLE_UPDATE_LOCKED => _m("Feed & update & lock"),
-  ];
+    return [
+        STATE_FEEDABLE               => _m("Feed"),
+        STATE_UNFEEDABLE             => _m("Do not feed"),
+        STATE_FEEDNOCHANGE           => _m("Feed locked"),
+        STATE_FEEDABLE_UPDATE        => _m("Feed & update"),
+        STATE_FEEDABLE_UPDATE_LOCKED => _m("Feed & update & lock"),
+    ];
 }
+
 /** GetViewFieldDef function
  * @param $validate
  * @param $insert
@@ -547,13 +546,14 @@ function inputFeedModes() {
  * @param $value = false
  * @return array
  */
-function GetViewFieldDef( $validate, $insert, $type, $input, $value=false ) {
-    $ret = ["validate"=>$validate, "insert"=>$insert, "type"=>$type, "input"=>$input];
-    if ( $value ) {
-        $ret['value'] =  $value;
+function GetViewFieldDef($validate, $insert, $type, $input, $value = false) {
+    $ret = ["validate" => $validate, "insert" => $insert, "type" => $type, "input" => $input];
+    if ($value) {
+        $ret['value'] = $value;
     }
     return $ret;
 }
+
 /** getViewFields function
  * @return array
  */
@@ -561,57 +561,59 @@ function getViewFields() {
     $VIEW_FIELDS = [];
     // se_views.php - view field definition
     /* Jakub added a special field "function:function_name" which calls function show_function_name() to show a special form part and store_function_name() to store form data. */
-                                                 // $validate, $insert,  $type,   $input,  $value
-    $VIEW_FIELDS["name"]            = GetViewFieldDef("text",  "quoted", "text",  "field50");
-    $VIEW_FIELDS["before"]          = GetViewFieldDef("text",  "quoted", "text",  "area"   );
-    $VIEW_FIELDS["even"]            = GetViewFieldDef("text",  "quoted", "text",  "area"   );
-    $VIEW_FIELDS["even_odd_differ"] = GetViewFieldDef("",      "quoted", "bool",  "chbox"  );
-    $VIEW_FIELDS["odd"]             = GetViewFieldDef("text",  "quoted", "text",  "areabig");
-    $VIEW_FIELDS["row_delimiter"]   = GetViewFieldDef("text",  "quoted", "text",  "area");
-    $VIEW_FIELDS["after"]           = GetViewFieldDef("text",  "quoted", "text",  "area"   );
-    $VIEW_FIELDS["group_by1"]       = GetViewFieldDef("text",  "quoted", "text",  "group"  );
-    $VIEW_FIELDS["g1_direction"]    = GetViewFieldDef("",      "quoted", "number","none"   );
-    $VIEW_FIELDS["gb_header"]       = GetViewFieldDef("",      "quoted", "number","none"   );
-    $VIEW_FIELDS["group_by2"]       = GetViewFieldDef("text",  "quoted", "text",  "orderal");
-    $VIEW_FIELDS["g2_direction"]    = GetViewFieldDef("",      "quoted", "number","none"  );
-    $VIEW_FIELDS["group_title"]     = GetViewFieldDef("text",  "quoted", "text",  "area"   );
-    $VIEW_FIELDS["group_bottom"]    = GetViewFieldDef("text",  "quoted", "text",  "area"   );
-    $VIEW_FIELDS["remove_string"]   = GetViewFieldDef("text",  "quoted", "text",  "area"   );
-    $VIEW_FIELDS["modification"]    = GetViewFieldDef("text",  "quoted", "text",  "seltype");
-    $VIEW_FIELDS["parameter"]       = GetViewFieldDef("text",  "quoted", "text",  "selgrp" );
-    $VIEW_FIELDS["img1"]            = GetViewFieldDef("text",  "quoted", "text",  "field"  );
-    $VIEW_FIELDS["img2"]            = GetViewFieldDef("text",  "quoted", "text",  "field"  );
-    $VIEW_FIELDS["img3"]            = GetViewFieldDef("text",  "quoted", "text",  "field"  );
-    $VIEW_FIELDS["img4"]            = GetViewFieldDef("text",  "quoted", "text",  "field"  );
-    $VIEW_FIELDS["order1"]          = GetViewFieldDef("text",  "quoted", "text",  "order"  );
-    $VIEW_FIELDS["o1_direction"]    = GetViewFieldDef("",      "quoted", "number","none"   );
-    $VIEW_FIELDS["order2"]          = GetViewFieldDef("text",  "quoted", "text",  "order"  );
-    $VIEW_FIELDS["o2_direction"]    = GetViewFieldDef("",      "quoted", "number","none"   );
-    $VIEW_FIELDS["selected_item"]   = GetViewFieldDef("text",  "quoted", "text",   "area"  );
-    $VIEW_FIELDS["cond1field"]      = GetViewFieldDef("text",  "quoted", "text",   "cond"  );
-    $VIEW_FIELDS["cond1op"]         = GetViewFieldDef("text",  "quoted", "text",   "none"  );
-    $VIEW_FIELDS["cond1cond"]       = GetViewFieldDef("text",  "quoted", "text",   "none"  );
-    $VIEW_FIELDS["cond2field"]      = GetViewFieldDef("text",  "quoted", "text",   "cond"  );
-    $VIEW_FIELDS["cond2op"]         = GetViewFieldDef("text",  "quoted", "text",   "none"  );
-    $VIEW_FIELDS["cond2cond"]       = GetViewFieldDef("text",  "quoted", "text",   "none"  );
-    $VIEW_FIELDS["cond3field"]      = GetViewFieldDef("text",  "quoted", "text",   "cond"  );
-    $VIEW_FIELDS["cond3op"]         = GetViewFieldDef("text",  "quoted", "text",   "none"  );
-    $VIEW_FIELDS["cond3cond"]       = GetViewFieldDef("text",  "quoted", "text",   "none"  );
-    $VIEW_FIELDS["listlen"]         = GetViewFieldDef("number","quoted", "text",   "field" );
-    $VIEW_FIELDS["flag"]            = GetViewFieldDef("",      "quoted", "bool",   "chbox" );
+    // $validate, $insert,  $type,   $input,  $value
+    $VIEW_FIELDS["name"]            = GetViewFieldDef("text", "quoted", "text", "field50");
+    $VIEW_FIELDS["before"]          = GetViewFieldDef("text", "quoted", "text", "area");
+    $VIEW_FIELDS["even"]            = GetViewFieldDef("text", "quoted", "text", "area");
+    $VIEW_FIELDS["even_odd_differ"] = GetViewFieldDef("", "quoted", "bool", "chbox");
+    $VIEW_FIELDS["odd"]             = GetViewFieldDef("text", "quoted", "text", "areabig");
+    $VIEW_FIELDS["row_delimiter"]   = GetViewFieldDef("text", "quoted", "text", "area");
+    $VIEW_FIELDS["after"]           = GetViewFieldDef("text", "quoted", "text", "area");
+    $VIEW_FIELDS["group_by1"]       = GetViewFieldDef("text", "quoted", "text", "group");
+    $VIEW_FIELDS["g1_direction"]    = GetViewFieldDef("", "quoted", "number", "none");
+    $VIEW_FIELDS["gb_header"]       = GetViewFieldDef("", "quoted", "number", "none");
+    $VIEW_FIELDS["group_by2"]       = GetViewFieldDef("text", "quoted", "text", "orderal");
+    $VIEW_FIELDS["g2_direction"]    = GetViewFieldDef("", "quoted", "number", "none");
+    $VIEW_FIELDS["group_title"]     = GetViewFieldDef("text", "quoted", "text", "area");
+    $VIEW_FIELDS["group_bottom"]    = GetViewFieldDef("text", "quoted", "text", "area");
+    $VIEW_FIELDS["remove_string"]   = GetViewFieldDef("text", "quoted", "text", "area");
+    $VIEW_FIELDS["modification"]    = GetViewFieldDef("text", "quoted", "text", "seltype");
+    $VIEW_FIELDS["parameter"]       = GetViewFieldDef("text", "quoted", "text", "selgrp");
+    $VIEW_FIELDS["img1"]            = GetViewFieldDef("text", "quoted", "text", "field");
+    $VIEW_FIELDS["img2"]            = GetViewFieldDef("text", "quoted", "text", "field");
+    $VIEW_FIELDS["img3"]            = GetViewFieldDef("text", "quoted", "text", "field");
+    $VIEW_FIELDS["img4"]            = GetViewFieldDef("text", "quoted", "text", "field");
+    $VIEW_FIELDS["order1"]          = GetViewFieldDef("text", "quoted", "text", "order");
+    $VIEW_FIELDS["o1_direction"]    = GetViewFieldDef("", "quoted", "number", "none");
+    $VIEW_FIELDS["order2"]          = GetViewFieldDef("text", "quoted", "text", "order");
+    $VIEW_FIELDS["o2_direction"]    = GetViewFieldDef("", "quoted", "number", "none");
+    $VIEW_FIELDS["selected_item"]   = GetViewFieldDef("text", "quoted", "text", "area");
+    $VIEW_FIELDS["cond1field"]      = GetViewFieldDef("text", "quoted", "text", "cond");
+    $VIEW_FIELDS["cond1op"]         = GetViewFieldDef("text", "quoted", "text", "none");
+    $VIEW_FIELDS["cond1cond"]       = GetViewFieldDef("text", "quoted", "text", "none");
+    $VIEW_FIELDS["cond2field"]      = GetViewFieldDef("text", "quoted", "text", "cond");
+    $VIEW_FIELDS["cond2op"]         = GetViewFieldDef("text", "quoted", "text", "none");
+    $VIEW_FIELDS["cond2cond"]       = GetViewFieldDef("text", "quoted", "text", "none");
+    $VIEW_FIELDS["cond3field"]      = GetViewFieldDef("text", "quoted", "text", "cond");
+    $VIEW_FIELDS["cond3op"]         = GetViewFieldDef("text", "quoted", "text", "none");
+    $VIEW_FIELDS["cond3cond"]       = GetViewFieldDef("text", "quoted", "text", "none");
+    $VIEW_FIELDS["listlen"]         = GetViewFieldDef("number", "quoted", "text", "field");
+    $VIEW_FIELDS["flag"]            = GetViewFieldDef("", "quoted", "bool", "chbox");
     //$VIEW_FIELDS["flag"]            = GetViewFieldDef("",      "quoted", "bool",   "bitflag" );
-    $VIEW_FIELDS["scroller"]        = GetViewFieldDef("",      "quoted", "bool",   "chbox" );
-    $VIEW_FIELDS["aditional"]       = GetViewFieldDef("text",  "quoted", "text",   "area"  );
-    $VIEW_FIELDS["aditional2"]      = GetViewFieldDef("text",  "quoted", "text",   "area"  );
-    $VIEW_FIELDS["aditional3"]      = GetViewFieldDef("text",  "quoted", "text",   "area"  );
-    $VIEW_FIELDS["aditional4"]      = GetViewFieldDef("text",  "quoted", "text",   "area"  );
-    $VIEW_FIELDS["aditional5"]      = GetViewFieldDef("text",  "quoted", "text",   "area"  );
-    $VIEW_FIELDS["aditional6"]      = GetViewFieldDef("text",  "quoted", "text",   "area"  );
-    $VIEW_FIELDS["noitem_msg"]      = GetViewFieldDef("text",  "quoted", "text",   "area"  );
-    $VIEW_FIELDS["field1"]          = GetViewFieldDef("text",  "quoted", "text",   "selfld");
-    $VIEW_FIELDS["field2"]          = GetViewFieldDef("text",  "quoted", "text",   "selfld");
-    $VIEW_FIELDS["field3"]          = GetViewFieldDef("text",  "quoted", "text",   "vid");
-    $VIEW_FIELDS["calendar_type"]   = GetViewFieldDef("text",  "quoted", "text",   "select", ["mon"=>_m("Month List"),"mon_table"=>_m("Month Table")]);
+    $VIEW_FIELDS["scroller"]      = GetViewFieldDef("", "quoted", "bool", "chbox");
+    $VIEW_FIELDS["aditional"]     = GetViewFieldDef("text", "quoted", "text", "area");
+    $VIEW_FIELDS["aditional2"]    = GetViewFieldDef("text", "quoted", "text", "area");
+    $VIEW_FIELDS["aditional3"]    = GetViewFieldDef("text", "quoted", "text", "area");
+    $VIEW_FIELDS["aditional4"]    = GetViewFieldDef("text", "quoted", "text", "area");
+    $VIEW_FIELDS["aditional5"]    = GetViewFieldDef("text", "quoted", "text", "area");
+    $VIEW_FIELDS["aditional6"]    = GetViewFieldDef("text", "quoted", "text", "area");
+    $VIEW_FIELDS["noitem_msg"]    = GetViewFieldDef("text", "quoted", "text", "area");
+    $VIEW_FIELDS["field1"]        = GetViewFieldDef("text", "quoted", "text", "selfld");
+    $VIEW_FIELDS["field2"]        = GetViewFieldDef("text", "quoted", "text", "selfld");
+    $VIEW_FIELDS["field3"]        = GetViewFieldDef("text", "quoted", "text", "vid");
+    $VIEW_FIELDS["calendar_type"] = GetViewFieldDef("text", "quoted", "text", "select", ["mon"       => _m("Month List"),
+                                                                                         "mon_table" => _m("Month Table"),
+    ]);
     return $VIEW_FIELDS;
 }
 
@@ -632,303 +634,303 @@ function getViewGroupFunctions() {
 }
 
 /** getViewTypes function
-*       View types is an array. The basic format is
-*       view_type => array (
-*           "view_field (one from $VIEW_FIELDS, see above)" => "label", ...)
-*
-*   You can use extended format for view_field info:
-*       view_field => array (
-*           "label" => "field label",
-*           "help" => "help text",
-*           "input" => "overrides the input function from $VIEW_FIELDS")
-*
-*   See the "digest" view below for an example.
-*   @return array
-*/
+ *       View types is an array. The basic format is
+ *       view_type => array (
+ *           "view_field (one from $VIEW_FIELDS, see above)" => "label", ...)
+ *
+ *   You can use extended format for view_field info:
+ *       view_field => array (
+ *           "label" => "field label",
+ *           "help" => "help text",
+ *           "input" => "overrides the input function from $VIEW_FIELDS")
+ *
+ *   See the "digest" view below for an example.
+ * @return array
+ */
 function getViewTypes() {
     $field3def = [
         "label" => _m("vid"),
-                         "help" => _m("now possible to use non numeric vid - like: photo_list and usage as {view:photo_list:...} or ..?vid=photo_list... Use only smallcaps - [a-z_].")
+        "help"  => _m("now possible to use non numeric vid - like: photo_list and usage as {view:photo_list:...} or ..?vid=photo_list... Use only smallcaps - [a-z_]."),
     ];
-    return   [
+    return [
         'list' => [
-                         "field3" => $field3def,
-                         "name" => _m("Item listing"),
-                         "before" => _m("Top HTML") ,
-                         "odd" => _m("Odd Rows") ,
-                         "even_odd_differ" => _m("Use different HTML code for even rows") ,
-                         "even" => _m("Even Rows") ,
-                         "row_delimiter" => _m("Row Delimiter") ,
-                         "after" => _m("Bottom HTML") ,
-                         "remove_string" => _m("Remove strings") ,
-    // TODO                     "modification" => _m("Type") ,
-    //                     "parameter" => _m("Parameter") ,
-    //                     "img1" => _m("View image 1") ,
-    //                     "img2" => _m("View image 2") ,
-    //                     "img3" => _m("View image 3") ,
-    //                     "img4" => _m("View image 4") ,
-                         "order1" => _m("Sort primary") ,
-                         "o1_direction" => " " ,
-                         "order2" => _m("Sort secondary") ,
-                         "o2_direction" => " " ,
-                         "group_by2" => _m("Sort alias"),
-                         "g2_direction" => " " ,
-                         "group_by1" => _m("Group by") ,
-                         "g1_direction" => " " ,
-                         "gb_header" => " " ,
-                         "group_title" => _m("Group title format") ,
-                         "group_bottom" => _m("Group bottom format") ,
-    //                     "selected_item" => _m("HTML for Selected") ,
-                         "cond1field" => _m("Condition 1") ,
-                         "cond1op" => " " ,
-                         "cond1cond" => " " ,
-                         "cond2field" => _m("Condition 2") ,
-                         "cond2op" => " " ,
-                         "cond2cond" => " " ,
-                         "cond3field" => _m("Condition 3") ,
-                         "cond3op" => " " ,
-                         "cond3cond" => " " ,
-                         "listlen" => _m("Listing length") ,
-                         "scroller" => [
-                             "label" => _m("Accept site module paging - {xpage}"),
-                             "help" => _m("if checked, no need to pass page-{xpage} param to the view")
-                         ],
-                         "noitem_msg" => [
-                                 "label" => _m("HTML code for \"No item found\" message"),
-                                 "help" => _m("use {#} if you do not want print anything")
-                         ],
-                         "flag" => _m("Add view ID as HTML comment")
-    //                     "aditional" => _m("Additional") );
+            "field3"          => $field3def,
+            "name"            => _m("Item listing"),
+            "before"          => _m("Top HTML"),
+            "odd"             => _m("Odd Rows"),
+            "even_odd_differ" => _m("Use different HTML code for even rows"),
+            "even"            => _m("Even Rows"),
+            "row_delimiter"   => _m("Row Delimiter"),
+            "after"           => _m("Bottom HTML"),
+            "remove_string"   => _m("Remove strings"),
+            // TODO                     "modification" => _m("Type") ,
+            //                     "parameter" => _m("Parameter") ,
+            //                     "img1" => _m("View image 1") ,
+            //                     "img2" => _m("View image 2") ,
+            //                     "img3" => _m("View image 3") ,
+            //                     "img4" => _m("View image 4") ,
+            "order1"          => _m("Sort primary"),
+            "o1_direction"    => " ",
+            "order2"          => _m("Sort secondary"),
+            "o2_direction"    => " ",
+            "group_by2"       => _m("Sort alias"),
+            "g2_direction"    => " ",
+            "group_by1"       => _m("Group by"),
+            "g1_direction"    => " ",
+            "gb_header"       => " ",
+            "group_title"     => _m("Group title format"),
+            "group_bottom"    => _m("Group bottom format"),
+            //                     "selected_item" => _m("HTML for Selected") ,
+            "cond1field"      => _m("Condition 1"),
+            "cond1op"         => " ",
+            "cond1cond"       => " ",
+            "cond2field"      => _m("Condition 2"),
+            "cond2op"         => " ",
+            "cond2cond"       => " ",
+            "cond3field"      => _m("Condition 3"),
+            "cond3op"         => " ",
+            "cond3cond"       => " ",
+            "listlen"         => _m("Listing length"),
+            "scroller"        => [
+                "label" => _m("Accept site module paging - {xpage}"),
+                "help"  => _m("if checked, no need to pass page-{xpage} param to the view"),
+            ],
+            "noitem_msg"      => [
+                "label" => _m("HTML code for \"No item found\" message"),
+                "help"  => _m("use {#} if you do not want print anything"),
+            ],
+            "flag"            => _m("Add view ID as HTML comment")
+            //                     "aditional" => _m("Additional") );
         ],
 
         'full' => [
-                         "field3" => $field3def,
-                         'name' => _m("Fulltext view"),
-                         "before" => _m("Top HTML") ,
-                         "odd" => _m("Odd Rows") ,
-                         "after" => _m("Bottom HTML") ,
-                         "remove_string" => _m("Remove strings") ,
-                         "cond1field" => _m("Condition 1") ,
-                         "cond1op" => " " ,
-                         "cond1cond" => " " ,
-                         "cond2field" => _m("Condition 2") ,
-                         "cond2op" => " " ,
-                         "cond2cond" => " " ,
-                         "cond3field" => _m("Condition 3") ,
-                         "cond3op" => " " ,
-                         "cond3cond" => " " ,
-                         "noitem_msg" => _m("HTML code for \"No item found\" message"),
-                         "flag" => _m("Add view ID as HTML comment")
+            "field3"        => $field3def,
+            'name'          => _m("Fulltext view"),
+            "before"        => _m("Top HTML"),
+            "odd"           => _m("Odd Rows"),
+            "after"         => _m("Bottom HTML"),
+            "remove_string" => _m("Remove strings"),
+            "cond1field"    => _m("Condition 1"),
+            "cond1op"       => " ",
+            "cond1cond"     => " ",
+            "cond2field"    => _m("Condition 2"),
+            "cond2op"       => " ",
+            "cond2cond"     => " ",
+            "cond3field"    => _m("Condition 3"),
+            "cond3op"       => " ",
+            "cond3cond"     => " ",
+            "noitem_msg"    => _m("HTML code for \"No item found\" message"),
+            "flag"          => _m("Add view ID as HTML comment"),
         ],
 
-        'discus' => [
-                           "field3" => $field3def,
-                           'name' => _m("Discussion"),
-                           "before" => _m("Top HTML") ,
-                           "odd" => _m("HTML code for index view of the comment") ,
-                           "after" => _m("Bottom HTML") ,
-                           "aditional2" => _m("HTML code for \"Show selected\" button") ,
-                           "aditional3" => _m("HTML code for \"Show all\" button") ,
-                           "aditional4" => _m("HTML code for \"Add\" button") ,
-                           "even_odd_differ" => _m("Show images") ,
-                           "modification" => _m("Order by") ,
-                           "img1" => _m("View image 1") ,
-                           "img2" => _m("View image 2") ,
-                           "img3" => _m("View image 3") ,
-                           "img4" => _m("View image 4") ,
-                           "even" => _m("HTML code for fulltext view of the comment"),
-                           "aditional" => _m("HTML code for space before comment") ,
-                           "remove_string" => _m("HTML code of the form for posting comment"),
-                           "aditional6" => [
-                               "label" => _m("E-mail template"),
-                               "input" => "field",
-                               "help" => _m("Number of e-mail template used for posting new comments to users")
-                           ],
-                           "flag" => _m("Allow HTML tags in the comments")
+        'discus'    => [
+            "field3"          => $field3def,
+            'name'            => _m("Discussion"),
+            "before"          => _m("Top HTML"),
+            "odd"             => _m("HTML code for index view of the comment"),
+            "after"           => _m("Bottom HTML"),
+            "aditional2"      => _m("HTML code for \"Show selected\" button"),
+            "aditional3"      => _m("HTML code for \"Show all\" button"),
+            "aditional4"      => _m("HTML code for \"Add\" button"),
+            "even_odd_differ" => _m("Show images"),
+            "modification"    => _m("Order by"),
+            "img1"            => _m("View image 1"),
+            "img2"            => _m("View image 2"),
+            "img3"            => _m("View image 3"),
+            "img4"            => _m("View image 4"),
+            "even"            => _m("HTML code for fulltext view of the comment"),
+            "aditional"       => _m("HTML code for space before comment"),
+            "remove_string"   => _m("HTML code of the form for posting comment"),
+            "aditional6"      => [
+                "label" => _m("E-mail template"),
+                "input" => "field",
+                "help"  => _m("Number of e-mail template used for posting new comments to users"),
+            ],
+            "flag"            => _m("Allow HTML tags in the comments"),
         ],
 
         // discussion to mail
         'disc2mail' => [
-                              "field3" => $field3def,
-                              'name' => _m("Discussion To Mail"),
-                              "aditional" => _m("From: (email header)"),
-                              "aditional2" => _m("Reply-To:"),
-                              "aditional3" => _m("Errors-To:"),
-                              "aditional4" => _m("Sender:"),
-                              "aditional5" => _m("Mail Subject:"),
-                              "even" => _m("Mail Body:")
+            "field3"     => $field3def,
+            'name'       => _m("Discussion To Mail"),
+            "aditional"  => _m("From: (email header)"),
+            "aditional2" => _m("Reply-To:"),
+            "aditional3" => _m("Errors-To:"),
+            "aditional4" => _m("Sender:"),
+            "aditional5" => _m("Mail Subject:"),
+            "even"       => _m("Mail Body:"),
         ],
 
-    /*  TODO
-        'seetoo' => array( 'name' => _m("Related item"),
-                                  "before" => _m("Top HTML") ,
-                                  "odd" => _m("Odd Rows") ,
-                                  "even_odd_differ" => _m("Use different HTML code for even rows") ,
-                                  "even" => _m("Even Rows") ,
-                                  "after" => _m("Bottom HTML") ,
-                                  "modification" => _m("Type") ,
-                                  "order1" => _m("Sort primary") ,
-                                  "o1_direction" => " " ,
-                                  "order2" => _m("Sort secondary") ,
-                                  "o2_direction" => " " ,
-                                  "selected_item" => _m("HTML for Selected") ,
-                                  "listlen" => _m("Listing length") );
-    */
+        /*  TODO
+            'seetoo' => array( 'name' => _m("Related item"),
+                                      "before" => _m("Top HTML") ,
+                                      "odd" => _m("Odd Rows") ,
+                                      "even_odd_differ" => _m("Use different HTML code for even rows") ,
+                                      "even" => _m("Even Rows") ,
+                                      "after" => _m("Bottom HTML") ,
+                                      "modification" => _m("Type") ,
+                                      "order1" => _m("Sort primary") ,
+                                      "o1_direction" => " " ,
+                                      "order2" => _m("Sort secondary") ,
+                                      "o2_direction" => " " ,
+                                      "selected_item" => _m("HTML for Selected") ,
+                                      "listlen" => _m("Listing length") );
+        */
 
         'const' => [
-                          "field3" => $field3def,
-                          'name' => _m("View of Constants"),
-                          "before" => _m("Top HTML") ,
-                          "odd" => _m("Odd Rows") ,
-                          "even" => _m("Even Rows") ,
-                          "row_delimiter" => _m("Row Delimiter") ,
-                          "after" => _m("Bottom HTML") ,
-                          "remove_string" => _m("Remove strings") ,
-                          "parameter" => _m("Constant Group") ,
-                          "order1" => _m("Sort primary") ,
-                          "o1_direction" => " " ,
-                          "order2" => _m("Sort secondary") ,
-                          "o2_direction" => " " ,
-                          "group_by1" => _m("Group by") ,
-                          "g1_direction" => " " ,
-                          "gb_header" => " " ,
-                          "group_title" => _m("Group title format") ,
-                          "group_bottom" => _m("Group bottom format") ,
-                          "cond1field" => _m("Condition 1") ,
-                          "cond1op" => " " ,
-                          "cond1cond" => " " ,
-                          "cond2field" => _m("Condition 2") ,
-                          "cond2op" => " " ,
-                          "cond2cond" => " " ,
-                          "cond3field" => _m("Condition 3") ,
-                          "cond3op" => " " ,
-                          "cond3cond" => " " ,
-                          "listlen" => _m("Listing length") ,
-                          "noitem_msg" => _m("HTML code for \"No item found\" message"),
-                          "even_odd_differ" => _m("Use different HTML code for even rows"),
-                          "flag" => _m("Add view ID as HTML comment")
+            "field3"          => $field3def,
+            'name'            => _m("View of Constants"),
+            "before"          => _m("Top HTML"),
+            "odd"             => _m("Odd Rows"),
+            "even"            => _m("Even Rows"),
+            "row_delimiter"   => _m("Row Delimiter"),
+            "after"           => _m("Bottom HTML"),
+            "remove_string"   => _m("Remove strings"),
+            "parameter"       => _m("Constant Group"),
+            "order1"          => _m("Sort primary"),
+            "o1_direction"    => " ",
+            "order2"          => _m("Sort secondary"),
+            "o2_direction"    => " ",
+            "group_by1"       => _m("Group by"),
+            "g1_direction"    => " ",
+            "gb_header"       => " ",
+            "group_title"     => _m("Group title format"),
+            "group_bottom"    => _m("Group bottom format"),
+            "cond1field"      => _m("Condition 1"),
+            "cond1op"         => " ",
+            "cond1cond"       => " ",
+            "cond2field"      => _m("Condition 2"),
+            "cond2op"         => " ",
+            "cond2cond"       => " ",
+            "cond3field"      => _m("Condition 3"),
+            "cond3op"         => " ",
+            "cond3cond"       => " ",
+            "listlen"         => _m("Listing length"),
+            "noitem_msg"      => _m("HTML code for \"No item found\" message"),
+            "even_odd_differ" => _m("Use different HTML code for even rows"),
+            "flag"            => _m("Add view ID as HTML comment"),
         ],
 
         'rss' => [
-                        "field3" => $field3def,
-                        'name' => _m("RSS exchange"),
-                        "before" => _m("Top HTML") ,
-                        "odd" => _m("Odd Rows") ,
-                        "after" => _m("Bottom HTML") ,
-                        "order1" => _m("Sort primary") ,
-                        "o1_direction" => " " ,
-                        "order2" => _m("Sort secondary") ,
-                        "o2_direction" => " " ,
-                        "cond1field" => _m("Condition 1") ,
-                        "cond1op" => " " ,
-                        "cond1cond" => " " ,
-                        "cond2field" => _m("Condition 2") ,
-                        "cond2op" => " " ,
-                        "cond2cond" => " " ,
-                        "cond3field" => _m("Condition 3") ,
-                        "cond3op" => " " ,
-                        "cond3cond" => " " ,
-                        "listlen" => _m("Listing length") ,
-                        "noitem_msg" => _m("HTML code for \"No item found\" message")
+            "field3"       => $field3def,
+            'name'         => _m("RSS exchange"),
+            "before"       => _m("Top HTML"),
+            "odd"          => _m("Odd Rows"),
+            "after"        => _m("Bottom HTML"),
+            "order1"       => _m("Sort primary"),
+            "o1_direction" => " ",
+            "order2"       => _m("Sort secondary"),
+            "o2_direction" => " ",
+            "cond1field"   => _m("Condition 1"),
+            "cond1op"      => " ",
+            "cond1cond"    => " ",
+            "cond2field"   => _m("Condition 2"),
+            "cond2op"      => " ",
+            "cond2cond"    => " ",
+            "cond3field"   => _m("Condition 3"),
+            "cond3op"      => " ",
+            "cond3cond"    => " ",
+            "listlen"      => _m("Listing length"),
+            "noitem_msg"   => _m("HTML code for \"No item found\" message"),
         ],
 
-        'static' => [
-                           "field3" => $field3def,
-                           'name' => _m("Static page"),
-                           "odd" => _m("HTML code"),
-                           "flag" => _m("Add view ID as HTML comment")
+        'static'     => [
+            "field3" => $field3def,
+            'name'   => _m("Static page"),
+            "odd"    => _m("HTML code"),
+            "flag"   => _m("Add view ID as HTML comment"),
         ],
 
         // for javascript list of items
         'javascript' => [
-                               "field3" => $field3def,
-                               'name' => _m("Javascript item exchange"),
-                               "before" => _m("Top HTML") ,
-                               "odd" => _m("Odd Rows") ,
-                               "after" => _m("Bottom HTML") ,
-                               "order1" => _m("Sort primary") ,
-                               "o1_direction" => " " ,
-                               "order2" => _m("Sort secondary") ,
-                               "o2_direction" => " " ,
-                               "cond1field" => _m("Condition 1") ,
-                               "cond1op" => " " ,
-                               "cond1cond" => " " ,
-                               "cond2field" => _m("Condition 2") ,
-                               "cond2op" => " " ,
-                               "cond2cond" => " " ,
-                               "cond3field" => _m("Condition 3") ,
-                               "cond3op" => " " ,
-                               "cond3cond" => " " ,
-                               "listlen" => _m("Listing length") ,
-                               "noitem_msg" => _m("HTML code for \"No item found\" message")
+            "field3"       => $field3def,
+            'name'         => _m("Javascript item exchange"),
+            "before"       => _m("Top HTML"),
+            "odd"          => _m("Odd Rows"),
+            "after"        => _m("Bottom HTML"),
+            "order1"       => _m("Sort primary"),
+            "o1_direction" => " ",
+            "order2"       => _m("Sort secondary"),
+            "o2_direction" => " ",
+            "cond1field"   => _m("Condition 1"),
+            "cond1op"      => " ",
+            "cond1cond"    => " ",
+            "cond2field"   => _m("Condition 2"),
+            "cond2op"      => " ",
+            "cond2cond"    => " ",
+            "cond3field"   => _m("Condition 3"),
+            "cond3op"      => " ",
+            "cond3cond"    => " ",
+            "listlen"      => _m("Listing length"),
+            "noitem_msg"   => _m("HTML code for \"No item found\" message"),
         ],
 
         'calendar' => [
-                             "field3" => $field3def,
-                             'name' => _m("Calendar"),
-                             "calendar_type" => _m("Calendar Type"),
-                             "before" => _m("Top HTML") ,
-                             "aditional3" => _m("Additional attribs to the TD event tag") ,
-                             "odd" => _m("Event format") ,
-                             "after" => _m("Bottom HTML") ,
-                             "remove_string" => _m("Remove strings") ,
-                             "order1" => _m("Sort primary") ,
-                             "o1_direction" => " " ,
-                             "order2" => _m("Sort secondary") ,
-                             "o2_direction" => " " ,
-                             "field1" => _m("Start date field"),
-                             "field2" => _m("End date field"),
-                             "group_title" => _m("Day cell top format") ,
-                             "group_bottom" => _m("Day cell bottom format") ,
-                             "even_odd_differ" => _m("Use other header for empty cells"),
-                             "aditional" => _m("Empty day cell top format"),
-                             "aditional2" => _m("Empty day cell bottom format"),
-                             "cond1field" => _m("Condition 1") ,
-                             "cond1op" => " " ,
-                             "cond1cond" => " " ,
-                             "cond2field" => _m("Condition 2") ,
-                             "cond2op" => " " ,
-                             "cond2cond" => " " ,
-                             "cond3field" => _m("Condition 3") ,
-                             "cond3op" => " " ,
-                             "cond3cond" => " " ,
-                             "listlen" => _m("Listing length") ,
-                             "noitem_msg" => _m("HTML code for \"No item found\" message"),
-                             "flag" => _m("Add view ID as HTML comment")
+            "field3"          => $field3def,
+            'name'            => _m("Calendar"),
+            "calendar_type"   => _m("Calendar Type"),
+            "before"          => _m("Top HTML"),
+            "aditional3"      => _m("Additional attribs to the TD event tag"),
+            "odd"             => _m("Event format"),
+            "after"           => _m("Bottom HTML"),
+            "remove_string"   => _m("Remove strings"),
+            "order1"          => _m("Sort primary"),
+            "o1_direction"    => " ",
+            "order2"          => _m("Sort secondary"),
+            "o2_direction"    => " ",
+            "field1"          => _m("Start date field"),
+            "field2"          => _m("End date field"),
+            "group_title"     => _m("Day cell top format"),
+            "group_bottom"    => _m("Day cell bottom format"),
+            "even_odd_differ" => _m("Use other header for empty cells"),
+            "aditional"       => _m("Empty day cell top format"),
+            "aditional2"      => _m("Empty day cell bottom format"),
+            "cond1field"      => _m("Condition 1"),
+            "cond1op"         => " ",
+            "cond1cond"       => " ",
+            "cond2field"      => _m("Condition 2"),
+            "cond2op"         => " ",
+            "cond2cond"       => " ",
+            "cond3field"      => _m("Condition 3"),
+            "cond3op"         => " ",
+            "cond3cond"       => " ",
+            "listlen"         => _m("Listing length"),
+            "noitem_msg"      => _m("HTML code for \"No item found\" message"),
+            "flag"            => _m("Add view ID as HTML comment"),
         ],
 
         // this view uses also "aditonal" and "aditional3" for the "Group by"
         // radio buttons and for the sort[] box, see se_view.php
 
-        'digest' => [
-                           "field3" => $field3def,
-                           "name" => _m("Alerts Selection Set"),
-                           "function:digest_filters" => "",
-                           "aditional2" => [
-                               "label" => _m("Fulltext URL"),
-                               "input" => "field",
-                               "help" => _m("Link to the .shtml page used
-                                 to create headline links.")
-                           ],
-                           "before" => _m("Top HTML") ,
-                           "odd" => _m("Odd Rows") ,
-                           "even_odd_differ" => _m("Use different HTML code for even rows") ,
-                           "even" => _m("Even Rows") ,
-                           "row_delimiter" => _m("Row Delimiter") ,
-                           "after" => _m("Bottom HTML") ,
-                           "remove_string" => _m("Remove strings") ,
-                           "order1" => _m("Sort primary") ,
-                           "o1_direction" => " " ,
-                           "order2" => _m("Sort secondary") ,
-                           "o2_direction" => " " ,
-                           "group_by1" => _m("Group by") ,
-                           "g1_direction" => " " ,
-                           "gb_header" => " " ,
-                           "group_title" => _m("Group title format") ,
-                           "group_bottom" => _m("Group bottom format") ,
-                           "listlen" => _m("Max number of items"),
-                           "noitem_msg" => _m("HTML code for \"No item found\" message"),
-                           "flag" => _m("Add view ID as HTML comment")
+        'digest'     => [
+            "field3"                  => $field3def,
+            "name"                    => _m("Alerts Selection Set"),
+            "function:digest_filters" => "",
+            "aditional2"              => [
+                "label" => _m("Fulltext URL"),
+                "input" => "field",
+                "help"  => _m("Link to the .shtml page used
+                                 to create headline links."),
+            ],
+            "before"                  => _m("Top HTML"),
+            "odd"                     => _m("Odd Rows"),
+            "even_odd_differ"         => _m("Use different HTML code for even rows"),
+            "even"                    => _m("Even Rows"),
+            "row_delimiter"           => _m("Row Delimiter"),
+            "after"                   => _m("Bottom HTML"),
+            "remove_string"           => _m("Remove strings"),
+            "order1"                  => _m("Sort primary"),
+            "o1_direction"            => " ",
+            "order2"                  => _m("Sort secondary"),
+            "o2_direction"            => " ",
+            "group_by1"               => _m("Group by"),
+            "g1_direction"            => " ",
+            "gb_header"               => " ",
+            "group_title"             => _m("Group title format"),
+            "group_bottom"            => _m("Group bottom format"),
+            "listlen"                 => _m("Max number of items"),
+            "noitem_msg"              => _m("HTML code for \"No item found\" message"),
+            "flag"                    => _m("Add view ID as HTML comment"),
         ],
 
         // View used for listing of ursl - mainly for listing items for index
@@ -936,112 +938,113 @@ function getViewTypes() {
         // The main difference from 'list' view is that the aliases are created
         // just from item table, so the memory usage is much smaller - you can
         // list all urls, even if there is a lot of items in the slice.
-        'urls' => [
-                         "field3" => $field3def,
-                         "name" => _m("URL listing"),
-                         "before" => _m("Top HTML") ,
-                         "odd" => _m("Row HTML"),
-                         "after" => _m("Bottom HTML") ,
-                         "remove_string" => _m("Remove strings") ,
-                         "order1" => _m("Sort primary") ,
-                         "o1_direction" => " " ,
-                         "order2" => _m("Sort secondary") ,
-                         "o2_direction" => " " ,
-                         "cond1field" => _m("Condition 1") ,
-                         "cond1op" => " " ,
-                         "cond1cond" => " " ,
-                         "cond2field" => _m("Condition 2") ,
-                         "cond2op" => " " ,
-                         "cond2cond" => " " ,
-                         "cond3field" => _m("Condition 3") ,
-                         "cond3op" => " " ,
-                         "cond3cond" => " " ,
-                         "listlen" => _m("Listing length") ,
-                         "noitem_msg" => _m("HTML code for \"No item found\" message"),
-                         "flag" => _m("Add view ID as HTML comment")
+        'urls'       => [
+            "field3"        => $field3def,
+            "name"          => _m("URL listing"),
+            "before"        => _m("Top HTML"),
+            "odd"           => _m("Row HTML"),
+            "after"         => _m("Bottom HTML"),
+            "remove_string" => _m("Remove strings"),
+            "order1"        => _m("Sort primary"),
+            "o1_direction"  => " ",
+            "order2"        => _m("Sort secondary"),
+            "o2_direction"  => " ",
+            "cond1field"    => _m("Condition 1"),
+            "cond1op"       => " ",
+            "cond1cond"     => " ",
+            "cond2field"    => _m("Condition 2"),
+            "cond2op"       => " ",
+            "cond2cond"     => " ",
+            "cond3field"    => _m("Condition 3"),
+            "cond3op"       => " ",
+            "cond3cond"     => " ",
+            "listlen"       => _m("Listing length"),
+            "noitem_msg"    => _m("HTML code for \"No item found\" message"),
+            "flag"          => _m("Add view ID as HTML comment"),
         ],
 
         // View used in Links module - displays set of link
-        'links' => [
-                          "field3" => $field3def,
-                          "name" => _m("Link listing"),
-                          "before" => _m("Top HTML") ,
-                          "odd" => _m("Odd Rows") ,
-                          "even_odd_differ" => _m("Use different HTML code for even rows") ,
-                          "even" => _m("Even Rows") ,
-                          "row_delimiter" => _m("Row Delimiter") ,
-                          "after" => _m("Bottom HTML") ,
-                          "remove_string" => _m("Remove strings") ,
-                          "order1" => _m("Sort primary") ,
-                          "o1_direction" => " " ,
-                          "order2" => _m("Sort secondary") ,
-                          "o2_direction" => " " ,
-                          "group_by1" => _m("Group by") ,
-                          "g1_direction" => " " ,
-                          "gb_header" => " " ,
-                          "group_title" => _m("Group title format") ,
-                          "group_bottom" => _m("Group bottom format") ,
-                          "cond1field" => _m("Condition 1") ,
-                          "cond1op" => " " ,
-                          "cond1cond" => " " ,
-                          "cond2field" => _m("Condition 2") ,
-                          "cond2op" => " " ,
-                          "cond2cond" => " " ,
-                          "cond3field" => _m("Condition 3") ,
-                          "cond3op" => " " ,
-                          "cond3cond" => " " ,
-                          "listlen" => _m("Listing length") ,
-                          "noitem_msg" => _m("HTML code for \"No item found\" message"),
-                          "flag" => _m("Add view ID as HTML comment")
+        'links'      => [
+            "field3"          => $field3def,
+            "name"            => _m("Link listing"),
+            "before"          => _m("Top HTML"),
+            "odd"             => _m("Odd Rows"),
+            "even_odd_differ" => _m("Use different HTML code for even rows"),
+            "even"            => _m("Even Rows"),
+            "row_delimiter"   => _m("Row Delimiter"),
+            "after"           => _m("Bottom HTML"),
+            "remove_string"   => _m("Remove strings"),
+            "order1"          => _m("Sort primary"),
+            "o1_direction"    => " ",
+            "order2"          => _m("Sort secondary"),
+            "o2_direction"    => " ",
+            "group_by1"       => _m("Group by"),
+            "g1_direction"    => " ",
+            "gb_header"       => " ",
+            "group_title"     => _m("Group title format"),
+            "group_bottom"    => _m("Group bottom format"),
+            "cond1field"      => _m("Condition 1"),
+            "cond1op"         => " ",
+            "cond1cond"       => " ",
+            "cond2field"      => _m("Condition 2"),
+            "cond2op"         => " ",
+            "cond2cond"       => " ",
+            "cond3field"      => _m("Condition 3"),
+            "cond3op"         => " ",
+            "cond3cond"       => " ",
+            "listlen"         => _m("Listing length"),
+            "noitem_msg"      => _m("HTML code for \"No item found\" message"),
+            "flag"            => _m("Add view ID as HTML comment"),
         ],
 
         // View used in Links module - displays set of categories
         'categories' => [
-                               "field3" => $field3def,
-                               "name" => _m("Category listing"),
-                               "before" => _m("Top HTML") ,
-                               "odd" => _m("Odd Rows") ,
-                               "even_odd_differ" => _m("Use different HTML code for even rows") ,
-                               "even" => _m("Even Rows") ,
-                               "row_delimiter" => _m("Row Delimiter") ,
-                               "after" => _m("Bottom HTML") ,
-                               "remove_string" => _m("Remove strings") ,
-                               "order1" => _m("Sort primary") ,
-                               "o1_direction" => " " ,
-                               "order2" => _m("Sort secondary") ,
-                               "o2_direction" => " " ,
-                               "group_by1" => _m("Group by") ,
-                               "g1_direction" => " " ,
-                               "gb_header" => " " ,
-                               "group_title" => _m("Group title format") ,
-                               "group_bottom" => _m("Group bottom format") ,
-                               "cond1field" => _m("Condition 1") ,
-                               "cond1op" => " " ,
-                               "cond1cond" => " " ,
-                               "cond2field" => _m("Condition 2") ,
-                               "cond2op" => " " ,
-                               "cond2cond" => " " ,
-                               "cond3field" => _m("Condition 3") ,
-                               "cond3op" => " " ,
-                               "cond3cond" => " " ,
-                               "listlen" => _m("Listing length") ,
-                               "noitem_msg" => _m("HTML code for \"No item found\" message"),
-                               "flag" => _m("Add view ID as HTML comment")
+            "field3"          => $field3def,
+            "name"            => _m("Category listing"),
+            "before"          => _m("Top HTML"),
+            "odd"             => _m("Odd Rows"),
+            "even_odd_differ" => _m("Use different HTML code for even rows"),
+            "even"            => _m("Even Rows"),
+            "row_delimiter"   => _m("Row Delimiter"),
+            "after"           => _m("Bottom HTML"),
+            "remove_string"   => _m("Remove strings"),
+            "order1"          => _m("Sort primary"),
+            "o1_direction"    => " ",
+            "order2"          => _m("Sort secondary"),
+            "o2_direction"    => " ",
+            "group_by1"       => _m("Group by"),
+            "g1_direction"    => " ",
+            "gb_header"       => " ",
+            "group_title"     => _m("Group title format"),
+            "group_bottom"    => _m("Group bottom format"),
+            "cond1field"      => _m("Condition 1"),
+            "cond1op"         => " ",
+            "cond1cond"       => " ",
+            "cond2field"      => _m("Condition 2"),
+            "cond2op"         => " ",
+            "cond2cond"       => " ",
+            "cond3field"      => _m("Condition 3"),
+            "cond3op"         => " ",
+            "cond3cond"       => " ",
+            "listlen"         => _m("Listing length"),
+            "noitem_msg"      => _m("HTML code for \"No item found\" message"),
+            "flag"            => _m("Add view ID as HTML comment"),
         ],
         // View used for creating input forms
-        'inputform' => [
-                         "field3" => $field3def,
-                         'name' => _m("Input Form"),
-//                       "before" => _m("Top HTML") ,
-                         "odd" => _m("New item form template") ,
-                         "even_odd_differ" => _m("Use different template for editing") ,
-                         "even" => _m("Edit item form template"),
-                         "remove_string" => _m("Remove strings"),
-//                       "after" => _m("Bottom HTML") ,
-                         "flag" => _m("Add view ID as HTML comment")
+        'inputform'  => [
+            "field3"          => $field3def,
+            'name'            => _m("Input Form"),
+            //                       "before" => _m("Top HTML") ,
+            "odd"             => _m("New item form template"),
+            "even_odd_differ" => _m("Use different template for editing"),
+            "even"            => _m("Edit item form template"),
+            "remove_string"   => _m("Remove strings"),
+            //                       "after" => _m("Bottom HTML") ,
+            "flag"            => _m("Add view ID as HTML comment"),
         ],
     ];
 }
+
 /** getViewTypesInfo function
  * @return array
  */
@@ -1051,7 +1054,7 @@ function getViewTypesInfo() {
     // alias  - which aliases to show
     // order  - 'easy' - show just Ascending/Descending
     // fields - which fields show in selectboxes (slice / 'constant')
-    $VIEW_TYPES_INFO['list'] = [
+    $VIEW_TYPES_INFO['list']       = [
         'modification' => [
             '1' => 'search',
             '2' => 'parameter',
@@ -1062,7 +1065,7 @@ function getViewTypesInfo() {
         ],
         'aliases'      => 'field',
     ];
-    $VIEW_TYPES_INFO['full'] = [
+    $VIEW_TYPES_INFO['full']       = [
         'modification' => [
             '11' => 'newest',
             '12' => 'newest with condition',
@@ -1072,8 +1075,8 @@ function getViewTypesInfo() {
         ],
         'aliases'      => 'field',
     ];
-    $VIEW_TYPES_INFO['digest'] = ['aliases' => 'field'];
-    $VIEW_TYPES_INFO['discus'] = [
+    $VIEW_TYPES_INFO['digest']     = ['aliases' => 'field'];
+    $VIEW_TYPES_INFO['discus']     = [
         'modification' => [
             '21' => 'timeorder',
             '22' => 'reverse timeorder',
@@ -1085,8 +1088,8 @@ function getViewTypesInfo() {
         'aditional4'   => ['default' => '<input type=button name=add_disc value="' . _m("Add new") . '" onClick=showAddComments() class="discbuttons">'],
         'aliases'      => 'discus',
     ];
-    $VIEW_TYPES_INFO['disc2mail'] = ['aliases' => 'disc2mail'];
-    $VIEW_TYPES_INFO['seetoo'] = [
+    $VIEW_TYPES_INFO['disc2mail']  = ['aliases' => 'disc2mail'];
+    $VIEW_TYPES_INFO['seetoo']     = [
         'modification' => [
             '31' => 'related',
             '32' => 'keyword with OR',
@@ -1094,13 +1097,13 @@ function getViewTypesInfo() {
         ],
         'aliases'      => 'field',
     ];
-    $VIEW_TYPES_INFO['const'] = [
+    $VIEW_TYPES_INFO['const']      = [
         'aliases' => 'const',
         'order'   => 'easy',
         'fields'  => 'GetConstantFields',
     ];
-    $VIEW_TYPES_INFO['urls'] = ['aliases' => 'justids'];
-    $VIEW_TYPES_INFO['links'] = [
+    $VIEW_TYPES_INFO['urls']       = ['aliases' => 'justids'];
+    $VIEW_TYPES_INFO['links']      = [
         'aliases' => 'links',
         'order'   => 'easy',
         'fields'  => 'GetLinkFields',
@@ -1110,20 +1113,20 @@ function getViewTypesInfo() {
         'order'   => 'easy',
         'fields'  => 'GetCategoryFields',
     ];
-    $VIEW_TYPES_INFO['rss'] = ['aliases' => 'field'];
-    $VIEW_TYPES_INFO['calendar'] = [
+    $VIEW_TYPES_INFO['rss']        = ['aliases' => 'field'];
+    $VIEW_TYPES_INFO['calendar']   = [
         'aliases'            => 'field',
         'aliases_additional' => (new AA_Aliases())
-            ->addAlias(new AA_Alias('_#CV_TST_1','','',_m("Calendar: Time stamp at 0:00 of processed cell")))
-            ->addAlias(new AA_Alias('_#CV_TST_2','','',_m("Calendar: Time stamp at 24:00 of processed cell")))
-            ->addAlias(new AA_Alias('_#CV_NUM_D','','',_m("Calendar: Day in month of processed cell")))
-            ->addAlias(new AA_Alias('_#CV_NUM_M','','',_m("Calendar: Month number of processed cell")))
-            ->addAlias(new AA_Alias('_#CV_NUM_Y','','',_m("Calendar: Year number of processed cell")))
+            ->addAlias(new AA_Alias('_#CV_TST_1', '', '', _m("Calendar: Time stamp at 0:00 of processed cell")))
+            ->addAlias(new AA_Alias('_#CV_TST_2', '', '', _m("Calendar: Time stamp at 24:00 of processed cell")))
+            ->addAlias(new AA_Alias('_#CV_NUM_D', '', '', _m("Calendar: Day in month of processed cell")))
+            ->addAlias(new AA_Alias('_#CV_NUM_M', '', '', _m("Calendar: Month number of processed cell")))
+            ->addAlias(new AA_Alias('_#CV_NUM_Y', '', '', _m("Calendar: Year number of processed cell"))),
     ];
 
-    $VIEW_TYPES_INFO['static'] = ['aliases' => 'none'];
+    $VIEW_TYPES_INFO['static']     = ['aliases' => 'none'];
     $VIEW_TYPES_INFO['javascript'] = ['aliases' => 'field'];
-    $VIEW_TYPES_INFO['inputform'] = ['aliases' => ''];
+    $VIEW_TYPES_INFO['inputform']  = ['aliases' => ''];
     return $VIEW_TYPES_INFO;
 }
 
@@ -1181,10 +1184,10 @@ const SC_NO_BIN      = 4;
 /** getFilemanAccesses function
  * @return array
  */
-function getFilemanAccesses()
-{ return [
-    "0" => _m("Superadmin"),
-//    "EDITOR" => _m("Slice Editor"),
-    "ADMINISTRATOR" => _m("Slice Administrator")
-];
+function getFilemanAccesses() {
+    return [
+        "0"             => _m("Superadmin"),
+        //    "EDITOR" => _m("Slice Editor"),
+        "ADMINISTRATOR" => _m("Slice Administrator"),
+    ];
 }

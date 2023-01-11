@@ -31,12 +31,27 @@
  *
 */
 
-const AA_REGISTER_GLOBALS = true;
+// const AA_REGISTER_GLOBALS = true;
+use AA\Util\InputVars;
+
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/varset.php";
 require_once __DIR__ . "/../include/constedit_util.php";
 
+try {
+    // array ( 'seo........…' => 1, )
+    $fid = InputVars::stringSlashedGET('fid', true);
+    // array ( 'se_inputfor…' => 1, )
+    $return_url = InputVars::stringGET('return_url', true);
+    $new_group_id = InputVars::stringSlashedPOST('new_group_id');
+    $constant_list = InputVars::stringSlashedPOST('constant_list');
+    $delimiter = InputVars::stringSlashedPOST('delimiter');
+    $update = InputVars::boolPOST('update');
+    $cancel = InputVars::boolPOST('cancel');
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
 
 if ($cancel) {
     go_url( StateUrl(self_base() . "index.php3"));

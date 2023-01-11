@@ -32,13 +32,17 @@ use AA\Manager;
 use AA\Manageraction\AbstractManageraction;
 use AA\Manageraction\Manageractions;
 use AA\Util\AbstractAliasgenerator;
+use AA\Util\InputVars;
 
-const AA_REGISTER_GLOBALS = true;
+// const AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/varset.php";
 require_once __DIR__ . "/../include/item.php";     // GetAliasesFromField funct def
 
+try {
+    $cancel = InputVars::boolPOST('cancel');
+} catch (Exception $e) {}
 
 if ($cancel) {
     go_url( StateUrl(self_base() . "index.php3"));
@@ -76,7 +80,7 @@ class Manageraction_History_Apply extends AbstractManageraction {
         // AA::$debug = 255;
 
         $sid = $manager->getModuleId();
-        $changes_to_apply = DB_AA::select('id', 'SELECT change.id FROM `change`, `item`', [['item.id', 'UNHEX(change.resource_id)', 'j'], ['change.id', $item_zids->longids()], ['slice_id', $sid, 'l']]);
+        $changes_to_apply = DB_AA::select('id', 'SELECT `change`.id FROM `change`, `item`', [['item.id', 'UNHEX(change.resource_id)', 'j'], ['change.id', $item_zids->longids()], ['slice_id', $sid, 'l']]);
 
         $changes = GetHistoryContent(new zids($changes_to_apply,'l'));
 
@@ -202,7 +206,7 @@ function QueryHistoryZIDs(AA_Set $set): zids {
     $where_sql      = MakeSQLConditions($HISTORY_FIELDS, $conds, 'LIKE', $foo);
     $order_by_sql   = MakeSQLOrderBy(   $HISTORY_FIELDS, $sort,  $foo);
 
-    $SQL  = "SELECT DISTINCT `change`.id FROM `change`, `item`  WHERE item.id = UNHEX(change.resource_id) AND item.slice_id = ". xpack_id($slice_id)." AND change.type = 'h'";
+    $SQL  = "SELECT DISTINCT `change`.id FROM `change`, `item`  WHERE item.id = UNHEX(change.resource_id) AND item.slice_id = ". xpack_id($slice_id)." AND `change`.type = 'h'";
 
     //    $SQL  = "SELECT DISTINCT change.id FROM `change`, change_record WHERE change.id = change_record.change_id AND change.resource_id = '$slice_id' ";
 
@@ -254,15 +258,11 @@ $manager_settings = [
          'query_funct'          => 'QueryHistoryZIDs'
      ],
      'actions'   => $actions,
-     'switches'  => [],
-     'messages'  => [
-         'title'       => _m('ActionApps - History Manager')
-     ]
 ];
 
 $apage = new AA_Adminpageutil('sliceadmin', 'history');
 $apage->setTitle(_m('ActionApps - History Manager'));
-$apage->printWithManager(new Manager('history'. AA::$module_id, (new \AA\Managed())->setSettings($manager_settings)));
+$apage->printWithManager(new Manager('history'. AA::$module_id, (new \AA\Managed())->setSettings($manager_settings)->setTitle(_m('ActionApps - History Manager'))));
 
 
 

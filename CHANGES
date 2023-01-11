@@ -2988,7 +2988,7 @@ The changes could be tracked on:
          - new possibility to copy only structure or only content of the slice
            during "Copy slice" feature of Central
          - updated database structure - added just one index for better handling
-           of dicsussions - this one:
+           of discussions - this one:
              ALTER TABLE discussion ADD INDEX item_id_date (item_id , date)
          - fixed problem with query sting parameters used with {pager} of SEO
            router

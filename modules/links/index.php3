@@ -207,10 +207,7 @@ $manager_settings = [
      'actions_hint' => _m("Perform action on selected items"),
      'actions_hint_url' => get_help_url(AA_LINKS_HELP_MAIN,"co-udelat-sodkazy"),
      'actions'   => $actions,
-     'switches'  => $switches,
-     'messages'  => [
-         'title'            => _m('ActionApps - Links Manager')
-     ]
+     'switches'  => $switches
 ];
 
 if ( $change_id OR ($r_state["module_id"] != $module_id)) {
@@ -230,7 +227,7 @@ if ( $change_id OR ($r_state["module_id"] != $module_id)) {
 
 $manager_id = 'links'. $module_id;  // no special meaning - just manager id
 
-$manager = new Manager($manager_id, (new \AA\Managed())->setSettings($manager_settings));
+$manager = new Manager($manager_id, (new \AA\Managed())->setSettings($manager_settings)->setTitle( _m('ActionApps - Links Manager')));
 $manager->performActions();
 $manager->printHtmlPageBegin();  // html, head, css, title, javascripts
 

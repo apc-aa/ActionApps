@@ -27,7 +27,7 @@
 
 use AA\Optimize\AbstractOptimize;
 
-const AA_REGISTER_GLOBALS = true;
+// const AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
 
@@ -50,7 +50,7 @@ if ($_GET['test'] AND ($optimizer = AA_Serializable::factory('AA\\Optimize\\'.$_
 
 /** @var AbstractOptimize $optimizer */
 if ($_GET['test4modules'] AND ($optimizer = AA_Serializable::factory('AA\\Optimize\\'.$_GET['test4modules'])) AND $optimizer->hasAction('test4modules')) {
-    $testresult[$_GET['test4modules']] = $optimizer->test4modules([$module_id]);
+    $testresult[$_GET['test4modules']] = $optimizer->test4modules([AA::$module_id]);
     $Msg .= $optimizer->report();
 }
 
@@ -63,9 +63,9 @@ if ($_GET['repair'] AND ($optimizer = AA_Serializable::factory('AA\\Optimize\\'.
 
 /** @var AbstractOptimize $optimizer */
 if ($_GET['repair4modules'] AND ($optimizer = AA_Serializable::factory('AA\\Optimize\\'.$_GET['repair4modules'])) AND $optimizer->hasAction('repair4modules')) {
-    $optimizer->repair4modules([$module_id]);
+    $optimizer->repair4modules([AA::$module_id]);
     $Msg .= $optimizer->report();
-    $testresult[$_GET['repair4modules']] = $optimizer->test4modules([$module_id]);
+    $testresult[$_GET['repair4modules']] = $optimizer->test4modules([AA::$module_id]);
 }
 
 $optimize_names        = [];

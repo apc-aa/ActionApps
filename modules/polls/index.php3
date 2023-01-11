@@ -33,7 +33,9 @@ use AA\Manageraction\Manageractions;
 use AA\Manageraction\Polls_DeleteTrash;
 use AA\Manageraction\Polls_MoveItem;
 
-const AA_REGISTER_GLOBALS = true;
+// const AA_REGISTER_GLOBALS = true;
+use AA\Util\InputVars;
+
 require_once __DIR__ . "/../../include/init_page.php";
 require_once __DIR__ . "/../../include/varset.php";
 require_once __DIR__ . "/../../include/formutil.php";
@@ -41,6 +43,13 @@ require_once __DIR__ . "/../../include/formutil.php";
 require_once __DIR__ . "/../../include/item.php";
 require_once __DIR__ . "/../../include/actions.php";
 require_once __DIR__ . "/../../modules/polls/include/util.php";
+
+try {
+    $cancel = InputVars::boolPOST('cancel');
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
+
 
 if ( !IfSlPerm(PS_EDIT_ALL_ITEMS) ) {
     MsgPage(_m("You do not have permission to manage Polls"));
@@ -65,7 +74,7 @@ $switches->addAction(new Polls_DeleteTrash('DeleteTrash',false));
 
 
 // id of the editted module (id in long form (32-digit hexadecimal number))
-$module_id = $slice_id;
+$module_id = AA::$module_id;
 // module_id is the same as slice_id (slice_id was used before AA introduced
 // modules. Now it is better to use module_id, because in other modules
 // (like Links, ...) it is not so confusing

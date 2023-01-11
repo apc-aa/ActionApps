@@ -32,23 +32,44 @@
 
 */
  // used in init_page.php script to include config.php from the right directory
+use AA\Util\InputVars;
+
 $directory_depth = '../';
 
-const AA_REGISTER_GLOBALS = true;
+// const AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../../include/init_page.php";
 require_once __DIR__ . "/../../include/varset.php";
 require_once __DIR__ . "/../../include/formutil.php";
 require_once __DIR__ . "/../../include/varset.php";
 require_once __DIR__ . "/../../include/mgettext.php";
 
-// id of the editted module
-$module_id = $slice_id;               // id in long form (32-digit hexadecimal
-                                      // number)
-$p_module_id = q_pack_id($module_id); // packed to 16-digit as stored in database
+try {
+    // array ( 'e37db0bc86b…' => 1, )
+    $poll_id = InputVars::idGETPOST('poll_id');
+    $headline = InputVars::stringPOST('headline');
+    $publish_date = InputVars::intPOST('publish_date');
+    $expiry_date  = InputVars::intPOST('expiry_date');
+    $design_id= InputVars::stringPOST('design_id');
+    $aftervote_design_id  = InputVars::stringPOST('aftervote_design_id');
+    $locked   = InputVars::intPOST('locked');
+    $logging  = InputVars::intPOST('logging');
+    $ip_locking   = InputVars::intPOST('ip_locking');
+    $ip_lock_timeout  = InputVars::intPOST('ip_lock_timeout');
+    $set_cookies  = InputVars::intPOST('set_cookies');
+    $params   = InputVars::stringPOST('params');
+
+    $answers  = InputVars::arraySlashedPOST('params');
+
+    $insert = InputVars::boolPOST('insert');
+    $update = InputVars::boolPOST('update');
+    $cancel = InputVars::boolPOST('cancel');
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
 
 // Check permissions for this page.
 
-if (!CheckPerms( AuthGetUid(), "slice", $module_id, PS_MODP_ADD_POLL)) {
+if (!CheckPerms( AuthGetUid(), "slice", AA::$module_id, PS_MODP_ADD_POLL)) {
     AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php3", _m("No permission to add/edit poll."), "admin");
     exit;
 }
@@ -68,11 +89,11 @@ if ($insert  || $update ) {
     $varset = new CVarset();
 
     $varset->add("module_id",          "quoted", $p_module_id);
-    $varset->add("headline",           "quoted", $headline);
+    $varset->add("headline",           "text", $headline);
     $varset->add("publish_date",       "number", $publish_date);
     $varset->add("expiry_date",        "number", $expiry_date);
-    $varset->add("design_id"    ,      "quoted", $design_id);
-    $varset->add("aftervote_design_id","quoted", $aftervote_design_id);
+    $varset->add("design_id"    ,      "text", $design_id);
+    $varset->add("aftervote_design_id","text", $aftervote_design_id);
 
     $varset->add("locked",             "number", ($locked ? 1 : 0));
     $varset->add("logging",            "number", ($logging ? 1 : 0));
@@ -81,12 +102,12 @@ if ($insert  || $update ) {
     $varset->add("set_cookies",        "number", ($set_cookies ? 1 : 0));
     // $varset->add("cookies_prefix",     "quoted", $cookies_prefix);  // not used
 
-    $varset->add("params",             "quoted", $params);
+    $varset->add("params",             "text", $params);
 
     if ($insert) {
         $varset->add("status_code","number", 1);
         $poll_id = new_id();
-        $varset->add("id",    "quoted", $poll_id);
+        $varset->add("id",    "text", $poll_id);
         $SQL = $varset->makeINSERT('polls');
     } elseif ($update ) {
         $SQL = "UPDATE polls SET ". $varset->makeUPDATE() ." WHERE (module_id='$p_module_id' AND id='$poll_id')";
@@ -125,7 +146,7 @@ if ($insert  || $update ) {
         $varset->doINSERT('polls_answer');
     }
     // clear cache
-    AA::Pagecache()->invalidateFor([$poll_id,$module_id]);    // invalidate this concrete poll and also the list of polls in this module, if used
+    AA::Pagecache()->invalidateFor([$poll_id,AA::$module_id]);    // invalidate this concrete poll and also the list of polls in this module, if used
 
     go_url(StateUrl(self_base(). "./index.php3"));  // back to poll manager
 }

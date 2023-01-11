@@ -117,9 +117,9 @@ function AafinderObjectLink($object_id): string {
     if ($obj = AA_Object::load($object_id)) {
         $name = ($obj->getName()==$obj->getProperty('alias')) ? $obj->getName() : $obj->getName(). ' ('. $obj->getProperty('alias').')';
         return a_href(get_aa_url('modules/site/aliases.php', [
-            'module_id' => $obj->getOwnerId(),
-            'id'       => $object_id
-        ]), $name). ' ('. AA_Slice::getModuleName($obj->getOwnerId()) .') &nbsp; '. ChangesMonitor::getHistoryLink($object_id);
+                'module_id' => $obj->getOwnerId(),
+                'id'        => $object_id
+            ]), $name). ' ('. AA_Slice::getModuleName($obj->getOwnerId()) .') &nbsp; '. ChangesMonitor::getHistoryLink($object_id);
     }
     return '';
 }

@@ -64,13 +64,13 @@ function AddUser($user, $flags = 0) {
     }
     $varset = new CVarset([
         ['type'       , "User"],
-                                ['uid'        , $user["uid"]],
-                                ['mail'       , (is_array($user['mail']) ? $user['mail'][0] : $user['mail'])],
-                                ['name'       , $user["givenname"]." ".$user["sn"]],
-                                ['sn'         , $user["sn"]],
-                                ['givenname'  , $user["givenname"]],
-                                ['description', ''],
-                                ['password'   , AA_Permsystem_Sql::generatePasswordHash($user["userpassword"])]
+        ['uid'        , $user["uid"]],
+        ['mail'       , (is_array($user['mail']) ? $user['mail'][0] : $user['mail'])],
+        ['name'       , $user["givenname"]." ".$user["sn"]],
+        ['sn'         , $user["sn"]],
+        ['givenname'  , $user["givenname"]],
+        ['description', ''],
+        ['password'   , AA_Permsystem_Sql::generatePasswordHash($user["userpassword"])]
     ]);
     $varset->doInsert('users');
     return $varset->last_insert_id();

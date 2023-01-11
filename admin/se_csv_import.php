@@ -13,7 +13,7 @@
  *
  * Input:
  *    $slice_id for edit slice
- *    optionaly $Msg to show under <h1>Headline</h1>
+ *    optionally $Msg to show under <h1>Headline</h1>
  *
  * There are two modes:
  *     default - shows a form for setting a source of the csv data
@@ -54,17 +54,44 @@
 
 // todo - work with global variable $err??
 
-const AA_REGISTER_GLOBALS = true;
+// const AA_REGISTER_GLOBALS = true;
+use AA\Util\InputVars;
+
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/import_util.php";
 
+try {
+    // array ( 'on' => 7, )
+    $caption = InputVars::boolPOST('caption');
+    // array ( 'text' => 4, 'file' => 2, 'url' => 1, )
+    $dataType = InputVars::stringPOST('dataType'); // alpha
+    // array ( ';' => 2, ';🦆' => 2, '~ěščřž…' => 1, '\\t+čřžý…' => 1, ',' => 1, )
+    $delimiter = InputVars::stringPOST('delimiter');
+    // array ( '"' => 4, '\'kvaaaaaaaak' => 2, '\'1234567890…' => 1, )
+    $enclosure = InputVars::stringPOST('enclosure');
+    // array ( ';' => 4, '~' => 1, '\\t' => 1, ',' => 1, )
+    // $foo_delimiter = InputVars::stringSlashedPOST('foo_delimiter');
+    // array ( '"' => 4, '\'' => 3, )
+    // $foo_enclosure = InputVars::stringSlashedPOST('foo_enclosure');
+    // array ( 'Zobraz zpr�…' => 1, 'Náhled' => 1, )
+    $preview = InputVars::boolPOST('preview');
+    // array ( '' => 7, )
+    $previous_upload = InputVars::stringPOST('previous_upload'); // empty
+    // array ( 'dd;d;dddd …' => 1, '' => 3, 'ú)ů§,.�…' => 1, 'qwertyuiop' => 1, 'a,b aa,bb …' => 1, )
+    $text = InputVars::stringPOST('text'); // empty
+    // array ( 'Další' => 5, )
+    $upload = InputVars::boolPOST('upload');
+    $upfile = $_REQUEST['upfile'];
+    // array ( 'http://' => 1, '' => 5, 'ííííí�…' => 1, )
+    $url = InputVars::stringPOST('url'); // empty
+    $cancel = InputVars::boolPOST('cancel');
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
+
+
 const FILE_PREFIX = 'importdata';
 
-$text      = $_REQUEST['text'];
-$upfile    = $_REQUEST['upfile'];
-$url       = $_REQUEST['url'];
-$enclosure = $_REQUEST['enclosure'];
-$delimiter = $_REQUEST['delimiter'];
 
 if (!IfSlPerm(PS_EDIT_ALL_ITEMS)) {
     MsgPage(_m("You have not permissions to import files"));
@@ -226,7 +253,7 @@ if ($preview) { // file preview
             <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
                 <tr>
                     <td><label><input type="radio" <?php if ($dataType == "file") echo "checked"; ?> name="dataType" value="file">&nbsp;file</label></td>
-                    <td><input type="file" name="upfile" value="<?php echo $upfile_name ?>"></td>
+                    <td><input type="file" name="upfile"></td>
                 </tr>
                 <tr>
                     <td><label><input type="radio" <?php if ($dataType == "url") echo "checked"; ?> name="dataType" value="url">&nbsp;URL</label></td>

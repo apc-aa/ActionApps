@@ -30,12 +30,12 @@
 use AA\Later\Toexecute;
 use AA\Manager;
 
-const AA_REGISTER_GLOBALS = true;
+// const AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/actions.php";
 
 if ( !IsSuperadmin() ) {
-    MsgPage(StateUrl(self_base())."index.php3", _m("You do not have permission to manage ActionApps tasks"));
+    MsgPage(_m("You do not have permission to manage ActionApps tasks"));
     exit;
 }
 

@@ -64,6 +64,10 @@ class Managed {
     protected $columns      = [];
     protected $columns2show = [];
 
+    public $msg_title      = '';
+    public $msg_noitem     = null;
+    public $msg_about      = '';
+
     protected $widget_setting = [];
 
     /** Create Managed object based on the specific (unique) string submitted by form...
@@ -134,11 +138,12 @@ class Managed {
         $aliases        = is_object($this->settings['itemview']['aliases']) ? $this->settings['itemview']['aliases']->getArray() : $this->settings['itemview']['aliases'];
 
         // modify $format_strings and $aliases (passed by reference)
+        $colspan = 100;
         if ( $manager_vid = $this->settings['itemview']['manager_vid'] ) {
             $view = AA_Views::getViewNumeric($manager_vid);
             if ( $view AND !($view->f('deleted')>0) ) {
                 $format_strings = $view->getViewFormat();
-                $this->messages['noitem_msg'] = $view->f('noitem_msg');
+                $this->msg_noitem = $view->f('noitem_msg');
                 if ( isset($this->scroller) ) {
                     $this->scroller->metapage = $view->f('listlen');
                 }
@@ -157,10 +162,11 @@ class Managed {
                 }
 
                 $format_strings = [    // optionaly to manager_vid you can set format array
-                    'compact_top'      => '<div class="aa-table aa-items-manager"><table><tr>'.$th.'</tr>',
+                    'compact_top'      => '<div class="aa-table aa-items-manager"><table><tr class="aa-table-head">'.$th.'</tr>',
                     'odd_row_format'   => '<tr>'. $td .'</tr>',
                     'compact_bottom'   => "</table></div><br>"
                 ];
+                $colspan = count($cols);
             } elseif ( !$format_strings ) {
                 $row = '<td>_#PUB_DATE&nbsp;</td><td>_#HEADLINE</td>'. (isset($aliases["_#AA_ACTIO"]) ? '<td>_#AA_ACTIO</td>': '');
                 $format_strings["odd_row_format"]  = '<tr class="tabtxt">'.$row.'</tr>';
@@ -169,14 +175,15 @@ class Managed {
                 $format_strings["compact_top"]     = '<table border="0" cellspacing="0" cellpadding="0" bgcolor="#F5F0E7" width="100%">
                     <tr class="tabtitlight"><td>'._m("Publish date").'</td><td>'._m("Headline").'</td>'. (isset($aliases["_#AA_ACTIO"]) ? '<td>'._m("Actions").'</td>' : ''). '</tr>';
                 $format_strings["compact_bottom"]  = '</table>';
+                $colspan = 3;
             }
         }
         $format_strings['odd_row_format'] = str_replace(Managed::MANGED_URL, $this->getUrl(), $format_strings['odd_row_format']);
 
         if ($this->isAction('add')) {
-            $new_link = a_href(StateUrl($this->getUrl(). '?add=1'), GetAAImage('icon_new.gif', _m('new'), 17, 17) . ' ' . _m('Add'));
-            $format_strings['compact_bottom'] .= $new_link;
-            $format_strings['noitem_msg']     .= $new_link;
+            $new_link = a_href(StateUrl($this->getUrl() . '?add=1'), _m('Add'), ['class'=>'aa-button-new']);
+            $format_strings['compact_bottom'] = "<tr class=\"aa-table-foot\"><td colspan=\"$colspan\">$new_link</td></tr>".$format_strings['compact_bottom'];
+            $this->msg_noitem     .= '<br>'.$new_link;
         }
 
         return new itemview($format_strings, $aliases, $zids, 0, $listlen, '', '', $this->settings['itemview']['get_content_funct']);
@@ -184,6 +191,7 @@ class Managed {
 
     /**
      * @param string $url
+     * @return Managed
      */
     public function setUrl(string $url): Managed {
         $this->url = $url;
@@ -194,8 +202,36 @@ class Managed {
         return $this->url;
     }
 
+    /** set title text of the Manager
+     * @param string $text
+     * @return Managed
+     */
+    public function setTitle(string $text): Managed {
+        $this->msg_title = $text;
+        return $this;
+    }
+
+    /** set "No item found" message
+     * @param string $text
+     * @return Managed
+     */
+    public function setNoitem(string $text): Managed {
+        $this->msg_noitem = $text;
+        return $this;
+    }
+
+    /** set About message
+     * @param string $text
+     * @return Managed
+     */
+    public function setAbout(string $text): Managed {
+        $this->msg_about = $text;
+        return $this;
+    }
+
     /** Set definition of the column
      * @param array $columns
+     * @return Managed
      */
     public function setColumns(array $columns): Managed  {
         $this->columns = $columns;
@@ -217,6 +253,7 @@ class Managed {
     public function setWidgetSetting(string $id, array $setting): void {
         $this->widget_setting[$id] = $setting;
     }
+
 }
 
 class Managed_Object extends Managed {
@@ -334,7 +371,7 @@ class Manager extends AA_Storable {
     /** @var AA_Searchbar  */
     protected $searchbar;
 
-    /** @var string searchbar aditional function name */
+    /** @var string searchbar additional function name */
     protected $searchbar_funct;
 
     /** @var AA_Scroller */
@@ -351,7 +388,6 @@ class Manager extends AA_Storable {
 
     protected $query_funct = [];
 
-    protected $messages;        // various language messages (title, noitem_msg, about)
     protected $itemview;        // itemview object
     protected $show;            // what controls show (scroller, searchbar, ...)
     protected $bin;             // stores the bin in which we are - string
@@ -439,10 +475,9 @@ class Manager extends AA_Storable {
 //        $scroller->addFilter("slice_id", "md5", $this->module_id);
         $this->scroller = $scroller;
 
-        $this->messages = $settings['messages'];
-        if ( !isset($this->messages['noitem_msg']) ) {
+        if ( !isset($this->managed->msg_noitem) ) {
             // could be redefined by view (see ['itemview']['manager_vid'])
-            $this->messages['noitem_msg'] = get_if( $settings['itemview']['format']['noitem_msg'], _m('No item found'));
+            $this->managed->setNoitem( _m('No item found'));
         }
 
         // r_state array holds all configuration of Manager
@@ -745,8 +780,8 @@ class Manager extends AA_Storable {
         // if ($this->messages['title']) {
         //     echo '<h1>'. $this->messages['title'] .'</h1>';
         // }
-        if ($this->messages['about']) {
-            $ret .= '<div class="aa-about"><small>'. $this->messages['about'] .'<br><br></small></div>';
+        if ($this->managed->msg_about) {
+            $ret .= '<div class="aa-about"><small>'. $this->managed->msg_about .'<br><br></small></div>';
         }
 
         $ret .= $this->getSearchbarBegin();
@@ -812,7 +847,7 @@ class Manager extends AA_Storable {
         // Print HTML start page (html begin, encoding, style sheet, no title)
         HtmlPageBegin();
         // manager javascripts - must be included
-        echo '<title>'. $this->messages['title'] .'</title>';
+        echo '<title>'. $this->managed->msg_title .'</title>';
         IncludeManagerJavascript();
         if ( $head_end ) {
             echo "\n</head>\n";
@@ -851,7 +886,7 @@ class Manager extends AA_Storable {
 
         $ids_count = $zids->count();
         if ( $ids_count == 0 ) {
-            $ret .= "<div class=\"tabtxt\">". $itemview->unaliasWithScroller($this->messages['noitem_msg']). "</div></form><br>";
+            $ret .= "<div class=\"tabtxt\">". $itemview->unaliasWithScroller($this->managed->msg_noitem). "</div></form><br>";
             return $ret;
         }
 

@@ -74,12 +74,16 @@ abstract class AbstractManageraction extends AA_Storable {
 
     /** for adding button to manager redefine rather getButtonDef method */
     public function getButton(string $manager_url, string $id_alias, string $module_alias): array {
+        $b = $this->getButtonDef();
+        if (!$b['attr']['class']) {
+            $b['attr']['class'] = 'aa-button';
+        }
         return ($b = $this->getButtonDef()) ? [
             $this->id => a_href(get_url($manager_url, [
                 "chb[x$id_alias]",
                 'akce=' . $this->id,
                 "module_id=$module_alias",
-            ], true), $b['label'], $b['class'] ?: 'aa-button', $b['attr'] ?: []),
+            ], true), $b['label'], $b['attr']),
         ] : [];
     }
 

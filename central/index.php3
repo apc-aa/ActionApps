@@ -38,12 +38,20 @@ use AA\Manageraction\Central_Sqlupdate;
 use AA\Manageraction\Central_Tab;
 use AA\Manageraction\Manageractions;
 
-const AA_REGISTER_GLOBALS = true;
+// const AA_REGISTER_GLOBALS = true;
+use AA\Util\InputVars;
+
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/varset.php";
 require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/item.php";
 require_once __DIR__."/../central/include/actionapps.class.php";
+
+try {
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
+
 
 /**
  * @return int[]
@@ -99,7 +107,7 @@ $managed = $metabase->getManagerConf('central_conf', $actions, $switches);
 //                                    </tr>
 //                                   ';
 // $manager_settings['itemview']['query_funct'] = 'Central_QueryZids';
-$managed->settings['messages']['title'] = _m('ActionApps Central');
+$managed->setTitle(_m('ActionApps Central'));
 //         'get_content_funct'    => 'Central_GetAaContent'
 
 $managed->setColumns2show(['ORG_NAME','AA_HTTP_DOMAIN','AA_BASE_DIR']);

@@ -626,6 +626,7 @@ input.cancel-button {
 .aa-table tr:hover {
     background-color: #F0E8DC;
 }
+.aa-table-foot td {text-align: center;}
 [class^="aa-button"] {
     box-shadow: #000 0 0 3px;
     padding: 1px 8px 2px;

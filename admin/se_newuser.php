@@ -81,11 +81,12 @@ if ( $update ) {
         }
     }while(false);
     if ( !count($err) ) {
-        $Msg = MsgOk(_m("User successfully added to permission system"));
-        $url = con_url(StateUrl(self_base() . "se_users.php"),"Msg=".rawurlencode($Msg));
-        $url = con_url($url, "UsrSrch=".rawurlencode(_m("Search")));
-        $url = con_url($url, "usr=".rawurlencode($user_login));
-        go_url($url);
+        $url_param = [
+                'Msg' => MsgOk(_m("User successfully added to permission system")),
+                'UsrSrch' => _m("Search"),
+                'usr'     => $user_login
+                ];
+        go_url(StateUrl(self_base() . "se_users.php"), $url_param);
     }
 }
 

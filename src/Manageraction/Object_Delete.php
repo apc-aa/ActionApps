@@ -20,8 +20,8 @@ class Object_Delete extends AbstractManageraction {
     protected function getButtonDef(): array {
         return [
             'label' => _m('Delete'),
-            'class' => 'aa-button-delete',
-            'attr'  => ['onclick' => "return confirm('" . _m("Do you really want to delete this row?") . "')"],
+            'attr'  => ['class'=>'aa-button-delete',
+                        'onclick' => "return confirm('" . _m("Do you really want to delete this row?") . "')"],
         ];
     }
 

@@ -42,10 +42,27 @@
  *
  */
 
-const AA_REGISTER_GLOBALS = true;
+// const AA_REGISTER_GLOBALS = true;
+use AA\Util\InputVars;
+
 require_once __DIR__ . "/../include/init_page.php";
 mgettext_bind(get_mgettext_lang(), 'param_wizard');
 require_once __DIR__ . "/../include/constants_param_wizard.php";
+
+try {
+    // array ( 'input_valid…' => 7, 'input_show_…' => 1, )
+    $combo_list = InputVars::stringGET('combo_list', true);
+    // array ( 'unique' => 5, 'e-unique' => 2, 'mch' => 1, )
+    $item = InputVars::stringGET('item', true);
+    // array ( 'VALIDATE_TY…' => 7, 'INPUT_TYPES' => 1, )
+    $list = InputVars::stringGET('list', true);
+    // array ( 'input_valid…' => 7, 'input_show_…' => 1, )
+    $text_param = InputVars::stringGET('text_param', true);
+    $cancel = InputVars::boolPOST('cancel');
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
+
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 

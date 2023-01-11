@@ -270,7 +270,7 @@ class AA_Mysqlauth {
         }
         foreach (array_unique($final_groups) as $group) {
             if ( $group ) {
-                DB_AA::sql("INSERT INTO auth_group (username, groups, last_changed) VALUES ('$username','".addslashes($group)."',".time().")");
+                DB_AA::sql("INSERT INTO auth_group (username, `groups`, last_changed) VALUES ('$username','".addslashes($group)."',".time().")");
             }
         }
     }
@@ -282,7 +282,7 @@ class AA_Mysqlauth {
      */
     function select($auth_field_group) {
         return "
-        SELECT publish_date, expiry_date, status_code, groups.text AS groups,
+        SELECT publish_date, expiry_date, status_code, `groups`.text AS groups,
                username.text AS username, password.text AS password
         FROM item, content AS groups, content AS username, content AS password
         WHERE groups.item_id = item.id

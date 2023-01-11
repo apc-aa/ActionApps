@@ -1284,7 +1284,7 @@ class AA_Metabase {
         if (count($keys)==1) {
             $actions->addAction(new \AA\Manageraction\Table_Row_Delete('DeleteTRow'));
             $key_alias = $aliases->getNamesForField($keys[0])[0];
-            $buttons = ['Edit'   => a_href(get_url('', ["id=$key_alias"], true), _m('Edit'), 'aa-button-edit')];
+            $buttons = ['Edit'   => a_href(get_url('', ["id=$key_alias"], true), _m('Edit'), ['class' => 'aa-button-edit'])];
         }
         $buttons = array_merge($buttons, $actions->getManagerButtons('', $key_alias, AA::$module_id));
 
@@ -1323,13 +1323,10 @@ class AA_Metabase {
             ],
             'actions'   => $actions,
             'switches'  => $switches,
-            'bin'       => 'app',
-            'messages'  => [
-                'title'       => _m('Manage %1', [$tablename])
-            ]
+            'bin'       => 'app'
         ];
 
-        return (new \AA\Managed_Table($tablename))->setSettings($manager_settings)->setColumns($columns);
+        return (new \AA\Managed_Table($tablename))->setSettings($manager_settings)->setColumns($columns)->setTitle(_m('Manage %1', [$tablename]));
     }
 
 //    /** AA_iEditable method - adds Object's editable properties to the $form */

@@ -66,7 +66,7 @@ class DB_MySQL extends AbstractDB {
 
             /* Vérification de la connexion */
             if (@mysqli_connect_errno()) {
-                $this->connect_failed("connect ($method$Host, $User, \$Password, $Database) failed - " . mysqli_connect_errno() . ' - ' . mysqli_connect_error());
+                $this->connect_failed("connect to database $Database failed - " . mysqli_connect_errno() . ' - ' . mysqli_connect_error());
                 return 0;
             }
 
@@ -386,8 +386,10 @@ class DB_MySQL extends AbstractDB {
 
     /* private: error handling */
     function halt($msg) {
-        $this->Error = @mysqli_error($this->Link_ID);
-        $this->Errno = @mysqli_errno($this->Link_ID);
+        if ($this->Link_ID) {
+            $this->Error = @mysqli_error($this->Link_ID);
+            $this->Errno = @mysqli_errno($this->Link_ID);
+        }
         parent::halt($msg);
     }
 }

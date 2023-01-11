@@ -31,8 +31,16 @@
  *
 */
 
-const AA_REGISTER_GLOBALS = true;
+//const AA_REGISTER_GLOBALS = true;
+use AA\Util\InputVars;
+
 require_once __DIR__ . "/../include/init_page.php";
+
+try {
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
+
 if (!IfSlPerm(PS_FEEDING)) {
     MsgPage(_m("You have not permissions to change feeding setting"));
     exit;
@@ -96,7 +104,7 @@ $form_buttons = [
           'add'   => 'onClick="Delete()"'
       ]
   ]);
-  FrmInputMultiSelect('rem_nodes', _m('Remote node'), $nodes, $node, 5, true);
+  FrmInputMultiSelect('rem_nodes', _m('Remote node'), $nodes, '', 5, true);
   FrmTabEnd($form_buttons);
 ?>
 <script>

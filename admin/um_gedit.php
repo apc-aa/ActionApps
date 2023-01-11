@@ -56,13 +56,13 @@ try {
     // array ( 'Jeď!' => 3, )
     $go_findgroup = InputVars::boolGET('go_findgroup');
     // array ( 'test group …' => 2, 'Kachny jsou…' => 1, 'o!:"/(?ˇ' => 1, 'o!:\\"/(?ˇ' => 1, )
-    $group_description = InputVars::stringSlashedPOST('group_description');
+    $group_description = InputVars::stringPOST('group_description');
     // array ( 'test group' => 2, '🦆🦆�…' => 1, 'Bbbbbbbbbbb…' => 2, )
-    $group_name = InputVars::stringSlashedPOST('group_name');
+    $group_name = InputVars::stringPOST('group_name');
     // array ( 'on' => 2, )
     $group_super = InputVars::boolPOST('group_super'); // alpha
     // array ( 'Bbbbbbbbbbb…' => 1, 'kvaq' => 3, )-array ( 'o' => 1, '' => 1, )
-    $grp = InputVars::stringSlashedGETPOST('grp'); // alpha-alpha
+    $grp = InputVars::stringGETPOST('grp'); // alpha-alpha
     // array ( 1 => 4, )-array ( 'Editace' => 4, 1 => 4, )
     $grp_edit = InputVars::boolGETPOST('grp_edit'); // -alnum
     // array ( 1 => 2, )-array ( 1 => 1, )
@@ -74,15 +74,15 @@ try {
     // array ( )
     $perm_mod = InputVars::arrayPOST('perm_mod'); // alpha
     // array ( '1,4b108926e…' => 3, 0 => 1, 6 => 1, )
-    $posted_users = InputVars::stringSlashedPOST('posted_users');
+    $posted_users = InputVars::stringPOST('posted_users');
     // array ( '4b108926e80…' => 1, )
     $sel_users_sel = InputVars::idPOST('sel_users_sel');
     // array ( 3 => 3, 7 => 1, )-array ( 3 => 6, '011ba695b78…' => 1, '' => 1, 7 => 1, )
-    $selected_group = InputVars::stringSlashedGETPOST('selected_group'); // -alnum
+    $selected_group = InputVars::stringGETPOST('selected_group'); // -alnum
     // array ( 0 => 5, 'update_subm…' => 4, )
-    $submit_action = InputVars::stringSlashedPOST('submit_action');
+    $submit_action = InputVars::stringPOST('submit_action');
     // array ( '' => 4, )
-    $usr1_flt = InputVars::stringSlashedPOST('usr1_flt'); // empty
+    $usr1_flt = InputVars::stringPOST('usr1_flt'); // empty
     $cancel = InputVars::boolGETPOST('cancel');
     $err = InputVars::arrayGETPOST('err');
     $Msg = InputVars::stringGETPOST('Msg');
@@ -351,7 +351,7 @@ FrmTabEnd($form_buttons);
 echo '</form>';
 
 if ( !$add_submit AND !$grp_new) {
-    PrintPermUmPageEnd($MODULES, $mod_types, $perms_roles_modules);
+    PrintPermUmPageEnd($MODULES, $mod_types);
 }
 
 $apage->printFoot();

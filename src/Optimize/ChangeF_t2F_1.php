@@ -32,7 +32,10 @@ class ChangeF_t2F_1 extends ChangeF_h2F_1 {
         if (($func == 'f_t:') AND ((($fld['html_default']==1) AND ($fld['html_show']==0) AND ($fld['multiple']==0)) OR (strlen($fld['in_item_tbl'])>1) OR ($fld['text_stored']==0))) {
             $slice_id = $fld->getSliceId();
             $slicename = AA_Module::getModuleName($slice_id);
-            $aliaslink = a_href(get_admin_url('se_inputform.php', ['change_id'=>$slice_id, 'fid'=>$fld['id']]).'#alias'.substr($alias,2), $alias);
+            $aliaslink = a_href(get_admin_url('se_inputform.php', [
+                    'change_id' => $slice_id,
+                    'fid'       => $fld['id']
+                ]) . '#alias' . substr($alias, 2), $alias);
             return "<br>$aliaslink ($slicename) - f_t: used with field marked as non-multiple and html - consider using quicker f_1 function for direct content print";
         }
         return '';

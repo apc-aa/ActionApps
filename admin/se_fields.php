@@ -168,10 +168,10 @@ if ($update) {
                 $varset->setFromArray($field_setting);   // from template for this field
 
                 // in AA_Core_Fields.. are fields identified by 'switch' or 'text'
-                // identifiers (without dots!) by default. However if user add new
+                // identifiers (without dots!) by default. However, if user add new
                 // "template" field to the AA_Core_Fields.. slice, then the identifier
                 // is full (it contains dots). We need base identifier, for now.
-                // Also we will add underscore for all "slice fields" - the ones
+                // Also, we will add underscore for all "slice fields" - the ones
                 // which are not set for items, but rather for slice (settings)
                 $ftype_base = ($slice_fields ? '_' : '') . AA_Fields::getFieldType($field_type);
 

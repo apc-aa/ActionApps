@@ -29,20 +29,39 @@
 */
 
 use AA\IO\DB\DB_AA;
+use AA\Util\InputVars;
 
-const AA_REGISTER_GLOBALS = true;
+// const AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/se_users.php";
 
+try {
+    // array ( 2 => 16, )
+    $UsrAdd = InputVars::stringGET('UsrAdd');
+    // array ( 'Vyhledat' => 2, )
+    $UsrSrch = InputVars::boolPOST('UsrSrch'); // alpha
+    $GrpSrch = InputVars::boolPOST('GrpSrch'); // alpha
+    $UsrDel = InputVars::stringPOST('UsrDel'); // alpha
+    // array ( 1 => 3, )
+    $adduser = InputVars::boolGET('adduser');
+    // array ( '' => 2, )
+    $grp = InputVars::stringPOST('grp'); // empty
+    // array ( 'ADMINISTRAT…' => 12, 'EDITOR' => 2, 'AUTHOR' => 2, )
+    $role = InputVars::stringGET('role'); // alpha
+    // array ( '' => 2, )
+    $usr = InputVars::stringPOST('usr'); // empty
+    $cancel = InputVars::boolPOST('cancel');
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
 
 if (!IfSlPerm(PS_USERS)) {
     AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php3", _m("You have not permissions to manage users"), "admin");
     exit;
 }
 
-/** IfLink function
- *  function shows link only if condition is true
+/** function shows link only if condition is true
  * @param $cond
  * @param $url
  * @param $txt
@@ -104,7 +123,7 @@ function PrintUser($perm, $usr_id, $editor_perm) {
         ['uid', $usr_id]
     ])) ? " ($cnt)" : '';
 
-    echo "<td class=\"tabtxt\"><input type=\"button\" name=\"uid\" value=\"". _m("Profile") ."$cnt\" onclick=\"document.location='". StateUrl("se_profile.php3?uid=$usr_id_enc") ."'\"></td>\n";
+    echo "<td class=\"tabtxt\"><input type=\"button\" name=\"uid\" value=\"". _m("Profile") ."$cnt\" onclick=\"document.location='". StateUrl("se_profile.php?uid=$usr_id_enc") ."'\"></td>\n";
     echo "</tr>\n";
 }
 
@@ -156,7 +175,7 @@ if ( $continue ) {
     echo "<tr><td class=\"tabtxt\">&nbsp;</td>
               <td class=\"tabtxt\" colspan=\"8\">". _m("Default user profile") ."</td>
               <td class=\"tabtxt\"><input type=\"button\" name=\"uid\" value=\"". _m("Profile") ."$cnt\"
-           onclick=\"document.location='". StateUrl("se_profile.php3?uid=*") ."'\"></td>\n";
+           onclick=\"document.location='". StateUrl("se_profile.php?uid=*") ."'\"></td>\n";
   echo "</tr>\n";
 
     echo "</table>

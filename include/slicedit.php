@@ -189,15 +189,15 @@ if ( $add || $update ) {
         if ( $update ) {
             $varset->clear();
             $varset->addkey("id", "unpacked", $slice_id);
-            $varset->add("name", "quoted", $name);
+            $varset->add("name", "text", $name);
             $varset->add("owner", "unpacked", $owner);
             //echo $owner; exit;  // problem was in VARCHAR of owner field in database. It must be BINARY
-            $varset->add("slice_url", "quoted", $slice_url);
+            $varset->add("slice_url", "text", $slice_url);
             $varset->add("priority", "number", $priority);
             if ( $superadmin ) {
                 $varset->add("deleted", "number", $deleted);
             }
-            $varset->add("lang_file", "quoted", $lang_file);
+            $varset->add("lang_file", "text", $lang_file);
 
             if (!$varset->doUpdate('module', null, $slice_id)) {
                 // not necessary - we have set the halt_on_error
@@ -211,7 +211,7 @@ if ( $add || $update ) {
             if ( $superadmin ) {
                 $varset->add("template", "number", $template);
             }
-            $varset->add("type", "quoted", $slice_type);
+            $varset->add("type", "text", $slice_type);
             $varset->add("permit_anonymous_post", "number", $permit_anonymous_post);
             $varset->add("permit_anonymous_edit", "number", $permit_anonymous_edit);
             $varset->add("permit_offline_fill", "number", $permit_offline_fill);
@@ -243,13 +243,13 @@ if ( $add || $update ) {
             $varset->set("id", $slice_id, "unpacked");
             $varset->set("created_by", AuthGetUid(), "text");
             $varset->set("created_at", now(), "text");
-            $varset->set("name", $name, "quoted");
+            $varset->set("name", $name, "text");
             $varset->set("owner", $owner, "unpacked");
-            $varset->set("slice_url", $slice_url, "quoted");
+            $varset->set("slice_url", $slice_url, "text");
             $varset->set("priority", $priority, "number");
             $varset->set("deleted", $deleted, "number");
-            $varset->set("lang_file", $lang_file, "quoted");
-            $varset->set("type","S","quoted");
+            $varset->set("lang_file", $lang_file, "text");
+            $varset->set("type","S","text");
 
             if ( !$varset->doINSERT('module') ) {
                 $err["DB"] .= MsgErr("Can't add slice");
@@ -270,19 +270,19 @@ if ( $add || $update ) {
             $varset->set("id", $slice_id, "unpacked");
             $varset->set("created_by", AuthGetUid(), "text");
             $varset->set("created_at", now(), "text");
-            $varset->set("name", $name, "quoted");
+            $varset->set("name", $name, "text");
             $varset->set("owner", $owner, "unpacked");
-            $varset->set("slice_url", $slice_url, "quoted");
-            $varset->set("type", $slice_type, "quoted");
+            $varset->set("slice_url", $slice_url, "text");
+            $varset->set("type", $slice_type, "text");
             $varset->set("deleted", $deleted, "number");
-            $varset->set("lang_file", $lang_file, "quoted");
+            $varset->set("lang_file", $lang_file, "text");
             $varset->set("d_listlen", $d_listlen, "number");
             $varset->set("template", $template, "number");
             $varset->set("permit_anonymous_post", $permit_anonymous_post, "number");
             $varset->set("permit_anonymous_edit", $permit_anonymous_edit, "number");
             $varset->set("permit_offline_fill", $permit_offline_fill, "number");
             $varset->set("fileman_access", $fileman_access, "text");
-            $varset->set("fileman_dir", $fileman_dir, "quoted");
+            $varset->set("fileman_dir", $fileman_dir, "text");
             $varset->add("auth_field_group", "text", $auth_field_group);
             $varset->add("mailman_field_lists", "text", $mailman_field_lists);
             $varset->add("reading_password", "text", $reading_password);
@@ -291,7 +291,7 @@ if ( $add || $update ) {
             $varset->add("flag", "number", $slice_flag);
 
             //mimo
-            $varset->add('mlxctrl', "quoted", $mlxctrl);
+            $varset->add('mlxctrl', "text", $mlxctrl);
 
             // create new slice
             if ( !$varset->doINSERT('slice') ) {

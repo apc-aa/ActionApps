@@ -28,12 +28,48 @@
 //             as_new - if we want to create new category group based on an existing (id of "template" group)
 
 use AA\IO\DB\DB_AA;
+use AA\Util\InputVars;
 
-const AA_REGISTER_GLOBALS = true;
+// const AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/varset.php";
 require_once __DIR__ . "/../include/constedit_util.php";
+
+try {
+    // array ( )
+    $cid = InputVars::arrayPOST('cid'); // alnum
+    // array ( 0 => 7, )
+    $deleteGroup = InputVars::boolPOST('deleteGroup');
+    // array ( 'seo........…' => 4, )-array ( 'seo........…' => 7, )
+    $fid = InputVars::stringGETPOST('fid'); // -
+    $as_new = InputVars::stringGET('as_new');
+    $new_owner_id = InputVars::stringPOST('new_owner_id');
+    $hierarch = InputVars::boolGETPOST('hierarch');
+    // array ( 1 => 4, )
+    $foo = InputVars::boolGET('foo');
+    // array ( 0 => 4, )-array ( '' => 3, 'v4161616161…' => 1, 'v4955595446' => 3, )
+    $group_id = InputVars::stringSlashedGETPOST('group_id'); // -alnum
+    // array ( )
+    $name = InputVars::arrayPOST('name');
+    // array ( 'JVFTGMCGHC' => 1, 'Aaaaaaa' => 1, 'IUYTF' => 1, )
+    $new_group_id = InputVars::stringSlashedPOST('new_group_id'); // alpha
+    // array ( )
+    $pri = InputVars::arrayPOST('pri');
+    // array ( 'on' => 4, )
+    $propagate_changes = InputVars::boolPOST('propagate_changes');
+    // array ( 'se_inputfor…' => 4, )-array ( 'se_inputfor…' => 7, )
+    $return_url = InputVars::stringGETPOST('return_url'); // -
+    // array ( ' Změnit [^…' => 7, )
+    $update = InputVars::boolPOST('update');
+    // array ( )
+    $used = InputVars::arrayPOST('used');
+    // array ( )
+    $value = InputVars::arrayPOST('value');
+    $cancel = InputVars::boolPOST('cancel');
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
 
 
 if ($cancel) {
@@ -274,12 +310,12 @@ $apage->printHead($err, $Msg);
 
 $form_buttons = [
     "update",
-                      "cancel"   => ["url"=> $back_url],
-                      "delgroup" => [
-                          "type"  => "button",
-                                          "value" => _m("Delete whole group"),
-                                          "add"   => 'onclick="deleteWholeGroup();"'
-                      ]
+    "cancel"   => ["url" => $back_url],
+    "delgroup" => [
+        "type"  => "button",
+        "value" => _m("Delete whole group"),
+        "add"   => 'onclick="deleteWholeGroup();"',
+    ],
 ];
 ?>
  <input type="hidden" name="group_id" value="<?php echo varname4form($group_id); /* do not move it to $form_buttons - we need it also in hierarchical editor, which do not use $form_buttons!!! */ ?>">

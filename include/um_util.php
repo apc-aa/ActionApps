@@ -129,12 +129,12 @@ function PrintModulePermModificator($selected_user) {
  * @return string
  */
 function GetModulePermRow($mid, $type, $name, $perm, $odd=false) {
-    global $MODULES, $perms_roles_modules;
+    global $MODULES;
     $ret = "<tr>
-        <td ".($odd ? " bgcolor=\"".COLOR_BACKGROUND."\"" : "")." align='top'>". $MODULES[$type]['name'] .":&nbsp;". a_href(AA_Module::getModuleUrl($mid),$name). "<br>&nbsp;&nbsp;&nbsp;&nbsp;($mid)</td>
+        <td ".($odd ? " bgcolor=\"".COLOR_BACKGROUND."\"" : "")." align='top'>". $MODULES[$type]['name'] .":&nbsp;". a_href(AA_Module::getModuleUrl($mid), $name). "<br>&nbsp;&nbsp;&nbsp;&nbsp;($mid)</td>
         <td ".($odd ? " bgcolor=\"".COLOR_BACKGROUND."\"" : "")." nowrap align='top'>";
-    if ( isset($perms_roles_modules[$type]) AND is_array($perms_roles_modules[$type]) ) {
-        foreach ($perms_roles_modules[$type] as $role) {
+    if ( isset(AA_Perm::PERMS_ROLES_MODULES[$type]) AND is_array(AA_Perm::PERMS_ROLES_MODULES[$type]) ) {
+        foreach (AA_Perm::PERMS_ROLES_MODULES[$type] as $role) {
             $ret .= "<label><input type=\"radio\" name=\"perm_mod[x$mid]\" value=\"$role\"";
             $ret .= ( AA_Perm::compare($perm,AA_Perm::ROLES[$role]['id'])=='E' ) ? ' checked>' : '>';
             $ret .= _mdelayed($role). '</label> ';
@@ -222,9 +222,8 @@ function GetModuleLetter($type) {
 /** PrintPermUmPageEnd function
  * @param $MODULES
  * @param $mod_types
- * @param $perms_roles_modules
  */
-function PrintPermUmPageEnd($MODULES, $mod_types, $perms_roles_modules) { ?>
+function PrintPermUmPageEnd($MODULES, $mod_types) { ?>
     <script>
       var mod       = [];
       var mod_names = [];
@@ -233,9 +232,9 @@ function PrintPermUmPageEnd($MODULES, $mod_types, $perms_roles_modules) { ?>
     echo "\n var mod_types='$mod_types';\n";
     foreach ($MODULES as $k => $v) {
         $letter = GetModuleLetter($k);             // get 'letter' or first letter of MODULE type
-        if ( isset($perms_roles_modules[$k]) AND is_array($perms_roles_modules[$k]) ) {
-            echo " mod[".ord($letter)."] = new Array('". join("','", $perms_roles_modules[$k]) ."');  // module type $k \n";
-            echo " mod_names[".ord($letter)."] = new Array('". join("','", array_map( '_mdelayed', $perms_roles_modules[$k])) ."');\n";
+        if ( isset(AA_Perm::PERMS_ROLES_MODULES[$k]) AND is_array(AA_Perm::PERMS_ROLES_MODULES[$k]) ) {
+            echo " mod[".ord($letter)."] = new Array('". join("','", AA_Perm::PERMS_ROLES_MODULES[$k]) ."');  // module type $k \n";
+            echo " mod_names[".ord($letter)."] = new Array('". join("','", array_map( '_mdelayed', AA_Perm::PERMS_ROLES_MODULES[$k])) ."');\n";
         }
     }
     ?>

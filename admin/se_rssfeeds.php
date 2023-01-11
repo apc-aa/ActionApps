@@ -34,9 +34,30 @@
 */
 
 use AA\IO\DB\DB_AA;
+use AA\Util\InputVars;
 
-const AA_REGISTER_GLOBALS = true;
+// const AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
+
+try {
+    // array ( 'insert' => 6, 'edit' => 7, 'update' => 2, 'add' => 4, )
+    $mode = InputVars::stringPOST('mode'); // alpha
+    // array ( '' => 15, 'asdfghjkl' => 4, )
+    $old_rssfeed_name = InputVars::stringPOST('old_rssfeed_name'); // alpha, empty
+    // array ( '🦆' => 3, 'asdfghjkl' => 4, '' => 10, 'asdfghjkl�…' => 1, '%ˇ:?"!' => 1, )
+    $rssfeed_name = InputVars::stringPOST('rssfeed_name'); // empty
+    // array ( 'asdfghjkl' => 4, '%ˇ:?' => 6, '🦆' => 1, )
+    $rssfeeds = InputVars::stringPOST('rssfeeds');
+    // array ( '' => 12, 'asdfghjkl' => 3, '%ˇ:?' => 4, )
+    $sel_rssfeed_name = InputVars::stringPOST('sel_rssfeed_name'); // empty
+    // array ( '' => 12, 'sdfghjk' => 2, 'sdfghjk🐖' => 3, 'ěščřž�…' => 1, '🐖' => 1, )
+    $server_url = InputVars::stringPOST('server_url'); // empty
+    $cancel = InputVars::boolPOST('cancel');
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
+
+
 if (!IfSlPerm(PS_FEEDING)) {
     MsgPage(_m("You have not permissions to change feeding setting"));
     exit;
@@ -55,7 +76,7 @@ if ($mode == "map") {
 }
 
 if ($mode == "edit" || $mode == "test") {
-    $db->query("SELECT * FROM rssfeeds WHERE name='$sel_rssfeed_name' AND slice_id = '$qp_slice_id'");
+    $db->query("SELECT * FROM rssfeeds WHERE name='". quote($sel_rssfeed_name). "' AND slice_id = '$qp_slice_id'");
     if ($db->next_record()) {
         $testfeed              = $db->record();
         $testfeed["feed_type"] = FEEDTYPE_RSS;
@@ -67,19 +88,19 @@ if ($mode == "edit" || $mode == "test") {
 } else {
     switch ($mode) {
         case "delete" :
-            $db->query("DELETE FROM rssfeeds WHERE name='$sel_rssfeed_name' AND slice_id = '$qp_slice_id'");
+            $db->query("DELETE FROM rssfeeds WHERE name='". quote($sel_rssfeed_name). "' AND slice_id = '$qp_slice_id'");
             // $db->query("DELETE FROM ef_permissions WHERE node='$sel_rssfeed_name'");
             break;
 
         case "insert" :
-            $db->query("SELECT * FROM rssfeeds WHERE name='$rssfeed_name' AND slice_id = '$qp_slice_id'");
+            $db->query("SELECT * FROM rssfeeds WHERE name='". quote($rssfeed_name). "' AND slice_id = '$qp_slice_id'");
             if ($db->next_record()) {
                 $err["DB"] .= MsgErr("Can't add RSS Feed $rssfeed_name");
             } else {
                 $catVS = new Cvarset();
                 $catVS->add("slice_id",  "unpacked", AA::$module_id);
-                $catVS->add("name",      "quoted",   $rssfeed_name);
-                $catVS->add("server_url","quoted",   $server_url);
+                $catVS->add("name",      "text",   $rssfeed_name);
+                $catVS->add("server_url","text",   $server_url);
                 if ( !$catVS->doINSERT('rssfeeds')) {
                     $err["DB"] .= MsgErr("Can't add RSS Feed $rssfeed_name");
                 }
@@ -88,10 +109,10 @@ if ($mode == "edit" || $mode == "test") {
 
         case "update" :
             $catVS = new Cvarset();
-            $catVS->add("name",      "quoted", $rssfeed_name);
-            $catVS->add("server_url","quoted", $server_url);
+            $catVS->add("name",      "text", $rssfeed_name);
+            $catVS->add("server_url","text", $server_url);
             $db->query("UPDATE rssfeeds SET ". $catVS->makeUPDATE()
-              ." WHERE name='$old_rssfeed_name' AND slice_id = '$qp_slice_id'");
+              ." WHERE name='". quote($old_rssfeed_name) ."' AND slice_id = '$qp_slice_id'");
             break;
 
         case "add" : $new_mode = "insert"; break;

@@ -114,7 +114,7 @@ class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedI
               <td><input name="chb[x_#AA_ID___]" value="" type="checkbox"></td>
               <td style="white-space:nowrap;">' .
             $buttons['Edit'].' '.
-            a_href(get_admin_url('aa_log.php?&srchbr_akce=1&srchbr_field%5B0%5D=selector&srchbr_oper%5B0%5D==&srchbr_value%5B0%5D=AA_Plannedtask:_#AA_ID___&srchbr_order%5B0%5D=time&srchbr_order_dir%5B0%5D=on'), _m('Log'), 'aa-button-show') . ' ' .
+            a_href(get_admin_url('aa_log.php?&srchbr_akce=1&srchbr_field%5B0%5D=selector&srchbr_oper%5B0%5D==&srchbr_value%5B0%5D=AA_Plannedtask:_#AA_ID___&srchbr_order%5B0%5D=time&srchbr_order_dir%5B0%5D=on'), _m('Log'), ['class' => 'aa-button-show']) . ' ' .
             $buttons['DeleteObject'].' </td>
               <td>_#AA_NAME_</td>
               <td>_#EVENT___</td>

@@ -28,12 +28,20 @@
  *
 */
 
+// const AA_REGISTER_GLOBALS = true;
+use AA\Util\InputVars;
 
-const AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/csn_util.php";
 
+try {
+    // array ( 'dcf6f197e02…' => 3, '6c81ec28dd4…' => 4, '4429a8e44bb…' => 8, )
+    $import_id = InputVars::idGET('import_id');
+    $cancel = InputVars::boolPOST('cancel');
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
 
 if ($cancel) {
     go_url( StateUrl(self_base() . "index.php3"));

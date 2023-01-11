@@ -219,7 +219,7 @@ function unixstamp_to_iso8601($t) {
     }
     $tz=substr("0" . $tz, -2);
     $tm=substr("0" . $tm, -2);
-    return date("Y-m-d\TH:i:s", $t). "${ts}${tz}:${tm}";
+    return date("Y-m-d\TH:i:s", $t). "$ts$tz:$tm";
 }
 
 // It seems to be better to use strtotime() function instead custom parsing as
@@ -232,23 +232,6 @@ function unixstamp_to_iso8601($t) {
 function iso8601_to_unixstamp($t) {
     return strtotime($t);
 }
-
-$DEFAULT_RSS_MAP = [
-    // Note this matches code in xml_rssparse.php for parsing DC fields
-    // Can change the names without affecting anything
-        "author.........." => ["feedmap_flag"=>FEEDMAP_FLAG_RSS,  "value"=>"DC/creator",                                "from_field_name"=>"DC:creator"],
-        "abstract........" => ["feedmap_flag"=>FEEDMAP_FLAG_RSS,  "value"=>"ITEM/description|DC/description|DC/subject","from_field_name"=>"Any abstract"],
-        "publish_date...." => ["feedmap_flag"=>FEEDMAP_FLAG_RSS,  "value"=>"DATE(DC/date)|DATE(ITEM/pubdate)|NOW",      "from_field_name"=>"DC:date"],
-        "source.........." => ["feedmap_flag"=>FEEDMAP_FLAG_RSS,  "value"=>"DC/source|CHANNEL/title",                   "from_field_name"=>"DC:source"],
-        "lang_code......." => ["feedmap_flag"=>FEEDMAP_FLAG_RSS,  "value"=>"DC/language",                               "from_field_name"=>"DC:language"],
-        "source_href....." => ["feedmap_flag"=>FEEDMAP_FLAG_RSS,  "value"=>"DC/relation|CHANNEL/link",                  "from_field_name"=>"DC:relation"],
-        "place..........." => ["feedmap_flag"=>FEEDMAP_FLAG_RSS,  "value"=>"DC/coverage",                               "from_field_name"=>"DC:coverage"],
-        "headline........" => ["feedmap_flag"=>FEEDMAP_FLAG_RSS,  "value"=>"DC/title|ITEM/title",                       "from_field_name"=>"DC:title"],
-        "full_text......." => ["feedmap_flag"=>FEEDMAP_FLAG_RSS,  "value"=>"CONTENT",                                   "from_field_name"=>"Content"],
-        "status_code....." => ["feedmap_flag"=>FEEDMAP_FLAG_VALUE,"value"=>2,                                           "from_field_name"=>"Approved"],
-        "hl_href........." => ["feedmap_flag"=>FEEDMAP_FLAG_RSS,  "value"=>"ITEM/link|ITEM/guid",                       "from_field_name"=>"ITEM:link"],
-        "expiry_date....." => ["feedmap_flag"=>FEEDMAP_FLAG_VALUE,"value"=>(time()+2000*24*60*60),                      "from_field_name"=>"Expiry Date"]
-];
 
 /** attr2id function
  * @param $str
@@ -318,12 +301,14 @@ class LastEditList {
         $itemview = new itemview($format, '', $zids, 0, $zids->count(), '', '', 'GetXml_GetContent');
         $this->lastlist = $itemview->get_output("view");
     }
+
     /** setList function
      * @param $list
      */
     function setList($list) {
         $this->lastlist = $list;
     }
+
     /** printList function
      *
      */
@@ -337,6 +322,7 @@ class LastEditList {
     function getList() {
         return $this->lastlist;
     }
+
     /** getPairs function
      *
      */
@@ -351,5 +337,3 @@ class LastEditList {
         return $ret;
     }
 }
-
-

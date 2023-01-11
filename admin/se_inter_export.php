@@ -28,9 +28,27 @@
 // optionaly $Msg to show under <h1>Headline</h1> (typicaly: Fields' mapping update)
 
 use AA\IO\DB\DB_AA;
+use AA\Util\InputVars;
 
-const AA_REGISTER_GLOBALS = true;
+// const AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
+
+try {
+    // array ( 'insert' => 13, 'delete' => 2, )
+    $mode = InputVars::stringPOST('mode'); // alpha
+    // array ( '~hejny' => 2, '~Hořící …' => 2, 'Econnect h1…' => 1, )
+    $perms = InputVars::stringSlashedPOST('perms');
+    // array ( '' => 4, 'Rohlík' => 3, 'Econnect h1…' => 1, 'adamsbeauty…' => 1, )
+    $r_nodes = InputVars::stringSlashedPOST('r_nodes'); // empty
+    // array ( ' Poslat [^…' => 13, )
+    $submitbtn = InputVars::boolPOST('submitbtn');
+    // array ( 'hejny' => 4, 'Hořící K…' => 4, '🦆' => 4, 'he' => 1, '' => 2, )
+    $user_name = InputVars::stringSlashedPOST('user_name'); // empty
+    $cancel = InputVars::boolPOST('cancel');
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
+
 if (!IfSlPerm(PS_FEEDING)) {
    MsgPage(_m("You have not permissions to change feeding setting"));
    exit;
@@ -124,7 +142,7 @@ FrmTabCaption(_m("Inter node export settings"));
         <?php
           if ($nodes && is_array($nodes)) {
               foreach ($nodes as $n) {
-                  echo "<option value=\"$n\"".($n==$node ? "SELECTED":"")." >$n</option>";
+                  echo "<option value=\"$n\"".($n==$r_nodes ? "SELECTED":"")." >$n</option>";
               }
           }
         ?>

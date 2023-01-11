@@ -37,14 +37,70 @@
 */
 
 
+use AA\Util\InputVars;
+
 $require_default_lang = true;      // do not use module specific language file
                                    // (message for init_page.php)
-const AA_REGISTER_GLOBALS = true;
+//const AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/varset.php";
-
 require_once __DIR__ . "/../include/um_util.php";
+
+try {
+    // array ( 1 => 3, )-array ( 1 => 5, )
+    $UsrSrch = InputVars::boolGETPOST('UsrSrch'); // -
+    // array ( 'Přidat [^…' => 1, )
+    $add_submit = InputVars::boolPOST('add_submit');
+    // array ( 'Jeď!' => 2, )
+    $go_finduser = InputVars::boolGET('go_finduser');
+    // array ( )
+    $new_module = InputVars::arrayPOST('new_module');
+    // array ( )
+    $new_module_role = InputVars::arrayPOST('new_module_role');
+    // array ( 0 => 1, '' => 1, )
+    $posted_groups = InputVars::boolPOST('posted_groups'); // empty
+    // array ( 'P' => 1, )
+    // $sel_groups_selp = InputVars::stringSlashedPOST('sel_groups_selp'); // alpha
+    // array ( 5 => 1, 4 => 1, 1 => 1, 2 => 1, 6 => 2, )-array ( '' => 1, 6 => 3, 2 => 1, )
+    $selected_user = InputVars::stringGETPOST('selected_user'); // -
+    // array ( 0 => 4, 'update_subm…' => 1, )
+    $submit_action = InputVars::stringPOST('submit_action');
+    // array ( 'Matěj' => 2, )
+    $user_firstname = InputVars::stringPOST('user_firstname');
+    // array ( 'hejny' => 1, )
+    $user_login = InputVars::stringPOST('user_login'); // alpha
+    // array ( 'mati.hejny@…' => 2, )
+    $user_mail1 = InputVars::stringPOST('user_mail1');
+    $user_mail2 = InputVars::stringPOST('user_mail2');
+    $user_mail3 = InputVars::stringPOST('user_mail3');
+    // array ( '...' => 1, 'nOnEwpAsswD' => 1, )
+    $user_password1 = InputVars::stringPOST('user_password1');
+    // array ( '...' => 1, 'nOnEwpAsswD' => 1, )
+    $user_password2 = InputVars::stringPOST('user_password2');
+    // array ( 'on' => 2, )
+    $user_super = InputVars::boolPOST('user_super');
+    $um_uedit_no_go_url = InputVars::boolPOST('user_super');
+    // array ( 'Hejný' => 2, )
+    $user_surname = InputVars::stringPOST('user_surname');
+    // array ( 'hejny' => 1, 'asdfghjkl' => 1, 'b' => 1, )-array ( 'hejn' => 1, 'asdfghjkl' => 2, '' => 2, )
+    $usr = InputVars::stringGETPOST('usr'); // alpha-alpha
+    $grp = InputVars::stringGETPOST('grp'); // alpha-alpha
+    // array ( 1 => 6, )-array ( 'Editace' => 3, 1 => 1, )
+    $usr_edit = InputVars::boolGETPOST('usr_edit'); // -alnum
+    // array ( 1 => 3, )-array ( 1 => 1, )
+    $usr_new = InputVars::boolGETPOST('usr_new'); // -
+    // array ( 3 => 3, 7 => 1, )-array ( 3 => 6, '011ba695b78…' => 1, '' => 1, 7 => 1, )
+    $selected_group = InputVars::stringGETPOST('selected_group'); // -alnum
+    // array ( )
+    $perm_mod = InputVars::arrayPOST('perm_mod'); // alpha
+    // array ( '' => 4, )
+    $usr1_flt = InputVars::stringPOST('usr1_flt'); // empty
+    $grp1_flt = InputVars::stringPOST('grp1_flt'); // empty
+    $cancel = InputVars::boolPOST('cancel');
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
 
 if ($cancel) {
     go_url( StateUrl(self_base() . "index.php3"));
@@ -373,7 +429,7 @@ $form_buttons["cancel"]        = ["url"=>"um_uedit.php"];
 FrmTabEnd($form_buttons);
 
 if ( !$add_submit AND !$usr_new) {
-    PrintPermUmPageEnd($MODULES, $mod_types, $perms_roles_modules);
+    PrintPermUmPageEnd($MODULES, $mod_types);
 }
 
 $apage->printFoot();

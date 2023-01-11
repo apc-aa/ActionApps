@@ -474,7 +474,7 @@ $_m["Alias"]
  = "";
 
 // admin/se_inputform.php, row 132, 476
-// admin/se_profile.php3, row 160
+// admin/se_profile.php, row 160
 $_m["Function"]
  = "";
 
@@ -887,7 +887,7 @@ $_m["From"]
  = "";
 
 // admin/se_mapping.php, row 220
-// admin/se_profile.php3, row 161
+// admin/se_profile.php, row 161
 // admin/se_history.php, row 72, 85
 // admin/se_constant.php, row 182, 414
 // include/constants.php, row 358
@@ -937,111 +937,111 @@ $_m["Field Type"]
 $_m["Triggers Available -- see some JavaScript help for when a trigger is run"]
  = "";
 
-// admin/se_profile.php3, row 42
+// admin/se_profile.php, row 42
 // admin/se_users.php, row 38
 $_m["You have not permissions to manage users"]
  = "";
 
-// admin/se_profile.php3, row 57
+// admin/se_profile.php, row 57
 // include/profile.class.php, row 303
 $_m["Rule deleted"]
  = "";
 
-// admin/se_profile.php3, row 62
+// admin/se_profile.php, row 62
 $_m["Error: Can't add rule"]
  = "";
 
-// admin/se_profile.php3, row 82
+// admin/se_profile.php, row 82
 $_m["Item number"]
  = "";
 
-// admin/se_profile.php3, row 83
+// admin/se_profile.php, row 83
 $_m["Input view ID"]
  = "";
 
-// admin/se_profile.php3, row 84
+// admin/se_profile.php, row 84
 $_m["Item filter"]
  = "";
 
-// admin/se_profile.php3, row 85
+// admin/se_profile.php, row 85
 $_m["Item order"]
  = "";
 
-// admin/se_profile.php3, row 86
+// admin/se_profile.php, row 86
 $_m["Item permissions"]
  = "";
 
-// admin/se_profile.php3, row 87
+// admin/se_profile.php, row 87
 $_m["Hide field"]
  = "";
 
-// admin/se_profile.php3, row 88
+// admin/se_profile.php, row 88
 $_m["Hide and Fill"]
  = "";
 
-// admin/se_profile.php3, row 89
+// admin/se_profile.php, row 89
 // admin/search_replace.php, row 761
 $_m["Fill field"]
  = "";
 
-// admin/se_profile.php3, row 90
+// admin/se_profile.php, row 90
 $_m["Predefine field"]
  = "";
 
-// admin/se_profile.php3, row 91
+// admin/se_profile.php, row 91
 $_m["Stored query"]
  = "";
 
-// admin/se_profile.php3, row 92
+// admin/se_profile.php, row 92
 $_m["UI - manager"]
  = "";
 
-// admin/se_profile.php3, row 93
+// admin/se_profile.php, row 93
 $_m["UI - manager - hide"]
  = "";
 
-// admin/se_profile.php3, row 94
+// admin/se_profile.php, row 94
 $_m["UI - inputform"]
  = "";
 
-// admin/se_profile.php3, row 95
+// admin/se_profile.php, row 95
 $_m["UI - inputform - hide"]
  = "";
 
-// admin/se_profile.php3, row 98
+// admin/se_profile.php, row 98
 // admin/se_compact.php, row 219
 // admin/se_view.php, row 154, 155
 $_m["Ascending"]
  = "";
 
-// admin/se_profile.php3, row 98
+// admin/se_profile.php, row 98
 // admin/se_compact.php, row 219
 // admin/se_view.php, row 154, 155
 // include/searchbar.class.php, row 606
 $_m["Descending"]
  = "";
 
-// admin/se_profile.php3, row 102, 128
+// admin/se_profile.php, row 102, 128
 $_m["Admin - user Profiles"]
  = "";
 
-// admin/se_profile.php3, row 135
+// admin/se_profile.php, row 135
 $_m["Rules"]
  = "";
 
-// admin/se_profile.php3, row 146
+// admin/se_profile.php, row 146
 $_m["No rule is set"]
  = "";
 
-// admin/se_profile.php3, row 151
+// admin/se_profile.php, row 151
 $_m["Add Rule"]
  = "";
 
-// admin/se_profile.php3, row 158
+// admin/se_profile.php, row 158
 $_m["Rule"]
  = "";
 
-// admin/se_profile.php3, row 159
+// admin/se_profile.php, row 159
 // admin/se_search.php3, row 147, 164
 // admin/se_fields.php, row 119, 240
 // admin/search_replace.php, row 762
@@ -1050,257 +1050,257 @@ $_m["Rule"]
 $_m["Field"]
  = "";
 
-// admin/se_profile.php3, row 162
+// admin/se_profile.php, row 162
 // admin/search_replace.php, row 262, 335, 419, 570
 // include/formutil.php, row 1151, 1168
 $_m["HTML"]
  = "";
 
-// admin/se_profile.php3, row 168
+// admin/se_profile.php, row 168
 $_m["Logo (top)"]
  = "";
 
-// admin/se_profile.php3, row 169
+// admin/se_profile.php, row 169
 $_m["View site (top)"]
  = "";
 
-// admin/se_profile.php3, row 170
+// admin/se_profile.php, row 170
 $_m["Add Item link (top)"]
  = "";
 
-// admin/se_profile.php3, row 171
+// admin/se_profile.php, row 171
 $_m["Item Manager link (top)"]
  = "";
 
-// admin/se_profile.php3, row 172
+// admin/se_profile.php, row 172
 $_m["Slice Admin link (top)"]
  = "";
 
-// admin/se_profile.php3, row 173
+// admin/se_profile.php, row 173
 $_m["AA link (top)"]
  = "";
 
-// admin/se_profile.php3, row 174
+// admin/se_profile.php, row 174
 $_m["Central link (top)"]
  = "";
 
-// admin/se_profile.php3, row 175
+// admin/se_profile.php, row 175
 $_m["Title (top)"]
  = "";
 
-// admin/se_profile.php3, row 176
+// admin/se_profile.php, row 176
 $_m["Logout link (top)"]
  = "";
 
-// admin/se_profile.php3, row 177
+// admin/se_profile.php, row 177
 $_m["User Info link (top)"]
  = "";
 
-// admin/se_profile.php3, row 178
+// admin/se_profile.php, row 178
 $_m["Module Selectbox (top)"]
  = "";
 
-// admin/se_profile.php3, row 179
+// admin/se_profile.php, row 179
 $_m["Module Switch text (top)"]
  = "";
 
-// admin/se_profile.php3, row 180
+// admin/se_profile.php, row 180
 $_m["Item Manager Menu: Header (left)"]
  = "";
 
-// admin/se_profile.php3, row 181
+// admin/se_profile.php, row 181
 $_m["Item Manager Menu: Add Item (left)"]
  = "";
 
-// admin/se_profile.php3, row 182
+// admin/se_profile.php, row 182
 $_m["Item Manager Menu: Active (left)"]
  = "";
 
-// admin/se_profile.php3, row 183
+// admin/se_profile.php, row 183
 $_m["Item Manager Menu: Pending (left)"]
  = "";
 
-// admin/se_profile.php3, row 184
+// admin/se_profile.php, row 184
 $_m["Item Manager Menu: Expired (left)"]
  = "";
 
-// admin/se_profile.php3, row 185
+// admin/se_profile.php, row 185
 $_m["Item Manager Menu: Holding (left)"]
  = "";
 
-// admin/se_profile.php3, row 186
+// admin/se_profile.php, row 186
 $_m["Item Manager Menu: Trash (left)"]
  = "";
 
-// admin/se_profile.php3, row 187
+// admin/se_profile.php, row 187
 $_m["Item Manager Menu: Bookmarks show (left)"]
  = "";
 
-// admin/se_profile.php3, row 188
+// admin/se_profile.php, row 188
 $_m["Item Manager Menu: Additional 1 (left)"]
  = "";
 
-// admin/se_profile.php3, row 189
+// admin/se_profile.php, row 189
 $_m["Item Manager Menu: Header 2 (left)"]
  = "";
 
-// admin/se_profile.php3, row 190
+// admin/se_profile.php, row 190
 $_m["Item Manager Menu: Slice Setting (left)"]
  = "";
 
-// admin/se_profile.php3, row 191
+// admin/se_profile.php, row 191
 $_m["Item Manager Menu: Empty Trash (left)"]
  = "";
 
-// admin/se_profile.php3, row 192
+// admin/se_profile.php, row 192
 $_m["Item Manager Menu: CSV Import (left)"]
  = "";
 
-// admin/se_profile.php3, row 193
+// admin/se_profile.php, row 193
 $_m["Item Manager Menu: Debug (left)"]
  = "";
 
-// admin/se_profile.php3, row 194
+// admin/se_profile.php, row 194
 $_m["Item Manager Menu: Additional 2 (left)"]
  = "";
 
-// admin/se_profile.php3, row 195
+// admin/se_profile.php, row 195
 $_m["Add CSS file"]
  = "";
 
-// admin/se_profile.php3, row 198
+// admin/se_profile.php, row 198
 $_m["Manager Actions"]
  = "";
 
-// admin/se_profile.php3, row 199
+// admin/se_profile.php, row 199
 $_m["Searchbar - Search Rows"]
  = "";
 
-// admin/se_profile.php3, row 200
+// admin/se_profile.php, row 200
 $_m["Searchbar - Order Rows"]
  = "";
 
-// admin/se_profile.php3, row 201
+// admin/se_profile.php, row 201
 $_m["Searchbar - Boomarks"]
  = "";
 
-// admin/se_profile.php3, row 205
+// admin/se_profile.php, row 205
 $_m["Title (add form)"]
  = "";
 
-// admin/se_profile.php3, row 206
+// admin/se_profile.php, row 206
 $_m["Top HTML code (add form)"]
  = "";
 
-// admin/se_profile.php3, row 207
+// admin/se_profile.php, row 207
 $_m["Bottom HTML code (add form)"]
  = "";
 
-// admin/se_profile.php3, row 208
+// admin/se_profile.php, row 208
 $_m["Button \"Insert\" (add form)"]
  = "";
 
-// admin/se_profile.php3, row 209
+// admin/se_profile.php, row 209
 $_m["Button \"Insert & View\" (add form)"]
  = "";
 
-// admin/se_profile.php3, row 210
+// admin/se_profile.php, row 210
 $_m["Button \"Cancel\" (add form)"]
  = "";
 
-// admin/se_profile.php3, row 211
+// admin/se_profile.php, row 211
 $_m["Title (edit form)"]
  = "";
 
-// admin/se_profile.php3, row 212
+// admin/se_profile.php, row 212
 $_m["Top HTML code (edit form)"]
  = "";
 
-// admin/se_profile.php3, row 213
+// admin/se_profile.php, row 213
 $_m["Bottom HTML code (edit form)"]
  = "";
 
-// admin/se_profile.php3, row 214
+// admin/se_profile.php, row 214
 $_m["Button \"Update\" (edit form)"]
  = "";
 
-// admin/se_profile.php3, row 215
+// admin/se_profile.php, row 215
 $_m["Button \"Update & View\" (edit form)"]
  = "";
 
-// admin/se_profile.php3, row 216
+// admin/se_profile.php, row 216
 $_m["Button \"Insert as new\" (edit form)"]
  = "";
 
-// admin/se_profile.php3, row 217
+// admin/se_profile.php, row 217
 $_m["Button \"Reset form\" (edit form)"]
  = "";
 
-// admin/se_profile.php3, row 218
+// admin/se_profile.php, row 218
 $_m["Button \"Cancel\" (edit form)"]
  = "";
 
-// admin/se_profile.php3, row 222
+// admin/se_profile.php, row 222
 $_m["Author Role"]
  = "";
 
-// admin/se_profile.php3, row 223
+// admin/se_profile.php, row 223
 $_m["Editor Role"]
  = "";
 
-// admin/se_profile.php3, row 224
+// admin/se_profile.php, row 224
 $_m["Adminostrator Role"]
  = "";
 
-// admin/se_profile.php3, row 225
+// admin/se_profile.php, row 225
 $_m["Superadmin Role"]
  = "";
 
-// admin/se_profile.php3, row 230
+// admin/se_profile.php, row 230
 $_m["number of item displayed in Item Manager"]
  = "";
 
-// admin/se_profile.php3, row 231
+// admin/se_profile.php, row 231
 $_m["id of view used for item input"]
  = "";
 
-// admin/se_profile.php3, row 232
+// admin/se_profile.php, row 232
 $_m["preset \"Search\" in Item Manager"]
  = "";
 
-// admin/se_profile.php3, row 233
+// admin/se_profile.php, row 233
 $_m["preset \"Order\" in Item Manager"]
  = "";
 
-// admin/se_profile.php3, row 234
+// admin/se_profile.php, row 234
 $_m["ID of \"Item Set\" which defines the permissions for item - see \"Admin - Item Set\""]
  = "";
 
-// admin/se_profile.php3, row 235
+// admin/se_profile.php, row 235
 $_m["hide the field in inputform"]
  = "";
 
-// admin/se_profile.php3, row 236
+// admin/se_profile.php, row 236
 $_m["hide the field in inputform and fill it by the value"]
  = "";
 
-// admin/se_profile.php3, row 237
+// admin/se_profile.php, row 237
 $_m["fill the field in inputform by the value"]
  = "";
 
-// admin/se_profile.php3, row 238
+// admin/se_profile.php, row 238
 $_m["predefine value of the field in inputform"]
  = "";
 
-// admin/se_profile.php3, row 239
+// admin/se_profile.php, row 239
 $_m["redefine manager UI - (empty values = do not show)"]
  = "";
 
-// admin/se_profile.php3, row 240
+// admin/se_profile.php, row 240
 $_m["hide this UI element"]
  = "";
 
-// admin/se_profile.php3, row 241
+// admin/se_profile.php, row 241
 $_m["redefine inputform UI - (empty values = do not show)"]
  = "";
 
@@ -2582,7 +2582,7 @@ $_m["HTML code for fulltext view"]
  = "";
 
 // admin/se_fulltext.php, row 155
-$_m["The template for dicsussion you can set on \"Design\" -> \"View\" page"]
+$_m["The template for discussion you can set on \"Design\" -> \"View\" page"]
  = "";
 
 // admin/se_fulltext.php, row 156

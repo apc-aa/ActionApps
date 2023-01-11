@@ -28,14 +28,35 @@
 */
 
 use AA\IO\DB\DB_AA;
+use AA\Util\InputVars;
 
-const AA_REGISTER_GLOBALS = true;
+//const AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/varset.php";
 require_once __DIR__ . "/../include/item.php";     // GetAliasesFromField funct def
 
-
+try {
+    // array ( 'on' => 4, )
+    $discus_disabled = InputVars::boolPOST('discus_disabled'); // alpha
+    // array ( 'on' => 4, )
+    $discus_htmlf = InputVars::boolPOST('discus_htmlf'); // alpha
+    // array ( '' => 11, 3144 => 4, )
+    $discus_vid = InputVars::intPOST('discus_vid'); // empty
+    // array ( '<BR><FONT S…' => 5, 'Fň' => 6, 'Fň🐖' => 2, 'Fň🐸' => 2, )
+    $fulltext_format = InputVars::stringPOST('fulltext_format');
+    // array ( '' => 8, 'ěščřtgv…' => 7, )
+    $fulltext_format_bottom = InputVars::stringPOST('fulltext_format_bottom'); // empty
+    // array ( '☃️' => 1, '☃️🐖' => 3, 'pjet' => 8, 'pjet🐰' => 3, )
+    $fulltext_format_top = InputVars::stringPOST('fulltext_format_top');
+    // array ( '()' => 10, '+ěščřž…' => 5, )
+    $fulltext_remove = InputVars::stringPOST('fulltext_remove');
+    // array ( 1 => 15, )
+    $update = InputVars::boolPOST('update');
+    $cancel = InputVars::boolPOST('cancel');
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
 
 
 //class AA_Adminpage {
@@ -84,32 +105,32 @@ if ( $update ) {
         ValidateInput("fulltext_format",        _m("Fulltext HTML code"), $fulltext_format,        $err, false,  "text");
         ValidateInput("fulltext_format_bottom", _m("Bottom HTML code"),   $fulltext_format_bottom, $err, false, "text");
         ValidateInput("fulltext_remove",        _m("Remove strings"),     $fulltext_remove,        $err, false, "text");
-        ValidateInput("discus_sel",             _m("Show discussion"),    $discus_sel,             $err, false,  "text");
+        ValidateInput("discus_vid",             _m("Show discussion"),    $discus_vid,             $err, false,  "text");
 
         if ( count($err) ) {
             break;
         }
 
-        $varset->add("fulltext_format_top", "quoted", $fulltext_format_top);
-        $varset->add("fulltext_format", "quoted", $fulltext_format);
-        $varset->add("fulltext_format_bottom", "quoted", $fulltext_format_bottom);
-        $varset->add("fulltext_remove", "quoted", $fulltext_remove);
+        $varset->add("fulltext_format_top", "text", $fulltext_format_top);
+        $varset->add("fulltext_format", "text", $fulltext_format);
+        $varset->add("fulltext_format_bottom", "text", $fulltext_format_bottom);
+        $varset->add("fulltext_remove", "text", $fulltext_remove);
 
-        $discus_flag = DB_AA::select1('flag', 'SELECT `flag` FROM `slice`', [['id', $slice_id, 'l']]);
+        $discus_flag = DB_AA::select1('flag', 'SELECT `flag` FROM `slice`', [['id', AA::$module_id, 'l']]);
         $discus_flag &= ~ (DISCUS_HTML_FORMAT | DISCUS_ADD_DISABLED); // clear the bits
         $discus_flag |= $discus_htmlf ? DISCUS_HTML_FORMAT : 0;
         $discus_flag |= $discus_disabled ? DISCUS_ADD_DISABLED : 0;
 
         $varset->add("flag", "number", $discus_flag);
-        $varset->add("vid",  "number", $discus_sel);
-        $varset->addkey("id", "unpacked", $slice_id);
+        $varset->add("vid",  "number", $discus_vid);
+        $varset->addkey("id", "unpacked", AA::$module_id);
 
-        if ( !$varset->doUpdate('slice', null, $slice_id) ) {
+        if ( !$varset->doUpdate('slice', null, AA::$module_id) ) {
             $err["DB"] = MsgErr( _m("Can't change slice settings") );
             break;    // not necessary - we have set the halt_on_error
         }
 
-        AA::Pagecache()->invalidateFor($slice_id);  // invalidate old cached values
+        AA::Pagecache()->invalidateFor(AA::$module_id);  // invalidate old cached values
 
     } while (false);
     if ( !count($err) ) {
@@ -117,8 +138,8 @@ if ( $update ) {
     }
 }
 
-if ( $slice_id != "" ) {  // set variables from database
-    $rec = DB_AA::select1('', 'SELECT fulltext_format, fulltext_format_top, fulltext_format_bottom, fulltext_remove, flag, vid FROM slice', [['id', $slice_id, 'l']]);
+if ( AA::$module_id != "" ) {  // set variables from database
+    $rec = DB_AA::select1('', 'SELECT fulltext_format, fulltext_format_top, fulltext_format_bottom, fulltext_remove, flag, vid FROM slice', [['id', AA::$module_id, 'l']]);
     if ($rec) {
         $fulltext_format_top    =  $rec['fulltext_format_top'];
         $fulltext_format        =  $rec['fulltext_format'];
@@ -157,7 +178,7 @@ $apage->printHead($err, $Msg);
 
 // lookup discussion views
 $discus_vids = DB_AA::select(['id'=>'name'], "SELECT id, name FROM view", [
-    ['slice_id', $slice_id, 'l'],
+    ['slice_id', AA::$module_id, 'l'],
     ['type','discus']
 ]);
 
@@ -185,15 +206,15 @@ FrmTextarea("fulltext_format_bottom", _m("Bottom HTML code"), $fulltext_format_b
 FrmInputText("fulltext_remove", _m("Remove strings"), $fulltext_remove, 254, 50, false,
              _m("Removes empty brackets etc. Use ## as delimiter."));
 if ($discus_vids) {
-    FrmInputSelect("discus_sel", _m("Show discussion"), $discus_vids, $discus_vid, false, _m("The template for dicsussion you can set on \"Design\" -> \"View\" page"));
+    FrmInputSelect("discus_vid", _m("Show discussion"), $discus_vids, $discus_vid, false, _m("The template for discussion you can set on \"Design\" -> \"View\" page"));
     FrmInputChBox("discus_htmlf", _m("Use HTML tags"), $discus_htmlf);
     FrmInputChBox("discus_disabled", _m("New comments disabled"), $discus_disabled);
 } else {
-    FrmStaticText(_m("Show discussion"), '--', _m("The template for dicsussion you can set on \"Design\" -> \"View\" page"));
-};
+    FrmStaticText(_m("Show discussion"), '--', _m("The template for discussion you can set on \"Design\" -> \"View\" page"));
+}
 
-$slice = AA_Slice::getModule($slice_id);
-PrintAliasHelp(new AA_Aliases(new AA_Aliasgenerator_Slice($slice_id)), $slice->getFields()->getRecordArray(), false, $form_buttons);
+$slice = AA_Slice::getModule(AA::$module_id);
+PrintAliasHelp(new AA_Aliases(new AA_Aliasgenerator_Slice(AA::$module_id)), $slice->getFields()->getRecordArray(), false, $form_buttons);
 
 FrmTabEnd();
 

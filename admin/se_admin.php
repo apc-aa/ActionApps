@@ -29,13 +29,35 @@
 
 
 use AA\IO\DB\DB_AA;
+use AA\Util\InputVars;
 
-const AA_REGISTER_GLOBALS = true;
+//const AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/varset.php";
 require_once __DIR__ . "/../include/item.php";     // GetAliasesFromField funct def
 
+try {
+    // array ( '<tr> <td…' => 1, '<tr class=t…' => 30, )
+    $admin_format = InputVars::stringPOST('admin_format');
+    // array ( '' => 19, '`@#$~^&*{}�…' => 2, 'Fň' => 4, 'Fň!%' => 2, 'Fň!%qwerty…' => 4, )
+    $admin_format_bottom = InputVars::stringPOST('admin_format_bottom'); // empty
+    // array ( '{version:sv…' => 1, '{iftype:hm@…' => 1, '{distance:5…' => 23, ' <tr cla…' => 1, ' <tr class…' => 1, '<tr class=t…' => 2, '{reverse:1-…' => 2, )
+    $admin_format_top = InputVars::stringPOST('admin_format_top');
+    // array ( '' => 25, 'NE!' => 1, 'NE!😩' => 1, 'NE!qwertyui…' => 4, )
+    $admin_noitem_msg = InputVars::stringPOST('admin_noitem_msg'); // empty
+    // array ( '' => 21, 'Fň' => 1, 'qwertyuiop' => 1, 'zxcvbnměš…' => 1, '🐵' => 1, 'Fň!%' => 6, )
+    $admin_remove = InputVars::stringPOST('admin_remove'); // empty
+    // array ( '' => 31, )
+    $inputform_sel = InputVars::intPOST('inputform_sel'); // empty
+    // array ( 'Přihlásit' => 2, )
+    $submit = InputVars::boolPOST('submit');
+    // array ( 1 => 24, ' Změnit [^…' => 7, )
+    $update = InputVars::boolPOST('update');
+    $cancel = InputVars::boolPOST('cancel');
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
 
 const DEFAULT_ADMIN_TOP    = '<tr>\n  <th></th>\n  <th>www</th>\n  <th>name</th>\n</tr>';
 const DEFAULT_ADMIN_HTML   = '<tr>\n  <td><input type=checkbox name=\"chb[x_#ITEM_ID#]\" value=\"1\"></td>\n  <td><a href=\"_#SEO_URL_\">&nbsp;&raquo;&nbsp;</a></td>\n  <td><a href=\"_#EDITITEM\">_#HEADLINE</a><br><small>_#SEO_URL_</small></td>\n</tr>';
@@ -67,11 +89,11 @@ if ($update) {
             break;
         }
 
-        $varset->add("admin_format_top",    "quoted", $admin_format_top);
-        $varset->add("admin_format",        "quoted", $admin_format);
-        $varset->add("admin_format_bottom", "quoted", $admin_format_bottom);
-        $varset->add("admin_remove",        "quoted", $admin_remove);
-        $varset->add("admin_noitem_msg",    "quoted", $admin_noitem_msg);
+        $varset->add("admin_format_top",    "text", $admin_format_top);
+        $varset->add("admin_format",        "text", $admin_format);
+        $varset->add("admin_format_bottom", "text", $admin_format_bottom);
+        $varset->add("admin_remove",        "text", $admin_remove);
+        $varset->add("admin_noitem_msg",    "text", $admin_noitem_msg);
         if ( !$db->query("UPDATE slice SET ". $varset->makeUPDATE() .
                          "WHERE id='".q_pack_id(AA::$module_id)."'")) {
             $err["DB"] = MsgErr( _m("Can't change slice settings") );

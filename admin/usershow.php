@@ -99,13 +99,10 @@ $manager_settings = [
          'fields'               => $slice->getFields()->getRecordArray(),
          'aliases'              => new AA_Aliases(new AA_Aliasgenerator_Slice($module_id)),
          'get_content_funct'    => 'GetItemContent'
-     ],
-     'messages' => [
-         'title'                => _m("Show selected users")
      ]
 ];
 
-$manager = new Manager('users'.AA::$module_id, (new \AA\Managed())->setSettings($manager_settings));
+$manager = new Manager('users'.AA::$module_id, (new \AA\Managed())->setSettings($manager_settings)->setTitle(_m("Show selected users")));
 
 // r_userstate array holds all configuration of Manager
 // the configuration then could be Bookmarked

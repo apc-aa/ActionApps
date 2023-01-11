@@ -111,27 +111,6 @@ const PS_MODW_SETTINGS         = "A";         //       | set site module propert
 // super         - possibly letters 'QRSTUVW'
 
 
-// defines, which roles youcan use with each module
-$perms_roles_modules = [
-  'S'     => ["AUTHOR","EDITOR","ADMINISTRATOR"],  // S - slice
-      // There is not listed SUPER, because SUPER is permission for 'aa' object
-      // and not 'slice' object. 'aa' object is parent of all modules - setting
-      // perm to 'aa' object is the same as setting it for all the modules
-      // (specific setting of 'slice' module for the user is stronger than
-      // the 'aa' seting)
-  'W'     => ["ADMINISTRATOR"],                    // site module
-  'A'     => ["ADMINISTRATOR"],                    // MySQL Auth module
-  'J'     => ["ADMINISTRATOR"],                    // jump module
-      // There is no specific roles in 'W', 'A', 'J' modules.
-      // See include/constants.php for module definitions
-  'Alerts'=> ["ADMINISTRATOR"],                    // Alerts module
-  'P'     => ["EDITOR","ADMINISTRATOR"],           // polls module
-  'Links' => ["AUTHOR","EDITOR","ADMINISTRATOR"]
-]; // Links module
-      // AUTHOR in Links module is public - probably identified by free/freepwd
-      // user. (S)he can just add links
-
-
 /**
  *
  */
@@ -440,6 +419,29 @@ class AA_Perm {
         ]
     ];               // super
     // reserve: tuvwxyzXYZ and special characters like +-/*@... (but no numbers!!!)
+
+
+
+    // defines, which roles you can use with each module
+    /** @todo move to modules itself  */
+    public const PERMS_ROLES_MODULES = [
+        'S'     => ["AUTHOR","EDITOR","ADMINISTRATOR"],  // S - slice
+            // There is not listed SUPER, because SUPER is permission for 'aa' object
+            // and not 'slice' object. 'aa' object is parent of all modules - setting
+            // perm to 'aa' object is the same as setting it for all the modules
+            // (specific setting of 'slice' module for the user is stronger than
+            // the 'aa' seting)
+        'W'     => ["ADMINISTRATOR"],                    // site module
+        'A'     => ["ADMINISTRATOR"],                    // MySQL Auth module
+        'J'     => ["ADMINISTRATOR"],                    // jump module
+            // There is no specific roles in 'W', 'A', 'J' modules.
+            // See include/constants.php for module definitions
+        'Alerts'=> ["ADMINISTRATOR"],                    // Alerts module
+        'P'     => ["EDITOR","ADMINISTRATOR"],           // polls module
+        'Links' => ["AUTHOR","EDITOR","ADMINISTRATOR"]
+        ]; // Links module
+            // AUTHOR in Links module is public - probably identified by free/freepwd
+            // user. (S)he can just add links
 
     function __construct($systems) {
         $this->perm_systems = [];

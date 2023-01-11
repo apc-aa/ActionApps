@@ -68,6 +68,7 @@ class AARSS extends AbstractGrabber
     /** setUrl function
      * @param $url
      */
+
     function setUrl($url) {
         $this->feed['server_url'] = $url;
     }
@@ -184,11 +185,33 @@ class AARSS extends AbstractGrabber
         return http_fetch($this->feed['server_url'], $finish);
     }
 
+    /**
+     * @return array[]
+     */
+    public static function getDefaultRssMap(): array {
+        return [
+            // Note this matches code in xml_rssparse.php for parsing DC fields
+            // Can change the names without affecting anything
+            "author.........." => ["feedmap_flag"=>FEEDMAP_FLAG_RSS,  "value"=>"DC/creator",                                "from_field_name"=>"DC:creator"],
+            "abstract........" => ["feedmap_flag"=>FEEDMAP_FLAG_RSS,  "value"=>"ITEM/description|DC/description|DC/subject","from_field_name"=>"Any abstract"],
+            "publish_date...." => ["feedmap_flag"=>FEEDMAP_FLAG_RSS,  "value"=>"DATE(DC/date)|DATE(ITEM/pubdate)|NOW",      "from_field_name"=>"DC:date"],
+            "source.........." => ["feedmap_flag"=>FEEDMAP_FLAG_RSS,  "value"=>"DC/source|CHANNEL/title",                   "from_field_name"=>"DC:source"],
+            "lang_code......." => ["feedmap_flag"=>FEEDMAP_FLAG_RSS,  "value"=>"DC/language",                               "from_field_name"=>"DC:language"],
+            "source_href....." => ["feedmap_flag"=>FEEDMAP_FLAG_RSS,  "value"=>"DC/relation|CHANNEL/link",                  "from_field_name"=>"DC:relation"],
+            "place..........." => ["feedmap_flag"=>FEEDMAP_FLAG_RSS,  "value"=>"DC/coverage",                               "from_field_name"=>"DC:coverage"],
+            "headline........" => ["feedmap_flag"=>FEEDMAP_FLAG_RSS,  "value"=>"DC/title|ITEM/title",                       "from_field_name"=>"DC:title"],
+            "full_text......." => ["feedmap_flag"=>FEEDMAP_FLAG_RSS,  "value"=>"CONTENT",                                   "from_field_name"=>"Content"],
+            "status_code....." => ["feedmap_flag"=>FEEDMAP_FLAG_VALUE,"value"=>2,                                           "from_field_name"=>"Approved"],
+            "hl_href........." => ["feedmap_flag"=>FEEDMAP_FLAG_RSS,  "value"=>"ITEM/link|ITEM/guid",                       "from_field_name"=>"ITEM:link"],
+            "expiry_date....." => ["feedmap_flag"=>FEEDMAP_FLAG_VALUE,"value"=>(time()+2000*24*60*60),                      "from_field_name"=>"Expiry Date"]
+        ];
+    }
+
     /** prepare function
      *  Fetch data and parse it
      */
     function prepare() {
-        global $DEFAULT_RSS_MAP, $debugfeed;
+        global $debugfeed;
 
         // just shortcut
         $feed_type = $this->feed['feed_type'];
@@ -291,7 +314,7 @@ class AARSS extends AbstractGrabber
             if ($debugfeed >= 2) {
                 print("\n<br>using default mapping");
             }
-            $map = $DEFAULT_RSS_MAP;
+            $map = self::getDefaultRssMap();
         }
         $this->map = $map;
 
@@ -333,7 +356,7 @@ class AARSS extends AbstractGrabber
             $approved = translateCategories($this->cat_field_id, $item, $this->ext_categs, $this->l_categs);
 
             // set status_code - according to the settings of ef_categories table
-            // RSS feeds have approved set from DEFAULT_RSS_MAP
+            // RSS feeds have approved set from AARSS::getDefaultRssMap()
             $item['fields_content'][$this->status_code_id][0]['value'] = $approved ? 1 : 2;
         }
 
