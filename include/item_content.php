@@ -133,6 +133,11 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
         return $this->flag;
     }
 
+    /** get 1 - HTML | 0 - plain ...  */
+    public function getFormatter(): int {
+        return $this->flag & AA_Formatters::STANDARD_FORMATTERS;
+    }
+
     /** @return true, if the value do not contain any data */
     function isEmpty() {
         return count($this->val) < 1;

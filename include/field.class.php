@@ -307,7 +307,7 @@ class AA_Field implements ArrayAccess {
      *  Returns array of two letters shortcuts for languages used in this slice for translations - array('en','cz','es')
      */
     function getTranslations() {
-        return ($this->data['multiple'] & 2) ? AA_Slice::getModule($this->getSliceId())->getTranslations() : [];
+        return $this->isMultilingual() ? AA_Slice::getModule($this->getSliceId())->getTranslations() : [];
     }
 
     /**
@@ -322,6 +322,13 @@ class AA_Field implements ArrayAccess {
      */
     function isMultiple(): bool {
         return $this->getWidget()::multiple();
+    }
+
+    /**
+     *  @return bool if the field is multilingual
+     */
+    function isMultilingual(): bool {
+        return ($this->data['multiple'] & 2);
     }
 
     /** getAaProperty function

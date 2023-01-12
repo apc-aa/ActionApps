@@ -416,6 +416,13 @@ class AA_Langs {
         return chr(intval($num / 26) + 97) . chr(($num % 26) + 97);
     }
 
+    /** combine getLangNum2Name and getLangName2Code
+     *  78000000 -> cs, 78000001 -> cs, 118000000 -> en...
+     */
+    public static function getLangNum2Code($langnumber): string {
+        return self::getLangName2Code(self::getLangNum2Name($langnumber));
+    }
+
     /** translate displayed lang name to standardized language code - cz -> cs
      */
     public static function getLangName2Code($lang) {

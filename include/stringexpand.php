@@ -2313,11 +2313,16 @@ class AA_Stringexpand_Safexml extends AA_Stringexpand_Nevercache {
      */
     function expand($text='') {
         // @todo it probably should escape also vertical tab \xB ...
-        return htmlspecialchars($text, ENT_XML1 | ENT_QUOTES, 'UTF-8');
+        return safexml($text);
     }
 }
 
-/**  */
+/** @usage {xmlfield:name:headline........}               -> <name>John</name>
+ *         {xmlfield:name:headline........}               -> <name lang="cs" format="plain">Jan</name><name lang="en" format="plain">John</name>  - for translated field and displayed formatters plain|html
+ *         {xmlfield:category:category........}           -> <category>white</category> <category>black</category>
+ *         {xmlfield:categories value:category........}   -> <categories><value>white</value> <value>black</value><categories>
+ *         {xmlfield:name:category........}   -> <categories><value>white</value> <value>black</value><categories>
+ */
 class AA_Stringexpand_Xmlfield extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // No reason to cache this simple function
@@ -2325,58 +2330,40 @@ class AA_Stringexpand_Xmlfield extends AA_Stringexpand_Nevercache {
      * @param $text string - string in UTF-8 to escape
      * @return string
      */
-    function expand($tags='', $field='') {
+    function expand($tags='', $field_id='') {
         $ret = '';
+        [$around_tag, $tag] = strpos($tags, ' ') ? explode(' ', $tags) : ['',$tags];
 
         $item = $this ? $this->item : null;
+        $atrs = [];
         if (is_object($item)) {
             if ($slice = AA_Slice::getModule($item->getSliceID())) {
-                if ($field = $slice->getField($field)) {
-                    $field->getTranslations();
-                    $field->getFormatters();
-                    $field->getAaProperty()->isMulti();
-                    $item->getval();
-                    $translations = AA_Slice::getModuleProperty($this->getSliceID(),'translations');
-
-                    if ($this->isMultilingual($col)) {
-                        return $this->text2Html($this->getval($col), $this->getFlag($col));
-                    } else {
-                        $param = '-';
+                if ($field = $slice->getField($field_id)) {
+                    $values = $item->getAaValue($field_id);
+                    if ($field->getFormatters()) {  // if a user have choice
+                        $atrs['format'] = AA_Formatters::getType($values->getFormatter());
                     }
-
+                    // $multival = $field->isMultiple();
+                    if ( $field->isMultilingual() ) {
+                        $values->fixTranslations($slice->getTranslations());
+                        foreach ($values as $ind => $val) {
+                            if (strlen($val)) {
+                                $ret .= xmltag($tag, $val, $atrs + ['lang' => AA_Langs::getLangNum2Code($ind)]);
+                            }
+                        }
+                    } else {
+                        foreach ($values as $val) {
+                            if (strlen($val)) {
+                                $ret .= xmltag($tag, $val, $atrs);
+                            }
+                        }
+                    }
                 }
             }
-        }// AND $item->isField($field)) {
-
-
-
-        // first_child try translation to right language
-        if (!strlen($txt = $this->getval($col, AA_Langs::getLangName2Num(AA::$lang)))) {
-            // if not present - translate to default language of the slice
-            $translations = AA_Slice::getModuleProperty($this->getSliceID(),'translations');
-            if (!strlen($txt = $this->getval($col, AA_Langs::getLangName2Num($translations[0])))) {
-                // last try the 0 index (if the field was not set to translation)
-                $txt = $this->getval($col);
-            }
         }
-        return $this->text2Html($txt, $this->getFlag($col));
-
-
-        // ($s = new AA_Slice)->getField()
-
-
-
-        // if ($this AND is_object($item) AND $item->isField($text)) ? $item->getval($text) : join(':', $params);
-
-
-        // $item->isField($field_id))
-
-        // @todo it probably should escape also vertical tab \xB ...
-        return htmlspecialchars($text, ENT_XML1 | ENT_QUOTES, 'UTF-8');
+        return ($around_tag AND $ret) ? "<$around_tag>$ret</$around_tag>" : $ret;
     }
 }
-
-
 
 /** Escapes the HTML special chars (>,<,&,...) and also prevents to double_encode
  *  already encoded entities (like &amp;quote;) - as opposite to {htmlspecialchars}
@@ -6706,7 +6693,7 @@ class AA_Requires {
         return join("\n", array_map( function($req) {return $req->getCode();}, $req_arr));
     }
 
-    /** getAsScript is conterparts to getHead and getFoot, but used in AJAX calls, where CSS and JS libs have to be loaded by script
+    /** getAsScript is counterparts to getHead and getFoot, but used in AJAX calls, where CSS and JS libs have to be loaded by script
      * @return string
      */
     function getAsScript() {

@@ -62,6 +62,13 @@ function a_href($url, $label, array $attr=[]): string {
     return '<a href="'.safe($url) ."\" $add>$label</a>";
 }
 
+/** creates xml/html tag with attributes
+ * @usage xmltag('name',John,['sex'=>'M'])
+ */
+function xmltag($tag, $content, $attr=[]): string {
+    return "<$tag". array_reduce( array_keys($attr), function ($str, $key) use ($attr) { return $str . ' ' . $key . '="' . safexml($attr[$key]) . '"'; }).'>'. safexml($content)."</$tag>";
+}
+
 /** expand_return_url function
  * Expand return_url, possibly adding a session to it
  * @param $session
@@ -1082,6 +1089,11 @@ function ParseFnc($s) {
  */
 function safe( $var='' ) {
     return htmlspecialchars( $var, ENT_QUOTES | ENT_HTML5, 'ISO-8859-1');
+}
+
+/** qoutes utf string for use in xml attributes and content */
+function safexml( $var='' ): string {
+    return htmlspecialchars( $var, ENT_QUOTES | ENT_SUBSTITUTE | ENT_XML1, 'UTF-8');
 }
 
 /** replaces all the &apos;, ... html entities */

@@ -461,6 +461,10 @@ class AA_Formatters {
      */
     const STANDARD_FORMATTERS = 1;   // default  0 | 1 -  TEXT2HTML | RAW | ... (will be increased up to 65535 after adding 128 - TEXY, ....)
 
+    /** @returns string id of formatter */
+    public static function getType(int $formatter): string {
+        return ($formatter==1) ? 'plain' : 'html';
+    }
 
     /**
      * @return array[]
