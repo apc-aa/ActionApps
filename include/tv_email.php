@@ -28,6 +28,8 @@
 // (c) Econnect, Jakub Adamek, December 2002
 // DOCUMENTATION: doc/tableview.html
 
+use AA\Util\Langs;
+
 require_once __DIR__ . "/../modules/alerts/util.php";
 
 
@@ -112,7 +114,7 @@ function GetEmailTableView($viewID) {
     global $attrs_edit, $attrs_browse;
 
     if ($viewID == "email_edit") {
-        $mylangs = AA_Langs::getNames();
+        $mylangs = Langs::getNames();
         return  [
         "table" => "email",
         "type" => "edit",
@@ -162,7 +164,7 @@ function GetEmailTableView($viewID) {
             ],
             "lang" => [
                 "caption" => _m("Language (charset)"),
-                "default" => get_mgettext_lang(),
+                "default" => \AA\Util\Langs::currentLang(),
                 "view" => ["type" => "select", "source" => $mylangs]
             ],
             "html" => [

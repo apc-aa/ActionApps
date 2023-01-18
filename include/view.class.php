@@ -28,6 +28,7 @@
 */
 
 use AA\IO\DB\DB_AA;
+use AA\Util\Langs;
 
 /** Classes for manipulating views,
  * viewobj has static info about views, not anything dependent on parameters
@@ -114,7 +115,7 @@ class AA_View {
      *  Returns lang code ('cz', 'en', 'en-utf8', 'de',...)
      */
     function getLang()     {
-        return AA_Langs::getLang($this->f('lang_file'));
+        return Langs::getLang($this->f('lang_file'));
     }
 
     /** jumpLink function

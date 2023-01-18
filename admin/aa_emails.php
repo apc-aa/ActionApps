@@ -28,6 +28,7 @@
 // Then it could be used as AJAX call for this action!
 
 use AA\Manager;
+use AA\Util\Langs;
 
 const AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
@@ -45,7 +46,7 @@ $managed = AA::Metabase()->getManagerConf('email');
 $managed->setColumns2show(['id','type','subject','description']);
 $managed->setWidgetSetting('html', ['type'=>'bool']);
 $managed->setWidgetSetting('type', ['enum'=> AA_Collection::get_email_types()]);
-$managed->setWidgetSetting('lang', ['enum'=>AA_Langs::getNames()]);
+$managed->setWidgetSetting('lang', ['enum'=>Langs::getNames()]);
 $managed->setWidgetSetting('owner_module_id', ['enum'=>AA_Module::getUserModules()]);
 
 $apage = new AA_Adminpageutil('aaadmin', 'email');

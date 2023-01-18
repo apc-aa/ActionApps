@@ -27,6 +27,8 @@
  *
 */
 
+use AA\Util\Langs;
+
 const FILE_ERROR_NO_SOURCE        = 100;
 const FILE_ERROR_COPY_FAILED      = 101;
 const FILE_ERROR_DST_DIR_FAILED   = 102;
@@ -361,7 +363,7 @@ class Files {
      * @return string the escaped safe filename
      */
     static function escape($filename) {
-        return ConvertCharset::singleton()->escape($filename, AA_Langs::getCharset(), true);
+        return ConvertCharset::singleton()->escape($filename, Langs::getCharset(), true);
     }
 
     /** delFile function

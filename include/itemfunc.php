@@ -26,6 +26,7 @@
 */
 
 use AA\IO\DB\DB_AA;
+use AA\Util\Langs;
 
 require_once __DIR__ . "/varset.php";
 require_once __DIR__ . "/notify.php";
@@ -428,7 +429,7 @@ class AA_Inserter_Trm extends AA_Inserter {
     public static function description(): string { return _m('Remove whitespaces from begin and end and also normalize UTF (NFC)');  }      // see NamedInterface
 
     public function execute($fieldwriter, $item_id, $value, $additional= []) {
-        $value['value'] = aa_trim(AA_Langs::isUTF() ? Normalizer::normalize($value['value']) : aa_trim($value['value']));
+        $value['value'] = Langs::isUTF() ? aa_trim(Normalizer::normalize($value['value'])) : aa_trim($value['value']);
         parent::execute($fieldwriter, $item_id, $value, $additional);
     }
 }

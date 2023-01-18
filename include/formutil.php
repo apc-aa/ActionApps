@@ -30,6 +30,7 @@
 */
 
 use AA\Cache\CacheStr2find;
+use AA\Util\Langs;
 use AA\Util\JsTriggers;
 use AA\Widget\Widget;
 
@@ -1312,7 +1313,7 @@ class AA_Inputfield {
             $parts = [];
             $widg = "<div class=\"aa-langdiv\">";
             foreach($this->translations as $lang) {
-                $lang_id           = AA_Langs::getLangName2Num($lang);  // converts two letter lang code into number used for translation fields (cz -> 78000000, en -> 118000000, ...)
+                $lang_id           = Langs::getLangName2Num($lang);  // converts two letter lang code into number used for translation fields (cz -> 78000000, en -> 118000000, ...)
                 $value             = safe($val[$lang_id]['value']);
                 if ( !strlen($value) AND $first) {
                     // if the translation is not set try to use standard value (possibly filled before we set the translations for the field)
@@ -1433,7 +1434,7 @@ class AA_Inputfield {
             $parts = [];
             $widg = "<div class=\"aa-langdiv\">";
             foreach($this->translations as $lang) {
-                $lang_id           = AA_Langs::getLangName2Num($lang);  // converts two letter lang code into number used for translation fields (cz -> 78000000, en -> 118000000, ...)
+                $lang_id           = Langs::getLangName2Num($lang);  // converts two letter lang code into number used for translation fields (cz -> 78000000, en -> 118000000, ...)
                 $value             = safe($val[$lang_id]['value']);
                 if ( !strlen($value) AND $first) {
                     // if the translation is not set try to use standard value (possibly filled before we set the translations for the field)

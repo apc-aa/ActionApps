@@ -26,6 +26,7 @@
 // expected $slice_id for edit slice, no_slice_id=1 for adding slice
 
 use AA\IO\DB\DB_AA;
+use AA\Util\Langs;
 use AA\Util\InputVars;
 
 // const AA_REGISTER_GLOBALS = true;
@@ -202,7 +203,7 @@ $flag_allow_pending = ($sarr['flag'] & SLICE_ALLOW_PENDING_CONTENT) == SLICE_ALL
 // lookup owners
 $slice_owners = DB_AA::select(['unpackid'=>'name'], 'SELECT LOWER(HEX(`id`)) AS unpackid, `name` FROM `slice_owner` ORDER BY `name`');
 
-$biglangs = AA_Langs::getFiles();
+$biglangs = Langs::getFiles();
 
 $apage = new AA_Adminpageutil('sliceadmin','main');
 $apage->setTitle( $slice_id=="" ? _m("Add Slice") : _m("Admin - Slice settings"));

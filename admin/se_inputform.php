@@ -31,7 +31,7 @@ use AA\Widget\Widget;
 
 //const AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
-mgettext_bind(get_mgettext_lang(), 'param_wizard');
+mgettext_bind(\AA\Util\Langs::currentLang(), 'param_wizard');
 require_once __DIR__ . "/../include/constants_param_wizard.php";
 require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/varset.php";

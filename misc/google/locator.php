@@ -27,12 +27,15 @@
 */
 
 /** APC-AA configuration file */
+
+use AA\Util\Langs;
+
 require_once __DIR__."/../../include/config.php";
 /** APC-AA constant definitions */
 require_once __DIR__ . "/../../include/constants.php";
 require_once __DIR__ . "/../../include/mgettext.php";
 
-mgettext_bind(AA_Langs::getLang($lang_file), 'news');
+mgettext_bind(Langs::getLang($lang_file), 'news');
 
 /** Set of useful functions used on most pages */
 require_once __DIR__ . "/../../include/util.php";

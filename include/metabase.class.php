@@ -1165,6 +1165,12 @@ class AA_Metabase {
         global $debug;                 // displays debug messages
 
         $tablename = $settings['table'];
+
+        if ($this->isColumn($tablename, 'status_code')) {
+            $bin  = $set->getBinsNumber();
+            $set->addCondition(new AA_Condition('status_code','==',$bin));
+        }
+
         $conds     = $set->getConds();
         $sort      = $set->getSort();
 

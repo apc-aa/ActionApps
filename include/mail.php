@@ -30,6 +30,7 @@
 
 use AA\IO\DB\DB_AA;
 use AA\Later\Toexecute;
+use AA\Util\Langs;
 
 require_once __DIR__ . "/item.php";
 require_once __DIR__ . "/item_content.php";
@@ -116,7 +117,7 @@ class AA_Mail extends htmlMimeMail implements \AA\Later\LaterInterface {
         foreach ( $record as $key => $value) {
             $record[$key] = AA::Stringexpander()->unalias($value, "", $item);
         }
-        $record["lang"] = AA_Langs::getCharset($record["lang"]);
+        $record["lang"] = Langs::getCharset($record["lang"]);
         return $this->setFromArray($record);
     }
 

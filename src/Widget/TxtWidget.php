@@ -11,7 +11,7 @@ use AA\FormArray;
 use AA_Content;
 use AA_Formatters;
 use AA_Item;
-use AA_Langs;
+use AA\Util\Langs;
 use AA_Property;
 use Exception;
 
@@ -99,7 +99,7 @@ class TxtWidget extends Widget
             $input_name = $base_name . "[$i]";
             if ( !$base ) {
                 $base['id']       = FormArray::formName2Id($input_name);
-                $base['langcode'] = AA_Langs::getLangName2Code(AA_Langs::getLangNum2Name($i));
+                $base['langcode'] = Langs::getLangName2Code(Langs::getLangNum2Name($i));
             }
             $widget .= $delim. $this->getOneInput($input_name, $i, $val, $attrs, '', $widget_add2, $required, !$aa_property->getContentTypeSwitches() OR ($type == 'live'), $base);
             $delim = "\n<br />";
@@ -170,14 +170,14 @@ class TxtWidget extends Widget
         }, array_keys($attrs), $attrs));
 
         $ret = "$htmlareaedit<textarea id=\"$input_id\" name=\"$input_name\" $attr_string $required $widget_add $areaclass>$input_value</textarea>$widget_add2";
-        if ($lang = AA_Langs::getLangNum2Name($i)) {
-            $langcode  = AA_Langs::getLangName2Code($lang);
+        if ($lang = Langs::getLangNum2Name($i)) {
+            $langcode  = Langs::getLangName2Code($lang);
             $translate = '';
 
             // the AA_Translate do not work on CKEditor nor CodeMirror, yet
             // @todo make AA_Translate work on CKEditor and CodeMirror
             if (!$showhtmlarea AND !$showcodeeditor AND ($langcode != $base['langcode'])) {
-                $translate =  "<span class=\"aa-langtrans-tbtn\" onclick=\"AA_Translate('$input_id', document.getElementById('" . $base['id'] . "').value, '" . $base['langcode'] . "', '$langcode');\">" . _m("translate from") . ' ' . AA_Langs::getLangCode2Name($base['langcode']) . "</span>";
+                $translate =  "<span class=\"aa-langtrans-tbtn\" onclick=\"AA_Translate('$input_id', document.getElementById('" . $base['id'] . "').value, '" . $base['langcode'] . "', '$langcode');\">" . _m("translate from") . ' ' . Langs::getLangCode2Name($base['langcode']) . "</span>";
             }
             $ret = "<span class=\"aa-langtrans $lang\"><strong class=\"aa-langtrans-label\">$lang</strong>$translate $ret</span>";
         }

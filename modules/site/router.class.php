@@ -332,7 +332,7 @@ class AA_Router_Seo extends AA_Router {
     /** static function - caling from outside is not necessary, now */
     function parseApc($apc, $home='', $langs= []) {
         if (!$home) {
-            $home = '/'.get_mgettext_lang();
+            $home = '/'. \AA\Util\Langs::currentLang();
         }
         // manage links like example.org/?filter=22
         if (substr($apc,0,2)=='/?') {  // maybe also "#"

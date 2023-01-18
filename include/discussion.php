@@ -28,6 +28,7 @@
 // discussion.php - discussion utility functions
 
 use AA\IO\DB\DB_AA;
+use AA\Util\Langs;
 
 require_once __DIR__ . "/mail.php";
 
@@ -486,7 +487,7 @@ function send2mailList($d_item_id, $new_id) {
 
                 $db->query("SELECT lang_file FROM slice INNER JOIN item ON item.slice_id = slice.id WHERE item.id='".q_pack_id($d_item_id)."'");
                 $db->next_record();
-                $mail->setCharset(AA_Langs::getCharset(substr($db->f("lang_file"),0,2)));
+                $mail->setCharset(Langs::getCharset(substr($db->f("lang_file"),0,2)));
                 $mail->send([$maillist]);
             } //view found
         } // vid present

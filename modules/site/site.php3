@@ -24,6 +24,7 @@ use AA\Cache\Cacheentry;
 use AA\Cache\CacheStr2find;
 use AA\Cache\PageCache;
 use AA\IO\DB\DB_AA;
+use AA\Util\Langs;
 
 require_once __DIR__."/../../include/config.php";
 require_once __DIR__."/../../include/locsess.php";
@@ -89,7 +90,7 @@ function IsInDomain( $domain ) {
 function Die404($page=null) {
     function_exists('http_response_code') ? http_response_code(404) : header( ($_SERVER['SERVER_PROTOCOL'] ?: 'HTTP/1.0'). ' 404 Not Found');
     if (!is_null($page)) {
-        header('Content-Type: '. (AA::$headers['type'] ?: 'text/html') .'; charset='.(AA::$headers['encoding'] ?: AA::$encoding ?: AA_Langs::getCharset()));
+        header('Content-Type: '. (AA::$headers['type'] ?: 'text/html') .'; charset='.(AA::$headers['encoding'] ?: AA::$encoding ?: Langs::getCharset()));
         echo AA::Stringexpander()->postprocess(AA::Stringexpander()->unalias($page));
     }
     //    else { echo '<!doctype html><html><head><title>404 Not Found</title></head><body><h1>Not Found</h1><p>The requested URL was not found on this server.</p></body></html>'; }
@@ -224,9 +225,9 @@ if ($_REQUEST['nocache'] & 2) {  // nocache=2 or nocache=3, ... - second bit set
 }
 
 if ($lang_file) {
-    mgettext_bind(AA_Langs::getLang($lang_file), 'output');
+    mgettext_bind(Langs::getLang($lang_file), 'output');
     AA::$lang    = strtolower(substr($lang_file,0,2));   // actual language - two letter shortcut cz / es / en
-    AA::$langnum = [AA_Langs::getLangName2Num(AA::$lang)];   // array of preferred languages in priority order.
+    AA::$langnum = [Langs::getLangName2Num(AA::$lang)];   // array of preferred languages in priority order.
 }
 
 

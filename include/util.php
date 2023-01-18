@@ -29,6 +29,7 @@
 //
 
 use AA\IO\DB\DB_AA;
+use AA\Util\Langs;
 use AA\Util\InputVars;
 use AA\Util\SingletonTrait;
 
@@ -1124,7 +1125,7 @@ function url2bin($data) {
  * @param $lang
  */
 function HtmlPageBegin($js_lib=false, $lang=null) {
-    AA::setEncoding(AA_Langs::getCharset($lang));
+    AA::setEncoding(Langs::getCharset($lang));
     $headers = AA::getHeaders();
     // fix for Chrome 57 which do not allow to send HTML in POST request sometimes (ERR_BLOCKED_BY_XSS_AUDITOR) - HM 2017-04-24
     $headers['x-xss-protection'] = 'X-XSS-Protection: 0';
@@ -1942,7 +1943,7 @@ function aa_strrpos($haystack , $needle , $offset = 0) {
 
 /** trim  with utf in mind */
 function aa_trim(string $string='', string $chars=''): string {
-    return (empty($chars) and AA_Langs::isUTF()) ? preg_replace("/^\s+|\s+$/u", "", $string) : trim($string, $chars);
+    return (empty($chars) and Langs::isUTF()) ? preg_replace("/^\s+|\s+$/u", "", $string) : trim($string, $chars);
     // trim($string, " \t\n\r\0\x0B\xA0");  // standard + chr(160) - hard space   // does not work for UTF characters - the hardspace \xA0 can break some UTF chars - "MŠ" for example
 }
 

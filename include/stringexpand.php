@@ -36,6 +36,7 @@
 use AA\Cache\CacheStr2find;
 use AA\FormArray;
 use AA\IO\DB\DB_AA;
+use AA\Util\Langs;
 use AA\Util\ChangesMonitor;
 
 require_once __DIR__ . "/perm_core.php";    // needed for GetAuthData();
@@ -1853,7 +1854,7 @@ class AA_Stringexpand_Date extends AA_Stringexpand_Nevercache {
 
         // no date (sometimes empty date is 3600 (based on timezone), so we
         // will use all the day 1.1.1970 as empty)
-        if ( !is_null($no_date_text) AND ((trim($timestamp,'0')=='') OR (IsSigInt((string)$timestamp) AND abs($timestamp) < 86400))) {
+        if ( !is_null($no_date_text) AND self::isEmptyDate($timestamp)) {
             return $no_date_text;
         }
         if ( $timestamp=='' ) {
@@ -1862,6 +1863,14 @@ class AA_Stringexpand_Date extends AA_Stringexpand_Nevercache {
             $timestamp = strtotime($timestamp);
         }
         return ($zone!='GMT') ? date($format, (int)$timestamp) : gmdate($format, (int)$timestamp);
+    }
+
+    /**
+     * @param $timestamp
+     * @return bool
+     */
+    static function isEmptyDate($timestamp): bool {
+        return ((trim($timestamp,'0')=='') OR (IsSigInt((string)$timestamp) AND abs($timestamp) < 86400));
     }
 }
 
@@ -2317,6 +2326,27 @@ class AA_Stringexpand_Safexml extends AA_Stringexpand_Nevercache {
     }
 }
 
+/** Pretty format XML
+ * @usage {xmlformat:xml}
+ */
+class AA_Stringexpand_Xmlformat extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+    /** expand function
+     * @param $xml string
+     * @return string
+     */
+    function expand($xml = '') {
+        $dom = new DOMDocument();
+        // must be before load xml string
+        $dom->preserveWhiteSpace = false;
+        $dom->formatOutput       = true;
+
+        $dom->loadXML($xml);
+        return $dom->saveXML();
+    }
+}
+
 /** @usage {xmlfield:name:headline........}               -> <name>John</name>
  *         {xmlfield:name:headline........}               -> <name lang="cs" format="plain">Jan</name><name lang="en" format="plain">John</name>  - for translated field and displayed formatters plain|html
  *         {xmlfield:category:category........}           -> <category>white</category> <category>black</category>
@@ -2347,8 +2377,8 @@ class AA_Stringexpand_Xmlfield extends AA_Stringexpand_Nevercache {
                     if ( $field->isMultilingual() ) {
                         $values->fixTranslations($slice->getTranslations());
                         foreach ($values as $ind => $val) {
-                            if (strlen($val)) {
-                                $ret .= xmltag($tag, $val, $atrs + ['lang' => AA_Langs::getLangNum2Code($ind)]);
+                            if (strlen($val) OR ($field->getType()=='date' AND !AA_Stringexpand_Date::isEmptyDate($val))) {
+                                $ret .= xmltag($tag, $val, $atrs + ['lang' => Langs::getLangNum2Code($ind)]);
                             }
                         }
                     } else {
@@ -4626,7 +4656,7 @@ class AA_Stringexpand_Edit extends AA_Stringexpand_Nevercache {
 
                 // Use right language (from slice settings) - languages are used for button texts, ...
                 //mgettext_bind($slice->getLang(), 'output');
-                mgettext_bind(get_mgettext_lang(), 'output');    // the lang itself should be set in AA::$lang and AA::$encoding (maybe from current site language)
+                mgettext_bind(\AA\Util\Langs::currentLang(), 'output');    // the lang itself should be set in AA::$lang and AA::$encoding (maybe from current site language)
 
                 if ( !($field = $slice->getField($field_id)) ) {
                     return '';
@@ -8526,7 +8556,7 @@ class AA_Password_Manager_Reader {
             $mail->setHeader("From", $from_email);
             $mail->setHeader("Reply-To", $from_email);
             $mail->setHeader("Errors-To", $from_email);
-            $mail->setCharset(AA_Langs::getCharset());
+            $mail->setCharset(Langs::getCharset());
             $mail->send([$email]);
         }
 
@@ -9253,7 +9283,7 @@ class AA_Stringexpand_Index extends AA_Stringexpand_Nevercache {
      */
     function expand($field_id='', $index=0, $item_id='', $lang='') {
         $item = $item_id ? AA_Items::getItem(new zids($item_id)) : ($this ? $this->item : null);
-        return is_object($item) ? $item->getval($field_id, (int)$index + ($lang ? AA_Langs::getLangName2Num($lang) : 0)) : '';
+        return is_object($item) ? $item->getval($field_id, (int)$index + ($lang ? Langs::getLangName2Num($lang) : 0)) : '';
     }
 }
 
@@ -9548,7 +9578,7 @@ class AA_Stringexpand_Tr extends AA_Stringexpand {
                     $html_flag       = $translate_slice->getField('headline........')->getDefaultFormatterFlag(); // get the flag
 
                     $ic = new ItemContent();
-                    $ic->setAaValue('headline........', new AA_Value([AA_Langs::getLangName2Num($translations[0]) => $text], $html_flag));
+                    $ic->setAaValue('headline........', new AA_Value([Langs::getLangName2Num($translations[0]) => $text], $html_flag));
                     $ic->setSliceID($translate_slice_id);
                     //$ic->complete4Insert();
 

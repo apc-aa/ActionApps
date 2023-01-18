@@ -28,6 +28,7 @@
 
 use AA\IO\Grabber\Form;
 use AA\Manager;
+use AA\Util\Langs;
 
 require_once __DIR__ . "/menu_util.php";
 
@@ -166,7 +167,7 @@ class AA_Adminpageutil {
 
     public function printHead($err, $Msg)
     {
-        AA::setEncoding(AA_Langs::getCharset());
+        AA::setEncoding(Langs::getCharset());
         $this->sendHeaders();
 
         $html_start = $this->getPageBegin();

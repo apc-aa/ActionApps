@@ -28,6 +28,7 @@
 */
 
 use AA\IO\DB\DB_AA;
+use AA\Util\Langs;
 use AA\Util\ChangeProposal;
 use AA\Util\ChangesMonitor;
 
@@ -54,7 +55,7 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
     /** AA_Value function
      * @param $value
      * @param null|int $flag  FLAG_HTML | FLAG_FEED | FLAG_FREEZE | FLAG_OFFLINE | FLAG_UPDATE | FLAG_TEXT_STORED
-     * for multilingual you can use: new AA_Value([AA_Langs::getLangName2Num($translations[0]) => $text], $html_flag));
+     * for multilingual you can use: new AA_Value([AA\Util\AA_Langs::getLangName2Num($translations[0]) => $text], $html_flag));
      */
     function __construct($value = null, $flag = null) {
         $this->clear()->addValue($value);
@@ -144,7 +145,7 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
     }
 
     /** Add Value
-     *  $ic->setAaValue('headline........', new AA_Value([AA_Langs::getLangName2Num($translations[0]) => $text], $html_flag));
+     *  $ic->setAaValue('headline........', new AA_Value([AA\Util\AA_Langs::getLangName2Num($translations[0]) => $text], $html_flag));
      */
     function addValue($value) {
         if (is_array($value)) {
@@ -167,7 +168,7 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
      */
     function addStringValue(string $val, string $lang=''): AA_Value {
         if (strlen($val)) {
-            $index = AA_Langs::getLangName2Num($lang);
+            $index = Langs::getLangName2Num($lang);
             while (isset($this->val[$index])) {
                 $index++;
             }
@@ -232,7 +233,7 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
             $first = true;
             $newval = [];
             foreach ($translations as $lang) {
-                $lang_id = AA_Langs::getLangName2Num($lang);  // converts two letter lang code into number used for translation fields (cz -> 78000000, en -> 118000000, ...)
+                $lang_id = Langs::getLangName2Num($lang);  // converts two letter lang code into number used for translation fields (cz -> 78000000, en -> 118000000, ...)
                 for ($i = 0; $i <= $maxindex; $i++) {
                     $value = $this->val[$lang_id + $i] ?? '';
                     if (!strlen($value) and $first and isset($this->val[$i])) {
@@ -468,7 +469,7 @@ class AA_Content implements Iterator, ArrayAccess, Countable {
         } else {
             $def_lang = AA_Module::getModule($this->getOwnerId())->getDefaultLang() ?: strtolower(substr(DEFAULT_LANG_INCLUDE,0,2));      // actual language - two letter shortcut cz / es / en
         }
-        return ($def_lang_num = AA_Langs::getLangName2Num($def_lang)); // array of prefered languages in priority order.
+        return ($def_lang_num = Langs::getLangName2Num($def_lang)); // array of prefered languages in priority order.
     }
 
     function getFlag($field_id) {

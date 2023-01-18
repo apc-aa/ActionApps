@@ -36,6 +36,7 @@
 // supress PHP notices
 use AA\Cache\PageCache;
 use AA\IO\DB\DB_AA;
+use AA\Util\Langs;
 
 error_reporting(error_reporting() & ~(E_WARNING | E_NOTICE | E_DEPRECATED | E_STRICT));
 
@@ -345,7 +346,7 @@ class AA {
 
     static function getHeaders() {
         $ret = [];
-        $ret['type'] = 'Content-Type: '. (AA::$headers['type'] ?: 'text/html') .'; charset='.(AA::$headers['encoding'] ?: AA::$encoding ?: AA_Langs::getCharset());
+        $ret['type'] = 'Content-Type: '. (AA::$headers['type'] ?: 'text/html') .'; charset='.(AA::$headers['encoding'] ?: AA::$encoding ?: Langs::getCharset());
         if (isset(AA::$headers['status'])) {
             $ret['status'] = AA::$headers['status'];
         }
@@ -364,7 +365,7 @@ class AA {
      */
     static function setEncoding($encoding) {
         AA::$encoding = $encoding;
-        mb_internal_encoding(AA_Langs::isUTF($encoding) ? 'UTF-8' : '8bit');
+        mb_internal_encoding(Langs::isUTF($encoding) ? 'UTF-8' : '8bit');
     }
 
 

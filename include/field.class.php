@@ -184,6 +184,25 @@ class AA_Field implements ArrayAccess {
     }
 
     /**
+     * @return string date|pwd|bool|text|int
+     */
+    function getType(): string {
+        [$validate_type] = explode(":", $this->getProperty('input_validate'), 2);
+        [$insert_type]   = explode(":", $this->getProperty('input_insert_func'), 2);
+        if ($insert_type == 'pwd') {
+            return 'pwd';
+        } elseif ($validate_type == 'date') {
+            return 'date';
+        } elseif ($insert_type == 'boo') {
+            return 'bool';
+        } elseif ($this->getProperty('text_stored')) {  // not used from here down - it is possible to add more types - ids, ...
+            return 'text';
+        }
+        return 'int';
+    }
+
+
+    /**
      * @param array $oldcontent4id
      * @param bool  $insert
      * @return AA_Value|null
@@ -199,12 +218,11 @@ class AA_Field implements ArrayAccess {
 
         // GLOBAL - was used for default field value set by ValidateContent4Id()
         // $var = isset($_REQUEST[$varname]) ? $_REQUEST[$varname] : $GLOBALS[$varname];
-        [$validate_type] = explode(":", $this->getProperty('input_validate'), 2);
-        [$insert_type]   = explode(":", $this->getProperty('input_insert_func'), 2);
+        $type = $this->getType();
 
         $var = $_REQUEST[$varname];
 
-        if ($insert_type == 'pwd') {
+        if ($type == 'pwd') {
             $change_var = $_REQUEST[$varname . 'a'];
             $retype_var = $_REQUEST[$varname . 'b'];
             $delete_var = $_REQUEST[$varname . 'd'];
@@ -222,7 +240,7 @@ class AA_Field implements ArrayAccess {
                 return null;
             }
             return new AA_Value($var, FLAG_HTML);
-        } elseif ($validate_type == 'date') {
+        } elseif ($type == 'date') {
             $datectrl = new datectrl($varname);
             if ($datectrl->isUpdatable()) {
                 $datectrl->update();                   // updates datectrl
@@ -232,7 +250,7 @@ class AA_Field implements ArrayAccess {
                 return new AA_Value($_REQUEST[$varname], FLAG_HTML);
             }
             return null;
-        } elseif ($insert_type == 'boo') {
+        } elseif ($type == 'bool') {
             // $ret = $this->content[$fid] = new AA_Value(($var ? 1 : 0), FLAG_HTML);  // replaced by the line below - I think it is mistake: $this->content[$fid]
             return new AA_Value(($var ? 1 : 0), FLAG_HTML);
         } elseif( isset($var) ) {

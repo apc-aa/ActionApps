@@ -128,8 +128,8 @@ class datectrl {
         $this->time  = $d["hours"].":".$d["minutes"].":".$d["seconds"] ;
     }
 
-    /** we check, if the value is not so big (becauce we solved problem, when
-     *  the date was entered as 230584301025887115 - which is too big and it
+    /** we check, if the value is not so big (because we solved problem, when
+     *  the date was entered as 230584301025887115 - which is too big, and it
      *  takes ages for PHP to evaluate the date() function then. (php 5.2.6))
      *  it is perfectly possible to increase the max value, however
      */

@@ -83,7 +83,7 @@ if ($do=="chu") { //CHeck User
     $mail->setHeader("From", ERROR_REPORTING_EMAIL);
     $mail->setHeader("Reply-To", ERROR_REPORTING_EMAIL);
     $mail->setHeader("Errors-To", ERROR_REPORTING_EMAIL);
-    //$mail->setCharset(AA_Langs::getCharset(substr ($db->f("lang_file"),0,2)));
+    //$mail->setCharset(AA\Util\AA_Langs::getCharset(substr ($db->f("lang_file"),0,2)));
     $mail->send([$email]);
     echo "The email with the key allowing to reset your password has been sent to you to this email address: $email";
 }

@@ -24,6 +24,8 @@ https://www.apc.org/
 
 // Settings for Alerts-related table views
 
+use AA\Util\Langs;
+
 require_once __DIR__ . "/util.php";
 require_once __DIR__ . "/../../include/tv_email.php";
 require_once __DIR__ . "/../../include/locauth.php";
@@ -138,7 +140,7 @@ function GetAlertsTableView ($viewID, $processForm = false) {
     */
 
     if ($viewID == "modedit") {
-        $alertslangs = AA_Langs::getFiles('alerts');
+        $alertslangs = Langs::getFiles('alerts');
         return [
         "table" => "module",
         "join" => [

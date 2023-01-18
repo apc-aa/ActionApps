@@ -208,7 +208,7 @@ class AA_Condition extends AA_Object {
      *                                      [,<field_n> => 1])
      *  Mainly for backward compatibility with old - array approach
      */
-    function getArray() {
+    function getArray(): array {
         $ret = ['value' => $this->value, 'operator' => $this->operator];
         foreach ($this->fields as $cond_field) {
             $ret[$cond_field] = 1;
@@ -828,9 +828,9 @@ class AA_Set extends AA_Object {
     }
 
     /** getConds function
-     *  retruns $conds[] array - mainly for backward compatibility
+     *  @retrun array $conds[] array - mainly for backward compatibility
      */
-    function getConds() {
+    function getConds(): array {
         $ret = [];
         foreach ($this->conds as $condition) {
             $ret[] = $condition->getArray();
@@ -873,7 +873,12 @@ class AA_Set extends AA_Object {
         return $this->bins;
     }
 
-    /** @return string representing teh codition (for {ids} or {view}, ...)
+    /** @return int bins as used in database status_code */
+    function getBinsNumber(): int {
+        return ($this->bins & AA_BIN_TRASH) ? 3 : (($this->bins & AA_BIN_HOLDING) ? 2 : 1);
+    }
+
+    /** @return string representing the condition (for {ids} or {view}, ...)
      */
     function getCondsAsString() {
         $ret   = '';

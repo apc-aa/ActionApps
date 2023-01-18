@@ -26,6 +26,7 @@
 */
 
 use AA\IO\DB\DB_AA;
+use AA\Util\Langs;
 use AA\Util\ChangesMonitor;
 
 require_once __DIR__ . "/stringexpand.php";
@@ -872,10 +873,10 @@ class AA_Item {
      */
     function f_2($col, $param=""): string {
         // first_child try translation to right language
-        if (!strlen($txt = $this->getval($col, AA_Langs::getLangName2Num(AA::$lang)))) {
+        if (!strlen($txt = $this->getval($col, Langs::getLangName2Num(AA::$lang)))) {
             // if not present - translate to default language of the slice
             $translations = AA_Slice::getModuleProperty($this->getSliceID(),'translations');
-            if (!strlen($txt = $this->getval($col, AA_Langs::getLangName2Num($translations[0])))) {
+            if (!strlen($txt = $this->getval($col, Langs::getLangName2Num($translations[0])))) {
                 // last try the 0 index (if the field was not set to translation)
                 $txt = $this->getval($col);
             }

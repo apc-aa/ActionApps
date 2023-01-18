@@ -27,6 +27,8 @@ https://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+use AA\Util\Langs;
+
 require_once __DIR__ . "/util.php";
 require_once __DIR__ . "/../../include/util.php";
 require_once __DIR__ . "/../../include/formutil.php";
@@ -35,7 +37,7 @@ add_post2shtml_vars();
 
 $cf_fields = [
     "lang" => [
-        "code"=>getFrmSelectEasy ("formlang", AA_Langs::getCharsets(), get_mgettext_lang()),
+        "code"=>getFrmSelectEasy ("formlang", Langs::getCharsets(), \AA\Util\Langs::currentLang()),
         "label"=>_m("Language"),
         // do not show in wizard
         "hidewizard"=>true

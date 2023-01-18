@@ -35,6 +35,7 @@
 // go to the database when something is needed.
 
 use AA\IO\DB\DB_AA;
+use AA\Util\Langs;
 use AA\Widget\Widget;
 
 require_once __DIR__ . "/zids.php"; // Pack and unpack ids
@@ -312,14 +313,14 @@ class AA_Module {
      *  Returns lang code ('cz', 'en', 'en-utf8', 'de',...)
      */
     function getLang()     {
-        return AA_Langs::getLang($this->_getModuleTableProperty('lang_file'));
+        return Langs::getLang($this->_getModuleTableProperty('lang_file'));
     }
 
     /** getCharset function
      *  Returns character encoding for the slice ('windows-1250', ...)
      */
     function getCharset()     {
-        return AA_Langs::getCharset($this->getLang());   // like 'windows-1250'
+        return Langs::getCharset($this->getLang());   // like 'windows-1250'
     }
 
     function getDefaultLang() {

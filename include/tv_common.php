@@ -28,14 +28,16 @@
 // DOCUMENTATION: doc/tableview.html
 // This file is meant to be included before any TableViews are defined.
 
-$attrs_edit = [
+use AA\Util\Langs;
+
+$attrs_edit   = [
     "table"=>"border=\"0\" cellpadding=\"3\" cellspacing=\"0\" bgcolor='".COLOR_TABBG."'"
 ];
 $attrs_browse = [
     "table"=>"border=\"1\" cellpadding=\"3\" cellspacing=\"0\" bgcolor='".COLOR_TABBG."'",
     "table_search" => "border=\"0\" cellpadding=\"3\" cellspacing=\"0\" bgcolor='".COLOR_TABBG."'"
 ];
-$format = [
+$format       = [
     "hint" => [
         "before" => "<i>",
         "after" => "</i>"
@@ -47,7 +49,7 @@ $format = [
 ];
 
 
-$langs = AA_Langs::getNames();
+$langs = Langs::getNames();
 
 // ----------------------------------------------------------------------------------
 /** CreateWhereFromList function

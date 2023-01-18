@@ -25,6 +25,8 @@
  *
 */
 
+use AA\Util\Langs;
+
 const SHOW_FILE_SIZE          = 65536;
 const IMPORTFILE_PREVIEW_ROWS = 5;
 const IMPORTFILE_TIME_LIMIT   = 6000;
@@ -282,7 +284,7 @@ class Action {
             case "store": {
                 $ind = 0;
                 if (strlen($this->params)==2) {  // cz | en | de | ..
-                  $ind = AA_Langs::getLangName2Num(strtolower($this->params));
+                  $ind = Langs::getLangName2Num(strtolower($this->params));
                 }
                 $fvalues[$ind]['value'] = $itemContent->GetValue($from);		// todo - pokud neexistuje pole s $from , co delat?
                 break;
@@ -356,7 +358,7 @@ class Action {
                 foreach ( $items as $k => $save ) {
                     $ind = $k;
                     if ($langs[$k] and strlen($langs[$k])==2) {  // cz | en | de | ..
-                        $ind = AA_Langs::getLangName2Num(strtolower($langs[$k]));
+                        $ind = Langs::getLangName2Num(strtolower($langs[$k]));
                     }
                     $fvalues[$ind]['value'] = trim($save);
                 }

@@ -29,20 +29,12 @@
  *
 */
 
-/** get_mgettext_lang function
- * Returns current language (two-letter acronym, e.g. "es", "cz").
- */
-function get_mgettext_lang() {
-    global $mgettext_lang;
-    return $mgettext_lang ?? 'en';
-}
-
 /** bind_mgettext_domain function
  *  Reads language constants from given file/
  *   @param string $filename  in include/lang directory
  *   @param bool $cache     Should the old language constants remain in memory?
  *                     You will need this behaviour only when using a script which
- *                     several times changes the language,
+ *                     several times change the language,
  *                     e.g. sends a lot of emails in different languages.
  *   @param string $lang      If you want to include several language files,
  *                     you must tell mgettext not too free the
@@ -74,7 +66,7 @@ function bind_mgettext_domain($filename, $cache = false, $lang = "") {
     if ( !is_file($filename)) {
         echo "<h1>WRONG MGETTEXT DOMAIN $filename</h1>";
     } else {
-        if ($lang != get_mgettext_lang()) {
+        if ($lang != \AA\Util\Langs::currentLang()) {
             $_m = [];
         }
         include $filename;

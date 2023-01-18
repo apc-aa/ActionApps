@@ -29,6 +29,8 @@
  * @param $chb[] - array of selected users (in reader management slice)
 */
 
+use AA\Util\Langs;
+
 const AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
@@ -52,7 +54,7 @@ if ( !$send ) {               // for the first time - directly from item manager
     $sess->register('r_wm_state');
     unset($r_wm_state);       // clear if it was filled
     $r_wm_state['items'] = $items;
-    $lang = get_mgettext_lang();
+    $lang = \AA\Util\Langs::currentLang();
     $html = 1;
 } else {
     $items     = $r_wm_state['items'];  // session variable holds selected items fmom item manager
@@ -200,7 +202,7 @@ FrmInputText(  'header_from', _m('From (email)'),      $_POST['header_from'], 25
 FrmInputText(  'reply_to',    _m('Reply to (email)'),  $_POST['reply_to'],    254, 80, false, '', '', false, 'email');
 FrmInputText(  'errors_to',   _m('Errors to (email)'), $_POST['errors_to'],   254, 80, false, '', '', false, 'email');
 FrmInputText(  'sender',      _m('Sender (email)'),    $_POST['sender'],      254, 80, false, '', '', false, 'email');
-FrmInputSelect('lang',        _m('Language (charset)'),  AA_Langs::getNames(),  $_POST['lang'] ?: $slice->getLang(), true);
+FrmInputSelect('lang',        _m('Language (charset)'),  Langs::getNames(), $_POST['lang'] ?: $slice->getLang(), true);
 FrmInputSelect('html',        _m('Use HTML'),           [_m('no'), _m('yes')], $_POST['html'], true);
 FrmInputFile(  'attachment1',   _m('Attachement 1'), $attachment1, false, "*/*");
 FrmInputFile(  'attachment2',   _m('Attachement 2'), $attachment2, false, "*/*");

@@ -30,7 +30,7 @@
 require_once __DIR__."/../include/config.php";
 require_once __DIR__ . "/../include/util.php";
 require_once __DIR__ . "/../include/mgettext.php";
-mgettext_bind(get_mgettext_lang(), 'param_wizard');
+mgettext_bind(\AA\Util\Langs::currentLang(), 'param_wizard');
 require_once __DIR__ . "/../include/constants_param_wizard.php";
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)

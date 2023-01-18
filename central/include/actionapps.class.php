@@ -843,6 +843,7 @@ function Central_GetAaContent($zids) {
 /** Central_QueryZids - Finds link IDs for links according to given  conditions
  * @param AA_Set $set
  * @return zids
+ * @deprecated - now we are using Metabases methods
  */
 function Central_QueryZids(AA_Set $set): zids {
    // @param array  $conds - search conditions (see FAQ)

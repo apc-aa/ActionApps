@@ -27,6 +27,8 @@
  *
 */
 
+use AA\Util\Langs;
+
 require_once __DIR__ . "/mgettext.php";
 require_once __DIR__ . "/itemview.php";
 require_once __DIR__ . "/searchlib.php";
@@ -268,7 +270,7 @@ class AA_Showview {
         }
         if (!AA::$langnum) { // for multilingual content (not defined when called from view.php, or cron.php3 mail, ...)
             AA::$lang    = strtolower(substr($view->getLang(),0,2));   // actual language - two letter shortcut cz / es / en
-            AA::$langnum = [AA_Langs::getLangName2Num(AA::$lang)];   // array of prefered languages in priority order.
+            AA::$langnum = [Langs::getLangName2Num(AA::$lang)];   // array of prefered languages in priority order.
         }
 
         $noitem_msg = ($this->_view_param["noitem"] ?? (((strlen($view->f('noitem_msg')) > 0)) ?

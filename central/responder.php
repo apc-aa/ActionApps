@@ -21,6 +21,7 @@ https://www.apc.org/
 
 // anonymous authentication - locauth calls extauthnobody
 use AA\IO\DB\DB_AA;
+use AA\Util\Langs;
 
 if (!empty($_REQUEST['free'])) {   // can't be just POST - we use it in live Tags, which sends GET request
     $nobody = true;
@@ -205,11 +206,11 @@ class AA_Responder_Get_Widget extends AA_Responder {
         }
 
         // Use right language (from slice settings) - languages are used for button texts, ...
-        $lang         = $this->lang ? AA_Langs::getLang(AA_Langs::getLangCode2Name($this->lang).'-utf8') : $slice->getLang();
+        $lang         = $this->lang ? Langs::getLang(Langs::getLangCode2Name($this->lang).'-utf8') : $slice->getLang();
         mgettext_bind($lang, 'output');
         AA::$lang     = strtolower(substr($lang,0,2));   // actual language - two letter shortcut cz / es / en
-        AA::$langnum  = [AA_Langs::getLangName2Num(AA::$lang)];   // array of preferred languages in priority order.
-        AA::setEncoding(AA_Langs::getCharset($lang));
+        AA::$langnum  = [Langs::getLangName2Num(AA::$lang)];   // array of preferred languages in priority order.
+        AA::setEncoding(Langs::getCharset($lang));
 
         if ($this->context) {
             AA_Credentials::singleton()->importFromToken($this->context);
