@@ -51,4 +51,9 @@ $managed->setWidgetSetting('owner_module_id', ['enum'=>AA_Module::getUserModules
 
 $apage = new AA_Adminpageutil('aaadmin', 'email');
 $apage->setTitle(_m("Manage Emails"));
+if ($_GET['id']) {
+    $apage->addHelpbox('', AA_Collection::getEmailAliasesHelpbox());
+}
 $apage->printWithManager((new Manager('email', $managed))->setAllModules());
+
+

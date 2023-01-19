@@ -528,7 +528,7 @@ class AA_Item {
      * @param $field_id
      * @return AA_Value
      */
-    function getAaValue($field_id){
+    function getAaValue($field_id): AA_Value {
         return $this->content4id->getAaValue($field_id);
     }
 

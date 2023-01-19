@@ -423,6 +423,71 @@ class AA_Collection {
             "other"                => _m("other")
         ];
     }
+
+    /**
+     *
+     */
+    public static function getEmailAliasesHelpbox(): string {
+        $ali   = [];
+        $ali[] = [
+            "group"   => _m("Aliases for Alerts Alert"),
+            "aliases" => [
+                "_#FILTERS_" => _m("complete filter text"),
+                "_#HOWOFTEN" => _m("howoften") . " (" . join(", ", get_howoften_options()) . ")",
+                "_#COLLFORM" => _m("Anonym Form URL (set in Alerts Admin - Settings)"),
+                "_#UNSBFORM" => _m("Unsubscribe Form URL"),
+            ]
+        ];
+
+        $ali[] = [
+            "group"   => _m("Aliases for Alerts Welcome"),
+            "aliases" => [
+                "_#HOWOFTEN" => _m("howoften") . " (" . join(", ", get_howoften_options()) . ")",
+                "_#COLLFORM" => _m("Collection Form URL (set in Alerts Admin - Settings)"),
+                "_#CONFIRM_" => _m("email confirmed"),
+            ]
+        ];
+
+        // these aliases are used in include/slicewiz.php
+        $ali[] = [
+            "group"   => _m("Aliases for Slice Wizard Welcome"),
+            "aliases" => [
+                "_#SLICNAME" => _m("Slice name"),
+                "_#NAME____" => _m("New user name"),
+                "_#LOGIN___" => _m("New user login name"),
+                "_#ROLE____" => _m("New user role (editor / admin)"),
+                "_#ME_NAME_" => _m("My name"),
+                "_#ME_MAIL_" => _m("My email")
+            ]
+        ];
+
+        $ali[] = [
+            "group"   => _m("Aliases for User Templates (you can use also all aliases of the user)"),
+            "aliases" => [
+                "_#BODYTEXT" => _m("Slice name"),
+                "_#SUBJECT_" => _m("New user name")
+            ]
+        ];
+
+        $ali[] = [
+            "group"   => _m("Aliases for Password Change email (you can use also all aliases of the user)"),
+            "aliases" => [
+                "_#PWD_LINK" => _m("HTML link to the password change page for current user"),
+                "_#PWD_URLP" => _m('URL parameter used for password change link in _#PWD_LINK (you can use it, if you want to use your own url for it)')
+            ]
+        ];
+
+
+        $ret = "<br><table border=\"0\" cellspacing=\"0\" cellpadding=\"0\">";
+        foreach ($ali as $aligroup) {
+            $ret .= "<tr><td class=\"tabtit\" colspan=\"2\"><b>&nbsp;" . $aligroup['group'] . "&nbsp;</b></td></tr>";
+            foreach ($aligroup["aliases"] as $alias => $desc) {
+                $ret .= "<tr><td class=\"tabtxt\">&nbsp;$alias&nbsp;</td><td class=\"tabtxt\">&nbsp;$desc&nbsp;</td></tr>";
+            }
+        }
+        $ret .= "</table>";
+        return $ret;
+    }
 }
 
 // -------------------------------------------------------------------------------------

@@ -243,6 +243,7 @@ class AA_Adminpageutil {
     }
 
     public function printFoot() {
+        $this->printHelpbox();
         $html_end = $this->getPageEnd();
         $html_end = AA::Stringexpander()->unalias($html_end);
         $html_end = AA::Stringexpander()->postprocess($html_end);

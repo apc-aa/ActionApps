@@ -100,7 +100,7 @@ if ($err) {
 }
 
 if (!$err && $tview == "email_edit") {
-    ShowEmailAliases();
+    echo AA_Collection::getEmailAliasesHelpbox();
 }
 
 $apage->printFoot();

@@ -583,6 +583,6 @@ $apage->addHelpbox(_m('To include view in your sitemodule webpage use'), '<pre>
        '.$view_recipe2.'
      </pre>
      <a href="https://documentation.actionapps.org/en/Syntax#.7Bview.7D_-_Including_Views">'._m('See documentation').'</a>');
-$apage->printHelpbox();
+//$apage->printHelpbox();
 
 $apage->printFoot();

@@ -42,7 +42,7 @@ class FldWidget extends Widget
     }
 
 
-    /** Creates base widget HTML, which will be surrounded by Live, Ajxax
+    /** Creates base widget HTML, which will be surrounded by Live, Ajax
      *  or normal decorations (added by _finalize*Html)
      *  @param \AA_Property $aa_property
      *  @param AA_Content $content
@@ -77,7 +77,7 @@ class FldWidget extends Widget
         if (!$attrs['size']) {
             unset($attrs['size']);
             if (count($translations)>1) {
-                $attrs['style'] = 'width:85%'; // for translations we need more space for buttons
+                $attrs['style'] = 'width:85%'; // for translations, we need more space for buttons
             } else {
                 $attrs['class'] = $attrs['class'] ? $attrs['class']. ' aa-w-full' : 'aa-w-full'; // $attrs['style'] = 'width:95%';
             }

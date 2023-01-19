@@ -99,7 +99,7 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
      *  Called as
      *     AA_Value::factoryFromContent($arr);
      */
-    static function factoryFromContent($arr) {
+    static function factoryFromContent($arr): AA_Value {
         $aav = new AA_Value();
         // preserves keys - necessary for translated values
         foreach ($arr as $key => $val) {
@@ -401,7 +401,7 @@ class AA_Content implements Iterator, ArrayAccess, Countable {
      * @param $field_id
      * @return AA_Value
      */
-    function getAaValue($field_id) {
+    function getAaValue($field_id): AA_Value {
         return isset($this->content[$field_id]) ? AA_Value::factoryFromContent( $this->content[$field_id] ) : new AA_Value();
     }
 
@@ -469,7 +469,7 @@ class AA_Content implements Iterator, ArrayAccess, Countable {
         } else {
             $def_lang = AA_Module::getModule($this->getOwnerId())->getDefaultLang() ?: strtolower(substr(DEFAULT_LANG_INCLUDE,0,2));      // actual language - two letter shortcut cz / es / en
         }
-        return ($def_lang_num = Langs::getLangName2Num($def_lang)); // array of prefered languages in priority order.
+        return ($def_lang_num = Langs::getLangName2Num($def_lang)); // array of preferred languages in priority order.
     }
 
     function getFlag($field_id) {

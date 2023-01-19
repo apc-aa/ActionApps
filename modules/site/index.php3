@@ -220,9 +220,8 @@ echo '</td><td valign="top">';
 $module->showSpot($tree, $r_spot_id);
 
 $apage->addHelpbox(_m('Possible system requires - &lcub;require:...&rcub; or &lcub;require:["...","..."]&rcub;'), '{htmltoggle::::'.GetHtmlTable(AA_Requires::getAvailableLibs(),'th').'}');
-$apage->printHelpbox();
-
-echo '</td></tr></table>';
+//$apage->printHelpbox();
+//echo '</td></tr></table>';
 
 
 $apage->printFoot();

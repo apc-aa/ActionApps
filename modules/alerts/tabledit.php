@@ -114,7 +114,7 @@ if (!$err && $tview == "send_emails") {
 }
 
 if (!$err && $tview == "email_edit") {
-    ShowEmailAliases();
+    echo AA_Collection::getEmailAliasesHelpbox();
 }
 
 if (!$err && $tview == "acf") {
