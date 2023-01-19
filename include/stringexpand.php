@@ -4145,6 +4145,23 @@ class AA_Stringexpand_Ifset extends AA_Stringexpand_Nevercachenotrim {
     }
 }
 
+/** Boolean comparison to exact value: 1
+ *  Example: {if1:{_#IS_PUBLI}:_#HEADLINE:no public yet}
+ */
+class AA_Stringexpand_If1 extends AA_Stringexpand_Nevercache {
+    /** Do not trim all parameters (maybe we can?) */
+
+    /** expand function
+     * @param $condition
+     * @param $text
+     * @param $else_text
+     * @return string
+     */
+    function expand($condition, $text, $else_text) {
+        return ((string)$condition=='1') ? $text : $else_text;
+    }
+}
+
 /** If $etalon is equal to $option1, then print $text1, else print $else_text.
  *  $(else_)text could contain _#1 and _#2 aliases for $etalon and $option1, but you
  *  can use any {} AA expression.
