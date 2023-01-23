@@ -39,9 +39,12 @@ namespace AA;
 use AA;
 use AA\IO\Grabber\ObjectForm;
 use AA\Manageraction\Manageractions;
+use AA\Widget\InfWidget;
 use AA_Condition;
 use AA_Content;
 use AA_Form;
+use AA_Formrow_Full;
+use AA_Formrow_Text;
 use AA_Metabase;
 use AA_Object;
 use AA_Profile;
@@ -319,10 +322,19 @@ class Managed_Table extends Managed {
                     $prop->setConstants($this->widget_setting[$k]['enum']);
                     $prop->required = true;
                 }
+                if (isset($this->widget_setting[$k]['name'])) {
+                    $prop->setName($this->widget_setting[$k]['name']);
+                }
+                if (isset($this->widget_setting[$k]['help'])) {
+                    $prop->setHelp($this->widget_setting[$k]['help']);
+                }
                 // $props['html']->setHelp('xxx');
             }
         }
         $form = (new AA_Form())->addProperties($props);
+//        if ($id) {
+//            $form->addRow(new AA_Formrow_Text('ddd'.$id));
+//        }
         $form->setObject($this->getType(), $id, $module_id);  //$module_id not used here
         return $form;
     }
@@ -817,7 +829,7 @@ class Manager extends AA_Storable {
             ];
 
             $html = '<form name="f" method="post" action="'. StateUrl() .'">';
-            $html .= getFrmTabCaption(_m("Object Edit"), $form_buttons);
+            $html .= getFrmTabCaption(_m("Edit id").': '.$_GET['id'], $form_buttons);
             $html .= '<tr><td colspan="2">';
             $html .= $form->getObjectEditHtml();
 //            $html .= $form->getEditFormHtml();

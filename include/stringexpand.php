@@ -4157,7 +4157,7 @@ class AA_Stringexpand_If1 extends AA_Stringexpand_Nevercache {
      * @param $else_text
      * @return string
      */
-    function expand($condition, $text, $else_text) {
+    function expand($condition='', $text='', $else_text='') {
         return ((string)$condition=='1') ? $text : $else_text;
     }
 }

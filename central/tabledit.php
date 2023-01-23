@@ -31,9 +31,21 @@
 // (c) Econnect, Jakub Adamek, December 2002
 // DOCUMENTATION: doc/tabledit.html, doc/tabledit_developer.html, doc/tableview.html
 
-const AA_REGISTER_GLOBALS = true;
+// const AA_REGISTER_GLOBALS = true;
+use AA\Util\InputVars;
+
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/tabledit.php";
+
+try {
+    // array ( )-array ( )
+    $cmd = InputVars::arrayGETPOST('cmd'); // -
+    // array ( )
+    $val = InputVars::arrayPOST('val');
+    $cancel = InputVars::boolPOST('cancel');
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
 
 // ----------------------------------------------------------------------------------------
 

@@ -193,6 +193,7 @@ class AA_Property extends AA_Storable {
     /** setters */
     function setHelp($val)     { $this->input_help = (string)$val; return $this; }
     function setExample($val)  { $this->example    =         $val; return $this; }
+    function setName($val)     { $this->name       = (string)$val; return $this; }
 
     public function setValidator($validator)  { $this->_validator = $validator; }   // we do not create AA_Validator object here, because then it makes infinite loop - AA_Property contains validator...        $val; return $this; }
 
@@ -256,7 +257,7 @@ class AA_Property extends AA_Storable {
             throw new Exception('Can\'t generate widget for '.$this->type.' object property');
         }
 
-        $form->addRow(new AA_Formrow_Full($this, $this->defaultWidget()));
+            $form->addRow(new AA_Formrow_Full($this, $this->defaultWidget()));
     }
 
     function defaultWidget() {

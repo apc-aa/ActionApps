@@ -93,7 +93,7 @@ class AA_MbC {
         return preg_match("/\(([0-9]*)\)/", $this->c[1], $part) ? (int)$part[1] : 0;
     }
 
-    /** @return string - database field type - 'float' | 'int' | 'text' */
+    /** @return string - database field type - 'float' | 'int' | 'string' | 'text' */
     public function getFieldType() {
         // Used in AA database
         // bigint(20)
