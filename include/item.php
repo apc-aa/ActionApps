@@ -293,7 +293,7 @@ function GetItemFromContent($content) {
     if ( !is_object($content) ) {
         return null;
     }
-    return new AA_Item($content, new AA_Aliases(new AA_Aliasgenerator_Slice($content->getSliceID())));
+    return new AA_Item($content, ($content->getType()=='item') ? new AA_Aliases(new AA_Aliasgenerator_Slice((new ItemContent($content))->getSliceID())) : '');
 }
 
 
@@ -553,6 +553,9 @@ class AA_Item {
 
     /** checks, if the field looks like the field ID */
     function isField($text): bool {
+        if (substr($this->content4id->getType(),0,2) == '_T') { // some table
+            return AA::Metabase()->isColumn(substr($this->content4id->getType(), 2), $text);
+        }
         return $this->content4id->isField($text);
     }
 

@@ -8,6 +8,7 @@
 
 namespace AA\Widget;
 use AA\FormArray;
+use AA_Item;
 
 /** Info text - just Output */
 class InfWidget extends Widget
@@ -43,11 +44,14 @@ class InfWidget extends Widget
     function _getRawHtml($aa_property, $content, $type = 'normal')
     {
         $property_id = $aa_property->getId();
-        $item_id     = $content->getId();
+        // $item_id     = $content->getId();
         $code = $this->getProperty('code', '{' . $property_id . '}');
-        if ($item_id) {
-            $widget = \AA_Items::getItem(new \zids($item_id))->unalias($code);
+        $item = GetItemFromContent($content);
+        if ($item) {
+            // sets also aliases for Item
+            $widget = $item->unalias($code);
         } else {
+            // probably not used - $item should be set
             $widget = $content->unalias($code);
         }
         $base_name = FormArray::getName4Form($property_id, $content, $this->item_index);

@@ -48,7 +48,7 @@ class AA_Property extends AA_Storable {
     /** Property name - like: _m('Mark as') */
     var $name;
 
-    /** Property type - text | int | bool | float | <class_name>
+    /** Property type - text | int | bool | float | readonly | <class_name>
      *  If the type is <class_name>, then it should support getAaValue() method.
      */
     var $type;
@@ -257,13 +257,15 @@ class AA_Property extends AA_Storable {
             throw new Exception('Can\'t generate widget for '.$this->type.' object property');
         }
 
-            $form->addRow(new AA_Formrow_Full($this, $this->defaultWidget()));
+        $form->addRow(new AA_Formrow_Full($this, $this->defaultWidget()));
     }
 
     function defaultWidget() {
         $values = $this->getConstants();
         $widget = '';
-        if ($this->isMulti()) {
+        if ($this->type == 'readonly') {
+            $widget = new \AA\Widget\InfWidget();
+        } elseif ($this->isMulti()) {
             if (empty($values)) {
                 if ($this->type == 'text') {
                     $widget = new \AA\Widget\MflWidget(['rows' => 2, 'row_count' => 1]);
@@ -332,7 +334,7 @@ class AA_Property extends AA_Storable {
 
     /** isObject function */
     function isObject() {
-        return !in_array($this->type, ['text', 'string', 'int', 'bool', 'float']);
+        return !in_array($this->type, ['text', 'string', 'int', 'bool', 'float', 'readonly']);
     }
 
     /** @return string - table, where the property would be stored */

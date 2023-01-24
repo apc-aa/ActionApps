@@ -6039,8 +6039,8 @@ class AA_Stringexpander {
 
     /** called as AA::Stringexpander()->unalias();
      * @param $text string
-     * @param $item AA_Item
      * @param $remove string
+     * @param $item AA_Item
      * @param $dequote bool
      * @param $itemview itemview
      * @return string

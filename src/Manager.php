@@ -232,12 +232,22 @@ class Managed {
         return $this;
     }
 
-    /** Set definition of the column
+    /** Set all definitions of the columns
      * @param array $columns
      * @return Managed
      */
     public function setColumns(array $columns): Managed  {
         $this->columns = $columns;
+        return $this;
+    }
+
+    /** Set definition of the column
+     * @param $col
+     * @param $format
+     * @return Managed
+     */
+    public function setColumn($col, $format): Managed  {
+        $this->columns[$col][1] = $format;
         return $this;
     }
 

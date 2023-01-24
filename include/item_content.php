@@ -386,9 +386,17 @@ class AA_Content implements Iterator, ArrayAccess, Countable {
         return $this->getValue($this->owner_field);
     }
 
-    /** get owner id based on id_field setting for this content */
+    /**  */
     function getName() {
         return $this->getValue('aa_name');
+    }
+
+    /** returns the identification of the content type
+     *  (created for WidgetInf in order we can use GetItemFromContent)
+     * @return string
+     */
+    public function getType(): string {
+        return $this->getValue('aa_type') ?: 'item';
     }
 
     /** get list of fields */
@@ -621,12 +629,14 @@ class ItemContent extends AA_Content {
 
     /** ItemContent function
      *  Constructor which takes content for ID or item_id (unpacked).
-     * @param $content4id  array|string  content4id array or item id
+     * @param $content4id  array|string|AA_Content - array, object or item id
      */
     function __construct($content4id = "") {
         if ($content4id) {
             if ( is_array($content4id) ) {
                 $this->setFromArray($content4id);
+            } elseif (is_object($content4id)) {
+                $this->content = $content4id->getContent();
             } else {
                 $this->setByItemID($content4id );
             }
