@@ -365,14 +365,14 @@ function GetUserEmails($type = "") {
 /** Grabs User name from LDAP/SQL/AA
  *  @param $user_id (uid=peterf,ou=People,ou=AA for LDAP, 24 for SQL, c7626ea.. for AA Reader )
  *  @return string name of the user ('Peter Fiala' in our example)
- *  @todo   we should propaply provide realy the username (like peterf) here
+ *  @todo   we should probably provide really the username (like peterf) here
  */
-function perm_username( $user_id ) {
+function perm_username( $user_id ): string {
     if ( $user_id == '9999999999' ) {
         return "anonym";
     }
     $userinfo = AA::$perm->getIDsInfo($user_id);
-    return empty($userinfo) ? $user_id : $userinfo['name'];
+    return empty($userinfo) ? (string)$user_id : (string)$userinfo['name'];
 }
 
 require_once __DIR__ . "/util.php";          // for getDB()
