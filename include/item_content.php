@@ -635,10 +635,10 @@ class ItemContent extends AA_Content {
         if ($content4id) {
             if ( is_array($content4id) ) {
                 $this->setFromArray($content4id);
-            } elseif (is_object($content4id)) {
+            } elseif (is_object($content4id) AND in_array(get_class_name($content4id), ['AA_Content','AA_Item','ItemContent'])) {
                 $this->content = $content4id->getContent();
             } else {
-                $this->setByItemID($content4id );
+                $this->setByItemID($content4id);  // zids or string id
             }
         }
     }
@@ -662,11 +662,11 @@ class ItemContent extends AA_Content {
 
     /** setByItemID function
      * Set by item ID (zid or unpacked or short)
-     * @param $item_id
-     * @param $ignore_reading_password
+     * @param string|zids $item_id
+     * @param bool        $ignore_reading_password
      * @return bool
      */
-    function setByItemID($item_id, $ignore_reading_password=false) {
+    function setByItemID($item_id, bool $ignore_reading_password=false) {
         if (!$item_id) {
             return false;
         }
@@ -679,11 +679,12 @@ class ItemContent extends AA_Content {
      *  Functions tries to fill all the fields from the form. It do not add any
      *  item specific fields (like status_code), so it could be used also for
      *  dynamic "slice setting fields"
-     * @param array     $oldcontent4id
+     * @param array      $oldcontent4id
      * @param bool       $insert
      * @param AA_Fields  $fields
      * @param AA_Profile $profile
      * @return bool
+     * @throws Exception
      */
     function setFieldsFromForm($oldcontent4id, bool $insert, $fields, $profile): bool {
         
