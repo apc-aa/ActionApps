@@ -146,7 +146,6 @@ class Managed {
             $view = AA_Views::getViewNumeric($manager_vid);
             if ( $view AND !($view->f('deleted')>0) ) {
                 $format_strings = $view->getViewFormat();
-                $this->msg_noitem = $view->f('noitem_msg');
                 if ( isset($this->scroller) ) {
                     $this->scroller->metapage = $view->f('listlen');
                 }
@@ -164,7 +163,7 @@ class Managed {
                     $td .= "<td class=\"aacol$col\">".$this->columns[$col][1].'</td>';   //<td style="white-space:nowrap;"> for .aacol_aa_action
                 }
 
-                $format_strings = [    // optionaly to manager_vid you can set format array
+                $format_strings = [    // optionally to manager_vid you can set format array
                     'compact_top'      => '<div class="aa-table aa-items-manager"><table><tr class="aa-table-head">'.$th.'</tr>',
                     'odd_row_format'   => '<tr>'. $td .'</tr>',
                     'compact_bottom'   => "</table></div><br>"
@@ -175,13 +174,14 @@ class Managed {
                 $format_strings["odd_row_format"]  = '<tr class="tabtxt">'.$row.'</tr>';
                 $format_strings["even_row_format"] = '<tr class="tabtxteven">'.$row.'</tr>';
                 $format_strings["even_odd_differ"] = 1;
-                $format_strings["compact_top"]     = '<table border="0" cellspacing="0" cellpadding="0" bgcolor="#F5F0E7" width="100%">
+                $format_strings["compact_top"]     = '<table bgcolor="#F5F0E7">
                     <tr class="tabtitlight"><td>'._m("Publish date").'</td><td>'._m("Headline").'</td>'. (isset($aliases["_#AA_ACTIO"]) ? '<td>'._m("Actions").'</td>' : ''). '</tr>';
                 $format_strings["compact_bottom"]  = '</table>';
                 $colspan = 3;
             }
         }
         $format_strings['odd_row_format'] = str_replace(Managed::MANGED_URL, $this->getUrl(), $format_strings['odd_row_format']);
+        $this->setNoitem($format_strings["noitem_msg"]);
 
         if ($this->isAction('add')) {
             $new_link = a_href(StateUrl($this->getUrl() . '?add=1'), _m('Add'), ['class'=>'aa-button-new']);
@@ -839,7 +839,7 @@ class Manager extends AA_Storable {
             ];
 
             $html = '<form name="f" method="post" action="'. StateUrl() .'">';
-            $html .= getFrmTabCaption(_m("Edit id").': '.$_GET['id'], $form_buttons);
+            $html .= getFrmTabCaption(_m("Edit id") . ': ' . $_GET['id'], $form_buttons);
             $html .= '<tr><td colspan="2">';
             $html .= $form->getObjectEditHtml();
 //            $html .= $form->getEditFormHtml();
@@ -924,7 +924,7 @@ class Manager extends AA_Storable {
 
         $ret .= $itemview->get_output('view');
 
-        $ret .= '<table border="0" cellpadding="3" class="aa_manager_actions noprint">
+        $ret .= '<table class="aa_manager_actions noprint">
                 <tr class="aa_manager_actions_tr"><td>';
 
         if ($this->show & MGR_ACTIONS) {

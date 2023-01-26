@@ -63,7 +63,7 @@ function EmptyTrashQuestion(url, question) {
 
 // Selects/deselect all item checkboxes on the page
 function SelectVis() {
-    let sel   = 'form[name=itemsform] input[name=^chb]';
+    let sel   = 'form[name="itemsform"] input[name^="chb"]';
     let state = !document.querySelector(sel).checked;
     document.querySelectorAll(sel).forEach(el => { el.checked = state; } );
 }
