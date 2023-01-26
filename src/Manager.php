@@ -215,11 +215,13 @@ class Managed {
     }
 
     /** set "No item found" message
-     * @param string $text
+     * @param string|null $text
      * @return Managed
      */
-    public function setNoitem(string $text): Managed {
-        $this->msg_noitem = $text;
+    public function setNoitem(?string $text): Managed {
+        if (isset($text)) {
+            $this->msg_noitem = $text;
+        }
         return $this;
     }
 
