@@ -104,7 +104,7 @@ class AA_Operators {
      * @return string
      */
     static public function normalize(?string $operator): string {
-        return str_replace(['eq', 'ne', 'lt', 'le', 'gt', 'ge'], ['==', '<>', '<', '<=', '>', '>='], $operator);
+        return str_replace(['eq', 'ne', '&lt;', 'lt', 'le', '&gt;', 'gt', 'ge'], ['==', '<>', '<', '<', '<=', '>', '>', '>='], $operator);
     }
 
     /** getJsDefinition function

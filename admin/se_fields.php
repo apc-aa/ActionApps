@@ -186,8 +186,8 @@ if ($update) {
                 $fieldid = AA_Fields::createFieldId($ftype_base, $max);
 
                 $varset->set("slice_id", AA::$module_id, "unpacked" );
-                $varset->set("id", $fieldid, "quoted" );
-                $varset->set("name",  $val, "quoted");
+                $varset->set("id", $fieldid, "text" );
+                $varset->set("name",  $val, "text");
                 $varset->set("input_pri", $pri[$key], "number");
                 $varset->set("required", ($req[$key] ? 1 : 0), "number");
                 $varset->set("input_show", ($shw[$key] ? 1 : 0), "number");
@@ -197,7 +197,7 @@ if ($update) {
                 }
             } else { // current field
                 $varset->clear();
-                $varset->add("name", "quoted", $val);
+                $varset->add("name", "text", $val);
                 $varset->add("input_pri", "number", $pri[$key]);
                 $varset->add("required", "number", ($req[$key] ? 1 : 0));
                 $varset->add("input_show", "number", ($shw[$key] ? 1 : 0));

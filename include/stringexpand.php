@@ -1743,10 +1743,12 @@ class AA_Stringexpand_Cookie extends AA_Stringexpand_Nevercache {
 }
 
 /** Evaluates the expression
- *    {math:<expression>[:<decimals>[:<decimal point character>:<thousands separator>]]}
+ *    {math:<expression>[:<decimals>[:<decimal point character>:<thousands separator>[:<emptytext>]]]}
  *    {math:1+1-(2*6)}          - calculates the expression
  *    {math:1 421,823 }         - returns number usable for calculation - 1421.823
  *    {math:478778:1:,: }
+ *    {math:478778:bool}        - returns Yes or No (translated by language file)
+ *    {math:{number..........}:1:,: :--}  - show -- if the number.......... is not filled (or is filled with spaces)
  *    {math:478778:1:,:&#8239;} - correct French SI type of number format with thin space
  *    {math:478778:1:FR}        - correct French SI type of number format with thin space
  *    {math:478778:1:EN}        - correct English SI type of number format with thin space and decimal point
@@ -1755,8 +1757,14 @@ class AA_Stringexpand_Math extends AA_Stringexpand_Nevercachenotrim {
     /** Do not trim all parameters (the $add parameter could contain space) */
 
     /** expand function  */
-    function expand($expression='', $decimals='', $dec_point='', $thousands_sep = '') {
-        $ret      = (double)calculate($expression);
+    function expand($expression='', $decimals='', $dec_point='', $thousands_sep = '', $emptytext='') {
+        if (strlen($emptytext) AND !strlen(trim($expression))) {
+            return $emptytext;
+        }
+        $ret = (double)calculate($expression);
+        if ($decimals == 'bool') {
+            return $ret ? _m('Yes') : _m('No');
+        }
         if ( !empty($dec_point) OR !empty($thousands_sep) ) {
             $decimals      = get_if($decimals,0);
             switch ($dec_point) {

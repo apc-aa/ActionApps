@@ -19,6 +19,12 @@ setlocale(LC_NUMERIC, 'en_US');            // use numeric with dot - there is pr
 $_m["new"]
  = "nový";
 
+ $_m["Yes"]
+    = "Ano";
+
+$_m["No"]
+    = "Ne";
+
 
 # Unused messages
 $_m["Cancel"]
