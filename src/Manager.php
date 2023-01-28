@@ -786,7 +786,7 @@ class Manager extends AA_Storable {
     }
 
     /** zids directly from manager, which is a right way! */
-    function getZids(): zids {
+    function getZids(): ?zids {
         return is_array($this->query_funct) ?
             call_user_func_array($this->query_funct[0], [$this->query_funct[1], $this->getSet()]) :
             call_user_func_array($this->query_funct, [$this->getSet()]);
@@ -904,7 +904,8 @@ class Manager extends AA_Storable {
      * @return mixed
      */
     function getItems($zids): string {
-        $ret = '<form name="itemsform" id="itemsform" method="post" action="'. StateUrl() .'">';
+        $ret  = '<form name="itemsform" id="itemsform" method="post" action="'. StateUrl() .'">';
+        $ret .= '<input type="submit" disabled style="display: none" aria-hidden="true"> '; // prevents form to be submitted by pressing Enter on any live text field
 
         $itemview = $this->managed->getItemview($zids, $this->module_id, $this->scroller->getListlen());
 

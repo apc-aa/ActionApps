@@ -57,7 +57,7 @@ $managed->setWidgetSetting('errors_to',                                         
 $managed->setWidgetSetting('sender',                                               ['name'=>_m('Envelop sender (email)')]);
 $managed->setWidgetSetting('attachments',                                          ['name'=>_m('Attachments')]);
 
-$apage = new AA_Adminpageutil('aaadmin', 'email');
+$apage = new AA_Adminpageutil('aaadmin', 'te_wizard_welcome');
 $apage->setTitle(_m("Manage Emails"));
 if ($_GET['id']) {
     $apage->addHelpbox('', AA_Collection::getEmailAliasesHelpbox());

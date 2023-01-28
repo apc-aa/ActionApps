@@ -37,9 +37,9 @@ require_once __DIR__ . "/../include/profile.php";
 require_once __DIR__ . "/../include/constants_param_wizard.php";
 
 try {
-    $uid        = InputVars::stringGET('uid');
+    $uid        = InputVars::stringGET('uid',true);
     $add        = InputVars::boolGET('add');
-    $del        = InputVars::boolGET('del');
+    $del        = InputVars::intGET('del');  // id of deleted
     $set_as     = InputVars::boolGET('set_as');
     $set_as_uid = InputVars::stringGET('set_as_uid');
     $property   = InputVars::stringGET('property');
@@ -48,8 +48,6 @@ try {
     $fnction    = InputVars::stringGET('fnction');
     $html       = InputVars::boolGET('html');
 
-    // array ( 2 => 1, )
-    $uid = InputVars::intGET('uid', true);
     $cancel = InputVars::boolPOST('cancel');
     $err = InputVars::arrayGETPOST('err');
     $Msg = InputVars::stringGETPOST('Msg');

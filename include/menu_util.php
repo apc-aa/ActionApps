@@ -73,9 +73,9 @@ function GetCommonMenu($profile) {
         "sliceimp"    => ["label"=>_m("Import"),          "cond"=>IfSlPerm(PS_ADD),      "href"=>"admin/sliceimp.php"],
 
         "header7"     =>_m("Wizard"),
-        //A"te_wizard_welcome"  => ["label"=>_m("Welcomes"),  "cond"=>IsSuperadmin(),        "href"=>"admin/tabledit.php?set_tview=email"],
-        "te_wizard_welcome2" => ["label"=>_m("Welcomes"),  "cond"=>IsSuperadmin(),        "href"=>"admin/aa_emails.php"],
-        "te_wizard_template"=> ["label"=>_m("Templates"), "cond"=>IsSuperadmin(),        "href"=>"admin/tabledit.php?set_tview=wt"],
+        //"te_wizard_welcome2"  => ["label"=>_m("Welcomes"),  "cond"=>IsSuperadmin(),        "href"=>"admin/tabledit.php?set_tview=email"],
+        "te_wizard_welcome" => ["label"=>_m("Welcomes"),  "cond"=>IsSuperadmin(),        "href"=>"admin/aa_emails.php"],
+        "te_wizard_template"=> ["label"=>_m("Templates"), "cond"=>IsSuperadmin(),        "href"=>"admin/aa_wizardtemplate.php"],
 
         "header8"     =>_m("Feeds"),
         "rsstest"     => ["label"=>_m("RSS test"),        "cond"=>IsSuperadmin(),        "href"=>"admin/rsstest.php"],
@@ -83,7 +83,7 @@ function GetCommonMenu($profile) {
         "testrss"     => ["label"=>_m("Run feeding"),     "cond"=>IsSuperadmin(),        "href"=>"admin/xmlclient.php3?debugfeed=4"],
 
         "header9"     =>_m("Misc"),
-        "te_cron"     => ["label"=>_m("Cron"),            "cond"=>IsSuperadmin(),        "href"=>"admin/tabledit.php?set_tview=cron"],
+        "te_cron"     => ["label"=>_m("Cron"),            "cond"=>IsSuperadmin(),        "href"=>"admin/aa_cron.php"],
         "toexecute"   => ["label"=>_m("Task Manager"),    "cond"=>IsSuperadmin(),        "href"=>"admin/aa_toexecute.php"],
         "tasks"       => ["label"=>_m("Planned Tasks"),   "cond"=>IsSuperadmin(),        "href"=>"admin/aa_tasks.php"],
         "log"         => ["label"=>_m("View Log"),        "cond"=>IsSuperadmin(),        "href"=>"admin/aa_log.php?srchbr_akce=1&srchbr_field%5B0%5D=time&srchbr_oper%5B0%5D=%3E&srchbr_value%5B0%5D=".(time()-8*24*3600)."&srchbr_order%5B0%5D=time&srchbr_order_dir%5B0%5D=on"],
@@ -116,7 +116,6 @@ function GetCommonMenu($profile) {
             "trash"       => ["cond"=>1,                           "href"=>"central/index.php3?Tab3=1",                                 "label"=>"<img src='../images/delete.gif' border=0>"._m("Trash bin")." (". (int)$r_state['bin_cnt']['folder3'] .")"],
 
             "header2"     => _m("Misc"),
-            "addaa"       => ["cond"=>IsSuperadmin(),              "href"=>"central/tabledit.php?cmd[centraledit][show_new]=1",         "label"=>"<img src='../images/add.gif' border=0>"._m("Add AA")],
             "synchronize" => ["cond"=>IsSuperadmin(),              "href"=>"central/synchronize.php",                                    "label"=>_m("Synchronize...")],
             "copyslice"   => ["cond"=>IsSuperadmin(),              "href"=>"central/copyslice.php",                                      "label"=>_m("Copy Slice...")],
             "line"        => "",
@@ -305,7 +304,7 @@ function showMenu($activeMain, $activeSubmenu = "", $showMain = true, $showSub =
 
         $user_out = GetLabel($profile, 'ui_manager', 'top_userinfo', GetMenuLink('userinfo' == $activeMain, AuthGetUname(), IfSlPerm(PS_EDIT_SELF_USER_DATA), 'admin/um_passwd.php'));
 
-        // @todo change it to method=get (+ hiden fields or so) in ordef the Backe button in browser works there better
+        // @todo change it to method=get (+ hidden fields or so) in order the Back button in browser works there better
         $search_out = IsSuperadmin() ? "<form name=aasearchform action=\"".get_admin_url('aafinder.php')."\"><input type=search name=search value=\"".safe($_REQUEST['findtext'])."\" placeholder=\"". _m('Search..') ."\"><input type=hidden name=searchinview value=1><input type=hidden name=searchinslice value=1><input type=hidden name=searchinfield value=1><input type=hidden name=searchinspot value=1><input type=hidden name=searchinobject value=1><input type=hidden name=searchincodeitems value=1><input type=hidden name=go_search value=1></form>"  : '';
 
         echo '
@@ -337,7 +336,7 @@ function showMenu($activeMain, $activeSubmenu = "", $showMain = true, $showSub =
 
                 if ($link) {
                     echo $delim. $link;
-                    $delim = ' | ';
+                    $delim = ' ';
                 }
             }
         }
