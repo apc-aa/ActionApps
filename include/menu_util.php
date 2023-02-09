@@ -22,16 +22,20 @@ use AA\IO\DB\DB_AA;
  * along with this program (LICENSE); if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @package   Include
- * @version   $Id$
  * @author    Jakub Adamek
  * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
  * @link      https://www.apc.org/ APC
- *
-*/
+ * @package   Include
+ * @version   $Id$
+ */
 
-function GetCommonMenu($profile) {
+
+/**
+ * @param AA_Profile $profile
+ * @return array
+ */
+function GetCommonMenu(AA_Profile $profile): array {
     global $r_state;
 
     $menu = [];
@@ -51,7 +55,7 @@ function GetCommonMenu($profile) {
         "items"     => [
 
         "header0"     => _m("Slices / Modules"),
-        "sliceadd"    => ["label"=>_m("Create new"),      "cond"=>IfSlPerm(PS_ADD),      "href"=>"admin/sliceadd.php"],
+        "sliceadd"    => ["label"=>_m("Create new"),      "cond"=>IfSlPerm(PS_ADD),      'ico'=>'ico-new-slice.png', "href"=>"admin/sliceadd.php"],
         "slicewiz"    => ["label"=>_m("Create new Wizard"), "cond"=>IfSlPerm(PS_ADD),    "href"=>"admin/slicewiz.php"],
         "slicedel"    => ["label"=>_m("Delete"),          "cond"=>IsSuperadmin(),        "href"=>"admin/slicedel.php"],
         "jumpedit"    => [
@@ -60,11 +64,11 @@ function GetCommonMenu($profile) {
         ],
     /*    "delete" => array ("label" => _m("Empty trash"), "cond"=>IfSlPerm(PS_DELETE_ITEMS), "href"=>"admin/index.php3?Delete=trash"),*/
 
-        "header1"     =>_m("Users"),
+        "header1"     => ['label'=>_m("Users"), 'ico'=>'ico-user.png'],
         "u_edit"      => ["label"=>_m("Edit User"),       "cond"=>IfSlPerm(PS_NEW_USER), "href"=>"admin/um_uedit.php"],
         "u_new"       => ["label"=>_m("New User"),        "cond"=>IfSlPerm(PS_NEW_USER), "href"=>"admin/um_uedit.php?usr_new=1"],
 
-        "header2"     =>_m("Groups"),
+        "header2"     => ['label'=>_m("Groups"), 'ico'=>'ico-users.png'],
         "g_edit"      => ["label"=>_m("Edit Group"),      "cond"=>IfSlPerm(PS_NEW_USER), "href"=>"admin/um_gedit.php"],
         "g_new"       => ["label"=>_m("New Group"),       "cond"=>IfSlPerm(PS_NEW_USER), "href"=>"admin/um_gedit.php?grp_new=1"],
 
@@ -111,15 +115,15 @@ function GetCommonMenu($profile) {
         "level"     => "submenu",
         "items"     => [
             "header1"     => _m("Folders"),
-            "app"         => ["cond"=>1,                           "href"=>"central/index.php3?Tab1=1",                                 "label"=>"<img src='../images/ok.gif' border=0>"._m("Active")." (". (int)$r_state['bin_cnt']['folder1'] .")"],
-            "hold"        => ["cond"=>1,                           "href"=>"central/index.php3?Tab2=1",                                 "label"=>"<img src='../images/edit.gif' border=0>"._m("Hold bin")." (". (int)$r_state['bin_cnt']['folder2'] .")"],
-            "trash"       => ["cond"=>1,                           "href"=>"central/index.php3?Tab3=1",                                 "label"=>"<img src='../images/delete.gif' border=0>"._m("Trash bin")." (". (int)$r_state['bin_cnt']['folder3'] .")"],
+            "app"         => ["cond"=>1,                           "href"=>"central/index.php3?Tab1=1",                                'ico'=>'ico-items.png', "label"=> _m("Active")." <span class='aa-bin-cnt'>". (int)$r_state['bin_cnt']['folder1'] ."</span>"],
+            "hold"        => ["cond"=>1,                           "href"=>"central/index.php3?Tab2=1",                                'ico'=>'ico-holdbin.png', "label"=>_m("Hold bin")." <span class='aa-bin-cnt'>". (int)$r_state['bin_cnt']['folder2'] ."</span>"],
+            "trash"       => ["cond"=>1,                           "href"=>"central/index.php3?Tab3=1",                                'ico'=>'ico-trashbin.png', "label"=>_m("Trash bin")." <span class='aa-bin-cnt'>". (int)$r_state['bin_cnt']['folder3'] ."</span>"],
 
             "header2"     => _m("Misc"),
             "synchronize" => ["cond"=>IsSuperadmin(),              "href"=>"central/synchronize.php",                                    "label"=>_m("Synchronize...")],
             "copyslice"   => ["cond"=>IsSuperadmin(),              "href"=>"central/copyslice.php",                                      "label"=>_m("Copy Slice...")],
             "line"        => "",
-            "item6"       => ["cond"=>IsSuperadmin(),              "href"=>"central/index.php3?DeleteTrash=1",                           "label"=>"<img src='../images/empty_trash.gif' border=0>"._m("Empty trash"), "js"=>"EmptyTrashQuestion('{href}','"._m("Are You sure to empty trash?")."')"],
+            "item6"       => ["cond"=>IsSuperadmin(),              "href"=>"central/index.php3?DeleteTrash=1",                           "label"=>_m("Empty trash"), "js"=>"EmptyTrashQuestion('{href}','"._m("Are You sure to empty trash?")."')"],
             "importcsv"   => ["cond"=>IsSuperadmin(),              "href"=>"central/import_csv.php",                                     "label"=>_m("Import conf from CSV...")],
             "debug"       => ["cond"=>IsSuperadmin(),              "js"  =>"ToggleCookie('aa_debug','1')", "hide"=>!IsSuperadmin(),      "label"=> ($_COOKIE['aa_debug'] ? _m("Set Debug OFF") : _m("Set Debug ON"))],
             "line2"       => ""
@@ -130,9 +134,19 @@ function GetCommonMenu($profile) {
 }
 
 
-function GetLabel($profile, $property, $selector, $default_text) {
-    $val = $profile->getProperty($property, $selector);
-    return ($val === false) ? $default_text : $val;
+/**
+ * @param AA_Profile $profile
+ * @param string     $property
+ * @param string     $selector
+ * @param string     $default_text
+ * @param string     $ico
+ * @return string
+ */
+function GetLabel(AA_Profile $profile, string $property, string $selector, string $default_text, string $ico=''): string {
+    $val =  $profile->getProperty($property, $selector);
+    $ret =  $ico ? GetAAImage($ico,'',23,23) : '';
+    $ret .= ($val === false) ? $default_text : $val;
+    return $ret;
 }
 
 // ----------------------------------------------------------------------------------------
@@ -141,8 +155,9 @@ function GetLabel($profile, $property, $selector, $default_text) {
 /** PrintModuleSelection function
  *
  */
-function PrintModuleSelection() {
+function GetModuleSelection(): string {
     global $g_modules;
+    $ret = '';
 
     $profile = AA_Profile::getProfile(AuthGetUid(), AA::$module_id); // current user settings
 
@@ -219,59 +234,58 @@ function PrintModuleSelection() {
 
         //$type = AA_Module::getModuleType(AA::$module_id);
 
-        $ret  = GetLabel($profile, 'ui_manager', 'top_moduleswitchtext', '');
-        $ret .= '<select name=sel_module onChange="if (this.value != \'\') document.location=this.value">';
-        $ret .= $options;
-        $ret .= '</select>';
+        $html  = GetLabel($profile, 'ui_manager', 'top_moduleswitchtext', '');
+        $html .= '<select name=sel_module onChange="if (this.value != \'\') document.location=this.value">';
+        $html .= $options;
+        $html .= '</select>';
 
-        $js = "document.getElementById('aanbform').innerHTML = '".str_replace("'", "\\'", $ret)."';";
-        FrmJavascriptCached($js, 'modules');
+        $js = "document.getElementById('aanbform').innerHTML = '".str_replace("'", "\\'", $html)."';";
+        $ret .= getFrmJavascriptCached($js, 'modules');
     } else {
-        echo GetLabel($profile, 'ui_manager', 'top_moduleselection', "&nbsp;");
+        $ret .= GetLabel($profile, 'ui_manager', 'top_moduleselection', "&nbsp;");
     }
+    return $ret;
 }
 
 // ----------------------------------------------------------------------------------------
 //                                SHOW MENU
 
-/** showMenu function
- * @param $activeMain -- selected item in main (top) menu
+/**
+ * @param        $activeMain    -- selected item in main (top) menu
  * @param string $activeSubmenu -- selected item in sub (left) menu
- * @param bool $showMain -- show the main menu (top navigation bar) ?
- * @param bool $showSub -- show the submenu (left navigation bar) ?
+ * @return string
  */
-function showMenu($activeMain, $activeSubmenu = "", $showMain = true, $showSub = true) {
+function getMenu($activeMain, $activeSubmenu = ""): string {
     global $slice_id;
+    $ret = '';
 
-    $profile = AA_Profile::getProfile(AuthGetUid(), $slice_id); // current user settings
+    if ($activeMain) {
 
-    // load the main AA menu (see menu.php)
+        $profile = AA_Profile::getProfile(AuthGetUid(), $slice_id); // current user settings
 
-    if ($menu_require = AA_Module::getModuleInfo('menu', AA::$module_id)) {
+        // load the main AA menu (see menu.php)
 
-        if (!function_exists('get_aamenus')) {
-            require_once __DIR__."/../" . $menu_require;
+        if ($menu_require = AA_Module::getModuleInfo('menu', AA::$module_id)) {
+
+            if (!function_exists('get_aamenus')) {
+                require_once __DIR__."/../" . $menu_require;
+            }
+            // @todo
+            // Menu functions are defined in include/menu.php or modules/*/menu.php
+            // We need to call last defined menu function (when switching to another
+            // module). This solution is not so nice, but it removes get_aamenus()
+            // redeclaration error. We probably change menus to object in the future
+            $smmenus = get_aamenus();
         }
-        // @todo
-        // Menu functions are defined in include/menu.php or modules/*/menu.php
-        // We need to call last defined menu function (when switching to another
-        // module). This solution is not so nice, but it removes get_aamenus()
-        // redeclaration error. We probably change menus to object in the future
-        $smmenus = get_aamenus();
-    }
 
-    // HACKISH: aaadmin menu needs always the _news_ lang file, even in other than slice modules
-    if ($activeMain == "aaadmin") {
-        mgettext_bind(\AA\Util\Langs::currentLang(), 'news');
-    }
+        // HACKISH: aaadmin menu needs always the _news_ lang file, even in other than slice modules
+        if ($activeMain == "aaadmin") {
+            mgettext_bind(\AA\Util\Langs::currentLang(), 'news');
+        }
 
-    $nb_logo = GetLabel($profile, 'ui_manager', 'top_logo', '<a href="'. AA_INSTAL_PATH .'">'. GetAAImage('action.gif', aa_version(), 106, 73). '</a>');
+        $nb_logo = GetLabel($profile, 'ui_manager', 'top_logo', '<a href="'. AA_INSTAL_PATH .'">'. GetAAImage('action.gif', aa_version(), 106, 73). '</a>');
 
-    echo '
-  <table border="0" cellspacing="0" cellpadding="0" width="100%">
-    <tr>
-';
-    if ($showMain) {
+        // --- showMain menu -----
         // Show the Alerts and Reader management images in the header
         switch ( $GLOBALS["g_modules"][$slice_id]["type"] ) {
             case 'Alerts':
@@ -289,9 +303,7 @@ function showMenu($activeMain, $activeSubmenu = "", $showMain = true, $showSub =
 
         $title_title = GetLabel($profile, 'ui_manager', 'top_title', $smmenus[$activeMain]['title']);
         $title_name  = ($slice_id ? AA_Slice::getModuleName($slice_id) : _m("New slice"));
-
-        $title_out   = $title_img .'&nbsp;'. $title_title . (($title_title AND $title_name) ? ' - ' : '') . $title_name;
-
+        $title_out   = $title_img . $title_title . (($title_title AND $title_name) ? ' - ' : '') . $title_name;
         $prop_logout = $profile->getProperty('ui_manager', 'top_logout');
 
         if ( $prop_logout === false ) {
@@ -307,85 +319,69 @@ function showMenu($activeMain, $activeSubmenu = "", $showMain = true, $showSub =
         // @todo change it to method=get (+ hidden fields or so) in order the Back button in browser works there better
         $search_out = IsSuperadmin() ? "<form name=aasearchform action=\"".get_admin_url('aafinder.php')."\"><input type=search name=search value=\"".safe($_REQUEST['findtext'])."\" placeholder=\"". _m('Search..') ."\"><input type=hidden name=searchinview value=1><input type=hidden name=searchinslice value=1><input type=hidden name=searchinfield value=1><input type=hidden name=searchinspot value=1><input type=hidden name=searchinobject value=1><input type=hidden name=searchincodeitems value=1><input type=hidden name=go_search value=1></form>"  : '';
 
-        echo '
-        <td colspan="2" id="aa_top">
-          <table border="0" cellpadding="0" cellspacing="0" width="100%" class="noprint">
-            <tr>
-              <td width="122" rowspan="2" align="center" class="nblogo">'.$nb_logo.'</td>
-              <td height="43" align="center" valign="middle" class="slicehead">'.
-                  $title_out .
-              '</td>
-              <td align="right" class="navbar">'. $search_out .'
-                <form name=logoutform method="post" action="'. get_admin_url('logout.php').'">
+        $ret .= '
+          <div class="aa-ui-top noprint" id="aa_top">
+            <div class="nblogo">'.$nb_logo.'</div>
+            <div class="aa-ui-nav">
+              <div class="slicehead">'. $title_out .'</div>
+              <div class="aa-ui-custom-nav">'. $search_out .'
+                  <form name=logoutform method="post" action="'. get_admin_url('logout.php').'">
                    '. $user_out .' '. $logout_out .'&nbsp;
-                </form>
-              </td>
-            </tr>
-            <tr>
-              <td align="center" class="navbar">
+                  </form>
+              </div>
+              <nav class="navbar">
         ';
-        $delim = '';
 
+        $links = [];
         foreach ($smmenus as $aamenu =>$aamenuprop) {
             if ($aamenuprop["level"] == "main") {
-                $link  = GetMenuLink($aamenu == $activeMain,
-                                     $aamenuprop['label'],
-                                     $aamenuprop["cond"] ?? true,
-                                     $aamenuprop["href"],
-                                     $aamenuprop["exact_href"]);
-
-                if ($link) {
-                    echo $delim. $link;
-                    $delim = ' ';
-                }
+                $links[$aamenu] = GetMenuLink($aamenu == $activeMain, $aamenuprop['label'], $aamenuprop['cond'] ?? true, $aamenuprop['href'], $aamenuprop['exact_href'], $aamenuprop['ico']);
             }
         }
 
-
-        echo '
-              </td>
-              <td class="navbar" align="right" valign="bottom">
-                <form name="nbform" id="aanbform" enctype="multipart/form-data" method="post" action="'. StateUrl() .'" style="display:inline">
-                &nbsp; ';
-        echo "\n";
-        PrintModuleSelection();
-        echo '
-                </form>
-              </td>
-            </tr>
-          </table>
-        </td>
-      </tr>
-      <tr>
-      ';
-    }
-
-    if ($showSub) {
-        $submenu = $smmenus[$activeMain]["submenu"];
-        if ($submenu) {
-            echo "<td valign=\"top\">";
-            showSubmenu($smmenus[$submenu], $activeSubmenu);
-            echo "</td>";
+        if ($viewlink = $links['view']) {
+            unset($links['view']);
         }
+        $ret .= join(' ',$links);
+
+        $ret .= '  
+            </nav>
+              <div class="aa-ui-modules">'.$viewlink.'
+                <form name="nbform" id="aanbform" enctype="multipart/form-data" method="post" action="'. StateUrl() .'">'."\n";
+        $ret .= GetModuleSelection();
+        $ret .= "\n</form>
+              </div>
+            </div>
+          </div>\n";
+
+        // showMain menu end -----
+
+        $ret .= "\n<div class='aa-ui-main'>";
+
+    // showSub menu -----
+        if ($submenu = $smmenus[$activeMain]["submenu"]) {
+            $ret .= "<div class='aa-ui-leftmenu'>";
+            $ret .= getSubmenu($smmenus[$submenu], $activeSubmenu);
+            $ret .= "</div>";
+        }
+    } else {
+        $ret .= "\n<div class='aa-ui-main'>";
     }
-    echo '
-        <td align="left" valign="top" width="99%" id="aa_content">
-          <table border="0" cellspacing="0" cellpadding="10" width="100%">
-            <tr>
-              <td align="left">
-              ';
+
+    $ret .= "\n <div class=\"aa-ui-content\">";
+    return $ret;
 }
 
 /** GetMenuLink
- * @param $active
- * @param $label
- * @param $cond
- * @param $aa_href
- * @param $exact_href
- * @param $slice_id
+ * @param        $active
+ * @param        $label
+ * @param        $cond
+ * @param        $aa_href
+ * @param string $exact_href
+ * @param string $ico
  * @return string
  */
-function GetMenuLink($active, $label, $cond, $aa_href, $exact_href='') {
+function GetMenuLink($active, $label, $cond, $aa_href, $exact_href='', $ico='') {
 
     $cssclass = $active ? 'nbactive' : 'nbenable';
 //    if ($active) {
@@ -396,8 +392,12 @@ function GetMenuLink($active, $label, $cond, $aa_href, $exact_href='') {
         if (!$href) {
             $href = get_aa_url($aa_href);
         }
+        if ($ico) {
+            $label = GetAAImage($ico,$label,23,23).$label;
+        }
+
         $href = StateUrl($href);
-        return a_href($href, "<span class=\"$cssclass\">$label</span>");
+        return a_href($href, $label, ['class'=>$cssclass]);
     }
     // maked invisible which is better, I think. Honza 2007-08-02
     // return "<span class=\"nbdisable\">$label</span>";
@@ -408,38 +408,40 @@ function GetMenuLink($active, $label, $cond, $aa_href, $exact_href='') {
  * @param $aamenuitems
  * @param $active
  */
-function showSubMenuRows( $aamenuitems, $active ) {
+function getSubMenuRows($aamenuitems, $active ): string {
     global $slice_id;
-
     if ( !isset($aamenuitems) OR !is_array($aamenuitems) ) {
-       return;
+       return '';
     }
+    $ret = '';
 
     foreach ($aamenuitems as $itemshow => $item) {
+        $ico = ((is_array($item) AND $item['ico']) ? GetAAImage($item['ico'], $item['title'], 23,23) : '');
+
         if (substr($itemshow,0,4) == "text") {
-            echo "<tr><td>$item</td></tr>\n";
+            $ret .= "<li class='aa-leftmenu-text'>$item</li>\n";
         } elseif (substr($itemshow,0,6) == "header") {
-            if ($item !== '') {
-                echo '<tr><td>&nbsp;</td></tr>
-                    <tr><td class="leftmenu">'.$item.'</td></tr>'."\n";
+            if (is_array($item)) {
+                $ret .= "<li class='aa-leftmenu-header' title='".$item['title']."'>".$item['label']."</li>\n";  // $ico not shown for design reasons
+            } elseif ($item !== '') {
+                $ret .= "<li class='aa-leftmenu-header'>$item</li>\n";
             }
         } elseif (substr($itemshow,0,4) == "line") {
-            echo '<tr><td><img src="'.AA_INSTAL_PATH.'images/black.gif" width="120" height="1"></td></tr>'."\n";
+            $ret .= "<li class='aa-leftmenu-line'><img src='".AA_INSTAL_PATH."images/black.gif' width=120 height=1></li>\n";
         } elseif ( $item["function"] ) {
             // call some function to get menu items
             // it is better mainly for left submenus for which we need
             // database access - if we use function, it is called only if
             // submenu should be displayed.
             $function = $item["function"];
-            showSubMenuRows( $function( $item["func_param"] ), $active );
+            $ret .= getSubMenuRows( $function($item["func_param"] ), $active );
         } else {
-            echo '<tr><td width="122" valign="TOP">&nbsp;';
             if (!isset ($item["cond"])) {
                 $item["cond"] = 1;
             }
             $cssclass = ($itemshow == $active) ? 'leftmenua' : 'leftmenuy';
 //            if ($itemshow == $active) {
-//                echo "<span class=\"leftmenua\">".$item["label"]."</span>\n";
+//                $ret .= "<span class=\"leftmenua\">".$item["label"]."</span>\n";
 //            } elseif (($slice_id || $item["show_always"]) && $item["cond"]) {
             if (($slice_id || $item["show_always"]) && $item["cond"]) {
                 $href = ($item["exact_href"] ?: get_aa_url($item["href"],[],!$item["no_slice_id"]));
@@ -448,13 +450,13 @@ function showSubMenuRows( $aamenuitems, $active ) {
                     $item['js'] = str_replace("{exact_href}",$href,$item['js']);
                     $href       = "javascript:".$item['js'];
                 }
-                echo '<a href="'.$href.'" class='.$cssclass.'>'.$item["label"]."</a>\n";
+                $ret .= '<li class="aa-leftmenu-link"><a href="'.$href.'" class='.$cssclass.'>'.$ico. $item["label"]."</a></li>\n";
             } elseif ( !$item["hide"] ) {
-                echo "<span class=\"leftmenun\">".$item["label"]."</span>\n";
+                $ret .= '<li class="aa-leftmenu-link"><span class="leftmenun">'.$ico.$item["label"]."</span></li>\n";
             }
-            echo "</td></tr>\n";
         }
     }
+    return $ret;
 }
 
 // ----------------------------------------------------------------------------------------
@@ -463,16 +465,17 @@ function showSubMenuRows( $aamenuitems, $active ) {
  * @param $aamenu
  * @param $active
  */
-function showSubmenu($aamenu, $active) {
-    echo '<table width="122" border="0" cellspacing="0" bgcolor="'.COLOR_TABBG.'" cellpadding="1" align="left" class="leftmenu noprint">'."\n";
+function getSubmenu($aamenu, $active): string {
+    $ret = '<div class="leftmenu noprint">'."\n";
 
     $aamenuitems = $aamenu["items"];
-    showSubMenuRows( $aamenuitems, $active );
 
-    echo '<tr><td>&nbsp;</td></tr>
-          <tr><td height="'.$aamenu["bottom_td"].'">&nbsp;</td></tr>
-          <tr><td class="copymsg"><small>'. _m("Copyright (C) 2001 the <a href=\"https://www.apc.org\">Association for Progressive Communications (APC)</a>") .'</small></td></tr>
-          </table>'."\n";
+    if ($submenu = getSubMenuRows( $aamenuitems, $active )) {
+        $ret .= "<ul>\n  $submenu\n</ul>";
+    }
+
+    $ret .= "</div>\n<div class='aa-ui-copyright'>". _m("Copyright (C) 2001 the <a href=\"https://www.apc.org\">Association for Progressive Communications (APC)</a>") ."</div>\n";
+    return $ret;
 }
 
 /** CreateMenuItem function

@@ -76,7 +76,7 @@ if ( !$fill ) {               // for the first time - directly from item manager
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 
 echo '
-  <link rel=StyleSheet href="'.AA_INSTAL_PATH.'tabledit.css" type="text/css"  title="TableEditCSS">
+  <link rel=StyleSheet href="'.AA_INSTAL_PATH.'tabledit.css"  title="TableEditCSS">
   <title>'.  _m("Modify items") .'</title>';
 FrmJavascriptFile('javascript/inputform.min.js?v='.AA_JS_VERSION);
 IncludeManagerJavascript();

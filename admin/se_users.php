@@ -67,7 +67,7 @@ if (!IfSlPerm(PS_USERS)) {
  * @param $txt
  */
 function IfLink( $cond, $url, $txt ) {
-    echo "<td class=\"tabtxt\">";
+    echo "<td>";
     echo $cond ? "<a href=\"$url\">$txt</a>" : $txt;
     echo  "</td>\n";
 }
@@ -93,7 +93,7 @@ function PrintUser($perm, $usr_id, $editor_perm) {
         $role_img = 'role1.gif';
     }
 
-    echo "<tr><td><img src=\"../images/$role_img\" width=50 height=25 border=0></td>\n";
+    echo "<tr><td><img src=\"../images/$role_img\" width=50 height=25></td>\n";
 
     $go_url_arr = [
         'User'        => "um_uedit.php?usr_edit=1&selected_user=$usr_id_enc",
@@ -107,10 +107,10 @@ function PrintUser($perm, $usr_id, $editor_perm) {
     $usr_code = ( !IsSuperadmin() ? $usrinfo['name'] :
         '<a href="'. get_admin_url(  $go_url_arr[$usrinfo['type']] ) .'">'. $usrinfo['name'] .'</a>' );
 
-    echo "<td class=\"tabtxt\">". $usr_code ."</td>\n";
-    echo "<td class=\"tabtxt\">". $username ."</td>\n";
-    echo "<td class=\"tabtxt\">". (($usrinfo['mail']) ?: "&nbsp;") ."</td>\n";
-    echo "<td class=\"tabtxt\">". _mdelayed($usrinfo['type']) ."</td>\n";
+    echo "<td>". $usr_code ."</td>\n";
+    echo "<td>". $username ."</td>\n";
+    echo "<td>". (($usrinfo['mail']) ?: "&nbsp;") ."</td>\n";
+    echo "<td>". _mdelayed($usrinfo['type']) ."</td>\n";
 
     IfLink( CanChangeRole($perm, $editor_perm, AA_Perm::ROLES["AUTHOR"]['perm']),        get_admin_url("se_users.php?UsrAdd=$usr_id_enc&role=AUTHOR"), _m("Author"));
     IfLink( CanChangeRole($perm, $editor_perm, AA_Perm::ROLES["EDITOR"]['perm']),        get_admin_url("se_users.php?UsrAdd=$usr_id_enc&role=EDITOR"), _m("Editor"));
@@ -121,9 +121,9 @@ function PrintUser($perm, $usr_id, $editor_perm) {
     $cnt = ($cnt = DB_AA::select1('cnt', 'SELECT count(*) as cnt FROM profile', [
         ['slice_id', $GLOBALS['slice_id'], 'l'],
         ['uid', $usr_id]
-    ])) ? " ($cnt)" : '';
+    ])) ? " <span class='aa-bin-cnt'>$cnt</span>" : '';
 
-    echo "<td class=\"tabtxt\"><input type=\"button\" name=\"uid\" value=\"". _m("Profile") ."$cnt\" onclick=\"document.location='". StateUrl("se_profile.php?uid=$usr_id_enc") ."'\"></td>\n";
+    echo "<td><button type=\"button\" name=\"uid\" onclick=\"document.location='". StateUrl("se_profile.php?uid=$usr_id_enc") ."'\">". _m("Profile") ."$cnt</button></td>\n";
     echo "</tr>\n";
 }
 
@@ -170,12 +170,11 @@ if ( $continue ) {
     $cnt = ($cnt = DB_AA::select1('cnt', 'SELECT count(*) as cnt FROM profile', [
         ['slice_id', $GLOBALS['slice_id'], 'l'],
         ['uid', '*']
-    ])) ? " ($cnt)" : '';
+    ])) ? " <span class='aa-bin-cnt'>$cnt</span>" : '';
 
-    echo "<tr><td class=\"tabtxt\">&nbsp;</td>
-              <td class=\"tabtxt\" colspan=\"8\">". _m("Default user profile") ."</td>
-              <td class=\"tabtxt\"><input type=\"button\" name=\"uid\" value=\"". _m("Profile") ."$cnt\"
-           onclick=\"document.location='". StateUrl("se_profile.php?uid=*") ."'\"></td>\n";
+    echo "<tr><td>&nbsp;</td>
+              <td colspan=\"8\">". _m("Default user profile") ."</td>
+              <td><button type=\"button\" name=\"uid\" onclick=\"document.location='". StateUrl("se_profile.php?uid=*") ."'\">". _m("Profile") ."$cnt</button></td>\n";
   echo "</tr>\n";
 
     echo "</table>

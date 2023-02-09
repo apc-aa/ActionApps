@@ -69,8 +69,8 @@ $apage->setForm();
 $apage->printHead($err, $Msg);
 
 
-echo '<table border="0" cellspacing="0" cellpadding="5" bgcolor="'.COLOR_TABTITBG.'" align="center">';
-echo "<tr><td colspan=\"2\" class=\"tabtxt\">";
+echo '<table>';
+echo "<tr><td colspan=\"2\">";
 
 echo $GLOBALS['filedit_js'];
 echo "
@@ -139,7 +139,7 @@ if ($filetype == _m("Text file") || $filetype == _m("Web file") || $filetype == 
     }
 }
 elseif ($filetype == _m("Image file"))
-    echo "<img src='$fe_wwwpath$fe_filename' border=\"0\">";
+    echo "<img src='$fe_wwwpath$fe_filename'>";
 else
     echo _m("This is a file of type")." $filetype. "._m("I can't view it. If you want to view or edit it, change it's extension.");
 //echo "</td></tr></table>";

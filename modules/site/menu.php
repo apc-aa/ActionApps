@@ -84,8 +84,8 @@ function get_aamenus() {
         "level"=>"submenu",
         "items"=> [
         "header1"=>_m("Main settings"),
-        "main"   => ["cond"=>IfSlPerm(PS_MODW_SETTINGS), "href"=>"modules/site/modedit.php", "label"=>_m("Site")],
-        "aliases"=> ["cond"=>IfSlPerm(PS_MODW_SETTINGS), "href"=>"modules/site/aliases.php", "label"=>_m("Aliases")],
+        "main"   => ["cond"=>IfSlPerm(PS_MODW_SETTINGS), "href"=>"modules/site/modedit.php", "label"=>_m("Site"), 'ico'=>'ico-site.png'],
+        "aliases"=> ["cond"=>IfSlPerm(PS_MODW_SETTINGS), "href"=>"modules/site/aliases.php", "label"=>_m("Aliases"), 'ico'=>'ico-aliases.png'],
         ]
     ];
     

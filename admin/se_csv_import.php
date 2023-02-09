@@ -207,12 +207,11 @@ if ($preview) { // file preview
     }
 }
 ?>
-<table width="600" border="0" cellspacing="0" cellpadding="1"
-       bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
-    <tr><td class="tabtit"><b>&nbsp;<?php echo _m("CSV format settings") ?></b></td></tr>
+<table class="aa-table">
+    <tr><th><?php echo _m("CSV format settings") ?></th></tr>
 
     <tr><td>
-      <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
+      <table>
       <?php
           $arr = [
               ','  => 'comma ,',
@@ -248,9 +247,9 @@ if ($preview) { // file preview
       </table>
     </td></tr>
 
-    <tr><td class="tabtit"><b>&nbsp;<?php echo _m("Source of CSV data") ?></b></td></tr>
+    <tr class="aa-tbl-header"><th><?php echo _m("Source of CSV data") ?></th></tr>
     <tr><td>
-            <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
+            <table>
                 <tr>
                     <td><label><input type="radio" <?php if ($dataType == "file") echo "checked"; ?> name="dataType" value="file">&nbsp;file</label></td>
                     <td><input type="file" name="upfile"></td>
@@ -265,11 +264,11 @@ if ($preview) { // file preview
                 </tr>
             </table>
         </td></tr>
-    <tr><td align="center">
+    <tr><td>
             <input type="hidden" name="previous_upload" value="<?php echo $dest_file ?>">
             <input type="hidden" name="slice_id" value="<?php echo AA::$module_id ?>">
             <input type="submit" name="preview" value="<?php echo _m("Preview")?>">
-            <input type="submit" name="upload" value="<?php echo _m("Next") ?>" align="center">&nbsp;&nbsp;
+            <input type="submit" name="upload" value="<?php echo _m("Next") ?>">&nbsp;&nbsp;
         </td></tr>
   </table>
 

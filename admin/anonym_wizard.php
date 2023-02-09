@@ -117,14 +117,14 @@ function GetAnonymousForm($slice, $s_fields, $show, $ok_url, $err_url, $use_show
 
     $ret .= $additional. "\n";
     $ret .= $form->getFormJavascript($jstriggers);
-    $ret .= "\n    <table border=\"0\" cellspacing=\"0\" cellpadding=\"4\" align=\"center\" class=\"tabtxt\">\n";
+    $ret .= "\n    <table class=\"aa-table\">\n";
     $ret .=  AA::Stringexpander()->postprocess(AA::Stringexpander()->unalias($form_code)); // to replace  {generate:HEAD} with dynamic javascripts needed by inputform
 
     $ret .= '
-      <tr>
-       <td colspan="10" align="center" class="tabtit">
+      <tr class="aa-tbl-header">
+       <th colspan="10">
         <input type="submit" name="send" value="'._m("Send").'">
-       </td>
+       </th>
       </tr>
     </table>
   </form>
@@ -215,36 +215,35 @@ FrmInputText('show_result', '', $show_result, 254, 60);
 FrmTabSeparator(_m("Fields"));
 
 echo '
-<tr>
- <td class="tabtxt" align="center"><b>'._m("Field").'</b></td>
- <td class="tabtxt" align="center"><b>'._m("Id").'</b></td>
- <td class="tabtxt" align="center"><b>'._m("Show").'</b></td>
- <td class="tabtxt" align="center"><b>'._m("Field Id in Form").'</b></td>
-</tr>
-<tr><td class="tabtxt" colspan="4"><hr></td></tr>';
+<tr class="aa-tbl-header">
+ <th>'._m("Field").'</th>
+ <th>'._m("Id").'</th>
+ <th>'._m("Show").'</th>
+ <th>'._m("Field Id in Form").'</th>
+</tr>';
 
 if ( is_array($s_fields)) {
     foreach ($s_fields as $field) {
         if ($field["input_show"]) {
             echo '
-            <tr><td class="tabtxt"><b>'.$field["name"].'</b></td>
-                <td class="tabtxt">'.$field["id"].'</td>
-                <td class="tabtxt" align="center">
+            <tr><td><b>'.$field["name"].'</b></td>
+                <td>'.$field["id"].'</td>
+                <td>
                     <input type="checkbox" name="show['.$field["id"].']"';
             if (! $show || $show[$field["id"]])
                 echo " checked";
             echo "></td>
-                <td class=\"tabtxt\">v".unpack_id($field["id"])."</td>
+                <td>v".unpack_id($field["id"])."</td>
             </tr>";
         }
     }
 }
 
 echo '
-<tr><td colspan="4" class="tabtxt"><hr><b>'
+<tr class="aa-tbl-header"><th colspan="4">'
     ._m("Only fields marked as \"Show\" on the \"Fields\" page
          are offered on this page.")
-.'</b></td></tr>';
+.'</th></tr>';
 
 FrmTabEnd($form_buttons);
 

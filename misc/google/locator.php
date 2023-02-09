@@ -161,7 +161,7 @@ google.setOnLoadCallback(mapload);
       </p>
     </form>
 
- <table  bgcolor="#FFFFCC" width="300">
+ <table  width="300">
   <tr>
     <td width="100"><b>Latitude</b></td>
     <td id="lat"></td>

@@ -179,9 +179,9 @@ function PrintSiteActionLink($r_spot_id, $action, $text, $img, $link=null) {
     return "<a href=\"$link\">$image</a>&nbsp;<a href=\"$link\">$text</a>";
 }
 
-echo '<table border=0 cellspacing=0 class=login width="98%"><tr><td id="sitetree">
+echo '<table class=login><tr><td id="sitetree">
       <br>
-      <table border=0 cellspacing=0 align="center">
+      <table>
         <tr>
           <td>'. PrintSiteActionLink($r_spot_id, 's', _m("Add&nbsp;spot"), 'add_spot.gif') .'</td>
           <td>&nbsp;'. PrintSiteActionLink($r_spot_id, 'c', _m("Add&nbsp;choice"), 'add_choice.gif') .'</td>
@@ -215,7 +215,7 @@ $functions = [
 
 $tree->walkTree($apc_state, 1, $functions, 'collapsed');
 
-echo '</td><td valign="top">';
+echo '</td><td>';
 
 $module->showSpot($tree, $r_spot_id);
 

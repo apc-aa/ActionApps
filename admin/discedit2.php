@@ -99,10 +99,10 @@ $apage->setForm(['action' => "?d_id=$d_id"]);
 $apage->printHead($err, $Msg);
 ?>
 
-<table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
-<tr><td class="tabtit"><b>&nbsp;<?php echo _m("Edit comment") ?></b></td></tr>
+<table class="aa-table">
+<tr class="aa-tbl-header"><th><?php echo _m("Edit comment") ?></th></tr>
 <tr><td>
-<table width="540" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
+<table width="540">
 <?php
     FrmStaticText("id", $d_id);
     FrmInputText("subject",_m("Subject"), $subject, 99, 50, true);
@@ -117,7 +117,7 @@ $apage->printHead($err, $Msg);
     FrmTextarea("free2", _m("Tracking"), $free2, 5, 40);
 ?>
 </table>
-<tr><td align="center">
+<tr><td>
 <?php
     echo "<input type=\"hidden\" name=\"d_id\" value=".$d_id.">";
     echo "<input type=\"hidden\" name=\"item_id\" value=".unpack_id($item_id).">";

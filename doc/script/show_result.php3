@@ -20,7 +20,7 @@
     // If there were too many errors, the array is not complete and thus
     // unserialize does not work.
     if (!is_array($resarr)) {
-        echo '<font class="tabtxt">Too many errors. Please contact the webmaster
+        echo '<font>Too many errors. Please contact the webmaster
             and tell him about the message: '.$result.'</font><br>'."\n";
         return;
     }
@@ -47,31 +47,31 @@
         case "validate":
             switch (key ($prop)) {
             case "con_email.......":
-                echo '<font class="tabtxt">
+                echo '<font>
                     Error in email. This email address is already subscribed.
                     Please use another one.</font>';
                 break;
             case "headline........":
-                echo '<font class="tabtxt">
+                echo '<font>
                     Error in username. This username is already used.
                     Please try another.
                 </font>'."\n";
                 break;
             default:
-                echo '<font class="tabtxt">Error in field value ('.key($prop).').</font><br>'."\n";
+                echo '<font>Error in field value ('.key($prop).').</font><br>'."\n";
                 break;
             }
             break;
 
         // Error: permissions K.O.
         case "permissions":
-            echo '<font class="tabtxt">Wrong password. You must
+            echo '<font>Wrong password. You must
                     fill the correct password every time you send info.</font><br>'."\n";
             break;
 
         // Other error.
         default:
-            echo '<font class="tabtxt">Some error: '.$prop.'</font><br>'."\n";
+            echo '<font>Some error: '.$prop.'</font><br>'."\n";
             break;
         }
     }

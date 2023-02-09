@@ -83,7 +83,7 @@ echo '
  </style>
 </head>
 <body id="body_white_color">
- <H1><B>'. _m('Category Edit') .'</B></H1>';
+ <h1>'. _m('Category Edit') .'</h1>';
 
 echo GetPrintArray($r_err);
 echo GetPrintArray($r_msg);
@@ -101,24 +101,24 @@ echo '<form name=f method=post action="catedit2.php">';
             ["before" => "(", "text" => "?", "after" => ")"]));
 echo '
       <tr>
-        <td width=255 align=center valign="top"><b>'. _m('Category tree') .'</b><div class="tabhlp"><i>'. _m('select the category for crossreference') .'</i></div></td>
+        <td width=255><b>'. _m('Category tree') .'</b><div class="tabhlp"><i>'. _m('select the category for crossreference') .'</i></div></td>
         <td width=60>&nbsp;</td>
-        <td align=center valign="top"><b>'. _m('Selected subcategories') .'</b><div class="tabhlp"><i>'. _m('subcategories of this category') .'</i></div></td>
+        <td><b>'. _m('Selected subcategories') .'</b><div class="tabhlp"><i>'. _m('subcategories of this category') .'</i></div></td>
       </tr>
       <tr>
         <td colspan="3"><div id="patharea"> </div></td>
       </tr>
       <tr>
-       <td align="CENTER" valign="TOP">'.
+       <td>'.
        $tree->getFrmTree('dblclick', $links_info['select_start'] ?: 2, 'patharea', '', false, '', 8, 'f') .'</td>
-          <td><a href="javascript:MoveSelectedCat(\'document.f.tree\',\'document.f.selcat\')"><img src="'.AA_INSTAL_PATH.'images/right.gif" border="0" alt="select"></a></td>
-          <td align="CENTER" valign="TOP">'.
+          <td><a href="javascript:MoveSelectedCat(\'document.f.tree\',\'document.f.selcat\')"><img src="'.AA_INSTAL_PATH.'images/right.gif" alt="select"></a></td>
+          <td>'.
        $tree->getFrmSubCatList(true, '', $cid, 250, 'selcat') .'</td>
       </tr>
       <tr>
        <td>&nbsp;</td>
        <td>&nbsp;</td>
-       <td align="center">';
+       <td>';
 if ( IsCatPerm(PS_LINKS_ADD_SUBCATEGORY, $r_state['cat_path']) )
     echo ' <a href="javascript:NewCateg(\''._m('New subcategory').'\')">'. _m('Add') .'</a> &nbsp; ';
 if ( IsCatPerm(PS_LINKS_DEL_SUBCATEGORY, $r_state['cat_path']) )

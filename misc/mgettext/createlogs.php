@@ -61,7 +61,7 @@ function create_logs ($lang_list, $old_lang_files, $log_files)
         fclose ($fd);
         break;
     }
-    if ($lang) echo '<font color="red">Log <b>'.$logfile.'</b> created.</font>';
-    else echo '<font color="red">All logs are created.</font>';
+    if ($lang) echo '<span style="color: red; ">Log <b>' .$logfile. '</b> created.</span>';
+    else echo '<span style="color: red; ">All logs are created.</span>';
 }
 

@@ -110,7 +110,7 @@ function getHierConstBoxes($hcid, $levelCount, $horizontal=0, $targetBox="", $ad
        $add_button_trigger = "aa_onChange('".$fieldid."'); ";
     }
 
-    $out = "<table border=\"0\" cellpadding=\"3\">";
+    $out = "<table>";
     if ($horizontal) $out .= "<tr>";
     $widthTxt = str_repeat("m",$boxWidth);
 
@@ -127,14 +127,14 @@ function getHierConstBoxes($hcid, $levelCount, $horizontal=0, $targetBox="", $ad
         if (!$levelNames[$i]) $levelNames[$i] = _m("Level")." $i";
         if ($horizontal) {
             $out .= "
-              <td align=\"left\" valign=\"top\" width=\"10%\"><b>".$levelNames[$i]."</b><br>
+              <td width=\"10%\"><b>".$levelNames[$i]."</b><br>
               <select name=\"hclevel{$i}_{$hcid}\" multiple size=\"10\" onChange=\"hcSelectItem($hcid,$i,$admin)\">
                 <option>$widthTxt</select>
                 <br><br>$buttonAdd&nbsp;&nbsp;$buttonSelect
               </td>";
         } else {
             $out .= "
-              <tr><td align=\"right\" valign=\"top\">
+              <tr><td>
                 <b>".$levelNames[$i]."</b><br>$buttonAdd<br>
                 <img src=\"../images/spacer.gif\" width=\"1\" height=\"2\"><br>$buttonSelect
                 </td><td>

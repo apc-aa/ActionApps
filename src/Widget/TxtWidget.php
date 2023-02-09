@@ -66,7 +66,7 @@ class TxtWidget extends Widget
             $attrs['onchange'] = "AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)";
         }
 
-        $widget_add2 = ($type == 'live') ? '<img width=16 height=16 border=0 title="' . _m('To save changes click here or outside the field.') . '" alt="' . _m('Save') . '" class="' . $base_id . 'ico" src="' . AA_INSTAL_PATH . 'images/px.gif" style="position:absolute; right:0;">' : '';
+        $widget_add2 = ($type == 'live') ? '<img width=16 height=16 title="' . _m('To save changes click here or outside the field.') . '" alt="' . _m('Save') . '" class="' . $base_id . 'ico" src="' . AA_INSTAL_PATH . 'images/px.gif" style="position:absolute; right:0;">' : '';
 
         $widget = '';
         if ( strpos(get_class($this), 'AA\Widget\CodWidget') !== false ) {
@@ -101,8 +101,7 @@ class TxtWidget extends Widget
                 $base['id']       = FormArray::formName2Id($input_name);
                 $base['langcode'] = Langs::getLangName2Code(Langs::getLangNum2Name($i));
             }
-            $widget .= $delim. $this->getOneInput($input_name, $i, $val, $attrs, '', $widget_add2, $required, !$aa_property->getContentTypeSwitches() OR ($type == 'live'), $base);
-            $delim = "\n<br />";
+            $widget .= $this->getOneInput($input_name, $i, $val, $attrs, '', $widget_add2, $required, !$aa_property->getContentTypeSwitches() OR ($type == 'live'), $base);
             $required = ''; // only one is required
         }
 
@@ -161,7 +160,7 @@ class TxtWidget extends Widget
             // conversions menu
             //$convertor   = $convert ? $this->get_convertors() : false;
             //if ( $convertor ) {
-            //    $this->echoo('  <table width="100%" border="0" cellspacing="0" cellpadding="" bgcolor="' . COLOR_TABBG . "\">\n   <tr><td>");
+            //    $this->echoo('  <table>\n   <tr><td>");
             //}
         }
 
@@ -179,7 +178,9 @@ class TxtWidget extends Widget
             if (!$showhtmlarea AND !$showcodeeditor AND ($langcode != $base['langcode'])) {
                 $translate =  "<span class=\"aa-langtrans-tbtn\" onclick=\"AA_Translate('$input_id', document.getElementById('" . $base['id'] . "').value, '" . $base['langcode'] . "', '$langcode');\">" . _m("translate from") . ' ' . Langs::getLangCode2Name($base['langcode']) . "</span>";
             }
-            $ret = "<span class=\"aa-langtrans $lang\"><strong class=\"aa-langtrans-label\">$lang</strong>$translate $ret</span>";
+            $ret = "<div class=\"aa-langtrans $lang\"><strong class=\"aa-langtrans-label\">$lang</strong>$translate $ret</div>";
+        } else {
+            $ret = "<div>$ret</div>";
         }
         return $ret;
     }

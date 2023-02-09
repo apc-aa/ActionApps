@@ -141,19 +141,19 @@ echo '
     onsubmit="return this.list_name.value != \'\' && this.admin_email.value != \'\'
     && this.admin_password.value != \'\'">
 <input type="hidden" name="slice_id" value="'.AA::$module_id.'">
-<table width="440" border="0" cellspacing="0" cellpadding="5" bgcolor="'.COLOR_TABTITBG.'" align="center">
-<tr><td class="tabtit" colspan="2"><b>'._m("List Settings").'</b></td></tr>
-<tr><td class="tabtxt" colspan="2">'._m("The list will be added to mailman and also
+<table width="440">
+<tr class="aa-tbl-header"><th colspan="2">'._m("List Settings").'</th></tr>
+<tr><td colspan="2">'._m("The list will be added to mailman and also
     to the constant group for the field %1 selected as Mailman Lists Field in Slice Settings.", [$field_name]).'<br><br>'
 ._m("All the fields are required.").'</td></tr>
-<tr class="tabtxt"><td>'.caption(_m("List name")).'</td>
+<tr><td>'.caption(_m("List name")).'</td>
 <td><input type="text" name="list_name" size="20" value="'.$list_name.'"></td></tr>
-<tr class="tabtxt"><td>'.caption(_m("Admin email")).'</td>
+<tr><td>'.caption(_m("Admin email")).'</td>
 <td><input type="text" name="admin_email" value="'.str_replace('"','&quot;',$admin_email).'" size="50"></td></tr>
-<tr class="tabtxt"><td>'.caption(_m("Admin password")).'</td>
+<tr><td>'.caption(_m("Admin password")).'</td>
 <td><input type="password" name="admin_password" size="20"></td></tr>';
 echo '
-<tr><td align="center" colspan="2">
+<tr><td colspan="2">
     <input type="submit" name="create_list" value="'._m("Create").'">&nbsp;&nbsp;
 </td></tr></table>
 ';

@@ -84,7 +84,7 @@ foreach ($MODULES as $type => $module) {
             continue;
         }
     }
-    echo "<tr><td width=\"20%\" class=\"tabtxt\"><b>"._mdelayed($module['name'])."</b></td><td width=\"60%\">".
+    echo "<tr><td width=\"20%\"><b>"._mdelayed($module['name'])."</b></td><td width=\"60%\">".
          ($module["show_templates"] ? $templ_sb : "&nbsp;").
          "</td><td width=\"60%\">
         <input type=\"submit\" name=\"create[$type]\" value=\""._m("Add")."\"></td></tr>";
@@ -93,7 +93,7 @@ FrmTabEnd();
 
 echo '<br><br>'. getTabStart();
 
-echo getFrmInputButtons(["cancel" => ["url" => "aafinder.php"]], 'middle', true, COLOR_TABTITBG);
+echo getFrmInputButtons(["cancel" => ["url" => "aafinder.php"]]);
 FrmTabEnd();
 
 $apage->printFoot();

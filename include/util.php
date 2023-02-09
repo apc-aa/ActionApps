@@ -63,6 +63,13 @@ function a_href($url, $label, array $attr=[]): string {
     return '<a href="'.safe($url) ."\" $add>$label</a>";
 }
 
+/** creates html tag with attributes
+ * @usage htmltag('div','text',['class'=>'info'])
+ */
+function htmltag($tag, $content, $attr=[]): string {
+    return "<$tag". array_reduce( array_keys($attr), function ($str, $key) use ($attr) { return $str . ' ' . $key . '="' . safe($attr[$key]) . '"'; }).'>'. safe($content)."</$tag>";
+}
+
 /** creates xml/html tag with attributes
  * @usage xmltag('name',John,['sex'=>'M'])
  */
@@ -1166,9 +1173,7 @@ function HtmlPageEnd() {
             </td>
           </tr>
         </table>
-      </td>
-    </tr>
-  </table>
+      </div>
 </body>
 </html>";
 }
@@ -1410,7 +1415,7 @@ function GetAAImage($filename, $alt, $width, $height, $add='', $add_path='') {
         $im_size = @getimagesize($image_path);
         $size = $im_size[3];
     }
-    return "<img border=0 src=\"$image_url\" alt=\"$alt\" $title $size $add>";
+    return "<img src=\"$image_url\" alt=\"$alt\" $title $size $add>";
 }
 
 /** GetModuleImage function

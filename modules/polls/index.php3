@@ -87,10 +87,10 @@ $manager_settings = $metabase->getManagerConf('polls', $actions, $switches);
 $manager_settings['itemview']['aliases'] = new AA_Aliases(new AA_Aliasgenerator_Polls);
 
 $manager_settings['itemview']['format']['compact_top'] = '
-                                      <table border="0" cellspacing="0" cellpadding="5">
-                                        <tr class=tabtit><th width="30">&nbsp;</th><th>'. _m('ID'). '</th><th>'. _m('Poll Question'). '</th><th>'. _m('Publish Date'). '</th><th>'. _m('Expiry Date'). '</th></tr>
+                                      <table class="aa-table">
+                                        <tr class="aa-tbl-header"><th width="30">&nbsp;</th><th>'. _m('ID'). '</th><th>'. _m('Poll Question'). '</th><th>'. _m('Publish Date'). '</th><th>'. _m('Expiry Date'). '</th></tr>
                                       ';
-$manager_settings['itemview']['format']['odd_row_format'] = '<tr class=tabtxt><td width="30"><input type="checkbox" name="chb[x_#POLL_ID_]" value=""></td><td>_#POLL_ID_</td><td><a href="_#EDITPOLL">_#QUESTION</a></td><td>_#PUB_DATE</td><td>_#EXP_DATE</td></tr>
+$manager_settings['itemview']['format']['odd_row_format'] = '<tr><td width="30"><input type="checkbox" name="chb[x_#POLL_ID_]" value=""></td><td>_#POLL_ID_</td><td><a href="_#EDITPOLL">_#QUESTION</a></td><td>_#PUB_DATE</td><td>_#EXP_DATE</td></tr>
                                       ';
 
 $manager = new Manager('poll'.$module_id, (new \AA\Managed())->setSettings($manager_settings));   // no special meaning of the manager_id, just some ID

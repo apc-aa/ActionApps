@@ -92,18 +92,18 @@ $switches->addAction(new Central_DeleteTrash('DeleteTrash',false));
 
 $managed = $metabase->getManagerConf('central_conf', $actions, $switches);
 //$manager_settings['itemview']['format']['compact_top'] = '
-//                                          <table border=0 cellspacing=0 cellpadding=5>';
+//                                          <table>';
 //$manager_settings['itemview']['format']['odd_row_format'] = '
-//                                    <tr class=tabtxt>
+//                                    <tr>
 //                                      <td width="30"><input type="checkbox" name="chb[_#ID______]" value=""></td>
-//                                      <td class=tabtxt><a href="'.StateUrl('tabledit.php?cmd[centraledit][edit][_#ID______]=1').'"> {ifset:{_#ORG_NAME}:_#1:--} </a></td>
-//                                      <td class=tabtxt>_#AA_ID___</td>
-//                                      <td class=tabtxt>_#DB_SERVE - _#DB_NAME_</td>
-//                                      <td class=tabtxt>_#AA_HTTP__#AA_BASE_</td>
+//                                      <td><a href="'.StateUrl('tabledit.php?cmd[centraledit][edit][_#ID______]=1').'"> {ifset:{_#ORG_NAME}:_#1:--} </a></td>
+//                                      <td>_#AA_ID___</td>
+//                                      <td>_#DB_SERVE - _#DB_NAME_</td>
+//                                      <td>_#AA_HTTP__#AA_BASE_</td>
 //                                    </tr>
-//                                    <tr class="tabtxt">
+//                                    <tr>
 //                                      <td>&nbsp;</td>
-//                                      <td class="tabtxt" colspan="4"><a href="{sessurl:?akce=Sqlupdate_Test&chb[_#ID______]=1}">'._m('sql_upadte TEST') .'</a> &nbsp; &nbsp; <a href="{sessurl:?akce=Sqlupdate_Update&chb[_#ID______]=1}">'._m('sql_upadte NOW!') .'</a></td>
+//                                      <td colspan="4"><a href="{sessurl:?akce=Sqlupdate_Test&chb[_#ID______]=1}">'._m('sql_upadte TEST') .'</a> &nbsp; &nbsp; <a href="{sessurl:?akce=Sqlupdate_Update&chb[_#ID______]=1}">'._m('sql_upadte NOW!') .'</a></td>
 //                                    </tr>
 //                                   ';
 // $manager_settings['itemview']['query_funct'] = 'Central_QueryZids';

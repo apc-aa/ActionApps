@@ -500,7 +500,7 @@ class AA_Field implements ArrayAccess {
 
         $name = safe($name); $pri=safe($pri);
 
-        $rowclass = ((substr ($id,0,6) == "alerts") ? 'tabtxt_field_alerts' : 'tabtxt');
+        $rowclass = ((substr ($id,0,6) == "alerts") ? 'tabtxt_field_alerts' : '');
         if ( $separate ) {
             $rowclass .= ' separator';
         }
@@ -522,7 +522,7 @@ class AA_Field implements ArrayAccess {
             function($a) use ($id) {
                 return $this->linkToField($a, $id, substr($a,2), (substr($a,0,2)=='X#') ? ['disabled'] : []);
             }, $aliases));
-        echo "<td class=\"tabhlp\">$alias_list</td>";
+        echo "<td class=\"aa-flds-aliases\">$alias_list</td>";
         echo "</tr>\n";
 
         if ($analyze AND ($type!='in_item_tbl')) {

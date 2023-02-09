@@ -37,9 +37,9 @@ function PrintAddableUser($usr, $usr_id, $editor_role, $new_usr=true) {
     $username = perm_username($usr_id);
     $usr_id   = rawurlencode($usr_id);
 
-    echo "<tr><td class=\"tabtxt\" width=\"25%\">". $usr['name'] ."</td>\n";
-    echo "<td class=\"tabtxt\">$username</td>\n";
-    echo "<td class=\"tabtxt\" width=\"25%\">".
+    echo "<tr><td width=\"25%\">". $usr['name'] ."</td>\n";
+    echo "<td>$username</td>\n";
+    echo "<td width=\"25%\">".
        (($usr['mail']) ?: "&nbsp;") ."</td>\n";
 
     IfLink(($editor_role > AA_Perm::ROLES["AUTHOR"]['id']) && $new_usr,
@@ -68,12 +68,12 @@ $form_buttons = [
     FrmTabCaption(_m("Search user or group"));
 ?>
 <tr>
-        <td width="30%" class="tabtxt"><b><?php echo _m("Users") ?></b></td>
+        <th width="30%"><?php echo _m("Users") ?></th>
         <td width="40%"><input type="text" name="usr" value="<?php echo safe($usr)?>"></td>
         <td width="30%"><input type="submit" name="UsrSrch" value="<?php echo _m("Search")?>"></td>
 </tr>
 <tr>
-        <td class="tabtxt"><b><?php echo _m("Groups") ?></b></td>
+        <th><?php echo _m("Groups") ?></th>
         <td><input type="text" name="grp" value="<?php echo safe($grp)?>"></td>
         <td><input type="submit" name="GrpSrch" value="<?php echo _m("Search")?>"></td>
 </tr>
@@ -110,9 +110,9 @@ if ($GrpSrch || $UsrSrch) {
     $l_counter = 1;
     if ( !is_array($addable) ) {
         if ( $addable == "too much" ) {
-            echo "<tr><td class=\"tabtxt\">". _m("Too many users or groups found.") ." ". _m("Try to be more specific.")."</td>\n";
+            echo "<tr><td>". _m("Too many users or groups found.") ." ". _m("Try to be more specific.")."</td>\n";
         } else {
-            echo "<tr><td class=\"tabtxt\">". _m("No user (group) found") ."</td>\n";
+            echo "<tr><td>". _m("No user (group) found") ."</td>\n";
         }
     } else {
         foreach ($addable as $usr_id => $usr) {

@@ -111,14 +111,16 @@ $managed = AA::Metabase()->getManagerConf('view', $actions);
 $managed->setColumns([]); // reset columns - use format strings bellow
 $managed->settings['itemview']['format']['compact_top'] = '
                                         <div class="aa-table">
-                                          <table border="0" cellpadding="5" cellspacing="0">
-                                            <tbody><tr>
-                                              <th width="30">&nbsp;</th>
-                                              <th>'._m('Actions').'</th>
-                                              <th colspan="2">vid=</th>
-                                              <th>'._m('Name').'</th>
-                                              <th>'._m('Type').'</th>
-                                            </tr>';
+                                          <table>
+                                            <thead><tr>
+                                              <th width="30" scope="col">&nbsp;</th>
+                                              <th scope="col">'._m('Actions').'</th>
+                                              <th colspan="2" scope="col">vid=</th>
+                                              <th scope="col">'._m('Name').'</th>
+                                              <th scope="col">'._m('Type').'</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>';
 $managed->settings['itemview']['format']['odd_row_format'] = '
                                       <tr><td width="30"><input name="chb[x_#ID______]" value="" type="checkbox"></td>
                                         <td>
@@ -131,7 +133,7 @@ $managed->settings['itemview']['format']['odd_row_format'] = '
                                         <td>_#NAME____</td>
                                         <td>{ifeq:{_#TYPE____}' . $view_types_ifeq.'}</td>
                                     </tr>';                      // <td>_#OBJECT__</td><td>_#EXECUTE_</td>
-$managed->settings['itemview']['format']['compact_bottom'] = '</table></div>';
+$managed->settings['itemview']['format']['compact_bottom'] = '</tbody></table></div>';
 
 $managed->settings['show'] = MGR_ALL & ~MGR_SB_BOOKMARKS & ~MGR_SB_SEARCHROWS & ~MGR_SB_ORDERROWS;    // MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS | MGR_SB_ALLTEXT | MGR_SB_ALLNUM
 $managed->settings['searchbar']['default_sort'] =  [0 => ['id' => 'd']];
@@ -168,7 +170,7 @@ echo '<div class="aa-table"><table><tbody>
       <tr><th colspan="3">'._m("Create new view").'</th> </tr>
       <tr>
         <td>'._m("by&nbsp;type:").'</td>
-        <td align="right"><select name="view_type">';
+        <td><select name="view_type">';
 
 foreach ( $VIEW_TYPES as $k => $v) {
     echo "<option value=\"$k\"> ". safe($v["name"]) ." </option>";
@@ -180,7 +182,7 @@ echo "</select></td>
 // row for new view creaded from template
 echo "<tr>
         <td>"._m("by&nbsp;template:")."</td>
-        <td align=\"right\">
+        <td>
          <select name=\"view_slice\" OnChange=\"SelectViewSlice()\">";
 // slice selection
 foreach ( $g_modules as $k => $v) {

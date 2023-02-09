@@ -56,7 +56,7 @@ function GetToexecuteManagerSettings(): \AA\Managed {
     $managed = AA::Metabase()->getManagerConf('toexecute', $actions);
     $managed->settings['itemview']['format']['compact_top'] = '
                                         <div class="aa-table">
-                                          <table border="0" cellpadding="5" cellspacing="0">
+                                          <table>
                                             <tbody><tr>
                                               <th width="30">&nbsp;</th>
                                               <th>id</th>

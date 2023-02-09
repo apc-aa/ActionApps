@@ -57,14 +57,14 @@ class Menu
             "level"     => "submenu",
             "items"     => [
                 "header1"     => _m("Folders"),
-                "app"       => ["cond"=>1,                           "href"=>"modules/polls/index.php3?Folder1a=1",                         "label"=>"<img src='../../images/ok.gif' border=0>"._m("Active")." (". $r_state['bin_cnt']['app'] .")"],
-                "appb"      => ["cond"=>1,                           "href"=>"modules/polls/index.php3?Folder1b=1",                         "label"=>_m("... pending")." (". $r_state['bin_cnt']['appb'] .")"],
-                "appc"      => ["cond"=>1,                           "href"=>"modules/polls/index.php3?Folder1c=1",                         "label"=>_m("... expired")." (". $r_state['bin_cnt']['appc'] .")"],
-                "folder2"   => ["cond"=>1,                           "href"=>"modules/polls/index.php3?Folder2=1",                          "label"=>"<img src='../../images/edit.gif' border=0>"._m("Hold bin")." (". $r_state['bin_cnt']['folder2'] .")"],
-                "folder3"   => ["cond"=>1,                           "href"=>"modules/polls/index.php3?Folder3=1",                          "label"=>"<img src='../../images/delete.gif' border=0>"._m("Trash bin")." (". $r_state['bin_cnt']['folder3'] .")"],
+                "app"       => ["cond"=>1,                           "href"=>"modules/polls/index.php3?Folder1a=1",                         "label"=>"<img src='../../images/ok.gif'>"._m("Active")." <span class='aa-bin-cnt'>". $r_state['bin_cnt']['app'] ."</span>"],
+                "appb"      => ["cond"=>1,                           "href"=>"modules/polls/index.php3?Folder1b=1",                         "label"=>_m("... pending")." <span class='aa-bin-cnt'>". $r_state['bin_cnt']['appb'] ."</span>"],
+                "appc"      => ["cond"=>1,                           "href"=>"modules/polls/index.php3?Folder1c=1",                         "label"=>_m("... expired")." <span class='aa-bin-cnt'>". $r_state['bin_cnt']['appc'] ."</span>"],
+                "folder2"   => ["cond"=>1,                           "href"=>"modules/polls/index.php3?Folder2=1",                          "label"=>"<img src='../../images/edit.gif'>"._m("Hold bin")." <span class='aa-bin-cnt'>". $r_state['bin_cnt']['folder2'] ."</span>"],
+                "folder3"   => ["cond"=>1,                           "href"=>"modules/polls/index.php3?Folder3=1",                          "label"=>"<img src='../../images/delete.gif'>"._m("Trash bin")." <span class='aa-bin-cnt'>". $r_state['bin_cnt']['folder3'] ."</span>"],
 
                 "header2"     => _m("Misc"),
-                "deletetrash" => ["cond"=>IfSlPerm(PS_DELETE_ITEMS),   "href"=>"modules/polls/index.php3?DeleteTrash=1",                     "label"=>"<img src='../../images/empty_trash.gif' border=0>"._m("Empty trash"), "js"=>"EmptyTrashQuestion('{href}','"._m("Are You sure to empty trash?")."')"],
+                "deletetrash" => ["cond"=>IfSlPerm(PS_DELETE_ITEMS),   "href"=>"modules/polls/index.php3?DeleteTrash=1",                     "label"=>._m("Empty trash"), "js"=>"EmptyTrashQuestion('{href}','"._m("Are You sure to empty trash?")."')"],
                 "line"        => ""
             ]
         ];

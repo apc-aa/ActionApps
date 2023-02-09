@@ -99,7 +99,7 @@ function PrintModulePermModificator($selected_user) {
     FrmTabSeparator(_m("Assign new permissions"));
     ?>
     <tr><td>
-            <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
+            <table>
                 <?php
                 if ( isset($mod_2B_add) ) {          // there is some module to add
                     PrintModuleAddRow($mod_2B_add, 1);
@@ -131,8 +131,8 @@ function PrintModulePermModificator($selected_user) {
 function GetModulePermRow($mid, $type, $name, $perm, $odd=false) {
     global $MODULES;
     $ret = "<tr>
-        <td ".($odd ? " bgcolor=\"".COLOR_BACKGROUND."\"" : "")." align='top'>". $MODULES[$type]['name'] .":&nbsp;". a_href(AA_Module::getModuleUrl($mid), $name). "<br>&nbsp;&nbsp;&nbsp;&nbsp;($mid)</td>
-        <td ".($odd ? " bgcolor=\"".COLOR_BACKGROUND."\"" : "")." nowrap align='top'>";
+        <td>". $MODULES[$type]['name'] .":&nbsp;". a_href(AA_Module::getModuleUrl($mid), $name). "<br>&nbsp;&nbsp;&nbsp;&nbsp;($mid)</td>
+        <td>";
     if ( isset(AA_Perm::PERMS_ROLES_MODULES[$type]) AND is_array(AA_Perm::PERMS_ROLES_MODULES[$type]) ) {
         foreach (AA_Perm::PERMS_ROLES_MODULES[$type] as $role) {
             $ret .= "<label><input type=\"radio\" name=\"perm_mod[x$mid]\" value=\"$role\"";
@@ -143,7 +143,7 @@ function GetModulePermRow($mid, $type, $name, $perm, $odd=false) {
         $ret .= "<label><input type=\"radio\" name=\"perm_mod[x$mid]\" value=\"ADMINISTRATOR\" checked>" . _m('ADMINISTRATOR'). '</label>';
     }
     $ret .= "  </td>
-    <td ".($odd ? " bgcolor=\"".COLOR_BACKGROUND."\"" : "")." nowrap align='top'>
+    <td>
     <label><input type=\"radio\" name=\"perm_mod[x$mid]\" value=\"REVOKE\">". _m("Revoke") ."</label></td>
     </tr>";
     return $ret;

@@ -62,8 +62,8 @@ function show_digest_filters() {
         $group = 0;
     }
 
-    echo "<tr><td class=\"tabtxt\"><b>"._m("Group by selections")."</b></td>
-        <td class=\"tabtxt\"><b><input type=\"radio\" name=\"aditional\" value=\"1\" "
+    echo "<tr><th>"._m("Group by selections")."</th>
+        <td><b><input type=\"radio\" name=\"aditional\" value=\"1\" "
         .($group ? "checked" : "")."> ".
         _m("Yes. Write sort[] to the conds[] field for each Selection.")."<br>
         <input type=\"radio\" name=\"aditional\" value=\"0\" "
@@ -86,50 +86,6 @@ function show_digest_filters() {
     }
     FrmStaticText("", _m("If you need more selections, use 'Update' and on next Edit two empty boxes appear."));
 }
-
-// function xxx_show_digest_filters_old() {
-//     global $view_id;
-//     $db = getDB();
-// 
-//     // Show the radio buttons "Group by selection"
-//     $db->query("SELECT aditional, aditional3 FROM view WHERE id=". ($view_id ? $view_id : 0));
-//     if ($db->next_record()) {
-//         $group = $db->f("aditional");
-//         $sort  = $db->f("aditional3");
-//     } else {
-//         $group = 0;
-//     }
-// 
-//     echo "<tr><td class=\"tabtxt\"><b>"._m("Group by selections")."</b></td>
-//         <td class=\"tabtxt\"><b><input type=\"radio\" name=\"aditional\" value=\"1\" "
-//         .($group ? "checked" : "")."> ".
-//         _m("Yes. Write sort[] to the conds[] field for each Selection.")."<br>
-//         <input type=\"radio\" name=\"aditional\" value=\"0\" "
-//         .($group ? "" : "checked")."> ".
-//         _m("No. Use this sort[]:")."</b>
-//         <textarea name=\"aditional3\" cols=\"50\" rows=".get_row_count($sort, 50, 4).">"
-//         .$sort."</textarea>
-//         </td>
-//     </tr>";
-// 
-//     // Show the Selections
-//     $db->query("SELECT * FROM alerts_filter WHERE vid=".($view_id ? $view_id : 0));
-//     $rows = $db->num_rows();
-//     for ($irow = 0; $irow < $rows+2; $irow ++) {
-//         if ($irow <= $db->num_rows()) $db->next_record();
-//         $rowid = $db->f("id");
-//         if (!$rowid) {
-//             $rowid = "new$irow";
-//         }
-//         FrmInputText("filters[$rowid][description]", _m("Alerts Selection")." ".($irow+1)." "._m("Description"), $db->f("description"), 100, 50, false);
-//         FrmTextarea("filters[$rowid][conds]", "conds[]", $db->f("conds"),
-//             get_row_count($db->f("conds"), 50, 4), 50, false,
-//             "", "http://apc-aa.sourceforge.net/faq/#215");
-//     }
-//     FrmStaticText("", _m("If you need more selections, use 'Update' and on next Edit two empty boxes appear."));
-//     freeDB($db);
-//}
-
 
 /** store_digest_filters function
  *  Stores info from the top part of the Alerts Selection Set view
@@ -193,7 +149,7 @@ function OrderFrm($name, $txt, $val, $order_fields, $easy_order=false, $group=fa
     $order_type = $easy_order ?
         ['0'=>_m("Ascending"), '1' => _m("Descending")] :
         ['0'=>_m("Ascending"), '1' => _m("Descending"), '2' => _m("Ascending by Priority"), '3' => _m("Descending by Priority")];
-    echo "<tr><td class=\"tabtxt\"><b>$txt</b> ";
+    echo "<tr><td><b>$txt</b> ";
     echo "</td>\n<td>";
     FrmSelectEasy($name, $order_fields, $val);
     // direction variable name - construct from $name
@@ -216,7 +172,7 @@ function OrderAliasFrm($name, $txt, $val) {
     $name=safe($name); $txt=safe($txt);
 
     $order_type = ['0'=>_m("Ascending"), '1' => _m("Descending"), '4'=>_m("Ascending (numeric)"),     '5' => _m("Descending (numeric)")];
-    echo "<tr><td class=\"tabtxt\"><b>$txt</b> ";
+    echo "<tr><td><b>$txt</b> ";
     echo "</td>\n<td><input name=\"$name\" size=\"14\" maxlength=\"10\" value=\"". safe($val) ."\">";
     $dirvarname = substr($name,0,1).substr($name,-1)."_direction";
     FrmSelectEasy($dirvarname, $order_type, $vw_data[$dirvarname]);
@@ -232,7 +188,7 @@ function OrderAliasFrm($name, $txt, $val) {
 function ConditionFrm($name, $txt, $val) {
     global $lookup_fields, $lookup_op, $vw_data;
     $name=safe($name); $txt=safe($txt);
-    echo "<tr><td class=\"tabtxt\"><b>$txt</b> ";
+    echo "<tr><td><b>$txt</b> ";
     echo "</td>\n<td>";
     FrmSelectEasy($name, $lookup_fields, $val);
     // direction variable name - construct from $name
@@ -544,24 +500,29 @@ foreach ($VIEW_TYPES[$view_type] as $k => $v) {
 }
 
 $slice = AA_Slice::getModule(AA::$module_id);
+$helpbox = '';
 
 switch( $VIEW_TYPES_INFO[$view_type]['aliases'] ) {
-    case 'disc2mail':   PrintAliasHelp(new AA_Aliases(new AA_Aliasgenerator_Discussion2mail()), false, false, $form_buttons);
-    case 'discus':      PrintAliasHelp(new AA_Aliases(new AA_Aliasgenerator_Discussion()), false, false, $form_buttons);
+    case 'disc2mail':   $helpbox .= getAliasHelp(new AA_Aliases(new AA_Aliasgenerator_Discussion2mail()), false, false);
+    case 'discus':      $helpbox .= getAliasHelp(new AA_Aliases(new AA_Aliasgenerator_Discussion()), false, false);
                         break;
-    case 'field':       PrintAliasHelp(new AA_Aliases((new AA_Aliasgenerator_Slice(AA::$module_id))->addAliases($VIEW_TYPES_INFO[$view_type]['aliases_additional'])), $slice->getFields()->getRecordArray(), false, $form_buttons);
+    case 'field':       $helpbox .= getAliasHelp(new AA_Aliases((new AA_Aliasgenerator_Slice(AA::$module_id))->addAliases($VIEW_TYPES_INFO[$view_type]['aliases_additional'])), $slice->getFields()->getRecordArray(), false);
                         break;
-    case 'justids':     PrintAliasHelp(new AA_Aliases(new AA_Aliasgenerator_Slicejustids(AA::$module_id)), false, false, $form_buttons);
+    case 'justids':     $helpbox .= getAliasHelp(new AA_Aliases(new AA_Aliasgenerator_Slicejustids(AA::$module_id)), false, false);
                         break;
-    case 'links':       PrintAliasHelp(new AA_Aliases(new AA_Aliasgenerator_Link()), false, false, $form_buttons);
+    case 'links':       $helpbox .= getAliasHelp(new AA_Aliases(new AA_Aliasgenerator_Link()), false, false);
                         break;
-    case 'categories':  PrintAliasHelp(new AA_Aliases(new AA_Aliasgenerator_Category()), false, false, $form_buttons);
+    case 'categories':  $helpbox .= getAliasHelp(new AA_Aliases(new AA_Aliasgenerator_Category()), false, false);
                         break;
-    case 'const':       PrintAliasHelp(new AA_Aliases(new AA_Aliasgenerator_Constant()), false, false, $form_buttons);
+    case 'const':       $helpbox .= getAliasHelp(new AA_Aliases(new AA_Aliasgenerator_Constant()), false, false);
                         break;
     case 'none':        break;
 }
-FrmTabEnd();
+FrmTabEnd($form_buttons);
+
+if ($helpbox) {
+    $apage->addHelpbox(_m("Use these aliases for database fields"), $helpbox);
+}
 
 $view_id2show = $view_id ?: '&lt;vid&gt;';
 

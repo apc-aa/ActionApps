@@ -288,7 +288,7 @@ class AA_Exporter_Html extends AA_Exporter {
 
     function _outputStart($item)  {
         $ret  = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">';
-        $ret .= '<html><head><meta http-equiv="Content-Type" content="text/html; charset='.$this->getCharset().'"><title>ActionApps Export</title></head><body><table border="1">';
+        $ret .= '<html><head><meta http-equiv="Content-Type" content="text/html; charset='.$this->getCharset().'"><title>ActionApps Export</title></head><body><table>';
 
         $arr = $this->field_set->getNameArray();
         array_walk($arr, ['AA_Exporter_Html', '_valueSanity'], 'th');

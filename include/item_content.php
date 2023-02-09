@@ -392,7 +392,7 @@ class AA_Content implements Iterator, ArrayAccess, Countable {
     }
 
     /** returns the identification of the content type
-     *  (created for WidgetInf in order we can use GetItemFromContent)
+     *  (created for InfWidget in order we can use GetItemFromContent)
      * @return string
      */
     public function getType(): string {
@@ -1101,10 +1101,10 @@ class ItemContent extends AA_Content {
      *                      in the database
      *      insert_if_new - the item is stored only if the item with this id
      *                      ($this->getItemID()) is not in the database.
-     *                      Otherwise it is skiped (not stored)
+     *                      Otherwise it is skipped (not stored)
      * @param array  $flags additional item processing flags.:
      *                  $flags[0] - invalidatecache - should we invalidate the cache for the slice?
-     *                  $flags[1] - feed            - process feeding (as in in the slice setting)?
+     *                  $flags[1] - feed            - process feeding (as in the slice setting)?
      *                  $flags[2] - throw_events    - issue update/insert event?
      *                  $flags[3] - allow_last_edit - allow rewrite last_edit field from $this content
      * @param string $context special parameter used for thumbnails - ''|feed

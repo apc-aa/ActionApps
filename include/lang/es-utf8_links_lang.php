@@ -1189,7 +1189,7 @@ $_m["You have the permission to add stored search globally. Do you want to add t
  = "Usted tiene permisos para añadir búsquedas globalmente. Desea añadir esta búsqueda como global (común a todos los usuarios)?";
 
 // include/searchbar.class.php, row 621
-$_m["Store"]
+$_m["Store search"]
  = "Almacenar";
 
 // include/searchbar.class.php, row 636

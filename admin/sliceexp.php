@@ -79,9 +79,9 @@ if ($_POST['b_export_type']) {
 } else {
     $all_slices = AA_Module::getModules('S');
 ?>
-    <tr><td class="tabtxt" colspan="2">
-    <table width="100%" border="0" cellspacing="0" cellpadding="0">
-        <tr><td class="tabtxt">
+    <tr><td colspan="2">
+    <table>
+        <tr><td>
         <b><?php echo _m("Choose, if you want export slices structure, data or both.") ?></b><br>
         <input type="checkbox" name="b_export_struct" value="1" checked><?php echo _m("Export structure") ?><br>
         <input type="checkbox" name="b_export_data" value="1"><?php echo _m("Export data") ?><br>
@@ -95,9 +95,9 @@ if ($_POST['b_export_type']) {
         <input type="checkbox" name="b_export_to_utf" value="1"><?php echo _m("Convert to UTF") ?><br><br>
         <table>
         <tr>
-            <td class="tabtxt"><input type="checkbox" name="b_export_spec_date" value="1"><?php echo _m("Export data from specified dates: ") ?></td>
-            <td class="tabtxt"><?php echo _m("From ") ?><input type="text" name="b_export_from_date" maxlength="10" width="10" onChange="b_export_date_onchange(this)"></td>
-            <td class="tabtxt"><?php echo _m("to") ?><input type="text" name="b_export_to_date" maxlength="10" width="10" onChange="b_export_date_onchange(this)"></td>
+            <td><input type="checkbox" name="b_export_spec_date" value="1"><?php echo _m("Export data from specified dates: ") ?></td>
+            <td><?php echo _m("From ") ?><input type="text" name="b_export_from_date" maxlength="10" width="10" onChange="b_export_date_onchange(this)"></td>
+            <td><?php echo _m("to") ?><input type="text" name="b_export_to_date" maxlength="10" width="10" onChange="b_export_date_onchange(this)"></td>
         </tr>
         </table>
         </td>
@@ -106,15 +106,15 @@ if ($_POST['b_export_type']) {
     FrmTabSeparator(_m("Choose one of two export kinds:"));
 ?>
     <tr>
-        <td class="tabtxt" width="50%">
-        <table width="100%" border="0" cellspacing="0" cellpadding="0">
-            <tr><td class="tabtxt" width="100%">
+        <td width="50%">
+        <table>
+            <tr><td>
             <b><?php echo _m("When exporting \"to Backup\" you may choose more slices at once.") ?></b></P>
             <?php echo _m("Select slices which you WANT to export:") ?>
             </td>
-            <tr><td class="tabtxt" width="100%">
-                <table width="200"><tr><td width="100%">
-                <SELECT name="export_slices[]" size="8" class="tabtxt" multiple>
+            <tr><td>
+                <table width="200"><tr><td>
+                <SELECT name="export_slices[]" size="8" multiple>
                 <?php
                     foreach ($all_slices as $s_id => $name) {
                         echo "<option value=\"$s_id\"> $name </option>";
@@ -125,7 +125,7 @@ if ($_POST['b_export_type']) {
                 </table>
         </table>
         </td>
-        <td class="tabtxt" width="50%" valign="top">
+        <td width="50%">
             <b><?php echo _m("When exporting \"to another ActionApps\" only the current slice will be exported and you choose its new identificator.") ?></b></p>
             <b><?php echo _m("Choose a new slice identificator exactly 16 characters long: ") ?></b>
             <input type="text" name="SliceID" value="template" size="16" maxlength="16"></P>

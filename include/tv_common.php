@@ -31,11 +31,11 @@
 use AA\Util\Langs;
 
 $attrs_edit   = [
-    "table"=>"border=\"0\" cellpadding=\"3\" cellspacing=\"0\" bgcolor='".COLOR_TABBG."'"
+    "table"=>""
 ];
 $attrs_browse = [
-    "table"=>"border=\"1\" cellpadding=\"3\" cellspacing=\"0\" bgcolor='".COLOR_TABBG."'",
-    "table_search" => "border=\"0\" cellpadding=\"3\" cellspacing=\"0\" bgcolor='".COLOR_TABBG."'"
+    "table"=>"",
+    "table_search" => ""
 ];
 $format       = [
     "hint" => [

@@ -205,7 +205,7 @@ FrmTabCaption(_m("Groups"));
 ?>
  <tr><td>
    <form method="post" action="<?php echo StateUrl() ?>">
-    <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
+    <table>
      <tr>
             <td width="20%">&nbsp;</td>
             <td width="46%"><input type="text" name="grp" value="<?php echo safe($rgrp)?>"></td>
@@ -220,9 +220,9 @@ FrmTabSeparator("");
 ?>
  <tr>
   <td><form name="f2" method="post" action="<?php echo StateUrl() ?>">
-    <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
+    <table>
      <tr>
-            <td width="20%"class="tabtxt"><b><?php echo _m("Group") ?></b></td>
+            <th width="20%"><?php echo _m("Group") ?></th>
             <td width="46%"><?php SelectGU_ID("selected_group", $groups, $selected_group);
           ?></td>
             <td width="33%"><input type="submit" name="grp_edit" value="<?php echo _m("Edit")?>">&nbsp;
@@ -266,7 +266,7 @@ if ( $grp_edit OR ($submit_action == "update_submit") ) {
 </td>
 </tr>
 <tr><td>
-<table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
+<table>
 
 <?php
 
@@ -318,23 +318,23 @@ if ( !$add_submit AND !$grp_new ) {
 
         echo "
         <tr><td>
-        <table width=\"440\" border=\"0\" cellspacing=\"0\" cellpadding=\"4\" bgcolor=\"" . COLOR_TABBG . "\">";
+        <table>";
 
         // User - group membership -----------------------------------------
 
-        echo '<tr><td width="190" align="center">' . _m("All Users") . '</td>
+        echo '<tr><td width="190">' . _m("All Users") . '</td>
                       <td width="60">&nbsp;</td>
-                      <td width="190" align="center">' . _m("Group's Users") . '</td></tr>
+                      <td width="190">' . _m("Group's Users") . '</td></tr>
             <tr><td><input type="text" name="usr1_flt" value="' . safe($usr1_flt) . '">
                     <input type="submit" name="usr1_submit" value="' . _m("Search") . '"></td>
                       <td>&nbsp;</td>
                       <td>&nbsp;</td></tr>
-            <tr><td align="center" valign="TOP">';
+            <tr><td>';
         SelectGU_ID("all_users_sel", array_diff_key($all_users,$sel_users), $all_users_sel, "multi");
         echo '    </td>
-                <td><input type="button" VALUE="  &#9654;  " onClick = "MoveSelected(document.f.all_users_sel, document.f.sel_users_sel)" align="center"><br><br>
-                    <input type="button" VALUE="  &#9664;  " onClick = "MoveSelected(document.f.sel_users_sel, document.f.all_users_sel)" align="center"></td>
-                      <td align="CENTER" valign="TOP">';
+                <td><input type="button" VALUE="  &#9654;  " onClick = "MoveSelected(document.f.all_users_sel, document.f.sel_users_sel)"><br><br>
+                    <input type="button" VALUE="  &#9664;  " onClick = "MoveSelected(document.f.sel_users_sel, document.f.all_users_sel)"></td>
+                      <td>';
         SelectGU_ID("sel_users_sel", $sel_users, $sel_users_sel, "multi");
         echo '    </td>
             </tr></table></td></tr>

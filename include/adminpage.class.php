@@ -162,7 +162,7 @@ class AA_Adminpageutil {
             $ret = '</form>';
         }
 
-        return $ret. '{generate:FOOT}</body></html>';
+        return $ret. '</div></div>{generate:FOOT}</body></html>';
     }
 
     public function printHead($err, $Msg)
@@ -197,11 +197,11 @@ class AA_Adminpageutil {
 
         // this is old code used everywhere, so it is copied here. It should be rewritten - without globals...
 
-        if ($this->menu != '') {
-            showMenu($this->menu, $this->submenu);
-        }
+        echo getMenu($this->menu, $this->submenu); // opens two divs - in all cases
 
-        echo "<h1>" . $this->title . "</h1>";
+        if ($this->title) {
+            echo "<h1>" . $this->title . "</h1>";
+        }
         if ($this->subtitle) {
             echo "<div>" . $this->subtitle . "</div>";
         }
@@ -236,8 +236,9 @@ class AA_Adminpageutil {
         }
         if ($html) {
             $html = '<br>'. $html;
-            $html = AA::Stringexpander()->unalias($html);
-            $html = AA::Stringexpander()->postprocess($html);
+            // not necessary to unalias - help text for aliases was executed
+            // $html = AA::Stringexpander()->unalias($html);
+            // $html = AA::Stringexpander()->postprocess($html);
             echo $html;
         }
     }
@@ -282,209 +283,3 @@ class AA_Adminpageutil {
         exit;
     }
 }
-
-
-/** following classes are not used, yet - just prepared for later admin page approach */
-
-/**
- * With AA_iEditable the object can be edited by AA_Form
-*/
-class AA_Adminpage implements AA_iEditable {
-    protected $module_id;
-
-    function __construct($module_id, $title) {
-        $this->module_id = $module_id;
-    }
-
-    public function getName()                                { return ''; }
-    public function getPerm()                                { return ''; }
-    public function getId()                                  { return ''; }
-    public function getOwnerId()                             { return ''; }
-    public function getProperty($property_id, $default=null) { return ''; }
-
-    protected function getCancelUrl() {
-        return get_admin_url('index.php3');
-    }
-    protected function isPerm() {
-        return IfSlPerm($this->getPerm(),$this->module_id);
-    }
-
-    public function process() {
-        if ($_POST['cancel']) {
-            go_url($this->getCancelUrl());
-        }
-        if (!$this->isPerm()) {
-            AA_Adminpageutil::MsgPageMenu($this->getCancelUrl(), _m('You have not permissions to this page') . ': ' . $this->getName(), 'admin');
-        }
-        if ($_POST['update'] AND !empty($_POST['aa'])) {
-            $err = [];          // error array (Init - just for initializing variable
-            // update or insert
-            $this->setFromForm();
-            if ($this->validateData()) {
-                if ($this->save()) {
-                    AA::Pagecache()->invalidateFor($this->module_id);  // invalidate old cached values
-                    // @todo msg ok
-                    $Msg = MsgOk(_m("Fulltext format update successful"));
-                } else {
-                    $err["DB"] = MsgErr( _m("Can't change slice settings") );
-                    // @todo msg err
-                }
-            } else {
-                // @todo msg err
-            }
-        } else {
-            $this->doLoad();
-            huhl($this);
-        }
-
-        // Print HTML start page (html begin, encoding, style sheet, no title)
-        HtmlPageBegin();
-        // manager javascripts - must be included
-        $html_start = '<title>'. $title .'</title>
-             {generate:HEAD}
-             </head>
-             <body>
-                <h1>' . $title .'</h1>
-        ';
-        $html_end = "{generate:FOOT}</body></html>";
-
-
-        // print the inputform
-        $form = AA_Form::factoryForm(get_called_class(), $this->module_id, $this->module_id);
-
-        // this also fills AA::Stringexpander required libs, so we can continue with postprocess
-        $out        = $form->getObjectEditHtml();
-        $out        = AA::Stringexpander()->postprocess($out); // to replace  {generate:HEAD} with dynamic javascripts needed by inputform
-        $html_start = AA::Stringexpander()->unalias($html_start);
-        $html_start = AA::Stringexpander()->postprocess($html_start);
-        $html_end   = AA::Stringexpander()->unalias($html_end);
-        $html_end   = AA::Stringexpander()->postprocess($html_end);
-
-        echo $html_start;
-
-        showMenu("sliceadmin", "fulltext");
-        echo GetPrintArray($r_err);
-        echo GetPrintArray($r_msg);
-        unset($r_err);
-        unset($r_msg);
-
-        echo '<form name="f" method="post" action="'. StateUrl() .'">';
-
-        $form_buttons = [
-            "update",
-                       "update" => ['type' => 'hidden', 'value'=>'1'],
-                       "cancel" => ["url"=>"se_fields.php"],
-                       "default" => [
-                           'type'  => 'button',
-                                          'value' => _m("Default"),
-                                          'add'   => 'onclick="Defaults()"'
-                       ]
-        ];
-
-        FrmTabCaption(_m("Object Edit"), $form_buttons);
-        // FrmHidden('ret_url', $ret_url);
-        // FrmHidden('oid',     $oid);
-        // FrmHidden('otype',   $otype);
-
-        echo '<tr><td colspan="2">';
-        echo $out;
-        echo '</td></tr>';
-
-        FrmTabEnd($form_buttons);
-        echo '</form>';
-        echo $html_end;
-    }
-
-    /** AA_iEditable method - adds Object's editable properties to the $form */
-    public static function addFormrows(AA_Form $form): void {}
-    /** AA_iEditable method - creates Object from the form data */
-    public static function factoryFromForm($oowner, $otype=null) {}
-    /** AA_iEditable method - save the object to the database
-     *    @return string|bool - id of saved data or false
-     */
-    public        function save() {}
-    public        function validateData(): bool { return true; }
-}
-
-class AA_Adminpage_Table extends AA_Adminpage {
-    const DB_TABLE = '';
-    protected $record;
-
-    function __construct($module_id) {
-        parent::__construct($module_id);
-        $this->doLoad();
-    }
-
-    public function getId()                                  { return $this->module_id; }
-    public function getOwnerId()                             { return $this->module_id; }
-    public function getProperty($property_id, $default=null) { return $this->record[$property_id]; }
-
-    /** managed table columns */
-    public static function getTableColumns() { return []; }
-
-    /** AA_iEditable method - adds Object's editable properties to the $form */
-    public static function addFormrows(AA_Form $form): void {
-        $form->addProperties(static::getClassProperties());
-    }
-
-    // needed by /data/www/aaa/include/form.class.php(339): AA_Object->getContent(Array, Object(zids))
-    public static function getClassProperties()  {
-        $props = AA::Metabase()->getColumnProperties(static::DB_TABLE);
-        if (count($cols = static::getTableColumns())) {
-            // restrict table columns
-            $props = array_intersect_key($props, array_flip($cols));
-        }
-        return $props;
-    }
-
-    // public static function load($id, $type=null) {
-    //     return new AA_Mailtemplate($id);
-    // }
-
-    /** AA_iEditable method - creates Object from the form data */
-    public static function factoryFromForm($oowner, $otype=null) {
-        $otype = get_called_class();
-        return (new $otype($oowner))->setFromForm();
-    }
-
-    protected function setFromForm() {
-        $grabber = new Form();
-        $grabber->prepare();    // maybe some initialization in grabber
-        // we expect just one form - no need to loop through contents
-        $content    = $grabber->getContent();  // @todo
-        //$store_mode = $grabber->getStoreMode();        // add | update | insert
-        $grabber->finish();    // maybe some finalization in grabber
-
-        $cols = static::getColumns();
-        $this->record = [];
-        foreach ($cols as $name) {
-            $this->record[$name] = $content->getValue($name);
-        }
-        return $this;
-    }
-
-    public static function load($id, $type=null) {
-        $otype = get_called_class();
-        return (new $otype($id))->doLoad();  // or AA::$module_id ?
-    }
-
-    protected function doLoad() {
-        $this->record = [];
-        if ($this->module_id) {
-            $content = AA_Metabase::getContent(new zids($this->module_id, 'l'), ['table' => static::DB_TABLE]);
-            if ($content4id = $content[$this->module_id]) {
-                // filter only used columns
-                $cols = static::getTableColumns();
-
-                foreach ($cols as $name) {
-                    $this->record[$name] = $content4id->getValue($name);
-                }
-            }
-        }
-        return $this;
-    }
-
-    /** AA_iEditable method - save the object to the database */
-    public        function save() {}
-}
-

@@ -753,7 +753,6 @@ function AA_LoadCss(url) {
     var link = document.querySelector('link[href="'+url+'"]');
     if (url && !link) {
         link  = document.createElement('link');
-        link.type = 'text/css';
         link.rel  = 'stylesheet';
         link.href = url;
         document.getElementsByTagName('head')[0].appendChild(link);

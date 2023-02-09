@@ -198,21 +198,12 @@ define("SCROLLER_LENGTH", 3);
 
 /** Select color profile for administation pages - colors or css files */
 // WebNetworks profile (green - default) ------------------------------------
-define("COLOR_TABBG",     "#A8C8B0");           // background of tables
-define("COLOR_TABTITBG",  "#589868");           // background of table titles
-define("COLOR_BACKGROUND","#F5F0E7");           // admin pages background
 define("ADMIN_CSS",       "admin.css");         // style for admin interface
 
 //  // Econnects profile --------------------------------------------------------
-//  define("COLOR_TABBG",     "#EBDABE");           // background of tables
-//  define("COLOR_TABTITBG",  "#584011");           // background of table titles
-//  define("COLOR_BACKGROUND","#F5F0E7");           // admin pages background
 //  define("ADMIN_CSS",       "admin-ecn.css");     // style for admin interface
 //
 //  // Comlink profile ----------------------------------------------------------
-//  define("COLOR_TABBG",     "#A8C8B0");           // background of tables
-//  define("COLOR_TABTITBG",  "#589868");           // background of table titles
-//  define("COLOR_BACKGROUND","#F5F0E7");           // admin pages background
 //  define("ADMIN_CSS",       "admin-cml.css");     // style for admin interface
 
 /** Page cache setting

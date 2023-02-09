@@ -42,7 +42,7 @@ $managed = AA::Metabase()->getManagerConf('searchlog');
 // 	id, date, query, found_count, search_time, user, additional1
 
 $managed->settings['itemview']['format']['compact_top']    = '
-                                          <table border="0" cellpadding="5" cellspacing="0">
+                                          <table>
                                             <tbody><tr>
                                               <th width="30">&nbsp;</th>
                                               <th>date</th>

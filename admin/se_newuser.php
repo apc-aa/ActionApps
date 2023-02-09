@@ -95,12 +95,11 @@ $apage->setTitle(_m("New user in permission system"));
 $apage->printHead($err, $Msg);
 
 ?>
-<table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
-<tr><td class="tabtit"><b>&nbsp;<?php echo _m("New user")?></b>
-</td>
+<table class="aa-table">
+<tr class="aa-tbl-header"><th></th><?php echo _m("New user")?></th>
 </tr>
 <tr><td>
-<table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
+<table width="440">
 <?php
   FrmInputText("user_login", _m("Login name"), $user_login, 50, 50, true);
   FrmInputPwd("user_password1", _m("Password"), $user_password1, 50, 50, true);
@@ -112,7 +111,7 @@ $apage->printHead($err, $Msg);
 //  FrmInputText("user_mail3", _m("E-mail")." 3", $user_mail3, 50, 50, false);
 ?>
 </table></td></tr>
-<tr><td align="center">
+<tr><td>
 <?php
   echo "<input type=\"hidden\" name=\"update\" value=1>";
   echo '<input type="submit" name="update" value="'. _m("Add") .'">&nbsp;&nbsp;';

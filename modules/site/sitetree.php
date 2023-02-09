@@ -742,7 +742,7 @@ class sitetree {
     }
 
     function printVariables( $spot_id, $vars ) {
-        echo "<tr><td valign=top><b>"._m("Spot&nbsp;variables")."</b></td><td>";
+        echo "<tr><td><b>"._m("Spot&nbsp;variables")."</b></td><td>";
         if (isset($vars) AND is_array($vars)) {
             foreach ($vars as $k => $v) {
                 echo "$v <span><a href=\"". self::siteAdminPageUrl($spot_id, "delvar=" . urlencode($k)) ."\" class=\"aa-button\">"._m("Delete")."</a></span><br>";
@@ -755,7 +755,7 @@ class sitetree {
     }
 
     function printConditions($spot_id, $conds, $vars) {
-        echo "<tr><td valign=top><b>"._m("Spot&nbsp;conditions")."</b></td><td>";
+        echo "<tr><td><b>"._m("Spot&nbsp;conditions")."</b></td><td>";
         if ( isset($vars) AND is_array($vars) ) {
             $i=0;
             foreach ($vars as $k => $v) {

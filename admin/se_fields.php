@@ -96,8 +96,8 @@ function ShowNewField($from_slice, $slice_id) {
     $pri      = 1000;
 
     // --------------- from template --------------------------
-    echo '<tr class="tabtit"><td colspan="8">'. _m('Add new field from template') .'</td></tr>';
-    echo "\n<tr class=\"tabtxt\">
+    echo '<tr class="aa-tab-title"><td colspan="8">'. _m('Add new field from template') .'</td></tr>';
+    echo "\n<tr>
           <td colspan=\"8\">". _m('Slice') .' ';
           $template_id = unpack_id('AA_Core_Fields..');
           $from_slice  = get_if($from_slice, $template_id);
@@ -107,7 +107,7 @@ function ShowNewField($from_slice, $slice_id) {
           FrmSelectEasy('from_slice', $slice_array, $from_slice, 'onchange="DisplayAaResponse(\'fieldselection\', \'Get_Fields\', {slice_id:this.value})"');
     echo "\n</td>
           </tr>
-          <tr class=\"tabtxt\">
+          <tr>
           <td><input type=\"Text\" name=\"name[$id]\" size=50 maxlength=254 value=\"$name\"></td>
           <td id=\"fieldselection\"></td>
         <td><input type=\"text\" name=\"pri[$id]\" size=\"4\" maxlength=\"4\" value=\"$pri\"></td>
@@ -275,16 +275,18 @@ if ($fix) {
 $form_buttons = ["update", "analyze" => ["type"=>"submit", "value"=>_m("Analyze")], "cancel"=> ["url"=>"se_fields.php"]];
 FrmTabCaption(_m("Fields"), $form_buttons);
 ?>
+<thead>
 <tr>
- <td class="tabtxt" align="center"><b><?php echo _m("Field") ?></b></td>
- <td class="tabtxt" align="center"><b><?php echo _m("Id") ?></b></td>
- <td class="tabtxt" align="center"><b><?php echo _m("Priority") ?></b></td>
- <td class="tabtxt" align="center"><b><?php echo _m("Required") ?></b></td>
- <td class="tabtxt" align="center"><b><?php echo _m("Show") ?></b></td>
- <td class="tabtxt" colspan="2">&nbsp;</td>
- <td class="tabtxt" align="center"><b><?php echo _m("Aliases")?></b></td>
+ <th scope=col><?php echo _m("Field") ?></th>
+ <th scope=col><?php echo _m("Id") ?></th>
+ <th scope=col><?php echo _m("Priority") ?></th>
+ <th scope=col><?php echo _m("Required") ?></th>
+ <th scope=col><?php echo _m("Show") ?></th>
+ <th scope=col colspan="2">&nbsp;</td>
+ <th scope=col><?php echo _m("Aliases")?></th>
 </tr>
-<tr><td colspan="8"><hr></td></tr>
+</thead>
+<tbody>
 <?php
 foreach ( $s_fields as $fld) {
     $fld->showFieldAdminRow($analyze OR $fix);
@@ -293,6 +295,9 @@ $form_buttons['slice_fields'] = ['value' => ($slice_fields ? 1 : 0)];
 
 // one row for possible new field
 ShowNewField($from_slice, AA::$module_id);
+?>
+</tbody>
+<?php
 FrmTabEnd( $form_buttons);
 
 ?>

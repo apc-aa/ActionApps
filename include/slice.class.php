@@ -680,24 +680,23 @@ class AA_Slice extends AA_Module {
      *  Returns array of admin format strings as used in manager class
      */
     function get_format_strings() {
-         // additional string for compact_top and compact_bottom needed
-         // for historical reasons (not manager.class verion of item manager)
-         return [
-             "compact_top"     => '<table border="0" cellspacing="0" cellpadding="1" bgcolor="#F5F0E7" class="mgr_table">'.
-                                             $this->getProperty('admin_format_top'),
-                        "category_sort"   => false,
-                        "category_format" => "",
-                        "category_top"    => "",
-                        "category_bottom" => "",
-                        "even_odd_differ" => false,
-                        "even_row_format" => "",
-                        "odd_row_format"  => $this->getProperty('admin_format'),
-                        "compact_remove"  => $this->getProperty('admin_remove'),
-                        "compact_bottom"  => $this->getProperty('admin_format_bottom'). '</table>',
-                        "noitem_msg"      => $this->getProperty('admin_noitem_msg'),
-                        // id is packed (format string are used as itemview
-                        //               parameter, where $slice_info expected)
-                        "id"              => pack_id($this->module_id)
+        // additional string for compact_top and compact_bottom needed
+        // for historical reasons (not manager.class version of item manager)
+        return [
+            "compact_top"     => '<div class="aa-items-manager"><table class="mgr_table">'. $this->getProperty('admin_format_top'),
+            "category_sort"   => false,
+            "category_format" => "",
+            "category_top"    => "",
+            "category_bottom" => "",
+            "even_odd_differ" => false,
+            "even_row_format" => "",
+            "odd_row_format"  => $this->getProperty('admin_format'),
+            "compact_remove"  => $this->getProperty('admin_remove'),
+            "compact_bottom"  => $this->getProperty('admin_format_bottom'). '</table></div>',
+            "noitem_msg"      => $this->getProperty('admin_noitem_msg'),
+            // id is packed (format string are used as itemview
+            //               parameter, where $slice_info expected)
+            "id"              => pack_id($this->module_id)
          ];
     }
 

@@ -136,8 +136,8 @@ $apage->printHead($err, $Msg);
   FrmTabCaption(_m("Remote RSS Feed administration"));
 ?>
       <tr><td colspan="2"><?php echo _m("Current remote rssfeeds") ?></td></tr>
-      <tr><td align="center" colspan="2">
-      <select name="rssfeeds" class="tabtxt" size=5>
+      <tr><td colspan="2">
+      <select name="rssfeeds" size=5>
       <?php
         if (isset($rssfeeds) && is_array($rssfeeds)) {
           foreach ($rssfeeds as $name) {
@@ -146,7 +146,7 @@ $apage->printHead($err, $Msg);
         }
       ?>
       </select>
-    <tr><td colspan="2" align="center">
+    <tr><td colspan="2">
       <input type="button" value="<?php echo _m("Edit") ?>" onClick = "SubmitForm('edit')" >
       <input type="button" VALUE="<?php echo _m("Delete") ?>" onClick = "SubmitForm('delete')">
       <input type="button" VALUE="<?php echo _m("Add") ?>" onClick = "SubmitForm('add')">

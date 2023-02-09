@@ -127,13 +127,13 @@ echo '<br>
 if ($edit) echo "<input type=hidden name='edit' value='1'>";
 FrmTabCaption(_m("Edit module"));
 echo '
-     <tr><td class=tabtxt><b>'._m("Module name").':</b></td>
-        <td class=tabtxt><input type=text name="jump_name" size=20 value="'.$jump_name.'"></td></tr>
-     <tr><td class=tabtxt><b>'._m("Jump to").' (URL):</b></td>
-        <td class=tabtxt><input type=text name="jump_url" size=60 value="'.$jump_url.'"></td></tr>
-     <tr><td colspan=2 class=tabtxt>'._m("Type in an AA-relative path, e.g.").' <code>admin/se_constant.php?group_id=something</code></td></tr>
-     <tr><td class=tabtxt><b>'._m("Jump to slice").":</b></td>
-        <td class=tabtxt><select name=dest_id>";
+     <tr><th>'._m("Module name").':</th>
+        <td><input type=text name="jump_name" size=20 value="'.$jump_name.'"></td></tr>
+     <tr><th>'._m("Jump to").' (URL):</th>
+        <td><input type=text name="jump_url" size=60 value="'.$jump_url.'"></td></tr>
+     <tr><td colspan=2>'._m("Type in an AA-relative path, e.g.").' <code>admin/se_constant.php?group_id=something</code></td></tr>
+     <tr><th>'._m("Jump to slice").":</th>
+        <td><select name=dest_id>";
 //        <option value=''>* * * Don't change slice * * *";
      if ( is_array($g_modules) AND (count($g_modules) > 1) ) {
         foreach ($g_modules as $k => $v) {
@@ -145,7 +145,7 @@ echo '
      else echo "<option>No module exists";
      echo "</select></td>
      </tr>
-     <tr><td class=tabtxt><b>"._m("Module ID").":</b></td><td>$jump_id</td></tr>";
+     <tr><th>"._m("Module ID").":</th><td>$jump_id</td></tr>";
 FrmTabEnd([
     "update"=> ["value"=>($jump_id ? _m("Update") : _m("Create"))],
                 "cancel"=> ["url"=>AA_INSTAL_PATH."admin/um_uedit.php"]

@@ -152,7 +152,7 @@ if ( isset($differences) ) {
         </script>
         <a id="toggle_info_'.$sid.'" href="javascript:toggleViaCss(\'#diff_'.$sid.' tr.diff_info\')">'._m("Hide/show info values").'</a>
         <a id="toggle_check_'.$sid.'" href="javascript:toggleCheckViaCss(\'#diff_'.$sid.' input[type=checkbox]\')">'._m("Check/Uncheck")."</a>
-        <table border=\"0\" id=\"diff_$sid\">";
+        <table id=\"diff_$sid\">";
         foreach ($diffs as $diff) {
             $diff->printOut();
         }

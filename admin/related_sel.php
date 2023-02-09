@@ -146,13 +146,13 @@ if ($design) {
             $manager_vid = $design;
         }
     } else {
-        $format['odd_row_format']  = '<tr class="tabtxt"><td>'.$design.'</td></tr>';
-        $format['compact_top']     = '<table border="0" cellspacing="0" cellpadding="0" bgcolor="#F5F0E7" width="100%">';
+        $format['odd_row_format']  = '<tr><td>'.$design.'</td></tr>';
+        $format['compact_top']     = '<table>';
         $format['compact_bottom']  = '</table>';
     }
 } else {  // '' or '0'
-    $format['odd_row_format']  = '<tr class="tabtxt"><td>_#PUB_DATE&nbsp;</td><td>{'.$slice_field.'}</td><td>_#AA_ACTIO</td></tr>';
-    $format['compact_top']     = '<table border="0" cellspacing="0" cellpadding="0" bgcolor="#F5F0E7" width="100%">
+    $format['odd_row_format']  = '<tr><td>_#PUB_DATE&nbsp;</td><td>{'.$slice_field.'}</td><td>_#AA_ACTIO</td></tr>';
+    $format['compact_top']     = '<table>
                 <tr><th>'._m("Publish date").'</th><th>'._m("Headline").'</th><th>'._m("Actions").'</th></tr>';
     $format['compact_bottom']  = '</table>';
 }

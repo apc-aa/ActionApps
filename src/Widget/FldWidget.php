@@ -106,8 +106,7 @@ class FldWidget extends Widget
                 $base['id']       = FormArray::formName2Id($input_name);
                 $base['langcode'] = Langs::getLangName2Code(Langs::getLangNum2Name($i));
             }
-            $widget .= $delim . $this->getOneInput($input_name, $i, $val, $attr_string, $autofocus, $base_id, $type, '', $required, $base);
-            $delim = "\n<br />";
+            $widget .= $this->getOneInput($input_name, $i, $val, $attr_string, $autofocus, $base_id, $type, '', $required, $base);
             $required = ''; // only one is required
             $autofocus = '';
         }
@@ -137,7 +136,9 @@ class FldWidget extends Widget
         if ($lang = Langs::getLangNum2Name($i)) {
             $langcode  = Langs::getLangName2Code($lang);
             $translate =  ($langcode == $base['langcode']) ? '' :  "<span class=\"aa-langtrans-tbtn\" onclick=\"AA_Translate('$input_id', document.getElementById('". $base['id'] ."').value, '".$base['langcode']."', '$langcode');\">". _m("translate from"). ' '. Langs::getLangCode2Name($base['langcode']) . "</span>";
-            $ret = "<span class=\"aa-langtrans $lang\"><strong class=\"aa-langtrans-label\">$lang</strong>$ret $translate</span>";
+            $ret = "<div class=\"aa-langtrans $lang\"><strong class=\"aa-langtrans-label\">$lang</strong>$ret $translate</div>";
+        } else {
+            $ret = "<div>$ret</div>";
         }
         return $ret;
     }

@@ -129,8 +129,8 @@ function ShowConstant($id, $name, $value, $cid, $pri, ?array $using_slices_arr=n
       <td><input type=\"text\" name=\"name[$id]\" size=\"60\" maxlength=\"149\" value=\"$name\"></td>
       <td><input type=\"text\" name=\"value[$id]\" size=\"60\" maxlength=\"255\" value=\"$value\">
           <input type=\"hidden\" name=\"cid[$id]\" value=\"$cid\"></td>
-      <td class=\"tabtxt\"><input type=\"text\" name=\"pri[$id]\" size=\"4\" maxlength=\"4\" value=\"$pri\"></td>
-      <td class=\"tabtxt\">$count<input type=\"hidden\" name=\"used[$id]\" value=\"".str_pad($count, 7, "0", STR_PAD_LEFT)."\"></td>";
+      <td><input type=\"text\" name=\"pri[$id]\" size=\"4\" maxlength=\"4\" value=\"$pri\"></td>
+      <td>$count<input type=\"hidden\" name=\"used[$id]\" value=\"".str_pad($count, 7, "0", STR_PAD_LEFT)."\"></td>";
     echo "</tr>\n";
 }
 
@@ -335,8 +335,8 @@ $form_buttons["return_url"]  = ["value" => $return_url];
 $form_buttons["fid"]         = ["value" => $fid];
 
 
-echo "<td class=\"tabtxt\"><b>"._m("Constant Group") ."</b></td>
-  <td class=\"tabtxt\" colspan=\"3\">";
+echo "<th>"._m("Constant Group") ."</th>
+  <td colspan=\"3\">";
 
 if ( $group_id ) {
     echo safe($group_id);
@@ -384,10 +384,10 @@ echo "</td></tr>
 echo "'</td></tr>
 <tr><td colspan=\"4\"><input type=\"submit\" name=\"hierarch\" value=\""._m("Edit in Hierarchical editor (allows to create constant hierarchy)")."\"></td></tr>
 <tr>
- <td class=\"tabtxt\" align=\"center\"><b><a href=\"javascript:SortConstants('name')\">". _m("Name") ."</a></b><br>". _m("shown&nbsp;on&nbsp;inputpage") ."</td>
- <td class=\"tabtxt\" align=\"center\"><b><a href=\"javascript:SortConstants('value')\">". _m("Value") ."</a></b><br>". _m("stored&nbsp;in&nbsp;database") ."</td>
- <td class=\"tabtxt\" align=\"center\"><b><a href=\"javascript:SortPri()\">". _m("Priority") ."</a></b><br>". _m("constant&nbsp;order") ."</td>
- <td class=\"tabtxt\" align=\"center\"><b><a href=\"javascript:SortConstants('used')\">". _m("Used") ."</a></b><br>". _m("times") ."</td>
+ <td><b><a href=\"javascript:SortConstants('name')\">". _m("Name") ."</a></b><br>". _m("shown&nbsp;on&nbsp;inputpage") ."</td>
+ <td><b><a href=\"javascript:SortConstants('value')\">". _m("Value") ."</a></b><br>". _m("stored&nbsp;in&nbsp;database") ."</td>
+ <td><b><a href=\"javascript:SortPri()\">". _m("Priority") ."</a></b><br>". _m("constant&nbsp;order") ."</td>
+ <td><b><a href=\"javascript:SortConstants('used')\">". _m("Used") ."</a></b><br>". _m("times") ."</td>
 </tr>
 <tr><td colspan=\"4\"><hr></td></tr>";
 

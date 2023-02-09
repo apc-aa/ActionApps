@@ -1738,7 +1738,7 @@ $_m["Transformation action"]
  = "";
 
 // include/constants_param_wizard.php, row 1123
-$_m["Store"]
+$_m["Store search"]
  = "";
 
 // include/constants_param_wizard.php, row 1124

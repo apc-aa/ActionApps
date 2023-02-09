@@ -187,7 +187,7 @@ if ($err) echo "<b>$err</b>";
 //    $manager_settings = AA::Metabase()->getManagerConf('external_feeds', $actions);
 //    //$manager_settings['itemview']['format']['compact_top'] = '
 //    //                                        <div class="aa-table">
-//    //                                          <table border="0" cellpadding="5" cellspacing="0">
+//    //                                          <table>
 //    //                                            <tbody><tr>
 //    //                                              <th width="30">&nbsp;</th>
 //    //                                              <th>'._m('Actions').'</th>

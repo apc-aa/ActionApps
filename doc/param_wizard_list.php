@@ -74,7 +74,7 @@ if ($list["hint"])
     echo $list["hint"] . "<br>";
 
 ksort($list["items"]);
-echo "<table border=0>\n";
+echo "<table>\n";
 $bottom_row = "<a href='#top'>" . _m("TOP") . "</a>\n";
 foreach ($list["items"] as $name => $item) {
     echo "<tr><td><b>$name</b></td><td><a href='#$name'>$item[name]</a></td></tr>\n";
@@ -89,7 +89,7 @@ foreach ($list["items"] as $name => $item) {
     $params = $item["params"];
     if (is_array($params)) {
         echo "<br>" . _m("Parameters:");
-        echo "<TABLE border=1 cellpadding=3>";
+        echo "<TABLE>";
         echo "<TR>"
         . "<TD><I>" . _m("name") . "</I></TD>"
         . "<TD><I>" . _m("type") . "</I></TD>"
@@ -115,7 +115,7 @@ foreach ($list["items"] as $name => $item) {
         }
         echo "</TABLE>\n";
     }
-    echo "<font size=-1><br>$bottom_row</font>\n";
+    echo "<span style=\"font-size: smaller; \"><br>$bottom_row</span>\n";
 }
 
 echo "</body></html>";

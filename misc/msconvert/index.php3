@@ -25,8 +25,8 @@ echo '
       $view=true;
   }
 
-  echo '<h2 align="center">'._m('Action Apps PDF/DOC Convertor').'</h2>
-  <p align="center">'._m('Experimental feature').'</p><br><br>';
+  echo '<h2>'._m('Action Apps PDF/DOC Convertor').'</h2>
+  <p>'._m('Experimental feature').'</p><br><br>';
 
 
 if (!$userfile) {

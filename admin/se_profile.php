@@ -122,13 +122,13 @@ $apage->setForm();
 $apage->printHead($err, $Msg);
 
 echo "
- <table width=\"70%\" border=\"0\" cellspacing=\"0\" cellpadding=\"1\" bgcolor=\"". COLOR_TABTITBG ."\" align=\"center\">
-  <tr>
-   <td class=\"tabtit\"><b>&nbsp;". _m("Rules") ." - $uid - ". perm_username($uid). "</b></td>
+ <table width=\"70%\">
+  <tr class=\"aa-tbl-header\">
+   <th>&nbsp;". _m("Rules") ." - $uid - ". perm_username($uid). "</th>
   </tr>
   <tr>
    <td>
-    <table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"4\" bgcolor=\"". COLOR_TABBG ."\">";
+    <table>";
 
 if ( isset($rules) AND is_array($rules) ) {
     foreach ($rules as $v) {
@@ -139,14 +139,14 @@ if ( isset($rules) AND is_array($rules) ) {
 }
 
 echo "</table>
-  <tr>
-   <td class=\"tabtit\"><b>&nbsp;". _m("Add Rule") ."</b></td>
+  <tr class=\"aa-tbl-header\">
+   <th>&nbsp;". _m("Add Rule") ."</th>
   </tr>
   <tr>
    <td>
     <form name=\"fr\">
-     <table border=\"0\" cellspacing=\"0\" cellpadding=\"4\" width=\"100%\" bgcolor=\"". COLOR_TABBG ."\">
-      <tr class=\"tabtxt\" align=\"center\">
+     <table>
+      <tr>
        <td><b>". _m("Rule") . "</b></td>
        <td><b>". _m("Field") . "</b></td>
        <td><b>". _m("Function") . "</b></td>

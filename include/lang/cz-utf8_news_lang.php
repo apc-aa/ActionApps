@@ -4905,8 +4905,8 @@ $_m["You have the permission to add stored search globally. Do you want to add t
  = "Uložit globálně? Filtr můžete uložit tak, že bude viditelný pro všechny uživatele tohoto webíku - tedy globálně [ OK ], či pouze jako váš osobní filtr [ Storno ]. Má-li být filtr globální - klikněte na OK, má-li být váš osobní - klikněte na Storno (popř. Cancel).";
 
 // include/searchbar.class.php, row 621
-$_m["Store"]
- = "Uložit";
+$_m["Store search"]
+ = "Uložit filtr";
 
 // include/searchbar.class.php, row 636
 $_m["Stored searches"]

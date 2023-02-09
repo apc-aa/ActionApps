@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 </head>
 
-<body bgcolor="#FFFFFF" text="#000000">
+<body>
 <h1>Table View grammar </h1>
 (c) Jakub Ad&aacute;mek, Econnect, September 2002 
 <p>$Id$</p>
@@ -30,8 +30,8 @@
 		&quot;mail_errors_to&quot; =&gt; array (&quot;caption&quot;=&gt;&quot;Errors-To:&quot;,&quot;view&quot; =&gt; array (&quot;type&quot;=&gt;&quot;text&quot;,&quot;size&quot;=&gt;array(&quot;cols&quot;=&gt;15))),
 		&quot;mail_sender&quot; =&gt; array (&quot;caption&quot;=&gt;&quot;Sender:&quot;,&quot;view&quot; =&gt; array (&quot;type&quot;=&gt;&quot;text&quot;,&quot;size&quot;=&gt;array(&quot;cols&quot;=&gt;15)))),
 		&quot;attrs&quot; =&gt; array (
-			&quot;table&quot;=&gt;&quot;border=1 cellpadding=3 cellspacing=0&quot;,
-			&quot;table_search&quot; =&gt;&quot;border=0 cellpadding=3 cellspacing=0&quot;));<br></pre>
+			&quot;table&quot;=&gt;&quot;border=1&quot;,
+			&quot;table_search&quot; =&gt;&quot;border=0&quot;));<br></pre>
 <p><br>
   Contents:</p>
 <p>&nbsp;</p>
@@ -44,7 +44,7 @@
 </ul>
 <h2>Table View Grammar</h2>
 <a name="tableview"></a> 
-<table width="105%" border="1">
+<table width="105%">
     <tr> 
         <td width="8%"><b>Attribute</b></td>
         <td width="38%"><b>Values</b></td>
@@ -199,7 +199,7 @@
   settings. For information about how defaults are set, you best see the source 
   <code>include/tabledit.php3</code>, function SetDefaultButtons(). </p>
 <p>Only if you are not satisfied with the defaults, set your own. </p>
-<table width="105%" border="1">
+<table width="105%">
   <tr> 
     <td width="12%"><b>Attribute</b></td>
     <td width="21%"><b>Values</b></td>
@@ -257,7 +257,7 @@
 </table>
 <h2>Field Parameters Grammar</h2>
 <a name="fieldparams"></a>
-<table width="100%" border="1">
+<table>
     <tr> 
         <td width="12%"><b>Attribute</b></td>
         <td width="17%"><b>Values</b></td>
@@ -339,7 +339,7 @@
 </table>
 <h2>Field View Grammar</h2>
 <a name="fieldview"></a>
-<table width="100%" border="1">
+<table>
     <tr> 
         <td width="12%"><b>Attribute</b></td>
         <td width="20%"><b>Values</b></td>
@@ -437,7 +437,7 @@
 <p>If you want to view fields from several tables in one record, the tables must 
   have some relationship 1:1 (one-to-one) or 1:n (one-to-many). Use the child 
   table as the main table of the Table View. </p>
-<table width="100%" border="1">
+<table>
   <tr> 
     <td width="12%"><b>Attribute</b></td>
     <td width="20%"><b>Values</b></td>
@@ -458,7 +458,7 @@
 </table>
 <h2>Child Table Grammar</h2>
 <a name="child"></a>
-<table width="100%" border="1">
+<table>
   <tr> 
     <td width="12%"><b>Attribute</b></td>
     <td width="20%"><b>Values</b></td>
@@ -477,7 +477,7 @@
 </table>
 <h2>AA special Table View attributes</h2>
 <a name="aa"></a> 
-<table width="100%" border="1">
+<table>
   <tr> 
     <td width="12%"><b>Attribute</b></td>
     <td width="55%"><b>Description</b></td>

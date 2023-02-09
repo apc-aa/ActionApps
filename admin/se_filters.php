@@ -173,39 +173,39 @@ $form_buttons= [
 FrmTabCaption(_m("Content Pooling - Configure Filters"), $form_buttons);
 ?>
 <tr>
-  <td colspan class="tabtxt" align="center"><b><?php echo _m("Filter for imported slice") . "&nbsp; "?></b></td>
+  <th><?php echo _m("Filter for imported slice") . "&nbsp; "?></th>
   <td><?php FrmSelectEasy("import_id", $impslices, $import_id, "OnChange=\"ChangeImport()\""); ?></td>
 </tr>
 <?php
 FrmTabSeparator(_m("Categories"));
 ?>
 <tr><td>
-<table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
-<tr>
-  <td width="40%" colspan="2" class="tabtxt" align="center"><b><?php echo _m("From") ?></b></td>
-  <td width="30%" class="tabtxt" align="center"><b><?php echo _m("To") ?></b></td>
-  <td width="30%" class="tabtxt" align="center"><b><?php echo _m("Active") ?></b></td>
+<table>
+<tr class="aa-tbl-header">
+  <th width="40%" colspan="2"><?php echo _m("From") ?></th>
+  <th width="30%"><?php echo _m("To") ?></th>
+  <th width="30%"><?php echo _m("Active") ?></th>
 </tr>
 
 <tr>
 <?php
 if ($imp_count) {
-   echo "<td align=\"center\">";
+   echo "<td>";
    FrmChBoxEasy("all_categories", $all_categories, "OnClick=\"AllCategClick()\"");
    echo "</td>";
 }
 ?>
-<td class=tabtxt <?php if (!$imp_count) { echo "colspan=\"2\" align=\"center\""; } ?>><?php echo _m("All Categories") ?></td>
+<td <?php if (!$imp_count) { echo "colspan=\"2\""; } ?>><?php echo _m("All Categories") ?></td>
 </td>
 
 <td><?php
 if ( isset($to_categories) AND is_array($to_categories) ) {
     FrmSelectEasy("categ_0", $to_categories, $categ_0);
 } else {
-    echo "<span class=\"tabtxt\">". _m("No category defined") ."</span>";
+    echo "<span>". _m("No category defined") ."</span>";
 }
 ?></td>
-<td align="center"><?php FrmChBoxEasy("approved_0", $approved_0); ?></td>
+<td><?php FrmChBoxEasy("approved_0", $approved_0); ?></td>
 </tr>
 <tr><td colspan="4"><hr></td></tr>
 <?php
@@ -217,17 +217,17 @@ if ( isset($to_categories) AND is_array($to_categories) ) {
 function PrintOneRow($id, $cat_name, $i) {
     global $chboxcat, $selcat, $chboxapp, $to_categories;
 
-    echo "<tr><td align=\"center\">";
+    echo "<tr><td>";
     $chboxname = "chbox_". $i;
     FrmChBoxEasy($chboxname, $chboxcat[$id] );
-    echo "</td>\n<td class=\"tabtxt\">". $cat_name. "</td><td>";
+    echo "</td>\n<td>". $cat_name. "</td><td>";
     $selectname = "categ_". $i;
     if ( isset($to_categories) AND is_array($to_categories) ) {
         FrmSelectEasy($selectname, $to_categories, $selcat[$id] ?? $id);
     } else {
-        echo "<span class=\"tabtxt\">". _m("No category defined") ."</span>";
+        echo "<span>". _m("No category defined") ."</span>";
     }
-    echo "</td>\n<td align=\"center\">";
+    echo "</td>\n<td>";
     $chboxname = "approved_". $i;
     FrmChBoxEasy($chboxname, $chboxapp[$id] );
     echo "<input type=\"hidden\" name=\"hid_$i\" value=\"$id\">";

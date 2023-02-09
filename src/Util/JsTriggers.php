@@ -182,7 +182,7 @@ class JsTriggers {
 
     public static function printSummary() {
         foreach (JsTriggers::CONTROL_TRIGGERS as $control => $trigs) {
-            echo '<tr><td class="tabtxt">' . $control . '</td><td class="tabtxt">' . join(", ", $trigs) . '</td></tr>';
+            echo '<tr><td>' . $control . '</td><td>' . join(", ", $trigs) . '</td></tr>';
         }
     }
 

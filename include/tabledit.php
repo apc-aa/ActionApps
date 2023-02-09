@@ -175,7 +175,7 @@ class tabledit {
     function view($where = "(1=1)") {
 
         /*
-        echo "<table width='100%'><tr><td width='50%'>&nbsp;</td><td align=right class=tabtxt><span class=te_help_link>";
+        echo "<table><tr><td width='50%'>&nbsp;</td><td><span class=te_help_link>";
         if ($this->type == "browse")
             echo _m("This is a Browse view in TableEdit. ");
         else echo _m("This is an Edit view in TableEdit. ");
@@ -248,7 +248,7 @@ class tabledit {
         }
 
         if ($this->view["help"]) {
-            echo '<table border="0" cellspacing="0" cellpadding="5"><tr><td class="te_help">'
+            echo '<table><tr><td class="te_help">'
                 .$this->view["help"]
                 .'</td></tr></table><br>';
         }
@@ -322,7 +322,7 @@ class tabledit {
                     echo "</tr>";
                 }
                 else {
-                    echo "<tr><td align=\"center\" colspan=\"100\">";
+                    echo "<tr><td colspan=\"100\">";
                     $this->ShowButtons($new_record, $key, $fnname, $formname, $irow, "down", $all_keys, $record_count);
                     echo "</td></tr></form></table>";
                     if (is_array($this->view["children"]) && !$new_record)
@@ -341,7 +341,7 @@ class tabledit {
             $this->ShowButtons(false, "", "", "", 0, "down", [], $record_count);
             // scroller
             if ($scroll->pageCount() > 1) {
-                echo "<p align=\"center\">";
+                echo "<p>";
                 echo $scroll->getNavbar();
                 echo "</p>";
             }
@@ -372,7 +372,7 @@ class tabledit {
         $bt = $this->ButtonsText(false);
             $bt = $bt[$button];
             $alt = $bt["alt"] ? $bt["alt"] : "&nbsp;";
-            $header .= "<TD class=te_b_col_head align=center>".$alt."</TD>\n";
+            $header .= "<TD class=te_b_col_head>".$alt."</TD>\n";
         }*/
 
         echo $header;
@@ -392,7 +392,7 @@ class tabledit {
                          if ($this->orderdir == 'd')
                               echo "down.gif\" alt=\""._m("order ascending")."\"";
                          else echo "up.gif\" alt=\""._m("order descending")."\"";
-                         echo " border=\"0\">";
+                         echo ">";
                      }
                      echo "</a>";
                 }
@@ -414,15 +414,15 @@ class tabledit {
      * @param $scroll
      */
     function showBrowseFooter($formname, $all_keys, $record_count, $scroll) {
-        echo "<tr><td colspan=\"100\"><table width=\"100%\">
-            <tr><td class=\"te_b_col_head\" width=\"100\" valign=\"top\">";
+        echo "<tr><td colspan=\"100\"><table>
+            <tr><td class=\"te_b_col_head\" width=\"100\">";
         // icon explanation ("= update" etc.)
         if ($record_count && is_array($this->view["buttons_left"])) {
             foreach ($this->view["buttons_left"] as $button => $use) {
                 $bt = $this->ButtonsText(false);
                 $bt = $bt[$button];
                 $alt = $bt["alt"] ?: "&nbsp;";
-                $img = '<img border="0" src="'.$this->imagepath.$bt["img"].'.gif" alt="'.$bt["alt"].'">';
+                $img = '<img src="'.$this->imagepath.$bt["img"].'.gif" alt="'.$bt["alt"].'">';
                 echo "<span class=\"te_button_text\">$img = $alt</span><br>";
             }
         }
@@ -572,7 +572,7 @@ class tabledit {
 
         $formname = "search_".$this->viewID;
         $searchimage = "<a href=\"javascript:document.".$formname.".submit()\">"
-            ."<img src=\"".$this->imagepath."search.gif\" alt=\""._m("Search")."\" border=\"0\"></a>";
+            ."<img src=\"".$this->imagepath."search.gif\" alt=\""._m("Search")."\"></a>";
 
         echo "<table ".$this->view["attrs"]["table_search"]." class=\"te_search_table\">
               <form name=\"".$formname."\" method=\"post\" action=\"".$this->getAction($this->gotoview2())."\">
@@ -696,7 +696,7 @@ class tabledit {
                         echo "</a>\n";
                     } else {
                         echo $href.
-                        '<img border="0" src="'.$this->imagepath.'edit_big.gif" alt="'._m("edit").'">
+                        '<img src="'.$this->imagepath.'edit_big.gif" alt="'._m("edit").'">
                         </a>'."\n";
                     }
                 }
@@ -882,7 +882,7 @@ class tabledit {
             }
             switch ($place) {
                 case "left": echo "<td class=\"te_b_row".($irow % 2 ? "1" : "2")."\">"; break;
-                case "down": echo "<td align=\"center\" width=\"50\">"; break;
+                case "down": echo "<td width=\"50\">"; break;
             }
             $this->ShowButton($bt, $new_record, $key, $fnname, $formname, $place, $all_keys, $record_count);
             echo "</td>\n";
@@ -935,7 +935,7 @@ class tabledit {
         }
 
         if ($bt["img"]) {
-            $img = '<img border="0" src="'.$this->imagepath.$bt["img"].$big.'.gif" alt="'.$bt["alt"].'">';
+            $img = '<img src="'.$this->imagepath.$bt["img"].$big.'.gif" alt="'.$bt["alt"].'">';
         } else {
             $img = "";
         }

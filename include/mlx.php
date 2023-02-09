@@ -78,17 +78,17 @@ if(!defined('MLX_OPTIMIZE')) {
 define ('MLX_HTML_TABHD',"\n"
 ."<tr>\n"
 ."  <td colspan=\"5\">\n"
-."    <table width=\"100%\" bgcolor=\"".COLOR_TABTITBG."\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\n"
+."    <table>\n"
 ."    <tbody>\n"
 ."    <tr>\n"
 ."      <td colspan=\"3\">\n"
-."        <table bgcolor=\"".COLOR_TABTITBG."\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\n"
+."        <table>\n"
 ."        <tbody>\n"
 ."        <tr>\n"
 ."          <td >&nbsp;<b>MLX Language Control</b></td>\n"
 ."        </tr>\n"
 ."        <tr>\n"
-."          <td><table border=\"0\" cellspacing=\"0\" cellpadding=\"1\">\n"
+."          <td><table>\n"
 ."            <tr>\n");
 define ('MLX_HTML_TABFT',"\n"
 ."            </tr>\n"
@@ -392,7 +392,7 @@ class MLX {
             if (!isset($v['id']) || ( strpos($v['id'],MLX_LANG2ID_TYPE) !== 0)) {
                 continue;
             }
-            $mlxout .= "<td valign='top' class='tabs";
+            $mlxout .= "<td class='tabs";
             if (($action == "edit") || ($action == "update")) {
                 $langid = $this->getLangItem($v['name'], $content4id, $content4mlxid);
             } elseif ($mlxid) {
@@ -411,7 +411,7 @@ class MLX {
                 }
                 $href .= "mlxid=$mlxid&";
             } else {
-                $mlxout .= "nonactive' bgcolor='".COLOR_TABBG;
+                $mlxout .= "nonactive'";
             }
             if ($langid) {
                 $extra = "\n<span class='mlx-view'><a href='../slice.php3"
@@ -419,7 +419,7 @@ class MLX {
                     ."&o=1&mlxl=".$v['name']."' target='_blank'>("._m("view").")</a>"
                     ."</span>\n";
             }
-            $mlxout .= "'>&nbsp;";
+            $mlxout .= ">&nbsp;";
             if ($href) { //TODO implement something that saves on switch
                 $mlxout .= "<a href='$mlx_url$href'>";
              // $mlxout .= "<a href='javascript:mlx_saveOnSwitch($mlx_url$href)'>";

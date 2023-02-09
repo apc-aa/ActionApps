@@ -4904,7 +4904,7 @@ $_m["You have the permission to add stored search globally. Do you want to add t
     = "Ulo�it glob�ln�? Filtr m��ete ulo�it tak, �e bude viditeln� pro v�echny u�ivatele tohoto web�ku - tedy glob�ln� [ OK ], �i pouze jako v� osobn� filtr [ Storno ]. M�-li b�t filtr glob�ln� - klikn�te na OK, m�-li b�t v� osobn� - klikn�te na Storno (pop�. Cancel).";
 
 // include/searchbar.class.php, row 621
-$_m["Store"]
+$_m["Store search"]
     = "Ulo�it";
 
 // include/searchbar.class.php, row 636

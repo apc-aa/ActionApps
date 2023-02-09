@@ -252,17 +252,6 @@ TD.leftmenuy {
   color: #4A4A4A;
 }
 
-.tabtxteven {
-    background-color: #C8E6C5; /* #f6e5c9 */
-    color: #526952;
-}
-
-.tabtitlight {
-    text-align: center;
-    font-weight: bold;
-    background-color:#589868;
-}
-
 .tabtxt_field_alerts {
   font-family: Verdana, Arial, Helvetica, sans-serif;
   font-size: x-small;
@@ -275,18 +264,6 @@ TD.leftmenuy {
   font-size: x-small;
   color: #4A4A4A;
   background: #A8C8B0;
-}
-
-.taberr {
-  color: red;
-}
-
-.notpubl {
-  color: blue;
-}
-
-.expired {
-  color: red;
 }
 
 .err {

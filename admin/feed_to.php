@@ -38,12 +38,12 @@ require_once __DIR__ . "/../include/formutil.php";
 function PrintExportRow( $sname, $sid, $odd) {
     echo '
     <tr>
-      <td'. ($odd ? ' bgcolor="#EBDABE"' : '') . '>'. safe($sname). '</td>
-      <td'. ($odd ? ' bgcolor="#EBDABE"' : '') . ' align="center"><input type="radio" name="x'. $sid .'" value="2"></td>
-      <td'. ($odd ? ' bgcolor="#EBDABE"' : '') . ' align="center">'.
+      <td>'. safe($sname). '</td>
+      <td><input type="radio" name="x'. $sid .'" value="2"></td>
+      <td>'.
       ( CheckPerms( AuthGetUid(), "slice", $sid, PS_ITEMS2ACT) ?
         '<input type="radio" name="x'. $sid .'" value="1">' : '&nbsp;') .'</td>
-      <td'. ($odd ? ' bgcolor="#EBDABE"' : '') . ' align="center"><input type="radio" name="x'. $sid .'" value="0" checked></td>
+      <td><input type="radio" name="x'. $sid .'" value="0" checked></td>
     </tr>';
 }
 
@@ -58,11 +58,11 @@ echo '
 <body>
   <h1>'. _m("Export selected items to selected slice") .'</h1>
   <form name="incf">
-   <table border="0" cellspacing="0" cellpadding="0" align="center">
-     <tr class="tabtit"><td align="center">'. _m("Slice") .'</td>
-         <td width="100" align="center">'. _m("Holding bin")   .'</td>
-         <td width="100" align="center">'. _m("Active")        .'</td>
-         <td width="100" align="center">'. _m("Do not export to this slice") .'</td></tr>';
+   <table>
+     <tr class="aa-tbl-header"><th>'. _m("Slice") .'</th>
+         <th>'. _m("Holding bin")   .'</th>
+         <th>'. _m("Active")        .'</th>
+         <th>'. _m("Do not export to this slice") .'</th></tr>';
 
 $i=1;     // slice checkbox counter
 if ( is_array($g_modules) AND (count($g_modules) > 1) ) {
@@ -81,7 +81,7 @@ if ( $i==1 ) {   // can't feed to any slice
   echo '<tr><td colspan="3">'. _m("No permission to set feeding for any slice") .'</td></tr>';
 }
 ?>
-   <tr><td colspan="4" class="tabtit" align="center"><br /><input type="button" name="sendfeeded" value="<?php echo _m("Export") ?>" onclick="SendFeed();"><br />&nbsp;</td></tr>
+   <tr class="aa-tbl-header"><th colspan="4"><br /><input type="button" name="sendfeeded" value="<?php echo _m("Export") ?>" onclick="SendFeed();"><br />&nbsp;</th></tr>
    </table>
    <script>
     function SendFeed() {

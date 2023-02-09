@@ -58,44 +58,6 @@ try {
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {}
 
-
-//class AA_Adminpage {
-//    protected $module_id;
-//    protected $perm;
-//    protected $name;
-//
-//    function __construct($module_id, $perm) {
-//        $this->module_id = $module_id;
-//        $this->perm      = $perm;
-//        $this->name      = $name;
-//    }
-//
-//    protected function getCancelUrl() {
-//        return get_admin_url('index.php3');
-//    }
-//    protected function isPerm() {
-//        return IfSlPerm($this->perm,$this->module_id);
-//    }
-//
-//    public function process() {
-//        if ($_POST['cancel']) {
-//            go_url($this->getCancelUrl());
-//        }
-//        if (!$this-isPerm()) {
-//            MsgPageMenu($this->getCancelUrl(), _m('You have not permissions to this page').': '.$this->name, 'admin');
-//        }
-//
-//
-//
-//    }
-//
-//}
-//
-//$apage = new AA_Adminpage(AA::$module_id, PS_FULLTEXT, _m("Admin - design Fulltext view"));
-//$apage->process();
-
-
-
 $err = [];          // error array (Init - just for initializing variable
 $varset      = new Cvarset();
 
@@ -214,8 +176,6 @@ if ($discus_vids) {
 }
 
 $slice = AA_Slice::getModule(AA::$module_id);
-PrintAliasHelp(new AA_Aliases(new AA_Aliasgenerator_Slice(AA::$module_id)), $slice->getFields()->getRecordArray(), false, $form_buttons);
-
-FrmTabEnd();
-
+FrmTabEnd($form_buttons);
+$apage->addHelpbox(_m("Use these aliases for database fields"), getAliasHelp(new AA_Aliases(new AA_Aliasgenerator_Slice(AA::$module_id)), $slice->getFields()->getRecordArray(), false));
 $apage->printFoot();

@@ -237,16 +237,16 @@ $manager_settings = [
      'itemview'  => [
          'manager_vid'          => false,    // $slice_info['manager_vid'],      // id of view which controls the design
          'format'               => [                           // optionaly to manager_vid you can set format array
-             'compact_top'      => '<table border=0 cellspacing=0 cellpadding=5>
-                                      <tr class=tabtit"><th width="30"></th><th>Item</th><th>Item ID</th><th>User</th><th>Change time</th></tr>',
+             'compact_top'      => '<table class="aa-table">
+                                      <tr class="aa-tbl-header"><th width="30"></th><th>Item</th><th>Item ID</th><th>User</th><th>Change time</th></tr>',
              'category_sort'    => false,
              'category_format'  => "",
              'category_top'     => "",
              'category_bottom'  => "",
              'even_odd_differ'  => false,
              'even_row_format'  => "",
-//           'odd_row_format'   => '<tr class="tabtxt"><td width="30"><input type="checkbox" name="chb[_#HI_CH_ID]" value=""></td><td class="tabtxt"><a href="_#EDITLINK">{switch({_#L_NAME__}).:_#L_NAME__:???}</a> (_#L_O_NAME)<div class="tabsmall">_#L_DESCRI<br>(_#CATEG_GO)<br><a href="_#L_URL___" target="_blank">_#L_URL___</a></div></td><td class="tabsmall">{alias:checked:f_d:j.n.Y}<br>{alias:created_by:f_e:username}<br>{alias:edited_by:f_e:username}<br><span style="background:#_#L_VCOLOR;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_#L_VALID_&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>
-             'odd_row_format'   => '<tr class="tabtxt"><td width="30"><input type="checkbox" name="chb[x_#HI_CH_ID]" value=""></td><td><strong>{item:{_#HI_ITEM_}:_#HEADLINE}</strong></td><td>_#HI_ITEM_</td><td>_#HI_UNAME <small>(_#HI_USER_)</small></td><td>_#HI_TIME_</td></tr>
+//           'odd_row_format'   => '<tr><td width="30"><input type="checkbox" name="chb[_#HI_CH_ID]" value=""></td><td><a href="_#EDITLINK">{switch({_#L_NAME__}).:_#L_NAME__:???}</a> (_#L_O_NAME)<div class="tabsmall">_#L_DESCRI<br>(_#CATEG_GO)<br><a href="_#L_URL___" target="_blank">_#L_URL___</a></div></td><td class="tabsmall">{alias:checked:f_d:j.n.Y}<br>{alias:created_by:f_e:username}<br>{alias:edited_by:f_e:username}<br><span style="background:#_#L_VCOLOR;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_#L_VALID_&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>
+             'odd_row_format'   => '<tr><td width="30"><input type="checkbox" name="chb[x_#HI_CH_ID]" value=""></td><td><strong>{item:{_#HI_ITEM_}:_#HEADLINE}</strong></td><td>_#HI_ITEM_</td><td>_#HI_UNAME <small>(_#HI_USER_)</small></td><td>_#HI_TIME_</td></tr>
              ',
              'compact_remove'   => '',
              'compact_bottom'   => "</table>",

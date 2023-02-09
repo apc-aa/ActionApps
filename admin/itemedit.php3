@@ -59,6 +59,7 @@ require_once __DIR__ . "/../include/varset.php";
 require_once __DIR__ . "/../include/feeding.php";
 require_once __DIR__ . "/../include/itemfunc.php";
 require_once __DIR__ . "/../include/notify.php";
+require_once __DIR__ . "/../include/menu_util.php";
 //mimo include mlx functions
 require_once __DIR__."/../include/mlx.php";
 
@@ -122,6 +123,7 @@ $update  = false;
 $preview = false;
 $go_edit = false;
 if ($_POST['insert'])      { $insert = true;                                               }
+if ($_POST['insert_new'])  { $insert = true;                                               }
 if ($_POST['ins_preview']) { $insert = true;                 $preview=true;                }
 if ($_POST['ins_edit'])    { $insert = true;                                $go_edit=true; }
 if ($_POST['update'])      {                 $update = true;                               }

@@ -208,7 +208,7 @@ FrmTextarea("even_row_format", _m("Even Rows"), $even_row_format, 6, 50, false,
 FrmTextarea("compact_bottom", _m("Bottom HTML"), $compact_bottom, 4, 50, false,
            _m("HTML code which appears at the bottom of slice area")
            .'<br>'.AA_View::getViewJumpLinks($compact_bottom), '', 1);
-echo "<tr><td class=\"tabtxt\"><b>"._m("Group by")."</b></td><td>";
+echo "<tr><th>"._m("Group by")."</th><td>";
 FrmSelectEasy("group_by", $lookup_fields, $group_by);
 echo "<br>"."";
 echo "</td></tr>
@@ -235,8 +235,7 @@ FrmTextarea("noitem_msg", _m("'No item found' message"), $noitem_msg, 4, 50, fal
            .'<br>'.AA_View::getViewJumpLinks($category_bottom), '', 1);
 
 $slice = AA_Slice::getModule(AA::$module_id);
-PrintAliasHelp(new AA_Aliases(new AA_Aliasgenerator_Slice(AA::$module_id)), $slice->getFields()->getRecordArray(), false, $form_buttons);
 
-FrmTabEnd();
-
+FrmTabEnd($form_buttons);
+$apage->addHelpbox(_m("Use these aliases for database fields"), getAliasHelp(new AA_Aliases(new AA_Aliasgenerator_Slice(AA::$module_id)), $slice->getFields()->getRecordArray(), false));
 $apage->printFoot();

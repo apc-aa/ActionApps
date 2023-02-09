@@ -4,7 +4,7 @@
   <meta
  content="text/html; charset=ISO-8859-1"
  http-equiv="content-type">
-<LINK rel="StyleSheet" href="/apc-aa/admin.css" type="text/css">
+<LINK rel="StyleSheet" href="/apc-aa/admin.css">
   <title></title>
 <script>
 var count=1;
@@ -37,7 +37,7 @@ function changeURLcontent() {
 </head>
 <body onLoad="startURLcheck()">
 <table style="text-align: left; width: 100%;"
- border="0" cellpadding="2" cellspacing="2">
+ &\nacing="2">
   <tbody>
     <tr>
       <td class=tablename>
@@ -52,7 +52,7 @@ function changeURLcontent() {
  value="GO" name="submit" type="submit">
 </form>
       </td>
-      <td class=tablename align=center>
+      <td class=tablename>
 
       <form enctype="text/plain"
  method="post" name="catcher"><input type="button"
@@ -60,7 +60,7 @@ function changeURLcontent() {
 <input type="hidden" name="localURL" value="">
 </form>
       </td>
-<td class=tablename align=center>
+<td class=tablename>
 <form enctype="text/plain"
  method="post" name="cancel"><input type="button"
  value="Cancel" name="catcher" onClick="top.self.close()">

@@ -367,16 +367,16 @@ class itemview {
               $depth = count($images)-1;
               $spacer = "";
               $out.= '
-              <table border="0" cellspacing="0" cellpadding="0" class="discrow" id="disc'.$d_id.'">
+              <table class="discrow" id="disc'.$d_id.'">
                 <tr>';
               for ( $i=0; $i<$depth; $i++)
               $spacer .= $this->slice_info['d_spacer'];
               if ($spacer) {
                   $out .= "
-                      <td valign=top class=\"discspacer\">$spacer</td>";
+                      <td class=\"discspacer\">$spacer</td>";
               }
               $out .= "
-                  <td width=\"99%\" class=\"discitem\">".$CurItem->get_item()."
+                  <td class=\"discitem\">".$CurItem->get_item()."
                   </td>
                 </tr>
               </table>
@@ -893,7 +893,7 @@ class itemview {
                                 $tdattribs = $CurItem->get_item();
                                 $CurItem->setformat ($this->slice_info['odd_row_format']);
                                 $colspan = ($event['span']>1) ? 'colspan='.$event['span'] : '';
-                                $outrow .= "<td valign=top $colspan $tdattribs>" .$CurItem->get_item()."</td>";
+                                $outrow .= "<td $colspan $tdattribs>" .$CurItem->get_item()."</td>";
                                 $we_have_event_this_week = true;
                             } elseif (!$event["iid"]) {
                                 $outrow .= '<td class="empty">&nbsp;</td>';
@@ -948,7 +948,7 @@ class itemview {
                         $CurItem->setformat($this->slice_info['aditional3']);
                         $tdattribs = $CurItem->get_item();
                         $CurItem->setformat($this->slice_info['odd_row_format']);
-                        $out .= "<td valign=\"top\" rowspan=\"".$event['span']."\" $tdattribs>" .$CurItem->get_item()."</td>";
+                        $out .= "<td rowspan=\"".$event['span']."\" $tdattribs>" .$CurItem->get_item()."</td>";
                     } elseif (!$event["iid"]) {
                         $out .= '<td class="empty">&nbsp;</td>';
                     }

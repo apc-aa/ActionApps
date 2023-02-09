@@ -183,7 +183,7 @@ FrmTextarea("admin_noitem_msg", _m("HTML code for \"No item found\" message"), $
 FrmInputSelect("inputform_sel", _m("Use special view"), $inputform_vids, $inputform_vid, false,
              _m("You can set special view - template for the Inputform on \"Design\" -> \"View\" page (inputform view)"));
 $slice = AA_Slice::getModule(AA::$module_id);
-PrintAliasHelp(new AA_Aliases(new AA_Aliasgenerator_Slice(AA::$module_id)), $slice->getFields()->getRecordArray(), false, $form_buttons);
-FrmTabEnd();
 
+FrmTabEnd($form_buttons);
+$apage->addHelpbox(_m("Use these aliases for database fields"), getAliasHelp(new AA_Aliases(new AA_Aliasgenerator_Slice(AA::$module_id)), $slice->getFields()->getRecordArray(), false));
 $apage->printFoot();

@@ -3,7 +3,7 @@
 <title>Table Edit</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 </head>
-<body bgcolor="#FFFFFF" text="#000000">
+<body>
 <h1>Class TableEdit </h1>
 (c) Jakub Ad&aacute;mek, Econnect, September 2002
 <p>$Id$</p>
@@ -33,7 +33,7 @@
   quickly find records. After clicking on the Edit image on the left of a record
   or on Insert under the table you usually go to an Edit view, set by &quot;gotoview&quot;
   (see <a href="tabledit.html">Table View grammar</a>).</p>
-<table class=te_table bgcolor="#99CC99">
+<table class=te_table>
   <tr>
     <td class=te_td colspan=3>&nbsp;</td>
     <td class=te_td><a href='tabledit.php3?set_tview=ac&cmd[ac][orderby][id]=1'><b>id</b></a><br>
@@ -45,7 +45,7 @@
     <td class=te_td><a href='tabledit.php3?set_tview=ac&cmd[ac][orderby][editorial]=1'><b>editorial</b></a><br>
     </td>
     <td class=te_td><a href='tabledit.php3?set_tview=ac&cmd[ac][orderby][mail_from]=1'><b>From:</b></a><br>
-      <font class=te_hint>mail header</font></td>
+      <span class=te_hint>mail header</span></td>
     <td class=te_td><a href='tabledit.php3?set_tview=ac&cmd[ac][orderby][mail_reply_to]=1'><b>Reply-To:</b></a><br>
     </td>
     <td class=te_td><a href='tabledit.php3?set_tview=ac&cmd[ac][orderby][mail_errors_to]=1'><b>Errors-To:</b></a><br>
@@ -225,7 +225,7 @@
 </form>
 <p>The Edit view is used to edit a record. Each field is shown on a separate row.
   Usually only one record is shown although you may show more if you wish.</p>
-<table border=0 cellpadding=3 cellspacing=0 bgcolor='#A8C8B0' class=te_edit_table >
+<table class=te_edit_table >
   <script>
         function validate_number (txtfield, minval, maxval, required) {
             if (!validate (txtfield, 'number', required))
@@ -342,7 +342,7 @@ Collection 11</textarea>
       </td>
     </tr>
     <tr>
-      <td colspan=2 class=te_edit_td align=center>
+      <td colspan=2 class=te_edit_td>
         <input type=hidden name='set_tview' value='ac_edit'>
         <input type=submit name='cmd[ac_edit][update][16]' value='Update'>
         &nbsp;&nbsp;

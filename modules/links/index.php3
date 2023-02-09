@@ -187,14 +187,14 @@ $manager_settings = [
      'itemview'  => [
          'manager_vid'          => $links_info['manager_vid'],      // id of view which controls the design
          'format'               => [                           // optionaly to manager_vid you can set format array
-             'compact_top'      => "<table border=0 cellspacing=0 cellpadding=5>",
+             'compact_top'      => "<table>",
              'category_sort'    => false,
              'category_format'  => "",
              'category_top'     => "",
              'category_bottom'  => "",
              'even_odd_differ'  => false,
              'even_row_format'  => "",
-             'odd_row_format'   => '<tr class=tabtxt><td width="30"><input type="checkbox" name="chb[_#LINK_ID_]" value=""></td><td class=tabtxt><a href="_#EDITLINK">{switch({_#L_NAME__}).:_#L_NAME__:???}</a> (_#L_O_NAME)<div class="tabsmall">_#L_DESCRI<br>(_#CATEG_GO)<br><a href="_#L_URL___" target="_blank">_#L_URL___</a></div></td><td class=tabsmall>{alias:checked:f_d:j.n.Y}<br>{alias:created_by:f_e:username}<br>{alias:edited_by:f_e:username}<br><span style="background:#_#L_VCOLOR;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_#L_VALID_&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>
+             'odd_row_format'   => '<tr><td width="30"><input type="checkbox" name="chb[_#LINK_ID_]" value=""></td><td><a href="_#EDITLINK">{switch({_#L_NAME__}).:_#L_NAME__:???}</a> (_#L_O_NAME)<div class="tabsmall">_#L_DESCRI<br>(_#CATEG_GO)<br><a href="_#L_URL___" target="_blank">_#L_URL___</a></div></td><td class=tabsmall>{alias:checked:f_d:j.n.Y}<br>{alias:created_by:f_e:username}<br>{alias:edited_by:f_e:username}<br><span style="background:#_#L_VCOLOR;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_#L_VALID_&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>
              ',
              'compact_remove'   => "()",
              'compact_bottom'   => "</table>",
@@ -261,7 +261,7 @@ $bookmarks[1] = _m('All my links');
 $bookmarks[2] = _m('Links to check');
 $bookmarks[3] = _m('Last edited');
 
-showMenu("linkmanager", $r_state['bin'], $navbar != "0", $leftbar != "0");
+echo getMenu("linkmanager", $r_state['bin']);
 
 $conds = $manager->getConds();
 $sort  = $manager->getSort();
@@ -274,16 +274,14 @@ $link_zids=Links_QueryZIDs($r_state['cat_path'], $conds, $sort, $r_state["show_s
 echo $manager->getSearchbarBegin();
 
 // special code extending searchbar - category selection
-echo '<table width="100%" border="0" cellspacing="0" cellpadding="3"
-              class=leftmenu bgcolor="'. COLOR_TABBG .'">';
+echo '<table class=leftmenu>';
 echo '<tr>
-       <td class="search" width="255" align="center">
+       <td class="search" width="255">
          <input type="hidden" name="cat_id" value="'.$r_state['cat_id']."\">
          $cat_tree
        </td>
-       <td width='99%'>";
-echo '<table width="100%" border="0" cellspacing="0" cellpadding="3"
-              class=leftmenu bgcolor="'. COLOR_TABBG .'">';
+       <td>";
+echo '<table class=leftmenu>';
 echo '<tr><td><div id="patharea">'. ' '. '</div> </td></tr>';
 echo getFrmInputButtons([
     'gocat' => [
@@ -300,9 +298,9 @@ echo getFrmInputButtons([
     ]
 //                        'bookmark' => array('type'=>'button',
 //                                            'value'=>_m('Bookmark'))
-], 'bottom');
+]);
 
-echo '<tr><td class=tabtxt>';
+echo '<tr><td>';
 FrmChBoxEasy("show_subtree", $r_state["show_subtree"]);
 echo _m('Show subtree links');
 echo getFrmMoreHelp(get_help_url(AA_LINKS_HELP_MAIN,"zobraz-odkazy")). ' </td></tr>';

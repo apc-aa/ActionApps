@@ -348,28 +348,28 @@ class AA_Csv_Importer {
 
         FrmTabCaption(_m("Mapping settings"));
         ?>
-            <tr>
-              <td class="tabtxt"><b><?php echo _m("To") ?></b></td>
-              <td class="tabtxt"><b><?php echo _m("From") ?></b></td>
-              <td class="tabtxt"><b><?php echo _m("Action") ?></b></td>
-              <td class="tabtxt"><b><?php echo _m("Html") ?></b></td>
-              <td class="tabtxt"><b><?php echo _m("Action parameters") ?></b></td>
-              <td class="tabtxt"><b><?php echo _m("Parameter wizard") ?></b></td>
+            <tr class="aa-tbl-header">
+              <th><?php echo _m("To") ?></th>
+              <th><?php echo _m("From") ?></th>
+              <th><?php echo _m("Action") ?></th>
+              <th><?php echo _m("Html") ?></th>
+              <th><?php echo _m("Action parameters") ?></th>
+              <th><?php echo _m("Parameter wizard") ?></th>
              </tr>
 
                <?php
                $inFields["__empty__"] = "     ";
                foreach ( $outFields as $f_id => $f_name) {
-                   echo "<tr><td class=\"tabtxt\"><b>$f_name</b></td>\n";
+                   echo "<tr><th>$f_name</th>\n";
                    echo "<td>";
                    FrmSelectEasy("mapping[$f_id]",$inFields,!$set_default ? $this->mapping[$f_id] : findNearestText($f_id, $f_name, $inFields));		// todo - multiple
                    echo "</td>";
-                   echo "<td class=\"tabtxt\">";
+                   echo "<td>";
                    FrmSelectEasy("actions[$f_id]",$actionList,!$set_default ? $this->actions[$f_id] : "default");
                    echo "</td>";
 
-                   echo "<td class=\"tabtxt\"><input type=\"checkbox\" name=\"html[$f_id]\" "; if (!$set_default AND $this->html[$f_id]) echo  "checked";  echo  "></input></td>";
-                   echo "<td class=\"tabtxt\"><input type=\"text\" name=\"params[$f_id]\" value=\""; if (!$set_default) echo stripslashes($this->params[$f_id]);  echo "\"></input></td>";
+                   echo "<td><input type=\"checkbox\" name=\"html[$f_id]\" "; if (!$set_default AND $this->html[$f_id]) echo  "checked";  echo  "></input></td>";
+                   echo "<td><input type=\"text\" name=\"params[$f_id]\" value=\""; if (!$set_default) echo stripslashes($this->params[$f_id]);  echo "\"></input></td>";
                    echo "<td class=\"tabhlp\"><a href='javascript:CallParamWizard(\"TRANS_ACTIONS\",\"actions[$f_id]\",\"params[$f_id]\")'><b>"
                    ._m("Help: Parameter Wizard")."</b></a></td>";
                    echo "</tr>\n";
@@ -377,14 +377,14 @@ class AA_Csv_Importer {
                FrmTabSeparator(_m("Import options"));
         ?>
 
-               <tr><td class="tabtxt" colspan="2">Setting item id:</td><tr>
+               <tr><td colspan="2">Setting item id:</td><tr>
 
-               <tr><td class="tabtxt" align="center"><input type="radio" <?php if ($this->itemId == "new") echo "CHECKED"; ?> name="itemId" value="new"></td>
-                <td class="tabtxt">Create new id</td>
+               <tr><td><input type="radio" <?php if ($this->itemId == "new") echo "CHECKED"; ?> name="itemId" value="new"></td>
+                <td>Create new id</td>
                </tr>
                <tr>
-               <td class="tabtxt" align="center"><input type="radio" <?php if ($this->itemId == "old") echo "CHECKED"; ?> name="itemId" value="old"></td>
-               <td class="tabtxt"><?php
+               <td><input type="radio" <?php if ($this->itemId == "old") echo "CHECKED"; ?> name="itemId" value="old"></td>
+               <td><?php
                  echo _m("Map item id from"). '&nbsp';
                  FrmSelectEasy("itemIdMappedFrom",$inFields, $this->itemIdMappedFrom ?: ( !$set_default ? '' : $inFields[0]));
                  echo '<br>';

@@ -334,7 +334,7 @@ class Widget extends AA_Object implements NamedInterface {
         }
         $nrows = ceil(count($records) / $ncols);
         $class = $class ? "class=\"$class\"" : '';
-        $ret = "<table border=0 cellspacing=0 $class>";
+        $ret = "<table $class>";
         for ($irow = 0; $irow < $nrows; ++$irow) {
             $ret .= '<tr>';
             for ($icol = 0; $icol < $ncols; ++$icol) {
@@ -348,7 +348,7 @@ class Widget extends AA_Object implements NamedInterface {
     }
 
     public static function _saveIcon($base_id, $cond = true, $pos = 'right', $offset = -12) {
-        return !$cond ? '' : '<img width=16 height=16 border=0 title="' . _m('To save changes click here or outside the field.') . '" alt="' . _m('Save') . '" class="' . $base_id . 'ico" src="' . AA_INSTAL_PATH . "images/px.gif\" style=\"position:absolute; $pos:$offset" . "px; top:-3px;\">";
+        return !$cond ? '' : '<img width=16 height=16 title="' . _m('To save changes click here or outside the field.') . '" alt="' . _m('Save') . '" class="' . $base_id . 'ico" src="' . AA_INSTAL_PATH . "images/px.gif\" style=\"position:absolute; $pos:$offset" . "px; top:-3px;\">";
     }
 
     /** Creates base widget HTML, which will be surrounded by Live, Ajxax
@@ -392,11 +392,11 @@ class Widget extends AA_Object implements NamedInterface {
      */
     public function stdFormStart($aa_property) {
         $ret = "\n<tr class=\"formrow{formpart} fieldstart cont-" . varname4form($aa_property->getId()) . "\">";
-        $ret .= "\n <td class=tabtxt><b>" . $aa_property->getName() . "</b>";
+        $ret .= "\n <th>" . $aa_property->getName() ;
         if ($aa_property->isRequired()) {
             $ret .= "&nbsp;*";
         }
-        $ret .= "</td>\n <td>";
+        $ret .= "</th>\n <td>";
         return $ret;
     }
 

@@ -166,7 +166,7 @@ $apage->addRequire(get_aa_url('javascript/manager.min.js?v='.AA_JS_VERSION ));
 $apage->addRequire(get_aa_url('javascript/inputform.min.js?v='.AA_JS_VERSION ));
 
 // removed - maybe we will have to put it back
-//  <link rel="StyleSheet" href="'.AA_INSTAL_PATH.'tabledit.css" type="text/css"  title="TableEditCSS">
+//  <link rel="StyleSheet" href="'.AA_INSTAL_PATH.'tabledit.css"  title="TableEditCSS">
 // echo getHtmlareaJavascript($slice_id);
 
 $apage->printHead($err, $Msg);

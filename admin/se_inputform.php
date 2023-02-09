@@ -398,11 +398,11 @@ $apage->printHead($err, $Msg);
 
 $form_buttons = [
     "update"   => ["type"=>"hidden","value"=>"1"],
-                      "fid"      => ["type"=>"hidden", "value"=>$fid],
-                      "update",
-                      "upd_edit" => ["type"=>"submit", "value"=>_m("Update & Edit")],
-                      "cancel2"   => ['value'=>_m('Show History'), "url"=>\AA\Util\ChangesMonitor::getHistoryUrl("F".AA_Fields::createShortId($fid).'@'.pack_id(AA::$module_id))],
-                      "cancel"   => ["url"=>"se_fields.php" .(AA_Fields::isSliceField($fid) ? '?slice_fields=1':'')]
+    "fid"      => ["type"=>"hidden", "value"=>$fid],
+    "update",
+    "upd_edit" => ["type"=>"submit", "value"=>_m("Update & Edit")],
+    "cancel2"  => ['value'=>_m('Show History'), "url"=>\AA\Util\ChangesMonitor::getHistoryUrl("F".AA_Fields::createShortId($fid).'@'.pack_id(AA::$module_id))],
+    "cancel"   => ["url"=>"se_fields.php" .(AA_Fields::isSliceField($fid) ? '?slice_fields=1':'')]
 ];
 
 FrmTabCaption(_m("Field properties") . ': ' . safe($fld['name'] . ' (' . $fld['id'] . ')'), $form_buttons);
@@ -413,12 +413,12 @@ $tab_separator = "\n<tr><td colspan=2><hr></td></tr>\n";
 
 echo "
      <tr>
-      <td class=tabtxt><b>". _m("Input type") ."</b></td>
-      <td class=tabtxt>";
+      <th>". _m("Input type") ."</th>
+      <td>";
        FrmSelectEasy("input_show_func_f", $isc_arr, $input_show_func_f);
 
       echo "<div class=tabhlp>". _m("Input field type in Add / Edit item.") ."</div>
-            <table border=0 cellspacing=0 cellpadding=4 bgcolor=\"". COLOR_TABBG ."\">
+            <table>
              <tr>
               <td><b>". _m("Constants") ."</b> ";
                FrmSelectEasy("input_show_func_c", $constants, $input_show_func_c);
@@ -432,8 +432,8 @@ echo "
               </td>
              </tr>
             </table>
-            <table border=0 cellpadding=0 cellspacing=0 width=\"100%\">
-                <tr><td class=tabtxt><b>"._m("Parameters")."</b></td>
+            <table>
+                <tr><th>"._m("Parameters")."</th>
                 <td class=tabhlp><a href='javascript:CallParamWizard (\"INPUT_TYPES\",\"input_show_func_f\",\"input_show_func_p\")'><b>"
                  ._m("Help: Parameter Wizard")."</b></a></td></tr></table>
                 <textarea name=\"input_show_func_p\" rows=4 cols=50 wrap=\"virtual\">". safe($input_show_func_p) ."</textarea>
@@ -444,16 +444,16 @@ FrmInputChBox("translation", _m("Allow translation"), $translation, false, '', 1
 echo $tab_separator;
 echo "
      <tr>
-      <td class=tabtxt><b>". _m("Default") ."</b></td>
-      <td class=tabtxt>";
+      <th>". _m("Default") ."</th>
+      <td>";
         // txt and qte is the same, so it is better to use the only one
         if ($input_default_f == 'qte') {
             $input_default_f = 'txt';
         }
         FrmSelectEasy("input_default_f", AA_Components::getClassArray('AA_Generator_'), $input_default_f);
       echo "<div class=tabhlp>". _m("How to generate the default value") ."</div>
-            <table border=0 cellpadding=0 cellspacing=0 width=\"100%\">
-                <tr><td class=tabtxt><b>"._m("Parameters")."</b></td>
+            <table>
+                <tr><th>"._m("Parameters")."</th>
                 <td class=tabhlp><a href='javascript:CallParamWizard (\"DEFAULT_VALUE_TYPES\",\"input_default_f\",\"input_default\")'><b>"
                  ._m("Help: Parameter Wizard")."</b></a></td></tr></table>
             <input type=\"text\" name=\"input_default\" class=aa-w-full value=\"". safe($input_default) ."\">
@@ -462,11 +462,11 @@ echo "
 echo $tab_separator;
 echo "
      <tr>
-         <td class=tabtxt><b>". _m("Validate") ."</b></td>
-         <td class=tabtxt>";
+         <th>". _m("Validate") ."</th>
+         <td>";
          FrmSelectEasy("input_validate_f", getSelectBoxFromParamWizard($VALIDATE_TYPES), $input_validate_f);
-         echo "<table border=0 cellpadding=0 cellspacing=0 width=\"100%\">
-             <tr><td class=tabtxt><b>"._m("Parameters")."</b></td>
+         echo "<table>
+             <tr><th>"._m("Parameters")."</th>
              <td class=tabhlp><a href='javascript:CallParamWizard (\"VALIDATE_TYPES\",\"input_validate_f\",\"input_validate_p\")'><b>"
              ._m("Help: Parameter Wizard")."</b></a></td></tr></table>
          <input type=\"text\" name=\"input_validate_p\" class=aa-w-full value=\"". safe($input_validate_p) ."\">
@@ -476,8 +476,8 @@ echo "
 echo $tab_separator;
 echo "
      <tr>
-         <td class=tabtxt><b>". _m("Stored as") ."</b></td>
-         <td class=tabtxt>";
+         <th>". _m("Stored as") ."</th>
+         <td>";
          if ($fld['in_item_tbl']) {
              echo _m('Stored in <em>item</em> table - it is not possible to change store method');
          } else {
@@ -493,12 +493,12 @@ echo "
 echo $tab_separator;
 echo "
      <tr>
-         <td class=tabtxt><b>". _m("Insert") ."</b></td>
-         <td class=tabtxt>";
+         <th>". _m("Insert") ."</th>
+         <td>";
          FrmSelectEasy("input_insert_func_f", AA_Components::getClassArray('AA_Inserter_'), $input_insert_func_f);
          echo "<div class=tabhlp>"._m("Defines how value is stored in database.")."</div>
-         <table border=0 cellpadding=0 cellspacing=0 width=\"100%\">
-             <tr><td class=tabtxt><b>"._m("Parameters")."</b></td>
+         <table>
+             <tr><th>"._m("Parameters")."</th>
              <td class=tabhlp><a href='javascript:CallParamWizard (\"INSERT_TYPES\",\"input_insert_func_f\",\"input_insert_func_p\")'><b>"
              ._m("Help: Parameter Wizard")."</b></a></td></tr></table>
          <textarea name=\"input_insert_func_p\" rows=3 cols=50 wrap=\"virtual\">". safe($input_insert_func_p) ."</textarea>
@@ -515,8 +515,8 @@ FrmTextarea(  "input_before", _m("Before HTML code"), $input_before, 4, 50, fals
 echo $tab_separator;
 echo "
      <tr>
-      <td class=tabtxt><b>". _m("Feeding mode") ."</b></td>
-      <td class=tabtxt>";
+      <th>". _m("Feeding mode") ."</th>
+      <td>";
         FrmSelectEasy("feed", inputFeedModes(), $feed);
       echo "<div class=tabhlp>". _m("Should the content of this field be copied to another slice if it is fed?") ."</div>
       </td>
@@ -544,10 +544,10 @@ for ($iAlias=1; $iAlias <= 3; ++$iAlias) {
     $aname_row     = "<div class=\"flex f-baseline\">";
     $aname_row    .=  "<div>_#<input name=\"$alias_name\" $alias_id_att type=text size=16 maxlength=8 value=\"$alias_value\" pattern=\"[A-Z0-9_#]{8}\" placeholder=\""._m("8 CHARS"). "\" title=\""._m("8 UPPERCASE letters or _")."\"></div>";
     $aname_row    .=  "<label class=\"sz-xs pr-1 pl-1\">$disbled_chb"._m('Disabled')."</label>";
-    $aname_row    .=  "<button type=button onclick=\"navigator.clipboard.writeText('_#'+document.querySelector('input[name=$alias_name]').value).then(() => { AA_Message('Copied to clipboard','info'); });\" class=\"btn-s\" title=\""._m('Copy to clipboard')."\">";
+    $aname_row    .=  "<button type=button onclick=\"navigator.clipboard.writeText('_#'+document.querySelector('input[name=$alias_name]').value).then(() => { AA_Message('Copied to clipboard','info'); });\" title=\""._m('Copy to clipboard')."\">";
     $aname_row    .=   '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#584011" viewBox="0 0 16 16"><path d="M9.5 0a.5.5 0 0 1 .5.5.5.5 0 0 0 .5.5.5.5 0 0 1 .5.5V2a.5.5 0 0 1-.5.5h-5A.5.5 0 0 1 5 2v-.5a.5.5 0 0 1 .5-.5.5.5 0 0 0 .5-.5.5.5 0 0 1 .5-.5h3Z"></path><path d="M3 2.5a.5.5 0 0 1 .5-.5H4a.5.5 0 0 0 0-1h-.5A1.5 1.5 0 0 0 2 2.5v12A1.5 1.5 0 0 0 3.5 16h9a1.5 1.5 0 0 0 1.5-1.5v-12A1.5 1.5 0 0 0 12.5 1H12a.5.5 0 0 0 0 1h.5a.5.5 0 0 1 .5.5v12a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5v-12Z"></path><path d="M10.854 7.854a.5.5 0 0 0-.708-.708L7.5 9.793 6.354 8.646a.5.5 0 1 0-.708.708l1.5 1.5a.5.5 0 0 0 .708 0l3-3Z"></path></svg>'; // https://icons.getbootstrap.com/
     $aname_row    .=  "</button>";
-    $aname_row    .=  "<input type=button value=\""._m('Reset')."\" class=\"btn-s\" onclick=\"ResetAlias($iAlias)\">";
+    $aname_row    .=  "<input type=button value=\""._m('Reset')."\" onclick=\"ResetAlias($iAlias)\">";
     $aname_row    .= "</div>";
 
     FrmStaticText(_m("Alias")." $iAlias", $aname_row,'',"", false);

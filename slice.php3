@@ -587,7 +587,7 @@ if ($zids->count() > 0) {
         echo $scr->getNavbar();
     }
 } else {
-    // test if the the noitem_msg is filled (be carefull - "0" should be considered as filled)
+    // test if the noitem_msg is filled (be careful - "0" should be considered as filled)
     echo (isset($slice_info['noitem_msg']) AND (strlen($slice_info['noitem_msg']) > 0)) ?               // <!--Vacuum--> is keyword for removing 'no item message'
           str_replace( '<!--Vacuum-->', '', AA::Stringexpander()->unalias($slice_info['noitem_msg'])) : ("<div>"._m("No item found") ."</div>");
 }

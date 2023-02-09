@@ -212,7 +212,7 @@ function update_language_files($aadir, $destdir)
         }
     }
     unlink($logfile);
-    echo '<font color="red"><b>Update Language Files has FINISHED</b></font><Br>';
+    echo '<span style="color: red; "><b>Update Language Files has FINISHED</b></span><Br>';
 }
 
 // ----------------------------------------------------------------------------
@@ -254,13 +254,13 @@ echo '
 <HEAD><TITLE>Mini GetText</TITLE></HEAD>
 <BODY>
 <FORM name="f" METHOD="post" ACTION="index.php3">
-<table border="1"><tr><td valign="top">
+<table><tr><td>
     <h1>Mini GetText maintenance</h1>
     <p>AA dir: <b>'.$aadir.'</b><br>
     Destination dir: <b>'.$destdir.'</b><br>
     Languages: <b>'.$langs2print.'</b>
     </p>
-</td><td valign="top">
+</td><td>
     <p>This script creates and updates mini-gettext language files. ';
 
 if ($show_create_related)
@@ -271,11 +271,11 @@ echo '</p>
 
     <p>If some settings are not OK, edit them in the script source file.</p>
 </td></tr>
-<tr><td valign="top" colspan="2">
+<tr><td colspan="2">
     <br><h2>Update language files</h2>
 </td></tr>
-<tr><td valign="top">
-    <table border="1">
+<tr><td>
+    <table>
     <tr><td colspan=2>generate:
                        <br><input type="radio" name="file_type" value="php3" checked> .php3 files (standard)
                        <br><input type="radio" name="file_type" value="po"> .PO files (gettext .PO files - can\'t be used directly in AA)</td></tr>
@@ -301,7 +301,7 @@ echo '
 
     <INPUT type="submit" name="cmd" value="update language files">
 </td>
-<td valign="top">
+<td>
     <p>This action will update the language files in the Destination dir.
     You should:
     <ol><li>copy files from <tt>'.$aadir.'include/lang</tt> to <tt>'.$destdir.'</tt></li>
@@ -319,29 +319,29 @@ echo '</td></tr>';
 
 if ($show_create_related) {
     echo '
-    <tr><td valign="top" colspan="2">
+    <tr><td colspan="2">
         <br><h2>Convert scripts</h2>
     </td></tr>
-    <tr><td valign="top">
+    <tr><td>
         <p>Warning: Because the file conversion is a long action, perhaps the server will time out
            during the operation. Just keep refreshing (Ctrl+R) this page until the server finishes.</p>
         <INPUT type="submit" name="cmd" value="convert scripts">
     </td>
-    <td valign="top">
+    <td>
         <p>This will convert the scripts by replacing all occurences of L_ language constants
            by appropriate <tt>_m()</tt> calls. Translations are taken from the lang file <tt>'.$translate_lang_file.'</tt>.</p>
         <p>All files in subdirs <tt>'.join(", ",$translate_dirlist).'</tt> of <tt>'.$aadir.'</tt> will be converted and the results placed into <tt>'.$translateddir.'</tt>.</p>
     </td></tr>
 
-    <tr><td valign="top" colspan="2">
+    <tr><td colspan="2">
         <br><h2>Create logs</h2>
     </td></tr>
-    <tr><td valign="top">
+    <tr><td>
         <p>Call "create logs" several times until the message "All logs created" appears.</p>
 
         <INPUT type="submit" name="cmd" value="create logs">
     </td>
-    <td valign="top">
+    <td>
         <p>This action is needed only the first time you prepare your PHP scripts
            for mini-gettext usage.</p>
         <p>It creates log files from old language files, one log file for one language a time.</p>

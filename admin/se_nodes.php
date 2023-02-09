@@ -120,8 +120,8 @@ $form_buttons = ["submit","cancel"=> ["url"=>"se_fields.php"]];
 FrmTabCaption(_m("Remote node administration"));
 ?>
       <tr><td colspan="2"><?php echo _m("Known remote nodes") ?></td></tr>
-      <tr><td align="center" colspan="2">
-      <select name="nodes" class="tabtxt" size="5">
+      <tr><td colspan="2">
+      <select name="nodes" size="5">
       <?php
         if (isset($nodes) && is_array($nodes)) {
             foreach ($nodes as $name) {
@@ -130,7 +130,7 @@ FrmTabCaption(_m("Remote node administration"));
         }
       ?>
       </select>
-    <tr><td colspan=2 align="center">
+    <tr><td colspan=2>
       <input type="button" value="<?php echo _m("Edit") ?>" onclick="ActionGo('edit');">
       <input type="button" value="<?php echo _m("Delete") ?>" onclick="ActionGo('delete');">
       <input type="button" value="<?php echo _m("Add") ?>" onclick="ActionGo('add');">

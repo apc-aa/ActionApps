@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>ActionApps - Developers notes</title>
-  <link rel=stylesheet type="text/css" href="devnotes.css">
+  <link rel=stylesheet href="devnotes.css">
 </head>
 <body>
 <H2>Preface</H2>
@@ -81,7 +81,7 @@ original item. </P>
 <P>Needed fields are shown with "!" after field name.</P>
 <P>Here is the meaning of each field: </P>
 
-<table border=1 cellSpacing=2 valign="TOP" bgColor=#eeeeee>
+<table>
 <tr>
     <td>Headline</td>
     <td>headline (always needed)</td>
@@ -175,7 +175,7 @@ accessible from <EM>index.php3</EM> page. It is accessible only to users, which 
 
 
 <h3>Main slice settings - Slice</h3>
-<table border=1 cellSpacing=2 valign="TOP" bgColor=#eeeeee>
+<table>
 <tr>
     <td>Headline</td>
     <td>- slice name<br>- shown as headline in slice.php3 (slice view)</td>
@@ -267,7 +267,7 @@ type of authentication (like SQL database etc.), but it is important to
 developers, not users. For users is important, that we set up four different
 roles, with different permissions. </P>
 
-<table border=1 cellSpacing=2 valign="TOP" bgColor=#eeeeee>
+<table>
 <tr>
     <td>Role</td>
     <td>Permission</td>
@@ -438,7 +438,7 @@ for slice compact view.</P>
 </tr>
 <tr>
     <td>
- <table border=1 cellSpacing=2 valign="TOP" bgColor=#eeeeee>
+ <table>
   <tr>
     <td>Top HTML</td>
     <td><code>&lt;table&gt;</code></td>
@@ -448,7 +448,7 @@ for slice compact view.</P>
     <td><code>&lt;tr&gt;&lt;td&gt;&lt;font face=Arial color="#808080" size=-2&gt;<span class=hlight>_POST_DATE</span> - &lt;/font&gt;<br>
        &lt;font color="#FF0000"&gt;&lt;strong&gt;&lt;a href="<span class=hlight>_HL_HREF</span>"&gt;<span class=hlight>_HEADLINE</span>&lt;/a&gt;&lt;/strong&gt;&lt;/font&gt;<br>
 &lt;font color=black size=-1&gt;<span class=hlight>_ABSTRACT</span>
-&lt;a href="<span class=hlight>_HL_HREF</span>"&gt;&lt;img src="images/fulltext.gif" width=65 height=14 alt="Full text" align=middle border=0&gt;&lt;/a&gt;&lt;br&gt;&lt;/font&gt;&lt;/td&gt;&lt;/tr&gt;</code>
+&lt;a href="<span class=hlight>_HL_HREF</span>"&gt;&lt;img src="images/fulltext.gif" width=65 height=14 alt="Full text"&gt;&lt;/a&gt;&lt;br&gt;&lt;/font&gt;&lt;/td&gt;&lt;/tr&gt;</code>
 </td>
   </tr>
   <tr>
@@ -465,12 +465,12 @@ for slice compact view.</P>
     <td><code>&lt;table&gt;<br><hr>&lt;tr&gt;&lt;td&gt;&lt;font face=Arial color="#808080" size=-2&gt;<span class=hlight>1/1/1999</span> - &lt;/font&gt;<br>
        &lt;font color="#FF0000"&gt;&lt;strong&gt;&lt;a href="<span class=hlight>http://web.ecn.cz/aauser/example/slice.shtml?sh_itm=efe015af18ae4f3fa53a51fa7853edf1</span>"&gt;<span class=hlight>Hello Ago</span>&lt;/a&gt;&lt;/strong&gt;&lt;/font&gt;<br>
 &lt;font color=black size=-1&gt;<span class=hlight>This is the item, where I send hello to Ago</span>
-&lt;a href="<span class=hlight>http://web.ecn.cz/aauser/example/slice.shtml?sh_itm=efe015af18ae4f3fa53a51fa7853edf1</span>"&gt;&lt;img src="images/fulltext.gif" width=65 height=14 alt="Full text" align=middle border=0&gt;&lt;/a&gt;&lt;br&gt;&lt;/font&gt;&lt;/td&gt;&lt;/tr&gt;<br><hr>
+&lt;a href="<span class=hlight>http://web.ecn.cz/aauser/example/slice.shtml?sh_itm=efe015af18ae4f3fa53a51fa7853edf1</span>"&gt;&lt;img src="images/fulltext.gif" width=65 height=14 alt="Full text"&gt;&lt;/a&gt;&lt;br&gt;&lt;/font&gt;&lt;/td&gt;&lt;/tr&gt;<br><hr>
 
 &lt;tr&gt;&lt;td&gt;&lt;font face=Arial color="#808080" size=-2&gt;<span class=hlight>12/4/1999</span> - &lt;/font&gt;<br>
        &lt;font color="#FF0000"&gt;&lt;strong&gt;&lt;a href="<span class=hlight>http://web.ecn.cz/aauser/example/slice.shtml?sh_itm=536e427a9b3e94acd53478270fff3211</span>"&gt;<span class=hlight>Database item</span>&lt;/a&gt;&lt;/strong&gt;&lt;/font&gt;<br>
 &lt;font color=black size=-1&gt;<span class=hlight>Second slice item from database</span>
-&lt;a href="<span class=hlight>http://web.ecn.cz/aauser/example/slice.shtml?sh_itm=536e427a9b3e94acd53478270fff3211</span>"&gt;&lt;img src="images/fulltext.gif" width=65 height=14 alt="Full text" align=middle border=0&gt;&lt;/a&gt;&lt;br&gt;&lt;/font&gt;&lt;/td&gt;&lt;/tr&gt;<br><hr>
+&lt;a href="<span class=hlight>http://web.ecn.cz/aauser/example/slice.shtml?sh_itm=536e427a9b3e94acd53478270fff3211</span>"&gt;&lt;img src="images/fulltext.gif" width=65 height=14 alt="Full text"&gt;&lt;/a&gt;&lt;br&gt;&lt;/font&gt;&lt;/td&gt;&lt;/tr&gt;<br><hr>
 &lt;/table&gt;</code></td>
 </tr>
 </table>
@@ -484,7 +484,7 @@ Except substitution of aliases program do one more thing
 with given format string. If program detects, that URL alias (like _HL_HREF) is
 empty in the database, whole &lt;a&gt; tag (if any) is removed.<BR>
                                 <br><STRONG>Example:<BR><BR></STRONG>
-<table border=1 cellSpacing=2 valign="TOP" bgColor=#eeeeee>
+<table>
 <tr>
     <td>Odd rows</td>
     <td>Some HTML code &lt;a href="<SPAN
@@ -495,8 +495,8 @@ empty in the database, whole &lt;a&gt; tag (if any) is removed.<BR>
     <td>Database contents</td>
     <td>
       <P><SPAN class=hlight>_HL_HREF</SPAN>&nbsp;= ""<BR><SPAN
-      class=hlight>_HEADLINE</SPAN>&nbsp;= "<FONT color=#0000ff>Item
-      title</FONT>"</P></td>
+      class=hlight>_HEADLINE</SPAN>&nbsp;= "<span style="color: #0000ff; ">Item
+      title</span>"</P></td>
 </tr>
 <tr>
     <td>Result HTML code</td>
@@ -517,7 +517,7 @@ substitution (it should be names with equal length).</P>
 redundant characters from final HTML code. For example, to remove braces in case
 database field&nbsp;is empty:</P>
 <P>
-<TABLE border=1 cellSpacing=2 valign="TOP" bgColor=#eeeeee>
+<TABLE>
 
   <TR>
     <TD>Format string</TD>
@@ -578,11 +578,10 @@ Slice&lt;/TITLE&gt;<BR>&nbsp;&lt;META content="text/html; charset=windows-1250"
 http-equiv=Content-Type&gt;<BR>&nbsp;&lt;META content="Example of NGO's slice"
 http-equiv=description&gt;<BR>&nbsp;&lt;LINK href="Example NGO's
 Slice_soubory/example.css" rel=
-stylesheet type=
-  text/css&gt;&lt;BR&gt;&lt;/HEAD&gt;<BR>&lt;BODY aLink=#ffd700
+stylesheet &gt;&lt;BR&gt;&lt;/HEAD&gt;<BR>&lt;BODY aLink=#ffd700
 background="Example NGO's Slice_soubory/back.gif"&gt;</P>
 <P>&lt;!-- Left
-column --&gt;<BR>&lt;TABLE align=left border=0 cellPadding=0
+column --&gt;<BR>&lt;TABLE
 width=150&gt;<BR>&nbsp; &lt;TR&gt;<BR>&nbsp;&nbsp;&nbsp;
 &lt;TD&gt;<BR>&lt;A&nbsp;href="<FONT
 color=#0000ff>http://web.ecn.cz/aauser/example/slice.shtml?highlight=1</FONT>"&gt;
@@ -644,7 +643,7 @@ blue. As you can see, you can control the content of slice.php3 by parameters
 added to URL. Here are the list of them: <BR><BR>
 
 
-<table border=1 cellSpacing=2 valign="TOP" bgColor=#eeeeee>
+<table>
 <tr>
     <td>Parameter</td>
     <td>Appearance</td>

@@ -124,7 +124,7 @@ $form_buttons = ["testall" => ["type"=>"submit", "value"=>_m("Test All")]];
 
 //$destinations = array_flip(array_unique($COLNODO_DOMAINS));
 
-echo getFrmTabCaption(_m('Optimalizations'), $form_buttons, 'class="aa-table"');
+echo getFrmTabCaption(_m('Optimalizations'), $form_buttons);
 foreach ( $optimize_names as $i => $name ) {
     FrmStaticText($name, $optimize_descriptions[$i], '', '', false);
 }

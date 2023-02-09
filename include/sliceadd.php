@@ -45,14 +45,13 @@ unset($temp_slices['41415f436f72655f4669656c64732e2e']);
 FrmTabCaption(_m("Slice"));
 
 if (isset( $templates ) AND is_array( $templates ) AND isset( $temp_slices ) AND is_array( $temp_slices )) {
-    echo "<tr><td class=tabtxt colspan=4>" . _m("To create the new Slice, please choose a template.\n        The new slice will inherit the template's default fields.  \n        You can also choose a non-template slice to base the new slice on, \n        if it has the fields you want.") . "</TD></TR>";
+    echo "<tr><td colspan=4>" . _m("To create the new Slice, please choose a template.\n        The new slice will inherit the template's default fields.  \n        You can also choose a non-template slice to base the new slice on, \n        if it has the fields you want.") . "</TD></TR>";
 }
-echo '<tr><td class="tabtxt" colspan="2"><input type="hidden" name="no_slice_id" value="1"></td></tr>';
+echo '<tr><td colspan="2"><input type="hidden" name="no_slice_id" value="1"></td></tr>';
 
 
 if ( isset( $templates ) AND is_array( $templates )) {
-    echo "<tr><td width=\"20%\" class=\"tabtxt\"><b>". _m("Template") ."</b>";
-    echo "</td><td width=\"60%\">";
+    echo "<tr><th width=\"20%\">". _m("Template"). "</th><td width=\"60%\">";
     FrmSelectEasy('template_id',$templates);
     echo '</td><td width=\"20%\">';
     if ($wizard) {
@@ -62,12 +61,11 @@ if ( isset( $templates ) AND is_array( $templates )) {
     }
     echo '</td></tr>';
 } else {
-    echo "<tr><td class=\"tabtxt\" colspan=\"2\">". _m("No templates") ."</td></tr>";
+    echo "<tr><td colspan=\"2\">". _m("No templates") ."</td></tr>";
 }
 
 if ( isset( $temp_slices ) AND is_array( $temp_slices )) {
-    echo "<tr><td class=\"tabtxt\"><b>". _m("Slice") ."</b>";
-    echo "</td>\n <td>";
+    echo "<tr><th>". _m("Slice") ."</th>\n <td>";
     FrmSelectEasy('template_id2',$temp_slices);
     echo '</td><td>';
     if ($wizard) {
@@ -77,7 +75,7 @@ if ( isset( $temp_slices ) AND is_array( $temp_slices )) {
     }
     echo '</td></tr>';
 } else {
-    echo "<tr><td class=\"tabtxt\" colspan=\"2\">". _m("No slices") ."</td></tr>";
+    echo "<tr><td colspan=\"2\">". _m("No slices") ."</td></tr>";
 }
 
 if ($$display_views_constants) {

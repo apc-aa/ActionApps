@@ -164,23 +164,23 @@ $form_buttons = [
 FrmTabCaption(_m("Content Pooling - Fields' mapping"), $form_buttons);
 ?>
         <tr>
-          <td align="left" class="tabtxt" align="center"><b><?php echo _m("Mapping from slice") . "&nbsp; "?></b>
+          <td><b><?php echo _m("Mapping from slice") . "&nbsp; "?></b>
           <?php FrmSelectEasy("from_slice_id", $impslices, $from_slice_id, "OnChange=\"ChangeFromSlice()\""); ?></td>
          </tr>
 <?php
 FrmTabSeparator(_m("Fields' mapping"));
 ?>
     <tr><td>
-      <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
+      <table>
         <tr>
-          <td class="tabtxt" align="center" colspan=2><b><?php echo _m("To") ?></b></td>
-          <td class="tabtxt" align="center" colspan=2><b><?php echo _m("From") ?></b></td>
-          <td class="tabtxt" align="center"><b><?php echo _m("Value") ?></b></td>
+          <td colspan=2><b><?php echo _m("To") ?></b></td>
+          <td colspan=2><b><?php echo _m("From") ?></b></td>
+          <td><b><?php echo _m("Value") ?></b></td>
         </tr>
 <?php
 foreach ($to_fields as $f_id => $f_name) {
-    echo "<tr><td class=\"tabtxt\"><b>$f_name</b></td>\n";
-    echo "<td class=\"tabtxt\">$f_id</td>\n";
+    echo "<tr><th>$f_name</th>\n";
+    echo "<td>$f_id</td>\n";
     echo "<td>";
     $val = "";
 
@@ -205,8 +205,8 @@ foreach ($to_fields as $f_id => $f_name) {
             break;
     }
     FrmSelectEasy("fmap[$f_id]",$from_fields,$sel);
-    echo "</td><td class=\"tabtxt\">$sel</td>";
-    echo "<td class=\"tabtxt\"> <input type=\"text\" name=\"fval[$f_id]\" value=\"$val\"></td>";
+    echo "</td><td>$sel</td>";
+    echo "<td> <input type=\"text\" name=\"fval[$f_id]\" value=\"$val\"></td>";
     echo "</tr>\n";
 }
 FrmTabEnd($form_buttons);

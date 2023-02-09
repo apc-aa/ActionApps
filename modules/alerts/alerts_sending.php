@@ -478,11 +478,11 @@ class AA_Collection {
         ];
 
 
-        $ret = "<br><table border=\"0\" cellspacing=\"0\" cellpadding=\"0\">";
+        $ret = "<br><table>";
         foreach ($ali as $aligroup) {
-            $ret .= "<tr><td class=\"tabtit\" colspan=\"2\"><b>&nbsp;" . $aligroup['group'] . "&nbsp;</b></td></tr>";
+            $ret .= "<tr><th colspan=\"2\">" . $aligroup['group'] . "</th></tr>";
             foreach ($aligroup["aliases"] as $alias => $desc) {
-                $ret .= "<tr><td class=\"tabtxt\">&nbsp;$alias&nbsp;</td><td class=\"tabtxt\">&nbsp;$desc&nbsp;</td></tr>";
+                $ret .= "<tr><td>&nbsp;$alias&nbsp;</td><td>&nbsp;$desc&nbsp;</td></tr>";
             }
         }
         $ret .= "</table>";

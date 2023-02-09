@@ -160,10 +160,10 @@ if (is_array($desc['params'])) {
 </head>
 
 <body onload="readParams()">
-<center>
+<div style="text-align: center;">
 
-    <table border="0" cellspacing="0" cellpadding="1" width="95%" bgcolor="<?php echo COLOR_TABTITBG ?>">
-        <tr><td align="center" class="tablename" width="100%"><?php echo $title ?></td></tr>
+    <table class="aa-table">
+        <tr class="aa-tbl-header"><th><?php echo $title ?></th></tr>
     </table>
 
     <form name="f" method="post" onSubmit="self.close()">
@@ -213,36 +213,36 @@ for ($i = 0, $ino = count($desc['examples']); $i < $ino; ++$i) {
                 }
         </script>
 
-        <table align=center width="95%" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>">
-            <tr><td class="tabtit" align="left">
+        <table class="aa-table">
+            <tr class="aa-tbl-header"><th>
                     <?php
                     if ($desc['name']) {
                         echo $desc['name'] . ": " . processSlashes($desc['desc']);
                     } else {
                         $what = $$list;
                         printf(_m("This is an undocumented %s. We don't recommend to use it."), $what['name']);
-                        echo "<p align=\"center\"><input type=\"submit\" value=\"" . _m("Close the wizard") . "\">";
-                        echo "</td></tr></table></body></html>";
+                        echo "<p><input type=\"submit\" value=\"" . _m("Close the wizard") . "\">";
+                        echo "</th></tr></table></body></html>";
                         exit;
                     }
 
                     echo '
-</td></tr>
+</th></tr>
 <tr><td>
-<table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="' . COLOR_TABBG . '" align="center">
-<tr><td class="tabtxt">';
+<table>
+<tr><td>';
 
                     // show the parameter boxes with hints
 
                     if (is_array($desc['params'])) {
                         echo _m("Available parameters: ") . "<br><br>";
-                        echo "<table align=\"left\" width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"2\">";
+                        echo "<table>";
                         $iparam = 0;
                         $example = "";
                         foreach ($desc['params'] as $param) {
-                            echo "<tr><td align=\"left\" size=\"50%\" class=\"tabtxt\" valign=\"top\">"
+                            echo "<tr><td size=\"50%\">"
                             . "<b>" . strtolower("$param[name]:") . "</b></td>
-            <td align=\"left\" class=\"tabtxt\">";
+            <td>";
                             echo GetWizardRow("param$iparam", $param);
                             echo "</td></tr>";
                             if ($iparam > 0) {
@@ -253,7 +253,7 @@ for ($i = 0, $ino = count($desc['examples']); $i < $ino; ++$i) {
                         }
                         echo "</table>";
                     } else {
-                        echo "<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"2\"><tr><td class=\"tabtxt\">";
+                        echo "<table><tr><td>";
                         $what = $$list;
                         printf(_m("This %s has no parameters.") . "<br>", strtolower($what['name']));
                         echo "</td></tr></table>";
@@ -262,17 +262,17 @@ for ($i = 0, $ino = count($desc['examples']); $i < $ino; ++$i) {
                     echo "
 </td></tr></table>
 </td></tr>
-<tr><td class=\"tabtit\" height=\"30\">";
+<tr><td height=\"30\">";
 
                     if (is_array($desc['examples'])) {
                         echo _m("Have a look at these examples of parameters sets:");
-                        echo "<table width=\"100%\" border=\"1\" cellspacing=\"1\" cellpadding=\"2\">";
+                        echo "<table>";
                         for ($i = 0, $ino = count($desc['examples']); $i < $ino; ++$i) {
                             $exm = $desc['examples'][$i];
-                            echo "<tr><td class=\"tabtit\">";
+                            echo "<tr class=\"aa-tbl-header\"><th>";
                             echo $exm['desc'];
-                            echo "</td><td class=\"tabtit\">";
-                            echo "<a href=\"javascript:useExample($i)\">" . _m("Show") . "</a></td></tr>";
+                            echo "</th><th>";
+                            echo "<a href=\"javascript:useExample($i)\">" . _m("Show") . "</a></th></tr>";
                         }
                         echo "</table>";
                     }
@@ -280,7 +280,7 @@ for ($i = 0, $ino = count($desc['examples']); $i < $ino; ++$i) {
                     $what = $$list;
                     echo $what['hint'];
                     echo '
-<p align="center">';
+<p>';
                     if (is_array($desc['params']))
                         echo '
     <input type="button" value="' . _m("OK - Save") . '" onclick="writeParams(); self.close()">&nbsp;&nbsp;

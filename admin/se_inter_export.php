@@ -116,7 +116,7 @@ $apage->printHead($err, $Msg);
 FrmTabCaption(_m("Inter node export settings"));
 ?>
       <tr><td colspan="2"><?php echo _m("Existing exports of the slice "). "<b>".AA_Slice::getModuleName(AA::$module_id)."</b>"; ?></td></tr>
-      <tr><td colspan="2" align="center">
+      <tr><td colspan="2">
         <select name="perms" size="5">
          <?php
            if ($perms && is_array($perms)) {
@@ -131,14 +131,14 @@ FrmTabCaption(_m("Inter node export settings"));
           ?>
         </select>
       </td></tr>
-      <tr><td colspan="2" align="center">
+      <tr><td colspan="2">
         <input type="button" VALUE="<?php echo _m("Delete") ?>" onClick = "Delete()">
        </td></tr>
 <?php
       FrmTabSeparator(_m("Insert new item"));
 ?>
-      <tr><td width="40%"><?php echo _m("Remote Nodes"); ?></td><td align="left">
-        <select name="r_nodes" class="tabtxt" size="5">
+      <tr><td width="40%"><?php echo _m("Remote Nodes"); ?></td><td>
+        <select name="r_nodes" size="5">
         <?php
           if ($nodes && is_array($nodes)) {
               foreach ($nodes as $n) {
@@ -149,7 +149,7 @@ FrmTabCaption(_m("Inter node export settings"));
         </select>
       </td></tr>
       <tr><td width="40%"><?php echo _m("User name"); ?></td>
-          <td align="left"><input type="text" name="user_name" size="40" value="<?php echo safe($user_name)?>" >
+          <td><input type="text" name="user_name" size="40" value="<?php echo safe($user_name)?>" >
       </td></tr>
 <?php
     FrmTabEnd([

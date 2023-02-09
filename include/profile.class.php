@@ -60,7 +60,7 @@ class AA_Profile {
      * @param string $module_id
      * @return AA_Profile
      */
-    static function getProfile($user_id, $module_id) {
+    static function getProfile($user_id, $module_id): AA_Profile {
         // AA_Profiles array
         static $instances = [];
         if (empty($instances[$user_id])) {

@@ -261,6 +261,7 @@ class AA_View {
         $format['selected_item']       = $selected_item;
         $format['id']                  = $this->fields['slice_id'];
         $format['vid']                 = $this->fields['id'];
+        $format['noitem_msg']          = $this->fields['noitem_msg'];
 
         $format['banners']             = $this->fields['banners'];
 

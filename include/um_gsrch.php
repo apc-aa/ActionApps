@@ -37,17 +37,17 @@
 
 ?>
 <form method="post" action="<?php echo StateUrl() ?>">
- <table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
-  <tr><td class="tabtit"><b>&nbsp;<?php echo _m("Groups")?></b></td></tr>
+ <table width="440" class="aa-table">
+  <tr class="aa-tbl-header"><th><?php echo _m("Groups")?></th></tr>
   <tr><td>
-    <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
+    <table>
      <tr>
         <td>&nbsp;</td>
         <td><input type="text" name="grp" value="<?php echo safe($grp)?>"></td>
         <td><input type="submit" name="GrpSrch" value="<?php echo _m("Search")?>"></td>
      </tr>
      <tr>
-        <td class="tabtxt"><b><?php echo _m("Group") ?></b></td>
+        <th><?php echo _m("Group") ?></th>
         <td><?php SelectGU_ID("selected_group", $groups, $selected_group) ?></td>
         <td><input type="submit" name="grp_edit" value="<?php echo _m("Edit")?>">&nbsp;
           <input type="submit" name="grp_del" value="<?php echo _m("Delete")?>">

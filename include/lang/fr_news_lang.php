@@ -4796,7 +4796,7 @@ $_m["You have the permission to add stored search globally. Do you want to add t
  = "Vous avez la permission de consid�rer des recherche globalement.  Voulez-vous consid�rer cette requ�te comme globale (commune � tous les usagers de la section)?";
 
 // include/searchbar.class.php, row 621
-$_m["Store"]
+$_m["Store search"]
  = "Ranger";
 
 // include/searchbar.class.php, row 636

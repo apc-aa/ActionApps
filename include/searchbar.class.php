@@ -520,20 +520,13 @@ class AA_Searchbar extends AA_Storable {
             $readonly = $this->search_row[$bar]->isReadonly();
         }
 
-        if ( $bar == 0 ) {   // first bar is described as 'SEARCH' others 'AND'
-            $searchtext = _m('Search');
-            $searchimage = "<a href='javascript:document.".$this->form_name. ".submit()'>".
-                           GetAAImage('search.gif', $searchtext, 15, 15) .'</a>';
-        } else {
-            $searchimage = GetAAImage('px.gif', '-', 15, 15);
-            $searchtext = _m('And');
-        }
+        $searchtext = ($bar == 0) ?  _m('Search') :  _m('And');   // first bar is described as 'SEARCH' others 'AND'
 
         // filter
-        $ret = "<tr class=\"leftmenuy\"><td class=\"search\">$searchimage</td><td><b>$searchtext</b></td>";
+        $ret = "<div class=\"aa-formgroup-inline".($readonly ? " aa-readonly" : '')."\"><div class='aa-sbrow-and'>$searchtext</div>";
         if ($readonly) {
-            $ret .= "<td class=\"tabtxteven\">".$this->fields[$fld]['name']."</td>";
-            $ret .= "<td class=\"tabtxteven\">";
+            $ret .= "<div class=\"aa-sbrow-fld\">".$this->fields[$fld]['name']."</div>";
+            $ret .= "<div class=\"aa-sbrow-op\">";
             switch ($oper) {
                 case "LIKE":
                 case "CONTAIN":  $ret .= _m('contains');    break;
@@ -544,18 +537,17 @@ class AA_Searchbar extends AA_Storable {
                 case "==":
                                  $ret .= _m('is');          break;
             }
-            $ret .= "</td>";
-            $ret .= "<td class=\"tabtxteven\">".$val."</td><td>$searchimage</td><td width=\"99%\"> &nbsp; </td>";
+            $ret .= "</div>";
+            $ret .= "<div class=\"aa-sbrow-val\">".$val."</div>";
         } else {
-            $ret .= "<td>";
+            $ret .= "<div class='aa-sbrow-fld'>";
             $ret .= getFrmSelectEasy("srchbr_field[$bar]", $search_arr, $fld, 'onchange="ChangeOperators(\''.$this->form_name.'\','.$bar.', \'\')"' );
-            $ret .= '</td><td>';
+            $ret .= '</div><div class="aa-sbrow-op">';
             $ret .= getFrmSelectEasy("srchbr_oper[$bar]", [' ' => ' '], null, 'onchange="OpenWindowIfRequest(\''.$this->form_name.'\',\''.$bar.'\',\''.get_admin_url("constants_sel.php").'\')" ');
-            $ret .= '</td><td>';
-            $ret .= "<input type=\"text\" name=\"srchbr_value[$bar]\" size=\"20\" onkeypress=\"if (event.keyCode == 13) document.".$this->form_name. ".submit();\"
-              value=\"$val\"></td><td>$searchimage</td><td width=\"99%\"> &nbsp; </td>";
+            $ret .= '</div><div class="aa-sbrow-val">';
+            $ret .= "<input type=\"text\" name=\"srchbr_value[$bar]\" size=\"20\" onkeypress=\"if (event.keyCode == 13) document.".$this->form_name. ".submit();\" value=\"$val\"></div>";
         }
-        $ret .= '</tr>';
+        $ret .= '</div>';
         return $ret;
     }
 
@@ -563,24 +555,20 @@ class AA_Searchbar extends AA_Storable {
      *
      */
     function get_bar_actions(): string {
-        $ret = "<tr class=\"leftmenuy\">
-
-               <td colspan=\"3\">
-               <input type=\"submit\" value=\"submit\" style=\"display:none\">
-               <a href=\"javascript:document.".$this->form_name. ".submit()\">". _m('Search') ."</a> /
-               <a href=\"javascript:SearchBarAction('".$this->form_name. "', 'clearsearch', false, false)\">". _m('Clear') ."</a>
-               </td>
-               <td colspan=\"2\">
-                <a href=\"javascript:SearchBarAction('".$this->form_name. "', 'bookmark', '"._m('Stored search name') ."',".
-                    ( !IfSlPerm(PS_BOOKMARK) ? "false" : "'". _m('You have the permission to add stored search globally. Do you want to add this query as global (common to all slice users)?')."'") .")\">". _m('Store') ."</a>";
-        $ret .= "</td>";
+        $ret  = '<div class="aa-sb-btns">';
+        $ret .=  '<button type="submit" class="btn btn-l">'._m('Search').'</button>';
+        $ret .=  '<button type="button" class="btn btn-l btn-secondary" onclick="SearchBarAction(\''.$this->form_name. "', 'clearsearch', false, false)\">". _m('Clear') ."</button>";
+        if ($this->show & MGR_SB_BOOKMARKS) {
+            $ret .= '<button type="button" class="btn btn-l btn-secondary" onclick="SearchBarAction(\'' . $this->form_name . "', 'bookmark', '" . _m('Stored search name') . "'," .
+                (!IfSlPerm(PS_BOOKMARK) ? "false" : "'" . _m('You have the permission to add stored search globally. Do you want to add this query as global (common to all slice users)?') . "'") . ")\">" . _m('Store search') . "</button>";
+        }
 
         if ($this->hint != "") {
-            $ret .= "<td>";
-            $ret .= getFrmMoreHelp($this->hint_url,"",$this->hint, true);
-            $ret .= "</td>";
+            $ret .= '<div class="aa-sb-hint">';
+            $ret .=  getFrmMoreHelp($this->hint_url,"",$this->hint, true);
+            $ret .= "</div>";
         }
-        $ret .= "</tr>";
+        $ret .= "</div>";
         return $ret;
     }
 
@@ -588,17 +576,16 @@ class AA_Searchbar extends AA_Storable {
      * Prints one order bar (one row)
      * @param int $bar which bar to print (index)
      */
-    function get_order_bar($bar) {
+    function get_order_bar($bar): string {
         $order_fields = $this->fields->getOrderArray();
         [$dir, $fld] = ( isset($this->order_row[$bar]) AND is_array($this->order_row[$bar]) ) ?  [safe($this->order_row[$bar]['dir']), $this->order_row[$bar]['field']] :  ["a", $order_fields[0]];
 
         $searchtext  = _m('Order');
-        $searchimage = "<a href=\"javascript:document.".$this->form_name. ".submit()\">". GetAAImage('order.gif', $searchtext, 15, 15) .'</a>';
-        $ret = "<tr class=\"leftmenuy\"><td class=\"search\">$searchimage</td><td><b>". str_replace(' ','&nbsp;',$searchtext). "</b></td><td>";
-        $ret .= getFrmSelectEasy("srchbr_order[$bar]", $order_fields, $fld);
-        $ret .= '</td><td colspan="2" class="leftmenuy"><label>';
-        $ret .= getFrmChBoxEasy("srchbr_order_dir[$bar]", $dir=='d');
-        $ret .= _m('Descending'). "</label></td><td>$searchimage</td><td width=\"99%\"> &nbsp; </td></tr>";
+        $ret =  '<div class="aa-formgroup-inline">';
+        $ret .=  "<div class=\"aa-orderrow-label\">$searchtext</div>";
+        $ret .=  "<div class=\"aa-orderrow-fld\">". getFrmSelectEasy("srchbr_order[$bar]", $order_fields, $fld).'</div>';
+        $ret .=  "<div class=\"aa-orderrow-dir\"><label>". getFrmChBoxEasy("srchbr_order_dir[$bar]", $dir=='d').' '. _m('Descending'). "</label></div>";
+        $ret .= "</div>";
         return $ret;
     }
 
@@ -606,18 +593,17 @@ class AA_Searchbar extends AA_Storable {
      *
      */
     function get_bar_bookmarks(): string {
-        return "<tr class=\"leftmenuy\">
-               <td colspan=\"2\"><b>". _m('Stored searches') ."</b></td>
-               <td>".
-               $this->bookmarks->getSelectbox() .
-               " <a href=\"javascript:SearchBarAction('".$this->form_name ."', 'bookmarkgo',     false, false)\">". _m('View')   ."</a>
-               </td>
-               <td colspan=\"4\">
-                 <span class=\"smalltext\"><a href=\"javascript:SearchBarActionConfirm('".$this->form_name ."', 'bookmarkupdate', '". _m("Are you sure to refine current search?") ."')\">". _m('Update') ."</a> /
-                 <a href=\"javascript:SearchBarAction('".$this->form_name ."', 'bookmarkrename', '". _m("Enter new name") ."', false)\">". _m('Rename') ."</a> /
-                 <a href=\"javascript:SearchBarActionConfirm('".$this->form_name ."', 'bookmarkdelete', '"._m("Are you sure to delete selected search?")."')\">". _m('Delete') ."</a></span>
-               </td>
-              </tr>";
+        $ret =  '<div class="aa-formgroup-inline">';
+        $ret .=  '<div class="aa-sb-bkmrks">'. $this->bookmarks->getSelectbox();
+        $ret .=   '<button type=button onclick="SearchBarAction(\''.$this->form_name ."', 'bookmarkgo', false, false)\">". _m('View') .'</button>';
+        $ret .=  '</div>';
+        $ret .=  '<div class="aa-sb-bkmrks-btns">';
+        $ret .=   '<button type="button" class="btn-secondary" onclick="SearchBarActionConfirm(\''.$this->form_name ."', 'bookmarkupdate', '". _m("Are you sure to refine current search?") ."')\">". _m('Update') ."</button>";
+        $ret .=   '<button type="button" class="btn-secondary" onclick="SearchBarAction(\''.$this->form_name ."', 'bookmarkrename', '". _m("Enter new name") ."', false)\">". _m('Rename') ."</button>";
+        $ret .=   '<button type="button" class="btn-secondary" onclick="SearchBarActionConfirm(\''.$this->form_name ."', 'bookmarkdelete', '"._m("Are you sure to delete selected search?")."')\">". _m('Delete') ."</button>";
+        $ret .=  '</div>';
+        $ret .= '</div>';
+        return $ret;
     }
 
     /** getBar function
@@ -625,9 +611,7 @@ class AA_Searchbar extends AA_Storable {
      */
     function getBar(): string {
 
-        $ret = '<input type="hidden" name="srchbr_akce" value="1">
-              <table width="100%" border="0" cellspacing="5" cellpadding="0"
-              class="noprint" bgcolor="'. COLOR_TABBG .'">';
+        $ret = '<div class="aa-ui-searchbar"><input type="hidden" name="srchbr_akce" value="1">';
 
         // print searchbars
         $count_sb = 0;
@@ -647,14 +631,16 @@ class AA_Searchbar extends AA_Storable {
             }
         }
 
+        $ret .= $this->get_bar_actions();
+
         if ($this->show & MGR_SB_BOOKMARKS) {
-            $ret .= $this->get_bar_actions();
             if ( $this->bookmarks->count() > 0 ) {
+                $ret  .= "<strong class='aa-form-label'>"._m('Stored searches').'</strong>';
                 $ret .= $this->get_bar_bookmarks();
             }
         }
 
-        $ret .= '</table>
+        $ret .= '</div>
               <script>
              ';
         $ret .= AA_Operators::getJsDefinition();

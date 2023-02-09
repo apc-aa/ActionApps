@@ -41,35 +41,20 @@ const D_SPACE_IMG = 4;
 const D_T_IMG = 5;
 const D_ITEM = 6;
 
-/** PrintImg function
- * @param $src
- * @param $width = 0
- * @param $height = 0
- * @param $path = 'rel'
- * @return string
- */
-function PrintImg($src, $width=0, $height=0, $path='rel') {
-    $width  = $width ? "width=\"$width\"" : "";
-    $height = $height ? "height=\"$height\"" : "";
-    $img    = (($path=='rel') ? "../images/$src" : AA_INSTAL_PATH."images/$src");
-    return "<img src=\"$img\" $width $height border='0'>";
-}
-
-$imgsrc = [
-    D_EXPAND_IMG => PrintImg("d_expand.gif",9,21),
-    D_HLINE_IMG  => PrintImg("d_hline.gif",9,21),
-    D_VLINE_IMG  => PrintImg("i.gif",9,21),
-    D_CORNER_IMG => PrintImg("l.gif",9,21),
-    D_SPACE_IMG  => PrintImg("blank.gif",12,21),
-    D_T_IMG      => PrintImg("t.gif",9,21),
-    D_ITEM       => ""
-];
 /** GetImageSrc function
  * @param $img
  * @return
  */
 function GetImageSrc($img) {
-    global $imgsrc;
+    $imgsrc = [
+        D_EXPAND_IMG => GetAAImage('d_expand.gif','',9,21),
+        D_HLINE_IMG  => GetAAImage('d_hline.gif', '',9,21),
+        D_VLINE_IMG  => GetAAImage('i.gif',       '',9,21),
+        D_CORNER_IMG => GetAAImage('l.gif',       '',9,21),
+        D_SPACE_IMG  => GetAAImage('blank.gif',   '',12,21),
+        D_T_IMG      => GetAAImage('t.gif',       '',9,21),
+        D_ITEM       => ""
+    ];
     return $imgsrc[$img];
 }
 
@@ -202,7 +187,7 @@ function SetImagesContent(&$content, $d_id, $images, $showimages, $imgtags) {
             $imgs.= $imgtags[$img];
         }
     } else {
-        $imgs = PrintImg("blank.gif",count($images)*15, 21, 'abs');
+        $imgs = GetAAImage('blank.gif','',count($images)*15, 21);
     }
     $content[$d_id]["d_treeimages...."][0]['value'] = $imgs;
 }
@@ -223,7 +208,7 @@ function GetDiscussionFormat($view_info) {
     $format['d_order']      = $VIEW_TYPES_INFO['discus']['modification'][$view_info['modification']];
     $format['slice_id']     = $view_info['slice_id'];
     $format['d_form']       = $view_info['remove_string'];
-    $format['d_spacer']     = ($view_info['aditional']  ?: '<img src="'.AA_INSTAL_PATH.'images/blank.gif" width="20" height="1" border="0">');
+    $format['d_spacer']     = ($view_info['aditional']  ?: '<img src="'.AA_INSTAL_PATH.'images/blank.gif" width="20" height="1">');
     $format['d_sel_butt']   = ($view_info['aditional2'] ?: '<input type="button" name="sel_ids" value="' ._m("Show selected"). '" onClick="showSelectedComments()" class="discbuttons">');
     $format['d_all_butt']   = ($view_info['aditional3'] ?: '<input type="button" name="all_ids" value="' ._m("Show all"). '" onClick="showAllComments()" class="discbuttons">');
     $format['d_add_butt']   = ($view_info['aditional4'] ?: '<input type="button" name="add_disc" value="' ._m("Add new"). '" onClick="showAddComments()" class="discbuttons">');

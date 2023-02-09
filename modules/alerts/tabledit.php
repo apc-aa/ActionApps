@@ -85,11 +85,11 @@ $apage->printHead($err, $Msg);
 // called before menu because of Item Manager
 ProcessFormData("GetAlertsTableView", $val, $cmd);
 
-echo "<TABLE width='100%'><TR valign=center><TD>";
+echo "<TABLE width='100%'><TR><TD>";
 if ($tableview["children"]) {
     echo "</TD><TD>";
     foreach ($tableview["children"] as $chviewid => $child) {
-        echo "<FONT class='tabtxt'><B><a href='#$chviewid'>$child[header]</a></B></FONT> ";
+        echo "<span><B><a href='#$chviewid'>$child[header]</a></B></span> ";
     }
 }
 echo "</TD></TR></TABLE>";

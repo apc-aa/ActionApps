@@ -40,11 +40,11 @@ class HidWidget extends Widget
      */
     function stdFormStart($aa_property) {
         $ret  = "\n<tr class=\"formrow{formpart} fieldstart cont-".varname4form($aa_property->getId())."\" style=\"visibility:hidden; position:absolute\">";
-        $ret .= "\n <td class=tabtxt><b>".$aa_property->getName()."</b>";
+        $ret .= "\n <th>".$aa_property->getName();
         if ( $aa_property->isRequired() ) {
             $ret .= "&nbsp;*";
         }
-        $ret .= "</td>\n <td>";
+        $ret .= "</th>\n <td>";
         return $ret;
     }
 

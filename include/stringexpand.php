@@ -6469,7 +6469,7 @@ class AA_Req_Css extends AA_Req_Lib {
      */
     function getCode(): string {
         $loadtype = (($this->loadtype == 'async') ? "media=print onload=\"this.media='all'\"" : ( $this->loadtype ? "media=\"{$this->loadtype}\"" : ''));  // onload - trick to load css asynchronously - https://stackoverflow.com/questions/32759272/how-to-load-css-asynchronously
-        return "<link rel=stylesheet type=\"text/css\"" .$this->getIntegrity(). " href=\"{$this->url}\" $loadtype >";
+        return "<link rel=stylesheet" .$this->getIntegrity(). " href=\"{$this->url}\" $loadtype >";
     }
 
     /**  getExternal and getScript is counterpart to getCode, but used in AJAX calls - external for libs to load before the script is called
@@ -9054,7 +9054,7 @@ class AA_Stringexpand_Formantispam extends AA_Stringexpand_Nevercache {
 
     /**  */
     function expand() {
-        return '<style type="text/css">
+        return '<style>
            div.aaskryto { display:none };
         </style>
         <div class="aaskryto"><input type="text" name="answer" value=""></div>';
@@ -9180,7 +9180,7 @@ class AA_Stringexpand_Recompute extends AA_Stringexpand_Nevercache {
  *  can set style them. There are 8 classes tagcloud1 - tagcloud8.
  *  The styles could by:
  *
- *    <style type="text/css">
+ *    <style>
  *      ul.tagcloud li.tagcloud1 { font-size: 1.8em; font-weight: 800; }
  *      ul.tagcloud li.tagcloud2 { font-size: 1.6em; font-weight: 700; }
  *      ul.tagcloud li.tagcloud3 { font-size: 1.4em; font-weight: 600; }
@@ -9394,6 +9394,7 @@ class AA_Stringexpand_Manager extends AA_Stringexpand_Nevercache {
      * @return string
      */
     function expand($slices='', $field=null, $item_id=null, $code=null, $conds=null, $sort=null, $mode=null, $edit_code=null) {
+
         $hash       = get_short_hash('manager', $slices, $field, $item_id, $code, $conds, $sort, $mode, $edit_code);
         $cmdvar     = 'aamng_'.$hash;
         

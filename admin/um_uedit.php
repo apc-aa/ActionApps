@@ -266,7 +266,7 @@ FrmTabCaption(_m("Users"));
 ?>
  <tr><td>
    <form method="post" action="<?php echo StateUrl() ?>">
-    <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>" align="center">
+    <table>
      <tr>
             <td width="20%">&nbsp;</td>
             <td width="46%"><input type="text" name="usr" value="<?php echo safe($rusr)?>"></td>
@@ -282,9 +282,9 @@ FrmTabSeparator("");
 ?>
  <tr>
   <td><form name="f2" method="post" action="<?php echo StateUrl() ?>">
-    <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>" align="center">
-     <tr>
-            <td width="20%" class="tabtxt"><b><?php echo _m("User") ?></b></td>
+    <table>
+     <tr class="aa-tbl-header">
+            <th width="20%"><?php echo _m("User") ?></th>
             <td width="46%"><?php SelectGU_ID("selected_user", $users, $selected_user);
           ?></td>
             <td width="33%"><input type="submit" name="usr_edit" value="<?php echo _m("Edit")?>">&nbsp;
@@ -375,19 +375,19 @@ if ( !$add_submit AND !$usr_new) {
 
 
 
-//    echo '<tr><td width="190" align="center">'. _m("All Groups") .'</td>
+//    echo '<tr><td width="190">'. _m("All Groups") .'</td>
 //                    <td width="60">&nbsp;</td>
-//                    <td width="190" align="center">'. _m("User's Groups") .'</td></tr>
+//                    <td width="190">'. _m("User's Groups") .'</td></tr>
 //          <tr><td><input type="text" name="grp1_flt" value="'. safe($grp1_flt) .'">
 //                  <input type="submit" name="grp1_submit" value="'. _m("Search") .'"></td>
 //                    <td>&nbsp;</td>
 //                    <td>&nbsp;</td></tr>
-//          <tr><td align="center" valign="top">';
+//          <tr><td>';
 //                SelectGU_ID("all_groups_sel", array_diff_key($all_groups, $sel_groups), $all_groups_sel, "multi");
 //    echo '    </td>
-//              <td><input type="button" VALUE="  &#9654;  " onClick = "MoveSelected(document.fx.all_groups_sel, document.fx.sel_groups_sel\')" align=center><br><br>
-//                  <input type="button" VALUE="  &#9664;  " onClick = "MoveSelected(document.fx.sel_groups_sel, document.fx.all_groups_sel\')" align=center></td>
-//                    <td align="center" valign="TOP">';
+//              <td><input type="button" VALUE="  &#9654;  " onClick = "MoveSelected(document.fx.all_groups_sel, document.fx.sel_groups_sel\')"><br><br>
+//                  <input type="button" VALUE="  &#9664;  " onClick = "MoveSelected(document.fx.sel_groups_sel, document.fx.all_groups_sel\')"></td>
+//                    <td>';
 //                SelectGU_ID("sel_groups_sel", $sel_groups, $sel_groups_sel, "multi");
 //    echo '    </td>
 //          </tr>';

@@ -1227,7 +1227,7 @@ class AA_Metabase {
 //          "cond"      => CheckPerms( AuthGetUid(), "slice", $slice_id, PS_MODP_EDIT_DESIGN),
 //          "title"     => $title,
 //          "caption"   => $title,
-            "attrs"     => ["table"=>"border=0 cellpadding=3 cellspacing=0 bgcolor='".COLOR_TABBG."'"],
+            "attrs"     => ["table"=>""],
 //          "gotoview"  => "polls_designs_edit",
         ];
 

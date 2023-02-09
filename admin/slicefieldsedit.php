@@ -44,6 +44,7 @@ require_once __DIR__ . "/../include/varset.php";
 require_once __DIR__ . "/../include/feeding.php";
 require_once __DIR__ . "/../include/itemfunc.php";
 require_once __DIR__ . "/../include/notify.php";
+require_once __DIR__ . "/../include/menu_util.php";
 
 if ( file_exists( "../include/usr_validate.php3" ) ) {
     require_once __DIR__."/../include/usr_validate.php3";

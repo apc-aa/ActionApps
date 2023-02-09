@@ -423,7 +423,7 @@ class cattree {
         // because Netscape 4 do not support dblclick event
         $js_form = "eval(document.$used_form.tree)";
         if ( $onWhat == 'dblclick' ) {
-            $ret .= '<div align="center"><br>
+            $ret .= '<div><br>
             <a href="javascript:GoToCategoryID(\'\', '.$js_form.', \''.$pathDiv.'\', \''.
             $cat_id_fld .'\')">'. _m('Switch to category') .'</a>
             </div>';

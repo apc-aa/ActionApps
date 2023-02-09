@@ -894,9 +894,11 @@ class AA_Object extends AA_Storable implements AA_iEditable {
     protected static function getManagerTopHtml($fields) {
         return '
           <table>
+          <thead>
             <tr>
-              <th>'.join("</th>\n<th>", array_merge( ['',_m('Action')], $fields->getFieldnamesArray(), [_m('ID'), _m('Owner ID'), _m('Owner')])).'</th>
+              <th scope=col>'.join("</th>\n<th scope=col>", array_merge( ['',_m('Action')], $fields->getFieldnamesArray(), [_m('ID'), _m('Owner ID'), _m('Owner')])).'</th>
             </tr>
+          </thead><tbody>
             ';
     }
 
@@ -975,7 +977,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
                                                 'even_row_format'  => "",
                                                 'odd_row_format'   => static::getManagerRowHtml($search_fields, $aliases, $buttons),
                                                 'compact_remove'   => "",
-                                                'compact_bottom'   => "</table></div><br>",
+                                                'compact_bottom'   => "</tbody></table></div><br>",
                                                 'noitem_msg'       => _m('No object found'). '<br>'
                  ],
                  'fields'               => $search_fields,

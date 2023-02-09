@@ -189,7 +189,7 @@ class inputform {
             if (!$slice_fields) {
                 $fields = $slice->getFields($slice_fields);
                 if (!array_find_fnc($fields, function ($f) { return $f->disable_insert_as_new(); })) {
-                    $buttons += inputform::_getButton('insert', 'submit', _m("Insert as new"), $profile->getProperty('ui_inputform', 'edit_btn_insert'));
+                    $buttons += inputform::_getButton('insert_new', 'submit', _m("Insert as new"), $profile->getProperty('ui_inputform', 'edit_btn_insert'));
                 }
                 if (strlen($profile->getProperty('ui_inputform', 'edit_btn_reset')) > 0) {
                     // reset button display just if it is defined in profile
@@ -224,15 +224,19 @@ class inputform {
                 <title>'. $page_title .'</title>
                 {generate:HEAD}
               </head>
-              <body '. $jstriggers->get('body') .' class="aa-ui">
-                <h1><b>' . $page_title .'</b></h1>';
+              <body '. $jstriggers->get('body') .' class="aa-ui">';
+
+            $html_start .= getMenu(''); // opens two divs - in all cases
+            if ($page_title) {
+                $html_start .= "\n<h1>$page_title</h1>";
+            }
 
             // you can add some html code by user profiles, above the form
             $html_start .= get_if($profile->getProperty('ui_inputform', $this->form4update ? 'edit_tophtml' : 'add_tophtml'), '');
 
             $html_start .= GetPrintArray( $this->messages['err'] );     // prints err or OK messages
 
-            $html_end = "{generate:FOOT}</body></html>";
+            $html_end = "</div></div>{generate:FOOT}</body></html>";
         }
 
         AA::Stringexpander()->addRequire("document.querySelectorAll('form').forEach(function(f) { f.addEventListener('submit', function() {sessionStorage.setItem('aa_pgtop', window.pageYOffset);});})", 'AA_Req_Load');
@@ -255,7 +259,8 @@ class inputform {
 
         echo $this->getFormStart();
 
-        echo getFrmTabCaption('', $buttons, 'id="inputtab"', 'id="inputtabrows"');
+        //echo getFrmTabCaption('', $buttons, 'id="inputtab"', 'id="inputtabrows"');
+        echo getFrmTabCaption('', $buttons, 'id="inputtab"');
         $tabs  = [];
         if ( $form_parts ) {
             for ( $idx=0; $idx <= $form_parts; $idx++ ) {
@@ -1059,14 +1064,15 @@ class AA_Inputfield {
 
     /** field_tr - begin of field row
      * @param bool $start
+     * @param bool $mark_single
      */
-    function field_tr($start=true) {
-        $start = $start ? ' fieldstart' : '';
+    function field_tr(bool $start=true, bool $mark_single=false) {
+        $start  = $start ? ' fieldstart' : '';
+        $start .= $mark_single ? ' aa-singlecol' : '';
         $this->echoo("\n<tr class=\"formrow{formpart}$start cont-".$this->varname."\">");
     }
 
-    /** field_name function
-     * Prints field name (and 'needed' sign - star) in table cell for inputform
+    /** Prints field name (and 'needed' sign - star) in table cell for inputform
      * @param $plus
      * @param $colspan
      * @param $name
@@ -1078,11 +1084,9 @@ class AA_Inputfield {
                         break;
         case 'secrow':  $this->field_tr(false);
         }
-        $this->echoo("\n <td class=\"tabtxt\" ".
-                      (($colspan==1) ? '': "colspan=\"$colspan\"").
-                      '><b>'. $name .'</b>');
+        $this->echoo("\n <th ". (($colspan==1) ? '': "colspan=\"$colspan\""). '>'. $name );
         $this->needed();
-        $this->echoo("</td>\n");
+        $this->echoo("</th>\n");
         if ( $plus=='plus' OR $plus=='secrow' ) {
             $this->echoo(' <td>');
         }
@@ -1145,7 +1149,7 @@ class AA_Inputfield {
             // conversions menu
             $convertor   = $conv ? $this->get_convertors() : false;
             if ( $convertor ) {
-                $this->echoo('  <table width="100%" border="0" cellspacing="0" cellpadding="" bgcolor="' . COLOR_TABBG . "\">\n   <tr><td>");
+                $this->echoo('  <table><tr><td>');
             }
 
             // show plaintext / html radio
@@ -1162,7 +1166,7 @@ class AA_Inputfield {
 
             if ( $convertor ) {
                 $this->echoo("</td>");
-                $this->echoo("<td align=\"right\">");
+                $this->echoo("<td>");
                 $this->echovar($convertor,   'conv');
                 $this->echoo("</td></tr>\n  </table>");
             } else {
@@ -1391,7 +1395,7 @@ class AA_Inputfield {
      *
      * @param int $rows
      * @param int $cols
-     * @param bool $single
+     * @param bool $single - mark row by class to be displayed as big textarea spanning two columns
      * @param bool $showrich_href - have we show "Show Editor" link? (if we want to, we have
      *                  to include /misc/htmlarea/aafunc.js script to the page
      * @param bool $showhtmlarea
@@ -1405,14 +1409,10 @@ class AA_Inputfield {
 
         $maxlen   = ($maxlength = (int)$maxlength) ? " maxlength=$maxlength" : '';
         $colsy    = ($cols = (int)$cols) ? " cols=$cols" : '';
-        $colspan  = $single ? 2 : 1;
-        $this->field_tr();
-        $this->field_name(false, $colspan);
-        if ($single) {
-            $this->echoo("</tr>");
-            $this->field_tr(false);
-        }
-        $this->echoo( ($colspan==1) ? '<td>' : "<td colspan=\"$colspan\">");
+        // $colspan  = $single ? 2 : 1;
+        $this->field_tr(true, (bool)$single);
+        $this->field_name();
+        $this->echoo(' <td>');
         $this->html_radio(!$showhtmlarea);
 
         if (!$showhtmlarea AND $showrich_href ) {
@@ -1511,7 +1511,7 @@ class AA_Inputfield {
                 if ($height > 0) {
                     $this->echoo("<div style=\"max-height:{$height}px; overflow:auto;\">");
                 }
-                $this->echoo('<table border="0" cellspacing="0">');
+                $this->echoo('<table>');
                 for ($irow = 0; $irow < $nrows; ++$irow) {
                     $ret  .= '<tr>';
                     for ($icol = 0; $icol < $ncols; ++$icol) {
@@ -1666,7 +1666,7 @@ class AA_Inputfield {
         $ret .= "</select>";
         $ret .= $this->presentFieldIndicator($name);
 
-        $this->echoo('<table border="0" cellspacing="0"><tr>');
+        $this->echoo('<table><tr>');
         if ($movebuttons) {
             $this->echoo("\n <td rowspan=\"2\">");
         } else {
@@ -1675,16 +1675,16 @@ class AA_Inputfield {
         $this->echovar( $ret );
         $this->echoo("</td>\n");
         if ($movebuttons) {
-             $this->echoo("<td valign=\"top\">");
+             $this->echoo("<td>");
              $this->echoo("<input type=\"button\" value=\" &#9650; \" ".
              " onClick=\"moveItem(this.parentNode.parentNode.parentNode.querySelector(&quot;select[name='$name']&quot;),'up');\">");
              $this->echoo('</td></tr>');
-             $this->echoo('<tr><td valign="bottom">');
+             $this->echoo('<tr><td>');
              $this->echoo("<input type=\"button\" value=\" &#9660; \" ".
              " onClick=\"moveItem(this.parentNode.parentNode.parentNode.querySelector(&quot;select[name='$name']&quot;), 'down');\">");
              $this->echoo("</td>");
         }
-        $this->echoo("</tr>\n <tr><td valign=\"bottom\" align=\"center\">\n");
+        $this->echoo("</tr>\n <tr><td>\n");
         if (strpos($actions,'R') !== false) {
             $this->echoo("<input type='button' value='". _m("Add") ."' onclick='OpenRelated(\"$name\", \"$sid\", \"$mode\", \"$design\", \"$whichitems\",\"".rawurlencode($conds)."\",\"".rawurlencode($condsrw)."\", \"".rawurlencode($slice_field)."\",\"".get_admin_url('related_sel.php')."\", \"".rawurlencode($sort_by)."\", \"".rawurlencode($listlen)."\" )'>\n");
         }
@@ -1737,7 +1737,7 @@ class AA_Inputfield {
     //    if ( $new_version ) {
     //        $varname = $this->varname;  // name without ending []
     //        $var_code = '
-    //        <table width="100%" border="0" cellpadding="0" cellspacing="0" class="formtable" id="rel'.$varname.'">
+    //        <table class="formtable" id="rel'.$varname.'">
     //          <tr>
     //            <th>'._m('Item').'</th>
     //            <th>'._m('Actions').'</th>
@@ -1773,7 +1773,7 @@ class AA_Inputfield {
     //        }
     //        $ret .= "</select>";
     //
-    //        $this->echoo('<table border="0" cellspacing="0"><tr>');
+    //        $this->echoo('<table><tr>');
     //        if ($movebuttons) {
     //            $this->echoo("\n <td rowspan=\"2\">");
     //        } else {
@@ -1782,16 +1782,16 @@ class AA_Inputfield {
     //        $this->echovar( $ret );
     //        $this->echoo("</td>\n");
     //        if ($movebuttons) {
-    //             $this->echoo("<td valign=\"top\">");
+    //             $this->echoo("<td>");
     //             $this->echoo("<input type=\"button\" value=\" &#9650; \" ".
     //             " onClick=\"moveItem(document.inputform['".$name."'],'up');\">");
     //             $this->echoo('</td></tr>');
-    //             $this->echoo('<tr><td valign="bottom">');
+    //             $this->echoo('<tr><td>');
     //             $this->echoo("<input type=\"button\" value=\" &#9660; \" ".
     //             " onClick=\"moveItem(document.inputform['".$name."'], 'down');\">");
     //             $this->echoo("</td>");
     //        }
-    //        $this->echoo("</tr>\n <tr><td valign=\"bottom\" align=\"center\">
+    //        $this->echoo("</tr>\n <tr><td>
     //          <input type='button' value='". _m("Add") ."' onclick='OpenRelated(\"$name\", \"$sid\", \"$mode\", \"$design\", \"$whichitems\",\"".rawurlencode($conds)."\",\"".rawurlencode($condsrw)."\",\"".get_admin_url('related_sel.php')."\" )'>
     //          &nbsp;&nbsp;");
     //        $this->echoo("<input type='button' value='". _m("Delete") ."' onclick=\"sb_RemoveItem(document.inputform['".$name."']);\">\n");
@@ -1840,8 +1840,8 @@ class AA_Inputfield {
 
         $this->echoo("
             <!-- {require:aa-constedit} -->
-            <table border=\"0\" cellpadding=\"2\" width=\"100%\"><tr>
-            <td align=\"center\"><b><span class=\"redtext\">"._m("Selected").":<span></b><br><br><input type=\"button\" value=\""._m("Delete")."\" onclick='hcDelete(\"$name\"); $delete_button_trigger'></td>
+            <table><tr>
+            <td><b><span class=\"redtext\">"._m("Selected").":<span></b><br><br><input type=\"button\" value=\""._m("Delete")."\" onclick='hcDelete(\"$name\"); $delete_button_trigger'></td>
             <td>");
         $out = "\n<select name=\"$name\" multiple size=\"$rows\" $triggers>";
             if (is_array($val)) {
@@ -1901,8 +1901,9 @@ class AA_Inputfield {
         if (is_null($item)) {
             $this->echovar($field->getWidgetNewHtml(null, null, null, null, $this->getAaValue()));
         } else {
-            $content = (new AA_Content() )->setOwnerId($slice_id)->setId($item->getId())->setAaValue($this->id, $this->getAaValue());
-            // another approach would be $content = $item->getItemContent();
+            // another approach would be, but it had troubles in InfWidget with {manager:...{_#ITEM_ID_}...}
+            //$content = (new AA_Content() )->setOwnerId($slice_id)->setId($item->getId())->setAaValue($this->id, $this->getAaValue());
+            $content = $item->getItemContent();
 
             $this->echovar($widget->getOnlyHtml($aa_property, $content));
         }
@@ -2023,15 +2024,15 @@ class AA_Inputfield {
         AA::Stringexpander()->addRequire(get_aa_url('javascript/inputform.min.js?v='.AA_JS_VERSION,'',false));
 
         $this->field_name('plus');
-        $this->echoo("<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\">
-          <tr align=\"left\">
-            <td align=\"center\" valign=\"top\">". $wi2_offer ."</td>
+        $this->echoo("<table>
+          <tr>
+            <td>". $wi2_offer ."</td>
             <td></td>
-            <td align=\"center\" valign=\"top\">". $wi2_selected ."</td>
+            <td>". $wi2_selected ."</td>
             <td></td>
           </tr>
-          <tr align=left>
-            <td align=\"center\" valign='TOP' rowspan=\"2\">");
+          <tr>
+            <td rowspan=\"2\">");
 
         $triggers  = $this->use_triggers_4_slice ? JsTriggers::singleton4id($this->use_triggers_4_slice)->get("select", $name) : '';
         $offername = str_replace("[]", "", $name). '_1';
@@ -2041,9 +2042,9 @@ class AA_Inputfield {
         $this->echovar( $out, 'unselected' );
 
         $this->echoo("</td>
-            <td rowspan=\"2\">&nbsp;&nbsp;<input type=button value=\"  &#9654;  \" onClick = \"MoveSelected(this.parentNode.parentNode.querySelector(&quot;select[name='$offername']&quot;),this.parentNode.parentNode.querySelector(&quot;select[name='$name']&quot;))\" align=\"center\">
-              <br><br>&nbsp;&nbsp;<input type=button value=\"  &#9664;  \" onClick = \"MoveSelected(this.parentNode.parentNode.querySelector(&quot;select[name='$name']&quot;),this.parentNode.parentNode.querySelector(&quot;select[name='$offername']&quot;))\" align=\"center\">&nbsp;&nbsp;</td>
-            <td align=\"center\" valign=\"top\" rowspan=\"2\">");
+            <td rowspan=\"2\">&nbsp;&nbsp;<input type=button value=\"  &#9654;  \" onClick = \"MoveSelected(this.parentNode.parentNode.querySelector(&quot;select[name='$offername']&quot;),this.parentNode.parentNode.querySelector(&quot;select[name='$name']&quot;))\">
+              <br><br>&nbsp;&nbsp;<input type=button value=\"  &#9664;  \" onClick = \"MoveSelected(this.parentNode.parentNode.querySelector(&quot;select[name='$name']&quot;),this.parentNode.parentNode.querySelector(&quot;select[name='$offername']&quot;))\">&nbsp;&nbsp;</td>
+            <td rowspan=\"2\">");
 
         // varname - name without []
         $out = "<select multiple id=\"".$this->varname."\" name=\"".$name."\" size=\"$rows\" $triggers ondblclick=\"MoveSelected(this,this.parentNode.parentNode.querySelector(&quot;select[name='$offername']&quot;))\">";
@@ -2069,9 +2070,9 @@ class AA_Inputfield {
 
         $this->echoo(getFrmJavascript("if (typeof listboxes == 'undefined') { var listboxes = []; };  listboxes[listboxes.length] = '$name';"));
         $this->echoo("\n      </td>");
-        $this->echoo("\n      <td valign=\"top\"><input type=button value=\" &#9650; \" onClick=\"moveItem(this.parentNode.parentNode.parentNode.querySelector(&quot;select[name='$name']&quot;),'up');\"></td>");
+        $this->echoo("\n      <td><input type=button value=\" &#9650; \" onClick=\"moveItem(this.parentNode.parentNode.parentNode.querySelector(&quot;select[name='$name']&quot;),'up');\"></td>");
         $this->echoo("\n      </tr>");
-        $this->echoo("<tr><td valign=\"bottom\"><input type=button value=\" &#9660; \" onClick=\"moveItem(this.parentNode.parentNode.parentNode.querySelector(&quot;select[name='$name']&quot;), 'down');\"></td></tr>");
+        $this->echoo("<tr><td><input type=button value=\" &#9660; \" onClick=\"moveItem(this.parentNode.parentNode.parentNode.querySelector(&quot;select[name='$name']&quot;), 'down');\"></td></tr>");
 
         if (!empty($addform) AND !empty($sid)) {
             $this->echoo("\n<tr><td colspan=\"4\">");
@@ -2147,11 +2148,11 @@ class AA_Inputfield {
         $triggers  = $this->use_triggers_4_slice ? JsTriggers::singleton4id($this->use_triggers_4_slice)->get("input", $name) : '';
         $ret ="<input type=\"text\" name=\"$name\" size=\"60\" value=\"".safe($val)."\" $triggers>";
 
-        $this->echoo('<table border="0" cellspacing="0"><tr>');
+        $this->echoo('<table><tr>');
         $this->echoo("\n <td>");
         $this->echovar( $ret );
         $this->echoo("</td>\n");
-        $this->echoo("</tr>\n <tr><td valign=\"bottom\" align=\"left\">\n");
+        $this->echoo("</tr>\n <tr><td>\n");
         $this->echoo("<input type=\"button\" value=\"". _m("Add") ."\" onclick=\"OpenLocalURLPick(\"$name\",\"$url\",\"".self_server().get_aa_url("admin", '', false)."\",\"$val\")\">\n");
         $this->echoo("&nbsp;&nbsp;<input type='button' value='". _m("Clear") ."' onclick=\"sb_ClearField(document.inputform['".$name."']);\">\n");
         $this->echoo("</td></tr></table>\n");
@@ -2600,11 +2601,12 @@ function getFrmSelectEasy($name, $arr, $selected="", $add="", $showempty=false) 
 }
 
 /**
- * @param string $add  - if contains class="aa-table", then the newer design is used
+ * @param string $outer_add  - if contains class="aa-table", then the newer design is used
  * @return string
  */
-function getTabStart($add='') {
-    return (strpos($add, 'aa-table')!==false) ? "<table $add>" : '<table width="95%" border="0" cellspacing="0" cellpadding="1" bgcolor="'. COLOR_TABTITBG .'" align="center" '.$add.'>';
+function getTabStart($outer_add='') {
+    //return (strpos($add, 'aa-table')!==false) ? "<table $add>" : '<table bgcolor="'. COLOR_TABTITBG .'" '.$add.'>';
+    return "<div $outer_add>";  // @todo convert to htmltag()
 }
 
 
@@ -2613,55 +2615,38 @@ function getTabStart($add='') {
  * @param string $caption
  * @param string $buttons
  * @param string $outer_add
- * @param string $inner_add
  * @return string
  */
-function getFrmTabCaption($caption = '', $buttons = '', $outer_add = '', $inner_add = '') {
+function getFrmTabCaption($caption = '', $buttons = '', $outer_add = '') {
     $ret = getTabStart($outer_add);
     if ($buttons) {
-        $ret .= getFrmInputButtons($buttons, 'middle', true, COLOR_TABBG, false, 'top');
+        $ret .= getFrmInputButtons($buttons, true, 'top');
     }
     if ($caption != "") {
-      $ret .= "\n    <tr><td class=\"tabtit\"><b>&nbsp;$caption</b></td></tr>";
+        $ret .= "\n <div class=\"aa-tab-title\">$caption</div>";
     }
-    $ret .= "
-      <tr>
-        <td>
-          <table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"4\" bgcolor=\"". COLOR_TABBG ."\" $inner_add>";
+    $ret .= "\n<table class=\"aa-table\">";
     return $ret;
 }
 
 function FrmTabCaption($caption = '', $buttons = '') {
-    echo getFrmTabCaption($caption, $buttons);
+    echo getFrmTabCaption($caption, $buttons, 'data-aa-class=clasic');
 }
 
+function FrmTabSeparator($subtitle) {
+    echo getFrmTabSeparator($subtitle);
+}
 
-/** FrmTabSeparator function
- * Prints middle row with subtitle into form table
+/** returns middle row with subtitle into form table
  * @param        $subtitle
- * @param string $buttons
- * @param string $valign
  */
-function FrmTabSeparator($subtitle, $buttons = '', $valign = 'middle') {
-    echo '</table>';
-    if ($buttons) {
-        echo getTabStart();
-        echo '<tr>';
-        echo getFrmInputButtons($buttons, $valign, false, COLOR_TABTITBG);
-        echo "</tr></table>";
-    }
-    echo '</td>
-        </tr>';
-    if ($buttons) {
-        echo "<tr><td bgcolor=". COLOR_TABBG." height=\"6\"></td></tr>";
-    }
+function getFrmTabSeparator($subtitle): string {
+    $ret = "\n </table>";
     if ( $subtitle ) {
-        echo "\n      <tr><td class=\"tabtit\"><b>&nbsp;$subtitle</b></td></tr>";
+        $ret .= "\n <div class=\"aa-tab-title\">$subtitle</div>";
     }
-    echo '
-      <tr>
-        <td>
-          <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="'. COLOR_TABBG .'">';
+    $ret .= "\n<table class=\"aa-table\">";
+    return $ret;
 }
 
 /** getFrmTabEnd function
@@ -2670,152 +2655,139 @@ function FrmTabSeparator($subtitle, $buttons = '', $valign = 'middle') {
  * @return string
  */
 function getFrmTabEnd( $buttons=false ) {
-    $ret = '    </table>
-            </td>
-          </tr>';
+    $ret = "\n</table>";
     if ( $buttons ) {
-        $ret .= getFrmInputButtons($buttons, 'middle', true, COLOR_TABTITBG, false, 'bottom');
+        $ret .= getFrmInputButtons($buttons, true, 'bottom');
     }
-    $ret .= '
-        </table>';
+    $ret .= "\n</div>";
     return $ret;
 }
 
-function FrmTabEnd( $buttons=false )
-{
+function FrmTabEnd( $buttons=false ) {
     echo getFrmTabEnd($buttons);
 }
 
 
-/** getFrmInputButtons function
- * Prints buttons based on $buttons array. It also adds slice_id
- * Maybe better is to use (@see FrmTabEnd())
- * @param $buttons
- * @param string $valign
- * @param bool $tr
+/** returns buttons based on $buttons array. It also adds slice_id
+ * Maybe better is to use (@param $buttons
  * @param string $bgcolor
- * @param bool $no_hidden - prints all $buttons except the hidden fields
- * @param string $prefix - prefix for button ids
+ * @param bool   $print_hidden - if false, prints all $buttons except the hidden fields
+ * @param string $prefix       - prefix for button ids
  * @return string
+ *@see FrmTabEnd())
  */
-function getFrmInputButtons($buttons, $valign = 'middle', $tr = true, $bgcolor = COLOR_TABBG, $no_hidden = false, $prefix = '') {
-    $ret = '';
-
-    if ($tr) {
-        $ret .= '<tr class=formbuttons>';
+function getFrmInputButtons($buttons, $print_hidden = true, $prefix = ''): string {
+    if ( !$buttons ) {
+        return '';
     }
-    $sticky = ($prefix=='top') ? ' style="border:'.COLOR_TABTITBG.' 1px solid; padding: 4px; position: sticky; top: 0; z-index: 5;"' : ''; //z-index - CodeMirror goes over if not > 2
 
-    $ret .= "<td align=center valign=\"$valign\" bgcolor=\"$bgcolor\" $sticky>";
-    if ( isset($buttons) AND is_array($buttons) ) {
+    $sticky = ($prefix=='top') ? ' style="position: sticky; top: 0; z-index: 5;"' : ''; //z-index - CodeMirror goes over if not > 2
+    $ret = "<div class=aa-tab-buttons $sticky>";
 
-        if ($prefix) {
-            $prefix .= '_';
+    if ($prefix) {
+        $prefix .= '_';
+    }
+    $noaccess = false;
+
+    foreach ( $buttons as  $name => $properties ) {
+        if ( !is_array($properties) ) {
+            $name = $properties;
+            $properties = [];
         }
-        $noaccess = false;
+        switch($name) {
+            case 'update':
+                if ($properties['type'] == 'hidden') {
+                    $ret .= ' <input type="hidden" name="update" id="'.$prefix .'update" value="'. get_if($properties['value'], "") .'">';
+                } else {
+                    $ret .= ' <input type="submit" class="btn-l" name="update" id="'.$prefix .'update" accesskey="S" value=" '. get_if($properties['value'], _m("Update")) ." [^S] " .' ">';
+                    $noaccess = true; // use for update of item, bug was, that both "update" and "insert" has accesskey S
+                }
+                if ($properties['help'] != '') {
+                    $ret .= getFrmMoreHelp($properties['help']);
+                    $ret .= "&nbsp;&nbsp;";
+                }
+                break;
+            case 'insert':
+                $ret .= ' <input type="submit" class="btn-l" name="insert" id="'.$prefix .'insert" ';
+                if (!$noaccess) { // was accesskey used ?
+                    $ret .= 'accesskey="S" ';
+                }
+                $ret .= 'value=" '. get_if($properties['value'], _m("Insert")) ." ";
+                if (!$noaccess) {
+                    $ret .= " [^S]";
+                }
+                $ret .= '  "> ';
+                if ($properties['help'] != '') {
+                    $ret .= getFrmMoreHelp($properties['help']);
+                    $ret .= "&nbsp;&nbsp;";
+                }
+                break;
+            case 'cancel':
+                $url = get_if($properties['url'],self_server().$_SERVER['PHP_SELF']);
+                if (!$properties['url']) {
+                    $url = con_url($url,'cancel=1');
+                }
+                $url  = StateUrl($url);
+                //          echo ' <input type="button" name="cancel" value=" '. get_if($properties['value'], _m("Cancel")) .' "> ';
+                $ret .= ' <input type="button" name="cancel" id="'.$prefix .'cancel" value=" '. get_if($properties['value'], _m("Cancel")) .' " class="btn-l btn-secondary" onclick="document.location=\''.$url.'\'"> ';
+                if ($properties['help'] != '') {
+                    $ret .= getFrmMoreHelp($properties['help']);
+                    $ret .= "&nbsp;&nbsp;";
+                }
+                break;
+            case 'close':
+                $ret .= ' <input type="button" name="cancel" id="'.$prefix .'cancel" value=" '. get_if($properties['value'], _m("Cancel")) .' " class="btn-l btn-secondary" onclick="window.close();"> ';
+                if ($properties['help'] != '') {
+                    $ret .= getFrmMoreHelp($properties['help']);
+                    $ret .= "&nbsp;&nbsp;";
+                }
+                break;
+            case 'reset':
+                $ret .= ' <input type="reset" id="'.$prefix .'reset" value=" '. _m("Reset form") .' " class="btn-l btn-secondary"> ';
+                if ($properties['help'] != '') {
+                    $ret .= getFrmMoreHelp($properties['help']);
+                    $ret .= "&nbsp;&nbsp;";
+                }
+                break;
+            case 'submit': // name is not submit because it breaks document.f.submit() function call
+                $ret .= ' <input type="submit" class="btn-l" name="submitbtn" id="'.$prefix .'submit" accesskey="S" value=" '. get_if($properties['value'], _m("Submit")) ."  [^S] ". ' "> ';
+                if ($properties['help'] != '') {
+                    $ret .= getFrmMoreHelp($properties['help']);
+                    $ret .= "&nbsp;&nbsp;";
+                }
+                break;
+            default:
+                if ($properties['url']) {
+                    $type = ($properties['type'] ?: 'button');
+                    $onclick = ' onclick="document.location=\''. StateUrl($properties['url']).'\'"';
+                } else {
+                    $type = ($properties['type'] ?: 'hidden');
+                    $onclick = '';
+                }
 
-        foreach ( $buttons as  $name => $properties ) {
-            if ( !is_array($properties) ) {
-                $name = $properties;
-                $properties = [];
-            }
-            switch($name) {
-                case 'update':
-                    if ($properties['type'] == 'hidden') {
-                        $ret .= '&nbsp;<input type="hidden" name="update" id="'.$prefix .'update" value="'. get_if($properties['value'], "") .'">&nbsp;';
-                    } else {
-                        $ret .= '&nbsp;<input type="submit" name="update" id="'.$prefix .'update" accesskey="S" value=" '. get_if($properties['value'], _m("Update")) ." [^S] " .' ">&nbsp;';
-                        $noaccess = true; // use for update of item, bug was, that both "update" and "insert" has accesskey S
-                    }
-                    if ($properties['help'] != '') {
-                        $ret .= getFrmMoreHelp($properties['help']);
-                        $ret .= "&nbsp;&nbsp;";
-                    }
+                if ( !$print_hidden AND ($type == 'hidden') ) {
+                    // do not print hidden fields if print_hidden is false
+                    // (used for FrmTabSeparator, to not duplicate hiddens)
                     break;
-                case 'insert':
-                    $ret .= '&nbsp;<input type="submit" name="insert" id="'.$prefix .'insert" ';
-                    if (!$noaccess) { // was accesskey used ?
-                        $ret .= 'accesskey="S" ';
-                    }
-                    $ret .= 'value=" '. get_if($properties['value'], _m("Insert")) ." ";
-                    if (!$noaccess) {
-                        $ret .= " [^S]";
-                    }
-                    $ret .= '  ">&nbsp;';
-                    if ($properties['help'] != '') {
-                        $ret .= getFrmMoreHelp($properties['help']);
-                        $ret .= "&nbsp;&nbsp;";
-                    }
-                    break;
-                case 'cancel':
-                    $url = get_if($properties['url'],self_server().$_SERVER['PHP_SELF']);
-                    if (!$properties['url']) {
-                        $url = con_url($url,'cancel=1');
-                    }
-                    $url  = StateUrl($url);
-                    //          echo '&nbsp;<input type="button" name="cancel" value=" '. get_if($properties['value'], _m("Cancel")) .' ">&nbsp;';
-                    $ret .= '&nbsp;<input type="button" name="cancel" id="'.$prefix .'cancel" value=" '. get_if($properties['value'], _m("Cancel")) .' " onclick="document.location=\''.$url.'\'">&nbsp;';
-                    if ($properties['help'] != '') {
-                        $ret .= getFrmMoreHelp($properties['help']);
-                        $ret .= "&nbsp;&nbsp;";
-                    }
-                    break;
-                case 'close':
-                    $ret .= '&nbsp;<input type="button" name="cancel" id="'.$prefix .'cancel" value=" '. get_if($properties['value'], _m("Cancel")) .' " onclick="window.close();">&nbsp;';
-                    if ($properties['help'] != '') {
-                        $ret .= getFrmMoreHelp($properties['help']);
-                        $ret .= "&nbsp;&nbsp;";
-                    }
-                    break;
-                case 'reset':
-                    $ret .= '&nbsp;<input type="reset" id="'.$prefix .'reset" value=" '. _m("Reset form") .' ">&nbsp;';
-                    if ($properties['help'] != '') {
-                        $ret .= getFrmMoreHelp($properties['help']);
-                        $ret .= "&nbsp;&nbsp;";
-                    }
-                    break;
-                case 'submit': // name is not submit because it breaks document.f.submit() function call
-                    $ret .= '&nbsp;<input type="submit" name="submitbtn" id="'.$prefix .'submit" accesskey="S" value=" '. get_if($properties['value'], _m("Submit")) ."  [^S] ". ' ">&nbsp;';
-                    if ($properties['help'] != '') {
-                        $ret .= getFrmMoreHelp($properties['help']);
-                        $ret .= "&nbsp;&nbsp;";
-                    }
-                    break;
-                default:
-                    if ($properties['url']) {
-                        $type = ($properties['type'] ?: 'button');
-                        $onclick = ' onclick="document.location=\''. StateUrl($properties['url']).'\'"';
-                    } else {
-                        $type = ($properties['type'] ?: 'hidden');
-                        $onclick = '';
-                    }
-
-                    if ( $no_hidden AND ($type == 'hidden') ) {
-                        // do not print hidden fields if no_hidden is true
-                        // (used for FrmTabSeparator, to not duplicate hiddens)
-                        break;
-                    }
-                    $nbsp = ( $type == 'hidden' ) ? '' : '&nbsp;';
-                    $ret .= $nbsp.'<input type="'.  $type .'"'.$onclick .
-                          ' name="'.  $name .
-                         '" id="'.  $prefix . $name .
-                         '" value="'. $properties['value'] . ($properties['accesskey'] ? "  [^".$properties['accesskey']."]  " : "").
-                         '" '.($properties['accesskey'] ? 'accesskey="'.$properties['accesskey'].'" ' : ""). $properties['add'] . '>'.$nbsp;
-                    if ($properties['help'] != '') {
-                        $ret .= getFrmMoreHelp($properties['help']);
-                        $ret .= "&nbsp;&nbsp;";
-                    }
-            }
-            $ret .= "\n";
+                }
+                $nbsp = ( $type == 'hidden' ) ? '' : ' ';
+                $ret .= $nbsp.'<input type="'.  $type .'"'.$onclick .
+                      ' name="'.  $name .
+                     '" id="'.  $prefix . $name .
+                     '" value="'. $properties['value'] . ($properties['accesskey'] ? "  [^".$properties['accesskey']."]  " : "").
+                     '" '.($properties['accesskey'] ? 'accesskey="'.$properties['accesskey'].'" ' : ""). $properties['add'] . ' class="btn-l btn-secondary">'.$nbsp;
+                if ($properties['help'] != '') {
+                    $ret .= getFrmMoreHelp($properties['help']);
+                    $ret .= "&nbsp;&nbsp;";
+                }
         }
+        $ret .= "\n";
     }
 
-    $ret .= StateHidden();
-
-    $ret .= "</td>";
-    if ($tr) {
-        $ret .= "</tr>";
+    if ($print_hidden) {
+        $ret .= StateHidden();
     }
+    $ret .= "</div>";
     return $ret;
 }
 
@@ -2887,7 +2859,7 @@ function GetHtmlTable( array $content, $mode='td', $caption='', $clasic=false ) 
         array_unshift($content,array_keys(reset($content)));
         $mode = 'th';
     }
-    $ret = getFrmTabCaption($caption, [], $clasic ? '' : 'class="aa-table"');
+    $ret = getFrmTabCaption($caption, [], $clasic ? 'data-aa-class=clasic' : '');
     $first = true;
     foreach ($content as $row) {
         $ret .= getFrmTabRow( $row , ($mode=='th' AND $first) ? 'th' : 'td');
@@ -2997,11 +2969,11 @@ function getRadioBookmarkRow( $name, $count, $value, $list_type, $list_text, $sa
     }
     $out = "
     <tr>
-      <td align=\"center\"><input type=\"radio\" name=\"group\" value=\"$value\" $checked></td>";
+      <td><input type=\"radio\" name=\"group\" value=\"$value\" $checked></td>";
 
     $out .= ((string)$value == (string)"testuser") ? "<td colspan=\"8\">" : "<td>";
 
-    $out .= "$name</td><td align=\"right\">$count</td>";
+    $out .= "$name</td><td>$count</td>";
     // get data about bookmark (who created, last used, ...)
     if (!is_null($bookmark_id)) {
         if ($event = AA_Log::getLastLogEvents("BM_CREATE", $bookmark_id)) {
@@ -3151,7 +3123,7 @@ function getSelectWithParam($name, $arr, $selected="", $html_setting=null) {
     return $ret;
 }
 
-/** PrintAliasHelp function
+/**
  *  Prints alias names as help for fulltext and compact format page
  * @param        $aliases_arr
  * @param bool   $fields
@@ -3159,8 +3131,20 @@ function getSelectWithParam($name, $arr, $selected="", $html_setting=null) {
  * @param string $buttons
  */
 function PrintAliasHelp(AA_Aliases $aliases, $fields = false, $endtable = true, $buttons = '') {
-    FrmTabSeparator(_m("Use these aliases for database fields"), $buttons);
+    echo getFrmInputButtons($buttons, false);
+    echo getAliasHelp($aliases, $fields, $endtable, $buttons);
+}
 
+/**
+ *  get alias names as help for fulltext and compact format page
+ * @param AA_Aliases $aliases
+ * @param bool       $fields
+ * @param bool       $endtable
+ * @param string     $buttons
+ * @return string
+ */
+function getAliasHelp(AA_Aliases $aliases, $fields = false, $endtable = true): string {
+    $ret = '';
     $aliases_arr = $aliases->getArray();
     foreach ($aliases_arr as $ali => $v ) {
         // if it is possible point to alias editing page
@@ -3168,10 +3152,11 @@ function PrintAliasHelp(AA_Aliases $aliases, $fields = false, $endtable = true, 
         if ($fields AND $fields[$v["fld"]] AND !$fields[$v["fld"]]['input_show']) {
             $ali = "<span class=\"disabled\">$ali</span>";
         }
-        echo "<tr><td nowrap>$ali</td><td>". $v['hlp'] ."</td><td>$aliasedit</td></tr>";
+        $ret .= "<tr><td>$ali</td><td>". safe($v['hlp']) ."</td><td>$aliasedit</td></tr>";
     }
 
     if ($endtable) {
-        echo "\n        </table></td></tr>";
+        $ret .= "\n        </table></td></tr>";
     }
+    return $ret;
 }

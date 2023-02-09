@@ -135,14 +135,14 @@ $form_buttons = [
 
 FrmTabCaption(_m("Enable export to slice:"));
 ?>
-<tr>
-    <td width="45%" class="tabtxt" align="center"><b><?php echo _m("Export disable") ?></b></td>
-    <td width="10%">&nbsp;</td>
-    <td width="45%" class="tabtxt" align="center"><b><?php echo _m("Export enable") ?></b></td>
+<tr class="aa-tbl-header">
+    <th width="45%"><?php echo _m("Export disable") ?></th>
+    <th width="10%">&nbsp;</th>
+    <th width="45%"><?php echo _m("Export enable") ?></th>
 </tr>
 <tr>
-<td align="center" valign="TOP">
-<select name="export_n" size="8" class="tabtxt">
+<td>
+<select name="export_n" size="8">
   <?php
   if ( isset($export_to) AND is_array($export_to)) {
       foreach ($all_slices as $s_id => $name) {
@@ -157,10 +157,10 @@ FrmTabCaption(_m("Enable export to slice:"));
   }
   ?>
 </select></td>
-<td><input type="button" value="  &#9654;  " onClick = "MoveSelected(document.f.export_n, document.f.export_y)" align="center">
-    <br><br><input type="button" VALUE="  &#9664;  " onClick = "MoveSelected(document.f.export_y, document.f.export_n)" align="center"></td>
-<td align="center" valign="top">
-<select name="export_y" size="8" class="tabtxt" multiple>
+<td><input type="button" value="  &#9654;  " onClick = "MoveSelected(document.f.export_n, document.f.export_y)">
+    <br><br><input type="button" VALUE="  &#9664;  " onClick = "MoveSelected(document.f.export_y, document.f.export_n)"></td>
+<td>
+<select name="export_y" size="8" multiple>
   <?php
   if ( isset($export_to) AND is_array($export_to)) {
       foreach ($export_to as $s_id => $name) {
@@ -188,16 +188,16 @@ FrmTabCaption(_m("Enable export to slice:"));
 </table></tr></td>
 <tr><td class=tabtit><b>&nbsp;<?php echo _m("Import from slice:") ?></b></td></tr>
 <tr><td>
-<table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">*/
+<table>*/
 ?>
 <tr>
-    <td width="45%" class="tabtxt" align="center"><b><?php echo _m("Do not import") ?></b></td>
-    <td width="10%">&nbsp;</td>
-    <td width="45%" class="tabtxt" align="center"><b><?php echo _m("Import") ?></b></td>
+    <th width="45%"><?php echo _m("Do not import") ?></th>
+    <th width="10%">&nbsp;</th>
+    <th width="45%"><?php echo _m("Import") ?></th>
 </tr>
 <tr>
-<td align="center" valign="TOP">
-<select name="import_n" size="8" class="tabtxt">
+<td>
+<select name="import_n" size="8">
   <?php
   if ( isset($importable) AND is_array($importable)) {
       foreach ($importable as $s_id => $name) {
@@ -208,10 +208,10 @@ FrmTabCaption(_m("Enable export to slice:"));
   }
   ?>
 </select></td>
-<td><input type="button" value="  &#9654;  " onClick = "MoveSelected(document.f.import_n,document.f.import_y)" align="center">
-    <br><br><input type="button" value="  &#9664;  " onClick = "MoveSelected(document.f.import_y,document.f.import_n)" align="center"></td>
-<td align="center" valign="top">
-<select name="import_y" size="8" class="tabtxt">
+<td><input type="button" value="  &#9654;  " onClick = "MoveSelected(document.f.import_n,document.f.import_y)">
+    <br><br><input type="button" value="  &#9664;  " onClick = "MoveSelected(document.f.import_y,document.f.import_n)"></td>
+<td>
+<select name="import_y" size="8">
   <?php
   if ( isset($imported) AND is_array($imported)) {
     foreach ($imported as $id => $name) {
@@ -227,9 +227,9 @@ FrmTabCaption(_m("Enable export to slice:"));
   /*
 <tr><td colspan=3>&nbsp;</td></tr>
 </table></tr></td>
-<tr><td align="center">
+<tr><td>
 <input type=hidden name="slice_id" value="<?php echo AA::$module_id ?>">
-<input type="button" VALUE="<?php echo _m("Update") ?>" onClick = "UpdateImportExport('<?php echo AA::$module_id ?>')" align=center>&nbsp;&nbsp;
+<input type="button" VALUE="<?php echo _m("Update") ?>" onClick = "UpdateImportExport('<?php echo AA::$module_id ?>')">&nbsp;&nbsp;
 <input type=submit name=cancel value="<?php echo _m("Cancel") ?>">
 </td></tr></table>*/
 

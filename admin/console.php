@@ -53,15 +53,15 @@ if ($code) {
 echo getTabStart();
 ?>
         <tr><td>
-          <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="#D2E2E8">
-          <tr><td align="center" valign="middle" bgcolor=#D2E2E8>&nbsp;<input type="submit" name="update" accesskey="S" value=" Actualizar (ALT+S)  ">&nbsp;
+          <table>
+          <tr><td>&nbsp;<input type="submit" name="update" accesskey="S" value=" Actualizar (ALT+S)  ">&nbsp;
 &nbsp;<input type="hidden" name="update" value="1">&nbsp;
 &nbsp;<input type="button" name="cancel" value=" Cancelar " onclick="document.location='se_fields.php3?slice_id=5abf7d2c73d7294cb105505a45e97762'">&nbsp;
 <input type="hidden" name="slice_id" value="<?php echo AA::$module_id ?>"></td></tr></table></td></tr>
       <tr>
         <td>
-          <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="#D2E2E8" ><tr class="formrow{formpart}">
- <td class="tabtxt" colspan="2"><b>Console</b></td>
+          <table><tr class="formrow{formpart}">
+ <td colspan="2"><b>Console</b></td>
 </tr>
 <tr><td colspan="2"><textarea id="code" name="code" rows="20" cols="60" style="width:100%" ><?php echo $code ?></textarea></td>
 </tr>
@@ -71,7 +71,7 @@ echo getTabStart();
     echo getTabStart();
 ?>
   <tr>
-    <td align="center" valign="middle" bgcolor="#00638C">&nbsp;<input type="submit" name="update" accesskey="S" value=" Actualizar (ALT+S)  ">&nbsp;</td>
+    <td>&nbsp;<input type="submit" name="update" accesskey="S" value=" Actualizar (ALT+S)  ">&nbsp;</td>
   </tr>
 </table>
 

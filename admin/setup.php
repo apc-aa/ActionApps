@@ -57,8 +57,8 @@ bind_mgettext_domain(DEFAULT_LANG_INCLUDE);
 function HtmlStart() {
     HtmlPageBegin();
     echo "<title>" . _m("ActionApps Setup") . "</title></head>\n";
-    echo "<body bgcolor=\"". COLOR_BACKGROUND ."\">\n";
-    echo "<center>\n";
+    echo "<body>\n";
+    echo "<div style=\"text-align: center;\">\n";
     echo "<h1>" . _m("ActionApps Setup") . "</h1>\n";
 }
 
@@ -85,12 +85,11 @@ function SuperForm() {
   global $login, $password1, $password2, $fname, $lname, $email;
   ?>
   <form action="setup.php">
-    <table border="0" cellspacing="0" cellpadding="1" width="440"
-           bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
-      <tr><td class=tabtit><b><?php echo _m("Superadmin account"); ?></b></td></tr>
+    <table
+           class="aa-table">
+      <tr class="aa-tbl-header"><th><?php echo _m("Superadmin account"); ?></th></tr>
       <tr><td>
-         <table border="0" cellspacing="0" cellpadding="4" width="100%"
-                bgcolor="<?php echo COLOR_TABBG ?>" align=center>
+         <table>
             <?php
               FrmInputText("login", _m("Login name"), $login, 12, 30, true);
               FrmInputPwd("password1", _m("Password"), $password1, 12, 30, true);
@@ -100,7 +99,7 @@ function SuperForm() {
               FrmInputText("email", _m("E-mail"), $email, 50, 30, true);
             ?>
          </table>
-      <tr><td align="center">
+      <tr><td>
          <?php echo StateHidden(); ?>
          <input type=submit name=phase value="<?php echo _m("Create") ?>">
     </td></tr>
@@ -127,7 +126,7 @@ function InitForm() {
  *  Prints end of html tags
  */
 function HtmlEnd() {
-   echo "</center></body></html>";
+   echo "</div></body></html>";
 }
 
 ///////////////////////////////////////////////////////////////////////////

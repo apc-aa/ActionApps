@@ -322,7 +322,7 @@ $apage->printHead($err, $Msg);
 
 FrmTabCaption(_m("Import exported data"));
 
-echo "<tr><td class=\"tabtxt\">";
+echo "<tr><td>";
 
 if ($cancel || $conflicts_list || $view_conflicts_list || $data_conflicts_list || $data_import_failure) {
     echo "<b>" . sprintf(_m("Count of imported slices: %d."), count($imported_list) + count($overwritten_list)) . "</p>";
@@ -370,7 +370,7 @@ if ($cancel || $conflicts_list || $view_conflicts_list || $data_conflicts_list |
     <?php
     if ($IDconflict) { ?>
         <tr>
-            <td class="tabtxt">
+            <td>
                 <b><?php echo _m("Slices with some of the IDs exist already. Change the IDs on the right side of the arrow.<br> Use only hexadecimal characters 0-9,a-f. If you do something wrong (wrong characters count, wrong characters, or if you change the ID on the arrow's left side), that ID will be considered unchanged.</p>") ?></b></p>
                 <p>
 <textarea name="conflicts_list" rows=<?php echo count($conflicts_ID) ?> cols="90">
@@ -388,7 +388,7 @@ foreach ($conflicts_ID as $c_id => $name) {
     }
     if ($view_IDconflict) { ?>
         <tr>
-            <td class="tabtxt">
+            <td>
                 <b><?php echo sprintf(_m("<p>Views with some of the same IDs exist already. Please edit on the right hands side of the arrow</p>")) ?></b></p>
                 <p>
 <textarea name="view_conflicts_list" rows=<?php echo count($view_conflicts_ID) ?> cols="90">
@@ -403,7 +403,7 @@ foreach ($view_conflicts_ID as $c_id => $name) {
     }
     if ($data_IDconflict) { ?>
 
-        <tr><td class="tabtxt">
+        <tr><td>
         <b><?php echo sprintf(_m("<p>Slice content with some of the IDs exist already. Change the IDs on the right side of the arrow.<br> Use only hexadecimal characters 0-9,a-f. </p>")) ?></b></p>
         <p>
         <textarea name="data_conflicts_list" rows=<?php echo count($data_conflicts_ID) ?> cols="90">
@@ -435,7 +435,7 @@ foreach ($data_conflicts_ID as $c_id => $name) {
     }
     if (!$IDconflict || !$data_IDconflict) { ?>
         <tr>
-            <td class="tabtxt">
+            <td>
                 <br>
                 <?php echo _m("1) If you have exported data in file, insert it's name here (eg. D:\data\apc_aa_slice.aaxml):") ?>
                 <p>
@@ -444,7 +444,7 @@ foreach ($data_conflicts_ID as $c_id => $name) {
             </td>
         </tr>
     <?php } ?>
-    <tr><td class="tabtxt">
+    <tr><td>
     <br>
     <?php if (!$IDconflict || !$data_IDconflict) {
         echo _m("2) If you have exported data in browser's window, insert the exported text into the textarea below:");

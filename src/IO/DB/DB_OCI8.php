@@ -131,7 +131,7 @@ class DB_OCI8 extends AbstractDB {
         }
 
         if ((1403 != $this->ErrArray["code"]) and (0 != $this->ErrArray["code"]) and $this->sqoe) {
-            echo "<BR><FONT color=red><B>" . $this->ErrArray["message"] . "<BR>Query :\"$Query_String\"</B></FONT>";
+            echo "<BR><span style=\"color: red\"><B>" . $this->ErrArray["message"] . "</B></span>";
         }
         $this->last_query_text = $Query_String;
         return $this->Parse;

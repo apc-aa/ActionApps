@@ -34,11 +34,11 @@ function GetTableView($viewID) {
     global $slice_id;
 
     $attrs_edit = [
-        "table"=>"border=0 cellpadding=3 cellspacing=0 bgcolor='".COLOR_TABBG."'"
+        "table"=>""
     ];
     $attrs_browse = [
-        "table"=>"border=1 cellpadding=3 cellspacing=0 bgcolor='".COLOR_TABBG."'",
-        "table_search" => "border=0 cellpadding=3 cellspacing=0 bgcolor='".COLOR_TABBG."'"
+        "table"=>"border=1",
+        "table_search" => ""
     ];
     // $format = array (...
 

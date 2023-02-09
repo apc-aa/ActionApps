@@ -383,7 +383,7 @@ echo '
  </style>
 </head>
 <body id="body_white_color" '.$on_load.'>
- <H1><B>'. $pagename .'</B></H1>';
+ <h1>'. $pagename .'</h1>';
  if ( Links_IsPublic() ) {
      echo '<div style="padding: 0 20px 10px;">'. _m('<!--NewPublicLinkText-->'). '</div>';
  }
@@ -414,13 +414,13 @@ if ( $id ) {
 
 echo '
     <tr>
-      <td class=tabtxt valign="top"><b>'. _m('Url') .'</b>&nbsp;*</td>
-      <td align="left">
+      <td><b>'. _m('Url') .'</b>&nbsp;*</td>
+      <td>
         <input type="text" name="url" size=50 value="'.$url.'">&nbsp;<a href="'.get_help_url(AA_LINKS_HELP_LINK,"url").'" target="_blank">?</a>&nbsp;&nbsp;
         <input type="button" value="'. _m('Check url') .'" onclick="CheckURL()">&nbsp;<a href="'.get_help_url(AA_LINKS_HELP_LINK,"hledej-url").'" target="_blank">?</a>&nbsp;&nbsp;
         <input type="button" value="'. _m('View') .'" onclick="window.open(document.f.url.value, \'blank\')">
         <div class="tabhlp">'. _m('You can check, if the page is not in database already') .'</div>
-        <style type="text/css">
+        <style>
            .skryto { display:none };
         </style>
         <div class="skryto">
@@ -475,31 +475,31 @@ if ( !Links_IsPublic() ) {
 echo '
       <tr>
        <td colspan="2">
-        <table width=100%>
-          <tr valign="top">
-            <td width=255 align=center valign="top"><b>'. _m('Category tree') .'</b><div class="tabhlp"><i>'. _m('select the category') .'</i></div>
+        <table>
+          <tr>
+            <td width=255><b>'. _m('Category tree') .'</b><div class="tabhlp"><i>'. _m('select the category') .'</i></div>
                <input type=hidden name=selcatCount value='.$selcatCount.'></td>
             <td width=60>&nbsp;</td>
-            <td align=center valign="top"><b>'. _m('Selected categories') .'</b><div class="tabhlp"><i>'. _m('go to the category you want to select and click on the right arrow button to select') .'</i></div></td>
+            <td><b>'. _m('Selected categories') .'</b><div class="tabhlp"><i>'. _m('go to the category you want to select and click on the right arrow button to select') .'</i></div></td>
           </tr>
           <tr>
            <td colspan="3"><div id="patharea"> </div></td>
           </tr>
           <tr>
-           <td align="CENTER" valign="TOP">'.
+           <td>'.
            $tree->getFrmTree('dblclick', $select_start, 'patharea', '', false, '', 15, 'f');
            if ( $r_state['cat_id'] ) {
                 echo $tree->goCategory( $r_state['cat_id'], 'patharea', '', 'f' );
            }
 echo      '</td>
-           <td  align="LEFT" valign="TOP" colspan=2>
-           <table border="0" width="100%" cellpadding="0" cellspacing="3">';
+           <td  colspan=2>
+           <table>';
 
                 for ( $i=0; $i<CATEGORIES_COUNT_TO_MANAGE; ++$i ) {
                      echo '<tr><td width="1px"><a
                      href="javascript:MoveSelectedTo(\'document.f.tree\',\'selcat'.$i.'\',\'document.f.selcatSelect'.$i.'\')"><img
-                     src="'.AA_INSTAL_PATH.'images/right.gif" border="0" alt="select"></a></td><td width="1px"><a
-                     href="javascript:DeleteField(\''.$i.'\')"><img src="'.AA_INSTAL_PATH.'images/bx.gif" border="0"
+                     src="'.AA_INSTAL_PATH.'images/right.gif" alt="select"></a></td><td width="1px"><a
+                     href="javascript:DeleteField(\''.$i.'\')"><img src="'.AA_INSTAL_PATH.'images/bx.gif"
                      alt="delete"></a></td><td class="sel_title"><SMALL><DIV id=selcat'.$i.'>'.$selcatValue[$i].'&nbsp;</DIV></SMALL>
                      </td><td><small>'.$selcatPropAdd[$i].$selcatPropDel[$i].'</small>
                      <input type="hidden" name="selcatSelect'.$i.'" value="'.$selcatSelectValue[$i].'">
@@ -540,16 +540,16 @@ if ( !Links_IsPublic() OR ($r_state['link_id'] AND $type) ) {
                "after"  => ")"
            ]));
    echo '
-      <tr><td width="50%" align=center><b>'. _m('Region') .'</b><div class="tabhlp"><i>'. _m('select up to 4 regions') .'</i></div></td>
-          <td align=center><b>'. _m('Language') .'</b><div class="tabhlp"><i>'. _m('select pege\'s languages') .'</i></div></td></tr>
-      <tr><td valign="top">';
+      <tr><td width="50%"><b>'. _m('Region') .'</b><div class="tabhlp"><i>'. _m('select up to 4 regions') .'</i></div></td>
+          <td><b>'. _m('Language') .'</b><div class="tabhlp"><i>'. _m('select pege\'s languages') .'</i></div></td></tr>
+      <tr><td>';
     if ( isset($regId) AND is_array($regId) ) {
         for ( $i=0, $ino=count($regId); $i<$ino; ++$i) {
             echo '<input type="checkbox" name="reg[]" value="'.$regId[$i].'" '.$regChecked[$i].'>'.$regName[$i].' '.$reg_changes[$i].'<br>';
         }
     }
     echo '</td>
-           <td valign="top">';
+           <td>';
     if ( isset($langId) AND is_array($langId) ) {
         for ( $i=0, $ino=count($langId); $i<$ino; ++$i) {
             echo '<input type="checkbox" name="lang[]" value="'.$langId[$i].'" '.$langChecked[$i].'>'.$langName[$i].' '.$lang_changes[$i].'<br>';

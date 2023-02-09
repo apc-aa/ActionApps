@@ -100,9 +100,12 @@ class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedI
         return _m('Current time on server') . ' ' . date('Y-m-d H:i') .
             '
           <table>
+            <thead>
             <tr>
-              <th>' . join("</th>\n<th>", ['', _m('Action'), _m('Name'), _m('Event'), _m('Time') . '<br>' . _m('+ seconds'), _m('Computed time'), _m('Condition'), _m('Scheduled to'), _m('Task'), _m('ID'), _m('Module')]) . '</th>
+              <th>' . join("</th>\n<th scope=col>", ['', _m('Action'), _m('Name'), _m('Event'), _m('Time') . '<br>' . _m('+ seconds'), _m('Computed time'), _m('Condition'), _m('Scheduled to'), _m('Task'), _m('ID'), _m('Module')]) . '</th>
             </tr>
+            </thead>
+            <tbody>
             ';
     }
 

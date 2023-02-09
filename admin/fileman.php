@@ -110,7 +110,7 @@ echo "
 <input type=\"hidden\" name=\"cmd\">
 <input type=\"hidden\" name=\"fmset[directory]\" value=\"$directory\">";
 
-echo '<table border="0" cellspacing="0" cellpadding="5" bgcolor="'.COLOR_TABTITBG.'" align="center">';
+echo '<table>';
 
 /** formatAction function
  * @param $value
@@ -136,7 +136,7 @@ function fileAction($name,$value) {
  *   @return string two columns of input and action, can flip and table
  */
 function uilr($inp,$act) : string {
-    return "<tr><td class=\"tabtxt\">$inp</td><td class=\"tabtxt\">$act</td></tr>\n";
+    return "<tr><td>$inp</td><td>$act</td></tr>\n";
 }
 
 /** inputplusaction function
@@ -151,13 +151,13 @@ function inputplusaction($name,$value) :string {
 
 
 echo $jsSender;
-echo "<tr><td class=\"tabtit\" align=\"left\">";
+echo '<tr class="aa-tbl-header"><th>';
 echo //fileAction ("checkall",_m("Select All")) .
      fileAction ("uncheckall",_m("Unselect all")) .
      fileAction ("delete",_m("Delete selected"));
-echo "</td></tr>
-<tr><td class=\"tabtxt\" align=\"center\">";
-echo '<table border="1" cellspacing="0" cellpadding="5" bgcolor="'.COLOR_TABTITBG.'" align="center">';
+echo "</th></tr>
+<tr><td>";
+echo '<table>';
 
 // Show column headers
 echo '<tr><td>&nbsp;</td><td>&nbsp;</td>';
@@ -171,7 +171,7 @@ foreach ($sortable_columns as $sortk => $col) {
         } else {
             $so = $col["sort"];
         }
-        $img = "&nbsp;<img src='../images/".($so == 'd' ? 'up' : 'down').".gif' border=0>";
+        $img = "&nbsp;<img src='../images/".($so == 'd' ? 'up' : 'down').".gif'>";
         $so  = $so == 'a' ? 'd' : 'a';
         $so  = "&sort_order=$so";
     } else {
@@ -192,14 +192,14 @@ echo "</table>
       <input type=\"hidden\" name=\"sort_order\" value=\"$sort_order\">
 </td></tr>
 <tr><td>";
-echo '<table border="0" cellspacing="0" cellpadding="5" align="center">';
+echo '<table>';
 
-echo "<tr><td class=\"tabtxt\" colspan=\"2\"></td></tr>";
+echo "<tr><td colspan=\"2\"></td></tr>";
 echo inputplusaction("createfile",_m("Create new file"));
 // echo "<input type=\"hidden\" name=\"MAX_FILE_SIZE\" value=\"10485760\">";         // browsers do not use this variable - removed
 echo uilr("<input type=\"file\" name=\"uploadarg\">",
     fileAction("upload",_m("Upload file")." (max. 10 MB)"));
-echo "<tr><td class=\"tabtxt\" colspan=\"2\"></td></tr>";
+echo "<tr><td colspan=\"2\"></td></tr>";
 
 $db->query("SELECT * FROM wizard_template");
 if ($db->num_rows()) {

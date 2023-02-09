@@ -57,13 +57,13 @@ class AA_Profile_Rule {
  */
 function PrintRuleRow($rid, $prop, $col1="", $col2="", $col3="", $col4="") {
   global $uid;
-  echo "<tr class=\"tabtxt\">
+  echo "<tr>
           <td>$prop&nbsp;</td>
           <td>$col1&nbsp;</td>
           <td>$col2&nbsp;</td>
           <td>$col3&nbsp;</td>
           <td>$col4&nbsp;</td>
-          <td align=\"right\"><a href=\"javascript:document.location='".
+          <td><a href=\"javascript:document.location='".
             StateUrl("se_profile.php?del=$rid&uid=$uid"). "'\">". _m("Delete") ."</a></td>
         </tr>";
 }
@@ -136,7 +136,7 @@ function PrintRule($rule, $fields) {
  */
 function PrintSetRule($n, $rule, $sfld, $func, $sparam, $shtml, $desc) {
     global $PROPERTY_TYPES, $lookup_fields;
-    echo "<tr class=\"tabtxt\">
+    echo "<tr>
            <td>". $PROPERTY_TYPES[$rule]. "<input type=\"hidden\" name=\"prop$n\" value=\"$rule\"></td>
            <td>";
     if ( is_array($sfld)) {

@@ -59,21 +59,18 @@ if ( !IfSlPerm(PS_EDIT_ALL_ITEMS)) {
     exit;
 }
 
-if ( $r_userstate['type'] ) {
+if ( !$_GET['type'] AND $r_userstate['type'] ) {
     $type = $r_userstate['type'];
 }
 
 switch( $type ) {
     case 'users':
-           $row =  '<td>_#LASTNAME</td><td>_#FIRSTNAM</td><td>_#EMAIL___<input type="hidden" name="items[x_#ITEM_ID#]" value=""></td>';
+           $row =  '<td>{ifset:{_#LASTNAME}:_#1:_#HEADLINE}</td><td>{ifset:{_#FIRSTNAM}:_#1}</td><td>{ifset:{_#EMAIL___}:_#1}<input type="hidden" name="items[x_#ITEM_ID#]" value=""></td>';
            $default_sort_field = "con_email.......";
            $format = [
-              'compact_top'      => '<table border=1 cellspacing=0 cellpadding=3 width=100%><tr align="center" class="tabtit">'.
-                                    '<td><b>Last</b></td><td><b>First</b></td><td><b>Email</b></td></tr>',
-              'even_odd_differ'  => 1,
-              'even_row_format'  => '<tr class="tabtxteven">'.$row.'</tr>',
-              'odd_row_format'   => '<tr class="tabtxt">'.$row.'</tr>',
-              'compact_bottom'   => "</table>"
+              'compact_top'      => '<table class="aa-table"><thead><tr><th colspan="2">'._m('User').'</th><th>'._m('Email').'</th></tr></thead><tbody>',
+              'odd_row_format'   => '<tr>'.$row.'</tr>',
+              'compact_bottom'   => "</tbody></table>"
            ];
     // add your type here
     default:  // no format used - taken default format from manager class
@@ -156,11 +153,11 @@ unset($r_msg);
 echo $manager->getItems($zids);   // print links and actions
 $r_userstate['usershowmanager'] = $manager->getState();
 
-echo '<table width="100%" border="0" cellspacing="0" cellpadding="1" bgcolor="'. COLOR_TABTITBG ."\" align=\"center\">
+echo "<table>
  <tr>
-  <td align=\"center\">
+  <td>
    <input type=\"button\" value='". _m("Close") ."' onclick='window.close()'>
-   <input type=\"hidden\" name=\"group\" value=\"".$group."\">
+   <input type=\"hidden\" name=\"group\" value=\"$group\">
   </td>
  </tr>
 </table>";

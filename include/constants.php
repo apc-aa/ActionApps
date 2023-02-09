@@ -982,7 +982,7 @@ function getViewTypesInfo() {
             '22' => 'reverse timeorder',
             '23' => 'thread',
         ],
-        'aditional'    => ['default' => '<img src="' . AA_INSTAL_PATH . 'images/blank.gif" width=20 height=1 border="0">'],
+        'aditional'    => ['default' => '<img src="' . AA_INSTAL_PATH . 'images/blank.gif" width=20 height=1>'],
         'aditional2'   => ['default' => '<input type=button name=sel_ids value="' . _m("Show selected") . '" onClick=showSelectedComments() class="discbuttons">'],
         'aditional3'   => ['default' => '<input type=button name=all_ids value="' . _m("Show all") . '" onClick=showAllComments() class="discbuttons">'],
         'aditional4'   => ['default' => '<input type=button name=add_disc value="' . _m("Add new") . '" onClick=showAddComments() class="discbuttons">'],

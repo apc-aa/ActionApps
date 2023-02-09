@@ -122,7 +122,7 @@ function get_aamenus() {
             "empty_trash"=> ["cond"=>IsSuperadmin(),
                             "hide"=>!IsSuperadmin(),
                             "href"=>$module_location."index.php3?DeleteTrash=1",
-                            "label"=>"<img src='../../images/empty_trash.gif' border=0>"._m("Empty trash"),
+                            "label"=>_m("Empty trash"),
                             "js"=>"EmptyTrashQuestion('{href}','"._m("Are You sure to empty trash?")."')"],
             "debug"=> ["cond"=>IsSuperadmin(),
                             "hide"=>!IsSuperadmin(),
@@ -142,7 +142,7 @@ function get_aamenus() {
     $aamenus['linkmanager_submenu']['items']['item6'] =  array (
                             "cond"=>IfSlPerm(PS_LINKS_DELETE_LINKS),
                             "href"=>$module_location."index.php3?Delete=trash",
-                            "label"=>"<img src='../../images/empty_trash.gif' border=0>"._m('Empty trash')); */
+                            "label"=>"<img src='../../images/empty_trash.gif'>"._m('Empty trash')); */
 
     $aamenus["addlink_submenu"] = [
         "bottom_td"=>200,

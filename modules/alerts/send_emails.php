@@ -62,7 +62,7 @@ function ShowCollectionAddOns() {
     // send to supplied email
     FrmInputText("example[email]", _m('Email'), $example['email']);
     FrmInputSelect("example[howoften]", _m("as if"), get_howoften_options(), $example["howoften"]);
-    FrmTabSeparator("", ['example[go]' => ['type' => 'submit', 'value' => _m("Go!")]]);
+    FrmTabSeparator("");
 
     // send to selected user
     $reader_mails = $collection->getReadersSelectArray();
@@ -125,13 +125,13 @@ function showSelectionTable() {
     freeDB($db);
 
     //echo "<BR><B>"._m("Selections ordered by slice and view:")."</B><BR>";
-    echo "<BR><TABLE border=1 cellpadding=3 cellspacing=0>
-        <TR class=tabtit><TD><B>"._m("Slice")."</B></TD>
+    echo "<br><TABLE>
+        <TR class=\"aa-tbl-header\"><TD><B>"._m("Slice")."</B></TD>
         <TD><B>"._m("View (Selection set)")."</B></TD>
         <TD><B>"._m("Selections")."</B></TD></TR>";
 
     if (!is_array($a)) {
-        echo "<TR><TD colspan=3 align=center class=tabtxt><B>"
+        echo "<TR><TD colspan=3><B>"
         ._m("Define selections in slices from which you want to send Alerts,
         in views of type Alerts Selection Set")."</B></TD></TR>";
     } else {
@@ -139,7 +139,7 @@ function showSelectionTable() {
             if (! IsSuperadmin() && ! strchr($myslices[unpack_id($slice_id)], PS_FULLTEXT)) {
                 continue;
             }
-            echo "<TR><TD class=tabtxt rowspan=".count($slice["views"]).">
+            echo "<TR><TD rowspan=".count($slice["views"]).">
                 <A href=\"".StateUrl(AA_INSTAL_PATH
                     ."admin/index.php3?slice_id=".unpack_id($slice_id))."\">"
                     .$slice["name"]."</A></TD>";
@@ -149,11 +149,11 @@ function showSelectionTable() {
                     echo "<TR>";
                 }
                 $first_view = false;
-                echo "<TD class=tabtxt>
+                echo "<TD>
                     <a href=\"".StateUrl(AA_INSTAL_PATH
                     ."admin/se_view.php?slice_id=".unpack_id($slice_id)
                     ."&view_id=".$vid."&view_type=".$view["type"])
-                    ."\">".$view["name"]."</A></TD><TD class=tabtxt>";
+                    ."\">".$view["name"]."</A></TD><TD>";
                 foreach ($view["filters"] as $fid => $filter) {
                     echo "f".$fid." ".$filter."<br>";
                 }

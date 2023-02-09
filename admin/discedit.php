@@ -134,12 +134,12 @@ $headline = getHeadline($content[$item_id]);
 echo getTabStart();
 
 ?>
-  <tr><td class="tabtit"><b>&nbsp;<?php
-     echo _m("Item: ")." $headline</b> (".
+  <tr class="aa-tbl-header"><th><?php
+     echo _m("Item: ")." $headline (".
            $content[$item_id]["disc_app........"][0]['value']. "/".
-           $content[$item_id]["disc_count......"][0]['value']. ")" ?> </td></tr>
+           $content[$item_id]["disc_count......"][0]['value']. ")" ?> </th></tr>
   <tr><td>
-  <table width="100%" border="0" cellspacing="0" cellpadding="0" bgcolor="<?php echo COLOR_TABBG ?>">
+  <table>
      <tr><td width="10">&nbsp;</td>
         <td><b><?php echo _m("Title") ?></td>
         <td width="10">&nbsp;</td>
@@ -149,7 +149,7 @@ echo getTabStart();
         <td width="10">&nbsp;</td>
         <td><b><?php echo _m("Date") ?></td>
         <td width="10">&nbsp;</td>
-        <td align="center"><b><?php echo _m("Actions") ?></td>
+        <td><b><?php echo _m("Actions") ?></td>
         <td width="10">&nbsp;</td>
     </tr>
       <tr><td colspan="9">&nbsp;</td></tr>
@@ -158,7 +158,7 @@ echo getTabStart();
 $item = new AA_Item('', new AA_Aliases(new AA_Aliasgenerator_Discussion()));
 $i = 0;
 if (!$outcome) {
-    echo "<tr><td colspan=\"9\" align=\"center\" class=\"tabtxt\">". _m("No discussion comments") ."<br><br></td></tr>";
+    echo "<tr><td colspan=\"9\">". _m("No discussion comments") ."<br><br></td></tr>";
 } else {
     foreach ($outcome as $d_id => $images) {
         $im = "";
@@ -166,24 +166,24 @@ if (!$outcome) {
             $im .= GetImageSrc($img);
         }
         $im2 = "<tr><td>&nbsp;</td>
-                 <td><table cellspacing=\"0\" cellpadding=\"0\" border=\"0\">
-                    <tr><td>".$im. PrintImg("blank.gif",2,21)."</td>
-                        <td nowrap>_#SUBJECT_&nbsp;</td>
+                 <td><table>
+                    <tr><td>".$im. GetAAImage('blank.gif','',2,21)."</td>
+                        <td>_#SUBJECT_&nbsp;</td>
                     </tr>
                     </table>
                  </td>
                  <td>&nbsp;</td>
-                 <td nowrap>_#AUTHOR#_</td>
+                 <td>_#AUTHOR#_</td>
                  <td>&nbsp;</td>
-                 <td nowrap>_#IP_ADDR_</td>
+                 <td>_#IP_ADDR_</td>
                  <td>&nbsp;</td>
-                 <td nowrap>_#DATE###_</td>
+                 <td>_#DATE###_</td>
                  <td>&nbsp;</td>";
         $item->setformat($im2);
         $item->set_data($dcontent[$d_id]);
         echo $item->get_item();
 
-        echo "<td align=\"center\">&nbsp;&nbsp;&nbsp;<a href=\"javascript:DeleteComment('".$d_id."')\"><small>". _m("Delete") ."</small></a>";
+        echo "<td>&nbsp;&nbsp;&nbsp;<a href=\"javascript:DeleteComment('".$d_id."')\"><small>". _m("Delete") ."</small></a>";
         echo "&nbsp;<a href=". con_url(StateUrl("discedit2.php"),"d_id=".
              $d_id."&item_id=".$item_id) ."><small>". _m("Edit") ."</small></a>";
         $s = ($h = !$dcontent[$d_id]["d_state........."][0]['value']) ? _m("Hide") : _m("Approve");
@@ -196,10 +196,10 @@ if (!$outcome) {
 ?>
   </table>
   </td></tr>
-  <tr><td class="tabtit"  align="center">
+  <tr class="aa-tbl-header"><th>
      <input type="submit" value="<?php echo _m("Back") ?>">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
      <input type="button" value="<?php echo _m("Delete All") ?>" onclick="DeleteAllComments();">&nbsp;
-     <input type="button" value="<?php echo _m("Delete All Unhidden") ?>" onclick="DeleteAllHiddenComments();"></td></tr>
+     <input type="button" value="<?php echo _m("Delete All Unhidden") ?>" onclick="DeleteAllHiddenComments();"></th></tr>
   </table>
 <?php
 $apage->printFoot();

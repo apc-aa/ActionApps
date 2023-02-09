@@ -56,7 +56,7 @@ $nb_view = (!$r_slice_view_url ?
   '<span class=nbenable>'. _m("View site") .'</span>' :
   " &nbsp; &nbsp;<a href=\"$r_slice_view_url\"><span class=nbenable>". _m("View site") .'</span></a>');
 
-$nb_logo = '<a href="'. AA_INSTAL_PATH .'"><img src="'.$nb_backpath.'../images/action.gif" width="106" height="73" border="0" alt="'. _m("ActionApps") .'"></a>';
+$nb_logo = '<a href="'. AA_INSTAL_PATH .'"><img src="'.$nb_backpath.'../images/action.gif" width="106" height="73" alt="'. _m("ActionApps") .'"></a>';
 
 $nb_go = '<span class=nbenable>'. _m("Go") .'</span>';
 
@@ -65,24 +65,24 @@ $nb_usermng = ( (!IfSlPerm(PS_NEW_USER) OR $usermng_page) ?
   '<a href="'. StateUrl("um_uedit.php") .'"><span class=nbenable>'. _m("Users") .'</span></a>');
 
 echo "
-<TABLE border=0 cellpadding=0 cellspacing=0>
+<TABLE>
   <TR>
     <TD><IMG src=\"$nb_backpath../images/spacer.gif\" width=122 height=1></TD>
     <TD><IMG src=\"$nb_backpath../images/spacer.gif\" width=300 height=1></TD>
     <TD><IMG src=\"$nb_backpath../images/spacer.gif\" width=267 height=1></TD>
   </TR>
   <TR>
-    <TD rowspan=2 align=center class=nblogo>$nb_logo</td>
-    <TD height=43 colspan=2 align=center valign=middle class=slicehead>
+    <TD rowspan=2 class=nblogo>$nb_logo</td>
+    <TD height=43 colspan=2 class=slicehead>
     $nb_context  -  ".
     ($module_id ? AA_Slice::getModuleName($module_id) : _m("New slice"))
     ."</TD>
   </TR>
   <TR>
-    <td align=center class=navbar>
+    <td class=navbar>
      $nb_view | $nb_manager | $nb_settings | $nb_usermng </td>
-    <TD align=center class=navbar>";
+    <TD class=navbar>";
 
-PrintModuleSelection();
+echo GetModuleSelection();
 
 echo "</TD></TR></TABLE>";

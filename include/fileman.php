@@ -257,9 +257,9 @@ function file_table($path, $dirname) {
             $href = StateUrl("fileman.php?cmd=" . ($file["dir"] ? "chdir&arg[chdir]=" : "edit&arg[edit]=") . $file['path'] . "&fmset[directory]=$directory");
             $retval .= "<tr>
             <td>".($file['name']!=".." ? "<input type=\"checkbox\" name=\"chb[".$file['path']."]\">" : "&nbsp;")."</td>
-            <td><a href=\"$href\"><img src=\"../images/$file[img].gif\" alt=\"".$file['type']."\" border=\"0\"></a></td>
+            <td><a href=\"$href\"><img src=\"../images/$file[img].gif\" alt=\"".$file['type']."\"></a></td>
             <td><a href=\"$href\">".$file['name']."</a></td>
-            <td align=\"right\">".($file["dir"] ? "&nbsp;" : format_file_size($file["size"]))."</td>
+            <td>".($file["dir"] ? "&nbsp;" : format_file_size($file["size"]))."</td>
             <td>".$file['type']."</td>
             <td>".$file['lastm']."</td>
             </tr>";

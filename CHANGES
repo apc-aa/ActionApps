@@ -1852,7 +1852,7 @@ The changes could be tracked on:
            The <li>s are marked in its class by the importance (number of use) so you
            can set style them. There are 8 classes tagcloud1 - tagcloud8.
            The styles could by:
-             <style type="text/css">
+             <style>
                ul.tagcloud li.tagcloud1 { font-size: 1.8em; font-weight: 800; }
                ul.tagcloud li.tagcloud2 { font-size: 1.6em; font-weight: 700; }
                ul.tagcloud li.tagcloud3 { font-size: 1.4em; font-weight: 600; }
@@ -2876,7 +2876,7 @@ The changes could be tracked on:
              - mime
              - html or hw (height="xxx" width="yyy")
              - img (<img src="<url>" height="xxx" width="yyy"/>)
-             - imgb (the same as img, but border="0" is added)
+             - imgb (the same as img, but is added)
          - new {fileinfo:<url>:<info>} returns size or type of the file:
            {fileinfo:{file............}:size} - thanks to Adam Sanchez
          - {include:} now passes Cookies to included file, which might
@@ -3777,7 +3777,7 @@ The changes could be tracked on:
            on the presumption, that the robots fill all the fields in the form,
            even the hidden ones. filler.php3 then never stores comment, which
            would have "answer" field filled. So if you add say:
-              <style type="text/css">
+              <style>
                   .skryt { display:none };
               </style>
               <div class="skryt">
@@ -4215,7 +4215,7 @@ The changes could be tracked on:
 (mimo)     between multiple content slice
 #
 #        (incomplete)
-         - hardcoded table for fulltext of discussion do not have width=100%
+         - hardcoded table for fulltext of discussion do not have
            now, because it makes troubles in IE on pages with CSS layout
 05-12-30 - computed fields can compute also with self content as well as with
 (honzam)   content of others computed fields, now

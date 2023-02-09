@@ -4540,7 +4540,7 @@ $_m["You have the permission to add stored search globally. Do you want to add t
  = "";
 
 // include/searchbar.class.php, row 621
-$_m["Store"]
+$_m["Store search"]
  = "";
 
 // include/searchbar.class.php, row 636

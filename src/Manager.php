@@ -159,24 +159,22 @@ class Managed {
                 $td = '';
                 $th = '';
                 foreach ($cols as $col) {
-                    $th .= "<th class=\"aacol$col\">".$this->columns[$col][0].'</th>';
+                    $th .= "<th class=\"aacol$col\" scope=col>".$this->columns[$col][0].'</th>';
                     $td .= "<td class=\"aacol$col\">".$this->columns[$col][1].'</td>';   //<td style="white-space:nowrap;"> for .aacol_aa_action
                 }
 
                 $format_strings = [    // optionally to manager_vid you can set format array
-                    'compact_top'      => '<div class="aa-table aa-items-manager"><table><tr class="aa-table-head">'.$th.'</tr>',
+                    'compact_top'      => '<div class="aa-table aa-items-manager"><table><thead><tr class="aa-table-head">'.$th.'</tr></thead><tbody>',
                     'odd_row_format'   => '<tr>'. $td .'</tr>',
-                    'compact_bottom'   => "</table></div><br>"
+                    'compact_bottom'   => "</tbody></table></div><br>"
                 ];
                 $colspan = count($cols);
             } elseif ( !$format_strings ) {
                 $row = '<td>_#PUB_DATE&nbsp;</td><td>_#HEADLINE</td>'. (isset($aliases["_#AA_ACTIO"]) ? '<td>_#AA_ACTIO</td>': '');
-                $format_strings["odd_row_format"]  = '<tr class="tabtxt">'.$row.'</tr>';
-                $format_strings["even_row_format"] = '<tr class="tabtxteven">'.$row.'</tr>';
-                $format_strings["even_odd_differ"] = 1;
-                $format_strings["compact_top"]     = '<table bgcolor="#F5F0E7">
-                    <tr class="tabtitlight"><td>'._m("Publish date").'</td><td>'._m("Headline").'</td>'. (isset($aliases["_#AA_ACTIO"]) ? '<td>'._m("Actions").'</td>' : ''). '</tr>';
-                $format_strings["compact_bottom"]  = '</table>';
+                $format_strings["odd_row_format"]  = '<tr>'.$row.'</tr>';
+                $format_strings["compact_top"]     = '<table class="aa-table"><thead>
+                    <tr><th scope=col>'._m("Publish date").'</th><th scope=col>'._m("Headline").'</th>'. (isset($aliases["_#AA_ACTIO"]) ? '<th scope=col>'._m("Actions").'</th>' : ''). '</tr></thead><tbody>';
+                $format_strings["compact_bottom"]  = '</tbody></table>';
                 $colspan = 3;
             }
         }
@@ -805,7 +803,7 @@ class Manager extends AA_Storable {
         //     echo '<h1>'. $this->messages['title'] .'</h1>';
         // }
         if ($this->managed->msg_about) {
-            $ret .= '<div class="aa-about"><small>'. $this->managed->msg_about .'<br><br></small></div>';
+            $ret .= '<div class="aa-about">'. $this->managed->msg_about .'</div>';
         }
 
         $ret .= $this->getSearchbarBegin();
@@ -884,7 +882,7 @@ class Manager extends AA_Storable {
      * with getSearchbarEnd() function
      */
     function getSearchbarBegin(): string {
-        $ret = '<form name="filterform" action="'.StateUrl().'" class="noprint">'.StateHidden();
+        $ret = '<form name="filterform" action="'.StateUrl().'" class="noprint aa-ui-filterform">'.StateHidden();
         if ( isset($this->searchbar) ) {
             $ret .= $this->searchbar->getBar();
         }
@@ -895,7 +893,7 @@ class Manager extends AA_Storable {
      * Prints end of search form with searchbar (@see printSearchbarBegin())
      */
     function getSearchbarEnd(): string {
-        return "</form><p></p>"; // workaround for align=left bug
+        return "</form>";
     }
 
      /**
@@ -911,7 +909,7 @@ class Manager extends AA_Storable {
 
         $ids_count = $zids->count();
         if ( $ids_count == 0 ) {
-            $ret .= "<div class=\"tabtxt\">". $itemview->unaliasWithScroller($this->managed->msg_noitem). "</div></form><br>";
+            $ret .= "<div>". $itemview->unaliasWithScroller($this->managed->msg_noitem). "</div></form><br>";
             return $ret;
         }
 
@@ -927,12 +925,12 @@ class Manager extends AA_Storable {
 
         $ret .= $itemview->get_output('view');
 
-        $ret .= '<table class="aa_manager_actions noprint">
-                <tr class="aa_manager_actions_tr"><td>';
 
         if ($this->show & MGR_ACTIONS) {
-            $ret .= '<input type="hidden" name="akce" value="">';          // filled by javascript - contains action to perform
-            $ret .= '<input type="hidden" name="akce_param" value="">';  // if we need some parameteres to the action, store it here
+            $ret .= '<div class="aa_manager_actions noprint">';
+            $ret .=  '<div class="aa-formgroup-inline">';
+            $ret .=   '<input type="hidden" name="akce" value="">';          // filled by javascript - contains action to perform
+            $ret .=   '<input type="hidden" name="akce_param" value="">';  // if we need some parameteres to the action, store it here
 
             $javascr = '';
             $options = '';
@@ -986,12 +984,14 @@ class Manager extends AA_Storable {
                             '. $javascr .'
                       </script>';
             }
-            $ret .= '<div class="aa_manager_actions_all" style="display: none">'._m("No item selected. Perform action for all filtered items? ").'<input type="hidden" name="aa_akce_all" value=""><button class="aa-button" onclick="aa$N(\'aa_akce_all\').value=1;MarkedActionGo();">'._m('Run for %1 items',[$this->scroller->getItemCount()]).'</button></div>';
-            $ret .= "</td>\n</tr>\n<tr><td id=\"markedactionparams\"></td></tr>\n<tr><td>";
+            $ret .=  '</div>';
+            $ret .=  '<div class="aa_manager_actions_all" style="display: none">'._m("No item selected. Perform action for all filtered items? ").'<input type="hidden" name="aa_akce_all" value=""><button class="aa-button" onclick="aa$N(\'aa_akce_all\').value=1;MarkedActionGo();">'._m('Run for %1 items',[$this->scroller->getItemCount()]).'</button></div>';
+            $ret .=  "<div id=\"markedactionparams\"></div>";
+            $ret .= '</div>';
         }
-        $ret .= $this->scroller->getNavbar();
-        $ret .= '</td></tr></table>';
-        $ret .= '</form><br>';
+        $ret .= '<div class="aa-ui-pager">';
+        $ret .=  $this->scroller->getNavbar();
+        $ret .= "\n</div></form><br>";
         return $ret;
     }
 

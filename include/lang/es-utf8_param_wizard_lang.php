@@ -1817,7 +1817,7 @@ $_m["Transformation action"]
  = "Acción de transformación";
 
 // include/constants_param_wizard.php, row 1123
-$_m["Store"]
+$_m["Store search"]
  = "Almacenar";
 
 // include/constants_param_wizard.php, row 1124

@@ -52,11 +52,11 @@ function PrintSlice($id, $name, $type) {
     $name = safe($name); $id = safe($id);
     $url  = (($type=='S') ? './slicedel2.php' : AA_INSTAL_PATH.$MODULES[$type]['directory']."moddelete.php" );
 
-    echo "<tr class=\"tabtxt\">
+    echo "<tr>
             <td><input type=\"checkbox\" name=\"deletearr[]\" value=\"$id\"></td>
             <td>$name</td>
             <td>$type</td>
-            <td class=\"tabtxt\"><a href=\"javascript:DeleteSlice('$id', '$url')\">". _m("Delete") ."</a></td>
+            <td><a href=\"javascript:DeleteSlice('$id', '$url')\">". _m("Delete") ."</a></td>
             </tr>
          ";
 }
@@ -107,7 +107,7 @@ while ( $db->next_record() ) {
   $slice_to_delete = true;
 }
 if ( !$slice_to_delete ) {
-  echo "<tr class=tabtxt><td>". _m("No slice marked for deletion") ."</td></tr>";
+  echo "<tr><td>". _m("No slice marked for deletion") ."</td></tr>";
 }
 
 FrmTabEnd($form_buttons);

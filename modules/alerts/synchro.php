@@ -82,8 +82,8 @@ if ($db->next_record()) {
 
 echo '
 <form method="post" name="form_choose" action="'.StateUrl("synchro.php").'">
-<table border="1" cellspacing="0" cellpadding="10" align="center" width="440">
-    <tr><td class=tabtxt>
+<table0" width="440">
+    <tr><td>
     <h2>'._m("Choose Reader Management Slice").'</h2>
     '._m("This Alerts Collection takes user data from the slice").":<br><b>";
 
@@ -110,8 +110,8 @@ echo '
 
 echo '
 <form method="post" name="form_add" action="'.StateUrl("synchro.php").'">
-<table border="1" cellspacing="0" cellpadding="10" align="center" width="440">
-    <tr><td class=tabtxt>
+<table0" width="440">
+    <tr><td>
     <h2>'._m("Add %1-specific fields to %2",
              [$collectionprop["name"], $slice_name]).'</h2>';
 echo _m("Adds only fields the IDs of which don't yet exist in the slice.
@@ -119,13 +119,13 @@ echo _m("Adds only fields the IDs of which don't yet exist in the slice.
 
 // Field table
 
-echo '<br><br><table border="1" cellspacing="0" cellpadding="3">
-    <tr><td class="tabtit">'._m("Field Name").'</td>
-        <td class="tabtit">'._m("Field ID").'</td></tr>';
+echo '<br><br><table class="aa-table">
+    <tr class="aa-tbl-header"><th>'._m("Field Name").'</th>
+        <th>'._m("Field ID").'</th></tr>';
 
 $fields = get_alerts_specific_fields($collectionid);
 foreach ($fields as $field_id => $fprop) {
-    echo "<tr><td class=\"tabtxt\">".$fprop["name"]."</td><td class=\"tabtxt\">$field_id</td></tr>\n";
+    echo "<tr><td>".$fprop["name"]."</td><td>$field_id</td></tr>\n";
 }
 echo '</table><br>';
 

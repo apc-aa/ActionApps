@@ -86,19 +86,22 @@ function get_aamenus() {
         "header1"=>_m("Alerts Admin"),
   //      "formwizard"=>array ("cond"=>IfSlPerm(PS_USERS), "href"=>"modules/alerts/cf_wizard.php3", "label"=>_m("Form Wizard")),
         "settings"=> ["cond"=>IfSlPerm(PS_USERS),
-            "href" => "modules/alerts/tabledit.php?set_tview=modedit&cmd[modedit][edit]["
-                .$GLOBALS["slice_id"]."]=1", "label"=>_m("Settings")],
+            "href" => "modules/alerts/tabledit.php?set_tview=modedit&cmd[modedit][edit][".$GLOBALS["slice_id"]."]=1",
+            "label"=>_m("Settings"),
+            'ico'=>'ico-form.png'],
         "filters"=> ["cond"=>IfSlPerm(PS_USERS),
             "href"=>"modules/alerts/tabledit.php?set_tview=acf",
-            "label"=>_m("Selections")],
+            "label"=>_m("Selections"),
+            'ico'=>'ico-selections.png'],
         "send_emails"=> ["cond"=>IfSlPerm(PS_USERS),
-            "href"=>"modules/alerts/tabledit.php?set_tview=send_emails&cmd[send_emails][edit]["
-                .$GLOBALS["collectionid"]."]=1",
-            "label"=>_m("Send emails")],
+            "href"=>"modules/alerts/tabledit.php?set_tview=send_emails&cmd[send_emails][edit][".$GLOBALS["collectionid"]."]=1",
+            "label"=>_m("Send emails"),
+            'ico'=>'ico-email.png'],
         "synchro"=> [
             "cond"=>IfSlPerm(PS_USERS),
             "href" => "modules/alerts/synchro.php",
-            "label" => _m("Reader management")
+            "label" => _m("Reader management"),
+            'ico'=>'ico-users.png'
         ],
         "doc"=> ["cond"=>1, "href"=>"doc/alerts.html", "label" => _m("Documentation")],
 
