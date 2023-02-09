@@ -89,7 +89,8 @@ try {
     // array ( '' => 92, 'asdfghjkl"_…' => 1, 'asdfghjkl\\"…' => 1, )
     $reading_password = InputVars::stringPOST('reading_password'); // empty
     // array ( 'https://ada…' => 2, '' => 87, 'www' => 1, 'B' => 1, 3 => 1, 'Kvakoš 765…' => 1, 'He said tha…' => 1, )
-    $slice_url = InputVars::stringPOST('slice_url'); // empty
+    $slice_url  = InputVars::stringPOST('slice_url'); // empty
+    $slice_type = InputVars::stringPOST('slice_type'); // empty
     // array ( 'on' => 18, )
     $template = InputVars::arrayPOST('template'); // alnum
     // array ( 'Přidat' => 3, )
