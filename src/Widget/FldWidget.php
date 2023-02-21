@@ -73,21 +73,23 @@ class FldWidget extends Widget
 
         $attrs = array_merge($attrs, $aa_property->getValidator()->getHtmlInputAttr());
 
-        $attrs['size'] = get_if($this->getProperty('width'), $attrs['size']);
-        if (!$attrs['size']) {
-            unset($attrs['size']);
-            if (count($translations)>1) {
-                $attrs['style'] = 'width:85%'; // for translations, we need more space for buttons
-            } else {
-                $attrs['class'] = $attrs['class'] ? $attrs['class']. ' aa-w-full' : 'aa-w-full'; // $attrs['style'] = 'width:95%';
+        // type number do not support size parameter, so ve have to set max and min (make no sense to do it for numbers > 11 characters - use default)
+        if ($attrs['type'] == 'number') {
+            if (!isset($attrs['max']) and ($nchars = $attrs['maxlength'] ?: $this->getProperty('width') ?: $this->getProperty('max_characters') ?: $attrs['size'] ?: 0) and ($nchars < 11)) {
+                $attrs['max'] = pow(10, $nchars) - 1;
+                $attrs['min'] = $attrs['min'] ?: '0';
             }
-        }
-        $attrs['maxlength'] = get_if($this->getProperty('max_characters'), $attrs['maxlength'], 255);
-
-        // type number do not support size parameter, so ve have to set max and min (make no sence to do it for numbers > 11 characters - use default)
-        if (($attrs['type'] == 'number') AND !isset($attrs['max']) AND ($nchars = $attrs['maxlength'] ?: $attrs['size'] ?: 0) AND ($nchars < 11)) {
-            $attrs['max'] = pow(10, $nchars) - 1;
-            $attrs['min'] = $attrs['min'] ?: '0';
+        } else {
+            $attrs['size'] = get_if($this->getProperty('width'), $attrs['size']);
+            if (!$attrs['size']) {
+                unset($attrs['size']);
+                if (count($translations)>1) {
+                    $attrs['style'] = 'width:85%'; // for translations, we need more space for buttons
+                } else {
+                    $attrs['class'] = $attrs['class'] ? $attrs['class']. ' aa-w-full' : 'aa-w-full'; // $attrs['style'] = 'width:95%';
+                }
+            }
+            $attrs['maxlength'] = get_if($this->getProperty('max_characters'), $attrs['maxlength'], 255);
         }
 
         $attr_string = join(' ', array_map(function ($k, $v) {

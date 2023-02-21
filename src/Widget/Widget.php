@@ -292,7 +292,7 @@ class Widget extends AA_Object implements NamedInterface {
 
     /** returns select options created from given array
      *  This method is rewritten get_options() method form formutil.php
-     * @param        $options []
+     * @param array  $options
      * @param string $restrict
      * @param bool   $do_not_select
      * @return string

@@ -86,10 +86,12 @@ class MchWidget extends Widget
             }
         }
 
-        // default value - in order something is send when no chbox is checked
+        // default value - in order something is sent when no checkbox is checked
         $input_name = $base_name_add . "[def]";
         $input_id = FormArray::formName2Id($input_name);
-        $widget = count($selection) ? ('<div class="aa-mch-selected"><strong>' . _m('Selected') . ':</strong><div class="aa-mch-tags">' . join(' ', $selection)) . '</div></div>' : '';
+
+        $small  = (count($options) < 7) ? ' aa-mch-options-s' : '';
+        $widget = count($selection) ? ("<div class=\"aa-mch-selected$small\"><strong>" . _m('Selected') . ':</strong><div class="aa-mch-tags">' . join(' ', $selection)) . '</div></div>' : '';
         $widget .= '<div class="aa-mch-list" style="max-height:' . $height . 'px; overflow:auto;">';
         $widget .= "\n<input type=\"hidden\" name=\"$input_name\" id=\"$input_id\" value=\"\">";
         $widget .= $this->getInMatrix($htmlopt, $this->getProperty('columns', 0), $this->getProperty('move_right', false), 'aa-tab-mch');
