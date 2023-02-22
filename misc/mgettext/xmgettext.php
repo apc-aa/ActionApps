@@ -385,7 +385,7 @@ function collect_messages($logfile, $files_base_dir, $files, &$messages, &$warni
             foreach ($msg as $message => $code) {
                 foreach ($code["code"] as $filename => $rows) {
                     foreach ($rows as $row) {
-                        $messages [$message]["code"][$filename][] = $row;
+                        $messages[$message]["code"][$filename][] = $row;
                     }
                 }
             }
@@ -545,7 +545,7 @@ function collect_messages_from_file($base_dir, $filename, &$messages, &$warnings
                 } elseif ($filetext[$pos] == ".") {
                     $find = 2;
                 } elseif ($filetext[$pos] == "," || $filetext[$pos] == ")") {
-                    $messages [$message]["code"][$filename][] = $irow;
+                    $messages[$message]["code"][$filename][] = $irow;
                     $find = 0;
                 } else {
                     $warnings[] = "$filename, row $irow: bad syntax inside _m () after $message";

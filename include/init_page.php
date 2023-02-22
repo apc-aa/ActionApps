@@ -74,9 +74,8 @@ if ($free) {
 require_once __DIR__ . "/locauth.php";
 
 // Save before getting the session stored variables
-// Now it should not be in session so maybe the $pass_sliceid is not necessary and we can use just slice_id
 // At least it does sanity check.
-//                               AA::$module_id - could be set on new Alterts module - see AlertsModeditAfterInsert()
+//                               AA::$module_id - could be set on new Alerts module - see AlertsModeditAfterInsert()
 if (!is_long_id(AA::$module_id = AA::$module_id ?: $_POST['change_id'] ?: $_GET['change_id'] ?: $_POST['module_id'] ?: $_GET['module_id'] ?: $_POST['slice_id'] ?: $_GET['slice_id'])) {
     AA::$module_id = '';
 }
@@ -99,22 +98,15 @@ if ($_GET['relogin']) {
     $auth->relogin();
 }
 
-$slice_id      = AA::$module_id;   // @deprecated - use AA::$module_id instead
-
 if ( $no_slice_id ) {
     unset($slice_id);
     AA::$module_id = null; // unset is_a not allowed for static variables
 }
+$slice_id      = AA::$module_id;   // @deprecated - use AA::$module_id instead
 
 require_once __DIR__ . "/util.php";  // must be after language include because of lang constants in util.php
 require_once __DIR__ . "/event.class.php";
 
-/* It is not a good idea to store $slice_id, it made some damage in AA
-   installations already. But for historical reasons before somebody ensures
-   that all Admin Panel modules send $slice_id each time, we leave it here.
-   But if a script sends slice_id, the session-stored one is overrided
-   (see $pass_sliceid above). */
-// $sess->register("slice_id");
 // array of variables - used to transport variables between pages (instead of dangerous hidden tag)
 $sess->register('r_hidden');
 

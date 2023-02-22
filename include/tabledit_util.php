@@ -318,7 +318,7 @@ function TableUpdate($val, $columns, $primary_aliases, $error_msg="", $triggers 
 
     // add non-key values
     foreach ($columns as $alias => $col) {
-        if (isset ($val[$alias])) {
+        if (isset($val[$alias])) {
             $varset = &$varsets[$col["table"]];
             $value = $val[$alias];
             if (!$col["primary"]) {
@@ -392,7 +392,7 @@ function TableInsert(&$newkey, &$where, $key_table, $val, $columns, $primary_ali
 
     // add non-key values
     foreach ($columns as $alias => $col) {
-        if (isset ($val[$alias])) {
+        if (isset($val[$alias])) {
             $varset = &$varsets[$col["table"]];
             $value = $val[$alias];
             if (!$col["primary"]) {

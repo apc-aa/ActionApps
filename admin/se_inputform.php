@@ -389,7 +389,6 @@ $apage->setSubtitle(_m("WARNING: Do not change this setting if you are not sure 
 $apage->addRequire('codemirror@5');
 $apage->addRequire('aa-jslib');   // just for AA_Message() copy to clipboard
 $apage->addRequire(get_aa_url('javascript/js_lib.min.js?v='.AA_JS_VERSION, '', false));
-$apage->addRequire(get_aa_url('css/aa-responsive.css?v='.AA_JS_VERSION, '', false )); // for clipboard button positions
 
 
 $apage->addRequire($script2run, 'AA_Req_Load');
@@ -441,7 +440,6 @@ echo "
       </tr>";
 FrmInputChBox("translation", _m("Allow translation"), $translation, false, '', 1, false, _m('Only Text Area and Text Field widgets allows translation. Languages should be set on Slice Setting page.'));
 
-echo $tab_separator;
 echo "
      <tr>
       <th>". _m("Default") ."</th>
@@ -459,7 +457,6 @@ echo "
             <input type=\"text\" name=\"input_default\" class=aa-w-full value=\"". safe($input_default) ."\">
       </td>
      </tr>";
-echo $tab_separator;
 echo "
      <tr>
          <th>". _m("Validate") ."</th>
@@ -473,7 +470,6 @@ echo "
          </td>
       </td>
      </tr>";
-echo $tab_separator;
 echo "
      <tr>
          <th>". _m("Stored as") ."</th>
@@ -490,7 +486,6 @@ echo "
          </td>
       </td>
      </tr>";
-echo $tab_separator;
 echo "
      <tr>
          <th>". _m("Insert") ."</th>
@@ -516,12 +511,11 @@ echo $tab_separator;
 echo "
      <tr>
       <th>". _m("Feeding mode") ."</th>
-      <td>";
-        FrmSelectEasy("feed", inputFeedModes(), $feed);
-      echo "<div class=tabhlp>". _m("Should the content of this field be copied to another slice if it is fed?") ."</div>
+      <td>". getFrmSelectEasy("feed", inputFeedModes(), $feed) .
+      "<div class=tabhlp>". _m("Should the content of this field be copied to another slice if it is fed?") ."</div>
       </td>
      </tr>";
-FrmTabSeparator(_m("ALIASES used in views to print field content (%1)", [$fld['id']]));
+echo getFrmTabInnerSeparator(_m("ALIASES used in views to print field content (%1)", [$fld['id']]));
 
 
 $myarray = $FIELD_FUNCTIONS['items'];
@@ -547,6 +541,7 @@ for ($iAlias=1; $iAlias <= 3; ++$iAlias) {
     $aname_row    .=  "<button type=button onclick=\"navigator.clipboard.writeText('_#'+document.querySelector('input[name=$alias_name]').value).then(() => { AA_Message('Copied to clipboard','info'); });\" title=\""._m('Copy to clipboard')."\">";
     $aname_row    .=   '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#584011" viewBox="0 0 16 16"><path d="M9.5 0a.5.5 0 0 1 .5.5.5.5 0 0 0 .5.5.5.5 0 0 1 .5.5V2a.5.5 0 0 1-.5.5h-5A.5.5 0 0 1 5 2v-.5a.5.5 0 0 1 .5-.5.5.5 0 0 0 .5-.5.5.5 0 0 1 .5-.5h3Z"></path><path d="M3 2.5a.5.5 0 0 1 .5-.5H4a.5.5 0 0 0 0-1h-.5A1.5 1.5 0 0 0 2 2.5v12A1.5 1.5 0 0 0 3.5 16h9a1.5 1.5 0 0 0 1.5-1.5v-12A1.5 1.5 0 0 0 12.5 1H12a.5.5 0 0 0 0 1h.5a.5.5 0 0 1 .5.5v12a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5v-12Z"></path><path d="M10.854 7.854a.5.5 0 0 0-.708-.708L7.5 9.793 6.354 8.646a.5.5 0 1 0-.708.708l1.5 1.5a.5.5 0 0 0 .708 0l3-3Z"></path></svg>'; // https://icons.getbootstrap.com/
     $aname_row    .=  "</button>";
+    $aname_row    .=  "<button type=button onclick=\"navigator.clipboard.writeText('_#'+document.querySelector('input[name=$alias_name]').value).then(() => { AA_Message('Copied to clipboard','info'); });\" title=\""._m('Copy to clipboard')."\">&#10697;</button>";
     $aname_row    .=  "<input type=button value=\""._m('Reset')."\" onclick=\"ResetAlias($iAlias)\">";
     $aname_row    .= "</div>";
 

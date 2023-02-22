@@ -855,9 +855,9 @@ class itemview {
         if ($this->slice_info['calendar_type'] == 'mon_table') {
             for ($cell = 7 - $firstday; $cell <= $max_cell; $cell += $row_len) {
                 for ($ievent = 0; $ievent < $max_events; ++$ievent)
-                    if ($calendar [$cell][$ievent]["iid"]) {
-                        $calendar [$cell][$ievent]["start"] = 1;
-                        $calendar [$cell][$ievent]["span"] = min ($calendar[$cell][$ievent]["span"],$row_len);
+                    if ($calendar[$cell][$ievent]["iid"]) {
+                        $calendar[$cell][$ievent]["start"] = 1;
+                        $calendar[$cell][$ievent]["span"] = min ($calendar[$cell][$ievent]["span"],$row_len);
                     }
             }
 

@@ -78,12 +78,12 @@ $L_MONTH = [
 
 if ($month == 0) {
     $month = getdate();
-    $month = $month ["mon"];
+    $month = $month["mon"];
 }
 
 if ($year == 0) {
     $year = getdate();
-    $year = $year ["year"];
+    $year = $year["year"];
 }
 
 echo "<form name='f' method='get' action='./actividades.shtml'>";

@@ -39,10 +39,10 @@ require_once __DIR__ . "/../include/se_users.php";
 try {
     // array ( 2 => 16, )
     $UsrAdd = InputVars::stringGET('UsrAdd');
+    $UsrDel = InputVars::stringGET('UsrDel'); // alpha
     // array ( 'Vyhledat' => 2, )
     $UsrSrch = InputVars::boolPOST('UsrSrch'); // alpha
     $GrpSrch = InputVars::boolPOST('GrpSrch'); // alpha
-    $UsrDel = InputVars::stringPOST('UsrDel'); // alpha
     // array ( 1 => 3, )
     $adduser = InputVars::boolGET('adduser');
     // array ( '' => 2, )
@@ -66,11 +66,10 @@ if (!IfSlPerm(PS_USERS)) {
  * @param $url
  * @param $txt
  */
-function IfLink( $cond, $url, $txt ) {
-    echo "<td>";
-    echo $cond ? "<a href=\"$url\">$txt</a>" : $txt;
-    echo  "</td>\n";
+function IfLink( $cond, $url, $txt, $class='btn btn-secondary'): string {
+    return '<td>'. ($cond ? "<a href=\"$url\" class='$class'>$txt</a>" : $txt) ."</td>\n";
 }
+
 /** PrintUser function
  * @param $usr
  * @param $usr_id
@@ -83,7 +82,9 @@ function PrintUser($perm, $usr_id, $editor_perm) {
 
     // select role icon
     $role_img = 'rolex.gif';
-    if (      IsPerm($perm,AA_Perm::ROLES["SUPER"]['id']) ) {
+    if ( !$perm ) {
+        $role_img = 'blank.gif';
+    } elseif ( IsPerm($perm,AA_Perm::ROLES["SUPER"]['id']) ) {
         $role_img = 'role4.gif';
     } elseif (IsPerm($perm,AA_Perm::ROLES["ADMINISTRATOR"]['id'] ) ) {
         $role_img = 'role3.gif';
@@ -97,9 +98,9 @@ function PrintUser($perm, $usr_id, $editor_perm) {
 
     $go_url_arr = [
         'User'        => "um_uedit.php?usr_edit=1&selected_user=$usr_id_enc",
-                         'Group'       => "um_gedit.php?grp_edit=1&selected_group=$usr_id_enc",
-                         'Reader'      => "#",
-                         'ReaderGroup' => "index.php3?change_id=$usr_id_enc"
+        'Group'       => "um_gedit.php?grp_edit=1&selected_group=$usr_id_enc",
+        'Reader'      => "#",
+        'ReaderGroup' => "index.php3?change_id=$usr_id_enc"
     ];
     $usrinfo = AA::$perm->getIDsInfo($usr_id);
 
@@ -112,10 +113,10 @@ function PrintUser($perm, $usr_id, $editor_perm) {
     echo "<td>". (($usrinfo['mail']) ?: "&nbsp;") ."</td>\n";
     echo "<td>". _mdelayed($usrinfo['type']) ."</td>\n";
 
-    IfLink( CanChangeRole($perm, $editor_perm, AA_Perm::ROLES["AUTHOR"]['perm']),        get_admin_url("se_users.php?UsrAdd=$usr_id_enc&role=AUTHOR"), _m("Author"));
-    IfLink( CanChangeRole($perm, $editor_perm, AA_Perm::ROLES["EDITOR"]['perm']),        get_admin_url("se_users.php?UsrAdd=$usr_id_enc&role=EDITOR"), _m("Editor"));
-    IfLink( CanChangeRole($perm, $editor_perm, AA_Perm::ROLES["ADMINISTRATOR"]['perm']), get_admin_url("se_users.php?UsrAdd=$usr_id_enc&role=ADMINISTRATOR"), _m("Administrator"));
-    IfLink( CanChangeRole($perm, $editor_perm, AA_Perm::ROLES["AUTHOR"]['perm']),        get_admin_url("se_users.php?UsrDel=$usr_id_enc&role=AUTHOR"), _m("Revoke"));
+    echo IfLink( CanChangeRole($perm, $editor_perm, AA_Perm::ROLES["AUTHOR"]['perm']),        get_url('', ['UsrAdd'=>$usr_id, 'role'=>"AUTHOR"],        true), _m("Author"));
+    echo IfLink( CanChangeRole($perm, $editor_perm, AA_Perm::ROLES["EDITOR"]['perm']),        get_url('', ['UsrAdd'=>$usr_id, 'role'=>"EDITOR"],        true), _m("Editor"));
+    echo IfLink( CanChangeRole($perm, $editor_perm, AA_Perm::ROLES["ADMINISTRATOR"]['perm']), get_url('', ['UsrAdd'=>$usr_id, 'role'=>"ADMINISTRATOR"], true), _m("Administrator"));
+    echo IfLink( CanChangeRole($perm, $editor_perm, AA_Perm::ROLES["AUTHOR"]['perm']),        get_url('', ['UsrDel'=>$usr_id, 'role'=>"AUTHOR"],        true), _m("Revoke"), 'aa-button-delete');
 
     // show profile button also for groups
     $cnt = ($cnt = DB_AA::select1('cnt', 'SELECT count(*) as cnt FROM profile', [
@@ -138,16 +139,18 @@ $apage->printHead($err, $Msg);
 $continue=true;
 
 if ( $show_adduser ) {
-    include "./se_users_add.php";
+    AddUserForm($usr, $grp, $GrpSrch, $UsrSrch, $editor_perms);
+    $continue = false;
 } elseif ( $UsrAdd || $UsrDel) {
-    ChangeRole(); // in include/se_users.php
+    ChangeRole($UsrAdd, $UsrDel, AA::$module_id, $editor_perms, $role); // in include/se_users.php
 }
-if ( $continue ) {
 
+if ( $continue ) {
     FrmTabCaption(_m("Change current permisions"));
 
-    $slice_users = AA::$perm->getObjectsPerms(AA::$module_id, "slice");
-    $aa_users    = AA::$perm->getObjectsPerms(AA_ID, "aa");   // higher than slice
+    $slice_users   = AA::$perm->getObjectsPerms(AA::$module_id, "slice");
+    $aa_users      = AA::$perm->getObjectsPerms(AA_ID, "aa");   // higher than slice
+    $profile_users = AA_Profile::getUsersForModule(AA::$module_id);  // sometimes could be set profile to group, which have no rights right now, but profile is set (and is counted for the user)
 
     // if conflicts slice perms and aa perms - solve it
     foreach ( $slice_users as $usr_id => $foo ) {
@@ -163,12 +166,19 @@ if ( $continue ) {
         }
     }
 
+    // no slice nor aa perms, but profile is set
+    foreach ($profile_users as $usr_id ) {
+        if ( ($usr_id != '*') AND !$slice_users[$usr_id] ) {
+            $slice_users[$usr_id] = '';  // no rights, just profile rules (applied to users in such group)
+        }
+    }
+
     foreach ($slice_users as $usr_id => $prm) {
         PrintUser($prm, $usr_id, $editor_perms);
     }
 
     $cnt = ($cnt = DB_AA::select1('cnt', 'SELECT count(*) as cnt FROM profile', [
-        ['slice_id', $GLOBALS['slice_id'], 'l'],
+        ['slice_id', AA::$module_id, 'l'],
         ['uid', '*']
     ])) ? " <span class='aa-bin-cnt'>$cnt</span>" : '';
 

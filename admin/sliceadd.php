@@ -33,6 +33,7 @@ $require_default_lang = true;
 
 // const AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
+require_once __DIR__ . "/../include/sliceadd.php";
 
 try {
     $cancel = InputVars::boolPOST('cancel');
@@ -71,9 +72,10 @@ $apage->setTitle(_m("Create New Slice / Module"));
 $apage->setForm(['action'=>'slicedit.php']);
 $apage->printHead($err, $Msg);
 
-require_once __DIR__ . "/../include/sliceadd.php";
+SliceAddForm();
 
 FrmTabCaption(_m("Modules"));
+
 foreach ($MODULES as $type => $module) {
   if ($module["hide_create_module"]) {
         continue;
@@ -81,7 +83,7 @@ foreach ($MODULES as $type => $module) {
     if ($module["show_templates"]) {
         $templ_sb = GetModuleTemplateSelecbox($type, $g_modules);
         if (!$templ_sb) {
-            continue;
+            // continue;
         }
     }
     echo "<tr><td width=\"20%\"><b>"._mdelayed($module['name'])."</b></td><td width=\"60%\">".
@@ -90,7 +92,6 @@ foreach ($MODULES as $type => $module) {
         <input type=\"submit\" name=\"create[$type]\" value=\""._m("Add")."\"></td></tr>";
 }
 FrmTabEnd();
-
 echo '<br><br>'. getTabStart();
 
 echo getFrmInputButtons(["cancel" => ["url" => "aafinder.php"]]);

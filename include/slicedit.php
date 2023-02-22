@@ -54,9 +54,7 @@ function add_user_and_welcome($welcome_id, $user_login, $slice_id, $role) {
     }
 
     reset($userinfo);
-    $GLOBALS["UsrAdd"] = key ($userinfo);
-    $GLOBALS["role"]   = $role;
-    ChangeRole(); // in include/se_users.php
+    ChangeRole(key($userinfo), false, $slice_id, $editor_perms, $role); // in include/se_users.php
 
     // 2. Send a welcome email message
     $user = current($userinfo);
@@ -83,270 +81,299 @@ function add_user_and_welcome($welcome_id, $user_login, $slice_id, $role) {
     }
 }
 
-if ($slice_id) {  // edit slice
-    if (!IfSlPerm(PS_EDIT)) {
-        MsgPage(_m("You have not permissions to edit this slice"));
-        exit;
+/**
+ * @param        $slice_id
+ * @param        $user_firstname
+ * @param        $user_surname
+ * @param        $err
+ * @param bool   $add_submit
+ * @param        $user_login
+ * @param string $user_password1
+ * @param string $user_password2
+ * @param        $user_mail1
+ * @param        $user_mail2
+ * @param        $user_mail3
+ * @param bool   $user_super
+ * @param bool   $um_uedit_no_go_url
+ * @param        $selected_user
+ * @param bool   $posted_groups
+ * @param array  $sel_groups
+ * @param array  $perm_mod
+ * @param array  $new_module
+ * @param array  $new_module_role
+ * @param bool   $add
+ * @param bool   $update
+ * @param string $owner
+ * @param string $new_owner
+ * @param string $new_owner_email
+ * @param        $name
+ * @param string $slice_url
+ * @param string $slice_type
+ * @param        $upload_url
+ * @param int    $priority
+ * @param int    $permit_anonymous_post
+ * @param bool   $permit_anonymous_edit
+ * @param int    $permit_offline_fill
+ * @param        $lang_file
+ * @param int    $d_listlen
+ * @param string $mlxctrl
+ * @param string $fileman_access
+ * @param string $fileman_dir
+ * @param array  $template
+ * @param bool   $deleted
+ * @param bool   $flag_allow_expired
+ * @param string $auth_field_group
+ * @param string $mailman_field_lists
+ * @param string $reading_password
+ * @param bool   $flag_allow_pending
+ * @param        $set_template_id
+ * @param array  $wiz
+ * @param string $user_role
+ * @return array
+ */
+function SliceEditProcess($slice_id, $user_firstname, $user_surname, $err, bool $add_submit, $user_login, string $user_password1, string $user_password2, $user_mail1, $user_mail2, $user_mail3, bool $user_super, bool $um_uedit_no_go_url, $selected_user, bool $posted_groups, array $sel_groups, array $perm_mod, array $new_module, array $new_module_role, bool $add, bool $update, string $owner, string $new_owner, string $new_owner_email, $name, string $slice_url, string $slice_type, $upload_url, int $priority, int $permit_anonymous_post, bool $permit_anonymous_edit, int $permit_offline_fill, $lang_file, int $d_listlen, string $mlxctrl, string $fileman_access, string $fileman_dir, array $template, bool $deleted, bool $flag_allow_expired, string $auth_field_group, string $mailman_field_lists, string $reading_password, bool $flag_allow_pending, $set_template_id, array $wiz, string $user_role) {
+    if ($slice_id) {  // edit slice
+        if (!IfSlPerm(PS_EDIT)) {
+            MsgPage(_m("You have not permissions to edit this slice"));
+            exit;
+        }
+    } else {          // add slice
+        if (!CheckPerms(AuthGetUid(), "aa", AA_ID, PS_ADD)) {
+            MsgPage(_m("You have not permissions to add slice"));
+            exit;
+        }
     }
-} else {          // add slice
-    if (!CheckPerms( AuthGetUid(), "aa", AA_ID, PS_ADD)) {
-        MsgPage(_m("You have not permissions to add slice"));
-        exit;
-    }
-}
-
-$varset     = new CVarset();
-$superadmin = IsSuperadmin();
 
 // Add new editor / administrator from Wizard page
-if ($user_firstname || $user_surname) {
-
-    // following code (in do {}) is used also in um_uedit file
-    do  {
-        // Procces user data -------------------------------------------------------
-        $userrecord = FillUserRecord($err, ($add_submit ? $user_login : 'nOnEwlOgiN'), $user_surname, $user_firstname, $user_password1, $user_password2,  $user_mail1, $user_mail2, $user_mail3);
-
-        if ( count($err)) {
-            break;
-        }
-
-        if ( $add_submit ) {      // -------------------- new user ------------------
-            NewUserData($err, $user_login, $userrecord, $user_super, $um_uedit_no_go_url);
-        } else {                 // ----------------- update user ------------------
-            ChangeUserData($err, $selected_user, $userrecord, $user_super);
-        }
-
-        // Procces group data ------------------------------------------------------
-        ChangeUserGroups($posted_groups, $sel_groups, $selected_user);
-
-        // Procces module permissions ----------------------------------------------
-
-        // Change module permissions if user wants
-        ChangeUserModulePerms($perm_mod, $selected_user);
-
-        // Add new modules for this user
-        AddUserModulePerms($new_module, $new_module_role, $selected_user);
-
-    } while (false);
-}
+    if ($user_firstname || $user_surname) {
+        $err = ProcessUser($submit_action, $selected_user, $err, $add_submit, $user_login, $user_surname, $user_firstname, $user_password1, $user_password2, $user_mail1, $user_mail2, $user_mail3, $user_super, $um_uedit_no_go_url, $posted_groups, $sel_groups, $perm_mod, $new_module, $new_module_role);
+    }
 
 
 // additional settings
-AA_Slice::processModuleObject($slice_id);
+    AA_Slice::processModuleObject($slice_id);
 
-if ( $add || $update ) {
-    do {
-        if ( !$owner ) {  // insert new owner
-            ValidateInput("new_owner", _m("New Owner"), $new_owner, $err, true, "text");
-            ValidateInput("new_owner_email", _m("New Owner's E-mail"), $new_owner_email, $err, true, "email");
+    if ($add || $update) {
 
-            if ( count($err)) {
-                break;
-            }
+        $varset     = new CVarset();
+        $superadmin = IsSuperadmin();
 
-            $owner = new_id();
-            $varset->set("id", $owner, "unpacked");
-            $varset->set("name", $new_owner, "text");
-            $varset->set("email", $new_owner_email, "text");
+        do {
+            if (!$owner) {  // insert new owner
+                ValidateInput("new_owner", _m("New Owner"), $new_owner, $err, true, "text");
+                ValidateInput("new_owner_email", _m("New Owner's E-mail"), $new_owner_email, $err, true, "email");
 
-            // create new owner
-            if ( !$varset->doINSERT('slice_owner')) {
-                $err["DB"] .= MsgErr("Can't add slice");
-                break;
-            }
-
-            $varset->clear();
-        }
-        ValidateInput("name", _m("Title"), $name, $err, true, "text");
-        ValidateInput("owner", _m("Owner"), $owner, $err, false, "id");
-        ValidateInput("slice_url", _m("URL of .shtml page (often leave blank)"), $slice_url, $err, false, "url");
-        ValidateInput("slice_type", _m("Slice Type"), $slice_type, $err, false, "text");
-        ValidateInput("upload_url", _m("Upload URL"), $upload_url, $err, false, "url");
-        ValidateInput("priority", _m("Priority (order in slice-menu)"), $priority, $err, false, "number");
-        ValidateInput("permit_anonymous_post", _m("Allow anonymous posting of items"), $permit_anonymous_post, $err, false, "number");
-        ValidateInput("permit_anonymous_edit", _m("Allow anonymous editing of items"), $permit_anonymous_edit, $err, false, "number");
-        ValidateInput("permit_offline_fill", _m("Allow off-line item filling"), $permit_offline_fill, $err, false, "number");
-        ValidateInput("lang_file", _m("Used Language File"), $lang_file, $err, true, "text");
-
-        ValidateInput("d_listlen", _m("Listing length"), $d_listlen, $err, false, "number");
-        //mimo change
-        ValidateInput('mlxctrl', _m("Language Control Slice"), $mlxctrl, $err, false, "id");
-        //
-        ValidateInput("fileman_access", _m("File Manager Access"), $fileman_access, $err, false, "text");
-        ValidateInput("fileman_dir", _m("File Manager Directory"), $fileman_dir, $err, false, "filename");
-
-        if ($fileman_dir AND DB_AA::test('slice', [['fileman_dir',$fileman_dir], ['id', $slice_id, 'l<>']])) {
-            $err[] = _m("This File Manager Directory is already used by another slice.");
-        }
-
-        if ( count($err)) {
-            break;
-        }
-        $template           = ( $template            ? 1 : 0 );
-        $deleted            = ( $deleted             ? 1 : 0 );
-        $flag_allow_expired = ( $flag_allow_expired  ? 1 : 0 );
-
-        if ( $update ) {
-            $varset->clear();
-            $varset->addkey("id", "unpacked", $slice_id);
-            $varset->add("name", "text", $name);
-            $varset->add("owner", "unpacked", $owner);
-            //echo $owner; exit;  // problem was in VARCHAR of owner field in database. It must be BINARY
-            $varset->add("slice_url", "text", $slice_url);
-            $varset->add("priority", "number", $priority);
-            if ( $superadmin ) {
-                $varset->add("deleted", "number", $deleted);
-            }
-            $varset->add("lang_file", "text", $lang_file);
-
-            if (!$varset->doUpdate('module', null, $slice_id)) {
-                // not necessary - we have set the halt_on_error
-                $err["DB"] = MsgErr("Can't change slice");
-                break;
-            }
-
-            $varset->remove('priority');  // is not in slice table (which is OK)
-
-            $varset->add("d_listlen", "number", $d_listlen);
-            if ( $superadmin ) {
-                $varset->add("template", "number", $template);
-            }
-            $varset->add("type", "text", $slice_type);
-            $varset->add("permit_anonymous_post", "number", $permit_anonymous_post);
-            $varset->add("permit_anonymous_edit", "number", $permit_anonymous_edit);
-            $varset->add("permit_offline_fill", "number", $permit_offline_fill);
-            $varset->add("fileman_access", "text", $fileman_access);
-            $varset->add("fileman_dir", "text", $fileman_dir);
-            $varset->add("auth_field_group", "text", $auth_field_group);
-            $varset->add("mailman_field_lists", "text", $mailman_field_lists);
-            $varset->add("reading_password", "text", $reading_password);
-
-            $slice_flag  = DB_AA::select1('flag', 'SELECT `flag` FROM `slice`', [['id', $slice_id, 'l']]);
-            $slice_flag &= ~(SLICE_ALLOW_EXPIRED_CONTENT | SLICE_ALLOW_PENDING_CONTENT); // clear the bits
-            $slice_flag |= $flag_allow_expired ? SLICE_ALLOW_EXPIRED_CONTENT : 0;
-            $slice_flag |= $flag_allow_pending ? SLICE_ALLOW_PENDING_CONTENT : 0;
-            $varset->add("flag", "number", $slice_flag);
-
-            $varset->add('mlxctrl', "unpacked", $mlxctrl); //store 16bytes packed
-
-
-            if (!$varset->doUpdate('slice', null, $slice_id)) {  // not necessary - we have set the halt_on_error
-                $err["DB"] = MsgErr("Can't change slice");
-                break;
-            }
-
-            $r_slice_view_url = ($slice_url=="" ? StateUrl("../slice.php3"). "&slice_id=$slice_id&encap=false"
-                                                : stripslashes($slice_url));
-        } else { // insert (add)
-
-            $slice_id = new_id();
-            $varset->set("id", $slice_id, "unpacked");
-            $varset->set("created_by", AuthGetUid(), "text");
-            $varset->set("created_at", now(), "text");
-            $varset->set("name", $name, "text");
-            $varset->set("owner", $owner, "unpacked");
-            $varset->set("slice_url", $slice_url, "text");
-            $varset->set("priority", $priority, "number");
-            $varset->set("deleted", $deleted, "number");
-            $varset->set("lang_file", $lang_file, "text");
-            $varset->set("type","S","text");
-
-            if ( !$varset->doINSERT('module') ) {
-                $err["DB"] .= MsgErr("Can't add slice");
-                break;
-            }
-
-            AA::$module_id = $slice_id;
-
-            $varset->clear();
-
-            // get template data
-            $varset->addArray( SLICE_FIELDS_TEXT, SLICE_FIELDS_NUM );
-            if (! ($record = DB_AA::select1('', 'SELECT * FROM slice', [['id', $set_template_id, 'l']]))) {
-                $err["DB"] = MsgErr("Bad template id");
-                break;
-            }
-            $varset->setFromArray($record);
-            $varset->set("id", $slice_id, "unpacked");
-            $varset->set("created_by", AuthGetUid(), "text");
-            $varset->set("created_at", now(), "text");
-            $varset->set("name", $name, "text");
-            $varset->set("owner", $owner, "unpacked");
-            $varset->set("slice_url", $slice_url, "text");
-            $varset->set("type", $slice_type, "text");
-            $varset->set("deleted", $deleted, "number");
-            $varset->set("lang_file", $lang_file, "text");
-            $varset->set("d_listlen", $d_listlen, "number");
-            $varset->set("template", $template, "number");
-            $varset->set("permit_anonymous_post", $permit_anonymous_post, "number");
-            $varset->set("permit_anonymous_edit", $permit_anonymous_edit, "number");
-            $varset->set("permit_offline_fill", $permit_offline_fill, "number");
-            $varset->set("fileman_access", $fileman_access, "text");
-            $varset->set("fileman_dir", $fileman_dir, "text");
-            $varset->add("auth_field_group", "text", $auth_field_group);
-            $varset->add("mailman_field_lists", "text", $mailman_field_lists);
-            $varset->add("reading_password", "text", $reading_password);
-
-            $slice_flag = $flag_allow_expired ? SLICE_ALLOW_EXPIRED_CONTENT : 0;
-            $varset->add("flag", "number", $slice_flag);
-
-            //mimo
-            $varset->add('mlxctrl', "text", $mlxctrl);
-
-            // create new slice
-            if ( !$varset->doINSERT('slice') ) {
-                $err["DB"] .= MsgErr("Can't add slice");
-                break;
-            }
-
-            // copy fields
-            $fields = DB_AA::select([], 'SELECT * FROM field', [['slice_id', $set_template_id, 'l']]);
-            foreach ($fields as $field) {
-                $varset->clear();
-                $varset->addArray( AA_Fields::FIELDS_TEXT, AA_Fields::FIELDS_NUM );
-                $varset->setFromArray($field);
-                $varset->set("slice_id", $slice_id, "unpacked" );
-                if ( !$varset->doINSERT('field')) {
-                    $err["DB"] .= MsgErr("Can't copy fields");
+                if (count($err)) {
                     break;
                 }
-            }
 
-            AddPermObject($slice_id, "slice");    // no special permission added - only superuser can access
+                $owner = new_id();
+                $varset->set("id", $owner, "unpacked");
+                $varset->set("name", $new_owner, "text");
+                $varset->set("email", $new_owner_email, "text");
 
-            /* Added by Jakub on June 2002 to support Add slice Wizard */
-            // Copy constants
-            if ($wiz["constants"] == "copy") {
-                if (!CopyConstants($slice_id)) {
-                    $err[] = _m("Error when copying constants.");
+                // create new owner
+                if (!$varset->doINSERT('slice_owner')) {
+                    $err["DB"] .= MsgErr("Can't add slice");
+                    break;
                 }
+
+                $varset->clear();
             }
-            // Copy views
-            if ($wiz["copyviews"] && $slice_id && $set_template_id) {
-                if (!CopyTableRows( "view",
-                                    "slice_id='".q_pack_id($set_template_id)."'",
-                                    ["slice_id"=>q_pack_id($slice_id)],
-                                    ["id"])) {
-                    $err[] = _m("Error when copying views.");
+            ValidateInput("name", _m("Title"), $name, $err, true, "text");
+            ValidateInput("owner", _m("Owner"), $owner, $err, false, "id");
+            ValidateInput("slice_url", _m("URL of .shtml page (often leave blank)"), $slice_url, $err, false, "url");
+            ValidateInput("slice_type", _m("Slice Type"), $slice_type, $err, false, "text");
+            ValidateInput("upload_url", _m("Upload URL"), $upload_url, $err, false, "url");
+            ValidateInput("priority", _m("Priority (order in slice-menu)"), $priority, $err, false, "number");
+            ValidateInput("permit_anonymous_post", _m("Allow anonymous posting of items"), $permit_anonymous_post, $err, false, "number");
+            ValidateInput("permit_anonymous_edit", _m("Allow anonymous editing of items"), $permit_anonymous_edit, $err, false, "number");
+            ValidateInput("permit_offline_fill", _m("Allow off-line item filling"), $permit_offline_fill, $err, false, "number");
+            ValidateInput("lang_file", _m("Used Language File"), $lang_file, $err, true, "text");
+
+            ValidateInput("d_listlen", _m("Listing length"), $d_listlen, $err, false, "number");
+            //mimo change
+            ValidateInput('mlxctrl', _m("Language Control Slice"), $mlxctrl, $err, false, "id");
+            //
+            ValidateInput("fileman_access", _m("File Manager Access"), $fileman_access, $err, false, "text");
+            ValidateInput("fileman_dir", _m("File Manager Directory"), $fileman_dir, $err, false, "filename");
+
+            if ($fileman_dir and DB_AA::test('slice', [['fileman_dir', $fileman_dir], ['id', $slice_id, 'l<>']])) {
+                $err[] = _m("This File Manager Directory is already used by another slice.");
+            }
+
+            if (count($err)) {
+                break;
+            }
+            $template           = ($template ? 1 : 0);
+            $deleted            = ($deleted ? 1 : 0);
+            $flag_allow_expired = ($flag_allow_expired ? 1 : 0);
+
+            if ($update) {
+                $varset->clear();
+                $varset->addkey("id", "unpacked", $slice_id);
+                $varset->add("name", "text", $name);
+                $varset->add("owner", "unpacked", $owner);
+                //echo $owner; exit;  // problem was in VARCHAR of owner field in database. It must be BINARY
+                $varset->add("slice_url", "text", $slice_url);
+                $varset->add("priority", "number", $priority);
+                if ($superadmin) {
+                    $varset->add("deleted", "number", $deleted);
                 }
-            }
+                $varset->add("lang_file", "text", $lang_file);
 
-            // Add new editor / administrator privileges from Wizard page
-            if ($user_login) {
-                $myerr = add_user_and_welcome($wiz["welcome"], $user_login, $slice_id, $user_role);
-                if ($myerr != "") $err[] = _m("Internal error when changing user role.")." ($myerr)";
-            }
-            /* End of Wizard stuff */
+                if (!$varset->doUpdate('module', null, $slice_id)) {
+                    // not necessary - we have set the halt_on_error
+                    $err["DB"] = MsgErr("Can't change slice");
+                    break;
+                }
 
-            // create new upload directory
-            Files::destinationDir(AA_Slice::getModule($slice_id));
-        }
+                $varset->remove('priority');  // is not in slice table (which is OK)
+
+                $varset->add("d_listlen", "number", $d_listlen);
+                if ($superadmin) {
+                    $varset->add("template", "number", $template);
+                }
+                $varset->add("type", "text", $slice_type);
+                $varset->add("permit_anonymous_post", "number", $permit_anonymous_post);
+                $varset->add("permit_anonymous_edit", "number", $permit_anonymous_edit);
+                $varset->add("permit_offline_fill", "number", $permit_offline_fill);
+                $varset->add("fileman_access", "text", $fileman_access);
+                $varset->add("fileman_dir", "text", $fileman_dir);
+                $varset->add("auth_field_group", "text", $auth_field_group);
+                $varset->add("mailman_field_lists", "text", $mailman_field_lists);
+                $varset->add("reading_password", "text", $reading_password);
+
+                $slice_flag = DB_AA::select1('flag', 'SELECT `flag` FROM `slice`', [['id', $slice_id, 'l']]);
+                $slice_flag &= ~(SLICE_ALLOW_EXPIRED_CONTENT | SLICE_ALLOW_PENDING_CONTENT); // clear the bits
+                $slice_flag |= $flag_allow_expired ? SLICE_ALLOW_EXPIRED_CONTENT : 0;
+                $slice_flag |= $flag_allow_pending ? SLICE_ALLOW_PENDING_CONTENT : 0;
+                $varset->add("flag", "number", $slice_flag);
+
+                $varset->add('mlxctrl', "unpacked", $mlxctrl); //store 16bytes packed
+
+
+                if (!$varset->doUpdate('slice', null, $slice_id)) {  // not necessary - we have set the halt_on_error
+                    $err["DB"] = MsgErr("Can't change slice");
+                    break;
+                }
+
+                $r_slice_view_url = ($slice_url == "" ? StateUrl("../slice.php3") . "&slice_id=$slice_id&encap=false"
+                    : stripslashes($slice_url));
+            } else { // insert (add)
+
+                $slice_id = new_id();
+                $varset->set("id", $slice_id, "unpacked");
+                $varset->set("created_by", AuthGetUid(), "text");
+                $varset->set("created_at", now(), "text");
+                $varset->set("name", $name, "text");
+                $varset->set("owner", $owner, "unpacked");
+                $varset->set("slice_url", $slice_url, "text");
+                $varset->set("priority", $priority, "number");
+                $varset->set("deleted", $deleted, "number");
+                $varset->set("lang_file", $lang_file, "text");
+                $varset->set("type", "S", "text");
+
+                if (!$varset->doINSERT('module')) {
+                    $err["DB"] .= MsgErr("Can't add slice");
+                    break;
+                }
+
+                AA::$module_id = $slice_id;
+
+                $varset->clear();
+
+                // get template data
+                $varset->addArray(SLICE_FIELDS_TEXT, SLICE_FIELDS_NUM);
+                if (!($record = DB_AA::select1('', 'SELECT * FROM slice', [['id', $set_template_id, 'l']]))) {
+                    $err["DB"] = MsgErr("Bad template id");
+                    break;
+                }
+                $varset->setFromArray($record);
+                $varset->set("id", $slice_id, "unpacked");
+                $varset->set("created_by", AuthGetUid(), "text");
+                $varset->set("created_at", now(), "text");
+                $varset->set("name", $name, "text");
+                $varset->set("owner", $owner, "unpacked");
+                $varset->set("slice_url", $slice_url, "text");
+                $varset->set("type", $slice_type, "text");
+                $varset->set("deleted", $deleted, "number");
+                $varset->set("lang_file", $lang_file, "text");
+                $varset->set("d_listlen", $d_listlen, "number");
+                $varset->set("template", $template, "number");
+                $varset->set("permit_anonymous_post", $permit_anonymous_post, "number");
+                $varset->set("permit_anonymous_edit", $permit_anonymous_edit, "number");
+                $varset->set("permit_offline_fill", $permit_offline_fill, "number");
+                $varset->set("fileman_access", $fileman_access, "text");
+                $varset->set("fileman_dir", $fileman_dir, "text");
+                $varset->add("auth_field_group", "text", $auth_field_group);
+                $varset->add("mailman_field_lists", "text", $mailman_field_lists);
+                $varset->add("reading_password", "text", $reading_password);
+
+                $slice_flag = $flag_allow_expired ? SLICE_ALLOW_EXPIRED_CONTENT : 0;
+                $varset->add("flag", "number", $slice_flag);
+
+                //mimo
+                $varset->add('mlxctrl', "text", $mlxctrl);
+
+                // create new slice
+                if (!$varset->doINSERT('slice')) {
+                    $err["DB"] .= MsgErr("Can't add slice");
+                    break;
+                }
+
+                // copy fields
+                $fields = DB_AA::select([], 'SELECT * FROM field', [['slice_id', $set_template_id, 'l']]);
+                foreach ($fields as $field) {
+                    $varset->clear();
+                    $varset->addArray(AA_Fields::FIELDS_TEXT, AA_Fields::FIELDS_NUM);
+                    $varset->setFromArray($field);
+                    $varset->set("slice_id", $slice_id, "unpacked");
+                    if (!$varset->doINSERT('field')) {
+                        $err["DB"] .= MsgErr("Can't copy fields");
+                        break;
+                    }
+                }
+
+                AddPermObject($slice_id, "slice");    // no special permission added - only superuser can access
+
+                /* Added by Jakub on June 2002 to support Add slice Wizard */
+                // Copy constants
+                if ($wiz["constants"] == "copy") {
+                    if (!CopyConstants($slice_id)) {
+                        $err[] = _m("Error when copying constants.");
+                    }
+                }
+                // Copy views
+                if ($wiz["copyviews"] && $slice_id && $set_template_id) {
+                    if (!CopyTableRows("view",
+                        "slice_id='" . q_pack_id($set_template_id) . "'",
+                        ["slice_id" => q_pack_id($slice_id)],
+                        ["id"])) {
+                        $err[] = _m("Error when copying views.");
+                    }
+                }
+
+                // Add new editor / administrator privileges from Wizard page
+                if ($user_login) {
+                    $myerr = add_user_and_welcome($wiz["welcome"], $user_login, $slice_id, $user_role);
+                    if ($myerr != "") {
+                        $err[] = _m("Internal error when changing user role.") . " ($myerr)";
+                    }
+                }
+                /* End of Wizard stuff */
+
+                // create new upload directory
+                Files::destinationDir(AA_Slice::getModule($slice_id));
+            }
 //        $slice->setSliceField('_upload_url.....', $upload_url);
 
-        AA::Pagecache()->invalidateFor($slice_id);  // invalidate old cached values for this slice
-    } while(false);
+            AA::Pagecache()->invalidateFor($slice_id);  // invalidate old cached values for this slice
+        } while (false);
 
-    if ( !count($err) ) {
-        go_return_or_url(StateUrl(self_base() . "slicedit.php"),0,0);
+        if (!count($err)) {
+            go_return_or_url(StateUrl(self_base() . "slicedit.php"), 0, 0);
+        }
     }
+    return $err;
 }

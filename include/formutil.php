@@ -1384,9 +1384,9 @@ class AA_Inputfield {
         if ( $safing ) {
             $val=safe($val);
         }
-        $this->echoo('<tr><td height="1" colspan="2">');
-        $this->echovar( "<input type=\"hidden\" name=\"$name\" value=\"$val\">" );
-        $this->echoo("</td></tr>\n");
+        $this->echoo('<tr style="visibility:collapse;"><td colspan=2>');
+        $this->echovar( "<input type=hidden name=\"$name\" value=\"$val\">" );
+        $this->echoo('</td></tr><tr style="visibility:collapse;"><td colspan=2></td></tr>'."\n");  // add extra row fro zebra stripes
     }
 
     /** textarea function
@@ -2648,6 +2648,14 @@ function getFrmTabSeparator($subtitle): string {
     $ret .= "\n<table class=\"aa-table\">";
     return $ret;
 }
+
+/** returns middle row with subtitle into the same form table
+ * @param        $subtitle
+ */
+function getFrmTabInnerSeparator($subtitle): string {
+    return "\n <tr><td class=\"aa-tab-title\" colspan=2>$subtitle</td></tr>";  // could be changer from 2 to something like 9999
+}
+
 
 /** getFrmTabEnd function
  * Prints form table end with buttons (@see FrmInputButtons)

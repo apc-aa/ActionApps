@@ -215,7 +215,7 @@ class ConvertCharset {
         $OutString  = "";
         $StringLenght = strlen($UnicodeString);
         for ($CharPosition = 0; $CharPosition < $StringLenght; $CharPosition++) {
-            $Char = $UnicodeString [$CharPosition];
+            $Char = $UnicodeString[$CharPosition];
             $AsciiChar = ord($Char);
 
             if ($AsciiChar < 128) { //1 7 0bbbbbbb (127)
@@ -224,7 +224,7 @@ class ConvertCharset {
             elseif ($AsciiChar >> 5 == 6) { //2 11 110bbbbb 10bbbbbb (2047)
                 $FirstByte      = ($AsciiChar & 31);
                 $CharPosition++;
-                $Char           = $UnicodeString [$CharPosition];
+                $Char           = $UnicodeString[$CharPosition];
                 $AsciiChar      = ord($Char);
                 $SecondByte     = ($AsciiChar & 63);
                 $AsciiChar      = ($FirstByte * 64) + $SecondByte;
@@ -234,11 +234,11 @@ class ConvertCharset {
             elseif ($AsciiChar >> 4  == 14) { //3 16 1110bbbb 10bbbbbb 10bbbbbb
                 $FirstByte      = ($AsciiChar & 31);
                 $CharPosition++;
-                $Char           = $UnicodeString [$CharPosition];
+                $Char           = $UnicodeString[$CharPosition];
                 $AsciiChar      = ord($Char);
                 $SecondByte     = ($AsciiChar & 63);
                 $CharPosition++;
-                $Char           = $UnicodeString [$CharPosition];
+                $Char           = $UnicodeString[$CharPosition];
                 $AsciiChar      = ord($Char);
                 $ThidrByte      = ($AsciiChar & 63);
                 $AsciiChar      = ((($FirstByte * 64) + $SecondByte) * 64) + $ThidrByte;
@@ -249,15 +249,15 @@ class ConvertCharset {
             elseif ($AsciiChar >> 3 == 30) { //4 21 11110bbb 10bbbbbb 10bbbbbb 10bbbbbb
                 $FirstByte      = ($AsciiChar & 31);
                 $CharPosition++;
-                $Char           = $UnicodeString [$CharPosition];
+                $Char           = $UnicodeString[$CharPosition];
                 $AsciiChar      = ord($Char);
                 $SecondByte     = ($AsciiChar & 63);
                 $CharPosition++;
-                $Char           = $UnicodeString [$CharPosition];
+                $Char           = $UnicodeString[$CharPosition];
                 $AsciiChar      = ord($Char);
                 $ThidrByte      = ($AsciiChar & 63);
                 $CharPosition++;
-                $Char           = $UnicodeString [$CharPosition];
+                $Char           = $UnicodeString[$CharPosition];
                 $AsciiChar      = ord($Char);
                 $FourthByte     = ($AsciiChar & 63);
                 $AsciiChar      = ((((($FirstByte * 64) + $SecondByte) * 64) + $ThidrByte) * 64) + $FourthByte;
@@ -604,7 +604,7 @@ class ConvertCharset {
      * @return string String with a proper message.
      **/
     function DebugOutput($Group, $Number, $Value = false) {
-        //$Debug [$Group][$Number] = "Message, can by with $Value";
+        //$Debug[$Group][$Number] = "Message, can by with $Value";
         //$Group[0] - Errors
         //$Group[1] - Notice
         $Debug[0][0] = "Error, can NOT read file: " . $Value . "<br>";

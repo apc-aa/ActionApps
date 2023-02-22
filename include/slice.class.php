@@ -86,9 +86,9 @@ class AA_Module {
      *   $slice       = AA_Slice::getModule($module_id)
      *   $some_module = AA_Module::getModule($module_id)  // this is not recommended - we usually know which module it should be
      *  @param $module_id
-     * @return AA_Module|AA_Slice|AA_Module_Site|AA_Module_Alerts|AA_Module_Links|AA_Module_Polls
+     * @return AA_Module|AA_Slice|AA_Module_Site|AA_Module_Alerts|AA_Module_Links|AA_Module_Polls|null
      */
-    static public function getModule($module_id) {
+    static public function getModule($module_id): ?AA_Module {
         if (!is_long_id($module_id)) {
             return null;
         }

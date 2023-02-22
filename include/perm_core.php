@@ -134,8 +134,7 @@ class AA_Perm_Resource {
     }
 }
 
-/** IsPerm function
- *  Check, if specified $perm is in $perms list
+/**  Check, if specified $perm is in $perms list
  * @param $perms
  * @param $perm
  * @return bool|string
@@ -194,8 +193,7 @@ function GetUserSlices() {
  * @return bool|string
  */
 function IfSlPerm($perm, $slice=null) {
-    global $slice_id;
-    return CheckPerms( AuthGetUid(), "slice", !is_null($slice) ? $slice : $slice_id, $perm);
+    return CheckPerms( AuthGetUid(), "slice", $slice ?? AA::$module_id, $perm);
 }
 
 /** IsSuperadmin function

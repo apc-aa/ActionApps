@@ -67,7 +67,7 @@ $varset = new Cvarset();
 
 if ( $del ) {
     DB_AA::delete('profile', [['id', $del], ['slice_id', AA::$module_id, 'l']]);
-    // slice identification is not neccessry
+    // slice identification is not necessary
        // $SQL = "DELETE FROM profile WHERE id='$del' AND slice_id='$p_slice_id'";
        // if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
        //     $err["DB"] = MsgErr("Can't delete profile");
@@ -122,38 +122,33 @@ $apage->setForm();
 $apage->printHead($err, $Msg);
 
 echo "
- <table width=\"70%\">
+ <table class=\"aa-table\">
   <tr class=\"aa-tbl-header\">
-   <th>&nbsp;". _m("Rules") ." - $uid - ". perm_username($uid). "</th>
-  </tr>
-  <tr>
-   <td>
-    <table>";
+   <th colspan='6'>&nbsp;". _m("Rules") ." - $uid - ". perm_username($uid). "</th>
+  </tr>";
 
-if ( isset($rules) AND is_array($rules) ) {
+if ( count($rules) ) {
     foreach ($rules as $v) {
         PrintRule($v, $lookup_fields);
     }
 } else {
-    echo "<tr><td>"._m("No rule is set")."</td></tr>";
+    echo "<tr><td colspan='6'>"._m("No rule is set")."</td></tr>";
 }
-
 echo "</table>
+<br>
+<form name=\"fr\">
+ <table class=\"aa-table\">
   <tr class=\"aa-tbl-header\">
-   <th>&nbsp;". _m("Add Rule") ."</th>
+   <th colspan='6'>&nbsp;". _m("Add Rule") ."</th>
   </tr>
   <tr>
-   <td>
-    <form name=\"fr\">
-     <table>
-      <tr>
        <td><b>". _m("Rule") . "</b></td>
        <td><b>". _m("Field") . "</b></td>
        <td><b>". _m("Function") . "</b></td>
        <td><b>". _m("Value") . "</b></td>
        <td><b>". _m("HTML") . "</b></td>
        <td>&nbsp;</td>
-      </tr>";
+  </tr>";
 
 $inputDefaultTypes =  AA_Components::getClassArray('AA_Generator_');
 
@@ -248,8 +243,7 @@ echo "</table>
       <input type=\"hidden\" name=\"html\">".
       StateHidden();
 echo '</form>
-    </td>
-   </tr>';
+';
 
 $set_as_from = GetTable2Array("SELECT DISTINCT uid FROM profile WHERE slice_id='$p_slice_id' AND (uid <>'$uid') AND (uid <>'*')", 'uid', 'uid');
 
@@ -257,8 +251,7 @@ if (is_array($set_as_from) AND (count($set_as_from) > 0)) {
     foreach ($set_as_from as $from_uid) {
         $set_as_from[$from_uid] = perm_username($from_uid);
     }
-    echo '<tr><td>
-    <form name="cpf" action="se_profile.php">
+    echo '<form name="cpf" action="se_profile.php">
       <input type="hidden" name="uid" value="' .$uid.'">
       <input type="hidden" name="set_as" value="1">'.
       StateHidden();
@@ -266,13 +259,9 @@ if (is_array($set_as_from) AND (count($set_as_from) > 0)) {
     echo _m('Copy Profile from');
     FrmSelectEasy('set_as_uid', $set_as_from);
     echo '<input type="submit" name="set_as" value=" '. _m('Copy') .' ">';
-    echo '</form>
-        </td>
-       </tr>';
+    echo '</form>';
 }
 ?>
-
-</table>
 
 <script>
     function addrule(n) {

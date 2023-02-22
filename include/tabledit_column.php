@@ -127,9 +127,9 @@ function get_formatted_date($datestring, $format) {
     }
 
     // mktime replaces missing values by today's values
-    if (!isset ($year)) {
-        if (!isset ($day)) {
-            if (!isset ($month)) {
+    if (!isset($year)) {
+        if (!isset($day)) {
+            if (!isset($month)) {
                 return mktime( $hour, $minute, $second);
             }
             else return mktime( $hour, $minute, $second, $month);
@@ -216,14 +216,14 @@ function ColumnFunctions($cview, &$val, $function, $name="", $new_record=false, 
         switch ($function) {
         case 'show':
             // show ****** for undefined values in select box, but not for new records
-            if (!isset ($cview["source"][$val]) && !$new_record) {
+            if (!isset($cview["source"][$val]) && !$new_record) {
                 $cview["source"][$val] = $unknown_select_value;
             }
             FrmSelectEasy($name, $cview["source"], $val);
             break;
         case 'show_ro':
             // show ****** for undefined values in select box, but not for new records
-            if (!isset ($cview["source"][$val]) && !$new_record) {
+            if (!isset($cview["source"][$val]) && !$new_record) {
                 $cview["source"][$val] = $unknown_select_value;
             }
             ShowColumnValueReadOnly($cview, $cview["source"][$val], $val, $name);

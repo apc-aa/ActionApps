@@ -39,6 +39,10 @@ require_once __DIR__ . "/../include/date.php";
 require_once __DIR__ . "/../include/varset.php";
 // add mlx functions
 require_once __DIR__."/../include/mlx.php";
+require_once __DIR__ . "/../include/slicedit.php";
+
+
+
 
 try {
     // array ( )
@@ -76,7 +80,7 @@ try {
     // array ( 'Jeď: Přid…' => 2, )
     $no_slice = InputVars::boolGETPOST('no_slice');
     // array ( 1 => 14, )
-    $no_slice_id = InputVars::boolPOST('no_slice_id');
+    // $no_slice_id = InputVars::boolPOST('no_slice_id');  // already set above for init_page.php
     // array ( 'b6849ffd5ce…' => 90, '41415f436f7…' => 2, '96ab12bbeae…' => 2, )
     $owner = InputVars::idPOST('owner');
     $new_owner = InputVars::stringPOST('new_owner');
@@ -180,7 +184,7 @@ $superadmin  = IsSuperadmin();
 
 $set_template_id = $_POST['template_from_slice'] ? $_POST['template_id2'] : $_POST['template_id'];
 
-require_once __DIR__ . "/../include/slicedit.php";
+$err = SliceEditProcess($slice_id, $user_firstname, $user_surname, $err, $add_submit, $user_login, $user_password1, $user_password2, $user_mail1, $user_mail2, $user_mail3, $user_super, $um_uedit_no_go_url, $selected_user, $posted_groups, $sel_groups, $perm_mod, $new_module, $new_module_role, $add, $update, $owner, $new_owner, $new_owner_email, $name, $slice_url, $slice_type, $upload_url, $priority, $permit_anonymous_post, $permit_anonymous_edit, $permit_offline_fill, $lang_file, $d_listlen, $mlxctrl, $fileman_access, $fileman_dir, $template, $deleted, $flag_allow_expired, $auth_field_group, $mailman_field_lists, $reading_password, $flag_allow_pending, $set_template_id, $wiz, $user_role);
 
 $foo_source = ( ( $slice_id=="" ) ? $set_template_id : $slice_id);
 

@@ -5900,11 +5900,11 @@ $_m["Trash bin"]
 
 // include/menu.php, row 194
 $_m["Bookmarks"]
- = "";
+ = "Záložky";
 
 // include/menu.php, row 203
 $_m["Setting"]
- = "&nbsp;";
+ = "Nastavení";
 
 // include/menu.php, row 204, 251
 $_m["Empty trash"]

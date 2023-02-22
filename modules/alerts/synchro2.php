@@ -136,10 +136,10 @@ function add_fields_2_slice($collectionid, $slice_id) {
             $input_pri += 10;
         }
 
-        if ($fprop ["constants"]["items"] == "{FILTERS}") {
-            $fprop ["constants"]["items"] = $filters;
+        if ($fprop["constants"]["items"] == "{FILTERS}") {
+            $fprop["constants"]["items"] = $filters;
         }
-        if ($fprop ["constants"]) {
+        if ($fprop["constants"]) {
             if (is_array($field_info)) {
                 [,$groupname] = explode(":", $field_info["input_show_func"]);
                 refresh_constant_group($groupname, $fprop["constants"]["items"]);
@@ -219,7 +219,7 @@ function getReaderManagementSlices () {
     $db = getDB();
     $db->query ($SQL);
     while ($db->next_record()) {
-        $retval [unpack_id ($db->f("id"))] = $db->f("name");
+        $retval[unpack_id ($db->f("id"))] = $db->f("name");
     }
     if ($collectionprop["slice_id"]) {
         $retval[""] = _m("not set");

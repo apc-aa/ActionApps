@@ -56,7 +56,7 @@ function GetCommonMenu(AA_Profile $profile): array {
 
         "header0"     => _m("Slices / Modules"),
         "sliceadd"    => ["label"=>_m("Create new"),      "cond"=>IfSlPerm(PS_ADD),      'ico'=>'ico-new-slice.png', "href"=>"admin/sliceadd.php"],
-        "slicewiz"    => ["label"=>_m("Create new Wizard"), "cond"=>IfSlPerm(PS_ADD),    "href"=>"admin/slicewiz.php"],
+        //"slicewiz"    => ["label"=>_m("Create new Wizard"), "cond"=>IfSlPerm(PS_ADD),    "href"=>"admin/slicewiz.php"],
         "slicedel"    => ["label"=>_m("Delete"),          "cond"=>IsSuperadmin(),        "href"=>"admin/slicedel.php"],
         "jumpedit"    => [
             "label"=>_m("Edit Jump"),       "cond"=>IfSlPerm(PS_ADD),      "exact_href" =>
@@ -142,7 +142,7 @@ function GetCommonMenu(AA_Profile $profile): array {
  * @param string     $ico
  * @return string
  */
-function GetLabel(AA_Profile $profile, string $property, string $selector, string $default_text, string $ico=''): string {
+function GetLabel(AA_Profile $profile, string $property, string $selector, ?string $default_text, string $ico=''): string {
     $val =  $profile->getProperty($property, $selector);
     $ret =  $ico ? GetAAImage($ico,'',23,23) : '';
     $ret .= ($val === false) ? $default_text : $val;
@@ -422,7 +422,9 @@ function getSubMenuRows($aamenuitems, $active ): string {
             $ret .= "<li class='aa-leftmenu-text'>$item</li>\n";
         } elseif (substr($itemshow,0,6) == "header") {
             if (is_array($item)) {
-                $ret .= "<li class='aa-leftmenu-header' title='".$item['title']."'>".$item['label']."</li>\n";  // $ico not shown for design reasons
+                if (!isset($item["cond"]) OR $item["cond"]) {
+                    $ret .= "<li class='aa-leftmenu-header' title='" . $item['title'] . "'>" . $item['label'] . "</li>\n";  // $ico not shown for design reasons
+                }
             } elseif ($item !== '') {
                 $ret .= "<li class='aa-leftmenu-header'>$item</li>\n";
             }
@@ -436,7 +438,7 @@ function getSubMenuRows($aamenuitems, $active ): string {
             $function = $item["function"];
             $ret .= getSubMenuRows( $function($item["func_param"] ), $active );
         } else {
-            if (!isset ($item["cond"])) {
+            if (!isset($item["cond"])) {
                 $item["cond"] = 1;
             }
             $cssclass = ($itemshow == $active) ? 'leftmenua' : 'leftmenuy';
@@ -452,7 +454,8 @@ function getSubMenuRows($aamenuitems, $active ): string {
                 }
                 $ret .= '<li class="aa-leftmenu-link"><a href="'.$href.'" class='.$cssclass.'>'.$ico. $item["label"]."</a></li>\n";
             } elseif ( !$item["hide"] ) {
-                $ret .= '<li class="aa-leftmenu-link"><span class="leftmenun">'.$ico.$item["label"]."</span></li>\n";
+                // no need to show not active menu items 2023-02-15 HM
+                // $ret .= '<li class="aa-leftmenu-link"><span class="leftmenun">'.$ico.$item["label"]."</span></li>\n";
             }
         }
     }
@@ -487,4 +490,3 @@ function getSubmenu($aamenu, $active): string {
 function CreateMenuItem( $label, $href, $cond = true ) {
     return ['label' => $label, 'href' => $href, 'cond' => $cond];
 }
-

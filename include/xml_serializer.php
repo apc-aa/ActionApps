@@ -202,7 +202,7 @@ class xml_unserializer {
             } elseif ($n == $name) {
                 // Cant assume its a structure export, import as array
                 $this->top[$n][] = $t;
-                //print("Unserialized stuff from somewhere $n []");
+                //print("Unserialized stuff from somewhere $n[]");
             } else {  // This came from a xml_sequencer
                 $this->top[$n] = $t;
                 //print("Unserialized xmlserialized array $n");

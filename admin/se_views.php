@@ -109,6 +109,8 @@ $view_types_ifeq = array_reduce( array_keys($VIEW_TYPES), function ($str, $key) 
 
 $managed = AA::Metabase()->getManagerConf('view', $actions);
 $managed->setColumns([]); // reset columns - use format strings bellow
+$managed->setAction('add',false);
+$managed->setNoitem('');
 $managed->settings['itemview']['format']['compact_top'] = '
                                         <div class="aa-table">
                                           <table>
@@ -166,8 +168,9 @@ foreach ( $views as $vw ) {
 echo '<form action="se_view.php" name="fvtype">';
 echo StateHidden();
 
-echo '<div class="aa-table"><table><tbody>
-      <tr><th colspan="3">'._m("Create new view").'</th> </tr>
+echo '<table class="aa-table">
+        <thead><tr><th colspan="3">'._m("Create new view").'</th></tr></thead>
+        <tbody
       <tr>
         <td>'._m("by&nbsp;type:").'</td>
         <td><select name="view_type">';
@@ -199,7 +202,7 @@ echo "   </select>&nbsp;<select name=\"view_view\">
         <td><input type=\"submit\" name=\"new_templ\" value=\"". _m("New") ."\"></td>
      </tr>";
 
-echo "</tbody></table></div></form>";
+echo "</tbody></table></form>";
 
 FrmJavascriptCached("
   var vs, vv, vn;

@@ -3006,7 +3006,6 @@ class AA_Stringexpand_Conds extends AA_Stringexpand_Nevercache {
         if ( !is_object($this->item) OR !$this->item->isField($text) ) {
             return AA_Stringexpand_Conds::_joinArray(json2arr($text), $no_url_encode, $no_url_encode ? 'AAnoCONDITION' : '');
         }
-
         return AA_Stringexpand_Conds::_joinArray($this->item->getValuesArray($text), $no_url_encode);
     }
 

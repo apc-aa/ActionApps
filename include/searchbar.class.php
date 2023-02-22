@@ -556,10 +556,10 @@ class AA_Searchbar extends AA_Storable {
      */
     function get_bar_actions(): string {
         $ret  = '<div class="aa-sb-btns">';
-        $ret .=  '<button type="submit" class="btn btn-l">'._m('Search').'</button>';
-        $ret .=  '<button type="button" class="btn btn-l btn-secondary" onclick="SearchBarAction(\''.$this->form_name. "', 'clearsearch', false, false)\">". _m('Clear') ."</button>";
+        $ret .=  '<button type="submit" class="btn">'._m('Search').'</button>';
+        $ret .=  '<button type="button" class="btn btn-secondary" onclick="SearchBarAction(\''.$this->form_name. "', 'clearsearch', false, false)\">". _m('Clear') ."</button>";
         if ($this->show & MGR_SB_BOOKMARKS) {
-            $ret .= '<button type="button" class="btn btn-l btn-secondary" onclick="SearchBarAction(\'' . $this->form_name . "', 'bookmark', '" . _m('Stored search name') . "'," .
+            $ret .= '<button type="button" class="btn btn-secondary" onclick="SearchBarAction(\'' . $this->form_name . "', 'bookmark', '" . _m('Stored search name') . "'," .
                 (!IfSlPerm(PS_BOOKMARK) ? "false" : "'" . _m('You have the permission to add stored search globally. Do you want to add this query as global (common to all slice users)?') . "'") . ")\">" . _m('Store search') . "</button>";
         }
 
@@ -610,6 +610,9 @@ class AA_Searchbar extends AA_Storable {
      * Get searchbar (search rows and order rows - based on current settings)
      */
     function getBar(): string {
+        if ( !($this->show & (MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS))) {
+            return '';
+        }
 
         $ret = '<div class="aa-ui-searchbar"><input type="hidden" name="srchbr_akce" value="1">';
 
@@ -631,7 +634,9 @@ class AA_Searchbar extends AA_Storable {
             }
         }
 
-        $ret .= $this->get_bar_actions();
+        if ($this->show & (MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS)) {
+            $ret .= $this->get_bar_actions();
+        }
 
         if ($this->show & MGR_SB_BOOKMARKS) {
             if ( $this->bookmarks->count() > 0 ) {

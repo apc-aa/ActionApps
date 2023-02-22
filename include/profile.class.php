@@ -73,6 +73,14 @@ class AA_Profile {
         return $instances[$user_id][$module_id];
     }
 
+    /** returns all users/groups who have any profile set for the slice
+     * @param string $module_id
+     * @return array
+     */
+    public static function getUsersForModule(string $module_id): array {
+        return DB_AA::select('uid', 'SELECT uid FROM profile', [['slice_id',$module_id,'l']]);
+    }
+
 
     /** loadprofile function
      *  Loads profile for current user and current slice/module from database

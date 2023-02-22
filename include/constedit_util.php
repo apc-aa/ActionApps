@@ -418,7 +418,7 @@ function hcUpdate()
     if (is_array($changes)) {
         $db->query("SELECT id, short_id FROM constant;");
         while ($db->next_record())
-            $shortIDmap [$db->f("short_id")] = addslashes($db->f("id"));
+            $shortIDmap[$db->f("short_id")] = addslashes($db->f("id"));
 
         $db->query("SELECT propagate FROM constant_slice WHERE group_id='$group_id'");
         if ($db->next_record()) {

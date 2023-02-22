@@ -28,6 +28,8 @@
 // messages for init_page:
 use AA\Util\InputVars;
 
+crash - we want to remove it from the codebase  HM 2023-02-22
+
 $no_slice_id          = true;
 $require_default_lang = true;
 
@@ -35,6 +37,8 @@ $require_default_lang = true;
 require_once __DIR__ . "/../include/init_page.php";
 // the parts used by the slice wizard are in the included file
 require_once __DIR__ . "/../include/formutil.php";
+require_once __DIR__ . "/../include/sliceadd.php";
+require_once __DIR__ . "/../include/slicedit.php";
 
 try {
     $add = InputVars::boolPOST('add');   // ??? from where it could come?
@@ -51,11 +55,12 @@ $wizard = 1;
 
 $set_template_id = $_POST['template_from_slice'] ? $_POST['template_id2'] : $_POST['template_id'];
 
+$err = [];          // error array (Init - just for initializing variable
+
 if ($add) {
-    require_once __DIR__ . "/../include/slicedit.php";
+    $err = SliceEditProcess($slice_id, $user_firstname, $user_surname, $err, $add_submit, $user_login, $user_password1, $user_password2, $user_mail1, $user_mail2, $user_mail3, $user_super, $um_uedit_no_go_url, $selected_user, $posted_groups, $sel_groups, $perm_mod, $new_module, $new_module_role, $add, $update, $owner, $new_owner, $new_owner_email, $name, $slice_url, $slice_type, $upload_url, $priority, $permit_anonymous_post, $permit_anonymous_edit, $permit_offline_fill, $lang_file, $d_listlen, $mlxctrl, $fileman_access, $fileman_dir, $template, $deleted, $flag_allow_expired, $auth_field_group, $mailman_field_lists, $reading_password, $flag_allow_pending, $set_template_id, $wiz, $user_role);
 }
 
-$err = [];          // error array (Init - just for initializing variable
 
 
 $apage = new AA_Adminpageutil();
@@ -64,7 +69,7 @@ $apage->setForm(['action'=>'slicedit.php']);
 $apage->printHead($err, $Msg);
 
 $display_views_constants = true;
-require_once __DIR__ . "/../include/sliceadd.php";
+SliceAddForm(true, true);
 
 FrmTabCaption(_m("[Optional] Create New User"));
 

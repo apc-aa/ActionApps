@@ -175,39 +175,11 @@ $varset      = new Cvarset();
 
 // Process submited form -------------------------------------------------------
 
-if ( $add_submit OR ($submit_action == "update_submit")) {
+if ($add_submit OR ($submit_action == "update_submit")) {
 
-    // following code (in do {}) is used also in slice wizard
-    do  {
-        // Procces user data -------------------------------------------------------
-        if ( ($submit_action != "update_submit") OR AA::$perm->isUserEditable($selected_user)) {
-            $userrecord = FillUserRecord($err, ($add_submit ? $user_login : 'nOnEwlOgiN'), $user_surname, $user_firstname, $user_password1, $user_password2,  $user_mail1, $user_mail2, $user_mail3);
-        }
+    $err = ProcessUser($submit_action, $selected_user, $err, $add_submit, $user_login, $user_surname, $user_firstname, $user_password1, $user_password2, $user_mail1, $user_mail2, $user_mail3, $user_super, $um_uedit_no_go_url, $posted_groups, $sel_groups, $perm_mod, $new_module, $new_module_role);
 
-        if ( count($err)) {
-            break;
-        }
-
-        if ( $add_submit ) {      // -------------------- new user ------------------
-            NewUserData($err, $user_login, $userrecord, $user_super, $um_uedit_no_go_url);
-        } elseif (AA::$perm->isUserEditable($selected_user))  {      // ----------------- update user ------------------
-            ChangeUserData($err, $selected_user, $userrecord, $user_super);
-        }
-
-        // Procces group data ------------------------------------------------------
-        ChangeUserGroups($posted_groups, $sel_groups, $selected_user);
-
-        // Procces module permissions ----------------------------------------------
-
-        // Change module permissions if user wants
-        ChangeUserModulePerms($perm_mod, $selected_user);
-
-        // Add new modules for this user
-        AddUserModulePerms($new_module, $new_module_role, $selected_user);
-
-    } while (false);
-
-    if ( !count($err) ) {
+    if (!count($err) ) {
         $Msg = MsgOk( $add_submit ? _m("User successfully added to permission system") : _m("User data modified"));
         go_url( get_url(StateUrl($_SERVER['PHP_SELF']), 'usr_edit=1&selected_user='. urlencode($selected_user)), $Msg);
     }

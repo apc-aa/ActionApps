@@ -107,7 +107,9 @@
 .aa-mch-selected span.no-active:hover {
     background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAICAYAAADN5B7xAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAIdJREFUeNpi/P//PwM2kJTo4wKkOoD43rz5W8Jg4kw4FBsDqVVA/B6I05HlGNFtACoWBFJnoFwToOnvkeVZsFgAMlkQm2Kwk4AmKgFxOdR0kJtBbg8DKr6HzbksUI+FgjQC6TQgrgAq3sOAA4A8DZMEKd4DVNzJgAcwARXMAgUdthDBBgACDADksi2FhQ+RKwAAAABJRU5ErkJggg==) no-repeat right 3px;
 }
-
+.aa-mch-options-s {
+    display: none;
+}
 .aa-missing-option {
     color: #CC0000;
 }

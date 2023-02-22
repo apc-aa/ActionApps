@@ -63,8 +63,7 @@ function PrintRuleRow($rid, $prop, $col1="", $col2="", $col3="", $col4="") {
           <td>$col2&nbsp;</td>
           <td>$col3&nbsp;</td>
           <td>$col4&nbsp;</td>
-          <td><a href=\"javascript:document.location='".
-            StateUrl("se_profile.php?del=$rid&uid=$uid"). "'\">". _m("Delete") ."</a></td>
+          <td><a href=\"javascript:document.location='". StateUrl("se_profile.php?del=$rid&uid=$uid"). "'\" class='aa-button-delete'>". _m("Delete") ."</a></td>
         </tr>";
 }
 
@@ -146,7 +145,7 @@ function PrintSetRule($n, $rule, $sfld, $func, $sparam, $shtml, $desc) {
     } else {
         echo "&nbsp;";
     }
-    echo " </td>
+    echo "<div class='tabhlp'>$desc</div></td>
            <td>";
     if ($func) {
         FrmSelectEasy("fnc$n", $func);
@@ -156,11 +155,7 @@ function PrintSetRule($n, $rule, $sfld, $func, $sparam, $shtml, $desc) {
     echo " </td>
     <td>". ($sparam ? "<input type=\"text\" name=\"param$n\" size=\"20\">" : "&nbsp;"). "</td>
     <td>". ($shtml  ? "<input type=\"checkbox\" name=\"html$n\">" : "&nbsp;"). "</td>
-    <td><a href=\"javascript:addrule($n)\">". _m("Add") ."</a></td></tr>
-    <tr>
-      <td class=\"tabhlp\">&nbsp;</td>
-      <td class=\"tabhlp\" colspan=\"5\">$desc</td>
-    </tr>";
+    <td><a href=\"javascript:addrule($n)\" class='btn'>". _m("Add") ."</a></td></tr>";
 }
 
 

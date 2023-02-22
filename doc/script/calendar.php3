@@ -78,7 +78,7 @@ $L_MONTH = [
 
 if ($month == 0) {
     $month = getdate();
-    $month = $month ["mon"];
+    $month = $month["mon"];
 }
 
 if ($year == 0) {

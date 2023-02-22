@@ -1,8 +1,7 @@
 <?php
 /**  expected at least $slice_id
  *   user calling is with $edit for edit item
- *   optionaly encap="false" if this form is not encapsulated into *.shtml file
- *   optionaly free and freepwd for anonymous user login (free == login, freepwd == password)
+ *   optionally free and freepwd for anonymous user login (free == login, freepwd == password)
  *
  * PHP version 7.2+
  *
@@ -30,8 +29,7 @@
 
 
 use AA\Util\InputVars;
-
-$encap = ( ($encap=="false") ? false : true );
+use AA\Util\Langs;
 
 if ($edit) {         // parameter for init_page - we edited new item so
     $unset_r_hidden = true;  // clear stored content
@@ -53,32 +51,19 @@ if ( file_exists( "../include/usr_validate.php3" ) ) {
 // Allow edit current slice without slice_pwd
 AA_Credentials::singleton()->loadFromSlice(AA::$module_id);
 
-if ($encap) {  // do we use somewhere this ensap??? Honza 3/2009
-    add_vars();        // adds values from QUERY_STRING_UNESCAPED
-}                             //       and REDIRECT_STRING_UNESCAPED - from url
+InputVars::QuoteVars("post");  // if magicquotes are not set, quote variables
 
-InputVars::QuoteVars("post", ['encap' => 1]);  // if magicquotes are not set, quote variables
-                                        // but skip (already edited) encap variable
+AA::setEncoding(Langs::getCharset());
 
-// TODO: GetHidden is not so correct in current AA code
-// Now we can have multiple itemedits open, so one set of r_hidden isn't correct
-// We should move r_hiddens functionality to inputform class
-// Later we have also rewrite this code to use filler script for filling (in
-// order we have only one - good - filling code and not two
-//   GetHidden($itemform_id);  // unpacks variables from $r_hidden session var.
-//   unset($r_hidden[$itemform_id]);
-//$r_hidden["hidden_acceptor"] = (($DOCUMENT_URI != "") ? $DOCUMENT_URI : $_SERVER['PHP_SELF']);
-//     only this script accepts r_hidden variable
-//     - if it don't match - unset($r_hidden) (see init_page.pgp3)
+$id = AA::$module_id;
 
 
 if ($cancel) {
-    if ($anonymous) { // anonymous login
-        go_url( $r_slice_view_url, '', $encap );
-    } else {
-        go_return_or_url(self_base()."index.php3",true,true);
-    }
+    go_return_or_url(self_base()."index.php3",true,true);
 }
+
+$go_edit = false;
+if ($_POST['upd_edit'])    {$update = true; $go_edit=true; }
 
 if ($update) {
     $action = "update";
@@ -95,7 +80,6 @@ $slice = AA_Slice::getModule($slice_id);
 ValidateContent4Id($err, $slice, $action, $id);
 $fields = $slice->getFields(true);
 
-
 //  update database
 if ( $update AND !count($err) AND $fields->count() ) {
 
@@ -110,13 +94,9 @@ if ( $update AND !count($err) AND $fields->count() ) {
     // removed $oldcontent4id (see ItemContent::storeItem)
     $content4id->storeSliceFields( $slice_id, $fields );
 
-    if (!count($err)) {
+    if (!count($err) AND !$go_edit) {
         page_close();
-        if ($anonymous) { // anonymous login
-            go_url( $r_slice_view_url, '', $encap );
-        } else {
-            go_return_or_url(self_base()."index.php3",true,true);
-        }
+        go_return_or_url(self_base()."index.php3",true,true);
     }
 }
 
@@ -129,7 +109,7 @@ unset( $content );       // used in another context for storing item to db
 unset( $content4id );
 
 if ($edit) {
-    if ( !is_array($fields) ) {
+    if ( !$fields->count() ) {
         $err["DB"] = MsgErr(_m("Error: no fields."));
         // do not quit - just go back.
         go_return_or_url(self_base()."index.php3",true,true);
@@ -148,26 +128,19 @@ if ($edit) {
 }
 
 // print begin ---------------------------------------------------------------
-if (!$encap) {
-    $inputform_settings = [
-        'display_aa_begin_end' => true,
-        'page_title'           => _m("Slice Setting"). " (". AA_Slice::getModuleName(AA::$module_id).")",
-    ];
-}
+$inputform_settings = [
+    'display_aa_begin_end' => true,
+    'page_title'           => _m("Slice Setting"). " (". AA_Slice::getModuleName(AA::$module_id).")",
+];
 
 $inputform_settings['messages']            = ['err' => $err];
 $inputform_settings['form_action']         = ($_SERVER['DOCUMENT_URI'] != "" ? $_SERVER['DOCUMENT_URI'] :
                                              $_SERVER['PHP_SELF'] . ($return_url ? "?return_url=".urlencode($return_url) : ''));
 $inputform_settings['form4update']         = true;
-$inputform_settings['cancel_url']          =  ($anonymous  ? $r_slice_view_url :
-                                              ($return_url=='close_dialog' ? get_admin_url("itemedit.php3?cancel=1&return_url=close_dialog") :
-                                              ($return_url ? expand_return_url(1) :
-                                              get_admin_url("index.php3?cancel=1"))));
+$inputform_settings['cancel_url']          = ($return_url=='close_dialog' ? get_admin_url("itemedit.php3?cancel=1&return_url=close_dialog") :
+                                              ($return_url ? expand_return_url(1) : get_admin_url("index.php3?cancel=1")));
 
-$inputform_settings['hidden']              = [
-                             'anonymous'   => (($free OR $anonymous) ? true : ""),
-                             'openervar'   => $openervar
-];  // id of variable in parent window (used for popup inputform)
+$inputform_settings['hidden']              = ['openervar'   => $openervar];  // id of variable in parent window (used for popup inputform)
 
 if ($inputform_settings['form4update']) {
     $inputform_settings['hidden']['id']    = $id;

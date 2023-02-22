@@ -52,22 +52,23 @@ require_once __DIR__ . "/mgettext.php";
  *
  */
 function get_aamenus() {
-    global $slice_id,
-           $r_state,
-           $bookmarks;
+    global $r_state, $bookmarks;
 
-    $profile = AA_Profile::getProfile(AuthGetUid(), $slice_id); // current user settings
+    $profile = AA_Profile::getProfile(AuthGetUid(), AA::$module_id); // current user settings
     $aamenus = [];
 
-    $aamenus["view"] = [
-        "label"       => GetLabel($profile,'ui_manager','top_view', _m("View site")),
-        "exact_href"  => AA_Slice::getModuleProperty($slice_id,'slice_url'),
-        "cond"        => ($profile->getProperty('ui_manager', 'top_view') !== ''),
-        "level"       => "main"
-    ];
+    $slice = AA_Slice::getModule(AA::$module_id);
 
-    $input_view = (isset($profile) AND $profile->getProperty('input_view')) ?
-                  '&vid='.$profile->getProperty('input_view') : '';
+    if ($slice) {
+        $aamenus["view"] = [
+            "label"      => GetLabel($profile, 'ui_manager', 'top_view', _m("View site")),
+            "exact_href" => $slice->getProperty('slice_url'),
+            "cond"       => ($profile->getProperty('ui_manager', 'top_view') !== ''),
+            "level"      => "main"
+        ];
+    }
+
+    $input_view = (isset($profile) AND $profile->getProperty('input_view')) ? '&vid='.$profile->getProperty('input_view') : '';
 
     $aamenus["additem"] = [
         "label" => GetLabel($profile,'ui_manager','top_additem', _m("Add Item")),
@@ -113,57 +114,56 @@ function get_aamenus() {
      *      no_slice_id don't add slice_id to the URL
      */
 
-    $aamenus ["sliceadmin_submenu"] = [
+    $aamenus["sliceadmin_submenu"] = [
         "bottom_td" => 50,
         "level"     => "submenu",
 
         "items"     => [
 
-        "header1"       => _m("Main settings"),
-        "main"          => ["cond"=>IfSlPerm(PS_EDIT),       "href"=>"admin/slicedit.php",                'ico'=>'ico-slice.png', "label"=>_m("Slice"), "show_always"=>1], //"href"=>"admin/tabledit.php?set_tview=sl_edit&cmd[sl_edit][edit][".$slice_id."]=1&slice_id=".$slice_id
-        "fields"        => ["cond"=>IfSlPerm(PS_FIELDS),     "href"=>"admin/se_fields.php",               'ico'=>'ico-fields.png', "label"=>_m("Fields")],
-        "slice_fields"  => ["cond"=>IfSlPerm(PS_FIELDS),     "href"=>"admin/se_fields.php?slice_fields=1", "label"=>_m("Slice Fields")],
-        "notify"        => ["cond"=>IfSlPerm(PS_EDIT),       "href"=>"admin/se_notify.php",                "label"=>_m("Email Notification")],
-        //"te_emails"   => array("cond"=>IfSlPerm(PS_FULLTEXT), "href"=>"admin/tabledit.php?set_tview=email", "label"=>_m("Emails")),
+            "header1"       => ["cond"=>$slice && IfSlPerm(PS_EDIT), 'label'=> _m("Main settings")],
+            "main"          => ["cond"=>IfSlPerm(PS_EDIT),       "href"=>"admin/slicedit.php",                'ico'=>'ico-slice.png', "label"=>_m("Slice"), "show_always"=>1], //"href"=>"admin/tabledit.php?set_tview=sl_edit&cmd[sl_edit][edit][".$slice_id."]=1&slice_id=".$slice_id
+            "fields"        => ["cond"=>IfSlPerm(PS_FIELDS),     "href"=>"admin/se_fields.php",               'ico'=>'ico-fields.png', "label"=>_m("Fields")],
+            "slice_fields"  => ["cond"=>IfSlPerm(PS_FIELDS),     "href"=>"admin/se_fields.php?slice_fields=1", "label"=>_m("Slice Fields")],
+            "notify"        => ["cond"=>IfSlPerm(PS_EDIT),       "href"=>"admin/se_notify.php",                "label"=>_m("Email Notification")],
+            //"te_emails"   => array("cond"=>IfSlPerm(PS_FULLTEXT), "href"=>"admin/tabledit.php?set_tview=email", "label"=>_m("Emails")),
 
-        "header2"       => ['label'=>_m("Permissions"), 'ico'=>'ico-permissions.png'],
-        "addusers"      => ["cond"=>IfSlPerm(PS_ADD_USER),   "href"=>"admin/se_users.php?adduser=1",       "label"=>_m("Assign")],
-        "users"         => ["cond"=>IfSlPerm(PS_USERS),      "href"=>"admin/se_users.php",                 "label"=>_m("Change")],
+            "header2"       => ["cond"=>$slice && IfSlPerm(PS_USERS), 'label'=>_m("Permissions"), 'ico'=>'ico-permissions.png'],
+            "addusers"      => ["cond"=>IfSlPerm(PS_ADD_USER),   "href"=>"admin/se_users.php?adduser=1",       "label"=>_m("Assign")],
+            "users"         => ["cond"=>IfSlPerm(PS_USERS),      "href"=>"admin/se_users.php",                 "label"=>_m("Change")],
 
-        "header3"       => _m("Design"),
-        "config"        => ["cond"=>IfSlPerm(PS_CONFIG),     "href"=>"admin/se_admin.php",                 'ico'=>'ico-item-manager.png', "label"=>_m("Item Manager")],
-        "views"         => ["cond"=>IfSlPerm(PS_FULLTEXT),   "href"=>"admin/se_views.php",                 'ico'=>'ico-views.png', "label"=>_m("Views")],
-        "fulltext"      => ["cond"=>IfSlPerm(PS_FULLTEXT),   "href"=>"admin/se_fulltext.php",              'ico'=>'ico-fulltext.png', "label"=>_m("Fulltext")],
-        "compact"       => ["cond"=>IfSlPerm(PS_COMPACT),    "href"=>"admin/se_compact.php",               "label"=>_m("Index")],
-        "forms"         => ["cond"=>IfSlPerm(PS_FULLTEXT),   "href"=>"admin/se_forms.php",                 "label"=>_m("Forms")],
-        "sets"          => ["cond"=>IfSlPerm(PS_FULLTEXT),   "href"=>"admin/se_sets.php",                  "label"=>_m("Sets of Items")],
+            "header3"       => ["cond"=>$slice && IfSlPerm(PS_FULLTEXT), 'label'=>_m("Design")],
+            "config"        => ["cond"=>IfSlPerm(PS_CONFIG),     "href"=>"admin/se_admin.php",                 'ico'=>'ico-item-manager.png', "label"=>_m("Item Manager")],
+            "views"         => ["cond"=>IfSlPerm(PS_FULLTEXT),   "href"=>"admin/se_views.php",                 'ico'=>'ico-views.png', "label"=>_m("Views")],
+            "fulltext"      => ["cond"=>IfSlPerm(PS_FULLTEXT),   "href"=>"admin/se_fulltext.php",              'ico'=>'ico-fulltext.png', "label"=>_m("Fulltext")],
+            "compact"       => ["cond"=>IfSlPerm(PS_COMPACT),    "href"=>"admin/se_compact.php",               "label"=>_m("Index")],
+            "forms"         => ["cond"=>IfSlPerm(PS_FULLTEXT),   "href"=>"admin/se_forms.php",                 "label"=>_m("Forms")],
+            "sets"          => ["cond"=>IfSlPerm(PS_FULLTEXT),   "href"=>"admin/se_sets.php",                  "label"=>_m("Sets of Items")],
 
-        "header4"       => ['label'=>_m("Content Pooling"), 'ico'=>'ico-content-pooling.png'],
-        "nodes"         => ["cond"=>IsSuperadmin(),          "href"=>"admin/se_nodes.php",                 "label"=>_m("Nodes")],
-        "import"        => ["cond"=>IfSlPerm(PS_FEEDING),    "href"=>"admin/se_import.php",                "label"=>_m("Inner Node Feeding")],
-        "n_import"      => ["cond"=>IfSlPerm(PS_FEEDING),    "href"=>"admin/se_inter_import.php",          "label"=>_m("Inter Node Import")],
-        "n_export"      => ["cond"=>IfSlPerm(PS_FEEDING),    "href"=>"admin/se_inter_export.php",          "label"=>_m("Inter Node Export")],
-        "rssfeeds"      => ["cond"=>IfSlPerm(PS_FEEDING),    "href"=>"admin/se_rssfeeds.php",              "label"=>_m("RSS Feeds")],
-        "filters"       => ["cond"=>IfSlPerm(PS_FEEDING),    "href"=>"admin/se_filters.php",               "label"=>_m("Filters")],
-        "mapping"       => ["cond"=>IfSlPerm(PS_FEEDING),    "href"=>"admin/se_mapping.php",               "label"=>_m("Mapping")],
-        "CSVimport"     => ["cond"=>IfSlPerm(PS_FEEDING),    "href"=>"admin/se_csv_import.php",            "label"=>_m("Import CSV")],
-        "export"        => ["cond"=>IfSlPerm(PS_FEEDING),    "href"=>"admin/se_export.php",                 "label"=>_m("Export to file")],
+            "header4"       => ["cond"=>$slice && IfSlPerm(PS_FEEDING), 'label'=>_m("Content Pooling"), 'ico'=>'ico-content-pooling.png'],
+            "nodes"         => ["cond"=>IsSuperadmin(),          "href"=>"admin/se_nodes.php",                 "label"=>_m("Nodes")],
+            "import"        => ["cond"=>IfSlPerm(PS_FEEDING),    "href"=>"admin/se_import.php",                "label"=>_m("Inner Node Feeding")],
+            "n_import"      => ["cond"=>IfSlPerm(PS_FEEDING),    "href"=>"admin/se_inter_import.php",          "label"=>_m("Inter Node Import")],
+            "n_export"      => ["cond"=>IfSlPerm(PS_FEEDING),    "href"=>"admin/se_inter_export.php",          "label"=>_m("Inter Node Export")],
+            "rssfeeds"      => ["cond"=>IfSlPerm(PS_FEEDING),    "href"=>"admin/se_rssfeeds.php",              "label"=>_m("RSS Feeds")],
+            "filters"       => ["cond"=>IfSlPerm(PS_FEEDING),    "href"=>"admin/se_filters.php",               "label"=>_m("Filters")],
+            "mapping"       => ["cond"=>IfSlPerm(PS_FEEDING),    "href"=>"admin/se_mapping.php",               "label"=>_m("Mapping")],
+            "CSVimport"     => ["cond"=>IfSlPerm(PS_FEEDING),    "href"=>"admin/se_csv_import.php",            "label"=>_m("Import CSV")],
+            "export"        => ["cond"=>IfSlPerm(PS_FEEDING),    "href"=>"admin/se_export.php",                 "label"=>_m("Export to file")],
 
-        "header5"       => ['label'=>_m("Misc"), 'ico'=>'ico-misc.png'],
-        "history"       => ["cond"=>IfSlPerm(PS_HISTORY),    "href"=>"admin/se_history.php",              "label"=>_m("History")],
-        "field_ids"     => ["cond"=>IfSlPerm(PS_FIELDS),     "href"=>"admin/se_fieldid.php",               "label"=>_m("Change field IDs")],
-        "javascript"    => ["cond"=>IfSlPerm(PS_FIELDS),     "href"=>"admin/se_javascript.php",            "label"=>_m("Field Triggers")],
-        "fileman"       => ["cond"=>FilemanPerms($slice_id), "href"=>"admin/fileman.php",                "label"=>_m("File Manager")],
-        "anonym_wizard" => ["cond"=>IfSlPerm(PS_FIELDS),     "href"=>"admin/anonym_wizard.php",            "label"=>_m("Anonymous Form Wizard")],
-        "email"         => ["cond"=>IfSlPerm(PS_USERS),      "href"=>"admin/tabledit.php?set_tview=email", "label"=>_m("Email templates")],
-        "taskmanager"   => ["cond"=>IfSlPerm(PS_EDIT),       "href"=>"admin/se_taskmanager.php",           "label"=>_m("Task Manager")],
-        "tasks"         => ["cond"=>IsSuperadmin(),          "href"=>"admin/se_tasks.php",                 "label"=>_m("Planned Tasks")],
+            "header5"       => ["cond"=>$slice && IfSlPerm(PS_EDIT), 'label'=>_m("Misc"), 'ico'=>'ico-misc.png'],
+            "history"       => ["cond"=>IfSlPerm(PS_HISTORY),    "href"=>"admin/se_history.php",              "label"=>_m("History")],
+            "field_ids"     => ["cond"=>IfSlPerm(PS_FIELDS),     "href"=>"admin/se_fieldid.php",               "label"=>_m("Change field IDs")],
+            "javascript"    => ["cond"=>IfSlPerm(PS_FIELDS),     "href"=>"admin/se_javascript.php",            "label"=>_m("Field Triggers")],
+            "fileman"       => ["cond"=>FilemanPerms(AA::$module_id), "href"=>"admin/fileman.php",                "label"=>_m("File Manager")],
+            "anonym_wizard" => ["cond"=>IfSlPerm(PS_FIELDS),     "href"=>"admin/anonym_wizard.php",            "label"=>_m("Anonymous Form Wizard")],
+            "email"         => ["cond"=>IfSlPerm(PS_USERS),      "href"=>"admin/tabledit.php?set_tview=email", "label"=>_m("Email templates")],
+            "taskmanager"   => ["cond"=>IfSlPerm(PS_EDIT),       "href"=>"admin/se_taskmanager.php",           "label"=>_m("Task Manager")],
+            "tasks"         => ["cond"=>IsSuperadmin(),          "href"=>"admin/se_tasks.php",                 "label"=>_m("Planned Tasks")],
         ]
     ];
 
-    $slice = AA_Slice::getModule($slice_id);
     if ( $slice AND $slice->getProperty("mailman_field_lists")) {
-        $aamenus ["sliceadmin_submenu"]["items"]["mailman_create_list"] = [
+        $aamenus["sliceadmin_submenu"]["items"]["mailman_create_list"] = [
             "cond"  => IfSlPerm(PS_FIELDS),
             "href"  => "admin/mailman_create_list.php3",
             "label" => _m("Mailman: create list")
@@ -194,36 +194,35 @@ function get_aamenus() {
 
     $aamenus["itemmanager_submenu"]['items'] += [
             "header2"     => GetLabel($profile,'ui_manager', 'itemmanager_submenu_header2', _m("Misc")),
-            "slice_fld"   => ["cond"=>(IfSlPerm(PS_EDIT_ALL_ITEMS) AND ($profile->getProperty('ui_manager', 'itemmanager_submenu_slice_fld') !== '')), 'hide' => ($profile->getProperty('ui_manager', 'itemmanager_submenu_slice_fld')   === ''), "href"=>"admin/slicefieldsedit.php?edit=1&encap=false&id=$slice_id",   "label"=>GetLabel($profile,'ui_manager','itemmanager_submenu_slice_fld', _m("Setting"))],
-            "empty_trash" => ["cond"=>(IfSlPerm(PS_DELETE_ITEMS) AND ($profile->getProperty('ui_manager', 'itemmanager_submenu_empty_trash') !== '')), 'hide' => ($profile->getProperty('ui_manager', 'itemmanager_submenu_empty_trash')   === ''), "href"=>"admin/index.php3?DeleteTrash=1",                             "label"=>GetLabel($profile,'ui_manager','itemmanager_submenu_empty_trash', _m("Empty trash")), "js"=>"EmptyTrashQuestion('{href}','"._m("Are You sure to empty trash?")."')"],
-            "CSVimport"   => ["cond"=>(IfSlPerm(PS_EDIT_ALL_ITEMS) AND ($profile->getProperty('ui_manager', 'itemmanager_submenu_CSVimport') !== '')), 'hide' => ($profile->getProperty('ui_manager', 'itemmanager_submenu_CSVimport')   === ''), "href"=>"admin/se_csv_import.php",                                     "label"=>GetLabel($profile,'ui_manager','itemmanager_submenu_CSVimport', _m("Import CSV"))],
+            "slice_fld"   => ["cond"=>(IfSlPerm(PS_EDIT_ALL_ITEMS) AND $slice AND $slice->getFields(true)->count() AND ($profile->getProperty('ui_manager', 'itemmanager_submenu_slice_fld') !== '')), 'hide' => ($profile->getProperty('ui_manager', 'itemmanager_submenu_slice_fld')   === ''), "href"=>"admin/slicefieldsedit.php?edit=1", "label"=>GetLabel($profile,'ui_manager','itemmanager_submenu_slice_fld', _m("Setting"))],
+            "empty_trash" => ["cond"=>(IfSlPerm(PS_DELETE_ITEMS) AND ($profile->getProperty('ui_manager', 'itemmanager_submenu_empty_trash') !== '')), 'hide' => ($profile->getProperty('ui_manager', 'itemmanager_submenu_empty_trash')   === ''), "href"=>"admin/index.php3?DeleteTrash=1", "label"=>GetLabel($profile,'ui_manager','itemmanager_submenu_empty_trash', _m("Empty trash")), "js"=>"EmptyTrashQuestion('{href}','"._m("Are You sure to empty trash?")."')"],
+            "CSVimport"   => ["cond"=>(IfSlPerm(PS_EDIT_ALL_ITEMS) AND ($profile->getProperty('ui_manager', 'itemmanager_submenu_CSVimport') !== '')), 'hide' => ($profile->getProperty('ui_manager', 'itemmanager_submenu_CSVimport')   === ''), "href"=>"admin/se_csv_import.php",          "label"=>GetLabel($profile,'ui_manager','itemmanager_submenu_CSVimport', _m("Import CSV"))],
             "debug"       => ["cond"=>(IsSuperadmin() AND ($profile->getProperty('ui_manager', 'itemmanager_submenu_debug')   !== '')),                'hide' => ($profile->getProperty('ui_manager', 'itemmanager_submenu_debug')   === '') AND !IsSuperadmin(),                  "js"  =>"ToggleCookie('aa_debug','1')","label"=>GetLabel($profile,'ui_manager','itemmanager_submenu_debug',  ($_COOKIE['aa_debug'] ? _m("Set Debug OFF") : _m("Set Debug ON")))]
     //        "line"        => ""
     ];
 
-    if ($slice_id && IfSlPerm(PS_EDIT_ALL_ITEMS)) {
+    if ($slice && IfSlPerm(PS_EDIT_ALL_ITEMS)) {
 
         $items = &$aamenus["itemmanager_submenu"]["items"];
 
         // Add associated Alerts to Item Manager submenu
         if ($slice->getProperty("type") == "ReaderManagement" ) {
-            $modules2link = DB_AA::select([], 'SELECT module_id as id, module.name as name FROM alerts_collection AC
-                INNER JOIN module ON AC.module_id = module.id', [['slice_id', $slice_id, 'l']]);
+            $modules2link = DB_AA::select([], 'SELECT module_id as id, module.name as name FROM alerts_collection AC INNER JOIN module ON AC.module_id = module.id', [['slice_id', AA::$module_id, 'l']]);
             AddAlertsModules($items, $modules2link, _m("Alerts"), _m("List of Alerts modules using this slice as Reader Management."));
 
             $items["header4"] = ['label'=> _m("Bulk Emails"),'ico'=>'ico-email.png', 'title'=> _m("Send bulk email to selected users or to users in Stored searches")];
             $items["item1"]   = [
                 "cond" => 1,
-                                    "exact_href" => "javascript:WriteEmailGo()",
-                                    "label" => _m("Send emails"),
-                                    "no_slice_id"=>1
+                "exact_href" => "javascript:WriteEmailGo()",
+                "label" => _m("Send emails"),
+                "no_slice_id"=>1
             ];
         }
         $modules2link = DB_AA::select([], 'SELECT DISTINCT AC.module_id as id, module.name as name FROM alerts_collection AC
             INNER JOIN module ON AC.module_id = module.id
             INNER JOIN alerts_collection_filter ACF ON AC.id = ACF.collectionid
             INNER JOIN alerts_filter AF ON AF.id = ACF.filterid
-            INNER JOIN view ON view.id = AF.vid', [['view.slice_id', $slice_id, 'l']]);
+            INNER JOIN view ON view.id = AF.vid', [['view.slice_id', AA::$module_id, 'l']]);
         AddAlertsModules($items, $modules2link, _m("Alerts Sent"), _m("List of Alerts modules sending items from this slice."));
     }
 

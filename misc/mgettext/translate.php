@@ -54,7 +54,7 @@ function translate_files($old_lang_file, $src_dir, $dst_dir) {
             if (strlen($value) <= 1 || ctype_digit((string)$value)) {
                 $consts[$name] = "\"$value\"";
             } else {
-                $consts [$name] = "_m(\"".str_replace( ['"',"\n","\r"], ['\\"',"\\n",""],  $value)."\")";
+                $consts[$name] = "_m(\"".str_replace( ['"',"\n","\r"], ['\\"',"\\n",""],  $value)."\")";
             }
         }
     }

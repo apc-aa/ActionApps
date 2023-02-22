@@ -90,13 +90,17 @@ function mgettext_bind($lang, $section, $cache=false) {
 function _m($id, $params=[]): string {
     global $_m;
 
+    if (!$id) {
+        return '';
+    }
+
     //static $count = 0;
     //$arr = ['<hr>', ++$count, $id, $_m[$id], $GLOBALS['mgettext_domain']];
     //array_walk($arr, function ($v) { echo "<br>".$v;});
 
-    $retval = $_m[$id];
+    $retval = (string)$_m[$id];
     if (!$retval) {
-        $retval = $id;
+        $retval = (string)$id;
     }
 
     if (!$params or !is_array($params)) {
@@ -116,7 +120,7 @@ function _m($id, $params=[]): string {
 
 /** _mdelayed function
  *  Works the same as _m() but is not parsed by xmgettext. This way it is
- *   useful to translate a non constant message, counted at run-time.
+ *   useful to translate a non-constant message, counted at run-time.
  * @param string $id
  * @param array  $params
  * @return string

@@ -142,7 +142,7 @@ function add_var3($varname, &$source, &$dest) {
             add_var3($key, $source[$key], $dest[$varname]);
         }
     }
-    elseif (isset ($source)) {
+    elseif (isset($source)) {
         $dest[$varname] = $source;
     }
 }

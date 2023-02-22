@@ -360,4 +360,60 @@ function ChangeUserData(&$err, $uid, &$userrecord, $user_super) {
       }
 }
 
+
+/**
+ * @param string $submit_action
+ * @param        $selected_user
+ * @param array  $err
+ * @param bool   $add_submit
+ * @param        $user_login
+ * @param        $user_surname
+ * @param        $user_firstname
+ * @param string $user_password1
+ * @param string $user_password2
+ * @param        $user_mail1
+ * @param        $user_mail2
+ * @param        $user_mail3
+ * @param bool   $user_super
+ * @param bool   $um_uedit_no_go_url
+ * @param bool   $posted_groups
+ * @param array  $sel_groups
+ * @param array  $perm_mod
+ * @param array  $new_module
+ * @param array  $new_module_role
+ * @return array
+ */
+function ProcessUser(string $submit_action, $selected_user, array $err, bool $add_submit, $user_login, $user_surname, $user_firstname, string $user_password1, string $user_password2, $user_mail1, $user_mail2, $user_mail3, bool $user_super, bool $um_uedit_no_go_url, bool $posted_groups, array $sel_groups, array $perm_mod, array $new_module, array $new_module_role): array {
+    // following code (in do {}) is used also in slice wizard
+    do {
+        // Procces user data -------------------------------------------------------
+        if (($submit_action != "update_submit") or AA::$perm->isUserEditable($selected_user)) {
+            $userrecord = FillUserRecord($err, ($add_submit ? $user_login : 'nOnEwlOgiN'), $user_surname, $user_firstname, $user_password1, $user_password2, $user_mail1, $user_mail2, $user_mail3);
+        }
+
+        if (count($err)) {
+            break;
+        }
+
+        if ($add_submit) {      // -------------------- new user ------------------
+            NewUserData($err, $user_login, $userrecord, $user_super, $um_uedit_no_go_url);
+        } elseif (AA::$perm->isUserEditable($selected_user)) {      // ----------------- update user ------------------
+            ChangeUserData($err, $selected_user, $userrecord, $user_super);
+        }
+
+        // Procces group data ------------------------------------------------------
+        ChangeUserGroups($posted_groups, $sel_groups, $selected_user);
+
+        // Procces module permissions ----------------------------------------------
+
+        // Change module permissions if user wants
+        ChangeUserModulePerms($perm_mod, $selected_user);
+
+        // Add new modules for this user
+        AddUserModulePerms($new_module, $new_module_role, $selected_user);
+
+    } while (false);
+    return $err;
+}
+
 ?>
