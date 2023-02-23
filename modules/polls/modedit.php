@@ -26,7 +26,7 @@ https://www.apc.org/
 
 use AA\IO\DB\DB_AA;
 
-if ($template['P'] ) {
+if ($_GET['template']['P'] ?? null ) {
     $no_slice_id = true;       // message for init_page.php
 }
 
@@ -198,11 +198,12 @@ $apage->printHead($err, $Msg);
     FrmInputText("name", _m("Name"), $name, 99, 25, true);
     $include_cmd = "<br>&lt;!--#include&nbsp;virtual=\"". AA_INSTAL_PATH ."modules/polls/poll.php3?pid=$module_id\"--&gt;";
     FrmInputText("slice_url", _m("URL"), $slice_url, 254, 25, false, _m("Use following SSI command to include the poll to the page: ". $include_cmd));
-    FrmInputText("priority", _m("Priority (order in slice-menu)"), $priority, 5, 5);
+    FrmInputNumber("priority", _m("Priority (order in slice-menu)"), $priority);
+
     FrmInputSelect("owner", _m("Owner"), $slice_owners, $owner);
     if ( !$owner ) {
         FrmInputText("new_owner", _m("New Owner"), $new_owner, 99);
-        FrmInputText("new_owner_email", _m("New Owner's E-mail"), $new_owner_email, 99);
+        FrmInputEmail("new_owner_email", _m("New Owner's E-mail"), $new_owner_email, 99);
     }
     if ( $superadmin ) {
         FrmInputChBox("deleted", _m("Deleted"), $deleted);

@@ -25,10 +25,11 @@ https://www.apc.org/
 */
 
 use AA\IO\DB\DB_AA;
+use AA\Util\InputVars;
 
 $no_slice_id   = $_REQUEST['template']['W'] ? true : false;       // message for init_page.php
 
-const AA_REGISTER_GLOBALS = true;
+// const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../../include/init_page.php";
 //require_once __DIR__."/../../include/en_site_lang.php";
 require_once __DIR__ . "/../../include/formutil.php";
@@ -36,6 +37,52 @@ require_once __DIR__ . "/../../include/formutil.php";
 require_once __DIR__ . "/../../include/varset.php";
 require_once __DIR__ . "/../../include/date.php";
 require_once __DIR__ . "/../../include/modutils.php";
+
+try {
+    // array ( )
+    $aa = InputVars::arrayPOST('aa'); // alnum
+    // array ( 1 => 1, )
+    $add = InputVars::boolPOST('add');
+    // array ( 'on' => 5, )
+    $deleted = InputVars::boolPOST('deleted');
+    // array ( ' Insert [^…' => 1, )
+    $insert = InputVars::boolPOST('insert');
+    // array ( 'en-utf8_sit…' => 5, )
+    $lang_file = InputVars::stringPOST('lang_file');
+    // array ( ' \' " / \\ �…' => 5, )
+    $name = InputVars::stringPOST('name');
+    // array ( ' \' " / \\ �…' => 1, )
+    $new_owner = InputVars::stringPOST('new_owner');
+    // array ( ' \' " / \\ �…' => 1, )
+    $new_owner_email = InputVars::stringPOST('new_owner_email');
+    // array ( 1 => 2, )
+    $no_slice_id = InputVars::boolGET('no_slice_id');
+    // array ( '41415f436f7…' => 5, )
+    $owner = InputVars::idPOST('owner');
+    // array ( 7777 => 4, 33 => 1, )
+    $priority = InputVars::intPOST('priority');
+    // array ( 1 => 5, )
+    $router = InputVars::boolPOST('router');
+    // array ( 'https://exa…' => 1, 'https://e/e…' => 4, )
+    $slice_url = InputVars::stringPOST('slice_url');
+    // array ( '' => 5, )
+    //$spot_id = InputVars::intPOST('spot_id'); // empty
+    // array ( ' \' " / \\ �…' => 2, ' \\\' \\" / \\\\…' => 1, ' \\\\\\\' \\\\\\" …' => 1, ' \\\\\\\\\\\\\\\' \\…' => 1, )
+    $state_file = InputVars::stringPOST('state_file');
+    // array ( )-array ( )
+    $template = InputVars::arrayGETPOST('template'); // alnum-alnum
+    // array ( 1 => 4, )
+    $update = InputVars::boolPOST('update');
+    // array ( )
+    $uses_modules = InputVars::arrayPOST('uses_modules');
+    // array ( '41415f436f7…' => 1, )
+    $uses_modules_1 = InputVars::idPOST('uses_modules_1');
+    // array ( 'P' => 5, )
+    $uses_modulesp = InputVars::stringPOST('uses_modulesp'); // alpha
+    $cancel = InputVars::boolPOST('cancel');
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
 
 $template_id = $template['W'] ? substr($template['W'],1) : unpack_id('SiteTemplate....');
 
@@ -105,8 +152,8 @@ if ($add || $update) {
         if (is_array($uses_modules)) {
             foreach ($uses_modules as $rel_slice_id) {
                 $varset->clear();
-                $varset->add("source_id",      "quoted", $p_module_id);
-                $varset->add("destination_id", "quoted", q_pack_id($rel_slice_id));
+                $varset->add("source_id",      "text", $p_module_id);
+                $varset->add("destination_id", "text", q_pack_id($rel_slice_id));
                 $varset->add("flag",           "number", REL_FLAG_MODULE_DEPEND);
                 $varset->doInsert('relation');
             }
@@ -134,7 +181,7 @@ if ($add || $update) {
             }
             $varset->setFromArray($site);
             $varset->set("id",         $module_id,        "unpacked");
-            $varset->set("state_file", $state_file,       "quoted");
+            $varset->set("state_file", $state_file,       "text");
             $varset->set("flag",       $router,           "number");
 
             // create new site
@@ -205,8 +252,8 @@ $headcode = <<<'EOT'
         var lb;
         for (var i = 0; i < listboxes.length; i++) {
            lb = listboxes[i];
-           for (var i = 0; i < document.inputform[lb].length; i++) {
-               document.inputform[lb].options[i].selected = ( document.inputform[lb].options[i].value != "wIdThTor" );
+           for (var j = 0; j < document.inputform[lb].length; j++) {
+               document.inputform[lb].options[j].selected = ( document.inputform[lb].options[j].value != "wIdThTor" );
            }
         }
         return true;
@@ -235,12 +282,12 @@ $apage->printHead($err, $Msg);
     FrmInputText("name", _m("Name"), $name, 99, 25, true);
     //$include_cmd = "<br>&lt;!--#include&nbsp;virtual=\"". AA_INSTAL_PATH ."modules/site/site.php3?site_id=$module_id\"--&gt;";
     FrmInputText("slice_url", _m("URL"), $slice_url, 254, 60, false, _m("Main URL of the website."),'', 'false', 'text', 'https://www.example.org/');
+    FrmInputNumber("priority", _m("Priority (order in slice-menu)"), $priority);
 
-    FrmInputText("priority", _m("Priority (order in slice-menu)"), $priority, 5, 5);
     FrmInputSelect("owner", _m("Owner"), $slice_owners, $owner);
     if ( !$owner ) {
         FrmInputText("new_owner", _m("New Owner"), $new_owner, 99);
-        FrmInputText("new_owner_email", _m("New Owner's E-mail"), $new_owner_email, 99);
+        FrmInputEmail("new_owner_email", _m("New Owner's E-mail"), $new_owner_email, 99);
     }
     if ($superadmin) {
         FrmInputChBox("deleted", _m("Deleted"), $deleted);

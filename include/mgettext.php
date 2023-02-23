@@ -90,8 +90,11 @@ function mgettext_bind($lang, $section, $cache=false) {
 function _m($id, $params=[]): string {
     global $_m;
 
-    if (!$id) {
+    if (!strlen($id)) {
         return '';
+    }
+    if (!$_m) {
+        return (string)$id;
     }
 
     //static $count = 0;

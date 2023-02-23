@@ -911,12 +911,16 @@ class AA_Metabase {
     }
 
     /** analyzeStructure - reads table and column definitions form database
-     * @param bool $regular
+     * @param bool  $regular
+     * @param array $only_tables
      */
-    function loadFromDb(bool $regular=false) {
+    function loadFromDb(bool $regular=false, array $only_tables=[]) {
         $db     = getDb();
         $tables = $db->table_names();
         foreach ($tables as $table) {
+            if ($only_tables and !in_array($table['table_name'], $only_tables)) {
+                continue;
+            }
             if ( !$regular or !in_array(substr($table['table_name'],0,4), ['bck_', 'tmp_'])) {
                 $this->tables[$table['table_name']] = AA_MbT::factoryFromDb($table['table_name']);
             }

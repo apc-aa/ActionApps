@@ -92,11 +92,11 @@ function SuperForm() {
          <table>
             <?php
               FrmInputText("login", _m("Login name"), $login, 12, 30, true);
-              FrmInputPwd("password1", _m("Password"), $password1, 12, 30, true);
-              FrmInputPwd("password2", _m("Retype Password"), $password2, 12, 30, true);
+              FrmInputPwd("password1", _m("Password"), $password1);
+              FrmInputPwd("password2", _m("Retype Password"), $password2);
               FrmInputText("fname", _m("First name"), $fname, 50, 30, true);
               FrmInputText("lname", _m("Last name"), $lname, 50, 30, true);
-              FrmInputText("email", _m("E-mail"), $email, 50, 30, true);
+              FrmInputEmail("email", _m("E-mail"), $email, 50, 30, true);
             ?>
          </table>
       <tr><td>

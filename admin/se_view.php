@@ -27,8 +27,63 @@
 // expected $view_id for editing specified view or $new
 
 use AA\IO\DB\DB_AA;
+use AA\Util\InputVars;
 
-const AA_REGISTER_GLOBALS = true;
+// const  AA_REGISTER_GLOBALS = true;
+try {
+    // array ( '<img src="/…' => 31, )
+    $aditional = InputVars::stringPOST('aditional');
+    // array ( '<input type…' => 31, )
+    $aditional2 = InputVars::stringPOST('aditional2');
+    // array ( '<input type…' => 31, )
+    $aditional3 = InputVars::stringPOST('aditional3');
+    // array ( '<input type…' => 31, )
+    $aditional4 = InputVars::stringPOST('aditional4');
+    // array ( '' => 26, '+ěščřž…' => 3, '12378909876…' => 1, '🐵' => 1, )
+    $aditional6 = InputVars::stringPOST('aditional6'); // empty
+    // array ( '</table></t…' => 31, )
+    $after = InputVars::stringPOST('after');
+    // array ( '<table bgco…' => 31, )
+    $before = InputVars::stringPOST('before');
+    // array ( '<table wid…' => 31, )
+    $even = InputVars::stringPOST('even');
+    // array ( 'on' => 12, )
+    $even_odd_differ = InputVars::boolPOST('even_odd_differ');
+    // array ( 'skhjvbsahjk…' => 27, '' => 2, 'jo' => 2, )
+    $field3 = InputVars::stringPOST('field3'); // alpha, empty
+    // array ( 'on' => 2, )
+    $flag = InputVars::boolPOST('flag');
+    // array ( '<img src=/a…' => 31, )
+    $img1 = InputVars::stringPOST('img1');
+    // array ( '<img src=/a…' => 31, )
+    $img2 = InputVars::stringPOST('img2');
+    // array ( '<img src=/a…' => 31, )
+    $img3 = InputVars::stringPOST('img3');
+    // array ( '<img src=/a…' => 31, )
+    $img4 = InputVars::stringPOST('img4');
+    // array ( 23 => 12, 21 => 19, )
+    $modification = InputVars::intPOST('modification');
+    // array ( 'test diskuse' => 29, '🐵' => 1, 'test diskus…' => 1, )
+    $name = InputVars::stringPOST('name');
+    // array ( '<tr><td wid…' => 31, )
+    $odd = InputVars::stringPOST('odd');
+    // array ( '<SCRIPT Lan…' => 31, )
+    $remove_string = InputVars::stringPOST('remove_string');
+    // array ( ' Změnit [^…' => 31, )
+    $update = InputVars::boolPOST('update');
+    // array ( 3144 => 20, 3076 => 1, )-array ( 3144 => 31, )
+    $view_id = InputVars::intGETPOST('view_id'); // -
+    // array ( 'discus' => 31, )
+    $view_type = InputVars::stringPOST('view_type'); // alpha
+
+    $new_templ = InputVars::boolPOST('new_templ');
+    $view_view = InputVars::intPOST('view_view'); // -
+
+    $cancel = InputVars::boolPOST('cancel');
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
+
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/varset.php";
@@ -82,7 +137,7 @@ function show_digest_filters() {
         $rowdesc = ($irow < $rows) ? $data[$irow]['description'] : '';
         $rowcond = ($irow < $rows) ? $data[$irow]['conds'] : '';
         FrmInputText("filters[$rowid][description]", _m("Alerts Selection")." ".($irow+1)." "._m("Description"), $rowdesc, 100, 50);
-        FrmTextarea("filters[$rowid][conds]", "conds[]", $rowcond,  get_row_count($rowcond, 50, 4), 50, false, "", "http://apc-aa.sourceforge.net/faq/#215");
+        FrmTextarea("filters[$rowid][conds]", "conds[]", $rowcond,  get_row_count($rowcond, 50, 4), 50, false, "", "https://apc-aa.sourceforge.net/faq/#215");
     }
     FrmStaticText("", _m("If you need more selections, use 'Update' and on next Edit two empty boxes appear."));
 }
@@ -103,7 +158,7 @@ function store_digest_filters() {
     $varset->clear();
     $varset->addkey("id", "number", $view_id);
     $varset->add("aditional", "number", $aditional);
-    $varset->add("aditional3", "quoted", $aditional3);
+    $varset->add("aditional3", "text", $aditional3);
     $db->query($varset->makeUPDATE("view"));
 
     foreach ($filters as $rowid => $filter) {
@@ -114,8 +169,8 @@ function store_digest_filters() {
             continue;
         }
         $varset->clear();
-        $varset->add("description", "quoted", $filter["description"]);
-        $varset->add("conds", "quoted", $filter["conds"]);
+        $varset->add("description", "text", $filter["description"]);
+        $varset->add("conds", "text", $filter["conds"]);
         $varset->add("vid", "number", $view_id);
 
         if (substr ($rowid,0,3) != "new") {
@@ -269,8 +324,8 @@ if ( $update ) {
         }
 
         $varset->add("slice_id", "unpacked", AA::$module_id);
-        //$varset->add("name", "quoted", substr($name,0,30));
-        $varset->add("type", "quoted", $view_type);
+        //$varset->add("name", "text", substr($name,0,30));
+        $varset->add("type", "text", $view_type);
 
         foreach ($VIEW_FIELDS as $k => $v) {
             if ( $VIEW_TYPES[$view_type][$k] ) {
@@ -281,7 +336,7 @@ if ( $update ) {
                 if ($v["max"]) {
                     $insval  = substr($insval, 0, $v["max"]);
                 }
-                $varset->add($k, 'quoted', quote($insval));
+                $varset->add($k, 'text', quote($insval));
             }
         }
 
@@ -427,7 +482,7 @@ if (($view_type == 'categories') OR ($view_type == 'links')) {
 }
 
 $apage->setTitle(_m("Admin - design View"));
-if ($VIEW_TYPES[$type]["even_odd_differ"]) {
+if ($VIEW_TYPES[$view_type]["even_odd_differ"]) {
     $apage->addRequire('InitPage();', 'AA_Req_Load');
 }
 $apage->addRequire($headcode, 'AA_Req_Headcode');

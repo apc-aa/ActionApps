@@ -156,7 +156,7 @@ function get_aamenus() {
             "javascript"    => ["cond"=>IfSlPerm(PS_FIELDS),     "href"=>"admin/se_javascript.php",            "label"=>_m("Field Triggers")],
             "fileman"       => ["cond"=>FilemanPerms(AA::$module_id), "href"=>"admin/fileman.php",                "label"=>_m("File Manager")],
             "anonym_wizard" => ["cond"=>IfSlPerm(PS_FIELDS),     "href"=>"admin/anonym_wizard.php",            "label"=>_m("Anonymous Form Wizard")],
-            "email"         => ["cond"=>IfSlPerm(PS_USERS),      "href"=>"admin/tabledit.php?set_tview=email", "label"=>_m("Email templates")],
+            "email"         => ["cond"=>IfSlPerm(PS_USERS),      "href"=>"admin/se_emails.php",                 "label"=>_m("Email templates")],
             "taskmanager"   => ["cond"=>IfSlPerm(PS_EDIT),       "href"=>"admin/se_taskmanager.php",           "label"=>_m("Task Manager")],
             "tasks"         => ["cond"=>IsSuperadmin(),          "href"=>"admin/se_tasks.php",                 "label"=>_m("Planned Tasks")],
         ]

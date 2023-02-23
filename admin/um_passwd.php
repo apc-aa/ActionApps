@@ -92,14 +92,14 @@ $form_buttons = [
 FrmTabCaption(_m("Edit User"));
 FrmStaticText(_m("Login name"), $user_data['login']);
 FrmStaticText(_m("User Id"), $user_data['id']);
-FrmInputPwd("user_password_old", _m("Current password"), $user_password_old, 50, 50, true);
-FrmInputPwd("user_password1", _m("Password"),       $user_password1, 50, 50, true);
-FrmInputPwd("user_password2", _m("Retype password"),$user_password2, 50, 50, true);
+FrmInputPwd("user_password_old", _m("Current password"), $user_password_old);
+FrmInputPwd("user_password1", _m("Password"), $user_password1);
+FrmInputPwd("user_password2", _m("Retype password"), $user_password2);
 FrmInputText("user_firstname",_m("First name"),     $user_firstname, 50, 50, true);
 FrmInputText("user_surname",  _m("Surname"),        $user_surname, 50, 50, true);
-FrmInputText("user_mail1",    _m("E-mail")." 1",    $user_mail1, 50, 50, true);
-//  FrmInputText("user_mail2", _m("E-mail")." 2",    $user_mail2, 50, 50, false);  // removed for compatibility with perm_sql.php
-//  FrmInputText("user_mail3", _m("E-mail")." 3",    $user_mail3, 50, 50, false);
+FrmInputEmail("user_mail1",    _m("E-mail")." 1",    $user_mail1, 50, 50, true);
+//  FrmInputEmail("user_mail2", _m("E-mail")." 2",    $user_mail2, 50, 50, false);  // removed for compatibility with perm_sql.php
+//  FrmInputEmail("user_mail3", _m("E-mail")." 3",    $user_mail3, 50, 50, false);
 //  FrmInputChBox("user_super", _m("Superadmin account"), $user_super, false, "", 1, false); // can't be changed by user itself
 
 FrmTabEnd($form_buttons);

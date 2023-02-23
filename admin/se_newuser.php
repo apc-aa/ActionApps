@@ -102,13 +102,13 @@ $apage->printHead($err, $Msg);
 <table width="440">
 <?php
   FrmInputText("user_login", _m("Login name"), $user_login, 50, 50, true);
-  FrmInputPwd("user_password1", _m("Password"), $user_password1, 50, 50, true);
-  FrmInputPwd("user_password2", _m("Retype password"), $user_password2, 50, 50, true);
+  FrmInputPwd("user_password1", _m("Password"), $user_password1);
+  FrmInputPwd("user_password2", _m("Retype password"), $user_password2);
   FrmInputText("user_firstname", _m("First name"), $user_firstname, 50, 50, true);
   FrmInputText("user_surname", _m("Surname"), $user_surname, 50, 50, true);
-  FrmInputText("user_mail1", _m("E-mail")." 1", $user_mail1, 50, 50);
-//  FrmInputText("user_mail2", _m("E-mail")." 2", $user_mail2, 50, 50, false);
-//  FrmInputText("user_mail3", _m("E-mail")." 3", $user_mail3, 50, 50, false);
+  FrmInputEmail("user_mail1", _m("E-mail")." 1", $user_mail1, 50, 50);
+//  FrmInputEmail("user_mail2", _m("E-mail")." 2", $user_mail2, 50, 50, false);
+//  FrmInputEmail("user_mail3", _m("E-mail")." 3", $user_mail3, 50, 50, false);
 ?>
 </table></td></tr>
 <tr><td>

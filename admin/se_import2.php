@@ -28,11 +28,24 @@
 */
 
 use AA\IO\DB\DB_AA;
+use AA\Util\InputVars;
 
-const AA_REGISTER_GLOBALS = true;
+// const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/logs.php";
 require_once __DIR__ . "/../include/varset.php";
+
+try {
+    // array ( )
+    $E = InputVars::arrayGET('E', true);
+    // array ( )
+    $I = InputVars::arrayGET('I', true);
+    // array ( 0 => 3, )
+    $to_all = InputVars::boolGET('to_all', true);
+    $cancel = InputVars::boolPOST('cancel');
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
 
 
 if (!IfSlPerm(PS_FEEDING)) {
@@ -85,7 +98,7 @@ do {
       if ( $val ) {
             $SQL = "DELETE FROM feedperms WHERE from_id = '$p_slice_id' AND to_id='". q_pack_id($to). "'";
             $db->query( $SQL );
-            AA_Log::write("FEED_DSBLE", "$slice_id:$val");
+            AA_Log::write("FEED_DSBLE", AA::$module_id.":$val");
         }
     }
 } while (false);

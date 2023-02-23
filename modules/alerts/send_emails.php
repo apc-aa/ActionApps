@@ -60,7 +60,7 @@ function ShowCollectionAddOns() {
     }
 
     // send to supplied email
-    FrmInputText("example[email]", _m('Email'), $example['email']);
+    FrmInputEmail("example[email]", _m('Email'), $example['email']);
     FrmInputSelect("example[howoften]", _m("as if"), get_howoften_options(), $example["howoften"]);
     FrmTabSeparator("");
 

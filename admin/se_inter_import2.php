@@ -28,7 +28,10 @@
  *
 */
 
-const AA_REGISTER_GLOBALS = true;
+// const  AA_REGISTER_GLOBALS = true;
+use AA\IO\DB\DB_AA;
+use AA\Util\InputVars;
+
 require_once __DIR__ . "/../include/init_page.php";
 if (!IfSlPerm(PS_FEEDING)) {
     MsgPage(_m("You have not permissions to change feeding setting"));
@@ -40,11 +43,20 @@ require_once __DIR__ . "/../include/xml_fetch.php";
 require_once __DIR__ . "/../include/xml_rssparse.php";
 require_once __DIR__ . "/../include/csn_util.php";
 
-$db->query("SELECT server_url, password FROM nodes WHERE name='$rem_nodes'");
-if ($db->next_record()) {
-    $server_url = $db->f('server_url');
-    $password   = $db->f('password');
-}
+try {
+    // array ( '' => 16, )
+    $feed_id = InputVars::intPOST('feed_id'); // empty
+    // array ( '"Kečup"' => 1, '"Párek"' => 1, 'Rohlík' => 2, 'ChangeNet' => 2, 'ActionApps.…' => 2, 'Econnect' => 2, 'Econnect Ec…' => 1, 'Econnect h1' => 1, 'Econnect h1…' => 2, 'adamsbeauty…' => 2, )
+    $rem_nodes = InputVars::stringPOST('rem_nodes', true);
+    // array ( ' Přidej v�…' => 16, )
+    $submitbtn = InputVars::boolPOST('submitbtn');
+    $exact_copy = InputVars::boolPOST('exact_copy');
+    $cancel = InputVars::boolPOST('cancel');
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
+
+['server_url'=>$server_url,'password'=>$password] = DB_AA::select1(['server_url', 'password'], "SELECT server_url, password FROM nodes", [['name',$rem_nodes]]);
 
 if (!($data = xml_fetch($server_url, ORG_NAME, $password, AuthGetUname(),"",0,""))) {
     MsgPage(_m("Unable to connect and/or retrieve data from the remote node. Contact the administrator of the local node."), self_base() . "se_inter_import.php");
@@ -67,6 +79,7 @@ if (!($aa_rss = aa_rss_parse($data))) {
     MsgPage(_m("Unable to connect and/or retrieve data from the remote node. Contact the administrator of the local node."), self_base() . "se_inter_import.php");
 }
 
+$chan = [];
 foreach ($aa_rss['channels'] as $id => $foo) {
     $chan[$id] = $aa_rss['channels'][$id]['title'];
 }

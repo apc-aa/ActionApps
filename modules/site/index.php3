@@ -23,8 +23,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // used in initpage.php3 script to include config.php from the right directory
 
 use AA\IO\DB\DB_AA;
+use AA\Util\InputVars;
 
-const AA_REGISTER_GLOBALS = true;
+// const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../../include/init_page.php";
 require_once __DIR__ . "/../../include/varset.php";
 require_once __DIR__ . "/../../include/formutil.php";
@@ -33,7 +34,25 @@ require_once __DIR__ . "/../../modules/site/sitetree.php";   // module specific 
 
 // ----------------- function definition end -----------------------------------
 
-$module_id   = $slice_id;
+try {
+    $spot_id = InputVars::intGETPOST('spot_id');
+    $go_sid = InputVars::intGET('go_sid');
+    $akce = InputVars::stringGET('akce');
+    $addcond = InputVars::stringGET('addcond');
+    $addcondop = InputVars::stringGET('addcondop');
+    $addcondvar = InputVars::stringGET('addcondvar');
+    $addvar = InputVars::stringGET('addvar');
+    $delvar = InputVars::stringGET('delvar');
+    $delcond = InputVars::stringGET('delcond');
+    $content = InputVars::stringPOST('content');
+    $name = InputVars::stringPOST('name');
+    $cancel = InputVars::boolPOST('cancel');
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
+
+
+$module_id   = AA::$module_id;
 $p_module_id = q_pack_id($module_id);
 
 if ( !($module = AA_Module_Site::getModule($module_id)) ) {
@@ -54,12 +73,12 @@ if ( !IfSlPerm(PS_MODW_EDIT_CODE) ) {
 }
 
 // form send us spot id (prevents 'Back' browser problems, ...)
-if (isset($spot_id)) {
+if ($spot_id) {
     $r_spot_id = $spot_id;
 }
 
 // switch to another spot, if the spot is in this site
-if (isset($go_sid)) {
+if ($go_sid) {
     $r_spot_id = $go_sid;
 }
 
@@ -77,8 +96,6 @@ $tree->addChoice( 1, 'choice 1' );
 $tree->addInSequence( 0, 'third' );
 $tree->addInSequence( 2, 'quatro' );
 */
-
-if ($debug) print("<p>Action=$akce; r_spot_id=$r_spot_id</p>");
 
 switch( $akce ) {
     case 's': $tree->addInSequence( $r_spot_id, 'spot' ); break;  // Add Spot
@@ -111,12 +128,9 @@ if ($addcond) {
     $tree->removeCondition($r_spot_id, $delcond);
 } elseif ($content OR $name) {
     $varset     = new CVarset();
-    $varset->add("content", "quoted", $content);
+    $varset->add("content", "text", $content);
 
-    $db_id = DB_AA::select1('id', 'SELECT `id` FROM `site_spot`', [
-        ['site_id', $module_id, 'l'],
-        ['spot_id', $r_spot_id]
-    ]);
+    $db_id = DB_AA::select1('id', 'SELECT `id` FROM `site_spot`', [ ['site_id', $module_id, 'l'], ['spot_id', $r_spot_id] ]);
     if ($db_id) {
         $varset->addkey("id", "number", $db_id);
         $varset->doUpdate('site_spot', null, "S.$db_id");
@@ -136,20 +150,14 @@ if ($addcond) {
     if ($name) {  // do not change to empty
         $tree->set('name', $r_spot_id, $name);
     }
-}
 
-// This is only run with a hand-coded URL to clean out the site
-// and remove corruption, ideally should fix the cause of the corruption!
-// - Mitra
-if ($sitefix) {
-    $tree->walkTree($apc_state, 1, function (...$args) {} , 'all');  // ModW_DoNothing
 }
 
 if ($addcond OR $delcond OR $content OR $name OR $akce) {
     AA::Pagecache()->invalidateFor($module_id);  // invalidate old cached values
 }
 
-if ($addcond OR $delcond OR $content OR $name OR $akce OR $sitefix OR $addvar OR $delvar) {
+if ($addcond OR $delcond OR $content OR $name OR $akce OR $addvar OR $delvar) {
     $module->saveTree($tree, $akce=='r');  // delete unused spots after we delete one spot
 }
 

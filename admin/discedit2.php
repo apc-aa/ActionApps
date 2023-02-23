@@ -107,7 +107,7 @@ $apage->printHead($err, $Msg);
     FrmStaticText("id", $d_id);
     FrmInputText("subject",_m("Subject"), $subject, 99, 50, true);
     FrmInputText("author",_m("Author"), $author, 60, 25, true);
-    FrmInputText("e_mail",_m("E-mail"), $e_mail, 60);
+    FrmInputEmail("e_mail",_m("E-mail"), $e_mail, 60);
     FrmTextarea("body", _m("Text of discussion comment"), $body, 10, 40);
     FrmDate("date", _m('Date'), $date, false, '', '', true);
     FrmInputText("url_address",_m("Authors's WWW  - URL"), $url_address, 99, 50);

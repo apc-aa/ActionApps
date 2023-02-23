@@ -452,8 +452,7 @@ echo '
         FrmHidden('type', $type );
     }
     // FrmInputText( 'rate', _m('Rating'). ' (1-10)',           $rate,  2, 5, false);
-    FrmInputText( 'initiator', _m('Author\'s e-mail'),           $initiator,  250, 50, false,
-                  "", get_help_url(AA_LINKS_HELP_LINK,"e-mail"));
+    FrmInputEmail( 'initiator', _m('Author\'s e-mail'), $initiator,  250, 50, false, "", get_help_url(AA_LINKS_HELP_LINK,"e-mail"));
     printChange('initiator', $initiator_change, $initiator);
     FrmTextarea(  'note',  _m('Editor\'s note'),    $note, 3, 60, false,
                   _m('You can type any message here - it is never shown on the website'),
@@ -528,7 +527,7 @@ if ( !Links_IsPublic() OR ($r_state['link_id'] AND $type) ) {
        printChange( 'org_phone', $org_phone_change, $org_phone );
        FrmInputText( 'org_fax', _m('Fax'), $org_fax,  250, 50);
        printChange( 'org_fax', $org_fax_change, $org_fax );
-       FrmInputText( 'org_email', _m('E-mail'), $org_email,  250, 50);
+       FrmInputEmail( 'org_email', _m('E-mail'), $org_email,  250, 50);
        printChange( 'org_email', $org_email_change, $org_email );
 }
 

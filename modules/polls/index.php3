@@ -33,7 +33,7 @@ use AA\Manageraction\Manageractions;
 use AA\Manageraction\Polls_DeleteTrash;
 use AA\Manageraction\Polls_MoveItem;
 
-// const AA_REGISTER_GLOBALS = true;
+// const  AA_REGISTER_GLOBALS = true;
 use AA\Util\InputVars;
 
 require_once __DIR__ . "/../../include/init_page.php";

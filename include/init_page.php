@@ -73,6 +73,9 @@ if ($free) {
 
 require_once __DIR__ . "/locauth.php";
 
+(new \AA\Doit\RequestMonitor())->record();
+
+
 // Save before getting the session stored variables
 // At least it does sanity check.
 //                               AA::$module_id - could be set on new Alerts module - see AlertsModeditAfterInsert()

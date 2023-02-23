@@ -30,9 +30,9 @@ use AA\Util\Langs;
 use AA\Util\InputVars;
 
 // it is message for init_page.php so it must be set here already
-$no_slice_id = (bool)$_POST['no_slice_id'];
+$no_slice_id = $_POST['no_slice_id'] ?? false;
 
-// const AA_REGISTER_GLOBALS = true;
+// const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/date.php";
@@ -229,7 +229,7 @@ FrmStaticText(_m("Id"), $slice_id);
 
 FrmInputText("name", _m("Title"), $sarr['name'], 99, 25, true);
 FrmInputText("slice_url", _m("URL of .shtml page (often leave blank)"), $sarr['slice_url']);
-FrmInputText("priority", _m("Priority (order in slice-menu)"), $sarr['priority'], 5, 5);
+FrmInputNumber("priority", _m("Priority (order in slice-menu)"), $sarr['priority']);
 // not functional, yet
 // FrmInputText("upload_url", _m("Upload URL"), $slice_url, 254, 25, false, _m('Url of uploaded files is %1 by default. You can change it by setting this parameter.<br>Note: This do not change the place, wheer the file is stored - you can just use another virtualhost name, for example.', array(IMG_UPLOAD_URL)));
 
@@ -239,7 +239,7 @@ if ( $sarr['slice_type'] !== 'AA_Core_Fields..') {  // we do not want change typ
 FrmInputSelect("owner", _m("Owner"), $slice_owners, $sarr['owner']);
 if ( !$sarr['owner'] ) {
     FrmInputText("new_owner", _m("New Owner"), $new_owner, 99);
-    FrmInputText("new_owner_email", _m("New Owner's E-mail"), $new_owner_email, 99);
+    FrmInputEmail("new_owner_email", _m("New Owner's E-mail"), $new_owner_email, 99);
 }
 if ( $superadmin ) {
     FrmInputChBox("template", _m("Template"), $sarr['template']);
@@ -263,7 +263,7 @@ if ($slice AND ($slice->getProperty("type") == 'ReaderManagement')) {
     FrmInputSelect("auth_field_group", _m("Auth Group Field"), $slicefields, $sarr['auth_field_group'], false, "", "../doc/reader.html#auth_field_group");
     FrmInputSelect("mailman_field_lists",_m("Mailman Lists Field"), $slicefields, $sarr['mailman_field_lists'], false, "", "../doc/reader.html#mailman");
 }
-FrmInputText("reading_password", _m("Password for Reading"), $sarr['reading_password'], 100, 25, false, "", "https://actionapps.org/faq/detail.shtml?x=1667");
+FrmInputEmail("reading_password", _m("Password for Reading"), $sarr['reading_password'], 100, 25, false, "", "https://actionapps.org/faq/detail.shtml?x=1667");
 
 if ($slice_id) {
     FrmStaticText(_m("Additional setting"), AA_Slice::getModuleObjectForm($slice_id), '', '', false);
@@ -272,7 +272,8 @@ if ($slice_id) {
 FrmStaticText(_m("Created"), date('Y-m-d H:i', $sarr['created_at']). ' ('. perm_username($sarr['created_by']). ')');
 
 FrmTabSeparator(_m("Settings for older AA - you will probably not use it for new slices"));
-FrmInputText("d_listlen", _m("Listing length"), $sarr['d_listlen'], 5, 5, false, _m('Used by slice.php3. Fill 0 to disable slice.php3 output for this slice (recommended for all newer slices - they are presented by Site Module).'));
+FrmInputNumber("d_listlen", _m("Listing length"), $sarr['d_listlen'], 0, 99999, false, _m('Used by slice.php3. Fill 0 to disable slice.php3 output for this slice (recommended for all newer slices - they are presented by Site Module).'));
+
 //mimo's MLX
 if ($slice_id && ($mlx_ctrl_for = DB_AA::select1('name', 'SELECT name FROM `slice`', [['mlxctrl', $slice_id, 'l']]))) {
     FrmStaticText(_m("MLX Control Slice for"), $mlx_ctrl_for, 0, "http://mimo.gn.apc.org/mlx/");

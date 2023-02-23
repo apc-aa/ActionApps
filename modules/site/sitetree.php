@@ -669,24 +669,20 @@ class sitetree {
                                 }
                             }
                         } else {
-                            if ($GLOBALS["sitefix"]) {
-                                huhl("Before fix position($pos)=",$chcurrent);
-                                unset($chcurrent->ch[$k]);
-                                huhl("After fix position($pos)=",$chcurrent);
-                            } else {
+//                            if ($GLOBALS["sitefix"]) {
+//                                unset($chcurrent->ch[$k]); // fix position($pos)=",$chcurrent);
+//                            } else {
                                 huhe("Warning: skipping Empty choice in position=$pos, run with &amp;sitefix=1 to fix; tree=",$this);
-                            }
+//                            }
                         }
                     } // each choice
                 } // haveBranches
             } else {  // Empty $pos
-                if ($GLOBALS["sitefix"]) {
-                    huhl("Before fix: poskey=$poskey val=",$current->po,"cur=", $current);
-                    unset($current->po[$poskey]);
-                    huhl("After fix: ",$current);
-                } else {
+//                if ($GLOBALS["sitefix"]) {
+//                    // unset($current->po[$poskey]); //  fix: poskey=$poskey val=",$current->po,"cur=", $current);
+//                } else {
                     huhe("Warning: skipping Empty position in id=$id key $poskey of tree=",$this->tree[$id]);
-                }
+//                }
             }
         } // each position
     } // function
@@ -745,7 +741,7 @@ class sitetree {
         echo "<tr><td><b>"._m("Spot&nbsp;variables")."</b></td><td>";
         if (isset($vars) AND is_array($vars)) {
             foreach ($vars as $k => $v) {
-                echo "$v <span><a href=\"". self::siteAdminPageUrl($spot_id, "delvar=" . urlencode($k)) ."\" class=\"aa-button\">"._m("Delete")."</a></span><br>";
+                echo safe($v) ."<span><a href=\"". self::siteAdminPageUrl($spot_id, "delvar=" . urlencode($k)) ."\" class=\"aa-button\">"._m("Delete")."</a></span><br>";
             }
         }
         echo "<form name=fvar action=\"".$_SERVER['PHP_SELF']."\"><input type='text' name='addvar' value='' size='50'><span><a href='javascript:document.fvar.submit()' class=\"aa-button\">"._m("Add")."</a></span>";
@@ -759,20 +755,23 @@ class sitetree {
         if ( isset($vars) AND is_array($vars) ) {
             $i=0;
             foreach ($vars as $k => $v) {
+                $safe_v = safe($v);
+                $safe_k = safe($k);
+
                 if ($conds[$v]) {
                     $match = AA_Site_Spot_Match::factoryByString($conds[$v],$v);
                     $warning = (trim($match->val) == $match->val) ? '' : '<div style="color:red;"><small>'._m('Warning: the condition starts or ends with whitespace character. Please check, if it is OK in your expression.').'</small></div>';
-                    echo "$v ($match->op) <strong>$match->val</strong> <span><a href=\"". self::siteAdminPageUrl($spot_id, 'delcond=' . urlencode($v)) ."\" class=\"aa-button\">"._m("Delete")."</a></span>$warning<br>";
+                    echo "$safe_v ($match->op) <strong>".safe($match->val)."</strong> <span><a href=\"". self::siteAdminPageUrl($spot_id, 'delcond=' . urlencode($v)) ."\" class=\"aa-button\">"._m("Delete")."</a></span>$warning<br>";
                 } else {
                     echo "<form name=fcond$i action=\"". $_SERVER['PHP_SELF'] ."\">
-                         $k
+                         $safe_k
                          <select name=addcondop>
                            <option>=</option>
                            <option value=contains>"._m('contains')."</option>
                            <option value=REGEXP>"._m('Regular Expression')."</option>
                          </select>
                          <input type='text' name='addcond' value='' size='50'>
-                     <input type='hidden' name='addcondvar' value='$v'>
+                     <input type='hidden' name='addcondvar' value='$safe_v'>
                      <span><a href='javascript:document.fcond$i.submit()' class=\"aa-button\">"._m("Add")."</a></span>";
                     echo StateHidden();
                     self::printHiddenRSpotId();

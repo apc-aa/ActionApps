@@ -94,10 +94,10 @@ function WriteModuleFields( $module_id, $superadmin, $type, $name, $slice_url, $
     $varset     = new CVarset();
 
     if ( $module_id )  {
-        $varset->add("name", "quoted", $name);
-        $varset->add("slice_url", "quoted", $slice_url);
+        $varset->add("name", "text", $name);
+        $varset->add("slice_url", "text", $slice_url);
         $varset->add("priority", "number", $priority);
-        $varset->add("lang_file", "quoted", $lang_file);
+        $varset->add("lang_file", "text", $lang_file);
         $varset->add("owner", "unpacked", $owner);
         $varset->addkey("id", "unpacked", $module_id);
         if ( $superadmin ) {
@@ -117,13 +117,13 @@ function WriteModuleFields( $module_id, $superadmin, $type, $name, $slice_url, $
         $varset->set("id", $module_id, "unpacked");
         $varset->set("created_by", AuthGetUid(), "text");
         $varset->set("created_at", now(), "text");
-        $varset->set("name", $name, "quoted");
+        $varset->set("name", $name, "text");
         $varset->set("owner", $owner, "unpacked");
-        $varset->set("slice_url", $slice_url, "quoted");
+        $varset->set("slice_url", $slice_url, "text");
         $varset->set("priority", $priority, "number");
         $varset->set("deleted", $deleted, "number");
-        $varset->set("lang_file", $lang_file, "quoted");
-        $varset->set("type", $type, "quoted");
+        $varset->set("lang_file", $lang_file, "text");
+        $varset->set("type", $type, "text");
 
         if ( !$varset->doInsert('module') ) {
             $err["DB"] .= MsgErr("Can't add module");

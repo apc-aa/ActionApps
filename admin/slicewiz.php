@@ -33,7 +33,7 @@ crash - we want to remove it from the codebase  HM 2023-02-22
 $no_slice_id          = true;
 $require_default_lang = true;
 
-// const AA_REGISTER_GLOBALS = true;
+// const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 // the parts used by the slice wizard are in the included file
 require_once __DIR__ . "/../include/formutil.php";
@@ -77,11 +77,11 @@ FrmTabCaption(_m("[Optional] Create New User"));
 FrmInputRadio("user_role", _m("Level of Access"),
     ["EDITOR"=>_m("Editor"), "ADMINISTRATOR"=>_m("Slice Administrator")], "EDITOR");
 FrmInputText("user_login", _m("Login name"), "", 50, 50, true);
-FrmInputPwd("user_password1", _m("Password"), "", 50, 50, true);
-FrmInputPwd("user_password2", _m("Retype password"), "", 50, 50, true);
+FrmInputPwd("user_password1", _m("Password"), "");
+FrmInputPwd("user_password2", _m("Retype password"), "");
 FrmInputText("user_firstname", _m("First name"), "", 50, 50, true);
 FrmInputText("user_surname", _m("Surname"), "", 50, 50, true);
-FrmInputText("user_mail1", _m("E-mail")." 1", "", 50, 50);
+FrmInputEmail("user_mail1", _m("E-mail")." 1", "", 50, 50);
 echo '<input type="hidden" name="add_submit" value="1">
 <input type="hidden" name="um_uedit_no_go_url" value="1">';
 

@@ -3,8 +3,16 @@
 namespace AA\Util;
 
 class InputVars {
+    protected static function inpuCheck($source, $var, $type, $required) {
+        switch ($type) {
+            case 'int': $ret = (int)$source[$var]; break;
+        }
+        return $ret;
+    }
+
+
     public static function intPOST(string $name, bool $required = false): int {
-        return (int)$_POST[$name];
+        return self::inpuCheck($_POST, $name, 'int', $required);
     }
 
     public static function boolPOST(string $name, bool $required = false): bool {
@@ -104,10 +112,14 @@ class InputVars {
         return isset($_GET[$name]) ? (array)$_GET[$name] : (array)$_POST[$name];
     }
 
+    public static function intGETPOST(string $name, bool $required = false): int {
+        return isset($_GET[$name]) ? (int)$_GET[$name] : (int)$_POST[$name] ;
+    }
+
+
     // --- General function ---
 
-    /** AddslashesArray function
-     * function addslashes enhanced by array processing
+    /** function addslashes enhanced by array processing
      * @param $value
      * @return array|string
      */
@@ -119,20 +131,18 @@ class InputVars {
         return is_array($value) ? array_map(["\AA\Util\InputVars", "StripslashesArray"], $value) : stripslashes($value);
     }
 
-    /** QuoteVars function
-     * function for processing posted or get variables
+    /** function for processing posted or get variables
      * adds quotes, if magic_quotes are switched off
-     * except of variables in $skip array (usefull for 'encap' for example)
-     * @param $method
-     * @param $skip
+     * except of variables in $skip array (useful for 'encap' for example)
+     * @param string $method
+     * @param array  $skip
      */
-    public static function QuoteVars($method = "get", $skip = '') {
+    public static function QuoteVars(string $method = "get", array $skip = []) {
         $arr = ($method == "get") ? $_GET : $_POST;
         foreach ($arr as $k => $v) {
-            if (!is_array($skip) or !isset($skip[$k])) {
+            if (!isset($skip[$k])) {
                 $GLOBALS[$k] = InputVars::AddslashesArray($v);
             }
         }
     }
-
 }

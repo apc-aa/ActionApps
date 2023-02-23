@@ -24,6 +24,8 @@ https://www.apc.org/
     $update=1 .. write changes to database
 */
 
+use AA\Util\InputVars;
+
 $LINKS_LANGUAGE_FILES = [
     "en_links_lang.php" => "en_links_lang.php",
     "cz_links_lang.php" => "cz_links_lang.php",
@@ -35,7 +37,7 @@ if ($template['Links']) {
     $no_slice_id = true;       // message for init_page.php
 }
 
-const AA_REGISTER_GLOBALS = true;
+// const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../../include/init_page.php";
 //require_once __DIR__."/../../include/en_links_lang.php";
 require_once __DIR__ . "/../../include/formutil.php";
@@ -45,6 +47,38 @@ require_once __DIR__ . "/../../include/date.php";
 require_once __DIR__ . "/../../include/modutils.php";
 require_once __DIR__ . "/../../include/mgettext.php";
 require_once __DIR__ . "/../../modules/links/util.php";
+
+try {
+    // array ( ' Vložit […' => 6, )
+    $insert = InputVars::boolPOST('insert');
+    // array ( 'cz_links_la…' => 3, 'en_links_la…' => 3, )
+    $lang_file = InputVars::stringPOST('lang_file');
+    // array ( '🐵' => 1, 'Naštvanej …' => 5, )
+    $name = InputVars::stringPOST('name');
+    // array ( 'JÁ!' => 5, '' => 1, )
+    $new_owner = InputVars::stringPOST('new_owner'); // empty
+    // array ( 'já@jsem.bo…' => 3, '' => 1, 'mati.hejny@…' => 1, 'já@Fň.cz' => 1, )
+    $new_owner_email = InputVars::stringPOST('new_owner_email'); // empty
+    // array ( 1 => 10, )
+    $no_slice_id = InputVars::boolGET('no_slice_id', true);
+    // array ( 0 => 3, '' => 2, '96ab12bbeae…' => 1, )
+    $owner = InputVars::stringPOST('owner'); // alnum, empty
+    // array ( 3838 => 1, 'nejvě' => 1, 0 => 2, 38 => 2, )
+    $priority = InputVars::stringPOST('priority');
+    // array ( '/(!":?' => 3, 1 => 3, )
+    $select_start = InputVars::stringPOST('select_start');
+    // array ( 'http://exam…' => 6, )
+    $slice_url = InputVars::stringPOST('slice_url');
+    // array ( '12345678909…' => 3, 1 => 3, )
+    $start_id = InputVars::intPOST('start_id');
+    // array ( )-array ( )
+    $template = InputVars::arrayGETPOST('template'); // alnum-alnum
+    // array ( 'ěščřž�…' => 3, 1 => 3, )
+    $tree_start = InputVars::stringPOST('tree_start');
+    $cancel = InputVars::boolPOST('cancel');
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
 
 if ($cancel) {
     go_url( StateUrl(self_base() . "index.php3"));
@@ -192,11 +226,12 @@ FrmStaticText(_m('ID'), $module_id);
 FrmInputText("name", _m('Title'), $name, 99, 25, true);
 FrmInputText("slice_url", _m('URL of .shtml page'), $slice_url, 254, 25, false,
     _m("Use following SSI command to include links to the page: "). $include_cmd);
-FrmInputText("priority", _m("Priority (order in slice-menu)"), $priority, 5, 5);
+FrmInputNumber("priority", _m("Priority (order in slice-menu)"), $priority);
+
 FrmInputSelect("owner", _m('Owner'), $slice_owners, $owner);
 if ( !$owner ) {
     FrmInputText("new_owner", _m('New Owner'), $new_owner, 99);
-    FrmInputText("new_owner_email", _m('New Owner\'s E-mail'), $new_owner_email, 99);
+    FrmInputEmail("new_owner_email", _m('New Owner\'s E-mail'), $new_owner_email, 99);
 }
 if ( $superadmin ) {
     FrmInputChBox("deleted", _m('Deleted'), $deleted);
@@ -205,14 +240,14 @@ FrmInputSelect("lang_file", _m('Used Language File'), $LINKS_LANGUAGE_FILES, $la
 
 // module specific...
 if ($template['Links']) {
-    FrmInputText("start_id", _m("Start category id"), $start_id);
+    FrmInputNumber("start_id", _m("Start category id"), $start_id, 0, 999999);
 } else {
     // we can't change start_id (module_id is derived from it)
     FrmStaticText(_m('Start category id'), $start_id);
 }
 if ( $superadmin ) {
-    FrmInputText("tree_start", _m("Tree start id"), $tree_start);
-    FrmInputText("select_start", _m("Select start id"), $select_start);
+    FrmInputNumber("tree_start", _m("Tree start id"), $tree_start, 0, 999999);
+    FrmInputNumber("select_start", _m("Select start id"), $select_start, 0, 999999);
 } else {
     FrmStaticText(_m("Tree start id"), $tree_start);
     FrmStaticText(_m("Select start id"), $select_start);

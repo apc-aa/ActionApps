@@ -197,7 +197,7 @@ class AA_Collection {
             "Debug collection " . $this->id,
             $this->_get('email_id_alert'),
             join(',', (array)$emails),
-            join(',', $aliases)
+            join(',', (array)$aliases)
         ]));
         return $email_count;
     }

@@ -27,11 +27,53 @@
  *
 */
 
-const AA_REGISTER_GLOBALS = true;
+// const  AA_REGISTER_GLOBALS = true;
+use AA\Util\InputVars;
+
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/varset.php";
 require_once __DIR__ . "/../include/item.php";     // GetAliasesFromField funct def
+
+
+try {
+    // array ( '' => 36, '🥸🐖�…' => 1, '🦆' => 1, )
+    $category_bottom = InputVars::stringPOST('category_bottom'); // empty
+    // array ( '<p>_#CATEGO…' => 25, 'ne' => 10, '' => 1, 'ne🐣' => 2, )
+    $category_format = InputVars::stringPOST('category_format'); // empty
+    // array ( 0 => 38, )
+    $category_sort = InputVars::boolPOST('category_sort');
+    // array ( '' => 9, '🐖👍�…' => 1, 'AÁÀĄÂÄ…' => 2, '🥸🥸�…' => 1, '☃️☃�…' => 19, '😩' => 1, '👍🏼�…' => 1, '🐖' => 1, '🧚‍♀�…' => 1, 'smajlíků�…' => 2, )
+    $category_top = InputVars::stringPOST('category_top'); // empty
+    // array ( '<br>' => 4, '<br>Kvakoš…' => 33, '' => 1, )
+    $compact_bottom = InputVars::stringPOST('compact_bottom'); // empty
+    // array ( '()' => 28, 38 => 8, '☃️☃�…' => 2, )
+    $compact_remove = InputVars::stringPOST('compact_remove');
+    // array ( '<br>ne ' => 1, '<br>Kvakoš…' => 32, '<br>' => 1, '' => 1, '<br>🧚‍…' => 3, )
+    $compact_top = InputVars::stringPOST('compact_top'); // empty
+    // array ( 'on' => 7, )
+    $even_odd_differ = InputVars::boolPOST('even_odd_differ');
+    // array ( '' => 7, 'kjhgfdß' => 31, )
+    $even_row_format = InputVars::stringPOST('even_row_format'); // empty
+    // array ( 2 => 35, 8 => 1, 1 => 2, )
+    $gb_direction = InputVars::intPOST('gb_direction');
+    // array ( 0 => 35, 3 => 1, 5 => 2, )
+    $gb_header = InputVars::intPOST('gb_header');
+    // array ( 'category...…' => 7, 'short_id...…' => 1, 'source_href…' => 2, 'publish_dat…' => 1, '' => 26, )
+    $group_by = InputVars::stringPOST('group_by'); // empty
+    // array ( 'No item fou…' => 28, 'nits😆�…' => 1, '😩' => 1, 123456789 => 1, '?:!/%' => 1, 'BIL JSEM TU…' => 5, ' ' => 1, )
+    $noitem_msg = InputVars::stringPOST('noitem_msg');
+    // array ( '<font face=…' => 37, '<p><b><a hr…' => 1, )
+    $odd_row_format = InputVars::stringPOST('odd_row_format');
+    // array ( 'Přihlásit' => 1, )
+    $submit = InputVars::boolPOST('submit');
+    // array ( 1 => 38, )
+    $update = InputVars::boolPOST('update');
+    $cancel = InputVars::boolPOST('cancel');
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
+
 
 
 if ($cancel) {
@@ -65,22 +107,22 @@ if ( $update ) {
             break;
         }
 
-        $varset->add("odd_row_format", "quoted", $odd_row_format);
-        $varset->add("even_row_format", "quoted", $even_row_format);
-        $varset->add("group_by","quoted",$group_by);
+        $varset->add("odd_row_format", "text", $odd_row_format);
+        $varset->add("even_row_format", "text", $even_row_format);
+        $varset->add("group_by","text",$group_by);
         $varset->add("gb_direction","number",$gb_direction);
         $varset->add("gb_header","number",$gb_header);
-        $varset->add("category_top", "quoted", $category_top);
-        $varset->add("category_format", "quoted", $category_format);
-        $varset->add("category_bottom", "quoted", $category_bottom);
-        $varset->add("compact_top", "quoted", $compact_top);
-        $varset->add("compact_bottom", "quoted", $compact_bottom);
-        $varset->add("compact_remove", "quoted", $compact_remove);
+        $varset->add("category_top", "text", $category_top);
+        $varset->add("category_format", "text", $category_format);
+        $varset->add("category_bottom", "text", $category_bottom);
+        $varset->add("compact_top", "text", $compact_top);
+        $varset->add("compact_bottom", "text", $compact_bottom);
+        $varset->add("compact_remove", "text", $compact_remove);
         $varset->add("even_odd_differ", "number", $even_odd_differ ? 1 : 0);
         $varset->add("category_sort", "number", $category_sort ? 1 : 0);
           // if not filled, store " " - the empty value displays "No item found" for
           // historical reasons
-        $varset->add("noitem_msg", "quoted", $noitem_msg ?: " " );
+        $varset->add("noitem_msg", "text", $noitem_msg ?: " " );
 
         if ( !$db->query("UPDATE slice SET ". $varset->makeUPDATE() . "
                           WHERE id='".q_pack_id(AA::$module_id)."'")) {

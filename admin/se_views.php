@@ -28,14 +28,23 @@
 use AA\IO\DB\DB_AA;
 use AA\Manager;
 use AA\Manageraction\Manageractions;
+use AA\Util\InputVars;
 
-const AA_REGISTER_GLOBALS = true;
+// const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/varset.php";
 require_once __DIR__ . "/../include/item.php";     // GetAliasesFromField funct def
 
 require_once __DIR__ . "/../include/actions.php";
+
+try {
+    $del = InputVars::boolGET('del');
+    $vid = InputVars::intGet('vid');
+    $cancel = InputVars::boolPOST('cancel');
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
 
 if ($cancel) {
     go_url( StateUrl(self_base() . "index.php3"));
@@ -49,6 +58,7 @@ if (!IfSlPerm(PS_FULLTEXT)) {
 $err = [];          // error array (Init - just for initializing variable
 $varset      = new Cvarset();
 
+// @todo - use standard Delete action
 if ( $del ) {
     // check if deleted view is from this slice (for security)
     if (!AA::Metabase()->doDelete('view', ['id'=>$vid, 'slice_id'=>AA::$module_id])) {
@@ -99,7 +109,7 @@ $apage->printHead($err, $Msg);
 
 
 $actions   = new Manageractions;
-$actions->addAction(new  AA\Manageraction\View_Move2slice(   'Move2slice',    $module_id));
+$actions->addAction(new  AA\Manageraction\View_Move2slice(   'Move2slice', AA::$module_id));
 
 //$switches  = new AA\Manageractions;  // we do not need switches here
 
@@ -140,13 +150,16 @@ $managed->settings['itemview']['format']['compact_bottom'] = '</tbody></table></
 $managed->settings['show'] = MGR_ALL & ~MGR_SB_BOOKMARKS & ~MGR_SB_SEARCHROWS & ~MGR_SB_ORDERROWS;    // MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS | MGR_SB_ALLTEXT | MGR_SB_ALLNUM
 $managed->settings['searchbar']['default_sort'] =  [0 => ['id' => 'd']];
 $managed->settings['actions'] =  $actions;
+$managed->setAction('add',false);  // views are add by special form below
 
 $manager = new Manager('views', $managed);
+
+
 $manager->performActions();
 
 $aa_set  = $manager->getSet();
 // $aa_set->setModules($module_id);
-$aa_set->addCondition(new AA_Condition('slice_id', '==', q_pack_id($module_id)));
+$aa_set->addCondition(new AA_Condition('slice_id', '==', q_pack_id(AA::$module_id)));
 
 $zids    = AA::Metabase()->queryZids(['table'=>'view'], $aa_set);
 

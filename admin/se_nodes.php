@@ -36,7 +36,7 @@
 use AA\IO\DB\DB_AA;
 use AA\Util\InputVars;
 
-// const AA_REGISTER_GLOBALS = true;
+// const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 if ( !IsSuperadmin() ) {
     MsgPage(_m("You have not permissions to manage nodes"));

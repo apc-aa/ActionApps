@@ -37,17 +37,27 @@ use AA\IO\DB\DB_AA;
  * @param string|array $variable could be array or not
  * @param $err
  * @param $needed
- * @param $validator (object of simple string)
+ * @param $validator AA_Validate|string|array  ['number',['min'=>0,'max'=>999]])
  * @return bool
  */
 function ValidateInput($variableName, $inputName, $variable, &$err, $needed=false, $validator="all") {
-    foreach ((array)$variable as $var) {
-        $valid = _ValidateSingleInput($variableName, $inputName, $var, $err, $needed, $validator);
-        if ( !$valid ) {
-            break;
+    if (is_string($validator) or is_array($validator)) {
+        $validator = AA_Validate::factoryCached($validator);
+    }
+    if (is_object($validator)) {
+        foreach ((array)$variable as $var) {
+            if ($validator->varempty($var)) {
+                if ($needed) {
+                    $err[$variableName] = MsgErr(_m("Error in") . " $inputName (" . _m("it must be filled") . ")");
+                    return false;
+                }
+            } elseif (!$validator->validate($var)) {
+                $err["$variableName"] = MsgErr(_m("Error in") . " $inputName - " . AA_Validate::lastErrMsg());
+                return false;
+            }
         }
     }
-    return $valid;
+    return true;
 }
 
 const VALIDATE_ERROR_BAD_TYPE         = 400;
@@ -72,8 +82,7 @@ class AA_Validate extends AA_Serializable {
 
     use \AA\Util\LastErrTrait;
 
-    /** factoryCached function
-     *  Returns validators for standard data types
+    /** Returns validators for standard data types
      * @param string|array $v_type - string, or array($type,$parameter)
      * @return AA_Validate|null
      */
@@ -237,7 +246,7 @@ class AA_Validate_Signed extends AA_Validate {
     }
 
     /** returns the type attribute for the HTML 5 <input> tag with possible some
-     *  more attributtes (like min, max, step, pattern, ...)
+     *  more attributes (like min, max, step, pattern, ...)
      */
     function getHtmlInputAttr() {
         $ret = ['type' => 'number', 'pattern' => '-?[0-9]*'];
@@ -274,7 +283,7 @@ class AA_Validate_Number extends AA_Validate_Signed {
     }
 
     /** returns the type attribute for the HTML 5 <input> tag with possible some
-     *  more attributtes (like min, max, step, pattern, ...)
+     *  more attributes (like min, max, step, pattern, ...)
      */
     function getHtmlInputAttr() {
         $ret = parent::getHtmlInputAttr();
@@ -364,7 +373,7 @@ class AA_Validate_Url extends AA_Validate_Regexp {
     }
 
     /** returns the type attribute for the HTML 5 <input> tag with possible some
-     *  more attributtes (like min, max, step, pattern, ...)
+     *  more attributes (like min, max, step, pattern, ...)
      */
     function getHtmlInputAttr() {
         return ['type'=> 'url', 'pattern'=>"^http(s?):\/\/\S+\.\S+"];
@@ -380,7 +389,7 @@ class AA_Validate_Email extends AA_Validate_Regexp {
     }
 
     /** returns the type attribute for the HTML 5 <input> tag with possible some
-     *  more attributtes (like min, max, step, pattern, ...)
+     *  more attributes (like min, max, step, pattern, ...)
      */
     function getHtmlInputAttr() {
         return ['type'=>'email'];
@@ -393,7 +402,7 @@ class AA_Validate_Email extends AA_Validate_Regexp {
 class AA_Validate_Id extends AA_Validate {
 
     /** returns the type attribute for the HTML 5 <input> tag with possible some
-     *  more attributtes (like min, max, step, pattern, ...)
+     *  more attributes (like min, max, step, pattern, ...)
      */
     function getHtmlInputAttr() {
         return ['type'=>'text', 'pattern'=>'[0-9a-f]{32}'];
@@ -512,7 +521,7 @@ class AA_Validate_Login extends AA_Validate {
     }
 
     /** returns the type attribute for the HTML 5 <input> tag with possible some
-     *  more attributtes (like min, max, step, pattern, ...)
+     *  more attributes (like min, max, step, pattern, ...)
      */
     function getHtmlInputAttr() {
         return ['type'=>'text', 'pattern'=>'[a-zA-Z0-9]{3,32}'];
@@ -540,7 +549,7 @@ class AA_Validate_Pwd extends AA_Validate {
     }
 
     /** returns the type attribute for the HTML 5 <input> tag with possible some
-     *  more attributtes (like min, max, step, pattern, ...)
+     *  more attributes (like min, max, step, pattern, ...)
      */
     function getHtmlInputAttr() {
         return ['type'=>'password', 'min'=>'5'];
@@ -671,7 +680,7 @@ class AA_Validate_Eunique extends AA_Validate {
     }
 
     /** returns the type attribute for the HTML 5 <input> tag with possible some
-     *  more attributtes (like min, max, step, pattern, ...)
+     *  more attributes (like min, max, step, pattern, ...)
      */
     function getHtmlInputAttr() {
         return ['type'=>'email'];
@@ -703,7 +712,7 @@ class AA_Validate_Text extends AA_Validate {
     }
 
     /** returns the type attribute for the HTML 5 <input> tag with possible some
-     *  more attributtes (like min, max, step, pattern, ...)
+     *  more attributes (like min, max, step, pattern, ...)
      */
     function getHtmlInputAttr() {
         $ret = ['type'=>'text'];
@@ -711,42 +720,6 @@ class AA_Validate_Text extends AA_Validate {
         if (($this->maxlength > 0) AND ($this->maxlength < 60)) { $ret['size']       = ((int)$this->maxlength+2); }
         return $ret;
     }
-}
-
-
-/** _ValidateSingleInput function
- *  Validate users input. Error is reported in $err array
- * @param $variableName
- * @param $inputName
- * @param string $variable is not array
- * @param $err
- * @param $needed
- * @param $validator (object of simple string)
- *  You can add parameters to $type divided by ":".
- * @return bool
- */
-function _ValidateSingleInput($variableName, $inputName, $variable, &$err, $needed, $validator) {
-
-    if (is_string($validator)) {
-       $validator = AA_Validate::factoryCached($validator);
-    }
-
-    $ret = true;
-    if (is_object($validator)) {
-        if ( $validator->varempty($variable) ) {
-            if ( $needed ) {
-                $err[$variableName] = MsgErr(_m("Error in")." $inputName ("._m("it must be filled").")");
-                return false;
-            } else {
-                return true;
-            }
-        }
-        $ret = $validator->validate($variable);
-        if (!$ret) {
-            $err["$variableName"] = MsgErr(_m("Error in")." $inputName - ". AA_Validate::lastErrMsg());
-        }
-    }
-    return $ret;
 }
 
 /** get_javascript_field_validation function

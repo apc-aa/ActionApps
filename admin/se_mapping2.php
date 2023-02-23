@@ -30,10 +30,26 @@
 */
 
 
-const AA_REGISTER_GLOBALS = true;
+// const  AA_REGISTER_GLOBALS = true;
+use AA\Util\InputVars;
+
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/varset.php";
 require_once __DIR__ . "/../include/csn_util.php";
+
+try {
+    // array ( '' => 2, 2 => 3, )
+    $ext_slice = InputVars::intPOST('ext_slice', true); // empty
+    // array ( )
+    $fmap = InputVars::arrayPOST('fmap', true);
+    // array ( '4429a8e44bb…' => 2, '164ced40da0…' => 3, )
+    $from_slice_id = InputVars::idPOST('from_slice_id', true);
+    // array ( )
+    $fval = InputVars::arrayPOST('fval', true);
+    $cancel = InputVars::boolPOST('cancel');
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
 
 if (!IfSlPerm(PS_FEEDING)) {
   MsgPage(_m("You have not permissions to change feeding setting"));
@@ -90,7 +106,7 @@ foreach ($fmap as $to_field_id => $val) {
     }
 }
 
-// Write external fields, which did not mapped.
+// Write external fields, which did not map.
 if ($map_to && is_array($map_to)) {
     foreach ($map_to as $from_field_id => $foo) {
         $catVS->clear();

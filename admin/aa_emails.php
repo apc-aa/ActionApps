@@ -30,7 +30,7 @@
 use AA\Manager;
 use AA\Util\Langs;
 
-//const AA_REGISTER_GLOBALS = true;
+// const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/varset.php";
 require_once __DIR__ . "/../include/formutil.php";

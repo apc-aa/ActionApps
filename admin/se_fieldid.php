@@ -35,13 +35,29 @@
 
 
 use AA\IO\DB\DB_AA;
+use AA\Util\InputVars;
 
-const AA_REGISTER_GLOBALS = true;
+// const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/varset.php";
 
 require_once __DIR__ . "/../include/util.php"; // tryquery
+
+try {
+    // array ( 2038 => 1, 19 => 1, )
+    $new_id_number = InputVars::intPOST('new_id_number');
+    // array ( '_year' => 1, 'code' => 1, )
+    $new_id_text = InputVars::stringSlashedPOST('new_id_text');
+    // array ( 'time.......…' => 1, 'id.........…' => 1, )
+    $old_id = InputVars::stringSlashedPOST('old_id');
+    // array ( ' Změnit [^…' => 2, )
+    $update = InputVars::boolPOST('update');
+    $cancel = InputVars::boolPOST('cancel');
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
+
 
 set_time_limit(600);
 

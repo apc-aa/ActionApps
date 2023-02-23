@@ -474,7 +474,8 @@ class AA_Inputfield {
     var $additional;       // additional code for input (like 'class="chleba")
     var $html_rb_show;     // show HTML/Plaintext radiobutton?
 
-    var $valid;            // validation function used (this function we added in order we can use this class for AA Admin forms as well)
+    var $valid;            // string validation function used - could be 'number' or 'number:0:9999' - in order og getClassProperties of AA_Validate_Number
+                           // (this function we added in order we can use this class for AA Admin forms as well)
     var $translations;     // field allows translation
     var $dbfield;          // contains name of database field. It is often
                            // empty, so we will use varname, but there are some
@@ -534,6 +535,7 @@ class AA_Inputfield {
     function getValue() {
         return $this->value[0]['value'];
     }
+
     /** setValue function
      * @param $value
      */
@@ -558,6 +560,15 @@ class AA_Inputfield {
      */
     function getAaValue() {
         return new AA_Value($this->value, $this->html_flag);
+    }
+
+    /**
+     * @param AA_Validate $validator
+     * @return AA_Inputfield
+     */
+    public function setValidator(AA_Validate $valid): AA_Inputfield {
+        $this->valid = $valid;
+        return $this;
     }
 
     /** getDefaults function
@@ -633,8 +644,7 @@ class AA_Inputfield {
         // }
     }
 
-    /** validate function
-     *  Validates $value is is 'valid'
+    /** Validates $value is is 'valid'
      * @param $value
      * @param $err
      * @return bool
@@ -1276,7 +1286,8 @@ class AA_Inputfield {
         [$name,$val,$add] = $this->prepareVars('multi');
 
         $attrs = ['type'=>'text'];
-        if (is_object($validator = AA_Validate::factoryByString($this->valid))) {
+        $validator = is_object($this->valid) ? $this->valid : AA_Validate::factoryByString($this->valid);
+        if (is_object($validator)) {
             $attrs = array_merge($attrs, $validator->getHtmlInputAttr());
         }
 
@@ -2225,8 +2236,7 @@ function FrmInputChBox($name, $txt, $checked=true, $changeorder=false, $add="", 
 }
 
 
-/** FrmInputText function
- *  Prints html tag <input type=text .. to 2-column table
+/** Prints html tag <input type=text .. to 2-column table
  *  for use within <form> and <table> tag.
  * @param        $name
  * @param        $txt
@@ -2250,24 +2260,55 @@ function FrmInputText($name, $txt, $val, $maxsize=254, $size=25, $needed=false, 
     $input->print_result();
 }
 
-/** FrmInputPwd function
- *  Prints password input box
+/** Prints password input box
  * @param        $name
  * @param        $txt
  * @param        $val
- * @param int    $maxsize
- * @param int    $size
+ */
+function FrmInputPwd($name, $txt, $val) {
+    $input = new AA_Inputfield($val, false, 'normal', $name, $txt, false, true);
+    $input->inputText(50, 50, 'password');
+    $input->print_result();
+}
+
+/** Prints password input box
+ * @param        $name
+ * @param        $txt
+ * @param        $val
+ */
+function FrmInputEmail($name, $txt, $val,  $maxsize=254, $size=25, $needed=false, $hlp="", $morehlp="", $placeholder='') {
+    $input = new AA_Inputfield($val, false, 'normal', $name, $txt, false, $needed, $hlp, $morehlp);
+    $input->inputText($maxsize, $size, 'email', $placeholder);
+    $input->print_result();
+}
+
+
+/** Prints html tag <input type=text .. to 2-column table
+ *  for use within <form> and <table> tag.
+ * @param        $name
+ * @param        $txt
+ * @param        $val
+ * @param int    $min
+ * @param int    $max
  * @param bool   $needed
  * @param string $hlp
  * @param string $morehlp
- * @param bool   $html
- * @param string $type
+ * @param string $placeholder
  */
-function FrmInputPwd($name, $txt, $val, $maxsize=254, $size=25, $needed=false, $hlp="", $morehlp="", $html=false, $type="password") {
-    $add   = false;   // in parameter, but never filled. Honza 24.4.2013
-    $input = new AA_Inputfield($val, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp);
-    $input->inputText($maxsize, $size, $type);
+function FrmInputNumber($name, $txt, $val, $min=0, $max=9999, $needed=false, $hlp="", $morehlp="", $placeholder='') {
+    $input = new AA_Inputfield($val, true, 'normal', $name, $txt, false, $needed, $hlp, $morehlp);
+    $input->setValidator(new AA_Validate_Number(['min'=>$min, 'max'=>$max]));
+    $input->inputText((int)($max/10+1), (int)($max/10+1), 'number', $placeholder);
     $input->print_result();
+
+    /* concept of new widget approach - not working - uses aa[][...]
+    //                     ($id='', $name='', $type='text', $multi=false, $persistent=true, $validator=null, $required=false, $input_help='', $input_morehlp='', $example='', $show_content_type_switch=0, $content_type_switch_default=FLAG_HTML, $perm=null, $default=null, $translations=null) {  // default values are needed for AA_Storable's construction
+    $aa_property = new AA_Property($name, $txt, 'int', false, false, null, $needed, $hlp, $morehlp);
+    $widget = $aa_property->defaultWidget();
+    echo $widget->stdFormStart($aa_property);
+    echo $widget->getOnlyHtml($aa_property, (new AA_Content())->setValue($name,$val));
+    echo $widget->stdFormEnd($aa_property);
+    */
 }
 
 

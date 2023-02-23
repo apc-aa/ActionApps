@@ -31,7 +31,7 @@ use AA\Util\InputVars;
 $no_slice_id          = true;
 $require_default_lang = true;
 
-// const AA_REGISTER_GLOBALS = true;
+// const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/sliceadd.php";
 

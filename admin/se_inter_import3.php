@@ -33,7 +33,7 @@
 use AA\IO\DB\DB_AA;
 use AA\Util\InputVars;
 
-const AA_REGISTER_GLOBALS = true;
+// const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 if (!IfSlPerm(PS_FEEDING)) {
     MsgPage(_m("You have not permissions to change feeding setting"));
@@ -42,12 +42,14 @@ if (!IfSlPerm(PS_FEEDING)) {
 require_once __DIR__ . "/../include/varset.php";
 require_once __DIR__ . "/../include/csn_util.php";
 
-$aa               = InputVars::stringSlashedPOST('aa');
-$f_slices         = InputVars::arraySlashedPOST('f_slices');
-$remote_node_name = InputVars::stringSlashedPOST('remote_node_name');
-$exact_copy       = InputVars::boolPOST('exact_copy');
+try {
+    $f_slices         = InputVars::arrayPOST('f_slices');
+    $remote_node_name = InputVars::stringPOST('remote_node_name');
+    $exact_copy       = InputVars::boolPOST('exact_copy');
+    $aa_rss           = unserialize(InputVars::stringPOST('aa'));
+    $err = InputVars::arrayGETPOST('err');
+} catch (Exception $e) {}
 
-$aa_rss    = unserialize(InputVars::stringSlashedPOST('aa'));
 
 $l_categs = GetGroupConstants(AA::$module_id);        // get all categories belong to local slice
 

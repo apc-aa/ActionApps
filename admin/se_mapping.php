@@ -30,7 +30,7 @@
 */
 
 
-// const AA_REGISTER_GLOBALS = true;
+// const  AA_REGISTER_GLOBALS = true;
 use AA\IO\Grabber\AARSS;
 use AA\Util\InputVars;
 

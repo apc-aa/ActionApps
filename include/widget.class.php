@@ -80,7 +80,7 @@ class AA_Property extends AA_Storable {
     var $example;
 
     /** show_content_type_switch is used instead of $html_show or $html_rb_show.
-     *  It is more generalized, so we can use more formaters in the future (not
+     *  It is more generalized, so we can use more formatters in the future (not
      *  only HTML / Plain text, but also Wiki, Texy or whatever.
      *  The value is flagged 0 - do not show, FLAG_HTML | FLAG_PLAIN (1+2=3)
      *  means HTML / Plain text switch. There is an idea to use constant like

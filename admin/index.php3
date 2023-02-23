@@ -41,7 +41,7 @@ use AA\Manageraction\Item_Tab;
 use AA\Manageraction\Manageractions;
 use AA\Util\InputVars;
 
-//const AA_REGISTER_GLOBALS = true;
+// const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/varset.php";
 require_once __DIR__ . "/../include/view.php";

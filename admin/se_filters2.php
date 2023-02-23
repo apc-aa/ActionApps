@@ -35,12 +35,30 @@
 */
 
 use AA\IO\DB\DB_AA;
+use AA\Util\InputVars;
 
-const AA_REGISTER_GLOBALS = true;
+// const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/varset.php";
 require_once __DIR__ . "/../include/csn_util.php";
 
+try {
+    // array ( '0-0' => 1, '0-1' => 5, )
+    $C = InputVars::stringGET('C');
+    // array ( )
+    $F = InputVars::arrayGET('F');
+    // array ( )
+    $T = InputVars::arrayGET('T');
+    // array ( 1 => 6, )
+    $all = InputVars::boolGET('all');
+    // array ( '' => 8, )
+    $feed_id = InputVars::intGET('feed_id'); // empty
+    // array ( 'dcf6f197e02…' => 2, '4429a8e44bb…' => 5, '6c81ec28dd4…' => 1, )
+    $import_id = InputVars::idGET('import_id', true);
+    $cancel = InputVars::boolPOST('cancel');
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
 
 if (!IfSlPerm(PS_FEEDING)) {
   AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php3", _m("You have not permissions to change feeding setting"), "admin");
@@ -107,7 +125,7 @@ if ($feed_id) { // cross server feeding
             $catVS->add("target_category_id", "unpacked", $v['target_category_id']);
             $catVS->add("approved",           "number",   $v['approved']);   // zero = the same category
             if ( !$catVS->doINSERT('ef_categories')) {    // not necessary - we have set the halt_on_error
-                $err["DB"] .= MsgErr("Can't add import from $val");
+                $err["DB"] .= MsgErr("Can't add import from". $v['name']);
             }
         }
     }
@@ -132,7 +150,7 @@ if ($feed_id) { // cross server feeding
         $catVS->add("to_approved",    "number",   $app);
         $catVS->add("to_category_id", "unpacked", $id);   // zero = the same category
         if ( !$catVS->doINSERT('feeds')) {
-            $err["DB"] .= MsgErr("Can't add import from $val");
+            $err["DB"] .= MsgErr("Can't add import from $import_id");
         }
     } elseif (isset($_GET['F']) AND is_array($_GET['F'])) {            // insert to categories
         foreach ($_GET['F'] as $index => $val) {

@@ -23,11 +23,18 @@
  * @link      https://www.apc.org/ APC
 */
 
-const AA_REGISTER_GLOBALS = true;
+use AA\Util\InputVars;
+
+// const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/tabledit.php";
 require_once __DIR__ . "/../include/tv_common.php";
 
+try {
+    $cancel = InputVars::boolPOST('cancel');
+    $err    = InputVars::arrayGETPOST('err');
+    $Msg    = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
 // ----------------------------------------------------------------------------------------
 
 /** tv_field_value function

@@ -39,8 +39,9 @@
  */
 
 use AA\Manager;
+use AA\Util\InputVars;
 
-const AA_REGISTER_GLOBALS = true;
+// const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/util.php";
 require_once __DIR__ . "/../include/item.php";
@@ -48,6 +49,26 @@ require_once __DIR__ . "/../include/discussion.php";
 require_once __DIR__ . "/../include/searchlib.php";
 require_once __DIR__ . "/../include/locsess.php";    // DB_AA object definition
 require_once __DIR__ . "/../include/exporter.class.php";
+
+try {
+    // array ( 16 => 6, 31 => 1, )
+    $bins = InputVars::intGET('bins');
+    // array ( '' => 2, '[ne][nejsem…' => 1, '[ne][nejsem]' => 4, )
+    $conds = InputVars::stringGET('conds'); // empty
+    // array ( 'Export' => 7, )
+    $export = InputVars::stringGET('export'); // alpha
+    // array ( 'jsem boe' => 1, 'jsem borec�…' => 1, 'jsem borec' => 4, '' => 1, )
+    $filename = InputVars::stringGET('filename'); // empty
+    // array ( 'AA_Exporter…' => 7, )
+    $format = InputVars::stringGET('format');
+    // array ( '' => 5, 'nejlepsi' => 2, )
+    $sort = InputVars::stringGET('sort'); // alpha, empty
+    // array ( 'human' => 4, 'db' => 3, )
+    $type = InputVars::stringGET('type'); // alpha
+    $cancel = InputVars::boolPOST('cancel');
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
 
 if (!IfSlPerm(PS_FEEDING)) {
     MsgPage(_m("You have not permissions to export"));

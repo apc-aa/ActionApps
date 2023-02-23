@@ -29,7 +29,7 @@ use AA\IO\DB\DB_AA;
 use AA\Util\InputVars;
 use AA\Util\JsTriggers;
 
-// const AA_REGISTER_GLOBALS = true;
+// const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/varset.php";

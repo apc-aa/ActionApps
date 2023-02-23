@@ -34,14 +34,51 @@
 */
 
 use AA\IO\DB\DB_AA;
+use AA\Util\InputVars;
 
-const AA_REGISTER_GLOBALS = true;
+// const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/util.php";
 require_once __DIR__ . "/../include/import_util.php";
 require_once __DIR__ . "/../include/constants_param_wizard.php";
 require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/feeding.php";
+
+try {
+    // array ( 'insert_new' => 1, 'overwrite' => 1, )
+    $actionIfItemExists = InputVars::stringPOST('actionIfItemExists');
+    // array ( )
+    $actions = InputVars::arrayPOST('actions'); // alpha
+    // array ( 'YTozOntzOjk…' => 2, )-array ( 'YTozOntzOjk…' => 2, )
+    $addParamsSerial = InputVars::stringGETPOST('addParamsSerial'); // -
+    // array ( '' => 2, )-array ( '' => 2, )
+    $fileName = InputVars::stringGETPOST('fileName'); // -
+    // array ( 'new' => 2, )
+    $itemId = InputVars::stringPOST('itemId'); // alpha
+    // array ( 'unpack_id' => 1, 'store' => 1, )
+    $itemIdMappedActions = InputVars::stringPOST('itemIdMappedActions');
+    // array ( '__empty__' => 2, )
+    $itemIdMappedFrom = InputVars::stringPOST('itemIdMappedFrom');
+    // array ( '🦆' => 1, '🦆ú)¨§…' => 1, )
+    $itemIdMappedParams = InputVars::stringPOST('itemIdMappedParams');
+    // array ( 0 => 1, '' => 1, )
+    $load_id = InputVars::boolPOST('load_id'); // empty
+    // array ( )
+    $mapping = InputVars::arrayPOST('mapping');
+    // array ( )
+    $params = InputVars::arrayPOST('params');
+    // array ( 1 => 1, '38😱😱�…' => 1, )
+    $save_name = InputVars::stringPOST('save_name');
+    // array ( 'Dokončit …' => 2, )
+    $save = InputVars::boolPOST('save');
+    $save_periodical = InputVars::boolPOST('save_periodical');
+    $load = InputVars::boolPOST('load');
+    $preview = InputVars::boolPOST('preview');
+    $upload = InputVars::boolPOST('upload');
+    $cancel = InputVars::boolPOST('cancel');
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
 
 /** findNearestText function
  * Returns key of the $array, which value is most similar to given $text
