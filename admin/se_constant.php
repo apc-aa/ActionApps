@@ -316,6 +316,11 @@ $form_buttons = [
         "value" => _m("Delete whole group"),
         "add"   => 'onclick="deleteWholeGroup();"',
     ],
+    "hierarch" => [
+        "value" => _m("Edit in Hierarchical editor"),
+        "type"  => "submit",
+        "title"  => _m("Edit in Hierarchical editor (allows to create constant hierarchy)")
+    ]
 ];
 ?>
  <input type="hidden" name="group_id" value="<?php echo varname4form($group_id); /* do not move it to $form_buttons - we need it also in hierarchical editor, which do not use $form_buttons!!! */ ?>">
@@ -352,13 +357,13 @@ if ($group_id) {
     $using_slices_arr =  DB_AA::select([], "SELECT LOWER(HEX(module.id)) AS unpackid, module.deleted, module.name as sname, field.id as fid, field.name as fname FROM `module`, `field` WHERE module.id = field.slice_id AND (field.input_show_func LIKE '%:$group_id' OR field.input_show_func LIKE '%:$group_id:%')");
 
     echo "
-      <tr><td><b>"._m("Constants used in slice")."</b></td>
+      <tr><th>"._m("Constants used in slice")."</th>
         <td colspan=\"3\">". join('<br>', array_map(function($arr) {return ($arr['deleted'] ? "&times;&times;&times; ".$arr['sname']." &times;&times;&times;" : $arr['sname'])." <small>[".$arr['unpackid']."]</small> (".$arr['fname']." <small>[".$arr['fid']."]</small>)";}, $using_slices_arr)) ."</td>
       </tr>";
 }
 
 echo "
-<tr><td><b>"._m("Constant group owner - slice")."</b></td>
+<tr><th>"._m("Constant group owner - slice")."</th>
 <td colspan=\"3\">";
 
 if (!$constant_info["owner_id"] || !$group_id) {
@@ -380,16 +385,13 @@ else {
 $propagate_ch = ( $group_id ? $constant_info["propagate"] : 1);   // default is checked for new constant group;
 
 echo "</td></tr>
-<tr><td colspan=\"4\"><input type=\"checkbox\" name=\"propagate_changes\"".($propagate_ch ? " checked" : "").">"._m("Propagate changes into current items");
-echo "'</td></tr>
-<tr><td colspan=\"4\"><input type=\"submit\" name=\"hierarch\" value=\""._m("Edit in Hierarchical editor (allows to create constant hierarchy)")."\"></td></tr>
-<tr>
- <td><b><a href=\"javascript:SortConstants('name')\">". _m("Name") ."</a></b><br>". _m("shown&nbsp;on&nbsp;inputpage") ."</td>
- <td><b><a href=\"javascript:SortConstants('value')\">". _m("Value") ."</a></b><br>". _m("stored&nbsp;in&nbsp;database") ."</td>
- <td><b><a href=\"javascript:SortPri()\">". _m("Priority") ."</a></b><br>". _m("constant&nbsp;order") ."</td>
- <td><b><a href=\"javascript:SortConstants('used')\">". _m("Used") ."</a></b><br>". _m("times") ."</td>
-</tr>
-<tr><td colspan=\"4\"><hr></td></tr>";
+<tr><th>"._m("Propagate changes into current items")."</th><td colspan=\"3\"><input type=\"checkbox\" name=\"propagate_changes\"".($propagate_ch ? " checked" : "")."></td></tr>
+<tr class='aa-tbl-header'>
+ <th><b><a href=\"javascript:SortConstants('name')\">". _m("Name") ."</a></b><br>". _m("shown&nbsp;on&nbsp;inputpage") ."</th>
+ <th><b><a href=\"javascript:SortConstants('value')\">". _m("Value") ."</a></b><br>". _m("stored&nbsp;in&nbsp;database") ."</th>
+ <th><b><a href=\"javascript:SortPri()\">". _m("Priority") ."</a></b><br>". _m("constant&nbsp;order") ."</th>
+ <th><b><a href=\"javascript:SortConstants('used')\">". _m("Used") ."</a></b><br>". _m("times") ."</th>
+</tr>";
 
 // existing constants
 if ($s_constants) {
