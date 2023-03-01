@@ -648,8 +648,8 @@ function AA_SiteNewitem(slice, template, field, value) {
     }
     AA__doChange(params);
 }
-function AA_SiteEdit(item) {
-    AA__doChange({'aaedit':item}, 'get');
+function AA_SiteEdit(item, cmdvar) {
+    AA__doChange({[cmdvar]:item,'aaedit':cmdvar}, 'get');
 }
 function AA_SiteSendForm(form) {
     AA__doChange(new FormData(form));
@@ -713,7 +713,7 @@ function SetCookie(name, value, plustime) {
     var expires = new Date();
     expires.setTime(expires.getTime() + plustime);
     coo += "; expires=" + expires.toGMTString() + "; path=/";
-    coo += (document.location.protocol == 'https:') ? ';secure;samesite=lax' : '';
+    coo += (window.location.protocol == 'https:') ? ';secure;samesite=lax' : '';
     document.cookie = coo;
     // + ((expires == null) ? "" : ("; expires=" + expires.toGMTString()))
     // + ((path == null)    ? "" : ("; path=" + path))

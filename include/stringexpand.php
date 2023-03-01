@@ -7567,7 +7567,7 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
             case 'url':
                 return $img_short;
             case 'im':      //  quick version - img without width and height
-                return "<img src=\"$img_short\" $param2 border=0 loading=lazy". (($param1 = safe(strip_tags($param1))) ? " title=\"$param1\" alt=\"$param1\" />" : ' />');
+                return "<img src=\"$img_short\" $param2 loading=lazy". (($param1 = safe(strip_tags($param1))) ? " title=\"$param1\" alt=\"$param1\" />" : ' />');
             case 'picture':
                 $thumb_params_arr = [];
                 parse_str($phpthumb_params, $thumb_params_arr);
@@ -7695,7 +7695,7 @@ class AA_Stringexpand_Imgtext extends AA_Stringexpand_Nevercachenotrim {
 //        $color      = (strlen($color) ? $color : '000000');
         $param      = join('|', [$txt, $size, $alignment, $color, $font, $opacity, $margin, $angle, $background, $bg_opacity]);
         $img_url    = AA_INSTAL_PATH. "img.php?new=$bg&amp;w=$width&amp;h=$height&amp;fltr[]=wmt|$param&amp;f=png";
-        return "<img src=\"$img_url\" width=\"$width\" height=\"$height\" alt=\"$text\" border=\"0\"/>";
+        return "<img src=\"$img_url\" width=\"$width\" height=\"$height\" alt=\"$text\"/>";
     }
 }
 
@@ -9393,7 +9393,6 @@ class AA_Stringexpand_Manager extends AA_Stringexpand_Nevercache {
      * @return string
      */
     function expand($slices='', $field=null, $item_id=null, $code=null, $conds=null, $sort=null, $mode=null, $edit_code=null) {
-
         $hash       = get_short_hash('manager', $slices, $field, $item_id, $code, $conds, $sort, $mode, $edit_code);
         $cmdvar     = 'aamng_'.$hash;
         
@@ -9454,14 +9453,15 @@ class AA_Stringexpand_Manager extends AA_Stringexpand_Nevercache {
         }
 
         $inner_code = '';
-        if ($edit_code AND (is_long_id($_GET['aaedit']) OR (is_long_id($_GET[$cmdvar])) )) {
-            
+//      if ($edit_code AND (is_long_id($_GET['aaedit']) OR (is_long_id($_GET[$cmdvar])) )) {
+        if ($edit_code AND is_long_id($_GET[$cmdvar])) {
+
             // @todo check slice of edited item to match $slices
-            $inner_code = StrExpand('AA_Stringexpand_Item', [(is_long_id($_GET['aaedit']) ? $_GET['aaedit'] : $_GET[$cmdvar]), $edit_code]);
+            $inner_code = StrExpand('AA_Stringexpand_Item', [$_GET[$cmdvar], $edit_code]);
             $footer     = '';
             if ( $mode_arr['B'] ) {
                 $footer .= $mode_arr['X'] ? '<footer><article><i class="ico back" onclick="history.back();">' . $mode_arr['B'] . '</i></article></footer>' 
-                                          : '<footer><article><i class="ico back" onclick="AA_SiteEdit(\'\');">' . $mode_arr['B'] . '</i></article></footer>';
+                                          : '<footer><article><i class="ico back" onclick="AA_SiteEdit(\'\',\''.$cmdvar.'\');">' . $mode_arr['B'] . '</i></article></footer>';
             }
         } else {
 
@@ -9486,8 +9486,8 @@ class AA_Stringexpand_Manager extends AA_Stringexpand_Nevercache {
             // load all mentioned items in one step
             AA_Items::preload($zids);
 
-            $code_actions  = $mode_arr['E'] ? ('<article><i class="ico edit" onclick="AA_SiteEdit(\'{id..............}\');">' . $mode_arr['E'] . '</i></article>') : '';
-            $code_actions .= $mode_arr['X'] ? ('<article><i class="ico edit" onclick="document.location=\'{go:xqs='.$cmdvar.'={id..............}}\';">' . $mode_arr['X'] . '</i></article>') : '';
+            $code_actions  = $mode_arr['E'] ? ('<article><i class="ico edit" onclick="AA_SiteEdit(\'{id..............}\',\''.$cmdvar.'\');">' . $mode_arr['E'] . '</i></article>') : '';
+            $code_actions .= $mode_arr['X'] ? ('<article><i class="ico edit" onclick="window.location=\'{go:xqs='.$cmdvar.'={id..............}}\';">' . $mode_arr['X'] . '</i></article>') : '';
             $code_actions .= $mode_arr['S'] ? ('<article><i class="ico setting" onclick="AA_ToolboxEdit(\'{id..............}\');">' . $mode_arr['S'] . '</i></article>') : '';
             $code_actions .= $mode_arr['D'] ? ('<article><i class="ico delete"  onclick="if (confirm(\'' . $mode_arr['Dconfirm'] . '\')) { document.querySelector(\'article[data-aa-part=&quot;' . $hash . '&quot;]\').classList.add(\'aa-updating\');  AA_SiteUpdate(\'{id..............}\',\'status_code.....\',3);}">' . $mode_arr['D'] . '</i></article>') : '';
             $footer  = $mode_arr['N'] ? ('<article><i class="ico new" onclick="document.querySelector(\'article[data-aa-part=&quot;' . $hash . '&quot;]\').classList.add(\'aa-updating\'); AA_SiteNewitem(\'' . $slices_arr[0] . '\',\'\',\'' . $field . '\',\'' . $item_id . '\');">' . $mode_arr['N'] . '</i></article>') : '';
@@ -9541,7 +9541,7 @@ EOT;
                  </article>';
         $ret .= "<script>$dz_setup_code</script>";
 
-        AA::Stringexpander()->setDependentParts(array_merge($slices_arr, ['aaedit']), $hash, $ret);
+        AA::Stringexpander()->setDependentParts(array_merge($slices_arr, [$cmdvar]), $hash, $ret);  // array_merge($slices_arr, ['aaedit']), $hash, $ret
         AA::Stringexpander()->addRequire('css-aa-system');
         AA::Stringexpander()->addRequire('aa-jslib');  // for AA_SiteNewitem, ...
         return $ret;

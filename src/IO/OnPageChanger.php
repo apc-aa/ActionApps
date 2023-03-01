@@ -65,7 +65,7 @@ class OnPageChanger  {
                 $this->sendPartsAndExit($saver->changedModules(),$err_msg);
             }
             if (isset($_GET['aaedit'])) {
-                $this->sendPartsAndExit(['aaedit']);
+                $this->sendPartsAndExit([$_GET['aaedit']]);
             }
         }
     }
