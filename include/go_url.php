@@ -157,7 +157,7 @@ function go_url($url, $add_param="", $usejs=false, $code=302) {
         $url = get_url($url, $add_param);
     }
     if ( $usejs OR headers_sent() OR ($_SERVER['SERVER_PROTOCOL']=='INCLUDED')) { // SSI included
-        echo '<script>document.location = "'.$url.'";</script>';
+        echo '<script>window.location = "'.$url.'";</script>';
     } else {
         header("Location: $url", true, $code);
     }

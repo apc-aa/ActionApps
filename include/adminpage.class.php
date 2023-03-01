@@ -118,8 +118,8 @@ class AA_Adminpageutil {
      * @param string $name
      * @param string $html
      */
-    public function addHelpbox($name, $html) {
-        $this->helpboxes[] = ['name'=>$name, 'html'=>$html];
+    public function addHelpbox($name, $html, bool $packed=false) {
+        $this->helpboxes[] = ['name'=>$name, 'html'=>$html, 'packed'=>$packed];
     }
 
     /**
@@ -232,14 +232,17 @@ class AA_Adminpageutil {
     public function printHelpbox() {
         $html = '';
         foreach ($this->helpboxes as $helpbox) {
-            $html .= GetHtmlTable( [[$helpbox['html']]], 'td', $helpbox['name'], true );  // clasic aa table
+            if ($helpbox['packed']) {
+                $html .= "<details><summary>".$helpbox['name']."</summary>". $helpbox['html'] . "</details>";
+            } else {
+                $html .= GetHtmlTable( [[$helpbox['html']]], 'td', $helpbox['name'], true );  // classic aa table
+            }
         }
         if ($html) {
-            $html = '<br>'. $html;
             // not necessary to unalias - help text for aliases was executed
             // $html = AA::Stringexpander()->unalias($html);
             // $html = AA::Stringexpander()->postprocess($html);
-            echo $html;
+            echo '<br>'.$html;
         }
     }
 

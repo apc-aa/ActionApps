@@ -42,6 +42,7 @@ require_once __DIR__ . "/../../include/varset.php";
 require_once __DIR__ . "/../../include/formutil.php";
 require_once __DIR__ . "/../../include/itemview.php";
 require_once __DIR__ . "/../../include/item.php";
+require_once __DIR__ . "/../../include/menu_util.php";
 
 require_once __DIR__ . "/../../modules/links/linksearch.php";
 require_once __DIR__ . "/../../modules/links/constants.php";
@@ -250,7 +251,7 @@ echo '<script>
   }
 
   function EditCurrentCat() {
-      document.location = "'.StateUrl('catedit.php').'&cid=" + document.filterform.cat_id.value;
+      window.location = "'.StateUrl('catedit.php').'&cid=" + document.filterform.cat_id.value;
   }
 </script>
 </head>';
@@ -288,17 +289,19 @@ echo getFrmInputButtons([
         'type' => 'button',
         'value' => _m('Show Links'),
         'add' => 'onclick="document.filterform.submit()"',
-        'help' => get_help_url(AA_LINKS_HELP_MAIN, "zobraz-odkazy")
-    ],
+    ]]);
+echo getFrmMoreHelp(get_help_url(AA_LINKS_HELP_MAIN, "zobraz-odkazy"));
+
+echo getFrmInputButtons([
     'editcat' => [
         'type' => 'button',
         'value' => _m('Edit Category'),
         'add' => 'onclick="EditCurrentCat()"',
-        'help' => get_help_url(AA_LINKS_HELP_MAIN, "editujkat")
     ]
-//                        'bookmark' => array('type'=>'button',
-//                                            'value'=>_m('Bookmark'))
+    //                        'bookmark' => array('type'=>'button',
+    //                                            'value'=>_m('Bookmark'))
 ]);
+echo getFrmMoreHelp(get_help_url(AA_LINKS_HELP_MAIN, "editujkat"));
 
 echo '<tr><td>';
 FrmChBoxEasy("show_subtree", $r_state["show_subtree"]);

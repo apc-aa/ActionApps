@@ -16,7 +16,7 @@ class AddUrlPreviewFieldTemplate extends \AA\Optimize\AddSeoFieldTemplate {
     protected function fieldSpecialSetting(): array {
         return [
             'name'       => 'Preview Url',
-            'input_help' => 'Url for item previw - could contain AA Expressions',
+            'input_help' => 'Url for item preview - could contain AA Expressions',
         ];
     }
 }

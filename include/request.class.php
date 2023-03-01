@@ -89,7 +89,7 @@ class AA_Http {
         $url = get_url( $url, $parameters);
         echo '
         <script>
-            document.location = "'.$url.'";
+            window.location = "'.$url.'";
         </script>
         ';
         exit;

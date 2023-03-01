@@ -53,6 +53,21 @@ use the escape character \ - the wizard will translate the characters. Remember 
 
 // require_once __DIR__."/../modules/alerts/reader_field_ids.php3";
 
+/** Standard code to link to Parameter wizard
+ * @param string $list
+ * @param string $combo_list
+ * @param string $text_param
+ * @param bool $title
+ * @return string
+ */
+function getParamWizardLink(string $list, string $combo_list, string $text_param, bool $title=false, string $codemirror=''): string {
+    $ret  = "<div class=\"flex f-between aa-paramwiz-link\">";
+    if ($title) {
+        $ret .= "<label for=\"$text_param\"><strong>" . _m("Parameters") . "</strong></label>";
+    }
+    $ret .= "<div class=tabhlp><a class='btn btn-s' href='javascript:CallParamWizard(\"".get_admin_url('param_wizard.php')."\",\"$list\",\"$combo_list\",\"$text_param\",\"$codemirror\")'>" ._m("Help: Parameter Wizard")."</a></div></div>\n";
+    return $ret;
+}
 
 // $INSERT_TYPES[...] - now uses class approach with AA\Util\Paramwizard
 // $DEFAULT_VALUE_TYPES[...] - now uses class approach with AA\Util\Paramwizard

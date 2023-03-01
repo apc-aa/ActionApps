@@ -124,7 +124,7 @@ function PrintUser($perm, $usr_id, $editor_perm) {
         ['uid', $usr_id]
     ])) ? " <span class='aa-bin-cnt'>$cnt</span>" : '';
 
-    echo "<td><button type=\"button\" name=\"uid\" onclick=\"document.location='". StateUrl("se_profile.php?uid=$usr_id_enc") ."'\">". _m("Profile") ."$cnt</button></td>\n";
+    echo "<td><button type=\"button\" name=\"uid\" onclick=\"window.location='". StateUrl("se_profile.php?uid=$usr_id_enc") ."'\">". _m("Profile") ."$cnt</button></td>\n";
     echo "</tr>\n";
 }
 
@@ -184,7 +184,7 @@ if ( $continue ) {
 
     echo "<tr><td>&nbsp;</td>
               <td colspan=\"8\">". _m("Default user profile") ."</td>
-              <td><button type=\"button\" name=\"uid\" onclick=\"document.location='". StateUrl("se_profile.php?uid=*") ."'\">". _m("Profile") ."$cnt</button></td>\n";
+              <td><button type=\"button\" name=\"uid\" onclick=\"window.location='". StateUrl("se_profile.php?uid=*") ."'\">". _m("Profile") ."$cnt</button></td>\n";
   echo "</tr>\n";
 
     echo "</table>

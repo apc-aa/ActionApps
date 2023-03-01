@@ -56,7 +56,7 @@ echo getTabStart();
           <table>
           <tr><td>&nbsp;<input type="submit" name="update" accesskey="S" value=" Actualizar (ALT+S)  ">&nbsp;
 &nbsp;<input type="hidden" name="update" value="1">&nbsp;
-&nbsp;<input type="button" name="cancel" value=" Cancelar " onclick="document.location='se_fields.php3?slice_id=5abf7d2c73d7294cb105505a45e97762'">&nbsp;
+&nbsp;<input type="button" name="cancel" value=" Cancelar " onclick="window.location='se_fields.php3?slice_id=5abf7d2c73d7294cb105505a45e97762'">&nbsp;
 <input type="hidden" name="slice_id" value="<?php echo AA::$module_id ?>"></td></tr></table></td></tr>
       <tr>
         <td>

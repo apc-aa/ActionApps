@@ -6,6 +6,7 @@ namespace AA\Doit;
 use AA;
 use AA\IO\DB\DB_AA;
 
+
 /** request monitor - developer temporary tool for catching all the REQUEST variables in order we can remove
  * foreach addslashesdeep() calls
  */
@@ -23,7 +24,6 @@ class RequestMonitor
             if ($_SESSION AND count($_SESSION)) { $request_monitorow_row['session'] = serialize($_SESSION); }
             if (DB_AA::exists_table('tmp_request_monitor')) {
                 AA::Metabase()->loadFromDb(false,['tmp_request_monitor']);  // it is not standard table - we have to read it
-                huhl('vvv', $request_monitorow_row);
                 AA::Metabase()->doInsert('tmp_request_monitor',$request_monitorow_row);
             }
         }

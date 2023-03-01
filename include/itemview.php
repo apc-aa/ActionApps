@@ -329,11 +329,11 @@ class itemview {
           if (done == 0) {
             alert (\" ". _m("No comment was selected") ."\" );
           } else {
-            document.location = url;
+            window.location = url;
           }
         }
-        function showAllComments() {document.location = \"". get_url($script_loc, "all_ids=1#disc") ."\"; }
-        function showAddComments() {document.location = \"". get_url($script_loc, "add_disc=1#disc") ."\";}
+        function showAllComments() {window.location = \"". get_url($script_loc, "all_ids=1#disc") ."\"; }
+        function showAddComments() {window.location = \"". get_url($script_loc, "add_disc=1#disc") ."\";}
       </script>";
    return $out;
   }

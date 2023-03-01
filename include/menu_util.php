@@ -235,7 +235,7 @@ function GetModuleSelection(): string {
         //$type = AA_Module::getModuleType(AA::$module_id);
 
         $html  = GetLabel($profile, 'ui_manager', 'top_moduleswitchtext', '');
-        $html .= '<select name=sel_module onChange="if (this.value != \'\') document.location=this.value">';
+        $html .= '<select name=sel_module onChange="if (this.value != \'\') window.location=this.value">';
         $html .= $options;
         $html .= '</select>';
 
@@ -347,7 +347,7 @@ function getMenu($activeMain, $activeSubmenu = ""): string {
         $ret .= '  
             </nav>
               <div class="aa-ui-modules">'.$viewlink.'
-                <form name="nbform" id="aanbform" enctype="multipart/form-data" method="post" action="'. StateUrl() .'">'."\n";
+                <form name="aanbform" id="aanbform" enctype="multipart/form-data" method="post" action="'. StateUrl() .'">'."\n";
         $ret .= GetModuleSelection();
         $ret .= "\n</form>
               </div>
@@ -419,17 +419,17 @@ function getSubMenuRows($aamenuitems, $active ): string {
         $ico = ((is_array($item) AND $item['ico']) ? GetAAImage($item['ico'], $item['title'], 23,23) : '');
 
         if (substr($itemshow,0,4) == "text") {
-            $ret .= "<li class='aa-leftmenu-text'>$item</li>\n";
+            $ret .= "<li class='aa-leftmenu-text aa-menuname-$itemshow'>$item</li>\n";
         } elseif (substr($itemshow,0,6) == "header") {
             if (is_array($item)) {
                 if (!isset($item["cond"]) OR $item["cond"]) {
-                    $ret .= "<li class='aa-leftmenu-header' title='" . $item['title'] . "'>" . $item['label'] . "</li>\n";  // $ico not shown for design reasons
+                    $ret .= "<li class='aa-leftmenu-header aa-menuname-$itemshow' title='" . $item['title'] . "'>" . $item['label'] . "</li>\n";  // $ico not shown for design reasons
                 }
             } elseif ($item !== '') {
-                $ret .= "<li class='aa-leftmenu-header'>$item</li>\n";
+                $ret .= "<li class='aa-leftmenu-header aa-menuname-$itemshow'>$item</li>\n";
             }
         } elseif (substr($itemshow,0,4) == "line") {
-            $ret .= "<li class='aa-leftmenu-line'><img src='".AA_INSTAL_PATH."images/black.gif' width=120 height=1></li>\n";
+            $ret .= "<li class='aa-leftmenu-line aa-menuname-$itemshow'><img src='".AA_INSTAL_PATH."images/black.gif' width=120 height=1></li>\n";
         } elseif ( $item["function"] ) {
             // call some function to get menu items
             // it is better mainly for left submenus for which we need
@@ -452,7 +452,7 @@ function getSubMenuRows($aamenuitems, $active ): string {
                     $item['js'] = str_replace("{exact_href}",$href,$item['js']);
                     $href       = "javascript:".$item['js'];
                 }
-                $ret .= '<li class="aa-leftmenu-link"><a href="'.$href.'" class='.$cssclass.'>'.$ico. $item["label"]."</a></li>\n";
+                $ret .= "<li class='aa-leftmenu-link aa-menuname-$itemshow'><a href=\"".$href.'" class='.$cssclass.'>'.$ico. $item["label"]."</a></li>\n";
             } elseif ( !$item["hide"] ) {
                 // no need to show not active menu items 2023-02-15 HM
                 // $ret .= '<li class="aa-leftmenu-link"><span class="leftmenun">'.$ico.$item["label"]."</span></li>\n";

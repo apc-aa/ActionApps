@@ -165,7 +165,7 @@ FrmTabCaption(_m("Content Pooling - Fields' mapping"), $form_buttons);
 ?>
         <tr>
           <td><b><?php echo _m("Mapping from slice") . "&nbsp; "?></b>
-          <?php FrmSelectEasy("from_slice_id", $impslices, $from_slice_id, "OnChange=\"ChangeFromSlice()\""); ?></td>
+          <?php FrmSelectEasy("from_slice_id", $impslices, $from_slice_id, ["onchange" => "ChangeFromSlice()"]); ?></td>
          </tr>
 <?php
 FrmTabSeparator(_m("Fields' mapping"));
@@ -204,7 +204,7 @@ foreach ($to_fields as $f_id => $f_name) {
             $val = safe($field_map[$f_id]['value']);
             break;
     }
-    FrmSelectEasy("fmap[$f_id]",$from_fields,$sel);
+    FrmSelectEasy("fmap[$f_id]", $from_fields, $sel);
     echo "</td><td>$sel</td>";
     echo "<td> <input type=\"text\" name=\"fval[$f_id]\" value=\"$val\"></td>";
     echo "</tr>\n";
@@ -227,11 +227,11 @@ FrmTabEnd($form_buttons);
         }
         url += "&slice_id=<?php echo AA::$module_id ?>"
         url += "&from_slice_id=" + from_sl
-        document.location=url
+        window.location=url
     }
 
     function Cancel() {
-        document.location = "<?php echo StateUrl(self_base() . "index.php3")?>"
+        window.location = "<?php echo StateUrl(self_base() . "index.php3")?>"
     }
 
     function Submit() {

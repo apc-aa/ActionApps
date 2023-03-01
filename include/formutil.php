@@ -1117,7 +1117,7 @@ class AA_Inputfield {
                 $convertor .= $delim . strtoupper(str_replace( '.', '', $format ));
                 $delim = '/';
             }
-            $convertor = "<a href=\"javascript:CallConvertor('".self_server(). AA_INSTAL_PATH."', '".$this->varname."')\">$convertor "._m('import') ."</a>";
+            $convertor = "<a class=\"btn aa-convertor\" href=\"javascript:CallConvertor('".self_server(). AA_INSTAL_PATH."', '".$this->varname."')\">$convertor "._m('import') ."</a>";
         }
 /**
  * for new version by Jirkar
@@ -1155,33 +1155,29 @@ class AA_Inputfield {
             $htmlvar     = $varname."html";
             $radio_html  = "<input type=\"radio\" name=\"$htmlvar\" value=\"h\"". (  $this->html_flag ? " checked>" : ">" )."</input>";
             $radio_plain = "<input type=\"radio\" name=\"$htmlvar\" value=\"t\"". ( !$this->html_flag ? " checked>" : ">" )."</input>";
-            $htmlareaedit= "<a href=\"javascript:openHTMLAreaFullscreen('".$varname."');\">"._m("Edit in HTMLArea")."</a>"; // used for HTMLArea
+            $htmlareaedit= "<a class=\"btn\" href=\"javascript:openHTMLAreaFullscreen('".$varname."');\">"._m("Edit in HTMLArea")."</a>"; // used for HTMLArea
             // conversions menu
             $convertor   = $conv ? $this->get_convertors() : false;
-            if ( $convertor ) {
-                $this->echoo('  <table><tr><td>');
-            }
 
             // show plaintext / html radio
-            $this->echoo('<span id="htmlplainspan'.$varname.'">'); // used for hiding "edit in htmlarea" link, dont remove
+            $this->echoo('<div class="aa-fld-toolbar" id="htmlplainspan'.$varname.'">');  // used for hiding "edit in htmlarea" link, dont remove
+
+            $this->echoo('<span class="aa-formatters">');
+            $this->echoo('<label>');
             $this->echovar($radio_html,  'html_rb');
             $this->echoo(_m("HTML"));
+            $this->echoo('</label><label>');
             $this->echovar($radio_plain, 'plain_rb');
             $this->echoo(_m("Plain text"));
-            $this->echoo('</span>');
-            $this->echoo("&nbsp;&nbsp;");
+            $this->echoo('</label></span>');
             $this->echoo('<span id="arealinkspan'.$varname.'" class="aa-arealink" style="display:none">'); // used for hiding "edit in htmlarea" link, dont remove
             $this->echovar($htmlareaedit, 'htmlarea_edit_link');
             $this->echoo('</span>');
 
             if ( $convertor ) {
-                $this->echoo("</td>");
-                $this->echoo("<td>");
                 $this->echovar($convertor,   'conv');
-                $this->echoo("</td></tr>\n  </table>");
-            } else {
-                $this->echoo("<br>\n");
-            }
+            } 
+            $this->echoo("</div>\n");
         }
     }
 
@@ -2588,9 +2584,9 @@ function getFrmChBoxEasy($name, $checked=true, $add="", $value='', $id=''): stri
  * @param $name
  * @param $arr
  * @param $selected
- * @param $add
+ * @param array $add
  */
-function FrmSelectEasy($name, $arr, $selected="", $add="") {
+function FrmSelectEasy($name, $arr, $selected="", array $add=[]) {
     echo getFrmSelectEasy($name, $arr, $selected, $add);
 }
 
@@ -2598,15 +2594,18 @@ function FrmSelectEasy($name, $arr, $selected="", $add="") {
  * @param        $name
  * @param        $arr
  * @param string $selected
- * @param string $add
+ * @param array  $add
  * @param bool   $showempty - display select even if is empty (for two boxes of user admin... )
  * @return string
  */
-function getFrmSelectEasy($name, $arr, $selected="", $add="", $showempty=false) {
+function getFrmSelectEasy($name, $arr, $selected="", array $add= [], $showempty=false) {
     $name=safe($name); // safe($add) - NO! - do not safe it
 
     if ((!is_array($arr) OR empty($arr)) AND !$showempty) {
         return '';
+    }
+    if (is_array($add)) {
+        $add = htmlattr($add);
     }
     $retval       = "\n<select name=\"$name\" $add>";
     $selectedused = false;
@@ -2743,21 +2742,18 @@ function getFrmInputButtons($buttons, $print_hidden = true, $prefix = ''): strin
             $name = $properties;
             $properties = [];
         }
+        $title = $properties['title'] ? ' title="'.$properties['title'].'"' : '';
         switch($name) {
             case 'update':
                 if ($properties['type'] == 'hidden') {
-                    $ret .= ' <input type="hidden" name="update" id="'.$prefix .'update" value="'. get_if($properties['value'], "") .'">';
+                    $ret .= ' <input type="hidden" name="update" id="'.$prefix .'update"'.$title.' value="'. get_if($properties['value'], "") .'">';
                 } else {
-                    $ret .= ' <input type="submit" class="btn-l" name="update" id="'.$prefix .'update" accesskey="S" value=" '. get_if($properties['value'], _m("Update")) ." [^S] " .' ">';
+                    $ret .= ' <input type="submit" class="btn-l" name="update" id="'.$prefix .'update"'.$title.' accesskey="S" value=" '. get_if($properties['value'], _m("Update")) ." [^S] " .' ">';
                     $noaccess = true; // use for update of item, bug was, that both "update" and "insert" has accesskey S
-                }
-                if ($properties['help'] != '') {
-                    $ret .= getFrmMoreHelp($properties['help']);
-                    $ret .= "&nbsp;&nbsp;";
                 }
                 break;
             case 'insert':
-                $ret .= ' <input type="submit" class="btn-l" name="insert" id="'.$prefix .'insert" ';
+                $ret .= ' <input type="submit" class="btn-l" name="insert"'.$title.' id="'.$prefix .'insert" ';
                 if (!$noaccess) { // was accesskey used ?
                     $ret .= 'accesskey="S" ';
                 }
@@ -2766,10 +2762,6 @@ function getFrmInputButtons($buttons, $print_hidden = true, $prefix = ''): strin
                     $ret .= " [^S]";
                 }
                 $ret .= '  "> ';
-                if ($properties['help'] != '') {
-                    $ret .= getFrmMoreHelp($properties['help']);
-                    $ret .= "&nbsp;&nbsp;";
-                }
                 break;
             case 'cancel':
                 $url = get_if($properties['url'],self_server().$_SERVER['PHP_SELF']);
@@ -2778,37 +2770,21 @@ function getFrmInputButtons($buttons, $print_hidden = true, $prefix = ''): strin
                 }
                 $url  = StateUrl($url);
                 //          echo ' <input type="button" name="cancel" value=" '. get_if($properties['value'], _m("Cancel")) .' "> ';
-                $ret .= ' <input type="button" name="cancel" id="'.$prefix .'cancel" value=" '. get_if($properties['value'], _m("Cancel")) .' " class="btn-l btn-secondary" onclick="document.location=\''.$url.'\'"> ';
-                if ($properties['help'] != '') {
-                    $ret .= getFrmMoreHelp($properties['help']);
-                    $ret .= "&nbsp;&nbsp;";
-                }
+                $ret .= ' <input type="button" name="cancel" id="'.$prefix .'cancel"'.$title.' value=" '. get_if($properties['value'], _m("Cancel")) .' " class="btn-l btn-secondary" onclick="window.location=\''.$url.'\'"> ';
                 break;
             case 'close':
-                $ret .= ' <input type="button" name="cancel" id="'.$prefix .'cancel" value=" '. get_if($properties['value'], _m("Cancel")) .' " class="btn-l btn-secondary" onclick="window.close();"> ';
-                if ($properties['help'] != '') {
-                    $ret .= getFrmMoreHelp($properties['help']);
-                    $ret .= "&nbsp;&nbsp;";
-                }
+                $ret .= ' <input type="button" name="cancel" id="'.$prefix .'cancel"'.$title.' value=" '. get_if($properties['value'], _m("Cancel")) .' " class="btn-l btn-secondary" onclick="window.close();"> ';
                 break;
             case 'reset':
-                $ret .= ' <input type="reset" id="'.$prefix .'reset" value=" '. _m("Reset form") .' " class="btn-l btn-secondary"> ';
-                if ($properties['help'] != '') {
-                    $ret .= getFrmMoreHelp($properties['help']);
-                    $ret .= "&nbsp;&nbsp;";
-                }
+                $ret .= ' <input type="reset" id="'.$prefix .'reset"'.$title.' value=" '. _m("Reset form") .' " class="btn-l btn-secondary"> ';
                 break;
             case 'submit': // name is not submit because it breaks document.f.submit() function call
-                $ret .= ' <input type="submit" class="btn-l" name="submitbtn" id="'.$prefix .'submit" accesskey="S" value=" '. get_if($properties['value'], _m("Submit")) ."  [^S] ". ' "> ';
-                if ($properties['help'] != '') {
-                    $ret .= getFrmMoreHelp($properties['help']);
-                    $ret .= "&nbsp;&nbsp;";
-                }
+                $ret .= ' <input type="submit" class="btn-l" name="submitbtn"'.$title.' id="'.$prefix .'submit" accesskey="S" value=" '. get_if($properties['value'], _m("Submit")) ."  [^S] ". ' "> ';
                 break;
             default:
                 if ($properties['url']) {
                     $type = ($properties['type'] ?: 'button');
-                    $onclick = ' onclick="document.location=\''. StateUrl($properties['url']).'\'"';
+                    $onclick = ' onclick="window.location=\''. StateUrl($properties['url']).'\'"';
                 } else {
                     $type = ($properties['type'] ?: 'hidden');
                     $onclick = '';
@@ -2824,11 +2800,7 @@ function getFrmInputButtons($buttons, $print_hidden = true, $prefix = ''): strin
                       ' name="'.  $name .
                      '" id="'.  $prefix . $name .
                      '" value="'. $properties['value'] . ($properties['accesskey'] ? "  [^".$properties['accesskey']."]  " : "").
-                     '" '.($properties['accesskey'] ? 'accesskey="'.$properties['accesskey'].'" ' : ""). $properties['add'] . ' class="btn-l btn-secondary">'.$nbsp;
-                if ($properties['help'] != '') {
-                    $ret .= getFrmMoreHelp($properties['help']);
-                    $ret .= "&nbsp;&nbsp;";
-                }
+                     '" '.($properties['accesskey'] ? 'accesskey="'.$properties['accesskey'].'" ' : ""). $properties['add'] . ' class="btn-l btn-secondary"'.$title.'>'.$nbsp;
         }
         $ret .= "\n";
     }
@@ -3160,7 +3132,7 @@ function FrmItemListForm($items) {
  * @return string
  */
 function getSelectWithParam($name, $arr, $selected="", $html_setting=null) {
-    $add = "onchange=\"ShowThisTagClass('fswp$name', 'div', 'fswp_'+this.value, 'fswp_')\"";
+    $add = ["onchange"=>"ShowThisTagClass('fswp$name', 'div', 'fswp_'+this.value, 'fswp_')"];
     $ret = getFrmSelectEasy($name, $arr, $selected, $add);
     if (isset($html_setting) AND is_array($html_setting)) {
         $ret .= "\n<div id=\"fswp$name\">";

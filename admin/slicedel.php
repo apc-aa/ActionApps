@@ -68,7 +68,7 @@ $headcode = '
          return;
      }
      var url=url2go+"'. StateUrl("?") .'"
-     document.location=url+"&del="+id;
+     window.location=url+"&del="+id;
    }
  </script>
 ';
@@ -91,7 +91,7 @@ if ( !isset($slices2show) ) {
 FrmTabCaption(_m("Select slice to delete"), $form_buttons);
 FrmInputRadio('slices2show', _m('Slices to show'), ['todelete'=>_m('Marked as "Deleted"'), 'all'=>"All slices"],
               $slices2show, false, _m('This option allows you to display all the slices and delete them, so be careful!'), '', 0, true,
-              "onClick='document.location = \"". get_admin_url('slicedel.php') ."&slices2show=\" + this.value'");
+              "onClick='window.location = \"". get_admin_url('slicedel.php') ."&slices2show=\" + this.value'");
 FrmTabSeparator(_m('Slices to delete'));
 
 // -- get views for current slice --

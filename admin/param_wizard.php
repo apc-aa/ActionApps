@@ -58,6 +58,7 @@ try {
     $list = InputVars::stringGET('list', true);
     // array ( 'input_valid…' => 7, 'input_show_…' => 1, )
     $text_param = InputVars::stringGET('text_param', true);
+    $codemirror = InputVars::stringGET('codemirror', true);
     $cancel = InputVars::boolPOST('cancel');
     $err = InputVars::arrayGETPOST('err');
     $Msg = InputVars::stringGETPOST('Msg');
@@ -169,13 +170,13 @@ if (is_array($desc['params'])) {
     <form name="f" method="post" onSubmit="self.close()">
 
         <script>
-            function changeFunction (combo) {
+            function changeFunction(combo) {
                 page = "<?php echo StateUrl(self_base() . "param_wizard.php") ?>"
-                    + "<?php echo "&list=$list" . "&combo_list='$combo_list'&text_param='$text_param'" ?>"
+                    + "<?php echo "&list=$list" . "&combo_list='$combo_list'&text_param='$text_param'&codemirror='$codemirror'" ?>"
                     + "&item=" + combo.value;
-                document.location = page;
+                window.location = page;
             }
-            function writeParams () {
+            function writeParams() {
                 params = '';
                 for (i=0; i < <?php echo count($desc['params']) ?>; i++) {
                     if (i > 0) params += ":";
@@ -183,22 +184,29 @@ if (is_array($desc['params'])) {
                     params += val.replace(/:/g,"#:");
                 }
                 window.opener.document.f.elements["<?php echo $text_param ?>"].value = params;
+                <?php if ($codemirror) { echo "window.opener.$codemirror.setValue(params);"; } ?>
             }
-            function fillParams (params) {
+            function fillParams(params) {
                 params = params.replace(/#:/g,"#~") + ":";
 <?php if ($allow_quote)
     echo "params = params.replace(/'/g,\":\");" ?>
                     for (i=0; i < <?php echo count($desc['params']) ?>; i++) {
                         if (params > "") {
                             str = params.substr(0,params.search(":"));
-                            params = params.substr (params.search(":")+1);
+                            params = params.substr(params.search(":")+1);
                         }
                         else str = "";
                         document.f.elements["param"+i].value = str.replace(/#~/g,":");
                     }
                 }
-                function readParams () {
-                    fillParams ( window.opener.document.f.elements["<?php echo $text_param ?>"].value );
+                function readParams() {
+                    <?php
+                    if ($codemirror) {
+                        echo "fillParams( window.opener.$codemirror.getValue());";
+                    } else {
+                        echo "fillParams( window.opener.document.f.elements[\"$text_param\"].value );";
+                    }
+                    ?>
                 }
                 function useExample(iExample) {
                     switch(iExample) {

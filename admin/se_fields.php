@@ -87,8 +87,11 @@ $err = [];          // error array (Init - just for initializing variable
 $varset = new Cvarset();
 
 /** ShowNewField function
+ * @param      $from_slice
+ * @param      $slice_id
+ * @param bool $slice_fields
  */
-function ShowNewField($from_slice, $slice_id) {
+function ShowNewField($from_slice, $slice_id, bool $slice_fields) {
     $id       = 'New_Field';
     $name     = '';
     $show     = true;
@@ -104,7 +107,7 @@ function ShowNewField($from_slice, $slice_id) {
           $slice_array = AA_Module::getUserModules('S');
           unset($slice_array[$template_id], $slice_array[$slice_id]);
           $slice_array = array_merge( [$template_id => '* Action Aplication Core', $slice_id => '* '.AA_Slice::getModuleName($slice_id)._m(' (this)')], $slice_array);
-          FrmSelectEasy('from_slice', $slice_array, $from_slice, 'onchange="DisplayAaResponse(\'fieldselection\', \'Get_Fields\', {slice_id:this.value})"');
+          FrmSelectEasy('from_slice', $slice_array, $from_slice, ['onchange' => "DisplayAaResponse('fieldselection', 'Get_Fields', {slice_id:this.value,slice_fields:" . ($slice_fields ? 1 : 0) . "})"]);
     echo "\n</td>
           </tr>
           <tr>
@@ -241,7 +244,8 @@ foreach ($s_fields as $fld) {
 $apage = new AA_Adminpageutil('sliceadmin',$slice_fields ? 'slice_fields' : 'fields');
 $apage->setTitle(_m("Admin - configure Fields"));
 $apage->addRequire('aa-jslib');
-$apage->addRequire("DisplayAaResponse('fieldselection', 'Get_Fields', {slice_id:'". get_if($from_slice, unpack_id('AA_Core_Fields..')) ."'});", 'AA_Req_Load');
+//$apage->addRequire("DisplayAaResponse('fieldselection', 'Get_Fields', {slice_id:'". get_if($from_slice, unpack_id('AA_Core_Fields..')) ."'});", 'AA_Req_Load');
+$apage->addRequire("document.querySelector('select[name=from_slice]').dispatchEvent(new Event('change'));", 'AA_Req_Load');
 $apage->printHead($err, $Msg);
 
 if ($analyze) {
@@ -294,7 +298,7 @@ foreach ( $s_fields as $fld) {
 $form_buttons['slice_fields'] = ['value' => ($slice_fields ? 1 : 0)];
 
 // one row for possible new field
-ShowNewField($from_slice, AA::$module_id);
+ShowNewField($from_slice, AA::$module_id, $slice_fields);
 ?>
 </tbody>
 <?php
@@ -307,7 +311,7 @@ FrmTabEnd( $form_buttons);
             return;
         }
         var url="<?php echo StateUrl(get_url('', ["del"=>1,"analyze"=>($analyze OR $fix)])); ?>"
-        document.location=url + "&fid=" + escape(id);
+        window.location=url + "&fid=" + escape(id);
     }
 </script>
 

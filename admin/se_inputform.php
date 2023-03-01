@@ -36,7 +36,6 @@ require_once __DIR__ . "/../include/constants_param_wizard.php";
 require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/varset.php";
 
-
 try {
     // array ( 'PUB_DATE' => 1, 'USERNAME' => 5, 'EMAIL___' => 1, 'HEADLINE' => 5, '' => 20, 'NENENENE' => 6, 'MOUCHAAA' => 1, 'UNDEFINE' => 4, )
     $alias1 = InputVars::stringSlashedPOST('alias1'); // empty
@@ -352,25 +351,14 @@ $headcode = '
         alert(\''. _m("You selected slice and not constant group. It is impossible to create slice from here.") .'\');
         return;
       }
-      document.location = GetUrl("'. get_admin_url("index.php3"). '", ["change_id=" + conid.substring(7) ]);  
+      window.location = GetUrl("'. get_admin_url("index.php3"). '", ["change_id=" + conid.substring(7) ]);  
       return;
     }
     if ( conid != "" ) {
       let url = "'. get_admin_url('se_constant.php', ['return_url' => 'se_inputform.php', 'fid' => $fid]). '";
       url += ( (as_new != 1) ? "&group_id=" : "&as_new=") + escape(conid);
-      document.location=url;
+      window.location=url;
     }
-  }
-  /* Calls the parameters wizard. Parameters are as follows:
-    list = name of the array containing all the needed data for the wizard
-    combo_list = a combobox of which the selected item will be shown in the wizard
-    text_param = the text field where the parameters are placed
-  */
-  function CallParamWizard(list, combo_list, text_param ) {
-    combo_list_el = document.f.elements[combo_list];
-    page = GetUrl("'. get_admin_url('param_wizard.php') .'", ["list=" + list, "combo_list=" + combo_list, "text_param=" + text_param, "item=" + combo_list_el.value]);
-    param_wizard = window.open(page,"somename","width=450,scrollbars=yes,menubar=no,hotkeys=no,resizable=yes");
-    param_wizard.focus();
   }
   
   function ResetAlias(number) {
@@ -414,47 +402,39 @@ echo "
      <tr>
       <th>". _m("Input type") ."</th>
       <td>";
-       FrmSelectEasy("input_show_func_f", $isc_arr, $input_show_func_f);
+      FrmSelectEasy("input_show_func_f", $isc_arr, $input_show_func_f);
+      echo "<div class=tabhlp>". _m("Input field type in Add / Edit item.") ."</div>";
+      echo "\n<div class='flex aa-input-const'>\n<strong>". _m("Constants") ."</strong>\n<div>";
+      FrmSelectEasy("input_show_func_c", $constants, $input_show_func_c);
 
-      echo "<div class=tabhlp>". _m("Input field type in Add / Edit item.") ."</div>
-            <table>
-             <tr>
-              <td><b>". _m("Constants") ."</b> ";
-               FrmSelectEasy("input_show_func_c", $constants, $input_show_func_c);
       $constants_menu = explode('|', str_replace(" ","&nbsp;",_m("Edit|Use as new|New")));
-      echo "   <div class=tabhlp>". _m("Choose a Constant Group or a Slice.") ."</div>
-              </td>
-              <td>
-                <a href='javascript:CallConstantEdit(0)'>&larr;&nbsp;". $constants_menu[0] ."</a><br>
-                <a href='javascript:CallConstantEdit(1)'>&larr;&nbsp;". $constants_menu[1] ."</a><br>
-                <a href='". get_admin_url('se_constant.php', ['return_url' => 'se_inputform.php', 'fid' => $fid]). "'>". $constants_menu[2] ."</a>
-              </td>
-             </tr>
-            </table>
-            <table>
-                <tr><th>"._m("Parameters")."</th>
-                <td class=tabhlp><a href='javascript:CallParamWizard (\"INPUT_TYPES\",\"input_show_func_f\",\"input_show_func_p\")'><b>"
-                 ._m("Help: Parameter Wizard")."</b></a></td></tr></table>
-                <textarea name=\"input_show_func_p\" rows=4 cols=50 wrap=\"virtual\">". safe($input_show_func_p) ."</textarea>
+
+      echo " <div class=tabhlp>". _m("Choose a Constant Group or a Slice.") ."</div>
+            </div>
+             <div>
+              <a href='javascript:CallConstantEdit(0)'>&larr;&nbsp;". $constants_menu[0] ."</a><br>
+              <a href='javascript:CallConstantEdit(1)'>&larr;&nbsp;". $constants_menu[1] ."</a><br>
+              <a href='". get_admin_url('se_constant.php', ['return_url' => 'se_inputform.php', 'fid' => $fid]). "'>". $constants_menu[2] ."</a>
+             </div>
+            </div>";
+
+      echo getParamWizardLink("INPUT_TYPES", "input_show_func_f", "input_show_func_p", true);
+      echo "<textarea name=input_show_func_p id=input_show_func_p rows=4 cols=50 wrap=\"virtual\">". safe($input_show_func_p) ."</textarea>
       </td>
       </tr>";
+
 FrmInputChBox("translation", _m("Allow translation"), $translation, false, '', 1, false, _m('Only Text Area and Text Field widgets allows translation. Languages should be set on Slice Setting page.'));
 
-echo "
-     <tr>
-      <th>". _m("Default") ."</th>
+echo "<tr><th>". _m("Default") ."</th>
       <td>";
         // txt and qte is the same, so it is better to use the only one
         if ($input_default_f == 'qte') {
             $input_default_f = 'txt';
         }
         FrmSelectEasy("input_default_f", AA_Components::getClassArray('AA_Generator_'), $input_default_f);
-      echo "<div class=tabhlp>". _m("How to generate the default value") ."</div>
-            <table>
-                <tr><th>"._m("Parameters")."</th>
-                <td class=tabhlp><a href='javascript:CallParamWizard (\"DEFAULT_VALUE_TYPES\",\"input_default_f\",\"input_default\")'><b>"
-                 ._m("Help: Parameter Wizard")."</b></a></td></tr></table>
-            <input type=\"text\" name=\"input_default\" class=aa-w-full value=\"". safe($input_default) ."\">
+      echo "<div class=tabhlp>". _m("How to generate the default value") ."</div>";
+      echo getParamWizardLink("DEFAULT_VALUE_TYPES","input_default_f","input_default", true);
+      echo "<input type=\"text\" name=input_default id=input_default class=aa-w-full value=\"". safe($input_default) ."\">
       </td>
      </tr>";
 echo "
@@ -462,11 +442,9 @@ echo "
          <th>". _m("Validate") ."</th>
          <td>";
          FrmSelectEasy("input_validate_f", getSelectBoxFromParamWizard($VALIDATE_TYPES), $input_validate_f);
-         echo "<table>
-             <tr><th>"._m("Parameters")."</th>
-             <td class=tabhlp><a href='javascript:CallParamWizard (\"VALIDATE_TYPES\",\"input_validate_f\",\"input_validate_p\")'><b>"
-             ._m("Help: Parameter Wizard")."</b></a></td></tr></table>
-         <input type=\"text\" name=\"input_validate_p\" class=aa-w-full value=\"". safe($input_validate_p) ."\">
+
+         echo getParamWizardLink("VALIDATE_TYPES","input_validate_f","input_validate_p", true);
+         echo "<input type=text name=input_validate_p id=input_validate_p class=aa-w-full value=\"". safe($input_validate_p) ."\">
          </td>
       </td>
      </tr>";
@@ -479,7 +457,7 @@ echo "
          } else {
              $text_rows    = DB_AA::select1('cnt', "SELECT count(*) as cnt FROM content, item", [['content.item_id', 'item.id', 'j'], ['item.slice_id', AA::$module_id, 'l'], ['content.field_id', $fld['id']], ['content.flag', 64, 'set']]);
              $numeric_rows = DB_AA::select1('cnt', "SELECT count(*) as cnt FROM content, item", [['content.item_id', 'item.id', 'j'], ['item.slice_id', AA::$module_id, 'l'], ['content.field_id', $fld['id']], ['content.flag', 64, 'unset']]);
-             FrmSelectEasy("text_stored", ['1'=>_m('Text'), '0'=>_m('Number')], $text_stored);
+             FrmSelectEasy("text_stored", ['1' => _m('Text'), '0' => _m('Number')], $text_stored);
              echo "<div class=tabhlp>"._m('Text').": $text_rows, "._m('Number').": $numeric_rows</div>";
          }
          echo "
@@ -491,12 +469,9 @@ echo "
          <th>". _m("Insert") ."</th>
          <td>";
          FrmSelectEasy("input_insert_func_f", AA_Components::getClassArray('AA_Inserter_'), $input_insert_func_f);
-         echo "<div class=tabhlp>"._m("Defines how value is stored in database.")."</div>
-         <table>
-             <tr><th>"._m("Parameters")."</th>
-             <td class=tabhlp><a href='javascript:CallParamWizard (\"INSERT_TYPES\",\"input_insert_func_f\",\"input_insert_func_p\")'><b>"
-             ._m("Help: Parameter Wizard")."</b></a></td></tr></table>
-         <textarea name=\"input_insert_func_p\" rows=3 cols=50 wrap=\"virtual\">". safe($input_insert_func_p) ."</textarea>
+         echo "<div class=tabhlp>"._m("Defines how value is stored in database.")."</div>";
+         echo getParamWizardLink("INSERT_TYPES","input_insert_func_f","input_insert_func_p", true);
+         echo "<textarea name=input_insert_func_p id=input_insert_func_p rows=3 cols=50 wrap=virtual>". safe($input_insert_func_p) ."</textarea>
          </td>
      </tr>";
 echo $tab_separator;
@@ -532,15 +507,11 @@ for ($iAlias=1; $iAlias <= 3; ++$iAlias) {
     $alias_disable = $alias_name. "_disable";
     $alias_value   = $$alias_name;
     $alias_id_att  = strlen($alias_value) ? "id=\"alias$alias_value\"" : '';
-    $alias_hlp     = "<strong><a href='javascript:CallParamWizard(\"FIELD_FUNCTIONS\", \"$alias_func_f\", \"$alias_func\")'>"._m("Help: Parameter Wizard")."</a></strong>";
+    $alias_hlp     = getParamWizardLink("FIELD_FUNCTIONS",$alias_func_f,$alias_func,false, 'cm_a'.$iAlias);
     $disbled_chb   = getFrmChBoxEasy($alias_disable, $$alias_disable, '', 1);
-
     $aname_row     = "<div class=\"flex f-baseline\">";
     $aname_row    .=  "<div>_#<input name=\"$alias_name\" $alias_id_att type=text size=16 maxlength=8 value=\"$alias_value\" pattern=\"[A-Z0-9_#]{8}\" placeholder=\""._m("8 CHARS"). "\" title=\""._m("8 UPPERCASE letters or _")."\"></div>";
     $aname_row    .=  "<label class=\"sz-xs pr-1 pl-1\">$disbled_chb"._m('Disabled')."</label>";
-    $aname_row    .=  "<button type=button onclick=\"navigator.clipboard.writeText('_#'+document.querySelector('input[name=$alias_name]').value).then(() => { AA_Message('Copied to clipboard','info'); });\" title=\""._m('Copy to clipboard')."\">";
-    $aname_row    .=   '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#584011" viewBox="0 0 16 16"><path d="M9.5 0a.5.5 0 0 1 .5.5.5.5 0 0 0 .5.5.5.5 0 0 1 .5.5V2a.5.5 0 0 1-.5.5h-5A.5.5 0 0 1 5 2v-.5a.5.5 0 0 1 .5-.5.5.5 0 0 0 .5-.5.5.5 0 0 1 .5-.5h3Z"></path><path d="M3 2.5a.5.5 0 0 1 .5-.5H4a.5.5 0 0 0 0-1h-.5A1.5 1.5 0 0 0 2 2.5v12A1.5 1.5 0 0 0 3.5 16h9a1.5 1.5 0 0 0 1.5-1.5v-12A1.5 1.5 0 0 0 12.5 1H12a.5.5 0 0 0 0 1h.5a.5.5 0 0 1 .5.5v12a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5v-12Z"></path><path d="M10.854 7.854a.5.5 0 0 0-.708-.708L7.5 9.793 6.354 8.646a.5.5 0 1 0-.708.708l1.5 1.5a.5.5 0 0 0 .708 0l3-3Z"></path></svg>'; // https://icons.getbootstrap.com/
-    $aname_row    .=  "</button>";
     $aname_row    .=  "<button type=button onclick=\"navigator.clipboard.writeText('_#'+document.querySelector('input[name=$alias_name]').value).then(() => { AA_Message('Copied to clipboard','info'); });\" title=\""._m('Copy to clipboard')."\">&#10697;</button>";
     $aname_row    .=  "<input type=button value=\""._m('Reset')."\" onclick=\"ResetAlias($iAlias)\">";
     $aname_row    .= "</div>";
@@ -550,7 +521,7 @@ for ($iAlias=1; $iAlias <= 3; ++$iAlias) {
     FrmTextarea($alias_func, _m("Parameters"), $$alias_func, 8, 60, false, AA_View::getViewJumpLinks('view.php?'.$$alias_func)); // added for f_v parameters
     FrmTextarea($alias_help, _m("Description"), $$alias_help, 2, 0);
     if ($iAlias != 3) {
-        echo "\n    <tr><td colspan=2><hr></td></tr>";
+        echo "\n    <tr><td colspan=2><hr></td></tr><tr style='visibility:collapse;'><td colspan=2></td></tr>";  // second row just for nicer table stripes
     }
 }
 

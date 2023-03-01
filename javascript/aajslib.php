@@ -851,7 +851,7 @@ function SetCookie(name, value, plustime) {
    var expires = new Date();
    expires.setTime(expires.getTime() + plustime);
     coo += "; expires=" + expires.toGMTString() + "; path=/";
-    coo += (document.location.protocol == 'https:') ? ';secure;samesite=lax' : '';
+    coo += (window.location.protocol == 'https:') ? ';secure;samesite=lax' : '';
     document.cookie = coo;
     // + ((expires == null) ? "" : ("; expires=" + expires.toGMTString()))
     // + ((path == null)    ? "" : ("; path=" + path))

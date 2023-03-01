@@ -763,7 +763,7 @@ class ItemContent extends AA_Content {
         }
 
         // if there are predefined values in user profile, fill it.
-        // Fill it only if $insert (new item). Otherwise left there filled value
+        // Fill it only if $insert (new item). Otherwise, left there filled value
         if ($insert) {  
             // apply Profile To Content
             $this->setFieldsFromProfile($fields, $profile);

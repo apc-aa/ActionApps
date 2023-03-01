@@ -207,7 +207,7 @@ if ($err) echo "<b>$err</b>";
 //    //                                        <td>
 //    //                                          <a href="./se_view.php?module_id=_#SLICE_ID&view_id=_#ID______" class="aa-button-edit">'. _m('Edit') .'</a>
 //    //                                          <a href="'.AA_INSTAL_URL.'view.php?vid=_#ID______" class="aa-button-show" title="'. _m("show this view") .'">'. _m('Show') .'</a>
-//    //                                          <a href="javascript:;" class="aa-button-delete" onclick="if (confirm(\''._m("Are you sure you want to delete selected view?").'\')) {document.location=\'./se_views.php?module_id=_#SLICE_ID&vid=_#ID______&del=1\';}">'. _m("Delete") .'</a>
+//    //                                          <a href="javascript:;" class="aa-button-delete" onclick="if (confirm(\''._m("Are you sure you want to delete selected view?").'\')) {window.location=\'./se_views.php?module_id=_#SLICE_ID&vid=_#ID______&del=1\';}">'. _m("Delete") .'</a>
 //    //                                        </td>
 //    //                                        <td><a href="./se_view.php?module_id=_#SLICE_ID&view_id=_#ID______">_#FIELD3__</a></td>
 //    //                                        <td><a href="./se_view.php?module_id=_#SLICE_ID&view_id=_#ID______">_#ID______</a></td>

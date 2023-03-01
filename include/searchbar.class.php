@@ -541,11 +541,11 @@ class AA_Searchbar extends AA_Storable {
             $ret .= "<div class=\"aa-sbrow-val\">".$val."</div>";
         } else {
             $ret .= "<div class='aa-sbrow-fld'>";
-            $ret .= getFrmSelectEasy("srchbr_field[$bar]", $search_arr, $fld, 'onchange="ChangeOperators(\''.$this->form_name.'\','.$bar.', \'\')"' );
+            $ret .= getFrmSelectEasy("srchbr_field[$bar]", $search_arr, $fld, ['onchange' => "ChangeOperators('" . $this->form_name . "','$bar', '')"]);
             $ret .= '</div><div class="aa-sbrow-op">';
-            $ret .= getFrmSelectEasy("srchbr_oper[$bar]", [' ' => ' '], null, 'onchange="OpenWindowIfRequest(\''.$this->form_name.'\',\''.$bar.'\',\''.get_admin_url("constants_sel.php").'\')" ');
+            $ret .= getFrmSelectEasy("srchbr_oper[$bar]", [' ' => ' '], null, ['onchange' => "OpenWindowIfRequest('" . $this->form_name . "','$bar','" . get_admin_url("constants_sel.php") . "')"]);
             $ret .= '</div><div class="aa-sbrow-val">';
-            $ret .= "<input type=\"text\" name=\"srchbr_value[$bar]\" size=\"20\" onkeypress=\"if (event.keyCode == 13) document.".$this->form_name. ".submit();\" value=\"$val\"></div>";
+            $ret .= "<input type=\"text\" name=\"srchbr_value[$bar]\" size=\"20\" onkeydown=\"if (event.keyCode == 13) document.".$this->form_name. ".submit();\" value=\"$val\"></div>";
         }
         $ret .= '</div>';
         return $ret;

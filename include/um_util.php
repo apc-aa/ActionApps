@@ -34,14 +34,18 @@ require_once __DIR__ . "/constants.php";
  * @param $name
  * @param $arr
  * @param $selected
- * @param $type
+ * @param string $type  short | multi
  */
 function SelectGU_ID($name, $arr, $selected="", $type="short") {
     if ( !is_array($arr)) {
         $arr = [];
     }
     array_walk($arr, function (&$v, $k) {$v = ((($userlogin = AA::$perm->getUserLoginName($k)) == $v['name']) OR !$userlogin) ? $v['name'] : $v['name']. " ($userlogin)";});
-    echo getFrmSelectEasy($name, $arr, $selected, "id=\"$name\"". ($type=="short" ? '' : ' size=8'). ($arr ? '' : ' style="min-width:100px;"'), true);
+    $attrs = ['id'=>"$name", 'style'=>"min-width:100px;"];
+    if ($type=='multi') {
+        $attrs['size'] = '8';
+    }
+    echo getFrmSelectEasy($name, $arr, $selected, $attrs, true);
 }
 
 /** GetFiltered function

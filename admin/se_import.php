@@ -113,7 +113,7 @@ function UpdateImportExport(slice_id) {
     if (document.f.export_y.options[i].value != "0")    // exported to slices
       url += "&E%5B" + i + "%5D=" + escape(document.f.export_y.options[i].value)
   }
-  document.location=url
+  window.location=url
 }
 </script>';
 

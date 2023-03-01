@@ -399,16 +399,15 @@ class AA_Csv_Importer {
                foreach ( $outFields as $f_id => $f_name) {
                    echo "<tr><th>$f_name</th>\n";
                    echo "<td>";
-                   FrmSelectEasy("mapping[$f_id]",$inFields,!$set_default ? $this->mapping[$f_id] : findNearestText($f_id, $f_name, $inFields));		// todo - multiple
+                   FrmSelectEasy("mapping[$f_id]", $inFields, !$set_default ? $this->mapping[$f_id] : findNearestText($f_id, $f_name, $inFields));		// todo - multiple
                    echo "</td>";
                    echo "<td>";
-                   FrmSelectEasy("actions[$f_id]",$actionList,!$set_default ? $this->actions[$f_id] : "default");
+                   FrmSelectEasy("actions[$f_id]", $actionList, !$set_default ? $this->actions[$f_id] : "default");
                    echo "</td>";
 
                    echo "<td><input type=\"checkbox\" name=\"html[$f_id]\" "; if (!$set_default AND $this->html[$f_id]) echo  "checked";  echo  "></input></td>";
                    echo "<td><input type=\"text\" name=\"params[$f_id]\" value=\""; if (!$set_default) echo stripslashes($this->params[$f_id]);  echo "\"></input></td>";
-                   echo "<td class=\"tabhlp\"><a href='javascript:CallParamWizard(\"TRANS_ACTIONS\",\"actions[$f_id]\",\"params[$f_id]\")'><b>"
-                   ._m("Help: Parameter Wizard")."</b></a></td>";
+                   echo "<td class=\"tabhlp\">". getParamWizardLink("TRANS_ACTIONS","actions[$f_id]","params[$f_id]"). "</td>";
                    echo "</tr>\n";
                }
                FrmTabSeparator(_m("Import options"));
@@ -423,7 +422,7 @@ class AA_Csv_Importer {
                <td><input type="radio" <?php if ($this->itemId == "old") echo "CHECKED"; ?> name="itemId" value="old"></td>
                <td><?php
                  echo _m("Map item id from"). '&nbsp';
-                 FrmSelectEasy("itemIdMappedFrom",$inFields, $this->itemIdMappedFrom ?: ( !$set_default ? '' : $inFields[0]));
+                 FrmSelectEasy("itemIdMappedFrom", $inFields, $this->itemIdMappedFrom ?: (!$set_default ? '' : $inFields[0]));
                  echo '<br>';
                  $mapping_options = [
                      'store'     => _m('unpacked long id (32 chracters)'),
@@ -431,7 +430,7 @@ class AA_Csv_Importer {
                                             'string2id' => _m('string to be converted (string2id) - with param:')
                  ];
 
-                 FrmSelectEasy("itemIdMappedActions",$mapping_options, !$set_default ? $this->itemIdMappedActions : 'store');
+                 FrmSelectEasy("itemIdMappedActions", $mapping_options, !$set_default ? $this->itemIdMappedActions : 'store');
                  echo '&nbsp<input type="text" name="itemIdMappedParams" value="'. (!$set_default ? $this->itemIdMappedParams : '').'">';
                ?></td>
             </tr>
@@ -514,6 +513,7 @@ if ($upload) {
 $apage = new AA_Adminpageutil('sliceadmin','CSVimport');
 $apage->setTitle(_m("Admin - Import CSV (2/2) - Mapping and Actions"));
 $apage->setForm();
+$apage->addRequire(get_aa_url('javascript/js_lib.min.js?v='.AA_JS_VERSION, '', false));
 $apage->printHead($err, $Msg);
 
 if ($preview) {
@@ -521,22 +521,5 @@ if ($preview) {
 }
 
 $importer->printForm(!($preview OR $load OR $save));
-?>
-<script>
-  /* Calls the parameters wizard. Parameters are as follows:
-    list = name of the array containing all the needed data for the wizard
-    combo_list = a combobox of which the selected item will be shown in the wizard
-    text_param = the text field where the parameters are placed
-  */
-  function CallParamWizard(list, combo_list, text_param ) {
-    page = "<?php echo StateUrl(self_base()."param_wizard.php")?>"
-        + "&list=" + list + "&combo_list=" + combo_list + "&text_param=" + text_param;
-    combo_list_el = document.f.elements[combo_list];
-    page += "&item=" + combo_list_el.value;
-    param_wizard = window.open(page,"somename","width=450,scrollbars=yes,menubar=no,hotkeys=no,resizable=yes");
-    param_wizard.focus();
-  }
-</script>
 
-<?php
 $apage->printFoot();

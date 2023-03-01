@@ -106,19 +106,19 @@ $script2run = '
     if ( !confirm("<?php echo _m("Are you sure you want to delete selected comment?"); ?>"))
        return
     var url="<?php echo StateUrl(con_url("./discedit.php", "mode=delete")); ?>"
-    document.location=url + "&d_id=" + escape(id) + "&item_id=" + "<?php echo $item_id; ?>"
+    window.location=url + "&d_id=" + escape(id) + "&item_id=" + "<?php echo $item_id; ?>"
   }
   function DeleteAllComments() {
     if ( !confirm("<?php echo _m("Are you sure you want to delete ALL comments? There is no way back!"); ?>"))
        return;
     var url="<?php echo StateUrl(con_url("./discedit.php", "mode=deleteall")); ?>"
-    document.location=url + "&item_id=" + "<?php echo $item_id; ?>"
+    window.location=url + "&item_id=" + "<?php echo $item_id; ?>"
   }
   function DeleteAllHiddenComments() {
     if ( !confirm("<?php echo _m("Are you sure you want to delete ALL unhidden comments (the comments, which are NOT HIDDEN)? There is no way back!"); ?>"))
        return;
     var url="<?php echo StateUrl(con_url("./discedit.php", "mode=deleteshown")); ?>"
-    document.location=url + "&item_id=" + "<?php echo $item_id; ?>"
+    window.location=url + "&item_id=" + "<?php echo $item_id; ?>"
   }
     ';
 

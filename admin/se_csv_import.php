@@ -251,7 +251,7 @@ if ($preview) { // file preview
     <tr><td>
             <table>
                 <tr>
-                    <td><label><input type="radio" <?php if ($dataType == "file") echo "checked"; ?> name="dataType" value="file">&nbsp;file</label></td>
+                    <td><label><input type="radio" <?php if (!$dataType OR ($dataType == "file")) echo "checked"; ?> name="dataType" value="file">&nbsp;file</label></td>
                     <td><input type="file" name="upfile"></td>
                 </tr>
                 <tr>

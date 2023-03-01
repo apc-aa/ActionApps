@@ -46,7 +46,7 @@ function CommaDelimeted(elid) {
 
 function GoIfConfirmed(url, text) {
   if (confirm(text)) {
-    document.location = url;
+    window.location = url;
   }
 }
 
@@ -58,5 +58,17 @@ function GetUrl(url, params) {
     url_fragment   = (url_components.length > 1) ? ('#' + url_components[1]) : '';
     url_params     = params.join('&');
     return url_path + ((url_path.search(/\?/) == -1) ? '?' : '&') + url_params + url_fragment;
+}
+
+/* Calls the parameters wizard. Parameters are as follows:
+  list = name of the array containing all the needed data for the wizard
+  combo_list = a combobox of which the selected item will be shown in the wizard
+  text_param = the text field where the parameters are placed
+*/
+function CallParamWizard(url, list, combo_list, text_param, codemirror ) {
+    combo_list_el = document.f.elements[combo_list];
+    page = GetUrl(url, ["list=" + list, "combo_list=" + combo_list, "text_param=" + text_param, "codemirror=" + codemirror, "item=" + combo_list_el.value]);
+    param_wizard = window.open(page,"somename","width=450,scrollbars=yes,menubar=no,hotkeys=no,resizable=yes");
+    param_wizard.focus();
 }
 

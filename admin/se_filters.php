@@ -174,7 +174,7 @@ FrmTabCaption(_m("Content Pooling - Configure Filters"), $form_buttons);
 ?>
 <tr>
   <th><?php echo _m("Filter for imported slice") . "&nbsp; "?></th>
-  <td><?php FrmSelectEasy("import_id", $impslices, $import_id, "OnChange=\"ChangeImport()\""); ?></td>
+  <td><?php FrmSelectEasy("import_id", $impslices, $import_id, ["onchange" => "ChangeImport()"]); ?></td>
 </tr>
 <?php
 FrmTabSeparator(_m("Categories"));
@@ -272,7 +272,7 @@ FrmTabEnd($form_buttons);
         var url = "<?php echo StateUrl(self_base() . "se_filters.php")?>"
         url += "&slice_id=<?php echo AA::$module_id ?>"
         url += "&import_id=" + document.f.import_id.value
-        document.location=url
+        window.location=url
     }
 
     function AllCategClick() {
@@ -324,7 +324,7 @@ FrmTabEnd($form_buttons);
         if (done == 0) {
             alert ( "<?php echo _m("No From category selected!") ?>" )
         } else {
-            document.location=url
+            window.location=url
         }
     }
 

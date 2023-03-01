@@ -63,11 +63,15 @@ function a_href($url, $label, array $attr=[]): string {
     return '<a href="'.safe($url) ."\" $add>$label</a>";
 }
 
+function htmlattr(array $attr) {
+    return array_reduce( array_keys($attr), function ($str, $key) use ($attr) { return $str . ' ' . $key . '="' . safe($attr[$key]) . '"'; });
+}
+
 /** creates html tag with attributes
  * @usage htmltag('div','text',['class'=>'info'])
  */
 function htmltag($tag, $content, $attr=[]): string {
-    return "<$tag". array_reduce( array_keys($attr), function ($str, $key) use ($attr) { return $str . ' ' . $key . '="' . safe($attr[$key]) . '"'; }).'>'. safe($content)."</$tag>";
+    return "<$tag". htmlattr($attr).'>'. safe($content)."</$tag>";
 }
 
 /** creates xml/html tag with attributes
@@ -124,21 +128,6 @@ function endslash(&$s) {
  */
 function escape4js($code) {
     return str_replace( ["\\", "'","\r\n","\n","\r",'<script','</script'], ["\\\\", "\\'",'\n','\n','\n','\x3Cscript','\x3C/script'], $code );   // remove newlines ...
-}
-
-/** array_add function
- *  adds all items from source to target, but doesn't overwrite items
- * @param $source
- * @param $target
- */
-function array_add($source, &$target) {
-    foreach ( (array)$source as $k => $v) {
-        if (!isset($target[$k])) {
-            $target[$k] = $v;
-        } else {
-            $target[]   = $v;
-        }
-    }
 }
 
 /** self_server function
@@ -323,6 +312,21 @@ function NormalizeArrayIndex($arr) {
     return $ret;
 }
 
+/** array_add function
+ *  adds all items from source to target, but doesn't overwrite items
+ * @param $source
+ * @param $target
+ */
+function array_add($source, &$target) {
+    foreach ( (array)$source as $k => $v) {
+        if (!isset($target[$k])) {
+            $target[$k] = $v;
+        } else {
+            $target[]   = $v;
+        }
+    }
+}
+
 /** array_merge_append function
  *  Adds second array to the first one - values are appended to the array, if
  *  uses the same key (regardless if string or numeric!)
@@ -356,7 +360,6 @@ function array_merge_append_global($newValues) {
         }
     }
 }
-
 
 function recursive_array_replace($find, $replace, $array) {
     if (!is_array($array)) {

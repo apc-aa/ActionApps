@@ -101,7 +101,7 @@ function CloseDialog($zid = null, $openervar = null, $insert=true, $url2go=null)
 
         $js = $item->get_item() ."\n";
     }
-    $js .= ($url2go ? "document.location = '$url2go';\n" : "window.close();\n");
+    $js .= ($url2go ? "window.location = '$url2go';\n" : "window.close();\n");
 
     // inputform.min.js for SelectRelations
     echo getHtmlPage(getFrmJavascriptFile('javascript/inputform.min.js?v='.AA_JS_VERSION).  getFrmJavascript($js));
