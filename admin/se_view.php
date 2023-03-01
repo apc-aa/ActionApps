@@ -29,6 +29,12 @@
 use AA\IO\DB\DB_AA;
 use AA\Util\InputVars;
 
+require_once __DIR__ . "/../include/init_page.php";
+require_once __DIR__ . "/../include/formutil.php";
+require_once __DIR__ . "/../include/varset.php";
+require_once __DIR__ . "/../include/item.php";     // GetAliasesFromField funct def
+require_once __DIR__ . "/../include/discussion.php";  // GetDiscussionAliases funct def
+
 // const  AA_REGISTER_GLOBALS = true;
 try {
     // array ( '<img src="/…' => 31, )
@@ -83,13 +89,6 @@ try {
     $err = InputVars::arrayGETPOST('err');
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {}
-
-require_once __DIR__ . "/../include/init_page.php";
-require_once __DIR__ . "/../include/formutil.php";
-require_once __DIR__ . "/../include/varset.php";
-require_once __DIR__ . "/../include/item.php";     // GetAliasesFromField funct def
-require_once __DIR__ . "/../include/discussion.php";  // GetDiscussionAliases funct def
-
 
 // ----------------------------------------------------------------------------
 /** get_row_count function
@@ -206,7 +205,7 @@ function OrderFrm($name, $txt, $val, $order_fields, $easy_order=false, $group=fa
         ['0'=>_m("Ascending"), '1' => _m("Descending"), '2' => _m("Ascending by Priority"), '3' => _m("Descending by Priority")];
     echo "<tr><td><b>$txt</b> ";
     echo "</td>\n<td>";
-    FrmSelectEasy($name, $order_fields, $val);
+    FrmSelectEasy($name, $order_fields, $val, ['onchange' => 'InitPage()']);
     // direction variable name - construct from $name
     $dirvarname = substr($name,0,1).substr($name,-1)."_direction";
     FrmSelectEasy($dirvarname, $order_type, $vw_data[$dirvarname]);
@@ -336,7 +335,7 @@ if ( $update ) {
                 if ($v["max"]) {
                     $insval  = substr($insval, 0, $v["max"]);
                 }
-                $varset->add($k, 'text', quote($insval));
+                $varset->add($k, 'text', $insval);
             }
         }
 
@@ -446,7 +445,12 @@ $slice = AA_Slice::getModule(AA::$module_id);
 $headcode = <<<'EOT'
 <script>
     function InitPage() {
-      EnableClick('even_odd_differ','even_row_format')
+    function InitPage() {
+      [].forEach.call(document.querySelectorAll('tr.cont-even_row_format'), function(e) { e.style.display=(document.f['even_odd_differ'].checked ? 'table-row' : 'none'); });
+    }
+        
+        
+      EnableClick('even_odd_differ','even')
       EnableClick('category_sort','category_format')
     }
     function EnableClick(cond,what) {
