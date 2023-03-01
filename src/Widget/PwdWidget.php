@@ -41,19 +41,23 @@ class PwdWidget extends Widget
         $required = $aa_property->isRequired() ? 'required' : '';
         $value = $content->getAaValue($aa_property->getId());
 
+        $attrs = Widget::stdInputAttrs($type, $base_id);
+        //unset($attrs['onchange']);                        // not prepared for live, yet
+        $widget_add = htmlattr($attrs);
+
         $widget = '';
         if (!$value->isEmpty()) {
             $input_name = $base_name . "[pwd][old]";
             $input_id = FormArray::formName2Id($input_name);
-            $widget .= "\n<input type=\"password\" id=\"$input_id\" name=\"$input_name\" placeholder=\"" . _m('Current password') . "\">";
+            $widget .= "\n<input type=\"password\" id=\"$input_id\" name=\"$input_name\" placeholder=\"" . _m('Current password') . "\" $widget_add>";
 //            $widget .= "\n<input type=\"password\" id=\"$input_id\" name=\"$input_name\" placeholder=\"" . _m('Current password') . "\" required  checkValidity=\"function () {alert('no'); this.setCustomValidity('jaj'); return false;}\">";
         }
         $input_name = $base_name . "[pwd][new1]";
         $input_id = FormArray::formName2Id($input_name);
-        $widget .= "\n<input type=\"password\" id=\"$input_id\" name=\"$input_name\" placeholder=\"" . _m('Password') . "\" $required>";
+        $widget .= "\n<input type=\"password\" id=\"$input_id\" name=\"$input_name\" placeholder=\"" . _m('Password') . "\" $required $widget_add>";
         $input_name = $base_name . "[pwd][new2]";
         $input_id = FormArray::formName2Id($input_name);
-//        $widget .= "\n<input type=\"password\" id=\"$input_id\" name=\"$input_name\" placeholder=\"" . _m('Retype New Password') . "\" $required checkValidity=\"function () {return false;}\">";
+//        $widget .= "\n<input type=\"password\" id=\"$input_id\" name=\"$input_name\" placeholder=\"" . _m('Retype New Password') . "\" $required $widget_add checkValidity=\"function () {return false;}\">";
         return ['html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired()];
     }
 

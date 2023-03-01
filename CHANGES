@@ -337,7 +337,7 @@ The changes could be tracked on:
 19-01-16 - new parameter <edit_code> in
 (honzam)     {manager:<slice>:<relation-field>:<item>:<code>[:<conds>[:<sort>[:<mode>[:<edit_code>]]]]}
            which allows you to specify code for edit - like _#EDIT_ITM.
-           Displays _#EDIT_ITM for item defined in {qss:aaedit}.
+           Displays _#EDIT_ITM for item defined in {qss:{qss:aaedit}}.
            Two related buttons are added in <mode>
              - E for Edit,
              - B for Back

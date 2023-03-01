@@ -77,6 +77,25 @@ class Widget extends AA_Object implements NamedInterface {
         }
     }
 
+    /**  HTML attributes to add to <inputs> <textareas>, <selects>...
+     * @param string $type
+     * @param string $base_id
+     * @param string $flags  ['dirty'] - onkeypress mark as dirty
+     * @return array
+     */
+    protected static function stdInputAttrs($type, $base_id, array $flags=[]): array {
+        $attrs = [];
+        if ($type == 'live') {
+            $attrs['class'] = 'live';
+            if (in_array('dirty',$flags)) {
+                $attrs['onkeypress'] = "AA_StateChange('$base_id', 'dirty')";
+            }
+            $attrs['onchange'] = "AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)";
+            $attrs['form'] = "";  // in order it is not submitted on regular form submit
+        }
+        return $attrs;
+    }
+
     // not used, yet
     //function assignConstants($arr) {
     //    $this->_const_arr = (array)$arr;

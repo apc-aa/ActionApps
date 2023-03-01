@@ -56,12 +56,8 @@ class FldWidget extends Widget
         $base_id = FormArray::formName2Id($base_name);
         $required = $aa_property->isRequired() ? 'required' : '';
 
-        $attrs = ['type' => 'text'];
-        if ($type == 'live') {
-            $attrs['class'] = 'live';
-            $attrs['onkeypress'] = "AA_StateChange('$base_id', 'dirty')";
-            $attrs['onchange'] = "AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)";
-        }
+        $attrs = Widget::stdInputAttrs($type, $base_id, ['dirty']);
+        $attrs['type'] = 'text';
         // $widget_add = ($type == 'live') ? " class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"" : '';   //style=\"padding-right:16px;\"" : '';
         $widget = '';
         $autofocus = ($type == 'ajax') ? 'autofocus' : '';
@@ -92,9 +88,7 @@ class FldWidget extends Widget
             $attrs['maxlength'] = get_if($this->getProperty('max_characters'), $attrs['maxlength'], 255);
         }
 
-        $attr_string = join(' ', array_map(function ($k, $v) {
-            return "$k=\"$v\"";
-        }, array_keys($attrs), $attrs));
+        $attr_string = htmlattr($attrs);
 
         if ($value->isEmpty()) {
             $value->addValue('');   // display empty field at least

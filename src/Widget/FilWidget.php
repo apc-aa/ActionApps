@@ -120,7 +120,9 @@ class FilWidget extends Widget
     {
         $base_name = FormArray::getName4Form($aa_property->getId(), $content, $this->item_index);
         $base_id = FormArray::formName2Id($base_name);
-        $widget_add = ($type == 'live') ? " class=\"live\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"" : '';
+
+        $attrs = Widget::stdInputAttrs($type, $base_id);
+        $widget_add = htmlattr($attrs);
 
         $widget = '';
         $delim = '';

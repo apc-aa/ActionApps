@@ -45,7 +45,7 @@ if ( $editor_page ) {
 $nb_backpath = ( (strpos($_SERVER['PHP_SELF'], '/admin/') > 0 ) ? '' : '../' );
 
 $nb_manager = ( $editor_page ?
-  '<span class=nbdisable>'. _m("Code&nbsp Manager") .'</span>':
+  '<span class=nbdisable>'. _m("Code Manager") .'</span>':
   '<a href="'. StateUrl("index.php3"). '"><span class=nbenable>'. _m("Code Manager") .'</span></a>');
 
 $nb_settings = ( ( $settings_page OR !IfSlPerm(PS_MODW_SETTINGS) ) ?

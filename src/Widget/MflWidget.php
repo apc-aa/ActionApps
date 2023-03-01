@@ -95,10 +95,9 @@ class MflWidget extends Widget
         $widget_add2     = '';
         $widget_onchange = '';
 
-        $attrs = [];
+        $attrs = Widget::stdInputAttrs($type, $base_id, ['dirty']);
         if ($type == 'live') {
-            $attrs['class'] = 'live';
-            $attrs['onkeypress'] = "AA_StateChange('$base_id', 'dirty')";
+            unset($attrs['onchange']);  // adding line below
             $widget_onchange = "onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"";
             $widget_add2     = '<img width=16 height=16 title="' . _m('To save changes click here or outside the field.') . '" alt="' . _m('Save') . '" class="' . $base_id . 'ico" src="' . AA_INSTAL_PATH . 'images/px.gif" style="position:absolute; right:0;">';
         }
@@ -118,9 +117,7 @@ class MflWidget extends Widget
 
         AA::$debug&2 && AA::$dbg->log('mfl', $aa_property, $attrs, $this->getProperty('width'));
 
-        $attr_string = join(' ', array_map(function ($k, $v) {
-            return "$k=\"$v\"";
-        }, array_keys($attrs), $attrs));
+        $attr_string = htmlattr($attrs);
 
         $widget = ($type == 'normal') ? AA_Formatters::getFormattersRadio($base_name, $aa_property, $value) : AA_Formatters::getHiddenFormatters($base_name, $aa_property, $value); // ajax, live
         // display at least one option

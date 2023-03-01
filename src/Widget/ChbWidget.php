@@ -30,7 +30,10 @@ class ChbWidget extends Widget
         // the checbox do not send nothing if unslected (so we add [chb][def]
         // hidden field which is send all the time)
         $base_name_add = $base_name . '[chb]';
-        $widget_add = ($type == 'live') ? " class=\"live\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"" : '';
+
+        $attrs = Widget::stdInputAttrs($type, $base_id);
+        $widget_add = htmlattr($attrs);
+
         $widget = '';
         $delim = '';
         $value = $content->getAaValue($aa_property->getId());
