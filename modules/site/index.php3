@@ -161,7 +161,7 @@ if ($addcond OR $delcond OR $content OR $name OR $akce OR $addvar OR $delvar) {
     $module->saveTree($tree, $akce=='r');  // delete unused spots after we delete one spot
 }
 
-$apage = new AA_Adminpageutil('codemanager');
+$apage = new AA_Adminpageutil('modadmin', 'codemanager');
 $apage->setModuleMenu( 'modules/site');
 $apage->setTitle( _m("Editor window - site code manager") );
 $apage->addRequire('codemirror@5');
@@ -187,8 +187,8 @@ function PrintSiteActionLink($r_spot_id, $action, $text, $img, $link=null) {
     return "<a href=\"$link\">$image</a>&nbsp;<a href=\"$link\">$text</a>";
 }
 
-echo '<table class=login><tr><td id="sitetree">
-      <br>
+echo '<div class="aa-site-codemanager">
+        <div id="sitetree" class="aa-site-tree">
       <table>
         <tr>
           <td>'. PrintSiteActionLink($r_spot_id, 's', _m("Add&nbsp;spot"), 'add_spot.gif') .'</td>
@@ -212,7 +212,7 @@ echo '<table class=login><tr><td id="sitetree">
               .'</td>
         </tr>
       </table>
-      <br>';
+      ';
 
 // callback functions
 $functions = [
@@ -223,13 +223,12 @@ $functions = [
 
 $tree->walkTree($apc_state, 1, $functions, 'collapsed');
 
-echo '</td><td>';
+echo '</div><div class="aa-site-code">';
 
 $module->showSpot($tree, $r_spot_id);
 
-$apage->addHelpbox(_m('Possible system requires - &lcub;require:...&rcub; or &lcub;require:["...","..."]&rcub;'), '{htmltoggle::::'.GetHtmlTable(AA_Requires::getAvailableLibs(),'th').'}');
-//$apage->printHelpbox();
-//echo '</td></tr></table>';
+echo '</div></div>';
 
+$apage->addHelpbox(_m('Possible system requires - &lcub;require:...&rcub; or &lcub;require:["...","..."]&rcub;'), GetHtmlTable(AA_Requires::getAvailableLibs(),'th'), true);
 
 $apage->printFoot();

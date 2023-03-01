@@ -98,7 +98,7 @@ $_m["View site"]
  = "";
 
 // modules/site/menu.php, row 55, 56
-$_m["Code&nbsp Manager"]
+$_m["Code Manager"]
  = "";
 
 // modules/site/menu.php, row 61, 62

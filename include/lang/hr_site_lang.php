@@ -116,7 +116,7 @@ $_m["View site"]
  = "Pogledajte stranicu";
 
 // modules/site/menu.php, row 55, 56
-$_m["Code&nbsp Manager"]
+$_m["Code Manager"]
  = "Ure�ivanje koda";
 
 // modules/site/menu.php, row 61, 62

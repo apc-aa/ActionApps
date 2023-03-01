@@ -48,16 +48,8 @@ function get_aamenus() {
         "level" => "main"
     ];
 
-    $aamenus["codemanager"] = [
-        "label" => _m("Code&nbsp Manager"),
-        "title" => _m("Code&nbsp Manager"),
-        "href"  => "modules/site/index.php3",
-        "level" => "main"
-    ];
-
     $aamenus["modadmin"] = [
-        "label" => _m("Module Settings"),
-        "title" => _m("Module Settings"),
+        "label" => _m("Site"),
         "href"  => "modules/site/modedit.php",
         "cond"  => IfSlPerm(PS_MODW_SETTINGS),
         "level" => "main",
@@ -83,9 +75,9 @@ function get_aamenus() {
         "bottom_td"=>200,
         "level"=>"submenu",
         "items"=> [
-        "header1"=>_m("Main settings"),
-        "main"   => ["cond"=>IfSlPerm(PS_MODW_SETTINGS), "href"=>"modules/site/modedit.php", "label"=>_m("Site"), 'ico'=>'ico-site.png'],
-        "aliases"=> ["cond"=>IfSlPerm(PS_MODW_SETTINGS), "href"=>"modules/site/aliases.php", "label"=>_m("Aliases"), 'ico'=>'ico-aliases.png'],
+          "main"        => ["cond"=>IfSlPerm(PS_MODW_SETTINGS),  "href"=>"modules/site/modedit.php", "label"=>_m("Module Settings"), 'ico'=>'ico-site.png'],
+          "codemanager" => ["cond"=>IfSlPerm(PS_MODW_EDIT_CODE), "href"=>"modules/site/index.php3",  "label"=>_m("Code Manager")],
+          "aliases"     => ["cond"=>IfSlPerm(PS_MODW_SETTINGS),  "href"=>"modules/site/aliases.php", "label"=>_m("Aliases"), 'ico'=>'ico-aliases.png'],
         ]
     ];
     
