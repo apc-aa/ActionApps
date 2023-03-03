@@ -232,10 +232,9 @@ class AA_Adminpageutil {
     public function printHelpbox() {
         $html = '';
         foreach ($this->helpboxes as $helpbox) {
+            $html = GetHtmlTable( [[$helpbox['html']]], 'td', $helpbox['name'], true );  // classic aa table
             if ($helpbox['packed']) {
-                $html .= "<details><summary>".$helpbox['name']."</summary>". $helpbox['html'] . "</details>";
-            } else {
-                $html .= GetHtmlTable( [[$helpbox['html']]], 'td', $helpbox['name'], true );  // classic aa table
+                $html = "<details><summary>".$helpbox['name']."</summary>". $html . "</details>";
             }
         }
         if ($html) {

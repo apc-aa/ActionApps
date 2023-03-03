@@ -185,5 +185,5 @@ FrmInputSelect("inputform_sel", _m("Use special view"), $inputform_vids, $inputf
 $slice = AA_Slice::getModule(AA::$module_id);
 
 FrmTabEnd($form_buttons);
-$apage->addHelpbox(_m("Use these aliases for database fields"), getAliasHelp(new AA_Aliases(new AA_Aliasgenerator_Slice(AA::$module_id)), $slice->getFields()->getRecordArray(), false));
+$apage->addHelpbox(_m("Use these aliases for database fields"), getAliasHelp(new AA_Aliases(new AA_Aliasgenerator_Slice(AA::$module_id)), $slice->getFields()->getRecordArray()));
 $apage->printFoot();

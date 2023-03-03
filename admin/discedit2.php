@@ -32,6 +32,8 @@ const AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/varset.php";
 
+
+$cancel_url = get_url(self_base() . "discedit.php", ['item_id'=>$item_id], true);
 if ($cancel) {
     go_url(StateUrl(self_base() . "discedit.php?item_id=".$item_id));
 }
@@ -94,16 +96,18 @@ if ($db->next_record()) {
 }
 
 $apage = new AA_Adminpageutil();
-$apage->setTitle(_m("Items managment - Discussion comments managment - Edit comment"));
+$apage->setTitle(_m("Items management - Discussion comments management - Edit comment"));
 $apage->setForm(['action' => "?d_id=$d_id"]);
 $apage->printHead($err, $Msg);
-?>
 
-<table class="aa-table">
-<tr class="aa-tbl-header"><th><?php echo _m("Edit comment") ?></th></tr>
-<tr><td>
-<table width="540">
-<?php
+$form_buttons = [
+    "update"  => ['type' => 'submit'],
+    "cancel"  => ['url'  => $cancel_url],
+    "d_id"    => ['type' => 'hidden', 'value'=>$d_id],
+    "item_id" => ['type' => 'hidden', 'value'=> unpack_id($item_id)],
+];
+
+FrmTabCaption(_m("Edit comment"), $form_buttons);
     FrmStaticText("id", $d_id);
     FrmInputText("subject",_m("Subject"), $subject, 99, 50, true);
     FrmInputText("author",_m("Author"), $author, 60, 25, true);
@@ -115,17 +119,5 @@ $apage->printHead($err, $Msg);
     FrmInputText("remote_addr",_m("Remote address"), $remote_addr, 60);
     FrmTextarea("free1", _m("Free 1"), $free1, 5, 40);
     FrmTextarea("free2", _m("Tracking"), $free2, 5, 40);
-?>
-</table>
-<tr><td>
-<?php
-    echo "<input type=\"hidden\" name=\"d_id\" value=".$d_id.">";
-    echo "<input type=\"hidden\" name=\"item_id\" value=".unpack_id($item_id).">";
-    echo "<input type=\"submit\" name=\"update\" value=". _m("Update") .">&nbsp;&nbsp;";
-    echo "<input type=\"reset\" value=". _m("Reset form") .">&nbsp;&nbsp;";
-    echo "<input type=\"submit\" name=\"cancel\" value=". _m("Cancel") .">";
-?>
-</td></tr></table>
-<?php
+FrmTabEnd($form_buttons);
 $apage->printFoot();
-

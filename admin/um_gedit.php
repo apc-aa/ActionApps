@@ -276,16 +276,16 @@ if ( $grp_new OR $add_submit ) {
     // buttons for adding new group
     $form_buttons = [
         "add_submit" => ["type"=>"submit","value"=>_m("Add"),"accesskey"=>"S"],
-                          "grp_new" => ["value"=>"1"]
+        "grp_new" => ["value"=>"1"]
     ];
 } else {
     // buttons for update group
     $form_buttons = [
         "submit_button" => [
             "type"=>"button","value"=>_m("Update"),"accesskey"=>"S",
-                                                   "add"=>'onclick="UpdateGroup(\'update_submit\')"'
+            "add"=>'onclick="UpdateGroup(\'update_submit\')"'
         ],
-                          "grp_edit" => ["value"=>"1"]
+        "grp_edit" => ["value"=>"1"]
     ];
 }
 

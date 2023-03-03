@@ -37,8 +37,8 @@
  * @param  array|string $params
  * @return string
  */
-function con_url($url, $params=[]): string {
-    return htmlspecialchars(get_url($url, $params), ENT_QUOTES | ENT_HTML5, 'ISO-8859-1');
+function con_url($url, $params=[], $state=false): string {
+    return htmlspecialchars(get_url($url, $params, $state), ENT_QUOTES | ENT_HTML5, 'ISO-8859-1');
 }
 
 /** makes url parameters to use with GET request from given parameters

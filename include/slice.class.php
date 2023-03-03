@@ -594,7 +594,7 @@ class AA_Slice extends AA_Module {
         return (($fid = $flds->getCategoryFieldId('file')) OR ($fid = $flds->getCategoryFieldId('img_upload')) OR ($fid = $flds->getCategoryFieldId('img_src'))) ? $fid : '';
     }
 
-    /** sql_id function - removed - use DB_AA::select1('SELECT * FROM `slice`', '', array(array('id',$slobj->getId(), 'l'))); */
+    /** sql_id function - removed - use DB_AA::select1('', 'SELECT * FROM `slice`', [['id',$slobj->getId(), 'l']]); */
     // function sql_id()      { return q_pack_id($this->module_id); }
 
 

@@ -2665,7 +2665,7 @@ $_m["Edit discussion"]
     = "Upravit diskusi";
 
 // admin/discedit2.php, row 110
-$_m["Items managment - Discussion comments managment - Edit comment"]
+$_m["Items management - Discussion comments management - Edit comment"]
     = "Spr�va zpr�v - Spr�va diskusn�ch p��sp�vk� - Editace p��sp�vku";
 
 // admin/discedit2.php, row 116

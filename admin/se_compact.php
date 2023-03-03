@@ -256,8 +256,13 @@ echo "<br>"."";
 echo "</td></tr>
 <tr><td>&nbsp;</td><td>";
 FrmSelectEasy("gb_header", getViewGroupFunctions(), $gb_header);
-FrmSelectEasy("gb_direction", ['2'=>_m("Ascending"), '8' => _m("Descending"), '1' => _m("Ascending by Priority"), '9' => _m("Descending by Priority")],
-            $gb_direction);
+FrmSelectEasy("gb_direction", [
+    '2' => _m("Ascending"),
+    '8' => _m("Descending"),
+    '1' => _m("Ascending by Priority"),
+    '9' => _m("Descending by Priority")
+],
+    $gb_direction);
 PrintHelp( _m("'by Priority' is usable just for fields using constants (like category)") );
 echo "<input type=hidden name='category_sort' value='$category_sort'>";
 echo "</td></tr>";
@@ -279,5 +284,5 @@ FrmTextarea("noitem_msg", _m("'No item found' message"), $noitem_msg, 4, 50, fal
 $slice = AA_Slice::getModule(AA::$module_id);
 
 FrmTabEnd($form_buttons);
-$apage->addHelpbox(_m("Use these aliases for database fields"), getAliasHelp(new AA_Aliases(new AA_Aliasgenerator_Slice(AA::$module_id)), $slice->getFields()->getRecordArray(), false));
+$apage->addHelpbox(_m("Use these aliases for database fields"), getAliasHelp(new AA_Aliases(new AA_Aliasgenerator_Slice(AA::$module_id)), $slice->getFields()->getRecordArray()));
 $apage->printFoot();

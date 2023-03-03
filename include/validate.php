@@ -159,12 +159,12 @@ class AA_Validate extends AA_Serializable {
     }
 
     /** validate function
-     * @param string          $var
+     * @param string|null     $var
      * @param AA_Content|null $content_context
      * @param string          $var_id
      * @return bool
      */
-    public function validate(string &$var, AA_Content $content_context = null, string $var_id = ''): bool { return true; }
+    public function validate(?string &$var, AA_Content $content_context = null, string $var_id = ''): bool { return true; }
 
     /** checks if the variable is empty
      * @param $var
@@ -226,12 +226,12 @@ class AA_Validate_Signed extends AA_Validate {
     }
 
     /** validate function
-     * @param string          $var
+     * @param string|null     $var
      * @param AA_Content|null $content_context
      * @param string          $var_id
      * @return bool
      */
-    public function validate(string &$var, AA_Content $content_context = null, string $var_id = ''): bool {
+    public function validate(?string &$var, AA_Content $content_context = null, string $var_id = ''): bool {
         if (!IsSigInt($var)) {
             return AA_Validate::bad(VALIDATE_ERROR_BAD_TYPE, _m('No integer value') . "'$var'", $var_id);
         }
@@ -328,12 +328,12 @@ class AA_Validate_Regexp extends AA_Validate {
     }
 
     /** validate function
-     * @param string          $var
+     * @param string|null     $var
      * @param AA_Content|null $content_context
      * @param string          $var_id
      * @return bool
      */
-    public function validate(string &$var, AA_Content $content_context = null, string $var_id = ''): bool {
+    public function validate(?string &$var, AA_Content $content_context = null, string $var_id = ''): bool {
         if ( ($this->maxlength > 0) AND (strlen($var) > $this->maxlength) ) {
             return AA_Validate::bad(VALIDATE_ERROR_TOO_LONG, _m('Too long'), $var_id);
         }
@@ -409,12 +409,12 @@ class AA_Validate_Id extends AA_Validate {
     }
 
     /** validate function
-     * @param string          $var
+     * @param string|null     $var
      * @param AA_Content|null $content_context
      * @param string          $var_id
      * @return bool
      */
-    public function validate(string &$var, AA_Content $content_context = null, string $var_id = ''): bool {
+    public function validate(?string &$var, AA_Content $content_context = null, string $var_id = ''): bool {
         if (!is_long_id($var)) {
             return AA_Validate::bad(VALIDATE_ERROR_BAD_TYPE, _m('No ID value'), $var_id);
         }
@@ -426,12 +426,12 @@ class AA_Validate_Id extends AA_Validate {
 class AA_Validate_Markedid extends AA_Validate_Id {
 
     /** validate function
-     * @param string          $var
+     * @param string|null     $var
      * @param AA_Content|null $content_context
      * @param string          $var_id
      * @return bool
      */
-    public function validate(string &$var, AA_Content $content_context = null, string $var_id = ''): bool {
+    public function validate(?string &$var, AA_Content $content_context = null, string $var_id = ''): bool {
         if (!is_long_id(ltrim($var,'xyz'))) {
             return AA_Validate::bad(VALIDATE_ERROR_BAD_TYPE, _m('No ID value'), $var_id);
         }
@@ -459,12 +459,12 @@ class AA_Validate_Float extends AA_Validate {
     }
 
     /** validate function
-     * @param string          $var
+     * @param string|null     $var
      * @param AA_Content|null $content_context
      * @param string          $var_id
      * @return bool
      */
-    public function validate(string &$var, AA_Content $content_context = null, string $var_id = ''): bool {
+    public function validate(?string &$var, AA_Content $content_context = null, string $var_id = ''): bool {
         if ( !is_float($var) ) {
             return AA_Validate::bad(VALIDATE_ERROR_BAD_TYPE, _m('No float value'), $var_id);
         }
@@ -490,12 +490,12 @@ class AA_Validate_Enum extends AA_Validate {
     }
 
     /** validate function
-     * @param string          $var
+     * @param string|null     $var
      * @param AA_Content|null $content_context
      * @param string          $var_id
      * @return bool
      */
-    public function validate(string &$var, AA_Content $content_context = null, string $var_id = ''): bool {
+    public function validate(?string &$var, AA_Content $content_context = null, string $var_id = ''): bool {
         return isset($this->possible_values[$var]) ? true : AA_Validate::bad(VALIDATE_ERROR_NOT_IN_LIST, _m('Out of range - not in the list'), $var_id);
     }
 }
@@ -504,12 +504,12 @@ class AA_Validate_Enum extends AA_Validate {
 class AA_Validate_Login extends AA_Validate {
 
     /** validate function
-     * @param string          $var
+     * @param string|null     $var
      * @param AA_Content|null $content_context
      * @param string          $var_id
      * @return bool
      */
-    public function validate(string &$var, AA_Content $content_context = null, string $var_id = ''): bool {
+    public function validate(?string &$var, AA_Content $content_context = null, string $var_id = ''): bool {
         $len = strlen($var);
         if ( $len<3 ) {
             return AA_Validate::bad(VALIDATE_ERROR_TOO_SHORT, _m('Too short'), $var_id);
@@ -532,12 +532,12 @@ class AA_Validate_Login extends AA_Validate {
 class AA_Validate_Pwd extends AA_Validate {
 
     /** validate function
-     * @param string          $var
+     * @param string|null     $var
      * @param AA_Content|null $content_context
      * @param string          $var_id
      * @return bool
      */
-    public function validate(string &$var, AA_Content $content_context = null, string $var_id = ''): bool {
+    public function validate(?string &$var, AA_Content $content_context = null, string $var_id = ''): bool {
         $len = strlen($var);
         if ( $len<5 ) {
             return AA_Validate::bad(VALIDATE_ERROR_TOO_SHORT, _m('Too short'), $var_id);
@@ -585,12 +585,12 @@ class AA_Validate_Unique extends AA_Validate {
     }
 
     /** validate function
-     * @param string          $var
+     * @param string|null     $var
      * @param AA_Content|null $content_context
      * @param string          $var_id
      * @return bool
      */
-    public function validate(string &$var, AA_Content $content_context = null, string $var_id = ''): bool {
+    public function validate(?string &$var, AA_Content $content_context = null, string $var_id = ''): bool {
         switch ($this->scope) {  // for older approach - presented in field setting
             case '':
             case '0': $this->scope = 'username';  break;
@@ -663,12 +663,12 @@ class AA_Validate_Eunique extends AA_Validate {
     }
 
     /** validate function
-     * @param string          $var
+     * @param string|null     $var
      * @param AA_Content|null $content_context
      * @param string          $var_id
      * @return bool
      */
-    public function validate(string &$var, AA_Content $content_context = null, string $var_id = ''): bool {
+    public function validate(?string &$var, AA_Content $content_context = null, string $var_id = ''): bool {
         if ( !AA_Validate::doValidate($var, 'email') ) {
             return false;
         }
@@ -699,12 +699,12 @@ class AA_Validate_Text extends AA_Validate {
     }
 
     /** validate function
-     * @param string          $var
+     * @param string|null     $var
      * @param AA_Content|null $content_context
      * @param string          $var_id
      * @return bool
      */
-    public function validate(string &$var, AA_Content $content_context = null, string $var_id = ''): bool {
+    public function validate(?string &$var, AA_Content $content_context = null, string $var_id = ''): bool {
         if ( ($this->maxlength > 0) AND (strlen($var) > $this->maxlength) ) {
             return AA_Validate::bad(VALIDATE_ERROR_TOO_LONG, _m('Too long'), $var_id);
         }

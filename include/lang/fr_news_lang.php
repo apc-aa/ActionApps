@@ -2559,7 +2559,7 @@ $_m["Edit discussion"]
  = "Modifier la discussion";
 
 // admin/discedit2.php, row 110
-$_m["Items managment - Discussion comments managment - Edit comment"]
+$_m["Items management - Discussion comments management - Edit comment"]
  = "Gestion des items - Gestion des commentaires - Modification des commentaires";
 
 // admin/discedit2.php, row 116

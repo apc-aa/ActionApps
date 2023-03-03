@@ -93,7 +93,7 @@ if (ctype_digit((string)$_REQUEST['respuesta'])) {
 }
 
 //$slice_id = unpack_id(GetTable2Array("SELECT slice_id FROM item WHERE id='".q_pack_id($d_item_id)."'", 'aa_first', 'slice_id'));
-$slice_id = DB_AA::select1('SELECT LOWER(HEX(`slice_id`)) as usid FROM item', 'usid', [['id', $d_item_id, 'l']]);
+$slice_id = DB_AA::select1('usid', 'SELECT LOWER(HEX(`slice_id`)) as usid FROM item', [['id', $d_item_id, 'l']]);
 $slice    = AA_Slice::getModule($slice_id);
 if (empty($slice)) {
      echo _m("Comment to wrong item - item's slice not found.");

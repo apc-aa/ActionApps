@@ -146,13 +146,13 @@ $discus_vids = DB_AA::select(['id'=>'name'], "SELECT id, name FROM view", [
 
 $form_buttons = [
     "update",
-                       "update" => ['type' => 'hidden', 'value'=>'1'],
-                       "cancel" => ["url"=>"se_fields.php"],
-                       "default" => [
-                           'type'  => 'button',
-                                          'value' => _m("Default"),
-                                          'add'   => 'onclick="Defaults()"'
-                       ]
+    "update" => ['type' => 'hidden', 'value'=>'1'],
+    "cancel" => ["url"=>"se_fields.php"],
+    "default" => [
+        'type'  => 'button',
+        'value' => _m("Default"),
+        'add'   => 'onclick="Defaults()"'
+    ]
 ];
 
 FrmTabCaption(_m("HTML code for fulltext view"), $form_buttons);
@@ -177,5 +177,5 @@ if ($discus_vids) {
 
 $slice = AA_Slice::getModule(AA::$module_id);
 FrmTabEnd($form_buttons);
-$apage->addHelpbox(_m("Use these aliases for database fields"), getAliasHelp(new AA_Aliases(new AA_Aliasgenerator_Slice(AA::$module_id)), $slice->getFields()->getRecordArray(), false));
+$apage->addHelpbox(_m("Use these aliases for database fields"), getAliasHelp(new AA_Aliases(new AA_Aliasgenerator_Slice(AA::$module_id)), $slice->getFields()->getRecordArray()));
 $apage->printFoot();

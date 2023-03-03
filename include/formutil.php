@@ -1155,7 +1155,7 @@ class AA_Inputfield {
             $htmlvar     = $varname."html";
             $radio_html  = "<input type=\"radio\" name=\"$htmlvar\" value=\"h\"". (  $this->html_flag ? " checked>" : ">" )."</input>";
             $radio_plain = "<input type=\"radio\" name=\"$htmlvar\" value=\"t\"". ( !$this->html_flag ? " checked>" : ">" )."</input>";
-            $htmlareaedit= "<a class=\"btn\" href=\"javascript:openHTMLAreaFullscreen('".$varname."');\">"._m("Edit in HTMLArea")."</a>"; // used for HTMLArea
+            $htmlareaedit= "<a href=\"javascript:openHTMLAreaFullscreen('".$varname."');\">"._m("Edit in HTMLArea")."</a>"; // used for HTMLArea
             // conversions menu
             $convertor   = $conv ? $this->get_convertors() : false;
 
@@ -1170,7 +1170,7 @@ class AA_Inputfield {
             $this->echovar($radio_plain, 'plain_rb');
             $this->echoo(_m("Plain text"));
             $this->echoo('</label></span>');
-            $this->echoo('<span id="arealinkspan'.$varname.'" class="aa-arealink" style="display:none">'); // used for hiding "edit in htmlarea" link, dont remove
+            $this->echoo('<span id="arealinkspan'.$varname.'" class="aa-arealink btn" style="display:none">'); // used for hiding "edit in htmlarea" link, dont remove
             $this->echovar($htmlareaedit, 'htmlarea_edit_link');
             $this->echoo('</span>');
 
@@ -2782,7 +2782,10 @@ function getFrmInputButtons($buttons, $print_hidden = true, $prefix = ''): strin
                 $ret .= ' <input type="submit" class="btn-l" name="submitbtn"'.$title.' id="'.$prefix .'submit" accesskey="S" value=" '. get_if($properties['value'], _m("Submit")) ."  [^S] ". ' "> ';
                 break;
             default:
-                if ($properties['url']) {
+                if ($properties['js']) {
+                    $type    = ($properties['type'] ?: 'button');
+                    $onclick = ' onclick="'.$properties['js'].'"';
+                } elseif ($properties['url']) {
                     $type = ($properties['type'] ?: 'button');
                     $onclick = ' onclick="window.location=\''. StateUrl($properties['url']).'\'"';
                 } else {
@@ -3145,39 +3148,23 @@ function getSelectWithParam($name, $arr, $selected="", $html_setting=null) {
 }
 
 /**
- *  Prints alias names as help for fulltext and compact format page
- * @param        $aliases_arr
- * @param bool   $fields
- * @param bool   $endtable
- * @param string $buttons
- */
-function PrintAliasHelp(AA_Aliases $aliases, $fields = false, $endtable = true, $buttons = '') {
-    echo getFrmInputButtons($buttons, false);
-    echo getAliasHelp($aliases, $fields, $endtable, $buttons);
-}
-
-/**
  *  get alias names as help for fulltext and compact format page
  * @param AA_Aliases $aliases
  * @param bool       $fields
- * @param bool       $endtable
  * @param string     $buttons
  * @return string
  */
-function getAliasHelp(AA_Aliases $aliases, $fields = false, $endtable = true): string {
-    $ret = '';
+function getAliasHelp(AA_Aliases $aliases, $fields = false): string {
+    $rows = [];
     $aliases_arr = $aliases->getArray();
-    foreach ($aliases_arr as $ali => $v ) {
+    foreach ($aliases as $ali => $v ) {
         // if it is possible point to alias editing page
-        $aliasedit = ( !$v["fld"] ? "&nbsp;" : "<a href=\"". StateUrl(con_url("./se_inputform.php", "fid=".urlencode($v["fld"]))) ."\">". _m("Edit") . "</a>");
-        if ($fields AND $fields[$v["fld"]] AND !$fields[$v["fld"]]['input_show']) {
+        $fld     = $v->getField();
+        $aliasedit = ( !$fld ? "&nbsp;" : "<a href=\"". con_url("./se_inputform.php", ['fid'=>$fld], true) ."\">". _m("Edit") . "</a>");
+        if ($fields AND $fields[$fld] AND !$fields[$fld]['input_show']) {
             $ali = "<span class=\"disabled\">$ali</span>";
         }
-        $ret .= "<tr><td>$ali</td><td>". safe($v['hlp']) ."</td><td>$aliasedit</td></tr>";
+        $rows[] = [$ali, safe($v->getHelp()), $aliasedit];
     }
-
-    if ($endtable) {
-        $ret .= "\n        </table></td></tr>";
-    }
-    return $ret;
+    return GetHtmlTable($rows);
 }

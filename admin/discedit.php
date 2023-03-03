@@ -101,105 +101,82 @@ GetDiscussionThread($tree, "0", 0, $outcome);         // get array of images
 
 
 
-$script2run = '
+$script2run = '<script>
   function DeleteComment(id) {
-    if ( !confirm("<?php echo _m("Are you sure you want to delete selected comment?"); ?>"))
-       return
-    var url="<?php echo StateUrl(con_url("./discedit.php", "mode=delete")); ?>"
-    window.location=url + "&d_id=" + escape(id) + "&item_id=" + "<?php echo $item_id; ?>"
+    if ( !confirm("'. _m("Are you sure you want to delete selected comment?") .'")) {
+       return;
+    }
+    window.location = "'. get_url("./discedit.php", ['mode'=>'delete', 'item_id' => $item_id], true). '&d_id=" + escape(id);
   }
   function DeleteAllComments() {
-    if ( !confirm("<?php echo _m("Are you sure you want to delete ALL comments? There is no way back!"); ?>"))
+    if ( !confirm("'. _m("Are you sure you want to delete ALL comments? There is no way back!") .'")) {
        return;
-    var url="<?php echo StateUrl(con_url("./discedit.php", "mode=deleteall")); ?>"
-    window.location=url + "&item_id=" + "<?php echo $item_id; ?>"
+    }
+    window.location = "'. get_url("./discedit.php", ['mode'=>'deleteall', 'item_id' => $item_id], true). '";
   }
   function DeleteAllHiddenComments() {
-    if ( !confirm("<?php echo _m("Are you sure you want to delete ALL unhidden comments (the comments, which are NOT HIDDEN)? There is no way back!"); ?>"))
+    if ( !confirm("'. _m("Are you sure you want to delete ALL unhidden comments (the comments, which are NOT HIDDEN)? There is no way back!") .'")) {
        return;
-    var url="<?php echo StateUrl(con_url("./discedit.php", "mode=deleteshown")); ?>"
-    window.location=url + "&item_id=" + "<?php echo $item_id; ?>"
+    }
+    window.location = "'. get_url("./discedit.php", ['mode'=>'deleteshown', 'item_id' => $item_id], true). '";
   }
-    ';
+</script>';
 
 $apage = new AA_Adminpageutil();
 $apage->setTitle(_m("Admin - Discussion comments management"));
 $apage->setForm(['action'=>'index.php3']);
-$apage->addRequire($script2run, 'AA_Req_Load');
+$apage->addRequire($script2run, 'AA_Req_Footcode');
 $apage->printHead($err, $Msg);
 
 $content  = GetItemContent($item_id);
 $headline = getHeadline($content[$item_id]);
 
-echo getTabStart();
+FrmTabCaption(_m("Item: ")." $headline (". $content[$item_id]["disc_app........"][0]['value']. "/". $content[$item_id]["disc_count......"][0]['value']. ")");
+   echo '<tr class="aa-tbl-header">
+        <th>'. _m("Title") .'</th>
+        <th>'. _m("Author") .'</th>
+        <th>'. _m("IP Address") .'</th>
+        <th>'. _m("Date") .'</th>
+        <th>'. _m("Actions") .'</th>
+    </tr>';
 
-?>
-  <tr class="aa-tbl-header"><th><?php
-     echo _m("Item: ")." $headline (".
-           $content[$item_id]["disc_app........"][0]['value']. "/".
-           $content[$item_id]["disc_count......"][0]['value']. ")" ?> </th></tr>
-  <tr><td>
-  <table>
-     <tr><td width="10">&nbsp;</td>
-        <td><b><?php echo _m("Title") ?></td>
-        <td width="10">&nbsp;</td>
-        <td><b><?php echo _m("Author") ?></td>
-        <td width="10">&nbsp;</td>
-        <td><b><?php echo _m("IP Address") ?></td>
-        <td width="10">&nbsp;</td>
-        <td><b><?php echo _m("Date") ?></td>
-        <td width="10">&nbsp;</td>
-        <td><b><?php echo _m("Actions") ?></td>
-        <td width="10">&nbsp;</td>
-    </tr>
-      <tr><td colspan="9">&nbsp;</td></tr>
-
-<?php
 $item = new AA_Item('', new AA_Aliases(new AA_Aliasgenerator_Discussion()));
 $i = 0;
 if (!$outcome) {
-    echo "<tr><td colspan=\"9\">". _m("No discussion comments") ."<br><br></td></tr>";
+    echo "<tr><td colspan=5>". _m("No discussion comments") ."<br><br></td></tr>";
 } else {
     foreach ($outcome as $d_id => $images) {
         $im = "";
         foreach($images as $img) {
             $im .= GetImageSrc($img);
         }
-        $im2 = "<tr><td>&nbsp;</td>
+        $im2 = "<tr>
                  <td><table>
                     <tr><td>".$im. GetAAImage('blank.gif','',2,21)."</td>
                         <td>_#SUBJECT_&nbsp;</td>
                     </tr>
                     </table>
                  </td>
-                 <td>&nbsp;</td>
                  <td>_#AUTHOR#_</td>
-                 <td>&nbsp;</td>
                  <td>_#IP_ADDR_</td>
-                 <td>&nbsp;</td>
                  <td>_#DATE###_</td>
-                 <td>&nbsp;</td>";
+         ";
         $item->setformat($im2);
         $item->set_data($dcontent[$d_id]);
         echo $item->get_item();
 
-        echo "<td>&nbsp;&nbsp;&nbsp;<a href=\"javascript:DeleteComment('".$d_id."')\"><small>". _m("Delete") ."</small></a>";
-        echo "&nbsp;<a href=". con_url(StateUrl("discedit2.php"),"d_id=".
-             $d_id."&item_id=".$item_id) ."><small>". _m("Edit") ."</small></a>";
+        echo "<td>";
+        echo   "<a class=aa-button-edit href=". con_url("discedit2.php",["d_id"=>$d_id,"item_id"=>$item_id],true) ."><small>". _m("Edit") ."</small></a>";
         $s = ($h = !$dcontent[$d_id]["d_state........."][0]['value']) ? _m("Hide") : _m("Approve");
-        echo "&nbsp;<a href=" . con_url(StateUrl("discedit.php"), "mode=hide&h=".$h.
-            "&d_id=".$d_id. "&item_id=".$item_id) ."><small>". $s. "</small></a></td>
-            <td>&nbsp;</td>";
-        echo "</tr>\n";
+        echo   "<a class=aa-button-delete href=\"javascript:DeleteComment('".$d_id."')\"><small>". _m("Delete") ."</small></a>";
+        echo   "<a class='btn btn-secondary' href=" . con_url("discedit.php", ["mode"=>'hide','h'=>$h, 'd_id'=>$d_id, 'item_id'=>$item_id], true) ."><small>". $s. "</small></a>";
+        echo "</td></tr>\n";
     }
 }
-?>
-  </table>
-  </td></tr>
-  <tr class="aa-tbl-header"><th>
-     <input type="submit" value="<?php echo _m("Back") ?>">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-     <input type="button" value="<?php echo _m("Delete All") ?>" onclick="DeleteAllComments();">&nbsp;
-     <input type="button" value="<?php echo _m("Delete All Unhidden") ?>" onclick="DeleteAllHiddenComments();"></th></tr>
-  </table>
-<?php
+$form_buttons = [
+        "update"     => ["value"=>_m("Back")],
+        "delete_all" => ["value"=>_m("Delete All"), "js"=>"DeleteAllComments()"],
+        "delete_un"  => ["value"=>_m("Delete All Unhidden"), "js"=>"DeleteAllHiddenComments()"]
+        ];
+FrmTabEnd($form_buttons);
 $apage->printFoot();

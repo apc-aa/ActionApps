@@ -2669,7 +2669,7 @@ $_m["Edit discussion"]
  = "Upravit diskusi";
 
 // admin/discedit2.php, row 110
-$_m["Items managment - Discussion comments managment - Edit comment"]
+$_m["Items management - Discussion comments management - Edit comment"]
  = "Správa zpráv - Správa diskusních příspěvků - Editace příspěvku";
 
 // admin/discedit2.php, row 116

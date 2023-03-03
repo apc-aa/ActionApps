@@ -151,7 +151,7 @@ class TxtWidget extends Widget
             }
 
         } elseif (!$no_htmleditor_link) {
-            $htmlareaedit = " &nbsp; <a href=\"javascript:;\" class=\"aa-arealink\" style=\"display:none\" onclick=\"this.parentNode.parentNode.querySelector('input[value=\'1\']').checked=true;this.parentNode.parentNode.querySelector('.aa-formatters').style.display='none'; this.style.display='none';CKEDITOR.replace('$input_id');\">" . _m("Edit in HTMLArea") . "</a>"; // used for HTMLArea
+            $htmlareaedit = "<a href=\"javascript:;\" class=\"aa-arealink btn\" style=\"display:none\" onclick=\"this.parentNode.parentNode.querySelector('input[value=\'1\']').checked=true;this.parentNode.parentNode.querySelector('.aa-formatters').style.display='none'; this.style.display='none';CKEDITOR.replace('$input_id');\">" . _m("Edit in HTMLArea") . "</a>"; // used for HTMLArea
             // conversions menu
             //$convertor   = $convert ? $this->get_convertors() : false;
             //if ( $convertor ) {

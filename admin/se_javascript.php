@@ -78,33 +78,29 @@ $apage->printHead($err, $Msg);
 FrmTabCaption(_m("JavaScript for fields"));
 ?>
 <tr><td><?php FrmStaticText(_m("Enter code in the JavaScript language. It will be included in the Add / Edit item page (itemedit.php3)."), ""); ?></td></tr>
-<tr><td class="tabtxt"><hr></td></tr>
-<tr><td class="tabtxt"><textarea name="javascript" id="javascriptarea" cols="100" rows="20">
+<tr><td><hr></td></tr>
+<tr><td><textarea name="javascript" id="javascriptarea" cols="100" rows="20">
 <?php
 echo $javascript.'</textarea></td></tr>';
-FrmTabSeparator(_m("Available fields and triggers"), [
-    "update",
-    "update" => ["type" => "hidden", "value" => "1"],
-    "cancel" => ["url" => "se_fields.php"]
-]);
+FrmTabSeparator(_m("Available fields and triggers"));
 
 $fields = AA_Slice::getModule(AA::$module_id)->getFields()->getPriorityArray();
 
 echo '
-<tr><td valign="top"><table border="0" cellspacing="0" cellpadding="1" bgcolor="'.COLOR_TABBG.'">
-<tr><td class="tabtit">'._m("Field IDs").':</td></tr>';
+<tr><td><table>
+<tr class="aa-tbl-header"><th>'._m("Field IDs").':</th></tr>';
 foreach ($fields as $fid) {
-    echo "<tr><td class=\"tabtxt\">$fid</td></tr>";
+    echo "<tr><td>$fid</td></tr>";
 }
 echo '</table>
 </td>
-<td valign="top"><table border="0" cellspacing="0" cellpadding="1" bgcolor="'.COLOR_TABBG.'">
-<tr><td class="tabtit">'._m("Triggers").':</td></tr>
-<tr><td class="tabtxt">'._m("Write trigger functions like").' "aa_onSubmit (fieldid) { }", <a href="https://actionapps.org/faq/detail.shtml?x=1706" target="_blank">'._m("see FAQ</a> for more details and examples").'</td></td></tr>
-<tr><td class="tabtxt">'._m("You can place {require:...} anywhere in the code to load any js library. If you do not use any {require:...}, AA will use default {require:aa-fillform@1} {require:aa-jslib@1}. Feel free to use just {require:aa-fillform} if you do not need old {require:aa-jslib@1}.").'</td></td></tr>
-<tr><td class="tabtxt">'._m("If you want to use javascript without any library, use {require:} or // {require:}.").'</td></td></tr>
-<tr><td class="tabtxt"><table border="1" cellspacing="0" cellpadding="1" bgcolor="'.COLOR_TABBG.'">';
-echo '<tr><td class="tabtit"><b>'._m("Field Type").'</b></td><td class=tabtit><b>'._m("Triggers Available -- see some JavaScript help for when a trigger is run").'</b></td></tr>';
+<td><table>
+<tr class="aa-tbl-header"><th>'._m("Triggers").':</th></tr>
+<tr><td>'._m("Write trigger functions like").' "aa_onSubmit (fieldid) { }", <a href="https://actionapps.org/faq/detail.shtml?x=1706" target="_blank">'._m("see FAQ</a> for more details and examples").'</td></td></tr>
+<tr><td>'._m("You can place {require:...} anywhere in the code to load any js library. If you do not use any {require:...}, AA will use default {require:aa-fillform@1} {require:aa-jslib@1}. Feel free to use just {require:aa-fillform} if you do not need old {require:aa-jslib@1}.").'</td></td></tr>
+<tr><td>'._m("If you want to use javascript without any library, use {require:} or // {require:}.").'</td></td></tr>
+<tr><td><table>';
+echo '<tr class="aa-tbl-header"><th>'._m("Field Type").'</th><th>'._m("Triggers Available -- see some JavaScript help for when a trigger is run").'</th></tr>';
 JsTriggers::printSummary();
 echo '
 </table></td></tr>

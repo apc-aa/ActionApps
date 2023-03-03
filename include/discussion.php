@@ -158,8 +158,8 @@ function setDiscUrls(&$col, $clean_url, $item_id, $d_id=null) {
     // in urls we do not need to replace & by &amp;
     $col["d_disc_url......"][0]['flag']  = FLAG_HTML;
     if ($d_id) {
-        $col["d_url_fulltext.."][0]['value'] = get_url($tmp_disc_url, "sel_ids=1&ids[x".$d_id."]=1#disc");
-        $col["d_url_reply....."][0]['value'] = get_url($tmp_disc_url, "add_disc=1&parent_id=".$d_id."#disc");
+        $col["d_url_fulltext.."][0]['value'] = get_url($tmp_disc_url, "sel_ids=1&ids[x".$d_id."]=1").'#disc';
+        $col["d_url_reply....."][0]['value'] = get_url($tmp_disc_url, "add_disc=1&parent_id=".$d_id). "#disc";
     }
 }
 

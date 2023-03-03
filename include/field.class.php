@@ -475,7 +475,7 @@ class AA_Field implements ArrayAccess {
     }
 
     private function linkToField(string $text, string $field_id, string $fragment='', array $class=[]) {
-        $url = StateUrl(con_url("./se_inputform.php", "fid=".urlencode($field_id)));
+        $url = con_url("./se_inputform.php", ['fid'=>$field_id], true);
         if ($fragment) {
             $url .= '#alias'.$fragment;
         }

@@ -85,9 +85,9 @@ class AA_Alias {
      */
     function __construct($alias, $funct, $field_id, $hlp = '') {
         $this->alias    = '_#' . strtoupper(substr($alias . '________', 2, 8));  // just make sure the alias is in correct _#SOME_ALS format
-        $this->field_id = $field_id;
-        $this->funct    = $funct;
-        $this->hlp      = $hlp;
+        $this->field_id = (string)$field_id;
+        $this->funct    = (string)$funct;
+        $this->hlp      = (string)$hlp;
     }
 
     /** conditional create
@@ -107,7 +107,7 @@ class AA_Alias {
     /** getArray function
      * @return array
      */
-    function getArray() {
+    function getArray(): array {
         // $fce = ParamImplode(array_merge(array($this->funct),$this->parameters));
         return ['fce' => $this->funct, 'param' => $this->field_id, 'hlp' => $this->hlp];
     }
@@ -115,7 +115,7 @@ class AA_Alias {
     /** get alias name
      * @return string
      */
-    function getAlias() {
+    function getAlias(): string {
         return $this->alias;
     }
 
@@ -124,6 +124,13 @@ class AA_Alias {
      */
     public function getField(): string {
         return $this->field_id;
+    }
+
+    /**
+     * @return string
+     */
+    public function getHelp(): string {
+        return $this->hlp;
     }
 }
 
@@ -153,7 +160,7 @@ trait LazyloadTrait {
     }
 }
 
-class AA_Aliases {
+class AA_Aliases implements Iterator, ArrayAccess, Countable {
 
     use LazyloadTrait;
 
@@ -249,8 +256,23 @@ class AA_Aliases {
         }
         return $ret;
     }
-}
 
+    /** Iterator interface */
+    public function rewind()  { $this->lazyGet('lazy_aliases'); reset($this->lazy_aliases); }
+    public function current() { $this->lazyGet('lazy_aliases'); return current($this->lazy_aliases); }
+    public function key()     { $this->lazyGet('lazy_aliases'); return key($this->lazy_aliases); }
+    public function next()    { $this->lazyGet('lazy_aliases'); next($this->lazy_aliases); }
+    public function valid()   { $this->lazyGet('lazy_aliases'); return (current($this->lazy_aliases) !== false); }
+
+    /** Countable interface - Returns number of values  */
+    public function count()   { $this->lazyGet('lazy_aliases'); return count($this->lazy_aliases); }
+
+    /** ArrayAccess interface */
+    public function offsetSet($offset, $value) { $this->lazyGet('lazy_aliases'); $this->lazy_aliases[$offset] = $value; }
+    public function offsetExists($offset)      { $this->lazyGet('lazy_aliases'); return isset($this->lazy_aliases[$offset]); }
+    public function offsetUnset($offset)       { $this->lazyGet('lazy_aliases'); unset($this->lazy_aliases[$offset]); }
+    public function offsetGet($offset)         { $this->lazyGet('lazy_aliases'); return $this->lazy_aliases[$offset] ?? null; }
+}
 
 // There we can mention $FIELD_TYPES, but they are not defined in this file,
 // but in database as special slice with id 'AA_Core_Fields..'
