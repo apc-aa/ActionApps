@@ -256,11 +256,11 @@ function PrintPermUmPageEnd($MODULES, $mod_types) { ?>
 
 /** ChangeUserGroups function
  *  Procces group data
- * @param $posted_groups
- * @param $sel_groups
- * @param $selected_user
+ * @param string|null $posted_groups
+ * @param             $sel_groups
+ * @param             $selected_user
  */
-function ChangeUserGroups($posted_groups, $sel_groups, $selected_user) {
+function ChangeUserGroups(?string $posted_groups, $sel_groups, $selected_user) {
     if ( isset($sel_groups) AND is_array($sel_groups) AND ($sel_groups["n"]=="")) {
         // first we remove user from all groups
         foreach ($sel_groups as $foo_gid => $foo) {
@@ -366,28 +366,28 @@ function ChangeUserData(&$err, $uid, &$userrecord, $user_super) {
 
 
 /**
- * @param string $submit_action
+ * @param string      $submit_action
  * @param        $selected_user
- * @param array  $err
- * @param bool   $add_submit
+ * @param array       $err
+ * @param bool        $add_submit
  * @param        $user_login
  * @param        $user_surname
  * @param        $user_firstname
- * @param string $user_password1
- * @param string $user_password2
+ * @param string      $user_password1
+ * @param string      $user_password2
  * @param        $user_mail1
  * @param        $user_mail2
  * @param        $user_mail3
- * @param bool   $user_super
- * @param bool   $um_uedit_no_go_url
- * @param bool   $posted_groups
- * @param array  $sel_groups
- * @param array  $perm_mod
- * @param array  $new_module
- * @param array  $new_module_role
+ * @param bool        $user_super
+ * @param bool        $um_uedit_no_go_url
+ * @param string|null $posted_groups
+ * @param array       $sel_groups
+ * @param array       $perm_mod
+ * @param array       $new_module
+ * @param array       $new_module_role
  * @return array
  */
-function ProcessUser(string $submit_action, $selected_user, array $err, bool $add_submit, $user_login, $user_surname, $user_firstname, string $user_password1, string $user_password2, $user_mail1, $user_mail2, $user_mail3, bool $user_super, bool $um_uedit_no_go_url, bool $posted_groups, array $sel_groups, array $perm_mod, array $new_module, array $new_module_role): array {
+function ProcessUser(string $submit_action, $selected_user, array $err, bool $add_submit, $user_login, $user_surname, $user_firstname, string $user_password1, string $user_password2, $user_mail1, $user_mail2, $user_mail3, bool $user_super, bool $um_uedit_no_go_url, ?string $posted_groups, array $sel_groups, array $perm_mod, array $new_module, array $new_module_role): array {
     // following code (in do {}) is used also in slice wizard
     do {
         // Procces user data -------------------------------------------------------

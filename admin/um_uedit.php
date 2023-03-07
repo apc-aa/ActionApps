@@ -59,7 +59,8 @@ try {
     // array ( )
     $new_module_role = InputVars::arrayPOST('new_module_role');
     // array ( 0 => 1, '' => 1, )
-    $posted_groups = InputVars::boolPOST('posted_groups'); // empty
+    // comma separated list of user groups
+    $posted_groups = InputVars::stringPOST('posted_groups'); // empty
     // array ( 'P' => 1, )
     // $sel_groups_selp = InputVars::stringSlashedPOST('sel_groups_selp'); // alpha
     // array ( 5 => 1, 4 => 1, 1 => 1, 2 => 1, 6 => 2, )-array ( '' => 1, 6 => 3, 2 => 1, )

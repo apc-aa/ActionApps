@@ -96,13 +96,13 @@ function add_user_and_welcome($welcome_id, $user_login, $slice_id, $role) {
  * @param bool   $user_super
  * @param bool   $um_uedit_no_go_url
  * @param        $selected_user
- * @param bool   $posted_groups
- * @param array  $sel_groups
- * @param array  $perm_mod
- * @param array  $new_module
- * @param array  $new_module_role
- * @param bool   $add
- * @param bool   $update
+ * @param string|null $posted_groups
+ * @param array $sel_groups
+ * @param array $perm_mod
+ * @param array $new_module
+ * @param array $new_module_role
+ * @param bool $add
+ * @param bool $update
  * @param string $owner
  * @param string $new_owner
  * @param string $new_owner_email
@@ -110,28 +110,28 @@ function add_user_and_welcome($welcome_id, $user_login, $slice_id, $role) {
  * @param string $slice_url
  * @param string $slice_type
  * @param        $upload_url
- * @param int    $priority
- * @param int    $permit_anonymous_post
- * @param bool   $permit_anonymous_edit
- * @param int    $permit_offline_fill
+ * @param int $priority
+ * @param int $permit_anonymous_post
+ * @param bool $permit_anonymous_edit
+ * @param int $permit_offline_fill
  * @param        $lang_file
- * @param int    $d_listlen
+ * @param int $d_listlen
  * @param string $mlxctrl
  * @param string $fileman_access
  * @param string $fileman_dir
- * @param array  $template
- * @param bool   $deleted
- * @param bool   $flag_allow_expired
+ * @param array $template
+ * @param bool $deleted
+ * @param bool $flag_allow_expired
  * @param string $auth_field_group
  * @param string $mailman_field_lists
  * @param string $reading_password
- * @param bool   $flag_allow_pending
+ * @param bool $flag_allow_pending
  * @param        $set_template_id
- * @param array  $wiz
+ * @param array $wiz
  * @param string $user_role
  * @return array
  */
-function SliceEditProcess($slice_id, $user_firstname, $user_surname, $err, $add_submit, $user_login, $user_password1, $user_password2, $user_mail1, $user_mail2, $user_mail3, $user_super, $um_uedit_no_go_url, $selected_user, $posted_groups, $sel_groups, $perm_mod, $new_module, $new_module_role, $add, $update, $owner, $new_owner, $new_owner_email, $name, $slice_url, $slice_type, $upload_url, $priority, $permit_anonymous_post, $permit_anonymous_edit, $permit_offline_fill, $lang_file, $d_listlen, $mlxctrl, $fileman_access, $fileman_dir, $template, $deleted, $flag_allow_expired, $auth_field_group, $mailman_field_lists, $reading_password, $flag_allow_pending, $set_template_id, $wiz, $user_role) {
+function SliceEditProcess($slice_id, $user_firstname, $user_surname, $err, $add_submit, $user_login, $user_password1, $user_password2, $user_mail1, $user_mail2, $user_mail3, $user_super, $um_uedit_no_go_url, $selected_user, ?string $posted_groups, $sel_groups, $perm_mod, $new_module, $new_module_role, $add, $update, $owner, $new_owner, $new_owner_email, $name, $slice_url, $slice_type, $upload_url, $priority, $permit_anonymous_post, $permit_anonymous_edit, $permit_offline_fill, $lang_file, $d_listlen, $mlxctrl, $fileman_access, $fileman_dir, $template, $deleted, $flag_allow_expired, $auth_field_group, $mailman_field_lists, $reading_password, $flag_allow_pending, $set_template_id, $wiz, $user_role) {
     if ($slice_id) {  // edit slice
         if (!IfSlPerm(PS_EDIT)) {
             MsgPage(_m("You have not permissions to edit this slice"));
