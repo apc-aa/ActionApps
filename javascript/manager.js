@@ -162,7 +162,7 @@ function OpenWindowIfRequest(formname, bar, admin_url) {
         sel_val = doc.elements['srchbr_field['+bar+']'].options[idx].value;
         sel_name = "srchbr_value["+bar+"]";
         sel_text = doc.elements['srchbr_value['+bar+']'].value;
-        OpenConstantsWindow(sel_name,sel_val,1, sel_text, admin_url);
+        OpenConstantsWindow(sel_name, sel_val, sel_text, admin_url);
         if (field_types.charAt(idx) == 3) {
             doc.elements['srchbr_oper['+bar+']'].selectedIndex = 2; // equals
         } else if (field_types.charAt(idx) == 4) {                    // numconstants
@@ -207,10 +207,9 @@ function ChangeOperators(formname, bar, selectedVal ) {
         doc.elements['srchbr_oper['+bar+']'].selectedIndex = idx;
 }
 
-/*
-added by haha
-function returning today's date in m/d/y format
-*/
+/** @return today's date in m/d/y format
+ *  @author haha
+ */
 function getToday(){
     now = new Date();
     today = (now.getMonth()+1)+"/"+ now.getDate() + "/"+ ((now.getYear() < 200) ? now.getYear()+1900 : now.getYear());
@@ -219,17 +218,10 @@ function getToday(){
 
 var constantswindow;  // window for related stories
 
-function OpenConstantsWindow(varname, field_name, design, sel_text, admin_url) {
+function OpenConstantsWindow(varname, field_name, sel_text, admin_url) {
     if ((constantswindow != null) && (!constantswindow.closed)) {
         constantswindow.close()    // in order to preview go on top after open
     }
-    constantswindow = open(admin_url +
-        "&field_name=" + field_name + "&var_id=" + varname + "&design=" + design +
-        "&sel_text=" + encodeURIComponent(sel_text) , "popup", "scrollbars=1,resizable=1,width=640,height=500");
-}
-
-
-function ReplaceFirstChar( str, ch ) {
-    return   ch + str.substring(1,str.length);
+    constantswindow = open(admin_url + "&field_name=" + field_name + "&var_id=" + varname + "&sel_text=" + encodeURIComponent(sel_text) , "popup", "scrollbars=1,resizable=1,width=640,height=500");
 }
 

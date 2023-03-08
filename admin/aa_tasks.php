@@ -26,9 +26,8 @@
 
 use AA\Manager;
 
-const AA_REGISTER_GLOBALS = true;
+// const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
-
 
 if (!IfSlPerm(PS_FORMS)) {
     AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php3", _m("You have not permissions to manage tasks"), "admin");

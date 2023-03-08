@@ -24,19 +24,34 @@
 */
 /** constants select - for searchbar.class.php, pavelji@ecn.cz
  *
- * field_name - expected - field id from which we want take the constants
+ * field_name - expected - field id from which we want to take constants
  * var_id     - expected - id of variable in calling form, which should be filled
- * design     - ???      - boolean - use standard or admin design (currently always 1)
  * sel_text   - expected - current setting of the search
  */
 
+use AA\Util\InputVars;
+
 $save_hidden = true;   // do not delete r_hidden session variable in init_page!
 
-const AA_REGISTER_GLOBALS = true;
+// const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/item.php";
 require_once __DIR__ . "/../include/itemfunc.php";
 require_once __DIR__ . "/../include/formutil.php";
+
+try {
+    // array ( 'category...…' => 2, )
+    $field_name = InputVars::stringGET('field_name', true);
+    // array ( '' => 1, '"windows-12…' => 1, )
+    $sel_text = InputVars::stringGET('sel_text', true); // empty
+    // array ( 'srchbr_valu…' => 2, )
+    $var_id = InputVars::stringGET('var_id', true);
+    $cancel = InputVars::boolPOST('cancel');
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
+
+
 
 //$module_id   = AA::$module_id; // get from session
 $slice       = AA_Slice::getModule(AA::$module_id);
@@ -90,12 +105,12 @@ echo '<tr><td>'. ($field ? $field->getWidgetNewHtml(null, null, 'mch', ['columns
 
 $form_buttons = [
     "var_id" => ["type" =>"hidden", "value"=>$var_id],
-                      "btn_ok" => [
-                          "type" =>"button",
-                                        "value"=> _m("OK"),
-                                        "add"  => 'onclick=\'updateChanges(this.form)\''
-                      ],
-                      "close"
+    "btn_ok" => [
+        "type" =>"button",
+        "value"=> _m("OK"),
+        "add"  => 'onclick=\'updateChanges(this.form)\''
+    ],
+    "close"
 ];
 
 FrmTabEnd($form_buttons);
