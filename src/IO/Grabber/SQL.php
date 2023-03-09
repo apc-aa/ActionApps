@@ -99,8 +99,8 @@ class SQL extends AbstractGrabber
         $properties = [];   //                   id             name        type    multi  persistent - validator, required, help, morehelp, example
         $properties['sql']      = new AA_Property('sql',      _m("SQL query"), 'string', false, true);
         $properties['dbname']   = new AA_Property('dbname',   _m("Database name"), 'string', false, true);
-        $properties['username'] = new AA_Property('username', _m("Username"), 'string', false, true);
-        $properties['password'] = new AA_Property('password', _m("Password"), 'string', false, true);
+        $properties['username'] = new AA_Property('username', _m("Database Username"), 'string', false, true);
+        $properties['password'] = new AA_Property('password', _m("Database Password"), 'string', false, true);
         $properties['type']     = new AA_Property('type',     _m("Database type (mysql, ...)"), 'string', false, true);
         $properties['host']     = new AA_Property('host',     _m("Host IP address"), 'string', false, true);
         $properties['port']     = new AA_Property('port',     _m("Port"), 'string', false, true);

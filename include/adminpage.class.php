@@ -230,18 +230,15 @@ class AA_Adminpageutil {
 
 
     public function printHelpbox() {
-        $html = '';
         foreach ($this->helpboxes as $helpbox) {
-            $html = GetHtmlTable( [[$helpbox['html']]], 'td', $helpbox['name'], true );  // classic aa table
-            if ($helpbox['packed']) {
-                $html = "<details><summary>".$helpbox['name']."</summary>". $html . "</details>";
+            $tab = GetHtmlTable( [[$helpbox['html']]], 'td', $helpbox['name'], true );  // classic aa table
+            $html = ($helpbox['packed']) ? "<details><summary>".$helpbox['name']."</summary>$tab</details>" : $tab;
+            if ($html) {
+                // not necessary to unalias - help text for aliases was executed
+                // $html = AA::Stringexpander()->unalias($html);
+                // $html = AA::Stringexpander()->postprocess($html);
+                echo '<br>'.$html;
             }
-        }
-        if ($html) {
-            // not necessary to unalias - help text for aliases was executed
-            // $html = AA::Stringexpander()->unalias($html);
-            // $html = AA::Stringexpander()->postprocess($html);
-            echo '<br>'.$html;
         }
     }
 

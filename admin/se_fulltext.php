@@ -157,14 +157,14 @@ $form_buttons = [
 
 FrmTabCaption(_m("HTML code for fulltext view"), $form_buttons);
 FrmTextarea("fulltext_format_top", _m("Top HTML code"), $fulltext_format_top, 4, 60, false,
-             _m("HTML code which appears at the top of slice area")
-             .'<br>'.AA_View::getViewJumpLinks($fulltext_format_top), '', 1);
+    _m("HTML code which appears at the top of slice area")
+    . '<br>' . AA_View::getViewJumpLinks($fulltext_format_top), '', 1);
 FrmTextarea("fulltext_format", _m("Fulltext HTML code"), $fulltext_format, 8, 60, false,
-             _m("Put here the HTML code combined with aliases form bottom of this page\n                     <br>The aliases will be substituted by real values from database when it will be posted to page")
-             .'<br>'.AA_View::getViewJumpLinks($fulltext_format), '', 1);
+    _m("Put here the HTML code combined with aliases form bottom of this page\n                     <br>The aliases will be substituted by real values from database when it will be posted to page")
+    . '<br>' . AA_View::getViewJumpLinks($fulltext_format), '', 1);
 FrmTextarea("fulltext_format_bottom", _m("Bottom HTML code"), $fulltext_format_bottom, 4, 60, false,
-             _m("HTML code which appears at the bottom of slice area")
-             .'<br>'.AA_View::getViewJumpLinks($fulltext_format_bottom), '', 1);
+    _m("HTML code which appears at the bottom of slice area")
+    . '<br>' . AA_View::getViewJumpLinks($fulltext_format_bottom), '', 1);
 FrmInputText("fulltext_remove", _m("Remove strings"), $fulltext_remove, 254, 50, false,
              _m("Removes empty brackets etc. Use ## as delimiter."));
 if ($discus_vids) {

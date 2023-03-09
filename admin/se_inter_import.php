@@ -37,8 +37,9 @@ use AA\Util\InputVars;
 require_once __DIR__ . "/../include/init_page.php";
 
 try {
-    $err = InputVars::arrayGETPOST('err');
-    $Msg = InputVars::stringGETPOST('Msg');
+    $feed_id = InputVars::intGET('feed_id');
+    $err     = InputVars::arrayGETPOST('err');
+    $Msg     = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {}
 
 if (!IfSlPerm(PS_FEEDING)) {
@@ -66,19 +67,16 @@ $SQL       = "SELECT feed_id, name, node_name, remote_slice_id, remote_slice_nam
                 FROM external_feeds LEFT JOIN nodes ON external_feeds.node_name = nodes.name
                WHERE slice_id='$p_slice_id' ORDER BY name";
 $ext_feeds = GetTable2Array($SQL, 'feed_id');
+
+$rows = [];
 if ($ext_feeds AND is_array($ext_feeds)) {
     foreach ($ext_feeds as $k => $v) {
-        if ($v['feed_mode']=='exact') {
-            $text2show       = '(=) ';
-            $show_exact_help = true;
-        } else {
-            $text2show       = '    ';
-        }
-        $text2show .= $v['node_name'];
-        if ($v['node_name'] != $v['name']) {
-            $text2show .= ' -  '. _m('Missing!!!');
-        }
-        $ext_feeds[$k] = str_pad($text2show,35)." ".$v['remote_slice_name'];
+        $row['node_name']    = $v['node_name'];
+        $row['remote_slice'] = $v['remote_slice_name'];
+        $row['exact']        = ($v['feed_mode']=='exact') ? _m("Exact copy") : '';
+        $row['state']        = ($v['node_name'] != $v['name']) ? _m('Missing!!!') : '';
+        $row['delete'] = a_href('javascript:Delete('.$k.')',_m(Delete),['class'=>'aa-button-delete']);
+        $rows[] = $row;
     }
 }
 
@@ -95,10 +93,18 @@ $form_buttons = [
     "submit"=> ["value" => _m("Create new feed from node")],
                       "cancel"=> ["url"=>"se_fields.php"]
 ];
-  FrmTabCaption(_m("Existing remote imports into the slice") . " <b>" . AA_Slice::getModuleName(AA::$module_id) . "</b>");
-  FrmInputMultiSelect('feed_id', _m('Imported slices'), $ext_feeds, '', 5, false, _m('feeds prefixed by (=) are "exact copy" feeds'));
-  FrmTabSeparator(_m("All remote nodes"));
-  FrmInputMultiSelect('rem_nodes', _m('Remote node'), $nodes, '', 5, true);
+
+if ($rows) {
+    array_unshift($rows, [_m("Remote slice"), _m("Node"), _m("Exact copy"), _m("State"), _m("Delete")]);
+    echo GetHtmlTable($rows,'th', _m("Existing remote imports into the slice") . " <b>" . AA_Slice::getModuleName(AA::$module_id) . "</b>");
+} else {
+    echo _m("No remote imports into the slice") . " <b>" . AA_Slice::getModuleName(AA::$module_id) . "</b>";
+}
+echo '<br><br>';
+
+
+  FrmTabCaption(_m("Inter Node Import"));
+  FrmInputSelect('rem_nodes', _m('Add from remote node'), $nodes, '', true);
   FrmTabEnd($form_buttons);
 ?>
 <script>
@@ -108,18 +114,12 @@ $form_buttons = [
         return null;
     }
 
-    function Delete() {
-        sel = SelectValue('document.f.feed_id')
-        if (sel == null) {
-            alert('<?php echo _m("No selected import"); ?>')
-            return
+    function Delete(sel) {
+        if (confirm('<?php echo _m("Are you sure you want to delete the import?"); ?>')) {
+            var url = "<?php echo StateUrl(self_base() . "se_inter_import.php"); ?>"
+            url += "&feed_id=" + sel
+            window.location = url
         }
-        if (!confirm('<?php echo _m("Are you sure you want to delete the import?"); ?>'))
-            return
-
-        var url = "<?php echo StateUrl(self_base() . "se_inter_import.php"); ?>"
-        url += "&feed_id=" + sel
-        window.location = url
     }
 
     function Submit() {

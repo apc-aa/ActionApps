@@ -9407,13 +9407,13 @@ class AA_Stringexpand_Manager extends AA_Stringexpand_Nevercache {
                 $mode_arr['S'] = '&#x2261';
             }
             if (array_key_exists('D', $mode_arr) AND !strlen($mode_arr['D'])) {
-                $mode_arr['D'] = '&#xd7;';
+                $mode_arr['D'] = '&#10005;';
             }
             if (array_key_exists('Dconfirm', $mode_arr) AND !strlen($mode_arr['Dconfirm'])) {
                 $mode_arr['Dconfirm'] = _m('Are you sure you want to permanently DELETE this record?');
             }
             if (array_key_exists('N', $mode_arr) AND !strlen($mode_arr['N'])) {
-                $mode_arr['N'] = _m('new');
+                $mode_arr['N'] = '+ '. _m('new');
             }
             if (array_key_exists('E', $mode_arr) AND !strlen($mode_arr['E'])) {
                 $mode_arr['E'] = _m('edit');
@@ -9432,11 +9432,11 @@ class AA_Stringexpand_Manager extends AA_Stringexpand_Nevercache {
                 $mode_arr['S'] = '&#x2261';
             }
             if (strpos($mode, 'D') !== false) {
-                $mode_arr['D'] = '&#xd7;';
+                $mode_arr['D'] = '&#10005;';
                 $mode_arr['Dconfirm'] = _m('Are you sure you want to permanently DELETE this record?');
             }
             if (strpos($mode, 'N') !== false) {
-                $mode_arr['N'] = _m('new');
+                $mode_arr['N'] = '+ '.  _m('new');
             }
             if (strpos($mode, 'E') !== false) {
                 $mode_arr['E'] = _m('edit');

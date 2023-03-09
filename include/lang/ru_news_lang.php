@@ -17,7 +17,7 @@ $mgettext_lang = "ru";
 // central/responder.php, row 150
 // include/loginform.inc, row 70
 // include/init_page.php, row 131
-$_m["Either your username or your password is not valid."]
+$_m["Either your username or your password is not valid"]
  = "";
 
 // ./diff.diff, row 128, 153
@@ -2058,7 +2058,7 @@ $_m["All remote nodes"]
  = "";
 
 // admin/se_inter_import.php, row 137
-$_m["Remote node"]
+$_m["Add from remote node"]
  = "";
 
 // admin/um_gedit.php, row 102
@@ -4937,7 +4937,7 @@ $_m["Please try again!"]
  = "";
 
 // include/loginform.inc, row 76
-$_m["If you are sure you have typed the correct password, please e-mail <a href=mailto:%1>%1</a>."]
+$_m["If you are sure you have typed the correct password, please e-mail <a href=mailto:%1>%1</a>"]
  = "";
 
 // include/um_gedit.php, row 43

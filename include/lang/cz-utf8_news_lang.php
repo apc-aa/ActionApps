@@ -130,12 +130,6 @@ $_m["Change current permissions"]
 $_m["Module"]
  = "Modul";
 
-$_m["If you are sure you have typed the correct password, please e-mail <a href=mailto:technical@ecn.cz>technical@ecn.cz</a>."]
- = "Pokud jste si jisti, že zadáváte správné jméno a heslo, obraťte se prosím \n\n"
-   ."     na <a href=mailto:actionapps@ecn.cz>actionapps@ecn.cz</a>.\n\n"
-   ."     <br>If you are sure you have typed the correct password, please e-mail \n\n"
-   ."     <a href=mailto:actionapps@ecn.cz>actionapps@ecn.cz</a>.";
-
 $_m["Show this field as a rich text editor (use only after having installed the necessary components!)"]
  = "Zobraz toto pole v rich text editoru (použijte až po nainstalování potřebných komponent!)";
 
@@ -374,8 +368,8 @@ $_m["Not in the list of possible values"]
 // central/responder.php, row 150
 // include/loginform.inc, row 70
 // include/init_page.php, row 131
-$_m["Either your username or your password is not valid."]
- = "Buď jméno nebo heslo nejsou v pořádku.";
+$_m["Either your username or your password is not valid"]
+ = "Buď jméno nebo heslo nejsou v pořádku";
 
 // ./diff.diff, row 128, 153
 // include/formutil.php, row 3109
@@ -2416,7 +2410,7 @@ $_m["All remote nodes"]
  = "Seznam uzlů";
 
 // admin/se_inter_import.php, row 137
-$_m["Remote node"]
+$_m["Add from remote node"]
  = "Vzdálený webík";
 
 // admin/um_gedit.php, row 102
@@ -5305,7 +5299,7 @@ $_m["Welcome! Please identify yourself with a username and a password:"]
 
 // include/loginform.inc, row 50
 $_m["Username:"]
- = "Uživatelské jméno<br>(User name):  ";
+ = "Uživatelské jméno / User name";
 
 // include/loginform.inc, row 53
 $_m["Type your username or mail"]
@@ -5313,7 +5307,7 @@ $_m["Type your username or mail"]
 
 // include/loginform.inc, row 56
 $_m["Password:"]
- = "Heslo<br>(Password):";
+ = "Heslo / Password";
 
 // include/loginform.inc, row 60
 $_m["Login now"]
@@ -5324,11 +5318,9 @@ $_m["Please try again!"]
  = "Zkuste to znovu, prosím!<br>Please try again!";
 
 // include/loginform.inc, row 76
-$_m["If you are sure you have typed the correct password, please e-mail <a href=mailto:%1>%1</a>."]
- = "Pokud jste si jisti, že zadáváte správné jméno a heslo, obraťte se prosím \n\n"
-   ."     na <a href=\"mailto:%1\">%1</a>.\n\n"
-   ."     <br>If you are sure you have typed the correct password, please e-mail \n\n"
-   ."     <a href=\"mailto:%1\">%1</a>.";
+$_m["If you are sure you have typed the correct password, please e-mail <a href=mailto:%1>%1</a>"]
+ = "Pokud jste si jisti, že zadáváte správné jméno a heslo, obraťte se prosím na <a href=\"mailto:%1\">%1</a>."
+   ."<br>If you are sure you have typed the correct password, please e-mail  <a href=\"mailto:%1\">%1</a>.";
 
 // include/um_gedit.php, row 43
 $_m["It is impossible to add group to permission system"]

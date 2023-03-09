@@ -180,10 +180,15 @@ class JsTriggers {
         return $slice_id ? JsTriggers::singleton4id($slice_id)->get($control, $unpacked_fieldid, $add) : '';
     }
 
-    public static function printSummary() {
+    /** get html table with list of possible triggers
+     * @return string
+     */
+    public static function getSummary(): string {
+        $ret = '';
         foreach (JsTriggers::CONTROL_TRIGGERS as $control => $trigs) {
-            echo '<tr><td>' . $control . '</td><td>' . join(", ", $trigs) . '</td></tr>';
+            $ret .= '<tr><td>' . $control . '</td><td>' . join(", ", $trigs) . '</td></tr>';
         }
+        return $ret;
     }
 
     public function isTriggers(): bool {

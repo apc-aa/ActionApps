@@ -136,7 +136,7 @@ function show_digest_filters() {
         $rowdesc = ($irow < $rows) ? $data[$irow]['description'] : '';
         $rowcond = ($irow < $rows) ? $data[$irow]['conds'] : '';
         FrmInputText("filters[$rowid][description]", _m("Alerts Selection")." ".($irow+1)." "._m("Description"), $rowdesc, 100, 50);
-        FrmTextarea("filters[$rowid][conds]", "conds[]", $rowcond,  get_row_count($rowcond, 50, 4), 50, false, "", "https://apc-aa.sourceforge.net/faq/#215");
+        FrmTextarea("filters[$rowid][conds]", "conds[]", $rowcond, get_row_count($rowcond, 50, 4), 50, false, "", "https://apc-aa.sourceforge.net/faq/#215");
     }
     FrmStaticText("", _m("If you need more selections, use 'Update' and on next Edit two empty boxes appear."));
 }
@@ -541,8 +541,8 @@ foreach ($VIEW_TYPES[$view_type] as $k => $v) {
         case "field":   FrmInputText(  $k, $label, $value, 254, 50, false, $help); break;
         case "field50": FrmInputText(  $k, $label, $value, 50, 50, true, $help); break;   // for name
         case "vid":     FrmInputText(  $k, $label. " - <a href=\"$view_url\" title=\"". _m('show this view') ."\">$view_id</a>", $value,  15, 15, false, $help, '', false, 'text', '', '[a-z][a-z_0-9]+'); break;
-        case "area":    FrmTextarea(   $k, $label, $value,   4, 50, false, $help, '', 1); break;
-        case "areabig": FrmTextarea(   $k, $label, $value,  15, 80, false, $help, '', 1); break;
+        case "area":    FrmTextarea($k, $label, $value, 4, 50, false, $help, '', 1); break;
+        case "areabig": FrmTextarea($k, $label, $value, 15, 80, false, $help, '', 1); break;
         case "seltype": FrmInputSelect($k, $label, $VIEW_TYPES_INFO[$view_type]['modification'], $value, false, $help); break;
         case "selfld":  FrmInputSelect($k, $label, $lookup_fields, $value, false, $help); break;
         case "selgrp":  FrmInputSelect($k, $label, $lookup_groups, $value, false, $help); break;

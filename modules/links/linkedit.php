@@ -435,9 +435,9 @@ echo '
     FrmInputText( 'original_name', _m('Original page name'), $original_name,  250, 50, false,
                    _m('Name of the page in original language'), get_help_url(AA_LINKS_HELP_LINK,"preklad-nazvu"));
     printChange('original_name', $original_name_change, $original_name);
-    FrmTextarea(  'description',  _m('Description'),    $description, 5, 60, false,
-                  _m('Do not use HTML tags and do not write words like "best page", ... The maximum length of the description should be about 250 characters.'),
-                  get_help_url(AA_LINKS_HELP_LINK,"popis-odkazu"));
+    FrmTextarea('description', _m('Description'), $description, 5, 60, false,
+        _m('Do not use HTML tags and do not write words like "best page", ... The maximum length of the description should be about 250 characters.'),
+        get_help_url(AA_LINKS_HELP_LINK, "popis-odkazu"));
     printChange('description', $description_change, $description);
 
     // do not show general categories to public (anonymous) users
@@ -454,9 +454,9 @@ echo '
     // FrmInputText( 'rate', _m('Rating'). ' (1-10)',           $rate,  2, 5, false);
     FrmInputEmail( 'initiator', _m('Author\'s e-mail'), $initiator,  250, 50, false, "", get_help_url(AA_LINKS_HELP_LINK,"e-mail"));
     printChange('initiator', $initiator_change, $initiator);
-    FrmTextarea(  'note',  _m('Editor\'s note'),    $note, 3, 60, false,
-                  _m('You can type any message here - it is never shown on the website'),
-                  get_help_url(AA_LINKS_HELP_LINK,"poznamka-odkaz"));
+    FrmTextarea('note', _m('Editor\'s note'), $note, 3, 60, false,
+        _m('You can type any message here - it is never shown on the website'),
+        get_help_url(AA_LINKS_HELP_LINK, "poznamka-odkaz"));
     printChange('note', $note_change, $note);
 
 if ( $r_state['link_id'] ) {        // 'edit link', not 'add link'

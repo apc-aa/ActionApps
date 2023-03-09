@@ -60,8 +60,8 @@ abstract class AA_Transformation implements \AA\Util\NamedInterface {
 
     /** _getVarname function
      *  Construct name of input form variable
-     *  It consist of classname, so we are able to guess which variable
-     *  is used for which class (child of AA_Transformation). It also contain
+     *  It consists of classname, so we are able to guess which variable
+     *  is used for which class (child of AA_Transformation). It also contains
      *  $input_id, so we are able to have more than one instance of the class
      *  in one form
      * @param string $name
@@ -94,9 +94,8 @@ abstract class AA_Transformation implements \AA\Util\NamedInterface {
         return $ret;
     }
 
-    /** getParam function
+    /**
      * @param $param_name
-     * @return $this->$param_name
      */
     function getParam($param_name) {
 //        return $this->parameters[$param_name]->getValue();
@@ -182,8 +181,8 @@ class AA_Transformation_Value extends AA_Transformation {
         $varname_new_content = AA_Transformation::_getVarname('new_content', $input_prefix, __CLASS__);
 
         FrmInputRadio($varname_new_flag, _m('Mark as'), $flag_options, get_if($_GET[$varname_new_flag],'u'));
-        FrmTextarea(  $varname_new_content, _m('New content'),       $_GET[$varname_new_content],  12, 80, false,
-               _m('You can use also aliases, so the content "&lt;i&gt;{abstract........}&lt;/i&gt;&lt;br&gt;{full_text......1}" is perfectly OK'));
+        FrmTextarea($varname_new_content, _m('New content'), $_GET[$varname_new_content], 12, 80, false,
+            _m('You can use also aliases, so the content "&lt;i&gt;{abstract........}&lt;/i&gt;&lt;br&gt;{full_text......1}" is perfectly OK'));
 
         FrmTabEnd();
         return ob_get_clean();
@@ -240,7 +239,7 @@ class AA_Transformation_Exactvalues extends AA_Transformation {
 
         $varname_new_content = AA_Transformation::_getVarname('new_content', $input_prefix, __CLASS__);
 
-        FrmTextarea(  $varname_new_content, _m('New content'), $_GET[$varname_new_content],  12, 80, false, _m('Exact value only - no AA expressions'));
+        FrmTextarea($varname_new_content, _m('New content'), $_GET[$varname_new_content], 12, 80, false, _m('Exact value only - no AA expressions'));
 
         FrmTabEnd();
         return ob_get_clean();
@@ -422,8 +421,8 @@ class AA_Transformation_AddValue extends AA_Transformation {
         $varname_new_content = AA_Transformation::_getVarname('new_content', $input_prefix, __CLASS__);
 
         FrmInputRadio($varname_new_flag, _m('Mark as'), $flag_options, get_if($_GET[$varname_new_flag],'u'));
-        FrmTextarea(  $varname_new_content, _m('New content'),       $_GET[$varname_new_content],  12, 80, false,
-               _m('You can use also aliases, so the content "&lt;i&gt;{abstract........}&lt;/i&gt;&lt;br&gt;{full_text......1}" is perfectly OK'));
+        FrmTextarea($varname_new_content, _m('New content'), $_GET[$varname_new_content], 12, 80, false,
+            _m('You can use also aliases, so the content "&lt;i&gt;{abstract........}&lt;/i&gt;&lt;br&gt;{full_text......1}" is perfectly OK'));
 
         FrmTabEnd();
         return ob_get_clean();
@@ -505,9 +504,9 @@ class AA_Transformation_ParseMulti extends AA_Transformation {
         $varname_delimiter = AA_Transformation::_getVarname('delimiter', $input_prefix, __CLASS__);
 
         FrmInputRadio($varname_new_flag, _m('Mark as'), $flag_options, get_if($_GET[$varname_new_flag],'u'));
-        FrmTextarea(  $varname_source, _m('Source text'),  $_GET[$varname_source],  12, 80, false,
-               _m('You can use also aliases, so the content "&lt;i&gt;{abstract........}&lt;/i&gt;&lt;br&gt;{full_text......1}" is perfectly OK'));
-        FrmTextarea( $varname_delimiter, _m('Delimiter'), $_GET[$varname_delimiter], 2, 80, false,
+        FrmTextarea($varname_source, _m('Source text'), $_GET[$varname_source], 12, 80, false,
+            _m('You can use also aliases, so the content "&lt;i&gt;{abstract........}&lt;/i&gt;&lt;br&gt;{full_text......1}" is perfectly OK'));
+        FrmTextarea($varname_delimiter, _m('Delimiter'), $_GET[$varname_delimiter], 2, 80, false,
             _m('use simple delimiter like | or longer like ---ENDTEXT---<br>use AA_LANG constant in delimiter to parse multilingual values like:   delimiter: |AA_LANG|   for Source text: |cz|text jedna|de|Ein text|en|text one'));
         FrmTabEnd();
         return ob_get_clean();
@@ -667,8 +666,8 @@ class AA_Transformation_Translate extends AA_Transformation {
         $varname_translation = AA_Transformation::_getVarname('translation', $input_prefix, __CLASS__);
 
         FrmInputRadio($varname_new_flag, _m('Mark as'), $flag_options, get_if($_GET[$varname_new_flag],'u'));
-        FrmTextarea(  $varname_translation, _m('Translations'),       $_GET[$varname_translation],  12, 80, false,
-        _m('Each translation on new line, translations separated by colon : (escape character for colon is #:).<br>You can use also aliases in the translation. There is also special alias _#0, which contain matching text - following translation is perfectly OK:<br><code> Bio:&lt;img src="_#0.jpg"&gt; ({publish_date....})</code><br>You can also use Regular Expressions - in such case the line would be "<code>:regexp:<regular expression>:<output></code>". You can use _#0 alias in <output>, which contains whole matching text.<br>Sometimes you want to remove specific value. In such case use <code>AA_NULL</code> text as translated text:<br> <code>Bio:AA_NULL</code><br>You may want also create more than one value from a value. Then separate the values by colon:<br> <code>Bio:Environment:Ecology</code> ("Bio" is replaced by two values). You can use any number of values here.'));
+        FrmTextarea($varname_translation, _m('Translations'), $_GET[$varname_translation], 12, 80, false,
+            _m('Each translation on new line, translations separated by colon : (escape character for colon is #:).<br>You can use also aliases in the translation. There is also special alias _#0, which contain matching text - following translation is perfectly OK:<br><code> Bio:&lt;img src="_#0.jpg"&gt; ({publish_date....})</code><br>You can also use Regular Expressions - in such case the line would be "<code>:regexp:<regular expression>:<output></code>". You can use _#0 alias in <output>, which contains whole matching text.<br>Sometimes you want to remove specific value. In such case use <code>AA_NULL</code> text as translated text:<br> <code>Bio:AA_NULL</code><br>You may want also create more than one value from a value. Then separate the values by colon:<br> <code>Bio:Environment:Ecology</code> ("Bio" is replaced by two values). You can use any number of values here.'));
 
         FrmTabEnd();
         return ob_get_clean();
@@ -733,8 +732,8 @@ class AA_Transformation_Replace extends AA_Transformation {
         $varname_searchpattern = AA_Transformation::_getVarname('searchpattern', $input_prefix, __CLASS__);
         $varname_replacestring = AA_Transformation::_getVarname('replacestring', $input_prefix, __CLASS__);
 
-        FrmTextarea(  $varname_searchpattern, _m('Search'),  $_GET[$varname_searchpattern],  4, 80);
-        FrmTextarea(  $varname_replacestring, _m('Replace'), $_GET[$varname_replacestring],  4, 80);
+        FrmTextarea($varname_searchpattern, _m('Search'), $_GET[$varname_searchpattern], 4, 80);
+        FrmTextarea($varname_replacestring, _m('Replace'), $_GET[$varname_replacestring], 4, 80);
         FrmTabEnd();
         return ob_get_clean();
     }
@@ -808,8 +807,8 @@ class AA_Transformation_Regexpreplace extends AA_Transformation {
         $varname_replacestring = AA_Transformation::_getVarname('replacestring', $input_prefix, __CLASS__);
         $varname_unalias       = AA_Transformation::_getVarname('unalias',       $input_prefix, __CLASS__);
 
-        FrmTextarea(  $varname_searchpattern, _m('Search'),  $_GET[$varname_searchpattern],  4, 80);
-        FrmTextarea(  $varname_replacestring, _m('Replace'), $_GET[$varname_replacestring],  4, 80);
+        FrmTextarea($varname_searchpattern, _m('Search'), $_GET[$varname_searchpattern], 4, 80);
+        FrmTextarea($varname_replacestring, _m('Replace'), $_GET[$varname_replacestring], 4, 80);
         FrmInputChBox($varname_unalias,       _m('Unalias'), $_GET[$varname_unalias], false, "", 1, false, _m('perform unaliasing on result strings'));
         FrmTabEnd();
         return ob_get_clean();

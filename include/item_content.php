@@ -587,7 +587,46 @@ class AA_Content implements Iterator, ArrayAccess, Countable {
         return $ret;
     }
 
-/** Iterator interface */
+    /** Show the item in one row of table  */
+    function __toString(): string {
+        $tab = [];
+        foreach ($this->content as $fid => $v) {
+            $val = array_column($v,'value');
+            $tab[$fid] = (count($val) > 1) ? json_encode($val) : $val;
+        }
+        return GetHtmlTable($tab,'key');
+    }
+
+    /** showAsRowInTable function
+     *  Show the item in one row in a table according to the order specified
+     *  by slice fields $slf
+     * @param $slf
+     * @param $tr_att
+     */
+    function showAsRowInTable($slf, $tr_att = "") {
+        echo "<tr " . $tr_att . " >";
+        foreach ($slf as $k => $foo) {
+            if (!($v = $this->content[$k])) {
+                echo "<td></td>";
+            } else {
+                echo "<td>";
+                unset($s);
+                foreach ($v as $v2) {
+                    $v2['value'] = stripslashes($v2['value']);
+                    $s[]         = $v2['html'] ? $v2['value'] : safe($v2['value']);
+                }
+                if (count($s) == 1) {
+                    echo $s[0];
+                } else {
+                    echo "[ " . implode(", ", $s) . " ]";
+                }
+                echo "</td>";
+            }
+        }
+        echo "</tr>";
+    }
+
+    /** Iterator interface */
     public function rewind()      { reset($this->content); }
     public function current()     { return $this->getAaValue(key($this->content)); }
     public function key()         { return key($this->content); }
@@ -1610,34 +1649,6 @@ class ItemContent extends AA_Content {
         return $trans_actions->transform($itemContent, $slice_fields, $this);
     }
 
-    /** showAsRowInTable function
-     *  Show the item in one row in a table according to the order specified
-     *  by slice fields $slf
-     * @param $slf
-     * @param $tr_att
-     */
-    function showAsRowInTable($slf, $tr_att="") {
-        echo "<tr ".$tr_att." >";
-        foreach ( $slf as $k => $foo) {
-            if (!($v = $this->content[$k])) {
-                echo "<td></td>";
-            } else {
-                echo "<td>";
-                unset($s);
-                foreach ($v as $v2) {
-                    $v2['value'] = stripslashes($v2['value']);
-                    $s[] = $v2['html'] ? $v2['value'] : safe($v2['value']);
-                }
-                if (count($s) == 1) {
-                    echo $s[0];
-                } else {
-                    echo "[ ". implode(", ",$s) . " ]";
-                }
-                echo "</td>";
-            }
-        }
-        echo "</tr>";
-    }
 }
 
 /** itemIsDuplicate function

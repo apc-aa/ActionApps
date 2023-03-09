@@ -128,15 +128,15 @@ foreach( $set_ids as $i => $set_id ) {
     FrmHidden("objid[$k]", $set->getId());
     FrmStaticText(_m('ID'), $set->getId());
     FrmInputText("name[$k]", _m("Set name %1",   [$k]), $set->getName(),             32, 32, false, _m('use alphanumeric characters only'));  // it is not absolutet necessary to use alphanum only, but it is easier to use, then
-    FrmTextarea("sli[$k]", _m("Slices %1",       [$k]), join('-',$set->getModules()), 2, 60, false, _m('possibly dash separated'));
-    FrmTextarea("cond[$k]",  _m("Conditions %1", [$k]), $set->getCondsAsString(),     4, 60, false, _m('Use "d-..." or "conds[]" conditions'));
+    FrmTextarea("sli[$k]", _m("Slices %1", [$k]), join('-', $set->getModules()), 2, 60, false, _m('possibly dash separated'));
+    FrmTextarea("cond[$k]", _m("Conditions %1", [$k]), $set->getCondsAsString(), 4, 60, false, _m('Use "d-..." or "conds[]" conditions'));
     FrmInputText("sort[$k]", _m("Sort %1",       [$k]), $set->getSortAsString(),    500, 60, false, _m('Use "headline.......,publish_date....-" or "sort[]" conditions'));
 }
 
 ++$k;
 FrmInputText("name[$k]", _m("Set name %1", [$k]), '', 32, 32, false, _m('use alphanumeric characters only'));  // it is not absolutet necessary to use alphanum only, but it is easier to use, then
-FrmTextarea("sli[$k]", _m("Slices %1",     [$k]), '',  2, 60, false, _m('possibly dash separated'));
-FrmTextarea("cond[$k]",  _m("Conditions %1", [$k]), '',  4, 60, false, _m('Use "d-..." or "conds[]" conditions'));
+FrmTextarea("sli[$k]", _m("Slices %1", [$k]), '', 2, 60, false, _m('possibly dash separated'));
+FrmTextarea("cond[$k]", _m("Conditions %1", [$k]), '', 4, 60, false, _m('Use "d-..." or "conds[]" conditions'));
 FrmInputText("sort[$k]", _m("Sort %1",       [$k]), '', 500, 60,false, _m('Use "headline........,publish_date....-" or "sort[]" conditions'));
 FrmHidden("setcount", $k);
 

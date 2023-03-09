@@ -167,19 +167,19 @@ $form_buttons = [
 FrmTabCaption(_m("Listing of items in Admin interface"), $form_buttons);
 
 FrmTextarea("admin_format_top", _m("Top HTML"), $admin_format_top, 4, 60,
-            false, _m("HTML code which appears at the top of slice area")
-            .'<br>'.AA_View::getViewJumpLinks($admin_format_top), '', 1);
+    false, _m("HTML code which appears at the top of slice area")
+    . '<br>' . AA_View::getViewJumpLinks($admin_format_top), '', 1);
 FrmTextarea("admin_format", _m("Item format"), $admin_format, 12, 60, true,
-            _m("Put here the HTML code combined with aliases form bottom of this page\n                     <br>The aliases will be substituted by real values from database when it will be posted to page")
-            .'<br>'.AA_View::getViewJumpLinks($admin_format), '', 1);
+    _m("Put here the HTML code combined with aliases form bottom of this page\n                     <br>The aliases will be substituted by real values from database when it will be posted to page")
+    . '<br>' . AA_View::getViewJumpLinks($admin_format), '', 1);
 FrmTextarea("admin_format_bottom", _m("Bottom HTML"), $admin_format_bottom,
-            4, 60, false, _m("HTML code which appears at the bottom of slice area")
-            .'<br>'.AA_View::getViewJumpLinks($admin_format_bottom), '', 1);
+    4, 60, false, _m("HTML code which appears at the bottom of slice area")
+    . '<br>' . AA_View::getViewJumpLinks($admin_format_bottom), '', 1);
 FrmInputText("admin_remove", _m("Remove strings"), $admin_remove, 254, 50, false,
              _m("Removes empty brackets etc. Use ## as delimiter."));
 FrmTextarea("admin_noitem_msg", _m("HTML code for \"No item found\" message"), $admin_noitem_msg,
-            4, 60, false, _m("Code to be printed when no item is filled (or user have no permission to any item in the slice)")
-            .'<br>'.AA_View::getViewJumpLinks($admin_noitem_msg), '', 1);
+    4, 60, false, _m("Code to be printed when no item is filled (or user have no permission to any item in the slice)")
+    . '<br>' . AA_View::getViewJumpLinks($admin_noitem_msg), '', 1);
 FrmInputSelect("inputform_sel", _m("Use special view"), $inputform_vids, $inputform_vid, false,
              _m("You can set special view - template for the Inputform on \"Design\" -> \"View\" page (inputform view)"));
 $slice = AA_Slice::getModule(AA::$module_id);

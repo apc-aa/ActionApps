@@ -836,9 +836,9 @@ class AA_Metabase {
      * @usage AA::Metabase()->doInsertMulti('log', [['time'=>time(),'user'=>$uid1, 'type'=>$event, 'selector'=>$selector, 'params'=>$params],
      *                                              ['time'=>time(),'user'=>$uid2, 'type'=>$event, 'selector'=>$selector, 'params'=>$params]]);
      * @see AA_Metabase::doInsert()
-     * @param  string   $tablename table, where to store data
-     * @param  string[] $data[][]  data rows - all data unpacked. The values are converted to correct ones
-     * @param  string   $nohalt  'nohalt' - do not halt on database error
+     * @param  string     $tablename table, where to store data
+     * @param  string[][] $data[][]  data rows - all data unpacked. The values are converted to correct ones
+     * @param  string     $nohalt  'nohalt' - do not halt on database error
      * @return bool|int   0|false on error
      * @todo   process it as one SQL insert statement
      */
@@ -851,7 +851,7 @@ class AA_Metabase {
     }
 
     /** The best (most safe) low-level approach to delete data in the AA table
-     *  - the packed keys are packesd automaticaly, the integer data are typecasted to numbers, ...
+     *  - the packed keys are packed automatically, the integer data are typecast to numbers, ...
      *  usage: AA::Metabase()->doDelete(...);
      * @param string   $tablename
      * @param string[] $keydata

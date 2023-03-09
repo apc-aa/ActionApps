@@ -412,9 +412,9 @@ echo "
       echo " <div class=tabhlp>". _m("Choose a Constant Group or a Slice.") ."</div>
             </div>
              <div>
-              <a href='javascript:CallConstantEdit(0)'>&larr;&nbsp;". $constants_menu[0] ."</a><br>
-              <a href='javascript:CallConstantEdit(1)'>&larr;&nbsp;". $constants_menu[1] ."</a><br>
-              <a href='". get_admin_url('se_constant.php', ['return_url' => 'se_inputform.php', 'fid' => $fid]). "'>". $constants_menu[2] ."</a>
+              <a class='btn btn-s' href='javascript:CallConstantEdit(0)'>&larr;&nbsp;". $constants_menu[0] ."</a>
+              <a class='btn btn-s' href='javascript:CallConstantEdit(1)'>&larr;&nbsp;". $constants_menu[1] ."</a>
+              <a class='btn btn-s' href='". get_admin_url('se_constant.php', ['return_url' => 'se_inputform.php', 'fid' => $fid]). "'>". $constants_menu[2] ."</a>
              </div>
             </div>";
 
@@ -478,9 +478,9 @@ echo $tab_separator;
 
 FrmInputChBox("html_show", _m("Show 'HTML' / 'plain text' option"), $html_show);
 FrmInputChBox("html_default", _m("'HTML' as default"), $html_default, false, '', 1, false, _m('HTML option means, that the field is printed as filled using {field...........} alias. Plain text means the newlines are converted to &lt;br&gt; etc. HTML is good option for any nontextual data, at least.'));
-FrmTextarea(  "input_help", _m("Help for this field"), $input_help, 2, 50, false, _m("Shown help for this field"));
+FrmTextarea("input_help", _m("Help for this field"), $input_help, 2, 50, false, _m("Shown help for this field"));
 FrmInputText("input_morehlp", _m("More help"), $input_morehlp, 254, '', false,  _m("Text shown after user click on '?' in input form"));
-FrmTextarea(  "input_before", _m("Before HTML code"), $input_before, 4, 50, false, _m("Code shown in input form before this field"));
+FrmTextarea("input_before", _m("Before HTML code"), $input_before, 4, 50, false, _m("Code shown in input form before this field"));
 
 echo $tab_separator;
 echo "
@@ -518,7 +518,7 @@ for ($iAlias=1; $iAlias <= 3; ++$iAlias) {
 
     FrmStaticText(_m("Alias")." $iAlias", $aname_row,'',"", false);
     FrmInputSelect($alias_func_f, _m("Function"), $func_types, $$alias_func_f, false, $alias_hlp);
-    FrmTextarea($alias_func, _m("Parameters"), $$alias_func, 8, 60, false, AA_View::getViewJumpLinks('view.php?'.$$alias_func)); // added for f_v parameters
+    FrmTextarea($alias_func, _m("Parameters"), $$alias_func, 8, 60, false, AA_View::getViewJumpLinks('view.php?' . $$alias_func)); // added for f_v parameters
     FrmTextarea($alias_help, _m("Description"), $$alias_help, 2, 0);
     if ($iAlias != 3) {
         echo "\n    <tr><td colspan=2><hr></td></tr><tr style='visibility:collapse;'><td colspan=2></td></tr>";  // second row just for nicer table stripes

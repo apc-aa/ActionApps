@@ -91,7 +91,7 @@ if ($nobody) {
     $_POST['username'] = $free;
     $_POST['password'] = $freepwd;
     if ( !$auth->auth_validatelogin()) {
-        echo _m("Either your username or your password is not valid.");
+        echo _m("Either your username or your password is not valid");
         exit;
     }
 }

@@ -71,7 +71,7 @@ function get_aamenus() {
     $input_view = (isset($profile) AND $profile->getProperty('input_view')) ? '&vid='.$profile->getProperty('input_view') : '';
 
     $aamenus["additem"] = [
-        "label" => GetLabel($profile,'ui_manager','top_additem', _m("Add Item")),
+        "label" => GetLabel($profile,'ui_manager','top_additem', '+ '. _m("Add Item")),
         "href"  => "admin/itemedit.php3?add=1$input_view",
         "cond"  => ($profile->getProperty('ui_manager', 'top_additem') !== ''),
         "level" => "main"

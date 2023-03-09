@@ -93,15 +93,12 @@ function _m($id, $params=[]): string {
     if (!strlen($id)) {
         return '';
     }
-    if (!$_m) {
-        return (string)$id;
-    }
 
     //static $count = 0;
     //$arr = ['<hr>', ++$count, $id, $_m[$id], $GLOBALS['mgettext_domain']];
     //array_walk($arr, function ($v) { echo "<br>".$v;});
 
-    $retval = (string)$_m[$id];
+    $retval = $_m ? (string)$_m[$id] : '';
     if (!$retval) {
         $retval = (string)$id;
     }

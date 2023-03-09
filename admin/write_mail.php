@@ -197,7 +197,7 @@ if ($user_templates) {
     FrmInputSelect('template_id', _m('Email template'), $user_templates,  $_POST['template_id']);
 }
 
-FrmTextarea(   'body',        _m('Body'),              $_POST['body'],         30, 80, true , '', '', '', true);
+FrmTextarea('body', _m('Body'), $_POST['body'], 30, 80, true, '', '', '', true);
 FrmInputEmail(  'header_from', _m('From (email)'),      $_POST['header_from'], 254, 80, true );
 FrmInputEmail(  'reply_to',    _m('Reply to (email)'),  $_POST['reply_to'],    254, 80);
 FrmInputEmail(  'errors_to',   _m('Errors to (email)'), $_POST['errors_to'],   254, 80);

@@ -76,9 +76,9 @@ try {
     // array ( )
     $uses_modules = InputVars::arrayPOST('uses_modules');
     // array ( '41415f436f7…' => 1, )
-    $uses_modules_1 = InputVars::idPOST('uses_modules_1');
+    // $uses_modules_1 = InputVars::idPOST('uses_modules_1');  // ignore - not needed here
     // array ( 'P' => 5, )
-    $uses_modulesp = InputVars::stringPOST('uses_modulesp'); // alpha
+    // $uses_modulesp = InputVars::stringPOST('uses_modulesp'); // alpha   - ignore - not needed here
     $cancel = InputVars::boolPOST('cancel');
     $err = InputVars::arrayGETPOST('err');
     $Msg = InputVars::stringGETPOST('Msg');
@@ -123,7 +123,6 @@ if ($add || $update) {
                 break;
             }
         }
-
         // validate all fields needed for module table (name, slice_url, lang_file, owner)
         ValidateModuleFields( $name, $slice_url, $priority, $lang_file, $owner, $err );
         $deleted          = ( $deleted  ? 1 : 0 );
@@ -148,15 +147,14 @@ if ($add || $update) {
         $p_module_id   = q_pack_id($module_id);
 
         // store used modules into relation table
-        $varset->doDeleteWhere('relation', "source_id='$p_module_id' AND flag='".REL_FLAG_MODULE_DEPEND."'");
+        DB_AA::delete('relation', [['source_id', $module_id, 'l'],['flag',REL_FLAG_MODULE_DEPEND,'i']]);
+
         if (is_array($uses_modules)) {
+            $data = [];
             foreach ($uses_modules as $rel_slice_id) {
-                $varset->clear();
-                $varset->add("source_id",      "text", $p_module_id);
-                $varset->add("destination_id", "text", q_pack_id($rel_slice_id));
-                $varset->add("flag",           "number", REL_FLAG_MODULE_DEPEND);
-                $varset->doInsert('relation');
+                $data[] = ["source_id" => $module_id, "destination_id" => $rel_slice_id, "flag" => REL_FLAG_MODULE_DEPEND];
             }
+            AA::Metabase()->doInsertMulti('relation', $data);
         }
 
         // now set all module specific settings
@@ -235,13 +233,13 @@ if ($template['W']) {           // set new name for new module
 if ( $template['W'] ) {
     $form_buttons = [
         'insert',
-                           'template[W]' => ['type'=>"hidden", 'value'=> $template['W']],
-                           'add'         => ['type'=>"hidden", 'value'=> 1],
+        'template[W]' => ['type'=>"hidden", 'value'=> $template['W']],
+        'add'         => ['type'=>"hidden", 'value'=> 1],
     ];
 } else {
     $form_buttons = [
         'update',
-                           "update"  => ['type' => 'hidden', 'value'=>'1'],
+        "update"  => ['type' => 'hidden', 'value'=>'1'],
     ];
 }
 
@@ -268,7 +266,6 @@ $apage->setTitle($template['W'] ? _m("Add Site") : _m("Edit Site"));
 $apage->addRequire(get_aa_url('/javascript/js_lib.min.js?v='.AA_JS_VERSION, '', false));
 $apage->addRequire($headcode, 'AA_Req_Headcode');
 $apage->addRequire('codemirror@5');
-//$apage->addRequire($script2run, 'AA_Req_Load');
 $apage->setForm();
 $apage->printHead($err, $Msg);
 
@@ -301,11 +298,10 @@ $apage->printHead($err, $Msg);
             $slice_selection[$k] = $v['name'];
         }
     }
-//    $uses_modules = GetTable2Array("SELECT source_id, destination_id FROM relation WHERE source_id='".q_pack_id($module_id)."' AND flag='".REL_FLAG_MODULE_DEPEND."'", "", 'unpack:destination_id');
+
+    //    $uses_modules = GetTable2Array("SELECT source_id, destination_id FROM relation WHERE source_id='".q_pack_id($module_id)."' AND flag='".REL_FLAG_MODULE_DEPEND."'", "", 'unpack:destination_id');
     $uses_modules = $module->getRelatedSlices();
-
     FrmTwoBox('uses_modules[]', _m('Uses slices') , $slice_selection, $uses_modules, 8, false, '', '', "Select all slices which you are using for the site. It is used for caching as well as for seo string search.");
-
     if ($module_id) {
         FrmStaticText(_m("Additional setting"), AA_Module_Site::getModuleObjectForm($module_id), '', '', false);
     }

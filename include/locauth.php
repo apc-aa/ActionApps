@@ -75,10 +75,13 @@ class AA_Auth extends Auth {
         $password = $_POST["password"];  // in cookies - if someone writes
         // to cookies username, then the
         // cookies username is used - error
+
+        bind_mgettext_domain(DEFAULT_LANG_INCLUDE);
+
         if (!$login_msg and $username) {
-            $login_msg = '<div style="color:red;"><b>' . _m("Either your username or your password is not valid.") . '</b></div>';
+            $login_msg = '<div style="color:red;"><b>' . _m("Either your username or your password is not valid") . '</b></div>';
             $login_msg .= '<div>' . _m("Please try again!") . '</div>';
-            $login_msg .= '<div>' . _m("If you are sure you have typed the correct password, please e-mail <a href=mailto:%1>%1</a>.", [ERROR_REPORTING_EMAIL]) . '</div>';
+            $login_msg .= '<div>' . _m("If you are sure you have typed the correct password, please e-mail <a href=mailto:%1>%1</a>", [ERROR_REPORTING_EMAIL]) . '</div>';
         }
 
         require_once __DIR__ . "/loginform.inc";

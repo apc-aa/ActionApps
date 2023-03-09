@@ -7882,38 +7882,49 @@ function AA_Response(method, resp_params, ok_func, err_func) {
     });
 }
 
+/** do not use any library dependencies */
 function displayInput(valdivid, item_id, fid, widget_type, widget_properties, context) {
-    // already editing ?
-    switch ($(valdivid).readAttribute('data-aa-edited')) {
-       case '1': return;
-       //case '2': $(valdivid).setAttribute("data-aa-edited", "0");  // the state 2 is needed for Firefox 3.0 - Storno not works
-       //          return;
+  // already editing ?
+  var el = document.getElementById(valdivid);
+  switch (el.getAttribute('data-aa-edited')) {
+    case '1': return;
+      //case '2': document.getElementById(valdivid).setAttribute("data-aa-edited", "0");  // the state 2 is needed for Firefox 3.0 - Storno not works
+      //          return;
+  }
+
+  el.setAttribute("data-aa-oldval", el.innerHTML);
+  var width = el.offsetWidth;
+
+  el.innerHTML = AA_GetConf('loader');
+  AA_Response('Get_Widget', { "field_id": fid, "item_id": item_id, "widget_type": widget_type, "widget_properties": widget_properties, context: context}, function(responseText) {
+    // var style = 'position:absolute; left:0px; top:0px; width:'+width+'px; z-index:1000;';
+    if (width>200) {
+      responseText = responseText.replace('class="ajax_widget aa-widget aa-ajax-open"', 'class="ajax_widget aa-widget aa-ajax-open" style="width:'+width+'px;"');
     }
+    el.innerHTML = responseText;
+    el.setAttribute("data-aa-edited", "1");
+    var firstInput = el.querySelector('input, select, textarea');
+    if (firstInput != null) {
+      firstInput.focus();
+      if (firstInput.tagName.toLowerCase()==="textarea") {
+        // add keydown event handler on firstElement
+        firstInput.addEventListener('keydown', function(event) {
+          switch (event.key) {
+            case "Escape": el.querySelector('input.cancel-button').click(); break; // Esc
+          }
+        });
+      } else {
+        firstInput.addEventListener('keydown', function(event) {
+          switch (event.key) {
+            case "Escape": el.querySelector('input.cancel-button').click(); break;
+            case "Enter"   : el.querySelector('input.save-button').click(); break;
+            //case "Tab": //@todo
+          }
+        });
 
-    // store current content
-    $(valdivid).setAttribute("data-aa-oldval", $(valdivid).innerHTML);
-    var width = $(valdivid).getWidth();
-
-    $(valdivid).update(AA_GetConf('loader'));
-    AA_Response('Get_Widget', { "field_id": fid, "item_id": item_id, "widget_type": widget_type, "widget_properties": widget_properties, context: context}, function(responseText) {
-            // var style = 'position:absolute;background:#f6f6f6;padding:10px;border:solid 1px #c7c7c7;box-shadow:0 0 8px rgba(0,0,0,0.19);z-index:100;';
-            if (width>200) {
-                responseText = responseText.replace('class="ajax_widget aa-widget aa-ajax-open"', 'class="ajax_widget aa-widget aa-ajax-open" style="width:'+width+'px;"');
-            }
-            $(valdivid).update(responseText);
-            // $(valdivid).update(responseText.replace('class=ajax_widget', 'class=ajax_widget style="'+style+'"'));  // new value
-            $(valdivid).setAttribute('data-aa-edited', '1');
-            var firstElement = $(valdivid).select('input','select', 'textarea')[0];
-            if(firstElement != null) {
-                firstElement.activate();
-                $(firstElement).on('keydown', function(event) {
-                  switch (event.keyCode) {
-                     // done by type submit case 13: $(this).nextAll('input.save-button').click();   break; // Enter
-                     case Event.KEY_ESC: $(valdivid).select('input.cancel-button')[0].simulate('click'); break; // Esc
-                  }
-               });
-            }
-    });
+      }
+    }
+  });
 }
 
 /** return back old value - CANCEL pressed on AJAX widget */

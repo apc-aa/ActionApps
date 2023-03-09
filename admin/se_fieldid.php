@@ -262,12 +262,11 @@ $d_fields = AA_Fields::getFields4Select(unpack_id('AA_Core_Fields..'), 'all', 'i
 $apage = new AA_Adminpageutil('sliceadmin','field_ids');
 $apage->setTitle(_m("Admin - change Field IDs"));
 $apage->printHead($err, $Msg);
-
 if ($update) {
     echo "$nchanges "._m("field IDs were changed").".<br>";
 }
 
-FrmTabCaption(_m("Admin - change Field IDs"));
+FrmTabCaption(_m("Change Field IDs"));
 
 echo"<tr><td>"._m("This page allows to change field IDs. It is a bit dangerous operation and may last long.\n    You need to do it only in special cases, like using search form for multiple slices. <br><br>\n    Choose a field ID to be changed and the new name and number, the dots ..... will be\n    added automatically.<br>")."</td></tr>
 <tr><td><br>"._m("Change from").": <select name='old_id'>";
@@ -300,7 +299,7 @@ echo "</select> <select name='new_id_number'>
 for ($i = 1; $i <= 9999; ++$i) {
     echo "<option>$i</option>";
 }
-echo "</select><br><br>";
+echo "</select><br><br></td></tr>";
 
 $form_buttons =  [
     "update" => ["type" => "hidden", "value" => "1"],
@@ -309,31 +308,11 @@ $form_buttons =  [
 ];;
 FrmTabEnd($form_buttons);
 
-//FrmTabSeparator(_m("Fields"));
-
-/*
-    <input type=hidden name=\"update\" value=1>
-    <input type=submit name=update value='". _m("Update") ."'>&nbsp;&nbsp;
-    <input type=submit name=cancel value='". _m("Cancel") ."'>
-    </td></tr></table>";
-<br>
-<table class="aa-table">
-<tr height=10><td colspan=2></td></tr>
-*/
-?>
-<tr>
- <th><?php echo _m("Id") ?></th>
- <th><?php echo _m("Field") ?></th>
-</tr>
-<tr><td colspan="2"><hr></td></tr>
-<?php
-    foreach ($s_fields as $fid => $fname) {
-        if (!in_array($fid, $reserved_ids)) {
-            echo "
-            <tr>
-            <td>&nbsp;&nbsp;$fid&nbsp;&nbsp;</td>
-            <td>&nbsp;&nbsp;<b>$fname&nbsp;&nbsp;</b></td></tr>";
-        }
+$rows = [[_m("Id"), _m("Field")]];
+foreach ($s_fields as $fid => $fname) {
+    if (!in_array($fid, $reserved_ids)) {
+        $rows[] = [$fid, $fname];
     }
-
+}
+$apage->addHelpbox('', GetHtmlTable($rows, 'th'));
 $apage->printFoot();

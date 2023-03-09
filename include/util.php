@@ -59,7 +59,7 @@ require_once __DIR__ . '/formutil.php';
  * @return string
  */
 function a_href($url, $label, array $attr=[]): string {
-    $add = array_reduce( array_keys($attr), function ($str, $key) use ($attr) { return $str . ' ' . $key . '="' . safe($attr[$key]) . '"'; });
+    $add = htmlattr($attr);
     return '<a href="'.safe($url) ."\" $add>$label</a>";
 }
 

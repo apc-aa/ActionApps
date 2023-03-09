@@ -939,9 +939,9 @@ class AA_Inputfield {
                             $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems, null, ($add_slice_pwd ? AA_Credentials::encrypt($add_slice_pwd) : null), null, $const_param);
                             $this->inputMultiSelect($rows);
                             break;
-                case 'fil': [$accepts, $text, $hlp] = $this->param;
-                            $this->inputFile($accepts, $text, $hlp);
-                            break;
+//                case 'fil': [$accepts, $text, $hlp] = $this->param;
+//                            $this->inputFile($accepts, $text, $hlp);
+//                            break;
                 case 'dte': if ( strstr($this->param[0], "'")) {     // old format
                                 $this->param = explode("'",$this->param[0]);
                             }
@@ -1017,6 +1017,7 @@ class AA_Inputfield {
                 case 'edt':
                 case 'mch':
                 case 'mng': // Manager
+                case 'fil':
                 //case 'hid': // not prepared yet - the field name and help is visible in inputWidget
                 //case 'pwd':
                 //case 'txt':
@@ -1153,8 +1154,8 @@ class AA_Inputfield {
 
         if ( $this->html_rb_show ) {
             $htmlvar     = $varname."html";
-            $radio_html  = "<input type=\"radio\" name=\"$htmlvar\" value=\"h\"". (  $this->html_flag ? " checked>" : ">" )."</input>";
-            $radio_plain = "<input type=\"radio\" name=\"$htmlvar\" value=\"t\"". ( !$this->html_flag ? " checked>" : ">" )."</input>";
+            $radio_html  = "<input type=\"radio\" name=\"$htmlvar\" value=\"h\"". (  $this->html_flag ? " checked>" : ">" );
+            $radio_plain = "<input type=\"radio\" name=\"$htmlvar\" value=\"t\"". ( !$this->html_flag ? " checked>" : ">" );
             $htmlareaedit= "<a href=\"javascript:openHTMLAreaFullscreen('".$varname."');\">"._m("Edit in HTMLArea")."</a>"; // used for HTMLArea
             // conversions menu
             $convertor   = $conv ? $this->get_convertors() : false;
@@ -1170,7 +1171,7 @@ class AA_Inputfield {
             $this->echovar($radio_plain, 'plain_rb');
             $this->echoo(_m("Plain text"));
             $this->echoo('</label></span>');
-            $this->echoo('<span id="arealinkspan'.$varname.'" class="aa-arealink btn" style="display:none">'); // used for hiding "edit in htmlarea" link, dont remove
+            $this->echoo('<span id="arealinkspan'.$varname.'" class="aa-arealink btn" style="display:none">'); // used for hiding "edit in htmlarea" link, don't remove
             $this->echovar($htmlareaedit, 'htmlarea_edit_link');
             $this->echoo('</span>');
 
@@ -2167,7 +2168,7 @@ class AA_Inputfield {
     }
     //END// Local URL Picker | Omar/Jaime | 11-06-2005
 
-    /** Hidden fied added to inputs, which sends no POST variable if unfilled
+    /** Hidden field added to inputs, which sends no POST variable if unfilled
      *  (so we do not know the widget for the field was shown)
      * @param string $name
      * @return string
@@ -2346,11 +2347,11 @@ function FrmHidden($name, $val, $safing=true ) {
  * @param bool   $needed
  * @param string $hlp
  * @param string $morehlp
- * @param string $single
+ * @param bool   $single
  * @param bool   $showrich_href
  * @param int    $maxlength
  */
-function FrmTextarea($name, $txt, $val, $rows=4, $cols=60, $needed=false, $hlp="", $morehlp="", $single="", $showrich_href=false, $maxlength=0) {
+function FrmTextarea($name, $txt, $val, $rows=4, $cols=60, $needed=false, $hlp="", $morehlp="", $single=false, $showrich_href=false, $maxlength=0) {
     $html  = false;   // it was in parameter, but was never used in the code /honzam 05/15/2004
     $add   = false;   // in parameter, but never filled. Honza 24.4.2013
     $input = new AA_Inputfield($val, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp);
@@ -2820,10 +2821,11 @@ function getFrmInputButtons($buttons, $print_hidden = true, $prefix = ''): strin
  * @param string $mode
  * @return string
  */
-function getFrmTabRow( $row, $mode='td') {
+function getFrmTabRow( $row, $mode='td', $attrs=[]) {
     $ret = '';
+    $add = $attrs ? ' '.htmlattr($attrs) : '';
     if ( isset($row) AND is_array($row) ) {
-        $ret .= "\n <tr>";
+        $ret .= "\n <tr$add>";
         foreach ( $row as $col ) {
             $ret .= ( !is_array($col) ? "<$mode>$col</$mode>" : "<$mode " .$col['attr']. '>'. $col['text'] ."</$mode>");
         }
@@ -2886,7 +2888,11 @@ function GetHtmlTable( array $content, $mode='td', $caption='', $clasic=false ) 
     $ret = getFrmTabCaption($caption, [], $clasic ? 'data-aa-class=clasic' : '');
     $first = true;
     foreach ($content as $row) {
-        $ret .= getFrmTabRow( $row , ($mode=='th' AND $first) ? 'th' : 'td');
+        if ($mode=='th' AND $first) {
+            $ret .= getFrmTabRow( $row , 'th', ['class'=>'aa-tbl-header']);
+        } else {
+            $ret .= getFrmTabRow($row);
+        }
         $first = false;
     }
     $ret .= getFrmTabEnd();
@@ -3156,7 +3162,6 @@ function getSelectWithParam($name, $arr, $selected="", $html_setting=null) {
  */
 function getAliasHelp(AA_Aliases $aliases, $fields = false): string {
     $rows = [];
-    $aliases_arr = $aliases->getArray();
     foreach ($aliases as $ali => $v ) {
         // if it is possible point to alias editing page
         $fld     = $v->getField();

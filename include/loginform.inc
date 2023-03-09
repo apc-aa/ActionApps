@@ -26,7 +26,6 @@
  *
 */
 
-bind_mgettext_domain(DEFAULT_LANG_INCLUDE);
 require_once __DIR__ . "/util.php";
 
 HtmlPageBegin();
@@ -37,40 +36,35 @@ echo '<title>ActionApps - '.ORG_NAME.'</title>';
 <body style="text-align: center;">
 <h1><?php echo _m("Welcome!") ?></h1>
 
+
+
 <?php echo _m("Welcome! Please identify yourself with a username and a password:") ?>
 <?php
    $qs= str_replace( ["&relogin=true", "relogin=true"],"", $this->url());
 ?>
-<form action="<?php echo $qs ?>" method=post>
-<table style="margin: 0px auto;">
+<form action="<?php echo $qs ?>" method=post class="aa-login-form">
 
- <tr>
-  <td><?php echo _m("Username:") ?></td>
-  <td>
-      <input type="text" name="username" value="<?php if (isset($this->auth["uname"])) { safe(print $this->auth["uname"]); }?>" size="32" maxlength="60" autocomplete="username">
-      <br><small><?php echo _m("Type your username or mail") ?></small>
-  </td>
- </tr>
-
- <tr>
-  <td><?php echo _m("Password:") ?></td>
-  <td><input type="password" name="password" size="32" maxlength="255" autocomplete="current-password"></td>
- </tr>
+    <div class="aa-login-row">
+        <label for="username"><?php echo _m("Username:") ?></label>
+        <input type="text" name="username" value="<?php if (isset($this->auth["uname"])) { safe(print $this->auth["uname"]); }?>" size="32" maxlength="255" autocomplete="username">
+    </div>
+    <div class="aa-login-row">
+        <label for="password"><?php echo _m("Password:") ?></label>
+        <input type="password" name="password" size="32" maxlength="255" autocomplete="current-password">
+    </div>
     <?php
     if (AA_Auth::use2FA()) {
-        echo ' <tr>
-          <td>'. _m("One Time Code") .'</td>
-          <td><input type="text" name="code2fa" size="32" maxlength="255"  inputmode="numeric"  pattern="[0-9]*" autocomplete="one-time-code"></td>
-         </tr>';
+        echo '
+        <div class="aa-login-row">
+            <label for="password">'. _m("One Time Code") .'</label>
+            <input type="text" name="code2fa" size="32" maxlength="255"  inputmode="numeric"  pattern="[0-9]*" autocomplete="one-time-code">
+        </div>';
     }
     ?>
 
- <tr>
-  <td colspan="2"><input type="submit" name="submit" value="<?php echo _m("Login now") ?>"></td>
- </tr>
-</table>
-
- <br><br>
+    <div class="aa-login-row">
+        <input type="submit" value="<?php echo _m("Login now") ?>" class="btn-l">
+    </div>
 
 <table style="margin: 0px auto;">
   <tr>

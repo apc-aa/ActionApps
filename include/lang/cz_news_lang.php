@@ -370,8 +370,8 @@ $_m["Params"]
 // central/responder.php, row 150
 // include/loginform.inc, row 70
 // include/init_page.php, row 131
-$_m["Either your username or your password is not valid."]
-    = "Bu� jm�no nebo heslo nejsou v po��dku.";
+$_m["Either your username or your password is not valid"]
+    = "Bu� jm�no nebo heslo nejsou v po��dku";
 
 // ./diff.diff, row 128, 153
 // include/formutil.php, row 3109
@@ -2412,7 +2412,7 @@ $_m["All remote nodes"]
     = "Seznam uzl�";
 
 // admin/se_inter_import.php, row 137
-$_m["Remote node"]
+$_m["Add from remote node"]
     = "Vzd�len� web�k";
 
 // admin/um_gedit.php, row 102
@@ -5304,7 +5304,7 @@ $_m["Welcome! Please identify yourself with a username and a password:"]
 
 // include/loginform.inc, row 50
 $_m["Username:"]
-    = "U�ivatelsk� jm�no<br>(User name):  ";
+    = "Uživatelské jméno / User name";
 
 // include/loginform.inc, row 53
 $_m["Type your username or mail"]
@@ -5312,7 +5312,7 @@ $_m["Type your username or mail"]
 
 // include/loginform.inc, row 56
 $_m["Password:"]
-    = "Heslo<br>(Password):";
+    = "Heslo / Password";
 
 // include/loginform.inc, row 60
 $_m["Login now"]
@@ -5323,7 +5323,7 @@ $_m["Please try again!"]
     = "Zkuste to znovu, pros�m!<br>Please try again!";
 
 // include/loginform.inc, row 76
-$_m["If you are sure you have typed the correct password, please e-mail <a href=mailto:%1>%1</a>."]
+$_m["If you are sure you have typed the correct password, please e-mail <a href=mailto:%1>%1</a>"]
     = "Pokud jste si jisti, �e zad�v�te spr�vn� jm�no a heslo, obra�te se pros�m \n\n"
     ."     na <a href=\"mailto:%1\">%1</a>.\n\n"
     ."     <br>If you are sure you have typed the correct password, please e-mail \n\n"

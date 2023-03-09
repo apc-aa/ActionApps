@@ -405,8 +405,8 @@ class AA_Csv_Importer {
                    FrmSelectEasy("actions[$f_id]", $actionList, !$set_default ? $this->actions[$f_id] : "default");
                    echo "</td>";
 
-                   echo "<td><input type=\"checkbox\" name=\"html[$f_id]\" "; if (!$set_default AND $this->html[$f_id]) echo  "checked";  echo  "></input></td>";
-                   echo "<td><input type=\"text\" name=\"params[$f_id]\" value=\""; if (!$set_default) echo stripslashes($this->params[$f_id]);  echo "\"></input></td>";
+                   echo "<td><input type=\"checkbox\" name=\"html[$f_id]\" "; if (!$set_default AND $this->html[$f_id]) echo  "checked";  echo  "></td>";
+                   echo "<td><input type=\"text\" name=\"params[$f_id]\" value=\""; if (!$set_default) echo stripslashes($this->params[$f_id]);  echo "\"></td>";
                    echo "<td class=\"tabhlp\">". getParamWizardLink("TRANS_ACTIONS","actions[$f_id]","params[$f_id]"). "</td>";
                    echo "</tr>\n";
                }

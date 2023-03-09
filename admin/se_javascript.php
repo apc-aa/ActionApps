@@ -64,7 +64,7 @@ if (AA::$module_id && $update) {
 
 $script2run = ' 
    var opts = { lineWrapping:true, matchBrackets: true, matchTags: true, viewportMargin: 10000, mode: "htmlmixed" };
-   window.cm_top  = CodeMirror.fromTextArea(document.getElementById("javascriptarea"), opts);
+   window.cm_top  = CodeMirror.fromTextArea(document.getElementById("javascript"), opts);
    ';
 
 $apage = new AA_Adminpageutil('sliceadmin','javascript');
@@ -76,35 +76,34 @@ $apage->printHead($err, $Msg);
 
 
 FrmTabCaption(_m("JavaScript for fields"));
-?>
-<tr><td><?php FrmStaticText(_m("Enter code in the JavaScript language. It will be included in the Add / Edit item page (itemedit.php3)."), ""); ?></td></tr>
-<tr><td><hr></td></tr>
-<tr><td><textarea name="javascript" id="javascriptarea" cols="100" rows="20">
-<?php
-echo $javascript.'</textarea></td></tr>';
-FrmTabSeparator(_m("Available fields and triggers"));
+FrmTextarea("javascript", _m("Code"), $javascript, 4, 60, false, _m("Enter code in the JavaScript language. It will be included in the Add / Edit item page (itemedit.php3)."), '', true);
 
-$fields = AA_Slice::getModule(AA::$module_id)->getFields()->getPriorityArray();
+$form_buttons =  [
+    "update",
+    "update" => ["type" => "hidden", "value" => "1"],
+    "cancel" => ["url" => "se_fields.php"]
+];
+FrmTabEnd($form_buttons);
 
-echo '
-<tr><td><table>
-<tr class="aa-tbl-header"><th>'._m("Field IDs").':</th></tr>';
-foreach ($fields as $fid) {
-    echo "<tr><td>$fid</td></tr>";
+$fields = AA_Slice::getModule(AA::$module_id)->getFields()->getNameArray();
+
+$rows = [[_m("Id"), _m("Field")]];
+foreach ($fields as $fid => $fname) {
+    $rows[] = [$fid, $fname];
 }
-echo '</table>
-</td>
-<td><table>
-<tr class="aa-tbl-header"><th>'._m("Triggers").':</th></tr>
-<tr><td>'._m("Write trigger functions like").' "aa_onSubmit (fieldid) { }", <a href="https://actionapps.org/faq/detail.shtml?x=1706" target="_blank">'._m("see FAQ</a> for more details and examples").'</td></td></tr>
-<tr><td>'._m("You can place {require:...} anywhere in the code to load any js library. If you do not use any {require:...}, AA will use default {require:aa-fillform@1} {require:aa-jslib@1}. Feel free to use just {require:aa-fillform} if you do not need old {require:aa-jslib@1}.").'</td></td></tr>
-<tr><td>'._m("If you want to use javascript without any library, use {require:} or // {require:}.").'</td></td></tr>
-<tr><td><table>';
-echo '<tr class="aa-tbl-header"><th>'._m("Field Type").'</th><th>'._m("Triggers Available -- see some JavaScript help for when a trigger is run").'</th></tr>';
-JsTriggers::printSummary();
-echo '
-</table></td></tr>
-</table></td>
-</tr></table>';
+$apage->addHelpbox(_m("Field IDs"), GetHtmlTable($rows, 'th'), true);
+
+$trig_hlp = '<p>'._m("Write trigger functions like").' "aa_onSubmit (fieldid) { }", <a href="https://actionapps.org/faq/detail.shtml?x=1706" target="_blank">'._m("see FAQ</a> for more details and examples").'</p>';
+$trig_hlp .= '<p>'._m("You can place {require:...} anywhere in the code to load any js library. If you do not use any {require:...}, AA will use default {require:aa-fillform@1} {require:aa-jslib@1}. Feel free to use just {require:aa-fillform} if you do not need old {require:aa-jslib@1}.").'</p>';
+$trig_hlp .= '<p>'._m("If you want to use javascript without any library, use {require:} or // {require:}.").'</p>';
+$trig_hlp .= '<table class="aa-table"><tr class="aa-tbl-header"><th>'._m("Field Type").'</th><th>'._m("Triggers Available -- see some JavaScript help for when a trigger is run").'</th></tr>';
+$trig_hlp .= JsTriggers::getSummary();
+$trig_hlp .= '</table>';
+
+$apage->addHelpbox(_m("Triggers"), $trig_hlp);
 
 $apage->printFoot();
+
+
+
+
