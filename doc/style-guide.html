@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="SHORTCUT ICON" href="../images/favicon.ico">
+    <meta charset="utf-8">
+    <title>aaa style quide</title>
+    <link rel="stylesheet" href="../css/aa-system.css?v=11">
+    <link rel="stylesheet" href="../admin-ecn.css">
+    <script src="../javascript/aajslib-legacy.min.js?v=11"></script>
+    <script src="../javascript/manager.min.js?module_id=dcae6144f58fe31c4e704e3887e1856e&amp;v=11"></script>
+  </head>
+  
+  <body>
+    <div class="aa-ui-top noprint" id="aa_top">
+      <div class="nblogo"><a href="/aa-dev/"><img src="../images/action.gif" alt="ActionApps" width="106" height="73"></a></div>
+      <div class="aa-ui-nav">
+        <div class="slicehead" style="margin: 25px 38px;">Style quide</div>
+      </div>
+    </div>
+    <div class="aa-ui-main">
+      <div class="aa-ui-leftmenu">
+        <div class="leftmenu noprint">
+          <ul>
+            <li class="aa-leftmenu-header aa-menuname-header1">Ostatní zprávy</li>
+            <li class="aa-leftmenu-link aa-menuname-app"><a href="#sg-colors" class="leftmenu">Colors</a></li>
+            <li class="aa-leftmenu-link aa-menuname-app"><a href="#sg-buttons" class="leftmenu">Buttony</a></li>
+            <li class="aa-leftmenu-link aa-menuname-app"><a href="#sg-widgets" class="leftmenu">Widgety</a></li>
+          </ul>
+        </div>
+        <div class="aa-ui-copyright">Copyright (C) 2001 the <a href="https://www.apc.org">Association for Progressive Communications (APC)</a></div>
+      </div>
+      
+      <div class="aa-ui-content">
+        <h2 class="clr-black" id="sg-colors">Colors</h2>
+        <table>
+         <tr><td colspan="2" class="pb-1"><strong>Basic color scheme</strong></td><td colspan="2" class="pb-1"><strong>Complementary colors</strong></td></tr>
+         <tr><td class="p-2 bg-clr-footer"></td><td class="pl-2"><strong>--clr-footer</strong><br>css background: class="bg-clr-footer" </td><td class="p-2 bg-clr-dark"></td><td class="pl-2"><strong>--clr-dark</strong><br>css background: class="bg-clr-dark" </td></tr>
+         <tr><td class="p-2 bg-clr-basic-light"></td><td class="pl-2"><strong>--clr-basic-light</strong><br>css background: class="bg-clr-basic-light" </td><td class="p-2 bg-clr-opacity-light"></td><td class="pl-2"><strong>--clr-opacity-light</strong> (table row light)<br>css background: class="bg-clr-opacity-light"</td></tr>
+         <tr><td class="p-2 bg-clr-basic"></td><td class="pl-2"><strong>--clr-basic</strong><br>css background: class="bg-clr-basic" </td><td class="p-2 bg-clr-opacity-dark"></td><td class="pl-2"><strong>--clr-opacity-dark</strong> (table row light)<br>css background: class="bg-clr-opacity-dark"</td></tr>
+         <tr><td class="p-2 bg-clr-basic-dark"></td><td class="pl-2"><strong>--clr-basic-dark</strong><br>css background: class="bg-clr-basic-dark" </td><td></td></tr>
+         <tr><td class="p-2 bg-clr-basic-darker"></td><td class="pl-2 pr-3"><strong>--clr-basic-darker</strong><br>css background: class="bg-clr-basic-darker" </td><td></td></tr>         
+        </table>
+        <br><br>
+        <h2 class="clr-black" id="sg-buttons">Buttons</h2>
+        <a class="btn">btn</a>
+        <a class="btn btn-secondary">btn btn-secondary</a>
+        <a class="btn btn-l">btn btn-l</a>
+        <br><br>
+        <a class="btn btn-s">btn btn-s</a>
+        <br><br>
+        <a class="aa-button">aa-button</a> <a class="aa-button-edit">aa-button-edit</a> <a class="aa-button-new">aa-button-new</a> <a class="aa-button-delete">aa-button-delete</a> <a class="aa-button-show">aa-button-show</a> <a class="aa-button-more">aa-button-more</a>
+        <br><br>
+
+        <h2 class="clr-black" id="sg-widgets">Widgets</h2>
+        <table class="aa-table">
+          <tr>
+             <th>aa-group (default)</th>
+             <td>
+               <article class="aa-rim relactionitem">
+                 <section class="itemgroup">
+                   <article class="item">
+                     <section class="iteminfo">
+                       <div class="aa-group">
+                         <div class="aa-field">
+                           <label><span>aa-group</span><input type="text" size="60" maxlength="255"></label>
+                         </div>
+                         <div class="aa-field">
+                           <label><span>Description</span><input type="number" pattern="[0-9]*" size="10" maxlength="9" max="999999999" min="0"></label>
+                         </div>
+                         <div class="aa-field">
+                           <label><span>Select</span><input type="checkbox" value="0"></label>
+                         </div>
+                         <div class="aa-field">
+                           <label><span>Done</span>
+                             <select class="live">
+                               <option>option 1</option>
+                               <option>option 2</option>
+                             </select>                     
+                            </label>
+                          </div>
+                          <div class="aa-field">
+                            <label><span>Description 2</span><input type="text" size="60" maxlength="255"></label>
+                          </div>
+                        </div>
+                     </section>
+                     <section class="icogroup">
+                       <article><i class="ico delete" onclick="">&#10005;</i></article>
+                     </section>
+                   </article>
+                </section>
+                <footer><article><i class="ico new">+ new</i></article></footer>
+               </article>
+             </td>
+          </tr>
+          <tr>
+             <th>aa-group-tbl</th>
+             <td>
+               <article class="aa-rim relactionitem">
+                 <section class="itemgroup">
+                   <article class="item">
+                     <section class="iteminfo">
+                       <div class="aa-group-tbl">
+                         <div class="aa-field">
+                           <label><span>aa-group-tbl</span><input type="text" size="60" maxlength="255"></label>
+                         </div>
+                         <div class="aa-field">
+                           <label><span>Description</span><input type="number" pattern="[0-9]*" size="10" maxlength="9" max="999999999" min="0"></label>
+                         </div>
+                         <div class="aa-field">
+                           <label><span>Select</span><input type="checkbox" value="0"></label>
+                         </div>
+                         <div class="aa-field">
+                           <label><span>Done</span>
+                             <select class="live">
+                               <option>option 1</option>
+                               <option>option 2</option>
+                             </select>                     
+                            </label>
+                          </div>
+                          <div class="aa-field">
+                            <label><span>Description 2</span><input type="text" size="60" maxlength="255"></label>
+                          </div>
+                        </div>
+                     </section>
+                     <section class="icogroup">
+                       <article><i class="ico delete" onclick="">&#10005;</i></article>
+                     </section>
+                   </article>
+                </section>
+                <footer><article><i class="ico new">+ new</i></article></footer>
+               </article>
+             </td>
+          </tr>
+          <tr>
+             <th>aa-group-block</th>
+             <td><article class="aa-rim relactionitem">
+                 <section class="itemgroup">
+                   <article class="item">
+                     <section class="iteminfo">
+                       <div class="aa-group-block">
+                         <div class="aa-field">
+                           <label><span>aa-group-block</span><input type="text" size="60" maxlength="255"></label>
+                         </div>
+                         <div class="aa-field">
+                           <label><span>Description</span><input type="number" pattern="[0-9]*" size="10" maxlength="9" max="999999999" min="0"></label>
+                         </div>
+                         <div class="aa-field">
+                           <label><span>Select</span><input type="checkbox" value="0"></label>
+                         </div>
+                         <div class="aa-field">
+                           <label><span>Done</span>
+                             <select class="live">
+                               <option>option 1</option>
+                               <option>option 2</option>
+                             </select>                     
+                            </label>
+                          </div>
+                          <div class="aa-field">
+                            <label><span>Description 2</span><input type="text" size="60" maxlength="255"></label>
+                          </div>
+                        </div>
+                     </section>
+                     <section class="icogroup">
+                       <article><i class="ico delete" onclick="">&#10005;</i></article>
+                     </section>
+                   </article>
+                </section>
+                <footer><article><i class="ico new">+ new</i></article></footer>
+               </article>
+             </td>
+          </tr>
+          <tr>
+             <th>aa-group-inlineblock</th>
+             <td>
+             <article class="aa-rim relactionitem">
+                 <section class="itemgroup">
+                   <article class="item">
+                     <section class="iteminfo">
+                       <div class="aa-group-inlineblock">
+                         <div class="aa-field">
+                           <label><span>aa-group-inlineblock</span><input type="text" size="60" maxlength="255"></label>
+                         </div>
+                         <div class="aa-field">
+                           <label><span>Description</span><input type="number" pattern="[0-9]*" size="10" maxlength="9" max="999999999" min="0"></label>
+                         </div>
+                         <div class="aa-field">
+                           <label><span>Select</span><input type="checkbox" value="0"></label>
+                         </div>
+                         <div class="aa-field">
+                           <label><span>Done</span>
+                             <select class="live">
+                               <option>option 1</option>
+                               <option>option 2</option>
+                             </select>                     
+                            </label>
+                          </div>
+                          <div class="aa-field">
+                            <label><span>Description 2</span><input type="text" size="60" maxlength="255"></label>
+                          </div>
+                        </div>
+                     </section>
+                     <section class="icogroup">
+                       <article><i class="ico delete" onclick="">&#10005;</i></article>
+                     </section>
+                   </article>              
+                </section>
+                <footer><article><i class="ico new">+ new</i></article></footer>
+               </article>
+             </td>
+          </tr>
+          <tr>
+            <th>AJAX (default)</th>
+            <td>
+              <article class="aa-rim relactionitem">
+                <section class="itemgroup">
+                  <article class="item">
+                    <section class="iteminfo">            
+                      <div class="aa-group-inline aa-headline-row ">
+                        <div class="aa-field"><strong>Title</strong></div>
+                        <div class="aa-field">23.12.2016 <div class="ajax_container" style="display:inline-block;width:100%"><div class="ajax_value" style="display:inline">aa-group-inline + aa-headline-row</div><div class="ajax_changes" style="display:inline"></div></div></div>
+                      </div>
+              
+                      <div class="aa-group aa-group-ajax">
+                        <div class="aa-field">
+                          <label><span>Description 1</span><div class="ajax_container" style="display:inline-block;width:100%"><div class="ajax_value" style="display:inline">ajax field 1</div><div class="ajax_changes" style="display:inline"></div></div></label>
+                        </div>
+                        <div class="aa-field">
+                          <label><span>Description 2</span><div class="ajax_container" style="display:inline-block;width:100%"><div class="ajax_value" style="display:inline">ajax field 1</div><div class="ajax_changes" style="display:inline"></div></div></label>
+                        </div>
+                        <div class="aa-field">
+                          <label><span>Description 3</span><div class="ajax_container" style="display:inline-block;width:100%"><div class="ajax_value" style="display:inline">ajax field 1</div><div class="ajax_changes" style="display:inline"></div></div></label>
+                        </div>
+                        <div class="aa-field">
+                          <label><span>Done</span><div class="aa-widget" style="display:inline; position:relative;"><input type="checkbox" value="0"></div></label>
+                        </div>
+                      </div>
+                      <div class="aa-group-toggle aa-group-ajax">
+                        <a class="togglelink" id="toggle_link_1tRmSl" href="#" onclick="AA_HtmlToggle('toggle_link_1tRmSl', 'see more', 'toggle_1_1tRmSl', 'see less', 'toggle_2_1tRmSl'); return false;">see more</a>
+                        <div class="toggleclass" id="toggle_1_1tRmSl"></div>
+                        <div class="toggleclass" id="toggle_2_1tRmSl" style="display:none;">xxxyyyzzz...</div>
+                      </div>
+                    </section>             
+                    <section class="icogroup">
+                      <article><i class="ico delete" onclick="">&#10005;</i></article>
+                    </section>
+                  </article>              
+                </section>
+                <footer>
+                  <article><i class="ico new">+ new</i></article>
+                </footer>
+              </article>
+            </td>
+          </tr>
+          <tr>
+            <th>AJAX aa-group-tbl</th>
+            <td>
+              <article class="aa-rim relactionitem">
+                <section class="itemgroup">
+                  <article class="item">
+                    <section class="iteminfo">            
+                      <div class="aa-group-inline aa-headline-row ">
+                        <div class="aa-field"><strong>Title</strong></div>
+                        <div class="aa-field">23.12.2016 <div class="ajax_container" style="display:inline-block;width:100%"><div class="ajax_value" style="display:inline">aa-group-inline + aa-headline-row</div><div class="ajax_changes" style="display:inline"></div></div></div>
+                      </div>
+              
+                      <div class="aa-group-tbl aa-group-ajax">
+                        <div class="aa-field">
+                          <label><span>Description 1</span><div class="ajax_container" style="display:inline-block;width:100%"><div class="ajax_value" style="display:inline">ajax field 1</div><div class="ajax_changes" style="display:inline"></div></div></label>
+                        </div>
+                        <div class="aa-field">
+                          <label><span>Description 2</span><div class="ajax_container" style="display:inline-block;width:100%"><div class="ajax_value" style="display:inline">ajax field 1</div><div class="ajax_changes" style="display:inline"></div></div></label>
+                        </div>
+                        <div class="aa-field">
+                          <label><span>Description 3</span><div class="ajax_container" style="display:inline-block;width:100%"><div class="ajax_value" style="display:inline">ajax field 1</div><div class="ajax_changes" style="display:inline"></div></div></label>
+                        </div>
+                        <div class="aa-field">
+                          <label><span>Done</span><div class="aa-widget" style="display:inline; position:relative;"><input type="checkbox" value="0"></div></label>
+                        </div>
+                      </div>
+                      <div class="aa-group-toggle aa-group-ajax">
+                        <a class="togglelink" id="toggle_link_2tRmSl" href="#" onclick="AA_HtmlToggle('toggle_link_2tRmSl', 'see more', 'toggle_1_2tRmSl', 'see less', 'toggle_2_2tRmSl'); return false;">see more</a>
+                        <div class="toggleclass" id="toggle_1_2tRmSl"></div>
+                        <div class="toggleclass" id="toggle_2_2tRmSl" style="display:none;">xxxyyyzzz...</div>
+                      </div>
+                    </section>             
+                    <section class="icogroup">
+                      <article><i class="ico delete" onclick="">&#10005;</i></article>
+                    </section>
+                  </article>              
+                </section>
+                <footer>
+                  <article><i class="ico new">+ new</i></article>
+                </footer>
+              </article>
+            </td>
+          </tr>
+          <tr>
+            <th>AJAX aa-group-block</th>
+            <td>
+              <article class="aa-rim relactionitem">
+                <section class="itemgroup">
+                  <article class="item">
+                    <section class="iteminfo">            
+                      <div class="aa-group-inline aa-headline-row ">
+                        <div class="aa-field"><strong>Title</strong></div>
+                        <div class="aa-field">23.12.2016 <div class="ajax_container" style="display:inline-block;width:100%"><div class="ajax_value" style="display:inline">aa-group-inline + aa-headline-row</div><div class="ajax_changes" style="display:inline"></div></div></div>
+                      </div>
+              
+                      <div class="aa-group-block aa-group-ajax">
+                        <div class="aa-field">
+                          <label><span>Description 1</span><div class="ajax_container" style="display:inline-block;width:100%"><div class="ajax_value" style="display:inline">ajax field 1</div><div class="ajax_changes" style="display:inline"></div></div></label>
+                        </div>
+                        <div class="aa-field">
+                          <label><span>Description 2</span><div class="ajax_container" style="display:inline-block;width:100%"><div class="ajax_value" style="display:inline">ajax field 1</div><div class="ajax_changes" style="display:inline"></div></div></label>
+                        </div>
+                        <div class="aa-field">
+                          <label><span>Description 3</span><div class="ajax_container" style="display:inline-block;width:100%"><div class="ajax_value" style="display:inline">ajax field 1</div><div class="ajax_changes" style="display:inline"></div></div></label>
+                        </div>
+                        <div class="aa-field">
+                          <label><span>Done</span><div class="aa-widget" style="display:inline; position:relative;"><input type="checkbox" value="0"></div></label>
+                        </div>
+                      </div>
+                      <div class="aa-group-toggle aa-group-ajax">
+                        <a class="togglelink" id="toggle_link_3tRmSl" href="#" onclick="AA_HtmlToggle('toggle_link_3tRmSl', 'see more', 'toggle_1_3tRmSl', 'see less', 'toggle_2_3tRmSl'); return false;">see more</a>
+                        <div class="toggleclass" id="toggle_1_3tRmSl"></div>
+                        <div class="toggleclass" id="toggle_2_3tRmSl" style="display:none;">xxxyyyzzz...</div>
+                      </div>
+                    </section>             
+                    <section class="icogroup">
+                      <article><i class="ico delete" onclick="">&#10005;</i></article>
+                    </section>
+                  </article>              
+                </section>
+                <footer>
+                  <article><i class="ico new">+ new</i></article>
+                </footer>
+              </article>
+            </td>
+          </tr>
+          <tr>
+            <th>AJAX aa-group-inlineblock</th>
+            <td>
+              <article class="aa-rim relactionitem">
+                <section class="itemgroup">
+                  <article class="item">
+                    <section class="iteminfo">            
+                      <div class="aa-group-inline aa-headline-row ">
+                        <div class="aa-field"><strong>Title</strong></div>
+                        <div class="aa-field">23.12.2016 <div class="ajax_container" style="display:inline-block;width:100%"><div class="ajax_value" style="display:inline">aa-group-inline + aa-headline-row</div><div class="ajax_changes" style="display:inline"></div></div></div>
+                      </div>
+              
+                      <div class="aa-group-inlineblock aa-group-ajax">
+                        <div class="aa-field">
+                          <label><span>Description 1</span><div class="ajax_container" style="display:inline-block;width:100%"><div class="ajax_value" style="display:inline">ajax field 1</div><div class="ajax_changes" style="display:inline"></div></div></label>
+                        </div>
+                        <div class="aa-field">
+                          <label><span>Description 2</span><div class="ajax_container" style="display:inline-block;width:100%"><div class="ajax_value" style="display:inline">ajax field 1</div><div class="ajax_changes" style="display:inline"></div></div></label>
+                        </div>
+                        <div class="aa-field">
+                          <label><span>Description 3</span><div class="ajax_container" style="display:inline-block;width:100%"><div class="ajax_value" style="display:inline">ajax field 1</div><div class="ajax_changes" style="display:inline"></div></div></label>
+                        </div>
+                        <div class="aa-field">
+                          <label><span>Done</span><div class="aa-widget" style="display:inline; position:relative;"><input type="checkbox" value="0"></div></label>
+                        </div>
+                      </div>
+                      <div class="aa-group-toggle aa-group-ajax">
+                        <a class="togglelink" id="toggle_link_4tRmSl" href="#" onclick="AA_HtmlToggle('toggle_link_4tRmSl', 'see more', 'toggle_1_4tRmSl', 'see less', 'toggle_2_4tRmSl'); return false;">see more</a>
+                        <div class="toggleclass" id="toggle_1_4tRmSl"></div>
+                        <div class="toggleclass" id="toggle_2_4tRmSl" style="display:none;">xxxyyyzzz...</div>
+                      </div>
+                    </section>             
+                    <section class="icogroup">
+                      <article><i class="ico delete" onclick="">&#10005;</i></article>
+                    </section>
+                  </article>              
+                </section>
+                <footer>
+                  <article><i class="ico new">+ new</i></article>
+                </footer>
+              </article>
+            </td>
+          </tr>
+        </table>             
+      </div>
+    </div>
+  </body>
+</html>

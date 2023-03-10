@@ -96,7 +96,10 @@ function GetCommonMenu(AA_Profile $profile): array {
         "xmgettext"   => ["label"=>_m("Mgettext"),        "cond"=>IsSuperadmin(),        "exact_href"=>"../misc/mgettext/index.php3"],
         'optimize'    => ["label"=>_m("Optimize"),        "cond"=>IsSuperadmin(),        "href"=>"admin/aa_optimize.php"],
         "history"     => ["label"=>_m("History"),         "cond"=>IfSlPerm(PS_HISTORY),  "href"=>"admin/se_history.php"],
-        "console"     => ["label" =>_m("Console"),        "cond" =>IsSuperadmin(),       "href" =>"admin/console.php"]
+        "console"     => ["label" =>_m("Console"),        "cond" =>IsSuperadmin(),       "href" =>"admin/console.php"],
+
+        "header10"     =>_m("Documentation"),
+        "styleguide"  => ["label" =>_m("Style Guide"),    "cond" =>IsSuperadmin(),       "href" =>"doc/style-guide.html"],
     //    "oneoff" => array("label"=>_m("One Off Code"), "cond"=>IsSuperadmin(), "href"=>"admin/oneoff.php3"),
         ]
     ];
