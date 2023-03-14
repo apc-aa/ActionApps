@@ -27,7 +27,7 @@ https://www.apc.org/
 use AA\IO\DB\DB_AA;
 use AA\Util\InputVars;
 
-$no_slice_id   = $_REQUEST['template']['W'] ? true : false;       // message for init_page.php
+$no_slice_id   = isset($_REQUEST['template']) && isset($_REQUEST['template']['W']);       // message for init_page.php
 
 // const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../../include/init_page.php";

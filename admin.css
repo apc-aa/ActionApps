@@ -198,7 +198,7 @@ td.leftmenu {
     color: #FFFFFF;
 }
 
-.ipreview, .iid, .ipostdate, .ihedline, .icategory, .ifeedtit, .ifeed {
+.iid, .ipostdate, .ihedline, .icategory, .ifeedtit, .ifeed {
   font-family: Verdana, Arial, Helvetica, sans-serif;
   font-size: 8pt;
   color: #4A4A4A;

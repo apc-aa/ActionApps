@@ -39,13 +39,25 @@
 */
 
 
-const AA_REGISTER_GLOBALS = true;
+use AA\Util\InputVars;
+
+// const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/varset.php";
 
 require_once __DIR__ . "/../include/itemfunc.php";
 require_once __DIR__ . "/../include/file_lock.php";
+
+try {
+    $admin_email = InputVars::stringPOST('admin_email');
+    $admin_password = InputVars::stringPOST('admin_password'); // alpha
+    $create_list = InputVars::stringPOST('create_list');
+    $list_name = InputVars::stringPOST('list_name'); // alpha
+    $cancel = InputVars::boolPOST('cancel');
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
 
 if ($cancel) {
   go_url( StateUrl(self_base() . "index.php3"));
@@ -72,18 +84,17 @@ $db = getDB();
 $db->query("SELECT field.input_show_func, field.name FROM field WHERE slice_id='".q_pack_id(AA::$module_id)."' AND id='" .$slice->getProperty("mailman_field_lists")."'");
 $db->next_record();
 $field_name = $db->f("name");
-list (,$groupid) = explode(":", $db->f("input_show_func"));
+[,$groupid] = explode(":", $db->f("input_show_func"));
 freeDB($db);
 
 if ($create_list && $admin_email && $list_name && $admin_password) {
-    add_mailman_list();
+    add_mailman_list($admin_email, $list_name, $admin_password, $groupid);
 }
 /** add_mailman_list function
  * Creates a new mailman list
  * @return void - none on error
  */
-function add_mailman_list() {
-    global $admin_email, $list_name, $admin_password, $groupid;
+function add_mailman_list($admin_email, $list_name, $admin_password, $groupid) {
 
     $db = getDB();
     $db->query ("SELECT * FROM constant WHERE group_id='".addslashes($groupid)."' AND name='".$list_name."'");

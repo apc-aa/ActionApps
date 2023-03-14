@@ -211,7 +211,8 @@ if (is_array($desc['params'])) {
                 function useExample(iExample) {
                     switch(iExample) {
 <?php
-for ($i = 0, $ino = count($desc['examples']); $i < $ino; ++$i) {
+$ino = count($desc['examples'] ?? []);
+for ($i = 0; $i < $ino; ++$i) {
     $exm = $desc['examples'][$i];
     echo "case $i: pars=\"" . $exm['params'] . "\"; break;";
 }

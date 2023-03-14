@@ -43,12 +43,32 @@
  *   AA admins may go to the upper level.
 */
 
-const AA_REGISTER_GLOBALS = true;
+// const  AA_REGISTER_GLOBALS = true;
+use AA\Util\InputVars;
+
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/date.php";
 require_once __DIR__ . "/../include/varset.php";
 require_once __DIR__ . "/../include/fileman.php";
+
+try {
+    // array ( )-array ( )
+    $arg = InputVars::arrayGETPOST('arg'); // -
+    // array ( )
+    $chb = InputVars::arrayPOST('chb');
+    // array ( 'edit' => 6, )-array ( 'createfile' => 5, 'cancel' => 6, 'rename' => 2, 'upload' => 2, 'copytmp' => 1, 'createdir' => 1, 'delete' => 5, )
+    $cmd = InputVars::stringGETPOST('cmd'); // alpha-alpha
+    // array ( )-array ( )
+    $fmset = InputVars::arrayGETPOST('fmset'); // -
+    // array ( 'name' => 4, )-array ( 'name' => 14, )
+    $sort_key = InputVars::stringGETPOST('sort_key'); // alpha-alpha
+    // array ( 'd' => 1, 'a' => 3, )-array ( 'a' => 14, )
+    $sort_order = InputVars::stringGETPOST('sort_order'); // alpha-alpha
+    $cancel = InputVars::boolPOST('cancel');
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
 
 
 // FilemanPerms() is defined in perm_core.php, it sets $fileman_dir
@@ -97,7 +117,7 @@ $apage->setTitle(_m("File Manager"));
 if ($directory) {
     $apage->setSubtitle(_m("Directory")." ".$directory);
 }
-$apage->setForm(['enctype'=>"multipart/form-data"]);
+$apage->setForm(['name'=>'fileman','enctype'=>"multipart/form-data"]);
 $apage->addRequire(get_aa_url('tabledit.css?v='.AA_JS_VERSION, '', false ));
 $apage->printHead($err, $Msg);
 

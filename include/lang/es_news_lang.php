@@ -769,7 +769,7 @@ $_m["The slice will be exact copy of the remote slice. All items will be copied 
 
 // admin/se_inputform.php, row 57
 // admin/se_javascript.php, row 38
-// admin/mailman_create_list.php3, row 55
+// admin/mailman_create_list.php, row 55
 // admin/se_fields.php, row 43
 // admin/se_constant_import.php, row 46
 // admin/se_constant.php, row 45
@@ -1691,48 +1691,48 @@ $_m["Default user profile"]
 $_m["You have not permissions to this page"]
     = "Usted no tiene permisos a esta p�gina";
 
-// admin/mailman_create_list.php3, row 61, 67
+// admin/mailman_create_list.php, row 61, 67
 $_m["Admin - Create Mailman List"]
     = "Administraci�n - Creaci�n lista Mailman";
 
-// admin/mailman_create_list.php3, row 74
+// admin/mailman_create_list.php, row 74
 $_m["First set Mailman Lists Field in Slice Settings."]
     = "Configure primero el campo para listas mailman en las propiedades del canal.";
 
-// admin/mailman_create_list.php3, row 97
+// admin/mailman_create_list.php, row 97
 $_m["Error: This list name is already used."]
     = "Error: este nombre de lista ya est� en uso.";
 
-// admin/mailman_create_list.php3, row 129
+// admin/mailman_create_list.php, row 129
 $_m["The list was successfully created."]
     = "La lista se cre� con �xito.";
 
-// admin/mailman_create_list.php3, row 150
+// admin/mailman_create_list.php, row 150
 $_m["List Settings"]
     = "Propiedades de la Lista";
 
-// admin/mailman_create_list.php3, row 152
+// admin/mailman_create_list.php, row 152
 $_m["The list will be added to mailman and also\n"
 ."    to the constant group for the field %1 selected as Mailman Lists Field in Slice Settings."]
     = "La lista se crear� en mailman, y tambi�n en el grupo de constantes para el campo '%1' (seleccionado como campo para listas mailman en las propiedades del canal).";
 
-// admin/mailman_create_list.php3, row 153
+// admin/mailman_create_list.php, row 153
 $_m["All the fields are required."]
     = "Todos los campos son obligatorios.";
 
-// admin/mailman_create_list.php3, row 154
+// admin/mailman_create_list.php, row 154
 $_m["List name"]
     = "Nombre de la lista";
 
-// admin/mailman_create_list.php3, row 156
+// admin/mailman_create_list.php, row 156
 $_m["Admin email"]
     = "email administrador";
 
-// admin/mailman_create_list.php3, row 158
+// admin/mailman_create_list.php, row 158
 $_m["Admin password"]
     = "Clave administrador";
 
-// admin/mailman_create_list.php3, row 162
+// admin/mailman_create_list.php, row 162
 // admin/setup.php, row 111, 230
 $_m["Create"]
     = "Crear";

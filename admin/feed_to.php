@@ -24,9 +24,17 @@
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
  * @link      https://www.apc.org/ APC
 */
-const AA_REGISTER_GLOBALS = true;
+// const  AA_REGISTER_GLOBALS = true;
+use AA\Util\InputVars;
+
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
+
+
+try {
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
 
 /** PrintExportRow function
  * Print one row with one 'sliceexport' radiobuttons
@@ -40,29 +48,25 @@ function PrintExportRow( $sname, $sid, $odd) {
     <tr>
       <td>'. safe($sname). '</td>
       <td><input type="radio" name="x'. $sid .'" value="2"></td>
-      <td>'.
-      ( CheckPerms( AuthGetUid(), "slice", $sid, PS_ITEMS2ACT) ?
-        '<input type="radio" name="x'. $sid .'" value="1">' : '&nbsp;') .'</td>
+      <td>'. ( CheckPerms(AuthGetUid(), "slice", $sid, PS_ITEMS2ACT) ? '<input type="radio" name="x'. $sid .'" value="1">' : '&nbsp;') .'</td>
       <td><input type="radio" name="x'. $sid .'" value="0" checked></td>
     </tr>';
 }
 
-
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
+$apage = new AA_Adminpageutil();
+$apage->setTitle(_m("Export Item to Selected Slice"));
+$apage->addRequire(get_aa_url('javascript/manager.min.js?v='.AA_JS_VERSION ));
+$apage->setForm(['name'=>'incf']);
+$apage->printHead($err, $Msg);
 
 echo '
-  <title>'.  _m("Export Item to Selected Slice") .'</title>';
-IncludeManagerJavascript();
-echo '
-</head>
-<body>
-  <h1>'. _m("Export selected items to selected slice") .'</h1>
-  <form name="incf">
-   <table>
-     <tr class="aa-tbl-header"><th>'. _m("Slice") .'</th>
+   <table class="aa-table">
+     <tr class="aa-tbl-header">
+         <th>'. _m("Slice") .'</th>
          <th>'. _m("Holding bin")   .'</th>
          <th>'. _m("Active")        .'</th>
-         <th>'. _m("Do not export to this slice") .'</th></tr>';
+         <th>'. _m("Do not export to this slice") .'</th>
+     </tr>';
 
 $i=1;     // slice checkbox counter
 if ( is_array($g_modules) AND (count($g_modules) > 1) ) {
@@ -106,7 +110,6 @@ if ( $i==1 ) {   // can't feed to any slice
         ReturnParam(retval);
     }
    </script>
-  </form>
-</body>
-</html>
-<?php page_close(); ?>
+
+<?php
+$apage->printFoot();

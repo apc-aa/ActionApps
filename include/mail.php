@@ -122,7 +122,7 @@ class AA_Mail extends htmlMimeMail implements \AA\Later\LaterInterface {
     }
 
     /** record array('subject','body','header_from','reply_to','errors_to','sender','lang','html','cc','bcc')  */
-    function setFromArray($record) {
+    function setFromArray(array $record) {
         // do not send empty emails
         if ( !strlen(trim($record["body"]))) {
             return false;
@@ -136,7 +136,7 @@ class AA_Mail extends htmlMimeMail implements \AA\Later\LaterInterface {
         }
 
         $this->setSubject($record["subject"]);
-        $this->setBasicHeaders($record, "");
+        $this->setBasicHeaders($record);
         $this->setCharset($lang);
 
         if ($record["cc"]) {
@@ -199,7 +199,7 @@ class AA_Mail extends htmlMimeMail implements \AA\Later\LaterInterface {
      * @param $record
      * @param $default
      */
-    function setBasicHeaders($record= [], $default= []) {
+    function setBasicHeaders(array $record= [], array $default= []) {
         $headers = [
             "From"        => "header_from",
             "Reply-To"    => "reply_to",

@@ -26,8 +26,16 @@
  *
 */
 
-const AA_REGISTER_GLOBALS = true;
+// const  AA_REGISTER_GLOBALS = true;
+use AA\Util\InputVars;
+
 require_once __DIR__ . "/../include/init_page.php";
+
+try {
+    $return_url = InputVars::stringGET('return_url'); // empty
+    $sh_itm = InputVars::idGET('sh_itm', true);
+} catch (Exception $e) {}
+
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
 </head>
@@ -37,9 +45,9 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 // we do not want to allow users to go back to edit, when it is opened in popup
 // (test for openervar (see itemedit.php3) would do the same)
 if ( $return_url != 'close_dialog' ) {
-    echo '<a href="'. con_url(StateUrl("itemedit.php3"),"encap=false&edit=1&id=$sh_itm") .'" target="_parent" class="ipreview">'. _m("Edit") .'</a>';
+    echo '<a href="'. con_url(StateUrl("itemedit.php3"),"encap=false&edit=1&id=$sh_itm") .'" target="_parent" class="btn btn-s">'. _m("Edit") .'</a>';
 }
-echo '<img src="../images/spacer.gif" width=50 height=1>';
+echo ' &nbsp; ';
 if ( $return_url == 'close_dialog' ) {
     $go2url = 'javascript:window.close()';
 } elseif ( $return_url ) {
@@ -47,7 +55,7 @@ if ( $return_url == 'close_dialog' ) {
 } else {
     $go2url = StateUrl("index.php3");
 }
-echo '<a href="'. $go2url .'" target="_parent" class="ipreview">'. _m("OK") .'</a>';
+echo '<a href="'. $go2url .'" target="_parent" class="btn btn-s">'. _m("OK") .'</a>';
 ?>
 </div>
 </body>
