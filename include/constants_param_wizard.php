@@ -126,6 +126,12 @@ $VALIDATE_TYPES["items"]["signed"] = [
         ]
     ]
 ];
+$VALIDATE_TYPES["items"]["float"] = [
+    "name"=>_m("Float - including scientific notation 1.2E+9"),
+];
+$VALIDATE_TYPES["items"]["decimal"] = [
+    "name"=>_m("Decimal")
+];
 $VALIDATE_TYPES["items"]["id"] = [
     "name"=>_m("Id = 1-32 hexadecimal digits [0-9a-f]")
 ];

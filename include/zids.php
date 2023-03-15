@@ -582,7 +582,7 @@ function explode_ids($ids_string): array {
  * @return array
  */
 function ParamExplode($param) {
-    // replace all "#:" and <http>"://" with dumy string,
+    // replace all "#:" and <http>"://" with dummy string,
     // convert separators to ##Sx
     // change "#:" to ":" and change back "://" - then split by separation string
     // replaces in order

@@ -423,6 +423,28 @@ class AA_Inserter_Boo extends AA_Inserter {
     }
 }
 
+/** Float - including conversion of 123456789012345678901234567890 to 1.2345678901235E+29 */
+class AA_Inserter_Flo extends AA_Inserter {
+    public static function name(): string        { return _m("Float");  }             // see NamedInterface
+    public static function description(): string { return _m('Real float - could convert big numbers to scientific notation (1.23E+29)');  }      // see NamedInterface
+
+    public function execute($fieldwriter, $item_id, $value, $additional= []) {
+        $value['value'] = PhpFloat($value['value']);  // converts also 12345678901234567890 to 1.2345678901235E+29
+        parent::execute($fieldwriter, $item_id, $value, $additional);
+    }
+}
+
+/** AA_Inserter_Dec */
+class AA_Inserter_Dec extends AA_Inserter {
+    public static function name(): string        { return _m("Decimal");  }             // see NamedInterface
+    public static function description(): string { return _m('The same as Float, but do not convert big numbers to  scientific notation (1.23E+29)');  }      // see NamedInterface
+
+    public function execute($fieldwriter, $item_id, $value, $additional= []) {
+        $value['value'] = str_replace(',', '.', $value['value']);  // Phpfloat does not work for long integers like 12345678901234567890
+        parent::execute($fieldwriter, $item_id, $value, $additional);
+    }
+}
+
 /** AA_Inserter_Trm - trim and normalize */
 class AA_Inserter_Trm extends AA_Inserter {
     public static function name(): string        { return _m("Trim");  }             // see NamedInterface

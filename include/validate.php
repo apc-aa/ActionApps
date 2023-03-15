@@ -100,6 +100,7 @@ class AA_Validate extends AA_Serializable {
                 case 'int':
                 case 'integer':  $standard_validators[$sv_key] = new AA_Validate_Number($parameters); break;
                 case 'float':    $standard_validators[$sv_key] = new AA_Validate_Float($parameters);  break;
+                case 'decimal':  $standard_validators[$sv_key] = new AA_Validate_Decimal($parameters);  break;
                 case 'e-mail':
                 case 'email':    $standard_validators[$sv_key] = new AA_Validate_Email($parameters);  break;
                 case 'alpha':    $standard_validators[$sv_key] = new AA_Validate_Regexp(['pattern'=>'/^[a-zA-Z]+$/']);          break;
@@ -465,10 +466,49 @@ class AA_Validate_Float extends AA_Validate {
      * @return bool
      */
     public function validate(?string &$var, AA_Content $content_context = null, string $var_id = ''): bool {
-        if ( !is_float($var) ) {
+        if ( !preg_match('/^[-+]?(([0-9]*[.,]?[0-9]+([ed][-+]?[0-9]+)?)|(inf)|(nan))$/i', $var) ) {  // is_float($var) is not OK - at least it does not allow 123
             return AA_Validate::bad(VALIDATE_ERROR_BAD_TYPE, _m('No float value'), $var_id);
         }
-        $var = (float)$var;
+        $var = str_replace(',', '.',$var); // Phpfloat does not work well for long int - 123456789012345678901234567890
+        if ( !is_null($this->f_max) AND ($var > $this->f_max) ) {
+            return AA_Validate::bad(VALIDATE_ERROR_OUT_OF_RANGE, _m('Out of range - too big'), $var_id);
+        }
+        if ( !is_null($this->f_min) AND ($var < $this->f_min) ) {
+            return AA_Validate::bad(VALIDATE_ERROR_OUT_OF_RANGE, _m('Out of range - too small'), $var_id);
+        }
+        return true;
+    }
+}
+
+/** Test for decimal value (including long ones - 123456789012345678901234567890.14)
+ *  @param   $min
+ *  @param   $max
+ */
+class AA_Validate_Decimal extends AA_Validate {
+    /** Minimum number */
+    protected $f_min;
+
+    /** Maximum number */
+    protected $f_max;
+
+    static function getClassProperties(): array {
+        return [                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
+                                      'f_min'  => new AA_Property( 'f_min',  _m("Alloved minimum value"), 'float', false, true, 'float', false, _m(""), '', '1.0'),
+                                      'f_max'  => new AA_Property( 'f_max',  _m("Alloved maximum value"), 'float', false, true, 'float', false, _m(""), '', '1000.0'),
+        ];
+    }
+
+    /** validate function
+     * @param string|null     $var
+     * @param AA_Content|null $content_context
+     * @param string          $var_id
+     * @return bool
+     */
+    public function validate(?string &$var, AA_Content $content_context = null, string $var_id = ''): bool {
+        if ( !preg_match('/^(?:\d+(?:[.,]\d*)?|[.,]\d+)$/', $var) ) {  // is_float($var) is not OK - at least it does not allow 123
+            return AA_Validate::bad(VALIDATE_ERROR_BAD_TYPE, _m('No decimal value'), $var_id);
+        }
+        $var = str_replace(',', '.',$var); // Phpfloat does not work well for long int - 123456789012345678901234567890
         if ( !is_null($this->f_max) AND ($var > $this->f_max) ) {
             return AA_Validate::bad(VALIDATE_ERROR_OUT_OF_RANGE, _m('Out of range - too big'), $var_id);
         }

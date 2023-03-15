@@ -69,9 +69,9 @@ class FldWidget extends Widget
 
         $attrs = array_merge($attrs, $aa_property->getValidator()->getHtmlInputAttr());
 
-        // type number do not support size parameter, so ve have to set max and min (make no sense to do it for numbers > 11 characters - use default)
+        // type number do not support size parameter, so we have to set max and min (make no sense to do it for numbers > 11 characters - use default)
         if ($attrs['type'] == 'number') {
-            if (!isset($attrs['max']) and ($nchars = $attrs['maxlength'] ?: $this->getProperty('width') ?: $this->getProperty('max_characters') ?: $attrs['size'] ?: 0) and ($nchars < 11)) {
+            if (!isset($attrs['max']) and ($nchars = $attrs['maxlength'] ?: $this->getProperty('max_characters') ?: $attrs['size'] ?: 0) and ($nchars < 11)) {  // $this->getProperty('width') - removed - max should not be set based on widget width
                 $attrs['max'] = pow(10, $nchars) - 1;
                 $attrs['min'] = $attrs['min'] ?: '0';
             }

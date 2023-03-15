@@ -592,9 +592,9 @@ class AA_Content implements Iterator, ArrayAccess, Countable {
         $tab = [];
         foreach ($this->content as $fid => $v) {
             $val = array_column($v,'value');
-            $tab[$fid] = (count($val) > 1) ? json_encode($val) : $val;
+            $tab[$fid] = (count($val) > 1) ? json_encode($val) : reset($val);
         }
-        return GetHtmlTable($tab,'key');
+        return GetHtmlTable([$tab],'key');
     }
 
     /** showAsRowInTable function

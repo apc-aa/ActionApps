@@ -416,8 +416,7 @@ class AA_Item {
 
     /** item function
      *  Constructor
-     *  @param $content4id ItemContent|AA_Content|zids|array - could be ItemContent as well as zids as well as old
-     *                     contentent array
+     *  @param $content4id ItemContent|AA_Content|zids|array - could be ItemContent as well as zids as well as old contentent array
      *  @param $aliases
      *  @param $format
      *  @param $remove

@@ -296,7 +296,7 @@ class AA_Permsystem_Sql extends AA_Permsystem {
      */
     function userIdFormatMatches($uid): bool  {
         // SQL perms - we are using numbers
-        return ctype_digit((string) $uid);
+        return (ctype_digit((string) $uid) AND ($uid < PHP_INT_MAX));  // just to not take long id like: 31326131643531393335636265386634
     }
 
     /** authenticateUsername function

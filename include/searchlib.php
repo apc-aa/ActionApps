@@ -453,15 +453,17 @@ class AA_Set extends AA_Object {
      * @return zids
      */
     public function query($restrict_zids = null, $limit = null): zids {
-        $zids = QueryZids($this->getModules(), $this->getConds(), $this->getSort(), $this->getBins(), 0, $restrict_zids, 'LIKE', $limit);
-        if ($this->postsort) {
-            return new zids(explode_ids(StrExpand('AA_Stringexpand_Order', [
-                join('-', $zids->longids()),
-                $this->postsort[0]['alias'],
-                $this->postsort[0]['order'],
-            ])), 'l');
+        if (!$this->postsort) {
+            return QueryZids($this->getModules(), $this->getConds(), $this->getSort(), $this->getBins(), 0, $restrict_zids, 'LIKE', $limit);
         }
-        return $zids;
+        // no limit...
+        $unsorted_zids = QueryZids($this->getModules(), $this->getConds(), $this->getSort(), $this->getBins(), 0, $restrict_zids, 'LIKE');
+        $sorted_ids =  explode_ids(StrExpand('AA_Stringexpand_Order', [ join('-', $unsorted_zids->longids()), $this->postsort[0]['alias'], $this->postsort[0]['order'] ]));
+        $limit = (int)$limit;
+        if (!$limit) {
+            return new zids($sorted_ids, 'l');
+        }
+        return new zids(array_slice($sorted_ids,0,$limit), 'l');
     }
 
     /** clear function

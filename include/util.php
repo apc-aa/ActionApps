@@ -227,9 +227,9 @@ function ParamImplode($param) {
     return implode(":", $param);
 }
 
-/** Converts float value into php form of float */
-function PhpFloat($value) {
-    // internally uses PHP float always with decimal point so we have to convert
+/** Converts float value into php form of float - string */
+function PhpFloat($value): string {
+    // internally uses PHP float always with decimal point, so we have to convert
     // twice, since (float) typecasting is unfortunately LOCALE dependent. Grr
     return str_replace(',', '.',(float)str_replace(',', '.', trim($value)));
 }
