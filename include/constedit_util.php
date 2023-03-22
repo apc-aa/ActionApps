@@ -620,7 +620,7 @@ function add_constant_group($group_id, $constants2import)
     }
 
     // set in seconds - allows the script to work so long
-    set_time_limit(600);
+    MoreTimeLimit(); // set_time_limit to 5 minutes (at least)
 
     $varset = new CVarset;
     $varset->add("group_id", "text",     "lt_groupNames");

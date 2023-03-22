@@ -1783,7 +1783,7 @@ $_m["No template set (which is strange - template was just written to the databa
     = "No hay formato seleccionado (lo cual es extra�o - el formato acaba de escribirse en la base de datos";
 
 // admin/write_mail.php, row 95
-$_m["Email sucessfully sent (Users: %1, Emails sent (valid e-mails...): %2)"]
+$_m["Email successfully sent (Users: %1, Emails sent (valid e-mails...): %2)"]
     = "Correo enviado con �xito (Usuarios: %1, Correos enviados (correos v�lidos...): %2)";
 
 // admin/write_mail.php, row 110
@@ -3442,7 +3442,7 @@ $_m["Source or destination field is not specified."]
     = "";
 
 // admin/search_replace.php, row 699
-$_m["Items selected: %1, Items sucessfully updated: %2"]
+$_m["Items selected: %1, Items successfully updated: %2, Items planned: %3"]
     = "Items seleccionados: %1, Items actualizados con �xito: %2";
 
 // admin/search_replace.php, row 716, 722
@@ -3467,7 +3467,7 @@ $_m["Selected items"]
     = "Items marcados";
 
 // admin/search_replace.php, row 763
-$_m["Be very carefull with this. Changes in some fields (Status Code, Publish Date, Slice ID, ...) could be very crucial for your item's data. There is no data validity check - what you will type will be written to the database.<br>You should also know there is no UNDO operation (at least now)."]
+$_m["Be very careful with this. Changes in some fields (Status Code, Publish Date, Slice ID, ...) could be very crucial for your item's data. There is no data validity check - what you will type will be written to the database.<br>You should also know there is no UNDO operation (at least now)."]
     = "Sea muy cuidadoso con esta funci�n. Cambios en algunos campos (C�digo de estado, Fecha de publicaci�n, ID del canal, ....) pueden ser cruciales para los datos de un �tem. No se realiza validaci�n de la informaci�n - lo que Usted teclee ser� escrito a la base de datos.<br> Tenga en cuenta que no existe una funci�n de DESHACER (al menos por ahora).";
 
 // admin/search_replace.php, row 765

@@ -2362,7 +2362,7 @@ The changes could be tracked on:
            of sites, where the slice is part of
          - new parameter <onsuccess> in
              {ajax:<item_id>:<field_id>[:<alias_or_any_code>[:<onsuccess>]]}
-           which is javascript code to run after the content is sucessfully
+           which is javascript code to run after the content is successfully
            updated - like:
              {ajax:{_#ITEM_ID_}:file............:<img src="/img/edit.gif" title="Upload new file"> :AA_Refresh('stickerdiv1')}
          - new {strtolower:<text>}
@@ -3397,7 +3397,7 @@ The changes could be tracked on:
          - view edit page uses big textareas (just like in the form for fulltext)
          - Prototype javascript library upgraded to last version 1.6.0
          - Improved cache deletion - the pagecache_str2find table is cleaned
-           only if pagecache table was sucessfully cleaned
+           only if pagecache table was successfully cleaned
          - SQL commands for searching AA database was simplified a bit (without
            functional change)
          - fixed bug in "Bulk email - Send emails" for Reader Slice - remaining

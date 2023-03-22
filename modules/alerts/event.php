@@ -89,7 +89,7 @@ function AlertsSendInstantAlert( $item_id, $slice_id ) {
         }
         if (is_array($collection_ids)) {
             initialize_last();
-            set_time_limit(600); // This can take a while
+            MoreTimeLimit();  // This can take a while
             send_emails("instant", $collection_ids, "", true, $item_id);
             // We must reset moved2active so that the item is not re-sent on update.
             $db->query ("UPDATE item SET moved2active = 0 WHERE id='" .q_pack_id($item_id)."'");

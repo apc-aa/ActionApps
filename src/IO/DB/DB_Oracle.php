@@ -95,7 +95,7 @@ namespace AA\IO\DB;
 //    ## init.ora file and increase the max_open_cursors parameter. Yours is on
 //    ## the default value, 100 per user.
 //    ## We tried to change the behaviour of query() in a way, that it tries
-//    ## to safe cursors, but on the other side be carefull with this, that you
+//    ## to safe cursors, but on the other side be careful with this, that you
 //    ## don't use an old result.
 //    ##
 //    ## You can also make extensive use of ->disconnect()!

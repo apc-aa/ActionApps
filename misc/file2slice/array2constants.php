@@ -43,9 +43,9 @@ $group_id = 'NSZM_Obce_3_____';              // define name of group
                                              // MUST be 16 character long !!!
 $fire = true;                               // write to DB?
 $priority_step = 10;
-$timeLimit = 600;                               // time limit in seconds
+
 // set in seconds - allows the script to work so long
-set_time_limit($time_limit);
+MoreTimeLimit();
 
 $err = [];          // error array (Init - just for initializing variable
 $varset = new Cvarset();

@@ -59,7 +59,7 @@ try {
 } catch (Exception $e) {}
 
 
-set_time_limit(600);
+MoreTimeLimit(600); // set_time_limit to 10 minutes (at least)
 
 $reserved_ids = [
   "disc_app........",

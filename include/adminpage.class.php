@@ -147,6 +147,7 @@ class AA_Adminpageutil {
 <head>
   <link rel="SHORTCUT ICON" href="' . AA_INSTAL_PATH . 'images/favicon.ico">
   <meta charset="' . AA::$encoding . '">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>' . $this->title . '</title>
   {generate:HEAD}
   </head>

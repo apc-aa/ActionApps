@@ -188,9 +188,8 @@ class mgettext_writer_po extends mgettext_writer {
 *                         If empty, no logs are used.
 * $param bool   $add_source_links Should xmgettext add commentary specifying where was the message used?
 */
-function xmgettext($lang_list, $logfile, $lang_files, $files_base_dir, $files, $chmod=0664, $stop_on_warning=true,
-                   $old_logs="", $add_source_links=true, $file_type='php3') {
-    set_time_limit(10000);
+function xmgettext($lang_list, $logfile, $lang_files, $files_base_dir, $files, $chmod=0664, $stop_on_warning=true, $old_logs="", $add_source_links=true, $file_type='php3') {
+    MoreTimeLimit(3600); // 1 hour
     collect_messages($logfile, $files_base_dir, $files, $messages, $warnings);
 
     if (is_array($warnings)) {

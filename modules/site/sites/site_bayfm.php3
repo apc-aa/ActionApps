@@ -5,7 +5,6 @@
 // http://apc-aa.sourceforge.net/slices
 
 // This is intended as the start of a generic, reusable site file
-if ($debug) set_time_limit(240);  //Debugging can extend process time a lot
 
 // Site specific configuration
 

@@ -49,9 +49,8 @@ require_once __DIR__ . "/../modules/links/cattree.php";
  * stopped be Apache after 2 minutes or whatever is set in TimeOut
  * The commandline could look like:
  *   # php toexecute.php3
- * or with 'nice' and allowing safe_mode (for set_time_limit) and skipping to
- * right directory for example:
- *   # cd /var/www/example.org/apc-aa/misc && nice php -d safe_mode=Off toexecute.php3
+ * or with 'nice' and skipping to right directory for example:
+ *   # cd /var/www/example.org/apc-aa/misc && nice php toexecute.php3
  * The command above could be used from cron.
  */
 

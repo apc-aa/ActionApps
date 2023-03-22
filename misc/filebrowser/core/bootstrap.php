@@ -25,15 +25,8 @@
 if (!preg_match('/^(\d+\.\d+)/', PHP_VERSION, $ver) || ($ver[1] < 5.3))
     die("You are using PHP " . PHP_VERSION . " when KCFinder require at least version 5.3.0! Some systems has an option to change the active PHP version. Please refer to your hosting provider or upgrade your PHP distribution.");
 
-
-// SAFE MODE CHECK
-if (ini_get("safe_mode"))
-    die("The \"safe_mode\" PHP ini setting is turned on! You cannot run KCFinder in safe mode.");
-
-
 // CMS INTEGRATION
 require "integration/actionapps.php";
-
 
 // REGISTER AUTOLOAD FUNCTION
 require "core/autoload.php";

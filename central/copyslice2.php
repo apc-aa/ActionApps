@@ -32,7 +32,7 @@ if (!IsSuperadmin()) {
   exit;
 }
 
-set_time_limit(360);
+MoreTimeLimit(); // set_time_limit to 5 minutes (at least)
 
 // ActionApps to synchronize
 $aas = AA_Actionapps::getArray();

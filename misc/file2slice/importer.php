@@ -12,7 +12,7 @@ require_once __DIR__ . "/../../include/locsess.php";
 require_once __DIR__ . "/../../include/util.php";
 require_once __DIR__ . "/../../include/formutil.php";
 
-//set_time_limit(600);
+//MoreTimeLimit();
 //ini_set('memory_limit', '128M');
 
 //only for testing

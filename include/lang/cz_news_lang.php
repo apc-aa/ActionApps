@@ -150,7 +150,7 @@ $_m["User mail"]
 $_m["No user or template set"]
     = "Nebyl vybr�n ��dn� u�ivatel (nebo nebyla nalezena �ablova e-mailu, co� je divn�)";
 
-$_m["Email sucessfully sent (Users: %1, Valid emails: %2, Emails sent: %3)"]
+$_m["Email successfully sent (Users: %1, Valid emails: %2, Emails sent: %3)"]
     = "E-mail byl odesl�n (u�ivatel�: %1, Platn�ch e-mailov�ch adres: %2, Odeslan�ch e-mail�: %3)";
 
 $_m["Select readers<br><i>%1 reader(s) selected</i>"]
@@ -1796,7 +1796,7 @@ $_m["No template set (which is strange - template was just written to the databa
     = "Nen� nastavena �ablona (co� je divn� - �ablona pr�v� byla zaps�na do datab�ze)";
 
 // admin/write_mail.php, row 95
-$_m["Email sucessfully sent (Users: %1, Emails sent (valid e-mails...): %2)"]
+$_m["Email successfully sent (Users: %1, Emails sent (valid e-mails...): %2)"]
     = "E-mail byl usp�n� posl�n (U�ivatel�: %1, Poslan�ch (validn�ch) e-mail�: %2)";
 
 // admin/write_mail.php, row 110
@@ -3454,7 +3454,7 @@ $_m["Source or destination field is not specified."]
     = "";
 
 // admin/search_replace.php, row 699
-$_m["Items selected: %1, Items sucessfully updated: %2"]
+$_m["Items selected: %1, Items successfully updated: %2, Items planned: %3"]
     = "Vybr�no �l�nk�: %1, �sp�n� zm�n�no: %2";
 
 // admin/search_replace.php, row 716, 722
@@ -3479,7 +3479,7 @@ $_m["Selected items"]
     = "Zm�nit vybran�";
 
 // admin/search_replace.php, row 763
-$_m["Be very carefull with this. Changes in some fields (Status Code, Publish Date, Slice ID, ...) could be very crucial for your item's data. There is no data validity check - what you will type will be written to the database.<br>You should also know there is no UNDO operation (at least now)."]
+$_m["Be very careful with this. Changes in some fields (Status Code, Publish Date, Slice ID, ...) could be very crucial for your item's data. There is no data validity check - what you will type will be written to the database.<br>You should also know there is no UNDO operation (at least now)."]
     = "POZOR na tuto funkci. Je velmi mocn� a dok�e v m�iku poni�it mnoho �l�nk�. Zm�ny v n�kter�ch pol��c�ch (tatus Code, Publish Date, Slice ID, ...) mohou zp�sobit ztr�tu dat. V�e je zaps�no ihned do datab�ze.<br>Je dobr� v�d�t, �e tato funkce nem� mo�nost n�vratu (UNDO).";
 
 // admin/search_replace.php, row 765

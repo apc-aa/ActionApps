@@ -399,7 +399,7 @@ class AA_Responder_Alertitem extends AA_Responder {
         $ret = '0';
         if (is_long_id($this->item_id) AND (strlen($this->collection_id)==5)) {
             //initialize_last();
-            //set_time_limit(600); // This can take a while
+            //MoreTimeLimit(); // This can take a while
             $ret = send_emails("irregular", [$this->collection_id], $this->test_email, true, $this->item_id);
             // We must reset moved2active so that the item is not re-sent on update.
             //$db->query ("UPDATE item SET moved2active = 0 WHERE id='" .q_pack_id($item_id)."'");    }

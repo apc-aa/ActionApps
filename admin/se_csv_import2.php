@@ -239,7 +239,7 @@ class AA_Csv_Importer {
         $fieldNames = createFieldNames($this->fileName,$this->addParams);
 
 
-        set_time_limit(IMPORTFILE_TIME_LIMIT);	// set time for the executing this script : todo ???
+        MoreTimeLimit(IMPORTFILE_TIME_LIMIT);	// set time for the executing this script
 
         $handle       = fopen($this->fileName,"r");
         $numProcessed = 0;

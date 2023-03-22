@@ -745,7 +745,7 @@ class htmlMimeMail {
 
         $to = $this->_encodeHeader(implode(', ', $recipients), $this->build_params['head_charset']);
 
-        if ( !empty($this->return_path) AND !ini_get('safe_mode')) {
+        if ( !empty($this->return_path) ) {
             $result = mail($to, $subject, $this->output, implode(CRLF, $headers), '-f' . $this->return_path);
         } else {
             $result = mail($to, $subject, $this->output, implode(CRLF, $headers));

@@ -371,7 +371,9 @@ function fileman_execute_command($basedir, $directory, $cmd, $arg, $chb, $fmset)
     }
         // Upload file
     elseif ($cmd=='upload') {
-        set_time_limit(FILEMAN_UPLOAD_TIME_LIMIT);
+        if ((int)FILEMAN_UPLOAD_TIME_LIMIT) { // set time limit for upload
+            MoreTimeLimit((int)FILEMAN_UPLOAD_TIME_LIMIT);
+        }
 
         // $uploaderr = aa_move_uploaded_file("uploadarg", $basedir.$directory, FILEMAN_MODE_FILE);
         $dest_file = Files::uploadFile('uploadarg', $basedir.$directory);

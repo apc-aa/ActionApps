@@ -4833,6 +4833,7 @@ class AA_Stringexpand_Ajax extends AA_Stringexpand_Nevercache {
                     $ret .= "<div class=\"ajax_value\" id=\"ajaxv_$input_id\" data-aa-alias=\"".safe(base64_encode($show_alias))."\" $data_onsuccess style=\"display:inline\">$repre_value</div>";
                     $ret .= "<div class=\"ajax_changes\" id=\"ajaxch_$input_id\" style=\"display:inline\"></div>";
                     $ret .= "</div>";
+                    AA::Stringexpander()->addRequire('aa-jslib');  // for DisplayInput()
                     AA::Stringexpander()->addRequire('css-aa-system');
                 }
             }
@@ -4892,6 +4893,7 @@ class AA_Stringexpand_Editable extends AA_Stringexpand_Nevercache {
                         '    AA_Toolbar(\'<input type="button" value="'. _m('save changes').'" onclick="AA_SaveEditors();">\');' . "\n" .
                         '  });' . "\n" .
                         '});' . "\n";
+                    AA::Stringexpander()->addRequire('aa-jslib');  // for AA_Toolbar(),...
                     AA::Stringexpander()->addRequire($script2run, 'AA_Req_Run');
                 }
             }
@@ -5389,7 +5391,7 @@ class AA_Stringexpand_Dictionary extends AA_Stringexpand {
     function expand($dictionaries='', $text='', $format='', $conds='') {
         // sometimes this function last to much time - try to extend it
         if (($max_execution_time = (int)ini_get('max_execution_time')) > 0) {
-            set_time_limit($max_execution_time+20);
+            MoreTimeLimit($max_execution_time+20);
         }
 
         $dictionaries = explode_ids($dictionaries);
@@ -8154,7 +8156,7 @@ class AA_Stringexpand_Jwtencode extends AA_Stringexpand {
         }
 
         if (strlen($add_validity) AND !is_long_id($uid)) {
-            // if we are using $add_validity, then the user MUST be from Reader Management so we can compute the add_valid
+            // if we are using $add_validity, then the user MUST be from Reader Management, so we can compute the add_valid
             return '';
         }
 

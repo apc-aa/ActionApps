@@ -131,7 +131,7 @@ if ( !$send ) {               // for the first time - directly from item manager
             $mails_sent  = AA_Mail::sendToReader($mail_id, $zids);
             $users_count = $zids->count();
         }
-        $Msg = MsgOk(_m("Email sucessfully sent (Users: %1, Emails sent (valid e-mails...): %2, template id: %3)", [$users_count, $mails_sent, $mail_id]));
+        $Msg = MsgOk(_m("Email successfully sent (Users: %1, Emails sent (valid e-mails...): %2, template id: %3)", [$users_count, $mails_sent, $mail_id]));
 
         if ((string)$group == (string)"sel_item") {
             $sel = "LIST";

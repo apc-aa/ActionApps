@@ -29,7 +29,7 @@ use AA\Util\Langs;
 
 const SHOW_FILE_SIZE          = 65536;
 const IMPORTFILE_PREVIEW_ROWS = 5;
-const IMPORTFILE_TIME_LIMIT   = 6000;
+const IMPORTFILE_TIME_LIMIT   = 600; // 10 minutes
 
 const NOT_STORE         = 0;
 const STORE_WITH_NEW_ID = 1;

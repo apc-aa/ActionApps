@@ -164,7 +164,7 @@ class Toexecute {
     function execute()
     {
 
-        // set_time_limit( 360 );   // try to set 360 seconds to run
+        // MoreTimeLimit();  // try to set 5 minutes to run
         $allowed_time = (float)(defined('TOEXECUTE_ALLOWED_TIME') ? TOEXECUTE_ALLOWED_TIME : ((ini_get('max_execution_time') > 0) ? ini_get('max_execution_time') - 9 : 16.0));
         /** there we store the time needed for last task of given type
          *  (selector) - this value we use in next round to determine, if we can

@@ -613,7 +613,7 @@ function GetModuleInfo($module_id, $type) {
 
     if ( $ret AND $ret['reading_password'] ) {
         // do it more secure and do not store it plain
-        // (we should be carefull - mainly with debug outputs)
+        // (we should be careful - mainly with debug outputs)
         $ret['reading_password'] = AA_Credentials::encrypt($ret['reading_password']);
     }
     return $ret;
@@ -1148,6 +1148,7 @@ function HtmlPageBegin($js_lib=false, $lang=null) {
     <link rel="stylesheet" href="'.(AA_INSTAL_PATH .ADMIN_CSS).'">
     <link rel="stylesheet" href="'.AA_INSTAL_PATH. 'css/aa-system.css">
     <meta charset="'.AA::$encoding.'">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 ';
 
     if ($js_lib) {
@@ -1988,3 +1989,12 @@ function get_authorization_header() {
     return trim($ret);
 }
 
+/** Increase the time limit for the script by x seconds
+ * @param int $seconds - increase time by $seconds - default 300 seconds
+ * @return void
+ */
+function MoreTimeLimit(int $seconds=300): void {
+    if (ini_get('max_execution_time')<$seconds) {
+        set_time_limit($seconds);
+    }
+}

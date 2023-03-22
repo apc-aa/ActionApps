@@ -1140,7 +1140,7 @@ class ItemContent extends AA_Content {
      *                      in the database
      *      insert_if_new - the item is stored only if the item with this id
      *                      ($this->getItemID()) is not in the database.
-     *                      Otherwise it is skipped (not stored)
+     *                      Otherwise, it is skipped (not stored)
      * @param array  $flags additional item processing flags.:
      *                  $flags[0] - invalidatecache - should we invalidate the cache for the slice?
      *                  $flags[1] - feed            - process feeding (as in the slice setting)?

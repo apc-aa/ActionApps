@@ -593,7 +593,7 @@ class AA_Exportsetings extends AA_Object {
             }
         }
 
-        set_time_limit(5000);
+        MoreTimeLimit(3600); // set_time_limit to 1 hour (at least)
 
         $exporter = AA_Object::factory($this->format, ['field_set'=>$fs, 'grabber'=>$grabber]);
         if (is_null($exporter)) {

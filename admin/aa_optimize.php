@@ -36,7 +36,7 @@ if (!IsSuperadmin()) {
     exit;
 }
 
-set_time_limit(max(300,ini_get('max_execution_time')));   // 300 seconds (at least)
+MoreTimeLimit(); // set_time_limit to 5 minutes (at least)
 
 $Msg = '';
 $testresult = [];

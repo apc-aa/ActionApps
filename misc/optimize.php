@@ -40,7 +40,7 @@ require_once __DIR__."/../include/config.php";
 require_once __DIR__ . "/../include/locsess.php";   // DB_AA definition
 require_once __DIR__ . "/../include/util.php";
 
-set_time_limit(160);
+MoreTimeLimit(); // set_time_limit to 5 minutes (at least)
 
 if ( substr( DB_PASSWORD, 0, 5 ) != $_GET['key'] ) {
     exit;                 // We need first five characters of database password

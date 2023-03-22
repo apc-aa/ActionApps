@@ -87,7 +87,7 @@ require_once __DIR__ . "/include/locsess.php";    // DB_AA object definition
 //AA::$debug&2 && AA::$dbg->group("/jsview.php", "Start");
 
 if (ctype_digit((string)$time_limit)) {
-    @set_time_limit((int)$time_limit);
+    MoreTimeLimit((int)$time_limit); // set_time_limit
 }
 
 AA::$debug&2 && AA::$dbg->group("/jsview.php", "Start");

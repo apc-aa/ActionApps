@@ -1690,7 +1690,7 @@ function QueryZids($slices, $conds = "", $sort = "", $type = "ACTIVE", $neverAll
                         //   headline........@7735375488a65e7735375488a65eab2ab2+/relation.......1
                         //   - search in headline field of all related items
                         //     (relation.......1 field of the remote slice 7735375488a65e7735375488a65eab2ab2 pointed to current item)
-                        //   - the + after <remote_slice_id> - 7735375488a65e7735375488a65eab2ab2+ means we want also non ACTIVE items take in the account
+                        //   - the + after <remote_slice_id> - 7735375488a65e7735375488a65eab2ab2+ means we want also non-ACTIVE items take in the account
                         [$cond_fld_id, $rel_combi] = explode('@', $fid);
                         [$rel_slice_id, $rel_fld_id] = explode('/', $rel_combi);
                         $rel_bins = AA_BIN_ACTIVE;
@@ -1825,7 +1825,7 @@ function QueryZids($slices, $conds = "", $sort = "", $type = "ACTIVE", $neverAll
             //    sort[0]=random
             //    sort[0]=category........&sort[1]=random
             //    /apc-aa/view.php?vid=13&cmd[13]=c-1-1&set[13]=sort-random
-            // This operatin is quite slow in MySQL, so if you need just
+            // This operation is quite slow in MySQL, so if you need just
             // one random item (for banner, ...), you should rather use
             // set[]=random-1 parameter for view.php
             if ($fid == 'random') {
@@ -1856,7 +1856,7 @@ function QueryZids($slices, $conds = "", $sort = "", $type = "ACTIVE", $neverAll
             } else {
                 if (!$sortable[$fid]) {           // this field is not joined, yet
                     $tbl = 'c' . $tbl_count++;
-                    // fill arrays to be able construct select command
+                    // fill arrays to be able to construct select command
                     $select_tabs[] = "LEFT JOIN content as $tbl
                                       ON ($tbl.item_id=item.id
                                       AND ($tbl.field_id='$fid' OR $tbl.field_id is NULL))";
@@ -1873,7 +1873,7 @@ function QueryZids($slices, $conds = "", $sort = "", $type = "ACTIVE", $neverAll
                     }
 
                     $tbl = 'o' . $tbl_count++;
-                    // fill arrays to be able construct select command
+                    // fill arrays to be able to construct select command
                     $select_tabs[] = "LEFT JOIN constant as $tbl
                                       ON ($tbl.value=" . $sortable[$fid] . ".text
                                       AND ($tbl.group_id='$constgroup'

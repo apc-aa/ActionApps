@@ -145,7 +145,7 @@ $_m["User mail"]
 $_m["No user or template set"]
  = "Nebyl vybrán žádný uživatel (nebo nebyla nalezena šablova e-mailu, což je divné)";
 
-$_m["Email sucessfully sent (Users: %1, Valid emails: %2, Emails sent: %3)"]
+$_m["Email successfully sent (Users: %1, Valid emails: %2, Emails sent: %3)"]
  = "E-mail byl odeslán (uživatelů: %1, Platných e-mailových adres: %2, Odeslaných e-mailů: %3)";
 
 $_m["Select readers<br><i>%1 reader(s) selected</i>"]
@@ -1794,7 +1794,7 @@ $_m["No template set (which is strange - template was just written to the databa
  = "Není nastavena šablona (což je divné - šablona právě byla zapsána do databáze)";
 
 // admin/write_mail.php, row 95
-$_m["Email sucessfully sent (Users: %1, Emails sent (valid e-mails...): %2)"]
+$_m["Email successfully sent (Users: %1, Emails sent (valid e-mails...): %2)"]
  = "E-mail byl uspěšně poslán (Uživatelů: %1, Poslaných (validních) e-mailů: %2)";
 
 // admin/write_mail.php, row 110
@@ -3452,7 +3452,7 @@ $_m["Source or destination field is not specified."]
  = "";
 
 // admin/search_replace.php, row 699
-$_m["Items selected: %1, Items sucessfully updated: %2"]
+$_m["Items selected: %1, Items successfully updated: %2, Items planned: %3"]
  = "Vybráno článků: %1, Úspěšně změněno: %2";
 
 // admin/search_replace.php, row 716, 722
@@ -3477,7 +3477,7 @@ $_m["Selected items"]
  = "Změnit vybrané";
 
 // admin/search_replace.php, row 763
-$_m["Be very carefull with this. Changes in some fields (Status Code, Publish Date, Slice ID, ...) could be very crucial for your item's data. There is no data validity check - what you will type will be written to the database.<br>You should also know there is no UNDO operation (at least now)."]
+$_m["Be very careful with this. Changes in some fields (Status Code, Publish Date, Slice ID, ...) could be very crucial for your item's data. There is no data validity check - what you will type will be written to the database.<br>You should also know there is no UNDO operation (at least now)."]
  = "POZOR na tuto funkci. Je velmi mocná a dokáže v mžiku poničit mnoho článků. Změny v některých políčcích (tatus Code, Publish Date, Slice ID, ...) mohou způsobit ztrátu dat. Vše je zapsáno ihned do databáze.<br>Je dobré vědět, že tato funkce nemá možnost návratu (UNDO).";
 
 // admin/search_replace.php, row 765

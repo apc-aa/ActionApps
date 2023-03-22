@@ -51,10 +51,8 @@ require_once __DIR__ . "/include/locsess.php";
 /** Defines class for inserting and updating database fields */
 require_once __DIR__ . "/include/varset.php";
 
-# zvetseni limitu - neprojde rozeslani vsech emailu
-if( !ini_get('safe_mode') ){
-  set_time_limit(3600);
-}
+// to complete all the tasks (send all mails...)
+MoreTimeLimit(3600); // set_time_limit to 1 hour (at least)
 
 /**
  * Runs the items from the cron table if their time has come.

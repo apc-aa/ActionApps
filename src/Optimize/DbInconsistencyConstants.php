@@ -74,8 +74,8 @@ class DbInconsistencyConstants extends AbstractOptimize {
         $non_ascii = $this->getNonAsciiGroups();
 
         foreach ($non_ascii as $grp) {
-            $this->message(['problem'=>_m('Non ASCII chars in group_id'),
-                            'group'=> a_href(get_admin_url('aafinder.php', [
+            $this->message(['problem' =>_m('Non ASCII chars in group_id'),
+                            'group'   => a_href(get_admin_url('aafinder.php', [
                                 'search'         => $grp,
                                 'searchinview'   => 1,
                                 'searchinslice'  => 1,
@@ -84,7 +84,7 @@ class DbInconsistencyConstants extends AbstractOptimize {
                                 'searchinobject' => 1,
                                 'go_search'      => 1
                             ]), $grp),
-                            'values'=>join(', ', DB_AA::select('c', "SELECT CONCAT(`name`,'->',`value`) as c FROM `constant`", [['group_id',$grp]]))]);
+                            'values'  =>join(', ', DB_AA::select('c', "SELECT CONCAT(`name`,'->',`value`) as c FROM `constant`", [['group_id',$grp]]))]);
             $ret = false;
         }
         $this->message(_m('Found %1 Non ASCII',[count($non_ascii)]));
@@ -92,8 +92,8 @@ class DbInconsistencyConstants extends AbstractOptimize {
         $not_used = $this->getNotUsedGroups();
 
         foreach ($not_used as $grp) {
-            $this->message(['problem'=>_m('Not used constant group'),
-                            'group'=> a_href(get_admin_url('aafinder.php', [
+            $this->message(['problem' =>_m('Not used constant group'),
+                            'group'   => a_href(get_admin_url('aafinder.php', [
                                 'search'         => $grp,
                                 'searchinview'   => 1,
                                 'searchinslice'  => 1,
@@ -102,7 +102,7 @@ class DbInconsistencyConstants extends AbstractOptimize {
                                 'searchinobject' => 1,
                                 'go_search'      => 1
                             ]), $grp),
-                            'values'=>join(', ', DB_AA::select('c', "SELECT CONCAT(`name`,'->',`value`) as c FROM `constant`", [['group_id',$grp]]))]);
+                            'values'  =>join(', ', DB_AA::select('c', "SELECT CONCAT(`name`,'->',`value`) as c FROM `constant`", [['group_id',$grp]]))]);
             $ret = false;
         }
         $this->message(_m('Found %1 unused constant groups',[count($not_used)]));

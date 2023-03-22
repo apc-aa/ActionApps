@@ -32,11 +32,11 @@ https://www.apc.org/
                     //   but there are redefined two conditions
                     // cmd[23]=d-headline........-LIKE-Profit-publish_date....-m:>-86400
                     //   generalized version of cmd[]-c
-                    //      - fields and operators specifed
+                    //      - fields and operators specified
                     //      - unlimited number of conditions
                     //      - all default conditions from view definition are
                     //        completely redefined by the specified ones
-//optionaly set[]    // setings to modify view behavior (can be combined with cmd)
+//optionaly set[]   // settings to modify view behavior (can be combined with cmd)
                     // set[23]=listlen-20
                     // set[23]=mlx-EN-FR-DE
                     //   - sets maximal number of viewed items in view 23 to 20
@@ -79,7 +79,7 @@ add_vars();
 pageOpen('noauth');   // just to start $sess with right parameters
 
 if (ctype_digit((string)$time_limit)) {
-    @set_time_limit((int)$time_limit);
+    MoreTimeLimit((int)$time_limit); // set_time_limit
 }
 
 AA::$debug&2 && AA::$dbg->group("/view.php", "Start");
