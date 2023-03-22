@@ -875,28 +875,45 @@ class AA_Transformation_CopyField extends AA_Transformation {
 }
 
 
-class AA_Transformator {
+class AA_Transformator implements \AA\Later\LaterInterface {
 
-    /** You do not check permissions here - you must already know, you have
-     *  perms for the change
-     * @param zids   $zids
-     * @param string $field_id
-     * @param        $transformation
-     * @param bool   $silent
-     * @param bool   $allow_last_edit just in special cases of silent bulk change
+    /** @var zids|null */
+    protected $zids   = null;
+
+    /** @var string     */
+    protected $field_id = '';
+
+    /** @var AA_Transformation|null */
+    protected $transformation = null;
+
+    /** @var bool  */
+    protected $silent;
+
+    /** @var bool just in special cases of silent bulk change - last_edit.. must be the field_id to work*/
+    protected $allow_last_edit;
+
+    function __construct(AA_Transformation $transformation, string $field_id='', zids $zids=null, bool $silent=true, bool $allow_last_edit=false) {
+        $this->transformation   = $transformation;
+        $this->field_id         = $field_id;
+        $this->zids             = $zids;
+        $this->silent           = $silent;
+        $this->allow_last_edit  = $allow_last_edit;
+    }
+
+    /** You do not check permissions here - you must already know, you have perms for the change
      * @return int
      */
-    function transform($zids, $field_id, $transformation, $silent=true, $allow_last_edit=false): int {
+    function transform(): int {
 
         $updated_items     = 0;         // number of updated items
         $slices2invalidate = [];
 
-        for ( $i=0, $ino=$zids->count(); $i<$ino; ++$i) {
+        foreach ($this->zids as $zid ) {
 
             $itemcontent    = new ItemContent();
-            $itemcontent->setByItemID($zids->zid($i), true);     // ignore password
+            $itemcontent->setByItemID($zid, true);     // ignore password
             // if we do not ignore it, then it will not work for slices with slice_pwd
-            // It is OK to do not care about password here - we are loged in and have permission PS_EDIT_ALL_ITEMS
+            // It is OK to do not care about password here - we are logged in and have permission PS_EDIT_ALL_ITEMS
 
             $sli_id  = $itemcontent->getSliceID();
             $item_id = $itemcontent->getItemID();
@@ -906,9 +923,9 @@ class AA_Transformator {
             }
 
             // transform returns AA_Value
-            $field_content = $transformation->transform($field_id, $itemcontent, $silent);
+            $field_content = $this->transformation->transform($this->field_id, $itemcontent, $this->silent);
             if ( !is_a($field_content, 'AA_Value') ) {
-                if ($field_content === true) {  // for recompute - all is already sucessfully done
+                if ($field_content === true) {  // for recompute - all is already successfully done
                     $updated_items++;
                     $slices2invalidate[$sli_id] = $sli_id;
                 }
@@ -917,11 +934,11 @@ class AA_Transformator {
             }
             $field_content->removeDuplicates();
             $newitemcontent = new ItemContent();
-            $newitemcontent->setAaValue($field_id, $field_content);
+            $newitemcontent->setAaValue($this->field_id, $field_content);
             $newitemcontent->setItemID($item_id);
             $newitemcontent->setSliceID($sli_id);
 
-            if ($newitemcontent->storeItem( $silent ? 'update_silent' : 'update', [false, false, false, $allow_last_edit])) {    // not invalidatecache, not feed, no events
+            if ($newitemcontent->storeItem( $this->silent ? 'update_silent' : 'update', [false, false, false, $this->allow_last_edit])) {    // not invalidatecache, not feed, no events
                 $updated_items++;
             }
             $slices2invalidate[$sli_id] = $sli_id;
@@ -935,6 +952,20 @@ class AA_Transformator {
         }
         return $updated_items;
     }
+
+    public function setZids(zids $zids): AA_Transformator {
+        $this->zids = $zids;
+        return $this;
+    }
+
+    public function setField(string $field_id): AA_Transformator {
+        $this->field_id = $field_id;
+        return $this;
+    }
+
+    /** @inheritDoc  */
+    public function toexecutelater($params = []) {
+        $num = $this->transform();
+        return "OK: $num";
+    }
 }
-
-

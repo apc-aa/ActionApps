@@ -54,15 +54,27 @@ if ( !$fill ) {               // for the first time - directly from item manager
     // we really want to fill fields
     $zids          = new zids;
     $updated_items = 0;
+    $planned = 0;
     if ($_REQUEST[SEARCH_REPLACE_PREFIX] AND (strpos(strtolower($_REQUEST[SEARCH_REPLACE_PREFIX]), 'aa_transformation_')===0)) {   // strtolower is fix for php4, where case of any class is small
         $transformation = AA_Object::factory($_REQUEST[SEARCH_REPLACE_PREFIX],AA_Transformation::getRequestVariables(SEARCH_REPLACE_PREFIX, $_REQUEST[SEARCH_REPLACE_PREFIX]));
         $zids           = ( ($group == 'testitemgroup') ? new zids($testitem) : getZidsFromGroupSelect($group, $items, $searchbar) );
 
-        $transformator  = new AA_Transformator;
-        $updated_items  = $transformator->transform($zids, $field_id, $transformation, $silent, ($silent AND ($field_id=='last_edit.......') AND IsSuperadmin()));
+        $transformator  = new AA_Transformator($transformation, $field_id, null, $silent, ($silent AND ($field_id=='last_edit.......') AND IsSuperadmin()));
+        if ($tasks>0) {
+            $zids_chunked = $zids->chunk($tasks);
+            $toexecute = new \AA\Later\Toexecute();
+
+            foreach ($zids_chunked as $chunk) {
+                if ($toexecute->later($transformator->setZids($chunk),[],'ModifyItemContent')) {
+                    $planned += $chunk->count();
+                }
+            }
+        } else {
+            $updated_items = $transformator->setZids($zids)->transform();
+        }
     }
 
-    $Msg     = MsgOk(_m("Items selected: %1, Items sucessfully updated: %2", [$zids->count(), $updated_items]));
+    $Msg     = MsgOk(_m("Items selected: %1, Items successfully updated: %2, Items planned: %3", [$zids->count(), $updated_items, $planned]));
     if ((string)$group == (string)"sel_item") {
         $sel = "LIST";
     } elseif ((string)$group == (string)"testitemgroup") {
@@ -70,7 +82,7 @@ if ( !$fill ) {               // for the first time - directly from item manager
     } else {
         $sel = get_if($group,"0");  // bookmarks groups are identified by numbers
     }
-    AA_Log::write("ITEM_FIELD_FILLED", $sel, [$zids->count(), $updated_items]);
+    AA_Log::write("ITEM_FIELD_FILLED", $sel, [$zids->count(), $updated_items, $planned]);
 }
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
@@ -117,7 +129,7 @@ foreach ($fields as $fld_id => $fld) {
 
 $params = [
     'field_copy_arr' => $field_copy_arr,
-                'field_select'   => $field_select
+    'field_select'   => $field_select
 ];
 
 FrmTabCaption((is_array($items) ? _m("Items") : (_m("Stored searches for ") . $slice->getName())));
@@ -128,15 +140,17 @@ FrmItemGroupSelect( $items, $searchbar, 'items', $messages, $additional);
 
 FrmTabSeparator(_m('Fill field'));
 FrmInputSelect('field_id',       _m('Field'),             $field_select,       $field_id, true,
-               _m('Be very carefull with this. Changes in some fields (Status Code, Publish Date, Slice ID, ...) could be very crucial for your item\'s data. There is no data validity check - what you will type will be written to the database.<br>You should also know there is no UNDO operation (at least now).'));
+               _m('Be very careful with this. Changes in some fields (Status Code, Publish Date, Slice ID, ...) could be very crucial for your item\'s data. There is no data validity check - what you will type will be written to the database.<br>You should also know there is no UNDO operation (at least now).'));
 
 FrmInputChBox('silent', _m('Silent'), true, false, "", 1, false, _m('Just update the field and do not perform any other operations like set-last-edit, evaluate-computed-field, feed, ...'));
 
 FrmStaticText(_m('Action'), AA_Components::getSelectionCode('AA_Transformation_', SEARCH_REPLACE_PREFIX, $params), "", "", false);
 
+FrmInputNumber('tasks', _m('Run as Tasks - fill number of items in one task'), $tasks, 0, 99999999, false, _m('If you want to run this operation as tasks, enter the number of items in one task here. The operation will be split into tasks. The tasks will be run in the background. You can check the status of the tasks in the task manager.'));
+
 FrmTabEnd([
     'fill' => ['type'=>'submit', 'value'=>_m('Fill')],
-                 'close'=> ['type'=>'button', 'value'=>_m('Close'), 'add'=>'onclick="window.close()"']
+    'close'=> ['type'=>'button', 'value'=>_m('Close'), 'add'=>'onclick="window.close()"']
 ]);
 
 // list selected items to special form - used by manager.min.js to show items (recipients)

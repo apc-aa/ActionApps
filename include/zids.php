@@ -516,6 +516,16 @@ class zids implements Iterator, ArrayAccess, Countable {
         return $ret;
     }
 
+    /** @return zids[] array of zids in chunks with max $size ids */
+    function chunk(int $size): array {
+        $chunks = array_chunk($this->a, $size);
+        $ret = [];
+        foreach ($chunks as $chunk) {
+            $ret[] = new zids($chunk, $this->type);
+        }
+        return $ret;
+    }
+
     /** Iterator interface */
     public function rewind()  { reset($this->a);                        }
     public function current() { return current($this->a);               }
