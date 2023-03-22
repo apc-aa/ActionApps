@@ -28,12 +28,28 @@
  *
 */
 
-const AA_REGISTER_GLOBALS = true;
+// const  AA_REGISTER_GLOBALS = true;
+use AA\Util\InputVars;
+
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/varset.php";
 
 require_once __DIR__ . "/../include/um_util.php";
+
+try {
+    $user_firstname = InputVars::stringSlashedPOST('user_firstname'); // alpha
+    $user_mail1 = InputVars::stringSlashedPOST('user_mail1');
+    $user_password1 = InputVars::stringSlashedPOST('user_password1'); // alpha
+    $user_password2 = InputVars::stringSlashedPOST('user_password2'); // alpha
+    $user_password_old = InputVars::stringSlashedPOST('user_password_old'); // alpha
+    $user_surname = InputVars::stringSlashedPOST('user_surname'); // alpha
+    $update = InputVars::boolPOST('update');
+    $cancel = InputVars::boolPOST('cancel');
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
+
 
 if ($cancel) {
     go_url( StateUrl(self_base() . "index.php3"));
@@ -54,7 +70,7 @@ if ( $update ) {
     if ( !AA::$perm->authenticateUsername(AuthGetUname(), $user_password_old, '') ) {
         $err['Password'] = MsgErr(_m("Error in current password - pasword is not changed"));
     }
-    $userrecord = FillUserRecord($err, 'nOnEwlOgiN', $user_surname, $user_firstname, $user_password1, $user_password2,  $user_mail1, $user_mail2, $user_mail3);
+    $userrecord = FillUserRecord($err, 'nOnEwlOgiN', $user_surname, $user_firstname, $user_password1, $user_password2,  $user_mail1);
 
     if ( !count($err)) {
         ChangeUserData($err, AuthGetUid(), $userrecord, 'AA_NO_CHANGE');

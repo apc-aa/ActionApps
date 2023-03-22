@@ -25,11 +25,27 @@
 */
 // expected $del - unpacked id of slice to delete
 
-const AA_REGISTER_GLOBALS = true;
+// const  AA_REGISTER_GLOBALS = true;
+use AA\Util\InputVars;
+
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/feeding.php";
 
 require_once __DIR__ . "/../include/modutils.php";
+
+try {
+    // array ( '1f5e8011cce…' => 1, )
+    $del = InputVars::idGET('del');
+    // array ( 'Vymazat vyb…' => 1, )
+    $delete = InputVars::boolPOST('delete');
+    // array ( )
+    $deletearr = InputVars::arrayPOST('deletearr');
+    // array ( 'todelete' => 1, )
+    $slices2show = InputVars::stringPOST('slices2show'); // alpha
+    $cancel = InputVars::boolPOST('cancel');
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
 
 
 if ($cancel) {

@@ -28,33 +28,28 @@
 //           $d_id
 //           $h
 
-const AA_REGISTER_GLOBALS = true;
+// const  AA_REGISTER_GLOBALS = true;
+use AA\Util\InputVars;
+
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/discussion.php";
 require_once __DIR__ . "/../include/item.php";
 
 
-/** getHeadline function
- * get a headline of the item
- * @param $content4id
- * @return string headline
- */
-function getHeadline($content4id): string {
-    if (!$content4id) {
-        return '';
-    }
-    if ($content4id["headline........"]) {
-        return $content4id["headline........"][0]['value'];
-    }
-
-    for ($i=1; $i<10; $i++) {
-        if ($content4id["headline.......".$i]) {
-            return $content4id["headline.......".$i][0]['value'];
-        }
-    }
-    return '';
-}
+try {
+    // array ( '5c9c0780a5c…' => 1, '60df0a16831…' => 1, 'db996299264…' => 7, '8bf7dd29548…' => 2, '0ae33f40354…' => 5, )
+    $d_id = InputVars::idGET('d_id');
+    // array ( 1 => 5, '' => 9, )
+    $h = InputVars::boolGET('h'); // empty
+    // array ( '653e6beff71…' => 54, '' => 2, )
+    $item_id = InputVars::idGET('item_id'); // empty
+    // array ( 'hide' => 14, 'delete' => 1, 'deleteshown' => 1, 'deleteall' => 1, )
+    $mode = InputVars::stringGET('mode'); // alpha
+    $cancel = InputVars::boolPOST('cancel');
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
 
 // check permission to edit discussion - you must be Editor, at least
 if (!IfSlPerm(PS_EDIT_ALL_ITEMS)) {
@@ -128,10 +123,7 @@ $apage->setForm(['action'=>'index.php3']);
 $apage->addRequire($script2run, 'AA_Req_Footcode');
 $apage->printHead($err, $Msg);
 
-$content  = GetItemContent($item_id);
-$headline = getHeadline($content[$item_id]);
-
-FrmTabCaption(_m("Item: ")." $headline (". $content[$item_id]["disc_app........"][0]['value']. "/". $content[$item_id]["disc_count......"][0]['value']. ")");
+FrmTabCaption(AA::Stringexpander()->unalias(_m("Item: ")." {item:$item_id:{(_#HEADLINE ({disc_app........}/{disc_count......}))}}"));
    echo '<tr class="aa-tbl-header">
         <th>'. _m("Title") .'</th>
         <th>'. _m("Author") .'</th>

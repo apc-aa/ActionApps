@@ -26,11 +26,19 @@
 
 // expected $slice_id for edit slice, nothing for adding slice
 
+use AA\Util\InputVars;
+
 $require_default_lang = true;      // do not use module specific language file
-const AA_REGISTER_GLOBALS = true;
+// const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
 
+try {
+    $slices2show = InputVars::stringGET('slices2show'); // alpha
+    $cancel = InputVars::boolPOST('cancel');
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
 
 if ($cancel) {
     go_url( StateUrl(self_base() . "index.php3"));
@@ -56,7 +64,7 @@ function PrintSlice($id, $name, $type) {
             <td><input type=\"checkbox\" name=\"deletearr[]\" value=\"$id\"></td>
             <td>$name</td>
             <td>$type</td>
-            <td><a href=\"javascript:DeleteSlice('$id', '$url')\">". _m("Delete") ."</a></td>
+            <td><a class=aa-button-delete href=\"javascript:DeleteSlice('$id', '$url')\">". _m("Delete") ."</a></td>
             </tr>
          ";
 }
@@ -85,9 +93,10 @@ $form_buttons= [
     "cancel" => ["url"  => "um_uedit.php"]
 ];
 
-if ( !isset($slices2show) ) {
+if ( !$slices2show ) {
     $slices2show = 'todelete';
 }
+
 FrmTabCaption(_m("Select slice to delete"), $form_buttons);
 FrmInputRadio('slices2show', _m('Slices to show'), ['todelete'=>_m('Marked as "Deleted"'), 'all'=>"All slices"],
               $slices2show, false, _m('This option allows you to display all the slices and delete them, so be careful!'), '', 0, true,

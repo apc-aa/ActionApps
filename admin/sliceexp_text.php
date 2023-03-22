@@ -95,7 +95,7 @@ class AA_Slice_Exporter {
         $slice["owner"] = unpack_id($slice["owner"]);
 
         if ($this->type != 'backup') {
-            if (strlen ($new_slice_id) != 16) {
+            if (strlen($new_slice_id) != 16) {
                 MsgPage(_m("Wrong slice ID length: ") . strlen($new_slice_id));
                 exit;
             } else {
@@ -150,10 +150,10 @@ class AA_Slice_Exporter {
     function exportOneSliceData($slobj, $temp_file) {
         if ($this->spec_date) {
             $conds = [];
-            $conds[0]["operator"]         = "e:>=";
+            $conds[0]["operator"]         = "d:>=";
             $conds[0]["publish_date...."] = 1;
             $conds[0]['value']            = $this->from_date;
-            $conds[1]["operator"]         = "e:<=";
+            $conds[1]["operator"]         = "d:<=";
             $conds[1]["publish_date...."] = 1;
             $conds[1]['value']            = $this->to_date;
         } else {
@@ -218,7 +218,7 @@ class AA_Slice_Exporter {
             $this->prepareEncoder($slobj->getCharset());
 
             if ($this->type != 'backup') {
-                if (strlen ($new_slice_id) != 16) {
+                if (strlen($new_slice_id) != 16) {
                     MsgPage(_m("Wrong slice ID length:") . strlen($new_slice_id));
                     exit;
                 } else {

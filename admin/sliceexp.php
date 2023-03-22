@@ -33,13 +33,46 @@
 */
 
 use AA\IO\DB\DB_AA;
+use AA\Util\InputVars;
 
 $require_default_lang = true;      // do not use module specific language file
                                    // (message for init_page.php)
-const AA_REGISTER_GLOBALS = true;
+// const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../admin/sliceexp_text.php";
 require_once __DIR__ . "/../include/formutil.php";
+
+try {
+    // array ( '12345678901…' => 3, 'template' => 1, 'templateddd…' => 2, '' => 4, )
+    $SliceID = InputVars::stringPOST('SliceID'); // alnum, empty
+    // array ( 1 => 7, )
+    $b_export_data = InputVars::boolPOST('b_export_data');
+    // array ( 'Pjet' => 3, '12.5.2000' => 3, '' => 4, )
+    $b_export_from_date = InputVars::stringPOST('b_export_from_date'); // empty
+    // array ( 1 => 4, )
+    $b_export_gzip = InputVars::boolPOST('b_export_gzip');
+    // array ( 1 => 4, )
+    $b_export_hex = InputVars::boolPOST('b_export_hex');
+    // array ( 1 => 6, )
+    $b_export_spec_date = InputVars::boolPOST('b_export_spec_date');
+    // array ( 1 => 8, )
+    $b_export_struct = InputVars::boolPOST('b_export_struct');
+    // array ( 'Štyry' => 3, '25.4.2021' => 3, '' => 4, )
+    $b_export_to_date = InputVars::stringPOST('b_export_to_date'); // empty
+    // array ( 1 => 6, )
+    $b_export_to_file = InputVars::boolPOST('b_export_to_file');
+    // array ( 1 => 7, )
+    $b_export_to_utf = InputVars::boolPOST('b_export_to_utf');
+    // array ( 'backup' => 4, 'doc' => 6, )
+    $b_export_type = InputVars::stringPOST('b_export_type'); // alpha
+    // array ( 1 => 7, )
+    $b_export_views = InputVars::boolPOST('b_export_views');
+    // array ( )
+    $export_slices = InputVars::arrayPOST('export_slices');
+    $cancel = InputVars::boolPOST('cancel');
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
 
 // Make sure you have permissions to do this
 if (!CheckPerms( AuthGetUid(), "aa", AA_ID, PS_ADD) ) {
@@ -53,7 +86,7 @@ if (!CheckPerms( AuthGetUid(), "aa", AA_ID, PS_ADD) ) {
 3: Neither, display a form
 */
 
-set_time_limit( 120 );
+MoreTimeLimit(); // set_time_limit to 5 minutes (at least)
 
 if ($_POST['b_export_type']=='doc') {
     $exporter = new AA_Slice_Documentator($b_export_type, $b_export_gzip, $b_export_struct, $b_export_data, $b_export_spec_date, $b_export_from_date, $b_export_to_date, $b_export_hex, $b_export_views, $b_export_to_utf);
@@ -61,7 +94,7 @@ if ($_POST['b_export_type']=='doc') {
     $exporter = new AA_Slice_Exporter($b_export_type, $b_export_gzip, $b_export_struct, $b_export_data, $b_export_spec_date, $b_export_from_date, $b_export_to_date, $b_export_hex, $b_export_views, $b_export_to_utf);
 }
 
-if (isset($b_export_to_file)) {
+if ($b_export_to_file) {
     $exporter->exportToFile(AA::$module_id, $export_slices, $SliceID);
     exit;
 }
@@ -96,8 +129,8 @@ if ($_POST['b_export_type']) {
         <table>
         <tr>
             <td><input type="checkbox" name="b_export_spec_date" value="1"><?php echo _m("Export data from specified dates: ") ?></td>
-            <td><?php echo _m("From ") ?><input type="text" name="b_export_from_date" maxlength="10" width="10" onChange="b_export_date_onchange(this)"></td>
-            <td><?php echo _m("to") ?><input type="text" name="b_export_to_date" maxlength="10" width="10" onChange="b_export_date_onchange(this)"></td>
+            <td><?php echo _m("From ") ?><input type="date" name="b_export_from_date"></td>
+            <td><?php echo _m("to") ?><input type="date" name="b_export_to_date"></td>
         </tr>
         </table>
         </td>
@@ -146,42 +179,6 @@ if ($_POST['b_export_type']) {
 
 </table>
 <script>
-    function b_export_date_onchange(vstup)  {
-        error = 0; tecka = 0; den = 0; rok = 0; mesic = 0;
-        for (index = 0; index < vstup.value.length; index++) {
-            ch = vstup.value.charAt(index);
-            if (ch != "0" && ch != "1" && ch != "2" && ch != "3" && ch != "4" && ch != "5" && ch != "6" && ch != "7" && ch != "8" && ch != "9" && ch != ".")
-            { error = 1; }
-            if ((ch == "0" || ch == "1" || ch == "2" || ch == "3" || ch == "4" || ch == "5" || ch == "6" || ch == "7" || ch == "8" || ch == "9") && (error == 0))
-            {
-                if (tecka == 0) {den=den + ch}
-                if (tecka == 1) {mesic=mesic + ch}
-                if (tecka == 2) {rok=rok + ch}
-            }
-            if (ch == "." && error == 0)
-            {
-                if (tecka == 1) {tecka=2}
-                if (tecka == 0) {tecka=1}
-            }
-        }
-
-        if ((den<1 || den >31) && (error == 0)) { error = 1; }
-        if ((mesic<1 || mesic>12) && (error == 0)) { error = 1;}
-        if (rok<1990 && tecka == 2 && error == 0 && rok != "") { error = 1;}
-        if ((tecka == 2 && rok == "") || (tecka > 2)) { error = 2;}
-        if (error == 1)
-        {
-            alert(<?php echo '"'._m("Date export error").'"' ?>);
-            vstup.focus();
-        }
-        if (error == 2)
-        {
-            alert(<?php echo '"'._m("Date export error").'"' ?>);
-            vstup.focus();
-        }
-        document.forms["f"].b_export_spec_date.checked = true;
-    }
-
     function validate () {
         form = document.forms["f"];
         if (form.SliceID.value.length != 16) {

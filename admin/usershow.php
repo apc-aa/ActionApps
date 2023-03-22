@@ -27,8 +27,9 @@
 */
 
 use AA\Manager;
+use AA\Util\InputVars;
 
-const AA_REGISTER_GLOBALS = true;
+// const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/varset.php";
 require_once __DIR__ . "/../include/view.php";
@@ -40,6 +41,18 @@ require_once __DIR__ . "/../include/searchlib.php";
 require_once __DIR__ . "/../include/formutil.php";
 
 require_once __DIR__ . "/../include/actions.php";
+
+try {
+    $group = InputVars::stringGET('group');
+    // $scr_*, $listlen - reads directly from $_GET and $_POST
+    // $srchbr_*  - reads directly from $_GET and $_POST
+    // array ( 'items' => 1, )
+    $type = InputVars::stringGET('type'); // alpha
+    $cancel = InputVars::boolPOST('cancel');
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
+
 
 // new manager class approach ------------------------------------------------
 
@@ -105,7 +118,7 @@ $manager = new Manager('users'.AA::$module_id, (new \AA\Managed())->setSettings(
 // the configuration then could be Bookmarked
 
 
-if ( !isset($r_userstate) OR isset($group) OR isset($items)) {
+if ( !isset($r_userstate) OR $group OR isset($items)) {
     // we are here for the first time
     unset($r_userstate);
     // set default admin interface settings from user's profile

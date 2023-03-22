@@ -28,10 +28,51 @@
 //             $d_id
 // optionaly   $update
 
-const AA_REGISTER_GLOBALS = true;
+// const  AA_REGISTER_GLOBALS = true;
+use AA\Util\InputVars;
+
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/varset.php";
 
+try {
+    // array ( 'ddd' => 9, )
+    $author = InputVars::stringPOST('author'); // alpha
+    // array ( 'ffgggf' => 9, )
+    $body = InputVars::stringPOST('body'); // alpha
+    // array ( 1 => 2, )-array ( 'Storno' => 1, )
+    $cancel = InputVars::boolGETPOST('cancel'); // -alpha
+    // array ( '8bf7dd29548…' => 6, '5c9c0780a5c…' => 6, 'b660d6672f7…' => 3, '0ae33f40354…' => 15, )-array ( '8bf7dd29548…' => 2, '5c9c0780a5c…' => 1, '0ae33f40354…' => 6, )
+    $d_id = InputVars::idGETPOST('d_id'); // -
+    // array ( '' => 9, )
+    $e_mail = InputVars::stringPOST('e_mail'); // empty
+    // array ( '' => 9, )
+    $free1 = InputVars::stringPOST('free1'); // empty
+    // array ( 'array ( …' => 9, )
+    $free2 = InputVars::stringPOST('free2');
+    // array ( '653e6beff71…' => 21, )-array ( '653e6beff71…' => 5, 'e>k��B…' => 4, )
+    $item_id = InputVars::idGETPOST('item_id'); // @todo - id
+    // array ( '84.42.240.38' => 9, )
+    $remote_addr = InputVars::stringPOST('remote_addr');
+    // array ( 'ffedittt' => 2, 'ffdd' => 1, 'ffq' => 2, 'ffqQ' => 3, 'ffqQW' => 1, )
+    $subject = InputVars::stringPOST('subject'); // alpha
+    // array ( 2 => 9, )
+    $tdctr_date_day = InputVars::intPOST('tdctr_date_day');
+    // array ( 3 => 9, )
+    $tdctr_date_month = InputVars::intPOST('tdctr_date_month');
+    // array ( '12:51' => 8, '12:43' => 1, )
+    $tdctr_date_time = InputVars::stringPOST('tdctr_date_time');
+    // array ( 2023 => 9, )
+    $tdctr_date_year = InputVars::intPOST('tdctr_date_year');
+    // array ( 'Změnit' => 1, ' Změnit [^…' => 7, )
+    $update = InputVars::boolPOST('update');
+    // array ( 'http://' => 9, )
+    $url_address = InputVars::stringPOST('url_address');
+    // array ( '' => 9, )
+    $url_description = InputVars::stringPOST('url_description'); // empty
+    $cancel = InputVars::boolPOST('cancel');
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
 
 $cancel_url = get_url(self_base() . "discedit.php", ['item_id'=>$item_id], true);
 if ($cancel) {
@@ -68,16 +109,16 @@ if ($update) {
 
 
     if (!count($err)) {
-        $varset->add("subject", "quoted", $subject);
-        $varset->add("author", "quoted", $author);
-        $varset->add("e_mail", "quoted", $e_mail);
-        $varset->add("body", "quoted", $body);
-        $varset->add("date", "quoted", $date);
-        $varset->add("url_address", "quoted", $url_address);
-        $varset->add("url_description", "quoted", $url_description);
-        $varset->add("remote_addr", "quoted", $remote_addr);
-        $varset->add("free1", "quoted", $free1);
-        $varset->add("free2", "quoted", $free2);
+        $varset->add("subject", "text", $subject);
+        $varset->add("author", "text", $author);
+        $varset->add("e_mail", "text", $e_mail);
+        $varset->add("body", "text", $body);
+        $varset->add("date", "text", $date);
+        $varset->add("url_address", "text", $url_address);
+        $varset->add("url_description", "text", $url_description);
+        $varset->add("remote_addr", "text", $remote_addr);
+        $varset->add("free1", "text", $free1);
+        $varset->add("free2", "text", $free2);
 
         $SQL = "UPDATE discussion SET ". $varset->makeUPDATE() . " WHERE id='" .q_pack_id($d_id)."'";
         $db->query($SQL);

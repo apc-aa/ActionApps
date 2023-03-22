@@ -290,7 +290,7 @@ function ChangeUserGroups(?string $posted_groups, $sel_groups, $selected_user) {
  * @param $user_mail3
  * @return array
  */
-function FillUserRecord(&$err, $user_login, $user_surname, $user_firstname, $user_password1, $user_password2,  $user_mail1, $user_mail2, $user_mail3) {
+function FillUserRecord(&$err, $user_login, $user_surname, $user_firstname, $user_password1, $user_password2,  $user_mail1, $user_mail2='', $user_mail3='') {
 
     $userrecord = [];
     ValidateInput("user_login", _m("Login name"), $user_login, $err, true, "login");
