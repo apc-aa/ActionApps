@@ -43,12 +43,12 @@ abstract class AA_Transformation implements \AA\Util\NamedInterface {
     /** name function
      *
      */
-    public static function name(): string         {}
+    public static function name(): string         { return ''; }
 
     /** description function
      *
      */
-    public static function description(): string  {}
+    public static function description(): string  { return ''; }
 
     /** transform function
      * @param string $field_id
@@ -69,8 +69,8 @@ abstract class AA_Transformation implements \AA\Util\NamedInterface {
      * @param string $classname
      * @return string
      */
-    function _getVarname($name, $input_id, $classname) {
-        return $input_id. substr($classname,18).$name;
+    static function _getVarname($name, $input_id, $classname) {
+        return $input_id . substr($classname, 18) . $name;
     }
 
     /** getRequestVariables function
@@ -119,7 +119,7 @@ abstract class AA_Transformation implements \AA\Util\NamedInterface {
      * @param $input_prefix
      * @param $params
      */
-    function htmlSetting($input_prefix, $params) { }
+    static function htmlSetting($input_prefix, $params) { }
 }
 
 class AA_Transformation_Value extends AA_Transformation {
@@ -167,7 +167,7 @@ class AA_Transformation_Value extends AA_Transformation {
      * @param $params
      * @return string
      */
-    function htmlSetting($input_prefix, $params) {
+    static function htmlSetting($input_prefix, $params) {
         $flag_options = [
             'h' => _m('HTML'),
                               't' => _m('Plain text'),
@@ -232,7 +232,7 @@ class AA_Transformation_Exactvalues extends AA_Transformation {
      * @param $params
      * @return string
      */
-    function htmlSetting($input_prefix, $params) {
+    static function htmlSetting($input_prefix, $params) {
         ob_start();
         FrmTabCaption();
         FrmStaticText('', self::description());
@@ -286,7 +286,7 @@ class AA_Transformation_Recompute extends AA_Transformation {
      * @param $params
      * @return string
      */
-    function htmlSetting($input_prefix, $params) {
+    static function htmlSetting($input_prefix, $params) {
         ob_start();
         FrmTabCaption();
         FrmStaticText('', self::description());
@@ -337,7 +337,7 @@ class AA_Transformation_Setflag extends AA_Transformation {
      * @param $params
      * @return string
      */
-    function htmlSetting($input_prefix, $params) {
+    static function htmlSetting($input_prefix, $params) {
         $flag_options = [
             'h' => _m('HTML'),
                               't' => _m('Plain text')
@@ -407,7 +407,7 @@ class AA_Transformation_AddValue extends AA_Transformation {
      * @param $params
      * @return string
      */
-    function htmlSetting($input_prefix, $params) {
+    static function htmlSetting($input_prefix, $params) {
         $flag_options = [
             'h' => _m('HTML'),
                               't' => _m('Plain text'),
@@ -489,7 +489,7 @@ class AA_Transformation_ParseMulti extends AA_Transformation {
      * @param $params
      * @return string
      */
-    function htmlSetting($input_prefix, $params) {
+    static function htmlSetting($input_prefix, $params) {
         $flag_options = [
             'h' => _m('HTML'),
             't' => _m('Plain text'),
@@ -499,8 +499,8 @@ class AA_Transformation_ParseMulti extends AA_Transformation {
         FrmTabCaption();
         FrmStaticText('', self::description());
 
-        $varname_new_flag  = AA_Transformation::_getVarname('new_flag',  $input_prefix, __CLASS__);
-        $varname_source    = AA_Transformation::_getVarname('source',    $input_prefix, __CLASS__);
+        $varname_new_flag  = AA_Transformation::_getVarname('new_flag', $input_prefix, __CLASS__);
+        $varname_source    = AA_Transformation::_getVarname('source', $input_prefix, __CLASS__);
         $varname_delimiter = AA_Transformation::_getVarname('delimiter', $input_prefix, __CLASS__);
 
         FrmInputRadio($varname_new_flag, _m('Mark as'), $flag_options, get_if($_GET[$varname_new_flag],'u'));
@@ -652,7 +652,7 @@ class AA_Transformation_Translate extends AA_Transformation {
      * @param $params
      * @return string
      */
-    function htmlSetting($input_prefix, $params) {
+    static function htmlSetting($input_prefix, $params) {
         $flag_options = [
             'h' => _m('HTML'),
                               't' => _m('Plain text'),
@@ -724,7 +724,7 @@ class AA_Transformation_Replace extends AA_Transformation {
      * @param $params
      * @return string
      */
-    function htmlSetting($input_prefix, $params) {
+    static function htmlSetting($input_prefix, $params) {
         ob_start();
         FrmTabCaption();
         FrmStaticText('', self::description());
@@ -798,14 +798,14 @@ class AA_Transformation_Regexpreplace extends AA_Transformation {
      * @param $params
      * @return string
      */
-    function htmlSetting($input_prefix, $params) {
+    static function htmlSetting($input_prefix, $params) {
         ob_start();
         FrmTabCaption();
         FrmStaticText('', self::description(), "", "", false);
 
         $varname_searchpattern = AA_Transformation::_getVarname('searchpattern', $input_prefix, __CLASS__);
         $varname_replacestring = AA_Transformation::_getVarname('replacestring', $input_prefix, __CLASS__);
-        $varname_unalias       = AA_Transformation::_getVarname('unalias',       $input_prefix, __CLASS__);
+        $varname_unalias       = AA_Transformation::_getVarname('unalias', $input_prefix, __CLASS__);
 
         FrmTextarea($varname_searchpattern, _m('Search'), $_GET[$varname_searchpattern], 4, 80);
         FrmTextarea($varname_replacestring, _m('Replace'), $_GET[$varname_replacestring], 4, 80);
@@ -860,7 +860,7 @@ class AA_Transformation_CopyField extends AA_Transformation {
      * @param $params
      * @return string
      */
-    function htmlSetting($input_prefix, $params) {
+    static function htmlSetting($input_prefix, $params) {
         ob_start();
         FrmTabCaption();
         FrmStaticText('', self::description());

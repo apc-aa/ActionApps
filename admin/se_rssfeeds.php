@@ -133,9 +133,8 @@ $apage = new AA_Adminpageutil('sliceadmin','rssfeeds');
 $apage->setTitle(_m("Remote RSS Feed administration"));
 $apage->printHead($err, $Msg);
 
-  FrmTabCaption(_m("Remote RSS Feed administration"));
+  FrmTabCaption(_m("Current remote rssfeeds"));
 ?>
-      <tr><td colspan="2"><?php echo _m("Current remote rssfeeds") ?></td></tr>
       <tr><td colspan="2">
       <select name="rssfeeds" size=5>
       <?php
@@ -147,11 +146,11 @@ $apage->printHead($err, $Msg);
       ?>
       </select>
     <tr><td colspan="2">
-      <input type="button" value="<?php echo _m("Edit") ?>" onClick = "SubmitForm('edit')" >
-      <input type="button" VALUE="<?php echo _m("Delete") ?>" onClick = "SubmitForm('delete')">
-      <input type="button" VALUE="<?php echo _m("Add") ?>" onClick = "SubmitForm('add')">
-      <input type="button" VALUE="<?php echo _m("Test") ?>" onClick = "SubmitForm('test')">
-      <input type="button" VALUE="<?php echo _m("Map") ?>" onClick = "SubmitForm('map')">
+      <input type="button" value="<?php echo _m("Edit") ?>"   onclick = "SubmitForm('edit')" >
+      <input type="button" value="<?php echo _m("Delete") ?>" onclick = "SubmitForm('delete')">
+      <input type="button" value="<?php echo _m("Add") ?>"    onclick = "SubmitForm('add')">
+      <input type="button" value="<?php echo _m("Test") ?>"   onclick = "SubmitForm('test')">
+      <input type="button" value="<?php echo _m("Map") ?>"    onclick = "SubmitForm('map')">
      </td></tr>
 <?php
   FrmTabSeparator($new_mode == "insert" ? _m("Add new rssfeed") : _m("Edit rssfeed data"));

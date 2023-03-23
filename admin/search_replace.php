@@ -136,7 +136,7 @@ FrmTabCaption((is_array($items) ? _m("Items") : (_m("Stored searches for ") . $s
 
 $messages['view_items']     = _m("View items");
 $messages['selected_items'] = _m('Selected items');
-FrmItemGroupSelect( $items, $searchbar, 'items', $messages, $additional);
+FrmItemGroupSelect( $items, $searchbar, 'items', $messages);
 
 FrmTabSeparator(_m('Fill field'));
 FrmInputSelect('field_id',       _m('Field'),             $field_select,       $field_id, true,

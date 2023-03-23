@@ -134,7 +134,7 @@ abstract class AbstractGrabber implements \AA\Util\NamedInterface {
      * @param $params
      * @return string
      */
-    function htmlSetting($input_prefix, $params) {     // $input_prefix - here grabber_id
+    static function htmlSetting($input_prefix, $params) {     // $input_prefix - here grabber_id
         $properties = static::getClassProperties();
         $form = new AA_Form;
         foreach ($properties as $id => $property) {

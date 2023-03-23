@@ -3025,7 +3025,7 @@ function getRadioBookmarkRow( $name, $count, $value, $list_type, $list_text, $sa
     if ((string)$value != (string)"testuser") {
         $grp = $value;
         $js = "OpenUsershowPopup('".get_admin_url("usershow.php")."&slice_id=$slice_id&group=$grp&type=$list_type')";
-        $out .= "<a href=\"javascript:$js;\">$list_text</a>";
+        $out .= "<a class=btn href=\"javascript:$js;\">$list_text</a>";
     }
     $out .=  "</td>
     </tr>";
@@ -3042,7 +3042,7 @@ function getRadioBookmarkRow( $name, $count, $value, $list_type, $list_text, $sa
  *               messages['selected_items'] = _m('Selected users')
  *  @param array additional = array( 'text' => 'Test', 'varname'=>'testuser');
  */
-function FrmItemGroupSelect( &$items, $searchbar, $list_type, $messages, $additional) {
+function FrmItemGroupSelect( &$items, $searchbar, $list_type, $messages, $additional=[]) {
     $out = '';
     if ( isset($items) AND is_array($items) ) {
         $out = getRadioBookmarkRow( $messages['selected_items'], count($items), 'sel_item', $list_type, $messages['view_items']);
@@ -3072,10 +3072,8 @@ function FrmItemGroupSelect( &$items, $searchbar, $list_type, $messages, $additi
         $out .= getRadioBookmarkRow( _m('All items in trash bin'),   count(getZidsFromGroupSelect('AA_BIN_TRASH'  , $items, $searchbar)), 'AA_BIN_TRASH', $list_type, $messages['view_items']);
     }
     // aditional group (test one, for examle)
-    if ( isset($additional) AND is_array($additional) ) {
-        foreach ( $additional as $row ) {
-            $out .= getRadioBookmarkRow( $row['text'], '', $row['varname'], $list_type, $messages['view_items'], false);
-        }
+    foreach ( $additional as $row ) {
+        $out .= getRadioBookmarkRow( $row['text'], '', $row['varname'], $list_type, $messages['view_items'], false);
     }
     echo $out;
 }
