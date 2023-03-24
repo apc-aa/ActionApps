@@ -27,13 +27,76 @@
  *
 */
 
-const AA_REGISTER_GLOBALS = true;
+// const  AA_REGISTER_GLOBALS = true;
+use AA\Util\InputVars;
+
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/varset.php";
 require_once __DIR__ . "/../include/transformation.class.php";
 
 const SEARCH_REPLACE_PREFIX = 'transform';
+
+try {
+    // array ( )
+    $aa = InputVars::arrayPOST('aa');
+    // array ( '' => 2, )
+    $aa_akce_all = InputVars::stringPOST('aa_akce_all'); // empty
+    // array ( 'ModifyConte…' => 4, )
+    $akce = InputVars::stringPOST('akce'); // alpha
+    // array ( '' => 4, )
+    $akce_param = InputVars::stringPOST('akce_param'); // empty
+    // array ( )
+    $chb = InputVars::arrayPOST('chb');
+    // array ( 'subtitle...…' => 12, )
+    $field_id = InputVars::stringPOST('field_id');
+    // array ( 'Změnit' => 12, )
+    $fill = InputVars::stringPOST('fill');
+    // array ( 'sel_item' => 12, )
+    $group = InputVars::stringPOST('group');
+    // array ( 'ModifyConte…' => 4, )
+    $markedaction_select = InputVars::stringPOST('markedaction_select'); // alpha
+    // array ( 'on' => 12, )
+    $silent = InputVars::boolPOST('silent');
+    // array ( 'AA_Transfor…' => 12, )
+    $transform = InputVars::stringPOST('transform');
+    // array ( '' => 12, )
+    $transformAddValuenew_content = InputVars::stringPOST('transformAddValuenew_content'); // empty
+    // array ( 'u' => 12, )
+    $transformAddValuenew_flag = InputVars::stringPOST('transformAddValuenew_flag'); // alpha
+    // array ( '' => 12, )
+    $transformCopyFieldfield2copy = InputVars::stringPOST('transformCopyFieldfield2copy'); // empty
+    // array ( '' => 12, )
+    $transformExactvaluesnew_content = InputVars::stringPOST('transformExactvaluesnew_content'); // empty
+    // array ( '|AA_LANG|' => 10, '' => 2, )
+    $transformParseMultidelimiter = InputVars::stringPOST('transformParseMultidelimiter'); // empty
+    // array ( 'u' => 12, )
+    $transformParseMultinew_flag = InputVars::stringPOST('transformParseMultinew_flag'); // alpha
+    // array ( '|cz|Jedna .…' => 2, '|cz|Jenda|D…' => 8, '|cz|Jenda|d…' => 2, )
+    $transformParseMultisource = InputVars::stringPOST('transformParseMultisource');
+    // array ( '' => 12, )
+    $transformRegexpreplacereplacestring = InputVars::stringPOST('transformRegexpreplacereplacestring'); // empty
+    // array ( '' => 12, )
+    $transformRegexpreplacesearchpattern = InputVars::stringPOST('transformRegexpreplacesearchpattern'); // empty
+    // array ( '' => 12, )
+    $transformReplacereplacestring = InputVars::stringPOST('transformReplacereplacestring'); // empty
+    // array ( '' => 12, )
+    $transformReplacesearchpattern = InputVars::stringPOST('transformReplacesearchpattern'); // empty
+    // array ( 'h' => 12, )
+    $transformSetflagnew_flag = InputVars::stringPOST('transformSetflagnew_flag'); // alpha
+    // array ( 'u' => 12, )
+    $transformTranslatenew_flag = InputVars::stringPOST('transformTranslatenew_flag'); // alpha
+    // array ( '' => 12, )
+    $transformTranslatetranslation = InputVars::stringPOST('transformTranslatetranslation'); // empty
+    // array ( '' => 12, )
+    $transformValuenew_content = InputVars::stringPOST('transformValuenew_content'); // empty
+    // array ( 'u' => 12, )
+    $transformValuenew_flag = InputVars::stringPOST('transformValuenew_flag'); // alpha
+    $cancel = InputVars::boolPOST('cancel');
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
+
 
 
 if ( !IfSlPerm(PS_EDIT_ALL_ITEMS)) {

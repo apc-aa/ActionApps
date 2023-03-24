@@ -1572,8 +1572,7 @@ function QueryZids($slices, $conds = "", $sort = "", $type = "ACTIVE", $neverAll
                 }
             }
         }
-        // get the fields for the first slice (used as template and we expect that
-        // all slices in the query has the same structure
+        // get the fields for the first slice (used as template - we expect that all slices in the query has the same structure)
         if (!empty($slices) and ($slice = AA_Slice::getModule(reset($slices)))) {
             // @todo convert whole $slices to AA_Slice
             // access the fields through slice - it is better for caching of values

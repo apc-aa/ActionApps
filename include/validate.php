@@ -349,7 +349,7 @@ class AA_Validate_Regexp extends AA_Validate {
      * @return bool
      */
     public function varempty($var) : bool {
-        return preg_match($this->empty_expression, $var);
+        return (strlen($this->pattern) < 3) ? parent::varempty($var) : preg_match($this->empty_expression, $var);
     }
 
     /** returns the type attribute for the HTML 5 <input> tag with possible some

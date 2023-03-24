@@ -153,9 +153,8 @@ abstract class AA_Serializable {
             // call AA\Widget\TxtWidget::getClassProperties()), for example
             $props = $class::getClassProperties();
             $name  = '';
-
             foreach ($props as $name =>$property) {
-                $value = array_shift($split);
+                $value = trim(array_shift($split));
                 if (isset($value)) {
                     $params[$name] = $property->isMulti() ? json2asoc($value) : $value;  // const_arr for widget uses this, for example
                     //$params[$name] = $property->isMulti() ? json2arr($value,true) : $value;  // const_arr for widget uses this, for example
