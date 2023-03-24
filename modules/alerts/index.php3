@@ -26,7 +26,7 @@ https://www.apc.org/
     along with this program (LICENSE); if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-const AA_REGISTER_GLOBALS = true;
+// const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../../include/init_page.php";
 require_once __DIR__ . "/../../include/go_url.php";
 go_url(AA_INSTAL_PATH ."modules/alerts/modedit.php?set_tview=modedit&cmd[modedit][edit][" .AA::$module_id."]=1&module_id=".AA::$module_id);

@@ -40,8 +40,8 @@ $jumps = AA_Module::getModules('J');
 
 // choose the first module when none is chosen
 if ($edit && !$jump_id && count ($jumps)) {
-    reset ($jumps);
-    $jump_id = key ($jumps);
+    reset($jumps);
+    $jump_id = key($jumps);
 }
 
 
@@ -80,7 +80,7 @@ if ($update) {
 
 //        $varset->set("slice_url", $slice_url, "quoted");
 //        $varset->set("priority", $priority, "number");
-//        $varset->set("deleted", $deleted, "number");
+        $varset->set("deleted", 0, "number");
 
         $varset->doINSERT('module');
     }

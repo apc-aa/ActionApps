@@ -60,9 +60,9 @@ try {
     // array ( 1 => 1, )
     $Tab2 = InputVars::boolGET('Tab2');
     // array ( 'Folder3' => 2, )
-    $akce = InputVars::stringPOST('akce'); // alnum
+    // $akce = InputVars::stringPOST('akce'); // alnum // not necessary
     // array ( '' => 2, )
-    $akce_param = InputVars::stringPOST('akce_param'); // empty
+    // $akce_param = InputVars::stringPOST('akce_param'); // empty // not necessary
     // array ( 1 => 49, )
     $cancel = InputVars::boolGET('cancel');
     // array ( '4085d9fe61e…' => 1, )

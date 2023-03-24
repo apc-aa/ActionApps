@@ -23,25 +23,25 @@ https://www.apc.org/
 
 // used in init_page.php script to include config.php from the right directory
 
-const AA_REGISTER_GLOBALS = true;
+// const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../../include/init_page.php";
 require_once __DIR__ . "/../../include/varset.php";
 require_once __DIR__ . "/../../include/view.php";
 
-
 is_object( $db ) || ($db = getDB());
 $db->query("SELECT * FROM jump WHERE slice_id = '".q_pack_id($slice_id)."'");
 if ($db->next_record()) {
-    $dest = $db->f("destination");
-    if (strchr ($dest,"?")) $dest .= "&"; else $dest .= "?";
+    $dest       = $db->f("destination");
+    $dest      .= strchr($dest,"?") ? "&" : "?";
     $instal_url = AA_INSTAL_PATH;
-    $url = StateUrl($instal_url.$dest);
-    $change_id = $db->f("dest_slice_id");
-    if ($change_id) $url .= "&jumping=1&change_id=".unpack_id($change_id);
-    //echo $url; exit;
+    $url        = StateUrl($instal_url.$dest);
+    $change_id  = $db->f("dest_slice_id");
+    if ($change_id) {
+        $url .= "&jumping=1&change_id=" . unpack_id($change_id);
+    }
     go_url ($url);
+} else {
+    echo "<html><body>Something is wrong. I didn't find any record for this slice in the <b>jump</b> table.</body></html>";
 }
-else
-    echo "<HTML><BODY>Something is wrong. I didn't find any record for this slice in the <B>jump</B> table.</BODY></HTML>";
 
 page_close();

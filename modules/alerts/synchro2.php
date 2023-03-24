@@ -28,7 +28,7 @@ https://www.apc.org/
 
 use AA\IO\DB\DB_AA;
 
-const AA_REGISTER_GLOBALS = true;
+// const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../../include/init_page.php";
 require_once __DIR__ . "/../../include/util.php";
 require_once __DIR__ . "/../../include/varset.php";

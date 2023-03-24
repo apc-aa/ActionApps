@@ -218,7 +218,7 @@ class Managed {
      * @return Managed
      */
     public function setNoitem(?string $text): Managed {
-        if (isset($text)) {
+        if (isset($text) AND strlen($text)) {
             $this->msg_noitem = $text;
         }
         return $this;

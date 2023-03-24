@@ -29,13 +29,62 @@
  * @param $chb[] - array of selected users (in reader management slice)
 */
 
+use AA\Util\InputVars;
 use AA\Util\Langs;
 
-const AA_REGISTER_GLOBALS = true;
+// const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../modules/alerts/util.php";
 require_once __DIR__ . "/../include/varset.php";
+
+try {
+    /** @var $chb array send to selected users */
+    $chb = InputVars::arrayPOST('chb');
+    // array ( '' => 1, )
+    // $aa_akce_all = InputVars::nonePOST('aa_akce_all'); // empty // not necessary
+    // array ( '' => 1, )
+    // $akce = InputVars::stringPOST('akce'); // alnum // not necessary
+    // array ( '' => 1, )
+    // $akce_param = InputVars::stringPOST('akce_param'); // empty // not necessary
+    // array ( '' => 3, '/var/www/ht…' => 1, )
+    $attachment1 = InputVars::stringPOST('attachment1'); // empty
+    // array ( '' => 3, '/var/www/ht…' => 1, )
+    $attachment2 = InputVars::stringPOST('attachment2'); // empty
+    // array ( '' => 3, '/var/www/ht…' => 1, )
+    $attachment3 = InputVars::stringPOST('attachment3'); // empty
+    // array ( '<p>eeeeee</…' => 4, )
+    $body = InputVars::stringPOST('body');
+    // array ( 'h' => 3, 't' => 1, )
+    $bodyhtml = InputVars::stringPOST('bodyhtml'); // alpha
+    // array ( 'johny+f@ecn…' => 2, '' => 2, )
+    $errors_to = InputVars::stringPOST('errors_to'); // empty
+    // array ( 'testuser' => 2, 'AA_BIN_ACTI…' => 1, 'AA_ALL' => 1, )
+    $group = InputVars::stringPOST('group');
+    // array ( 'johny+f@ecn…' => 3, 'johny+ef@ec…' => 1, )
+    $header_from = InputVars::stringPOST('header_from');
+    // array ( 1 => 2, 0 => 2, )
+    $html = InputVars::boolPOST('html');
+    // array ( 'cz-utf8' => 2, 'en-utf8' => 2, )
+    $lang = InputVars::stringPOST('lang');
+    // array ( 'nothing' => 1, )
+    $markedaction_select = InputVars::stringPOST('markedaction_select'); // alpha
+    // array ( 'johny+f@ecn…' => 2, '' => 2, )
+    $reply_to = InputVars::stringPOST('reply_to'); // empty
+    // array ( 'Pošli' => 4, )
+    $send = InputVars::boolPOST('send');
+    // array ( 'johny+f@ecn…' => 2, '' => 2, )
+    $sender = InputVars::stringPOST('sender'); // empty
+    // array ( 'ee' => 2, 'eed' => 1, 'eedf' => 1, )
+    $subject = InputVars::stringPOST('subject'); // alpha
+    // array ( 4 => 2, '' => 1, 5 => 1, )
+    $template_id = InputVars::intPOST('template_id'); // empty
+    // array ( 'malik@sezna…' => 4, )
+    $testemail = InputVars::stringPOST('testemail');
+    $cancel = InputVars::boolPOST('cancel');
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
 
 $searchbar = new AA_Searchbar();   // mainly for bookmarks
 $items     = $chb;

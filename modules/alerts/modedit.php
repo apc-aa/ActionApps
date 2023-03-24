@@ -30,6 +30,8 @@ https://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+use AA\Util\InputVars;
+
 require_once __DIR__."/../../include/config.php";
 require_once __DIR__ . "/../../include/constants.php";
 require_once __DIR__ . "/../../include/locsess.php";
@@ -57,9 +59,25 @@ if ($_POST['cmd']['modedit']['update']) {
     }
 }
 
-
-const AA_REGISTER_GLOBALS = true;
+// const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../../include/init_page.php";
+
+try {
+    // array ( )-array ( )
+    $cmd = InputVars::arrayGETPOST('cmd'); // -
+    // array ( )
+    $example = InputVars::arrayPOST('example');
+    // array ( 1 => 11, )
+    $no_slice_id = InputVars::boolGET('no_slice_id');
+    // array ( 'modedit' => 13, 'email_edit' => 11, 'acf' => 4, 'send_emails' => 5, 'email' => 4, )
+    $set_tview = InputVars::stringGET('set_tview');
+    // array ( )
+    $val = InputVars::arrayPOST('val');
+    $cancel = InputVars::boolPOST('cancel');
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
+
 
 $slice_id = AA::$module_id;
 
@@ -93,14 +111,14 @@ $apage->printHead($err, $Msg);
 // called before menu because of Item Manager
 ProcessFormData("GetAlertsTableView", $val, $cmd);
 
-echo "<TABLE width='100%'><TR><TD>";
+echo "<table width='100%'><tr><td>";
 if ($tableview["children"]) {
-    echo "</TD><TD>";
+    echo "</td><td>";
     foreach ($tableview["children"] as $chviewid => $child) {
-        echo "<span><B><a href='#$chviewid'>$child[header]</a></B></span> ";
+        echo "<span><b><a href='#$chviewid'>$child[header]</a></b></span> ";
     }
 }
-echo "</TD></TR></TABLE>";
+echo "</td></tr></table>";
 
 $script = StateUrl("modedit.php");
 
@@ -130,7 +148,7 @@ if (!$err && $tview == "acf") {
 }
 
 if ($no_slice_id) {
-    echo "</BODY></HTML>";
+    echo "</body></html>";
 } else {
     $apage->printFoot();
 }

@@ -26,12 +26,28 @@ https://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-const AA_REGISTER_GLOBALS = true;
+// const  AA_REGISTER_GLOBALS = true;
+use AA\Util\InputVars;
+
 require_once __DIR__ . "/../../include/init_page.php";
 require_once __DIR__ . "/../../include/util.php";
 require_once __DIR__ . "/../../include/varset.php";
 require_once __DIR__ . "/../../include/formutil.php";
 require_once __DIR__ . "/../../modules/alerts/synchro2.php";
+
+try {
+    // array ( 'Přidat neb…' => 1, )
+    $add_fields = InputVars::boolPOST('add_fields');
+    // array ( 'cdf2b25eb2c…' => 5, '52656164657…' => 2, '' => 1, )
+    $change_to = InputVars::idPOST('change_to'); // empty
+    // array ( 'Změnit' => 8, )
+    $change_to_cmd = InputVars::boolPOST('change_to_cmd');
+    // array ( 'on' => 5, )
+    $change_to_delete = InputVars::boolPOST('change_to_delete');
+    $cancel = InputVars::boolPOST('cancel');
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
 
 // -------------------------------------------------------------------
 // HTML code
@@ -82,7 +98,7 @@ if ($db->next_record()) {
 
 echo '
 <form method="post" name="form_choose" action="'.StateUrl("synchro.php").'">
-<table0" width="440">
+<table width="440">
     <tr><td>
     <h2>'._m("Choose Reader Management Slice").'</h2>
     '._m("This Alerts Collection takes user data from the slice").":<br><b>";

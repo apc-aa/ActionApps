@@ -58,8 +58,7 @@ abstract class AA_Transformation implements \AA\Util\NamedInterface {
      */
     function transform($field_id, $itemcontent, $silent=true)    {}
 
-    /** _getVarname function
-     *  Construct name of input form variable
+    /** Construct name of input form variable
      *  It consists of classname, so we are able to guess which variable
      *  is used for which class (child of AA_Transformation). It also contains
      *  $input_id, so we are able to have more than one instance of the class
@@ -73,8 +72,7 @@ abstract class AA_Transformation implements \AA\Util\NamedInterface {
         return $input_id . substr($classname, 18) . $name;
     }
 
-    /** getRequestVariables function
-     * Grabs only variables, which is intended for class $classname
+    /** Grabs only variables, which is intended for class $classname
      * @param $input_id
      * @param $classname
      * @return string[]
