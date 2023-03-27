@@ -76,7 +76,7 @@ function get_aamenus() {
         "level"=>"submenu",
         "items"=> [
           "main"        => ["cond"=>IfSlPerm(PS_MODW_SETTINGS),  "href"=>"modules/site/modedit.php", "label"=>_m("Module Settings"), 'ico'=>'ico-site.png'],
-          "codemanager" => ["cond"=>IfSlPerm(PS_MODW_EDIT_CODE), "href"=>"modules/site/index.php3",  "label"=>_m("Code Manager")],
+          "codemanager" => ["cond"=>IfSlPerm(PS_MODW_EDIT_CODE), "href"=>"modules/site/index.php3",  "label"=>_m("Code Manager"), 'ico'=>'ico-code.png'],
           "aliases"     => ["cond"=>IfSlPerm(PS_MODW_SETTINGS),  "href"=>"modules/site/aliases.php", "label"=>_m("Aliases"), 'ico'=>'ico-aliases.png'],
         ]
     ];

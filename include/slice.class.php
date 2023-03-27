@@ -873,7 +873,7 @@ class AA_Module_Site extends AA_Module {
 
 
 
-    public function showSpot($tree, $spot_id) {
+    public function showSpot(sitetree $tree, $spot_id) {
         $spot_data = DB_AA::select1('', 'SELECT id, content FROM site_spot', [
             ['site_id', $this->module_id, 'l'],
             ['spot_id', $spot_id, 'i']

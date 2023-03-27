@@ -13,7 +13,7 @@ class Links_Move extends \AA\Manageraction\Links_Check {
     var $to_bin;
 
     /** Constructor - fills the information about the target bin */
-    function __construct($id, $to_bin) {
+    function    __construct($id, $to_bin) {
         parent::__construct($id);
         $this->to_bin = $to_bin;
     }

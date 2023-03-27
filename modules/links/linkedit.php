@@ -18,14 +18,25 @@
 // Edit Link Page
 
 use AA\IO\DB\DB_AA;
+use AA\Util\InputVars;
 
-const AA_REGISTER_GLOBALS = true;
+// const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../../include/init_page.php";
 require_once __DIR__ . "/../../include/formutil.php";
 require_once __DIR__ . "/../../include/util.php";
 require_once __DIR__ . "/../../modules/links/constants.php";
 require_once __DIR__ . "/../../modules/links/cattree.php";
 require_once __DIR__ . "/../../modules/links/util.php";
+
+try {
+    $sid = InputVars::idGETPOST('sid');
+    $update = InputVars::boolGETPOST('update');
+    $getOldV = InputVars::boolGETPOST('getOldV');
+    $lid = InputVars::intGET('lid');
+    $cancel = InputVars::boolGETPOST('cancel');
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
 
 function printChange($field, $change_arr, $original_value="") {
     global $created_by_change; // used for display of initiator of the change
@@ -36,7 +47,7 @@ function printChange($field, $change_arr, $original_value="") {
 
             $hidden_field = $field .'_hid'. $i++;
             FrmHidden($hidden_field, $val);
-            $accept     = " <a href=\"javascript:AcceptChange('$field','$hidden_field')\">"._m('Accept').'</a>';
+            $accept     = " <a class='btn' href=\"javascript:AcceptChange('$field','$hidden_field')\">"._m('Accept').'</a>';
             $changed_by = $created_by_change[$key] ? ' ('.$created_by_change[$key].')' : '';
             $new_val    = get_if( trim($val), '-- '. _m('unfilled'). ' --');
             FrmStaticText(MarkChanged(_m('Change')), MarkChanged($new_val) . $changed_by . $accept, "", "", false);
@@ -49,7 +60,7 @@ function MarkChanged($txt) {
 }
 
 // id of the editted module (id in long form (32-digit hexadecimal number))
-$module_id    = get_if($slice_id,$sid);
+$module_id    = get_if(AA::$module_id, $sid);
 $p_module_id  = q_pack_id($module_id); // packed to 16-digit as stored in database
 $links_info   = GetModuleInfo($module_id,'Links');
 $select_start = get_if( (int)$_GET['select_start'], (int)$links_info['select_start'], 2);   // used for anonymous forms
@@ -73,8 +84,8 @@ if ($cancel) {
 }
 
 // get lid via url
-if ( ctype_digit($lid) ) {
-    $r_state['link_id'] = (int)$lid;
+if ( $lid > 0 ) {
+    $r_state['link_id'] = $lid;
     $pagename = _m('Edit Link');
 } else {
     // adding new link
@@ -227,14 +238,18 @@ if ( $r_state['link_id'] ) {                  // not new link
         //region
         $SQL= "SELECT region_id FROM links_link_reg WHERE link_id IN ($changeIds)";
         $db->query($SQL);
-        while ($db->next_record())
+        $region_changes = [];
+        while ($db->next_record()) {
             $region_changes[$db->f('region_id')]++;   // count it
+        }
 
         //language
         $SQL= "SELECT lang_id FROM links_link_lang WHERE link_id IN ($changeIds)";
         $db->query($SQL);
-        while ($db->next_record())
-            $language_changes[$db->f('lang_id')]++;   // count it
+        $language_changes = [];
+        while ($db->next_record()) {
+            $language_changes[$db->f('lang_id')]++;
+        }   // count it
     }
 }
 
@@ -276,7 +291,7 @@ while ($db->next_record()) {
 }
 
 // lookup - link types
-$link_types = GetConstants($LINK_TYPE_CONSTANTS);
+$link_types = $LINK_TYPE_CONSTANTS ? GetConstants($LINK_TYPE_CONSTANTS) : [];
 
 // fill assignments fields -----------------------------------------------------
 
@@ -441,10 +456,8 @@ echo '
     printChange('description', $description_change, $description);
 
     // do not show general categories to public (anonymous) users
-    if ( !Links_IsPublic() ) {
-        FrmInputSelect( 'type', _m('Link type'), $link_types, $type, false,
-                       _m('Select the type, if the link belongs to some special category'),
-                       get_help_url(AA_LINKS_HELP_LINK,"obecna-kategorie"));
+    if ( !Links_IsPublic() AND $link_types) {
+        FrmInputSelect( 'type', _m('Link type'), $link_types, $type, false, _m('Select the type, if the link belongs to some special category'), get_help_url(AA_LINKS_HELP_LINK,"obecna-kategorie"));
         printChange('type', $type_change, $type);
     } else {
         // we have to preserve current value (if we do not want to show it as

@@ -7,16 +7,26 @@
 // Edit Link Page
 
 use AA\IO\DB\DB_AA;
+use AA\Util\InputVars;
 
-const AA_REGISTER_GLOBALS = true;
+// const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../../include/init_page.php";
 require_once __DIR__ . "/../../include/formutil.php";
 require_once __DIR__ . "/../../modules/links/cattree.php";
 require_once __DIR__ . "/../../modules/links/constants.php";
 require_once __DIR__ . "/../../modules/links/util.php";
 
+try {
+    // array ( 1 => 2, 2 => 3, 3 => 1, 4 => 3, )
+    $cid = InputVars::intGET('cid');
+    $updated = InputVars::boolGETPOST('updated');
+    $cancel = InputVars::boolGETPOST('cancel');
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
+
 // id of the editted module (id in long form (32-digit hexadecimal number))
-$module_id  = $slice_id;
+$module_id  = AA::$module_id;
 $links_info = GetModuleInfo($module_id,'Links');
 
 // r_err and r_msg - passes messages between scripts
@@ -120,10 +130,10 @@ echo '
        <td>&nbsp;</td>
        <td>';
 if ( IsCatPerm(PS_LINKS_ADD_SUBCATEGORY, $r_state['cat_path']) )
-    echo ' <a href="javascript:NewCateg(\''._m('New subcategory').'\')">'. _m('Add') .'</a> &nbsp; ';
+    echo ' <a class=aa-button-new href="javascript:NewCateg(\''._m('New subcategory').'\')">'. _m('Add') .'</a> &nbsp; ';
 if ( IsCatPerm(PS_LINKS_DEL_SUBCATEGORY, $r_state['cat_path']) )
-    echo ' <a href="javascript:DelCateg(\''._m('Remove selected subcategory?').'\')">'. _m('Del') .'</a> &nbsp; ';
-    echo ' <a href="javascript:ChangeStateCateg(\'document.f.selcat\')">'. _m('Change state') .'</a>';
+    echo ' <a class=aa-button-delete href="javascript:DelCateg(\''._m('Remove selected subcategory?').'\')">'. _m('Del') .'</a> &nbsp; ';
+    echo ' <a class=aa-button href="javascript:ChangeStateCateg(\'document.f.selcat\')">'. _m('Change state') .'</a>';
 
     FrmTabEnd( [
         'sbmt_button'  => [

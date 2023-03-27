@@ -35,33 +35,6 @@ require_once __DIR__ . "/formutil.php";
 /** searchlib for AA_Condition definition, ... */
 require_once __DIR__ . "/searchlib.php";
 
-/** searchfields_cmp function
- *  Helper function to sort search fields
- *
- *  @param $a array first field for comparison
- *  @param $b array second
- *  @return integer  (0 or 1 or -1)
- */
-function searchfields_cmp($a, $b) {
-    if ($a['search_pri'] == $b['search_pri']) {
-        return 0;
-    }
-    return ($a['search_pri'] < $b['search_pri']) ? -1 : 1;
-}
-
-/** orderfields_cmp function
- *  helper function to sort order fields
- * @param $a
- * @param $b
- * @return int
- */
-function orderfields_cmp($a, $b) {
-    if ($a['order_pri'] == $b['order_pri']) {
-        return 0;
-    }
-    return ($a['order_pri'] < $b['order_pri']) ? -1 : 1;
-}
-
 /**
  * AA_Searchbar_Row class - handles one search row
  */

@@ -9,6 +9,7 @@
 namespace AA\Util;
 
 
+
 class Searchfields implements \Iterator, \ArrayAccess, \Countable {
 
     protected $fields = [];
@@ -76,7 +77,7 @@ class Searchfields implements \Iterator, \ArrayAccess, \Countable {
         $fields           = $this->fields;
 
         // sort
-        uasort ($fields, "orderfields_cmp");
+        uasort($fields, [self::class, 'orderfields_cmp']);
         $last_pri = 0;
         foreach ( $fields as $fid => $v) {
             if ($v['order_pri'] > 0 ) {
@@ -127,7 +128,7 @@ class Searchfields implements \Iterator, \ArrayAccess, \Countable {
             $search_operators['all_fields_numeric'] = 'numeric';
         }
 
-        uasort ($fields, "searchfields_cmp");
+        uasort($fields, [ self::class, 'searchfields_cmp']);
         $last_pri = 0;
         foreach ( $fields as $fid => $v) {
             if ($v['search_pri'] > 0 ) {           // not searchable fields
@@ -148,6 +149,31 @@ class Searchfields implements \Iterator, \ArrayAccess, \Countable {
 
     public function containNumeric() {
         return in_array('numeric', array_column($this->fields,'operators'));
+    }
+
+
+    /** Helper function to sort search fields
+     *  @param $a array first field for comparison
+     *  @param $b array second
+     *  @return integer  (0 or 1 or -1)
+     */
+    protected static function searchfields_cmp($a, $b) {
+        if ($a['search_pri'] == $b['search_pri']) {
+            return 0;
+        }
+        return ($a['search_pri'] < $b['search_pri']) ? -1 : 1;
+    }
+
+    /** Helper function to sort order fields
+     * @param $a
+     * @param $b
+     * @return int
+     */
+    protected static function orderfields_cmp($a, $b) {
+        if ($a['order_pri'] == $b['order_pri']) {
+            return 0;
+        }
+        return ($a['order_pri'] < $b['order_pri']) ? -1 : 1;
     }
 
     /**

@@ -136,7 +136,7 @@ class RequestMonitor
             if (($vs != '1') and ($vs != '0') and ($vs != 'on')) {
                 $bool = false;
             }
-            if (!ctype_digit($vs)) {
+            if (!ctype_digit((string)$vs)) {
                 $int = false;
             }
             if (!is_numeric($vs)) {

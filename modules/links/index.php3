@@ -35,8 +35,9 @@ use AA\Manageraction\Links_Move;
 use AA\Manageraction\Links_Move2Cat;
 use AA\Manageraction\Links_Tab;
 use AA\Manageraction\Manageractions;
+use AA\Util\InputVars;
 
-const AA_REGISTER_GLOBALS = true;
+// const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../../include/init_page.php";
 require_once __DIR__ . "/../../include/varset.php";
 require_once __DIR__ . "/../../include/formutil.php";
@@ -49,6 +50,29 @@ require_once __DIR__ . "/../../modules/links/constants.php";
 require_once __DIR__ . "/../../modules/links/actions.php";
 require_once __DIR__ . "/../../modules/links/cattree.php";
 require_once __DIR__ . "/../../modules/links/util.php";      // module specific utils
+
+try {
+    // array ( 1 => 1, )
+    $GoBookmark = InputVars::boolGET('GoBookmark');
+    // array ( 'changed' => 7, 'app' => 17, 'folder2' => 4, )
+    $Tab = InputVars::stringGET('Tab'); // alnum
+    // $aa_akce_all = InputVars::stringPOST('aa_akce_all'); // empty // not necessary
+    // $akce* = InputVars::stringSlashedPOST('akce'); // alnum // not necessary
+    // array ( 2 => 19, 1 => 2, 3 => 18, 4 => 2, )
+    $cat_id = InputVars::intGET('cat_id');
+    // array ( )
+    $chb = InputVars::arrayPOST('chb');
+    // array ( 'Folder2' => 2, 'Activate' => 1, )
+    $markedaction_select = InputVars::stringPOST('markedaction_select'); // alnum
+    // array ( 'on' => 30, )
+    $show_subtree = InputVars::boolGET('show_subtree');
+    // $srchbr* // non necessary
+    $change_id = InputVars::idGETPOST('change_id');
+    $listlen = InputVars::intGET('listlen');
+    $cancel = InputVars::boolPOST('cancel');
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
 
 
 // Check permissions for this page.
@@ -146,7 +170,7 @@ function Links_CountLinkInBins($cat_path) {
 }
 
 // id of the editted module (id in long form (32-digit hexadecimal number))
-$module_id   = $slice_id;
+$module_id   = AA::$module_id;
 $p_module_id = q_pack_id($module_id); // packed to 16-digit as stored in database
 $links_info  = GetModuleInfo($module_id,'Links');
 
@@ -183,7 +207,7 @@ $manager_settings = [
      ],
      'scroller'  => [
          'listlen'              => ($listlen ?: EDIT_ITEM_COUNT),
-         'slice_id'             => $slice_id
+         'slice_id'             => AA::$module_id
      ],
      'itemview'  => [
          'manager_vid'          => $links_info['manager_vid'],      // id of view which controls the design
@@ -199,10 +223,10 @@ $manager_settings = [
              ',
              'compact_remove'   => "()",
              'compact_bottom'   => "</table>",
-             'id'               => $link_info['id']
+             'id'               => $links_info['id']
          ],
          'fields'               => '',
-         'aliases'              => new AA_Aliases(new AA_Aliasgenerator_Constant()),
+         'aliases'              => new AA_Aliases(new AA_Aliasgenerator_Link()),
          'get_content_funct'    => 'Links_GetLinkContent'
      ],
      'actions_hint' => _m("Perform action on selected items"),
@@ -314,9 +338,6 @@ echo "</table>";
 
 echo $manager->getSearchbarEnd();   // close the searchbar form
 
-// prints JavaScript which changes tree to current cat.
-echo $tree->goCategory($r_state['cat_id'], 'patharea', 'document.filterform.cat_id', 'filterform');
-
 echo GetPrintArray($r_err);
 echo GetPrintArray($r_msg);
 unset($r_err);
@@ -325,6 +346,10 @@ unset($r_msg);
 echo $manager->getItems($link_zids);   // print links and actions
 $r_state['manager'][$manager_id]    = $manager->getState();
 // $r_state['manager_id'] = $manager_id;  // no special meaning - just manager id
+
+// prints JavaScript which changes tree to current cat.
+echo $tree->goCategory($r_state['cat_id'], 'patharea', 'document.filterform.cat_id', 'filterform');
+
 
 HtmlPageEnd();
 page_close();

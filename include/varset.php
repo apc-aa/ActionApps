@@ -256,7 +256,7 @@ class Cvarset {
     }
 
     /** resetFromRecord function
-     *  Fills varset with data grabed from database ($db->record())
+     *  Fills varset with data grabbed from database ($db->record())
      * @param $record
      */
     function resetFromRecord($record) {

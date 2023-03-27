@@ -1,17 +1,29 @@
 <?php
-/** @param url         - url to check
- *  @param tree_start  - from which category you have to search
- *  @param checked_id  - link_id of checked link
- */
  //$Id$
 
-const AA_REGISTER_GLOBALS = true;
+// const  AA_REGISTER_GLOBALS = true;
+use AA\Util\InputVars;
+
 require_once __DIR__ . "/../../include/init_page.php";
 require_once __DIR__ . "/../../include/formutil.php";
 require_once __DIR__ . "/../../include/itemview.php";
 require_once __DIR__ . "/../../include/item.php";
 require_once __DIR__ . "/../../modules/links/util.php";
 require_once __DIR__ . "/../../modules/links/linksearch.php";
+
+try {
+    /**  @var string checked_id  link_id of checked link */
+    $checked_id = InputVars::intGET('checked_id', true);
+
+    /**  @var string tree_start  from which category you have to search */
+    $tree_start = InputVars::intGET('tree_start', true);
+
+    /** @var string $url url to check */
+    $url = InputVars::stringGET('url', true);
+    $cancel = InputVars::boolPOST('cancel');
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
 
 // HTML page start
 HtmlPageBegin();

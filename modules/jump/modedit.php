@@ -27,13 +27,35 @@ https://www.apc.org/
 */
 
 use AA\IO\DB\DB_AA;
+use AA\Util\InputVars;
 
 $require_default_lang = true;      // do not use module specific language file
-const AA_REGISTER_GLOBALS = true;
+// const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../../include/init_page.php";
 require_once __DIR__ . "/../../include/formutil.php";
-
 require_once __DIR__ . "/../../include/varset.php";
+
+try {
+    // array ( '6c81ec28dd4…' => 4, '28c1fa37265…' => 1, 'c390fa58964…' => 1, '5916c1036b8…' => 2, 'da5b0c89fd3…' => 2, )
+    $dest_id = InputVars::idPOST('dest_id');
+    // array ( 1 => 9, )-array ( 1 => 5, 'Editace' => 2, )
+    $edit = InputVars::boolGETPOST('edit'); // -alnum
+    // array ( '28c1fa37265…' => 7, '' => 4, 'a0e0104fd72…' => 1, )
+    $jump_id = InputVars::idPOST('jump_id'); // empty
+    // array ( 'Jumpaaa' => 1, 'Jumper 38/(…' => 1, 'Jumper 38/(!' => 2, 'Vznášejí…' => 1, 'Jump' => 2, 'Jump ww' => 1, 'odule name:' => 2, )
+    $jump_name = InputVars::stringPOST('jump_name');
+    // array ( 'Because she…' => 5, 'admin/se_fu…' => 5, )
+    $jump_url = InputVars::stringPOST('jump_url');
+    // array ( 1 => 4, )
+    $no_slice_id = InputVars::boolGET('no_slice_id');
+    // array ( 'Přihlásit' => 1, 'Login now' => 2, )
+    // $submit = InputVars::boolPOST('submit'); // not needed
+    // array ( ' Změnit [^…' => 5, ' Create [^S…' => 4, ' Update [^S…' => 1, )
+    $update = InputVars::boolPOST('update');
+    $cancel = InputVars::boolPOST('cancel');
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
 
 // create the $jumps array:
 $jumps = AA_Module::getModules('J');
@@ -57,13 +79,16 @@ if ($update) {
 
     $varset = new Cvarset();
     $varset->clear();
-    $varset->add("destination", "quoted", $jump_url);
+    $varset->add("destination", "text", $jump_url);
     $varset->add("dest_slice_id", "unpacked", $dest_id);
 
     $db->query("SELECT * FROM module WHERE id='$q_jump_id'");
     if ($db->next_record()) {
         $db->query("UPDATE jump SET ".$varset->makeUPDATE() ." WHERE slice_id='$q_jump_id'");
-        $db->query("UPDATE module SET name='$jump_name' WHERE id='$q_jump_id'");
+
+        $varset->clear();
+        $varset->add("name","text",$jump_name);
+        $db->query("UPDATE module SET ".$varset->makeUPDATE() ." WHERE id='$q_jump_id'");
     }
     else {
         $varset->add("slice_id", "unpacked", $jump_id);
@@ -71,9 +96,9 @@ if ($update) {
 
         $varset->clear();
         $varset->add("id","unpacked",$jump_id);
-        $varset->add("name","quoted",$jump_name);
-        $varset->add("type","quoted",'J');
-        $varset->add("lang_file","quoted","en_news_lang.php");
+        $varset->add("name","text",$jump_name);
+        $varset->add("type","text",'J');
+        $varset->add("lang_file","text","en_news_lang.php");
         $varset->add("owner","text",'');
         $varset->add("created_by","text",AuthGetUid());
         $varset->add("created_at","text",now());

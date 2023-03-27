@@ -962,7 +962,7 @@ class Manager extends AA_Storable {
             }
 
             if ( $options ) {
-                $ret .= "<img src=\"".AA_INSTAL_PATH."images/arrow_ltr.gif\">
+                $ret .= "<a href=\"javascript:SelectVis()\"><img src=\"".AA_INSTAL_PATH."images/arrow_ltr.gif\"></a>
                     <a href=\"javascript:SelectVis()\" class=\"aa-button\">". _m('Select all')."</a>&nbsp;&nbsp;&nbsp;&nbsp;";
 
                   // click "go" does not use markedform, it uses itemsfrom above...

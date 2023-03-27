@@ -177,7 +177,7 @@ if ($add || $update) {
                 $err["DB"] = MsgErr("Bad template id");
                 break;
             }
-            $varset->setFromArray($site);
+            $varset->resetFromRecord($site);
             $varset->set("id",         $module_id,        "unpacked");
             $varset->set("state_file", $state_file,       "text");
             $varset->set("flag",       $router,           "number");

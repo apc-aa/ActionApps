@@ -97,37 +97,37 @@ function get_aamenus() {
         "level"=>"submenu",
         "items"=> [
             "header1"=>_m('Folders').getFrmMoreHelp(get_help_url(AA_LINKS_HELP_MAIN,"schranky"),"",_m("Folders with links, sorted by their status (active, changed, new, ...)"), true),
-            "app"=> ["cond"=> $r_state['bin'] != "app",
-                            "href"=>$module_location."index.php3?Tab=app",
-                            "label"=>_m('Active')." (".$r_state['bin_cnt']['app'].")"],
-            "changed"=> ["cond"=> $r_state['bin'] != "changed",
-                            "href"=>$module_location."index.php3?Tab=changed",
-                            "label"=>_m('Changed Links')." (".$r_state['bin_cnt']['changed'].")"],
-            "new"=> ["cond"=> $r_state['bin'] != "new",
-                            "href"=>$module_location."index.php3?Tab=new",
-                            "label"=>_m('New Links')." (".$r_state['bin_cnt']['new'].")"],
-            "folder2"=> ["cond"=> $r_state['bin'] != "folder2",
-                            "href"=>$module_location."index.php3?Tab=folder2",
-                            "label"=>_m('Holding bin')." (".$r_state['bin_cnt']['folder2'].")"],
-            "folder3"=> ["cond"=> $r_state['bin'] != "folder3",
-                            "href"=>$module_location."index.php3?Tab=folder3",
-                            "label"=>_m('Trash')." (".$r_state['bin_cnt']['folder3'].")"],
-            "unasigned"=> ["cond"=> $r_state['bin'] != "unasigned",
-                            "href"=>$module_location."index.php3?Tab=unasigned",
-                            "label"=>_m('Unasigned')." (".$r_state['bin_cnt']['unasigned'].")"],
-            "unasigned3"=> ["cond"=> $r_state['bin'] != "unasigned3",
+            "app"=> [//"cond"=> $r_state['bin'] != "app",
+                     "href"=>$module_location."index.php3?Tab=app",
+                     "label"=>_m('Active')." (".$r_state['bin_cnt']['app'].")"],
+            "changed"=> [//"cond"=> $r_state['bin'] != "changed",
+                         "href"=>$module_location."index.php3?Tab=changed",
+                         "label"=>_m('Changed Links')." (".$r_state['bin_cnt']['changed'].")"],
+            "new"=> [//"cond"=> $r_state['bin'] != "new",
+                     "href"=>$module_location."index.php3?Tab=new",
+                     "label"=>_m('New Links')." (".$r_state['bin_cnt']['new'].")"],
+            "folder2"=> [//"cond"=> $r_state['bin'] != "folder2",
+                         "href"=>$module_location."index.php3?Tab=folder2",
+                         "label"=>_m('Holding bin')." (".$r_state['bin_cnt']['folder2'].")"],
+            "folder3"=> [//"cond"=> $r_state['bin'] != "folder3",
+                         "href"=>$module_location."index.php3?Tab=folder3",
+                         "label"=>_m('Trash')." (".$r_state['bin_cnt']['folder3'].")"],
+            "unasigned"=> [//"cond"=> $r_state['bin'] != "unasigned",
+                           "href"=>$module_location."index.php3?Tab=unasigned",
+                           "label"=>_m('Unasigned')." (".$r_state['bin_cnt']['unasigned'].")"],
+            "unasigned3"=> [//"cond"=> $r_state['bin'] != "unasigned3",
                             "href"=>$module_location."index.php3?Tab=unasigned3",
                             "label"=>_m('Unasigned - Trash')." (".$r_state['bin_cnt']['unasigned3'].")"],
             "line1"               => '',
             "empty_trash"=> ["cond"=>IsSuperadmin(),
-                            "hide"=>!IsSuperadmin(),
-                            "href"=>$module_location."index.php3?DeleteTrash=1",
-                            "label"=>_m("Empty trash"),
-                            "js"=>"EmptyTrashQuestion('{href}','"._m("Are You sure to empty trash?")."')"],
+                             "hide"=>!IsSuperadmin(),
+                             "href"=>$module_location."index.php3?DeleteTrash=1",
+                             "label"=>_m("Empty trash"),
+                             "js"=>"EmptyTrashQuestion('{href}','"._m("Are You sure to empty trash?")."')"],
             "debug"=> ["cond"=>IsSuperadmin(),
-                            "hide"=>!IsSuperadmin(),
-                            "js"=>"ToggleCookie('aa_debug','1')",
-                            "label"=> ($_COOKIE['aa_debug'] ? _m("Set Debug OFF") : _m("Set Debug ON"))],
+                       "hide"=>!IsSuperadmin(),
+                       "js"=>"ToggleCookie('aa_debug','1')",
+                       "label"=> ($_COOKIE['aa_debug'] ? _m("Set Debug OFF") : _m("Set Debug ON"))],
             "header2" => _m('Bookmarks').getFrmMoreHelp(get_help_url(AA_LINKS_HELP_MAIN,"zalozky-odkazu"),"",_m("My own links"), true)
         ]
     ];
@@ -216,8 +216,7 @@ function CreateMenu4Views( $foo ) {
     $SQL = "SELECT id, name, type FROM view WHERE slice_id='". q_pack_id($slice_id)."'";
     $db->query( $SQL );
     while ($db->next_record()) {
-        $menu['view'.$db->f('id')] = CreateMenuItem( $db->f('name'),  // label, href [, cond]
-            'admin/se_view.php?view_id='.$db->f('id').'&view_type='.$db->f('type'));
+        $menu['view'.$db->f('id')] = CreateMenuItem( $db->f('name'), 'admin/se_view.php?view_id='.$db->f('id').'&view_type='.$db->f('type'));  // label, href [, cond]
     }
     freeDB($db);
     return $menu;

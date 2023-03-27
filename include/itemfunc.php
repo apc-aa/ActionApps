@@ -76,7 +76,7 @@ class AA_Generator_Never extends AA_Generator {
     public static function name(): string { return _m("Never, i.e. maximum date");  }
 
     /** generate() - main function for generating the value */
-    function generate(): AA_Value    { return new AA_Value(2145826800); }
+    function generate(): AA_Value    { return new AA_Value(MAX_TIME_NEVER); }
 }
 
 
@@ -122,7 +122,7 @@ class AA_Generator_Dte extends AA_Generator {
     }
 
     /** generate() value of currrent timestamp */    // checks maximum date bounds
-    function generate(): AA_Value    {  return new AA_Value(min(2145826800, mktime(0,0,0,date("m"),date("d")+(int)$this->plusdays,date("Y"))));  }
+    function generate(): AA_Value    {  return new AA_Value(min(MAX_TIME_NEVER, mktime(0,0,0,date("m"),date("d")+(int)$this->plusdays,date("Y"))));  }
 }
 
 /** AA_Generator_Txt - Text from 'Parameter' */

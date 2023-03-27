@@ -46,9 +46,7 @@
 use AA\Util\Langs;
 use AA\Util\InputVars;
 
-$encap = ( ($encap=="false") ? false : true );
-
-if ($edit OR $add) {         // parameter for init_page - we edited new item so
+if ($_REQUEST['edit'] OR $_REQUEST['add']) {         // parameter for init_page - we edited new item so
     $unset_r_hidden = true;  // clear stored content
 }
 
@@ -66,6 +64,41 @@ require_once __DIR__."/../include/mlx.php";
 if ( file_exists( "../include/usr_validate.php3" ) ) {
     require_once __DIR__."/../include/usr_validate.php3";
 }
+
+try {
+    // array ( )
+    $aa = InputVars::arrayPOST('aa');
+    // $aaedit, $aamng_* // not necessary
+    // array ( '' => 153, )
+    $anonymous = InputVars::boolPOST('anonymous'); // empty
+    // array ( 1 => 246, )
+    $edit = InputVars::boolGET('edit');
+    // array ( '4b108926e80…' => 3, '541353ec974…' => 1, '31ac1b7f0be…' => 4, '37904f2f3bd…' => 4, '74c486828a6…' => 24, '79a16c06b61…' => 9, '0dbc7582674…' => 3, 'a3c409eccec…' => 5, '0a51c8215f6…' => 4, 'de8f491a367…' => 2, '845ebaf1f78…' => 1, 'ff380b84dcd…' => 2, '87959928674…' => 13, 'a07ea63a5e4…' => 2, '8f9a8bb4dbe…' => 1, '889f88d2b5b…' => 3, '66637bd5779…' => 3, 'a18c7c29971…' => 1, '5115e57c5f2…' => 2, 'a723bc05045…' => 70, 'ee1b7e3e3d9…' => 1, 'a51d744c1ee…' => 1, '4dc8c4e058f…' => 3, '67fda6a6d37…' => 16, '809cd40c6bb…' => 1, '76cbe350684…' => 51, '88cbbb83ae4…' => 3, '26f1853a7a1…' => 2, '603be11312a…' => 9, 'd0ca57c4e89…' => 1, '5bd78a13b0b…' => 1, )-array ( '4b108926e80…' => 2, '541353ec974…' => 2, '31ac1b7f0be…' => 10, '37904f2f3bd…' => 2, '74c486828a6…' => 13, '79a16c06b61…' => 14, '0dbc7582674…' => 1, 'a3c409eccec…' => 3, '0a51c8215f6…' => 3, 'ff380b84dcd…' => 1, '87959928674…' => 2, '889f88d2b5b…' => 1, 'a723bc05045…' => 56, '4dc8c4e058f…' => 1, '67fda6a6d37…' => 15, '76cbe350684…' => 7, '26f1853a7a1…' => 2, '603be11312a…' => 3, '5bd78a13b0b…' => 1, )
+    $id = InputVars::idGETPOST('id'); // -
+    // array ( '' => 153, )
+    $mlxid = InputVars::idPOST('mlxid'); // empty
+    // array ( '' => 153, )
+    $mlxl = InputVars::stringPOST('mlxl'); // empty
+    // array ( 'aa[n1_4085d…' => 2, 'aa[ua723bc0…' => 2, )-array ( '' => 150, 'aa[n1_4085d…' => 1, 'aa[ua723bc0…' => 2, )
+    $openervar = InputVars::stringGETPOST('openervar'); // -
+    // array ( 'close_dialog' => 9, )
+    $return_url = InputVars::stringGETPOST('return_url');
+    // array ( 20 => 1, 1 => 8, 6 => 2, 27 => 17, 8 => 2, 31 => 12, )
+    //$tdctr_v6578706972795f646174652e2e2e2e2e_day = InputVars::intPOST('tdctr_v6578706972795f646174652e2e2e2e2e_day');
+    // array ( '' => 30, )
+    // $v616c65727473312e2e2e2e5073746669 = InputVars::nonePOST('v616c65727473312e2e2e2e5073746669'); // empty
+
+    $post_preview = $_REQUEST['post_preview'] ?? true;
+
+
+    $cancel = InputVars::boolGET('cancel');
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
+
+
+
+
 
 /** Function for extracting variables from $r_hidden session field */
 /*
@@ -128,8 +161,6 @@ if ($_POST['ins_edit'])    { $insert = true;                                $go_
 if ($_POST['update'])      {                 $update = true;                               }
 if ($_POST['upd_preview']) {                 $update = true; $preview=true;                }
 if ($_POST['upd_edit'])    {                 $update = true;                $go_edit=true; }
-
-$cancel = (bool)$_GET['cancel'];
 
 $add = !( $update OR $cancel OR $insert OR $edit );
 

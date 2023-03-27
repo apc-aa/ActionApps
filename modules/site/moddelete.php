@@ -21,11 +21,19 @@ https://www.apc.org/
 // expected $del - unpacked id of module to delete
 
 use AA\IO\DB\DB_AA;
+use AA\Util\InputVars;
 
-const AA_REGISTER_GLOBALS = true;
+// const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../../include/init_page.php";
 require_once __DIR__ . "/../../include/modutils.php";
 
+try {
+    // array ( 'e294141961f…' => 1, )
+    $del = InputVars::idGET('del', true);
+    $cancel = InputVars::boolPOST('cancel');
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
 
 if ($cancel)
   go_url( StateUrl(self_base() . "index.php3"));

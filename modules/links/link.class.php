@@ -733,7 +733,7 @@ class linkobj {
         $ret = true;
         // load all form data
         foreach ( $LINK_DATA_FIELDS as $aafield ) {
-            $field_value = stripslashes(trim($GLOBALS[$aafield->varname()]));
+            $field_value = trim($GLOBALS[$aafield->varname()]);
             $ret &= $aafield->validate($field_value, $err);
             $this->data[$aafield->varname()] = $field_value;
         }

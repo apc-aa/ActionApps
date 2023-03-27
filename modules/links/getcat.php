@@ -22,22 +22,26 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 // used in init_page.php script to include config.php from the right directory
 
-const AA_REGISTER_GLOBALS = true;
+// const  AA_REGISTER_GLOBALS = true;
+use AA\Util\InputVars;
+
 require_once __DIR__ . "/../../include/init_page.php";
 require_once __DIR__ . "/../../include/formutil.php";
 require_once __DIR__ . "/../../modules/links/constants.php";
 require_once __DIR__ . "/../../modules/links/cattree.php";
 require_once __DIR__ . "/../../modules/links/util.php";      // module specific utils
 
+try {
+    $start = InputVars::intGET('start') ?: 1;
+} catch (Exception $e) {}
+
 function PrintCategory( $id, $name, $base, $state, $parent, $level ) {
     echo "<br>";
-    while ( $level-- )
-      echo '.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+    while ( $level-- ) {
+        echo '.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+    }
     echo " <a href=\"javascript:ReturnParam('$id')\">$name</a> $base";
 }
-
-if ( !isset($_GET['start']) )
-    $start = 1;
 
 $tree = new cattree( $start );
 

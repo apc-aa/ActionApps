@@ -81,19 +81,21 @@ $module_id = AA::$module_id;
 
 $p_module_id = q_pack_id($module_id); // packed to 16-digit as stored in database
 
-$metabase         = AA::Metabase();
-$manager_settings = $metabase->getManagerConf('polls', $actions, $switches);
-// function - we need trnslate _m() on use (not at include time)
-$manager_settings['itemview']['aliases'] = new AA_Aliases(new AA_Aliasgenerator_Polls);
+$metabase = AA::Metabase();
+$managed  = $metabase->getManagerConf('polls', $actions, $switches);
 
-$manager_settings['itemview']['format']['compact_top'] = '
-                                      <table class="aa-table">
-                                        <tr class="aa-tbl-header"><th width="30">&nbsp;</th><th>'. _m('ID'). '</th><th>'. _m('Poll Question'). '</th><th>'. _m('Publish Date'). '</th><th>'. _m('Expiry Date'). '</th></tr>
-                                      ';
-$manager_settings['itemview']['format']['odd_row_format'] = '<tr><td width="30"><input type="checkbox" name="chb[x_#POLL_ID_]" value=""></td><td>_#POLL_ID_</td><td><a href="_#EDITPOLL">_#QUESTION</a></td><td>_#PUB_DATE</td><td>_#EXP_DATE</td></tr>
-                                      ';
+// function - we need translate _m() on use (not at include time)
 
-$manager = new Manager('poll'.$module_id, (new \AA\Managed())->setSettings($manager_settings));   // no special meaning of the manager_id, just some ID
+//$manager_settings['itemview']['aliases'] = new AA_Aliases(new AA_Aliasgenerator_Polls);
+//
+//$manager_settings['itemview']['format']['compact_top'] = '
+//                                      <table class="aa-table">
+//                                        <tr class="aa-tbl-header"><th width="30">&nbsp;</th><th>'. _m('ID'). '</th><th>'. _m('Poll Question'). '</th><th>'. _m('Publish Date'). '</th><th>'. _m('Expiry Date'). '</th></tr>
+//                                      ';
+//$manager_settings['itemview']['format']['odd_row_format'] = '<tr><td width="30"><input type="checkbox" name="chb[x_#POLL_ID_]" value=""></td><td>_#POLL_ID_</td><td><a href="_#EDITPOLL">_#QUESTION</a></td><td>_#PUB_DATE</td><td>_#EXP_DATE</td></tr>
+//                                      ';
+
+$manager = new Manager('poll'.$module_id, $managed);   // no special meaning of the manager_id, just some ID
 $manager->performActions();
 
 $aa_set = $manager->getSet();

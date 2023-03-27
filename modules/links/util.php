@@ -349,8 +349,9 @@ $GENERAL_CATS['Ostatn� akce']                               = ['pri' => 3060, 
  /** Fills $LINK_TYPE_CONSTANTS_ARR by general categories (if not filled, yet) */
 function  Links_LoadGlobalCategories() {
     global $LINK_TYPE_CONSTANTS, $LINK_TYPE_CONSTANTS_ARR;
-    if ( !$LINK_TYPE_CONSTANTS )
+    if ( !$LINK_TYPE_CONSTANTS ) {
         return false;
+    }
     if ( !$LINK_TYPE_CONSTANTS_ARR ) {  // array is cached (=stored to globals)
         $LINK_TYPE_CONSTANTS_ARR = GetConstants($LINK_TYPE_CONSTANTS, 'pri', 'pri');
         // General categories names could be stored not only in 'Value' of
@@ -403,16 +404,8 @@ function Links_getUrlReport($url, $format_strings, $checked_id, $tree_start=fals
 
     $url   = addslashes($url);
     $conds = [
-        [
-            'value'    => "$url OR ${url}_",
-                           'operator' => 'XLIKE',
-                           'url'      => 1
-        ],
-                    [
-                        'value'    => $checked_id,  // we do not want to find
-                           'operator' => '<>',         // the link we are asking to
-                           'id'       => 1
-                    ]
+        ['value'    => "$url OR ${url}_", 'operator' => 'XLIKE', 'url'      => 1],
+        ['value'    => $checked_id,       'operator' => '<>',    'id'       => 1]  // we do not want to find the link itself
     ];
     $sort  = '';
     // 1 - base category - look for all links in the database (no matter in which subtree)
@@ -428,7 +421,7 @@ function Links_getUrlReport($url, $format_strings, $checked_id, $tree_start=fals
     $out = "";
     if ( $links_zids->count() != 0 ) {
         // function - we need trnslate _m() on use (not at include time)
-        $itemview = new itemview($format_strings, new AA_Aliases(new AA_Aliasgenerator_Constant), $links_zids, 0, 100, '', '', 'Links_GetLinkContent');
+        $itemview = new itemview($format_strings, new AA_Aliases(new AA_Aliasgenerator_Link), $links_zids, 0, 100, '', '', 'Links_GetLinkContent');
         $out      = $itemview->get_output("view");
     }
     return $out;

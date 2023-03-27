@@ -280,7 +280,7 @@ class cattree {
 
     /**
     * Prints javascript which defines necessary javascript variables for category
-    * tree. There must be already includede js_lib_links.min.js file on the page
+    * tree. There must be already included js_lib_links.min.js file on the page
     * in order ClearListbox(), GoCategory() and ChangeCategory() are defined
     *
     * @param string $fromId special string which in conjunction with $toId defines
@@ -372,7 +372,7 @@ class cattree {
 
     /**
      * Prints javascript which changes tree to given category
-     * There must be already includede js_lib_links.min.js file on the page
+     * There must be already included js_lib_links.min.js file on the page
      * in order ClearListbox(), GoCategory() and ChangeCategory() are defined
      *
      * @param int $cid id of category to switch to (this->treeStart must
@@ -382,7 +382,7 @@ class cattree {
      * @return string
      */
     function goCategory($cid, $pathDiv="", $cat_id_fld="", $form="") {
-        return getFrmJavascript("GoToCategoryID('$cid', eval('document.$form.tree'), '$pathDiv', '$cat_id_fld')\n");
+        return getFrmJavascript("GoToCategoryID('$cid', eval('document.$form.tree'), '$pathDiv', '$cat_id_fld')\n", true);
     }
 
     /**
@@ -424,8 +424,7 @@ class cattree {
         $js_form = "eval(document.$used_form.tree)";
         if ( $onWhat == 'dblclick' ) {
             $ret .= '<div><br>
-            <a href="javascript:GoToCategoryID(\'\', '.$js_form.', \''.$pathDiv.'\', \''.
-            $cat_id_fld .'\')">'. _m('Switch to category') .'</a>
+            <a class=aa-button href="javascript:GoToCategoryID(\'\', '.$js_form.', \''.$pathDiv.'\', \''. $cat_id_fld .'\')">'. _m('Switch to category') .'</a>
             </div>';
         }
         return $ret;

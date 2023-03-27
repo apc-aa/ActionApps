@@ -2906,10 +2906,14 @@ function getFrmJavascriptFile( $src, $add='') {
 }
 
 /** getFrmJavascript function
- * @param $jscode
+ * @param      $jscode
+ * @param bool $onload
  * @return string
  */
-function getFrmJavascript( $jscode ) {
+function getFrmJavascript($jscode , bool $onload=false) {
+    if ($onload) {
+        $jscode = "document.addEventListener('DOMContentLoaded', function() { $jscode });";
+    }
     return "\n<script>\n  $jscode \n</script>\n";
 }
 

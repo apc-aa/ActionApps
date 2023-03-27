@@ -23,23 +23,32 @@ https://www.apc.org/
 
 // used in init_page.php script to include config.php from the right directory
 
-const AA_REGISTER_GLOBALS = true;
+// const  AA_REGISTER_GLOBALS = true;
+use AA\Util\InputVars;
+
 require_once __DIR__ . "/../../include/init_page.php";
 require_once __DIR__ . "/../../include/varset.php";
 require_once __DIR__ . "/../../include/formutil.php";
 
-// id of the editted module
-$module_id = $slice_id;               // id in long form (32-digit hexadecimal
-                                      // number)
-$p_module_id = q_pack_id($module_id); // packed to 16-digit as stored in database
+try {
+    $cancel = InputVars::boolPOST('cancel');
+} catch (Exception $e) {}
 
+// id of the editted module
+$module_id   = AA::$module_id;        // id in long form (32-digit hexadecimal number)
 
 // Check permissions for this page.
 // You should change PS_MODW_EDIT_CODE permission to match the permission in your
 // module. See /include/perm_core.php for more details
 
-if ( !IfSlPerm(PS_MODW_EDIT_CODE) ) {
-  MsgPage(_m("You do not have permission to edit items in this slice"));
+if ( !($module = AA_Module_XX::getModule($module_id)) ) {
+    MsgErr(_m("Module XX not found"));
+    page_close();
+    exit;
+}
+
+if ( !IfSlPerm(PS_MODX_EDIT_CODE) ) {
+  MsgPage(_m("You do not have permission to edit items in this module"));
   exit;
 }
 
@@ -47,23 +56,31 @@ if ( !IfSlPerm(PS_MODW_EDIT_CODE) ) {
 // fill code for handling the operations managed on this page
 
 
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-?>
-<title><?php echo _m("Editor window - item manager") ?></title>
-</head> <?php
 
-require_once __DIR__ . "/navbar.php"; // module specific navigation bar
-require_once __DIR__ . "/util.php";   // module specific utils
+
+$apage = new AA_Adminpageutil('modadmin', 'xxmanager');
+$apage->setModuleMenu( 'modules/xx');
+$apage->setTitle( _m("Editor window - xx manager") );
+
+// possible other imports
+// $apage->addRequire('aa-jslib');   // {htmltoggle in helpbox}
+// $apage->addRequire('codemirror@5');
+// $script2run = '
+//    var opts = { lineWrapping:true, matchBrackets: true, matchTags: true, viewportMargin: 10000, mode: "htmlmixed" };
+//    window.cm_a1 = CodeMirror.fromTextArea(document.getElementById("content"), opts);
+//    ';
+// $apage->addRequire($script2run, 'AA_Req_Load');
+
+$apage->printHead($err, $Msg);
+
+
+
 
 
 // fill code for the main admin page layout
 
 
-echo '
-  </body>
-</html>';
 
-page_close();
-exit;
 
-?>
+
+$apage->printFoot();

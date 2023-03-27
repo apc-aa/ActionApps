@@ -57,7 +57,7 @@ class SQL extends AbstractGrabber
         if ( filter_var($host, FILTER_VALIDATE_IP) or ctype_alnum($host) ) {
             $arr[] = 'host=' . $host;
         }
-        if ( ctype_digit($port) ) {
+        if ( ctype_digit((string)$port) ) {
             $arr[] = 'port=' . $port;
         }
         if ( ctype_alnum($charset) ) {

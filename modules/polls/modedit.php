@@ -25,19 +25,57 @@ https://www.apc.org/
 */
 
 use AA\IO\DB\DB_AA;
+use AA\Util\InputVars;
 
 if ($_GET['template']['P'] ?? null ) {
     $no_slice_id = true;       // message for init_page.php
 }
 
 $directory_depth = "../";
-const AA_REGISTER_GLOBALS = true;
+// const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../../include/init_page.php";
 require_once __DIR__ . "/../../include/formutil.php";
-
 require_once __DIR__ . "/../../include/varset.php";
 require_once __DIR__ . "/../../include/date.php";
 require_once __DIR__ . "/../../include/modutils.php";
+
+
+try {
+    // array ( 'AA_POLLS2' => 1, 'AA_POLLSs' => 6, 'AA_POLLSq' => 1, )
+    $cookies_prefix = InputVars::stringPOST('cookies_prefix');
+    // array ( ' Insert [^…' => 8, )
+    $insert = InputVars::boolPOST('insert');
+    // array ( 445 => 1, 44 => 6, 4 => 1, )
+    $ip_lock_timeout = InputVars::intPOST('ip_lock_timeout');
+    // array ( 'on' => 8, )
+    $ip_locking = InputVars::boolPOST('ip_locking');
+    // array ( 'cz-utf8_pol…' => 1, 'es-utf8_pol…' => 6, 'en_polls_la…' => 1, )
+    $lang_file = InputVars::stringPOST('lang_file');
+    // array ( 'on' => 8, )
+    $logging = InputVars::boolPOST('logging');
+    // array ( 'start \' " /…' => 7, 'test polls' => 1, )
+    $name = InputVars::stringPOST('name');
+    // array ( 1 => 14, )
+    $no_slice_id = InputVars::boolGET('no_slice_id');
+    // array ( '41415f436f7…' => 7, '' => 1, )
+    $owner = InputVars::idPOST('owner'); // empty
+    // array ( 14 => 1, 2 => 7, )
+    $priority = InputVars::intPOST('priority');
+    // array ( 'on' => 8, )
+    $set_cookies = InputVars::boolPOST('set_cookies');
+    // array ( 'start \' " /…' => 1, 'http://aa.l…' => 7, )
+    $slice_url = InputVars::stringPOST('slice_url');
+    // array ( )-array ( )
+    $new_owner = InputVars::stringPOST('new_owner'); // empty
+    $new_owner_email = InputVars::stringPOST('new_owner_email'); // empty
+    $template = InputVars::arrayGETPOST('template'); // alnum-alnum
+    $deleted = InputVars::boolPOST('deleted');
+    $update = InputVars::boolPOST('update');
+    $cancel = InputVars::boolPOST('cancel');
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
+
 
 if ($cancel) {
     go_url( StateUrl(self_base() . "index.php3"));
@@ -47,7 +85,7 @@ $err = [];          // error array (Init - just for initializing variable
 
 $varset      = new CVarset();
 $superadmin  = IsSuperadmin();
-$module_id   = $slice_id;
+$module_id   = AA::$module_id;
 
 if ($template['P']) {        // add module
     if (!CheckPerms( AuthGetUid(), "aa", AA_ID, PS_ADD)) {
@@ -76,7 +114,7 @@ if ( $insert || $update ) {
         // now validate all module specific fields
         ValidateInput("ip_lock_timeout", _m("IP Locking timeout"), $ip_lock_timeout, $err, false, "text");
         ValidateInput("cookies_prefix",  _m("Cookies prefix"),     $cookies_prefix,  $err, false, "text");
-        ValidateInput("params",          _m("Parameters"),         $params,          $err, false, "text");
+        //ValidateInput("params",          _m("Parameters"),         $params,          $err, false, "text");
         $logging      = ( $logging     ? 1 : 0 );
         $ip_locking   = ( $ip_locking  ? 1 : 0 );
         $set_cookies  = ( $set_cookies ? 1 : 0 );
@@ -104,7 +142,7 @@ if ( $insert || $update ) {
             $varset->add("ip_locking",     "number", $ip_locking);
             $varset->add("ip_lock_timeout", "number", $ip_lock_timeout);
             $varset->add("set_cookies",    "number", $set_cookies);
-            $varset->add("cookies_prefix", "quoted", $cookies_prefix);
+            $varset->add("cookies_prefix", "text", $cookies_prefix);
 
             // defaults - we use the same table for all polls. The setting
             // status_code=0 flags this poll as default for this poll module
@@ -127,17 +165,18 @@ if ( $insert || $update ) {
                 $err["DB"] = MsgErr("Bad template id");
                 break;
             }
-            $varset->setFromArray($db->record());
-            $varset->set("id",             new_id(),        "quoted");
+            $varset->resetFromRecord($db->record());
+            $varset->set("id",             new_id(),        "text");
             $varset->set("module_id",      $module_id,      "unpacked");
             $varset->set("logging",        $logging,        "number");
             $varset->set("ip_locking",     $ip_locking,     "number");
             $varset->set("ip_lock_timeout",$ip_lock_timeout,"number");
             $varset->set("set_cookies",    $set_cookies,    "number");
-            $varset->set("cookies_prefix", $cookies_prefix, "quoted");
+            $varset->set("cookies_prefix", $cookies_prefix, "text");
             $varset->set("status_code",    0,               "number");
-            $varset->set("headline",       '',              "quoted");
-            $varset->set("params",         '',              "quoted");
+            $varset->set("headline",       '',              "text");
+            $varset->set("params",         '',              "text");
+            $varset->set("publish_date",   now(),           "number");
 
             // create new poll
             $varset->doInsert('polls');
@@ -148,7 +187,7 @@ if ( $insert || $update ) {
             while ( $db->next_record() ) {
                 $varset->resetFromRecord($db->record());
                 $varset->set("module_id", $module_id, "unpacked" );
-                $varset->set('id',        new_id(),   'quoted');
+                $varset->set('id',        new_id(),   'text');
                 $varset->doInsert('polls_design');
             }
         }
@@ -169,7 +208,7 @@ $p_source_id = q_pack_id( $source_id );
 [ $name, $slice_url, $priority, $lang_file, $owner, $deleted, $slice_owners ] = GetModuleFields($source_id);
 
 // load module specific data
-[ $status_code, $headline, $publish_date, $expiry_date, $logging, $ip_locking, $ip_lock_timeout, $set_cookies, $cookies_prefix, $design_id, $params] = array_values(DB_AA::select1('', "SELECT status_code, headline, publish_date, expiry_date, logging, ip_locking, ip_lock_timeout, set_cookies, cookies_prefix, design_id, params FROM polls", [
+[ $status_code, $headline, $publish_date, $expiry_date, $locked, $logging, $ip_locking, $ip_lock_timeout, $set_cookies, $cookies_prefix, $design_id, $params] = array_values(DB_AA::select1('', "SELECT status_code, headline, publish_date, expiry_date, locked, logging, ip_locking, ip_lock_timeout, set_cookies, cookies_prefix, design_id, params FROM polls", [
     ['module_id', $source_id, 'l'],
     ['status_code', 0]
 ]));
@@ -215,7 +254,7 @@ $apage->printHead($err, $Msg);
     FrmTabSeparator(_m("Defaults for polls in this module"));
     FrmInputChBox("logging",      _m("Use logging"),        $logging);
     FrmInputChBox("ip_locking",    _m("Use IP locking"),     $ip_locking);
-    FrmInputText("ip_lock_timeout", _m("IP Locking timeout"), $ip_lock_timeout);
+    FrmInputNumber("ip_lock_timeout", _m("IP Locking timeout"), $ip_lock_timeout);
     FrmInputChBox("set_cookies",   _m("Use cookies"),        $set_cookies);
     FrmInputText("cookies_prefix", _m("Cookies prefix"),     $cookies_prefix);
 //    FrmInputText("params",        _m("Parameters"),         $params);     // @todo - add paramwizard

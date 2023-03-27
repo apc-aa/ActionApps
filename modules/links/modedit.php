@@ -33,7 +33,7 @@ $LINKS_LANGUAGE_FILES = [
 ];
 
 
-if ($template['Links']) {
+if ($_POST['template']['Links'] ?? false) {
     $no_slice_id = true;       // message for init_page.php
 }
 
@@ -75,6 +75,8 @@ try {
     $template = InputVars::arrayGETPOST('template'); // alnum-alnum
     // array ( 'ěščřž�…' => 3, 1 => 3, )
     $tree_start = InputVars::stringPOST('tree_start');
+    $deleted = InputVars::boolPOST('deleted');
+    $update = InputVars::boolPOST('update');
     $cancel = InputVars::boolPOST('cancel');
     $err = InputVars::arrayGETPOST('err');
     $Msg = InputVars::stringGETPOST('Msg');
@@ -87,7 +89,7 @@ if ($cancel) {
 $err = [];          // error array (Init - just for initializing variable
 $varset      = new CVarset();
 $superadmin  = IsSuperadmin();
-$module_id   = $slice_id;
+$module_id   = AA::$module_id;
 
 
 if ($template['Links']) {        // add module
@@ -164,7 +166,7 @@ if ( ($insert AND $superadmin) OR $update ) {
                 $err["DB"] = MsgErr("Bad template id");
                 break;
             }
-            $varset->setFromArray($db->record());
+            $varset->resetFromRecord($db->record());
             $varset->set("id", $module_id, "unpacked");
             $varset->set("start_id", $start_id, "number");
             $varset->set("tree_start", $tree_start, "number");

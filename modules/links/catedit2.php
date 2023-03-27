@@ -2,13 +2,42 @@
 //$Id$
 
 use AA\IO\DB\DB_AA;
+use AA\Util\InputVars;
 
-const AA_REGISTER_GLOBALS = true;
+// const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../../include/init_page.php";
 require_once __DIR__ . "/../../include/formutil.php";
 require_once __DIR__ . "/../../include/varset.php";
 require_once __DIR__ . "/../../modules/links/constants.php";
 require_once __DIR__ . "/../../modules/links/util.php";           // module specific utils
+
+try {
+    // array ( '' => 13, )
+    $additional = InputVars::stringPOST('additional', true); // empty
+    // array ( 'Root' => 4, 'Example' => 5, 'Exampled' => 1, 'dddd' => 1, 'fffff' => 2, )
+    $cat_name = InputVars::stringPOST('cat_name', true); // alpha
+    // array ( 1 => 4, 2 => 6, 3 => 1, 4 => 2, )
+    $cid = InputVars::intPOST('cid', true);
+    // array ( '' => 4, 'basic ' => 1, 'ddd' => 1, 'ff' => 3, 'ffdd' => 1, 'ffh' => 1, 'gory descr' => 2, )
+    $description = InputVars::stringPOST('description', true); // empty
+    // array ( 'on' => 4, )
+    $nolinks = InputVars::boolPOST('nolinks');
+    // array ( '' => 6, 'ditor\'s note' => 1, 'g' => 3, 'gdd' => 1, 'hhhh' => 1, 'itor\'s no' => 1, )
+    $note = InputVars::stringPOST('note', true); // empty
+    // array ( 0 => 4, 2 => 1, )
+    $selcat = InputVars::intPOST('selcat');
+    // array ( '2,0,0' => 2, 2 => 1, '2,0' => 1, '' => 5, '0,0' => 2, 4 => 2, )
+    $subcatIds = InputVars::stringPOST('subcatIds', true); // empty
+    // array ( 'Example#Tes…' => 2, 'Example' => 1, 'Example#ddd' => 1, '' => 5, 'ddd#fff' => 1, 'dddd#fffff' => 1, 'fffff' => 2, )
+    $subcatNames = InputVars::stringPOST('subcatNames', true); // empty
+    // array ( 'visible#vis…' => 3, 'visible' => 3, 'visible#hig…' => 2, '' => 5, )
+    $subcatStates = InputVars::stringPOST('subcatStates', true); // empty
+    // array ( 4 => 2, )
+    $tree = InputVars::intPOST('tree');
+    $cancel = InputVars::boolPOST('cancel');
+    $err = InputVars::arrayGETPOST('err');
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {}
 
 $r_state['linkedit']['old'] = $_POST;  // in case of bad input
 unset($r_msg);
@@ -184,12 +213,12 @@ ValidateInput("description", _m('Category description'),   $description, $r_err,
 ValidateInput("additional",  _m('Additional information'), $additional,  $r_err, false, "text");
 ValidateInput("note",        _m('Editor\'s note'),         $note,        $r_err, false, "text");
 
-if (count($r_err) <= 1) {
-    $varset->add("name",        "quoted", $cat_name);
-    $varset->add("description", "quoted", $description);
-    $varset->add("additional",  "quoted", $additional);
-    $varset->add("note",        "quoted", $note);
-    $varset->add("nolinks",     "quoted", $nolinks ? 1 : 0);
+if (!$r_err OR (count($r_err) <= 1)) {
+    $varset->add("name",        "text", $cat_name);
+    $varset->add("description", "text", $description);
+    $varset->add("additional",  "text", $additional);
+    $varset->add("note",        "text", $note);
+    $varset->add("nolinks",     "text", $nolinks ? 1 : 0);
     $db->query("UPDATE links_categories SET ". $varset->makeUPDATE() . " WHERE id=$cid");
     $r_msg[] = MsgOk(_m('Category data changed'));
 } else {

@@ -60,38 +60,7 @@ try {
     $silent = InputVars::boolPOST('silent');
     // array ( 'AA_Transfor…' => 12, )
     $transform = InputVars::stringPOST('transform');
-    // array ( '' => 12, )
-    $transformAddValuenew_content = InputVars::stringPOST('transformAddValuenew_content'); // empty
-    // array ( 'u' => 12, )
-    $transformAddValuenew_flag = InputVars::stringPOST('transformAddValuenew_flag'); // alpha
-    // array ( '' => 12, )
-    $transformCopyFieldfield2copy = InputVars::stringPOST('transformCopyFieldfield2copy'); // empty
-    // array ( '' => 12, )
-    $transformExactvaluesnew_content = InputVars::stringPOST('transformExactvaluesnew_content'); // empty
-    // array ( '|AA_LANG|' => 10, '' => 2, )
-    $transformParseMultidelimiter = InputVars::stringPOST('transformParseMultidelimiter'); // empty
-    // array ( 'u' => 12, )
-    $transformParseMultinew_flag = InputVars::stringPOST('transformParseMultinew_flag'); // alpha
-    // array ( '|cz|Jedna .…' => 2, '|cz|Jenda|D…' => 8, '|cz|Jenda|d…' => 2, )
-    $transformParseMultisource = InputVars::stringPOST('transformParseMultisource');
-    // array ( '' => 12, )
-    $transformRegexpreplacereplacestring = InputVars::stringPOST('transformRegexpreplacereplacestring'); // empty
-    // array ( '' => 12, )
-    $transformRegexpreplacesearchpattern = InputVars::stringPOST('transformRegexpreplacesearchpattern'); // empty
-    // array ( '' => 12, )
-    $transformReplacereplacestring = InputVars::stringPOST('transformReplacereplacestring'); // empty
-    // array ( '' => 12, )
-    $transformReplacesearchpattern = InputVars::stringPOST('transformReplacesearchpattern'); // empty
-    // array ( 'h' => 12, )
-    $transformSetflagnew_flag = InputVars::stringPOST('transformSetflagnew_flag'); // alpha
-    // array ( 'u' => 12, )
-    $transformTranslatenew_flag = InputVars::stringPOST('transformTranslatenew_flag'); // alpha
-    // array ( '' => 12, )
-    $transformTranslatetranslation = InputVars::stringPOST('transformTranslatetranslation'); // empty
-    // array ( '' => 12, )
-    $transformValuenew_content = InputVars::stringPOST('transformValuenew_content'); // empty
-    // array ( 'u' => 12, )
-    $transformValuenew_flag = InputVars::stringPOST('transformValuenew_flag'); // alpha
+    // $transform* // not necessary
     $cancel = InputVars::boolPOST('cancel');
     $err = InputVars::arrayGETPOST('err');
     $Msg = InputVars::stringGETPOST('Msg');

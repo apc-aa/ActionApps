@@ -4403,8 +4403,8 @@ class AA_Stringexpand_Iftype extends AA_Stringexpand_Nevercache {
             case 'shortid':  return is_short_id($test_string) AND ($test_string > 0);  // maybe we should update the is_short_id test
             case 'mail':     return (bool)filter_var($test_string, FILTER_VALIDATE_EMAIL);
             case 'signed':   return IsSigInt($test_string);                                     // any integer
-            case 'number':   return ctype_digit($test_string);                                  // integer >= 0
-            case 'positive': return (ctype_digit($test_string) and ((int)$test_string > 0));    // integer > 0
+            case 'number':   return ctype_digit((string)$test_string);                                  // integer >= 0
+            case 'positive': return (ctype_digit((string)$test_string) and ((int)$test_string > 0));    // integer > 0
         }
         return false;
     }

@@ -362,7 +362,7 @@ class AA_View {
         if ($banner_arr) {
             foreach ((array)$banner_arr as $banner) {
                 [$foo_pos, $foo_vid, $foo_fld] = explode('-', $banner);
-                if (ctype_digit($foo_pos) AND strlen($foo_vid)) {
+                if (ctype_digit((string)$foo_pos) AND strlen($foo_vid)) {
                     $bparam = "vid=$foo_vid";
                     if ($foo_fld != 'norandom') {
                         $bparam .= "&set[$foo_vid]=random-" . ($foo_fld ?: 1);
