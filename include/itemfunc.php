@@ -728,8 +728,9 @@ class AA_Inserter_Fil extends AA_Inserter {
 
         if (strpos('x'.$value['value'], 'AA_UPLOAD:')==1) {
             // newer - widget approach - the uploaded file is encoded into the value
-            // and prefixed with "AA_UPLOAD:" constant
-            $up_file = array_combine(['aa_const', 'name', 'type', 'tmp_name', 'error', 'size'], ParamExplode($value['value']));
+            // and prefixed with "AA_UPLOAD:" constant  - AA_UPLOAD:aalogo.svg:aalogo.svg:image/svg+xml:/tmp/php4e7YxF:0:5266
+            //$up_file = array_combine(['aa_const', 'name', 'type', 'tmp_name', 'error', 'size'], ParamExplode($value['value']));  // there is new full_path member in php 8.1
+            $up_file = unserialize(substr($value['value'], 10), ['allowed_classes' => false]);
             if ($up_file['name']=='') {
                 $value['value'] = '';
             }

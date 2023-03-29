@@ -55,15 +55,9 @@ try {
     $remote_addr = InputVars::stringPOST('remote_addr');
     // array ( 'ffedittt' => 2, 'ffdd' => 1, 'ffq' => 2, 'ffqQ' => 3, 'ffqQW' => 1, )
     $subject = InputVars::stringPOST('subject'); // alpha
-    // array ( 2 => 9, )
-    $tdctr_date_day = InputVars::intPOST('tdctr_date_day');
-    // array ( 3 => 9, )
-    $tdctr_date_month = InputVars::intPOST('tdctr_date_month');
-    // array ( '12:51' => 8, '12:43' => 1, )
-    $tdctr_date_time = InputVars::stringPOST('tdctr_date_time');
-    // array ( 2023 => 9, )
-    $tdctr_date_year = InputVars::intPOST('tdctr_date_year');
-    // array ( 'Změnit' => 1, ' Změnit [^…' => 7, )
+
+    // $tdctr_date_* // not necessary
+
     $update = InputVars::boolPOST('update');
     // array ( 'http://' => 9, )
     $url_address = InputVars::stringPOST('url_address');

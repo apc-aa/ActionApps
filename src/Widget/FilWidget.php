@@ -95,7 +95,7 @@ class FilWidget extends Widget
                 if (isset($file['error']) AND ($file['error']==0)) { // 0 means UPLOAD_ERR_OK - sometimes (when using FormData JS API) the array is present even for empty field upload
                     $upload_ok = true;
                     // the information about file is in array - ['name'=>..,'type'=>..,'tmp_name'=>..,'error'=>..,'size'=>..]
-                    $values[] = 'AA_UPLOAD:' . ParamImplode(array_values($file));
+                    $values[] = 'AA_UPLOAD:' . serialize($file);
                 }
             }
         }

@@ -751,7 +751,7 @@ class ItemContent extends AA_Content {
                 $this->content[$pri_field_id] = $aacontent4id->getValues($pri_field_id);
                 continue;
             }
-            // if makes no sense - the value is always returned
+            // "if" makes no sense - the value is always returned
             if ($field_value = $field->readValueFromOldtypeForm($oldcontent4id, $insert)) {
                 $this->content[$pri_field_id] = $field_value->getArray();
             }

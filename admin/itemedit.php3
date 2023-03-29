@@ -46,11 +46,11 @@
 use AA\Util\Langs;
 use AA\Util\InputVars;
 
-if ($_REQUEST['edit'] OR $_REQUEST['add']) {         // parameter for init_page - we edited new item so
+if ( isset($_REQUEST['edit']) OR isset($_REQUEST['add'])) {         // parameter for init_page - we edited new item so
     $unset_r_hidden = true;  // clear stored content
 }
 
-const AA_REGISTER_GLOBALS = true;
+// const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";     // This pays attention to $change_id
 require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/varset.php";
@@ -89,7 +89,6 @@ try {
     // $v616c65727473312e2e2e2e5073746669 = InputVars::nonePOST('v616c65727473312e2e2e2e5073746669'); // empty
 
     $post_preview = $_REQUEST['post_preview'] ?? true;
-
 
     $cancel = InputVars::boolGET('cancel');
     $err = InputVars::arrayGETPOST('err');
