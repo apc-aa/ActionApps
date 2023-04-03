@@ -100,7 +100,7 @@ if ($insert  || $update ) {
     $varset->add("ip_locking",         "number", ($ip_locking ? 1 : 0));
     $varset->add("ip_lock_timeout",    "number", $ip_lock_timeout);
     $varset->add("set_cookies",        "number", ($set_cookies ? 1 : 0));
-    // $varset->add("cookies_prefix",     "quoted", $cookies_prefix);  // not used
+    // $varset->add("cookies_prefix",     "text", $cookies_prefix);  // not used
 
     $varset->add("params",             "text", $params);
 

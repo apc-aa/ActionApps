@@ -103,7 +103,7 @@ if ($update) {
         $varset->add("created_by","text",AuthGetUid());
         $varset->add("created_at","text",now());
 
-//        $varset->set("slice_url", $slice_url, "quoted");
+//        $varset->set("slice_url", $slice_url, "text");
 //        $varset->set("priority", $priority, "number");
         $varset->set("deleted", 0, "number");
 

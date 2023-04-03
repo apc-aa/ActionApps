@@ -64,7 +64,7 @@ foreach ($constants2import as $cnst) {
     $varset->set("name",  $cnst, "text");
     $varset->set("value", $cnst, "text");
     $varset->set("pri",   $pri += $priority_step, "number");
-    // $varset->set("class", $class[$key], "quoted");
+    // $varset->set("class", $class[$key], "text");
     $varset->set("id", new_id(), "unpacked" );
     $varset->set("group_id", $group_id, "text" );
     $SQL =  $varset->makeINSERT('constant');

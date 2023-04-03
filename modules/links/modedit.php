@@ -171,8 +171,8 @@ if ( ($insert AND $superadmin) OR $update ) {
             $varset->set("start_id", $start_id, "number");
             $varset->set("tree_start", $tree_start, "number");
             $varset->set("select_start", $select_start, "number");
-            //      $varset->set("default_cat_tmpl", $default_cat_tmpl, "quoted");
-            //      $varset->set("link_tmpl", $link_tmpl, "quoted");
+            //      $varset->set("default_cat_tmpl", $default_cat_tmpl, "text");
+            //      $varset->set("link_tmpl", $link_tmpl, "text");
 
             // create new links
             if ( !$varset->doINSERT('links')) {
