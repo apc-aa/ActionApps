@@ -57,8 +57,6 @@ $managed->setWidgetSetting('errors_to',                                         
 $managed->setWidgetSetting('sender',                                               ['name'=>_m('Envelop sender (email)')]);
 $managed->setWidgetSetting('attachments',                                          ['name'=>_m('Attachments')]);
 
-//huhl($managed);
-
 $apage = new AA_Adminpageutil('sliceadmin', 'email');
 $apage->setTitle(_m("Manage Emails"));
 if ($_GET['id']) {
