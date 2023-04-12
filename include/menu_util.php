@@ -287,9 +287,10 @@ function getMenu($activeMain, $activeSubmenu = ""): string {
 
         // --- showMain menu -----
         // Show the Alerts and Reader management images in the header
+        $title_img = '';
         switch ( $GLOBALS["g_modules"][$slice_id]["type"] ) {
             case 'Alerts':
-                $title_img = a_href(AA_INSTAL_PATH . 'doc/reader.html', GetAAImage('alerts.gif', _m('Alerts'), 62, 36));
+                $title_img = a_href(AA_INSTAL_PATH . 'doc/reader.html', GetAAImage('alerts.gif', _m('Alerts'), 28, 40));
                 break;
             case 'S':
                 if (AA_Slice::getModuleProperty($slice_id,'type') == "ReaderManagement") {
@@ -297,13 +298,10 @@ function getMenu($activeMain, $activeSubmenu = ""): string {
                 }
                 break;
         }
-        if (!$title_img) {
-            $title_img = GetAAImage('spacer.gif', '', 28, 36);
-        }
 
         $title_title = GetLabel($profile, 'ui_manager', 'top_title', $smmenus[$activeMain]['title']);
         $title_name  = safe($slice_id ? AA_Slice::getModuleName($slice_id) : _m("New slice"));
-        $title_out   = $title_img . $title_title . (($title_title AND $title_name) ? ' - ' : '') . $title_name;
+        $title_out   = $title_title . (($title_title AND $title_name) ? ' - ' : '') . $title_name. $title_img;
         $prop_logout = $profile->getProperty('ui_manager', 'top_logout');
 
         if ( $prop_logout === false ) {

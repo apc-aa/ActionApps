@@ -33,8 +33,8 @@ use AA\Util\Langs;
 require_once __DIR__ . "/mail.php";
 
 // discussion images
-const D_EXPAND_IMG = 0;
-const D_HLINE_IMG = 1;
+const D_EXPAND_IMG = 0;   // not used
+const D_HLINE_IMG = 1;    // not use
 const D_VLINE_IMG = 2;
 const D_CORNER_IMG = 3;
 const D_SPACE_IMG = 4;
@@ -47,8 +47,8 @@ const D_ITEM = 6;
  */
 function GetImageSrc($img) {
     $imgsrc = [
-        D_EXPAND_IMG => GetAAImage('d_expand.gif','',9,21),
-        D_HLINE_IMG  => GetAAImage('d_hline.gif', '',9,21),
+        D_EXPAND_IMG => GetAAImage('blank.gif','',9,21),  // not used
+        D_HLINE_IMG  => GetAAImage('blank.gif', '',9,21), // not used
         D_VLINE_IMG  => GetAAImage('i.gif',       '',9,21),
         D_CORNER_IMG => GetAAImage('l.gif',       '',9,21),
         D_SPACE_IMG  => GetAAImage('blank.gif',   '',12,21),
@@ -262,9 +262,7 @@ function GetDiscussionThread(&$tree, $d_id, $depth, &$outcome, $images="") {
         }
         if ($depth>1) {
             $outcome[$d_id][] = $images[$depth];
-            //          $outcome[$d_id][] =  D_SPACE_IMG;
         }
-        //        $outcome[$d_id][] = $tree[$d_id] ? D_EXPAND_IMG : D_HLINE_IMG;
         $outcome[$d_id][] = D_ITEM;
     }
     if (!($nodes = $tree[$d_id])) {

@@ -11,20 +11,20 @@
 /* TABLE EDIT STYLES */
 
 .te_help {
-    font-size: xx-small;
+    font-size: 0.87rem;
     color: #FFFFFF;
 	background: #589868;
 }
 
 .te_help_link {
-	font-size: xx-small;
+	font-size: 0.87rem;
 	font-weight: bold;
 	text-align: right;
 	white-space: nowrap;
 }
 
 .te_button_text {
-    font-size: xx-small;
+    font-size: 0.87rem;
     font-weight : bold;
     color: black;
     border : thin;
@@ -45,8 +45,12 @@
 }
 
 .te_child_header {
-; font-size: large; font-weight: bold
-; border-style: none; border-top-width: medium; border-bottom-width: medium}
+	font-size: large;
+	font-weight: bold;
+	border-style: none; 
+	border-top-width: medium; 
+	border-bottom-width: medium
+}
 
 /* Browse view */
 
@@ -75,7 +79,7 @@
 }
 
 .te_b_col_hint {
-	font-size: xx-small;
+	font-size: 0.87rem;
 }
 
 /* Edit view */
@@ -94,6 +98,6 @@
 }
 
 .te_e_col_hint {
-	font-size : x-small;
+	font-size: 0.87rem;
 }
 

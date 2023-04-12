@@ -10,7 +10,7 @@
     <script src="../javascript/manager.min.js?module_id=dcae6144f58fe31c4e704e3887e1856e&amp;v=11"></script>
   </head>
   
-  <body>
+ <body>
     <div class="aa-ui-top noprint" id="aa_top">
       <div class="nblogo"><a href="/aa-dev/"><img src="../images/action.gif" alt="ActionApps" width="106" height="73"></a></div>
       <div class="aa-ui-nav">
@@ -32,28 +32,74 @@
       
       <div class="aa-ui-content">
         <h2 class="clr-black" id="sg-colors">Colors</h2>
-        <table>
-         <tr><td colspan="2" class="pb-1"><strong>Basic color scheme</strong></td><td colspan="2" class="pb-1"><strong>Complementary colors</strong></td></tr>
+        &gt;<table>
+         <tbody><tr><td colspan="2" class="pb-1"><strong>Basic color scheme</strong></td><td colspan="2" class="pb-1"><strong>Complementary colors</strong></td></tr>
          <tr><td class="p-2 bg-clr-footer"></td><td class="pl-2"><strong>--clr-footer</strong><br>css background: class="bg-clr-footer" </td><td class="p-2 bg-clr-dark"></td><td class="pl-2"><strong>--clr-dark</strong><br>css background: class="bg-clr-dark" </td></tr>
          <tr><td class="p-2 bg-clr-basic-light"></td><td class="pl-2"><strong>--clr-basic-light</strong><br>css background: class="bg-clr-basic-light" </td><td class="p-2 bg-clr-opacity-light"></td><td class="pl-2"><strong>--clr-opacity-light</strong> (table row light)<br>css background: class="bg-clr-opacity-light"</td></tr>
          <tr><td class="p-2 bg-clr-basic"></td><td class="pl-2"><strong>--clr-basic</strong><br>css background: class="bg-clr-basic" </td><td class="p-2 bg-clr-opacity-dark"></td><td class="pl-2"><strong>--clr-opacity-dark</strong> (table row light)<br>css background: class="bg-clr-opacity-dark"</td></tr>
-         <tr><td class="p-2 bg-clr-basic-dark"></td><td class="pl-2"><strong>--clr-basic-dark</strong><br>css background: class="bg-clr-basic-dark" </td><td></td></tr>
+         <tr><td class="p-2 bg-clr-basic-dark"></td><td class="pl-2"><strong>--clr-basic-dark</strong><br>css background: class="bg-clr-basic-dark" </td><td class="p-2 bg-clr-body"></td><td class="pl-2"><strong>--clr-body</strong><br>css background: class="bg-clr-body" </td></tr>
          <tr><td class="p-2 bg-clr-basic-darker"></td><td class="pl-2 pr-3"><strong>--clr-basic-darker</strong><br>css background: class="bg-clr-basic-darker" </td><td></td></tr>         
-        </table>
+        </tbody></table>
         <br><br>
         <h2 class="clr-black" id="sg-buttons">Buttons</h2>
         <a class="btn">btn</a>
         <a class="btn btn-secondary">btn btn-secondary</a>
-        <a class="btn btn-l">btn btn-l</a>
+        <a class="btn btn-l">btn btn-l</a> <a class="btn btn-l btn-secondary">btn btn-l btn-secondary</a>
         <br><br>
         <a class="btn btn-s">btn btn-s</a>
         <br><br>
         <a class="aa-button">aa-button</a> <a class="aa-button-edit">aa-button-edit</a> <a class="aa-button-new">aa-button-new</a> <a class="aa-button-delete">aa-button-delete</a> <a class="aa-button-show">aa-button-show</a> <a class="aa-button-more">aa-button-more</a>
         <br><br>
 
-        <h2 class="clr-black" id="sg-widgets">Widgets</h2>
+        <h3>aa-table</h3>
         <table class="aa-table">
-          <tr>
+          <thead>
+           <tr>
+             <th>Table header</th>
+             <td>tag thead or class .aa-table-header</td>
+           </tr>
+           </thead>
+           <tbody>
+             <tr><th>1</th><td>xcv</td></tr>
+             <tr><th>2</th><td>xcv</td></tr>
+             <tr><th>3</th><td>xcv</td></tr>
+             <tr><th>4</th><td>xcv</td></tr>
+          </tbody>
+        </table>
+        <h3>aa-table aa-table-simple</h3>
+        <table class="aa-table aa-table-simple">
+          <thead>
+           <tr>
+             <th>Table header</th>
+             <td>tag thead or class .aa-table-header</td>
+           </tr>
+           </thead>
+           <tbody>
+             <tr><th>1</th><td>xcv</td></tr>
+             <tr><th>2</th><td>xcv</td></tr>
+             <tr><th>3</th><td>xcv</td></tr>
+             <tr><th>4</th><td>xcv</td></tr>
+          </tbody>
+        </table>
+        <h3>Table aa-w-no-full</h3>
+        <table class="aa-table aa-table-simple aa-w-no-full">
+          <thead>
+           <tr>
+             <th>Table header</th>
+             <td>tag thead or class .aa-table-header</td>
+           </tr>
+           </thead>
+           <tbody>
+             <tr><th>1</th><td>xcv</td></tr>
+             <tr><th>2</th><td>xcv</td></tr>
+          </tbody>
+        </table>
+        <br>
+        
+        <h2 class="clr-black" id="sg-widgets">Widgets</h2>
+                     
+      <table class="aa-table">
+          <tbody><tr>
              <th>aa-group (default)</th>
              <td>
                <article class="aa-rim relactionitem">
@@ -84,10 +130,66 @@
                         </div>
                      </section>
                      <section class="icogroup">
-                       <article><i class="ico delete" onclick="">&#10005;</i></article>
+                       <article><i class="ico delete" onclick="">✕</i></article>
                      </section>
                    </article>
-                </section>
+                <article class="item">
+                     <section class="iteminfo">
+                       <div class="aa-group">
+                         <div class="aa-field">
+                           <label><span>aa-group</span><input type="text" size="60" maxlength="255"></label>
+                         </div>
+                         <div class="aa-field">
+                           <label><span>Description</span><input type="number" pattern="[0-9]*" size="10" maxlength="9" max="999999999" min="0"></label>
+                         </div>
+                         <div class="aa-field">
+                           <label><span>Select</span><input type="checkbox" value="0"></label>
+                         </div>
+                         <div class="aa-field">
+                           <label><span>Done</span>
+                             <select class="live">
+                               <option>option 1</option>
+                               <option>option 2</option>
+                             </select>                     
+                            </label>
+                          </div>
+                          <div class="aa-field">
+                            <label><span>Description 2</span><input type="text" size="60" maxlength="255"></label>
+                          </div>
+                        </div>
+                     </section>
+                     <section class="icogroup">
+                       <article><i class="ico delete" onclick="">✕</i></article>
+                     </section>
+                   </article><article class="item">
+                     <section class="iteminfo">
+                       <div class="aa-group">
+                         <div class="aa-field">
+                           <label><span>aa-group</span><input type="text" size="60" maxlength="255"></label>
+                         </div>
+                         <div class="aa-field">
+                           <label><span>Description</span><input type="number" pattern="[0-9]*" size="10" maxlength="9" max="999999999" min="0"></label>
+                         </div>
+                         <div class="aa-field">
+                           <label><span>Select</span><input type="checkbox" value="0"></label>
+                         </div>
+                         <div class="aa-field">
+                           <label><span>Done</span>
+                             <select class="live">
+                               <option>option 1</option>
+                               <option>option 2</option>
+                             </select>                     
+                            </label>
+                          </div>
+                          <div class="aa-field">
+                            <label><span>Description 2</span><input type="text" size="60" maxlength="255"></label>
+                          </div>
+                        </div>
+                     </section>
+                     <section class="icogroup">
+                       <article><i class="ico delete" onclick="">✕</i></article>
+                     </section>
+                   </article></section>
                 <footer><article><i class="ico new">+ new</i></article></footer>
                </article>
              </td>
@@ -123,7 +225,7 @@
                         </div>
                      </section>
                      <section class="icogroup">
-                       <article><i class="ico delete" onclick="">&#10005;</i></article>
+                       <article><i class="ico delete" onclick="">✕</i></article>
                      </section>
                    </article>
                 </section>
@@ -161,7 +263,7 @@
                         </div>
                      </section>
                      <section class="icogroup">
-                       <article><i class="ico delete" onclick="">&#10005;</i></article>
+                       <article><i class="ico delete" onclick="">✕</i></article>
                      </section>
                    </article>
                 </section>
@@ -200,7 +302,7 @@
                         </div>
                      </section>
                      <section class="icogroup">
-                       <article><i class="ico delete" onclick="">&#10005;</i></article>
+                       <article><i class="ico delete" onclick="">✕</i></article>
                      </section>
                    </article>              
                 </section>
@@ -241,7 +343,7 @@
                       </div>
                     </section>             
                     <section class="icogroup">
-                      <article><i class="ico delete" onclick="">&#10005;</i></article>
+                      <article><i class="ico delete" onclick="">✕</i></article>
                     </section>
                   </article>              
                 </section>
@@ -284,7 +386,7 @@
                       </div>
                     </section>             
                     <section class="icogroup">
-                      <article><i class="ico delete" onclick="">&#10005;</i></article>
+                      <article><i class="ico delete" onclick="">✕</i></article>
                     </section>
                   </article>              
                 </section>
@@ -327,7 +429,7 @@
                       </div>
                     </section>             
                     <section class="icogroup">
-                      <article><i class="ico delete" onclick="">&#10005;</i></article>
+                      <article><i class="ico delete" onclick="">✕</i></article>
                     </section>
                   </article>              
                 </section>
@@ -370,7 +472,7 @@
                       </div>
                     </section>             
                     <section class="icogroup">
-                      <article><i class="ico delete" onclick="">&#10005;</i></article>
+                      <article><i class="ico delete" onclick="">✕</i></article>
                     </section>
                   </article>              
                 </section>
@@ -380,8 +482,7 @@
               </article>
             </td>
           </tr>
-        </table>             
-      </div>
+        </tbody></table></div>
     </div>
   </body>
 </html>
