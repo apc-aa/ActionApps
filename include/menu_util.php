@@ -312,7 +312,7 @@ function getMenu($activeMain, $activeSubmenu = ""): string {
             $logout_out = '<input type="submit" name="logout" value="'.$profile->getProperty('ui_manager', 'top_logout').'">';
         }
 
-        $user_out = GetLabel($profile, 'ui_manager', 'top_userinfo', GetMenuLink('userinfo' == $activeMain, AuthGetUname(), IfSlPerm(PS_EDIT_SELF_USER_DATA), 'admin/um_passwd.php'));
+        $user_out = GetLabel($profile, 'ui_manager', 'top_userinfo', GetMenuLink('userinfo' == $activeMain, AuthGetUname(), IfSlPerm(PS_EDIT_SELF_USER_DATA), 'admin/um_passwd.php', '', '', 'aa-ui-userinfo'));
 
         // @todo change it to method=get (+ hidden fields or so) in order the Back button in browser works there better
         $search_out = IsSuperadmin() ? "<form name=aasearchform action=\"".get_admin_url('aafinder.php')."\"><input type=search name=search value=\"".safe($_REQUEST['findtext'])."\" placeholder=\"". _m('Search..') ."\"><input type=hidden name=searchinview value=1><input type=hidden name=searchinslice value=1><input type=hidden name=searchinfield value=1><input type=hidden name=searchinspot value=1><input type=hidden name=searchinobject value=1><input type=hidden name=searchincodeitems value=1><input type=hidden name=go_search value=1></form>"  : '';
@@ -379,12 +379,11 @@ function getMenu($activeMain, $activeSubmenu = ""): string {
  * @param string $ico
  * @return string
  */
-function GetMenuLink($active, $label, $cond, $aa_href, $exact_href='', $ico='') {
+function GetMenuLink($active, $label, $cond, $aa_href, $exact_href='', $ico='', $add_css='') {
 
-    $cssclass = $active ? 'nbactive' : 'nbenable';
-//    if ($active) {
-//        return "<span class=\"nbactive\">$label</span>\n";
-//    }
+    $cssclass  = $active ? 'nbactive' : 'nbenable';
+    $cssclass .= $add_css ? ' '.$add_css : '';
+
     if (AA::$module_id AND $cond) {
         $href = $exact_href;
         if (!$href) {

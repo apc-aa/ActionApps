@@ -46,7 +46,9 @@ class Saver implements AA\Later\LaterInterface {
     /** @var \AA\IO\Grabber\AbstractGrabber the object which delivers the data */
     protected $grabber;
 
-    /** describes, what to do with data before storing */
+    /** describes, what to do with data before storing
+     *  @var AA_Transformation[]
+     */
     protected $transformations;
 
     /** id of destination slice */
@@ -60,6 +62,12 @@ class Saver implements AA\Later\LaterInterface {
 
     /** how to deal with errors LOG | STRICT */
     protected $error_mode;
+
+    /** {aa-expression} - expression to validate the inserted item - if set, all rows must begin with '1' or contain just white characters for storing the item
+     *
+     * @var array
+     */
+    private $validate = [];
 
     /** array of newly inserted ids (after run()) - the long ones */
     private $_new_ids = [];
@@ -119,7 +127,7 @@ class Saver implements AA\Later\LaterInterface {
 
         while ($source_content4id = $this->grabber->getItem()) {
             if (!$fire) {
-                $this->message("AA\IO\Saver->run(): grabbed item: ");
+                $this->message("AA\IO\Saver->run(): grabbed item: ",2);
                 $this->message($source_content4id);
             }
 
@@ -137,14 +145,14 @@ class Saver implements AA\Later\LaterInterface {
                 $content4id->setAaValue($field_id, $field_content);
             }
 
-            // now the $content4id should be filled in both cases - directfill as well as indirect
+            // now the $content4id should be filled in both cases - directfill and indirect
 
             $id_mode = ($this->id_mode == 'by_grabber') ? $this->grabber->getIdMode() : $this->id_mode;
             $store_mode = ($this->store_mode == 'by_grabber') ? $this->grabber->getStoreMode() : $this->store_mode;
 
             if (!$fire) {
-                $this->message("AA\IO\Saver->run(): id_mode: $id_mode, store_mode: $store_mode, transformed item: ");
-                $this->message($content4id->getAllAsArray());
+                $this->message("AA\IO\Saver->run(): id_mode: $id_mode, store_mode: $store_mode, transformed item: ",2);
+                $this->message($content4id,2);
             }
 
             switch ($id_mode) {
@@ -183,7 +191,7 @@ class Saver implements AA\Later\LaterInterface {
                             $condval = $content4id->getValue($fld);
                             if (!strlen(trim($condval))) {
                                 $err_count++;
-                                $this->message(['err'=>"AA\IO\Saver->run(): key condition empty for $fld in ". print_r($source_content4id->getContent(),true)]);
+                                $this->message(['err' =>"AA\IO\Saver->run(): key condition empty for $fld"]);
                                 continue 3; // another item
                             }
 
@@ -191,9 +199,9 @@ class Saver implements AA\Later\LaterInterface {
                         }
                         $zids = $set->query(null, 1);
                         if (!$fire) {
-                            $this->message("AA\IO\Saver->run(): update/insert - condition:");
-                            $this->message($set);
-                            $this->message($zids);
+                            $this->message("AA\IO\Saver->run(): update/insert - condition:",2);
+                            $this->message($set,2);
+                            $this->message($zids,2);
                         }
                         if ($zids->count()) {
                             if (strpos($store_mode, 'update') === false) {
@@ -224,16 +232,22 @@ class Saver implements AA\Later\LaterInterface {
 
             AA::$slice_id = $content4id->getSliceID();   // pass validator the current slice of added item for slice unique
 
+            if ($this->validate AND ($err_arr = $this->test_validate($content4id))) {
+                $err_count++;
+                $this->message(['err' =>"AA\IO\Saver->run(): validate failed: ". join("\n", $err_arr)]);
+                continue;
+            }
+
             if (($store_mode == 'overwrite') OR (substr($store_mode, 0, 6) == 'insert')) {
                 if (!$content4id->complete4Insert($this->error_mode)) {
                     $err_count++;
-                    $this->message(['err'=>"AA\IO\Saver->run(): complete4Insert failed: " . ItemContent::lastErrMsg()]);
+                    $this->message(['err' =>"AA\IO\Saver->run(): complete4Insert failed: " . ItemContent::lastErrMsg()]);
                     continue;
                 }
             } else { // @todo do validation for updates
                 if (!$content4id->validate4Update()) {
                     $err_count++;
-                    $this->message(['err'=>"AA\IO\Saver->run(): validate4Update failed: " . ItemContent::lastErrMsg()]);
+                    $this->message(['err' =>"AA\IO\Saver->run(): validate4Update failed: " . ItemContent::lastErrMsg()]);
                     continue;
                 }
             }
@@ -246,7 +260,7 @@ class Saver implements AA\Later\LaterInterface {
                 if (!($new_item_id = $content4id->storeItem($store_mode))) {     // invalidatecache, feed
                     // AA\IO\Saver->run(): storeItem failed or skiped duplicate:
                     $err_count++;
-                    $this->message(['err'=>'AA\IO\Saver->run(): storeItem failed or skipped duplicate: '. ItemContent::lastErrMsg()]);
+                    $this->message(['err' =>'AA\IO\Saver->run(): storeItem failed or skipped duplicate: '. ItemContent::lastErrMsg()]);
                 } else {
                     // @todo better check of new ids
                     if ($store_mode == 'insert') {
@@ -262,17 +276,40 @@ class Saver implements AA\Later\LaterInterface {
                     }
                 }
             } else {
-                $this->message("AA\IO\Saver->run(): would be stored ID / content: " . ItemContent::lastErrMsg());
-                $this->message($new_item_id);
+                $ok_count++;
+                $this->message("AA\IO\Saver->run(): would be stored ID / content: " . ItemContent::lastErrMsg(),2);
+                $this->message($new_item_id,2);
                 $this->message($content4id);
             }
         } // while grabber->getItem()
         $this->grabber->finish();    // maybe some finalization in grabber
 
+        $this->message("AA\IO\Saver->run(): finish - $ok_count OK, $err_count Err." . ItemContent::lastErrMsg());
+
         if (!$fire) {
             print($this->report());
         }
         return [$ok_count, $err_count];
+    }
+
+    /** Checks if the item is valid based on custom validate string
+     * @param $content4id
+     * @return array array of error strings (empty array [] on success
+     */
+    protected function test_validate($content4id): array {
+        $err_array    = [];
+        $item = new \AA_Item($content4id);
+        foreach ($this->validate as $test) {
+            $validate_str = trim(AA::Stringexpander()->unalias($test, '', $item));
+            $array        = preg_split("/\R/", $validate_str);
+            foreach ($array as $row) {
+                $row = trim($row);
+                if ($row AND ($row{0} != '1')) {
+                    $err_array[] = $row;
+                }
+            }
+        }
+        return $err_array;
     }
 
     /** Returns array of long new saved ids */
@@ -301,15 +338,25 @@ class Saver implements AA\Later\LaterInterface {
     }
 
     /** overrides the report from the trait - we are adding the Grabber report as well
+     * @param int    $verbosity
      * @param string $type
      * @return string - messages in table
      */
-    public function report(string $type='html'): string {
-        return $this->traitreport($type) . $this->grabber->report($type);
+    public function report(int $verbosity = 1, string $type='html'): string {
+        return $this->traitreport($verbosity, $type) . $this->grabber->report($verbosity, $type);
     }
 
     /** loads all the data based on grabber setting and return it */
     public function getSources(): array {
         return $this->grabber->getSources();
+    }
+
+    /**
+     * @param string $validate
+     * {aa-expression} - expression to validate the inserted item - if set, must be equal to '1' for storing the item
+     */
+    public function addValidate(string $validate): Saver {
+        $this->validate[] = $validate;
+        return $this;
     }
 }
