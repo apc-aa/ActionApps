@@ -207,12 +207,10 @@ class AA_Adminpageutil {
             echo "<div>" . $this->subtitle . "</div>";
         }
 
-        echo "<div class='mb-3 mt-3'>$Msg</div>";
+        if (strlen($Msg)) {
+            echo "<div class='mb-3 mt-3'>$Msg</div>";
+        }
 
-        // PrintArray($r_err);
-        // PrintArray($r_msg);
-        // unset($r_err);
-        // unset($r_msg);
         if ($this->form) {
             // to remember the page scroll position in order we can return back
             AA::Stringexpander()->addRequire("document.querySelectorAll('form').forEach(function(f) { f.addEventListener('submit', function() {sessionStorage.setItem('aa_pgtop', window.pageYOffset);});})", 'AA_Req_Load');

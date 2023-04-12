@@ -564,7 +564,7 @@ input[type="radio"] {
 .slicehead {
     font-size: 1.1rem;
     /* color: rgb(127 67 81 /100%); */
-    padding-top: 7px;
+    padding-top: 15px;
     flex: 1 0 69%;
     text-align: center;
     grid-area: slicehead;
@@ -595,7 +595,7 @@ input[type="radio"] {
     grid-area: navbar;
 }
 .slicehead img {
-    margin-left: 9px;
+    margin: -10px 9px;
 }
 #aa_top input[type=search] {
     padding: 6px 10px;
@@ -623,6 +623,12 @@ input[type="radio"] {
      color: black;
      padding: 6px 15px;
      vertical-align: middle;
+}
+.aa-ui-custom-nav .aa-ui-userinfo {
+    background-image: url(/aa-dev/images/ico-user.gif);
+    background-repeat: no-repeat;
+    background-position: 4px 1px;
+    padding-left: 27px;
 }
 .aa-ui-nav .navbar a  {
      font-weight: 600;
@@ -662,6 +668,11 @@ input[type="radio"] {
      background-color: var(--clr-basic-dark);
      /* box-shadow: inset 0 0 18px rgb(168 151 122 / 50%); */
      border-color: var(--clr-basic-darker);
+}
+.aa-ui-modules a.nbenable {
+    padding: 7px 6px 0;
+    height: 30px;
+    box-sizing: border-box;
 }
 .aa-ui-nav select {
     padding: 4px 5px;
