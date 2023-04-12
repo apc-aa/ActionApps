@@ -42,7 +42,7 @@ if (typeof window.AA_GetConf === 'undefined') {
             case 'path':
                 return AA_GetConf.aa_install_path;
             case 'loader':
-                return '<img src="' + AA_GetConf.aa_install_path + 'images/loader.gif" border=0 width=16 height=16>';
+                return '<img src="' + AA_GetConf.aa_install_path + 'images/loader.gif" width=16 height=16 class=aa-loader>';
             case 'lang':
                 return document.documentElement.lang.substring(0,2);
         }
@@ -110,11 +110,48 @@ function AA_InsertHtml(into_id, code) {
    $(jqid(into_id)).append(code);
 }
 
+/** rewrite of AA_AjaxInsert, which uses prototype.js to vanilla JS */
+function AA_AjaxInsert(a_obj, form_url) {
+    var new_div_id = a_obj.id + '_ins';
+    if ( document.getElementById(new_div_id) == null ) {
+        var new_div  = document.createElement('div');
+        new_div.id = new_div_id;
+        a_obj.innerHTML =  '<img src="' + AA_GetConf('path') + 'images/icon_close.gif" width=16 height=16>';
+        a_obj.parentNode.insertBefore(new_div, a_obj.nextSibling);
+        AA_Ajax(new_div_id, form_url);
+    } else {
+        a_obj.innerHTML =  '<img src="' + AA_GetConf('path') + 'images/icon_new.gif" width=16 height=16>';
+        document.getElementById(new_div_id).remove();
+    }
+}
+
+/** Rewrite of xxxAA_AjaxSendAddForm, which uses prototype.js to jQuery */
+function AA_AjaxSendAddForm(id) {
+    var code   = $(jqid(id) + ' *').serialize();
+    // var sb   = $(id).up('div').previous('a').identify().substring(1);
+    var sb   = document.getElementById(id).parentNode.parentNode.previousElementSibling.children[0].id.substring(1);
+    document.getElementById(id).innerHTML = AA_GetConf('loader');
+
+    $.ajax({
+        url: AA_GetConf('path') + 'filler.php',
+        data: code,
+        dataType: 'json',
+        success: function(data) {
+            $.each(data, function(key, value) {
+                sb_SetValue( $('#' + sb), 'new', value, key);
+            });
+            // close form and display add icon
+            AA_AjaxInsert($(id).up('div').previous(), '');
+        }
+    });
+}
+
+
 /** selector_update is optional and is good for updating table rows, where we want to show/hide tr, but update td */
 function AA_HtmlAjaxToggleCss(link_id, link_text_1, link_text_2, selector_hide, url, selector_update) {
     var link = jqid(link_id);
-    var selector_update = selector_update ? selector_update : selector_hide;
     var swap;
+    selector_update = selector_update ? selector_update : selector_hide;
     if ( !$(link).hasClass('is-on')) {
         $(selector_hide).show('fast');
         $(link).toggleClass('is-on');

@@ -61,7 +61,7 @@ function get_aamenus() {
 
     if ($slice) {
         $aamenus["view"] = [
-            "label"      => GetLabel($profile, 'ui_manager', 'top_view', _m("View site")),
+            "label"      => GetLabel($profile, 'ui_manager', 'top_view', GetAAImage('enabled.png', _m("View site") , 16, 16)),
             "exact_href" => $slice->getProperty('slice_url'),
             "cond"       => ($profile->getProperty('ui_manager', 'top_view') !== ''),
             "level"      => "main"
