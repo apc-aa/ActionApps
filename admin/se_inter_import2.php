@@ -52,7 +52,7 @@ try {
     $submitbtn = InputVars::boolPOST('submitbtn');
     $exact_copy = InputVars::boolPOST('exact_copy');
     $cancel = InputVars::boolPOST('cancel');
-    $err = InputVars::arrayGETPOST('err');
+    
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {}
 

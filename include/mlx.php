@@ -57,11 +57,6 @@ const MLX_LANG2ID_TYPE = 'mlxctrl';
     you can overwrite them in your config.php
 **/
 
-/** set to 1 to display trace info **/
-if(!defined('MLX_TRACE')) {
-    define ('MLX_TRACE',0);
-}
-
 /** there is a problem with views and caching mlx-ed results
     at least in combination with site module, disable at own
     risk (btw, I dont think this caching brings alot better
@@ -118,20 +113,7 @@ function __mlx_dbg($v,$label="")
         print($v);
     echo "</pre>";
 }
-/** __mlx_trace function
- * @param $v
- */
-function __mlx_trace($v) {
-    if (MLX_TRACE) {
-        echo "<pre>";
-        if (is_array($v)) {
-            print_r($v);
-        } else {
-            print($v."\n");
-        }
-        echo "</pre>";
-    }
-}
+
 /** __mlx_fatal function
  * @param $msg
  */
@@ -507,9 +489,7 @@ class MLX {
     /** trace function
      * @param $v
      */
-    function trace($v) {
-        __mlx_trace($v);
-    }
+    function trace($v) {}
 };
 
 class MLXView {

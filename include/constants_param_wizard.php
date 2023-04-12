@@ -61,7 +61,7 @@ use the escape character \ - the wizard will translate the characters. Remember 
  * @return string
  */
 function getParamWizardLink(string $list, string $combo_list, string $text_param, bool $title=false, string $codemirror=''): string {
-    $ret  = "<div class=\"flex f-between aa-paramwiz-link\">";
+    $ret  = "<div class=\"flex aa-paramwiz-link\">";
     if ($title) {
         $ret .= "<label for=\"$text_param\"><strong>" . _m("Parameters") . "</strong></label>";
     }
@@ -824,7 +824,7 @@ $FIELD_FUNCTIONS = [
     "params"=> [
         [
             "name"=>_m("information"),
-            "desc"=>_m("specifies returned information: <br> - <i>size</i> - returns size of file in kB o MB<br> - <i>type</i> - returns type of file)"),
+            "desc"=>_m("specifies returned information: <br> - <i>name</i> - filename<br> - <i>type</i> - returns type of file (like TXT)<br> - <i>size</i> - returns size of file in kB or MB (like 12.1 kB)<br> - <i>bytesize</i> - (like 12128)<br> - <i>link</i><br> - <i>typesize</i> - [type - size] in span<br> - <i>crc</i><br> - <i>time</i>"),
             "type"=>"STR",
             "example"=>"size"
         ]
@@ -832,6 +832,8 @@ $FIELD_FUNCTIONS = [
 ]
 ]
 ];
+
+
 
 
 // --------------------------------------------------------------------------------

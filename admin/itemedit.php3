@@ -91,7 +91,7 @@ try {
     $post_preview = $_REQUEST['post_preview'] ?? true;
 
     $cancel = InputVars::boolGET('cancel');
-    $err = InputVars::arrayGETPOST('err');
+    
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {}
 
@@ -351,9 +351,6 @@ if ($edit) {
 
 // mimo changes
 if ($lang_control) {
-    if (MLX_TRACE) {
-        print("mlxl=$mlxl<br>mlxid=$mlxid<br>action=$action<br>");
-    }
     if (empty($mlx)) {
         $mlx = new MLX($slice);
     }

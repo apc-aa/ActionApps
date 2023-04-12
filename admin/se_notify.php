@@ -81,7 +81,7 @@ try {
     // array ( 1 => 5, )
     $update = InputVars::boolPOST('update');
     $cancel = InputVars::boolPOST('cancel');
-    $err = InputVars::arrayGETPOST('err');
+    
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {}
 

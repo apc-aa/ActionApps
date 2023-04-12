@@ -35,7 +35,7 @@ try {
     // array ( 4 => 2, )
     $tree = InputVars::intPOST('tree');
     $cancel = InputVars::boolPOST('cancel');
-    $err = InputVars::arrayGETPOST('err');
+    
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {}
 

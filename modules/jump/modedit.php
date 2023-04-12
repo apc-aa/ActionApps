@@ -53,7 +53,7 @@ try {
     // array ( ' Změnit [^…' => 5, ' Create [^S…' => 4, ' Update [^S…' => 1, )
     $update = InputVars::boolPOST('update');
     $cancel = InputVars::boolPOST('cancel');
-    $err = InputVars::arrayGETPOST('err');
+    
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {}
 

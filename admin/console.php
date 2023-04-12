@@ -43,8 +43,14 @@ if (!IsSuperadmin()) {
     exit;
 }
 
+$script2run = ' 
+   var opts = { lineWrapping:true, matchBrackets: true, matchTags: true, viewportMargin: 10000, mode: "htmlmixed" };
+   window.cm_code  = CodeMirror.fromTextArea(document.getElementById("code"), opts);
+   ';
 $apage = new AA_Adminpageutil('aaadmin','console');
 $apage->setTitle(_m("ActionApps Console"));
+$apage->addRequire($script2run, 'AA_Req_Load');
+$apage->addRequire('codemirror@5');
 $apage->printHead($err, $Msg);
 
 $form_buttons = [

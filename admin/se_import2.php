@@ -43,7 +43,7 @@ try {
     // array ( 0 => 3, )
     $to_all = InputVars::boolGET('to_all', true);
     $cancel = InputVars::boolPOST('cancel');
-    $err = InputVars::arrayGETPOST('err');
+    
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {}
 

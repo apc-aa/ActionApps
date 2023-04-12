@@ -105,7 +105,7 @@ try {
     // array ( 1 => 42, ' Změnit [^…' => 1, )
     $update = InputVars::boolPOST('update');
     $cancel = InputVars::boolPOST('cancel');
-    $err = InputVars::arrayGETPOST('err');
+    
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {}
 
@@ -263,7 +263,7 @@ if ($update) {
 
         if ( !count($err) ) {
             $Msg = MsgOk(_m("Fields update successful"));
-            go_url( $return_url ? (expand_return_url(1) . "&msg=".urlencode($Msg)) : $back_admin_url );  // back to field page
+            go_url( $return_url ? (expand_return_url(1) . "&msg=".urlencode($Msg)) : $back_admin_url );  // back to field page  // @todo Mssg
         }
     } while (0);           //in order we can use "break;" statement
 }
@@ -392,11 +392,11 @@ $form_buttons = [
     "cancel"   => ["url"=>"se_fields.php" .(AA_Fields::isSliceField($fid) ? '?slice_fields=1':'')]
 ];
 
-FrmTabCaption(_m("Field properties") . ': ' . safe($fld['name'] . ' (' . $fld['id'] . ')'), $form_buttons);
+FrmTabCaption(_m("Field properties") . ': ' . safe($fld['name'] . ' (' . $fld['id'] . ')'), $form_buttons, true);
 
 $isc_arr = AA_Components::getClassArray('AA\\Widget\\Widget');
 
-$tab_separator = "\n<tr><td colspan=2><hr></td></tr>\n";
+$tab_separator = "\n<tr class='aa-tab-line'><td colspan=2></td></tr>\n";
 
 echo "
      <tr>
@@ -521,7 +521,7 @@ for ($iAlias=1; $iAlias <= 3; ++$iAlias) {
     FrmTextarea($alias_func, _m("Parameters"), $$alias_func, 8, 60, false, AA_View::getViewJumpLinks('view.php?' . $$alias_func)); // added for f_v parameters
     FrmTextarea($alias_help, _m("Description"), $$alias_help, 2, 0);
     if ($iAlias != 3) {
-        echo "\n    <tr><td colspan=2><hr></td></tr><tr style='visibility:collapse;'><td colspan=2></td></tr>";  // second row just for nicer table stripes
+        echo "\n    \n<tr class='aa-tab-line'><td colspan=2></td></tr>\n";
     }
 }
 

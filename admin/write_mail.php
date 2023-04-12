@@ -82,7 +82,7 @@ try {
     // array ( 'malik@sezna…' => 4, )
     $testemail = InputVars::stringPOST('testemail');
     $cancel = InputVars::boolPOST('cancel');
-    $err = InputVars::arrayGETPOST('err');
+    
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {}
 

@@ -70,7 +70,7 @@ try {
     // array ( )
     $export_slices = InputVars::arrayPOST('export_slices');
     $cancel = InputVars::boolPOST('cancel');
-    $err = InputVars::arrayGETPOST('err');
+    
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {}
 

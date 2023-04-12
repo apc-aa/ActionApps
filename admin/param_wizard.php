@@ -60,7 +60,7 @@ try {
     $text_param = InputVars::stringGET('text_param', true);
     $codemirror = InputVars::stringGET('codemirror', true);
     $cancel = InputVars::boolPOST('cancel');
-    $err = InputVars::arrayGETPOST('err');
+    
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {}
 

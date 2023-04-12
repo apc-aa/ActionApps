@@ -1219,37 +1219,39 @@ class AA_Metabase {
     }
 
 
-    /** Get tabledit cofiguration for easy edit and add to the table */
-    function getTableditConf($tablename) {
-        $ret = [
-            "table"     => $tablename,
-            "type"      => "edit",
-//          "mainmenu"  => "modadmin",
-//          "submenu"   => "design",
-            "readonly"  => false,
-            "addrecord" => false,
-//          "cond"      => CheckPerms( AuthGetUid(), "slice", $slice_id, PS_MODP_EDIT_DESIGN),
-//          "title"     => $title,
-//          "caption"   => $title,
-            "attrs"     => ["table"=>""],
-//          "gotoview"  => "polls_designs_edit",
-        ];
-
-        $table         = $this->tables[$tablename];
-        $table_columns = $table->getColumnNames();
-        foreach ($table_columns as $column_name) { // in priority order
-            $field_type = 'text';    // @todo - get the type from field type
-            $ret['fields'][$column_name] = [
-                'caption' => $column_name,
-                'view'    => ['type' => $field_type]
-            ];
-            // @todo - do better check - based on table setting
-            if ($column_name = 'id') {
-                $ret['fields'][$column_name]['view']['readonly'] = true;
-            }
-        }
-        return $ret;
-    }
+    /** Get tabledit cofiguration for easy edit and add to the table
+     *  NO LONGER USED
+     */
+//    function getTableditConf($tablename) {
+//        $ret = [
+//            "table"     => $tablename,
+//            "type"      => "edit",
+////          "mainmenu"  => "modadmin",
+////          "submenu"   => "design",
+//            "readonly"  => false,
+//            "addrecord" => false,
+////          "cond"      => CheckPerms( AuthGetUid(), "slice", $slice_id, PS_MODP_EDIT_DESIGN),
+////          "title"     => $title,
+////          "caption"   => $title,
+//            "attrs"     => ["table"=>""],
+////          "gotoview"  => "polls_designs_edit",
+//        ];
+//
+//        $table         = $this->tables[$tablename];
+//        $table_columns = $table->getColumnNames();
+//        foreach ($table_columns as $column_name) { // in priority order
+//            $field_type = 'text';    // @todo - get the type from field type
+//            $ret['fields'][$column_name] = [
+//                'caption' => $column_name,
+//                'view'    => ['type' => $field_type]
+//            ];
+//            // @todo - do better check - based on table setting
+//            if ($column_name = 'id') {
+//                $ret['fields'][$column_name]['view']['readonly'] = true;
+//            }
+//        }
+//        return $ret;
+//    }
 
     /** AA_Property for $tablename and column */
     function getColumnProperty($tablename, $columnname) {

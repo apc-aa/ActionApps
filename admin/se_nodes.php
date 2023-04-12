@@ -62,7 +62,7 @@ try {
     // array ( ' Poslat [^…' => 20, )
     $submitbtn = InputVars::boolPOST('submitbtn');
     $cancel = InputVars::boolPOST('cancel');
-    // $err = InputVars::arrayGETPOST('err');
+    // 
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {}
 

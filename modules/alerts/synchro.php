@@ -45,7 +45,7 @@ try {
     // array ( 'on' => 5, )
     $change_to_delete = InputVars::boolPOST('change_to_delete');
     $cancel = InputVars::boolPOST('cancel');
-    $err = InputVars::arrayGETPOST('err');
+    
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {}
 

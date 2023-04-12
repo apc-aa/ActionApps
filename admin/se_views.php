@@ -42,7 +42,7 @@ try {
     $del = InputVars::boolGET('del');
     $vid = InputVars::intGet('vid');
     $cancel = InputVars::boolPOST('cancel');
-    $err = InputVars::arrayGETPOST('err');
+    
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {}
 
@@ -122,8 +122,7 @@ $managed->setColumns([]); // reset columns - use format strings bellow
 $managed->setAction('add',false);
 $managed->setNoitem('');
 $managed->settings['itemview']['format']['compact_top'] = '
-                                        <div class="aa-table">
-                                          <table>
+                                          <table class="aa-table aa-w-no-full">
                                             <thead><tr>
                                               <th width="30" scope="col">&nbsp;</th>
                                               <th scope="col">'._m('Actions').'</th>
@@ -145,7 +144,7 @@ $managed->settings['itemview']['format']['odd_row_format'] = '
                                         <td>_#NAME____</td>
                                         <td>{ifeq:{_#TYPE____}' . $view_types_ifeq.'}</td>
                                     </tr>';                      // <td>_#OBJECT__</td><td>_#EXECUTE_</td>
-$managed->settings['itemview']['format']['compact_bottom'] = '</tbody></table></div>';
+$managed->settings['itemview']['format']['compact_bottom'] = '</tbody></table>';
 
 $managed->settings['show'] = MGR_ALL & ~MGR_SB_BOOKMARKS & ~MGR_SB_SEARCHROWS & ~MGR_SB_ORDERROWS;    // MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS | MGR_SB_ALLTEXT | MGR_SB_ALLNUM
 $managed->settings['searchbar']['default_sort'] =  [0 => ['id' => 'd']];
@@ -181,7 +180,7 @@ foreach ( $views as $vw ) {
 echo '<form action="se_view.php" name="fvtype">';
 echo StateHidden();
 
-echo '<table class="aa-table">
+echo '<table class="aa-table aa-table-simple aa-w-no-full">
         <thead><tr><th colspan="3">'._m("Create new view").'</th></tr></thead>
         <tbody
       <tr>

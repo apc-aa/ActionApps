@@ -47,7 +47,7 @@ try {
     // array ( 'srchbr_valu…' => 2, )
     $var_id = InputVars::stringGET('var_id', true);
     $cancel = InputVars::boolPOST('cancel');
-    $err = InputVars::arrayGETPOST('err');
+    
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {}
 
@@ -93,7 +93,6 @@ if ($sel_text) {
 }
 
 $field = $slice->getField($field_name);
-
 echo "$Msg <br>";
 
 // ------- Caption -----------

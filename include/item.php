@@ -533,7 +533,7 @@ class AA_Item {
 
     function isEmpty() { return $this->content4id->isEmpty(); }
 
-    /** Without $bin returns true if the item is viseble - not expired/trashed/pending/...
+    /** Without $bin returns true if the item is visible - not expired/trashed/pending/...
      *  You can specify bin AA_BIN_ACTIVE or AA_BIN_HOLDING or AA_BIN_TRASH or AA_BIN_ALL or its bitwise combination (the trash and pending is not supported, now)
      * @return bool
      */

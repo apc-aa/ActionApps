@@ -47,7 +47,7 @@ try {
     // array ( )
     $fval = InputVars::arrayPOST('fval', true);
     $cancel = InputVars::boolPOST('cancel');
-    $err = InputVars::arrayGETPOST('err');
+    
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {}
 
@@ -121,7 +121,6 @@ if ($map_to && is_array($map_to)) {
     }
 }
 
-go_url( StateUrl(self_base() . "se_mapping.php") . "&from_slice_id=".rawurlencode($from_slice_id) .
-        "&Msg=" . rawurlencode(MsgOk(_m("Fields' mapping update succesful"))));
+go_url( StateUrl(self_base() . "se_mapping.php") . "&from_slice_id=".rawurlencode($from_slice_id) ."&Msg=" . rawurlencode(MsgOk(_m("Fields' mapping update successful"))));  // @todo Mssg
 page_close();
 

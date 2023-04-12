@@ -43,7 +43,7 @@ try {
     // array ( 'todelete' => 1, )
     $slices2show = InputVars::stringPOST('slices2show'); // alpha
     $cancel = InputVars::boolPOST('cancel');
-    $err = InputVars::arrayGETPOST('err');
+    
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {}
 

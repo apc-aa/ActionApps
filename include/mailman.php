@@ -43,6 +43,10 @@ class AA_Mailman {
     public static function createSynchroFiles($slice_id) {
         global $MAILMAN_SYNCHRO_DIR;
 
+        if ( !$MAILMAN_SYNCHRO_DIR) {
+            return;
+        }
+
         if (! @is_dir($MAILMAN_SYNCHRO_DIR)) {
 	        warn('Error: mailman dir not exists '.$MAILMAN_SYNCHRO_DIR);
             return;
@@ -59,10 +63,6 @@ class AA_Mailman {
         // Add empty mailing lists
         if ($group_id = GetCategoryGroup($slice_id, $field)) {
             $maillists = array_keys(GetConstants($group_id));
-
-            //huhl($group_id,$maillists);
-            //exit;
-
             foreach ($maillists as $listname) {
                 self::_createOneFile($slice_id, $field, $listname);
             }
@@ -79,11 +79,11 @@ class AA_Mailman {
             $mails = join("\n",AA_Validate::filter(explode('|',str_replace([' ',"\t"], ['',''],AA::Stringexpander()->unalias("{item:{ids:$slice_id:d-$field_id-=-".str_replace('-', '--',$listname)."}:".FIELDID_EMAIL.":|}"))), 'email'));
 
             if ($fd = fopen($MAILMAN_SYNCHRO_DIR.$listname, "w")) {
-               fwrite ($fd, $mails);
-               fclose ($fd);
-	    } else {
-		    huhl('Error: mailman file write '.$MAILMAN_SYNCHRO_DIR.$listname);
-	    }
+                fwrite ($fd, $mails);
+                fclose ($fd);
+            } else {
+                warn('Error: mailman file write '.$MAILMAN_SYNCHRO_DIR.$listname);
+            }
         }
     }
 
@@ -96,6 +96,11 @@ class AA_Mailman {
      * @param $newvalue
      */
     static function constantsChanged( $constant_id, $oldvalue, $newvalue ) {
+        global $MAILMAN_SYNCHRO_DIR;
+        if ( !$MAILMAN_SYNCHRO_DIR) {
+            return;
+        }
+
         if ( !($group_id = DB_AA::select1('group_id', 'SELECT group_id FROM `constant`', [['id', $constant_id, 'l']])) ) {
             return;
         }

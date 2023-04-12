@@ -738,7 +738,7 @@ class sitetree {
     }
 
     function printVariables( $spot_id, $vars ) {
-        echo "<tr><td><b>"._m("Spot&nbsp;variables")."</b></td><td>";
+        echo "<tr><th>"._m("Spot&nbsp;variables")."</th><td>";
         if (isset($vars) AND is_array($vars)) {
             foreach ($vars as $k => $v) {
                 echo safe($v) ."<span><a href=\"". self::siteAdminPageUrl($spot_id, "delvar=" . urlencode($k)) ."\" class=\"aa-button-delete\">"._m("Delete")."</a></span><br>";
@@ -751,7 +751,7 @@ class sitetree {
     }
 
     function printConditions($spot_id, $conds, $vars) {
-        echo "<tr><td><b>"._m("Spot&nbsp;conditions")."</b></td><td>";
+        echo "<tr><th>"._m("Spot&nbsp;conditions")."</th><td>";
         if ( isset($vars) AND is_array($vars) ) {
             $i=0;
             foreach ($vars as $k => $v) {
@@ -789,8 +789,8 @@ class sitetree {
 
         // get actions (eye for disable/enable, at this moment
         $action = $disabled ?
-            '<a href="' . self::siteAdminPageUrl($spot_id, 'akce=e') . '">' . GetModuleImage('site', 'disabled.gif', '', 16, 12, 'class="eye"') . '</a>' :
-            '<a href="' . self::siteAdminPageUrl($spot_id, 'akce=h') . '">' . GetModuleImage('site', 'enabled.gif', '', 16, 12, 'class="eye"') . '</a>';
+            '<a class=eye href="' . self::siteAdminPageUrl($spot_id, 'akce=e') . '">' . GetModuleImage('site', 'disabled.png', '', 16, 16) . '</a>' :
+            '<a class=eye href="' . self::siteAdminPageUrl($spot_id, 'akce=h') . '">' . GetModuleImage('site', 'enabled.png', '', 16, 16) . '</a>';
 
         // print the spot <div>
         echo "<div$class title=\"spot ID: $spot_id\">${action}<a href=\"" . self::siteAdminPageUrl($spot_id, "go_sid=$spot_id") . "\" class=\"spot\">$spot_name</a></div>";

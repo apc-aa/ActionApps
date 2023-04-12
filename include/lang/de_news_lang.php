@@ -2937,7 +2937,7 @@ $_m["Optimalizations"]
  = "";
 
 // admin/se_mapping2.php, row 112
-$_m["Fields' mapping update succesful"]
+$_m["Fields' mapping update successful"]
  = "Feldzuordnung erfolgreich aktualisiert";
 
 // admin/se_rssfeeds.php, row 113, 165, 172

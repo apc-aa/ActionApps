@@ -978,13 +978,6 @@ class AA_Inputfield {
                             $this->varname_modify('[]');         // use slightly modified varname
                             $this->hierarchicalConstant($constgroup, $levelCount, $boxWidth, $rows, $horizontalLevels, $firstSelectable, explode('~',$levelNames));
                             break;
-                case 'wi2': [$constgroup, $rows, $wi2_offer, $wi2_selected, $slice_field, $whichitems, $conds_str, $sort_str, $addform, $add_slice_pwd] = $this->param;
-                            if ( !is_null($item) ) {
-                                $conds_str = $item->unalias($conds_str);
-                            }
-                            $this->varname_modify('[]');         // use slightly modified varname
-                            $this->twoBox(get_if($rows,5), $wi2_offer, $wi2_selected, $slice_field, $whichitems, $conds_str, $sort_str, $addform, $add_slice_pwd);
-                            break;
                 case 'pwd':  // handled in passwordModify
                             [$fieldsize, $change_pwd_label, $retype_pwd_label, $delete_pwd_label, $change_pwd_help, $retype_pwd_help] = $this->param;
                             $this->passwordModify( $fieldsize, $change_pwd_label, $retype_pwd_label, $delete_pwd_label, $change_pwd_help, $retype_pwd_help);
@@ -1008,6 +1001,14 @@ class AA_Inputfield {
                 //                $this->inputWidget($item, $slice_id);          // standard
                 //            }
                 //    break;
+                case 'wi2': [$constgroup, $rows, $wi2_offer, $wi2_selected, $slice_field, $whichitems, $conds_str, $sort_str, $addform, $add_slice_pwd] = $this->param;
+                            if ( !is_null($item) ) {
+                                $conds_str = $item->unalias($conds_str);
+                            }
+                            $this->varname_modify('[]');         // use slightly modified varname
+                            $this->twoBox(get_if($rows,5), $wi2_offer, $wi2_selected, $slice_field, $whichitems, $conds_str, $sort_str, $addform, $add_slice_pwd);
+                            break;
+                //case 'wi2':  // still uses mch
                 case 'tag':
                 case 'mfl':
                 case 'rim':
@@ -1171,7 +1172,7 @@ class AA_Inputfield {
             $this->echovar($radio_plain, 'plain_rb');
             $this->echoo(_m("Plain text"));
             $this->echoo('</label></span>');
-            $this->echoo('<span id="arealinkspan'.$varname.'" class="aa-arealink btn" style="display:none">'); // used for hiding "edit in htmlarea" link, don't remove
+            $this->echoo('<span id="arealinkspan'.$varname.'" class="btn aa-arealink" style="display:none">'); // used for hiding "edit in htmlarea" link, don't remove
             $this->echovar($htmlareaedit, 'htmlarea_edit_link');
             $this->echoo('</span>');
 
@@ -1340,7 +1341,7 @@ class AA_Inputfield {
                 }
                 $parts["part$id2"] = [$lang, $classes];
 
-                $widg .= "<label class=\"aa-langtrans $lang\" id=\"part$id2\" ".($first ? '' : ' style="display:none;"')."><strong class=\"aa-langtrans-label\">$lang</strong>";
+                $widg .= "<label class=\"aa-langtrans aa-lang-$lang\" id=\"part$id2\" ".($first ? '' : ' style="display:none;"')."><strong class=\"aa-langtrans-label\">$lang</strong>";
 
 
                 $link  = ((substr($value,0,7)==='http://') OR (substr($value,0,8)==='https://')) ? '&nbsp;'.a_href($value, GetAAImage('external-link.png', _m('Show'), 16, 16)) : '';
@@ -1459,7 +1460,7 @@ class AA_Inputfield {
                 }
                 $parts["part$id2"] = [$lang, $classes];
 
-                $widg .= "<label class=\"aa-langtrans $lang\" id=\"part$id2\" ".($first ? '' : ' style="display:none;"')."><strong class=\"aa-langtrans-label\">$lang</strong>";
+                $widg .= "<label class=\"aa-langtrans aa-lang-$lang\" id=\"part$id2\" ".($first ? '' : ' style="display:none;"')."><strong class=\"aa-langtrans-label\">$lang</strong>";
                 $widg .= "<textarea id=\"$id2\" name=\"$name2\"$areaclass rows=\"$rows\" ".$GLOBALS['mlxFormControlExtra']."$colsy$maxlen class=aa-w-full style=\"height:{$rows_css}em;\" $triggers>$value</textarea>\n";
                 $widg .= "</label>";
                 if (!$showhtmlarea AND $showrich_href ) {
@@ -1674,25 +1675,18 @@ class AA_Inputfield {
         $ret .= "</select>";
         $ret .= $this->presentFieldIndicator($name);
 
-        $this->echoo('<table><tr>');
-        if ($movebuttons) {
-            $this->echoo("\n <td rowspan=\"2\">");
-        } else {
-            $this->echoo("\n <td>");
-        }
+        $this->echoo("<div class=\"aa-widget aa-widget-iso aa-stdwidget\"><div class='aa-input'>
+          <div class='aa-iso-list'>");
+
         $this->echovar( $ret );
-        $this->echoo("</td>\n");
+        $this->echoo("</div>\n");
         if ($movebuttons) {
-             $this->echoo("<td>");
-             $this->echoo("<input type=\"button\" value=\" &#9650; \" ".
-             " onClick=\"moveItem(this.parentNode.parentNode.parentNode.querySelector(&quot;select[name='$name']&quot;),'up');\">");
-             $this->echoo('</td></tr>');
-             $this->echoo('<tr><td>');
-             $this->echoo("<input type=\"button\" value=\" &#9660; \" ".
-             " onClick=\"moveItem(this.parentNode.parentNode.parentNode.querySelector(&quot;select[name='$name']&quot;), 'down');\">");
-             $this->echoo("</td>");
+             $this->echoo("<div class='aa-iso-updown'>");
+             $this->echoo("<input type=\"button\" value=\" &#9650; \" class=aa-widg-up onClick=\"moveItem(this.parentNode.parentNode.querySelector(&quot;select[name='$name']&quot;),'up');\">");
+             $this->echoo("<input type=\"button\" value=\" &#9660; \" class=aa-widg-down onClick=\"moveItem(this.parentNode.parentNode.querySelector(&quot;select[name='$name']&quot;), 'down');\">");
+             $this->echoo("</div>");
         }
-        $this->echoo("</tr>\n <tr><td>\n");
+        $this->echoo("</div>\n <div class='aa-iso-foot'>\n");
         if (strpos($actions,'R') !== false) {
             $this->echoo("<input type='button' value='". _m("Add") ."' onclick='OpenRelated(\"$name\", \"$sid\", \"$mode\", \"$design\", \"$whichitems\",\"".rawurlencode($conds)."\",\"".rawurlencode($condsrw)."\", \"".rawurlencode($slice_field)."\",\"".get_admin_url('related_sel.php')."\", \"".rawurlencode($sort_by)."\", \"".rawurlencode($listlen)."\" )'>\n");
         }
@@ -1714,7 +1708,7 @@ class AA_Inputfield {
             $this->echoo("&nbsp;&nbsp;<input type='button' value='". _m("Delete") ."' onclick=\"sb_RemoveItem(document.inputform['".$name."']);\">\n");
         }
         $this->echoo(getFrmJavascript("if (typeof listboxes == 'undefined') { var listboxes = []; };  listboxes[listboxes.length] = '$name';"));
-        $this->echoo("</td></tr></table>\n");
+        $this->echoo("</div></div></div>\n");
         $this->helps('plus');
     }
 
@@ -1906,8 +1900,8 @@ class AA_Inputfield {
 
         $this->echoo($widget->stdFormStart($aa_property));
 
-        if (is_null($item)) {
-            $this->echovar($field->getWidgetNewHtml(null, null, null, null, $this->getAaValue()));
+        if (is_null($item) OR $item->isEmpty()) {
+            $this->echovar($field->getWidgetNewHtml(null, null, null, null, $this->getAaValue(), null, true));
         } else {
             // another approach would be, but it had troubles in InfWidget with {manager:...{_#ITEM_ID_}...}
             //$content = (new AA_Content() )->setOwnerId($slice_id)->setId($item->getId())->setAaValue($this->id, $this->getAaValue());
@@ -2032,15 +2026,9 @@ class AA_Inputfield {
         AA::Stringexpander()->addRequire(get_aa_url('javascript/inputform.min.js?v='.AA_JS_VERSION,'',false));
 
         $this->field_name('plus');
-        $this->echoo("<table>
-          <tr>
-            <td>". $wi2_offer ."</td>
-            <td></td>
-            <td>". $wi2_selected ."</td>
-            <td></td>
-          </tr>
-          <tr>
-            <td rowspan=\"2\">");
+        $this->echoo("<div class=\"aa-widget aa-widget-wi2 aa-stdwidget\"><div class='aa-input'>
+          <div class='aa-wi2-offer'>
+            <label for=''>". $wi2_offer ."</label>");
 
         $triggers  = $this->use_triggers_4_slice ? JsTriggers::singleton4id($this->use_triggers_4_slice)->get("select", $name) : '';
         $offername = str_replace("[]", "", $name). '_1';
@@ -2049,10 +2037,15 @@ class AA_Inputfield {
         $out  .= '</select>';
         $this->echovar( $out, 'unselected' );
 
-        $this->echoo("</td>
-            <td rowspan=\"2\">&nbsp;&nbsp;<input type=button value=\"  &#9654;  \" onClick = \"MoveSelected(this.parentNode.parentNode.querySelector(&quot;select[name='$offername']&quot;),this.parentNode.parentNode.querySelector(&quot;select[name='$name']&quot;))\">
-              <br><br>&nbsp;&nbsp;<input type=button value=\"  &#9664;  \" onClick = \"MoveSelected(this.parentNode.parentNode.querySelector(&quot;select[name='$name']&quot;),this.parentNode.parentNode.querySelector(&quot;select[name='$offername']&quot;))\">&nbsp;&nbsp;</td>
-            <td rowspan=\"2\">");
+        $this->echoo("</div>
+          <div class=\"aa-wi2-leftright\">
+            <input type=button value=\"  &#9654;  \" class=aa-wi2-right onClick = \"MoveSelected(this.parentNode.parentNode.querySelector(&quot;select[name='$offername']&quot;),this.parentNode.parentNode.querySelector(&quot;select[name='$name']&quot;))\">
+            <input type=button value=\"  &#9664;  \" class=aa-wi2-left onClick = \"MoveSelected(this.parentNode.parentNode.querySelector(&quot;select[name='$name']&quot;),this.parentNode.parentNode.querySelector(&quot;select[name='$offername']&quot;))\">
+          </div>");
+
+        $this->echoo("
+          <div class='aa-wi2-selected'>
+            <label for=''>". $wi2_selected ."</label>");
 
         // varname - name without []
         $out = "<select multiple id=\"".$this->varname."\" name=\"".$name."\" size=\"$rows\" $triggers ondblclick=\"MoveSelected(this,this.parentNode.parentNode.querySelector(&quot;select[name='$offername']&quot;))\">";
@@ -2073,17 +2066,20 @@ class AA_Inputfield {
         $out .= '</select>';
         $out .= $this->presentFieldIndicator($name);
 
-
         $this->echovar( $out, 'selected' );
 
         $this->echoo(getFrmJavascript("if (typeof listboxes == 'undefined') { var listboxes = []; };  listboxes[listboxes.length] = '$name';"));
-        $this->echoo("\n      </td>");
-        $this->echoo("\n      <td><input type=button value=\" &#9650; \" onClick=\"moveItem(this.parentNode.parentNode.parentNode.querySelector(&quot;select[name='$name']&quot;),'up');\"></td>");
-        $this->echoo("\n      </tr>");
-        $this->echoo("<tr><td><input type=button value=\" &#9660; \" onClick=\"moveItem(this.parentNode.parentNode.parentNode.querySelector(&quot;select[name='$name']&quot;), 'down');\"></td></tr>");
+        $this->echoo("\n      </div>");
+        $this->echoo("\n      <div class='aa-wi2-updown'>
+            <input type=button value=\" &#9650; \" class=aa-wi2-up onClick=\"moveItem(this.parentNode.parentNode.querySelector(&quot;select[name='$name']&quot;),'up');\">
+            <input type=button value=\" &#9660; \" class=aa-wi2-down onClick=\"moveItem(this.parentNode.parentNode.querySelector(&quot;select[name='$name']&quot;), 'down');\"></div>");
 
         if (!empty($addform) AND !empty($sid)) {
-            $this->echoo("\n<tr><td colspan=\"4\">");
+
+            // for AA_AjaxInsert()
+            AA::Stringexpander()->addRequire('aajslib');
+
+            $this->echoo("\n<div class='aa-wi2-add'>");
             if (!$slice_field) {
                 $slice_field = '{'.GetHeadlineFieldID($sid, "headline.").'}';
             }
@@ -2091,9 +2087,9 @@ class AA_Inputfield {
             $img      = GetAAImage('icon_new.gif', _m('new'), 17, 17);
             // varname used for as pointer to right selectbox for returning ajax call
             $this->echoo("\n<a id=\"a".$this->varname ."\"href=\"javascript:void(0)\" onclick=\"AA_AjaxInsert(this, '$form_url'); return false;\">$img</a>");
-            $this->echoo("\n      </td></tr>");
+            $this->echoo("\n      </div>");
         }
-        $this->echoo("\n        </table>");
+        $this->echoo("\n        </div></div>");
         $this->helps('plus');
     }
 
@@ -2658,7 +2654,7 @@ function getTabStart($outer_add='') {
  * @param string $outer_add
  * @return string
  */
-function getFrmTabCaption($caption = '', $buttons = '', $outer_add = '') {
+function getFrmTabCaption($caption = '', $buttons = '', $outer_add = '', $simple=false) {
     $ret = getTabStart($outer_add);
     if ($buttons) {
         $ret .= getFrmInputButtons($buttons, true, 'top');
@@ -2666,12 +2662,13 @@ function getFrmTabCaption($caption = '', $buttons = '', $outer_add = '') {
     if ($caption != "") {
         $ret .= "\n <div class=\"aa-tab-title\">$caption</div>";
     }
-    $ret .= "\n<table class=\"aa-table\">";
+    $table_add_class = $simple ? ' aa-table-simple' : '';
+    $ret .= "\n<table class=\"aa-table$table_add_class\">";
     return $ret;
 }
 
-function FrmTabCaption($caption = '', $buttons = '') {
-    echo getFrmTabCaption($caption, $buttons, 'data-aa-class=clasic');
+function FrmTabCaption($caption = '', $buttons = '', $simple=false) {
+    echo getFrmTabCaption($caption, $buttons, 'data-aa-class=clasic', $simple);
 }
 
 function FrmTabSeparator($subtitle) {
@@ -3046,9 +3043,9 @@ function getRadioBookmarkRow( $name, $count, $value, $list_type, $list_text, $sa
  *               messages['selected_items'] = _m('Selected users')
  *  @param array additional = array( 'text' => 'Test', 'varname'=>'testuser');
  */
-function FrmItemGroupSelect( &$items, $searchbar, $list_type, $messages, $additional=[]) {
+function FrmItemGroupSelect( $items, $searchbar, $list_type, $messages, $additional=[]) {
     $out = '';
-    if ( isset($items) AND is_array($items) ) {
+    if (is_array($items) AND count($items)) {
         $out = getRadioBookmarkRow( $messages['selected_items'], count($items), 'sel_item', $list_type, $messages['view_items']);
     } elseif ( isset($searchbar) AND is_object($searchbar) ) {
         $book_arr = $searchbar->getBookmarkNames();

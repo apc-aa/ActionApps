@@ -46,7 +46,7 @@ require_once __DIR__ . "/../../modules/polls/include/util.php";
 
 try {
     $cancel = InputVars::boolPOST('cancel');
-    $err = InputVars::arrayGETPOST('err');
+    
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {}
 

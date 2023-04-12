@@ -49,7 +49,7 @@ try {
     $delimiter = InputVars::stringSlashedPOST('delimiter');
     $update = InputVars::boolPOST('update');
     $cancel = InputVars::boolPOST('cancel');
-    $err = InputVars::arrayGETPOST('err');
+    
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {}
 
@@ -100,7 +100,7 @@ if ($update) {
         if (!count($err)) {
             $Msg .= MsgOk(_m("Constants update successful"));
         }
-        go_url(StateUrl(get_url($back_url, 'Msg='.urlencode($Msg))));
+        go_url(StateUrl(get_url($back_url, 'Msg='.urlencode($Msg))));  // @todo Mssg
     } while( 0 );           // in order we can use "break;" statement
 }
 

@@ -80,7 +80,7 @@ try {
     // array ( 'P' => 5, )
     // $uses_modulesp = InputVars::stringPOST('uses_modulesp'); // alpha   - ignore - not needed here
     $cancel = InputVars::boolPOST('cancel');
-    $err = InputVars::arrayGETPOST('err');
+    
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {}
 

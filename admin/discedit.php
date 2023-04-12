@@ -47,7 +47,7 @@ try {
     // array ( 'hide' => 14, 'delete' => 1, 'deleteshown' => 1, 'deleteall' => 1, )
     $mode = InputVars::stringGET('mode'); // alpha
     $cancel = InputVars::boolPOST('cancel');
-    $err = InputVars::arrayGETPOST('err');
+    
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {}
 

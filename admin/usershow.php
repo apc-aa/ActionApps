@@ -49,7 +49,7 @@ try {
     // array ( 'items' => 1, )
     $type = InputVars::stringGET('type'); // alpha
     $cancel = InputVars::boolPOST('cancel');
-    $err = InputVars::arrayGETPOST('err');
+    
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {}
 

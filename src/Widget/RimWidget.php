@@ -106,7 +106,7 @@ class RimWidget extends Widget
             $actbuttonsdown['M'] = '';
         }// @todo
         if (strpos($actions2show, 'R') !== false) {
-            $actbuttonsdown['R'] = "<article><i class=\"ico insert\">add</i><input type=search value onkeyup=\"DisplayAaResponse('flt$input_id', 'Widget_Selection', {s:'$def_slice_id',f:'$def_field_id',q:this.value})\"></article>";
+            $actbuttonsdown['R'] = "<article><i class=\"ico insert\">add</i><input type=search value onkeyup=\"DisplayAaResponse('flt$base_id', 'Widget_Selection', {s:'$def_slice_id',f:'$def_field_id',q:this.value})\"></article>";
         }// @todo
         if (strpos($actions2show, 'N') !== false) {
             $actbuttonsdown['N'] = "<article><i class=\"ico new\" onclick=\"OpenWindowTop('" . Inputform_url(true, null, $sid, 'close_dialog', null, $input_name) . "');\">" . _m('new') . '</i></article>';
@@ -141,11 +141,10 @@ class RimWidget extends Widget
                            ';
         }
 
-        // default value - in order something is send when no chbox is checked
+        // default value - in order something is sent when no chbox is checked
         $input_name = $base_name_add . "[def]";
         $input_id = FormArray::formName2Id($input_name);
 
-        // <input type="text" id="finduser" name="finduser" onkeyup="PlanSearch($('#finduser').val()+$('#prispeluser').val(), ReloadUserTable,500)" placeholder="hledej...">
 
         $downbuttons = join("\n", array_values($actbuttonsdown));
 
@@ -156,7 +155,7 @@ class RimWidget extends Widget
                          <input type="hidden" name="$input_name" id="$input_id" value="">
                          $downbuttons
                        </footer>
-                       <section class="itemselect" id=flt$input_id>
+                       <section class="itemselect" id=flt$base_id>
                        </section>
                      </article>
 HTML;

@@ -47,7 +47,7 @@ try {
     $content = InputVars::stringPOST('content');
     $name = InputVars::stringPOST('name');
     $cancel = InputVars::boolPOST('cancel');
-    $err = InputVars::arrayGETPOST('err');
+    
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {}
 
@@ -183,32 +183,32 @@ function PrintSiteActionLink($r_spot_id, $action, $text, $img, $link=null) {
     if (!$link) {
         $link  = sitetree::siteAdminPageUrl($r_spot_id, "akce=$action");
     }
-    $image = GetModuleImage('site', $img, '', 16, 12);
-    return "<a href=\"$link\">$image</a>&nbsp;<a href=\"$link\">$text</a>";
+    $image = GetModuleImage('site', $img, '', 16, 16);
+    return "<a class=aa-button href=\"$link\">$image $text</a>";
 }
 
 echo '<div class="aa-site-codemanager">
         <div id="sitetree" class="aa-site-tree">
-      <table>
+      <table class="aa-w-full">
         <tr>
-          <td>'. PrintSiteActionLink($r_spot_id, 's', _m("Add&nbsp;spot"), 'add_spot.gif') .'</td>
-          <td>&nbsp;'. PrintSiteActionLink($r_spot_id, 'c', _m("Add&nbsp;choice"), 'add_choice.gif') .'</td>
+          <td>'. PrintSiteActionLink($r_spot_id, 's', _m("Add&nbsp;spot"), 'add_spot.png') .'</td>
+          <td>'. PrintSiteActionLink($r_spot_id, 'c', _m("Add&nbsp;choice"), 'add_choice.png') .'</td>
         </tr>
         <tr>
-          <td>'. PrintSiteActionLink($r_spot_id, 'u', _m("Move&nbsp;up"), 'up.gif') .'</td>
-          <td>&nbsp;'. PrintSiteActionLink($r_spot_id, 'd', _m("Move&nbsp;down"), 'down.gif') .'</td>
+          <td>'. PrintSiteActionLink($r_spot_id, 'u', _m("Move&nbsp;up"), 'up.png') .'</td>
+          <td>'. PrintSiteActionLink($r_spot_id, 'd', _m("Move&nbsp;down"), 'down.png') .'</td>
         </tr>
         <tr>
-          <td>'. PrintSiteActionLink($r_spot_id, 'l', _m("Move&nbsp;left"), 'left.gif') .'</td>
-          <td>&nbsp;'. PrintSiteActionLink($r_spot_id, 'a', _m("Move&nbsp;right"), 'right.gif') .'</td>
+          <td>'. PrintSiteActionLink($r_spot_id, 'l', _m("Move&nbsp;left"), 'left.png') .'</td>
+          <td>'. PrintSiteActionLink($r_spot_id, 'a', _m("Move&nbsp;right"), 'right.png') .'</td>
         </tr>
         <tr>
-          <td>'. PrintSiteActionLink($r_spot_id, 'r', _m("Delete"), 'delete.gif', 'javascript:GoIfConfirmed(\''. sitetree::siteAdminPageUrl($r_spot_id, "akce=r") .'\', \''.
+          <td>'. PrintSiteActionLink($r_spot_id, 'r', _m("Delete"), 'delete.png', 'javascript:GoIfConfirmed(\''. sitetree::siteAdminPageUrl($r_spot_id, "akce=r") .'\', \''.
                                             _m("Are you sure you want to delete the spot?") .'\')') .'</td>
-          <td>&nbsp;'.
+          <td>'.
           (($tree->get('flag', $r_spot_id) & AA_Module_Site::FLAG_DISABLE) ?
-              PrintSiteActionLink($r_spot_id, 'e', _m("Enable"), 'enabled.gif') :
-              PrintSiteActionLink($r_spot_id, 'h', _m("Disable"), 'disabled.gif'))
+              PrintSiteActionLink($r_spot_id, 'e', _m("Enable"), 'enabled.png') :
+              PrintSiteActionLink($r_spot_id, 'h', _m("Disable"), 'disabled.png'))
               .'</td>
         </tr>
       </table>

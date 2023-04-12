@@ -47,7 +47,7 @@ try {
     $remote_node_name = InputVars::stringPOST('remote_node_name');
     $exact_copy       = InputVars::boolPOST('exact_copy');
     $aa_rss           = unserialize(InputVars::stringPOST('aa'));
-    $err = InputVars::arrayGETPOST('err');
+    
 } catch (Exception $e) {}
 
 

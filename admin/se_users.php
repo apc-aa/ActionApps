@@ -52,7 +52,7 @@ try {
     // array ( '' => 2, )
     $usr = InputVars::stringPOST('usr'); // empty
     $cancel = InputVars::boolPOST('cancel');
-    $err = InputVars::arrayGETPOST('err');
+    
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {}
 

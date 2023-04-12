@@ -70,7 +70,7 @@ try {
     $change_id = InputVars::idGETPOST('change_id');
     $listlen = InputVars::intGET('listlen');
     $cancel = InputVars::boolPOST('cancel');
-    $err = InputVars::arrayGETPOST('err');
+    
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {}
 

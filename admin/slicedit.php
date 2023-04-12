@@ -131,7 +131,7 @@ try {
     // array ( )
     $wiz = InputVars::arrayPOST('wiz');
     $cancel = InputVars::boolPOST('cancel');
-    $err = InputVars::arrayGETPOST('err');
+    
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {}
 

@@ -298,7 +298,7 @@ class AA_Showview {
         // and view_param[slice_id] is empty or same
 
         // collect used slices for cache invalidation
-        $this->_used_slice_ids = is_array($slices) ? array_merge([$slice_id], $slices) : [$slice_id];
+        AA_Module::mark4cache(is_array($slices) ? array_merge([$slice_id], $slices) : [$slice_id]);
 
         if (!AA::$site_id AND !AA::$slice_id) {  // it is used as allpage main module to find {_:alias} aliases when called outside of site module
             AA::$slice_id = $slice_id;
@@ -313,11 +313,11 @@ class AA_Showview {
                 // create array of discussion parameters
                 $disc = [
                     'ids'         => ($this->_view_param["all_ids"] ? "" : $this->_view_param["ids"]),
-                              'item_id'     => $this->_view_param["sh_itm"],
-                              'vid'         => $vid,
-                              'html_format' => ($view_info['flag'] & DISCUS_HTML_FORMAT),
-                              'parent_id'   => $this->_view_param["parent_id"],
-                              'disc_ids'    => $this->_view_param["disc_ids"]
+                    'item_id'     => $this->_view_param["sh_itm"],
+                    'vid'         => $vid,
+                    'html_format' => ($view_info['flag'] & DISCUS_HTML_FORMAT),
+                    'parent_id'   => $this->_view_param["parent_id"],
+                    'disc_ids'    => $this->_view_param["disc_ids"]
                 ];
                 if (($this->_view_param["disc_type"] == "list") || is_array($this->_view_param["disc_ids"])) {
                     $disc['type'] = "list";
@@ -430,7 +430,7 @@ class AA_Showview {
                 }
                 $calendar_conds = [
                     ['operator' => '<',  'value' => mktime (0,0,0,$month+1,1,$year), $view_info['field1'] => 1],
-                                         ['operator' => '>=', 'value' => mktime (0,0,0,$month,1,$year),   $view_info['field2'] => 1]
+                    ['operator' => '>=', 'value' => mktime (0,0,0,$month,1,$year),   $view_info['field2'] => 1]
                 ];
                 // Note drops through to next case
 
@@ -542,12 +542,5 @@ class AA_Showview {
         }
         AA::$debug&2 && AA::$dbg->groupend("view_$vid".'_'.$dbgtime);
         return $ret;
-    }
-
-    /**
-     * @return array
-     */
-    public function lastUsedSliceIds(): array {
-        return $this->_used_slice_ids;
     }
 }

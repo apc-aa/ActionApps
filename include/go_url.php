@@ -127,8 +127,9 @@ function get_aa_url($href, $params=[], $state=true): string {
  * @param bool         $state
  * @return string
  */
-function get_admin_url($href, $params='', $state=true): string {
-    return get_aa_url("admin/$href", $params, $state);
+function get_admin_url($href='', $params='', $state=true): string {
+    $href = $href ? AA_INSTAL_PATH."admin/$href" : $_SERVER['PHP_SELF'];
+    return get_url($href, $params, $state);
 }
 
 /** get_help_url function
@@ -145,7 +146,7 @@ function get_help_url($href, $anchor) {
 /** go_url function
  * Move to another page (must be before any output from script)
  * @param $url
- * @param $add_param
+ * @param $add_param array|string
  * @param $usejs
  */
 function go_url($url, $add_param="", $usejs=false, $code=302) {

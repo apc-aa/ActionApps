@@ -369,7 +369,7 @@ function Event_ItemAfterInsert( $type, $slice_id, $slice_type, $itemContent, $fo
     AA_Mysqlauth::updateReaders( [pack_id( $item_id )], $slice_id );
     AlertsSendWelcome( $slice_id, $itemContent );
     // AlertsSendInstantAlert( $item_id, $slice_id );
-    $GLOBALS['MAILMAN_SYNCHRO_DIR'] && AA_Mailman::createSynchroFiles($slice_id);
+    AA_Mailman::createSynchroFiles($slice_id);
 
     // notifications
     switch ($itemContent->getStatusCode()) {
@@ -395,7 +395,7 @@ function Event_ItemAfterUpdate( $type, $slice_id, $slice_type, $itemContent, $ol
     $item_id = $itemContent->getItemID();
     AA_Mysqlauth::updateReaders( [pack_id( $item_id )], $slice_id );
 //    AlertsSendInstantAlert( $item_id, $slice_id );
-    $GLOBALS['MAILMAN_SYNCHRO_DIR'] && AA_Mailman::createSynchroFiles($slice_id);
+    AA_Mailman::createSynchroFiles($slice_id);
 
     // notifications
     switch ($itemContent->getStatusCode()) {
@@ -467,7 +467,7 @@ function Event_ItemsBeforeDelete( $type, $slice_id, $slice_type, $item_ids, $foo
        because they should be deleted on moving to Trash bin. But it is
        perhaps better to make sure. */
     AA_Mysqlauth::deleteReaders( $item_ids, $slice_id );
-    $GLOBALS['MAILMAN_SYNCHRO_DIR'] && AA_Mailman::createSynchroFiles($slice_id);
+    AA_Mailman::createSynchroFiles($slice_id);
     //mimo added
     $mlx = new MLXEvents();
     $mlx->itemsBeforeDelete($item_ids,$slice_id);
@@ -485,7 +485,7 @@ function Event_ItemsBeforeDelete( $type, $slice_id, $slice_type, $item_ids, $foo
  */
 function Event_ItemsMoved( $type, $slice_id, $slice_type, $item_ids, $new_status, $foo2 ) {
     AA_Mysqlauth::updateReaders( $item_ids, $slice_id );
-    $GLOBALS['MAILMAN_SYNCHRO_DIR'] && AA_Mailman::createSynchroFiles( $slice_id );
+    AA_Mailman::createSynchroFiles( $slice_id );
 }
 
 /** Event_ConstantBeforeUpdate function
@@ -513,7 +513,7 @@ function Event_ConstantBeforeUpdate( $type, $slice_id, $slice_type, &$newvalue, 
  */
 function Event_ConstantUpdated( $type, $slice_id, $slice_type, $newvalue, $oldvalue, $constant_id ) {
     AA_Mysqlauth::changeGroups($constant_id, $oldvalue, $newvalue);
-    $GLOBALS['MAILMAN_SYNCHRO_DIR'] && AA_Mailman::constantsChanged( $constant_id, $oldvalue, $newvalue );
+    AA_Mailman::constantsChanged( $constant_id, $oldvalue, $newvalue );
 }
 
 

@@ -62,7 +62,7 @@ try {
     $transform = InputVars::stringPOST('transform');
     // $transform* // not necessary
     $cancel = InputVars::boolPOST('cancel');
-    $err = InputVars::arrayGETPOST('err');
+    
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {}
 
@@ -164,7 +164,7 @@ $params = [
     'field_select'   => $field_select
 ];
 
-FrmTabCaption((is_array($items) ? _m("Items") : (_m("Stored searches for ") . $slice->getName())));
+FrmTabCaption((count($items) ? _m("Items") : (_m("Stored searches for ") . $slice->getName())));
 
 $messages['view_items']     = _m("View items");
 $messages['selected_items'] = _m('Selected items');

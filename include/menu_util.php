@@ -125,11 +125,8 @@ function GetCommonMenu(AA_Profile $profile): array {
             "header2"     => _m("Misc"),
             "synchronize" => ["cond"=>IsSuperadmin(),              "href"=>"central/synchronize.php",                                    "label"=>_m("Synchronize...")],
             "copyslice"   => ["cond"=>IsSuperadmin(),              "href"=>"central/copyslice.php",                                      "label"=>_m("Copy Slice...")],
-            "line"        => "",
             "item6"       => ["cond"=>IsSuperadmin(),              "href"=>"central/index.php3?DeleteTrash=1",                           "label"=>_m("Empty trash"), "js"=>"EmptyTrashQuestion('{href}','"._m("Are You sure to empty trash?")."')"],
             "importcsv"   => ["cond"=>IsSuperadmin(),              "href"=>"central/import_csv.php",                                     "label"=>_m("Import conf from CSV...")],
-            "debug"       => ["cond"=>IsSuperadmin(),              "js"  =>"ToggleCookie('aa_debug','1')", "hide"=>!IsSuperadmin(),      "label"=> ($_COOKIE['aa_debug'] ? _m("Set Debug OFF") : _m("Set Debug ON"))],
-            "line2"       => ""
         ]
     ];
 
@@ -305,7 +302,7 @@ function getMenu($activeMain, $activeSubmenu = ""): string {
         }
 
         $title_title = GetLabel($profile, 'ui_manager', 'top_title', $smmenus[$activeMain]['title']);
-        $title_name  = ($slice_id ? AA_Slice::getModuleName($slice_id) : _m("New slice"));
+        $title_name  = safe($slice_id ? AA_Slice::getModuleName($slice_id) : _m("New slice"));
         $title_out   = $title_img . $title_title . (($title_title AND $title_name) ? ' - ' : '') . $title_name;
         $prop_logout = $profile->getProperty('ui_manager', 'top_logout');
 

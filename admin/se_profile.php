@@ -49,7 +49,7 @@ try {
     $html       = InputVars::boolGET('html');
 
     $cancel = InputVars::boolPOST('cancel');
-    $err = InputVars::arrayGETPOST('err');
+    
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {}
 

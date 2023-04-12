@@ -99,7 +99,7 @@ try {
     $usr1_flt = InputVars::stringPOST('usr1_flt'); // empty
     $grp1_flt = InputVars::stringPOST('grp1_flt'); // empty
     $cancel = InputVars::boolPOST('cancel');
-    $err = InputVars::arrayGETPOST('err');
+    
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {}
 
@@ -182,7 +182,7 @@ if ($add_submit OR ($submit_action == "update_submit")) {
 
     if (!count($err) ) {
         $Msg = MsgOk( $add_submit ? _m("User successfully added to permission system") : _m("User data modified"));
-        go_url( get_url(StateUrl($_SERVER['PHP_SELF']), 'usr_edit=1&selected_user='. urlencode($selected_user)), $Msg);
+        go_url(get_admin_url('', ['usr_edit'=>1, 'selected_user'=>$selected_user, 'Msg'=>$Msg])); // @todo Mssg
     }
 }
 
@@ -374,21 +374,21 @@ if ($usr_new or $add_submit) {
     $form_buttons = [
         "add_submit"=> [
             "value"=>_m("Add"),
-                                              "type"=>"submit",
-                                              "accesskey"=>"S"
+            "type"=>"submit",
+            "accesskey"=>"S"
         ],
-                           "usr_new"=> ["value"=>"1"]
+        "usr_new"=> ["value"=>"1"]
     ];
 } else {
     // buttons for update user
     $form_buttons = [
         "submit_button"=> [
             "value"=>_m("Update"),
-                                                 "type"=>"button",
-                                                 "add"=>'onclick="UpdateUser(\'update_submit\')"',
-                                                 "accesskey"=>"S"
+            "type"=>"button",
+            "add"=>'onclick="UpdateUser(\'update_submit\')"',
+            "accesskey"=>"S"
         ],
-                          "usr_edit"=> ["value"=>"1"]
+        "usr_edit"=> ["value"=>"1"]
     ];
 }
 

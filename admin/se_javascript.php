@@ -36,7 +36,7 @@ require_once __DIR__ . "/../include/varset.php";
 try {
     $update = InputVars::boolPOST('update');
     $cancel = InputVars::boolPOST('cancel');
-    $err = InputVars::arrayGETPOST('err');
+    
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {}
 

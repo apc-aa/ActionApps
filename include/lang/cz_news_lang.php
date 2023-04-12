@@ -839,7 +839,7 @@ $_m["Fields update successful"]
 // admin/se_inputform.php, row 290, 323
 // admin/se_fields.php, row 210, 226
 $_m["Admin - configure Fields"]
-    = "Spr�va web�ku - Nastaven� pol�";
+    = "Spr�va web�ku - Nastaven� políček";
 
 // admin/se_inputform.php, row 296
 $_m["You selected slice and not constant group. It is impossible to create slice from here."]
@@ -1402,7 +1402,7 @@ $_m["Rule"]
 // admin/anonym_wizard.php, row 208
 // admin/se_fieldid.php, row 305
 $_m["Field"]
-    = "Polo�ka";
+    = "Políčko";
 
 // admin/se_profile.php, row 162
 // admin/search_replace.php, row 262, 335, 419, 570
@@ -3186,7 +3186,7 @@ $_m["Optimalizations"]
     = "";
 
 // admin/se_mapping2.php, row 112
-$_m["Fields' mapping update succesful"]
+$_m["Fields' mapping update successful"]
     = "Nastaven� mapov�n� pol� �sp�n� zm�n�no";
 
 // admin/se_rssfeeds.php, row 113, 165, 172

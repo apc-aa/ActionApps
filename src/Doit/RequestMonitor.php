@@ -93,7 +93,6 @@ class RequestMonitor
                 $detail  .= "<br><small><em>".safe(join('|',$def['vals']))."$sum</em></small>";
             }
             $code .= '<br>  &nbsp;   &nbsp;$cancel = InputVars::boolPOST(\'cancel\');';
-            $code .= '<br>  &nbsp;   &nbsp;$err = InputVars::arrayGETPOST(\'err\');';
             $code .= '<br>  &nbsp;   &nbsp;$Msg = InputVars::stringGETPOST(\'Msg\');';
             $ret .= "<h3 style=\"background-color:#FCE19A\">$page **************************************</h3>try { $code<br>} catch (Exception \$e) {}<br><hr><br><div style=\"background-color:#ccc\">$detail</div>";
         }

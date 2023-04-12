@@ -41,16 +41,6 @@ require_once __DIR__ . '/logs.php';
 require_once __DIR__ . '/go_url.php';
 require_once __DIR__ . '/formutil.php';
 
-/** identity function - used for chaining with constructor
- *  Usage: (new AA_Some_Object())->set(something);
- * @param object $object
- * @return object
- * @deprecated no longer needed - in PHP 5.4 we have (new My_Object())->method() call
- */
-//function with(object $object): object {
-//    return $object;
-//}
-
 /** a_href function
  *  Get <a href> tag
  * @param        $url
@@ -58,8 +48,11 @@ require_once __DIR__ . '/formutil.php';
  * @param array  $attr ['onclick' => "return confirm('Are you sure?')"]
  * @return string
  */
-function a_href($url, $label, array $attr=[]): string {
+function a_href($url, $label='', array $attr=[]): string {
     $add = htmlattr($attr);
+    if (!strlen($label)) {
+        $label = $url;
+    }
     return '<a href="'.safe($url) ."\" $add>$label</a>";
 }
 

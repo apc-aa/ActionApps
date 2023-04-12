@@ -921,11 +921,7 @@ class AA_Stringexpand_Htmltoggle extends AA_Stringexpand_Nevercache {
             $switch_state_2 = '[-]';
         }
 
-        $plusimg  = '<span class="aa-img-plus">'.  GetAAImage('plus.gif',  _m('show'), 15, 9) .'</span>';
-        $minusimg = '<span class="aa-img-minus">'. GetAAImage('minus.gif', _m('show'), 15, 9) .'</span>';
-
-        // we can't use apostrophes and quotes in href="javacript:..." attribute
-        $switches    = str_replace(['[+]','[-]'], [$plusimg, $minusimg], [$switch_state_1, $switch_state_2]);
+        $switches = AA_Stringexpand::replaceIcons([$switch_state_1, $switch_state_2]);  // replace icons [+] [-]
         $switches_js = str_replace(["'", '"', "\n", "\r"], ["\'", "\'", ' ', ' '], $switches);
 
         $uniqid = gensalt(6); // gensalt is shorter than mt_rand(100000000,999999999);  // mt_rand is quicker than uniqid()
@@ -987,11 +983,7 @@ class AA_Stringexpand_Htmltogglecss extends AA_Stringexpand_Nevercache {
         $class    = ($is_on == 1) ? ' is-on' : '';
         $selected = ($is_on == 1) ? 1 : 0;
 
-        $plusimg  = '<span class="aa-img-plus">'.  GetAAImage('plus.gif',  _m('show'), 15, 9) .'</span>';
-        $minusimg = '<span class="aa-img-minus">'. GetAAImage('minus.gif', _m('show'), 15, 9) .'</span>';
-
-        // we can't use apostrophes and quotes in href="javacript:..." attribute
-        $switches    = str_replace(['[+]','[-]'], [$plusimg, $minusimg], [$switch_state_1, $switch_state_2]);
+        $switches = AA_Stringexpand::replaceIcons([$switch_state_1, $switch_state_2]);  // replace icons [+] [-]
         $switches_js = str_replace(["'", '"', "\n", "\r"], ["\'", "\'", ' ', ' '], $switches);
 
         $uniqid = gensalt(6);  // mt_rand is quicker than uniqid()
@@ -1044,11 +1036,7 @@ class AA_Stringexpand_Htmlajaxtogglecss extends AA_Stringexpand_Nevercache {
             $switch_state_2 = '[-]';
         }
 
-        $plusimg  = '<span class="aa-img-plus">'.  GetAAImage('plus.gif',  _m('show'), 15, 9) .'</span>';
-        $minusimg = '<span class="aa-img-minus">'. GetAAImage('minus.gif', _m('show'), 15, 9) .'</span>';
-
-        // we can't use apostrophes and quotes in href="javacript:..." attribute
-        $switches    = str_replace(['[+]','[-]'], [$plusimg, $minusimg], [$switch_state_1, $switch_state_2]);
+        $switches = AA_Stringexpand::replaceIcons([$switch_state_1, $switch_state_2]);  // replace icons [+] [-]
         $switches_js = str_replace(["'", '"', "\n", "\r"], ["\'", "\'", ' ', ' '], $switches);
 
         // automaticaly add conversion to utf-8 for AA view.php calls
@@ -1266,11 +1254,7 @@ class AA_Stringexpand_Expandable extends AA_Stringexpand_Nevercachenotrim {
             }
         }
 
-        $plusimg  = '<span class="aa-img-plus">'.  GetAAImage('plus.gif',  _m('show'), 15, 9) .'</span>';
-        $minusimg = '<span class="aa-img-minus">'. GetAAImage('minus.gif', _m('show'), 15, 9) .'</span>';
-
-        // we can't use apostrophes and quotes in href="javacript:..." attribute
-        $switches    = str_replace(['[+]','[-]'], [$plusimg, $minusimg], [$switch_state_1, $switch_state_2]);
+        $switches = AA_Stringexpand::replaceIcons([$switch_state_1, $switch_state_2]);  // replace icons [+] [-]
         $switches_js = str_replace(["'", '"', "\n", "\r"], ["\'", "\'", ' ', ' '], $switches);
 
         $uniqid = gensalt(6); // gensalt is shorter than mt_rand(100000000,999999999);  // mt_rand is quicker than uniqid()
@@ -1319,11 +1303,7 @@ class AA_Stringexpand_Htmlajaxtoggle extends AA_Stringexpand {
             $switch_state_2 = '[-]';
         }
 
-        $plusimg  = '<span class="aa-img-plus">'.  GetAAImage('plus.gif',  _m('show'), 15, 9) .'</span>';
-        $minusimg = '<span class="aa-img-minus">'. GetAAImage('minus.gif', _m('show'), 15, 9) .'</span>';
-
-        // we can't use apostrophes and quotes in href="javacript:..." attribute
-        $switches    = str_replace(['[+]','[-]'], [$plusimg, $minusimg], [$switch_state_1, $switch_state_2]);
+        $switches = AA_Stringexpand::replaceIcons([$switch_state_1, $switch_state_2]);  // replace icons [+] [-]
         $switches_js = str_replace(["'", '"', "\n", "\r"], ["\'", "\'", ' ', ' '], $switches);
 
         // automatically add conversion to utf-8 for AA view.php calls
@@ -1359,7 +1339,9 @@ class AA_Stringexpand_Lazy extends AA_Stringexpand_Nevercache { // do not cache 
         if (!strlen($url)) {
             return '';
         }
-        $placeholder = $placeholder ?: '<span class="aa-defaultloader">'.  GetAAImage('loader.gif',  _m('loading...'), 16, 16) .'</span>';
+        $placeholder = $placeholder ?: '[*]';
+        [$placeholder] = AA_Stringexpand::replaceIcons([$placeholder],['*']);  // replace icon [*]
+
         $uniqid = gensalt(8); // gensalt is shorter than mt_rand(100000000,999999999);  // mt_rand is quicker than uniqid()
         $ret    = "<div class=aa-lazydiv id=lazy_$uniqid data-aa-url=\"$url\">$placeholder</div>\n";
 
@@ -2359,7 +2341,7 @@ class AA_Stringexpand_Xmlformat extends AA_Stringexpand_Nevercache {
  *         {xmlfield:name:headline........}               -> <name lang="cs" format="plain">Jan</name><name lang="en" format="plain">John</name>  - for translated field and displayed formatters plain|html
  *         {xmlfield:category:category........}           -> <category>white</category> <category>black</category>
  *         {xmlfield:categories value:category........}   -> <categories><value>white</value> <value>black</value><categories>
- *         {xmlfield:name:category........}   -> <categories><value>white</value> <value>black</value><categories>
+ *         {xmlfield:name:category........}               -> <categories><value>white</value> <value>black</value><categories>
  */
 class AA_Stringexpand_Xmlfield extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
@@ -4070,7 +4052,7 @@ class AA_Stringexpand_Options extends AA_Stringexpand {
             $constants = GetConstants(trim($group));
             if (is_array($constants)) {
                 foreach ($constants as $k => $v) {
-                    $sel  = ((string)$k == $selected) ? ' selected' : '';
+                    $sel  = in_array((string)$k,$selected) ? ' selected' : '';
                     $ret .= "\n  <option value=\"".safe($k)."\"$sel>".safe($v)."</option>";
                 }
             }
@@ -6987,6 +6969,21 @@ class AA_Stringexpand {
         return $text;
     }
 
+    /** replace icons
+     * @param array $texts
+     * @param array $icons - ['+', '-', '*'] - default to ['+', '-']
+     * @return array replaced texts
+     */
+    protected static function replaceIcons(array $texts, array $icons=['+', '-']): array {
+        $search = [];
+        $replace = [];
+        if (in_array('+', $icons)) { $search[]  = '[+]'; $replace[] = '<span class="aa-img-plus">'.  GetAAImage('plus.gif',  _m('show'), 15, 9) .'</span>';   }
+        if (in_array('-', $icons)) { $search[]  = '[-]'; $replace[] = '<span class="aa-img-minus">'.  GetAAImage('minus.gif',  _m('hide'), 15, 9) .'</span>'; }
+        if (in_array('*', $icons)) { $search[]  = '[*]'; $replace[] = '<span class="aa-defaultloader">'.  GetAAImage('loader.gif',  _m('loading'), 16, 16) .'</span>'; }
+
+        return str_replace($search, $replace, $texts);
+    }
+
     /** get all related slices (provided or counted from current item, site od slice)
      * @param string $slices_str  '' | 'all' | '<slice_id>-<slice_id>-...'
      * @return string[]
@@ -7613,7 +7610,7 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
 
         $ret =  "<picture class=aa-picture>";
         $ret .= "\n  <source srcset=\"$webp_src\" type=image/webp>";
-        $ret .= "\n  <img src=\"$src\" width=$w height=$h $add loading=lazy $alt_title>";
+        $ret .= "\n  <img src=\"$src\" width=$w height=$h $add loading=lazy $alt_title>";  // lazy is enough on img for <picture> element
         $ret .= "\n</picture>";
         
         return $ret;

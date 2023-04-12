@@ -75,7 +75,7 @@ try {
     $finditem_edit_op = InputVars::stringGET('finditem_edit_op'); // alpha
     // array ( 'Jeď!' => 1, )
     $go_finditem_edit = InputVars::boolGET('go_finditem_edit'); // convert submit to bool
-    $err = InputVars::arrayGETPOST('err');
+    
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {}
 

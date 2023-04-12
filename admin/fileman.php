@@ -66,7 +66,7 @@ try {
     // array ( 'd' => 1, 'a' => 3, )-array ( 'a' => 14, )
     $sort_order = InputVars::stringGETPOST('sort_order'); // alpha-alpha
     $cancel = InputVars::boolPOST('cancel');
-    $err = InputVars::arrayGETPOST('err');
+    
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {}
 

@@ -904,6 +904,7 @@ class Manager extends AA_Storable {
      */
     function getItems($zids): string {
         $ret  = '<form name="itemsform" id="itemsform" method="post" action="'. StateUrl() .'">';
+        $ret .= '<div class=aa-manager-tab>';
         $ret .= '<input type="submit" disabled style="display: none" aria-hidden="true"> '; // prevents form to be submitted by pressing Enter on any live text field
 
         $itemview = $this->managed->getItemview($zids, $this->module_id, $this->scroller->getListlen());
@@ -962,7 +963,7 @@ class Manager extends AA_Storable {
             }
 
             if ( $options ) {
-                $ret .= "<a href=\"javascript:SelectVis()\"><img src=\"".AA_INSTAL_PATH."images/arrow_ltr.gif\"></a>
+                $ret .= "<a href=\"javascript:SelectVis()\"><img src=\"".AA_INSTAL_PATH."images/arrow_ltr.gif\" alt='^'></a>
                     <a href=\"javascript:SelectVis()\" class=\"aa-button\">". _m('Select all')."</a>&nbsp;&nbsp;&nbsp;&nbsp;";
 
                   // click "go" does not use markedform, it uses itemsfrom above...
@@ -992,7 +993,7 @@ class Manager extends AA_Storable {
         }
         $ret .= '<div class="aa-ui-pager">';
         $ret .=  $this->scroller->getNavbar();
-        $ret .= "\n</div></form><br>";
+        $ret .= "\n</div></div></form><br>";
         return $ret;
     }
 

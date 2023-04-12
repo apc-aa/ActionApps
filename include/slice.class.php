@@ -47,6 +47,8 @@ class AA_Module {
 
     /** array of already constructed modules */
     protected static $_modules     = [];  // Array unpacked module id -> AA_Module object
+    /** @var array  mark as used for cache - in case we use the module, but do not need $module object itself - like in views  */
+    protected static $_used4cache   = [];
     protected static $_module_types= [];  // Array unpacked module id -> type
 
     protected $module_id;
@@ -276,6 +278,13 @@ class AA_Module {
         return '';
     }
 
+    /**
+     * @param array $used4cache
+     */
+    public static function mark4cache(array $used4cache): void {
+        self::$_used4cache = array_merge(self::$_used4cache, $used4cache);
+    }
+
     /** get module ID   */
     function getId() {
         return $this->module_id; // Return a 32 character id
@@ -328,7 +337,7 @@ class AA_Module {
     }
 
     static function getUsedModules(): array {
-        return array_keys(AA_Module::$_modules);
+        return array_unique(array_merge(self::$_used4cache, array_keys(AA_Module::$_modules)));
     }
 
     /** @return array id => name of current user's modules
@@ -878,7 +887,7 @@ class AA_Module_Site extends AA_Module {
             ['site_id', $this->module_id, 'l'],
             ['spot_id', $spot_id, 'i']
         ]);
-        FrmTabCaption();
+        FrmTabCaption('Spot Settings','',true);
         FrmStaticText(_m('Spot ID'), "[$spot_id] - " . _m('You can include this spot code in another spot by using {sitespot:%1}', [$spot_id]));
 
         $tree->printVariables($spot_id, $tree->get('variables',$spot_id));
@@ -896,7 +905,7 @@ class AA_Module_Site extends AA_Module {
 
         echo "<br><form method='post' name=fs action=\"". $_SERVER['PHP_SELF'] ."\">";
         sitetree::printHiddenRSpotId();
-        FrmTabCaption('',$form_buttons);
+        FrmTabCaption('Edit spot', '', true);
         FrmInputText('name', _m("Spot name"), $tree->get('name', $spot_id), 50, 50, true, false, false);
         FrmTextarea('content', '', $spot_data['content'], 50, 80, false, AA_View::getViewJumpLinks($spot_data['content']), "", true);
         FrmTabEnd($form_buttons);

@@ -131,12 +131,10 @@ class FldWidget extends Widget
         $ret = "<input $attr_string name=\"$input_name\" id=\"$input_id\" value=\"$input_value\" $required $widget_add $autofocus>$link" . Widget::_saveIcon($base_id, $type == 'live'); //, 'right', $link ? 16 : 0);
         if ($lang = Langs::getLangNum2Name($i)) {
             $langcode  = Langs::getLangName2Code($lang);
-            $translate =  ($langcode == $base['langcode']) ? '' :  "<span class=\"aa-langtrans-tbtn\" onclick=\"AA_Translate('$input_id', document.getElementById('". $base['id'] ."').value, '".$base['langcode']."', '$langcode');\">". _m("translate from"). ' '. Langs::getLangCode2Name($base['langcode']) . "</span>";
-            $ret = "<div class=\"aa-langtrans $lang\"><strong class=\"aa-langtrans-label\">$lang</strong>$ret $translate</div>";
-        } else {
-            $ret = "<div>$ret</div>";
+            $translate =  ($langcode == $base['langcode']) ? '' :  "<span class=\"btn aa-langtrans-tbtn\" onclick=\"AA_Translate('$input_id', document.getElementById('". $base['id'] ."').value, '".$base['langcode']."', '$langcode');\">". _m("translate from"). ' '. Langs::getLangCode2Name($base['langcode']) . "</span>";
+            $ret = "<div class=\"aa-langtrans aa-lang-$lang\"><strong class=\"aa-langtrans-label\">$lang</strong>$ret $translate</div>";
         }
-        return $ret;
+        return "<div class='aa-one-val'>$ret</div>";
     }
 
     /** @inheritDoc */

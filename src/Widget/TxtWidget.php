@@ -68,8 +68,8 @@ class TxtWidget extends Widget
             // use specific GetWidgetValue for CodeMirror (we need some non-breaking-space replacement there)
             $widget .= Widget::getWidgetIdentificationCode($base_name, 'cod');
         }
+        $widget .= $widget_add2;
 
-        $delim = '';
         $value = $content->getAaValue($aa_property->getId());
         $def_rows = $this->getProperty('rows', 4);
 
@@ -96,7 +96,7 @@ class TxtWidget extends Widget
                 $base['id']       = FormArray::formName2Id($input_name);
                 $base['langcode'] = Langs::getLangName2Code(Langs::getLangNum2Name($i));
             }
-            $widget .= $this->getOneInput($input_name, $i, $val, $attrs, '', $widget_add2, $required, !$aa_property->getContentTypeSwitches() OR ($type == 'live'), $base);
+            $widget .= $this->getOneInput($input_name, $i, $val, $attrs, $required, !$aa_property->getContentTypeSwitches() OR ($type == 'live'), $base);
             $required = ''; // only one is required
         }
 
@@ -118,7 +118,7 @@ class TxtWidget extends Widget
      * @param array $base
      * @return string
      */
-    protected function getOneInput($input_name, $i, $val, $attrs, $widget_add, $widget_add2, $required, $no_htmleditor_link, $base)
+    protected function getOneInput($input_name, $i, $val, $attrs, $required, $no_htmleditor_link, $base)
     {
 
         $showhtmlarea   = strpos(get_class($this), 'AA\Widget\EdtWidget') !== false;
@@ -151,7 +151,7 @@ class TxtWidget extends Widget
             }
 
         } elseif (!$no_htmleditor_link) {
-            $htmlareaedit = "<a href=\"javascript:;\" class=\"aa-arealink btn\" style=\"display:none\" onclick=\"this.parentNode.parentNode.querySelector('input[value=\'1\']').checked=true;this.parentNode.parentNode.querySelector('.aa-formatters').style.display='none'; this.style.display='none';CKEDITOR.replace('$input_id');\">" . _m("Edit in HTMLArea") . "</a>"; // used for HTMLArea
+            $htmlareaedit = "<a href=\"javascript:;\" class=\"btn aa-arealink\" style=\"display:none\" onclick=\"this.parentNode.parentNode.querySelector('input[value=\'1\']').checked=true;this.parentNode.parentNode.querySelector('.aa-formatters').style.display='none'; this.style.display='none';CKEDITOR.replace('$input_id');\">" . _m("Edit in HTMLArea") . "</a>"; // used for HTMLArea
             // conversions menu
             //$convertor   = $convert ? $this->get_convertors() : false;
             //if ( $convertor ) {
@@ -161,7 +161,7 @@ class TxtWidget extends Widget
 
         $attr_string = htmlattr($attrs);
 
-        $ret = "$htmlareaedit<textarea id=\"$input_id\" name=\"$input_name\" $attr_string $required $widget_add $areaclass>$input_value</textarea>$widget_add2";
+        $ret = "<textarea id=\"$input_id\" name=\"$input_name\" $attr_string $required $areaclass>$input_value</textarea>";
         if ($lang = Langs::getLangNum2Name($i)) {
             $langcode  = Langs::getLangName2Code($lang);
             $translate = '';
@@ -169,13 +169,11 @@ class TxtWidget extends Widget
             // the AA_Translate do not work on CKEditor nor CodeMirror, yet
             // @todo make AA_Translate work on CKEditor and CodeMirror
             if (!$showhtmlarea AND !$showcodeeditor AND ($langcode != $base['langcode'])) {
-                $translate =  "<span class=\"aa-langtrans-tbtn\" onclick=\"AA_Translate('$input_id', document.getElementById('" . $base['id'] . "').value, '" . $base['langcode'] . "', '$langcode');\">" . _m("translate from") . ' ' . Langs::getLangCode2Name($base['langcode']) . "</span>";
+                $translate =  "<span class=\"btn aa-langtrans-tbtn\" onclick=\"AA_Translate('$input_id', document.getElementById('" . $base['id'] . "').value, '" . $base['langcode'] . "', '$langcode');\">" . _m("translate from") . ' ' . Langs::getLangCode2Name($base['langcode']) . "</span>";
             }
-            $ret = "<div class=\"aa-langtrans $lang\"><strong class=\"aa-langtrans-label\">$lang</strong>$translate $ret</div>";
-        } else {
-            $ret = "<div>$ret</div>";
+            $ret = "<div class=\"aa-langtrans aa-lang-$lang\"><strong class=\"aa-langtrans-label\">$lang</strong>$ret$translate</div>";
         }
-        return $ret;
+        return "<div class='aa-one-val'>$htmlareaedit$ret</div>";
     }
 
     /** @inheritDoc */

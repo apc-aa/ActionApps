@@ -333,7 +333,7 @@ class AA {
     public  static $encoding;            // inner module's/slice's encoding (utf-8, ...)
     public  static $lang;                // two letters small caps - cz / es / en / ...
     public  static $langnum;             // array of prefered language numbers - > 10000000
-    public  static $headers = [];   // [type=>xml|html,status=>404,encoding=>utf-8|windows-1250|...] - sent headers
+    public  static $headers = [];        // [type=>xml|html,status=>404,encoding=>utf-8|windows-1250|...] - sent headers
     public  static $module_id;           // for admin pages - replace of older $slice_id
     /** @var  AA_Stringexpander $stringexpander */
     private static $stringexpander = null;

@@ -38,7 +38,6 @@ require_once __DIR__ . "/../include/init_page.php";
 
 try {
     $feed_id = InputVars::intGET('feed_id');
-    $err     = InputVars::arrayGETPOST('err');
     $Msg     = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {}
 

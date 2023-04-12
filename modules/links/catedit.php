@@ -21,7 +21,7 @@ try {
     $cid = InputVars::intGET('cid');
     $updated = InputVars::boolGETPOST('updated');
     $cancel = InputVars::boolGETPOST('cancel');
-    $err = InputVars::arrayGETPOST('err');
+    
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {}
 

@@ -53,7 +53,7 @@ try {
     // array ( '' => 12, 'sdfghjk' => 2, 'sdfghjk🐖' => 3, 'ěščřž�…' => 1, '🐖' => 1, )
     $server_url = InputVars::stringPOST('server_url'); // empty
     $cancel = InputVars::boolPOST('cancel');
-    $err = InputVars::arrayGETPOST('err');
+    
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {}
 

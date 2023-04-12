@@ -68,7 +68,7 @@ class Importer implements \AA\Later\LaterInterface {
         if ($err) {
             $ret .= ", error items: $err";
         }
-        return $ret . (($p = $this->saver->report('plain')) ? ", $p" : '');
+        return $ret . (($p = $this->saver->report(1, 'plain')) ? ", $p" : '');
     }
 
     /** used in Report to identify the Importer in the log

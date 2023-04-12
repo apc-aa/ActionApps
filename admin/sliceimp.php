@@ -55,7 +55,7 @@ try {
     $dry_run          = InputVars::boolPOST('dry_run');
     // array ( '' => 4, )
     $cancel = InputVars::stringGETPOST('cancel');
-    $err = InputVars::arrayGETPOST('err');
+    
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {}
 
@@ -98,7 +98,7 @@ function proove_ID($slice) {
 
     $slice_id = q_pack_id($slice["id"]);
     //echo "$slice_id";
-    $SQL = "SELECT id FROM slice WHERE id=\"$slice_id\"";
+    $SQL = "SELECT `id` FROM `slice` WHERE `id`=\"$slice_id\"";
 
     global $db;
     $db->query($SQL);

@@ -64,7 +64,7 @@ try {
     // array ( '' => 9, )
     $url_description = InputVars::stringPOST('url_description'); // empty
     $cancel = InputVars::boolPOST('cancel');
-    $err = InputVars::arrayGETPOST('err');
+    
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {}
 

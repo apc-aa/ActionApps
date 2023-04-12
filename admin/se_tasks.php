@@ -38,7 +38,7 @@ try {
     // array ( 'Přihlásit' => 2, )
     // $submit = InputVars::stringSlashedPOST('submit');
     // $cancel = InputVars::boolPOST('cancel');
-    $err = InputVars::arrayGETPOST('err');
+    
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {}
 

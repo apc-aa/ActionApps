@@ -86,7 +86,7 @@ function PrintModulePermModificator($selected_user) {
             $i++;
         } else {               // no permission to this module
             // this module should be listed in 'Add perm' listbox
-            $mod_2B_add .= "<option value=\"$mid\">$name</option>";
+            $mod_2B_add .= "<option value=\"$mid\">".safe($name)."</option>";
             $mod_types .= GetModuleLetter($type);  // string for javascript
         }                       // to know, what type of module the $mod_2B_add is
     }
@@ -135,7 +135,7 @@ function PrintModulePermModificator($selected_user) {
 function GetModulePermRow($mid, $type, $name, $perm, $odd=false) {
     global $MODULES;
     $ret = "<tr>
-        <td>". $MODULES[$type]['name'] .":&nbsp;". a_href(AA_Module::getModuleUrl($mid), $name). "<br>&nbsp;&nbsp;&nbsp;&nbsp;($mid)</td>
+        <td>". $MODULES[$type]['name'] .":&nbsp;". a_href(AA_Module::getModuleUrl($mid), safe($name)). "<br>&nbsp;&nbsp;&nbsp;&nbsp;($mid)</td>
         <td>";
     if ( isset(AA_Perm::PERMS_ROLES_MODULES[$type]) AND is_array(AA_Perm::PERMS_ROLES_MODULES[$type]) ) {
         foreach (AA_Perm::PERMS_ROLES_MODULES[$type] as $role) {
@@ -341,7 +341,7 @@ function NewUserData(&$err, $uid, &$userrecord, $user_super, $um_uedit_no_go_url
         }
         $Msg = MsgOk(_m("User successfully added to permission system"));
         if (!$um_uedit_no_go_url) {
-            go_url( get_url(StateUrl($_SERVER['PHP_SELF']), 'UsrSrch=1&usr='. urlencode($uid)), $Msg);
+            go_url( get_url(StateUrl($_SERVER['PHP_SELF']), 'UsrSrch=1&usr='. urlencode($uid)), $Msg);  // @todo Mssg
         }
     }
 }

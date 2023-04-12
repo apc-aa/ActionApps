@@ -76,7 +76,7 @@ try {
     $preview = InputVars::boolPOST('preview');
     $upload = InputVars::boolPOST('upload');
     $cancel = InputVars::boolPOST('cancel');
-    $err = InputVars::arrayGETPOST('err');
+    
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {}
 

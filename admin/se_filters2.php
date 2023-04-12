@@ -56,7 +56,7 @@ try {
     // array ( 'dcf6f197e02…' => 2, '4429a8e44bb…' => 5, '6c81ec28dd4…' => 1, )
     $import_id = InputVars::idGET('import_id', true);
     $cancel = InputVars::boolPOST('cancel');
-    $err = InputVars::arrayGETPOST('err');
+    
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {}
 

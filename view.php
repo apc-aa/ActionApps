@@ -127,7 +127,7 @@ if ($cacheentry = AA::Pagecache()->getPage($cache_key, $nocache & 1)) {   // noc
     AA::$debug&2 && AA::$dbg->log("view not found in cache");
     $showview     = new AA_Showview($view_param);
     $page_content = $showview->getViewOutput();
-    $cache_sids   = $showview->lastUsedSliceIds();
+    $cache_sids   = AA_Module::getUsedModules();
     $cacheentry = new Cacheentry($page_content, AA::getHeaders());
     $cacheentry->processPage();
 

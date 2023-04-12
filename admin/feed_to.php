@@ -32,7 +32,7 @@ require_once __DIR__ . "/../include/formutil.php";
 
 
 try {
-    $err = InputVars::arrayGETPOST('err');
+    
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {}
 

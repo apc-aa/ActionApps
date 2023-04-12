@@ -48,7 +48,7 @@ require_once __DIR__ . "/../include/item.php";
 require_once __DIR__."/../central/include/actionapps.class.php";
 
 try {
-    $err = InputVars::arrayGETPOST('err');
+    
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {}
 

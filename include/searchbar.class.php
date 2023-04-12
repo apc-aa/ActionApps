@@ -566,14 +566,16 @@ class AA_Searchbar extends AA_Storable {
      *
      */
     function get_bar_bookmarks(): string {
-        $ret =  '<div class="aa-formgroup-inline">';
-        $ret .=  '<div class="aa-sb-bkmrks">'. $this->bookmarks->getSelectbox();
-        $ret .=   '<button type=button onclick="SearchBarAction(\''.$this->form_name ."', 'bookmarkgo', false, false)\">". _m('View') .'</button>';
+        $ret  = '<div class=aa-ui-searches>';
+        $ret .=  '<div class="aa-formgroup-inline">';
+        $ret .=   '<span class=aa-form-label>'._m('Stored searches').'</span>';
+        $ret .=   '<div class="aa-sb-bkmrks">'. $this->bookmarks->getSelectbox() .'</div>';
         $ret .=  '</div>';
         $ret .=  '<div class="aa-sb-bkmrks-btns">';
-        $ret .=   '<button type="button" class="btn-secondary" onclick="SearchBarActionConfirm(\''.$this->form_name ."', 'bookmarkupdate', '". _m("Are you sure to refine current search?") ."')\">". _m('Update') ."</button>";
-        $ret .=   '<button type="button" class="btn-secondary" onclick="SearchBarAction(\''.$this->form_name ."', 'bookmarkrename', '". _m("Enter new name") ."', false)\">". _m('Rename') ."</button>";
-        $ret .=   '<button type="button" class="btn-secondary" onclick="SearchBarActionConfirm(\''.$this->form_name ."', 'bookmarkdelete', '"._m("Are you sure to delete selected search?")."')\">". _m('Delete') ."</button>";
+        $ret .=   '<button type=button onclick="SearchBarAction(\''.$this->form_name ."', 'bookmarkgo', false, false)\">". _m('View') .'</button>';
+        $ret .=   '<button type=button class="btn-secondary" onclick="SearchBarActionConfirm(\''.$this->form_name ."', 'bookmarkupdate', '". _m("Are you sure to refine current search?") ."')\">". _m('Update') ."</button>";
+        $ret .=   '<button type=button class="btn-secondary" onclick="SearchBarAction(\''.$this->form_name ."', 'bookmarkrename', '". _m("Enter new name") ."', false)\">". _m('Rename') ."</button>";
+        $ret .=   '<button type=button class="btn-secondary" onclick="SearchBarActionConfirm(\''.$this->form_name ."', 'bookmarkdelete', '"._m("Are you sure to delete selected search?")."')\">". _m('Delete') ."</button>";
         $ret .=  '</div>';
         $ret .= '</div>';
         return $ret;
@@ -587,7 +589,8 @@ class AA_Searchbar extends AA_Storable {
             return '';
         }
 
-        $ret = '<div class="aa-ui-searchbar"><input type="hidden" name="srchbr_akce" value="1">';
+        $ret  = '<div class="aa-ui-searchbar flex"><input type="hidden" name="srchbr_akce" value="1">';
+        $ret .= '<div>';
 
         // print searchbars
         $count_sb = 0;
@@ -610,10 +613,10 @@ class AA_Searchbar extends AA_Storable {
         if ($this->show & (MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS)) {
             $ret .= $this->get_bar_actions();
         }
+        $ret .= '</div>';
 
         if ($this->show & MGR_SB_BOOKMARKS) {
             if ( $this->bookmarks->count() > 0 ) {
-                $ret  .= "<strong class='aa-form-label'>"._m('Stored searches').'</strong>';
                 $ret .= $this->get_bar_bookmarks();
             }
         }

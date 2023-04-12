@@ -86,7 +86,7 @@ try {
     $view_view = InputVars::intPOST('view_view'); // -
 
     $cancel = InputVars::boolPOST('cancel');
-    $err = InputVars::arrayGETPOST('err');
+    
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {}
 

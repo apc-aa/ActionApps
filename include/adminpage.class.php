@@ -207,7 +207,7 @@ class AA_Adminpageutil {
             echo "<div>" . $this->subtitle . "</div>";
         }
 
-        echo $Msg;
+        echo "<div class='mb-3 mt-3'>$Msg</div>";
 
         // PrintArray($r_err);
         // PrintArray($r_msg);
@@ -229,11 +229,10 @@ class AA_Adminpageutil {
         }
     }
 
-
     public function printHelpbox() {
         foreach ($this->helpboxes as $helpbox) {
             $tab = GetHtmlTable( [[$helpbox['html']]], 'td', $helpbox['name'], true );  // classic aa table
-            $html = ($helpbox['packed']) ? "<details><summary>".$helpbox['name']."</summary>$tab</details>" : $tab;
+            $html = ($helpbox['packed']) ? "<details class='aa-helpbox'><summary>".$helpbox['name']."</summary>$tab</details>" : $tab;
             if ($html) {
                 // not necessary to unalias - help text for aliases was executed
                 // $html = AA::Stringexpander()->unalias($html);
@@ -261,7 +260,7 @@ class AA_Adminpageutil {
     /** MsgPageMenu function
      *  Displays page with message and link to $url
      * @param $url - where to go if user clicks on Back link on this message page
-     * @param $msg - displayed message
+     * @param $msg string|array - displayed message or array of messages
      * @param $mode - items/admin/standalone for surrounding of message
      * @param $menu
      */
@@ -273,11 +272,15 @@ class AA_Adminpageutil {
             pageOpen();
         }
 
+        if (is_array($msg)) {
+            $msg = join(' ', $msg); // probably error messages in divs
+        }
+
         $apage = new AA_Adminpageutil($mode == 'admin' ? 'aaadmin' : 'sliceadmin', $menu);
         $apage->setForm();
-        $apage->printHead($err, $msg);
+        $apage->printHead([], $msg);
 
-        echo "<a href=\"$url\">" . _m("Back") . "</a>";
+        echo "<div><a href=\"$url\" class='btn'>" . _m("Back") . "</a></div>";
         $apage->printFoot();
 
         exit;

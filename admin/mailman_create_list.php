@@ -55,7 +55,7 @@ try {
     $create_list = InputVars::stringPOST('create_list');
     $list_name = InputVars::stringPOST('list_name'); // alpha
     $cancel = InputVars::boolPOST('cancel');
-    $err = InputVars::arrayGETPOST('err');
+    
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {}
 

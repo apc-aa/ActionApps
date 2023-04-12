@@ -43,7 +43,7 @@ require_once __DIR__ . "/../include/slicedit.php";
 try {
     $add = InputVars::boolPOST('add');   // ??? from where it could come?
     $cancel = InputVars::boolPOST('cancel');
-    $err = InputVars::arrayGETPOST('err');
+    
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {}
 

@@ -45,7 +45,7 @@ try {
     // array ( 'hejny' => 4, 'Hořící K…' => 4, '🦆' => 4, 'he' => 1, '' => 2, )
     $user_name = InputVars::stringSlashedPOST('user_name'); // empty
     $cancel = InputVars::boolPOST('cancel');
-    $err = InputVars::arrayGETPOST('err');
+    
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {}
 

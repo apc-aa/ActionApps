@@ -31,7 +31,7 @@ try {
     // array ( 'e294141961f…' => 1, )
     $del = InputVars::idGET('del', true);
     $cancel = InputVars::boolPOST('cancel');
-    $err = InputVars::arrayGETPOST('err');
+    
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {}
 

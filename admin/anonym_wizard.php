@@ -48,7 +48,7 @@ try {
     // array ( 'http://SHOW…' => 3, )
     $show_result = InputVars::stringPOST('show_result');
     $cancel = InputVars::boolPOST('cancel');
-    $err = InputVars::arrayGETPOST('err');
+    
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {}
 

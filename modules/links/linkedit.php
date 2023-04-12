@@ -34,7 +34,7 @@ try {
     $getOldV = InputVars::boolGETPOST('getOldV');
     $lid = InputVars::intGET('lid');
     $cancel = InputVars::boolGETPOST('cancel');
-    $err = InputVars::arrayGETPOST('err');
+    
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {}
 

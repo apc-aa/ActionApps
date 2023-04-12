@@ -21,7 +21,7 @@ try {
     /** @var string $url url to check */
     $url = InputVars::stringGET('url', true);
     $cancel = InputVars::boolPOST('cancel');
-    $err = InputVars::arrayGETPOST('err');
+    
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {}
 

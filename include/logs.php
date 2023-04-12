@@ -54,8 +54,8 @@ AA_WARN
 
 class AA_Log {
 
-    static function warn($selector) {
-        AA_Log::write('AA_WARN', $selector, AA_Log::backtrack(2));
+    static function warn(array $params = []) {
+        AA_Log::write('AA_WARN', self::context(), array_merge($params, [AA_Log::backtrack(2)]));
     }
 
     /** AA_Log::write function - Write log entry
@@ -121,7 +121,6 @@ class AA_Log {
            // 'ITEM_NEW'
            // 'ITEM_UPD'
            // 'M_FLDI_VLD'
-           // AA_WARN
            // LOGIN
            // PWD_REHASH
         ];
@@ -137,7 +136,7 @@ class AA_Log {
     }
 
     static function context($selector='') {
-        return ParamImplode([$selector,str_replace(':','_',$_SERVER['REMOTE_ADDR']), ($_SERVER['HTTPS'] ? '' : 'http/'). "{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}"]);
+        return ParamImplode([AA::$module_id,$selector,str_replace(':','_',$_SERVER['REMOTE_ADDR']), ($_SERVER['HTTPS'] ? '' : 'http/'). "{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}"]);
     }
 
     /** getLastLogEvents function

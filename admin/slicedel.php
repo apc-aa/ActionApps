@@ -36,7 +36,7 @@ require_once __DIR__ . "/../include/formutil.php";
 try {
     $slices2show = InputVars::stringGET('slices2show'); // alpha
     $cancel = InputVars::boolPOST('cancel');
-    $err = InputVars::arrayGETPOST('err');
+    
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {}
 

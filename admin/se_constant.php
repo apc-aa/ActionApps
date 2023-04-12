@@ -67,7 +67,7 @@ try {
     // array ( )
     $value = InputVars::arrayPOST('value');
     $cancel = InputVars::boolPOST('cancel');
-    $err = InputVars::arrayGETPOST('err');
+    
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {}
 
@@ -358,7 +358,7 @@ if ($group_id) {
 
     echo "
       <tr><th>"._m("Constants used in slice")."</th>
-        <td colspan=\"3\">". join('<br>', array_map(function($arr) {return ($arr['deleted'] ? "&times;&times;&times; ".$arr['sname']." &times;&times;&times;" : $arr['sname'])." <small>[".$arr['unpackid']."]</small> (".$arr['fname']." <small>[".$arr['fid']."]</small>)";}, $using_slices_arr)) ."</td>
+        <td colspan=\"3\">". join('<br>', array_map(function($arr) {return safe($arr['deleted'] ? "&times;&times;&times; ".$arr['sname']." &times;&times;&times;" : $arr['sname'])." <small>[".$arr['unpackid']."]</small> (".safe($arr['fname'])." <small>[".safe($arr['fid'])."]</small>)";}, $using_slices_arr)) ."</td>
       </tr>";
 }
 

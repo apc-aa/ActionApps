@@ -87,7 +87,7 @@ try {
     // array ( 'https://dat…' => 4, 'https://cdn…' => 2, 'https://www…' => 1, )
     $url = InputVars::stringPOST('url', true);
     $cancel = InputVars::boolPOST('cancel');
-    $err = InputVars::arrayGETPOST('err');
+    
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {}
 

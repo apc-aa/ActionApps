@@ -247,8 +247,8 @@ class AA_Form extends AA_Object implements \AA\Util\NamedInterface {
      */
     static function getClassProperties(): array {
         return [          //           id       name       type        multi  persist validator, required, help, morehelp, example
-            'rows'        => new AA_Property( 'rows',        _m("Rows"),         'AA_Formrow', true, true),
-            'object_type' => new AA_Property( 'object_type', _m("Object Type"),  'text', false, true)
+            'rows'        => new AA_Property( 'rows',        _m("Rows"),         'AA_Formrow', true, true)
+            // 'object_type' => new AA_Property( 'object_type', _m("Object Type"),  'text', false, true)
         ];
     }
 
