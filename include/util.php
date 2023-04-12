@@ -1138,8 +1138,8 @@ function HtmlPageBegin($js_lib=false, $lang=null) {
 <html>
   <head>
     <link rel="SHORTCUT ICON" href="'. AA_INSTAL_PATH .'images/favicon.ico">
-    <link rel="stylesheet" href="'.(AA_INSTAL_PATH .ADMIN_CSS).'">
-    <link rel="stylesheet" href="'.AA_INSTAL_PATH. 'css/aa-system.css">
+    <link rel="stylesheet" href="'.(AA_INSTAL_PATH .ADMIN_CSS).'?v='.AA_JS_VERSION.'">
+    <link rel="stylesheet" href="'.AA_INSTAL_PATH. 'css/aa-system.css?v='.AA_JS_VERSION.'">
     <meta charset="'.AA::$encoding.'">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 ';

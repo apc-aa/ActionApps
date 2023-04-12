@@ -179,7 +179,7 @@ class AA_Adminpageutil {
             }
         }
         AA::Stringexpander()->addRequire('css-aa-system');
-        AA::Stringexpander()->addRequire(AA_INSTAL_PATH . ADMIN_CSS);
+        AA::Stringexpander()->addRequire(AA_INSTAL_PATH . ADMIN_CSS.'?v='.AA_JS_VERSION);
 
         if ($errtext = trim(join('<br>',(array)$err))) {
             //$errtext = 'some text';
