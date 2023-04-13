@@ -250,8 +250,8 @@ $headcode = <<<'EOT'
         var lb;
         for (var i = 0; i < listboxes.length; i++) {
            lb = listboxes[i];
-           for (var j = 0; j < document.inputform[lb].length; j++) {
-               document.inputform[lb].options[j].selected = ( document.inputform[lb].options[j].value != "wIdThTor" );
+           for (var j = 0; j < document.f[lb].length; j++) {
+               document.f[lb].options[j].selected = ( document.f[lb].options[j].value != "wIdThTor" );
            }
         }
         return true;
@@ -270,7 +270,7 @@ $apage->setForm();
 $apage->printHead($err, $Msg);
 
 ?>
-<form name="inputform" method=post action="<?php echo StateUrl() ?>" onSubmit="return ModeditSubmit()">
+<form name="f" method=post action="<?php echo StateUrl() ?>" onSubmit="return ModeditSubmit()">
 <?php
     FrmTabCaption(_m("Site"), $form_buttons);
 
