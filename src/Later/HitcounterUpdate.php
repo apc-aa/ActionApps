@@ -31,7 +31,7 @@ use AA\IO\DB\DB_AA;
 
 /** Used as object for toexecute - updates item.display_count and hit_archive
  *  based on hit log in hit_short_id and hit_long_id tables
- *  It also plans the the hit_x..... field counting into toexecute queue
+ *  It also plans the hit_x..... field counting into toexecute queue
  */
 class HitcounterUpdate implements LaterInterface
 {
@@ -93,6 +93,7 @@ class HitcounterUpdate implements LaterInterface
         $grouper->plan(3);
 
         $this->updateDisplayStatistics();
+        return "S:".count($hits_s)." L:".count($hits_l);
     }
 
     /** Plan task for counting statistics fields (hit_1, hit_7, ...)

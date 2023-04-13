@@ -48,6 +48,8 @@ use AA\IO\DB\DB_AA;
 require_once __DIR__."/./include/config.php";
 /** Main include file for using session management function on page */
 require_once __DIR__ . "/include/locsess.php";
+/** At least for MoreTimeLimit() */
+require_once __DIR__ . "/include/util.php";
 /** Defines class for inserting and updating database fields */
 require_once __DIR__ . "/include/varset.php";
 

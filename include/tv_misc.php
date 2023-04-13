@@ -88,37 +88,37 @@ function GetMiscTableView($viewID) {
     /* ------------------------------------------------------------------------------------
        cron
     */
-    if ($viewID == "cron") {
-        $doc_url = "https://apc-aa.sourceforge.net/faq/#cron";
-        $run_url = get_aa_url('cron.php3','',false);
-        return  [
-        "table" => "cron",
-        "type" => "browse",
-        "mainmenu" => "aaadmin",
-        "submenu" => "te_cron",
-        "help" => _m("For help see FAQ: ")."<a href=\"$doc_url\">$doc_url</a><br>".
-                  _m("To run cron manualy now: ")."<a href=\"$run_url\">$run_url</a>",
-        "readonly" => false,
-        "addrecord" => true,
-        "cond" => IsSuperadmin(),
-        "title" => _m ("Cron"),
-        "caption" => _m("Cron"),
-        "attrs" => $attrs_browse,
-        "fields" => [
-            "minutes" => ["default"=>"*","view" => ["type" => "text", "size" => ["cols"=>2]]],
-            "hours" => ["default"=>"*","view" => ["type" => "text", "size" => ["cols"=>2]]],
-            "mday" => ["default"=>"*","view" => ["type" => "text", "size" => ["cols"=>2]]],
-            "mon" => ["default"=>"*","view" => ["type" => "text", "size" => ["cols"=>2]]],
-            "wday" => ["default"=>"*","view" => ["type" => "text", "size" => ["cols"=>2]]],
-            "script" => [
-                "view" => ["type" => "text", "size" => ["cols"=>25]],
-                "required" => true
-            ],
-            "params" => ["view" => ["type" => "text", "size" => ["cols"=>20]]],
-            "last_run" => ["view" => ["readonly" => true, "type" => "date", "format" => "j.n.Y G:i"]]
-        ]
-        ];
-    }
+//    if ($viewID == "cron") {
+//        $doc_url = "https://apc-aa.sourceforge.net/faq/#cron";
+//        $run_url = get_aa_url('cron.php3','',false);
+//        return  [
+//        "table" => "cron",
+//        "type" => "browse",
+//        "mainmenu" => "aaadmin",
+//        "submenu" => "te_cron",
+//        "help" => _m("For help see FAQ: ")."<a href=\"$doc_url\">$doc_url</a><br>".
+//                  _m("To run cron manualy now: ")."<a href=\"$run_url\">$run_url</a>",
+//        "readonly" => false,
+//        "addrecord" => true,
+//        "cond" => IsSuperadmin(),
+//        "title" => _m ("Cron"),
+//        "caption" => _m("Cron"),
+//        "attrs" => $attrs_browse,
+//        "fields" => [
+//            "minutes" => ["default"=>"*","view" => ["type" => "text", "size" => ["cols"=>2]]],
+//            "hours" => ["default"=>"*","view" => ["type" => "text", "size" => ["cols"=>2]]],
+//            "mday" => ["default"=>"*","view" => ["type" => "text", "size" => ["cols"=>2]]],
+//            "mon" => ["default"=>"*","view" => ["type" => "text", "size" => ["cols"=>2]]],
+//            "wday" => ["default"=>"*","view" => ["type" => "text", "size" => ["cols"=>2]]],
+//            "script" => [
+//                "view" => ["type" => "text", "size" => ["cols"=>25]],
+//                "required" => true
+//            ],
+//            "params" => ["view" => ["type" => "text", "size" => ["cols"=>20]]],
+//            "last_run" => ["view" => ["readonly" => true, "type" => "date", "format" => "j.n.Y G:i"]]
+//        ]
+//        ];
+//    }
     /* ------------------------------------------------------------------------------------
        log
     */

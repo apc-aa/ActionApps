@@ -42,4 +42,13 @@ class Taskmanager_Execute extends AbstractManageraction {
         // if we want to use it as "action" (not "switch"), then we should be in trash bin
         return IfSlPerm(PS_EDIT);
     }
+
+
+    /** @inheritDoc */
+    protected function getButtonDef(): array {
+        return [
+            'label' => $this->getName(),
+            'attr'  => ['class'=>'aa-button-run']
+        ];
+    }
 }
