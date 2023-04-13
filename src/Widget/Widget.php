@@ -665,7 +665,7 @@ class Widget extends AA_Object implements NamedInterface {
                     ]), '', '3');
                     break;
                 case 'filter_conds':
-                    $ret[$pid] = new AA_Property($pid, _m("Filtering conditions"), 'string', false, true, 'string', false, _m("(for slices only) Conditions for filtering items in selection. Use conds[] array."), '', "conds[0][category.......1]=Enviro&conds[1][switch.........2]=1");
+                    $ret[$pid] = new AA_Property($pid, _m("Filtering conditions"), 'string', false, true, 'string', false, _m("(for slices only) Conditions for filtering items in selection. Use d-.. condition or conds[] array."), '', "d-source..........-BEGIN-Ecn");
                     break;
                 case 'sort_by':
                     $ret[$pid] = new AA_Property($pid, _m("Sort by"), 'string', false, true, 'string', false, _m("(for slices only) Sort the items in specified order. Use sort[] array"), '', "sort[0][headline........]=a&sort[1][publish_date....]=d");

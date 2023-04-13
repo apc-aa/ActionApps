@@ -647,7 +647,7 @@ $_m["Filtering conditions"]
  = "Condiciones de filtrado";
 
 // include/constants_param_wizard.php, row 366, 418, 466, 525, 558, 675
-$_m["(for slices only) Conditions for filtering items in selection. Use conds[] array."]
+$_m["(for slices only) Conditions for filtering items in selection. Use d-.. condition or conds[] array."]
  = "(para canales solamente) Condiciones de filtrado de �tems en la selecci�n. Utilice el arreglo conds[]";
 
 // include/constants_param_wizard.php, row 369, 421, 469, 528, 561, 678

@@ -6911,7 +6911,7 @@ $_m["Filtering conditions"]
  = "";
 
 // include/widget.class.php, row 603, 643, 684, 863, 938, 980, 1099
-$_m["(for slices only) Conditions for filtering items in selection. Use conds[] array."]
+$_m["(for slices only) Conditions for filtering items in selection. Use d-.. condition or conds[] array."]
  = "";
 
 // include/widget.class.php, row 604, 644, 685, 864, 939, 981, 1100
