@@ -125,7 +125,6 @@ class FilWidget extends Widget
         $widget_add = htmlattr($attrs);
 
         $widget = '';
-        $delim = '';
         $width = $this->getProperty('width', 60);            // @todo - width is not property of file widget, yet
         $max_characters = (int)$this->getProperty('max_characters', 254);  // @todo - width is not property of file widget, yet
         $allowed_ftypes = $this->getProperty('allowed_ftypes', '');
@@ -134,19 +133,20 @@ class FilWidget extends Widget
         $value = $content->getAaValue($aa_property->getId());
 
         for ($i = 0, $ino = $value->count(); $i < $ino; ++$i) {
-            $input_name = $base_name . "[fil][url][$i]";
-            $input_id = FormArray::formName2Id($input_name);
+            $input_name  = $base_name . "[fil][url][$i]";
+            $input_id    = FormArray::formName2Id($input_name);
             $input_value = safe($value->getValue($i));
-            $link = $input_value ? a_href($input_value, GetAAImage('external-link.png', _m('Show'), 16, 16)) : '';
+            $link        = $input_value ? a_href($input_value, GetAAImage('external-link.png', _m('Show').' '.$input_value, 16, 16),['class'=>'aa-fil-link']) : '';
+            $widget     .= "\n<div class=aa-fil-file>";
             if (($display_url < 2) AND ($type == 'normal')) {
-                $widget .= $delim . "\n<input type=\"text\" size=\"$width\" maxlength=\"$max_characters\" name=\"$input_name\" id=\"$input_id\" value=\"$input_value\"$widget_add>&nbsp;$link";
+                $widget .= "<input type=\"text\" size=\"$width\" maxlength=\"$max_characters\" name=\"$input_name\" id=\"$input_id\" value=\"$input_value\"$widget_add> $link";
             } else {
-                $widget .= "\n<input type=\"hidden\" name=\"$input_name\" id=\"$input_id\" value=\"$input_value\">$input_value";
+                $widget .= "<input type=\"hidden\" name=\"$input_name\" id=\"$input_id\" value=\"$input_value\">$link";
             }
-            $delim = '<br>';
+            $widget     .= '</div>';
         }
 
-        // if the widget is multiple, then it behaves differntly with deletion - the old uploads are not cleaned unles you say so
+        // if the widget is multiple, then it behaves differently with deletion - the old uploads are not cleaned unless you say so
         if ($widget AND $multiple) {
             $input_name = $base_name . "[fil][add]";
             $input_id = FormArray::formName2Id($input_name);
