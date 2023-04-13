@@ -1056,7 +1056,7 @@ class AA_Inputfield {
 
     function morehelp($hlp) {
         if ( $hlp ) {
-            $this->echoo( "&nbsp;<a href=".safe($hlp)." target='_blank'>?</a>" );
+            $this->echoo( "<a href=".safe($hlp)." target='_blank' class='aa-morehelp'>?</a>" );
         }
     }
 
@@ -1344,10 +1344,8 @@ class AA_Inputfield {
                 $widg .= "<label class=\"aa-langtrans aa-lang-$lang\" id=\"part$id2\" ".($first ? '' : ' style="display:none;"')."><strong class=\"aa-langtrans-label\">$lang</strong>";
 
 
-                $link  = ((substr($value,0,7)==='http://') OR (substr($value,0,8)==='https://')) ? '&nbsp;'.a_href($value, GetAAImage('external-link.png', _m('Show'), 16, 16)) : '';
-                $widg .= "<input id=\"$id2\" name=\"$name2\" $attr_string ". (($this->required AND $first) ? " required": '').
-                                $GLOBALS['mlxFormControlExtra'].
-                                " value=\"$value\" $triggers>$link";
+                $link  = ((substr($value,0,7)==='http://') OR (substr($value,0,8)==='https://')) ? a_href($value, GetAAImage('external-link.png', _m('Show'), 16, 16), ['class'=>'aa-externallink']) : '';
+                $widg .= "<input id=\"$id2\" name=\"$name2\" $attr_string ". (($this->required AND $first) ? " required": ''). $GLOBALS['mlxFormControlExtra']. " value=\"$value\" $triggers>$link";
                 $widg .= "</label>";
                 $first = false;
             }
@@ -1356,11 +1354,9 @@ class AA_Inputfield {
 
         } else {
             $value     = safe($val[0]['value']);
-            $link    = ((substr($value,0,7)==='http://') OR (substr($value,0,8)==='https://')) ? '&nbsp;'.a_href($value, GetAAImage('external-link.png', _m('Show'), 16, 16)) : '';
+            $link    = ((substr($value,0,7)==='http://') OR (substr($value,0,8)==='https://')) ? a_href($value, GetAAImage('external-link.png', _m('Show'), 16, 16), ['class'=>'aa-externallink']) : '';
 
-            $widg =  "<input name=\"$name\" $attr_string ". ($this->required ? " required": '').
-                            $GLOBALS['mlxFormControlExtra'].
-                            "  value=\"$value\" $triggers>$link";
+            $widg =  "<input name=\"$name\" $attr_string ". ($this->required ? " required": ''). $GLOBALS['mlxFormControlExtra']." value=\"$value\" $triggers>$link";
         }
 
         $this->echovar($widg);
@@ -2291,7 +2287,7 @@ function FrmInputEmail($name, $txt, $val,  $maxsize=254, $size=25, $needed=false
 function FrmInputNumber($name, $txt, $val, $min=0, $max=9999, $needed=false, $hlp="", $morehlp="", $placeholder='') {
     $input = new AA_Inputfield($val, true, 'normal', $name, $txt, false, $needed, $hlp, $morehlp);
     $input->setValidator(new AA_Validate_Number(['min'=>$min, 'max'=>$max]));
-    $input->inputText((int)($max/10+1), (int)($max/10+1), 'number', $placeholder);
+    $input->inputText((int)log10($max)+1, (int)log10($max)+4, 'number', $placeholder);  // size must be bigger to show also arrows
     $input->print_result();
 
     /* concept of new widget approach - not working - uses aa[][...]

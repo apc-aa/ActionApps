@@ -1372,6 +1372,7 @@ h1:has(+form[name="inputform"]) {
     vertical-align: middle;
     text-align: left;
     font-size: 1rem;
+    position: relative;
 }
 #inputtab tr > th:first-child {
     padding-top: 20px;
@@ -1410,6 +1411,19 @@ h1:has(+form[name="inputform"]) {
     padding: 3px 0 3px 2px;
     color: rgb(0 0 0 / 70%);
     font-size: var(--sz-s);
+}
+.aa-w-full + a.aa-externallink {
+    position: absolute;
+    right: 4px;
+    top: 3px;
+}
+.aa-w-full + a.aa-morehelp, a.aa-externallink + a.aa-morehelp  {
+    position: absolute;
+    right: 10px;
+    top: 3px;
+}
+a.aa-externallink + a.aa-morehelp  {
+    top: 21px;
 }
 #inputtab input[type="checkbox"] + .tabhlp {
     padding-left: 0;
