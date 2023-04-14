@@ -321,6 +321,14 @@ hr {
     border-bottom: solid 1px #9e9e9e;
     margin: 0;
 }
+details summary  {
+    color: #2F3D99;
+    padding: 12px 0;
+    cursor: pointer;
+}
+details ::marker  {
+    color: var(--clr-basic-darker);
+}
 .sz-xs {
     font-size: var(--sz-xs);
 }

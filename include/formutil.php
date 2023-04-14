@@ -1412,6 +1412,7 @@ class AA_Inputfield {
         [$name,$val,$add] = $this->prepareVars('multi');
         // make the textarea bigger, if already filled with long text
 
+        $rows     = (int)$rows;
         $maxlen   = ($maxlength = (int)$maxlength) ? " maxlength=$maxlength" : '';
         $colsy    = ($cols = (int)$cols) ? " cols=$cols" : '';
         // $colspan  = $single ? 2 : 1;
@@ -1470,10 +1471,10 @@ class AA_Inputfield {
         } else {
 
             $value    = safe($val[0]['value']);
-            $rows     = max($rows, min(floor(substr_count($value,"\n")*1.35), 30));
+            $rows     = max($rows, 2, min(floor(substr_count($value,"\n")*1.35), 30));
             $rows_css = $rows*1.3;  // firefox adds extra line, so we specify the height in css as well. Not so important, can be changed later.
 
-            $widg    = "<textarea id=\"$name\" name=\"$name\"$areaclass". ($this->required ? " required": '') ." rows=\"$rows\" ".$GLOBALS['mlxFormControlExtra']."$colsy$maxlen class=aa-w-full style=\"height:{rows_css}em;\" $triggers>$value</textarea>\n";
+            $widg    = "<textarea id=\"$name\" name=\"$name\"$areaclass". ($this->required ? " required": '') ." rows=\"$rows\" ".$GLOBALS['mlxFormControlExtra']."$colsy$maxlen class=aa-w-full style=\"height:{$rows_css}em;\" $triggers>$value</textarea>\n";
         }
         $this->echovar($widg);
         $this->helps('plus');

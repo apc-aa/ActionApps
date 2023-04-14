@@ -69,7 +69,7 @@ class AA_Adminpageutil {
     }
 
     /**
-     * @param string $title
+     * @param array $settings  // like: ['action'=>'se_mapping2.php', 'enctype'=>'multipart/form-data', 'id'=>'formf','onsubmit'=>"return validate2()"]
      */
     public function setForm(array $settings= [])
     {

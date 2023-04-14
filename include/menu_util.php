@@ -393,7 +393,6 @@ function GetMenuLink($active, $label, $cond, $aa_href, $exact_href='', $ico='', 
             $label = GetAAImage($ico,$label,23,23).$label;
         }
 
-        $href = StateUrl($href);
         return a_href($href, $label, ['class'=>$cssclass]);
     }
     // maked invisible which is better, I think. Honza 2007-08-02

@@ -95,7 +95,7 @@ $perm_edit_all  = IfSlPerm(PS_EDIT_ALL_ITEMS);
 $perm_edit_self = IfSlPerm(PS_EDIT_SELF_ITEMS);
 
 if ( !$perm_edit_all && !$perm_edit_self) {
-    MsgPage(_m("You do not have permission to edit items in the slice:") . AA_Slice::getModuleName(AA::$module_id));
+    MsgPage(_m("You do not have permission to edit items in the slice:").' '. safe(AA_Slice::getModuleName(AA::$module_id)));
     exit;
 }
 
