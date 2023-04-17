@@ -789,8 +789,8 @@ class sitetree {
 
         // get actions (eye for disable/enable, at this moment
         $action = $disabled ?
-            '<a class=eye href="' . self::siteAdminPageUrl($spot_id, 'akce=e') . '">' . GetModuleImage('site', 'disabled.png', '', 16, 16) . '</a>' :
-            '<a class=eye href="' . self::siteAdminPageUrl($spot_id, 'akce=h') . '">' . GetModuleImage('site', 'enabled.png', '', 16, 16) . '</a>';
+            '<a class=eye href="' . self::siteAdminPageUrl($spot_id, 'akce=e') . '">' . GetModuleImage('site', 'disabled.gif', '', 16, 16) . '</a>' :
+            '<a class=eye href="' . self::siteAdminPageUrl($spot_id, 'akce=h') . '">' . GetModuleImage('site', 'enabled.gif', '', 16, 16) . '</a>';
 
         // print the spot <div>
         echo "<div$class title=\"spot ID: $spot_id\">${action}<a href=\"" . self::siteAdminPageUrl($spot_id, "go_sid=$spot_id") . "\" class=\"spot\">$spot_name</a></div>";

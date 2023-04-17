@@ -191,24 +191,24 @@ echo '<div class="aa-site-codemanager">
         <div id="sitetree" class="aa-site-tree">
       <table class="aa-w-full">
         <tr>
-          <td>'. PrintSiteActionLink($r_spot_id, 's', _m("Add&nbsp;spot"), 'add_spot.png') .'</td>
-          <td>'. PrintSiteActionLink($r_spot_id, 'c', _m("Add&nbsp;choice"), 'add_choice.png') .'</td>
+          <td>'. PrintSiteActionLink($r_spot_id, 's', _m("Add&nbsp;spot"), 'add_spot.gif') .'</td>
+          <td>'. PrintSiteActionLink($r_spot_id, 'c', _m("Add&nbsp;choice"), 'add_choice.gif') .'</td>
         </tr>
         <tr>
-          <td>'. PrintSiteActionLink($r_spot_id, 'u', _m("Move&nbsp;up"), 'up.png') .'</td>
-          <td>'. PrintSiteActionLink($r_spot_id, 'd', _m("Move&nbsp;down"), 'down.png') .'</td>
+          <td>'. PrintSiteActionLink($r_spot_id, 'u', _m("Move&nbsp;up"), 'up.gif') .'</td>
+          <td>'. PrintSiteActionLink($r_spot_id, 'd', _m("Move&nbsp;down"), 'down.gif') .'</td>
         </tr>
         <tr>
-          <td>'. PrintSiteActionLink($r_spot_id, 'l', _m("Move&nbsp;left"), 'left.png') .'</td>
-          <td>'. PrintSiteActionLink($r_spot_id, 'a', _m("Move&nbsp;right"), 'right.png') .'</td>
+          <td>'. PrintSiteActionLink($r_spot_id, 'l', _m("Move&nbsp;left"), 'left.gif') .'</td>
+          <td>'. PrintSiteActionLink($r_spot_id, 'a', _m("Move&nbsp;right"), 'right.gif') .'</td>
         </tr>
         <tr>
-          <td>'. PrintSiteActionLink($r_spot_id, 'r', _m("Delete"), 'delete.png', 'javascript:GoIfConfirmed(\''. sitetree::siteAdminPageUrl($r_spot_id, "akce=r") .'\', \''.
+          <td>'. PrintSiteActionLink($r_spot_id, 'r', _m("Delete"), 'delete.gif', 'javascript:GoIfConfirmed(\''. sitetree::siteAdminPageUrl($r_spot_id, "akce=r") .'\', \''.
                                             _m("Are you sure you want to delete the spot?") .'\')') .'</td>
           <td>'.
           (($tree->get('flag', $r_spot_id) & AA_Module_Site::FLAG_DISABLE) ?
-              PrintSiteActionLink($r_spot_id, 'e', _m("Enable"), 'enabled.png') :
-              PrintSiteActionLink($r_spot_id, 'h', _m("Disable"), 'disabled.png'))
+              PrintSiteActionLink($r_spot_id, 'e', _m("Enable"), 'enabled.gif') :
+              PrintSiteActionLink($r_spot_id, 'h', _m("Disable"), 'disabled.gif'))
               .'</td>
         </tr>
       </table>
