@@ -733,7 +733,7 @@ class ItemContent extends AA_Content {
         }
 
         $aacontent4id = null; // modern input format - introduced with [rim]
-        if ($_POST['aa']) {
+        if ($_POST['aa'] OR $_FILES['aa']) {
             //$grabber = new AA_Grabber_Form();
             $grabber = new AA\IO\Grabber\Form();
             $grabber->prepare();    // maybe some initialization in grabber

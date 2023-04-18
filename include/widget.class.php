@@ -317,6 +317,11 @@ class AA_Property extends AA_Storable {
                 continue;
             }
             $empty = false;
+
+            if (is_a($validator, 'AA_Validate_Url') AND (strpos($v,'AA_UPLOAD:')===0)) {   // we are uploading - url will change later   @todo - mark the notvalidated content like AA_UPLOAD in widgets
+                continue;
+            }
+
             if (!($valid = $validator->validate($v, $context_content, $this->getId()))) {
                 break;
             }
