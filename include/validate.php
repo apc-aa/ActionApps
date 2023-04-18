@@ -320,6 +320,13 @@ class AA_Validate_Regexp extends AA_Validate {
     protected $empty_expression = '/^\s*$/';
     protected $maxlength;
 
+    function __construct($param= []) {
+        parent::__construct($param);
+        if (!strlen(trim($this->empty_expression))) {
+            $this->empty_expression = '/^\s*$/';
+        }
+    }
+
     static function getClassProperties(): array {
         return [                      //           id            name              type    multi  persist validator, required, help, morehelp, example
             'pattern'          => new AA_Property( 'pattern',           _m("Regular expression"), 'string', false, true, 'string', false, _m(""), '', '/^[a-z]*$/'),
@@ -387,6 +394,7 @@ class AA_Validate_Email extends AA_Validate_Regexp {
     function __construct($param= []) {
         parent::__construct($param);
         $this->pattern = '/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,6}$/';
+        $this->empty_expression = '/^\s*$/';
     }
 
     /** returns the type attribute for the HTML 5 <input> tag with possible some
