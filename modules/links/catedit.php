@@ -99,16 +99,14 @@ echo GetPrintArray($r_err);
 echo GetPrintArray($r_msg);
 
 echo '<form name=f method=post action="catedit2.php">';
-    FrmTabCaption(_m('Category') . getFrmMoreHelp(get_help_url(AA_LINKS_HELP_LINK, "formular-kategorie"),
-            ["before" => "(", "text" => "?", "after" => ")"]));
+    FrmTabCaption(_m('Category') . getFrmMoreHelp(get_help_url(AA_LINKS_HELP_LINK, "formular-kategorie")));
     FrmStaticText(_m('Id'), $id . '&nbsp; &nbsp; &nbsp;(' . _m('Links in subtree') . ': ' . $links_count . ')', "", "", false);
     FrmInputText( 'cat_name',     _m('Category name'),           $cat_name,  250, 50, false, "", get_help_url(AA_LINKS_HELP_CATEGORY,"nazev-kategorie") );
     FrmTextarea('description', _m('Category description'), $description, 3, 60, false, "", get_help_url(AA_LINKS_HELP_CATEGORY, "popis-kategorie"));
     FrmInputChBox('nolinks',      _m('No links'), $nolinks, false, '', 1, false, _m('Disalow storing of the links to this category?'));
     FrmTextarea('note', _m('Editor\'s note'), $note, 3, 60, false, "", get_help_url(AA_LINKS_HELP_CATEGORY, "poznamka-kategorie"));
     FrmHidden(    'additional',   $additional);
-    FrmTabSeparator(_m('Subcategories') . getFrmMoreHelp(get_help_url(AA_LINKS_HELP_LINK, "podkategorie"),
-            ["before" => "(", "text" => "?", "after" => ")"]));
+    FrmTabSeparator(_m('Subcategories') . getFrmMoreHelp(get_help_url(AA_LINKS_HELP_LINK, "podkategorie")));
 echo '
       <tr>
         <td width=255><b>'. _m('Category tree') .'</b><div class="tabhlp"><i>'. _m('select the category for crossreference') .'</i></div></td>

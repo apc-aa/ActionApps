@@ -99,18 +99,18 @@ function PrintUser($perm, $usr_id, $editor_perm) {
     $go_url_arr = [
         'User'        => "um_uedit.php?usr_edit=1&selected_user=$usr_id_enc",
         'Group'       => "um_gedit.php?grp_edit=1&selected_group=$usr_id_enc",
-        'Reader'      => "#",
+        'Reader'      => "um_uedit.php?usr_edit=1&selected_user=$usr_id_enc",
         'ReaderGroup' => "index.php3?change_id=$usr_id_enc"
     ];
     $usrinfo = AA::$perm->getIDsInfo($usr_id);
 
     // add link to user settings for superadmins
     $usr_code = ( !IsSuperadmin() ? $usrinfo['name'] :
-        '<a href="'. get_admin_url(  $go_url_arr[$usrinfo['type']] ) .'">'. $usrinfo['name'] .'</a>' );
+        '<a href="'. get_admin_url(  $go_url_arr[$usrinfo['type']] ) .'">'. safe($usrinfo['name']) .'</a>' );
 
     echo "<td>". $usr_code ."</td>\n";
-    echo "<td>". $username ."</td>\n";
-    echo "<td>". (($usrinfo['mail']) ?: "&nbsp;") ."</td>\n";
+    echo "<td>". safe($username) ."</td>\n";
+    echo "<td>". (safe($usrinfo['mail']) ?: "&nbsp;") ."</td>\n";
     echo "<td>". _mdelayed($usrinfo['type']) ."</td>\n";
 
     echo IfLink( CanChangeRole($perm, $editor_perm, AA_Perm::ROLES["AUTHOR"]['perm']),        get_url('', ['UsrAdd'=>$usr_id, 'role'=>"AUTHOR"],        true), _m("Author"));

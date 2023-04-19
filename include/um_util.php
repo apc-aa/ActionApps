@@ -352,18 +352,21 @@ function NewUserData(&$err, $uid, &$userrecord, $user_super, $um_uedit_no_go_url
  * @param $user_super
  */
 function ChangeUserData(&$err, $uid, &$userrecord, $user_super) {
-      $userrecord["uid"] = $uid;
-      if (!ChangeUser($userrecord)) {
-          $err["LDAP"] = MsgErr( _m("Can't change user") );
-      } elseif ($user_super != 'AA_NO_CHANGE') {
-          if ($user_super) {		// set or revoke super admin privilege
-              AddPerm($userrecord["uid"], AA_ID, "aa", AA_Perm::ROLES["SUPER"]['id']);
-          } else {
-              DelPerm($userrecord["uid"], AA_ID, "aa");
-          }
-      }
+    $userrecord["uid"] = $uid;
+    if (AA::$perm->isUserEditable($uid)) {
+        if (!ChangeUser($userrecord)) {
+            $err["LDAP"] = MsgErr(_m("Can't change user"));
+            return;
+        }
+    }
+    if ($user_super !== 'AA_NO_CHANGE') {
+        if ($user_super) {		// set or revoke super admin privilege
+            AddPerm($userrecord["uid"], AA_ID, "aa", AA_Perm::ROLES["SUPER"]['id']);
+        } else {
+            DelPerm($userrecord["uid"], AA_ID, "aa");
+        }
+    }
 }
-
 
 /**
  * @param string      $submit_action
@@ -398,10 +401,9 @@ function ProcessUser(string $submit_action, $selected_user, array $err, bool $ad
         if (count($err)) {
             break;
         }
-
         if ($add_submit) {      // -------------------- new user ------------------
             NewUserData($err, $user_login, $userrecord, $user_super, $um_uedit_no_go_url);
-        } elseif (AA::$perm->isUserEditable($selected_user)) {      // ----------------- update user ------------------
+        } else {      // ----------------- update user ------------------
             ChangeUserData($err, $selected_user, $userrecord, $user_super);
         }
 

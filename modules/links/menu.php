@@ -36,7 +36,6 @@ https://www.apc.org/
  * You can insert special content to the left menu column. Just use following
  * keywords as itentifiers:
  *      "textXXX"   - display text
- *      "lineXXX"   - display line
  *      "headerXXX" - display menu header
  */
 
@@ -61,7 +60,7 @@ function get_aamenus() {
 
 
     $aamenus["view"] = [
-        "label" => _m('View'),
+        "label"      => GetAAImage('enabled.png', _m("View site") , 16, 16),
         "exact_href"  => $r_slice_view_url,
         "cond"  => 1,
         "level" => "main"
@@ -96,7 +95,7 @@ function get_aamenus() {
         "bottom_td"=>200,
         "level"=>"submenu",
         "items"=> [
-            "header1"=>_m('Folders').getFrmMoreHelp(get_help_url(AA_LINKS_HELP_MAIN,"schranky"),"",_m("Folders with links, sorted by their status (active, changed, new, ...)"), true),
+            "header1"=>_m('Folders').getFrmMoreHelp(get_help_url(AA_LINKS_HELP_MAIN, "schranky"), _m("Folders with links, sorted by their status (active, changed, new, ...)")),
             "app"=> [//"cond"=> $r_state['bin'] != "app",
                      "href"=>$module_location."index.php3?Tab=app",
                      "label"=>_m('Active')." (".$r_state['bin_cnt']['app'].")"],
@@ -118,7 +117,7 @@ function get_aamenus() {
             "unasigned3"=> [//"cond"=> $r_state['bin'] != "unasigned3",
                             "href"=>$module_location."index.php3?Tab=unasigned3",
                             "label"=>_m('Unasigned - Trash')." (".$r_state['bin_cnt']['unasigned3'].")"],
-            "line1"               => '',
+            "header2"     => _m("Misc"),
             "empty_trash"=> ["cond"=>IsSuperadmin(),
                              "hide"=>!IsSuperadmin(),
                              "href"=>$module_location."index.php3?DeleteTrash=1",
@@ -128,7 +127,7 @@ function get_aamenus() {
                        "hide"=>!IsSuperadmin(),
                        "js"=>"ToggleCookie('aa_debug','1')",
                        "label"=> ($_COOKIE['aa_debug'] ? _m("Set Debug OFF") : _m("Set Debug ON"))],
-            "header2" => _m('Bookmarks').getFrmMoreHelp(get_help_url(AA_LINKS_HELP_MAIN,"zalozky-odkazu"),"",_m("My own links"), true)
+            "header3" => _m('Bookmarks').getFrmMoreHelp(get_help_url(AA_LINKS_HELP_MAIN, "zalozky-odkazu"), _m("My own links"))
         ]
     ];
     foreach ( (array) $bookmarks as $bookid => $bookname ) {
@@ -181,7 +180,6 @@ function get_aamenus() {
         items           array of menu items in form item_id => properties
                         if item_id is "headerxxx", shows a header,
                             be careful that xxx be always a different number
-                        if item_id is "line", shows a line
             label       to be shown
             cond        if not satisfied, don't show the label linked
                         slice_id is included in the cond automatically

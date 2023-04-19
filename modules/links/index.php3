@@ -299,42 +299,26 @@ $link_zids=Links_QueryZIDs($r_state['cat_path'], $conds, $sort, $r_state["show_s
 echo $manager->getSearchbarBegin();
 
 // special code extending searchbar - category selection
-echo '<table class=leftmenu>';
-echo '<tr>
-       <td class="search" width="255">
+echo '<div class=flex>';
+echo '<div class=search>
          <input type="hidden" name="cat_id" value="'.$r_state['cat_id']."\">
          $cat_tree
-       </td>
-       <td>";
-echo '<table class=leftmenu>';
-echo '<tr><td><div id="patharea">'. ' '. '</div> </td></tr>';
-echo getFrmInputButtons([
-    'gocat' => [
-        'type' => 'button',
-        'value' => _m('Show Links'),
-        'add' => 'onclick="document.filterform.submit()"',
-    ]]);
-echo getFrmMoreHelp(get_help_url(AA_LINKS_HELP_MAIN, "zobraz-odkazy"));
+      </div>";
+echo '<div id="patharea"> </div>';
+echo '<div>';
+echo  getFrmInputButtons([ 'gocat'   => [ 'type' => 'button', 'value' => _m('Show Links'), 'add' => 'onclick="document.filterform.submit()"']]);
+echo  getFrmMoreHelp(get_help_url(AA_LINKS_HELP_MAIN, "zobraz-odkazy"));
 
-echo getFrmInputButtons([
-    'editcat' => [
-        'type' => 'button',
-        'value' => _m('Edit Category'),
-        'add' => 'onclick="EditCurrentCat()"',
-    ]
-    //                        'bookmark' => array('type'=>'button',
-    //                                            'value'=>_m('Bookmark'))
-]);
-echo getFrmMoreHelp(get_help_url(AA_LINKS_HELP_MAIN, "editujkat"));
-
-echo '<tr><td>';
-FrmChBoxEasy("show_subtree", $r_state["show_subtree"]);
-echo _m('Show subtree links');
-echo getFrmMoreHelp(get_help_url(AA_LINKS_HELP_MAIN,"zobraz-odkazy")). ' </td></tr>';
-
-echo "</table></td></tr>";
-echo "<tr><td>".getFrmMoreHelp(get_help_url(AA_LINKS_HELP_MAIN,"seznamkat"))."</td></tr>";
-echo "</table>";
+echo  getFrmInputButtons([ 'editcat' => [ 'type' => 'button', 'value' => _m('Edit Category'), 'add' => 'onclick="EditCurrentCat()"' ]]);    // 'bookmark' => array('type'=>'button','value'=>_m('Bookmark'))
+echo  getFrmMoreHelp(get_help_url(AA_LINKS_HELP_MAIN, "editujkat"));
+echo  '<div>';
+  FrmChBoxEasy("show_subtree", $r_state["show_subtree"]);
+  echo _m('Show subtree links');
+  echo getFrmMoreHelp(get_help_url(AA_LINKS_HELP_MAIN,"zobraz-odkazy")).
+      ' </div>';
+echo "</div>";
+echo "</div>";
+echo getFrmMoreHelp(get_help_url(AA_LINKS_HELP_MAIN,"seznamkat"));
 
 echo $manager->getSearchbarEnd();   // close the searchbar form
 

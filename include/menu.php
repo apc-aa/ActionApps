@@ -100,7 +100,6 @@ function get_aamenus() {
      *  items           array of menu items in form item_id => properties
      *                  if item_id is "headerxxx", shows a header,
      *                      be careful that xxx be always a different number
-     *                  if item_id is "line", shows a line
      *      label       to be shown
      *      cond        if not satisfied, don't show the label linked
      *                  slice_id is included in the cond automatically
@@ -198,7 +197,6 @@ function get_aamenus() {
             "empty_trash" => ["cond"=>(IfSlPerm(PS_DELETE_ITEMS) AND ($profile->getProperty('ui_manager', 'itemmanager_submenu_empty_trash') !== '')), 'hide' => ($profile->getProperty('ui_manager', 'itemmanager_submenu_empty_trash')   === ''), "href"=>"admin/index.php3?DeleteTrash=1", "label"=>GetLabel($profile,'ui_manager','itemmanager_submenu_empty_trash', _m("Empty trash")), "js"=>"EmptyTrashQuestion('{href}','"._m("Are You sure to empty trash?")."')"],
             "CSVimport"   => ["cond"=>(IfSlPerm(PS_EDIT_ALL_ITEMS) AND ($profile->getProperty('ui_manager', 'itemmanager_submenu_CSVimport') !== '')), 'hide' => ($profile->getProperty('ui_manager', 'itemmanager_submenu_CSVimport')   === ''), "href"=>"admin/se_csv_import.php",          "label"=>GetLabel($profile,'ui_manager','itemmanager_submenu_CSVimport', _m("Import CSV"))],
             "debug"       => ["cond"=>(IsSuperadmin() AND ($profile->getProperty('ui_manager', 'itemmanager_submenu_debug')   !== '')),                'hide' => ($profile->getProperty('ui_manager', 'itemmanager_submenu_debug')   === '') AND !IsSuperadmin(),                  "js"  =>"ToggleCookie('aa_debug','1')","label"=>GetLabel($profile,'ui_manager','itemmanager_submenu_debug',  ($_COOKIE['aa_debug'] ? _m("Set Debug OFF") : _m("Set Debug ON")))]
-    //        "line"        => ""
     ];
 
     if ($slice && IfSlPerm(PS_EDIT_ALL_ITEMS)) {

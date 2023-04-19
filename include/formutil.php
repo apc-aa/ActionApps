@@ -2178,32 +2178,15 @@ class AA_Inputfield {
 
 /** getFrmMoreHelp function
  *  prints anchor tag with link to external documentation
- * @param $hlp
- * @param $text
+ * @param $hlp_url
  * @param $hint
- * @param $image
  * @return string
  */
-function getFrmMoreHelp($hlp, $text="", $hint="", $image=false) {
-    if ($image) {
-        $img = GetAAImage('help50.gif', safe($hint), 16, 12);
+function getFrmMoreHelp($hlp_url, $hint="") {
+    if ( $hlp_url ) {
+        return a_href($hlp_url,'?', ['title'=>$hint, 'target'=>'_blank', 'class'=>'aa-morehelp']);
     }
-    if ( $hlp ) {
-        if (is_array($text) || ($image)) {
-          return "&nbsp;".($image ? "&nbsp;&nbsp;" : $text["before"])."<a href=".safe($hlp)." target='_blank' ".
-            (($hint != "") ? "title=\"".safe($hint)."\"" : "") .">".($image ? $img : $text["text"])."</a>".($image ? "" : $text["after"]);
-        } elseif (is_string($text) && ($text != "")) {
-            return "&nbsp;<a href=\"".safe($hlp)."\" target='_blank'>".($image ? $img : $text)."</a>";
-        } else {
-            return "&nbsp;<a href=\"".safe($hlp)."\" target='_blank' ".(($hint != "") ? "title=\"".safe($hint)."\"" : "").
-               ">".($image ? $img : "?")."</a>";
-        }
-    } else {
-        if (($text == "") && ($image)) {
-          return "&nbsp;<abbr title=\"".safe($hint)."\">".$img."</abbr>";
-        }
-    }
-
+    return htmltag('abbr','?', ['title'=>$hint, 'class'=>'aa-morehelp']);
 }
 
 /** FrmInputChBox function

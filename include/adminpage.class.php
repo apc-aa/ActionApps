@@ -229,7 +229,13 @@ class AA_Adminpageutil {
 
     public function printHelpbox() {
         foreach ($this->helpboxes as $helpbox) {
-            $tab = GetHtmlTable( [[$helpbox['html']]], 'td', $helpbox['name'], true );  // classic aa table
+            $tab = '<div class=aa-helpbox-container>';
+            if ($helpbox['name']) {
+                $tab .= "\n <div class=aa-tab-title>" . $helpbox['name'] . "</div>";
+            }
+            $tab .= "\n <div class=aa-tab-content>" . $helpbox['html'] . "</div>";
+            $tab .= "</div>";
+
             $html = ($helpbox['packed']) ? "<details class='aa-helpbox'><summary>".$helpbox['name']."</summary>$tab</details>" : $tab;
             if ($html) {
                 // not necessary to unalias - help text for aliases was executed

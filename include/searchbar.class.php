@@ -538,7 +538,7 @@ class AA_Searchbar extends AA_Storable {
 
         if ($this->hint != "") {
             $ret .= '<div class="aa-sb-hint">';
-            $ret .=  getFrmMoreHelp($this->hint_url,"",$this->hint, true);
+            $ret .=  getFrmMoreHelp($this->hint_url, $this->hint);
             $ret .= "</div>";
         }
         $ret .= "</div>";

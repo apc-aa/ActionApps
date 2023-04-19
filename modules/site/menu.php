@@ -61,7 +61,6 @@ function get_aamenus() {
         items           array of menu items in form item_id => properties
                         if item_id is "headerxxx", shows a header,
                             be careful that xxx be always a different number
-                        if item_id is "line", shows a line
             label       to be shown
             cond        if not satisfied, don't show the label linked
                         slice_id is included in the cond automatically

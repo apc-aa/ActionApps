@@ -418,8 +418,7 @@ $form_buttons = [
 
 echo '
 <form name="f" method=post action="'. StateUrl("linkedit2.php") .'">';
-$caption = _m('Link').getFrmMoreHelp(get_help_url(AA_LINKS_HELP_LINK,"formular-odkaz"),
-                                      ["before"=>"(", "text"=>"?", "after"=>")"]);
+$caption = _m('Link').getFrmMoreHelp(get_help_url(AA_LINKS_HELP_LINK,"formular-odkaz"));
 FrmTabCaption($caption, $form_buttons);
 
 $bin_names = get_bin_names();
@@ -482,8 +481,7 @@ if ( !Links_IsPublic() ) {
 }
 
 
-    FrmTabSeparator(_m('Show in category') . getFrmMoreHelp(get_help_url(AA_LINKS_HELP_LINK, "odkaz-dokategorii"),
-            ["before" => "(", "text" => "?", "after" => ")"]));
+    FrmTabSeparator(_m('Show in category') . getFrmMoreHelp(get_help_url(AA_LINKS_HELP_LINK, "odkaz-dokategorii")));
 echo '
       <tr>
        <td colspan="2">
@@ -528,8 +526,7 @@ echo      '</td>
 // show the organization information only to real editors or to public, if
 // the link is of special type
 if ( !Links_IsPublic() OR ($r_state['link_id'] AND $type) ) {
-       FrmTabSeparator(_m('Organization') . getFrmMoreHelp(get_help_url(AA_LINKS_HELP_LINK, "kontakt"),
-               ["before" => "(", "text" => "?", "after" => ")"]));
+       FrmTabSeparator(_m('Organization') . getFrmMoreHelp(get_help_url(AA_LINKS_HELP_LINK, "kontakt")));
        FrmInputText( 'org_city', _m('City'), $org_city,  250, 50);
        printChange( 'org_city', $org_city_change, $org_city );
        FrmInputText( 'org_street', _m('Street'), $org_street,  250, 50);
@@ -545,12 +542,7 @@ if ( !Links_IsPublic() OR ($r_state['link_id'] AND $type) ) {
 }
 
 
-       FrmTabSeparator(_m('Regions and languages') .
-           getFrmMoreHelp(get_help_url(AA_LINKS_HELP_LINK, "region-jazyk"), [
-               "before" => "(",
-               "text"   => "?",
-               "after"  => ")"
-           ]));
+       FrmTabSeparator(_m('Regions and languages') .getFrmMoreHelp(get_help_url(AA_LINKS_HELP_LINK, "region-jazyk")));
    echo '
       <tr><td width="50%"><b>'. _m('Region') .'</b><div class="tabhlp"><i>'. _m('select up to 4 regions') .'</i></div></td>
           <td><b>'. _m('Language') .'</b><div class="tabhlp"><i>'. _m('select pege\'s languages') .'</i></div></td></tr>

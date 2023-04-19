@@ -64,8 +64,7 @@ class Menu
                 "folder3"   => ["cond"=>1,                           "href"=>"modules/polls/index.php3?Folder3=1",                          "label"=>"<img src='../../images/delete.gif'>"._m("Trash bin")." <span class='aa-bin-cnt'>". $r_state['bin_cnt']['folder3'] ."</span>"],
 
                 "header2"     => _m("Misc"),
-                "deletetrash" => ["cond"=>IfSlPerm(PS_DELETE_ITEMS),   "href"=>"modules/polls/index.php3?DeleteTrash=1",                     "label"=>._m("Empty trash"), "js"=>"EmptyTrashQuestion('{href}','"._m("Are You sure to empty trash?")."')"],
-                "line"        => ""
+                "deletetrash" => ["cond"=>IfSlPerm(PS_DELETE_ITEMS),   "href"=>"modules/polls/index.php3?DeleteTrash=1",                     "label"=>_m("Empty trash"), "js"=>"EmptyTrashQuestion('{href}','"._m("Are You sure to empty trash?")."')"]
             ]
         ];
 
@@ -90,7 +89,6 @@ class Menu
             items           array of menu items in form item_id => properties
                             if item_id is "headerxxx", shows a header,
                                 be careful that xxx be always a different number
-                            if item_id is "line", shows a line
                 label       to be shown
                 cond        if not satisfied, don't show the label linked
                             slice_id is included in the cond automatically
@@ -104,7 +102,6 @@ class Menu
             items           array of menu items in form item_id => properties
                             if item_id is "headerxxx", shows a header,
                                 be careful that xxx be always a different number
-                            if item_id is "line", shows a line
                 label       to be shown
                 cond        if not satisfied, don't show the label linked
                             slice_id is included in the cond automatically

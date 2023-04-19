@@ -321,13 +321,16 @@ function getMenu($activeMain, $activeSubmenu = ""): string {
           <div class="aa-ui-top noprint" id="aa_top">
             <div class="nblogo">'.$nb_logo.'</div>
             <div class="aa-ui-nav">
-              <div class="slicehead">'. $title_out .'</div>
-              <div class="aa-ui-custom-nav">'. $search_out .'
+              <div class="flex f-between">
+                <div class="slicehead">'. $title_out .'</div>
+                <div class="aa-ui-custom-nav">'. $search_out .'
                   <form name=logoutform method="post" action="'. get_admin_url('logout.php').'">
                    '. $user_out .' '. $logout_out .'&nbsp;
                   </form>
+                </div>
               </div>
-              <nav class="navbar">
+              <div class="flex f-between">
+                <nav class="navbar">
         ';
 
         $links = [];
@@ -343,11 +346,12 @@ function getMenu($activeMain, $activeSubmenu = ""): string {
         $ret .= join(' ',$links);
 
         $ret .= '  
-            </nav>
-              <div class="aa-ui-modules">'.$viewlink.'
-                <form name="aanbform" id="aanbform" enctype="multipart/form-data" method="post" action="'. StateUrl() .'">'."\n";
+                </nav>
+                <div class="aa-ui-modules">'.$viewlink.'
+                  <form name="aanbform" id="aanbform" enctype="multipart/form-data" method="post" action="'. StateUrl() .'">'."\n";
         $ret .= GetModuleSelection();
         $ret .= "\n</form>
+                </div>
               </div>
             </div>
           </div>\n";
@@ -424,8 +428,6 @@ function getSubMenuRows($aamenuitems, $active ): string {
             } elseif ($item !== '') {
                 $ret .= "<li class='aa-leftmenu-header aa-menuname-$itemshow'>$item</li>\n";
             }
-        } elseif (substr($itemshow,0,4) == "line") {
-            $ret .= "<li class='aa-leftmenu-line aa-menuname-$itemshow'><img src='".AA_INSTAL_PATH."images/black.gif' width=120 height=1></li>\n";
         } elseif ( $item["function"] ) {
             // call some function to get menu items
             // it is better mainly for left submenus for which we need

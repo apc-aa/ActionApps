@@ -944,7 +944,11 @@ class AA_Item {
         // the date was entered as 230584301025887115 - which is too big and it
         // takes ages for PHP to evaluate the date() function then. (php 5.2.6))
         // it is perfectly possible to increase the max value, however
-        $dstr = (string)date($param, (int)max(-2147483647,min(100000000000,$this->getval($col))));
+        $time = $this->getval($col);
+        if ($time > 10000000000000) {  // check for nanotime - used in se_history for example
+            $time = (int)$time/1000000000; // convert to seconds from nanotime()
+        }
+        $dstr = (string)date($param, (int)max(-2147483647,min(100000000000,$time)));
         return (($param != "H:i") ? $dstr : ( ($dstr=="00:00") ? "" : $dstr ));
     }
 
