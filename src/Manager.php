@@ -972,7 +972,7 @@ class Manager extends AA_Storable {
                       <option value="nothing">'. _m('Selected items') .':'.
                       $options .'</select>';
                 if ($this->actions_hint_url || $this->actions_hint) {
-                    $ret .= getFrmMoreHelp($this->actions_hint_url, "", $this->actions_hint);
+                    $ret .= getFrmMoreHelp($this->actions_hint_url, $this->actions_hint);
                 }
 
                 $ret .= '&nbsp;&nbsp;<a href="javascript:MarkedActionGo()" class="aa-button">'. _m('Go') . '</a>';

@@ -1782,7 +1782,7 @@ function get_if($value, $else, $else2='aa_NoNe', $else3='aa_NoNe') {
  *  file, for better version information
  */
 function aa_version($format='full') {
-    $version = '2.90.0';
+    $version = '2023.1';
     $full    = 'ActionApps '.$version.' ($Date$, $Revision$), PHP '.phpversion().', REMOTE_ADDR: '.$_SERVER['REMOTE_ADDR'];
     switch ($format) {
         case 'svn': return (int) substr($full, strpos($full, 'Revision')+10);
