@@ -60,7 +60,7 @@ if (!array_key_exists('userfile', $_FILES)) {
             $safe_file_name=escapeshellcmd($file_name);
             $safe_encoding=escapeshellarg ($encoding);
             if ( defined('CONV_HTMLFILTERS_DOC')) {
-                $ee = exec(str_replace('%1',"$uploadpath$safe_file_name",CONV_HTMLFILTERS_DOC),$out);
+                exec(str_replace('%1',"$uploadpath$safe_file_name",CONV_HTMLFILTERS_DOC),$out);
             }
             unlink ("$uploadpath$file_name");
             $insidesection=false;
@@ -78,6 +78,54 @@ if (!array_key_exists('userfile', $_FILES)) {
                 } else {
                     $line = str_replace("&scaron;","š",$line);
                     $line = str_replace("&Scaron;","Š",$line);
+                    $buffer[]=$line;
+                }
+            }
+            $output = array_merge($output,$buffer);
+        } elseif (preg_match("/.docx$/i",$realname)) {
+            $safe_file_name=escapeshellcmd($file_name);
+            $safe_encoding=escapeshellarg ($encoding);
+            if ( defined('CONV_HTMLFILTERS_DOCX')) {
+                exec(str_replace('%1',"$uploadpath$safe_file_name",CONV_HTMLFILTERS_DOCX),$out);
+            }
+            unlink ("$uploadpath$file_name");
+            $insidesection=false;
+            $buffer = [];
+            $output = [];
+            foreach ($out as $linenum => $line) {
+                if (preg_match("/^<!--Section/",$line)) {
+                    if ($insidesection==true) {
+                        $output = array_merge($output,$buffer);
+                        $buffer = [];
+                    } else {
+                        $buffer= [];
+                    }
+                    $insidesection=true;
+                } else {
+                    $buffer[]=$line;
+                }
+            }
+            $output = array_merge($output,$buffer);
+        } elseif (preg_match("/.docx$/i",$realname)) {
+            $safe_file_name=escapeshellcmd($file_name);
+            $safe_encoding=escapeshellarg ($encoding);
+            if ( defined('CONV_HTMLFILTERS_DOCX')) {
+                exec(str_replace('%1',"$uploadpath$safe_file_name",CONV_HTMLFILTERS_DOCX),$out);
+            }
+            unlink ("$uploadpath$file_name");
+            $insidesection=false;
+            $buffer = [];
+            $output = [];
+            foreach ($out as $linenum => $line) {
+                if (preg_match("/^<!--Section/",$line)) {
+                    if ($insidesection==true) {
+                        $output = array_merge($output,$buffer);
+                        $buffer = [];
+                    } else {
+                        $buffer= [];
+                    }
+                    $insidesection=true;
+                } else {
                     $buffer[]=$line;
                 }
             }

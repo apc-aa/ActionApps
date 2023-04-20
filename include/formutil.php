@@ -1108,19 +1108,16 @@ class AA_Inputfield {
      *  Print links to document convertors, if convertors are installed
      */
     function get_convertors() {
-        global $CONV_HTMLFILTERS;
-        $convertor = '';
-        if ( isset($CONV_HTMLFILTERS) AND is_array($CONV_HTMLFILTERS) ) {
-            $delim='';
-            foreach ( $CONV_HTMLFILTERS as $format => $program) {
-                if ( $format == 'iconv' ) {
-                    continue;
-                }
-                $convertor .= $delim . strtoupper(str_replace( '.', '', $format ));
-                $delim = '/';
-            }
-            $convertor = "<a class=\"btn aa-convertor\" href=\"javascript:CallConvertor('".self_server(). AA_INSTAL_PATH."', '".$this->varname."')\">$convertor "._m('import') ."</a>";
-        }
+        $constants = array_filter(get_defined_constants(true)['user'], function($key) {
+            return strpos($key, 'CONV_TEXTFILTERS') === 0;
+        }, ARRAY_FILTER_USE_KEY);
+
+        $convertors = array_map(function($key) {
+            return substr($key, 17);
+        },array_keys($constants));
+
+        $convtext = join('/',array_diff($convertors, ['ICONV']));
+        $convertor = "<a class=\"btn aa-convertor\" href=\"javascript:CallConvertor('".self_server(). AA_INSTAL_PATH."', '".$this->varname."')\">$convtext "._m('import') ."</a>";
 /**
  * for new version by Jirkar
  * not functional
