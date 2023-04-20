@@ -1,4 +1,10 @@
 <?php
+
+function AddslashesDeep($value)   { return is_array($value) ? array_map('AddslashesDeep',   $value) : addslashes($value);   }
+foreach ($_REQUEST as $k => $v) {
+    $$k = AddslashesDeep($v);
+}
+
 require_once __DIR__."/./../../include/config.php";
 require_once __DIR__ . "/../../include/util.php";
 
@@ -29,7 +35,7 @@ echo '
   <p>'._m('Experimental feature').'</p><br><br>';
 
 
-if (!$userfile) {
+if (!array_key_exists('userfile', $_FILES)) {
     ?>
     <form method="post" action="" enctype="multipart/form-data">
     <input type="file" name="userfile"> <br>
@@ -39,6 +45,7 @@ if (!$userfile) {
     if ($encoding) echo "<input type=\"hidden\" name=\"encoding\" value=\"$encoding\">";
     echo "</form>";
 } else {
+
     $file_name    = Files::getTmpFilename('msc');
     $realname     = $_FILES['userfile']['name'];
     $stringoutput = '';
@@ -46,52 +53,57 @@ if (!$userfile) {
     if ($dest_file === false) {   // error
         $error = Files::lastErrMsg();
     }
+
     if ($error) die($GLOBALS["IMG_UPLOAD_PATH"]);
     if (!$error) {
         if (preg_match("/.doc$/i",$realname)) {
             $safe_file_name=escapeshellcmd($file_name);
             $safe_encoding=escapeshellarg ($encoding);
             if ( defined('CONV_HTMLFILTERS_DOC')) {
-                exec(str_replace('%1',"$uploadpath$safe_file_name",CONV_HTMLFILTERS_DOC),$out);
-                $out=join("\n",$out);
+                $ee = exec(str_replace('%1',"$uploadpath$safe_file_name",CONV_HTMLFILTERS_DOC),$out);
             }
             unlink ("$uploadpath$file_name");
             $insidesection=false;
-            $buffer= [];
-            $output= [];
+            $buffer = [];
+            $output = [];
             foreach ($out as $linenum => $line) {
                 if (preg_match("/^<!--Section/",$line)) {
                     if ($insidesection==true) {
-                        $output=array_merge ($output,$buffer);
+                        $output = array_merge($output,$buffer);
+                        $buffer = [];
+                    } else {
                         $buffer= [];
-                    } else $buffer= [];
+                    }
                     $insidesection=true;
                 } else {
-                    $line=str_replace("&scaron;","�",$line);
-                    $line=str_replace("&Scaron;","�",$line);
+                    $line = str_replace("&scaron;","š",$line);
+                    $line = str_replace("&Scaron;","Š",$line);
                     $buffer[]=$line;
                 }
             }
+            $output = array_merge($output,$buffer);
         } elseif (preg_match("/.pdf$/i",$realname)){
             $safe_file_name=escapeshellcmd($file_name);
             if ( defined('CONV_HTMLFILTERS_PDF')) {
                 exec (str_replace('%1',"$uploadpath$safe_file_name",CONV_HTMLFILTERS_PDF),$out);
-                $out=join("\n",$out);
+                //$out=join("\n",$out);
             }
             unlink ("$uploadpath$file_name");
-            if (!$out) $out[]=" ";
+            if (!$out) {
+                $out = " ";
+            }
             $insidesection=false;
             $buffer= [];
             $output= [];
             foreach ($out as $linenum => $line) {
                 if (preg_match("/body/i",$line)) {
                     if ($insidesection==true) {
-                        $output=array_merge ($output,$buffer);
+                        $output=array_merge($output,$buffer);
                         $buffer= [];
                     } else $buffer= [];
-                    $insidesection=true;
+                    $insidesection = true;
                 } else {
-                    $buffer[]=$line;
+                    $buffer[] = $line;
                 }
             }
         } elseif (preg_match("/.xls$/i",$realname)){
@@ -100,10 +112,12 @@ if (!$userfile) {
             $safe_sysenc=escapeshellarg ($sysenc);
             if ( defined('CONV_HTMLFILTERS_XLS')) {
                 exec (str_replace('%1',"$uploadpath$safe_file_name",CONV_HTMLFILTERS_XLS),$out);
-                $out=join("\n",$out);
+                //$out=join("\n",$out);
             }
             unlink ("$uploadpath$file_name");
-            if (!$out) $out[]=" ";
+            if (!$out) {
+                $out[] = " ";
+            }
             $insidesection=true;
             $output= [];
             foreach ($out as $linenum => $line) {
