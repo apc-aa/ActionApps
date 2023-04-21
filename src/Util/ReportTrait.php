@@ -37,7 +37,7 @@ trait ReportTrait {
         }
 
         if ($rows) {
-            $caption =  is_callable([$this, "objName"]) ? $this->objName() : '';
+            $caption =  is_callable([$this, "getId"]) ? $this->getId() : '';
             if ($type=='html') {
                 $ret = GetHtmlTable($rows, 'key', $caption);
             } elseif ($type=='plain') {

@@ -1428,15 +1428,21 @@ function GetModuleImage($module, $filename, $alt='', $width=0, $height=0, $add='
     return GetAAImage($filename, $alt, $width, $height, $add, "modules/$module/");
 }
 
-/** returns $object's class name without namespace
- * @param $object
+/** returns $object's class name without namespace and possibly Id for logging purposes
+ * @param      $object
+ * @param bool $add_id
  * @return false|string
  */
-function get_class_name($object) {
+function get_class_name($object, $add_id=false) {
     $classname = get_class($object);
-    return ($pos = strrpos($classname, '\\')) ? substr($classname, $pos + 1) : $classname;
+    if ($pos = strrpos($classname, '\\')) {
+        $classname = substr($classname, $pos + 1);
+    }
+    if ($add_id AND method_exists($object, 'getId')) {
+        $classname .= ":" . $object->getId();
+    }
+    return $classname;
 }
-
 
 /**
  * Use as

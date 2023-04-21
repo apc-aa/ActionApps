@@ -94,7 +94,7 @@ class Toexecute {
             ['execute_after', ((int)$time < time() ? time() : $time)],  // task for user queue uses TOEXECUTE_USER_TASK_TIME
             ['aa_user', AuthGetUid()],
             ['priority', $priority],
-            ['selector', ($selector ?: get_class($object))],
+            ['selector', ($selector ?: get_class_name($object, true))],
             ['object', serialize($object)],
             ['params', serialize($params)]
         ]);
@@ -246,7 +246,7 @@ class Toexecute {
         if (is_object($object) and !is_a($object, '__PHP_Incomplete_Class', false)) {
             $retcode = $this->execute_one($object, unserialize($task['params']));
             $this->message($retcode);
-            $selector = get_class($object) . (method_exists($object, 'getId') ? ":" . $object->getId() : '');
+            $selector = get_class_name($object, true);
         } else {
             $this->message('Toexecute:execute - unserialize err:' . $task['object']);
             $retcode = 'no execute, removed from queue';
@@ -256,6 +256,7 @@ class Toexecute {
         // Task is done - remove it from queue
         $varset->doDelete('toexecute');
         $execute_times[$task_type] = microtime(true) - $task_start;
+
         AA_Log::write('TOEXECUTE', $selector, $execute_times[$task_type] . ":$retcode:" . $task['params']);
         return 1;
     }

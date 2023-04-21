@@ -1118,28 +1118,7 @@ class AA_Inputfield {
 
         $convtext = join('/',array_diff($convertors, ['ICONV']));
         $convertor = "<a class=\"btn aa-convertor\" href=\"javascript:CallConvertor('".self_server(). AA_INSTAL_PATH."', '".$this->varname."')\">$convtext "._m('import') ."</a>";
-/**
- * for new version by Jirkar
- * not functional
- * file misc/msconvert/index.php3 needs more changes
 
-        $delim='';
-        if ( defined('CONV_HTMLFILTERS_DOC')  ) {
-            $convertor .= $delim . 'doc';
-            $delim = '/';
-        }
-        if ( defined('CONV_HTMLFILTERS_PDF')  ) {
-            $convertor .= $delim . 'pdf';
-            $delim = '/';
-        }
-        if ( defined('CONV_HTMLFILTERS_XLS')  ) {
-            $convertor .= $delim . 'xls';
-            $delim = '/';
-        }
-        if ( $delim == '/'  ) {
-            $convertor = "<a href=\"javascript:CallConvertor('".self_server(). AA_INSTAL_PATH."', '".$this->varname."')\">$convertor "._m('import') ."</a>";
-        }
-*/
         return $convertor;
     }
 

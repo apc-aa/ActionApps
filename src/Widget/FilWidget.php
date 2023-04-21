@@ -125,7 +125,7 @@ class FilWidget extends Widget
         $widget_add = htmlattr($attrs);
 
         $widget = '';
-        $width = $this->getProperty('width', 60);            // @todo - width is not property of file widget, yet
+        // $width = $this->getProperty('width', 60);            // @todo - width is not property of file widget, yet
         $max_characters = (int)$this->getProperty('max_characters', 254);  // @todo - width is not property of file widget, yet
         $allowed_ftypes = $this->getProperty('allowed_ftypes', '');
         $display_url = (int)$this->getProperty('display_url', 0);
@@ -139,7 +139,7 @@ class FilWidget extends Widget
             $link        = $input_value ? a_href($input_value, GetAAImage('external-link.png', _m('Show').' '.$input_value, 16, 16),['class'=>'aa-fil-link']) : '';
             $widget     .= "\n<div class=aa-fil-file>";
             if (($display_url < 2) AND ($type == 'normal')) {
-                $widget .= "<input type=\"text\" size=\"$width\" maxlength=\"$max_characters\" name=\"$input_name\" id=\"$input_id\" value=\"$input_value\"$widget_add> $link";
+                $widget .= "<input type=\"text\" class=aa-w-full maxlength=\"$max_characters\" name=\"$input_name\" id=\"$input_id\" value=\"$input_value\"$widget_add> $link";
             } else {
                 $widget .= "<input type=\"hidden\" name=\"$input_name\" id=\"$input_id\" value=\"$input_value\">$link";
             }

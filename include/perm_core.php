@@ -975,7 +975,7 @@ class AA_Permsystem_Reader extends AA_Permsystem {
         // return ( ($hash{0} !== '$') OR (substr($hash,0,3)=='$1$') );
     }
 
-    /** updates user password - should be called after successfull authentication and if we needsRehashPassword() */
+    /** updates user password - should be called after successful authentication and if we needsRehashPassword() */
     protected function rehashPassword($user_id, $password) {
         if ($user_id AND $password) {
             AA_Log::write('PWD_REHASH', AA_Log::context($user_id));

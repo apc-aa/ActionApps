@@ -31,7 +31,7 @@ namespace AA\IO;
 use AA\Util\NamedInterface;
 
 class Importer implements \AA\Later\LaterInterface {
-    protected $name;
+    protected $id;
 
     /** @var Saver  */
     protected $saver;
@@ -41,11 +41,12 @@ class Importer implements \AA\Later\LaterInterface {
     /**
      * Importer constructor.
      * (the params could be changed to saver_params, grabber_params, Transformation_params later)
-     * @param      $saver
-     * @param bool $run
+     * @param Saver  $saver
+     * @param bool   $run
+     * @param string $id
      */
-    public function __construct(Saver $saver, bool $run=true, string $name='') {
-        $this->name =  $name;
+    public function __construct(Saver $saver, bool $run=true, string $id='') {
+        $this->id    = $id;
         $this->saver = $saver;
         $this->run   = $run;
     }
@@ -74,7 +75,7 @@ class Importer implements \AA\Later\LaterInterface {
     /** used in Report to identify the Importer in the log
      * @return string
      */
-    public function objName(): string {
-        return $this->name;
+    public function getId(): string {
+        return $this->id;
     }
 }

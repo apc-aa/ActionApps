@@ -87,7 +87,7 @@ function ResampleImage($simage,$dimage,$new_w,$new_h,$exact) {
         $y=$imginfo[1]/$new_h;
     }
 
-    //if image is smaller then limits, do not resample
+    //if image is smaller than limits, do not resample
     if ($x < 1 && $y < 1) {
         return CopyImage2Destination($simage, $dimage);
     }

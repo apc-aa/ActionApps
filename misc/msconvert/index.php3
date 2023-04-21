@@ -10,7 +10,6 @@ require_once __DIR__ . "/../../include/util.php";
 
 if (!$view)     $view     = false;
 if (!$encoding) $encoding = CONV_DEFAULTENCODING;
-if (!$sysenc)   $sysenc   = CONV_SYSTEMENCODING;
 
 $uploadpath = IMG_UPLOAD_PATH;
 
@@ -58,7 +57,6 @@ if (!array_key_exists('userfile', $_FILES)) {
     if (!$error) {
         if (preg_match("/.doc$/i",$realname)) {
             $safe_file_name=escapeshellcmd($file_name);
-            $safe_encoding=escapeshellarg ($encoding);
             if ( defined('CONV_HTMLFILTERS_DOC')) {
                 exec(str_replace('%1',"$uploadpath$safe_file_name",CONV_HTMLFILTERS_DOC),$out);
             }
@@ -84,7 +82,6 @@ if (!array_key_exists('userfile', $_FILES)) {
             $output = array_merge($output,$buffer);
         } elseif (preg_match("/.docx$/i",$realname)) {
             $safe_file_name=escapeshellcmd($file_name);
-            $safe_encoding=escapeshellarg ($encoding);
             if ( defined('CONV_HTMLFILTERS_DOCX')) {
                 exec(str_replace('%1',"$uploadpath$safe_file_name",CONV_HTMLFILTERS_DOCX),$out);
             }
@@ -108,7 +105,6 @@ if (!array_key_exists('userfile', $_FILES)) {
             $output = array_merge($output,$buffer);
         } elseif (preg_match("/.docx$/i",$realname)) {
             $safe_file_name=escapeshellcmd($file_name);
-            $safe_encoding=escapeshellarg ($encoding);
             if ( defined('CONV_HTMLFILTERS_DOCX')) {
                 exec(str_replace('%1',"$uploadpath$safe_file_name",CONV_HTMLFILTERS_DOCX),$out);
             }
@@ -156,8 +152,6 @@ if (!array_key_exists('userfile', $_FILES)) {
             }
         } elseif (preg_match("/.xls$/i",$realname)){
             $safe_file_name=escapeshellcmd($file_name);
-            $safe_encoding=escapeshellarg ($encoding);
-            $safe_sysenc=escapeshellarg ($sysenc);
             if ( defined('CONV_HTMLFILTERS_XLS')) {
                 exec (str_replace('%1',"$uploadpath$safe_file_name",CONV_HTMLFILTERS_XLS),$out);
                 //$out=join("\n",$out);
