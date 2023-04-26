@@ -143,7 +143,6 @@ class AA_Router {
         return $params[$param];
     }
 
-
     /** _scrollerArray function
      *  Return navigation bar as a hash
      *  labels as keys, query string fragments a values
@@ -188,7 +187,7 @@ class AA_Router {
 
     function go2url($query_string) {
         global $apc_state;
-        return self::getState($this->newState($apc_state, $query_string));
+        return static::getState($this->newState($apc_state, $query_string));
     }
 
     // should be refined in subclass
