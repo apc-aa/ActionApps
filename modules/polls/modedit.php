@@ -236,7 +236,7 @@ $apage->printHead($err, $Msg);
     FrmStaticText(_m("Id"), $module_id);
     FrmInputText("name", _m("Name"), $name, 99, 25, true);
     $include_cmd = "<br>&lt;!--#include&nbsp;virtual=\"". AA_INSTAL_PATH ."modules/polls/poll.php3?pid=$module_id\"--&gt;";
-    FrmInputText("slice_url", _m("URL"), $slice_url, 254, 25, false, _m("Use following SSI command to include the poll to the page: ". $include_cmd));
+    FrmInputText("slice_url", _m("URL"), $slice_url, 254, 25, false, _m("Use following SSI command to include the poll to the page: " . $include_cmd));
     FrmInputNumber("priority", _m("Priority (order in slice-menu)"), $priority);
 
     FrmInputSelect("owner", _m("Owner"), $slice_owners, $owner);
@@ -256,7 +256,7 @@ $apage->printHead($err, $Msg);
     FrmInputChBox("ip_locking",    _m("Use IP locking"),     $ip_locking);
     FrmInputNumber("ip_lock_timeout", _m("IP Locking timeout"), $ip_lock_timeout);
     FrmInputChBox("set_cookies",   _m("Use cookies"),        $set_cookies);
-    FrmInputText("cookies_prefix", _m("Cookies prefix"),     $cookies_prefix);
+    FrmInputText("cookies_prefix", _m("Cookies prefix"), $cookies_prefix);
 //    FrmInputText("params",        _m("Parameters"),         $params);     // @todo - add paramwizard
     FrmTabEnd($form_buttons);
 

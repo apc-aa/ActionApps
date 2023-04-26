@@ -144,14 +144,14 @@ $form_buttons = [
 
 FrmTabCaption(_m("Edit comment"), $form_buttons);
     FrmStaticText("id", $d_id);
-    FrmInputText("subject",_m("Subject"), $subject, 99, 50, true);
-    FrmInputText("author",_m("Author"), $author, 60, 25, true);
+    FrmInputText("subject", _m("Subject"), $subject, 99, 50, true);
+    FrmInputText("author", _m("Author"), $author, 60, 25, true);
     FrmInputEmail("e_mail",_m("E-mail"), $e_mail, 60);
     FrmTextarea("body", _m("Text of discussion comment"), $body, 10, 40);
     FrmDate("date", _m('Date'), $date, false, '', '', true);
-    FrmInputText("url_address",_m("Authors's WWW  - URL"), $url_address, 99, 50);
+    FrmInputText("url_address", _m("Authors's WWW  - URL"), $url_address, 99, 50);
     FrmInputText("url_description", _m("Authors's WWW - description"), $url_description, 60);
-    FrmInputText("remote_addr",_m("Remote address"), $remote_addr, 60);
+    FrmInputText("remote_addr", _m("Remote address"), $remote_addr, 60);
     FrmTextarea("free1", _m("Free 1"), $free1, 5, 40);
     FrmTextarea("free2", _m("Tracking"), $free2, 5, 40);
 FrmTabEnd($form_buttons);

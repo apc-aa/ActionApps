@@ -483,18 +483,21 @@ class AA_Inputfield {
                            // the varname (for examlpe "name" is good database
                            // column name, but wrong for HTML form)
 
-    // --- private ---
-    var $result;           // result string (depends on result_mode if variables are as aliases or it is expanded)
-    var $result_mode;      // expand | template
-                           // expand   - input fields are normally printed;
-                           // template - field is printed as alias
-                           //            {inputfield:...} and content is stored
-                           //            into contentcache
-    var $value_modified;   // sometimes we have to modify value before output
-    var $selected;         // helper array used for quick search, if specified
+    // --- privates ---
+    /** @var string $result Collects output of the field  */
+    protected $result;           // result string (depends on result_mode if variables are as aliases or it is expanded)
+
+    /** @var string $result_mode expand | template
+     *                           expand   - input fields are normally printed;
+     *                           template - field is printed as alias
+     *                             {inputfield:...} and content is stored into contentcache
+     */
+    protected $result_mode;
+    protected $value_modified;   // sometimes we have to modify value before output
+    protected $selected;         // helper array used for quick search, if specified
                            // value is selected (mainly for multivalues)
-    var $const_arr;        // array of constants used for selections (selectbox, radio, ...)
-    var $msg;                         // stores return code from functions
+    protected $const_arr;        // array of constants used for selections (selectbox, radio, ...)
+    protected $msg;                         // stores return code from functions
 
     protected $use_triggers_4_slice = 0;  // shall the input contain aa_onXxxx() triggers? used for item-editing widgets
 
@@ -1029,32 +1032,33 @@ class AA_Inputfield {
         }
         return $this->result;
     }
-    /** print_result function
-     *
+
+    /**
+     * @return string
      */
-    function print_result() {
-        echo $this->result;
+    function get_result(): string {
+        return $this->result;
     }
 
 
-    // pivate functions - functions helping field display ---------------------
+    // private functions - functions helping field display ---------------------
 
     /** needed function
      * functions to show additional field data
      */
-    function needed() {
+    protected function needed() {
         if ( $this->required ) {
             $this->echoo( "&nbsp;*" );
         }
     }
 
-    function help($hlp) {
+    protected function help($hlp) {
         if ( $hlp ) {
             $this->echoo( "<div class=\"tabhlp\">$hlp</div>" );
         }
     }
 
-    function morehelp($hlp) {
+    protected function morehelp($hlp) {
         if ( $hlp ) {
             $this->echoo( "<a href=".safe($hlp)." target='_blank' class='aa-morehelp'>?</a>" );
         }
@@ -1066,7 +1070,7 @@ class AA_Inputfield {
      * @param $hlp
      * @param $more_hlp
      */
-    function helps( $plus=false, $hlp=null, $more_hlp=null ) {
+    protected function helps($plus=false, $hlp=null, $more_hlp=null ) {
         $this->morehelp(is_null($more_hlp) ? $this->input_morehlp : $more_hlp );
         $this->help(    is_null($hlp)      ? $this->input_help    : $hlp );
         if ( $plus ) {
@@ -1078,7 +1082,7 @@ class AA_Inputfield {
      * @param bool $start
      * @param bool $mark_single
      */
-    function field_tr(bool $start=true, bool $mark_single=false) {
+    protected function field_tr(bool $start=true, bool $mark_single=false) {
         $start  = $start ? ' fieldstart' : '';
         $start .= $mark_single ? ' aa-singlecol' : '';
         $this->echoo("\n<tr class=\"formrow{formpart}$start cont-".$this->varname."\">");
@@ -1089,7 +1093,7 @@ class AA_Inputfield {
      * @param $colspan
      * @param $name
      */
-    function field_name( $plus=false, $colspan=1, $name=null ) {
+    protected function field_name($plus=false, $colspan=1, $name=null ) {
         $name = is_null($name) ? $this->name : $name;
         switch( $plus ) {
         case 'plus':    $this->field_tr();
@@ -2181,12 +2185,11 @@ function getFrmMoreHelp($hlp_url, $hint="") {
 function FrmInputChBox($name, $txt, $checked=true, $changeorder=false, $add="", $colspan=1, $needed=false, $hlp="", $morehlp="") {
     $input = new AA_Inputfield($checked, false, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp);
     $input->inputChBox($changeorder, $colspan);
-    $input->print_result();
+    echo $input->get_result();
 }
 
 
-/** Prints html tag <input type=text .. to 2-column table
- *  for use within <form> and <table> tag.
+/** Gets html tag <input type=text .. to 2-column table  for use within <form> and <table> tag.
  * @param        $name
  * @param        $txt
  * @param        $val
@@ -2196,17 +2199,25 @@ function FrmInputChBox($name, $txt, $checked=true, $changeorder=false, $add="", 
  * @param string $hlp
  * @param string $morehlp
  * @param bool   $html
- * @param string $type allows to show <INPUT type=PASSWORD> field as well
- *                     (and perhaps BUTTON and SUBMIT also, but I do not see
+ * @param string $type  allows to show <INPUT type=PASSWORD> field as well
+ *                      (and perhaps BUTTON and SUBMIT also, but I do not see
  *                      any usage) - added by Jakub, 28.1.2003
  * @param string $placeholder
  * @param string $pattern
+ * @return string
  */
-function FrmInputText($name, $txt, $val, $maxsize=254, $size=25, $needed=false, $hlp="", $morehlp="", $html=false, $type="text", $placeholder='', $pattern='') {
+function getFrmText($name, $txt, $val, $maxsize=254, $size=25, $needed=false, $hlp="", $morehlp="", $html=false, $placeholder='', $pattern=''): string {
     $add   = false;   // in parameter, but never filled. Honza 24.4.2013
     $input = new AA_Inputfield($val, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp);
-    $input->inputText($maxsize, $size, $type, $placeholder, $pattern);
-    $input->print_result();
+    $input->inputText($maxsize, $size, "text", $placeholder, $pattern);
+    return $input->get_result();
+}
+
+/** Prints html tag <input type=text .. to 2-column table  for use within <form> and <table> tag.
+ * @see getFrmText
+ */
+function FrmInputText($name, $txt, $val, $maxsize=254, $size=25, $needed=false, $hlp="", $morehlp="", $html=false, $placeholder='', $pattern='') {
+    echo getFrmText($name, $txt, $val, $maxsize, $size, $needed, $hlp, $morehlp, $html, $placeholder, $pattern);
 }
 
 /** Prints password input box
@@ -2217,7 +2228,7 @@ function FrmInputText($name, $txt, $val, $maxsize=254, $size=25, $needed=false, 
 function FrmInputPwd($name, $txt, $val) {
     $input = new AA_Inputfield($val, false, 'normal', $name, $txt, false, true);
     $input->inputText(50, 50, 'password');
-    $input->print_result();
+    echo $input->get_result();
 }
 
 /** Prints password input box
@@ -2228,12 +2239,11 @@ function FrmInputPwd($name, $txt, $val) {
 function FrmInputEmail($name, $txt, $val,  $maxsize=254, $size=25, $needed=false, $hlp="", $morehlp="", $placeholder='') {
     $input = new AA_Inputfield($val, false, 'normal', $name, $txt, false, $needed, $hlp, $morehlp);
     $input->inputText($maxsize, $size, 'email', $placeholder);
-    $input->print_result();
+    echo $input->get_result();
 }
 
 
-/** Prints html tag <input type=text .. to 2-column table
- *  for use within <form> and <table> tag.
+/** Gets html tag <input type=text .. to 2-column table for use within <form> and <table> tag.
  * @param        $name
  * @param        $txt
  * @param        $val
@@ -2244,11 +2254,11 @@ function FrmInputEmail($name, $txt, $val,  $maxsize=254, $size=25, $needed=false
  * @param string $morehlp
  * @param string $placeholder
  */
-function FrmInputNumber($name, $txt, $val, $min=0, $max=9999, $needed=false, $hlp="", $morehlp="", $placeholder='') {
+function getFrmNumber($name, $txt, $val, $min=0, $max=9999, $needed=false, $hlp="", $morehlp="", $placeholder=''): string {
     $input = new AA_Inputfield($val, true, 'normal', $name, $txt, false, $needed, $hlp, $morehlp);
     $input->setValidator(new AA_Validate_Number(['min'=>$min, 'max'=>$max]));
     $input->inputText((int)log10($max)+1, (int)log10($max)+4, 'number', $placeholder);  // size must be bigger to show also arrows
-    $input->print_result();
+    return $input->get_result();
 
     /* concept of new widget approach - not working - uses aa[][...]
     //                     ($id='', $name='', $type='text', $multi=false, $persistent=true, $validator=null, $required=false, $input_help='', $input_morehlp='', $example='', $show_content_type_switch=0, $content_type_switch_default=FLAG_HTML, $perm=null, $default=null, $translations=null) {  // default values are needed for AA_Storable's construction
@@ -2260,6 +2270,12 @@ function FrmInputNumber($name, $txt, $val, $min=0, $max=9999, $needed=false, $hl
     */
 }
 
+/** Prints html tag <input type=text .. to 2-column table for use within <form> and <table> tag.
+ * @see FrmInputNumber
+ */
+function FrmInputNumber($name, $txt, $val, $min=0, $max=9999, $needed=false, $hlp="", $morehlp="", $placeholder='') {
+    echo getFrmNumber($name, $txt, $val, $min, $max, $needed, $hlp, $morehlp, $placeholder);
+}
 
 /** FrmStaticText function
  *  Prints two static text to 2-column table for use within <table> tag
@@ -2272,7 +2288,7 @@ function FrmInputNumber($name, $txt, $val, $min=0, $max=9999, $needed=false, $hl
 function FrmStaticText($txt, $val, $hlp = "", $morehlp = "", $safing = true) {
     $input = new AA_Inputfield($val, false, 'normal', '', $txt, '', false, $hlp, $morehlp);
     $input->staticText($safing);
-    $input->print_result();
+    echo $input->get_result();
 }
 
 /** FrmHidden function
@@ -2285,7 +2301,7 @@ function FrmStaticText($txt, $val, $hlp = "", $morehlp = "", $safing = true) {
 function FrmHidden($name, $val, $safing=true ) {
     $input = new AA_Inputfield($val, false, 'normal', $name);
     $input->hidden($safing);
-    $input->print_result();
+    echo $input->get_result();
 }
 
 /** FrmTextarea function
@@ -2311,7 +2327,7 @@ function FrmTextarea($name, $txt, $val, $rows=4, $cols=60, $needed=false, $hlp="
         $input->html_rb_show = true;
     }
     $input->textarea($rows, $cols, $single, $showrich_href, false, $maxlength);
-    $input->print_result();
+    echo $input->get_result();
 }
 
 /** FrmDate function
@@ -2331,7 +2347,7 @@ function FrmDate($name, $txt, $val, $needed=false, $hlp="", $morehlp="", $displa
     $add   = false;   // in parameter, but never filled. Honza 24.4.2013
     $input = new AA_Inputfield($val, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp);
     $input->dateSelect(7, 1, true, $display_time);
-    $input->print_result();
+    echo $input->get_result();
 }
 
 
@@ -2353,7 +2369,7 @@ function FrmInputRadio($name, $txt, $arr, $selected="", $needed=false, $hlp="", 
     $html  = false;   // in parameter, but never filled. Honza 24.4.2013
     $input = new AA_Inputfield($selected, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp, $arr);
     $input->inputRadio($ncols, $move_right);
-    $input->print_result();
+    echo $input->get_result();
 }
 
 /** FrmInputMultiSelect function
@@ -2376,7 +2392,7 @@ function FrmInputMultiSelect($name, $txt, $arr, $selected="", $rows=5, $needed=f
     $add   = false;   // in parameter, but never filled. Honza 24.4.2013
     $input = new AA_Inputfield($selected, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp, $arr);
     $input->inputMultiSelect($rows);
-    $input->print_result();
+    echo $input->get_result();
 }
 
 
@@ -2398,7 +2414,7 @@ function FrmInputMultiText($name, $txt, $arr, $selected="", $rows=5, $needed=fal
     $add   = false;   // in parameter, but never filled. Honza 24.4.2013
     $input = new AA_Inputfield($selected, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp, $arr);
     $input->inputRelation($rows, '', '', '', $actions);
-    $input->print_result();
+    echo $input->get_result();
 }
 
 /** FrmInputSelect function
@@ -2418,7 +2434,7 @@ function FrmInputSelect($name, $txt, $arr, $selected="", $needed=false, $hlp="",
     $add   = false;   // in parameter, but never filled. Honza 24.4.2013
     $input = new AA_Inputfield($selected, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp, $arr);
     $input->inputSelect($usevalue);
-    $input->print_result();
+    echo $input->get_result();
 }
 
 /** FrmInputFile function
@@ -2437,7 +2453,7 @@ function FrmInputFile($name, $txt, $val, $needed=false, $accepts="image/*", $hlp
     $add   = false;   // in parameter, but never filled. Honza 24.4.2013
     $input = new AA_Inputfield($val, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp);
     $input->inputFile($accepts);
-    $input->print_result();
+    echo $input->get_result();
 }
 
 /** FrmInputPreSelect function
@@ -2461,7 +2477,7 @@ function FrmInputPreSelect($name, $txt, $arr, $val, $maxsize=254, $size=25, $nee
     $add   = false;   // in parameter, but never filled. Honza 24.4.2013
     $input = new AA_Inputfield($val, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp, $arr);
     $input->inputPreSelect($maxsize,$size,$adding,$secondfield,$usevalue);
-    $input->print_result();
+    echo $input->get_result();
 }
 
 /** FrmTwoBox function
@@ -2489,7 +2505,7 @@ function FrmTwoBox($name, $txt, $arr, $selected, $rows, $needed=false, $wi2_offe
     // $val is not used - there is only from historical reasons and should be removed accross files
     $input = new AA_Inputfield($sel, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp, $arr);
     $input->twoBox($rows,$wi2_offer,$wi2_selected);
-    $input->print_result();
+    echo $input->get_result();
 }
 
 /** PrintHelp function

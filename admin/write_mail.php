@@ -236,7 +236,7 @@ FrmItemGroupSelect( $items, $searchbar, 'users', $messages, $additional);
 
 FrmTabSeparator(_m('Write the email'));
 
-FrmInputText(  'subject',     _m('Subject'),           $_POST['subject'],     254, 80, true);
+FrmInputText('subject', _m('Subject'), $_POST['subject'], 254, 80, true);
 //FrmTextarea(   'body',        _m('Body'),              $_POST['body'],         20, 80, true, '', '', '', true);  // enable rich text area
 
 if ($user_templates) {

@@ -443,11 +443,11 @@ echo '
       </td>
     </tr>';
     printChange('url', $url_change, $url);
-    FrmInputText( 'aa_name', _m('Page name'),           $aa_name,  250, 50, true,
-                   _m('English name of the page'), get_help_url(AA_LINKS_HELP_LINK,"nazev-odkazu"));
+    FrmInputText('aa_name', _m('Page name'), $aa_name, 250, 50, true,
+        _m('English name of the page'), get_help_url(AA_LINKS_HELP_LINK, "nazev-odkazu"));
     printChange('aa_name', $aa_name_change, $aa_name);
-    FrmInputText( 'original_name', _m('Original page name'), $original_name,  250, 50, false,
-                   _m('Name of the page in original language'), get_help_url(AA_LINKS_HELP_LINK,"preklad-nazvu"));
+    FrmInputText('original_name', _m('Original page name'), $original_name, 250, 50, false,
+        _m('Name of the page in original language'), get_help_url(AA_LINKS_HELP_LINK, "preklad-nazvu"));
     printChange('original_name', $original_name_change, $original_name);
     FrmTextarea('description', _m('Description'), $description, 5, 60, false,
         _m('Do not use HTML tags and do not write words like "best page", ... The maximum length of the description should be about 250 characters.'),
@@ -527,15 +527,15 @@ echo      '</td>
 // the link is of special type
 if ( !Links_IsPublic() OR ($r_state['link_id'] AND $type) ) {
        FrmTabSeparator(_m('Organization') . getFrmMoreHelp(get_help_url(AA_LINKS_HELP_LINK, "kontakt")));
-       FrmInputText( 'org_city', _m('City'), $org_city,  250, 50);
+       FrmInputText('org_city', _m('City'), $org_city, 250, 50);
        printChange( 'org_city', $org_city_change, $org_city );
-       FrmInputText( 'org_street', _m('Street'), $org_street,  250, 50);
+       FrmInputText('org_street', _m('Street'), $org_street, 250, 50);
        printChange( 'org_street', $org_street_change, $org_street );
-       FrmInputText( 'org_post_code', _m('Post code'), $org_post_code,  250, 50);
+       FrmInputText('org_post_code', _m('Post code'), $org_post_code, 250, 50);
        printChange( 'org_post_code', $org_post_code_change, $org_post_code );
-       FrmInputText( 'org_phone', _m('Phone'), $org_phone,  250, 50);
+       FrmInputText('org_phone', _m('Phone'), $org_phone, 250, 50);
        printChange( 'org_phone', $org_phone_change, $org_phone );
-       FrmInputText( 'org_fax', _m('Fax'), $org_fax,  250, 50);
+       FrmInputText('org_fax', _m('Fax'), $org_fax, 250, 50);
        printChange( 'org_fax', $org_fax_change, $org_fax );
        FrmInputEmail( 'org_email', _m('E-mail'), $org_email,  250, 50);
        printChange( 'org_email', $org_email_change, $org_email );

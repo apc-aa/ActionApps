@@ -64,7 +64,7 @@ function htmlattr(array $attr) {
  * @usage htmltag('div','text',['class'=>'info'])
  */
 function htmltag($tag, $content, $attr=[]): string {
-    return "<$tag". htmlattr($attr).'>'. safe($content)."</$tag>";
+    return "<$tag". htmlattr($attr).'>'. $content ."</$tag>";
 }
 
 /** creates xml/html tag with attributes
@@ -1429,12 +1429,12 @@ function GetModuleImage($module, $filename, $alt='', $width=0, $height=0, $add='
 }
 
 /** returns $object's class name without namespace and possibly Id for logging purposes
- * @param      $object
+ * @param string|object $object
  * @param bool $add_id
  * @return false|string
  */
 function get_class_name($object, $add_id=false) {
-    $classname = get_class($object);
+    $classname = is_object($object) ? get_class($object) : $object;
     if ($pos = strrpos($classname, '\\')) {
         $classname = substr($classname, $pos + 1);
     }

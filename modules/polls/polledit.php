@@ -195,14 +195,14 @@ if ($poll_id) {
         }
     }
 
-    FrmInputText("headline",      _m("Headline"),                                  $headline, 255, 40, true,  _m("Question"));
+    FrmInputText("headline", _m("Headline"), $headline, 255, 40, true, _m("Question"));
     FrmInputMultiText('answers[]',_m("Insert new answers and choose their order"), $polltext,  "", 10, true);
     FrmDate('publish_date',       _m('Publish Date'),                              $publish_date, true, "", "", true);
     FrmDate('expiry_date',        _m('Expiry Date'),                               $expiry_date,   true, "", "", true);
 
 } else {
 
-    FrmInputText("headline",       _m("Headline"),                                  "", 255, 40, true,  _m("Question"));
+    FrmInputText("headline", _m("Headline"), "", 255, 40, true, _m("Question"));
     FrmInputMultiText('answers[]', _m("Insert new answers and choose their order"), [], "", 10, true);
     FrmDate('publish_date',        _m('Publish Date'),                              now(), true, "", "", true);
     FrmDate('expiry_date',         _m('Expiry Date'),                               now()+604800, true, "", "", true);   // 604800 - 60*60*24*7 - week
@@ -213,10 +213,10 @@ FrmTabSeparator(_m("Polls settings"));
 FrmInputChBox("locked",         _m("Poll is locked"),     $locked);
 FrmInputChBox("logging",        _m("Use logging"),        $logging);
 FrmInputChBox("ip_locking",     _m("Use IP locking"),     $ip_locking);
-FrmInputText("ip_lock_timeout", _m("IP Locking timeout"), $ip_lock_timeout, 15, 10, false,  _m("time in seconds"));
+FrmInputText("ip_lock_timeout", _m("IP Locking timeout"), $ip_lock_timeout, 15, 10, false, _m("time in seconds"));
 FrmInputChBox("set_cookies",    _m("Use cookies"),        $set_cookies);
 // FrmInputText("cookies_prefix",  _m("Cookies prefix"),     $cookies_prefix);  // not used
-FrmInputText("params",          _m("Parameters"),         $params);
+FrmInputText("params", _m("Parameters"), $params);
 
 FrmTabSeparator(_m("Polls design templates"));
 

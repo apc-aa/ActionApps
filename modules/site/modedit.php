@@ -278,7 +278,7 @@ $apage->printHead($err, $Msg);
     FrmStaticText(_m("Id"), $module_id);
     FrmInputText("name", _m("Name"), $name, 99, 25, true);
     //$include_cmd = "<br>&lt;!--#include&nbsp;virtual=\"". AA_INSTAL_PATH ."modules/site/site.php3?site_id=$module_id\"--&gt;";
-    FrmInputText("slice_url", _m("URL"), $slice_url, 254, 60, false, _m("Main URL of the website."),'', 'false', 'text', 'https://www.example.org/');
+    FrmInputText("slice_url", _m("URL"), $slice_url, 254, 60, false, _m("Main URL of the website."), '', 'false', 'https://www.example.org/');
     FrmInputNumber("priority", _m("Priority (order in slice-menu)"), $priority);
 
     FrmInputSelect("owner", _m("Owner"), $slice_owners, $owner);
@@ -291,7 +291,7 @@ $apage->printHead($err, $Msg);
     }
     FrmInputSelect("lang_file", _m("Used Language File"), $MODULES['W']['language_files'], $lang_file);
     FrmInputSelect("router",   _m("Router"), [1 => 'AA_Router_Seo'], $router, false, _m("Use AA_Router_Seo. Otherwise you will use old sitemodule approach with 'control file', which we can't recommend."));
-    FrmInputText("state_file", _m("Home or State file"), $state_file, 99, 25, false, _m("For AA_Router_Seo fill the <b>default url</b> (home) - like <em>/en/home</em> or left it empty<br><br>For older sites without AA_Router_Seo fill in the name of <b>Site control file</b> - will be placed in /modules/site/sites/ directory. The name you specify will be prefixed by 'site_' prefix, so if you for example name the file as 'apc.php', the site control file will be /modules/site/sites/site_apc.php."),'', 'false', 'text', '/en/home');
+    FrmInputText("state_file", _m("Home or State file"), $state_file, 99, 25, false, _m("For AA_Router_Seo fill the <b>default url</b> (home) - like <em>/en/home</em> or left it empty<br><br>For older sites without AA_Router_Seo fill in the name of <b>Site control file</b> - will be placed in /modules/site/sites/ directory. The name you specify will be prefixed by 'site_' prefix, so if you for example name the file as 'apc.php', the site control file will be /modules/site/sites/site_apc.php."), '', 'false', '/en/home');
 
     foreach ($g_modules as  $k => $v) {
         if (strpos('SP', $v['type']) !== false) {

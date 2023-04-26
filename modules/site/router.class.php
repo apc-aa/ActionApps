@@ -180,9 +180,15 @@ class AA_Router {
         return $arr;
     }
 
+    /** static function - calling from outside is not necessary, now
+     * @param array $apc_state
+     * @return string
+     */
+    static function getState($apc_state): string { return '';  }
+
     function go2url($query_string) {
         global $apc_state;
-        return $this->getState($this->newState($apc_state, $query_string));
+        return self::getState($this->newState($apc_state, $query_string));
     }
 
     // should be refined in subclass
@@ -391,12 +397,15 @@ class AA_Router_Seo extends AA_Router {
         return $ret;
     }
 
-    /** static function - caling from outside is not necessary, now */
-    function getState($apc_state) {
-        $ret = '/'.$apc_state['xlang'].$apc_state['xpage'].$apc_state['xflag'].($apc_state['xcat'] ? '-'. $apc_state['xcat'] : '').'/';
-        $i=1;
-        while (!empty($apc_state['xseo'.$i])) {
-            $ret .= $apc_state['xseo'.$i]. '/';
+    /** static function - calling from outside is not necessary, now
+     * @param array $apc_state
+     * @return string
+     */
+    static function getState($apc_state): string {
+        $ret = '/' . $apc_state['xlang'] . $apc_state['xpage'] . $apc_state['xflag'] . ($apc_state['xcat'] ? '-' . $apc_state['xcat'] : '') . '/';
+        $i   = 1;
+        while (!empty($apc_state['xseo' . $i])) {
+            $ret .= $apc_state['xseo' . $i] . '/';
             $i++;
         }
         // the state should be direcory-like: /cz/, /en2/, ... not /cz, /en2 - the reason is we want to report the /entropy url as 404, not as xlang=en, xflag=tropy
@@ -406,13 +415,13 @@ class AA_Router_Seo extends AA_Router {
         //   RewriteCond %{REQUEST_FILENAME} !-f
         //   RewriteCond %{REQUEST_FILENAME} !-d
         //   RewriteRule ^ /apc-aa/modules/site/site.php3 [L,QSA]
-        if ($i>1) {
-            $ret = rtrim($ret,"/");
+        if ($i > 1) {
+            $ret = rtrim($ret, "/");
         }
 
         // add querystring
         if ($apc_state['xqs']) {
-            $ret .= '?'. $apc_state['xqs'];
+            $ret .= '?' . $apc_state['xqs'];
         }
         return $ret;
     }

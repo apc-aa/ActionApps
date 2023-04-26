@@ -227,7 +227,7 @@ $include_cmd = "<!--#include virtual=\"". AA_INSTAL_PATH ."modules/links/links.p
 FrmStaticText(_m('ID'), $module_id);
 FrmInputText("name", _m('Title'), $name, 99, 25, true);
 FrmInputText("slice_url", _m('URL of .shtml page'), $slice_url, 254, 25, false,
-    _m("Use following SSI command to include links to the page: "). $include_cmd);
+    _m("Use following SSI command to include links to the page: ") . $include_cmd);
 FrmInputNumber("priority", _m("Priority (order in slice-menu)"), $priority);
 
 FrmInputSelect("owner", _m('Owner'), $slice_owners, $owner);

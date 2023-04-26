@@ -176,7 +176,7 @@ FrmTextarea("admin_format_bottom", _m("Bottom HTML"), $admin_format_bottom,
     4, 60, false, _m("HTML code which appears at the bottom of slice area")
     . '<br>' . AA_View::getViewJumpLinks($admin_format_bottom), '', 1);
 FrmInputText("admin_remove", _m("Remove strings"), $admin_remove, 254, 50, false,
-             _m("Removes empty brackets etc. Use ## as delimiter."));
+    _m("Removes empty brackets etc. Use ## as delimiter."));
 FrmTextarea("admin_noitem_msg", _m("HTML code for \"No item found\" message"), $admin_noitem_msg,
     4, 60, false, _m("Code to be printed when no item is filled (or user have no permission to any item in the slice)")
     . '<br>' . AA_View::getViewJumpLinks($admin_noitem_msg), '', 1);

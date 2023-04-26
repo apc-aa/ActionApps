@@ -318,8 +318,8 @@ if ( $usr_edit OR ($submit_action == "update_submit") ) {
 if ( !($usr_edit OR ($submit_action == "update_submit")) OR AA::$perm->isUserEditable($selected_user)) {
     FrmInputPwd("user_password1", _m("Password"), $user_password1);
     FrmInputPwd("user_password2", _m("Retype password"), $user_password2);
-    FrmInputText("user_firstname",_m("First name"),     $user_firstname, 50, 50, true);
-    FrmInputText("user_surname",  _m("Surname"),        $user_surname, 50, 50, true);
+    FrmInputText("user_firstname", _m("First name"), $user_firstname, 50, 50, true);
+    FrmInputText("user_surname", _m("Surname"), $user_surname, 50, 50, true);
     FrmInputEmail("user_mail1",    _m("E-mail")." 1",    $user_mail1, 50, 50, true);
 }
 
