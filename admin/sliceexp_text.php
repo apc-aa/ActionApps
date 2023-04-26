@@ -382,7 +382,7 @@ class AA_Slice_Documentator extends AA_Slice_Exporter {
 
         $fields = DB_AA::select([], 'SELECT * FROM `field`', [['slice_id',$slobj->getId(), 'l']], ['input_show-', 'input_pri']);
         foreach ($fields as $new) {
-            $slice_data .= '<tr><th>'.$new['name'].'</th><td>'.$new['id'].'</td><td>'.Widget::factoryByString($new["input_show_func"])->name().'</td><td>'.($new['input_show'] ? '':_m('Hidden')).'</td></tr>';
+            $slice_data .= '<tr><th>'.$new['name'].'</th><td>'.$new['id'].'</td><td>'.Widget::factoryByString($new["input_show_func"])::name().'</td><td>'.($new['input_show'] ? '':_m('Hidden')).'</td></tr>';
 
             $new["slice_id"] = $uid; // Use new id if set
 

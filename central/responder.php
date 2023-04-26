@@ -439,7 +439,7 @@ if ( empty($responder) ) {
 }
 
 if (!$responder->isPerm()) {
-    AA_Response::error(_m("You (%2) don't have permissions to run %1", [$responder->name(),AuthGetUid()]), 101);  // error code > 0
+    AA_Response::error(_m("You (%2) don't have permissions to run %1", [$responder::name(),AuthGetUid()]), 101);  // error code > 0
     exit;
 }
 

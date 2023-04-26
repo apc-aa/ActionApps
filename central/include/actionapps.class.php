@@ -487,13 +487,13 @@ class AA_Module_Definition_Slice extends AA_Module_Definition {
         $dest_module_id = $dest_def->getId();
         $metabase       = AA::Metabase();
 
-        $diff =                    AA_Difference::_compareArray(reset($this->data['module']),  reset($dest_def->data['module']), new AA_Identifier($dest_module_id, 'module', $dest_module_id), [$metabase->getModuleField('module')]); // just module data
-        $diff = array_merge($diff, AA_Difference::_compareArray(reset($this->data['slice']),   reset($dest_def->data['slice']),  new AA_Identifier($dest_module_id, 'slice', $dest_module_id),  [$metabase->getModuleField('slice')]));  // just slice data
-        $diff = array_merge($diff, AA_Difference::_compareArray($this->data['field'],    $dest_def->data['field'],    new AA_Identifier($dest_module_id, 'field'),    [$metabase->getModuleField('field')]));
-        $diff = array_merge($diff, AA_Difference::_compareArray($this->data['view'],     $dest_def->data['view'],     new AA_Identifier($dest_module_id, 'view'),     [$metabase->getModuleField('view')]));
-        $diff = array_merge($diff, AA_Difference::_compareArray($this->data['email'],    $dest_def->data['email'],    new AA_Identifier($dest_module_id, 'email'),    [$metabase->getModuleField('email')]));
-        $diff = array_merge($diff, AA_Difference::_compareArray($this->data['constant_slice'], $dest_def->data['constant_slice'], new AA_Identifier($dest_module_id, 'constant_slice'), [$metabase->getModuleField('constant_slice')]));
-        $diff = array_merge($diff, AA_Difference::_compareArray($this->data['constant'], $dest_def->data['constant'], new AA_Identifier($dest_module_id, 'constant'), [$metabase->getModuleField('constant')]));
+        $diff =                    AA_Difference::_compareArray(reset($this->data['module']),  reset($dest_def->data['module']), new AA_Identifier($dest_module_id, 'module', $dest_module_id), [$metabase::getModuleField('module')]); // just module data
+        $diff = array_merge($diff, AA_Difference::_compareArray(reset($this->data['slice']),   reset($dest_def->data['slice']),  new AA_Identifier($dest_module_id, 'slice', $dest_module_id),  [$metabase::getModuleField('slice')]));  // just slice data
+        $diff = array_merge($diff, AA_Difference::_compareArray($this->data['field'],    $dest_def->data['field'],    new AA_Identifier($dest_module_id, 'field'),    [$metabase::getModuleField('field')]));
+        $diff = array_merge($diff, AA_Difference::_compareArray($this->data['view'],     $dest_def->data['view'],     new AA_Identifier($dest_module_id, 'view'),     [$metabase::getModuleField('view')]));
+        $diff = array_merge($diff, AA_Difference::_compareArray($this->data['email'],    $dest_def->data['email'],    new AA_Identifier($dest_module_id, 'email'),    [$metabase::getModuleField('email')]));
+        $diff = array_merge($diff, AA_Difference::_compareArray($this->data['constant_slice'], $dest_def->data['constant_slice'], new AA_Identifier($dest_module_id, 'constant_slice'), [$metabase::getModuleField('constant_slice')]));
+        $diff = array_merge($diff, AA_Difference::_compareArray($this->data['constant'], $dest_def->data['constant'], new AA_Identifier($dest_module_id, 'constant'), [$metabase::getModuleField('constant')]));
         return $diff;
     }
 }

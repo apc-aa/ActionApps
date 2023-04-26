@@ -187,7 +187,7 @@ class AA_Router {
 
     function go2url($query_string) {
         global $apc_state;
-        return static::getState($this->newState($apc_state, $query_string));
+        return static::getState(static::newState($apc_state, $query_string));
     }
 
     // should be refined in subclass
@@ -334,8 +334,8 @@ class AA_Router_Seo extends AA_Router {
         return $this->apc;
     }
 
-    /** static function - caling from outside is not necessary, now */
-    function parseApc($apc, $home='', $langs= []) {
+    /** static function - calling from outside is not necessary, now */
+    static function parseApc($apc, $home='', $langs= []) {
         if (!$home) {
             $home = '/'. \AA\Util\Langs::currentLang();
         }
@@ -428,7 +428,7 @@ class AA_Router_Seo extends AA_Router {
     /** ze stavajiciho $apc_state a naparsovaneho query-stringu
         aktualizuje hodnoty v $apc_state a vrati novy aktualni
         apc retezec */
-    function newState($apc_state, $query_string) {
+    static function newState($apc_state, $query_string) {
         $new_arr = [];
         parse_str($query_string, $new_arr);   // now we have $new_arr['x'], $new_arr['p'], etc.
 
@@ -569,6 +569,7 @@ class AA_Router_Seo extends AA_Router {
             }
             return '';
         }
+        return '';
     }
 
     // function _xseo2id($seo_string) {
@@ -595,7 +596,7 @@ class AA_Router_Seo extends AA_Router {
         return $this->_seocache[$seo_string];
     }
 
-    function _maxKey($arr, $prefix) {
+    static function _maxKey($arr, $prefix) {
         $max = 0;
         foreach($arr as $key => $val) {
             $prefix_len = strlen($prefix);
