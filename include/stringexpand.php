@@ -2010,7 +2010,7 @@ class AA_Stringexpand_Gps extends AA_Stringexpand_Nevercache {
         // 49°58'4.508"N, 12°30'10.790"E
         // -49°58'4.508"N, -12°30'10.790"E
         // 49°58'4.508"S, 12°30'10.790"W
-        if ( preg_match('/^([-+])?(\d+)°(\d+)\'(\d+\.?\,?\d*?)("|\'\')(N|W|S|E),?([-+])?(\d+)°(\d+)\'(\d+\.?\,?\d*?)("|\'\')(N|W|S|E)$/', $gps_in, $p) ) {
+        if ( preg_match('/^([-+])?(\d+)°(\d+)\'(\d+\.?,?\d*?)("|\'\')([NWSE]),?([-+])?(\d+)°(\d+)\'(\d+\.?,?\d*?)("|\'\')([NWSE])$/', $gps_in, $p) ) {
             $num1 = (($p[1]=='-' OR strtoupper($p[6])=='S' OR strtoupper($p[6])=='W') ? '-' : '') .((int)$p[2] + ((int)$p[3]/60) + ((float)$p[4]/3600));
             $num2 = (($p[7]=='-' OR strtoupper($p[12])=='S' OR strtoupper($p[12])=='W') ? '-' : '') .((int)$p[8] + ((int)$p[9]/60) + ((float)$p[10]/3600));
             $lat = (strtoupper($p[6])=='N' OR strtoupper($p[6])=='S') ? $num1 : $num2;
@@ -2071,7 +2071,8 @@ class AA_Stringexpand_Limit extends AA_Stringexpand_Nevercachenotrim {
     function expand($ids='', $offset='', $length='', $delimiter='-') {
         // cut off spaces well as delimiters
         $arr = explode($delimiter, trim($ids, " \t\n\r\0\x0B\xA0" .((strlen($delimiter) == 1) ? $delimiter : '')));
-        $arr = ($length === '') ? array_slice($arr, $offset) : array_slice($arr, $offset, $length);
+        $offset = (int)$offset;
+        $arr = ($length === '') ? array_slice($arr, $offset) : array_slice($arr, $offset, (int)$length);
         return join($delimiter, $arr);
     }
 }
@@ -2092,7 +2093,7 @@ class AA_Stringexpand_Shuffle extends AA_Stringexpand_Nevercache {
         $arr = explode_ids($ids);
         $arr = $this->do_change_array($arr);
         if ($limit) {
-            $arr = array_slice($arr, 0, $limit);
+            $arr = array_slice($arr, 0, (int)$limit);
         }
         return join('-', $arr);
     }
@@ -2140,11 +2141,13 @@ class AA_Stringexpand_Sort extends AA_Stringexpand_Nevercachenotrim {
             $arr = array_unique($arr);
         }
         if (ctype_digit((string)$limit) AND (count($arr)>$limit)) {
-            $arr   = array_slice($arr,0,$limit);
+            $arr   = array_slice($arr,0,(int)$limit);
             if (strlen($add)) {
                 $arr[] = $add;
             }
         }
+        $s = array_slice([2,3],'1','1');
+
         return join($delimiter, $arr);
     }
 }
@@ -2159,7 +2162,7 @@ class AA_Stringexpand_Next extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // No reason to cache this simple function
 
-    /** for offset and length parameters see PHP function array_slice()
+    /**
      * @param $ids // item ids separated by '-' (long or short)
      * @param $current_id // id of the item in question - id should be of the same type as in $ids
      * @return string
@@ -2179,7 +2182,7 @@ class AA_Stringexpand_Next extends AA_Stringexpand_Nevercache {
 class AA_Stringexpand_Unique extends AA_Stringexpand_Nevercachenotrim {
     /** Do not trim all parameters (the $delimiter parameter could contain space) */
 
-    /** for offset and length parameters see PHP function array_slice()
+    /**
      * @param $ids // item ids (or any other values) separated by '-'
      * @param $delimiter // separator of the parts - by default it is '-', but
      *                       you can use any one
@@ -2208,7 +2211,7 @@ class AA_Stringexpand_Unique extends AA_Stringexpand_Nevercachenotrim {
 class AA_Stringexpand_Lookup extends AA_Stringexpand_Nevercachenotrim {
     /** Do not trim all parameters (the $delimiter parameter could contain space) */
 
-    /** for offset and length parameters see PHP function array_slice()
+    /**
      * @param $value  // value to look for
      * @param $values // values to be searched
      * @param $delimiter // separator of the values - by default it is '-' or json (if it starts with '[') but you can use any one
@@ -2239,7 +2242,7 @@ class AA_Stringexpand_Lookup extends AA_Stringexpand_Nevercachenotrim {
 class AA_Stringexpand_Count extends AA_Stringexpand_Nevercachenotrim {
     /** Do not trim all parameters (the $delimiter parameter could contain space) */
 
-    /** for offset and length parameters see PHP function array_slice()
+    /**
      * @param $ids // item ids separated by '-' (long or short)
      * @param $delimiter // separator of the parts - by default it is '-', but
      *                       you can use any one
@@ -2266,7 +2269,7 @@ class AA_Stringexpand_Previous extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // No reason to cache this simple function
 
-    /** for offset and length parameters see PHP function array_slice()
+    /**
      * @param $ids // item ids separated by '-' (long or short)
      * @param $current_id // id of the item in question - id should be of the same type as in $ids
      * @return string
@@ -6146,7 +6149,7 @@ class AA_Stringexpander {
         return $this->requires->getFoot();
     }
 
-    /** getRequireScript are conterparts to getRequireHead and getRequireFoot, but used in AJAX calls, where CSS and JS libs have to be loaded by script
+    /** getRequireScript are counterparts to getRequireHead and getRequireFoot, but used in AJAX calls, where CSS and JS libs have to be loaded by script
      * @return string
      */
     function getRequireScript() {
@@ -6278,12 +6281,12 @@ class AA_Req {
      */
     function getCode(): string  { return ''; }
 
-    /** getExternal and getScript is conterpart to getCode, but used in AJAX calls - external for libs to load before the script is called
+    /** getExternal and getScript is counterpart to getCode, but used in AJAX calls - external for libs to load before the script is called
      * @return string
      */
-    function getExternal()      { return ''; }
+    function getExternal(): string { return ''; }
 
-    /**  getExternal and getScript is conterpart to getCode, but used in AJAX calls - external for libs to load before the script is called
+    /**  getExternal and getScript is counterpart to getCode, but used in AJAX calls - external for libs to load before the script is called
      * @return string
      */
     function getScript()        { return ''; }
@@ -6368,13 +6371,14 @@ class AA_Req_Lib extends AA_Req {
     }
 
     
-    /**  getExternal and getScript is conterpart to getCode, but used in AJAX calls - external for libs to load before the script is called
+    /**  getExternal and getScript is counterpart to getCode, but used in AJAX calls - external for libs to load before the script is called
      * @return string
      */
-    function getExternal() {
+    function getExternal(): string {
         if (trim($this->url)) {
             return "AA_LoadJs('load_once',AA_IsLoaded,'{$this->url}',true);";  // we use script.async=false - codemirror in {ajax} did not load plugins withou it
         }
+        return '';
     }
 
     /**
@@ -6458,7 +6462,7 @@ class AA_Req_Css extends AA_Req_Lib {
     /**  getExternal and getScript is counterpart to getCode, but used in AJAX calls - external for libs to load before the script is called
      * @return string
      */
-    function getExternal() {
+    function getExternal(): string {
         return ($this->loadtype=='print') ? '' : "AA_LoadCss('{$this->url}');";
     }
 }
@@ -6538,7 +6542,7 @@ class AA_Req_Run extends AA_Req {
         return strlen($this->script) ? "<script> {$this->script} </script>" : '';
     }
 
-    /**  getExternal and getScript is conterpart to getCode, but used in AJAX calls - external for libs to load before the script is called
+    /**  getExternal and getScript is counterpart to getCode, but used in AJAX calls - external for libs to load before the script is called
      * @return string
      */
     function getScript() {
@@ -6599,7 +6603,7 @@ class AA_Req_Load extends AA_Req_Run {
         return "<script> document.addEventListener('DOMContentLoaded', function() { {$this->script} }); </script>";
     }
 
-    /** getExternal and getScript is conterpart to getCode, but used in AJAX calls - external for libs to load before the script is called
+    /** getExternal and getScript is counterpart to getCode, but used in AJAX calls - external for libs to load before the script is called
      *  @return string
      */
     function getScript() {

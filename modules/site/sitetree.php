@@ -59,7 +59,7 @@ class AA_Site_Spot_Match {
         switch ( $this->op ) {
             case '=':        return ($value ==  $this->val);
             case 'REGEXP':   return preg_match('/'. str_replace('/', '\/', $this->val) .'/', $value);
-            case 'contains': return (strpos($this->val, $value) !== false);
+            case 'contains': return (strlen($value) AND (strpos($this->val, $value) !== false));
            // case 'empty':    return !strlen(trim($value));
         }
         return false;

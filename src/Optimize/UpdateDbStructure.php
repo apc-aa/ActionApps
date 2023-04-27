@@ -89,6 +89,10 @@ class UpdateDbStructure extends \AA\Optimize\AbstractOptimize {
             } else if ($diff['table2'] == '') {
                 $this->message(_m('<em>Table <b>%1</b> is <b>new</b>.</em><br>', [$tablename]));
             }
+            $this->message(_m('<em>Updating table <b>%1</b>.</em><br>', [$tablename]));
+
+            $this->query('START TRANSACTION');
+
             // create temporary table
             $this->message(_m('Deleting temporary table tmp_%1, if exist.', [$tablename]));
             $this->query("DROP TABLE IF EXISTS `tmp_$tablename`");
@@ -120,7 +124,11 @@ class UpdateDbStructure extends \AA\Optimize\AbstractOptimize {
             $this->query("DROP TABLE IF EXISTS `bck_$tablename`");
             $this->query("ALTER TABLE `$tablename` RENAME `bck_$tablename`");
             $this->query("ALTER TABLE `tmp_$tablename` RENAME `$tablename`");
+
+            $this->query('COMMIT');
             $this->message(_m('%1 done.', [$tablename]));
+
+
         }
         return true;
     }

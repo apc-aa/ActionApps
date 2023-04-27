@@ -304,7 +304,7 @@ class Saver implements AA\Later\LaterInterface {
             $array        = preg_split("/\R/", $validate_str);
             foreach ($array as $row) {
                 $row = trim($row);
-                if ($row AND ($row{0} != '1')) {
+                if ($row AND ($row[0] != '1')) {
                     $err_array[] = $row;
                 }
             }
