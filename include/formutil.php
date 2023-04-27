@@ -2624,6 +2624,7 @@ function getTabStart($outer_add='') {
  * @param string $caption
  * @param string $buttons
  * @param string $outer_add
+ * @param bool   $simple no table stripping
  * @return string
  */
 function getFrmTabCaption($caption = '', $buttons = '', $outer_add = '', $simple=false) {
@@ -2643,19 +2644,27 @@ function FrmTabCaption($caption = '', $buttons = '', $simple=false) {
     echo getFrmTabCaption($caption, $buttons, 'data-aa-class=clasic', $simple);
 }
 
-function FrmTabSeparator($subtitle) {
-    echo getFrmTabSeparator($subtitle);
+/**
+ * @param      $subtitle
+ * @param bool $simple no table stripping
+ * @return void
+ */
+function FrmTabSeparator($subtitle, bool $simple=false) {
+    echo getFrmTabSeparator($subtitle, $simple);
 }
 
 /** returns middle row with subtitle into form table
  * @param        $subtitle
+ * @param bool   $simple no table stripping
+ * @return string
  */
-function getFrmTabSeparator($subtitle): string {
+function getFrmTabSeparator($subtitle, bool $simple=false): string {
     $ret = "\n </table>";
     if ( $subtitle ) {
         $ret .= "\n <div class=\"aa-tab-title\">$subtitle</div>";
     }
-    $ret .= "\n<table class=\"aa-table\">";
+    $table_add_class = $simple ? ' aa-table-simple' : '';
+    $ret .= "\n<table class=\"aa-table$table_add_class\">";
     return $ret;
 }
 

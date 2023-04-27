@@ -101,7 +101,7 @@ class AA_Collection {
         $content4ids = GetItemContent($this->getReaders($how_often), false, true, [FIELDID_USERNAME, FIELDID_EMAIL]);
         if ( is_array($content4ids) ) {
             foreach ($content4ids as $reader_id => $content4id ) {
-                $ret[$reader_id] = trim( $content4id[FIELDID_USERNAME][0]['value'] . ' ('. $content4id[FIELDID_EMAIL][0]['value'] . ')', "() \t\n\r\0\x0B");
+                $ret[$reader_id] = trim( $content4id[FIELDID_USERNAME][0]['value'] . ' ('. $content4id[FIELDID_EMAIL][0]['value'] . ')');
             }
         }
         return $ret;
@@ -214,11 +214,11 @@ class AA_Collection {
     *
     * @param bool $update    decides whether alerts_filter_howoften.last would be updated,
     *                        i.e. whether this is only a debug trial or the real life
-    * @param $ho      = how often
-    * @param $item_id = if only one item should be send (instant alerts)
+    * @param $ho             = how often
+    * @param $item_id        = if only one item should be send (instant alerts)
     * @return array ($filterid => new items)
     */
-    function createFilterText($ho, $update, $item_id) {
+    function createFilterText($ho, $update, $item_id): array {
 
         // the view.aditional field stores info about grouping by selections
         $SQL = "
@@ -352,7 +352,7 @@ class AA_Collection {
      * @param object $readerContent if null, use all filters
      * @return string
      */
-    function getFilterText4Reader($readerContent, $filters) {
+    function getFilterText4Reader($readerContent, array $filters): string {
         $user_filters = [];
         if ($readerContent) {
             $user_filters_value = $readerContent->getValues(getAlertsField(FIELDID_FILTERS, $this->id));
@@ -372,7 +372,7 @@ class AA_Collection {
         $user_zids  = new zids(null, "p");
 
         // add dummy filter
-        $filters[99999] = "dummy";
+        $filters[99999] = ["dummy"=>true];
         $user_text = '';
 
         foreach ( $filters as $filterid => $fprop ) {
@@ -393,7 +393,7 @@ class AA_Collection {
                 $filter_ids = [];
                 $user_zids->clear("p");
             }
-            if ($fprop == "dummy") {
+            if ($fprop["dummy"]) {
                 break;
             }
             if (! $readerContent || $user_filters[$filterid]) {
@@ -478,7 +478,7 @@ class AA_Collection {
         ];
 
 
-        $ret = "<br><table>";
+        $ret = "<table>";
         foreach ($ali as $aligroup) {
             $ret .= "<tr><th colspan=\"2\">" . $aligroup['group'] . "</th></tr>";
             foreach ($aligroup["aliases"] as $alias => $desc) {

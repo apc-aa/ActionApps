@@ -51,23 +51,26 @@ function ShowCollectionAddOns() {
     }
 
     echo "<br><br>\n    <form name=\"example[form]\" method=\"post\">";
-    FrmTabCaption(_m('Send now an example alert email to')) ;
+    FrmTabCaption(_m('Send now an example alert email to email'),'',true) ;
 
     if ($example["go"]) {
         $mail_count = send_emails($example["howoften"], [$collectionid],  [$example["email"]], false, "");
     } elseif ($example["goreader"]) {
-        $mail_count = send_emails($example["howoftenr"], [$collectionid],  '', false, "", $example['reader']);
+        $mail_count = send_emails($example["howoftenr"], [$collectionid], [], false, "", $example['reader']);
     }
 
     // send to supplied email
     FrmInputEmail("example[email]", _m('Email'), $example['email']);
     FrmInputSelect("example[howoften]", _m("as if"), get_howoften_options(), $example["howoften"]);
-    FrmTabSeparator("");
+    FrmTabEnd(['example[go]' => ['type' => 'submit', 'value' => _m("Go!")]]);
+
+    echo '<br>';
 
     // send to selected user
     $reader_mails = $collection->getReadersSelectArray();
     asort($reader_mails);
 
+    FrmTabCaption(_m('Send now an example alert email to Reader'),'',true) ;
     FrmInputSelect("example[reader]",_m('Reader'), $reader_mails, $example["reader"]);
     FrmInputSelect("example[howoftenr]", _m("as if"), get_howoften_options(), $example["howoftenr"]);
     FrmTabEnd(['example[goreader]' => ['type'=> 'submit', 'value'=>_m("Go!")]]);
@@ -125,42 +128,39 @@ function showSelectionTable() {
     freeDB($db);
 
     //echo "<BR><B>"._m("Selections ordered by slice and view:")."</B><BR>";
-    echo "<br><TABLE>
-        <TR class=\"aa-tbl-header\"><TD><B>"._m("Slice")."</B></TD>
-        <TD><B>"._m("View (Selection set)")."</B></TD>
-        <TD><B>"._m("Selections")."</B></TD></TR>";
+    echo "<br><table>
+        <tr class=\"aa-tbl-header\"><th>"._m("Slice")."</th>
+        <th>"._m("View (Selection set)")."</th>
+        <th>"._m("Selections")."</th></tr>";
 
     if (!is_array($a)) {
-        echo "<TR><TD colspan=3><B>"
+        echo "<tr><td colspan=3><b>"
         ._m("Define selections in slices from which you want to send Alerts,
-        in views of type Alerts Selection Set")."</B></TD></TR>";
+        in views of type Alerts Selection Set")."</b></td></tr>";
     } else {
         foreach ($a as $slice_id => $slice) {
             if (! IsSuperadmin() && ! strchr($myslices[unpack_id($slice_id)], PS_FULLTEXT)) {
                 continue;
             }
-            echo "<TR><TD rowspan=".count($slice["views"]).">
-                <A href=\"".StateUrl(AA_INSTAL_PATH
+            echo "<tr><td rowspan=".count($slice["views"]).">
+                <a href=\"".StateUrl(AA_INSTAL_PATH
                     ."admin/index.php3?slice_id=".unpack_id($slice_id))."\">"
-                    .$slice["name"]."</A></TD>";
+                    .$slice["name"]."</a></td>";
             $first_view = true;
             foreach ($slice["views"] as $vid => $view) {
                 if (! $first_view) {
-                    echo "<TR>";
+                    echo "<tr>";
                 }
                 $first_view = false;
-                echo "<TD>
-                    <a href=\"".StateUrl(AA_INSTAL_PATH
-                    ."admin/se_view.php?slice_id=".unpack_id($slice_id)
-                    ."&view_id=".$vid."&view_type=".$view["type"])
-                    ."\">".$view["name"]."</A></TD><TD>";
+                echo "<td>
+                    <a href=\"".StateUrl(AA_INSTAL_PATH ."admin/se_view.php?slice_id=".unpack_id($slice_id) ."&view_id=".$vid."&view_type=".$view["type"]) ."\">".$view["name"]."</a></td><td>";
                 foreach ($view["filters"] as $fid => $filter) {
                     echo "f".$fid." ".$filter."<br>";
                 }
-                echo "</TD></TR>";
+                echo "</td></tr>";
             }
         }
     }
-    echo "</TABLE>";
+    echo "</table>";
 }
 

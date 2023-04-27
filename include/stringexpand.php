@@ -5434,27 +5434,27 @@ class AA_Stringexpand_Dictionary extends AA_Stringexpand {
      *  Return array of substitution pairs for dictionary, based on given dictionary
      *  slice, format string which defines the format and possible slice codnitions.
      *   [biom] => <a href="http://biom.cz">_#KEYWORD_</a>, ...
-     * @param $dictionaries (array)
-     * @param $format
-     * @param $delimeters
-     * @param $conds
+     * @param        $dictionaries (array)
+     * @param        $format
+     * @param        $delimiters
+     * @param string $conds
      * @return array
      */
-    function getDictReplacePairs($dictionaries, $format, $delimiters, $conds='') {
+    static function getDictReplacePairs($dictionaries, $format, $delimiters, $conds = '') {
         // return array of pairs: [biom] => <a href="http://biom.cz">_#KEYWORD_</a>
         $replace_pairs = [];
 
         // conds string could contain also sort[] - if so, use conds also as $sort
         // parameter (the sort is grabbed form the string then)
-        $sort     = (strpos( $conds, 'sort') !== false ) ? $conds : '';
+        $sort = (strpos($conds, 'sort') !== false) ? $conds : '';
 
         /** 'keywords........' field could contain multiple values. In this case we
          *  have to create pair for each of the word. The _#KEYWORD_ alias is then
          *  used in format string
          */
 
-        $format  = AA_Slice::getModule($dictionaries[0])->getField($format) ? '{substr:{'.$format.'}:0:50}' : $format;
-        $format  = "{@keywords........:##}_AA_DeLiM_$format";
+        $format = AA_Slice::getModule($dictionaries[0])->getField($format) ? '{substr:{' . $format . '}:0:50}' : $format;
+        $format = "{@keywords........:##}_AA_DeLiM_$format";
 
         // above is little hack - we need keyword pair, but we want to call
         // GetFormatedItems only once (for speedup), so we create one string with
@@ -5464,10 +5464,10 @@ class AA_Stringexpand_Dictionary extends AA_Stringexpand {
         $set     = new AA_Set($dictionaries, $conds, $sort);
         $kw_item = GetFormattedItems($set->query(), $format);
 
-        foreach ( $kw_item as $kw_string ) {
-            [$keywords, $link] = explode('_AA_DeLiM_', $kw_string,2);
-            $kw_array              = explode('##', $keywords);
-            foreach ( (array)$kw_array as $kw ) {
+        foreach ($kw_item as $kw_string) {
+            [$keywords, $link] = explode('_AA_DeLiM_', $kw_string, 2);
+            $kw_array = explode('##', $keywords);
+            foreach ((array)$kw_array as $kw) {
                 if (!strlen($kw)) {
                     continue;
                 }
@@ -5478,12 +5478,12 @@ class AA_Stringexpand_Dictionary extends AA_Stringexpand {
                 text as the whole word - not as part of any word
                 added by haha
                 */
-                $search_kw = 'AA#@'. strtr($kw, $delimiters) .'AA#@';
+                $search_kw                 = 'AA#@' . strtr($kw, $delimiters) . 'AA#@';
                 $replace_pairs[$search_kw] = str_replace('_#KEYWORD_', $kw, $link);
-                if ( ($first_upper=strtoupper($kw[0])) != $kw[0]) {
+                if (($first_upper = strtoupper($kw[0])) != $kw[0]) {
                     // do the same for the word with first letter in uppercase
-                    $kw[0] = $first_upper;
-                    $search_kw = 'AA#@'. strtr($kw, $delimiters) .'AA#@';
+                    $kw[0]                     = $first_upper;
+                    $search_kw                 = 'AA#@' . strtr($kw, $delimiters) . 'AA#@';
                     $replace_pairs[$search_kw] = str_replace('_#KEYWORD_', $kw, $link);
                 }
             }
@@ -8202,7 +8202,9 @@ class AA_Stringexpand_Jwtdecode extends AA_Stringexpand {
 
             if (strcasecmp($type, "Bearer") == 0) {
                 try {
-                    $decoded = (array)\Firebase\JWT\JWT::decode($jwt, $key, ['HS256']);
+                    $decoded = (array)\Firebase\JWT\JWT::decode($jwt, new Firebase\JWT\Key($key, 'HS256'));  // new (v6.0.0)
+                    // old v5.0.0
+                    // $decoded = (array)\Firebase\JWT\JWT::decode($jwt, $key, ['HS256']);
                     $uid = $decoded['sub'];
                     if (is_long_id($uid) AND strlen($add_validity)) {
                         if ($decoded['aaValid'] == StrExpand('AA_Stringexpand_Item', [$uid,$add_validity])) {
