@@ -1047,7 +1047,7 @@ class AA_Dbcondition {
                     break;
                 case 'm':
                 case '-':
-                    $querystring = time() - $querystring;
+                    $querystring = time() - (int)$querystring;
                     break;
             }
         }
