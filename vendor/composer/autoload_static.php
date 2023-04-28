@@ -7,6 +7,13 @@ namespace Composer\Autoload;
 class ComposerStaticInit43e15006db6c3041e7b8c7c57cf04d54
 {
     public static $prefixLengthsPsr4 = array (
+        'H' => 
+        array (
+            'Horde\\Util\\' => 11,
+            'Horde\\Translation\\' => 18,
+            'Horde\\Text\\Diff\\' => 16,
+            'Horde\\Exception\\' => 16,
+        ),
         'F' => 
         array (
             'Firebase\\JWT\\' => 13,
@@ -14,6 +21,22 @@ class ComposerStaticInit43e15006db6c3041e7b8c7c57cf04d54
     );
 
     public static $prefixDirsPsr4 = array (
+        'Horde\\Util\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/horde/util/src',
+        ),
+        'Horde\\Translation\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/horde/translation/src',
+        ),
+        'Horde\\Text\\Diff\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/horde/text_diff/src',
+        ),
+        'Horde\\Exception\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/horde/exception/src',
+        ),
         'Firebase\\JWT\\' => 
         array (
             0 => __DIR__ . '/..' . '/firebase/php-jwt/src',
@@ -23,9 +46,17 @@ class ComposerStaticInit43e15006db6c3041e7b8c7c57cf04d54
     public static $prefixesPsr0 = array (
         'H' => 
         array (
-            'Horde' => 
+            'Horde_Translation' => 
             array (
-                0 => __DIR__ . '/..' . '/hearst-digital/horde-text-diff/lib',
+                0 => __DIR__ . '/..' . '/horde/translation/lib',
+            ),
+            'Horde_Text_Diff' => 
+            array (
+                0 => __DIR__ . '/..' . '/horde/text_diff/lib',
+            ),
+            'Horde_Exception' => 
+            array (
+                0 => __DIR__ . '/..' . '/horde/exception/lib',
             ),
         ),
         'D' => 
@@ -703,24 +734,93 @@ class ComposerStaticInit43e15006db6c3041e7b8c7c57cf04d54
         'Firebase\\JWT\\Key' => __DIR__ . '/..' . '/firebase/php-jwt/src/Key.php',
         'Firebase\\JWT\\SignatureInvalidException' => __DIR__ . '/..' . '/firebase/php-jwt/src/SignatureInvalidException.php',
         'FormrowWidget' => __DIR__ . '/../..' . '/include/form.class.php',
-        'Horde_Text_Diff' => __DIR__ . '/..' . '/hearst-digital/horde-text-diff/lib/Horde/Text/Diff.php',
-        'Horde_Text_Diff_Engine_Native' => __DIR__ . '/..' . '/hearst-digital/horde-text-diff/lib/Horde/Text/Diff/Engine/Native.php',
-        'Horde_Text_Diff_Engine_Xdiff' => __DIR__ . '/..' . '/hearst-digital/horde-text-diff/lib/Horde/Text/Diff/Engine/Xdiff.php',
-        'Horde_Text_Diff_Exception' => __DIR__ . '/..' . '/hearst-digital/horde-text-diff/lib/Horde/Text/Diff/Exception.php',
-        'Horde_Text_Diff_Mapped' => __DIR__ . '/..' . '/hearst-digital/horde-text-diff/lib/Horde/Text/Diff/Mapped.php',
-        'Horde_Text_Diff_Op_Add' => __DIR__ . '/..' . '/hearst-digital/horde-text-diff/lib/Horde/Text/Diff/Op/Add.php',
-        'Horde_Text_Diff_Op_Base' => __DIR__ . '/..' . '/hearst-digital/horde-text-diff/lib/Horde/Text/Diff/Op/Base.php',
-        'Horde_Text_Diff_Op_Change' => __DIR__ . '/..' . '/hearst-digital/horde-text-diff/lib/Horde/Text/Diff/Op/Change.php',
-        'Horde_Text_Diff_Op_Copy' => __DIR__ . '/..' . '/hearst-digital/horde-text-diff/lib/Horde/Text/Diff/Op/Copy.php',
-        'Horde_Text_Diff_Op_Delete' => __DIR__ . '/..' . '/hearst-digital/horde-text-diff/lib/Horde/Text/Diff/Op/Delete.php',
-        'Horde_Text_Diff_Renderer' => __DIR__ . '/..' . '/hearst-digital/horde-text-diff/lib/Horde/Text/Diff/Renderer.php',
-        'Horde_Text_Diff_Renderer_Context' => __DIR__ . '/..' . '/hearst-digital/horde-text-diff/lib/Horde/Text/Diff/Renderer/Context.php',
-        'Horde_Text_Diff_Renderer_Inline' => __DIR__ . '/..' . '/hearst-digital/horde-text-diff/lib/Horde/Text/Diff/Renderer/Inline.php',
-        'Horde_Text_Diff_Renderer_Unified' => __DIR__ . '/..' . '/hearst-digital/horde-text-diff/lib/Horde/Text/Diff/Renderer/Unified.php',
-        'Horde_Text_Diff_ThreeWay' => __DIR__ . '/..' . '/hearst-digital/horde-text-diff/lib/Horde/Text/Diff/ThreeWay.php',
-        'Horde_Text_Diff_ThreeWay_BlockBuilder' => __DIR__ . '/..' . '/hearst-digital/horde-text-diff/lib/Horde/Text/Diff/ThreeWay/BlockBuilder.php',
-        'Horde_Text_Diff_ThreeWay_Op_Base' => __DIR__ . '/..' . '/hearst-digital/horde-text-diff/lib/Horde/Text/Diff/ThreeWay/Op/Base.php',
-        'Horde_Text_Diff_ThreeWay_Op_Copy' => __DIR__ . '/..' . '/hearst-digital/horde-text-diff/lib/Horde/Text/Diff/ThreeWay/Op/Copy.php',
+        'Horde\\Exception\\HordeException' => __DIR__ . '/..' . '/horde/exception/src/HordeException.php',
+        'Horde\\Exception\\LastError' => __DIR__ . '/..' . '/horde/exception/src/LastError.php',
+        'Horde\\Exception\\NotFound' => __DIR__ . '/..' . '/horde/exception/src/NotFound.php',
+        'Horde\\Exception\\Pear' => __DIR__ . '/..' . '/horde/exception/src/Pear.php',
+        'Horde\\Exception\\PermissionDenied' => __DIR__ . '/..' . '/horde/exception/src/PermissionDenied.php',
+        'Horde\\Exception\\Translation' => __DIR__ . '/..' . '/horde/exception/src/Translation.php',
+        'Horde\\Exception\\Wrapped' => __DIR__ . '/..' . '/horde/exception/src/Wrapped.php',
+        'Horde\\Text\\Diff\\AddOperation' => __DIR__ . '/..' . '/horde/text_diff/src/AddOperation.php',
+        'Horde\\Text\\Diff\\BaseOperation' => __DIR__ . '/..' . '/horde/text_diff/src/BaseOperation.php',
+        'Horde\\Text\\Diff\\ChangeOperation' => __DIR__ . '/..' . '/horde/text_diff/src/ChangeOperation.php',
+        'Horde\\Text\\Diff\\ContextRenderer' => __DIR__ . '/..' . '/horde/text_diff/src/ContextRenderer.php',
+        'Horde\\Text\\Diff\\CopyOperation' => __DIR__ . '/..' . '/horde/text_diff/src/CopyOperation.php',
+        'Horde\\Text\\Diff\\DeleteOperation' => __DIR__ . '/..' . '/horde/text_diff/src/DeleteOperation.php',
+        'Horde\\Text\\Diff\\Diff' => __DIR__ . '/..' . '/horde/text_diff/src/Diff.php',
+        'Horde\\Text\\Diff\\DiffEngineFactory' => __DIR__ . '/..' . '/horde/text_diff/src/DiffEngineFactory.php',
+        'Horde\\Text\\Diff\\DiffEngineInterface' => __DIR__ . '/..' . '/horde/text_diff/src/DiffEngineInterface.php',
+        'Horde\\Text\\Diff\\Exception' => __DIR__ . '/..' . '/horde/text_diff/src/Exception.php',
+        'Horde\\Text\\Diff\\InlineRenderer' => __DIR__ . '/..' . '/horde/text_diff/src/InlineRenderer.php',
+        'Horde\\Text\\Diff\\MappedDiff' => __DIR__ . '/..' . '/horde/text_diff/src/MappedDiff.php',
+        'Horde\\Text\\Diff\\NativeEngine' => __DIR__ . '/..' . '/horde/text_diff/src/NativeEngine.php',
+        'Horde\\Text\\Diff\\OperationInterface' => __DIR__ . '/..' . '/horde/text_diff/src/OperationInterface.php',
+        'Horde\\Text\\Diff\\OperationList' => __DIR__ . '/..' . '/horde/text_diff/src/OperationList.php',
+        'Horde\\Text\\Diff\\Renderer' => __DIR__ . '/..' . '/horde/text_diff/src/Renderer.php',
+        'Horde\\Text\\Diff\\ShellEngine' => __DIR__ . '/..' . '/horde/text_diff/src/ShellEngine.php',
+        'Horde\\Text\\Diff\\StringEngine' => __DIR__ . '/..' . '/horde/text_diff/src/StringEngine.php',
+        'Horde\\Text\\Diff\\ThreeWay' => __DIR__ . '/..' . '/horde/text_diff/src/ThreeWay.php',
+        'Horde\\Text\\Diff\\ThreeWayBaseOperation' => __DIR__ . '/..' . '/horde/text_diff/src/ThreeWayBaseOperation.php',
+        'Horde\\Text\\Diff\\ThreeWayBlockBuilder' => __DIR__ . '/..' . '/horde/text_diff/src/ThreeWayBlockBuilder.php',
+        'Horde\\Text\\Diff\\ThreeWayCopyOperation' => __DIR__ . '/..' . '/horde/text_diff/src/ThreeWayCopyOperation.php',
+        'Horde\\Text\\Diff\\UnifiedColoredRenderer' => __DIR__ . '/..' . '/horde/text_diff/src/UnifiedColoredRenderer.php',
+        'Horde\\Text\\Diff\\UnifiedRenderer' => __DIR__ . '/..' . '/horde/text_diff/src/UnifiedRenderer.php',
+        'Horde\\Text\\Diff\\XdiffEngine' => __DIR__ . '/..' . '/horde/text_diff/src/XdiffEngine.php',
+        'Horde\\Translation\\AbstractTranslation' => __DIR__ . '/..' . '/horde/translation/src/AbstractTranslation.php',
+        'Horde\\Translation\\Autodetect' => __DIR__ . '/..' . '/horde/translation/src/Autodetect.php',
+        'Horde\\Translation\\GettextHandler' => __DIR__ . '/..' . '/horde/translation/src/GettextHandler.php',
+        'Horde\\Translation\\Handler' => __DIR__ . '/..' . '/horde/translation/src/Handler.php',
+        'Horde\\Translation\\Translation' => __DIR__ . '/..' . '/horde/translation/src/Translation.php',
+        'Horde\\Translation\\TranslationException' => __DIR__ . '/..' . '/horde/translation/src/TranslationException.php',
+        'Horde\\Util\\ArraySortHelper' => __DIR__ . '/..' . '/horde/util/src/ArraySortHelper.php',
+        'Horde\\Util\\ArrayUtils' => __DIR__ . '/..' . '/horde/util/src/ArrayUtils.php',
+        'Horde\\Util\\CharacterSets' => __DIR__ . '/..' . '/horde/util/src/CharacterSets.php',
+        'Horde\\Util\\Domhtml' => __DIR__ . '/..' . '/horde/util/src/Domhtml.php',
+        'Horde\\Util\\HordeString' => __DIR__ . '/..' . '/horde/util/src/HordeString.php',
+        'Horde\\Util\\StringTransliterate' => __DIR__ . '/..' . '/horde/util/src/StringTransliterate.php',
+        'Horde\\Util\\Stringable' => __DIR__ . '/..' . '/horde/util/src/Stringable.php',
+        'Horde\\Util\\Util' => __DIR__ . '/..' . '/horde/util/src/Util.php',
+        'Horde\\Util\\Variables' => __DIR__ . '/..' . '/horde/util/src/Variables.php',
+        'Horde_Array' => __DIR__ . '/..' . '/horde/util/lib/Horde/Array.php',
+        'Horde_Array_Sort_Helper' => __DIR__ . '/..' . '/horde/util/lib/Horde/Array/Sort/Helper.php',
+        'Horde_Domhtml' => __DIR__ . '/..' . '/horde/util/lib/Horde/Domhtml.php',
+        'Horde_Exception' => __DIR__ . '/..' . '/horde/exception/lib/Horde/Exception.php',
+        'Horde_Exception_LastError' => __DIR__ . '/..' . '/horde/exception/lib/Horde/Exception/LastError.php',
+        'Horde_Exception_NotFound' => __DIR__ . '/..' . '/horde/exception/lib/Horde/Exception/NotFound.php',
+        'Horde_Exception_Pear' => __DIR__ . '/..' . '/horde/exception/lib/Horde/Exception/Pear.php',
+        'Horde_Exception_PermissionDenied' => __DIR__ . '/..' . '/horde/exception/lib/Horde/Exception/PermissionDenied.php',
+        'Horde_Exception_Translation' => __DIR__ . '/..' . '/horde/exception/lib/Horde/Exception/Translation.php',
+        'Horde_Exception_Wrapped' => __DIR__ . '/..' . '/horde/exception/lib/Horde/Exception/Wrapped.php',
+        'Horde_String' => __DIR__ . '/..' . '/horde/util/lib/Horde/String.php',
+        'Horde_String_Transliterate' => __DIR__ . '/..' . '/horde/util/lib/Horde/String/Transliterate.php',
+        'Horde_Text_Diff' => __DIR__ . '/..' . '/horde/text_diff/lib/Horde/Text/Diff.php',
+        'Horde_Text_Diff_Engine_Native' => __DIR__ . '/..' . '/horde/text_diff/lib/Horde/Text/Diff/Engine/Native.php',
+        'Horde_Text_Diff_Engine_Shell' => __DIR__ . '/..' . '/horde/text_diff/lib/Horde/Text/Diff/Engine/Shell.php',
+        'Horde_Text_Diff_Engine_String' => __DIR__ . '/..' . '/horde/text_diff/lib/Horde/Text/Diff/Engine/String.php',
+        'Horde_Text_Diff_Engine_Xdiff' => __DIR__ . '/..' . '/horde/text_diff/lib/Horde/Text/Diff/Engine/Xdiff.php',
+        'Horde_Text_Diff_Exception' => __DIR__ . '/..' . '/horde/text_diff/lib/Horde/Text/Diff/Exception.php',
+        'Horde_Text_Diff_Mapped' => __DIR__ . '/..' . '/horde/text_diff/lib/Horde/Text/Diff/Mapped.php',
+        'Horde_Text_Diff_Op_Add' => __DIR__ . '/..' . '/horde/text_diff/lib/Horde/Text/Diff/Op/Add.php',
+        'Horde_Text_Diff_Op_Base' => __DIR__ . '/..' . '/horde/text_diff/lib/Horde/Text/Diff/Op/Base.php',
+        'Horde_Text_Diff_Op_Change' => __DIR__ . '/..' . '/horde/text_diff/lib/Horde/Text/Diff/Op/Change.php',
+        'Horde_Text_Diff_Op_Copy' => __DIR__ . '/..' . '/horde/text_diff/lib/Horde/Text/Diff/Op/Copy.php',
+        'Horde_Text_Diff_Op_Delete' => __DIR__ . '/..' . '/horde/text_diff/lib/Horde/Text/Diff/Op/Delete.php',
+        'Horde_Text_Diff_Renderer' => __DIR__ . '/..' . '/horde/text_diff/lib/Horde/Text/Diff/Renderer.php',
+        'Horde_Text_Diff_Renderer_Context' => __DIR__ . '/..' . '/horde/text_diff/lib/Horde/Text/Diff/Renderer/Context.php',
+        'Horde_Text_Diff_Renderer_Inline' => __DIR__ . '/..' . '/horde/text_diff/lib/Horde/Text/Diff/Renderer/Inline.php',
+        'Horde_Text_Diff_Renderer_Unified' => __DIR__ . '/..' . '/horde/text_diff/lib/Horde/Text/Diff/Renderer/Unified.php',
+        'Horde_Text_Diff_Renderer_Unified_Colored' => __DIR__ . '/..' . '/horde/text_diff/lib/Horde/Text/Diff/Renderer/Unified/Colored.php',
+        'Horde_Text_Diff_ThreeWay' => __DIR__ . '/..' . '/horde/text_diff/lib/Horde/Text/Diff/ThreeWay.php',
+        'Horde_Text_Diff_ThreeWay_BlockBuilder' => __DIR__ . '/..' . '/horde/text_diff/lib/Horde/Text/Diff/ThreeWay/BlockBuilder.php',
+        'Horde_Text_Diff_ThreeWay_Op_Base' => __DIR__ . '/..' . '/horde/text_diff/lib/Horde/Text/Diff/ThreeWay/Op/Base.php',
+        'Horde_Text_Diff_ThreeWay_Op_Copy' => __DIR__ . '/..' . '/horde/text_diff/lib/Horde/Text/Diff/ThreeWay/Op/Copy.php',
+        'Horde_Translation' => __DIR__ . '/..' . '/horde/translation/lib/Horde/Translation.php',
+        'Horde_Translation_Autodetect' => __DIR__ . '/..' . '/horde/translation/lib/Horde/Translation/Autodetect.php',
+        'Horde_Translation_Exception' => __DIR__ . '/..' . '/horde/translation/lib/Horde/Translation/Exception.php',
+        'Horde_Translation_Handler' => __DIR__ . '/..' . '/horde/translation/lib/Horde/Translation/Handler.php',
+        'Horde_Translation_Handler_Gettext' => __DIR__ . '/..' . '/horde/translation/lib/Horde/Translation/Handler/Gettext.php',
+        'Horde_Util' => __DIR__ . '/..' . '/horde/util/lib/Horde/Util.php',
+        'Horde_Variables' => __DIR__ . '/..' . '/horde/util/lib/Horde/Variables.php',
         'ItemContent' => __DIR__ . '/../..' . '/include/item_content.php',
         'LastEditList' => __DIR__ . '/../..' . '/include/csn_util.php',
         'LazyloadTrait' => __DIR__ . '/../..' . '/include/constants.php',

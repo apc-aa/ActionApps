@@ -61,6 +61,8 @@ try {
     // array ( 'AA_Transfor…' => 12, )
     $transform = InputVars::stringPOST('transform');
     // $transform* // not necessary
+    $tasks = InputVars::intPOST('tasks');
+    // $transform* // not necessary
     $cancel = InputVars::boolPOST('cancel');
     
     $Msg = InputVars::stringGETPOST('Msg');

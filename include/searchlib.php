@@ -1019,7 +1019,7 @@ class AA_Dbcondition {
         }
 
         // search operator for functions (some operators can be in function:operator
-        // fomat - the function is called to $querystring (good for date transform ...)
+        // format - the function is called to $querystring (good for date transform ...)
         if (in_array($operator[0], ['d', 'e', 'm'])) {
             $func        = $operator[0];
             $operator    = substr($operator, 1);
