@@ -66,7 +66,7 @@ class DbBinaryTrailingZeros extends AbstractOptimize {
     function _fixCol($table, $field) {
         $db = getDb();
         $SQL = "UPDATE `$table` SET `$field`=TRIM(TRAILING '\0' FROM `$field`)";
-        echo "<br>$SQL";
+        $this->message($SQL);
         //$db->query($SQL);
         freeDb($db);
     }
