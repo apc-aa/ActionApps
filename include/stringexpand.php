@@ -5971,7 +5971,7 @@ class AA_Stringexpand_Preg_Match extends AA_Stringexpand_Nevercachenotrim {
 /**
  * Class AA_Stringexpander
  */
-class AA_Stringexpander {
+class AA_Stringexpander implements \AA\Later\LaterInterface {
     /**
      * @var int
      */
@@ -6238,6 +6238,16 @@ class AA_Stringexpander {
             $ret[key($ret)] .= '<script>'.$script.'</script>';
         }
         return $ret;
+    }
+
+
+    /** @inheritDoc
+     * @param array $params [$text] to unalias
+     * @usage as $toexecute->laterOnce($this, ["{recompute:85984589745662157859845897456621:text............}"], "Stringexp-Recompute-85..", 40, time() + 60 * 60 * 24); // once a day
+     */
+    public function toexecutelater($params = []) {
+        [$text] = $params;
+        return $this->unalias($text);
     }
 }
 
@@ -8143,7 +8153,7 @@ class AA_Stringexpand_Jwtencode extends AA_Stringexpand {
      * @param string $username     - username
      * @param string $password     - password
      * @param string $lifetime     - lifetime in seconds (default - 1 day)
-     * @param string $add_validity - aditional check - alias or aa code evaluated for the user. When user then access the
+     * @param string $add_validity - additional check - alias or aa code evaluated for the user. When user then access the
      *                               the AA with token, the evaluated text for the user must be the same for success login
      *                             - could be used for invalidating of the token. Let's create end_date........ field
      *                               with _#EXITTIME alias passed as $add_validity. Then with user logout we just update
@@ -8173,7 +8183,7 @@ class AA_Stringexpand_Jwtencode extends AA_Stringexpand {
         // You must specify supported algorithms for your application. See
         // https://tools.ietf.org/html/draft-ietf-jose-json-web-algorithms-40
         // for a list of spec-compliant algorithms.
-        $jwt = \Firebase\JWT\JWT::encode($token, $key);
+        $jwt = \Firebase\JWT\JWT::encode($token, $key, 'HS256');
 
         // This will now be an object instead of an associative array. To get
         // an associative array, you will need to cast it as such:

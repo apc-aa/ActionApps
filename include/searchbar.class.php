@@ -272,17 +272,19 @@ class AA_Searchbar extends AA_Storable {
         }
     }
 
-    /** setFromBookmark function
-     *  Set searchbar state from bookmark number <$key>
-     * @param $key
+    /** Set searchbar state from bookmark number <$key>
+     * @param $key numeric bookmark number
+     * @return bool true if bookmark exists, false otherwise
      */
-    function setFromBookmark($key) {
+    function setFromBookmark($key): bool {
         if ( $this->bookmarks->is_defined($key) ) {
             $this->resetSearchAndOrder();
             $state = $this->bookmarks->getState($key);
             $this->setFromState($state);
             $this->bookmarks->setLastUsed($key);
+            return true;
         }
+        return false;
     }
 
     /** convertState function

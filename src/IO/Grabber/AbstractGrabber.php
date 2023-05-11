@@ -81,7 +81,7 @@ abstract class AbstractGrabber implements \AA\Util\NamedInterface {
      * @param string|null $post_body
      * @return false|string data
      */
-    protected function loadUrl(string $url, string $post_body = ''): string {
+    protected function loadUrl(string $url, ?string $post_body = ''): string {
         $context = !($post_body) ? null : stream_context_create(['http' => ['method'  => 'POST', 'header'  => 'Content-Type: text/xml', 'content' => $post_body ]]);
         return file_get_contents($url, false, $context);
     }

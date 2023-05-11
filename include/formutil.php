@@ -2350,31 +2350,7 @@ function FrmDate($name, $txt, $val, $needed=false, $hlp="", $morehlp="", $displa
     echo $input->get_result();
 }
 
-
-/** FrmInputRadio function
- *  Prints a radio group, html tags <input type="radio" .. to 2-column table
- *  for use within <form> and <table> tag
- * @param $name
- * @param $txt
- * @param $arr
- * @param $selected
- * @param $needed
- * @param $hlp
- * @param $morehlp
- * @param $ncols
- * @param $move_right
- * @param $add
- */
-function FrmInputRadio($name, $txt, $arr, $selected="", $needed=false, $hlp="", $morehlp="", $ncols=0, $move_right=true, $add='') {
-    $html  = false;   // in parameter, but never filled. Honza 24.4.2013
-    $input = new AA_Inputfield($selected, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp, $arr);
-    $input->inputRadio($ncols, $move_right);
-    echo $input->get_result();
-}
-
-/** FrmInputMultiSelect function
- *  Prints html tag <select multiple .. to 2-column table
- *  for use within <form> and <table> tag
+/** returnsPrints html tag <select multiple .. to 2-column table for use within <form> and <table> tag
  * @param        $name
  * @param        $txt
  * @param        $arr
@@ -2383,22 +2359,48 @@ function FrmInputRadio($name, $txt, $arr, $selected="", $needed=false, $hlp="", 
  * @param bool   $needed
  * @param string $hlp
  * @param string $morehlp
- * @param int    $minrows
- * @param string $mode
- * @param bool   $design
  */
-function FrmInputMultiSelect($name, $txt, $arr, $selected="", $rows=5, $needed=false, $hlp="", $morehlp="", $minrows=0, $mode='AMB', $design=false) {
+function getFrmInputMultiSelect($name, $txt, $arr, $selected="", $rows=5, $needed=false, $hlp="", $morehlp=""): string {
     $html  = false;   // in parameter, but never filled. Honza 24.4.2013
     $add   = false;   // in parameter, but never filled. Honza 24.4.2013
     $input = new AA_Inputfield($selected, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp, $arr);
     $input->inputMultiSelect($rows);
-    echo $input->get_result();
+    return $input->get_result();
+}
+
+/** FrmInputMultiSelect function Prints html tag <select multiple .. to 2-column table for use within <form> and <table> tag
+ * @see getFrmText
+ */
+function FrmInputMultiSelect($name, $txt, $arr, $selected="", $rows=5, $needed=false, $hlp="", $morehlp="") {
+    echo getFrmInputMultiSelect($name, $txt, $arr, $selected, $rows, $needed, $hlp, $morehlp);
 }
 
 
+
+    /** FrmInputRadio function
+     *  Prints a radio group, html tags <input type="radio" .. to 2-column table
+     *  for use within <form> and <table> tag
+     * @param $name
+     * @param $txt
+     * @param $arr
+     * @param $selected
+     * @param $needed
+     * @param $hlp
+     * @param $morehlp
+     * @param $ncols
+     * @param $move_right
+     * @param $add
+     */
+    function FrmInputRadio($name, $txt, $arr, $selected="", $needed=false, $hlp="", $morehlp="", $ncols=0, $move_right=true, $add='') {
+        $html  = false;   // in parameter, but never filled. Honza 24.4.2013
+        $input = new AA_Inputfield($selected, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp, $arr);
+        $input->inputRadio($ncols, $move_right);
+        echo $input->get_result();
+    }
+
+
 /** FrmInputMultiText function - Multiple Text Field Widget
- *  Prints html tag <select multiple .. to 2-column table
- *  for use within <form> and <table> tag
+ *  Prints html tag <input .. to 2-column table for use within <form> and <table> tag
  * @param        $name
  * @param        $txt
  * @param        $arr
@@ -2955,6 +2957,7 @@ function IncludeManagerJavascript() {
 /** getRadioBookmarkRow function
  *  returns one row with one radiobutton - asociated to bookmark (stored search)
  *  or item list
+ * @param string $selected - value
  * @param      $name - dislpayed name of this option
  * @param      $count
  * @param      $value - value for this option
@@ -2964,13 +2967,13 @@ function IncludeManagerJavascript() {
  * @param null $bookmark_id
  * @return string
  */
-function getRadioBookmarkRow( $name, $count, $value, $list_type, $list_text, $safe=true, $bookmark_id=null) {
+function getRadioBookmarkRow( $selected, $name, $count, $value, $list_type, $list_text, $safe=true, $bookmark_id=null) {
     global $slice_id;
 
     static $checked = ' checked';  // mark first option when no $group selected
 
-    if ( isset( $GLOBALS['group'] ) ) {
-        $checked = (((string)$GLOBALS['group'] == (string)$value) ? ' checked' : '');
+    if ( strlen($selected) ) {
+        $checked = (((string)$selected == (string)$value) ? ' checked' : '');
     }
 
     if ( $safe ) {
@@ -2978,9 +2981,9 @@ function getRadioBookmarkRow( $name, $count, $value, $list_type, $list_text, $sa
     }
     $out = "
     <tr>
-      <td><input type=\"radio\" name=\"group\" value=\"$value\" $checked></td>";
+      <td><input type=radio name=group value=\"$value\" $checked></td>";
 
-    $out .= ((string)$value == (string)"testuser") ? "<td colspan=\"8\">" : "<td>";
+    $out .= ((string)$value == "testuser") ? "<td colspan=8>" : "<td>";
 
     $out .= "$name</td><td>$count</td>";
     // get data about bookmark (who created, last used, ...)
@@ -3019,15 +3022,16 @@ function getRadioBookmarkRow( $name, $count, $value, $list_type, $list_text, $sa
  *   Allows select items group (used for bulk e-mails as well as for Find&Replace)
  *  @param array $items - array of item ids with 'x' prefix
  *  @param AA_Searchbar $searchbar
- *  @param string list_type - items preview type ('items' | 'users') @see usershow.php
- *  @param array messages['view_items']     = _m("View Recipients")
- *               messages['selected_items'] = _m('Selected users')
+ *  @param string $selected - selected group
+ *  @param string $list_type - items preview type ('items' | 'users') @see usershow.php
+ *  @param array  $messages - $messages['view_items']     = _m("View Recipients")
+ *                            messages['selected_items'] = _m('Selected users')
  *  @param array additional = array( 'text' => 'Test', 'varname'=>'testuser');
  */
-function FrmItemGroupSelect( $items, $searchbar, $list_type, $messages, $additional=[]) {
+function FrmItemGroupSelect( $items, $searchbar, $selected, $list_type, $messages, $additional=[]) {
     $out = '';
     if (is_array($items) AND count($items)) {
-        $out = getRadioBookmarkRow( $messages['selected_items'], count($items), 'sel_item', $list_type, $messages['view_items']);
+        $out = getRadioBookmarkRow( $selected, $messages['selected_items'], count($items), 'sel_item', $list_type, $messages['view_items']);
     } elseif ( isset($searchbar) AND is_object($searchbar) ) {
         $book_arr = $searchbar->getBookmarkNames();
         if ( count($book_arr) ) {
@@ -3043,19 +3047,19 @@ function FrmItemGroupSelect( $items, $searchbar, $list_type, $messages, $additio
                      </tr>";
             foreach ( $book_arr as $k => $v ) {
                 $bookparams = $searchbar->getBookmarkParams($k);
-                $out .= getRadioBookmarkRow( $v, count(getZidsFromGroupSelect($k, $items, $searchbar)), $k, $list_type, $messages['view_items'], true, is_array($bookparams) ? $bookparams['id'] : null);
+                $out .= getRadioBookmarkRow( $selected, $v, count(getZidsFromGroupSelect($k, $items, $searchbar)), $k, $list_type, $messages['view_items'], true, is_array($bookparams) ? $bookparams['id'] : null);
             }
         }
-        $out .= getRadioBookmarkRow( _m('All active items'),         count(getZidsFromGroupSelect('AA_BIN_ACTIVE' , $items, $searchbar)), 'AA_BIN_ACTIVE', $list_type, $messages['view_items']);
-        $out .= getRadioBookmarkRow( _m('All items'),                count(getZidsFromGroupSelect('AA_ALL'        , $items, $searchbar)), 'AA_ALL', $list_type, $messages['view_items']);
-        $out .= getRadioBookmarkRow( _m('All pending items'),        count(getZidsFromGroupSelect('AA_BIN_PENDING', $items, $searchbar)), 'AA_BIN_PENDING', $list_type, $messages['view_items']);
-        $out .= getRadioBookmarkRow( _m('All expired items'),        count(getZidsFromGroupSelect('AA_BIN_EXPIRED', $items, $searchbar)), 'AA_BIN_EXPIRED', $list_type, $messages['view_items']);
-        $out .= getRadioBookmarkRow( _m('All items in holding bin'), count(getZidsFromGroupSelect('AA_BIN_HOLDING', $items, $searchbar)), 'AA_BIN_HOLDING', $list_type, $messages['view_items']);
-        $out .= getRadioBookmarkRow( _m('All items in trash bin'),   count(getZidsFromGroupSelect('AA_BIN_TRASH'  , $items, $searchbar)), 'AA_BIN_TRASH', $list_type, $messages['view_items']);
+        $out .= getRadioBookmarkRow( $selected, _m('All active items'),         count(getZidsFromGroupSelect('AA_BIN_ACTIVE' , $items, $searchbar)), 'AA_BIN_ACTIVE', $list_type, $messages['view_items']);
+        $out .= getRadioBookmarkRow( $selected, _m('All items'),                count(getZidsFromGroupSelect('AA_ALL'        , $items, $searchbar)), 'AA_ALL', $list_type, $messages['view_items']);
+        $out .= getRadioBookmarkRow( $selected, _m('All pending items'),        count(getZidsFromGroupSelect('AA_BIN_PENDING', $items, $searchbar)), 'AA_BIN_PENDING', $list_type, $messages['view_items']);
+        $out .= getRadioBookmarkRow( $selected, _m('All expired items'),        count(getZidsFromGroupSelect('AA_BIN_EXPIRED', $items, $searchbar)), 'AA_BIN_EXPIRED', $list_type, $messages['view_items']);
+        $out .= getRadioBookmarkRow( $selected, _m('All items in holding bin'), count(getZidsFromGroupSelect('AA_BIN_HOLDING', $items, $searchbar)), 'AA_BIN_HOLDING', $list_type, $messages['view_items']);
+        $out .= getRadioBookmarkRow( $selected, _m('All items in trash bin'),   count(getZidsFromGroupSelect('AA_BIN_TRASH'  , $items, $searchbar)), 'AA_BIN_TRASH', $list_type, $messages['view_items']);
     }
     // aditional group (test one, for examle)
     foreach ( $additional as $row ) {
-        $out .= getRadioBookmarkRow( $row['text'], '', $row['varname'], $list_type, $messages['view_items'], false);
+        $out .= getRadioBookmarkRow( $selected, $row['text'], '', $row['varname'], $list_type, $messages['view_items'], false);
     }
     echo $out;
 }
@@ -3074,23 +3078,23 @@ function getZidsFromGroupSelect($group, $items, $searchbar) {
     } else {                   // user defined by bookmark
         $conds = false;
         $sort  = false;
+        $bins  = null;
         switch ((string)$group) {
-            case 'AA_BIN_ACTIVE':
-            case '':               $bins = AA_BIN_ACTIVE;  break;
+            case 'AA_BIN_ACTIVE':  $bins = AA_BIN_ACTIVE;  break;
             case 'AA_ALL':         $bins = AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING | AA_BIN_TRASH;  break;
             case 'AA_BIN_PENDING': $bins = AA_BIN_PENDING; break;
             case 'AA_BIN_EXPIRED': $bins = AA_BIN_EXPIRED; break;
             case 'AA_BIN_HOLDING': $bins = AA_BIN_HOLDING; break;
             case 'AA_BIN_TRASH':   $bins = AA_BIN_TRASH;   break;
             default:
-
-                $searchbar->setFromBookmark($group);
-                $set   = $searchbar->getSet();
-                $bins  = AA_BIN_ACTIVE;
-                $conds = $set->getConds();
-                $sort  = $set->getSort();
+                if ( $searchbar->setFromBookmark($group) ) {
+                    $set   = $searchbar->getSet();
+                    $bins  = AA_BIN_ACTIVE;
+                    $conds = $set->getConds();
+                    $sort  = $set->getSort();
+                }
         }
-        $zids  = QueryZids( [$slice_id], $conds, $sort,  $bins);
+        $zids  = is_null($bins) ? new zids() : QueryZids( [$slice_id], $conds, $sort,  $bins);
     }
     return $zids;
 }

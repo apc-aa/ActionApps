@@ -109,9 +109,9 @@ if ( !$fill ) {               // for the first time - directly from item manager
     }
 
     $Msg     = MsgOk(_m("Items selected: %1, Items successfully updated: %2, Items planned: %3", [$zids->count(), $updated_items, $planned]));
-    if ((string)$group == (string)"sel_item") {
+    if ((string)$group == "sel_item") {
         $sel = "LIST";
-    } elseif ((string)$group == (string)"testitemgroup") {
+    } elseif ((string)$group == "testitemgroup") {
         $sel = "TEST";
     } else {
         $sel = get_if($group,"0");  // bookmarks groups are identified by numbers
@@ -170,7 +170,7 @@ FrmTabCaption((count($items) ? _m("Items") : (_m("Stored searches for ") . $slic
 
 $messages['view_items']     = _m("View items");
 $messages['selected_items'] = _m('Selected items');
-FrmItemGroupSelect( $items, $searchbar, 'items', $messages);
+FrmItemGroupSelect( $items, $searchbar, $group, 'items', $messages);
 
 FrmTabSeparator(_m('Fill field'));
 FrmInputSelect('field_id',       _m('Field'),             $field_select,       $field_id, true,

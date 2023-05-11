@@ -232,7 +232,7 @@ $additional[]               = ['text' => '<input type="text" name="testemail" va
 
 $user_templates = GetUserEmails("user template");  // false or array['id']=>'name'
 
-FrmItemGroupSelect( $items, $searchbar, 'users', $messages, $additional);
+FrmItemGroupSelect( $items, $searchbar, $group, 'users', $messages, $additional);
 
 FrmTabSeparator(_m('Write the email'));
 

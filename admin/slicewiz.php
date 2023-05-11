@@ -28,7 +28,7 @@
 // messages for init_page:
 use AA\Util\InputVars;
 
-crash - we want to remove it from the codebase  HM 2023-02-22
+die('We want to remove this file from the codebase. HM 2023-02-22. Please comment out line '.__LINE__.' in '.basename(__FILE__));
 
 $no_slice_id          = true;
 $require_default_lang = true;
