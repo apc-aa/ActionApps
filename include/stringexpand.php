@@ -344,7 +344,7 @@ class AA_Stringexpand_User extends AA_Stringexpand {
 
 /** Expands {xuser:xxxxxx} alias - auth user informations (of current user)
  *   @param $field - field to show ('headline........', '_#SURNAME_' ...).
- *                   empty for username (of curent logged user)
+ *                   empty for username (of current logged user)
  *                   id - for long id
  *
  *   We do not use {user} in this case, since views with {user} are not cached,
@@ -358,7 +358,7 @@ class AA_Stringexpand_Xuser extends AA_Stringexpand {
      */
     function expand($field='') {
         $xuid  = $GLOBALS['apc_state']['xuid'];   // xuid now sholud be considered as primary
-        $xuser = $GLOBALS['apc_state']['xuser'];  // there culd be more than one user with the same xuser name from different slices
+        $xuser = $GLOBALS['apc_state']['xuser'];  // there could be more than one user with the same xuser name from different slices
         if (!$xuser) {
             return '';
         }
@@ -7021,10 +7021,10 @@ class AA_Stringexpand {
 
     /**
      * @param string[] $arr
-     * @param string $delimiter
+     * @param string   $delimiter
      * @return string
      */
-    protected static function joinWithDelimiter($arr, $delimiter) {
+    public static function joinWithDelimiter($arr, $delimiter) {
         return empty($arr) ? '' : (($delimiter=='json') ? json_encode($arr) : join($delimiter, $arr));
     }
 
@@ -7033,7 +7033,7 @@ class AA_Stringexpand {
      * @param string $delimiter
      * @return array
      */
-    protected static function explode2array(string $values, string $delimiter=''): array {
+    public static function explode2array(string $values, string $delimiter=''): array {
         if (empty($delimiter)) {
             if ($values[0] == '[') {
                 $ret = json2arr($values);
@@ -8371,6 +8371,9 @@ class AA_Stringexpand_Array extends AA_Stringexpand_Nevercachenotrim {
             case 'get':
                 $ret = $arr->get($par1);
                 break;
+            case 'addmulti':
+                $arr->addmulti($par1, $par2); // $values, $delimiter
+                break;
             case 'addset':
                 $arr->addset($par1, $par2);
                 break;
@@ -8381,6 +8384,10 @@ class AA_Stringexpand_Array extends AA_Stringexpand_Nevercachenotrim {
             case 'getall':
                 // $expr with _#1, $delimiter, $sort (key|)
                 $ret = $arr->getAll(strlen($par1) ? $par1 : '_#1', $par2, $par3);
+                break;
+            case 'getfiltered':
+                // filter, $delimiter
+                $ret = $arr->getFiltered($par1, $par2);
                 break;
             case 'sum':
 //            $ret = $arr->sum($i, strlen($val) ? $val : '_#1');

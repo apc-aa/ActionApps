@@ -168,6 +168,10 @@ class AA_Array {
         }
     }
 
+    function addmulti($values, $delimiter) {
+        array_push($this->arr, ...AA_Stringexpand::explode2array($values, $delimiter));
+    }
+
     function addset($i, $value) {
         $this->arr[(string)$i] = ((float)str_replace(',', '.',$this->arr[(string)$i])) + ((float) str_replace(',', '.', $value));
     }
@@ -197,6 +201,10 @@ class AA_Array {
             }
         }
         return join($join, $ret);
+    }
+    function getFiltered($filter, $delimiter) {
+        $ret = preg_grep('/'. preg_quote($filter, '/'). '/', $this->arr);
+        return $ret ? AA_Stringexpand::joinWithDelimiter($ret, $delimiter) : '';
     }
 }
 
