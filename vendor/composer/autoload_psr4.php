@@ -6,9 +6,12 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
+    'Iban\\Validation\\' => array($vendorDir . '/honzito/iban-validation/src'),
     'Horde\\Util\\' => array($vendorDir . '/horde/util/src'),
     'Horde\\Translation\\' => array($vendorDir . '/horde/translation/src'),
     'Horde\\Text\\Diff\\' => array($vendorDir . '/horde/text_diff/src'),
     'Horde\\Exception\\' => array($vendorDir . '/horde/exception/src'),
     'Firebase\\JWT\\' => array($vendorDir . '/firebase/php-jwt/src'),
+    'Defr\\QRPlatba\\' => array($vendorDir . '/honzito/qr-platba/src'),
+    'DASPRiD\\Enum\\' => array($vendorDir . '/dasprid/enum/src'),
 );

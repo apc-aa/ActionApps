@@ -17,16 +17,22 @@
     {
       "type": "vcs",
       "url": "https://github.com/honzito/phpThumb.git"
+    },
+    {
+      "type": "vcs",
+      "url": "https://github.com/honzito/iban-validation.git"
     }
   ],
   "require": {
-    "php": ">=7.2",
+    "php": ">=7.4",
     "ext-json": "*",
     "ext-ctype": "*",
-    "firebase/php-jwt": "v5.0.0",
-    "mobiledetect/mobiledetectlib": "2.8.33",
+    "firebase/php-jwt": "v6.*",
+    "mobiledetect/mobiledetectlib": "2.*",
     "phpgangsta/googleauthenticator": "dev-master",
-    "hearst-digital/horde-text-diff": "dev-master",
+    "horde/text_diff": "v3.*",
+    "honzito/qr-platba": "@dev",
+    "honzito/phpthumb": "dev-justcode",
     "ext-iconv": "*",
     "ext-zlib": "*",
     "ext-gd": "*",
@@ -51,5 +57,7 @@
   "config": {
     "discard-changes": true,
     "optimize-autoloader": true
-  }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable" : true
 }
