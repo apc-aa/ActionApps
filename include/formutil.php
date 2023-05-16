@@ -2291,17 +2291,24 @@ function FrmStaticText($txt, $val, $hlp = "", $morehlp = "", $safing = true) {
     echo $input->get_result();
 }
 
-/** FrmHidden function
- *  Prints html tag <input type=hidden .. to 2-column table
- *  for use within <form> and <table> tag
+/** Gets html tag <input type=hidden .. to 2-column table for use within <form> and <table> tag
+ * @param string $name
+ * @param string $val
+ * @param bool $safing
+ */
+function getFrmHidden($name, $val, $safing=true ): string {
+    $input = new AA_Inputfield($val, false, 'normal', $name);
+    $input->hidden($safing);
+    return $input->get_result();
+}
+
+/** Printss html tag <input type=hidden .. to 2-column table for use within <form> and <table> tag
  * @param string $name
  * @param string $val
  * @param bool $safing
  */
 function FrmHidden($name, $val, $safing=true ) {
-    $input = new AA_Inputfield($val, false, 'normal', $name);
-    $input->hidden($safing);
-    echo $input->get_result();
+    echo getFrmHidden($name, $val, $safing);
 }
 
 /** FrmTextarea function
