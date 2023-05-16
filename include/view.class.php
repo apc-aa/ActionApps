@@ -202,16 +202,17 @@ class AA_View {
 
 
     /** old GetViewSort function
-     * @param $param_sort
+     * @param array $param_sort
      * @return array|bool
      */
-    public function getSort($param_sort=null) {
+    public function getSort(array $param_sort=[]) {
         $sort = false;
         // grouping
 
-        if ($param_sort['group_by']) {
-            // $sort = String2Sort($param_sort['group_by']);
-            $sort = String2Sort('100000'.$param_sort['group_by']);
+        if (array_key_exists('group_by', $param_sort)) {
+            if ($param_sort['group_by']) { // we can have group_by= to avoid grouping ({view:55::group_by-})
+                $sort = String2Sort('100000' . $param_sort['group_by']);
+            }
         } else {
             if ($this->f('group_by1')) {
                 $sort[] = [$this->f('group_by1') => AA_View::VIEW_SORT_DIRECTIONS[$this->f('g1_direction')]];
@@ -219,9 +220,9 @@ class AA_View {
         }
 
         //sorting
-        if ($param_sort['sort']) {
-            if ( $param_sort['sort'] != 'AAnoSORT' ) {
-                $set    = new AA_Set;
+        if (array_key_exists('sort', $param_sort)) {
+            if ($param_sort['sort'] AND $param_sort['sort'] != 'AAnoSORT') {
+                $set = new AA_Set;
                 $set->addSortFromString($param_sort['sort']);
                 $sort = $set->getSort();
             }
@@ -411,7 +412,7 @@ class AA_View {
      */
     public static function parseViewParameters($query_string = "") {
         if ($use_globals = (!$query_string or !preg_match("/vid=[a-z]/", $query_string))) {
-            // old behavior - we do not want to use global dependecy with {view.php} but we do not removed it in times when we wrote {view.php..}{ alias, so we are removing it at least for new "named views"
+            // old behavior - we do not want to use global dependency with {view.php} but we did not remove it in times when we wrote {view.php..}{ alias, so we are removing it at least for new "named views"
             global $cmd, $set, $vid, $als;
             global $x;   // url parameter - used for cmd[]=x-111-url view parameter
         }
@@ -466,7 +467,7 @@ class AA_View {
                     break;
 
                 case 'o':  // the same as x, but no hit for item is added
-                case 'i':  // i is exactly the same as o, now
+                case 'i':  // 'i' is exactly the same as 'o', now
                 case 'x':
                     $vid  = $command->getParameter(0);
                     $zids = new zids();

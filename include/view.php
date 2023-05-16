@@ -226,11 +226,11 @@ class AA_Showview {
         $conds = $this->_view_param["conds"];
         $slices = $this->_view_param["slices"];
         $param_conds = $this->_view_param["param_conds"];
-        $param_sort = [
-            'sort' => $this->_view_param["sort"],
-            'group_by' => $this->_view_param["group_by"],
-            'group_limit' => $this->_view_param["group_limit"]
-        ];
+        $param_sort = [];
+        if (array_key_exists('sort', $this->_view_param))        { $param_sort['sort']        = $this->_view_param['sort']; }
+        if (array_key_exists('group_by', $this->_view_param))    { $param_sort['group_by']    = $this->_view_param['group_by']; }
+        if (array_key_exists('group_limit', $this->_view_param)) { $param_sort['group_limit'] = $this->_view_param['group_limit']; }
+
         $category_id = $this->_view_param['cat'];
         // $item_ids   = $this->_view_param["item_ids"];
         $zids = $this->_view_param["zids"];
