@@ -4137,6 +4137,21 @@ class AA_Stringexpand_Ifset extends AA_Stringexpand_Nevercachenotrim {
     }
 }
 
+/** The same as {ifset:..} but it ignores all the HTML comments in the condition */
+class AA_Stringexpand_Iftext extends AA_Stringexpand_Nevercachenotrim {
+    /** Do not trim all parameters (maybe we can?) */
+
+    /** expand function
+     * @param $condition
+     * @param $text
+     * @param $else_text
+     * @return mixed|string
+     */
+    function expand(...$arg_list) {
+        return AA_Stringexpand_Ifin::_resolveCompare(array_merge([''], $arg_list), function($a,$b) { $v = trim(preg_replace('/<!--(.*?)-->/s', '', $b)); return !((strlen($v)<1) OR IsAlias($v));}, true);
+    }
+}
+
 /** Boolean comparison to exact value: 1
  *  Example: {if1:{_#IS_PUBLI}:_#HEADLINE:no public yet}
  */
