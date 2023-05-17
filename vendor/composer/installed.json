@@ -121,17 +121,17 @@
         },
         {
             "name": "honzito/bacon-qr-code-basis",
-            "version": "2023.208.4",
-            "version_normalized": "2023.208.4.0",
+            "version": "2023.208.6",
+            "version_normalized": "2023.208.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/honzito/BaconQrCode-Basis.git",
-                "reference": "46cc1c0ba643b18228b87f704472a37680f9786d"
+                "reference": "f17a47fbcc25a9bfd487213f8d904c9b8d978b53"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/honzito/BaconQrCode-Basis/zipball/46cc1c0ba643b18228b87f704472a37680f9786d",
-                "reference": "46cc1c0ba643b18228b87f704472a37680f9786d",
+                "url": "https://api.github.com/repos/honzito/BaconQrCode-Basis/zipball/f17a47fbcc25a9bfd487213f8d904c9b8d978b53",
+                "reference": "f17a47fbcc25a9bfd487213f8d904c9b8d978b53",
                 "shasum": ""
             },
             "require": {
@@ -140,7 +140,7 @@
                 "ext-iconv": "*",
                 "php": "^7.4 || ^8"
             },
-            "time": "2023-05-16T10:23:50+00:00",
+            "time": "2023-05-17T13:01:57+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -169,7 +169,7 @@
             "description": "QR Code Generator for PHP - BaconQrCode cleaned to basic QRCode generator library with minimum requirements.",
             "homepage": "https://github.com/honzito/BaconQrCode-Basis",
             "support": {
-                "source": "https://github.com/honzito/BaconQrCode-Basis/tree/2023.208.4"
+                "source": "https://github.com/honzito/BaconQrCode-Basis/tree/2023.208.6"
             },
             "install-path": "../honzito/bacon-qr-code-basis"
         },

@@ -38,6 +38,10 @@ use AA\FormArray;
 use AA\IO\DB\DB_AA;
 use AA\Util\Langs;
 use AA\Util\ChangesMonitor;
+use BaconQrCode\Common\ErrorCorrectionLevel;
+use BaconQrCode\Renderer\GDLibRenderer;
+use BaconQrCode\Writer;
+use Defr\QRPlatba\QRPlatba;
 
 require_once __DIR__ . "/perm_core.php";    // needed for GetAuthData();
 
@@ -7724,6 +7728,53 @@ class AA_Stringexpand_Imgtext extends AA_Stringexpand_Nevercachenotrim {
         $param      = join('|', [$txt, $size, $alignment, $color, $font, $opacity, $margin, $angle, $background, $bg_opacity]);
         $img_url    = AA_INSTAL_PATH. "img.php?new=$bg&amp;w=$width&amp;h=$height&amp;fltr[]=wmt|$param&amp;f=png";
         return "<img src=\"$img_url\" width=\"$width\" height=\"$height\" alt=\"$text\"/>";
+    }
+}
+
+/** Creates B/W QR code image
+ *  {qrcode:<text>[:<size>:<margin>]}
+ *
+ *  @usage <img src="{qrcode:https://actionapps.org:600}" alt="AA website" width=200 height=200>
+ *  @param $text - text to encode (utf)
+ *  @param $size - size of the image in pixels (default 300)
+ *  @param $margin - margin (default 2)
+ **/
+class AA_Stringexpand_Qrcode extends AA_Stringexpand {
+    function expand($text='', $size='', $margin='') {
+        $size = ctype_digit((string)$size) ? (int)$size : 300;
+        $margin = ctype_digit((string)$margin) ? (int)$margin : 2;
+        $renderer = new GDLibRenderer( $size, $margin);
+        $writer   = new Writer($renderer);
+        $qr_image = base64_encode($writer->writeString($text, 'UTF-8', ErrorCorrectionLevel::M()));
+        return "data:image/png;base64,$qr_image";
+    }
+}
+
+/** Creates B/W QR image for payment
+ *  {qrpay:<account>:<amount>[:<currency>:<reference-number>:<message>:<due-date>:<specific-symbol>]}
+ *
+ *  @usage <img src="{qrpay:12-3456789012/0100:1234.56:CZK:2023000123:Honza for Ecn Services 2023:2023-01-01:1234567890}" alt="QR payment" width=200 height=200>
+ *  @param $account - IBAN or account number (automatically converted to IBAN)
+ *  @param $amount - amount to pay
+ *  @param $currency - currency (default EUR) - 3 letterers currency code like EUR, CZK, USD, GBP, COP ...
+ *  @param $reference_number - reference number (variable symbol) - 1-10 digits
+ *  @param $message - message - 1-60 alphanumeric characters
+ *  @param $due_date - due date - YYYY-MM-DD
+ *  @param $specific_symbol - specific symbol - 1-10 digits
+ **/
+class AA_Stringexpand_Qrpay extends AA_Stringexpand {
+    function expand($account='', $amount='', $currency='', $reference_number='', $message='', $due_date='', $specific_symbol='') {
+        if (!$account OR !$amount) {
+            return '';
+        }
+        $amount = (float)PhpFloat($amount);
+        $qr = new QRPlatba($account, $amount, $reference_number, $currency ? 'EUR' : $currency);
+        try {
+            if ($message)         { $qr->setMessage($message); }
+            if ($due_date)        { $qr->setDueDate(new DateTime($due_date)); }
+            if ($specific_symbol) { $qr->setSpecificSymbol($specific_symbol); }
+        } catch (Exception $e) {}
+        return $qr->getQRCodeImage(false, 800, 2);
     }
 }
 

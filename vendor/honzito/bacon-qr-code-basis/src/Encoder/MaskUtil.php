@@ -79,7 +79,8 @@ final class MaskUtil
     public static function applyMaskPenaltyRule3(ByteMatrix $matrix) : int
     {
         $penalty = 0;
-        $array = $matrix->getArray();
+        //$array = $matrix->getArray();
+        $array = array_map(function ($value) { return (array)$value; }, (array)$matrix->getArray());  // SplFixedArray to array - there is probably bug in PHP 8.0 - 8.2+ (https://github.com/Bacon/BaconQrCode/issues/92) - this is workaround
         $width = $matrix->getWidth();
         $height = $matrix->getHeight();
 
