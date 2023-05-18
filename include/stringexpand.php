@@ -7751,9 +7751,9 @@ class AA_Stringexpand_Qrcode extends AA_Stringexpand {
 }
 
 /** Creates B/W QR image for payment
- *  {qrpay:<account>:<amount>[:<currency>:<reference-number>:<message>:<due-date>:<specific-symbol>]}
+ *  {qrpay:<account>:<amount>[:<currency>:<reference-number>:<message>:<due-date>:<specific-symbol>:<recipient-name>]}
  *
- *  @usage <img src="{qrpay:12-3456789012/0100:1234.56:CZK:2023000123:Honza for Ecn Services 2023:2023-01-01:1234567890}" alt="QR payment" width=200 height=200>
+ *  @usage <img src="{qrpay:12-3456789012/0100:1234.56:CZK:2023000123:Honza for Ecn Services 2023:2023-01-01:1234567890:Ecn Studio ltd.}" alt="QR payment" width=200 height=200>
  *  @param $account - IBAN or account number (automatically converted to IBAN)
  *  @param $amount - amount to pay
  *  @param $currency - currency (default EUR) - 3 letterers currency code like EUR, CZK, USD, GBP, COP ...
@@ -7761,9 +7761,10 @@ class AA_Stringexpand_Qrcode extends AA_Stringexpand {
  *  @param $message - message - 1-60 alphanumeric characters
  *  @param $due_date - due date - YYYY-MM-DD
  *  @param $specific_symbol - specific symbol - 1-10 digits
+ *  @param $recipient_name - recipient name - 1-35 alphanumeric characters
  **/
 class AA_Stringexpand_Qrpay extends AA_Stringexpand {
-    function expand($account='', $amount='', $currency='', $reference_number='', $message='', $due_date='', $specific_symbol='') {
+    function expand($account='', $amount='', $currency='', $reference_number='', $message='', $due_date='', $specific_symbol='', $recipient_name='') {
         if (!$account OR !$amount) {
             return '';
         }
@@ -7773,6 +7774,7 @@ class AA_Stringexpand_Qrpay extends AA_Stringexpand {
             if ($message)         { $qr->setMessage($message); }
             if ($due_date)        { $qr->setDueDate(new DateTime($due_date)); }
             if ($specific_symbol) { $qr->setSpecificSymbol($specific_symbol); }
+            if ($recipient_name)  { $qr->setRecipientName($recipient_name); }
         } catch (Exception $e) {}
         return $qr->getQRCodeImage(false, 800, 2);
     }
