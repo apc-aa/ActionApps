@@ -7598,6 +7598,8 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
             case '':
             case 'url':
                 return $img_short;
+            case 'rawurl':
+                return str_replace('&amp;', '&', $img_url);
             case 'im':      //  quick version - img without width and height
                 return "<img src=\"$img_short\" $param2 loading=lazy". (($param1 = safe(strip_tags($param1))) ? " title=\"$param1\" alt=\"$param1\" />" : ' />');
             case 'picture':
@@ -7815,7 +7817,13 @@ class AA_Stringexpand_Fileinfo extends AA_Stringexpand {
             case 'size':
                 $filename = str_replace(IMG_UPLOAD_URL, IMG_UPLOAD_PATH, $url);
                 if (is_file($filename)) {
-                    $size    = @filesize($filename);
+                    $size = @filesize($filename);
+                } else {
+                    $fullurl = $url[0]=='/' ? 'https://'.$_SERVER['HTTP_HOST'].$url : $url;
+                    $size = @strlen(file_get_contents($fullurl));
+                }
+
+                if ($size) {
                     if ($info=='bytesize') {
                         return $size;
                     }
