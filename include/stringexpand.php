@@ -2289,22 +2289,25 @@ class AA_Stringexpand_Previous extends AA_Stringexpand_Nevercache {
 }
 
 /** Escapes the text for CSV export */
-function Csv_escape($text) {
-    return (strcspn($text,",\"\n\r") == strlen($text)) ? $text : '"'.str_replace('"', '""', str_replace("\r\n", "\n", $text)).'"';
+function Csv_escape($text, $char=',') {
+    return (strcspn($text, $char."\"\n\r") == strlen($text)) ? $text : '"'.str_replace('"', '""', str_replace("\r\n", "\n", $text)).'"';
 }
 
 /**
  * Class AA_Stringexpand_Csv
+ * @usage {csv:<text>[:<char>]}
+ *        {csv:{abstract........}:;};{csv...
  */
 class AA_Stringexpand_Csv extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // No reason to cache this simple function
     /** expand function
-     * @param $text
+     * @param string $text - text to escape
+     * @param string $char - separator character (default is ',')
      * @return string
      */
-    function expand($text='') {
-        return Csv_escape($text);
+    function expand($text='', $char='') {
+        return Csv_escape($text, (strlen($char)==1) ? $char : ',');
     }
 }
 
