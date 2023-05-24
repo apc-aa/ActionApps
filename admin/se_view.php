@@ -80,10 +80,10 @@ try {
     // array ( 3144 => 20, 3076 => 1, )-array ( 3144 => 31, )
     $view_id = InputVars::intGETPOST('view_id'); // -
     // array ( 'discus' => 31, )
-    $view_type = InputVars::stringPOST('view_type'); // alpha
+    $view_type = InputVars::stringGETPOST('view_type'); // alpha
 
-    $new_templ = InputVars::boolPOST('new_templ');
-    $view_view = InputVars::intPOST('view_view'); // -
+    $new_templ = InputVars::boolGET('new_templ');
+    $view_view = InputVars::intGET('view_view'); // -
 
     $cancel = InputVars::boolPOST('cancel');
     
@@ -274,12 +274,14 @@ $view_id = (int) $_REQUEST['view_id'];  // sanitize
 if ($view_id) {
     $view      = AA_Views::getViewNumeric($view_id);
     $view_type = $view->f('type');
-} else {
-    // fix for Zeus webserver, which (at least in version 4.2 on PHP 4.3.1/SunOS)
-    // adds wrong $view_type variable to $_SERVER array, which then redefine
-    // the $view_type from $_POST array
-    $view_type = $_POST['view_type'] ?: $_GET['view_type'];
-}
+} 
+// removed - Zeus server is no longer maintained
+//// else {
+//    // fix for Zeus webserver, which (at least in version 4.2 on PHP 4.3.1/SunOS)
+//    // adds wrong $view_type variable to $_SERVER array, which then redefine
+//    // the $view_type from $_POST array
+//    $view_type = $_POST['view_type'] ?: $_GET['view_type'];
+//}
 
 
 $back_url = ( (($view_type == 'categories') OR ($view_type == 'links')) ?
