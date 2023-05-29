@@ -1385,14 +1385,13 @@ h1:has(+form[name="inputform"]) {
 }
 #inputtab td {
     padding: 0.4em 0.6em;
-    vertical-align: middle;
+    vertical-align: top;
     text-align: left;
     font-size: 1rem;
     position: relative;
 }
 #inputtab tr > th:first-child {
-    padding-top: 20px;
-    padding-bottom: 20px;
+    padding-top: 14px;
     padding-right: 15px;
 }
 #inputtab tr > td:last-child {
@@ -1430,13 +1429,13 @@ h1:has(+form[name="inputform"]) {
 }
 .aa-w-full + a.aa-externallink {
     position: absolute;
-    right: 4px;
-    top: 3px;
+    right: 3px;
+    top: 2px;
 }
 .aa-w-full + a.aa-morehelp, a.aa-externallink + a.aa-morehelp  {
     position: absolute;
-    right: 10px;
-    top: 3px;
+    right: 4px;
+    top: 6px;
 }
 a.aa-externallink + a.aa-morehelp  {
     top: 21px;
@@ -1451,14 +1450,15 @@ a.aa-externallink + a.aa-morehelp  {
     padding: 4px;
 }
 #inputtab input[type="checkbox"], #inputtab input[type="radio"] {
-    margin: 2px 5px 2px 0;
+    margin: 9px 5px 2px 0;
     vertical-align: bottom;
 }
 #inputtab .aa-mch-list input[type=checkbox], #inputtab .aa-mch-list input[type=radio] {
-    margin: 3px 5px 2px 0;
+    margin: 7px 5px 4px 0;
 }
 #inputtab label.aa-chb {
     padding-right: 12px;
+    white-space: nowrap;
 }
 #inputtab img[title="new"] {
     margin-left: 3px;
