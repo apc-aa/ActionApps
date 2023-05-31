@@ -86,6 +86,8 @@ try {
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {}
 
+$err = [];          // error array (Init - just for initializing variable
+
 $searchbar = new AA_Searchbar();   // mainly for bookmarks
 $items     = $chb;
 
@@ -124,6 +126,7 @@ if ( !$send ) {               // for the first time - directly from item manager
         ValidateInput("html",        _m("Use HTML"),           $html,        $err, false, "number");
         ValidateInput("template_id", _m("Email template"),     $template_id, $err, false, "number");
 
+        $attachs = [];
         foreach (['attachment1', 'attachment2', 'attachment3'] as $attach) {
             $uploadvar = $attach.'x';
             if ( $_FILES[$uploadvar]['name'] != '' ) {
