@@ -48,12 +48,13 @@ class JsonLD extends AbstractGrabber
     protected $token = '';
 
     /**
-     * @var callable function to return item array form the grabbed json
+     * @var string // type of splitter - function to return item array form the grabbed json
+     *             // (once it was callable, but it is not possible to serialize it for toexecute)
      */
     protected $item_splitter = null;
 
     /**
-     * @var callable - function for getting next url gor grabber
+     * @var string - type of next item function for getting next url gor grabber
      */
     protected $next_func = null;
 
@@ -101,19 +102,43 @@ class JsonLD extends AbstractGrabber
     }
 
     /**
-     * @param callable $item_splitter
+     * @param string|null $item_splitter
+     * @return JsonLD
      */
-    public function setItemSplitter(callable $item_splitter = null): self {
+    public function setItemSplitter(string $item_splitter = null): self {
         $this->item_splitter = $item_splitter;
         return $this;
     }
 
+    protected function splitter($json) {
+        $ret = [];
+
+        // for now just one splitter type - FeatureCollection
+        if ($this->item_splitter == 'FeatureCollection') {
+            foreach ($json['FeatureCollection'] as $itm) {
+                $ret[] = $itm['properties'];
+            }
+        } else {         // if there is no splitter, return whole json
+            $ret = $json;
+        }
+        return $ret;
+    }
+
     /**
-     * @param callable|null $next_func
+     * @param string|null $next_func
      */
-    public function setNextFunc(callable $next_func = null): self {
+    public function setNextFunc(string $next_func = null): self {
         $this->next_func = $next_func;
         return $this;
+    }
+
+    protected function nextfunction($json) {
+        // for now just one non-standard next function - Empty
+        if ($this->next_func == 'None') {
+            return '';
+        }
+        // if there is no nextfunction, return empty url
+        return '';
     }
 
     /** You can get token dynamically, so you will set it through  setAuth, or you already have token, then you setToken directly */
@@ -178,7 +203,7 @@ class JsonLD extends AbstractGrabber
 
     protected function nextPage($json): string {
         if ($this->next_func) {
-            return call_user_func($this->next_func, $json);
+            return $this->nextfunction($json);
         }
         $url = '';
         if ($next = $json['hydra:view']['hydra:next']) {
@@ -212,7 +237,7 @@ class JsonLD extends AbstractGrabber
         foreach ($data as $chunk) {
             $json = json_decode($chunk, true);
             if ($this->item_splitter) {
-                $this->_items = array_merge($this->_items, call_user_func($this->item_splitter, $json));
+                $this->_items = array_merge($this->_items, $this->splitter($json));
             } else {
                 $this->_items = array_merge($this->_items, $json);
             }
