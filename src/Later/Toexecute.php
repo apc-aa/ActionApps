@@ -189,7 +189,7 @@ class Toexecute {
                 break;
             }
         }
-        AA_Log::write('TOEXECUTE', 'AA\Later\Toexecute', "finished $count/$started in " . (microtime(true) - $execute_start) . "/$allowed_time");
+        AA_Log::write('TOEXECUTE', 'AA\Later\Toexecute', "finished $count/$started in " . sprintf('%.3g', microtime(true) - $execute_start) . "/$allowed_time");
     }
 
     /** Executes as many tasks from the $tasks array as time allows
@@ -222,7 +222,7 @@ class Toexecute {
                 break;
             }
         }
-        AA_Log::write('TOEXECUTE', 'AA\Later\Toexecute', "finished $count/$started in " . (microtime(true) - $execute_start) . "/$allowed_time");
+        AA_Log::write('TOEXECUTE', 'AA\Later\Toexecute', "finished $count/$started in " . sprintf('%.3g',microtime(true) - $execute_start) . "/$allowed_time");
     }
 
     function _exeOne($task, &$execute_times, $execute_start, $allowed_time)
@@ -257,7 +257,10 @@ class Toexecute {
         $varset->doDelete('toexecute');
         $execute_times[$task_type] = microtime(true) - $task_start;
 
-        AA_Log::write('TOEXECUTE', $selector, $execute_times[$task_type] . ":$retcode:" . $task['params']);
+        $mem_usage = sprintf('%.3g',(memory_get_usage() / (1024*1024)));
+        $mem_peak  = sprintf('%.3g',(memory_get_peak_usage() / (1024*1024)));
+
+        AA_Log::write('TOEXECUTE', $selector, sprintf('%.3g', $execute_times[$task_type]).":${mem_usage}MB:${mem_peak}MB:$retcode:" . $task['params']);
         return 1;
     }
 

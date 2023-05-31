@@ -1154,12 +1154,10 @@ function HtmlPageBegin($js_lib=false, $lang=null) {
 
 // use instead of </body></html> on pages which show menu
 function HtmlPageEnd() {
-    global $spareDBs, $slices4cache;
+    global $slices4cache;
     AA::$debug&2 && AA::$dbg->info('time: '. timestartdiff());
     if (AA::$debug&16) {
-        echo '<br>Page generation time: '. timestartdiff();
-        echo '<br>Dababase instances: '. DB_AA::$_instances_no;
-        echo '<br>  (spareDBs): '. count($spareDBs);
+        AA::$dbg->basic_stat();
         if ($slices4cache) {
             echo '<br>UsedModules:<br> - ' . join('<br> - ', array_map(function ($mid) { return AA_Module::getModuleName($mid); }, $slices4cache));
         }

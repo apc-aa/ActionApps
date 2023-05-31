@@ -64,9 +64,7 @@ if ($cacheentry = AA::Pagecache()->getPage($cache_key, (string)$site_nocache)) {
     $cacheentry->processPage(1);
     if ( AA::$debug ) {
         echo '<br><br>Site cache hit!!!';
-        echo '<br>Page generation time: '. timestartdiff();
-        echo '<br>Dababase instances: '. DB_AA::$_instances_no;
-        echo '<br>  (spareDBs): '. count($spareDBs);
+        AA::$dbg->basic_stat();
         AA::$dbg->duration_stat();
     }
     exit;
@@ -276,9 +274,7 @@ if (!$site_nocache AND (empty($apc_state['xuid']) or ($apc_state['xuid']=='nobod
 
 if (AA::$debug&2) {
     echo '<br><br>Site cache MIS!!!';
-    echo '<br>Page generation time: '. timestartdiff();
-    echo '<br>Dababase instances: '. DB_AA::$_instances_no;
-    echo '<br>  (spareDBs): '. count($spareDBs);
+    AA::$dbg->basic_stat();
     echo '<br>UsedModules:<br> - '. join('<br> - ', array_map(function($mid) {return AA_Module::getModuleName($mid);}, $slices4cache));
     AA::$debug&4 && AA::$dbg->duration_stat();
 }
