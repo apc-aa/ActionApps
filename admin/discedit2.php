@@ -26,7 +26,7 @@
 // discedit2.php - admin discussion comments
 // expected    $item_id for comment's item_id
 //             $d_id
-// optionaly   $update
+// optionally   $update
 
 // const  AA_REGISTER_GLOBALS = true;
 use AA\Util\InputVars;

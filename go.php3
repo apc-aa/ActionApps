@@ -6,7 +6,7 @@
 * <pre>
 * expected  type      // = fed  - go to item, where the item is fed from
 * expected  sh_itm    // id of item
-* optionaly url       // show found item on url (if not specified, the url is
+* optionally url       // show found item on url (if not specified, the url is
 *                     // taken from slice
 * </pre>
 * @package UserOutput

@@ -127,7 +127,7 @@ function GetMiscTableView($viewID) {
         "table"     => "log",
         "type"      => "browse",
         "mainmenu"  => "aaadmin",
-        "help"      => _m("COUNT_HIT events will be used for counting item hits. After a while it will be automaticaly deleted."),
+        "help"      => _m("COUNT_HIT events will be used for counting item hits. After a while it will be automatically deleted."),
         "submenu"   => "te_log",
         "readonly"  => false,
         "addrecord" => false,

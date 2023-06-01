@@ -25,7 +25,7 @@
  *
 */
 //             $slice_id
-// optionaly $Msg to show under <h1>Headline</h1> (typicaly: Fields' mapping update)
+// optionally $Msg to show under <h1>Headline</h1> (typically: Fields' mapping update)
 
 use AA\IO\DB\DB_AA;
 use AA\Util\InputVars;

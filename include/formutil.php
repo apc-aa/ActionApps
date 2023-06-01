@@ -3064,7 +3064,7 @@ function FrmItemGroupSelect( $items, $searchbar, $selected, $list_type, $message
         $out .= getRadioBookmarkRow( $selected, _m('All items in holding bin'), count(getZidsFromGroupSelect('AA_BIN_HOLDING', $items, $searchbar)), 'AA_BIN_HOLDING', $list_type, $messages['view_items']);
         $out .= getRadioBookmarkRow( $selected, _m('All items in trash bin'),   count(getZidsFromGroupSelect('AA_BIN_TRASH'  , $items, $searchbar)), 'AA_BIN_TRASH', $list_type, $messages['view_items']);
     }
-    // aditional group (test one, for examle)
+    // aditional group (test one, for example)
     foreach ( $additional as $row ) {
         $out .= getRadioBookmarkRow( $selected, $row['text'], '', $row['varname'], $list_type, $messages['view_items'], false);
     }

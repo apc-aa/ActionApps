@@ -84,7 +84,7 @@ function getHierConstInitJavaScript($hcid, $group_id, $levelCount=3, $formName='
  * @param  $hcid
  * @param  $levelCount - count of boxes
  * @param  $horizontal = 0 - should be the boxes placed horizontal?
- * @param  $targetBox = "" - where to put selected values (usefull by admin=false)
+ * @param  $targetBox = "" - where to put selected values (useful by admin=false)
  * @param  $admin = true - are the boxes in admin interface?
  *           if yes, buttons are "Add new" and "Select",
  *           else, buttons are "Select" - moves to the targetBox

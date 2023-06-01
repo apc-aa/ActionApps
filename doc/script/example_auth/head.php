@@ -22,7 +22,7 @@ function displayUserbox($a) {
         echo "<a href=\"logout.php\">logout</a><br/>";
     } else {
         // Not authenticated
-        echo "<form method=\"post\" action=\"/apc-aa/doc/script/examle_auth/login.php\">";
+        echo "<form method=\"post\" action=\"/apc-aa/doc/script/example_auth/login.php\">";
         echo "Username: <input type=\"text\" name=\"username\"><br/>";
         echo "Password: <input type=\"password\" name=\"password\"><br/>";
         echo "<input type=\"submit\">";

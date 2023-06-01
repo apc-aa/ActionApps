@@ -28,8 +28,8 @@
 
 // expected at least $slice_id
 // user calling is with $edit for edit item
-// optionaly encap="false" if this form is not encapsulated into *.shtml file
-// optionaly free and freepwd for anonymous user login (free == login, freepwd == password)
+// optionally encap="false" if this form is not encapsulated into *.shtml file
+// optionally free and freepwd for anonymous user login (free == login, freepwd == password)
 
 
 // buttons

@@ -23,7 +23,7 @@ https://www.apc.org/
 
 
 
-// This file You can use for storing usefull functions, which is specific for
+// This file You can use for storing useful functions, which is specific for
 // the module. In general it could be empty.
 
 

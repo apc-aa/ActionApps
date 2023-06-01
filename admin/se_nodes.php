@@ -5,7 +5,7 @@
  *                 $name
  *                 $server_url
  *                 $password
- *     optionaly $Msg to show under <h1>Headline</h1> (typicaly: Fields' mapping update)
+ *     optionally $Msg to show under <h1>Headline</h1> (typically: Fields' mapping update)
  *                 $old_node_name
  *                 $sel_node_name
  *

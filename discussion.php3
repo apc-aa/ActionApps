@@ -62,7 +62,7 @@ function PutSearchLog($searchlog, $found_count=0) {
 
 /** APC-AA configuration file */
 require_once __DIR__."/./include/config.php";
-/** Set of usefull functions used on most pages */
+/** Set of useful functions used on most pages */
 require_once __DIR__ . "/include/util.php";
 /** Mail sending functions */
 require_once __DIR__ . "/include/mail.php";

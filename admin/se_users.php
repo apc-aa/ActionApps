@@ -1,7 +1,7 @@
 <?php
 /** expected $slice_id for edit slice
- *   optionaly $Msg to show under <h1>Headline</h1>
- *   (typicaly: Category update successful)
+ *   optionally $Msg to show under <h1>Headline</h1>
+ *   (typically: Category update successful)
  *
  *
  * PHP version 7.2+

@@ -881,7 +881,7 @@ class AA_Permsystem {
     /** true, if the password is in old format and needs to be updated with new hash */
     protected function needsRehashPassword($hash): bool { return false; }
 
-    /** updates user password - should be called after successfull authentication and if we needsRehashPassword() */
+    /** updates user password - should be called after successful authentication and if we needsRehashPassword() */
     protected function rehashPassword($user_id, $password)     {}
 
     /** Creates a password hash for given Permsystem */

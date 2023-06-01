@@ -62,12 +62,12 @@ function ProcessFormData($getTableViewsFn, $val, &$cmd) {
                     $ok = true;
                     if (key($par) == $GLOBALS['new_key']) {
                         $ok = ProcessInsert($myviewid, $myview, $primary_aliases, $val, $cmd);
-                        if ($ok) $GLOBALS["Msg"] = _m("Insert was successfull.");
+                        if ($ok) $GLOBALS["Msg"] = _m("Insert was successful.");
                     }
                     else {
                         $ok = TableUpdate( $val[key($par)], $myview["fields"], $primary_aliases, $myview["messages"]["error_update"], $myview["triggers"]);
                         if ($ok) {
-                            $GLOBALS["Msg"] = _m("Update was successfull.");
+                            $GLOBALS["Msg"] = _m("Update was successful.");
                         }
                     }
                     if (!$ok) {
@@ -90,7 +90,7 @@ function ProcessFormData($getTableViewsFn, $val, &$cmd) {
                         $err = "";
                     }
                     else {
-                        $GLOBALS["Msg"] = _m("Update was successfull.");
+                        $GLOBALS["Msg"] = _m("Update was successful.");
                     }
                 }
                 break;
@@ -104,12 +104,12 @@ function ProcessFormData($getTableViewsFn, $val, &$cmd) {
                     }
                 }
                 if ($ok) {
-                    $GLOBALS["Msg"] = _m("Delete was successfull.");
+                    $GLOBALS["Msg"] = _m("Delete was successful.");
                 }
                 break;
             case "delete":
                 if (TableDelete($myview["table"], key($par), $myview["fields"], $primary_aliases, $myview["messages"]["error_delete"], $myview["triggers"])) {
-                    $GLOBALS["Msg"] = _m("Delete was successfull.");
+                    $GLOBALS["Msg"] = _m("Delete was successful.");
                 }
                 break;
             default:
@@ -300,7 +300,7 @@ function TableDelete($table, $key, $columns, $primary_aliases, $error_msg="", $t
  * @param $error_msg
  * @param $triggers
  * @param $be_cautios
- * @return bool - true if successfull, false if not
+ * @return bool - true if successful, false if not
  */
 function TableUpdate($val, $columns, $primary_aliases, $error_msg="", $triggers = "", $be_cautious=1) {
     global $err;
@@ -356,7 +356,7 @@ function TableUpdate($val, $columns, $primary_aliases, $error_msg="", $triggers 
     }
     freeDB($db);
 
-    $GLOBALS["Msg"] = _m("Update was successfull.");
+    $GLOBALS["Msg"] = _m("Update was successful.");
     return true;
 }
 
@@ -442,7 +442,7 @@ function TableInsert(&$newkey, &$where, $key_table, $val, $columns, $primary_ali
     }
     freeDB($db);
 
-    $GLOBALS["Msg"] = _m("Insert was successfull.");
+    $GLOBALS["Msg"] = _m("Insert was successful.");
     return $newkey;
 }
 

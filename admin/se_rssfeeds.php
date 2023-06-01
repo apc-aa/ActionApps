@@ -5,7 +5,7 @@
  *                $name
  *                $server_url
  *                $password
- *    optionaly $Msg to show under <h1>Headline</h1> (typicaly: Fields' mapping update)
+ *    optionally $Msg to show under <h1>Headline</h1> (typically: Fields' mapping update)
  *                $old_rssfeed_name
  *                $sel_rssfeed_name
  *

@@ -651,14 +651,14 @@ class sitetree {
                         if ($cho) { // skip buggy empty choices
                             if (($method=='all') OR ($method=='collapsed') OR ($this->conditionMatches($cho, $state) AND !$this->isFlag($cho, AA_Module_Site::FLAG_DISABLE))) {
 
-                                // sometimes it is usefull to call a function before the choice
+                                // sometimes it is useful to call a function before the choice
                                 if ($functions['before_choice']) {
                                     call_user_func_array($functions['before_choice'], [$cho, $depth, $choices_index, $choices_count]);
                                 }
 
                                 $this->walkTree($state, $cho, $functions, $method, $depth+1);
 
-                                // and sometimes it is usefull to call a function after the choice
+                                // and sometimes it is useful to call a function after the choice
                                 if ($functions['after_choice']) {
                                     call_user_func_array($functions['after_choice'], [$cho, $depth, $choices_index, $choices_count]);
                                 }

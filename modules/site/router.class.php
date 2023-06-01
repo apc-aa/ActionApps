@@ -342,7 +342,7 @@ class AA_Router_Seo extends AA_Router {
         // manage links like example.org/?filter=22
         if (substr($apc,0,2)=='/?') {  // maybe also "#"
             $apc = $home.$apc;
-        } elseif ($apc=='/index.php') { // usefull for AA behind proxy (HTTP_X_FORWARDED_SERVER) - Appache adds index.php as default path so we have to re
+        } elseif ($apc=='/index.php') { // useful for AA behind proxy (HTTP_X_FORWARDED_SERVER) - Appache adds index.php as default path so we have to re
             $apc = $home;
         }
 

@@ -638,7 +638,7 @@ class itemview {
                 if (is_null($catname = $this->zids->getAttr($zidx, 'group_by'))) {
                     $catname = $CurItem->getval($this->group_fld);
                 } else {
-                    // it shoudn't be set, but just in case - we do not want to redefine it
+                    // it shouldn't be set, but just in case - we do not want to redefine it
                     // @todo move it outside else - there it is just for first testing
                     $CurItem->addAlias(new AA_Alias('_#GRP_NAME', ParamImplode(["f_t", $catname]), 'id..............', _m("exact group name")));
                 }

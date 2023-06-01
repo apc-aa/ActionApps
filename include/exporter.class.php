@@ -531,7 +531,7 @@ class AA_Exportsetings extends AA_Object {
         ];
     }
 
-    function export($restict_zids=null) {
+    function export($restrict_zids=null) {
         $slice_id = $this->aa_owner;
         $slice  = AA_Slice::getModule($slice_id);
 
@@ -552,7 +552,7 @@ class AA_Exportsetings extends AA_Object {
         } else {
             $fields          = $slice->getFields();
             $possible_fields = $fields->getPriorityArray();
-            $grabber         = new Slice($set, $restict_zids);
+            $grabber         = new Slice($set, $restrict_zids);
         }
 
         if (is_array($this->fields) AND count($this->fields) ) {

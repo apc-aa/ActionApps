@@ -207,7 +207,7 @@ define("ADMIN_CSS",       "admin.css");         // style for admin interface
 //  define("ADMIN_CSS",       "admin-cml.css");     // style for admin interface
 
 /** Page cache setting
- *  pages with items/views/slices/sites are automaticaly cached by AA
+ *  pages with items/views/slices/sites are automatically cached by AA
  *  The caching system is quite smart - it caches only unchanged pages.
  *  However, You can switch caching off. */
 define( "ENABLE_PAGE_CACHE", true );

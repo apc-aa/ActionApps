@@ -87,7 +87,7 @@ if ( $answer )    {
 if (ctype_digit((string)$_REQUEST['respuesta'])) {
     if (($_REQUEST['varA'] + $_REQUEST['varB']) != $_REQUEST['respuesta']) {
         // $varA + $varB must be equal to $respuesta, if provided
-        echo _m("Wrong result, not posible to post comments.");
+        echo _m("Wrong result, not possible to post comments.");
         exit;
     }
 }

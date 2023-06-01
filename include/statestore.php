@@ -966,7 +966,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
              ],
              'itemview'  => [
                  'manager_vid'          => false,    // $slice_info['manager_vid'],      // id of view which controls the design
-                 'format'               => [    // optionaly to manager_vid you can set format array
+                 'format'               => [    // optionally to manager_vid you can set format array
                                                 'compact_top'      => '<div class="aa-table aa-items-manager">'. static::getManagerTopHtml($search_fields),
                                                 'category_sort'    => false,
                                                 'category_format'  => "",

@@ -332,7 +332,7 @@ function aa_rss_parse($xml_data) {
         $GLOBALS['g_slice_encoding'] = AA_Slice::getModule($GLOBALS['slice_id'])->getCharset();
     }
 
-    // encoding detected automaticaly - utf-8 on the output of the parsed
+    // encoding detected automatically - utf-8 on the output of the parsed
     $xml_parser = xml_parser_create_ns();
 
     // Clear out, or will just append to previous parse!

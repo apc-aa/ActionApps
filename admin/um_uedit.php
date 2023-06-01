@@ -1,6 +1,6 @@
 <?php
 /**  um_uedit.php - adds new user to permission system
- *     optionaly $Msg to show under <h1>Headline</h1> (typicaly: update successful)
+ *     optionally $Msg to show under <h1>Headline</h1> (typically: update successful)
  *     selected_user
  *     state variables:
  *        $usr_edit       - comes from um_usrch - button Edit $selected_user

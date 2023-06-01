@@ -1558,7 +1558,7 @@ class AA_Contentcache {
         return $this->_get_result(get_hash(func_get_args()), $function, $params, $function);
     }
 
-    ///** sometimes it is quicker to not count the key automaticaly (in case of object call) */
+    ///** sometimes it is quicker to not count the key automatically (in case of object call) */
     //function get_result_by_id($key, $function, $params) {
     //    if ( isset( $this->content[$key]) ) {
     //        $this->content[$key][2]++;
@@ -1782,7 +1782,7 @@ function get_if($value, $else, $else2='aa_NoNe', $else3='aa_NoNe') {
 }
 
 /** aa_version function
- *  Version of AA - automaticaly included also date and revision of util.php
+ *  Version of AA - automatically included also date and revision of util.php
  *  file, for better version information
  */
 function aa_version($format='full') {

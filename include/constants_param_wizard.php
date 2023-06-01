@@ -903,7 +903,7 @@ $TRANS_ACTIONS["items"]["storeparsemulti"] = [
     "params"=> [
         [
             "name"=>_m("delimiter (+ possible languages)"),
-            "desc"=>_m("string delimeter which separates the values of the input field (like \"|\"). Another option is to add also languages separated by \"##\" in the form <delimiter>##<lang1>##<lang2> (\"|##cz##en\" for \"Ahoj|Hi\") - this will fill translated fields"),
+            "desc"=>_m("string delimiter which separates the values of the input field (like \"|\"). Another option is to add also languages separated by \"##\" in the form <delimiter>##<lang1>##<lang2> (\"|##cz##en\" for \"Ahoj|Hi\") - this will fill translated fields"),
             "type"=>"STR",
             "example"=>"|"
         ],

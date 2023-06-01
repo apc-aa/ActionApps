@@ -247,8 +247,8 @@ class AA_Debug {
         $mem_peak  = sprintf('%.3g',(memory_get_peak_usage() / (1024*1024)));
 
         echo '<br>Page generation time: '. sprintf('%.3g',timestartdiff());
-        echo "<br>Memory ussage (actual): ${mem_usage} MiB";
-        echo "<br>Memory ussage (peak): ${mem_peak} MiB";
+        echo "<br>Memory usage (actual): ${mem_usage} MiB";
+        echo "<br>Memory usage (peak): ${mem_peak} MiB";
         echo '<br>Dababase instances: '. DB_AA::$_instances_no;
         echo '<br>  (spareDBs): '. count($spareDBs);
     }
@@ -364,9 +364,9 @@ class AA {
         if (isset(AA::$headers['disposition'])) {
             $ret['disposition'] = 'Content-Disposition: '.AA::$headers['disposition'];
         }
-        foreach (['CSP','CSP-RO','RT','NEL','XSS','XCTO','RP','CORS','CORSH'] as $posibleheader) {  // @todo CORS
-            if (isset(AA::$headers[$posibleheader])) {
-                $ret[$posibleheader] = AA::$headers[$posibleheader];
+        foreach (['CSP','CSP-RO','RT','NEL','XSS','XCTO','RP','CORS','CORSH'] as $possibleheader) {  // @todo CORS
+            if (isset(AA::$headers[$possibleheader])) {
+                $ret[$possibleheader] = AA::$headers[$possibleheader];
             }
         }
         return $ret;

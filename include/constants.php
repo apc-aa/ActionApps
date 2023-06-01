@@ -1086,8 +1086,8 @@ const MGR_ACTIONS       = 2;  // show actions
 const MGR_SB_SEARCHROWS = 4;  // show search rows in searchbar
 const MGR_SB_ORDERROWS  = 8;  // show order rows in searchbar
 const MGR_SB_BOOKMARKS  = 16;  // show bookmarks in searchbar
-const MGR_SB_ALLTEXT    = 32;  // show '-- any text field --' option in search fieds
-const MGR_SB_ALLNUM     = 64;  // show '-- any numeric field --' option in search fieds
+const MGR_SB_ALLTEXT    = 32;  // show '-- any text field --' option in search fields
+const MGR_SB_ALLNUM     = 64;  // show '-- any numeric field --' option in search fields
 const MGR_ALL           = 127;  // show all
 
 /** constants for bins, used in new QueryZIDS function */

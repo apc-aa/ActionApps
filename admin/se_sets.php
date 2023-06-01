@@ -1,7 +1,7 @@
 <?php
 /** se_sets.php - creates sets
  *   expected $slice_id for edit slice
- *   optionaly $Msg to show under <h1>Hedline</h1> (typicaly: update successful)
+ *   optionally $Msg to show under <h1>Headline</h1> (typically: update successful)
  *
  *   not nic - quick & dirty solution, for now. Will be rewritten.
  *

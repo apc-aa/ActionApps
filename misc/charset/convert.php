@@ -6,7 +6,7 @@
  *
  * @param $from   - source encoding      (default is iso-8859-1)
  * @param $to     - destination encoding (default is utf-8)
- * @param $source - file (url) to be converted. In examle above we convert
+ * @param $source - file (url) to be converted. In example above we convert
  *                 https://www.apc.org/page.htm  (url encoded)
  *
  * @version $Id$

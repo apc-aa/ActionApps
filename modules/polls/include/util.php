@@ -71,7 +71,7 @@ class AA_Aliasgenerator_Answer extends AbstractAliasgenerator {
 
         $aliases->addAlias(new AA_Alias('_#ANS_NO__', 'f_1', 'priority', _m('Nubmer of answer')));
         $aliases->addAlias(new AA_Alias('_#ANS_VOTE', 'f_1', 'votes', _m('Nubmer of votes for this answer')));
-        $aliases->addAlias(new AA_Alias('_#ANSWER__', 'f_1', 'answer', _m('Text of answer'))); // generated automaticaly form the table column using metabase methods
+        $aliases->addAlias(new AA_Alias('_#ANSWER__', 'f_1', 'answer', _m('Text of answer'))); // generated automatically form the table column using metabase methods
         $aliases->addAlias(new AA_Alias('_#ANS_ID__', 'f_1', 'id', _m('ID of answer (32 characters hexadecimal number)')));
         $aliases->addAlias(new AA_Alias('_#ANS_PERC', 'f_t:{poll_share}', '', _m('Votes for this answer in percent. You can use also {poll_share}.')));
         $aliases->addAlias(new AA_Alias('_#ANS_SUM_', 'f_t:{poll_sum}', '', _m('Sum of all votes. You can use also {poll_sum}.')));

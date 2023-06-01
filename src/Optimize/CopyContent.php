@@ -20,7 +20,7 @@ class CopyContent extends AbstractOptimize {
      * @return string - a description
      */
     public static function description(): string {
-        return _m("Copy data for all items newer than short_id=1941629 from content table to content2 table. Used for recovery content table on Ecn server. Not usefull for any other users, I think.");
+        return _m("Copy data for all items newer than short_id=1941629 from content table to content2 table. Used for recovery content table on Ecn server. Not useful for any other users, I think.");
     }
 
     /** implemented actions within this class */

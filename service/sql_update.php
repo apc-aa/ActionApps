@@ -77,7 +77,7 @@ if (!$silent) {
       <h1>ActionApps database update</h1>
       <p>This script is written to be not destructive. It creates temporary tables
          first, then copies data from old tables to the temporary ones (tmp_*) and
-         after successfull copy it drops old tables and renames temporary ones to
+         after successful copy it drops old tables and renames temporary ones to
          right names. Then it possibly updates common records (like default field
          definitions, module templates, constants and templates).</p>
       <p style="color:red;">However, it is strongly recommended backup your current

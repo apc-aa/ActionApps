@@ -46,7 +46,7 @@ use Defr\QRPlatba\QRPlatba;
 require_once __DIR__ . "/perm_core.php";    // needed for GetAuthData();
 
 /**
- * Class AA_Aliasfunc for storing functions like {_:Message_box:Update successfull:green}
+ * Class AA_Aliasfunc for storing functions like {_:Message_box:Update successful:green}
  */
 class AA_Aliasfunc extends AA_Object implements \AA\Util\NamedInterface {
 
@@ -543,7 +543,7 @@ class AA_Stringexpand_Formbreak extends AA_Stringexpand {
         }
 
         // You can specify also the names for next tabs (separated by ':'), which is
-        // usefull mainly for last tab (for which you do not have formbrake, of course
+        // useful mainly for last tab (for which you do not have formbrake, of course
         $i = 0;
         foreach ($part_names as $name) {  // remember part name
             // the formparts are numbered backward
@@ -684,7 +684,7 @@ class AA_Stringexpand_Yahoo extends AA_Stringexpand {
         $style_default  = "2" ;
         $image          = '';
 
-        // test to see if the optinal elements of the params are supported. if not set them to the defaults
+        // test to see if the optional elements of the params are supported. if not set them to the defaults
 
         if ( !($style == "0" OR $style == "1" OR $style == "2" OR $style == "3" OR $style == "4" ) ) {
             $style = $style_default ;
@@ -954,7 +954,7 @@ class AA_Stringexpand_Htmltoggle extends AA_Stringexpand_Nevercache {
  *          {htmltogglecss:+:-:#id_#SITEM_ID:1}
  *  It creates the link text1 (or text2) +/- toggle which displays/hides all
  *  elements matching the css_rule (#id82422) in our example
- *  The /javscript/aajslib.php shoud be included to the page
+ *  The /javscript/aajslib.php should be included to the page
  *  (by <script src="">)
  *  @param $switch_state_1 - default link text
  *  @param $switch_state_2 - link text 2
@@ -1002,7 +1002,7 @@ class AA_Stringexpand_Htmltogglecss extends AA_Stringexpand_Nevercache {
  *          {htmlajaxtogglecss:+:-:#id_#SITEM_ID:/apc-aa/view.php?vid=33&cmd[33]=x-33-{_#SITEM_ID}}
  *  It creates the link text1 (or text2) +/- toggle which loads+displays/hides all
  *  elements matching the css_rule (#id82422) in our example
- *  The /javscript/aajslib.php shoud be included to the page
+ *  The /javscript/aajslib.php should be included to the page
  *  (by <script src="">)
  *  @param $switch_state_1  - default link text
  *  @param $switch_state_2  - link text 2
@@ -1043,8 +1043,8 @@ class AA_Stringexpand_Htmlajaxtogglecss extends AA_Stringexpand_Nevercache {
         $switches = AA_Stringexpand::replaceIcons([$switch_state_1, $switch_state_2]);  // replace icons [+] [-]
         $switches_js = str_replace(["'", '"', "\n", "\r"], ["\'", "\'", ' ', ' '], $switches);
 
-        // automaticaly add conversion to utf-8 for AA view.php calls
-        // -- removed - view.php now check for AJAX call automaticaly
+        // automatically add conversion to utf-8 for AA view.php calls
+        // -- removed - view.php now check for AJAX call automatically
         //if ((strpos($url_of_text,'/view.php?') !== false) AND (strpos($url_of_text,'convert')===false)) {
         //    $url_of_text = get_url($url_of_text,array('convertto' => 'utf-8'));
         //}
@@ -1221,7 +1221,7 @@ class AA_Stringexpand_Shorten extends AA_Stringexpand_Nevercachenotrim {
  *          {expandable:some long text:50:...:more >>>:less <<<}
  *  It creates the div and if the text is longer than <length> characters, then
  *  it adds <more> DHTML link in order user can see all the text
- *  The /javscript/aajslib.php shoud be included to the page
+ *  The /javscript/aajslib.php should be included to the page
  *  (by <script src="">)
  *  @param $text           - default link text
  *  @param $length         - HTML code displayed as default (in div)
@@ -1281,7 +1281,7 @@ class AA_Stringexpand_Expandable extends AA_Stringexpand_Nevercachenotrim {
  *  It creates the link text1 (or text2) and two divs, where only one is visible
  *  at the time - first is displayed as defaut, the second is loaded by AJAX
  *  call on demand from specified url. The URL should be on the same server
- *  The /apc-aa/javascript/aajslib.php shoud be included to the page
+ *  The /apc-aa/javascript/aajslib.php should be included to the page
  *  (by <script src="">)
  *  @param $switch_state_1 - default link text
  *  @param $code_1         - HTML code displayed as default (in div)
@@ -1622,7 +1622,7 @@ function getConstantValue($group, $what, $field_name) {
  *  The unaliasing works this way:
  *
  *    Ex: some text {ifset:{_#HEADLINE}:<h1>_#1</h1>} here
- *    //  say that healdline is "I'm headline (with {brackets})")
+ *    //  say that headline is "I'm headline (with {brackets})")
  *
  *  1) unalias innermost curly brackets.
  *     It is {_#HEADLINE}, so the by unaliasing this we get:
@@ -1651,7 +1651,7 @@ $UNQUOTED_ARRAY = [":", "(", ")", "{", "}"];
 $QUOTED_ARRAY   = ["|~@_a", "|~@_b", "|~@_c", "|~@_d", "|~@_e", "_AA_ReMoVe"];
 
 /** QuoteColons function
- *  Substitutes all colons and othe special syntax characters with special AA
+ *  Substitutes all colons and other special syntax characters with special AA
  *  string. Used to mark characters :{}() which are content, not syntax elements
  * @param $text string
  */
@@ -1996,7 +1996,7 @@ class AA_Stringexpand_Distance extends AA_Stringexpand_Nevercache {
     }
 }
 
-/** Converts GPS coordinates to decimal Latitide / Longitude
+/** Converts GPS coordinates to decimal Latitude / Longitude
  *   {gps:<any-gps>[:<format>]}
  *   @example {gps: 49°58'4.508"N, 12°30'10.790"E}
  *   @param string $any-gps coords in different formats - 49.9679189N, 12.5029972E; N 49°58.07513', E 12°30.17983'; 49°58'4.508"N, 12°30'10.790"E; 41.40338, 2.17403; 41°24'12.2"N 2°10'26.5"E; later maybe 3CHX+F6 Praha,...
@@ -2844,11 +2844,11 @@ class AA_Stringexpand_Rss2html extends AA_Stringexpand {
 
         $xsl_cond = ($number>0) ? '[position() &lt; '. ($number+1) .']' : '';
 
-        // načtení dokumentu XML
+        // load XML document
         $xml = new DomDocument();
         $xml->load($rss_url);
 
-        // načtení stylu XSLT
+        // load of XSLT styles
         $xsl = new DomDocument();
         $xsl->loadXML('<?xml version="1.0" encoding="utf-8"?>
             <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
@@ -2863,11 +2863,11 @@ class AA_Stringexpand_Rss2html extends AA_Stringexpand {
             </xsl:stylesheet>
         ');
 
-        // vytvoření procesoru XSLT
+        // create XSLT processor
         $proc = new xsltprocessor();
         $proc->importStylesheet($xsl);
 
-        // provedení transformace a vypsání výsledku
+        // perform transformation and display result
         return $proc->transformToXML($xml);
     }
 }
@@ -3029,7 +3029,7 @@ class AA_Stringexpand_Conds extends AA_Stringexpand_Nevercache {
  * Main usage is to display some field or alias of given item:
  *   {item:171055:_#HEADLINE}
  *
- * You can also display it for more than one item and use the delimeter
+ * You can also display it for more than one item and use the delimiter
  *   {item:53443-54322-53553:_#HEADLINE:, }
  *   {item:{@relation........:-}:_#KEY_____->_#VALUE___:jsonasoc}
  *
@@ -3057,7 +3057,7 @@ class AA_Stringexpand_Item extends AA_Stringexpand {
      *                     - now you can also use tree representation like:
      *                     3234(3443-3678(3872-3664)-3223)-4045  (see above)
      * @param $content    string
-     * @param $delimeter  string - coud be also 'json' or jsonasoc -  {item:{@relation........:-}:_#KEY_____->_#VALUE___:jsonasoc}
+     * @param $delimiter  string - could be also 'json' or jsonasoc -  {item:{@relation........:-}:_#KEY_____->_#VALUE___:jsonasoc}
      * @param $top        string
      * @param $bottom     string
      * @param $bin        string - allowed bins dash separated: ACTIVE-HOLDING-TRASH. Default is ACTIVE (pending and expired is not available, for now)
@@ -3134,9 +3134,9 @@ class AA_Stringexpand_Item extends AA_Stringexpand {
  * but it could be also more complicated tree - just like:
  *   3234(3443-3678(3872-3664)-3223)-4045
  *
- * The exmples of trees follows.
+ * The examples of trees follows.
  *
- * Practical examle of usage is for example breadcrumb navigation:
+ * Practical example of usage is for example breadcrumb navigation:
  *   {itree:{xseo1}({xseo2}({xseo3}({xseo4}))): <a href="_#ITEM_URL">_#HEADLINE</a> &gt;: _#HEADLINE}
  *
  * or better
@@ -3169,13 +3169,13 @@ class AA_Stringexpand_Item extends AA_Stringexpand {
  *               2 content
  *               3 nested_top
  *               5 content
- *               delimeter
+ *               delimiter
  *               6 content
  *               3 nested_bottom
  *               4 content
  *               1 nested_bottom
  *               7 content
- *               delimeter
+ *               delimiter
  *               8 content
  *
  * 2) SEO path (like for breadcrumbs - xseo1 --- xseo2 --- xseo3)
@@ -3202,9 +3202,9 @@ class AA_Stringexpand_Item extends AA_Stringexpand {
  *   represented as:  1-2-3
  *
  *   printed as: 1 content
- *               delimeter
+ *               delimiter
  *               2 content
- *               delimeter
+ *               delimiter
  *               3 content
  */
 class AA_Stringexpand_Itree extends AA_Stringexpand_Nevercachenotrim {
@@ -3217,7 +3217,7 @@ class AA_Stringexpand_Itree extends AA_Stringexpand_Nevercachenotrim {
      *                     3234(3443-3678(3872-3664)-3223)-4045  (see above)
      * @param $top
      * @param $content
-     * @param $delimeter
+     * @param $delimiter
      * @param $bottom
      * @return string
      */
@@ -3326,7 +3326,7 @@ class AA_Treecache {
  * @param $function   string - sum | max | min | avg | concat | count | order | filter | filter_contain | filter_intersect
  * @param $ids_string string - list of item ids, which we take into account
  * @param $expression string - the value, we are counting with (like _#NUMBER_E)
- * @param $parameter  string - posible additional parameter for the function (like delimiter for the "concat" function)
+ * @param $parameter  string - possible additional parameter for the function (like delimiter for the "concat" function)
  *
  * {aggregate:max:{ids:3a0c44958b1c6ad697804cfdbccd8b09}:_#D_APPCNT}
  */
@@ -3426,7 +3426,7 @@ class AA_Stringexpand_Aggregate extends AA_Stringexpand {
 }
 
 
-/** returns fultext of the item as defined in slice admin
+/** returns fulltext of the item as defined in slice admin
  */
 class AA_Stringexpand_Fulltext extends AA_Stringexpand {
     /**
@@ -3454,7 +3454,7 @@ class AA_Stringexpand_Fulltext extends AA_Stringexpand {
 
 /** returns ids of items based on conds d-...
  *  {ids:<slices>:[<conds>[:<sort>[:<delimiter>[:<restrict_ids>[:<limit>]]]]]}
- *  {ids:6a435236626262738348478463536272:d-category.......1-BEGIN-Bio-switch.........1-==-1:headine........-}
+ *  {ids:6a435236626262738348478463536272:d-category.......1-BEGIN-Bio-switch.........1-==-1:headline........-}
  *  returns dash separated long ids of items in selected slice where category
  *  begins with Bio and switch is 1 ordered by headline - descending
  */
@@ -3471,7 +3471,7 @@ class AA_Stringexpand_Ids extends AA_Stringexpand {
      *               - category.......1+publish_date....-headline........
      *               - _#HEADLINE
      *               - _#HEADLINE-
-     * @param $delimeter
+     * @param $delimiter
      * @param $ids
      * @param $limit - could be negative for last $limit ids
      * @return string
@@ -3531,7 +3531,7 @@ class AA_Stringexpand_Backlinks extends AA_Stringexpand {
      * @param $item_id - item to find back links
      * @param $slice_ids - slices to look at (dash separated), default are all slices within site modules of item's slice
      * @param $sort - redefine sorting - like: category.......1-,headline........
-     *                    - couldbe also
+     *                    - could be also
      * @return mixed|null|string|string[]
      */
     function expand($item_id=null, $slice_ids=null, $sort=null) {
@@ -3620,14 +3620,14 @@ class AA_Stringexpand_Sortstring extends AA_Stringexpand {
     }
 }
 
-/** @return string usefull for sorting numbers in text mode. The string is based
+/** @return string useful for sorting numbers in text mode. The string is based
  *  on number nad length, so it creates B1 from 1, C10 from 10, C89 from 89, and
  *  E2458 from 2458
  *  {sortid:<number>}
  */
 class AA_Stringexpand_Sortid extends AA_Stringexpand_Nevercache {
     /** expand function
-     * @param $number - number to be tranformed to string for sorting
+     * @param $number - number to be transformed to string for sorting
      * @return string B1 for $id=1, F25487 for $id=25487, ...
      */
     function expand($number='') {
@@ -4418,8 +4418,8 @@ class AA_Stringexpand_Iftype extends AA_Stringexpand_Nevercache {
 }
 
 
-/** Takes unlimited number of parameters and jioins the unempty ones into one
- *  string ussing first parameter as delimiter
+/** Takes unlimited number of parameters and joins the unempty ones into one
+ *  string using first parameter as delimiter
  *  Example: {join:, :{_#YEAR____}:{_#SIZE____}:{_#SOURCE___}}
  */
 class AA_Stringexpand_Join extends AA_Stringexpand_Nevercachenotrim {
@@ -4505,7 +4505,7 @@ class AA_Stringexpand_Fieldid extends AA_Stringexpand_Nevercache {
 /** Get field property (currently only name | help |  alias1 | alias2 | alias3 | widget_new is supported)
  *  {field:<field_id>:<property>:<slice_id>}
  *  {field:headline........:name:ebfbc0082a26365ef6cefd7c4a4ec253}
- *    - displayes the Name of the headline field in specified slice as defined by administrator of the slice ion the Fieds Admin page
+ *    - displays the Name of the headline field in specified slice as defined by administrator of the slice on the Fields Admin page
  *  Allowed properties are name, help and alias1
  */
 class AA_Stringexpand_Field extends AA_Stringexpand {
@@ -4532,7 +4532,7 @@ class AA_Stringexpand_Field extends AA_Stringexpand {
      */
     function expand($field_id='', $property='name', $slice_id=null) {
         // we do not want to allow users to get all field setting
-        // that's why we restict it to the properties, which makes sense
+        // that's why we restrict it to the properties, which makes sense
         // @todo - make it less restrictive
         $property = self::$ALLOWED_PROPERTIES[$property];
         if ($property == 'widget_new') {
@@ -4564,7 +4564,7 @@ class AA_Stringexpand_Field extends AA_Stringexpand {
 }
 
 /** {fieldoptions:<slice_id>:<field_id>:<values>}
- *  displys html <options> as defined for the field. You can specify current
+ *  displays html <options> as defined for the field. You can specify current
  *  values - as single value, or as multivalue in JSON format.
  */
 class AA_Stringexpand_Fieldoptions extends AA_Stringexpand_Field {
@@ -4644,7 +4644,7 @@ class AA_Stringexpand_Inputonly extends AA_Stringexpand_Input {
  */
 class AA_Stringexpand_Edit extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
-    // It works with database, so it shoud always look in the database
+    // It works with database, so it should always look in the database
 
     // not needed right now for Nevercached functions, but who knows in the future
     /** additionalCacheParam function
@@ -4772,7 +4772,7 @@ class AA_Stringexpand_Live extends AA_Stringexpand_Edit {
  **/
 class AA_Stringexpand_Ajax extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
-    // It works with database, so it shoud always look in the database
+    // It works with database, so it should always look in the database
 
     // not needed right now for Nevercached functions, but who knows in the future
     /** additionalCacheParam function
@@ -4854,7 +4854,7 @@ class AA_Stringexpand_Ajax extends AA_Stringexpand_Nevercache {
  */
 class AA_Stringexpand_Editable extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
-    // It works with database, so it shoud always look in the database
+    // It works with database, so it should always look in the database
 
     // not needed right now for Nevercached functions, but who knows in the future
     /** additionalCacheParam function
@@ -4926,7 +4926,7 @@ class AA_Stringexpand_Editable extends AA_Stringexpand_Nevercache {
  */
 class AA_Stringexpand_Newitem extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
-    // It works with database, so it shoud always look in the database
+    // It works with database, so it should always look in the database
 
     /** expand function
      * @param $template_item_id
@@ -5008,7 +5008,7 @@ class AA_Stringexpand_Newitem extends AA_Stringexpand_Nevercache {
  */
 class AA_Stringexpand_Ensureitem extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
-    // It works with database, so it shoud always look in the database
+    // It works with database, so it should always look in the database
 
     /** expand function
      * @param $existing_id
@@ -5044,7 +5044,7 @@ class AA_Stringexpand_Ensureitem extends AA_Stringexpand_Nevercache {
  */
 class AA_Stringexpand_Updateitem extends AA_Stringexpand_Newitem {
     // Never cached (extends AA_Stringexpand_Nevercache)
-    // It works with database, so it shoud always look in the database
+    // It works with database, so it should always look in the database
 
     /** expand function
      * @param $item_id
@@ -5109,7 +5109,7 @@ class AA_Stringexpand_Modulefield extends AA_Stringexpand {
      */
     function expand($slice_id='', $property='') {
         // we do not want to allow users to get all field setting
-        // that's why we restict it to the properties, which makes sense
+        // that's why we restrict it to the properties, which makes sense
         // @todo - make it less restrictive
 
         switch ($property) {
@@ -5198,7 +5198,7 @@ class AA_Stringexpand_Slice extends AA_Stringexpand_Nevercache {
 /** do not use for site modules - use AA_Stringexpand_Pager instead
  *
  *  {scroller:<begin>:<end>:<add>:<nopage>}
- *  Displys page scroller for view
+ *  Displays page scroller for view
  */
 class AA_Stringexpand_Scroller extends AA_Stringexpand {
     /** Do not trim all parameters ($add could contain space) */
@@ -5227,7 +5227,7 @@ class AA_Stringexpand_Scroller extends AA_Stringexpand {
     }
 }
 
-/** page scroller for site modules views - displys page scroller for view
+/** page scroller for site modules views - displays page scroller for view
  *
  *  It calls router methods, so it displays the right urls in the scroller
  *  @see AA_Router::scroller() method
@@ -5286,7 +5286,7 @@ class AA_Stringexpand_Pager extends AA_Stringexpand_Nevercache {
 }
 
 
-/** page scroller for site modules views - displys page scroller for view
+/** page scroller for site modules views - displays page scroller for view
  *
  *  It calls router methods, so it displays the right urls in the scroller
  *  @see AA_Router::scroller() method
@@ -5621,7 +5621,7 @@ function expandFilenameWithHttp($parturl) {
     if (!(aa_substr($filename, 0, 7) == 'http://') AND !(aa_substr($filename, 0, 8) == 'https://')) {
         $filename = self_server(). (($filename[0] =='/') ? '' : '/'). $filename;
         if (!empty($_SERVER["HTTP_COOKIE"])) {
-            // we resend cookies only for local requests (It could be usefull for AA_Auth ...)
+            // we resend cookies only for local requests (It could be useful for AA_Auth ...)
             $headers  = ['Cookie'=>$_SERVER["HTTP_COOKIE"]];
         }
     }
@@ -5660,7 +5660,7 @@ class AA_Unalias_Callback {
     var $itemview;
 
     // We use different AA_Unalias_Callback object for each item, so this cache
-    // is usefull just in case we are using the same expresion inside the same
+    // is useful just in case we are using the same expresion inside the same
     // spot or view field
     // We use it just for easy expressions - like field, aliases, where we do not use $contentcache
     // var $_localcache;
@@ -6962,7 +6962,7 @@ class AA_Stringexpand {
     }
 
     /** additionalCacheParam function
-     *  Some stringexpand functions uses global parameters, so it is not posible
+     *  Some stringexpand functions uses global parameters, so it is not possible
      *  to use cache for results based just on expand() parameters. We need to
      *  add following parameters. In most cases you do not need to override this
      *  function
@@ -7928,7 +7928,7 @@ class AA_Stringexpand_Alerts  extends AA_Stringexpand_Nevercache {
 
 /** Adds supplied slice password to the list of known passwords for the page,
  *  so you can display the content of the protected slice
- *  It is usefull for site module, when you need to display protected content
+ *  It is useful for site module, when you need to display protected content
  *  Experimental
  *  Usage: {credentials:ThisIsThePassword}
  */
@@ -7956,7 +7956,7 @@ class AA_Stringexpand_Qs extends AA_Stringexpand_Nevercachenotrim {
     /** expand function
      * @param $ids_string
      * @param $expression
-     * @param $delimeter
+     * @param $delimiter
      * @return array|string
      */
     function expand($variable_name='', $delimiter=null) {
@@ -9263,7 +9263,7 @@ class AA_Stringexpand_Recompute extends AA_Stringexpand_Nevercache {
  *     <count_field> - The id of the field, where you already have the number
  *                     of usage precounted. It is very good idea,to have such
  *                     field - in other case the counts must be countedon every
- *                     usage. The count could be counted automaticaly
+ *                     usage. The count could be counted automatically
  *                     in the field by using "Comuted field for INSERT/UPDATE"
  *                     with the parameter "_#BACKLINK:_#BACKLINK::day", where
  *                     alias _#BACKLINK could be definned as
@@ -9859,7 +9859,7 @@ class AA_Stringexpand_Post_Str_Replace extends AA_Stringexpand_Nevercachenotrim 
 
 /** Creates "Export to XLSX" button on the table specified by selector:
  *    {tableexport:.xlsexportable}
- *  All the JS libraries are automaticaly loaded
+ *  All the JS libraries are automatically loaded
  *  You must using {generate:HEAD} and {generate:FOOT} in your site module!
  *  We may replace the JS by another with the same functionality in the future,
  *  so do not count on the exact library in the code. The {tableexport} code
@@ -9886,7 +9886,7 @@ class AA_Stringexpand_Tableexport extends AA_Stringexpand {
 /** Creates Datatable form tables matching the $selector (.datatable) by default
  *    {datatable:<selector>:<options>}
  *    {datatable}, {datatable:#mytable}, {datatable:.datatable:{ paging:false, info:false }}
- *  All the JS libraries are automaticaly loaded
+ *  All the JS libraries are automatically loaded
  *  You must using {generate:HEAD} and {generate:FOOT} in your site module!
  *  Experimental - not able to sort czech and other characters by default (v 1.10.20)
  */
@@ -9909,7 +9909,7 @@ class AA_Stringexpand_Datatable extends AA_Stringexpand {
 
 /** Creates Sortable table matching the $selector (table.sortable by default)
  *    {sortable}, {sortable:#mytable}, {sortable:table.sortable} (default)
- *  All the JS libraries are automaticaly loaded
+ *  All the JS libraries are automatically loaded
  *  You must using {generate:HEAD} and {generate:FOOT} in your site module
  */
 class AA_Stringexpand_Sortable extends AA_Stringexpand {

@@ -105,7 +105,7 @@ $aa_set->addCondition(new AA_Condition('module_id', '==', $p_module_id));
 
 // there is also one poll which acts as template - managed from Polls Admin
 // (and not from the Polls Manager page) - it has status_code=0,
-// so it is filtered out automaticaly
+// so it is filtered out automatically
 
 $now = now();
 $bin_sets['app'] = clone($aa_set);

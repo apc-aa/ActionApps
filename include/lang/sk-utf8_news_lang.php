@@ -5993,15 +5993,15 @@ $_m["Can't change user"]
  = "Nie je možné zmeniť údaje uživateľa - LDAP Error";
 
 // include/tabledit_util.php, row 72, 453
-$_m["Insert was successfull."]
+$_m["Insert was successful."]
  = "";
 
 // include/tabledit_util.php, row 80, 107, 364
-$_m["Update was successfull."]
+$_m["Update was successful."]
  = "";
 
 // include/tabledit_util.php, row 122, 128
-$_m["Delete was successfull."]
+$_m["Delete was successful."]
  = "";
 
 // include/tabledit_util.php, row 537
@@ -6317,7 +6317,7 @@ $_m["For help see FAQ: "]
  = "";
 
 // include/tv_misc.php, row 152
-$_m["COUNT_HIT events will be used for counting item hits. After a while it will be automaticaly deleted."]
+$_m["COUNT_HIT events will be used for counting item hits. After a while it will be automatically deleted."]
  = "";
 
 // include/tv_misc.php, row 160, 161
@@ -6554,7 +6554,7 @@ $_m["Copy Content Table"]
  = "";
 
 // AA\Optimize\... #xx713
-$_m["Copy data for all items newer than short_id=1941629 from content table to content2 table. Used for recovery content table on Ecn server. Not usefull for any other users, I think."]
+$_m["Copy data for all items newer than short_id=1941629 from content table to content2 table. Used for recovery content table on Ecn server. Not useful for any other users, I think."]
  = "";
 
 // AA\Optimize\... #xx757

@@ -1,7 +1,7 @@
 <?php
 /**  um_passwd.php - change password for user
  *    expected $slice_id for edit slice
- *    optionally $Msg to show under <h1>Hedline</h1> (typicaly: update successful)
+ *    optionally $Msg to show under <h1>Headline</h1> (typically: update successful)
  *
  *
  * PHP version 7.2+

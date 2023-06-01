@@ -4,7 +4,7 @@
  *           $slice_id
  *           $feed_id - if set, then delete this feed
  *
- * optionaly $Msg to show under <h1>Headline</h1> (typicaly: Fields' mapping update)
+ * optionally $Msg to show under <h1>Headline</h1> (typically: Fields' mapping update)
  *
  *
  * PHP version 7.2+

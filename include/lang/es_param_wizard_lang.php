@@ -30,7 +30,7 @@ $_m["PHP-like format - see <a href=\"http://www.php.cz/manual/en/function.date.p
 $_m["print HTML"]
  = "mostrar HTML";
 
-$_m["prints <i>the field</i> content (or <i>unalias string</i>) depending on the html flag (if html flag is not set, it converts the content to html. In difference to f_h function, it converts to html line-breaks, too. Obviously this function is used for fultexts.)"]
+$_m["prints <i>the field</i> content (or <i>unalias string</i>) depending on the html flag (if html flag is not set, it converts the content to html. In difference to f_h function, it converts to html line-breaks, too. Obviously this function is used for fulltexts.)"]
  = "muestra <i>el campo</i> (o la <b>cadena</b>), alterando o no su contenido dependiendo de la selecci�n hecha en 'HTML / texto plano': si se seleccion� 'texto plano', convierte el contenido a HTML, a�adiendo cambios de linea etc.";
 
 $_m["field will be displayed in select box. if not specified, in select box are displayed headlines. (only for constants input type: slice)"]

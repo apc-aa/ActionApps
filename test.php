@@ -3,7 +3,7 @@
  *  It was never fully updated for AA, but could be good start for
  *  new version of it - see AA code from the end of 2017.
  *
- *  The script is here to remind us that we shoudl indeed have
+ *  The script is here to remind us that we should indeed have
   * something like this for installation and troubleshooting
   * purposes. The installation docs refers to it. Maybe the first
   * thing AA user will see after the installation :-|

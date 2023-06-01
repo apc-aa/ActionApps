@@ -216,7 +216,7 @@ class AA_Poll {
         $set->addCondition(new AA_Condition('module_id',   '==', q_pack_id($pid)));
         // there is also one poll which acts as template - managed from Polls Admin
         // (and not from the Polls Manager page) - it has status_code=0,
-        // so it is filtered out automaticaly
+        // so it is filtered out automatically
 
         $ignore_expirydate = false;
         if (is_array($conds)) {

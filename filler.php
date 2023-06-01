@@ -281,7 +281,7 @@ if ( $_REQUEST['answer'] )    {
 if (ctype_digit((string)$_REQUEST['respuesta'])) {
     if (($_REQUEST['varA'] + $_REQUEST['varB']) != $_REQUEST['respuesta']) {
         // $varA + $varB must be equal to $respuesta, if provided
-        SendErrorPage(["fatal"=>_m("Wrong result, not posible to post comments.")]);
+        SendErrorPage(["fatal"=>_m("Wrong result, not possible to post comments.")]);
     }
 }
 

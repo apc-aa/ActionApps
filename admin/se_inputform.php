@@ -224,7 +224,7 @@ if ($update) {
         if (isset($isf_parameters['const'])) {
             $isf .= ':'.$input_show_func_c_real;
             // if we use relation between slices, then the validation should be 'id'
-            // and insert function shoud be ids (which is most important mainly
+            // and insert function should be ids (which is most important mainly
             // for "Related Item Window" - because without it, the IDS are prefixed by x, y or z)
             if (substr($input_show_func_c_real,0,7)=='#sLiCe-') {
                 // allowed insert functions are ids, and both computed functions

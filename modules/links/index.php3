@@ -211,7 +211,7 @@ $manager_settings = [
      ],
      'itemview'  => [
          'manager_vid'          => $links_info['manager_vid'],      // id of view which controls the design
-         'format'               => [                           // optionaly to manager_vid you can set format array
+         'format'               => [                           // optionally to manager_vid you can set format array
              'compact_top'      => "<table>",
              'category_sort'    => false,
              'category_format'  => "",

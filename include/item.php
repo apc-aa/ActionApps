@@ -1065,7 +1065,7 @@ class AA_Item {
     }
 
     /** f_f function
-     * prints link to fulltext (hedline url)
+     * prints link to fulltext (headline url)
      *  col: hl_href.........
      *  param: link_only:redirect
      *     link_only field id (like "link_only.......")
@@ -1082,7 +1082,7 @@ class AA_Item {
     }
 
     /** f_b function
-     * prints text with link to fulltext (hedline url)
+     * prints text with link to fulltext (headline url)
      * param: link_only:url_field:redirect:txt:condition_fld
      *    link_only     - field id (like "link_only.......")
      *    url_field     - field id of external url for link_only
@@ -1715,7 +1715,7 @@ class AA_Item {
      *         <add url param>      - url parameter added to cat=xxx (id=links)
      *         <url_base>    - file to go (like: kormidlo.shtml)
      *         <restrict>    - display only categories matching <restrict> path
-     *                       - example: restict=1,23, - only categs under 23 shown
+     *                       - example: restrict=1,23, - only categs under 23 shown
      * @param $col
      * @param $param
      * @return string

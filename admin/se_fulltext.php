@@ -1,7 +1,7 @@
 <?php
 /** se_fulltext.php - assigns html format for fulltext view
  *   expected $slice_id for edit slice
- *   optionaly $Msg to show under <h1>Hedline</h1> (typicaly: update successful)
+ *   optionally $Msg to show under <h1>Headline</h1> (typically: update successful)
  *
  * PHP version 7.2+
  *

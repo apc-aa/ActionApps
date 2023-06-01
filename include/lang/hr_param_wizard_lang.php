@@ -44,7 +44,7 @@ $_m["prints <i>the field</i> as image width (height='xxx' width='yyy') empty str
 $_m["print HTML"]
  = "ispisuje HTML";
 
-$_m["prints <i>the field</i> content (or <i>unalias string</i>) depending on the html flag (if html flag is not set, it converts the content to html. In difference to f_h function, it converts to html line-breaks, too. Obviously this function is used for fultexts.)"]
+$_m["prints <i>the field</i> content (or <i>unalias string</i>) depending on the html flag (if html flag is not set, it converts the content to html. In difference to f_h function, it converts to html line-breaks, too. Obviously this function is used for fulltexts.)"]
  = "ispisuje <i>sadr�aj</i> polja (ili <i>unalias string</i>) ovisno o html oznaci.)";
 
 # End of unused messages

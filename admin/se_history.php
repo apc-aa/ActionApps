@@ -1,7 +1,7 @@
 <?php
 /** se_fulltext.php - assigns html format for fulltext view
  *   expected $slice_id for edit slice
- *   optionaly $Msg to show under <h1>Hedline</h1> (typicaly: update successful)
+ *   optionally $Msg to show under <h1>Headline</h1> (typically: update successful)
  *
  * PHP version 7.2+
  *
@@ -236,7 +236,7 @@ $manager_settings = [
      ],
      'itemview'  => [
          'manager_vid'          => false,    // $slice_info['manager_vid'],      // id of view which controls the design
-         'format'               => [                           // optionaly to manager_vid you can set format array
+         'format'               => [                           // optionally to manager_vid you can set format array
              'compact_top'      => '<table class="aa-table">
                                       <tr class="aa-tbl-header"><th width="30"></th><th>Item</th><th>Item ID</th><th>User</th><th>Change time</th></tr>',
              'category_sort'    => false,

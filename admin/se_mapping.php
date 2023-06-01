@@ -2,8 +2,8 @@
 /** se_mapping.php - mapping fields settings
  *
  *    expected $slice_id for edit slice
- *    optionaly $from_slice_id for selected imported slice
- *    optionaly $Msg to show under <h1>Headline</h1> (typicaly: Fields' mapping update)
+ *    optionally $from_slice_id for selected imported slice
+ *    optionally $Msg to show under <h1>Headline</h1> (typically: Fields' mapping update)
  *
  * PHP version 7.2+
  *

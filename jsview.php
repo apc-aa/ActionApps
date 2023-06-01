@@ -29,7 +29,7 @@ https://www.apc.org/
 //    <script src="https://www.apc.org/apps/aa/jsview.php3?&vid=2&cmd[2]=c-1-Database"></script>
 
 //expected  vid      // id of view
-//optionaly cmd[]    // command to modify the view
+//optionally cmd[]    // command to modify the view
                     // cmd[23]=v-25 means: show view id 25 in place of id 23
                     // cmd[23]=i-24-7464674747 means view
                     //   number 23 has to display item 74.. in format defined
@@ -45,12 +45,12 @@ https://www.apc.org/
                     //      - unlimited number of conditions
                     //      - all default conditions from view definition are
                     //        completely redefined by the specified ones
-//optionaly set[]    // setings to modify view behavior (can be combined with cmd)
+//optionally set[]    // setings to modify view behavior (can be combined with cmd)
                     // set[23]=listlen-20
                     // set[23]=mlx-EN-FR-DE
                     //   - sets maximal number of viewed items in view 23 to 20
                     //   - there can be more settings (future) - comma separated
-//optionaly als[]    // user alias - see slice.php3 for more details
+//optionally als[]    // user alias - see slice.php3 for more details
 //
 // please look into /view.php for more details
 

@@ -1,8 +1,8 @@
 <?php
 /** se_filters.php - feeding filters settings
  *   expected $slice_id for edit slice
- *   optionaly $import_id for selected imported slice
- *   optionaly $Msg to show under <h1>Hedline</h1> (typicaly: Filters update successful)
+ *   optionally $import_id for selected imported slice
+ *   optionally $Msg to show under <h1>Headline</h1> (typically: Filters update successful)
  *
  * PHP version 7.2+
  *

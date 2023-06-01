@@ -1,7 +1,7 @@
 <?php
 /** se_import.php - feeding settings
  *   expected AA::$module_id for edit slice
- *   optionaly $Msg to show under <h1>Hedline</h1> (typicaly: Category update successful)
+ *   optionally $Msg to show under <h1>Headline</h1> (typically: Category update successful)
  *
  *
  * PHP version 7.2+

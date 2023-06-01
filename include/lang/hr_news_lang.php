@@ -895,7 +895,7 @@ $_m["javascript: window.alert('No source url specified')"]
 $_m["print HTML"]
     = "ispisuje HTML";
 
-$_m["prints <i>the field</i> content (or <i>unalias string</i>) depending on the html flag (if html flag is not set, it converts the content to html. In difference to f_h function, it converts to html line-breaks, too. Obviously this function is used for fultexts.)"]
+$_m["prints <i>the field</i> content (or <i>unalias string</i>) depending on the html flag (if html flag is not set, it converts the content to html. In difference to f_h function, it converts to html line-breaks, too. Obviously this function is used for fulltexts.)"]
     = "ispisuje <i>sadr�aj</i> polja (ili <i>unalias string</i>) ovisno o html oznaci.)";
 
 $_m["<img src={img_src.........1} _#IMG_WDTH _#IMG_HGHT>"]
@@ -6870,15 +6870,15 @@ $_m["Can't change user"]
     = "Ne mogu promijeniti korisnika/icu";
 
 // include/tabledit_util.php, row 72, 453
-$_m["Insert was successfull."]
+$_m["Insert was successful."]
     = "Umetanje uspje�no";
 
 // include/tabledit_util.php, row 80, 107, 364
-$_m["Update was successfull."]
+$_m["Update was successful."]
     = "Obnavljanje uspje�no";
 
 // include/tabledit_util.php, row 122, 128
-$_m["Delete was successfull."]
+$_m["Delete was successful."]
     = "Brisanje uspje�no";
 
 // include/tabledit_util.php, row 537
@@ -7194,7 +7194,7 @@ $_m["For help see FAQ: "]
     = "Za pomo� pogledajte �esto postavljana pitanja";
 
 // include/tv_misc.php, row 152
-$_m["COUNT_HIT events will be used for counting item hits. After a while it will be automaticaly deleted."]
+$_m["COUNT_HIT events will be used for counting item hits. After a while it will be automatically deleted."]
     = "";
 
 // include/tv_misc.php, row 160, 161
@@ -7431,7 +7431,7 @@ $_m["Copy Content Table"]
     = "";
 
 // AA\Optimize\... #xx713
-$_m["Copy data for all items newer than short_id=1941629 from content table to content2 table. Used for recovery content table on Ecn server. Not usefull for any other users, I think."]
+$_m["Copy data for all items newer than short_id=1941629 from content table to content2 table. Used for recovery content table on Ecn server. Not useful for any other users, I think."]
     = "";
 
 // AA\Optimize\... #xx757

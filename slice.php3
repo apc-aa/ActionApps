@@ -21,23 +21,23 @@ https://www.apc.org/
 
 //expected  slice_id
 //expected  encap     // determines wheather this file is ssi included or called directly
-//optionaly sh_itm    // if specified - selected item is shown in full text
-//optionaly x         // the same as sh_itm, but short_id is used instead
+//optionally sh_itm    // if specified - selected item is shown in full text
+//optionally x         // the same as sh_itm, but short_id is used instead
                      // implemented for shorter item url (see _#SITEM_ID alias)
-//optionaly o         // the same as x but the hit is not counted
+//optionally o         // the same as x but the hit is not counted
                      // implemented for shorter item url (see _#SITEM_ID alias)
-//optionaly seo      // the same as x, but instead of it of item you provide seo
+//optionally seo      // the same as x, but instead of it of item you provide seo
                      // string (the one on seo............. field)
-//optionaly srch      // true if this script have to show search results
-//optionaly highlight // when true, shows only highlighted items in compact view
-//optionaly bigsrch   // NOT SUPPORTED IN AA v 1.5+
-//optionaly cat_id    // select only items in category with id cat_id
-//optionaly cat_name  // select only items in category with name cat_name
-//optionaly inc       // for dispalying another file instead of slice data
+//optionally srch      // true if this script have to show search results
+//optionally highlight // when true, shows only highlighted items in compact view
+//optionally bigsrch   // NOT SUPPORTED IN AA v 1.5+
+//optionally cat_id    // select only items in category with id cat_id
+//optionally cat_name  // select only items in category with name cat_name
+//optionally inc       // for dispalying another file instead of slice data
                      // (like static html file - inc=/contact.html)
-//optionaly listlen   // change number of listed items in compact view
+//optionally listlen   // change number of listed items in compact view
                      // (aplicable in compact viewe only)
-//optionaly items[x]  // array of items to show one after one as fulltext
+//optionally items[x]  // array of items to show one after one as fulltext
                      // the array format is
 //easy_query          // for easiest form of query
 //order               // order field id - if other than publish date
@@ -48,7 +48,7 @@ https://www.apc.org/
 //all_scr             // if true, scroller shows also 'All'
 //scr_go              // sets scroller to specified page
 //scr_url             // redefines the page where the scroller should go (it is
-                     // usefull if you include slice.php3 from another php script)
+                     // useful if you include slice.php3 from another php script)
 //restrict            // field id used with "res_val" and "exact" for restricted
                      // output (display only items with
                      //       "restrict" field = "res_val"
@@ -62,22 +62,22 @@ https://www.apc.org/
 //lock                // used in join with "key" for multiple slices on one page
                      // display. each slice have to have its lock, so commands
                      // (like sh_itm, scr_go, ...) will be executed only if key
-                     // is the same as lock. key is send automaticaly with all
+                     // is the same as lock. key is send automatically with all
                      // links generated in slice (at this time just prepared)
 //key                 // see lock (at this time just prepared)
 //slicetext           // displays just the text instead of any output
                      // can be used for hiding the output of slice.hp3
 
                       //Discussion parameters
-//optionaly add_disc   // if set, discussion comment will be added
-//optionaly parent_id  // parent id of added disc. comment
+//optionally add_disc   // if set, discussion comment will be added
+//optionally parent_id  // parent id of added disc. comment
 //optionally sel_ids    // if set, show only discussion comments in $ids[] array
 //optionally ids[]      // array of discussion comments to show in fulltext mode (ids['x'.$id])
 //optionally all_ids    // if set, show all discussion comments
 //optionally hideFulltext // if set, don't show fulltext part
 //optionally neverAllItems // if set, don't show anything when everything would be shown (if no conds[] are set)
 //optionally defaultCondsOperator // replaces LIKE for conds with not specified operator
-//optionally group_n   // displayes only the n-th group (in listings where items
+//optionally group_n   // displays only the n-th group (in listings where items
                       // are grouped by some field (category, for example))
                       // good for display all the items of last magazine issue
                       // ( group_n=1 )

@@ -2,7 +2,7 @@
 /** se_inter_import2.php - Inter node feed import settings
  *
  *             $slice_id
- *   optionaly $Msg to show under <h1>Headline</h1> (typicaly: Fields' mapping update)
+ *   optionally $Msg to show under <h1>Headline</h1> (typically: Fields' mapping update)
  *
  * PHP version 7.2+
  *

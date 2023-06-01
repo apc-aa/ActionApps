@@ -29,7 +29,7 @@
 /** @param $format    - csv|excel|html - corresponds to AA_Exporter_* classes
  *  @param $slice_id  - unpacked slice id to export
  *  @param $sort      - optional - sorting
- *  @param $conds     - optional - conditions when just some items shoud be exported
+ *  @param $conds     - optional - conditions when just some items should be exported
  *  @param $filename  - optional - name of the file
  *
  *  You can also store the export and then allow people to export items by public link /apc-aa/export.php

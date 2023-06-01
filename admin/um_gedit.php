@@ -1,6 +1,6 @@
 <?php
 /**  um_gedit.php - adds and edits groups in permission system (now LDAP directory)
- *    optionaly $Msg to show under <h1>Hedline</h1> (typicaly: update successful)
+ *    optionally $Msg to show under <h1>Headline</h1> (typically: update successful)
  *    selected_group
  *    state variables:
  *       $grp_edit       - comes from um_gsrch - button Edit $selected_group
