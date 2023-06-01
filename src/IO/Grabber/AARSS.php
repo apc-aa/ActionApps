@@ -108,7 +108,7 @@ class AARSS extends AbstractGrabber
         /* Mention, that $cat_ids now contain also AA_Other_Categor, which is
            used on oposite site of feeding as command to send all categories.
            The category list is sent from historical reasons (AA before 2.8
-           do not send category informations without this array().
+           do not send category information without this array().
            Current AA use another approach for APC feeds - we will get all items
            regardless on category. The filtering we will do after that.
            This approach means more data to be transfered, but on the other hand

@@ -86,7 +86,7 @@ require_once __DIR__ . "/include/util.php";
 // not sure if the line bellow works...
 $_REQUEST['slice_id'] = trim($_REQUEST['slice_id']);
 
-AA::$debug = $_REQUEST['debug'];
+AA::$debug = (int)$_REQUEST['debug'];
 
 if ($_REQUEST['context'] ?? '') {
     AA_Credentials::singleton()->importFromToken($_REQUEST['context']);

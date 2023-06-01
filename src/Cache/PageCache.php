@@ -37,7 +37,7 @@ use AA\Later\Toexecute;
 use Cvarset;
 use Mobile_Detect;
 
-/** AA\Cache\PageCache class used for caching informations into database
+/** AA\Cache\PageCache class used for caching information into database
  *  uses table:
  *    CREATE TABLE pagecache (
  *      id varchar(32) NOT NULL,   (md5 crypted keystring used as database primary key (for quicker database searching)
@@ -51,7 +51,7 @@ use Mobile_Detect;
 
 class PageCache  {
 
-    protected $cacheTime     = 600; // number of seconds to store cached informations
+    protected $cacheTime     = 600; // number of seconds to store cached information
 
     /** AA\Cache\PageCache function
      *  AA\Cache\PageCache class constructor
@@ -189,19 +189,20 @@ class PageCache  {
     }
 
     /** set function
-     *  Cache informations based on $keyString
+     *  Cache information based on $keyString
      *  Returns database identifier of the cache value (MD5 of keystring)
      * @param $keyString
      * @param $content
      * @param CacheStr2find $str2find
-     * @param $force - if true, the content is stored into cache even
+     * @param $force   - if true, the content is stored into cache even
      *                 if ENABLE_PAGE_CACHE is false (we use cache for cached
      *                 javascript in admin interface (modules selectbox
      *                 for example), so we need to use cache here)
-     * @return mixed
+     * @return bool
      */
-    function store($key, $content, $str2find, $force=false) {
+    function store($key, $content, $str2find, $force=false): bool {
         global $cache_nostore;
+        $ret = false;
 
         AA::$debug&2 && AA::$dbg->log("Pagecache->store(key):$key", 'Pagecache str2find:'.join(',', $str2find->getStrings()), 'Pagecache content (length):'.strlen($content), 'Pagecache cache_nostore:'.$cache_nostore );
 
@@ -230,8 +231,9 @@ class PageCache  {
                 $toexecute     = new Toexecute;
                 $toexecute->laterOnce($cache_purger, [$this->cacheTime], 'PagecachePurge', 101, now() + 300);  // run it once in 5 minutes
             }
+            $ret = true;
         }
-        return $key;
+        return $ret;
     }
 
     /** special cache function for storing whole page. The whole page should be
@@ -239,9 +241,9 @@ class PageCache  {
      *  When page is stored with storePage(), then you have to use getPage()
      *  counterpart function
      */
-    function storePage($key, Cacheentry $entry, $str2find, $force=false) {
+    function storePage($key, Cacheentry $entry, $str2find, $force=false): bool {
         // @todo - we can use json_encode, when $entry->$h['encoding']=='utf-8' which is quicker, than serialize
-        $this->store($key, serialize($entry), $str2find, $force);
+        return $this->store($key, serialize($entry), $str2find, $force);
     }
 
     function getPage($key, $action='get') {
@@ -285,7 +287,7 @@ class PageCache  {
     }
 
     /** invalidateFor function
-     *  Remove cached informations for all rows which have the $cond in str2find
+     *  Remove cached information for all rows which have the $cond in str2find
      * @param string | array $strings
      * @param string         $type
      */
@@ -311,7 +313,7 @@ class PageCache  {
     }
 
     /** invalidate function
-     *  Remove cached informations for all rows
+     *  Remove cached information for all rows
      */
     function invalidate() {
         DB_AA::delete('pagecache_str2find');
