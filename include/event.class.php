@@ -543,7 +543,7 @@ function Event_AddLinkGlobalCat( $type, $slice, $slice_type, &$ret_params, $para
     }
 
     $db = getDB();
-    // get all informations about general categories
+    // get all information about general categories
     $SQL = "SELECT pri, description, name FROM constant
              WHERE group_id='$LINK_TYPE_CONSTANTS'
                AND value='$name'";

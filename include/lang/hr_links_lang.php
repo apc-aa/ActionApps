@@ -775,7 +775,7 @@ $_m["No permission to delete link from the category - link set as PROPOSAL to DE
  = "Nemate dozvolu za obristai vezu iz kategorije - veza je potavljena kao PONUDA za BRISANJE sa date kategorije";
 
 // modules/links/actions.php, row 124, 194
-$_m["Can't get asociation informations"]
+$_m["Can't get asociation information"]
  = "Ne mogu dobiti informacije o asocijaciji";
 
 // modules/links/actions.php, row 159

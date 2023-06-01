@@ -860,7 +860,7 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
 
     // get content from content table
 
-    // feeding - don't worry about it - when fed item is updated, informations
+    // feeding - don't worry about it - when fed item is updated, information
     // in content table is updated too
 
     // do we want any content field?

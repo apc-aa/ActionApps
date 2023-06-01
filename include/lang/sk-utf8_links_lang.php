@@ -757,7 +757,7 @@ $_m["No permission to delete link from the category - link set as PROPOSAL to DE
  = "";
 
 // modules/links/actions.php, row 124, 194
-$_m["Can't get asociation informations"]
+$_m["Can't get asociation information"]
  = "";
 
 // modules/links/actions.php, row 159

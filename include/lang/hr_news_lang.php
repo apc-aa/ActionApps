@@ -3966,7 +3966,7 @@ $_m["Find all FIELDS containing in ites definition the string:"]
     = "";
 
 // admin/aafinder.php, row 207
-$_m["Get all informations about the item"]
+$_m["Get all information about the item"]
     = "";
 
 // admin/view.php, row 39

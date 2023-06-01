@@ -11,7 +11,7 @@ function Links_CountAllLinks() {
     return $cattree->count_all_links();
 }
 
-/** Get all informations about link
+/** Get all information about link
  * @param int $lid
  * @return string|array
  */

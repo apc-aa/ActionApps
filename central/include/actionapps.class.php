@@ -37,7 +37,7 @@ use AA\Later\Toexecute;
 class AA_Actionapps {
 
     /** username of "access" user
-     *  We use the access user acount to get informations about remote AA and
+     *  We use the access user acount to get information about remote AA and
      *  to update the remote AA slices/setting. You should create such user on
      *  remote AA (superuser is enough :-)
      */

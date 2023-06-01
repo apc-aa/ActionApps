@@ -58,7 +58,7 @@ function Links_DeleteLink($lid) {
     $db->query($SQL);
     if ( !$db->next_record() ) {
         freeDB($db);
-        return _m('Can\'t get asociation informations');
+        return _m('Can\'t get asociation information');
     }
 
     if ( $db->f('base') == 'y' ) {    // we have to find another base for the link
@@ -123,7 +123,7 @@ function Links_RefuseLink($param, $lid, $akce_param) {
     $db->query($SQL);
     if ( !$db->next_record() ) {
         freeDB($db);
-        return _m('Can\'t get asociation informations');
+        return _m('Can\'t get asociation information');
     }
 
     if ( $db->f('base') == 'y' ) {            // we have to find new base

@@ -241,6 +241,18 @@ class AA_Debug {
         $this->_calls[]      = [count($this->_tracestack), $func, DB_AA::$_instances_no.' '.substr($text,0,200), strlen($text),microtime(true), microtime(true),'',0];
     }
 
+    function basic_stat() {
+        global $spareDBs;
+        $mem_usage = sprintf('%.3g',(memory_get_usage() / (1024*1024)));
+        $mem_peak  = sprintf('%.3g',(memory_get_peak_usage() / (1024*1024)));
+
+        echo '<br>Page generation time: '. sprintf('%.3g',timestartdiff());
+        echo "<br>Memory ussage (actual): ${mem_usage} MiB";
+        echo "<br>Memory ussage (peak): ${mem_peak} MiB";
+        echo '<br>Dababase instances: '. DB_AA::$_instances_no;
+        echo '<br>  (spareDBs): '. count($spareDBs);
+    }
+
     function duration_stat() {
 
         $row    = [];
@@ -264,7 +276,6 @@ class AA_Debug {
             krsort($row);
             echo '<br><table><tr><th>used x times</th><th>query</th></tr>' . join('', $row) . '<tr></table>';
         }
-
 
         // longest queries;
         $row    = [];
@@ -296,7 +307,7 @@ class AA_Debug {
         echo "<small><em>$time</em></small><br>\n";
 
         foreach ($params as $a) {
-            if (is_object($a) && is_callable([$a,"__toString"])) {
+            if (false AND is_object($a) && is_callable([$a,"__toString"])) {
                 print $a;
             } else {
                 print_r($a);
@@ -412,7 +423,7 @@ class AA {
     }
 }
 
-AA::$debug = ($_GET['debug'] ?: $_COOKIE['aa_debug']);  // aa_debug used in admin interface - item manager - left menu
+AA::$debug = (int)($_GET['debug'] ?: $_COOKIE['aa_debug']);  // aa_debug used in admin interface - item manager - left menu
 AA::$dbg   = (AA::$debug[0] == 'f') ? new AA_Debug_Firephp() : ((AA::$debug[0] == 'c') ? new AA_Debug_Console() : new AA_Debug_Console());
 
 // This pair of functions remove the guessing about which of $db $db2

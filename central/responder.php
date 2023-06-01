@@ -77,7 +77,7 @@ class AA_Responder_Logout extends AA_Responder {
     }
 }
 
-/** @return array of informations about AA - org_name, domaun */
+/** @return array of information about AA - org_name, domaun */
 class AA_Responder_Get_Aaname extends AA_Responder {
     function __construct($param=null) {}
 
@@ -86,7 +86,7 @@ class AA_Responder_Get_Aaname extends AA_Responder {
     }
 }
 
-/** @return array of informations about AA - org_name, domain */
+/** @return array of information about AA - org_name, domain */
 class AA_Responder_Get_Modules extends AA_Responder {
     /** array of module types to get */
     var $types;

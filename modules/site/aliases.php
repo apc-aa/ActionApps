@@ -40,3 +40,15 @@ if (!IfSlPerm(PS_MODW_SETTINGS)) {
 $apage = new AA_Adminpageutil('modadmin', 'aliases');
 $apage->setTitle(_m('Manage %1', [AA_Aliasfunc::name()]));
 $apage->printWithManager(new Manager('aliasfunc' . AA::$module_id, AA_Aliasfunc::getManagerConf()));
+
+// invalidate cache for all sites using this aliases
+if ($_POST['update']) {
+    $invalidatefor = [AA::$module_id];
+    $sites = AA_Module::getModules('W', true);
+    foreach ($sites as $site_id => $site) {
+        if (in_array(AA::$module_id, (array)AA_Module_Site::getModuleProperty($site_id, 'add_aliases'))) {
+            $invalidatefor[] = $site_id;
+        }
+    }
+    AA::Pagecache()->invalidateFor($invalidatefor);
+}

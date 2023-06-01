@@ -267,13 +267,14 @@ if (empty($slices4cache)) {    // can't be combined empty() and assignment = for
 }
 
 // do not cache for logged users
+$cached = "not cached ($site_nocache,". array_key_exists('xuid', $apc_state) .')';
 if (!$site_nocache AND (empty($apc_state['xuid']) or ($apc_state['xuid']=='nobody'))) {
     $str2find = new CacheStr2find($slices4cache);
-    AA::Pagecache()->storePage($cache_key, $cacheentry, $str2find);
+    $cached = AA::Pagecache()->storePage($cache_key, $cacheentry, $str2find) ? "cached ($cache_key)" : 'not cached in storePage';
 }
 
 if (AA::$debug&2) {
-    echo '<br><br>Site cache MIS!!!';
+    echo '<br><br>Site cache MIS!!! - '.$cached;
     AA::$dbg->basic_stat();
     echo '<br>UsedModules:<br> - '. join('<br> - ', array_map(function($mid) {return AA_Module::getModuleName($mid);}, $slices4cache));
     AA::$debug&4 && AA::$dbg->duration_stat();

@@ -629,11 +629,11 @@ $_m["You have not permissions to change feeding setting"]
 
 // admin/se_inter_import2.php, row 50, 67
 $_m["Unable to connect and/or retrieve data from the remote node. Contact the administrator of the local node."]
- = "Imcapable de connecter et/ou de retrouver les informations du serveur distant. Contacter l'administrateur du serveur local.";
+ = "Imcapable de connecter et/ou de retrouver les information du serveur distant. Contacter l'administrateur du serveur local.";
 
 // admin/se_inter_import2.php, row 57
 $_m["No slices available. You have not permissions to import any data of that node. Contact the administrator of the remote slice and check, that he obtained your correct username."]
- = "Pas de section disponible.  Vous n'avez pas la permission d'importer des informations de ce serveur.  Contactez l'administrateur de la section distant et v�rifiez  qu'il vous a obtenu un nom d'utilisateur valide.";
+ = "Pas de section disponible.  Vous n'avez pas la permission d'importer des information de ce serveur.  Contactez l'administrateur de la section distant et v�rifiez  qu'il vous a obtenu un nom d'utilisateur valide.";
 
 // admin/se_inter_import2.php, row 58
 $_m["Invalid password for the node name:"]
@@ -876,7 +876,7 @@ $_m["You must select one or more slices to backup"]
 
 // admin/sliceexp.php, row 167
 $_m["Choose, if you want export slices structure, data or both."]
- = "Choisir si vous souhaiter exporter la structure ou les informations (ou les deux) de la section";
+ = "Choisir si vous souhaiter exporter la structure ou les information (ou les deux) de la section";
 
 // admin/sliceexp.php, row 168
 $_m["Export structure"]
@@ -884,7 +884,7 @@ $_m["Export structure"]
 
 // admin/sliceexp.php, row 169
 $_m["Export data"]
- = "Exporter les informations";
+ = "Exporter les information";
 
 // admin/sliceexp.php, row 170
 $_m["Export views"]
@@ -900,7 +900,7 @@ $_m["HEX output"]
 
 // admin/sliceexp.php, row 176
 $_m["Store exported data in file"]
- = "Exporter les informations dans fichier";
+ = "Exporter les information dans fichier";
 
 // admin/sliceexp.php, row 177
 $_m["Convert to UTF"]
@@ -908,7 +908,7 @@ $_m["Convert to UTF"]
 
 // admin/sliceexp.php, row 180
 $_m["Export data from specified dates: "]
- = "Exporter les informations de dates sp�cifiques";
+ = "Exporter les information de dates sp�cifiques";
 
 // admin/sliceexp.php, row 181
 $_m["From "]
@@ -2440,11 +2440,11 @@ $_m["Can't upload Import file"]
 
 // admin/sliceimp.php, row 360, 372
 $_m["Import exported data (slice structure and content)"]
- = "Importer les informations export�s (structure et informations de la section)";
+ = "Importer les information export�s (structure et information de la section)";
 
 // admin/sliceimp.php, row 374
 $_m["Import exported data"]
- = "Importer les informations export�s";
+ = "Importer les information export�s";
 
 // admin/sliceimp.php, row 379
 $_m["Count of imported slices: %d."]
@@ -2484,11 +2484,11 @@ $_m["<p>Slice content with some of the IDs exist already. Change the IDs on the 
 
 // admin/sliceimp.php, row 475
 $_m["<p>If you choose OVERWRITE, the slices and data with unchanged ID will be overwritten and the new ones added. <br>If you choose INSERT, the slices and data with ID conflict will be ignored and the new ones added.<br>And finally, if you choose \"Insert with new ids\", slice structures gets new ids and it's content too.</p>"]
- = "<p>Si vous choisissez ECRASER, les section et information avec des identit�s non-chang�es seront �cras�es et les nouvelles ajout�es. <br>Si vous choisissez INS�RER, les sections et informations dont les identit�s sont conflictuelles seront ignor�es et les nouvelles ajout�es added.<br>Finalement, si vous choisissez \"Ins�rer avec de nouvelles identit�s\", les stuctures et informations des section auront de nouvelles identit�s.</p>";
+ = "<p>Si vous choisissez ECRASER, les section et information avec des identit�s non-chang�es seront �cras�es et les nouvelles ajout�es. <br>Si vous choisissez INS�RER, les sections et information dont les identit�s sont conflictuelles seront ignor�es et les nouvelles ajout�es added.<br>Finalement, si vous choisissez \"Ins�rer avec de nouvelles identit�s\", les stuctures et information des section auront de nouvelles identit�s.</p>";
 
 // admin/sliceimp.php, row 494
 $_m["1) If you have exported data in file, insert it's name here (eg. D:\\data\\apc_aa_slice.aaxml):"]
- = "Si vous avez export� des informations dans un fichier, ins�rez son nom ici ( ex: D:\\data\\apc_aa_slice.aaxml):";
+ = "Si vous avez export� des information dans un fichier, ins�rez son nom ici ( ex: D:\\data\\apc_aa_slice.aaxml):";
 
 // admin/sliceimp.php, row 496
 $_m["Send file with slice structure and data"]
@@ -2496,7 +2496,7 @@ $_m["Send file with slice structure and data"]
 
 // admin/sliceimp.php, row 502
 $_m["2) If you have exported data in browser's window, insert the exported text into the textarea below:"]
- = "Si vous avez export� des informations dans la fen�tre du fereteur, ins�rer le texte export� dans la zone de texte ci-bas";
+ = "Si vous avez export� des information dans la fen�tre du fereteur, ins�rer le texte export� dans la zone de texte ci-bas";
 
 // admin/sliceimp.php, row 515
 $_m["Here specify, what do you want to import:"]
@@ -2516,7 +2516,7 @@ $_m["Import into this slice - whatever file says"]
 
 // admin/sliceimp.php, row 520
 $_m["Send the slice structure and data"]
- = "Envoyer la structure et les informations de la section";
+ = "Envoyer la structure et les information de la section";
 
 // admin/rsstest.php, row 104, 105
 $_m["RSS Feed import test"]
@@ -3113,7 +3113,7 @@ $_m["Add new rssfeed"]
 
 // admin/se_rssfeeds.php, row 193
 $_m["Edit rssfeed data"]
- = "Modifier les informations du Services s�lection de routes";
+ = "Modifier les information du Services s�lection de routes";
 
 // admin/se_rssfeeds.php, row 195
 $_m["RSS Feed name"]
@@ -3176,7 +3176,7 @@ $_m["Find all FIELDS containing in ites definition the string:"]
  = "";
 
 // admin/aafinder.php, row 207
-$_m["Get all informations about the item"]
+$_m["Get all information about the item"]
  = "";
 
 // admin/view.php, row 39
@@ -3430,7 +3430,7 @@ $_m["URL"]
 
 // admin/se_csv_import.php, row 228
 $_m["Source of CSV data"]
- = "Alimentation des informations CSV";
+ = "Alimentation des information CSV";
 
 // admin/se_csv_import.php, row 251
 // admin/se_csv_import2.php, row 332
@@ -3834,7 +3834,7 @@ $_m["Add new node"]
 
 // admin/se_nodes.php, row 178
 $_m["Edit node data"]
- = "Editer les informations du noeud";
+ = "Editer les information du noeud";
 
 // admin/se_nodes.php, row 181
 $_m["Node name"]
@@ -5570,7 +5570,7 @@ $_m["Save changes"]
 
 // include/filedit.php, row 136
 $_m["Reset content"]
- = "Restaurer les informations";
+ = "Restaurer les information";
 
 // include/filedit.php, row 142
 $_m["File content"]
@@ -6496,7 +6496,7 @@ $_m["This table sets handling of not confirmed users. It's accessible only\n"
    ."            <br>\n"
    ."            Pour ex�cuter le script, vous devez avoir cron fonctionnel\n"
    ."            misc/alerts/admin_mails.php3.<br>\n"
-   ."            POur plus d'informations, voir <a href='http://apc-aa.sourceforge.net/faq/#1389'>the FAQ</a>.";
+   ."            POur plus d'information, voir <a href='http://apc-aa.sourceforge.net/faq/#1389'>the FAQ</a>.";
 
 // include/tableviews.php, row 125, 126
 $_m["Polls Design"]

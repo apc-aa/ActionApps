@@ -717,7 +717,7 @@ echo '</td></tr><tr><td>';
 
 
 echo '<form name="f_finditem" action="">';
-echo '<b>'._m("Get all informations about the ITEM").'</b><br>
+echo '<b>'._m("Get all information about the ITEM").'</b><br>
     <input type="text" name="finditem" value="'.safe($finditem).'" size=120>&nbsp;&nbsp;
     <input type="submit" name="go_finditem" value="'._m("Go!").'">' .StateHidden();
 echo '</form>';

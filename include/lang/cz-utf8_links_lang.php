@@ -823,7 +823,7 @@ $_m["No permission to delete link from the category - link set as PROPOSAL to DE
  = "Nemáte oprávnění zrušit zařazení odkazu do kategorie - odkaz byl navržen na vymazání z této kategorie příslušnému správci.";
 
 // modules/links/actions.php, row 124, 194
-$_m["Can't get asociation informations"]
+$_m["Can't get asociation information"]
  = "Nelze zjistit údaje o zařazení odkazu do kategorie";
 
 // modules/links/actions.php, row 159

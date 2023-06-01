@@ -778,7 +778,7 @@ $_m["No permission to delete link from the category - link set as PROPOSAL to DE
  = "No tiene permisos para borrar el enlace de la categoria - configure el enlace como PROPUESTA para BORRAR desde la categoria dada";
 
 // modules/links/actions.php, row 124, 194
-$_m["Can't get asociation informations"]
+$_m["Can't get asociation information"]
  = "No es posible obtener información de asociación";
 
 // modules/links/actions.php, row 159

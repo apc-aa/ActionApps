@@ -346,7 +346,7 @@ class AA_Stringexpand_User extends AA_Stringexpand {
     }
 }
 
-/** Expands {xuser:xxxxxx} alias - auth user informations (of current user)
+/** Expands {xuser:xxxxxx} alias - auth user information (of current user)
  *   @param $field - field to show ('headline........', '_#SURNAME_' ...).
  *                   empty for username (of current logged user)
  *                   id - for long id
@@ -8093,12 +8093,7 @@ class AA_Stringexpand__ extends AA_Stringexpand {
             if (is_null($saliases[$name])) {
                 if (is_null($smodules)) {
                     if (AA::$site_id) {
-                        $smodules = [AA::$site_id];
-                        if ($site = AA_Module_Site::getModule(AA::$site_id)) {
-                            if (is_array($add_modules = $site->getProperty('add_aliases'))) {
-                                $smodules = array_merge($smodules,array_filter($add_modules));
-                            }
-                        }
+                        $smodules = self::getAliasSites(AA::$site_id);
                     } elseif (AA::$slice_id) {
                         $smodules = explode_ids(StrExpand('AA_Stringexpand_Modulefield', [AA::$slice_id, 'site_ids']));
                     } else {
@@ -8123,6 +8118,20 @@ class AA_Stringexpand__ extends AA_Stringexpand {
         AA::$debug&8 && AA::$dbg->traceend("_:$name", $text);
 
         return $text;
+    }
+
+    /** Get all sites which uses this _Aliases
+     * @param string $site_id
+     * @return array
+     */
+    protected static function getAliasSites(string $site_id): array {
+        $ret = [$site_id];
+        if ($site = AA_Module_Site::getModule($site_id)) {
+            if (is_array($add_modules = $site->getProperty('add_aliases'))) {
+                $ret = array_merge($ret, array_filter($add_modules));
+            }
+        }
+        return $ret;
     }
 }
 
