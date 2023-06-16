@@ -2022,6 +2022,7 @@ class AA_Stringexpand_Gps extends AA_Stringexpand_Nevercache {
         }
 
         if (!strlen($format)) {
+            $arr = [];
             if (strlen($lat)) {
                 $arr[] = '_#LAT';
             }
@@ -7808,6 +7809,10 @@ class AA_Stringexpand_Fileinfo extends AA_Stringexpand {
      * @return int|string|void
      */
     function expand($url='', $info='') {
+
+        if (!strlen($url)) {
+            return '';
+        }
 
         switch ( $info ) {
             case 'type':
