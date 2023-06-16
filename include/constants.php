@@ -464,14 +464,13 @@ function inputFeedModes() {
 
 /** GetViewFieldDef function
  * @param $validate
- * @param $insert
  * @param $type
  * @param $input
  * @param $value = false
  * @return array
  */
-function GetViewFieldDef($validate, $insert, $type, $input, $value = false) {
-    $ret = ["validate" => $validate, "insert" => $insert, "type" => $type, "input" => $input];
+function GetViewFieldDef($validate, $type, $input, $value = false) {
+    $ret = ["validate" => $validate, "type" => $type, "input" => $input];
     if ($value) {
         $ret['value'] = $value;
     }
@@ -486,57 +485,58 @@ function getViewFields() {
     // se_views.php - view field definition
     /* Jakub added a special field "function:function_name" which calls function show_function_name() to show a special form part and store_function_name() to store form data. */
     // $validate, $insert,  $type,   $input,  $value
-    $VIEW_FIELDS["name"]            = GetViewFieldDef("text", "quoted", "text", "field50");
-    $VIEW_FIELDS["before"]          = GetViewFieldDef("text", "quoted", "text", "area");
-    $VIEW_FIELDS["even"]            = GetViewFieldDef("text", "quoted", "text", "area");
-    $VIEW_FIELDS["even_odd_differ"] = GetViewFieldDef("", "quoted", "bool", "chbox");
-    $VIEW_FIELDS["odd"]             = GetViewFieldDef("text", "quoted", "text", "areabig");
-    $VIEW_FIELDS["row_delimiter"]   = GetViewFieldDef("text", "quoted", "text", "area");
-    $VIEW_FIELDS["after"]           = GetViewFieldDef("text", "quoted", "text", "area");
-    $VIEW_FIELDS["group_by1"]       = GetViewFieldDef("text", "quoted", "text", "group");
-    $VIEW_FIELDS["g1_direction"]    = GetViewFieldDef("", "quoted", "number", "none");
-    $VIEW_FIELDS["gb_header"]       = GetViewFieldDef("", "quoted", "number", "none");
-    $VIEW_FIELDS["group_by2"]       = GetViewFieldDef("text", "quoted", "text", "orderal");
-    $VIEW_FIELDS["g2_direction"]    = GetViewFieldDef("", "quoted", "number", "none");
-    $VIEW_FIELDS["group_title"]     = GetViewFieldDef("text", "quoted", "text", "area");
-    $VIEW_FIELDS["group_bottom"]    = GetViewFieldDef("text", "quoted", "text", "area");
-    $VIEW_FIELDS["remove_string"]   = GetViewFieldDef("text", "quoted", "text", "area");
-    $VIEW_FIELDS["modification"]    = GetViewFieldDef("text", "quoted", "text", "seltype");
-    $VIEW_FIELDS["parameter"]       = GetViewFieldDef("text", "quoted", "text", "selgrp");
-    $VIEW_FIELDS["img1"]            = GetViewFieldDef("text", "quoted", "text", "field");
-    $VIEW_FIELDS["img2"]            = GetViewFieldDef("text", "quoted", "text", "field");
-    $VIEW_FIELDS["img3"]            = GetViewFieldDef("text", "quoted", "text", "field");
-    $VIEW_FIELDS["img4"]            = GetViewFieldDef("text", "quoted", "text", "field");
-    $VIEW_FIELDS["order1"]          = GetViewFieldDef("text", "quoted", "text", "order");
-    $VIEW_FIELDS["o1_direction"]    = GetViewFieldDef("", "quoted", "number", "none");
-    $VIEW_FIELDS["order2"]          = GetViewFieldDef("text", "quoted", "text", "order");
-    $VIEW_FIELDS["o2_direction"]    = GetViewFieldDef("", "quoted", "number", "none");
-    $VIEW_FIELDS["selected_item"]   = GetViewFieldDef("text", "quoted", "text", "area");
-    $VIEW_FIELDS["cond1field"]      = GetViewFieldDef("text", "quoted", "text", "cond");
-    $VIEW_FIELDS["cond1op"]         = GetViewFieldDef("text", "quoted", "text", "none");
-    $VIEW_FIELDS["cond1cond"]       = GetViewFieldDef("text", "quoted", "text", "none");
-    $VIEW_FIELDS["cond2field"]      = GetViewFieldDef("text", "quoted", "text", "cond");
-    $VIEW_FIELDS["cond2op"]         = GetViewFieldDef("text", "quoted", "text", "none");
-    $VIEW_FIELDS["cond2cond"]       = GetViewFieldDef("text", "quoted", "text", "none");
-    $VIEW_FIELDS["cond3field"]      = GetViewFieldDef("text", "quoted", "text", "cond");
-    $VIEW_FIELDS["cond3op"]         = GetViewFieldDef("text", "quoted", "text", "none");
-    $VIEW_FIELDS["cond3cond"]       = GetViewFieldDef("text", "quoted", "text", "none");
-    $VIEW_FIELDS["listlen"]         = GetViewFieldDef("number", "quoted", "text", "field");
-    $VIEW_FIELDS["flag"]            = GetViewFieldDef("", "quoted", "bool", "chbox");
-    //$VIEW_FIELDS["flag"]            = GetViewFieldDef("",      "quoted", "bool",   "bitflag" );
-    $VIEW_FIELDS["scroller"]      = GetViewFieldDef("", "quoted", "bool", "chbox");
-    $VIEW_FIELDS["aditional"]     = GetViewFieldDef("text", "quoted", "text", "area");
-    $VIEW_FIELDS["aditional2"]    = GetViewFieldDef("text", "quoted", "text", "area");
-    $VIEW_FIELDS["aditional3"]    = GetViewFieldDef("text", "quoted", "text", "area");
-    $VIEW_FIELDS["aditional4"]    = GetViewFieldDef("text", "quoted", "text", "area");
-    $VIEW_FIELDS["aditional5"]    = GetViewFieldDef("text", "quoted", "text", "area");
-    $VIEW_FIELDS["aditional6"]    = GetViewFieldDef("text", "quoted", "text", "area");
-    $VIEW_FIELDS["noitem_msg"]    = GetViewFieldDef("text", "quoted", "text", "area");
-    $VIEW_FIELDS["field1"]        = GetViewFieldDef("text", "quoted", "text", "selfld");
-    $VIEW_FIELDS["field2"]        = GetViewFieldDef("text", "quoted", "text", "selfld");
-    $VIEW_FIELDS["field3"]        = GetViewFieldDef("text", "quoted", "text", "vid");
-    $VIEW_FIELDS["calendar_type"] = GetViewFieldDef("text", "quoted", "text", "select", ["mon"       => _m("Month List"),
-                                                                                         "mon_table" => _m("Month Table"),
+    $VIEW_FIELDS["name"]            = GetViewFieldDef("text", "text", "field50");
+    $VIEW_FIELDS["before"]          = GetViewFieldDef("text", "text", "area");
+    $VIEW_FIELDS["even"]            = GetViewFieldDef("text", "text", "area");
+    $VIEW_FIELDS["even_odd_differ"] = GetViewFieldDef("", "bool", "chbox");
+    $VIEW_FIELDS["odd"]             = GetViewFieldDef("text", "text", "areabig");
+    $VIEW_FIELDS["row_delimiter"]   = GetViewFieldDef("text", "text", "area");
+    $VIEW_FIELDS["after"]           = GetViewFieldDef("text", "text", "area");
+    $VIEW_FIELDS["group_by1"]       = GetViewFieldDef("text", "text", "group");
+    $VIEW_FIELDS["g1_direction"]    = GetViewFieldDef("", "number", "none");
+    $VIEW_FIELDS["gb_header"]       = GetViewFieldDef("", "number", "none");
+    $VIEW_FIELDS["group_by2"]       = GetViewFieldDef("text", "text", "orderal");
+    $VIEW_FIELDS["g2_direction"]    = GetViewFieldDef("", "number", "none");
+    $VIEW_FIELDS["group_title"]     = GetViewFieldDef("text", "text", "area");
+    $VIEW_FIELDS["group_bottom"]    = GetViewFieldDef("text", "text", "area");
+    $VIEW_FIELDS["remove_string"]   = GetViewFieldDef("text", "text", "area");
+    $VIEW_FIELDS["modification"]    = GetViewFieldDef("text", "text", "seltype");
+    $VIEW_FIELDS["parameter"]       = GetViewFieldDef("text", "text", "selgrp");
+    $VIEW_FIELDS["img1"]            = GetViewFieldDef("text", "text", "field");
+    $VIEW_FIELDS["img2"]            = GetViewFieldDef("text", "text", "field");
+    $VIEW_FIELDS["img3"]            = GetViewFieldDef("text", "text", "field");
+    $VIEW_FIELDS["img4"]            = GetViewFieldDef("text", "text", "field");
+    $VIEW_FIELDS["order1"]          = GetViewFieldDef("text", "text", "order");
+    $VIEW_FIELDS["o1_direction"]    = GetViewFieldDef("", "number", "none");
+    $VIEW_FIELDS["order2"]          = GetViewFieldDef("text", "text", "order");
+    $VIEW_FIELDS["o2_direction"]    = GetViewFieldDef("", "number", "none");
+    $VIEW_FIELDS["selected_item"]   = GetViewFieldDef("text", "text", "area");
+    $VIEW_FIELDS["cond1field"]      = GetViewFieldDef("text", "text", "cond");
+    $VIEW_FIELDS["cond1op"]         = GetViewFieldDef("text", "text", "none");
+    $VIEW_FIELDS["cond1cond"]       = GetViewFieldDef("text", "text", "none");
+    $VIEW_FIELDS["cond2field"]      = GetViewFieldDef("text", "text", "cond");
+    $VIEW_FIELDS["cond2op"]         = GetViewFieldDef("text", "text", "none");
+    $VIEW_FIELDS["cond2cond"]       = GetViewFieldDef("text", "text", "none");
+    $VIEW_FIELDS["cond3field"]      = GetViewFieldDef("text", "text", "cond");
+    $VIEW_FIELDS["cond3op"]         = GetViewFieldDef("text", "text", "none");
+    $VIEW_FIELDS["cond3cond"]       = GetViewFieldDef("text", "text", "none");
+    $VIEW_FIELDS["listlen"]         = GetViewFieldDef("number", "text", "field");
+    $VIEW_FIELDS["flag"]            = GetViewFieldDef("", "bool", "chbox");
+    //$VIEW_FIELDS["flag"]            = GetViewFieldDef("", "bool",   "bitflag" );
+    $VIEW_FIELDS["scroller"]      = GetViewFieldDef("", "bool", "chbox");
+    $VIEW_FIELDS["aditional"]     = GetViewFieldDef("text", "text", "area");
+    $VIEW_FIELDS["aditional2"]    = GetViewFieldDef("text", "text", "area");
+    $VIEW_FIELDS["aditional3"]    = GetViewFieldDef("text", "text", "area");
+    $VIEW_FIELDS["aditional4"]    = GetViewFieldDef("text", "text", "area");
+    $VIEW_FIELDS["aditional5"]    = GetViewFieldDef("text", "text", "area");
+    $VIEW_FIELDS["aditional6"]    = GetViewFieldDef("text", "text", "area");
+    $VIEW_FIELDS["noitem_msg"]    = GetViewFieldDef("text", "text", "area");
+    $VIEW_FIELDS["field1"]        = GetViewFieldDef("text", "text", "selfld");
+    $VIEW_FIELDS["field2"]        = GetViewFieldDef("text", "text", "selfld");
+    $VIEW_FIELDS["field3"]        = GetViewFieldDef("text", "text", "vid");
+    $VIEW_FIELDS["calendar_type"] = GetViewFieldDef("text", "text", "select", [
+        "mon"       => _m("Month List"),
+        "mon_table" => _m("Month Table"),
     ]);
     return $VIEW_FIELDS;
 }

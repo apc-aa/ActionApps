@@ -634,6 +634,9 @@ class Widget extends AA_Object implements NamedInterface {
                 case 'width':
                     $ret[$pid] = new AA_Property($pid, _m("Width"), 'int', false, true, 'int', false, _m("width of the field in characters (size parameter)"), '', 60);
                     break;
+                case 'input_type':
+                    $ret[$pid] = new AA_Property($pid, _m("Input type"), 'string', false, true, 'string', false, _m("type of input - email|tel|url|number. Can be used for other types (time), but in most cases it will be better to create new Widget type - like checkbox, password, color"), '', 20);
+                    break;
                 case 'show_buttons_txt':
                     $ret[$pid] = new AA_Property($pid, _m("Buttons to show"), 'string', false, true, 'string', false, _m("Which action buttons to show:<br>M - Move (up and down)<br>D - Delete value,<br>A - Add new value<br>C - Change the value<br>Use 'MDAC' (default), 'DAC', just 'M' or any other combination. The order of letters M,D,A,C is not important."), '', 'MDAC');
                     break;

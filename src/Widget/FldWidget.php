@@ -32,7 +32,7 @@ class FldWidget extends Widget
      * @return array
      */
     static function getClassProperties(): array {
-        return Widget::propertiesShop(['max_characters', 'width']);
+        return Widget::propertiesShop(['max_characters', 'width', 'input_type']);
     }
 
     /** libs to run after the page DOM is loaded */
@@ -57,7 +57,7 @@ class FldWidget extends Widget
         $required = $aa_property->isRequired() ? 'required' : '';
 
         $attrs = Widget::stdInputAttrs($type, $base_id, ['dirty']);
-        $attrs['type'] = 'text';
+
         // $widget_add = ($type == 'live') ? " class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"" : '';   //style=\"padding-right:16px;\"" : '';
         $widget = '';
         $autofocus = ($type == 'ajax') ? 'autofocus' : '';
@@ -68,6 +68,7 @@ class FldWidget extends Widget
         $translations = $aa_property->getTranslations();
 
         $attrs = array_merge($attrs, $aa_property->getValidator()->getHtmlInputAttr());
+        $attrs['type'] = $this->getProperty('input_type') ?: $attrs['type'] ?: 'text';
 
         // type number do not support size parameter, so we have to set max and min (make no sense to do it for numbers > 11 characters - use default)
         if ($attrs['type'] == 'number') {

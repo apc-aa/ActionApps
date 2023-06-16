@@ -891,7 +891,7 @@ class AA_Inputfield {
                 case 'hid': $this->hidden();           break;
                 case 'fld': if (!$this->translations) {
                                 // not yet prepared for standard widget - Triggers - SetField, GetField do not work. @TODO
-                                $this->inputText(get_if($this->param[0],255), get_if($this->param[1],0)); // maxlength, fieldsize
+                                $this->inputText(get_if($this->param[0],255), get_if($this->param[1],0), get_if($this->param[2],'text')); // maxlength, fieldsize, input_type
                             } else {
                                 $this->inputWidget($item, $slice_id);          // standard
                             }

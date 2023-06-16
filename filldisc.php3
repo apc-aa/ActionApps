@@ -1,10 +1,11 @@
 <?php
 
 use AA\IO\DB\DB_AA;
+use AA\Util\InputVars;
 
 /**
  * filldisc.php3 - writes a discussion item into the discussion table
- * expected parameters (usually from a HTML form):
+ * expected parameters (usually from an HTML form):
  *          $d_item_id
  *          $d_parent_id
  *          $d_subject
@@ -75,6 +76,27 @@ require_once __DIR__ . "/include/itemview.php";
 require_once __DIR__ . "/include/item.php";
 require_once __DIR__ . "/include/event.class.php";
 require_once __DIR__ . "/include/validate.php";
+
+try {
+    $answer = InputVars::stringPOST('answer', true); // empty
+    // array ( 'HM' => 2, 'ee' => 1, '' => 2, 'rr' => 1, )
+    $d_author = InputVars::stringPOST('d_author', true); // alpha, empty
+    // array ( 'opravené d…' => 2, 'errr' => 1, '' => 1, 'rr' => 1, 'f' => 1, )
+    $d_body = InputVars::stringPOST('d_body', true); // empty
+    // array ( 'devel@ecn.cz' => 2, '' => 4, )
+    $d_e_mail = InputVars::stringPOST('d_e_mail', true); // empty
+    // array ( '8de4c6fa4e6…' => 6, )
+    $d_item_id = InputVars::idPOST('d_item_id', true);
+    // array ( '' => 3, 'f0583c0321e…' => 1, 'd40e80bf3bb…' => 2, )
+    $d_parent = InputVars::idPOST('d_parent', true); // empty
+    // array ( 'opravené d…' => 2, '' => 4, )
+    $d_subject = InputVars::stringPOST('d_subject', true); // empty
+    // array ( 'http://zpra…' => 6, )
+    $url = InputVars::stringPOST('url', true);
+} catch (Exception $e) {}
+
+
+
 
 $err = [];       // error array (Init - just for initializing variable)
 
