@@ -1795,6 +1795,7 @@ function aa_version($format='full') {
             $rev = explode("\n", $rev);
             return $rev[3];
         case 'aa':  return $version;
+        case 'php':  return phpversion();
     }
     return $full;
 }
