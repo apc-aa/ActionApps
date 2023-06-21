@@ -52,31 +52,26 @@ class HitcounterUpdate implements LaterInterface
         $time = time() - 2;
 
         // first look to the short id hit table;
-        $hits_s = GetTable2Array("SELECT id, count(*) as count FROM hit_short_id WHERE time < $time GROUP BY id", 'id', 'count');
+        $hits_s = DB_AA::select(['id'=>'count'], 'SELECT `id`, count(*) as count FROM hit_short_id '. DB_AA::makeWhere([['time',$time, '<']]). " GROUP BY `id`");
 
         // now look for long ids hits
-        $hits_l = GetTable2Array("SELECT item.short_id, count(*) as count FROM hit_long_id INNER JOIN item ON hit_long_id.id=item.id
-                                   WHERE hit_long_id.time < $time GROUP BY item.short_id", 'short_id', 'count');
+        $hits_l = DB_AA::select(['short_id'=>'count'], 'SELECT item.short_id, count(*) as count FROM hit_long_id INNER JOIN item ON hit_long_id.id=item.id '. DB_AA::makeWhere([['hit_long_id.time',$time, '<']]). " GROUP BY item.short_id");
 
-        if (is_array($hits_s)) {
-            foreach ( $hits_s as $short_id => $count ) {
-                // add long ids count
-                if ( isset($hits_l[$short_id]) ) {
-                    $count += $hits_l[$short_id];
-                    unset($hits_l[$short_id]);
-                }
-                if ( $count > 0 ) {
-                    DB_AA::sql( "UPDATE item SET display_count=(display_count+$count) WHERE short_id = $short_id");
-                }
+        foreach ( $hits_s as $short_id => $count ) {
+            // add long ids count
+            if ( isset($hits_l[$short_id]) ) {
+                $count += $hits_l[$short_id];
+                unset($hits_l[$short_id]);
+            }
+            if ( $count > 0 ) {
+                DB_AA::sql( "UPDATE item SET display_count=(display_count+$count) WHERE short_id = $short_id");
             }
         }
 
         // Now the rest long_ids
-        if (is_array($hits_l)) {
-            foreach ( $hits_l as $short_id => $count ) {
-                if ( $count > 0 ) {
-                    DB_AA::sql( "UPDATE item SET display_count=(display_count+$count) WHERE short_id = $short_id");
-                }
+        foreach ( $hits_l as $short_id => $count ) {
+            if ( $count > 0 ) {
+                DB_AA::sql( "UPDATE item SET display_count=(display_count+$count) WHERE short_id = $short_id");
             }
         }
 

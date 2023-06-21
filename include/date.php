@@ -149,7 +149,7 @@ class datectrl {
             return 0;
         }
         $t = explode( ':', $this->time ?: "0:0:0");
-        return mktime($t[0],$t[1],$t[2],(int)$this->month,(int)$this->day,(int)$this->year);
+        return mktime((int)$t[0],(int)$t[1],(int)$t[2],(int)$this->month,(int)$this->day,(int)$this->year);
 
     }
 

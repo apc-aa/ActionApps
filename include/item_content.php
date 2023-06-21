@@ -1010,7 +1010,7 @@ class ItemContent extends AA_Content {
         if ($invalid) {
             switch ($validate) {
                 case 'STRICT':
-                    ItemContent::lastErr(ITEMCONTENT_ERROR_INVALID, join("\n", array_map(function ($err) { return $err[0].": ".$err[1]; }, $invalid)));
+                    ItemContent::lastErr(ITEMCONTENT_ERROR_INVALID, join("\n", array_map(function ($fld, $err) { return "[$fld] ". $err[0].": ".$err[1]; }, array_keys($invalid), $invalid)));
                     return false;
                 case 'LOG':
                     foreach ($invalid as $fld => $msg) {
