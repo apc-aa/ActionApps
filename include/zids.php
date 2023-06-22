@@ -638,8 +638,7 @@ function unpack_id($packed_id=''): string {
     return ((string)$packed_id != '0') ? bin2hex($packed_id) : '0';
 }
 
-/** quote function
- * function to double backslashes and apostrofs
+/** function to double backslashes and apostrophes
  * @param $str
  * @return string
  */

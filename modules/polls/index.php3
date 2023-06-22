@@ -82,7 +82,7 @@ $module_id = AA::$module_id;
 $p_module_id = q_pack_id($module_id); // packed to 16-digit as stored in database
 
 $metabase = AA::Metabase();
-$managed  = $metabase->getManagerConf('polls', $actions, $switches);
+$managed  = $metabase->getManagerConf('polls', $actions, $switches, ['edit_url' => get_aa_url('modules/polls/polledit.php?poll_id=_#id')]);
 
 // function - we need translate _m() on use (not at include time)
 

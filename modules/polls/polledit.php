@@ -51,14 +51,14 @@ try {
     $expiry_date  = InputVars::intPOST('expiry_date');
     $design_id= InputVars::stringPOST('design_id');
     $aftervote_design_id  = InputVars::stringPOST('aftervote_design_id');
-    $locked   = InputVars::intPOST('locked');
-    $logging  = InputVars::intPOST('logging');
-    $ip_locking   = InputVars::intPOST('ip_locking');
+    $locked   = InputVars::boolPOST('locked');
+    $logging  = InputVars::boolPOST('logging');
+    $ip_locking   = InputVars::boolPOST('ip_locking');
     $ip_lock_timeout  = InputVars::intPOST('ip_lock_timeout');
-    $set_cookies  = InputVars::intPOST('set_cookies');
+    $set_cookies  = InputVars::boolPOST('set_cookies');
     $params   = InputVars::stringPOST('params');
 
-    $answers  = InputVars::arraySlashedPOST('params');
+    $answers  = InputVars::arraySlashedPOST('answers');
 
     $insert = InputVars::boolPOST('insert');
     $update = InputVars::boolPOST('update');
@@ -88,34 +88,66 @@ if ($insert  || $update ) {
 
     $varset = new CVarset();
 
-    $varset->add("module_id",          "quoted", $p_module_id);
-    $varset->add("headline",           "text", $headline);
-    $varset->add("publish_date",       "number", $publish_date);
-    $varset->add("expiry_date",        "number", $expiry_date);
-    $varset->add("design_id"    ,      "text", $design_id);
-    $varset->add("aftervote_design_id","text", $aftervote_design_id);
-
-    $varset->add("locked",             "number", ($locked ? 1 : 0));
-    $varset->add("logging",            "number", ($logging ? 1 : 0));
-    $varset->add("ip_locking",         "number", ($ip_locking ? 1 : 0));
-    $varset->add("ip_lock_timeout",    "number", $ip_lock_timeout);
-    $varset->add("set_cookies",        "number", ($set_cookies ? 1 : 0));
-    // $varset->add("cookies_prefix",     "text", $cookies_prefix);  // not used
-
-    $varset->add("params",             "text", $params);
+    $data = [
+        //'poll_id' => $poll_id,
+        'module_id' => AA::$module_id,
+        'headline' => $headline,
+        'publish_date' => $publish_date,
+        'expiry_date' => $expiry_date,
+        'design_id' => $design_id,
+        'aftervote_design_id' => $aftervote_design_id,
+        'locked' => $locked,
+        'logging' => $logging,
+        'ip_locking' => $ip_locking,
+        'ip_lock_timeout' => $ip_lock_timeout,
+        'set_cookies' => $set_cookies,
+        'params' => $params
+    ];
 
     if ($insert) {
-        $varset->add("status_code","number", 1);
+        $data['status_code'] = 1;
         $poll_id = new_id();
-        $varset->add("id",    "text", $poll_id);
-        $SQL = $varset->makeINSERT('polls');
+        $data['id'] = $poll_id;
+        if (false === AA::Metabase()->doInsert('polls', $data)) {
+            $err["DB"] = MsgErr(_m("Can't insert new poll"));
+            exit;
+        }
     } elseif ($update ) {
-        $SQL = "UPDATE polls SET ". $varset->makeUPDATE() ." WHERE (module_id='$p_module_id' AND id='$poll_id')";
+        $data['id'] = $poll_id;
+        if (false === AA::Metabase()->doUpdate('polls', $data)) {
+            $err["DB"] = MsgErr(_m("Can't update poll with id ".$poll_id));
+            exit;
+        }
     }
-    if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
-        $err["DB"] = MsgErr(($update ? _m("Can't update poll with id ".$poll_id) : _m("Can't insert new poll")));
-        exit;
-    }
+
+//    $varset->add("module_id",          "unpacked", AA::$module_id);
+//    $varset->add("headline",           "text", $headline);
+//    $varset->add("publish_date",       "number", $publish_date);
+//    $varset->add("expiry_date",        "number", $expiry_date);
+//    $varset->add("design_id"    ,      "text", $design_id);
+//    $varset->add("aftervote_design_id","text", $aftervote_design_id);
+//
+//    $varset->add("locked",             "number", ($locked ? 1 : 0));
+//    $varset->add("logging",            "number", ($logging ? 1 : 0));
+//    $varset->add("ip_locking",         "number", ($ip_locking ? 1 : 0));
+//    $varset->add("ip_lock_timeout",    "number", $ip_lock_timeout);
+//    $varset->add("set_cookies",        "number", ($set_cookies ? 1 : 0));
+//    // $varset->add("cookies_prefix",     "text", $cookies_prefix);  // not used
+//
+//    $varset->add("params",             "text", $params);
+//
+//    if ($insert) {
+//        $varset->add("status_code","number", 1);
+//        $poll_id = new_id();
+//        $varset->add("id",    "text", $poll_id);
+//        $SQL = $varset->makeINSERT('polls');
+//    } elseif ($update ) {
+//        $SQL = "UPDATE polls SET ". $varset->makeUPDATE() ." WHERE (module_id='$p_module_id' AND id='$poll_id')";
+//    }
+//    if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
+//        $err["DB"] = MsgErr(($update ? _m("Can't update poll with id ".$poll_id) : _m("Can't insert new poll")));
+//        exit;
+//    }
 
     $SQL         = "SELECT * FROM polls_answer WHERE (poll_id='$poll_id')";
     $answertable = GetTable2Array($SQL, 'id', 'aa_fields');
@@ -158,17 +190,16 @@ $apage->addRequire(get_aa_url('javascript/inputform.min.js?v='.AA_JS_VERSION ));
 $apage->setForm();
 $apage->printHead($err, $Msg);
 
-
 if ($poll_id) {
     $form_buttons = [
         "update",
-                           "poll_id" => ['type' => 'hidden', 'value'=>$poll_id],
-                           "cancel" => ["url"=>"index.php3"]
+        "poll_id" => ['type' => 'hidden', 'value'=>$poll_id],
+        "cancel" => ["url"=>"index.php3"]
     ];
 } else {
     $form_buttons = [
         "insert",
-                           "cancel" => ["url"=>"index.php3"]
+        "cancel" => ["url"=>"index.php3"]
     ];
 }
 

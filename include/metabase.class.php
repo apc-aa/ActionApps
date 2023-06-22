@@ -1277,9 +1277,10 @@ class AA_Metabase {
      * @param string              $tablename
      * @param Manageractions|null $actions
      * @param Manageractions|null $switches
+     * @param array               $set         - like ['edit_url' => 'some_url.php?id=_#id']
      * @return Managed
      */
-    function getManagerConf(string $tablename, Manageractions $actions=null, Manageractions $switches=null): Managed {
+    function getManagerConf(string $tablename, Manageractions $actions=null, Manageractions $switches=null, array $set=[]): Managed {
         $table         = $this->tables[$tablename];
         $aliases       = $table->generateAliases();
         $search_fields = $this->getSearchfields($tablename);
@@ -1296,7 +1297,8 @@ class AA_Metabase {
         if (count($keys)==1) {
             $actions->addAction(new \AA\Manageraction\Table_Row_Delete('DeleteTRow'));
             $key_alias = $aliases->getNamesForField($keys[0])[0];
-            $buttons = ['Edit'   => a_href(get_url('', ["id=$key_alias"], true), _m('Edit'), ['class' => 'aa-button-edit'])];
+            $edit_url = array_key_exists('edit_url', $set) ? str_replace('_#id', $key_alias, $set['edit_url']) : get_url('', ["id=$key_alias"], true);
+            $buttons = ['Edit'   => a_href($edit_url, _m('Edit'), ['class' => 'aa-button-edit'])];
         }
         $buttons = array_merge($buttons, $actions->getManagerButtons('', $key_alias, AA::$module_id));
 
@@ -1338,7 +1340,11 @@ class AA_Metabase {
             'bin'       => 'app'
         ];
 
-        return (new \AA\Managed_Table($tablename))->setSettings($manager_settings)->setColumns($columns)->setTitle(_m('Manage %1', [$tablename]));
+        $managed = (new \AA\Managed_Table($tablename))->setSettings($manager_settings)->setColumns($columns)->setTitle(_m('Manage %1', [$tablename]));
+        if (array_key_exists('edit_url', $set)) {
+            $managed->setUrl($set['edit_url']);
+        }
+        return $managed;
     }
 
 //    /** AA_iEditable method - adds Object's editable properties to the $form */

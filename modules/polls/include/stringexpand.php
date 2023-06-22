@@ -57,7 +57,7 @@ class AA_Stringexpand_Poll extends AA_Stringexpand {
 }
 
 /** Expands {poll_share[:<max>]} number representing current share of the votes
- *  for the answer. By default in scale of 0-100, so it could be used as percent
+ *  for the answer. By default, in scale of 0-100, so it could be used as percent
  *  value. You can specify the max parameter, so the values could be from 0 to ""
  *  $max which could be used as image width, ...
  *  @param $max

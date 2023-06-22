@@ -16,7 +16,7 @@ function displayUserbox($a) {
     $user_uid = $a->getUid();
     echo "<div style=\"background: #CCF; border: solid 1px #666\">";
     if ($user_uid) {
-        // We know, who you are (or at least who is the person who uses this browser
+        // We know who you are (or at least who is the person who uses this browser
         // while accessing our pages)
         echo "Hello $user_uid!<br/>";
         echo "<a href=\"logout.php\">logout</a><br/>";

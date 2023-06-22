@@ -8088,7 +8088,10 @@ class AA_Stringexpand__ extends AA_Stringexpand {
         static $saliases = [];
         static $smodules = null;
 
-        $name     = array_shift($arg_list);
+        $name = trim(array_shift($arg_list));
+        if (!strlen($name)) {
+            return '';
+        }
 
         AA::$debug&32 && AA::$dbg->tracestart('{_:.. load}', $name);
 
