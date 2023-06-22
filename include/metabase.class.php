@@ -1204,9 +1204,14 @@ class AA_Metabase {
 
     static function queryCount($settings, $set) {
         $tablename = $settings['table'];
-        $conds = $set->getConds();
-
         $metabase = AA::Metabase();
+
+        if ($metabase->isColumn($tablename, 'status_code')) {
+            $bin  = $set->getBinsNumber();
+            $set->addCondition(new AA_Condition('status_code','==',$bin));
+        }
+
+        $conds = $set->getConds();
 
         $fields = $metabase->getSearchArray($tablename);
         $join_tables = [];   // not used in this function

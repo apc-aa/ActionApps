@@ -122,18 +122,16 @@ $bin_sets['appc']->addCondition(new AA_Condition('status_code', '==', '1'));
 $bin_sets['appc']->addCondition(new AA_Condition('expiry_date', '<', $now));
 
 $bin_sets['folder2'] = clone($aa_set);
-$bin_sets['folder2']->addCondition(new AA_Condition('status_code', '==', '2'));
+$bin_sets['folder2']->setBins(AA_BIN_HOLDING);
 
 $bin_sets['folder3'] = clone($aa_set);
-$bin_sets['folder3']->addCondition(new AA_Condition('status_code', '==', '3'));
+$bin_sets['folder3']->setBins(AA_BIN_TRASH);
 
 $r_state['bin_cnt']['app']     = AA_Metabase::queryCount(['table' => 'polls'], $bin_sets['app']);
 $r_state['bin_cnt']['appb']    = AA_Metabase::queryCount(['table' => 'polls'], $bin_sets['appb']);
 $r_state['bin_cnt']['appc']    = AA_Metabase::queryCount(['table' => 'polls'], $bin_sets['appc']);
 $r_state['bin_cnt']['folder2'] = AA_Metabase::queryCount(['table' => 'polls'], $bin_sets['folder2']);
 $r_state['bin_cnt']['folder3'] = AA_Metabase::queryCount(['table' => 'polls'], $bin_sets['folder3']);
-
-
 
 $zids  = AA::Metabase()->queryZids(['table'=>'polls'], $bin_sets[$manager->getBin()]);
 

@@ -254,6 +254,9 @@ FrmTabSeparator(_m("Polls design templates"));
 $SQL     = "SELECT id, name FROM polls_design WHERE (module_id='$p_module_id')";
 $designs = GetTable2Array($SQL, 'id', 'name');
 
+$designs = \AA\IO\DB\DB_AA::select(['id'=>'name'], 'SELECT id, name FROM polls_design', [['module_id', AA::$module_id, 'l']]);
+
+
 FrmInputSelect("design_id",           _m("Select design type - before vote"), $designs, $design_id, true);
 FrmInputSelect("aftervote_design_id", _m("Select design type - after vote"), $designs, $aftervote_design_id, false, _m('If the design after vote should look differently, then specify it here.'));
 
