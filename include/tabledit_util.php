@@ -329,7 +329,7 @@ function TableUpdate($val, $columns, $primary_aliases, $error_msg="", $triggers 
                     $varset->add($col["field"],"number",$value);
                 }
                 else {
-                    $varset->add($col["field"],"quoted",$value);
+                    $varset->add($col["field"],"text",$value);
                 }
             }
         }
