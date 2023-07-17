@@ -815,9 +815,9 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
                 $ERR_VALUE = [["value" => _m("Error: Missing Reading Password"), "flag"  => FLAG_HTML]];
                 foreach ($content as $unpack_id => $c4id) {
                     $unpermitted[$unpack_id] = true;
-                    foreach ($c4id as $fid) {
+                    foreach ($c4id as $fid => $foo) {
                         // at least id and slice_id should be correct.............. for AA_Items::getItems()
-                        if (($fid != 'id..............') OR ($fid != 'slice_id........')) {
+                        if ( !in_array($fid, ['id..............','slice_id........','unpacked_id.....','u_slice_id......'])) {
                             $content[$unpack_id][$fid] = $ERR_VALUE;
                         }
                     }

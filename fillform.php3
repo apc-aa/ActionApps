@@ -88,8 +88,7 @@ https://www.apc.org/
 */
 
 if (!isset($form)) $form = "f";
-
-$encap = ( ($encap=="false") ? false : true );
+$encap = ( array_key_exists('encap', $_REQUEST) AND ($_REQUEST['encap']=="false") ) ? false : true;
 
 /** APC-AA configuration file */
 require_once __DIR__."/include/config.php";

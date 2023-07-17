@@ -263,7 +263,7 @@ if ($slice AND ($slice->getProperty("type") == 'ReaderManagement')) {
     FrmInputSelect("auth_field_group", _m("Auth Group Field"), $slicefields, $sarr['auth_field_group'], false, "", "../doc/reader.html#auth_field_group");
     FrmInputSelect("mailman_field_lists",_m("Mailman Lists Field"), $slicefields, $sarr['mailman_field_lists'], false, "", "../doc/reader.html#mailman");
 }
-FrmInputEmail("reading_password", _m("Password for Reading"), $sarr['reading_password'], 100, 25, false, "", "https://actionapps.org/faq/detail.shtml?x=1667");
+FrmInputText("reading_password", _m("Password for Reading"), $sarr['reading_password'], 100, 50, false, "", "https://actionapps.org/faq/detail.shtml?x=1667");
 
 if ($slice_id) {
     FrmStaticText(_m("Additional setting"), AA_Slice::getModuleObjectForm($slice_id), '', '', false);
@@ -284,7 +284,7 @@ if ($slice_id && ($mlx_ctrl_for = DB_AA::select1('name', 'SELECT name FROM `slic
 
 if ($superadmin) {
     FrmInputSelect("fileman_access", _m("File Manager Access"), getFilemanAccesses(), $sarr['fileman_access'], false, "", "http://apc-aa.sourceforge.net/faq/#1106");
-    FrmInputText("fileman_dir", _m("File Manager Directory"), $sarr['fileman_dir'], 99, 25, false, "", "https://actionapps.org/faq/detail.shtml?x=1698");
+    FrmInputText("fileman_dir", _m("File Manager Directory"), $sarr['fileman_dir'], 99, 50, false, "", "https://actionapps.org/faq/detail.shtml?x=1698");
 }
 
 if ($slice_id=="") {

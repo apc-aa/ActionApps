@@ -1160,7 +1160,7 @@ class AA_Stringexpand_Shorten extends AA_Stringexpand_Nevercachenotrim {
     public static function shorten_middle($text, $length)
     {
         $text = trim(strip_tags($text));
-        $ret = aa_substr($text, 0, $length / 2 - 1) . '...';
+        $ret = aa_substr($text, 0, $length / 2 - 1) . '…';
         return $ret . aa_substr($text, aa_strlen($ret) - $length);
     }
 
@@ -1949,6 +1949,8 @@ class AA_Stringexpand_Daterange extends AA_Stringexpand_Nevercache {
 
     /** expand function  */
     function expand($start_timestamp='', $end_timestamp='', $year_format='Y') {
+        $start_timestamp = (int)$start_timestamp;
+        $end_timestamp   = (int)$end_timestamp;
         if ( date("j.n.$year_format", $start_timestamp) == date("j.n.$year_format", $end_timestamp) ) {
             $ret = date("j.n.$year_format", $start_timestamp);
         } elseif ( date("Y", $start_timestamp) == date("Y", $end_timestamp) ) {
@@ -3617,7 +3619,7 @@ class AA_Stringexpand_Sortstring extends AA_Stringexpand {
     function expand($item_id='', $relation_field=null, $expression=null) {
         $zids = new zids(array_reverse(AA_Stringexpand_Treestring::treefunc('getIds', $item_id, $relation_field), 'l'));
         $orderstrings =  strlen($expression) ? AA_Items::getFormatted($zids, $expression, AA_BIN_ALL) : $zids->shortids();
-        return join('', array_map( ['AA_Stringexpand_Sortid','expand'], $orderstrings));
+        return join('', array_map( ['AA_Stringexpand_Sortid','sortid'], $orderstrings));
     }
 }
 
@@ -3632,6 +3634,11 @@ class AA_Stringexpand_Sortid extends AA_Stringexpand_Nevercache {
      * @return string B1 for $id=1, F25487 for $id=25487, ...
      */
     function expand($number='') {
+        return chr(65+strlen((string)$number)).$number;
+    }
+    
+    /** the same as expand, but callable staticaly */
+    public static function sortid($number='') {
         return chr(65+strlen((string)$number)).$number;
     }
 }
