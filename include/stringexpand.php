@@ -1756,11 +1756,11 @@ class AA_Stringexpand_Math extends AA_Stringexpand_Nevercachenotrim {
             switch ($dec_point) {
                 case 'FR':
                     $dec_point = ',';
-                    $thousands_sep = '&#8239;';  // non breaking thin space
+                    $thousands_sep = '&#8239;';  // non-breaking thin space
                     break;
                 case 'EN':
                     $dec_point = '.';
-                    $thousands_sep = '&#8239;';  // non breaking thin space
+                    $thousands_sep = '&#8239;';  // non-breaking thin space
                     break;
                 default:
                     $dec_point = get_if($dec_point, ',');
@@ -4602,6 +4602,7 @@ class AA_Stringexpand_Fieldoptions extends AA_Stringexpand_Field {
  *    {input:36fd8c4501d7a8b9e9505dc323d24321:headline........:::{"name":"Project name","input_help":"fill in the project name","row_count":"10"}}
  *    {input:36fd8c4501d7a8b9e9505dc323d24321:category........::sel:{"const_arr":{"0":"yes","1":"no"}}}          (1)
  *    {input:36fd8c4501d7a8b9e9505dc323d24321:category........::sel:{"const_arr":{jsonasoc:0:yes:1:no}}}         (2)
+ *    {input:36fd8c4501d7a8b9e9505dc323d24321:e_posted_by.....::fld:{"input_type":"email"}}                      (3)
  */
 class AA_Stringexpand_Input extends AA_Stringexpand_Field {
     /** expand function

@@ -86,7 +86,7 @@ try {
     $new_owner = InputVars::stringPOST('new_owner');
     $new_owner_email = InputVars::stringPOST('new_owner_email');
     // array ( 0 => 93, '' => 1, )
-    $permit_anonymous_edit = InputVars::boolPOST('permit_anonymous_edit'); // empty
+    $permit_anonymous_edit = InputVars::intPOST('permit_anonymous_edit'); // empty
     // array ( 0 => 4, 1 => 89, 2 => 1, )
     $permit_anonymous_post = InputVars::intPOST('permit_anonymous_post');
     // array ( 1 => 89, 0 => 4, 2 => 1, )
