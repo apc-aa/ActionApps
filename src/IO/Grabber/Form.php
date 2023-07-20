@@ -249,8 +249,11 @@ class Form extends AbstractGrabber {
                 // create full_text......1 from full_text______1
                 $field_id = AA_Fields::getFieldIdFromVar($dirty_field_id);
 
-                // get the content of the field (values and flags)
-                $aa_value = Widget::getValue($val_array);
+                // Get the content of the field (values and flags)
+                // Convert to array - designers sometimes set (wrongly) as scalar:
+                //    <input type="hidden" name="aa[n1_f803d8dc...2b][relation________]" value="{_#ITEM_ID_}">  - right is ..aa[n1_f803d8dc...2b][relation________][0]...
+                //  (which somehow works in PHP<8) - now we typecasting it to array to be sure
+                $aa_value = Widget::getValue((array)$val_array);
                 $aa_value->replaceInValues($trans_item_alias, $trans_item_ids);
 
                 if (($dirty_item_id[0] == 'r') and ($field_id != 'slice_id........')) {

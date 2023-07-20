@@ -541,7 +541,7 @@ class AA_Exportsetings extends AA_Object {
         }
 
         // cleanup fields
-        $this->fields = array_filter(array_map('trim', $this->fields), 'strlen');
+        $this->fields = is_array($this->fields) ? array_filter(array_map('trim', $this->fields), 'strlen') : [];
 
         $set = new AA_Set($slice_id, AA::Stringexpander()->unalias($this->conds), AA::Stringexpander()->unalias($this->sort), $this->bins);
         $fs  = new AA_Fieldset;
@@ -555,7 +555,7 @@ class AA_Exportsetings extends AA_Object {
             $grabber         = new Slice($set, $restrict_zids);
         }
 
-        if (is_array($this->fields) AND count($this->fields) ) {
+        if (count($this->fields) ) {
             foreach ($this->fields as $f) {
                 if (in_array($f, $possible_fields)) {
                     // just use unpacked variants
