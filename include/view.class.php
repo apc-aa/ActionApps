@@ -647,9 +647,12 @@ class AA_Views {
             $vid = (int)$vid;
         } elseif (AA::$site_id AND ($site = AA_Module_Site::getModule(AA::$site_id))) {
             $vid = $site->findViewId($vid);
+        } elseif ( is_long_id($m = AA::$module_id ?: AA::$slice_id) AND strlen($vid) ) {  // for planned tasks, for example
+            $vid = DB_AA::select1('id', 'SELECT id FROM view', [['slice_id', $m, 'l'], ['field3', $vid]]);
         } else {
             return null;
         }
+
         $view = AA_Views::singleton()->_getView($vid);
         return $view->load() ? $view : null;  // if exists return
     }

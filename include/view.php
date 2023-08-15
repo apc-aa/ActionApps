@@ -506,7 +506,7 @@ class AA_Showview {
 
                 $itemview = new itemview( $format, $aliases, $zids2, $list_from, $listlen, shtml_url(), "", ($view_info['type'] == 'urls') ? 'GetItemContentMinimal' : '');
 
-            if (isset($zids2) && ($zids2->count() > $list_from)) {
+                if (isset($zids2) && ($zids2->count() > ( ctype_digit((string)$list_from) ? (int)$list_from : 0))) { // $list_from could be 'random:number.........1' ...
                     $ret = $itemview->get_output(($view_info['type'] == 'calendar') ? 'calendar' : 'view');
                 } else {
                     $ret = $itemview->unaliasWithScroller($noitem_msg);

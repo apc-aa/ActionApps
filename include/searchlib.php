@@ -1346,7 +1346,7 @@ function MakeSQLConditions($fields_arr, $conds, $defaultCondsOperator, &$join_ta
     if (isset($conds) and is_array($conds)) {
         foreach ($conds as $cond) {
             if (isset($cond) and is_array($cond)) {
-                unset($onecond);                    // clear
+                $onecond = [];                    // clear
                 foreach ($cond as $fid => $v) {
                     $finfo = $fields_arr[$fid];
                     if (isset($finfo) and is_array($finfo)) {
