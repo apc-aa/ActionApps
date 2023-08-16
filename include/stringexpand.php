@@ -7783,7 +7783,7 @@ class AA_Stringexpand_Qrpay extends AA_Stringexpand {
             return '';
         }
         $amount = (float)PhpFloat($amount);
-        $qr = new QRPlatba($account, $amount, $reference_number, $currency ? 'EUR' : $currency);
+        $qr = new QRPlatba($account, $amount, $reference_number, $currency ?: 'EUR');
         try {
             if ($message)         { $qr->setMessage($message); }
             if ($due_date)        { $qr->setDueDate(new DateTime($due_date)); }
