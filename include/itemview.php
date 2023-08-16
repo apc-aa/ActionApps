@@ -482,6 +482,7 @@ class itemview {
     }
 
     $is_random = $this->is_random();
+    $real_from = (int)$this->from_record;  // $this->from_record could be "random:..."
 
     // fill the foo_ids - ids to itemids to get from database
     if ( !$is_random ) {
@@ -489,7 +490,7 @@ class itemview {
             $SORT_CONST = ['0'=> 'locale', '1' => 'rlocale', '4'=>'numeric', '5' => 'rnumeric'];
             $this->zids = new zids(explode_ids(StrExpand('AA_Stringexpand_Order', [join('-',$this->zids->short_or_longids()), $this->slice_info['group_by2'], $SORT_CONST[(int)$this->slice_info['g2_direction']]])));
         }
-        $foo_zids = $this->zids->slice((integer)$this->from_record, ( ($this->num_records < 0) ? MAX_NO_OF_ITEMS_4_GROUP :  $this->num_records ));
+        $foo_zids = $this->zids->slice($real_from, ( ($this->num_records < 0) ? MAX_NO_OF_ITEMS_4_GROUP :  $this->num_records ));
     } else { // Selecting random record
       [ $random, $rweight ] = explode( ":", $this->from_record);
       if ( !$rweight ) {
@@ -506,6 +507,7 @@ class itemview {
                  // the one based on weight field (now in $rweight variable
         $foo_zids = $this->zids;
       }
+      $real_from = 0;
     }
 
     // Create an array of content, indexed by either long or short id (not tagged id)
@@ -546,7 +548,6 @@ class itemview {
             }
         }
       }
-      $this->from_record = 0;
     }
 
     // count hit for random item - it is used for banners, so it is important
@@ -567,7 +568,7 @@ class itemview {
       case "itemlist":          // multiple items as fulltext one after one
         $out = $this->slice_info['fulltext_format_top'];
         for ( $i=0; $i<$this->num_records; $i++ ) {
-          $iid = $this->zids->short_or_longids($this->from_record+$i);
+          $iid = $this->zids->short_or_longids($real_from+$i);
           if ( !$iid )
             continue;                                     // iid = quoted or short id
 
@@ -605,7 +606,7 @@ class itemview {
                 $out .= (new AA_Showview(AA_View::parseViewParameters($this->slice_info['banners'][$i])))->getViewOutput();
             }
 
-            $zidx = $this->from_record+$i;
+            $zidx = $real_from+$i;
             if ($zidx >= $zidscount) {
                 break;
             }
