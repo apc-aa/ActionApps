@@ -125,9 +125,9 @@ class AA_Field implements ArrayAccess {
      *                       used, when we want to use another widget, than the default one
      *                       usually not used
      * @param $properties - array of properties to redefine for $widget_type
-     * @return Widget|mixed
+     * @return Widget|null
      */
-    function getWidget($widget_type=null, $properties= []) {
+    function getWidget($widget_type=null, $properties= []): ?Widget {
         $widget_hash = get_hash($widget_type,$properties);
 
         // just for cache. maybe it is not necessary...
@@ -357,10 +357,12 @@ class AA_Field implements ArrayAccess {
 
         $translations = $this->getTranslations();
 
-        $validator_string = $this->data['input_validate']; // ids for iso widget could be marked - prepended by x, y or z
-        if ( (substr($validator_string,0,2)=='id') AND (substr($this->data['input_show_func'],0,3)=='iso') ) {
-            $validator_string = 'markedid';
-        }
+        $widget = $this->getWidget();
+        $validator = $widget ? $widget->getUpgradedValidator($this->data['input_validate']) : AA_Validate::factoryByString($this->data['input_validate']); // ids for iso widget could be marked - prepended by x, y or z
+//      moved to IsoWidget
+//        if ( (substr($validator_string,0,2)=='id') AND (substr($this->data['input_show_func'],0,3)=='iso') ) {
+//            $validator_string = 'markedid';
+//        }
 
         // AA_Property($id='', $name='', $type='text', $multi=false, $persistent=true, $validator=null, $required=false, $input_help='', $input_morehlp='', $example='', $show_content_type_switch=0, $content_type_switch_default=FLAG_HTML, $perms=null, $default=null, $translations=null) {
         return new AA_Property(
@@ -369,7 +371,7 @@ class AA_Field implements ArrayAccess {
             $this->getProperty('in_item_tbl') ? AA::Metabase()->getFieldType('item',$this->getProperty('in_item_tbl')) : ($this->getProperty('text_stored') ? 'text' : 'int'),
             $widget_properties['multiple'] ?? $this->isMultiple(),
             false,                   // persistent @todo
-            AA_Validate::factoryByString($validator_string), // null,
+            $validator, // null,
             isset($widget_properties['required']) ? (bool)$widget_properties['required'] : $this->required(),
             $widget_properties['input_help'] ?? $this->getProperty('input_help'),
             $widget_properties['input_morehlp'] ?? $this->getProperty('input_morehlp'),

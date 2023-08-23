@@ -21,6 +21,7 @@ use AA_Object;
 use AA_Property;
 use AA_Set;
 use AA_Slice;
+use AA_Validate;
 use AA_Value;
 use Exception;
 use zids;
@@ -809,4 +810,13 @@ class Widget extends AA_Object implements NamedInterface {
         }
         return $ret;
     }
+
+    /** In most cases returns the Validator from the field definition string. In some cases (like Tag or ISO) it returns upgraded validator (should allow) more than IDs in both cases
+     * @param string $validator_string
+     * @return AA_Validate|null
+     */
+    public function getUpgradedValidator(string $validator_string): ?AA_Validate {
+        return AA_Validate::factoryByString($validator_string);
+    }
+
 }

@@ -8,6 +8,8 @@
 
 namespace AA\Widget;
 
+use AA_Validate;
+
 /** Related Item Window widget */
 class IsoWidget extends MchWidget
 {
@@ -43,5 +45,16 @@ class IsoWidget extends MchWidget
      */
     public static function description(): string {
         return ''; // TODO: Implement description() method.
+    }
+
+    /** In most cases returns the Validator from the field definition string. In some cases (like Tag or ISO) it returns upgraded validator (should allow) more than IDs in both cases
+     * @param string $validator_string
+     * @return AA_Validate|null
+     */
+    public function getUpgradedValidator(string $validator_string): ?AA_Validate {
+        if ( (substr($validator_string,0,2)=='id') ) {
+            $validator_string = 'markedid';  // we should allow marked ids
+        }
+        return AA_Validate::factoryByString($validator_string);
     }
 }

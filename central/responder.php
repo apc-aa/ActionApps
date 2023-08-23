@@ -219,7 +219,7 @@ class AA_Responder_Get_Widget extends AA_Responder {
         $field = $slice->getField($this->field_id);
         $widget_html = $field ? $field->getWidgetAjaxHtml($iid, null, null, $this->widget_type, json2asoc($this->widget_properties)) : '';
 
-        // @todo for WidgetTag the CSS is loaded this way, but the select2.js do not work by this way. Check it.
+        // @todo for TagWidget the CSS is loaded this way, but the select2.js do not work by this way. Check it.
         if ($widget_script = AA::Stringexpander()->getRequireScript()) {
             $widget_html = "$widget_html<script>$widget_script</script>";
         }

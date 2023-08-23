@@ -8,6 +8,7 @@
 
 namespace AA\Widget;
 use AA\FormArray;
+use AA_Validate;
 use AA_Value;
 use zids;
 
@@ -142,14 +143,14 @@ class TagWidget extends Widget
 
     }
 
-    /** @return AA_Value for the data send by the widget
-     *   We use it, because we want to remove all the empty values
-     *
-     *   The data submitted by form usually looks like
-     *       aa[n1_54343ea876898b6754e3578a8cc544e6][switch__________][tag][]=bc9032bb4bd0751086ccc773a36ab936|||5893020f01ddaeedecc02588109daf8d|||test
-     * @param $data4field - ['tag'=>['0'=>values separated by |||]]
+    /** @param $data4field - ['tag'=>['0'=>values separated by |||]]
      *   This method coverts such data to AA_Value.
      *
+     * @return AA_Value for the data send by the widget
+     *
+     *   The data submitted by form usually looks like
+     *       aa[n1_54343ea876898b6754e3578a8cc544e6][switch__________][tag][]=bc9032bb4bd0751086ccc773a36ab936
+     *       aa[n1_54343ea876898b6754e3578a8cc544e6][switch__________][tag][]=test
      */
     public static function getWidgetValue(array $data4field): AA_Value
     {
@@ -158,13 +159,9 @@ class TagWidget extends Widget
         $fld_value_arr = [];
 
         foreach ((array)$data4field as $key => $value) {
-            if (ctype_digit((string)$key) AND strlen($value)) {
-                $vals = explode("|||", $value);
-                foreach ($vals as $v) {
-                    if (strlen(trim($v))) {
-                        $fld_value_arr[] = ['value' => 't' . $v, 'flag' => $flag];
-                    }
-                }
+            $value = trim($value);
+            if (strlen($value) AND ctype_digit((string)$key)) {
+                $fld_value_arr[] = ['value' => (is_long_id($value) ? '':'t') .$value, 'flag' => $flag];
             }
         }
         return new AA_Value($fld_value_arr, $flag);
@@ -175,5 +172,16 @@ class TagWidget extends Widget
      */
     public static function description(): string {
         return ''; // TODO: Implement description() method.
+    }
+
+    /** In most cases returns the Validator from the field definition string. In some cases (like Tag or ISO) it returns upgraded validator (should allow) more than IDs in both cases
+     * @param string $validator_string
+     * @return AA_Validate|null
+     */
+    public function getUpgradedValidator(string $validator_string): ?AA_Validate {
+        if ( (substr($validator_string,0,2)=='id') AND ((int)$this->getProperty('disable_new', 0) != 1)) {
+            $validator_string = 'text';  // we should allow adding new text here
+        }
+        return AA_Validate::factoryByString($validator_string);
     }
 }
