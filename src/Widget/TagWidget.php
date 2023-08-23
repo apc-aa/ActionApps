@@ -108,7 +108,12 @@ class TagWidget extends Widget
 
         $max_values = (int)$this->getProperty('max_values', 0); // Limit the number of values entered. If 0 or empty, the number is unlimitted
 
-        $multiple = ($max_values == 1) ? '' : ' multiple';
+        if (($max_values == 1) AND $required) {
+            $multiple   = '';
+            $max_values = 0;  // if I do not null it, the select2 widget will not allow to change the value
+        } else {
+            $multiple = ' multiple';
+        }
 
         // send empty string always - used for send value, even if the select is empty, so we know, the widget is in use
         $widget =  "<input type=hidden name=\"$input_name\" value=\"\">";

@@ -1135,7 +1135,7 @@ function HtmlPageBegin($js_lib=false, $lang=null) {
     AA::sendHeaders($headers);
     echo
 '<!DOCTYPE html>
-<html>
+<html lang="'.Langs::getLangName2Code($lang).'">
   <head>
     <link rel="SHORTCUT ICON" href="'. AA_INSTAL_PATH .'images/favicon.ico">
     <link rel="stylesheet" href="'.(AA_INSTAL_PATH .ADMIN_CSS).'?v='.AA_JS_VERSION.'">

@@ -817,6 +817,7 @@ function aa_maketags(id, slice_id, field_id, max_values ) {
         templateResult: function (d) { return $("<span>"+d.text+"</span>"); },
         templateSelection: function (d) { return $("<span>"+d.text+"</span>"); },
         createTag: function (params) { return undefined; },
+        language: AA_GetConf('lang'),
         selectOnClose: true,
         ajax: { url: responder,
             dataType: 'json',
@@ -838,7 +839,7 @@ function aa_maketags(id, slice_id, field_id, max_values ) {
             }
         }
     }
-    if (max_values > 1) {
+    if (max_values > 0) {
         conf.maximumSelectionLength =  max_values;
     }
     $('#'+id).select2( conf );

@@ -108,6 +108,7 @@ class Langs {
     /** translate displayed lang name to standardized language code - cz -> cs
      */
     public static function getLangName2Code($lang) {
+        $lang = substr($lang, 0, 2);
         $LANGS = ['cz' => 'cs'];
         return $LANGS[$lang] ?: $lang;
     }
