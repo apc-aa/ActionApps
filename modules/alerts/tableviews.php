@@ -291,9 +291,9 @@ function FindAlertsUserPermissions() {
     }
 
     $db = getDB();
-    $db->query("SELECT userid
-        FROM alerts_user_collection
-        WHERE collectionid='$collectionid' AND $where");
+    $db->query("SELECT `userid`
+        FROM `alerts_user_collection`
+        WHERE `collectionid`='$collectionid' AND $where");
     $retval = [];
     while ($db->next_record()) {
         $retval[] = $db->f("userid");

@@ -104,7 +104,7 @@ function add_fields_2_slice($collectionid, $slice_id) {
     ]);
 
     // find filters to fill into the Filters constant group
-    $filters = DB_AA::select(['fid'=>'description'], 'SELECT CONCAT("f",alerts_filter.id) AS fid, alerts_filter.description FROM alerts_filter, alerts_collection_filter', [
+    $filters = DB_AA::select(['fid'=>'description'], "SELECT CONCAT('f',alerts_filter.id) AS fid, alerts_filter.description FROM alerts_filter, alerts_collection_filter", [
         ['alerts_filter.id','alerts_collection_filter.filterid','j'],
         ['alerts_collection_filter.collectionid',$collectionid]
     ], ['alerts_collection_filter.myindex']);
