@@ -78,7 +78,6 @@ function ChangeRole($UsrAdd, $UsrDel, $slice_id, $editor_perms, $role) {
 function PrintAddableUser($usr, $usr_id, $editor_role, $new_usr=true) {
     // $usr_id is DN in LDAP
     $username = perm_username($usr_id);
-    $usr_id   = rawurlencode($usr_id);
 
     echo "<tr><td>". $usr['name'] ."</td>\n";
     echo "<td>$username</td>\n";
