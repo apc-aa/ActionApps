@@ -48,8 +48,10 @@ try {
     // $srchbr_*  - reads directly from $_GET and $_POST
     // array ( 'items' => 1, )
     $type = InputVars::stringGET('type'); // alpha
+
+    $items = InputVars::arrayPOST('items');
+
     $cancel = InputVars::boolPOST('cancel');
-    
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {}
 
@@ -108,7 +110,8 @@ $manager_settings = [
          'format'               => $format,
          'fields'               => $slice->getFields()->getRecordArray(),
          'aliases'              => new AA_Aliases(new AA_Aliasgenerator_Slice($module_id)),
-         'get_content_funct'    => 'GetItemContent'
+         'get_content_funct'    => 'GetItemContent',
+         'query_funct'          => 'QueryZidsSet'
      ]
 ];
 
