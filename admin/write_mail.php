@@ -180,7 +180,7 @@ if ( !$send ) {               // for the first time - directly from item manager
             $zids = getZidsFromGroupSelect($group, $items, $searchbar);
             // following functionality could be extend by adding third
             // parameter $recipient (for testing e-mail)
-            $mails_sent  = AA_Mail::sendToReader($mail_id, $zids);
+            $mails_sent  = AA_Mail::sendToReader($mail_id, $zids, AA::$module_id);
             $users_count = $zids->count();
         }
         $Msg = MsgOk(_m("Email successfully sent (Users: %1, Emails sent (valid e-mails...): %2, template id: %3)", [$users_count, $mails_sent, $mail_id]));

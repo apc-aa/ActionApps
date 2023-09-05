@@ -168,7 +168,8 @@ $manager_settings = [
          'format'               => $slice->get_format_strings(),   // optionally to manager_vid you can set format array
          'fields'               => $slice->getFields()->getRecordArray(),
          'aliases'              => new AA_Aliases(new AA_Aliasgenerator_Slice($module_id)),
-         'get_content_funct'    => 'GetItemContent'
+         'get_content_funct'    => 'GetItemContent',
+         'query_funct'          => 'QueryZidsSet'
      ],
      'actions'     => $actions,
      'switches'    => $switches,

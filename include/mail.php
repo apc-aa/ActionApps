@@ -295,18 +295,18 @@ class AA_Mail extends htmlMimeMail implements \AA\Later\LaterInterface {
      * @param $zids
      * @return
      */
-    static function sendToReader($mail_id, $zids) {
+    static function sendToReader($mail_id, $zids, $slice_id) {
         $chunks = array_chunk($zids->longids(),50);  // plan 50 mails in one shot
         if (count($chunks)==1) {
             // less than 50 mails - schedule right now
-            $mail_scheduler = new AA_Mail_Scheduler($mail_id,$chunks[0]);
+            $mail_scheduler = new AA_Mail_Scheduler($mail_id,$chunks[0], $slice_id);
             $mail_scheduler->schedule();  // right now
         } else {
             // more than 50 - plan scheduling
             // there was problems with more than 1000 mails - it wasn't possible to plan it in one shot
             $toexecute  = new Toexecute;
             foreach ($chunks as $chunk) {
-                $mail_scheduler = new AA_Mail_Scheduler($mail_id, $chunk);
+                $mail_scheduler = new AA_Mail_Scheduler($mail_id, $chunk, $slice_id);
                 $toexecute->later($mail_scheduler, [], "AA_Mail_Scheduler:$mail_id", 105);      // a bit higher priority than mail sending
             }
         }
@@ -321,10 +321,12 @@ class AA_Mail extends htmlMimeMail implements \AA\Later\LaterInterface {
 class AA_Mail_Scheduler implements \AA\Later\LaterInterface {
     protected $mail_id;
     protected $reader_ids;
+    protected $slice_id;
 
-    function __construct($mail_id, $reader_ids) {
+    function __construct($mail_id, $reader_ids, $slice_id) {
         $this->mail_id    = $mail_id;
         $this->reader_ids = $reader_ids;
+        $this->slice_id   = $slice_id;
     }
 
     /** this will be written to AA_Log after toexecute. No other purpose */
@@ -333,6 +335,9 @@ class AA_Mail_Scheduler implements \AA\Later\LaterInterface {
     }
 
     function schedule() {
+        // Allow to use current slice data without slice_pwd
+        AA_Credentials::singleton()->loadFromSlice($this->slice_id);
+
         $mail_count = 0;
         if ($this->mail_id AND count($this->reader_ids)) {
             foreach ( $this->reader_ids as $id ) {
