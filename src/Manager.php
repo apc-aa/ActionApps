@@ -139,7 +139,7 @@ class Managed {
     public function getItemview(zids $zids, $module_id, $listlen): itemview {
 
         $format_strings = $this->settings['itemview']['format'];
-        $aliases        = is_object($this->settings['itemview']['aliases']) ? $this->settings['itemview']['aliases']->getArray() : $this->settings['itemview']['aliases'];
+        $aliases        = is_object($this->settings['itemview']['aliases']) ? $this->settings['itemview']['aliases']->getArray() : ( is_array($this->settings['itemview']['aliases']) ? $this->settings['itemview']['aliases'] : []);
 
         // modify $format_strings and $aliases (passed by reference)
         $colspan = 100;
@@ -697,7 +697,7 @@ class Manager extends AA_Storable {
      */
     public function getPostedItems(): zids {
         if (!is_array($_POST['chb']) AND ($_POST['aa_akce_all']=='1')) {
-            $this->getZids();
+            return $this->getZids();
         }
         return (new zids())->setFromItemArr($_POST['chb'] ?? $_GET['chb'] ?? []);
     }
@@ -735,7 +735,6 @@ class Manager extends AA_Storable {
 
         /** @var zids $item_zids */
         $item_zids = $this->getPostedItems(); // in some managers we use 'x' before the item id - remove it
-
 
         // new approach uses AA\Manageractions
         if ($akce AND is_object($this->actions)) {
