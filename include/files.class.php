@@ -85,13 +85,13 @@ class Files {
 
     /** genereateUnusedFilename function
      *  checks, if the file is not exist and in case it exist, it finds similar
-     *  file name which do not exists. If modificator specified, then it is
+     *  file name which does not exist. If modificator specified, then it is
      *  added to fileneme (like '_thumb')
      * @param $file_name
      * @param $modificator
      * @return string
      */
-    static function generateUnusedFilename($file_name, $modificator='') {
+    static function generateUnusedFilename($file_name, $modificator=''): string {
         $path_parts = pathinfo($file_name);
 
         // we have to process dot (extension do not contain it)
@@ -156,11 +156,11 @@ class Files {
     static function uploadFile($filevarname, $dest_dir, $type='', $replacemethod='new', $filename=null) {
         $up_file = is_array($filevarname) ? $filevarname : $_FILES[$filevarname];
 
-        $dest_file = Files::makeFile($dest_dir, Files::escape($filename ?: basename($up_file['name'])));
-        if ($dest_file === false) {
+        if (!$dest_dir) {
             Files::lastErr(FILE_ERROR_NO_DESTINATION, _m('No destination file specified'));  // set error code
             return false;
         }
+        $dest_file = Files::makeFile($dest_dir, Files::escape($filename ?: basename($up_file['name'])));
 
         // look if the uploaded file exists
         if (!is_uploaded_file($up_file['tmp_name'])) {
@@ -405,31 +405,17 @@ class Files {
         return $deleted;
     }
 
-    /** fixPath function
-     * Append a / to the path if required.
+    /**  Append a / to the path if required.
      * @param string $path the path
      * @return string path with trailing /
      */
-    static function fixPath($path) {
-        //append a slash to the path if it doesn't exists.
+    static function fixPath($path): string {
+        $path = (string)$path;
+        //append a slash to the path if it doesn't exist.
         if (!(substr($path,-1) == '/')) {
             $path .= '/';
         }
         return $path;
-    }
-
-    /** makePath function
-     * Concat two paths together. Basically $pathA+$pathB
-     * @param string $pathA path one
-     * @param string $pathB path two
-     * @return string a trailing slash combinded path.
-     */
-    function makePath($pathA, $pathB) {
-        $pathA = Files::fixPath($pathA);
-        if (substr($pathB,0,1)=='/') {
-            $pathB = substr($pathB,1);
-        }
-        return Files::fixPath($pathA.$pathB);
     }
 
     /** makeFile function
@@ -439,7 +425,7 @@ class Files {
      * @param string $pathB the ending path with file
      * @return string combined file path.
      */
-    static function makeFile($pathA, $pathB) {
+    static function makeFile($pathA, $pathB): string {
         $pathA = Files::fixPath($pathA);
         if (substr($pathB,0,1)=='/') {
             $pathB = substr($pathB,1);
