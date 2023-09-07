@@ -58,6 +58,7 @@ class TagWidget extends Widget
     {
         $def_field_id = $aa_property->getId();
         $def_slice_id = $content->getOwnerId();
+        $def_item_id  = $content->getId() ?: '';
 
     //    $disable_new = (int)$this->getProperty('disable_new', 0);
     //
@@ -139,7 +140,7 @@ class TagWidget extends Widget
 
               // when called by Ajax, the requireLibs() in called in responder is not enough for some reason
               // maybe we can change it to async / await / Promises 
-              AA_LoadJs( jQuery.fn.select2, function() {aa_maketags('$input_id', '$def_slice_id', '$def_field_id', $max_values);}, '".\AA_Requires::getUrl4Lib('select2@4')."');
+              AA_LoadJs( jQuery.fn.select2, function() {aa_maketags('$input_id', '$def_slice_id', '$def_field_id', $max_values, '$def_item_id');}, '".\AA_Requires::getUrl4Lib('select2@4')."');
             </script>";
 
 

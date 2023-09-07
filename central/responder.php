@@ -302,15 +302,17 @@ class AA_Responder_Get_Fields extends AA_Responder {
 /** return html selectbox of fields in given slice */
 class AA_Responder_Tags extends AA_Responder {
     /** array of module types to get */
-    var $slice_id;
-    var $input;
-    var $field_id;
+    protected $slice_id;
+    protected $input;
+    protected $field_id;
+    protected $item_id;  // not filled for new item
 
     function  __construct($param=null) {
         // the slice id and the field id defines the field, where the widget is DEFINED
         $this->slice_id = $param['s'];
         $this->field_id = $param['f'];
         $this->input    = $param['q'];
+        $this->item_id  = $param['i'] ?: null;
     }
 
     function isPerm() { return true; }
@@ -322,8 +324,8 @@ class AA_Responder_Tags extends AA_Responder {
         $found  = false;
         if ($field AND $trimed) {
             $widget = $field->getWidget();
-            $opts   = $widget->getFormattedOptions(null, false, $this->input);
-            $i=6;
+            $opts   = $widget->getFormattedOptions($this->item_id, false, $this->input);
+            $i=100;
             foreach ($opts as $id => $text) {
                 if (trim($text)==trim($this->input)) {
                     // to the front
