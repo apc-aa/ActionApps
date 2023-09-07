@@ -151,6 +151,7 @@ function get_aamenus() {
 
             "header5"       => ["cond"=>$slice && IfSlPerm(PS_EDIT), 'label'=>_m("Misc"), 'ico'=>'ico-misc.png'],
             "history"       => ["cond"=>IfSlPerm(PS_HISTORY),    "href"=>"admin/se_history.php",              "label"=>_m("History")],
+            "statistics"    => ["cond"=>IfSlPerm(PS_EDIT_ALL_ITEMS), "href"=>"admin/se_statistics.php",       "label"=>_m("Statistics")],
             "field_ids"     => ["cond"=>IfSlPerm(PS_FIELDS),     "href"=>"admin/se_fieldid.php",               "label"=>_m("Change field IDs")],
             "javascript"    => ["cond"=>IfSlPerm(PS_FIELDS),     "href"=>"admin/se_javascript.php",            "label"=>_m("Field Triggers")],
             "fileman"       => ["cond"=>FilemanPerms(AA::$module_id), "href"=>"admin/fileman.php",                "label"=>_m("File Manager")],
