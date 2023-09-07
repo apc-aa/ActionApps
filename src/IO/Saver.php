@@ -300,7 +300,7 @@ class Saver implements AA\Later\LaterInterface {
         $err_array    = [];
         $item = new \AA_Item($content4id);
         foreach ($this->validate as $test) {
-            $validate_str = trim(AA::Stringexpander()->unalias($test, '', $item));
+            $validate_str = trim(AA::Un($test, '', $item));
             $array        = preg_split("/\R/", $validate_str);
             foreach ($array as $row) {
                 $row = trim($row);
@@ -315,6 +315,11 @@ class Saver implements AA\Later\LaterInterface {
     /** Returns array of long new saved ids */
     function newIds() {
         return $this->_new_ids;
+    }
+
+    /** Returns array of long updated ids */
+    function updatedIds() {
+        return $this->_updated_ids;
     }
 
     function changedIds() {

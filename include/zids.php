@@ -81,7 +81,7 @@ class zids implements Iterator, ArrayAccess, Countable {
      */
     function __construct($initial = null, $inittype = "z", $extended_att = []){  // constructor
         // $inittype is for where type is known
-        // Note it refers to the type of ELEMENTS if its an array
+        // Note it refers to the type of ELEMENTS if it is an array
         $this->type = $inittype;
         $this->a    = [];  // Make sure at least empty array
         $this->_ext = is_array($extended_att) ? $extended_att : [];
@@ -574,7 +574,7 @@ function is_long_id($id): bool   { return ((strlen($id)==32) AND ctype_xdigit($i
 function is_packed_id($id): bool { return (strlen($id)==16); }
 
 /** used instead of explode ('-'... which returns [0 => ''] for empty string and not empty string
- *  @return string[] - array of non empty ids
+ *  @return string[] - array of non-empty ids
  *  @param  string   - dash-separated-ids
  */
 function explode_ids($ids_string): array {

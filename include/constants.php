@@ -1066,7 +1066,7 @@ const FEEDMAP_FLAG_RSS    = 5;
 const DISCUS_HTML_FORMAT          = 1;  // discussion html format flag in slice table
 const DISCUS_ADD_DISABLED         = 2;  // disbles filldisc adding on new comments
 const SLICE_ALLOW_EXPIRED_CONTENT = 4;  // when we reference expired item, the content could be shown on public pages
-const SLICE_ALLOW_PENDING_CONTENT = 8;  // pending items, when referenced, will be wisible - this allows you also to see preview of pending item
+const SLICE_ALLOW_PENDING_CONTENT = 8;  // pending items, when referenced, will be visible - this allows you also to see preview of pending item
 
 // used in add slice wizard
 const NOT_EMAIL_WELCOME = -1;

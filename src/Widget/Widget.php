@@ -115,15 +115,15 @@ class Widget extends AA_Object implements NamedInterface {
     }
 
 
-    /** returns array(ids => formated text) for the current widget based on
+    /** returns array(ids => formatted text) for the current widget based on
      *  the widget settings
-     * @param $content        AA_Content
+     * @param $for_id         string - long item id
      * @param $restrict_zids  zids[]
      * @param $searchterm
      * @param $ignore_filters bool
      * @return array
      */
-    public function getFormattedOptions($content = null, $restrict_zids = false, $searchterm = '', $ignore_filters = false) {
+    public function getFormattedOptions($for_id = null, $restrict_zids = false, $searchterm = '', $ignore_filters = false) {
 
         $values_array = $this->getProperty('const_arr');  // is associative!
         if (!empty($values_array)) {          // values assigned directly
@@ -149,16 +149,14 @@ class Widget extends AA_Object implements NamedInterface {
         // AA::$debug&2 && AA::$dbg->log($filter_conds);
         // if variable is for some item, then we can use _#ALIASES_ in conds
         // and sort
-        $for_id = '';
-        if (is_object($content)) {
-            $for_id = $content->getId();
+        if (is_long_id($for_id)) {
             // is the conds contain aliases, unalias it - Just for speedup for the cases the unaliasing is not needed
             $check = " $filter_conds $filter_conds_rw $sort_by";
             if (strpos($check, '{') or strpos($check, '_#')) {
                 $item = AA_Items::getItem(new zids($for_id));
-                $filter_conds    = AA::Stringexpander()->unalias($filter_conds,'',$item);
-                $filter_conds_rw = AA::Stringexpander()->unalias($filter_conds_rw,'',$item);
-                $sort_by         = AA::Stringexpander()->unalias($sort_by,'',$item);
+                $filter_conds    = AA::Un($filter_conds,'',$item);
+                $filter_conds_rw = AA::Un($filter_conds_rw,'',$item);
+                $sort_by         = AA::Un($sort_by,'',$item);
             }
         }
 
@@ -258,7 +256,9 @@ class Widget extends AA_Object implements NamedInterface {
             // not filled, yet - so fill it
             // Fills array used for list selection. Fill it from constant group or slice.
             // function is rewritten fill_const_arr().
-            $this->_const_arr = $this->getFormattedOptions($content);  // Initialize
+
+            $item_id = is_object($content) ? $content->getId() : null;
+            $this->_const_arr = $this->getFormattedOptions($item_id);  // Initialize
         }
 
         foreach ($this->_const_arr as $k => $v) {

@@ -91,6 +91,7 @@ https://www.apc.org/
 
 
 use AA\Util\Hitcounter;
+use AA\Util\InputVars;
 
 function add2sort(&$sort, $sarr) {
     if (isset($sort) AND is_array($sort)) {
@@ -117,6 +118,10 @@ foreach ($_REQUEST as $k => $v) {
     $$k = AddslashesDeep($v);
 }
 // ----- input variables normalization - end ----------------------------------
+
+try {
+    $encap = InputVars::stringGETPOST('encap');
+} catch (Exception $e) {}
 
 
 $encap = ( ($encap=="false") ? false : true );
@@ -338,7 +343,7 @@ if ( $sh_itm OR $x OR $o OR $seo ) {
         Hitcounter::hit($zid, 0);
     }
     elseif ( $seo ) {
-        $zid = new zids(explode_ids(StrExpand('AA_Stringexpand_Seo2ids', [$slice_id, $seo])), 'l');
+        $zid = new zids(explode_ids(StrExp('seo2ids', [$slice_id, $seo])), 'l');
         Hitcounter::hit($zid, 0);
     }
     elseif ( $o ) {
@@ -589,7 +594,7 @@ if ($zids->count() > 0) {
 } else {
     // test if the noitem_msg is filled (be careful - "0" should be considered as filled)
     echo (isset($slice_info['noitem_msg']) AND (strlen($slice_info['noitem_msg']) > 0)) ?               // <!--Vacuum--> is keyword for removing 'no item message'
-          str_replace( '<!--Vacuum-->', '', AA::Stringexpander()->unalias($slice_info['noitem_msg'])) : ("<div>"._m("No item found") ."</div>");
+          str_replace( '<!--Vacuum-->', '', AA::Un($slice_info['noitem_msg'])) : ("<div>"._m("No item found") ."</div>");
 }
 
 if ($searchlog) {

@@ -687,7 +687,7 @@ function Event_ItemInserted_Efekt( $type, $slice_id, $slice_type, $ret_params, $
     $ekis_id  = $ret_params->getValue('relation.......1');              // item's short_id is in params
 
 
-    $email1   = trim(AA::Stringexpander()->unalias('{item:'.$ekis_id.':_#EKISMAIL}'));
+    $email1   = trim(AA::Un('{item:'.$ekis_id.':_#EKISMAIL}'));
 
     $item     = AA_Items::getItem(new zids($short_id, 's'));
 

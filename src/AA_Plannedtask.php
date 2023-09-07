@@ -175,20 +175,20 @@ class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedI
         $ret = $this->aa_name;
         AA::$slice_id = $this->getOwnerId();
         if (is_long_id($this->item_id)) {
-            AA::Stringexpander()->unalias('{define:aa_event_for:' . $this->item_id . '}');
+            AA::Un('{define:aa_event_for:' . $this->item_id . '}');
         }
         $condition = trim($this->condition);
-        $condition_res = strlen($condition) ? trim(AA::Stringexpander()->unalias($condition)) : '1';
+        $condition_res = strlen($condition) ? trim(AA::Un($condition)) : '1';
         if (!strlen($condition_res) or ((string)$condition_res === '0')) {
             $ret .= ":Cond not met - $condition ($condition_res)";
         } else {
             if (is_long_id($this->item_id)) {
-                $ret .= ':=' . AA::Stringexpander()->unalias($this->task, '', AA_Items::getItem(new zids($this->item_id, 'l')));
+                $ret .= ':=' . AA::Un($this->task, '', AA_Items::getItem(new zids($this->item_id, 'l')));
             } else {
-                $ret .= ':=' . AA::Stringexpander()->unalias($this->task);
+                $ret .= ':=' . AA::Un($this->task);
             }
         }
-        AA_Log::write('TOEXECUTE', get_class($this) . ':' . $this->getId(), 'end' . ":$ret:");
+        AA_Log::write('TOEXECUTE', get_class($this) . ':' . $this->getId(), 'end' . ":$ret:S".AA::$slice_id);
         return $ret;
     }
 

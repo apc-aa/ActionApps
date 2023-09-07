@@ -115,7 +115,7 @@ class AA_Mail extends htmlMimeMail implements \AA\Later\LaterInterface {
         }
         // unalias all the template fields including errors_to ...
         foreach ( $record as $key => $value) {
-            $record[$key] = AA::Stringexpander()->unalias($value, "", $item);
+            $record[$key] = AA::Un($value, "", $item);
         }
         $record["lang"] = Langs::getCharset($record["lang"]);
         return $this->setFromArray($record);
@@ -303,7 +303,7 @@ class AA_Mail extends htmlMimeMail implements \AA\Later\LaterInterface {
             $mail_scheduler->schedule();  // right now
         } else {
             // more than 50 - plan scheduling
-            // there was problems with more than 1000 mails - it wasn't possible to plan it in one shot
+            // there were problems with more than 1000 mails - it wasn't possible to plan it in one shot
             $toexecute  = new Toexecute;
             foreach ($chunks as $chunk) {
                 $mail_scheduler = new AA_Mail_Scheduler($mail_id, $chunk, $slice_id);
@@ -314,8 +314,8 @@ class AA_Mail extends htmlMimeMail implements \AA\Later\LaterInterface {
     }
 };
 
-/** Helsp split email generation into chunks - 50 mails each task
- *  there was problems with more than 1000 mails - it wasn't possible to plan it in one shot
+/** Helps split email generation into chunks - 50 mails each task
+ *  there were problems with more than 1000 mails - it wasn't possible to plan it in one shot
  *  @see AA_Mail::sendToReader();
  */
 class AA_Mail_Scheduler implements \AA\Later\LaterInterface {

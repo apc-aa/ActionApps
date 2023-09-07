@@ -29,7 +29,21 @@ https://www.apc.org/
 
 // polyfills - will be removed when the incompatible browsers will not be supported by its creator
 if (window.NodeList && !NodeList.prototype.forEach) {
-  NodeList.prototype.forEach = Array.prototype.forEach;
+    NodeList.prototype.forEach = Array.prototype.forEach;
+}
+
+/** shortcut to parent.querySelector() */
+const AA_$ = (sel, el = document) => el.querySelector(sel);
+/** shortcut to parent.querySelectorAll() */
+const AA_$$ = (sel, el = document) => Array.from(el.querySelectorAll(sel));
+
+/** replaces jQuery $xx.load(url) - used as AA_Load(xx,url) */
+function AA_Load(sel, url) {
+    fetch(url)
+        .then(response => response.text())
+        .then(html => {
+            AA_$(sel).innerHTML = html;
+        });
 }
 
 if (typeof window.AA_GetConf === 'undefined') {
@@ -47,6 +61,16 @@ if (typeof window.AA_GetConf === 'undefined') {
                 return document.documentElement.lang.substring(0,2);
         }
     }
+}
+
+function jqescape(s) {
+    // escape all special characters (like [])
+    return s.replace(/([^a-zA-Z0-9_-])/g, '\\$1')
+}
+
+function jqid(s) {
+    // escape all special characters (like [])
+    return '#' + jqescape(s);
 }
 
 // switch current item in gallery
@@ -330,16 +354,6 @@ function DisplayInputBack(input_id) {
     $(valdiv).html( $(valdiv).attr('data-aa-oldval') );
     // $(valdiv).attr('data-aa-edited', '2');      // no longer needed  state 2- we use stopPropagation() in widget Ajax
     $(valdiv).attr('data-aa-edited', '0');
-}
-
-function jqescape(s) {
-    // escape all special characters (like [])
-    return s.replace(/([^a-zA-Z0-9_-])/g, '\\$1')
-}
-
-function jqid(s) {
-    // escape all special characters (like [])
-    return '#' + jqescape(s);
 }
 
 /** This function replaces the older one - proposeChange
@@ -811,7 +825,7 @@ function AA_NewId() {
     return uuid.join('');
 }
 
-function aa_maketags(id, slice_id, field_id, max_values ) {
+function aa_maketags(id, slice_id, field_id, max_values, item_id ) {
     var responder = AA_GetConf('path') + 'central/responder.php';
     var conf = {
         templateResult: function (d) { return $("<span>"+d.text+"</span>"); },
@@ -829,11 +843,12 @@ function aa_maketags(id, slice_id, field_id, max_values ) {
                     q: params.term,     //search term
                     p: params.page,     // page number
                     s: slice_id, // slice_id
-                    f: field_id  // field_id
-                };
+                    f: field_id, // field_id
+                    i: item_id   // item_id (if possible)
+                 };
             },
             processResults: function (data, params) {
-                params.page = params.page || 1; // whether or not there are more results available
+                params.page = params.page || 1; // whether there are more results available
                 // notice we return the value of more so Select2 knows if more results can be loaded
                 return {results: data, pagination: {more: (params.page * 10) < data.count_filtered} }
             }

@@ -62,8 +62,8 @@ class PohodaOrdersResult extends AA\IO\Grabber\AbstractGrabber {
 
 
         //$zids     = new zids($response_att['id'], 's');
-        $item_id = AA::Stringexpander()->unalias('{item:' . $response_att['id'] . ':_#ITEM_ID_}');
-        $poznamka = AA::Stringexpander()->unalias('{item:' . $response_att['id'] . ':source.........2}');
+        $item_id = AA::Un('{item:' . $response_att['id'] . ':_#ITEM_ID_}');
+        $poznamka = AA::Un('{item:' . $response_att['id'] . ':source.........2}');
 
         $item = new ItemContent();
         $item->setItemID($item_id);

@@ -103,10 +103,10 @@ class PageCache  {
     /** get function
      *  Returns cached information or false
      * @param $key
-     * @param $action
+     * @param string $action
      * @return bool
      */
-    function get($key, $action='get') {
+    function get($key, string $action='get') {
         AA::$debug&2 && AA::$dbg->log("Pagecache->get(key):$key", 'Pagecache action:'.$action);
 
         if ( ENABLE_PAGE_CACHE ) {
@@ -114,7 +114,7 @@ class PageCache  {
                 $this->invalidateById( $key );
                 AA::$debug&2 && AA::$dbg->log("Pagecache: return false - invlaidating");
                 return false;
-            } elseif ( (string)$action == '1' ) {  // nocache=1
+            } elseif ( $action == '1' ) {  // nocache=1
                 AA::$debug&2 && AA::$dbg->log("Pagecache: return false - nocache");
                 return false;
             }
@@ -138,12 +138,13 @@ class PageCache  {
      * @return bool|mixed
      */
     function cacheDb($function, $params, $str2find, $action='get') {
+        $action = (string)$action;
         $key = get_hash($function, $params);
         if ( $res = $this->get($key, $action) ) {
             return unserialize($res);  // it is setrialized for storing in the database
         }
         $res = call_user_func_array($function, (array)$params);
-        if (!ctype_digit((string)$action)) {  // nocache is not
+        if (!ctype_digit($action)) {  // nocache is not
             $this->store($key, serialize($res), $str2find);
         }
         return $res;
@@ -247,6 +248,7 @@ class PageCache  {
     }
 
     function getPage($key, $action='get') {
+        $action = (string)$action;
         $entry = $this->get($key, $action);
         AA::$debug&2 && AA::$dbg->log("Pagecache->getPage(output): ".($entry ? 'cached text' : 'not found'), 'Pagecache action:'.$action);
         return $entry ? unserialize($entry) : false;

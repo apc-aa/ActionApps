@@ -33,11 +33,11 @@
 // set timezone - just for date() speedup
 // date_default_timezone_set(date_default_timezone_get());
 
-// supress PHP notices
 use AA\Cache\PageCache;
 use AA\IO\DB\DB_AA;
 use AA\Util\Langs;
 
+// supress PHP notices
 error_reporting(error_reporting() & ~(E_WARNING | E_NOTICE | E_DEPRECATED | E_STRICT));
 
 // if AA used in proxy mode, we need to correct some internal variables
@@ -186,6 +186,7 @@ class AA_Debug {
     protected $_starttime;
     protected $_duration   = [];
     protected $_tracestack = [];
+    /** @var array [<level>, <function>, <fnc_param>, <fnc_param_len>, <time_start>, <time_end>, <output>, <output_len>] */
     protected $_calls      = [];
     protected $_repeated   = [];
 
@@ -292,9 +293,29 @@ class AA_Debug {
 
         echo '<br><table><tr><th>time</th><th>duration</th><th>function</th><th>in</th><th>out</th></tr>';
         foreach($this->_calls as $call) {
-           echo '<tr><td>'.(1000*($call[4]-$_SERVER['REQUEST_TIME_FLOAT'])).'</td><td>'.(1000*($call[5]-$call[4])).'</td><td>'.str_repeat('.&nbsp;',$call[0]).safe($call[1]).'</td><td>'.safe($call[2]).( ($call[3]>200 AND !AA::$debug&128) ? '..+'.($call[3]-200) :'' ).'</td><td>'.safe($call[6]).($call[7]>20? '..+'.($call[7]-20) :'' ).'</td></tr>';
+            $style = $call[0]>0 ? ' style="display: none;"' : '';
+           echo '<tr class=l'.str_repeat('_',$call[0]). $style.'><td>'.(1000*($call[4]-$_SERVER['REQUEST_TIME_FLOAT'])).'</td><td>'.(1000*($call[5]-$call[4])).'</td><td class="aa-dbgtoggle">'.str_repeat('.&nbsp;',$call[0]).safe($call[1]).'<button onclick="AA_DbgToggleRows(this)">-</button></td><td>'.safe($call[2]).( ($call[3]>200 AND !AA::$debug&128) ? '..+'.($call[3]-200) :'' ).'</td><td>'.safe($call[6]).($call[7]>20? '..+'.($call[7]-20) :'' ).'</td></tr>';
         }
         echo '</table>';
+
+        echo <<<EOF
+              <style> 
+                td.aa-dbgtoggle { display: flex; justify-content: space-between; }
+              </style>
+              <script>
+                function AA_DbgToggleRows(button) {
+                    let isVisible = (button.textContent === '-');
+                    let nextRows = button.parentNode.parentNode.nextElementSibling;
+                    while (nextRows && nextRows.className.startsWith(button.closest('tr').getAttribute('class')+'_')) {
+                        nextRows.style.display = isVisible ? 'none' : '';
+                        nextRows = nextRows.nextElementSibling;
+                    }
+                    button.textContent = isVisible ? '+' : '-';
+                }
+                // document.querySelectorAll("tr[class^='l_'] button").forEach(function(el) { el.click(); });
+              </script>
+EOF;
+
         AA::Contentcache()->duration_stat();
     }
 
@@ -380,11 +401,18 @@ class AA {
     }
 
 
-    /** @usage AA::Stringexpander()->unalias();
+    /** @usage AA::Un();
      *  @return  AA_Stringexpander
      */
     static function Stringexpander() {
         return AA::$stringexpander ?: (AA::$stringexpander = new AA_Stringexpander());
+    }
+
+    /** shortcut for AA::Un()
+     *  @usage AA::Un($text);
+     */
+    static function Un($text, $remove='', $item=null, $dequote=true, $itemview=null ): string  {
+        return AA::Stringexpander()->unalias($text, $remove, $item, $dequote, $itemview);
     }
 
     /** @usage AA::Contentcache()->set();
@@ -437,7 +465,8 @@ $spareDBs     = [];
 function getDB() {
     global $spareDBs;
     if (!($db = array_pop($spareDBs))) {
-        $db = new DB_AA(['type' => DB_TYPE, 'host' => DB_HOST, 'database' => DB_NAME, 'user' => DB_USER, 'password' => DB_PASSWORD]);
+        // $type = ($_GET['mysqli']==1) ? DB_TYPE : 'db_pdo';
+        // $db = new DB_AA(['type' => $type, 'host' => DB_HOST, 'database' => DB_NAME, 'user' => DB_USER, 'password' => DB_PASSWORD]);
     }
     return $db;
 }

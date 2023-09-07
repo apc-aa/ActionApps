@@ -68,11 +68,13 @@ class AA_Module {
      *   $name = AA_Module_Site::getModuleName($module_id)
      *   $name = AA_Slice::getModuleName($module_id)
      * @param $module_id
-     * @return bool|mixed|string
      */
-    static public function getModuleName($module_id) {
+    static public function getModuleName($module_id, bool $link=false): string {
         $module = static::getModule($module_id);
-        return $module ? $module->getName() : '';
+        if ($module) {
+            return $link ? a_href(static::getModuleUrl($module_id),$module->getName()) : $module->getName();
+        }
+        return '';
     }
 
     /** Module switch url
@@ -290,8 +292,8 @@ class AA_Module {
         return $this->module_id; // Return a 32 character id
     }
 
-    function getName() {
-        $name = $this->_getModuleTableProperty('name');
+    function getName(): string {
+        $name = (string)$this->_getModuleTableProperty('name');
         return $this->deleted() ? "&times;&times;&times; $name &times;&times;&times;" : $name;
     }
 
@@ -820,7 +822,7 @@ class AA_Module_Site extends AA_Module {
         $spots =  DB_AA::select(['spot_id'=> []], 'SELECT spot_id, content, flag from site_spot', [['site_id', $module_id, 'l'], ['spot_id', $spot_ids, 'i']]);
 
         foreach ( $spot_ids as $v ) {
-            $out .= ($spots[$v]['flag'] & AA_Module_Site::FLAG_JUST_TEXT) ? $spots[$v]['content'] : AA::Stringexpander()->unalias($spots[$v]['content'], '', $item);
+            $out .= ($spots[$v]['flag'] & AA_Module_Site::FLAG_JUST_TEXT) ? $spots[$v]['content'] : AA::Un($spots[$v]['content'], '', $item);
         }
         return $out;
     }
@@ -920,7 +922,7 @@ class AA_Module_Site extends AA_Module {
     public function getRouter() {
         if ($this->_getSpecificTableProperty('flag') == 1) {    // 1 - Use AA_Router_Seo
             // home can contain some logic like: {ifin:{server:SERVER_NAME}:czechweb.cz:/cz/home:/en/home}
-            $home       = AA::Stringexpander()->unalias(trim($this->_getSpecificTableProperty('state_file'))) ?: '/' .substr($this->_getModuleTableProperty('lang_file'),0,2). '/';
+            $home       = AA::Un(trim($this->_getSpecificTableProperty('state_file'))) ?: '/' .substr($this->_getModuleTableProperty('lang_file'),0,2). '/';
             return AA_Router::singleton('AA_Router_Seo', $this->getRelatedSlices(), $home, $this->_getModuleObjectProperty('web_languages'));
         }
         return null;

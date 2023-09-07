@@ -90,7 +90,7 @@ class MngWidget extends Widget
         $mng_edit_code   = $this->getProperty('row_edit', '');  // we left it to defaults for {manager}
         //$mng_field=null, $mng_item_id=null, $mng_code=null, $mng_conds=null, $mng_sort=null, $mng_mode=null, $mng_edit_code=null)
 
-        $widget .= \AA::Stringexpander()->unalias("{manager:$mng_slice:$mng_field:$input_value:$mng_code:$mng_conds:$mng_sort:$mng_mode:$mng_edit_code}");
+        $widget .= \AA::Un("{manager:$mng_slice:$mng_field:$input_value:$mng_code:$mng_conds:$mng_sort:$mng_mode:$mng_edit_code}");
         return ['html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired()];
     }
 }

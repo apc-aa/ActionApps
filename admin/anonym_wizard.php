@@ -118,7 +118,7 @@ function GetAnonymousForm($slice, $s_fields, $show, $ok_url, $err_url, $use_show
     $ret .= $additional. "\n";
     $ret .= $form->getFormJavascript($jstriggers);
     $ret .= "\n    <table class=\"aa-table\">\n";
-    $ret .=  AA::Stringexpander()->postprocess(AA::Stringexpander()->unalias($form_code)); // to replace  {generate:HEAD} with dynamic javascripts needed by inputform
+    $ret .=  AA::Stringexpander()->postprocess(AA::Un($form_code)); // to replace  {generate:HEAD} with dynamic javascripts needed by inputform
 
     $ret .= '
       <tr class="aa-tbl-header">

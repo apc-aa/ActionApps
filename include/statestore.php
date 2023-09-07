@@ -122,14 +122,13 @@ abstract class AA_Serializable {
      * @param string $class_mask
      * @return string
      */
-    static function constructClassName($name, $class_mask=null) {
-        $name = ucwords(strtolower(str_replace('-', '', $name)));    // str_replace probably for validator e-mail, but maybe not necessary
+    static function constructClassName($name, $class_mask=null): string {
+        $name       = ucwords(strtolower(str_replace('-', '', $name)));    // str_replace probably for validator e-mail, but maybe not necessary
         $class_mask = rtrim($class_mask,'_') ?: get_called_class();
         if (($pos=strrpos($class_mask, '\\')) !== false) {
             return substr_replace($class_mask, "\\$name", $pos, 1);
-        } else {
-            return $class_mask . '_' . ucwords(strtolower(str_replace('-', '', $name)));   // str_replace probably for validator e-mail, but maybe not necessary
         }
+        return $class_mask . '_' . $name;
     }
 
     /** parseClassProperties function

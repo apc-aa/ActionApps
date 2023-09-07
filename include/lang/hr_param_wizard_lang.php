@@ -1808,8 +1808,8 @@ $_m["Add http prefix"]
  = "Dodaje http prefiks";
 
 // include/constants_param_wizard.php, row 1142
-$_m["Adds 'http://' prefix to the field if not beginning with 'http://' and not empty."]
- = "Dodaje 'http://' prefiks polu ako ne po�inje sa 'http://' i nije prazno.";
+$_m["Adds 'https://' prefix to the field if not beginning with 'https://' and not empty."]
+ = "Dodaje 'https://' prefiks polu ako ne po�inje sa 'https://' i nije prazno.";
 
 // include/constants_param_wizard.php, row 1146
 $_m["Store parameter"]
@@ -1832,7 +1832,7 @@ $_m["string to add"]
  = "";
 
 // include/constants_param_wizard.php, row 1157
-$_m["this parameter will be added to the string before conversion (the reason is to aviod empty strings and also in order we do not generate always the same id for common strings (in different imports). If this param is not specified, slice_id is used istead."]
+$_m["this parameter will be added to the string before conversion (the reason is to avoid empty strings and also in order we do not generate always the same id for common strings (in different imports). If this param is not specified, slice_id is used istead."]
  = "";
 
 // include/constants_param_wizard.php, row 1163

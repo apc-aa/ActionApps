@@ -578,7 +578,7 @@ class AA_Router_Seo extends AA_Router {
     //         if (is_null($_seoslices)) {
     //             $_seoslices = join('-',$this->_getSeoSlices());
     //         }
-    //         $this->_seocache[$seo_string] = substr(StrExpand('AA_Stringexpand_Seo2ids', array($_seoslices, $seo_string)),0,32);
+    //         $this->_seocache[$seo_string] = substr(StrExp('seo2ids', [$_seoslices, $seo_string]),0,32);
     //     }
     //     return $this->_seocache[$seo_string];
     // }
@@ -591,7 +591,7 @@ class AA_Router_Seo extends AA_Router {
         // Q: Is the cache needed, when AA_Stringexpand_Seo2ids is already cached? Honza 2015-07-16
         // A: Yes - based on measures it seams to be much quicker. Honza 2015-07-16
         if (!isset($this->_seocache[$seo_string])) {
-            $this->_seocache[$seo_string] = substr(StrExpand('AA_Stringexpand_Seo2ids', [join('-',$this->slices), $seo_string]),0,32);
+            $this->_seocache[$seo_string] = substr(StrExp('seo2ids', [join('-',$this->slices), $seo_string]),0,32);
         }
         return $this->_seocache[$seo_string];
     }
@@ -637,7 +637,7 @@ class AA_Stringexpand_Xid extends AA_Stringexpand_Nevercache {
         if (empty($param) OR ctype_digit((string)$param) OR ($param=='path') OR ($param=='list') OR is_long_id($param)) {
             return $router->xid($param, $url);
         } else {
-            return AA::Stringexpander()->unalias('{item:'.$router->xid().':'.$param.'}');
+            return AA::Un('{item:'.$router->xid().':'.$param.'}');
         }
     }
 }

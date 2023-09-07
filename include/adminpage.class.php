@@ -166,7 +166,7 @@ class AA_Adminpageutil {
         return $ret. '</div></div>{generate:FOOT}</body></html>';
     }
 
-    public function printHead($err, $Msg)
+    public function printHead($err=[], $Msg='')
     {
         AA::setEncoding(Langs::getCharset());
         $this->sendHeaders();
@@ -191,7 +191,7 @@ class AA_Adminpageutil {
         // $out        = $form->getObjectEditHtml();
         // $out        = AA::Stringexpander()->postprocess($out); // to replace  {generate:HEAD} with dynamic javascripts needed by inputform
 
-        $html_start = AA::Stringexpander()->unalias($html_start);
+        $html_start = AA::Un($html_start);
         $html_start = AA::Stringexpander()->postprocess($html_start);
 
         echo $html_start;
@@ -239,7 +239,7 @@ class AA_Adminpageutil {
             $html = ($helpbox['packed']) ? "<details class='aa-helpbox'><summary>".$helpbox['name']."</summary>$tab</details>" : $tab;
             if ($html) {
                 // not necessary to unalias - help text for aliases was executed
-                // $html = AA::Stringexpander()->unalias($html);
+                // $html = AA::Un($html);
                 // $html = AA::Stringexpander()->postprocess($html);
                 echo '<br>'.$html;
             }
@@ -249,7 +249,7 @@ class AA_Adminpageutil {
     public function printFoot() {
         $this->printHelpbox();
         $html_end = $this->getPageEnd();
-        $html_end = AA::Stringexpander()->unalias($html_end);
+        $html_end = AA::Un($html_end);
         $html_end = AA::Stringexpander()->postprocess($html_end);
         echo $html_end;
         page_close();

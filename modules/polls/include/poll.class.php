@@ -213,7 +213,7 @@ class AA_Poll {
      */
     static function generateSet($pid,$conds=null,$sort=null) {
         $set = new AA_Set;
-        $set->addCondition(new AA_Condition('module_id',   '==', q_pack_id($pid)));
+        $set->addCondition(new AA_Condition('module_id',   '==', xpack_id($pid)));
         // there is also one poll which acts as template - managed from Polls Admin
         // (and not from the Polls Manager page) - it has status_code=0,
         // so it is filtered out automatically

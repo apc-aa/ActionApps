@@ -282,8 +282,7 @@ class AA_Mysqlauth {
      */
     function select($auth_field_group) {
         return "
-        SELECT publish_date, expiry_date, status_code, `groups`.text AS groups,
-               username.text AS username, password.text AS password
+        SELECT `publish_date`, `expiry_date`, `status_code`, `groups`.text AS groups, username.text AS username, password.text AS password
         FROM item, content AS groups, content AS username, content AS password
         WHERE groups.item_id = item.id
           AND groups.field_id = '".$auth_field_group."'

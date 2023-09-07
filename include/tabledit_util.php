@@ -202,7 +202,7 @@ function SetColumnTypes(&$columns, &$primary_aliases, $default_table, $join="", 
             if ($primary && $primary[$table]) {
                 $is_primary = in_array($col["name"], $primary[$table]);
             } else {
-                $is_primary = (strpos($col["flags"], "primary_key")!==false);
+                $is_primary = ($col["key"] == "PRI");
             }
             if ($is_primary || $is_join_part) {
                 // create the column if not exists

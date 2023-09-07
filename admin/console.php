@@ -51,18 +51,15 @@ $apage = new AA_Adminpageutil('aaadmin','console');
 $apage->setTitle(_m("ActionApps Console"));
 $apage->addRequire($script2run, 'AA_Req_Load');
 $apage->addRequire('codemirror@5');
-$apage->printHead($err, $Msg);
+$apage->printHead();
 
-$form_buttons = [
-    "update",
-    "cancel" => ["url"=>"se_fields.php"],
-];
+$form_buttons = ["show" => ["type"=>"submit", "value"=>_m("Show")]];
 
 // ------------------------------------------------------------------------------------------
 FrmTabCaption(_m('Console'));
 FrmTextarea('code', _m('Code'),$code);
 if (strlen($code)) {
-    FrmStaticText(_m('Result'), '<pre><code>'. safe(AA::Stringexpander()->unalias($code)).'</code></pre>','','',false);
+    FrmStaticText(_m('Result'), '<pre><code>'. safe(AA::Un($code)).'</code></pre>','','',false);
 }
 FrmTabEnd($form_buttons);
 

@@ -306,8 +306,12 @@ class AA_Content implements Iterator, ArrayAccess, Countable {
     protected $id_field     = 'aa_id';
     protected $owner_field  = 'aa_owner';
 
-    function unalias($text) {
-        return AA::Stringexpander()->unalias($text);
+    /** unalias the text using content of this AA_Content/ItemContent and possibly aliases of the slice */
+    function unalias($text): string {
+        // we count with the fact, that if $this is ItemContent, then alias {headline} is not considered as field,
+        // but for AA_Content it could be (if headline is the key in content arr)
+        $item = GetItemFromContent($this);
+        return is_null($item) ? '' : $item->unalias($text);
     }
 
     /**
@@ -332,7 +336,7 @@ class AA_Content implements Iterator, ArrayAccess, Countable {
      * @param $field_id string
      * @param $value AA_Value
      */
-    function setAaValue($field_id, $value) {
+    function setAaValue($field_id, $value): self {
         if (is_object($value)) {
             // we expect AA_Value object here
             $this->content[$field_id] = $value->getArray();
@@ -341,14 +345,27 @@ class AA_Content implements Iterator, ArrayAccess, Countable {
     }
 
     /** set object id based on id_field setting for this content */
-    function setId($id) {
+    function setId($id): self {
         $this->setAaValue($this->id_field, new AA_Value( $id ));
         return $this;
     }
 
     /** set object id based on id_field setting for this content */
-    function setOwnerId($id) {
+    function setOwnerId($id): self {
         $this->setAaValue($this->owner_field, new AA_Value( $id ));
+        return $this;
+    }
+
+    /** setFromCSVArray function
+     *  Set the content with CSV data
+     * @param $csvRec     []
+     * @param $fieldNames []
+     */
+    function setFromCSVArray($csvRec, $fieldNames): self {
+        $i = 0;
+        foreach ($fieldNames as $k => $foo) {
+            $this->content[$k][0]['value'] = $csvRec[$i++];
+        }
         return $this;
     }
 
@@ -462,8 +479,9 @@ class AA_Content implements Iterator, ArrayAccess, Countable {
      * @param string $val
      * @param int    $idx
      */
-    function setValue($field_id, $val, $idx=0) {
+    function setValue($field_id, $val, $idx=0): self {
         $this->content[$field_id][$idx]['value'] = $val;
+        return $this;
     }
 
     private function _getDefaultLangNum() {
@@ -938,20 +956,8 @@ class ItemContent extends AA_Content {
 
     /*------------------------ */
 
-    /** setFromCSVArray function
-     *  Set the content with CSV data
-     * @param $csvRec[]
-     * @param $fieldNames[]
-     */
-    function setFromCSVArray($csvRec, $fieldNames) {
-        $i = 0;
-        foreach ($fieldNames as $k => $foo) {
-            $this->content[$k][0]['value'] = $csvRec[$i++];
-        }
-    }
-
     /**
-     * @param string $type  present|visible|all   validate just PRESENT fields in ItemContent (for update), The fiels VISIBLE (dislayed on inputform), ALL fields in the slice
+     * @param string $type  present|visible|all   validate just PRESENT fields in ItemContent (for update), The fields VISIBLE (displayed on inputform), ALL fields in the slice
      * @return array of non valid fields like: ['text............'=>[410,'Not filled']]
      */
     function validateReport($type='present') {
@@ -1257,8 +1263,8 @@ class ItemContent extends AA_Content {
                 break;
             case 'insert':
                 // reset hit counter fields for new items
-                $hitfieds = array_filter($fields->getPriorityArray(), function($fid) { return (substr($fid, 0, 4) == 'hit_' ); });
-                foreach ($hitfieds as $fid ) {
+                $hitfields = array_filter($fields->getPriorityArray(), function($fid) { return (substr($fid, 0, 4) == 'hit_' ); });
+                foreach ($hitfields as $fid ) {
                     $this->setValue($fid, 0);
                 }
 
@@ -1369,7 +1375,7 @@ class ItemContent extends AA_Content {
         if ($historylog !== '0') {
             AA_Log::write(($mode == 'insert') ? 'ITEM_NEW' : 'ITEM_UPD', AA_Log::context($id), $function_params);
         }
-        // events are after ChangeMonitor - sometimes we use {chenged:} in the events
+        // events are after ChangeMonitor - sometimes we use {changed:} in the events
         if ($throw_events) {
             if ($mode == 'insert') {
                 AA_Plannedtask::executeForEvent($slice_id, 'ITEM_NEW', $id);
@@ -1386,10 +1392,10 @@ class ItemContent extends AA_Content {
     /** updateComputedFields function
      * @param AA_Fields|null $fields
      * @param string         $mode
-     * @param array          $restict_fields
+     * @param array          $restrict_fields
      * @return bool
      */
-    function updateComputedFields(?AA_Fields $fields = null, string $mode = 'update', array $restict_fields = []): bool {
+    function updateComputedFields(?AA_Fields $fields = null, string $mode = 'update', array $restrict_fields = []): bool {
 
         if (!($id = $this->getItemID()) OR $this->isEmpty()) {  // the recomputed item is already deleted, probably
             return false;
@@ -1411,7 +1417,7 @@ class ItemContent extends AA_Content {
 
         foreach ($fields as $fid => $field) {
 
-            if ( count($restict_fields) AND !in_array($fid, $restict_fields)) {
+            if ( count($restrict_fields) AND !in_array($fid, $restrict_fields)) {
                 // we can restrict the recomputed fields in {recompute}
                 // so - skip not recomputed fields
                 continue;
@@ -1512,12 +1518,6 @@ class ItemContent extends AA_Content {
         AA::Pagecache()->invalidateFor($slice_id);
     }
 
-    /** unalias the text using content of this itemcontent and aliases of the slice */
-    function unalias($text) {
-        $item = GetItemFromContent($this);
-        return is_null($item) ? '' : $item->unalias($text);
-    }
-
     ///** _clean_updated_fields function
     // *  delete content of all fields, which are in new content array
     // *  (this means - all not redefined fields are unchanged)
@@ -1598,41 +1598,19 @@ class ItemContent extends AA_Content {
 
             $inserter = AA_Inserter::factoryByField($fld);
 
-            if ( !is_a($inserter,'AA_Inserter_Nul')) {
-                // update content table or fill item_varset
-                $parameters = [];
-                $thumbnails = [];    // probably for preventing infinite loop ? HM
+            // file upload needs the $fields array, because it stores some other fields as thumbnails
+            $parameters = is_a($inserter,'AA_Inserter_Fil') ? ["fields" => $aa_fields, "context" => $context] : [];
 
-                foreach ($cont as $numkey => $v) {
+            // update content table or fill item_varset
+            foreach ($cont as $numkey => $v) {
 
-                    $numkey = (int)$numkey;
-                    // file upload needs the $fields array, because it stores
-                    // some other fields as thumbnails
+                $parameters['order'] = (int)$numkey;
+                $inserter->execute($field_writer, $id, $v, $parameters);
 
-                    if ( is_a($inserter,'AA_Inserter_Fil')) {
-                        //Note $thumbnails is undefined the first time in this loop
-                        if ($thumbnails) {
-                            foreach ($thumbnails as $v_stop) {
-                                if ($v_stop == $fid) {
-                                    $stop = true;
-                                }
-                            }
-                        }
-
-                        if (!$stop) {
-                            $parameters["order"]   = $numkey;
-                            $parameters["fields"]  = $aa_fields;
-                            $parameters["context"] = $context;
-                            $thumbnails = $inserter->execute($field_writer, $id, $v, $parameters);
-                        }
-                    } else {
-                        $inserter->execute($field_writer, $id, $v, ['order'=>$numkey]);
-                    }
-                    // do not store multiple values if field is not marked as multiple
-                    // ERRORNOUS
-                    //if( !$f["multiple"]!=1 )
-                        //continue;
-                }
+                // do not store multiple values if field is not marked as multiple
+                // ERRORNOUS
+                //if( !$f["multiple"]!=1 )
+                    //continue;
             }
         }
         return $field_writer->getItemVarset();
@@ -1640,12 +1618,12 @@ class ItemContent extends AA_Content {
 
     /** transform function
      * Transform $itemContent according to the transformation actions $trans_actions and slice fields $slice_fields
-     * @param $itemContent
-     * @param Actions $trans_actions
-     * @param $slice_fields
-     * @return
+     * @param AA_Content $itemContent
+     * @param Actions     $trans_actions
+     * @param             $slice_fields
+     * @return string|null     err or empty string
      */
-    function transform(&$itemContent, $trans_actions, $slice_fields) {
+    function transform( AA_Content $itemContent, Actions $trans_actions, $slice_fields): ?string {
         return $trans_actions->transform($itemContent, $slice_fields, $this);
     }
 

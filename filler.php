@@ -211,7 +211,7 @@ function SendOkPage($txt, $new_ids = []) {
         }
         if (false !== strpos($_REQUEST["ok_url"], '_#')) {
             $item = AA_Item::getItem(new zids(reset($new_ids), 'l'));
-            $_REQUEST["ok_url"] = AA::Stringexpander()->unalias($_REQUEST["ok_url"], '', $item);
+            $_REQUEST["ok_url"] = AA::Un($_REQUEST["ok_url"], '', $item);
         }
     }
     if ($_REQUEST["inline"]) {
@@ -237,7 +237,7 @@ function SendOkPage($txt, $new_ids = []) {
             } else {
                 foreach ($new_ids as $long_id) {
                     $item = AA_Item::getItem(new zids($long_id, 'l'));
-                    $text = AA::Stringexpander()->unalias($retcode, '', $item);
+                    $text = AA::Un($retcode, '', $item);
                     if ($text and $item) {
                         $slice = AA_Slice::getModule($item->getSliceID());
                         if (!empty($slice)) {

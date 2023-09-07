@@ -47,9 +47,6 @@ require_once __DIR__ . "/validate.php";
 // IsUserNameFree() function definition here
 require_once __DIR__."/perm_" . PERM_LIB . ".php";
 
-const AA_WIDTHTOR       = '<option value="wIdThTor"> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </option>';
-const AA_WIDTHTOR_SHORT = '<option value="wIdThTor">&nbsp;</option>';
-
 // Deprecated GYR tagged ids - it adds letter before item id in related item, which is not practical for joined tables, ...
     // Easy to redefine this functionality by changing the array below
     // prefix is what goes in the selection box in "Edit Item",
@@ -149,7 +146,7 @@ class inputform {
      */
     function dryEvaluate($content4id, $slice, $edit) {
         $form = $this->getForm($content4id, $slice, $edit);
-        $out  = AA::Stringexpander()->unalias($form, '', GetItemFromContent($content4id));
+        $out  = AA::Un($form, '', GetItemFromContent($content4id));
         return  AA::Stringexpander()->postprocess($out); // to replace  {generate:HEAD} with dynamic javascripts needed by inputform
     }
 
@@ -243,16 +240,16 @@ class inputform {
         AA::Stringexpander()->addRequire("if (sessionStorage.getItem('aa_pgtop')>0) { window.scrollTo(0,sessionStorage.getItem('aa_pgtop')); sessionStorage.setItem('aa_pgtop', 0); }", 'AA_Req_Load');
 
         // print the inputform
-        $out        = AA::Stringexpander()->unalias($form, $remove_string, GetItemFromContent($content4id));
+        $out        = AA::Un($form, $remove_string, GetItemFromContent($content4id));
         $out        = AA::Stringexpander()->postprocess($out); // to replace  {generate:HEAD} with dynamic javascripts needed by inputform
 
         $form_parts      = $GLOBALS['g_formpart'];        // must be here - right after unalias
         $form_part_names = $GLOBALS['g_formpart_names'];  // must be here - right after unalias
         $form_part_pos   = $GLOBALS['g_formpart_pos'];    // must be here - right after unalias
 
-        $html_start = AA::Stringexpander()->unalias($html_start);
+        $html_start = AA::Un($html_start);
         $html_start = AA::Stringexpander()->postprocess($html_start);
-        $html_end   = AA::Stringexpander()->unalias($html_end);
+        $html_end   = AA::Un($html_end);
         $html_end   = AA::Stringexpander()->postprocess($html_end);
 
         echo $html_start;
@@ -631,7 +628,7 @@ class AA_Inputfield {
         $this->input_morehlp = $field_arr['input_morehlp'];
 
         //$funct = ParamExplode($field["input_show_func"]);
-        //$this->input_type    = AA::Stringexpander()->unalias($funct[0]);
+        //$this->input_type    = AA::Un($funct[0]);
         $funct = array_values(Widget::parseClassProperties($field_arr["input_show_func"]));
         $this->input_type    = substr(strtolower($funct[0]),-9,3);    // grab from AA\Widget\FldWidget
         $this->param         = array_slice( $funct, 1 );
@@ -1887,9 +1884,9 @@ class AA_Inputfield {
             $this->echovar($widget->getOnlyHtml($aa_property, $content));
         }
 //        if (is_null($item)) {
-//            $this->echovar(AA::Stringexpander()->unalias('{inputonly:'.$slice_id.':'.$this->id.'}'));
+//            $this->echovar(AA::Un('{inputonly:'.$slice_id.':'.$this->id.'}'));
 //        } else {
-//            $this->echovar(AA::Stringexpander()->unalias('{edit:'.$item->getId().':'.$this->id.'}','',$item));
+//            $this->echovar(AA::Un('{edit:'.$item->getId().':'.$this->id.'}','',$item));
 //        }
         $this->echoo($widget->stdFormEnd($aa_property));
     }

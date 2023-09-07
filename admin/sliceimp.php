@@ -98,7 +98,7 @@ function proove_ID($slice) {
 
     $slice_id = q_pack_id($slice["id"]);
     //echo "$slice_id";
-    $SQL = "SELECT `id` FROM `slice` WHERE `id`=\"$slice_id\"";
+    $SQL = "SELECT `id` FROM `slice` WHERE `id`= '$slice_id'";
 
     global $db;
     $db->query($SQL);
@@ -141,7 +141,7 @@ function proove_data_ID($data_id) {
 //		echo "Warning: ". _m("Slice_ID (%1) has wrong length (%2, should be 32)", $slice["id"], strlen($slice["id"]));
 //	}
     $old_data_id = addslashes(pack_id($data_id));
-    $SQL         = "SELECT * FROM item WHERE id=\"$old_data_id\"";
+    $SQL         = "SELECT * FROM item WHERE id='$old_data_id'";
     global $db;
     $db->query($SQL);
     if ($db->next_record()) {

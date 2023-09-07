@@ -1847,8 +1847,8 @@ $_m["Add http prefix"]
  = "A�ade el prefijo http";
 
 // include/constants_param_wizard.php, row 1142
-$_m["Adds 'http://' prefix to the field if not beginning with 'http://' and not empty."]
- = "A�ade el prefijo 'http://' al campo que no comienza con 'http://' y no es vac�o.";
+$_m["Adds 'https://' prefix to the field if not beginning with 'https://' and not empty."]
+ = "A�ade el prefijo 'https://' al campo que no comienza con 'https://' y no es vac�o.";
 
 // include/constants_param_wizard.php, row 1146
 $_m["Store parameter"]
@@ -1871,7 +1871,7 @@ $_m["string to add"]
  = "cadena a a�adir";
 
 // include/constants_param_wizard.php, row 1157
-$_m["this parameter will be added to the string before conversion (the reason is to aviod empty strings and also in order we do not generate always the same id for common strings (in different imports). If this param is not specified, slice_id is used istead."]
+$_m["this parameter will be added to the string before conversion (the reason is to avoid empty strings and also in order we do not generate always the same id for common strings (in different imports). If this param is not specified, slice_id is used istead."]
  = "Este par�metro ser� a�adido a la cadena antes de la conversi�n (la razon es para abolir cadenas vacias y tambi�n para no generar siempre el mismo id para cadenas similares (desde diferentes importaciones). Si este par�metro no se especifica, el identificador del canal slice_id ser� utilizado.";
 
 // include/constants_param_wizard.php, row 1163

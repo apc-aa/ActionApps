@@ -210,7 +210,7 @@ function GetFormattedItems($zids, $format, $crypted_additional_slice_pwd=null, $
 
     $items = AA_Items::getItems($zids, $crypted_additional_slice_pwd);
     foreach($items as $long_id=>$item) {
-        $ret[$long_id] = AA::Stringexpander()->unalias($format, '', $item);
+        $ret[$long_id] = AA::Un($format, '', $item);
     }
 
     if (!(isset($tagprefix) AND ($zids->onetype() == 't'))) {
@@ -289,7 +289,7 @@ function GetFormatedConstants($constgroup, $format, $restrict_zids, $conds, $sor
  * @param $content  ItemContent|AA_Content object
  * @return AA_Item
  */
-function GetItemFromContent($content) {
+function GetItemFromContent($content): ?AA_Item {
     if ( !is_object($content) ) {
         return null;
     }
@@ -807,7 +807,7 @@ class AA_Item {
      * @return string
      */
     function unalias( $text, $remove="" ): string {
-        return AA::Stringexpander()->unalias($text, $remove, $this);
+        return AA::Un($text, $remove, $this);
     }
 
     /** subst_alias function
@@ -987,7 +987,7 @@ class AA_Item {
         if ( !in_array($ptype, ['width', 'height', 'imgtype', 'mime', 'html', 'htmlb']) ) {
             $ptype = 'hw';
         }
-        return StrExpand('AA_Stringexpand_Img', [$this->getval($col), '', $ptype]);
+        return StrExp('img', [$this->getval($col), '', $ptype]);
     }
 
     /** f_n function
@@ -1057,7 +1057,7 @@ class AA_Item {
         }
 
         if ($pparagraph) {
-            $shorted_text = StrExpand('AA_Stringexpand_Shorten', [get_if($value, $pfield), $plength]);
+            $shorted_text = StrExp('shorten', [get_if($value, $pfield), $plength]);
         } else {
             $shorted_text = substr($value, 0, $plength);
         }
@@ -1371,7 +1371,7 @@ class AA_Item {
             case "csv":
                 return $this->f_t($col,":".$p[0]);
             case "slice_info":
-                return StrExpand('AA_Stringexpand_Modulefield', [get_if($this->getSliceID(),$GLOBALS['slice_id']), $col]);
+                return StrExp('modulefield', [get_if($this->getSliceID(),$GLOBALS['slice_id']), $col]);
             case "link_edit":
                 return (($p[1]=='anonym') ?
                 get_aa_url('modules/links/linkedit.php?free=anonym&freepwd=anonym&lid='. $this->getval('id')) :
@@ -1666,7 +1666,7 @@ class AA_Item {
      * @return string
      */
     function f_z($col, $param=""): string {
-        return StrExpand('AA_Stringexpand_Fileinfo', [$this->getval($col),$param]);
+        return StrExp('fileinfo', [$this->getval($col),$param]);
     }
 
     /** l_b function
@@ -1903,7 +1903,7 @@ class AA_Items {
 
     /** getItemProperty function
      * @param $item_zid
-     * @param $field
+     * @param             $field
      * @return AA_Value|null
      */
     static function getItemProperty($item_zid, $field) {

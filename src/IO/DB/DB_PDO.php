@@ -4,11 +4,13 @@ namespace AA\IO\DB;
 
 use PDO;
 use PDOException;
+use PDOStatement;
 
 class DB_PDO extends AbstractDB {
 
     /* public: connection parameters */
     var $Host = "";
+    var $Port     = "";
     var $Database = "";
     var $User = "";
     var $Password = "";
@@ -18,9 +20,9 @@ class DB_PDO extends AbstractDB {
     /* public: configuration parameters */
     var $Auto_Free = 0;     ## Set to 1 for automatic mysqli_free_result()
     var $Debug = 0;     ## Set to 1 for debugging messages.
-    var $Seq_Table = "db_sequence";
 
     /* public: result array and current row number */
+    var $Record   = [];
     var $Row;
 
     /* public: current error number and error text */
@@ -31,7 +33,14 @@ class DB_PDO extends AbstractDB {
     var $revision = "1.0";
 
     /* private: link and query handles */
+    /**
+     * @var int|PDO
+     */
     var $dbh = 0;
+
+    /**
+     * @var int|PDOStatement
+     */
     var $sth = 0;
 
     function escape_string($str) {
@@ -45,14 +54,10 @@ class DB_PDO extends AbstractDB {
         return $this->dbh->quote($str);
     }
 
-    function quote_identifier($str) {
-        $arr = explode(".", $str);
-        return '"' . implode('"."', $arr) . '"';
-    }
-
-    function qi($str) {
-        $arr = explode(".", $str);
-        return '"' . implode('"."', $arr) . '"';
+    /** Quotes table name or column name */
+    function quote_identifier(string $str): string {
+        $char = ($this->Server == 'mysql') ? '`' : '"';   // in original was used just '"' character (which is SQL standard and could be OK)
+        return $char. join("$char.$char", explode(".", $str)) . $char;
     }
 
     /**
@@ -64,6 +69,7 @@ class DB_PDO extends AbstractDB {
         $this->Host     = $connection['host'] ?? '';
         $this->User     = $connection['user'] ?? '';
         $this->Password = $connection['password'] ?? '';
+        $this->Port     = $connection['port'] ?? '';
     }
 
     function beginTransaction() {
@@ -89,16 +95,49 @@ class DB_PDO extends AbstractDB {
         return $this->dbh->rollback();
     }
 
-    function lastInsertId() {
+    function execute($param=array()) {
+        if (!$this->connect()) {
+            return 0;
+        };
+        if (!is_array($param)) {
+            $param = func_get_args();
+        }
+        if (!count(array_filter(array_keys($param), 'is_string'))) { // this is NOT an associative array, so we cannot bindValue or bindParams
+            if (!$status = $this->sth->execute($param)) {
+                if ($this->Debug) {
+                    var_dump($param);
+                }
+                $this->halt(array_search(null,$param)?"Null Parameter":"Cannot Execute");
+            }
+        } else {
+            foreach ($param as $key => &$val) {
+                if ($val === null) {
+                    $this->sth->bindValue($key, $val, PDO::PARAM_NULL);
+                } else if ($val === "''") {
+                    $this->sth->bindValue($key, $val, PDO::PARAM_STR);
+                } else {
+                    $this->sth->bindParam($key, $val);
+                }
+            }
+            if (!$status = $this->sth->execute()) {
+                $this->halt(array_search(null, $param) ? "Null Parameter" : "Cannot Execute");
+            }
+        }
+        $this->getErrorInfo();
+        return $status;
+    }
+
+    function last_insert_id() {
         return $this->dbh->lastInsertId();
     }
 
     /* public: connection management */
     function connect() {
         $Database = $this->Database;
-        $Host = $this->Host;
-        $User = $this->User;
+        $Host     = $this->Host;
+        $User     = $this->User;
         $Password = $this->Password;
+        $Port     = $this->Port;
 
         /* establish connection, select database */
         if (!$this->dbh) {
@@ -119,25 +158,23 @@ class DB_PDO extends AbstractDB {
                         #       	$this->dbh = new PDO("$this->Server:host=$Host;dbname=$Database;port=5432", $User, $Password);
                         break;
                     default:
+                        $Port = $Port ? ";port=$Port" : '';
                         if ($this->Debug) {
-                            echo "Connecting to $Host as $User<br>\n";
+                            echo "Connecting to $Host$Port as $User<br>\n";
                         }
-                        $this->dbh = new PDO("$this->Server:host=$Host;dbname=$Database;charset=$this->charset", $User, $Password);
+                        $this->dbh = new PDO("$this->Server:host=$Host$Port;dbname=$Database;charset=$this->charset", $User, $Password);
                 }
             } catch (PDOException $e) {
                 $this->halt($e->getMessage());
             }
             if (!$this->dbh) {
-                $this->halt("connect($Host, $User, \$Password) failed.");
+                $this->halt("connect($Host$Port, $User, \$Password) failed.");
                 return 0;
             }
 
             switch ($this->Server) {
                 case "mysql":
                     $this->dbh->query("SET SESSION sql_mode='ANSI'");
-                    if (phpversion() < "5.3.6") {
-                        $this->dbh->exec("SET NAMES $this->charset");
-                    }
                     break;
                 case "sqlite":
                     if ($this->Debug) {
@@ -220,7 +257,7 @@ class DB_PDO extends AbstractDB {
             printf("Debug: query = %s<br>\n", $Query_String);
         }
         try {
-            $this->sth = $this->dbh->query($Query_String);
+            $this->sth = $this->dbh->query($Query_String, PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             $this->halt($e->getMessage());
         }
@@ -230,14 +267,74 @@ class DB_PDO extends AbstractDB {
         $this->Row = 0;
         $this->getErrorInfo();
         if (!$this->sth) {
-            $this->halt("Invalid SQL: " . $Query_String);
+            $this->halt("SQL Query Failed: ".$Query_String);
         }
 
         return $this->sth;
     }
 
+    /* public get 1 column */
+  function fetch_column($col) {
+        if (!$this->sth) {
+            $this->halt("fetchColumn called with no query pending.");
+            return 0;
+        }
+        return array_column($this->sth->fetchAll(PDO::FETCH_ASSOC), $col);
+    }
+
+//    /* public get all records */
+//    function fetch_all($cast=false,$num=false) {
+//        if (!$this->sth) {
+//            $this->halt("fetchAll called with no query pending.");
+//            return 0;
+//        }
+//        if ($cast) $meta = $this->metadata();
+//        if ($this->sth->columnCount()>1) {
+//            // Array of records (rows)
+//            if ($cast) {
+//                # perhaps this should be changed: see...
+//                # https://phpdelusions.net/pdo#returntypes
+//                # https://phpdelusions.net/pdo#emulation
+//                foreach ($this->sth->fetchAll(PDO::FETCH_NUM) as $row) {
+//                    $count=0;
+//                    foreach($row as $key=>$val) {
+//                        if ($num) $name=$count; else
+//                            $name = $meta[$key]["name"];
+//                        $type = $meta[$key]["type"];
+//                        if ( preg_match("/int$/i",$type)) $type = "int";
+//                        switch($type) {
+//                            case "date":
+//                            case "datetime":
+//                                $casted_row[$name] = (strtotime($val)/86400)+25569.4167;
+//                                break;
+//                            case "int":
+//                            case "long":
+//                            case "longlong":
+//                            case "newdecimal":
+//                            case "float":
+//                            case "double":
+//                                $casted_row[$name] = $val + 0;
+//                                break;
+//                            default:
+//                                $casted_row[$name] = $val;
+//                        }
+//                        $count++;
+//                    }
+//                    $data[] = $casted_row;
+//                }
+//            } else
+//                $data = $this->sth->fetchAll(PDO::FETCH_ASSOC);
+//            if (!$data) $data = array();  // if no records return empty array/
+//        } else {
+//            // Array of values
+//            foreach ($this->sth->fetchAll(PDO::FETCH_NUM) as $row) $data[]=$row[0];
+//        }
+//        return $data;  // Always return an array,
+//    }
+
     /* public: walk result set */
     function next_record() {
+        $fetch_style = PDO::FETCH_ASSOC; // use as function parameter?
         if (!$this->sth) {
             $this->halt("next_record called with no query pending.");
             return 0;
@@ -247,7 +344,7 @@ class DB_PDO extends AbstractDB {
             echo ".";
         }
 
-        $this->Record = $this->sth->fetch();
+        $this->Record = $this->sth->fetch($fetch_style);
         ++$this->Row;
         $this->getErrorInfo();
 
@@ -312,46 +409,6 @@ class DB_PDO extends AbstractDB {
         if (isset($this->Record[$Name])) {
             return $this->Record[$Name];
         }
-    }
-
-    /* public: sequence numbers */
-    function nextid($seq_name) {
-        $this->connect();
-
-        if ($this->lock($this->Seq_Table)) {
-            /* get sequence number (locked) and increment */
-            $q = sprintf("select nextid from `%s` where seq_name = '%s'",
-                $this->Seq_Table,
-                $seq_name);
-            try {
-                $st = $this->dbh->query($q);
-                $currentid = $st->fetchColumn();
-            } catch (PDOException $e) {
-                $currentid = false;
-            }
-
-            /* No current value, make one */
-            if ($currentid === false) {
-                $nextid = 1;
-                $q = sprintf("insert into `%s` values('%s', %s)",
-                    $this->Seq_Table,
-                    $seq_name,
-                    $nextid);
-                $nr = $this->dbh->exec($q);
-            } else {
-                $nextid = $currentid + 1;
-                $q = sprintf("update `%s` set nextid = '%s' where seq_name = '%s'",
-                    $this->Seq_Table,
-                    $nextid,
-                    $seq_name);
-                $nr = $this->dbh->exec($q);
-            }
-            $this->unlock();
-        } else {
-            $this->halt("cannot lock " . $this->Seq_Table . " - has it been created?");
-            return 0;
-        }
-        return $nextid;
     }
 
     /* public: return table metadata */
@@ -463,7 +520,7 @@ class DB_PDO extends AbstractDB {
             WHERE TABLE_SCHEMA=" . $this->quote($this->Database) . " AND TABLE_NAME=" . $this->quote($table);
                     break;
                 default:
-                    $q = "DESCRIBE " . $this->qi($table);
+                    $q = "DESCRIBE " . $this->quote_identifier($table);
             }
             try {
                 if (!$stmt = $this->dbh->query($q)) {
@@ -690,14 +747,4 @@ class DB_PDO extends AbstractDB {
         }
         parent::halt($msg);
     }
-
-    function haltmsg($msg) {
-        printf("<b>Database error:</b> %s<br>\n", $msg);
-        printf("<b>%s PDO Error</b> (%s): %s, %s<br>\n",
-            $this->Server,
-            $this->ErrCode,
-            $this->Errno,
-            $this->Error);
-    }
-
 }

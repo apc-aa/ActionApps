@@ -182,7 +182,7 @@ class JsonLD extends AbstractGrabber
      * @param string|null $post_body
      * @return false|string data
      */
-    protected function loadUrl(string $url, string $post_body = ''): string {
+    protected function loadUrl(string $url, ?string $post_body = ''): string {
         $header =  "Content-Type: application/json";
         $header .= "\r\nAccept: application/json";
         if ($this->token) {

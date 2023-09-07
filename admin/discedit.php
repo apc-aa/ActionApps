@@ -123,7 +123,7 @@ $apage->setForm(['action'=>'index.php3']);
 $apage->addRequire($script2run, 'AA_Req_Footcode');
 $apage->printHead($err, $Msg);
 
-FrmTabCaption(AA::Stringexpander()->unalias(_m("Item: ")." {item:$item_id:{(_#HEADLINE ({disc_app........}/{disc_count......}))}}"));
+FrmTabCaption(AA::Un(_m("Item: ")." {item:$item_id:{(_#HEADLINE ({disc_app........}/{disc_count......}))}}"));
    echo '<tr class="aa-tbl-header">
         <th>'. _m("Title") .'</th>
         <th>'. _m("Author") .'</th>

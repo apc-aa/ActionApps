@@ -3639,7 +3639,6 @@ $_m["Are you sure you want to PERMANENTLY DELETE this group?"]
     = "Opravdu chcete NEN�VRATN� smazat tyto skupinu konstant?";
 
 // admin/se_filters2.php, row 89
-// include/csn_util.php, row 95
 $_m["Other categories"]
     = "";
 

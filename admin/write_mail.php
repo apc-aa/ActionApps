@@ -149,11 +149,7 @@ if ( !$send ) {               // for the first time - directly from item manager
             break;
         }
 
-        $varset->addglobals( [
-            'description', 'subject',
-                                   'header_from', 'reply_to', 'errors_to', 'sender',
-                                   'lang', 'owner_module_id', 'type', 'attachments'
-        ]);
+        $varset->addglobals( [ 'description', 'subject', 'header_from', 'reply_to', 'errors_to', 'sender', 'lang', 'owner_module_id', 'type', 'attachments']);
 
         if ($template_id AND ($mailtemplate = AA_Mail::getTemplate((int)$template_id))) {
             $varset->add('body', 'text', str_replace(['_#BODYTEXT','_#SUBJECT_'], [$_POST['body'], $_POST['subject']],$mailtemplate['body']));
@@ -163,6 +159,7 @@ if ( !$send ) {               // for the first time - directly from item manager
         $varset->add('html', 'number', $html);
 
         $varset->doINSERT('email');
+
         $mail_id = $varset->last_insert_id();  // get mail template id
 
         if ( !ctype_digit((string)$mail_id) )  {
@@ -178,7 +175,7 @@ if ( !$send ) {               // for the first time - directly from item manager
         } else {
             // get reader's zids
             $zids = getZidsFromGroupSelect($group, $items, $searchbar);
-            // following functionality could be extend by adding third
+            // following functionality could be extended by adding third
             // parameter $recipient (for testing e-mail)
             $mails_sent  = AA_Mail::sendToReader($mail_id, $zids, AA::$module_id);
             $users_count = $zids->count();

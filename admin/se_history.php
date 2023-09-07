@@ -97,7 +97,6 @@ class Manageraction_History_Apply extends AbstractManageraction {
                     $doit = true;
                 }
             }
-            // huhl($newcontent4id);
             if ($doit AND $newcontent4id->storeItem( 'update', [false, false, true])) {
                 $updated_items = 1;
             }

@@ -47,6 +47,12 @@ class DB_MySQL extends AbstractDB {
         return mysqli_real_escape_string($this->Link_ID, $string);
     }
 
+    /** Quotes table name or column name */
+    function quote_identifier(string $str): string {
+        $char = '`';   // in original was used just '"' character (which is SQL standard and could be OK)
+        return $char. join("$char.$char", explode(".", $str)) . $char;
+    }
+
     /* public: connection management */
     function connect() {
         /* establish connection, select database */
@@ -136,7 +142,7 @@ class DB_MySQL extends AbstractDB {
     }
 
 
-    /* public: walk result set */
+        /* public: walk result set */
     function next_record() {
         if (!is_object($this->Result)) {
             $this->halt("next_record called with no query pending.");

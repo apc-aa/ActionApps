@@ -51,7 +51,7 @@ function GoIfConfirmed(url, text) {
 }
 
 /** Appends any number of QUERY_STRING parameters (separated by &) to given URL,
- *  using apropriate ? or &. */
+ *  using appropriate ? or &. */
 function GetUrl(url, params) {
     url_components = url.split('#', 2);
     url_path       = url_components[0];

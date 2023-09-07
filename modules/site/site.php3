@@ -74,11 +74,7 @@ if ($cacheentry = AA::Pagecache()->getPage($cache_key, (string)$site_nocache)) {
 
 require_once __DIR__."/../../include/util.php";
 
-/**
- * @param $domain
- * @return bool
- */
-function IsInDomain( $domain ) {
+function IsInDomain( $domain ): bool {
     return (($_SERVER['HTTP_HOST'] == $domain)  || ($_SERVER['HTTP_HOST'] == 'www.'.$domain));
 }
 
@@ -89,7 +85,7 @@ function Die404($page=null) {
     function_exists('http_response_code') ? http_response_code(404) : header( ($_SERVER['SERVER_PROTOCOL'] ?: 'HTTP/1.0'). ' 404 Not Found');
     if (!is_null($page)) {
         header('Content-Type: '. (AA::$headers['type'] ?: 'text/html') .'; charset='.(AA::$headers['encoding'] ?: AA::$encoding ?: Langs::getCharset()));
-        echo AA::Stringexpander()->postprocess(AA::Stringexpander()->unalias($page));
+        echo AA::Stringexpander()->postprocess(AA::Un($page));
     }
     //    else { echo '<!doctype html><html><head><title>404 Not Found</title></head><body><h1>Not Found</h1><p>The requested URL was not found on this server.</p></body></html>'; }
     exit;
@@ -230,7 +226,7 @@ if ($lang_file) {
 
 
 
-$is_valid = ($perm_alias = $module->getProperty('perm_alias')) ? AA::Stringexpander()->unalias("{item:$hit_lid:{($perm_alias)}}") : 'Valid';
+$is_valid = ($perm_alias = $module->getProperty('perm_alias')) ? AA::Un("{item:$hit_lid:{($perm_alias)}}") : 'Valid';
 
 
 // --- Process all AJAX commands and possibly EXIT ---------------------
@@ -247,7 +243,7 @@ $page_changer->checkAndProcessCall($is_valid == 'Valid');
 // --- if not EXITEed above, continue
 
 
-$page_content = ($is_valid == 'Valid') ? $module->getSite( $apc_state ) : AA::Stringexpander()->postprocess(AA::Stringexpander()->unalias($module->getProperty('loginpage_code')));
+$page_content = ($is_valid == 'Valid') ? $module->getSite( $apc_state ) : AA::Stringexpander()->postprocess(AA::Un($module->getProperty('loginpage_code')));
 
 // AJAX check
 if ((AA::$headers['encoding'] != 'utf-8') && (AA::$encoding != 'utf-8') && IsAjaxCall()) {

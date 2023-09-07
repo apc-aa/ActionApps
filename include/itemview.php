@@ -98,7 +98,7 @@ class itemview {
 
     $this->group_fld  = $slice_info['group_by'];
 
-    $this->aliases    = is_object($aliases) ? $aliases->getArray() : $aliases;
+    $this->aliases    = is_object($aliases) ? $aliases->getArray() : ( is_array($aliases) ? $aliases : [] );
     // add special alias, which is = 1 for selected item (given by
     // set[34]=selected-43535 view.php parameter
     if ( !$this->aliases['_#SELECTED'] AND $slice_info['selected_item'] ) {
@@ -436,7 +436,7 @@ class itemview {
       if (!$item) {
           $item = new AA_Item(null,$this->aliases,null,null,$this->parameters);
       }
-      return AA::Stringexpander()->unalias($txt, '', $item, true, $this);
+      return AA::Un($txt, '', $item, true, $this);
   }
 
   // set the aliases from the slice of the item ... used to view items from
@@ -488,7 +488,7 @@ class itemview {
     if ( !$is_random ) {
         if ((strlen($this->slice_info['group_by2'])==10) AND (substr($this->slice_info['group_by2'],0,2)=='_#')) {
             $SORT_CONST = ['0'=> 'locale', '1' => 'rlocale', '4'=>'numeric', '5' => 'rnumeric'];
-            $this->zids = new zids(explode_ids(StrExpand('AA_Stringexpand_Order', [join('-',$this->zids->short_or_longids()), $this->slice_info['group_by2'], $SORT_CONST[(int)$this->slice_info['g2_direction']]])));
+            $this->zids = new zids(explode_ids(StrExp('order', [join('-',$this->zids->short_or_longids()), $this->slice_info['group_by2'], $SORT_CONST[(int)$this->slice_info['g2_direction']]])));
         }
         $foo_zids = $this->zids->slice($real_from, ( ($this->num_records < 0) ? MAX_NO_OF_ITEMS_4_GROUP :  $this->num_records ));
     } else { // Selecting random record
@@ -562,7 +562,7 @@ class itemview {
         $this->setColumns($CurItem, $iid);        // set right content for aliases
 
         // print item
-        $out = AA::Stringexpander()->unalias($this->slice_info['fulltext_format_top'].$this->slice_info['fulltext_format'].$this->slice_info['fulltext_format_bottom'], $this->slice_info['fulltext_remove'], $CurItem);
+        $out = AA::Un($this->slice_info['fulltext_format_top'].$this->slice_info['fulltext_format'].$this->slice_info['fulltext_format_bottom'], $this->slice_info['fulltext_remove'], $CurItem);
         break;
 
       case "itemlist":          // multiple items as fulltext one after one

@@ -125,12 +125,17 @@ function AafinderObjectLink($object_id): string {
 }
 
 function AafinderItemLink($item_id, $slice_id=''): string {
-    if (!$slice_id AND ($item = AA_Items::getItem(new zids($item_id, 'l')))) {
-        $slice_id = $item->getSliceID();
-    } else {
-        return '';
+    if (!$slice_id) {
+        if ($item = AA_Items::getItem(new zids($item_id, 'l'))) {
+            $slice_id = $item->getSliceID();
+        } else {
+            return '';
+        }
     }
-    return a_href(get_admin_url("itemedit.php3?id=$item_id&change_id=$slice_id&edit=1"), "$item_id"). ' ('. AA_Slice::getModuleName($slice_id) .') &nbsp; '. ChangesMonitor::getHistoryLink($item_id);
+    return join(' | ', [a_href(get_admin_url('itemedit.php3',['id'=>$item_id,'change_id'=>$slice_id,'edit'=>1]), "$item_id"),
+                        AA_Slice::getModuleName($slice_id, true),
+                        ChangesMonitor::getHistoryLink($item_id),
+                        a_href(get_admin_url('se_statistics.php', ['change_id'=>$slice_id, 'items'=>$item_id]), _m('Statistics'))]);
 }
 
 function AafinderSliceLink($slice_id): string {
@@ -159,13 +164,9 @@ function query_search(array $where, string $phrase): string {
 
     $output = count($arr)." "._m('Show results with string')."  <b><i>$phrase</i></b><br>";
 
-    $items = [[_m('Edit'), _m('Slice'), 'short_id', 'status_code', 'publish_date', 'last_edit', 'edited_by']];
+    $items = [[_m('Item'), 'short_id', 'status_code', 'publish_date', 'last_edit', 'edited_by']];
     foreach ($arr as $f) {
-        $slice_id   = $f['slice_id'];
-        $slice_name = AA_Slice::getModuleName($slice_id);
-        $long_id    = $f['iid'];
-
-        $items[]    = ["<a href=\"itemedit.php3?id=$long_id&edit=1&encap=false&slice_id=$slice_id\">"._m('Edit')."</a>", $slice_name, $f['short_id'], $f['status_code'], date('Y-m-d H:i',$f['post_date']), date('Y-m-d H:i',$f['last_edit']),$f['edited_by']];
+        $items[]    = [AafinderItemLink($f['iid'], $f['slice_id']), $f['short_id'], $f['status_code'], date('Y-m-d H:i',$f['post_date']), date('Y-m-d H:i',$f['last_edit']),$f['edited_by']];
     }
 
     return $output. GetHtmlTable($items, 'th'). '<br><br>';
@@ -217,8 +218,7 @@ function PrintItemInfo($item_id) {
     }
     $long_id = $item->getItemID();
     $sid     = $item->getSliceID();
-    echo "<br>Item ID: $long_id (". $item->getval('short_id........') .") | <a href=\"".StateUrl("itemedit.php3?id=$long_id&edit=1&encap=false&change_id=$sid")."\" target=\"_blank\">"._m('Edit')."</a>". ' | '. ChangesMonitor::getHistoryLink($item_id);
-    echo "<br>Item slice: $sid (". AA_Slice::getModuleName($sid). ')';
+    echo "<br>Item ID: ".AafinderItemLink($long_id,$sid);
     $format = '_#HEADLINE';
     echo "<br>_#HEADLINE: ". $item->unalias($format);
     echo "<br>Fed to: ".     join(', ', WhereFed($item->getItemID()));
@@ -239,10 +239,10 @@ function PrintItemInfo($item_id) {
 
         $slice = AA_Slice::getModule($sid);
 
-        if ($res = DB_AA::select([], 'SELECT "" as FieldName, `field_id`, `number`,`text`, `flag` FROM `content`', [['item_id',$long_id, 'l']])) {              // empty FieldName - will be filled later
+        if ($res = DB_AA::select([], "SELECT '' as FieldName, `field_id`, `number`,`text`, `flag` FROM `content`", [['item_id',$long_id, 'l']])) {              // empty FieldName - will be filled later
             array_walk($res, function (&$v, $k) use ($slice) {
                 $v['FieldName'] =  ($f=$slice->getField($v['field_id'])) ? $f->getName() : '-- invalid --';
-                if (is_long_id($v['text']) and ($hdln = AA::Stringexpander()->unalias("{item:$v[text]:_#HEADLINE}"))) {
+                if (is_long_id($v['text']) and ($hdln = AA::Un("{item:$v[text]:_#HEADLINE}"))) {
                     $v['text'] .= "<br><small>($hdln)</small>";
                 }
             });
@@ -253,12 +253,12 @@ function PrintItemInfo($item_id) {
 
         echo 'show '. ChangesMonitor::getHistoryLink($item_id);
 
-        if ($res = DB_AA::select([], 'SELECT LOWER(HEX(`item_id`)) as Item, "" as Status, "" as PubDate, "" as ExpDate, "" as FieldName, `field_id`, `number`,`text`, `flag` FROM `content`', [['text',$long_id]])) {
+        if ($res = DB_AA::select([], "SELECT LOWER(HEX(`item_id`)) as Item, '' as Status, '' as PubDate, '' as ExpDate, '' as FieldName, `field_id`, `number`,`text`, `flag` FROM `content`", [['text',$long_id]])) {
             array_walk($res, function (&$v, $k) {
                 if (is_long_id($iid = $v['Item'])) {
                     $item = AA_Items::getItem(new zids($iid, 'l'));
                     $v['Item'] .= ' / ' . AA_Module::getModuleName($item->getSliceID());
-                    if ($hdln = AA::Stringexpander()->unalias("{item:$iid:_#HEADLINE}")) {
+                    if ($hdln = AA::Un("{item:$iid:_#HEADLINE}")) {
                         $v['Item'] .= "<br><small>($hdln)</small>";
                     }
                     $v['Status'] = $item->getStatusCode();
@@ -606,7 +606,7 @@ if ( strlen($go_search) OR strlen($go_replace) ) {
                 $row = [];
 
                 if (strlen($go_search)) {
-                    $SQL = "SELECT `$fld` as txt, INSTR(`$fld`,\"" . quote($search) . "\") as pos $addfields FROM `$tbl` $addtables WHERE $addconds INSTR(`$fld`,\"" . quote($search) . "\")>0";
+                    $SQL = "SELECT `$fld` as txt, INSTR(`$fld`,'" . quote($search) . "') as pos $addfields FROM `$tbl` $addtables WHERE $addconds INSTR(`$fld`,'" . quote($search) . "')>0";
                     $txt = DB_AA::select([], $SQL);
                     if (!$txt) {
                         continue;
@@ -632,7 +632,7 @@ if ( strlen($go_search) OR strlen($go_replace) ) {
                     }
                 } elseif (strlen($go_replace) AND strlen($search) AND (strlen($replace) > 5)) {
                     $replace_str = str_replace('{#AAA}', '', $replace);
-                    $SQL = "UPDATE `$tbl` SET `$fld` = REPLACE(`$fld`, \"" . quote($search) . "\", \"" . quote($replace_str) . "\")";
+                    $SQL = "UPDATE `$tbl` SET `$fld` = REPLACE(`$fld`, '" . quote($search) . "', '" . quote($replace_str) . "')";
                     $rep = DB_AA::sql($SQL);
                     $row[0] = $rep ? "<b>$tbl.$fld</b>" : "$tbl.$fld";
                     $row[1] = "($rep replaces)";

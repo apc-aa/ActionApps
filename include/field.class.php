@@ -1039,6 +1039,25 @@ class AA_Fields implements Iterator, Countable {
         return (string)substr(strrchr($id,'.'), 1);
     }
 
+    /** Returns first field id of specified type
+     * @param $fields[]
+     * @param $ftype
+     * @return bool|string
+     */
+    public static function getBaseFieldId($fields, $ftype) {
+        $no = 10000;
+        if (isset($fields) and is_array($fields)) {
+            foreach ($fields as $k => $val) {
+                if (!strstr($val['id'], $ftype)) {
+                    continue;
+                }
+                $last = self::getFieldNo($val['id']);
+                $no   = min($no, (($last == '') ? -1 : (integer)$last));
+            }
+        }
+        return ($no == 10000) ? false : self::createFieldId($ftype, ($no == -1) ? '.' : (string)$no);
+    }
+
     /** Converts real field id into field id as used in the AA form, like:
      *  post_date......1  ==>  post_date______1
      */

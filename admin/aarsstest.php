@@ -223,7 +223,7 @@ if ($err) echo "<b>$err</b>";
 //
 //    $aa_set  = $manager->getSet();
 //    // $aa_set->setModules($module_id);
-//    $aa_set->addCondition(new AA_Condition('slice_id', '==', q_pack_id($module_id)));
+//    $aa_set->addCondition(new AA_Condition('slice_id', '==', xpack_id($module_id)));
 //
 //    $zids    = AA::Metabase()->queryZids(['table'=>'external_feeds'], $aa_set);
 //

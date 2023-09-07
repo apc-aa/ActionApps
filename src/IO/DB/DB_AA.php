@@ -503,6 +503,8 @@ class DB_AA extends AbstractDB
 
     function quote($string) { return $this->dbase->quote($string); }
 
+    function quote_identifier(string $str): string { return $this->dbase->quote_identifier($str); }
+
     function connect() { return $this->dbase->connect(); }
 
     function connect_failed($message = '') { $this->dbase->connect_failed($message); }

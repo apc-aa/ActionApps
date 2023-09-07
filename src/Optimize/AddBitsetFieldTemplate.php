@@ -18,7 +18,7 @@ class AddBitsetFieldTemplate extends \AA\Optimize\AddSeoFieldTemplate {
             'name'              => 'Bitset',
             'input_show_func'   => 'nul',
             'input_default'     => 'now',
-            'alias1_func'       => 'f__:{math#:_#this&1}',
+            'alias1_func'       => 'f__:{math:_#this&1}',
             'html_default'      => '1',
             'input_validate'    => 'number',
             'input_insert_func' => 'com',

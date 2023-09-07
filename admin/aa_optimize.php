@@ -128,6 +128,6 @@ echo getFrmTabCaption(_m('Optimalizations'), $form_buttons);
 foreach ( $optimize_names as $i => $name ) {
     FrmStaticText($name, $optimize_descriptions[$i], '', '', false);
 }
-FrmTabEnd($form_buttons);
+echo getFrmTabEnd($form_buttons);
 
 $apage->printFoot();

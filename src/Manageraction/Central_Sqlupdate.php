@@ -44,7 +44,7 @@ class Central_Sqlupdate extends AbstractManageraction {
             $response = file_get_contents($file);
             $status   = substr($response, 0, 3);
             $toggle   = '{htmltoggle:&gt;&gt;:' . QuoteColons($file) . ':&lt;&lt;:' . QuoteColons($response) . '}';
-            $ret      .= AA::Stringexpander()->unalias($status . ' ' . $toggle);
+            $ret      .= AA::Un($status . ' ' . $toggle);
         }
         freeDB($db);
         return $ret;                                     // OK - no error

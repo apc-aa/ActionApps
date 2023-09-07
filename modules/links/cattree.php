@@ -538,7 +538,7 @@ class linkcounter implements \AA\Later\LaterInterface {
 }
 
 
-/** Bitfiled data type - you can set bit, get bit ... in bitfield of
+/** Bitfield data type - you can set bit, get bit ... in bitfield of
  *  unlimited length
  */
 class bitfield {

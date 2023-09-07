@@ -450,7 +450,7 @@ class AA_Fieldset {
 
         foreach ($this->_fields as $index => $definition) {
             $recipe = ($this->_types[$index]=='f') ? "{@$definition:|}" : $definition;
-            $arr[]  = AA::Stringexpander()->unalias($recipe, '', $item);
+            $arr[]  = AA::Un($recipe, '', $item);
         }
         return $arr;
     }
@@ -543,7 +543,7 @@ class AA_Exportsetings extends AA_Object {
         // cleanup fields
         $this->fields = is_array($this->fields) ? array_filter(array_map('trim', $this->fields), 'strlen') : [];
 
-        $set = new AA_Set($slice_id, AA::Stringexpander()->unalias($this->conds), AA::Stringexpander()->unalias($this->sort), $this->bins);
+        $set = new AA_Set($slice_id, AA::Un($this->conds), AA::Un($this->sort), $this->bins);
         $fs  = new AA_Fieldset;
 
         if ($this->grabber_type== 'AA\IO\Grabber\Discussion') {
@@ -601,7 +601,7 @@ class AA_Exportsetings extends AA_Object {
             exit;
         }
 
-        $filename = $this->filename ? AA::Stringexpander()->unalias($this->filename) : date("ymd").'-'.StrExpand('AA_Stringexpand_Seoname', [$slice->getName(), '', $slice->getCharset()]). (($this->grabber_type== 'AA\IO\Grabber\Discussion') ? '-Disc' : ''). '.'.$exporter->getExtension();
+        $filename = $this->filename ? AA::Un($this->filename) : date("ymd").'-'.StrExp('seoname', [$slice->getName(), '', $slice->getCharset()]). (($this->grabber_type== 'AA\IO\Grabber\Discussion') ? '-Disc' : ''). '.'.$exporter->getExtension();
 
         $exporter->sendFile($filename);
     }
