@@ -99,6 +99,7 @@ EOT;
 $apage = new AA_Adminpageutil('sliceadmin','views');
 $apage->setTitle(_m("Admin - design View"));
 $apage->setSubtitle(_m(""));
+$apage->setForm();
 //$apage->setForm(array('action'=>'se_view.php', 'name'=>'fvtype'));
 //$apage->addRequire('codemirror@5');
 $apage->addRequire('aa-jslib');   // just for MarkedActionSelect() in manager.min.js
@@ -146,7 +147,9 @@ $managed->settings['itemview']['format']['odd_row_format'] = '
                                     </tr>';                      // <td>_#OBJECT__</td><td>_#EXECUTE_</td>
 $managed->settings['itemview']['format']['compact_bottom'] = '</tbody></table>';
 
-$managed->settings['show'] = MGR_ALL & ~MGR_SB_BOOKMARKS & ~MGR_SB_SEARCHROWS & ~MGR_SB_ORDERROWS;    // MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS | MGR_SB_ALLTEXT | MGR_SB_ALLNUM
+//$managed->settings['show'] = MGR_ALL & ~MGR_SB_BOOKMARKS & ~MGR_SB_SEARCHROWS & ~MGR_SB_ORDERROWS;    // MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS | MGR_SB_ALLTEXT | MGR_SB_ALLNUM
+//$managed->settings['show'] = MGR_ALL & ~(MGR_SB_BOOKMARKS | MGR_SB_ALLTEXT | MGR_SB_ALLNUM);    // MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS | MGR_SB_ALLTEXT | MGR_SB_ALLNUM
+$managed->settings['show'] = MGR_ALL & ~(MGR_SB_BOOKMARKS | MGR_SB_ALLNUM);    // MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS | MGR_SB_ALLTEXT | MGR_SB_ALLNUM
 $managed->settings['searchbar']['default_sort'] =  [0 => ['id' => 'd']];
 $managed->settings['actions'] =  $actions;
 $managed->setAction('add',false);  // views are add by special form below
