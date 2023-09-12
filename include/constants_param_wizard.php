@@ -839,6 +839,19 @@ $FIELD_FUNCTIONS = [
 // --------------------------------------------------------------------------------
 
 $TRANS_ACTIONS["name"] = _m("Transformation action");
+$TRANS_ACTIONS["items"]["expression"] = [
+    "name"=>_m("AA Expression"),
+    "desc"=>_m("AA expression where we can use any AA {expressions}"),
+    "params"=> [
+        [
+            "name"=>_m("expression"),
+            "desc"=>_m(""),
+            "example"=>"{ifeq:{flag}:true:1:0}",
+            "type"=>"STR"
+        ]
+    ]
+];
+
 $TRANS_ACTIONS["items"]["store"] = [
     "name"=>_m("Store"),
     "desc"=>_m("Simply store a value from the input field"),
@@ -870,7 +883,7 @@ $TRANS_ACTIONS["items"]["formatdate"] = [
 
 $TRANS_ACTIONS["items"]["web"] = [
     "name"=>_m("Add http prefix"),
-    "desc"=>_m("Adds 'http://' prefix to the field if not beginning with 'http://' and not empty.")
+    "desc"=>_m("Adds 'https://' prefix to the field if not beginning with 'https://' and not empty.")
 ];
 
 $TRANS_ACTIONS["items"]['value'] = [
@@ -890,7 +903,7 @@ $TRANS_ACTIONS["items"]["string2id"] = [
     "params"=> [
         [
             "name"=>_m("string to add"),
-              "desc"=>_m("this parameter will be added to the string before conversion (the reason is to aviod empty strings and also in order we do not generate always the same id for common strings (in different imports). If this param is not specified, slice_id is used istead."),
+              "desc"=>_m("this parameter will be added to the string before conversion (the reason is to avoid empty strings and also in order we do not generate always the same id for common strings (in different imports). If this param is not specified, slice_id is used istead."),
               "example"=>"This string is up to you (any length)",
               "type"=>"STR"
         ]

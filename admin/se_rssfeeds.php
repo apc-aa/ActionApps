@@ -34,6 +34,8 @@
 */
 
 use AA\IO\DB\DB_AA;
+use AA\IO\Feed;
+use AA\IO\FeedUtil;
 use AA\Util\InputVars;
 
 // const  AA_REGISTER_GLOBALS = true;
@@ -64,14 +66,13 @@ if (!IfSlPerm(PS_FEEDING)) {
 }
 
 require_once __DIR__ . "/../include/varset.php";
-require_once __DIR__ . "/../include/xml_fetch.php";
 
 $err = [];
 require_once __DIR__ . "/../include/formutil.php";
 $qp_slice_id=q_pack_id(AA::$module_id);
 
 if ($mode == "map") {
-    $feed = name2rssfeed(AA::$module_id,$sel_rssfeed_name);
+    $feed = FeedUtil::name2rssfeed(AA::$module_id, $sel_rssfeed_name);
     go_url(StateUrl(self_base() . "se_mapping.php?from_slice_id=".$feed["remote_slice_id"]));
 }
 
@@ -79,7 +80,7 @@ if ($mode == "edit" || $mode == "test") {
     $db->query("SELECT * FROM rssfeeds WHERE name='". quote($sel_rssfeed_name). "' AND slice_id = '$qp_slice_id'");
     if ($db->next_record()) {
         $testfeed              = $db->record();
-        $testfeed["feed_type"] = FEEDTYPE_RSS;
+        $testfeed["feed_type"] = Feed::FEEDTYPE_RSS;
         $old_rssfeed_name      = $sel_rssfeed_name;
         $rssfeed_name          = $db->f('name');
         $server_url            = $db->f('server_url');
@@ -212,7 +213,7 @@ function checkData() {
 </script>
 <?php
 if ($mode == "test") {
-    onefeed($testfeed["feed_id"],$testfeed, 5, 'write');
+    Feed::onefeed($testfeed["feed_id"], $testfeed, 5, 'write');
 }
 
 $apage->printFoot();

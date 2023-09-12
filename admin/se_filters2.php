@@ -35,12 +35,12 @@
 */
 
 use AA\IO\DB\DB_AA;
+use AA\IO\FeedUtil;
 use AA\Util\InputVars;
 
 // const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/varset.php";
-require_once __DIR__ . "/../include/csn_util.php";
 
 try {
     // array ( '0-0' => 1, '0-1' => 5, )
@@ -83,7 +83,7 @@ $catVS       = new Cvarset();
 if ($feed_id) { // cross server feeding
     // setting filters from external slice
 
-    if ($ext_categs = GetExternalCategories($feed_id)) {
+    if ($ext_categs = FeedUtil::GetExternalCategories($feed_id)) {
         // delete current filters and then insert new
         DB_AA::delete('ef_categories', [['feed_id', $feed_id]]);
 
@@ -102,11 +102,11 @@ if ($feed_id) { // cross server feeding
             $to_id = ParseIdA($C, $app);
             // $to_id could be 'AA_The_Same_Cate' keyword, which means "The Same category"
             // ('AA_Other_Categor' and 'AA_The_Same_Cate' are keywords)
-            $ext_categs[UNPACKED_AA_OTHER_CATEGOR]['target_category_id'] = $to_id;
-            $ext_categs[UNPACKED_AA_OTHER_CATEGOR]['approved']           = $app;
+            $ext_categs[FeedUtil::UNPACKED_AA_OTHER_CATEGOR]['target_category_id'] = $to_id;
+            $ext_categs[FeedUtil::UNPACKED_AA_OTHER_CATEGOR]['approved']           = $app;
             // add also name and value (not crucial for the functionality, but nice)
-            $ext_categs[UNPACKED_AA_OTHER_CATEGOR]['value']              = 'AA_Other_Categor';
-            $ext_categs[UNPACKED_AA_OTHER_CATEGOR]['name']               = _m('Other categories');
+            $ext_categs[FeedUtil::UNPACKED_AA_OTHER_CATEGOR]['value'] = 'AA_Other_Categor';
+            $ext_categs[FeedUtil::UNPACKED_AA_OTHER_CATEGOR]['name']  = _m('Other categories');
         } else {                              // individual categories
             // set according the posted values
             foreach ($_GET['F'] as $index => $id ) {
@@ -140,7 +140,7 @@ if ($feed_id) { // cross server feeding
 
     if ($all) {                                         // all_categories
         $id = ParseIdA($C, $app);
-        if ( $id == UNPACKED_AA_THE_SAME_CATE ) {           // the same category
+        if ( $id == FeedUtil::UNPACKED_AA_THE_SAME_CATE) {           // the same category
             $id = 0;
         }
         $catVS->clear();
@@ -156,7 +156,7 @@ if ($feed_id) { // cross server feeding
         foreach ($_GET['F'] as $index => $val) {
             $from_cat = ParseIdA($val, $app);
             $to_cat = $_GET['T'][$index];
-            if ( ($to_cat == UNPACKED_AA_THE_SAME_CATE) OR ($to_cat == "0") ) { // "0" is from older versions - it could be never "0"
+            if ( ($to_cat == FeedUtil::UNPACKED_AA_THE_SAME_CATE) OR ($to_cat == "0") ) { // "0" is from older versions - it could be never "0"
                 $to_cat = $from_cat;
             }
             $catVS->clear();

@@ -31,11 +31,11 @@
 
 
 // const  AA_REGISTER_GLOBALS = true;
+use AA\IO\FeedUtil;
 use AA\Util\InputVars;
 
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/varset.php";
-require_once __DIR__ . "/../include/csn_util.php";
 
 try {
     // array ( '' => 2, 2 => 3, )
@@ -61,7 +61,7 @@ $p_from_slice_id = q_pack_id($from_slice_id);
 $err = [];       // error array (Init - just for initializing variable)
 
 // save old values
-[$map_to,$field_map] = GetExternalMapping(AA::$module_id, $from_slice_id );
+[$map_to,$field_map] = FeedUtil::GetExternalMapping(AA::$module_id, $from_slice_id);
 
 // First we DELETE current fields mapping and then INSERT new.
 $db->query("DELETE FROM feedmap WHERE from_slice_id = '$p_from_slice_id' AND to_slice_id = '$p_slice_id' ");

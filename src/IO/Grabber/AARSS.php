@@ -8,11 +8,63 @@
 
 namespace AA\IO\Grabber;
 
+use AA\IO\Feed;
+use AA\IO\FeedUtil;
+use AA_Fields;
 use AA_Item;
 use AA_Log;
 use AA_Slice;
 use ItemContent;
-use LastEditList;
+use AA\IO\LastEditList;
+
+require_once __DIR__ . "/../../../include/xml_rssparse.php";
+
+// started to rewrite xml_rssparese.php to be more object oriented
+class AARSS_Parser {
+
+    // An array mapping all the name spaces we've seen in RSS feeds to abbreviations
+    // Only a few of the abbreviations are likely to be used below
+    const MODULE2ABBREV = [
+        "HTTP://WWW.W3.ORG/1999/02/22-RDF-SYNTAX-NS#"   => "RDF",
+        "HTTP://PURL.ORG/RSS/1.0/"                      => "RSS",
+        "HTTP://MY.NETSCAPE.COM/RDF/SIMPLE/0.9/"        => "RSS", //same items
+        "HTTP://PURL.ORG/DC/ELEMENTS/1.1/"              => "DC",
+        "HTTP://WWW.APC.ORG/RSS/AA-MODULE.HTML"         => "AA",
+        "HTTP://PURL.ORG/RSS/1.0/ITEM-IMAGES/"          => "IM",   // Unused
+        "HTTP://RECORDS.SOURCEFORGE.NET/SCHEMAS/RSS-META-MODULE/" => "RECORD", // Unused
+        "HTTP://WWW.W3.ORG/1999/XHMTL"                  => "XHTML",
+        "HTTP://PURL.ORG/RSS/1.0/MODULES/CONTENT/"      => "CONTENT",
+        "HTTP://PURL.ORG/RSS/1.0/MODULES/SUBSCRIPTION/" => "SUBSCRIPTION",
+        "HTTP://PURL.ORG/RSS/1.0/MODULES/LINK/"         => "LINK",
+        "HTTP://PURL.ORG/RSS/1.0/MODULES/RICHEQUIV/"    => "REQV",
+        "HTTP://XMLNS.COM/FOAF/0.1/"					=> "FOAF",
+        "HTTP://PURL.ORG/RSS/1.0/MODULES/SYNDICATION/"  => "SYNDICATION",
+        "HTTP://WEBNS.NET/MVCB/"                        => "ADMIN"
+    ];
+
+    /** nsName2abbrevname function
+     * @param $name
+     * @return string
+     */
+    public static function nsName2abbrevname($name) {
+        preg_match("/(.+):([^:]+)/", $name, $nameparts);
+        if ($ab = self::MODULE2ABBREV[$nameparts[1]]) {
+            return $ab . ":" . $nameparts[2];
+        }
+        return $name;
+    }
+
+    /** nsAbbrev2name function
+     * @param $abbrev
+     * @return false|int|string
+     */
+    public static function nsAbbrev2name($abbrev) {
+        return array_search($abbrev, self::MODULE2ABBREV);
+    }
+}
+
+
+
 
 /** Saver / AbstractGrabber API
  *
@@ -84,7 +136,7 @@ class AARSS extends AbstractGrabber
      *
      */
     function _getRssData() {
-        return trim(http_fetch($this->feed['server_url']), "\xef\xbb\xbf \t\n\r\0\x0B"); // remove also BOM (the first three characters)
+        return trim(FeedUtil::http_fetch($this->feed['server_url']), "\xef\xbb\xbf \t\n\r\0\x0B"); // remove also BOM (the first three characters)
     }
 
     /** _getApcData function
@@ -92,7 +144,7 @@ class AARSS extends AbstractGrabber
      */
     function _getApcData() {
         // for APC feeds we need to list all categories, which we want receive
-        $this->ext_categs = GetExternalCategories($this->feed_id); // we will need it later
+        $this->ext_categs = FeedUtil::GetExternalCategories($this->feed_id); // we will need it later
 
         // select external categories in format
         // array('unpacked_cat_id'=> array( 'value'=>, 'name'=>, 'approved'=>, 'target_category_id'=>))
@@ -108,7 +160,7 @@ class AARSS extends AbstractGrabber
         /* Mention, that $cat_ids now contain also AA_Other_Categor, which is
            used on oposite site of feeding as command to send all categories.
            The category list is sent from historical reasons (AA before 2.8
-           do not send category information without this array().
+           do not send category information without this []).
            Current AA use another approach for APC feeds - we will get all items
            regardless on category. The filtering we will do after that.
            This approach means more data to be transfered, but on the other hand
@@ -118,7 +170,7 @@ class AARSS extends AbstractGrabber
         // now we have cat_ids[] array => we can ask for data
         $categories2fed = implode(" ", $cat_ids);
 
-        return xml_fetch($this->feed['server_url'], ORG_NAME, $this->feed['password'], $this->feed['user_id'], $this->r_slice_id, $this->feed['newest_item'], $categories2fed);
+        return FeedUtil::xml_fetch($this->feed['server_url'], ORG_NAME, $this->feed['password'], $this->feed['user_id'], $this->r_slice_id, $this->feed['newest_item'], $categories2fed);
     }
 
     /** _getExactData function
@@ -147,11 +199,11 @@ class AARSS extends AbstractGrabber
 
         $init = $base;
         $init['conds[0][last_edit.......]'] = 1;
-        $init['conds[0][value]'] = iso8601_to_unixstamp($this->feed['newest_item']);
+        $init['conds[0][value]'] =  FeedUtil::iso8601_to_unixstamp($this->feed['newest_item']);
         $init['conds[0][operator]'] = '>=';
 
         $remote_list = new LastEditList();
-        $remote_list->setList(http_fetch($this->feed['server_url'], $init));
+        $remote_list->setList(FeedUtil::http_fetch($this->feed['server_url'], $init));
         $remote_pairs = $remote_list->getPairs();
 
         if ($debugfeed > 8) {
@@ -182,7 +234,7 @@ class AARSS extends AbstractGrabber
             huhl('_getExactData() - http_fetch:', $this->feed['server_url'], $finish);
         }
 
-        return http_fetch($this->feed['server_url'], $finish);
+        return FeedUtil::http_fetch($this->feed['server_url'], $finish);
     }
 
     /**
@@ -219,7 +271,7 @@ class AARSS extends AbstractGrabber
         set_time_limit(240); // Allow 4 minutes per feed
 
         $slice = AA_Slice::getModule($this->slice_id);
-        $feed_debug_name = 'Feed #' . $this->feed_id . ' (' . getFeedTypeName($feed_type) . '): ' .
+        $feed_debug_name = 'Feed #' . $this->feed_id . ' (' . Feed::getFeedTypeName($feed_type) . '): ' .
             $this->feed['name'] . ' : ' . $this->feed['remote_slice_name'] .
             ' -> ' . $slice->getName();
         // Get XML Data
@@ -228,13 +280,13 @@ class AARSS extends AbstractGrabber
         }
 
         switch ($feed_type) {
-            case FEEDTYPE_RSS:
+            case Feed::FEEDTYPE_RSS:
                 $xml_data = $this->_getRssData();
                 break;
-            case FEEDTYPE_EXACT:
+            case Feed::FEEDTYPE_EXACT:
                 $xml_data = $this->_getExactData();
                 break;
-            case FEEDTYPE_APC:
+            case Feed::FEEDTYPE_APC:
             default:
                 $xml_data = $this->_getApcData();
                 break;
@@ -269,6 +321,8 @@ class AARSS extends AbstractGrabber
         /** $g_slice_encoding is passed to aa_rss_parse() - it defines output character encoding */
         $GLOBALS['g_slice_encoding'] = $slice->getCharset();
 
+        huhl($xml_data);
+
         if (!($this->aa_rss = aa_rss_parse($xml_data))) {
             AA_Log::write("CSN", '', "Feeding mode ($feed_debug_name): Unable to parse XML data");
             if ($debugfeed >= 1) {
@@ -283,18 +337,18 @@ class AARSS extends AbstractGrabber
 
         //  --- output parsed - great! - we are going to store
 
-        $this->l_categs = GetGroupConstants($this->slice_id);       // category definitions
+        $this->l_categs = FeedUtil::GetGroupConstants($this->slice_id);       // category definitions
         // - used only for FEEDTYPE_APC
 
-        if ($feed_type == FEEDTYPE_APC) {
+        if ($feed_type == Feed::FEEDTYPE_APC) {
             // Update the slice categories in the ef_categories table,
             // that is, if the set of possible slice categories has changed
-            updateCategories($this->feed_id, $this->l_categs, $this->ext_categs, $this->aa_rss['channels'][$this->r_slice_id]['categories'], $this->aa_rss['categories']);
+            FeedUtil::updateCategories($this->feed_id, $this->l_categs, $this->ext_categs, $this->aa_rss['channels'][$this->r_slice_id]['categories'], $this->aa_rss['categories']);
         }
 
-        if (($feed_type == FEEDTYPE_APC) OR ($feed_type == FEEDTYPE_EXACT)) {
+        if (($feed_type == Feed::FEEDTYPE_APC) OR ($feed_type == Feed::FEEDTYPE_EXACT)) {
             //Update the field names and add new fields to feedmap table
-            updateFieldsMapping($this->slice_id, $this->r_slice_id, $this->aa_rss['channels'][$this->r_slice_id]['fields'], $this->aa_rss['fields']);
+            FeedUtil::updateFieldsMapping($this->slice_id, $this->r_slice_id, $this->aa_rss['channels'][$this->r_slice_id]['fields'], $this->aa_rss['fields']);
         }
 
         // Find channel definition
@@ -306,11 +360,11 @@ class AARSS extends AbstractGrabber
             }
         }
 
-        [, $map] = GetExternalMapping($this->slice_id, $this->r_slice_id);
+        [, $map] = FeedUtil::GetExternalCategories($this->slice_id, $this->r_slice_id);
         if ($debugfeed >= 7) {
             print("\n<br>Mapping: $map, $this->slice_id, $this->r_slice_id");
         }
-        if (!$map && ($feed_type == FEEDTYPE_RSS)) {
+        if (!$map && ($feed_type == Feed::FEEDTYPE_RSS)) {
             if ($debugfeed >= 2) {
                 print("\n<br>using default mapping");
             }
@@ -319,9 +373,9 @@ class AARSS extends AbstractGrabber
         $this->map = $map;
 
         // Use the APC specific fields from the item
-        if ($feed_type == FEEDTYPE_APC) {
-            $this->cat_field_id = GetBaseFieldId($this->aa_rss['fields'], "category");
-            $this->status_code_id = GetBaseFieldId($this->aa_rss['fields'], "status_code");
+        if ($feed_type == Feed::FEEDTYPE_APC) {
+            $this->cat_field_id = AA_Fields::getBaseFieldId($this->aa_rss['fields'], "category");
+            $this->status_code_id = AA_Fields::getBaseFieldId($this->aa_rss['fields'], "status_code");
         }
 
         if (is_array($this->aa_rss['items'])) {
@@ -345,15 +399,15 @@ class AARSS extends AbstractGrabber
         // A series of steps to make field specific edits
         // set fulltext field back from the content field, where it was put by
         // APC for RSS compatability
-        if ($fulltext_field_id = GetBaseFieldId($this->aa_rss['fields'], "full_text")) {
-            $item['fields_content'][$fulltext_field_id][0] = contentvalue($item);
+        if ($fulltext_field_id = AA_Fields::getBaseFieldId($this->aa_rss['fields'], "full_text")) {
+            $item['fields_content'][$fulltext_field_id][0] = FeedUtil::contentvalue($item);
         }
 
         /** Apply filters - rename categories and bin (approved/holding/trash) */
-        if ($this->feed['feed_type'] == FEEDTYPE_APC) { // Use the APC specific fields from the item
+        if ($this->feed['feed_type'] == Feed::FEEDTYPE_APC) { // Use the APC specific fields from the item
 
             // apply categories mapping. $item is updated accordingly
-            $approved = translateCategories($this->cat_field_id, $item, $this->ext_categs, $this->l_categs);
+            $approved = FeedUtil::translateCategories($this->cat_field_id, $item, $this->ext_categs, $this->l_categs);
 
             // set status_code - according to the settings of ef_categories table
             // RSS feeds have approved set from AARSS::getDefaultRssMap()
@@ -372,7 +426,7 @@ class AARSS extends AbstractGrabber
                     break;
                 case FEEDMAP_FLAG_EXTMAP:   // Check this really works when val in from_field_id
                 case FEEDMAP_FLAG_RSS:
-                    $values = map1field($v['value'], $item, $this->channel);
+                    $values = FeedUtil::map1field($v['value'], $item, $this->channel);
                     if (isset($values) && is_array($values)) {
                         foreach ($values as $k => $v2) {
                             $values[$k]['value'] = $v2['value'];
@@ -395,7 +449,7 @@ class AARSS extends AbstractGrabber
      *
      */
     function finish() {
-        if ($this->feed['feed_type'] == FEEDTYPE_APC) {
+        if ($this->feed['feed_type'] == Feed::FEEDTYPE_APC) {
             $db = getDB();
             //update the newest item
             $SQL = "UPDATE external_feeds SET newest_item='" . quote($this->aa_rss['channels'][$this->r_slice_id]['timestamp']) . "'

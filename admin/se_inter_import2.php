@@ -30,6 +30,7 @@
 
 // const  AA_REGISTER_GLOBALS = true;
 use AA\IO\DB\DB_AA;
+use AA\IO\FeedUtil;
 use AA\Util\InputVars;
 
 require_once __DIR__ . "/../include/init_page.php";
@@ -39,9 +40,7 @@ if (!IfSlPerm(PS_FEEDING)) {
 }
 
 require_once __DIR__ . "/../include/formutil.php";
-require_once __DIR__ . "/../include/xml_fetch.php";
 require_once __DIR__ . "/../include/xml_rssparse.php";
-require_once __DIR__ . "/../include/csn_util.php";
 
 try {
     // array ( '' => 16, )
@@ -58,7 +57,7 @@ try {
 
 ['server_url'=>$server_url,'password'=>$password] = DB_AA::select1(['server_url', 'password'], "SELECT server_url, password FROM nodes", [['name',$rem_nodes]]);
 
-if (!($data = xml_fetch($server_url, ORG_NAME, $password, AuthGetUname(),"",0,""))) {
+if (!($data = FeedUtil::xml_fetch($server_url, ORG_NAME, $password, AuthGetUname(), "", 0, ""))) {
     MsgPage(_m("Unable to connect and/or retrieve data from the remote node. Contact the administrator of the local node."), self_base() . "se_inter_import.php");
 }
 
@@ -66,8 +65,8 @@ if (!($data = xml_fetch($server_url, ORG_NAME, $password, AuthGetUname(),"",0,""
 if (substr($data,0,1) != "<") {
     AA_Log::write("CSN", AA_Log::context(), "Establishing mode: $data");
     switch ($data) {
-        case ERR_NO_SLICE : $err_msg = _m("No slices available. You have not permissions to import any data of that node. Contact the administrator of the remote slice and check, that he obtained your correct username."); break;
-        case ERR_PASSWORD : $err_msg = _m("Invalid password for the node name:") . " ".ORG_NAME . ". "._m("Contact the administrator of the local node."); break;
+        case FeedUtil::ERR_NO_SLICE : $err_msg = _m("No slices available. You have not permissions to import any data of that node. Contact the administrator of the remote slice and check, that he obtained your correct username."); break;
+        case FeedUtil::ERR_PASSWORD : $err_msg = _m("Invalid password for the node name:") . " ".ORG_NAME . ". "._m("Contact the administrator of the local node."); break;
         default:            $err_msg = _m("Remote server returns following error:") . " $data"; break;
     }
     MsgPage($err_msg, StateUrl(self_base() . "se_inter_import.php")); // $data contains error message

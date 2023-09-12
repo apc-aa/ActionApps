@@ -29,11 +29,11 @@
 */
 
 // const  AA_REGISTER_GLOBALS = true;
+use AA\IO\FeedUtil;
 use AA\Util\InputVars;
 
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
-require_once __DIR__ . "/../include/csn_util.php";
 
 try {
     // array ( 'dcf6f197e02…' => 3, '6c81ec28dd4…' => 4, '4429a8e44bb…' => 8, )
@@ -108,19 +108,19 @@ if ( $group ) {
 // lookup (from_categories) and preset form values
 if ($feed_id = $remote_slices[$import_id]) {   // not comparison! - external feed
 
-    $ext_categs = GetExternalCategories($feed_id, true);  // get also default 'AA_Other_Categor' category
+    $ext_categs = FeedUtil::GetExternalCategories($feed_id, true);  // get also default 'AA_Other_Categor' category
 
     $imp_count  = sizeof($ext_categs);
 
     if ($ext_categs AND is_array($ext_categs)) {
 
         // check, if we use 'All categories' option
-        $all_categories = UseAllCategoriesOption( $ext_categs );
+        $all_categories = FeedUtil::UseAllCategoriesOption($ext_categs);
 
         if ( $all_categories ) {
             // first row - all categories
-            $approved_0     = $ext_categs[UNPACKED_AA_OTHER_CATEGOR]['approved'];
-            $categ_0        = $ext_categs[UNPACKED_AA_OTHER_CATEGOR]['target_category_id'];
+            $approved_0     = $ext_categs[FeedUtil::UNPACKED_AA_OTHER_CATEGOR]['approved'];
+            $categ_0        = $ext_categs[FeedUtil::UNPACKED_AA_OTHER_CATEGOR]['target_category_id'];
         } else {
             foreach ( $ext_categs as $id => $v) {
                 $chboxcat[$id] = (strlen($v['target_category_id'])>1);
@@ -238,14 +238,14 @@ if ($feed_id) {
     if (isset($ext_categs) && is_array($ext_categs)) {
         $i=1;
         foreach ($ext_categs as $id => $v ) {
-            if ( $id == UNPACKED_AA_OTHER_CATEGOR ) {
+            if ( $id == FeedUtil::UNPACKED_AA_OTHER_CATEGOR) {
                 $other_categ = $v;   // we just want to list it at the end
                 continue;
             }
             PrintOneRow($id,$v['name'],$i++);
         }
         if ( $other_categ ) {
-            PrintOneRow(UNPACKED_AA_OTHER_CATEGOR,$other_categ['name'],$i++);
+            PrintOneRow(FeedUtil::UNPACKED_AA_OTHER_CATEGOR, $other_categ['name'],$i++);
         }
     }
 }

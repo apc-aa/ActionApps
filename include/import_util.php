@@ -87,17 +87,17 @@ function createFieldNames($fileName, $addParams) {
  * @param Actions     $trans_actions
  * @param             $slice_fields
  * @param ItemContent $itemContent
- * @return
+ * @return string|null     err or empty string
  */
-function convertCSV2Items($csvRec, $fieldNames, $trans_actions, $slice_fields, &$itemContent) {
-    $itemContent1 = new ItemContent;
+function convertCSV2Items($csvRec, $fieldNames, Actions $trans_actions, $slice_fields, &$itemContent): ?string {
+    $itemContent1 = new AA_Content;
     $itemContent1->setFromCSVArray($csvRec, $fieldNames);
     $itemContent  = new ItemContent;
-    $err          = $itemContent->transform($itemContent1, $trans_actions, $slice_fields);
-    return $err;
+    return $itemContent->transform($itemContent1, $trans_actions, $slice_fields);
 }
 
 class Actions {
+    /** @var array */
     var $actions;
     var $globalParams;
     /** Actions function
@@ -107,11 +107,11 @@ class Actions {
      * @param $params
      * @param $globalParams
      */
-    function __construct($actions, $inFields, $html, $params, $globalParams="") {
+    function __construct(array $actions, $inFields, $html, $params, $globalParams="") {
         foreach ( $actions as $f_id => $action) {
             $this->actions[$f_id] = [
-                "from"=>$inFields[$f_id],
-                                           "action"=>new Action($action,$html[$f_id],stripslashes($params[$f_id]))
+                "from"   => $inFields[$f_id],
+                "action" => new Action($action,$html[$f_id],stripslashes($params[$f_id]))
             ];
         }
         $this->globalParams = $globalParams;
@@ -120,12 +120,12 @@ class Actions {
     /** transform function
      *  Transform the input item content to the output item content according
      *  to the actions
-     * @param $itemcontent
-     * @param $slice_fields
-     * @param $outputItemContent
-     * @return
+     * @param AA_Content $itemContent
+     * @param array       $slice_fields
+     * @param ItemContent $outputItemContent
+     * @return string|null     err or empty string
      */
-     function transform(&$itemContent, $slice_fields, $outputItemContent) {
+     function transform( AA_Content $itemContent, array $slice_fields, ItemContent $outputItemContent): ?string {
 
          // id is not part of $slice_fields, unfortunatelly (should be changed)
          if ( !isset($slice_fields['id..............']) ) {
@@ -168,7 +168,9 @@ class Actions {
              if ( !$done ) {
 
                  // transform the input field to the output field according the action
-                 $err = $action['action']->transform($itemContent,$action['from'],$this->globalParams,$fieldVal );
+                 /** @var Action $act */
+                 $act = $action['action'];
+                 $err = $act->transform($itemContent,$action['from'],$this->globalParams,$fieldVal );
                  if ($err) {
                      return $err;
                  }
@@ -181,23 +183,10 @@ class Actions {
                      $outputItemContent->setAaValue($field_id, new AA_Value($fieldVal));
                  }
              }
-        }
+         }
+         return null;
     }
-    /** getOutputFields function
-     *
-     */
-    function getOutputFields() {
-        return array_keys( $this->actions );
-    }
-    /** getActions function
-     *
-     */
-    function getActions() {
-        foreach ( $this->actions as $v ) {
-            $f[] = $v['action'];
-        }
-        return $f;
-    }
+
     /** getHtml function
      *
      */
@@ -207,18 +196,15 @@ class Actions {
         }
         return $f;
     }
+
     /** getParams function
-     *
      */
-    function getParams() {
-        foreach ( $this->actions as $v ) { $f[] = $v['action']->getParams(); }
+    function getParams(): array {
+        $f = [];
+        foreach ( $this->actions as $v ) {
+            $f[] = $v['action']->getParams();
+        }
         return $f;
-    }
-    /** getGlobalParams function
-     *
-     */
-    function getGlobalParams() {
-        return $this->globalParams;
     }
 }
 
@@ -279,12 +265,16 @@ class Action {
      * @param $fvalues
      * @return string
      */
-    function transform($itemContent, $from, $globalParams, &$fvalues ) {
+    function transform(AA_Content $itemContent, $from, $globalParams, &$fvalues ) {
         switch ( $this->action) {
+            case "expression": {
+                $fvalues[]['value'] = $itemContent->unalias(str_replace('_#this','{'.$from.'}',$this->params));
+                break;
+            }
             case "store": {
                 $ind = 0;
                 if (strlen($this->params)==2) {  // cz | en | de | ..
-                  $ind = Langs::getLangName2Num(strtolower($this->params));
+                    $ind = Langs::getLangName2Num(strtolower($this->params));
                 }
                 $fvalues[$ind]['value'] = $itemContent->GetValue($from);		// todo - pokud neexistuje pole s $from , co delat?
                 break;
@@ -318,7 +308,7 @@ class Action {
                 $value = $itemContent->GetValue($from);
                 if ( $value ) {
                     if (strtolower(substr($value, 0, 4)) != "http")
-                    $value = "http://". $value;
+                    $value = "https://". $value;
                 }
                 $fvalues[]['value'] = $value;
                 break;
@@ -408,18 +398,6 @@ class Action {
                 }
                 break;
             }
-/*
-            case "nszmciselnik": {
-                $items = explode ($this->params,trim($itemContent->GetValue($from)));
-                foreach ( $items as $tostore ) {
-                    $save = $GLOBALS['nszmciselnik'][(string)trim($tostore)];
-                    if ( $save ) {
-                        $fvalues[]['value'] = $save;
-                    }
-                }
-                break;
-            }
- */
             case "nszmmesta": {
                 $save = $GLOBALS['nszmmesta'][(string)trim($itemContent->GetValue($from))];
                 if ( $save ) {
@@ -567,7 +545,7 @@ $nszmmesta = [
  *  Get List of actions
  */
 function getActions() {
-    $a = ["store","removestring","formatdate", "web", "storeparsemulti","storeparsemultiunpack",'nszmnewidunpacked', 'nszmmultiidunpacked', "value","string2id", 'nszmstav', 'nszmciselnik', 'nszmmesta', 'password', "default"];
+    $a = ["expression", "store","removestring","formatdate", "web", "storeparsemulti","storeparsemultiunpack",'nszmnewidunpacked', 'nszmmultiidunpacked', "value","string2id", 'nszmstav', 'nszmciselnik', 'nszmmesta', 'password', "default"];
     // not used:  "convertvalue","storemultiasone", "storeasmulti", "not map"
     foreach ( $a as $v ) { $actions[$v] = $v; }
     return $actions;

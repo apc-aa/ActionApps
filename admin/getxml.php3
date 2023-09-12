@@ -48,6 +48,8 @@
 //  2) the variables are imported in global scope and is quoted
 // We are trying to remove any dependecy on the point 2) and use only $_* superglobals
 use AA\IO\DB\DB_AA;
+use AA\IO\FeedUtil;
+use AA\IO\LastEditList;
 
 /**
  * @param $value
@@ -65,7 +67,6 @@ require_once __DIR__."/../include/config.php";
 require_once __DIR__ . "/../include/locsess.php";
 require_once __DIR__ . "/../include/util.php";
 require_once __DIR__ . "/../include/varset.php";
-require_once __DIR__ . "/../include/csn_util.php";
 
 //-------------------------- Constants -----------------------------------------
 
@@ -240,7 +241,7 @@ function GetBaseFieldContent($slice_fields, $ftype, $content4id) {
     if ($ftype=="") {
         return "";
     }
-    $f    = GetBaseFieldId($slice_fields, $ftype);
+    $f    = AA_Fields::getBaseFieldId($slice_fields, $ftype);
     $cont = $content4id[$f][0];
     return ($cont['flag'] & FLAG_HTML) ? strip_tags($cont['value']) : $cont['value'];
 }
@@ -312,7 +313,7 @@ function GetXMLItem($slice_id, $item_id, $content4id, $slice_fields) {
 
     // create fulltext in the element <content:items>
     if (!$link_only) {
-        $f = GetBaseFieldId($slice_fields, "full_text");
+        $f = AA_Fields::getBaseFieldId($slice_fields, "full_text");
         if ($f) {
             $flag_format = GetFlagFormat($content4id[$f][0]['flag']);
             $xml_items .="\t<content:items><rdf:Bag>\n".
@@ -325,7 +326,7 @@ function GetXMLItem($slice_id, $item_id, $content4id, $slice_fields) {
     }
 
     // create item's categories
-    $item_categs = $content4id[GetBaseFieldId($slice_fields, "category")];
+    $item_categs = $content4id[AA_Fields::getBaseFieldId($slice_fields, "category")];
 
     if (is_array($item_categs)) {
         // get constants array from database ('val'=>'packed id')
@@ -347,7 +348,7 @@ function GetXMLItem($slice_id, $item_id, $content4id, $slice_fields) {
     foreach ( MAP_DC2AA as $k => $v) {
         $cont = GetBaseFieldContent($slice_fields,$v,$content4id);
         if ($v == "publish_date") { // convert publish date
-            $cont = unixstamp_to_iso8601 ($cont);
+            $cont = FeedUtil::unixstamp_to_iso8601($cont);
         }
         $xml_items .= "\t<dc:$k>".code($cont)."</dc:$k>\n";
     }
@@ -360,7 +361,7 @@ function GetXMLItem($slice_id, $item_id, $content4id, $slice_fields) {
     $f = ["full_text", "slice_id"];
 
     foreach ( $f as $k => $v) {        // create array of elements, which will be skipped
-        $rss[GetBaseFieldId($slice_fields,$v)] = $v;
+        $rss[AA_Fields::getBaseFieldId($slice_fields, $v)] = $v;
     }
     $xml_items .= "\t<aa:fielddatacont><rdf:Bag>\n";
     foreach ($slice_fields as $k => $v) {
@@ -420,13 +421,13 @@ function RestrictIdsByCategory( $ids, $categories, $slice_id, $content, $cat_fie
         return $new_ids;                              // empty array
     }
 
-    $consts = GetGroupConstants($slice_id);      // get categories belongs to $slice_id
+    $consts = FeedUtil::GetGroupConstants($slice_id);      // get categories belongs to $slice_id
 
     // create array of requested categories ids indexed by value
     foreach ( $categories as $cat ) {
         // special category used in AA>= 2.8 - if provided, all items are
         // returned and sent. The filtering is done on destination side.
-        if ( $cat == UNPACKED_AA_OTHER_CATEGOR ) {
+        if ( $cat == FeedUtil::UNPACKED_AA_OTHER_CATEGOR) {
             return $ids;
         }
         if ($consts[$cat]) {
@@ -454,7 +455,7 @@ function RestrictIdsByCategory( $ids, $categories, $slice_id, $content, $cat_fie
 
 // check the node_name and password against the nodes table's data
 if (!DB_AA::test("nodes", [['name',$node_name], ['password',$password]])) {
-    Error(ERR_PASSWORD);
+    Error(FeedUtil::ERR_PASSWORD);
 }
 
 $xml_channel = $used_fields = $xml_items = "";
@@ -465,7 +466,7 @@ if (!$slice_id) {
 
     $slice_ids = GetFeedingSlices( $node_name, $user );
     if (!$slice_ids) {
-        Error(ERR_NO_SLICE);
+        Error(FeedUtil::ERR_NO_SLICE);
     }
     echo XML_BEGIN;
     foreach ($slice_ids as $sl_id) {
@@ -529,7 +530,7 @@ if ($ids) {
     // fix date (sometimes start_timestamp contains space (wrongly) instead of
     // plus '+' sign (besause wrong url where + is translated to space)
     $start_timestamp      = str_replace(' ', '+', trim($start_timestamp));
-    $start_timestamp      = iso8601_to_unixstamp($start_timestamp);
+    $start_timestamp      = FeedUtil::iso8601_to_unixstamp($start_timestamp);
     $tmpobj               = $slice->getFields();
     $cat_field            = $tmpobj->getCategoryFieldId();
     $now   = now();
@@ -550,7 +551,7 @@ if ($ids) {
         $time = max($arr);
     }
 
-    $time = unixstamp_to_iso8601($time);
+    $time = FeedUtil::unixstamp_to_iso8601($time);
 
     if ($ids) {
         $content = GetItemContent($ids);     // get the content of all items

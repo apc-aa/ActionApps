@@ -119,15 +119,20 @@ $form_buttons = [
                       "template_aa"     => ["value"     =>  $_POST['template_aa']]
 ];
 
+$sync_slices    = $_POST['sync_slices']    ?? [];
+$sync_sites     = $_POST['sync_sites']     ?? [];
+$sync_alerts    = $_POST['sync_alerts']    ?? [];
+$destination_aa = $_POST['destination_aa'] ?? [];
+
 FrmTabCaption('', $form_buttons);
 FrmStaticText(_m('Template ActionApps'), $aas[$_POST['template_aa']]->getName());
 FrmTabSeparator(_m('Modules to Copy from %1', [$aas[$_POST['template_aa']]->getName()]));
-FrmInputMultiSelect('sync_slices[]', _m('Slices to copy'), $template_slices, @reset($_POST['sync_slices']), 10);
+FrmInputMultiSelect('sync_slices[]', _m('Slices to copy'), $template_slices, reset($sync_slices), 10);
 FrmInputChBox('sync_defs',  _m('Copy definitions'), $sync_defs, false, '', 1, false, _m('Copy slice, fields, views, .... of selected slices above'));
 FrmInputChBox('sync_items', _m('Copy also items'), $sync_items, false, '', 1, false, _m('Copy also item data (items, content, discussions tables) of selected slices above - You can also check only this checkbox to copy the content of the slice into previously prepared (and empty) slice'));
-FrmInputMultiSelect('sync_sites[]', _m('Site modules to copy'), $template_sites, @reset($_POST['sync_sites']), 10);
-FrmInputMultiSelect('sync_alerts[]', _m('Alerts modules to copy'), $template_alerts, @reset($_POST['sync_alerts']), 10);
-FrmInputMultiSelect('destination_aa[]', _m('Destination AAs'), $aas_array, @reset($_POST['destination_aa']), 20, true, _m('ActionApps installation to update'));
+FrmInputMultiSelect('sync_sites[]', _m('Site modules to copy'), $template_sites, reset($sync_sites), 10);
+FrmInputMultiSelect('sync_alerts[]', _m('Alerts modules to copy'), $template_alerts, reset($sync_alerts), 10);
+FrmInputMultiSelect('destination_aa[]', _m('Destination AAs'), $aas_array, reset($destination_aa), 20, true, _m('ActionApps installation to update'));
 FrmTabEnd($form_buttons);
 
 $apage->printFoot();

@@ -35,26 +35,6 @@
 //       getxml.php3)
 
 
-// An array mapping all the name spaces we've seen in RSS feeds to abbreviations
-// Only a few of the abbreviations are likely to be used below
-$module2abbrev = [
-        "HTTP://WWW.W3.ORG/1999/02/22-RDF-SYNTAX-NS#"   => "RDF",
-        "HTTP://PURL.ORG/RSS/1.0/"                      => "RSS",
-        "HTTP://MY.NETSCAPE.COM/RDF/SIMPLE/0.9/"        => "RSS", //same items
-        "HTTP://PURL.ORG/DC/ELEMENTS/1.1/"              => "DC",
-        "HTTP://WWW.APC.ORG/RSS/AA-MODULE.HTML"         => "AA",
-        "HTTP://PURL.ORG/RSS/1.0/ITEM-IMAGES/"          => "IM",   // Unused
-        "HTTP://RECORDS.SOURCEFORGE.NET/SCHEMAS/RSS-META-MODULE/" => "RECORD", // Unused
-        "HTTP://WWW.W3.ORG/1999/XHMTL"                  => "XHTML",
-        "HTTP://PURL.ORG/RSS/1.0/MODULES/CONTENT/"      => "CONTENT",
-        "HTTP://PURL.ORG/RSS/1.0/MODULES/SUBSCRIPTION/" => "SUBSCRIPTION",
-        "HTTP://PURL.ORG/RSS/1.0/MODULES/LINK/"         => "LINK",
-        "HTTP://PURL.ORG/RSS/1.0/MODULES/RICHEQUIV/"    => "REQV",
-        "HTTP://XMLNS.COM/FOAF/0.1/"					=> "FOAF",
-        "HTTP://PURL.ORG/RSS/1.0/MODULES/SYNDICATION/"  => "SYNDICATION",
-        "HTTP://WEBNS.NET/MVCB/"                        => "ADMIN"
-];
-
 // Examples refered to below (as EG1 ... EG5) where these have been seen,
 // 1 - APC e.g. http://web.changenet.sk/aa/admin/getxml.php3
 // 2 - http://www.ibiblio.org/ecolandtech/pcwiki/index.php/RecentChanges?format=rss  (Wiki)
@@ -62,6 +42,8 @@ $module2abbrev = [
 // 4 - http://www.peerfear.org/rss/index.rss (Kevin Burton)
 // 5 - http://www.aaronsw.com/weblog/index.xml
 // 6 -
+use AA\IO\FeedUtil;
+use AA\IO\Grabber\AARSS_Parser;
 
 /** decode function
  * Converts data to right character encoding (grabbed from slice setting)
@@ -82,27 +64,6 @@ function decode($v) {
     return $encoder->Convert($v, 'utf-8', $GLOBALS['g_slice_encoding']);
 }
 
-/** nsName2abbrevname function
- * @param $name
- * @return string
- */
-function nsName2abbrevname($name) {
-    global $module2abbrev; // Static array above
-    preg_match("/(.+):([^:]+)/",$name,$nameparts);
-    if ($ab = $module2abbrev[$nameparts[1]]) {
-        return $ab.":".$nameparts[2];
-    }
-    return $name;
-}
-
-/** nsAbbrev2name function
- * @param $abbrev
- * @return false|int|string
- */
-function nsAbbrev2name($abbrev) {
-    global $module2abbrev; // static array above
-    return array_search($abbrev,$module2abbrev);
-}
 /** startElement function
  * @param $parser
  * @param $name
@@ -116,9 +77,9 @@ function startElement($parser, $name, $attrs) {
          $item, $item_uri,
          $field_uri, $field_uri_slice, $category_uri,
          $content_format, $rss_version,
-         $fielddata_uri, $fielddata_content_format, $fielddata, $CONTENT_FORMATS;
-  $cur_tag .= "^".nsName2abbrevname($name);
-  $RDF = nsAbbrev2name("RDF");   // For matching with NameSpace expanded attributes
+         $fielddata_uri, $fielddata_content_format, $fielddata;
+  $cur_tag .= "^". AARSS_Parser::nsName2abbrevname($name);
+  $RDF = AARSS_Parser::nsAbbrev2name("RDF");   // For matching with NameSpace expanded attributes
 
   if ($GLOBALS['debugfeed'] >=8) {
       print("\nStartElement:$cur_tag");
@@ -131,7 +92,7 @@ function startElement($parser, $name, $attrs) {
       $rdf_modules = $attrs; break;
 
     case "^RDF:RDF^RSS:CHANNEL":                                            // channel URI
-      $channel_uri = attr2id($attrs["$RDF:ABOUT"]); break;
+      $channel_uri = FeedUtil::attr2id($attrs["$RDF:ABOUT"]); break;
 
     case "^RDF:RDF^RSS:CHANNEL^AA:CATEGORIES^RDF:BAG^RDF:LI":               // list of categories AA specific
       $channel['categories'][substr(strrchr($attrs["$RDF:RESOURCE"],"/"),1)] = 1; break;
@@ -141,7 +102,7 @@ function startElement($parser, $name, $attrs) {
       break;
 
     case "^RDF:RDF^RSS:CHANNEL^RSS:ITEMS^RDF:SEQ^RDF:LI":                       // list of items
-     $channel['items'][attr2id($attrs["$RDF:RESOURCE"])] = 1; break;
+     $channel['items'][FeedUtil::attr2id($attrs["$RDF:RESOURCE"])] = 1; break;
 
     case "^RDF:RDF^AA:CATEGORY":                                        // category URI AA specific
       $category_uri = substr(strrchr($attrs["$RDF:ABOUT"],"/"),1); break;
@@ -158,7 +119,7 @@ function startElement($parser, $name, $attrs) {
 //Some feeds e.g. http://www.heise.de/newsticker/heise.rdf leave blank!
       $item_uri =
         ($attrs["$RDF:ABOUT"])
-        ? attr2id($attrs["$RDF:ABOUT"])
+        ? FeedUtil::attr2id($attrs["$RDF:ABOUT"])
         : "";
       break;
 
@@ -166,7 +127,7 @@ function startElement($parser, $name, $attrs) {
       $content_format = $attrs["$RDF:RESOURCE"]; break;
 
     case "^RDF:RDF^RSS:ITEM^CONTENT:ENCODED":   // format is implicit - EG5
-      $content_format = array_search(HTML,$CONTENT_FORMATS);  break;
+      $content_format = array_search(FeedUtil::HTML, FeedUtil::CONTENT_FORMATS);  break;
 
     case "^RDF:RDF^RSS:ITEM^AA:CATEGORIES^RDF:BAG^RDF:LI":                  // list of categories into which an item belongs AA Specific
       $item['categories'][] = substr(strrchr($attrs["$RDF:RESOURCE"],"/"),1); break;
@@ -187,8 +148,7 @@ function startElement($parser, $name, $attrs) {
  * @param $name
  */
 function endElement($parser, $name) {
-  global $CONTENT_FORMATS,    //csn_util.php: Array url (e.g. "http://www.isi.edu ... test/html") to int (HTML=0, PLAIN=1)
-         $cur_tag,
+  global $cur_tag,
          $aa_rss,
          $channel_uri, $channel,
          $category_uri, $category,
@@ -234,14 +194,14 @@ function endElement($parser, $name) {
       break;
 
     case "^RDF:RDF^RSS:ITEM^AA:FIELDDATACONT^RDF:BAG^RDF:LI^AA:FIELDDATA":
-      $fielddata['format'] = $CONTENT_FORMATS[$fielddata_content_format];
+      $fielddata['format'] = FeedUtil::CONTENT_FORMATS[$fielddata_content_format];
       $item['fields_content'][$fielddata_uri][] = $fielddata;
       break;
 
     case "^RDF:RDF^RSS:ITEM^CONTENT:ENCODED":  //EG5
     case "^RDF:RDF^RSS:ITEM^CONTENT:ITEMS^RDF:BAG^RDF:LI^CONTENT:ITEM":
-      $item['content'][$CONTENT_FORMATS[$content_format]] = $fulltext_content;
-      $fulltext_content="";
+      $item['content'][FeedUtil::CONTENT_FORMATS[$content_format]] = $fulltext_content;
+      $fulltext_content                                            ="";
       break;
   }
 

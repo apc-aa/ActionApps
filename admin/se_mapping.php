@@ -31,6 +31,7 @@
 
 
 // const  AA_REGISTER_GLOBALS = true;
+use AA\IO\FeedUtil;
 use AA\IO\Grabber\AARSS;
 use AA\Util\InputVars;
 
@@ -49,7 +50,6 @@ if (!IfSlPerm(PS_FEEDING)) {
 }
 
 require_once __DIR__ . "/../include/formutil.php";
-require_once __DIR__ . "/../include/csn_util.php";
 
 $err = [];          // error array (Init - just for initializing variable
 
@@ -78,7 +78,7 @@ $SQL="SELECT feed_id, server_url, name, slice_id FROM rssfeeds
        WHERE slice_id='$p_slice_id'";
 $db->query($SQL);
 while ($db->next_record()) {
-    $u_remote_slice_id = attr2id($db->f('server_url'));         // @todo - remove the mapping dependence on URL
+    $u_remote_slice_id = FeedUtil::attr2id($db->f('server_url'));         // @todo - remove the mapping dependence on URL
     $impslices[$u_remote_slice_id] = "RSS - ".$db->f('name');
     $remote_slices[$u_remote_slice_id] = 2;       // mark slice as RSS
 }
@@ -110,7 +110,7 @@ if ($from_slice_id == "") {
 $p_from_slice_id = q_pack_id($from_slice_id);
 
 // get mapping from table
-[$map_to,$field_map] = GetExternalMapping(AA::$module_id, $from_slice_id );
+[$map_to,$field_map] = FeedUtil::GetExternalMapping(AA::$module_id, $from_slice_id);
 
 if (is_null($field_map) && ($remote_slices[$from_slice_id] == 2)) {
     $field_map = AARSS::getDefaultRssMap();

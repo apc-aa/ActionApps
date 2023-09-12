@@ -31,6 +31,7 @@
 */
 
 use AA\IO\DB\DB_AA;
+use AA\IO\FeedUtil;
 use AA\Util\InputVars;
 
 // const  AA_REGISTER_GLOBALS = true;
@@ -40,7 +41,6 @@ if (!IfSlPerm(PS_FEEDING)) {
     exit;
 }
 require_once __DIR__ . "/../include/varset.php";
-require_once __DIR__ . "/../include/csn_util.php";
 
 try {
     $f_slices         = InputVars::arrayPOST('f_slices');
@@ -51,7 +51,7 @@ try {
 } catch (Exception $e) {}
 
 
-$l_categs = GetGroupConstants(AA::$module_id);        // get all categories belong to local slice
+$l_categs = FeedUtil::GetGroupConstants(AA::$module_id);        // get all categories belong to local slice
 
 $catVS = new Cvarset();
 foreach ($f_slices as $f_slice) {
@@ -69,7 +69,7 @@ foreach ($f_slices as $f_slice) {
              'remote_slice_name' => $channel['title'],
              'user_id'           => AuthGetUname(),
              'node_name'         => $remote_node_name,
-             'newest_item'       => unixstamp_to_iso8601(time()),
+             'newest_item'       => FeedUtil::unixstamp_to_iso8601(time()),
              'feed_mode'         => ($exact_copy ? 'exact' : '')
     ];
 
@@ -86,7 +86,7 @@ foreach ($f_slices as $f_slice) {
         $catVS->add("category",          "text",     $cat['value']);
         $catVS->add("category_name",     "text",     $cat['name']);
         $catVS->add("category_id",       "unpacked", $cat_id);
-        $catVS->add("target_category_id","unpacked", MapDefaultCategory($l_categs,$cat['value'],$cat['catparent']));       // default category
+        $catVS->add("target_category_id","unpacked", FeedUtil::MapDefaultCategory($l_categs, $cat['value'], $cat['catparent']));       // default category
         $catVS->add("approved",          "number",   0);
 
         if ( !$catVS->doTrueReplace('ef_categories')) {
