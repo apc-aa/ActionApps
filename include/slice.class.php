@@ -500,23 +500,42 @@ class AA_Slice extends AA_Module {
         return ($this->getProperty('flag') & SLICE_ALLOW_PENDING_CONTENT) == SLICE_ALLOW_PENDING_CONTENT;
     }
 
+    /** Should we use pending bin condition - based on nocheck_pending slice setting?
+     */
+    function noCheckPending(): bool {
+        $expr = (string)$this->getProperty('nocheck_pending');
+        return !strlen($expr) ? false : ($expr === "1" || AA::Un($expr) === "1");
+    }
+
+    /** Should we use expired bin condition - based on nocheck_expired slice setting?
+     */
+    function noCheckExpired(bool $suggestion=false) {
+        $expr = (string)$this->getProperty('nocheck_expired');
+        return !strlen($expr) ? $suggestion : ($expr === "1" || AA::Un($expr) === "1");
+    }
+
+    /** should we show Pending Bin in AA UI */
+    function noPendingBin(): bool { return (string)$this->getProperty('nocheck_pending')==='1'; }
+    /** should we show Expired Bin in AA UI */
+    function noExpiredBin(): bool { return (string)$this->getProperty('nocheck_expired')==='1'; }
+
     public function countItemsInBins() {
         $now = now('step');
         $ret = ['folder1'=>0, 'folder2'=>0, 'folder3'=>0, 'expired'=>0, 'pending'=>0];
 
         $ret = array_merge($ret, DB_AA::select(['fldr'=>'cnt'], "SELECT concat('folder',status_code) as fldr, count(*) as cnt FROM item ". DB_AA::makeWhere([['slice_id', $this->module_id, 'l']]). ' GROUP BY status_code'));
-        $ret['expired'] = DB_AA::select1('cnt', "SELECT count(*) as cnt FROM item ", [
+        $ret['expired'] = $this->noExpiredBin() ? 0 : DB_AA::select1('cnt', "SELECT count(*) as cnt FROM item ", [
             ['slice_id', $this->module_id, 'l'],
             ['status_code', 1],
             ['expiry_date', $now, '<=']
         ]);
-        $ret['pending'] = DB_AA::select1('cnt', "SELECT count(*) as cnt FROM item ", [
+        $ret['pending'] = $this->noPendingBin() ? 0 : DB_AA::select1('cnt', "SELECT count(*) as cnt FROM item ", [
             ['slice_id', $this->module_id, 'l'],
             ['status_code', 1],
             ['publish_date', $now, '>'],
             ['expiry_date', $now, '>']
         ]);
-        $ret['app']     = $ret['folder1']-$ret['pending']-$ret['expired'];
+        $ret['app']     = $ret['folder1'] - ($this->noCheckPending() ? 0 : $ret['pending']) - ($this->noCheckExpired() ? 0 : $ret['expired']);
 
         return $ret;
     }
@@ -1061,7 +1080,11 @@ class AA_Module_Polls extends AA_Module {
 }
 
 /** Module settings */
-abstract class AA_AbstractModulesettings extends AA_Object {}
+abstract class AA_AbstractModulesettings extends AA_Object {
+
+    /** check, if the $prop is the property of this object */
+    static function isProperty($prop): bool { return false; }
+}
 
 /** Slice settings */
 class AA_Modulesettings_Slice extends AA_AbstractModulesettings {
@@ -1073,8 +1096,8 @@ class AA_Modulesettings_Slice extends AA_AbstractModulesettings {
     const USES_NAME = false;
 
     /** check, if the $prop is the property of this object */
-    static function isProperty($prop) {
-        return in_array($prop, ['spamprotect', 'translations', 'autofields', 'fieldslice', 'historylog']);
+    static function isProperty($prop): bool {
+        return in_array($prop, ['spamprotect', 'translations', 'autofields', 'fieldslice', 'historylog', 'nocheck_pending', 'nocheck_expired']);
     }
 
     /** allows storing object in database
@@ -1083,11 +1106,13 @@ class AA_Modulesettings_Slice extends AA_AbstractModulesettings {
      */
     static function getClassProperties(): array {
         return [ //                        id             name                            type     multi  persist validator, required, help, morehelp, example
-            // 'spamprotect'  => new AA_Property( 'spamprotect',  _m("Languages for translation"), 'string', true, true, new AA_Validate_Regexp(['pattern'=>'/^[a-z]{2}$/', 'maxlength'=>2]), false, _m('specify language codes in which you want translate content - small caps, two letters - like: en, es, de, ...')),
-            'translations' => new AA_Property( 'translations', _m("Languages for translation"), 'string', true, true, new AA_Validate_Regexp(['pattern'=>'/^[a-z]{2}$/', 'maxlength'=>2]), false, _m('specify language codes in which you want translate content - small caps, two letters - like: en, es, de, ...')),
-            'autofields'   => new AA_Property( 'autofields',   _m("Automatic field creation"),  'bool',  false, true, 'bool', false, _m('If checked, slice allows storing values to text....* field, even if the appropriate text....* is not defined in the slice. The field will be created using field text............ as template.')),
-            'fieldslice'   => new AA_Property( 'fieldslice',   _m("Fields defined by another slice"), 'string',  false, true, 'id', false, _m('You can use special slice for additional fields definition. There you can write slice ID, which define the fields.<br>Could be used for data slice, which stores values for user created forms.')),
-            'historylog'   => new AA_Property( 'historylog',   _m("Store item history for N days"), 'string',  false, true, '', false, _m('ALL - do not delele history log (default)<br>0 - do not store item history (nor ITEM_UPD/ITEM_NEW events in Log)<br><em>number</em> - days after which will be history of items deleted'))
+            // 'spamprotect'  => new AA_Property( 'spamprotect',     _m("Languages for translation"), 'string', true, true, new AA_Validate_Regexp(['pattern'=>'/^[a-z]{2}$/', 'maxlength'=>2]), false, _m('specify language codes in which you want translate content - small caps, two letters - like: en, es, de, ...')),
+            'translations'    => new AA_Property( 'translations',    _m("Languages for translation"), 'string', true, true, new AA_Validate_Regexp(['pattern'=>'/^[a-z]{2}$/', 'maxlength'=>2]), false, _m('specify language codes in which you want translate content - small caps, two letters - like: en, es, de, ...')),
+            'autofields'      => new AA_Property( 'autofields',      _m("Automatic field creation"),  'bool',  false, true, 'bool', false, _m('If checked, slice allows storing values to text....* field, even if the appropriate text....* is not defined in the slice. The field will be created using field text............ as template.')),
+            'fieldslice'      => new AA_Property( 'fieldslice',      _m("Fields defined by another slice"), 'string',  false, true, 'id', false, _m('You can use special slice for additional fields definition. There you can write slice ID, which define the fields.<br>Could be used for data slice, which stores values for user created forms.')),
+            'historylog'      => new AA_Property( 'historylog',      _m("Store item history for N days"), 'string',  false, true, '', false, _m('ALL - do not delele history log (default)<br>0 - do not store item history (nor ITEM_UPD/ITEM_NEW events in Log)<br><em>number</em> - days after which will be history of items deleted')),
+            'nocheck_pending' => new AA_Property( 'nocheck_pending', _m("No pending items"), 'string',  false, true, '', false, _m('1 - disable pending bin completely in this slice (act publish_date field as normal one)<br>{aa-expression} - if evaluated as 1, disable pending check (for view, slice, {ids...}) (use {if:{qss:..}, {var:..}, {server:..} expression here)')),
+            'nocheck_expired' => new AA_Property( 'nocheck_expired', _m("No expired items"), 'string',  false, true, '', false, _m('1 - disable expired bin completely in this slice (act expiry_date field as normal one)<br>{aa-expression} - if evaluated as 1, disable expiry date check (for view, slice, {ids...}) (use {if:{qss:..}, {var:..}, {server:..} expression here)'))
              // do not forget to add new property to  isProperty!
         ];
     }
@@ -1105,7 +1130,7 @@ class AA_Modulesettings_Site extends AA_AbstractModulesettings {
 
 
     /** check, if the $prop is the property of this object */
-    static function isProperty($prop) {
+    static function isProperty($prop): bool {
         return in_array($prop, ['translate_slice', 'add_aliases', 'web_languages', 'page404', 'page404_code', 'sitemap_alias', 'perm_alias', 'loginpage_code', 'perm_mode', 'ga_id']);
     }
 

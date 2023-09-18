@@ -67,6 +67,8 @@ class AA_Operators {
                 '!='        => '<>',
                 '<='        => '<=',
                 '>='        => '>=',
+                '&'         => '&',
+                '|'         => '|',
                 'd:<'       => 'd:<',
                 'd:>'       => 'd:>',
                 'd:<='      => 'd:<=',
@@ -104,7 +106,7 @@ class AA_Operators {
      * @return string
      */
     static public function normalize(?string $operator): string {
-        return str_replace(['eq', 'ne', '&lt;', 'lt', 'le', '&gt;', 'gt', 'ge'], ['==', '<>', '<', '<', '<=', '>', '>', '>='], $operator);
+        return str_replace(['eq', 'ne', '&lt;', 'lt', 'le', '&gt;', 'gt', 'ge', '&amp;'], ['==', '<>', '<', '<', '<=', '>', '>', '>=', '&'], $operator);
     }
 
     /** getJsDefinition function
@@ -156,13 +158,13 @@ class AA_Condition extends AA_Object {
      * @return array
      */
     static function getClassProperties(): array {
-        return [                   //  id            name         type      multi  persistent validator, required, help,                                         morehelp, example
-                                   /** Array of compared fields */
-                                   'fields'   => new AA_Property('fields', _m("Fields"), 'text', true, true, 'field'),
-                                   /** Condition operator like 'CONTAIN', 'BEGIN', '=', '<>', '<', '>' ... */
-                                   'operator' => new AA_Property('operator', _m("Operator"), 'text', false, true, AA_Operators::getEnum()),
-                                   /** Compared value */
-                                   'value'    => new AA_Property('value', _m("Value"), 'text', false, true, 'text'),
+        return [                              //  id            name         type      multi  persistent validator, required, help,                                         morehelp, example
+                   /** Array of compared fields */
+                   'fields'   => new AA_Property('fields', _m("Fields"), 'text', true, true, 'field'),
+                   /** Condition operator like 'CONTAIN', 'BEGIN', '=', '<>', '<', '>' ... */
+                   'operator' => new AA_Property('operator', _m("Operator"), 'text', false, true, AA_Operators::getEnum()),
+                   /** Compared value */
+                   'value'    => new AA_Property('value', _m("Value"), 'text', false, true, 'text'),
         ];
     }
 
@@ -225,7 +227,7 @@ class AA_Condition extends AA_Object {
         if ($val[0] == '-') {  // we do not want triple --- like in: expiry_date.....-m:<- --432000
             $val = " $val";
         }
-        return join(',', $this->fields) . '-' . $this->operator . '-' . $val; // StrExpand('AA_Stringexpand_Conds', array($this->value, '1'));  - does not work for B OR C, ...
+        return join(',', $this->fields) . '-' . $this->operator . '-' . $val; // StrExp('conds', [$this->value, '1']);  - does not work for B OR C, ...
     }
 
     /** getAsLongString function
@@ -244,7 +246,7 @@ class AA_Condition extends AA_Object {
 
 
     /** create whole phrase from the text
-     *  Puts the expression in the quotes, so it becames phrase
+     *  Puts the expression in the quotes, so it becomes phrase
      *  Example:   I say: "Hola..."    ->    "I say: \"Hola\"..."
      */
     static public function makePhrase($text) {
@@ -313,6 +315,10 @@ class AA_Condition extends AA_Object {
                 return $field_value >= $this->value;
             case '>'  :
                 return $field_value > $this->value;
+            case '&'  :
+                return $field_value & $this->value;
+            case '|'  :
+                return $field_value | $this->value;
 //          case '<=>':  //MySQL know this operator, but we do not use it in AA
         }
         return false;
@@ -458,7 +464,7 @@ class AA_Set extends AA_Object {
         }
         // no limit...
         $unsorted_zids = QueryZids($this->getModules(), $this->getConds(), $this->getSort(), $this->getBins(), 0, $restrict_zids, 'LIKE');
-        $sorted_ids =  explode_ids(StrExpand('AA_Stringexpand_Order', [ join('-', $unsorted_zids->longids()), $this->postsort[0]['alias'], $this->postsort[0]['order'] ]));
+        $sorted_ids =  explode_ids(StrExp('order', [ join('-', $unsorted_zids->longids()), $this->postsort[0]['alias'], $this->postsort[0]['order'] ]));
         $limit = (int)$limit;
         if (!$limit) {
             return new zids($sorted_ids, 'l');
@@ -659,7 +665,7 @@ class AA_Set extends AA_Object {
             }
         }
 
-        // Finally create the the conds array
+        // Finally create the conds array
         foreach ($conds as $k => $cond) {
             $operator = $cond['operator'];
             $value    = $cond['value'];
@@ -928,14 +934,14 @@ class AA_Set extends AA_Object {
      * @return array
      */
     static function getClassProperties(): array {
-        return [                //  id            name         type          multi  persistent validator, required, help,                                         morehelp, example
-                                /** Array of AA_Condition */
-                                'conds'  => new AA_Property('conds', _m("Conditions"), 'AA_Condition', true, true),
-                                /** array of AA_Sortorder */
-                                'sort'   => new AA_Property('sort', _m("Sort"), 'AA_Sortorder', true, true),
-                                /** array of slice_ids */
-                                'slices' => new AA_Property('slices', _m("Slices"), 'text', true, true),
-                                //     'alias'  => new AA_Property( 'alias',   _m("Alias"),         'string', false, true, '', true,  _m('Alias will be called as {_:&lt;Alias_name&gt;[:&lt;Possible parameters - colon separated&gt;]}'),'', 'Message_box'),
+        return [ //  id            name         type          multi  persistent validator, required, help,                                         morehelp, example
+                 /** Array of AA_Condition */
+                 'conds'  => new AA_Property('conds', _m("Conditions"), 'AA_Condition', true, true),
+                 /** array of AA_Sortorder */
+                 'sort'   => new AA_Property('sort', _m("Sort"), 'AA_Sortorder', true, true),
+                 /** array of slice_ids */
+                 'slices' => new AA_Property('slices', _m("Slices"), 'text', true, true),
+                 //     'alias'  => new AA_Property( 'alias',   _m("Alias"),         'string', false, true, '', true,  _m('Alias will be called as {_:&lt;Alias_name&gt;[:&lt;Possible parameters - colon separated&gt;]}'),'', 'Message_box'),
         ];
     }
 
@@ -979,12 +985,7 @@ class AA_Dbcondition {
         // normalize operator
         // we allow modifiers without ':' - like d>, e>=, ... (which bring administrators the possibility to not deal with escaping ':' in some cases)
         // we are also trying to fix administrators mistakes, when they convert > to &gt; so &gt;, ... are valid operator, now
-        $this->operator = str_replace(['#:', ':', '&gt;', '&lt;'], [
-            '',
-            '',
-            '>',
-            '<',
-        ], trim($operator)); // #: - fix mistaken escaping of d#:>...
+        $this->operator = str_replace(['#:', ':', '&gt;', '&lt;', '&amp;'], ['', '', '>', '<','&'], trim($operator)); // #: - fix mistaken escaping of d#:>...
         if (strlen($this->operator) < 4) {
             $this->operator = AA_Operators::normalize($this->operator);  // d-highlight.......-lt-5  - lt, gt, le, ge, ne are allowed as well
         }
@@ -1009,6 +1010,7 @@ class AA_Dbcondition {
         AA::$debug & 64 && AA::$dbg->log('AA_Dbcondition', $this->field, $this->operator, $this->querystring, $this->type);
 
         $field       = $this->field;
+        $qfield      = getDB()->quote_identifier($field);
         $operator    = $this->operator;
         $querystring = $this->querystring;
 
@@ -1079,14 +1081,14 @@ class AA_Dbcondition {
                 return [
                     'INNER',
                     '',
-                    "($field = '" . addcslashes($querystring, "'") . "')",
+                    "($qfield = '" . addcslashes($querystring, "'") . "')",
                 ];  // exact match (we added this because SQL Syntax parser in AA have problems with packed ids)
             case 'BEGIN':
-                return ['INNER', '', "($field LIKE '" . addcslashes(quote($querystring), "_%") . "%')"];
+                return ['INNER', '', "($qfield LIKE '" . addcslashes(quote($querystring), "_%") . "%')"];
             case 'CONTAIN':
-                return ['INNER', '', "($field LIKE '%" . addcslashes(quote($querystring), "_%") . "%')"];
+                return ['INNER', '', "($qfield LIKE '%" . addcslashes(quote($querystring), "_%") . "%')"];
             case 'BITSET':
-                return ['INNER', '', "($field & " . (int)$querystring . " = " . (int)$querystring . ")"];
+                return ['INNER', '', "($qfield & " . (int)$querystring . " = " . (int)$querystring . ")"];
             case 'XLIKE':
                 $ret = (new Syntax($field, $operator, SQL_Lex::lex(trim($querystring))))->S();
                 if ($ret == "_SYNTAX_ERROR") {
@@ -1133,37 +1135,39 @@ class AA_Dbcondition {
                 return ($ret ? ['INNER', '', "($ret)"] : ['ALL', '', "1=1"]);   // maybe we can change LEFT to INNER
             case 'BETWEEN':
                 $arr = explode(",", quote($querystring));
-                return ['INNER', '', "(($field >= $arr[0]) AND ($field <= $arr[1]))"];
+                return ['INNER', '', "(($qfield >= $arr[0]) AND ($qfield <= $arr[1]))"];
             case 'ISNULL':
-                return ['LEFT', '', "(($field IS NULL) OR ($field=''))"];
+                return ['LEFT', '', "(($qfield IS NULL) OR ($qfield=''))"];
             case 'NOTNULL':
-                return ['INNER', '', "(($field IS NOT NULL) AND ($field<>''))"];
+                return ['INNER', '', "(($qfield IS NOT NULL) AND ($qfield<>''))"];
             case 'ISMAIL':
-                return ['INNER', '', "($field REGEXP '" . quote(AA_REGEXP_MAIL) . "')"];
+                return ['INNER', '', "($qfield REGEXP '" . quote(AA_REGEXP_MAIL) . "')"];
             case 'REGEXP':
-                return ['INNER', '', "($field REGEXP '" . quote($querystring) . "')"];
+                return ['INNER', '', "($qfield REGEXP '" . quote($querystring) . "')"];
             case 'NOTMAIL':
-                return ['LEFT', '', "($field NOT REGEXP '" . quote(AA_REGEXP_MAIL) . "')"];
+                return ['LEFT', '', "($qfield NOT REGEXP '" . quote(AA_REGEXP_MAIL) . "')"];
             case 'NOTREGEXP':
-                return ['LEFT', '', "($field NOT REGEXP '" . quote($querystring) . "')"];
+                return ['LEFT', '', "($qfield NOT REGEXP '" . quote($querystring) . "')"];
             //      case '<=>':  //MySQL know this operator, but we do not use it in AA
             //      MariDB doc: NULL values cannot be used with most comparison operators. For example, =, >, >=, <=, <, or != cannot be used, as any comparison with a NULL always returns a NULL value, never true (1) or false (0).
             //        - so we can use INNER join
 
             case '<>' :       // for work with multivalues we look for non existatnt join by value
             case '!=' :
-                return $this->joined ? ['LEFT', "($field = '$cleanstr')", "($field IS NULL)"] :
-                    ['LEFT', "", "($field <> '$cleanstr')"];
+                return $this->joined ? ['LEFT', "($qfield = '$cleanstr')", "($qfield IS NULL)"] :
+                    ['LEFT', "", "($qfield <> '$cleanstr')"];
 
             case '<=' :
             case '<'  :
             case '>=' :
             case '>'  :
+            case '&'  :
+            case '|'  :
                 if (IsSigInt($cleanstr)) {
                     // it allows comparing also text stored fields - like d-number..........-lt-22 when number.......... is stored as text
-                    return ['LEFT', '', "($field $operator $cleanstr)"];
+                    return ['LEFT', '', "($qfield $operator $cleanstr)"];
                 }
-                return ['LEFT', '', "($field $operator '$cleanstr')"];
+                return ['LEFT', '', "($qfield $operator '$cleanstr')"];
         }
         return ['ALL', '', "1=1"];
     }
@@ -1172,7 +1176,7 @@ class AA_Dbcondition {
 
 // -------------------------------------------------------------------------------------------
 
-/** ProoveFieldNames function - just for debuging
+/** ProoveFieldNames function - just for debugging
  * show debug info about non-existing fields in all given slices
  * @param $slices
  * @param $conds
@@ -1294,7 +1298,8 @@ function ParseEasyConds(&$conds, $defaultCondsOperator = "LIKE") {
             foreach ($cond as $field => $val) {
                 if (strpos($field, ',') !== false) {
                     unset($conds[$k][$field]);
-                    foreach (explode(',', $field) as $separate_field) {
+                    $fields = explode(',', $field);
+                    foreach ($fields as $separate_field) {
                         $conds[$k][$separate_field] = $val;
                     }
                 }
@@ -1325,8 +1330,7 @@ function String2Sort($sort_string) {
     return $set->getSort();
 }
 
-/** MakeSQLConditions function
- *  Creates array of SQL conditions based on $conds and fields $add
+/** Creates array of SQL conditions based on $conds and fields $add
  * @param          $fields_arr
  * @param          $conds
  * @param          $defaultCondsOperator
@@ -1339,6 +1343,19 @@ function String2Sort($sort_string) {
 function MakeSQLConditions($fields_arr, $conds, $defaultCondsOperator, &$join_tables, $additional_field_cond = '', $add_param = false) {
 
     ParseMultiSelectConds($conds);
+
+    // and now replace all_fields conds (like conds[0][all_fields]  --> conds[0][even,odd,before]=1) which is then parsed in ParseEasyConds()
+    foreach ($conds as $k => $cond) {
+        foreach ($cond as $field => $val) {
+            if ($field == 'all_fields') {
+                unset($conds[$k][$field]);
+                foreach( $fields_arr as $fld2add =>$foo ) {
+                    $conds[$k][$fld2add] = $val;
+                }
+            }
+        }
+    }
+
     ParseEasyConds($conds, $defaultCondsOperator);
 
     AA::$debug & 2 && AA::$dbg->log("<br>Conds after ParseEasyConds():", $conds, "<br>--");
@@ -1373,7 +1390,7 @@ function MakeSQLConditions($fields_arr, $conds, $defaultCondsOperator, &$join_ta
 }
 
 /** MakeSQLOrderBy function
- *  Creates array of SQL ORDER BY expresions based on $sort and fields array
+ *  Creates array of SQL ORDER BY expressions based on $sort and fields array
  * @param          $fields_arr
  * @param array    $sort
  * @param array    $join_tables              - if some table is needed to join,
@@ -1427,7 +1444,7 @@ function MakeSQLOrderBy($fields_arr, $sort, &$join_tables, $additional_field_con
  *                                         'limit' => <number>)
  *                                         Limits the number of returned ids from each
  *                                         group. Group is defined by 'field'. Used
- *                                         for displaying only firs <number> of items
+ *                                         for displaying only first <number> of items
  *                                         from each group. Also good, if you want to
  *                                         list just the group names which is used in
  *                                         selected items (then set the number to 1)
@@ -1445,9 +1462,9 @@ function GetZidsFromSQL($SQL, $col, $zid_type = 's', $empty_result_condition = f
 
         if (!$group_limit) {
             $arr = $db->fetch_column($col);
-        } else {                     // we have to remove the ids above the limit for group
-            // and also we have to add extended attributes to zids, because
-            // of group_by
+        } else {
+            // we have to remove the ids above the limit for group, and also we have to add extended attributes
+            // to zids, because of group_by
             $group_by = [];
             $groups   = [];                 // array where we count the number of items in each group
             $glimit   = $group_limit['limit'];  // shortcut - just for possible speedup
@@ -1464,6 +1481,7 @@ function GetZidsFromSQL($SQL, $col, $zid_type = 's', $empty_result_condition = f
             $extended_attr = ['group_by' => $group_by];
         }
     }
+
     $zids = new zids($arr, $zid_type, $extended_attr);
 
     $QueryIDsCount = count($arr);
@@ -1560,6 +1578,7 @@ function QueryZids($slices, $conds = "", $sort = "", $type = "ACTIVE", $neverAll
     ParseEasyConds($conds, $defaultCondsOperator);
 
     $select_order = '';
+    $ignore_expiry_date  = false;
 
     // we need fields just in case we use sort or conds. Not necessary for
     // restrict_zids queries, where we often do not have slice id
@@ -1599,11 +1618,11 @@ function QueryZids($slices, $conds = "", $sort = "", $type = "ACTIVE", $neverAll
                     case 'all_fields':
                         $cond_flds = 'all_fields';
                         $store     = 'text';
-                        continue;
+                        continue 2;  // continue with next foreach
                     case 'all_fields_numeric':
                         $cond_flds = 'all_fields';
                         $store     = 'number';
-                        continue;
+                        continue 2;  // continue with next foreach
                 }
                 if (AA_Condition::CONDS_NOT_FIELD_NAMES[$fid]) {
                     continue;      // it is not field_id parameters - skip it for now
@@ -1949,7 +1968,20 @@ function QueryZids($slices, $conds = "", $sort = "", $type = "ACTIVE", $neverAll
         }
     }
 
-    $SQL .= CreateBinCondition($type, 'item', $ignore_expiry_date);
+    if (!$slice AND $slices) {
+        $slice = AA_Slice::getModule(reset($slices));
+    }
+
+    /** @todo deal with no slice id for restrict_zids without conds */
+    huhl($ignore_expiry_date, $slice->noCheckExpired($ignore_expiry_date));
+    $ignore_expiry_date  = ($slice AND $slice->noCheckExpired($ignore_expiry_date));
+    $ignore_publish_date = ($slice AND $slice->noCheckPending());
+
+    // not this way - HM 2023:
+    // // $ignore_expiry_date  = $ignore_expiry_date  AND $slice AND $slice->isExpiredContentAllowed();  // expiry date is not so strict (we historically used it before allowing pending items - for archives, old events, ...)
+    // $ignore_publish_date = $ignore_publish_date AND $slice AND $slice->isPendingContentAllowed();
+
+    $SQL .= CreateBinCondition($type, 'item', $ignore_expiry_date, $ignore_publish_date);
 
     if (isset($select_conds) and is_array($select_conds)) {     // conditions -----
         $SQL .= " AND (" . implode(") AND (", $select_conds) . ") ";

@@ -415,7 +415,7 @@ class AA_Showview {
                         break;
                     }
                 }
-                $ret      = AA::Stringexpander()->unalias($noitem_msg);
+                $ret      = AA::Un($noitem_msg);
                 break;
             case 'seetoo':
             case 'calendar':

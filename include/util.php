@@ -618,10 +618,11 @@ function GetModuleInfo($module_id, $type) {
  *  Returns part of SQL command used in where related to bins
  * @param        $bin
  * @param string $table table name
- * @param bool   $ignore_expiry_date
+ * @param bool $ignore_expiry_date
+ * @param bool $ignore_pending_date
  * @return string
  */
-function CreateBinCondition($bin, $table, $ignore_expiry_date=false) {
+function CreateBinCondition($bin, $table, bool $ignore_expiry_date=false, bool $ignore_pending_date=false): string {
     // now is rounded in order the time is in steps - it is better for search
     // caching - SQL is THE SAME during one time step
     $now = now('step');            // round up
@@ -662,11 +663,15 @@ function CreateBinCondition($bin, $table, $ignore_expiry_date=false) {
         $or_conds[] = " $table.status_code=1 ";
     } else {
         if ($numeric_bin & AA_BIN_ACTIVE) {
-            $SQL = " $table.status_code=1 AND $table.publish_date <= '$now' ";
+            $SQL = " $table.status_code=1 ";
+            /* for slices, where we want to allow to look into pending items using cond -publish_date....-gt-1 */
+            if ( !$ignore_pending_date  ) {
+                $SQL .= "AND $table.publish_date <= '$now' ";
+            }
             /* condition can specify expiry date (good for archives) */
             if ( !( $ignore_expiry_date && defined("ALLOW_DISPLAY_EXPIRED_ITEMS") && ALLOW_DISPLAY_EXPIRED_ITEMS) ) {
                 //              $SQL2 .= " AND ($table.expiry_date > '$now' OR $table.expiry_date IS NULL) ";
-                $SQL .= " AND $table.expiry_date > '$now' ";
+                $SQL .= "AND $table.expiry_date > '$now' ";
             }
             $or_conds[] = $SQL;
         }
@@ -1953,6 +1958,17 @@ function aa_trim(string $string='', string $chars=''): string {
     return (empty($chars) and Langs::isUTF()) ? preg_replace("/^\s+|\s+$/u", "", $string) : trim($string, $chars);
     // trim($string, " \t\n\r\0\x0B\xA0");  // standard + chr(160) - hard space   // does not work for UTF characters - the hardspace \xA0 can break some UTF chars - "MŠ" for example
 }
+
+/** strtolower with utf in mind */
+function aa_strtolower($string) {
+    return Langs::isUTF() ? mb_strtolower($string) : strtolower($string); // maybe we could count with other languages
+}
+
+/** strtoupper with utf in mind */
+function aa_strtoupper($string) {
+    return Langs::isUTF() ? mb_strtoupper($string) : strtoupper($string); // maybe we could count with other languages
+}
+
 
 /** test if any array member passes the callback test - implements missing PHP function
  *  @usage array_find_fnc([1,2,3,4,5,6], function($x) { return $x > 4; });  // 5
