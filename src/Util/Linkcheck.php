@@ -47,7 +47,7 @@ use AA\IO\DB\DB_AA;
 class Linkcheck {
 
     // http codes, error names and their weight
-    private static $HTTP_ERROR_CODES = [
+    private const HTTP_ERROR_CODES = [
         // first 3 are for checking domain from email
         'N/A'   => ["comment" => "Non HTTP", "weight" => "5"],
         'OK'    => ["comment" => "Valid hostname", "weight" => "0"],
@@ -119,20 +119,19 @@ class Linkcheck {
             }
         } else {
             $urlArray = parse_url($url);
-            if (!$urlArray["port"]) {
-                $urlArray["port"] = "80";
-            }
-            if (!$urlArray["path"]) {
-                $urlArray["path"] = "/";
-            }
+
+            $urlArray["port"] = $urlArray["port"] ?? (($urlArray["scheme"] == 'https') ? "443" : "80");
+            $protocol = ($urlArray["scheme"] == 'https' && $urlArray["port"] == 443) ? 'ssl://' : '';
+            $urlArray["path"] = $urlArray["path"] ?? "/";
+            $sock = @fsockopen($protocol . $urlArray["host"], $urlArray["port"], $errnum, $errstr, 10);
+
             $return["url"] = $url;
-            $sock          = @fsockopen($urlArray["host"], $urlArray["port"], $errnum, $errstr, 10);
             if (!$sock) {
                 $return["code"] = "999";
             } else {
                 $dump = "HEAD " . $urlArray["path"] . " HTTP/1.1\r\n";
-                $dump .= "User-Agent: APC-AA Link Checker (http://www.ecn.cz/)\r\n";
-                $dump .= "Host: " . $urlArray["host"] . "\r\nConnection: close\r\n";
+                $dump .= "User-Agent: APC-AA Link Checker (https://actionapps.org/)\r\n";
+                $dump .= "Host: " . $urlArray["host"] . "\r\n";
                 $dump .= "Connection: close\r\n\r\n";
                 fputs($sock, $dump);
                 while (($str = fgets($sock, 1024)) && (($return["code"] == "") || ($return["contentType"] == ""))) {
@@ -148,8 +147,8 @@ class Linkcheck {
                 flush();
             }
         }
-        $return["comment"]   = self::$HTTP_ERROR_CODES[$return["code"]]["comment"];
-        $return["weight"]    = self::$HTTP_ERROR_CODES[$return["code"]]["weight"];
+        $return["comment"]   = self::HTTP_ERROR_CODES[$return["code"]]["comment"];
+        $return["weight"]    = self::HTTP_ERROR_CODES[$return["code"]]["weight"];
         $return["timestamp"] = $time;
         return $return;
     }
@@ -241,10 +240,10 @@ class Linkcheck {
         $num = 0;
         for ($i = 0; $i < $count; ++$i) {
             /* exponential function - too fast near zero :(
-            // $num =  exp((-1)*($arr[$i]["reltime"]/60/60/24))*self::$HTTP_ERROR_CODES[$arr[$i]["code"]]["weight"];
+            // $num =  exp((-1)*($arr[$i]["reltime"]/60/60/24))*self::HTTP_ERROR_CODES[$arr[$i]["code"]]["weight"];
             */
             // linear function
-            $n1  = (self::$HTTP_ERROR_CODES[$arr[$i]["code"]]["weight"] / ($i + 1));
+            $n1  = (self::HTTP_ERROR_CODES[$arr[$i]["code"]]["weight"] / ($i + 1));
             $num += $n1;
         }
         // returned number - 1000 is the biggest number, with worst error codes, we want to return
