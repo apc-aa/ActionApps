@@ -556,6 +556,7 @@ class ComposerStaticInit43e15006db6c3041e7b8c7c57cf04d54
         'AA_Stringexpand_Ids' => __DIR__ . '/../..' . '/include/stringexpand.php',
         'AA_Stringexpand_If' => __DIR__ . '/../..' . '/include/stringexpand.php',
         'AA_Stringexpand_If1' => __DIR__ . '/../..' . '/include/stringexpand.php',
+        'AA_Stringexpand_Ifbit' => __DIR__ . '/../..' . '/include/stringexpand.php',
         'AA_Stringexpand_Ifeq' => __DIR__ . '/../..' . '/include/stringexpand.php',
         'AA_Stringexpand_Ifeqfield' => __DIR__ . '/../..' . '/include/stringexpand.php',
         'AA_Stringexpand_Ifin' => __DIR__ . '/../..' . '/include/stringexpand.php',

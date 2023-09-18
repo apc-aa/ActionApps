@@ -467,6 +467,7 @@ return array(
     'AA_Stringexpand_Ids' => $baseDir . '/include/stringexpand.php',
     'AA_Stringexpand_If' => $baseDir . '/include/stringexpand.php',
     'AA_Stringexpand_If1' => $baseDir . '/include/stringexpand.php',
+    'AA_Stringexpand_Ifbit' => $baseDir . '/include/stringexpand.php',
     'AA_Stringexpand_Ifeq' => $baseDir . '/include/stringexpand.php',
     'AA_Stringexpand_Ifeqfield' => $baseDir . '/include/stringexpand.php',
     'AA_Stringexpand_Ifin' => $baseDir . '/include/stringexpand.php',
