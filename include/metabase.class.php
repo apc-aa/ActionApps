@@ -1322,7 +1322,7 @@ class AA_Metabase {
         }
 
         $manager_settings = [
-            'show'      =>  MGR_ALL & ~(MGR_SB_BOOKMARKS | MGR_SB_ALLTEXT | MGR_SB_ALLNUM),
+            'show'      =>  MGR_ALL & ~(MGR_SB_BOOKMARKS | MGR_SB_ALLNUM),
             'searchbar' => [
                 'fields'               => $search_fields,
                 'search_row_count_min' => 1,
