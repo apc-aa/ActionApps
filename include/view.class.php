@@ -210,8 +210,8 @@ class AA_View {
         // grouping
 
         if (array_key_exists('group_by', $param_sort)) {
-            if ($param_sort['group_by']) { // we can have group_by= to avoid grouping ({view:55::group_by-})
-                $sort = String2Sort('100000' . $param_sort['group_by']);
+            if ($param_sort['group_by'] AND !AA_Alias::isAliasLike($param_sort['group_by'], true)) { // we can have group_by= to avoid grouping ({view:55::group_by-})
+                $sort = String2Sort('100000' . $param_sort['group_by']);                       // for aliases, we do not want to sort
             }
         } else {
             if ($this->f('group_by1')) {
@@ -385,7 +385,7 @@ class AA_View {
      * @return array asociative array of properties
      */
     public static function parseSettings($set_arr) {
-        $ALLOW_MULTIPLE = ['banner' => true];  // you can use set[245]=banner-2-260,banner-10-261
+        define('ALLOW_MULTIPLE', ['banner' => true]);  // you can use set[245]=banner-2-260,banner-10-261
 
         $ret = [];
         foreach ($set_arr as $set) {
@@ -394,7 +394,7 @@ class AA_View {
                 $pos = strpos($v, '-');
                 if ($pos) {
                     $seting_name = substr($v, 0, $pos);
-                    if ($ALLOW_MULTIPLE[$seting_name]) {
+                    if (ALLOW_MULTIPLE[$seting_name]) {
                         $ret[$seting_name][] = substr($v, $pos + 1);  // always array (for banner for example)
                     } else {
                         $ret[$seting_name] = substr($v, $pos + 1);
@@ -439,6 +439,7 @@ class AA_View {
             }
 
             $new_params = add_vars($query_string, 'return');  // adds values from url (it's not automatic in SSIed script)
+
             if ($use_globals) {
                 add_vars($query_string);   // import it also globally
                 $vid = trim($vid);
@@ -454,7 +455,6 @@ class AA_View {
         // Splits on "-" and subsitutes aliases
         $commands = new AA_View_Commands($new_params['cmd'][$vid], $new_params['als']);
         $v_conds  = new AA_Set;
-        $c_conds  = new AA_Set;
 
         AA::$debug & 2 && AA::$dbg->log("<br>ParseViewParameters - command:", $commands);
 

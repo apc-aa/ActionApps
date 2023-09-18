@@ -81,7 +81,7 @@ class itemview {
      */
   function __construct($slice_info, $aliases, $zids, $from, $number, $clean_url, $disc = "", $get_content_funct = 'GetItemContent') {
 
-      $this->slice_info = $slice_info;  // $slice_info is array with this fields:
+      $this->slice_info = $slice_info;  // $slice_info is array with these fields:
                                       //      - print_view() function:
                                       //   compact_top, category_sort,
                                       //   category_format, category_top,
@@ -95,6 +95,7 @@ class itemview {
                                       //   fulltext_format_top,
                                       //   fulltext_format_bottom,
                                       //   banners
+                                      //   group_by2, g2_direction  // allows to sort by alias
 
     $this->group_fld  = $slice_info['group_by'];
 
@@ -486,9 +487,12 @@ class itemview {
 
     // fill the foo_ids - ids to itemids to get from database
     if ( !$is_random ) {
-        if ((strlen($this->slice_info['group_by2'])==10) AND (substr($this->slice_info['group_by2'],0,2)=='_#')) {
-            $SORT_CONST = ['0'=> 'locale', '1' => 'rlocale', '4'=>'numeric', '5' => 'rnumeric'];
-            $this->zids = new zids(explode_ids(StrExp('order', [join('-',$this->zids->short_or_longids()), $this->slice_info['group_by2'], $SORT_CONST[(int)$this->slice_info['g2_direction']]])));
+        if ( $this->group_fld AND AA_Alias::isAliasLike($this->group_fld, true) ) {
+            $this->zids = new zids(explode_ids(StrExp('order', [join('-',$this->zids->short_or_longids()), $this->group_fld, 'locale'])));
+        }
+        elseif ((strlen($this->slice_info['group_by2'])==10) AND (substr($this->slice_info['group_by2'],0,2)=='_#')) {
+            define('SORT_CONST', ['0' => 'locale', '1' => 'rlocale', '4' => 'numeric', '5' => 'rnumeric']);
+            $this->zids = new zids(explode_ids(StrExp('order', [join('-',$this->zids->short_or_longids()), $this->slice_info['group_by2'], SORT_CONST[(int)$this->slice_info['g2_direction']]])));
         }
         $foo_zids = $this->zids->slice($real_from, ( ($this->num_records < 0) ? MAX_NO_OF_ITEMS_4_GROUP :  $this->num_records ));
     } else { // Selecting random record
@@ -635,14 +639,13 @@ class itemview {
             if ($this->group_fld) {
 
                 //AA::$debug&2 && AA::$dbg->info("group_fld", $iid, $this->zids->getAttr($zidx, 'group_by')) && exit;
-
-                if (is_null($catname = $this->zids->getAttr($zidx, 'group_by'))) {
-                    $catname = $CurItem->getval($this->group_fld);
-                } else {
-                    // it shouldn't be set, but just in case - we do not want to redefine it
-                    // @todo move it outside else - there it is just for first testing
-                    $CurItem->addAlias(new AA_Alias('_#GRP_NAME', ParamImplode(["f_t", $catname]), 'id..............', _m("exact group name")));
+                if (is_null($catname = $this->zids->getAttr($zidx, 'group_by'))) {  // used in GetZidsFromSQL for group_limit...
+                    // $catname = $CurItem->getval($this->group_fld);
+                    $catname = $CurItem->subst_alias($this->group_fld);
                 }
+                // it shouldn't be set, but just in case - we do not want to redefine it
+                $CurItem->addAlias(new AA_Alias('_#GRP_NAME', ParamImplode(["f__", $catname]), 'id..............', _m("exact group name")));
+
                 if ($this->slice_info['gb_header']) {
                     if ($this->slice_info['gb_header'] == 127) {  // all before ~
                         $catname = strtok($catname, '~');

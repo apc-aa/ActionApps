@@ -84,7 +84,7 @@ class AA_Alias {
      * @param string $hlp = ''
      */
     function __construct($alias, $funct, $field_id, $hlp = '') {
-        $this->alias    = '_#' . strtoupper(substr($alias . '________', 2, 8));  // just make sure the alias is in correct _#SOME_ALS format
+        $this->alias    = self::ensureAlias($alias);  // just make sure the alias is in correct _#SOME_ALS format
         $this->field_id = (string)$field_id;
         $this->funct    = (string)$funct;
         $this->hlp      = (string)$hlp;
@@ -102,6 +102,23 @@ class AA_Alias {
             return new AA_Alias($alias, $funct, $field_id, $hlp);
         }
         return null;
+    }
+
+    /** just make sure the alias is in correct _#SOME_ALS format */
+    public static function ensureAlias(string $alias): string {
+        return '_#' . strtoupper(substr($alias . '________', 2, 8));
+    }
+
+    /** test if the text looks like alias (_#ABCDEFGH)
+     * @param string $text
+     * @param bool   $raw   if true, we want to pass also raw alias name (ABCDEFGH)
+     * @return string alias with _# or empty string
+     */
+    public static function isAliasLike(string $text, bool $raw = false): string {
+        if (preg_match("/^_#[A-Z0-9_#]{8}$/", $text) === 1) {;   // pattern="_#[A-Z0-9_#]{8} - used also in se_field.php UI"
+            return $text;
+        }
+        return ($raw AND (preg_match("/^[A-Z0-9_#]{8}$/", $text) === 1)) ? "_#$text" : '';
     }
 
     /** getArray function
