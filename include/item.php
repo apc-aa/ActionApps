@@ -244,18 +244,18 @@ function GetFormattedItems($zids, $format, $crypted_additional_slice_pwd=null, $
 }
 
 /** GetFormatedConstants function
- * @param        $constgroup
- * @param        $format
- * @param        $restrict_zids
- * @param        $conds
- * @param        $sort
- * @param string $for_id   if created for some item andd _#ITEM_ID_ alias
+ * @param             $constgroup
+ * @param             $format
+ * @param             $restrict_zids
+ * @param             $conds
+ * @param             $sort
+ * @param string|null $for_id if created for some item and _#ITEM_ID_ alias
  * @return array
  * @todo Teach itemview to return array (instead of whole listing) and convert
- *        those functions (GetFormattedConstants() and GetFormattedItems())
- *        to itemview
+ *                            those functions (GetFormattedConstants() and GetFormattedItems())
+ *                            to itemview
  */
-function GetFormatedConstants($constgroup, $format, $restrict_zids, $conds, $sort, string $for_id='') {
+function GetFormatedConstants($constgroup, $format, $restrict_zids, $conds, $sort, ?string $for_id=null) {
     if (!trim($constgroup)) {
         return [];
     }
