@@ -321,7 +321,7 @@ class AARSS extends AbstractGrabber
         /** $g_slice_encoding is passed to aa_rss_parse() - it defines output character encoding */
         $GLOBALS['g_slice_encoding'] = $slice->getCharset();
 
-        huhl($xml_data);
+        // huhl($xml_data);
 
         if (!($this->aa_rss = aa_rss_parse($xml_data))) {
             AA_Log::write("CSN", '', "Feeding mode ($feed_debug_name): Unable to parse XML data");
