@@ -11,13 +11,13 @@ class DB_AA extends AbstractDB
 {
 
     /** @var string DB connection - host  */
-    protected $Host;
+    // protected $Host;
     /** @var string DB connection - database name  */
-    protected $Database;
+    // protected $Database;
     /** @var string DB connection - username  */
-    protected $User;
+    // protected $User;
     /** @var string DB connection - password  */
-    protected $Password;
+    // protected $Password;
 
     /** @var string database link  */
     protected $dbase;
@@ -26,8 +26,11 @@ class DB_AA extends AbstractDB
 
     /* public: constructor */
     function __construct(array $connection) {
+
+        [$type,$driver] = explode(':',$connection['type'].':');  // $driver used in  PDO: db_pdo:mysql, ...
+
         self::$_instances_no++;
-        switch (mb_strtolower($connection['type'])) {
+        switch (mb_strtolower($type)) {
             case 'db_mssql':
                 $this->dbase = new DB_MSSQL($connection);
                 break;
@@ -38,6 +41,7 @@ class DB_AA extends AbstractDB
                 $this->dbase = new DB_ODBC($connection);
                 break;
             case 'db_pdo':
+                $connection['driver'] = $driver;
                 $this->dbase = new DB_PDO($connection);
                 break;
             case 'db_pgsql':
@@ -503,6 +507,12 @@ class DB_AA extends AbstractDB
 
     function quote($string) { return $this->dbase->quote($string); }
 
+    static public function quoteIdentifier(string $str): string {
+        $char = in_array(DB_TYPE, ['db_mysql','db_mysqli','db_pdo:mysql']) ? '`' : '"';   // in original was used just '"' character (which is SQL standard and could be OK), but using PDO with mysql needs '`' character
+        return $char. join("$char.$char", explode(".", $str)) . $char;
+    }
+
+    /** you must have $dbase link to quote. If you do not have it, you can use quoteIdentifier() */
     function quote_identifier(string $str): string { return $this->dbase->quote_identifier($str); }
 
     function connect() { return $this->dbase->connect(); }

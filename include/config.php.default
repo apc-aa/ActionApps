@@ -93,7 +93,7 @@ define("DB_HOST",    "my.domain.org"); // server on which the database (MySQL) i
 define("DB_NAME",    "aadb");          // Name of database
 define("DB_USER",    "aadbuser");      // User name for database access
 define("DB_PASSWORD","test.pw");       // Database password
-define("DB_TYPE",    "db_mysql");      // you can (in theory) use also another
+define("DB_TYPE",    "db_mysql");      // you can use db_mysql, db_pdo:mysql and (in theory) also another
                                        // databases like db_odbc, db_mssql, ...
 
 /** Page shown on database error

@@ -466,8 +466,7 @@ function getDB() {
     global $spareDBs;
     if (!($db = array_pop($spareDBs))) {
         // $type = ($_GET['mysqli']==1) ? DB_TYPE : 'db_pdo';
-        $type = DB_TYPE;
-        $db = new DB_AA(['type' => $type, 'host' => DB_HOST, 'database' => DB_NAME, 'user' => DB_USER, 'password' => DB_PASSWORD]);
+        $db = new DB_AA(['type' => DB_TYPE, 'host' => DB_HOST, 'database' => DB_NAME, 'user' => DB_USER, 'password' => DB_PASSWORD]);
     }
     return $db;
 }

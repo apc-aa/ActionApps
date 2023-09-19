@@ -66,10 +66,11 @@ class DB_PDO extends AbstractDB {
      */
     function __construct(array $connection) {
         $this->Database = $connection['database'] ?? '';
-        $this->Host     = $connection['host'] ?? '';
-        $this->User     = $connection['user'] ?? '';
+        $this->Host     = $connection['host']     ?? '';
+        $this->User     = $connection['user']     ?? '';
         $this->Password = $connection['password'] ?? '';
-        $this->Port     = $connection['port'] ?? '';
+        $this->Port     = $connection['port']     ?? '';
+        $this->Server   = $connection['driver']   ?? 'mysql';
     }
 
     function beginTransaction() {

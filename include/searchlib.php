@@ -1010,7 +1010,7 @@ class AA_Dbcondition {
         AA::$debug & 64 && AA::$dbg->log('AA_Dbcondition', $this->field, $this->operator, $this->querystring, $this->type);
 
         $field       = $this->field;
-        $qfield      = getDB()->quote_identifier($field);
+        $qfield = DB_AA::quoteIdentifier($field);
         $operator    = $this->operator;
         $querystring = $this->querystring;
 
@@ -1973,7 +1973,6 @@ function QueryZids($slices, $conds = "", $sort = "", $type = "ACTIVE", $neverAll
     }
 
     /** @todo deal with no slice id for restrict_zids without conds */
-    huhl($ignore_expiry_date, $slice->noCheckExpired($ignore_expiry_date));
     $ignore_expiry_date  = ($slice AND $slice->noCheckExpired($ignore_expiry_date));
     $ignore_publish_date = ($slice AND $slice->noCheckPending());
 

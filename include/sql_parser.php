@@ -1,5 +1,6 @@
 <?php
 
+use AA\IO\DB\DB_AA;
 use AA\Util\LastErrTrait;
 
 /**
@@ -566,7 +567,7 @@ class Syntax {
             $val .= SQL_Parser_Constants::SYNTAX_RIGHT_PAR;
         } elseif ($la == SQL_Parser_Constants::TOKEN_TYPE_STRING) {    // G -> string
             // echo("G->string<BR>\n");//debug
-            $val = getDB()->quote_identifier($this->column). $this->operator . " '" . $this->pre . $this->tList->getStringValue() . $this->post . "'";
+            $val = DB_AA::quoteIdentifier($this->column). $this->operator . " '" . $this->pre . $this->tList->getStringValue() . $this->post . "'";
             if (($err = $this->tList->match(SQL_Parser_Constants::TOKEN_TYPE_STRING))) {
                 self::lastErr(13, $err);
                 return "_SYNTAX_ERROR";
