@@ -61,7 +61,7 @@ class Langs {
     }
 
     /** returns charset - like 'windows-1250' from given lang code or current lang
-     *  usage: AA\Util\AA_Langs::getCharset();
+     *  usage: AA\Util\Langs::getCharset();
      */
     public static function getCharset($lang_code = null) {
         if (!$lang_code or !is_array($ret = self::$LANGS[$lang_code])) {

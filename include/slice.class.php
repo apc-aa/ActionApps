@@ -294,7 +294,7 @@ class AA_Module {
 
     function getName(): string {
         $name = (string)$this->_getModuleTableProperty('name');
-        return $this->deleted() ? "&times;&times;&times; $name &times;&times;&times;" : $name;
+        return $this->deleted() ? (Langs::isUTF() ? "××× $name ×××" : "xxx $name xxx")  : $name;
     }
 
     /** Checks, if the module_id is OK and the slice is not deleted */

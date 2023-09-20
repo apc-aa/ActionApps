@@ -3,6 +3,7 @@
 namespace AA\Optimize;
 
 use AA\IO\DB\DB_AA;
+use AA_Slice;
 use function _m;
 
 /** List Checkbox fields marked as required

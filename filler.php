@@ -73,6 +73,9 @@ function AddslashesDeep($value)   { return is_array($value) ? array_map('Addslas
 foreach ($_REQUEST as $k => $v) {
     $$k = AddslashesDeep($v);
 }
+
+$notshown = (array)($_REQUEST['notshown'] ?? []);
+
 // ----- input variables normalization - end ----------------------------------
 
 
@@ -392,7 +395,7 @@ foreach ($content4id as $field) {
 }
 
 // copy old values for fields not shown in the form
-if (! $insert && is_array($notshown)) {
+if ( !$insert && is_array($notshown) && $notshown ) {
     foreach ( $notshown as $vfield_id => $foo) {
         $field_ids[] = substr($vfield_id,1);  // remove first 'v'
     }

@@ -109,10 +109,12 @@ try {
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {}
 
+$slice_fields = AA_Fields::isSliceField($fid);
+
 if ($upd_edit) {
     $back_admin_url = get_admin_url('se_inputform.php', ['fid'=>$fid]);
 } else {
-    $back_admin_url = get_admin_url('se_fields.php', (AA_Fields::isSliceField($fid) ? ['slice_fields'=>1] : []));
+    $back_admin_url = get_admin_url('se_fields.php', ($slice_fields ? ['slice_fields'=>1] : []));
 }
 
 if ($cancel) {
@@ -371,7 +373,7 @@ $headcode = '
   }
 </script>';
 
-$apage = new AA_Adminpageutil('sliceadmin','fields');
+$apage = new AA_Adminpageutil('sliceadmin', ($slice_fields ? 'slice_fields' : 'fields'));
 $apage->setTitle(_m("Admin - configure Fields"));
 $apage->setSubtitle(_m("WARNING: Do not change this setting if you are not sure what you're doing!"));
 $apage->addRequire('codemirror@5');
@@ -389,7 +391,7 @@ $form_buttons = [
     "update",
     "upd_edit" => ["type"=>"submit", "value"=>_m("Update & Edit")],
     "cancel2"  => ['value'=>_m('Show History'), "url"=>\AA\Util\ChangesMonitor::getHistoryUrl("F".AA_Fields::createShortId($fid).'@'.pack_id(AA::$module_id))],
-    "cancel"   => ["url"=>"se_fields.php" .(AA_Fields::isSliceField($fid) ? '?slice_fields=1':'')]
+    "cancel"   => ["url"=>"se_fields.php" .($slice_fields ? '?slice_fields=1':'')]
 ];
 
 FrmTabCaption(_m("Field properties") . ': ' . safe($fld['name'] . ' (' . $fld['id'] . ')'), $form_buttons, true);
