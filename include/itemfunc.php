@@ -1059,7 +1059,7 @@ function StoreItem( $id, $slice_id, $content4id, $insert, $invalidatecache=true,
 //./admin/slicefieldsedit.php:ValidateContent4Id($err, $slice, $action, $id);
 //./filler.php:               ValidateContent4Id($err_valid, $slice, $insert ? "insert" : "update", $my_item_id, !$notvalidate, $notshown);
 
-function ValidateContent4Id(&$err, $slice, $action, $id=0, $do_validate=true, $notshown="") {
+function ValidateContent4Id(&$err, $slice, $action, $id=0, $do_validate=true, $notshown=[]) {
     global $oldcontent4id;
 
     $profile = AA_Profile::getProfile(AuthGetUid(), $slice->getId()); // current user settings

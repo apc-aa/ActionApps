@@ -31,7 +31,8 @@
 use AA\Util\InputVars;
 use AA\Util\Langs;
 
-if ($edit) {         // parameter for init_page - we edited new item so
+
+if ( isset($_REQUEST['edit']) OR isset($_REQUEST['add'])) {         // parameter for init_page - we edited new item so
     $unset_r_hidden = true;  // clear stored content
 }
 
