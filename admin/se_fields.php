@@ -286,7 +286,7 @@ FrmTabCaption('', $form_buttons);
  <th scope=col><?php echo _m("Priority") ?></th>
  <th scope=col><?php echo _m("Required") ?></th>
  <th scope=col><?php echo _m("Show") ?></th>
- <th scope=col colspan="2">&nbsp;</td>
+ <th scope=col colspan="2">&nbsp;</th>
  <th scope=col><?php echo _m("Aliases")?></th>
 </tr>
 </thead>
