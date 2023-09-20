@@ -310,7 +310,7 @@ FrmTabEnd( $form_buttons);
         if ( !confirm("<?php echo _m("Do you really want to delete this field from this slice?"); ?>")) {
             return;
         }
-        var url="<?php echo StateUrl(get_url('', ["del"=>1,"analyze"=>($analyze OR $fix)])); ?>"
+        var url="<?php echo StateUrl(get_url('', ["del"=>1,"analyze"=>($analyze OR $fix)] + ($slice_fields ? ['slice_fields'=>1] : []))); ?>"
         window.location=url + "&fid=" + escape(id);
     }
 </script>
