@@ -149,16 +149,17 @@ class Widget extends AA_Object implements NamedInterface {
         // AA::$debug&2 && AA::$dbg->log($filter_conds);
         // if variable is for some item, then we can use _#ALIASES_ in conds
         // and sort
-        if (is_long_id($for_id)) {
-            // is the conds contain aliases, unalias it - Just for speedup for the cases the unaliasing is not needed
-            $check = " $filter_conds $filter_conds_rw $sort_by";
-            if (strpos($check, '{') or strpos($check, '_#')) {
-                $item = AA_Items::getItem(new zids($for_id));
-                $filter_conds    = AA::Un($filter_conds,'',$item);
-                $filter_conds_rw = AA::Un($filter_conds_rw,'',$item);
-                $sort_by         = AA::Un($sort_by,'',$item);
-            }
+        // if (is_long_id($for_id)) {   // we should unalias not only for items -  d-auth_group......-=-{user:_#COND_PRM} is perfectly valid and do not use item's aliases
+
+        // is the conds contain aliases, unalias it - Just for speedup for the cases the unaliasing is not needed
+        $check = " $filter_conds $filter_conds_rw $sort_by";
+        if (strpos($check, '{') or strpos($check, '_#')) {
+            $item = is_long_id($for_id) ? AA_Items::getItem(new zids($for_id)) : null;
+            $filter_conds    = AA::Un($filter_conds,'',$item);
+            $filter_conds_rw = AA::Un($filter_conds_rw,'',$item);
+            $sort_by         = AA::Un($sort_by,'',$item);
         }
+        //}
 
         // "#sLiCe-" prefix indicates select from items
         if ($sid = $this->getConstSlice()) {
