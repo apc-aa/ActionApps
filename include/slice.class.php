@@ -456,10 +456,9 @@ class AA_Slice extends AA_Module {
         return $this->fields->isField($fname);
     }
 
-    /** jumpLink function
-     * @return string
+    /** @return html link to slice
      */
-    function jumpLink() {
+    function jumpLink(): string {
         return "<a href=\"".get_admin_url("index.php3?change_id=".$this->getId()). "\">".$this->getName()."</a>";
     }
 

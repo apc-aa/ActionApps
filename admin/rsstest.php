@@ -56,9 +56,9 @@ function showRSSFeedActions($feed_id) {
  * @param $slice_id
  * @return string
  */
-function displaySliceName($slice_id) {
+function displaySliceName($slice_id): string {
     $slice = AA_Slice::getModule(unpack_id($slice_id));
-    return $slice->jumpLink();
+    return $slice ? $slice->jumpLink() : '';
 }
 
 $sess->register("tview");

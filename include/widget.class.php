@@ -265,6 +265,8 @@ class AA_Property extends AA_Storable {
         $widget = '';
         if ($this->type == 'readonly') {
             $widget = new \AA\Widget\InfWidget();
+        } elseif ($this->type == 'hidden') {
+            $widget = new \AA\Widget\HidWidget();
         } elseif ($this->isMulti()) {
             if (empty($values)) {
                 if ($this->type == 'text') {
@@ -339,7 +341,7 @@ class AA_Property extends AA_Storable {
 
     /** isObject function */
     function isObject() {
-        return !in_array($this->type, ['text', 'string', 'int', 'bool', 'float', 'readonly']);
+        return !in_array($this->type, ['text', 'string', 'int', 'bool', 'float', 'readonly', 'hidden']);
     }
 
     /** @return string - table, where the property would be stored */

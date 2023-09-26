@@ -204,6 +204,15 @@ class Managed {
         return $this->url;
     }
 
+    /**
+     * @param string $module_id
+     * @return Managed
+     */
+    public function setModule(string $module_id): Managed {
+        $this->settings['module_id'] = $module_id;
+        return $this;
+    }
+
     /** set title text of the Manager
      * @param string $text
      * @return Managed
@@ -262,10 +271,13 @@ class Managed {
 
     /**
      * @param string $id
-     * @param array  $setting  ['type'=>bool|enum|string, 'enum'=>['x','y']]
+     * @param array  $setting  ['type'=>bool|enum|string, 'enum'=>['x','y'], 'name'=>'', 'help'=>'']
      */
     public function setWidgetSetting(string $id, array $setting): void {
         $this->widget_setting[$id] = $setting;
+        if (array_key_exists('name', $setting) && array_key_exists($id, $this->columns)) {
+            $this->columns[$id][0] = $this->widget_setting[$id]['name'];
+        }
     }
 
 }
@@ -325,19 +337,19 @@ class Managed_Table extends Managed {
     public function getForm(?string $id, ?string $module_id): ?AA_Form {
         $props = AA::Metabase()->getColumnProperties($this->table);
         foreach ($props as $k => $prop) {
-            if ($this->widget_setting[$k]) {
-                if (isset($this->widget_setting[$k]['type'])) {
-                    $prop->type = $this->widget_setting[$k]['type'];
+            if ($setting = $this->widget_setting[$k]) {
+                if (isset($setting['type'])) {
+                    $prop->type = $setting['type'];
                 }
-                if (isset($this->widget_setting[$k]['enum'])) {
-                    $prop->setConstants($this->widget_setting[$k]['enum']);
+                if (isset($setting['enum'])) {
+                    $prop->setConstants($setting['enum']);
                     $prop->required = true;
                 }
-                if (isset($this->widget_setting[$k]['name'])) {
-                    $prop->setName($this->widget_setting[$k]['name']);
+                if (isset($setting['name'])) {
+                    $prop->setName($setting['name']);
                 }
-                if (isset($this->widget_setting[$k]['help'])) {
-                    $prop->setHelp($this->widget_setting[$k]['help']);
+                if (isset($setting['help'])) {
+                    $prop->setHelp($setting['help']);
                 }
                 // $props['html']->setHelp('xxx');
             }
@@ -366,7 +378,11 @@ class Managed_Table extends Managed {
             unset($content['aa_id']);
             AA::Metabase()->doUpdate($this->table, $content->getAllAsScalar());
         } elseif (($store_mode == 'insert') AND $this->isAction('add')) {
-            AA::Metabase()->doInsert($this->table, $content->getAllAsScalar());
+            $data = $content->getAllAsScalar();
+            if ($owner && ($module_field = AA_Metabase::getModuleField($this->table))) {
+                $data[$module_field] = $owner;
+            }
+            AA::Metabase()->doInsert($this->table, $data);
         }
     }
 

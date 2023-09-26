@@ -1,14 +1,5 @@
 <?php
-/** se_rssfeeds.php - RSS Feed administration
- *
- *    expected    $mode
- *                $name
- *                $server_url
- *                $password
- *    optionally $Msg to show under <h1>Headline</h1> (typically: Fields' mapping update)
- *                $old_rssfeed_name
- *                $sel_rssfeed_name
- *
+/**
  * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
@@ -22,198 +13,61 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program (LICENSE); if not, write to the Free Software
+ * along with this program (LICENSE); if not, write tao the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @version   $Id$
- * @author    Mitra
+ * @author    Honza Malik <honza.malik@ecn.cz>
  * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
  * @link      https://www.apc.org/ APC
  *
-*/
+ */
 
-use AA\IO\DB\DB_AA;
-use AA\IO\Feed;
-use AA\IO\FeedUtil;
-use AA\Util\InputVars;
+use AA\Manager;
+use AA\Util\Langs;
 
 // const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
+require_once __DIR__ . "/../include/varset.php";
+require_once __DIR__ . "/../include/formutil.php";
+require_once __DIR__ . "/../include/item.php";
+require_once __DIR__ . "/../include/actions.php";
 
-try {
-    // array ( 'insert' => 6, 'edit' => 7, 'update' => 2, 'add' => 4, )
-    $mode = InputVars::stringPOST('mode'); // alpha
-    // array ( '' => 15, 'asdfghjkl' => 4, )
-    $old_rssfeed_name = InputVars::stringPOST('old_rssfeed_name'); // alpha, empty
-    // array ( '🦆' => 3, 'asdfghjkl' => 4, '' => 10, 'asdfghjkl�…' => 1, '%ˇ:?"!' => 1, )
-    $rssfeed_name = InputVars::stringPOST('rssfeed_name'); // empty
-    // array ( 'asdfghjkl' => 4, '%ˇ:?' => 6, '🦆' => 1, )
-    $rssfeeds = InputVars::stringPOST('rssfeeds');
-    // array ( '' => 12, 'asdfghjkl' => 3, '%ˇ:?' => 4, )
-    $sel_rssfeed_name = InputVars::stringPOST('sel_rssfeed_name'); // empty
-    // array ( '' => 12, 'sdfghjk' => 2, 'sdfghjk🐖' => 3, 'ěščřž�…' => 1, '🐖' => 1, )
-    $server_url = InputVars::stringPOST('server_url'); // empty
-    $cancel = InputVars::boolPOST('cancel');
-    
-    $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) {}
-
-
-if (!IfSlPerm(PS_FEEDING)) {
-    MsgPage(_m("You have not permissions to change feeding setting"));
+if ( !IsSuperadmin() ) {
+    MsgPage(_m("You do not have permission to manage Emails"));
     exit;
 }
 
-require_once __DIR__ . "/../include/varset.php";
-
-$err = [];
-require_once __DIR__ . "/../include/formutil.php";
-$qp_slice_id=q_pack_id(AA::$module_id);
-
+/*  @todo - test and map needs to be implemented from old version
 if ($mode == "map") {
-    $feed = FeedUtil::name2rssfeed(AA::$module_id, $sel_rssfeed_name);
-    go_url(StateUrl(self_base() . "se_mapping.php?from_slice_id=".$feed["remote_slice_id"]));
+$feed = FeedUtil::name2rssfeed(AA::$module_id, $sel_rssfeed_name);
+go_url(StateUrl(self_base() . "se_mapping.php?from_slice_id=".$feed["remote_slice_id"]));
 }
-
-if ($mode == "edit" || $mode == "test") {
-    $db->query("SELECT * FROM rssfeeds WHERE name='". quote($sel_rssfeed_name). "' AND slice_id = '$qp_slice_id'");
-    if ($db->next_record()) {
-        $testfeed              = $db->record();
-        $testfeed["feed_type"] = Feed::FEEDTYPE_RSS;
-        $old_rssfeed_name      = $sel_rssfeed_name;
-        $rssfeed_name          = $db->f('name');
-        $server_url            = $db->f('server_url');
-        $new_mode              = "update";
-    }
-} else {
-    switch ($mode) {
-        case "delete" :
-            $db->query("DELETE FROM rssfeeds WHERE name='". quote($sel_rssfeed_name). "' AND slice_id = '$qp_slice_id'");
-            // $db->query("DELETE FROM ef_permissions WHERE node='$sel_rssfeed_name'");
-            break;
-
-        case "insert" :
-            $db->query("SELECT * FROM rssfeeds WHERE name='". quote($rssfeed_name). "' AND slice_id = '$qp_slice_id'");
-            if ($db->next_record()) {
-                $err["DB"] .= MsgErr("Can't add RSS Feed $rssfeed_name");
-            } else {
-                $catVS = new Cvarset();
-                $catVS->add("slice_id",  "unpacked", AA::$module_id);
-                $catVS->add("name",      "text",   $rssfeed_name);
-                $catVS->add("server_url","text",   $server_url);
-                if ( !$catVS->doINSERT('rssfeeds')) {
-                    $err["DB"] .= MsgErr("Can't add RSS Feed $rssfeed_name");
-                }
-            }
-            break;
-
-        case "update" :
-            $catVS = new Cvarset();
-            $catVS->add("name",      "text", $rssfeed_name);
-            $catVS->add("server_url","text", $server_url);
-            $db->query("UPDATE rssfeeds SET ". $catVS->makeUPDATE()
-              ." WHERE name='". quote($old_rssfeed_name) ."' AND slice_id = '$qp_slice_id'");
-            break;
-
-        case "add" : $new_mode = "insert"; break;
-    } // switch
-  $rssfeed_name = $server_url = "";
-  $new_mode     = "insert";  // So show "Add" rather than "Edit" on next page, and set in hidden input
-
-}
-
-$rssfeeds = DB_AA::select('',"SELECT `name` FROM rssfeeds", [['slice_id',AA::$module_id,'l']], ['name']);
-//$db->query("SELECT * FROM rssfeeds WHERE slice_id = '$qp_slice_id' ORDER BY name ");
-//$rssfeeds=array();
-//while ($db->next_record()) {
-//    $rssfeeds[] = $db->f('name');
-//}
-
-$apage = new AA_Adminpageutil('sliceadmin','rssfeeds');
-$apage->setTitle(_m("Remote RSS Feed administration"));
-$apage->printHead($err, $Msg);
-
-  FrmTabCaption(_m("Current remote rssfeeds"));
-?>
-      <tr><td colspan="2">
-      <select name="rssfeeds" size=5>
-      <?php
-        if (isset($rssfeeds) && is_array($rssfeeds)) {
-          foreach ($rssfeeds as $name) {
-              echo "<option value=\"$name\">$name</option>";
-          }
-        }
-      ?>
-      </select>
-    <tr><td colspan="2">
-      <input type="button" value="<?php echo _m("Edit") ?>"   onclick = "SubmitForm('edit')" >
-      <input type="button" value="<?php echo _m("Delete") ?>" onclick = "SubmitForm('delete')">
-      <input type="button" value="<?php echo _m("Add") ?>"    onclick = "SubmitForm('add')">
-      <input type="button" value="<?php echo _m("Test") ?>"   onclick = "SubmitForm('test')">
-      <input type="button" value="<?php echo _m("Map") ?>"    onclick = "SubmitForm('map')">
-     </td></tr>
-<?php
-  FrmTabSeparator($new_mode == "insert" ? _m("Add new rssfeed") : _m("Edit rssfeed data"));
-?>
-    <tr><td><?php echo _m("RSS Feed name") ?></td>
-        <td><input type="text" name="rssfeed_name" size="40" value="<?php echo safe($rssfeed_name)?>" >
-            <br><?php echo _m("New rssfeed name")?></tr>
-    <tr><td><?php echo _m("URL of the feed") ?></td>
-         <td><input type="text" name="server_url" size="40" value="<?php echo safe($server_url)?>" >
-             <br><?php echo _m("e.g. https://www.someplace.com/rss/index.xml")?>
-             <br><?php echo _m("Do NOT change this URL if you already set the Mapping (or update mapping after the change). The mapping is tied to this url!")?>
-    <input type="hidden" name="mode" value="<?php echo safe($new_mode) ?>">
-    <input type="hidden" name="old_rssfeed_name" value="<?php echo safe($old_rssfeed_name) ?>">
-    <input type="hidden" name="sel_rssfeed_name">
-</tr>
-<?php
-
-  FrmTabEnd(["send"=> ['type'=>'button', 'value'=>_m('Send'), 'add'=>'onClick="checkData()"'], "cancel"=> ["url"=>"se_fields.php"]]);
-
-?>
-<script>
-
-function SelectValue(sel) {
-    svindex = eval(sel).selectedIndex;
-    if (svindex != -1) {
-        return eval(sel).options[svindex].value;
-    }
-    return null;
-}
-
-function SubmitForm(mode) {
-    if (mode== 'add') {
-        document.f.mode.value = mode;
-        document.f.submit();
-    } else {
-        sel = SelectValue('document.f.rssfeeds');
-        if (sel == null) {
-            alert('<?php echo _m("No selected rssfeed"); ?>');
-        } else {
-            if (mode == 'delete') {
-                if (!confirm('<?php echo _m("Are you sure you want to delete the rssfeed?"); ?>')) {
-                    return;
-                }
-            }
-            document.f.sel_rssfeed_name.value = sel;
-            document.f.mode.value = mode;
-            document.f.submit();
-        }
-    }
-}
-
-function checkData() {
-    if (document.f.rssfeed_name.value=="") {
-        alert('<?php echo _m("Error: RSS node empty"); ?>');
-        return false;
-    }
-    document.f.submit();
-}
-</script>
-<?php
 if ($mode == "test") {
-    Feed::onefeed($testfeed["feed_id"], $testfeed, 5, 'write');
+Feed::onefeed($testfeed["feed_id"], $testfeed, 5, 'write');
 }
+*/
 
-$apage->printFoot();
+
+
+$managed = AA::Metabase()->getManagerConf('rssfeeds');
+$managed->setColumns2show(['name','server_url','feed_id']);
+
+$managed->setModule(AA::$module_id);
+// $managed->setWidgetSetting('slice_id', ['enum'=>AA_Module::getUserModules(), 'name'=>_m('Owner')]);
+$managed->setWidgetSetting('slice_id', ['type'=>'hidden', 'name'=>_m('Owner')]);
+$managed->setWidgetSetting('feed_id',                                       ['name'=>_m('ID')]);
+$managed->setWidgetSetting('server_url',                                    ['name'=>_m('URL of the feed'), 'help'=> _m("e.g. https://www.someplace.com/rss/index.xml").'<br>'._m("Do NOT change this URL if you already set the Mapping (or update mapping after the change). The mapping is tied to this url!")]);
+$managed->setWidgetSetting('name',                                          ['name'=>_m('RSS Feed name')]);
+
+$apage = new AA_Adminpageutil('sliceadmin', 'rssfeeds');
+$apage->setTitle(_m("Remote RSS Feed administration"));
+
+$manager = new Manager('rssfeeds', $managed);
+
+$manager->setRestrictionConds([
+    new AA_Condition('slice_id', '==', pack_id(AA::$module_id))
+]);
+
+$apage->printWithManager($manager);

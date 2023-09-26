@@ -117,8 +117,7 @@ class Manageraction_History_Apply extends AbstractManageraction {
 }
 
 /** GetHistoryFields function
- * List of fields, which will be listed in searchbar in Links Manager (search)
- * (modules/links/index.php3)
+ * List of fields, which will be listed in searchbar in Manager (search)
  * @return AA\Util\Searchfields
  */
 function GetHistoryFields() {  // function - we need trnslate _m() on use (not at include time)
