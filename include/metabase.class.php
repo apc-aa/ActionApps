@@ -717,6 +717,9 @@ class AA_Metabase {
         return $this->tables[$tablename]->getColumn($column)->getFieldType();
     }
 
+    /** auto generated fields */
+    const AUTO_KEYS = ['polls_design' => 'id'];
+
     /** static method */
     static function getModuleFields() {
         static $MODULE_KEYS = [
@@ -731,6 +734,7 @@ class AA_Metabase {
             'links'               => 'id',
             'module'              => 'id',
             'polls'               => 'module_id',
+            'polls_design'        => 'module_id',
             'profile'             => 'slice_id',
             'rssfeeds'            => 'slice_id',
             'site'                => 'id',
@@ -815,6 +819,17 @@ class AA_Metabase {
             return $varset->doInsert($tablename, $nohalt);
         }
         return false;
+    }
+
+    /** use with doInsert - generates auto key for new records for supported tables
+     *  maybe we can do it automaticaly in doInsert
+     *  maybe we can do it based on getKey() method and using the getMaxLength() method
+     */
+    function autoInsertKey($tablename, array &$data): array {
+        if (($fld = self::AUTO_KEYS[$tablename]) ?? false) {
+            $data[$fld] = new_id();
+        }
+        return $data;
     }
 
     /** The best (most safe) low-level approach to store data in the AA table - the data are checked before storing against database schema

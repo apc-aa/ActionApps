@@ -50,6 +50,8 @@ $buttons  = [
 
 $managed = AA::Metabase()->getManagerConf('rssfeeds',null,null,[],$buttons);
 $managed->setColumns2show(['name','server_url','feed_id']);
+$managed->setColumn('server_url', '<a href="{server_url}">{shorten:{server_url}:60:3}</a>');
+
 
 $managed->setModule(AA::$module_id);
 // $managed->setWidgetSetting('slice_id', ['enum'=>AA_Module::getUserModules(), 'name'=>_m('Owner')]);

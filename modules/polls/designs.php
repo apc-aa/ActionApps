@@ -49,6 +49,10 @@ $managed->setWidgetSetting('id',                          ['name'=>_m('ID')]);
 $managed->setWidgetSetting('comment',                     ['name'=>_m('Comment')]);
 $managed->setWidgetSetting('name',                        ['name'=>_m('Name')]);
 
+$managed->setWidgetSetting('top',                         ['name'=>_m('Top HTML')]);
+$managed->setWidgetSetting('answer',                      ['name'=>_m('Answer HTML')]);
+$managed->setWidgetSetting('bottom',                      ['name'=>_m('Bottom HTML')]);
+
 $apage = new AA_Adminpageutil('modadmin', 'design');
 $apage->setTitle(_m("Polls Design"));
 
