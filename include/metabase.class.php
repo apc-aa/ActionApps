@@ -1285,7 +1285,7 @@ class AA_Metabase {
      * @param array               $set         - like ['edit_url' => 'some_url.php?id=_#id']
      * @return Managed
      */
-    function getManagerConf(string $tablename, Manageractions $actions=null, Manageractions $switches=null, array $set=[]): Managed {
+    function getManagerConf(string $tablename, Manageractions $actions=null, Manageractions $switches=null, array $set=[], array $addbuttons=[]): Managed {
         $table         = $this->tables[$tablename];
         $aliases       = $table->generateAliases();
         $search_fields = $this->getSearchfields($tablename);
@@ -1303,9 +1303,9 @@ class AA_Metabase {
             $actions->addAction(new \AA\Manageraction\Table_Row_Delete('DeleteTRow'));
             $key_alias = $aliases->getNamesForField($keys[0])[0];
             $edit_url = array_key_exists('edit_url', $set) ? str_replace('_#id', $key_alias, $set['edit_url']) : get_url('', ["id=$key_alias"], true);
-            $buttons = ['Edit'   => a_href($edit_url, _m('Edit'), ['class' => 'aa-button-edit'])];
+            $buttons['Edit'] = a_href($edit_url, _m('Edit'), ['class' => 'aa-button-edit']);
         }
-        $buttons = array_merge($buttons, $actions->getManagerButtons('', $key_alias, AA::$module_id));
+        $buttons = array_merge($buttons, $actions->getManagerButtons('', $key_alias, AA::$module_id), $addbuttons);
 
         $columns = [];
         if (count($actions)) {

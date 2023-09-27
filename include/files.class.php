@@ -532,9 +532,14 @@ class AA_File_Wrapper {
      */
     function open($mode = 'r') {
         $this->fp = null;
-        $this->fp = @fopen($this->url, $mode);
+        try {
+            $this->fp = fopen($this->url, $mode);
+        } catch (Throwable $e) {  // Exceptions and Errors
+            return false;
+        }
 		return ($this->fp !== false);
     }
+
 	/**
      * Close the file.
      */

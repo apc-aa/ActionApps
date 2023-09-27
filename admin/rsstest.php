@@ -43,7 +43,7 @@ function tv_field_value($feed_id,$param,$var) {
  * @return string - set of html links
  */
 function showRSSFeedActions($feed_id) {
-    $url = "'".get_admin_url('xmlclient.php3'). "&rssfeed_id=$feed_id'".
+    $url = "'".get_admin_url('xmlclient.php'). "&rssfeed_id=$feed_id'".
                tv_field_value($feed_id,'fill','fire').
                tv_field_value($feed_id,'server_url','server_url').
                tv_field_value($feed_id,'debugfeed','debug');

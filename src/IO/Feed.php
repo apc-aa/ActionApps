@@ -37,21 +37,16 @@ class Feed {
     }
 
     /** loadRSSFeed function
-     * @param $id
-     * @param $url = null
+     * @param             $id
+     * @param string|null $url = null
      */
-    function loadRSSFeed($id, $url = null) {
+    function loadRSSFeed($id, ?string $url = null) {
         $this->id   = $id;
         $this->type = Feed::FEEDTYPE_RSS;
 
         //$SQL = "SELECT feed_id, server_url, name, slice_id FROM rssfeeds WHERE feed_id='$id'";
         //$feeddata                    = GetTable2Array($SQL, 'aa_first', 'aa_fields');
-        $feeddata              = DB_AA::select1([], "SELECT `feed_id`, `server_url`, `name`, `slice_id` FROM rssfeeds", [
-            [
-                'feed_id',
-                $id,
-            ],
-        ]);
+        $feeddata              = DB_AA::select1([], "SELECT `feed_id`, `server_url`, `name`, `slice_id` FROM rssfeeds", [['feed_id', $id,]]);
         $feeddata['feed_type'] = Feed::FEEDTYPE_RSS;
         // fictive remote slice id, but always the same for the same url
         $feeddata['remote_slice_id'] = pack_id(FeedUtil::attr2id($feeddata['server_url']));
@@ -75,16 +70,8 @@ class Feed {
         // $SQL = "SELECT feed_id, password, server_url, name, slice_id, remote_slice_id, newest_item, user_id, remote_slice_name, feed_mode
         //           FROM nodes, external_feeds WHERE nodes.name=external_feeds.node_name AND feed_id='$id'";
         // $feeddata                    = GetTable2Array($SQL, 'aa_first', 'aa_fields');
-        $feeddata              = DB_AA::select1([], "SELECT feed_id, password, server_url, name, slice_id, remote_slice_id, newest_item, user_id, remote_slice_name, feed_mode FROM nodes, external_feeds", [
-            [
-                'nodes.name',
-                'external_feeds.node_name',
-                'j',
-            ],
-            [
-                'feed_id',
-                $id,
-            ],
+        $feeddata = DB_AA::select1([], "SELECT feed_id, password, server_url, name, slice_id, remote_slice_id, newest_item, user_id, remote_slice_name, feed_mode FROM nodes, external_feeds", [
+            ['nodes.name', 'external_feeds.node_name', 'j',], ['feed_id', $id,]
         ]);
         $feeddata['feed_type'] = ($feeddata['feed_mode'] == 'exact') ? Feed::FEEDTYPE_EXACT : Feed::FEEDTYPE_APC;
 
@@ -98,22 +85,32 @@ class Feed {
 
     /** feed function
      * Process one feed RSS, or APC AA RSS, or CSV or ... - based on AA\IO\AbstractGrabber\AbstractGrabber
-     * @param  $feed_id      - id of feed (it is autoincremented number from 1 ...
-     *                       - RSS and APC feeds could have the same id :-(
-     * @param  $feed         - feed definition array (server_url, password, ...)
-     * @param  $debugfeed    - just for debuging purposes
-     * @param  $fire         - write   - feed and write the items to the databse
-     *                       test    - process without write anything to the database
+     * @param string $fire - write   - feed and write the items to the databse
+     *                       test    - process without using queue and write anything to the database
      *                       display - only display the data from the feed
+     * @return string saver report
      */
-    function feed() {
-        if ($this->fire = 'write') {
-            $saver = new AA\IO\Saver($this->grabber, null, $this->destination_slice_id, 'by_grabber', 'by_grabber');
-            // $saver->run();
-            $name     = 'feed&id=' . $this->id . '&type=' . self::getFeedTypeName($this->type);
-            $importer = new AA\IO\Importer($saver, true, $name);
-            (new Toexecute)->laterOnce($importer, [], $importer->getId(), 10);
+    function feed(string $fire=''): string {
+        $fire = $fire ?: $this->fire;
+        $run = ($this->fire == 'write');
+        $saver = new AA\IO\Saver($this->grabber, null, $this->destination_slice_id, 'by_grabber', 'by_grabber');
+        // $saver->run();
+        $name     = 'feed&id=' . $this->id . '&type=' . self::getFeedTypeName($this->type);
+        $importer = new AA\IO\Importer($saver, $run, $name);
+
+        $ret = '';
+        switch($fire) {
+            case 'test': // do not use toexecute queue
+                $ret = $importer->toexecutelater();
+                break;
+            case 'write':
+                (new Toexecute)->laterOnce($importer, [], $importer->getId(), 10); // write   - feed and write the items to the database
+                $ret = 'queued';
+                break;
+            case 'display':
+                $ret = join('',$importer->getSources());
         }
+        return $ret;
     }
 
     /** getFeedTypeName function
@@ -637,21 +634,13 @@ class FeedUtil {
     }
 
     /** name2rssfeed function
-     * @param string $slice_id
-     * @param string $name
-     * @return array
+     * @param string $rss_id as stored in DB
+     * @return string identifier of remote slice created from server_url
+     * @todo rewrite the concept to not rely on server_url
      */
-    public static function name2rssfeed($slice_id, $name) {
-        $res = [];
-        $db  = getDB();
-        $db->query("SELECT * FROM rssfeeds WHERE name='$name' AND slice_id = '" . q_pack_id($slice_id) . "'");
-        if ($db->next_record()) {
-            $res                    = $db->record();
-            $res["feed_type"]       = Feed::FEEDTYPE_RSS;
-            $res["remote_slice_id"] = FeedUtil::attr2id($db->f('server_url'));
-        }
-        freeDB($db);
-        return $res;
+    public static function rssid2rssfeed(int $rss_id): string {
+        $server_url = DB_AA::select1('server_url', 'SELECT `server_url` FROM `rssfeeds`', [['feed_id',$rss_id,'i']]);
+        return $server_url ? FeedUtil::attr2id($server_url) : '';
     }
 
     /** GetGroupConstants function

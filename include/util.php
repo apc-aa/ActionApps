@@ -390,7 +390,7 @@ function new_id($mark=0){
     return $id;
 }
 
-/** is_marked_by funcion
+/** is_marked_by function
  * @param $id
  * @param $mark
  *  @return true, if the $id is marked by $mark - @see new_id()

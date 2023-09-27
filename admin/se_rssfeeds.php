@@ -25,7 +25,6 @@
  */
 
 use AA\Manager;
-use AA\Util\Langs;
 
 // const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
@@ -39,19 +38,17 @@ if ( !IsSuperadmin() ) {
     exit;
 }
 
-/*  @todo - test and map needs to be implemented from old version
-if ($mode == "map") {
-$feed = FeedUtil::name2rssfeed(AA::$module_id, $sel_rssfeed_name);
-go_url(StateUrl(self_base() . "se_mapping.php?from_slice_id=".$feed["remote_slice_id"]));
-}
-if ($mode == "test") {
-Feed::onefeed($testfeed["feed_id"], $testfeed, 5, 'write');
-}
-*/
+// if ($mode == "test") { Feed::onefeed($testfeed["feed_id"], $testfeed, 5, 'write'); }
 
+$buttons  = [
+    'Map'      => a_href(get_admin_url('se_mapping.php', ['rssfeed_id={feed_id}']), _m('Map'), ['class' => 'aa-button']),
+    'Queue'    => a_href(get_admin_url('xmlclient.php',  ['rssfeed_id={feed_id}']), _m('Run (queue)'), ['class' => 'aa-button-run']),
+    'Test'     => a_href(get_admin_url('xmlclient.php',  ['rssfeed_id={feed_id}&fill=0']), _m('Test'), ['class' => 'aa-button-test']),
+    'Source'   => a_href(get_admin_url('xmlclient.php',  ['rssfeed_id={feed_id}&display=1']), _m('Source'), ['class' => 'aa-button-show']),
+    'Validate' => a_href('https://validator.w3.org/feed/check.cgi?url={safe:{server_url}}', _m('Validate'), ['class' => 'aa-button-test']),
+];
 
-
-$managed = AA::Metabase()->getManagerConf('rssfeeds');
+$managed = AA::Metabase()->getManagerConf('rssfeeds',null,null,[],$buttons);
 $managed->setColumns2show(['name','server_url','feed_id']);
 
 $managed->setModule(AA::$module_id);

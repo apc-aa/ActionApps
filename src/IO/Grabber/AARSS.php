@@ -259,6 +259,27 @@ class AARSS extends AbstractGrabber
         ];
     }
 
+    /** loads all the data based on grabber setting and return it */
+    public function getSources(): array {
+        $feed_type = $this->feed['feed_type'];
+
+        switch ($feed_type) {
+            case Feed::FEEDTYPE_RSS:
+                $xml_data = $this->_getRssData();
+                break;
+            case Feed::FEEDTYPE_EXACT:
+                $xml_data = $this->_getExactData();
+                break;
+            case Feed::FEEDTYPE_APC:
+            default:
+                $xml_data = $this->_getApcData();
+                break;
+        }
+
+        return [$xml_data];
+    }
+
+
     /** prepare function
      *  Fetch data and parse it
      */
@@ -279,18 +300,7 @@ class AARSS extends AbstractGrabber
             print("\n<br>$feed_debug_name");
         }
 
-        switch ($feed_type) {
-            case Feed::FEEDTYPE_RSS:
-                $xml_data = $this->_getRssData();
-                break;
-            case Feed::FEEDTYPE_EXACT:
-                $xml_data = $this->_getExactData();
-                break;
-            case Feed::FEEDTYPE_APC:
-            default:
-                $xml_data = $this->_getApcData();
-                break;
-        }
+        [$xml_data] = $this->getSources();
 
         // Special option - it only dispays fed data
         if ($this->fire == 'display') {
@@ -360,7 +370,7 @@ class AARSS extends AbstractGrabber
             }
         }
 
-        [, $map] = FeedUtil::GetExternalCategories($this->slice_id, $this->r_slice_id);
+        [, $map] = FeedUtil::GetExternalMapping($this->slice_id, $this->r_slice_id);
         if ($debugfeed >= 7) {
             print("\n<br>Mapping: $map, $this->slice_id, $this->r_slice_id");
         }

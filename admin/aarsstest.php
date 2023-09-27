@@ -51,7 +51,7 @@ function tv_field_value($feed_id,$param,$var) {
  * @noinspection PhpUnused
  */
 function showFeedActions($feed_id) {
-    $url = "'".AA_INSTAL_URL ."admin/xmlclient.php3?feed_id=$feed_id'".
+    $url = "'".AA_INSTAL_URL ."admin/xmlclient.php?feed_id=$feed_id'".
                tv_field_value($feed_id,'fill','fire').
                tv_field_value($feed_id,'time','newest_item').
                tv_field_value($feed_id,'debugfeed','debug');
