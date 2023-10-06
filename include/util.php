@@ -1983,6 +1983,12 @@ function array_find_fnc(iterable $arr, callable $comparator) {
     return null;
 }
 
+/** trims all the values and also keys of the array recursively
+ * @usage array_trim_all(json2asoc($json));
+ */
+function array_trim_all($arr) {
+    return is_array($arr) ? array_map('array_trim_all', array_combine(array_map('trim', array_keys($arr)), array_values($arr))) : (is_string($arr) ? trim($arr) : $arr);
+}
 
 /** Get Authorization Header
  * @return string

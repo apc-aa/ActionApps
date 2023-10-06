@@ -1337,17 +1337,25 @@ class AA_Stringexpand_Lazy extends AA_Stringexpand_Nevercache { // do not cache 
     /**
      * @param string $url
      * @param string $placeholder
+     * @param string $mode - 'nolazy' for direct load - {lazy:/apc-aa/view.php?vid=15::nolazy}
      * @return string
      */
-    function expand($url='', $placeholder='') {
+    function expand($url='', $placeholder='', $mode='') {
         if (!strlen($url)) {
             return '';
         }
+        $uniqid = gensalt(8); // gensalt is shorter than mt_rand(100000000,999999999);  // mt_rand is quicker than uniqid()
+        $ret    = "<div class=aa-lazydiv id=lazy_$uniqid data-aa-url=\"$url\">";
+
+        if ($mode == 'nolazy') {
+            $load = StrExp('include',[$url]);
+            return $ret.$load."</div>\n";
+        }
+
         $placeholder = $placeholder ?: '[*]';
         [$placeholder] = AA_Stringexpand::replaceIcons([$placeholder],['*']);  // replace icon [*]
 
-        $uniqid = gensalt(8); // gensalt is shorter than mt_rand(100000000,999999999);  // mt_rand is quicker than uniqid()
-        $ret    = "<div class=aa-lazydiv id=lazy_$uniqid data-aa-url=\"$url\">$placeholder</div>\n";
+        $ret    .= "$placeholder</div>\n";
 
         // @todo extract AA_setInnerHtml() and AA_Fetch to aajslib
         $script2run = <<<EOT
@@ -2967,17 +2975,19 @@ class AA_Stringexpand_Polls extends AA_Stringexpand_Nevercache {
  *  or
  *    {view.php?vid=9&cmd[9]=c-1-{conds:category.......1}}
  *  or
- *    {ids:5367e68a88b82887baac311c30544a71:d-headline........-=-{conds:category.......3:1}}
- *  see the third parameter (1) in the last example!
+ *    {ids:5367e68a88b82887baac311c30544a71:d-headline........-=-{conds:category.......3:1}}  //  see the third parameter (1) in the last example!
  *    {ids:5367e68a88b82887baac311c30544a71:d-headline........-=-{conds:{qs:type}:1}}
+ *  or
+ *    {ids:5367e68a88b82887baac311c30544a71:d-headline........-==-{conds:category.......3:==}}  // see the third parameter (==) in the last example
  *  works also for multivalue variable (type[] $_GET variable in the last example)
  *
  *  The syntax is:
- *     {conds:<field or text>[:<do not url encode>]}
- *  <do not url encode> the conds are by default url encoded
- *  (%22My%20category%22) so it can be used as parameter to view. However - we
- *  do not need url encoding for {ids } construct, so for usage with {ids}
- *  use the last parameter and set it to 1
+ *     {conds:<field or text>[:<mode>]}
+ *  <mode> = '' (empty) - the conds are by default url encoded (good for SSI includes with calling /aa/view.php...)
+ *                        (%22My%20category%22) so it can be used as parameter to view.
+ *         = "1"        - we do not need url encoding for {ids } construct, so for usage with {ids} use the last parameter and set it to 1
+ *         = "=="       - the same as "1" but for usage with '==' operator (d-headline........-==-{conds:category.......3:==})
+ *     in most cases you want to use mode 1 or ==
  */
 class AA_Stringexpand_Conds extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
@@ -2995,18 +3005,19 @@ class AA_Stringexpand_Conds extends AA_Stringexpand_Nevercache {
 
     /** expand function
      * @param string $text
-     * @param bool   $no_url_encode
+     * @param string 1 - no url encode (good for  inline d-conditions, == - for use with d- conds and == operator)
      * @return string
      */
-    function expand($text='', $no_url_encode=false) {
+    function expand($text='', $mode='') {
         if ( !is_object($this->item) OR !$this->item->isField($text) ) {
-            return AA_Stringexpand_Conds::_joinArray(json2arr($text), $no_url_encode, $no_url_encode ? 'AAnoCONDITION' : '');
+            $default = ($mode=='==') ? '' : ($mode ? 'AAnoCONDITION' : '');
+            return AA_Stringexpand_Conds::_joinArray(json2arr($text), $mode, $default);
         }
-        return AA_Stringexpand_Conds::_joinArray($this->item->getValuesArray($text), $no_url_encode);
+        return AA_Stringexpand_Conds::_joinArray($this->item->getValuesArray($text), $mode);
     }
 
     /** Static */
-    function _joinArray($values, $no_url_encode, $default='AA_NeVeRtRuE') {
+    function _joinArray($values, $mode, $default='AA_NeVeRtRuE') {
         if (empty($values)) {
             return $default;
         }
@@ -3015,10 +3026,14 @@ class AA_Stringexpand_Conds extends AA_Stringexpand_Nevercache {
             if ( empty($val) ) {
                 continue;
             }
-
-            $ret  .= $delim. ($no_url_encode ? ('"'. str_replace(['-','"'], ['--','\"'], $val) .'"') :
-                    ('%22'. str_replace(['-',' '], ['--','%20'], $val) .'%22'));
-            $delim = $no_url_encode ? ' OR ' : '%20OR%20';
+            if ($mode=='==') { //  makes no sense to join multivalues with '==' operator
+                $ret  .= $delim. str_replace('-', '--', $val);
+            } elseif ($mode) {
+                $ret  .= $delim. ('"'. str_replace(['-', '"'], ['--', '\"'], $val) .'"');
+            } else {
+                $ret  .= $delim. ('%22'. str_replace(['-',' '], ['--','%20'], $val) .'%22');
+            }
+            $delim = $mode ? ' OR ' : '%20OR%20';
         }
         return empty($ret) ? $default : $ret;
     }
@@ -7780,7 +7795,7 @@ class AA_Stringexpand_Imgtext extends AA_Stringexpand_Nevercachenotrim {
 /** Creates B/W QR code image
  *  {qrcode:<text>[:<size>:<margin>]}
  *
- *  @usage <img src="{qrcode:https://actionapps.org:600}" alt="AA website" width=200 height=200>
+ *  @usage <img src="{qrcode:https#://actionapps.org:600}" alt="AA website" width=200 height=200>
  *  @param $text - text to encode (utf)
  *  @param $size - size of the image in pixels (default 300)
  *  @param $margin - margin (default 2)
@@ -9529,7 +9544,7 @@ class AA_Stringexpand_Formedit extends AA_Stringexpand_Nevercache {
  *           - D - delete (with json you can specify also Dconfirm:<question> - see below)
  *           - S - setting (edit item in Toolbox)
  *           - E - edit - used with <edit_code> parameter
- *           - X - eXternale edit - the same as Edit, but it peloads all page for edit form
+ *           - X - eXternal edit - the same as Edit, but it reloads all page for edit form
  *                     - used with <edit_code> parameter
  *           - B - back - used with <edit_code> parameter
  *           - F - file upload to first file...........x or img_upload.....x or img_src........x field
@@ -9560,7 +9575,7 @@ class AA_Stringexpand_Manager extends AA_Stringexpand_Nevercache {
         $mode_arr = [];
 
         if ($mode[0] == '{') { // we define buttons using asociative array - {jsonasoc:N:Add item:D:Delete item}
-            $mode_arr = json2asoc($mode);
+            $mode_arr = array_trim_all(json2asoc($mode));
             if (array_key_exists('S', $mode_arr) AND !strlen($mode_arr['S'])) {
                 $mode_arr['S'] = '&#x2261';
             }
