@@ -1348,7 +1348,7 @@ class AA_Stringexpand_Lazy extends AA_Stringexpand_Nevercache { // do not cache 
         $uniqid = gensalt(8); // gensalt is shorter than mt_rand(100000000,999999999);  // mt_rand is quicker than uniqid()
 
         if ($mode == 'nolazy') {
-            return  "<div class=aa-lazydiv-nolazy id=lazy_$uniqid data-aa-url=\"$url\">". StrExp('include',[$url]) ."</div>\n";
+            return  "<div class=aa-lazydiv-nolazy id=lazy_$uniqid data-aa-url=\"$url\">". StrExp('include',[$url,'ajax']) ."</div>\n";   // ajax for the same parameters as lazy variant
         }
 
         $ret    = "<div class=aa-lazydiv id=lazy_$uniqid data-aa-url=\"$url\">";
@@ -5605,6 +5605,9 @@ class AA_Stringexpand_Include extends AA_Stringexpand {
             case "http":
                 $fileout = expandFilenameWithHttp($fn);
                 break;
+            case "ajax":
+                $fileout = expandFilenameWithHttp($fn, 'ajax');
+                break;
             case "fileman":
                 // Note this won't work if called from a Static view because no slice_id available
                 // This should be fixed.
@@ -5647,10 +5650,11 @@ class AA_Stringexpand_Include extends AA_Stringexpand {
 
 /** expandFilenameWithHttp function
  *  Expand any quotes in the parturl, and fetch via http
- * @param $parturl
- * @return array|string
+ * @param string $parturl
+ * @param string $type
+ * @return false|string
  */
-function expandFilenameWithHttp($parturl) {
+function expandFilenameWithHttp($parturl, string $type='') {
     $filename = str_replace( 'URL_PARAMETERS', DeBackslash(shtml_query_string()), $parturl);
 
     // filename do not use colons as separators => dequote before callig
@@ -5658,7 +5662,7 @@ function expandFilenameWithHttp($parturl) {
         return "";
     }
 
-    $headers  = [];
+    $headers  = ($type == 'ajax') ? ['X-Requested-With'=>'XMLHttpRequest'] : [];
     // if no http request - add server name
     if (!(aa_substr($filename, 0, 7) == 'http://') AND !(aa_substr($filename, 0, 8) == 'https://')) {
         $filename = self_server(). (($filename[0] =='/') ? '' : '/'). $filename;
@@ -5669,9 +5673,6 @@ function expandFilenameWithHttp($parturl) {
     }
 
     return AA_Http::postRequest($filename, [], $headers);
-    // $file = &AA_File_Wrapper::wrapper($filename);
-    // $file->contents(); opens the stream, reads the data and close the stream
-    // return $file->contents();
 }
 
 /** Get $_SERVER[<variable>] value
