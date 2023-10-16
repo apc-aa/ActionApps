@@ -673,7 +673,7 @@ class Widget extends AA_Object implements NamedInterface {
                     $ret[$pid] = new AA_Property($pid, _m("Filtering conditions"), 'string', false, true, 'string', false, _m("(for slices only) Conditions for filtering items in selection. Use d-.. condition or conds[] array."), '', "d-source..........-BEGIN-Ecn");
                     break;
                 case 'sort_by':
-                    $ret[$pid] = new AA_Property($pid, _m("Sort by"), 'string', false, true, 'string', false, _m("(for slices only) Sort the items in specified order. Use sort[] array"), '', "sort[0][headline........]=a&sort[1][publish_date....]=d");
+                    $ret[$pid] = new AA_Property($pid, _m("Sort by"), 'string', false, true, 'string', false, _m("(for slices only) Sort the items in specified order. Use <fld>[+-]<fld>[+-]... or even any alias _#SOME_ALS."), '', "category.......1+publish_date....-headline........");
                     break;
                 case 'additional_slice_pwd':
                     $ret[$pid] = new AA_Property($pid, _m("Slice password"), 'string', false, true, 'string', false, _m("(for slices only) If the related slice is protected by 'Slice Password', fill it here"), '', 'ExtraSecure');

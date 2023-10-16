@@ -64,14 +64,14 @@ require_once __DIR__ . "/../../include/init_page.php";
 
 try {
     // array ( )-array ( )
-    $cmd = $cmd ?? InputVars::arrayGETPOST('cmd'); // -
+    $cmd ??= InputVars::arrayGETPOST('cmd'); // -
     // array ( )
     $example = InputVars::arrayPOST('example');
     $fire    = InputVars::arrayPOST('fire');
     // array ( 1 => 11, )
     $no_slice_id = InputVars::boolGET('no_slice_id');
     // array ( 'modedit' => 13, 'email_edit' => 11, 'acf' => 4, 'send_emails' => 5, 'email' => 4, )
-    $set_tview = $set_tview ?? InputVars::stringGET('set_tview');
+    $set_tview ??= InputVars::stringGET('set_tview');
     // array ( )
     $val = InputVars::arrayPOST('val');
     $cancel = InputVars::boolPOST('cancel');

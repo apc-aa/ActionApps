@@ -470,11 +470,11 @@ class tabledit {
             exit;
         }
 
-        $this->view["addrecord"]           = $this->view["addrecord"] ?? true;
-        $this->view["listlen"]             = $this->view["listlen"] ?? 15;
-        $this->view["search"]              = $this->view["search"] ?? $this->type == "browse";
-        $this->view["messages"]["no_item"] = $this->view["messages"]["no_item"] ?? _m("Nothing to be shown.");
-        $this->view["readonly"]            = $this->view["readonly"] ?? true;
+        $this->view["addrecord"]           ??= true;
+        $this->view["listlen"]             ??= 15;
+        $this->view["search"]              ??= $this->type == "browse";
+        $this->view["messages"]["no_item"] ??= _m("Nothing to be shown.");
+        $this->view["readonly"]            ??= true;
 
         $this->view["attrs"]["table"] .= " class=te_".substr($this->type,0,1)."_table ";
 
@@ -780,8 +780,8 @@ class tabledit {
             }
         }
 
-        $this->view["buttons_left"] = $this->view["buttons_left"] ?? $bl;
-        $this->view["buttons_down"] = $this->view["buttons_down"] ?? $bd;
+        $this->view["buttons_left"] ??= $bl;
+        $this->view["buttons_down"] ??= $bd;
     }
 
     // -----------------------------------------------------------------------------------

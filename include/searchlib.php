@@ -421,6 +421,7 @@ class AA_Set extends AA_Object {
      * @param $conds  array or conds url string
      * @param $sort   array or sort  url string in various formats:
      *                1)   sort = headline........-
+     *                1b)  sort = category.......1+publish_date....-headline........
      *                2)   sort[0] = headline........-
      *                3)   sort[0][headline........]=d
      *                4)   sort[0][headline........]=d&sort[1][publish_date....]=a

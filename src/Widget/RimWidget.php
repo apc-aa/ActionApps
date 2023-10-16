@@ -112,7 +112,7 @@ class RimWidget extends Widget
             $actbuttonsdown['N'] = "<article><i class=\"ico new\" onclick=\"OpenWindowTop('" . Inputform_url(true, null, $sid, 'close_dialog', null, $input_name) . "');\">" . _m('new') . '</i></article>';
         }// @todo
         if (strpos($actions2show, 'D') !== false) {
-            $actbuttons['D'] = '<article onclick="this.parentNode.parentNode.parentNode.removeChild(this.parentNode.parentNode)"><i class="ico delete">x</i></article>';
+            $actbuttons['D'] = '<article onclick="this.parentNode.parentNode.parentNode.removeChild(this.parentNode.parentNode)"><i class="ico delete">&#215;</i></article>';
         }// @todo
         if (strpos($actions2show, 'E') !== false) {
             $actbuttons['E'] = '<article><i class="ico edit">edit</i></article>';
@@ -178,7 +178,7 @@ HTML;
                              </section>
                              <section class="icogroup">
                                <input type="hidden" name="" value="' . safe($k) . '"><article class="select" onclick="this.previousSibling.name=AA_up(this, \'.aa-widget\').getAttribute(\'data-aa-basename\')+\'[rim][]\'; AA_up(this, \'.aa-widget\').querySelector(\'.itemgroup\').appendChild(this.parentNode.parentNode);"><i class="ico select">+</i></article>
-                               <article class="delete" onclick="this.parentNode.parentNode.parentNode.removeChild(this.parentNode.parentNode)"><i class="ico delete">x</i></article>
+                               <article class="delete" onclick="this.parentNode.parentNode.parentNode.removeChild(this.parentNode.parentNode)"><i class="ico delete">&#215;</i></article>
                              </section>
                            </article>
                            ';

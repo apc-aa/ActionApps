@@ -41,8 +41,8 @@
 
 use AA\Util\Langs;
 
-$encap = $encap ?? $_REQUEST['encap'] ?? false;
-$free  = $free  ?? $_REQUEST['free']  ?? false;
+$encap ??= $_REQUEST['encap'] ?? false;
+$free  ??= $_REQUEST['free'] ?? false;
 
 // ----- input variables normalization - start
 // This code handles with "magic quotes" and "register globals" PHP (<5.4) setting

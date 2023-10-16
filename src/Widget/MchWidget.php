@@ -84,7 +84,7 @@ class MchWidget extends Widget
         $selection = [];
         foreach ($options as $o) {
             if ($o['selected']) {
-                $selection[] = '<span data-aa-mchval="' . safe($o['k']) . '" onclick="var el=document.querySelector(\'#widget-' . $base_id . ' input[type=checkbox][value=&quot;' . $o['k'] . '&quot;]\');el.checked=!el.checked;this.style.opacity=el.checked?1:.3;el.dispatchEvent(new Event(\'change\', { \'bubbles\': true }));">' . $o['v'] . '</span>';
+                $selection[] = '<span data-aa-mchval="' . safe($o['k']) . '" onclick="const el=document.querySelector(\'#widget-' . $base_id . ' input[type=checkbox][value=&quot;' . $o['k'] . '&quot;]\');el.checked=!el.checked;this.style.opacity=el.checked?1:.3;el.dispatchEvent(new Event(\'change\'));">' . $o['v'] . '</span>';
             }
         }
 

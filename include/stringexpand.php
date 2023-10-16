@@ -1330,7 +1330,8 @@ class AA_Stringexpand_Htmlajaxtoggle extends AA_Stringexpand {
  *  displays <placeholder>, but when user scroll the placeholder to the screen, it loads view by ajax
  *  @param $url            - url, which will be called by AJAX and displayed
  *                           on demand (click on the link)
- *  @param $placeholder    - the HTML code for the div before load
+ * @param $placeholder       - the HTML code for the div before load
+ * @param $mode              - 'nolazy' for direct load - {lazy:/apc-aa/view.php?vid=15::nolazy}, empty for lazy load (could be more modes in the future)
  */
 class AA_Stringexpand_Lazy extends AA_Stringexpand_Nevercache { // do not cache - we use another unique id
 
@@ -1345,12 +1346,12 @@ class AA_Stringexpand_Lazy extends AA_Stringexpand_Nevercache { // do not cache 
             return '';
         }
         $uniqid = gensalt(8); // gensalt is shorter than mt_rand(100000000,999999999);  // mt_rand is quicker than uniqid()
-        $ret    = "<div class=aa-lazydiv id=lazy_$uniqid data-aa-url=\"$url\">";
 
         if ($mode == 'nolazy') {
-            $load = StrExp('include',[$url]);
-            return $ret.$load."</div>\n";
+            return  "<div class=aa-lazydiv-nolazy id=lazy_$uniqid data-aa-url=\"$url\">". StrExp('include',[$url]) ."</div>\n";
         }
+
+        $ret    = "<div class=aa-lazydiv id=lazy_$uniqid data-aa-url=\"$url\">";
 
         $placeholder = $placeholder ?: '[*]';
         [$placeholder] = AA_Stringexpand::replaceIcons([$placeholder],['*']);  // replace icon [*]
@@ -2986,7 +2987,7 @@ class AA_Stringexpand_Polls extends AA_Stringexpand_Nevercache {
  *  <mode> = '' (empty) - the conds are by default url encoded (good for SSI includes with calling /aa/view.php...)
  *                        (%22My%20category%22) so it can be used as parameter to view.
  *         = "1"        - we do not need url encoding for {ids } construct, so for usage with {ids} use the last parameter and set it to 1
- *         = "=="       - the same as "1" but for usage with '==' operator (d-headline........-==-{conds:category.......3:==})
+ *         = "=="       - the same as "1" but for ussage with '==' operator (d-headline........-==-{conds:category.......3:==})
  *     in most cases you want to use mode 1 or ==
  */
 class AA_Stringexpand_Conds extends AA_Stringexpand_Nevercache {
@@ -3786,7 +3787,7 @@ class AA_Stringexpand_Menu extends AA_Stringexpand {
     /** expand function
      * @param $item_ids - item ids of the menu options on the first level
      * @param $code - alias or aa expression which will be printed inside <li></li>
-     *                         - should be link to the item - _HEADLINK (for example)
+     *                         - should be a link to the item - _HEADLINK (for example)
      *                         - if the resulting code is empty, the menu option is not displayed
      *                           (not its submenu), which you can use for not displaying some items
      * @param $relation_field - tree relation field (default relation........)

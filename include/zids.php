@@ -75,7 +75,7 @@ class zids implements Iterator, ArrayAccess, Countable {
     /** zids function
      *  Constructor can be called with an array, or a zid
      * @param $initial
-     * @param $inittype
+     * @param string $inittype l|p|s|w|t|z
      * @param array $extended_att  additional attribute for each zid. It is in the form
      *                             array('attr'=>array(<array of attr for zids in the same based array, as $initial>))
      */
@@ -116,9 +116,10 @@ class zids implements Iterator, ArrayAccess, Countable {
             }
         }
         switch ($this->type) {
-        case 's': $this->a = array_values(array_filter($this->a, 'is_short_id'));  break;
-        case 'l': $this->a = array_values(array_filter($this->a, 'is_long_id'));   break;
-        case 'p': $this->a = array_values(array_filter($this->a, 'is_packed_id')); break;
+            case 's': $this->a = array_values(array_filter($this->a, 'is_short_id'));  break;
+            case 'l': $this->a = array_values(array_filter($this->a, 'is_long_id'));   break;
+            case 'p': $this->a = array_values(array_filter($this->a, 'is_packed_id')); break;
+            case 'w': $this->a = array_values(array_filter($this->a, 'is_string_id')); break;
         }
     }
 
@@ -555,6 +556,9 @@ function guesstype($str) {
     if (($s < 12) AND (ctype_digit((string) $str) OR ($str==''))) {
         return 's';
     }
+    if (is_string_id($str)) { // packed id newer starts with '
+        return 'w';  // text id
+    }
     if (($s >= 12) AND ($s <= 16)) {
         return 'p';
     }
@@ -572,6 +576,7 @@ function guesstype($str) {
 function is_short_id($id): bool  { return (strlen($id) < 12) AND ctype_digit((string) $id); }
 function is_long_id($id): bool   { return ((strlen($id)==32) AND ctype_xdigit($id)); }
 function is_packed_id($id): bool { return (strlen($id)==16); }
+function is_string_id($id): bool { return ($id[0] == "'"); }
 
 /** used instead of explode ('-'... which returns [0 => ''] for empty string and not empty string
  *  @return string[] - array of non-empty ids
