@@ -5668,7 +5668,7 @@ function expandFilenameWithHttp($parturl, string $type='') {
         $filename = self_server(). (($filename[0] =='/') ? '' : '/'). $filename;
         if (!empty($_SERVER["HTTP_COOKIE"])) {
             // we resend cookies only for local requests (It could be useful for AA_Auth ...)
-            $headers  = ['Cookie'=>$_SERVER["HTTP_COOKIE"]];
+            $headers['Cookie'] = $_SERVER["HTTP_COOKIE"];
         }
     }
 
