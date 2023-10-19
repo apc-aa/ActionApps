@@ -5666,9 +5666,9 @@ function expandFilenameWithHttp($parturl, string $type='') {
     // if no http request - add server name
     if (!(aa_substr($filename, 0, 7) == 'http://') AND !(aa_substr($filename, 0, 8) == 'https://')) {
         $filename = self_server(). (($filename[0] =='/') ? '' : '/'). $filename;
-        if (!empty($_SERVER["HTTP_COOKIE"])) {
+        if ($_COOKIE) {
             // we resend cookies only for local requests (It could be useful for AA_Auth ...)
-            $headers['Cookie'] = $_SERVER["HTTP_COOKIE"];
+            $headers['Cookie'] = http_build_query($_COOKIE, '', '; ');
         }
     }
 

@@ -109,7 +109,7 @@ if ($convertfrom) {
 }
 if ($convertto) {
     $view_param['convertto']   = $convertto;
-} elseif (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && (strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest')) {
+} elseif (IsAjaxCall()) {
     $view_param['convertto']   = 'utf-8';
 }
 

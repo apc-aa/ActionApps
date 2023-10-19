@@ -98,44 +98,38 @@ class AA_Http {
 
     /** postRequest function
      *  POST data to the url (using POST request and returns resulted data
-     * @param $url
-     * @param $data
-     * @return false|array $result[]
+     * @param       $url
+     * @param array $data
+     * @param array $headers
+     * @return false|string $result[]
      * inspired by http://netevil.org/blog/2006/nov/http-post-from-php-without-curl
      */
-    public static function postRequest($url, $data = [], $headers= []) {
+    public static function postRequest($url, array $data=[], array $headers=[]) {
 
-        if (empty($data)) {
-            $fp = @fopen($url, 'rb', false);
-        } else {
-            $data = http_build_query($data);
-            $params = [
-                'http' => [
-                                'method' => 'POST',
-                                'content' => $data
-                ]
-            ];
-            if (!empty($headers)) {
+        if ($data OR $headers) {
+            $opts = null;
+            if ($data) {
+                $data = http_build_query($data);
+                $opts = ['http' => ['method' => 'POST', 'content' => $data]];
+            }
+
+            if ($headers) {
                 $header = '';
                 foreach ($headers as $k => $v) {
                     $header .= "$k: $v\r\n";
                 }
-                $params['http']['header'] = $header;
+                $opts['http']['header'] = $header;
             }
-            $ctx = stream_context_create($params);
-            $fp  = @fopen($url, 'rb', false, $ctx);
         }
 
-        if (!$fp) {
-           AA_Http::lastErr(1, "Can't open url: $url");  // set error code
-           return false;
+        $ctx = $opts ? stream_context_create($opts) : null;
+        $ret = file_get_contents($url, false, $ctx);
+
+        if ($ret === false) {
+            AA_Http::lastErr(2, "Problem reading data from url: $url");  // set error code
+            return false;
         }
-        $response = @stream_get_contents($fp);
-        if ($response === false) {
-           AA_Http::lastErr(2, "Problem reading data from url: $url");  // set error code
-           return false;
-        }
-        return $response;
+        return $ret;
     }
 }
 
