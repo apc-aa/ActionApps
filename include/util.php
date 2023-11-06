@@ -1505,7 +1505,7 @@ class AA_Credentials {
 
     public function importFromToken(string $timetoken) {
         $arr = AA_Stringexpand_Encrypt::decrypt_time_token($timetoken);
-        if ( is_array($arr['spwd']) ) {
+        if ( is_array($arr) && is_array($arr['spwd']) ) {
             foreach ($arr['spwd'] as $crypted_slice_pwd) {
                 $this->register($crypted_slice_pwd);
             }

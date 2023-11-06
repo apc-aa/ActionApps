@@ -211,7 +211,7 @@ class AA_View {
 
         if (array_key_exists('group_by', $param_sort)) {
             if ($param_sort['group_by'] AND !AA_Alias::isAliasLike($param_sort['group_by'], true)) { // we can have group_by= to avoid grouping ({view:55::group_by-})
-                $sort = String2Sort('100000' . $param_sort['group_by']);                       // for aliases, we do not want to sort
+                $sort = String2Sort('100000' . $param_sort['group_by']);                             // for aliases, we do not want to sort
             }
         } else {
             if ($this->f('group_by1')) {

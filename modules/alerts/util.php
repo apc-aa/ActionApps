@@ -102,7 +102,7 @@ function confirm_email($slice_id, $aw) {
     $zids = $set->query();
 
     if ($zids->count() != 1) {
-        if ($GLOBALS['debug']) { echo "AW not OK: ".$zids->count()." items"; }
+        warn("AW not OK: ".$zids->count()." items");
         return false;
     }
     UpdateField($zids->longids(0), FIELDID_MAIL_CONFIRMED, new AA_Value('1'));
@@ -114,34 +114,23 @@ function confirm_email($slice_id, $aw) {
 function unsubscribe_reader($slice_id, $au, $c) {
 
     require_once __DIR__ . "/../../include/itemfunc.php";
-    $db = getDB();
-    $db->query (
-        "SELECT item.id FROM content INNER JOIN item
-         ON content.item_id = item.id
-         WHERE item.slice_id='".q_pack_id($slice_id)."'
-         AND content.field_id='".FIELDID_ACCESS_CODE."'
-         AND content.text='$au'");
-    if ($db->num_rows() != 1) {
-        if ($GLOBALS['debug']) echo "AU not OK: ".$db->num_rows()." items";
-        freeDB($db);
+
+    $readers = DB_AA::select('iid', 'SELECT LOWER(HEX(item.id)) as iid FROM `content`,`item`',[['content.item_id', 'item.id', 'j'],['item.slice_id',$slice_id,'l'],['content.field_id', FIELDID_ACCESS_CODE],['content.text',$au]]);
+    if (count($readers) != 1) {
+        warn("AU not OK: ".$db->num_rows()." items");
         return false;
     }
-    $db->next_record();
-    $item_id = unpack_id($db->f("id"));
+    $item_id   = reset($readers);
+    $field_id  = getAlertsField(FIELDID_HOWOFTEN, $c);
+    $frequency = DB_AA::select1('text', 'SELECT text FROM `content`',[['item_id',$item_id, 'l'],['field_id', $field_id]]);
 
-    $field_id = getAlertsField(FIELDID_HOWOFTEN, $c);
-    $db->query( "SELECT text FROM content WHERE field_id = '".$field_id."' AND item_id = '".q_pack_id($item_id)."'");
-
-    if ($db->next_record()) {
-        $frequency = $db->f("text");
-        if ($frequency AND (substr($frequency,0,5) != 'unsub')) {
-            $new_frequency = quote('unsubscribed:'. date('Y-m-d H:i'). ':au');  // just inform text
-            $db->query( "UPDATE content SET text='$new_frequency' WHERE field_id = '$field_id' AND item_id = '".q_pack_id($item_id)."'");
-            if ($GLOBALS['debug']) { echo "<!--OK: f $field_id unsubscribed-->"; }
-            freeDB($db);
-            return true;
-        }
+    if ($frequency === false) {
+        return false;
     }
-    freeDB($db);
-    return false;
+
+    if (substr($frequency,0,5) != 'unsub') {  // left old unsub message and date
+        UpdateField($item_id, $field_id, new AA_Value('unsubscribed:'. date('Y-m-d H:i'). ':au')); // just inform text
+        debug("<!--OK: f $field_id unsubscribed-->");
+    }
+    return true;
 }
