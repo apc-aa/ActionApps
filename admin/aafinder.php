@@ -166,7 +166,7 @@ function query_search(array $where, string $phrase): string {
 
     $items = [[_m('Item'), 'short_id', 'status_code', 'publish_date', 'last_edit', 'edited_by']];
     foreach ($arr as $f) {
-        $items[]    = [AafinderItemLink($f['iid'], $f['slice_id']), $f['short_id'], $f['status_code'], date('Y-m-d H:i',$f['post_date']), date('Y-m-d H:i',$f['last_edit']),$f['edited_by']];
+        $items[]    = [AafinderItemLink($f['iid'], $f['slice_id']), $f['short_id'], $f['status_code'], date('Y-m-d H:i', (int)$f['post_date']), date('Y-m-d H:i',(int)$f['last_edit']),$f['edited_by']];
     }
 
     return $output. GetHtmlTable($items, 'th'). '<br><br>';
@@ -229,11 +229,11 @@ function PrintItemInfo($item_id) {
         if ($res = DB_AA::select([], 'SELECT * FROM `item`', [['id',$long_id, 'l']])) {
             $res[0]['id']            = unpack_id($res[0]['id']);
             $res[0]['slice_id']      = unpack_id($res[0]['slice_id']);
-            $res[0]['post_date']    .= '<br><small>('.date('j.n.Y H:i:s', $res[0]['post_date']) .'</small>)';
-            $res[0]['publish_date'] .= '<br><small>('.date('j.n.Y H:i:s', $res[0]['publish_date']) .'</small>)';
-            $res[0]['expiry_date']  .= '<br><small>('.date('j.n.Y H:i:s', $res[0]['expiry_date']) .'</small>)';
-            $res[0]['last_edit']    .= '<br><small>('.date('j.n.Y H:i:s', $res[0]['last_edit']) .'</small>)';
-            $res[0]['moved2active'] .= '<br><small>('.date('j.n.Y H:i:s', $res[0]['moved2active']) .'</small>)';
+            $res[0]['post_date']    .= '<br><small>('.date('j.n.Y H:i:s', (int)$res[0]['post_date']) .'</small>)';
+            $res[0]['publish_date'] .= '<br><small>('.date('j.n.Y H:i:s', (int)$res[0]['publish_date']) .'</small>)';
+            $res[0]['expiry_date']  .= '<br><small>('.date('j.n.Y H:i:s', (int)$res[0]['expiry_date']) .'</small>)';
+            $res[0]['last_edit']    .= '<br><small>('.date('j.n.Y H:i:s', (int)$res[0]['last_edit']) .'</small>)';
+            $res[0]['moved2active'] .= '<br><small>('.date('j.n.Y H:i:s', (int)$res[0]['moved2active']) .'</small>)';
             echo GetHtmlTable($res, 'key', _m('Item table record for the item'));
         }
 
@@ -262,8 +262,8 @@ function PrintItemInfo($item_id) {
                         $v['Item'] .= "<br><small>($hdln)</small>";
                     }
                     $v['Status'] = $item->getStatusCode();
-                    $v['PubDate'] = date('j.n.Y H:i:s', $item->getval('publish_date....'));
-                    $v['ExpDate'] = date('j.n.Y H:i:s', $item->getval('expiry_date.....'));
+                    $v['PubDate'] = date('j.n.Y H:i:s', (int)$item->getval('publish_date....'));
+                    $v['ExpDate'] = date('j.n.Y H:i:s', (int)$item->getval('expiry_date.....'));
 
                     $islice = AA_Slice::getModule($item->getSliceID());
                     $v['FieldName'] = ($f=$islice->getField($v['field_id'])) ? $f->getName() : '-- invalid --';
@@ -516,7 +516,7 @@ if (strlen($findtext)) {
             $print['id'] = unpack_id($print['id']);
             $print['parent']  = unpack_id($print['parent']);
             $print['item_id'] = AafinderItemLink(unpack_id($print['item_id']), $print['slice_id']);
-            $print['date'] = date('Y-m-d H:i:s', $print['date']);
+            $print['date'] = date('Y-m-d H:i:s', (int)$print['date']);
             echo '<tr><td>'. join('</td><td>', $print).'</td></tr>';
         }
         echo '</table>';

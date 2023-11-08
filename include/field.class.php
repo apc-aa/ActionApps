@@ -759,7 +759,7 @@ class AA_Fields implements Iterator, Countable {
      *  to return null in &function())
      * @param $field_id
      */
-    function getField(string $field_id) {
+    function getField(string $field_id): ?AA_Field {
         $this->loadField($field_id);
         return is_object($this->fields[$field_id]) ? $this->fields[$field_id] : null;
     }

@@ -4554,7 +4554,7 @@ class AA_Stringexpand_Field extends AA_Stringexpand {
     /**
      * @var array
      */
-    private static $ALLOWED_PROPERTIES = ['name'=>'name','help'=>'input_help', 'alias1'=>'alias1', 'alias2'=>'alias2', 'alias3'=>'alias3', 'widget_new'=>'widget_new'];
+    private static $ALLOWED_PROPERTIES = ['name'=>'name','help'=>'input_help', 'alias1'=>'alias1', 'alias2'=>'alias2', 'alias3'=>'alias3', 'widget_new'=>'widget_new', 'is_multi'=>'is_multi', 'is_multilang'=>'is_multilang', 'is_formatable'=>'is_formatable', 'type'=>'type'];
 
     /** additionalCacheParam function
      * @param array $params parameters passed to expand (caching could be parameter sensitive).
@@ -4575,25 +4575,34 @@ class AA_Stringexpand_Field extends AA_Stringexpand {
         // we do not want to allow users to get all field setting
         // that's why we restrict it to the properties, which makes sense
         // @todo - make it less restrictive
-        $property = self::$ALLOWED_PROPERTIES[$property];
-        if ($property == 'widget_new') {
-            return StrExp('input', [$slice_id, $field_id]);
-        }
+        $prop = self::$ALLOWED_PROPERTIES[$property];
 
-        $field = $this->_getField($slice_id, $field_id);
-        if (!$field) {
+
+        if (!($field = $this->_getField($slice_id, $field_id))) {
             return '';
         }
 
-        return (string) $field->getProperty($property ?: 'name');
+        switch ($prop) {
+            case 'widget_new':
+                return StrExp('input', [$slice_id, $field_id]);
+            case 'is_multi':
+                return $field->isMultiple() ? '1' : '';
+            case 'is_multilang':
+                return $field->isMultilingual() ? '1' : '';
+            case 'is_formatable':
+                return $field->getFormatters() ? '1' : '';
+                case 'type':
+                return $field->getType();          //  'pwd' | 'date' | 'bool' | 'text' | 'int'
+        }
+
+        return (string) $field->getProperty($prop ?: 'name');
     }
 
     /**
      * @param $slice_id
      * @param $field_id
-     * @return AA_Field string
      */
-    function _getField($slice_id, $field_id) {
+    function _getField($slice_id, $field_id): ?AA_Field {
         if (empty($slice_id)) {
             if ( empty($this->item) ) {
                 return null;

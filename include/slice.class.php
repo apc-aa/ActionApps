@@ -592,9 +592,8 @@ class AA_Slice extends AA_Module {
     }
 
     /** getField function
-     *  @return AA_Field
      */
-    function getField($field_id) {
+    function getField($field_id): ?AA_Field {
         return $this->fields->getField($field_id);
     }
 

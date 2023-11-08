@@ -123,7 +123,7 @@ class Manageraction_History_Apply extends AbstractManageraction {
 function GetHistoryFields() {  // function - we need trnslate _m() on use (not at include time)
     $searchfields = new AA\Util\Searchfields();
     //   id                     $name,                        $field,                 operators='text', $table=false, $search_pri=false, $order_pri=false
-    $searchfields->add('id'                  , _m('Id'),                    'links_links.id',                'numeric', false,          0,    0);
+    //$searchfields->add('id'                  , _m('Id'),                    'links_links.id',                'numeric', false,          0,    0);
 
     $searchfields->add('change_id'   , _m('Id'),          'change.id',                 'text', false,           10, 10);
     $searchfields->add('resource_id' , _m('Resource ID'), 'change.resource_id',        'text', false,           20, 20);
