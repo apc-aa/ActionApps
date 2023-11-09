@@ -64,16 +64,17 @@ HtmlPageBegin(true);
 <script>
     // update changes in parent window
     function updateChanges(myform) {
-      window.opener.document.filterform.elements["<?php echo $var_id ?>"].value = "";
+      let filterf = window.opener.document["filterform"]
+        filterf.elements["<?php echo $var_id ?>"].value = "";
       for (var i = 0; i < myform.elements.length-1; i++) {
-            if ((myform.elements[i].type == "checkbox") && (myform.elements[i].checked == true)) {
-                t_val = window.opener.document.filterform.elements["<?php echo $var_id ?>"].value;
+            if ((myform.elements[i].type === "checkbox") && (myform.elements[i].checked === true)) {
+                t_val = filterf.elements["<?php echo $var_id ?>"].value;
                 if (t_val == "") {
                     t_val = '"' + myform.elements[i].value + '"';
                 } else {
                     t_val = t_val + ' OR "' + myform.elements[i].value + '"';
                 }
-                window.opener.document.filterform.elements["<?php echo $var_id ?>"].value = t_val;
+                filterf.elements["<?php echo $var_id ?>"].value = t_val;
             }
       }
       window.close();
@@ -87,7 +88,7 @@ if ($sel_text) {
     $content_tmp = explode(" OR ", $sel_text);
     if (is_array($content_tmp)) {
         for ( $i=0, $ino=count($content_tmp); $i<$ino; ++$i) {
-            $preset_value->addValue(str_replace("\\\"", "", $content_tmp[$i]));
+            $preset_value->addValue(trim($content_tmp[$i],'"'));
         }
     }
 }
