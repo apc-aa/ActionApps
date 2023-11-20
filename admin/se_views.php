@@ -71,7 +71,7 @@ if ( $del ) {
 }
 
 // returns javascript row for view selection
-function GetViewJSArray( $sid, $id, $name, $i ) {
+function GetViewJSArray( $sid, $id, $name, $i ): string {
     $id=safe($id);
     return "\n vs[$i]=\"x$sid\"; vv[$i]=\"$id\"; vn[$i]=\"".safe($name)."\";";
 }
@@ -176,7 +176,7 @@ $i   = 0;
 foreach ( $views as $vw ) {
     if ($g_modules[$vw['uslice_id']]) {     // if user has any permission for the view's slice
         $view_array .= GetViewJSArray( $vw['uslice_id'], $vw['id'], ($vw['field3'] ? $vw['field3'].' - ' : '').$vw['id'].' - '.$vw['name'], $i++ );
-        $sliceWview[$vw['uslice_id']] = 1;  // mark the slices, where is an view
+        $sliceWview[$vw['uslice_id']] = 1;  // mark the slices, where is a view
     }
 }
 

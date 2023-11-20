@@ -15,7 +15,7 @@
 *
 * You should have received a copy of the GNU General Public License
 * along with this program (LICENSE); if not, write to the Free Software
-* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 *
 * @package   Include
 * @version   $Id$
@@ -54,7 +54,7 @@ if (!defined(AA_INSTAL_PATH)) {
     $url_components = parse_url(AA_INSTAL_URL);
     define('AA_INSTAL_PATH', $url_components['path']);
 }
-// now it is not necessary to have this constant in config.php - we count it from current file path
+// now it is not necessary to have this constant in config.php - we count it from a current file path
 if (!defined('AA_BASE_PATH')) {
     define('AA_BASE_PATH', substr(__DIR__, 0, -7));
 }
@@ -183,12 +183,12 @@ spl_autoload_register(function ($class_name) {
 });
 
 class AA_Debug {
-    protected $_starttime;
-    protected $_duration   = [];
-    protected $_tracestack = [];
+    protected array $_starttime = [];
+    protected array $_duration   = [];
+    protected array $_tracestack = [];
     /** @var array [<level>, <function>, <fnc_param>, <fnc_param_len>, <time_start>, <time_end>, <output>, <output_len>] */
-    protected $_calls      = [];
-    protected $_repeated   = [];
+    protected array $_calls      = [];
+    protected array $_repeated   = [];
 
     function __construct() {
         $this->_starttime = ['main' => microtime(true)];
@@ -248,8 +248,8 @@ class AA_Debug {
         $mem_peak  = sprintf('%.3g',(memory_get_peak_usage() / (1024*1024)));
 
         echo '<br>Page generation time: '. sprintf('%.3g',timestartdiff());
-        echo "<br>Memory usage (actual): ${mem_usage} MiB";
-        echo "<br>Memory usage (peak): ${mem_peak} MiB";
+        echo "<br>Memory usage (actual): $mem_usage MiB";
+        echo "<br>Memory usage (peak): $mem_peak MiB";
         echo '<br>Dababase instances: '. DB_AA::$_instances_no;
         echo '<br>  (spareDBs): '. count($spareDBs);
     }
@@ -376,7 +376,7 @@ class AA {
     /** @var  AA_Metabase $metabase */
     private static $metabase       = null;
 
-    static function getHeaders() {
+    static function getHeaders(): array {
         $ret = [];
         $ret['type'] = 'Content-Type: '. (AA::$headers['type'] ?: 'text/html') .'; charset='.(AA::$headers['encoding'] ?: AA::$encoding ?: Langs::getCharset());
         if (isset(AA::$headers['status'])) {
@@ -404,7 +404,7 @@ class AA {
     /** @usage AA::Un();
      *  @return  AA_Stringexpander
      */
-    static function Stringexpander() {
+    static function Stringexpander(): AA_Stringexpander {
         return AA::$stringexpander ?: (AA::$stringexpander = new AA_Stringexpander());
     }
 
@@ -418,21 +418,21 @@ class AA {
     /** @usage AA::Contentcache()->set();
      *  @return  AA_Contentcache
      */
-    static function Contentcache() {
+    static function Contentcache(): AA_Contentcache {
         return AA::$contentcache ?: (AA::$contentcache = new AA_Contentcache());
     }
 
     /** @usage AA::Pagecache()->invalidateFor();
      *  @return  Pagecache
      */
-    static function Pagecache() {
+    static function Pagecache(): PageCache {
         return AA::$pagecache ?: (AA::$pagecache = new PageCache(CACHE_TTL));
     }
 
     /** @usage AA::Metabase()->doInsert('log', ['time'=>time(),'user'=>$uid, 'type'=>$event, 'selector'=>$selector, 'params'=>$params]);
      *  @return  AA_Metabase
      */
-    static function Metabase() {
+    static function Metabase(): AA_Metabase {
         return AA::$metabase ?: (AA::$metabase = AA_Metabase::singleton());
     }
 

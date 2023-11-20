@@ -35,7 +35,7 @@ use AA\Util\Langs;
 require_once __DIR__ . "/item.php";
 require_once __DIR__ . "/item_content.php";
 require_once __DIR__ . "/stringexpand.php";
-require_once __DIR__."/htmlMimeMail/htmlMimeMail.php";
+require_once __DIR__ . "/htmlMimeMail/htmlMimeMail.php";
 require_once __DIR__ . "/validate.php";
 
 
@@ -96,8 +96,8 @@ class AA_Mail extends htmlMimeMail implements \AA\Later\LaterInterface {
 
     /** setFromTemplate function
      *  Prepares the mail for sending
-     *  The e-mail template is taken from database and all aliases
-     *  in the template are expanded acording tho $item
+     *  The e-mail template is taken from a database, and all aliases
+     *  in the template are expanded according tho $item
      * @param $mail_id
      * @param $item
      * @return bool
@@ -225,7 +225,7 @@ class AA_Mail extends htmlMimeMail implements \AA\Later\LaterInterface {
      *  Econnect <info@ecn.cz>  -> info@ecn.cz
      */
     function extractEmails($string){
-        preg_match_all("/[\._a-zA-Z0-9-]+@[\._a-zA-Z0-9-]+/i", $string, $matches);
+        preg_match_all("/[._a-zA-Z0-9-]+@[._a-zA-Z0-9-]+/i", $string, $matches);
         return $matches[0];
     }
 
@@ -292,10 +292,11 @@ class AA_Mail extends htmlMimeMail implements \AA\Later\LaterInterface {
      *  Mail template is unaliased using aliases and data form item identified by
      *  $zids (often Reader item). The recipients are Readers itself, by default.
      * @param $mail_id
-     * @param $zids
-     * @return
+     * @param $zids zids
+     * @param $slice_id
+     * @return int number of ids to send mails
      */
-    static function sendToReader($mail_id, $zids, $slice_id) {
+    static function sendToReader($mail_id, zids $zids, $slice_id): int {
         $chunks = array_chunk($zids->longids(),50);  // plan 50 mails in one shot
         if (count($chunks)==1) {
             // less than 50 mails - schedule right now
@@ -335,7 +336,7 @@ class AA_Mail_Scheduler implements \AA\Later\LaterInterface {
     }
 
     function schedule() {
-        // Allow to use current slice data without slice_pwd
+        // Allow using current slice data without slice_pwd
         AA_Credentials::singleton()->loadFromSlice($this->slice_id);
 
         $mail_count = 0;
@@ -359,8 +360,7 @@ class AA_Mail_Scheduler implements \AA\Later\LaterInterface {
     }
 }
 
-/** html2text function
- *  Strips the HTML tags and lot more to get a plain text mail version.
+/** Strips the HTML tags and a lot more to get a plain text mail version.
  *   Replaces URL links by the link in compound brackets behind the linked text.
  * @param $html string
  * @return null|string|string[]
@@ -412,7 +412,7 @@ function html2text($html, $encoding='utf-8') {
         "'<script[^>]*?>.*?</script>'si",
         "'<style[^>]*?>.*?</style>'si",
         // Strip out html tags
-        "'<[\/\!]*?[^<>]*?>'si",
+        "'<[/!]*?[^<>]*?>'si",
         // trim end of line whitespaces (also fixes responsivnes when long line is present)
         ($encoding=='utf-8') ? "'\\h+\\n'u" : "'\\h+\\n'",
         // If the previous commands added too much whitespace, delete it
@@ -435,7 +435,7 @@ function html2text($html, $encoding='utf-8') {
         "",
         // Strip out html tags
         "",
-        // trim end of line whitespaces (also fixes responsivnes when long line is present)
+        // trim the end of line whitespaces (also fixes responsiveness when long line is present)
         "\n",
         // If the previous commands added too much whitespace, delete it
         "\n\n\n"
@@ -453,3 +453,22 @@ function html2text($html, $encoding='utf-8') {
     $html = preg_replace($search, $replace, $html);
     return $html;
 }
+
+function GetMailManaged(): \AA\Managed {
+    $managed = AA::Metabase()->getManagerConf('email');
+    $managed->setColumns2show(['id', 'type', 'subject', 'description']);
+    $managed->setWidgetSetting('html', ['type' => 'bool', 'name' => _m('Use HTML')]);
+    $managed->setWidgetSetting('type', ['enum' => AA_Collection::get_email_types(), 'name' => _m('Email type')]);
+    $managed->setWidgetSetting('lang', ['enum' => Langs::getNames(), 'name' => _m('Language (charset)')]);
+    $managed->setWidgetSetting('owner_module_id', ['enum' => AA_Module::getUserModules(), 'name' => _m('Owner')]);
+    $managed->setWidgetSetting('description', ['name' => _m('Description/Result')]);
+    $managed->setWidgetSetting('subject', ['name' => _m('Subject')]);
+    $managed->setWidgetSetting('body', ['name' => _m('Body')]);
+    $managed->setWidgetSetting('header_from', ['name' => _m('From (email) ')]);
+    $managed->setWidgetSetting('reply_to', ['name' => _m('Reply to (email)')]);
+    $managed->setWidgetSetting('errors_to', ['name' => _m('Errors to (email)')]);
+    $managed->setWidgetSetting('sender', ['name' => _m('Envelop sender (email)')]);
+    $managed->setWidgetSetting('attachments', ['name' => _m('Attachments')]);
+    return $managed;
+}
+

@@ -27,8 +27,6 @@
  */
 
 use AA\Managed;
-use AA\Manager;
-use AA\Manageraction\AbstractManageraction;
 use AA\Manageraction\Manageractions;
 
 /** AA_Metabase holds the database structure of AA

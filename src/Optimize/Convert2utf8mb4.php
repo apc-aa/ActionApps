@@ -49,16 +49,7 @@ class Convert2utf8mb4 extends AbstractOptimize {
         $new_collation1 = $this->convert('utf8_', 'utf8mb4_');
         $new_collation2 = $this->convert('utf8mb3_', 'utf8mb4_');
 
-        $new_collation = $new_collation1 or $new_collation2 or DB_AA::select1('TABLE_COLLATION', "SELECT TABLE_COLLATION FROM information_schema.TABLES", [
-            [
-                'TABLE_SCHEMA',
-                DB_NAME,
-            ],
-            [
-                'TABLE_NAME',
-                'content',
-            ],
-        ]);
+        $new_collation = $new_collation1 ?: $new_collation2 ?: DB_AA::select1('TABLE_COLLATION', "SELECT TABLE_COLLATION FROM information_schema.TABLES", [['TABLE_SCHEMA', DB_NAME,], ['TABLE_NAME', 'content',]]);
         $this->query("ALTER DATABASE " . DB_NAME . " CHARACTER SET = utf8mb4 COLLATE = $new_collation;");
         $this->message(_m('Database default set to %1', [$new_collation]));
         $this->message(_m('Please do not forget to change DB_CHARACTER_SET to "utf8mb4" and DB_COLLATION_CONNECTION to "%1" in your config.php', [$new_collation]));

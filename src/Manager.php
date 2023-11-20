@@ -39,12 +39,9 @@ namespace AA;
 use AA;
 use AA\IO\Grabber\ObjectForm;
 use AA\Manageraction\Manageractions;
-use AA\Widget\InfWidget;
 use AA_Condition;
 use AA_Content;
 use AA_Form;
-use AA_Formrow_Full;
-use AA_Formrow_Text;
 use AA_Metabase;
 use AA_Object;
 use AA_Profile;
@@ -838,7 +835,7 @@ class Manager extends AA_Storable {
     /**
      * @param zids|null $zids  @deprecated - manager should generate the zids from its own settings
      * @return string
-     * @throws Exception
+     * @throws \Exception
      */
     function getDisplayPage(zids $zids=null): string {
         global $r_state;

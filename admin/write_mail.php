@@ -175,7 +175,7 @@ if ( !$send ) {               // for the first time - directly from item manager
         } else {
             // get reader's zids
             $zids = getZidsFromGroupSelect($group, $items, $searchbar);
-            // following functionality could be extended by adding third
+            // the following functionality could be extended by adding third
             // parameter $recipient (for testing e-mail)
             $mails_sent  = AA_Mail::sendToReader($mail_id, $zids, AA::$module_id);
             $users_count = $zids->count();

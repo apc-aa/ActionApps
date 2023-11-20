@@ -46,10 +46,9 @@ class AA_Module {
     const SETTING_TABLE = '';
 
     /** array of already constructed modules */
-    protected static $_modules     = [];  // Array unpacked module id -> AA_Module object
+    protected static array $_modules     = [];  // Array unpacked module id -> AA_Module object
     /** @var array  mark as used for cache - in case we use the module, but do not need $module object itself - like in views  */
-    protected static $_used4cache   = [];
-    protected static $_module_types= [];  // Array unpacked module id -> type
+    protected static array $_used4cache   = [];
 
     protected $module_id;
     protected $module_setting;         // Array of module settings
@@ -67,7 +66,9 @@ class AA_Module {
     /** get module - called as:
      *   $name = AA_Module_Site::getModuleName($module_id)
      *   $name = AA_Slice::getModuleName($module_id)
-     * @param $module_id
+     * @param      $module_id
+     * @param bool $link
+     * @return string
      */
     static public function getModuleName($module_id, bool $link=false): string {
         $module = static::getModule($module_id);
@@ -175,12 +176,12 @@ class AA_Module {
     }
 
     /** AA_Module::deleteModules function
-     * @param $module_id
+     * @param array $module_ids
      * @return bool
      */
-    static public function deleteModules($module_ids) {
+    static public function deleteModules(array $module_ids): bool {
         foreach ($module_ids as $module_id) {
-            /** @var class-string<AA_Module> $class name - it is string name of class */
+            /** @var class-string<AA_Module> $class name - it is a string name of class */
             if (!is_long_id($module_id) OR !($class = AA_Module::getModuleInfo('class', $module_id))) {
                 return false;     // _m("No such module.")
             }
@@ -194,6 +195,10 @@ class AA_Module {
             DB_AA::delete_low_priority('module', [['id', $module_id, 'l']]);
             DelPermObject($module_id, "slice");   // delete module from permission system
         }
+        return true;
+    }
+
+    static public function _deleteModules(array $module_ids): bool {
         return true;
     }
 
@@ -540,11 +545,11 @@ class AA_Slice extends AA_Module {
     }
 
     /** AA_Slice::_deleteModules() function - called automatically form AA_Module::deleteModules()
-     * @param $module_id
+     * @param array $module_ids
      * @return bool
      */
-    static public function _deleteModules($module_ids) {
-        if (!is_array($module_ids) OR !count($module_ids)) {
+    static public function _deleteModules(array $module_ids): bool {
+        if (!count($module_ids)) {
             return false;     // _m("No such module.")
         }
         // deletes from content, offline and relation tables
@@ -981,11 +986,11 @@ class AA_Module_Site extends AA_Module {
     }
 
     /** AA_Module_Site::_deleteModules() function - called automatically form AA_Module::deleteModules()
-     * @param $module_id
+     * @param array $module_ids
      * @return bool
      */
-    static public function _deleteModules($module_ids) {
-        if (!is_array($module_ids) OR !count($module_ids)) {
+    static public function _deleteModules(array $module_ids): bool {
+        if (!count($module_ids)) {
             return false;     // _m("No such module.")
         }
 
@@ -1002,11 +1007,11 @@ class AA_Module_Alerts extends AA_Module {
     const SETTING_TABLE = 'alerts_collection';
 
     /** AA_Module_Alerts::_deleteModules() function - called automatically form AA_Module::deleteModules()
-     * @param $module_id
+     * @param array $module_ids
      * @return bool
      */
-    static public function _deleteModules($module_ids) {
-        if (!is_array($module_ids) OR !count($module_ids)) {
+    static public function _deleteModules(array $module_ids): bool {
+        if (!count($module_ids)) {
             return false;     // _m("No such module.")
         }
 
@@ -1026,11 +1031,11 @@ class AA_Module_Links extends AA_Module {
     // const SETTING_TABLE = 'alerts_collection';
 
     /** AA_Module_Links::_deleteModules() function - called automatically form AA_Module::deleteModules()
-     * @param $module_id
+     * @param array $module_ids
      * @return bool
      */
-    static public function _deleteModules($module_ids) {
-        if (!is_array($module_ids) OR !count($module_ids)) {
+    static public function _deleteModules(array $module_ids): bool {
+        if (!count($module_ids)) {
             return false;     // _m("No such module.")
         }
         DB_AA::delete_low_priority('links',   [['id', $module_ids, 'l']]);
@@ -1043,10 +1048,10 @@ class AA_Module_Jump extends AA_Module {
     // const SETTING_TABLE = 'alerts_collection';
 
     /** AA_Module_Jump::_deleteModules() function - called automatically form AA_Module::deleteModules()
-     * @param $module_id
+     * @param array $module_ids
      * @return bool
      */
-    static public function _deleteModules($module_ids) {
+    static public function _deleteModules(array $module_ids): bool {
         // @todo
         return true;
     }
@@ -1057,11 +1062,11 @@ class AA_Module_Polls extends AA_Module {
     // const SETTING_TABLE = 'alerts_collection';
 
     /** AA_Module_Polls::_deleteModules() function - called automatically form AA_Module::deleteModules()
-     * @param $module_id
+     * @param array $module_ids
      * @return bool
      */
-    static public function _deleteModules($module_ids) {
-        if (!is_array($module_ids) OR !count($module_ids)) {
+    static public function _deleteModules(array $module_ids): bool {
+        if (!count($module_ids)) {
             return false;     // _m("No such module.")
         }
 

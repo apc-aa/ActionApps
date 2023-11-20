@@ -1866,7 +1866,7 @@ class AA_Inputfield {
      */
     function inputWidget($item, $slice_id) {
         if ( !($field = AA_Slice::getModule($slice_id)->getField($this->id)) ) {
-            return '';
+            return;
         }
 
         $widget      = $field->getWidget();
@@ -1969,7 +1969,7 @@ class AA_Inputfield {
 
         $this->field_name('plus');
         $this->html_radio();
-        $this->echovar( "<textarea name=\"$name\" rows=\"$rows\" cols=\"$cols\" wrap=\"virtual\" $triggers>$val</textarea>" );
+        $this->echovar( "<textarea name=\"$name\" rows=\"$rows\" cols=\"$cols\" wrap=\"soft\" $triggers>$val</textarea>" );
         $out  = "<select name=\"foo_$name\" onchange=\"add_to_line($name, this.value)\">";
         $out .= $this->get_options( $this->const_arr );
         $out .= '</select>';
@@ -2059,8 +2059,8 @@ class AA_Inputfield {
             }
             $form_url = get_aa_url('form.php', ['form_id' => $addform, 'type' => 'ajax', 'ret_code' => $slice_field]);
             $img      = GetAAImage('icon_new.gif', _m('new'), 17, 17);
-            // varname used for as pointer to right selectbox for returning ajax call
-            $this->echoo("\n<a id=\"a".$this->varname ."\"href=\"javascript:void(0)\" onclick=\"AA_AjaxInsert(this, '$form_url'); return false;\">$img</a>");
+            // varname used as a pointer to right selectbox for returning ajax call
+            $this->echoo("\n<a id=\"a".$this->varname ."\" href=\"javascript:void(0)\" onclick=\"AA_AjaxInsert(this, '$form_url'); return false;\">$img</a>");
             $this->echoo("\n      </div>");
         }
         $this->echoo("\n        </div></div>");
@@ -3070,12 +3070,10 @@ function FrmItemGroupSelect( $items, $searchbar, $selected, $list_type, $message
 
 /** getZidsFromGroupSelect function
  *  Returns zids according to user selection of FrmItemGroupSelect
- * @param              $group
  * @param array        $items
  * @param AA_Searchbar $searchbar
- * @return zids
  */
-function getZidsFromGroupSelect($group, $items, $searchbar) {
+function getZidsFromGroupSelect($group, $items, $searchbar): zids {
     global $slice_id;
     if ( (string)$group == 'sel_item' ) {  // user specified users
         $zids = (new zids())->setFromItemArr($items);

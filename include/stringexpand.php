@@ -5090,7 +5090,7 @@ class AA_Stringexpand_Ensureitem extends AA_Stringexpand_Nevercache {
  *
  * If you want to update the item conditionally just do not fill <long_item_id> in cases you do not want update
  *
- * @return <long_item_id> if updated, nothing if item is not updated
+ * @return string <long_item_id> if updated, nothing if item is not updated
  *
  */
 class AA_Stringexpand_Updateitem extends AA_Stringexpand_Newitem {
@@ -5470,11 +5470,11 @@ class AA_Stringexpand_Dictionary extends AA_Stringexpand {
             "'<h[1-6][^>]*?>.*?</h[1-6]>'si",  // Strip out titles
             // can't be nested
             "'<a[^>]*?>.*?</a>'si",            // Strip out links
-            "'<[\/\!]*?[^<>]*?>'si"
+            "'<[/!]*?[^<>]*?>'si"
         ];          // Strip out HTML tags
 
         // substitute html tags with shortcuts
-        // (= remove the code where we do not want replace text)
+        // (= remove the code where we do not want to replace text)
         //
         // Store $text in the $html_subst_arr array - used for dictionary escaping html  tags.
 
@@ -6405,7 +6405,7 @@ class AA_Req {
      */
     function getConstructor() {
         $sri = $this->integrity ? ",'".$this->integrity."'" : '';
-        return get_called_class().'(['.join(',', array_map($this->depend, function($dep) { return "\"$dep\"";})). ']'. $sri;
+        return get_called_class().'(['.join(',', array_map(function($dep) { return "\"$dep\"";}, $this->depend)). ']'. $sri;
     }
 }
 
@@ -7529,9 +7529,7 @@ class AA_Stringexpand_Packid extends AA_Stringexpand_Nevercache {
      * @return string
      */
     function expand($unpacked_id='') {
-        if ($unpacked_id) {// Note was + instead {32}
-            return ((string)$unpacked_id == "0" ? "0" : pack("H*",$unpacked_id));
-        }
+        return $unpacked_id ? (((string)$unpacked_id == "0" ? "0" : pack("H*", $unpacked_id))) : '';
     }
 }
 
@@ -9298,7 +9296,7 @@ class AA_Stringexpand_Rotator extends AA_Stringexpand_Nevercache {
         $framesdiv = '<div class="rot-frames">'.join("\n",$frames).'</div>';
 
         AA::Stringexpander()->addRequire('aa-jslib');  // for AA_Rotator
-        return "<div id=\"$div_id\" style=\"position:relative\">".$framesdiv.$extrahightdiv.$liswitcher."</div><script>AA_Rotator('$div_id', $interval, ".count($frames).", '$speed', '$effect');</script>";
+        return "<div id=\"$div_id\" style=\"position:relative\">".$framesdiv.$extrahightdiv.$liswitcher."</div><script>AA_Rotator('$div_id', $interval, ".count($frames). ", '$speed', '$effect');</script>";
     }
 }
 

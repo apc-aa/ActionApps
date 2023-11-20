@@ -48,7 +48,8 @@
     "ext-openssl": "*",
     "ext-apache": "*",
     "ext-pdo": "*",
-    "ext-mysqli": "*"
+    "ext-mysqli": "*",
+    "ext-libxml": "*"
   },
   "autoload": {
     "classmap": ["include/","src/"],

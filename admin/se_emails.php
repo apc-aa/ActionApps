@@ -28,7 +28,6 @@
 // Then it could be used as AJAX call for this action!
 
 use AA\Manager;
-use AA\Util\Langs;
 
 // const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
@@ -36,26 +35,14 @@ require_once __DIR__ . "/../include/varset.php";
 require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/item.php";
 require_once __DIR__ . "/../include/actions.php";
+require_once __DIR__ . "/../include/mail.php";  // GetMailManaged funct def
 
 if ( !IsSuperadmin() ) {
     MsgPage(_m("You do not have permission to manage Emails"));
     exit;
 }
 
-$managed = AA::Metabase()->getManagerConf('email');
-$managed->setColumns2show(['id','type','subject','description']);
-$managed->setWidgetSetting('html', ['type'=>'bool',                                 'name'=>_m('Use HTML')]);
-$managed->setWidgetSetting('type', ['enum'=> AA_Collection::get_email_types(),      'name'=>_m('Email type')]);
-$managed->setWidgetSetting('lang', ['enum'=>Langs::getNames(),                      'name'=>_m('Language (charset)')]);
-$managed->setWidgetSetting('owner_module_id', ['enum'=>AA_Module::getUserModules(), 'name'=>_m('Owner')]);
-$managed->setWidgetSetting('description',                                          ['name'=>_m('Description/Result')]);
-$managed->setWidgetSetting('subject',                                              ['name'=>_m('Subject')]);
-$managed->setWidgetSetting('body',                                                 ['name'=>_m('Body')]);
-$managed->setWidgetSetting('header_from',                                          ['name'=>_m('From (email) ')]);
-$managed->setWidgetSetting('reply_to',                                             ['name'=>_m('Reply to (email)')]);
-$managed->setWidgetSetting('errors_to',                                            ['name'=>_m('Errors to (email)')]);
-$managed->setWidgetSetting('sender',                                               ['name'=>_m('Envelop sender (email)')]);
-$managed->setWidgetSetting('attachments',                                          ['name'=>_m('Attachments')]);
+$managed = GetMailManaged();
 
 $apage = new AA_Adminpageutil('sliceadmin', 'email');
 $apage->setTitle(_m("Manage Emails"));

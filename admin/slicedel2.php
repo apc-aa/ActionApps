@@ -52,12 +52,13 @@ if ($cancel) {
     go_url( StateUrl(self_base() . "index.php3"));
 }
 
-if ($del OR $deletearr) {
-    if (!IsSuperadmin()) {
-        MsgPage(_m("You don't have permissions to delete slice."));
-        exit;
-    }
-} else {
+$deletearr = $del ? [$del] : (array)$deletearr;
+if (!count($deletearr)) {
+    MsgPage(_m("You don't have permissions to delete slice."));
+    exit;
+}
+
+if (!IsSuperadmin()) {
     MsgPage(_m("You don't have permissions to delete slice."));
     exit;
 }
@@ -65,7 +66,7 @@ if ($del OR $deletearr) {
 $err = [];      // error array (Init - just for initializing variable
 //AA::$debug = 127;
 
-if (!AA_Module::deleteModules($del ? [$del] : $deletearr)) {
+if (!AA_Module::deleteModules($deletearr)) {
     go_url(get_admin_url("slicedel.php?Msg=". urlencode(_m("No such module."))));
 }
 //AA::$dbg->duration_stat();
