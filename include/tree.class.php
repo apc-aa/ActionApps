@@ -118,7 +118,7 @@ class AA_Supertree {
         return $sub;
     }
 
-    function getMenu($ids, $current_ids, $code, $inner=false, $expanded=false) {
+    function getMenu($ids, $current_ids, $code, $inner=false, $expanded=false, $exp_button=false) {
         $ret = '';
         $xid = end($current_ids);
 
@@ -128,9 +128,11 @@ class AA_Supertree {
                     $inpath = in_array($mid, $current_ids) ? 'inpath' : '';
                     if ($expanded OR $inpath) {
                         $this->load($mid);
-                        $sub  = empty($this->_i[$mid]) ? '' : $this->getMenu($this->_i[$mid], $current_ids, $code, true, $expanded);
+                        $sub  = empty($this->_i[$mid]) ? '' : $this->getMenu($this->_i[$mid], $current_ids, $code, true, $expanded, $exp_button);
                         $ret .= '  <li id="menu-'.$mid.'" class="'.$inpath.($mid==$xid  ? ' xidmatch':'').'">';
-                        $ret .= $menu_txt. $sub;
+                        $ret .= $menu_txt;
+                        $ret .= ($exp_button AND strlen($sub)) ? '<i class=aa-ico-expand onclick="this.closest(\'li\').classList.toggle(\'inpath\');"></i>' : '' ;
+                        $ret .= $sub;
                         $ret .= "</li>\n";
                     } else {
                         $ret .= "  <li id=\"menu-$mid\">$menu_txt</li>\n";
@@ -139,7 +141,7 @@ class AA_Supertree {
             }
         }
         if (!$inner AND $ret AND (false !== ($pos = strrpos($ret, 'inpath')))) {
-            // add active to the closest active menu entry on final recursive return
+            // add "active" to the closest active menu entry on final recursive return
             $ret = substr_replace($ret, 'inpath active', $pos, 6);
         }
 

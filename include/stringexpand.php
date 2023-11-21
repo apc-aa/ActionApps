@@ -1348,7 +1348,7 @@ class AA_Stringexpand_Lazy extends AA_Stringexpand_Nevercache { // do not cache 
         $uniqid = gensalt(8); // gensalt is shorter than mt_rand(100000000,999999999);  // mt_rand is quicker than uniqid()
 
         if ($mode == 'nolazy') {
-            return  "<div class=aa-lazydiv-nolazy id=lazy_$uniqid data-aa-url=\"$url\">". StrExp('include',[$url,'ajax']) ."</div>\n";   // ajax for the same parameters as lazy variant
+            return  "<div class=aa-lazydiv-nolazy id=lazy_$uniqid data-aa-url=\"$url\">". StrExp('include',[$url]) ."</div>\n";   // ajax for the same parameters as lazy variant
         }
 
         $ret    = "<div class=aa-lazydiv id=lazy_$uniqid data-aa-url=\"$url\">";
@@ -3787,12 +3787,12 @@ class AA_Stringexpand_Menu extends AA_Stringexpand {
     /** expand function
      * @param $item_ids - item ids of the menu options on the first level
      * @param $code - alias or aa expression which will be printed inside <li></li>
-     *                         - should be a link to the item - _HEADLINK (for example)
+     *                         - should be a link to the item - _#HEADLINK (for example)
      *                         - if the resulting code is empty, the menu option is not displayed
      *                           (not its submenu), which you can use for not displaying some items
      * @param $relation_field - tree relation field (default relation........)
      * @param $sort_string - order of tree leaves
-     * @param $type - <nothing>|all - if "all", the menu is expanded to all leaves
+     * @param $type - <nothing>|all|all+ - if "all", the menu is expanded to all leaves, if "all+", the expand button is added
      * @return string
      */
     function expand($item_ids=null, $code=null, $relation_field=null, $sort_string=null, $type=null) {
@@ -3810,7 +3810,7 @@ class AA_Stringexpand_Menu extends AA_Stringexpand {
         $current_ids = explode_ids(AA::Un('{xid:list}'));
 
         $supertree = AA_Trees::getSupertree(get_if($relation_field, 'relation........'), 1, $sort);
-        return $supertree->getMenu($long_ids, $current_ids, $code, false, $type=='all');
+        return $supertree->getMenu($long_ids, $current_ids, $code, false, strpos($type,'all')!==false, strpos($type,'+')!==false);
     }
 }
 
@@ -4554,7 +4554,7 @@ class AA_Stringexpand_Field extends AA_Stringexpand {
     /**
      * @var array
      */
-    private static $ALLOWED_PROPERTIES = ['name'=>'name','help'=>'input_help', 'alias1'=>'alias1', 'alias2'=>'alias2', 'alias3'=>'alias3', 'widget_new'=>'widget_new', 'is_multi'=>'is_multi', 'is_multilang'=>'is_multilang', 'is_formatable'=>'is_formatable', 'type'=>'type'];
+    private static $ALLOWED_PROPERTIES = ['name'=>'name','help'=>'input_help', 'alias1'=>'alias1', 'alias2'=>'alias2', 'alias3'=>'alias3', 'widget_new'=>'widget_new', 'is_multi'=>'is_multi', 'is_multilang'=>'is_multilang', 'is_formatable'=>'is_formatable', 'type'=>'type', 'valuetable'=>'valuetable'];
 
     /** additionalCacheParam function
      * @param array $params parameters passed to expand (caching could be parameter sensitive).
@@ -4577,7 +4577,6 @@ class AA_Stringexpand_Field extends AA_Stringexpand {
         // @todo - make it less restrictive
         $prop = self::$ALLOWED_PROPERTIES[$property];
 
-
         if (!($field = $this->_getField($slice_id, $field_id))) {
             return '';
         }
@@ -4591,8 +4590,16 @@ class AA_Stringexpand_Field extends AA_Stringexpand {
                 return $field->isMultilingual() ? '1' : '';
             case 'is_formatable':
                 return $field->getFormatters() ? '1' : '';
-                case 'type':
-                return $field->getType();          //  'pwd' | 'date' | 'bool' | 'text' | 'int'
+            case 'type':
+                return $field->getType();          //  pwd | date | bool | text | int | id
+            case 'valuetable':
+                if ($w = $field->getWidget() AND is_array($arr = $w->getFormattedOptions())) {
+                    // generate html table key -> value
+                    return array_reduce(array_keys($arr), function ($html, $key) use ($arr) {
+                            return $html . "<tr><td>" . htmlspecialchars($key) . "</td><td>" . htmlspecialchars($arr[$key]) . "</td></tr>";
+                        }, '');
+                }
+                return '';
         }
 
         return (string) $field->getProperty($prop ?: 'name');
