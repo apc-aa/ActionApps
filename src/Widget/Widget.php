@@ -812,7 +812,8 @@ class Widget extends AA_Object implements NamedInterface {
         return $ret;
     }
 
-    /** In most cases returns the Validator from the field definition string. In some cases (like Tag or ISO) it returns upgraded validator (should allow) more than IDs in both cases
+    /** In most cases, returns the Validator from the field definition string.
+     * In some cases (like Tag or ISO), it returns upgraded validator (should allow) more than IDs in both cases
      * @param string $validator_string
      * @return AA_Validate|null
      */

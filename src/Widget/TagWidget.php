@@ -101,7 +101,13 @@ class TagWidget extends Widget
         //$widget_add = ($type == 'live') ? " class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"" : '';   //style=\"padding-right:16px;\"" : '';
         //$widget_adds = ($type == 'live') ? " class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"" : '';   //style=\"padding-left:16px;\"" : '';
 
+        $attrs = Widget::stdInputAttrs($type, $base_id, ['dirty']);
+        $attrs['class'] = trim(($attrs['class'] ?? '') . ' aa-w-full');
+        $widget_add = htmlattr($attrs);
+
         $autofocus = ($type == 'ajax') ? 'autofocus' : '';
+
+
 
         // This widget uses constants - show selectbox!
         $input_name = $base_name . "[tag][]";
@@ -111,16 +117,16 @@ class TagWidget extends Widget
 
         if (($max_values == 1) AND $required) {
             $multiple   = '';
-            $max_values = 0;  // if I do not null it, the select2 widget will not allow to change the value
+            $max_values = 0;  // if I do not null it, the select2 widget will not allow changing the value
         } else {
             $multiple = ' multiple';
         }
 
-        // send empty string always - used for send value, even if the select is empty, so we know, the widget is in use
+        // send empty string always - used for sending value, even if the select is empty, so we know, the widget is in use
         $widget =  "<input type=hidden name=\"$input_name\" value=\"\">";
 
         //$widget    = AA\Widget\Widget::_saveIcon($base_id, $type == 'live', 'left')."<select name=\"$input_name\" id=\"$input_id\"$multiple $required $widget_adds $autofocus>";
-        $widget .= Widget::_saveIcon($base_id, $type == 'live') . "<select name=\"$input_name\" id=\"$input_id\"$multiple $required $autofocus class=aa-w-full>";
+        $widget .= Widget::_saveIcon($base_id, $type == 'live') . "<select name=\"$input_name\" id=\"$input_id\"$multiple $required $autofocus $widget_add>";
         //$selected = $content->getAaValue($aa_property->getId());
         // empty select option for not required fields and also for live selectbox,
         // because people thinks, that the first value is filled in the database (which is not)
@@ -133,16 +139,14 @@ class TagWidget extends Widget
         $widget .= $this->getSelectOptions($sel_options);
         $widget .= "</select>";
 
-        $widget .=  "
-            <script>
-              // AA_LoadCss('" . AA_INSTAL_PATH . "javascript/select2/select2.css');
-              // AA_LoadJs( true, function() {aa_maketags('$input_id', '$def_slice_id', '$def_field_id','" . AA_INSTAL_PATH . "');}, '');
-
-              // when called by Ajax, the requireLibs() in called in responder is not enough for some reason
-              // maybe we can change it to async / await / Promises 
+        // AA_LoadCss('" . AA_INSTAL_PATH . "javascript/select2/select2.css');
+        // AA_LoadJs( true, function() {aa_maketags('$input_id', '$def_slice_id', '$def_field_id','" . AA_INSTAL_PATH . "');}, '');
+        // when called by Ajax, the requireLibs() in called in responder is not enough for some reason
+        // maybe we can change it to async / await / Promises
+        $widget .="
+            <script> 
               AA_LoadJs( jQuery.fn.select2, function() {aa_maketags('$input_id', '$def_slice_id', '$def_field_id', $max_values, '$def_item_id');}, '".\AA_Requires::getUrl4Lib('select2@4')."');
             </script>";
-
 
         return ['html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired()];
         
