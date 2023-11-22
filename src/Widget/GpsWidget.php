@@ -21,7 +21,7 @@ class GpsWidget extends Widget
 
     /** @inheritDoc */
     public static function name(): string {
-        return _m('Multiple Text Field');   // widget name
+        return _m('GPS coordinates');   // widget name
     }
 
     public static function description(): string { return ''; }
@@ -81,44 +81,41 @@ class GpsWidget extends Widget
         $input_value = safe($value->getValue());
 
         $widget = "<input $attr_string name=\"$input_name\" id=\"$input_id\" value=\"$input_value\" $required>";
-        $widget .= <<<'EOF'
+        $widget .= <<<EOF
   
                       <div class="input-box p-1 ukaz-mapu" style="display: none;">
-                        <div class="map" style="height: 200px; width: 200px;"></div>
+                        <div class="mapdiv$input_id" style="height: 200px; width: 200px;"></div>
                       </div>
 
                       <div class="pt-1">
                                 Najdi dle adresy / názvu: 
-                          <input name="adresa4suggest_#ITEM_ID_" class="address4suggest" size=40>
-                          <input type=hidden name="latsuggest_#ITEM_ID_">
-                          <input type=hidden name="lonsuggest_#ITEM_ID_">
-                        <br><input type=button name="copygps_#ITEM_ID_" value="Ulož" disabled onclick="document.querySelector('#aa-u{_#ITEM_ID_}-location_______1-0').value = document.querySelector('[name=latsuggest_#ITEM_ID_]').value; document.querySelector('#aa-u{_#ITEM_ID_}-location_______2-0').value = document.querySelector('[name=lonsuggest_#ITEM_ID_]').value;document.querySelector('#aa-u{_#ITEM_ID_}-location_______1-0').onchange();document.querySelector('#aa-u{_#ITEM_ID_}-location_______2-0').onchange();this.disabled=true;">
+                          <input id="adresa4suggest$input_id" class="address4suggest" size=40>
+                          <input type=hidden name="latsuggest$input_id">
+                          <input type=hidden name="lonsuggest$input_id">
+                        <br><input type=button name="copygps$input_id" value="Ulož" disabled onclick="document.querySelector('#aa-u{_#ITEM_ID_}-location_______1-0').value = document.querySelector('[name=latsuggest_#ITEM_ID_]').value; document.querySelector('#aa-u{_#ITEM_ID_}-location_______2-0').value = document.querySelector('[name=lonsuggest_#ITEM_ID_]').value;document.querySelector('#aa-u{_#ITEM_ID_}-location_______1-0').onchange();document.querySelector('#aa-u{_#ITEM_ID_}-location_______2-0').onchange();this.disabled=true;">
                     
                         <script>
                           // naseptavac
-                          var inputEl_#ITEM_ID_ = document.querySelector(".map-widg-_#ITEM_ID_ .address4suggest");
-                          var suggest_#ITEM_ID_ = new SMap.Suggest(inputEl_#ITEM_ID_);
-                          var map_#ITEM_ID_ = L.map(document.querySelector(".map-widg-_#ITEM_ID_ .map"), {zoomSnap: 0 });
+                          var inputEl$input_id = document.getElementById("adresa4suggest$input_id");
+                          var suggest$input_id = new SMap.Suggest(inputEl$input_id);
+                          var map$input_id = L.map(document.getElementById("mapdiv$input_id"), {zoomSnap: 0 });
                           L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                          }).addTo(map_#ITEM_ID_);
+                          }).addTo(map$input_id);
                           //var myMapIcon = L.icon({ iconUrl: '/img/vozejkmap-ico.png', iconSize: [44, 44], popupAnchor: [-22, -44] });
-                          var markers_#ITEM_ID_ = [];
+                          var markers$input_id = [];
                     
-                          suggest_#ITEM_ID_.addListener("suggest", function(suggestData) {
-                            showOnMap(map_#ITEM_ID_, '_#ITEM_ID_', suggestData.data.latitude, suggestData.data.longitude, inputEl_#ITEM_ID_.value);
-                            document.querySelector('[name=copygps_#ITEM_ID_]').disabled=false;;
+                          suggest$input_id.addListener("suggest", function(suggestData) {
+                            showOnMap(map$input_id, '$input_id', suggestData.data.latitude, suggestData.data.longitude, inputEl$input_id.value);  // $input_id or  _#ITEM_ID_ ?
+                            document.getElementById("$input_id").disabled=false;
                           });
-                    
-                                {ifset:{location.......1}{location.......2}:
-                                    showOnMap(map_#ITEM_ID_, '_#ITEM_ID_', '{location.......1}', '{location.......2}', '');
-                          }
-                    
-                        </script>  
-                      </div>
 EOF;
-
-
+        if ($input_value) { 
+            [$lat, $lon] = explode(' ', trim($input_value));
+            $widget .= "\n  showOnMap(map$input_id, '$input_id', '$lat', '$lon', '');";
+        }
+        $widget .= "\n  </script>  
+                     </div>";
         return ['html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired()];
     }
 }
