@@ -473,13 +473,13 @@ class AA_Router_Seo extends AA_Router {
             $apc_state['xpage'] = '';
             $apc_state['xqs']   = '';
         }
-        if (!empty($new_arr['xpage'])) { //'scroll' to other page
+        if (isset($new_arr['xpage'])) { //'scroll' to other page
             $apc_state['xpage'] = ($new_arr['xpage'] < 2) ? '' : $new_arr['xpage'];
         }
-        if (!empty($new_arr['xflag'])) { //change flag
+        if (isset($new_arr['xflag'])) { //change flag
             $apc_state['xflag'] = $new_arr['xflag'];
         }
-        if (!empty($new_arr['xcat'])) { //change flag
+        if (isset($new_arr['xcat'])) { //change flag
             $apc_state['xcat'] = $new_arr['xcat'];
         }
         if (isset($new_arr['xqs'])) { //change xqs  (we can use also {go:xqs=} for current url without query string
