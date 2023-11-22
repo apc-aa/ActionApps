@@ -2019,6 +2019,7 @@ class AA_Stringexpand_Gps extends AA_Stringexpand_Nevercache {
     /** expand function  */
     function expand($gps='', $format='') {
         $gps_in = aa_html_entity_decode(inner_trim($gps));
+        $lat = $lon = '';
 
         // 49°58'4.508"N, 12°30'10.790"E
         // 12° 30' 10.790'' E 49° 58' 4.508'' N

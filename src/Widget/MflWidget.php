@@ -33,14 +33,12 @@ class MflWidget extends Widget
     public static function description(): string { return ''; }
 
     // inherited from \AA\Widget\Widget
-    protected function requireLibs($aa_property, $winfo)
-    {
+    protected function requireLibs($aa_property, $winfo): array {
         return ['codemirror@5'];
     }
 
     /** script to run after the page DOM is loaded */
-    protected function requireRun($aa_property, $winfo)
-    {
+    protected function requireRun($aa_property, $winfo): string {
         $ret = '';
         // are there some textareas not converted to CodeMirror?
         if ($this->ids_4_editor) {
@@ -97,7 +95,7 @@ class MflWidget extends Widget
 
         $attrs = Widget::stdInputAttrs($type, $base_id, ['dirty']);
         if ($type == 'live') {
-            unset($attrs['onchange']);  // adding line below
+            unset($attrs['onchange']);  // adding on the line below
             $widget_onchange = "onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"";
             $widget_add2     = '<img width=16 height=16 title="' . _m('To save changes click here or outside the field.') . '" alt="' . _m('Save') . '" class="' . $base_id . 'ico" src="' . AA_INSTAL_PATH . 'images/px.gif" style="position:absolute; right:0;">';
         }

@@ -33,8 +33,7 @@ class TagWidget extends Widget
     }
 
     /** array of libs needed for the widget - automatically inserted to the inputform */
-    protected function requireLibs($aa_property, $winfo)
-    {
+    protected function requireLibs($aa_property, $winfo): array {
         return ['select2@4','aa-jslib@3'];
     }
 

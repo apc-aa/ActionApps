@@ -36,8 +36,7 @@ class FldWidget extends Widget
     }
 
     /** libs to run after the page DOM is loaded */
-    protected function requireLibs($aa_property, $winfo)
-    {
+    protected function requireLibs($aa_property, $winfo): array {
         return ( count($aa_property->getTranslations())>1 ) ? ['aa-jslib@3'] : [];
     }
 
@@ -62,7 +61,6 @@ class FldWidget extends Widget
         $widget = '';
         $autofocus = ($type == 'ajax') ? 'autofocus' : '';
 
-        $delim = '';
         $value = $content->getAaValue($aa_property->getId());
 
         $translations = $aa_property->getTranslations();
@@ -70,7 +68,7 @@ class FldWidget extends Widget
         $attrs = array_merge($attrs, $aa_property->getValidator()->getHtmlInputAttr());
         $attrs['type'] = $this->getProperty('input_type') ?: $attrs['type'] ?: 'text';
 
-        // type number do not support size parameter, so we have to set max and min (make no sense to do it for numbers > 11 characters - use default)
+        // type number does not support size parameter, so we have to set max and min (make no sense to do it for numbers > 11 characters - use default)
         if ($attrs['type'] == 'number') {
             if (!isset($attrs['max']) and ($nchars = $attrs['maxlength'] ?: $this->getProperty('max_characters') ?: $attrs['size'] ?: 0) and ($nchars < 11)) {  // $this->getProperty('width') - removed - max should not be set based on widget width
                 $attrs['max'] = pow(10, $nchars) - 1;

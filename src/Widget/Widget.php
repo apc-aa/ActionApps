@@ -57,12 +57,12 @@ class Widget extends AA_Object implements NamedInterface {
     }
 
     /** array of libs needed for the widget - automatically inserted to the inputform - part of Widget API */
-    protected function requireLibs($aa_property, $winfo) {
+    protected function requireLibs($aa_property, $winfo): array {
         return [];
     }
 
     /** script to run after the page DOM is loaded - part of Widget API */
-    protected function requireRun($aa_property, $winfo) {
+    protected function requireRun($aa_property, $winfo): string {
         return '';
     }
 

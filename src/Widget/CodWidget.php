@@ -18,13 +18,12 @@ class CodWidget extends TxtWidget
         return _m('Code editor');
     }
 
-    protected function requireLibs($aa_property, $winfo) {
+    protected function requireLibs($aa_property, $winfo): array {
         return array_merge(['codemirror@5'], parent::requireLibs($aa_property, $winfo));
     }
 
     /** script to run after the page DOM is loaded */
-    protected function requireRun($aa_property, $winfo)
-    {
+    protected function requireRun($aa_property, $winfo): string {
         $ret = '';
         // are there some textareas not converted to CodeMirror?
         if ($this->ids_4_editor) {
