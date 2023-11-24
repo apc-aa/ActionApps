@@ -76,9 +76,13 @@ class FormArray
         return "aa[n${item_index}_$oowner][$form_field_id]";
     }
 
-    static public function formName2Id($name)
-    {
-        return str_replace([']', '['], ['', '-'], $name);
+    /** returns string to be used as input id
+     * @param string $name
+     * @param bool $universal normally we use dash as word separator, but for universal id we use underscore (usable also in JS variable)
+     * @return array|string|string[]
+     */
+    static public function formName2Id($name, bool $universal= false ) {
+        return str_replace([']', '['], ['', $universal ? '_' : '-'], $name);
     }
 
     /** returns array(item_id,field_id) from name of variable used on AA form */

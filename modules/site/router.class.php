@@ -508,7 +508,7 @@ class AA_Router_Seo extends AA_Router {
         }
 
         // workaround for the static::get_class()
-        // returns real class name, not the AA_Router_Seo (if called staticaly)
+        // returns real class name, not the AA_Router_Seo (if called statically)
         $backtrace           = debug_backtrace();
         $apc_state['router'] = $backtrace[0]['class'];
 

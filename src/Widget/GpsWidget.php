@@ -28,7 +28,7 @@ class GpsWidget extends Widget
 
     // inherited from \AA\Widget\Widget
     protected function requireLibs($aa_property, $winfo): array {
-        return ['codemirror@5'];
+        return ['leaflet'];
     }
 
     /** script to run after the page DOM is loaded */
@@ -78,41 +78,67 @@ class GpsWidget extends Widget
 
         $input_name = $base_name . "[0]";
         $input_id = FormArray::formName2Id($input_name);
+        $js_id    = FormArray::formName2Id($input_name, true);
         $input_value = safe($value->getValue());
 
         $widget = "<input $attr_string name=\"$input_name\" id=\"$input_id\" value=\"$input_value\" $required>";
         $widget .= <<<EOF
+
+        <style> 
+          input[type="button"][disabled] { background-color: #dfdfdf; cursor: default;} 
+          .smap-suggest .item { justify-content: initial; }
+        </style>
+        
+        <script src="https://api.mapy.cz/loader.js"></script>
+        <script>Loader.load(null, {suggest: true});</script>
+        <script>
+          function showOnMap(map, itemid, lat, lon, title) {
+            // vyber polozky z naseptavace
+            document.getElementById('coosuggest'+itemid).value = lat + ' ' + lon;
+            document.getElementById('mapout'+itemid).style.display='block';
+            map.setView([lat, lon], 15);
+            var markers = [];
+            markers.push(L.marker([lat, lon], {"title":title, draggable: true, autoPan: true}).on('dragend', function (e) {
+              document.getElementById('coosuggest'+itemid).value = this.getLatLng().lat + ' ' + this.getLatLng().lng;
+              document.getElementById('copygps'+itemid).disabled=false;;
+             })        
+            );  //, icon: myMapIcon
+
+            var group = new L.featureGroup(markers).addTo(map);
+            map.fitBounds(group.getBounds());
+        };
+        </script>
+
   
-                      <div class="input-box p-1 ukaz-mapu" style="display: none;">
-                        <div class="mapdiv$input_id" style="height: 200px; width: 200px;"></div>
+                      <div class="input-box p-1"  id="mapout$js_id" style="display: none;">
+                        <div id="mapdiv$js_id" style="height: 200px; width: 200px;"></div>
                       </div>
 
                       <div class="pt-1">
                                 Najdi dle adresy / názvu: 
-                          <input id="adresa4suggest$input_id" class="address4suggest" size=40>
-                          <input type=hidden name="latsuggest$input_id">
-                          <input type=hidden name="lonsuggest$input_id">
-                        <br><input type=button name="copygps$input_id" value="Ulož" disabled onclick="document.querySelector('#aa-u{_#ITEM_ID_}-location_______1-0').value = document.querySelector('[name=latsuggest_#ITEM_ID_]').value; document.querySelector('#aa-u{_#ITEM_ID_}-location_______2-0').value = document.querySelector('[name=lonsuggest_#ITEM_ID_]').value;document.querySelector('#aa-u{_#ITEM_ID_}-location_______1-0').onchange();document.querySelector('#aa-u{_#ITEM_ID_}-location_______2-0').onchange();this.disabled=true;">
+                          <input id="adresa4suggest$js_id" class="address4suggest" size=40>
+                          <input type=hidden id="coosuggest$js_id">
+                          <br><input type=button id="copygps$js_id" value="Ulož" disabled onclick="const el=document.getElementById('$input_id'); el.value=document.getElementById('coosuggest$js_id').value;el.onchange();this.disabled=true;">
                     
                         <script>
                           // naseptavac
-                          var inputEl$input_id = document.getElementById("adresa4suggest$input_id");
-                          var suggest$input_id = new SMap.Suggest(inputEl$input_id);
-                          var map$input_id = L.map(document.getElementById("mapdiv$input_id"), {zoomSnap: 0 });
+                          var inputEl$js_id = document.getElementById("adresa4suggest$js_id");
+                          var suggest$js_id = new SMap.Suggest(inputEl$js_id);
+                          var map$js_id = L.map(document.getElementById("mapdiv$js_id"), {zoomSnap: 0 });
                           L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                          }).addTo(map$input_id);
+                          }).addTo(map$js_id);
                           //var myMapIcon = L.icon({ iconUrl: '/img/vozejkmap-ico.png', iconSize: [44, 44], popupAnchor: [-22, -44] });
-                          var markers$input_id = [];
+                          var markers$js_id = [];
                     
-                          suggest$input_id.addListener("suggest", function(suggestData) {
-                            showOnMap(map$input_id, '$input_id', suggestData.data.latitude, suggestData.data.longitude, inputEl$input_id.value);  // $input_id or  _#ITEM_ID_ ?
+                          suggest$js_id.addListener("suggest", function(suggestData) {
+                            showOnMap(map$js_id, '$js_id', suggestData.data.latitude, suggestData.data.longitude, inputEl$js_id.value);  // $js_id or  _#ITEM_ID_ ?
                             document.getElementById("$input_id").disabled=false;
                           });
 EOF;
         if ($input_value) { 
             [$lat, $lon] = explode(' ', trim($input_value));
-            $widget .= "\n  showOnMap(map$input_id, '$input_id', '$lat', '$lon', '');";
+            $widget .= "\n  showOnMap('map$js_id', '$js_id', '$lat', '$lon', '');";
         }
         $widget .= "\n  </script>  
                      </div>";
