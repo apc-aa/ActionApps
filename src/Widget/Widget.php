@@ -413,11 +413,11 @@ class Widget extends AA_Object implements NamedInterface {
      */
     public function stdFormStart($aa_property) {
         $ret = "\n<tr class=\"formrow{formpart} fieldstart cont-" . varname4form($aa_property->getId()) . "\">";
-        $ret .= "\n <th>" . $aa_property->getName() ;
+        $ret .= "\n <th><div>" . $aa_property->getName() ;   // div for min / max width css - HM/SV 2023-11-24
         if ($aa_property->isRequired()) {
             $ret .= "&nbsp;*";
         }
-        $ret .= "</th>\n <td>";
+        $ret .= "</div></th>\n <td>";
         return $ret;
     }
 
@@ -807,6 +807,10 @@ class Widget extends AA_Object implements NamedInterface {
                 case 'class_type':
                     $ret[$pid] = new AA_Property($pid, _m("Class prefix"), 'string', false, true, 'string', false, _m("Component idetifier to select from"), '', 'Widget');
                     break;
+                case 'load_from_fld':
+                    $ret[$pid] = new AA_Property($pid, _m("Address field"), 'string', false, true, 'string', false, _m("field_id of another text field, from which user can grab address search"), '', "location........");
+                    break;
+
             }
         }
         return $ret;

@@ -260,6 +260,12 @@
     padding-top: 35px !important;
 }
 /**/
+.relative {
+    position: relative;
+}
+.absolute {
+    position: absolute;
+}
 html {
     font-size: 13px;
 }
@@ -267,7 +273,7 @@ body {
        margin: 0;
        color: #000000;
        background: #f3f3f1;
-       font-family: 'Open Sans';
+       font-family: 'Open Sans', sans-serif;
        line-height: 1.4em;
 }
 a {
@@ -335,8 +341,8 @@ details ::marker  {
 .sz-xs, .x-small {
     font-size: var(--sz-xs);
 }
-input[type="text"], input[type="tel"], input[type="email"], input[type="number"], input[type="password"], input[type="date"], input[type="search"], input[type="url"], select, textarea {
-	font-family: 'Open Sans';
+input[type="text"], input[type="tel"], input[type="email"], input[type="number"], input[type="password"], input[type="date"], input[type="search"], input[type="url"], select, textarea, input:not([type]) {
+    font-family: 'Open Sans', sans-serif;
 	font-size: var(--sz-s);
 	border: 1px solid var(--clr-border);
 	margin: 2px;
@@ -348,7 +354,7 @@ input[type="text"], input[type="tel"], input[type="email"], input[type="number"]
 	background: white;
 }
 input[type="file"] {
-    font-family: "open sans";
+    font-family: "open sans", sans-serif;
     margin-left: 7px;
     font-size: var(--sz-s);
     padding: 5px 0;
@@ -392,7 +398,7 @@ input[type="submit"] img, input[type="button"] img, .button img, .btn img {
 /* standart buttons */
 input[type="submit"], input[type="button"], button, .button, .btn {
     display: inline-block;
-    font-family: 'Open Sans';
+    font-family: 'Open Sans', sans-serif;
     border: solid 1px transparent;
     text-decoration: none;
     font-size: var(--sz-s);
@@ -408,7 +414,7 @@ input[type="submit"], input[type="button"], button, .button, .btn {
 /* bigger buttons */
 input[type="submit"].btn-l, input[type="button"].btn-l, button.btn-l, .button.btn-l, .btn.btn-l, .btn-l  {
      display: inline-block;
-     font-family: 'Open Sans';
+     font-family: 'Open Sans', sans-serif;
      font-size: var(--sz-s);
      padding: 6px 15px;
      border: solid 1px transparent;
@@ -437,8 +443,7 @@ input[type="submit"].btn-l, input[type="button"].btn-l, button.btn-l, .button.bt
     transition: all 0.3s;
 }
 /* all transparent secondary buttons */
-input[type="submit"].btn-secondary, input[type="button"].btn-secondary, button.btn-secondary, .button.btn-secondary, .btn.btn-secondary, .btn-secondary
-.aa-sb-bkmrks-btns .btn.btn-xs {
+input[type="submit"].btn-secondary, input[type="button"].btn-secondary, button.btn-secondary, .button.btn-secondary, .btn.btn-secondary, .btn-secondary .aa-sb-bkmrks-btns .btn.btn-xs {
      background-color: rgb(255 255 255 / 20%);
      /* background-color: transparent; */
      border: solid 1px rgb(26 4 4 / 30%);
@@ -613,7 +618,7 @@ input[type="radio"] {
 }
 .aa-ui-custom-nav a, .aa-ui-custom-nav input[type="submit"], .aa-ui-modules a  {
      display: inline-block;
-     font-family: 'Open Sans';
+     font-family: 'Open Sans', sans-serif;
      font-size: var(--sz-s);
      margin: 2px;
      line-height: 16px;
@@ -637,7 +642,7 @@ input[type="radio"] {
      text-transform: uppercase;
      color: #61454A;
      display: inline-block;
-     font-family: 'Open Sans';
+     font-family: 'Open Sans', sans-serif;
      margin: 2px;
      line-height: 16px;
      text-decoration: none;
@@ -761,7 +766,6 @@ li.aa-leftmenu-header {
 .aa-ui-content > .aa-ui-filterform {
 	display: block;
 	margin: 10px 0 0 0;
-	background-color: var(--clr-opacity-dark);
 	background: #e6e3d9;
 	padding: 20px 25px 5px 30px;
 	box-sizing: border-box;
@@ -1393,6 +1397,11 @@ h1:has(+form[name="inputform"]) {
 #inputtab tr > th:first-child {
     padding-top: 14px;
     padding-right: 15px;
+    width: 10%;
+}	
+#inputtab tr > th:first-child > div {
+    max-width: 263px;
+    min-width: 177px;
 }
 #inputtab tr > td:last-child {
     padding-right: 25px;
@@ -1412,7 +1421,7 @@ h1:has(+form[name="inputform"]) {
 #inputtab tr tr:nth-child(even), #inputtab tr tr:nth-child(odd) {
     background-color: transparent;
 }
-#inputtab input[type="text"], #inputtab input[type="tel"], #inputtab input[type="email"], #inputtab input[type="number"], #inputtab input[type="password"], #inputtab input[type="url"], #inputtab input[type="date"], #inputtab select, #inputtab textarea {
+#inputtab input[type="text"], #inputtab input[type="tel"], #inputtab input[type="email"], #inputtab input[type="number"], #inputtab input[type="password"], #inputtab input[type="url"], #inputtab input[type="date"], #inputtab select, #inputtab textarea, #inputtab input:not([type]) {
     font-size: 1rem;
     padding: 4px 5px;
 }
@@ -1487,12 +1496,6 @@ a.aa-externallink + a.aa-morehelp  {
 @media (max-width: 1200px) { 
 .slicehead {
 	padding-left: 37px;
-}
-}
-@media (min-width: 1200px) {
-#inputtab tr > th:first-child {
-    max-width: 250px;
-    min-width: 150px;
 }
 }
 .okno {

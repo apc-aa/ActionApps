@@ -1097,7 +1097,7 @@ class AA_Inputfield {
                         break;
         case 'secrow':  $this->field_tr(false);
         }
-        $this->echoo("\n <th ". (($colspan==1) ? '': "colspan=\"$colspan\""). '>'. $name );
+        $this->echoo("\n <th ". (($colspan==1) ? '': "colspan=\"$colspan\""). "><div>$name</div>" );  // div for min max width styling HM/SV 2023-11-23
         $this->needed();
         $this->echoo("</th>\n");
         if ( $plus=='plus' OR $plus=='secrow' ) {
