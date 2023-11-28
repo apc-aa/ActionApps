@@ -542,20 +542,20 @@ class AA_MbT implements Iterator, ArrayAccess, Countable {
     }
 
     /** Iterator interface */
-    public function rewind()  { reset($this->c);                        }
-    public function current() { return current($this->c);               }
-    public function key()     { return key($this->c);                   }
-    public function next()    { next($this->c);                         }
-    public function valid()   { return (current($this->c) !== false);   }
+    public function rewind(): void   { reset($this->c);                        }
+    public function current(): mixed { return current($this->c);               }
+    public function key(): mixed     { return key($this->c);                   }
+    public function next(): void     { next($this->c);                         }
+    public function valid(): bool    { return (current($this->c) !== false);   }
 
     /** Countable interface */
-    public function count()   { return count($this->c);                 }
+    public function count(): int     { return count($this->c);                 }
 
     /** ArrayAccess interface */
-    public function offsetSet($offset, $value) { $this->c[$offset] = $value;      }
-    public function offsetExists($offset)      { return isset($this->c[$offset]); }
-    public function offsetUnset($offset)       { unset($this->c[$offset]);        }
-    public function offsetGet($offset)         { return $this->c[$offset] ?? null; }
+    public function offsetSet($offset, $value): void { $this->c[$offset] = $value;      }
+    public function offsetExists($offset): bool      { return isset($this->c[$offset]); }
+    public function offsetUnset($offset): void       { unset($this->c[$offset]);        }
+    public function offsetGet($offset): mixed        { return $this->c[$offset] ?? null; }
 }
 
 /** @todo convert to static class variables after move to PHP5 */

@@ -58,8 +58,8 @@
  *
  *   @param array dateConds Special feature: contains names of textfields which are
  *      dates represented by 3 select boxes in the way of AA. E.g. <br>
- *      <tt>dateConds[3]="mydate"</tt> means:<br>
- *      <tt>conds[3]['value']</tt> is a date in some strtotime format,
+ *      <code>dateConds[3]="mydate"</code> means:<br>
+ *      <code>conds[3]['value']</code> is a date in some strtotime format,
  *      mydate_day is the select box cotaining day, mydate_month contains month,
  *      mydate_year contains year
  *

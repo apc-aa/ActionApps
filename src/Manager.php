@@ -379,6 +379,7 @@ class Managed_Table extends Managed {
             if ($owner && ($module_field = AA_Metabase::getModuleField($this->table))) {
                 $data[$module_field] = $owner;
             }
+            AA::Metabase()->autoInsertKey($this->table, $data);
             AA::Metabase()->doInsert($this->table, $data);
         }
     }
@@ -999,7 +1000,7 @@ class Manager extends AA_Storable {
                       </script>';
             }
             $ret .=  '</div>';
-            $ret .=  '<div class="aa_manager_actions_all" style="display: none">'._m("No item selected. Perform action for all filtered items? ").'<input type="hidden" name="aa_akce_all" value=""><button class="aa-button" onclick="aa$N(\'aa_akce_all\').value=1;MarkedActionGo();">'._m('Run for %1 items',[$this->scroller->getItemCount()]).'</button></div>';
+            $ret .=  '<div class="aa_manager_actions_all" style="display: none">'._m("No item selected. Perform action for all filtered items? ").'<input type="hidden" name="aa_akce_all" value=""><button class="aa-button" onclick="AA_$N(\'aa_akce_all\').value=1;MarkedActionGo();">'._m('Run for %1 items',[$this->scroller->getItemCount()]).'</button></div>';
             $ret .=  "<div id=\"markedactionparams\"></div>";
             $ret .= '</div>';
         }

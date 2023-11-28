@@ -189,12 +189,15 @@ class AA_Field implements ArrayAccess {
     function getType(): string {
         [$validate_type] = explode(":", $this->getProperty('input_validate'), 2);
         [$insert_type]   = explode(":", $this->getProperty('input_insert_func'), 2);
+
         if ($insert_type == 'pwd') {
             return 'pwd';
         } elseif ($validate_type == 'date') {
             return 'date';
         } elseif ($insert_type == 'boo') {
             return 'bool';
+        } elseif ($insert_type == 'ids') {
+            return 'id';
         } elseif ($this->getProperty('text_stored')) {  // not used from here down - it is possible to add more types - ids, ...
             return 'text';
         }
@@ -573,21 +576,21 @@ class AA_Field implements ArrayAccess {
 
     // Array Access implementation --------------------------
     /** implements ArrayAccess */
-    public function offsetSet($offset, $value) {
+    public function offsetSet($offset, $value): void {
         if ($offset) {
             $this->data[$offset] = $value;
         }
     }
     /** implements ArrayAccess */
-    public function offsetExists($offset) {
+    public function offsetExists($offset): bool {
         return isset($this->data[$offset]);
     }
     /** implements ArrayAccess */
-    public function offsetUnset($offset) {
+    public function offsetUnset($offset): void {
         unset($this->data[$offset]);
     }
     /** implements ArrayAccess */
-    public function offsetGet($offset) {
+    public function offsetGet($offset): mixed {
         return $this->data[$offset] ?? null;
     }
 }
@@ -1109,32 +1112,32 @@ class AA_Fields implements Iterator, Countable {
      * @link https://php.net/manual/en/iterator.rewind.php
      * @return void Any returned value is ignored.
      */
-    public function rewind()  { $this->loaded_all || $this->load(); return reset($this->fields);                         }
+    public function rewind(): void { $this->loaded_all || $this->load(); reset($this->fields); }
 
     /** Return the current element
      *  @link https://php.net/manual/en/iterator.current.php
      *  @return AA_Field
      */
-    public function current() { $this->loaded_all || $this->load(); return current($this->fields); }
+    public function current(): mixed { $this->loaded_all || $this->load(); return current($this->fields); }
 
     /**
      * Return the key of the current element
      * @link https://php.net/manual/en/iterator.key.php
      * @return string|null scalar on success, or null on failure.
      */
-    public function key()     { $this->loaded_all || $this->load(); return key($this->fields);                }
+    public function key(): mixed { $this->loaded_all || $this->load(); return key($this->fields);                }
 
     /** Move forward to next element
      *  @link https://php.net/manual/en/iterator.next.php
      *  @return void Any returned value is ignored.
      */
-    public function next()    { $this->loaded_all || $this->load(); return next($this->fields);                   }
+    public function next(): void { $this->loaded_all || $this->load(); next($this->fields); }
 
     /** Checks if current position is valid
      *  @link https://php.net/manual/en/iterator.valid.php
      *  @return bool The return value will be casted to boolean and then evaluated. Returns true on success or false on failure.
      */
-    public function valid()   { $this->loaded_all || $this->load(); return (current($this->fields) !== false);    }
+    public function valid(): bool { $this->loaded_all || $this->load(); return (current($this->fields) !== false);    }
 
     // ----- Countable interface --------------
 
@@ -1142,5 +1145,5 @@ class AA_Fields implements Iterator, Countable {
      *  @link https://php.net/manual/en/countable.count.php
      *  @return int The custom count as an integer. The return value is cast to an integer.
      */
-    public function count()   { $this->loaded_all || $this->load(); return count($this->fields);                     }
+    public function count(): int { $this->loaded_all || $this->load(); return count($this->fields);                     }
 }

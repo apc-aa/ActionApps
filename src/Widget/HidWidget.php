@@ -57,7 +57,7 @@ class HidWidget extends Widget
      * @return array
      * @throws \Exception
      */
-    function _getRawHtml($aa_property, $content, $type='normal') {
+    function _getRawHtml($aa_property, $content, $type='normal'): array {
         $property_id = $aa_property->getId();
         $base_name   = FormArray::getName4Form($property_id, $content, $this->item_index);
         $base_id     = FormArray::formName2Id($base_name);
@@ -70,14 +70,13 @@ class HidWidget extends Widget
     }
 
     /**
-     * @param array $winfo
+     * @param array       $winfo
      * @param AA_Property $aa_property
-     * @param bool $widget_only
+     * @param bool        $widget_only
      * @return string
      */
-    function _finalizeHtml($winfo, $aa_property, $widget_only = false)
-    {
-        return $winfo['html'];
+    function _finalizeHtml($winfo, $aa_property, $widget_only = false): string {
+        return (string)$winfo['html'];
     }
 
     /** Creates all common ajax editing buttons to be used by different inputs
@@ -85,15 +84,13 @@ class HidWidget extends Widget
      * @param $aa_property AA_Property
      * @return string
      */
-    function _finalizeAjaxHtml($winfo, $aa_property)
-    {
-        return $winfo['html'];
+    function _finalizeAjaxHtml($winfo, $aa_property): string {
+        return (string)$winfo['html'];
     }
 
     /* Decorates Live Widget. Prepared for overriding in subclasses */
-    function _finalizeLiveHtml($winfo, $aa_property)
-    {
-        return $winfo['html'];
+    function _finalizeLiveHtml($winfo, $aa_property): string {
+        return (string)$winfo['html'];
     }
 
     /**

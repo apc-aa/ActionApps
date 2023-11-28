@@ -5,6 +5,12 @@ var myform    = document.inputform;
 var relatedwindow;  // window for related stories
 var urlpickerwindow; // window for local URL picking
 
+// polyfills - will be removed when the incompatible browsers will not be supported by its creator
+if (window.NodeList && !NodeList.prototype.forEach) { NodeList.prototype.forEach = Array.prototype.forEach; }
+/** shortcut to parent.querySelector() */
+if (typeof AA_$ !== 'function')  { var AA_$ = (sel, el = document) => el.querySelector(sel); }
+/** shortcut to parent.querySelectorAll() */
+if (typeof AA_$$ !== 'function') { var AA_$$ = (sel, el = document) => Array.from(el.querySelectorAll(sel)); }
 
 if (typeof window.AA_GetConf === 'undefined') {
     window.AA_GetConf = function(prop) {

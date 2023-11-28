@@ -236,7 +236,7 @@ class linkassignment {
     }
 
 
-    function dbSave() {
+    function dbSave(): bool {
         if ( !$this->category OR !$this->link ) return false;
         $varset = new Cvarset();
 
@@ -250,6 +250,7 @@ class linkassignment {
                                       'proposal_delete'=> $this->proposal_delete ? 'y' : 'n']);
 
         $varset->doINSERT('links_link_cat');
+        return true;
     }
 
     function getCategory()          { return $this->category;        }

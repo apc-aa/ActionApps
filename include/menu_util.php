@@ -405,12 +405,12 @@ function GetMenuLink($active, $label, $cond, $aa_href, $exact_href='', $ico='', 
 }
 
 /** showSubMenuRows function
- * @param $aamenuitems
+ * @param array $aamenuitems
  * @param $active
  */
-function getSubMenuRows($aamenuitems, $active ): string {
+function getSubMenuRows(array $aamenuitems, $active ): string {
     global $slice_id;
-    if ( !isset($aamenuitems) OR !is_array($aamenuitems) ) {
+    if ( !$aamenuitems ) {
        return '';
     }
     $ret = '';

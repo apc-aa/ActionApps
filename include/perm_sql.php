@@ -344,7 +344,7 @@ class AA_Permsystem_Sql extends AA_Permsystem {
      * @param $pattern
      * @return array - list of groups which corresponds to mask $pattern
      */
-    function findGroups($pattern) {
+    function findGroups($pattern): array {
         return DB_AA::select(['id'=> ['name']], "SELECT id, name FROM `users` WHERE name LIKE '%".quote($pattern)."%' AND (type = '".quote(_m("Group"))."' OR type = 'Group')");
     }
 
@@ -379,10 +379,10 @@ class AA_Permsystem_Sql extends AA_Permsystem {
 
     /** getGroupMembers function
      * @param $group_id
-     * @todo  Make this recursive friendly?
      * @return array
+     *@todo  Make this recursive friendly?
      */
-    function getGroupMembers($group_id) {
+    function getGroupMembers($group_id): array {
         $ret = [];
         $ids = DB_AA::select('memberid', "SELECT memberid FROM `membership`", [['groupid', $group_id, 'i']]);
         foreach($ids as $id) {
@@ -396,7 +396,7 @@ class AA_Permsystem_Sql extends AA_Permsystem {
      * @param $flags - use to obey group in groups?
      * @return array of group_ids, where id (group or user) is a member
      */
-    function getMembership($id, $flags = 0) {
+    function getMembership($id, $flags = 0): array {
 
         // groups now can contain also Readers
         // if (!ctype_digit((string)$id)) { return []; }
@@ -434,7 +434,7 @@ class AA_Permsystem_Sql extends AA_Permsystem {
      * @return array of sliceids and their permissions (for user $userid) counting all groups listed in third parameter
      * (the gorups could be also foreign - like from Reader Set, but permissions for such groups are stored here)
      */
-    function getJoinedPerms($uid, $objectType, $groups= []) {
+    function getJoinedPerms($uid, $objectType, $groups= []): array {
         $groups[] = $uid;
 
         $db_perms = DB_AA::select([], "SELECT userid, objectid, perm FROM `perms`", [['object_type', $objectType], ['userid', $groups]]);
@@ -463,7 +463,7 @@ class AA_Permsystem_Sql extends AA_Permsystem {
      *
      *  example: $arr["uid=honzam,dc=ecn,dc=apc,dc=org"] == 2
      */
-    function getObjectsPerms($objectID, $objectType) {
+    function getObjectsPerms($objectID, $objectType): array {
         return DB_AA::select(['userid'=>'perm'], "SELECT userid, perm FROM `perms`", [['object_type', $objectType], ['objectid', $objectID]]);
     }
 }

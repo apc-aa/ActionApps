@@ -154,16 +154,16 @@ $apage->setForm(['action'=>'se_mapping2.php', 'enctype'=>'multipart/form-data'])
 $apage->printHead($err, $Msg);
 
 $form_buttons = [
-    "ext_slice"=> [
-        "type"=>"hidden",
+    "ext_slice" => [
+        "type"  => "hidden",
                                          "value"=>$remote_slices[$from_slice_id]
     ],
-                      "btn_upd"=> [
-                          "type"=>"button",
-                                       "value"=>_m("Update"),
-                                       "accesskey"=>"S",
+    "btn_upd"   => [
+        "type"      => "button",
+        "value"     => _m("Update"),
+        "accesskey" => "S",
                                        "add"=>'onclick="Submit()"'
-                      ],
+    ],
                       "cancel"=> ["url"=>"se_fields.php"]
 ];
 

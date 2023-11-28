@@ -2894,7 +2894,7 @@ function getFrmJavascriptFile( $src, $add='') {
  * @param bool $onload
  * @return string
  */
-function getFrmJavascript($jscode , bool $onload=false) {
+function getFrmJavascript($jscode , bool $onload=false): string {
     if ($onload) {
         $jscode = "document.addEventListener('DOMContentLoaded', function() { $jscode });";
     }

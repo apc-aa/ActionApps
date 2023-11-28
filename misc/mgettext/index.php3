@@ -304,9 +304,9 @@ echo '
 <td>
     <p>This action will update the language files in the Destination dir.
     You should:
-    <ol><li>copy files from <tt>'.$aadir.'include/lang</tt> to <tt>'.$destdir.'</tt></li>
+    <ol><li>copy files from <code>'.$aadir.'include/lang</code> to <code>'.$destdir.'</code></li>
         <li>run this action</li>
-        <li>copy the updated files back to <tt>'.$aadir.'include/lang</tt></li>
+        <li>copy the updated files back to <code>'.$aadir.'include/lang</code></li>
     </ol></p>';
 
 if ($show_create_related) {
@@ -329,8 +329,8 @@ if ($show_create_related) {
     </td>
     <td>
         <p>This will convert the scripts by replacing all occurences of L_ language constants
-           by appropriate <tt>_m()</tt> calls. Translations are taken from the lang file <tt>'.$translate_lang_file.'</tt>.</p>
-        <p>All files in subdirs <tt>'.join(", ",$translate_dirlist).'</tt> of <tt>'.$aadir.'</tt> will be converted and the results placed into <tt>'.$translateddir.'</tt>.</p>
+           by appropriate <code>_m()</code> calls. Translations are taken from the lang file <code>'.$translate_lang_file.'</code>.</p>
+        <p>All files in subdirs <code>'.join(", ",$translate_dirlist).'</code> of <code>'.$aadir.'</code> will be converted and the results placed into <code>'.$translateddir.'</code>.</p>
     </td></tr>
 
     <tr><td colspan="2">

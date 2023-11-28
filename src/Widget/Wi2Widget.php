@@ -32,12 +32,11 @@ class Wi2Widget extends MchWidget
      *  or normal decorations (added by _finalize*Html)
      *  @param \AA_Property $aa_property
      *  @param \AA_Content  $content
-     *  @param string       $type  normal|live|ajax
+     *  @param string       $type normal|live|ajax
      *  @return array
      *  @throws \Exception
      */
-    function _getRawHtml($aa_property, $content, $type = 'normal')
-    {
+    function _getRawHtml($aa_property, $content, $type = 'normal'): array {
         $this->setProperty('columns', 1);
         return parent::_getRawHtml($aa_property, $content, $type);
     }

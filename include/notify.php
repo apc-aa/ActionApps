@@ -56,7 +56,7 @@ function email_notify($slice_id, $event, $item_id) {
 
     // $SQL    = "SELECT ${prefix}_s as s, ${prefix}_b as b FROM slice WHERE id = '$p_slice_id'";
     // $notify = GetTable2Array($SQL, 'aa_first', 'aa_fields');
-    $notify = DB_AA::select1([], "SELECT ${prefix}_s as s, ${prefix}_b as b FROM slice", [['id', $slice_id, 'l']]);
+    $notify = DB_AA::select1([], "SELECT {$prefix}_s as s, {$prefix}_b as b FROM slice", [['id', $slice_id, 'l']]);
 
     $SQL    = "SELECT uid FROM email_notify WHERE slice_id = '$p_slice_id' AND function = '$event'";
     $emails = GetTable2Array($SQL, '', 'uid');

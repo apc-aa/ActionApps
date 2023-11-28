@@ -277,14 +277,14 @@ function ChangeCatPermAsIn($category, $template) {
     $oldPerms = AA::$perm->getObjectsPerms($category_perm_id, 'slice');
 
     // Delete all old perms
-    if ( isset($oldPerms) AND is_array($oldPerms)) {
+    if ( $oldPerms ) {
         foreach ($oldPerms as  $uid => $perm ) {
             DelPerm($uid, $category_perm_id, 'slice');
         }
     }
 
     // Copy template's permissions
-    if ( isset($newPerms) AND is_array($newPerms)) {
+    if ( $newPerms ) {
         foreach ($newPerms as  $uid => $perm) {
             AddPerm($uid, $category_perm_id, 'slice', $perm);
         }
@@ -516,13 +516,11 @@ class AA_Perm {
         return [];
     }
 
-    public function findGroups($pattern) {
+    public function findGroups($pattern): array {
         $groups = [];
         foreach ($this->perm_systems as $perm_sys) {
-            if (is_array($new_groups = $perm_sys->findGroups($pattern))) {
-                // + operator preserves the numeric keys (used in SQL perm), which is crucial
-                $groups += $new_groups;
-            }
+            // + operator preserves the numeric keys (used in SQL perm), which is crucial
+            $groups += $perm_sys->findGroups($pattern);
         }
         return $groups;
     }
@@ -794,7 +792,7 @@ class AA_Perm {
 
     /** AA_Perm::joinSliceAndAAPerm function
      * Resolves precedence issues between slice-specific permissions
-     * and global access rigths (rights to object aa).
+     * and global access rights (rights to object aa).
      * Slice-specific perms take precedence except the SUPER access level
      * @param $slice_perm
      * @param $aa_perm
@@ -838,8 +836,8 @@ class AA_Perm {
 
 AA::$perm = new AA_Perm([PERM_LIB, 'Reader']);
 
-class AA_Permsystem {
-    /** userIdFormatMatches - is user id in correct format?
+abstract class AA_Permsystem {
+    /** userIdFormatMatches - is user id in the correct format?
      *  we MUST use specific UIDs for every single Permission Type
      *  (it MUST be clear, which perm system is used just from the format of UID)
      */
@@ -855,18 +853,19 @@ class AA_Permsystem {
 
     function findUserByLogin($user_login): array                              { return []; }
 
-    function findGroups($pattern)                               {}
+    function findGroups($pattern): array { return []; }
 
     /** getGroup function
-     *  @param $user_id
-     *  @return array(uid, name, description) or false if not found
+     * @param $group_id
+     * @return false|array [uid, name, description] or false if not found
      */
-    function getGroup($group_id)                                {}
-    function getIDsInfo($uid)                                   {}
-    function getGroupMembers($group_id)                         {}
-    function getMembership($id, $flags=0)                       { return []; }
-    function getObjectsPerms($objectID, $objectType)            { return []; }
-    function getJoinedPerms($uid, $objectType, $groups= []) { return []; }
+    abstract function getGroup($group_id);
+    abstract function getIDsInfo($uid);
+    abstract function getGroupMembers($group_id): array;
+    abstract function getMembership($id, $flags=0): array;
+
+    function getObjectsPerms($objectID, $objectType): array { return []; }
+    function getJoinedPerms($uid, $objectType, $groups= []): array { return []; }
 
     /** true, if the system is able to store permissins for groups and users (even foreign users and groups)
      *  SQL and LDAP is able to store it, Reader not. */
@@ -1030,7 +1029,7 @@ class AA_Permsystem_Reader extends AA_Permsystem {
         return $users;
     }
 
-    public function findGroups($pattern) {
+    public function findGroups($pattern): array {
         $db = getDB();
         $db->query("SELECT module.id,module.name FROM slice,module
                       WHERE slice.type = 'ReaderManagement'
@@ -1144,21 +1143,21 @@ class AA_Permsystem_Reader extends AA_Permsystem {
         return $res;
     }
 
-    function getGroupMembers($group_id) {
+    function getGroupMembers($group_id): array {
         // @todo implement it
         return [];
     }
 
     /** getMembership function
      *  return array of group_ids, where id (group or user) is a member (=Reader Management slice) in which is the user member
-     * @param $user_id
+     * @param $id
      * @return array
      */
-    function getMembership($user_id, $flags=0) {
-        if (!$user_id) {
+    function getMembership($id, $flags=0): array {
+        if (!$id) {
             return [];
         }
-        $user_info = AA_Reader::getReaderItemContent($user_id);
+        $user_info = AA_Reader::getReaderItemContent($id);
 
         if ($user_info->isEmpty()) {
             return [];
@@ -1167,7 +1166,7 @@ class AA_Permsystem_Reader extends AA_Permsystem {
         $reader_slice_id = $user_info->getSliceID();
         $ret             = [$reader_slice_id];
 
-        $restrict_zids   = new zids($user_id, 'l');
+        $restrict_zids   = new zids($id, 'l');
         // groups could be definned also by subset of readers - defined by AA_Set
         $set_ids         = AA_Object::querySet('AA_Set', new AA_Set([$reader_slice_id]));
         foreach( $set_ids as $set_id ) {

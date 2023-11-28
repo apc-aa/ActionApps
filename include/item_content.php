@@ -723,13 +723,14 @@ class ItemContent extends AA_Content {
      * @param bool        $ignore_reading_password
      * @return bool
      */
-    function setByItemID($item_id, bool $ignore_reading_password=false) {
+    function setByItemID($item_id, bool $ignore_reading_password=false): bool {
         if (!$item_id) {
             return false;
         }
         $zid           = is_object($item_id) ? $item_id : new zids($item_id);
         $content       = GetItemContent($zid, false, $ignore_reading_password);
         $this->content = is_array($content) ? reset($content) : [];
+        return true;
     }
 
     /** setFieldsFromForm function
@@ -936,7 +937,7 @@ class ItemContent extends AA_Content {
      * @param $value
      * @return bool
      */
-    function setItemID($value) {
+    function setItemID($value): bool {
         if (!is_long_id($value)) {
             $this->setValue('id..............', pack_id(0));
             $this->setValue('unpacked_id.....', 0);
@@ -945,6 +946,7 @@ class ItemContent extends AA_Content {
         // we want to switch the default to unpacked_id, but id is still necessary (for field copy in complete4Insert...)
         $this->setValue('id..............', pack_id($value));
         $this->setValue('unpacked_id.....', $value);
+        return true;
     }
 
     /** setSliceID function

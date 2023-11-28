@@ -793,7 +793,7 @@ class sitetree {
             '<a class=eye href="' . self::siteAdminPageUrl($spot_id, 'akce=h') . '">' . GetModuleImage('site', 'enabled.gif', '', 16, 16) . '</a>';
 
         // print the spot <div>
-        echo "<div$class title=\"spot ID: $spot_id\">${action}<a href=\"" . self::siteAdminPageUrl($spot_id, "go_sid=$spot_id") . "\" class=\"spot\">$spot_name</a></div>";
+        echo "<div$class title=\"spot ID: $spot_id\">{$action}<a href=\"" . self::siteAdminPageUrl($spot_id, "go_sid=$spot_id") . "\" class=\"spot\">$spot_name</a></div>";
     }
 
     public static function printHiddenRSpotId() {

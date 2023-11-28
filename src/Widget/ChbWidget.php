@@ -18,12 +18,11 @@ class ChbWidget extends Widget
      *  or normal decorations (added by _finalize*Html)
      *  @param \AA_Property $aa_property
      *  @param \AA_Content  $content
-     *  @param string       $type  normal|live|ajax
+     *  @param string       $type normal|live|ajax
      *  @return array
      *  @throws \Exception
      */
-    function _getRawHtml($aa_property, $content, $type = 'normal')
-    {
+    function _getRawHtml($aa_property, $content, $type = 'normal'): array {
         $base_name = FormArray::getName4Form($aa_property->getId(), $content, $this->item_index);
         $base_id = FormArray::formName2Id($base_name);
         // we use extended version, because of ajax and live widget and the fact

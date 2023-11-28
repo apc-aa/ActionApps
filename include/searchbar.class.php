@@ -740,7 +740,7 @@ class AA_Bookmarks {
     /** setFromProfile function
      *
      */
-    function setFromProfile() {
+    function setFromProfile(): bool {
         if ( !is_object($this->profile) ) {
             return false;
         }
@@ -757,10 +757,11 @@ class AA_Bookmarks {
                 ];
             }
         }
+        return true;
     }
 
     /** store function
-     *  Store bookmark to database
+     *  Store bookmark to the database
      * @param $name
      * @param $state
      * @param $to_global
@@ -852,14 +853,14 @@ class AA_Bookmarks {
      * @param $state
      * @return bool
      */
-    function updateBookmark($key, $state) {
+    function updateBookmark($key, $state): bool {
         $old = $this->bookmarks[$key];
         $ret = $this->update( $old['name'], $state, $old['type']=='*', $old['id']);
         if ($ret) {
             AA_Log::write("BM_UPDATE", $old['id'], $old['name']);
-        } else {
-            return false;
+            return true;
         }
+        return false;
     }
 
     /** renameBookmark function
@@ -867,14 +868,14 @@ class AA_Bookmarks {
      * @param $newname
      * @return bool
      */
-    function renameBookmark($key, $newname) {
+    function renameBookmark($key, $newname): bool {
         $old = $this->bookmarks[$key];
         $ret = $this->update( $newname, $old['state'], $old['type']=='*', $old['id']);
         if ($ret) {
             AA_Log::write("BM_RENAME", $old['id'], [$newname, $old['name']]);
-        } else {
-            return false;
+            return true;
         }
+        return false;
     }
 
     /** bookmark of key $key is currently seleted? */

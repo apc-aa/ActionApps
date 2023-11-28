@@ -76,11 +76,7 @@ function FormSaver(search_id, container, text) {
         // Besides, the demo avoid storing the same
         // search multiple times, so the code searches for duplicates and
         // removes them. Finally, the demo stores a maximum of 10 searches per user.
-        if (container=='') {
-            var currentSearch = form.serialize();
-        } else {
-            var currentSearch = $(container+' input, '+container+' select, '+container+' textarea').serialize();
-        }
+        var currentSearch = container == '' ? form.serialize() : $(container + ' input, ' + container + ' select, ' + container + ' textarea').serialize();
         searches.unshift(currentSearch);
         // Removes the duplicates
         for (var i = 1; i < searches.length; i++) {

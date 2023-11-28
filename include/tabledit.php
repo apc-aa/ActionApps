@@ -179,7 +179,7 @@ class tabledit {
         if ($this->type == "browse")
             echo _m("This is a Browse view in TableEdit. ");
         else echo _m("This is an Edit view in TableEdit. ");
-        echo "<a href='http://aa.ecn.cz/aaa/doc/tabledit_user.html'>"
+        echo "<a href='https://actionapps.org/aaa/doc/tabledit_user.html'>"
             ._m("Do you need Help?")."</a></span></td></tr></table>";
         */
         $this->SetViewDefaults();

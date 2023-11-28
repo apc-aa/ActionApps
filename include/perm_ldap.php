@@ -436,7 +436,8 @@ function ChangePerm($id, $objectID, $objectType, $perm, $flags = 0) {
  */
 function InitLDAP() {
     $aa_default_ldap = AA_Permsystem_Ldap::getLdap();
-    $ds = ldap_connect($aa_default_ldap['host'], $aa_default_ldap['port']);	// connect LDAP server
+    $ldap_uri = "ldap://".$aa_default_ldap['host'].":".$aa_default_ldap['port'];
+    $ds = ldap_connect($ldap_uri);	// connect LDAP server
     if (!$ds) {   				// not connect
         return false;
     }
@@ -487,13 +488,13 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
         // default ldap server for all searches
         return [
             "host"   => LDAP_HOST,
-                      "binddn" => LDAP_BINDDN,
-                      "bindpw" => LDAP_BINDPW,
-                      "basedn" => LDAP_BASEDN,
-                      "people" => LDAP_PEOPLE,
-                      "groups" => LDAP_GROUPS,
-                      "acls"   => LDAP_ACLS,
-                      "port"   => LDAP_PORT
+            "binddn" => LDAP_BINDDN,
+            "bindpw" => LDAP_BINDPW,
+            "basedn" => LDAP_BASEDN,
+            "people" => LDAP_PEOPLE,
+            "groups" => LDAP_GROUPS,
+            "acls"   => LDAP_ACLS,
+            "port"   => LDAP_PORT
         ];
     }
 
@@ -543,7 +544,8 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
             $LDAPserver = AA_Permsystem_Ldap::getLdap();
         }
 
-        $ds = ldap_connect($LDAPserver['host'], $LDAPserver['port']);	// connect LDAP server
+        $ldap_uri = "ldap://".$LDAPserver['host'].":".$LDAPserver['port'];
+        $ds = ldap_connect($ldap_uri);	// connect LDAP server
         if (!$ds) {                 			// not connected
             return false;
         }
@@ -622,19 +624,20 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
 
     /** findGroups function
      *  @param $pattern
-     *  @return false|string|array - list of groups which corresponds to mask $pattern
+     *  @return array - list of groups which corresponds to mask $pattern
      */
-    function findGroups($pattern) {
+    function findGroups($pattern): array {
         $aa_default_ldap = AA_Permsystem_Ldap::getLdap();
         if ( !($ds=InitLDAP()) ) {
-            return false;
+            return [];
         }
 
         $filter = "(&(objectclass=groupofnames)(cn=$pattern*))";
         $res    = @ldap_search($ds,$aa_default_ldap['groups'],$filter, ["cn"]);
         if (!$res) {
             // LDAP sizelimit exceed
-            return ((ldap_errno($ds)==4) ? "too much" : false);
+            // return ((ldap_errno($ds)==4) ? "too much" : false);
+            return [];
         }
         $arr = ldap_get_entries($ds,$res);
 
@@ -737,7 +740,7 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
      * @param $group_id
      * @return array
      */
-    function getGroupMembers($group_id) {
+    function getGroupMembers($group_id): array {
         if ( !($ds=InitLDAP()) ) {
             return [];
         }
@@ -764,9 +767,9 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
     /** getMembership function
      * @param $id
      * @param $flags - use to obey group in groups?
-     * @return false|string|array of group_ids, where id (group or user) is a member
+     * @return array of group_ids, where id (group or user) is a member
      */
-    function getMembership($id, $flags = 0) {
+    function getMembership($id, $flags = 0): array {
         $aa_default_ldap = AA_Permsystem_Ldap::getLdap();
 
         if ( !($ds=InitLDAP()) ) {
@@ -789,7 +792,8 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
             $res = @ldap_search($ds,$aa_default_ldap['groups'],$search, ['member']);
             if (!$res) {
                 // LDAP sizelimit exceed ?
-                return (ldap_errno($ds)==4) ? "too much" : false;
+                // return (ldap_errno($ds)==4) ? "too much" : false;
+                return [];
             }
             $array = ldap_get_entries($ds,$res);
             unset($last_groups);  //get deeper groups to last_groups and groups
@@ -814,7 +818,7 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
      * @return array of sliceids and their permissions (for user $userid) counting all groups listed in third parameter
      * (the gorups could be also foreign - like from Reader Set, but permissions for such groups are stored here)
      */
-    function getJoinedPerms($uid, $objectType, $groups= []) {
+    function getJoinedPerms($uid, $objectType, $groups= []): array {
         $aa_default_ldap = AA_Permsystem_Ldap::getLdap();
         if (!($ds=InitLDAP())) {
             return [];
@@ -857,13 +861,13 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
     /** getObjectsPerms function
      * @param $objectID
      * @param $ojectType
-     * @return false|array of user/group identities and their permissions
+     * @return array of user/group identities and their permissions
      *  granted on specified object $objectID
      */
-    function getObjectsPerms($objectID, $objectType) {
+    function getObjectsPerms($objectID, $objectType): array {
         $aa_default_ldap = AA_Permsystem_Ldap::getLdap();
         if (!($ds=InitLDAP())) {
-            return false;
+            return [];
         }
 
         $filter = "(&(objectclass=apcacl)(apcobjecttype=$objectType))";
@@ -871,7 +875,7 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
 
         $result = @ldap_read($ds,$basedn,$filter, ["apcaci"]);
         if (!$result) {
-            return false;
+            return [];
         }
 
         $entry = ldap_first_entry ($ds, $result);

@@ -203,12 +203,14 @@ function get_aamenus() {
 /** Create view menu for current slice
  * @noinspection PhpUnused
  */
-function CreateMenu4Views( $foo ) {
+function CreateMenu4Views( $foo ): array {
     global $slice_id;
 
-    if ( !IfSlPerm(PS_LINKS_EDIT_DESIGN) )
-        return;
+    if ( !IfSlPerm(PS_LINKS_EDIT_DESIGN) ) {
+        return [];
+    }
 
+    $menu = [];
     $db = getDB();
 
     $SQL = "SELECT id, name, type FROM view WHERE slice_id='". q_pack_id($slice_id)."'";

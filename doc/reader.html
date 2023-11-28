@@ -1,126 +1,461 @@
-<html><head>
-      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-   <title>Reader Management</title><meta name="generator" content="DocBook XSL Stylesheets V1.49"></head><body><div class="article"><div class="titlepage"><div><h2 class="title"><a name="d0e1"></a>Reader Management</h2></div><div><div class="author"><h3 class="author">Jakub Ad&aacute;mek</h3><div class="affiliation"><span class="orgname">Econnect<br></span></div></div></div><div><p class="releaseinfo">$Id$</p></div><div><div class="revhistory"><table summary="Revision history"><tr><th colspan="2"><b>Revision History</b></th></tr><tr><td>Revision 1.7</td><td>5.4.2003</td></tr><tr><td colspan="2">The part about Alerts moved to a <a href="alerts.html" target="_top">separate document</a>.</td></tr><tr><td>Revision 1.6</td><td>9.3.2003</td></tr><tr><td colspan="2">Added the section Sending emails by wizard</td></tr><tr><td>Revision 1.5</td><td>8.3.2003</td></tr><tr><td colspan="2">Updated Mailman section. Other minor changes.</td></tr><tr><td>Revision 1.4</td><td>6.3.2003</td></tr><tr><td colspan="2">Updated Alerts specific as the menu is updated and Filters
-        are renamed to Selections not to confuse them with Content Pooling
-        Filters</td></tr><tr><td>Revision 1.3</td><td>3.3.2003</td></tr><tr><td colspan="2">Enhanced and corrected the Mailman specific section to
-        reflect the recent implementation, it is not yet complete.</td></tr><tr><td>Revision 1.2</td><td>16.2.2003</td></tr><tr><td colspan="2">The part about Anonymous forms moved to a <a href="anonym.html" target="_top">separate document</a>. Enhanced and
-        corrected the Alerts specific section to reflect the recent
-        implementation.</td></tr><tr><td>Revision 1.1</td><td>11.2.2003</td></tr><tr><td colspan="2">Added a remark about using several slices (second paragraph
-        in "Central point: Slice"). Enhanced and corrected the Auth
-        specific section to reflect the recent implementation.</td></tr><tr><td>Revision 1.0</td><td>5.2.2003</td></tr></table></div></div><hr></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><a href="#d0e87">Basic idea</a></dt><dt><a href="#d0e120">Reader Management Slice</a></dt><dd><dl><dt><a href="#d0e197">Sending emails by wizard</a></dt></dl></dd><dt><a href="#d0e210">Editing Reader Info: Anonymous posting form</a></dt><dt><a href="#d0e218">Module common behaviour</a></dt><dt><a href="#d0e225">Module specific behaviour</a></dt><dd><dl><dt><a href="#d0e228">Alerts </a></dt><dt><a href="#d0e236">Auth </a></dt><dd><dl><dt><a href="#d0e239">Apache module mod_auth_mysql</a></dt><dt><a href="#d0e277">Auth feature</a></dt></dl></dd><dt><a href="#d0e353">Mailman </a></dt><dd><dl><dt><a href="#d0e391">Mailman: create list</a></dt></dl></dd></dl></dd><dt><a href="#d0e407">Discussion - Why to use slice?</a></dt></dl></div><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3><p><span class="emphasis"><em>This file was created from the DocBook XML source. Please
-    do modifications in the source, not here.</em></span></p></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="d0e87"></a>Basic idea</h2></div></div><p>See also the separate documents about <a href="alerts.html" target="_top">Alerts</a> and about <a href="anonym.html" target="_top">Anonymous forms</a>.</p><p>Readers are users with no AA admin access. I don't want to use
-    the term &#8220;users&#8221; because of possible confusion with the AA
-    users like Authors and more.</p><p>Several modules may be connected with readers:</p><div class="itemizedlist"><ul type="disc"><li>Alerts, for sending new items by email</li><li>Authorization (Auth), for HTTP authorization via MySQL_Auth</li><li>Mailman, for e-mail discussions</li><li><p>AA permissions synchronization, which propagates username and
-        password changes to the AA permission system</p></li></ul></div><p>Readers are identified by email in Alerts and Mailman and by
-    username in Auth.</p></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="d0e120"></a>Reader Management Slice</h2></div></div><p>After a lot of discussing and unhappily also a lot of work to be
-    thrown off, we have in Econnect decided the best approach to handle Reader
-    management will be a slice. It is so simple: each item belongs to one
-    person. The individual settings for Alerts, Auth etc. are added as fields
-    to the item design.</p><p>Note this means not one slice but several slices, one for each web
-    site which uses Alerts, Auth or Mailman. Readers of different web sites
-    are in different slices and thus independent. Slice features like item
-    feeding may be used when necessary.</p><p>The minimal slice template named Reader Management Minimal is now a
-    part of the sql_update script and consists of:</p><div class="table"><p><b>Table 1. Fields in the Reader Management Minimal template</b></p><table summary="Fields in the Reader Management Minimal template"><colgroup><col><col></colgroup><tbody><tr><td>Username</td><td>Used in the Authorization (Auth) module</td></tr><tr><td>Email</td><td>Required for Alerts and Mailman modules. For each Reader
-            Management slice either username or email should be flagged as
-            required.</td></tr><tr><td>Password</td><td>If the web uses Auth, this is the HTTP password. Otherwise
-            this password must be filled in the anonymous form every time a
-            reader wants to change his or her personal details.</td></tr><tr><td>First / Last name</td><td>Not required, may be used to personalize emails.</td></tr><tr><td>Email Confirmed</td><td>This box is automatically checked after the reader clicks
-            on a link including the Access Code (see below). No reader
-            receives any Alert email until it is checked.</td></tr><tr><td><a name="access_code"></a>Access Code</td><td>This code is received in emails as a part of a URL. By
-            clicking on this URL a reader confirms his or her email address.
-            The URL points to reader personal details. On webs not using Auth
-            this is the only way to edit personal details.</td></tr><tr><td>Remark</td><td>Any remark, may or may not be a part of the personal
-            details shown to readers.</td></tr><tr><td>Start date</td><td>Membership start, readers are disabled before this point
-            for all related modules.</td></tr><tr><td>Expiry date</td><td>Membership finish, readers are disabled after this point.</td></tr></tbody></table></div><p>Slice administrators create new slice based on this template and may
-    add any number of further fields, which is the main advantage of using a
-    slice for Reader Management.</p><p>The Alerts module adds automatically its own fields, with special
-    field IDs linking to the module, e.g. <tt>alerts1....4e4c7</tt>
-    for &#8220;how often&#8221; and Alerts Collection with ID
-    <tt>4e4c7</tt>.</p><p>One Reader management slice may be connected with several modules,
-    usually belonging to the same web site. Suppose you create a site with
-    HTTP restricted access. You may provide an Authorization module and two
-    different Alerts Collections. They all link to the same reader group and
-    thus use the same Reader management slice.</p><p>In the simplest cases, there will be one Reader management slice +
-    one Alerts or Auth module. The Alerts or Auth module will always use
-    (almost) directly the slice data.</p><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="d0e197"></a><a name="wizard_email"></a>Sending emails by wizard</h3></div></div><p>On Reader Management slices there appears in the action select box
-      a new item: &#8220;Send emails wizard&#8221;. If you select some items
-      (readers) and choose this action, the window is divided in two frames
-      with a wizard in the right one.</p><p>The wizard contains hints and links into AA pages. Its steps
-      include creating or editing the email template, sending an example email
-      to yourself and sending the email to all readers which you selected
-      before running the wizard.</p><p>You can use any fields aliases like in any view (index, fulltext
-      etc.)</p></div></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="d0e210"></a>Editing Reader Info: Anonymous posting form</h2></div></div><p>As readers do not have access to the AA control panel, they must
-    edit their personal details on the <a href="anonym.html" target="_top">Anonymous
-    posting form, described in another document</a>.</p></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="d0e218"></a>Module common behaviour</h2></div></div><p>Only readers in Active bin will receive Alerts, be allowed to pages
-    guarded by Authorization etc.</p><p>In special cases, when you want to stop web access for some reader
-    (authorization) but don't want to stop him or her receiving Alerts,
-    you must create a dummy authorization group and assign this group to him
-    or her.</p></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="d0e225"></a>Module specific behaviour</h2></div></div><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="d0e228"></a>Alerts </h3></div></div><p>Alerts are described in a <a href="alerts.html" target="_top">separate
-      document</a>.</p></div><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="d0e236"></a>Auth </h3></div></div><div class="sect3"><div class="titlepage"><div><h4 class="title"><a name="d0e239"></a>Apache module mod_auth_mysql</h4></div></div><p>The Auth feature (it is not a real module) is meant to be used
-        by the <tt>mod_auth_mysql</tt> Apache module. You must
-        install this module on your web server to appreciate the Auth feature.
-        There are several versions of the module with different option names.
-        Find the correct ones in your version. This is the info you will need:</p><div class="table"><p><b>Table 2. Tables maintained by the Auth feature</b></p><table summary="Tables maintained by the Auth feature"><colgroup><col><col></colgroup><tbody><tr><td>auth_user</td><td>with the fields &#8220;username&#8221; and
-                &#8220;passwd&#8221;</td></tr><tr><td>auth_group</td><td>with the fields &#8220;username&#8221; and
-                &#8220;groups&#8221;</td></tr></tbody></table></div><p>Set up Apache and fill correct group info into the
-        <tt>.htaccess</tt> files in folders which you want to
-        protect. Note the groups you are using here are the groups separated
-        by semicolon in the AA constants, see below.</p></div><div class="sect3"><div class="titlepage"><div><h4 class="title"><a name="d0e277"></a>Auth feature</h4></div></div><p>The Auth administration includes creating membership types
-        (meta-groups) and assigning (sub)groups to them. This may be achieved
-        with the usage of AA constants, where the constant name is the
-        membership type and the constant value are the subgroups assigned to
-        individual folders, separated by semicolon.</p><p>For example, if you want to create Standard Membership and
-        Privileged Membership, where the first is permitted to folders
-        "main" and "search" and the second to "main",
-        "search" and "privileged", you create these two
-        constants:</p><div class="table"><p><b>Table 3. Membership Constants Example</b></p><table summary="Membership Constants Example"><colgroup><col><col></colgroup><tbody><tr><td><span class="emphasis"><em>Name</em></span></td><td><span class="emphasis"><em>Value</em></span></td></tr><tr><td>Standard Membership</td><td>myreaders_main;myreaders_search</td></tr><tr><td>Privileged Membership</td><td>myreaders_main;myreaders_search;myreaders_privileged</td></tr></tbody></table></div><p>The user / membership type assignments are synchronized with
-        tables <tt>auth_user</tt> and <tt>auth_group</tt>
-        using event handlers for events like updating an item or moving the
-        item into another bin. Also you should check &#8220;Propagate changes
-        into current items&#8221; in the constant group because then if you
-        change the subgroups, all user-group assignments for that metagroup
-        are updated even in the <tt>auth_group</tt> table.</p><p>To avoid the conflict of another Reader Management slice using
-        the same subgroup names, I recommend to use some pre- or postfix (like
-        &#8220;myreaders_&#8221; in my example).</p><p>When you have created the constant group, create a field of type
-        &#8220;Auth Group&#8221; and assign the constant group to it.</p><p><a name="auth_field_group"></a>The Auth feature is set on and
-        off using a new item in Slice Settings, named &#8220;Auth Group Field&#8221;,
-        with the name of the field mentioned above. This setting is visible
-        only in Reader Management slices created from the Reader Management
-        Minimal template (<span class="emphasis"><em>exactly, only for slices of type
-        <tt>ReaderManagement</tt></em></span>).</p><p>Only when &#8220;Auth Group Field&#8221; is filled, the slice
-        is synchronized with the auth_user/group tables.</p><p>You may set to which bin new readers are put on subscription
-        with the standard "Allow anonymous posting of items" setting.</p><p>Because readers are assigned to items, they may appear in
-        Pending or Expired bin depending on Start date and Expiry date
-        settings. You should run the script <tt>auth_maintain.php3?maintain_auth=1</tt>
-        once a day by cron to automatically add or delete users moved to or
-        from the Active bin.</p></div></div><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="d0e353"></a><a name="mailman"></a>Mailman </h3></div></div><p>You can manage mailing lists with the Mailman feature. The idea is
-      to use a directory accessible both to PHP and to mailman. AA maintain
-      files with names being the mailing list names, each file contains a list
-      of email addresses subscribed to the list, one on a row. Mailman reads
-      these files regularly to synchronize the real mailing lists.</p><p>To use this feature, follow these steps:</p><div class="orderedlist"><ol type="1"><li>create the mailing lists using the mailman interface</li><li>in config.php3, set <tt>$MAILMAN_SYNCHRO_DIR</tt>
-          to the directory accessible both to PHP and to mailman, described
-          above</li><li>create a new field of type &#8220;Mailing Lists&#8221; in
-          the Reader Management slice</li><li>create a new constant group for this field. The names and
-          values of constants in the group are the names of the mailing lists</li><li>set the field type, the default is multiple-checkboxes. You
-          can arrange the checkboxes into a table with the parameter wizard</li><li>in Slice Settings, select the field as Mailman Lists Field</li><li><p>set mailman cron so that it regularly (e.g. every minute)
-          updates the real mailing lists using a Unix shell-script like</p><pre class="screen">LISTSDIR="/var/www/html/maillists"
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
+    <title>Reader Management</title>
+    <meta content="DocBook XSL Stylesheets V1.49" name="generator">
+</head>
+<body>
+<div class="article">
+    <div class="titlepage">
+        <div><h2 class="title"><a name="d0e1"></a>Reader Management</h2></div>
+        <div>
+            <div class="author"><h3 class="author">Jakub Ad&aacute;mek</h3>
+                <div class="affiliation"><span class="orgname">Econnect<br></span></div>
+            </div>
+        </div>
+        <div><p class="releaseinfo">$Id$</p></div>
+        <div>
+            <div class="revhistory">
+                <table summary="Revision history">
+                    <tr>
+                        <th colspan="2"><b>Revision History</b></th>
+                    </tr>
+                    <tr>
+                        <td>Revision 1.7</td>
+                        <td>5.4.2003</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">The part about Alerts moved to a <a href="alerts.html" target="_top">separate
+                            document</a>.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Revision 1.6</td>
+                        <td>9.3.2003</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">Added the section Sending emails by wizard</td>
+                    </tr>
+                    <tr>
+                        <td>Revision 1.5</td>
+                        <td>8.3.2003</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">Updated Mailman section. Other minor changes.</td>
+                    </tr>
+                    <tr>
+                        <td>Revision 1.4</td>
+                        <td>6.3.2003</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">Updated Alerts specific as the menu is updated and Filters
+                            are renamed to Selections not to confuse them with Content Pooling
+                            Filters
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Revision 1.3</td>
+                        <td>3.3.2003</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">Enhanced and corrected the Mailman specific section to
+                            reflect the recent implementation, it is not yet complete.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Revision 1.2</td>
+                        <td>16.2.2003</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">The part about Anonymous forms moved to a <a href="anonym.html" target="_top">separate
+                            document</a>. Enhanced and
+                            corrected the Alerts specific section to reflect the recent
+                            implementation.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Revision 1.1</td>
+                        <td>11.2.2003</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">Added a remark about using several slices (second paragraph
+                            in "Central point: Slice"). Enhanced and corrected the Auth
+                            specific section to reflect the recent implementation.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Revision 1.0</td>
+                        <td>5.2.2003</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <hr>
+    </div>
+    <div class="toc"><p><b>Table of Contents</b></p>
+        <dl>
+            <dt><a href="#d0e87">Basic idea</a></dt>
+            <dt><a href="#d0e120">Reader Management Slice</a></dt>
+            <dd>
+                <dl>
+                    <dt><a href="#d0e197">Sending emails by wizard</a></dt>
+                </dl>
+            </dd>
+            <dt><a href="#d0e210">Editing Reader Info: Anonymous posting form</a></dt>
+            <dt><a href="#d0e218">Module common behaviour</a></dt>
+            <dt><a href="#d0e225">Module specific behaviour</a></dt>
+            <dd>
+                <dl>
+                    <dt><a href="#d0e228">Alerts </a></dt>
+                    <dt><a href="#d0e236">Auth </a></dt>
+                    <dd>
+                        <dl>
+                            <dt><a href="#d0e239">Apache module mod_auth_mysql</a></dt>
+                            <dt><a href="#d0e277">Auth feature</a></dt>
+                        </dl>
+                    </dd>
+                    <dt><a href="#d0e353">Mailman </a></dt>
+                    <dd>
+                        <dl>
+                            <dt><a href="#d0e391">Mailman: create list</a></dt>
+                        </dl>
+                    </dd>
+                </dl>
+            </dd>
+            <dt><a href="#d0e407">Discussion - Why to use slice?</a></dt>
+        </dl>
+    </div>
+    <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3>
+        <p><span class="emphasis"><em>This file was created from the DocBook XML source. Please
+    do modifications in the source, not here.</em></span></p></div>
+    <div class="sect1">
+        <div class="titlepage">
+            <div><h2 class="title" style="clear: both"><a name="d0e87"></a>Basic idea</h2></div>
+        </div>
+        <p>See also the separate documents about <a href="alerts.html" target="_top">Alerts</a> and about <a
+                href="anonym.html" target="_top">Anonymous forms</a>.</p>
+        <p>Readers are users with no AA admin access. I don't want to use
+            the term &#8220;users&#8221; because of possible confusion with the AA
+            users like Authors and more.</p>
+        <p>Several modules may be connected with readers:</p>
+        <div class="itemizedlist">
+            <ul type="disc">
+                <li>Alerts, for sending new items by email</li>
+                <li>Authorization (Auth), for HTTP authorization via MySQL_Auth</li>
+                <li>Mailman, for e-mail discussions</li>
+                <li><p>AA permissions synchronization, which propagates username and
+                    password changes to the AA permission system</p></li>
+            </ul>
+        </div>
+        <p>Readers are identified by email in Alerts and Mailman and by
+            username in Auth.</p></div>
+    <div class="sect1">
+        <div class="titlepage">
+            <div><h2 class="title" style="clear: both"><a name="d0e120"></a>Reader Management Slice</h2></div>
+        </div>
+        <p>After a lot of discussing and unhappily also a lot of work to be
+            thrown off, we have in Econnect decided the best approach to handle Reader
+            management will be a slice. It is so simple: each item belongs to one
+            person. The individual settings for Alerts, Auth etc. are added as fields
+            to the item design.</p>
+        <p>Note this means not one slice but several slices, one for each web
+            site which uses Alerts, Auth or Mailman. Readers of different web sites
+            are in different slices and thus independent. Slice features like item
+            feeding may be used when necessary.</p>
+        <p>The minimal slice template named Reader Management Minimal is now a
+            part of the sql_update script and consists of:</p>
+        <div class="table"><p><b>Table 1. Fields in the Reader Management Minimal template</b></p>
+            <table summary="Fields in the Reader Management Minimal template">
+                <colgroup>
+                    <col>
+                    <col>
+                </colgroup>
+                <tbody>
+                <tr>
+                    <td>Username</td>
+                    <td>Used in the Authorization (Auth) module</td>
+                </tr>
+                <tr>
+                    <td>Email</td>
+                    <td>Required for Alerts and Mailman modules. For each Reader
+                        Management slice either username or email should be flagged as
+                        required.
+                    </td>
+                </tr>
+                <tr>
+                    <td>Password</td>
+                    <td>If the web uses Auth, this is the HTTP password. Otherwise
+                        this password must be filled in the anonymous form every time a
+                        reader wants to change his or her personal details.
+                    </td>
+                </tr>
+                <tr>
+                    <td>First / Last name</td>
+                    <td>Not required, may be used to personalize emails.</td>
+                </tr>
+                <tr>
+                    <td>Email Confirmed</td>
+                    <td>This box is automatically checked after the reader clicks
+                        on a link including the Access Code (see below). No reader
+                        receives any Alert email until it is checked.
+                    </td>
+                </tr>
+                <tr>
+                    <td><a name="access_code"></a>Access Code</td>
+                    <td>This code is received in emails as a part of a URL. By
+                        clicking on this URL a reader confirms his or her email address.
+                        The URL points to reader personal details. On webs not using Auth
+                        this is the only way to edit personal details.
+                    </td>
+                </tr>
+                <tr>
+                    <td>Remark</td>
+                    <td>Any remark may or may not be a part of the personal
+                        details shown to readers.
+                    </td>
+                </tr>
+                <tr>
+                    <td>Start date</td>
+                    <td>Membership start, readers are disabled before this point
+                        for all related modules.
+                    </td>
+                </tr>
+                <tr>
+                    <td>Expiry date</td>
+                    <td>Membership finish, readers are disabled after this point.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <p>Slice administrators create new slice based on this template and may
+            add any number of further fields, which is the main advantage of using a
+            slice for Reader Management.</p>
+        <p>The Alerts module adds automatically its own fields, with special
+            field IDs linking to the module, e.g. <code>alerts1....4e4c7</code>
+            for &#8220;how often&#8221; and Alerts Collection with ID
+            <code>4e4c7</code>.</p>
+        <p>One Reader management slice may be connected with several modules,
+            usually belonging to the same web site. Suppose you create a site with
+            HTTP restricted access. You may provide an Authorization module and two
+            different Alerts Collections. They all link to the same reader group and
+            thus use the same Reader management slice.</p>
+        <p>In the simplest cases, there will be one Reader management slice +
+            one Alerts or Auth module. The Alerts or Auth module will always use
+            (almost) directly the slice data.</p>
+        <div class="sect2">
+            <div class="titlepage">
+                <div><h3 class="title"><a name="d0e197"></a><a name="wizard_email"></a>Sending emails by wizard</h3>
+                </div>
+            </div>
+            <p>On Reader Management slices there appears in the action select box
+                a new item: &#8220;Send emails wizard&#8221;. If you select some items
+                (readers) and choose this action, the window is divided in two frames
+                with a wizard in the right one.</p>
+            <p>The wizard contains hints and links into AA pages. Its steps
+                include creating or editing the email template, sending an example email
+                to yourself and sending the email to all readers which you selected
+                before running the wizard.</p>
+            <p>You can use any fields aliases like in any view (index, fulltext
+                etc.)</p></div>
+    </div>
+    <div class="sect1">
+        <div class="titlepage">
+            <div><h2 class="title" style="clear: both"><a name="d0e210"></a>Editing Reader Info: Anonymous posting form
+            </h2></div>
+        </div>
+        <p>As readers do not have access to the AA control panel, they must
+            edit their personal details on the <a href="anonym.html" target="_top">Anonymous
+                posting form, described in another document</a>.</p></div>
+    <div class="sect1">
+        <div class="titlepage">
+            <div><h2 class="title" style="clear: both"><a name="d0e218"></a>Module common behaviour</h2></div>
+        </div>
+        <p>Only readers in Active bin will receive Alerts, be allowed to pages
+            guarded by Authorization etc.</p>
+        <p>In special cases, when you want to stop web access for some reader
+            (authorization) but don't want to stop him or her receiving Alerts,
+            you must create a dummy authorization group and assign this group to him
+            or her.</p></div>
+    <div class="sect1">
+        <div class="titlepage">
+            <div><h2 class="title" style="clear: both"><a name="d0e225"></a>Module specific behaviour</h2></div>
+        </div>
+        <div class="sect2">
+            <div class="titlepage">
+                <div><h3 class="title"><a name="d0e228"></a>Alerts </h3></div>
+            </div>
+            <p>Alerts are described in a <a href="alerts.html" target="_top">separate
+                document</a>.</p></div>
+        <div class="sect2">
+            <div class="titlepage">
+                <div><h3 class="title"><a name="d0e236"></a>Auth </h3></div>
+            </div>
+            <div class="sect3">
+                <div class="titlepage">
+                    <div><h4 class="title"><a name="d0e239"></a>Apache module mod_auth_mysql</h4></div>
+                </div>
+                <p>The Auth feature (it is not a real module) is meant to be used
+                    by the <code>mod_auth_mysql</code> Apache module. You must
+                    install this module on your web server to appreciate the Auth feature.
+                    There are several versions of the module with different option names.
+                    Find the correct ones in your version. This is the info you will need:</p>
+                <div class="table"><p><b>Table 2. Tables maintained by the Auth feature</b></p>
+                    <table summary="Tables maintained by the Auth feature">
+                        <colgroup>
+                            <col>
+                            <col>
+                        </colgroup>
+                        <tbody>
+                        <tr>
+                            <td>auth_user</td>
+                            <td>with the fields &#8220;username&#8221; and
+                                &#8220;passwd&#8221;
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>auth_group</td>
+                            <td>with the fields &#8220;username&#8221; and
+                                &#8220;groups&#8221;
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p>Set up Apache and fill correct group info into the
+                    <code>.htaccess</code> files in folders which you want to
+                    protect. Note the groups you are using here are the groups separated
+                    by semicolon in the AA constants, see below.</p></div>
+            <div class="sect3">
+                <div class="titlepage">
+                    <div><h4 class="title"><a name="d0e277"></a>Auth feature</h4></div>
+                </div>
+                <p>The Auth administration includes creating membership types
+                    (meta-groups) and assigning (sub)groups to them. This may be achieved
+                    with the usage of AA constants, where the constant name is the
+                    membership type and the constant value are the subgroups assigned to
+                    individual folders, separated by semicolon.</p>
+                <p>For example, if you want to create Standard Membership and
+                    Privileged Membership, where the first is permitted to folders
+                    "main" and "search" and the second to "main",
+                    "search" and "privileged", you create these two
+                    constants:</p>
+                <div class="table"><p><b>Table 3. Membership Constants Example</b></p>
+                    <table summary="Membership Constants Example">
+                        <colgroup>
+                            <col>
+                            <col>
+                        </colgroup>
+                        <tbody>
+                        <tr>
+                            <td><span class="emphasis"><em>Name</em></span></td>
+                            <td><span class="emphasis"><em>Value</em></span></td>
+                        </tr>
+                        <tr>
+                            <td>Standard Membership</td>
+                            <td>myreaders_main;myreaders_search</td>
+                        </tr>
+                        <tr>
+                            <td>Privileged Membership</td>
+                            <td>myreaders_main;myreaders_search;myreaders_privileged</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p>The user / membership type assignments are synchronized with
+                    tables <code>auth_user</code> and <code>auth_group</code>
+                    using event handlers for events like updating an item or moving the
+                    item into another bin. Also you should check &#8220;Propagate changes
+                    into current items&#8221; in the constant group because then if you
+                    change the subgroups, all user-group assignments for that metagroup
+                    are updated even in the <code>auth_group</code> table.</p>
+                <p>To avoid the conflict of another Reader Management slice using
+                    the same subgroup names, I recommend to use some pre- or postfix (like
+                    &#8220;myreaders_&#8221; in my example).</p>
+                <p>When you have created the constant group, create a field of type
+                    &#8220;Auth Group&#8221; and assign the constant group to it.</p>
+                <p><a name="auth_field_group"></a>The Auth feature is set on and
+                    off using a new item in Slice Settings, named &#8220;Auth Group Field&#8221;,
+                    with the name of the field mentioned above. This setting is visible
+                    only in Reader Management slices created from the Reader Management
+                    Minimal template (<span class="emphasis"><em>exactly, only for slices of type
+        <code>ReaderManagement</code></em></span>).</p>
+                <p>Only when &#8220;Auth Group Field&#8221; is filled, the slice
+                    is synchronized with the auth_user/group tables.</p>
+                <p>You may set to which bin new readers are put on subscription
+                    with the standard "Allow anonymous posting of items" setting.</p>
+                <p>Because readers are assigned to items, they may appear in
+                    Pending or Expired bin depending on Start date and Expiry date
+                    settings. You should run the script <code>auth_maintain.php3?maintain_auth=1</code>
+                    once a day by cron to automatically add or delete users moved to or
+                    from the Active bin.</p></div>
+        </div>
+        <div class="sect2">
+            <div class="titlepage">
+                <div><h3 class="title"><a name="d0e353"></a><a name="mailman"></a>Mailman </h3></div>
+            </div>
+            <p>You can manage mailing lists with the Mailman feature. The idea is
+                to use a directory accessible both to PHP and to mailman. AA maintain
+                files with names being the mailing list names, each file contains a list
+                of email addresses subscribed to the list, one on a row. Mailman reads
+                these files regularly to synchronize the real mailing lists.</p>
+            <p>To use this feature, follow these steps:</p>
+            <div class="orderedlist">
+                <ol type="1">
+                    <li>create the mailing lists using the mailman interface</li>
+                    <li>in config.php3, set <code>$MAILMAN_SYNCHRO_DIR</code>
+                        to the directory accessible both to PHP and to mailman, described
+                        above
+                    </li>
+                    <li>create a new field of type &#8220;Mailing Lists&#8221; in
+                        the Reader Management slice
+                    </li>
+                    <li>create a new constant group for this field. The names and
+                        values of constants in the group are the names of the mailing lists
+                    </li>
+                    <li>set the field type, the default is multiple-checkboxes. You
+                        can arrange the checkboxes into a table with the parameter wizard
+                    </li>
+                    <li>in Slice Settings, select the field as Mailman Lists Field</li>
+                    <li><p>set mailman cron so that it regularly (e.g. every minute)
+                        updates the real mailing lists using a Unix shell-script like</p>
+                        <pre class="screen">LISTSDIR="/var/www/html/maillists"
 MMDIR="/var/mailman"
 for LIST in `find $LISTSDIR/* -newer $MMDIR/data/.lastsync -printf "%f\n"`;
     do
         $MMDIR/bin/sync_members -f $LISTSDIR/$LIST -w=no -a=no $LIST
     done
-touch $MMDIR/data/.lastsync</pre></li></ol></div><div class="sect3"><div class="titlepage"><div><h4 class="title"><a name="d0e391"></a>Mailman: create list</h4></div></div><p>Another convenience feature is the possibility to create new
-        mailing lists from the AA interface. For Reader management slices with
-        a field filled in Slice Settings - Mailman Lists Field there appears a
-        new option in the menu, &#8220;Mailman: create list&#8221;. You fill
-        the name of the new list, admin email and password. The list name is
-        added to the constant group used by the Mailman Lists Field and a
-        request row is added to the file <tt>.mailman</tt> in the
-        <tt>$MAILMAN_SYNCHRO_DIR</tt> directory. You should run
-        another Unix shell-script regularly which executes the requests.</p><p>Tip: If you enable users to subscribe to mailing lists in an
-        anonymous form, you must add the new checkbox to that form.</p></div></div></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="d0e407"></a>Discussion - Why to use slice?</h2></div></div><p>The main reason to use slice was that we need some reader management
-    with the possibility to add any new fields. This is exactly what slice
-    does. Also, we can use many other nice features already developed for
-    slice. And last but not least if we need to improve the current slice
-    interface to better support Reader management, this will be useful for all
-    other slices as well. This is for example the case of Anonymous forms.</p></div></div></body></html>
+touch $MMDIR/data/.lastsync</pre>
+                    </li>
+                </ol>
+            </div>
+            <div class="sect3">
+                <div class="titlepage">
+                    <div><h4 class="title"><a name="d0e391"></a>Mailman: create list</h4></div>
+                </div>
+                <p>Another convenience feature is the possibility to create new
+                    mailing lists from the AA interface. For Reader management slices with
+                    a field filled in Slice Settings - Mailman Lists Field there appears a
+                    new option in the menu, &#8220;Mailman: create list&#8221;. You fill
+                    the name of the new list, admin email and password. The list name is
+                    added to the constant group used by the Mailman Lists Field and a
+                    request row is added to the file <code>.mailman</code> in the
+                    <code>$MAILMAN_SYNCHRO_DIR</code> directory. You should run
+                    another Unix shell-script regularly which executes the requests.</p>
+                <p>Tip: If you enable users to subscribe to mailing lists in an
+                    anonymous form, you must add the new checkbox to that form.</p></div>
+        </div>
+    </div>
+    <div class="sect1">
+        <div class="titlepage">
+            <div><h2 class="title" style="clear: both"><a name="d0e407"></a>Discussion - Why to use slice?</h2></div>
+        </div>
+        <p>The main reason to use slice was that we need some reader management
+            with the possibility to add any new fields. This is exactly what slice
+            does. Also, we can use many other nice features already developed for
+            slice. And last but not least if we need to improve the current slice
+            interface to better support Reader management, this will be useful for all
+            other slices as well. This is for example the case of Anonymous forms.</p></div>
+</div>
+</body>
+</html>

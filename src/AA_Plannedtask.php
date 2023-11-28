@@ -122,9 +122,9 @@ class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedI
               <td>_#AA_NAME_</td>
               <td>_#EVENT___</td>
               <td>_#TIME____<br>{ifeq:{_#SHIFT___}:::0::+_#1s}</td>
-              <td>{internal:' . get_class() . ':computedtime}</td>
+              <td>{internal:' . self::class . ':computedtime}</td>
               <td>{expandable:{_#CONDITIO}:30:...:&raquo;:&laquo;}</td>
-              <td>{internal:' . get_class() . ':scheduledto}</td>
+              <td>{internal:' . self::class . ':scheduledto}</td>
               <td>{expandable:{_#TASK____}:30:...:&raquo;:&laquo;}</td>
               <td><small>_#AA_ID___</small></td>
               <td><small title="_#AA_OWNER">_#AA_OW_NM</small></td>
@@ -188,7 +188,7 @@ class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedI
                 $ret .= ':=' . AA::Un($this->task);
             }
         }
-        AA_Log::write('TOEXECUTE', get_class($this) . ':' . $this->getId(), 'end' . ":$ret:S".AA::$slice_id);
+        AA_Log::write('TOEXECUTE', get_class($this) . ':' . $this->getId(), 'end' . ":$ret:x".AA::$slice_id);
         return $ret;
     }
 

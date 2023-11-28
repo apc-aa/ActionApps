@@ -43,12 +43,11 @@ class RimWidget extends Widget
      *  or normal decorations (added by _finalize*Html)
      *  @param \AA_Property $aa_property
      *  @param \AA_Content  $content
-     *  @param string       $type  normal|live|ajax
+     *  @param string       $type normal|live|ajax
      *  @return array
      *  @throws \Exception
      */
-    function _getRawHtml($aa_property, $content, $type = 'normal')
-    {
+    function _getRawHtml($aa_property, $content, $type = 'normal'): array {
         $base_name = FormArray::getName4Form($aa_property->getId(), $content, $this->item_index);
         $base_id = FormArray::formName2Id($base_name);
         $base_name_add = $base_name . '[rim]';
@@ -61,7 +60,7 @@ class RimWidget extends Widget
 
         $constgroup = $this->getProperty('const');
         if (!$constgroup OR (substr($constgroup, 0, 7) != "#sLiCe-")) {  // no constants or slice defined
-            return;                           //  = array();
+            return [];                           //  = array();
         }
         $sid = substr($constgroup, 7);
 
@@ -167,8 +166,7 @@ HTML;
     }
 
     /** function which offers filtered selections for current widget */
-    function getFilterSelection($searchstring)
-    {
+    function getFilterSelection($searchstring): string {
         $options = $this->getFormattedOptions(null, false, $searchstring);
         $ret = '';
         foreach ($options as $k => $v) {

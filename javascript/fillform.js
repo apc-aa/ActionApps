@@ -201,7 +201,7 @@ function setControlOrAADate(formName, controlName, newValue, datePrefix, html, t
         myName = datePrefix + controlName;
         if (getControlByName(formName, myName+'_day') != null) {
             var myDate = new Date();
-            var timeStamp = new Number(newValue);
+            var timeStamp = Number(newValue);
             timeStamp += (myDate.getTimezoneOffset()/60 - timeZone) * 3600;
             myDate.setTime(timeStamp * 1000);
             //alert("Date coming to JavaScript is "+timeStamp+". That means "+myDate);

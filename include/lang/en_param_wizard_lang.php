@@ -598,7 +598,7 @@ $_m["Sort by"]
  = "";
 
 // include/constants_param_wizard.php, row 370, 422, 470, 529, 562, 679
-$_m["(for slices only) Sort the items in specified order. Use sort[] array"]
+$_m["(for slices only) Sort the items in specified order. Use <fld>[+-]<fld>[+-]... or even any alias _#SOME_ALS."]
  = "";
 
 // include/constants_param_wizard.php, row 375

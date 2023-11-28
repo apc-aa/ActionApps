@@ -38,12 +38,11 @@ class DteWidget extends Widget
      *  or normal decorations (added by _finalize*Html)
      *  @param \AA_Property $aa_property
      *  @param \AA_Content  $content
-     *  @param string       $type  normal|live|ajax
+     *  @param string       $type normal|live|ajax
      *  @return array
      *  @throws \Exception
      */
-    function _getRawHtml($aa_property, $content, $type = 'normal')
-    {
+    function _getRawHtml($aa_property, $content, $type = 'normal'): array {
         // time parameter==date or all is totally unset - use alternative
         if (($this->getProperty('show_time',0)==2) OR (!$this->getProperty('relative',0) AND !$this->getProperty('start_year',0) AND !$this->getProperty('end_year',0) AND !$this->getProperty('show_time',0)))  {
             return $this->_getRawHtml_dateinput($aa_property, $content, $type);

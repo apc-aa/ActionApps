@@ -388,7 +388,7 @@ class Cvarset {
 
 
     /** before doUpdate you can call saveHistory() to store changes */
-    function saveHistory($tablename, $id) {
+    function saveHistory($tablename, $id): string {
         $this->_doQuery($this->makeSELECT($tablename));
         if ($this->last_used_db->num_rows() != 1) {
             // Error: there are several rows with the same key variables
@@ -401,6 +401,7 @@ class Cvarset {
            $data[$col] = unpack_id($data[$col]);
         }
         \AA\Util\ChangesMonitor::singleton()->addHistory(\AA\Util\ChangesMonitor::getDiff($id, $data, $this->getArray()));
+        return '';
     }
 
     /** doUpdate function

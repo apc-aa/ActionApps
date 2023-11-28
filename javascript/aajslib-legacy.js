@@ -8241,7 +8241,7 @@ function proposeChange(combi_id, item_id, fid, change) {
                 $('ajaxch_'+combi_id).update('');
             } else {
                 $('ajaxv_'+combi_id).update( $('ajaxh_'+combi_id).value);  // restore old content
-                $('ajaxch_'+combi_id).update($('ajaxch_'+combi_id).innerHTML + '<span class="ajax_change">Navrhovanďż˝ zmďż˝na: ' + transport.responseText +'</span><br>');
+                $('ajaxch_'+combi_id).update($('ajaxch_'+combi_id).innerHTML + '<span class="ajax_change">Navrhovaná změna: ' + transport.responseText +'</span><br>');
             }
             $(valdivid).setAttribute("data-aa-edited", "0");
         }

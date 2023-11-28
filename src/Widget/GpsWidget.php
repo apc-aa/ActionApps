@@ -56,12 +56,11 @@ class GpsWidget extends Widget
      *  or normal decorations (added by _finalize*Html)
      *  @param \AA_Property $aa_property
      *  @param \AA_Content  $content
-     *  @param string       $type  normal|live|ajax
+     *  @param string       $type normal|live|ajax
      *  @return array
      *  @throws \Exception
      */
-    function _getRawHtml($aa_property, $content, $type = 'normal')
-    {
+    function _getRawHtml($aa_property, $content, $type = 'normal'): array {
         $field_id = $aa_property->getId();
         $base_name = FormArray::getName4Form($field_id, $content, $this->item_index);
         $base_id = FormArray::formName2Id($base_name);

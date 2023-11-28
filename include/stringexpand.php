@@ -3870,7 +3870,6 @@ class AA_Stringexpand_Seo2ids extends AA_Stringexpand {
         // this way we solve the problem mainly in sitemodules, with slices which do not have seo............. field
         static $_seoslices = [];  // stores only slices with 'seo' field
 
-        $dirty_slices = [];
         if ( !is_array($sarr = $_seoslices[$hash = hash('md5', 'h'.$slices)])) {
             $dirty_slices = $this->getRelatedModules($slices);
             $sarr = $dirty_slices ? self::_getSeoSlices($dirty_slices) : [];

@@ -460,7 +460,7 @@ function get_files_subtree($mydir) {
  * @param $dstdir
  * @return string
  */
-function fileman_copy_template($srcdir, $dstdir) {
+function fileman_copy_template($srcdir, $dstdir): string {
     global $slice_id;
 
     $aliases = [
@@ -504,6 +504,7 @@ function fileman_copy_template($srcdir, $dstdir) {
         }
         chmod ($dstdir."/".$file, FILEMAN_MODE_FILE);
     }
+    return '';
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

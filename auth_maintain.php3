@@ -1,6 +1,6 @@
 <?php
 /* This script should be called once a day from cron to maintain the
- * Auth tables with the parameter <tt>maintain_auth=1</tt>.
+ * Auth tables with the parameter <code>maintain_auth=1</code>.
  *
  * @package ReaderInput
  * @version $Id$

@@ -1,10 +1,8 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
+<!DOCTYPE html>
+<html lang="zxx">
 <head>
-  <meta
- content="text/html; charset=ISO-8859-1"
- http-equiv="content-type">
-<LINK rel="StyleSheet" href="/apc-aa/admin.css">
+  <meta charset=ISO-8859-1>
+  <link rel="StyleSheet" href="../admin.css">
   <title></title>
 <script>
 var count=1;
@@ -36,8 +34,7 @@ function changeURLcontent() {
 </script>
 </head>
 <body onLoad="startURLcheck()">
-<table style="text-align: left; width: 100%;"
- &\nacing="2">
+<table style="text-align: left; width: 100%;">
   <tbody>
     <tr>
       <td class=tablename>

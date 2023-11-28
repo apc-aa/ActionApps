@@ -22,9 +22,9 @@ function clearSelectBox (formname, boxname) {
 }
 
 function hcResolveValues (arr) {
-    var i = 0;
+    let i;
     for (i=0; i < arr.length; ++i) {
-        if (arr[i][colValue] == '#')
+        if (arr[i][colValue] === '#')
             arr[i][colValue] = arr[i][colName];
         if (arr[i].length > colChild)
             hcResolveValues (arr[i][colChild]);
@@ -64,7 +64,7 @@ function getSelectedArray(hcid) {
     var arr = hcConsts[hcid];
     for (i=0; i <= hcSelectedBox[hcid]; ++i) {
         if (hcSelectedItems[hcid][i] == -1)
-            return new Array();
+            return [];
         arr = arr[hcSelectedItems[hcid][i]];
         if (i < hcSelectedBox[hcid]) arr = arr[colChild];
     }
@@ -91,7 +91,7 @@ function hcSelectItem(hcid, iBox, admin) {
 
     ++iBox;
     if (iBox < hcLevelCount[hcid]) {
-        var selectBox = document[hcForm]['hclevel'+iBox+'_'+hcid];
+        selectBox = document[hcForm]['hclevel'+iBox+'_'+hcid];
         if (arr.length > colChild) {
             arr = arr[colChild];
             for (i=0; i < arr.length; ++i) {
@@ -104,7 +104,7 @@ function hcSelectItem(hcid, iBox, admin) {
         while (i < selectBox.options.length)
             selectBox.options[i] = null;
         while (++iBox < hcLevelCount[hcid]) {
-            var selectBox = document[hcForm]['hclevel'+iBox+'_'+hcid];
+            selectBox = document[hcForm]['hclevel'+iBox+'_'+hcid];
             while (selectBox.options.length)
                 selectBox.options[0] = null;
         }
@@ -152,7 +152,7 @@ function hcUpdateMe(hcid) {
 function array_splice (arr, iStart, deleteCount) {
     if (iStart > 0)
         begin = arr.slice (0, iStart);
-    else begin = new Array();
+    else begin = [];
     end = arr.slice (iStart+deleteCount,arr.length);
     return begin.concat (end);
 }
@@ -164,7 +164,7 @@ function saveDeletedIDs (arr) {
         hcDeletedIDs [hcDeletedIDs.length] = arr[colID];
     if (arr.length > colChild) {
         arr = arr[colChild];
-        var i = new Number();
+        var i;
         for (i=0; i < arr.length; ++i)
             saveDeletedIDs (arr[i]);
     }
@@ -211,7 +211,7 @@ function hcDeleteMe(hcid, withChildren) {
     }
 
     if (arr.length == 0) {
-        if (iBox == 0) hcConsts[hcid] = new Array();
+        if (iBox == 0) hcConsts[hcid] = [];
         else if (arr.splice) {
             arrParent.splice (colChild,1);
         } else {
@@ -226,7 +226,7 @@ function hcDeleteMe(hcid, withChildren) {
     if (iBox > 0) {
         hcSelectItem(hcid, iBox-1);
     } else {
-        var selectBox = document[hcForm]['hclevel'+iBox+'_'+hcid];
+        selectBox = document[hcForm]['hclevel'+iBox+'_'+hcid];
         selectBox.selectedIndex = -1;
         refreshBox(hcid, iBox);
         if (hcConsts[hcid].length > 0) {
@@ -259,7 +259,7 @@ function hcAddNew(hcid, iBox) {
     ++hcNewID;
     if (iBox > 0) {
         if (arr.length <= colChild)
-            arr[colChild] = new Array ();
+            arr[colChild] = [];
         arr = arr[colChild];
     }
     arr[arr.length] = newItem;
@@ -292,9 +292,9 @@ function sendDirtyBranch(arr,ancestors) {
     else info = "";
     if (arr.length > colChild) {
         // JavaScript doesn't create new values on recursion
-        var myID = new String(arr[colID]);
+        var myID = String(arr[colID]);
         arr = arr[colChild];
-        var i = new Number();
+        var i;
         for (i=0; i < arr.length; ++i)
             info += sendDirtyBranch(arr[i], ancestors+","+myID);
     }

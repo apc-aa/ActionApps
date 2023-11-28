@@ -27,15 +27,14 @@ https://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-// polyfills - will be removed when the incompatible browsers will not be supported by its creator
-if (window.NodeList && !NodeList.prototype.forEach) {
-    NodeList.prototype.forEach = Array.prototype.forEach;
-}
+"use strict";
 
+// polyfills - will be removed when the incompatible browsers will not be supported by its creator
+if (window.NodeList && !NodeList.prototype.forEach) { NodeList.prototype.forEach = Array.prototype.forEach; }
 /** shortcut to parent.querySelector() */
-const AA_$ = (sel, el = document) => el.querySelector(sel);
+if (typeof AA_$ !== 'function')  { var AA_$ = (sel, el = document) => el.querySelector(sel); }
 /** shortcut to parent.querySelectorAll() */
-const AA_$$ = (sel, el = document) => Array.from(el.querySelectorAll(sel));
+if (typeof AA_$$ !== 'function') { var AA_$$ = (sel, el = document) => Array.from(el.querySelectorAll(sel)); }
 
 /** replaces jQuery $xx.load(url) - used as AA_Load(xx,url) */
 function AA_Load(sel, url) {
@@ -151,9 +150,9 @@ function AA_AjaxInsert(a_obj, form_url) {
 
 /** Rewrite of xxxAA_AjaxSendAddForm, which uses prototype.js to jQuery */
 function AA_AjaxSendAddForm(id) {
-    var code   = $(jqid(id) + ' *').serialize();
+    const code = $(jqid(id) + ' *').serialize();
     // var sb   = $(id).up('div').previous('a').identify().substring(1);
-    var sb   = document.getElementById(id).parentNode.parentNode.previousElementSibling.children[0].id.substring(1);
+    const sb = document.getElementById(id).parentNode.parentNode.previousElementSibling.children[0].id.substring(1);
     document.getElementById(id).innerHTML = AA_GetConf('loader');
 
     $.ajax({
@@ -488,11 +487,11 @@ function AA_Rotator(id, interval, max, speed, effect) {
  *  internal - could be changed
  */
 function AA__liveSearch(id, viewparam, deflt) {
-    val    = $(jqid(id)+ ' input.itemsearch')[0].value;
+    let val = $(jqid(id)+ ' input.itemsearch')[0].value;
     if (!val.length && deflt.length) {
         val=deflt;
     }
-    fnc = function(t,v,q) { AA_AjaxCss(t, AA_GetConf('path') + 'view.php3?vid=' + viewparam.replace('AA_LS_QUERY', q));}
+    let fnc = function(t,v,q) { AA_AjaxCss(t, AA_GetConf('path') + 'view.php3?vid=' + viewparam.replace('AA_LS_QUERY', q));}
     if (AA__liveSearch.timer) {
        if (AA__liveSearch.searchval != val) {
            clearTimeout(AA__liveSearch.timer);

@@ -27,11 +27,11 @@
 
 
 class AA_Supertree {
-    protected $_i;        // Array of items
+    protected array $_i;        // Array of items
     protected $_relation_field;  //
     protected $_sort;     // sort array().
                           // Currently wors only for Reverse trees. @todo
-    protected $_modules;  // Array of modules
+    protected array $_modules;  // Array of modules
 
     protected $_restrict_slices;  // Array of allowed slices
 
@@ -95,10 +95,9 @@ class AA_Supertree {
      * @param $id
      * @return array
      */
-    function getIds($id) {
+    function getIds($id): array {
         $this->load($id);
-        $ids = $this->_subIds($id, 1);
-        return $ids;
+        return $this->_subIds($id, 1);
     }
 
     /**
@@ -106,7 +105,7 @@ class AA_Supertree {
      * @param int $level
      * @return array
      */
-    function _subIds($id, $level=1) {
+    function _subIds($id, $level=1): array {
         if ($level > 100) {
             // @todo throw error
             return [];
@@ -118,7 +117,7 @@ class AA_Supertree {
         return $sub;
     }
 
-    function getMenu($ids, $current_ids, $code, $inner=false, $expanded=false, $exp_button=false) {
+    function getMenu($ids, $current_ids, $code, $inner=false, $expanded=false, $exp_button=false): string {
         $ret = '';
         $xid = end($current_ids);
 
@@ -152,10 +151,9 @@ class AA_Supertree {
      * @param $id
      * @return string
      */
-    function getTreeString($id) {
+    function getTreeString($id): string {
         $this->load($id);
-        $ids = $this->_subTreeString($id, 1);
-        return $ids;
+        return $this->_subTreeString($id, 1);
     }
 
     /**
@@ -163,7 +161,7 @@ class AA_Supertree {
      * @param $level
      * @return string
      */
-    function _subTreeString($id, $level) {
+    function _subTreeString($id, $level): string {
         if ($level > 100) {
             // @todo throw error
             return '';
@@ -177,7 +175,7 @@ class AA_Supertree {
         return $id. (empty($treestring) ? '' : "($treestring)");
     }
 
-    function _compactValue($value_arr) {
+    function _compactValue($value_arr): array {
         $ret = [];
         if (is_array($value_arr)) {
             foreach ( $value_arr as $fld_content ) {
@@ -190,16 +188,16 @@ class AA_Supertree {
     }
 }
 
-/** The same as AA_Supertree, but it holds reversed tree - tree construced not
- *  as parent->childrens but children->parent. The diferrence is the direction,
+/** The same as AA_Supertree, but it holds reversed tree - tree constructed not
+ *  as parent->child but child->parent. The difference is the direction,
  *  the relation field points.
- *  !! The Reverse Tree is limitted to one relation slice only !! - @todo - fix
+ *  !! The Reverse Tree is limited to one relation slice only !! - @todo - fix
  *  It is the same - we just change the way, how to construct the tree.
  */
 class AA_Supertree_Reverse extends AA_Supertree {
 
     /** load function
-     * @param $force
+     * @param string $id long_item_id
      */
     function load( $id ) {
         if (isset($this->_i[$id])) {
@@ -264,7 +262,7 @@ class AA_Trees {
      * @return
      * @noinspection PhpUnused
      */
-    static function getTreeString($id, $relation_field, $reverse=false, $sort=null, $slices=null) {
+    static function getTreeString($id, $relation_field, $reverse=false, $sort=null, $slices=null): string {
         $supertree = AA_Trees::getSupertree($relation_field, $reverse, $sort, $slices);
         return $supertree->getTreeString($id);
     }

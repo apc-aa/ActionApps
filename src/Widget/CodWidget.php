@@ -57,7 +57,7 @@ class CodWidget extends TxtWidget
     //     *  @return array
     //     *  @throws \Exception
     //     */
-    //    function _getRawHtml($aa_property, $content, $type = 'normal')
+    //    function _getRawHtml($aa_property, $content, $type = 'normal'): array
     //    {
     //        $property_id = $aa_property->getId();
     //        $base_name = FormArray::getName4Form($property_id, $content, $this->item_index);
@@ -140,7 +140,7 @@ class CodWidget extends TxtWidget
 //     *  @return array
 //     *  @throws \Exception
 //     */
-//    function _getRawHtml($aa_property, $content, $type='normal') {
+//    function _getRawHtml($aa_property, $content, $type='normal'): array {
 //        $property_id  = $aa_property->getId();
 //        $base_name    = AA\FormArray::getName4Form($property_id, $content, $this->item_index);
 //        $base_id      = AA\FormArray::formName2Id($base_name);

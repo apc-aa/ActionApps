@@ -50,7 +50,7 @@ class AA_Formrow extends AA_Storable {
      * @return string
      * @throws Exception
      */
-    function getRowHtml($content, $type='') {
+    function getRowHtml($content, $type=''): string {
         $widget = $this->getWidget();
         // $widget->registerRequires(); // now in _finalizeHtml
         switch ($type) {
@@ -78,7 +78,7 @@ class AA_Formrow_Text extends AA_Formrow {
     function __construct($text=null) { // default values are needed for AA_Storable's construction
         $this->text = $text;
     }
-    function getRowHtml($content, $type='') {
+    function getRowHtml($content, $type=''): string {
         return '<div>'.$this->text.'</div>';
     }
 }
@@ -184,11 +184,11 @@ class FormrowWidget extends Widget {
      *  or normal decorations (added by _finalize*Html)
      *  @param AA_Property $aa_property
      *  @param AA_Content  $content
-     *  @param string      $type  normal|live|ajax
+     *  @param string      $type normal|live|ajax
      *  @return array
      *  @throws Exception
      */
-    function _getRawHtml($aa_property, $content, $type='normal') {
+    function _getRawHtml($aa_property, $content, $type='normal'): array {
         // $property_id  = $aa_property->getId();
         // $input_name   = AA\FormArray::getName4Form($property_id, $content)."[formrow][]";
 

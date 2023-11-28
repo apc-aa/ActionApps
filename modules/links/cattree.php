@@ -438,7 +438,7 @@ class cattree {
         if (!$name)   $name='tree';
         if (!$width)  $width=250;
         if (!$rows)   $rows=8;
-        $ret  = "<select name=\"$name\" size=\"$rows\" $onWhat style=\"width:${width}px\"></select>";
+        $ret  = "<select name=\"$name\" size=\"$rows\" $onWhat style=\"width:{$width}px\"></select>";
         return $ret;
     }
 
@@ -450,7 +450,7 @@ class cattree {
         if (!$name)   $name='tree';
         if (!$width)  $width=250;
         if (!$rows)   $rows=8;
-        $ret = "<select name=\"$name\" size=\"$rows\" $onWhat style=\"width:${width}px\">";
+        $ret = "<select name=\"$name\" size=\"$rows\" $onWhat style=\"width:{$width}px\">";
         if (isset($this->ancesors_idx) AND is_array($this->ancesors_idx[$cat2show])) {
             foreach ($this->ancesors_idx[$cat2show] as $idx) {  // start position
                 $assig = $this->assignments[$idx];
@@ -471,7 +471,7 @@ class cattree {
      *                           passed as array( $obj, method )
      * @return bool
      */
-    function walkTree($start_id, $function, $level=0) {
+    function walkTree($start_id, $function, $level=0): bool {
         if (!isset($this->ancesors_idx) OR !is_array($this->ancesors_idx[$start_id])) {
             return false;
         }
@@ -485,6 +485,7 @@ class cattree {
                 $this->walkTree($assig->getTo(), $function, $level+1);
             }
         }
+        return true;
     }
 
 

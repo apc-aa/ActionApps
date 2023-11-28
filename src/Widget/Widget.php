@@ -380,8 +380,7 @@ class Widget extends AA_Object implements NamedInterface {
      * @return array
      * @throws Exception
      */
-    public function _getRawHtml($aa_property, $content, $type = 'normal') {
-    }
+    public function _getRawHtml($aa_property, $content, $type = 'normal'): array { return []; }
 
     /** Get widget HTML for using in form
      * @param AA_Property $aa_property   - the variable
@@ -391,7 +390,7 @@ class Widget extends AA_Object implements NamedInterface {
      * @return string - widget HTML for using in form
      * @throws Exception
      */
-    public function getHtml($aa_property, $content, $function = null) {
+    public function getHtml($aa_property, $content, $function = null): string {
         return $this->_finalizeHtml($this->_getRawHtml($aa_property, $content), $aa_property);
     }
 
@@ -403,7 +402,7 @@ class Widget extends AA_Object implements NamedInterface {
      * @return string - just widget HTML for using in form - without label...
      * @throws Exception
      */
-    public function getOnlyHtml($aa_property, $content, $function = null) {
+    public function getOnlyHtml($aa_property, $content, $function = null): string {
         return $this->_finalizeHtml($this->_getRawHtml($aa_property, $content), $aa_property, true);
     }
 
@@ -411,7 +410,7 @@ class Widget extends AA_Object implements NamedInterface {
      * @param AA_Property $aa_property
      * @return string
      */
-    public function stdFormStart($aa_property) {
+    public function stdFormStart($aa_property): string {
         $ret = "\n<tr class=\"formrow{formpart} fieldstart cont-" . varname4form($aa_property->getId()) . "\">";
         $ret .= "\n <th><div>" . $aa_property->getName() ;   // div for min / max width css - HM/SV 2023-11-24
         if ($aa_property->isRequired()) {
@@ -425,7 +424,7 @@ class Widget extends AA_Object implements NamedInterface {
      * @param AA_Property $aa_property
      * @return string
      */
-    public function stdFormEnd($aa_property) {
+    public function stdFormEnd($aa_property): string {
         $ret = '';
         if ($hlp = $aa_property->getMorehelp()) {
             $ret .= "&nbsp;<a href=" . safe($hlp) . " target=_blank>?</a>";
@@ -443,7 +442,7 @@ class Widget extends AA_Object implements NamedInterface {
      * @param bool        $widget_only
      * @return string
      */
-    public function _finalizeHtml($winfo, $aa_property, $widget_only = false) {
+    public function _finalizeHtml($winfo, $aa_property, $widget_only = false): string {
         $base_name = $winfo['base_name'];
         $base_id = FormArray::formName2Id($base_name);
         $required = $winfo['required'];
@@ -472,7 +471,7 @@ class Widget extends AA_Object implements NamedInterface {
      * @return string - widget HTML for using as AJAX component (in place editing)
      * @throws Exception
      */
-    public function getAjaxHtml($aa_property, $content, $function = null) {
+    public function getAjaxHtml($aa_property, $content, $function = null): string {
         return $this->_finalizeAjaxHtml($this->_getRawHtml($aa_property, $content, 'ajax'), $aa_property);
     }
 
@@ -481,7 +480,7 @@ class Widget extends AA_Object implements NamedInterface {
      * @param $aa_property AA_Property
      * @return string
      */
-    public function _finalizeAjaxHtml($winfo, $aa_property) {
+    public function _finalizeAjaxHtml($winfo, $aa_property): string {
         $base_name = $winfo['base_name'];
         $base_id = FormArray::formName2Id($base_name);
         $help = $aa_property->getHelp();
@@ -514,7 +513,7 @@ class Widget extends AA_Object implements NamedInterface {
     }
 
     /* Decorates Live Widget. Prepared for overriding in subclasses */
-    public function _finalizeLiveHtml($winfo, $aa_property) {
+    public function _finalizeLiveHtml($winfo, $aa_property): string {
         $base_id = $winfo['base_id'];
         // $help = $aa_property->getHelp();  //not used
         $widget_html = $winfo['html']; //. ($help ? "\n    <div class=\"aa-help\"><small>$help</small></div>\n" :'');
@@ -526,7 +525,7 @@ class Widget extends AA_Object implements NamedInterface {
     }
 
     /** function which offers filtered selections for current widget */
-    public function getFilterSelection($searchstring) {
+    public function getFilterSelection($searchstring): string {
         return '';
     }
 

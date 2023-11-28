@@ -56,7 +56,7 @@ abstract class AA_Transformation implements \AA\Util\NamedInterface {
      * @param bool $silent
      * @return AA_Value|bool
      */
-    function transform($field_id, $itemcontent, $silent=true)    {}
+    abstract function transform($field_id, $itemcontent, $silent=true);
 
     /** Construct name of input form variable
      *  It consists of classname, so we are able to guess which variable

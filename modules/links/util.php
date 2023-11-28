@@ -404,8 +404,8 @@ function Links_getUrlReport($url, $format_strings, $checked_id, $tree_start=fals
 
     $url   = addslashes($url);
     $conds = [
-        ['value'    => "$url OR ${url}_", 'operator' => 'XLIKE', 'url'      => 1],
-        ['value'    => $checked_id,       'operator' => '<>',    'id'       => 1]  // we do not want to find the link itself
+        ['value' => "$url OR {$url}_", 'operator' => 'XLIKE', 'url' => 1],
+        ['value'    => $checked_id,       'operator' => '<>',    'id'       => 1]// we do not want to find the link itself
     ];
     $sort  = '';
     // 1 - base category - look for all links in the database (no matter in which subtree)

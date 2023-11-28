@@ -9,7 +9,7 @@ require_once __DIR__ . "/../include/itemfunc.php";
 $KeyVal = 90;  // generated key validity in minutes
 $script_path = AA_INSTAL_PATH."misc/forgotten_pwd.php3";
 ?>
-<html>
+<html lang="en">
 <head>
 <script>
 function validatePwd() {
@@ -38,6 +38,7 @@ function validatePwd() {
     }
 }
 </script>
+    <title>Change Password</title>
 </head>
 <body>
 <?php

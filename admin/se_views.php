@@ -126,24 +126,24 @@ $managed->settings['itemview']['format']['compact_top'] = '
                                           <table class="aa-table aa-w-no-full">
                                             <thead><tr>
                                               <th width="30" scope="col">&nbsp;</th>
-                                              <th scope="col">'._m('Actions').'</th>
                                               <th colspan="2" scope="col">vid=</th>
                                               <th scope="col">'._m('Name').'</th>
                                               <th scope="col">'._m('Type').'</th>
+                                              <th scope="col">'._m('Actions').'</th>
                                             </tr>
                                             </thead>
                                             <tbody>';
 $managed->settings['itemview']['format']['odd_row_format'] = '
                                       <tr><td width="30"><input name="chb[x_#ID______]" value="" type="checkbox"></td>
+                                        <td><a href="se_view.php?module_id=_#SLICE_ID&view_id=_#ID______">_#ID______</a></td>
+                                        <td>{ifset:{_#FIELD3__}:<a href="se_view.php?module_id=_#SLICE_ID&view_id=_#ID______">_#1</a>}</td>
+                                        <td>_#NAME____</td>
+                                        <td>{ifeq:{_#TYPE____}' . $view_types_ifeq.'}</td>
                                         <td>
                                           <a href="se_view.php?module_id=_#SLICE_ID&view_id=_#ID______" class="aa-button-edit">' . _m('Edit') .'</a>
                                           <a href="'.AA_INSTAL_URL.'view.php?vid=_#ID______" class="aa-button-show" title="'. _m("show this view") .'">'. _m('Show') .'</a>
                                           <a href="javascript:;" class="aa-button-delete" onclick="if (confirm(\''._m("Are you sure you want to delete selected view?").'\')) {window.location=\'./se_views.php?module_id=_#SLICE_ID&vid=_#ID______&del=1\';}">'. _m("Delete") . '</a>
                                         </td>
-                                        <td><a href="se_view.php?module_id=_#SLICE_ID&view_id=_#ID______">_#ID______</a></td>
-                                        <td>{ifset:{_#FIELD3__}:<a href="se_view.php?module_id=_#SLICE_ID&view_id=_#ID______">_#1</a>}</td>
-                                        <td>_#NAME____</td>
-                                        <td>{ifeq:{_#TYPE____}' . $view_types_ifeq.'}</td>
                                     </tr>';                      // <td>_#OBJECT__</td><td>_#EXECUTE_</td>
 $managed->settings['itemview']['format']['compact_bottom'] = '</tbody></table>';
 

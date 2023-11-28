@@ -79,6 +79,7 @@ function add_user_and_welcome($welcome_id, $user_login, $slice_id, $role) {
     if (AA_Mail::sendTemplate($welcome_id, [$me["mail"], $user["mail"]], $item) != 2) {
         return _m("Error mailing");
     }
+    return '';   // OK
 }
 
 /**

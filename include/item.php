@@ -1283,6 +1283,7 @@ class AA_Item {
         if ( $foo = $this->getval($col)) {
             return $this->RSS_restrict( $foo, $p[0]);
         }
+        return '';
     }
 
     /** f_t function

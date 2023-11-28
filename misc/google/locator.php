@@ -34,6 +34,7 @@ require_once __DIR__."/../../include/config.php";
 /** APC-AA constant definitions */
 require_once __DIR__ . "/../../include/constants.php";
 require_once __DIR__ . "/../../include/mgettext.php";
+require_once __DIR__ . "/../../include/locsess.php";
 
 mgettext_bind(Langs::getLang($lang_file), 'news');
 

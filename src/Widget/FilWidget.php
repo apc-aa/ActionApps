@@ -111,13 +111,12 @@ class FilWidget extends Widget
     /** Creates base widget HTML, which will be surrounded by Live, Ajxax
      *  or normal decorations (added by _finalize*Html)
      *  @param AA_Property $aa_property
-     *  @param \AA_Content  $content
-     *  @param string      $type  normal|live|ajax
+     *  @param \AA_Content $content
+     *  @param string      $type normal|live|ajax
      *  @return array
      *  @throws \Exception
      */
-    function _getRawHtml($aa_property, $content, $type = 'normal')
-    {
+    function _getRawHtml($aa_property, $content, $type = 'normal'): array {
         $base_name = FormArray::getName4Form($aa_property->getId(), $content, $this->item_index);
         $base_id = FormArray::formName2Id($base_name);
 
@@ -218,8 +217,7 @@ class FilWidget extends Widget
         //return str_replace('AA_LIVE_OK_FUNC', $function ? $function : "''", $this->_finalizeAjaxHtml($this->_getRawHtml($aa_property, $content)));
     }
 
-    function _finalizeAjaxHtml($winfo, $aa_property)
-    {
+    function _finalizeAjaxHtml($winfo, $aa_property): string {
         // not standard - we do not show save button (the upload input works the same way here)
         $base_name = $winfo['base_name'];
         $base_id = FormArray::formName2Id($base_name);

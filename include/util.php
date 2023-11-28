@@ -1940,7 +1940,7 @@ function aa_substr($text, $start, $len=null) {
 
 /** strlen with utf in mind */
 function aa_strlen($text) {
-    return mb_strlen($text);
+    return grapheme_strlen($text);   // mb_ functions do not work well - see https://tonsky.me/blog/unicode/
 }
 
 /** strpos with utf in mind */

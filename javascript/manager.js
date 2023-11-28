@@ -1,6 +1,8 @@
-if (!window.aa$)  { var aa$  = document.querySelector.bind(document);     }
-if (!window.aa$$) { var aa$$ = document.querySelectorAll.bind(document);  }
-if (!window.aa$N) { var aa$N = function (n) { let ret; return (ret = document.getElementsByName(n)) ? ret[0] : null; } }
+/** shortcut to parent.querySelector() */
+if (typeof AA_$ !== 'function')  { var AA_$ = (sel, el = document) => el.querySelector(sel); }
+/** shortcut to parent.querySelectorAll() */
+if (typeof AA_$$ !== 'function') { var AA_$$ = (sel, el = document) => Array.from(el.querySelectorAll(sel)); }
+if (typeof AA_$N !== 'function') { var AA_$N = function (n) { let ret; return (ret = document.getElementsByName(n)) ? ret[0] : null; } }
 
 // Scripts used in Manager.php
 // - following global javascript variables should be set before calling
@@ -22,8 +24,8 @@ function MarkedActionGo() {
             document.itemsform.action = ifaction;
             document.itemsform.target = iftarget;
         } else {
-            if (!GetItemsArrayString() && !aa$N('aa_akce_all').value) {
-                aa$('.aa_manager_actions_all').style.display = '';
+            if (!GetItemsArrayString() && !AA_$N('aa_akce_all').value) {
+                AA_$('.aa_manager_actions_all').style.display = '';
             } else {
                 document.itemsform.submit();
             }

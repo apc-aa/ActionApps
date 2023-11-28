@@ -688,9 +688,9 @@ function sqlin( $column, $values, $long=false ): string {
 
 /** id_t2l function
  * @param $str
- * @return null
+ * @return string|null
  */
-function id_t2l($str) {
+function id_t2l($str): ?string {
     if (!$str) {
         warn("Warning: zids:id_t2l:converting empty string");
         return null;
@@ -700,5 +700,6 @@ function id_t2l($str) {
         return $parts[2];
     }
     warn("Unable to parse tagged id '$str' - tell mitra");
+    return null;
 }
 

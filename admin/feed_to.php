@@ -98,7 +98,7 @@ if ( $i==1 ) {   // can't feed to any slice
         // prepare returnvalue
         for ( var i=0; i<len; i++ ) {
             inputname = document.incf.elements[i].name;
-            if ( inputname.substring(0,1) == 'x') {     // slices radiobuttons
+            if ( inputname.substring(0,1) === 'x') {     // slices radiobuttons
                 radiovalue = document.incf.elements[i].value;
                 if ( (radiovalue > 0) && (document.incf.elements[i].checked)) {
                     retval += delimiter + radiovalue + '-' + inputname.substring(1);

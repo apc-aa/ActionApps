@@ -8,19 +8,18 @@ foreach ($_REQUEST as $k => $v) {
 require_once __DIR__."/./../../include/config.php";
 require_once __DIR__ . "/../../include/util.php";
 
-if (!$view)     $view     = false;
-if (!$encoding) $encoding = CONV_DEFAULTENCODING;
+if (!$view)     { $view = false; }
+if (!$encoding) { $encoding = defined('CONV_DEFAULTENCODING') ?: 'utf-8'; }
 
 $uploadpath = IMG_UPLOAD_PATH;
 
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-  "http://www.w3.org/TR/html4/loose.dtd">
-<HTML>
-  <HEAD>
+<!DOCTYPE html>
+<html>
+  <head>
     <title>'. _m('Foreign Formats Convertor') .'</title>
-    <meta http-equiv="Content-Type" content="text/html; charset='.$encoding.'">
-  </HEAD>';
+    <meta charset="'.$encoding.'">
+  </head>';
 
   if ($submit=="Import") {
       echo "<body onload=\"PasteHTML();\">";
@@ -41,8 +40,10 @@ if (!array_key_exists('userfile', $_FILES)) {
     <input type="submit" value="Preview">
     <input type="submit" name="submit" value="Import">
     <?php
-    if ($encoding) echo "<input type=\"hidden\" name=\"encoding\" value=\"$encoding\">";
-    echo "</form>";
+        if ($encoding) echo "<input type=\"hidden\" name=\"encoding\" value=\"$encoding\">";
+    ?>
+    </form>
+    <?php
 } else {
 
     $file_name    = Files::getTmpFilename('msc');

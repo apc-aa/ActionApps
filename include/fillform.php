@@ -74,10 +74,10 @@ function safeChars($str) {
 
 /** fillForm function
  *   Finds the item content and calls fillFormWithContent.
- *   Prooves permissions to update an item.
+ *   Proves permissions to update an item.
  *   Returns string of HTML and Javascript for echoing
  */
-function fillForm() {
+function fillForm(): string {
     global $my_item_id, $slice_id, $oldcontent4id;
     // get slice_id if not specified - try get it from $my_item_id
     if ( !$slice_id AND $my_item_id ) {
@@ -94,8 +94,7 @@ function fillForm() {
         }
     }
     if ( !$slice_id ) {
-       echo "<!-- fillform.php: Slice ID not set, but it could be OK -->";
-       return;
+        return "<!-- fillform.php: Slice ID not set, but it could be OK -->";
     }
 
     $slice = AA_Slice::getModule($slice_id);
@@ -197,7 +196,7 @@ function fillForm() {
  * @param $oldcontent4id
  * @return string
  */
-function fillFormWithContent($oldcontent4id) {
+function fillFormWithContent($oldcontent4id): string {
     global $form, $suffix, $my_item_id;
 
     $timezone = GetTimeZone();

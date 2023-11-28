@@ -448,7 +448,7 @@ function UpdateItems($item_id, $slice_id) {     // function UpdateItems($item_id
  * @param $item_id string - is unpacked id of feeded item
  * @return bool
  */
-function FeedItem($item_id) {
+function FeedItem($item_id): bool {
     // get item field definition
     $content    = GetItemContent($item_id);
     $content4id = $content[$item_id];   // shortcut
@@ -491,4 +491,5 @@ function FeedItem($item_id) {
             }
         }
     }
+    return true;
 }

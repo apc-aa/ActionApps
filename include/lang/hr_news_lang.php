@@ -7682,7 +7682,7 @@ $_m["Sort by"]
     = "";
 
 // include/widget.class.php, row 604, 644, 685, 864, 939, 981, 1100
-$_m["(for slices only) Sort the items in specified order. Use sort[] array"]
+$_m["(for slices only) Sort the items in specified order. Use <fld>[+-]<fld>[+-]... or even any alias _#SOME_ALS."]
     = "";
 
 // include/widget.class.php, row 625

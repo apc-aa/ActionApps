@@ -71,7 +71,7 @@ if (typeof window.AA_GetConf === 'undefined') {
             case 'path':
                 return AA_GetConf.aa_install_path;
             case 'loader':
-                return '<img src="' + AA_GetConf.aa_install_path + 'images/loader.gif" border=0 width=16 height=16>';
+                return '<img src="' + AA_GetConf.aa_install_path + 'images/loader.gif" alt="Loading..." role="alert" aria-busy="true" aria-live="assertive" border=0 width=16 height=16>';
         }
     }
 }

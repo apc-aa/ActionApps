@@ -232,7 +232,6 @@ define("CACHE_TTL", 10800 ); // 3 hours
   //                            ".ppt" => "/usr/bin/ppthtml",
   //                            "iconv"=> "/usr/bin/iconv" );
   // define(CONV_DEFAULTENCODING,'windows-1250');   // default output encoding
-  // define(CONV_SYSTEMENCODING,'utf-8');
 
 /** If true, the expired items could be displayed by in specific query
  *  (good for archive display). If false, expired items are never shown */

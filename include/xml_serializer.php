@@ -80,6 +80,7 @@ function xml_serialize($k, $v, $i, $ii, $a=null) {
         print("What is $k, if it isn't String, array or object=");
         print_r($v);
     }
+    return '';
 }
 
 //
