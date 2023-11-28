@@ -20,7 +20,7 @@ class MngWidget extends Widget
 
     /** \AA\Util\NamedInterface function */
     public static function description(): string {
-        return _m('Best for galeries and other tabular data which is multivalue and different for each item');
+        return _m('Best for galleries and other tabular data which is multivalue and different for each item');
     }   // widget name
 
     protected function requireLibs($aa_property, $winfo): array {
@@ -39,11 +39,11 @@ class MngWidget extends Widget
      *  or normal decorations (added by _finalize*Html)
      *  @param \AA_Property $aa_property
      *  @param \AA_Content  $content
-     *  @param string       $type  normal|live|ajax
+     *  @param string       $type normal|live|ajax
      *  @return array
      *  @throws \Exception
      */
-    function _getRawHtml($aa_property, $content, $type = 'normal') {
+    function _getRawHtml($aa_property, $content, $type = 'normal'): array {
         $property_id = $aa_property->getId();
         $item_id     = $content->getId();
         $base_name   = FormArray::getName4Form($property_id, $content, $this->item_index);
