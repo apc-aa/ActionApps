@@ -100,7 +100,7 @@ function AdminLink($table, $row): string
         case 'view':
             return AafinderViewLink($row['iid']);
         case 'slice':
-            return AafinderSliceLink($row['iid']);
+            return AafinderModuleeLink($row['iid']);
         case 'field':
             return AafinderFieldLink($row['iid'], $row['sid']);
         case 'site_spot':
@@ -138,8 +138,8 @@ function AafinderItemLink($item_id, $slice_id=''): string {
                         a_href(get_admin_url('se_statistics.php', ['change_id'=>$slice_id, 'items'=>$item_id]), _m('Statistics'))]);
 }
 
-function AafinderSliceLink($slice_id): string {
-    return a_href(get_admin_url("index.php3?change_id=$slice_id"), "$slice_id"). ' ('. AA_Module::getModuleName($slice_id) .')  &nbsp; '. ChangesMonitor::getHistoryLink($slice_id);
+function AafinderModuleeLink($module_id): string {
+    return AA_Module::getModuleName($module_id, true). " ($module_id) &nbsp; ". ChangesMonitor::getHistoryLink($module_id);
 }
 
 function AafinderSiteLink($spot_id, $module_id): string {
@@ -153,7 +153,7 @@ function AafinderSiteLink($spot_id, $module_id): string {
 
 function AafinderViewLink($view_id): string {
     $view = AA_Views::getViewNumeric($view_id);
-    return $view->jumpLink($view_id." -  ".$view->f("name")).' ('. AA_Module::getModuleName($view->getSliceId()) .') &nbsp; '. ChangesMonitor::getHistoryLink("V.$view_id");
+    return $view->jumpLink($view_id." -  ".$view->f("name")).' ('. AA_Module::getModuleName($view->getSliceId(), true) .') &nbsp; '. ChangesMonitor::getHistoryLink("V.$view_id");
 }
 
 function query_search(array $where, string $phrase): string {
@@ -185,17 +185,14 @@ function PrintIdsInfo($l_or_s_id) {
     if (!is_long_id($l_or_s_id)) {
         return;
     }
-    if ($res = DB_AA::select([], 'SELECT `id`, FROM_UNIXTIME(`time`) as Date, `user`, `type`, `selector`, `params` FROM `log`', [['selector', $l_or_s_id, 'RLIKE']])) {
-        echo GetHtmlTable($res, 'key', _m('Log'));
-    }
 
     if (DB_AA::test('slice', [['id', $l_or_s_id, 'l']])) {
         echo '<h3>'. _m('Slice') .'</h3><pre>';
-        echo AafinderSliceLink($l_or_s_id). "<br>";
+        echo AafinderModuleeLink($l_or_s_id). "<br>";
         echo "</pre>";
     } elseif (DB_AA::test('module', [['id', $l_or_s_id, 'l']])) {
         echo '<h3>'. _m('Module') .'</h3><pre>';
-        echo AafinderSliceLink($l_or_s_id). "<br>";
+        echo AafinderModuleeLink($l_or_s_id). "<br>";
         echo "</pre>";
     }
     if ($rec = DB_AA::select([], 'SELECT * FROM `object_text`', [['object_id', $l_or_s_id]])) {
@@ -205,8 +202,10 @@ function PrintIdsInfo($l_or_s_id) {
         print_r(DB_AA::select([], 'SELECT * FROM `object_float`', [['object_id', $l_or_s_id]]));
         echo "</pre>";
     }
+    if ($res = DB_AA::select([], 'SELECT `id`, FROM_UNIXTIME(`time`) as Date, `user`, `type`, `selector`, `params` FROM `log`', [['selector', $l_or_s_id, 'RLIKE']])) {
+        echo GetHtmlTable($res, 'key', _m('Log'));
+    }
 }
-
 
 
 function PrintItemInfo($item_id) {
