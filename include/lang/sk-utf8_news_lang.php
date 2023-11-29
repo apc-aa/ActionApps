@@ -1058,7 +1058,7 @@ $_m["JavaScript for fields"]
  = "";
 
 // admin/se_javascript.php, row 78
-$_m["Enter code in the JavaScript language. It will be included in the Add / Edit item page (itemedit.php3)."]
+$_m["Enter code in the JavaScript language. It will be included in the Add / Edit item page (itemedit.php)."]
  = "";
 
 // admin/se_javascript.php, row 83
@@ -1688,31 +1688,31 @@ $_m["Remote Nodes"]
 $_m["User name"]
  = "Meno uživatela";
 
-// admin/itemedit.php3, row 90
+// admin/itemedit.php, row 90
 // admin/related_sel.php, row 181
 $_m["There are too many related items. The number of related items is limited."]
  = "Je vybráných príliš vela súvisiacich clánkov.";
 
-// admin/itemedit.php3, row 232
+// admin/itemedit.php, row 232
 // admin/slicefieldsedit.php, row 128
 $_m["Error: no fields."]
  = "";
 
-// admin/itemedit.php3, row 240
+// admin/itemedit.php, row 240
 // admin/slicefieldsedit.php, row 136
 $_m["Bad item ID id=%1"]
  = "";
 
-// admin/itemedit.php3, row 252
+// admin/itemedit.php, row 252
 $_m["Error: You have no rights to edit item."]
  = "";
 
-// admin/itemedit.php3, row 284
+// admin/itemedit.php, row 284
 // include/menu.php, row 73
 $_m["Add Item"]
  = "Pridať správu";
 
-// admin/itemedit.php3, row 284
+// admin/itemedit.php, row 284
 $_m["Edit Item"]
  = "Upraviť správu";
 
@@ -3743,8 +3743,8 @@ $_m["Your node name"]
  = "Názov vášho uzlu";
 
 // admin/se_nodes.php, row 183
-$_m["URL of the getxml.php3"]
- = "URL súboru getxml.php3";
+$_m["URL of the getxml.php"]
+ = "URL súboru getxml.php";
 
 // admin/se_nodes.php, row 184
 $_m["Your getxml is"]
@@ -5151,7 +5151,7 @@ $_m["alias for Short Item ID"]
 // include/item.php, row 102, 103
 // include/field.class.php, row 404, 405
 $_m["alias used on admin page index.php3 for itemedit url"]
- = "alias používaný v administratívnych stránkách index.php3 pre URL itemedit.php3";
+ = "alias používaný v administratívnych stránkách index.php3 pre URL itemedit.php";
 
 // include/item.php, row 104
 // include/field.class.php, row 406

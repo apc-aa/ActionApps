@@ -1724,8 +1724,8 @@ $_m["function"]
  = "funkcija";
 
 // include/constants_param_wizard.php, row 1101
-$_m["name of the function in the include/usr_aliasfnc.php3 file"]
- = "ime funkcije u include/usr_aliasfnc.php3 datoteci";
+$_m["name of the function in the include/usr_aliasfnc.php file"]
+ = "ime funkcije u include/usr_aliasfnc.php datoteci";
 
 // include/constants_param_wizard.php, row 1103
 $_m["usr_start_end_date_cz"]

@@ -1258,8 +1258,8 @@ $_m["JavaScript for fields"]
  = "JavaScript pro políčka";
 
 // admin/se_javascript.php, row 78
-$_m["Enter code in the JavaScript language. It will be included in the Add / Edit item page (itemedit.php3)."]
- = "Vložte kód v JavaScriptu. Bude zahrnut na stránce Přidat / Upravit zprávu (itemedit.php3).";
+$_m["Enter code in the JavaScript language. It will be included in the Add / Edit item page (itemedit.php)."]
+ = "Vložte kód v JavaScriptu. Bude zahrnut na stránce Přidat / Upravit zprávu (itemedit.php).";
 
 // admin/se_javascript.php, row 83
 $_m["Available fields and triggers"]
@@ -1888,31 +1888,31 @@ $_m["Remote Nodes"]
 $_m["User name"]
  = "Jméno uživatele";
 
-// admin/itemedit.php3, row 90
+// admin/itemedit.php, row 90
 // admin/related_sel.php, row 181
 $_m["There are too many related items. The number of related items is limited."]
  = "Je vybráno příliš mnoho souvisejících článků.";
 
-// admin/itemedit.php3, row 232
+// admin/itemedit.php, row 232
 // admin/slicefieldsedit.php, row 128
 $_m["Error: no fields."]
  = "Chyba: žádné políčko.";
 
-// admin/itemedit.php3, row 240
+// admin/itemedit.php, row 240
 // admin/slicefieldsedit.php, row 136
 $_m["Bad item ID id=%1"]
  = "Špatné číslo článku id=%1";
 
-// admin/itemedit.php3, row 252
+// admin/itemedit.php, row 252
 $_m["Error: You have no rights to edit item."]
  = "Nemáte práva měnit článek";
 
-// admin/itemedit.php3, row 284
+// admin/itemedit.php, row 284
 // include/menu.php, row 73
 $_m["Add Item"]
  = "Přidat zprávu";
 
-// admin/itemedit.php3, row 284
+// admin/itemedit.php, row 284
 $_m["Edit Item"]
  = "Upravit zprávu";
 
@@ -3951,8 +3951,8 @@ $_m["Your node name"]
  = "Jméno uzlu";
 
 // admin/se_nodes.php, row 183
-$_m["URL of the getxml.php3"]
- = "URL souboru getxml.php3";
+$_m["URL of the getxml.php"]
+ = "URL souboru getxml.php";
 
 // admin/se_nodes.php, row 184
 $_m["Your getxml is"]
@@ -5370,7 +5370,7 @@ $_m["alias for Short Item ID"]
 // include/item.php, row 102, 103
 // include/field.class.php, row 404, 405
 $_m["alias used on admin page index.php3 for itemedit url"]
- = "alias používaný v administrativních stránkách index.php3 pro URL itemedit.php3";
+ = "alias používaný v administrativních stránkách index.php3 pro URL itemedit.php";
 
 // include/item.php, row 104
 // include/field.class.php, row 406

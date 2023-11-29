@@ -1690,7 +1690,7 @@ $_m["function"]
  = "";
 
 // include/constants_param_wizard.php, row 1101
-$_m["name of the function in the include/usr_aliasfnc.php3 file"]
+$_m["name of the function in the include/usr_aliasfnc.php file"]
  = "";
 
 // include/constants_param_wizard.php, row 1103

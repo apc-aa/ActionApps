@@ -30,8 +30,10 @@ use AA\Util\Langs;
 use AA\Util\ChangesMonitor;
 
 require_once __DIR__ . "/stringexpand.php";
-if ( file_exists( __DIR__."/usr_aliasfnc.php3" ) ) {
-  require_once __DIR__."/usr_aliasfnc.php3";
+if (file_exists(__DIR__ . "/usr_aliasfnc.php")) {
+    require_once __DIR__ . "/usr_aliasfnc.php";
+} elseif (file_exists(__DIR__ . "/usr_aliasfnc.php")) {   // for compatibility with old AAs
+    require_once __DIR__ . "/usr_aliasfnc.php";
 }
 
 require_once __DIR__ . "/item_content.php";
@@ -105,7 +107,7 @@ function FillFakeAlias(&$content4id, &$aliases, $alias, $value, $flag=FLAG_HTML)
 
 /** sess_return_url function
  * helper function for f_e
- * this is called from admin/index.php3 and include/usr_aliasfnc.php3 in some site
+ * this is called from admin/index.php3 and include/usr_aliasfnc.php in some site
  * added by setu@gwtech.org 2002-0211
  *
  * make_return_url
@@ -124,7 +126,7 @@ function sess_return_url($url) {
 
 /** make_return_url function
  * helper function for f_e
- *  this is called from admin/index.php3 and include/usr_aliasfnc.php3 in some site
+ *  this is called from admin/index.php3 and include/usr_aliasfnc.php in some site
  *  added by setu@gwtech.org 2002-0211
  *
  *  make_return_url
@@ -159,10 +161,10 @@ function make_return_url($r1="") {
 function Inputform_url($add, $iid, $sid='', $ret_url='', $vid = null, $var = null, $safe=true): string {
     global $profile;
 
-    // $admin_path = AA_INSTAL_URL. "admin/itemedit.php3";
+    // $admin_path = AA_INSTAL_URL. "admin/itemedit.php";
     // changed back to relative address - in order we stay within the same
     // domain and protocol (https...)
-    // $admin_path = 'itemedit.php3';
+    // $admin_path = 'itemedit.php';
     $param      = [];
 
     // If Session is set, then append session id, otherwise append slice_id and it will prompt userid
@@ -191,7 +193,7 @@ function Inputform_url($add, $iid, $sid='', $ret_url='', $vid = null, $var = nul
     } elseif (isset($profile) AND $profile->getProperty('input_view')) {
         $param[] = 'vid='.$profile->getProperty('input_view');
     }
-    return $safe ? con_url('itemedit.php3',$param) : get_url('itemedit.php3',$param);
+    return $safe ? con_url('itemedit.php',$param) : get_url('itemedit.php',$param);
 }
 
 /** GetFormattedItems function
@@ -1477,7 +1479,7 @@ class AA_Item {
     }
 
     /** f_u function
-     * Calls user defined function in file /include/usr_aliasfnc.php3
+     * Calls user defined function in file /include/usr_aliasfnc.php
      * @param $col
      * @param $param
      * @return string
@@ -1489,7 +1491,7 @@ class AA_Item {
         $p = ParamExplode($param);
         $fnc = $p[0];
         if (!is_callable($fnc)) {
-            huhl("Field $col is defined with f_u and function '$fnc', but '$fnc' is not defined in apc-aa/include/usr_aliasfnc.php3");
+            huhl("Field $col is defined with f_u and function '$fnc', but '$fnc' is not defined in apc-aa/include/usr_aliasfnc.php");
             return '';
         }
         return (string)$fnc($this->content4id->getContent(), $col, $param);

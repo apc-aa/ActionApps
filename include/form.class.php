@@ -9,7 +9,7 @@ use AA\Widget\HidWidget;
  * File contains definition of inputform class - used for displaying input form
  * for item add/edit and other form utility functions
  *
- * Should be included to other scripts (as /admin/itemedit.php3)
+ * Should be included to other scripts (as /admin/itemedit.php)
  *
  * PHP version 7.2+
  *

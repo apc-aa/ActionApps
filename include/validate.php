@@ -771,7 +771,7 @@ class AA_Validate_Text extends AA_Validate {
 }
 
 /** get_javascript_field_validation function
-* used in tabledit.php and itemedit.php3
+* used in tabledit.php and itemedit.php
 */
 function get_javascript_field_validation() {
     /* javascript params:

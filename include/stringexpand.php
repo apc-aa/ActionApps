@@ -5243,7 +5243,7 @@ class AA_Stringexpand_Slice extends AA_Stringexpand_Nevercache {
      */
     function expand($property='name') {
         // get slice_id from item, but sometimes the item is not filled (like
-        // on "Add Item" in itemedit.php3, so we use global slice_id here
+        // on "Add Item" in itemedit.php, so we use global slice_id here
         $item = $this->item;
         $slice_id  = $item ? $item->getSliceID() : $GLOBALS['slice_id'];
         if (!$slice_id ) {

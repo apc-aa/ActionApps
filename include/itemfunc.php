@@ -1038,10 +1038,10 @@ function StoreItem( $id, $slice_id, $content4id, $insert, $invalidatecache=true,
  *       $oldcontent4id
  *       $special input variables
  *
- *   This function is used in itemedit.php3, filler.php and file_import.php3.
+ *   This function is used in itemedit.php, filler.php and file_import.php3.
  *
  *   @author Jakub Adamek, Econnect, January 2003
- *           Most of the code is taken from itemedit.php3, created by Honza.
+ *           Most of the code is taken from itemedit.php, created by Honza.
  *
  * @param $err
  * @param $slice AA_Slice
@@ -1055,7 +1055,7 @@ function StoreItem( $id, $slice_id, $content4id, $insert, $invalidatecache=true,
  * @param array $notshown is an optional array ("field_id"=>1,...) of fields
  *                          not shown in the anonymous form
  */
-//./admin/itemedit.php3:       ValidateContent4Id($err, $slice, $action, $id);
+//./admin/itemedit.php:       ValidateContent4Id($err, $slice, $action, $id);
 //./admin/slicefieldsedit.php:ValidateContent4Id($err, $slice, $action, $id);
 //./filler.php:               ValidateContent4Id($err_valid, $slice, $insert ? "insert" : "update", $my_item_id, !$notvalidate, $notshown);
 

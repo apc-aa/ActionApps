@@ -158,7 +158,7 @@ The changes could be tracked on:
 19-08-06 - new Manager input widget - it allows manage Items from remote slice, when the remote
 (honzam)   item points to editted item. It the same as we can achieve with {manager}. It works
            also in AA admin interface, where was problem with Add Item operation (the ID of new
-           item is not knows). Solved by artificial "connector ID". Best for galeries and other
+           item is not knows). Solved by artificial "connector ID". Best for galleries and other
            tabular data which is multivalue and different for each item.
          - New search field in AA user interface - right top - which searches the AA the same
            way as you do in AA -> Find. It is shown just to Superadmins.
@@ -6154,7 +6154,7 @@ The changes could be tracked on:
          - added '-' operator modifier for relative time conditions.
            The operator was implemented to view definition too (se_view.php3)
 01-07-04 - new support for custom alias function definitions
-           (include/usr_aliasfnc.php3 - not in CVS! - you can create it)
+           (include/usr_aliasfnc.php - not in CVS! - you can create it)
          - new user defined aliases (see url parameter 'als' to slice.php3)
          - new possibility to create item by copying old one
            ('Insert as new' in itemedit.php3 file)

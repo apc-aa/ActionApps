@@ -186,7 +186,7 @@ function getAADate(formName,dateField,emptyValue) {
 
     sets the AA like date in 3 select boxes:
     Params:
-        datePrefix is usually tdctr_ on forms created from itemedit.php3, '' on search forms
+        datePrefix is usually tdctr_ on forms created from itemedit.php, '' on search forms
         html is usually 'h' for HTML, 't' for Plain text, 0 when not needed
 */
 

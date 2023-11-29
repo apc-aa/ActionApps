@@ -441,7 +441,7 @@ const FLAG_TEXT_STORED = 64;   // value is stored in the text field (and not num
 /** item table flags (numbers - just to be compatible with content table) */
 const ITEM_FLAG_FEED               = 2;   // item is fed
 const ITEM_FLAG_OFFLINE            = 8;   // off-line filled or imported from file
-const ITEM_FLAG_ANONYMOUS_EDITABLE = 32;    // anonymously added and thus anonymously editable (reset on every use of itemedit.php3)
+const ITEM_FLAG_ANONYMOUS_EDITABLE = 32;    // anonymously added and thus anonymously editable (reset on every use of itemedit.php)
 
 /** states of feed field of field table */
 const STATE_FEEDABLE               = 0;

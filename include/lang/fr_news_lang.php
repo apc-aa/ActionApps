@@ -1153,8 +1153,8 @@ $_m["JavaScript for fields"]
  = "JavaScript pour champs";
 
 // admin/se_javascript.php, row 78
-$_m["Enter code in the JavaScript language. It will be included in the Add / Edit item page (itemedit.php3)."]
- = "Entrer le code dans le langage JavaScript. Il sera inclut dans la page ajouter / modifier les items (itemedit.php3).";
+$_m["Enter code in the JavaScript language. It will be included in the Add / Edit item page (itemedit.php)."]
+ = "Entrer le code dans le langage JavaScript. Il sera inclut dans la page ajouter / modifier les items (itemedit.php).";
 
 // admin/se_javascript.php, row 83
 $_m["Available fields and triggers"]
@@ -1784,31 +1784,31 @@ $_m["Remote Nodes"]
 $_m["User name"]
  = "Nom d'usager";
 
-// admin/itemedit.php3, row 90
+// admin/itemedit.php, row 90
 // admin/related_sel.php, row 181
 $_m["There are too many related items. The number of related items is limited."]
  = "Il y a trop d'items reli�s. Le nombre d'items reli�s est limit�. ";
 
-// admin/itemedit.php3, row 232
+// admin/itemedit.php, row 232
 // admin/slicefieldsedit.php, row 128
 $_m["Error: no fields."]
  = "Erreur: pas de champs";
 
-// admin/itemedit.php3, row 240
+// admin/itemedit.php, row 240
 // admin/slicefieldsedit.php, row 136
 $_m["Bad item ID id=%1"]
  = "";
 
-// admin/itemedit.php3, row 252
+// admin/itemedit.php, row 252
 $_m["Error: You have no rights to edit item."]
  = "";
 
-// admin/itemedit.php3, row 284
+// admin/itemedit.php, row 284
 // include/menu.php, row 73
 $_m["Add Item"]
  = "Ajouter des items";
 
-// admin/itemedit.php3, row 284
+// admin/itemedit.php, row 284
 $_m["Edit Item"]
  = "Modifier les items";
 
@@ -3844,8 +3844,8 @@ $_m["Your node name"]
  = "Nom de votre noeud";
 
 // admin/se_nodes.php, row 183
-$_m["URL of the getxml.php3"]
- = "URL de getxml.php3";
+$_m["URL of the getxml.php"]
+ = "URL de getxml.php";
 
 // admin/se_nodes.php, row 184
 $_m["Your getxml is"]

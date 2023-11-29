@@ -138,7 +138,7 @@ $inputform_settings['messages']            = ['err' => $err];
 $inputform_settings['form_action']         = ($_SERVER['DOCUMENT_URI'] != "" ? $_SERVER['DOCUMENT_URI'] :
                                              $_SERVER['PHP_SELF'] . ($return_url ? "?return_url=".urlencode($return_url) : ''));
 $inputform_settings['form4update']         = true;
-$inputform_settings['cancel_url']          = ($return_url=='close_dialog' ? get_admin_url("itemedit.php3?cancel=1&return_url=close_dialog") :
+$inputform_settings['cancel_url']          = ($return_url=='close_dialog' ? get_admin_url("itemedit.php?cancel=1&return_url=close_dialog") :
                                               ($return_url ? expand_return_url(1) : get_admin_url("index.php3?cancel=1")));
 
 $inputform_settings['hidden']              = ['openervar'   => $openervar];  // id of variable in parent window (used for popup inputform)

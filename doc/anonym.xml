@@ -51,7 +51,7 @@
 
         <date>6.3.2003</date>
 
-        <revremark>Added links to doc/script/show_result.php3</revremark>
+        <revremark>Added links to doc/script/show_result.php</revremark>
       </revision>
 
       <revision>
@@ -77,7 +77,7 @@
 
     <para>See also: <ulink role="html" url="reader.html">doc/reader.html</ulink>,
     <ulink role="html" url="alerts.html">doc/alerts.html</ulink>,
-    doc/script/show_result.php3</para>
+    doc/script/show_result.php</para>
   </abstract>
 
   <sect1>
@@ -322,10 +322,10 @@
     <constant>fillform.php3</constant> is SSI-included in your shtml page.</para>
 
     <para>You may create your own PHP script (see an example in
-    <constant>doc/script/show_result.php3</constant>) and send its URL as a
+    <constant>doc/script/show_result.php</constant>) and send its URL as a
     value of a <constant>show_result</constant> variable. Add it as a
     parameter to the <constant>fillform.php3</constant> SSI include created by
-    the Wizard, e.g. <screen>&#60;!--#include virtual=&#34;/aaa/fillform.php3?show_result=http://ecn.cz/show_result.php3&#38;form=...&#34;--&#62;</screen>An
+    the Wizard, e.g. <screen>&#60;!--#include virtual=&#34;/aaa/fillform.php3?show_result=https://ecn.cz/show_result.php&#38;form=...&#34;--&#62;</screen>An
     array <constant>$result</constant> with the results will be sent to the
     PHP script and you may print appropriate messages, see the example.</para>
 

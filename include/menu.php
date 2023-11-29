@@ -72,7 +72,7 @@ function get_aamenus() {
 
     $aamenus["additem"] = [
         "label" => GetLabel($profile,'ui_manager','top_additem', '+ '. _m("Add Item")),
-        "href"  => "admin/itemedit.php3?add=1$input_view",
+        "href"  => "admin/itemedit.php?add=1$input_view",
         "cond"  => ($profile->getProperty('ui_manager', 'top_additem') !== ''),
         "level" => "main"
     ];
@@ -175,7 +175,7 @@ function get_aamenus() {
         "level"     => "submenu",
         "items"     => [
             "header1"     => GetLabel($profile,'ui_manager', 'itemmanager_submenu_header1', _m("Folders")),
-            "additem"     => ["cond"=> $profile->getProperty('ui_manager', 'itemmanager_submenu_additem'),        'hide' => !$profile->getProperty('ui_manager', 'itemmanager_submenu_additem'),                                                                          "label"=>$profile->getProperty('ui_manager', 'itemmanager_submenu_additem'), "href"  => "admin/itemedit.php3?add=1$input_view"],
+            "additem"     => ["cond"=> $profile->getProperty('ui_manager', 'itemmanager_submenu_additem'),        'hide' => !$profile->getProperty('ui_manager', 'itemmanager_submenu_additem'),                                                                          "label"=>$profile->getProperty('ui_manager', 'itemmanager_submenu_additem'), "href"  => "admin/itemedit.php?add=1$input_view"],
             "app"         => ["cond"=> ($profile->getProperty('ui_manager', 'itemmanager_submenu_app')   !== ''), 'hide' => ($profile->getProperty('ui_manager', 'itemmanager_submenu_app')   === ''), "href"=>"admin/index.php3?Tab1a=1", 'ico'=>'ico-items.png',      "label"=>GetLabel($profile,'ui_manager', 'itemmanager_submenu_app'  , _m("Active")." <span class='aa-bin-cnt'>". $r_state['bin_cnt']['app'] ."</span>")],
             "appb"        => ["cond"=> (($profile->getProperty('ui_manager', 'itemmanager_submenu_appb') !== '') AND (!$slice OR !$slice->noPendingBin())), 'hide' => ($profile->getProperty('ui_manager', 'itemmanager_submenu_appb')  === ''), "href"=>"admin/index.php3?Tab1b=1", 'ico'=>'ico-items-pend.png', "label"=>GetLabel($profile,'ui_manager', 'itemmanager_submenu_appb' , _m("... pending")." <span class='aa-bin-cnt'>". $r_state['bin_cnt']['pending'] ."</span>"), "show"=>true],
             "appc"        => ["cond"=> (($profile->getProperty('ui_manager', 'itemmanager_submenu_appc') !== '') AND (!$slice OR !$slice->noExpiredBin())), 'hide' => ($profile->getProperty('ui_manager', 'itemmanager_submenu_appc')  === ''), "href"=>"admin/index.php3?Tab1c=1", 'ico'=>'ico-items-exp.png',  "label"=>GetLabel($profile,'ui_manager', 'itemmanager_submenu_appc' , _m("... expired")." <span class='aa-bin-cnt'>". $r_state['bin_cnt']['expired'] ."</span>"), "show"=>true],

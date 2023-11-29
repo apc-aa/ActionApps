@@ -32,7 +32,7 @@
 //
 // Note: This parser does not check correctness of the RSS document. It assumes, that xml document
 //       conforms to the RSS 1.0. Normally it parses document, which was created by aa server module (see
-//       getxml.php3)
+//       getxml.php)
 
 
 // Examples refered to below (as EG1 ... EG5) where these have been seen,

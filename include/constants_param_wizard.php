@@ -645,7 +645,7 @@ $FIELD_FUNCTIONS = [
     "params"=> [
         [
             "name"=>_m("function"),
-            "desc"=>_m("name of the function in the include/usr_aliasfnc.php3 file"),
+            "desc"=>_m("name of the function in the include/usr_aliasfnc.php file"),
             "type"=>"STR",
             "example"=>_m("usr_start_end_date_cz")
         ],

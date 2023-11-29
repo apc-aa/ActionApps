@@ -1763,8 +1763,8 @@ $_m["function"]
  = "funci�n";
 
 // include/constants_param_wizard.php, row 1101
-$_m["name of the function in the include/usr_aliasfnc.php3 file"]
- = "nombre de la funci�n en el archivo include/usr_aliasfnc.php3";
+$_m["name of the function in the include/usr_aliasfnc.php file"]
+ = "nombre de la funci�n en el archivo include/usr_aliasfnc.php";
 
 // include/constants_param_wizard.php, row 1103
 $_m["usr_start_end_date_cz"]

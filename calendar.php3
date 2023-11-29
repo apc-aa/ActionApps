@@ -1,5 +1,5 @@
 <?php
-/*  $Id$ 
+/*  $Id$
 
     This is an example of the top part of a calendar page. 
     The script shows select boxes to choose month and year and a heading with
@@ -9,7 +9,7 @@
     An example of the appropriate .shtml page:
     
     <html><body>
-    <!--#include virtual="/apc-aa/doc/script/calendar.php3"-->
+    <!--#include virtual="/apc-aa/doc/script/calendar.php"-->
     <!--#include virtual="/apc-aa/view.php?vid=317"-->
     </body></html>
     

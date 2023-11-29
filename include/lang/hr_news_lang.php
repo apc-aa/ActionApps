@@ -934,8 +934,8 @@ $_m["calls a user defined function (see How to create new aliases in <a href='ht
 $_m["function"]
     = "funkcija";
 
-$_m["name of the function in the include/usr_aliasfnc.php3 file"]
-    = "ime funkcije u include/usr_aliasfnc.php3 datoteci";
+$_m["name of the function in the include/usr_aliasfnc.php file"]
+    = "ime funkcije u include/usr_aliasfnc.php datoteci";
 
 $_m["parameter"]
     = "parametar";
@@ -1946,7 +1946,7 @@ $_m["JavaScript for fields"]
     = "";
 
 // admin/se_javascript.php, row 78
-$_m["Enter code in the JavaScript language. It will be included in the Add / Edit item page (itemedit.php3)."]
+$_m["Enter code in the JavaScript language. It will be included in the Add / Edit item page (itemedit.php)."]
     = "Unesite kod u java scriptu";
 
 // admin/se_javascript.php, row 83
@@ -2576,31 +2576,31 @@ $_m["Remote Nodes"]
 $_m["User name"]
     = "Ime korisnika/ice";
 
-// admin/itemedit.php3, row 90
+// admin/itemedit.php, row 90
 // admin/related_sel.php, row 181
 $_m["There are too many related items. The number of related items is limited."]
     = "";
 
-// admin/itemedit.php3, row 232
+// admin/itemedit.php, row 232
 // admin/slicefieldsedit.php, row 128
 $_m["Error: no fields."]
     = "Gre�ka: nema polja";
 
-// admin/itemedit.php3, row 240
+// admin/itemedit.php, row 240
 // admin/slicefieldsedit.php, row 136
 $_m["Bad item ID id=%1"]
     = "";
 
-// admin/itemedit.php3, row 252
+// admin/itemedit.php, row 252
 $_m["Error: You have no rights to edit item."]
     = "";
 
-// admin/itemedit.php3, row 284
+// admin/itemedit.php, row 284
 // include/menu.php, row 73
 $_m["Add Item"]
     = "Dodajte stavku";
 
-// admin/itemedit.php3, row 284
+// admin/itemedit.php, row 284
 $_m["Edit Item"]
     = "Uredite stavku";
 
@@ -4630,8 +4630,8 @@ $_m["Your node name"]
     = "Ime va�eg �vora";
 
 // admin/se_nodes.php, row 183
-$_m["URL of the getxml.php3"]
-    = "web adresa za getxml.php3";
+$_m["URL of the getxml.php"]
+    = "web adresa za getxml.php";
 
 // admin/se_nodes.php, row 184
 $_m["Your getxml is"]

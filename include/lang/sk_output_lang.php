@@ -206,7 +206,7 @@ $_m["alias for Short Item ID"]
 
 // include/item.php, row 102, 103
 $_m["alias used on admin page index.php3 for itemedit url"]
- = "alias pou��van� v administrat�vnych str�nk�ch index.php3 pre URL itemedit.php3";
+ = "alias pou��van� v administrat�vnych str�nk�ch index.php3 pre URL itemedit.php";
 
 // include/item.php, row 104
 $_m["Alias used on admin page index.php3 for edit discussion url"]

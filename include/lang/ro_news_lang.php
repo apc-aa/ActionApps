@@ -1095,8 +1095,8 @@ $_m["JavaScript for fields"]
     = "";
 
 // admin/se_javascript.php, row 78
-$_m["Enter code in the JavaScript language. It will be included in the Add / Edit item page (itemedit.php3)."]
-    = "Introduce�i codul �n JavaScript. Va fi inclus in pagina Ad�ugare / Editare articol (itemedit.php3).";
+$_m["Enter code in the JavaScript language. It will be included in the Add / Edit item page (itemedit.php)."]
+    = "Introduce�i codul �n JavaScript. Va fi inclus in pagina Ad�ugare / Editare articol (itemedit.php).";
 
 // admin/se_javascript.php, row 83
 $_m["Available fields and triggers"]
@@ -1725,31 +1725,31 @@ $_m["Remote Nodes"]
 $_m["User name"]
     = "Nume utilizator";
 
-// admin/itemedit.php3, row 90
+// admin/itemedit.php, row 90
 // admin/related_sel.php, row 181
 $_m["There are too many related items. The number of related items is limited."]
     = "Sunt prea multe articole �nrudite. Num�rul articolelor �nrudite este limitat�.";
 
-// admin/itemedit.php3, row 232
+// admin/itemedit.php, row 232
 // admin/slicefieldsedit.php, row 128
 $_m["Error: no fields."]
     = "";
 
-// admin/itemedit.php3, row 240
+// admin/itemedit.php, row 240
 // admin/slicefieldsedit.php, row 136
 $_m["Bad item ID id=%1"]
     = "";
 
-// admin/itemedit.php3, row 252
+// admin/itemedit.php, row 252
 $_m["Error: You have no rights to edit item."]
     = "";
 
-// admin/itemedit.php3, row 284
+// admin/itemedit.php, row 284
 // include/menu.php, row 73
 $_m["Add Item"]
     = "Ad�ugare articol";
 
-// admin/itemedit.php3, row 284
+// admin/itemedit.php, row 284
 $_m["Edit Item"]
     = "Editare articol";
 
@@ -3784,8 +3784,8 @@ $_m["Your node name"]
     = "Numele nodului dvs.";
 
 // admin/se_nodes.php, row 183
-$_m["URL of the getxml.php3"]
-    = "URL al getxml.php3";
+$_m["URL of the getxml.php"]
+    = "URL al getxml.php";
 
 // admin/se_nodes.php, row 184
 $_m["Your getxml is"]

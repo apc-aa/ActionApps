@@ -20,8 +20,7 @@
     // If there were too many errors, the array is not complete and thus
     // unserialize does not work.
     if (!is_array($resarr)) {
-        echo '<font>Too many errors. Please contact the webmaster
-            and tell him about the message: '.$result.'</font><br>'."\n";
+        echo 'Too many errors. Please contact the webmaster and tell him about the message: ' .$result. '<br>' ."\n";
         return;
     }
 
@@ -39,39 +38,32 @@
         // Called by fillform when the URL contains a parameter sent to readers in
         // confirmation emails.
         case "email_confirmed":
-            echo "Thank you! You have just confirmed your subscription and from
-                now on you will receive our news by email.";
+            echo "Thank you! You have just confirmed your subscription and from now on you will receive our news by email.";
             break;
 
         // Error when validating some field.
         case "validate":
             switch (key ($prop)) {
             case "con_email.......":
-                echo '<font>
-                    Error in email. This email address is already subscribed.
-                    Please use another one.</font>';
+                echo 'Error in email. This email address is already subscribed. Please use another one.';
                 break;
             case "headline........":
-                echo '<font>
-                    Error in username. This username is already used.
-                    Please try another.
-                </font>'."\n";
+                echo 'Error in username. This username is already used. Please try another.'."\n";
                 break;
             default:
-                echo '<font>Error in field value ('.key($prop).').</font><br>'."\n";
+                echo 'Error in field value ('.key($prop).').<br>'."\n";
                 break;
             }
             break;
 
         // Error: permissions K.O.
         case "permissions":
-            echo '<font>Wrong password. You must
-                    fill the correct password every time you send info.</font><br>'."\n";
+            echo 'Wrong password. You must fill the correct password every time you send info.<br>'."\n";
             break;
 
         // Other error.
         default:
-            echo '<font>Some error: '.$prop.'</font><br>'."\n";
+            echo 'Some error: '.$prop.'<br>'."\n";
             break;
         }
     }

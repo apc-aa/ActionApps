@@ -1012,7 +1012,7 @@ $_m["JavaScript for fields"]
  = "";
 
 // admin/se_javascript.php, row 78
-$_m["Enter code in the JavaScript language. It will be included in the Add / Edit item page (itemedit.php3)."]
+$_m["Enter code in the JavaScript language. It will be included in the Add / Edit item page (itemedit.php)."]
  = "";
 
 // admin/se_javascript.php, row 83
@@ -1642,31 +1642,31 @@ $_m["Remote Nodes"]
 $_m["User name"]
  = "";
 
-// admin/itemedit.php3, row 90
+// admin/itemedit.php, row 90
 // admin/related_sel.php, row 181
 $_m["There are too many related items. The number of related items is limited."]
  = "";
 
-// admin/itemedit.php3, row 232
+// admin/itemedit.php, row 232
 // admin/slicefieldsedit.php, row 128
 $_m["Error: no fields."]
  = "";
 
-// admin/itemedit.php3, row 240
+// admin/itemedit.php, row 240
 // admin/slicefieldsedit.php, row 136
 $_m["Bad item ID id=%1"]
  = "";
 
-// admin/itemedit.php3, row 252
+// admin/itemedit.php, row 252
 $_m["Error: You have no rights to edit item."]
  = "";
 
-// admin/itemedit.php3, row 284
+// admin/itemedit.php, row 284
 // include/menu.php, row 73
 $_m["Add Item"]
  = "Artikel hinzuf�gen";
 
-// admin/itemedit.php3, row 284
+// admin/itemedit.php, row 284
 $_m["Edit Item"]
  = "Artikel bearbeiten";
 
@@ -3698,8 +3698,8 @@ $_m["Your node name"]
  = "";
 
 // admin/se_nodes.php, row 183
-$_m["URL of the getxml.php3"]
- = "URL der getxml.php3";
+$_m["URL of the getxml.php"]
+ = "URL der getxml.php";
 
 // admin/se_nodes.php, row 184
 $_m["Your getxml is"]

@@ -373,7 +373,7 @@ $inputform_settings['form4update']         = $edit || $update || ($insert && $ad
 $inputform_settings['show_preview_button'] = (($post_preview!=0) OR !isset($post_preview));
 
 $inputform_settings['cancel_url']          =  ($anonymous  ? $r_slice_view_url :
-                                              ($return_url=='close_dialog' ? get_admin_url("itemedit.php3?cancel=1&return_url=close_dialog") :
+                                              ($return_url=='close_dialog' ? get_admin_url("itemedit.php?cancel=1&return_url=close_dialog") :
                                               ($return_url ? expand_return_url(1) :
                                               get_admin_url("index.php3?cancel=1"))));
 

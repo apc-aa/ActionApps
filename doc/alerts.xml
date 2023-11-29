@@ -349,11 +349,11 @@
       </listitem>
 
       <listitem>
-        <para>Copy show_results.php3</para>
+        <para>Copy show_result.php</para>
 
         <orderedlist>
           <listitem>
-            <simpara>Copy the script from <constant>doc/script/show_result.php3</constant>
+            <simpara>Copy the script from <constant>doc/script/show_result.php</constant>
             to the same location where you created myalerts.shtml. </simpara>
           </listitem>
         </orderedlist>
@@ -384,7 +384,7 @@
           </listitem>
 
           <listitem>
-            <para>Fill the URL of yours show_result.php3 and check the box
+            <para>Fill the URL of yours show_result.php and check the box
             <quote>Use a PHP script ...</quote></para>
           </listitem>
 

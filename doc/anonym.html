@@ -53,7 +53,7 @@
                             <td>6.3.2003</td>
                         </tr>
                         <tr>
-                            <td colspan="2">Added links to doc/script/show_result.php3</td>
+                            <td colspan="2">Added links to doc/script/show_result.php</td>
                         </tr>
                         <tr>
                             <td>Revision 1.0</td>
@@ -88,7 +88,7 @@
             is in some cases not accurate, as the form is used for reader personal info and the readers must be
             authorized to edit their own info.</p>
         <p>See also: <a href="reader.html" target="_top">doc/reader.html</a>, <a href="alerts.html" target="_top">doc/alerts.html</a>,
-            doc/script/show_result.php3</p></div>
+            doc/script/show_result.php</p></div>
     <div class="sect1" lang="en">
         <div class="titlepage">
             <div>
@@ -299,10 +299,10 @@
             them, like a username being already used, can not.</p>
         <p>By default, the <code class="constant">fillform.php3</code> script shows standard error messages. They always
             appear at the place where <code class="constant">fillform.php3</code> is SSI-included in your shtml page.</p>
-        <p>You may create your own PHP script (see an example in <code class="constant">doc/script/show_result.php3</code>)
+        <p>You may create your own PHP script (see an example in <code class="constant">doc/script/show_result.php</code>)
             and send its URL as a value of a <code class="constant">show_result</code> variable. Add it as a parameter to
             the <code class="constant">fillform.php3</code> SSI include created by the Wizard, e.g. </p>
-        <pre class="screen">&lt;!--#include virtual="/aaa/fillform.php3?show_result=http://ecn.cz/show_result.php3&amp;form=..."--&gt;</pre>
+        <pre class="screen">&lt;!--#include virtual="/aaa/fillform.php3?show_result=https://ecn.cz/show_result.php&amp;form=..."--&gt;</pre>
         <p>An array <code class="constant">$result</code> with the results will be sent to the PHP script and you may print
             appropriate messages, see the example.</p>
         <p>The <code class="constant">$result</code> array content is created at various places in <code class="constant">filler.php3</code>

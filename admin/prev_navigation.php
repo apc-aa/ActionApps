@@ -43,9 +43,9 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 <div style="text-align: center;">
 <?php
 // we do not want to allow users to go back to edit, when it is opened in popup
-// (test for openervar (see itemedit.php3) would do the same)
+// (test for openervar (see itemedit.php) would do the same)
 if ( $return_url != 'close_dialog' ) {
-    echo '<a href="'. con_url(StateUrl("itemedit.php3"),"encap=false&edit=1&id=$sh_itm") .'" target="_parent" class="btn btn-s">'. _m("Edit") .'</a>';
+    echo '<a href="'. con_url(StateUrl("itemedit.php"),"encap=false&edit=1&id=$sh_itm") .'" target="_parent" class="btn btn-s">'. _m("Edit") .'</a>';
 }
 echo ' &nbsp; ';
 if ( $return_url == 'close_dialog' ) {
