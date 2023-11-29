@@ -38,7 +38,7 @@ class HidWidget extends Widget
      * @param AA_Property $aa_property
      * @return string
      */
-    function stdFormStart($aa_property) {
+    function stdFormStart($aa_property): string {
         $ret  = '<tr style="visibility:collapse;"><td colspan=2></td></tr>'."\n";  // add extra row for zebra stripes
         $ret .= "\n<tr class=\"formrow{formpart} fieldstart cont-".varname4form($aa_property->getId())."\" style=\"visibility:collapse;\">";
         $ret .= "\n <th>".$aa_property->getName();
