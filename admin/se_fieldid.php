@@ -2,11 +2,11 @@
 /**
  * This script allows to change a field ID in hopefully all tables where it occurs.
  *
- *  The array maintain_fields contains database fields to be checked. All such fields
- *  are downloaded from database, the old ID occuring anywhere in them is changed to the
+ *  The array MAINTAIN_FIELDS contains database fields to be checked. All such fields
+ *  are downloaded from database, the old ID occurring anywhere in them is changed to the
  *  new one and the fields are uploaded back.
  *
- *  Some texts cannot be described in this easy way, so maintain_sql may contain other
+ *  Some texts cannot be described in this easy way, so MAINTAIN_SQL may contain other
  *  SQL commands. You may use the :old_id: and :new_id: strings which will be replaced by the old / new ids.
  *
  * PHP version 7.2+
@@ -45,8 +45,8 @@ require_once __DIR__ . "/../include/varset.php";
 require_once __DIR__ . "/../include/util.php"; // tryquery
 
 try {
-    // array ( 2038 => 1, 19 => 1, )
-    $new_id_number = InputVars::intPOST('new_id_number');
+    // array ( '.', 2038 => 1, 19 => 1, )
+    $new_id_number = InputVars::stringPOST('new_id_number');
     // array ( '_year' => 1, 'code' => 1, )
     $new_id_text = InputVars::stringSlashedPOST('new_id_text');
     // array ( 'time.......…' => 1, 'id.........…' => 1, )
@@ -61,7 +61,7 @@ try {
 
 MoreTimeLimit(600); // set_time_limit to 10 minutes (at least)
 
-$reserved_ids = [
+const RESERVED_IDS = [
   "disc_app........",
   "disc_count......",
   "display_count...",
@@ -77,45 +77,65 @@ $reserved_ids = [
   "status_code....."
 ];
 
-$maintain_fields = [
-    "slice" => [
-            "primary" => "id",  // primary key
+$xslice_id = xpack_id(AA::$module_id);
+
+if ($cancel) {
+    go_url( StateUrl(self_base() . "index.php3"));
+}
+
+
+if (!IfSlPerm(PS_FIELDS)) {
+    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php3", _m("You have not permissions to change fields settings"), "admin");
+    exit;
+}
+
+$err = [];          // error array (Init - just for initializing variable
+$varset = new Cvarset();
+
+/** ChangefieldID function
+ * @param $old_id
+ * @param $new_id
+ */
+function ChangeFieldID($old_id, $new_id) {
+    define("MAINTAIN_FIELDS", [
+        "slice" => [
+            "primary"      => "id",  // primary key
             "primary_type" => "text", // key type (text / number)
-            "slice_id" => "id", // slice_id key
-            "fields" => [     // fields to be changed
-                "fulltext_format_top",
-                "fulltext_format",
-                "fulltext_format_bottom",
-                "odd_row_format",
-                "even_row_format",
-                "compact_top",
-                "compact_bottom",
-                "category_top",
-                "category_format",
-                "category_bottom",
-                "admin_format_top",
-                "admin_format",
-                "admin_format_bottom",
-                "aditional",
-                "javascript"
+            "slice_id"     => "id", // slice_id key
+            "fields"       => [     // fields to be changed
+                                    "fulltext_format_top",
+                                    "fulltext_format",
+                                    "fulltext_format_bottom",
+                                    "odd_row_format",
+                                    "even_row_format",
+                                    "compact_top",
+                                    "compact_bottom",
+                                    "category_top",
+                                    "category_format",
+                                    "category_bottom",
+                                    "admin_format_top",
+                                    "admin_format",
+                                    "admin_format_bottom",
+                                    "aditional",
+                                    "javascript"
             ]
-    ],
-    "field" => [
+        ],
+        "field" => [
             "primary_part" => "id", // the whole key is (id,slice_id)
             "primary_type" => "text",
-            "slice_id" => "slice_id",
-            "fields" => [
+            "slice_id"     => "slice_id",
+            "fields"       => [
                 "id",
                 "alias1_func",
                 "alias2_func",
                 "alias3_func"
             ]
-    ],
-    "view" => [
-            "primary" => "id",
+        ],
+        "view"  => [
+            "primary"      => "id",
             "primary_type" => "number",
-            "slice_id" => "slice_id",
-            "fields" => [
+            "slice_id"     => "slice_id",
+            "fields"       => [
                 "before",
                 "even",
                 "odd",
@@ -139,46 +159,23 @@ $maintain_fields = [
                 "field2",
                 "field3"
             ]
-    ]
-];
+        ]
+    ]);
 
-$xslice_id = xpack_id(AA::$module_id);
+    $xslice_id = xpack_id(AA::$module_id);
 
-$maintain_sql = [
-    "UPDATE feedmap SET to_field_id=':new_id:' WHERE to_field_id=':old_id:' AND to_slice_id = $xslice_id" ,
-    "UPDATE feedmap SET from_field_id=':new_id:' WHERE from_field_id=':old_id:' AND from_slice_id = $xslice_id"
-];
-
-
-if ($cancel) {
-    go_url( StateUrl(self_base() . "index.php3"));
-}
-
-
-if (!IfSlPerm(PS_FIELDS)) {
-    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php3", _m("You have not permissions to change fields settings"), "admin");
-    exit;
-}
-
-$err = [];          // error array (Init - just for initializing variable
-$varset = new Cvarset();
-
-/** ChangefieldID function
- * @param $old_id
- * @param $new_id
- */
-function ChangeFieldID($old_id, $new_id)
-{
-    global $maintain_fields, $maintain_sql, $xslice_id;
+    define("MAINTAIN_SQL", [
+        "UPDATE feedmap SET to_field_id=':new_id:' WHERE to_field_id=':old_id:' AND to_slice_id = $xslice_id",
+        "UPDATE feedmap SET from_field_id=':new_id:' WHERE from_field_id=':old_id:' AND from_slice_id = $xslice_id"
+    ]);
 
     $varset = new Cvarset();
-    foreach ( $maintain_fields as $table => $settings) {
+    foreach ( MAINTAIN_FIELDS as $table => $settings) {
         $keyfield = $settings['primary'];
         if (!$keyfield) {
             $keyfield = $settings['primary_part'];
         }
-        $SQL = "SELECT `$keyfield`, `".join($settings['fields'],"`, `")."` FROM `$table`
-                WHERE ".$settings['slice_id']." = $xslice_id";
+        $SQL = "SELECT `$keyfield`, `". join("`, `", $settings['fields'])."` FROM `$table`  WHERE ".$settings['slice_id']." = $xslice_id";
         $rows = GetTable2Array ($SQL);
         if (is_array($rows)) {
             foreach ($rows as $row) {
@@ -207,7 +204,7 @@ function ChangeFieldID($old_id, $new_id)
         }
     }
 
-    foreach ($maintain_sql as $sql) {
+    foreach (MAINTAIN_SQL as $sql) {
         $sql = str_replace(":old_id:", $old_id, $sql);
         $sql = str_replace(":new_id:", $new_id, $sql);
         DB_AA::sql($sql);
@@ -234,7 +231,7 @@ if ($update && $new_id_text && AA::$module_id) {
         }
         $new_id .= $new_id_number;
         if ($old_id != $new_id && strlen ($new_id) == 16) {
-            if (in_array($new_id, $reserved_ids)) {
+            if (in_array($new_id, RESERVED_IDS)) {
                 $err[] = _m("This ID is reserved")." ($new_id).";
             } else {
                 // proove the field does not exist
@@ -272,7 +269,7 @@ echo"<tr><td>"._m("This page allows to change field IDs. It is a bit dangerous o
 <tr><td><br>"._m("Change from").": <select name='old_id'>";
 $slice_fields = false;
 foreach ($s_fields as $fid => $fname) {
-    if (!in_array($fid, $reserved_ids)) {
+    if (!in_array($fid, RESERVED_IDS)) {
         if ( AA_Fields::isSliceField($fid)) {
             $slice_fields = true;
         }
@@ -310,7 +307,7 @@ FrmTabEnd($form_buttons);
 
 $rows = [[_m("Id"), _m("Field")]];
 foreach ($s_fields as $fid => $fname) {
-    if (!in_array($fid, $reserved_ids)) {
+    if (!in_array($fid, RESERVED_IDS)) {
         $rows[] = [$fid, $fname];
     }
 }
