@@ -91,79 +91,79 @@ $_m["Select Category"]
 $_m["OK"]
  = "";
 
-// modules/links/index.php3, row 45
+// modules/links/index.php, row 45
 $_m["No permissions to edit links"]
  = "Nem�te pr�vo editovat tento odkaz";
 
-// modules/links/index.php3, row 238
+// modules/links/index.php, row 238
 $_m["HINT: \"social ecology\" AND environment"]
  = "TIP: (pr�vo AND informace) OR \"ob�ansk� pr�va\"";
 
-// modules/links/index.php3, row 265
+// modules/links/index.php, row 265
 $_m["Perform action on selected items"]
  = "Vyber akci, kter� se provede s vybran�mi odkazy";
 
-// modules/links/index.php3, row 269
+// modules/links/index.php, row 269
 $_m["Check Link"]
  = "Kontrola odkazu provedena";
 
-// modules/links/index.php3, row 272
+// modules/links/index.php, row 272
 $_m["Highlight Link"]
  = "Doporu�it odkaz";
 
-// modules/links/index.php3, row 275
+// modules/links/index.php, row 275
 $_m["Dehighlight Link"]
  = "Zru�it doporu�en� odkazu";
 
-// modules/links/index.php3, row 278
+// modules/links/index.php, row 278
 $_m["Remove from category"]
  = "Vy�adit z t�to kategorie";
 
-// modules/links/index.php3, row 281
+// modules/links/index.php, row 281
 $_m["Move to Active"]
  = "P�esunout mezi Aktivn�";
 
-// modules/links/index.php3, row 285
+// modules/links/index.php, row 285
 $_m["Move to Holding bin"]
  = "P�esunout do Z�sobn�ku";
 
-// modules/links/index.php3, row 289
+// modules/links/index.php, row 289
 $_m["Move to Trash"]
  = "P�esunout do Ko�e";
 
-// modules/links/index.php3, row 292
+// modules/links/index.php, row 292
 $_m["Add to category"]
  = "P�idat do kategorie";
 
-// modules/links/index.php3, row 296
+// modules/links/index.php, row 296
 $_m["Move to category"]
  = "P�esunout do kategorie";
 
-// modules/links/index.php3, row 325
+// modules/links/index.php, row 325
 $_m["ActionApps - Links Manager"]
  = "Spr�va odkaz�";
 
-// modules/links/index.php3, row 382
+// modules/links/index.php, row 382
 $_m["All my links"]
  = "V�echny m� odkazy";
 
-// modules/links/index.php3, row 383
+// modules/links/index.php, row 383
 $_m["Links to check"]
  = "Ke kontrole";
 
-// modules/links/index.php3, row 384
+// modules/links/index.php, row 384
 $_m["Last edited"]
  = "Naposledy editovan�";
 
-// modules/links/index.php3, row 412
+// modules/links/index.php, row 412
 $_m["Show Links"]
  = "Zobraz odkazy";
 
-// modules/links/index.php3, row 416
+// modules/links/index.php, row 416
 $_m["Edit Category"]
  = "Edituj kategorii";
 
-// modules/links/index.php3, row 425
+// modules/links/index.php, row 425
 $_m["Show subtree links"]
  = "Zobrazuj odkazy i ze v�ech podkategori�";
 

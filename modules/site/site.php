@@ -170,12 +170,12 @@ if ($module->getProperty('flag') == 1) {    // 1 - Use AA_Router_Seo
 
     // use REDIRECT_URL for homepage redirects:
     //    RewriteRule ^/?$ /en/home [QSA]
-    //    RewriteRule ^/?en /apc-aa/modules/site/site.php3?site_id=439ee0af030d6b2598763de404aa5e34 [QSA,L,PT]
+    //    RewriteRule ^/?en /apc-aa/modules/site/site.php?site_id=439ee0af030d6b2598763de404aa5e34 [QSA,L,PT]
 
     // or (I think better)
     //    RewriteEngine on
-    //    RewriteRule ^/?$  /apc-aa/modules/site/site.php3?site_id=439ee0af030d6b2598763de404aa5e34 [QSA,L,PT]
-    //    RewriteRule ^/?en /apc-aa/modules/site/site.php3?site_id=439ee0af030d6b2598763de404aa5e34 [QSA,L,PT]
+    //    RewriteRule ^/?$  /apc-aa/modules/site/site.php?site_id=439ee0af030d6b2598763de404aa5e34 [QSA,L,PT]
+    //    RewriteRule ^/?en /apc-aa/modules/site/site.php?site_id=439ee0af030d6b2598763de404aa5e34 [QSA,L,PT]
 
     $uri          = (strlen($_SERVER['REQUEST_URI']) > 1) ? $_SERVER['REQUEST_URI'] : $_SERVER['REDIRECT_URL'];
     $apc_state    = $router->parse($uri);

@@ -49,79 +49,79 @@ $_m["Select Category"]
 $_m["OK"]
  = "U redu";
 
-// modules/links/index.php3, row 45
+// modules/links/index.php, row 45
 $_m["No permissions to edit links"]
  = "Nemate dozvolu za ure�ivanje veza";
 
-// modules/links/index.php3, row 238
+// modules/links/index.php, row 238
 $_m["HINT: \"social ecology\" AND environment"]
  = "";
 
-// modules/links/index.php3, row 265
+// modules/links/index.php, row 265
 $_m["Perform action on selected items"]
  = "";
 
-// modules/links/index.php3, row 269
+// modules/links/index.php, row 269
 $_m["Check Link"]
  = "Provjerite vezu";
 
-// modules/links/index.php3, row 272
+// modules/links/index.php, row 272
 $_m["Highlight Link"]
  = "Ozna�ite vezu";
 
-// modules/links/index.php3, row 275
+// modules/links/index.php, row 275
 $_m["Dehighlight Link"]
  = "Odzna�ite vezu";
 
-// modules/links/index.php3, row 278
+// modules/links/index.php, row 278
 $_m["Remove from category"]
  = "Uklonite iz kategorije";
 
-// modules/links/index.php3, row 281
+// modules/links/index.php, row 281
 $_m["Move to Active"]
  = "Preselite u aktivno";
 
-// modules/links/index.php3, row 285
+// modules/links/index.php, row 285
 $_m["Move to Holding bin"]
  = "Preselite u mapu za �ekanje";
 
-// modules/links/index.php3, row 289
+// modules/links/index.php, row 289
 $_m["Move to Trash"]
  = "Preselite u sme�e";
 
-// modules/links/index.php3, row 292
+// modules/links/index.php, row 292
 $_m["Add to category"]
  = "Dodajte kategoriji";
 
-// modules/links/index.php3, row 296
+// modules/links/index.php, row 296
 $_m["Move to category"]
  = "Preselite u kategoriju";
 
-// modules/links/index.php3, row 325
+// modules/links/index.php, row 325
 $_m["ActionApps - Links Manager"]
  = "APC - AA - Ure�ivanje veza";
 
-// modules/links/index.php3, row 382
+// modules/links/index.php, row 382
 $_m["All my links"]
  = "Sve moje veze";
 
-// modules/links/index.php3, row 383
+// modules/links/index.php, row 383
 $_m["Links to check"]
  = "Veze za provjeru";
 
-// modules/links/index.php3, row 384
+// modules/links/index.php, row 384
 $_m["Last edited"]
  = "Zadnje ure�eno";
 
-// modules/links/index.php3, row 412
+// modules/links/index.php, row 412
 $_m["Show Links"]
  = "Prika�i veze";
 
-// modules/links/index.php3, row 416
+// modules/links/index.php, row 416
 $_m["Edit Category"]
  = "Uredite kategoriju";
 
-// modules/links/index.php3, row 425
+// modules/links/index.php, row 425
 $_m["Show subtree links"]
  = "Poka�ite veze pofkategorija";
 

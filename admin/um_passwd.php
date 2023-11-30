@@ -52,11 +52,11 @@ try {
 
 
 if ($cancel) {
-    go_url( StateUrl(self_base() . "index.php3"));
+    go_url( StateUrl(self_base() . "index.php"));
 }
 
 if (!IfSlPerm(PS_EDIT_SELF_USER_DATA) OR !AA::$perm->isUserEditable(AuthGetUid())) {
-    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php3", _m("You have not permissions to change user data"), "admin");
+    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You have not permissions to change user data"), "admin");
     exit;
 }
 
@@ -102,7 +102,7 @@ $apage->printHead($err, $Msg);
 
 $form_buttons = [
     "update",
-                       "cancel" => ["url"=>"index.php3"]
+                       "cancel" => ["url"=>"index.php"]
 ];
 
 FrmTabCaption(_m("Edit User"));

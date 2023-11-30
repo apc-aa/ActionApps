@@ -211,12 +211,12 @@ $_m["alias for Short Item ID"]
  = "alias pre skrátené císlo clánku";
 
 // include/item.php, row 102, 103
-$_m["alias used on admin page index.php3 for itemedit url"]
- = "alias používaný v administratívnych stránkách index.php3 pre URL itemedit.php";
+$_m["alias used on admin page index.php for itemedit url"]
+ = "alias používaný v administratívnych stránkách index.php pre URL itemedit.php";
 
 // include/item.php, row 104
-$_m["Alias used on admin page index.php3 for edit discussion url"]
- = "Alias používaný v administratívnych stránkách index.php3 pre URL discedit.php";
+$_m["Alias used on admin page index.php for edit discussion url"]
+ = "Alias používaný v administratívnych stránkách index.php pre URL discedit.php";
 
 // include/item.php, row 105
 $_m["Title of Slice for RSS"]

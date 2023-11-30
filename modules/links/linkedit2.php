@@ -96,13 +96,13 @@ $r_state['linkedit']['old'] = $_POST;  // in case of bad input
 unset($r_msg);
 unset($r_err);
 
-$senderUrlOK  = ( Links_IsPublic() ? "/podekovani.shtml" : StateUrl(self_base()."index.php3"));      // TODO - poradne
+$senderUrlOK  = ( Links_IsPublic() ? "/podekovani.shtml" : StateUrl(self_base() . "index.php"));      // TODO - poradne
 $senderUrlErr = ( Links_IsPublic() ? StateUrl(self_base()."linkedit.php") : StateUrl(self_base()."linkedit.php"));
 
 // this is not used, now I think - cancel is served in linkedit.php
 if ($cancel) {
     // page where to go after this script execution
-    $cancelUrl = ( Links_IsPublic() ? "/" : StateUrl(self_base() ."index.php3"));         // TODO - poradne
+    $cancelUrl = ( Links_IsPublic() ? "/" : StateUrl(self_base() . "index.php"));         // TODO - poradne
     go_url( $cancelUrl );
 }
 

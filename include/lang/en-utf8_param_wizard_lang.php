@@ -1282,7 +1282,7 @@ $_m["edit item"]
  = "";
 
 // include/constants_param_wizard.php, row 841
-$_m["_#EDITITEM used on admin page index.php3 for itemedit url"]
+$_m["_#EDITITEM used on admin page index.php for itemedit url"]
  = "";
 
 // include/constants_param_wizard.php, row 844

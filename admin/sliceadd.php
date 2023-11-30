@@ -62,7 +62,7 @@ function GetModuleTemplateSelecbox($type, $g_modules) {
 // the parts used by the slice wizard are in the included file
 
 if ($cancel) {
-  go_url( StateUrl(self_base() . "index.php3"));
+  go_url( StateUrl(self_base() . "index.php"));
 }
 
 $err = [];          // error array (Init - just for initializing variable

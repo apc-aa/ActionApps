@@ -170,7 +170,7 @@ if ($cancel) {
         // Used for adding item to another slice from itemedit's popup.
         CloseDialog();
     } else {
-        go_return_or_url(self_base()."index.php3",true,true);
+        go_return_or_url(self_base() . "index.php",true,true);
     }
 }
 
@@ -304,7 +304,7 @@ if ( ($insert || $update) AND count($fields) ) {
         } elseif ($go_edit) {   // if go_edit - continue to edit again
             go_url( Inputform_url(false, $added_to_db, $slice_id, '', null, null, false) );
         } else {
-            go_return_or_url(self_base() . "index.php3",true,true);
+            go_return_or_url(self_base() . "index.php",true,true);
         }
     }
 }
@@ -375,7 +375,7 @@ $inputform_settings['show_preview_button'] = (($post_preview!=0) OR !isset($post
 $inputform_settings['cancel_url']          =  ($anonymous  ? $r_slice_view_url :
                                               ($return_url=='close_dialog' ? get_admin_url("itemedit.php?cancel=1&return_url=close_dialog") :
                                               ($return_url ? expand_return_url(1) :
-                                              get_admin_url("index.php3?cancel=1"))));
+                                              get_admin_url("index.php?cancel=1"))));
 
 $inputform_settings['hidden']              = [
                              'anonymous'   => (($free OR $anonymous) ? true : ""),

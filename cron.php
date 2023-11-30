@@ -2,7 +2,7 @@
 /**
  * PHP cron: reads items from database and runs them. The item format is UNIX-cron-like.
  *
- * DOCUMENTATION: See cron.php3 documentation in {@link http://apc-aa.sourceforge.net/faq/#401 FAQ pages}.
+ * DOCUMENTATION: See cron.php documentation in {@link http://apc-aa.sourceforge.net/faq/#401 FAQ pages}.
  *
  * UNIX Cron documentation:
  *<pre>
@@ -59,7 +59,7 @@ MoreTimeLimit(3600); // set_time_limit to 1 hour (at least)
 /**
  * Runs the items from the cron table if their time has come.
  * You may call cron with specified timestamp to simulate the behavior.
- * DOCUMENTATION: See cron.php3 documentation in {@link http://apc-aa.sourceforge.net/faq/#401 FAQ pages}.
+ * DOCUMENTATION: See cron.php documentation in {@link http://apc-aa.sourceforge.net/faq/#401 FAQ pages}.
  * @param int $time the UNIX timestamp to simulate behaviour on a given date
  *                  - if omitted, uses the current time
  */

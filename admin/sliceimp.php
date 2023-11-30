@@ -272,7 +272,7 @@ function import_slice_data($slice_id, $id, $content4id, $insert, $feed) {
 }
 
 if ($cancel) {
-    go_url( StateUrl(self_base() . "index.php3"));
+    go_url( StateUrl(self_base() . "index.php"));
 }
 
 $IDconflict = false;

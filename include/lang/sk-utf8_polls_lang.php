@@ -16,24 +16,24 @@ setlocale(LC_NUMERIC, 'en_US');            // use numeric with dot - there is pr
                                            //   $cmp  = create_function('$b', "return ($etalon $operator". ' $b);');
                                            // float!! value $etalon is then with comma which leads to syntax error
 
-// modules/polls/index.php3, row 41
+// modules/polls/index.php, row 41
 $_m["You do not have permission to manage Polls"]
  = "";
 
-// modules/polls/index.php3, row 75
+// modules/polls/index.php, row 75
 $_m["ID"]
  = "";
 
-// modules/polls/index.php3, row 75
+// modules/polls/index.php, row 75
 $_m["Poll Question"]
  = "";
 
-// modules/polls/index.php3, row 75
+// modules/polls/index.php, row 75
 // modules/polls/polledit.php, row 188, 195
 $_m["Publish Date"]
  = "";
 
-// modules/polls/index.php3, row 75
+// modules/polls/index.php, row 75
 // modules/polls/polledit.php, row 189, 196
 $_m["Expiry Date"]
  = "";

@@ -77,7 +77,7 @@ function get_aamenus() {
     $aamenus["linkmanager"] = [
         "label" => _m('Link Manager'),
         "title" => _m('Link Manager'),
-        "href"  => $module_location."index.php3?Tab=app",
+        "href"  => $module_location."index.php?Tab=app",
         "level" => "main",
         "submenu" => "linkmanager_submenu"
     ];
@@ -97,30 +97,30 @@ function get_aamenus() {
         "items"=> [
             "header1"=>_m('Folders').getFrmMoreHelp(get_help_url(AA_LINKS_HELP_MAIN, "schranky"), _m("Folders with links, sorted by their status (active, changed, new, ...)")),
             "app"=> [//"cond"=> $r_state['bin'] != "app",
-                     "href"=>$module_location."index.php3?Tab=app",
+                     "href"=>$module_location."index.php?Tab=app",
                      "label"=>_m('Active')." (".$r_state['bin_cnt']['app'].")"],
             "changed"=> [//"cond"=> $r_state['bin'] != "changed",
-                         "href"=>$module_location."index.php3?Tab=changed",
+                         "href"=>$module_location."index.php?Tab=changed",
                          "label"=>_m('Changed Links')." (".$r_state['bin_cnt']['changed'].")"],
             "new"=> [//"cond"=> $r_state['bin'] != "new",
-                     "href"=>$module_location."index.php3?Tab=new",
+                     "href"=>$module_location."index.php?Tab=new",
                      "label"=>_m('New Links')." (".$r_state['bin_cnt']['new'].")"],
             "folder2"=> [//"cond"=> $r_state['bin'] != "folder2",
-                         "href"=>$module_location."index.php3?Tab=folder2",
+                         "href"=>$module_location."index.php?Tab=folder2",
                          "label"=>_m('Holding bin')." (".$r_state['bin_cnt']['folder2'].")"],
             "folder3"=> [//"cond"=> $r_state['bin'] != "folder3",
-                         "href"=>$module_location."index.php3?Tab=folder3",
+                         "href"=>$module_location."index.php?Tab=folder3",
                          "label"=>_m('Trash')." (".$r_state['bin_cnt']['folder3'].")"],
             "unasigned"=> [//"cond"=> $r_state['bin'] != "unasigned",
-                           "href"=>$module_location."index.php3?Tab=unasigned",
+                           "href"=>$module_location."index.php?Tab=unasigned",
                            "label"=>_m('Unasigned')." (".$r_state['bin_cnt']['unasigned'].")"],
             "unasigned3"=> [//"cond"=> $r_state['bin'] != "unasigned3",
-                            "href"=>$module_location."index.php3?Tab=unasigned3",
+                            "href"=>$module_location."index.php?Tab=unasigned3",
                             "label"=>_m('Unasigned - Trash')." (".$r_state['bin_cnt']['unasigned3'].")"],
             "header2"     => _m("Misc"),
             "empty_trash"=> ["cond"=>IsSuperadmin(),
                              "hide"=>!IsSuperadmin(),
-                             "href"=>$module_location."index.php3?DeleteTrash=1",
+                             "href"=>$module_location."index.php?DeleteTrash=1",
                              "label"=>_m("Empty trash"),
                              "js"=>"EmptyTrashQuestion('{href}','"._m("Are You sure to empty trash?")."')"],
             "debug"=> ["cond"=>IsSuperadmin(),
@@ -133,14 +133,14 @@ function get_aamenus() {
     foreach ( (array) $bookmarks as $bookid => $bookname ) {
         $aamenus['linkmanager_submenu']['items']['bookmark'.$bookid] =
             [
-                "href"=>$module_location."index.php3?GoBookmark=$bookid",
+                "href"=>$module_location."index.php?GoBookmark=$bookid",
                    "label"=>$bookname
             ];
     }
 /*    $aamenus['linkmanager_submenu']['items']['header3'] = _m('Misc');
     $aamenus['linkmanager_submenu']['items']['item6'] =  array (
                             "cond"=>IfSlPerm(PS_LINKS_DELETE_LINKS),
-                            "href"=>$module_location."index.php3?Delete=trash",
+                            "href"=>$module_location."index.php?Delete=trash",
                             "label"=>"<img src='../../images/empty_trash.gif'>"._m('Empty trash')); */
 
     $aamenus["addlink_submenu"] = [

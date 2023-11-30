@@ -4,7 +4,7 @@
  * 'managers' pages (like Item Manager, Link Manager, Discussion comments,
  * Related Items, ...) It takes care about searchber, scroller, actions, ...
  *
- * Should be included to other scripts (as /admin/index.php3)
+ * Should be included to other scripts (as /admin/index.php)
  *
  *
  *
@@ -935,7 +935,7 @@ class Manager extends AA_Storable {
         $itemview->num_records = $this->scroller->metapage;
 
         // big security hole is open if we cache it
-        // (links to itemedit.php3 would stay with session ids in cache
+        // (links to itemedit.php would stay with session ids in cache
         // - you bacame another user !!!)
 
         $ret .= $itemview->get_output('view');

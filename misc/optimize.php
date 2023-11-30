@@ -1,7 +1,7 @@
 <?php
 /**
  * Database maintainance script. It optimizes database tables.
- * This script could be called from cron.php3 - see AA -> Cron and set there
+ * This script could be called from cron.php - see AA -> Cron and set there
  * someting like:
  *                  32  2  *  *  2    misc/optimize.php   key=passw
  *

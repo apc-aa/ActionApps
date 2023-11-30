@@ -52,7 +52,7 @@ use zids;
  *    hit_7  (week)  plan +/- 35  minutes
  *    hit_30 (month) plan +/- 150 minutes
  * For the "statistics counting" task we use toexecute table, so if you have
- * problems with statistics, check, if the script misc/toexecute.php3 is runned
+ * problems with statistics, check, if the script misc/toexecute.php is runned
  * form the aa cron (see AA -> Cron admin page)
  *
  * Why we use this approach? MySQL lock the item table for updte when someone do
@@ -112,7 +112,7 @@ class Hitcounter
             $varset->doInsert('hit_long_id');
         }
 
-        // no longer necessary to plan it here - we plan the task in toexecute.php3 which must be called anyway if we want to tun tasks
+        // no longer necessary to plan it here - we plan the task in toexecute.php which must be called anyway if we want to tun tasks
         // it is not necessary to check, if the  AA\Later\HitcounterUpdate is planed
         // on each hit. We check it only once for 1000 (COUNTHIT_PROBABILITY)
         // if (COUNTHIT_PROBABILITY and rand(0, COUNTHIT_PROBABILITY) == 1) {

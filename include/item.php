@@ -107,7 +107,7 @@ function FillFakeAlias(&$content4id, &$aliases, $alias, $value, $flag=FLAG_HTML)
 
 /** sess_return_url function
  * helper function for f_e
- * this is called from admin/index.php3 and include/usr_aliasfnc.php in some site
+ * this is called from admin/index.php and include/usr_aliasfnc.php in some site
  * added by setu@gwtech.org 2002-0211
  *
  * make_return_url
@@ -126,7 +126,7 @@ function sess_return_url($url) {
 
 /** make_return_url function
  * helper function for f_e
- *  this is called from admin/index.php3 and include/usr_aliasfnc.php in some site
+ *  this is called from admin/index.php and include/usr_aliasfnc.php in some site
  *  added by setu@gwtech.org 2002-0211
  *
  *  make_return_url
@@ -1340,7 +1340,7 @@ class AA_Item {
     /** f_e function
      * If someone understands the parameter wizzard, it would be good to expand this to take a second parameter
      * i.e. return url.
-     * _#EDITITEM used on admin page index.php3 for itemedit url
+     * _#EDITITEM used on admin page index.php for itemedit url
      * param: 0
      * @param $col
      * @param $param
@@ -1354,7 +1354,7 @@ class AA_Item {
             case "session":
                 return $sess->id();
             case "disc":
-                // _#DISCEDIT used on admin page index.php3 for edit discussion comments
+                // _#DISCEDIT used on admin page index.php for edit discussion comments
                 return con_url(StateUrl("discedit.php"), "item_id=". $this->getItemID());
                 // These next two return values from globals that would actually be better coming froom the item or itemview,
                 // otherwise won't work if there are nested views.

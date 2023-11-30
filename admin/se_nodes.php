@@ -186,7 +186,7 @@ FrmTabCaption(_m("Remote node administration"));
     }
 
     function Cancel() {
-        window.location = "<?php echo StateUrl("index.php3")?>"
+        window.location = "<?php echo StateUrl("index.php")?>"
     }
 </script>
 <?php

@@ -49,7 +49,7 @@ try {
 
 
 if ($cancel) {
-    go_url( StateUrl(self_base() . "index.php3"));
+    go_url( StateUrl(self_base() . "index.php"));
 }
 
 $deletearr = $del ? [$del] : (array)$deletearr;

@@ -31,16 +31,16 @@ require_once __DIR__ . "/../../include/tv_email.php";
 require_once __DIR__ . "/../../include/locauth.php";
 
 /** see class tabledit :: var $getTableViewsFn for an explanation of the parameters */
-function GetAlertsTableView ($viewID, $processForm = false) {
+function GetAlertsTableView($viewID, $processForm = false): array {
 
     if ($viewID == "email_edit") {
-        $tableview = GetEmailTableView ($viewID);
+        $tableview = GetEmailTableView($viewID);
         $tableview["mainmenu"] = "admin";
         return $tableview;
     }
 
     if ($viewID == "email") {
-        $tableview = GetEmailTableView ($viewID);
+        $tableview = GetEmailTableView($viewID);
         $tableview["mainmenu"] = "admin";
         $tableview["submenu"] = "email";
         return $tableview;
@@ -273,6 +273,7 @@ function GetAlertsTableView ($viewID, $processForm = false) {
         ]
         ];
     }
+    return [];
 
 } // end of GetTableView
 

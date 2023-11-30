@@ -73,18 +73,18 @@ try {
 
 
 if ($cancel) {
-    go_url( StateUrl(self_base() . "index.php3"));
+    go_url( StateUrl(self_base() . "index.php"));
 }
 
 if (!IfSlPerm(PS_FIELDS)) {
-    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php3", _m("You have not permissions to change fields settings"), "admin");
+    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You have not permissions to change fields settings"), "admin");
     exit;
 }
 
 // as_new and $group_id is varname4form()-ed (for easier parameter passing)
 $as_new    = (strlen($as_new) > 1)   ? pack_id(substr($as_new,1)) : null;
 $group_id  = (strlen($group_id) > 1) ? pack_id(substr($group_id,1)) : null;
-$back_url  = ($return_url ? ($fid    ? con_url($return_url,"fid=".$fid) : $return_url) : "index.php3");
+$back_url  = ($return_url ? ($fid    ? con_url($return_url,"fid=".$fid) : $return_url) : "index.php");
 $from_form = false;  // display the values from form (after unsucessful update)
 
 if ($deleteGroup AND $group_id) {
@@ -99,7 +99,7 @@ $varset      = new Cvarset();
 if ( $group_id ) {
     $constant_info = DB_AA::select1('', 'SELECT  LOWER(HEX(`slice_id`)) AS owner_id, name, propagate FROM constant_slice, slice', [['constant_slice.slice_id', 'slice.id', 'j'], ['group_id', $group_id]]);
     if ($constant_info && !CheckPerms( AuthGetUid(), "slice", $constant_info["owner_id"], PS_FIELDS)) {
-        AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php3", _m("You have not permissions to change fields settings for the slice owning this group") . " (" . $constant_info['name'] . ")", "admin");
+        AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You have not permissions to change fields settings for the slice owning this group") . " (" . $constant_info['name'] . ")", "admin");
         exit;
     }
 }

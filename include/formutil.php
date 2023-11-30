@@ -2919,7 +2919,7 @@ function getFrmJavascriptCached( $jscode, $name, $loadtype = 'async defer' ) {
         $str2find = new CacheStr2find([$name], 'js');
         AA::Pagecache()->store($key, $jscode, $str2find, true);
     }
-    return getFrmJavascriptFile( 'cached.php3?keystr='.$key, $loadtype );
+    return getFrmJavascriptFile( 'cached.php?keystr='.$key, $loadtype );
 }
 
 /** getFrmCSS function

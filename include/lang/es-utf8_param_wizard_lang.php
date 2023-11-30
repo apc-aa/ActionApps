@@ -1353,8 +1353,8 @@ $_m["edit item"]
  = "editar ítem";
 
 // include/constants_param_wizard.php, row 841
-$_m["_#EDITITEM used on admin page index.php3 for itemedit url"]
- = "alias _#EDITITEM usado en la página de administración index.php3 para el enlace para editar el ítem";
+$_m["_#EDITITEM used on admin page index.php for itemedit url"]
+ = "alias _#EDITITEM usado en la página de administración index.php para el enlace para editar el ítem";
 
 // include/constants_param_wizard.php, row 844
 $_m["disc - for editing a discussion<br>itemcount - to output an item count<br>safe - for safe html<br>slice_info - select a field from the slice info<br>edit - URL to edit the item<br>add - URL to add a new item"]

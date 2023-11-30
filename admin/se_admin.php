@@ -1,6 +1,6 @@
 <?php
 /**
- *  se_admin.php - assigns html format for administation item view (index.php3)
+ *  se_admin.php - assigns html format for administation item view (index.php)
  *  optionally $Msg to show under <h1>Headline</h1> (typically: update successful)
  *
  * PHP version 7.2+
@@ -65,11 +65,11 @@ const DEFAULT_ADMIN_BOTTOM = '';
 const DEFAULT_ADMIN_MSG    = '';
 
 if ($cancel) {
-    go_url( StateUrl(self_base() . "index.php3"));
+    go_url( StateUrl(self_base() . "index.php"));
 }
 
 if (!IfSlPerm(PS_CONFIG)) {
-    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php3", _m("You have no permission to set configuration parameters of this slice"), "admin");
+    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You have no permission to set configuration parameters of this slice"), "admin");
     exit;
 }
 

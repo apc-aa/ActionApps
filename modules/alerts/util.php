@@ -73,7 +73,7 @@ function get_bin_names() {
 function new_collection_id() {
     do {
         $new_id = gensalt(5);
-    } while ( DB_AA::select1('id', 'SELECT id FROM `alerts_collection`', [['id', $new_id]]) );
+    } while ( DB_AA::test('alerts_collection', [['id', $new_id]]) );
     return $new_id;
 }
 
@@ -85,16 +85,12 @@ function getAlertsField($field_id, $collection_id) {
 
 // -----------------------------------------------------------------------------------
 
-function alerts_con_url($Url,$Params){
-  return ( strstr($Url, '?') ? $Url."&".$Params : $Url."?".$Params );
-}
-
 /** confirm_email function
  *   Confirms email on Reader management slices because the parameter $aw
  *   is sent only in Welcome messages.
  *   Returns true if email exists and not yet confirmed, false otherwise.
  */
-function confirm_email($slice_id, $aw) {
+function confirm_email($slice_id, $aw): bool {
 
     require_once __DIR__ . "/../../include/itemfunc.php";
 
@@ -111,18 +107,17 @@ function confirm_email($slice_id, $aw) {
 
 /** unsubscribe_reader function
  */
-function unsubscribe_reader($slice_id, $au, $c) {
-
+function unsubscribe_reader($slice_id, $au, $c): bool {
     require_once __DIR__ . "/../../include/itemfunc.php";
 
     $readers = DB_AA::select('iid', 'SELECT LOWER(HEX(item.id)) as iid FROM `content`,`item`',[['content.item_id', 'item.id', 'j'],['item.slice_id',$slice_id,'l'],['content.field_id', FIELDID_ACCESS_CODE],['content.text',$au]]);
     if (count($readers) != 1) {
-        warn("AU not OK: ".$db->num_rows()." items");
+        warn("AU not OK: ".count($readers)." items");
         return false;
     }
     $item_id   = reset($readers);
     $field_id  = getAlertsField(FIELDID_HOWOFTEN, $c);
-    $frequency = DB_AA::select1('text', 'SELECT text FROM `content`',[['item_id',$item_id, 'l'],['field_id', $field_id]]);
+    $frequency = DB_AA::select1('text', 'SELECT `text` FROM `content`',[['item_id', $item_id, 'l'], ['field_id', $field_id]]);
 
     if ($frequency === false) {
         return false;

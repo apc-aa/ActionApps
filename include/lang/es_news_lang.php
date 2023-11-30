@@ -417,12 +417,12 @@ $_m["Add"]
 $_m["No templates"]
     = "Sin plantillas";
 
-// ./filldisc.php3, row 89, 110
+// ./filldisc.php, row 89, 110
 // ./filler.php, row 301
 $_m["Not accepted, sorry. Looks like spam."]
     = "";
 
-// ./filldisc.php3
+// ./filldisc.php
 // ./filler.php
 $_m["Wrong result, not posible to post comments."]
     = "El resultado de la suma no es correcto";
@@ -2038,16 +2038,16 @@ $_m["No permission to set feeding for any slice"]
 $_m["Export"]
     = "Exportar";
 
-// admin/index.php3, row 94
+// admin/index.php, row 94
 $_m["You do not have permission to edit items in the slice:"]
     = "Usted no tiene permisos para editar �tems en el canal:";
 
-// admin/index.php3, row 162
+// admin/index.php, row 162
 // admin/se_history.php, row 213
 $_m["ActionApps - Reader Manager"]
     = "Gestor de Lectura - AAs";
 
-// admin/index.php3, row 163
+// admin/index.php, row 163
 $_m["ActionApps - Item Manager"]
     = "Gestor de Items - AAs";
 
@@ -4176,15 +4176,15 @@ $_m["You don't have permissions to run %1."]
 $_m["Central - Copy Slice (1/2) - Select Source ActionApps"]
     = "";
 
-// central/index.php3, row 62
+// central/index.php, row 62
 $_m["You do not have permission to manage ActionApps instalations"]
     = "";
 
-// central/index.php3, row 135
+// central/index.php, row 135
 $_m["sql_upadte NOW!"]
     = "";
 
-// central/index.php3, row 149
+// central/index.php, row 149
 $_m["ActionApps Central"]
     = "";
 
@@ -5345,13 +5345,13 @@ $_m["alias for Short Item ID"]
 
 // include/item.php, row 102, 103
 // include/field.class.php, row 404, 405
-$_m["alias used on admin page index.php3 for itemedit url"]
-    = "alias usado en la p�gina de administraci�n index.php3 para el url de edici�n del �tem";
+$_m["alias used on admin page index.php for itemedit url"]
+    = "alias usado en la p�gina de administraci�n index.php para el url de edici�n del �tem";
 
 // include/item.php, row 104
 // include/field.class.php, row 406
-$_m["Alias used on admin page index.php3 for edit discussion url"]
-    = "Alias usado en la p�gina de administraci�n index.php3 para el URL de los comentarios";
+$_m["Alias used on admin page index.php for edit discussion url"]
+    = "Alias usado en la p�gina de administraci�n index.php para el URL de los comentarios";
 
 // include/item.php, row 105
 // include/field.class.php, row 407

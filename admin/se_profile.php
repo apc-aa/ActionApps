@@ -58,7 +58,7 @@ if ($cancel) {
 }
 
 if (!IfSlPerm(PS_USERS)) {
-    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php3", _m("You have not permissions to manage users"), "admin");
+    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You have not permissions to manage users"), "admin");
     exit;
 }
 

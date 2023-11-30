@@ -161,8 +161,8 @@ class AA_Collection {
                     $als = new AA_Aliases();
                     $als->addTextAlias("_#FILTERS_",$user_text);
                     $als->addTextAlias("_#HOWOFTEN",$ho);
-                    $als->addTextAlias("_#COLLFORM",alerts_con_url($this->getSliceUrl(), "ac=".$readerContent->getValue(FIELDID_ACCESS_CODE)));
-                    $als->addTextAlias("_#UNSBFORM",alerts_con_url($this->getSliceUrl(), "au=".$readerContent->getValue(FIELDID_ACCESS_CODE). "&c=".$this->id));
+                    $als->addTextAlias("_#COLLFORM",get_url($this->getSliceUrl(), ['ac'=>$readerContent->getValue(FIELDID_ACCESS_CODE)]));
+                    $als->addTextAlias("_#UNSBFORM",get_url($this->getSliceUrl(), ['au'=>$readerContent->getValue(FIELDID_ACCESS_CODE),'c'=>$this->id]));
 
                     $reader_slice = $this->getReaderSlice();
                     $aliases      = array_merge($reader_slice->aliases(), $als->getArray());
@@ -182,8 +182,8 @@ class AA_Collection {
 //          $als->addAlias(new AA_Alias("_#FILTERS_", "id..............", 'f_t', array(get_filter_text_4_reader(null, $filters, $this->id))));
             $als->addTextAlias("_#FILTERS_", $this->getFilterText4Reader(null, $filters));
             $als->addTextAlias("_#HOWOFTEN", $ho);
-            $als->addTextAlias("_#COLLFORM", alerts_con_url($this->getSliceUrl(), "ac=ABCDE"));
-            $als->addTextAlias("_#UNSBFORM", alerts_con_url($this->getSliceUrl(), "au=ABCDE&c=".$this->id));
+            $als->addTextAlias("_#COLLFORM", get_url($this->getSliceUrl(), ['ac'=>'ABCDE']));
+            $als->addTextAlias("_#UNSBFORM", get_url($this->getSliceUrl(), ['au'=>'ABCDE','c'=>$this->id]));
             $item = new AA_Item('', $als);
             foreach ( (array)$emails as $email ) {
                 if (AA_Mail::sendTemplate($this->_get('email_id_alert'), $email, $item)) {
@@ -349,7 +349,7 @@ class AA_Collection {
     /** Used in send_emails(). Finds filter text for the given reader.
      *   There are two modes: group by Selection and don't group. The
      *   second one is more difficult.
-     * @param object $readerContent if null, use all filters
+     * @param ItemContent|null $readerContent if null, use all filters
      * @return string
      */
     function getFilterText4Reader($readerContent, array $filters): string {

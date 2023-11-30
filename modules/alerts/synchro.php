@@ -104,7 +104,7 @@ echo '
     '._m("This Alerts Collection takes user data from the slice").":<br><b>";
 
 if ($slice_set) {
-    echo "<a href=\"".StateUrl(AA_INSTAL_PATH."admin/index.php3?change_id=". $collectionprop["slice_id"])."\">".$slice_name.'</a>';
+    echo "<a href=\"".StateUrl(AA_INSTAL_PATH."admin/index.php?change_id=". $collectionprop["slice_id"])."\">".$slice_name.'</a>';
 } else {
     echo $slice_name;
 }

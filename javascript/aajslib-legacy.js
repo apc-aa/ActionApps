@@ -8014,7 +8014,7 @@ function AA_SendForm(id, refresh, ok_func) {
  *  Polls usage - @see: https://actionapps.org/en/Polls_Module#AJAX_Polls_Design
  */
 function AA_AjaxSendForm(form_id, url) {
-    var filler_url = url || 'modules/polls/poll.php3';  // by default it is used for Polls
+    var filler_url = url || 'modules/polls/poll.php';  // by default it is used for Polls
     if (filler_url.charAt(0)!='/') {
         filler_url = AA_GetConf('path') + filler_url;   // AA link
     }

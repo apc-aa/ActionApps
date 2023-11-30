@@ -122,7 +122,7 @@ if ($cancel) {
 }
 
 if (!IfSlPerm(PS_FIELDS)) {
-    AA_Adminpageutil::MsgPageMenu(get_admin_url("index.php3"), _m("You have not permissions to change fields settings"), "admin");
+    AA_Adminpageutil::MsgPageMenu(get_admin_url("index.php"), _m("You have not permissions to change fields settings"), "admin");
     exit;
 }
 
@@ -353,7 +353,7 @@ $headcode = '
         alert(\''. _m("You selected slice and not constant group. It is impossible to create slice from here.") .'\');
         return;
       }
-      window.location = GetUrl("'. get_admin_url("index.php3"). '", ["change_id=" + conid.substring(7) ]);  
+      window.location = GetUrl("'. get_admin_url("index.php"). '", ["change_id=" + conid.substring(7) ]);  
       return;
     }
     if ( conid != "" ) {

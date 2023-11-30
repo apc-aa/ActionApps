@@ -62,7 +62,7 @@ $managed->setColumn('last_run', '{date:j.n.Y H#:i#:s:{last_run}}');
 
 //if ($viewID == "cron") {
 //    $doc_url = "https://apc-aa.sourceforge.net/faq/#cron";
-//    $run_url = get_aa_url('cron.php3','',false);
+//    $run_url = get_aa_url('cron.php','',false);
 //    return  [
 //        "table" => "cron",
 //        "type" => "browse",
@@ -92,7 +92,7 @@ $managed->setColumn('last_run', '{date:j.n.Y H#:i#:s:{last_run}}');
 //    ];
 //}
 $doc_url = "http://actionapps.org/faq/detail.shtml?x=1726";
-$run_url = get_aa_url('cron.php3','',false);
+$run_url = get_aa_url('cron.php','',false);
 $managed->setAbout( _m("For help see FAQ: ")."<a href=\"$doc_url\">$doc_url</a><br>". _m("To run cron manualy now: ")."<a href=\"$run_url\">$run_url</a>");
 
 $apage = new AA_Adminpageutil('aaadmin', 'cron');

@@ -3,7 +3,7 @@
  * File contains definitions of functions which corresponds with actions
  * on Link Manager page - manipulates with links
  *
- * Should be included to other scripts (module/links/index.php3)
+ * Should be included to other scripts (module/links/index.php)
  *
  * @package Links
  * @version $Id$

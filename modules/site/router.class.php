@@ -213,8 +213,8 @@ class AA_Router {
  *
  *  Using this this class requires mod_rewrite with the rules set as follows:
  *
- *    RewriteRule ^$ /apc-aa/modules/site/site.php3?site_id=670d58c34e6671be2460dde59ab5aab1&apc=en/home [L,QSA]
- *    RewriteRule ^((en|cz|de).*$) /apc-aa/modules/site/site.php3?site_id=670d58c34e6671be2460dde59ab5aab1&apc=$1 [L,QSA]
+ *    RewriteRule ^$ /apc-aa/modules/site/site.php?site_id=670d58c34e6671be2460dde59ab5aab1&apc=en/home [L,QSA]
+ *    RewriteRule ^((en|cz|de).*$) /apc-aa/modules/site/site.php?site_id=670d58c34e6671be2460dde59ab5aab1&apc=$1 [L,QSA]
  *
  *  The URL then looks like
  *
@@ -288,7 +288,7 @@ class AA_Router_Seo extends AA_Router {
         }
 
         if ( $_REQUEST['username'] ) {
-            // not necessary - we alredy logged in by pageOpen() in site.php3
+            // not necessary - we alredy logged in by pageOpen() in site.php
             //$auth->relogin();
             $this->apc['xuser'] = AuthGetUname();
             $this->apc['xuid']  = AuthGetUid();
@@ -410,10 +410,10 @@ class AA_Router_Seo extends AA_Router {
         // the state should be direcory-like: /cz/, /en2/, ... not /cz, /en2 - the reason is we want to report the /entropy url as 404, not as xlang=en, xflag=tropy
         // which could happen when site.php is called like:
         //   RewriteEngine on
-        //   RewriteRule ^$ /apc-aa/modules/site/site.php3 [L,QSA]
+        //   RewriteRule ^$ /apc-aa/modules/site/site.php [L,QSA]
         //   RewriteCond %{REQUEST_FILENAME} !-f
         //   RewriteCond %{REQUEST_FILENAME} !-d
-        //   RewriteRule ^ /apc-aa/modules/site/site.php3 [L,QSA]
+        //   RewriteRule ^ /apc-aa/modules/site/site.php [L,QSA]
         if ($i > 1) {
             $ret = rtrim($ret, "/");
         }

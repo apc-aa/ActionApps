@@ -1316,7 +1316,7 @@ $_m["edit item"]
  = "Uredite stavku";
 
 // include/constants_param_wizard.php, row 841
-$_m["_#EDITITEM used on admin page index.php3 for itemedit url"]
+$_m["_#EDITITEM used on admin page index.php for itemedit url"]
  = "Uredite stavku na admin stranici";
 
 // include/constants_param_wizard.php, row 844

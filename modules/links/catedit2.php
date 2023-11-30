@@ -186,7 +186,7 @@ function GetPureName($name, &$state) {
 // End of function definitions -------------------------------------------------
 
 if ($cancel)
-    go_url( StateUrl(self_base(). "index.php3"));
+    go_url( StateUrl(self_base() . "index.php"));
 
 
 // we always sending cat id - it prevent us of bug with 'Back' browser button
@@ -312,4 +312,4 @@ if (isset($oldBaseSubcat) AND is_array($oldBaseSubcat) ) {
 }
 
 page_close();
-go_url( StateUrl(self_base() . "index.php3"));
+go_url( StateUrl(self_base() . "index.php"));

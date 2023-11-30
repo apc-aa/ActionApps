@@ -48,9 +48,9 @@ require_once __DIR__ . "/../modules/links/cattree.php";
  * benefit is, that the script then can run as long as you want - it is not
  * stopped be Apache after 2 minutes or whatever is set in TimeOut
  * The commandline could look like:
- *   # php toexecute.php3
+ *   # php toexecute.php
  * or with 'nice' and skipping to right directory for example:
- *   # cd /var/www/example.org/apc-aa/misc && nice php toexecute.php3
+ *   # cd /var/www/example.org/apc-aa/misc && nice php toexecute.php
  * The command above could be used from cron.
  */
 

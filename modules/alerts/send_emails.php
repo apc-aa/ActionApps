@@ -144,7 +144,7 @@ function showSelectionTable() {
             }
             echo "<tr><td rowspan=".count($slice["views"]).">
                 <a href=\"".StateUrl(AA_INSTAL_PATH
-                    ."admin/index.php3?slice_id=".unpack_id($slice_id))."\">"
+                    ."admin/index.php?slice_id=".unpack_id($slice_id))."\">"
                     .$slice["name"]."</a></td>";
             $first_view = true;
             foreach ($slice["views"] as $vid => $view) {

@@ -180,12 +180,12 @@ $_m["alias for Short Item ID"]
  = "sinonim za oznaku kratke stavke";
 
 // include/item.php, row 102, 103
-$_m["alias used on admin page index.php3 for itemedit url"]
- = "sinonim kori�ten na admin stranici index.php3 za ure�ivanje web adresa stavki";
+$_m["alias used on admin page index.php for itemedit url"]
+ = "sinonim kori�ten na admin stranici index.php za ure�ivanje web adresa stavki";
 
 // include/item.php, row 104
-$_m["Alias used on admin page index.php3 for edit discussion url"]
- = "sinonim kori�ten na admin stranici index.php3 za ure�ivanje web adresa diskusija";
+$_m["Alias used on admin page index.php for edit discussion url"]
+ = "sinonim kori�ten na admin stranici index.php za ure�ivanje web adresa diskusija";
 
 // include/item.php, row 105
 $_m["Title of Slice for RSS"]

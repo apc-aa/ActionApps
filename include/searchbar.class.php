@@ -3,7 +3,7 @@
  * File contains definition of AA_Searchbar class - it handles search and order
  * bar in AA admin interface (Link Manager page for example)
  *
- * Should be included to other scripts (as /modules/links/index.php3)
+ * Should be included to other scripts (as /modules/links/index.php)
  *
  *
  *

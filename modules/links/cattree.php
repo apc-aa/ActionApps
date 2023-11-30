@@ -28,7 +28,7 @@ https://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-/** For Links_QueryZids() - called also from /misc/toexecute.php3 */
+/** For Links_QueryZids() - called also from /misc/toexecute.php */
 
 use AA\IO\DB\DB_AA;
 use AA\Later\Toexecute;

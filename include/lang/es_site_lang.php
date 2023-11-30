@@ -42,56 +42,56 @@ $_m["Module not found."]
 $_m["Slice successfully deleted, tables are optimized"]
  = "Canal borrado con �xito; tablas optimizados";
 
-// modules/site/index.php3, row 45
+// modules/site/index.php, row 45
 $_m["You do not have permission to edit items in this slice"]
  = "Ud. no tiene permisos para editar �tems en este canal";
 
-// modules/site/index.php3, row 70
+// modules/site/index.php, row 70
 $_m["Starting spot not found"]
  = "No se encontr� el nodo inicial";
 
-// modules/site/index.php3, row 141
+// modules/site/index.php, row 141
 $_m["Editor window - site code manager"]
  = "Edici�n - Administrador de sitios";
 
-// modules/site/index.php3, row 161
+// modules/site/index.php, row 161
 $_m["Add&nbsp;spot"]
  = "Nuevo&nbsp;nodo";
 
-// modules/site/index.php3, row 162
+// modules/site/index.php, row 162
 $_m["Add&nbsp;choice"]
  = "Nueva&nbsp;opci�n";
 
-// modules/site/index.php3, row 165
+// modules/site/index.php, row 165
 $_m["Move&nbsp;up"]
  = "Mover&nbsp;arriba";
 
-// modules/site/index.php3, row 166
+// modules/site/index.php, row 166
 $_m["Move&nbsp;down"]
  = "Mover&nbsp;abajo";
 
-// modules/site/index.php3, row 169
+// modules/site/index.php, row 169
 $_m["Move&nbsp;left"]
  = "Mover&nbsp;Derecha";
 
-// modules/site/index.php3, row 170
+// modules/site/index.php, row 170
 $_m["Move&nbsp;right"]
  = "Mover&nbsp;Izquierda";
 
-// modules/site/index.php3, row 173
+// modules/site/index.php, row 173
 // modules/site/util.php, row 136, 154
 $_m["Delete"]
  = "Borrar";
 
-// modules/site/index.php3, row 174
+// modules/site/index.php, row 174
 $_m["Are you sure you want to delete the spot?"]
  = "Est� seguro de borrar este nodo?";
 
-// modules/site/index.php3, row 177
+// modules/site/index.php, row 177
 $_m["Enable"]
  = "Activar";
 
-// modules/site/index.php3, row 178
+// modules/site/index.php, row 178
 $_m["Disable"]
  = "Desactivar";
 

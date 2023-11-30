@@ -46,79 +46,79 @@ $_m["Select Category"]
 $_m["OK"]
  = "";
 
-// modules/links/index.php3, row 45
+// modules/links/index.php, row 45
 $_m["No permissions to edit links"]
  = "No tiene permisos para editar v�nculos";
 
-// modules/links/index.php3, row 238
+// modules/links/index.php, row 238
 $_m["HINT: \"social ecology\" AND environment"]
  = "Truco: \"ecolog�a social\" AND ambiente";
 
-// modules/links/index.php3, row 265
+// modules/links/index.php, row 265
 $_m["Perform action on selected items"]
  = "Realice la acci�n en los �tems seleccionados";
 
-// modules/links/index.php3, row 269
+// modules/links/index.php, row 269
 $_m["Check Link"]
  = "Revisar enlace";
 
-// modules/links/index.php3, row 272
+// modules/links/index.php, row 272
 $_m["Highlight Link"]
  = "Resaltar enlace";
 
-// modules/links/index.php3, row 275
+// modules/links/index.php, row 275
 $_m["Dehighlight Link"]
  = "Des-resaltar enlace";
 
-// modules/links/index.php3, row 278
+// modules/links/index.php, row 278
 $_m["Remove from category"]
  = "Remueva de la categoria";
 
-// modules/links/index.php3, row 281
+// modules/links/index.php, row 281
 $_m["Move to Active"]
  = "Mover a aprobados";
 
-// modules/links/index.php3, row 285
+// modules/links/index.php, row 285
 $_m["Move to Holding bin"]
  = "Mover a Por Aprobar";
 
-// modules/links/index.php3, row 289
+// modules/links/index.php, row 289
 $_m["Move to Trash"]
  = "Mover a papelera";
 
-// modules/links/index.php3, row 292
+// modules/links/index.php, row 292
 $_m["Add to category"]
  = "A�adir categoria";
 
-// modules/links/index.php3, row 296
+// modules/links/index.php, row 296
 $_m["Move to category"]
  = "Mover a categoria";
 
-// modules/links/index.php3, row 325
+// modules/links/index.php, row 325
 $_m["ActionApps - Links Manager"]
  = "AAs - Administrador de enlaces";
 
-// modules/links/index.php3, row 382
+// modules/links/index.php, row 382
 $_m["All my links"]
  = "Todos mis enlaces";
 
-// modules/links/index.php3, row 383
+// modules/links/index.php, row 383
 $_m["Links to check"]
  = "Enlaces a revisar";
 
-// modules/links/index.php3, row 384
+// modules/links/index.php, row 384
 $_m["Last edited"]
  = "Ultima edici�n";
 
-// modules/links/index.php3, row 412
+// modules/links/index.php, row 412
 $_m["Show Links"]
  = "Mostrar enlaces";
 
-// modules/links/index.php3, row 416
+// modules/links/index.php, row 416
 $_m["Edit Category"]
  = "Editar categoria";
 
-// modules/links/index.php3, row 425
+// modules/links/index.php, row 425
 $_m["Show subtree links"]
  = "Mostrar subdirectorios de enlaces";
 

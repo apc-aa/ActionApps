@@ -28,56 +28,56 @@ $_m["Module not found."]
 $_m["Slice successfully deleted, tables are optimized"]
  = "";
 
-// modules/site/index.php3, row 45
+// modules/site/index.php, row 45
 $_m["You do not have permission to edit items in this slice"]
  = "";
 
-// modules/site/index.php3, row 70
+// modules/site/index.php, row 70
 $_m["Starting spot not found"]
  = "";
 
-// modules/site/index.php3, row 141
+// modules/site/index.php, row 141
 $_m["Editor window - site code manager"]
  = "";
 
-// modules/site/index.php3, row 161
+// modules/site/index.php, row 161
 $_m["Add&nbsp;spot"]
  = "";
 
-// modules/site/index.php3, row 162
+// modules/site/index.php, row 162
 $_m["Add&nbsp;choice"]
  = "";
 
-// modules/site/index.php3, row 165
+// modules/site/index.php, row 165
 $_m["Move&nbsp;up"]
  = "";
 
-// modules/site/index.php3, row 166
+// modules/site/index.php, row 166
 $_m["Move&nbsp;down"]
  = "";
 
-// modules/site/index.php3, row 169
+// modules/site/index.php, row 169
 $_m["Move&nbsp;left"]
  = "";
 
-// modules/site/index.php3, row 170
+// modules/site/index.php, row 170
 $_m["Move&nbsp;right"]
  = "";
 
-// modules/site/index.php3, row 173
+// modules/site/index.php, row 173
 // modules/site/util.php, row 136, 154
 $_m["Delete"]
  = "";
 
-// modules/site/index.php3, row 174
+// modules/site/index.php, row 174
 $_m["Are you sure you want to delete the spot?"]
  = "";
 
-// modules/site/index.php3, row 177
+// modules/site/index.php, row 177
 $_m["Enable"]
  = "";
 
-// modules/site/index.php3, row 178
+// modules/site/index.php, row 178
 $_m["Disable"]
  = "";
 

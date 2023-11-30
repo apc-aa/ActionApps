@@ -382,7 +382,7 @@ $FIELD_FUNCTIONS = [
 ],
 "f_e"=> [
     "name"=>_m("edit item"),
-    "desc"=>_m("_#EDITITEM used on admin page index.php3 for itemedit url"),
+    "desc"=>_m("_#EDITITEM used on admin page index.php for itemedit url"),
     "params"=> [
         [
             "name"=>_m("type"),

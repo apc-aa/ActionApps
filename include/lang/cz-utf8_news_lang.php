@@ -433,7 +433,7 @@ $_m["Add"]
 $_m["No templates"]
  = "Žádná šablona";
 
-// ./filldisc.php3, row 89, 110
+// ./filldisc.php, row 89, 110
 // ./filler.php, row 301
 $_m["Not accepted, sorry. Looks like spam."]
  = "";
@@ -2049,16 +2049,16 @@ $_m["No permission to set feeding for any slice"]
 $_m["Export"]
  = "Export";
 
-// admin/index.php3, row 94
+// admin/index.php, row 94
 $_m["You do not have permission to edit items in the slice:"]
  = "Nemáte právo editovat články ve webíku:";
 
-// admin/index.php3, row 162
+// admin/index.php, row 162
 // admin/se_history.php, row 213
 $_m["ActionApps - Reader Manager"]
  = "ActionApps - Správce čtenářů";
 
-// admin/index.php3, row 163
+// admin/index.php, row 163
 $_m["ActionApps - Item Manager"]
  = "ActionApps - Správce zpráv";
 
@@ -4190,15 +4190,15 @@ $_m["You don't have permissions to run %1."]
 $_m["Central - Copy Slice (1/2) - Select Source ActionApps"]
  = "";
 
-// central/index.php3, row 62
+// central/index.php, row 62
 $_m["You do not have permission to manage ActionApps instalations"]
  = "";
 
-// central/index.php3, row 135
+// central/index.php, row 135
 $_m["sql_upadte NOW!"]
  = "";
 
-// central/index.php3, row 149
+// central/index.php, row 149
 $_m["ActionApps Central"]
  = "";
 
@@ -5369,13 +5369,13 @@ $_m["alias for Short Item ID"]
 
 // include/item.php, row 102, 103
 // include/field.class.php, row 404, 405
-$_m["alias used on admin page index.php3 for itemedit url"]
- = "alias používaný v administrativních stránkách index.php3 pro URL itemedit.php";
+$_m["alias used on admin page index.php for itemedit url"]
+ = "alias používaný v administrativních stránkách index.php pro URL itemedit.php";
 
 // include/item.php, row 104
 // include/field.class.php, row 406
-$_m["Alias used on admin page index.php3 for edit discussion url"]
- = "Alias používaný v administrativních stránkách index.php3 pro URL discedit.php";
+$_m["Alias used on admin page index.php for edit discussion url"]
+ = "Alias používaný v administrativních stránkách index.php pro URL discedit.php";
 
 // include/item.php, row 105
 // include/field.class.php, row 407

@@ -183,11 +183,11 @@ $_m["alias for Short Item ID"]
  = "Alias für kurze Artikel-ID";
 
 // include/item.php, row 102, 103
-$_m["alias used on admin page index.php3 for itemedit url"]
+$_m["alias used on admin page index.php for itemedit url"]
  = "";
 
 // include/item.php, row 104
-$_m["Alias used on admin page index.php3 for edit discussion url"]
+$_m["Alias used on admin page index.php for edit discussion url"]
  = "";
 
 // include/item.php, row 105

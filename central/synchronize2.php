@@ -26,7 +26,7 @@ require_once __DIR__ . "/../include/formutil.php";
 pageOpen();
 
 if (!IsSuperadmin()) {
-  AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php3", _m("You don't have permissions to synchronize slices."), "admin");
+  AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You don't have permissions to synchronize slices."), "admin");
   exit;
 }
 

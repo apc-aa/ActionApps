@@ -205,12 +205,12 @@ $_m["alias for Short Item ID"]
  = "alias pre skr�ten� c�slo cl�nku";
 
 // include/item.php, row 102, 103
-$_m["alias used on admin page index.php3 for itemedit url"]
- = "alias pou��van� v administrat�vnych str�nk�ch index.php3 pre URL itemedit.php";
+$_m["alias used on admin page index.php for itemedit url"]
+ = "alias pou��van� v administrat�vnych str�nk�ch index.php pre URL itemedit.php";
 
 // include/item.php, row 104
-$_m["Alias used on admin page index.php3 for edit discussion url"]
- = "Alias pou��van� v administrat�vnych str�nk�ch index.php3 pre URL discedit.php";
+$_m["Alias used on admin page index.php for edit discussion url"]
+ = "Alias pou��van� v administrat�vnych str�nk�ch index.php pre URL discedit.php";
 
 // include/item.php, row 105
 $_m["Title of Slice for RSS"]

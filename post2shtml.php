@@ -9,7 +9,7 @@
  * But post2shtml helps you. Instead of using
  *     <form action="some_page.shtml" method="get">
  * you write
- *     <form action="/aa/post2shtml.php3?shtml_page=some_page.shtml" method="post">
+ *     <form action="/aa/post2shtml.php?shtml_page=some_page.shtml" method="post">
  *
  * The script works in these steps:
  *

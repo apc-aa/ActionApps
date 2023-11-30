@@ -205,12 +205,12 @@ $_m["alias for Short Item ID"]
  = "pseudonim pentru ID scurt de element";
 
 // include/item.php, row 102, 103
-$_m["alias used on admin page index.php3 for itemedit url"]
- = "denumire utilizat� �n pagina admin index.php3 pentru url editare element";
+$_m["alias used on admin page index.php for itemedit url"]
+ = "denumire utilizat� �n pagina admin index.php pentru url editare element";
 
 // include/item.php, row 104
-$_m["Alias used on admin page index.php3 for edit discussion url"]
- = "Pseudonim folosit �n pagina admin index.php3 pentru editare url discu�ii";
+$_m["Alias used on admin page index.php for edit discussion url"]
+ = "Pseudonim folosit �n pagina admin index.php pentru editare url discu�ii";
 
 // include/item.php, row 105
 $_m["Title of Slice for RSS"]

@@ -48,7 +48,7 @@ try {
 } catch (Exception $e) {}
 
 if ($cancel) {
-    go_url( StateUrl(self_base() . "index.php3"));
+    go_url( StateUrl(self_base() . "index.php"));
 }
 
 $wizard = 1;

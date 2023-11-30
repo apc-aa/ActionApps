@@ -20,7 +20,7 @@ https://www.apc.org/
 */
 
 /** Old utility functions for "Control file" controlled site modules
- * (the ones used control file in modules/site/sites - like the example - site_bayfm.php3)
+ * (the ones used control file in modules/site/sites - like the example - site_bayfm.php)
  * Now we use SEO Router based sites, which do not need control file nor this utils
  *
  * The function bellow may be used in some site control files. AA itself no longer needs it

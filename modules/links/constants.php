@@ -2,7 +2,7 @@
 /**
  * constants definition file for links module
  *
- * Should be included to other scripts (as /modules/links/index.php3)
+ * Should be included to other scripts (as /modules/links/index.php)
  *
  * @package Links
  * @version $Id$
@@ -48,7 +48,7 @@ const LINKS_BASE_CAT     = 'y';
 const LINKS_NOT_BASE_CAT = 'n';
 
 /** List of fields, which will be listed in searchbar in Links Manager (search)
- *  (modules/links/index.php3)
+ *  (modules/links/index.php)
  */
 function GetLinkFields() {  // function - we need trnslate _m() on use (not at include time)
     $searchfields = new AA\Util\Searchfields();
@@ -160,7 +160,7 @@ class AA_Aliasgenerator_Link extends AbstractAliasgenerator {
 }
 
 /** List of fields, which will be listed in searchbar in Links Manager (search)
- * (modules/links/index.php3)
+ * (modules/links/index.php)
  */
 function GetCategoryFields() {  // function - we need trnslate _m() on use (not at include time)
     return [

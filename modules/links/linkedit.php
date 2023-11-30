@@ -79,7 +79,7 @@ if ( !isset($r_err) ) {
 
 if ($cancel) {
     // page where to go after this script execution
-    $cancelUrl = ( Links_IsPublic() ? "/" : StateUrl(self_base() ."index.php3"));
+    $cancelUrl = ( Links_IsPublic() ? "/" : StateUrl(self_base() . "index.php"));
     go_url( $cancelUrl );
 }
 
@@ -108,7 +108,7 @@ if ( $r_state['link_id'] ) {
 
 /*  all users have the permissions to create link
 } elseif (!IsGlobalPerm( PS_LINKS_CREATE_LINK )) {
-    MsgPage(StateUrl(self_base()."index.php3"), _m('No permission to create link'));
+    MsgPage(StateUrl(self_base()."index.php"), _m('No permission to create link'));
     exit;
 */
 

@@ -38,7 +38,7 @@ https://www.apc.org/
  *
  * All we have to do here is to transform passed variables to $apc_state
  * array and define $slices4cache array. Both those arrays then should be passed
- * to /apc-aa/modules/site.php3 script, which displays the content, then.
+ * to /apc-aa/modules/site.php script, which displays the content, then.
  *
  * ==Site control file==
  *
@@ -51,7 +51,7 @@ https://www.apc.org/
  * 2) If we want to permit control of the site to extenal people, which do
  *    not have access to AA scripts directory, then it is possible to them to
  *    not fill "site control file" in site configuration dialog and then call
- *    /apc-aa/modules/site/site.php3 script from this file. There we should
+ *    /apc-aa/modules/site/site.php script from this file. There we should
  *    prepare new $apc_state and togetger with $slices4cache and $site_id pass
  *    it by GET method. Just like this:
  *

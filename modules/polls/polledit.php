@@ -70,7 +70,7 @@ try {
 // Check permissions for this page.
 
 if (!CheckPerms( AuthGetUid(), "slice", AA::$module_id, PS_MODP_ADD_POLL)) {
-    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php3", _m("No permission to add/edit poll."), "admin");
+    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("No permission to add/edit poll."), "admin");
     exit;
 }
 
@@ -180,7 +180,7 @@ if ($insert  || $update ) {
     // clear cache
     AA::Pagecache()->invalidateFor([$poll_id,AA::$module_id]);    // invalidate this concrete poll and also the list of polls in this module, if used
 
-    go_url(StateUrl(self_base(). "./index.php3"));  // back to poll manager
+    go_url(StateUrl(self_base() . "./index.php"));  // back to poll manager
 }
 
 $apage = new AA_Adminpageutil('pollsmanager', 'main');
@@ -194,12 +194,12 @@ if ($poll_id) {
     $form_buttons = [
         "update",
         "poll_id" => ['type' => 'hidden', 'value'=>$poll_id],
-        "cancel" => ["url"=>"index.php3"]
+        "cancel" => ["url"=>"index.php"]
     ];
 } else {
     $form_buttons = [
         "insert",
-        "cancel" => ["url"=>"index.php3"]
+        "cancel" => ["url"=>"index.php"]
     ];
 }
 

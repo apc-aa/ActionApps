@@ -3,7 +3,7 @@
  * File contains definition of AA_Actionapps class - holding information about
  * one AA installation.
  *
- * Should be included to other scripts (as /admin/index.php3)
+ * Should be included to other scripts (as /admin/index.php)
  *
  * @version $Id$
  * @author Honza Malik <honza.malik@ecn.cz>

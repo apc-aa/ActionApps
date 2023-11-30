@@ -57,7 +57,7 @@ try {
 } catch (Exception $e) {}
 
 if (!IfSlPerm(PS_USERS)) {
-    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php3", _m("You have not permissions to manage users"), "admin");
+    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You have not permissions to manage users"), "admin");
     exit;
 }
 
@@ -100,7 +100,7 @@ function PrintUser($perm, $usr_id, $editor_perm) {
         'User'        => "um_uedit.php?usr_edit=1&selected_user=$usr_id_enc",
         'Group'       => "um_gedit.php?grp_edit=1&selected_group=$usr_id_enc",
         'Reader'      => "um_uedit.php?usr_edit=1&selected_user=$usr_id_enc",
-        'ReaderGroup' => "index.php3?change_id=$usr_id_enc"
+        'ReaderGroup' => "index.php?change_id=$usr_id_enc"
     ];
     $usrinfo = AA::$perm->getIDsInfo($usr_id);
 

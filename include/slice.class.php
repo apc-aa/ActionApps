@@ -140,12 +140,12 @@ class AA_Module {
     {
         static $MODULEINFO = [
             //                   class             url                         menu
-            'W'      => ['AA_Module_Site',  'modules/site/index.php3',   'modules/site/menu.php'],
-            'S'      => ['AA_Slice',        'admin/index.php3',          'include/menu.php'],
-            'Alerts' => ['AA_Module_Alerts','modules/alerts/index.php3', 'modules/alerts/menu.php'],
-            'J'      => ['AA_Module_Jump',  'modules/jump/index.php3',   'include/menu.php'],
-            'P'      => ['AA_Module_Polls', 'modules/polls/index.php3',  'modules/polls/menu.php'],
-            'Links'  => ['AA_Module_Links', 'modules/links/index.php3',  'modules/links/menu.php']
+            'W'      => ['AA_Module_Site',  'modules/site/index.php',   'modules/site/menu.php'],
+            'S'      => ['AA_Slice',        'admin/index.php',          'include/menu.php'],
+            'Alerts' => ['AA_Module_Alerts','modules/alerts/index.php', 'modules/alerts/menu.php'],
+            'J'      => ['AA_Module_Jump',  'modules/jump/index.php',   'include/menu.php'],
+            'P'      => ['AA_Module_Polls', 'modules/polls/index.php',  'modules/polls/menu.php'],
+            'Links'  => ['AA_Module_Links', 'modules/links/index.php',  'modules/links/menu.php']
         ];
         static $_module_types = [];
 
@@ -464,7 +464,7 @@ class AA_Slice extends AA_Module {
     /** @return html link to slice
      */
     function jumpLink(): string {
-        return "<a href=\"".get_admin_url("index.php3?change_id=".$this->getId()). "\">".$this->getName()."</a>";
+        return "<a href=\"".get_admin_url("index.php?change_id=".$this->getId()). "\">".$this->getName()."</a>";
     }
 
     /** type function
@@ -1145,7 +1145,7 @@ class AA_Modulesettings_Site extends AA_AbstractModulesettings {
         return [ //                             id             name                                                type     multi  persist validator, required, help, morehelp, example
             'translate_slice' => new AA_Property( 'translate_slice',  _m("Slice with translations"),                'string', false, true, ['enum', AA_Module::getUserModules('S')], false, _m("the slice used for {tr:text...} translations (the slice needs to have just headline........ field set as 'Allow translation')")),
             'add_aliases'     => new AA_Property( 'add_aliases',      _m("Additional aliases"),                     'string', true,  true, ['enum',   AA_Module::getUserModules('W')], false, _m('Select sitemodule, where we have to look for additional {_:...} aliases')),
-            'web_languages'   => new AA_Property( 'web_languages',    _m("Languages on website"),                   'string', true,  true, ['regexp', ['pattern'=>'/^[a-z]{2}$/','maxlength'=>2]], false, _m('List all languages for which you want to use sitemodule - en, es, cz, ..<br>It is quite necessary if you want to call sitemodule newer way from Apache:<br> RewriteEngine on<br> RewriteRule ^$ /apc-aa/modules/site/site.php3 [L,QSA]<br> RewriteCond %{REQUEST_FILENAME} !-f<br> RewriteCond %{REQUEST_FILENAME} !-d<br> RewriteRule ^ /apc-aa/modules/site/site.php3 [L,QSA]<br>')),
+            'web_languages'   => new AA_Property( 'web_languages',    _m("Languages on website"),                   'string', true,  true, ['regexp', ['pattern'=>'/^[a-z]{2}$/','maxlength'=>2]], false, _m('List all languages for which you want to use sitemodule - en, es, cz, ..<br>It is quite necessary if you want to call sitemodule newer way from Apache:<br> RewriteEngine on<br> RewriteRule ^$ /apc-aa/modules/site/site.php [L,QSA]<br> RewriteCond %{REQUEST_FILENAME} !-f<br> RewriteCond %{REQUEST_FILENAME} !-d<br> RewriteRule ^ /apc-aa/modules/site/site.php [L,QSA]<br>')),
             'page404'         => new AA_Property( 'page404',          _m("Page not Found (404)"),                   'string', false, true, ['enum',   ['1'=>_m('Do not care'),'2'=>_m('Send standard 404 page, when {xid} is empty'),'3'=>_m('Send code below')]], false, _m('When first option "Do not care" is selected (old behavior), you should test unfilled {xid} in your sitemodule yourself')),
             'page404_code'    => new AA_Property( 'page404_code',     _m("HTML code for \"Page not Found\" (404)"), 'text',   false, true),
             'sitemap_alias'   => new AA_Property( 'sitemap_alias',    _m("sitemap.xml alias"),                      'string', false, true, '', false, _m('The sitemap.xml will be generated from all slices (in order above) where the specified alias (say _#SMAP_URL) exists. The alias should generate full url of the item in each slice. For private/hidden items it should generate empty string in order the URL is not shown.')),

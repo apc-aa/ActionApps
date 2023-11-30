@@ -50,7 +50,7 @@ function AlertsSendWelcome( $slice_id, $itemContent ) {
     if (! $itemContent->getValue(FIELDID_MAIL_CONFIRMED)) {   // switch..........
 
         while ($mydb->next_record()) {
-            $aliases["_#COLLFORM"] = GetAliasDef( "f_t:". alerts_con_url($mydb->f("slice_url"),"aw=".$itemContent->getValue(FIELDID_ACCESS_CODE)), "id..............");
+            $aliases["_#COLLFORM"] = GetAliasDef( "f_t:". get_url($mydb->f("slice_url"),['aw'=>$itemContent->getValue(FIELDID_ACCESS_CODE)]), "id..............");
             $aliases["_#HOWOFTEN"] = GetAliasDef( "f_h",  getAlertsField(FIELDID_HOWOFTEN, $mydb->f("id")));
             $aliases["_#CONFIRM_"] = GetAliasDef( "f_h",  FIELDID_MAIL_CONFIRMED);
             $item  = new AA_Item($itemContent, $aliases);
@@ -71,7 +71,7 @@ function AlertsSendWelcome( $slice_id, $itemContent ) {
 *
 *   Only the Active items are sent, not the Pending ones. The Pending items
 *   are sent when they become active
-*   by the regular call from the cron.php3 script in the same way
+*   by the regular call from the cron.php script in the same way
 *   as daily, weekly or monthly alerts.
 */
 function AlertsSendInstantAlert( $item_id, $slice_id ) {

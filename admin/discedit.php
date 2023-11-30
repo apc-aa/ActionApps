@@ -53,7 +53,7 @@ try {
 
 // check permission to edit discussion - you must be Editor, at least
 if (!IfSlPerm(PS_EDIT_ALL_ITEMS)) {
-    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php3", _m("You don't have permissions to edit all items."), "items");
+    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You don't have permissions to edit all items."), "items");
     exit;
 }
 
@@ -119,7 +119,7 @@ $script2run = '<script>
 
 $apage = new AA_Adminpageutil();
 $apage->setTitle(_m("Admin - Discussion comments management"));
-$apage->setForm(['action'=>'index.php3']);
+$apage->setForm(['action'=>'index.php']);
 $apage->addRequire($script2run, 'AA_Req_Footcode');
 $apage->printHead($err, $Msg);
 

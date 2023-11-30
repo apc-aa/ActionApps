@@ -45,7 +45,7 @@ function CompareSliceDefs($template_slice_defs, $comp_slice_defs, $mapping) {
 pageOpen();
 
 if (!IsSuperadmin()) {
-    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php3", _m("You don't have permissions to synchronize slices."), "admin");
+    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You don't have permissions to synchronize slices."), "admin");
     exit;
 }
 

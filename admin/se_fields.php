@@ -73,13 +73,13 @@ try {
 } catch (Exception $e) {}
 
 if ($cancel) {
-    go_url( StateUrl(self_base() . "index.php3"));
+    go_url( StateUrl(self_base() . "index.php"));
 }
 
 $slice = AA_Slice::getModule(AA::$module_id);
 
 if (!IfSlPerm(PS_FIELDS) OR !$slice) {
-    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php3", _m("You have not permissions to change fields settings"), "admin");
+    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You have not permissions to change fields settings"), "admin");
     exit;
 }
 

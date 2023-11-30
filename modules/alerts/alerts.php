@@ -61,7 +61,7 @@ require_once __DIR__ . "/../../modules/alerts/alerts_sending.php";
  * The commandline could look like:
  *   # php alert.php3 howoften=weekly
  * or with 'nice' and skiping to right directory for example:
- *   # cd /var/www/example.org/apc-aa/modules/alerts && nice php alerts.php3 howoften=weekly
+ *   # cd /var/www/example.org/apc-aa/modules/alerts && nice php alerts.php howoften=weekly
  * The command above could be used from cron.
  */
 

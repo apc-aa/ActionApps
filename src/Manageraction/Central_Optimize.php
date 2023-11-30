@@ -1,9 +1,9 @@
 <?php
 /**
  * File contains definitions of functions which corresponds with actions
- * on Item Manager page (admin/index.php3) - manipulates with central_confs
+ * on Item Manager page (admin/index.php) - manipulates with central_confs
  *
- * Should be included to other scripts (admin/index.php3)
+ * Should be included to other scripts (admin/index.php)
  *
  *   Move central_conf to app/hold/trash based on param
  * @param $status     string - static function parameter defined in manager action

@@ -237,7 +237,7 @@ FrmTabEnd($form_buttons);
     }
 
     function Cancel() {
-        window.location = "<?php echo StateUrl(self_base() . "index.php3")?>"
+        window.location = "<?php echo StateUrl(self_base() . "index.php")?>"
     }
 
     function Submit() {

@@ -80,7 +80,7 @@ try {
 } catch (Exception $e) {}
 
 if (!IsSuperadmin()) {
-    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php3", _m("You don't have permissions to do search."), "admin");
+    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You don't have permissions to do search."), "admin");
     exit;
 }
 // ----------------------------------------------------------------------------------------
@@ -148,7 +148,7 @@ function AafinderSiteLink($spot_id, $module_id): string {
     } else {
         $spot_code = "??? $spot_id";
     }
-    return a_href(get_aa_url("modules/site/index.php3?slice_id=$module_id&module_id=$module_id&spot_id=$spot_id&go_sid=$spot_id"), $spot_code). ' ('. AA_Module_Site::getModuleName($module_id) .') &nbsp; '. ChangesMonitor::getHistoryLink("S.$spot_id");
+    return a_href(get_aa_url("modules/site/index.php?slice_id=$module_id&module_id=$module_id&spot_id=$spot_id&go_sid=$spot_id"), $spot_code). ' ('. AA_Module_Site::getModuleName($module_id) .') &nbsp; '. ChangesMonitor::getHistoryLink("S.$spot_id");
 }
 
 function AafinderViewLink($view_id): string {

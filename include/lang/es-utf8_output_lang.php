@@ -258,12 +258,12 @@ $_m["alias for Short Item ID"]
  = "alias para el \"short\" Id del ítem";
 
 // include/item.php, row 102, 103
-$_m["alias used on admin page index.php3 for itemedit url"]
- = "alias usado en la página de administración index.php3 para el url de edición del ítem";
+$_m["alias used on admin page index.php for itemedit url"]
+ = "alias usado en la página de administración index.php para el url de edición del ítem";
 
 // include/item.php, row 104
-$_m["Alias used on admin page index.php3 for edit discussion url"]
- = "Alias utilizado en la página de administración index.php3 para el url de editar discusión";
+$_m["Alias used on admin page index.php for edit discussion url"]
+ = "Alias utilizado en la página de administración index.php para el url de editar discusión";
 
 // include/item.php, row 105
 $_m["Title of Slice for RSS"]

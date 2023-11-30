@@ -182,7 +182,7 @@ if (!$no_slice_id) {
 //    //$module_type_changed = $after_login || ($_GET['from_type'] != $module_type);  // from_type used on slice selectbox in admin interface
 //
 ///* If we switch to another module type, we try whether the requested file
-//   exists in the module direcory and if not, we go to module's index.php3 page.
+//   exists in the module direcory and if not, we go to module's index.php page.
 //
 //   Discussion: There is a chance two modules will have the same page name
 //   for very different behavior and that this would be a bit confusing when
@@ -193,7 +193,7 @@ if (!$no_slice_id) {
 //        $hdd_dir = "../".$MODULES[$module_type]['directory'];
 //        $web_dir = AA_INSTAL_PATH   .$MODULES[$module_type]['directory'];
 //        if (!file_exists($hdd_dir.$page) OR ($page=='tabledit.php') OR ($module_type=='J') ) {
-//            $page = "index.php3";
+//            $page = "index.php";
 //        }
 //        if ($web_dir.$page != $_SERVER['PHP_SELF']) {
 //            $page = StateUrl($web_dir.$page."?slice_id=$slice_id");

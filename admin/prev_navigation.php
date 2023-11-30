@@ -53,7 +53,7 @@ if ( $return_url == 'close_dialog' ) {
 } elseif ( $return_url ) {
     $go2url = $return_url;
 } else {
-    $go2url = StateUrl("index.php3");
+    $go2url = StateUrl("index.php");
 }
 echo '<a href="'. $go2url .'" target="_parent" class="btn btn-s">'. _m("OK") .'</a>';
 ?>

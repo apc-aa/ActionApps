@@ -54,7 +54,7 @@ if ($_GET['no_slice_id']) {
 if ($_POST['cmd']['modedit']['update']) {
     ProcessFormData("GetAlertsTableView", $_POST['val'], $_POST['cmd']);
     if ($_POST['cmd']['modedit']['update']['__new__']) {   // new alerts
-        go_url(StateUrl(self_base() . "index.php3"));
+        go_url(StateUrl(self_base() . "index.php"));
         exit;
     }
 }
@@ -93,8 +93,8 @@ if ($set_tview) {
 
 $tableview = GetAlertsTableView($tview);
 
-if (!is_array($tableview)) {
-    go_url(StateUrl(self_base()."index.php3?Msg=Bad table view ID: $tview"));
+if (!$tableview) {  // empty array?
+    go_url(StateUrl(self_base() . "index.php"));
     exit;
 }
 if (! $tableview["cond"] )  {

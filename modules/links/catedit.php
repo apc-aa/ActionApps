@@ -36,7 +36,7 @@ if ( !isset($r_err) ) {
 }
 
 if ($cancel)
-    go_url( StateUrl(self_base() . "index.php3"));
+    go_url( StateUrl(self_base() . "index.php"));
 
 if ( !$cid ) {
     $cid = (int)$r_state['cat_id'];

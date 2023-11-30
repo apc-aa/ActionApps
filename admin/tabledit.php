@@ -71,7 +71,7 @@ if ( ($tview[0] == "a") OR ( substr($tview,0,5) =='polls') ) {
 $tableview = $func($tview);
 
 if (!is_array($tableview)) {
-    go_url(StateUrl(self_base()."index.php3?Msg=Bad table view ID: $tview"));
+    go_url(StateUrl(self_base() . "index.php"));
     exit;
 }
 if (! $tableview["cond"] ) {

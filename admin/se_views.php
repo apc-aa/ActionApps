@@ -47,11 +47,11 @@ try {
 } catch (Exception $e) {}
 
 if ($cancel) {
-    go_url( StateUrl(self_base() . "index.php3"));
+    go_url( StateUrl(self_base() . "index.php"));
 }
 
 if (!IfSlPerm(PS_FULLTEXT)) {
-    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php3", _m("You do not have permission to change views"), "admin");
+    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You do not have permission to change views"), "admin");
     exit;
 }
 

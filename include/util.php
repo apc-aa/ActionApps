@@ -103,7 +103,7 @@ function go_return_or_url($url, $usejs=false, $session=false) {
     } elseif ($url) {
         go_url(StateUrl($url));
     }
-    // Note if no $url or $return_url then drops through - this is used in index.php3
+    // Note if no $url or $return_url then drops through - this is used in index.php
 }
 
 /** endslash function
@@ -1203,7 +1203,7 @@ function MsgPage($msg, string $url = '') {
         echo "<p>$msg</p><br><br>";
     }
     if (!$url) {
-        $url = self_base(). "index.php3";
+        $url = self_base(). "index.php";
     }
     $url = safe(StateUrl($url));
     echo "<a href=\"$url\">"._m("Back")."</a>";
@@ -1347,7 +1347,7 @@ function ReadFileSafe($url) {
 }
 
 /** add_post2shtml_vars function
- * Cooperates with the script post2shtml.php3 (see more doc there),
+ * Cooperates with the script post2shtml.php (see more doc there),
  * which allows to easily post variables
  * to PHP scripts SSI-included in a .shtml page.
  *

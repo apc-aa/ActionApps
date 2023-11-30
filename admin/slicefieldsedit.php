@@ -60,7 +60,7 @@ $id = AA::$module_id;
 
 
 if ($cancel) {
-    go_return_or_url(self_base()."index.php3",true,true);
+    go_return_or_url(self_base() . "index.php",true,true);
 }
 
 $go_edit = false;
@@ -97,7 +97,7 @@ if ( $update AND !count($err) AND $fields->count() ) {
 
     if (!count($err) AND !$go_edit) {
         page_close();
-        go_return_or_url(self_base()."index.php3",true,true);
+        go_return_or_url(self_base() . "index.php",true,true);
     }
 }
 
@@ -113,7 +113,7 @@ if ($edit) {
     if ( !$fields->count() ) {
         $err["DB"] = MsgErr(_m("Error: no fields."));
         // do not quit - just go back.
-        go_return_or_url(self_base()."index.php3",true,true);
+        go_return_or_url(self_base() . "index.php",true,true);
     }
 
     // fill content array from item and content tables
@@ -139,7 +139,7 @@ $inputform_settings['form_action']         = ($_SERVER['DOCUMENT_URI'] != "" ? $
                                              $_SERVER['PHP_SELF'] . ($return_url ? "?return_url=".urlencode($return_url) : ''));
 $inputform_settings['form4update']         = true;
 $inputform_settings['cancel_url']          = ($return_url=='close_dialog' ? get_admin_url("itemedit.php?cancel=1&return_url=close_dialog") :
-                                              ($return_url ? expand_return_url(1) : get_admin_url("index.php3?cancel=1")));
+                                              ($return_url ? expand_return_url(1) : get_admin_url("index.php?cancel=1")));
 
 $inputform_settings['hidden']              = ['openervar'   => $openervar];  // id of variable in parent window (used for popup inputform)
 

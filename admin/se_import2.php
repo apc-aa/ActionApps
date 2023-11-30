@@ -49,7 +49,7 @@ try {
 
 
 if (!IfSlPerm(PS_FEEDING)) {
-  AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php3", _m("You have not permissions to change feeding setting"), "admin");
+  AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You have not permissions to change feeding setting"), "admin");
   exit;
 }
 

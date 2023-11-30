@@ -90,7 +90,7 @@ function GetMiscTableView($viewID) {
     */
 //    if ($viewID == "cron") {
 //        $doc_url = "https://apc-aa.sourceforge.net/faq/#cron";
-//        $run_url = get_aa_url('cron.php3','',false);
+//        $run_url = get_aa_url('cron.php','',false);
 //        return  [
 //        "table" => "cron",
 //        "type" => "browse",

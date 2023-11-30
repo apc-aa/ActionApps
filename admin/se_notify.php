@@ -107,7 +107,7 @@ function save_notify2db($slice_id, $function, $emails) {
 // sanity checks
 
 if ($cancel){
-    go_url( StateUrl(self_base() . "index.php3"));
+    go_url( StateUrl(self_base() . "index.php"));
 }
 
 if (! AA::$module_id){

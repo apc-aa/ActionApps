@@ -4,7 +4,7 @@ use AA\IO\DB\DB_AA;
 use AA\Util\InputVars;
 
 /**
- * filldisc.php3 - writes a discussion item into the discussion table
+ * filldisc.php - writes a discussion item into the discussion table
  * expected parameters (usually from an HTML form):
  *          $d_item_id
  *          $d_parent_id

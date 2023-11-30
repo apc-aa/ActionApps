@@ -268,7 +268,7 @@ class AA_Showview {
         if (!isset($GLOBALS['apc_state']['router'])) {
             mgettext_bind($view->getLang(), 'output');
         }
-        if (!AA::$langnum) { // for multilingual content (not defined when called from view.php, or cron.php3 mail, ...)
+        if (!AA::$langnum) { // for multilingual content (not defined when called from view.php, or cron.php mail, ...)
             AA::$lang    = strtolower(substr($view->getLang(),0,2));   // actual language - two letter shortcut cz / es / en
             AA::$langnum = [Langs::getLangName2Num(AA::$lang)];   // array of prefered languages in priority order.
         }

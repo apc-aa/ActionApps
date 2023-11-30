@@ -1,9 +1,9 @@
 <?php
 /**
  * File contains definitions of functions which corresponds with actions
- * on Item Manager page (admin/index.php3) - manipulates with polls
+ * on Item Manager page (admin/index.php) - manipulates with polls
  *
- * Should be included to other scripts (admin/index.php3)
+ * Should be included to other scripts (admin/index.php)
  *
  *   Move polls to app/hold/trash based on param
  * @param $status     - static function parameter defined in manager action

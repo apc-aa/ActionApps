@@ -188,12 +188,12 @@ $_m["alias for Short Item ID"]
  = "alias para el \"short\" Id del �tem";
 
 // include/item.php, row 102, 103
-$_m["alias used on admin page index.php3 for itemedit url"]
- = "alias usado en la p�gina de administraci�n index.php3 para el url de edici�n del �tem";
+$_m["alias used on admin page index.php for itemedit url"]
+ = "alias usado en la p�gina de administraci�n index.php para el url de edici�n del �tem";
 
 // include/item.php, row 104
-$_m["Alias used on admin page index.php3 for edit discussion url"]
- = "Alias utilizado en la p�gina de administraci�n index.php3 para el url de editar discusi�n";
+$_m["Alias used on admin page index.php for edit discussion url"]
+ = "Alias utilizado en la p�gina de administraci�n index.php para el url de editar discusi�n";
 
 // include/item.php, row 105
 $_m["Title of Slice for RSS"]
