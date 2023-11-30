@@ -84,7 +84,7 @@ $lang_groups ["news"] =
            "admin/",
            "central/",
            "include/",
-           "-./slice.php3",
+           "-./slice.php",
            "-admin/param_wizard.php",
            "-include/view.php",
            "-include/constants_param_wizard.php",
@@ -104,10 +104,10 @@ $lang_groups ["links"] =
 // _polls_lang.php language files, used in the Links module
 $lang_groups ["polls"] =
     ["modules/polls/"];
-// _output_lang.php language files, used in the output, i.e. slice.php3 and view.php
+// _output_lang.php language files, used in the output, i.e. slice.php and view.php
 $lang_groups ["output"] =
     [
-        "./slice.php3",
+        "./slice.php",
            "./view.php",
            "./discussion.php",
            "include/util.php",
@@ -185,12 +185,12 @@ function update_language_files($aadir, $destdir)
     global $update, $lang_groups, $addlogs, $lang_list, $file_type;
     //echo $aadir." ".$destdir;    @mkdir ($destdir, 0777);
 
-    $logfile = $destdir."log_language_updates.php3";
+    $logfile = $destdir."log_language_updates.php";
     if (file_exists ($logfile)) {
         include $logfile;
     }
 
-    $xmgettext_logfile = $destdir."collect_msg_log.php3";
+    $xmgettext_logfile = $destdir."collect_msg_log.php";
 
     foreach ( $lang_groups as $langfiles => $srcfiles) {
         if (!$update[$langfiles]) {
@@ -277,7 +277,7 @@ echo '</p>
 <tr><td>
     <table>
     <tr><td colspan=2>generate:
-                       <br><input type="radio" name="file_type" value="php3" checked> .php3 files (standard)
+                       <br><input type="radio" name="file_type" value="php" checked> .php files (standard)
                        <br><input type="radio" name="file_type" value="po"> .PO files (gettext .PO files - can\'t be used directly in AA)</td></tr>
     <tr><td><b>language files</b></td><td><b>are updated from</b></td></tr>';
 

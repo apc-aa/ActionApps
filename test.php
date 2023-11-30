@@ -29,7 +29,7 @@ if (extension_loaded('gd')) {
 } else {
     print("<li style=\"color: red; \">Warning: GD is unavailable, image manipulation won't be available</li>\n");
 }
-require_once __DIR__.'/include/config.php3';
+require_once __DIR__.'/include/config.php';
 
 function checkdir($name,$dir,$mustendslash, $mustwritable) {
     if ($mustendslash && ! preg_match('`/$`',$dir)) {

@@ -45,7 +45,7 @@ define('AA_SITE_PATH', "/home/httpd/html/");
 
 /** AA_BASE_DIR defines AA directory under AA_SITE_PATH where is AA installed.
  *  If you concaternate AA_SITE_PATH and AA_BASE_DIR, you should get absolute
- *  path from root to AA directory (where file slice.php3 is in).
+ *  path from root to AA directory (where file slice.php is in).
  *  Make sure to terminate this path with a slash!
  *  Example:
  *  define('AA_BASE_DIR', "apc-aa/");
@@ -74,7 +74,7 @@ define('AA_HTTP_DOMAIN', "http://my.domain.org/");
 
 /** ID of AA (any unique 32chars long hexadecimal number)
  *  Please change this value to be unique - use any random hexadecimal number
- *  You MUST set it before you run setup.php3 script - you can't change it later
+ *  You MUST set it before you run setup.php script - you can't change it later
  *  bacause AA superadmin permission is joined with this number
  */
 define("AA_ID", "990111222333444555666777888999A9");
@@ -297,11 +297,11 @@ define("FILEMAN_BASE_URL",AA_HTTP_DOMAIN."apc-aa-files/");
 define("FILEMAN_UPLOAD_TIME_LIMIT", 600);
 
 /** XMGETTEXT language files - this setting is needed only for AA developers
- *  who want to run xmgettext (see misc/mgettext/index.php3). */
+ *  who want to run xmgettext (see misc/mgettext/index.php). */
 $XMGETTEXT_DESTINATION_DIR = "/www/php_rw/lang/";
 
 /** MAILMAN synchronization dir. In this directory are placed the
  * files with lists of email addresses which processes mailman.
- * The dir must exist, it is not created by the mailman.php3 script.
+ * The dir must exist, it is not created by the mailman.php script.
  * ( @see http://apc-aa.sourceforge.net/faq/index.shtml#email )   */
 $MAILMAN_SYNCHRO_DIR = "/www/mailman/";

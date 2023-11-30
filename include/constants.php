@@ -409,7 +409,7 @@ const ANONYMOUS_EDIT_PASSWORD         = 4;
 const ANONYMOUS_EDIT_HTTP_AUTH        = 5;
 const ANONYMOUS_EDIT_CRON             = 6;
 
-// MAX_NO_OF_ITEMS_4_GROUP is used with group_n slice.php3 parameter and
+// MAX_NO_OF_ITEMS_4_GROUP is used with group_n slice.php parameter and
 // specifies how many items from the begining we have to search
 const MAX_NO_OF_ITEMS_4_GROUP = 1000;
 

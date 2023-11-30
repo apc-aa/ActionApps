@@ -198,7 +198,7 @@ $_m["Not allowed to post comments"]
  = "";
 
 // ./filler.php, row 250
-// ./offline.php3, row 82
+// ./offline.php, row 82
 $_m["Slice ID not defined"]
  = "";
 
@@ -2525,7 +2525,7 @@ $_m["'by Priority' is usable just for fields using constants (like category)"]
  = "";
 
 // admin/se_compact.php, row 236
-$_m["message to show in place of slice.php3, if no item matches the query"]
+$_m["message to show in place of slice.php, if no item matches the query"]
  = "";
 
 // admin/se_newuser.php, row 61
@@ -3512,7 +3512,7 @@ $_m["Select destination ActionApps"]
  = "";
 
 // admin/aa_synchronize2.php3, row 94
-$_m["The list is taken from config.php3 file of ActionApps"]
+$_m["The list is taken from config.php file of ActionApps"]
  = "";
 
 // admin/se_csv_import2.php, row 144
@@ -3777,7 +3777,7 @@ $_m["Recover"]
 
 // admin/setup.php, row 154
 $_m["Database is not configured correctly or the database is empty.<br>\n"
-   ."             Check please the database credentials in <b>include/config.php3</b>\n"
+   ."             Check please the database credentials in <b>include/config.php</b>\n"
    ."             file <br>or run <a href=\"../sql_update.php\">sql_update.php</a> script,\n"
    ."             which creates AA tables for you."]
  = "";
@@ -4065,7 +4065,7 @@ $_m["Can't move image  %1 to %2"]
  = "";
 
 // include/files.class.php, row 218
-$_m["Can't change permissions on uploaded file: %1 - %2. See IMG_UPLOAD_FILE_MODE in your config.php3"]
+$_m["Can't change permissions on uploaded file: %1 - %2. See IMG_UPLOAD_FILE_MODE in your config.php"]
  = "";
 
 // include/files.class.php, row 239
@@ -5438,11 +5438,11 @@ $_m["I can't view it. If you want to view or edit it, change it's extension."]
 $_m["Manage %1"]
  = "";
 
-// include/slice.php3, row 78
+// include/slice.php, row 78
 $_m["Select Category "]
  = "";
 
-// include/slice.php3, row 80
+// include/slice.php, row 80
 $_m["All categories"]
  = "";
 
@@ -6274,7 +6274,7 @@ $_m["Log view"]
  = "";
 
 // include/tv_misc.php, row 183
-$_m["See searchlog=1 parameter for slice.php3 in FAQ: "]
+$_m["See searchlog=1 parameter for slice.php in FAQ: "]
  = "";
 
 // include/tv_misc.php, row 191, 192
@@ -6607,7 +6607,7 @@ $_m["Create upload directory for current slice"]
  = "";
 
 // AA\Optimize\... #xx1087
-$_m["see IMG_UPLOAD_PATH parameter in config.php3 file"]
+$_m["see IMG_UPLOAD_PATH parameter in config.php file"]
  = "";
 
 // AA\Optimize\... #xx1106

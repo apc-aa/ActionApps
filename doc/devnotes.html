@@ -22,10 +22,10 @@
 <P>Sorry for my English.</P>
 <H2>&nbsp;</H2>
 <H2>Editor window</H2>
-<P>The editor window (<EM>index.php3</EM>) is the main
+<P>The editor window (<EM>index.php</EM>) is the main
     place, where authors and editors will control his items. The slice, which is
     edited is specified by parameter <EM>slice_id </EM> within URL (link like<code>
-        href="/apc-aa/admin/index.php3?slice_id=763e546ba2f36efb00abc346ce8af03c"</code>).
+        href="/apc-aa/admin/index.php?slice_id=763e546ba2f36efb00abc346ce8af03c"</code>).
     If no <EM>slice_id </EM> is specified, the first slice, in which given user has any permission, is displayed.<br>
     <br>There are three tables (the look of this page should be changed, but the idea of three tables remains):</P>
 <dl>
@@ -81,8 +81,8 @@ The same situation is in <EM>Actions </EM>column. User see
 only actions, he has permission to (<EM>author </EM>
 can't move items from bin to bin, so he don't see move icons).<br>
 <H2>Item Editing</H2>
-<P>Item editing page <EM>itemedit.php3 </EM>is accessible from main editor page
-    <EM>index.php3</EM>. This is the place, where <EM>authors</EM>, <EM>editors
+<P>Item editing page <EM>itemedit.php </EM>is accessible from main editor page
+    <EM>index.php</EM>. This is the place, where <EM>authors</EM>, <EM>editors
     </EM>and other stuff can write or edit his items.</P>
 <P>Appearance of each edit field is controlled from Main slice settings - Field
     page (see below).</P>
@@ -196,7 +196,7 @@ can't move items from bin to bin, so he don't see move icons).<br>
 
 <H2> &nbsp;</H2>
 <H2>Slice administration</H2>Slice administration pages are
-accessible from <EM>index.php3</EM> page. It is accessible only to users, which have permission to. There are several
+accessible from <EM>index.php</EM> page. It is accessible only to users, which have permission to. There are several
 types of slice admin pages listed in left menu column. Again, user can access only pages, which he have permission to. I
 start with Main slice settings - slice.
 
@@ -205,7 +205,7 @@ start with Main slice settings - slice.
 <table>
     <tr>
         <td>Headline</td>
-        <td>- slice name<br>- shown as headline in slice.php3 (slice view)</td>
+        <td>- slice name<br>- shown as headline in slice.php (slice view)</td>
     </tr>
     <tr>
         <td>Short name</td>
@@ -213,8 +213,8 @@ start with Main slice settings - slice.
     </tr>
     <tr>
         <td>Slice URL</td>
-        <td> - URL of main slice page (homepage of this slice - probably page with slice.php3 include). It is used in
-            calling slice view from buttons inside editor page (index.php3)
+        <td> - URL of main slice page (homepage of this slice - probably page with slice.php include). It is used in
+            calling slice view from buttons inside editor page (index.php)
         </td>
     </tr>
     <tr>
@@ -231,15 +231,15 @@ start with Main slice settings - slice.
     </tr>
 </table>
 <P>Follows default values for new items setting. These are the values, which is
-    shown to user (author) in <EM>itemedit.php3 </EM>window as default values, when
-    he want to add new item. Meaning of each field is described in <EM>itemedit.php3
+    shown to user (author) in <EM>itemedit.php </EM>window as default values, when
+    he want to add new item. Meaning of each field is described in <EM>itemedit.php
     </EM>part of this text.</P>
 <P><STRONG>Hint:</STRONG> There you can specify the fixed values, which is
     common to all items in your slice, too.<BR> <STRONG>For example</STRONG>: if you
     want all included images in slice have the same size 150x120 pixels, you can
     write number 150 in <EM>Image width input box </EM>and number 120 in <EM>Image
         height input box </EM>and then remove <EM>Image width</EM> and <EM>Image height
-        input boxes </EM>from <EM>itemedit.php3 </EM>page (can be done on slice
+        input boxes </EM>from <EM>itemedit.php </EM>page (can be done on slice
     administration page Fields - see below).</P>
 <P>All changes are valid after click on <EM>Update </EM>
     button, but I think it is clear enough.
@@ -280,7 +280,7 @@ start with Main slice settings - slice.
 <h3>Main slice settings - Search form</h3>
 <P>On search form
     setting page you can set a properties of search form, which can be shown on web
-    page within <EM>slice.php3</EM>
+    page within <EM>slice.php</EM>
     (see <A href="#bigsrch">bigsrch</A> in
     slice incorporating). There you can specify, which search fields are shown to
     user including fields where to search, and default settings for where to search
@@ -294,7 +294,7 @@ start with Main slice settings - slice.
     based on LDAP. This comes from a long debate across APC, and this is the result.
     The idea is that permission system is common for all APC members, and it is
     shared by other applications, not just AA. However, all LDAP dependent functions
-    are grouped in one file - perm_ldap.php3, so it is very easy updatable for any
+    are grouped in one file - perm_ldap.php, so it is very easy updatable for any
     type of authentication (like SQL database etc.), but it is important to
     developers, not users. For users is important, that we set up four different
     roles, with different permissions. </P>
@@ -350,7 +350,7 @@ start with Main slice settings - slice.
     to this slice, not from permission system of course. </P>
 <P>&nbsp;</P>
 
-<I>The listing below is a part of permission library file - perm_ldap.php3</I>
+<I>The listing below is a part of permission library file - perm_ldap.php</I>
 <pre>
 <code>
 # permission types for aa object
@@ -437,7 +437,7 @@ $perms_roles_perms = array("AUTHOR"=&gt;PS_EDIT_SELF_ITEMS,
     functions support it, but there are no interface, how to assign user (or group)
     to any group, yet. The groups of groups of groups of ... are implemented too,
     the maximum depth of nesting is 16 (different number can be set very easy in
-    <EM>perm_ldap.php3 </EM>
+    <EM>perm_ldap.php </EM>
 
 
     - just redefine constant). The depth constant is necessary to as defence to cyclic nesting in group definition.
@@ -467,7 +467,7 @@ $perms_roles_perms = array("AUTHOR"=&gt;PS_EDIT_SELF_ITEMS,
   &lt;body&gt;
   &lt;h1&gt;Slice title&lt;/h1&gt;
   ...
-  <p class=hlight>&lt;!--#include virtual="/apc-aa/slice.php3?encap=true&amp;slice_id=e2f6b2bf9c1687de7acccdb0f570209e"--&gt;</p>
+  <p class=hlight>&lt;!--#include virtual="/apc-aa/slice.php?encap=true&amp;slice_id=e2f6b2bf9c1687de7acccdb0f570209e"--&gt;</p>
   ...
   &lt;/body&gt;
  &lt;/html&gt;</pre>
@@ -621,7 +621,7 @@ $perms_roles_perms = array("AUTHOR"=&gt;PS_EDIT_SELF_ITEMS,
 <H3>1. Pure slice</H3>
 <P>You can view slice as is with no additional texts and graphics. It's done on
     URL like this:</P>
-<code>http://yourhost/apc-aa/slice.php3?slice_id=7a4812e153a0106931c888778daf446f</code>
+<code>http://yourhost/apc-aa/slice.php?slice_id=7a4812e153a0106931c888778daf446f</code>
 <H3>2. Encapsulated slice</H3>
 <P>More popular version of slice view should be
     the encapsulated one. The slice is included into shtml page by SSI commands. The
@@ -697,13 +697,13 @@ $perms_roles_perms = array("AUTHOR"=&gt;PS_EDIT_SELF_ITEMS,
     &lt;TR&gt;<BR>&nbsp;&nbsp;&nbsp; &lt;TD&gt;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     &lt;H1&gt;Example NGO's Slice&lt;/H1&gt;&lt;/TD&gt;&lt;/TR&gt;<BR>&nbsp;
     &lt;TR&gt;<BR>&nbsp;&nbsp;&nbsp; &lt;TD&gt;</P>
-<P><span style="color: #0000ff; ">&lt;!--#include&nbsp;virtual="/apc-aa/slice.php3?encap=true&amp;slice_id=e2f6b2bf9c1687de7acccdb0f570209e"--&gt;</span>
+<P><span style="color: #0000ff; ">&lt;!--#include&nbsp;virtual="/apc-aa/slice.php?encap=true&amp;slice_id=e2f6b2bf9c1687de7acccdb0f570209e"--&gt;</span>
 </P>
 <P>&nbsp;&nbsp;&nbsp;
     &lt;/TD&gt;<BR>&nbsp;&nbsp;&lt;/TR&gt;<BR>&lt;/TABLE&gt;&lt;BR&gt;<BR>&lt;/BODY&gt;<BR>&lt;/HTML&gt;</P></CODE>In
 this short example you can see,
-how encapsulate slice.php3 into shtml page. Important commands I highlighted in
-blue. As you can see, you can control the content of slice.php3 by parameters
+how encapsulate slice.php into shtml page. Important commands I highlighted in
+blue. As you can see, you can control the content of slice.php by parameters
 added to URL. Here are the list of them: <BR><BR>
 
 

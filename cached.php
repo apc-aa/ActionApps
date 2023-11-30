@@ -36,7 +36,7 @@ require_once __DIR__ . "/include/locsess.php";
 /** Caching functions */
 require_once __DIR__ . "/include/util.php";
 
-// headers copied from include/extsess.php3 file
+// headers copied from include/extsess.php file
 $allowcache_expire = 24*3600; // 1 day
 $exp_gmt           = gmdate("D, d M Y H:i:s", time() + $allowcache_expire) . " GMT";
 $mod_gmt           = gmdate("D, d M Y H:i:s", getlastmod()) . " GMT";

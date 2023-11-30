@@ -175,7 +175,7 @@ HTML;
                                ' . $v . '
                              </section>
                              <section class="icogroup">
-                               <input type="hidden" name="" value="' . safe($k) . '"><article class="select" onclick="this.previousSibling.name=AA_up(this, \'.aa-widget\').getAttribute(\'data-aa-basename\')+\'[rim][]\'; AA_up(this, \'.aa-widget\').querySelector(\'.itemgroup\').appendChild(this.parentNode.parentNode);"><i class="ico select">+</i></article>
+                               <input type="hidden" name="" value="' . safe($k) . '"><article class="select" onclick="this.previousSibling.name=AA_up(this, \'.aa-widget\').getAttribute(\'data-aa-basename\')+\'[rim][]\'; AA_up(this, \'.aa-widget\').querySelector(\'.itemgroup\').append(this.parentNode.parentNode);"><i class="ico select">+</i></article>
                                <article class="delete" onclick="this.parentNode.parentNode.parentNode.removeChild(this.parentNode.parentNode)"><i class="ico delete">&#215;</i></article>
                              </section>
                            </article>

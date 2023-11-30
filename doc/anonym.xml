@@ -98,9 +98,9 @@
     <title>Filler and fillform</title>
 
     <para>Two scripts handle the anonymous forms. The first,
-    <constant>filler.php3</constant>, stores the info coming from the form
+    <constant>filler.php</constant>, stores the info coming from the form
     into the database. It also validates the data and prooves permissions to
-    edit or update the item. The second, <constant>fillform.php3</constant>,
+    edit or update the item. The second, <constant>fillform.php</constant>,
     refills the data into the form shown to the reader. It retrieves the data
     from database or in some special cases directly from <constant>filler</constant>.</para>
   </sect1>
@@ -113,7 +113,7 @@
     <quote>Add item</quote> page with only a few necessary changes. But as the
     form now allows to edit items and to use several options for it, a new
     wizard was created. This wizard creates the HTML code for a complete form
-    with the SSI include of <constant>fillform.php3</constant> necessary to
+    with the SSI include of <constant>fillform.php</constant> necessary to
     edit items. The resulting form differs depending on whether Anonymous
     editing is allowed or not.</para>
 
@@ -128,7 +128,7 @@
           <row>
             <entry>err_url</entry>
 
-            <entry>The URL to which the script <constant>filler.php3</constant>
+            <entry>The URL to which the script <constant>filler.php</constant>
             jumps when some error occurs. It may be the same page on which the
             form is shown.</entry>
           </row>
@@ -143,7 +143,7 @@
             <entry>show_result</entry>
 
             <entry>The URL of a PHP script which receives the results from
-            <constant>filler.php3</constant>. This allows for a completely
+            <constant>filler.php</constant>. This allows for a completely
             free design of how the errors are presented to the user. See <link
             linkend="show_results">below</link>.</entry>
           </row>
@@ -165,7 +165,7 @@
       <listitem>
         <simpara>The setting <constant>use_post2shtml</constant> allows to use
         the POST method for the form even though it is on a shtml page. See
-        more info in the script <constant>post2shtml.php3</constant>.</simpara>
+        more info in the script <constant>post2shtml.php</constant>.</simpara>
       </listitem>
     </itemizedlist>
   </sect1>
@@ -181,7 +181,7 @@
 
     <para>You must choose the correct setting in Slice Admin - Settings -
     Allow anonymous editing of items, which is used by the
-    <constant>filler.php3</constant> script on an item update request. The
+    <constant>filler.php</constant> script on an item update request. The
     options are:</para>
 
     <table>
@@ -269,9 +269,9 @@
 
       <listitem>
         <para>The inputs are validated as if they were typed in the standard
-        <constant>itemedit.php3</constant> form. When there are any invalid
+        <constant>itemedit.php</constant> form. When there are any invalid
         data, the whole item is not updated. The javascript validation used in
-        <constant>itemedit.php3</constant> is also included in the form
+        <constant>itemedit.php</constant> is also included in the form
         created by the wizard</para>
       </listitem>
 
@@ -317,24 +317,24 @@
     validation (function <constant>proove_fields</constant>). But some of
     them, like a username being already used, can not.</para>
 
-    <para>By default, the <constant>fillform.php3</constant> script shows
+    <para>By default, the <constant>fillform.php</constant> script shows
     standard error messages. They always appear at the place where
-    <constant>fillform.php3</constant> is SSI-included in your shtml page.</para>
+    <constant>fillform.php</constant> is SSI-included in your shtml page.</para>
 
     <para>You may create your own PHP script (see an example in
     <constant>doc/script/show_result.php</constant>) and send its URL as a
     value of a <constant>show_result</constant> variable. Add it as a
-    parameter to the <constant>fillform.php3</constant> SSI include created by
-    the Wizard, e.g. <screen>&#60;!--#include virtual=&#34;/aaa/fillform.php3?show_result=https://ecn.cz/show_result.php&#38;form=...&#34;--&#62;</screen>An
+    parameter to the <constant>fillform.php</constant> SSI include created by
+    the Wizard, e.g. <screen>&#60;!--#include virtual=&#34;/aaa/fillform.php?show_result=https://ecn.cz/show_result.php&#38;form=...&#34;--&#62;</screen>An
     array <constant>$result</constant> with the results will be sent to the
     PHP script and you may print appropriate messages, see the example.</para>
 
     <para>The <constant>$result</constant> array content is created at various
-    places in <constant>filler.php3</constant> array. Look there for accurate
+    places in <constant>filler.php</constant> array. Look there for accurate
     info. At this moment the messages are:</para>
 
     <table>
-      <title>Results from filler.php3</title>
+      <title>Results from filler.php</title>
 
       <tgroup cols="2">
         <tbody>
@@ -383,7 +383,7 @@
           <row>
             <entry>email_confirmed</entry>
 
-            <entry>Added by <constant>fillform.php3</constant> on Reader
+            <entry>Added by <constant>fillform.php</constant> on Reader
             management slices: When the reader successfully confirms his or
             her email by using the URL sent in an email, <constant>fillform</constant>
             adds a message <quote>email_confirmed =&#62; OK</quote>. This
@@ -393,7 +393,7 @@
           <row>
             <entry>unsubscribed</entry>
 
-            <entry>Added by <constant>fillform.php3</constant> on Reader
+            <entry>Added by <constant>fillform.php</constant> on Reader
             management slices: When the reader unsubscribes from Alerts (which
             is achieved by setting How often to an empty value).</entry>
           </row>

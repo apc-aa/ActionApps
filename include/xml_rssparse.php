@@ -36,7 +36,7 @@
 
 
 // Examples refered to below (as EG1 ... EG5) where these have been seen,
-// 1 - APC e.g. http://web.changenet.sk/aa/admin/getxml.php3
+// 1 - APC e.g. http://web.changenet.sk/aa/admin/getxml.php
 // 2 - http://www.ibiblio.org/ecolandtech/pcwiki/index.php/RecentChanges?format=rss  (Wiki)
 // 3 - http://p.moreover.com/cgi-local/page?o=rss&c=Environment%20news   (RSS 0.9)
 // 4 - http://www.peerfear.org/rss/index.rss (Kevin Burton)

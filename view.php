@@ -41,7 +41,7 @@ https://www.apc.org/
                     // set[23]=mlx-EN-FR-DE
                     //   - sets maximal number of viewed items in view 23 to 20
                     //   - there can be more settings (future) - comma separated
-//optionally als[]    // user alias - see slice.php3 for more details
+//optionally als[]    // user alias - see slice.php for more details
 // for more info see AA FAQ: http://apc-aa.sourceforge.net/faq/index.shtml#219
 
 //ini_set('display_errors', 1);

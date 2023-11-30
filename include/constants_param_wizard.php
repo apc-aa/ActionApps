@@ -51,7 +51,7 @@ use the escape character \ - the wizard will translate the characters. Remember 
         "params"=>the params in the internal format (divided by :)
 */
 
-// require_once __DIR__."/../modules/alerts/reader_field_ids.php3";
+// require_once __DIR__."/../modules/alerts/reader_field_ids.php";
 
 /** Standard code to link to Parameter wizard
  * @param string $list
@@ -270,7 +270,7 @@ $FIELD_FUNCTIONS = [
     "params"=> [
         [
             "name"=>_m("link only"),
-        "desc"=>_m("field id (like 'link_only.......') where switch between external and internal item is stored.  (That page should contain SSI include ../slice.php3.). If unfilled, the same page as for item index is used for fulltext (which is obvious behavior)."),
+        "desc"=>_m("field id (like 'link_only.......') where switch between external and internal item is stored.  (That page should contain SSI include ../slice.php.). If unfilled, the same page as for item index is used for fulltext (which is obvious behavior)."),
         "type"=>"STRID",
         "example"=>_m("link_only.......")
         ],
@@ -282,7 +282,7 @@ $FIELD_FUNCTIONS = [
         ],
         [
             "name"=>_m("redirect"),
-        "desc"=>_m("The URL of another page which shows the content of the item. (That page should contain SSI include ../slice.php3.). If unfilled, the same page as for item index is used for fulltext (which is obvious behavior)."),
+        "desc"=>_m("The URL of another page which shows the content of the item. (That page should contain SSI include ../slice.php.). If unfilled, the same page as for item index is used for fulltext (which is obvious behavior)."),
         "type"=>"STR",
         "example"=>_m("http#://www.ecn.cz/articles/solar.shtml")
         ],
@@ -410,7 +410,7 @@ $FIELD_FUNCTIONS = [
         ],
         [
             "name"=>_m("redirect"),
-        "desc"=>_m("The URL of another page which shows the content of the item. (That page should contain SSI include ../slice.php3.). If unfilled, the same page as for item index is used for fulltext (which is obvious behavior)."),
+        "desc"=>_m("The URL of another page which shows the content of the item. (That page should contain SSI include ../slice.php.). If unfilled, the same page as for item index is used for fulltext (which is obvious behavior)."),
         "type"=>"STR",
         "example"=>_m("http#://www.ecn.cz/articles/solar.shtml")
         ],

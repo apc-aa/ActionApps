@@ -117,7 +117,7 @@ This is the commented <b>aadb</b> database dump (see <a href="AAdb_ER.html">AAdb
     <li>At the end we substitute all remaining aliases with database fields.</li>
 </ul> </div>
    <code><b>fulltext_remove</b> varchar(255),</code><br><div class="description">The remove strings for fulltext view. (see compact_remove)</div>
-   <code><b>edit_fields</b> varchar(40),</code><br><div class="description">This is the string field, but the sense of this string should be interpretted as array of boolean values. Each boolean value ("y" / "n") corresponds to one field of item table. The value of "y" (yes) means "show corresponding field on itemedit.php3 page (input item form)". For corresponding fields see en_news_lang.php.</div>
+   <code><b>edit_fields</b> varchar(40),</code><br><div class="description">This is the string field, but the sense of this string should be interpretted as array of boolean values. Each boolean value ("y" / "n") corresponds to one field of item table. The value of "y" (yes) means "show corresponding field on itemedit.php page (input item form)". For corresponding fields see en_news_lang.php.</div>
    <code><b>needed_fields</b> varchar(40),</code><br><div class="description">Boolean array as in case edit_fields field (see above). The value of "y" (yes) means "corresponding field will be required on itemedit.php3 page (input item form) - user must fill it in". For corresponding fields see en_news_lang.php.</div>
    <code><b>search_show</b> varchar(15),</code><br><div class="description">The same as edit_fields but for search form. For corresponding fields see en_news_lang.php.</div>
    <code><b>search_default</b> varchar(10),</code><br><div class="description">The same as search_show. Each value sets a field which is searched by default (title, abstract, fulltext, editor's note). For corresponding fields see en_news_lang.php.</div>
@@ -202,7 +202,7 @@ This is the commented <b>aadb</b> database dump (see <a href="AAdb_ER.html">AAdb
 );
 
 <h2>MySQL permission tables</h2>
-<p>Next three tables are used only if you want to use MySQL permission sysstem. The switching the permission system can be done in config.php3 file (see constankt PERM_LIB). The default permission system is based on LDAP but it's up to you which one to use. If LDAP permission systerm is used, those tables are unnecessary.</p>
+<p>Next three tables are used only if you want to use MySQL permission sysstem. The switching the permission system can be done in config.php file (see constankt PERM_LIB). The default permission system is based on LDAP but it's up to you which one to use. If LDAP permission systerm is used, those tables are unnecessary.</p>
 <p>The user table holds both user data and group data. The benefit of this approach is that we have distinct ids set for users and groups. Field specific for users are: password, uid, mail, name (= givenname + sn), givenname and sn (= surname). Field specific to groups are: name and description.</p>
 <h3>CREATE TABLE <b>users</b> (</h3>
    <code><b>id</b> int(11) DEFAULT '0' NOT NULL auto_increment,</code><br><div class="description">User/group id</div>

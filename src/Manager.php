@@ -653,7 +653,7 @@ class Manager extends AA_Storable {
      * Adds new Order bar(s)
      * @param  array $sort[] = array( <field> => <a|d> )
      *               value other than 'a' means DESCENDING
-     * for description @see searchbar.class.php3
+     * for description @see searchbar.class.php
      */
     function addOrderBar($sort) {
         if ( $this->searchbar ) {
@@ -667,7 +667,7 @@ class Manager extends AA_Storable {
      * @param array $conds [] = array ( <field> => 1, 'operator' => <operator>,'value' => <search_string> )
      *
      * @param bool $readonly
-     * @see searchbar.class.php3 for description
+     * @see searchbar.class.php for description
      */
     function addSearchBar($conds, bool $readonly=false) {
         if ( $this->searchbar ) {

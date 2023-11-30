@@ -2774,7 +2774,7 @@ $_m["'by Priority' is usable just for fields using constants (like category)"]
     = "'dle �azen�' lze pou��t jen pro pole pou��vaj�c� konstant (kategorie) - tam take najdete hodnoty pro '�azen�'";
 
 // admin/se_compact.php, row 236
-$_m["message to show in place of slice.php3, if no item matches the query"]
+$_m["message to show in place of slice.php, if no item matches the query"]
     = "zpr�va, kter� se objev� p�i nenalezen� ��dn�ho odpov�daj�c�ho �l�nku";
 
 // admin/se_newuser.php, row 61
@@ -5714,11 +5714,11 @@ $_m["I can't view it. If you want to view or edit it, change it's extension."]
 $_m["Manage %1"]
     = "";
 
-// include/slice.php3, row 78
+// include/slice.php, row 78
 $_m["Select Category "]
     = "Zvolte Kategorii ";
 
-// include/slice.php3, row 80
+// include/slice.php, row 80
 $_m["All categories"]
     = "V�echny kategorie";
 
@@ -6550,7 +6550,7 @@ $_m["Log view"]
     = "";
 
 // include/tv_misc.php, row 183
-$_m["See searchlog=1 parameter for slice.php3 in FAQ: "]
+$_m["See searchlog=1 parameter for slice.php in FAQ: "]
     = "";
 
 // include/tv_misc.php, row 191, 192

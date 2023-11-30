@@ -144,7 +144,7 @@ FrmTabCaption(_m("Remote node administration"));
     <tr><td><?php echo _m("Node name") ?></td>
         <td><input type="text" name="node_name" size="40" value="<?php echo safe($node_name)?>" ><br><?php echo _m("Your node name")?>: "<?php echo ORG_NAME ?>"
     <tr><td><?php echo _m("URL of the getxml.php") ?></td>
-        <td><input type="text" name="server_url" size="40" value="<?php echo safe($server_url)?>" ><br><?php echo _m("Your getxml is")?>: "<?php echo AA_INSTAL_URL ?>admin/getxml.php3"
+        <td><input type="text" name="server_url" size="40" value="<?php echo safe($server_url)?>" ><br><?php echo _m("Your getxml is")?>: "<?php echo AA_INSTAL_URL ?>admin/getxml.php"
     <tr><td><?php echo _m("Password") ?></td>
          <td><input type="text" name="password" size="40" value="<?php echo safe($password)?>" >
     <input type="hidden" name="mode" value="<?php echo safe($new_mode) ?>">

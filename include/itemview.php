@@ -449,7 +449,7 @@ class itemview {
   function setColumns(AA_Item $CurItem, string $iid) {
       // hack for searching in multiple slices. This is not so nice part
       // of code - we mix there $aliases[<alias>] with $aliases[<p_slice_id>][<alias>]
-      // used (filled) in slice.php3
+      // used (filled) in slice.php
       $CurItem->set_data($this->_content[$iid]);
       // slice_id... in content is packed!!!
       $p_slice_id = addslashes($CurItem->getval('slice_id........'));
@@ -594,7 +594,7 @@ class itemview {
         // compact view (of items or links)
         $oldcat                   = "_No CaTeg";
         $catname                  = '';
-        $group_n                  = 0;    // group counter (see group_n slice.php3 parameter)
+        $group_n                  = 0;    // group counter (see group_n slice.php parameter)
         $top_html_already_printed = false;
 
         // negative num_record used for displaying n-th group of items only

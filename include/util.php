@@ -406,7 +406,7 @@ function is_marked_by($id, $mark) {
  *  @return string - unique (long - unpacked) id from a string.
  *  Note that it will always return the same id from the same string so it
  *  can be used to compare the hashes as well as create new item id (combining
- *  item id of fed item and slice_id, for example - @see xml_fetch.php3)
+ *  item id of fed item and slice_id, for example - @see xml_fetch.php)
  */
 function string2id($str) {
     do {

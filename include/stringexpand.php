@@ -1366,7 +1366,7 @@ class AA_Stringexpand_Lazy extends AA_Stringexpand_Nevercache { // do not cache 
     const newScript = document.createElement("script");
     Array.from(oldScript.attributes)
       .forEach( attr => newScript.setAttribute(attr.name, attr.value) );
-    newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+    newScript.append(document.createTextNode(oldScript.innerHTML));
     oldScript.parentNode.replaceChild(newScript, oldScript);
   });
 }

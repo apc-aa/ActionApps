@@ -48,7 +48,7 @@ https://www.apc.org/
 //all_scr             // if true, scroller shows also 'All'
 //scr_go              // sets scroller to specified page
 //scr_url             // redefines the page where the scroller should go (it is
-                     // useful if you include slice.php3 from another php script)
+                     // useful if you include slice.php from another php script)
 //restrict            // field id used with "res_val" and "exact" for restricted
                      // output (display only items with
                      //       "restrict" field = "res_val"
@@ -188,7 +188,7 @@ require_once __DIR__."/include/mlx.php";
 
 // session is not working right now with PHP5 style sessions. It should not be
 // needed. We are testing the code, and if all will be OK, we remove sessions
-// from slice.php3 completely. It doesn-t work because of Cookies vs. SSI.
+// from slice.php completely. It doesn-t work because of Cookies vs. SSI.
 //    Honza 2016-07-12
 pageOpen('noauth');
 
@@ -260,7 +260,7 @@ if (!$slice_info OR $slice_info['deleted']>0) {
     ExitPage(_m("Invalid slice number or slice was deleted") . " (ID: $slice_id)");
 }
 if ($slice_info['d_listlen']==0) {
-    ExitPage(_m("slice.php3 output forbiden for this slice"));
+    ExitPage(_m("slice.php output forbiden for this slice"));
 }
 
 // Use right language (from slice settings) - languages are used for scroller (Next, ...)
@@ -271,7 +271,7 @@ if (!$slice_info['even_odd_differ']) {
 }
 
 // it is possible to redefine the design of fulltext or compact view by the view
-// see fview and iview url parameters for this file (slice.php3)
+// see fview and iview url parameters for this file (slice.php)
 if ($fview || $iview) {
     if ($fview) {                       // use formating from view for fulltext
         $fview_info = AA_Views::getViewNumeric($fview);

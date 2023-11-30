@@ -18,8 +18,8 @@
  * 2. The web server is redirected to "some_page.shtml?post2sthml_id=aa45db3d345de..."
  * 3. The web server parses the page "some_page.shtml" and comes to some
  *    SSI include like <!--#include virtual="/aa/some_script.php"-->. It calls
- *    the PHP script some_script.php3.
- * 4. some_script.php3 knows it may be called this way and thus uses the post2shtml_id
+ *    the PHP script some_script.php.
+ * 4. some_script.php knows it may be called this way and thus uses the post2shtml_id
  *    to find the right row in the post2shtml table and thus
  *    retrieve the form data with the function add_post2shtml_vars()
  *    from include/util.php.
@@ -31,7 +31,7 @@
  * add_post2shtml_vars() a global variable $password contains the encrypted password.
  * (CHANGE: 06/19/2003 Honza - we no longer call md5() function on passwords -
  *  we call crypt($password,'xx') function instead. crypt() is used for storing
- *  passwords to database (@see /include/itemfunct.php3 insert_fnc_pwd()) - it
+ *  passwords to database (@see /include/itemfunct.php insert_fnc_pwd()) - it
  *  uses MD5 on some systems (but on other systems it uses DES?, ...))
  *
  * Parameters: <br>

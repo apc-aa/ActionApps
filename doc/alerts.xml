@@ -83,7 +83,7 @@
       be explained later. The view defines the Selections, which have a
       description and a set of the powerful <ulink url="???"><constant>conds[]</constant>
       and <constant>sort[]</constant></ulink> parameters, the same as are used
-      with <constant>slice.php3</constant> in search forms. You can e.g.
+      with <constant>slice.php</constant> in search forms. You can e.g.
       create one selection for each category. When you open an Alerts view,
       there are always two empty pairs of boxes for two new Selections. If you
       want to define more Selections, store the view settings and reopen it.</para>
@@ -244,7 +244,7 @@
     manually.</para>
 
     <para>The cron items are added to the <constant>cron</constant> table
-    automatically by <constant>sql_update.php3</constant>. You must set up
+    automatically by <constant>sql_update.php</constant>. You must set up
     cron on your server, <ulink url="http://apc-aa.sourceforge.net/faq#cron">see
     FAQ</ulink>. There are four items for the four different frequencies
     (instant, daily, weekly, monthly). The info when were which Alerts module
@@ -272,7 +272,7 @@
     <orderedlist>
       <listitem>
         <simpara>Update to the new AA version from Subversion (svn) and run
-        <constant>sql_update.php3</constant></simpara>
+        <constant>sql_update.php</constant></simpara>
       </listitem>
 
       <listitem>

@@ -510,24 +510,24 @@ Calendar.prototype.create = function (_par) {
 		div.style.position = "absolute";
 		div.style.display = "none";
 	}
-	div.appendChild(table);
+	div.append(table);
 
 	var thead = document.createElement("thead");
-	table.appendChild(thead);
+	table.append(thead);
 	var cell = null;
 	var row = null;
 
 	var cal = this;
 	var hh = function (text, cs, navtype) {
 		cell = document.createElement("td");
-		row.appendChild(cell);
+		row.append(cell);
 		cell.colSpan = cs;
 		cell.className = "button";
 		Calendar._add_evs(cell);
 		cell.calendar = cal;
 		cell.navtype = navtype;
 		if (text.substr(0, 1) != '&') {
-			cell.appendChild(document.createTextNode(text));
+			cell.append(document.createTextNode(text));
 		}
 		else {
 			// FIXME: dirty hack for entities
@@ -537,7 +537,7 @@ Calendar.prototype.create = function (_par) {
 	};
 
 	row = document.createElement("tr");
-	thead.appendChild(row);
+	thead.append(row);
 	row.className = "headrow";
 
 	hh("-", 1, 100).ttip = Calendar._TT["TOGGLE"];
@@ -550,7 +550,7 @@ Calendar.prototype.create = function (_par) {
 	}
 
 	row = document.createElement("tr");
-	thead.appendChild(row);
+	thead.append(row);
 	row.className = "headrow";
 
 	hh("&#x00ab;", 1, -2).ttip = Calendar._TT["PREV_YEAR"];
@@ -561,13 +561,13 @@ Calendar.prototype.create = function (_par) {
 
 	// day names
 	row = document.createElement("tr");
-	thead.appendChild(row);
+	thead.append(row);
 	row.className = "daynames";
 	this.daynames = row;
 	for (var i = 0; i < 7; ++i) {
 		cell = document.createElement("td");
-		row.appendChild(cell);
-		cell.appendChild(document.createTextNode(""));
+		row.append(cell);
+		cell.append(document.createTextNode(""));
 		if (!i) {
 			cell.navtype = 100;
 			cell.calendar = this;
@@ -577,24 +577,24 @@ Calendar.prototype.create = function (_par) {
 	this.displayWeekdays();
 
 	var tbody = document.createElement("tbody");
-	table.appendChild(tbody);
+	table.append(tbody);
 
 	for (i = 0; i < 6; ++i) {
 		row = document.createElement("tr");
-		tbody.appendChild(row);
+		tbody.append(row);
 		for (var j = 0; j < 7; ++j) {
 			cell = document.createElement("td");
-			row.appendChild(cell);
-			cell.appendChild(document.createTextNode(""));
+			row.append(cell);
+			cell.append(document.createTextNode(""));
 			cell.calendar = this;
 		}
 	}
 
 	var tfoot = document.createElement("tfoot");
-	table.appendChild(tfoot);
+	table.append(tfoot);
 
 	row = document.createElement("tr");
-	tfoot.appendChild(row);
+	tfoot.append(row);
 	row.className = "footrow";
 
 	cell = hh(Calendar._TT["SEL_DATE"], 7, 300);
@@ -612,10 +612,10 @@ Calendar.prototype.create = function (_par) {
 		var mn = document.createElement("div");
 		mn.className = "label";
 		mn.month = i;
-		mn.appendChild(document.createTextNode(Calendar._MN[i].substr(0, 3)));
-		div.appendChild(mn);
+		mn.append(document.createTextNode(Calendar._MN[i].substr(0, 3)));
+		div.append(mn);
 	}
-	this.element.appendChild(div);
+	this.element.append(div);
 
 	div = document.createElement("div");
 	this.yearsCombo = div;
@@ -623,13 +623,13 @@ Calendar.prototype.create = function (_par) {
 	for (i = 0; i < 12; ++i) {
 		var yr = document.createElement("div");
 		yr.className = "label";
-		yr.appendChild(document.createTextNode(""));
-		div.appendChild(yr);
+		yr.append(document.createTextNode(""));
+		div.append(yr);
 	}
-	this.element.appendChild(div);
+	this.element.append(div);
 
 	this._init(this.mondayFirst, this.date);
-	parent.appendChild(this.element);
+	parent.append(this.element);
 }
 
 Calendar.prototype._init = function (mondayFirst, date) {
@@ -770,7 +770,7 @@ Calendar.prototype.destroy = function () {
 Calendar.prototype.reparent = function (new_parent) {
 	var el = this.element;
 	el.parentNode.removeChild(el);
-	new_parent.appendChild(el);
+	new_parent.append(el);
 };
 
 Calendar.prototype.show = function () {

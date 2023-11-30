@@ -377,7 +377,7 @@ function AA_AjaxSendAddForm(id) {
     var sb   = $(id).up('div').previous('a').identify().substring(1);
     $(id).insert(AA_GetConf('loader'));
 
-    new Ajax.Request(AA_GetConf('path') + 'filler.php3', {
+    new Ajax.Request(AA_GetConf('path') + 'filler.php', {
         parameters: code,
         requestHeaders: {Accept: 'application/json'},
         onSuccess: function(transport) {
@@ -407,7 +407,7 @@ function AA_SendWidgetAjax(id) {
 
     code += '&inline=1&ret_code_enc='+alias_name;
 
-    new Ajax.Request(AA_GetConf('path') + 'filler.php3', {
+    new Ajax.Request(AA_GetConf('path') + 'filler.php', {
         parameters: code,
         requestHeaders: {Accept: 'application/json'},
         onSuccess: function(transport) {
@@ -461,7 +461,7 @@ function AA_SendWidgetLive(id, liveinput, fnc) {
     var code = Form.serialize(valdivid);
     code += '&inline=1';  // do not send us whole page as result
 
-    new Ajax.Request(AA_GetConf('path') + 'filler.php3', {
+    new Ajax.Request(AA_GetConf('path') + 'filler.php', {
         parameters: code,
         requestHeaders: {Accept: 'application/json'},
         onSuccess: function(transport) {
@@ -683,7 +683,7 @@ function AA__systemDiv(id, attrs, text) {
     var box = $(id);
     if (!box) {
         box = new Element('div', attrs);
-        document.body.appendChild(box);
+        document.body.append(box);
     }
     box.update(text);
     if (!text) {
@@ -733,7 +733,7 @@ function AA_LoadJs(condition, callback, url, sync) {
         }
 
         script.src = url;
-        document.getElementsByTagName("head")[0].appendChild(script);
+        document.getElementsByTagName("head")[0].append(script);
     }
 }
 
@@ -755,7 +755,7 @@ function AA_LoadCss(url) {
         link  = document.createElement('link');
         link.rel  = 'stylesheet';
         link.href = url;
-        document.getElementsByTagName('head')[0].appendChild(link);
+        document.getElementsByTagName('head')[0].append(link);
     }
     return link;
 }
@@ -776,7 +776,7 @@ function AA_SaveEditors() {
     }
   }
 
-  new Ajax.Request(AA_GetConf('path') + 'filler.php3', {
+  new Ajax.Request(AA_GetConf('path') + 'filler.php', {
       parameters: params,
       requestHeaders: {Accept: 'application/json'},
       onSuccess: function(transport) {

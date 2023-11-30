@@ -26,7 +26,7 @@ https://www.apc.org/
 //    <!--#include virtual="/apps/aa/view.php?&vid=2&cmd[2]=c-1-Database" -->
 //
 // Exapmle of calling jsview.php:
-//    <script src="https://www.apc.org/apps/aa/jsview.php3?&vid=2&cmd[2]=c-1-Database"></script>
+//    <script src="https://www.apc.org/apps/aa/jsview.php?&vid=2&cmd[2]=c-1-Database"></script>
 
 //expected  vid      // id of view
 //optionally cmd[]    // command to modify the view
@@ -50,7 +50,7 @@ https://www.apc.org/
                     // set[23]=mlx-EN-FR-DE
                     //   - sets maximal number of viewed items in view 23 to 20
                     //   - there can be more settings (future) - comma separated
-//optionally als[]    // user alias - see slice.php3 for more details
+//optionally als[]    // user alias - see slice.php for more details
 //
 // please look into /view.php for more details
 

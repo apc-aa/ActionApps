@@ -350,7 +350,7 @@ function getWidgetValue(widget) {
 }
 */
 
-/* ITEMEDIT.PHP3 field JavaScript functions - AA API */
+/* ITEMEDIT.php field JavaScript functions - AA API */
 
 function getField(fieldID) {
     var val = getControlOrAADate('inputform','v'+unpackID(fieldID), 'tdctr_', ''); // old AA forms

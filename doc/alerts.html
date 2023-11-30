@@ -105,7 +105,7 @@
                 class="quote">Group by selections</span>&#8221;, will be explained later. The view defines the
             Selections, which have a description and a set of the powerful <a href="???" target="_top"><code
                     class="constant">conds[]</code> and <code class="constant">sort[]</code></a> parameters, the same as are
-            used with <code class="constant">slice.php3</code> in search forms. You can e.g. create one selection for each
+            used with <code class="constant">slice.php</code> in search forms. You can e.g. create one selection for each
             category. When you open an Alerts view, there are always two empty pairs of boxes for two new Selections. If
             you want to define more Selections, store the view settings and reopen it.</p>
         <p>You can add Selections from several views and several slices to one Alerts module. Readers may choose which
@@ -238,7 +238,7 @@
         <div></div>
     </div>
     <p>There are two ways of sending the emails: regularly by cron or manually.</p>
-    <p>The cron items are added to the <code class="constant">cron</code> table automatically by <code class="constant">sql_update.php3</code>.
+    <p>The cron items are added to the <code class="constant">cron</code> table automatically by <code class="constant">sql_update.php</code>.
         You must set up cron on your server, <a href="http://apc-aa.sourceforge.net/faq#cron" target="_top">see FAQ</a>.
         There are four items for the four different frequencies (instant, daily, weekly, monthly). The info when were
         which Alerts module emails generated is stored in the table <code class="constant">alerts_collection_howoften</code>.

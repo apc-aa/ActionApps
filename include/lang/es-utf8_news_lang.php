@@ -438,7 +438,7 @@ $_m["Not allowed to post comments"]
  = "";
 
 // ./filler.php, row 250
-// ./offline.php3, row 82
+// ./offline.php, row 82
 $_m["Slice ID not defined"]
  = "ID del Canal no definido";
 
@@ -2768,7 +2768,7 @@ $_m["'by Priority' is usable just for fields using constants (like category)"]
  = "¡'Por Prioridad' sólo es válido para campos que usen constantes!";
 
 // admin/se_compact.php, row 236
-$_m["message to show in place of slice.php3, if no item matches the query"]
+$_m["message to show in place of slice.php, if no item matches the query"]
  = "Mensaje a mostrar cuando no se encuentran ítems";
 
 // admin/se_newuser.php, row 61
@@ -5695,11 +5695,11 @@ $_m["I can't view it. If you want to view or edit it, change it's extension."]
 $_m["Manage %1"]
  = "";
 
-// include/slice.php3, row 78
+// include/slice.php, row 78
 $_m["Select Category "]
  = "Seleccione Categoría ";
 
-// include/slice.php3, row 80
+// include/slice.php, row 80
 $_m["All categories"]
  = "Todas categorías";
 
@@ -6531,8 +6531,8 @@ $_m["Log view"]
  = "Ver Log";
 
 // include/tv_misc.php, row 183
-$_m["See searchlog=1 parameter for slice.php3 in FAQ: "]
- = "Ver el parámetro searchlog=1 para slice.php3 en el FAQ: ";
+$_m["See searchlog=1 parameter for slice.php in FAQ: "]
+ = "Ver el parámetro searchlog=1 para slice.php en el FAQ: ";
 
 // include/tv_misc.php, row 191, 192
 $_m["SearchLog view"]

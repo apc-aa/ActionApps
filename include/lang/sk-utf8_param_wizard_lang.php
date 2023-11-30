@@ -1114,7 +1114,7 @@ $_m["link only"]
  = "";
 
 // include/constants_param_wizard.php, row 772
-$_m["field id (like 'link_only.......') where switch between external and internal item is stored.  (That page should contain SSI include ../slice.php3.). If unfilled, the same page as for item index is used for fulltext (which is obvious behavior)."]
+$_m["field id (like 'link_only.......') where switch between external and internal item is stored.  (That page should contain SSI include ../slice.php.). If unfilled, the same page as for item index is used for fulltext (which is obvious behavior)."]
  = "";
 
 // include/constants_param_wizard.php, row 774, 857
@@ -1138,7 +1138,7 @@ $_m["redirect"]
  = "";
 
 // include/constants_param_wizard.php, row 780, 859
-$_m["The URL of another page which shows the content of the item. (That page should contain SSI include ../slice.php3.). If unfilled, the same page as for item index is used for fulltext (which is obvious behavior)."]
+$_m["The URL of another page which shows the content of the item. (That page should contain SSI include ../slice.php.). If unfilled, the same page as for item index is used for fulltext (which is obvious behavior)."]
  = "";
 
 // include/constants_param_wizard.php, row 783

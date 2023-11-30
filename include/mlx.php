@@ -396,7 +396,7 @@ class MLX {
                 $mlxout .= "nonactive'";
             }
             if ($langid) {
-                $extra = "\n<span class='mlx-view'><a href='../slice.php3"
+                $extra = "\n<span class='mlx-view'><a href='../slice.php"
                     ."?slice_id=".$this->slice->getId()."&sh_itm=".$langid
                     ."&o=1&mlxl=".$v['name']."' target='_blank'>("._m("view").")</a>"
                     ."</span>\n";

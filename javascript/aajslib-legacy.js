@@ -7787,7 +7787,7 @@ if (window.NodeList && !NodeList.prototype.forEach) {
 // switch current item in gallery
 function AA_GalleryGoto(photo_div, viewid, sitemid, galeryid, thumb_id) {
     $(photo_div).show();
-    AA_Ajax(photo_div, AA_GetConf('path') + 'view.php3?vid=' + viewid + '&cmd[' + viewid + ']=x-' + viewid + '-' + sitemid + '&convertto=utf-8&als[GALERYID]=' + galeryid);
+    AA_Ajax(photo_div, AA_GetConf('path') + 'view.php?vid=' + viewid + '&cmd[' + viewid + ']=x-' + viewid + '-' + sitemid + '&convertto=utf-8&als[GALERYID]=' + galeryid);
     $$('div.switcher img.active').invoke('removeClassName', 'active');
     if ($(thumb_id)) {
         $(thumb_id).addClassName('active');
@@ -8344,7 +8344,7 @@ function AA__liveSearch(id, viewparam, deflt) {
     if (!val.length && deflt.length) {
         val=deflt;
     }
-    fnc = function(t,v,q) { AA_AjaxCss(t, AA_GetConf('path') + 'view.php3?vid=' + viewparam.replace('AA_LS_QUERY', q));}
+    fnc = function(t,v,q) { AA_AjaxCss(t, AA_GetConf('path') + 'view.php?vid=' + viewparam.replace('AA_LS_QUERY', q));}
     if (AA__liveSearch.timer) {
        if (AA__liveSearch.searchval != val) {
            clearTimeout(AA__liveSearch.timer);
@@ -8384,7 +8384,7 @@ function AA__systemDiv(id, attrs, text) {
     var box = $(id);
     if (!box) {
         box = new Element('div', attrs);
-        document.body.appendChild(box);
+        document.body.append(box);
     }
     box.update(text);
     if (!text) {
@@ -8434,7 +8434,7 @@ function AA_LoadJs(condition, callback, url, sync) {
         }
 
         script.src = url;
-        document.getElementsByTagName("head")[0].appendChild(script);
+        document.getElementsByTagName("head")[0].append(script);
     }
 }
 
@@ -8456,7 +8456,7 @@ function AA_LoadCss(url) {
         link  = document.createElement('link');
         link.rel  = 'stylesheet';
         link.href = url;
-        document.getElementsByTagName('head')[0].appendChild(link);
+        document.getElementsByTagName('head')[0].append(link);
     }
     return link;
 }

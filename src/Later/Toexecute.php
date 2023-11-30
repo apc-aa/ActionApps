@@ -39,7 +39,7 @@ use Cvarset;
 /** AA\Later\Toexecute class - used for many short tasks, such as sending an e-mail for
  *  alerts. Instead of sending thounsands of e-mails in one php script run (bad
  *  eperienses with 1000+ emails), we store just store the task in the database.
- *  Then we call misc/toexecute.php3 script from AA cron (say each 2 minutes)
+ *  Then we call misc/toexecute.php script from AA cron (say each 2 minutes)
  *  and if there is any task in the queue, it is executed. This way we spread
  *  sending of weeks alerts to thounsands users to several hours.
  *  Usage:
@@ -159,7 +159,7 @@ class Toexecute {
         $varset->doDeleteWhere('toexecute', "selector='" . quote($selector) . "'");
     }
 
-    /** execute function - function called periodically from /misc/toexecute.php3
+    /** execute function - function called periodically from /misc/toexecute.php
      */
     function execute()
     {

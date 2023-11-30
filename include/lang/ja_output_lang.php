@@ -12,40 +12,40 @@ $mgettext_lang = "ja";
 
 # Unused messages
 # End of unused messages
-// ./slice.php3, row 179
+// ./slice.php, row 179
 $_m["Bad inc parameter - included file must be in the same directory as this .shtml file and must contain only alphanumeric characters"]
  = "";
 
-// ./slice.php3, row 184
+// ./slice.php, row 184
 $_m["No such file"]
  = "";
 
-// ./slice.php3, row 213
+// ./slice.php, row 213
 $_m["Invalid slice number or slice was deleted"]
  = "";
 
-// ./slice.php3, row 271
+// ./slice.php, row 271
 $_m["session id"]
  = "";
 
-// ./slice.php3, row 378
+// ./slice.php, row 378
 $_m["number of current page (on pagescroller)"]
  = "";
 
-// ./slice.php3, row 379
+// ./slice.php, row 379
 $_m["page length (number of items)"]
  = "";
 
-// ./slice.php3, row 569
+// ./slice.php, row 569
 // include/view.php, row 593
 $_m["No item found"]
  = "���ܤ����դ���ޤ���";
 
-// include/slice.php3, row 78
+// include/slice.php, row 78
 $_m["Select Category "]
  = "";
 
-// include/slice.php3, row 80
+// include/slice.php, row 80
 $_m["All categories"]
  = "";
 
@@ -308,7 +308,7 @@ $_m["Urldefault"]
  = "";
 
 // include/scroller.php, row 314
-// include/easy_scroller.php3, row 167
+// include/easy_scroller.php, row 167
 $_m["All"]
  = "";
 

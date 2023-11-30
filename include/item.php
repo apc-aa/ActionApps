@@ -72,11 +72,11 @@ function GetAliases4Type( $type, $additional="" ) {
             break;
         case 'links':
             // function - we need trnslate _m() on use (not at include time)
-            $aliases = (new AA_Aliases(new AA_Aliasgenerator_Link()))->getArray();       // defined in modules/links/constant.php3
+            $aliases = (new AA_Aliases(new AA_Aliasgenerator_Link()))->getArray();       // defined in modules/links/constant.php
             break;
         case 'categories':
             // function - we need trnslate _m() on use (not at include time)
-            $aliases = (new AA_Aliases(new AA_Aliasgenerator_Category()))->getArray();   // defined in modules/links/constant.php3
+            $aliases = (new AA_Aliases(new AA_Aliasgenerator_Category()))->getArray();   // defined in modules/links/constant.php
             break;
     }
 
@@ -1072,7 +1072,7 @@ class AA_Item {
      *  param: link_only:redirect
      *     link_only field id (like "link_only.......")
      *     redirect - url of another page which shows the content of item
-     *              - this page should contain SSI include ../slice.php3 too
+     *              - this page should contain SSI include ../slice.php too
      *     no_sess  - if true, it does not add session id to url
      * @param $col
      * @param $param
@@ -1090,7 +1090,7 @@ class AA_Item {
      *    url_field     - field id of external url for link_only
      *                  - (like hl_href.........)
      *    redirect      - url of another page which shows the content of item
-     *                  - this page should contain SSI include ../slice.php3 too
+     *                  - this page should contain SSI include ../slice.php too
      *    txt           - if txt is field_id content is shown as link, else txt
      *    condition_fld - field id - if no content of this field, no link
      *    addition      - additional parameter to <a tag (like target=_blank)
@@ -1273,7 +1273,7 @@ class AA_Item {
         if ($col == 'hl_href.........' && strlen($p[0]) == 16) {
             $redirect  = $p[1] ?:
                                         strtr(AA_INSTAL_URL, ':', '#:') .
-                                        "slice.php3?slice_id=$slice_id&encap=false";
+                                        "slice.php?slice_id=$slice_id&encap=false";
             //      return strtr( $this->f_f($col, $p[0] . ':' . $redirect), '#/', ':/') ;
             return $this->RSS_restrict(strtr( $this->f_f($col, $p[0] . ':' . $redirect), '#/', ':/'),500) ;
         }
@@ -1504,7 +1504,7 @@ class AA_Item {
      *     url_field     - field id of external url for link_only
      *                   - (like hl_href.........)
      *     redirect      - url of another page which shows the content of item
-     *                   - this page should contain SSI include ../slice.php3 too
+     *                   - this page should contain SSI include ../slice.php too
      *     txt           - if txt is field_id content is shown as link, else txt
      *     condition_fld - field id - if no content of this field, no link
      *     addition      - additional parameter to <a tag (like target=_blank)

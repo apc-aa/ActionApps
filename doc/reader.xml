@@ -402,7 +402,7 @@
 
         <para>Because readers are assigned to items, they may appear in
         Pending or Expired bin depending on Start date and Expiry date
-        settings. You should run the script <constant>auth_maintain.php3?maintain_auth=1</constant>
+        settings. You should run the script <constant>auth_maintain.php?maintain_auth=1</constant>
         once a day by cron to automatically add or delete users moved to or
         from the Active bin.</para>
       </sect3>
@@ -425,7 +425,7 @@
         </listitem>
 
         <listitem>
-          <simpara>in config.php3, set <constant>$MAILMAN_SYNCHRO_DIR</constant>
+          <simpara>in config.php, set <constant>$MAILMAN_SYNCHRO_DIR</constant>
           to the directory accessible both to PHP and to mailman, described
           above</simpara>
         </listitem>

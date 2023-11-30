@@ -61,8 +61,10 @@ require_once __DIR__ . "/../include/menu_util.php";
 //mimo include mlx functions
 require_once __DIR__."/../include/mlx.php";
 
-if ( file_exists( "../include/usr_validate.php3" ) ) {
-    require_once __DIR__."/../include/usr_validate.php3";
+if ( file_exists( "../include/usr_validate.php" ) ) {
+    require_once __DIR__."/../include/usr_validate.php";
+} elseif (file_exists( "../include/usr_validate.php3" ) ) {
+    require_once __DIR__ . "/../include/usr_validate.php3";
 }
 
 try {

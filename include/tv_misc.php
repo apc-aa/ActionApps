@@ -158,7 +158,7 @@ function GetMiscTableView($viewID) {
         "table"     => "searchlog",
         "type"      => "browse",
         "mainmenu"  => "aaadmin",
-        "help"      => _m("See searchlog=1 parameter for slice.php3 in FAQ: ")."<a target=\"_blank\" href=\"$doc_url\">$doc_url</a>",
+        "help"      => _m("See searchlog=1 parameter for slice.php in FAQ: ")."<a target=\"_blank\" href=\"$doc_url\">$doc_url</a>",
         "submenu"   => "te_searchlog",
         "readonly"  => false,
         "addrecord" => false,

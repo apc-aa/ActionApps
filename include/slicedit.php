@@ -259,7 +259,7 @@ function SliceEditProcess($slice_id, $user_firstname, $user_surname, $err, $add_
                     break;
                 }
 
-                $r_slice_view_url = ($slice_url == "" ? StateUrl("../slice.php3") . "&slice_id=$slice_id&encap=false"
+                $r_slice_view_url = ($slice_url == "" ? StateUrl("../slice.php") . "&slice_id=$slice_id&encap=false"
                     : stripslashes($slice_url));
             } else { // insert (add)
 

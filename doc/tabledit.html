@@ -36,21 +36,21 @@
 <table class=te_table>
   <tr>
     <td class=te_td colspan=3>&nbsp;</td>
-    <td class=te_td><a href='tabledit.php3?set_tview=ac&cmd[ac][orderby][id]=1'><b>id</b></a><br>
+    <td class=te_td><a href='tabledit.php?set_tview=ac&cmd[ac][orderby][id]=1'><b>id</b></a><br>
     </td>
-    <td class=te_td><a href='tabledit.php3?set_tview=ac&cmd[ac][orderby][description]=1'><b>description</b>&nbsp;</a><br>
+    <td class=te_td><a href='tabledit.php?set_tview=ac&cmd[ac][orderby][description]=1'><b>description</b>&nbsp;</a><br>
     </td>
-    <td class=te_td><a href='tabledit.php3?set_tview=ac&cmd[ac][orderby][showme]=1'><b>standard</b></a><br>
+    <td class=te_td><a href='tabledit.php?set_tview=ac&cmd[ac][orderby][showme]=1'><b>standard</b></a><br>
     </td>
-    <td class=te_td><a href='tabledit.php3?set_tview=ac&cmd[ac][orderby][editorial]=1'><b>editorial</b></a><br>
+    <td class=te_td><a href='tabledit.php?set_tview=ac&cmd[ac][orderby][editorial]=1'><b>editorial</b></a><br>
     </td>
-    <td class=te_td><a href='tabledit.php3?set_tview=ac&cmd[ac][orderby][mail_from]=1'><b>From:</b></a><br>
+    <td class=te_td><a href='tabledit.php?set_tview=ac&cmd[ac][orderby][mail_from]=1'><b>From:</b></a><br>
       <span class=te_hint>mail header</span></td>
-    <td class=te_td><a href='tabledit.php3?set_tview=ac&cmd[ac][orderby][mail_reply_to]=1'><b>Reply-To:</b></a><br>
+    <td class=te_td><a href='tabledit.php?set_tview=ac&cmd[ac][orderby][mail_reply_to]=1'><b>Reply-To:</b></a><br>
     </td>
-    <td class=te_td><a href='tabledit.php3?set_tview=ac&cmd[ac][orderby][mail_errors_to]=1'><b>Errors-To:</b></a><br>
+    <td class=te_td><a href='tabledit.php?set_tview=ac&cmd[ac][orderby][mail_errors_to]=1'><b>Errors-To:</b></a><br>
     </td>
-    <td class=te_td><a href='tabledit.php3?set_tview=ac&cmd[ac][orderby][mail_sender]=1'><b>Sender:</b></a><br>
+    <td class=te_td><a href='tabledit.php?set_tview=ac&cmd[ac][orderby][mail_sender]=1'><b>Sender:</b></a><br>
     </td>
   </tr>
   <script>
@@ -114,7 +114,7 @@
             return validate(myform['val[description]'],"", 1);
         }
   </script>
-  <form name='tv_ac_16' method=post action='tabledit.php3?set_tview=ac'>
+  <form name='tv_ac_16' method=post action='tabledit.php?set_tview=ac'>
     <tr>
       <td class=te_td><img src="../images/ok.gif" width="16" height="16" alt="update"></td>
       <td class=te_td><img src="../images/delete.gif" width="16" height="16" alt="delete"></td>
@@ -147,7 +147,7 @@
       </td>
     </tr>
   </form>
-  <form name='tv_ac_11' method=post action='tabledit.php3?set_tview=ac'>
+  <form name='tv_ac_11' method=post action='tabledit.php?set_tview=ac'>
     <tr>
       <td class=te_td><img src="../images/ok.gif" width="16" height="16" alt="update"></td>
       <td class=te_td><img src="../images/delete.gif" width="16" height="16" alt="delete"></td>
@@ -180,9 +180,9 @@
       </td>
     </tr>
   </form>
-  <form name='tv_ac_12' method=post action='tabledit.php3?set_tview=ac'>
+  <form name='tv_ac_12' method=post action='tabledit.php?set_tview=ac'>
   </form>
-  <form name='tv_ac_13' method=post action='tabledit.php3?set_tview=ac'>
+  <form name='tv_ac_13' method=post action='tabledit.php?set_tview=ac'>
     <tr>
       <td class=te_td><img src="../images/ok.gif" width="16" height="16" alt="update"></td>
       <td class=te_td><img src="../images/delete.gif" width="16" height="16" alt="delete"></td>
@@ -215,9 +215,9 @@
       </td>
     </tr>
   </form>
-  <form name='tv_ac_5' method=post action='tabledit.php3?set_tview=ac'>
+  <form name='tv_ac_5' method=post action='tabledit.php?set_tview=ac'>
   </form>
-  <form name='tv_ac_6' method=post action='tabledit.php3?set_tview=ac'>
+  <form name='tv_ac_6' method=post action='tabledit.php?set_tview=ac'>
   </form>
 </table>
 <form name="form1" method="post" action="">
@@ -287,7 +287,7 @@
             return validate(myform['val[description]'],"", 1);
         }
   </script>
-  <form name='tv_ac_edit_16' method=post onSubmit='' action='tabledit.php3'>
+  <form name='tv_ac_edit_16' method=post onSubmit='' action='tabledit.php'>
     <tr>
       <td class=te_edit_td><span class=te_edit_column_header>description</span><br>
       </td>
@@ -379,10 +379,10 @@ Collection 11</textarea>
   as parent, B as child and the field typeID from table B is shown as a select
   box with values got from C.</p>
 <h2> Class Usage</h2>
-<p>The class usage is quite simple. Create a new class by constructor, see <code>include/tabledit.php3</code>
+<p>The class usage is quite simple. Create a new class by constructor, see <code>include/tabledit.php</code>
   source for exact parameter description. One of the parameters is the current
   URL, TableEdit uses session to move with scroller and to store other parameters.
-  Call the view() function. See <code>admin/tabledit.php3</code> for an example.</p>
+  Call the view() function. See <code>admin/tabledit.php</code> for an example.</p>
 <h2>Dependencies</h2>
 <p>Uses PHPLib Database and Session objects (set externally).<br>
   Uses AA CVarset and Scroller objects, ValidateInput() and other functions.<br>

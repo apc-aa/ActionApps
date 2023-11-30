@@ -27,13 +27,13 @@ configuration file, for example, like this (snipped from <code>/etc/httpd/conf/h
 This also suggests to put all ActionApps user pages into a common
 directory structure and not into the normal user's htdocs tree, so
 control over the pages can easily be separated.
-<h2><a name="ss6.2">6.2 config.php3 permissions</a> </h2>
-<p>The http server must be able to access the <code>include/config.php3</code>
+<h2><a name="ss6.2">6.2 config.php permissions</a> </h2>
+<p>The http server must be able to access the <code>include/config.php</code>
 file, but this file contains passwords, so it should not be world
 readable.<br>
 </p>
 <p>Other&nbsp; possible common solution for this is that you create a
-unix group for your http server and make the <code>config.php3</code>
+unix group for your http server and make the <code>config.php</code>
 file belong to that group and be group readable. Before you do this,
 make sure that it's safe to change the group apache is running under -
 there may be other programs and setups that rely on this setting&nbsp;
@@ -57,11 +57,11 @@ to
       <pre>Group www</pre>
       <hr> </blockquote>
   </li>
-  <li>Change file permissions in <code>config.php3</code> and restart
+  <li>Change file permissions in <code>config.php</code> and restart
 the   server.
     <blockquote><code> </code>
       <hr>
-      <pre># chown root.www /home/httpd/html/apc-aa/include/config.php3<br># chmod 640  /home/httpd/html/apc-aa/include/config.php3<br># /etc/rc.d/init.d/httpd stop<br># /etc/rc.d/init.d/httpd start<br></pre>
+      <pre># chown root.www /home/httpd/html/apc-aa/include/config.php<br># chmod 640  /home/httpd/html/apc-aa/include/config.php<br># /etc/rc.d/init.d/httpd stop<br># /etc/rc.d/init.d/httpd start<br></pre>
       <hr> </blockquote>
   </li>
 </ul>

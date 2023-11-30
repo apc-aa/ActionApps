@@ -4,7 +4,7 @@
  *
  * The process of importing CSV data is splitted in the two parts:
  *   1) Converting CSV data to list of items, where each item is stored to the
- *      ItemContent class . See ItemContent.php3
+ *      ItemContent class . See ItemContent.php
  *   2) Each item in the ItemContent class is transformed according
  *      to the transformation actions to another ItemContent, which will be
  *      stored to some slice.

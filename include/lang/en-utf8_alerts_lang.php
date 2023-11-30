@@ -368,7 +368,7 @@ $_m["This table sets handling of not confirmed users. It's accessible only\n"
    ."            set number of days to 0. The two last fields are for your information only.<br>\n"
    ."            <br>\n"
    ."            To run the script, you must have cron set up with a row running\n"
-   ."            misc/alerts/admin_mails.php3.<br>\n"
+   ."            misc/alerts/admin_mails.php.<br>\n"
    ."            For more information, see <a href='http://apc-aa.sourceforge.net/faq/#1389'>the FAQ</a>."]
  = "";
 

@@ -544,7 +544,7 @@ $_m["Prints some <b>text</b> (or field content) with a link to the fulltext. A m
 $_m["link only"]
     = "Samo veza";
 
-$_m["field id (like 'link_only.......') where switch between external and internal item is stored.  (That page should contain SSI include ../slice.php3.). If unfilled, the same page as for item index is used for fulltext (which is obvious behavior)."]
+$_m["field id (like 'link_only.......') where switch between external and internal item is stored.  (That page should contain SSI include ../slice.php.). If unfilled, the same page as for item index is used for fulltext (which is obvious behavior)."]
     = "ID polja";
 
 $_m["link_only......."]
@@ -562,7 +562,7 @@ $_m["hl_href........."]
 $_m["redirect"]
     = "preusmjeravanje";
 
-$_m["The URL of another page which shows the content of the item. (That page should contain SSI include ../slice.php3.). If unfilled, the same page as for item index is used for fulltext (which is obvious behavior)."]
+$_m["The URL of another page which shows the content of the item. (That page should contain SSI include ../slice.php.). If unfilled, the same page as for item index is used for fulltext (which is obvious behavior)."]
     = "Web adresa druge stranice koja pokazuje sadr�aj stavke.";
 
 $_m["text"]
@@ -1132,12 +1132,12 @@ $_m["Not allowed to post comments"]
     = "";
 
 // ./filler.php, row 250
-// ./offline.php3, row 82
+// ./offline.php, row 82
 $_m["Slice ID not defined"]
     = "Nije definiran ID stranice";
 
 // ./filler.php, row 257
-// ./offline.php3, row 112
+// ./offline.php, row 112
 $_m["Bad slice ID"]
     = "Neispravan ID stranice";
 
@@ -1160,27 +1160,27 @@ $_m["You are not allowed to update this item."]
 $_m["Some error in store item."]
     = "Gre�ka.";
 
-// ./offline.php3, row 116
+// ./offline.php, row 116
 $_m["You don't have permission to fill this slice off-line"]
     = "Nmeate dozvolu za ispunjavanje ove stranice off-line";
 
-// ./offline.php3, row 138
+// ./offline.php, row 138
 $_m["Duplicated item send - skipped"]
     = "Poku�aj dvostrukog slanja";
 
-// ./offline.php3, row 141
+// ./offline.php, row 141
 $_m["Wrong data (WDDX packet)"]
     = "Krivi podaci";
 
-// ./offline.php3, row 144
+// ./offline.php, row 144
 $_m["Item OK - stored in database"]
     = "Stavka je spremljena u bazu";
 
-// ./offline.php3, row 152
+// ./offline.php, row 152
 $_m["Now you can dalete local file. "]
     = "Sada mo�ete obrisati lokalnu datoteku";
 
-// ./offline.php3, row 153
+// ./offline.php, row 153
 $_m[" Delete "]
     = "Obri�ite";
 
@@ -1202,7 +1202,7 @@ $_m["Repair"]
 // ./sql_update.php, row 1579
 // admin/um_uedit.php, row 339
 // admin/se_mapping.php, row 199
-// admin/se_search.php3, row 180
+// admin/se_search.php, row 180
 // admin/um_gedit.php, row 241
 // admin/discedit2.php, row 136
 // admin/se_filters.php, row 256
@@ -1270,20 +1270,20 @@ $_m["Are you sure you want to delete selected user from whole permission system?
     = "";
 
 // admin/um_uedit.php, row 208
-// include/menu_aa.php3, row 48
+// include/menu_aa.php, row 48
 $_m["New User"]
     = "Novi korisnik - ica";
 
 // admin/um_uedit.php, row 208, 288
 // admin/um_passwd.php, row 103
-// include/menu_aa.php3, row 47
+// include/menu_aa.php, row 47
 $_m["Edit User"]
     = "Promjena podataka o korisniku / ici";
 
 // admin/um_uedit.php, row 215
 // admin/um_gedit.php, row 261
 // admin/se_users_add.php, row 68
-// include/menu_aa.php3, row 46
+// include/menu_aa.php, row 46
 $_m["Users"]
     = "Korisnici ice";
 
@@ -1318,7 +1318,7 @@ $_m["User"]
 // include/searchbar.class.php, row 644
 // include/formutil.php, row 1622, 1668, 1713, 1759
 // include/profile.php, row 69
-// include/menu_aa.php3, row 41
+// include/menu_aa.php, row 41
 $_m["Delete"]
     = "Obri�ite";
 
@@ -1396,7 +1396,7 @@ $_m["Superadmin account"]
 // admin/um_gedit.php, row 162
 // admin/se_users_add.php, row 73
 // include/um_gsrch.php, row 41
-// include/menu_aa.php3, row 50
+// include/menu_aa.php, row 50
 $_m["Groups"]
     = "Grupe";
 
@@ -2082,7 +2082,7 @@ $_m["Rule"]
     = "Pravilo";
 
 // admin/se_profile.php, row 159
-// admin/se_search.php3, row 147, 164
+// admin/se_search.php, row 147, 164
 // admin/se_fields.php, row 119, 240
 // admin/search_replace.php, row 762
 // admin/anonym_wizard.php, row 208
@@ -2733,7 +2733,7 @@ $_m["No permission to set feeding for any slice"]
 
 // admin/feed_to.php, row 84
 // include/actions.php, row 146
-// include/menu_aa.php3, row 55
+// include/menu_aa.php, row 55
 $_m["Export"]
     = "Izvezite";
 
@@ -2867,9 +2867,9 @@ $_m["Feed url"]
 $_m["Content Pooling update successful"]
     = "Sadr�aj na �ekanju uspje�no obnovljen";
 
-// admin/aa_synchronize_remote.php3, row 31
-// admin/aa_synchronize.php3, row 32
-// admin/aa_synchronize2.php3, row 34
+// admin/aa_synchronize_remote.php, row 31
+// admin/aa_synchronize.php, row 32
+// admin/aa_synchronize2.php, row 34
 // central/synchronize.php, row 31
 // central/synchronize2.php, row 30
 // central/synchronize_remote.php, row 27
@@ -2879,7 +2879,7 @@ $_m["Content Pooling update successful"]
 $_m["You don't have permissions to synchronize slices."]
     = "";
 
-// admin/aa_synchronize_remote.php3, row 40
+// admin/aa_synchronize_remote.php, row 40
 // central/synchronize_remote.php, row 36
 $_m["No such command"]
     = "";
@@ -3020,38 +3020,38 @@ $_m["Approve"]
 $_m["Back"]
     = "Natrag";
 
-// admin/se_search.php3, row 38
+// admin/se_search.php, row 38
 $_m["You have not permissions to change search settings"]
     = "Nemate dozvolu za promjenu postavki pretra�ivanja";
 
-// admin/se_search.php3, row 117
+// admin/se_search.php, row 117
 $_m["Search fields update successful"]
     = "Polaja za pretra�ivanje uspje�no obnovljena";
 
-// admin/se_search.php3, row 130, 136
+// admin/se_search.php, row 130, 136
 $_m["Admin - design Search Page"]
     = "Admin - kreiranje stranice za pretra�ivanje";
 
-// admin/se_search.php3, row 142
+// admin/se_search.php, row 142
 $_m["Search form criteria"]
     = "Kriterij pretra�ivanja";
 
-// admin/se_search.php3, row 147, 165
+// admin/se_search.php, row 147, 165
 // admin/se_fields.php, row 244
 // admin/anonym_wizard.php, row 210
 // admin/se_views.php, row 77
 $_m["Show"]
     = "Prika�i";
 
-// admin/se_search.php3, row 159
+// admin/se_search.php, row 159
 $_m["Search in fields"]
     = "Pretra�ite u poljima";
 
-// admin/se_search.php3, row 166
+// admin/se_search.php, row 166
 $_m["Default settings"]
     = "Pretpostavljene postavke";
 
-// admin/se_search.php3, row 181
+// admin/se_search.php, row 181
 // admin/sliceimp.php, row 486, 521
 // admin/discedit2.php, row 138
 // admin/se_newuser.php, row 128
@@ -3115,12 +3115,12 @@ $_m["Are you sure you want to delete selected group from whole permission system
     = "";
 
 // admin/um_gedit.php, row 158
-// include/menu_aa.php3, row 52
+// include/menu_aa.php, row 52
 $_m["New Group"]
     = "Nova grupa";
 
 // admin/um_gedit.php, row 158
-// include/menu_aa.php3, row 51
+// include/menu_aa.php, row 51
 $_m["Edit Group"]
     = "Uredite grupu";
 
@@ -3128,7 +3128,7 @@ $_m["Edit Group"]
 // admin/setup.php, row 167
 // include/um_gsrch.php, row 50
 // include/constants.php, row 360
-// include/perm_emailsql.php3, row 166, 523
+// include/perm_emailsql.php, row 166, 523
 // include/perm_sql.php, row 177
 $_m["Group"]
     = "Grupa";
@@ -3167,38 +3167,38 @@ $_m["All Users"]
 $_m["Group's Users"]
     = "Korisnici / ice grupe";
 
-// admin/aa_synchronize.php3, row 46
+// admin/aa_synchronize.php, row 46
 $_m["Authentification failed, try again"]
     = "";
 
-// admin/aa_synchronize.php3, row 51
-// admin/aa_synchronize2.php3, row 69
+// admin/aa_synchronize.php, row 51
+// admin/aa_synchronize2.php, row 69
 $_m["Admin - Synchronize ActionApps"]
     = "";
 
-// admin/aa_synchronize.php3, row 63
-// admin/aa_synchronize2.php3, row 81
+// admin/aa_synchronize.php, row 63
+// admin/aa_synchronize2.php, row 81
 $_m["Admin - Synchronize ActionApps (1/3) - Destination ActionApps"]
     = "";
 
-// admin/aa_synchronize.php3, row 74
-// admin/aa_synchronize2.php3, row 92
+// admin/aa_synchronize.php, row 74
+// admin/aa_synchronize2.php, row 92
 $_m["Template ActionApps (current)"]
     = "";
 
-// admin/aa_synchronize.php3, row 76
+// admin/aa_synchronize.php, row 76
 $_m["Remote ActionApps URL"]
     = "";
 
-// admin/aa_synchronize.php3, row 76
+// admin/aa_synchronize.php, row 76
 $_m["like https://example.org/apc-aa/"]
     = "";
 
-// admin/aa_synchronize.php3, row 77
+// admin/aa_synchronize.php, row 77
 $_m["Remote Superadmin Username"]
     = "";
 
-// admin/aa_synchronize.php3, row 78
+// admin/aa_synchronize.php, row 78
 $_m["Remote Superadmin Password"]
     = "";
 
@@ -3459,7 +3459,7 @@ $_m["'by Priority' is usable just for fields using constants (like category)"]
     = "Po va�nosti";
 
 // admin/se_compact.php, row 236
-$_m["message to show in place of slice.php3, if no item matches the query"]
+$_m["message to show in place of slice.php, if no item matches the query"]
     = "Poruka koja se prikazuje ako nema tra�ene stavke";
 
 // admin/se_newuser.php, row 61
@@ -3941,7 +3941,7 @@ $_m["You have not permissions to add slice"]
     = "Nemate dozvolu za dodati stranicu";
 
 // admin/aafinder.php, row 49, 51, 186
-// include/menu_aa.php3, row 71
+// include/menu_aa.php, row 71
 $_m["AA finder"]
     = "AA tra�ilica";
 
@@ -4229,7 +4229,7 @@ $_m["Preview"]
     = "Pregled";
 
 // admin/se_csv_import.php, row 252
-// include/easy_scroller.php3, row 164, 290
+// include/easy_scroller.php, row 164, 290
 $_m["Next"]
     = "Slijede�i";
 
@@ -4439,11 +4439,11 @@ $_m["This page allows to change field IDs. It is a bit dangerous operation and m
 $_m["Change from"]
     = "Promjenite od";
 
-// admin/aa_synchronize2.php3, row 93
+// admin/aa_synchronize2.php, row 93
 $_m["Select destination ActionApps"]
     = "";
 
-// admin/aa_synchronize2.php3, row 94
+// admin/aa_synchronize2.php, row 94
 $_m["The list is taken from config.php file of ActionApps"]
     = "";
 
@@ -4792,7 +4792,7 @@ $_m["Do not import"]
     = "Nemojte uvesti";
 
 // admin/se_import.php, row 193
-// include/menu_aa.php3, row 56
+// include/menu_aa.php, row 56
 $_m["Import"]
     = "Uvezite";
 
@@ -4963,11 +4963,11 @@ $_m["Check/Uncheck"]
 $_m["Compared and Updated ActionApps"]
     = "";
 
-// include/easy_scroller.php3, row 146, 272
+// include/easy_scroller.php, row 146, 272
 $_m["Previous"]
     = "Prethodni";
 
-// include/easy_scroller.php3, row 167
+// include/easy_scroller.php, row 167
 // include/scroller.php, row 314
 $_m["All"]
     = "Sve";
@@ -6365,11 +6365,11 @@ $_m["I can't view it. If you want to view or edit it, change it's extension."]
 $_m["Manage %1"]
     = "";
 
-// include/slice.php3, row 78
+// include/slice.php, row 78
 $_m["Select Category "]
     = "Izaberite kategoriju";
 
-// include/slice.php3, row 80
+// include/slice.php, row 80
 $_m["All categories"]
     = "Sve kategorije";
 
@@ -6515,7 +6515,7 @@ $_m["Import CSV"]
     = "Uvoz CSV-a";
 
 // include/menu.php, row 164, 202, 247
-// include/menu_aa.php3, row 67
+// include/menu_aa.php, row 67
 $_m["Misc"]
     = "Razno";
 
@@ -6611,108 +6611,108 @@ $_m["Copy Slice..."]
 $_m["Rule added"]
     = "Pravilo je dodano";
 
-// include/menu_aa.php3, row 38
+// include/menu_aa.php, row 38
 $_m["Slices / Modules"]
     = "Stranice / moduli";
 
-// include/menu_aa.php3, row 39
+// include/menu_aa.php, row 39
 $_m["Create new"]
     = "Napravite novi";
 
-// include/menu_aa.php3, row 40
+// include/menu_aa.php, row 40
 $_m["Create new Wizard"]
     = "Napravite novog �arobnjaka";
 
-// include/menu_aa.php3, row 42
+// include/menu_aa.php, row 42
 $_m["Edit Jump"]
     = "Uredite skok";
 
-// include/menu_aa.php3, row 54
+// include/menu_aa.php, row 54
 $_m["Slice structure"]
     = "Struktura stranice";
 
-// include/menu_aa.php3, row 58
+// include/menu_aa.php, row 58
 $_m["Wizard"]
     = "�arobnjak";
 
-// include/menu_aa.php3, row 59
+// include/menu_aa.php, row 59
 $_m["Welcomes"]
     = "Dobro do�li!";
 
-// include/menu_aa.php3, row 60
+// include/menu_aa.php, row 60
 $_m["Templates"]
     = "Predlo�ci";
 
-// include/menu_aa.php3, row 62
+// include/menu_aa.php, row 62
 $_m["Feeds"]
     = "";
 
-// include/menu_aa.php3, row 63
+// include/menu_aa.php, row 63
 $_m["RSS test"]
     = "";
 
-// include/menu_aa.php3, row 64
+// include/menu_aa.php, row 64
 $_m["AA RSS test"]
     = "";
 
-// include/menu_aa.php3, row 65
+// include/menu_aa.php, row 65
 $_m["Run feeding"]
     = "";
 
-// include/menu_aa.php3, row 68
+// include/menu_aa.php, row 68
 // include/tv_misc.php, row 129, 130
 $_m["Cron"]
     = "Pokretanje u odre�eno vrijeme";
 
-// include/menu_aa.php3, row 69
+// include/menu_aa.php, row 69
 $_m["View Log"]
     = "";
 
-// include/menu_aa.php3, row 70
+// include/menu_aa.php, row 70
 $_m["View SearchLog"]
     = "";
 
-// include/menu_aa.php3, row 72
+// include/menu_aa.php, row 72
 $_m["Mgettext"]
     = "";
 
-// include/menu_aa.php3, row 73
+// include/menu_aa.php, row 73
 $_m["Optimize"]
     = "";
 
-// include/menu_aa.php3, row 74
+// include/menu_aa.php, row 74
 $_m["Summarize"]
     = "Zbirno";
 
-// include/menu_aa.php3, row 75
+// include/menu_aa.php, row 75
 $_m["Synchronize AA"]
     = "";
 
-// include/menu_aa.php3, row 76
+// include/menu_aa.php, row 76
 $_m["History"]
     = "";
 
-// include/grabber.class.php3, row 257
+// include/grabber.class.php, row 257
 $_m["CSV"]
     = "";
 
-// include/grabber.class.php3, row 265
+// include/grabber.class.php, row 265
 $_m["Import data from CSV (Comma Separated Values) format"]
     = "";
 
-// include/grabber.class.php3, row 330
+// include/grabber.class.php, row 330
 $_m["AA RSS"]
     = "";
 
-// include/grabber.class.php3, row 336
+// include/grabber.class.php, row 336
 $_m["Grabs data from generic RSS or AA RSS (used for item exchange between different AA installations)"]
     = "";
 
-// include/grabber.class.php3, row 672
+// include/grabber.class.php, row 672
 $_m["Form"]
     = "";
 
-// include/grabber.class.php3, row 677
+// include/grabber.class.php, row 677
 $_m["Grabbs data POSTed by AA form"]
     = "";
 
@@ -7201,7 +7201,7 @@ $_m["Log view"]
     = "";
 
 // include/tv_misc.php, row 183
-$_m["See searchlog=1 parameter for slice.php3 in FAQ: "]
+$_m["See searchlog=1 parameter for slice.php in FAQ: "]
     = "";
 
 // include/tv_misc.php, row 191, 192
@@ -7257,7 +7257,7 @@ $_m["This table sets handling of not confirmed users. It's accessible only\n"
 ."            set number of days to 0. The two last fields are for your information only.<br>\n"
 ."            <br>\n"
 ."            To run the script, you must have cron set up with a row running\n"
-."            misc/alerts/admin_mails.php3.<br>\n"
+."            misc/alerts/admin_mails.php.<br>\n"
 ."            For more information, see <a href='http://apc-aa.sourceforge.net/faq/#1389'>the FAQ</a>."]
     = "";
 

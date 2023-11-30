@@ -99,7 +99,7 @@ function get_url($url, $params=[], $state=false): string {
         return $state ? StateUrl($url) : $url;
     }
 
-    // be careful - sometimes we pass url with aliases (like oedit.php3?oid=_#AA_ID___...)
+    // be careful - sometimes we pass url with aliases (like oedit.php?oid=_#AA_ID___...)
     $param_string = HttpGetParameters($params);
     if (($pos = strpos($url, '?')) !== false)  { return substr_replace($url, "?$param_string&", $pos, 1); }
     if (($pos = strpos($url, '&')) !== false)  { return substr_replace($url, "&$param_string&", $pos, 1); }

@@ -1,6 +1,6 @@
 /** AA Javascripts library usable on the public pages, just like:
  *  <script src="https://actionapps.org/apc-aa/javascript/jquery.min.js"></script>
- *  <script src="https://actionapps.org/apc-aa/javascript/aajslib-jquery.php3"></script>
+ *  <script src="https://actionapps.org/apc-aa/javascript/aajslib-jquery.php"></script>
  *  (replace "https://actionapps.org/apc-aa" with your server and aa path
  *
  *  @package UserOutput
@@ -381,7 +381,7 @@ function AA_SendWidgetAjax(base_id) {
 
     code += '&inline=1&ret_code_enc='+alias_name;
 
-    $.post(AA_GetConf('path') + 'filler.php3', code, function(data) {
+    $.post(AA_GetConf('path') + 'filler.php', code, function(data) {
         AA_ReloadAjaxResponse(base_id, data);
     });
 }
@@ -432,7 +432,7 @@ function AA_SendWidgetLive(base_id, liveinput, fnc) {
 
     code += '&inline=1';  // do not send us whole page as result
 
-    $.post(AA_GetConf('path') + 'filler.php3', code, function(data) {
+    $.post(AA_GetConf('path') + 'filler.php', code, function(data) {
         AA_StateChange(base_id, 'normal');
         if (typeof fnc == 'function') {
             fnc();
@@ -491,7 +491,7 @@ function AA__liveSearch(id, viewparam, deflt) {
     if (!val.length && deflt.length) {
         val=deflt;
     }
-    let fnc = function(t,v,q) { AA_AjaxCss(t, AA_GetConf('path') + 'view.php3?vid=' + viewparam.replace('AA_LS_QUERY', q));}
+    let fnc = function(t,v,q) { AA_AjaxCss(t, AA_GetConf('path') + 'view.php?vid=' + viewparam.replace('AA_LS_QUERY', q));}
     if (AA__liveSearch.timer) {
        if (AA__liveSearch.searchval != val) {
            clearTimeout(AA__liveSearch.timer);
@@ -626,7 +626,7 @@ function AA_LoadJs(condition, callback, url, sync) {
         }
 
         script.src = url;
-        document.getElementsByTagName("head")[0].appendChild(script);
+        document.getElementsByTagName("head")[0].append(script);
     }
 }
 
@@ -645,7 +645,7 @@ function AA_LoadCss(url) {
    var link  = document.createElement('link');
    link.rel  = 'stylesheet';
    link.href = url;
-   document.getElementsByTagName('head')[0].appendChild(link);
+   document.getElementsByTagName('head')[0].append(link);
    return link;
  }
 
@@ -665,7 +665,7 @@ function AA_SaveEditors() {
         }
     }
 
-    $.post(AA_GetConf('path') + 'filler.php3', params, function(data) {
+    $.post(AA_GetConf('path') + 'filler.php', params, function(data) {
         AA_Toolbar('');
         window.removeEventListener("beforeunload", AA_WindowUnloadQ);
         AA_Message((Object.keys(data).length == 1) ? 'Zmeny ulozeny' : ('Ulozeno ' + Object.keys(data).length +' zmen'));

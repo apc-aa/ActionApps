@@ -28,7 +28,7 @@ component (Apache, Mysql, PHP) . <br>
 </p>
 <p>A quick test is to upload the apc-aa (as described in <a
  href="install-4.html">install-4.html</a> and then go to <a
- href="http://your.host/apc-aa/test.php3">http://your.host/apc-aa/test.php3</a>,
+ href="http://your.host/apc-aa/test.php">http://your.host/apc-aa/test.php</a>,
 if that works ok and gives you detailed information on your PHP
 installation, then everything else SHOULD be fine.</p>
 <h2><a name="ss3.1">3.1 Platform</a> </h2>
@@ -157,7 +157,7 @@ If both are there, you are lucky because     the php setup is complete;
 otherwise, you must install the missing parts. </li>
   <li>If you see the string <code>php phpinfo() ?</code>, you do not
 have php4     installed or at least it is not enabled. In which case,
-you can try again     with a test file test.php3 which will work if the
+you can try again     with a test file test.php which will work if the
 PHP3 is installed. APC-AA     should work with this. </li>
 </ul>
 <p> </p>
@@ -197,10 +197,10 @@ and
   <hr> </blockquote>
 "Commented out" means That they are prepended by a "#". Remove the
 leading "#" from the lines if it is there.
-<p>Add <code>index.php3</code> to the DirectoryIndex line: </p>
+<p>Add <code>index.php</code> to the DirectoryIndex line: </p>
 <blockquote><code> </code>
   <hr>
-  <pre>DirectoryIndex index.html index.shtml index.cgi index.php3<br></pre>
+  <pre>DirectoryIndex index.html index.shtml index.cgi index.php<br></pre>
   <hr> </blockquote>
 <p>Restart the web server to reread the configuration files: </p>
 <blockquote><code> </code>
@@ -209,7 +209,7 @@ leading "#" from the lines if it is there.
   <hr> </blockquote>
 <p>After these configuration steps, PHP and server side includes should
 work. You can test PHP by browsing to your test page ( <a
- href="http://localhost/test.php3">http://localhost/test.php3</a>)
+ href="http://localhost/test.php">http://localhost/test.php</a>)
 again. </p>
 <p> </p>
 <p>To test if SSI works, create sample .shtml file. This can be for
@@ -221,7 +221,7 @@ is your DocumentRoot directory: </p>
   <hr> </blockquote>
 <p>Now test it by browsing to your test page ( <a
  href="http://localhost/test.shtml">http://localhost/test.shtml</a>).
-You should see the same output as when browsing test.php3 page. If not,
+You should see the same output as when browsing test.php page. If not,
 reffer to the SSI documentation <a
  href="http://httpd.apache.org/docs/howto/ssi.html">http://httpd.apache.org/docs/howto/ssi.html</a>.</p>
 <h2><a name="ss3.7">3.7 PHP.INI and PHPLIB installation</a> </h2>

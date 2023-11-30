@@ -36,7 +36,7 @@ require_once __DIR__ . "/item_content.php";
 require_once __DIR__ . "/event.class.php";
 
 if ( !is_object($event) ) {
-    $event = new aaevent;   // not defined in scripts which do not include init_page.php (like offline.php3)
+    $event = new aaevent;   // not defined in scripts which do not include init_page.php (like offline.php)
 }
 
 
@@ -1038,7 +1038,7 @@ function StoreItem( $id, $slice_id, $content4id, $insert, $invalidatecache=true,
  *       $oldcontent4id
  *       $special input variables
  *
- *   This function is used in itemedit.php, filler.php and file_import.php3.
+ *   This function is used in itemedit.php, filler.php and file_import.php.
  *
  *   @author Jakub Adamek, Econnect, January 2003
  *           Most of the code is taken from itemedit.php, created by Honza.

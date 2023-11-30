@@ -64,11 +64,11 @@ $_m["This table sets handling of not confirmed users. It's accessible only\n"
    ."            set number of days to 0. The two last fields are for your information only.<br>\n"
    ."            <br>\n"
    ."            To run the script, you must have cron set up with a row running\n"
-   ."            misc/alerts/admin_mails.php3.<br>\n"
+   ."            misc/alerts/admin_mails.php.<br>\n"
    ."            For more information, see <a href='http://apc-aa.sourceforge.net/faq/#1389'>the FAQ</a>."]
  = "Esta tabla configura la manera como se manejan o no los usuarios confirmados. Solamente pueden acceder a ella los superadministradores. Usted puede borrar usuarios no confirmados después de un número de días y/o enviarles un correo-e solicitando una confirmación después de un número menor de días. Para apagar alguna de las funciones defina el número de días como 0. Los dos últimos campos son para su información solamente.<br>\n"
    ."            <br>\n"
-   ."            Para ejecutar el script, Usted debe configurar el cron con una file ejecutando misc/alerts/admin_mails.php3.<br>\n"
+   ."            Para ejecutar el script, Usted debe configurar el cron con una file ejecutando misc/alerts/admin_mails.php.<br>\n"
    ."            Para mayor información, consulte <a href='http://apc-aa.sourceforge.net/faq/#1389'>el FAQ</a>.";
 
 $_m["Example"]
@@ -436,7 +436,7 @@ $_m["This table sets handling of not confirmed users. It's accessible only\n"
    ."            set number of days to 0. The two last fields are for your information only.<br>\n"
    ."            <br>\n"
    ."            To run the script, you must have cron set up with a row running\n"
-   ."            misc/alerts/admin_mails.php3.<br>\n"
+   ."            misc/alerts/admin_mails.php.<br>\n"
    ."            For more information, see <a href='http://apc-aa.sourceforge.net/faq/#1389'>the FAQ</a>."]
  = "";
 

@@ -59,7 +59,7 @@ class ScheduleAaTasks implements LaterInterface
         $toexecute->laterOnce(new ToexecuteCleanup(), [], "ToexecuteCleanup", 10, now() + (60*60*24));
     }
 
-    /** Not used - we call it directly from toxecute.php3
+    /** Not used - we call it directly from toxecute.php
      * @inheritDoc
      */
     public function toexecutelater($params = [])

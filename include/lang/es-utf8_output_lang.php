@@ -89,40 +89,40 @@ $_m["December"]
  = "Diciembre";
 
 
-// ./slice.php3, row 179
+// ./slice.php, row 179
 $_m["Bad inc parameter - included file must be in the same directory as this .shtml file and must contain only alphanumeric characters"]
  = "Error en parámetro - el archivo a incluir debe estar en la misma carpeta que este .shtml y debe contener únicamente caracteres alfanuméricos";
 
-// ./slice.php3, row 184
+// ./slice.php, row 184
 $_m["No such file"]
  = "No se encontró el archivo";
 
-// ./slice.php3, row 213
+// ./slice.php, row 213
 $_m["Invalid slice number or slice was deleted"]
  = "Identificador de canal no válido, o el canal fué borrado";
 
-// ./slice.php3, row 271
+// ./slice.php, row 271
 $_m["session id"]
  = "id de sesión";
 
-// ./slice.php3, row 378
+// ./slice.php, row 378
 $_m["number of current page (on pagescroller)"]
  = "número de página actual (en numerador de página)";
 
-// ./slice.php3, row 379
+// ./slice.php, row 379
 $_m["page length (number of items)"]
  = "longitud de la página (número de ítems)";
 
-// ./slice.php3, row 569
+// ./slice.php, row 569
 // include/view.php, row 593
 $_m["No item found"]
  = "No se encontraron items";
 
-// include/slice.php3, row 78
+// include/slice.php, row 78
 $_m["Select Category "]
  = "Seleccione Categoría ";
 
-// include/slice.php3, row 80
+// include/slice.php, row 80
 $_m["All categories"]
  = "Todas las categorías";
 
@@ -394,15 +394,15 @@ $_m["Urldefault"]
  = "";
 
 // include/scroller.php, row 314
-// include/easy_scroller.php3, row 167
+// include/easy_scroller.php, row 167
 $_m["All"]
  = "Todo";
 
-// include/easy_scroller.php3, row 146, 272
+// include/easy_scroller.php, row 146, 272
 $_m["Previous"]
  = "Anterior";
 
-// include/easy_scroller.php3, row 164, 290
+// include/easy_scroller.php, row 164, 290
 $_m["Next"]
  = "Siguiente";
 
@@ -416,7 +416,7 @@ $_m["Change Password"]
 $_m["change password"]
  = "Cambiar Clave";
 
-// include/widget.php3 ...
+// include/widget.php ...
 $_m["Save"]
  = "Guardar";
 

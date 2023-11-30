@@ -27,7 +27,7 @@
 */
 
 // perm_core.php
-// Definitions and functions used no matter which one perm_*.php3 backend
+// Definitions and functions used no matter which one perm_*.php backend
 // is used.
 //
 

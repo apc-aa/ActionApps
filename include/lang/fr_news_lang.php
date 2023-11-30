@@ -2668,8 +2668,8 @@ $_m["'by Priority' is usable just for fields using constants (like category)"]
  = "'Par priorit�'utile seulement pour les champs de valeurs constantes (comme cat�gorie)";
 
 // admin/se_compact.php, row 236
-$_m["message to show in place of slice.php3, if no item matches the query"]
- = "Message � pr�senter � la place de slice.php3, si aucun item n'est trouv� par la requ�te";
+$_m["message to show in place of slice.php, if no item matches the query"]
+ = "Message � pr�senter � la place de slice.php, si aucun item n'est trouv� par la requ�te";
 
 // admin/se_newuser.php, row 61
 // admin/setup.php, row 247
@@ -3923,7 +3923,7 @@ $_m["Recover"]
 
 // admin/setup.php, row 154
 $_m["Database is not configured correctly or the database is empty.<br>\n"
-   ."             Check please the database credentials in <b>include/config.php3</b>\n"
+   ."             Check please the database credentials in <b>include/config.php</b>\n"
    ."             file <br>or run <a href=\"../sql_update.php3\">sql_update.php3</a> script,\n"
    ."             which creates AA tables for you."]
  = "La base de donn�es n'est pas configur�e correctement ou est vide<br>\n"
@@ -5592,11 +5592,11 @@ $_m["I can't view it. If you want to view or edit it, change it's extension."]
 $_m["Manage %1"]
  = "";
 
-// include/slice.php3, row 78
+// include/slice.php, row 78
 $_m["Select Category "]
  = "S�lectionner la cat�gorie";
 
-// include/slice.php3, row 80
+// include/slice.php, row 80
 $_m["All categories"]
  = "Toute les categories";
 
@@ -6428,7 +6428,7 @@ $_m["Log view"]
  = "";
 
 // include/tv_misc.php, row 183
-$_m["See searchlog=1 parameter for slice.php3 in FAQ: "]
+$_m["See searchlog=1 parameter for slice.php in FAQ: "]
  = "";
 
 // include/tv_misc.php, row 191, 192

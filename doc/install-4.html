@@ -103,12 +103,12 @@ ActionApps is installed directly in that domains web site. </p>
 <p> </p>
 <p> </p>
 <h3><a name="ss4.1.4">4.1.4 Configuring ActionApps</a></h3>
-<p>Edit <code>/home/httpd/html/apc-aa/include/config.php3</code>. </p>
+<p>Edit <code>/home/httpd/html/apc-aa/include/config.php</code>. </p>
 <p>This is the main ActionApps configuration file. It contains comments
  which explain everything there. Note that this file may not contain
 anything before the <code>&lt;?php</code> line at the top and after
 the <code>?&gt;</code> line at the bottom. </p>
-<p><b>The file <code>/home/httpd/html/apc-aa/include/config.php3</code>
+<p><b>The file <code>/home/httpd/html/apc-aa/include/config.php</code>
 now contains passwords. It should therefore not be world readable. On
 the other hand, the http server must be able to read it. Read the
 chapter on <a href="install-6.html#security">security</a> for a
@@ -133,7 +133,7 @@ password, use the mysql root password. </p>
 database. Note that the instructions below assumed you used
 "localhost" as the MySQL server, if you set something else, then it
 will typically be something like "aadbuser@machinename". This
-username and password should match that set in config.php3 above. We
+username and password should match that set in config.php above. We
 will refer to this password as the <em>aadbuser password</em>. </p>
 <blockquote>
   <hr>
@@ -149,7 +149,7 @@ typically because the ISP has failed to give you one of the database
 permissions requested above, or has set up authentication for the
 database wrongly. </p>
 <p>Point your Web browser to <a
- href="http://localhost/apc-aa/admin/setup.php3">http://localhost/apc-aa/admin/setup.php3</a>.
+ href="http://localhost/apc-aa/admin/setup.php">http://localhost/apc-aa/admin/setup.php</a>.
 You should see a page with two buttons "Init" and "Recover", click
 "Init" and you should receive a form where you can enter the
 information for the SuperAdmin account. </p>
@@ -181,7 +181,7 @@ superadmin account, follow these steps. </p>
 <ul>
   <li>rename the file apc-aa/admin/setup.php.txt to
 apc-aa/admin/setup.php </li>
-  <li>go to <a href="http://localhost/apc-aa/admin/sliceadd.php3">http://localhost/apc-aa/admin/setup.php3</a>
+  <li>go to <a href="http://localhost/apc-aa/admin/sliceadd.php">http://localhost/apc-aa/admin/setup.php</a>
 and press "Recover" </li>
   <li>rename the file apc-aa/admin/setup.php back to
 apc-aa/admin/setup.php.txt for safety. </li>
@@ -212,7 +212,7 @@ your web server running. Than set the right permisions. Example:
   </code></pre>
   <code> </code>
   <hr> </blockquote>
-<p>Edit apc-aa/include/config.php3, edit the defines IMG_UPLOAD_PATH
+<p>Edit apc-aa/include/config.php, edit the defines IMG_UPLOAD_PATH
 and IMG_UPLOAD_URL to point to this directory. Note the trailing "/".
 </p>
 <p>To stop someone uploading a PHP file and then executing it, edit
@@ -232,9 +232,9 @@ your httpd.conf file and add </p>
 <h2><a name="ss4.5">4.5 Your first test slice</a> </h2>
 <p>After creating the superadmin you will be thanked and either
 directed to the Slice addition page <a
- href="http://localhost/apc-aa/admin/sliceadd.php3">http://localhost/apc-aa/admin/sliceadd.php3</a>
+ href="http://localhost/apc-aa/admin/sliceadd.php">http://localhost/apc-aa/admin/sliceadd.php</a>
 or direct to the Administration front end <a
- href="http://localhost/apc-aa/admin/index.php3">http://localhost/apc-aa/admin</a>.
+ href="http://localhost/apc-aa/admin/index.php">http://localhost/apc-aa/admin</a>.
 You should be able to log in now with the superadmin account you
 created above. Refer to the <a
  href="https://www.apc.org/actionapps/english/manual/wmguide.html">APC
