@@ -65,6 +65,11 @@ try {
     // array ( )
     $used = InputVars::arrayPOST('used');
     // array ( )
+
+    // Hierarchy editor
+    $hcalldata = InputVars::stringPOST('hcalldata');
+    $hierarch  = InputVars::stringPOST('hierarch');
+
     $value = InputVars::arrayPOST('value');
     $cancel = InputVars::boolPOST('cancel');
     
@@ -141,10 +146,11 @@ function ShowConstant($id, $name, $value, $cid, $pri, ?array $using_slices_arr=n
  *   @param $oldvalue
  */
 function propagateChanges($constant_id, $newvalue, $oldvalue) {
-    global $group_id, $Msg, $event;
+    global $group_id, $Msg;
 
     if ($oldvalue == $newvalue) return;
 
+    $event = aaevent::singleton();
     $event->comes('CONSTANT_BEFORE_UPDATE', AA::$module_id, 'S', $newvalue, $oldvalue, $constant_id);
 
     $cnt = 0;
@@ -183,7 +189,10 @@ function propagateChanges($constant_id, $newvalue, $oldvalue) {
     $event->comes('CONSTANT_UPDATED', AA::$module_id, 'S', $newvalue, $oldvalue, $constant_id);
 }
 
-hcUpdate();
+
+if ($hcalldata || $hierarch) {
+    hcUpdate();
+}
 
 if ($update) {
     $from_form = true;
@@ -288,6 +297,8 @@ if ($update) {
                 }
             }
         }
+        $event_return_state = '';
+        aaevent::singleton()->comes('CONSTANTGROUP_UPDATED', AA::$module_id, 'S', $event_return_state, $group_id);
         AA::Pagecache()->invalidateFor(AA::$module_id);  // invalidate old cached values
 
         if (!count($err)) {

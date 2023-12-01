@@ -92,10 +92,8 @@ class AA_Mailman {
     // --------------------------------------------------------------------------
     /** constantsChanged function
      * @param $constant_id
-     * @param $oldvalue
-     * @param $newvalue
      */
-    static function constantsChanged( $constant_id, $oldvalue, $newvalue ) {
+    static function constantsChanged( $constant_id) {
         global $MAILMAN_SYNCHRO_DIR;
         if ( !$MAILMAN_SYNCHRO_DIR) {
             return;

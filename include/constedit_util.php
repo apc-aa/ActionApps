@@ -468,6 +468,7 @@ function hcUpdate()
                 $db->query("UPDATE constant SET ". $varset->makeUPDATE() ." WHERE short_id = ".$new_id);
             }
         }
+        aaevent::singleton()->comes('CONSTANTGROUP_UPDATED', AA::$module_id, 'S', $event_return_state, $group_id);
     }
     freeDB($db);
 }

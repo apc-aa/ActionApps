@@ -1158,7 +1158,6 @@ class ItemContent extends AA_Content {
      * @return bool|mixed|string
      */
     function storeItem( $mode, $flags = [], $context='' ) {
-        global $event;
 
         if (! ($slice_id     = $this->getSliceID()))            {return false;}
         if (! ($slice        = AA_Slice::getModule($slice_id))) {return false;}
@@ -1237,6 +1236,8 @@ class ItemContent extends AA_Content {
             ItemContent::lastErr(ITEMCONTENT_ERROR_NO_ID, _m("No Status code"));
             return false;
         }
+
+        $event = aaevent::singleton();
 
         // remove old content first (just in content table - item is updated)
         if (in_array($mode, ['update', 'overwrite', 'add'])) {

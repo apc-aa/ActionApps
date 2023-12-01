@@ -35,10 +35,6 @@ require_once __DIR__ . "/date.php";
 require_once __DIR__ . "/item_content.php";
 require_once __DIR__ . "/event.class.php";
 
-if ( !is_object($event) ) {
-    $event = new aaevent;   // not defined in scripts which do not include init_page.php (like offline.php)
-}
-
 
 /** classes for default values of the fields
  *  derived from  AA_Serializable in order to be able to factory from string

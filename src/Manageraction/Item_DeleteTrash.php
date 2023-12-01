@@ -6,6 +6,7 @@ use AA;
 use AA\IO\DB\DB_AA;
 use AA\Manager;
 use AA_Items;
+use aaevent;
 use zids;
 
 /** Manager action Item_DeleteTrash - Handler for DeleteTrash switch
@@ -33,7 +34,7 @@ class Item_DeleteTrash extends AbstractManageraction {
 
     /** @inheritDoc */
     function perform(Manager $manager, zids $item_zids, $action_param) {
-        global $slice_id, $event;
+        global $slice_id;
 
         if (!IfSlPerm(PS_DELETE_ITEMS)) {    // permission to delete items?
             return _m("You have not permissions to remove items");
@@ -63,7 +64,7 @@ class Item_DeleteTrash extends AbstractManageraction {
         // mimo enabled -- problem?
 
         $longids = $items_to_delete->longids(); // we need variable because of pass by reference
-        $event->comes('ITEMS_BEFORE_DELETE', $slice_id, 'S', $longids);
+        aaevent::singleton()->comes('ITEMS_BEFORE_DELETE', $slice_id, 'S', $longids);
 
         // delete content of all fields
         AA_Items::deleteItems($items_to_delete);

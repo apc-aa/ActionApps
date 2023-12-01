@@ -228,8 +228,7 @@ if (!$catVS->doInsert('discussion')) {  // not necessary - we have set the halt_
     $err["DB"] .= MsgErr("Can't add discussion comment");
 }
 
-if ( !is_object($event) ) $event = new aaevent;   // not defined in scripts which do not include init
-$event->comes('ITEM_NEW_COMMENT', $d_item_id, 'Item', $new_id );
+aaevent::singleton()->comes('ITEM_NEW_COMMENT', $d_item_id, 'Item', $new_id );
 
 send2mailList($d_item_id, $new_id);
 

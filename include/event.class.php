@@ -32,6 +32,8 @@
 */
 
 
+use AA\Util\SingletonTrait;
+
 require_once __DIR__ . "/mail.php";
 require_once __DIR__ . "/../modules/alerts/event.php";
 //mimo add
@@ -43,13 +45,14 @@ require_once __DIR__."/mlx.php";
  * the function invoking
  */
 class aahandler {
-    var $funct;    // handler function - function to call is conditions are met
-    var $conds;
+    protected $funct;       // handler function - function to call is conditions are met - should be callable, but PHP do not allow it here (7.4)
+    protected array $conds;
+
     /** aahandler function
-     * @param $funct
-     * @param $conds
+     * @param callable $funct
+     * @param array    $conds
      */
-    function __construct( $funct, $conds ) {
+    function __construct(callable $funct, array $conds ) {
         $this->funct = $funct;
         $this->conds = $conds;
     }
@@ -61,7 +64,7 @@ class aahandler {
      * @return bool
      */
     function matches( $type, $slice, $slice_type ) {
-        if ( !(isset($this->conds) AND is_array($this->conds)) ) {
+        if ( !$this->conds ) {
             return true;   // no conditions are set for handler - do it always
         }
         foreach ( $this->conds as $condition => $value ) {
@@ -91,11 +94,20 @@ class aahandler {
 /**
  * aaevent class - stores list of aahandlers. If event comes, aa calls 'comes'
  * method. aaevent object then looks for handles, which wait for the event
- * and invoke handler funtion for each.
+ * and invoke handler function for each.
+ *
+ * Use as
+ *    $credentials = aaevent::singleton()->comes(...);
+ * @method  static aaevent singleton()
+ *
  */
 class aaevent {
-    var $handlers = 'not_filled';    // array of aahandler objects
-    var $returns;                    // array of return values of last event
+
+    use SingletonTrait;
+
+    /** @var aahandler[]|null  */
+    protected ?array $handlers = null;    // array of aahandler objects
+    protected array  $returns = [];       // array of return values of last event
 
     /** Main event function - called when any event ocures. The method then
      *  search all handlers and calls all that matches all criteria
@@ -113,12 +125,9 @@ class aaevent {
      * @return bool
      */
     function comes($type, $slice, $slice_type, &$ret_params, $params='', $params2='') {
-        unset($this->returns);
-        if ( $this->handlers == 'not_filled' ) {
-            $this->get_handlers($type, $slice, $slice_type);
-        }
-        if ( !(isset($this->handlers) AND is_array($this->handlers)) ) {
-            return false;
+        $this->returns = []; // unset it
+        if ( !is_array($this->handlers) ) {
+            $this->handlers = $this->get_handlers($type, $slice, $slice_type);
         }
         foreach ( $this->handlers as $handler ) {
             if ( $handler->matches($type, $slice, $slice_type) ) {
@@ -134,23 +143,25 @@ class aaevent {
      * @param $class
      * @param $selector
      */
-    function get_handlers($type, $class, $selector) {
+    function get_handlers($type, $class, $selector): array {
         // TODO - read the events from database instead of this static definition
-        $this->handlers   = [];
-        $this->handlers[] = new aahandler('Event_ItemsBeforeDelete',       ['type' => 'ITEMS_BEFORE_DELETE',   'slice_type' => 'S']);  // all slices
-        $this->handlers[] = new aahandler('Event_ItemsMoved',              ['type' => 'ITEMS_MOVED',           'slice_type' => 'S']);  // all slices
-        $this->handlers[] = new aahandler('Event_ItemBeforeUpdate',        ['type' => 'ITEM_BEFORE_UPDATE',    'slice_type' => 'S']);  // all slices
-        $this->handlers[] = new aahandler('Event_ItemBeforeInsert',        ['type' => 'ITEM_BEFORE_INSERT',    'slice_type' => 'S']);  // all slices
-        $this->handlers[] = new aahandler('Event_ItemAfterInsert',         ['type' => 'ITEM_NEW',              'slice_type' => 'S']);  // all slices
-        $this->handlers[] = new aahandler('Event_ItemAfterUpdate',         ['type' => 'ITEM_UPDATED',          'slice_type' => 'S']);  // all slices
-        $this->handlers[] = new aahandler('Event_CommentAfterInsert',      ['type' => 'COMMENT_UPDATED',       'slice_type' => 'S']);  // all slices
-        $this->handlers[] = new aahandler('Event_ConstantBeforeUpdate',    ['type' => 'CONSTANT_BEFORE_UPDATE','slice_type' => 'S']);  // all slices
-        $this->handlers[] = new aahandler('Event_ConstantUpdated',         ['type' => 'CONSTANT_UPDATED',      'slice_type' => 'S']);  // all slices
-        $this->handlers[] = new aahandler('Event_AddLinkGlobalCat',        ['type' => 'LINK_NEW',              'slice_type' => 'Links']);
-        $this->handlers[] = new aahandler('Event_AddLinkGlobalCat',        ['type' => 'LINK_UPDATED',          'slice_type' => 'Links']);
-        $this->handlers[] = new aahandler('Event_ItemNewComment',          ['type' => 'ITEM_NEW_COMMENT',      'slice_type' => 'Item']);
-        $this->handlers[] = new aahandler('Event_ItemInserted_Efekt',      ['type' => 'ITEM_NEW',         'slice'        => '5f8d11e83b206f3c1a89f39039e9c38b']);  // EFEKT - iEKIS
-        $this->handlers[] = new aahandler('Event_ItemUpdated_Efekt',       ['type' => 'ITEM_UPDATED',     'slice'        => '5f8d11e83b206f3c1a89f39039e9c38b']);  // EFEKT - iEKIS
+        $handlers   = [];
+        $handlers[] = new aahandler('Event_ItemsBeforeDelete',       ['type' => 'ITEMS_BEFORE_DELETE',   'slice_type' => 'S']);  // all slices
+        $handlers[] = new aahandler('Event_ItemsMoved',              ['type' => 'ITEMS_MOVED',           'slice_type' => 'S']);  // all slices
+        $handlers[] = new aahandler('Event_ItemBeforeUpdate',        ['type' => 'ITEM_BEFORE_UPDATE',    'slice_type' => 'S']);  // all slices
+        $handlers[] = new aahandler('Event_ItemBeforeInsert',        ['type' => 'ITEM_BEFORE_INSERT',    'slice_type' => 'S']);  // all slices
+        $handlers[] = new aahandler('Event_ItemAfterInsert',         ['type' => 'ITEM_NEW',              'slice_type' => 'S']);  // all slices
+        $handlers[] = new aahandler('Event_ItemAfterUpdate',         ['type' => 'ITEM_UPDATED',          'slice_type' => 'S']);  // all slices
+        $handlers[] = new aahandler('Event_CommentAfterInsert',      ['type' => 'COMMENT_UPDATED',       'slice_type' => 'S']);  // all slices
+        $handlers[] = new aahandler('Event_ConstantBeforeUpdate',    ['type' => 'CONSTANT_BEFORE_UPDATE','slice_type' => 'S']);  // all slices
+        $handlers[] = new aahandler('Event_ConstantUpdated',         ['type' => 'CONSTANT_UPDATED',      'slice_type' => 'S']);  // all slices
+        $handlers[] = new aahandler('Event_ConstantGroupUpdated',    ['type' => 'CONSTANTGROUP_UPDATED', 'slice_type' => 'S']);  // all slices
+        $handlers[] = new aahandler('Event_AddLinkGlobalCat',        ['type' => 'LINK_NEW',              'slice_type' => 'Links']);
+        $handlers[] = new aahandler('Event_AddLinkGlobalCat',        ['type' => 'LINK_UPDATED',          'slice_type' => 'Links']);
+        $handlers[] = new aahandler('Event_ItemNewComment',          ['type' => 'ITEM_NEW_COMMENT',      'slice_type' => 'Item']);
+        $handlers[] = new aahandler('Event_ItemInserted_Efekt',      ['type' => 'ITEM_NEW',         'slice'        => '5f8d11e83b206f3c1a89f39039e9c38b']);  // EFEKT - iEKIS
+        $handlers[] = new aahandler('Event_ItemUpdated_Efekt',       ['type' => 'ITEM_UPDATED',     'slice'        => '5f8d11e83b206f3c1a89f39039e9c38b']);  // EFEKT - iEKIS
+        return $handlers;
     }
 
     /** get_handlers_newwwwww function
@@ -159,7 +170,8 @@ class aaevent {
      * @param $class
      * @param $selector
      */
-    function get_handlers_newwwwww($type, $class, $selector) {
+    function get_handlers_newwwwww($type, $class, $selector): array {
+        $handlers = [];
         $db  = getDB();
         $SQL = "SELECT reaction, params FROM event WHERE type='".quote($type)."'";
         if ($class) {
@@ -177,6 +189,7 @@ class aaevent {
             }
         }
         freeDB($db);
+        return $handlers;
     }
 }
 
@@ -503,7 +516,7 @@ function Event_ConstantBeforeUpdate( $type, $slice_id, $slice_type, &$newvalue, 
 };
 
 /** Event_ConstantUpdated function
- *  Called after propagating a change in a constant value.
+ *  Called after propagating a change in a constant value - called for all changed category value
  * @param $type
  * @param $slice_id
  * @param $slice_type
@@ -513,8 +526,25 @@ function Event_ConstantBeforeUpdate( $type, $slice_id, $slice_type, &$newvalue, 
  */
 function Event_ConstantUpdated( $type, $slice_id, $slice_type, $newvalue, $oldvalue, $constant_id ) {
     AA_Mysqlauth::changeGroups($constant_id, $oldvalue, $newvalue);
-    AA_Mailman::constantsChanged( $constant_id, $oldvalue, $newvalue );
 }
+
+/**
+ * Called after updating a constant group.
+ *
+ * @param $type
+ * @param $slice_id
+ * @param $slice_type
+ * @param $ret_params
+ * @param $constant_id
+ * @param $param_2
+ *
+ * @return void
+ */
+function Event_ConstantGroupUpdated($type, $slice_id, $slice_type, $ret_params, $constant_id, $param_2 ) {
+    AA_Mailman::constantsChanged( $constant_id );
+}
+
+
 
 
 /** Event_AddLinkGlobalCat function

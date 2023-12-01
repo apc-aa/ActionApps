@@ -129,8 +129,6 @@ if ( !$no_slice_id AND !IsSuperadmin() AND !$perm_slices[AA::$module_id] AND !$a
 
 is_object( $db ) || ($db = getDB());
 
-$event        = new aaevent;
-
 // Create g_modules: a global array which holds user editable modules
 $db->query("SELECT id, name, type, deleted FROM module ORDER BY priority, name");
 while ($db->next_record()) {
