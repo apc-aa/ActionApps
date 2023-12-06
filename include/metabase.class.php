@@ -543,8 +543,8 @@ class AA_MbT implements Iterator, ArrayAccess, Countable {
 
     /** Iterator interface */
     public function rewind(): void   { reset($this->c);                        }
-    public function current(): mixed { return current($this->c);               }
-    public function key(): mixed     { return key($this->c);                   }
+    public function current()/*: mixed (not in PHP7.4)*/ { return current($this->c);               }
+    public function key()/*: mixed (not in PHP7.4)*/     { return key($this->c);                   }
     public function next(): void     { next($this->c);                         }
     public function valid(): bool    { return (current($this->c) !== false);   }
 
@@ -555,7 +555,7 @@ class AA_MbT implements Iterator, ArrayAccess, Countable {
     public function offsetSet($offset, $value): void { $this->c[$offset] = $value;      }
     public function offsetExists($offset): bool      { return isset($this->c[$offset]); }
     public function offsetUnset($offset): void       { unset($this->c[$offset]);        }
-    public function offsetGet($offset): mixed        { return $this->c[$offset] ?? null; }
+    public function offsetGet($offset)/*: mixed (not in PHP7.4)*/        { return $this->c[$offset] ?? null; }
 }
 
 /** @todo convert to static class variables after move to PHP5 */

@@ -260,7 +260,7 @@ class Toexecute {
         $mem_usage = sprintf('%.3g',(memory_get_usage() / (1024*1024)));
         $mem_peak  = sprintf('%.3g',(memory_get_peak_usage() / (1024*1024)));
 
-        AA_Log::write('TOEXECUTE', $selector, sprintf('%.3g', $execute_times[$task_type]).":${mem_usage}MB:${mem_peak}MB:$retcode:" . $task['params']);
+        AA_Log::write('TOEXECUTE', $selector, sprintf('%.3g', $execute_times[$task_type]).":{$mem_usage}MB:{$mem_peak}MB:$retcode:" . $task['params']);
         return 1;
     }
 

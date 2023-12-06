@@ -162,7 +162,7 @@ abstract class AbstractGrabber implements \AA\Util\NamedInterface {
     /** getAllItems function
      *  Shortcut method to get array of all the Items
      * @param string $key if you want to get items as indexed array
-     * @return ItemContent[]|AA_Content[]
+     * @return AA_Content[]  or ItemContent[]
      * @throws \Exception
      */
     public function getAllItems(string $key=''): array {

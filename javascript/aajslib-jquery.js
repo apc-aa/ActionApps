@@ -29,19 +29,30 @@ https://www.apc.org/
 
 "use strict";
 
-// polyfills - will be removed when the incompatible browsers will not be supported by its creator
+// polyfills - will be removed when the incompatible browsers are not supported by its creator
 if (window.NodeList && !NodeList.prototype.forEach) { NodeList.prototype.forEach = Array.prototype.forEach; }
 /** shortcut to parent.querySelector() */
 if (typeof AA_$ !== 'function')  { var AA_$ = (sel, el = document) => el.querySelector(sel); }
 /** shortcut to parent.querySelectorAll() */
 if (typeof AA_$$ !== 'function') { var AA_$$ = (sel, el = document) => Array.from(el.querySelectorAll(sel)); }
 
-/** replaces jQuery $xx.load(url) - used as AA_Load(xx,url) */
-function AA_Load(sel, url) {
-    fetch(url)
+/** replaces jQuery $xx.load(url) - used as AA_Load(xx,url)
+ * @param {HTMLElement|string} sel
+ * @param {string} url
+ * @param {object} options fetch parameters like {method: "POST", headers: {"X-Requested-With": "XMLHttpRequest"}}
+ **/
+function AA_Load(sel, url, options = {}) {
+    return fetch(url,options)
         .then(response => response.text())
         .then(html => {
-            AA_$(sel).innerHTML = html;
+            const el = (sel instanceof HTMLElement) ? sel : AA_$(sel);
+            el.innerHTML = html;
+            AA_$$('script', el).forEach(oldjs => {   // to run the script inside
+                const newjs = document.createElement("script");
+                [...oldjs.attributes].forEach(at => newjs.setAttribute(at.name, at.value));
+                newjs.text = oldjs.text;
+                oldjs.parentNode.replaceChild(newjs, oldjs);
+            });
         });
 }
 

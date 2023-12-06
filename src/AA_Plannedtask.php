@@ -30,18 +30,9 @@
  */
 
 
-use AA;
 use AA\IO\DB\DB_AA;
 use AA\Later\LaterInterface;
 use AA\Later\Toexecute;
-use AA_Condition;
-use AA_Formrow_Text;
-use AA_Items;
-use AA_Log;
-use AA_Object;
-use AA_Property;
-use AA_Set;
-use zids;
 
 
 /** Task executed at planed time

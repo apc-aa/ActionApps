@@ -1339,6 +1339,7 @@ class AA_Stringexpand_Lazy extends AA_Stringexpand_Nevercache { // do not cache 
      * @param string $url
      * @param string $placeholder
      * @param string $mode - 'nolazy' for direct load - {lazy:/apc-aa/view.php?vid=15::nolazy}
+     *                     - 'now'    for lazy load with imediate start (no Intersection observer)
      * @return string
      */
     function expand($url='', $placeholder='', $mode='') {
@@ -1351,48 +1352,37 @@ class AA_Stringexpand_Lazy extends AA_Stringexpand_Nevercache { // do not cache 
             return  "<div class=aa-lazydiv-nolazy id=lazy_$uniqid data-aa-url=\"$url\">". StrExp('include',[$url]) ."</div>\n";   // ajax for the same parameters as lazy variant
         }
 
-        $ret    = "<div class=aa-lazydiv id=lazy_$uniqid data-aa-url=\"$url\">";
+        $ret = "<div class=".(($mode == 'now') ? 'aa-lazydiv-now' : 'aa-lazydiv' ). " id=lazy_$uniqid data-aa-url=\"$url\">";
 
         $placeholder = $placeholder ?: '[*]';
         [$placeholder] = AA_Stringexpand::replaceIcons([$placeholder],['*']);  // replace icon [*]
 
         $ret    .= "$placeholder</div>\n";
 
-        // @todo extract AA_setInnerHtml() and AA_Fetch to aajslib
-        $script2run = <<<EOT
-    var setInnerHtmlLazy = function(elm, html) {
-  elm.innerHTML = html;
-  Array.from(elm.querySelectorAll("script")).forEach( oldScript => {
-    const newScript = document.createElement("script");
-    Array.from(oldScript.attributes)
-      .forEach( attr => newScript.setAttribute(attr.name, attr.value) );
-    newScript.append(document.createTextNode(oldScript.innerHTML));
-    oldScript.parentNode.replaceChild(newScript, oldScript);
-  });
+        $script2run = /** @lang JavaScript */
+            <<<EOT
+function AA__LoadLazyCallback(ens, ob) {
+    ens.forEach(en => {
+        if ( en.isIntersecting) {
+            const target = en.target;
+            AA__LoadLazyDiv(target);
+            ob.unobserve(target);
+        }
+    });
 }
-
-    var observer = new IntersectionObserver( function(entries, observer) {
-      entries.forEach( function(entry) {
-        if (entry.isIntersecting) {   
-          entry.target.classList.add('aa-updating');
-          fetch(entry.target.dataset.aaUrl, { method: "POST", headers: {"X-Requested-With": "XMLHttpRequest"}})
-            .then(function(response) {
-              return response.text();
-            })
-            .then(function(text) {
-              setInnerHtmlLazy(entry.target, text);
-            })
-            .catch(function(error) { console.error(error);  })
-            .finally(function() { entry.target.classList.remove('aa-updating') });
-            // AA_Ajax(entry.target.id, entry.target.dataset.aaUrl);
-            observer.unobserve(entry.target);
-          }
-        });
-      }, {rootMargin: "0px 0px 200px 0px"});
-    document.querySelectorAll('.aa-lazydiv').forEach(function(e) { observer.observe(e) });
+function AA__LoadLazyDiv(el) {
+    el.classList.add('aa-updating');
+    AA_Load(el, el.dataset.aaUrl, {method: "POST", headers: {"X-Requested-With": "XMLHttpRequest"}})
+      .catch(error => console.error(error))
+      .finally(() => el.classList.remove('aa-updating'));
+}
+AA_$$('.aa-lazydiv-now').forEach(el => AA__LoadLazyDiv(el));
+const observer = new IntersectionObserver(AA__LoadLazyCallback, { rootMargin: "0px 0px 200px 0px"});
+AA_$$('.aa-lazydiv').forEach(el => observer.observe(el));
 EOT;
-        //$script2run = 'let observer = new IntersectionObserver((entries, observer) => { entries.forEach(entry => { if (entry.isIntersecting) { AA_Ajax(entry.target.id, entry.target.dataset.aaUrl); observer.unobserve(entry.target); } });}, {rootMargin: "0px 0px 0px 0px"}); document.querySelectorAll(\'.aa-lazydiv\').forEach(e => { observer.observe(e) });';
-        AA::Stringexpander()->addRequire('aa-jslib');  // for {live...} - maybe we should distinguish
+
+
+        AA::Stringexpander()->addRequire('aa-jslib');  // for {live...} and now also for AA_$, AA_$$, AA_Load
         AA::Stringexpander()->addRequire($script2run, 'AA_Req_Run');
         AA::Stringexpander()->addRequire('css-aa-system');
         return $ret;

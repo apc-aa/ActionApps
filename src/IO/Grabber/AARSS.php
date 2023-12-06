@@ -48,7 +48,7 @@ class AARSS_Parser {
      */
     public static function nsName2abbrevname($name) {
         preg_match("/(.+):([^:]+)/", $name, $nameparts);
-        if ($ab = self::MODULE2ABBREV[$nameparts[1]]) {
+        if ($ab = self::MODULE2ABBREV[$nameparts[1]] ?? false) {
             return $ab . ":" . $nameparts[2];
         }
         return $name;
@@ -62,8 +62,6 @@ class AARSS_Parser {
         return array_search($abbrev, self::MODULE2ABBREV);
     }
 }
-
-
 
 
 /** Saver / AbstractGrabber API

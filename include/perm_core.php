@@ -169,21 +169,23 @@ function CheckPerms( $user_id, $objType, $objID, $perm) {
     }
 }
 
-/** GetUserSlices function
- * @return array|string
+/** get array of slices the user have permission to
+ * @param string $perm get only slices matching the perm
+ * @return array|string "all"
  */
-function GetUserSlices() {
+function GetUserSlices(string $perm='') {
     global $permission_uid, $permission_to;
     $user_id = AuthGetUid();
 
     if (!$permission_to OR ($permission_uid != $user_id)) {
         AA::$perm->cache($user_id);
     }
-    if (IsPerm($permission_to["aa"][AA_ID], PS_MANAGE_ALL_SLICES) ) {
-        return "all";
+    if (IsPerm($permission_to['aa'][AA_ID], PS_MANAGE_ALL_SLICES) ) {
+        return 'all';
     }
 
-    return  $permission_to["slice"];
+    // all slices or filtered by provided $perm
+    return !$perm ? $permission_to['slice'] : array_filter($permission_to['slice'], function($sprms) use ($perm) { return strchr($sprms, $perm); });
 }
 
 /** IfSlPerm function
@@ -628,7 +630,7 @@ class AA_Perm {
      * granted on all objects of type $objectType
      * flags & 1 -> do not involve membership in groups
      */
-    function getUserPerms($uid, $objectType, $flags = 0) {
+    function getUserPerms($uid, $objectType, $flags = 0): array {
         if ( $ps = $this->_whichPermstorage()) {
             return $ps->getJoinedPerms($uid, $objectType, ($flags & 1) ? [] : $this->getMembership($uid));
         }

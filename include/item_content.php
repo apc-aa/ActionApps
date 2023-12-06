@@ -714,7 +714,7 @@ class ItemContent extends AA_Content {
         }
 
         // changed this from [a-z_]+\.+[0-9]*$ because of alerts[12]....abcde
-        return (((strlen($field_id)==16) AND preg_match('/^[a-z0-9_]+\.+[0-9A-Za-z]*$/',$field_id)) OR $f_def[$field_id]);
+        return (((strlen($field_id)==16) AND preg_match('/^[a-z0-9_]+\.+[0-9A-Za-z]*$/',$field_id)) OR array_key_exists($field_id, $f_def));
     }
 
     /** setByItemID function
@@ -1433,6 +1433,7 @@ class ItemContent extends AA_Content {
                 continue;
             }
 
+            $expand_delimiter = '';
             // computed field?
             switch ($fnc["fnc"]) {
                 case 'seo':
@@ -1479,7 +1480,7 @@ class ItemContent extends AA_Content {
             $aa_val = new AA_Value( strlen($expand_delimiter) ? array_filter(explode($expand_delimiter,$new_computed_value) ,'strlen') : $new_computed_value, $field->getProperty('html_default')>0 ? FLAG_HTML : 0);
 
             // set this value also to $item in order we can count with it
-            // in next computed field
+            // in the next computed field
             $item->setAaValue($fid, $aa_val);
             $values = $item->getValues($fid);
 
@@ -1574,7 +1575,7 @@ class ItemContent extends AA_Content {
                     //exit;
                     DB_AA::delete('content', [['item_id', $id, 'l'], ['field_id', array_unique($field_arr)], ['number', $lang*AA_Value::MAX_INDEX, '>='], ['number', ($lang+1)*AA_Value::MAX_INDEX, '<']]);
                     DB_AA::delete('content', [['item_id', $id, 'l'], ['field_id', array_unique($field_arr)], ['number', 0, '>='], ['number', AA_Value::MAX_INDEX, '<']]);
-                    DB_AA::delete('content', [['item_id', $id, 'l'], ['field_id', array_unique($field_arr)], ['number', 'ISNULL']]);
+                    DB_AA::delete('content', [['item_id', $id, 'l'], ['field_id', array_unique($field_arr)], ['number', '', 'ISNULL']]);
                 }
             }
             // note extra images deleted in insert_fnc_fil if needed

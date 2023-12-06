@@ -186,19 +186,19 @@ class Searchfields implements \Iterator, \ArrayAccess, \Countable {
     }
 
     /** Iterator interface */
-    public function rewind()  { reset($this->fields);                        }
-    public function current() { return current($this->fields);               }
-    public function key()     { return key($this->fields);                   }
-    public function next()    { next($this->fields);                         }
-    public function valid()   { return (current($this->fields) !== false);   }
+    public function rewind(): void   { reset($this->fields);                        }
+    public function current()/*: mixed (not in PHP7.4)*/ { return current($this->fields);               }
+    public function key()/*: mixed (not in PHP7.4)*/     { return key($this->fields);                   }
+    public function next(): void     { next($this->fields);                         }
+    public function valid(): bool    { return (current($this->fields) !== false);   }
 
     /** Countable interface */
-    public function count()   { return count($this->fields);                 }
+    public function count(): int     { return count($this->fields);                 }
 
     /** ArrayAccess interface */
-    public function offsetSet($offset, $value) { $this->fields[$offset] = $value;      }
-    public function offsetExists($offset)      { return isset($this->fields[$offset]); }
-    public function offsetUnset($offset)       { unset($this->fields[$offset]);        }
-    public function offsetGet($offset)         { return isset($this->fields[$offset]) ? $this->fields[$offset] : null; }
+    public function offsetSet($offset, $value): void { $this->fields[$offset] = $value;       }
+    public function offsetExists($offset): bool      { return isset($this->fields[$offset]);  }
+    public function offsetUnset($offset): void       { unset($this->fields[$offset]);         }
+    public function offsetGet($offset)/*: mixed (not in PHP7.4)*/        { return $this->fields[$offset] ?? null; }
 
 }

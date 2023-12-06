@@ -2861,7 +2861,10 @@ function FrmTabs( $tabs, $tabsId ) {
  * @param bool     $clasic
  * @return string
  */
-function GetHtmlTable( array $content, $mode='td', $caption='', $clasic=false ) {
+function GetHtmlTable( array $content, $mode='td', $caption='', $clasic=false ): string {
+    if (!$content) {
+        return '';
+    }
     if ($mode == 'key') {
         array_unshift($content,array_keys(reset($content)));
         $mode = 'th';

@@ -322,8 +322,8 @@ class DB_AA extends AbstractDB
      *     s<>      - string            <>               single             ['name', $name, 's<>']
      *     l<>      - longid            <>               single             ['id', $slice_id, 'l<>']
      *     !=       - integer           <>               single             ['date', 1478547854, '!=']   // the same as above - "<>"
-     *     ISNULL   -                   IS NULL                             ['number', 'ISNULL']
-     *     NOTNULL  -                   IS NOT NULL                         ['number', 'NOTNULL']
+     *     ISNULL   -                   IS NULL                             ['number', '', 'ISNULL']
+     *     NOTNULL  -                   IS NOT NULL                         ['number', '', 'NOTNULL']
      *     LIKE     -                   LIKE             single             ['id', '\_%', 'LIKE']
      *     RLIKE    -                   LIKE             single             ['selector', $item_id, 'RLIKE']
      *     BEGIN    -                   LIKE             single             ['selector', $item_id, 'BEGIN'] // similar to RLIKE, but the value must begin with exact match of the string (including "%" and "_" characters)
@@ -377,10 +377,10 @@ class DB_AA extends AbstractDB
             } elseif ($type == 'FILLED') {
                 $where[] = "$name > '' ";             // this is kind of trick for - not null, not empty, not any whitespace character(s) - thanks: https://stackoverflow.com/questions/1869264#42723975
                 continue;
-            } elseif ((string)$value == 'ISNULL') {
+            } elseif ($type == 'ISNULL') {
                 $where[] = "$name IS NULL ";
                 continue;
-            } elseif ((string)$value == 'NOTNULL') {
+            } elseif ($type == 'NOTNULL') {
                 $where[] = "$name IS NOT NULL ";
                 continue;
             } else {

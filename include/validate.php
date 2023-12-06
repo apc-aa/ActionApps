@@ -172,7 +172,7 @@ class AA_Validate extends AA_Serializable {
      * @return bool
      */
     function varempty($var) : bool {
-        return strlen(trim($var))==0;
+        return strlen(trim((string)$var))==0;
     }
 
     /** bad function

@@ -590,7 +590,7 @@ class AA_Field implements ArrayAccess {
         unset($this->data[$offset]);
     }
     /** implements ArrayAccess */
-    public function offsetGet($offset): mixed {
+    public function offsetGet($offset)/*: mixed (not in PHP7.4)*/ {
         return $this->data[$offset] ?? null;
     }
 }
@@ -1118,14 +1118,14 @@ class AA_Fields implements Iterator, Countable {
      *  @link https://php.net/manual/en/iterator.current.php
      *  @return AA_Field
      */
-    public function current(): mixed { $this->loaded_all || $this->load(); return current($this->fields); }
+    public function current()/*: mixed (not in PHP7.4)*/ { $this->loaded_all || $this->load(); return current($this->fields); }
 
     /**
      * Return the key of the current element
      * @link https://php.net/manual/en/iterator.key.php
      * @return string|null scalar on success, or null on failure.
      */
-    public function key(): mixed { $this->loaded_all || $this->load(); return key($this->fields);                }
+    public function key()/*: mixed (not in PHP7.4)*/ { $this->loaded_all || $this->load(); return key($this->fields);                }
 
     /** Move forward to next element
      *  @link https://php.net/manual/en/iterator.next.php
