@@ -67,9 +67,9 @@ define('AA_INSTAL_PATH', "/".AA_BASE_DIR);  // you can left it as it is
  *  find AA directory
  *  Make sure to terminate this path with a slash!
  *  Example:
- *  define('AA_HTTP_DOMAIN', "http://aa.apc.org/");
+ *  define('AA_HTTP_DOMAIN', "https://aa.apc.org/");
  */
-define('AA_HTTP_DOMAIN', "http://my.domain.org/");
+define('AA_HTTP_DOMAIN', "https://my.domain.org/");
 
 
 /** ID of AA (any unique 32chars long hexadecimal number)
@@ -82,7 +82,7 @@ define("AA_ID", "990111222333444555666777888999A9");
 /** Organization name
  *  It should be also world unique - it is important to have it unique mainly
  *  if you plan exchange articles between servers
- *  (@see http://apc-aa.sourceforge.net/faq/index.shtml#241)
+ *  (@see https://actionapps.org/faq/detail.shtml?x=1788)
  */
 define("ORG_NAME","An APC Member");
 
@@ -116,14 +116,14 @@ define("DB_TYPE",    "db_mysql");      // you can use db_mysql, db_pdo:mysql and
 define("DB_CHARACTER_SET", "utf8mb4");
 define("DB_COLLATION_CONNECTION", "utf8mb4_czech_ci");
 
-/** Use MySQL non-persistent database connect (mysql_connect())
+/** Use MySQL non-persistent database connect (mysqli_connect())
  *  or the persistent one?
  *  Persistent connection should be better for most servers, but if you have
  *  experience troubles in MySQL connection, use non-persistent connections
- *  see http://cz.php.net/manual/en/function.mysql-pconnect.php
+ *  see https://www.php.net/manual/en/mysqli.construct.php
  *  Default value: true
  */
-define('AA_USE_NON_PERSISTENT_CONNECT', false);
+define('AA_USE_NON_PERSISTENT_CONNECT', true);
 
 /** Permissions system settings
  *  Select permission system (exactly one of "dummy", "ldap", "sql")
@@ -147,8 +147,8 @@ define("PERM_LIB", "sql");
 
 /** Default language file
  *  Language files are stored in include/lang/ directory. At this time you can
- *  use any *_news_lang.php, where '*' is one of cz, de, en, es, ja, ro, sk
- *  ( @see http://apc-aa.sourceforge.net/faq/index.shtml#1180 )
+ *  use any *-utf8_news_lang.php, where '*' is one of cz, de, en, es, ja, ro, sk
+ *  ( @see https://actionapps.org/faq/detail.shtml?x=1776 )
  */
 define("DEFAULT_LANG_INCLUDE", "en-utf8_news_lang.php");
 
@@ -173,8 +173,8 @@ define('TOEXECUTE_ALLOWED_TIME', 59.0);
 /** File uploads settings
  *  The directory for file uploads should be webserver writeable and it
  *  shouldn't be inside AA directory (for security reasons - PHP script upload)
- *  ( @see http://apc-aa.sourceforge.net/faq/index.shtml#fileupload )
- *  ( @see http://apc-aa.sourceforge.net/faq/index.shtml#1118 )
+ *  ( @see https://actionapps.org/faq/detail.shtml?x=1696 )
+ *  ( @see https://actionapps.org/faq/detail.shtml?x=1694 )
  */
 /** url to image/file directory */
 define("IMG_UPLOAD_URL", AA_HTTP_DOMAIN."img_upload/");
@@ -280,8 +280,8 @@ define("DOCUMENTATION_URL", "https://actionapps.org/aa/doc");
 /** Filemanager is special feature which allows you to modify static files right
  *  inside AA admin interface.
  *  It's not necessary to configure it here, if you don't plan to use it.
- *  ( @see http://apc-aa.sourceforge.net/faq/index.shtml#1106 )
- *  ( @see http://apc-aa.sourceforge.net/faq/index.shtml#fileman )
+ *  ( @see https://actionapps.org/faq/detail.shtml?x=1698 )
+ *  ( @see https://actionapps.org/faq/detail.shtml?x=1697 )
  */
 /** mkdir perms, set by variable because constants don't work with octal
 *  values */
@@ -303,5 +303,5 @@ $XMGETTEXT_DESTINATION_DIR = "/www/php_rw/lang/";
 /** MAILMAN synchronization dir. In this directory are placed the
  * files with lists of email addresses which processes mailman.
  * The dir must exist, it is not created by the mailman.php script.
- * ( @see http://apc-aa.sourceforge.net/faq/index.shtml#email )   */
+ * ( @see https://actionapps.org/faq/detail.shtml?x=2009 )   */
 $MAILMAN_SYNCHRO_DIR = "/www/mailman/";
