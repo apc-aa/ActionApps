@@ -334,7 +334,7 @@ class AARSS extends AbstractGrabber
 
         // huhl($xml_data);
 
-        if (!($this->aa_rss = aa_rss_parse($xml_data, "{$this->feed_id} (${this->feed['server_url']})"))) {
+        if (!($this->aa_rss = aa_rss_parse($xml_data, "{$this->feed_id} ({$this->feed['server_url']})"))) {
             AA_Log::write("CSN", $this->getLogSelector(), "Feeding mode ($feed_debug_name): Unable to parse XML data");
             if ($debugfeed >= 1) {
                 print("\n<br>$feed_debug_name:" . $this->feed['server_url'] . ":unparsable: <hr>" . safe($xml_data) . "<hr>");
