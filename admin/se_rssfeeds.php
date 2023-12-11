@@ -31,34 +31,16 @@ require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/varset.php";
 require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/item.php";
-require_once __DIR__ . "/../include/actions.php";
+require_once __DIR__ . "/../include/feeding.php";
 
-if ( !IsSuperadmin() ) {
-    MsgPage(_m("You do not have permission to manage Emails"));
+if (!IfSlPerm(PS_FEEDING)) {
+    MsgPage(_m("You have not permissions to change feeding setting"));
     exit;
 }
 
 // if ($mode == "test") { Feed::onefeed($testfeed["feed_id"], $testfeed, 5, 'write'); }
 
-$buttons  = [
-    'Map'      => a_href(get_admin_url('se_mapping.php', ['rssfeed_id={feed_id}']), _m('Map'), ['class' => 'aa-button']),
-    'Queue'    => a_href(get_admin_url('xmlclient.php',  ['rssfeed_id={feed_id}']), _m('Run (queue)'), ['class' => 'aa-button-run']),
-    'Test'     => a_href(get_admin_url('xmlclient.php',  ['rssfeed_id={feed_id}&fill=0']), _m('Test'), ['class' => 'aa-button-test']),
-    'Source'   => a_href(get_admin_url('xmlclient.php',  ['rssfeed_id={feed_id}&display=1']), _m('Source'), ['class' => 'aa-button-show']),
-    'Validate' => a_href('https://validator.w3.org/feed/check.cgi?url={safe:{server_url}}', _m('Validate'), ['class' => 'aa-button-test']),
-];
-
-$managed = AA::Metabase()->getManagerConf('rssfeeds',null,null,[],$buttons);
-$managed->setColumns2show(['name','server_url','feed_id']);
-$managed->setColumn('server_url', '<a href="{server_url}">{shorten:{server_url}:60:3}</a>');
-
-
-$managed->setModule(AA::$module_id);
-// $managed->setWidgetSetting('slice_id', ['enum'=>AA_Module::getUserModules(), 'name'=>_m('Owner')]);
-$managed->setWidgetSetting('slice_id', ['type'=>'hidden', 'name'=>_m('Owner')]);
-$managed->setWidgetSetting('feed_id',                                       ['name'=>_m('ID')]);
-$managed->setWidgetSetting('server_url',                                    ['name'=>_m('URL of the feed'), 'help'=> _m("e.g. https://www.someplace.com/rss/index.xml").'<br>'._m("Do NOT change this URL if you already set the Mapping (or update mapping after the change). The mapping is tied to this url!")]);
-$managed->setWidgetSetting('name',                                          ['name'=>_m('RSS Feed name')]);
+$managed = GetFeedManaged();
 
 $apage = new AA_Adminpageutil('sliceadmin', 'rssfeeds');
 $apage->setTitle(_m("Remote RSS Feed administration"));
