@@ -39,7 +39,7 @@ class AARSS_Parser {
         "HTTP://PURL.ORG/RSS/1.0/MODULES/RICHEQUIV/"    => "REQV",
         "HTTP://XMLNS.COM/FOAF/0.1/"					=> "FOAF",
         "HTTP://PURL.ORG/RSS/1.0/MODULES/SYNDICATION/"  => "SYNDICATION",
-        "HTTP://WEBNS.NET/MVCB/"                        => "ADMIN"
+        "HTTP://WEBNS.NET/MVCB/"                        => "ADMIN",
     ];
 
     /** nsName2abbrevname function
@@ -253,7 +253,7 @@ class AARSS extends AbstractGrabber
             "full_text......." => ["feedmap_flag"=>FEEDMAP_FLAG_RSS,  "value"=>"CONTENT",                                   "from_field_name"=>"Content"],
             "status_code....." => ["feedmap_flag"=>FEEDMAP_FLAG_VALUE,"value"=>2,                                           "from_field_name"=>"Approved"],
             "hl_href........." => ["feedmap_flag"=>FEEDMAP_FLAG_RSS,  "value"=>"ITEM/link|ITEM/guid",                       "from_field_name"=>"ITEM:link"],
-            "expiry_date....." => ["feedmap_flag"=>FEEDMAP_FLAG_VALUE,"value"=>(time()+2000*24*60*60),                      "from_field_name"=>"Expiry Date"]
+            "expiry_date....." => ["feedmap_flag"=>FEEDMAP_FLAG_VALUE,"value"=>(time()+2000*24*60*60),                      "from_field_name"=>"Expiry Date"],
         ];
     }
 
@@ -277,6 +277,9 @@ class AARSS extends AbstractGrabber
         return [$xml_data];
     }
 
+    protected function getLogSelector(): string {
+        return 'RSS:'.$this->feed_id;
+    }
 
     /** prepare function
      *  Fetch data and parse it
@@ -307,7 +310,7 @@ class AARSS extends AbstractGrabber
         }
 
         if (!$xml_data) {
-            AA_Log::write("CSN", '', "No data returned for $feed_debug_name");
+            AA_Log::write("CSN", $this->getLogSelector(), "No data returned for $feed_debug_name");
             if ($debugfeed >= 1) {
                 print("\n<br>$feed_debug_name: no data returned");
             }
@@ -319,7 +322,7 @@ class AARSS extends AbstractGrabber
 
         // if an error occured, write it to the LOG
         if (($first_char = substr($xml_data, 0, 1)) != "<") {
-            AA_Log::write("CSN", '', "Feeding mode ($feed_debug_name): $xml_data");
+            AA_Log::write("CSN", $this->getLogSelector(), "Feeding mode ($feed_debug_name): $xml_data");
             if ($debugfeed >= 1) {
                 print("\n<br>$feed_debug_name:bad data returned (first character &quot;$first_char&quot; (ord=" . ord($first_char) . ") is not &quot;&lt;&quot;):$xml_data");
             }
@@ -331,8 +334,8 @@ class AARSS extends AbstractGrabber
 
         // huhl($xml_data);
 
-        if (!($this->aa_rss = aa_rss_parse($xml_data))) {
-            AA_Log::write("CSN", '', "Feeding mode ($feed_debug_name): Unable to parse XML data");
+        if (!($this->aa_rss = aa_rss_parse($xml_data, "{$this->feed_id} (${this->feed['server_url']})"))) {
+            AA_Log::write("CSN", $this->getLogSelector(), "Feeding mode ($feed_debug_name): Unable to parse XML data");
             if ($debugfeed >= 1) {
                 print("\n<br>$feed_debug_name:" . $this->feed['server_url'] . ":unparsable: <hr>" . safe($xml_data) . "<hr>");
             }

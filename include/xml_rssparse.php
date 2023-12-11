@@ -276,9 +276,8 @@ function charD($parser, $data) {
  * @param $xml_data
  * @return array|bool|mixed
  */
-function aa_rss_parse($xml_data) {
-    global $aa_rss,
-    $cur_tag, $aa_rss, $channel, $category, $field, $item,
+function aa_rss_parse($xml_data, string $feed_id='') {
+    global $aa_rss, $cur_tag, $aa_rss, $channel, $category, $field, $item,
     $fulltext_content, $fielddata,$content_format;
 
 
@@ -309,7 +308,7 @@ function aa_rss_parse($xml_data) {
     xml_set_element_handler($xml_parser, "startElement", "endElement");
     xml_set_character_data_handler($xml_parser,"charD");
     if (!xml_parse($xml_parser, $xml_data)) {
-        $err = sprintf("XML parse error: %s at line %d", xml_error_string(xml_get_error_code($xml_parser)), xml_get_current_line_number($xml_parser));
+        $err = sprintf("Feed %s: XML parse error: %s at line %d", $feed_id, xml_error_string(xml_get_error_code($xml_parser)), xml_get_current_line_number($xml_parser));
         print("\nXML_RSSPARSE:ERR:$err");
         return false;
     }

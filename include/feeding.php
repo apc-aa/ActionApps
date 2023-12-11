@@ -493,3 +493,27 @@ function FeedItem($item_id): bool {
     }
     return true;
 }
+
+function GetFeedManaged(): \AA\Managed {
+    $buttons  = [
+        'Map'      => a_href(get_admin_url('se_mapping.php', ['rssfeed_id={feed_id}']), _m('Map'), ['class' => 'aa-button']),
+        'Queue'    => a_href(get_admin_url('xmlclient.php',  ['rssfeed_id={feed_id}']), _m('Run (queue)'), ['class' => 'aa-button-run']),
+        'Test'     => a_href(get_admin_url('xmlclient.php',  ['rssfeed_id={feed_id}&fill=0']), _m('Test'), ['class' => 'aa-button-test']),
+        'Source'   => a_href(get_admin_url('xmlclient.php',  ['rssfeed_id={feed_id}&display=1']), _m('Source'), ['class' => 'aa-button-show']),
+        'Validate' => a_href('https://validator.w3.org/feed/check.cgi?url={safe:{server_url}}', _m('Validate'), ['class' => 'aa-button-test']),
+        'Log'      => a_href(get_admin_url('aa_log.php?&srchbr_akce=1&srchbr_field%5B0%5D=selector&srchbr_oper%5B0%5D==&srchbr_value%5B0%5D=RSS:{feed_id}&srchbr_order%5B0%5D=time&srchbr_order_dir%5B0%5D=on'), _m('Log'), ['class' => 'aa-button-show']),
+    ];
+
+    $managed = AA::Metabase()->getManagerConf('rssfeeds',null,null,[],$buttons);
+    $managed->setColumns2show(['name','server_url','feed_id']);
+    $managed->setColumn('server_url', '<a href="{server_url}">{shorten:{server_url}:60:3}</a>');
+
+    $managed->setModule(AA::$module_id);
+    $managed->setWidgetSetting('slice_id', ['enum'=>AA_Module::getUserModules(), 'name'=>_m('Owner')]);
+    $managed->setWidgetSetting('slice_id', ['type'=>'hidden', 'name'=>_m('Owner')]);
+    $managed->setWidgetSetting('feed_id',                                       ['name'=>_m('ID')]);
+    $managed->setWidgetSetting('server_url',                                    ['name'=>_m('URL of the feed'), 'help'=> _m("e.g. https://www.someplace.com/rss/index.xml").'<br>'._m("Do NOT change this URL if you already set the Mapping (or update mapping after the change). The mapping is tied to this url!")]);
+    $managed->setWidgetSetting('name',                                          ['name'=>_m('RSS Feed name')]);
+    return $managed;
+}
+
