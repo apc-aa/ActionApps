@@ -2009,15 +2009,18 @@ class AA_Stringexpand_Gps extends AA_Stringexpand_Nevercache {
 
     /** expand function  */
     function expand($gps='', $format='') {
-        $gps_in = aa_html_entity_decode(inner_trim($gps));
         $lat = $lon = '';
-
+        // -50.09697 14.42332
+        if (preg_match('/^(-?\d+\.\d+)\s+(-?\d+\.\d+)$/', aa_trim($gps), $p)) {
+            $lat = $p[1];
+            $lon = $p[2];
+        }
         // 49°58'4.508"N, 12°30'10.790"E
         // 12° 30' 10.790'' E 49° 58' 4.508'' N
         // 49°58'4.508"N, 12°30'10.790"E
         // -49°58'4.508"N, -12°30'10.790"E
         // 49°58'4.508"S, 12°30'10.790"W
-        if ( preg_match('/^([-+])?(\d+)°(\d+)\'(\d+\.?,?\d*?)("|\'\')([NWSE]),?([-+])?(\d+)°(\d+)\'(\d+\.?,?\d*?)("|\'\')([NWSE])$/', $gps_in, $p) ) {
+        elseif ( preg_match('/^([-+])?(\d+)°(\d+)\'(\d+\.?,?\d*?)("|\'\')([NWSE]),?([-+])?(\d+)°(\d+)\'(\d+\.?,?\d*?)("|\'\')([NWSE])$/', aa_html_entity_decode(inner_trim($gps)), $p) ) {
             $num1 = (($p[1]=='-' OR strtoupper($p[6])=='S' OR strtoupper($p[6])=='W') ? '-' : '') .((int)$p[2] + ((int)$p[3]/60) + ((float)$p[4]/3600));
             $num2 = (($p[7]=='-' OR strtoupper($p[12])=='S' OR strtoupper($p[12])=='W') ? '-' : '') .((int)$p[8] + ((int)$p[9]/60) + ((float)$p[10]/3600));
             $lat = (strtoupper($p[6])=='N' OR strtoupper($p[6])=='S') ? $num1 : $num2;
