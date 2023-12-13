@@ -90,7 +90,7 @@ class AA_Aliasfunc extends AA_Object implements \AA\Util\NamedInterface {
             'alias'  => new AA_Property( 'alias',  _m("Alias"),          'string', false, true, '', true,  _m('Alias will be called as {_:&lt;Alias_name&gt;[:&lt;Possible parameters - colon separated&gt;]}'),'', 'Message_box'),
             'code'   => new AA_Property( 'code',   _m("Code"),           'text',   false, true, '', false,  _m('Code printed by the alias. Alias could have parameters and you can use it by _#P1, _#P2, ... variables'),'', '&lt;div class=mybox style="color:_#P2"&gt;_#P1&lt;/div&gt;'),
             'desc'   => new AA_Property( 'desc',   _m("Description"),    'text',   true, true, '', false),
-            'ussage' => new AA_Property( 'ussage', _m("Usage example"), 'string',  true,  true, '', false, '', '', '{_:Message_box:Update successful:green}')
+            'ussage' => new AA_Property( 'ussage', _m("Usage example"), 'string',  true,  true, '', false, '', '', '{_:Message_box:Update successful:green}'),
         ];
     }
 
@@ -180,6 +180,7 @@ function aa_json_decode($string, $asoc=false) {
     }
     return $values;
 }
+
 
 /** @return string - JSON array form string where values are delimited by $delimiter.
  *  Input text must be in utf8
@@ -425,12 +426,12 @@ class AA_Stringexpand_Userinfo extends AA_Stringexpand {
         switch ($property) {
             case 'logintime':  return DB_AA::select1('time', "SELECT time FROM `log`", [
                 ['type', 'LOGIN'],
-                ['params', $user]
+                ['params', $user],
 //                ['params', str_replace(':', ':#', $user) . ':%', 'LIKE']
             ], ['time-']) ?: '';
             case 'logintimes': return join('-',DB_AA::select('time', "SELECT time FROM `log`", [
                 ['type','LOGIN'],
-                ['params',$user]
+                ['params',$user],
             ], ['time-']));
         }
         return perm_username( $user );
@@ -1200,7 +1201,7 @@ class AA_Stringexpand_Shorten extends AA_Stringexpand_Nevercachenotrim {
                 $shorted_text = aa_substr($strip_text, 0, $length);
                 $SEARCH_CRIT = [
                     ["\n", 2,0], ["\r", 2,0], ['.', 2,1], ["\n", 5,0], ["\r", 5,0], ['.', 5,1],
-                    [' ', 10,0]
+                    [' ', 10,0],
                 ];
                 foreach ($SEARCH_CRIT as $criterium) {
                     if ( (($paraend = aa_strrpos($shorted_text, $criterium[0])) > $length/$criterium[1])) {  // half is minimum
@@ -5467,7 +5468,7 @@ class AA_Stringexpand_Dictionary extends AA_Stringexpand {
             "'<h[1-6][^>]*?>.*?</h[1-6]>'si",  // Strip out titles
             // can't be nested
             "'<a[^>]*?>.*?</a>'si",            // Strip out links
-            "'<[/!]*?[^<>]*?>'si"
+            "'<[/!]*?[^<>]*?>'si",
         ];          // Strip out HTML tags
 
         // substitute html tags with shortcuts
@@ -6604,6 +6605,34 @@ class AA_Req_Htm extends AA_Req {
     }
 }
 
+/**
+ * Class AA_Req_Htm
+ */
+class AA_Req_CSScode extends AA_Req {
+
+    const CODE_POSITION = 'HEAD-B';
+
+    protected $css;
+
+    /**
+     * AA_Req_Run constructor.
+     * @param $script
+     * @param array $depend
+     */
+    function __construct($css, $depend= []) {
+        $this->css     = $css;
+        $this->depend  = $depend;
+    }
+
+    /**
+     * @return string
+     */
+    function getCode(): string {
+        return strlen($this->css) ? "<style> {$this->css} </style>" : '';
+    }
+
+    /** @todo may be to implement getScript()? */
+}
 
 
 
@@ -6741,6 +6770,8 @@ class AA_Requires {
             $hash = $this->addUsrRequire($require, 'AA_Req_Footlib');
         } elseif ($type == 'AA_Req_Htm') {
             $hash = $this->addUsrRequire($require, 'AA_Req_Htm');
+        } elseif ($type == 'AA_Req_CSScode') {
+            $hash = $this->addUsrRequire($require, 'AA_Req_CSScode');
         } elseif ((aa_substr($require,-4)=='.css') OR aa_strpos($require,'.css?') OR aa_strpos($require,'.css ') OR aa_strpos($require,'/css?')) {  //  /css? for google fonts
             $hash = $this->addUsrRequire($require, 'AA_Req_Css');
         } elseif (aa_substr($require,-3)=='.js' OR aa_strpos($require,'.js?') OR (aa_strpos($require,'/')!==false)) {
@@ -6923,7 +6954,7 @@ class AA_Requires {
             'css-normalize@8'             => new AA_Req_Css('https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.css', 'sha256-WAgYcAck1C1/zEl5sBl5cfyhxtLgKGdpI3oKyJffVRI='),
             'css-fontawesome@4'           => new AA_Req_Css('https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css', 'sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0='),
             '_css-codemirror@5'           => new AA_Req_Css('https://cdn.jsdelivr.net/npm/codemirror@5.63.3/lib/codemirror.css', 'sha256-utW7LD90DZW8tsURpPq7cabUGkha4Bf++sK4e7NC0+8='),
-            'htm-aa-system@1'             => new AA_Req_Htm('AA_Tools::getBottomCode')
+            'htm-aa-system@1'             => new AA_Req_Htm('AA_Tools::getBottomCode'),
 
             //'select2@4'                => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/select2@4.0.5/dist/js/select2.min.js', 'sha256-FA14tBI8v+/1BtcH9XtJpcNbComBEpdawUZA6BPXRVw=', array('jquery@3','_css-select2@4')),
             //'lightgallery@1'           => new AA_Req_Footlib('https://cdn.jsdelivr.net/lightgallery.js/1.0.1/js/lightgallery.min.js', 'sha384-HZ/iOnkYJdO5/U2ug7IPTgNZq61Jr+SMoJGCWsjVjNqwY/77YVNA/mZQ1tdfo2Xm', array('_css-lightgallery@1')), // v 1.1.1 do not work
@@ -8746,7 +8777,7 @@ class AA_Password_Manager_Reader {
 
         if ($template_id = DB_AA::select1('id', 'SELECT id FROM `email`', [
             ['owner_module_id', $slice_id, 'l'],
-            ['type', 'password change']
+            ['type', 'password change'],
         ])) {
             $slice     = AA_Slice::getModule($slice_id);
             $user_item = new AA_Item($user_info, $slice->aliases( $add_alias ));
@@ -9119,7 +9150,7 @@ class AA_Stringexpand_Mail extends AA_Stringexpand_Nevercache {
             'html'        => 1,
             'cc'          => $cc,
             'bcc'         => $bcc,
-            'attachments' => $attach
+            'attachments' => $attach,
         ];
 
         $mail = new AA_Mail;
@@ -9173,7 +9204,7 @@ class AA_Stringexpand_Xxmail extends AA_Stringexpand_Nevercache {
             'lang'        => $lang,
             'html'        => 1,
             'cc'          => $cc,
-            'bcc'         => $bcc
+            'bcc'         => $bcc,
         ];
 
         $mail = new AA_Mail;
@@ -9209,7 +9240,7 @@ class AA_Stringexpand_Mailform extends AA_Stringexpand_Nevercache {
             'body' => $body,
             'ok' => $ok,
             'lang' => $lang,
-            'from' => $from
+            'from' => $from,
         ];
         $form_id  = 'form'.new_id();
         $mailconf = AA_Stringexpand_Encrypt::get_time_token($config_arr);

@@ -253,8 +253,21 @@ class Managed {
      * @param $format
      * @return Managed
      */
-    public function setColumn($col, $format): Managed  {
+    public function setColumn(string $col, string $format): Managed  {
         $this->columns[$col][1] = $format;
+        return $this;
+    }
+
+    /**
+     * Add a column to the Manager
+     *
+     * @param string $col    The column key
+     * @param string $name   The column name
+     * @param string $format The column format
+     * @return Managed The Manager object with the newly added column
+     */
+    public function addColumn(string $col, string $name, string $format): Managed  {
+        $this->columns[$col] = [$name, $format];
         return $this;
     }
 

@@ -29,15 +29,13 @@
  *
  */
 
-
 use AA\IO\DB\DB_AA;
 use AA\Later\LaterInterface;
 use AA\Later\Toexecute;
 
-
 /** Task executed at planed time
  */
-class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedInterface
+class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedInterface, AA\Expand\InternalExpandInterface
 {
 
     protected $task = '';
@@ -132,17 +130,11 @@ class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedI
         return strtotime($time) + (int)$this->getProperty('shift');
     }
 
-    /** The possibility, how to implement internal aliases for Admin interface
-     *  Such aliases then could be called as {internal:AA_Plannedtask:lastrun:...},
-     *  where AA_Plannedtask is AA class, which has internal_expand() method.
-     *  Such function should never leak potentially sensitive data, since
-     *  anyone could call it (although we will try to do it callable just form
-     *  internal AA admin interface). It should not be called outside and
-     *  results are not guaranteed.
+    /** Implement internal aliases for Admin interface Such aliases then could be called as {internal:AA_Plannedtask:lastrun:...},
+     * @implements InternalExpandInterface::internal_expand()
      */
-    static function internal_expand($content, $info)
-    {
-        // $params  = func_get_args();
+    static function internal_expand(?AA_Content $content, ...$params): string {
+        [$info] = $params;
         $task_id = $content->getId();
         switch ($info) {
             case 'scheduledto':

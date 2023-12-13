@@ -52,7 +52,7 @@ LOGIN           module_id:field_id              msg:url                        /
 AA_WARN
 */
 
-class AA_Log {
+class AA_Log implements \AA\Expand\InternalExpandInterface {
 
     static function warn(array $params = []) {
         AA_Log::write('AA_WARN', self::context(), array_merge($params, [AA_Log::backtrack(2)]));
@@ -153,6 +153,15 @@ class AA_Log {
         return DB_AA::select1('', 'SELECT * FROM log', $conds, ['id-']);
     }
 
+    /** Internal aliases for Admin interface
+     *  @usage {internal:AA_Log:RSS#:21:3600}
+     */
+    static function internal_expand(?AA_Content $content, ...$params): string {
+        [$type,$selector,$seconds] = $params;
+        $seconds = (int)$seconds ?: 3600;
+
+        return (!$type OR !$selector) ? '' : (string)DB_AA::select1('cnt', "SELECT count(*) as cnt FROM `log`", [['type',$type], ['selector',$selector], ['time',time()-$seconds, '>=']]);
+    }
 }
 
 

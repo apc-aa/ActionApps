@@ -66,6 +66,16 @@ class Widget extends AA_Object implements NamedInterface {
         return '';
     }
 
+    /** code to use once on the page - function definition  - part of Widget API */
+    protected function requireLibCode($aa_property, $winfo): string {
+        return '';
+    }
+
+    /** CSS code to use once on the page - CSS specific CSS for the widget - part of Widget API */
+    protected function requireCssCode($aa_property, $winfo): string {
+        return '';
+    }
+
 
     /** register Requires - internal */
     protected function registerRequires($aa_property, $winfo) {
@@ -75,6 +85,12 @@ class Widget extends AA_Object implements NamedInterface {
         }
         if ($script2run = $this->requireRun($aa_property, $winfo)) {
             AA::Stringexpander()->addRequire($script2run, 'AA_Req_Load');
+        }
+        if ($libcode = $this->requireLibCode($aa_property, $winfo)) {
+            AA::Stringexpander()->addRequire("<script> $libcode </script>", 'AA_Req_Headcode');
+        }
+        if ($csscode = $this->requireCssCode($aa_property, $winfo)) {
+            AA::Stringexpander()->addRequire($csscode, 'AA_Req_CSScode');
         }
     }
 

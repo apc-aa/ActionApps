@@ -28,23 +28,75 @@ class GpsWidget extends Widget
 
     // inherited from \AA\Widget\Widget
     protected function requireLibs($aa_property, $winfo): array {
-        return ['leaflet', 'aa-fillform'];
+        return ['leaflet', 'aa-fillform', 'https://api.mapy.cz/loader.js'];
     }
 
     /** script to run after the page DOM is loaded */
     protected function requireRun($aa_property, $winfo): string {
-        $ret = '';
-        // are there some textareas not converted to CodeMirror?
-        if ($this->ids_4_editor) {
-           $ret .= "\n  document.querySelectorAll(\"". join(',',$this->ids_4_editor) .'").forEach( function(el) { CodeMirror.fromTextArea(el, { lineWrapping:true, matchBrackets: true, matchTags: true, viewportMargin: 10000, mode: "htmlmixed" });});';
-
-           // clean the list - all textareas are converted
-           $this->ids_4_editor = [];
-        }
-        return $ret;
+        $js_id    = FormArray::formName2Id($winfo['last_input_name'], true);
+        $val_id   = FormArray::formName2Id($winfo['last_input_name']);
+        return /** @lang JavaScript */ <<<EOF
+  var inputEl$js_id = AA_$('#adresa4suggest$js_id');
+  var valEl$js_id = AA_$('#$val_id');
+  var suggest$js_id = new SMap.Suggest(inputEl$js_id);
+  var map$js_id = L.map(AA_$('#mapdiv$js_id'), {zoomSnap: 0, zoomControl: false });
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' }).addTo(map$js_id);
+  L.control.zoom({position: 'bottomleft'}).addTo(map$js_id);
+  var markers$js_id = [];
+  suggest$js_id.addListener("suggest", function(suggestData) {
+    AA_ShowOnMap(map$js_id, '$js_id', suggestData.data.latitude.toFixed(6), suggestData.data.longitude.toFixed(6), inputEl$js_id.value);
+    AA_$('#copygps$js_id').disabled=false;
+  });
+  if (valEl$js_id.value) {
+    var [lat, lon] = valEl$js_id.value.split(' ');
+    AA_ShowOnMap(map$js_id, '$js_id', lat, lon, '');
+  }
+EOF;
     }
 
-    /** getClassProperties function of AA_Serializable
+    protected function requireCssCode($aa_property, $winfo): string  {
+        return '.aa-widget-gps input[type="button"][disabled] { background-color: #dfdfdf; cursor: default;} 
+          .aa-widget-gps .smap-suggest .item { justify-content: initial; } 
+          .aa-widget-gps .aa-input { display: flex; }
+          .aa-gps-suggest-box { position: relative; flex: 1; margin: 2px 0 0 7px; }
+          .aa-gps-suggest { position: absolute; top: -2px; right: 1px; z-index: 1100; }
+          .aa-gps-map { width: 100%; }
+          .aa-widget-gps input[type="button"] { padding: 5px 12px; margin: 0; }
+          .aa-gps-use { position: absolute; top: 0; z-index: 1100; }
+          @media (max-width: 810px) { 
+            .aa-widget-gps .aa-input { display: block; }
+            .aa-gps-suggest-box { margin-left: 0}
+          }';
+    }
+
+    protected function requireLibCode($aa_property, $winfo): string  {
+        return /** @lang JavaScript */ <<<EOF
+function AA_ShowOnMap(map, itemid, lat, lon, title) {
+    AA_$(`#coosuggest\${itemid}`).value = `\${lat} \${lon}`;
+    map.setView([lat, lon], 15);
+    
+    let marker = null;
+    map.eachLayer((layer) => { if (layer instanceof L.Marker) {
+        marker = layer;
+    }});
+    
+    if (marker) {
+       marker.setLatLng([lat, lon]);
+    } else {
+       marker = L.marker([lat, lon], {"title":title, draggable: true, autoPan: true}).on('dragend', (e) => {
+         AA_$(`#coosuggest\${itemid}`).value = `\${marker.getLatLng().lat.toFixed(6)} \${marker.getLatLng().lng.toFixed(6)}`;
+         AA_$(`#copygps\${itemid}`).disabled = false;
+       }).addTo(map);
+    }
+    map.fitBounds(marker.getLatLng().toBounds(100)); // 50m radius
+}
+Loader.load(null, {suggest: true}); // naseptavac
+EOF;
+
+    }
+
+
+        /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
      * @return array
      */
@@ -69,8 +121,6 @@ class GpsWidget extends Widget
         $attrs = Widget::stdInputAttrs($type, $base_id, ['dirty']);
         $attr_string = htmlattr($attrs);
 
-        $load_from_fld = $this->getProperty('load_from_fld', '');
-
         $value = $content->getAaValue($field_id);
 
         $input_name = $base_name . "[0]";
@@ -78,101 +128,21 @@ class GpsWidget extends Widget
         $js_id    = FormArray::formName2Id($input_name, true);
         $input_value = safe($value->getValue());
 
+        $msg_search = _m('Search');
+        $load_from_fld_btn = ( $load_from_fld = $this->getProperty('load_from_fld', '') ) ? "<input type=button id=\"copyaddr$js_id\" value=\"" . _m('Load from address') . "\" onclick=\"AA_$('#adresa4suggest$js_id').value=getField('$load_from_fld');AA_$('#adresa4suggest$js_id').dispatchEvent(new Event('input'));\">" : '';
+
         $widget = "<div><input $attr_string name=\"$input_name\" id=\"$input_id\" value=\"$input_value\" $required></div>";
         $widget .= <<<EOF
-
-        <style>
-          input[type="button"][disabled] { background-color: #dfdfdf; cursor: default;} 
-          .smap-suggest .item { justify-content: initial; } 
-          .aa-stdwidget .aa-input {
-            display: flex;
-          }
-          .aa-gps-suggest-box {
-            position: relative;
-            flex: 1;
-            margin: 2px 0 0 7px;
-          }
-          .aa-gps-suggest {
-            position: absolute;
-            top: -2px;
-            right: 1px;
-            z-index: 1100;
-          }
-          .aa-gps-map {
-            width: 100%;
-          }
-          .aa-stdwidget input[type="button"] {
-            padding: 5px 12px;
-            margin: 0;
-          }
-          .aa-gps-use{
-            position: absolute;
-            top: 0;
-            z-index: 1100;
-          }
-        </style>
-        
-        <script src="https://api.mapy.cz/loader.js"></script>
-        <script>Loader.load(null, {suggest: true});</script>
-        <script>
-          function showOnMap(map, itemid, lat, lon, title) {
-            AA_$(`#coosuggest\${itemid}`).value = `\${lat} \${lon}`;
-            map.setView([lat, lon], 15);
-            
-            // Check if marker already exists
-            let marker = null;
-            map.eachLayer((layer) => { if (layer instanceof L.Marker) {
-                marker = layer;
-            }});
-            
-            if (marker) {
-               // If it does, just update its position
-               marker.setLatLng([lat, lon]);
-            } else {
-               // If it doesn't, create a new marker
-               marker = L.marker([lat, lon], {"title":title, draggable: true, autoPan: true}).on('dragend', (e) => {
-                 AA_$(`#coosuggest\${itemid}`).value = `\${this.getLatLng().lat} \${this.getLatLng().lng}`;
-                 AA_$(`#copygps\${itemid}`).disabled = false;
-               }).addTo(map);
-            }
-            map.fitBounds(marker.getLatLng().toBounds(100)); // 50m radius  
-          
-        };
-        </script>
-
-  
                       <div class="aa-gps-suggest-box"  id="mapout$js_id">
                         <div class="aa-gps-suggest">
-                          <input id="adresa4suggest$js_id" placeholder="Hledej">
-                          <input type=button id="copyaddr$js_id" value="Load from address" onclick="AA_$('#adresa4suggest$js_id').value=getField('$load_from_fld');AA_$('#adresa4suggest$js_id').dispatchEvent(new Event('input'));">
+                          <input type=search id="adresa4suggest$js_id" placeholder="$msg_search">
+                          $load_from_fld_btn
                           <input type=hidden id="coosuggest$js_id">
                         </div>
                         <div class="aa-gps-map" id="mapdiv$js_id" style="height: 200px;"></div>
                         <input class="aa-gps-use" type=button id="copygps$js_id" value="&larr; Use" disabled onclick="const el=AA_$('#$input_id'); el.value=AA_$('#coosuggest$js_id').value;el.dispatchEvent(new Event('change'));this.disabled=true;">
                       </div>
-                    
-                      <script>
-                          // naseptavac
-                          var inputEl$js_id = AA_$('#adresa4suggest$js_id');
-                          var suggest$js_id = new SMap.Suggest(inputEl$js_id);
-                          var map$js_id = L.map(AA_$('#mapdiv$js_id'), {zoomSnap: 0, zoomControl: false });
-                          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                          }).addTo(map$js_id);
-                          L.control.zoom({position: 'bottomleft'}).addTo(map$js_id);
-                          //var myMapIcon = L.icon({ iconUrl: '/img/vozejkmap-ico.png', iconSize: [44, 44], popupAnchor: [-22, -44] });
-                          var markers$js_id = [];
-                    
-                          suggest$js_id.addListener("suggest", function(suggestData) {
-                            showOnMap(map$js_id, '$js_id', suggestData.data.latitude, suggestData.data.longitude, inputEl$js_id.value);
-                            AA_$('#copygps$js_id').disabled=false;
-                          });
 EOF;
-        if ($input_value) { 
-            [$lat, $lon] = explode(' ', trim($input_value));
-            $widget .= "\n  showOnMap(map$js_id, '$js_id', '$lat', '$lon', '');";
-        }
-        $widget .= "\n  </script>";
         return ['html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired()];
     }
 }
