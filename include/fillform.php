@@ -200,44 +200,33 @@ function fillFormWithContent($oldcontent4id): string {
     global $form, $suffix, $my_item_id;
 
     $timezone = GetTimeZone();
-    $js = "var fillform_fields". $suffix. " = new Array (\n";
+    $js = "const fillform_fields". $suffix. " = [\n";
 
-    $first = true;
+    $jsarr = [];
     if (is_array($oldcontent4id)) {
         foreach ($oldcontent4id as $field_id => $field_array) {
             if (is_array($field_array)) {
                 foreach ($field_array as $field) {
                     $myvalue = safeChars($field['value']);
-                    //$control_id = $field_id;
                     $control_id = 'v'.unpack_id($field_id);
                     // field password.......x is used to authenticate item edit
-                    if ((substr($field_id, 0, 14) != "password......") AND
-                                     ($field_id != "id..............") AND
-                                     ($field_id != "slice_id........")) {
-
-                        if (!$first) {
-                            $js .= ",\n";
-                        } else {
-                            $first = false;
-                        }
-                        $js .= "\t\tnew Array ('$form','$control_id','$myvalue','tdctr_','". ($field["flag"] & FLAG_HTML ? "h" : "t")."',$timezone)";
+                    if (!in_array(substr($field_id, 0, 10), ['password..','secret....']) AND !in_array($field_id, ['id..............', 'slice_id........'])) {
+                        $jsarr[] = "\t['$form','$control_id','$myvalue','tdctr_','". ($field["flag"] & FLAG_HTML ? "h" : "t")."',$timezone]";
                     }
                 }
             }
         }
     }
+    $js .= join(",\n", $jsarr). "];
 
-    $js .= ");
-
-    function fillForm".$suffix."() {
-        setControl ('$form','my_item_id','$my_item_id');
-        for (i=0; i < fillform_fields".$suffix.".length; i++) {
-            var item = fillform_fields".$suffix."[i];
-            setControlOrAADate (item[0],item[1],item[2],item[3],item[4],item[5]);
+    function fillForm{$suffix}() {
+        setControl('$form','my_item_id','$my_item_id');
+        fillform_fields{$suffix}.forEach(item => {
+            setControlOrAADate(item[0],item[1],item[2],item[3],item[4],item[5]);
         }
     }\n";
     if (!isset($GLOBALS["notrun"])) {
-        $js .= "\n  fillForm ();";
+        $js .= "\n  fillForm();";
     }
     return getFrmJavascript($js);
 }
