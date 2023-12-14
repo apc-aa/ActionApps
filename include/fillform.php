@@ -217,13 +217,14 @@ function fillFormWithContent($oldcontent4id): string {
             }
         }
     }
-    $js .= join(",\n", $jsarr). "];
+    $js .= join(",\n", $jsarr). "];\n";
 
+    $js .= /** @lang JavaScript */ "
     function fillForm{$suffix}() {
         setControl('$form','my_item_id','$my_item_id');
         fillform_fields{$suffix}.forEach(item => {
             setControlOrAADate(item[0],item[1],item[2],item[3],item[4],item[5]);
-        }
+        });
     }\n";
     if (!isset($GLOBALS["notrun"])) {
         $js .= "\n  fillForm();";
