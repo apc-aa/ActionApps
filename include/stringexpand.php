@@ -2000,8 +2000,11 @@ class AA_Stringexpand_Distance extends AA_Stringexpand_Nevercache {
 
 /** Converts GPS coordinates to decimal Latitude / Longitude
  *   {gps:<any-gps>[:<format>]}
- *   @example {gps: 49°58'4.508"N, 12°30'10.790"E}
- *   @param string $any-gps coords in different formats - 49.9679189N, 12.5029972E; N 49°58.07513', E 12°30.17983'; 49°58'4.508"N, 12°30'10.790"E; 41.40338, 2.17403; 41°24'12.2"N 2°10'26.5"E; later maybe 3CHX+F6 Praha,...
+ *   @example {gps: 49°58'4.508"N, 12°30'10.790"E}        --> 49.967918888889,12.502997222222
+ *   @example {gps: 49°58'4.508"N, 12°30'10.790"E:_#lat}  --> 49.967918888889
+ *   @example {gps:-50.09697 14.42332:_#lon}              --> 14.42332
+ *   @param string $gps    - gps coords in different formats - 49.9679189N, 12.5029972E; N 49°58.07513', E 12°30.17983'; 49°58'4.508"N, 12°30'10.790"E; 41.40338, 2.17403; 41°24'12.2"N 2°10'26.5"E; later maybe 3CHX+F6 Praha,...
+ *   @param string $format - any string containing _#lat and/or _#lon strings, which will be replaced by Latitude and Longitude
  */
 class AA_Stringexpand_Gps extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
@@ -2030,14 +2033,14 @@ class AA_Stringexpand_Gps extends AA_Stringexpand_Nevercache {
         if (!strlen($format)) {
             $arr = [];
             if (strlen($lat)) {
-                $arr[] = '_#LAT';
+                $arr[] = '_#lat';
             }
             if (strlen($lon)) {
-                $arr[] = '_#LON';
+                $arr[] = '_#lon';
             }
             $format = join(',',$arr);
         }
-        return str_replace(['_#LAT','_#LON'],[$lat,$lon],$format);
+        return str_ireplace(['_#lat','_#lon'],[$lat,$lon],$format);
     }
 }
 
