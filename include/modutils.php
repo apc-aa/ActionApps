@@ -60,6 +60,30 @@ function CreateNewOwner($new_owner, $new_owner_email, &$err, $varset) {
     return $owner;
 }
 
+function ModuleFieldsForm($module_id, array $module_arr, bool $superadmin, bool $template=false, $new_owner='', $new_owner_email='') {
+    [$name, $slice_url, $priority, $lang_file, $owner, $deleted, $slice_owners ] = $module_arr;
+
+    if ($template) {
+        $name  = '';
+        $owner = '';
+    }
+
+    FrmStaticText(_m("Id"), $module_id);
+
+    FrmInputText("name", _m("Title"), $name, 99, 25, true);
+    FrmInputText("slice_url", _m("URL of .shtml page (often leave blank)"), $slice_url);
+    FrmInputNumber("priority", _m("Priority (order in slice-menu)"), $priority);
+
+    FrmInputSelect("owner", _m("Owner"), $slice_owners, $owner);
+    if ( !$owner ) {
+        FrmInputText("new_owner", _m("New Owner"), $new_owner, 99);
+        FrmInputEmail("new_owner_email", _m("New Owner's E-mail"), $new_owner_email, 99);
+    }
+    if ( $superadmin ) {
+        FrmInputChBox("deleted", _m("Deleted"), $deleted);
+    }
+}
+
 /** ValidateModuleFields function
  * Validate all fields needed for module table (name, slice_url, lang_file, owner)
  * @param $name

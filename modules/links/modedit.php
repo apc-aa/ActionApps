@@ -83,7 +83,7 @@ try {
 } catch (Exception $e) {}
 
 if ($cancel) {
-    go_url( StateUrl(self_base() . "index.php3"));
+    go_url( StateUrl(self_base() . "index.php"));
 }
 
 $err = [];          // error array (Init - just for initializing variable
@@ -200,9 +200,6 @@ if ( ($insert AND $superadmin) OR $update ) {
 $source_id   = ($template['Links'] ? substr($template['Links'],1) : $module_id );
 $p_source_id = q_pack_id( $source_id );
 
-// load module common data
-[ $name, $slice_url, $priority, $lang_file, $owner, $deleted, $slice_owners ] = GetModuleFields($source_id);
-
 // load module specific data
 $SQL= " SELECT * FROM links WHERE id='$p_source_id'";
 
@@ -223,21 +220,10 @@ $apage->setTitle( $template['Links'] ? _m("Add Links module") : _m("Edit Links m
 $apage->printHead($err, $Msg);
 
 FrmTabCaption(_m('Module Links data'));
-$include_cmd = "<!--#include virtual=\"". AA_INSTAL_PATH ."modules/links/links.php3?link_id=$module_id\"-->";
-FrmStaticText(_m('ID'), $module_id);
-FrmInputText("name", _m('Title'), $name, 99, 25, true);
-FrmInputText("slice_url", _m('URL of .shtml page'), $slice_url, 254, 25, false,
-    _m("Use following SSI command to include links to the page: ") . $include_cmd);
-FrmInputNumber("priority", _m("Priority (order in slice-menu)"), $priority);
 
-FrmInputSelect("owner", _m('Owner'), $slice_owners, $owner);
-if ( !$owner ) {
-    FrmInputText("new_owner", _m('New Owner'), $new_owner, 99);
-    FrmInputEmail("new_owner_email", _m('New Owner\'s E-mail'), $new_owner_email, 99);
-}
-if ( $superadmin ) {
-    FrmInputChBox("deleted", _m('Deleted'), $deleted);
-}
+ModuleFieldsForm($source_id, $marr = GetModuleFields($source_id), $superadmin, (bool)$template['Links'], $new_owner, $new_owner_email);
+$lang_file = rtrim($marr[3],'3');   // trim for old php3 lang file extension
+
 FrmInputSelect("lang_file", _m('Used Language File'), $LINKS_LANGUAGE_FILES, $lang_file);
 
 // module specific...

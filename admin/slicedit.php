@@ -40,9 +40,7 @@ require_once __DIR__ . "/../include/varset.php";
 // add mlx functions
 require_once __DIR__."/../include/mlx.php";
 require_once __DIR__ . "/../include/slicedit.php";
-
-
-
+require_once __DIR__ . "/../include/modutils.php";
 
 try {
     // array ( )
@@ -152,7 +150,7 @@ define ('PERMS_ANONYMOUS_EDIT', [
 ]);
 
 if ($cancel) {
-    go_url( StateUrl(self_base() . "index.php3"));
+    go_url( StateUrl(self_base() . "index.php"));
 }
 
 // Create new module
@@ -225,36 +223,27 @@ if ($slice_id == "") {
 
 FrmTabCaption(_m("Slice"), $form_buttons);
 
-FrmStaticText(_m("Id"), $slice_id);
+ModuleFieldsForm($foo_source, $marr = GetModuleFields($foo_source), $superadmin, ($slice_id==""), $new_owner, $new_owner_email);
 
-FrmInputText("name", _m("Title"), $sarr['name'], 99, 25, true);
-FrmInputText("slice_url", _m("URL of .shtml page (often leave blank)"), $sarr['slice_url']);
-FrmInputNumber("priority", _m("Priority (order in slice-menu)"), $sarr['priority']);
-// not functional, yet
-// FrmInputText("upload_url", _m("Upload URL"), $slice_url, 254, 25, false, _m('Url of uploaded files is %1 by default. You can change it by setting this parameter.<br>Note: This do not change the place, wheer the file is stored - you can just use another virtualhost name, for example.', array(IMG_UPLOAD_URL)));
+$convert_action = '';
+if ((DB_CHARACTER_SET == "cp1250") and $slice_id and (AA_Slice::getModule($slice_id)->getCharset() == 'windows-1250')) {
+    $convert_action = 'Convert encoding of this slice to utf <a href=' . StateUrl($_SERVER['PHP_SELF'] . '?convert=utf') . '>test</a> <a href=' . StateUrl($_SERVER['PHP_SELF'] . '?convert=doutf') . '>convert</a>';
+}
 
+FrmInputSelect("lang_file", _m("Language"), $biglangs, rtrim($sarr['lang_file'],'3'), false, $convert_action);  // trim for old php3 lang file extension
 if ( $sarr['slice_type'] !== 'AA_Core_Fields..') {  // we do not want change type for AA_Core_Fields.. slice
     FrmInputSelect("slice_type", _m("Slice Type"), AA_Slice::getSliceTypes(), $sarr['slice_type']);
 }
-FrmInputSelect("owner", _m("Owner"), $slice_owners, $sarr['owner']);
-if ( !$sarr['owner'] ) {
-    FrmInputText("new_owner", _m("New Owner"), $new_owner, 99);
-    FrmInputEmail("new_owner_email", _m("New Owner's E-mail"), $new_owner_email, 99);
-}
+
 if ( $superadmin ) {
     FrmInputChBox("template", _m("Template"), $sarr['template']);
-    FrmInputChBox("deleted", _m("Deleted"), $sarr['deleted']);
 }
+
 FrmInputChBox("flag_allow_expired", _m("Show content of expired items"), $flag_allow_expired);
 FrmInputChBox("flag_allow_pending", _m("Show content of pending items"), $flag_allow_pending);
 FrmInputSelect("permit_anonymous_post", _m("Allow anonymous posting of items"), PERMS_STATE, $sarr['permit_anonymous_post']);
 FrmInputSelect("permit_anonymous_edit", _m("Allow anonymous editing of items"), PERMS_ANONYMOUS_EDIT, $sarr['permit_anonymous_edit'], false, "", "../doc/anonym.html");
 FrmInputSelect("permit_offline_fill", _m("Allow off-line item filling"),        PERMS_STATE, $sarr['permit_offline_fill']);
-$convert_action = '';
-if ((DB_CHARACTER_SET == "cp1250") and $slice_id and (AA_Slice::getModule($slice_id)->getCharset() == 'windows-1250')) {
-    $convert_action = 'Convert encoding of this slice to utf <a href=' . StateUrl($_SERVER['PHP_SELF'] . '?convert=utf') . '>test</a> <a href=' . StateUrl($_SERVER['PHP_SELF'] . '?convert=doutf') . '>convert</a>';
-}
-FrmInputSelect("lang_file", _m("Language"), $biglangs, $sarr['lang_file'], false, $convert_action);
 
 // Reader Management specific settings (Jakub, 7.2.2003)
 $slice     = AA_Slice::getModule($slice_id);
@@ -272,7 +261,7 @@ if ($slice_id) {
 FrmStaticText(_m("Created"), date('Y-m-d H:i', $sarr['created_at']). ' ('. perm_username($sarr['created_by']). ')');
 
 FrmTabSeparator(_m("Settings for older AA - you will probably not use it for new slices"));
-FrmInputNumber("d_listlen", _m("Listing length"), $sarr['d_listlen'], 0, 99999, false, _m('Used by slice.php3. Fill 0 to disable slice.php3 output for this slice (recommended for all newer slices - they are presented by Site Module).'));
+FrmInputNumber("d_listlen", _m("Listing length"), $sarr['d_listlen'], 0, 99999, false, _m('Used by slice.php. Fill 0 to disable slice.php output for this slice (recommended for all newer slices - they are presented by Site Module).'));
 
 //mimo's MLX
 if ($slice_id && ($mlx_ctrl_for = DB_AA::select1('name', 'SELECT name FROM `slice`', [['mlxctrl', $slice_id, 'l']]))) {

@@ -187,13 +187,13 @@ class ChangesMonitor {
     /** value of the resource n steps back
      * @param string $resource_id
      * @param string $selector
-     * @param int $step
-     * @return string
+     * @param int    $step
+     * @return array ['value'=>.., 'time'=>.., 'user'=>.., 'type'=>..]
      */
-    function changeByStep(string $resource_id, string $selector, int $step=-1): string {
-        $value = '';
+    function changeByStep(string $resource_id, string $selector, int $step=-1): array {
+        $value = [];
         if (trim($resource_id) AND trim($selector)) {
-            $value = DB_AA::select1('value', "SELECT value FROM `change`, `change_record`", [['change.id', 'change_record.change_id', 'j'], ['change.resource_id', $resource_id], ['change.type', 'h'], ['change_record.selector', $selector], ['change_record.value', '', 'FILLED']], ['time-'], abs($step));
+            $value = DB_AA::select1([], "SELECT `change_record`.`value`,`change`.`time`,`change`.`user`,`change`.`type` FROM `change`, `change_record`", [['change.id', 'change_record.change_id', 'j'], ['change.resource_id', $resource_id], ['change.type', 'h'], ['change_record.selector', $selector], ['change_record.value', '', 'FILLED']], ['time-'], abs($step));
         }
         return $value;
     }
@@ -201,15 +201,14 @@ class ChangesMonitor {
     /** timestamp of last change
      * @param string $resource_id
      * @param string $selector
-     * @param string $delimiter
-     * @return string
+     * @return array [['value'=>.., 'time'=>.., 'user'=>.., 'type'=>..]]
      */
-    function changesAll(string $resource_id, string $selector, string $delimiter='-'): string {
+    function changesAll(string $resource_id, string $selector): array {
         $values = [];
         if (trim($resource_id) AND trim($selector)) {
-            $values = DB_AA::select('value', "SELECT value FROM `change`, `change_record`", [['change.id', 'change_record.change_id', 'j'], ['change.resource_id', $resource_id], ['change.type', 'h'], ['change_record.selector', $selector], ['change_record.value', '', 'FILLED']], ['time-']);
+            $values = DB_AA::select([], "SELECT `change_record`.`value`,`change`.`time`,`change`.`user`,`change`.`type` FROM `change`, `change_record`", [['change.id', 'change_record.change_id', 'j'], ['change.resource_id', $resource_id], ['change.type', 'h'], ['change_record.selector', $selector], ['change_record.value', '', 'FILLED']], ['time-']);
         }
-        return join($delimiter, $values);
+        return $values;
     }
 
     /** deleteProposalForSelector function

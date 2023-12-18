@@ -8656,17 +8656,30 @@ class AA_Stringexpand_History extends AA_Stringexpand {
      * @param string $time      timestamp (positive value) - get the value for that time,
      *                          -x (negative value) - the x-th last value (-1 is default - last value before current)
      *                          string - like "|" - all values delimited by |
+     * @param string $format    any string with aliases _#val, _#date, _#user, _#timestamp - default _#val
+     * @example {history:f6d805868794d003f112d37d1723a5d9:year............}
+     * @example {history:f6d805868794d003f112d37d1723a5d9:year............:-2:_#date - _#val}
+     * @example {history:f6d805868794d003f112d37d1723a5d9:year............:<br>:_#date - _#val (_#user)}
      * @return string
      */
-    function expand($item_id=null, $field_id=null, $time=null): string {
+    function expand($item_id=null, $field_id=null, $time=null, $format=''): string {
         if (strlen($time) and !IsSigInt($time)) {
-            $delimiter = $time;
-            return ChangesMonitor::singleton()->changesAll($item_id, $field_id, $delimiter);
+            return $this->formatChange(ChangesMonitor::singleton()->changesAll($item_id, $field_id), $format, $time);
         }
+        $time = $time ?: -1;
         if ((int)$time < 0) {
-            return ChangesMonitor::singleton()->changeByStep($item_id, $field_id, (int)$time);
+            return $this->formatChange([ChangesMonitor::singleton()->changeByStep($item_id, $field_id, (int)$time)], $format);
         }
         return ''; // @todo timestamp based value
+    }
+
+    protected function formatChange(array $changes, string $format, string $delimiter=''): string {
+        $retarr = [];
+        $format = $format ?: '_#val';
+        foreach ($changes as $ch) {
+            $retarr[] = str_replace(['_#val', '_#date', '_#user', '_#timestamp'], [$ch['value'], date('Y-m-d H:i:s', ChangesMonitor::toTimestamp($ch['time'])),$ch['user'], date('U', ChangesMonitor::toTimestamp($ch['time']))], $format);
+        }
+        return join($delimiter, $retarr);
     }
 }
 

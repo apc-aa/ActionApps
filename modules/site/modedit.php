@@ -87,7 +87,7 @@ try {
 $template_id = $template['W'] ? substr($template['W'],1) : unpack_id('SiteTemplate....');
 
 if ($cancel) {
-    go_url( StateUrl(self_base() . "index.php3"));
+    go_url( StateUrl(self_base() . "index.php"));
 }
 
 $err = [];          // error array (Init - just for initializing variable
@@ -212,9 +212,6 @@ if ($add || $update) {
 $source_id   = ($template['W'] ? $template_id : $module_id );
 $p_source_id = q_pack_id( $source_id );
 
-// load module common data
-[$name, $slice_url, $priority, $lang_file, $owner, $deleted, $slice_owners] = GetModuleFields($source_id);
-
 // load module specific data
 $SQL= " SELECT * FROM site WHERE id='$p_source_id'";
 $db->query($SQL);
@@ -225,10 +222,6 @@ $id     = unpack_id($db->f("id"));  // correct ids
 $router = $db->f("flag");           // router is stored as flag
 
 $module = AA_Module_Site::getModule($source_id);
-
-if ($template['W']) {           // set new name for new module
-    $name = "";
-}
 
 if ( $template['W'] ) {
     $form_buttons = [
@@ -275,20 +268,13 @@ $apage->printHead($err, $Msg);
     FrmTabCaption(_m("Site"), $form_buttons);
 
     sitetree::printHiddenRSpotId();
-    FrmStaticText(_m("Id"), $module_id);
-    FrmInputText("name", _m("Name"), $name, 99, 25, true);
-    //$include_cmd = "<br>&lt;!--#include&nbsp;virtual=\"". AA_INSTAL_PATH ."modules/site/site.php3?site_id=$module_id\"--&gt;";
-    FrmInputText("slice_url", _m("URL"), $slice_url, 254, 60, false, _m("Main URL of the website."), '', 'false', 'https://www.example.org/');
-    FrmInputNumber("priority", _m("Priority (order in slice-menu)"), $priority);
 
-    FrmInputSelect("owner", _m("Owner"), $slice_owners, $owner);
-    if ( !$owner ) {
-        FrmInputText("new_owner", _m("New Owner"), $new_owner, 99);
-        FrmInputEmail("new_owner_email", _m("New Owner's E-mail"), $new_owner_email, 99);
-    }
-    if ($superadmin) {
-        FrmInputChBox("deleted", _m("Deleted"), $deleted);
-    }
+
+    ModuleFieldsForm($source_id, $marr = GetModuleFields($source_id), $superadmin, (bool)$template['W'], $new_owner, $new_owner_email);
+    $lang_file = rtrim($marr[3],'3');   // trim for old php3 lang file extension
+
+    //FrmInputText("slice_url", _m("URL"), $slice_url, 254, 60, false, _m("Main URL of the website."), '', 'false', 'https://www.example.org/');
+
     FrmInputSelect("lang_file", _m("Used Language File"), $MODULES['W']['language_files'], $lang_file);
     FrmInputSelect("router",   _m("Router"), [1 => 'AA_Router_Seo'], $router, false, _m("Use AA_Router_Seo. Otherwise you will use old sitemodule approach with 'control file', which we can't recommend."));
     FrmInputText("state_file", _m("Home or State file"), $state_file, 99, 25, false, _m("For AA_Router_Seo fill the <b>default url</b> (home) - like <em>/en/home</em> or left it empty<br><br>For older sites without AA_Router_Seo fill in the name of <b>Site control file</b> - will be placed in /modules/site/sites/ directory. The name you specify will be prefixed by 'site_' prefix, so if you for example name the file as 'apc.php', the site control file will be /modules/site/sites/site_apc.php."), '', 'false', '/en/home');
