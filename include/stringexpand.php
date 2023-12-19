@@ -4675,8 +4675,9 @@ class AA_Stringexpand_Input extends AA_Stringexpand_Field {
         }
         // const_arr in widget_properties could be specified as (1) JSON object, or as (2) string with JSON object - see examples(1) and (2) above
         $widget_prop = AA_Stringexpand_Edit::WidgetPropsString2Arr($widget_properties);
+        $preset = AA_Value::factoryFromJson($preset_value); // could be json as well as single value string
 
-        return $field->getWidgetNewHtml($required==1, null, $widget_type, $widget_prop, $preset_value, $item_index, $widget_only);
+        return $field->getWidgetNewHtml($required==1, null, $widget_type, $widget_prop, $preset, $item_index, $widget_only);
     }
 }
 
