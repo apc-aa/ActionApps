@@ -706,7 +706,7 @@ class AA_Validate_Eunique extends AA_Validate {
         return [                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
             'field_id' => new AA_Property( 'field_id', _m("Field id"), 'string', false, true, 'string', false, _m(""), '', ''),
             'scope'    => new AA_Property( 'scope',    _m("Scope"),    'string', false, true, 'string', false, _m("username | slice | <b>allslices</b>"), '', 'slice'),  // or 0 | 1 | 2 for field setting
-            'item_id'  => new AA_Property( 'item_id' , _m("Item id whichh we do not count"), 'string', false, true, 'string', false),
+            'item_id'  => new AA_Property( 'item_id' , _m("Item id which we do not count"), 'string', false, true, 'string', false),
         ];
     }
 
@@ -721,7 +721,7 @@ class AA_Validate_Eunique extends AA_Validate {
             return false;
         }
 
-        // here we use default username if the this fields is username (field is headline........) OR allslices if not (in old ParamWizard we use "Slice only" boolean)
+        // here we use default username if this field is username (field is headline........) OR allslices if not (in old ParamWizard we use "Slice only" boolean)
         $scope =  $this->scope ?: (($var_id == FIELDID_USERNAME) ? 'username' : 'allslices');
         $validator = new AA_Validate_Unique(['field_id' => $this->field_id, 'scope' => $scope, 'item_id' => $this->item_id]);
         return $validator->validate($var, $content_context, $var_id);

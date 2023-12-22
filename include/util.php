@@ -1560,7 +1560,7 @@ class AA_Contentcache {
      * @return mixed
      */
     function get_result( $function, $params= [], $additional_params='' ) {
-        return $this->_get_result(get_hash(func_get_args()), $function, $params, $function);
+        return $this->_get_result(get_hash(func_get_args()), $function, $params, is_array($function) ? join('>', $function) : $function);
     }
 
     ///** sometimes it is quicker to not count the key automatically (in case of object call) */
@@ -1583,7 +1583,7 @@ class AA_Contentcache {
      * @param $ident
      * @return mixed
      */
-    function _get_result($key, $function, $params, $ident) {
+    function _get_result($key, $function, $params, string $ident) {
         if ( isset( $this->content[$key]) ) {
             $this->content[$key][2]++;
             return $this->content[$key][0];
@@ -1747,9 +1747,11 @@ class AA_Contentcache {
 
     function duration_stat() {
         echo "<br><b>contentcache</b> (".count($this->content)." rows)<br>";
-        echo '<br><table><tr><th>id</th><th>generation time</th><th>content(length)</th><th>used</th></tr>';
+        echo '<table class=aa-stat><tr><th>id</th><th>generation time</th><th>content(length)</th><th>used</th></tr>';
         foreach($this->content as $c) {
-           echo '<tr><td>'.safe($c[3]).'</td><td>'.(1000*$c[1]).'</td><td>'.safe(substr($c[0],0,20)).' ('.strlen($c[0]).')</td><td>'.$c[2].'</td></tr>';
+            $val = $c[0];
+            $val = is_array($val) ? '['.count($val).']' : (is_object($val) ? get_class_name($val) : (string)$val);
+            echo '<tr><td>'.safe($c[3]).'</td><td class=num>'.sprintf("%.4f",1000*$c[1]).'</td><td class=num>'.safe(substr($val,0,20)).' ('.strlen($val).')</td><td class=num>'.$c[2].'</td></tr>';
         }
         echo '</table>';
 
@@ -1765,9 +1767,9 @@ class AA_Contentcache {
             $stat[$c[3]]['hits']+=$c[2];
             $stat[$c[3]]['saved']+=$c[2]*1000*$c[1];
         }
-        echo '<br><table><tr><th>id</th><th>cases</th><th>unused</th><th>sum gentime</th><th>sum length</th><th>sum hits</th><th>saved</th></tr>';
+        echo '<table class=aa-stat><tr><th>id</th><th>cases</th><th>unused</th><th>sum gentime</th><th>sum length</th><th>sum hits</th><th>saved</th></tr>';
         foreach($stat as $key=>$c) {
-           echo '<tr><td>'.safe($key).'</td><td>'.$c['cases'].'</td><td>'.$c['unused'].'</td><td>'.$c['gentime'].'</td><td>'.$c['length'].'</td><td>'.$c['hits'].'</td><td>'.$c['saved'].'</td></tr>';
+           echo '<tr><td>'.safe($key).'</td><td class=num>'.$c['cases'].'</td><td class=num>'.$c['unused'].'</td><td class=num>'.sprintf("%.4f",$c['gentime']).'</td><td class=num>'.$c['length'].'</td><td class=num>'.$c['hits'].'</td><td class=num>'.sprintf("%.4f",$c['saved']).'</td></tr>';
         }
         echo '</table>';
     }

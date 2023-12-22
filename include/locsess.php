@@ -221,7 +221,7 @@ class AA_Debug {
     function tracestart($func, $text='') {
         $txt = AA::$debug&128 ? $text : substr($text,0,200);
         if ($func=='Query') {
-            $this->_check_repeted($text);
+            $this->_check_repeated($text);
         }
         $this->_calls[]      = [count($this->_tracestack), $func, DB_AA::$_instances_no.' '.$txt, strlen($text),microtime(true)];
         $this->_tracestack[] = count($this->_calls)-1;
@@ -255,53 +255,85 @@ class AA_Debug {
     }
 
     function duration_stat() {
+        
+        echo '
+<style>
+    table.aa-stat {
+      width: 100%;
+      margin-top: 1rem;
+      border-collapse: collapse; 
+      border: 1px solid #888; 
+      th, td { padding: 6px 4px 2px; }
+      th { background-color: #ddd; }
+      td { background-color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 50vw; }
+      td.num { text-align: right; }
+      td.aa-dbgtoggle { display: flex; justify-content: space-between; }
+      .aa-line { position: absolute; top: 0; transform: translateY(-50%); height: 4px;}
+   }
+</style>';
 
         $row    = [];
         $sumsum = 0;
         foreach($this->_duration as $func => $times) {
             $sumsum += ($sum = 1000*array_sum($times));
-            $row['a'.sprintf('%f',$sum/100000.0).'-'.$func] .= '<tr><td>'.safe($func).'</td><td>'.count($times).'</td><td>'.sprintf('%f',$sum/count($times)).'</td><td>'.sprintf('%f',$sum).'</td><td>'.sprintf('%f',1000*max($times)).'</td><td>'.sprintf('%f',1000*min($times)).'</td></tr>';
+            $row['a'.sprintf('%f',$sum/100000.0).'-'.$func] .= '<tr><td>'.safe($func).'</td><td class=num>'.count($times).'</td><td class=num>'.sprintf('%.4f',$sum/count($times)).'</td><td class=num>'.sprintf('%.4f',$sum).'</td><td class=num>'.sprintf('%.4f',1000*max($times)).'</td><td class=num>'.sprintf('%.4f',1000*min($times)).'</td></tr>';
         }
         krsort($row);
-        echo '<table><tr><th>function</th><th>called</th><th>avg</th><th>sum</th><th>max</th><th>min</th></tr>'.join('',$row).'<tr><th>Sum</th><th></th><th></th><th>'.$sumsum.'</th><th></th><th></th></tr></table>';
+        echo '<table class=aa-stat><tr><th>function</th><th>called</th><th>avg</th><th>sum</th><th>max</th><th>min</th></tr>'.join('',$row).'<tr><th>Sum</th><th></th><th></th><th>'.$sumsum.'</th><th></th><th></th></tr></table>';
 
 
         // repeated queries;
         $row    = [];
         foreach($this->_repeated as $query => $times) {
             if ($times>1) {
-                $row['a' . sprintf('%09d', $times)] = '<tr><td>' . safe($times) . '</td><td>' . safe($query) . '</td></tr>';
+                $row['a' . sprintf('%.09d', $times)] = '<tr><td class=num>' . safe($times) . '</td><td>' . safe($query) . '</td></tr>';
             }
         }
         if ($row) {
             krsort($row);
-            echo '<br><table><tr><th>used x times</th><th>query</th></tr>' . join('', $row) . '<tr></table>';
+            echo '<table class=aa-stat><tr><th>used x times</th><th>query</th></tr>' . join('', $row) . '<tr></table>';
         }
 
         // longest queries;
         $row    = [];
         foreach($this->_calls as $call) {
             if ($call[1]=="Query") {
-                $row['a' . sprintf('%012.5f',($call[5]-$call[4])*1000.0)] = '<tr><td>'.safe(($call[5]-$call[4])*1000.0) . '</td><td>' . safe($call[2]) . '</td><td>' . safe($call[6]) . '</td></tr>';
+                $row['a' . sprintf('%012.5f',($call[5]-$call[4])*1000.0)] = '<tr><td class=num>'.sprintf('%.4f',($call[5]-$call[4])*1000.0) . '</td><td>' . safe($call[2]) . '</td><td class=num>' . safe($call[6]) . '</td></tr>';
             }
         }
         if ($row) {
             krsort($row);
-            echo '<br><table><tr><th>time</th><th>query</th><th>out</th></tr>' . join('', $row) . '<tr></table>';
+            echo '<table class=aa-stat><tr><th>time</th><th>query</th><th>out</th></tr>' . join('', $row) . '<tr></table>';
         }
 
+        echo '<table class=aa-stat><tr><th>time</th><th>duration</th><th>function</th><th>in</th><th>out</th></tr>';
 
-        echo '<br><table><tr><th>time</th><th>duration</th><th>function</th><th>in</th><th>out</th></tr>';
-        foreach($this->_calls as $call) {
-            $style = $call[0]>0 ? ' style="display: none;"' : '';
-           echo '<tr class=l'.str_repeat('_',$call[0]). $style.'><td>'.(1000*($call[4]-$_SERVER['REQUEST_TIME_FLOAT'])).'</td><td>'.(1000*($call[5]-$call[4])).'</td><td class="aa-dbgtoggle">'.str_repeat('.&nbsp;',$call[0]).safe($call[1]).'<button onclick="AA_DbgToggleRows(this)">-</button></td><td>'.safe($call[2]).( ($call[3]>200 AND !AA::$debug&128) ? '..+'.($call[3]-200) :'' ).'</td><td>'.safe($call[6]).($call[7]>20? '..+'.($call[7]-20) :'' ).'</td></tr>';
+        $global_start = $this->_calls[0][4];
+        $global_end   = $this->_calls[count($this->_calls)-1][5];
+        $global_dur   = $global_end - $global_start;
+
+        // get max of $this->_calls[0][1] (level)
+        $max_level = max(array_column($this->_calls, 0)) ?: 1;
+
+        foreach($this->_calls as $key => $call) {
+            $tr_style = 'position: relative;';
+            $level = $call[0];
+            $next_level = array_key_exists($key+1,$this->_calls) ? $this->_calls[$key+1][0] : 0;
+            $style = $level>0 ? " style=\"display: none; $tr_style\"" : " style=\"$tr_style\"";
+            $time = sprintf("%.4f", (1000*($call[4]-$_SERVER['REQUEST_TIME_FLOAT'])));
+            $dur  = ($call[5]-$call[4]);
+            $color = '#0080'. str_pad(dechex((255 * $level / $max_level) % 256), 2, '0', STR_PAD_LEFT);
+            $rel_start = round(100*($call[4]-$global_start)/$global_dur,2);
+            $rel_dur   = round(100*($dur)/$global_dur,2);
+            $func    = str_repeat('.&nbsp;',$level).safe($call[1]);
+            $dur = sprintf("%.4f", 1000*$dur);
+            $expand = ($next_level>$level) ? '<button onclick="AA_DbgToggleRows(this)">'.($level>0 ? '-':'+').'</button>' : '';
+            $linediv = "<div class=aa-line style=\"left: $rel_start%; width: $rel_dur%; background-color: $color\"></div>";
+            echo "<tr title=\"{$func} ($dur)\" class=l".str_repeat('_', $level). $style."><td class=num>{$linediv}{$time}</tdnum><td class=num>$dur</td><td class=aa-dbgtoggle>$func{$expand}</td><td>".safe($call[2]).( ($call[3]>200 AND !AA::$debug&128) ? '..+'.($call[3]-200) :'' ).'</td><td>'.safe($call[6]).($call[7]>20? '..+'.($call[7]-20) :'' ).'</td></tr>';
         }
         echo '</table>';
 
         echo <<<EOF
-              <style> 
-                td.aa-dbgtoggle { display: flex; justify-content: space-between; }
-              </style>
               <script>
                 function AA_DbgToggleRows(button) {
                     let isVisible = (button.textContent === '-');
@@ -319,7 +351,7 @@ EOF;
         AA::Contentcache()->duration_stat();
     }
 
-    function _check_repeted($txt) {
+    function _check_repeated($txt) {
         ++$this->_repeated[$txt];
     }
 

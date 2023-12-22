@@ -132,7 +132,8 @@ function AafinderItemLink($item_id, $slice_id=''): string {
             return '';
         }
     }
-    return join(' | ', [a_href(get_admin_url('itemedit.php',['id'=>$item_id,'change_id'=>$slice_id,'edit'=>1]), "$item_id"),
+    $seo = StrExp('item', [$item_id, 'seo.............']) ?: 'Item';
+    return join(' | ', [a_href(get_admin_url('itemedit.php',['id'=>$item_id,'change_id'=>$slice_id,'edit'=>1]), "$seo ($item_id)"),
                         AA_Slice::getModuleName($slice_id, true),
                         ChangesMonitor::getHistoryLink($item_id),
                         a_href(get_admin_url('se_statistics.php', ['change_id'=>$slice_id, 'items'=>$item_id]), _m('Statistics'))]);
