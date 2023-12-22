@@ -1779,7 +1779,7 @@ class AA_Contentcache {
             $stat[$c[3]]['cases']++;
             $stat[$c[3]]['unused']+=($c[2] ? 0 : 1);
             $stat[$c[3]]['gentime']+=1000*$c[1];
-            $stat[$c[3]]['length']+=strlen($c[0]);
+            $stat[$c[3]]['length']+= is_string($c[0]) ? strlen($c[0]) : 0;
             $stat[$c[3]]['hits']+=$c[2];
             $stat[$c[3]]['saved']+=$c[2]*1000*$c[1];
         }
