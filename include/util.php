@@ -1535,6 +1535,7 @@ class AA_Contentcache {
     // used for global cache of contents
     /** @var $content string[] - array of cache entry - 'key'=>[result, generation_time, uses, identification] */
     protected $content = [];
+
     /** @var $content_stable string[] - the same as $content, but for special content, which is not deleted by clear_soft() */
     protected $content_stable = [];
 
@@ -1560,7 +1561,22 @@ class AA_Contentcache {
      * @return mixed
      */
     function get_result( $function, $params= [], $additional_params='' ) {
-        return $this->_get_result(get_hash(func_get_args()), $function, $params, is_array($function) ? join('>', $function) : $function);
+        return $this->_get_result(get_hash(func_get_args()), $function, $params, $this->callable2ident($function));
+    }
+
+    /**
+     * This function is used to identify a any callable function in PHP (passed as array, string, object, ...).
+     *
+     * @param mixed $function The function to identify.
+     */
+    function callable2ident($function): string {
+        if (is_string($function)) {
+            return $function;
+        }
+        if (is_array($function)) {
+            return is_object($function[0]) ? get_class($function[0]) . '>' . $function[1] : join('>', $function);
+        }
+        return ($function instanceof Closure) ? 'Closure' : var_export($function, true);
     }
 
     ///** sometimes it is quicker to not count the key automatically (in case of object call) */
