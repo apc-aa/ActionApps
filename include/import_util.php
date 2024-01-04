@@ -141,6 +141,7 @@ class Actions {
              if (!$action || $action['action']->getAction() == "default") {
                  switch ($field_id) {
                      // case "display_count..." : $v = 0; break;
+                   /* Removed - it created data for fields, so it is then updated on Rewrite/Update action, which is not correct
                      case 'status_code.....' : $done = 1; $fieldVal[]['value'] = 1; break; // todo
                      case 'flags...........' : $done = 1; $fieldVal[]['value'] = ITEM_FLAG_OFFLINE; break;
                      case 'post_date.......':
@@ -151,6 +152,7 @@ class Actions {
                      case 'posted_by.......' : $done = 1; $fieldVal[]['value'] = AuthGetUid(); break;	// todo
                      // todo
                      case 'id..............' : $done = 1; $fieldVal[]['value'] = new_id(); break;
+                   */
                      default :
                          if ( $action['from'] && ($action['from'] != '__empty__')) {
                              $action['action']->setAction('store');

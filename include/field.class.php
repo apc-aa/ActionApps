@@ -708,7 +708,7 @@ class AA_Fields implements Iterator, Countable {
             return;
         }
 
-        if (++$this->lazy_loaded_no > 9) {   // if we are asking for more that 9 times, we should probably load all the fields
+        if (++$this->lazy_loaded_no > 9) {   // if we are asking for more than 9 times, we should probably load all the fields
            $this->load();
            return;
         }
