@@ -107,6 +107,8 @@ class AA_Searchbar_Row extends AA_Storable {
  */
 class AA_Searchbar extends AA_Storable {
     protected $fields;          // fields definitions
+
+    protected ?string $module_id;   // module id (of fields)
     protected $form_name;       // name of the form (for submit)
 
     /** @var AA_Searchbar_Row[]   */
@@ -144,7 +146,7 @@ class AA_Searchbar extends AA_Storable {
      * @param $hint
      * @param $hint_url
      */
-    function __construct($fields=null, $form_name='foo', $search_row_count_min=1, $order_row_count_min=1, $add_empty_search_row=1, $show=null, $hint='', $hint_url='') {
+    function __construct($fields=null, $form_name='foo', $search_row_count_min=1, $order_row_count_min=1, $add_empty_search_row=1, $show=null, $hint='', $hint_url='', ?string $module_id = null) {
         $this->fields               = $fields;
         $this->form_name            = $form_name;
         $this->search_row_count_min = $search_row_count_min;
@@ -156,6 +158,7 @@ class AA_Searchbar extends AA_Storable {
         $this->show                 = is_null($show) ? (MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS) : $show;
         $this->hint                 = $hint;
         $this->hint_url             = $hint_url;
+        $this->module_id            = $module_id;
     }
 
     /** update funtion
@@ -518,7 +521,7 @@ class AA_Searchbar extends AA_Storable {
             $ret .= "<div class='aa-sbrow-fld'>";
             $ret .= getFrmSelectEasy("srchbr_field[$bar]", $search_arr, $fld, ['onchange' => "ChangeOperators('" . $this->form_name . "','$bar', '')"]);
             $ret .= '</div><div class="aa-sbrow-op">';
-            $ret .= getFrmSelectEasy("srchbr_oper[$bar]", [' ' => ' '], null, ['onchange' => "OpenWindowIfRequest('" . $this->form_name . "','$bar','" . get_admin_url("constants_sel.php") . "')"]);
+            $ret .= getFrmSelectEasy("srchbr_oper[$bar]", [' ' => ' '], null, ['onchange' => "OpenWindowIfRequest('" . $this->form_name . "','$bar','" . get_admin_url('constants_sel.php',['module_id'=>$this->module_id], false) . "')"]);
             $ret .= '</div><div class="aa-sbrow-val">';
             $ret .= "<input type=\"text\" name=\"srchbr_value[$bar]\" size=\"20\" onkeydown=\"if (event.keyCode == 13) document.".$this->form_name. ".submit();\" value=\"$val\"></div>";
         }
