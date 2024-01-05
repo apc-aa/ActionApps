@@ -610,6 +610,8 @@ class Manager extends AA_Storable {
         ];
         if ($BIN_CONDS[$this->bin]) {
             $set->setBins($BIN_CONDS[$this->bin]);
+        } elseif (ctype_digit((string)$this->bin)) {
+            $set->setBins($this->bin);
         }
         if ($this->restrict_conds) {
             foreach ($this->restrict_conds as $cond) {
