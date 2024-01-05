@@ -770,7 +770,7 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
 
     $SQL = "SELECT $item_fields_sql FROM item WHERE ". $zids->sqlin();
 
-    // when we contruct tree, we want to use only current item, for example
+    // when we construct tree, we want to use only current item, for example
     if (!is_null($bin)) {
         $SQL .= ' AND '. CreateBinCondition($bin, 'item');
     }
