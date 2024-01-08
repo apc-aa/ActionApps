@@ -35,6 +35,10 @@ require_once __DIR__ . "/itemfunc.php";
 
 class AA_Field implements ArrayAccess {
 
+    const USED_FIELDS = [];
+
+
+
     /** associative array of field data as defined in field table
      *   (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored)
      */
@@ -59,6 +63,14 @@ class AA_Field implements ArrayAccess {
      */
     function __construct($data) {
         $this->data = $data;
+        $this->sanitizeData();  // check for misconfigured mandatory fields
+    }
+
+    /** Check for misconfigured mandatory fields */
+    protected function sanitizeData() {
+        if ($this->data['id'] == 'id..............') {
+            $this->data['input_validate'] = 'packedid';
+        }
     }
 
     /** storageColumn function
