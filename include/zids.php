@@ -140,9 +140,7 @@ class zids implements Iterator, ArrayAccess, Countable {
      * @return zids
      */
     public function setFromItemArr(array $item_arr) {
-        return $this->clear()->add(array_map(function ($k) {
-            return ltrim($k, 'x');
-        }, array_keys($item_arr)));   // in some managers we use 'x' before the item id - remove it
+        return $this->clear()->add(array_map(fn ($k) => ltrim($k, 'x'), array_keys($item_arr)));   // in some managers we use 'x' before the item id - remove it
     }
 
     /** clear function - removes all zids and resets

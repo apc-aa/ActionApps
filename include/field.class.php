@@ -34,14 +34,10 @@ use AA\Widget\Widget;
 require_once __DIR__ . "/itemfunc.php";
 
 class AA_Field implements ArrayAccess {
+    /** @var string[] list of field table rows manager by this class - other are unused */
+    const USED_FIELDS = ['id', 'slice_id', 'name', 'input_pri', 'input_help', 'input_morehlp', 'input_default', 'required', 'feed', 'multiple', 'input_show_func', 'search_pri', 'alias1', 'alias1_func', 'alias1_help', 'alias2', 'alias2_func', 'alias2_help', 'alias3', 'alias3_func', 'alias3_help', 'input_before', 'content_edit', 'html_default', 'html_show', 'in_item_tbl', 'input_validate', 'input_insert_func', 'input_show', 'text_stored'];
 
-    const USED_FIELDS = [];
-
-
-
-    /** associative array of field data as defined in field table
-     *   (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored)
-     */
+    /** associative array of field data as defined in field table - @see USED_FIELDS */
     protected $data;
 
     /** associative array of aliases
@@ -298,9 +294,7 @@ class AA_Field implements ArrayAccess {
         return $this->aliases->getArray();
     }
 
-    /** getConstantGroup function
-     * function finds group_id in field.input_show_func parameter
-     */
+    /**  function finds group_id in field.input_show_func parameter */
     function getConstantGroup() {
         // does this field use constants? Isn't it slice?
         [$field_type, $field_add] = $this->getSearchType();
@@ -577,7 +571,7 @@ class AA_Field implements ArrayAccess {
             $text_vals = '';
             if ($items_field['cntval'] < 5) {
                 $arr = DB_AA::select('txt', 'SELECT `text`, SUBSTRING(text,1,12) as txt FROM content, item '. DB_AA::makeWhere([['content.item_id','item.id', 'j'], ['item.slice_id',$slice_id, 'l'],['field_id',$id]]). ' GROUP BY `text`');
-                $text_vals = ' ('. join(', ', array_map( function ($str) { return '"'. ((strlen($str) == 12) ? substr($str,0,11).'…' : $str). '"'; }, $arr)). ')';
+                $text_vals = ' ('. join(', ', array_map( fn ($str) => '"'. ((strlen($str) == 12) ? substr($str,0,11).'…' : $str). '"', $arr)). ')';
             }
             $distinct_val  = ($text_stored == 1) ? "<u title='field is marked as text stored'>text:$items_field[cntval]</u>$text_vals,num:$items_field[cntnum]" : "text:$items_field[cntval]$text_vals,<u title='field is marked as number stored'>num:$items_field[cntnum]</u>";
             $distinct_text = (($items_field['cntitm']==$items) AND ($items_field[$text_stored==1 ? 'cntval':'cntnum']==1) AND ($items>1)) ? "<b title=\"All the values are the same - maybe you can delete the field\">Distinct values</b>:$distinct_val":"Distinct values:$distinct_val";
@@ -730,11 +724,11 @@ class AA_Fields implements Iterator, Countable {
             $zids = $set->query();
             $this->fields[$fid] = $zids->count() ? new AA_Field_Slicedef($zids->zid(0), $this->master_id) : '';
         } else {
-            $data = DB_AA::select1('', 'SELECT * FROM `field`', [['slice_id', $this->master_id, 'l'], ['id', $fid]]);
+            $flds = implode(',',array_map(fn ($value) => "`$value`", AA_Field::USED_FIELDS));
+            $data = DB_AA::select1('', "SELECT $flds FROM `field`", [['slice_id', $this->master_id, 'l'], ['id', $fid]]);
             $this->fields[$fid] = $data ? new AA_Field($data) : '';
         }
     }
-
 
     /** load all fields function  */
     function load() {
@@ -742,7 +736,8 @@ class AA_Fields implements Iterator, Countable {
             return;
         }
         $this->fields = [];
-        $a = DB_AA::select(['id'=> []], 'SELECT * FROM `field`', [['slice_id', $this->master_id, 'l'], ['id', '\_%', ($this->collection == 0) ? 'NOT LIKE' : 'LIKE']], ['input_pri']);
+        $flds = implode(',',array_map(fn ($value) => "`$value`", AA_Field::USED_FIELDS));
+        $a = DB_AA::select(['id'=> []], "SELECT $flds FROM `field`", [['slice_id', $this->master_id, 'l'], ['id', '\_%', ($this->collection == 0) ? 'NOT LIKE' : 'LIKE']], ['input_pri']);
         foreach ($a as $fid => $data) {
             $this->fields[$fid] = new AA_Field($data);
         }

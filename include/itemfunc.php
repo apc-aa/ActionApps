@@ -1086,7 +1086,7 @@ function ValidateContent4Id(&$err, $slice, $action, $id=0, $do_validate=true, $n
 
     foreach ($fields as $pri_field_id => $field) {
 
-        $f = $field->getRecord();
+        // $f = $field->getRecord();  // now we use ArrayAccess
 
         //  'status_code.....' is not in condition - could be set from defaults
         if (($pri_field_id=='edited_by.......') || ($pri_field_id=='posted_by.......')) {
@@ -1098,12 +1098,12 @@ function ValidateContent4Id(&$err, $slice, $action, $id=0, $do_validate=true, $n
         global $$varname, $$htmlvarname;
 
         $setdefault = $action == "add"
-                || !$f["input_show"]
+                || !$field["input_show"]
                 || $profile->getProperty('hide',$pri_field_id)
                 || ($action == "insert" && $notshown[$varname]);
 
-        [$validate_type] = explode(":", $f["input_validate"], 2);
-        [$insert_type]   = explode(":", $f["input_insert_func"], 2);
+        [$validate_type] = explode(":", $field["input_validate"], 2);
+        [$insert_type]   = explode(":", $field["input_insert_func"], 2);
 
         if ($setdefault) {
             $default = $field->getDefault();
@@ -1129,7 +1129,7 @@ function ValidateContent4Id(&$err, $slice, $action, $id=0, $do_validate=true, $n
                 if ($$varname != "") {                  // loaded from defaults
                     $foo_datectrl_name->setdate_int($$varname);
                 }
-                $foo_datectrl_name->ValidateDate($f["name"], $err, $f["required"], $default_val);
+                $foo_datectrl_name->ValidateDate($field["name"], $err, $field["required"], $default_val);
                 $$varname = $foo_datectrl_name->get_date();  // write to var
             } elseif ($insert_type == 'boo') {
                 $$varname = ($$varname ? 1 : 0);
@@ -1157,8 +1157,8 @@ function ValidateContent4Id(&$err, $slice, $action, $id=0, $do_validate=true, $n
         if ($do_validate && ($action == "insert" || $action == "update")) {
             // special setting for file upload - there we solve the problem
             // of required fileupload field, but which is empty at this moment
-            if ( $f["required"] AND (substr($f["input_show_func"], 0,3) === 'fil')) {
-                ValidateInput($varname, $f["name"], $$varname. $GLOBALS[$varname.'x'] , $err, $f["required"] ? 1 : 0, AA_Validate::factoryByString($f["input_validate"]));
+            if ( $field["required"] AND (substr($field["input_show_func"], 0,3) === 'fil')) {
+                ValidateInput($varname, $field["name"], $$varname. $GLOBALS[$varname.'x'] , $err, $field["required"] ? 1 : 0, AA_Validate::factoryByString($field["input_validate"]));
                 continue;
             }
 
@@ -1170,19 +1170,19 @@ function ValidateContent4Id(&$err, $slice, $action, $id=0, $do_validate=true, $n
                     // add $id, so we do not find the currently edited item when
                     // we are looking for uniqueness
 
-                    [$v_func,$v_field,$v_scope] = ParamExplode($f["input_validate"]);
+                    [$v_func,$v_field,$v_scope] = ParamExplode($field["input_validate"]);
                     if (!$v_field) {
                         $v_field = $pri_field_id;
                     }
                     $v_type = ParamImplode([$v_func,$v_field,$v_scope,$id]);
-                    ValidateInput($varname, $f["name"], $$varname, $err, $f["required"] ? 1 : 0, AA_Validate::factoryByString($v_type));
+                    ValidateInput($varname, $field["name"], $$varname, $err, $field["required"] ? 1 : 0, AA_Validate::factoryByString($v_type));
 
                     break;
                 case 'user':
                     // this is under development.... setu, 2002-0301
                     // value can be modified by $$varname = "new value";
                     if (function_exists('usr_validate')) {
-                        $$varname = usr_validate($varname, $f["name"], $$varname, $err, $f, $fields);
+                        $$varname = usr_validate($varname, $field["name"], $$varname, $err, $field, $fields);
                     }
                     break;
                 //case 'text':
@@ -1192,7 +1192,7 @@ function ValidateContent4Id(&$err, $slice, $action, $id=0, $do_validate=true, $n
                 //case 'id':
                 default:
                     // status code is never required
-                    ValidateInput($varname, $f["name"], $$varname, $err, ($f["required"] AND ($pri_field_id!='status_code.....')) ? 1 : 0, AA_Validate::factoryByString($f["input_validate"]));
+                    ValidateInput($varname, $field["name"], $$varname, $err, ($field["required"] AND ($pri_field_id!='status_code.....')) ? 1 : 0, AA_Validate::factoryByString($field["input_validate"]));
                     break;
             }
         }

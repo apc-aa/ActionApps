@@ -272,7 +272,7 @@ if (!$site_nocache AND (empty($apc_state['xuid']) or ($apc_state['xuid']=='nobod
 if (AA::$debug&2) {
     echo '<br><br>Site cache MIS!!! - '.$cached;
     AA::$dbg->basic_stat();
-    echo '<br>UsedModules:<br> - '. join('<br> - ', array_map(function($mid) {return AA_Module::getModuleName($mid);}, $slices4cache));
+    echo '<br>UsedModules:<br> - '. join('<br> - ', array_map(fn ($mid) => AA_Module::getModuleName($mid), $slices4cache));
     AA::$debug&4 && AA::$dbg->duration_stat();
 }
 

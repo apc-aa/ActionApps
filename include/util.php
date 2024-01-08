@@ -1164,7 +1164,7 @@ function HtmlPageEnd() {
     if (AA::$debug&16) {
         AA::$dbg->basic_stat();
         if ($slices4cache) {
-            echo '<br>UsedModules:<br> - ' . join('<br> - ', array_map(function ($mid) { return AA_Module::getModuleName($mid); }, $slices4cache));
+            echo '<br>UsedModules:<br> - ' . join('<br> - ', array_map(fn ($mid) => AA_Module::getModuleName($mid), $slices4cache));
         }
         AA::$dbg->duration_stat();
     }

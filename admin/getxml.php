@@ -281,12 +281,14 @@ function GetXMLFieldData($slice_id, $field_id, $content4id) {
  * @param $slice_id
  * @param $item_id
  * @param $content4id (by link)
- * @param $slice_fields (by link)
+ * @param $sfields
  * @return string xml_items
  */
-function GetXMLItem($slice_id, $item_id, $content4id, $slice_fields) {
+function GetXMLItem($slice_id, $item_id, $content4id, AA_Fields $sfields) {
     static $value2const_id;
     static $slice_url;
+
+    $slice_fields = $sfields->getRecordArray(); // @todo - use $sfields directly
 
     // create RSS elements
     $title       = GetBaseFieldContent($slice_fields,"headline", $content4id);
@@ -381,11 +383,11 @@ function GetXMLItem($slice_id, $item_id, $content4id, $slice_fields) {
  * @param $slice_id
  * @param $items_ids (by link)
  * @param $content (by link)
- * @param $slice_fields (by link)
+ * @param $slice_fields
  *
  *
  */
-function CreateXMLItems($slice_id, $items_ids, $content, $slice_fields) {
+function CreateXMLItems($slice_id, $items_ids, $content, AA_Fields $slice_fields) {
     foreach ($items_ids as $id)  {
         echo GetXMLItem($slice_id, $id, $content[$id], $slice_fields);
     }
@@ -579,7 +581,7 @@ echo $xml_fields;
 echo $xml_categories;
 
 if ($ids) {        // feeding mode
-    CreateXMLItems($slice_id, $ids, $content, $slice->getFields()->getRecordArray());
+    CreateXMLItems($slice_id, $ids, $content, $slice->getFields());
 }
 
 echo "</rdf:RDF>";

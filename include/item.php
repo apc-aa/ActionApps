@@ -925,11 +925,14 @@ class AA_Item {
         if (strlen($param)>2) {  // for speedup of standard {relation........} alias
             $param = $this->unalias( $param );
         }
-        $res = '';
-        foreach ( $values as $v ) {
-            $res .= ($res ? $param : ''). $this->text2Html($v['value'], $v['flag']); // add value separator just if field is filled
-        }
-        return $res;
+//        $res = '';
+//        foreach ( $values as $v ) {
+//            $res .= ($res ? $param : ''). $this->text2Html($v['value'], $v['flag']); // add value separator just if field is filled
+//        }
+//        return $res;
+        // optimized for speed
+
+        return implode($param, array_map(fn ($v) => $this->text2Html($v['value'], $v['flag']), $values));
     }
 
     /** f_d function
@@ -1930,7 +1933,7 @@ class AA_Items {
         DB_AA::delete_low_priority('hit_long_id', [['id',             $ids_arr,   'l']]);
 
         $ctx = AA_Log::context();
-        AA_Log::write("ITEM_DEL", array_map(function($id) use ($ctx) {return "$id:$ctx";}, $ids_arr));
+        AA_Log::write("ITEM_DEL", array_map(fn ($id) => "$id:$ctx", $ids_arr));
 
         ChangesMonitor::deleteChanges($ids_arr);
     }

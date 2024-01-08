@@ -251,9 +251,11 @@ class AA_Csv_Importer {
         }
 
         while ($csvRec = getCSV($handle,$this->addParams['delimiter'],$this->addParams['enclosure'])) {
-            $err = convertCSV2Items($csvRec, $fieldNames, $trans_actions, $slice->getFields()->getRecordArray(), $itemContent);
+            $err = convertCSV2Items($csvRec, $fieldNames, $trans_actions, $slice->getFields(), $itemContent);
             $numProcessed++;
             $msg .= _m("Item:").$numProcessed .":";
+
+            // huhl($csvRec, $fieldNames, $trans_actions, $slice->getFields(), $itemContent);
 
             if (!$err) {
                 $itemContent->setSliceID($this->slice_id);
@@ -303,12 +305,9 @@ class AA_Csv_Importer {
 
         // Create list of fields from the first row of csv data
         $fieldNames    = createFieldNames($this->fileName,$this->addParams);
-        $slice_fields  = $slice->getFields()->getRecordArray();
+        $slice_fields  = $slice->getFields();
 
-        $slf['unpacked_id.....'] = "Item id";
-        foreach ( $slice_fields as $k => $v ) {
-            $slf[$k] = $v['name'];
-        }
+        $slf = array_merge(['unpacked_id.....' => 'Item id'], $slice_fields->getNameArray());
 
         $handle = fopen($this->fileName, "r");
 

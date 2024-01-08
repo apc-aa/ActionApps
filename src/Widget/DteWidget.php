@@ -144,7 +144,7 @@ class DteWidget extends Widget
                     $curr_attrs['min'] = $val_attr;
                 }
             }
-            $attr_string = join(' ', array_map(function ($k, $v) { return "$k=\"$v\""; }, array_keys($attrs), $curr_attrs));
+            $attr_string = join(' ', array_map(fn ($k, $v) => "$k=\"$v\"", array_keys($attrs), $curr_attrs));
 
             $widget    .= $delim . "\n<input $attr_string name=\"$input_name\" value=\"$val_attr\" id=\"$input_id\"$widget_add{$required}>";
             $delim      = '<br>';

@@ -284,5 +284,5 @@ FrmTextarea("noitem_msg", _m("'No item found' message"), $noitem_msg, 4, 50, fal
 $slice = AA_Slice::getModule(AA::$module_id);
 
 FrmTabEnd($form_buttons);
-$apage->addHelpbox(_m("Use these aliases for database fields"), getAliasHelp(new AA_Aliases(new AA_Aliasgenerator_Slice(AA::$module_id)), $slice->getFields()->getRecordArray()));
+$apage->addHelpbox(_m("Use these aliases for database fields"), getAliasHelp(new AA_Aliases(new AA_Aliasgenerator_Slice(AA::$module_id)), $slice->getFields()));
 $apage->printFoot();

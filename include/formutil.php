@@ -617,26 +617,26 @@ class AA_Inputfield {
      * @param AA_Field $field_arr
      */
     function setFromField($field) {
-        $field_arr = $field->getRecord();
+        // $field_arr = $field->getRecord();  // now we use ArrayAccess
 
-        $this->id            = $field_arr['id'];
+        $this->id            = $field['id'];
         $this->varname       = varname4form($this->id);
-        $this->name          = $field_arr['name'];
-        $this->input_before  = $field_arr['input_before'];
-        $this->required      = $field_arr['required'];
-        $this->input_help    = $field_arr['input_help'];
-        $this->input_morehlp = $field_arr['input_morehlp'];
+        $this->name          = $field['name'];
+        $this->input_before  = $field['input_before'];
+        $this->required      = $field['required'];
+        $this->input_help    = $field['input_help'];
+        $this->input_morehlp = $field['input_morehlp'];
 
         //$funct = ParamExplode($field["input_show_func"]);
         //$this->input_type    = AA::Un($funct[0]);
-        $funct = array_values(Widget::parseClassProperties($field_arr["input_show_func"]));
+        $funct = array_values(Widget::parseClassProperties($field['input_show_func']));
         $this->input_type    = substr(strtolower($funct[0]),-9,3);    // grab from AA\Widget\FldWidget
         $this->param         = array_slice( $funct, 1 );
-        $this->html_rb_show  = $field_arr["html_show"];
-        $this->valid         = $field_arr["input_validate"];
+        $this->html_rb_show  = $field['html_show'];
+        $this->valid         = $field['input_validate'];
 
-        if ($field_arr["multiple"] & 2) {   // translation
-            $this->translations = AA_Slice::getModule(unpack_id($field_arr["slice_id"]))->getTranslations();
+        if ($field['multiple'] & 2) {   // translation
+            $this->translations = AA_Slice::getModule(unpack_id($field['slice_id']))->getTranslations();
         }
         // removed - const_arr should be in input_show_func param
         // if ( isset($field["const_arr"]) ) {
@@ -1109,16 +1109,10 @@ class AA_Inputfield {
      *  Print links to document convertors, if convertors are installed
      */
     function get_convertors() {
-        $constants = array_filter(get_defined_constants(true)['user'], function($key) {
-            return strpos($key, 'CONV_TEXTFILTERS') === 0;
-        }, ARRAY_FILTER_USE_KEY);
-
-        $convertors = array_map(function($key) {
-            return substr($key, 17);
-        },array_keys($constants));
-
-        $convtext = join('/',array_diff($convertors, ['ICONV']));
-        $convertor = "<a class=\"btn aa-convertor\" href=\"javascript:CallConvertor('".self_server(). AA_INSTAL_PATH."', '".$this->varname."')\">$convtext "._m('import') ."</a>";
+        $constants  = array_filter(get_defined_constants(true)['user'], fn ($key) => strpos($key, 'CONV_TEXTFILTERS') === 0, ARRAY_FILTER_USE_KEY);
+        $convertors = array_map(fn ($key) => substr($key, 17), array_keys($constants));
+        $convtext   = join('/',array_diff($convertors, ['ICONV']));
+        $convertor  = "<a class=\"btn aa-convertor\" href=\"javascript:CallConvertor('".self_server(). AA_INSTAL_PATH."', '".$this->varname."')\">$convtext "._m('import') ."</a>";
 
         return $convertor;
     }
@@ -1291,7 +1285,7 @@ class AA_Inputfield {
             $attrs['max'] = pow(10,$nchars)-1;
             $attrs['min'] = $attrs['min'] ?: '0';
         }
-        $attr_string = join(' ', array_map( function($k, $v) {return "$k=\"$v\"";}, array_keys($attrs), $attrs));
+        $attr_string = join(' ', array_map( fn ($k, $v) => "$k=\"$v\"", array_keys($attrs), $attrs));
 
         $triggers  = $this->use_triggers_4_slice ? JsTriggers::singleton4id($this->use_triggers_4_slice)->get("input", $name) : '';
 
@@ -3146,13 +3140,13 @@ function getSelectWithParam($name, $arr, $selected="", $html_setting=null) {
  * @param string     $buttons
  * @return string
  */
-function getAliasHelp(AA_Aliases $aliases, $fields = false): string {
+function getAliasHelp(AA_Aliases $aliases, ?AA_Fields $fields = null): string {
     $rows = [];
     foreach ($aliases as $ali => $v ) {
         // if it is possible point to alias editing page
         $fld     = $v->getField();
         $aliasedit = ( !$fld ? "&nbsp;" : "<a href=\"". con_url("./se_inputform.php", ['fid'=>$fld], true) ."\">". _m("Edit") . "</a>");
-        if ($fields AND $fields[$fld] AND !$fields[$fld]['input_show']) {
+        if ($fields AND $fields->isField($fld) AND !$fields->getProperty($fld,'input_show')) {
             $ali = "<span class=\"disabled\">$ali</span>";
         }
         $rows[] = [$ali, safe($v->getHelp()), $aliasedit];

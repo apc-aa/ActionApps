@@ -77,7 +77,7 @@ class RequestMonitor
                     $table[$name]['valempty'][] = $vartype['empty'];
                     $table[$name]['valreq'][] = $vartype['req'];
                     $table[$name]['vals'][] = join('|', $vals);
-                    $table[$name]['valsum'][] = var_export(array_count_values(array_map( function ($str) { return ((is_string($str) AND (strlen($str)) > 12) ? substr($str,0,11).'…' : $str); }, $vals)), true);
+                    $table[$name]['valsum'][] = var_export(array_count_values(array_map( fn ($str) => ((is_string($str) AND (strlen($str)) > 12) ? substr($str,0,11).'…' : $str), $vals)), true);
                 }
             }
             ksort($table);

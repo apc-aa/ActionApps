@@ -41,7 +41,7 @@ require_once __DIR__ . "/stringexpand.php"; // for translateString()
  * @return array
  */
 function GetFieldMapping($from_slice_id, $destination_id) {
-    $fields_from = AA_Slice::getModule($from_slice_id)->getFields()->getRecordArray();
+    $fields_from = AA_Slice::getModule($from_slice_id)->getFields()->getPriorityArray();
     $fields_to   = AA_Slice::getModule($destination_id)->getFields()->getPriorityArray();
 
     if (empty($fields_to)) {
@@ -78,8 +78,8 @@ function GetFieldMapping($from_slice_id, $destination_id) {
         if ( $m[$field_id] ) {
             $map[$field_id] = $m[$field_id];                 // set if mapped
         } else {                                 // if not mapped - store in the same; if not exist, set empty
-            $map[$field_id] = $fields_from[$field_id] ? ["feedmap_flag"=>FEEDMAP_FLAG_MAP,"val"=>$field_id] :
-                                                        ["feedmap_flag"=>FEEDMAP_FLAG_EMPTY,"val"=>""];
+            $map[$field_id] = in_array($field_id, $fields_from) ? ["feedmap_flag"=>FEEDMAP_FLAG_MAP,"val"=>$field_id] :
+                                                                  ["feedmap_flag"=>FEEDMAP_FLAG_EMPTY,"val"=>""];
         }
     }
 
@@ -223,18 +223,19 @@ function FeedItemTo($item_id, $from_slice_id, $destination_id, $approved, $tocat
     }
 
     $id          = new_id();
-    $fields_to   = $destination->getFields()->getRecordArray();
+    $fields_to   = $destination->getFields()->getPriorityArray();
+    $item2fed    = null;
 
     // prepare new4id array before call StoreItem function
-    foreach ($fields_to as $newfld => $newfldname) {
+    foreach ($fields_to as $newfld) {
         $flag = $map[$newfld]['feedmap_flag'];
         $val  = $map[$newfld]['val'];
 
         switch ($flag) {
-            case FEEDMAP_FLAG_EMPTY : continue;
+            case FEEDMAP_FLAG_EMPTY : continue(2);
             case FEEDMAP_FLAG_MAP :
                 if ($fields->getProperty($val,'feed')==STATE_UNFEEDABLE) {
-                    continue;
+                    continue(2);
                 } else {
                     $new4id[$newfld] = $content4id[$val];
                     if ($fields->getProperty($val,'feed')==STATE_FEEDNOCHANGE ) {

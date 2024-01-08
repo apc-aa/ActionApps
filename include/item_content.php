@@ -962,7 +962,7 @@ class ItemContent extends AA_Content {
      * @param string $type  present|visible|all   validate just PRESENT fields in ItemContent (for update), The fields VISIBLE (displayed on inputform), ALL fields in the slice
      * @return array of non valid fields like: ['text............'=>[410,'Not filled']]
      */
-    function validateReport($type='present') {
+    function validateReport($type='present', array $ignore=[]): array {
         $slice      = AA_Slice::getModule($this->getSliceID());
         $fields     = $slice->getFields();
         $ret        = [];
@@ -1018,7 +1018,7 @@ class ItemContent extends AA_Content {
         if ($invalid) {
             switch ($validate) {
                 case 'STRICT':
-                    ItemContent::lastErr(ITEMCONTENT_ERROR_INVALID, join("\n", array_map(function ($fld, $err) { return "[$fld] ". $err[0].": ".$err[1]; }, array_keys($invalid), $invalid)));
+                    ItemContent::lastErr(ITEMCONTENT_ERROR_INVALID, join("\n", array_map(fn ($fld, $err) => "[$fld] ". $err[0].": ". $err[1], array_keys($invalid), $invalid)));
                     return false;
                 case 'LOG':
                     foreach ($invalid as $fld => $msg) {
@@ -1030,7 +1030,7 @@ class ItemContent extends AA_Content {
             }
         }
 
-        // start from scretch with new content
+        // start from scratch with new content
         $new_content = new ItemContent;
         $fields      = $slice->getFields();
         $profile     = AA_Profile::getProfile(AuthGetUid(), $slice->getId()); // current user settings
@@ -1623,11 +1623,11 @@ class ItemContent extends AA_Content {
     /** transform function
      * Transform $itemContent according to the transformation actions $trans_actions and slice fields $slice_fields
      * @param AA_Content $itemContent
-     * @param Actions     $trans_actions
-     * @param             $slice_fields
+     * @param Actions    $trans_actions
+     * @param AA_Fields  $slice_fields
      * @return string|null     err or empty string
      */
-    function transform( AA_Content $itemContent, Actions $trans_actions, $slice_fields): ?string {
+    function transform( AA_Content $itemContent, Actions $trans_actions, AA_Fields $slice_fields): ?string {
         return $trans_actions->transform($itemContent, $slice_fields, $this);
     }
 

@@ -507,7 +507,9 @@ class Manager extends AA_Storable {
                               $settings['searchbar']['add_empty_search_row'],
                               $this->show,
                               $settings['searchbar']['hint'],
-                              $settings['searchbar']['hint_url']);
+                              $settings['searchbar']['hint_url'],
+                              $this->module_id
+            );
             $this->searchbar_funct = $settings['searchbar']['function'];
             if ( isset($settings['searchbar']['default_bookmark']) ) {
                 $this->searchbar->setFromBookmark($settings['searchbar']['default_bookmark']);

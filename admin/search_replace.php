@@ -147,18 +147,15 @@ if ( !IsSuperadmin() ) {
     $restricted_fields = ['short_id........' => true];
 }
 
-// create field_select array for field selection
+// create field_select and field_copy_arr arrays for field selection
 $field_select['no_field'] = _m('Select field...');
-$fields                   = $slice->getFields()->getRecordArray();
-foreach ($fields as $fld_id => $fld) {
+$field_copy_arr           = [];
+$fields                   = $slice->getFields()->getNameArray();
+foreach ($fields as $fld_id => $fld_name) {
     if ( !$restricted_fields[$fld_id] ) {
-        $field_select[$fld_id] = $fld['name']. ' ('. $fld_id. ')';
+        $field_select[$fld_id] = "$fld_name ($fld_id)";
     }
-}
-
-// create field_copy_arr array for field selection
-foreach ($fields as $fld_id => $fld) {
-    $field_copy_arr[$fld_id] = $fld['name']. ' ('. $fld_id. ')';
+    $field_copy_arr[$fld_id] = "$fld_name ($fld_id)";
 }
 
 $params = [

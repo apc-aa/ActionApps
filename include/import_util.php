@@ -85,11 +85,11 @@ function createFieldNames($fileName, $addParams) {
  * @param             $csvRec
  * @param             $fieldNames
  * @param Actions     $trans_actions
- * @param             $slice_fields
+ * @param AA_Fields   $slice_fields
  * @param ItemContent $itemContent
  * @return string|null     err or empty string
  */
-function convertCSV2Items($csvRec, $fieldNames, Actions $trans_actions, $slice_fields, &$itemContent): ?string {
+function convertCSV2Items($csvRec, $fieldNames, Actions $trans_actions, AA_Fields $slice_fields, &$itemContent): ?string {
     $itemContent1 = new AA_Content;
     $itemContent1->setFromCSVArray($csvRec, $fieldNames);
     $itemContent  = new ItemContent;
@@ -121,50 +121,50 @@ class Actions {
      *  Transform the input item content to the output item content according
      *  to the actions
      * @param AA_Content $itemContent
-     * @param array       $slice_fields
+     * @param AA_Fields  $slice_fields
      * @param ItemContent $outputItemContent
      * @return string|null     err or empty string
      */
-     function transform( AA_Content $itemContent, array $slice_fields, ItemContent $outputItemContent): ?string {
+     function transform( AA_Content $itemContent, AA_Fields $slice_fields, ItemContent $outputItemContent): ?string {
 
-         // id is not part of $slice_fields, unfortunatelly (should be changed)
-         if ( !isset($slice_fields['id..............']) ) {
-             $slice_fields['id..............'] = 'to be processed in next loop';
+         $fieldIds = $slice_fields->getPriorityArray();
+
+         // id is not part of $slice_fields, unfortunately (should be changed)
+         if ( !in_array('id..............',$fieldIds)) {
+             $fieldIds[] = 'id..............';           // 'to be processed in next loop';
          }
 
-         foreach ( $slice_fields as $field_id => $foo ) {
+         foreach ( $fieldIds as $field_id ) {
              $action = &$this->actions[$field_id];
              unset( $fieldVal, $v);
              $done = false;
 
              // fill up the output field with default value, if the action does not exist for the output field, or the action is "default"
              if (!$action || $action['action']->getAction() == "default") {
-                 switch ($field_id) {
                      // case "display_count..." : $v = 0; break;
-                   /* Removed - it created data for fields, so it is then updated on Rewrite/Update action, which is not correct
-                     case 'status_code.....' : $done = 1; $fieldVal[]['value'] = 1; break; // todo
-                     case 'flags...........' : $done = 1; $fieldVal[]['value'] = ITEM_FLAG_OFFLINE; break;
+                /* Removed - it created data for fields, so it is then updated on Rewrite/Update action, which is not correct
+                  switch ($field_id) {
+                     case 'status_code.....' : $done = true; $fieldVal[]['value'] = 1; break; // todo
+                     case 'flags...........' : $done = true; $fieldVal[]['value'] = ITEM_FLAG_OFFLINE; break;
                      case 'post_date.......':
                      case 'last_edit.......':
-                     case 'publish_date....' : $done = 1; $fieldVal[]['value'] = time(); break;
-                     case 'expiry_date.....' : $done = 1; $fieldVal[]['value'] = mktime(0,0,0,date("m"),date("d"),date("Y")+10) ; break;	// expiry in 10 years default : TODO
+                     case 'publish_date....' : $done = true; $fieldVal[]['value'] = time(); break;
+                     case 'expiry_date.....' : $done = true; $fieldVal[]['value'] = mktime(0,0,0,date("m"),date("d"),date("Y")+10) ; break;	// expiry in 10 years default : TODO
                      case 'edited_by.......':
-                     case 'posted_by.......' : $done = 1; $fieldVal[]['value'] = AuthGetUid(); break;	// todo
+                     case 'posted_by.......' : $done = true; $fieldVal[]['value'] = AuthGetUid(); break;	// todo
                      // todo
-                     case 'id..............' : $done = 1; $fieldVal[]['value'] = new_id(); break;
-                   */
+                     case 'id..............' : $done = true; $fieldVal[]['value'] = new_id(); break;
                      default :
-                         if ( $action['from'] && ($action['from'] != '__empty__')) {
-                             $action['action']->setAction('store');
-                         } elseif ( $action['action']->getParams() ) {
-                             $action['action']->setAction('value');
-                         } else {
-                             $done = 1;
-                         }
-                         break;
+                   */
+                 if ($action['from'] && ($action['from'] != '__empty__')) {
+                     $action['action']->setAction('store');
+                 } elseif ($action['action']->getParams()) {
+                     $action['action']->setAction('value');
+                 } else {
+                     $done = true;
                  }
              } elseif ($action['action']->getAction() == "new") {
-                  $done = 1;
+                  $done = true;
                   $fieldVal[]['value'] = new_id();
              }
              if ( !$done ) {

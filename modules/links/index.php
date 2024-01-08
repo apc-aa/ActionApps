@@ -225,7 +225,7 @@ $manager_settings = [
              'compact_bottom'   => "</table>",
              'id'               => $links_info['id']
          ],
-         'fields'               => '',
+         //'fields'               => '',
          'aliases'              => new AA_Aliases(new AA_Aliasgenerator_Link()),
          'get_content_funct'    => 'Links_GetLinkContent'
      ],

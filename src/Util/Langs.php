@@ -43,7 +43,7 @@ class Langs {
     }
 
     public static function getNames() {
-        return array_map(function ($l) { return $l[1]; }, self::$LANGS);
+        return array_map(fn ($l) => $l[1], self::$LANGS);
     }
 
     /** returns lang code ('cz', 'en', 'en-utf8', 'de',...) from given $lang_file or from default

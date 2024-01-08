@@ -567,7 +567,7 @@ switch( $VIEW_TYPES_INFO[$view_type]['aliases'] ) {
     case 'disc2mail':   $helpbox .= getAliasHelp(new AA_Aliases(new AA_Aliasgenerator_Discussion2mail()));
     case 'discus':      $helpbox .= getAliasHelp(new AA_Aliases(new AA_Aliasgenerator_Discussion()));
                         break;
-    case 'field':       $helpbox .= getAliasHelp(new AA_Aliases((new AA_Aliasgenerator_Slice(AA::$module_id))->addAliases($VIEW_TYPES_INFO[$view_type]['aliases_additional'])), $slice->getFields()->getRecordArray());
+    case 'field':       $helpbox .= getAliasHelp(new AA_Aliases((new AA_Aliasgenerator_Slice(AA::$module_id))->addAliases($VIEW_TYPES_INFO[$view_type]['aliases_additional'])), $slice->getFields());
                         break;
     case 'justids':     $helpbox .= getAliasHelp(new AA_Aliases(new AA_Aliasgenerator_Slicejustids(AA::$module_id)));
                         break;

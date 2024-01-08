@@ -277,9 +277,7 @@ function charD($parser, $data) {
  * @return array|bool|mixed
  */
 function aa_rss_parse($xml_data, string $feed_id='') {
-    global $aa_rss, $cur_tag, $aa_rss, $channel, $category, $field, $item,
-    $fulltext_content, $fielddata,$content_format;
-
+    global $cur_tag, $aa_rss, $channel, $category, $field, $item, $fulltext_content, $fielddata, $content_format;
 
     if ($GLOBALS['debugfeed'] >=8) {
         huhl("aa_rss_parse:Parsing ...");

@@ -630,27 +630,6 @@ class AA_Slice extends AA_Module {
     /** sql_id function - removed - use DB_AA::select1('', 'SELECT * FROM `slice`', [['id',$slobj->getId(), 'l']]); */
     // function sql_id()      { return q_pack_id($this->module_id); }
 
-
-    /** fields function
-     *  fetch the fields
-     * @param $return_type
-     * @param $slice_fields
-     * @return array with two elements [0] is array in form
-     * wanted by Storeitem etc, [1] is array of fields in priority order
-     * @deprecated - use getFields() and getField() instead
-     */
-    function fields( $return_type = null, $slice_fields = false ): array {
-
-        $fields = $slice_fields ? $this->dynamic_fields : $this->fields;
-
-        switch ( $return_type ) {
-            case 'pri':     return $fields->getPriorityArray();  // array of field definitions sorted by priority - integer key
-            case 'name':    return $fields->getNameArray();
-
-        }
-        return [$fields->getRecordArray(), $fields->getPriorityArray()];                         // two member array ('record' array, 'pri' array)
-    }
-
     /**
      * @return \AA\Util\Searchfields
      */

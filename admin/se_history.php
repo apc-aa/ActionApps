@@ -250,7 +250,7 @@ $manager_settings = [
              'compact_bottom'   => "</table>",
              'id'               => AA::$module_id
          ],
-         'fields'               => '',
+         //'fields'               => '',
          'aliases'              => new AA_Aliases(new AA_Aliasgenerator_History()),
          'get_content_funct'    => 'GetHistoryContent',
          'query_funct'          => 'QueryHistoryZIDs'

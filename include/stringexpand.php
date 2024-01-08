@@ -1519,7 +1519,7 @@ function parseLoop($out, $item) {
     } else { // we have format string
         if ( !$params ) {
             // case if we have only one parameter for substitution
-            $ret_str = join($separator,  array_filter( array_map( function($value) use ($format_str) { return str_replace('_#1', $value, $format_str); }, $val), 'strlen'));
+            $ret_str = join($separator,  array_filter( array_map( fn ($value) => str_replace('_#1', $value, $format_str), $val), 'strlen'));
 
             // $val_delim = '';
             // foreach ($val as $value) {
@@ -6407,7 +6407,7 @@ class AA_Req {
      */
     function getConstructor() {
         $sri = $this->integrity ? ",'".$this->integrity."'" : '';
-        return get_called_class().'(['.join(',', array_map(function($dep) { return "\"$dep\"";}, $this->depend)). ']'. $sri;
+        return get_called_class().'(['.join(',', array_map(fn ($dep) => "\"$dep\"", $this->depend)). ']'. $sri;
     }
 }
 
@@ -6536,7 +6536,7 @@ class AA_Req_Lib extends AA_Req {
         $param[] = "'". $this->url. ($this->loadtype ? ' '.$this->loadtype : '') ."'";
         $param[] = $this->integrity ? "'".$this->integrity."'" : "''";
         if ($this->depend) {
-            $param[] = "[" . join(',', array_map(function ($dep) { return "'$dep'"; }, $this->depend)) . ']';
+            $param[] = "[" . join(',', array_map(fn ($dep) => "'$dep'", $this->depend)) . ']';
         }
         return get_called_class()."(". join(', ', $param). ")";
     }
@@ -6603,7 +6603,7 @@ class AA_Req_Htm extends AA_Req {
     function getConstructor() {
         $param[] = "'". $this->funct ."'";
         if ($this->depend) {
-            $param[] = "array(" . join(',', array_map(function ($dep) { return "'$dep'"; }, $this->depend)) . ')';
+            $param[] = "array(" . join(',', array_map(fn ($dep) => "'$dep'", $this->depend)) . ')';
         }
         return get_called_class()."(". join(', ', $param). ")";
     }
@@ -6854,7 +6854,7 @@ class AA_Requires {
      */
     function getHead() {
         $req_arr = array_merge($this->computeRequires('HEAD-A'),$this->computeRequires('HEAD-B'));
-        return join("\n", array_map( function($req) {return $req->getCode();}, $req_arr));
+        return join("\n", array_map( fn ($req) => $req->getCode(), $req_arr));
     }
 
     /**
@@ -6862,7 +6862,7 @@ class AA_Requires {
      */
     function getFoot() {
         $req_arr = array_merge($this->computeRequires('FOOT-A'),$this->computeRequires('FOOT-B'));
-        return join("\n", array_map( function($req) {return $req->getCode();}, $req_arr));
+        return join("\n", array_map( fn ($req) => $req->getCode(), $req_arr));
     }
 
     /** getAsScript is counterparts to getHead and getFoot, but used in AJAX calls, where CSS and JS libs have to be loaded by script
@@ -6870,10 +6870,10 @@ class AA_Requires {
      */
     function getAsScript() {
         $req_arr  = array_merge($this->computeRequires('HEAD-A'),$this->computeRequires('HEAD-B'),$this->computeRequires('FOOT-A'),$this->computeRequires('FOOT-B'));
-        $external = array_filter(array_map( function($req) {return $req->getExternal();}, $req_arr));
+        $external = array_filter(array_map( fn ($req) => $req->getExternal(), $req_arr));
         $js_count = array_reduce($external, function($count, $a) { $count += (strpos(trim($a),'AA_LoadJs(')===0) ? 1 : 0; return $count; },0);
 
-        $scripts  = join("\n", array_map( function($req) {return $req->getScript();}, $req_arr));
+        $scripts  = join("\n", array_map( fn ($req) => $req->getScript(), $req_arr));
         //huhl($req_arr, $external, $scripts);
 
         /** @todo could be moved to Promise.all approach */
@@ -9071,7 +9071,7 @@ class AA_Stringexpand_Foreach extends AA_Stringexpand {
         // multidimensional array
         if (is_array($arr) AND is_array(current($arr))) {
             $combinations = $this->combine_arrays($arr);
-            $aliases = array_map( function($v) {return '_#'.(is_numeric($v) ? "loop$v" : $v);}, array_keys($arr));
+            $aliases = array_map( fn ($v) => '_#'.(is_numeric($v) ? "loop$v" : $v), array_keys($arr));
             foreach ($combinations as $addr) {
                 $ret[] = AA::Un(str_replace($aliases,$addr,$text),'',$item);
             }
@@ -10192,7 +10192,7 @@ class AA_Stringexpand_Aadocumentation extends AA_Stringexpand {
         $ret = [];
         // remove initial /**, *, */
         preg_match_all("#\n\s*/?[*]+/?\s*(.*)#", "\n".$string, $matches);
-        $string = join("\n", array_map( function ($s) { return ltrim($s,'* \t');}, $matches[1]));
+        $string = join("\n", array_map( fn ($s) => ltrim($s,'* \t'), $matches[1]));
         $blocks = explode("\n@", $string);
         $blocks[0] = 'text '.$blocks[0];
         foreach ($blocks as $block) {

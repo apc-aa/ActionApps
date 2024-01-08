@@ -1347,7 +1347,7 @@ class AA_Metabase {
                 'listlen'              => 100
             ],
             'itemview'  => [
-                'fields'               => $search_fields,
+                //'fields'               => $search_fields,
                 'aliases'              => $aliases,
                 //    static class method               , first parameter to the method
                 'get_content_funct'    => [['AA_Metabase', 'getContent'], ['table'=>$tablename]],
