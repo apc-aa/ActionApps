@@ -1738,6 +1738,7 @@ class AA_Stringexpand_Cookie extends AA_Stringexpand_Nevercache {
  *    {math:478778:1:,:&#8239;} - correct French SI type of number format with thin space
  *    {math:478778:1:FR}        - correct French SI type of number format with thin space
  *    {math:478778:1:EN}        - correct English SI type of number format with thin space and decimal point
+ *    {math:1234567.89:2:US}    - English type of number format with coma and decimal point (1,234,567.89)
  */
 class AA_Stringexpand_Math extends AA_Stringexpand_Nevercachenotrim {
     /** Do not trim all parameters (the $add parameter could contain space) */
@@ -1761,6 +1762,10 @@ class AA_Stringexpand_Math extends AA_Stringexpand_Nevercachenotrim {
                 case 'EN':
                     $dec_point = '.';
                     $thousands_sep = '&#8239;';  // non-breaking thin space
+                    break;
+                case 'US':
+                    $dec_point = '.';
+                    $thousands_sep = ',';
                     break;
                 default:
                     $dec_point = get_if($dec_point, ',');
