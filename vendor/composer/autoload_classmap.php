@@ -419,6 +419,7 @@ return array(
     'AA_Stringexpand_Czdate' => $baseDir . '/include/usr_aliasfnc.php',
     'AA_Stringexpand_Datatable' => $baseDir . '/include/stringexpand.php',
     'AA_Stringexpand_Date' => $baseDir . '/include/stringexpand.php',
+    'AA_Stringexpand_Datediff' => $baseDir . '/include/stringexpand.php',
     'AA_Stringexpand_Daterange' => $baseDir . '/include/stringexpand.php',
     'AA_Stringexpand_Debug' => $baseDir . '/include/stringexpand.php',
     'AA_Stringexpand_Debuglog' => $baseDir . '/include/stringexpand.php',

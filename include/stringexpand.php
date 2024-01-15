@@ -1978,6 +1978,27 @@ class AA_Stringexpand_Daterange extends AA_Stringexpand_Nevercache {
     }
 }
 
+/** Calculates date difference - like age
+ *   {datediff:<start_timestamp>[:<end_timestamp>[:<format>]]}
+ *   {datediff:{start_date......}} - displays "42" (years)
+ *   {datediff:{start_date......},{expiry_date.....},%R%a} - displays "+897" (days) - @see
+ *
+ *   @param $start_timestamp - timestamp of the start date
+ *   @param $end_timestamp   - timestamp of the end date - {now} is default
+ *   @param $format          - format - %y (for years) is defoult - other values @see PHP date_diff()->format()
+ */
+class AA_Stringexpand_Datediff extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+
+    /** expand function  */
+    function expand($start_timestamp='', $end_timestamp='', $format='%y') {
+        $date1 = (new DateTime())->setTimestamp((int)$start_timestamp);
+        $date2 = (new DateTime())->setTimestamp(($end_timestamp == '') ? time() : (int)$end_timestamp);
+        return date_diff($date1, $date2)->format(($format == '') ? '%y' : $format);
+    }
+}
+
 /** Distance between two Latitude/Longitude coordinates on Earth in meters
  *   {distance:<lat1>:<lon1>:<lat2>:<lon2>}
  *   {distance:50.0898689:14.4000936:48.8940964:13.8241719}

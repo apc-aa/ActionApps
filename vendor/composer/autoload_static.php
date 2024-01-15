@@ -507,6 +507,7 @@ class ComposerStaticInit43e15006db6c3041e7b8c7c57cf04d54
         'AA_Stringexpand_Csv' => __DIR__ . '/../..' . '/include/stringexpand.php',
         'AA_Stringexpand_Datatable' => __DIR__ . '/../..' . '/include/stringexpand.php',
         'AA_Stringexpand_Date' => __DIR__ . '/../..' . '/include/stringexpand.php',
+        'AA_Stringexpand_Datediff' => __DIR__ . '/../..' . '/include/stringexpand.php',
         'AA_Stringexpand_Daterange' => __DIR__ . '/../..' . '/include/stringexpand.php',
         'AA_Stringexpand_Debug' => __DIR__ . '/../..' . '/include/stringexpand.php',
         'AA_Stringexpand_Debuglog' => __DIR__ . '/../..' . '/include/stringexpand.php',
