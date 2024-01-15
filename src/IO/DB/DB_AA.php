@@ -97,7 +97,7 @@ class DB_AA extends AbstractDB
 
         $offset = ($row>1) ? (($row-1).',') : '';
 
-        AA::$debug & 8 && AA::$dbg->log("$query LIMIT $offset 1");
+        // AA::$debug & 8 && AA::$dbg->log("$query LIMIT $offset 1");
 
         $db->query("$query LIMIT $offset 1");
         $ret = false;
