@@ -379,7 +379,8 @@ function Event_ItemNewComment( $type, $item_id, $slice_type, $disc_id, $foo, $fo
  */
 function Event_ItemAfterInsert( $type, $slice_id, $slice_type, $itemContent, $foo, $foo2 ) {
     $item_id = $itemContent->getItemID();
-    AA_Mysqlauth::updateReaders( [pack_id( $item_id )], $slice_id );
+    AA_Mysqlauth::updateReaders( [pack_id( $item_id )], $slice_id );  // maybe not necessary - AA_Mysqlauth_Maintain probably solves it HM 2024-01-16
+    (new AA_Mysqlauth_Maintain())->schedule();  // plan or replan the maintenance to be run earlier
     AlertsSendWelcome( $slice_id, $itemContent );
     // AlertsSendInstantAlert( $item_id, $slice_id );
     AA_Mailman::createSynchroFiles($slice_id);
@@ -406,8 +407,11 @@ function Event_ItemAfterInsert( $type, $slice_id, $slice_type, $itemContent, $fo
 function Event_ItemAfterUpdate( $type, $slice_id, $slice_type, $itemContent, $oldItemContent, $foo2 ) {
 
     $item_id = $itemContent->getItemID();
-    AA_Mysqlauth::updateReaders( [pack_id( $item_id )], $slice_id );
-//    AlertsSendInstantAlert( $item_id, $slice_id );
+
+    // AA_Mysqlauth::updateReaders( [pack_id( $item_id )], $slice_id ); AA_Mysqlauth_Maintain probably solves it HM 2024-01-16 (there were multiple DELETEs in Event_ItemBeforeUpdate and Event_ItemAfterUpdate on each readers update)
+    (new AA_Mysqlauth_Maintain())->schedule();  // plan or replan the maintenance to be run earlier
+
+    // AlertsSendInstantAlert( $item_id, $slice_id );
     AA_Mailman::createSynchroFiles($slice_id);
 
     // notifications
@@ -444,10 +448,10 @@ function Event_CommentAfterInsert( $type, $slice_id, $slice_type, &$itemContent,
  * @return bool
  */
 function Event_ItemBeforeUpdate( $type, $slice_id, $slice_type, $itemContent, $oldItemContent, $foo2 ) {
-    $item_id = $itemContent->getItemID();
     // Delete reader from Auth tables because if the username changes,
     // AA_Mysqlauth::updateReaders can not recognize it.
-    AA_Mysqlauth::deleteReaders( [pack_id( $item_id)], $slice_id );
+    // AA_Mysqlauth::deleteReaders( new zids($itemContent->getItemID(), 'l'), $slice_id );   // AA_Mysqlauth_Maintain probably solves it HM 2024-01-16 (there were multiple DELETEs in Event_ItemBeforeUpdate and Event_ItemAfterUpdate on each readers update)
+
     return true;
 }
 
@@ -470,16 +474,16 @@ function Event_ItemBeforeInsert( $type, $slice_id, $slice_type, &$itemContent, $
  * @param        $type
  * @param        $slice_id
  * @param        $slice_type
- * @param object $item_ids is sent by reference but for better performance only
+ * @param zids   $item_ids is sent by reference but for better performance only
  * @param        $foo
  * @param        $foo2
  * @return bool
  */
-function Event_ItemsBeforeDelete( $type, $slice_id, $slice_type, $item_ids, $foo, $foo2 ) {
+function Event_ItemsBeforeDelete( $type, $slice_id, $slice_type, $zids, $foo, $foo2 ) {
     /* It is not really necessary to delete the readers from Auth tables,
        because they should be deleted on moving to Trash bin. But it is
        perhaps better to make sure. */
-    AA_Mysqlauth::deleteReaders( $item_ids, $slice_id );
+    AA_Mysqlauth::deleteReaders( $zids, $slice_id );
     AA_Mailman::createSynchroFiles($slice_id);
     //mimo added
     $mlx = new MLXEvents();
@@ -497,7 +501,8 @@ function Event_ItemsBeforeDelete( $type, $slice_id, $slice_type, $item_ids, $foo
  * @param $foo2
  */
 function Event_ItemsMoved( $type, $slice_id, $slice_type, $item_ids, $new_status, $foo2 ) {
-    AA_Mysqlauth::updateReaders( $item_ids, $slice_id );
+    AA_Mysqlauth::updateReaders( $item_ids, $slice_id ); // maybe not necessary - AA_Mysqlauth_Maintain probably solves it HM 2024-01-16
+    (new AA_Mysqlauth_Maintain())->schedule();  // plan or replan the maintenance to be run earlier
     AA_Mailman::createSynchroFiles( $slice_id );
 }
 

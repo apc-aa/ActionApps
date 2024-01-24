@@ -347,6 +347,7 @@ return array(
     'AA_Modulesettings_Site' => $baseDir . '/include/slice.class.php',
     'AA_Modulesettings_Slice' => $baseDir . '/include/slice.class.php',
     'AA_Mysqlauth' => $baseDir . '/include/auth.php',
+    'AA_Mysqlauth_Maintain' => $baseDir . '/include/auth.php',
     'AA_Object' => $baseDir . '/include/statestore.php',
     'AA_Operators' => $baseDir . '/include/searchlib.php',
     'AA_Password_Manager_Reader' => $baseDir . '/include/stringexpand.php',

@@ -389,6 +389,8 @@ class AA_Slice extends AA_Module {
     protected $dynamic_fields;         // 2 member array( $fields, $prifields) == slice_fields
     protected $dynamic_setting = null; // dynamic slice setting fields stored in content table
 
+    protected $feeding_tree = null;     // graph of feeds
+
     const SETTING_CLASS = 'AA_Modulesettings_Slice';
     const SETTING_TABLE = 'slice';
 
@@ -398,8 +400,8 @@ class AA_Slice extends AA_Module {
      * @param $module_id
      */
     function __construct($module_id) {
-        $this->fields         = new AA_Fields($module_id);
-        $this->dynamic_fields = new AA_Fields($module_id, 1);
+        $this->fields         = AA_Fields::factoryFor($module_id);
+        $this->dynamic_fields = AA_Fields::factoryFor($module_id, 1);
         parent::__construct($module_id);
     }
 
@@ -772,6 +774,64 @@ class AA_Slice extends AA_Module {
             }
         }
         return $show_func_used;
+    }
+
+    /** Return feeding tree where items should be fed.
+     *  $tree[$from, $to] = array(approved=>$appr, category=>$cat_id) means, that item from
+     *  slice $from will be fed to slice $to, category $cat_id and bin depending on $appr :
+     *  $appp="y" => active folder else hold bin.
+     * @param ItemContent $content
+     * @return array
+     */
+    function getFeedTree(ItemContent $content): array {
+        if (is_null($this->feeding_tree)) {
+            $this->feeding_tree = [];
+
+            $sl_id = $this->getId();
+            $from_category_id = '';
+            // get this item category_id
+            if ($cat_group = GetCategoryGroup($sl_id)) {
+                if ($cat_field = $this->getFields()->getCategoryFieldId()) {
+                    if ( $p_cat_id = DB_AA::select1('id', 'SELECT `id` FROM `constant`', [['group_id', $cat_group], ['value', $content->getValue($cat_field)]]) ) {
+                        $from_category_id = unpack_id($p_cat_id);
+                    }
+                }
+            }
+
+            $slice_queue[$sl_id] = ['approved'=>"y", 'category'=>$from_category_id];
+            foreach($slice_queue as $sl_id => $val) {
+                if ($val['approved'] == "y") {
+                    $from_category_id = $val['category'];
+                    if ($from_category_id) {
+                        $p_from_cat_id = pack_id($from_category_id);
+                    }
+
+                    $db = getDB();
+                    $SQL = "SELECT feeds.to_id, feeds.category_id, feeds.all_categories,
+                           feeds.to_approved, feeds.to_category_id
+                     FROM slice, feeds LEFT JOIN feedperms ON feedperms.from_id=feeds.from_id
+                    WHERE feeds.from_id = slice.id
+                      AND feeds.from_id='". q_pack_id($sl_id) ."'
+                      AND (slice.export_to_all=1
+                       OR  feedperms.to_id = feeds.to_id)";  // check perms to feed, too
+                    $db->query($SQL);
+
+                    while ($db->next_record()) {
+                        $to_id = unpack_id($db->f('to_id'));
+                        // condition is necessary for multi feeding to this slice
+                        if (isset($slice_queue[$to_id])) {
+                            continue;
+                        }
+                        $approved = $db->f('to_approved') ? "y" : "n";
+                        if (($p_from_cat_id == $db->f('category_id')) OR $db->f('all_categories')) {
+                            $slice_queue[$to_id] = $this->feeding_tree[$sl_id][$to_id] = ['approved'=>$approved, 'category'=>unpack_id($db->f('to_category_id'))];
+                        }
+                    }
+                    freeDB($db);
+                }
+            }
+        }
+        return $this->feeding_tree;
     }
 }
 

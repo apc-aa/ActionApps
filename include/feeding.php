@@ -319,52 +319,6 @@ function WhereFed($item_id) {
     return array_map('unpack_id', DB_AA::select('', 'SELECT destination_id FROM relation', [['source_id', $item_id, 'l'], ['flag', REL_FLAG_FEED, 'i']]));
 }
 
-/** CreateFeedTree function
- *  Return feeding tree where items should be fed.
- *  $tree[$from, $to] = array(approved=>$appr, category=>$cat_id) means, that item from
- *  slice $from will be fed to slice $to, category $cat_id and bin depending on $appr :
- *  $appp="y" => active folder else hold bin.
- * @param $sl_id
- * @param $from_category_id
- * @return mixed
- */
-
-function CreateFeedTree($sl_id, $from_category_id) {
-    $slice_queue[$sl_id] = ['approved'=>"y", 'category'=>$from_category_id];
-
-    foreach($slice_queue as $sl_id => $val) {
-        if ($val['approved'] == "y") {
-            $from_category_id = $val['category'];
-            if ($from_category_id) {
-                $p_from_cat_id = pack_id($from_category_id);
-            }
-
-            $db = getDB();
-            $SQL = "SELECT feeds.to_id, feeds.category_id, feeds.all_categories,
-                           feeds.to_approved, feeds.to_category_id
-                     FROM slice, feeds LEFT JOIN feedperms ON feedperms.from_id=feeds.from_id
-                    WHERE feeds.from_id = slice.id
-                      AND feeds.from_id='". q_pack_id($sl_id) ."'
-                      AND (slice.export_to_all=1
-                       OR  feedperms.to_id = feeds.to_id)";  // check perms to feed, too
-            $db->query($SQL);
-
-            while ($db->next_record()) {
-                $to_id = unpack_id($db->f('to_id'));
-                // condition is necessary for multi feeding to this slice
-                if (isset($slice_queue[$to_id])) {
-                    continue;
-                }
-                $approved = $db->f('to_approved') ? "y" : "n";
-                if (($p_from_cat_id == $db->f('category_id')) OR $db->f('all_categories')) {
-                    $slice_queue[$to_id] = $tree[$sl_id][$to_id] = ['approved'=>$approved, 'category'=>unpack_id($db->f('to_category_id'))];
-                }
-            }
-            freeDB($db);
-        }
-    }
-    return $tree;
-}
 /** UpdateFedItem function
  * Update $dest_d item according to $item_id
  * @param $item_id
@@ -446,39 +400,22 @@ function UpdateItems($item_id, $slice_id) {     // function UpdateItems($item_id
 
 /** FeedItem function
  *  Feeds item to all apropriate slices
- * @param $item_id string - is unpacked id of feeded item
+ * @param ItemContent $content4id - fed item
  * @return bool
  */
-function FeedItem($item_id): bool {
-    // get item field definition
-    $content    = GetItemContent($item_id);
-    $content4id = $content[$item_id];   // shortcut
-
+function FeedItem(ItemContent $content): bool {
     // if not approved - exit
-    if ( $content4id["status_code....."][0]['value'] != '1' ) {
+    if ( $content->getStatusCode() != '1' ) {
         return false;
     }
 
-    $slice_id   = $content4id["u_slice_id......"][0]['value'];
-    $slice      = AA_Slice::getModule($slice_id);
-
-    // get this item category_id
-    $cat_group = GetCategoryGroup($slice_id);
-    $cat_field = $slice->getFields()->getCategoryFieldId();
-
-    if ($cat_group AND $cat_field) {
-        $p_cat_id = DB_AA::select1('id', 'SELECT id FROM `constant`', [
-            ['group_id', $cat_group],
-            ['value', $content4id[$cat_field][0]['value']]
-        ]);
-        if ( $p_cat_id ) {
-            $cat_id = unpack_id($p_cat_id);
-        }
-    }
+    $item_id    = $content->getItemID();
+    $slice_id   = $content->getSliceID();
 
     // we try to update items
     if (!UpdateItems($item_id, $slice_id)) {  // if update was done, don't feed;
-        if ($tree = CreateFeedTree($slice_id, $cat_id)) {    // if empty tree => no feed
+        $slice = AA_Slice::getModule($slice_id);
+        if ($tree = $slice->getFeedTree($content)) {    // if empty tree ([]) => no feed
             // now we have the feeding tree in $tree array
             // feed item to all destination slices
             $items_id[$slice_id] = $item_id;

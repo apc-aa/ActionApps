@@ -196,8 +196,8 @@ class AA_Debug {
 
     // we return true, just to be able to write:
     //   AA::$debug&2 && AA::$dbg->info("OK") && exit;
-    function log(...$v): bool { $this->_do('log',     $v); return true;}
-    function info(...$v): bool { $this->_do('info',    $v); return true;}
+    function log(...$v): bool { $this->tracepoint('log', $v[0]); $this->_do('log',     $v); return true;}
+    function info(...$v): bool { $this->tracepoint('info', $v[0]); $this->_do('info',    $v); return true;}
     function warn(...$v): bool { $this->tracepoint('warn', $v[0]); $this->_do('warn',    $v); return true;}
     function error(...$v): bool { $this->tracepoint('error', $v[0]); $this->_do('error',   $v); return true;}
 
@@ -220,6 +220,9 @@ class AA_Debug {
 
     function tracestart($func, $text='') {
         $txt = AA::$debug&128 ? $text : substr($text,0,200);
+        if (AA::$debug&256) {
+            $txt .= "\n<br>".AA_Log::backtrack();
+        }
         if ($func=='Query') {
             $this->_check_repeated($text);
         }
@@ -242,21 +245,23 @@ class AA_Debug {
         $this->_calls[]      = [count($this->_tracestack), $func, DB_AA::$_instances_no.' '.substr($text,0,200), strlen($text),microtime(true), microtime(true),'',0];
     }
 
-    function basic_stat() {
+    function basic_stat(): string {
         global $spareDBs;
+        $ret = '<table class=aa-stat>';
+
         $mem_usage = sprintf('%.3g',(memory_get_usage() / (1024*1024)));
         $mem_peak  = sprintf('%.3g',(memory_get_peak_usage() / (1024*1024)));
 
-        echo '<br>Page generation time: '. sprintf('%.3g',timestartdiff());
-        echo "<br>Memory usage (actual): $mem_usage MiB";
-        echo "<br>Memory usage (peak): $mem_peak MiB";
-        echo '<br>Dababase instances: '. DB_AA::$_instances_no;
-        echo '<br>  (spareDBs): '. count($spareDBs);
+        $ret .= '<tr><th>Page generation time</th><td>'. sprintf('%.3g',timestartdiff()).'</td></tr>';
+        $ret .= "<tr><th>Memory usage (actual)</th><td>$mem_usage MiB</td></tr>";
+        $ret .= "<tr><th>Memory usage (peak)</th><td>$mem_peak MiB</td></tr>";
+        $ret .= '<tr><th>Dababase instances</th><td>'. DB_AA::$_instances_no.'</td></tr>';
+        $ret .= '<tr><th>(spareDBs)</th><td>'. count($spareDBs).'</td></tr>';
+        return $ret.'</table>';
     }
 
-    function duration_stat() {
-        
-        echo '
+    function duration_stat(): string {
+        $ret = '
 <style>
     table.aa-stat {
       width: 100%;
@@ -274,39 +279,43 @@ class AA_Debug {
 
         $row    = [];
         $sumsum = 0;
+        $i = 0;
         foreach($this->_duration as $func => $times) {
             $sumsum += ($sum = 1000*array_sum($times));
-            $row['a'.sprintf('%f',$sum/100000.0).'-'.$func] .= '<tr><td>'.safe($func).'</td><td class=num>'.count($times).'</td><td class=num>'.sprintf('%.4f',$sum/count($times)).'</td><td class=num>'.sprintf('%.4f',$sum).'</td><td class=num>'.sprintf('%.4f',1000*max($times)).'</td><td class=num>'.sprintf('%.4f',1000*min($times)).'</td></tr>';
+            $row['a'.sprintf('%f',$sum/100000.0).'-'.$func. ++$i] .= '<tr><td>'.safe($func).'</td><td class=num>'.count($times).'</td><td class=num>'.sprintf('%.4f',$sum/count($times)).'</td><td class=num>'.sprintf('%.4f',$sum).'</td><td class=num>'.sprintf('%.4f',1000*max($times)).'</td><td class=num>'.sprintf('%.4f',1000*min($times)).'</td></tr>';
         }
         krsort($row);
-        echo '<table class=aa-stat><tr><th>function</th><th>called</th><th>avg</th><th>sum</th><th>max</th><th>min</th></tr>'.join('',$row).'<tr><th>Sum</th><th></th><th></th><th>'.$sumsum.'</th><th></th><th></th></tr></table>';
+        $ret .= '<table class="aa-stat sortable"><thead><tr><th>function</th><th data-sort=integer>called</th><th data-sort=float>avg</th><th data-sort=float>sum</th><th data-sort=float>max</th><th data-sort=float>min</th></tr></thead><tbody>'.join('',$row).'</tbody><tfoot><tr><th data-sort=float>Sum</th><th></th><th></th><th>'.$sumsum.'</th><th></th><th></th></tr></tfoot></table>';
 
 
         // repeated queries;
         $row    = [];
+        $i = 0;
         foreach($this->_repeated as $query => $times) {
             if ($times>1) {
-                $row['a' . sprintf('%.09d', $times)] = '<tr><td class=num>' . safe($times) . '</td><td>' . safe($query) . '</td></tr>';
+                $row['a' . sprintf('%.09d', $times). ++$i] = '<tr><td class=num>' . safe($times) . '</td><td>' . safe($query) . '</td></tr>';
             }
         }
         if ($row) {
             krsort($row);
-            echo '<table class=aa-stat><tr><th>used x times</th><th>query</th></tr>' . join('', $row) . '<tr></table>';
+            $ret .= '<table class="aa-stat sortable"><tr><th data-sort=integer>used x times</th><th>query</th></tr>' . join('', $row) . '<tr></table>';
         }
 
         // longest queries;
         $row    = [];
+        $i = 0;
         foreach($this->_calls as $call) {
             if ($call[1]=="Query") {
-                $row['a' . sprintf('%012.5f',($call[5]-$call[4])*1000.0)] = '<tr><td class=num>'.sprintf('%.4f',($call[5]-$call[4])*1000.0) . '</td><td>' . safe($call[2]) . '</td><td class=num>' . safe($call[6]) . '</td></tr>';
+                $time = sprintf("%.4f", (1000*($call[4]-$_SERVER['REQUEST_TIME_FLOAT'])));
+                $row['a' . sprintf('%012.5f',($call[5]-$call[4])*1000.0). ++$i] = '<tr><td class=num>'.$i.'</td><td class=num>'.$time. '</td><td class=num>'.sprintf('%.4f',($call[5]-$call[4])*1000.0) . '</td><td>' . safe($call[2]) . '</td><td class=num>' . safe($call[6]) . '</td></tr>';
             }
         }
         if ($row) {
             krsort($row);
-            echo '<table class=aa-stat><tr><th>time</th><th>query</th><th>out</th></tr>' . join('', $row) . '<tr></table>';
+            $ret .= '<table class="aa-stat sortable"><tr><th data-sort=integer>#</th><th data-sort=float>time</th><th data-sort=float>duration</th><th>query</th><th data-sort=integer>out</th></tr>' . join('', $row) . '<tr></table>';
         }
 
-        echo '<table class=aa-stat><tr><th>time</th><th>duration</th><th>function</th><th>in</th><th>out</th></tr>';
+        $ret .= '<table class="aa-stat sortable"><tr><th data-sort=float>time</th><th data-sort=float>duration</th><th>function</th><th>in</th><th data-sort=integer>out</th></tr>';
 
         $global_start = $this->_calls[0][4];
         $global_end   = $this->_calls[count($this->_calls)-1][5];
@@ -327,13 +336,13 @@ class AA_Debug {
             $rel_dur   = round(100*($dur)/$global_dur,2);
             $func    = str_repeat('.&nbsp;',$level).safe($call[1]);
             $dur = sprintf("%.4f", 1000*$dur);
-            $expand = ($next_level>$level) ? '<button onclick="AA_DbgToggleRows(this)">'.($level>0 ? '-':'+').'</button>' : '';
+            $expand = ($next_level>$level) ? '<button type=button onclick="AA_DbgToggleRows(this)">'.($level>0 ? '-':'+').'</button>' : '';
             $linediv = "<div class=aa-line style=\"left: $rel_start%; width: $rel_dur%; background-color: $color\"></div>";
-            echo "<tr title=\"{$func} ($dur)\" class=l".str_repeat('_', $level). $style."><td class=num>{$linediv}{$time}</tdnum><td class=num>$dur</td><td class=aa-dbgtoggle>$func{$expand}</td><td>".safe($call[2]).( ($call[3]>200 AND !AA::$debug&128) ? '..+'.($call[3]-200) :'' ).'</td><td>'.safe($call[6]).($call[7]>20? '..+'.($call[7]-20) :'' ).'</td></tr>';
+            $ret .= "<tr title=\"{$func} ($dur)\" class=l".str_repeat('_', $level). $style."><td class=num>{$linediv}{$time}</tdnum><td class=num>$dur</td><td class=aa-dbgtoggle>$func{$expand}</td><td>".safe($call[2]).( ($call[3]>200 AND !AA::$debug&128) ? '..+'.($call[3]-200) :'' ).'</td><td>'.safe($call[6]).($call[7]>20? '..+'.($call[7]-20) :'' ).'</td></tr>';
         }
-        echo '</table>';
+        $ret .= '</table>';
 
-        echo <<<EOF
+        $ret .= <<<EOF
               <script>
                 function AA_DbgToggleRows(button) {
                     let isVisible = (button.textContent === '-');
@@ -348,7 +357,10 @@ class AA_Debug {
               </script>
 EOF;
 
-        AA::Contentcache()->duration_stat();
+        $ret .= AA::Contentcache()->duration_stat();
+        $ret .= StrExp('sortable');
+
+        return $ret;
     }
 
     function _check_repeated($txt) {
@@ -483,7 +495,7 @@ class AA {
     }
 }
 
-AA::$debug = (int)($_GET['debug'] ?: $_COOKIE['aa_debug']);  // aa_debug used in admin interface - item manager - left menu
+AA::$debug = (int)($_REQUEST['debug'] ?: $_COOKIE['aa_debug']);  // aa_debug used in admin interface - item manager - left menu
 AA::$dbg   = (AA::$debug[0] == 'f') ? new AA_Debug_Firephp() : ((AA::$debug[0] == 'c') ? new AA_Debug_Console() : new AA_Debug_Console());
 
 // This pair of functions remove the guessing about which of $db $db2

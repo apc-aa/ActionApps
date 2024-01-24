@@ -30,41 +30,28 @@
 */
 
 use AA\IO\DB\DB_AA;
+use AA\Later\Toexecute;
 
 require_once __DIR__ . "/util.php";
-
-// we tried to remove all global $db, so let's try to comment out following global object
-// honza 2015-12-30
-// is_object( $db ) || ($db = getDB());
 
 class AA_Mysqlauth {
 
     // --------------------------------------------------------------------------
     /** AA_Mysqlauth::deleteReaders function
     *   Updates the mysql_auth tables <em>auth_user</em> and <em>auth_group</em>.
-    *   @param array $item_ids non-quoted packed IDs
+    *   @param zids $zids non-quoted packed IDs
     *   @param $slice_id
     */
-    static function deleteReaders( $item_ids, $slice_id ) {
-        $db = getDB();
-        $db->query ("SELECT type, auth_field_group FROM slice WHERE id='".q_pack_id( $slice_id )."'");
-        $db->next_record();
-        if ($db->f("type") != "ReaderManagement" || ! $db->f("auth_field_group")) {
-            freeDB($db);
+    static function deleteReaders( $zids, $slice_id ) {
+        if (!AA_Slice::getModuleProperty($slice_id,'auth_field_group') OR (AA_Slice::getModuleProperty($slice_id,'type') != "ReaderManagement")) {
             return;
         }
-        $db->query ("
-            SELECT text FROM content
-            INNER JOIN item ON content.item_id = item.id
-            WHERE field_id = '".FIELDID_USERNAME."'
-            AND item.id IN ('".join_and_quote( "','", $item_ids)."')");
-        while ($db->next_record()) {
-            $usernames[] = $db->f("text");
+
+        $usernames = DB_AA::select('text', "SELECT `text` FROM `content`, `item`", [['content.item_id', 'item.id', 'j'], ['item.id', $zids->longids(), 'l'], ['content.field_id', FIELDID_USERNAME]]);
+        if ($usernames) {
+            DB_AA::delete('auth_user', [['username', $usernames]]);
+            DB_AA::delete('auth_group', [['username', $usernames]]);
         }
-        $where = "WHERE username IN ('".join_and_quote( "','", $usernames)."')";
-        $db->query("DELETE FROM auth_user ".$where);
-        $db->query("DELETE FROM auth_group ".$where);
-        freeDB($db);
     }
 
     // --------------------------------------------------------------------------
@@ -74,9 +61,8 @@ class AA_Mysqlauth {
     *   @param $slice_id
     */
     static function updateReaders( $item_ids, $slice_id ) {
-        $sl_type             = AA_Slice::getModuleProperty($slice_id,'type');
         $sl_auth_field_group = AA_Slice::getModuleProperty($slice_id,'auth_field_group');
-        if (($sl_type != "ReaderManagement") OR !$sl_auth_field_group) {
+        if (!$sl_auth_field_group OR (AA_Slice::getModuleProperty($slice_id,'type') != "ReaderManagement")) {
             return;
         }
 
@@ -95,7 +81,6 @@ class AA_Mysqlauth {
                 }
             }
         }
-        AA_Mysqlauth::maintenance();
     }
 
     /** AA_Mysqlauth::getReadersData function
@@ -276,22 +261,21 @@ class AA_Mysqlauth {
     }
 
     // --------------------------------------------------------------------------
-    /** AA_Mysqlauth::select function
-     * @param $auth_field_group
-     * @return string
-     */
-    function select($auth_field_group) {
-        return "
-        SELECT `publish_date`, `expiry_date`, `status_code`, `groups`.text AS groups, username.text AS username, password.text AS password
-        FROM item, content AS groups, content AS username, content AS password
-        WHERE groups.item_id = item.id
-          AND groups.field_id = '".$auth_field_group."'
-          AND username.item_id = item.id
-          AND username.field_id = '".FIELDID_USERNAME."'
-          AND password.item_id = item.id
-          AND password.field_id = '".FIELDID_PASSWORD."'";
-    }
-
+    //    /** AA_Mysqlauth::select function
+    //     * @param $auth_field_group
+    //     * @return string
+    //     */
+    //    function select($auth_field_group) {
+    //        return "
+    //        SELECT `publish_date`, `expiry_date`, `status_code`, `groups`.text AS groups, username.text AS username, password.text AS password
+    //        FROM item, content AS groups, content AS username, content AS password
+    //        WHERE groups.item_id = item.id
+    //          AND groups.field_id = '".$auth_field_group."'
+    //          AND username.item_id = item.id
+    //          AND username.field_id = '".FIELDID_USERNAME."'
+    //          AND password.item_id = item.id
+    //          AND password.field_id = '".FIELDID_PASSWORD."'";
+    //    }
     // --------------------------------------------------------------------------
 
     /** AA_Mysqlauth::changeGroups function
@@ -328,3 +312,16 @@ class AA_Mysqlauth {
         }
     }
 }
+
+class AA_Mysqlauth_Maintain implements \AA\Later\LaterInterface {
+
+    public function toexecutelater($params= []) {
+        AA_Mysqlauth::maintenance();
+    }
+
+    function schedule(): void {
+        AA::$debug&32 && AA::$dbg->info('AA_Mysqlauth_Maintain::schedule');
+        (new Toexecute)->laterOnce($this, [], self::class, 100, now()+2, true); // when deleting many items (readers), we need to wait for the end of the transaction to run it only once
+    }
+}
+

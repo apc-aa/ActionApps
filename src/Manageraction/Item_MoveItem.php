@@ -2,8 +2,10 @@
 
 namespace AA\Manageraction;
 
+use AA;
 use AA\Manager;
 use AA_Value;
+use ItemContent;
 use zids;
 
 /**
@@ -34,24 +36,35 @@ class Item_MoveItem extends AbstractManageraction {
 
 
     /**
-     * @param $zids    zids
-     * @param $to_bin  int
+     * @param zids   $zids
+     * @param int    $to_bin
+     * @param string $slice_id
+     * @return int
      */
-    function doMove($zids, $to_bin) {
+    protected static function doMove($zids, $to_bin, string $slice_id): int {
         $ids = $zids->longids();
+
+        $newcontent4id = new ItemContent();
+        $newcontent4id->setAaValue('status_code.....', new AA_Value($to_bin));
+        $newcontent4id->setSliceID($slice_id);
+
+        $updated_items = 0;
         foreach ($ids as $id) {
-            UpdateField($id, 'status_code.....', new AA_Value($to_bin), [
-                true,
-                true,
-                true,
-            ]);   // invalidate cache, feed, throw events
+            // older and slower approach - needs GetItemContent() ...
+            // UpdateField($id, 'status_code.....', $val, [false, false, false]);   // invalidate cache, feed, throw events
+            $newcontent4id->setItemID($id);
+            if ($newcontent4id->storeItem( 'update', [false, true, true] )) {    // !invalidatecache, feed, throw_events
+                ++$updated_items;
+            }
         }
+        return $updated_items;
     }
 
     /** @inheritDoc */
     function perform(Manager $manager, zids $item_zids, $action_param) {
         $sid = $manager->getModuleId();
-        Item_MoveItem::doMove($item_zids->itemFilter($sid), $this->to_bin);
+        Item_MoveItem::doMove($item_zids->itemFilter($sid), $this->to_bin, $sid);
+        AA::Pagecache()->invalidateFor($sid);
         return false;                                     // OK - no error
     }
 

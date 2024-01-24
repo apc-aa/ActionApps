@@ -63,8 +63,8 @@ class Item_DeleteTrash extends AbstractManageraction {
 
         // mimo enabled -- problem?
 
-        $longids = $items_to_delete->longids(); // we need variable because of pass by reference
-        aaevent::singleton()->comes('ITEMS_BEFORE_DELETE', $slice_id, 'S', $longids);
+        //$longids = $items_to_delete->longids(); // we need variable because of pass by reference
+        aaevent::singleton()->comes('ITEMS_BEFORE_DELETE', $slice_id, 'S', $items_to_delete);
 
         // delete content of all fields
         AA_Items::deleteItems($items_to_delete);

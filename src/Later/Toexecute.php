@@ -61,17 +61,6 @@ class Toexecute {
 
     const TOEXECUTE_USER_TASK_TIME =  2000000000;
 
-     /** global_instance function
-     *  "class function" obviously called as AA\Later\Toexecute::global_instance();
-     *  This function makes sure, there is global instance of the class
-     */
-    function global_instance()
-    {
-        if (!isset($GLOBALS['toexecute'])) {
-            $GLOBALS['toexecute'] = new Toexecute;
-        }
-    }
-
     /** later function
      *  Stores the object and params to the database for later execution.
      *  Such task is called from cron (the order depends on priority)
@@ -111,31 +100,42 @@ class Toexecute {
     /** before the task is planed, it check, if it is not already scheduled
      *  (from previous time). The task is considered as planed, if the SELECTORs
      *  are the same
-     * @param object $object
-     * @param array $params
-     * @param string $selector
-     * @param int $priority
+     * @param object   $object
+     * @param array    $params
+     * @param string   $selector
+     * @param int      $priority
      * @param int|null $time
+     * @param bool     $just_once - this task (based on selector) is (re)planed only once in script execution (AA_Mysqlauth_Maintain we want to schedule once - not on every deleted item))
      */
-    function laterOnce(object $object, array $params, string $selector, int $priority = 100, ?int $time = null)
-    {
-        if (!self::scheduledTime($selector)) {
-            //if ( !GetTable2Array("SELECT selector FROM toexecute WHERE selector='".quote($selector)."' AND priority > 0", 'aa_first', 'aa_mark')) {
+    function laterOnce(object $object, array $params, string $selector, int $priority = 100, ?int $time = null, bool $just_once=false) {
+        static $scheduled = [];  // selector => true for tasks where $just_once is true
+
+        if ($just_once) {
+            if (isset($scheduled[$selector])) {
+                return;
+            } else {
+                $scheduled[$selector] = true;
+            }
+        }
+
+        $time = (int)$time < time() ? time() : $time; // the same as in later()
+        $task = self::scheduledTask($selector);  // ['id' => $id, 'time' => $time]
+        if (!$task['id']) {
             $this->later($object, $params, $selector, $priority, $time);
+        } elseif ( $task['time'] > $time) {
+            // we need it run earlier
+            DB_AA::update('toexecute', [['execute_after' => $time]], [['id', $task['id'], 'i']]);
         }
     }
 
-    /** returns scheduled time or false */
-    static function scheduledTime($selector)
-    {
-        return DB_AA::select1('execute_after', "SELECT execute_after FROM toexecute", [['selector', $selector], ['priority', 0, '>']]);
+    /** @returns array scheduled ['id'=>.., 'time'=>..] or ['id'=>false, 'time'=>false]
+     *  @usage  ['id' => $id, 'time' => $time] = self::scheduledTask($selector);
+     */
+    static function scheduledTask($selector): array {
+        $ret = DB_AA::select1([], "SELECT `id`,`execute_after` FROM `toexecute`", [['selector', $selector], ['priority', 0, '>']]);
+        return $ret ?: ['id'=>false, 'time'=>false];
     }
 
-    /** returns id of scheduled task */
-    static function scheduledTaskId($selector)
-    {
-        return DB_AA::select1('id', "SELECT id FROM toexecute", [['selector', $selector], ['priority', 0, '>']]);
-    }
 
     /** User task queue - we use it for splitting one long task (which would take
      *  ages) into subtasks, so it could be executed separately - one after

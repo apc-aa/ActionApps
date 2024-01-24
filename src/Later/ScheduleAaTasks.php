@@ -47,6 +47,8 @@ class ScheduleAaTasks implements LaterInterface
         $computedfields_updater = new ComputedfieldsUpdater;
         $computedfields_updater->plan();
 
+        $toexecute->laterOnce(new \AA_Mysqlauth_Maintain(), [], 'AA_Mysqlauth_Maintain', 10, now() + (60*60*24));
+
         // we plan this tasks for future (tomorrow)
         // it should be enough to clean the logs once a day
 

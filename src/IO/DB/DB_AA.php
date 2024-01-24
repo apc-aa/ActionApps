@@ -141,8 +141,6 @@ class DB_AA extends AbstractDB
         $query .= is_array($where) ? ' ' . DB_AA::makeWhere($where) : '';
         $query .= is_array($order) ? ' ' . DB_AA::makeOrder($order) : '';
 
-        AA::$debug & 2 && AA::$dbg->log("$query");
-
         $db->query($query);
 
         $ret = [];

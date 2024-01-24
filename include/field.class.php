@@ -706,6 +706,16 @@ class AA_Fields implements Iterator, Countable {
         $this->lazy_loaded_no = 0;
     }
 
+    /** use instead of constructor - there was multiple AA_Fields for the same slice - in getSearchFields() */
+    static function factoryFor($master_id, $collection = 0): self {
+        static $field_sets = [];
+        $key = $master_id . '_' . $collection;
+        if (!isset($field_sets[$key])) {
+            $field_sets[$key] = new self($master_id, $collection);
+        }
+        return $field_sets[$key];
+    }
+
     /** load function
      * @param string $fid
      */
@@ -917,7 +927,7 @@ class AA_Fields implements Iterator, Countable {
             if ($field_type=='relation') {
                 $field_type = 'constants';
                 if ($related_cnt) {
-                    $related_fields = (new AA_Fields($values_slice_or_const))->getSearchfields(0);
+                    $related_fields = AA_Fields::factoryFor($values_slice_or_const)->getSearchfields(0);
                     $related += 1000;
                     $opt_group = $field_name;
 
@@ -958,10 +968,11 @@ class AA_Fields implements Iterator, Countable {
 
         if ($related_cnt) {
 
-            // add all fields of slices which points to this sice
+            // add all fields of slices which points to this slice
+            // this query is slow, but hard to improve
             $related_fields = DB_AA::select([], 'SELECT id, name, LOWER(HEX(slice_id)) as sid FROM `field`', [['input_show_func','___:#sLiCe-' . $this->master_id . '%','LIKE']]);
             foreach ($related_fields as $rf_def) {
-                $related_fields = (new AA_Fields($rf_def['sid']))->getSearchfields(0);
+                $related_fields = AA_Fields::factoryFor($rf_def['sid'])->getSearchfields(0);
                 $related += 1000;
                 $opt_group = AA_Module::getModuleName($rf_def['sid']) . ' / ' . $rf_def['name'];
                 // add "-- any text field --" search option

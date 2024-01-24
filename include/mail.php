@@ -402,6 +402,7 @@ function html2text($html, $encoding='utf-8') {
         "'[\r\n][ \t]+'",
         "'[\r\n]*'",
         "'<hr>'si",
+        "'<li>'si",
         "'</tr>'si",
         "'</table>'si",
         "'<br[^>]{0,2}>'si",   // <br> as well as <br />
@@ -424,6 +425,7 @@ function html2text($html, $encoding='utf-8') {
         "",
         "",
         "\n------------------------------------------------------------\n",
+        "\n  * ",
         "\n",
         "\n",
         "\n",   // <br> as well as <br />

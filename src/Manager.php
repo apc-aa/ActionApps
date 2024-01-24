@@ -1017,6 +1017,7 @@ class Manager extends AA_Storable {
                       </script>';
             }
             $ret .=  '</div>';
+//            $ret .=  '<input type="hidden" name="debug" value="511">';
             $ret .=  '<div class="aa_manager_actions_all" style="display: none">'._m("No item selected. Perform action for all filtered items? ").'<input type="hidden" name="aa_akce_all" value=""><button class="aa-button" onclick="AA_$N(\'aa_akce_all\').value=1;MarkedActionGo();">'._m('Run for %1 items',[$this->scroller->getItemCount()]).'</button></div>';
             $ret .=  "<div id=\"markedactionparams\"></div>";
             $ret .= '</div>';

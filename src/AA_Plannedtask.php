@@ -138,8 +138,8 @@ class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedI
         $task_id = $content->getId();
         switch ($info) {
             case 'scheduledto':
-                $time = Toexecute::scheduledTime(self::toexecuteSelector($task_id));
-                return '<span title="task.id:' . Toexecute::scheduledTaskId(self::toexecuteSelector($task_id)) . '">' . ($time ? date('Y-m-d H:i:s', $time) : '--') . '</span>';
+                $task = Toexecute::scheduledTask(self::toexecuteSelector($task_id));
+                return '<span title="task.id:' . $task['id'] . '">' . ($task['time'] ? date('Y-m-d H:i:s', $task['time']) : '--') . '</span>';
             case 'computedtime':
                 $task = AA_Object::load($task_id, 'AA_Plannedtask');
                 $time = $task->nexttime();
@@ -216,16 +216,9 @@ class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedI
         return $form;
     }
 
-    static public function executeForEvent($module_id, $event_id, $item_id)
-    {
-        $aa_set = new AA_Set();
-        $aa_set->setModules($module_id);
-        $aa_set->addCondition(new AA_Condition('event', '==', $event_id));
-
-        $zids = AA_Object::querySet('AA_Plannedtask', $aa_set);
-
-        foreach ($zids as $id) {
-            $task = AA_Object::load($id, 'AA_Plannedtask');
+    static public function executeForEvent(string $module_id, string $event_id, string $item_id) {
+        $tasks = AA::Contentcache()->get_result(['AA_Plannedtask', 'getModuleTasks'], [$module_id, $event_id], '', true);
+        foreach ($tasks as $task) {
             if (is_long_id($item_id)) {
                 $task->setProperty('item_id', $item_id);
             }
@@ -236,6 +229,27 @@ class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedI
             }
         }
     }
+
+    /** get tasks for module and event (used mainly for caching - when moved multiple items to trash...))
+     * @param string $module_id
+     * @param string $event_id
+     * @return AA_Plannedtask[]
+     */
+    static public function getModuleTasks($module_id, $event_id): array {
+        $aa_set = new AA_Set();
+        $aa_set->setModules([$module_id]);
+        $aa_set->addCondition(new AA_Condition('event', '==', $event_id));
+
+        $zids = AA_Object::querySet('AA_Plannedtask', $aa_set);
+        $tasks = [];
+
+        foreach ($zids as $id) {
+            $tasks[] = AA_Object::load($id, 'AA_Plannedtask');
+
+        }
+        return $tasks;
+    }
+
 }
 
 

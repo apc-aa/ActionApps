@@ -306,7 +306,7 @@ class inputform {
         // you can add some html code by user profiles, below the form
         echo get_if($profile->getProperty('ui_inputform', $this->form4update ? 'edit_bottomhtml' : 'add_bottomhtml'), '');
 
-        AA::$debug&4 && AA::$dbg->duration_stat();
+        if (AA::$debug&4) { echo AA::$dbg->duration_stat(); }
 
         echo $html_end;
     }

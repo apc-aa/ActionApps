@@ -946,7 +946,7 @@ class AA_Transformator implements \AA\Later\LaterInterface {
 
             // we disabled events, so at the end we should update auth data
             // for Reader Management slice
-            AA_Mysqlauth::maintenance();
+            (new AA_Mysqlauth_Maintain())->schedule();  // plan or replan the maintenance to be run earlier
         }
         return $updated_items;
     }

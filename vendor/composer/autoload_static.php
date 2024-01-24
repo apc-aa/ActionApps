@@ -436,6 +436,7 @@ class ComposerStaticInit43e15006db6c3041e7b8c7c57cf04d54
         'AA_Modulesettings_Site' => __DIR__ . '/../..' . '/include/slice.class.php',
         'AA_Modulesettings_Slice' => __DIR__ . '/../..' . '/include/slice.class.php',
         'AA_Mysqlauth' => __DIR__ . '/../..' . '/include/auth.php',
+        'AA_Mysqlauth_Maintain' => __DIR__ . '/../..' . '/include/auth.php',
         'AA_Object' => __DIR__ . '/../..' . '/include/statestore.php',
         'AA_Operators' => __DIR__ . '/../..' . '/include/searchlib.php',
         'AA_Password_Manager_Reader' => __DIR__ . '/../..' . '/include/stringexpand.php',

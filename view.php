@@ -140,7 +140,7 @@ if ($cacheentry = AA::Pagecache()->getPage($cache_key, $nocache & 1)) {   // noc
 AA::$debug&2 && AA::$dbg->groupend("/view.php", "Completed view");
 
 if (AA::$debug) {
-    AA::$dbg->duration_stat();
+    echo AA::$dbg->duration_stat();
 }
 
 exit;

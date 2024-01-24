@@ -356,7 +356,7 @@ class zids implements Iterator, ArrayAccess, Countable {
             return $this->clear('l');
         }
         $where = [['slice_id',$slice_id,'l'],$this->getDbWhereArray()];
-        return $this->clear('l')->add(DB_AA::select('', "SELECT LOWER(HEX(id)) FROM item", $where));
+        return $this->clear('l')->add(DB_AA::select('', "SELECT LOWER(HEX(id)) FROM `item`", $where));
     }
 
     /** slice function
@@ -523,6 +523,16 @@ class zids implements Iterator, ArrayAccess, Countable {
             $ret[] = new zids($chunk, $this->type);
         }
         return $ret;
+    }
+
+    /** creates string id - it starts with ' and ideally one letter identifier of string type, then string id and possibly type or class or selector
+     * @param string $type - ideally one letter identifier of string type - like 'C' for AA Class object
+     * @param string $id   - any alphanumeric string with id (not containing '/')
+     * @param string $sel  - possibly some kind of type or class or selector - in context of $type the $id+$sel is the unique identifier - later we can add sel2, sel3, ... separated by /
+     * @return string
+     */
+    public static function sting_id(string $type, string $id, string $sel=''): string {
+        return "'{$type}/{$id}". (strlen($sel) ? "/{$sel}" : '');
     }
 
     /** Iterator interface */

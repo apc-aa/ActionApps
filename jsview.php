@@ -129,7 +129,7 @@ if ($cacheentry = AA::Pagecache()->getPage($cache_key, $nocache & 1)) {  // noca
 AA::$debug&2 && AA::$dbg->groupend("/jsview.php", "Completed view");
 
 if (AA::$debug) {
-    AA::$dbg->duration_stat();
+    echo AA::$dbg->duration_stat();
 }
 
 exit;

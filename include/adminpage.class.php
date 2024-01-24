@@ -163,6 +163,9 @@ class AA_Adminpageutil {
             $ret = '</form>';
         }
 
+        if (AA::$debug&2) { $ret .= AA::$dbg->basic_stat();    }
+        if (AA::$debug&4) { $ret .= AA::$dbg->duration_stat(); }
+
         return $ret. '</div></div>{generate:FOOT}</body></html>';
     }
 

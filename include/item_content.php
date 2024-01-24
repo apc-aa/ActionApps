@@ -1162,6 +1162,9 @@ class ItemContent extends AA_Content {
         if (! ($slice_id     = $this->getSliceID()))            {return false;}
         if (! ($slice        = AA_Slice::getModule($slice_id))) {return false;}
         if (! count($fields  = $slice->getFields()))            {return false;}
+
+        AA::$debug&32 && AA::$dbg->tracestart('storeItem', "$mode - S:$slice_id");
+
         $silent       = false;           // do not perform any additional operation (feed, invalidate, compute_fields, ... if not specified by flags)
 
         $function_params = [$mode, join('-',(array)$flags), $context];  // just for AA_Log
@@ -1202,13 +1205,14 @@ class ItemContent extends AA_Content {
             /** @noinspection PhpMissingBreakStatementInspection */
             case 'insert_if_new': if (!$this->getItemID()) {
                                       ItemContent::lastErr(ITEMCONTENT_ERROR_NO_ID, _m("No Id specified (%1 - %2)", [$this->getItemID(), $this->getValue('headline........')]));  // set error code
-                                      if ($GLOBALS['errcheck']) huhl(ItemContent::lastErrMsg());
+                                      AA::$debug&32 && AA::$dbg->traceend('storeItem', ItemContent::lastErrMsg());
                                       return false;
                                   }
                                   if (itemIsDuplicate($this->getItemID())) {
                                       ItemContent::lastErr(ITEMCONTENT_ERROR_DUPLICATE, _m("Duplicated ID - skiped (%1 - %2)", [$this->getItemID(), $this->getValue('headline........')]));  // set error code
                                       if ($GLOBALS['errcheck']) huhl(ItemContent::lastErrMsg());
                                       if ($GLOBALS['debugfeed'] >= 4) print("\n<br>skipping duplicate: ".$this->getValue('headline........'));
+                                      AA::$debug&32 && AA::$dbg->traceend('storeItem', 'skipping duplicate'.ItemContent::lastErrMsg());
                                       return false;
                                   }
                                   $mode ='insert';
@@ -1228,12 +1232,14 @@ class ItemContent extends AA_Content {
         if (!$id) {
             ItemContent::lastErr(ITEMCONTENT_ERROR_BAD_PARAM, _m("StoreItem for slice %1 - failed parameter check for id = '%2'", [$slice->getName(), $id]));  // set error code
             if ($GLOBALS['errcheck']) huhl(ItemContent::lastErrMsg());
+            AA::$debug&32 && AA::$dbg->traceend('storeItem', ItemContent::lastErrMsg());
             return false;
         }                                       
 
         // do not store item, if status_code==SC_NO_BIN
         if ($this->getStatusCode() == SC_NO_BIN) {
             ItemContent::lastErr(ITEMCONTENT_ERROR_NO_ID, _m("No Status code"));
+            AA::$debug&32 && AA::$dbg->traceend('storeItem', ItemContent::lastErrMsg());
             return false;
         }
 
@@ -1366,7 +1372,7 @@ class ItemContent extends AA_Content {
         AA_Items::getItem($zid, $slice->getProperty('reading_password'), true);
 
         if ($feed) {
-            FeedItem($id);
+            FeedItem($itemContent);
         }
 
         $historylog = $slice->getProperty('historylog');
@@ -1389,6 +1395,7 @@ class ItemContent extends AA_Content {
             }
         }
 
+        AA::$debug&32 && AA::$dbg->traceend('storeItem', $id);
         return $id;
     } // end of storeItem()
 

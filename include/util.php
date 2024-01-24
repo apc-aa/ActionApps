@@ -1162,11 +1162,11 @@ function HtmlPageEnd() {
     global $slices4cache;
     AA::$debug&2 && AA::$dbg->info('time: '. timestartdiff());
     if (AA::$debug&16) {
-        AA::$dbg->basic_stat();
+        echo AA::$dbg->basic_stat();
         if ($slices4cache) {
             echo '<br>UsedModules:<br> - ' . join('<br> - ', array_map(fn ($mid) => AA_Module::getModuleName($mid), $slices4cache));
         }
-        AA::$dbg->duration_stat();
+        echo AA::$dbg->duration_stat();
     }
 
   echo "
@@ -1549,9 +1549,9 @@ class AA_Contentcache {
      *                     then the $function parameter should be array
      *                     (see http://php.net/manual/en/function.call-user-func.php)
      *                     For static class methods:
-     *                        $result = AA::Contentcache()->get_result(array('Classname', 'function_name'), array(param1, param2));
+     *                        $result = AA::Contentcache()->get_result(['Classname', 'function_name'], [param1, param2]);
      *                     For instance methods:
-     *                        $result = AA::Contentcache()->get_result(array($this, 'function_name'), array(param1, param2));
+     *                        $result = AA::Contentcache()->get_result([$this, 'function_name'], [param1, param2]);
      * @param $params - array of function's parameters
      * @param $additional_params - string
      *                   - special param for cache - it is not passed to the
@@ -1560,8 +1560,8 @@ class AA_Contentcache {
      *                     only on its parameters, but also on some (global?) variable
      * @return mixed
      */
-    function get_result( $function, $params= [], $additional_params='' ) {
-        return $this->_get_result(get_hash(func_get_args()), $function, $params, $this->callable2ident($function));
+    function get_result( $function, $params= [], $additional_params='', $stable=false ) {
+        return $this->_get_result(get_hash($function, $params, $additional_params), $function, $params, $this->callable2ident($function), $stable);
     }
 
     /**
@@ -1599,14 +1599,19 @@ class AA_Contentcache {
      * @param $ident
      * @return mixed
      */
-    function _get_result($key, $function, $params, string $ident) {
-        if ( isset( $this->content[$key]) ) {
-            $this->content[$key][2]++;
-            return $this->content[$key][0];
+    function _get_result($key, $function, $params, string $ident, $stable=false) {
+        if ($stable) { // not possible to shothand it, because of the reference
+            $content = &$this->content_stable;
+        } else {
+            $content = &$this->content;
+        }
+        if ( isset( $content[$key]) ) {
+            $content[$key][2]++;
+            return $content[$key][0];
         }
         $time = microtime(true);
         $val = call_user_func_array($function, (array)$params);
-        $this->content[$key] = [$val, microtime(true)-$time, 0, $ident];
+        $content[$key] = [$val, microtime(true)-$time, 0, $ident];
         return $val;
     }
 
@@ -1761,18 +1766,24 @@ class AA_Contentcache {
 
 
 
-    function duration_stat() {
-        echo "<br><b>contentcache</b> (".count($this->content)." rows)<br>";
-        echo '<table class=aa-stat><tr><th>id</th><th>generation time</th><th>content(length)</th><th>used</th></tr>';
-        foreach($this->content as $c) {
+    function duration_stat(): string {
+        $ret  = $this->content_stat($this->content, 'content');
+        $ret .= $this->content_stat($this->content_stable, 'content stable');
+        return $ret;
+    }
+
+    protected function content_stat(array &$content, string $name): string {
+        $ret = "<br><b>contentcache - $name</b> (".count($content)." rows)<br>";
+        $ret .= '<table class=aa-stat><tr><th>id</th><th>generation time</th><th>content(length)</th><th>used</th></tr>';
+        foreach($content as $c) {
             $val = $c[0];
             $val = is_array($val) ? '['.count($val).']' : (is_object($val) ? get_class_name($val) : (string)$val);
-            echo '<tr><td>'.safe($c[3]).'</td><td class=num>'.sprintf("%.4f",1000*$c[1]).'</td><td class=num>'.safe(substr($val,0,20)).' ('.strlen($val).')</td><td class=num>'.$c[2].'</td></tr>';
+            $ret .= '<tr><td>'.safe($c[3]).'</td><td class=num>'.sprintf("%.4f",1000*$c[1]).'</td><td class=num>'.safe(substr($val,0,20)).' ('.strlen($val).')</td><td class=num>'.$c[2].'</td></tr>';
         }
-        echo '</table>';
+        $ret .= '</table>';
 
         $stat = [];
-        foreach($this->content as $c) {
+        foreach($content as $c) {
             if ( !isset($stat[$c[3]]) ) {
                 $stat[$c[3]] = [];
             }
@@ -1783,12 +1794,12 @@ class AA_Contentcache {
             $stat[$c[3]]['hits']+=$c[2];
             $stat[$c[3]]['saved']+=$c[2]*1000*$c[1];
         }
-        echo '<table class=aa-stat><tr><th>id</th><th>cases</th><th>unused</th><th>sum gentime</th><th>sum length</th><th>sum hits</th><th>saved</th></tr>';
+        $ret .= '<table class=aa-stat><tr><th>id</th><th>cases</th><th>unused</th><th>sum gentime</th><th>sum length</th><th>sum hits</th><th>saved</th></tr>';
         foreach($stat as $key=>$c) {
-           echo '<tr><td>'.safe($key).'</td><td class=num>'.$c['cases'].'</td><td class=num>'.$c['unused'].'</td><td class=num>'.sprintf("%.4f",$c['gentime']).'</td><td class=num>'.$c['length'].'</td><td class=num>'.$c['hits'].'</td><td class=num>'.sprintf("%.4f",$c['saved']).'</td></tr>';
+            $ret .= '<tr><td>'.safe($key).'</td><td class=num>'.$c['cases'].'</td><td class=num>'.$c['unused'].'</td><td class=num>'.sprintf("%.4f",$c['gentime']).'</td><td class=num>'.$c['length'].'</td><td class=num>'.$c['hits'].'</td><td class=num>'.sprintf("%.4f",$c['saved']).'</td></tr>';
         }
-        echo '</table>';
-    }
+        return $ret.'</table>';    }
+
 // end of contentcache class
 }
 

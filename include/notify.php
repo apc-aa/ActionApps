@@ -43,7 +43,6 @@ require_once __DIR__ . "/mail.php";
  * @param string $item_id
  */
 function email_notify($slice_id, $event, $item_id) {
-    $p_slice_id = q_pack_id($slice_id);
     $slice      = AA_Slice::getModule($slice_id);
 
     // select the text templates
@@ -56,27 +55,27 @@ function email_notify($slice_id, $event, $item_id) {
 
     // $SQL    = "SELECT ${prefix}_s as s, ${prefix}_b as b FROM slice WHERE id = '$p_slice_id'";
     // $notify = GetTable2Array($SQL, 'aa_first', 'aa_fields');
-    $notify = DB_AA::select1([], "SELECT {$prefix}_s as s, {$prefix}_b as b FROM slice", [['id', $slice_id, 'l']]);
+    // $notify = DB_AA::select1([], "SELECT {$prefix}_s as s, {$prefix}_b as b FROM slice", [['id', $slice_id, 'l']]);
+    // $SQL    = "SELECT uid FROM email_notify WHERE slice_id = '$p_slice_id' AND function = '$event'";
 
-    $SQL    = "SELECT uid FROM email_notify WHERE slice_id = '$p_slice_id' AND function = '$event'";
-    $emails = GetTable2Array($SQL, '', 'uid');
 
-    if ( $notify AND $emails) {
+    if ($notify_body = $slice->getProperty($prefix . '_b')) {
+        if ($emails = DB_AA::select('uid','SELECT `uid` FROM `email_notify`',[['slice_id',$slice_id,'l'],['function',$event, 'i']])) {
+            // ignore reading password
+            $item = AA_Items::getItem(new zids($item_id), $slice->getProperty('reading_password'));
 
-        // ignore reading password
-        $item = AA_Items::getItem(new zids($item_id), $slice->getProperty('reading_password'));
+            if ($item) {
+                $body = $item->unalias($notify_body);
+                if (trim($body)) {
+                    $subject = $item->unalias($slice->getProperty($prefix . '_s'));
 
-        if ($item) {
-            $body = $item->unalias($notify['b']);
-            if (trim($body)) {
-                $subject = $item->unalias($notify['s']);
-
-                $mail = new AA_Mail();
-                $mail->setBasicHeaders(['sender'=>ALERTS_EMAIL]);
-                $mail->setSubject($subject);
-                $mail->setHtml($body, html2text($body));
-                $mail->setCharset($slice->getCharset());
-                $mail->send($emails);
+                    $mail = new AA_Mail();
+                    $mail->setBasicHeaders(['sender' => ALERTS_EMAIL]);
+                    $mail->setSubject($subject);
+                    $mail->setHtml($body, html2text($body));
+                    $mail->setCharset($slice->getCharset());
+                    $mail->send($emails);
+                }
             }
         }
     }
