@@ -1938,8 +1938,7 @@ function IsSpamText($text, $tolerance=4) {
  * @param string $identifier
  * @return bool
  */
-function IsAlias($identifier): bool
-{
+function IsAlias($identifier): bool {
     return  ((substr($identifier,0,2)=='_#') AND ((strlen($identifier)==10) OR ((substr($identifier,0,3)=='_#P') AND ctype_digit((string)substr($identifier,3)))));
 }
 
@@ -1947,12 +1946,20 @@ function IsAlias($identifier): bool
  * @param string $var
  * @return bool
  */
-function IsSigInt($var): bool  // like function is_signed(),function is_number(), function is_positive(), function is_numeric(),
-{
+function IsSigInt($var): bool { // like function is_signed(),function is_number(), function is_positive(), function is_numeric(),
     if (is_int(filter_var($var, FILTER_VALIDATE_INT))) {
         return true;
     }
     return (strlen($var) AND is_int(filter_var(ltrim($var,'0'), FILTER_VALIDATE_INT)));  // the 04 is int
+}
+
+/** check, if variable could be converted to string
+ * @param string $var
+ * @return bool
+ */
+function IsStringable($var): bool { // like function is_signed(),function is_number(), function is_positive(), function is_numeric(),
+    return $var === null || is_scalar($var) || (is_object($var) && method_exists($var, '__toString'));
+    // And since PHP 8 you can replace the third condition with $var instanceof Stringable    // And since PHP 8 you can replace the third condition with $var instanceof Stringable
 }
 
 /** RestoreVariables to global context - kind of @deprecated */

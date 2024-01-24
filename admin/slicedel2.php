@@ -69,6 +69,8 @@ $err = [];      // error array (Init - just for initializing variable
 if (!AA_Module::deleteModules($deletearr)) {
     go_url(get_admin_url("slicedel.php?Msg=". urlencode(_m("No such module."))));
 }
+//echo AA::$dbg->duration_stat();
+//exit;
 
 page_close();                                // to save session variables
 

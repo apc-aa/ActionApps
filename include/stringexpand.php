@@ -7148,9 +7148,9 @@ class AA_Stringexpand {
      * @param string $slices_str  '' | 'all' | '<slice_id>-<slice_id>-...'
      * @return string[]
      */
-    protected function getRelatedModules($slices_str) {
+    protected function getRelatedModules($slices_str='') {
         $slices = [];
-        if (!strlen($slices_str) OR ($slices_str='all')) {
+        if (!strlen($slices_str) OR ($slices_str=='all')) {
             if (is_object($this->item)) {
                 $slices = explode_ids(AA::Un("{unique:{slice_id........}-{site:{modulefield:{slice_id........}:site_ids}:modules}}", '', $this->item));
             } elseif (AA::$site_id) {
@@ -9198,66 +9198,41 @@ class AA_Stringexpand_Mail extends AA_Stringexpand_Nevercache {
 
         $mail = new AA_Mail;
         $mail->setFromArray($mail_arr);
+        // AA_Log::write('DEBUG', aa_substr($subject, 0, 16), join('-', $to));
         return $mail->sendLater($to);
     }
 }
 
-/** Sends e-mail conditionaly
+/** Sends e-mail from template (of the same slice/site) - could be used inside mail notify (updated item is passed, so you can use aliases like _#ITEM_ID_...)
  *  Be careful - it can send mail on every page load!
  *  Use as:
- *    {mail:1:honza.malik@ecn.cz:test mail:{view:24}:utf-8:actionapps@ecn.cz}
+ *    {mailtemplate:874:test@ecn.cz}
+ *    {mailtemplate:874:["test@ecn.cz,"info@ecn.cz"]}
+ *    {mailtemplate:{if1:{qss:send}:874}:test@ecn.cz}   // conditional sending
  */
-class AA_Stringexpand_Xxmail extends AA_Stringexpand_Nevercache {
+class AA_Stringexpand_Mailtemplate extends AA_Stringexpand_Nevercache {
 
     /**
-     * @param string $condition
+     * @param string $template e-mail template - must be from the same site. If empty, mail is not sent (use it as condition, if you want to send mail conditionally)
      * @param string $to
-     * @param string $subject
-     * @param string $body
-     * @param string $lang
-     * @param string $from
-     * @param string $reply_to
-     * @param string $errors_to
-     * @param string $sender
-     * @param string $cc
-     * @param string $bcc
-     * @return string|void
+     * @return int|string|void
      */
-    function expand($condition='', $to='', $subject='', $body='', $lang='', $from='', $reply_to='', $errors_to='', $sender='', $cc='', $bcc='') {
+    function expand($template='', $to='') {
+        $template = ctype_digit((string)$template) ? (int)$template : 0;
 
-        if (!strlen($condition) OR !strlen($body) OR ((string)$condition==='0')) {
+        if (!$template) { return ''; }
+        if (!($template_id = DB_AA::select1('id', 'SELECT `id` FROM `email`', [['id',$template,'i'], ['owner_module_id', $this->getRelatedModules(), 'l']]))) {
+            warn("Mail template '$template' do not belongs to related slices");
             return '';
         }
+        if (!($to = json2arr($to))) { return ''; }
 
-        $to = json2arr($to); // can't be inside empty()  - Honza, php 5.2
-        if (empty($to)) {
-            return '';
-        }
-
-        $cc  = join(',',AA_Validate::filter(json2arr($cc), 'email'));
-        $bcc = join(',',AA_Validate::filter(json2arr($bcc), 'email'));
-
-        $mail_arr = [
-            'subject'     => $subject,
-            'body'        => $body,
-            'header_from' => $from,
-            'reply_to'    => $reply_to,
-            'errors_to'   => $errors_to,
-            'sender'      => $sender,
-            'lang'        => $lang,
-            'html'        => 1,
-            'cc'          => $cc,
-            'bcc'         => $bcc,
-        ];
-
-        $mail = new AA_Mail;
-        $mail->setFromArray($mail_arr);
-        AA_Log::write('DEBUG', aa_substr($subject, 0, 16), join('-', $to));
-        return '';
+        return AA_Mail::sendTemplate($template_id, $to, $this->item) ? '1' : '';
     }
 }
 
-/** Sends e-mail conditionaly
+
+/** Sends e-mail conditionally
  *  Be careful - it can send mail on every page load!
  *  Use as:
  *    {mailform:<to>:<subject>:<html-inputs>:<body>:<ok-text>:<lang>:<from>}

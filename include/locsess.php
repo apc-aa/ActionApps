@@ -242,6 +242,7 @@ class AA_Debug {
     }
 
     function tracepoint($func, $text='') {
+        $text = IsStringable($text) ? (string)$text : print_r($text, true);
         $this->_calls[]      = [count($this->_tracestack), $func, DB_AA::$_instances_no.' '.substr($text,0,200), strlen($text),microtime(true), microtime(true),'',0];
     }
 
