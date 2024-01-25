@@ -131,7 +131,7 @@ class MflWidget extends Widget
                 }
                 $widget .= "<div><textarea $attr_string name=\"$input_name\" id=\"$input_id\" rows=\"$rows\" $required $widget_onchange>$input_value</textarea>$widget_add2</div>";  // do not insert \n here - javascript for sorting tables sorttable do not work then
                 // @todo browser validity check fails with "An invalid form control with name='aa[n1_02c47a4be90355edc4407b5897ddf3c8][text__________31][mfl][0]' is not focusable." if textarea is required - fix it
-                if (!$required) {
+                if (!$aa_property->isRequired()) {
                     // add this textarea to the list for CodeMirror creation
                     $this->ids_4_editor[] = '#' . $input_id;
                 }
