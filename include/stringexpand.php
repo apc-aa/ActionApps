@@ -1058,9 +1058,9 @@ class AA_Stringexpand_Htmlajaxtogglecss extends AA_Stringexpand_Nevercache {
 
 
 /** Displays live search (search field and the list of matching articles) on html page
- *    {livesearch:<view_param>[:<placeholder>[:<dafault_phrase>]]}
+ *    {livesearch:<view_param>[:<placeholder>[:<default_phrase>]]}
  *    {livesearch:3650}
- *    {livesearch:3650:search...:DoNotDisplayAnythingByDefault}
+ *    {livesearch:3650:search...:-}
  *    {livesearch:3650&cmd[3650]=c-1-%22AA_LS_QUERY%22-2-publications:search for pubs...}
  *  It requires jQuery and aajslib-jquery.php
  *  @param $view_param      - just view ID or whole view parameters. If whole parameters used, then you have to use AA_LS_QUERY
@@ -1070,8 +1070,8 @@ class AA_Stringexpand_Htmlajaxtogglecss extends AA_Stringexpand_Nevercache {
  *                              3650&cmd[3650]=c-1-%22AA_LS_QUERY%22-2-publications
  *  @param $placeholder     - placeholder text to search field
  *  @param $default         - the phrase to search if the search field is empty.
- *                          - it is not necessary to fill it, if you want to see first the results by defaut
- *                          - you can put there some nonsence value, if you want to see the item list empty by default
+ *                          - it is not necessary to fill it, if you want to see first the results by default
+ *                          - put '-' there for empty list by default (or you can put there some nonsence value, but it is then searched)
  *
  */
 class AA_Stringexpand_Livesearch extends AA_Stringexpand_Nevercache {
@@ -1085,18 +1085,18 @@ class AA_Stringexpand_Livesearch extends AA_Stringexpand_Nevercache {
      */
     function expand($view_param='', $placeholder='', $default='') {
         $placeholder = safe($placeholder);
-        $default     = safe($default);
+        $def         = ($default == '-') ? 'AADoNotFindAnything' : safe($default);
         $id = 'aa-ls'.gensalt(6); // gensalt is shorter than mt_rand(100000000,999999999);
         $view_param  = is_numeric($view_param) ? "$view_param&cmd[$view_param]=c-1-%22AA_LS_QUERY%22" : $view_param;
         $ret = "
             <article class=aa-widget id=$id>
               <header>
-                <form action=? onsubmit=\"AA__liveSearch('$id', '$view_param', '$default'); return false;\">
-                  <input type=search class=itemsearch name=itemsearch oninput=\"AA__liveSearch('$id', '$view_param', '$default')\" placeholder=\"$placeholder\"><i class=aa-utiltag></i>
+                <form action=? onsubmit=\"AA__liveSearch('$id', '$view_param', '$def'); return false;\">
+                  <input type=search class=itemsearch name=itemsearch oninput=\"AA__liveSearch('$id', '$view_param', '$def')\" placeholder=\"$placeholder\"><i class=aa-utiltag></i>
                 </form>
               </header>
               <section class=itemgroup onkeydown=AA__Keynavigate>";
-        $ret .= AA::Un("{view.php?vid=". str_replace('AA_LS_QUERY', $default, $view_param). "}");
+        $ret .= ($default == '-') ? '' : AA::Un("{view.php?vid=". str_replace('AA_LS_QUERY', $def, $view_param). "}");
         $ret .= "      </section>
             </article>";
         return $ret;
