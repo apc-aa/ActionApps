@@ -5417,19 +5417,39 @@ class AA_Stringexpand_Pagermore extends AA_Stringexpand_Nevercache {
     }
 }
 
-/** debugging
+/** {nocache} switches off internal stringexpand cache for all {aa-expressions}
  */
-class AA_Stringexpand_Debug extends AA_Stringexpand_Nevercachenotrim {
-    /** Do not trim all parameters  */
+class AA_Stringexpand_Nocache extends AA_Stringexpand_Nevercache {
 
-    /** expand function
-     * @param $property
+    function expand() {
+        AA_Stringexpand::switchCacheOff();
+        return '';
+    }
+}
+
+
+/** start/stop debugging {debug:<level>[:<store>]}    <level> - 0 - no debug, 1 - 511 set debug level (as bitfield)
+ * Usage:
+ *        {debug:3} - set debug level to 3
+ *        {debug:0} - stop debugging
+ *        {debug}   - stop debugging
+ *        {debug:3:temp}  - set debug level to 3 and store the current debug level to internal debug temp variable
+ *        {debug::temp}   - restore debug level from internal debug temp variable (stored above)
+ */
+class AA_Stringexpand_Debug extends AA_Stringexpand_Nevercache {
+
+    /**
+     * @param string $level
      * @return string
      */
-    function expand( $text='' ) {
+    function expand( $level='', $store='') {
+        static $levels = [];
         $ret = '';
-        if ( !$text OR is_numeric($text) ) {
-            AA::$debug = (int)$text;
+        if ( !$level ) {
+            AA::$debug = strlen($store) ? ($levels[$store] ?? 0) : 0;
+        } elseif (is_numeric($level)) {
+            if (strlen($store)) { $levels[$store] = AA::$debug; }
+            AA::$debug = (int)$level;
         } else {
             // do not rely on this - could be changed. If you want specific format, then add any text parameter
             $ret = "\nDababase instances: ". DB_AA::$_instances_no;
