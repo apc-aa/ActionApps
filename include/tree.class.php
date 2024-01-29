@@ -139,9 +139,9 @@ class AA_Supertree {
                 }
             }
         }
-        if (!$inner AND $ret AND (false !== ($pos = strrpos($ret, 'inpath')))) {
+        if (!$inner AND $ret AND (false !== ($pos = strrpos($ret, 'class="inpath')))) {
             // add "active" to the closest active menu entry on final recursive return
-            $ret = substr_replace($ret, 'inpath active', $pos, 6);
+            $ret = substr_replace($ret, 'class="inpath active', $pos, 13);
         }
 
         return ($ret ? "\n<ul>\n$ret</ul>\n" : '');
