@@ -311,11 +311,9 @@ class AA_Stringexpand_User extends AA_Stringexpand {
      * @return bool|mixed|null|string|string[]
      */
     function expand($field='') {
-        global $cache_nostore;
-        // this GLOBAL :-( variable is message for pagecache to NOT store views (or
-        // slices), where we use {user:xxx} alias, into cache (AUTH_USER is not in
-        // cache's keyString.
-        $cache_nostore = true;             // GLOBAL!!!
+        // this is message for pagecache to NOT store views (or slices), where we use {user:xxx} alias,
+        // into cache (AUTH_USER is not in cache's keyString).
+        AA::Pagecache()->switchCacheNostore();
         $auth_user     = get_if($_SERVER['PHP_AUTH_USER'],AuthGetUname(),$_SERVER['REMOTE_USER']);
         switch ($field) {
             case '':         return $auth_user;
@@ -5417,12 +5415,21 @@ class AA_Stringexpand_Pagermore extends AA_Stringexpand_Nevercache {
     }
 }
 
-/** {nocache} switches off internal stringexpand cache for all {aa-expressions}
+/** switches off internal stringexpand cache or pagecache
+ *  {nocache} or {nocache:2} switches off internal stringexpand cache for all {aa-expressions} (we use it in email templates, where the parameters are sent by {define})
+ *  {nocache:1} switches off pagecache for the current page
+ *  {nocache:3} switches off both - pagecache and stringexpand cache
  */
 class AA_Stringexpand_Nocache extends AA_Stringexpand_Nevercache {
 
-    function expand() {
-        AA_Stringexpand::switchCacheOff();
+    function expand($level='') {
+        $level = strlen($level) ? (int)$level : 2; // as default, we stop internal caching
+        if ($level & 1) {
+            AA::Pagecache()->switchCacheNostore();
+        }
+        if ($level & 2) {
+            AA_Stringexpand::switchCacheOff();
+        }
         return '';
     }
 }

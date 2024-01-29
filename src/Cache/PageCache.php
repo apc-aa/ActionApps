@@ -53,6 +53,8 @@ class PageCache  {
 
     protected $cacheTime     = 600; // number of seconds to store cached information
 
+    protected bool $cache_nostore = false; // if true, the cache is not stored (used for {user:xxxx} alias)
+
     /** AA\Cache\PageCache function
      *  AA\Cache\PageCache class constructor
      * @param $ct
@@ -202,13 +204,11 @@ class PageCache  {
      * @return bool
      */
     function store($key, $content, $str2find, $force=false): bool {
-        global $cache_nostore;
         $ret = false;
 
-        AA::$debug&2 && AA::$dbg->log("Pagecache->store(key):$key", 'Pagecache str2find:'.join(',', $str2find->getStrings()), 'Pagecache content (length):'.strlen($content), 'Pagecache cache_nostore:'.$cache_nostore );
+        AA::$debug&2 && AA::$dbg->log("Pagecache->store(key):$key", 'Pagecache str2find:'.join(',', $str2find->getStrings()), 'Pagecache content (length):'.strlen($content), 'Pagecache cache_nostore:'.$this->cache_nostore );
 
-        if ($force OR (ENABLE_PAGE_CACHE AND !$cache_nostore)) {  // $cache_nostore used when
-            // {user:xxxx} alias is used
+        if ($force OR (ENABLE_PAGE_CACHE AND !$this->cache_nostore)) {  // $this->cache_nostore used if {user:xxxx} alias is used
             AA::$debug&2 && AA::$dbg->log("Pagecache->store(): - storing");
             $varset = new Cvarset( [['content', $content], ['stored', time()]]);
             $varset->addkey('id', 'text', $key);
@@ -320,5 +320,10 @@ class PageCache  {
     function invalidate() {
         DB_AA::delete('pagecache_str2find');
         DB_AA::delete('pagecache');
+    }
+
+    /** the page is not stored in the cache */
+    public function switchCacheNostore(): void {
+        $this->cache_nostore = true;
     }
 }
