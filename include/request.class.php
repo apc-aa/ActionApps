@@ -85,7 +85,7 @@ class AA_Http {
     /** Move (redirect) to page $url using javascript
      *  static function
      */
-    protected static function _goJs($url, $parameters='') {
+    protected static function _goJs($url, array $parameters= []) {
         $url = get_url( $url, $parameters);
         echo '
         <script>

@@ -4,13 +4,6 @@
 // Miscellaneous utility functions ---------------------------------------------
 use AA\IO\DB\DB_AA;
 
-/** Counts links in all categories */
-function Links_CountAllLinks() {
-    cattree::global_instance();  // makes sure $cattree instance is created
-    global $cattree;
-    return $cattree->count_all_links();
-}
-
 /** Get all information about link
  * @param int $lid
  * @return string|array
@@ -43,12 +36,12 @@ function Links_AssignCategory($category_id, $insertedId, $pri=10, $base='y', $st
 }
 
 /** Add new category, copies parents permissions
- *  @returns id of new category
+ *  @returns int - id of new category
  */
-function Links_AddCategory($name, $parent, $parentpath) {
+function Links_AddCategory($name, $parent, $parentpath): int {
     $db = getDB();
     $db->query( "INSERT INTO links_categories  ( name ) VALUES ('$name')" );
-    $res =  $db->last_insert_id();
+    $res = (int)$db->last_insert_id();
 
     // correct path
     $db->query( "UPDATE links_categories set path='$parentpath,$res' WHERE id=$res" );
@@ -151,7 +144,7 @@ function Links_SliceID2Category($sl_id) {
  * @see GetItemContent(), itemview class, item class
  * @param zids $zids array if ids to get from database
  * @return array - Abstract Data Structure containing the links data
- *                 {@link http://apc-aa.sourceforge.net/faq/#1337}
+ *                 {@link https://actionapps.org/faq/#1337}
  */
 function Links_GetLinkContent($zids) {
     if (!$zids OR $zids->count()<1) {
@@ -221,7 +214,7 @@ function Links_GetLinkContent($zids) {
  *
  * @param zids $zids ids to get from database
  * @return array - Abstract Data Structure containing the links data
- *                 {@link http://apc-aa.sourceforge.net/faq/#1337}
+ *                 {@link https://actionapps.org/faq/#1337}
  * @noinspection PhpUnused
  * @see GetItemContent(), itemview class, item class
  */
@@ -421,7 +414,7 @@ function Links_getUrlReport($url, $format_strings, $checked_id, $tree_start=fals
     $out = "";
     if ( $links_zids->count() != 0 ) {
         // function - we need trnslate _m() on use (not at include time)
-        $itemview = new itemview($format_strings, new AA_Aliases(new AA_Aliasgenerator_Link), $links_zids, 0, 100, '', '', 'Links_GetLinkContent');
+        $itemview = new itemview($format_strings, new AA_Aliases(new AA_Aliasgenerator_Link), $links_zids, 0, 100, '', [], 'Links_GetLinkContent');
         $out      = $itemview->get_output("view");
     }
     return $out;

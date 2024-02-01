@@ -42,6 +42,8 @@ class Paramwizard {
      */
     public function getParamWizardArr($type, $class_mask) {
         $ret = [];
+
+        /** @var NamedInterface $class */
         if (class_exists($class = AA_Serializable::constructClassName($type, $class_mask))) {
             $ret['name'] = $class::name();
             $ret['desc'] = $class::description();

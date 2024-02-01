@@ -260,7 +260,7 @@ function add_vars($query_string="", $where='GLOBALS') {
     if ( !$varstring ) {
         return [];
     }
-    if ( ($pos = strpos('#', $varstring)) === true ) {  // remove 'fragment' part
+    if ( ($pos = strpos('#', $varstring)) !== false ) {  // remove 'fragment' part
         $varstring = substr($varstring,0,$pos);
     }
 

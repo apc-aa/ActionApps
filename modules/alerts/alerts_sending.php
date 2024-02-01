@@ -496,7 +496,7 @@ class AA_Collection {
  * @param string $ho = how often
  * @param array  $collection_ids (collection_id, collection_id, ...).
  *            If set to "all", all collections are processed.
- * @param array  $emails (email, email, ...)
+ * @param string|array  $emails (email, email, ...)
  *            If set to "all", all Alerts users are processed.
  * @param bool   $update
  * @param string $item_id

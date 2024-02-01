@@ -356,7 +356,7 @@ class AA_View {
     /** ParseBannerParam function
      *  Parses banner url parameter (for view.php as well as for slice.php
      *  (banner parameter format: banner-<position in list>-<banner vid>-[<weight_field>]
-     *  (@see {@link http://apc-aa.sourceforge.net/faq/#219})
+     *  (@see {@link https://actionapps.org/faq/#219})
      */
     public static function parseBannerParam($banner_arr): array {
         $ret = [];

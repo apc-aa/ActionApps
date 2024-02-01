@@ -230,7 +230,6 @@ class AA_Scroller extends AA_Storable {
  *	Implements navigation bar for scrolling through long lists.
  *  No SQL filters support (as in scroller.php)
  */
-
 class AA_Scroller_Easy {
     var $current = 1;	  /** current page     */
     var $id;			  /** scroller id - identifies scroller on a web page */

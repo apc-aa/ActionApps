@@ -762,7 +762,7 @@ class AA_Transformation_Regexpreplace extends AA_Transformation {
      * @return string - message
      */
     public static function description(): string {
-        return _m("Search the content of text and replaces it with the another text using regular expressions. The aliases are unaliased in resulting string.<br>Example:<br> - Search: ^.*x=([0-9]*)$<br> - Replace: {item:$1:_#SEO_URL_}<br> - Unalias: Yes<br>Result: replaces all old-form links in the URL field from the new ones <br>(http://biom.cz/item.shtml?x=2344 --&gt; http://biom.cz/cz/about-biom)");
+        return _m("Search the content of text and replaces it with the another text using regular expressions. The aliases are unaliased in resulting string.<br>Example:<br> - Search: ^.*x=([0-9]*)$<br> - Replace: {item:$1:_#SEO_URL_}<br> - Unalias: Yes<br>Result: replaces all old-form links in the URL field from the new ones <br>(https://biom.cz/item.shtml?x=2344 --&gt; https://biom.cz/cz/about-biom)");
     }
 
     /** transform function

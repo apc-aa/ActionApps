@@ -83,7 +83,7 @@ try {
     // array ( ' Submit [^…' => 7, )
     $submitbtn = InputVars::stringSlashedPOST('submitbtn', true);
     // array ( '' => 7, )
-    $type = InputVars::nonePOST('type', true); // empty
+    $type = InputVars::stringPOST('type', true); // empty
     // array ( 'https://dat…' => 4, 'https://cdn…' => 2, 'https://www…' => 1, )
     $url = InputVars::stringPOST('url', true);
     $cancel = InputVars::boolPOST('cancel');
@@ -145,7 +145,7 @@ if ( $r_state['link_id'] ) {
     $r_msg[] = MsgOk(_m('Link inserted'));
     // $event->comes('LINK_NEW', $r_state["module_id"], 'Links', $categs2assign, Links_IsGlobalCategory($type), false);
 }
-Links_CountAllLinks();  // update number of links info
+cattree::singleton()->count_all_links();  // update number of links info in all categories
 
 page_close();
 debug('<a href="'.$senderUrlOK.'">'._m('Continue').'</a>');

@@ -98,7 +98,7 @@ function DelCateg(msg) {
 function NewCateg(msg) {
   var temptxt=prompt(msg, "")
   if ((temptxt != "") && (temptxt != null)) {
-    document.f.selcat.options[document.f.selcat.length] = new Option("(-) " + temptxt, 0)
+    document.f.selcat.options[document.f.selcat.length] = new Option("(-) " + temptxt, '0')
   }
 }
 
@@ -169,7 +169,6 @@ function GoCategory(sbx, pathid, cat_id_fld) {
 
 // Returns true, if specified category have a subcategories
 function HaveSubcategories(catid) {
-  var have_subcat = false;
   for (var i=0; i < assignno; i++)   //assignno, s[] - global variables (tree)
     if (s[i] == catid)
       return true;
@@ -215,9 +214,7 @@ function isGeneral(cid) {
 // Changes tree listbox (all categories) depending on given category
 function ChangeCategory(catid, sbx, pathid, cat_id_fld) {
     var pos=0
-    var txt
     var do_nothing = false;
-    var tmp
 
     if( catid == treeStart )
         level = 0

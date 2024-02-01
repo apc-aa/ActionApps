@@ -36,7 +36,7 @@ require_once __DIR__ . "/../include/tv_common.php";
  * @return string
  */
 function tv_field_value($feed_id,$param,$var) {
-    return "+'&$param='+escape(document.tv_rsstest.elements['val[$feed_id][$var]'].value)";
+    return "+'&$param='+encodeURIComponent(document.tv_rsstest.elements['val[$feed_id][$var]'].value)";
 }
 /** showRSSFeedActions function
  * @param $feed_id
@@ -48,7 +48,7 @@ function showRSSFeedActions($feed_id) {
                tv_field_value($feed_id,'server_url','server_url').
                tv_field_value($feed_id,'debugfeed','debug');
     $out  = "<a class=btn href=\"javascript:OpenWindowTop($url)\" title=\"downloads remote items from the feed and possibly store it to the desired slice (if \"write\" checkbox is checked\">"._m('feed')."</a>&nbsp;";
-    $out .= "<a class=btn href=\"javascript:OpenWindowTop('https://validator.w3.org/feed/check.cgi?url='+escape(document.tv_rsstest.elements['val[$feed_id][server_url]'].value))\" title=\"checks the validity of the feed by feedvalidator.org\">"._m('validate')."</a>&nbsp;";
+    $out .= "<a class=btn href=\"javascript:OpenWindowTop('https://validator.w3.org/feed/check.cgi?url='+encodeURIComponent(document.tv_rsstest.elements['val[$feed_id][server_url]'].value))\" title=\"checks the validity of the feed by feedvalidator.org\">"._m('validate')."</a>&nbsp;";
     $out .= "<a class=btn href=\"javascript:OpenWindowTop(document.tv_rsstest.elements['val[$feed_id][server_url]'].value)\" title=\"displays the source data in new window\">"._m('show')."</a>";
     return $out;
 }

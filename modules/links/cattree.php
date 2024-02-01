@@ -38,29 +38,32 @@ require_once __DIR__ . "/../../modules/links/linksearch.php";
 
 /** Category assignments - stores which category is subcategory of another */
 class catassignment {
-    var $from;
-    var $to;
-    var $base;
-    var $state;
+    var int $from;
+    var int $to;
+    var string $base;
+    var string $state;
 
     /** just constructor - variable assignments */
     function  __construct($from, $to, $base, $state) {
-        $this->from  = $from;
-        $this->to    = $to;
-        $this->base  = $base;
-        $this->state = $state;
+        $this->from  = (int)$from;
+        $this->to    = (int)$to;
+        $this->base  = (string)$base;
+        $this->state = (string)$state;
     }
 
-    function  getFrom() { return $this->from; }
-    function  getTo()   { return $this->to; }
-    function  getBase() { return $this->base; }
-    function  getState(){ return $this->state; }
+    function  getFrom(): int     { return $this->from; }
+    function  getTo(): int       { return $this->to; }
+    function  getBase(): string  { return $this->base; }
+    function  getState(): string { return $this->state; }
 }
 
 /**
  * cattree class - handles tree of categories
  */
 class cattree {
+
+    use \AA\Util\SingletonTrait;
+
     var $treeStart;      // where to start - category root
     var $go_to_empty;    // boolean - should we go to the empty subcategories?
     var $path_delimiter; // string to show between categories in path
@@ -68,25 +71,19 @@ class cattree {
     var $catnames;       // asociative array with names of columns and values of current row
     var $catpaths;       // asociative array with paths to categories
     var $catnolinks;     // asociative array with 'nolinks' category paremeters
+    /**
+     * @var catassignment[]
+     */
     var $assignments;    // category assignments - stores which category is subcategory of another
     var $ancesors_idx;   // for each category it defines array of ancessors - used just for speedup (walkTree)
 
-    var $STATES_CODING = ['highlight'=>'!', 'visible'=>'-', 'hidden'=>'x'];
+    const STATES_CODING = ['highlight'=>'!', 'visible'=>'-', 'hidden'=>'x'];
 
     // constructor
     function __construct($treeStart=-1, $go_to_empty=false, $path_delimiter=' > ') {
         $this->treeStart      = $treeStart;
         $this->go_to_empty    = $go_to_empty;
         $this->path_delimiter = $path_delimiter;
-    }
-
-    /** "class function" obviously called as cattree::global_instance();
-    *  This function makes sure, there is global instance of the class
-    */
-    static function global_instance() {
-        if ( !isset($GLOBALS['cattree']) ) {
-            $GLOBALS['cattree'] = new cattree();
-        }
     }
 
     /** Compare function for sorting categories in subcategory
@@ -143,7 +140,7 @@ class cattree {
                                         $db->f('category_id'),
                                         $db->f('what_id'),
                                         $db->f('base')=='n' ? '@' : ' ',
-                                        $this->STATES_CODING[$db->f('state')]);
+                                        self::STATES_CODING[$db->f('state')]);
         }
 
         freeDB($db);
@@ -163,7 +160,7 @@ class cattree {
 
 
     /** Search category $parenid, if there exist subcategory of name $name
-    *  @returns id of found category or false
+    *  @returns int|false - id of found category or false
     */
     function subcatExist($parentid, $name) {
         $this->updateIfNeeded();
@@ -350,10 +347,7 @@ class cattree {
         foreach ( $this->catnames as $allId => $allName) {
             if (!$names_count[$allName]) {
                 $names_count[$allName] =1;
-            } else {
-                $names_count[$allName];
             }
-
             $names_count[$allName]++;
             $index_name = (string)floor($names_count[$allName] / MAX_JS_NODES_AT_LINE) . "~$allName";
             $js_arr[$index_name] .= "a[$allId]=";
@@ -488,7 +482,7 @@ class cattree {
         return true;
     }
 
-
+    /** Counts links in all categories */
     function count_all_links() {
         $this->updateIfNeeded();
         $toexecute   = new Toexecute;
@@ -516,7 +510,7 @@ class linkcounter implements \AA\Later\LaterInterface {
         global $nocache;
         $g_nocache = $nocache;
         $nocache   = true;
-        $zids      = Links_QueryZIDs($cpath, '', '', true);
+        $zids      = Links_QueryZIDs($cpath, [], '', true);
         $nocache   = $g_nocache;
 
         $count = $zids->count();

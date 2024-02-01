@@ -439,7 +439,7 @@ class MLX {
             $content = GetItemContent($mlxid);
             //var_dump($content);
             if (!$content) {
-                $this->fatal(_m("Bad item ID %1", [$mlxid]).var_export($mlxid));
+                $this->fatal(_m("Bad item ID %1", [$mlxid]).var_export($mlxid, true));
             }
             $content4mlxid = $content[$mlxid];
         }

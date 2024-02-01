@@ -523,7 +523,7 @@ class AA_Searchbar extends AA_Storable {
             $ret .= '</div><div class="aa-sbrow-op">';
             $ret .= getFrmSelectEasy("srchbr_oper[$bar]", [' ' => ' '], null, ['onchange' => "OpenWindowIfRequest('" . $this->form_name . "','$bar','" . get_admin_url('constants_sel.php',['module_id'=>$this->module_id], false) . "')"]);
             $ret .= '</div><div class="aa-sbrow-val">';
-            $ret .= "<input type=\"text\" name=\"srchbr_value[$bar]\" size=\"20\" onkeydown=\"if (event.keyCode == 13) document.".$this->form_name. ".submit();\" value=\"$val\"></div>";
+            $ret .= "<input type=\"text\" name=\"srchbr_value[$bar]\" size=\"20\" onkeydown=\"if (event.key === 'Enter') document.".$this->form_name. ".submit();\" value=\"$val\"></div>";
         }
         $ret .= '</div>';
         return $ret;

@@ -85,9 +85,7 @@ class linkassignment {
 
     /** Returns if the assignment is OK - if category exists */
     function checkExistence() {
-        cattree::global_instance();  // makes sure $cattree instance is created
-        global $cattree;
-        return $cattree->exists($this->category);
+        return cattree::singleton()->exists($this->category);
     }
 
     /** Fixes the state based on state of the base assignment
@@ -124,10 +122,8 @@ class linkassignment {
 
     /** $base_state - state of base assignment - good for repair of some kind of problems */
     function check_problems($base) {
-        cattree::global_instance();  // makes sure $cattree instance is created
-        global $cattree;
         $problem= [];
-        if ( !$cattree->exists($this->category) ) {
+        if ( !cattree::singleton()->exists($this->category) ) {
             $problem[] = problem_report('assigned_cat_not_exist',$this->category);
         }
         if ( ($this->state == 'hidden') AND ( !$base OR (($base->getState() != 'hidden') AND !$base->isProposal() ))) {
@@ -154,37 +150,28 @@ class linkassignment {
 
     /** get name of general category, if it is general category */
     function General() {
-        cattree::global_instance();  // makes sure $cattree instance is created
-        global $cattree;
-        return $cattree->isGeneral($this->category);
+        return cattree::singleton()->isGeneral($this->category);
     }
 
     function downgrade_general() {
-        cattree::global_instance();  // makes sure $cattree instance is created
-        global $cattree;
         while ( $this->General() ) {
-            $this->category = $cattree->getParent($this->category);
+            $this->category = cattree::singleton()->getParent($this->category);
         }
         return $this->category;      // it returns false if prent is not found
     }
 
     function getCategoryName() {
-        cattree::global_instance();  // makes sure $cattree instance is created
-        global $cattree;
-        return $cattree->getName($this->category);
+        return cattree::singleton()->getName($this->category);
     }
 
     function isPerm($action) {
-        cattree::global_instance();  // makes sure $cattree instance is created
-        global $cattree;
-        return IsCatPerm( $action, $cattree->getPath($this->category) );
+        return IsCatPerm( $action, cattree::singleton()->getPath($this->category) );
     }
 
     /** Returns new assignment to general category */
     function transform($cid,$general) {
         global $GENERAL_TRANSFORM_RULES;
-        cattree::global_instance();  // makes sure $cattree instance is created
-        global $cattree;
+        $cattree = cattree::singleton();
         $path   = $cattree->getPath($cid);
         $action = 'ignore';
         foreach ((array) $GENERAL_TRANSFORM_RULES as $winner => $rule ) {
@@ -216,13 +203,11 @@ class linkassignment {
      *  Returns array of new assignments
      */
     function generalize($general) {
-        cattree::global_instance();  // makes sure $cattree instance is created
-        global $cattree;
-
         if ( !$general ) {
             return [$this];
         }
         $ret = [];
+        $cattree = cattree::singleton();
         $cur_cid = $this->getCategory();
         while ( $cur_cid ) {
             if ( $new_ass = $this->transform($cur_cid,$general) ) {
@@ -366,7 +351,7 @@ class assignmentset {
     }
 
     /** Remove assignments to the same category and also assignments
-     *  to non existing category
+     *  to non-existing category
      */
     function remove_duplicity() {
         if ( !isset($this->assignments) ) return;
@@ -437,8 +422,7 @@ class assignmentset {
     /** Remove all assignments to categories with 'nolinks' flag set */
     function remove_nolinks() {
         if ( !isset($this->assignments) ) return;
-        cattree::global_instance();  // makes sure $cattree instance is created
-        global $cattree;
+        $cattree = cattree::singleton();
         foreach ( (array)$this->assignments as $k => $ass ) {
             // check, if category is allowed to have links
             if ( $cattree->isNolinks($this->assignments[$k]->getCategory()) ) {
@@ -831,16 +815,15 @@ class linkobj {
         }
     }
 
-    /** Do current logged user has permission for $action to this link? */
+    /** Do current log user has permission for $action to this link? */
     function isPerm($action) {
         if ($this->numberOfAssignments() > 0) {
             $base = $this->assignments->getBase();
             return $base ? $base->isPerm($action) : false;
         }
         // this else option added for changing the unassigned links
-        cattree::global_instance();  // makes sure $cattree instance is created
-        global $cattree, $r_state;
-        return IsCatPerm( $action, $cattree->getPath($r_state['tree_start_path']) );
+        global $r_state;
+        return IsCatPerm( $action, cattree::singleton()->getPath($r_state['tree_start_path']) );
     }
 
     /** Get name of general category, if it is general category */
@@ -1004,8 +987,7 @@ class linkobj {
 
         // TODO - next row is wrong - assignments is not array
         if ( !isset($this->assignments) OR !is_array($this->assignments) ) return;
-        cattree::global_instance();  // makes sure $cattree instance is created
-        global $cattree;
+        $cattree = cattree::singleton();
         $names    = [];
         $thematic = 0;
         $other    = 0;

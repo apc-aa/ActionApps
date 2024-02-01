@@ -311,7 +311,7 @@ FrmTabEnd( $form_buttons);
             return;
         }
         var url="<?php echo StateUrl(get_url('', ["del"=>1,"analyze"=>($analyze OR $fix)] + ($slice_fields ? ['slice_fields'=>1] : []))); ?>"
-        window.location=url + "&fid=" + escape(id);
+        window.location=url + "&fid=" + encodeURIComponent(id);
     }
 </script>
 

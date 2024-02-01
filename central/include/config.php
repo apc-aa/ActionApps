@@ -32,6 +32,6 @@ https://www.apc.org/
 $ACTIONAPPS   = [];
 $ACTIONAPPS[] = ['name'=>'Example AA Dev',  'url'=>'https://example.org/apc-aa-dev/',  'user'=>'superuser1', 'pwd'=>'superpassword1'];
 $ACTIONAPPS[] = ['name'=>'Example AAA',     'url'=>'https://example.org/aa/',          'user'=>'superuser2', 'pwd'=>'superpassword2'];
-$ACTIONAPPS[] = ['name'=>'Example AA test', 'url'=>'http://test.example.org/apc-aa/',  'user'=>'superuser3', 'pwd'=>'superpassword3'];
+$ACTIONAPPS[] = ['name'=>'Example AA test', 'url'=>'https://test.example.org/apc-aa/', 'user'=>'superuser3', 'pwd'=>'superpassword3'];
 
 

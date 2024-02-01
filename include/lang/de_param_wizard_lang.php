@@ -1683,7 +1683,7 @@ $_m["user function"]
  = "";
 
 // include/constants_param_wizard.php, row 1098
-$_m["calls a user defined function (see How to create new aliases in <a href='http://apc-aa.sourceforge.net/faq/#aliases'>FAQ</a>)"]
+$_m["calls a user defined function (see How to create new aliases in <a href='https://actionapps.org/faq/#aliases'>FAQ</a>)"]
  = "calls a user defined function (see How to create new aliases in /doc/faq.html)";
 
 // include/constants_param_wizard.php, row 1100

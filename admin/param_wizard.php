@@ -171,17 +171,17 @@ if (is_array($desc['params'])) {
 
         <script>
             function changeFunction(combo) {
-                page = "<?php echo StateUrl(self_base() . "param_wizard.php") ?>"
+                let page = "<?php echo StateUrl(self_base() . "param_wizard.php") ?>"
                     + "<?php echo "&list=$list" . "&combo_list='$combo_list'&text_param='$text_param'&codemirror='$codemirror'" ?>"
                     + "&item=" + combo.value;
                 window.location = page;
             }
             function writeParams() {
-                params = '';
-                for (i=0; i < <?php echo count($desc['params']) ?>; i++) {
+                let params = '';
+                for (let i = 0; i < <?php echo count($desc['params']) ?>; i++) {
                     if (i > 0) params += ":";
-                    val = document.f.elements["param"+i].value;
-                    params += val.replace(/:/g,"#:");
+                    let val = document.f.elements["param" + i].value;
+                    params += val.replace(/:/g, "#:");
                 }
                 window.opener.document.f.elements["<?php echo $text_param ?>"].value = params;
                 <?php if ($codemirror) { echo "window.opener.$codemirror.setValue(params);"; } ?>
@@ -190,10 +190,10 @@ if (is_array($desc['params'])) {
                 params = params.replace(/#:/g,"#~") + ":";
 <?php if ($allow_quote)
     echo "params = params.replace(/'/g,\":\");" ?>
-                    for (i=0; i < <?php echo count($desc['params']) ?>; i++) {
+                    for (let i=0; i < <?php echo count($desc['params']) ?>; i++) {
                         if (params > "") {
-                            str = params.substr(0,params.search(":"));
-                            params = params.substr(params.search(":")+1);
+                            str = params.substring(0,params.indexOf(":"));
+                            params = params.substring(params.indexOf(":")+1);
                         }
                         else str = "";
                         document.f.elements["param"+i].value = str.replace(/#~/g,":");

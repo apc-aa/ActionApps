@@ -44,7 +44,7 @@ function unpackID(packedID) {
 
 function hex2dec(hex) {
     hex = hex.toUpperCase();
-    dec = 0;
+    let dec = 0;
     for (i=0; i < hex.length; ++i) {
         dec *= 16;
         c = hex.charAt(i);
@@ -62,9 +62,10 @@ function hex2dec(hex) {
 
 function packID(unpackedID) {
     var packedID = '';
-    for (j=0; j < unpackedID.length; j += 2) {
-        code = hex2dec(unpackedID.substr(j,2));
-        if (code != 0) {
+    let code;
+    for (j = 0; j < unpackedID.length; j += 2) {
+        code = hex2dec(unpackedID.substring(j, j + 2));
+        if (code !== 0) {
             packedID += String.fromCharCode(code);
         } else {
             return '';
@@ -238,7 +239,7 @@ function setThisControl(myControl, newValue) {
                 }
             }
         }
-        else if (myControl.type.substr(0,6) == "select")
+        else if (myControl.type.substring(0,6) === "select")
             for (var i = 0; i < myControl.options.length; i++) {
                 if ( (myControl.options[i].value == newValue) || ((myControl.options[i].value == "") && (myControl.options[i].text == newValue))) {
                     myControl.options[i].selected = true;
@@ -258,11 +259,12 @@ function setThisControl(myControl, newValue) {
    ToDo: implement multiple check-boxes
 */
 function setControlArray(formName, controlName, newArray) {
-    var myControl = getControlByName(formName, controlName);
+    let i, j;
+    const myControl = getControlByName(formName, controlName);
     if (myControl != null) {
         if (myControl.type == "select-multiple") {
-            for (var j = 0; j < newArray.length; j++) {
-                for (var i = 0; i < myControl.options.length; i++) {
+            for (j = 0; j < newArray.length; j++) {
+                for (i = 0; i < myControl.options.length; i++) {
                     if ( (myControl.options[i].value == newArray[j]) ||
                         ((myControl.options[i].value == "") && (myControl.options[i].text == newArray[j]))) {
                         myControl.options[i].selected = true;
@@ -277,8 +279,8 @@ function setControlArray(formName, controlName, newArray) {
             }
         } else {
             if (myControl[0].type == "checkbox") {
-                for (var j = 0; j < newArray.length; j++) {
-                            for (var i = 0; i < myControl.length; i++) {
+                for (j = 0; j < newArray.length; j++) {
+                            for (i = 0; i < myControl.length; i++) {
                             if ( (myControl[i].value == newArray[j]) ||
                             ((myControl[i].value == "") && (myControl[i].text == newArray[j]))) {
                                             myControl[i].checked = true;

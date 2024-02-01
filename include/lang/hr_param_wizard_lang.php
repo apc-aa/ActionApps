@@ -1716,8 +1716,8 @@ $_m["user function"]
  = "korisni�ka funkcija";
 
 // include/constants_param_wizard.php, row 1098
-$_m["calls a user defined function (see How to create new aliases in <a href='http://apc-aa.sourceforge.net/faq/#aliases'>FAQ</a>)"]
- = "korisni�ki defainirana funkcija (pogledajte kakao kreirati nove sinonime na <a href='http://apc-aa.sourceforge.net/faq/#aliases'>FAQ</a>)";
+$_m["calls a user defined function (see How to create new aliases in <a href='https://actionapps.org/faq/#aliases'>FAQ</a>)"]
+ = "korisni�ki defainirana funkcija (pogledajte kakao kreirati nove sinonime na <a href='https://actionapps.org/faq/#aliases'>FAQ</a>)";
 
 // include/constants_param_wizard.php, row 1100
 $_m["function"]

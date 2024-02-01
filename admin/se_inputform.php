@@ -358,7 +358,7 @@ $headcode = '
     }
     if ( conid != "" ) {
       let url = "'. get_admin_url('se_constant.php', ['return_url' => 'se_inputform.php', 'fid' => $fid]). '";
-      url += ( (as_new != 1) ? "&group_id=" : "&as_new=") + escape(conid);
+      url += ( (as_new != 1) ? "&group_id=" : "&as_new=") + encodeURIComponent(conid);
       window.location=url;
     }
   }

@@ -681,14 +681,14 @@ class AA_Fields implements Iterator, Countable {
     var $master_id;
 
     /** collection - each id could have multiple fieldsets.
-     *  In fact we do not use this feature yet, it is just abstraction for
+     *  In fact, we do not use this feature yet, it is just abstraction for
      *  "slice fields" - slice has two field sets - normal fields and
      *  "slice (setting) fields", where id of those fields begins with '_'
      */
     var $collection;
 
     /** Array of aliases - for caching purposes */
-    var $aliases;
+    var ?array $aliases;
 
     protected $loaded_all;
     protected $lazy_loaded_no;

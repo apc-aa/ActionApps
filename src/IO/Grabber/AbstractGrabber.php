@@ -47,7 +47,7 @@ abstract class AbstractGrabber implements \AA\Util\NamedInterface {
     protected $load_frequency = null;
 
     /** @todo - not yet implemented */
-    static function factoryFromFile($file) {
+    static function factoryFromFile($file): AbstractGrabber {
         $grabbers = AA_Components::getClassNames('AA\\IO\\Grabber\\AbstractGrabber');
         exit;
     }

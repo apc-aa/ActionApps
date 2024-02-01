@@ -80,7 +80,7 @@ class MngWidget extends Widget
         // ($slices='', $field=null, $item_id=null, $code=null, $conds=null, $sort=null, $mode=null, $edit_code=null)
         if (!($mng_slice = $this->getConstSlice())) {
             warn("No Slice parameter provided");
-            return '';
+            return [];
         }
         $mng_field  = $this->getProperty('related_field', 'relation........');
         $mng_code   = $this->getProperty('row_code', '_#ROW_CODE');

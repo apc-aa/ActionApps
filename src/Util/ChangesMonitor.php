@@ -167,7 +167,7 @@ class ChangesMonitor {
      */
     static function getChangeList($resource_id): array {
         $history_entries = !trim($resource_id) ? [] : DB_AA::select(['id'=> ['time', 'user']], 'SELECT `id`, `time`, `user` from `change`', [['resource_id',$resource_id], ['type','h']], ['time-']);
-        array_walk($history_entries, function (&$v, $k) {$v['time'] = ChangesMonitor::toTimestamp($v['time']);}); // if the change[time] is in nanoseconds convert it to seconds
+        array_walk($history_entries, function (&$v, $k) {$v['time'] = ChangesMonitor::toTimestamp((int)$v['time']);}); // if the change[time] is in nanoseconds convert it to seconds
         return $history_entries;
     }
 
@@ -181,7 +181,7 @@ class ChangesMonitor {
         if (trim($resource_id) AND trim($selector)) {
             $time = DB_AA::select1('time', "SELECT time FROM `change`, `change_record`", [['change.id', 'change_record.change_id', 'j'], ['change.resource_id', $resource_id], ['change.type', 'h'], ['change_record.selector', $selector]], ['time-']);
         }
-        return $time ? self::toTimestamp($time) : 0;
+        return $time ? self::toTimestamp((int)$time) : 0;
     }
 
     /** value of the resource n steps back
@@ -195,7 +195,7 @@ class ChangesMonitor {
         if (trim($resource_id) AND trim($selector)) {
             $value = DB_AA::select1([], "SELECT `change_record`.`value`,`change`.`time`,`change`.`user`,`change`.`type` FROM `change`, `change_record`", [['change.id', 'change_record.change_id', 'j'], ['change.resource_id', $resource_id], ['change.type', 'h'], ['change_record.selector', $selector], ['change_record.value', '', 'FILLED']], ['time-'], abs($step));
         }
-        return $value;
+        return $value ?: [];
     }
 
     /** timestamp of last change
@@ -294,7 +294,7 @@ class ChangesMonitor {
             $chid = '';
             foreach ($arr as $change) {
                 if ($chid != $change['change_id']) {
-                    echo "<tr><th colspan=6>" . date('Y-m-d H:i:s', self::toTimestamp($change['time'])) . ' -' . perm_username($change['user']) . " <small>($change[type], uid:$change[user], res:$change[resource_id], change:$change[change_id])</small></th></tr>";
+                    echo "<tr><th colspan=6>" . date('Y-m-d H:i:s', self::toTimestamp((int)$change['time'])) . ' -' . perm_username($change['user']) . " <small>($change[type], uid:$change[user], res:$change[resource_id], change:$change[change_id])</small></th></tr>";
                     $chid = $change['change_id'];
                 }
                 echo "<tr><td>&nbsp;</td><td>$change[selector]</td><td><pre>".safe($change['value'])."</pre></td><td>$change[priority]</td><td>$change[chtype]</td><td>".safe($change['resource_id'])."</td></tr>";

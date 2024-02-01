@@ -387,7 +387,7 @@ class Session {
                 */
                 if(strpos($_SERVER['PHP_SELF'], $mysid)) {
                     // cut session info from PHP_SELF // and QUERY_STRING, for sure
-                    $new_qs = 'http://'.$_SERVER['SERVER_NAME']. str_replace($mysid, '', $_SERVER['PHP_SELF']) .(($_SERVER['QUERY_STRING']) ? '?'.str_replace($mysid, '', $_SERVER['QUERY_STRING']) : '');
+                    $new_qs = 'https://'.$_SERVER['SERVER_NAME']. str_replace($mysid, '', $_SERVER['PHP_SELF']) .(($_SERVER['QUERY_STRING']) ? '?'.str_replace($mysid, '', $_SERVER['QUERY_STRING']) : '');
 
                     // clear new cookie, if set
                     $cprm = session_get_cookie_params();

@@ -54,6 +54,10 @@ if (!IfSlPerm(PS_FEEDING)) {
 
 $err = [];          // error array (Init - just for initializing variable
 
+$chboxcat = [];
+$selcat   = [];
+$chboxapp = [];
+
 // lookup (slices)
 $SQL= "SELECT name, id FROM feeds, slice
         LEFT JOIN feedperms ON slice.id=feedperms.from_id
@@ -302,7 +306,7 @@ FrmTabEnd($form_buttons);
         if ((typeof document.f.all_categories == 'undefined') || document.f.all_categories.checked) { // no import cats
             done = 1
             if ( <?php echo (( isset($to_categories) AND is_array($to_categories)) ? 1 : 0 ) ?> ) {
-                url += "&all=1&C=" + escape(document.f.categ_0.value)
+                url += "&all=1&C=" + encodeURIComponent(document.f.categ_0.value)
                 url += "-" + (document.f.approved_0.checked ? 1 : 0)
             } else {
                 url += "&all=1&C=0-" + (document.f.approved_0.checked ? 1 : 0)
@@ -312,11 +316,11 @@ FrmTabEnd($form_buttons);
                 if (document.f['chbox_'+i].checked) {
                     done = 1
                     if ( <?php echo (( isset($to_categories) AND is_array($to_categories)) ? 1 : 0 ) ?> ) {
-                        url += "&T%5B%5D=" + escape(document.f['categ_'+i].value)
+                        url += "&T%5B%5D=" + encodeURIComponent(document.f['categ_'+i].value)
                     } else {
                         url += "&T%5B%5D=0"
                     }
-                    url += "&F%5B%5D=" +  escape(document.f['hid_'+i].value)
+                    url += "&F%5B%5D=" +  encodeURIComponent(document.f['hid_'+i].value)
                     url += "-" + (document.f['approved_'+i].checked ? 1 : 0)
                 }
             }

@@ -928,8 +928,8 @@ $_m["if no content matches, use this string as return value"]
 $_m["user function"]
     = "korisni�ka funkcija";
 
-$_m["calls a user defined function (see How to create new aliases in <a href='http://apc-aa.sourceforge.net/faq/#aliases'>FAQ</a>)"]
-    = "korisni�ki defainirana funkcija (pogledajte kakao kreirati nove sinonime na <a href='http://apc-aa.sourceforge.net/faq/#aliases'>FAQ</a>)";
+$_m["calls a user defined function (see How to create new aliases in <a href='https://actionapps.org/faq/#aliases'>FAQ</a>)"]
+    = "korisni�ki defainirana funkcija (pogledajte kakao kreirati nove sinonime na <a href='https://actionapps.org/faq/#aliases'>FAQ</a>)";
 
 $_m["function"]
     = "funkcija";
@@ -7258,7 +7258,7 @@ $_m["This table sets handling of not confirmed users. It's accessible only\n"
 ."            <br>\n"
 ."            To run the script, you must have cron set up with a row running\n"
 ."            misc/alerts/admin_mails.php.<br>\n"
-."            For more information, see <a href='http://apc-aa.sourceforge.net/faq/#1389'>the FAQ</a>."]
+."            For more information, see <a href='https://actionapps.org/faq/#1389'>the FAQ</a>."]
     = "";
 
 // include/tableviews.php, row 125, 126

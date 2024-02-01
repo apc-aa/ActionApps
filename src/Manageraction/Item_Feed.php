@@ -32,7 +32,7 @@ class Item_Feed extends AbstractManageraction {
 
     /** @inheritDoc */
     function perform(Manager $manager, zids $item_zids, $action_param) {
-        if (strlen($action_param) < 1) {
+        if (!$action_param) {
             return _m('No slice selected');
         }
         $export_to = explode(",", $action_param);          // <status>-<slice_id> pairs

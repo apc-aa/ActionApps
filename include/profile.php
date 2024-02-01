@@ -84,9 +84,6 @@ function PrintRule($rule, $fields) {
         case 'admin_perm':
             PrintRuleRow($rid, $PROPERTY_TYPES[$prop], "", $rule['value']);
             break;
-        case 'bookmark':
-            PrintRuleRow($rid, $PROPERTY_TYPES[$prop], $rule['selector']);
-            break;
         case 'admin_order':
             $fid = substr( $rule['value'], 0, -1 );
             $ord = substr( $rule['value'], -1 );
@@ -119,6 +116,7 @@ function PrintRule($rule, $fields) {
             break;
         case 'ui_manager_hide':
         case 'ui_inputform_hide':
+        case 'bookmark':
             PrintRuleRow($rid, $PROPERTY_TYPES[$prop], $rule['selector']);
             break;
     }

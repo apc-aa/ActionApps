@@ -6419,7 +6419,7 @@ $_m["This table sets handling of not confirmed users. It's accessible only\n"
 ."            <br>\n"
 ."            To run the script, you must have cron set up with a row running\n"
 ."            misc/alerts/admin_mails.php3.<br>\n"
-."            For more information, see <a href='http://apc-aa.sourceforge.net/faq/#1389'>the FAQ</a>."]
+."            For more information, see <a href='https://actionapps.org/faq/#1389'>the FAQ</a>."]
     = "";
 
 // include/tableviews.php, row 125, 126

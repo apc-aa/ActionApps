@@ -59,7 +59,7 @@ $_m["This table sets handling of not confirmed users. It's accessible only\n"
    ."            <br>\n"
    ."            To run the script, you must have cron set up with a row running\n"
    ."            misc/alerts/admin_mails.php3.<br>\n"
-   ."            For more information, see <a href='http://apc-aa.sourceforge.net/faq/#1389'>the FAQ</a>."]
+   ."            For more information, see <a href='https://actionapps.org/faq/#1389'>the FAQ</a>."]
  = "Ova tablica postavlja rukovanje sa podacima nepotvr�enih korisnika/ica. Dostupna je samo\n"
    ."            superadminima.\n"
    ."            Mo�ete obrisati nepotvr�ene korisnike/ice nakon odre�enog broja dana i / ili poslati e-mail \n"
@@ -69,7 +69,7 @@ $_m["This table sets handling of not confirmed users. It's accessible only\n"
    ."            <br>\n"
    ."            Za okretanje skripte, morate imati postavljen cron sa pokrenutim retkom\n"
    ."            misc/alerts/admin_mails.php3.<br>\n"
-   ."            Za vi�e informacija, pogledajte <a href='http://apc-aa.sourceforge.net/faq/#1389'>the FAQ</a>.";
+   ."            Za vi�e informacija, pogledajte <a href='https://actionapps.org/faq/#1389'>the FAQ</a>.";
 
 $_m["Example"]
  = "Primjer";
@@ -437,7 +437,7 @@ $_m["This table sets handling of not confirmed users. It's accessible only\n"
    ."            <br>\n"
    ."            To run the script, you must have cron set up with a row running\n"
    ."            misc/alerts/admin_mails.php3.<br>\n"
-   ."            For more information, see <a href='http://apc-aa.sourceforge.net/faq/#1389'>the FAQ</a>."]
+   ."            For more information, see <a href='https://actionapps.org/faq/#1389'>the FAQ</a>."]
  = "";
 
 // modules/alerts/tableviews.php, row 367

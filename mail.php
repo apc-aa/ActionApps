@@ -19,13 +19,6 @@ https://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-/**
- *  @param form_id   - long id of form
- *  @param type      - "ajax"
- *  @param ret_code  - AA expression (with aliases to be returned after ajax insert)
- *  @param object_id - optional item_id (for edit)
- */
-
 require_once __DIR__."/./include/config.php";
 require_once __DIR__ . "/include/util.php";
 require_once __DIR__ . "/include/item.php";

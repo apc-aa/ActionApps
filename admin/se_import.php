@@ -105,13 +105,13 @@ function UpdateImportExport(slice_id) {
   var url = "'. StateUrl(self_base() . "se_import2.php") .'"
   url += "&slice_id=" + slice_id
   url += "&to_all=" + (document.f.export_to_all.checked ? \'1\' : \'0\')
-  for (var i = 0; i < document.f.import_y.options.length; i++) {
+  for (let i = 0; i < document.f.import_y.options.length; i++) {
     if (document.f.import_y.options[i].value != "0")    // imported slices
-      url += "&I%5B" + i + "%5D=" + escape(document.f.import_y.options[i].value)
+      url += "&I%5B" + i + "%5D=" + encodeURIComponent(document.f.import_y.options[i].value)
   }
-  for (var i = 0; i < document.f.export_y.options.length; i++) {
+  for (let i = 0; i < document.f.export_y.options.length; i++) {
     if (document.f.export_y.options[i].value != "0")    // exported to slices
-      url += "&E%5B" + i + "%5D=" + escape(document.f.export_y.options[i].value)
+      url += "&E%5B" + i + "%5D=" + encodeURIComponent(document.f.export_y.options[i].value)
   }
   window.location=url
 }

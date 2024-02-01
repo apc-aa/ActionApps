@@ -820,7 +820,7 @@ class AA_Task_Import_Module_Chunk implements \AA\Later\LaterInterface {
  * @see GetItemContent(), itemview class, item class
  * @param zids $zids array if ids to get from database
  * @return array - Abstract Data Structure containing the links data
- *                 {@link http://apc-aa.sourceforge.net/faq/#1337}
+ *                 {@link https://actionapps.org/faq/#1337}
  */
 function Central_GetAaContent($zids) {
     $content = [];

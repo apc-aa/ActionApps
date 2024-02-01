@@ -33,13 +33,13 @@
 * You can supply just pid parameter - the first poll is displayed
 * (the one in Active bin with oldest publish date and not expired)
 *
-* @param pid      - id of poll module
-* @param poll_id  - 32 digit long hexadecimal id of poll (see Polls Admin)
-* @param vote_id  - vote for specified answer
-* @param conds    - conds for the module which enables to display polls matching
-*                   specified condition (just like for views)
-* @param sort     - sortorder of polls (just like for views)
-* @param listlen  - number of polls displayed - default is 1
+* @param $pid      - id of poll module
+* @param $poll_id  - 32 digit long hexadecimal id of poll (see Polls Admin)
+* @param $vote_id  - vote for specified answer
+* @param $conds    - conds for the module which enables to display polls matching
+*                    specified condition (just like for views)
+* @param $sort     - sortorder of polls (just like for views)
+* @param $listlen  - number of polls displayed - default is 1
 */
 
 

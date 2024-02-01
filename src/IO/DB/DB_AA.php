@@ -487,7 +487,7 @@ class DB_AA extends AbstractDB
             ob_end_clean();
             // AA_Http::go(DB_ERROR_PAGE, array('Err'=>$this->Errno, 'ErrMsg'=>$this->Error, 'Msg'=>$msg), 'POST', false);
             // sending variables disabled - see the comment above
-            AA_Http::go(DB_ERROR_PAGE, null, 'GET', false);
+            AA_Http::go(DB_ERROR_PAGE, [], 'GET', false);
             exit;
         }
 

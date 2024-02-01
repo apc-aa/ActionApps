@@ -7,7 +7,7 @@ trait ReportTrait {
 
     /** Message function
      *  Records Error/Information message
-     * @param string|array $row
+     * @param string|array|object $row
      * @param int          $verbosity
      */
     protected function message($row, int $verbosity = 1) {

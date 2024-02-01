@@ -219,8 +219,8 @@ class Files {
      */
     static function createFileFromString($text, $dest_dir, $filename) {
         $dest_file = Files::makeFile($dest_dir, Files::escape($filename));
-        if ($dest_file === false) {
-            // lastErr is already set from destinationFile;
+        if ($dest_file === '') {
+            // lastErr is already set from destinationFile ?;
             return false;
         }
 
@@ -467,7 +467,8 @@ class Files {
  *
  * Copyright (c) 2003-2006 John Willinsky
  * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
- * (@see http://pkp.sfu.ca/ojs)
+ * @see https://gitlab.liu.se/edver36/pkp-lib/-/blob/ojs-3_0b1/classes/file/FileWrapper.inc.php
+ * @see http://pkp.sfu.ca/ojs
  *
  * Class abstracting operations for reading remote files using various protocols.
  * (for when allow_url_fopen is disabled).
@@ -493,7 +494,7 @@ class AA_File_Wrapper {
     var $url;
 	/** @var array parsed URL info */
     var $info;
-	/** @var int the file descriptor */
+	/** @var resource the file descriptor */
     var $fp;
     /** @var int used in http */
     var $redirects;
@@ -601,6 +602,8 @@ class AA_File_Wrapper {
 
 /**
  * HTTP protocol class.
+ *
+ * for proxy (Proxy-Authorization) see https://gitlab.liu.se/edver36/pkp-lib/-/blob/ojs-stable-3_1_1/classes/file/wrappers/HTTPFileWrapper.inc.php?ref_type=heads
  */
 class AA_File_HTTP_Wrapper extends AA_File_Wrapper {
     var $headers;
@@ -819,7 +822,7 @@ class AA_File_FTP_Wrapper extends AA_File_Wrapper {
         [, $h1, $h2, $h3, $h4, $p1, $p2] = $matches;
 
         $host = "$h1.$h2.$h3.$h4";
-        $port = ($p1 << 8) + $p2;
+        $port = ((int)$p1 << 8) + (int)$p2;
 		if (!($this->fp = fsockopen($host, $port))) {
             return false;
         }

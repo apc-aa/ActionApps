@@ -374,7 +374,7 @@ $FIELD_FUNCTIONS = [
     "params"=> [
         [
             "name"=>_m("format"),
-        "desc"=>_m("PHP-like format - see <a href=\"http://php.net/manual/en/function.date.php\" target=_blank>PHP manual</a>"),
+        "desc"=>_m("PHP-like format - see <a href=\"https://php.net/manual/en/function.date.php\" target=_blank>PHP manual</a>"),
         "type"=>"STR",
         "example"=>_m("m-d-Y")
         ]
@@ -628,8 +628,8 @@ $FIELD_FUNCTIONS = [
         "desc"=>_m("You can use some output modifications:<br>
                    &nbsp; - [<i>empty</i>] - no modification<br>
                    &nbsp; - <i>csv</i>  - prints the field for CSV file (Comma Separated Values) export<br>
-                   &nbsp; - <i>urlencode</i> - URL-encodes string (see <a href=\"http://php.net/urlencode\">urlencode<a> PHP function)<br>
-                   &nbsp; - <i>safe</i> - converts special characters to HTML entities (see <a href=\"http://php.net/htmlspecialchars\">htmlspecialchars<a> PHP function)<br>
+                   &nbsp; - <i>urlencode</i> - URL-encodes string (see <a href=\"https://www.php.net/urlencode\">urlencode<a> PHP function)<br>
+                   &nbsp; - <i>safe</i> - converts special characters to HTML entities (see <a href=\"https://www.php.net/htmlspecialchars\">htmlspecialchars<a> PHP function)<br>
                    &nbsp; - <i>javascript</i> - escape ' (replace ' with \\')<br>
                    &nbsp; - <i>striptags</i>  - strip HTML and PHP tags from the string<br>
                    &nbsp; - <i>asis</i>  - prints field content 'as is' - it do not add &lt;br&gt; at line ends even if field is marked as 'Plain text'. 'asis' parameter is good for Item Manager's 'Modify content...' feature, for example<br>
@@ -641,7 +641,7 @@ $FIELD_FUNCTIONS = [
 ],
 "f_u"=> [
     "name"=>_m("user function"),
-    "desc"=>_m("calls a user defined function (see How to create new aliases in <a href='http://apc-aa.sourceforge.net/faq/#aliases'>FAQ</a>)"),
+    "desc"=>_m("calls a user defined function (see How to create new aliases in <a href='https://actionapps.org/faq/#aliases'>FAQ</a>)"),
     "params"=> [
         [
             "name"=>_m("function"),

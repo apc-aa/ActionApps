@@ -448,20 +448,20 @@ echo '
     }
   }
 
-  function SortConstants( col2sort ) {
-    var i,element,element2, text,row,counter=10;
+  function SortConstants(col2sort) {
+    var i, element, element2, text, row, counter = 10;
     GetFormData(col2sort);
     data2sort.sort();
-    for (i=0; i<='. $lastIndex .'; i++) {
+    for (i = 0; i <= '. $lastIndex .'; i++) {
       text = data2sort[i];
-      row = text.substr(text.lastIndexOf(" ~~")+3);
-      element = "document.f.elements[\'pri["+row+"]\']";
-      element2 = "document.f.elements[\'"+col2sort+"["+row+"]\']";
-      if (eval(element2).value == "")
-        eval(element).value = 9000;
-       else {
-        eval(element).value = counter;
-        counter += 10;
+      row = text.substring(text.lastIndexOf(" ~~") + 3);
+      element = document.getElementsByName("pri[" + row + "]")[0];
+      element2 = document.getElementsByName(col2sort + "[" + row + "]")[0];
+      if (element2.value == "")
+        element.value = 9000;
+      else {
+        element.value = counter;
+        counter += 10;  
       }
     }
   }

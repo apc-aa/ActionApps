@@ -245,7 +245,7 @@
 
     <para>The cron items are added to the <constant>cron</constant> table
     automatically by <constant>sql_update.php</constant>. You must set up
-    cron on your server, <ulink url="http://apc-aa.sourceforge.net/faq#cron">see
+    cron on your server, <ulink url="https://actionapps.org/faq/detail.shtml?x=1726">see
     FAQ</ulink>. There are four items for the four different frequencies
     (instant, daily, weekly, monthly). The info when were which Alerts module
     emails generated is stored in the table <constant>alerts_collection_howoften</constant>.

@@ -5,7 +5,7 @@
 
 // site definition file for Econnect's site (http://ecn.cz)
 // This is just an example of site file. For more details on sites see FAQ:
-// http://apc-aa.sourceforge.net/faq/
+// https://actionapps.org/faq/
 
 function CheckW( $w ) {
   return ($w && strpos( ' ezn', $w )) ? $w : 'z';

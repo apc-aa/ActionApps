@@ -1761,8 +1761,8 @@ $_m["user function"]
  = "definida por el usuario";
 
 // include/constants_param_wizard.php, row 1098
-$_m["calls a user defined function (see How to create new aliases in <a href='http://apc-aa.sourceforge.net/faq/#aliases'>FAQ</a>)"]
- = "hace un llamado a una función definida por el administrador de este sistema (vea <em>How to create new aliases</em> en el <a href='http://apc-aa.sourceforge.net/faq/#aliases' target=_blank>FAQ</a>)";
+$_m["calls a user defined function (see How to create new aliases in <a href='https://actionapps.org/faq/#aliases'>FAQ</a>)"]
+ = "hace un llamado a una función definida por el administrador de este sistema (vea <em>How to create new aliases</em> en el <a href='https://actionapps.org/faq/#aliases' target=_blank>FAQ</a>)";
 
 // include/constants_param_wizard.php, row 1100
 $_m["function"]
@@ -1790,7 +1790,7 @@ $_m["view"]
 
 // include/constants_param_wizard.php, row 1109
 $_m["allows to manipulate the views. This is a complicated and powerful function, described in <a href=\"../doc/FAQ.html#viewparam\" target=_blank>FAQ</a>, which allows to display any view in place of the alias. It can be used for 'related stories' table or for dislaying content of related slice."]
- = "permite mostrar vistas. Esta función es potente y complicada, y está descrita en el <a href=\"http://apc-aa.sourceforge.net/faq#viewparam\" target=_blank>FAQ</a>. Muestra una vista en el lugar del alias. Es útil, entre otras cosas, para hacer enlaces a items relacionados de otros canales.";
+ = "permite mostrar vistas. Esta función es potente y complicada, y está descrita en el <a href=\"https://actionapps.org/faq/#viewparam\" target=_blank>FAQ</a>. Muestra una vista en el lugar del alias. Es útil, entre otras cosas, para hacer enlaces a items relacionados de otros canales.";
 
 // include/constants_param_wizard.php, row 1111
 $_m["complex parameter"]

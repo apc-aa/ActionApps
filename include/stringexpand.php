@@ -647,7 +647,7 @@ class AA_Stringexpand_Skype extends AA_Stringexpand {
         $message         = safe($message);
 
         // start the rendering the html output
-        $output  = '<!-- Skype "My status" button http://www.skype.com/go/skypebuttons -->';
+        $output  = '<!-- Skype "My status" button https://www.skype.com/go/skypebuttons -->';
         $output .= '<script src="https://download.skype.com/share/skypebuttons/js/skypeCheck.js"></script>';
         $output .= '<a href="skype:'.$user_skype_name.'?'.$action.'"><img src="https://mystatus.skype.com/'.$style.'/'.$user_skype_name.'" style="border: none;" alt="'.$message.'" title="'.$message.'" /></a>';
         $output .= '<!-- end of skype button -->';
@@ -5809,7 +5809,7 @@ class AA_Unalias_Callback {
         global $als, $errcheck;
         $out = $match[1];
 
-        // See http://apc-aa.sourceforge.net/faq#aliases for details
+        // See https://actionapps.org/faq/#aliases for details
         // bracket could look like:
         // {alias:[<field id>]:<f_* function>[:parameters]} - return result of f_*
         // {switch(testvalue)test:result:test2:result2:default}
@@ -8728,7 +8728,9 @@ class AA_Stringexpand_History extends AA_Stringexpand {
         $retarr = [];
         $format = $format ?: '_#val';
         foreach ($changes as $ch) {
-            $retarr[] = str_replace(['_#val', '_#date', '_#user', '_#timestamp'], [$ch['value'], date('Y-m-d H:i:s', ChangesMonitor::toTimestamp($ch['time'])),$ch['user'], date('U', ChangesMonitor::toTimestamp($ch['time']))], $format);
+            if ($ch) {
+                $retarr[] = str_replace(['_#val', '_#date', '_#user', '_#timestamp'], [$ch['value'], date('Y-m-d H:i:s', ChangesMonitor::toTimestamp((int)$ch['time'])), $ch['user'], date('U', ChangesMonitor::toTimestamp($ch['time']))], $format);
+            }
         }
         return join($delimiter, $retarr);
     }

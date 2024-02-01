@@ -30,7 +30,7 @@ if ($handle = opendir('/data/www/aa-config/')) {
         if (substr($file,-5) != '.conf') {
             continue;
         }
-        $result = file_get_contents("http://odm.colnodo.apc.org/apc-aa-dev/misc/test/confreader.php?file=". urlencode($file));
+        $result = file_get_contents("https://odm.colnodo.apc.org/apc-aa-dev/misc/test/confreader.php?file=". urlencode($file));
         print_r($file);
         print_r($result);
         $conf   = unserialize($result);

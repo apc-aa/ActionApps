@@ -185,7 +185,7 @@ class Managed {
             $this->msg_noitem     .= '<br>'.$new_link;
         }
 
-        return new itemview($format_strings, $aliases, $zids, 0, $listlen, '', '', $this->settings['itemview']['get_content_funct']);
+        return new itemview($format_strings, $aliases, $zids, 0, $listlen, '', [], $this->settings['itemview']['get_content_funct']);
     }
 
     /**

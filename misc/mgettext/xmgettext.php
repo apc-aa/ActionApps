@@ -207,12 +207,12 @@ function xmgettext($lang_list, $logfile, $lang_files, $files_base_dir, $files, $
             echo " YES - require it - ";
             require_once $langfile;
         }
-        echo count($_m) ." ($old_logs)";
+        echo (is_array($_m) ? count($_m) : 0) ." ($old_logs)";
 
         if ($old_logs) {
             add_old_translations($old_logs, $lang, $_m, $other_translations);
         }
-        echo " - ". count($_m) .'<br>';
+        echo " - ". (is_array($_m) ? count($_m) : 0) .'<br>';
 
         // write the file
         if ($file_type == 'php') {
@@ -245,7 +245,7 @@ function xmgettext($lang_list, $logfile, $lang_files, $files_base_dir, $files, $
                 }
 
                 // other translations
-                if (is_array ($other_translations) && $other_translations[$message]) {
+                if (is_array($other_translations) && $other_translations[$message]) {
                     $other_join = [];
                     foreach ( $other_translations[$message] as $other => $foo) {
                         $other_join[] = $other;

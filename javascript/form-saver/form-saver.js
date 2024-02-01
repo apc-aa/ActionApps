@@ -47,7 +47,7 @@ function buildSearchesList(searches, searchesList, form, container, text) {
                 $('<span tabindex=0 class=aa-form-saver__btn>')
                     .text(btn_text)
                     .on('click keypress', function(event) {
-                        if ( event.type !== 'keypress' || event.keyCode === 13 || event.keyCode === 32 ) {
+                        if (event.type !== 'keypress' || event.key === 'Enter' || event.key === ' ') {
                             if (container == '') {
                                 form.trigger('reset');
                             } else {

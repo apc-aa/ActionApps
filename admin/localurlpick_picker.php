@@ -8,8 +8,8 @@
 var count=1;
 
 function changeURLlocation() {
-    splitURL = document.forms[0].url.value.split("/")
-    if (splitURL[2] == parent._navigator.location.host) {
+    let splitURL = document.forms[0].url.value.split("/");
+    if (splitURL[2] === parent._navigator.location.host) {
         parent._navigator.location = this.url.value
     }
 }
@@ -21,12 +21,12 @@ function feedFields() {
 function startURLcheck() {
     changeURLcontent();
     if (count > 0) {
-        Id = window.setTimeout("startURLcheck()", 100);
+        window.setTimeout("startURLcheck()", 100);
     }
 }
 
 function changeURLcontent() {
-    if (document.forms[1].localURL.value != parent.frames[1].location) {
+    if (document.forms[1].localURL.value !== parent.frames[1].location) {
       document.forms[1].localURL.value=parent.frames[1].location;
       document.forms[0].url.value=parent.frames[1].location;
   }
@@ -38,16 +38,13 @@ function changeURLcontent() {
   <tbody>
     <tr>
       <td class=tablename>
-      <form 
- enctype="text/plain" method="post" name="navigator" onSubmit="changeURLlocation();return false;">
+      <form enctype="text/plain" method="post" name="navigator" onSubmit="changeURLlocation();return false;">
 <input type=button value=Back onClick="history.go(-1)">
 <input type=button value=Forward onClick="history.go(+1)">
 <input type=button value=Home onClick="parent.frames[1].location='<?php echo htmlspecialchars($_GET["url"]); ?>'">
-<input
- size="60" name="url"
- value="http://"> <input
- value="GO" name="submit" type="submit">
-</form>
+<input type="url" size="60" name="url" placeholder="https://" value="">
+          <input value="GO" name="submit" type="submit">
+      </form>
       </td>
       <td class=tablename>
 

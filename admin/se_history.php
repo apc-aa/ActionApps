@@ -165,7 +165,7 @@ class AA_Aliasgenerator_History extends AbstractAliasgenerator {
  * @see GetItemContent(), itemview class, item class
  * @param zids $zids if ids to get from database
  * @return array - Abstract Data Structure containing the links data
- *                 {@link http://apc-aa.sourceforge.net/faq/#1337}
+ *                 {@link https://actionapps.org/faq/#1337}
  */
 function GetHistoryContent($zids) {
     if (!$zids OR $zids->count()<1) {

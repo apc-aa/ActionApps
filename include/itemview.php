@@ -43,7 +43,7 @@ require_once __DIR__ . "/stringexpand.php";
  * it - selects right set of items/link IDs to display (based on page scroller
  *      for example)
  *    - get item/links content from database (using "Abstract Data Structure"
- *      described also in {@link http://apc-aa.sourceforge.net/faq/#1337})
+ *      described also in {@link https://actionapps.org/faq/#1337})
  *    - instantiate 'item' class (defined in item.php) for each item/link which
  *      should be printed.
  *
@@ -63,7 +63,7 @@ class itemview {
   var $disc;               // array of discussion parameters (see apc-aa/view.php)
   var $get_content_funct;  // function to call, if we want to get content
                            // (using "Abstract Data Structure" described also
-                           // in {@link http://apc-aa.sourceforge.net/faq/#1337})
+                           // in {@link https://actionapps.org/faq/#1337})
   var $parameters;         // optional asociative array of additional parameters
                            // - used for category_id (in Links module) ...
                            // - filed by parameter() method
@@ -76,10 +76,10 @@ class itemview {
      * @param        $from
      * @param        $number
      * @param        $clean_url
-     * @param string $disc
+     * @param array  $disc
      * @param string $get_content_funct
      */
-  function __construct($slice_info, $aliases, $zids, $from, $number, $clean_url, $disc = "", $get_content_funct = 'GetItemContent') {
+  function __construct($slice_info, $aliases, $zids, $from, $number, $clean_url, $disc = [], $get_content_funct = 'GetItemContent') {
 
       $this->slice_info = $slice_info;  // $slice_info is array with these fields:
                                       //      - print_view() function:
@@ -117,7 +117,7 @@ class itemview {
     $this->from_record       = $from;      // number or text "random[:<weight_field>]"
     $this->num_records       = $number;    // negative number used for displaying n-th group of items only
     $this->clean_url         = $clean_url;
-    $this->disc              = $disc;
+    $this->disc              = (array)$disc;
     $this->parameters        = [];
     $this->_content          = [];
     $this->get_content_funct = $get_content_funct ?: 'GetItemContent';

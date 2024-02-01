@@ -119,6 +119,10 @@ foreach ($_REQUEST as $k => $v) {
 }
 // ----- input variables normalization - end ----------------------------------
 
+
+require_once __DIR__."/./include/config.php";
+require_once __DIR__ . "/include/util.php";
+
 try {
     $encap = InputVars::stringGETPOST('encap');
 } catch (Exception $e) {}
@@ -126,8 +130,6 @@ try {
 
 $encap = ( ($encap=="false") ? false : true );
 
-require_once __DIR__."/./include/config.php";
-require_once __DIR__ . "/include/util.php";
 require_once __DIR__ . "/include/item.php";
 require_once __DIR__ . "/include/view.php";
 require_once __DIR__ . "/include/searchlib.php";
@@ -306,7 +308,7 @@ if (!$encap) {
 }
 
 if ($bigsrch OR $easy_query) {  // big search form or authomatical search form
-    ExitPage('<!-- bigsrch parameter is NOT SUPPORTED IN AA v 1.5+ <br>easy_query is  NOT SUPPORTED IN AA v 2.50+ <br>See <a href="http://apc-aa.sourceforge.net/faq/index.shtml#215">AA FAQ</a> for more details. -->');
+    ExitPage('<!-- bigsrch parameter is NOT SUPPORTED IN AA v 1.5+ <br>easy_query is  NOT SUPPORTED IN AA v 2.50+ <br>See <a href="https://actionapps.org/faq/#215">AA FAQ</a> for more details. -->');
 }
 
 $add_aliases = $aliases    = AA_View::getAliasesFromUrl($als);
@@ -374,11 +376,11 @@ if ( $sh_itm OR $x OR $o OR $seo ) {
             // create array of parameters
             $disc = [
                 'ids'         => $all_ids ? "" : $ids,
-                          'type'        => $add_disc ? "adddisc" : (($sel_ids || $all_ids) ? "fulltext" : "thread"),
-                          'item_id'     => $zid->longids(0),
-                          'vid'         => $view_info['id'],
-                          'html_format' => $view_info['flag'] & DISCUS_HTML_FORMAT,
-                          'parent_id'   => $parent_id
+                'type'        => $add_disc ? "adddisc" : (($sel_ids || $all_ids) ? "fulltext" : "thread"),
+                'item_id'     => $zid->longids(0),
+                'vid'         => $view_info['id'],
+                'html_format' => $view_info['flag'] & DISCUS_HTML_FORMAT,
+                'parent_id'   => $parent_id
             ];
 
             $format  = GetDiscussionFormat($view_info);
@@ -575,12 +577,9 @@ if ( !$scrl ) {
     $scr->current = $scr_go;
 }
 
-
 if ( !$srch AND !$encap AND !$easy_query ) {
-    $cur_cats=GetCategories($db, q_pack_id($slice_id));     // get list of categories
-    pCatSelector(MyUrl($encap, $scr_url), $cur_cats, $scr->filters['category_id']['value'], $slice_id, $encap);
+    pCatSelector(MyUrl($encap, $scr_url), $slice_id);
 }
-
 
 if ($zids->count() > 0) {
 

@@ -172,7 +172,7 @@ $translate_lang_file = str_replace ("??","en",$old_lang_files);
 // Command called from the form:
 if ($cmd == "create logs") {
     create_logs($lang_list, $old_lang_files, $log_files);
-} elseif ($cmd == "update language files" && is_array ($update)) {
+} elseif ($cmd == "update language files" && is_array($update)) {
     update_language_files($aadir, $destdir);
 } elseif ($cmd == "convert scripts") {
     translate_aa_files($aadir, $translateddir);

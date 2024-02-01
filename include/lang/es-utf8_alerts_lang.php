@@ -65,11 +65,11 @@ $_m["This table sets handling of not confirmed users. It's accessible only\n"
    ."            <br>\n"
    ."            To run the script, you must have cron set up with a row running\n"
    ."            misc/alerts/admin_mails.php.<br>\n"
-   ."            For more information, see <a href='http://apc-aa.sourceforge.net/faq/#1389'>the FAQ</a>."]
+   ."            For more information, see <a href='https://actionapps.org/faq/#1389'>the FAQ</a>."]
  = "Esta tabla configura la manera como se manejan o no los usuarios confirmados. Solamente pueden acceder a ella los superadministradores. Usted puede borrar usuarios no confirmados después de un número de días y/o enviarles un correo-e solicitando una confirmación después de un número menor de días. Para apagar alguna de las funciones defina el número de días como 0. Los dos últimos campos son para su información solamente.<br>\n"
    ."            <br>\n"
    ."            Para ejecutar el script, Usted debe configurar el cron con una file ejecutando misc/alerts/admin_mails.php.<br>\n"
-   ."            Para mayor información, consulte <a href='http://apc-aa.sourceforge.net/faq/#1389'>el FAQ</a>.";
+   ."            Para mayor información, consulte <a href='https://actionapps.org/faq/#1389'>el FAQ</a>.";
 
 $_m["Example"]
  = "Ejemplo";
@@ -437,7 +437,7 @@ $_m["This table sets handling of not confirmed users. It's accessible only\n"
    ."            <br>\n"
    ."            To run the script, you must have cron set up with a row running\n"
    ."            misc/alerts/admin_mails.php.<br>\n"
-   ."            For more information, see <a href='http://apc-aa.sourceforge.net/faq/#1389'>the FAQ</a>."]
+   ."            For more information, see <a href='https://actionapps.org/faq/#1389'>the FAQ</a>."]
  = "";
 
 // modules/alerts/tableviews.php, row 367

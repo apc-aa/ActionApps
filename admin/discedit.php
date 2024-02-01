@@ -101,7 +101,7 @@ $script2run = '<script>
     if ( !confirm("'. _m("Are you sure you want to delete selected comment?") .'")) {
        return;
     }
-    window.location = "'. get_url("./discedit.php", ['mode'=>'delete', 'item_id' => $item_id], true). '&d_id=" + escape(id);
+    window.location = "'. get_url("./discedit.php", ['mode'=>'delete', 'item_id' => $item_id], true). '&d_id=" + encodeURIComponent(id);
   }
   function DeleteAllComments() {
     if ( !confirm("'. _m("Are you sure you want to delete ALL comments? There is no way back!") .'")) {

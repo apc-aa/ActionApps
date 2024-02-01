@@ -46,35 +46,22 @@ function Page_HTML_End(){
     </html>';
 }
 
-/** GetCAtegories function
- * @param $db
- * @param $p_slice_id
- * @return mixed
- */
-function GetCategories($db,$p_slice_id){
-     $SQL = "SELECT name, value FROM constant WHERE group_id='".$p_slice_id."'";
-     $db->query($SQL);
-     while ($db->next_record()) {
-         $unpacked       = unpack_id($db->f("value"));
-         $arr[$unpacked] = $db->f("name");
-     }
-     return $arr;
-}
-
-/** pCatSelector function
+/**
  * @param $url
- * @param $cats
- * @param $selected
- * @param int $sli_id
- * @param bool $encaps
+ * @param $sli_id
+ * @deprecated - used only on not encapsulated slice.php which nobody uses
  */
-function pCatSelector($url, $cats, $selected, $sli_id = 0, $encaps = true){
-    if (sizeof($cats)>0) {
+function pCatSelector($url, $sli_id){
+
+    // was GetCategories() - strange to search for packed slice id in gropup_id - HM 2024
+    $cats = DB_AA::select(['pvalue'=>'name'], 'SELECT LOWER(HEX(`value`)) AS pvalue, `name` FROM `constant`', [['group_id',$sli_id,'l']]);
+
+    if ($cats) {
+        $selected = $_GET['cat_id'];
         echo "<form action=\"$url\" method=\"get\">";
-        if ( !$encaps ) {   // not encapsulated - need to send slice_id
-            echo "<input type=\"hidden\" name=\"slice_id\" value=\"$sli_id\">";
-            echo "<input type=\"hidden\" name=\"encap\" value=\"".($encaps ? "true":"false")."\">";
-        }
+        // not encapsulated - need to send slice_id
+          echo "<input type=hidden name=slice_id value=\"$sli_id\">";
+          echo "<input type=hidden name=encap value=false>";
         echo _m("Select Category ") . "<select name=\"cat_id\">";
         $seloption=(($selected=="")?"selected":"");
         echo "<option value=all $seloption>"._m("All categories").'</option>';

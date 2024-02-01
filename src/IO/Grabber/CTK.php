@@ -105,7 +105,7 @@ class CTK extends AbstractGrabber
         $item->setValue('expiry_date.....', '2145913199');                                                                              // Nekonecno
         $item->setAaValue('full_text......1', new AA_Value($ftext, FLAG_HTML));                         // Plný text
         $item->setValue('source.........1', 'ČTK');                                                                                     // Zdroj
-        $item->setValue('source_href.....', 'http://www.ctk.cz');                                                                       // URL zdroje
+        $item->setValue('source_href.....', 'https://www.ctk.cz/');                                                                       // URL zdroje
         $item->setValue('status_code.....', 2);                                                                                         // Do zasobniku
 /* windows-1250 verze */
 /*

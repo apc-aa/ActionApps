@@ -303,9 +303,8 @@ class AA_Condition extends AA_Object {
             case '==' :                                           // exact match - no SQL parsing
             case '='  :
                 return $field_value == $this->value;
+            case '!=':
             case '<>' :
-                return $field_value != $this->value;
-            case '!=' :
                 return $field_value != $this->value;
             case '<=' :
                 return $field_value <= $this->value;
@@ -486,7 +485,7 @@ class AA_Set extends AA_Object {
     }
 
     /** set the bins - like Holding Bin, Approved, Trash, ...
-     * @param $bins bitfield
+     * @param $bins int bitfield
      *              AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING | AA_BIN_TRASH
      */
     function setBins($bins): AA_Set {

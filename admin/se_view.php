@@ -447,11 +447,8 @@ $slice = AA_Slice::getModule(AA::$module_id);
 $headcode = <<<'EOT'
 <script>
     function InitPage() {
-    function InitPage() {
       [].forEach.call(document.querySelectorAll('tr.cont-even_row_format'), function(e) { e.style.display=(document.f['even_odd_differ'].checked ? 'table-row' : 'none'); });
-    }
-        
-        
+       
       EnableClick('even_odd_differ','even')
       EnableClick('category_sort','category_format')
     }

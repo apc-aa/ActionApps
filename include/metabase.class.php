@@ -1121,7 +1121,7 @@ class AA_Metabase {
      * @param zids $zids     array if ids to get from database
      * @param array $settings array - just one parameter: table (or owner), where to search
      * @return AA_Content[] - Abstract Data Structure containing the links data
-     *                        {@link http://apc-aa.sourceforge.net/faq/#1337}
+     *                        {@link https://actionapps.org/faq/#1337}
      * @static
      * @see GetItemContent(), itemview class, item class
      */

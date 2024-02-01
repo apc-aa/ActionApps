@@ -6485,7 +6485,7 @@ $_m["This table sets handling of not confirmed users. It's accessible only\n"
    ."            <br>\n"
    ."            To run the script, you must have cron set up with a row running\n"
    ."            misc/alerts/admin_mails.php3.<br>\n"
-   ."            For more information, see <a href='http://apc-aa.sourceforge.net/faq/#1389'>the FAQ</a>."]
+   ."            For more information, see <a href='https://actionapps.org/faq/#1389'>the FAQ</a>."]
  = "Cette table permet la manipulation des utilisateurs non confirm�s. Elle est accessible seulement\n"
    ."            aux super-administrateurs.\n"
    ."            Vous pouvez supprimer les usagers non confirm�s apr�s un certain nombre de jours et / ou leur envoyer un courriel\n"
@@ -6495,7 +6495,7 @@ $_m["This table sets handling of not confirmed users. It's accessible only\n"
    ."            <br>\n"
    ."            Pour ex�cuter le script, vous devez avoir cron fonctionnel\n"
    ."            misc/alerts/admin_mails.php3.<br>\n"
-   ."            POur plus d'information, voir <a href='http://apc-aa.sourceforge.net/faq/#1389'>the FAQ</a>.";
+   ."            POur plus d'information, voir <a href='https://actionapps.org/faq/#1389'>the FAQ</a>.";
 
 // include/tableviews.php, row 125, 126
 $_m["Polls Design"]

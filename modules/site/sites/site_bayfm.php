@@ -1,7 +1,7 @@
 <?php
 // site definition file for Site Example (http://apc-aa.sf.net/site/index.shtml)
 // This is just an example of site file. For more details on sites see FAQ:
-// http://apc-aa.sourceforge.net/faq/
+// https://actionapps.org/faq/
 // http://apc-aa.sourceforge.net/slices
 
 // This is intended as the start of a generic, reusable site file

@@ -42,7 +42,6 @@ class GpsWidget extends Widget
   var map$js_id = L.map(AA_$('#mapdiv$js_id'), {zoomSnap: 0, zoomControl: false });
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' }).addTo(map$js_id);
   L.control.zoom({position: 'bottomleft'}).addTo(map$js_id);
-  var markers$js_id = [];
   suggest$js_id.addListener("suggest", function(suggestData) {
     AA_ShowOnMap(map$js_id, '$js_id', suggestData.data.latitude.toFixed(6), suggestData.data.longitude.toFixed(6), inputEl$js_id.value);
     AA_$('#copygps$js_id').disabled=false;

@@ -88,7 +88,6 @@ readfile($dir. 'prototype.js'    ); echo "\n";      // make sure there is new li
 readfile($dir. 'prototip.js'     ); echo "\n";      // make sure there is new line after each file, in order we do not mix lats and first line of the files
 readfile($dir. 'control.tabs.js' );
 ?>
-
 // polyfills - will be removed when the incompatible browsers will not be supported by its creator
 if (window.NodeList && !NodeList.prototype.forEach) {
     NodeList.prototype.forEach = Array.prototype.forEach;
@@ -217,10 +216,10 @@ function displayInput(valdivid, item_id, fid, widget_type, widget_properties, co
             if(firstElement != null) {
                 firstElement.activate();
                 $(firstElement).on('keydown', function(event) {
-                  switch (event.keyCode) {
-                     // done by type submit case 13: $(this).nextAll('input.save-button').click();   break; // Enter
-                     case Event.KEY_ESC: $(valdivid).select('input.cancel-button')[0].simulate('click'); break; // Esc
+                  if (event.key === 'Escape') {
+                     $(valdivid).select('input.cancel-button')[0].simulate('click');
                   }
+                  // done by type submit case 13: $(this).nextAll('input.save-button').click();   break; // Enter
                });
             }
     });
@@ -861,10 +860,10 @@ function SetCookie(name, value, plustime) {
 
 function getCookieVal(offset) {
     var endstr = document.cookie.indexOf(";", offset);
-    if (endstr == -1) {
+    if (endstr === -1) {
         endstr = document.cookie.length;
     }
-    return unescape(document.cookie.substring(offset, endstr));
+    return decodeURIComponent(document.cookie.substring(offset, endstr));
 }
 
 function GetCookie(name) {

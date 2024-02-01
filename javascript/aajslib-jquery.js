@@ -517,15 +517,12 @@ function AA__liveSearch(id, viewparam, deflt) {
 
 /** used with conjunction with livesearch for arrows navigation */
 function AA__Keynavigate(e) {
-    if (e.keyCode == 40) {
+    if (e.key === 'ArrowDown') {
         $("a:focus").closest('li').next().find('a.move').focus();
     }
-
-    // Up key
-    if (e.keyCode == 38) {
+    if (e.key === 'ArrowUp') {
         $(".move:focus").closest('li').prev().find('a.move').focus();
     }
-    
 }
 
 /* text - string or url (begins with '/')
@@ -784,10 +781,10 @@ function SetCookie(name, value, plustime) {
 
 function getCookieVal(offset) {
     var endstr = document.cookie.indexOf(";", offset);
-    if (endstr == -1) {
+    if (endstr === -1) {
         endstr = document.cookie.length;
     }
-    return unescape(document.cookie.substring(offset, endstr));
+    return decodeURIComponent(document.cookie.substring(offset, endstr));
 }
 
 function GetCookie(name) {

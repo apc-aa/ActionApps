@@ -199,7 +199,7 @@ class AA_Poll {
         $set->addSortorder(new AA_Sortorder(['priority' => 'a']));
 
         $zids     = AA::Metabase()->queryZids(['table'=>'polls_answer'], $set);
-        $itemview = new itemview($format, new AA_Aliases(new AA_Aliasgenerator_Answer), $zids, 0, $zids->count(), shtml_url(), "", [['AA_Metabase', 'getContent'], ['table' => 'polls_answer']]);
+        $itemview = new itemview($format, new AA_Aliases(new AA_Aliasgenerator_Answer), $zids, 0, $zids->count(), shtml_url(), [], [['AA_Metabase', 'getContent'], ['table' => 'polls_answer']]);
 
         return $itemview->get_output();
     }

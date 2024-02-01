@@ -29,7 +29,7 @@ class DB_MySQL extends AbstractDB {
     /* private: link and query handles */
     protected $Link_ID = null;
 
-    /** @var null|object|bool */
+    /** @var bool|\mysqli_result */
     protected $Result  = null;
 
     /**

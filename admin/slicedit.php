@@ -265,14 +265,14 @@ FrmInputNumber("d_listlen", _m("Listing length"), $sarr['d_listlen'], 0, 99999, 
 
 //mimo's MLX
 if ($slice_id && ($mlx_ctrl_for = DB_AA::select1('name', 'SELECT name FROM `slice`', [['mlxctrl', $slice_id, 'l']]))) {
-    FrmStaticText(_m("MLX Control Slice for"), $mlx_ctrl_for, 0, "http://mimo.gn.apc.org/mlx/");
+    FrmStaticText(_m("MLX Control Slice for"), $mlx_ctrl_for, 0, "https://actionapps.org/faq/detail.shtml?x=2290");
 } else {
     $mlx_slices = DB_AA::select(['unpackid'=>'name'], "SELECT LOWER(HEX(`id`)) AS unpackid, `name` FROM `slice` WHERE ((mlxctrl IS NULL) OR (mlxctrl='')) ORDER BY `name`");
-    FrmInputSelect('mlxctrl', _m("MLX: Language Control Slice"), $mlx_slices, unpack_id($sarr['mlxctrl']), false, "", "http://mimo.gn.apc.org/mlx/");
+    FrmInputSelect('mlxctrl', _m("MLX: Language Control Slice"), $mlx_slices, unpack_id($sarr['mlxctrl']), false, "", "https://actionapps.org/faq/detail.shtml?x=2290");
 }
 
 if ($superadmin) {
-    FrmInputSelect("fileman_access", _m("File Manager Access"), getFilemanAccesses(), $sarr['fileman_access'], false, "", "http://apc-aa.sourceforge.net/faq/#1106");
+    FrmInputSelect("fileman_access", _m("File Manager Access"), getFilemanAccesses(), $sarr['fileman_access'], false, "", "https://actionapps.org/faq/detail.shtml?x=1697");
     FrmInputText("fileman_dir", _m("File Manager Directory"), $sarr['fileman_dir'], 99, 50, false, "", "https://actionapps.org/faq/detail.shtml?x=1698");
 }
 

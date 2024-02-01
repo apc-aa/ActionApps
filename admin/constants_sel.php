@@ -66,7 +66,8 @@ HtmlPageBegin(true);
     function updateChanges(myform) {
       let filterf = window.opener.document["filterform"]
         filterf.elements["<?php echo $var_id ?>"].value = "";
-      for (var i = 0; i < myform.elements.length-1; i++) {
+        let t_val;
+        for (var i = 0; i < myform.elements.length - 1; i++) {
             if ((myform.elements[i].type === "checkbox") && (myform.elements[i].checked === true)) {
                 t_val = filterf.elements["<?php echo $var_id ?>"].value;
                 if (t_val == "") {
@@ -76,7 +77,7 @@ HtmlPageBegin(true);
                 }
                 filterf.elements["<?php echo $var_id ?>"].value = t_val;
             }
-      }
+        }
       window.close();
     }
 </script>
