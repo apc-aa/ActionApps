@@ -49,11 +49,11 @@ try {
     // array ( 1 => 4, )
     $foo = InputVars::boolGET('foo');
     // array ( 0 => 4, )-array ( '' => 3, 'v4161616161…' => 1, 'v4955595446' => 3, )
-    $group_id = InputVars::stringSlashedGETPOST('group_id'); // -alnum
+    $group_id = InputVars::stringGETPOST('group_id'); // -alnum
     // array ( )
     $name = InputVars::arrayPOST('name');
     // array ( 'JVFTGMCGHC' => 1, 'Aaaaaaa' => 1, 'IUYTF' => 1, )
-    $new_group_id = InputVars::stringSlashedPOST('new_group_id'); // alpha
+    $new_group_id = InputVars::stringPOST('new_group_id'); // alpha
     // array ( )
     $pri = InputVars::arrayPOST('pri');
     // array ( 'on' => 4, )
@@ -65,6 +65,7 @@ try {
     // array ( )
     $used = InputVars::arrayPOST('used');
     // array ( )
+    $chown = InputVars::boolPOST('chown');
 
     // Hierarchy editor
     $hcalldata = InputVars::stringPOST('hcalldata');
@@ -127,7 +128,7 @@ function ShowConstant($id, $name, $value, $cid, $pri, ?array $using_slices_arr=n
         }
     }
 
-    $name = safe($name); $value=safe($value); $pri=safe($pri); $cid=safe($cid);
+    $name = safe($name); $value=safe($value); $pri=safe($pri); $cid=safe($cid); $id=safe($id);
 
     echo "
     <tr>
@@ -141,12 +142,13 @@ function ShowConstant($id, $name, $value, $cid, $pri, ?array $using_slices_arr=n
 
 /** propagateChanges function
  * Propagates changes to a constant value to the items which contain this value.
- *   @param $constant_id
- *   @param string $newvalue The new value with added slashes (e.g. from a form)
- *   @param $oldvalue
+ * @param string $group_id packed id of constant group
+ * @param        $constant_id
+ * @param string $newvalue The new value with added slashes (e.g. from a form)
+ * @param        $oldvalue
  */
-function propagateChanges($constant_id, $newvalue, $oldvalue) {
-    global $group_id, $Msg;
+function propagateChanges($group_id, $constant_id, $newvalue, $oldvalue) {
+    global $Msg;
 
     if ($oldvalue == $newvalue) return;
 
@@ -158,6 +160,8 @@ function propagateChanges($constant_id, $newvalue, $oldvalue) {
     $db = getDB();
 
     if ($oldvalue) {
+        $qgroup_id = quote($group_id);
+
         // we have to join also item table in order we make sure field is in right slice
         $db->query("
         SELECT item_id,field_id
@@ -165,8 +169,8 @@ function propagateChanges($constant_id, $newvalue, $oldvalue) {
          WHERE content.item_id=item.id
            AND item.slice_id = field.slice_id
            AND content.field_id = field.id
-           AND (field.input_show_func LIKE '___:$group_id:%'
-            OR  field.input_show_func LIKE '___:$group_id')
+           AND (field.input_show_func LIKE '___:$qgroup_id:%'
+            OR  field.input_show_func LIKE '___:$qgroup_id')
            AND content.text = '$oldvalue'");
         while ($db->next_record()) {
             ++$cnt;
@@ -203,22 +207,19 @@ if ($update) {
         foreach ($name as $key => $nam) {
             $prior     = $pri[$key];
             $val       = $value[$key];
-            $cid[$key] = (($cid[$key]=="") ? "x".new_id() : $cid[$key] );  // unpacked, with beginning 'x' for string indexing array
             ValidateInput("nam", _m("Name"), $nam, $err, false, "text");   // if not filled it will be deleted
             ValidateInput("val", _m("Value"), $val, $err, false, "text");
             ValidateInput("prior", _m("Priority"), $prior, $err, false, "number");
         }
 
-        if (!$group_id) {  // new constant group
-            $new_group_id = str_replace(':','-',$new_group_id);  // we don't need ':'
+        if (!strlen($group_id)) {  // new constant group
+            $new_group_id = substr(ConvertEncoding(str_replace(':','-',$new_group_id),'','us-ascii'),0,16);  // we don't need ':' nor UTF characters - we have 16 Bytes
                                                                  // in id (parameter separator)
             ValidateInput("new_group_id", _m("Constant Group"), $new_group_id, $err, true, "text");
             if (count($err)) {
                 break;
             }
-            $SQL = "SELECT * FROM constant WHERE group_id = '$new_group_id'";
-            $db->query($SQL);
-            if ($db->next_record()) {
+            if (DB_AA::test('constant', [['group_id',$new_group_id]])) {
                 $err["DB"] = _m("This constant group already exists");
             } else {
                 $add_new_group = true;
@@ -232,66 +233,56 @@ if ($update) {
 
         if ($group_id) {
             // if there is no group owner, promote this slice to owner
-            $db->query("SELECT * FROM constant_slice WHERE group_id='$group_id'");
-            if (!$db->next_record()) {
-                $db->query("
-                INSERT INTO constant_slice (slice_id,group_id,propagate)
-                VALUES ( ".xpack_id(AA::$module_id) .",'$group_id',".($propagate_changes ? 1 : 0).");");
+            $data_constant_slice = ['group_id' => $group_id, 'propagate' => ($propagate_changes ? 1 : 0)];
+            if (!DB_AA::test('constant_slice', [['group_id',$group_id]])) {
+                $data_constant_slice['slice_id'] = AA::$module_id;
+                AA::Metabase()->doInsert('constant_slice', $data_constant_slice);
             } else {
-                $db->query("
-                UPDATE constant_slice SET propagate=".($propagate_changes ? 1 : 0)."
-                WHERE group_id = '$group_id'");
                 if ($new_owner_id) {
-                    $db->query("
-                    UPDATE constant_slice SET slice_id='".addslashes(pack_id($new_owner_id))."'
-                    WHERE group_id = '$group_id'");
-                    $chown = 0;
+                    $data_constant_slice['slice_id'] = $new_owner_id;
+                    $chown = false;
                 }
+                AA::Metabase()->doUpdate('constant_slice', $data_constant_slice);
             }
         }
 
         // add new group to constant group list
         if ($add_new_group) {
-            $varset->clear();
-            $varset->set("id", new_id(), "unpacked" );
-            $varset->set("group_id", 'lt_groupNames', "quoted" );
-            $varset->set("name", $group_id, "quoted");
-            $varset->set("value", $group_id, "quoted");
-            $varset->set("pri", 100, "number");
-            if (!$varset->doInsert('constant')) {
+            if (!AA::Metabase()->doInsert('constant', ['id' => new_id(), 'group_id' => 'lt_groupNames', 'name' => $group_id, 'value' => $group_id, 'pri' => 100])) {
                 $err["DB"] .= MsgErr("Can't create constant group");
                 break;
             }
         }
 
         foreach ($name as $key => $foonam) {
+            $new_constant = ($cid[$key]=="");
+            if ($new_constant) {
+                $cid[$key] = 'x'.new_id();
+            }
             $category_id = substr($cid[$key],1);     // remove beginning 'x'
-            $p_cid       = q_pack_id($category_id);
             // if name is empty, delete the constant
-            if ($foonam == "") {
-                if (!$db->query("DELETE FROM constant WHERE id='$p_cid'")) {
-                    $err["DB"] .= MsgErr("Can't delete constant");
-                    break;
+            if (($foonam == "")) {
+                if (!$new_constant) {
+                    if (!DB_AA::delete('constant', [['id',$category_id, 'l']])) {
+                        $err["DB"] .= MsgErr("Can't delete constant $category_id");
+                        break;
+                    }
                 }
                 continue;
             }
-            $varset->clear();
-            $varset->set("name",  $name[$key], "quoted");
-            $varset->set("value", $value[$key], "quoted");
-            $varset->set("pri", ( $pri[$key] ?: 1000), "number");
-            $db->query("SELECT * FROM constant WHERE id='$p_cid'");
-            if ($db->next_record()) {
+            $data_constant = ['id'=> $category_id, 'name' => $name[$key], 'value' => $value[$key], 'pri' => ( $pri[$key] ?: 1000)];
+            if (false !== ($oldval = DB_AA::select1('value', 'SELECT `value` FROM `constant`',[['id',$category_id,'l']]))) {
                 if ($propagate_changes) {
-                    propagateChanges($category_id, $value[$key], addslashes($db->f('value')));
+                    propagateChanges($group_id, $category_id, $value[$key], $oldval);
                 }
-                if (!$db->query("UPDATE constant SET ". $varset->makeUPDATE() ." WHERE id='$p_cid'")) {
+                $data_constant['id'] = $category_id;
+                if (!AA::Metabase()->doUpdate('constant', $data_constant)) {
                     $err["DB"] .= MsgErr("Can't update constant");
                     break;
                 }
             } else {
-                $varset->set("id", $category_id, "unpacked" );
-                $varset->set("group_id", $group_id, "quoted" );
-                if (!$varset->doInsert('constant')) {
+                $data_constant['group_id'] = $group_id;
+                if (!AA::Metabase()->doInsert('constant', $data_constant)) {
                     $err["DB"] .= MsgErr("Can't copy constant");
                     break;
                 }
@@ -310,9 +301,7 @@ if ($update) {
 
 // lookup constants
 if ($group_id OR $as_new) {
-    $gid = ( $as_new ?: $group_id );
-    $SQL = "SELECT id, name, value, pri FROM constant  WHERE group_id='$gid' ORDER BY pri, name";
-    $s_constants = GetTable2Array($SQL, "NoCoLuMn");
+    $s_constants = DB_AA::select([], 'SELECT `id`, `name`, `value`, `pri` FROM `constant`', [['group_id', ( $as_new ?: $group_id )]], ['pri', 'name']);
 }
 
 $apage = new AA_Adminpageutil('sliceadmin','fields');
@@ -379,16 +368,14 @@ echo "
 
 if (!$constant_info["owner_id"] || !$group_id) {
     echo _m("Whoever first updates values becomes owner.");
-}
-elseif ($chown AND is_array($g_modules) AND (count($g_modules) > 1) ) {
+} elseif ($chown AND is_array($g_modules) AND (count($g_modules) > 1) ) {
     // display the select box to change group owner if requested ($chown)
     echo "<select name=\"new_owner_id\">";
     foreach ($g_modules as $k => $v) {
         echo "<option value='". safe($k)."'". ($constant_info["owner_id"] == $k ? " selected" : ""). "> ". safe($v["name"]);
     }
     echo "</select>\n";
-}
-else {
+} else {
     echo $constant_info["name"]."&nbsp;&nbsp;&nbsp;&nbsp;
     <input type=\"submit\" name=\"chown\" value=\""._m("Change owner")."\">";
 }
@@ -404,9 +391,9 @@ echo "</td></tr>
  <th><b><a href=\"javascript:SortConstants('used')\">". _m("Used") ."</a></b><br>". _m("times") ."</th>
 </tr>";
 
+$i=0;
 // existing constants
 if ($s_constants) {
-    $i=0;
     foreach ($s_constants as $v) {
         if ($from_form) {  // get values from form
             ShowConstant($i, $name[$i], $value[$i], $cid[$i], $pri[$i], $using_slices_arr);
@@ -439,17 +426,17 @@ echo '
   var data2sort;
 
   function GetFormData( col2sort ) {
-    var i,element;
+    let i,element;
     data2sort = [];
-    for (i=0; i<='. $lastIndex .'; i++) {
-      element = "document.f.elements[\'"+col2sort+"["+i+"]\']";
-      // add rownumber at the end of the text (to be able to get old possition)
-      data2sort[i] = eval(element).value + " ~~"+i;
+    for (i=0; i<=' . $lastIndex .'; i++) {
+      element = document.getElementsByName(col2sort+"["+i+"]")[0];
+      // add rownumber at the end of the text (to be able to get old position)
+      data2sort[i] = element.value + " ~~"+i;
     }
   }
 
   function SortConstants(col2sort) {
-    var i, element, element2, text, row, counter = 10;
+    let i, element, element2, text, row, counter = 10;
     GetFormData(col2sort);
     data2sort.sort();
     for (i = 0; i <= '. $lastIndex .'; i++) {
@@ -457,9 +444,9 @@ echo '
       row = text.substring(text.lastIndexOf(" ~~") + 3);
       element = document.getElementsByName("pri[" + row + "]")[0];
       element2 = document.getElementsByName(col2sort + "[" + row + "]")[0];
-      if (element2.value == "")
+      if (element2.value === "") {
         element.value = 9000;
-      else {
+      } else {
         element.value = counter;
         counter += 10;  
       }
@@ -467,10 +454,10 @@ echo '
   }
 
   function SortPri( ) {
-    var i,element,counter=10;
+    let i,element,counter=10;
     for (i=0; i<='. $lastIndex .'; i++) {
-      element = "document.f.elements[\'pri["+i+"]\']";
-      eval(element).value = counter;
+      element = document.getElementsByName("pri["+i+"]")[0];
+      element.value = counter;
       counter += 10;
     }
   }
