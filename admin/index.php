@@ -80,7 +80,7 @@ try {
 
 
 
-// Allow edit current slice without slice_pwd
+// Allow editing current slice without slice_pwd
 AA_Credentials::singleton()->loadFromSlice(AA::$module_id);
 
 // id of the editted module (id in long form (32-digit hexadecimal number))

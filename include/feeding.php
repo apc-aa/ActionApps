@@ -228,8 +228,9 @@ function FeedItemTo($item_id, $from_slice_id, $destination_id, $approved, $tocat
 
     // prepare new4id array before call StoreItem function
     foreach ($fields_to as $newfld) {
-        $flag = $map[$newfld]['feedmap_flag'];
-        $val  = $map[$newfld]['val'];
+        $flag   = $map[$newfld]['feedmap_flag'];
+        $val    = $map[$newfld]['val'];
+        $minkey = 0;
 
         switch ($flag) {
             case FEEDMAP_FLAG_EMPTY : continue(2);
@@ -238,10 +239,11 @@ function FeedItemTo($item_id, $from_slice_id, $destination_id, $approved, $tocat
                     continue(2);
                 } else {
                     $new4id[$newfld] = $content4id[$val];
+                    $minkey = (is_array($new4id[$newfld]) AND $new4id[$newfld]) ? min(array_keys($new4id[$newfld])) : 0; // for language translation we do not start with 0
                     if ($fields->getProperty($val,'feed')==STATE_FEEDNOCHANGE ) {
-                        $new4id[$newfld][0]['flag'] |= FLAG_FREEZE;  // don't allow to change
+                        $new4id[$newfld][$minkey]['flag'] |= FLAG_FREEZE;  // don't allow to change
                     } elseif ($fields->getProperty($val,'feed')==STATE_FEEDABLE_UPDATE_LOCKED) {
-                        $new4id[$newfld][0]['flag'] |= FLAG_FREEZE | FLAG_UPDATE;   //update and don't allow to change
+                        $new4id[$newfld][$minkey]['flag'] |= FLAG_FREEZE | FLAG_UPDATE;   //update and don't allow to change
                     }
                 }
                 break;
@@ -262,12 +264,12 @@ function FeedItemTo($item_id, $from_slice_id, $destination_id, $approved, $tocat
                 break;
         }
 
-        $new4id[$newfld][0]['flag'] |= FLAG_FEED;      // mark as fed
+        $new4id[$newfld][$minkey]['flag'] |= FLAG_FEED;      // mark as fed
 
         // category mapping
         if ( $newfld == $catfieldid ) {
             if ( (string)$tocategory != "0" ) {    // if 0 - don't change category
-                $new4id[$newfld][0]['value'] = $destinationcat;
+                $new4id[$newfld][$minkey]['value'] = $destinationcat;
             }
         }
     }
@@ -399,7 +401,7 @@ function UpdateItems($item_id, $slice_id) {     // function UpdateItems($item_id
 }
 
 /** FeedItem function
- *  Feeds item to all apropriate slices
+ *  Feeds item to all appropriate slices
  * @param ItemContent $content4id - fed item
  * @return bool
  */
