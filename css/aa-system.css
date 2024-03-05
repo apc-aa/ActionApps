@@ -43,7 +43,6 @@ div[contenteditable] {
     background-color: #6E1F2C;
     border-color: #5C1823;
 }
-
 #aa-message-box {
     width: 100%;
     text-align: center;
@@ -78,7 +77,6 @@ div[contenteditable] {
 #aa-message-box.aa-ok > div:first-child {
     background-color: #E2FAC4;
 }
-
 /*multi chbox*/
 .aa-mch-selected  {
     line-height: 2;
@@ -111,9 +109,6 @@ div[contenteditable] {
 .aa-missing-option {
     color: #CC0000;
 }
-
-
-
 .aa-ajax-open {
     position:absolute;
     background:#f6f6f6;
@@ -122,7 +117,6 @@ div[contenteditable] {
     box-shadow:0 0 8px rgba(0,0,0,0.19);
     z-index:100;
 }
-
 /*aa-tools - start---------------------------*/
 /*aa-tools - reset*/
 .aa-tools section, .aa-tools article, .aa-tools aside, .aa-tools div, .aa-tools p, .aa-tools ul, .aa-tools ol, .aa-tools li, .aa-tools form, .aa-tools h1, .aa-tools h2, .aa-tools h3, .aa-tools h4 {
@@ -480,8 +474,8 @@ i.aa-tool-show {
     border-radius: 5px;
     position: absolute;
     right: 12px;
-        z-index: 100;
-        cursor: pointer;
+    z-index: 100;
+    cursor: pointer;
 }
 i.ico.aa-tool-edit:hover {
     box-shadow: 0 0 5px rgb(255, 109, 25);
@@ -563,7 +557,6 @@ i.ico.aa-tool-edit:hover {
     display: flex;
     flex-wrap: wrap;
     width: 100%;
-    /* border-bottom: 1px solid rgba(0, 0, 0, 0.21); */
 }
 .aa-rim .itemgroup {
     width: 100%;
@@ -576,11 +569,12 @@ i.ico.aa-tool-edit:hover {
     border: 1px solid rgba(0, 0, 0, 0.21);
     border-bottom: 0;
     justify-content: space-between;
+    align-items: flex-start;
     display: flex;
     margin: 0;
 }
 .aa-rim .item:last-child {
-   border-bottom: 1px solid rgba(0, 0, 0, 0.21);
+	border-bottom: 1px solid rgba(0, 0, 0, 0.21);
 }
 .aa-rim footer {
 	width: 100%;
@@ -603,7 +597,7 @@ i.ico.aa-tool-edit:hover {
 }
 .aa-rim i.ico {
     font-style: normal;
-    margin: 3px 0;
+    margin: 3px 5px;
     color: #ffffff;
     background: #545350;
     display: inline-block;
@@ -611,11 +605,27 @@ i.ico.aa-tool-edit:hover {
     padding: 5px 12px;
     cursor: pointer;
     text-align: center;
+    font-size: 0.75rem;
 }
 .aa-rim i.ico:hover {
     background: rgb(0, 0, 0);
 }
-.aa-rim i.ico.delete {
+.aa-rim .icogroup {
+    display: flex;
+    padding: 5px 0;
+}
+.aa-rim .icons {
+    flex: 1;
+    text-align: right;
+}
+.aa-rim .icogroup i.ico, .aa-rim .icons i.ico {
+	padding: 5px 6px;
+	line-height: 1.1;
+}
+.aa-rim .icons i.ico {
+    margin-right: 0;
+}
+.aa-rim .icogroup i.ico.delete {
     font-style: normal;
     font-weight: bold;
     border-radius: 50%;
@@ -625,6 +635,10 @@ i.ico.aa-tool-edit:hover {
     text-align: center;
     font-size: 12px;
     line-height: 25px;
+    margin: 2px 5px 0 0;
+}
+.aa-rim i.ico:before {
+    content: none;
 }
 .aa-rim i.ico.delete:hover {
     background-color: #e00303;
@@ -755,6 +769,7 @@ i.ico.aa-tool-edit:hover {
 /* ala table */
 .aa-group-tbl {
     display: flex;
+    align-items: baseline;
 }
 .aa-group-tbl .aa-field {
     margin-right: 10px;
@@ -791,7 +806,16 @@ i.ico.aa-tool-edit:hover {
     right: -27px;
     top: -4px;
 }
-
+/* ajax*/
+.aa-group-ajax .aa-field {
+    margin-right: 10px;
+}
+.aa-group-tbl.aa-group-ajax .aa-field {
+    padding-right: 5px;
+}
+.aa-field .ajax_value > br:first-child {
+    display: none;
+}
 /* toggle */
 .aa-group-toggle .togglelink {
     text-decoration: none;
@@ -814,6 +838,10 @@ i.ico.aa-tool-edit:hover {
 }
 .aa-group-toggle .togglelink:hover:before {
     background-color: rgb(0 0 0);
+}
+.aa-group-toggle .togglelink {
+    color: black !important;
+    text-decoration: none;
 }
 /* events */
 .aa-updating {

@@ -119,17 +119,10 @@ foreach ($_REQUEST as $k => $v) {
 }
 // ----- input variables normalization - end ----------------------------------
 
+$encap = ( array_key_exists('encap', $_REQUEST) AND ($_REQUEST['encap']=="false") ) ? false : true ;
 
 require_once __DIR__."/./include/config.php";
 require_once __DIR__ . "/include/util.php";
-
-try {
-    $encap = InputVars::stringGETPOST('encap');
-} catch (Exception $e) {}
-
-
-$encap = ( ($encap=="false") ? false : true );
-
 require_once __DIR__ . "/include/item.php";
 require_once __DIR__ . "/include/view.php";
 require_once __DIR__ . "/include/searchlib.php";

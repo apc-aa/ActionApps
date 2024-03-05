@@ -487,7 +487,8 @@ class itemview {
 
     // fill the foo_ids - ids to itemids to get from database
     if ( !$is_random ) {
-        if ( $this->group_fld AND AA_Alias::isAliasLike($this->group_fld, true) ) {
+        if ( $this->group_fld AND ($grp_al = AA_Alias::isAliasLike($this->group_fld, true)) ) {
+            $this->group_fld = $grp_al;   // replaces possible ABCDEFGH alias with _#ABCDEFGH
             $this->zids = new zids(explode_ids(StrExp('order', [join('-',$this->zids->short_or_longids()), $this->group_fld, 'locale'])));
         }
         elseif ((strlen($this->slice_info['group_by2'])==10) AND (substr($this->slice_info['group_by2'],0,2)=='_#')) {
@@ -646,6 +647,13 @@ class itemview {
                 // it shouldn't be set, but just in case - we do not want to redefine it
                 $CurItem->addAlias(new AA_Alias('_#GRP_NAME', ParamImplode(["f__", $catname]), 'id..............', _m("exact group name")));
 
+                if (is_null($catname = $this->zids->getAttr($zidx, 'group_by'))) {  // used in GetZidsFromSQL for group_limit...
+                    // $catname = $CurItem->getval($this->group_fld);
+                    $catname = $CurItem->subst_alias($this->group_fld);
+                }
+                // it shouldn't be set, but just in case - we do not want to redefine it
+                // @todo move it outside else - there it is just for first testing
+                $CurItem->addAlias(new AA_Alias('_#GRP_NAME', ParamImplode(["f__", $catname]), 'id..............', _m("exact group name")));
                 if ($this->slice_info['gb_header']) {
                     if ($this->slice_info['gb_header'] == 127) {  // all before ~
                         $catname = strtok($catname, '~');
