@@ -706,7 +706,7 @@ class AA_Inputfield {
             if (!$slice_field) {
                 $slice_field = GetHeadlineFieldID($sid, "headline.");
                 if (!$slice_field) {
-                    $slice_field = 'publish_date....';
+                    $slice_field = '_#HEADLINE';
                 }
             }
             if ( $whichitems < 1 ) {
