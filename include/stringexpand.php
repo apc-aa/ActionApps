@@ -611,8 +611,8 @@ class AA_Stringexpand_Icq extends AA_Stringexpand {
         if ( !$user_id ) {
             return "";
         }
-        $user_id = urlencode($user_id);
-        $action  = urlencode($action);
+        $user_id = rawurlencode($user_id);
+        $action  = rawurlencode($action);
         $style   = (int)$style;
 
         // set the url to the image and the stype of the image
@@ -641,9 +641,9 @@ class AA_Stringexpand_Skype extends AA_Stringexpand {
         if ( !$user_skype_name ) {
             return "";
         }
-        $user_skype_name = urlencode($user_skype_name);
-        $action          = urlencode($action);
-        $style           = urlencode($style);
+        $user_skype_name = rawurlencode($user_skype_name);
+        $action          = rawurlencode($action);
+        $style           = rawurlencode($style);
         $message         = safe($message);
 
         // start the rendering the html output
@@ -777,7 +777,7 @@ class AA_Stringexpand_Facebook extends AA_Stringexpand_Nevercache {
             $width  = 165;
             $height = 21;
         }
-        return "<iframe src=\"https://www.facebook.com/plugins/like.php?href=".urlencode($url)."&amp;width=$width&amp;layout=button_count&amp;action=like&amp;size=small&amp;show_faces=false&amp;share=$share&amp;height=$height\" width=\"$width\" height=\"$height\" style=\"border:none;overflow:hidden\" scrolling=no frameborder=0 allowTransparency=true allow=\"encrypted-media\"></iframe>";
+        return "<iframe src=\"https://www.facebook.com/plugins/like.php?href=".rawurlencode($url)."&amp;width=$width&amp;layout=button_count&amp;action=like&amp;size=small&amp;show_faces=false&amp;share=$share&amp;height=$height\" width=\"$width\" height=\"$height\" style=\"border:none;overflow:hidden\" scrolling=no frameborder=0 allowTransparency=true allow=\"encrypted-media\"></iframe>";
     }
 }
 
@@ -794,7 +794,7 @@ class AA_Stringexpand_Twitter extends AA_Stringexpand_Nevercache {
 }
 
 /** Expands {protectmail:<email>[:<text>]} - hides mail into javascript to protect against spammers
- *  <a href="mailto:<email>"><text></a>   (but encocded in javascript)
+ *  <a href="mailto:<email>"><text></a>   (but encoded in javascript)
  *
  *  @param string $email e-mail to protect
  *  @param string $text  text to be linked (if not specified, the $email is used)
@@ -4849,6 +4849,8 @@ class AA_Stringexpand_Live extends AA_Stringexpand_Edit {
  *  {ajax:{_#ITEM_ID_}:file............:<img src="/img/edit.gif" title="Upload new file"> :AA_Refresh('stickerdiv1')}
  *  {ajax:{_#ITEM_ID_}:file............:<img src="/img/edit.gif" title="Upload new file"> :AA_Refresh(this)}   // updates the first element with data-aa-url in DOM up
  *  {ajax::number..........:_#ANSWER__::sel:{"const_arr":{"0":"no","1":"yes"}}}
+ *
+ *  Editing could be switched off by defining the constant AA_FLAG_NOEDIT: {define:AA_FLAG_NOEDIT:1}
  **/
 class AA_Stringexpand_Ajax extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
@@ -6327,7 +6329,7 @@ class AA_Stringexpander implements \AA\Later\LaterInterface {
                     if ( strpos($this->getRequireFoot(), 'smart-eu-cookies') !== false) {
                         $rep = "// AA-Generated-GACONSENT - start";
                         $rep .= "\nvar aa_ga_storage = (document.cookie.indexOf('smart-eu-cookies') !== -1 && document.cookie.includes('smart-eu-cookies=1')) ? 'granted' : 'denied';";
-                        $rep .= "\ngtag('consent', 'default', {'ad_storage': aa_ga_storage,'analytics_storage': aa_ga_storage,'personalization_storage': aa_ga_storage});";
+                        $rep .= "\ngtag('consent', 'default', {'ad_storage': aa_ga_storage,'analytics_storage': aa_ga_storage,'personalization_storage': aa_ga_storage,'ad_personalization': aa_ga_storage,'ad_user_data': aa_ga_storage});";  // updated to consent mode v2
                         $rep .= "\n// AA-Generated-GACONSENT - end\n";
                         $replace_arr2[] = $rep;
                     } else {
@@ -7877,7 +7879,7 @@ class AA_Stringexpand_Imgtext extends AA_Stringexpand_Nevercachenotrim {
         if (!$width OR !$height OR !strlen(trim($text))) {
             return '';
         }
-        $txt        = urlencode($text);
+        $txt        = rawurlencode($text);
         $bg         = (strlen($background) ? $background : 'FFFFFF') .'|'. (strlen($bg_opacity) ? $bg_opacity : '0');
 //        $color      = (strlen($color) ? $color : '000000');
         $param      = join('|', [$txt, $size, $alignment, $color, $font, $opacity, $margin, $angle, $background, $bg_opacity]);
@@ -8119,13 +8121,13 @@ class AA_Stringexpand_Qs extends AA_Stringexpand_Nevercachenotrim {
         }
         $ret = '';
         if (strpos($variable_name,'[')!==false) {
-            $qstring = urldecode(shtml_query_string());
+            $qstring = rawurldecode(shtml_query_string());
             if (strpos($qstring, $variable_name) !== false) {
                 $qarr = explode('&', $qstring);
                 foreach ($qarr as $vardef) {
                     [$var,$val] = explode('=',$vardef);
                     if ($var == $variable_name) {
-                        $ret = urldecode($val);
+                        $ret = rawurldecode($val);
                         break;
                     }
                 }
@@ -9175,7 +9177,8 @@ class AA_Stringexpand_Foreach extends AA_Stringexpand {
  *  Use as:
  *    {mail:1:honza.malik@ecn.cz:test mail:{view:24}:utf-8:actionapps@ecn.cz}
  *    {mail:1:["test@ecn.cz,"info@ecn.cz"]:test mail:{view:24}:utf-8:actionapps@ecn.cz:actionapps@ecn.cz:actionapps@ecn.cz:actionapps@ecn.cz::https#://test.org/img/img1.png}
- *    {mail:1:["test@ecn.cz,"info@ecn.cz"]:test mail:{view:24}:utf-8:actionapps@ecn.cz:::::["https#://test.org/img1.png","https#://test.org/img2.png"]}
+ *    {mail:1:test@ecn.cz:test mail:{view:24}:utf-8:actionapps@ecn.cz:::::["https#://test.org/img1.png","https#://test.org/img2.png"]}
+ *    {mail:1:test@ecn.cz:test mail:{view:24}:utf-8:actionapps@ecn.cz:::::{"First.png":"https://test.org/img1.png","Second.png":"https://test.org/img2.png"}}  - renamed attachements
  *    {mail:1:test@ecn.cz:test mail:Hi, I am body of mail:utf-8:actionapps@ecn.cz:::::{@file............:json}}
  */
 class AA_Stringexpand_Mail extends AA_Stringexpand_Nevercache {
@@ -9209,8 +9212,6 @@ class AA_Stringexpand_Mail extends AA_Stringexpand_Nevercache {
         $cc  = join(',',AA_Validate::filter(json2arr($cc), 'email'));
         $bcc = join(',',AA_Validate::filter(json2arr($bcc), 'email'));
 
-        $attach = ParamImplode(json2arr($attachments));
-
         $mail_arr = [
             'subject'     => $subject,
             'body'        => $body,
@@ -9222,7 +9223,7 @@ class AA_Stringexpand_Mail extends AA_Stringexpand_Nevercache {
             'html'        => 1,
             'cc'          => $cc,
             'bcc'         => $bcc,
-            'attachments' => $attach,
+            'attachments' => $attachments,
         ];
 
         $mail = new AA_Mail;

@@ -58,10 +58,10 @@ if (empty($to)) {
 $body = strlen(trim($config_arr['body'])) ? str_replace('_#1', $inner_body, $config_arr['body']) : $inner_body;
 $mail_arr = [
     'subject'     => $config_arr['subject'],
-                   'body'        => $body,
-                   'header_from' => $config_arr['from'],
-                   'lang'        => $config_arr['lang'],
-                   'html'        => 1
+    'body'        => $body,
+    'header_from' => $config_arr['from'],
+    'lang'        => $config_arr['lang'],
+    'html'        => 1
 ];
 
 $mail = new AA_Mail;

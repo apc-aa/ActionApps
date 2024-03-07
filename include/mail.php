@@ -38,7 +38,7 @@ require_once __DIR__ . "/stringexpand.php";
 require_once __DIR__ . "/htmlMimeMail/htmlMimeMail.php";
 require_once __DIR__ . "/validate.php";
 
-
+// not used yet
 class AA_Mailtemplate implements AA_iEditable {
     protected $record;
 
@@ -76,6 +76,8 @@ class AA_Mailtemplate implements AA_iEditable {
     /** AA_iEditable method - save the object to the database */
     public        function save() {}
 }
+
+
 
 class AA_Mail extends htmlMimeMail implements \AA\Later\LaterInterface {
 
@@ -121,7 +123,7 @@ class AA_Mail extends htmlMimeMail implements \AA\Later\LaterInterface {
         return $this->setFromArray($record);
     }
 
-    /** record array('subject','body','header_from','reply_to','errors_to','sender','lang','html','cc','bcc')  */
+    /** record array('subject','body','header_from','reply_to','errors_to','sender','lang','html','cc','bcc','attachments')  */
     function setFromArray(array $record) {
         // do not send empty emails
         if ( !strlen(trim($record["body"]))) {
@@ -147,15 +149,37 @@ class AA_Mail extends htmlMimeMail implements \AA\Later\LaterInterface {
         }
 
         if ($record['attachments']) {
-            $attachs = ParamExplode($record['attachments']);
-            foreach ($attachs as $attachment) {
-                if ($attachment) {
-                    $att_data = $this->getFile($attachment);
-                }
-                $this->addAttachment($att_data, basename(parse_url($attachment, PHP_URL_PATH)));
-            }
+            $this->addAttachmentFromString($record['attachments']);
         }
         return true;
+    }
+
+    /** Adds attachments to the e-mail
+     * @param string $string either colon separated list of files (https#://test.org/img1.png:https#://test.org/img2.png)
+     *                       or json array of files (["https://test.org/img1.png","https://test.org/img2.png"])
+     *                       or json object of files ({"filename1.png":"https://test.org/img1.png","filename2.png":"https://test.org/img2.png"})
+     */
+    protected function addAttachmentFromString(string $string) {
+        switch ($string[0]) {
+            case '[':
+                $att_arr = json2arr($string);
+                break;
+            case '{':
+                $att_arr = json2asoc($string);
+                break;
+            default:
+                $att_arr = ParamExplode($string);
+        }
+        foreach ($att_arr as $name => $attachment) {
+            if ($attachment) {
+                if (strlen($att_data = $this->getFile($attachment))) {
+                    if (ctype_digit((string)$name)) {
+                        $name = basename(parse_url($attachment, PHP_URL_PATH));
+                    }
+                    $this->addAttachment($att_data, $name);
+                }
+            }
+        }
     }
 
     /** sendLater function
