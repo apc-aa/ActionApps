@@ -399,7 +399,7 @@ class AA_Form extends AA_Object implements \AA\Util\NamedInterface {
             $content->setOwnerId($this->object_owner);
         } else {
             $managed  = \AA\Managed::factoryFromType($this->object_type);
-            $contents = $managed->getContent(new zids($this->object_id));
+            $contents = $managed->getContent(new zids($this->object_id, $managed->getZidsType()));
 
             // $contents = call_user_func_array([$this->object_type, 'getContent'], [['class'=>$this->object_type, 'owner'=>$this->object_owner], new zids($this->object_id)]);
             //$contents = AA_Object::getContent(['class'=>$this->object_type], new zids($this->object_id));

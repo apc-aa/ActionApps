@@ -177,17 +177,19 @@ class ObjectForm extends AbstractGrabber
         switch ($dirty_obj_id[0]) {
             case 'u':
                 $ret['store_mode'] = 'update';
-                $ret['id'] = substr($dirty_obj_id, 1, 32);
+                // allowing utf string ids (for table nodes...)
+                $ret['id'] = rawurldecode(substr($dirty_obj_id, 1));     // substr($dirty_obj_id, 1, 32);
                 break;
             case 'i':
                 $ret['store_mode'] = 'add';
-                $ret['id'] = substr($dirty_obj_id, 1, 32);
+                // allowing utf string ids (for table nodes...)
+                $ret['id'] = rawurldecode(substr($dirty_obj_id, 1));     // substr($dirty_obj_id, 1, 32);
                 break;
             case 'n':
                 $ret['store_mode'] = 'new';
                 $ret['id'] = $id_trans_table['_#' . $dirty_obj_id];
                 $owner_start_char = strpos($dirty_obj_id, '_') + 1;
-                $ret['owner'] = substr($dirty_obj_id, $owner_start_char, 32);
+                $ret['owner'] = substr($dirty_obj_id, $owner_start_char, 32);  // @todo - check if 32 is OK for string forms (rawurldecode?)
                 break;
         }
         return $ret;

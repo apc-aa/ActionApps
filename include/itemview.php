@@ -625,7 +625,8 @@ class itemview {
             $GLOBALS['QueryIDsGroupIndex'][]     = $group_index;   // So that _#GRP_INDX = f_e:groupindex can find it
             $GLOBALS['QueryIDsItemGroupIndex'][] = $ingroup_index; // So that _#IGRPINDX = f_e:itemgroupindex can find it
 
-            $iid = $this->zids->short_or_longids($zidx);
+            // $iid = $this->zids->short_or_longids($zidx);
+            $iid = $this->zids->id_slw($zidx);
             if ( !$iid ) {
                 huhe("Warning: itemview: got a null id");
                 continue;
@@ -635,6 +636,7 @@ class itemview {
 
             $OldItem = clone($CurItem);  // this could be used in CATEGORY BOTTOM -
                                   // we need old item aliases & content there
+
             $this->setColumns($CurItem, $iid);   // set right content for aliases
 
             if ($this->group_fld) {

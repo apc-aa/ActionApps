@@ -290,6 +290,10 @@ class Managed {
         }
     }
 
+    /** which typ of zids it uses - 's' | 'l' | 'w' */
+    public function getZidsType(): string {
+        return 'l';
+    }
 }
 
 class Managed_Object extends Managed {
@@ -322,6 +326,8 @@ class Managed_Object extends Managed {
         return AA_Object::getContent($zids, ['class' => $this->class]);
     }
 
+
+
     /**
      * @return string
      */
@@ -345,7 +351,7 @@ class Managed_Table extends Managed {
 
     /** @inheritDoc */
     public function getForm(?string $id, ?string $module_id): ?AA_Form {
-        $props = AA::Metabase()->getColumnProperties($this->table);
+        $props = AA::Metabase()->getColumnProperties($this->table, (bool)$id);
         foreach ($props as $k => $prop) {
             if ($setting = $this->widget_setting[$k]) {
                 if (isset($setting['type'])) {
@@ -400,6 +406,15 @@ class Managed_Table extends Managed {
     /** @inheritDoc */
     public function getContent(zids $zids): array {
         return AA_Metabase::getContent($zids, ['table' => $this->table]);
+    }
+
+    /** which typ of zids it uses - 's' | 'l' | 'w' */
+    public function getZidsType(): string {
+        if (!($zid_type = AA::Metabase()->getZidsType($this->table))) {
+            warn("This table cannot be used in Manager - no zids type defined");
+            exit;
+        }
+        return $zid_type;
     }
 
     /**
@@ -730,7 +745,7 @@ class Manager extends AA_Storable {
         if (!is_array($_POST['chb']) AND ($_POST['aa_akce_all']=='1')) {
             return $this->getZids();
         }
-        return (new zids())->setFromItemArr($_POST['chb'] ?? $_GET['chb'] ?? []);
+        return (new zids([], $this->managed->getZidsType()))->setFromItemArr($_POST['chb'] ?? $_GET['chb'] ?? []);
     }
 
     /** performActions function

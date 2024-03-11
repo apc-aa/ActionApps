@@ -224,11 +224,14 @@ class AA_MbC {
         return $type;
     }
 
-    function getAsProperty(): ?AA_Property {
-        if ($this->isKey() OR (strtolower($this->c[5]) == 'auto_increment')) {
-            return null;
-        }
+    function getAsProperty(bool $edit=true): ?AA_Property {
         $type = $this->getFieldType();
+        if ($this->isKey() OR (strtolower($this->c[5]) == 'auto_increment')) {
+            // for editing or int/long/packed ids do not allow editing - allow edit keys just for new text field (nodes table)
+            if ($edit OR ($type=='int') OR ($type=='float') OR $this->getMaxLength()<=32) {
+                return null;
+            }
+        }
         // $id,       $name,     $type, $multi, $persistent, $validator, $required, $input_help, $input_morehlp='', $example='', $show_content_type_switch=0, $content_type_switch_default=, $perms=null, $default=null) {
         $validator = ($len = $this->getMaxLength()) ? [$type,['maxlength'=>$len]] : $type;
         $required  = false; //  !($this->c[2]) - nonsense
@@ -426,6 +429,21 @@ class AA_MbT implements Iterator, ArrayAccess, Countable {
     function isKey($columnname): bool {
         return ($this->k[$columnname] ? true : false);
     }
+
+    /** get type of this key for zids object - 's' | 'w' | 'p' | 'l'
+     * @param string $key
+     */
+    public function getZidsType(string $key): string {
+        $column = $this->c[$key];
+        if ($column->getFieldType() == 'int') {
+            return 's';   // short int
+        }
+        if ($column->getMaxLength() > 32) {
+            return 'w';   // sting
+        }
+        return AA_Metabase::isPacked($this->t, $key) ? 'p' : 'l';
+    }
+
 
     function getCreateSql(string $prefix='', string $engine_template_table=''): string {
         $sql_parts = [];
@@ -992,6 +1010,16 @@ class AA_Metabase {
         return $this->tables[$tablename]->getSearchfields();
     }
 
+    /** get zid-object type for key of this table - 's' | 'w' | 'p' | 'l' | '' (error) */
+    public function getZidsType($tablename) {
+        $keys     = $this->getKeys($tablename);
+        if (count($keys) != 1) {
+            warn("you can't use this function for [$tablename] table - " . count($keys) . " keys");
+            return '';
+        }
+        return $this->tables[$tablename]->getZidsType($keys[0]);
+    }
+
     /** @return array rows from $tablename for given $module_id in form
      *          ret[id] = array('column'=>value, ...)
      *          ids are always UNPACKED (as keys as well as in values)
@@ -1193,12 +1221,10 @@ class AA_Metabase {
 
         if ( $debug ) huhl( "<br>Conds:", $conds, "<br>--<br>Sort:", $sort, "<br>--");
 
-        $metabase    = AA::Metabase();
-
-        $fields      = $metabase->getSearchArray($tablename);
+        $fields      = $this->getSearchArray($tablename);
         $join_tables = [];   // not used in this function
 
-        $keys        = $metabase->getKeys($tablename);
+        $keys        = $this->getKeys($tablename);
         if (count($keys) != 1) {
             // you can't use this function for that table - this is programmers mistake - correct the code
             echo "Missing key for table $tablename in AA::Metabase()->queryZids()";
@@ -1212,7 +1238,7 @@ class AA_Metabase {
         $SQL   .= ($where ? "WHERE (1=1) $where" : '');
         $SQL   .= MakeSQLOrderBy($fields, $sort, $join_tables);
 
-        return GetZidsFromSQL($SQL, $key, 'z');
+        return GetZidsFromSQL($SQL, $key, $this->tables[$tablename]->getZidsType($key));
     }
 
     static function queryCount($settings, $set) {
@@ -1271,20 +1297,16 @@ class AA_Metabase {
 //        return $ret;
 //    }
 
-    /** AA_Property for $tablename and column */
-    function getColumnProperty($tablename, $columnname) {
-        return (is_object($table = $this->tables[$tablename]) AND is_object($column = $table[$columnname])) ? $column->getAsProperty() : null;
-    }
-
     /** AA_Propery array - for form generation
-     * @param $tablename
+     * @param string $tablename
+     * @param bool   $edit
      * @return AA_Property[]
      */
-    function getColumnProperties($tablename): array {
+    function getColumnProperties(string $tablename, bool $edit=true): array {
         $table = $this->tables[$tablename];
         $ret   = [];
         foreach ($table as $column) { // in priority order
-            if ($prop = $column->getAsProperty()) {
+            if ($prop = $column->getAsProperty($edit)) {
                 $ret[$column->getName()] = $prop;
             }
         }
@@ -1314,8 +1336,9 @@ class AA_Metabase {
         // for now, we support only tables with 1-column key, but it could be extended to id|module type of id later
         if (count($keys)==1) {
             $actions->addAction(new \AA\Manageraction\Table_Row_Delete('DeleteTRow'));
-            $key_alias = $aliases->getNamesForField($keys[0])[0];
-            $edit_url = array_key_exists('edit_url', $set) ? str_replace('_#id', $key_alias, $set['edit_url']) : get_url('', ["id=$key_alias"], true);
+            // $key_alias = $aliases->getNamesForField($keys[0])[0];
+            $key_alias = "{rawurlencode:{".$keys[0]."}}";
+            $edit_url = array_key_exists('edit_url', $set) ? str_replace('_#id', "{rawurlencode:{".$keys[0]."}}", $set['edit_url']) : get_url('', ["id={rawurlencode:{".$keys[0]."}}"], true);  // can't be shorted - we need {} aroud the key_alias; $key_alias is sefe()d, which we not need
             $buttons['Edit'] = a_href($edit_url, _m('Edit'), ['class' => 'aa-button-edit']);
         }
         $buttons = array_merge($buttons, $actions->getManagerButtons('', $key_alias, AA::$module_id), $addbuttons);

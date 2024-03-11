@@ -65,7 +65,7 @@ class FormArray
 
         $oid = $content->getId();
         if ($oid) {
-            return "aa[u$oid][$form_field_id]";
+            return 'aa[u'.rawurlencode($oid).']['.rawurlencode($form_field_id).']';
         }
 
         $oowner = $content->getOwnerID();

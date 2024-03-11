@@ -119,7 +119,7 @@ class zids implements Iterator, ArrayAccess, Countable {
             case 's': $this->a = array_values(array_filter($this->a, 'is_short_id'));  break;
             case 'l': $this->a = array_values(array_filter($this->a, 'is_long_id'));   break;
             case 'p': $this->a = array_values(array_filter($this->a, 'is_packed_id')); break;
-            case 'w': $this->a = array_values(array_filter($this->a, 'is_string_id')); break;
+            case 'w': break;   // strings stored as plain strings - not "'" added in front
         }
     }
 
@@ -140,7 +140,7 @@ class zids implements Iterator, ArrayAccess, Countable {
      * @return zids
      */
     public function setFromItemArr(array $item_arr) {
-        return $this->clear()->add(array_map(fn ($k) => ltrim($k, 'x'), array_keys($item_arr)));   // in some managers we use 'x' before the item id - remove it
+        return $this->clear($this->type)->add(array_map(fn ($k) => rawurldecode(strpos($k, 'x') === 0 ? substr($k, 1) : $k), array_keys($item_arr)));   // in some managers we use 'x' before the item id - remove it
     }
 
     /** clear function - removes all zids and resets
@@ -155,8 +155,8 @@ class zids implements Iterator, ArrayAccess, Countable {
     }
 
 
-    /** adds ids from $ids array and checks if the valueas are short or long
-     *  wrong valuas are not added
+    /** adds ids from $ids array and checks if the values are short or long
+     *  wrong values are not added
      * @return zids this
      */
     function addDirty($ids) {
@@ -324,13 +324,21 @@ class zids implements Iterator, ArrayAccess, Countable {
     }
 
     /** id function
-     * Return nth id, note there is no guarrantee what format this will be in, so its
+     * Return nth id, note there is no guarantee what format this will be in, so its
      * only really useful for serialization or if type is checked as well
      * @param $idx
      * @return
      */
     function id($idx=0) {
         return $this->a[$idx];
+    }
+
+    /** similar to short_or_longids() but is for one value and counts with string zids ('s', 'l', 'w') */
+    public function id_slw(int $idx=0) {
+        if (array_key_exists($idx, $this->a)) {
+            return in_array($this->type, ['s','l','w']) ? $this->a[$idx] : $this->longids($idx);
+        }
+        return false;
     }
 
     /**
@@ -454,7 +462,7 @@ class zids implements Iterator, ArrayAccess, Countable {
             if ( $column == 'short_or_long' ) {
                 $column = ( $this->use_short_ids() ? "item.short_id" : "item.id" );
             }
-            if ( $asis OR ($this->type == 's') ) {
+            if ( $asis OR in_array($this->type, ['s','w']) ) {
                 $id_list = join(",",array_map("qquote",$this->a));
             } else {
                 $id_list = join(",",array_map('xpack_id',$this->longids()));
@@ -659,14 +667,13 @@ function quote($str): string {
     return addslashes($str);
 }
 
-/** q_pack_id function
- * returns packed and quoted id
+/**
+ * returns packed and quoted id - better to use xpack_id()
  * @param $unpacked_id
  * @return string
  */
 function q_pack_id($unpacked_id): string {
-    $foo = pack_id($unpacked_id);
-    return quote($foo);
+    return quote(pack_id($unpacked_id));
 }
 
 /** qquote function
