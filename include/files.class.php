@@ -509,23 +509,15 @@ class AA_File_Wrapper {
         $this->info = $info;
         $this->redirects = 5;
     }
+
 	/**
      * Read and return the contents of the file (like file_get_contents()).
      * @return string
      */
     function contents() {
-        $contents = '';
-		if ($retval = $this->open()) {
-			if (is_object($retval)) { // It may be a redirect
-				return $retval->contents();
-			}
-            while (!$this->eof()) {
-                $contents .= $this->read();
-            }
-            $this->close();
-        }
-        return $contents;
+        return file_get_contents($this->url);
     }
+
 	/**
      * Open the file.
      * @param $mode string only 'r' (read-only) is currently supported
@@ -599,13 +591,36 @@ class AA_File_Wrapper {
     }
 }
 
+/** Just to have common content function for next wrappers */
+class AA_File_Wrapper_Ext extends AA_File_Wrapper {
+
+    /**
+     * Read and return the contents of the file (like file_get_contents()).
+     * @return string
+     */
+    function contents() {
+        $contents = '';
+        if ($retval = $this->open()) {
+            if (is_object($retval)) { // It may be a redirect
+                return $retval->contents();
+            }
+            while (!$this->eof()) {
+                $contents .= $this->read();
+            }
+            $this->close();
+        }
+        return $contents;
+    }
+
+}
+
 
 /**
  * HTTP protocol class.
  *
  * for proxy (Proxy-Authorization) see https://gitlab.liu.se/edver36/pkp-lib/-/blob/ojs-stable-3_1_1/classes/file/wrappers/HTTPFileWrapper.inc.php?ref_type=heads
  */
-class AA_File_HTTP_Wrapper extends AA_File_Wrapper {
+class AA_File_HTTP_Wrapper extends AA_File_Wrapper_Ext {
     var $headers;
     var $defaultPort;
     var $defaultHost;
@@ -649,6 +664,25 @@ class AA_File_HTTP_Wrapper extends AA_File_Wrapper {
         }
         $this->headers[$name] = $value;
     }
+
+    /**
+     * Read and return the contents of the file (like file_get_contents()).
+     * @return string
+     */
+    function contents() {
+        $contents = '';
+        if ($retval = $this->open()) {
+            if (is_object($retval)) { // It may be a redirect
+                return $retval->contents();
+            }
+            while (!$this->eof()) {
+                $contents .= $this->read();
+            }
+            $this->close();
+        }
+        return $contents;
+    }
+
 
     /** open function
      * @param $mode
@@ -740,7 +774,7 @@ class AA_File_HTTPS_Wrapper extends AA_File_HTTP_Wrapper {
 /**
  * FTP protocol class.
  */
-class AA_File_FTP_Wrapper extends AA_File_Wrapper {
+class AA_File_FTP_Wrapper extends AA_File_Wrapper_Ext {
 	/** @var resource Control socket */
     var $ctrl;
 	/**
@@ -765,6 +799,7 @@ class AA_File_FTP_Wrapper extends AA_File_Wrapper {
         $this->close();
         return false;
     }
+
 	/**
 	 * Close an open file.
      */
