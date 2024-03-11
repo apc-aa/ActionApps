@@ -5288,7 +5288,7 @@ $_m["%1th parameter filled in DiscussionMailList field"]
 
 // include/loginform.inc, row 39
 $_m["Welcome!"]
- = "Přihlášení (Login) - <a href='http://www.ecn.cz'>Econnect</a> Toolkit 2.11";
+ = "Přihlášení (Login) - <a href='https://www.ecn.cz'>Ecn</a> Toolkit %1";
 
 // include/loginform.inc, row 41
 $_m["Welcome! Please identify yourself with a username and a password:"]

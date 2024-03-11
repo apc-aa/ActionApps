@@ -34,7 +34,7 @@ echo '<title>ActionApps - '.ORG_NAME.'</title>';
 ?>
 </head>
 <body style="text-align: center;">
-<h1><?php echo _m("Welcome!") ?></h1>
+<h1><?php echo _m("Welcome!", [aa_version('aa')]) ?></h1>
 <?php // styles to match the old login form ?>
 <style>
     body {
