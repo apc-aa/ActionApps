@@ -859,11 +859,11 @@ function Central_QueryZids(AA_Set $set): zids {
     $fields      = AA::Metabase()->getSearchArray('central_conf');
     $join_tables = [];   // not used in this function
 
-    $SQL  = 'SELECT DISTINCT id FROM central_conf WHERE ';
+    $SQL  = 'SELECT DISTINCT `id` FROM `central_conf` WHERE ';
     $SQL .= CreateBinCondition($type, 'central_conf');
     $SQL .= MakeSQLConditions($fields, $conds, $fields, $join_tables);
     $SQL .= MakeSQLOrderBy($fields, $sort, $join_tables);
 
-    return GetZidsFromSQL($SQL, 'id');
+    return GetZidsFromSQL($SQL, 'id', 's');
 }
 

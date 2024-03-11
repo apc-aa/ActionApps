@@ -1078,11 +1078,7 @@ class AA_Dbcondition {
         // new operators - no SQL parsing, no stripslashes
         switch ($operator) {
             case '==':
-                return [
-                    'INNER',
-                    '',
-                    "($qfield = '" . addcslashes($querystring, "'") . "')",
-                ];  // exact match (we added this because SQL Syntax parser in AA have problems with packed ids)
+                return ['INNER', '', "($qfield = '".quote($querystring)."')",];  // exact match (we added this because SQL Syntax parser in AA have problems with packed ids)
             case 'BEGIN':
                 return ['INNER', '', "($qfield LIKE '" . addcslashes(quote($querystring), "_%") . "%')"];
             case 'CONTAIN':
@@ -2085,7 +2081,7 @@ function QueryConstantZIDs($group_id, $conds, $sort = "", $restrict_zids = false
     }
 
     // get result --------------------------
-    return GetZidsFromSQL($SQL, 'short_id');
+    return GetZidsFromSQL($SQL, 'short_id', 's');
 }
 
 // -------------------------------------------------------------------------------------------

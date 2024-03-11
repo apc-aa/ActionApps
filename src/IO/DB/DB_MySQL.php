@@ -167,11 +167,7 @@ class DB_MySQL extends AbstractDB {
             $this->halt("next_record called with no query pending.");
             return [];
         }
-        $ret = [];
-        while (is_array($r = @mysqli_fetch_assoc($this->Result))) {
-            $ret[] = $r[$col];
-        }
-        return $ret;
+        return array_column(@mysqli_fetch_all($this->Result, MYSQLI_ASSOC), $col);
     }
 
 

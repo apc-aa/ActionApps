@@ -154,7 +154,7 @@ class DB_ODBC extends AbstractDB {
 
     /* public: get the time in msecs */
     function getmicrotime() {
-        list($usec, $sec) = explode(" ", microtime());
+        [$usec, $sec] = explode(" ", microtime());
         return (float)$usec + (float)$sec;
     }
 

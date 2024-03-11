@@ -9,39 +9,41 @@ use PDOStatement;
 class DB_PDO extends AbstractDB {
 
     /* public: connection parameters */
-    var $Host = "";
-    var $Port     = "";
-    var $Database = "";
-    var $User = "";
-    var $Password = "";
-    var $Server = "mysql";
-    var $charset = "utf8";
+    protected $Host       = "";
+    protected $Port       = "";
+    protected $Database   = "";
+    protected $User       = "";
+    protected $Password   = "";
+    protected $Server     = "mysql";
+    protected $charset    = '';
+    protected $collation  = '';
+    protected $persistent = '';
 
     /* public: configuration parameters */
-    var $Auto_Free = 0;     ## Set to 1 for automatic mysqli_free_result()
-    var $Debug = 0;     ## Set to 1 for debugging messages.
+    protected $Auto_Free = 0;     ## Set to 1 for automatic mysqli_free_result()
+    protected $Debug = 0;     ## Set to 1 for debugging messages.
 
     /* public: result array and current row number */
-    var $Record   = [];
-    var $Row;
+    protected $Record   = [];
+    protected $Row;
 
     /* public: current error number and error text */
-    var $ErrCode = 0;
+    protected $ErrCode = 0;
 
     /* public: this is an api revision, not a CVS revision. */
-    var $type = "pdo";
-    var $revision = "1.0";
+    protected $type = "pdo";
+    protected $revision = "1.0";
 
     /* private: link and query handles */
     /**
      * @var int|PDO
      */
-    var $dbh = 0;
+    protected $dbh = 0;
 
     /**
      * @var int|PDOStatement
      */
-    var $sth = 0;
+    protected $sth = 0;
 
     function escape_string($str) {
         return substr(substr($this->quote($str), 1), 0, -1);
@@ -65,12 +67,16 @@ class DB_PDO extends AbstractDB {
      * @param array $connection
      */
     function __construct(array $connection) {
-        $this->Database = $connection['database'] ?? '';
-        $this->Host     = $connection['host']     ?? '';
-        $this->User     = $connection['user']     ?? '';
-        $this->Password = $connection['password'] ?? '';
-        $this->Port     = $connection['port']     ?? '';
-        $this->Server   = $connection['driver']   ?? 'mysql';
+        parent::__construct($connection);
+        $this->Database   = $connection['database']   ?? '';
+        $this->Host       = $connection['host']       ?? '';
+        $this->User       = $connection['user']       ?? '';
+        $this->Password   = $connection['password']   ?? '';
+        $this->Port       = $connection['port']       ?? '';
+        $this->Server     = $connection['driver']     ?? 'mysql';
+        $this->charset    = $connection['charset']    ?? '';
+        $this->collation  = $connection['collation']  ?? '';
+        $this->persistent = $connection['persistent'] ?? false;
     }
 
     function beginTransaction() {
@@ -163,7 +169,19 @@ class DB_PDO extends AbstractDB {
                         if ($this->Debug) {
                             echo "Connecting to $Host$Port as $User<br>\n";
                         }
-                        $this->dbh = new PDO("$this->Server:host=$Host$Port;dbname=$Database;charset=$this->charset", $User, $Password);
+                        $dsn = "$this->Server:host=$Host$Port;dbname=$Database";
+                        if ($this->charset) {
+                            $dsn .= ";charset=$this->charset";
+                        }
+                        $options = [];
+                        if ($this->persistent) {
+                            $options[PDO::ATTR_PERSISTENT] = true;
+                        }
+                        if ($this->collation AND  $this->charset) {
+                            $options[PDO::MYSQL_ATTR_INIT_COMMAND] = "SET NAMES '$this->charset' COLLATE '$this->collation'";
+                        }
+                        //huhl($dsn, $User, $Password, $options);
+                        $this->dbh = new PDO($dsn, $User, $Password, $options);
                 }
             } catch (PDOException $e) {
                 $this->halt($e->getMessage());
@@ -260,7 +278,7 @@ class DB_PDO extends AbstractDB {
         try {
             $this->sth = $this->dbh->query($Query_String, PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
-            $this->halt($e->getMessage());
+            $this->halt("SQL Query Failed: $Query_String ". $e->getMessage());
         }
         #if ($this->sth->rowCount()) {
         #	$result = $this->sth->setFetchMode(PDO::FETCH_BOTH); /wasn't required, must be default.

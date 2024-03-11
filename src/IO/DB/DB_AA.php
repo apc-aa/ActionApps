@@ -64,6 +64,18 @@ class DB_AA extends AbstractDB
         }
     }
 
+    /** just for debug purposes */
+     static public function getDbType(): string {
+         $db = getDB();
+         $type = $db->getType();
+         freeDB($db);
+         return $type;
+    }
+
+    /** just for debug purposes */
+    public function getType() {
+         return get_class_name($this->dbase);
+    }
 
     /**
      * @deprecated Used just as compatibility layer for external scripts calling $db->Record['name']

@@ -32,6 +32,7 @@
  *
 */
 
+use AA\IO\DB\DB_AA;
 use AA\Util\JsTriggers;
 
 $hcCol = [
@@ -354,23 +355,24 @@ function printConstsArray(&$arr, $admin) {
 /** hcUpdate function
  *
  */
-function hcUpdate()
-{
+function hcUpdate() {
     global $levelCount, $hide_value, $levelsHorizontal, $group_id, $p_slice_id;
+
+    $qgroup_id = quote($group_id);
     $db = getDB();
 
-    $db->query("SELECT * FROM constant_slice WHERE group_id = '$group_id'");
+    $db->query("SELECT * FROM constant_slice WHERE group_id = '$qgroup_id'");
     if ($levelCount) {
         if ($db->next_record()) {
             $db->query(
                 "UPDATE constant_slice SET levelcount=$levelCount,
                 horizontal=".($levelsHorizontal ? 1 : 0).",
                 hidevalue=".($hide_value ? 1 : 0)."
-                WHERE group_id='$group_id'");
+                WHERE group_id='$qgroup_id'");
         } else {
             $db->query(
                 "INSERT INTO constant_slice (group_id,slice_id,horizontal,hidevalue,levelcount)
-                VALUES ('$group_id','$p_slice_id',".($levelsHorizontal ? 1 : 0)
+                VALUES ('$qgroup_id','$p_slice_id',".($levelsHorizontal ? 1 : 0)
                 .",".($hide_value ? 1 : 0).",".$levelCount.")");
         }
     } else {
@@ -420,7 +422,7 @@ function hcUpdate()
         while ($db->next_record())
             $shortIDmap[$db->f("short_id")] = addslashes($db->f("id"));
 
-        $db->query("SELECT propagate FROM constant_slice WHERE group_id='$group_id'");
+        $db->query("SELECT propagate FROM constant_slice WHERE group_id='$qgroup_id'");
         if ($db->next_record()) {
             $propagate_changes = $db->f("propagate");
         } else {
@@ -453,7 +455,7 @@ function hcUpdate()
                     $ancestors .= $shortIDmap[$myid];
                 }
                 $varset->set("id",$id,"quoted");
-                $varset->set("group_id",$group_id,"quoted");
+                $varset->set("group_id",$group_id,"text");
                 $varset->set("ancestors",$ancestors,"quoted");
 
                 $varset->doINSERT('constant');
@@ -462,7 +464,7 @@ function hcUpdate()
                 if ($propagate_changes) {
                     $db->query("SELECT id, value FROM constant WHERE short_id=$new_id");
                     if ($db->next_record()) {
-                        propagateChanges(unpack_id($db->f("id")), $newvalue, addslashes($db->f("value")));
+                        propagateChanges($group_id, unpack_id($db->f("id")), $newvalue, $db->f("value"));
                     }
                 }
                 $db->query("UPDATE constant SET ". $varset->makeUPDATE() ." WHERE short_id = ".$new_id);
@@ -654,32 +656,16 @@ function add_constant_group($group_id, $constants2import)
 *   is deleted only if it is used only in the given slice.
 *
 *   @author Jakub Adamek, Econnect, January 2003
-*   @param $group_id
+*   @param string $group_id packed group ID
 *   @param string $slice_id  unpacked slice ID
 *   @return bool  @c true if group was deleted, @c false otherwise	*/
 function delete_constant_group($group_id, $slice_id = "") {
-    $db = getDB();
-
-    $delete = true;
-    if ($slice_id) {
-        $db->query("
-            SELECT slice.id FROM slice INNER JOIN field ON slice.id = field.slice_id
-            WHERE field.input_show_func LIKE '%$group_id%'
-            AND slice.id <> '".q_pack_id($slice_id)."'");
-        if ($db->next_record()) {
-            $delete = false;
-        }
+    $qgrouip_id = quote($group_id);
+    if ($slice_id && (false === DB_AA::select1('', "SELECT slice.id FROM slice INNER JOIN field ON slice.id = field.slice_id WHERE field.input_show_func LIKE '%$qgrouip_id%' AND slice.id <> " . xpack_id($slice_id)))) {
+        return false;
     }
-    if ($delete) {
-        // delete group name and constants
-        $db->query ("
-            DELETE FROM constant
-            WHERE (group_id='lt_groupNames' AND value='$group_id')
-                  OR group_id='$group_id'");
-        $delete = $db->affected_rows();
-    }
-    freeDB($db);
-    return $delete;
+    // delete group name and constants
+    return DB_AA::sql("DELETE FROM `constant` WHERE (`group_id`='lt_groupNames' AND `value`='$qgrouip_id') OR `group_id`='$qgrouip_id'");
 }
 
 // -------------------------------------------------------------------
