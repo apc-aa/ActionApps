@@ -41,13 +41,16 @@
     "ext-xsl": "*",
     "ext-simplexml": "*",
     "ext-xml": "*",
-    "ext-intl": "*"
+    "ext-intl": "*",
+    "ext-pdo": "*"
+  },
+  "require-dev": {
+    "codeception/codeception": "^5.1"
   },
   "suggest": {
     "ext-ldap": "*",
     "ext-openssl": "*",
     "ext-apache": "*",
-    "ext-pdo": "*",
     "ext-mysqli": "*",
     "ext-libxml": "*"
   },
