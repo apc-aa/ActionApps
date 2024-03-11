@@ -121,9 +121,9 @@ define("DB_COLLATION_CONNECTION", "utf8mb4_czech_ci");
  *  Persistent connection should be better for most servers, but if you have
  *  experience troubles in MySQL connection, use non-persistent connections
  *  see https://www.php.net/manual/en/mysqli.construct.php
- *  Default value: true
+ *  Default value: false
  */
-define('AA_USE_NON_PERSISTENT_CONNECT', true);
+define('AA_USE_NON_PERSISTENT_CONNECT', false);
 
 /** Permissions system settings
  *  Select permission system (exactly one of "dummy", "ldap", "sql")

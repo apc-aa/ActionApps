@@ -161,7 +161,7 @@ $manager->performActions();
 
 $aa_set  = $manager->getSet();
 // $aa_set->setModules($module_id);
-$aa_set->addCondition(new AA_Condition('slice_id', '==', q_pack_id(AA::$module_id)));
+$aa_set->addCondition(new AA_Condition('slice_id', '==', pack_id(AA::$module_id)));
 
 $zids    = AA::Metabase()->queryZids(['table'=>'view'], $aa_set);
 

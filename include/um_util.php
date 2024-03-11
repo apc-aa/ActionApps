@@ -273,7 +273,7 @@ function ChangeUserGroups(?string $posted_groups, $sel_groups, $selected_user) {
     $assigned_groups = explode(",",$posted_groups);
     foreach ($assigned_groups as $foo_gid) {
         if ($foo_gid) {
-            AddGroupMember(urldecode($foo_gid), $selected_user);
+            AddGroupMember(rawurldecode($foo_gid), $selected_user);
         }
     }
 }
@@ -341,7 +341,7 @@ function NewUserData(&$err, $uid, &$userrecord, $user_super, $um_uedit_no_go_url
         }
         $Msg = MsgOk(_m("User successfully added to permission system"));
         if (!$um_uedit_no_go_url) {
-            go_url( get_url(StateUrl($_SERVER['PHP_SELF']), 'UsrSrch=1&usr='. urlencode($uid)), $Msg);  // @todo Mssg
+            go_url( get_url(StateUrl($_SERVER['PHP_SELF']), 'UsrSrch=1&usr='. rawurlencode($uid)), $Msg);  // @todo Mssg
         }
     }
 }

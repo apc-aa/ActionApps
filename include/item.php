@@ -183,7 +183,7 @@ function Inputform_url($add, $iid, $sid='', $ret_url='', $vid = null, $var = nul
         $param[] = "slice_id=$sid";
     }
     if ($return_url) {
-        $param[] = 'return_url='. urlencode($return_url);
+        $param[] = 'return_url='. rawurlencode($return_url);
     }
     if ($var) {
         $param[] = "openervar=$var";  // id of variable in parent window (used for popup inputform)

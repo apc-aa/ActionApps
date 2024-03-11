@@ -370,7 +370,7 @@ if ( !$encap ) {
 }
 $inputform_settings['messages']            = ['err' => $err];
 $inputform_settings['form_action']         = ($_SERVER['DOCUMENT_URI'] != "" ? $_SERVER['DOCUMENT_URI'] :
-                                             $_SERVER['PHP_SELF'] . ($return_url ? "?return_url=".urlencode($return_url) : ''));
+                                             $_SERVER['PHP_SELF'] . ($return_url ? "?return_url=".rawurlencode($return_url) : ''));
 $inputform_settings['form4update']         = $edit || $update || ($insert && $added_to_db);
 $inputform_settings['show_preview_button'] = (($post_preview!=0) OR !isset($post_preview));
 

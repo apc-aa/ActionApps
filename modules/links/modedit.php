@@ -188,7 +188,7 @@ if ( ($insert AND $superadmin) OR $update ) {
         $netscape = (($r=="") ? "r=1" : "r=".++$r);  // special parameter for Netscape to reload page
         // added by Setu, 2002-0227
         if ($return_url) {  // after work for action, if return_url is there, we go to the page.
-            go_url(urldecode($return_url));
+            go_url(rawurldecode($return_url));
         }
         go_url(StateUrl(self_base() . "modedit.php?$netscape"));
     }

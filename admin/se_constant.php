@@ -347,7 +347,7 @@ if ( $group_id ) {
     echo safe($group_id);
 } else {
     echo '<input type="text" name="new_group_id" size="16" maxlength="16" pattern="[a-zA-Z0-9_ .+-]{5,16}" required value="'.safe($new_group_id).'" title="'._m('alphanumeric 5-16 character long identifier').'">
-          <a href="'.get_admin_url('se_constant_import.php?return_url=se_inputform.php&amp;fid='. urlencode($fid)).
+          <a href="'.get_admin_url('se_constant_import.php?return_url=se_inputform.php&amp;fid='. rawurlencode($fid)).
           '">'._m('Import Constants...').'</a>';
 }
 echo "\n     </td>\n</tr>";

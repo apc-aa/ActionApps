@@ -518,8 +518,7 @@ class AA_Content implements Iterator, ArrayAccess, Countable {
      * @param $field_id
      * @return array
      */
-    function getValuesArray($field_id): array
-    {
+    function getValuesArray($field_id): array {
         return empty($this->content[$field_id]) ? [] : array_column($this->content[$field_id],'value');
     }
 

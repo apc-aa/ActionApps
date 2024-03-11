@@ -249,8 +249,8 @@ function fillConds() {
     //        (varname='jsjjs[]' and setControlArray())
     foreach (explode('&',shtml_query_string()) as $pair) {
         [$var,$val] = explode('=',$pair);
-        $val  = str_replace("\"", '\\"', urldecode($val));
-        $var  = urldecode($var);
+        $val  = str_replace("\"", '\\"', rawurldecode($val));
+        $var  = rawurldecode($var);
         $js  .= "setControl('$form','$var',\"$val\");\n";
     }
 

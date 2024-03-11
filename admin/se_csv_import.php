@@ -160,7 +160,7 @@ if ($upload) {
     $addParams['caption']   = $caption;
 
     // continue with settings transformation actions
-    go_url(StateUrl(self_base()."se_csv_import2.php"). "&fileName=".urlencode($dest_file)."&addParamsSerial=" .bin2url(serialize($addParams)));
+    go_url(StateUrl(self_base()."se_csv_import2.php"). "&fileName=".rawurlencode($dest_file)."&addParamsSerial=" .bin2url(serialize($addParams)));
 }
 
 require_once __DIR__ . "/../include/formutil.php";

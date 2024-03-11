@@ -265,7 +265,7 @@ if ($update) {
 
         if ( !count($err) ) {
             $Msg = MsgOk(_m("Fields update successful"));
-            go_url( $return_url ? (expand_return_url(1) . "&msg=".urlencode($Msg)) : $back_admin_url );  // back to field page  // @todo Mssg
+            go_url( $return_url ? (expand_return_url(1) . "&msg=".rawurlencode($Msg)) : $back_admin_url );  // back to field page  // @todo Mssg
         }
     } while (0);           //in order we can use "break;" statement
 }

@@ -741,7 +741,7 @@ class sitetree {
         echo "<tr><th>"._m("Spot&nbsp;variables")."</th><td>";
         if (isset($vars) AND is_array($vars)) {
             foreach ($vars as $k => $v) {
-                echo safe($v) ."<span><a href=\"". self::siteAdminPageUrl($spot_id, "delvar=" . urlencode($k)) ."\" class=\"aa-button-delete\">"._m("Delete")."</a></span><br>";
+                echo safe($v) ."<span><a href=\"". self::siteAdminPageUrl($spot_id, "delvar=" . rawurlencode($k)) ."\" class=\"aa-button-delete\">"._m("Delete")."</a></span><br>";
             }
         }
         echo "<form name=fvar action=\"".$_SERVER['PHP_SELF']."\"><input type='text' name='addvar' value='' size='50'><span><a href='javascript:document.fvar.submit()' class=\"aa-button-new\">"._m("Add")."</a></span>";
@@ -761,7 +761,7 @@ class sitetree {
                 if ($conds[$v]) {
                     $match = AA_Site_Spot_Match::factoryByString($conds[$v],$v);
                     $warning = (trim($match->val) == $match->val) ? '' : '<div style="color:red;"><small>'._m('Warning: the condition starts or ends with whitespace character. Please check, if it is OK in your expression.').'</small></div>';
-                    echo "$safe_v ($match->op) <strong>".safe($match->val)."</strong> <span><a href=\"". self::siteAdminPageUrl($spot_id, 'delcond=' . urlencode($v)) ."\" class=\"aa-button-delete\">"._m("Delete")."</a></span>$warning<br>";
+                    echo "$safe_v ($match->op) <strong>".safe($match->val)."</strong> <span><a href=\"". self::siteAdminPageUrl($spot_id, 'delcond=' . rawurlencode($v)) ."\" class=\"aa-button-delete\">"._m("Delete")."</a></span>$warning<br>";
                 } else {
                     echo "<form name=fcond$i action=\"". $_SERVER['PHP_SELF'] ."\">
                          $safe_k

@@ -450,7 +450,7 @@ class ConvertCharset {
         $ToCharset   = strtolower($ToCharset);
 
         /**
-         * Of course you can make a conversion from one charset to the same one :)
+         * Of course, you can make a conversion from one charset to the same one :)
          * but I feel obligate to let you know about it.
          **/
         if ($FromCharset == $ToCharset) {
@@ -459,7 +459,7 @@ class ConvertCharset {
         }
 
         // replace all Windows-1250 accent characters with
-        // thier non-accent ekvivalents. Useful for Czech and Slovak languages.
+        // their non-accent equivalents. Useful for Czech and Slovak languages.
         // Special approach, since Convert class do not do it by itself
         if (($FromCharset == 'windows-1250') AND ($ToCharset == 'us-ascii')) {
             $ret = $StringToChange;
@@ -470,7 +470,7 @@ class ConvertCharset {
             return $ret;
         }
 
-        // replace all utf-8 accent characters with thier non-accent ekvivalents
+        // replace all utf-8 accent characters with their non-accent equivalents
         // Special approach, since Convert class do not do it by itself
         if (($FromCharset == 'utf-8') AND ($ToCharset == 'us-ascii')) {
 

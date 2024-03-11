@@ -171,7 +171,7 @@ class MLXCtrl {
      */
     function getFirstNonEmpty() {
         foreach ($this->translations as $v) {
-            if ((list($itemid,)=array_values($v)) && $itemid) {
+            if (([$itemid,]=array_values($v)) && $itemid) {
                 return $v;
             }
         }
@@ -312,7 +312,7 @@ class MLX {
         global $DOCUMENT_URI;
         global $PHP_SELF;
         $mlxout   = MLX_HTML_TABHD;
-        $mlx_url  = ($DOCUMENT_URI != "" ? $DOCUMENT_URI : $PHP_SELF . ($return_url ? "?return_url=".urlencode($return_url) : ''));
+        $mlx_url  = ($DOCUMENT_URI != "" ? $DOCUMENT_URI : $PHP_SELF . ($return_url ? "?return_url=".rawurlencode($return_url) : ''));
         $mlx_url .= "?".$this->getparamstring($params);
         switch ($action) {
             case "update":

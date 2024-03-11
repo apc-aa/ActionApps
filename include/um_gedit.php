@@ -47,7 +47,7 @@ do  {
                 AddPerm($newgroupid, AA_ID, "aa", AA_Perm::ROLES["SUPER"]['id']);
             }
             $Msg = MsgOk(_m("Group successfully added to permission system"));
-            go_url( get_url(StateUrl($_SERVER['PHP_SELF']), 'GrpSrch=1&grp='. urlencode($group_name)), $Msg);  // @todo Mssg
+            go_url( get_url(StateUrl($_SERVER['PHP_SELF']), 'GrpSrch=1&grp='. rawurlencode($group_name)), $Msg);  // @todo Mssg
         }
     } else {
         $grouprecord["uid"] = $selected_group;
@@ -65,7 +65,7 @@ do  {
     // posted_users contains comma delimeted list of selected users of group
     if ($posted_users) {
         // we use urldecode in order to use comma as separator
-        $assigned_users = array_map('urldecode', explode(",",$posted_users));
+        $assigned_users = array_map('rawurldecode', explode(",",$posted_users));
     }
 
     if (isset($sel_users) AND is_array($sel_users) AND ($sel_users["n"]=="")) {

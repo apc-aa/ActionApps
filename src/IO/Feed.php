@@ -203,7 +203,7 @@ class FeedUtil {
             $param = [];
             foreach ($d as $k => $v) {
                 if ($v) {
-                    $param[] = urlencode($k) . "=" . urlencode($v);
+                    $param[] = rawurlencode($k) . "=" . rawurlencode($v);
                 }
             }
             if ($tl = implode("&", $param)) {

@@ -146,7 +146,7 @@ if ( $add_submit OR ($submit_action == "update_submit")) {
 
     if (!count($err)) {
         $Msg = MsgOk(_m("Group successfully added to permission system"));
-        go_url( get_url(StateUrl($_SERVER['PHP_SELF']), 'grp_edit=1&selected_group='. urlencode($selected_group)), $Msg);   // @todo Mssg
+        go_url( get_url(StateUrl($_SERVER['PHP_SELF']), 'grp_edit=1&selected_group='. rawurlencode($selected_group)), $Msg);   // @todo Mssg
     }
 }
 
@@ -161,7 +161,7 @@ function UpdateGroup(action) {
 }
 
 function RealyDelete() {
-  if ( window.confirm('". _m("Are you sure you want to delete selected group from whole permission system?") ."')) {
+  if ( window.confirm('". _m("Are you sure you want to delete selected group from whole permission system?") . "')) {
     document.f2.submit_action.value = 'grp_del'
     document.f2.submit()
   }
@@ -169,9 +169,9 @@ function RealyDelete() {
 
 // function changes content of role listbox for new module, when user selects another module to be added
 function SetRole(no) {
-    var idx=document.f.elements['new_module['+no+']'].selectedIndex;
-    var roles;
-    var roles_names;
+    const idx=document.f.elements['new_module['+no+']'].selectedIndex;
+    let roles;
+    let roles_names;
     // which roles is defined for the module
     if ( idx > 0 ) {
         roles       = mod[mod_types.charCodeAt(idx-1)];
@@ -181,11 +181,11 @@ function SetRole(no) {
         roles_names = new Array('                     ');
     }
     // clear selectbox
-    for ( i=(document.f.elements['new_module_role['+no+']'].options.length-1); i>=0; i--){
+    for ( let i=(document.f.elements['new_module_role['+no+']'].options.length-1); i>=0; i--){
         document.f.elements['new_module_role['+no+']'].options[i] = null
     }
     // fill selectbox from the right slice
-    for ( i=0; i<roles.length ; i++) {
+    for ( let i=0; i<roles.length ; i++) {
         document.f.elements['new_module_role['+no+']'].options[i] = new Option(roles_names[i], roles[i])
     }
 }

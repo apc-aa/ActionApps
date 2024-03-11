@@ -44,17 +44,17 @@ function add_vars($query_string="") {
     $pos = strpos($a[$i], "=");
     if($pos) {
       $lvalue = substr($a[$i],0,$pos);
-      $value  = urldecode (DeBackslash(substr($a[$i],$pos+1)));
+      $value  = rawurldecode(DeBackslash(substr($a[$i],$pos+1)));
     }  
     if (!preg_match("/^(.+)\[(.*)\]/i", $lvalue, $c))   // is it array variable[]
-      $GLOBALS[urldecode (DeBackslash($lvalue))]= $value;   # normal variable
+      $GLOBALS[rawurldecode(DeBackslash($lvalue))]= $value;   # normal variable
     else {
-      $index1 = urldecode (DeBackslash($c[2]));
+      $index1 = rawurldecode(DeBackslash($c[2]));
       if (preg_match("/^(.+)\[(.*)\]/i", $c[1], $d)) { // for double array variable[][]
-        $index2  = urldecode (DeBackslash($d[2]));
-        $varname = urldecode (DeBackslash($d[1]));  
+        $index2  = rawurldecode(DeBackslash($d[2]));
+        $varname = rawurldecode(DeBackslash($d[1]));
       } else 
-        $varname  = urldecode (DeBackslash($c[1]));  
+        $varname  = rawurldecode(DeBackslash($c[1]));
       if( isset($index2) ) 
         $GLOBALS[$varname][$index2][$index1] = $value;
        else 
@@ -117,8 +117,7 @@ echo "<h1>".($day ?: ""). $L_MONTH[$month]." ".$year."</h1>";
 <script>
     // prepare the view parameters
     function saveMonthYear() {
-        mytext = 'month-'+ document.f['month'].value +',year-'+ document.f['year'].value;
-        document.f['set[]'].value = mytext;
+        document.f['set[]'].value = 'month-'+ document.f['month'].value +',year-'+ document.f['year'].value;
         document.f.submit();
     }
 </script>

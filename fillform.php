@@ -123,7 +123,7 @@ echo fillFormFromVars($fillConds);
 
 if ($show_result) {
     if ($result) {
-        ReadFileSafe(con_url($show_result, "result=".urlencode(serialize($result))));
+        ReadFileSafe(con_url($show_result, "result=".rawurlencode(serialize($result))));
     } else {
         ReadFileSafe($show_result);
     }

@@ -80,7 +80,7 @@ class AA_Scroller extends AA_Storable {
      * @return string
      */
     function relative($pages) {
-        return urlencode("scr_" . $this->id . "_Mv") . "=" . urlencode($pages);
+        return rawurlencode("scr_" . $this->id . "_Mv") . "=" . rawurlencode($pages);
     }
 
     /** absolute function
@@ -89,7 +89,7 @@ class AA_Scroller extends AA_Storable {
      * @return string
      */
     function absolute($page) {
-        return urlencode("scr_" . $this->id . "_Go") . "=" . urlencode($page);
+        return rawurlencode("scr_" . $this->id . "_Go") . "=" . rawurlencode($page);
     }
 
     /** checkBounds function
@@ -268,7 +268,7 @@ class AA_Scroller_Easy {
      */
     //  --- no longer used
     //function Relative($pages) {
-    //    return urlencode("scr_{$this->id}_Mv") . "=" . urlencode($pages);
+    //    return rawurlencode("scr_{$this->id}_Mv") . "=" . urlencode($pages);
     //}
 
     /** Absolute function
@@ -277,7 +277,7 @@ class AA_Scroller_Easy {
      * @return string
      */
     function Absolute($page) {
-        return urlencode("scr_{$this->id}_Go") . "=" . urlencode($page);
+        return rawurlencode("scr_{$this->id}_Go") . "=" . rawurlencode($page);
     }
     /** pageCount function
      *
@@ -415,7 +415,7 @@ class AA_Scroller_Sitemodule {
      * @return string
      */
     function Absolute($page) {
-        return urlencode("scr_{$this->id}_Go") . "=" . urlencode($page);
+        return rawurlencode("scr_{$this->id}_Go") . "=" . rawurlencode($page);
     }
     /** pageCount function
      *

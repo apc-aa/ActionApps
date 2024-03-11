@@ -241,6 +241,11 @@ function ConvertEncodingDeep($value, $from=null, $to=null) {
     return $value;
 }
 
+/** Converts the string to anoteher encoding. Wrong characters are transliterated.
+ * @param string $str   text to convert
+ * @param string $from  source      encoding utf-8|windows-1250|us-ascii|...  - utf-8 is default
+ * @param string $to    destination encoding utf-8|windows-1250|us-ascii|...  - utf-8 is default
+ */
 function ConvertEncoding($str, $from, $to='UTF-8') {
     $from = $from ?: 'UTF-8';
     $to   = $to   ?: 'UTF-8';
@@ -455,6 +460,7 @@ function debug(...$messages) {
  */
 function warn($msg) {
     if (AA::$debug) {
+        AA::$dbg->log(AA_Log::backtrack());
         $trace = debug_backtrace();
         AA::$dbg->warn( join('->', [$trace[1]['class'],$trace[1]['function']]).': '.$msg );
     }

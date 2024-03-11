@@ -100,7 +100,7 @@ if ($update) {
         if (!count($err)) {
             $Msg .= MsgOk(_m("Constants update successful"));
         }
-        go_url(StateUrl(get_url($back_url, 'Msg='.urlencode($Msg))));  // @todo Mssg
+        go_url(StateUrl(get_url($back_url, 'Msg='.rawurlencode($Msg))));  // @todo Mssg
     } while( 0 );           // in order we can use "break;" statement
 }
 

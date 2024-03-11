@@ -182,7 +182,7 @@ function GetModuleFields($source_id) {
  */
 function ExitIfCantDelete( $del ) {
     if ( DB_AA::select1('', 'SELECT deleted FROM `module`', [['id', $del, 'l']]) === false ) {
-        go_url(get_admin_url("slicedel.php?Msg=". urlencode(_m("No such module."))));
+        go_url(get_admin_url("slicedel.php?Msg=". rawurlencode(_m("No such module."))));
     }
 }
 

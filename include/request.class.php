@@ -207,7 +207,7 @@ class AA_Request {
     }
 
     function encode4Url() {
-        return urlencode(base64_encode($this->_requestVal()));
+        return rawurlencode(base64_encode($this->_requestVal()));
     }
 
     /** static member function called like:
