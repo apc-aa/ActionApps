@@ -150,7 +150,7 @@ class image_gd extends image {
 
     public function watermark($file, $left=false, $top=false) {
         $info = getimagesize($file);
-        list($w, $h, $t) = $info;
+        [$w, $h, $t] = $info;
         if (!in_array($t, array(IMAGETYPE_PNG, IMAGETYPE_GIF)))
             return false;
         $imagecreate = ($t == IMAGETYPE_PNG) ? "imagecreatefrompng" : "imagecreatefromgif";
@@ -297,19 +297,19 @@ class image_gd extends image {
             return false;
 
         if (count($args[0]) == 3) {
-            list($r, $g, $b) = $args[0];
+            [$r, $g, $b] = $args[0];
 
         } elseif (preg_match($exprRGB, $args[0], $match)) {
-            list($tmp, $r, $g, $b) = $match;
+            [$tmp, $r, $g, $b] = $match;
 
         } elseif (preg_match($exprHex1, $args[0], $match)) {
-            list($tmp, $r, $g, $b) = $match;
+            [$tmp, $r, $g, $b] = $match;
             $r = hexdec($r);
             $g = hexdec($g);
             $b = hexdec($b);
 
         } elseif (preg_match($exprHex2, $args[0], $match)) {
-            list($tmp, $r, $g, $b) = $match;
+            [$tmp, $r, $g, $b] = $match;
             $r = hexdec("$r$r");
             $g = hexdec("$g$g");
             $b = hexdec("$b$b");
@@ -319,7 +319,7 @@ class image_gd extends image {
             preg_match($exprByte, $args[1]) &&
             preg_match($exprByte, $args[2])
         ) {
-            list($r, $g, $b) = $args;
+            [$r, $g, $b] = $args;
 
         } else
             return false;
@@ -341,7 +341,7 @@ class image_gd extends image {
         if ($imageDetails === false)
             return false;
 
-        list($src, $srcWidth, $srcHeight) = $imageDetails;
+        [$src, $srcWidth, $srcHeight] = $imageDetails;
 
         if (is_null($dstW)) $dstW = $this->width - $dstW;
         if (is_null($dstH)) $dstH = $this->height - $dstY;

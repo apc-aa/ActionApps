@@ -87,7 +87,7 @@ final class Crypt {
      * @throws \Exception
      */
     private static function encryptWithPHP($K, $key_length, $IV, $P = null, $A = null) {
-        list($J0, $v, $a_len_padding, $H) = self::common($K, $key_length, $IV, $A);
+        [$J0, $v, $a_len_padding, $H] = self::common($K, $key_length, $IV, $A);
         $C = self::getGCTR($K, $key_length, self::getInc(32, $J0), $P);
         $u = self::calcVector($C);
         $c_len_padding = self::addPadding($C);
@@ -110,7 +110,7 @@ final class Crypt {
         $C = mb_substr($message, 0, -self::AES256GCM_TAGBYTES, '8bit');
         $T = mb_substr($message, -self::AES256GCM_TAGBYTES, null, '8bit');
 
-        list($J0, $v, $a_len_padding, $H) = self::common($K, $key_length, $IV, $A);
+        [$J0, $v, $a_len_padding, $H] = self::common($K, $key_length, $IV, $A);
         $ret = self::getGCTR($K, $key_length, self::getInc(32, $J0), $C);
         $u = self::calcVector($C);
         $c_len_padding = self::addPadding($C);
@@ -218,7 +218,7 @@ final class Crypt {
      */
     private static function toUInt32Bits($bin)
     {
-        list(, $h, $l) = unpack('n*', $bin);
+        [, $h, $l] = unpack('n*', $bin);
         return $l + ($h * 0x010000);
     }
     /**

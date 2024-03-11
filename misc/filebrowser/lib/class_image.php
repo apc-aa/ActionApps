@@ -64,7 +64,7 @@ abstract class image {
         $imageDetails = $this->buildImage($image);
 
         if ($imageDetails !== false)
-            list($this->image, $this->width, $this->height) = $imageDetails;
+            [$this->image, $this->width, $this->height] = $imageDetails;
         else
             $this->initError = true;
         $this->options = $options;

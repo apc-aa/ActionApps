@@ -186,7 +186,7 @@ function delete_fields_from_slice($collectionid, $slice_id) {
 
         $db->query($varset->makeSELECT ("field"));
         if ($db->next_record()) {
-            list (, $group_id) = explode (":", $db->f("input_show_func"));
+            [, $group_id] = explode (":", $db->f("input_show_func"));
             if (delete_constant_group($group_id, $slice_id)) {
                 $ndeleted_groups++;
             }

@@ -18,7 +18,7 @@ spl_autoload_register(function($path) {
     if (count($path) == 1)
         return;
 
-    list($ns, $class) = $path;
+    [$ns, $class] = $path;
 
     if ($ns == "kcfinder") {
         if (in_array($class, array("uploader", "browser", "minifier", "session")))
