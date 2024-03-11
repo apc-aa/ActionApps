@@ -24,18 +24,21 @@ https://www.apc.org/
     Created by Jakub Adamek, January 2002 */
 
 function dec2hex(dec) {
-    if (dec <= 0) return "0";
-    hex = "";
+    if (dec <= 0) {
+        return "0";
+    }
+    let hex = "";
+    let digit;
     while (dec > 0) {
         digit = dec % 16;
-        hex   = String.fromCharCode(digit + ((digit < 10) ? 48 : 87)) + hex; // '0' is 48 ASCII
-        dec   = Math.floor(dec / 16);
+        hex = String.fromCharCode(digit + ((digit < 10) ? 48 : 87)) + hex; // '0' is 48 ASCII
+        dec = Math.floor(dec / 16);
     }
     return hex;
 }
 
 function unpackID(packedID) {
-    retval = "";
+    let retval = "";
     for (i = 0; i < packedID.length; i ++) {
         retval += dec2hex(packedID.charCodeAt(i));
     }
@@ -45,7 +48,8 @@ function unpackID(packedID) {
 function hex2dec(hex) {
     hex = hex.toUpperCase();
     let dec = 0;
-    for (i=0; i < hex.length; ++i) {
+    let c;
+    for (let i = 0; i < hex.length; ++i) {
         dec *= 16;
         c = hex.charAt(i);
         if (c >= '0' && c <= '9') {
@@ -63,7 +67,7 @@ function hex2dec(hex) {
 function packID(unpackedID) {
     var packedID = '';
     let code;
-    for (j = 0; j < unpackedID.length; j += 2) {
+    for (let j = 0; j < unpackedID.length; j += 2) {
         code = hex2dec(unpackedID.substring(j, j + 2));
         if (code !== 0) {
             packedID += String.fromCharCode(code);
@@ -78,8 +82,9 @@ function packID(unpackedID) {
     params: fields = array of controls' names */
 
 function prooveFilled(formName, fields) {
-    var myform = document.forms[formName];
-    for (var i=0; i < fields.length; ++i) {
+    const myform = document.forms[formName];
+    let val;
+    for (let i = 0; i < fields.length; ++i) {
         val = getControlValue(formName, fields[i]);
         if (val == "") {
             myform[fields[i]].focus();
@@ -97,10 +102,11 @@ function prooveFilled(formName, fields) {
     params: fields = array of controls' names */
 
 function prooveFilledIf(formName, fields) {
-    var myform = document.forms[formName];
-    for (var i=0; i < fields.length; ++i) {
+    const myform = document.forms[formName];
+    let parVal, val, proove;
+    for (let i = 0; i < fields.length; ++i) {
         parVal = getControlValue(formName, fields[i][1]);
-        val    = fields[i][2];
+        val = fields[i][2];
         proove = (val == "" && parVal != "") || (parVal == val);
         if (!proove) {
             myform[fields[i][0]].focus;
@@ -112,9 +118,8 @@ function prooveFilledIf(formName, fields) {
 
 // the crazy Netscape returns 104 as year 2004 (hoping nobody will use it in the 21th century perhaps)
 function getYearNetscapeSafe(myDate) {
-    year = myDate.getYear();
-    if (year < 200) year += 1900;
-    return year;
+    let year = myDate.getYear();
+    return (year < 200) ? year + 1900 : year;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -133,24 +138,23 @@ function getYearNetscapeSafe(myDate) {
     emptyValue in any of the 3 select-boxes means date is not set */
 
 function saveDate(formName,dateField,targetField,emptyValue) {
-    myDate = getAADate(formName,dateField,emptyValue);
-    var myField = document.forms[formName][targetField];
-    if (myDate != 0) {
-        var d = new Date();
+    let myDate = getAADate(formName, dateField, emptyValue);
+    const myField = document.forms[formName][targetField];
+    if (myDate !== 0) {
+        const d = new Date();
         d.setTime(myDate);
-        year = getYearNetscapeSafe(d);
-        month = d.getMonth()+1;
-        myField.value = month+"/"+d.getDate()+"/"+year;
+        myField.value = (d.getMonth() + 1) + "/" + d.getDate() + "/" + getYearNetscapeSafe(d);
+    } else {
+        myField.value = "";
     }
-    else myField.value = "";
 }
 
 /* sets given date in an AA-like form
  params: startYear is the top year in the year select box */
 
 function setDay(formName,dateField,startYear,myDate) {
-    tryDate = new Date(2000,1,1);
-    dayShift = 1-tryDate.getDate();
+    let tryDate  = new Date(2000, 1, 1);
+    let dayShift = 1 - tryDate.getDate();
     document.forms[formName][dateField+"_day"].selectedIndex   = myDate.getDate()-dayShift-1;
     document.forms[formName][dateField+"_month"].selectedIndex = myDate.getMonth();
     document.forms[formName][dateField+"_year"].selectedIndex  = getYearNetscapeSafe(myDate)-startYear;
@@ -167,14 +171,11 @@ function setToday(formName,dateField, startYear) {
     emptyValue in any of the day,month,year select boxes will return 0 */
 
 function getAADate(formName,dateField,emptyValue) {
-    var f = document.forms[formName];
-    month = f[dateField+"_month"].value;
-    day   = f[dateField+"_day"].value;
-    year  = f[dateField+"_year"].value;
-    if (month != emptyValue && day != emptyValue && year != emptyValue)
-        return new Date (year,month-1,day).getTime();
-    else
-        return 0;
+    const f = document.forms[formName];
+    let month = f[dateField + "_month"].value;
+    let day = f[dateField + "_day"].value;
+    let year = f[dateField + "_year"].value;
+    return (month != emptyValue && day != emptyValue && year != emptyValue) ? new Date(year, month-1, day).getTime() : 0;
 }
 
 /* Function: setControlOrAADate
@@ -192,23 +193,25 @@ function getAADate(formName,dateField,emptyValue) {
 */
 
 function setControlOrAADate(formName, controlName, newValue, datePrefix, html, timeZone) {
+    let myName;
     if (getControlByName(formName, controlName) != null) {
         setControl(formName, controlName, newValue);
-        if (html) setControl(formName, controlName+'html', html);
-    }
-    else if (getControlByName(formName, controlName+"[]") != null)
-        setControl(formName, controlName+"[]", newValue);
-    else if (!isNaN(newValue)) {
+        if (html) {
+            setControl(formName, controlName + 'html', html);
+        }
+    } else if (getControlByName(formName, controlName + "[]") != null) {
+        setControl(formName, controlName + "[]", newValue);
+    } else if (!isNaN(newValue)) {
         myName = datePrefix + controlName;
-        if (getControlByName(formName, myName+'_day') != null) {
+        if (getControlByName(formName, myName + '_day') != null) {
             var myDate = new Date();
             var timeStamp = Number(newValue);
-            timeStamp += (myDate.getTimezoneOffset()/60 - timeZone) * 3600;
+            timeStamp += (myDate.getTimezoneOffset() / 60 - timeZone) * 3600;
             myDate.setTime(timeStamp * 1000);
             //alert("Date coming to JavaScript is "+timeStamp+". That means "+myDate);
-            setControl(formName,myName+'_day',myDate.getDate());
-            setControl(formName,myName+'_month',myDate.getMonth()+1);
-            setControl(formName,myName+'_year',getYearNetscapeSafe(myDate));
+            setControl(formName, myName + '_day', myDate.getDate());
+            setControl(formName, myName + '_month', myDate.getMonth() + 1);
+            setControl(formName, myName + '_year', getYearNetscapeSafe(myDate));
         }
     }
 }
@@ -271,27 +274,23 @@ function setControlArray(formName, controlName, newArray) {
                         break;
                     }
                 }
-                if (i == myControl.options.length) {
-                    opt = new Option(newArray[j],newArray[j],false,false);
-                    myControl.options [i] = opt;
+                if (i === myControl.options.length) {
+                    myControl.options[i] = new Option(newArray[j],newArray[j],false,false);
                     myControl.options[i].selected = true;
                 }
             }
-        } else {
-            if (myControl[0].type == "checkbox") {
-                for (j = 0; j < newArray.length; j++) {
-                            for (i = 0; i < myControl.length; i++) {
-                            if ( (myControl[i].value == newArray[j]) ||
-                            ((myControl[i].value == "") && (myControl[i].text == newArray[j]))) {
-                                            myControl[i].checked = true;
-                            break;
-                        }
-                    }
-                    if (i == myControl.length) {
-                                    opt = new Option(newArray[j],newArray[j],false,false);
-                        myControl[i] = opt;
+        } else if (myControl[0].type == "checkbox") {
+            for (j = 0; j < newArray.length; j++) {
+                for (i = 0; i < myControl.length; i++) {
+                    if ((myControl[i].value == newArray[j]) ||
+                        ((myControl[i].value == "") && (myControl[i].text == newArray[j]))) {
                         myControl[i].checked = true;
+                        break;
                     }
+                }
+                if (i === myControl.length) {
+                    myControl[i] = new Option(newArray[j], newArray[j], false, false);
+                    myControl[i].checked = true;
                 }
             }
         }

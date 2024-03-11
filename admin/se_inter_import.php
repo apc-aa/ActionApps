@@ -109,14 +109,13 @@ echo '<br><br>';
 ?>
 <script>
     function SelectValue(sel) {
-        svindex = eval(sel).selectedIndex;
-        if (svindex != -1) { return eval(sel).options[svindex].value; }
-        return null;
+        const svindex = eval(sel).selectedIndex;
+        return (svindex !== -1) ? eval(sel).options[svindex].value : null;
     }
 
     function Delete(sel) {
         if (confirm('<?php echo _m("Are you sure you want to delete the import?"); ?>')) {
-            var url = "<?php echo StateUrl(self_base() . "se_inter_import.php"); ?>"
+            let url = "<?php echo StateUrl(self_base() . "se_inter_import.php"); ?>";
             url += "&feed_id=" + sel
             window.location = url
         }

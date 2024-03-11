@@ -526,14 +526,14 @@ $fileman_js = "
         }
 
         function command (name) {
-            formname = 'fileman';
+            const formname = 'fileman';
             switch (name) {
             case 'checkall':
                 SelectVis (formname,'chb',1); break;
             case 'uncheckall':
                 SelectVis (formname,'chb',0); break;
             case 'delete':
-                if (confirm('"._m("Are you sure you want to delete the selected files and folders?")."'))
+                if (confirm('" ._m("Are you sure you want to delete the selected files and folders?")."'))
                     submitCommand ('delete');
                 break;
             case 'reset':

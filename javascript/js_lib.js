@@ -36,12 +36,13 @@ function MoveSelected(left, right) {
 // Encodes all values from listbox to comma delimeted string
 // prepared for sending as url parameter
 function CommaDelimeted(elid) {
-  if (el = document.getElementById(elid)) {
-      return [].slice.call(el.querySelectorAll('option')).map(function (v) {
-          return encodeURIComponent(v.value);
-      }).join(",");
-  }
-  return '';
+    let el;
+    if (el = document.getElementById(elid)) {
+        return [].slice.call(el.querySelectorAll('option')).map(function (v) {
+            return encodeURIComponent(v.value);
+        }).join(",");
+    }
+    return '';
 }
 
 function GoIfConfirmed(url, text) {
@@ -53,11 +54,11 @@ function GoIfConfirmed(url, text) {
 /** Appends any number of QUERY_STRING parameters (separated by &) to given URL,
  *  using appropriate ? or &. */
 function GetUrl(url, params) {
-    url_components = url.split('#', 2);
-    url_path       = url_components[0];
-    url_fragment   = (url_components.length > 1) ? ('#' + url_components[1]) : '';
-    url_params     = params.join('&');
-    return url_path + ((url_path.search(/\?/) == -1) ? '?' : '&') + url_params + url_fragment;
+    let url_components = url.split('#', 2);
+    let url_path       = url_components[0];
+    let url_fragment   = (url_components.length > 1) ? ('#' + url_components[1]) : '';
+    let url_params     = params.join('&');
+    return url_path + ((url_path.search(/\?/) === -1) ? '?' : '&') + url_params + url_fragment;
 }
 
 /* Calls the parameters wizard. Parameters are as follows:
@@ -66,9 +67,8 @@ function GetUrl(url, params) {
   text_param = the text field where the parameters are placed
 */
 function CallParamWizard(url, list, combo_list, text_param, codemirror ) {
-    combo_list_el = document.f.elements[combo_list];
-    page = GetUrl(url, ["list=" + list, "combo_list=" + combo_list, "text_param=" + text_param, "codemirror=" + codemirror, "item=" + combo_list_el.value]);
-    param_wizard = window.open(page,"somename","width=450,scrollbars=yes,menubar=no,hotkeys=no,resizable=yes");
-    param_wizard.focus();
+    let combo_list_el = document.f.elements[combo_list];
+    let page = GetUrl(url, ["list=" + list, "combo_list=" + combo_list, "text_param=" + text_param, "codemirror=" + codemirror, "item=" + combo_list_el.value]);
+    window.open(page, "somename", "width=450,scrollbars=yes,menubar=no,hotkeys=no,resizable=yes").focus();
 }
 

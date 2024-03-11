@@ -89,13 +89,12 @@ $err = [];          // error array (Init - just for initializing variable
 
 $headcode = '<script>
     function SelectValue(sel) {
-        svindex = eval(sel).selectedIndex;
-        if (svindex != -1) { return eval(sel).options[svindex].value; }
-        return null;
+        const svindex = eval(sel).selectedIndex;
+        return (svindex !== -1) ? eval(sel).options[svindex].value : null;
     }
 
     function Delete() {
-        sel = SelectValue(\'document.f.perms\')
+        const sel = SelectValue(\'document.f.perms\')
         if (sel == null) {
             alert(\''. _m("No selected export") .'\')
             return 

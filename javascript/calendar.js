@@ -32,8 +32,7 @@ Calendar = function (mondayFirst, dateStr, yourHandler, yourCloseHandler) {
 // "static", needed for event handlers.
 Calendar._C = null;
 
-Calendar.is_ie = ( (navigator.userAgent.toLowerCase().indexOf("msie") != -1) &&
-		   (navigator.userAgent.toLowerCase().indexOf("opera") == -1) );
+Calendar.is_ie = ( (navigator.userAgent.toLowerCase().indexOf("msie") !== -1) && (navigator.userAgent.toLowerCase().indexOf("opera") === -1) );
 Calendar._MD = [31,28,31,30,31,30,31,31,30,31,30,31];
 
 // ** public functions (these can be thought as static, since none of them use
@@ -101,7 +100,7 @@ Calendar.removeClass = function(el, className) {
 	}
 	var classes = el.className.split(" ");
 	var newClasses = [];
-	for (i = 0; i < classes.length; ++i) {
+	for (let i = 0; i < classes.length; ++i) {
 		if (classes[i] != className) {
 			newClasses[newClasses.length] = classes[i];
 		}

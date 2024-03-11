@@ -190,26 +190,28 @@ if (is_array($desc['params'])) {
                 params = params.replace(/#:/g,"#~") + ":";
 <?php if ($allow_quote)
     echo "params = params.replace(/'/g,\":\");" ?>
-                    for (let i=0; i < <?php echo count($desc['params']) ?>; i++) {
-                        if (params > "") {
-                            str = params.substring(0,params.indexOf(":"));
-                            params = params.substring(params.indexOf(":")+1);
-                        }
-                        else str = "";
-                        document.f.elements["param"+i].value = str.replace(/#~/g,":");
-                    }
-                }
-                function readParams() {
-                    <?php
-                    if ($codemirror) {
-                        echo "fillParams( window.opener.$codemirror.getValue());";
+                let str;
+                for (let i = 0; i < <?php echo count($desc['params']) ?>; i++) {
+                    if (params > "") {
+                        str = params.substring(0, params.indexOf(":"));
+                        params = params.substring(params.indexOf(":") + 1);
                     } else {
-                        echo "fillParams( window.opener.document.f.elements[\"$text_param\"].value );";
+                        str = "";
                     }
-                    ?>
+                    document.f.elements["param" + i].value = str.replace(/#~/g, ":");
                 }
-                function useExample(iExample) {
-                    switch(iExample) {
+            }
+            function readParams() {
+                <?php
+                if ($codemirror) {
+                    echo "fillParams( window.opener.$codemirror.getValue());";
+                } else {
+                    echo "fillParams( window.opener.document.f.elements[\"$text_param\"].value );";
+                }
+                ?>
+            }
+            function useExample(iExample) {
+                switch(iExample) {
 <?php
 $ino = count($desc['examples'] ?? []);
 for ($i = 0; $i < $ino; ++$i) {
@@ -217,9 +219,9 @@ for ($i = 0; $i < $ino; ++$i) {
     echo "case $i: pars=\"" . $exm['params'] . "\"; break;";
 }
 ?>
-                    }
-                    fillParams(pars);
                 }
+                fillParams(pars);
+            }
         </script>
 
         <table class="aa-table">

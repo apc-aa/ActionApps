@@ -220,9 +220,8 @@ FrmTabEnd($form_buttons);
 <script>
 
     function SelectValue(sel) {
-        svindex = eval(sel).selectedIndex;
-        if (svindex != -1) { return eval(sel).options[svindex].value; }
-        return null;
+        const svindex = eval(sel).selectedIndex;
+        return (svindex !== -1) ? eval(sel).options[svindex].value : null;
     }
 
     function ChangeFromSlice() {

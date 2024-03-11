@@ -16,9 +16,10 @@ var hcDeletedIDs    = [];
 var hcNewID = 0;
 
 function clearSelectBox (formname, boxname) {
-    selectBox = document.forms[formname][boxname];
-    for (i=selectBox.options.length-1; i >= 0; i--)
+    const selectBox = document.forms[formname][boxname];
+    for (let i=selectBox.options.length-1; i >= 0; i--) {
         selectBox.options[i] = null;
+    }
 }
 
 function hcResolveValues (arr) {
@@ -39,15 +40,16 @@ function hcInit(hcid) {
 
 
     // init the hcSelectedItems array
-    for (i=0; i < hcLevelCount[hcid]; ++i) {
+    for (let i=0; i < hcLevelCount[hcid]; ++i) {
         hcSelectedItems[hcid][i] = -1;
     }
 
     // fill in the top level box
     var selectBox = document[hcForm]['hclevel0_'+hcid];
     selectBox[0] = null;
-    for (i=0; i < hcConsts[hcid].length; ++i) {
-        opt = new Option(hcConsts[hcid][i][colName],hcConsts[hcid][i][colValue],false,false);
+    let opt;
+    for (let i = 0; i < hcConsts[hcid].length; ++i) {
+        opt = new Option(hcConsts[hcid][i][colName], hcConsts[hcid][i][colValue], false, false);
         selectBox.options[i] = opt;
     }
     if (hcConsts[hcid].length > 0) {
@@ -62,8 +64,8 @@ function hcInit(hcid) {
 
 function getSelectedArray(hcid) {
     var arr = hcConsts[hcid];
-    for (i=0; i <= hcSelectedBox[hcid]; ++i) {
-        if (hcSelectedItems[hcid][i] == -1)
+    for (let i=0; i <= hcSelectedBox[hcid]; ++i) {
+        if (hcSelectedItems[hcid][i] === -1)
             return [];
         arr = arr[hcSelectedItems[hcid][i]];
         if (i < hcSelectedBox[hcid]) arr = arr[colChild];
@@ -90,42 +92,49 @@ function hcSelectItem(hcid, iBox, admin) {
     }
 
     ++iBox;
+    let opt, i;
     if (iBox < hcLevelCount[hcid]) {
-        selectBox = document[hcForm]['hclevel'+iBox+'_'+hcid];
+        selectBox = document[hcForm]['hclevel' + iBox + '_' + hcid];
         if (arr.length > colChild) {
             arr = arr[colChild];
-            for (i=0; i < arr.length; ++i) {
-                opt = new Option(arr[i][colName],arr[i][colValue],false,false);
+            for (i = 0; i < arr.length; ++i) {
+                opt = new Option(arr[i][colName], arr[i][colValue], false, false);
                 selectBox.options[i] = opt;
             }
             selectBox.selectedIndex = -1;
+        } else {
+            i = 0;
         }
-        else i=0;
-        while (i < selectBox.options.length)
+        while (i < selectBox.options.length) {
             selectBox.options[i] = null;
+        }
         while (++iBox < hcLevelCount[hcid]) {
-            selectBox = document[hcForm]['hclevel'+iBox+'_'+hcid];
-            while (selectBox.options.length)
+            selectBox = document[hcForm]['hclevel' + iBox + '_' + hcid];
+            while (selectBox.options.length) {
                 selectBox.options[0] = null;
+            }
         }
     }
 }
 
 function refreshBox(hcid, iBox) {
-    var selectBox = document[hcForm]['hclevel'+iBox+'_'+hcid];
-    oldSelectedIndex = selectBox.selectedIndex;
-    var arr = hcConsts[hcid];
+    const selectBox = document[hcForm]['hclevel' + iBox + '_' + hcid];
+    const oldSelectedIndex = selectBox.selectedIndex;
+    let arr = hcConsts[hcid];
+    let i, opt;
     if (arr.length > 0) {
-        for (i=0; i < iBox; ++i)
+        for (i=0; i < iBox; ++i) {
             arr = arr[hcSelectedItems[hcid][i]][colChild];
+        }
         for (i=0; i < arr.length; ++i) {
             opt = new Option(arr[i][colName],arr[i][colValue],false,false);
             selectBox.options[i] = opt;
         }
     }
     selectBox.selectedIndex = oldSelectedIndex;
-    while (i < selectBox.options.length)
+    while (i < selectBox.options.length) {
         selectBox.options[i] = null;
+    }
 }
 
 // fills array with values in the edit boxes on screen
@@ -149,12 +158,9 @@ function hcUpdateMe(hcid) {
     deletes given count of items beginning with iStart
     IE knows splice from version 5.5 only */
 
-function array_splice (arr, iStart, deleteCount) {
-    if (iStart > 0)
-        begin = arr.slice (0, iStart);
-    else begin = [];
-    end = arr.slice (iStart+deleteCount,arr.length);
-    return begin.concat (end);
+function array_splice(arr, iStart, deleteCount) {
+    const begin = iStart > 0 ? arr.slice(0, iStart) : [];
+    return begin.concat(arr.slice(iStart + deleteCount, arr.length));  // add end
 }
 
 /** Saves recursively IDs of the whole branch beginning with given item */
@@ -173,10 +179,10 @@ function saveDeletedIDs (arr) {
 /** Deletes the item edited with / without children */
 
 function hcDeleteMe(hcid, withChildren) {
-    iBox = hcSelectedBox[hcid];
+    let iBox = hcSelectedBox[hcid];
 
-    var f = document[hcForm];
-    if (f['hcDoDelete'].checked == false) {
+    const f = document[hcForm];
+    if (f['hcDoDelete'].checked === false) {
         alert ('Check the box prior to delete anything.');
         return;
     }
@@ -184,11 +190,15 @@ function hcDeleteMe(hcid, withChildren) {
         f['hcDoDelete'].checked = false;
     }
 
-    var arr = hcConsts[hcid];
-    for (i=0; i < iBox; ++i) {
+    let arr = hcConsts[hcid];
+    let arrParent, grandParent;
+    for (let i = 0; i < iBox; ++i) {
         arr = arr[hcSelectedItems[hcid][i]];
-        if (i == iBox-1) arrParent = arr;
-        else if (i == iBox-2) grandParent = arr;
+        if (i === iBox - 1) {
+            arrParent = arr;
+        } else if (i === iBox - 2) {
+            grandParent = arr;
+        }
         arr = arr[colChild];
     }
     if (arr[hcSelectedItems[hcid][iBox]].length > colChild && !withChildren) {
@@ -210,18 +220,22 @@ function hcDeleteMe(hcid, withChildren) {
         }
     }
 
-    if (arr.length == 0) {
-        if (iBox == 0) hcConsts[hcid] = [];
-        else if (arr.splice) {
+    if (arr.length === 0) {
+        if (iBox === 0) {
+            hcConsts[hcid] = [];
+        } else if (arr.splice) {
             arrParent.splice (colChild,1);
         } else {
             arrParent = array_splice (arrParent, colChild, 1);
-            if (iBox == 1) hcConsts[hcid][hcSelectedItems[hcid][iBox-1]] = arrParent;
-            else grandParent[colChild][hcSelectedItems[hcid][iBox-1]] = arrParent;
+            if (iBox === 1) {
+                hcConsts[hcid][hcSelectedItems[hcid][iBox - 1]] = arrParent;
+            } else {
+                grandParent[colChild][hcSelectedItems[hcid][iBox - 1]] = arrParent;
+            }
         }
     }
 
-    var selectBox = document[hcForm]['hclevel'+iBox+'_'+hcid];
+    let selectBox = document[hcForm]['hclevel' + iBox + '_' + hcid];
     selectBox.selectedIndex = -1;
     if (iBox > 0) {
         hcSelectItem(hcid, iBox-1);
@@ -232,14 +246,15 @@ function hcDeleteMe(hcid, withChildren) {
         if (hcConsts[hcid].length > 0) {
             selectBox.selectedIndex = 0;
             hcSelectItem(hcid, iBox);
+        } else {
+            refreshBox(hcid, 1);
         }
-        else refreshBox(hcid, 1);
     }
 }
 
 function hcAddNew(hcid, iBox) {
-    var selectBox = document[hcForm]['hclevel'+iBox+'_'+hcid];
-    if (hcConsts[hcid].length == 0 && iBox > 0) {
+    const selectBox = document[hcForm]['hclevel' + iBox + '_' + hcid];
+    if (hcConsts[hcid].length === 0 && iBox > 0) {
         alert ('There are no hcConsts. You can add only to level 0.');
         return;
     }
@@ -247,13 +262,12 @@ function hcAddNew(hcid, iBox) {
         alert ('You can not add to this level. An item in the preceding level must be selected.');
         return;
     }
-    var arr = hcConsts[hcid];
-    for (i=0; i < iBox; ++i) {
+    let arr = hcConsts[hcid];
+    for (let i=0; i < iBox; ++i) {
         arr = arr[hcSelectedItems[hcid][i]];
         if (i < iBox-1) arr = arr[colChild];
     }
-    var f = document[hcForm];
-    var newItem = new Array(colChild);
+    const newItem = new Array(colChild);
     setEditedValues(newItem);
     newItem[colID] = '#'+hcNewID;
     ++hcNewID;
@@ -279,31 +293,29 @@ function careQuotes (str) {
 }
 
 function sendDirtyBranch(arr,ancestors) {
+
     //alert (ancestors+" "+arr);
-    if (arr[colDirty]) {
-        info = ":"
-            +careQuotes(arr[colName])+"~"
-            +careQuotes(arr[colValue])+"~"
-            +careQuotes(arr[colPrior])+"~"
-            +careQuotes(arr[colDesc])+"~"
-            +arr[colID]+"~"
-            +ancestors;
-    }
-    else info = "";
+    let info = arr[colDirty] ? ":"
+        + careQuotes(arr[colName]) + "~"
+        + careQuotes(arr[colValue]) + "~"
+        + careQuotes(arr[colPrior]) + "~"
+        + careQuotes(arr[colDesc]) + "~"
+        + arr[colID] + "~"
+        + ancestors : "";
     if (arr.length > colChild) {
         // JavaScript doesn't create new values on recursion
-        var myID = String(arr[colID]);
+        const myID = String(arr[colID]);
         arr = arr[colChild];
-        var i;
-        for (i=0; i < arr.length; ++i)
-            info += sendDirtyBranch(arr[i], ancestors+","+myID);
+        for (let i = 0; i < arr.length; ++i) {
+            info += sendDirtyBranch(arr[i], ancestors + "," + myID);
+        }
     }
     return info;
 }
 
 function sendDirty(hcid) {
-    info = "";
-    for (i=0; i < hcConsts[hcid].length; ++i) {
+    let info = "";
+    for (let i=0; i < hcConsts[hcid].length; ++i) {
         info += sendDirtyBranch(hcConsts[hcid][i],'');
     }
     if (info > "") {
@@ -313,57 +325,59 @@ function sendDirty(hcid) {
 }
 
 function sendDeleted () {
-    alldata = "";
-    for (i=0; i < hcDeletedIDs.length; ++i) {
-        if (i > 0) alldata += ",";
+    let alldata = "";
+    for (let i=0; i < hcDeletedIDs.length; ++i) {
+        if (i > 0) {
+            alldata += ",";
+        }
         alldata += hcDeletedIDs[i];
     }
     return alldata;
 }
 
 function hcSendAll(hcid) {
-    var f = document[hcForm];
-    alldata = sendDeleted() + sendDirty(hcid);
-    f['hcalldata'].value = alldata;
+    const f = document[hcForm];
+    f['hcalldata'].value = sendDeleted() + sendDirty(hcid);
     f.submit();
 }
 
-function hcAddItemTo(hcid,i,targetBox) {
-    var f = document[hcForm];
-    var selectBox = document[hcForm]['hclevel'+i+'_'+hcid];
-    if (selectBox.selectedIndex == -1) return;
-    myname = selectBox.options[selectBox.selectedIndex].text;
-    myvalue = selectBox.options[selectBox.selectedIndex].value;
+function hcAddItemTo(hcid,iBox,targetBox) {
+    const selectBox = document[hcForm]['hclevel' + iBox + '_' + hcid];
+    if (selectBox.selectedIndex === -1) {
+        return;
+    }
+    let myname  = selectBox.options[selectBox.selectedIndex].text;
+    let myvalue = selectBox.options[selectBox.selectedIndex].value;
     //alert ('name '+name+' value '+value);
-    var target = document[hcForm][targetBox];
+    const target = document[hcForm][targetBox];
 
     // if an option with the same name is already selected, replace it
-    for (i = 0; i < target.length; i ++)
-        if (target.options[i].text == myname) {
+    for (let i = 0; i < target.length; i ++) {
+        if (target.options[i].text === myname) {
             target.options[i].value = myvalue;
             target.options[i].selected = true;
             return;
         }
-
-    opt = new Option(myname,myvalue,true,true);
-    target.options [target.length] = opt;
+    }
+    target.options [target.length] = new Option(myname, myvalue, true, true);
 }
 
-function hcClearBox (boxName) {
-    var box = document[hcForm][boxName];
-    for (i=box.length-1; i >= 0; --i)
+function hcClearBox(boxName) {
+    const box = document[hcForm][boxName];
+    for (let i=box.length-1; i >= 0; --i) {
         box.options[i] = null;
+    }
 }
 
 function hcDelete(boxName) {
-    var box = document[hcForm][boxName];
+    const box = document[hcForm][boxName];
     if (box.selectedIndex > -1) {
         box.options[box.selectedIndex] = null;
     }
 }
 
 function hcDeleteLast(boxName) {
-    var box = document[hcForm][boxName];
+    const box = document[hcForm][boxName];
     box.options[box.length-1] = null;
 }
 

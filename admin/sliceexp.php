@@ -180,28 +180,26 @@ if ($_POST['b_export_type']) {
 </table>
 <script>
     function validate () {
-        form = document.forms["f"];
+        const form = document.forms["f"];
         if (form.SliceID.value.length != 16) {
             alert (<?php echo '"'._m("The identificator should be 16 characters long, not ").'"' ?>
                 + form.SliceID.value.length);
             form.SliceID.focus();
-        }
-        else {
+        } else {
             form.submit();
         }
     }
     function validate2() {
-        sl_count = 0;
-        x = document.f['export_slices[]'];
-        form = document.forms["f"];
-        for (i=0; i<x.length; i++) {
+        let sl_count = 0;
+        const x = document.f['export_slices[]'];
+        const form = document.forms["f"];
+        for (let i=0; i<x.length; i++) {
             sl_count += (x.options[i].selected ? 1 : 0);
         }
-        if (sl_count == 0) {
+        if (sl_count === 0) {
             alert (<?php  echo '"'._m("You must select one or more slices to backup").'"' ?>);
             return false;
-        }
-        else {
+        }  else {
             return true;
         }
     }

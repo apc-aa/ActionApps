@@ -59,53 +59,49 @@ HtmlPageBegin();
 
 function mapload() {
     if (GBrowserIsCompatible()) {
-        var map = new GMap2(document.getElementById("map"));
+        const map = new GMap2(document.getElementById("map"));
         map.addControl(new GSmallMapControl());
         map.addControl(new GMapTypeControl());
-        var center = new GLatLng(49.94815, 15.26761);
+        const center = new GLatLng(49.94815, 15.26761);
         map.setCenter(center, 7);
-        geocoder = new GClientGeocoder();
-        var marker = new GMarker(center, {draggable: true});
+        geocoder = new GClientGeocoder();  // global variable
+        const marker = new GMarker(center, {draggable: true});
         map.addOverlay(marker);
         document.getElementById("lat").innerHTML = center.lat().toFixed(5);
         document.getElementById("lng").innerHTML = center.lng().toFixed(5);
 
         GEvent.addListener(marker, "dragend", function() {
-                var point = marker.getPoint();
+            var point = marker.getPoint();
+            map.panTo(point);
+            document.getElementById("lat").innerHTML = point.lat().toFixed(5);
+            document.getElementById("lng").innerHTML = point.lng().toFixed(5);
+
+        });
+
+        GEvent.addListener(map, "moveend", function() {
+            map.clearOverlays();
+            const center = map.getCenter();
+            const marker = new GMarker(center, {draggable: true});
+            map.addOverlay(marker);
+            document.getElementById("lat").innerHTML = center.lat().toFixed(5);
+            document.getElementById("lng").innerHTML = center.lng().toFixed(5);
+
+            GEvent.addListener(marker, "dragend", function() {
+                const point = marker.getPoint();
                 map.panTo(point);
                 document.getElementById("lat").innerHTML = point.lat().toFixed(5);
                 document.getElementById("lng").innerHTML = point.lng().toFixed(5);
 
+            });
         });
-
-
-        GEvent.addListener(map, "moveend", function() {
-                map.clearOverlays();
-                var center = map.getCenter();
-                var marker = new GMarker(center, {draggable: true});
-                map.addOverlay(marker);
-                document.getElementById("lat").innerHTML = center.lat().toFixed(5);
-                document.getElementById("lng").innerHTML = center.lng().toFixed(5);
-
-
-                GEvent.addListener(marker, "dragend", function() {
-                        var point =marker.getPoint();
-                        map.panTo(point);
-                        document.getElementById("lat").innerHTML = point.lat().toFixed(5);
-                        document.getElementById("lng").innerHTML = point.lng().toFixed(5);
-
-                });
-
-        });
-
     }
 }
 
 function showAddress(address) {
-    var map = new GMap2(document.getElementById("map"));
+    const map = new GMap2(document.getElementById("map"));
     map.addControl(new GSmallMapControl());
     map.addControl(new GMapTypeControl());
-    if (geocoder) {
+    if (geocoder) {  // global variable
         geocoder.getLatLng(
             address,
             function(point) {
@@ -116,37 +112,35 @@ function showAddress(address) {
                     document.getElementById("lng").innerHTML = point.lng().toFixed(5);
                     map.clearOverlays()
                     map.setCenter(point, 15);
-                    var marker = new GMarker(point, {draggable: true});
+                    const marker = new GMarker(point, {draggable: true});
                     map.addOverlay(marker);
 
                     GEvent.addListener(marker, "dragend", function() {
-                            var pt = marker.getPoint();
+                        const pt = marker.getPoint();
+                        map.panTo(pt);
+                        document.getElementById("lat").innerHTML = pt.lat().toFixed(5);
+                        document.getElementById("lng").innerHTML = pt.lng().toFixed(5);
+                    });
+
+                    GEvent.addListener(map, "moveend", function() {
+                        map.clearOverlays();
+                        const center = map.getCenter();
+                        const marker = new GMarker(center, {draggable: true});
+                        map.addOverlay(marker);
+                        document.getElementById("lat").innerHTML = center.lat().toFixed(5);
+                        document.getElementById("lng").innerHTML = center.lng().toFixed(5);
+
+                        GEvent.addListener(marker, "dragend", function() {
+                            const pt = marker.getPoint();
                             map.panTo(pt);
                             document.getElementById("lat").innerHTML = pt.lat().toFixed(5);
                             document.getElementById("lng").innerHTML = pt.lng().toFixed(5);
-                    });
-
-
-                    GEvent.addListener(map, "moveend", function() {
-                            map.clearOverlays();
-                            var center = map.getCenter();
-                            var marker = new GMarker(center, {draggable: true});
-                            map.addOverlay(marker);
-                            document.getElementById("lat").innerHTML = center.lat().toFixed(5);
-                            document.getElementById("lng").innerHTML = center.lng().toFixed(5);
-
-                            GEvent.addListener(marker, "dragend", function() {
-                                    var pt = marker.getPoint();
-                                    map.panTo(pt);
-                                    document.getElementById("lat").innerHTML = pt.lat().toFixed(5);
-                                    document.getElementById("lng").innerHTML = pt.lng().toFixed(5);
-                            });
-
+                        });
                     });
 
                 }
             }
-            );
+        );
     }
 }
 

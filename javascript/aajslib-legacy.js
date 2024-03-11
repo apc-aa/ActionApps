@@ -8222,9 +8222,10 @@ function SetContent(id,txt) {
 }
 
 function proposeChange(combi_id, item_id, fid, change) {
-    var valdivid   = 'ajaxv_'+combi_id;
-    var alias_name = $(valdivid).readAttribute('data-aa-alias');
-    if ( typeof do_change == 'undefined') {
+    const valdivid = 'ajaxv_' + combi_id;
+    const alias_name = $(valdivid).readAttribute('data-aa-alias');
+    let do_change;
+    if (typeof do_change == 'undefined') {
         do_change = 1;
     }
 
@@ -8340,11 +8341,13 @@ function AA_Rotator(id, interval, max, speed, effect) {
  *  internal - could be changed
  */
 function AA__liveSearch(id, viewparam, deflt) {
-    val    = $$('#' +id+ ' input.itemsearch')[0].value;
+    let val = $$('#' + id + ' input.itemsearch')[0].value;
     if (!val.length && deflt.length) {
         val=deflt;
     }
-    fnc = function(t,v,q) { AA_AjaxCss(t, AA_GetConf('path') + 'view.php?vid=' + viewparam.replace('AA_LS_QUERY', q));}
+    const fnc = function (t, v, q) {
+      AA_AjaxCss(t, AA_GetConf('path') + 'view.php?vid=' + viewparam.replace('AA_LS_QUERY', q));
+    };
     if (AA__liveSearch.timer) {
        if (AA__liveSearch.searchval != val) {
            clearTimeout(AA__liveSearch.timer);
@@ -8496,7 +8499,7 @@ function AA_WindowUnloadQ(e) {
 }
 
 function AA_SiteUpdate(item, field, value, action) {
-  if (['u','i','r'].indexOf(action) == -1) {
+  if (['u','i','r'].indexOf(action) === -1) {
     action = 'u';
   }
   var params = {};

@@ -797,9 +797,9 @@ function get_javascript_field_validation() {
     */
     return /** @lang JavaScript */ "
         function validate (myform, txtfield, type, required, add) {
-            var invalid_email = /(@.*@)|(\\.\\.)|(@\\.)|(\\.@)|(^\\.)/;
-            var valid_email = /^.+@[a-zA-Z0-9\\-\\.]+\\.([a-zA-Z]{2,6}|[0-9]{1,3})$/;
-
+            const invalid_email = /(@.*@)|(\\.\\.)|(@\\.)|(\\.@)|(^\\.)/;
+            const valid_email = /^.+@[a-zA-Z0-9\\-\\.]+\\.([a-zA-Z]{2,6}|[0-9]{1,3})$/;
+            let myfield, myfield2;
             if (type == 'pwd') {
                 myfield = myform[txtfield+'a'];
                 myfield2 = myform[txtfield+'b'];
@@ -811,12 +811,12 @@ function get_javascript_field_validation() {
                 return true;
             }
 
-            var val = myfield.value;
-            var err = '';
+            const val = myfield.value;
+            let err = '';
 
             if (val == '' && required && (type != 'pwd' || add == 1)) {
                 err = (type == 'pwd') ? '" . _m("This field is required.") . "' : '" . _m("This field is required (marked by *).") . "';
-            } else if (val == '') { 
+            } else if (val === '') { 
                 return true;
             }
             

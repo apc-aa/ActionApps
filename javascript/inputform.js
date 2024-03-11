@@ -65,11 +65,12 @@ function sb_SetValue(selectbox, index, text, value) {
     if (selectbox != null && selectbox.options != null) {
         if (index=='new') {
             // find "empty" row
-            for( i=0; i < selectbox.options.length; i++ ) { // maxcount is global as well as relmessage
-                if( (selectbox.options[i].value == 'wIdThTor') || selectbox.options[i].value == '') break;
+            let i;
+            for(i = 0; i < selectbox.options.length; i++ ) { // maxcount is global as well as relmessage
+                if( (selectbox.options[i].value === 'wIdThTor') || selectbox.options[i].value === '') break;
             }
 
-            if ( i == selectbox.options.length ) {
+            if ( i === selectbox.options.length ) {
                 selectbox.options[selectbox.options.length] = new Option(text, value);
                 return;
             }
@@ -87,9 +88,8 @@ function sb_SetValue(selectbox, index, text, value) {
 
 function sb_UpdateValue(selectbox, old_value, text, value) {
     // find row to update (contains old_value)
-    for ( i=0; i < selectbox.length; i++ ) {
-        if ( selectbox.options[i].value == old_value )
-        {
+    for (let i=0; i < selectbox.length; i++ ) {
+        if ( selectbox.options[i].value === old_value ) {
             sb_SetValue(selectbox, i, text, value);
             break;
         }
@@ -97,20 +97,20 @@ function sb_UpdateValue(selectbox, old_value, text, value) {
 }
 
 function sb_AddValue(selectbox, text) {
-    new_val = prompt(text, '');
+    let new_val = prompt(text, '');
     if (new_val != null) {
         sb_SetValue(selectbox, 'new', new_val, new_val);
     }
 }
 
 function sb_EditValue(selectbox, text) {
-    if ( selectbox.selectedIndex == -1 ) {
+    if ( selectbox.selectedIndex === -1 ) {
         return;
     }
-    val = selectbox.value;
+    let val = selectbox.value;
     // wIdThTor is special AA constant, which behaves as empty string, but the
     // width of selectbox is not zero for it
-    new_val = prompt(text, (val=='wIdThTor') ? '' : val);
+    let new_val = prompt(text, (val === 'wIdThTor') ? '' : val);
     if (new_val != null) {
         sb_SetValue(selectbox, selectbox.selectedIndex, new_val, new_val);
     }
@@ -175,9 +175,8 @@ function add_to_line(inputbox, value) {
 // @param string aa_instal_path - relative path to AA on server (like"/apc-aa/")
 // @param string textarea_id    - textarea fomr id (like "v66756c6c5f746578742e2e2e2e2e2e31")
 function CallConvertor(aa_instal_path, textarea_id) {
-    page = aa_instal_path + "misc/msconvert/index.php?inputid=" + textarea_id;
-    conv = window.open(page,"convwindow","width=450,scrollbars=yes,menubar=no,hotkeys=no,resizable=yes");
-    conv.focus();
+    let page = aa_instal_path + "misc/msconvert/index.php?inputid=" + textarea_id;
+    window.open(page, "convwindow", "width=450,scrollbars=yes,menubar=no,hotkeys=no,resizable=yes").focus();
 }
 
 // displays all tags 'classtoshow' of 'type', which is in 'where' id
@@ -218,7 +217,7 @@ function OpenLocalURLPick(varname, url, aa_instal_path, value) {
     if ((urlpickerwindow != null) && (!urlpickerwindow.closed)) {
         urlpickerwindow.close()    // in order to preview go on top after open
     }
-    page = aa_instal_path + "/localurlpick.php?var_id=" + varname + "&url=" + url + "&value=" + value
+    let page = aa_instal_path + "/localurlpick.php?var_id=" + varname + "&url=" + url + "&value=" + value
     urlpickerwindow = open(page, "urlpickerwindow", "scrollbars=1, resizable=1, height=600 width=800 menubar=no");
 }
 
@@ -240,9 +239,9 @@ function showHTMLAreaLink(name) {
 
 function OLDopenHTMLAreaFullscreen(name) {    // open HTMLArea in popupwindow
     if (CKEDITOR.env.isCompatible) {
-        var elem = document.body.querySelectorAll('input[name="'+name+"html"+'"]');
-        for (i=0; i<elem.length; i++) {
-            if (elem[i].value == "h") {
+        let elem = document.body.querySelectorAll('input[name="' + name + "html" + '"]');
+        for (let i=0; i<elem.length; i++) {
+            if (elem[i].value === "h") {
                 elem[i].checked = true;
             }
         }
@@ -257,14 +256,15 @@ function OLDopenHTMLAreaFullscreen(name) {    // open HTMLArea in popupwindow
 }
 
 function openHTMLAreaFullscreen(name) {    //
+    let el;
     if (CKEDITOR.env.isCompatible) {
-        if (el = document.body.querySelector('input[name="'+name+'html'+'"][value="h"]')) {
+        if (el = document.body.querySelector('input[name="' + name + 'html' + '"][value="h"]')) {
             el.checked = true;
         }
-        if ( el = document.getElementById("htmlplainspan"+name) ) {
+        if (el = document.getElementById("htmlplainspan" + name)) {
             el.style.display = "none";
         }
-        if ( el = document.getElementById("arealinkspan"+name) ) {
+        if (el = document.getElementById("arealinkspan" + name)) {
             el.style.display = "none";
         }
         CKEDITOR.replace(name);

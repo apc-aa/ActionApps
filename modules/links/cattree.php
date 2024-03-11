@@ -315,9 +315,10 @@ class cattree {
 
         $js = '
         // data ----------------------------------------------
-        s=new Array('. $fromString .')
-        t=new Array('. $toString .')
-        b=new Array('. $baseString .')
+        // ALL GLOBAL (and we count with it - HM-2024)
+        s=['. $fromString .']
+        t=['. $toString .']
+        b=['. $baseString .']
         general = "'.$general->getAsString().'"
 
         var assignno = s.length    // number of category assignments
@@ -326,9 +327,9 @@ class cattree {
         var select_depth = '. $select_depth .'
         var go_into_empty_cat = '. ($this->go_to_empty ? 'true' : 'false') .'
         var path_delimiter    = "'. $this->path_delimiter .'"
-        a=new Array()'."\n";
+        a=[]'."\n";
 
-        // This part is not cached - There was some problems in Firefox, when
+        // This part is not cached - There were some problems in Firefox, when
         // treeStart was undefined, then
 
         FrmJavascript( $js );

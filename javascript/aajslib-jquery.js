@@ -676,7 +676,7 @@ function AA_SaveEditors() {
     $.post(AA_GetConf('path') + 'filler.php', params, function(data) {
         AA_Toolbar('');
         window.removeEventListener("beforeunload", AA_WindowUnloadQ);
-        AA_Message((Object.keys(data).length == 1) ? 'Zmeny ulozeny' : ('Ulozeno ' + Object.keys(data).length +' zmen'));
+        AA_Message((Object.keys(data).length === 1) ? 'Zmeny ulozeny' : ('Ulozeno ' + Object.keys(data).length +' zmen'));
     }, 'json');
 }
 
@@ -688,7 +688,7 @@ function AA_WindowUnloadQ(e) {
 }
 
 function AA_SiteUpdate(item, field, value, action) {
-    if (['u','i','r'].indexOf(action) == -1) {
+    if (['u','i','r'].indexOf(action) === -1) {
        action = 'u';
     }
     var params = {};
@@ -720,7 +720,7 @@ function AA__SiteUpdateParts(data) {
     //var matches   = [];
     //var re = /contenteditable=true id="([^"]*)"/g;
     for (var i in data) {
-        if (i == 'message') {
+        if (i === 'message') {
             $('article.aa-updating[data-aa-part]').removeClass('aa-updating');
             AA_Message(data[i], 'err');
         } else {
@@ -746,7 +746,7 @@ function AA__SiteUpdateParts(data) {
 }
 
 function AA__doChange(params, type) {
-    if (type == 'get') {
+    if (type === 'get') {
         $.get(window.location.href, params, AA__SiteUpdateParts);
     } else if (params instanceof FormData) {
         $.ajax({
@@ -771,7 +771,7 @@ function SetCookie(name, value, plustime) {
     var expires = new Date();
     expires.setTime(expires.getTime() + plustime);
     coo += "; expires=" + expires.toGMTString() + "; path=/";
-    coo += (window.location.protocol == 'https:') ? ';secure;samesite=lax' : '';
+    coo += (window.location.protocol === 'https:') ? ';secure;samesite=lax' : '';
     document.cookie = coo;
     // + ((expires == null) ? "" : ("; expires=" + expires.toGMTString()))
     // + ((path == null)    ? "" : ("; path=" + path))
@@ -798,7 +798,7 @@ function GetCookie(name) {
             return getCookieVal(j);
         }
         i = document.cookie.indexOf(" ", i) + 1;
-        if (i == 0) break;
+        if (i === 0) break;
     }
     return null;
 }

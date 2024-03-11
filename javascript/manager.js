@@ -97,17 +97,17 @@ var itemwindow;
 // if add_items == '&' or '?', items[x5443388....] array with selected items
 // is added to the url (used for preview, for example). Use false for no add.
 function OpenItemWindow(url, add_items) {
-    if (url.indexOf("rXn=1") != -1) {
-        var items;
+    if (url.indexOf("rXn=1") !== -1) {
+        let items;
         if( add_items ) {    // defines items string separator ('&' or '?') in url
             items =  GetItemsArrayString();
             if( items ) {
                 url += add_items + items
             }
         }
-
-        if( itemwindow != null )
-            itemwindow.close();    // in order to itemwindow go on top after open
+        if( itemwindow != null ) {
+            itemwindow.close(); // in order to itemwindow go on top after open
+        }
         itemwindow = open(url,'popup','scrollbars')
     } else {
         itemwindow = open('','popup','scrollbars');
@@ -131,8 +131,8 @@ function ReturnParam(param) {
 // you can supply question (for user text input) and/or confirmation question
 // result srchbr_akce then have the following format: <akce>[:<text>][:y]
 function SearchBarAction( formname, srchbr_akce, question, yes_no ) {
-    var srchform = document[formname];
-    var answer;
+    const srchform = document[formname];
+    let answer;
     if ( question ) {
         answer = prompt(question);
         srchbr_akce += ':' + answer.replace(/:/g, "#:");
@@ -147,7 +147,7 @@ function SearchBarAction( formname, srchbr_akce, question, yes_no ) {
 
 // the same as above SearchBarAction(), but only ask if we have to do action
 function SearchBarActionConfirm( formname, srchbr_akce, confirmtxt ) {
-    var srchform = document[formname];
+    const srchform = document[formname];
     if ( confirm(confirmtxt) ) {
         srchform.elements['srchbr_akce'].value = srchbr_akce;
         srchform.submit();
@@ -156,66 +156,68 @@ function SearchBarActionConfirm( formname, srchbr_akce, confirmtxt ) {
 }
 
 function OpenWindowIfRequest(formname, bar, admin_url) {
-    var doc = document[formname];
-    var idx=doc.elements['srchbr_field['+bar+']'].selectedIndex;
-    var idx2=doc.elements['srchbr_oper['+bar+']'].selectedIndex;
+    const doc = document[formname];
+    const idx = doc.elements['srchbr_field[' + bar + ']'].selectedIndex;
+    const idx2 = doc.elements['srchbr_oper[' + bar + ']'].selectedIndex;
 
-    if (doc.elements['srchbr_oper['+bar+']'].options[idx2].value == "select") {
-        sel_val = doc.elements['srchbr_field['+bar+']'].options[idx].value;
-        sel_name = "srchbr_value["+bar+"]";
-        sel_text = doc.elements['srchbr_value['+bar+']'].value;
+    if (doc.elements['srchbr_oper[' + bar + ']'].options[idx2].value === "select") {
+        let sel_val  = doc.elements['srchbr_field[' + bar + ']'].options[idx].value;
+        let sel_name = "srchbr_value[" + bar + "]";
+        let sel_text = doc.elements['srchbr_value[' + bar + ']'].value;
         OpenConstantsWindow(sel_name, sel_val, sel_text, admin_url);
-        if (field_types.charAt(idx) == 3) {
-            doc.elements['srchbr_oper['+bar+']'].selectedIndex = 2; // equals
-        } else if (field_types.charAt(idx) == 4) {                    // numconstants
-            doc.elements['srchbr_oper['+bar+']'].selectedIndex = 0; // =
+        if (field_types.charAt(idx) === '3') {
+            doc.elements['srchbr_oper[' + bar + ']'].selectedIndex = 2; // equals
+        } else if (field_types.charAt(idx) === '4') {                    // numconstants
+            doc.elements['srchbr_oper[' + bar + ']'].selectedIndex = 0; // =
         }
     }
 }
 function ChangeOperators(formname, bar, selectedVal ) {
-    var doc = document[formname];
-    var idx=doc.elements['srchbr_field['+bar+']'].selectedIndex;
-    var type = field_types.charAt(idx);
+    const doc = document[formname];
+    let idx = doc.elements['srchbr_field[' + bar + ']'].selectedIndex;
+    const type = field_types.charAt(idx);
 
     // added by haha
     // get index of form element named srchbr_value[bar]
     // in order to set default value of this text field
-    srch_field_index=0;
-    while(doc.elements[srch_field_index].name!="") {
-      if(doc.elements[srch_field_index].name =="srchbr_value["+bar+"]") {
+    let srch_field_index = 0;
+    while(doc.elements[srch_field_index].name!=="") {
+      if(doc.elements[srch_field_index].name ==="srchbr_value["+bar+"]") {
         break;
       }
       srch_field_index++;
     }
 
-    if ((type=='2') && (doc.elements[srch_field_index].value=='')){ // date field
+    if ((type==='2') && (doc.elements[srch_field_index].value==='')){ // date field
       doc.elements[srch_field_index].value = getToday();
     }
     //else
     //  document.'.$this->form_name.'.elements[srch_field_index].value = "";
 
     // clear selectbox
-    for( i=(doc.elements['srchbr_oper['+bar+']'].options.length-1); i>=0; i--){
+    let i;
+    for(i = (doc.elements['srchbr_oper[' + bar + ']'].options.length - 1); i>=0; i--){
       doc.elements['srchbr_oper['+bar+']'].options[i] = null
     }
     idx = -1;         // overused variable idx
     // fill selectbox from the right slice
     for( i=0; i<operator_names[type].length ; i++) {
       doc.elements['srchbr_oper['+bar+']'].options[i] = new Option(operator_names[type][i], operator_values[type][i]);
-      if( operator_values[type][i] == selectedVal )
+      if( operator_values[type][i] == selectedVal ) {
           idx = i;
+      }
     }
-    if( idx != -1 )
-        doc.elements['srchbr_oper['+bar+']'].selectedIndex = idx;
+    if( idx !== -1 ) {
+        doc.elements['srchbr_oper[' + bar + ']'].selectedIndex = idx;
+    }
 }
 
 /** @return today's date in m/d/y format
  *  @author haha
  */
 function getToday(){
-    now = new Date();
-    today = (now.getMonth()+1)+"/"+ now.getDate() + "/"+ ((now.getYear() < 200) ? now.getYear()+1900 : now.getYear());
-    return today;
+    const now = new Date();
+    return (now.getMonth() + 1) + "/" + now.getDate() + "/" + ((now.getYear() < 200) ? now.getYear() + 1900 : now.getYear());
 }
 
 var constantswindow;  // window for related stories

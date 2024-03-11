@@ -280,10 +280,11 @@ FrmTabEnd($form_buttons);
     }
 
     function AllCategClick() {
-        for ( i=1; i<=<?php echo $imp_count?>; i++ ) {
+        for (let i=1; i<=<?php echo $imp_count?>; i++ ) {
             DisableClick('document.f.all_categories','document.f.chbox_'+i)
-            if ( <?php echo (( isset($to_categories) AND is_array($to_categories)) ? 1 : 0 ) ?> )
-                DisableClick('document.f.all_categories','document.f.categ_'+i)
+            if ( <?php echo (( isset($to_categories) AND is_array($to_categories)) ? 1 : 0 ) ?> ) {
+                DisableClick('document.f.all_categories', 'document.f.categ_' + i)
+            }
             DisableClick('document.f.all_categories','document.f.approved_'+i)
         }
     }

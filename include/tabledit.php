@@ -605,8 +605,8 @@ class tabledit {
         echo "
         <script>
             function $fnname(formname, keys) {
-                myform = document.forms[formname];
-                for (ikey = 0; ikey < keys.length; ikey ++) {
+                const myform = document.forms[formname];
+                for (let ikey = 0; ikey < keys.length; ikey ++) {
                     name = 'val[' + keys [ikey] + ']';
                     \n";
         foreach ($this->cols as $colname => $column) {
