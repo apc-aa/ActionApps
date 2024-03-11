@@ -1,14 +1,5 @@
 <?php
 /**  se_nodes.php - Remote node administration
- *
- *     expected    $mode
- *                 $name
- *                 $server_url
- *                 $password
- *     optionally $Msg to show under <h1>Headline</h1> (typically: Fields' mapping update)
- *                 $old_node_name
- *                 $sel_node_name
- *
  * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
@@ -33,161 +24,24 @@
  *
 */
 
-use AA\IO\DB\DB_AA;
-use AA\Util\InputVars;
+use AA\Manager;
 
 // const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
+require_once __DIR__ . "/../include/varset.php";
+require_once __DIR__ . "/../include/formutil.php";
+require_once __DIR__ . "/../include/item.php";
+require_once __DIR__ . "/../include/actions.php";
+
 if ( !IsSuperadmin() ) {
     MsgPage(_m("You have not permissions to manage nodes"));
     exit;
 }
-$err = [];
-require_once __DIR__ . "/../include/formutil.php";
 
-try {
-    // array ( 'add' => 3, 'insert' => 11, 'edit' => 12, 'update' => 9, 'delete' => 1, )
-    $mode = InputVars::stringPOST('mode'); // alpha
-    // array ( '' => 14, '"Kečup"' => 3, '"Párek"' => 1, 'Rohlík' => 3, 'Rohlík🌭' => 2, 'Řízek' => 1, 'ActionApps.…' => 3, 'Econnect' => 2, 'Econnect Ec…' => 1, 'ChangeNet' => 2, 'Econnect h1' => 1, 'Econnect h1…' => 2, 'adamsbeauty…' => 1, )
-    $node_name = InputVars::stringSlashedPOST('node_name'); // empty
-    // array ( '' => 4, 'Rohlík' => 3, 'ActionApps.…' => 2, 'ChangeNet' => 1, 'Econnect' => 2, 'Econnect Ec…' => 1, 'Econnect h1' => 1, 'Econnect h1…' => 2, 'Rohlík🌭' => 1, )
-    $nodes = []; // empty  // not used as variable
-    // array ( '' => 21, 'Rohlík' => 4, 'ActionApps.…' => 3, 'ChangeNet' => 2, 'Econnect' => 2, 'Econnect Ec…' => 1, 'Econnect h1' => 1, 'Econnect h1…' => 2, )
-    $old_node_name = InputVars::stringSlashedPOST('old_node_name'); // empty
-    // array ( '' => 23, 'Rohlík' => 3, 'ActionApps.…' => 2, 'ChangeNet' => 1, 'Econnect' => 2, 'Econnect Ec…' => 1, 'Econnect h1' => 1, 'Econnect h1…' => 2, 'Rohlík🌭' => 1, )
-    $sel_node_name = InputVars::stringSlashedPOST('sel_node_name'); // empty
-    // array ( '' => 14, 'https://ada…' => 8, 123456789 => 4, '🐖' => 2, 'http://acti…' => 1, 'http://aa.e…' => 1, 'http://work…' => 1, 'http://web.…' => 1, 'https://act…' => 2, 'http://chan…' => 1, 'https://too…' => 1, )
-    $server_url = InputVars::stringSlashedPOST('server_url'); // empty
-    $password = InputVars::stringSlashedPOST('password');
-    // array ( ' Poslat [^…' => 20, )
-    $submitbtn = InputVars::boolPOST('submitbtn');
-    $cancel = InputVars::boolPOST('cancel');
-    // 
-    $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) {}
+$managed = AA::Metabase()->getManagerConf('nodes');
+// $managed->settings['searchbar']['default_sort'] =  [0 => ['time' => 'd']];
 
-if ($mode == "edit") {
-    $db->query("SELECT * FROM nodes WHERE name='$sel_node_name'");
-    if ($db->next_record()) {
-        $old_node_name = $sel_node_name;
-        $node_name = $db->f('name');
-        $server_url = $db->f('server_url');
-        $password = $db->f('password');
-        $new_mode = "update";
-    }
-} else {
-    switch ($mode) {
-        case "delete" :
-            $db->query("DELETE FROM nodes WHERE name='$sel_node_name'");
-            $db->query("DELETE FROM ef_permissions WHERE node='$sel_node_name'");
-            break;
-
-        case "insert" :
-            $db->query("SELECT * FROM nodes WHERE name='$node_name'");
-            if ($db->next_record()) {
-                $err["DB"] .= MsgErr("Can't add node $node_name");
-            } else {
-                $SQL = "INSERT INTO nodes VALUES('$node_name','$server_url','$password')";
-                if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
-                    $err["DB"] .= MsgErr("Can't add node $node_name");
-                }
-            }
-            break;
-
-        case "update" :
-            $db->query("UPDATE nodes SET name='$node_name', server_url='$server_url',
-                                          password='$password' WHERE name='$old_node_name'");
-            break;
-
-        case "add" :
-            $new_mode = "insert";
-            break;
-    }
-    $node_name = $server_url = $password = "";
-    $new_mode = "insert";
-
-}
-
-$nodes = DB_AA::select('', "SELECT `name` FROM `nodes`");
-
-$apage = new AA_Adminpageutil('sliceadmin','nodes');
+$apage = new AA_Adminpageutil('sliceadmin', 'nodes');
 $apage->setTitle(_m("Remote node administration"));
-$apage->setForm(['onsubmit' => "return checkData()"]);
-$apage->printHead($err, $Msg);
+$apage->printWithManager((new Manager('nodes', $managed))->setAllModules());
 
-$form_buttons = ["submit","cancel"=> ["url"=>"se_fields.php"]];
-
-FrmTabCaption(_m("Remote node administration"));
-?>
-      <tr><td colspan="2"><?php echo _m("Known remote nodes") ?></td></tr>
-      <tr><td colspan="2">
-      <select name="nodes" size="5">
-      <?php
-        if (isset($nodes) && is_array($nodes)) {
-            foreach ($nodes as $name) {
-                echo "<option value=\"$name\">$name</option>";
-            }
-        }
-      ?>
-      </select>
-    <tr><td colspan=2>
-      <input type="button" value="<?php echo _m("Edit") ?>" onclick="ActionGo('edit');">
-      <input type="button" value="<?php echo _m("Delete") ?>" onclick="ActionGo('delete');">
-      <input type="button" value="<?php echo _m("Add") ?>" onclick="ActionGo('add');">
-     </td></tr>
-    <tr><td colspan="2">&nbsp;</td></tr>
-<?php
-
-    FrmTabSeparator(($new_mode == "insert" ? _m("Add new node") : _m("Edit node data")));
-
-?>
-    <tr><td><?php echo _m("Node name") ?></td>
-        <td><input type="text" name="node_name" size="40" value="<?php echo safe($node_name)?>" ><br><?php echo _m("Your node name")?>: "<?php echo ORG_NAME ?>"
-    <tr><td><?php echo _m("URL of the getxml.php") ?></td>
-        <td><input type="text" name="server_url" size="40" value="<?php echo safe($server_url)?>" ><br><?php echo _m("Your getxml is")?>: "<?php echo AA_INSTAL_URL ?>admin/getxml.php"
-    <tr><td><?php echo _m("Password") ?></td>
-         <td><input type="text" name="password" size="40" value="<?php echo safe($password)?>" >
-    <input type="hidden" name="mode" value="<?php echo safe($new_mode) ?>">
-    <input type="hidden" name="old_node_name" value="<?php echo safe($old_node_name) ?>">
-    <input type="hidden" name="sel_node_name">
-<?php
-    FrmTabEnd($form_buttons);
-?>
-<script>
-
-    function ActionGo(mode) {
-        var frm = document.f;
-        if (mode== 'add') {
-            frm.elements["mode"].value = mode;
-            frm.submit();
-        } else {
-
-            sel = frm.elements["nodes"].value;
-            if (!sel)
-                alert('<?php echo _m("No selected node"); ?>')
-            else {
-                if (mode == 'delete') {
-                    if (!confirm('<?php echo _m("Are you sure you want to delete the node?"); ?>')) {
-                        return;
-                    }
-                }
-                frm.elements["sel_node_name"].value = sel
-                frm.elements["mode"].value = mode;
-                frm.submit();
-            }
-        }
-    }
-
-    function checkData() {
-        if (document.f.elements['node_name'].value=="") {
-            alert('<?php echo _m("Node empty"); ?>')
-            return false;
-        }
-    }
-
-    function Cancel() {
-        window.location = "<?php echo StateUrl("index.php")?>"
-    }
-</script>
-<?php
-$apage->printFoot();
