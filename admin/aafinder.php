@@ -253,17 +253,20 @@ function PrintItemInfo($item_id) {
 
         echo 'show '. ChangesMonitor::getHistoryLink($item_id);
 
-        if ($res = DB_AA::select([], "SELECT LOWER(HEX(`item_id`)) as Item, '' as Status, '' as PubDate, '' as ExpDate, '' as FieldName, `field_id`, `number`,`text`, `flag` FROM `content`", [['text',$long_id]])) {
+        if ($res = DB_AA::select([], "SELECT LOWER(HEX(`item_id`)) as Item, '' as Status, '' as PubDate, '' as ExpDate, '' as LastEdit, '' as FieldName, `field_id`, `number`,`text`, `flag` FROM `content`", [['text',$long_id]])) {
             array_walk($res, function (&$v, $k) {
                 if (is_long_id($iid = $v['Item'])) {
                     $item = AA_Items::getItem(new zids($iid, 'l'));
                     $v['Item'] .= ' / ' . AA_Module::getModuleName($item->getSliceID());
-                    if ($hdln = AA::Un("{item:$iid:_#HEADLINE}")) {
+                    $hdln = current(AA_Items::getFormatted(new zids($iid, 'l'), '_#HEADLINE', AA_BIN_ALL));  // we want also headline of items in trash
+                    if ($hdln) {
                         $v['Item'] .= "<br><small>($hdln)</small>";
                     }
+                    $v['Item'] .= "<br><small>".ChangesMonitor::getHistoryLink($iid)."</small>";
                     $v['Status'] = $item->getStatusCode();
                     $v['PubDate'] = date('j.n.Y H:i:s', (int)$item->getval('publish_date....'));
                     $v['ExpDate'] = date('j.n.Y H:i:s', (int)$item->getval('expiry_date.....'));
+                    $v['LastEdit'] = date('j.n.Y H:i:s', (int)$item->getval('last_edit.......')).'<br><small>('.$item->getval('edited_by.......').' - '.perm_username($item->getval('edited_by.......')).')</small>';
 
                     $islice = AA_Slice::getModule($item->getSliceID());
                     $v['FieldName'] = ($f=$islice->getField($v['field_id'])) ? $f->getName() : '-- invalid --';
