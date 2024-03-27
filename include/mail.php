@@ -38,26 +38,53 @@ require_once __DIR__ . "/stringexpand.php";
 require_once __DIR__ . "/htmlMimeMail/htmlMimeMail.php";
 require_once __DIR__ . "/validate.php";
 
-// not used yet
+// now used only getAsArray and setAs Array - other features like iEditable, getAllAsArray is not used, now
 class AA_Mailtemplate implements AA_iEditable {
-    protected $record;
+    use AA\Util\DataArrayAccessTrait;
+
+    /** associative array of mail template data - used also by  DataArrayAccessTrait*/
+    protected $data = [];
 
     function __construct($id=null) {
-        $this->record = [];
+        $this->data = [];
         if ($id and ctype_digit((string)$id)) {
             $template = AA_Metabase::getContent(new zids($id, 's'), ['table' => 'email']);
             if ($template[$id]) {
-                $this->record = $template[$id]->getAllAsArray(); // @todo - it is wrong> key => [] - we need key -> value1
+                $this->data = $template[$id]->getAllAsScalar();
             }
         }
     }
 
-    public function getName()                                { return $this->record['description']; }
-    public function getId()                                  { return $this->record['id']; }
-    public function getOwnerId()                             { return $this->record['owner_module_id']; }
-    public function getProperty($property_id, $default=null) { return $this->record[$property_id]; }
+    public function getAsMailArray(): array {
+        if ($this->isEmpty()) {
+            return [];
+        }
+        $ret = $this->data;
+        $ret['lang'] = Langs::getCharset($ret['lang']);
+        return $ret;
+    }
 
-        /** AA_iEditable method - adds Object's editable properties to the $form */
+    /** creates new mail template from the array and saves it to the database
+     * @param array $mail_arr
+     * @return AA_Mailtemplate - filled or empty if store is failed
+     */
+    public static function createFromMailArray(array $mail_arr): AA_Mailtemplate {
+        $mail = new AA_Mailtemplate;
+        $mail->data = $mail_arr;
+        $mail->data['lang'] = Langs::fixLang($mail->data['lang']);   // Mail uses just charset, while template uses lang ('cz-utf8')
+        if ($id = AA::Metabase()->doInsert('email', $mail->data)) {
+            $mail->data['id'] = $id;
+            return $mail;
+        }
+        return new AA_Mailtemplate;  // empty
+    }
+
+    public function getName()                                { return $this->data['description']; }
+    public function getId()                                  { return $this->offsetGet('id') ?? 0; }
+    public function getOwnerId()                             { return $this->data['owner_module_id']; }
+    public function getProperty($property_id, $default=null) { return $this->data[$property_id]; }
+
+    /** AA_iEditable method - adds Object's editable properties to the $form */
     public static function addFormrows(AA_Form $form): void {
         $form->addProperties(static::getClassProperties());
     }
@@ -75,21 +102,15 @@ class AA_Mailtemplate implements AA_iEditable {
     public static function factoryFromForm($oowner, $otype=null) {}
     /** AA_iEditable method - save the object to the database */
     public        function save() {}
+
+    // Array Access implementation is in the DataArrayAccessTrait  --------------------------
 }
-
-
 
 class AA_Mail extends htmlMimeMail implements \AA\Later\LaterInterface {
 
     /** $template_id and $reader_id is mainly for getId() used in AA_Log after toexecute */
     protected $template_id = '';
     protected $reader_id   = '';
-
-    /** static getTemplate */
-    static function getTemplate($mail_id) {
-        // return GetTable2Array("SELECT * FROM email WHERE id = $mail_id", 'aa_first', 'aa_fields');
-        return DB_AA::select1([], "SELECT * FROM email", [['id', $mail_id]]);
-    }
 
     /** used in AA_Log after toexecute */
     function getId() {
@@ -112,14 +133,13 @@ class AA_Mail extends htmlMimeMail implements \AA\Later\LaterInterface {
         }
 
         // email has the templates in it
-        if (! ( $record = AA_Mail::getTemplate($mail_id))) {
+        if ( !($record = (new AA_Mailtemplate((int)$mail_id))->getAsMailArray())) {
             return false;
         }
         // unalias all the template fields including errors_to ...
         foreach ( $record as $key => $value) {
             $record[$key] = AA::Un($value, "", $item);
         }
-        $record["lang"] = Langs::getCharset($record["lang"]);
         return $this->setFromArray($record);
     }
 
@@ -182,14 +202,13 @@ class AA_Mail extends htmlMimeMail implements \AA\Later\LaterInterface {
         }
     }
 
-    /** sendLater function
-     *  Send prepared e-mail to adresses specified in the $to array.
-     *  The e-mail is queued it AA\Later\Toexecute queue before sending (not imediate)
+    /** Send prepared e-mail to addresses specified in the $to array.
+     *  The e-mail is queued it AA\Later\Toexecute queue before sending (not immediate)
      * @param $to
      * @param bool $all_later Sends all mails later - otherwise, the first two mails are sent directly
-     * @return int
+     * @return int number of sent mails
      */
-    function sendLater($to, $all_later=false) {
+    function sendLater($to, $all_later=false): int {
         static $send_mails_total = 0;
 
         $toexecute = new Toexecute;
@@ -315,9 +334,9 @@ class AA_Mail extends htmlMimeMail implements \AA\Later\LaterInterface {
      *  Sends mail defined in e-mail template id $mail_id to all zids (Readers).
      *  Mail template is unaliased using aliases and data form item identified by
      *  $zids (often Reader item). The recipients are Readers itself, by default.
-     * @param $mail_id
-     * @param $zids zids
-     * @param $slice_id
+     * @param int    $mail_id
+     * @param zids   $zids
+     * @param string $slice_id - slice of the Readers - used for slice credentials
      * @return int number of ids to send mails
      */
     static function sendToReader($mail_id, zids $zids, $slice_id): int {
@@ -346,6 +365,8 @@ class AA_Mail extends htmlMimeMail implements \AA\Later\LaterInterface {
 class AA_Mail_Scheduler implements \AA\Later\LaterInterface {
     protected $mail_id;
     protected $reader_ids;
+
+    /** @var string $slice_id slice of the Readers - used for slice credentials */
     protected $slice_id;
 
     function __construct($mail_id, $reader_ids, $slice_id) {

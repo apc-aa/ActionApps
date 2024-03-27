@@ -49,8 +49,7 @@ if (!strlen($inner_body)) {
     exit;
 }
 
-$to = json2arr($config_arr['to']); // can't be inside empty()  - Honza, php 5.2
-if (empty($to)) {
+if (!($to = json2arr($config_arr['to']))) {
     echo '<!-- no recipient -->';
     exit;
 }

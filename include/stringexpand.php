@@ -2865,7 +2865,7 @@ class AA_Stringexpand_Rss extends AA_Stringexpand_Nevercachenotrim {
  *     <h2><a href="http://www.ekobydleni.eu">www.ekobydleni.eu</a></h2>
  *     {convert:{rss2html:http#://www.ekobydleni.eu/feed/:5}:utf-8:windows-1250}
  *
- *  Used XSL extension of PHP5. PHP must be compiled with XSL support
+ *  Used libxml which is enabled by default in PHP 7.4+
  */
 class AA_Stringexpand_Rss2html extends AA_Stringexpand {
     // Never cached (extends AA_Stringexpand_Nevercache)
@@ -7177,7 +7177,7 @@ class AA_Stringexpand {
      * @param string $slices_str  '' | 'all' | '<slice_id>-<slice_id>-...'
      * @return string[]
      */
-    protected function getRelatedModules($slices_str='') {
+    protected function getRelatedModules($slices_str=''): array {
         $slices = [];
         if (!strlen($slices_str) OR ($slices_str=='all')) {
             if (is_object($this->item)) {
@@ -7242,7 +7242,7 @@ class AA_Stringexpand_Nevercache extends AA_Stringexpand {
 }
 
 /** Special parent class for all stringexpand functions, where no cache
- *  is needed and no Trim (nainly for PHP based functions - formely
+ *  is needed and no Trim - mainly for PHP based functions - formerly
  *      public static $php_functions = [ 'strlen'           => 'strlen', ...
  */
 class AA_Stringexpand_Nevercachenotrim extends AA_Stringexpand {
@@ -7531,7 +7531,18 @@ class AA_Stringexpand_striptags extends AA_Stringexpand_Nevercachenotrim {
     }
 }
 
-/** Prints version of AA as fullstring, AA version (2.11.0), or svn revision (2368)
+/** AA counterpart of PHP gethostbyaddr()
+ *  {gethostbyaddr:{server:REMOTE_ADDR}}
+ */
+class AA_Stringexpand_Gethostbyaddr extends AA_Stringexpand {
+
+    /** @param string $ip  */
+    function expand($ip='') {
+        return !strlen($ip) ? '' : ((($ret = gethostbyaddr($ip)) === false) ? '' : $ret);
+    }
+}
+
+/** Prints version of AA as full-string, AA version (2.11.0), or svn revision (2368)
  *  {version[:aa|svn|svn2]}
  **/
 class AA_Stringexpand_Version extends AA_Stringexpand_Nevercachenotrim {
@@ -9172,10 +9183,11 @@ class AA_Stringexpand_Foreach extends AA_Stringexpand {
 }
 
 
-/** Sends e-mail conditionaly
+/** Sends e-mail conditionally
  *  Be careful - it can send mail on every page load!
  *  Use as:
  *    {mail:1:honza.malik@ecn.cz:test mail:{view:24}:utf-8:actionapps@ecn.cz}
+ *    {mail:1:7847785-435636-244355-434524:test mail:{view:24}:utf-8:actionapps@ecn.cz}  - Reader ids from related slices to current site (using queue and silently created templates)
  *    {mail:1:["test@ecn.cz,"info@ecn.cz"]:test mail:{view:24}:utf-8:actionapps@ecn.cz:actionapps@ecn.cz:actionapps@ecn.cz:actionapps@ecn.cz::https#://test.org/img/img1.png}
  *    {mail:1:test@ecn.cz:test mail:{view:24}:utf-8:actionapps@ecn.cz:::::["https#://test.org/img1.png","https#://test.org/img2.png"]}
  *    {mail:1:test@ecn.cz:test mail:{view:24}:utf-8:actionapps@ecn.cz:::::{"First.png":"https://test.org/img1.png","Second.png":"https://test.org/img2.png"}}  - renamed attachements
@@ -9185,7 +9197,7 @@ class AA_Stringexpand_Mail extends AA_Stringexpand_Nevercache {
 
     /**
      * @param string $condition
-     * @param string $to
+     * @param string $to           email, ["email1","email2"] or 36363..e2-451f23e..3a (Reader ids from related slices to current site)
      * @param string $subject
      * @param string $body
      * @param string $lang
@@ -9195,7 +9207,7 @@ class AA_Stringexpand_Mail extends AA_Stringexpand_Nevercache {
      * @param string $sender
      * @param string $cc
      * @param string $bcc
-     * @param string $attachments
+     * @param string $attachments - single as string: "url1", multiple as json: ["url1",..], or as json with names {"name1":"url1",...}
      * @return int|string|void
      */
     function expand($condition='', $to='', $subject='', $body='', $lang='', $from='', $reply_to='', $errors_to='', $sender='', $cc='', $bcc='', $attachments='') {
@@ -9204,9 +9216,18 @@ class AA_Stringexpand_Mail extends AA_Stringexpand_Nevercache {
             return '';
         }
 
-        $to = json2arr($to); // can't be inside empty()  - Honza, php 5.2
-        if (empty($to)) {
-            return '';
+        // "to" could be list of e-mails or Reader ids
+        if (strpos($to, '@') !== false) {
+            // list of emails like honza.malik@ecn.cz or ["test@ecn.cz,"info@ecn.cz"]
+            if (!($to = json2arr($to))) {
+                return '';
+            }
+        } else {
+            // "to" as item ids - filter ids by related modules
+            $to = (new zids(explode_ids($to)))->itemFilter($this->getRelatedModules());
+            if ($to->isEmpty()) {
+                return '';
+            }
         }
 
         $cc  = join(',',AA_Validate::filter(json2arr($cc), 'email'));
@@ -9226,6 +9247,12 @@ class AA_Stringexpand_Mail extends AA_Stringexpand_Nevercache {
             'attachments' => $attachments,
         ];
 
+        // the path is different for Readers and direct mails
+        if ($to instanceof zids) {  // Readers - we go for temlate
+            return AA_Mail::sendToReader(AA_Mailtemplate::createFromMailArray($mail_arr)->getId(), $to, $to->getFirstSlice());
+        }
+
+        // else - to definned as mails
         $mail = new AA_Mail;
         $mail->setFromArray($mail_arr);
         // AA_Log::write('DEBUG', aa_substr($subject, 0, 16), join('-', $to));

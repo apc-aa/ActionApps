@@ -151,7 +151,7 @@ if ( !$send ) {               // for the first time - directly from item manager
 
         $varset->addglobals( [ 'description', 'subject', 'header_from', 'reply_to', 'errors_to', 'sender', 'lang', 'owner_module_id', 'type', 'attachments']);
 
-        if ($template_id AND ($mailtemplate = AA_Mail::getTemplate((int)$template_id))) {
+        if ($template_id AND !($mailtemplate = new AA_Mailtemplate((int)$template_id))->isEmpty()) {
             $varset->add('body', 'text', str_replace(['_#BODYTEXT','_#SUBJECT_'], [$_POST['body'], $_POST['subject']],$mailtemplate['body']));
         } else {
             $varset->add('body', 'quoted', $body);
