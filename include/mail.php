@@ -39,7 +39,7 @@ require_once __DIR__ . "/htmlMimeMail/htmlMimeMail.php";
 require_once __DIR__ . "/validate.php";
 
 // now used only getAsArray and setAs Array - other features like iEditable, getAllAsArray is not used, now
-class AA_Mailtemplate implements AA_iEditable {
+class AA_Mailtemplate implements AA_iEditable, ArrayAccess, Countable, Iterator {
     use AA\Util\DataArrayAccessTrait;
 
     /** associative array of mail template data - used also by  DataArrayAccessTrait*/

@@ -33,7 +33,7 @@ use AA\Widget\Widget;
 /** for AA_Generator_*   */
 require_once __DIR__ . "/itemfunc.php";
 
-class AA_Field implements ArrayAccess {
+class AA_Field implements ArrayAccess, Countable, Iterator {
     use AA\Util\DataArrayAccessTrait;
 
     /** @var string[] list of field table rows manager by this class - other are unused */
