@@ -28,6 +28,7 @@
 */
 
 use AA\IO\DB\DB_AA;
+use AA\Util\ArrTrait;
 
 
 /**
@@ -66,11 +67,13 @@ use AA\IO\DB\DB_AA;
 //require_once __DIR__."/util.php";  // quote
 
 class zids implements Iterator, ArrayAccess, Countable {
-    var $a;     // Array of ids of type specified in $t
-    var $type;  // Type of $a
-    var $l2s;   // array used for translation from 'long' to 'short' type
-    var $s2l;   // array used for translation from 'short' to 'long' type
-    protected $_ext; // array of extended parameters (we are using it when we store group_by additional info into zids)
+    use ArrTrait;
+
+    protected $arr;   // Array of ids of type specified in $t
+    protected $type;  // Type of $a
+    protected $l2s;   // array used for translation from 'long' to 'short' type
+    protected $s2l;   // array used for translation from 'short' to 'long' type
+    protected $_ext;  // array of extended parameters (we are using it when we store group_by additional info into zids)
 
     /** zids function
      *  Constructor can be called with an array, or a zid
@@ -83,7 +86,7 @@ class zids implements Iterator, ArrayAccess, Countable {
         // $inittype is for where type is known
         // Note it refers to the type of ELEMENTS if it is an array
         $this->type = $inittype;
-        $this->a    = [];  // Make sure at least empty array
+        $this->arr  = [];  // Make sure at least empty array
         $this->_ext = is_array($extended_att) ? $extended_att : [];
 
         if (empty($initial)) {
@@ -94,14 +97,14 @@ class zids implements Iterator, ArrayAccess, Countable {
             if (is_array($initial[0])) { // Array of fields
                 foreach ( $initial as $field ) {
                     if ( $field['value'] ) {           // copy just not empty ids
-                        $this->a[] = $field['value'];
+                        $this->arr[] = $field['value'];
                     }
                 }
             } else {
-                 $this->a = array_values(array_filter($initial,'trim'));  // copy just not empty ids and assign them form 0 index
+                 $this->arr = array_values(array_filter($initial,'trim'));  // copy just not empty ids and assign them form 0 index
             }
         } else {
-            $this->a[] = $initial;
+            $this->arr[] = $initial;
         }
         unset( $initial );
         $this->clean(); // this also sets ->type
@@ -116,16 +119,16 @@ class zids implements Iterator, ArrayAccess, Countable {
             }
         }
         switch ($this->type) {
-            case 's': $this->a = array_values(array_filter($this->a, 'is_short_id'));  break;
-            case 'l': $this->a = array_values(array_filter($this->a, 'is_long_id'));   break;
-            case 'p': $this->a = array_values(array_filter($this->a, 'is_packed_id')); break;
+            case 's': $this->arr = array_values(array_filter($this->arr, 'is_short_id'));  break;
+            case 'l': $this->arr = array_values(array_filter($this->arr, 'is_long_id'));   break;
+            case 'p': $this->arr = array_values(array_filter($this->arr, 'is_packed_id')); break;
             case 'w': break;   // strings stored as plain strings - not "'" added in front
         }
     }
 
     /** fills $this->>type with current zids type */
     function guesstype() {
-        foreach ($this->a as $val) {
+        foreach ($this->arr as $val) {
             if ( ($this->type = guesstype($val)) != 'z' ) {
                 break;
             }
@@ -143,12 +146,19 @@ class zids implements Iterator, ArrayAccess, Countable {
         return $this->clear($this->type)->add(array_map(fn ($k) => rawurldecode(strpos($k, 'x') === 0 ? substr($k, 1) : $k), array_keys($item_arr)));   // in some managers we use 'x' before the item id - remove it
     }
 
+    /** copy all data from provided zids */
+    public function cloneFrom(zids $zids) {
+        $this->arr  = $zids->arr;
+        $this->type = $zids->type;
+        $this->_ext = $zids->_ext;
+    }
+
     /** clear function - removes all zids and resets
      * @param $inittype
      * @return zids
      */
     function clear($inittype = 'z') {
-        $this->a    = [];
+        $this->arr  = [];
         $this->type = $inittype;
         $this->_ext = [];
         return $this;
@@ -177,7 +187,7 @@ class zids implements Iterator, ArrayAccess, Countable {
                 $this->type = $type;
             }
             if ($this->type == $type) {
-                $this->a[] = $id;
+                $this->arr[] = $id;
             }
         }
         $this->clean();
@@ -193,15 +203,15 @@ class zids implements Iterator, ArrayAccess, Countable {
     function add($ids) {
         if ( isset($ids) AND is_object($ids) ) {           // zids
             if ($this->isEmpty()) {
-                $this->a    = $ids->a;
+                $this->arr  = $ids->arr;
                 $this->type = $ids->onetype();
             } elseif ($ids->onetype() == $this->onetype()) {
-                $this->a = array_merge($this->a, (array)$ids->a);
+                $this->arr = array_merge($this->arr, (array)$ids->arr);
             }
         } elseif ( isset($ids) AND is_array($ids) ) {      // array of ids
-            $this->a = array_merge($this->a, $ids);
+            $this->arr = array_merge($this->arr, $ids);
         } elseif ( $ids ) {                                // id
-            $this->a[] = $ids;
+            $this->arr[] = $ids;
         }
         $this->clean();
         return $this;
@@ -217,16 +227,16 @@ class zids implements Iterator, ArrayAccess, Countable {
         $this->add($ids);
         if ($this->count() > 0 ) {
             // we can't use array_unique because we need to preserve key range 0..x
-            sort ($this->a);
+            sort ($this->arr);
             $last = "XXXXXXXX";
             $unique = [];
-            foreach ($this->a as $v) {
+            foreach ($this->arr as $v) {
                 if ($v && $v != $last) {
                     $unique[] = $v;
                 }
                 $last = $v;
             }
-            $this->a = $unique;
+            $this->arr = $unique;
         }
     }
 
@@ -234,7 +244,7 @@ class zids implements Iterator, ArrayAccess, Countable {
      *  Don't rely on the output format, its only for debuging
      */
     function __toString() {
-        return "zids object: type=".$this->type." (". ($this->count()<=0 ? 'Empty' : implode(",",$this->a) ).")";
+        return "zids object: type=".$this->type." (". ($this->count()<=0 ? 'Empty' : implode(",",$this->arr) ).")";
     }
 
     /** onetype function
@@ -248,14 +258,14 @@ class zids implements Iterator, ArrayAccess, Countable {
 
     /** Is zids empty? */
     function isEmpty() {
-        return (count($this->a) < 1);
+        return (count($this->arr) < 1);
     }
 
     /** warnid function
      * Quick check to warn if item doesn't exist
      */
     function warnid($i=null,$warnstr="") {
-        if ( (isset($i) and !(isset($this->a[$i]))) ) {
+        if ( (isset($i) and !(isset($this->arr[$i]))) ) {
             huhe("Warning: zids: $warnstr, item $i doesn't exist, returning null");
             return true;
         }
@@ -276,9 +286,9 @@ class zids implements Iterator, ArrayAccess, Countable {
             return [];
         }
         switch ($this->type) {
-            case "l":  return (isset($i) ? $this->a[$i]            : $this->a);
-            case "p":  return (isset($i) ? unpack_id($this->a[$i]) : array_map("unpack_id", $this->a));
-            case "t":  return (isset($i) ? id_t2l($this->a[$i])    : array_map("id_t2l", $this->a));
+            case "l":  return (isset($i) ? $this->arr[$i]            : $this->arr);
+            case "p":  return (isset($i) ? unpack_id($this->arr[$i]) : array_map("unpack_id", $this->arr));
+            case "t":  return (isset($i) ? id_t2l($this->arr[$i])    : array_map("id_t2l", $this->arr));
             case 's':  $trans = $this->translate('l');
                        return (isset($i) ? $trans[$i] : $trans );
             default:
@@ -296,7 +306,7 @@ class zids implements Iterator, ArrayAccess, Countable {
             return null;
         }
         if ( $this->type == 's' ) {
-            return (isset($i) ? $this->a[$i] : $this->a);
+            return (isset($i) ? $this->arr[$i] : $this->arr);
         }
         $l_zids = new zids( $this->longids(),'l');  // convert to long (for translation)
         $trans  = $l_zids->translate('s');
@@ -330,13 +340,13 @@ class zids implements Iterator, ArrayAccess, Countable {
      * @return
      */
     function id($idx=0) {
-        return $this->a[$idx];
+        return $this->arr[$idx];
     }
 
     /** similar to short_or_longids() but is for one value and counts with string zids ('s', 'l', 'w') */
     public function id_slw(int $idx=0) {
-        if (array_key_exists($idx, $this->a)) {
-            return in_array($this->type, ['s','l','w']) ? $this->a[$idx] : $this->longids($idx);
+        if (array_key_exists($idx, $this->arr)) {
+            return in_array($this->type, ['s','l','w']) ? $this->arr[$idx] : $this->longids($idx);
         }
         return false;
     }
@@ -346,10 +356,10 @@ class zids implements Iterator, ArrayAccess, Countable {
      */
     public function getDbWhereArray() {
         switch ($this->type) {
-            case 'p': return ['id', $this->a];
-            case 'l': return ['id', $this->a, 'l'];
+            case 'p': return ['id', $this->arr];
+            case 'l': return ['id', $this->arr, 'l'];
             case 't': return ['id', $this->longids(), 'l'];
-            case 's': return ['short_id', $this->a, 'i'];
+            case 's': return ['short_id', $this->arr, 'i'];
         }
         warn("ERROR - zids::getDbWhereArray(): can't handle type $this->type");
         return ['id', []];  // never satisfy condition... (1=2)
@@ -359,11 +369,11 @@ class zids implements Iterator, ArrayAccess, Countable {
      * @param  string $slice_id
      * @return zids
      */
-    public function itemFilter($slice_id) {
-        if (($this->count() < 1) OR !is_long_id($slice_id)) {
+    public function itemFilter(array $slice_ids) {
+        if (($this->count() < 1) OR !$slice_ids) {
             return $this->clear('l');
         }
-        $where = [['slice_id',$slice_id,'l'],$this->getDbWhereArray()];
+        $where = [['slice_id',$slice_ids,'l'],$this->getDbWhereArray()];
         return $this->clear('l')->add(DB_AA::select('', "SELECT LOWER(HEX(id)) FROM `item`", $where));
     }
 
@@ -375,8 +385,8 @@ class zids implements Iterator, ArrayAccess, Countable {
      * @return zids
      */
     function slice($offset, $length=1) {
-        if (is_array($this->a)) {
-            return new zids(array_slice($this->a,$offset,$length),$this->type);
+        if (is_array($this->arr)) {
+            return new zids(array_slice($this->arr,$offset,$length),$this->type);
         } else {
             return new zids(null, $this->type);
         }
@@ -388,12 +398,12 @@ class zids implements Iterator, ArrayAccess, Countable {
      * @return zids
      */
     function zid($index) {
-        return new zids($this->a[$index], $this->type);
+        return new zids($this->arr[$index], $this->type);
     }
 
     /** get the ids array as is */
     function getArray() {
-        return $this->a;
+        return $this->arr;
     }
 
     /** get extended attribute for id */
@@ -409,7 +419,7 @@ class zids implements Iterator, ArrayAccess, Countable {
             return false;
         }
         $tags = [];
-        foreach ( $this->a as $v ) {
+        foreach ($this->arr as $v ) {
             if (preg_match('/^(.*?)([0-9a-f]{24,32})$/',$v,$parts)) {
                 $tags[$parts[2]] = $parts[1]; // Note can be empty
             } else {
@@ -442,7 +452,7 @@ class zids implements Iterator, ArrayAccess, Countable {
         }
         $b = [];
         if ( $this->count() > 0 ) {
-            foreach ($this->a as $v) {
+            foreach ($this->arr as $v) {
                 $b[] = $tags[$v];
             }
         }
@@ -463,7 +473,7 @@ class zids implements Iterator, ArrayAccess, Countable {
                 $column = ( $this->use_short_ids() ? "item.short_id" : "item.id" );
             }
             if ( $asis OR in_array($this->type, ['s','w']) ) {
-                $id_list = join(",",array_map("qquote",$this->a));
+                $id_list = join(",",array_map("qquote",$this->arr));
             } else {
                 $id_list = join(",",array_map('xpack_id',$this->longids()));
             }
@@ -485,7 +495,7 @@ class zids implements Iterator, ArrayAccess, Countable {
         if ($this->count() == 0) {
             return false;
         }
-        foreach ( $this->a as $i => $id ) {
+        foreach ($this->arr as $i => $id ) {
             $zid = $this->zid($i);
             $SQL        = "SELECT slice_id FROM item WHERE ". $zid->sqlin();
             $p_slice_id = GetTable2Array($SQL, 'aa_first', 'slice_id');
@@ -513,7 +523,7 @@ class zids implements Iterator, ArrayAccess, Countable {
         freeDB($db);
         // we need it in the same order as in source
         $ret = [];
-        foreach ( $this->a as $idx => $zid ) {
+        foreach ($this->arr as $idx => $zid ) {
             switch ($type) {
                 case 'l': $ret[$idx] = $this->s2l[$zid]; break;
                 case 'p': $ret[$idx] = pack_id($this->s2l[$zid]); break;
@@ -525,7 +535,7 @@ class zids implements Iterator, ArrayAccess, Countable {
 
     /** @return zids[] array of zids in chunks with max $size ids */
     function chunk(int $size): array {
-        $chunks = array_chunk($this->a, $size);
+        $chunks = array_chunk($this->arr, $size);
         $ret = [];
         foreach ($chunks as $chunk) {
             $ret[] = new zids($chunk, $this->type);
@@ -543,21 +553,8 @@ class zids implements Iterator, ArrayAccess, Countable {
         return "'{$type}/{$id}". (strlen($sel) ? "/{$sel}" : '');
     }
 
-    /** Iterator interface */
-    public function rewind()  { reset($this->a);                        }
-    public function current() { return current($this->a);               }
-    public function key()     { return key($this->a);                   }
-    public function next()    { next($this->a);                         }
-    public function valid()   { return (current($this->a) !== false);   }
+    // Iterator, ArrayAccess and Countable interface implementation is in ArrTrait --------------------------
 
-    /** Countable interface */
-    public function count(): int { return count($this->a);                 }
-
-    /** ArrayAccess interface */
-    public function offsetSet($offset, $value) { $this->a[$offset] = $value;      }
-    public function offsetExists($offset)      { return isset($this->a[$offset]); }
-    public function offsetUnset($offset)       { unset($this->a[$offset]);        }
-    public function offsetGet($offset)         { return $this->a[$offset] ?? null; }
 } // class zids
 
 /** guesstype function
@@ -620,6 +617,8 @@ function ParamExplode($param) {
     return explode('##Sx', str_replace(['#:', 'tp://', 'tps://', ':', '~@|_'], ['~@|_', 'tp~@|_//', 'tps~@|_//', '##Sx', ':'], $param));
 }
 
+
+/** @see also get_short_hash for shorter hash */
 function get_hash(...$arg_list) {
     // return md5(json_encode($arg_list));
     // return md5(var_export($arg_list, true));

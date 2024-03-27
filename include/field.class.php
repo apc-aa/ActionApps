@@ -34,6 +34,8 @@ use AA\Widget\Widget;
 require_once __DIR__ . "/itemfunc.php";
 
 class AA_Field implements ArrayAccess {
+    use AA\Util\DataArrayAccessTrait;
+
     /** @var string[] list of field table rows manager by this class - other are unused */
     const USED_FIELDS = ['id', 'slice_id', 'name', 'input_pri', 'input_help', 'input_morehlp', 'input_default', 'required', 'feed', 'multiple', 'input_show_func', 'search_pri', 'alias1', 'alias1_func', 'alias1_help', 'alias2', 'alias2_func', 'alias2_help', 'alias3', 'alias3_func', 'alias3_help', 'input_before', 'content_edit', 'html_default', 'html_show', 'in_item_tbl', 'input_validate', 'input_insert_func', 'input_show', 'text_stored'];
 
@@ -171,7 +173,7 @@ class AA_Field implements ArrayAccess {
      * @param bool $with_profile
      * @return AA_Value
      */
-    function getDefault( $with_profile=false ) {
+    function getDefault( $with_profile=false ): AA_Value {
         if ($with_profile) {
             $profile   = AA_Profile::getProfile(AuthGetUid(), $this->getSliceId()); // current user settings
             if ($profile_value = $profile->getProperty('predefine', $this->getId())) {
@@ -580,25 +582,7 @@ class AA_Field implements ArrayAccess {
         }
     }
 
-    // Array Access implementation --------------------------
-    /** implements ArrayAccess */
-    public function offsetSet($offset, $value): void {
-        if ($offset) {
-            $this->data[$offset] = $value;
-        }
-    }
-    /** implements ArrayAccess */
-    public function offsetExists($offset): bool {
-        return isset($this->data[$offset]);
-    }
-    /** implements ArrayAccess */
-    public function offsetUnset($offset): void {
-        unset($this->data[$offset]);
-    }
-    /** implements ArrayAccess */
-    public function offsetGet($offset)/*: mixed (not in PHP7.4)*/ {
-        return $this->data[$offset] ?? null;
-    }
+    // Array Access implementation is in the DataArrayAccessTrait  --------------------------
 }
 
 /** AA_Field defined by slice */

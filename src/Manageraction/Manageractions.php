@@ -7,11 +7,13 @@ use Countable;
 use Iterator;
 
 class Manageractions implements Iterator, ArrayAccess, Countable {
+    use \AA\Util\ArrTrait;
+
     /** @var \AA\Manageraction\AbstractManageraction[] */
-    var $actions;
+    var $arr = [];
 
     function __construct() {
-        $this->actions = [];
+        $this->arr = [];
     }
 
     /**
@@ -19,12 +21,12 @@ class Manageractions implements Iterator, ArrayAccess, Countable {
      * @return \AA\Manageraction\AbstractManageraction|null
      */
     function getAction($id) {
-        return $this->actions[$id] ?: null;
+        return $this->arr[$id] ?: null;
     }
 
     function getManagerButtons(string $manager_url, string $id_alias, string $module_alias): array {
         $btns = [];
-        foreach ($this->actions as $a) {
+        foreach ($this->arr as $a) {
             $btns = array_merge($btns, $a->getButton($manager_url, $id_alias, $module_alias));
         }
         return $btns;
@@ -35,29 +37,8 @@ class Manageractions implements Iterator, ArrayAccess, Countable {
      * @return \AA\Manageraction\AbstractManageraction
      */
     function addAction($action) {
-        return $this->actions[$action->getId()] = $action;
+        return $this->arr[$action->getId()] = $action;
     }
 
-    /** Iterator interface */
-    public function rewind() { reset($this->actions); }
-
-    public function current() { return current($this->actions); }
-
-    public function key() { return key($this->actions); }
-
-    public function next() { next($this->actions); }
-
-    public function valid() { return (current($this->actions) !== false); }
-
-    /** Countable interface */
-    public function count() { return count($this->actions); }
-
-    /** ArrayAccess interface */
-    public function offsetSet($offset, $value) { $this->actions[$offset] = $value; }
-
-    public function offsetExists($offset) { return isset($this->actions[$offset]); }
-
-    public function offsetUnset($offset) { unset($this->actions[$offset]); }
-
-    public function offsetGet($offset) { return $this->actions[$offset] ?? null; }
+    // ArrayAccess, Countable and Iterator interface implementation is in ArrTrait --------------------------
 }

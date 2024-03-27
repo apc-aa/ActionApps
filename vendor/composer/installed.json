@@ -733,6 +733,6 @@
             "install-path": "../phpgangsta/googleauthenticator"
         }
     ],
-    "dev": false,
+    "dev": true,
     "dev-package-names": []
 }

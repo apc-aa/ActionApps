@@ -42,12 +42,13 @@ require_once __DIR__ . "/itemfunc.php";
  *          - the values are always plain (= no quoting, no htmlspecialchars...)
  */
 class AA_Value implements Iterator, ArrayAccess, Countable {
+    use \AA\Util\ArrTrait;
 
     /** you can use MAX_INDEX numerical values for multivalues - bigger indexes are used for language translations */
     const MAX_INDEX = 1000000;
 
     /** array of the values */
-    protected $val;
+    protected $arr;
 
     /** holds the flag - common for all the values */
     protected $flag;
@@ -103,7 +104,7 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
         $aav = new AA_Value();
         // preserves keys - necessary for translated values
         foreach ($arr as $key => $val) {
-            $aav->val[(int)$key] = $val['value'];
+            $aav->arr[(int)$key] = $val['value'];
         }
         $first = reset($arr);
         return $aav->setFlag($first['flag']);
@@ -117,7 +118,7 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
      * @return
      */
     function getValue($i = 0) {
-        return $this->val[$i];
+        return $this->arr[$i];
     }
 
     /** getValues function
@@ -125,7 +126,7 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
      * @param $i
      */
     function getValues() {
-        return $this->val;
+        return $this->arr;
     }
 
     /** Returns the value for a field. If it is a multi-value
@@ -141,7 +142,7 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
 
     /** @return true, if the value do not contain any data */
     function isEmpty() {
-        return count($this->val) < 1;
+        return count($this->arr) < 1;
     }
 
     /** Add Value
@@ -154,11 +155,11 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
             //                         ['flag']  = ..
             //                     [1]['value'] = ..
             foreach ($value as $key => $val) {
-                $this->val[(int)$key] = is_array($val) ? $val['value'] : (!is_object($val) ? $val : serialize($val));
+                $this->arr[(int)$key] = is_array($val) ? $val['value'] : (!is_object($val) ? $val : serialize($val));
                 // @todo check, if $val->getSomething is callable
             }
         } elseif (!is_null($value)) {
-            $this->val[] = $value;
+            $this->arr[] = $value;
         }
         return $this->removeDuplicates();
     }
@@ -169,27 +170,27 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
     function addStringValue(string $val, string $lang=''): AA_Value {
         if (strlen($val)) {
             $index = Langs::getLangName2Num($lang);
-            while (isset($this->val[$index])) {
+            while (isset($this->arr[$index])) {
                 $index++;
             }
-            $this->val[$index] = $val;
+            $this->arr[$index] = $val;
         }
         return $this;
     }
 
     public function containValue(string $txt): bool {
-        return in_array($txt, $this->val);
+        return in_array($txt, $this->arr);
     }
 
     /** Remove Value */
     function removeValues(array $remove): AA_Value {
-        $this->val = array_diff($this->val, $remove);
+        $this->arr = array_diff($this->arr, $remove);
         return $this;
     }
 
     /** Set $value - value is normal (numeric) array or string value */
     function setValues($value): AA_Value {
-        $this->val = is_array($value) ? $value : (is_null($value) ? [] : [$value]);
+        $this->arr = is_array($value) ? $value : (is_null($value) ? [] : [$value]);
         return $this;
     }
 
@@ -201,7 +202,7 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
 
     /** clear function  */
     function clear(): AA_Value {
-        $this->val = [];
+        $this->arr  = [];
         $this->flag = 0;
         return $this;
     }
@@ -212,7 +213,7 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
      * @return AA_Value
      */
     function replaceInValues($search, $replace): AA_Value {
-        array_walk($this->val, function (&$v) use ($search, $replace) { $v = str_replace($search, $replace, $v); });
+        array_walk($this->arr, function (&$v) use ($search, $replace) { $v = str_replace($search, $replace, $v); });
         return $this;
     }
 
@@ -224,7 +225,7 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
     function fixTranslations($translations): AA_Value {
         if ($translations) {
             $maxindex = 0;
-            foreach ($this->val as $k => $v) {
+            foreach ($this->arr as $k => $v) {
                 if (strlen($v)) { // do not add index for all empty values
                     $maxindex = max($maxindex, $k % AA_Value::MAX_INDEX);
                 }
@@ -235,25 +236,25 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
             foreach ($translations as $lang) {
                 $lang_id = Langs::getLangName2Num($lang);  // converts two letter lang code into number used for translation fields (cz -> 78000000, en -> 118000000, ...)
                 for ($i = 0; $i <= $maxindex; $i++) {
-                    $value = $this->val[$lang_id + $i] ?? '';
-                    if (!strlen($value) and $first and isset($this->val[$i])) {
+                    $value = $this->arr[$lang_id + $i] ?? '';
+                    if (!strlen($value) and $first and isset($this->arr[$i])) {
                         // if the translation is not set try to use standard value (possibly filled before we set the translations for the field)
-                        $value = $this->val[$i];
+                        $value = $this->arr[$i];
                     }
                     $newval[$lang_id + $i] = $value;
                 }
                 $first = false;
             }
-            $this->val = $newval;
+            $this->arr = $newval;
         }
         return $this;
     }
 
     /** Remove duplicate values from the array */
     function removeDuplicates(): AA_Value {
-        reset($this->val);
-        if (key($this->val) < AA_Value::MAX_INDEX) {  // do not remove for multilingual
-            $this->val = array_values(array_unique($this->val));
+        reset($this->arr);
+        if (key($this->arr) < AA_Value::MAX_INDEX) {  // do not remove for multilingual
+            $this->arr = array_values(array_unique($this->arr));
         }
         return $this;
     }
@@ -267,34 +268,13 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
      */
     function getArray() {
         $ret = [];
-        foreach ($this->val as $k => $v) {
+        foreach ($this->arr as $k => $v) {
             $ret[(int)$k] = ['value' => $v, 'flag' => $this->flag];
         }
         return $ret;
     }
 
-    /** Iterator interface */
-    public function rewind() { reset($this->val); }
-
-    public function current() { return current($this->val); }
-
-    public function key() { return key($this->val); }
-
-    public function next() { next($this->val); }
-
-    public function valid() { return (current($this->val) !== false); }
-
-    /** Countable interface - Returns number of values  */
-    public function count() { return count($this->val); }
-
-    /** ArrayAccess interface */
-    public function offsetSet($offset, $value) { $this->val[$offset] = $value; }
-
-    public function offsetExists($offset) { return isset($this->val[$offset]); }
-
-    public function offsetUnset($offset) { unset($this->val[$offset]); }
-
-    public function offsetGet($offset) { return $this->val[$offset] ?? null; }
+    // ArrayAccess, Countable and Iterator interface implementation is in ArrTrait --------------------------
 }
 
 /** Class holds any data (AA_Values)

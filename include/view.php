@@ -407,8 +407,7 @@ class AA_Showview {
                             $GLOBALS['mlxView']->preQueryZIDs($mlxslice,$conds);
                             $zids3 = new zids($zids->longids());
                             $GLOBALS['mlxView']->postQueryZIDs($zids3,$mlxslice,$slice_id); //.serialize($zids3));
-                            $zids->a    = $zids3->a;
-                            $zids->type = $zids3->type;
+                            $zids->cloneFrom($zids3);
                         }
                         $itemview = new itemview($format, $slice->aliases($als), $zids, 0, 1, shtml_url());
                         $ret      = $itemview->get_output("view");

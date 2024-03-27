@@ -44,7 +44,7 @@
     "ext-intl": "*",
     "ext-pdo": "*"
   },
-  "require-dev": {
+  "commented-out-r-equire-dev": {
     "codeception/codeception": "^5.1"
   },
   "suggest": {

@@ -578,7 +578,8 @@ class MLXView {
 
         $translations = $this->getPrioTranslationFields($ctrlSliceID,$slice_id);
         $arr = [];
-        foreach($zidsObj->a as $packedid) {
+        $zarr = $zidsObj->getArray();
+        foreach($zarr as $packedid) {
             $arr[(string)$packedid] = 1;
         }
         $db = getDB();
@@ -636,7 +637,8 @@ class MLXView {
         //__mlx_dbg($arr,"return");
         freeDB($db);
         $QueryIDsCount = count($arr);
-        $zidsObj->a    = array_keys($arr);
+        $zidsObj->clear();
+        $zidsObj->add(array_keys($arr));
     }
 
     /** getAlternatives function

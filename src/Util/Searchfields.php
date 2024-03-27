@@ -11,8 +11,10 @@ namespace AA\Util;
 
 
 class Searchfields implements \Iterator, \ArrayAccess, \Countable {
+    use ArrTrait;
 
-    protected $fields = [];
+    /** @var array fields - arr is ussed also by ArrTrait */
+    protected $arr = [];
 
     /**  Valid searchfield properties  */
     protected const FLDPROPS = [
@@ -40,7 +42,7 @@ class Searchfields implements \Iterator, \ArrayAccess, \Countable {
         if (!$id) {
             return;
         }
-        $this->fields[$id] = ['name'=>$name, 'field'=>$field, 'operators'=>$operators, 'table'=>$table, 'search_pri'=>$search_pri, 'order_pri'=>$order_pri, 'opt_group'=>$opt_group];
+        $this->arr[$id] = ['name' =>$name, 'field' =>$field, 'operators' =>$operators, 'table' =>$table, 'search_pri' =>$search_pri, 'order_pri' =>$order_pri, 'opt_group' =>$opt_group];
     }
 
     public function addArray( $id, array $fld) {
@@ -48,7 +50,7 @@ class Searchfields implements \Iterator, \ArrayAccess, \Countable {
             return;
         }
         // copy just existing properties
-        $this->fields[$id] = array_intersect_key($fld, self::FLDPROPS);
+        $this->arr[$id] = array_intersect_key($fld, self::FLDPROPS);
     }
 
     /**
@@ -74,7 +76,7 @@ class Searchfields implements \Iterator, \ArrayAccess, \Countable {
      */
     public function getOrderArray() {
         $order_fields     = [];
-        $fields           = $this->fields;
+        $fields           = $this->arr;
 
         // sort
         uasort($fields, [self::class, 'orderfields_cmp']);
@@ -97,14 +99,14 @@ class Searchfields implements \Iterator, \ArrayAccess, \Countable {
      * @return array
      */
     public function getFieldidsArray() {
-        return array_keys($this->fields);
+        return array_keys($this->arr);
     }
 
     /** Return array of field names
      * @return array
      */
     public function getFieldnamesArray() {
-        return array_column($this->fields,'name');
+        return array_column($this->arr,'name');
     }
 
     /**
@@ -116,7 +118,7 @@ class Searchfields implements \Iterator, \ArrayAccess, \Countable {
     private function generateArray($type, $add_alltext=true, $add_allnum=true) {
         $search_fields    = [];
         $search_operators = [];
-        $fields           = $this->fields;
+        $fields           = $this->arr;
 
         // add "all fields" search
         if ($add_alltext) {
@@ -148,7 +150,7 @@ class Searchfields implements \Iterator, \ArrayAccess, \Countable {
     }
 
     public function containNumeric() {
-        return in_array('numeric', array_column($this->fields,'operators'));
+        return in_array('numeric', array_column($this->arr,'operators'));
     }
 
 
@@ -182,23 +184,8 @@ class Searchfields implements \Iterator, \ArrayAccess, \Countable {
      * @return array - old searchfield array for backward compatibility in some functions
      */
     public function getArrayDeprecated() {
-        return $this->fields;
+        return $this->arr;
     }
 
-    /** Iterator interface */
-    public function rewind(): void   { reset($this->fields);                        }
-    public function current()/*: mixed (not in PHP7.4)*/ { return current($this->fields);               }
-    public function key()/*: mixed (not in PHP7.4)*/     { return key($this->fields);                   }
-    public function next(): void     { next($this->fields);                         }
-    public function valid(): bool    { return (current($this->fields) !== false);   }
-
-    /** Countable interface */
-    public function count(): int     { return count($this->fields);                 }
-
-    /** ArrayAccess interface */
-    public function offsetSet($offset, $value): void { $this->fields[$offset] = $value;       }
-    public function offsetExists($offset): bool      { return isset($this->fields[$offset]);  }
-    public function offsetUnset($offset): void       { unset($this->fields[$offset]);         }
-    public function offsetGet($offset)/*: mixed (not in PHP7.4)*/        { return $this->fields[$offset] ?? null; }
-
+    // ArrayAccess, Countable and Iterator interface implementation is in ArrTrait --------------------------
 }

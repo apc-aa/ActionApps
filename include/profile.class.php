@@ -204,7 +204,7 @@ class AA_Profile {
      * @param $value
      * @return AA_Value
      */
-    function parseContentProperty($value) {
+    function parseContentProperty($value): AA_Value {
         if (!($generator = AA_Generator::factoryByString(substr($value,2)))) {  // see format described above
             return new AA_Value;
         }

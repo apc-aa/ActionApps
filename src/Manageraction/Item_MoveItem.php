@@ -63,7 +63,7 @@ class Item_MoveItem extends AbstractManageraction {
     /** @inheritDoc */
     function perform(Manager $manager, zids $item_zids, $action_param) {
         $sid = $manager->getModuleId();
-        Item_MoveItem::doMove($item_zids->itemFilter($sid), $this->to_bin, $sid);
+        Item_MoveItem::doMove($item_zids->itemFilter([$sid]), $this->to_bin, $sid);
         AA::Pagecache()->invalidateFor($sid);
         return false;                                     // OK - no error
     }

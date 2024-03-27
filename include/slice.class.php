@@ -366,7 +366,7 @@ class AA_Module {
      * @param array $module_ids
      * @return array - clean list of active (not deleted) unique modules
      */
-    public static function filterActive( array $module_ids) {
+    public static function filterActive( array $module_ids): array {
         static $active_modules = null;
         if ( is_null($active_modules)) {
             $active_modules = array_keys(AA_Module::getModules('', true, ['created_at-']));
@@ -993,7 +993,7 @@ class AA_Module_Site extends AA_Module {
      * @param string $slice_type - filter just this SLICE! type
      * @return array - slices and polls
      */
-    function getRelatedSlices($slice_type='') {
+    function getRelatedSlices($slice_type=''): array {
         if (is_null($this->_related_slices)) {
             // could be rewritten to form:  DB_AA::select(array('unpackid'=>'name'), 'SELECT LOWER(HEX(`id`)) AS unpackid, `name` FROM `slice_owner` ORDER BY `name`');
             $this->_related_slices = AA_Module::filterActive(DB_AA::select('', 'SELECT LOWER(HEX(`destination_id`)) AS unpackid FROM relation', [['source_id', $this->module_id, 'l'], ['flag', REL_FLAG_MODULE_DEPEND, 'i']]));

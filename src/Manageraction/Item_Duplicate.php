@@ -25,7 +25,7 @@ class Item_Duplicate extends AbstractManageraction {
     function perform(Manager $manager, zids $item_zids, $action_param) {
         $sid = $manager->getModuleId();
 
-        $grabber = new AA\IO\Grabber\Slice(new AA_Set([$sid], null, null, AA_BIN_ALL), $item_zids->itemFilter($sid));
+        $grabber = new AA\IO\Grabber\Slice(new AA_Set([$sid], null, null, AA_BIN_ALL), $item_zids->itemFilter([$sid]));
         // insert_if_new is the same as insert, (but just make sure the item is not in DB which is not important here)
         $saver = new AA\IO\Saver($grabber, null, null, 'insert_if_new', 'new');
         $saver->run();

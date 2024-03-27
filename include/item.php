@@ -1892,7 +1892,7 @@ class AA_Items {
      * @param $bin - AA_BIN_ACTIVE or AA_BIN_HOLDING or AA_BIN_TRASH or AA_BIN_ALL or its bitwise combination (the trash and pending is not supported, now)
      * @return array
      */
-    static function getFormatted($zids, $expression, $bin=AA_BIN_ACTIVE) {
+    static function getFormatted($zids, $expression, $bin=AA_BIN_ACTIVE): array {
         $res = [];
         AA_Items::preload($zids);
         $items = AA_Items::singleton();
