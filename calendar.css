@@ -26,16 +26,16 @@ div.calendar { position: relative; }
   padding: 2px;
 }
 
-.calendar thead .headrow { /* Row <TR> containing navigation buttons */
+.calendar thead .headrow { /* Row <tr> containing navigation buttons */
   background: #7B9CAE;
   color: #fff;
 }
 
-.calendar thead .daynames { /* Row <TR> containing the day names */
+.calendar thead .daynames { /* Row <tr> containing the day names */
   background: #C4D3DB;
 }
 
-.calendar thead .name { /* Cells <TD> containing the day names */
+.calendar thead .name { /* Cells <td> containing the day names */
   border-bottom: 1px solid #556;
   padding: 2px;
   text-align: center;
@@ -60,20 +60,20 @@ div.calendar { position: relative; }
 
 /* The body part -- contains all the days in month. */
 
-.calendar tbody .day { /* Cells <TD> containing month days dates */
+.calendar tbody .day { /* Cells <td> containing month days dates */
   width: 2em;
   color: #456;
   text-align: right;
   padding: 2px 4px 2px 2px;
 }
 
-.calendar tbody .hilite { /* Hovered cells <TD> */
+.calendar tbody .hilite { /* Hovered cells <td> */
   background: #DEE7EB;
   padding: 1px 3px 1px 1px;
   border: 1px solid #bbb;
 }
 
-.calendar tbody .active { /* Active (pressed) cells <TD> */
+.calendar tbody .active { /* Active (pressed) cells <td> */
   background: #cde;
   padding: 2px 2px 0 2px;
 }
@@ -107,13 +107,13 @@ div.calendar { position: relative; }
 
 /* The footer part -- status bar and "Close" button */
 
-.calendar tfoot .footrow { /* The <TR> in footer (only one right now) */
+.calendar tfoot .footrow { /* The <tr> in footer (only one right now) */
   text-align: center;
   background: #556;
   color: #fff;
 }
 
-.calendar tfoot .ttip { /* Tooltip (status bar) cell <TD> */
+.calendar tfoot .ttip { /* Tooltip (status bar) cell <td> */
   background: #fff;
   color: #445;
   border-top: 1px solid #556;

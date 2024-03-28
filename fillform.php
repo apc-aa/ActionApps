@@ -31,7 +31,7 @@
  *  @param string c   Collection ID, used in connection with $au (see above).
  *
  *  WARNING: There are some troubles with check boxes. You should never use
- *      checkboxes checked by default (<INPUT TYPE="CHECKBOX" CHECKED>)
+ *      checkboxes checked by default (<input type="checkbox" checked>)
  *      in combination with fillform.
  *
  *	 This script contains two similar functions:

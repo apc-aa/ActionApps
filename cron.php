@@ -66,7 +66,7 @@ MoreTimeLimit(3600); // set_time_limit to 1 hour (at least)
 function cron($time = 0) {
 
     if ($_GET['debug']) {
-        echo "<HTML><BODY>";
+        echo "<html><body>";
         echo "DEBUGGING. I don't run any script!<br>";
     }
 
@@ -78,7 +78,7 @@ function cron($time = 0) {
     $db = getDB();
 
     $parts = ["mon"=>12,"wday"=>7,"mday"=>31,"hours"=>24,"minutes"=>60];
-    if ($_GET['debug']) { echo "<B>".date("d.m.y H:i",$time)."</B></BR>"; }
+    if ($_GET['debug']) { echo "<b>".date("d.m.y H:i",$time)."</b><br>"; }
 
     $db->query("SELECT * FROM cron");
     while ($db->next_record()) {
@@ -186,7 +186,7 @@ function cron($time = 0) {
             fopen($url,"r");
         }
     }
-    if ($_GET['debug']) echo "</BODY></HTML>";
+    if ($_GET['debug']) echo "</body></html>";
 }
 
 // Use this for debug purposes

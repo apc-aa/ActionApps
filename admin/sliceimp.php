@@ -454,7 +454,7 @@ foreach ($data_conflicts_ID as $c_id => $name) {
         <textarea name="slice_def" rows="10" cols="100"><?php if ($IDconflict || $data_IDconflict)
 // Be careful here, $slice_def_bck contains structures line
 // <xxx>&lt;BR&gt;some content</xxx>
-// Which the browser will convert to <xxx><BR>some content</xxx>
+// Which the browser will convert to <xxx><br>some content</xxx>
 // which is invalid XML. So, convert & to &amp; first, so pass through
 // htmlspecialchars, which browser will undo.
             echo safe($slice_def_bck) ?></textarea>

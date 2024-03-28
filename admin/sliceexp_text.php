@@ -297,7 +297,7 @@ class AA_Slice_Exporter {
             <tr><td>
             <form>
             <p><b>".  _m("Save this text. You may use it to import the slices into any ActionApps:") ."</b>
-            </P>
+            </p>
             <textarea cols=\"80\" rows=\"20\">";
 
         // fpassthru($export_file);

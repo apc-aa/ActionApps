@@ -73,7 +73,7 @@ try {
     $name = InputVars::stringPOST('name');
     // array ( '<tr><td wid…' => 31, )
     $odd = InputVars::stringPOST('odd');
-    // array ( '<SCRIPT Lan…' => 31, )
+    // array ( '<script Lan…' => 31, )
     $remove_string = InputVars::stringPOST('remove_string');
     // array ( ' Změnit [^…' => 31, )
     $update = InputVars::boolPOST('update');

@@ -142,12 +142,12 @@ if ($_POST['b_export_type']) {
         <td width="50%">
         <table>
             <tr><td>
-            <b><?php echo _m("When exporting \"to Backup\" you may choose more slices at once.") ?></b></P>
+            <b><?php echo _m("When exporting \"to Backup\" you may choose more slices at once.") ?></b><br>
             <?php echo _m("Select slices which you WANT to export:") ?>
             </td>
             <tr><td>
                 <table width="200"><tr><td>
-                <SELECT name="export_slices[]" size="8" multiple>
+                <select name="export_slices[]" size="8" multiple>
                 <?php
                     foreach ($all_slices as $s_id => $name) {
                         echo "<option value=\"$s_id\"> $name </option>";
@@ -159,9 +159,9 @@ if ($_POST['b_export_type']) {
         </table>
         </td>
         <td width="50%">
-            <b><?php echo _m("When exporting \"to another ActionApps\" only the current slice will be exported and you choose its new identificator.") ?></b></p>
+            <b><?php echo _m("When exporting \"to another ActionApps\" only the current slice will be exported and you choose its new identificator.") ?></b><br>
             <b><?php echo _m("Choose a new slice identificator exactly 16 characters long: ") ?></b>
-            <input type="text" name="SliceID" value="template" size="16" maxlength="16"></P>
+            <input type="text" name="SliceID" value="template" size="16" maxlength="16"><br>
             <input type="hidden" name="b_export_type" id="b_export_type" value="export">
         </td>
     </tr>

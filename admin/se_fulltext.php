@@ -43,7 +43,7 @@ try {
     $discus_htmlf = InputVars::boolPOST('discus_htmlf'); // alpha
     // array ( '' => 11, 3144 => 4, )
     $discus_vid = InputVars::intPOST('discus_vid'); // empty
-    // array ( '<BR><FONT S…' => 5, 'Fň' => 6, 'Fň🐖' => 2, 'Fň🐸' => 2, )
+    // array ( '<br><font S…' => 5, 'Fň' => 6, 'Fň🐖' => 2, 'Fň🐸' => 2, )
     $fulltext_format = InputVars::stringPOST('fulltext_format');
     // array ( '' => 8, 'ěščřtgv…' => 7, )
     $fulltext_format_bottom = InputVars::stringPOST('fulltext_format_bottom'); // empty
