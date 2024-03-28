@@ -31,7 +31,7 @@ class FldWidget extends Widget
      *  Used parameter format (in fields.input_show_func table)
      * @return array
      */
-    static function getClassProperties(): array {
+    public static function getClassProperties(): array {
         return Widget::propertiesShop(['max_characters', 'width', 'input_type']);
     }
 

@@ -41,7 +41,7 @@ class TagWidget extends Widget
      *  Used parameter format (in fields.input_show_func table)
      * @return array
      */
-    static function getClassProperties(): array {
+    public static function getClassProperties(): array {
         return Widget::propertiesShop(['const', 'bin_filter', 'filter_conds', 'slice_field', 'sort_by', 'additional_slice_pwd', 'max_values', 'disable_new', 'filter_conds_rw']);
     }
 

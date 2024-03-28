@@ -59,7 +59,7 @@ class MflWidget extends Widget
      *  Used parameter format (in fields.input_show_func table)
      * @return array
      */
-    static function getClassProperties(): array {
+    public static function getClassProperties(): array {
         $ret = Widget::propertiesShop(['show_buttons_txt', 'row_count', 'max_characters', 'width', 'rows']);
         $ret['rows']->setHelp(_m("if 1 (default), textfield used. for rows>1 textareas are used"))->setExample(1);
         return $ret;

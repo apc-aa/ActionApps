@@ -1146,7 +1146,7 @@ class AA_Modulesettings_Slice extends AA_AbstractModulesettings {
      *  AA_Object's method
      * @return array
      */
-    static function getClassProperties(): array {
+    public static function getClassProperties(): array {
         return [ //                        id             name                            type     multi  persist validator, required, help, morehelp, example
             // 'spamprotect'  => new AA_Property( 'spamprotect',     _m("Languages for translation"), 'string', true, true, new AA_Validate_Regexp(['pattern'=>'/^[a-z]{2}$/', 'maxlength'=>2]), false, _m('specify language codes in which you want translate content - small caps, two letters - like: en, es, de, ...')),
             'translations'    => new AA_Property( 'translations',    _m("Languages for translation"), 'string', true, true, new AA_Validate_Regexp(['pattern'=>'/^[a-z]{2}$/', 'maxlength'=>2]), false, _m('specify language codes in which you want translate content - small caps, two letters - like: en, es, de, ...')),
@@ -1180,7 +1180,7 @@ class AA_Modulesettings_Site extends AA_AbstractModulesettings {
      *  AA_Object's method
      * @return array
      */
-    static function getClassProperties(): array {
+    public static function getClassProperties(): array {
         return [ //                             id             name                                                type     multi  persist validator, required, help, morehelp, example
             'translate_slice' => new AA_Property( 'translate_slice',  _m("Slice with translations"),                'string', false, true, ['enum', AA_Module::getUserModules('S')], false, _m("the slice used for {tr:text...} translations (the slice needs to have just headline........ field set as 'Allow translation')")),
             'add_aliases'     => new AA_Property( 'add_aliases',      _m("Additional aliases"),                     'string', true,  true, ['enum',   AA_Module::getUserModules('W')], false, _m('Select sitemodule, where we have to look for additional {_:...} aliases')),

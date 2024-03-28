@@ -49,7 +49,7 @@ class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedI
      *  AA_Object's method
      * @return array
      */
-    static function getClassProperties(): array
+    public static function getClassProperties(): array
     {
         return [          //           id            name              type        multi  persist validator, required, help, morehelp, example
             'task' => new AA_Property('task', _m("Task"), 'text', false, true, '', true),

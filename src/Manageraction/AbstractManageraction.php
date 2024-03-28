@@ -38,7 +38,7 @@ abstract class AbstractManageraction extends AA_Storable {
      *  we need to pass all parameters of the object
      * @return array
      */
-    static function getClassProperties(): array {          //  id             name                              type    multi  persistent - validator, required, help, morehelp, example
+    public static function getClassProperties(): array {          //  id             name                              type    multi  persistent - validator, required, help, morehelp, example
         return [
             'id'           => new AA_Property('id', _m('Action ID'), 'text', false, true),
             'open_url'     => new AA_Property('open_url', _m('URL to open'), 'text', false, true),

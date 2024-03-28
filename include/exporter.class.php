@@ -481,7 +481,7 @@ class AA_Exportsetings extends AA_Object {
      *  AA_Object's method
      * @return array
      */
-    static function getClassProperties(): array {
+    public static function getClassProperties(): array {
 
         $bins_arr = [
             AA_BIN_ALL      => _m('All'),

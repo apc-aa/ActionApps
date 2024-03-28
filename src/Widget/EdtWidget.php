@@ -21,7 +21,7 @@ class EdtWidget extends TxtWidget
      *  Used parameter format (in fields.input_show_func table)
      * @return array
      */
-    static function getClassProperties(): array {
+    public static function getClassProperties(): array {
         return Widget::propertiesShop(['rows', 'cols', 'area_type']);
     }
 

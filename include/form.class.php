@@ -101,7 +101,7 @@ class AA_Formrow_Full extends AA_Formrow {
     /**
      * @return array
      */
-    static function getClassProperties(): array {
+    public static function getClassProperties(): array {
         return [                   //       id                   name                  type        multi  persist validator, required, help, morehelp, example
             'property'       => new AA_Property( 'property',       _m("Property"),          'AA_Property', false, true),
             'widget'         => new AA_Property( 'widget',         _m("Widget"), 'AA\Widget\Widget',   false, true)
@@ -139,7 +139,7 @@ class AA_Formrow_Field extends AA_Formrow {
     /**
      * @return array
      */
-    static function getClassProperties(): array {
+    public static function getClassProperties(): array {
         return [                   //       id                   name               type        multi  persist validator, required, help, morehelp, example
             'field_id'       => new AA_Property( 'field_id',       _m("Field"),          'string', false, true),
             'slice_id'       => new AA_Property( 'slice_id',       _m("Slice ID"),       'string', false, true)
@@ -173,7 +173,7 @@ class FormrowWidget extends Widget {
      *  Used parameter format (in fields.input_show_func table)
      * @return array
      */
-    static function getClassProperties(): array {
+    public static function getClassProperties(): array {
         return [                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
             'const_arr'              => new AA_Property( 'const_arr',              _m("Values array"),         'string', true,  true, 'string', false, _m("Directly specified array of values (do not use Constants, if filled)"))
         ];
@@ -245,7 +245,7 @@ class AA_Form extends AA_Object implements \AA\Util\NamedInterface {
      *  AA_Object's method
      * @return array
      */
-    static function getClassProperties(): array {
+    public static function getClassProperties(): array {
         return [          //           id       name       type        multi  persist validator, required, help, morehelp, example
             'rows'        => new AA_Property( 'rows',        _m("Rows"),         'AA_Formrow', true, true)
             // 'object_type' => new AA_Property( 'object_type', _m("Object Type"),  'text', false, true)

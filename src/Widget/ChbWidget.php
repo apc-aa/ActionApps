@@ -77,7 +77,7 @@ class ChbWidget extends Widget
      *  Used parameter format (in fields.input_show_func table)
      * @return array
      */
-    static function getClassProperties(): array {
+    public static function getClassProperties(): array {
         return [];
     }
 

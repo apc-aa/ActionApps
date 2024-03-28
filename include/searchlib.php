@@ -157,7 +157,7 @@ class AA_Condition extends AA_Object {
      *  Used parameter format (in fields.input_show_func table)
      * @return array
      */
-    static function getClassProperties(): array {
+    public static function getClassProperties(): array {
         return [                              //  id            name         type      multi  persistent validator, required, help,                                         morehelp, example
                    /** Array of compared fields */
                    'fields'   => new AA_Property('fields', _m("Fields"), 'text', true, true, 'field'),
@@ -343,7 +343,7 @@ class AA_Sortorder extends AA_Object {
      *  Used parameter format (in fields.input_show_func table)
      * @return array
      */
-    static function getClassProperties(): array {
+    public static function getClassProperties(): array {
         return [                   //  id            name         type      multi  persistent validator, required, help,                                         morehelp, example
                                    'field' => new AA_Property('field', _m("Field"), 'text', false, true, 'field'),
                                    'desc'  => new AA_Property('desc', _m("Descending"), 'text', false, true, 'bool'),
@@ -933,7 +933,7 @@ class AA_Set extends AA_Object {
      *  Used parameter format (in fields.input_show_func table)
      * @return array
      */
-    static function getClassProperties(): array {
+    public static function getClassProperties(): array {
         return [ //  id            name         type          multi  persistent validator, required, help,                                         morehelp, example
                  /** Array of AA_Condition */
                  'conds'  => new AA_Property('conds', _m("Conditions"), 'AA_Condition', true, true),

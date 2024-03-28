@@ -28,7 +28,7 @@ class RioWidget extends Widget
      *  Used parameter format (in fields.input_show_func table)
      * @return array
      */
-    static function getClassProperties(): array {
+    public static function getClassProperties(): array {
         return Widget::propertiesShop(['const', 'columns', 'move_right', 'slice_field', 'bin_filter', 'filter_conds', 'sort_by', 'additional_slice_pwd', 'const_arr']);
     }
 

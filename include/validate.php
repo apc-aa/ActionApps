@@ -217,7 +217,7 @@ class AA_Validate_Signed extends AA_Validate {
      *  copied from $VALIDATE_TYPES
      * @return array
      */
-    static function getClassProperties(): array {
+    public static function getClassProperties(): array {
         return [
             //           id                             name                        type    multi  persist validator, required, help, morehelp, example
             'min'       => new AA_Property('min',       _m("Alloved minimum value"), 'int', false, true, 'int', false, _m(""), '', 1),
@@ -328,7 +328,7 @@ class AA_Validate_Regexp extends AA_Validate {
         }
     }
 
-    static function getClassProperties(): array {
+    public static function getClassProperties(): array {
         return [                      //           id            name              type    multi  persist validator, required, help, morehelp, example
             'pattern'          => new AA_Property( 'pattern',           _m("Regular expression"), 'string', false, true, 'string', false, _m(""), '', '/^[a-z]*$/'),
             'empty_expression' => new AA_Property( 'empty_expression',  _m("Empty expression"),   'string', false, true, 'string', false, _m(""), '', '/^(0|\s*)$/'),
@@ -475,7 +475,7 @@ class AA_Validate_Float extends AA_Validate {
     /** Maximum number */
     protected $f_max;
 
-    static function getClassProperties(): array {
+    public static function getClassProperties(): array {
         return [                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
             'f_min'  => new AA_Property( 'f_min',  _m("Alloved minimum value"), 'float', false, true, 'float', false, _m(""), '', '1.0'),
             'f_max'  => new AA_Property( 'f_max',  _m("Alloved maximum value"), 'float', false, true, 'float', false, _m(""), '', '1000.0'),
@@ -514,7 +514,7 @@ class AA_Validate_Decimal extends AA_Validate {
     /** Maximum number */
     protected $f_max;
 
-    static function getClassProperties(): array {
+    public static function getClassProperties(): array {
         return [                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
                                       'f_min'  => new AA_Property( 'f_min',  _m("Alloved minimum value"), 'float', false, true, 'float', false, _m(""), '', '1.0'),
                                       'f_max'  => new AA_Property( 'f_max',  _m("Alloved maximum value"), 'float', false, true, 'float', false, _m(""), '', '1000.0'),
@@ -546,7 +546,7 @@ class AA_Validate_Enum extends AA_Validate {
     /** Enumeration array (array of possible values). Values are stored as keys. */
     protected $possible_values;
 
-    static function getClassProperties(): array {
+    public static function getClassProperties(): array {
         return [                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
             'possible_values' => new AA_Property( 'possible_values', _m("Possible values"), 'string', true, true, 'string', false)
         ];
@@ -639,7 +639,7 @@ class AA_Validate_Unique extends AA_Validate {
      *  copied from $VALIDATE_TYPES
      * @return array
      */
-    static function getClassProperties(): array {
+    public static function getClassProperties(): array {
         return [                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
             'field_id' => new AA_Property( 'field_id', _m("Field id"), 'string', false, true, 'string', false, _m(""), '', ''),
             'scope'    => new AA_Property( 'scope',    _m("Scope"),    'string', false, true, 'string', false, _m("username | slice | allslices"), '', 'slice'),  // or 0 | 1 | 2 for field setting
@@ -717,7 +717,7 @@ class AA_Validate_Eunique extends AA_Validate {
      *  copied from $VALIDATE_TYPES
      * @return array
      */
-    static function getClassProperties(): array {
+    public static function getClassProperties(): array {
         return [                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
             'field_id' => new AA_Property( 'field_id', _m("Field id"), 'string', false, true, 'string', false, _m(""), '', ''),
             'scope'    => new AA_Property( 'scope',    _m("Scope"),    'string', false, true, 'string', false, _m("username | slice | <b>allslices</b>"), '', 'slice'),  // or 0 | 1 | 2 for field setting
@@ -755,7 +755,7 @@ class AA_Validate_Eunique extends AA_Validate {
 class AA_Validate_Text extends AA_Validate {
     protected $maxlength;
 
-    static function getClassProperties(): array {
+    public static function getClassProperties(): array {
         return [                      //           id            name              type    multi  persist validator, required, help, morehelp, example
             'maxlength'        => new AA_Property( 'maxlength',         _m("Maximum length"),     'int',    false, true, 'int',    false, _m(""), '', '15')
         ];

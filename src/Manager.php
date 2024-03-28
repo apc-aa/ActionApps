@@ -474,7 +474,7 @@ class Manager extends AA_Storable {
      *  Used parameter format (in fields.input_show_func table)
      * @return array
      */
-    static function getClassProperties(): array {  //  id             name          type   multi  persistent - validator, required, help, morehelp, example
+    public static function getClassProperties(): array {  //  id             name          type   multi  persistent - validator, required, help, morehelp, example
         return [
             'searchbar'   => new AA_Property( 'searchbar',   _m("Searchbar"),  'AA_Searchbar', false, true),
             'scroller'    => new AA_Property( 'scroller',    _m("Scroller"),   'AA_Scroller',  false, true),

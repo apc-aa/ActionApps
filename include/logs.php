@@ -164,6 +164,28 @@ class AA_Log implements \AA\Expand\InternalExpandInterface {
     }
 }
 
+/** set of properties */
+class AA_Propset {
+    use \AA\Util\ArrTrait;
+
+    protected $arr = [];
+
+    public static function factoryFromArray(array $arr) {
+        $ret = new self();
+        foreach ($arr as $v) {
+            $ret->arr[] = new AA_Property(...$v);
+        }
+        return $ret;
+    }
+}
+
+
+class AA_Logentry {
+
+    public static function factoryFroType($type) {
+        return new self();
+    }
+}
 
 
 

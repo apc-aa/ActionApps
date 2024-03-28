@@ -89,7 +89,7 @@ class AA_Mailtemplate implements AA_iEditable, ArrayAccess, Countable, Iterator 
         $form->addProperties(static::getClassProperties());
     }
 
-    public static function getClassProperties()  {
+    public static function getClassProperties(): array {
         return AA::Metabase()->getColumnProperties('email');
     }
 

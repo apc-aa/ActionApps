@@ -6519,7 +6519,7 @@ The new structure allows
 99-12-08 - compact view sorting is by publish_date and not post_date
          - default fulltext and compact html changed to view publish date
            and not post date
-         - fixed bug in html formatted preview (it replaces NL with <BR>
+         - fixed bug in html formatted preview (it replaces NL with <br>
            before)
          - listing length settings in slicedit is now applayed to compact
            view

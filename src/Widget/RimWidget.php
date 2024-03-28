@@ -35,7 +35,7 @@ class RimWidget extends Widget
      *  Used parameter format (in fields.input_show_func table)
      * @return array
      */
-    static function getClassProperties(): array {
+    public static function getClassProperties(): array {
         return Widget::propertiesShop(['const', 'slice_field', 'show_buttons', 'item_template', 'bin_filter', 'filter_conds', 'sort_by', 'additional_slice_pwd', 'const_arr', 'filter_conds_rw']);
     }
 

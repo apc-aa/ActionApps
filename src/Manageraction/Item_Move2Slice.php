@@ -42,7 +42,7 @@ class Item_Move2Slice extends AbstractManageraction {
      *  we need to pass all parameters of the object
      * @return array
      */
-    static function getClassProperties(): array {
+    public static function getClassProperties(): array {
         $properties = parent::getClassProperties();
         //                                          id             name                              type    multi  persistent - validator, required, help, morehelp, example
         $properties['slice_id'] = new AA_Property('slice_id', _m('Slice ID'), 'text', false, true);

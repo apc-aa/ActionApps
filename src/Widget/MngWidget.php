@@ -31,7 +31,7 @@ class MngWidget extends Widget
      *  Used parameter format (in fields.input_show_func table)
      * @return array
      */
-    static function getClassProperties(): array {
+    public static function getClassProperties(): array {
         return Widget::propertiesShop(['const', 'related_field', 'row_code', 'row_edit', 'mng_buttons', 'sort_by']);
     }
 

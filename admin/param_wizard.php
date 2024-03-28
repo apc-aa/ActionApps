@@ -70,7 +70,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 /** processSlashes function
  * @param $s
  * @return string - the HTML tags to be printed verbatim are back-slashed in the text
- *          e.g. <A ....> is written \<A ...\>
+ *          e.g. <a ....> is written \<a ...\>
  */
 function processSlashes($s) {
     $s = str_replace("\\<", safe("<"), $s);

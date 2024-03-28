@@ -85,7 +85,7 @@ class AA_Aliasfunc extends AA_Object implements \AA\Util\NamedInterface {
      *  AA_Object's method
      * @return array
      */
-    static function getClassProperties(): array {
+    public static function getClassProperties(): array {
         return [          //           id       name       type        multi   persist validator, required, help, morehelp, example
             'alias'  => new AA_Property( 'alias',  _m("Alias"),          'string', false, true, '', true,  _m('Alias will be called as {_:&lt;Alias_name&gt;[:&lt;Possible parameters - colon separated&gt;]}'),'', 'Message_box'),
             'code'   => new AA_Property( 'code',   _m("Code"),           'text',   false, true, '', false,  _m('Code printed by the alias. Alias could have parameters and you can use it by _#P1, _#P2, ... variables'),'', '&lt;div class=mybox style="color:_#P2"&gt;_#P1&lt;/div&gt;'),

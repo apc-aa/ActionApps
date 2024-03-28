@@ -45,7 +45,7 @@ class AA_Scroller extends AA_Storable {
      *  Used parameter format (in fields.input_show_func table)
      * @return array
      */
-    static function getClassProperties(): array {  //  id             name          type   multi  persistent - validator, required, help, morehelp, example
+    public static function getClassProperties(): array {  //  id             name          type   multi  persistent - validator, required, help, morehelp, example
         return [
             'pgcnt'      => new AA_Property( 'pgcnt'     , _m('Pgcnt'     ), 'int',  false, true),
             'current'    => new AA_Property( 'current'   , _m('Current'   ), 'int',  false, true),

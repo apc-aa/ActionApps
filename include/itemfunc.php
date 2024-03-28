@@ -111,7 +111,7 @@ class AA_Generator_Dte extends AA_Generator {
     /** getClassProperties function of AA_Serializable
      * @return array
      */
-    static function getClassProperties(): array {
+    public static function getClassProperties(): array {
         return [             //           id         name                        type    multi  persist validator, required, help, morehelp, example
             'plusdays' => new AA_Property( 'plusdays',  _m("Number of days"), 'int', false, true, 'int', false, '', '', '365')
         ];
@@ -132,7 +132,7 @@ class AA_Generator_Txt extends AA_Generator {
     /** getClassProperties function of AA_Serializable
      * @return array
      */
-    static function getClassProperties(): array {
+    public static function getClassProperties(): array {
         return [      //           id         name     type    multi  persist validator, required, help, morehelp, example
             'text' => new AA_Property( 'text',  _m("Text"), 'text' )
         ];
@@ -168,7 +168,7 @@ class AA_Generator_Rnd extends AA_Generator {
     /** getClassProperties function of AA_Serializable
      * @return array
      */
-    static function getClassProperties(): array {
+    public static function getClassProperties(): array {
         return [             //           id         name                       type      multi  persist validator, required, help, morehelp, example
             'length'       => new AA_Property( 'length      ',  _m("String length"),  'int',    false, true, 'int', false, '', '', '5'),
             'checkfield'   => new AA_Property( 'checkfield  ',  _m("Field to check"), 'string', false, true, 'field', false, _m("If you need a unique code, you must send the field ID, the function will then look into this field to ensure uniqueness."), '', 'unspecified.....'),
@@ -221,7 +221,7 @@ class AA_Generator_Variable extends AA_Generator {
     /** getClassProperties function of AA_Serializable
      * @return array
      */
-    static function getClassProperties(): array {
+    public static function getClassProperties(): array {
         return [      //           id         name     type    multi  persist validator, required, help, morehelp, example
             'text' => new AA_Property( 'text',  _m("Text"), 'text', false, true, 'text', false, '', '', '{date:Y}')
         ];
@@ -245,7 +245,7 @@ class AA_Generator_Mul extends AA_Generator {
     /** getClassProperties function of AA_Serializable
      * @return array
      */
-    static function getClassProperties(): array {
+    public static function getClassProperties(): array {
         return [      //           id         name     type                  multi  persist validator, required, help, morehelp, example
             'text'      => new AA_Property( 'text',       _m("Text"),      'text',   false, true, 'text', false, '', '', 'red|green|blue'),
             'delimiter' => new AA_Property( 'delimiter',  _m("Delimiter"), 'string', false, true, 'text', false, '', '', '|')
@@ -598,7 +598,7 @@ class AA_Inserter_Co2 extends AA_Inserter {
     /** getClassProperties function of AA_Serializable
      * @return array
      */
-    static function getClassProperties():array {
+    public static function getClassProperties():array {
         return [             //           id         name                       type      multi  persist validator, required, help, morehelp, example
             'code'       => new AA_Property( 'code',        _m("Code for unaliasing (INSERT)"),'text', false, true, 'text', false, _m("There you can write any string. The string will be unaliased on item store, so you can use any {...} construct as well as field aliases here"), '', '({publish_date....}) {headline........}'),
             'code_update'=> new AA_Property( 'code_update', _m("Code for unaliasing (UPDATE)"),'text', false, true, 'text', false, _m("The same as above, but just for UPDATE operation. If unfilled, the value of the field stays unchanged"), '', ''),
@@ -626,7 +626,7 @@ class AA_Inserter_Com extends AA_Inserter {
     /** getClassProperties function of AA_Serializable
      * @return array
      */
-    static function getClassProperties():array {
+    public static function getClassProperties():array {
         return [             //           id         name                       type      multi  persist validator, required, help, morehelp, example
             'code'   => new AA_Property( 'code',        _m("Code for unaliasing (INSERT+UPDATE"),    'text', false, true, 'text', false, _m("There you can write any string. The string will be unaliased on item store, so you can use any {...} construct as well as field aliases here"), '', '({publish_date....}) {headline........}')
         ];
@@ -653,7 +653,7 @@ class AA_Inserter_Seo extends AA_Inserter {
     /** getClassProperties function of AA_Serializable
      * @return array
      */
-    static function getClassProperties():array {
+    public static function getClassProperties():array {
         return [             //           id         name                       type      multi  persist validator, required, help, morehelp, example
             'code'   => new AA_Property( 'code', _m("Alias to compute from"), 'text', false, true, 'text', false, _m("if not specified, the _#HEADLINE is used"), '', '_#HEADLINE')
         ];
@@ -698,7 +698,7 @@ class AA_Inserter_Fil extends AA_Inserter {
     /** getClassProperties function of AA_Serializable
      * @return array
      */
-    static function getClassProperties():array {
+    public static function getClassProperties():array {
         return [             //           id         name                       type      multi  persist validator, required, help, morehelp, example
             'type'          => new AA_Property( 'type',         _m("Mime types accepted"), 'text', false, true, 'text', false, _m('Only files of matching mime types will be accepted'), '', 'image/*'),
             'width'         => new AA_Property( 'width',        _m("Maximum image width"), 'int',  false, true, 'int',  false, '', '', '800'),
@@ -835,7 +835,7 @@ class AA_Inserter_Pwd extends AA_Inserter {
     /** getClassProperties function of AA_Serializable
      * @return array
      */
-    static function getClassProperties():array {
+    public static function getClassProperties():array {
         return [             //           id         name                       type      multi  persist validator, required, help, morehelp, example
             'bck_field'    => new AA_Property( 'bck_field',    _m("Copy of password"), 'text', false, true, 'field', false, _m('Field_id, where you want to store the copy of the password. Some times useful if you want to allow people to get hir/her old password. It is strongly recommended to not store it in plaintext and encrypt it. See second parameter.'), '', 'password.......1'),
             'crypt_phrase' => new AA_Property( 'crypt_phrase', _m("Encrypt phrase"),   'text',  false, true, 'text', false, _m('If you specify the "Copy of password" field, it is recommended to ecrypt the password in the database. Fill there any string. If you then need the password, you can decrypt it from the field by using the same phrase - {decrypt:{password.......1}:Some Phrase}'), '', 'Some Phrase')
@@ -875,7 +875,7 @@ class AA_Inserter_2fa extends AA_Inserter {
     /** getClassProperties function of AA_Serializable
      * @return array
      */
-    static function getClassProperties():array  {
+    public static function getClassProperties():array  {
         return [             //           id         name                       type      multi  persist validator, required, help, morehelp, example
                              'crypt_phrase' => new AA_Property( 'crypt_phrase',  _m("Encrypt phrase"), 'text', false, true, 'text', false, _m('Password to be applied for encrypting this field value. Could contain AA expressions or aliases (for user item in Reader Management slice)'), '', 'SomeSecret784!*')
         ];

@@ -32,7 +32,7 @@ class FilWidget extends Widget
      *  Used parameter format (in fields.input_show_func table)
      * @return array
      */
-    static function getClassProperties(): array {
+    public static function getClassProperties(): array {
         return Widget::propertiesShop(['allowed_ftypes', 'label', 'hint', 'display_url', 'multiple']);
     }
 

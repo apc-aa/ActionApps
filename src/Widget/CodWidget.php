@@ -45,7 +45,7 @@ class CodWidget extends TxtWidget
      *  Used parameter format (in fields.input_show_func table)
      * @return array
      */
-    static function getClassProperties(): array {
+    public static function getClassProperties(): array {
         return Widget::propertiesShop(['rows']);
     }
 
@@ -128,7 +128,7 @@ class CodWidget extends TxtWidget
 //    /** getClassProperties function of AA_Serializable
 //     *  Used parameter format (in fields.input_show_func table)
 //     */
-//     static function getClassProperties()  {
+//     public static function getClassProperties(): array  {
 //        return AA\Widget\Widget::propertiesShop(array('rows'));
 //    }
 
