@@ -82,6 +82,8 @@ try {
     // array ( 'discus' => 31, )
     $view_type = InputVars::stringGETPOST('view_type'); // alpha
 
+    $filters = InputVars::arrayPOST('filters'); // ['new0' => ['description' => 'test', 'conds' => 'test'],...]
+
     $new_templ = InputVars::boolGET('new_templ');
     $view_view = InputVars::intGET('view_view'); // -
 
