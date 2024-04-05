@@ -410,10 +410,11 @@ const ANONYMOUS_EDIT_HTTP_AUTH        = 5;
 const ANONYMOUS_EDIT_CRON             = 6;
 
 // MAX_NO_OF_ITEMS_4_GROUP is used with group_n slice.php parameter and
-// specifies how many items from the begining we have to search
+// specifies how many items from the beginning we have to search
 const MAX_NO_OF_ITEMS_4_GROUP = 1000;
 
-const NO_PICTURE_URL = AA_INSTAL_URL . 'images/blank.gif';
+const NO_PICTURE_URL  = AA_INSTAL_URL . 'images/blank.gif';
+const NO_PICTURE_DATA = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';   // smallest 1px transparent gif
 
 function GetConstantFields() {  // function - we need translate _m() on use (not at include time)
     return [
