@@ -453,6 +453,11 @@ class AA_Set extends AA_Object {
         $this->bins = $bins;
     }
 
+    /** @inheritDoc */
+    protected static function getAdminUrlTemplate(): string {
+        return get_admin_url('se_sets.php', ['module_id=_#AA_OWNER']);
+    }
+
     /** New main function to get item ids from database based on conditions...
      *  Should replace QueryZids() in future
      * @param $restrict_zids - zids

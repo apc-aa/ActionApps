@@ -108,7 +108,7 @@ class FilWidget extends Widget
     }
 
 
-    /** Creates base widget HTML, which will be surrounded by Live, Ajxax
+    /** Creates base widget HTML, which will be surrounded by Live, Ajax
      *  or normal decorations (added by _finalize*Html)
      *  @param AA_Property $aa_property
      *  @param \AA_Content $content

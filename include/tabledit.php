@@ -267,7 +267,7 @@ class tabledit {
                 $this->ShowSearchRow();
             }
 
-            $fnname = "prooveFields_".$this->viewID;
+            $fnname = "proveFields_".$this->viewID;
             $this->ShowProoveFields($fnname);
 
             $formname = "tv_".$this->viewID;

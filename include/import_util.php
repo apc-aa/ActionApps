@@ -47,6 +47,10 @@ function getCSV($handle, $delimiter = ';', $enclosure = '"') {
     if ($delimiter == '\t') {
         $delimiter = chr(9);  // tabulator ascii
     }
+    if (strlen($enclosure) !== 1) {
+        $enclosure = 0x00;  // unlikely character (not possible to use '' with fgetcsv) - @todo - test it
+    }
+
     return fgetcsv($handle,0,$delimiter, $enclosure);
 }
 

@@ -250,10 +250,10 @@ if (isset($lang_list) AND is_array($lang_list)) {
 }
 
 echo '
-<HTML>
-<HEAD><TITLE>Mini GetText</TITLE></HEAD>
-<BODY>
-<FORM name="f" METHOD="post" ACTION="index.php">
+<html>
+<head><title>Mini GetText</title></head>
+<body>
+<form name="f" METHOD="post" ACTION="index.php">
 <table><tr><td>
     <h1>Mini GetText maintenance</h1>
     <p>AA dir: <b>'.$aadir.'</b><br>
@@ -351,7 +351,7 @@ if ($show_create_related) {
 echo '
 </table>
 
-</FORM>
-</BODY>
-</HTML>';
+</form>
+</body>
+</html>';
 

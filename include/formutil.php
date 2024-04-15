@@ -112,8 +112,6 @@ class inputform {
 
     // computed values form form fields
     var $show_func_used;    // used show functions in the input form
-    var $js_proove_fields;  // javascript form validation code
-
 
     /** inputform function
      *  Constructor - initializes inputform
@@ -159,8 +157,7 @@ class inputform {
      */
     function printForm($content4id, $slice, $edit, $slice_fields=false) {
         // Get the default form and FILL CONTENTCACHE with fields
-        // This function also fills the $this->show_func_used and
-        // $this->js_proove_fields
+        // This function also fills the $this->show_func_used [and $this->js_proove_fields ...not used already]
         $form          = $this->getForm($content4id, $slice, $edit, '', $slice_fields);
         $remove_string = '';
 
@@ -213,7 +210,7 @@ class inputform {
 
             // get validation and gui javascripts for used fields
             // getFormJavascript must be called after getForm since
-            // $this->show_func_used, $this->js_proove_fields must be already filled
+            // $this->show_func_used
 
             $jstriggers  = JsTriggers::singleton4id($slice_id);
             $html_start  = $this->getFormJavascript($jstriggers);
@@ -385,7 +382,8 @@ class inputform {
         }
         // no longer used - we use standard HTML5 validation, now;    get_js_validation() already removed 2021-01-26 HM
         // $this->js_proove_fields = $slice->get_js_validation( $edit ? 'edit' : '', $content4id->getItemID(), $shown_fields, $slice_fields);
-        // we need to know, if the file upload is used to use multipart form encoding
+
+        // we need to know if the file upload is used to use multipart form encoding
         if (!is_array($this->show_func_used)) {       // not already computed
             $this->show_func_used = $slice->get_show_func_used($content4id->getItemID(), $shown_fields, $slice_fields);
         }
@@ -394,8 +392,7 @@ class inputform {
 
     /** getFormJavascript
      *  Get validation, triggers and gui javascript for used fields on Add/Edit Form
-     *  Must be called after getForm since $this->show_func_used and
-     *  $this->js_proove_fields must be already filled
+     *  Must be called after getForm since $this->show_func_used must be already filled
      * @param JsTriggers $jstriggers
      * @return string
      */
@@ -409,10 +406,8 @@ class inputform {
         // $retval .= getFrmJavascriptFile( 'javascript/js_lib.min.js' );
         // $retval .= getFrmJavascriptFile( 'javascript/aajslib.php' );
 
-        $jscode = $this->js_proove_fields;
-
         // field javascript feature - triggers see JsTriggers class
-        $jscode .= $jsTriggers->getJavascriptAndRegisterRequires();
+        $jscode = $jsTriggers->getJavascriptAndRegisterRequires();
 
         $retval .= getFrmJavascript( $jscode );
         $retval .= getFrmJavascriptFile('misc/htmleditor/ckeditor.js');
@@ -424,8 +419,7 @@ class inputform {
 
     /** getFormStart function
      *  Get form tag with right enctype and triggers
-     *  Must be called after getForm since $this->show_func_used and
-     *  $this->js_proove_fields must be already filled
+     *  Must be called after getForm since $this->show_func_used must be already filled
      */
     function getFormStart() {
         // uses fileupload?

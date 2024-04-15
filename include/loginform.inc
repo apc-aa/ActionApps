@@ -34,68 +34,44 @@ echo '<title>ActionApps - '.ORG_NAME.'</title>';
 ?>
 </head>
 <body style="text-align: center;">
+<br><br><br>
 <h1><?php echo _m("Welcome!", [aa_version('aa')]) ?></h1>
 <?php // styles to match the old login form ?>
 <style>
-    body {
-        background: #f5f0e7;
-        font-size: 13px;
-        line-height: inherit;
-    }
-    body * {
-        font-family: Verdana, Arial, Helvetica, sans-serif;
-    }
-    h1 {
-        font-weight: bold;
-        font-size: 16px;
-        margin-top: 12px;
+    html {
+        font-size: 15px;
     }
     .aa-login-form {
-        background: #EBDABE;
-        margin: 0 auto;
-        display: inline-block;
-        width: inherit;
-        padding: 5px;
+        background: var(--clr-basic-dark);
+        width: 300px;
+        margin: 20px auto;
+        padding: 20px;
     }
     .aa-login-row {
-        display: flex;
-        margin-top: 0;
-    }
-    .aa-login-row:last-child {
-        display: block !important;
-        margin: 0 auto;
+        margin-top: 10px;
     }
     .aa-login-row label {
-        font-weight: normal;
-        width: 135px;
-        text-align: left;
-        padding-left: 2px;
-        vertical-align: top;
+        display: block;
+        margin-bottom: 3px;
+        color: rgb(0 0 0 / 69%);
     }
     .aa-login-row label strong {
-        font-weight: normal;
-        display:block;
+        color: black;
     }
     .aa-login-row input {
-        text-align: left;
-        padding: 0 3px;
-        margin: 3px 2px 15px;
+        text-align: center;
+        padding: 8px 15px;
     }
-
-    input[type="submit"].btn-l {
-        display: inline-block;
-        background-color: #D5C2A4;
-        padding: 5px 15px;
-        border: none;
-        margin: 2px;
-        text-decoration: none;
-        color: black;
-        font-size: 11px;
-        font-family: arial, sans-serif;
+    .aa-login-submit input[type="submit"].btn-l {
+        padding: 11px 30px;
+        margin-top: 15px;
     }
-    .aa-login-submit {
-        display: block;
-        width: 100%;
+    .aa-login-submit input[type="submit"].btn-l:hover {
+        background-color: black;
+    }
+    small {
+        font-size: inherit;
+        opacity: 0.8;
     }
 </style>
 

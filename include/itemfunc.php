@@ -830,7 +830,7 @@ class AA_Inserter_Pwd extends AA_Inserter {
     protected $crypt_phrase;            // see getClassProperties
 
     public static function name(): string        { return _m("Password and Change Password");  }             // see NamedInterface
-    public static function description(): string { return _m('Stores value from a "Password and Change Password" field type. First prooves the new password matches the retyped new password, and if so, encrypts the new password and stores it.');  }      // see NamedInterface
+    public static function description(): string { return _m('Stores value from a "Password and Change Password" field type. First proves the new password matches the retyped new password, and if so, encrypts the new password and stores it.');  }      // see NamedInterface
 
     /** getClassProperties function of AA_Serializable
      * @return array

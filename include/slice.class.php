@@ -1158,6 +1158,12 @@ class AA_Modulesettings_Slice extends AA_AbstractModulesettings {
              // do not forget to add new property to  isProperty!
         ];
     }
+
+    /** @inheritDoc */
+
+    protected static function getAdminUrlTemplate(): string {
+        return get_admin_url('slicedit.php', ['module_id=_#AA_OWNER']);
+    }
 }
 
 /** Slice settings */
@@ -1193,6 +1199,11 @@ class AA_Modulesettings_Site extends AA_AbstractModulesettings {
             'perm_mode'       => new AA_Property( 'perm_mode',        _m("User login databases"),                   'string', false, true, ['enum',  ['1'=>_m('first Reader Management slice listed in Uses slices'),'2'=>_m('all Reader Management slices listed in Uses slices'),'3'=>_m('AA + all Reader Management slices in AA (old behavior)')]], false, _m('First Reader Management slice is encouraged option - only the people from this slice is allowed to login to public pages. If not selected, "AA + all Reader Management slices" option is used.')),
             'ga_id'           => new AA_Property( 'ga_id',            _m("Google analytics tracking id"),           'string', false, true, ['text', ['maxlength'=>20]],  false, _m('If you are using {generate:HEAD} and {generate:FOOT} in yor sitemodule code, then the Google Analytics code is generated with this tracking ID. The generated code could be changed in the future when Google changes the snippet.<br>To use user Consent bar, add {eucookies} or {eucookies:OK to use cookies?:OK:more://www.example.cz/cz/cookies-strategy::No:top} in the site.'))
         ];
+    }
+
+    /** @inheritDoc */
+    protected static function getAdminUrlTemplate(): string {
+        return get_aa_url('/modules/site/modedit.php', ['module_id=_#AA_OWNER']);
     }
 }
 

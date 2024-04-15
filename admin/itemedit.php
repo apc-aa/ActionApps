@@ -188,7 +188,6 @@ if ($add) {
 
 // ValidateContent4Id() sets GLOBAL!! variables:
 //   $show_func_used   - list of show func used in the form
-//   $js_proove_fields - JavaScript code for form validation
 //   $oldcontent4id
 
 $id = $_REQUEST['id'];

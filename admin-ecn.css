@@ -531,30 +531,7 @@ input[type="radio"] {
 .aa-ui-content > h1 {
     margin: 1em 0 1em 0;
 }
-/* login form */
-.aa-login-form {
-    background: var(--clr-basic-dark);
-    width: 300px;
-    margin: 20px auto;
-    padding: 20px;
-}
-.aa-login-row {
-    margin-top: 10px;
-}
-.aa-login-row label {
-    display: block;
-    margin-bottom: 3px;
-	color: rgb(0 0 0 / 69%);
-}
-.aa-login-row label strong {
-    color: black;
-}
-.aa-login-row input {
-    text-align: center;
-}
-.aa-login-row input {
-    text-align: center;
-}
+
 /* HEADER */
 #aa_top {
     display: flex;

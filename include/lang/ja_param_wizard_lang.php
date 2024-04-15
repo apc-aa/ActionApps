@@ -179,7 +179,7 @@ $_m["Password and Change Password"]
 
 // include/constants_param_wizard.php, row 115
 $_m["Stores value from a 'Password and Change Password' field type.\n"
-   ."           First prooves the new password matches the retyped new password,\n"
+   ."           First proves the new password matches the retyped new password,\n"
    ."           and if so, MD5-encrypts the new password and stores it."]
  = "";
 
@@ -322,7 +322,7 @@ $_m["User = does nothing ???"]
  = "";
 
 // include/constants_param_wizard.php, row 201
-$_m["Unique = proove uniqueness"]
+$_m["Unique = prove uniqueness"]
  = "";
 
 // include/constants_param_wizard.php, row 203

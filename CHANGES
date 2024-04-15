@@ -4747,7 +4747,7 @@ The changes could be tracked on:
            (dynamicaly generated javascript is stored into database and then
             is included to the HTML file as external javascript file. Advantage
             is, that when the content of js is not changed, yhen the external
-            file is not loaded (so it is quicker) - prooved with Apache log
+            file is not loaded (so it is quicker) - proved with Apache log
          - prepared new item action - move to different slice (item manager)
 04-11-05 - MLXGetText added (based on Honza's {_m:); will post instructions
 (mimo)     on http://mimo.gn.apc.org/mlx/

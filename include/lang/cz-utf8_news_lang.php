@@ -5292,13 +5292,11 @@ $_m["Welcome!"]
 
 // include/loginform.inc, row 41
 $_m["Welcome! Please identify yourself with a username and a password:"]
- = "<br>\n\n"
-   ."     <br><br>Přihlašte se prosím Vaším jménem a heslem\n\n"
-   ."     <br>(Welcome! Log in by your name and password):";
+ = "Přihlašte se prosím Vaším jménem a heslem<br><small>(Welcome! Log in by your name and password)</small>";
 
 // include/loginform.inc, row 50
 $_m["Username:"]
- = "Uživatelské jméno / User name";
+ = "<strong>Uživatelské jméno</strong> / User name";
 
 // include/loginform.inc, row 53
 $_m["Type your username or mail"]
@@ -5306,7 +5304,7 @@ $_m["Type your username or mail"]
 
 // include/loginform.inc, row 56
 $_m["Password:"]
- = "Heslo / Password";
+ = "<strong>Heslo</strong> / Password";
 
 // include/loginform.inc, row 60
 $_m["Login now"]

@@ -289,10 +289,11 @@ foreach ($g_modules as $k => $v) {
         $constants["#sLiCe-".$k] =  $v['name'];
     }
 }
-  // lookup fields
-if ( !($fld = DB_AA::select1('', 'SELECT * FROM field', [['slice_id', AA::$module_id, 'l'], ['id', $fid]]))) {
-    $Msg = MsgErr(_m("No fields defined for this slice"));
-    go_url($return_url ? expand_return_url(1) : $back_admin_url);  // back to field page
+
+// load field
+if ( !($fld = AA_Field::factoryFromDb($fid, AA::$module_id))) {
+    // $Msg = MsgErr(_m("No field found"));
+    go_url($return_url ? expand_return_url(1) : $back_admin_url, ['msg'=>_m("No field found")]);  // back to field page
 }
 
 if ( !$update ) {      // load defaults

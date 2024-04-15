@@ -242,7 +242,7 @@ $_m["Password and Change Password"]
     = "Lozinka i promjena lozinke";
 
 $_m["Stores value from a 'Password and Change Password' field type.\n"
-."           First prooves the new password matches the retyped new password,\n"
+."           First proves the new password matches the retyped new password,\n"
 ."           and if so, MD5-encrypts the new password and stores it."]
     = "Sprema vrijednosti iz 'Lozinka i promjena lozinke' tipa polja.";
 
@@ -311,7 +311,7 @@ $_m["Bool = store as bool"]
 $_m["User = does nothing ???"]
     = "Korisnik/ica = nema promjena ???";
 
-$_m["Unique = proove uniqueness"]
+$_m["Unique = prove uniqueness"]
     = "Jedinstven = provjerite jedinstvenost zapisa";
 
 $_m["Validates only if the value is not yet used. Useful e.g.\n"

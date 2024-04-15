@@ -64,6 +64,12 @@ class AA_Field implements ArrayAccess, Countable, Iterator {
         $this->sanitizeData();  // check for misconfigured mandatory fields
     }
 
+    public static function factoryFromDb(string $field_id, string $slice_id): ?AA_Field {
+        $flds = implode(',',array_map(fn ($value) => "`$value`", self::USED_FIELDS));
+        $data = DB_AA::select1('', "SELECT $flds FROM `field`", [['slice_id', $slice_id, 'l'], ['id', $field_id]]);
+        return $data ? new AA_Field($data) : null;
+    }
+
     /** Check for misconfigured mandatory fields */
     protected function sanitizeData() {
         if ($this->data['id'] == 'id..............') {
@@ -487,8 +493,8 @@ class AA_Field implements ArrayAccess, Countable, Iterator {
         return $new;
     }
 
-    private function linkToField(string $text, string $field_id, string $fragment='', array $attrs=[]) {
-        $url = get_url("./se_inputform.php", ['fid'=>$field_id], true);
+    public function linkToField(string $text, string $fragment='', array $attrs=[]) {
+        $url = get_admin_url("se_inputform.php", ['module_id'=>$this->getSliceId(), 'fid'=>$this->getId()]);
         if ($fragment) {
             $url .= '#alias'.$fragment;
         }
@@ -523,7 +529,7 @@ class AA_Field implements ArrayAccess, Countable, Iterator {
         <td><input type=\"text\" name=\"pri[$id]\" size=\"4\" maxlength=\"4\" value=\"$pri\"></td>
         <td><input type=\"checkbox\" name=\"req[$id]\"". ($required ? " checked" : "") ."></td>
         <td><input type=\"checkbox\" name=\"shw[$id]\"". ($show ? " checked" : "") ."></td>";
-        echo "<td>".$this->linkToField( _m("Edit"), $id, '', ['class'=>'aa-button-edit'] )."</td>";
+        echo "<td>".$this->linkToField(_m("Edit"), '', ['class' => 'aa-button-edit'])."</td>";
         if ( $type=="in_item_tbl" ) {
             echo "<td></td>";
         } else {
@@ -532,7 +538,7 @@ class AA_Field implements ArrayAccess, Countable, Iterator {
 
         $alias_list = join(' ', array_map(
             function($a) use ($id) {
-                return $this->linkToField($a, $id, substr($a,2), (substr($a,0,2)=='X#') ? ['class'=>'disabled'] : []);
+                return $this->linkToField($a, substr($a, 2), (substr($a, 0, 2) == 'X#') ? ['class' => 'disabled', 'title' => _m('disabled')] : []);
             }, $aliases));
         echo "<td class=\"aa-flds-aliases\">$alias_list</td>";
         echo "</tr>\n";
@@ -718,9 +724,7 @@ class AA_Fields implements Iterator, Countable {
             $zids = $set->query();
             $this->fields[$fid] = $zids->count() ? new AA_Field_Slicedef($zids->zid(0), $this->master_id) : '';
         } else {
-            $flds = implode(',',array_map(fn ($value) => "`$value`", AA_Field::USED_FIELDS));
-            $data = DB_AA::select1('', "SELECT $flds FROM `field`", [['slice_id', $this->master_id, 'l'], ['id', $fid]]);
-            $this->fields[$fid] = $data ? new AA_Field($data) : '';
+            $this->fields[$fid] = AA_Field::factoryFromDb($fid, $this->master_id) ?? '';
         }
     }
 

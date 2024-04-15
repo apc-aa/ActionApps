@@ -83,6 +83,11 @@ class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedI
         return '';
     }
 
+    /** @inheritDoc */
+    protected static function getAdminUrlTemplate(): string {
+        return get_admin_url('se_tasks.php', ['id=_#AA_ID___','module_id=_#AA_OWNER']);
+    }
+
     /** Manager top HTML  */
     protected static function getManagerTopHtml($fields)
     {

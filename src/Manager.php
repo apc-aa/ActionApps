@@ -56,8 +56,8 @@ use zids;
 
 class Managed {
 
-    //  it is public for now, in order we can easily change the setting - $managed->settings[...] == ...
     const MANGED_URL        = 'AA_MaNaGeD_UrL';
+    //  it is public for now, in order we can easily change the setting - $managed->settings[...] == ...
     public $settings        = [];
     /** like  ['edit'=>true, 'add'=>true] - set by setAction() */
     protected $add_action   = [];

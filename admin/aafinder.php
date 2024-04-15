@@ -86,23 +86,29 @@ if (!IsSuperadmin()) {
 // ----------------------------------------------------------------------------------------
 
 
-function AafinderFieldLink($field_id, $slice_id): string {
-    return a_href(get_admin_url("se_inputform.php?change_id=$slice_id&fid=$field_id"), "$field_id"). ' ('.AA_Slice::getModuleName($slice_id).')';
+function AafinderFieldLink($field_id, $slice_id, $db_fld=''): string {
+    if ($fld = AA_Field::factoryFromDb($field_id, $slice_id)) {
+        $txt = $fld->linkToField("$field_id - ". $fld->getName());
+        if ((strpos($db_fld,'alias')===0) AND DB_AA::test('field',[['slice_id',$slice_id,'l'],['id',$field_id],[substr($db_fld,0,6),'X','BEGIN']]) ) {
+            $txt = "<s title=\""._m('disabled')."\">$txt</s>";
+        }
+        return $txt;
+    }
+    return '';
 }
 
-function AdminLink($table, $row): string
-{
+function AdminLink($table, $fld, $row): string {
     switch ($table) {
         case 'content':
         case 'discussion':
         case 'item':
-            return AafinderItemLink($row['iid'], $row['sid']);
+            return AafinderItemLink($row['iid'], $row['sid'], true);
         case 'view':
             return AafinderViewLink($row['iid']);
         case 'slice':
             return AafinderModuleeLink($row['iid']);
         case 'field':
-            return AafinderFieldLink($row['iid'], $row['sid']);
+            return AafinderFieldLink($row['iid'], $row['sid'], $fld);
         case 'site_spot':
             return AafinderSiteLink($row['iid'], $row['sid']);
         case 'object_text':
@@ -116,15 +122,13 @@ function AdminLink($table, $row): string
 function AafinderObjectLink($object_id): string {
     if ($obj = AA_Object::load($object_id)) {
         $name = ($obj->getName()==$obj->getProperty('alias')) ? $obj->getName() : $obj->getName(). ' ('. $obj->getProperty('alias').')';
-        return a_href(get_aa_url('modules/site/aliases.php', [
-                'module_id' => $obj->getOwnerId(),
-                'id'        => $object_id
-            ]), $name). ' ('. AA_Slice::getModuleName($obj->getOwnerId()) .') &nbsp; '. ChangesMonitor::getHistoryLink($object_id);
+        $url = $obj->getAdminUrl();
+        return ($url ? a_href($url, $name) : $name). ' ('. $obj->getObjectType(). ' - '. AA_Slice::getModuleName($obj->getOwnerId()) .') &nbsp; '. ChangesMonitor::getHistoryLink($object_id);
     }
     return '';
 }
 
-function AafinderItemLink($item_id, $slice_id=''): string {
+function AafinderItemLink($item_id, $slice_id='', $no_module_link=false): string {
     if (!$slice_id) {
         if ($item = AA_Items::getItem(new zids($item_id, 'l'))) {
             $slice_id = $item->getSliceID();
@@ -133,10 +137,14 @@ function AafinderItemLink($item_id, $slice_id=''): string {
         }
     }
     $seo = StrExp('item', [$item_id, 'seo.............']) ?: 'Item';
-    return join(' | ', [a_href(get_admin_url('itemedit.php',['id'=>$item_id,'change_id'=>$slice_id,'edit'=>1]), "$seo ($item_id)"),
-                        AA_Slice::getModuleName($slice_id, true),
-                        ChangesMonitor::getHistoryLink($item_id),
-                        a_href(get_admin_url('se_statistics.php', ['change_id'=>$slice_id, 'items'=>$item_id]), _m('Statistics'))]);
+    $info = [];
+    $info[] = a_href(get_admin_url('itemedit.php',['id'=>$item_id,'change_id'=>$slice_id,'edit'=>1]), "$seo ($item_id)");
+    if (!$no_module_link) {
+        $info[] = AA_Slice::getModuleName($slice_id, true);
+    }
+    $info[] = ChangesMonitor::getHistoryLink($item_id);
+    $info[] = a_href(get_admin_url('se_statistics.php', ['change_id'=>$slice_id, 'items'=>$item_id]), _m('Statistics'));
+    return join(' | ', $info);
 }
 
 function AafinderModuleeLink($module_id): string {
@@ -149,12 +157,12 @@ function AafinderSiteLink($spot_id, $module_id): string {
     } else {
         $spot_code = "??? $spot_id";
     }
-    return a_href(get_aa_url("modules/site/index.php?slice_id=$module_id&module_id=$module_id&spot_id=$spot_id&go_sid=$spot_id"), $spot_code). ' ('. AA_Module_Site::getModuleName($module_id) .') &nbsp; '. ChangesMonitor::getHistoryLink("S.$spot_id");
+    return a_href(get_aa_url("modules/site/index.php?slice_id=$module_id&module_id=$module_id&spot_id=$spot_id&go_sid=$spot_id"), $spot_code).' &nbsp; '. ChangesMonitor::getHistoryLink("S.$spot_id");
 }
 
 function AafinderViewLink($view_id): string {
     $view = AA_Views::getViewNumeric($view_id);
-    return $view->jumpLink($view_id." -  ".$view->f("name")).' ('. AA_Module::getModuleName($view->getSliceId(), true) .') &nbsp; '. ChangesMonitor::getHistoryLink("V.$view_id");
+    return $view->jumpLink($view_id." -  ".$view->f("name")).' &nbsp; '. ChangesMonitor::getHistoryLink("V.$view_id");
 }
 
 function query_search(array $where, string $phrase): string {
@@ -163,6 +171,7 @@ function query_search(array $where, string $phrase): string {
 
     $arr = DB_AA::select([], 'SELECT distinct slice.name as slice_name, LOWER(HEX(slice.id)) as slice_id, LOWER(HEX(item.id)) as iid, item.short_id, item.status_code, item.post_date, item.last_edit, item.edited_by from slice, item, content', $where, ['status_code','slice_name','short_id']);
 
+    $phrase = safe($phrase);
     $output = count($arr)." "._m('Show results with string')."  <b><i>$phrase</i></b><br>";
 
     $items = [[_m('Item'), 'short_id', 'status_code', 'publish_date', 'last_edit', 'edited_by']];
@@ -572,7 +581,7 @@ if ( strlen($go_search) OR strlen($go_replace) ) {
         } elseif ($searchincodeitems) {
             $codeslices = DB_AA::select('lid','SELECT LOWER(HEX(`id`)) as lid FROM `slice`',[['type', '___Code', 'BEGIN']]) ?: ['90112233001122330011223300112233'];
             $codeslicesquery = sqlin( 'item.slice_id', $codeslices, true );
-            $table2search['content'] = ['id' => 'LOWER(HEX(`item_id`))', 'addtables' => ',`item`', 'addconds' => 'item.id=content.item_id AND '.$codeslicesquery.' AND '];
+            $table2search['content'] = ['id' => 'LOWER(HEX(`item_id`))', 'slice_id' => 'LOWER(HEX(`slice_id`))', 'addtables' => ',`item`', 'addconds' => 'item.id=content.item_id AND '.$codeslicesquery.' AND '];
         }
         if ($searchinobject) {
             $table2search['object_text'] = ['id' => '`object_id`'];
@@ -616,6 +625,7 @@ if ( strlen($go_search) OR strlen($go_replace) ) {
                     }
                     $row[0] = "<b>$tbl.$fld</b>";
                     $row[1] = count($txt);
+                    $row[2] = '';
                     FrmTabRow($row);
                     $row = [];
                     foreach ($txt as $t) {
@@ -629,8 +639,9 @@ if ( strlen($go_search) OR strlen($go_replace) ) {
                             }
                         }
                         $code = str_replace('AA_$@MArK%', '<span style="background-color:#DDD">', safe($code)) . '</span>';
-                        $row[0] = "<small>" . AdminLink($tbl, $t) . "</small>";
-                        $row[1] = "<small> $code</small>";
+                        $row[0] = "<small>" . AdminLink($tbl, $fld, $t) . "</small>";
+                        $row[1] = "<small>". AA_Module::getModuleName($t['sid'],true)."</small>";
+                        $row[2] = "<small> $code</small>";
                         FrmTabRow($row);
                     }
                 } elseif (strlen($go_replace) AND strlen($search) AND (strlen($replace) > 5)) {
@@ -638,7 +649,8 @@ if ( strlen($go_search) OR strlen($go_replace) ) {
                     $SQL = "UPDATE `$tbl` SET `$fld` = REPLACE(`$fld`, '" . quote($search) . "', '" . quote($replace_str) . "')";
                     $rep = DB_AA::sql($SQL);
                     $row[0] = $rep ? "<b>$tbl.$fld</b>" : "$tbl.$fld";
-                    $row[1] = "($rep replaces)";
+                    $row[1] = "";
+                    $row[2] = "($rep replaces)";
                     FrmTabRow($row);
                 } else {
                     // just to not make damage in id fields, ...

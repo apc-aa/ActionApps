@@ -67,12 +67,11 @@ if (!CheckPerms( AuthGetUid(), "aa", AA_ID, PS_ADD) ) {
 
 $varset     = new Cvarset();
 
-/** proove_ID function
- *  Prooves whether this ID already exists in the slices table, changes the ID to a new chosen one
+/**  Proves whether this ID already exists in the slices table, changes the ID to a new chosen one
  * @param array $slice
  * @return bool
  */
-function proove_ID($slice) {
+function prove_ID($slice) {
     global $resolve_conflicts, $overwrite, $new_slice_ids;
 
     $res = $resolve_conflicts[$slice["id"]];
@@ -118,12 +117,12 @@ function proove_ID($slice) {
     return true;
 }
 
-/** proove_data_ID function
+/**
  * @param $data_id
  * @return bool
  */
  // same function as above, but for table item and content
-function proove_data_ID($data_id) {
+function prove_data_ID($data_id) {
     global $data_resolve_conflicts, //Set from data_conflicts_list
            $data_overwrite;
     $res = $data_resolve_conflicts[$data_id];
@@ -175,7 +174,7 @@ function import_slice(&$slice) {
            $new_slice_ids;
 
     if ($only_slice) { // import slice definition ?
-        $IDconflict = !proove_ID($slice);
+        $IDconflict = !prove_ID($slice);
         if (($IDconflict)&&($GLOBALS["submit"]!=_m("Insert with new ids"))) {
             huhl('ID conflict '.$slice["id"].' '. $slice["name"]);
             $conflicts_ID[$slice["id"]] = $slice["name"];
@@ -240,7 +239,7 @@ function import_slice_data($slice_id, $id, $content4id, $insert, $feed) {
             return false;
         }
         $cont            = $content4id[$id];
-        $data_IDconflict = !proove_data_ID($id);
+        $data_IDconflict = !prove_data_ID($id);
         if (($data_IDconflict)&&($GLOBALS["submit"]!=_m("Insert with new ids"))) {
             $data_conflicts_ID[$id] = $cont["headline........"][0]['value'];
             $cancel = 0;

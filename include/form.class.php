@@ -267,6 +267,11 @@ class AA_Form extends AA_Object implements \AA\Util\NamedInterface {
         return '';
     }
 
+    /** @inheritDoc */
+    protected static function getAdminUrlTemplate(): string {
+        return get_admin_url('se_forms.php', ['id=_#AA_ID___','module_id=_#AA_OWNER']);
+    }
+
     /** add default property's row(s) for all props in array
      * @param AA_Property[] $props
      * @return $this

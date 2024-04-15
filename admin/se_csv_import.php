@@ -227,7 +227,7 @@ if ($preview) { // file preview
           '"'  => 'double quote "',
           "'"  => 'single quote \''
       ];
-      FrmInputPreSelect("enclosure", "Enclosure", $arr, $preview ? $enclosure : '"');
+      FrmInputPreSelect("enclosure", "Enclosure", $arr, $preview ? $enclosure : '"', 1, 1, true);
 
       FrmInputChBox("caption","Use first row as field names",$preview ? $caption : true);
 

@@ -73,7 +73,7 @@ function SliceAddForm(bool $wizard=false, bool $display_views_constants=false): 
 
     if (isset($temp_slices) and is_array($temp_slices)) {
         echo "<tr><th>" . _m("Slice") . "</th>\n <td>";
-        FrmSelectEasy('template_id2', $temp_slices);
+        FrmSelectEasy('template_id2', $temp_slices, AA::$module_id);
         echo '</td><td>';
         if ($wizard) {
             echo '<input type="radio" name="template_slice_radio" value="slice" checked>';

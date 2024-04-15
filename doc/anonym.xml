@@ -99,7 +99,7 @@
 
     <para>Two scripts handle the anonymous forms. The first,
     <constant>filler.php</constant>, stores the info coming from the form
-    into the database. It also validates the data and prooves permissions to
+    into the database. It also validates the data and proves permissions to
     edit or update the item. The second, <constant>fillform.php</constant>,
     refills the data into the form shown to the reader. It retrieves the data
     from database or in some special cases directly from <constant>filler</constant>.</para>

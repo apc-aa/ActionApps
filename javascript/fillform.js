@@ -78,7 +78,7 @@ function packID(unpackedID) {
     return packedID;
 }
 
-/* prooves all given fields are filled
+/* proves all given fields are filled
     params: fields = array of controls' names */
 
 function prooveFilled(formName, fields) {

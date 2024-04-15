@@ -712,7 +712,7 @@ function CreateBinCondition($bin, $table, bool $ignore_expiry_date=false, bool $
  * @param bool  $fields2get
  *                                    restrict return fields only to listed fields (so the content4id array
  *                                    is not so big)
- *                                    like: array('headline........', 'category.......1')
+ *                                    like: ['headline........', 'category.......1']
  * @param null  $crypted_additional_slice_pwd
  * @param null  $bin
  * @return array
@@ -793,7 +793,7 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
 
         $row = $db->record();
 
-        // proove permissions for password-read-protected slices
+        // prove permissions for password-read-protected slices
         $unpack_id                  = unpack_id($row['id']);
         $unpack_slice_id            = unpack_id($row['slice_id']);
         $long_ids[]                 = $unpack_id;
@@ -809,7 +809,7 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
            //   (we should test it after this while cycle - once for slice)
            // Solved 2016-08-24 Honza
         foreach ($real_item_fields2get as $item_fid) {
-            // FLAG_HTML do not means in fact, that the content is in HTML, but it rather means, that we should not call txt2html function on the content
+            // FLAG_HTML does not mean in fact, that the content is in HTML, but it rather means, that we should not call txt2html function on the content
             // we do not need to call txt2html() to any of the item table fields
             $content[$unpack_id][AA_Fields::createFieldId($item_fid)][] = ["value" => $row[$item_fid], "flag"  => FLAG_HTML];
         }
@@ -1267,8 +1267,7 @@ function StoreToContent($item_id, $field_id, $text_stored, $value, $additional= 
 
 // -----------------------------------------------------------------------------
 
-/** gensalt function
- * generates random string of given length
+/** Generates random string of given length
  * @param $saltlen
  * @return string
  */

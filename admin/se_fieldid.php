@@ -234,7 +234,7 @@ if ($update && $new_id_text && AA::$module_id) {
             if (in_array($new_id, RESERVED_IDS)) {
                 $err[] = _m("This ID is reserved")." ($new_id).";
             } else {
-                // proove the field does not exist
+                // prove the field does not exist
                 $db = getDB();
                 $db->query("SELECT id FROM field WHERE slice_id=$xslice_id AND id='$new_id'");
                 if ($db->next_record()) {

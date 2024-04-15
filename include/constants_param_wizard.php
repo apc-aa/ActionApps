@@ -145,7 +145,7 @@ $VALIDATE_TYPES["items"]["user"] = [
     "name"=>_m("User = does nothing ???")
 ];
 $VALIDATE_TYPES["items"]["unique"] = [
-    "name"=>_m("Unique = proove uniqueness"),
+    "name"=>_m("Unique = prove uniqueness"),
     "desc"=>_m("Validates only if the value is not yet used. Useful e.g.
         for emails or user names."),
     "params"=> [

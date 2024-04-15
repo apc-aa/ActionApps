@@ -225,7 +225,7 @@ class AA_Property extends AA_Storable {
         return $new_value;
     }
 
-    /** Converts AA_Value to real property value (scallar, Array, ...)
+    /** Converts AA_Value to real property value (scalar, Array, ...)
      *  @param $aa_value AA_Value
      *  @return array
      */
