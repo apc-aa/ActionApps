@@ -169,21 +169,47 @@ class AA_Propset {
     use \AA\Util\ArrTrait;
 
     protected $arr = [];
+    protected string $id  = '';  // must be unique in the system - as short as possible
 
-    public static function factoryFromArray(array $arr) {
-        $ret = new self();
-        foreach ($arr as $v) {
-            $ret->arr[] = new AA_Property(...$v);
+    public function __construct(string $id = '') {
+        $this->id = $id;
+    }
+
+    public function factoryFromArray(array $arr): AA_Propset {
+        foreach ($arr as $k => $v) {
+            $this->arr[$k] = new AA_Property(...$v);
         }
-        return $ret;
+        return $this;
+    }
+
+    static public function shop(string $id): ?AA_Propset {
+        switch ($id) {
+            // Describes structure of "description" field in "email" table
+            case 'a': return (new AA_Propset($id))->factoryFromArray([
+                ['time',_m('Created time'), 'int'],
+                ['sid',_m('Page Short ID'), 'int'],
+                ['users',_m('Users'), 'int'],
+                ['mails',_m('E-mails'), 'int']]);
+
+            // Describes structure of "type" field in "email" table for {mail:...} function on page
+            case 'b': return (new AA_Propset($id))->factoryFromArray([
+                ['type',_m('Type'), 'string'],  // type of mail template
+                ['page',_m('Page'), 'int']]);   // short item id of page, where {mail:... function is
+        }
+        return null;
     }
 }
 
-
 class AA_Logentry {
+    protected AA_Propset $propset;
+    protected AA_Content $content;
 
-    public static function factoryFroType($type) {
-        return new self();
+    public function __construct(string $propset_id, ?AA_Content $content) {
+        $this->propset = AA_Propset::shop($propset_id);
+        $this->content = $content;
+    }
+
+    public function serialize() {
     }
 }
 

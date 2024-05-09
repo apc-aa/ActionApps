@@ -300,7 +300,7 @@ function getMenu($activeMain, $activeSubmenu = ""): string {
         }
 
         $title_title = GetLabel($profile, 'ui_manager', 'top_title', $smmenus[$activeMain]['title']);
-        $title_name  = safe($slice_id ? AA_Slice::getModuleName($slice_id) : _m("New slice"));
+        $title_name  = safe($slice_id ? AA_Module::getModuleName($slice_id) : _m("New slice"));
         $title_out   = $title_title . (($title_title AND $title_name) ? ' - ' : '') . $title_name. $title_img;
         $prop_logout = $profile->getProperty('ui_manager', 'top_logout');
 

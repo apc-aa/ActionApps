@@ -503,7 +503,9 @@ class Widget extends AA_Object implements NamedInterface {
         $class = ($this->getProperty('ajaxtype', '') == 'inline') ? 'aa-widget aa-ajax-inline' : 'aa-widget aa-ajax-open';
         $class .= ' aa-widget-' . strtolower(AA_Components::getClassType(get_called_class(), 'Widget'));
         $widget_html = "<div class=\"ajax_widget $class\" id=\"widget-$base_id\">";
+        $widget_html .= "\n<div class=aa-input>";
         $widget_html .= "\n" . $winfo['html'] . ($help ? "\n    <div class=\"aa-help\"><small>$help</small></div>\n" : '');
+        $widget_html .= "\n</div>";
         $widget_html .= '<input name=context value="'.AA_Credentials::singleton()->getAsToken().'" type=hidden>';
         $widget_html .= "\n<div class=ajax_buttons>";
         $widget_html .= "\n<input class=\"save-button\" type=\"submit\" value=\"" . _m('SAVE CHANGE') . "\" onclick=\"AA_SendWidgetAjax('$base_id'); return false;\">"; //Save change
@@ -532,7 +534,7 @@ class Widget extends AA_Object implements NamedInterface {
     public function _finalizeLiveHtml($winfo, $aa_property): string {
         $base_id = $winfo['base_id'];
         // $help = $aa_property->getHelp();  //not used
-        $widget_html = $winfo['html']; //. ($help ? "\n    <div class=\"aa-help\"><small>$help</small></div>\n" :'');
+        $widget_html = '<div class=aa-input>' . $winfo['html'] . '</div>'; //. ($help ? "\n    <div class=\"aa-help\"><small>$help</small></div>\n" :'');
         $class = 'aa-widget aa-live';
         $class .= ' aa-widget-' . strtolower(AA_Components::getClassType(get_called_class(), 'Widget'));
 
@@ -623,7 +625,7 @@ class Widget extends AA_Object implements NamedInterface {
     public static function propertiesShop($props = []): array {
         $ret = [];
         foreach ($props as $pid) {
-            switch ($pid) {  //  id                                                    name                                    type   multi  persist validator, required, help, morehelp, example
+            switch ($pid) {  //  id                       name     type   multi  persist validator, required, help, morehelp, example
                 case 'rows':
                     $ret[$pid] = new AA_Property($pid, _m("Rows"), 'int', false, true, 'int', false, '', '', 10);
                     break;
@@ -825,7 +827,12 @@ class Widget extends AA_Object implements NamedInterface {
                 case 'load_from_fld':
                     $ret[$pid] = new AA_Property($pid, _m("Address field"), 'string', false, true, 'string', false, _m("field_id of another text field, from which user can grab address search"), '', "location........");
                     break;
-
+                case 'map_shapes':
+                    $ret[$pid] = new AA_Property($pid, _m("Allowed shapes"), 'string', false, true, 'string', false, _m("M - Marker (point) - default<br>L - Line<br>P - Polygon<br>R - Rectangle"), '', "MLP");
+                    break;
+                case 'multi_shape':
+                    $ret[$pid] = new AA_Property($pid, _m("Multiple shapes"), 'bool', false, true, 'bool', false, _m("Allow multiple shapes at time"), '', "0");
+                    break;
             }
         }
         return $ret;

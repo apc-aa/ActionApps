@@ -65,12 +65,18 @@ class AA_Mailtemplate implements AA_iEditable, ArrayAccess, Countable, Iterator 
     }
 
     /** creates new mail template from the array and saves it to the database
-     * @param array $mail_arr
+     * @param array  $mail_arr
+     * @param string $type
+     * @param string $description
+     * @param string $owner
      * @return AA_Mailtemplate - filled or empty if store is failed
      */
-    public static function createFromMailArray(array $mail_arr): AA_Mailtemplate {
+    public static function createFromMailArray(array $mail_arr, string $type, string $description, string $owner): AA_Mailtemplate {
         $mail = new AA_Mailtemplate;
         $mail->data = $mail_arr;
+        $mail->data['type']            = $type;
+        $mail->data['description']     = $description;
+        $mail->data['owner_module_id'] = $owner;
         $mail->data['lang'] = Langs::fixLang($mail->data['lang']);   // Mail uses just charset, while template uses lang ('cz-utf8')
         if ($id = AA::Metabase()->doInsert('email', $mail->data)) {
             $mail->data['id'] = $id;

@@ -50,23 +50,17 @@ require_once __DIR__ . "/perm_core.php";    // needed for GetAuthData();
  */
 class AA_Aliasfunc extends AA_Object implements \AA\Util\NamedInterface {
 
-    /**
-     * @var string
-     */
-    var $alias;
-    /**
-     * @var string
-     */
-    var $code;
-    /**
-     * @var string
-     */
-    var $desc;
-    /**
-     * @var string
-     */
-    var $ussage;
-    // var $params;
+    /** @var string  */
+    protected $alias;
+
+    /** @var string */
+    protected $code;
+
+    /** @var string  */
+    protected $desc;
+
+    /** @var array  */
+    protected $ussage;
 
     /** AA_Aliasfunc function
      * @param $alias;
@@ -74,7 +68,7 @@ class AA_Aliasfunc extends AA_Object implements \AA\Util\NamedInterface {
      * @param $desc;
      * @param $ussage;
      */
-    function __construct($alias='', $code='', $desc='', $ussage='') {
+    function __construct($alias='', $code='', $desc='', $ussage=[]) {
         $this->alias  = $alias;
         $this->code   = $code;
         $this->desc   = $desc;
@@ -89,7 +83,7 @@ class AA_Aliasfunc extends AA_Object implements \AA\Util\NamedInterface {
         return [          //           id       name       type        multi   persist validator, required, help, morehelp, example
             'alias'  => new AA_Property( 'alias',  _m("Alias"),          'string', false, true, '', true,  _m('Alias will be called as {_:&lt;Alias_name&gt;[:&lt;Possible parameters - colon separated&gt;]}'),'', 'Message_box'),
             'code'   => new AA_Property( 'code',   _m("Code"),           'text',   false, true, '', false,  _m('Code printed by the alias. Alias could have parameters and you can use it by _#P1, _#P2, ... variables'),'', '&lt;div class=mybox style="color:_#P2"&gt;_#P1&lt;/div&gt;'),
-            'desc'   => new AA_Property( 'desc',   _m("Description"),    'text',   true, true, '', false),
+            'desc'   => new AA_Property( 'desc',   _m("Description"),    'text',   false, true, '', false),
             'ussage' => new AA_Property( 'ussage', _m("Usage example"), 'string',  true,  true, '', false, '', '', '{_:Message_box:Update successful:green}'),
         ];
     }
@@ -110,6 +104,11 @@ class AA_Aliasfunc extends AA_Object implements \AA\Util\NamedInterface {
      */
     public static function description(): string {
         return '';
+    }
+
+    /** @inheritDoc */
+    protected static function getAdminUrlTemplate(): string {
+        return get_aa_url('modules/site/aliases.php', ['id=_#AA_ID___','module_id=_#AA_OWNER']);
     }
 }
 
@@ -5461,7 +5460,7 @@ class AA_Stringexpand_Debug extends AA_Stringexpand_Nevercache {
             AA::$debug = (int)$level;
         } else {
             // do not rely on this - could be changed. If you want specific format, then add any text parameter
-            $ret = "\nDababase instances: ". DB_AA::$_instances_no;
+            $ret = "\nDatabase instances: ". DB_AA::$_instances_no;
         }
         return $ret;
     }
@@ -6210,7 +6209,8 @@ class AA_Stringexpander implements \AA\Later\LaterInterface {
             }
 
             $last_replacements  = 0;
-            AA::$debug&4 && AA::$dbg->tracestart('unalias', $text);
+            // we store it in the variable -  AA::$debug could change in do-while loop {debug...} which thel leads to error
+            ($do_trace = AA::$debug&4) && AA::$dbg->tracestart('unalias', $text);
             $callback = [new AA_Unalias_Callback($item, $itemview), AA::$debug&8 ? 'expand_bracketed_timedebug':'expand_bracketed'];
             do {
                 $oldtext = $text;
@@ -6232,7 +6232,7 @@ class AA_Stringexpander implements \AA\Later\LaterInterface {
                 }
                 $quotecolons_partly += $last_replacements;
             } while($last_replacements);
-            AA::$debug&4 && AA::$dbg->traceend('unalias', "$quotecolons_partly - $text");
+            $do_trace && AA::$dbg->traceend('unalias', "$quotecolons_partly - $text");
         }
 
         if (is_object($item)) {
@@ -6971,7 +6971,8 @@ class AA_Requires {
             'tableexport@4'               => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/tableexport@4.0.11/dist/js/tableexport.min.js', 'sha256-3njWp77R/1aA2AeJg4mxgOHejH9S5YodN/b28OzA35c=', ['_css-tableexport@4','filesaver@1','js-xlsx@0']),
             'js-xlsx@0'                   => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/xlsx@0.17.3/dist/xlsx.core.min.js', 'sha256-em3RDuTKTX0nyubrZvtj25roaSbGmOt083ZbuxlVRdU='),
             'filesaver@1'                 => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/file-saver@1.3.8/FileSaver.min.js', 'sha256-FPJJt8nA+xL4RU6/gsriA8p8xAeLGatoyTjldvQKGdE='),
-            'leaflet@1'                   => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet-src.js', 'sha256-dG7rUAec0UN0e3nlMEuYJzsbK0rpoz4hBbNp0ir9iF8=', ['_css-leaflet@1']),
+            'leaflet-draw@1'              => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/leaflet-draw@1.0.4/dist/leaflet.draw.js', 'sha256-siofc4Uwjlra3YWkwthOn8Uj69cNN4aMug/iOHNiRgs=', ['_css-leaflet-draw@1']),
+            'leaflet@1'                   => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js', 'sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=', ['_css-leaflet@1']),
             'chartjs@2'                   => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js', 'sha256-t9UJPrESBeG2ojKTIcFLPGF7nHi2vEc7f5A2KpH/UBU='),
             'dropzone@5'                  => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/dropzone@5.9.3/dist/min/dropzone.min.js', 'sha256-uCdT6FLkY6+68Xzm4f9O0usHnJPdKv0Q0rsoXvLchP4=', ['_css-dropzone@5']),
             'select2@4'                   => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.full.min.js', 'sha256-gtZlnMWqbrBdDWvmCQCgfiA3kq8J4FMqQ4a8Tvmgopk=', ['jquery@3','_css-select2@4']),
@@ -7006,7 +7007,8 @@ class AA_Requires {
             '_css-select2@3'              => new AA_Req_Css('https://cdn.jsdelivr.net/npm/Select2@3.5.7/select2.css', 'sha256-YxoY/Ov8dU2zQTW3WNFp25v+U1SBgVrOkiB8w3rupb4='),
             '_css-lightgallery@2'         => new AA_Req_Css('https://cdn.jsdelivr.net/npm/lightgallery@2.2.1/css/lightgallery-bundle.min.css async', 'sha256-Uxm/PH2he1eJjDjL9GpZSqxO3+ibyFsbhGupVTc9qLg='),
             '_css-lightgallery@1'         => new AA_Req_Css('https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/css/lightgallery.min.css', 'sha256-gU66VAEd73/e6tBq5c+WSiRcNH0PSXLnHMPeFIKxtHM='),
-            '_css-leaflet@1'              => new AA_Req_Css('https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.css', 'sha256-BPfK9M5v34c2XP6p0cxVz1mUQLst0gTLk0mlc7kuodA='),
+            '_css-leaflet@1'              => new AA_Req_Css('https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css', 'sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY='),
+            '_css-leaflet-draw@1'         => new AA_Req_Css('https://cdn.jsdelivr.net/npm/leaflet-draw@1.0.4/dist/leaflet.draw.css', 'sha256-XzD3RpaHPv7lzX9qt+2n1j5cWj48O24KsgaGYpKN8x8='),
             '_css-sortable@1'             => new AA_Req_Css('https://cdn.jsdelivr.net/gh/honzito/plain.sortable@1.2.1/sortable.css', 'sha256-TNKOtdeH1MmRdsujDukp9lYyndNf5qPvBHbWfKWGoX8='),
             'css-aa-system@1'             => new AA_Req_Css(get_aa_url('css/aa-system.css?v='.AA_JS_VERSION,'',false)),
             'css-normalize@7'             => new AA_Req_Css('https://cdn.jsdelivr.net/npm/normalize.css@7.0.0/normalize.css', 'sha384-Y+IEavQyTjgXgt7TL5nxVHI/DEuF6yoysy50puRyQDKmjfOZjY7+QvoRelSV4XvZ'),
@@ -7906,14 +7908,22 @@ class AA_Stringexpand_Imgtext extends AA_Stringexpand_Nevercachenotrim {
  *  @param $text - text to encode (utf)
  *  @param $size - size of the image in pixels (default 300)
  *  @param $margin - margin (default 2)
+ *  @returns string base64 encoded image (empty one on error))
  **/
 class AA_Stringexpand_Qrcode extends AA_Stringexpand {
     function expand($text='', $size='', $margin='') {
-        $size = ctype_digit((string)$size) ? (int)$size : 300;
-        $margin = ctype_digit((string)$margin) ? (int)$margin : 2;
+        if (!trim($text)) {
+            return NO_PICTURE_DATA;
+        }
+        $size     = ctype_digit((string)$size) ? (int)$size : 300;
+        $margin   = ctype_digit((string)$margin) ? (int)$margin : 2;
         $renderer = new GDLibRenderer( $size, $margin);
         $writer   = new Writer($renderer);
-        $qr_image = base64_encode($writer->writeString($text, 'UTF-8', ErrorCorrectionLevel::M()));
+        try {
+            $qr_image = base64_encode($writer->writeString($text, 'UTF-8', ErrorCorrectionLevel::M()));
+        } catch (Exception $e) {
+            return NO_PICTURE_DATA;
+        }
         return "data:image/png;base64,$qr_image";
     }
 }
@@ -8272,6 +8282,7 @@ class AA_Stringexpand__ extends AA_Stringexpand {
                 }
                 $zids = AA_Object::querySet('AA_Aliasfunc', new AA_Set($smodules, new AA_Condition('alias', '==', $name)));
                 $saliases[$name] = AA_Object::loadProperty($zids->longids(0),'code');
+
                 // another approach read all at once - not used
                 // huhl( AA_Object::loadProperties($zids->longids(), 'aa_name'));
             }
@@ -9249,7 +9260,10 @@ class AA_Stringexpand_Mail extends AA_Stringexpand_Nevercache {
 
         // the path is different for Readers and direct mails
         if ($to instanceof zids) {  // Readers - we go for temlate
-            return AA_Mail::sendToReader(AA_Mailtemplate::createFromMailArray($mail_arr)->getId(), $to, $to->getFirstSlice());
+            $type  = (new AA_Logentry('b',['type'=>'pg','page'=>AA::Un('{item:{xid}:short_id........}')]))->serialize();
+            $descr = 'Mail sent to Reader';
+            $owner = $this->getRelatedModules();
+            return AA_Mail::sendToReader(AA_Mailtemplate::createFromMailArray($mail_arr,$type, $descr, $owner)->getId(), $to, $to->getFirstSlice());
         }
 
         // else - to definned as mails
@@ -9738,6 +9752,7 @@ class AA_Stringexpand_Manager extends AA_Stringexpand_Nevercache {
         }
 
         $inner_code = '';
+        $standard_mgr = true;
 //      if ($edit_code AND (is_long_id($_GET['aaedit']) OR (is_long_id($_GET[$cmdvar])) )) {
         if ($edit_code AND is_long_id($_GET[$cmdvar])) {
 
@@ -9777,17 +9792,24 @@ class AA_Stringexpand_Manager extends AA_Stringexpand_Nevercache {
             $code_actions .= $mode_arr['D'] ? ('<article><i class="ico delete"  onclick="if (confirm(\'' . $mode_arr['Dconfirm'] . '\')) { document.querySelector(\'article[data-aa-part=&quot;' . $hash . '&quot;]\').classList.add(\'aa-updating\');  AA_SiteUpdate(\'{id..............}\',\'status_code.....\',3);}">' . $mode_arr['D'] . '</i></article>') : '';
             $footer  = $mode_arr['N'] ? ('<article><i class="ico new" onclick="document.querySelector(\'article[data-aa-part=&quot;' . $hash . '&quot;]\').classList.add(\'aa-updating\'); AA_SiteNewitem(\'' . $slices_arr[0] . '\',\'\',\'' . $field . '\',\'' . $item_id . '\');">' . $mode_arr['N'] . '</i></article>') : '';
 
-            $list_code = '<article class="item">
-                            <section class="iteminfo">
-                              ' . $code . '
-                            </section>
-                            <section class="icogroup">
-                              ' . $code_actions . '
-                            </section>
-                          </article>';
+            $code_delim = '_AA_C_DeLiM_'.gensalt(6);
 
             // expired, ... are already filtered by query() above (if expiry_date is not in conds)
-            $inner_code .= AA_Stringexpand_Item::itemJoin(AA_Items::getFormatted($zids, $list_code, AA_BIN_ALL), '');
+            $tmp_code_arr = AA_Items::getFormatted($zids, "{$code}{$code_delim}{$code_actions}", AA_BIN_ALL);
+
+            $standard_mgr = (strpos(reset($tmp_code_arr),'_#actions') === false);
+            if ($standard_mgr) { // standard manager
+                $inner_code = array_reduce($tmp_code_arr, function ($ret, $tmp_code) use ($code_delim) {
+                    [$code, $code_actions] = explode($code_delim, $tmp_code, 2);
+                    return "{$ret}\n<article class=\"item aa-rim-items\">\n  <section class=iteminfo>\n    $code \n  </section>\n  <section class=icogroup>\n    $code_actions \n  </section>\n</article>";
+                }, '');
+            } else {
+                // you can use _#actions in the CODE, and then your html template is used instead of predefined one - like
+                $inner_code = array_reduce($tmp_code_arr, function ($ret, $tmp_code) use ($code_delim) {
+                    [$code, $code_actions] = explode($code_delim, $tmp_code, 2);
+                    return "{$ret}\n<article class=\"item aa-rim-items\">". str_replace('_#actions', $code_actions, $code). "\n</article>";
+                }, '');
+            }
 
             if ($mode_arr['F']) {
 
@@ -9818,7 +9840,7 @@ EOT;
 
         }
 
-        $ret  = '<article class="aa-rim relactionitem" data-aa-part="'.$hash.'">
+        $ret  = '<article class="aa-rim relactionitem'.($standard_mgr ? '' : ' aa-rim-tbl').'" data-aa-part="'.$hash.'">
                     <section class="itemgroup">'
             .$inner_code.'
                     </section>

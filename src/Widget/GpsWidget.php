@@ -26,51 +26,175 @@ class GpsWidget extends Widget
 
     public static function description(): string { return ''; }
 
+    /** getClassProperties function of AA_Serializable
+     *  Used parameter format (in fields.input_show_func table)
+     * @return array
+     */
+    public static function getClassProperties(): array {
+        return Widget::propertiesShop(['load_from_fld', 'map_shapes', 'multi_shape']);
+    }
+
+    /** returns if the widget handles shapes (line, polygon, ...) or just markers   */
+    protected function usedShapes(): string {
+        // if map_shapes contain another letter than M
+        $shapes = strtoupper(trim($this->getProperty('map_shapes')));
+        return strlen($shapes) ? $shapes : 'M';
+    }
+
     // inherited from \AA\Widget\Widget
     protected function requireLibs($aa_property, $winfo): array {
-        return ['leaflet', 'aa-fillform', 'https://api.mapy.cz/loader.js'];
+        return ['leaflet', 'leaflet-draw', 'aa-fillform', 'https://api.mapy.cz/loader.js'];
     }
 
     /** script to run after the page DOM is loaded */
     protected function requireRun($aa_property, $winfo): string {
         $js_id    = FormArray::formName2Id($winfo['last_input_name'], true);
         $val_id   = FormArray::formName2Id($winfo['last_input_name']);
+        $drawComponent = '';
+        $shapes        = $this->usedShapes();
+        $multi_shape   = $this->getProperty('multi_shape', false);
+        if ($shapes !== 'M') {
+            $drawComponent = "
+              const drawControl = new L.Control.Draw({
+                 position: 'bottomright',
+                 edit: { featureGroup: drawnItems, poly: { allowIntersection: false }, remove: false, edit: false },
+                 draw: { ";
+                        $drawComponent .= strpos($shapes, 'M') !== false ? 'marker: true'         : ', marker: false';
+                        $drawComponent .= strpos($shapes, 'L') !== false ? ', polyline: true'     : ', polyline: false';
+                        $drawComponent .= strpos($shapes, 'P') !== false ? ', polygon: true'      : ', polygon: false';
+                        $drawComponent .= strpos($shapes, 'R') !== false ? ', rectangle: true'    : ', rectangle: false';
+                        $drawComponent .= false                          ? ', circle: true'       : ', circle: false';        // circles are not supported by toGeoJSON()
+                        $drawComponent .= false                          ? ', circlemarker: true' : ', circlemarker: false';
+                        $drawComponent .= "}
+                });
+              map$js_id.addControl(drawControl);
+            
+              // Ensure only one shape is drawn at a time
+              map$js_id.on(L.Draw.Event.CREATED, function(event) {";
+            $drawComponent .= $multi_shape ? '' : "\ndrawnItems.clearLayers();";  // Clear existing layers
+            $drawComponent .= "                
+                const layer = event.layer;
+                drawnItems.addLayer(layer);
+                layer.editing.enable(); // Automatically enable editing
+                layer.on('edit', function(event) {
+                    AA_GpsPrepareResults('#coosuggest$js_id', '#copygps$js_id', drawnItems.toGeoJSON());
+                });
+                layer.on('drag', function(event) {
+                    AA_GpsPrepareResults('#coosuggest$js_id', '#copygps$js_id', drawnItems.toGeoJSON());
+                });
+                AA_GpsPrepareResults('#coosuggest$js_id', '#copygps$js_id', drawnItems.toGeoJSON());
+              });
+              suggest$js_id.addListener('suggest', function(suggestData) {
+                AA_GpsShowGeo(map$js_id, '$js_id', {'type':'Point','coordinates':[suggestData.data.longitude.toFixed(6), suggestData.data.latitude.toFixed(6)]}, inputEl$js_id.value, drawnItems);
+              });
+              if (valEl$js_id.value) {
+                  AA_GpsShowGeo(map$js_id, '$js_id', valEl$js_id.value, '', drawnItems);
+              }
+              ";
+        } else {
+            $drawComponent = "
+              suggest$js_id.addListener('suggest', function(suggestData) {
+                AA_GpsShowMarker(map$js_id, '$js_id', suggestData.data.latitude.toFixed(6) , suggestData.data.longitude.toFixed(6), inputEl$js_id.value, drawnItems);
+              });
+              let match = valEl$js_id.value.match(/^([+-]?(\d*[.])?\d+)\s([+-]?(\d*[.])?\d+)$/);
+              if (match) {
+                  AA_GpsShowMarker(map$js_id, '$js_id', match[1], match[3], '', drawnItems);
+              }
+              ";
+        }
+
+
+
+
+
+
+
         return /** @lang JavaScript */ <<<EOF
-  var inputEl$js_id = AA_$('#adresa4suggest$js_id');
-  var valEl$js_id = AA_$('#$val_id');
-  var suggest$js_id = new SMap.Suggest(inputEl$js_id);
-  var map$js_id = L.map(AA_$('#mapdiv$js_id'), {zoomSnap: 0, zoomControl: false });
+  const inputEl$js_id = AA_$('#adresa4suggest$js_id');
+  const valEl$js_id = AA_$('#$val_id');
+  const suggest$js_id = new SMap.Suggest(inputEl$js_id);
+  const map$js_id = L.map('mapdiv$js_id', {zoomSnap: 0, zoomControl: false });
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' }).addTo(map$js_id);
   L.control.zoom({position: 'bottomleft'}).addTo(map$js_id);
-  suggest$js_id.addListener("suggest", function(suggestData) {
-    AA_ShowOnMap(map$js_id, '$js_id', suggestData.data.latitude.toFixed(6), suggestData.data.longitude.toFixed(6), inputEl$js_id.value);
-    AA_$('#copygps$js_id').disabled=false;
-  });
-  if (valEl$js_id.value) {
-    var [lat, lon] = valEl$js_id.value.split(' ');
-    AA_ShowOnMap(map$js_id, '$js_id', lat, lon, '');
-  }
+
+  // Set up drawing controls
+  const drawnItems = new L.FeatureGroup();
+  map$js_id.addLayer(drawnItems);
+  
+  $drawComponent
+  
 EOF;
     }
 
     protected function requireCssCode($aa_property, $winfo): string  {
+        /** @lang CSS */
         return '.aa-widget-gps input[type="button"][disabled] { background-color: #dfdfdf; cursor: default;} 
           .aa-widget-gps .smap-suggest .item { justify-content: initial; } 
-          .aa-widget-gps .aa-input { display: flex; }
+          .aa-gps-content { display: flex; }
           .aa-gps-suggest-box { position: relative; flex: 1; margin: 2px 0 0 7px; }
           .aa-gps-suggest { position: absolute; top: -2px; right: 1px; z-index: 1100; }
           .aa-gps-map { width: 100%; }
           .aa-widget-gps input[type="button"] { padding: 5px 12px; margin: 0; }
           .aa-gps-use { position: absolute; top: 0; z-index: 1100; }
-          @media (max-width: 810px) { 
-            .aa-widget-gps .aa-input { display: block; }
-            .aa-gps-suggest-box { margin-left: 0}
-          }';
+          .leaflet-draw-toolbar { display: flex; flex-direction: column; }
+          .leaflet-draw-draw-marker   { order: 1; }
+          .leaflet-draw-draw-polyline { order: 2; }
+          .leaflet-draw-draw-polygon  { order: 3; }
+          .aa-gps-container { container: aa_gps_container / size; }
+          @container aa_gps_container (max-width: 500px) { 
+            .aa-gps-content { display: block; }
+            .aa-gps-content > div:first-of-type > input { width: 98%; }
+            .aa-gps-suggest-box { margin-left: 0; }
+          }
+          ';
     }
 
     protected function requireLibCode($aa_property, $winfo): string  {
         return /** @lang JavaScript */ <<<EOF
-function AA_ShowOnMap(map, itemid, lat, lon, title) {
+function AA_GpsShowGeo(map, itemid, geojsonData, title, drawnItems) {
+    // Clear previous items if you wish to display only the latest GeoJSON
+    drawnItems.clearLayers();
+    
+    // if geojsonData is string, convert to object
+    if (typeof geojsonData === "string") {
+      geojsonData = geojsonData.trim();
+      // check if the value is in format "lat lon" or GeoJSON by regexp
+      let match = geojsonData.match(/^([+-]?(\d*[.])?\d+)\s([+-]?(\d*[.])?\d+)$/);
+      if (match) {
+          geojsonData  = {"type":"Point","coordinates":[match[3], match[1]]};
+      } else {
+        try {
+            geojsonData = JSON.parse(geojsonData);
+        } catch (e) {
+            console.error("Invalid GeoJSON data");
+            return;
+        }
+      }
+    }
+    if (geojsonData) {
+        L.geoJSON(geojsonData, {
+            onEachFeature: function (feature, layer) {
+                layer.on('click', function () {
+                    layer.editing.enable();
+                });
+                layer.on("edit", function(event) {
+                    AA_GpsPrepareResults(`#coosuggest\${itemid}`, `#copygps\${itemid}`, layer.toGeoJSON());
+                });
+                layer.on("drag", function(event) {
+                    AA_GpsPrepareResults(`#coosuggest\${itemid}`, `#copygps\${itemid}`, layer.toGeoJSON());
+                });
+            }
+        }).addTo(drawnItems);        
+        
+        // Fit map bounds to the added GeoJSON
+        map.fitBounds(drawnItems.getBounds());
+        AA_GpsPrepareResults(`#coosuggest\${itemid}`, `#copygps\${itemid}`, geojsonData);
+    } else {
+        console.error("Invalid or empty GeoJSON data");
+    }
+}
+
+function AA_GpsShowMarker(map, itemid, lat, lon, title) {
     AA_$(`#coosuggest\${itemid}`).value = `\${lat} \${lon}`;
     map.setView([lat, lon], 15);
     
@@ -83,24 +207,43 @@ function AA_ShowOnMap(map, itemid, lat, lon, title) {
        marker.setLatLng([lat, lon]);
     } else {
        marker = L.marker([lat, lon], {"title":title, draggable: true, autoPan: true}).on('dragend', (e) => {
-         AA_$(`#coosuggest\${itemid}`).value = `\${marker.getLatLng().lat.toFixed(6)} \${marker.getLatLng().lng.toFixed(6)}`;
-         AA_$(`#copygps\${itemid}`).disabled = false;
+         AA_GpsPrepareResults(`#coosuggest\${itemid}`, `#copygps\${itemid}`, {"type":"Point","coordinates":[marker.getLatLng().lng.toFixed(6), marker.getLatLng().lat.toFixed(6)]});
        }).addTo(map);
     }
     map.fitBounds(marker.getLatLng().toBounds(100)); // 50m radius
+    AA_GpsPrepareResults(`#coosuggest\${itemid}`, `#copygps\${itemid}`, {"type":"Point","coordinates":[lon,lat]});
 }
+
+function AA_GpsPrepareResults(resultinput, usebutton, geojson) {
+    AA_$(usebutton).disabled=false;
+    AA_$(resultinput).value = AA_GeoJSON2String(geojson);
+}
+
+function AA_GeoJSON2String(geojsonData) {
+    if (geojsonData.type === "FeatureCollection" && geojsonData.features.length === 1) {
+        geojsonData = geojsonData.features[0];
+    }
+    if (geojsonData.type === "Feature") {
+        geojsonData = geojsonData.geometry;
+    }
+
+    // Check if the resulting or original data is a Point
+    if (geojsonData.type === "Feature" && geojsonData.geometry && geojsonData.geometry.type === "Point") {
+        return `\${geojsonData.geometry.coordinates[1]} \${geojsonData.geometry.coordinates[0]}`;
+    } else if (geojsonData.type === "Point") {
+        // Direct Point without being a Feature
+        return `\${geojsonData.coordinates[1]} \${geojsonData.coordinates[0]}`;
+    }
+
+    // Return the modified or unmodified GeoJSON object
+    return JSON.stringify(geojsonData);
+}
+
+
+
 Loader.load(null, {suggest: true}); // naseptavac
 EOF;
 
-    }
-
-
-        /** getClassProperties function of AA_Serializable
-     *  Used parameter format (in fields.input_show_func table)
-     * @return array
-     */
-    public static function getClassProperties(): array {
-        return Widget::propertiesShop(['load_from_fld']);
     }
 
     /** Creates base widget HTML, which will be surrounded by Live, Ajxax
@@ -130,8 +273,11 @@ EOF;
         $msg_search = _m('Search');
         $load_from_fld_btn = ( $load_from_fld = $this->getProperty('load_from_fld', '') ) ? "<input type=button id=\"copyaddr$js_id\" value=\"" . _m('Load from address') . "\" onclick=\"AA_$('#adresa4suggest$js_id').value=getField('$load_from_fld');AA_$('#adresa4suggest$js_id').dispatchEvent(new Event('input'));\">" : '';
 
-        $widget = "<div><input $attr_string name=\"$input_name\" id=\"$input_id\" value=\"$input_value\" $required></div>";
-        $widget .= <<<EOF
+        /** @lang HTML */
+        $widget = <<<EOF
+                    <div class="aa-gps-container">
+                     <div class="aa-gps-content">
+                      <div><input $attr_string name="$input_name" id="$input_id" value="$input_value" $required></div>
                       <div class="aa-gps-suggest-box"  id="mapout$js_id">
                         <div class="aa-gps-suggest">
                           <input type=search id="adresa4suggest$js_id" placeholder="$msg_search">
@@ -141,6 +287,8 @@ EOF;
                         <div class="aa-gps-map" id="mapdiv$js_id" style="height: 200px;"></div>
                         <input class="aa-gps-use" type=button id="copygps$js_id" value="&larr; Use" disabled onclick="const el=AA_$('#$input_id'); el.value=AA_$('#coosuggest$js_id').value;el.dispatchEvent(new Event('change'));this.disabled=true;">
                       </div>
+                    </div>
+                  </div>
 EOF;
         return ['html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired()];
     }
