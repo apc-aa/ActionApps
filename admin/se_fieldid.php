@@ -256,8 +256,23 @@ $s_fields = AA_Fields::getFields4Select(AA::$module_id, 'all', 'id');
 $d_fields = AA_Fields::getFields4Select(unpack_id('AA_Core_Fields..'), 'all', 'id');
 
 
+$footcode = '<script>
+  function ChangeFld(id) {
+      document.getElementById("old_id").value=id;
+      const type = id.split(".")[0];
+      const selectElement = document.getElementById("new_id_text");
+      if (Array.from(selectElement.options).find(opt => opt.value === type)) {
+          selectElement.value = type;
+      }
+      return false;
+  }
+</script>';
+
+
+
 $apage = new AA_Adminpageutil('sliceadmin','field_ids');
 $apage->setTitle(_m("Admin - change Field IDs"));
+$apage->addRequire($footcode, 'AA_Req_Footcode');
 $apage->printHead($err, $Msg);
 if ($update) {
     echo "$nchanges "._m("field IDs were changed").".<br>";
@@ -266,7 +281,7 @@ if ($update) {
 FrmTabCaption(_m("Change Field IDs"));
 
 echo"<tr><td>"._m("This page allows to change field IDs. It is a bit dangerous operation and may last long.\n    You need to do it only in special cases, like using search form for multiple slices. <br><br>\n    Choose a field ID to be changed and the new name and number, the dots ..... will be\n    added automatically.<br>")."</td></tr>
-<tr><td><br>"._m("Change from").": <select name='old_id'>";
+<tr><td><br>"._m("Change from").": <select name='old_id' id='old_id'>";
 $slice_fields = false;
 foreach ($s_fields as $fid => $fname) {
     if (!in_array($fid, RESERVED_IDS)) {
@@ -278,7 +293,7 @@ foreach ($s_fields as $fid => $fname) {
 }
 echo "</select> ";
 
-echo _m("to")." <select name='new_id_text'>";
+echo _m("to")." <select name='new_id_text' id='new_id_text'>";
 foreach ($d_fields as $fid => $fname) {
     echo "<option value=\"$fid\">$fid</option>";
 }
@@ -308,7 +323,8 @@ FrmTabEnd($form_buttons);
 $rows = [[_m("Id"), _m("Field")]];
 foreach ($s_fields as $fid => $fname) {
     if (!in_array($fid, RESERVED_IDS)) {
-        $rows[] = [$fid, $fname];
+        $setlink = "<a href=\"javascript:;\" onclick=\"return ChangeFld('$fid');\">$fid</a>";
+        $rows[] = [$setlink, $fname];
     }
 }
 $apage->addHelpbox('', GetHtmlTable($rows, 'th'));
