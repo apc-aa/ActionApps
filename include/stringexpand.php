@@ -9260,9 +9260,9 @@ class AA_Stringexpand_Mail extends AA_Stringexpand_Nevercache {
 
         // the path is different for Readers and direct mails
         if ($to instanceof zids) {  // Readers - we go for temlate
-            $type  = (new AA_Logentry('b',['type'=>'pg','page'=>AA::Un('{item:{xid}:short_id........}')]))->serialize();
-            $descr = 'Mail sent to Reader';
-            $owner = $this->getRelatedModules();
+            $type  = (new AA_Logentry_MR(['type' =>'pg', 'page' =>AA::Un('{item:{xid}:short_id........}')]))->serializeToString();
+            $descr = (new AA_Logentry_Mail2reader(['time' =>date("Y-m-d H.i.s"), 'readers' =>$to->count()]))->serializeToString();;
+            $owner = $this->getRelatedModules()[0] ?? '';
             return AA_Mail::sendToReader(AA_Mailtemplate::createFromMailArray($mail_arr,$type, $descr, $owner)->getId(), $to, $to->getFirstSlice());
         }
 

@@ -117,6 +117,14 @@ abstract class AA_Serializable {
         return [];
     }
 
+    /** Returns array of persistent slots (AA_property)
+     *  Uses getClassProperties() method of the classes from which it grabs
+     *  all persistent properties
+     */
+    protected static function getPersistentProperties(): array {
+        return array_filter(static::getClassProperties(), fn ($property) => $property->isPersistent());
+    }
+
     /** create the name of class from the type and name
      *  static class method
      * @param string $name
@@ -132,8 +140,7 @@ abstract class AA_Serializable {
         return $class_mask . '_' . $name;
     }
 
-    /** parseClassProperties function
-     *  Parses class parameters from the string, which is stored in the database
+    /** Parses class parameters from the string, which is stored in the database
      *  Typical use is for fields.input_show_func, where parameters are stored
      *  as string in the form: fnc:const:param
      *  @param string $string
@@ -183,6 +190,30 @@ abstract class AA_Serializable {
         return $params;
     }
 
+    /** Reverse to parseClassProperties */
+    public function serializeToString(): string {
+        $class_shotcut = AA_Components::getClassType(get_called_class(), 'AA_Logentry_');
+        $parts = [$class_shotcut];
+        $props = static::getPersistentProperties();
+
+        foreach ($props as $name => $property) {
+            $value = $this->$name;
+            if (is_array($value)) {
+                if (count($value) === 0) {
+                    $value = '';
+                } elseif (count($value) === 1) {
+                    $value = $value[0];
+                } else {
+                    $value = json_encode($value);
+                }
+            } elseif (!is_scalar($value)) {
+                warn("property {$name} not storable");
+                $value = '';
+            }
+            $parts[] = $value;
+        }
+        return ParamImplode($parts);
+    }
 }
 
 
@@ -198,25 +229,6 @@ abstract class AA_Serializable {
  */
 class AA_Storable extends AA_Serializable {
 
-
-    /** getPersistentProperties function
-     *  Returns array of persistent slots (AA_property)
-     *  Uses getClassProperties() method of the classes from which it grabs
-     *  all persistent properties
-     * @param $class
-     * @return array
-     */
-    static function getPersistentProperties() {
-        $ret        = [];
-        $properties = static::getClassProperties();
-        foreach ( $properties as $id => $property) {
-            if ( $property->isPersistent() ) {
-                $ret[$id] = $property;
-            }
-        }
-        return $ret;
-    }
-
     /** convertState function
      *  Setting state from previous versions of state
      * @param int   $version
@@ -226,7 +238,6 @@ class AA_Storable extends AA_Serializable {
     function &convertState($version, &$state) {
         return $state;
     }
-
 
     /** setFromState function
      * Restores the object's data from $state
@@ -1103,7 +1114,7 @@ class AA_Components {
             $right_classes = [];
             foreach ($right_class_names as $classname) {
                 $shortcut = substr($classname, $mask_length);
-                $right_classes[$tolower ? strtolower($shortcut) : $class_name] = $classname;
+                $right_classes[$tolower ? strtolower($shortcut) : $shortcut] = $classname;
             }
         }
         if (is_callable($filter)) {
@@ -1113,7 +1124,7 @@ class AA_Components {
     }
 
 
-    /** get 'cod' from AA\Widget\CodWidget
+    /** get 'Cod' from AA\Widget\CodWidget
      *  called as:  AA_Components::getClassType(get_called_class(),'Widget');
      *              AA_Components::getClassType(get_class($widget),'Widget')
      *              AA_Components::getClassType($class_name)
@@ -1122,7 +1133,8 @@ class AA_Components {
      * @return string
      */
     static function getClassType(string $classname, string $mask = ''): string {
-        return $mask ? str_replace($mask,'',substr($classname, strrpos($classname, '\\') + 1)) : substr($classname, strrpos($classname, '\\') + 1);
+        $classname = array_slice(explode("\\", $classname), -1, 1)[0];
+        return $mask ? str_replace($mask,'',$classname) : $classname;
     }
 
     /** returns sorted array for selectbox (class => name)

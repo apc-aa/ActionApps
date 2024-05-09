@@ -164,54 +164,49 @@ class AA_Log implements \AA\Expand\InternalExpandInterface {
     }
 }
 
-/** set of properties */
-class AA_Propset {
-    use \AA\Util\ArrTrait;
+///** set of properties */
+//class AA_Propset {
+//    use \AA\Util\ArrTrait;
+//
+//    protected $arr = [];
+//    protected string $id  = '';  // must be unique in the system - as short as possible
+//
+//    public function __construct(string $id = '') {
+//        $this->id = $id;
+//    }
+//
+//    public function factoryFromArray(array $arr): AA_Propset {
+//        foreach ($arr as $k => $v) {
+//            $this->arr[$k] = new AA_Property(...$v);
+//        }
+//        return $this;
+//    }
+//}
 
-    protected $arr = [];
-    protected string $id  = '';  // must be unique in the system - as short as possible
+/** Uses AA_Seializable to create log entry. Constructor is taken from AA_Serializable */
+abstract class AA_Logentry extends AA_Serializable {}
 
-    public function __construct(string $id = '') {
-        $this->id = $id;
-    }
-
-    public function factoryFromArray(array $arr): AA_Propset {
-        foreach ($arr as $k => $v) {
-            $this->arr[$k] = new AA_Property(...$v);
-        }
-        return $this;
-    }
-
-    static public function shop(string $id): ?AA_Propset {
-        switch ($id) {
-            // Describes structure of "description" field in "email" table
-            case 'a': return (new AA_Propset($id))->factoryFromArray([
-                ['time',_m('Created time'), 'int'],
-                ['sid',_m('Page Short ID'), 'int'],
-                ['users',_m('Users'), 'int'],
-                ['mails',_m('E-mails'), 'int']]);
-
-            // Describes structure of "type" field in "email" table for {mail:...} function on page
-            case 'b': return (new AA_Propset($id))->factoryFromArray([
-                ['type',_m('Type'), 'string'],  // type of mail template
-                ['page',_m('Page'), 'int']]);   // short item id of page, where {mail:... function is
-        }
-        return null;
+/** Mail Template log entry - description */
+class AA_Logentry_Mail2reader extends AA_Logentry {
+    public static function getClassProperties(): array {
+        return [
+            'time'    => new AA_Property('time',    _m("Created time"), 'string'),
+            'readers' => new AA_Property('readers', _m('Readers to be emailed'), 'int'),
+        ];
     }
 }
 
-class AA_Logentry {
-    protected AA_Propset $propset;
-    protected AA_Content $content;
-
-    public function __construct(string $propset_id, ?AA_Content $content) {
-        $this->propset = AA_Propset::shop($propset_id);
-        $this->content = $content;
-    }
-
-    public function serialize() {
+/** Mail Template log entry - type */
+class AA_Logentry_MR extends AA_Logentry {
+    public static function getClassProperties(): array {
+        return [
+            'type'  => new AA_Property('type',_m('Type'), 'string'),  // type of mail template
+            'page'  => new AA_Property('page',_m('Page'), 'int'),     // short item id of page, where {mail:... function is
+        ];
     }
 }
+
+
 
 
 

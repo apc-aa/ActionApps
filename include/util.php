@@ -212,7 +212,7 @@ function DeBackslash($txt) {
  * @param $param
  * @return string
  */
-function ParamImplode($param) {
+function ParamImplode($param): string {
     if (!is_array($param)) {
         return (string)$param;
     }
