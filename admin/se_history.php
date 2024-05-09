@@ -61,7 +61,7 @@ if (!IfSlPerm(PS_HISTORY)) {
 class Manageraction_History_Apply extends AbstractManageraction {
 
     /** Name of this Manager's action */
-    function getName() {
+    public function getName(): string {
         return _m('Set again this old values');
     }
 
@@ -155,8 +155,6 @@ class AA_Aliasgenerator_History extends AbstractAliasgenerator {
         return $aliases;
     }
 }
-
-
 
 /**
  * Loads data from database for given link ids (called in itemview class)

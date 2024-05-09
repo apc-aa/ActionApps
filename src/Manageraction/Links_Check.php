@@ -20,7 +20,7 @@ class Links_Check extends AbstractManageraction {
     }
 
     /** Name of this Manager's action */
-    function getName() {
+    public function getName(): string {
         return _m('Check Link');
     }
 

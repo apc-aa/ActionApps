@@ -21,7 +21,7 @@ class Central_Sqlupdate extends AbstractManageraction {
     }
 
     /** Name of this Manager's action */
-    function getName() {
+    public function getName(): string {
         return _m('Update DB (sql_update)') . ' - ' . $this->update_action;
     }
 

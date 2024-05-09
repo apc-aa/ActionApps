@@ -2,6 +2,7 @@
 
 namespace AA\Optimize;
 
+use AA;
 use AA\IO\DB\DB_AA;
 use function _m;
 use function freeDB;
@@ -31,17 +32,20 @@ class CopyItemsFromBackup extends AbstractOptimize {
     public static function types(): array { return ['private_fix']; }
 
     protected function getDeletedItemIds(string $module_id, string $item_table_bck) {
+        if (!DB_AA::exists_table($item_table_bck)) {
+            return [];
+        }
         $bck_ids = DB_AA::select('unpackid', "SELECT LOWER(HEX(`id`)) AS unpackid FROM `$item_table_bck`", [['slice_id',$module_id,'l']]);
         $cur_ids = DB_AA::select('unpackid', "SELECT LOWER(HEX(`id`)) AS unpackid FROM `item`", [['slice_id',$module_id,'l']]);
 
         $diff_ids = array_diff($bck_ids, $cur_ids);
-        huhl(count($bck_ids), $bck_ids[0], $bck_ids[1], $bck_ids[2], count($cur_ids), $cur_ids[0], $cur_ids[1], $cur_ids[2], count($diff_ids), $diff_ids[0], $diff_ids[1], $diff_ids[2]);
+        huhl(count($bck_ids), reset($bck_ids), next($bck_ids), next($bck_ids), count($cur_ids), $cur_ids[0], $cur_ids[1], $cur_ids[2], count($diff_ids), $diff_ids[0], $diff_ids[1], $diff_ids[2]);
 
         return $diff_ids;
     }
 
     protected function copyFomBackup(array $ids, string $item_table_bck, string $content_table_bck, bool $delete=true): bool {
-        if (!$ids) {
+        if (!$ids OR !DB_AA::exists_table($item_table_bck) OR !DB_AA::exists_table($content_table_bck)) {
             return false;
         }
 
@@ -61,7 +65,7 @@ class CopyItemsFromBackup extends AbstractOptimize {
     /** Test function - @return true if everything is OK - no action needed
      */
     public function test(): bool {
-        $diff_ids = $this->getDeletedItemIds(AA::$module_id, 'item20240109');
+        $diff_ids = $this->getDeletedItemIds('6cf969ebbf5d8794f1304e55744cf0d7', 'item20240109');
         $this->message(_m('Deleted items to be recreated: %1.', [count($diff_ids)]));
         return true;
     }

@@ -30,14 +30,14 @@ class UpdateDbStructure extends \AA\Optimize\AbstractOptimize {
     }
 
     /** checks if this Optimize class belongs to specified type (like "sql_update") */
-    function isType($type): bool { return in_array($type, ['sql_update']); }
+    public static function types(): array { return ['sql_update']; }
 
     /** the optimizers are ordered by priority (less first) when executed
      *  in chain (like for sql_update)
      *  Default value is 100
      *  Execute this first
      */
-    function priority() { return 50; }  // quite big priority but not first
+    public static function priority(): int { return 50; }  // quite big priority but not first
 
     /** Test function
      * @return string - a message

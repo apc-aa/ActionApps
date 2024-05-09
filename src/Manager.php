@@ -65,6 +65,8 @@ class Managed {
     protected $columns      = [];
     protected $columns2show = [];
 
+    protected $zids_type    = 'l'; // 's' | 'l' | 'w'
+
     public $msg_title      = '';
     public $msg_noitem     = null;
     public $msg_about      = '';
@@ -254,7 +256,11 @@ class Managed {
      * @return Managed
      */
     public function setColumn(string $col, string $format): Managed  {
-        $this->columns[$col][1] = $format;
+        if ($format === '') {
+            unset($this->columns[$col]);
+        } else {
+            $this->columns[$col][1] = $format;;
+        }
         return $this;
     }
 
@@ -292,7 +298,13 @@ class Managed {
 
     /** which typ of zids it uses - 's' | 'l' | 'w' */
     public function getZidsType(): string {
-        return 'l';
+        return $this->zids_type;
+    }
+
+    /** Set which typ of zids it uses - 's' | 'l' | 'w' */
+    public function setZidsType(string $zids_type): Managed {
+        $this->zids_type = $zids_type;
+        return $this;
     }
 }
 
@@ -742,7 +754,7 @@ class Manager extends AA_Storable {
      * @return zids
      */
     public function getPostedItems(): zids {
-        if (!is_array($_POST['chb']) AND ($_POST['aa_akce_all']=='1')) {
+        if (!is_array($_REQUEST['chb']) AND ($_POST['aa_akce_all']=='1')) {
             return $this->getZids();
         }
         return (new zids([], $this->managed->getZidsType()))->setFromItemArr($_POST['chb'] ?? $_GET['chb'] ?? []);

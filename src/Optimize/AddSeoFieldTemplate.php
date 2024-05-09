@@ -23,6 +23,9 @@ class AddSeoFieldTemplate extends \AA\Optimize\AbstractOptimize {
         return _m("Updates field templates (in ActionApps Core slice) - redefine the field template");
     }
 
+    /** checks if this Optimize class belongs to specified type (like "sql_update") */
+    public static function types(): array { return ['sql_update','add_field']; }
+
     /** the field identifier  */
     protected function fieldType(): string { return 'seo'; }
 
@@ -77,10 +80,6 @@ class AddSeoFieldTemplate extends \AA\Optimize\AbstractOptimize {
         ];
         return array_merge($field_standard, $this->fieldSpecialSetting());
     }
-
-    /** checks if this Optimize class belongs to specified type (like "sql_update") */
-    function isType($type): bool { return in_array($type, ['sql_update']); }
-
 
     /** Test function
      * @return bool

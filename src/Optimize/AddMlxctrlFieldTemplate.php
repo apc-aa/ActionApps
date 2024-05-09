@@ -17,7 +17,7 @@ class AddMlxctrlFieldTemplate extends \AA\Optimize\AddSeoFieldTemplate {
         return [
             'name'          => 'MLX Control',
             'input_pri'     => '6000',
-            'input_morehlp' => 'http://mimo.gn.apc.org/mlx/',
+            'input_morehlp' => 'https://actionapps.org/faq/detail.shtml?x=2290',
             'required'      => '1',
             'multiple'      => '1',
             'input_show'    => '0',

@@ -30,7 +30,7 @@ class Item_Move2Slice extends AbstractManageraction {
     }
 
     /** Name of this Manager's action */
-    function getName() {
+    public function getName(): string {
         return _m('Move to another slice');
     }
 

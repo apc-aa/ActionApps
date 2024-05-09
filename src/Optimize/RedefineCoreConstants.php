@@ -23,7 +23,7 @@ class RedefineCoreConstants extends \AA\Optimize\AbstractOptimize {
     }
 
     /** checks if this Optimize class belongs to specified type (like "sql_update") */
-    function isType($type): bool { return in_array($type, ['sql_update']); }
+    public static function types(): array { return ['sql_update']; }
 
     /** Test function
      * @return bool

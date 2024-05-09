@@ -516,10 +516,16 @@ class AA_Content implements Iterator, ArrayAccess, Countable {
     /** use mainly for table data save
      * @return array
      */
-    function getAllAsScalar(): array {
+    function getAllAsScalar(string $delimiter = null): array {
         $ret = [];
-        foreach ($this->content as $fid => $val) {
-            $ret[$fid] = array_column($val,'value')[0];
+        if (is_null($delimiter)) {
+            foreach ($this->content as $fid => $val) {
+                $ret[$fid] = array_column($val, 'value')[0];
+            }
+        } else {
+            foreach ($this->content as $fid => $val) {
+                $ret[$fid] = join($delimiter, array_column($val, 'value'));
+            }
         }
         return $ret;
     }

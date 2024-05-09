@@ -57,6 +57,7 @@ class RemoveUndefineAlias extends AbstractOptimize {
      */
     public function test(): bool {
         //$metabase = AA::Metabase();
+        $ret = false;
         if ($fields = DB_AA::select([], 'SELECT `id`, LOWER(HEX(`slice_id`)) AS uslice_id, `name`, `alias1` FROM `field`', [
             [
                 'alias1',
@@ -68,12 +69,13 @@ class RemoveUndefineAlias extends AbstractOptimize {
                 $this->message(_m('%1 - %2 (%3) Params: %4', [
                     $field['id'],
                     $field['name'],
-                    AA_Slice::getModuleName($field['uslice_id']),
+                    safe(AA_Slice::getModuleName($field['uslice_id'])),
                     $field['alias1'],
                 ]));
             }
         } else {
             $this->message(_m('OK - There is no _#UNDEFINE alias'));
+            $ret = true;
         }
 
         if ($fields = DB_AA::select([], 'SELECT `id`, LOWER(HEX(`slice_id`)) AS uslice_id, `name`, `input_morehlp` FROM `field`', [
@@ -88,14 +90,16 @@ class RemoveUndefineAlias extends AbstractOptimize {
                 $this->message(_m('%1 - %2 (%3) Params: %4', [
                     $field['id'],
                     $field['name'],
-                    AA_Slice::getModuleName($field['uslice_id']),
+                    safe(AA_Slice::getModuleName($field['uslice_id'])),
                     $field['input_morehlp'],
                 ]));
             }
+            $ret = false;
         } else {
             $this->message(_m('OK - There is no old help.html help link'));
+            $ret &= true;
         }
-        return true;
+        return $ret;
     }
 
     /** Repair function

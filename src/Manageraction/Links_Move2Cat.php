@@ -15,7 +15,7 @@ class Links_Move2Cat extends AbstractManageraction {
     }
 
     /** Name of this Manager's action */
-    function getName() {
+    public function getName(): string {
         return _m('Move to category');
     }
 

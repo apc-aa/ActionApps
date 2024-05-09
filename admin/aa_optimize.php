@@ -25,109 +25,118 @@
  * @link      https://www.apc.org/ APC
 */
 
+use AA\Manageraction\AbstractManageraction;
+use AA\Manageraction\Manageractions;
 use AA\Optimize\AbstractOptimize;
+use AA\Manager;
 
 // const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
-require_once __DIR__ . "/../include/formutil.php";
+
+
+/** Manager action Item_DeleteTrash - Handler for DeleteTrash switch
+ *  Delete all items in the trash bin
+ */
+class Optimize_Action_Test extends AbstractManageraction {
+
+    const ACTION_NAME = 'test';
+
+    protected function doAction(AbstractOptimize $optimizer): bool { return $optimizer->test(); }
+
+    /** @inheritDoc */
+    public function getName(): string { return _m('Test'); }
+
+    /** @inheritDoc */
+    function perform(Manager $manager, zids $item_zids, $action_param) {
+        $Msg = '';
+        foreach ($item_zids as $optimize_class) {
+            /** @var AbstractOptimize $optimizer */
+            $optimizer = AA_Serializable::factory('AA\\Optimize\\'.$optimize_class);
+            if ($optimizer) {
+                if ($optimizer->hasAction(static::ACTION_NAME)) {
+                    AbstractOptimize::$action_results[$optimize_class] = $this->doAction($optimizer);
+                    AbstractOptimize::$action_results_text[$optimize_class] = $optimizer->report();
+                } else {
+                    AbstractOptimize::$action_results_text[$optimize_class] = _m('No %1 action in %2.', [static::ACTION_NAME, $optimize_class]);
+                }
+            } else {
+                AbstractOptimize::$action_results_text[$optimize_class] = _m('No optimize class found (%1).', [$optimize_class]);
+            }
+            $Msg .= AbstractOptimize::$action_results_text[$optimize_class];
+        }
+
+        return $Msg;
+    }
+
+    /** Checks if the user have enough permission to perform the action
+     * @param \AA\Manager $manager
+     * @return bool|string
+     */
+    function isPerm4Action($manager) {
+        /** @todo Should be changed to different permission */
+        // if we want to use it as "action" (not "switch"), then we should be in trash bin
+        return  IsSuperadmin();
+    }
+
+
+    /** @inheritDoc */
+    protected function getButtonDef(): array {
+        return [
+            'label' => $this->getName(),
+            'attr'  => ['class'=>'aa-button'],
+            'cond'  => '{ifin:|{@actions:|}|:|'.static::ACTION_NAME.'|:1}'
+        ];
+    }
+}
+
+class Optimize_Action_Test4modules extends Optimize_Action_Test {
+    const ACTION_NAME = 'test4modules';
+
+    protected function doAction(AbstractOptimize $optimizer): bool { return $optimizer->test4modules([AA::$module_id]); }
+
+    /** @inheritDoc */
+    public function getName(): string { return _m('Test current'); }
+}
+
+class Optimize_Action_Repair extends Optimize_Action_Test {
+    const ACTION_NAME = 'repair';
+
+    protected function doAction(AbstractOptimize $optimizer): bool { return $optimizer->repair(); }
+
+    /** @inheritDoc */
+    public function getName(): string { return _m('Repair'); }
+}
+
+class Optimize_Action_Repair4modules extends Optimize_Action_Test {
+    const ACTION_NAME = 'repair4modules';
+
+    protected function doAction(AbstractOptimize $optimizer): bool { return $optimizer->repair4modules([AA::$module_id]); }
+
+    /** @inheritDoc */
+    public function getName(): string { return _m('Repair current'); }
+}
+
 
 if (!IsSuperadmin()) {
-    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php3", _m("You don't have permissions to do optimize tests."), "admin");
+    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You don't have permissions to do optimize tests."), "admin");
     exit;
 }
 
 MoreTimeLimit(); // set_time_limit to 5 minutes (at least)
 
-$Msg = '';
-$testresult = [];
-$err = [];          // error array (Init - just for initializing variable
-
-/** @var AbstractOptimize $optimizer */
-if ($_GET['test'] AND ($optimizer = AA_Serializable::factory('AA\\Optimize\\'.$_GET['test'])) AND $optimizer->hasAction('test')) {
-    $testresult[$_GET['test']] = $optimizer->test();
-    $Msg .= $optimizer->report();
-}
-
-/** @var AbstractOptimize $optimizer */
-if ($_GET['test4modules'] AND ($optimizer = AA_Serializable::factory('AA\\Optimize\\'.$_GET['test4modules'])) AND $optimizer->hasAction('test4modules')) {
-    $testresult[$_GET['test4modules']] = $optimizer->test4modules([AA::$module_id]);
-    $Msg .= $optimizer->report();
-}
-
-/** @var AbstractOptimize $optimizer */
-if ($_GET['repair'] AND ($optimizer = AA_Serializable::factory('AA\\Optimize\\'.$_GET['repair'])) AND $optimizer->hasAction('repair')) {
-    $optimizer->repair();
-    $Msg .= $optimizer->report();
-    $testresult[$_GET['repair']] = $optimizer->test();
-}
-
-/** @var AbstractOptimize $optimizer */
-if ($_GET['repair4modules'] AND ($optimizer = AA_Serializable::factory('AA\\Optimize\\'.$_GET['repair4modules'])) AND $optimizer->hasAction('repair4modules')) {
-    $optimizer->repair4modules([AA::$module_id]);
-    $Msg .= $optimizer->report();
-    $testresult[$_GET['repair4modules']] = $optimizer->test4modules([AA::$module_id]);
-}
-
-$optimize_names        = [];
-$optimize_descriptions = [];
-
-foreach (AA_Components::getClassNames('AA\\Optimize\\') as $optimize_class) {
-
-    // call static class methods
-    $optimize_names[]        = $optimize_class::name();
-    $description             = $optimize_class::description();
-    $actions                 = $optimize_class::actions();
-    $class_type              = AA_Components::getClassType($optimize_class);
-
-    if ($_POST['testall']) {
-
-        /** @var AbstractOptimize $optimizer */
-        $optimizer = AA_Serializable::factory($optimize_class);
-        if ($optimizer->hasAction('test')) {
-            if ( !($testresult[$class_type] = $optimizer->test())) {
-                $Msg .= $optimizer->report();
-            }
-        }
-    }
-
-    $addclass = isset($testresult[$class_type]) ? ($testresult[$class_type] ? 'class=okmsg' : 'class=err') : '';
-
-    $row = "
-    <div>
-      <div style=\"float: right;\">";
-    if (in_array('test4modules', $actions)) {
-        $row .= "<a href=\"". StateUrl("?test4modules=$class_type") ."\" class=aa-button-test title=\"". _m('Test for current module')."\">". _m('Test current'). "</a> ";
-    }
-    if (in_array('repair4modules', $actions)) {
-        $row .= "<a href=\"". StateUrl("?repair4modules=$class_type") ."\" class=aa-button-run title=\"". _m('Repair current module')."\">". _m('Repair current'). "</a> ";
-    }
-
-    if (in_array('test', $actions)) {
-        $row .= "<a href=\"". StateUrl("?test=$class_type") ."\" class=aa-button-test>". _m('Test'). "</a> ";
-    }
-    if (in_array('repair', $actions)) {
-        $row .= "<a href=\"". StateUrl("?repair=$class_type") ."\" class=aa-button-run>". _m('Repair'). "</a> ";
-    }
-
-    $optimize_descriptions[] = $row ."
-      </div>
-      <div $addclass>$description</div>
-    </div>";
-}
-
 $apage = new AA_Adminpageutil('aaadmin','optimize');
 $apage->setTitle(_m("Admin - Optimize a Repair ActionApps"));
-$apage->printHead($err, $Msg);
 
-//$form_buttons = array ("submit");
-$form_buttons = ["testall" => ["type"=>"submit", "value"=>_m("Test All")]];
+$actions   = new Manageractions;
+$actions->addAction(new Optimize_Action_Test('OptimizeTest'));
+$actions->addAction(new Optimize_Action_Test4modules('OptimizeTest4modules'));
+$actions->addAction(new Optimize_Action_Repair('OptimizeRepair'));
+$actions->addAction(new Optimize_Action_Repair4modules('OptimizeRepair4modules'));
 
-//$destinations = array_flip(array_unique($COLNODO_DOMAINS));
+$managed = AA_Components::getManagerConf('AA\\Optimize\\', 'AA\\Optimize\\AbstractOptimize', $actions);
+$managed->setColumn('name', '<b class="{ifeq:{result}:OK:okmsg:ERR:err}">{name}</b><div>{description}</div>{ifset:{resulttxt}:<div><em>_#1</em></div>}' );
+$managed->setColumns2show(['name','types']);
 
-echo getFrmTabCaption(_m('Optimalizations'), $form_buttons);
-foreach ( $optimize_names as $i => $name ) {
-    FrmStaticText($name, $optimize_descriptions[$i], '', '', false);
-}
-echo getFrmTabEnd($form_buttons);
+$apage->printWithManager(new Manager('optimize' . AA::$module_id, $managed));
 
-$apage->printFoot();
+//    AA::Pagecache()->invalidateFor($invalidatefor);

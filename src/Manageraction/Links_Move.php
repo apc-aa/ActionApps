@@ -19,7 +19,7 @@ class Links_Move extends \AA\Manageraction\Links_Check {
     }
 
     /** Name of this Manager's action */
-    function getName() {
+    public function getName(): string {
         switch ($this->to_bin) {
             case 1:
                 return _m('Move to Active');

@@ -42,23 +42,23 @@ class DbBinaryTrailingZeros extends AbstractOptimize {
         $tablenames = $metabase->getTableNames();
 
         foreach ($tablenames as $tablename) {
-                //echo "<br><br>$tablename";
-                if (substr($tablename, 0, 4) == 'bck_') {
-                    continue;
-                }
-                if ( !($cols = $metabase->getColumns($tablename))) {
-                    continue;
-                }
-                foreach ($cols as $colname => $coldef) {
-                    if (strpos($coldef->c[1],'char(')===0) {
+            //echo "<br><br>$tablename";
+            if (substr($tablename, 0, 4) == 'bck_') {
+                continue;
+            }
+            if ( !($cols = $metabase->getColumns($tablename))) {
+                continue;
+            }
+            foreach ($cols as $colname => $coldef) {
+                if (strpos($coldef->c[1],'char(')===0) {
 //                        echo "<br> &nbsp; $tablename . $colname ";
-                        $this->_fixCol($tablename,$colname);
-                    }
-                    if (($coldef->getFieldType() == 'text') and !$coldef->isBinary()) {
-                       // echo "<br> &nbsp; $colname ". (AA_Metabase::isPacked($tablename, $colname) ? 'P' : '.'). ($coldef->isBinary() ? 'B' : '.'). ($coldef->isKey() ? 'K' : '.');
-                    }
+                    $this->_fixCol($tablename,$colname);
+                }
+                if (($coldef->getFieldType() == 'text') and !$coldef->isBinary()) {
+                   // echo "<br> &nbsp; $colname ". (AA_Metabase::isPacked($tablename, $colname) ? 'P' : '.'). ($coldef->isBinary() ? 'B' : '.'). ($coldef->isKey() ? 'K' : '.');
                 }
             }
+        }
         return true;
     }
     

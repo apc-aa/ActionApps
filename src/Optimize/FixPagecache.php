@@ -48,7 +48,7 @@ class FixPagecache extends AbstractOptimize {
             $row_count,
         ]));
         // $this->message(_m('We found %1 inconsistent rows from %2 in pagecache_str2find', array($wrong_count, $row_count)));
-        return true;
+        return !count($bad_rows);
     }
 
     /** Deletes the pagecache - the renaming and deleting is much, much quicker,

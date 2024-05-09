@@ -15,7 +15,7 @@ class Links_Add2Cat extends AbstractManageraction {
     }
 
     /** Name of this Manager's action */
-    function getName() {
+    public function getName(): string {
         return _m('Add to category');
     }
 

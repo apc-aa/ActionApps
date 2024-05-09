@@ -12,7 +12,7 @@ use zids;
 class Object_Delete extends AbstractManageraction {
 
     /** Name of this Manager's action */
-    function getName() {
+    public function getName(): string {
         return _m('Delete row');
     }
 

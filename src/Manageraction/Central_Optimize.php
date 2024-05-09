@@ -66,7 +66,7 @@ class Central_Optimize extends AbstractManageraction {
     }
 
     /** Name of this Manager's action */
-    function getName() {
+    public function getName(): string {
         $class = $this->optimize_class;
         return $class::name() . ' - ' . $this->optimize_method;
     }

@@ -2,11 +2,18 @@
 
 namespace AA\Optimize;
 
+use AA_Content;
+use AA_Property;
+use AA_Value;
 use function getDB;
 use function safe;
 
 abstract class AbstractOptimize implements \AA\Util\NamedInterface {
     use \AA\Util\ReportTrait;
+
+    /** @var array used in manager to store test results in order we can use it in alias _#RESULT__ */
+    public static array $action_results = [];
+    public static array $action_results_text = [];
 
     protected $db;
 
@@ -46,11 +53,40 @@ abstract class AbstractOptimize implements \AA\Util\NamedInterface {
     }
 
     /** checks if this Optimize class belongs to specified type (like "sql_update") */
-    function isType($type): bool { return in_array($type, []); }
+    public static function types(): array { return []; }      // full set is ['sql_update','add_field', 'private_fix']  - private_fix for site specific repairs - probably not useful for others
 
     /** the optimizers are ordered by priority when executed in chain (like for sql_update) */
-    function priority() { return 100; }
+    public static function priority(): int { return 100; }
 
+
+    /** used for generating aliases and content for Manager
+     * @return array
+     */
+    public static function getClassProperties(): array {
+        //                                          id              name            type     multi  persist validator, required, help, morehelp, example
+        return [
+                 'aa_id'       => new AA_Property( 'aa_id',       _m("ID"),          'string', false,  false),
+                 'name'        => new AA_Property( 'name',        _m("Name"),        'string', false,  false),
+                 'description' => new AA_Property( 'description', _m("Description"), 'string', false,  false),
+                 'actions'     => new AA_Property( 'actions',     _m("Actions"),     'string', true,  false),
+                 'types'       => new AA_Property( 'types',       _m("Types"),       'string', true,  false),
+                 'priority'    => new AA_Property( 'priority',    _m("Priority"),    'int',    false, false),
+                 'result'      => new AA_Property( 'result',      _m("Result"),      'string', false, false),
+                 'resulttxt'   => new AA_Property( 'resulttxt',   _m("Result text"), 'string', false, false)
+               ];
+    }
+
+    /** function to add content fields to getContent of Component for each type of Components (for Manager)*/
+    public static function contentAdd(AA_Content $content) {
+        $content->setAaValue('name',        new AA_Value(static::name()));
+        $content->setAaValue('description', new AA_Value(static::description()));
+        $content->setAaValue('actions',     new AA_Value(static::actions()));
+        $content->setAaValue('types',       new AA_Value(static::types()));
+        $content->setAaValue('priority',    new AA_Value(static::priority()));
+        $res = AbstractOptimize::$action_results[get_class_name(static::class)] ?? '-';
+        $content->setAaValue('result',      new AA_Value(($res==='-') ? '' : ($res ? 'OK' : 'ERR'))); // result is '' when no action was performed, OK or ERR as action result
+        $content->setAaValue('resulttxt',   new AA_Value(AbstractOptimize::$action_results_text[get_class_name(static::class)] ?? ''));
+    }
 
     /** This function stores global state for all optimizations.
      *  You can call it with bool parameter which will switch the state

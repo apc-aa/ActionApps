@@ -222,9 +222,24 @@ class AA_Aliases implements Iterator, ArrayAccess, Countable {
         return $this;
     }
 
+    /**
+     * @param AA_Property[] $properties
+     * @return $this
+     */
+    function addFromProperties(array $properties): AA_Aliases {
+        foreach ($properties as $prop_id => $property) {
+            if ($property->isObject()) {
+                continue;
+            }
+            // @todo - make alias field type aware
+            $this->addAlias(new AA_Alias('_#' . substr(str_pad(strtoupper($prop_id), 8, '_'), 0, 8), 'f_h:, ', $prop_id, $prop_id));
+        }
+        return $this;
+    }
+
     /** addFromArray adds aliases from old deprecated array
-     * @param $alias_name
-     * @param $text
+     * @param array $alias_arr
+     * @return AA_Aliases
      * @deprecated
      */
     function addFromArray(array $alias_arr): AA_Aliases {

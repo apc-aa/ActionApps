@@ -49,7 +49,7 @@ abstract class AbstractManageraction extends AA_Storable {
     /** Name of this Manager's action
      * @return string
      */
-    function getName() { return ''; }
+    public function getName(): string { return ''; }
 
     /** ID of this Manager's action
      * @return string
@@ -66,25 +66,28 @@ abstract class AbstractManageraction extends AA_Storable {
      */
     function getOpenUrlAdd() { return $this->open_url_add; }
 
-    /** if you want to generate button to manager, redefine this method */
+    /** if you want to generate button to manager, redefine this method
+     * @return array   ['label'=>, 'attr'=>, 'cond'] */
     protected function getButtonDef(): array {
-        //return ['label'=>_m('Edit'), 'class'=>'aa-button-edit', attr=>['onclick' =>"return confirm('". _m("Do you really want to delete this object?"). "')"]];
+        //return ['label'=>_m('Edit'), attr=>['class'=>'aa-button-edit', 'onclick' =>"return confirm('". _m("Do you really want to delete this object?"). "')"]];
         return [];
     }
 
     /** for adding button to manager redefine rather getButtonDef method */
     public function getButton(string $manager_url, string $id_alias, string $module_alias): array {
+        $ret = [];
         $b = $this->getButtonDef();
-        if (!$b['attr']['class']) {
+        if ($b  AND !$b['attr']['class']) {
             $b['attr']['class'] = 'aa-button';
         }
-        return ($b = $this->getButtonDef()) ? [
-            $this->id => a_href(get_url($manager_url, [
-                "chb[x$id_alias]",
-                'akce=' . $this->id,
-                "module_id=$module_alias",
-            ], true), $b['label'], $b['attr']),
-        ] : [];
+        if ($b) {
+            $code = a_href(get_url($manager_url, ["chb[x$id_alias]", 'akce=' . $this->id, "module_id=$module_alias",], true), $b['label'], $b['attr'] ?? []);
+            if (array_key_exists('cond', $b)) {
+                $code = "{if1:{$b['cond']}:{$code}}";
+            }
+            $ret = [$this->id => $code];
+        }
+        return $ret;
     }
 
     /**

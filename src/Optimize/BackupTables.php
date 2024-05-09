@@ -26,9 +26,6 @@ class BackupTables extends \AA\Optimize\AbstractOptimize {
         return _m("[experimental] ") . _m("Deletes all the current backup tables (bck_slice, bck_item, ...) and copies there live tables (slice, item, ...).");
     }
 
-    /** checks if this Optimize class belongs to specified type (like "sql_update") */
-    function isType($type): bool { return in_array($type, []); }
-
     public static function actions(): array { return ['repair']; }
 
     /** Main update function

@@ -10,6 +10,8 @@ namespace AA\Util;
 
 
 
+use AA;
+
 class Searchfields implements \Iterator, \ArrayAccess, \Countable {
     use ArrTrait;
 
@@ -26,6 +28,46 @@ class Searchfields implements \Iterator, \ArrayAccess, \Countable {
         'order_pri'  => true,
         'opt_group'  => true
     ];
+
+    /**
+     * @param $properties
+     * @return \AA\Util\Searchfields
+     */
+    public static function factoryFromProperties($properties): \AA\Util\Searchfields {
+        $i            = 0;
+        $searchfields = new AA\Util\Searchfields();
+
+        foreach ($properties as $prop_id => $property) {
+            if ($property->isObject()) {
+                continue;
+            }
+
+            $field_type = $property->getType();    // @todo - convert to right search values
+
+            switch ($field_type) {
+                case 'int':
+                    $field_type = 'numeric';
+                    break;
+
+                case 'text':
+                case 'numeric':
+                case 'date':
+                case 'constants':
+                case 'numconstants':
+                    break;
+
+                // case 'string':
+                default:
+                    $field_type = 'text';
+            }
+
+            // we can hide the field, if we put in fields.search_pri=0
+            $search_pri = ++$i;
+            //             $name,        $field,       $operators, $table, $search_pri, $order_pri
+            $searchfields->add($prop_id, $property->getName(), $prop_id, $field_type, false, $search_pri, $search_pri);
+        }
+        return $searchfields;
+    }
 
 
     /**  add search field to Searchfields

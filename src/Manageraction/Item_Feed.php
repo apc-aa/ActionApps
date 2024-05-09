@@ -26,7 +26,7 @@ class Item_Feed extends AbstractManageraction {
     }
 
     /** Name of this Manager's action */
-    function getName() {
+    public function getName(): string {
         return _m('Export to slice');
     }
 

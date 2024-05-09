@@ -31,21 +31,7 @@ class Convert2innodb extends AbstractOptimize {
     public function test(): bool {
         //$metabase = AA::Metabase();
         //$tables   = $metabase->getTableNames();
-        $engines = DB_AA::select(['TABLE_NAME' => 'ENGINE'], "SELECT TABLE_NAME,ENGINE FROM information_schema.TABLES", [
-            [
-                'TABLE_SCHEMA',
-                DB_NAME,
-            ],
-            [
-                'ENGINE',
-                'NOTNULL',
-            ],
-            [
-                'ENGINE',
-                'InnoDB',
-                's<>',
-            ],
-        ]);
+        $engines = DB_AA::select(['TABLE_NAME' => 'ENGINE'], "SELECT TABLE_NAME,ENGINE FROM information_schema.TABLES", [['TABLE_SCHEMA', DB_NAME], ['ENGINE', '', 'NOTNULL'], ['ENGINE', 'InnoDB', 's<>']]);
         $count = 0;
         foreach ($engines as $tablename => $engine) {
             if (substr($tablename, 0, 4) == 'bck_') {
@@ -55,7 +41,7 @@ class Convert2innodb extends AbstractOptimize {
             $count++;
         }
         $this->message(_m('We found %1 tables which needs to be converted', [$count]));
-        return true;
+        return !$count;
     }
 
     /** Deletes the pagecache - the renaming and deleting is much, much quicker,
@@ -64,21 +50,7 @@ class Convert2innodb extends AbstractOptimize {
      */
     public function repair(): bool {
         //$tables   = $metabase->getTableNames();
-        $engines = DB_AA::select(['TABLE_NAME' => 'ENGINE'], "SELECT TABLE_NAME,ENGINE FROM information_schema.TABLES", [
-            [
-                'TABLE_SCHEMA',
-                DB_NAME,
-            ],
-            [
-                'ENGINE',
-                'NOTNULL',
-            ],
-            [
-                'ENGINE',
-                'InnoDB',
-                's<>',
-            ],
-        ]);
+        $engines = DB_AA::select(['TABLE_NAME' => 'ENGINE'], "SELECT TABLE_NAME,ENGINE FROM information_schema.TABLES", [['TABLE_SCHEMA', DB_NAME], ['ENGINE', '', 'NOTNULL'], ['ENGINE', 'InnoDB', 's<>']]);
         $converted = 0;
         foreach ($engines as $tablename => $engine) {
             if (substr($tablename, 0, 4) == 'bck_') {

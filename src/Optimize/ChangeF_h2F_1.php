@@ -81,17 +81,10 @@ class ChangeF_h2F_1 extends AbstractOptimize {
     }
 
     protected function fieldtest(AA_Field $fld, string $aliasfld): string {
-        $alias = $fld[$aliasfld];
         $func  = $fld[$aliasfld.'_func'];
 
         if (($func == 'f_h:') AND ((($fld['html_default']==1) AND ($fld['html_show']==0) AND ($fld['multiple']==0)) OR (strlen($fld['in_item_tbl'])>1) OR ($fld['text_stored']==0))) {
-            $slice_id = $fld->getSliceId();
-            $slicename = AA_Module::getModuleName($slice_id);
-            $aliaslink = a_href(get_admin_url('se_inputform.php', [
-                    'change_id' => $slice_id,
-                    'fid'       => $fld['id']
-                ]) . '#alias' . substr($alias, 2), $alias);
-            return "<br>$aliaslink ($slicename) - f_h: used with field marked as non-multiple and html - consider using quicker f_1 function for direct content print";
+            return self::alias_code($fld, $aliasfld, "f_h: used with field marked as non-multiple and html - consider using quicker f_1 function for direct content print");
         }
         return '';
     }
@@ -108,6 +101,18 @@ class ChangeF_h2F_1 extends AbstractOptimize {
         $this->query("UPDATE field SET `${aliasfld}_func`='f_1:' ". DB_AA::makeWhere([['slice_id', $fld->getSliceId(), 'l'], ['id', $fld['id']]]));
         return "<br>$alias ($slicename) changed to f_1";
     }
+
+    /** prints proposed change description */
+    protected static function alias_code(AA_Field $fld, string $aliasfld, string $text): string {
+        $slice_id  = $fld->getSliceId();
+        $slicename = AA_Module::getModuleName($slice_id);
+        $alias     = $fld[$aliasfld];
+        $aliaslink = a_href(get_admin_url('se_inputform.php', ['change_id' => $slice_id, 'fid' => $fld['id']]) . '#alias' . substr($alias, 2), $alias);
+        ['fnc'=>$fnc, 'param'=>$param ] = ParseFnc($fld[$aliasfld.'_func']);
+
+        return "<div>$aliaslink ($slicename) - $text<div><pre style='font-size: .8rem; margin: 5px 20px; opacity: .7'>".safe($param)."</pre></div></div>";
+    }
+
 
     /**
      * @return bool

@@ -19,7 +19,7 @@ class AddFeedingCronEntry extends \AA\Optimize\AbstractOptimize {
     }
 
     /** checks if this Optimize class belongs to specified type (like "sql_update") */
-    function isType($type): bool { return in_array($type, ['sql_update']); }
+    public static function types(): array { return ['sql_update']; }
 
 
     /** Test function @return bool */
@@ -29,7 +29,7 @@ class AddFeedingCronEntry extends \AA\Optimize\AbstractOptimize {
         $row_count = DB_AA::select1('count', 'SELECT count(*) as count FROM cron', [
             [
                 'script',
-                'admin/xmlclient.php3',
+                'admin/xmlclient.php',
             ],
         ]);
         if ($row_count < 1) {
@@ -43,10 +43,11 @@ class AddFeedingCronEntry extends \AA\Optimize\AbstractOptimize {
     public function repair(): bool {
 
         $this->message(_m('Deleting AA Cron entry for Feeding'));
-        $this->query("DELETE FROM cron WHERE script='admin/xmlclient.php3'");
+        $this->query("DELETE FROM cron WHERE script='admin/xmlclient.php'");
+        $this->query("DELETE FROM cron WHERE script='admin/xmlclient.php3'");  // old version
 
         $this->message(_m('Adding AA cron entry for Feeding'));
-        $this->query("INSERT INTO cron (minutes, hours, mday, mon, wday, script, params, last_run) VALUES ('8,23,38,53', '*', '*', '*', '*', 'admin/xmlclient.php3', '', NULL)");
+        $this->query("INSERT INTO cron (minutes, hours, mday, mon, wday, script, params, last_run) VALUES ('8,23,38,53', '*', '*', '*', '*', 'admin/xmlclient.php', '', NULL)");
 
         $this->message(_m('AA cron entry for Feeding - done.'));
         return true;

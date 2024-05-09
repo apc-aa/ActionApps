@@ -20,7 +20,7 @@ class AddEmailTemplatesCronEntry extends \AA\Optimize\AbstractOptimize {
     }
 
     /** checks if this Optimize class belongs to specified type (like "sql_update") */
-    function isType($type): bool { return in_array($type, ['sql_update']); }
+    public static function types(): array { return ['sql_update']; }
 
 
     /** Test function @return bool */
@@ -50,7 +50,7 @@ class AddEmailTemplatesCronEntry extends \AA\Optimize\AbstractOptimize {
             $row = [
                 'description' => 'Generic Alerts Welcome',
                 'subject'     => 'Welcome to Econnect Alerts',
-                'body'        => 'Somebody requested to receive regularly new items from our web site \r\n<a href=\"http://www.ecn.cz\">www.ecn.cz</a>\r\n{switch({_#HOWOFTEN})instant:at the moment they are added\r\n:daily:once a day\r\n:weekly:once a week\r\n:monthly:once a month}.<br>\r\n<br>\r\nYou will not receive any emails until you confirm your subscription.\r\nTo confirm it or to change your personal info, please go to<br>\r\n<a href=\"_#COLLFORM\">_#COLLFORM</a>.<br><br>\r\nThank you for reading our alerts,<br>\r\nThe Econnect team\r\n',
+                'body'        => 'Somebody requested to receive regularly new items from our web site \r\n<a href=\"https://www.ecn.cz\">www.ecn.cz</a>\r\n{switch({_#HOWOFTEN})instant:at the moment they are added\r\n:daily:once a day\r\n:weekly:once a week\r\n:monthly:once a month}.<br>\r\n<br>\r\nYou will not receive any emails until you confirm your subscription.\r\nTo confirm it or to change your personal info, please go to<br>\r\n<a href=\"_#COLLFORM\">_#COLLFORM</a>.<br><br>\r\nThank you for reading our alerts,<br>\r\nThe Econnect team\r\n',
                 'header_from' => 'somebody@example.cz',
                 'type'        => 'alerts welcome',
             ];
@@ -64,17 +64,6 @@ class AddEmailTemplatesCronEntry extends \AA\Optimize\AbstractOptimize {
                 'body'        => '_#FILTERS_\r\n<br><hr>\r\nTo change your personal info, please go to<br>\r\n<a href=\"_#COLLFORM\">_#COLLFORM</a>.<br><br>\r\nThank you for reading our alerts,<br>\r\nThe Econnect team\r\n',
                 'header_from' => 'ecn@example.cz',
                 'type'        => 'alerts alert',
-            ];
-            AA::Metabase()->doInsert('email', array_merge($std_row, $row));
-        }
-
-        if (!DB_AA::test('email', [['type', 'slice wizard welcome']])) {
-            $row = [
-                'description' => 'Generic Item Manager Welcome',
-                'subject'     => 'Welcome, AA _#ROLE____',
-                'body'        => 'You have been assigned an Item Manager for the slice _#SLICNAME. Your username is _#LOGIN___. See <a href=\"http://apc-aa.sf.net/faq\">FAQ</a> for help.',
-                'header_from' => '\"_#ME_NAME_\" <_#ME_MAIL_>',
-                'type'        => 'slice wizard welcome',
             ];
             AA::Metabase()->doInsert('email', array_merge($std_row, $row));
         }

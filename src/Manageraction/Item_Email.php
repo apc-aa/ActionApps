@@ -8,7 +8,7 @@ use AA\Manager;
 class Item_Email extends AbstractManageraction {
 
     /** Name of this Manager's action */
-    function getName() {
+    public function getName(): string {
         return _m('Send email');
     }
 

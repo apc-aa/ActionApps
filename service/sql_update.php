@@ -68,7 +68,7 @@ $silent = $_GET['silent'] ?? false;
 
 if (!$silent) {
     echo '
-      <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+      <!DOCTYPE html>
       <html>
       <head>
         <title>APC-AA database update script</title>
@@ -185,12 +185,8 @@ class AA_SQL_Updater {
     function getOptimizers(): array {
         $optimizers = [];
 
-        foreach (AA_Components::getClassNames('AA\\Optimize\\') as $optimize_class) {
-            /** @var AbstractOptimize $optimizer */
-            $optimizer = AA_Serializable::factory($optimize_class);
-            if ($optimizer->isType('sql_update')) {
-                $optimizers[sprintf("%05s",$optimizer->priority()).$optimize_class] = $optimizer;
-            }
+        foreach (AA_Components::getClassNames('AA\\Optimize\\', function($class) { return in_array('sql_update', $class::types()); }) as $optimize_class) {
+            $optimizers[sprintf("%05s",$optimize_class::priority()).$optimize_class] = AA_Serializable::factory($optimize_class);
         }
         ksort($optimizers);
         return $optimizers;

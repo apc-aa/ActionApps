@@ -6,7 +6,7 @@ namespace AA\Manageraction;
 class Item_Modifycontent extends AbstractManageraction {
 
     /** Name of this Manager's action */
-    function getName() {
+    public function getName(): string {
         return _m('Modify content');
     }
 

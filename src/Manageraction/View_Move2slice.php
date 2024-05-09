@@ -17,7 +17,7 @@ use zids;
 class View_Move2slice extends \AA\Manageraction\Item_Move2Slice {
 
     /** Name of this Manager's action */
-    function getName() {
+    public function getName(): string {
         return _m('Move view to another slice');
     }
 

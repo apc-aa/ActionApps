@@ -73,20 +73,6 @@ class Convert2utf8mb4 extends AbstractOptimize {
     }
 
     protected function get_tables(string $colation_prefix) {
-        return DB_AA::select(['TABLE_NAME' => 'TABLE_COLLATION'], "SELECT * FROM information_schema.TABLES", [
-            [
-                'TABLE_SCHEMA',
-                DB_NAME,
-            ],
-            [
-                'TABLE_COLLATION',
-                'NOTNULL',
-            ],
-            [
-                'TABLE_COLLATION',
-                $colation_prefix,
-                'BEGIN',
-            ],
-        ]);
+        return DB_AA::select(['TABLE_NAME' => 'TABLE_COLLATION'], "SELECT * FROM information_schema.TABLES", [['TABLE_SCHEMA', DB_NAME], ['TABLE_COLLATION','', 'NOTNULL'], ['TABLE_COLLATION', $colation_prefix, 'BEGIN']]);
     }
 }

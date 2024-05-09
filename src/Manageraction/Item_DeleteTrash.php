@@ -28,7 +28,7 @@ class Item_DeleteTrash extends AbstractManageraction {
     }
 
     /** Name of this Manager's action */
-    function getName() {
+    public function getName(): string {
         return _m('Remove (delete from database)');
     }
 

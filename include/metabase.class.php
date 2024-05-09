@@ -399,6 +399,11 @@ class AA_MbT implements Iterator, ArrayAccess, Countable {
         return new AA_MbT($tablename, $columns, $indexes);
     }
 
+    /** get Table name */
+    public function getName(): string {
+        return $this->t;
+    }
+
     function getColumnNames() {
         return array_keys($this->c);
     }
@@ -550,13 +555,41 @@ class AA_MbT implements Iterator, ArrayAccess, Countable {
         return $searchfields;
     }
 
-    /** returns asociative array of table fields filled with '' or 0 (based on column type) */
+    /** returns associative array of table fields filled with '' or 0 (based on column type) */
     function getEmptyRowArray() {
         $fieldarr = [];
         foreach ($this->c as $column_name => $column) {
             $fieldarr[$column_name] = $column->getEmptyValue();
         }
         return $fieldarr;
+    }
+
+    /** Prepare Cvarset for given data array (set right types/values/...)
+     *
+     * @param  string[] $data    data array - all data unpacked. The values are converted to correct ones
+     * @return Cvarset|null
+     */
+    public function getVarset4Data(array $data): ?Cvarset {
+        if ( !($cols = $this->getColumns())) {
+            return null;
+        }
+        $varset = new Cvarset();
+
+        foreach ($cols as $colname => $coldef) {
+            if (isset($data[$colname])) {
+                $value = $data[$colname];
+                $iskey = $coldef->isKey();
+                if ($coldef->getFieldType() == 'int') {
+                    $varset->add($colname, 'number', (int)$value, $iskey);
+                } elseif (AA_Metabase::isPacked($this->t, $colname)) {
+                    $varset->add($colname, 'unpacked', $value, $iskey);
+                } else {
+                    $value = ($maxlen = $coldef->getMaxLength()) ? substr($value, 0, $maxlen) : $value;
+                    $varset->add($colname, 'text', $value, $iskey);
+                }
+            }
+        }
+        return $varset;
     }
 
     /** Iterator interface */
@@ -609,6 +642,10 @@ class AA_Metabase {
         }
 
         return $instance;
+    }
+
+    public function addTable(AA_MbT $table): void {
+        $this->tables[$table->getName()] = $table;
     }
 
     /** Returns array of all table names */
@@ -707,7 +744,7 @@ class AA_Metabase {
             'site', 'site_spot', 'slice', 'slice_owner', 'toexecute',
             'users', 'view', 'wizard_template',
             // supported table using double keys (slice_id,id)
-            'field'
+            'field',
             // unsupported table using triple keys (slice_id,uid,`function`)
             // 'email_notify'
         ];
@@ -756,7 +793,7 @@ class AA_Metabase {
             'site'                => 'id',
             'site_spot'           => 'site_id',
             'slice'               => 'id',
-            'view'                => 'slice_id'
+            'view'                => 'slice_id',
         ];
         return $MODULE_KEYS;
     }
@@ -802,7 +839,7 @@ class AA_Metabase {
             'site_spot'           => ['site_id'],
             'slice'               => ['id', 'owner', 'mlxctrl'],
             'slice_owner'         => ['id'],
-            'view'                => ['slice_id']
+            'view'                => ['slice_id'],
         ];
         return $PACKED[$tablename] ?? [];
     }
@@ -902,26 +939,7 @@ class AA_Metabase {
      * @return Cvarset|null
      */
     private function getVarset4Data(string $tablename, array $data) {
-        if ( !($cols = $this->getColumns($tablename))) {
-            return null;
-        }
-        $varset = new Cvarset();
-
-        foreach ($cols as $colname => $coldef) {
-            if (isset($data[$colname])) {
-                $value = $data[$colname];
-                $iskey = $coldef->isKey();
-                if ($coldef->getFieldType() == 'int') {
-                    $varset->add($colname, 'number', (int)$value, $iskey);
-                } elseif (AA_Metabase::isPacked($tablename, $colname)) {
-                    $varset->add($colname, 'unpacked', $value, $iskey);
-                } else {
-                    $value = ($maxlen = $coldef->getMaxLength()) ? substr($value, 0, $maxlen) : $value;
-                    $varset->add($colname, 'text', $value, $iskey);
-                }
-            }
-        }
-        return $varset;
+        return $this->tables[$tablename]->getVarset4Data($data);
     }
 
     /** Check is all keys for current table are filled in Cvarset
@@ -1033,7 +1051,7 @@ class AA_Metabase {
             'discussion' => ['scr_field' => 'item_id',  'dest_table' => 'item',           'dest_field' => 'id'],
 
             'alerts_collection_filter'   => ['scr_field' => 'collectionid',  'dest_table' => 'alerts_collection', 'dest_field' => 'id'],
-            'alerts_collection_howoften' => ['scr_field' => 'collectionid',  'dest_table' => 'alerts_collection', 'dest_field' => 'id']
+            'alerts_collection_howoften' => ['scr_field' => 'collectionid',  'dest_table' => 'alerts_collection', 'dest_field' => 'id'],
         ];
 
         $module_table = $tablename;
@@ -1121,7 +1139,7 @@ class AA_Metabase {
             $diffs[$tablename] = [
                 'equal'  => (str_replace($eq_vars, $eq_novars, $table_sql_1) == str_replace($eq_vars, $eq_novars, $table_sql_2)),
                 'table1' => $table_sql_1,
-                'table2' => $table_sql_2
+                'table2' => $table_sql_2,
             ];
         }
 
@@ -1134,7 +1152,7 @@ class AA_Metabase {
             $diffs[$tablename] = [
                 'equal'  => false,
                 'table1' => '',
-                'table2' => $metabase->getCreateSql($tablename)
+                'table2' => $metabase->getCreateSql($tablename),
             ];
         }
         return $diffs;
@@ -1364,21 +1382,21 @@ class AA_Metabase {
                 'search_row_count_min' => 1,
                 'order_row_count_min'  => 1,
                 'add_empty_search_row' => true,
-                'function'             => false  // name of function for additional action hooked on standard filter action
+                'function'             => false,  // name of function for additional action hooked on standard filter action
             ],
             'scroller'  => [
-                'listlen'              => 100
+                'listlen'              => 100,
             ],
             'itemview'  => [
                 //'fields'               => $search_fields,
                 'aliases'              => $aliases,
                 //    static class method               , first parameter to the method
                 'get_content_funct'    => [['AA_Metabase', 'getContent'], ['table'=>$tablename]],
-                'query_funct'          => [[AA::Metabase(), 'queryZids'], ['table'=>$tablename]]
+                'query_funct'          => [[AA::Metabase(), 'queryZids'], ['table'=>$tablename]],
             ],
             'actions'   => $actions,
             'switches'  => $switches,
-            'bin'       => 'app'
+            'bin'       => 'app',
         ];
 
         $managed = (new \AA\Managed_Table($tablename))->setSettings($manager_settings)->setColumns($columns)->setTitle(_m('Manage %1', [$tablename]));

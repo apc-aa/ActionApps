@@ -12,7 +12,7 @@ use zids;
 class Taskmanager_Execute extends AbstractManageraction {
 
     /** Name of this Manager's action */
-    function getName() {
+    public function getName(): string {
         return _m('Execute');
     }
 

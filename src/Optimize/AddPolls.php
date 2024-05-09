@@ -9,6 +9,19 @@ use function _m;
 /** Add tables for new polls module */
 class AddPolls extends \AA\Optimize\AbstractOptimize {
 
+    public const POLLS_DEFAULT_VALUES = [
+        'id'         => 'PollsTemplate...',
+        'name'       => 'Polls Template',
+        'deleted'    => 0,
+        'type'       => 'P',
+        'slice_url'  => '',
+        'lang_file'  => 'en-utf8_polls_lang.php',
+        'created_at' => 1043151515,
+        'created_by' => '',
+        'owner'      => 'AA_Core.........',
+        'flag'       => 0
+    ];
+
     /** Name function
      * @return string - a name
      */
@@ -27,7 +40,7 @@ class AddPolls extends \AA\Optimize\AbstractOptimize {
     public static function actions(): array { return ['repair']; }
 
     /** checks if this Optimize class belongs to specified type (like "sql_update") */
-    function isType($type): bool { return in_array($type, ['sql_update']); }
+    public static function types(): array { return ['sql_update']; }
 
     /** Test function
      * @return string - a message
@@ -65,7 +78,8 @@ class AddPolls extends \AA\Optimize\AbstractOptimize {
         $this->query("DROP TABLE IF EXISTS `polls_log`");
         $this->query($metabase->getCreateSql('polls_log'));
 
-        $this->query("REPLACE INTO module (id, name, deleted, type, slice_url, lang_file, created_at, created_by, owner, flag) VALUES ('PollsTemplate...', 'Polls Template', 0, 'P', '', 'en_polls_lang.php', 1043151515, '', 'AA_Core.........', 0)");
+        AA::Metabase()->doReplace('log', self::POLLS_DEFAULT_VALUES);
+        //$this->query("REPLACE INTO module (".join(',',$keys).") VALUES ('PollsTemplate...', 'Polls Template', 0, 'P', '', 'en_polls_lang.php', 1043151515, '', 'AA_Core.........', 0)");
         $this->query("REPLACE INTO `polls` (`id`, `module_id`, `status_code`, `headline`, `publish_date`, `expiry_date`, `locked`, `logging`, `ip_locking`, `ip_lock_timeout`, `set_cookies`, `cookies_prefix`, `design_id`, `aftervote_design_id`, `params`) VALUES('506f6c6c73467273744578616d706c65', 'PollsTemplate...', 0, 'Do you like ActionApps', 1194217200, 1500000000, 0, 0, 0, 0, 0, 'AA_POLLS', '506f6c6c7344657369676e4578616d70', '', '')");
         $this->query("REPLACE INTO `polls_answer` (`id`, `poll_id`, `answer`, `votes`, `priority`) VALUES('506f6c6c73416e73776572312e2e2e2e', '506f6c6c73467273744578616d706c65', 'Yes', 0, 1)");
         $this->query("REPLACE INTO `polls_answer` (`id`, `poll_id`, `answer`, `votes`, `priority`) VALUES('506f6c6c73416e73776572322e2e2e2e', '506f6c6c73467273744578616d706c65', 'No', 0, 2)");

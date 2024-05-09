@@ -14,7 +14,7 @@ class Links_Delete extends AbstractManageraction {
     }
 
     /** Name of this Manager's action */
-    function getName() {
+    public function getName(): string {
         return _m('Remove from category');
     }
 

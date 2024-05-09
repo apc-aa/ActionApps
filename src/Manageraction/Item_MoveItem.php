@@ -22,7 +22,7 @@ class Item_MoveItem extends AbstractManageraction {
     }
 
     /** Name of this Manager's action */
-    function getName() {
+    public function getName(): string {
         switch ($this->to_bin) {
             case 1:
                 return _m('Move to Active');

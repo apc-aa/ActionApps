@@ -11,7 +11,7 @@ use zids;
 class Table_Row_Delete extends AbstractManageraction {
 
     /** Name of this Manager's action */
-    function getName(): string {
+    public function getName(): string {
         return _m('Delete row');
     }
 
