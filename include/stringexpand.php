@@ -2036,21 +2036,23 @@ class AA_Stringexpand_Gps extends AA_Stringexpand_Nevercache {
     /** expand function  */
     function expand($gps='', $format='') {
         $lat = $lon = '';
-        // -50.09697 14.42332
-        if (preg_match('/^(-?\d+\.\d+)\s+(-?\d+\.\d+)$/', aa_trim($gps), $p)) {
-            $lat = $p[1];
-            $lon = $p[2];
+        // -50.09697 14.423321
+        // 50.090802N,14.400522E
+        // 14.400522E 50.090802N
+        if (preg_match('/^([-+])?\s?(\d*[.,]?\d+)\s?([NWSE]?)[,\s]+([-+])?\s?(\d*[.,]?\d+)\s?([NWSE]?)$/', aa_trim($gps), $p)) {
+            $num1 = (($p[1]=='-' OR strtoupper($p[3])=='S' OR strtoupper($p[3])=='W') ? '-' : '') .(float)$p[2];
+            $num2 = (($p[4]=='-' OR strtoupper($p[6])=='S' OR strtoupper($p[6])=='W') ? '-' : '') .(float)$p[5];
+            [$lat, $lon] = (in_array(strtoupper($p[3]), ['E','W'])) ? [$num2, $num1] : [$num1, $num2];
         }
         // 49°58'4.508"N, 12°30'10.790"E
         // 12° 30' 10.790'' E 49° 58' 4.508'' N
         // 49°58'4.508"N, 12°30'10.790"E
         // -49°58'4.508"N, -12°30'10.790"E
         // 49°58'4.508"S, 12°30'10.790"W
-        elseif ( preg_match('/^([-+])?(\d+)°(\d+)\'(\d+\.?,?\d*?)("|\'\')([NWSE]),?([-+])?(\d+)°(\d+)\'(\d+\.?,?\d*?)("|\'\')([NWSE])$/', aa_html_entity_decode(inner_trim($gps)), $p) ) {
-            $num1 = (($p[1]=='-' OR strtoupper($p[6])=='S' OR strtoupper($p[6])=='W') ? '-' : '') .((int)$p[2] + ((int)$p[3]/60) + ((float)$p[4]/3600));
-            $num2 = (($p[7]=='-' OR strtoupper($p[12])=='S' OR strtoupper($p[12])=='W') ? '-' : '') .((int)$p[8] + ((int)$p[9]/60) + ((float)$p[10]/3600));
-            $lat = (strtoupper($p[6])=='N' OR strtoupper($p[6])=='S') ? $num1 : $num2;
-            $lon = (strtoupper($p[6])=='E' OR strtoupper($p[6])=='W') ? $num1 : $num2;
+        elseif ( preg_match('/^([-+])?(\d*[.,]?\d+)°(?:(\d*[.,]?\d+)\')?(?:(\d*[.,]?\d+)(?:"|\'\'))?([NWSE]?),?([-+])?(\d*[.,]?\d+)°(?:(\d*[.,]?\d+)\')?(?:(\d*[.,]?\d+)(?:"|\'\'))?([NWSE]?)$/', aa_html_entity_decode(inner_trim($gps)), $p) ) {
+            $num1 = (($p[1]=='-' OR strtoupper($p[5])=='S' OR strtoupper($p[5])=='W') ? '-' : '') .((float)$p[2] + ((float)$p[3]/60) + ((float)$p[4]/3600));
+            $num2 = (($p[6]=='-' OR strtoupper($p[10])=='S' OR strtoupper($p[10])=='W') ? '-' : '') .((float)$p[7] + ((float)$p[8]/60) + ((float)$p[9]/3600));
+            [$lat, $lon] = (in_array(strtoupper($p[5]), ['E','W'])) ? [$num2, $num1] : [$num1, $num2];
         }
 
         if (!strlen($format)) {
