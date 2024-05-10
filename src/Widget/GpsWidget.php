@@ -140,7 +140,7 @@ EOF;
           .leaflet-draw-draw-marker   { order: 1; }
           .leaflet-draw-draw-polyline { order: 2; }
           .leaflet-draw-draw-polygon  { order: 3; }
-          .aa-gps-container { container: aa_gps_container / inline-Ssize; }
+          .aa-gps-container { container: aa_gps_container / inline-size; }
           @container aa_gps_container (max-width: 500px) { 
             .aa-gps-content { display: block; }
             .aa-gps-content > div:first-of-type > input { width: 98%; }
