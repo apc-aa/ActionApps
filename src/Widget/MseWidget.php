@@ -28,6 +28,11 @@ class MseWidget extends MchWidget
         return ''; // TODO: Implement description() method.
     }
 
+    /** To use css for mch (for ajax...))
+     * @inheritDoc
+     */
+    protected function getWidgetType(): string { return 'mch'; }
+
     /** returns if the widget handles multivalue or just single value   */
     public static function multiple(): bool {
         return true;

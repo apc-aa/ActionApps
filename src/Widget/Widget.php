@@ -491,6 +491,14 @@ class Widget extends AA_Object implements NamedInterface {
         return $this->_finalizeAjaxHtml($this->_getRawHtml($aa_property, $content, 'ajax'), $aa_property);
     }
 
+    /** Normally it returns current widget type, but for widgets managed by other widgets it returns true real widget type (for CSS)
+     *  In such case it is reimplemented there
+     *  @retruns string wi2, sel, ....
+     */
+    protected function getWidgetType(): string {
+        return strtolower(AA_Components::getClassType(get_called_class(), 'Widget'));
+    }
+
     /** Creates all common ajax editing buttons to be used by different inputs
      * @param $winfo       array
      * @param $aa_property AA_Property
@@ -501,7 +509,7 @@ class Widget extends AA_Object implements NamedInterface {
         $base_id = FormArray::formName2Id($base_name);
         $help = $aa_property->getHelp();
         $class = ($this->getProperty('ajaxtype', '') == 'inline') ? 'aa-widget aa-ajax-inline' : 'aa-widget aa-ajax-open';
-        $class .= ' aa-widget-' . strtolower(AA_Components::getClassType(get_called_class(), 'Widget'));
+        $class .= ' aa-widget-' . $this->getWidgetType();
         $widget_html = "<div class=\"ajax_widget $class\" id=\"widget-$base_id\">";
         $widget_html .= "\n<div class=aa-input>";
         $widget_html .= "\n" . $winfo['html'] . ($help ? "\n    <div class=\"aa-help\"><small>$help</small></div>\n" : '');

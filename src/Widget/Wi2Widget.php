@@ -9,8 +9,7 @@
 namespace AA\Widget;
 
 /** Two Boxes widget */
-class Wi2Widget extends MchWidget
-{
+class Wi2Widget extends MchWidget {
 
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
@@ -27,6 +26,11 @@ class Wi2Widget extends MchWidget
     public static function multiple(): bool {
         return true;
     }
+
+    /** To use css for mch (for ajax...))
+     * @inheritDoc
+     */
+    protected function getWidgetType(): string { return 'mch'; }
 
     /** Creates base widget HTML, which will be surrounded by Live, Ajxax
      *  or normal decorations (added by _finalize*Html)

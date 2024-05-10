@@ -30,6 +30,12 @@ class IsoWidget extends MchWidget
         return true;
     }
 
+    /** To use css for mch (for ajax...))
+     * @inheritDoc
+     */
+    protected function getWidgetType(): string { return 'mch'; }
+
+
     /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
      * @return array
