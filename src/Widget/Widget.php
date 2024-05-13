@@ -87,7 +87,7 @@ class Widget extends AA_Object implements NamedInterface {
             AA::Stringexpander()->addRequire($script2run, 'AA_Req_Load');
         }
         if ($libcode = $this->requireLibCode($aa_property, $winfo)) {
-            AA::Stringexpander()->addRequire("<script> $libcode </script>", 'AA_Req_Headcode');
+            AA::Stringexpander()->addRequire($libcode, 'AA_Req_Run'); // better would be if in HEAD-2 probably - like Req_Headcode
         }
         if ($csscode = $this->requireCssCode($aa_property, $winfo)) {
             AA::Stringexpander()->addRequire($csscode, 'AA_Req_CSScode');
