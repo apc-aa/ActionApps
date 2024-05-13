@@ -57,7 +57,7 @@ class GpsWidget extends Widget
             $drawComponent = "
               const drawControl = new L.Control.Draw({
                  position: 'bottomright',
-                 edit: { featureGroup: drawnItems, poly: { allowIntersection: false }, remove: false, edit: false },
+                 edit: { featureGroup: drawnItems$js_id, poly: { allowIntersection: false }, remove: false, edit: false },
                  draw: { ";
                         $drawComponent .= strpos($shapes, 'M') !== false ? 'marker: true'         : ', marker: false';
                         $drawComponent .= strpos($shapes, 'L') !== false ? ', polyline: true'     : ', polyline: false';
@@ -71,34 +71,34 @@ class GpsWidget extends Widget
             
               // Ensure only one shape is drawn at a time
               map$js_id.on(L.Draw.Event.CREATED, function(event) {";
-            $drawComponent .= $multi_shape ? '' : "\ndrawnItems.clearLayers();";  // Clear existing layers
+            $drawComponent .= $multi_shape ? '' : "\ndrawnItems$js_id.clearLayers();";  // Clear existing layers
             $drawComponent .= "                
                 const layer = event.layer;
-                drawnItems.addLayer(layer);
+                drawnItems$js_id.addLayer(layer);
                 layer.editing.enable(); // Automatically enable editing
                 layer.on('edit', function(event) {
-                    AA_GpsPrepareResults('#coosuggest$js_id', '#copygps$js_id', drawnItems.toGeoJSON());
+                    AA_GpsPrepareResults('#coosuggest$js_id', '#copygps$js_id', drawnItems$js_id.toGeoJSON());
                 });
                 layer.on('drag', function(event) {
-                    AA_GpsPrepareResults('#coosuggest$js_id', '#copygps$js_id', drawnItems.toGeoJSON());
+                    AA_GpsPrepareResults('#coosuggest$js_id', '#copygps$js_id', drawnItems$js_id.toGeoJSON());
                 });
-                AA_GpsPrepareResults('#coosuggest$js_id', '#copygps$js_id', drawnItems.toGeoJSON());
+                AA_GpsPrepareResults('#coosuggest$js_id', '#copygps$js_id', drawnItems$js_id.toGeoJSON());
               });
               suggest$js_id.addListener('suggest', function(suggestData) {
-                AA_GpsShowGeo(map$js_id, '$js_id', {'type':'Point','coordinates':[suggestData.data.longitude.toFixed(6), suggestData.data.latitude.toFixed(6)]}, inputEl$js_id.value, drawnItems);
+                AA_GpsShowGeo(map$js_id, '$js_id', {'type':'Point','coordinates':[suggestData.data.longitude.toFixed(6), suggestData.data.latitude.toFixed(6)]}, inputEl$js_id.value, drawnItems$js_id);
               });
               if (valEl$js_id.value) {
-                  AA_GpsShowGeo(map$js_id, '$js_id', valEl$js_id.value, '', drawnItems);
+                  AA_GpsShowGeo(map$js_id, '$js_id', valEl$js_id.value, '', drawnItems$js_id);
               }
               ";
         } else {
             $drawComponent = "
               suggest$js_id.addListener('suggest', function(suggestData) {
-                AA_GpsShowMarker(map$js_id, '$js_id', suggestData.data.latitude.toFixed(6) , suggestData.data.longitude.toFixed(6), inputEl$js_id.value, drawnItems);
+                AA_GpsShowMarker(map$js_id, '$js_id', suggestData.data.latitude.toFixed(6) , suggestData.data.longitude.toFixed(6), inputEl$js_id.value, drawnItems$js_id);
               });
               let match = valEl$js_id.value.match(/^([+-]?(\d*[.])?\d+)\s([+-]?(\d*[.])?\d+)$/);
               if (match) {
-                  AA_GpsShowMarker(map$js_id, '$js_id', match[1], match[3], '', drawnItems);
+                  AA_GpsShowMarker(map$js_id, '$js_id', match[1], match[3], '', drawnItems$js_id);
               }
               ";
         }
@@ -118,8 +118,8 @@ class GpsWidget extends Widget
   L.control.zoom({position: 'bottomleft'}).addTo(map$js_id);
 
   // Set up drawing controls
-  const drawnItems = new L.FeatureGroup();
-  map$js_id.addLayer(drawnItems);
+  const drawnItems$js_id = new L.FeatureGroup();
+  map$js_id.addLayer(drawnItems$js_id);
   
   $drawComponent
   
@@ -273,6 +273,8 @@ EOF;
         $msg_search = _m('Search');
         $load_from_fld_btn = ( $load_from_fld = $this->getProperty('load_from_fld', '') ) ? "<input type=button id=\"copyaddr$js_id\" value=\"" . _m('Load from address') . "\" onclick=\"AA_$('#adresa4suggest$js_id').value=getField('$load_from_fld');AA_$('#adresa4suggest$js_id').dispatchEvent(new Event('input'));\">" : '';
 
+        $use_string = _m("Use");
+
         /** @lang HTML */
         $widget = <<<EOF
                     <div class="aa-gps-container">
@@ -285,7 +287,7 @@ EOF;
                           <input type=hidden id="coosuggest$js_id">
                         </div>
                         <div class="aa-gps-map" id="mapdiv$js_id" style="height: 200px;"></div>
-                        <input class="aa-gps-use" type=button id="copygps$js_id" value="&larr; Use" disabled onclick="const el=AA_$('#$input_id'); el.value=AA_$('#coosuggest$js_id').value;el.dispatchEvent(new Event('change'));this.disabled=true;">
+                        <input class="aa-gps-use" type=button id="copygps$js_id" value="&larr; {$use_string}" disabled onclick="const el=AA_$('#$input_id'); el.value=AA_$('#coosuggest$js_id').value;el.dispatchEvent(new Event('change'));this.disabled=true;">
                       </div>
                     </div>
                   </div>
