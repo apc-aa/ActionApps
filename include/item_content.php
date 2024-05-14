@@ -154,8 +154,13 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
             // in AA_ItemContent - [0]['value'] = ..
             //                         ['flag']  = ..
             //                     [1]['value'] = ..
-            foreach ($value as $val) {
-                $this->arr[] = is_array($val) ? $val['value'] : (!is_object($val) ? $val : serialize($val));
+            foreach ($value as $key => $val) {
+                // find undefined key - we need this way it for multilingual fields
+                $key = (int)$key;
+                while (array_key_exists($key, $this->arr)) {
+                    $key++;
+                }
+                $this->arr[$key] = is_array($val) ? $val['value'] : (!is_object($val) ? $val : serialize($val));
                 // @todo check, if $val->getSomething is callable
             }
         } elseif (!is_null($value)) {

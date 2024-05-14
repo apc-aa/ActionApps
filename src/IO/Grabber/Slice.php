@@ -8,6 +8,7 @@
 
 namespace AA\IO\Grabber;
 
+use AA_Set;
 use AA_Slice;
 use ItemContent;
 use zids;
@@ -18,12 +19,16 @@ use zids;
 class Slice extends AbstractGrabber
 {
 
+    /** @var AA_Set specifies the slice, conds and sort */
     protected $set;
-    /** AA_Set specifies the slice, conds and sort */
+
+    /** @var zids possible subset of ids grabbed */
     protected $restrict_zids;
-    /** possible subset of ids grabbed */
+
+
+    /** @var array possible subset of fields - used in {updateitem:...} for field value update */
     protected $restrict_fields;
-    /** possible subset of fields - used in {updateitem:...} for field value update */
+
     private $_longids;
     /** list if files to grab - internal array */
     private $_content_cache;
@@ -58,6 +63,9 @@ class Slice extends AbstractGrabber
      */
     function prepare() {
         $zids = $this->set->query($this->restrict_zids);
+        if ($this->restrict_zids AND ($zids->count() != $this->restrict_zids->count())) {
+            warn('Not all restrict_zids found - '.$this->restrict_zids->count().' vs '.$zids->count().' found');
+        }
         $this->_longids = $zids->longids();
         $this->_content_cache = [];
         $this->_index = 0;

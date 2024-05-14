@@ -460,7 +460,7 @@ class AA_Set extends AA_Object {
 
     /** New main function to get item ids from database based on conditions...
      *  Should replace QueryZids() in future
-     * @param $restrict_zids - zids
+     * @param zids $restrict_zids
      * @return zids
      */
     public function query($restrict_zids = null, $limit = null): zids {

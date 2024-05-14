@@ -5020,6 +5020,7 @@ class AA_Stringexpand_Newitem extends AA_Stringexpand_Nevercache {
      */
     function expand(...$arg_list) {
         if (!is_long_id($template_long_item_id = array_shift($arg_list))) {
+            warn('No template id');
             return '';
         }
 
