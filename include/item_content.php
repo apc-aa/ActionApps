@@ -69,7 +69,7 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
      * @param $val
      * @return AA_Value
      */
-    static function factory($val) {
+    static function factory($val): AA_Value {
         if (is_object($val)) {
             if (strtolower(get_class($val)) == 'aa_value') {
                 return $val;
@@ -86,7 +86,7 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
      *  Called as
      *     AA_Value::factoryFromJson($val);
      */
-    static function factoryFromJson($json) {
+    static function factoryFromJson($json): AA_Value {
         $aav = new AA_Value();
         if (($json[0] == '[') and (!is_null($arr = json_decode($json, true)))) {
             $aav->setValues(array_values($arr));
@@ -154,8 +154,8 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
             // in AA_ItemContent - [0]['value'] = ..
             //                         ['flag']  = ..
             //                     [1]['value'] = ..
-            foreach ($value as $key => $val) {
-                $this->arr[(int)$key] = is_array($val) ? $val['value'] : (!is_object($val) ? $val : serialize($val));
+            foreach ($value as $val) {
+                $this->arr[] = is_array($val) ? $val['value'] : (!is_object($val) ? $val : serialize($val));
                 // @todo check, if $val->getSomething is callable
             }
         } elseif (!is_null($value)) {
@@ -194,7 +194,7 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
         return $this;
     }
 
-    /** Set the flag (for al the values the flag is common at this time) */
+    /** Set the flag (for all the values the flag is common at this time) */
     function setFlag($flag): AA_Value {
         $this->flag = $flag;
         return $this;
@@ -266,7 +266,7 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
      *          the values are not quoted, ...
      *  Mainly for backward compatibility with old - array approach
      */
-    function getArray() {
+    function getArray(): array {
         $ret = [];
         foreach ($this->arr as $k => $v) {
             $ret[(int)$k] = ['value' => $v, 'flag' => $this->flag];

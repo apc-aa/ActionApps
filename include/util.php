@@ -1691,15 +1691,15 @@ class AA_Contentcache {
             unset($this->content[$key]);
             unset($this->content_stable[$key]);
         } else {
-            unset($this->content);
-            unset($this->content_stable);
+            $this->content = [];
+            $this->content_stable = [];
         }
     }
 
     /** clear_soft function
      */
     function clear_soft() {
-        unset($this->content);
+        $this->content = [];
     }
 
 

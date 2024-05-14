@@ -103,12 +103,6 @@ class GpsWidget extends Widget
               ";
         }
 
-
-
-
-
-
-
         return /** @lang JavaScript */ <<<EOF
   const inputEl$js_id = AA_$('#adresa4suggest$js_id');
   const valEl$js_id = AA_$('#$val_id');
@@ -218,6 +212,13 @@ function AA_GpsPrepareResults(resultinput, usebutton, geojson) {
     AA_$(usebutton).disabled=false;
     AA_$(resultinput).value = AA_GeoJSON2String(geojson);
 }
+function AA_GpsUse(aainput, itemid, usebutton) {
+    const el=AA_$(aainput); 
+    el.value=AA_$(`#coosuggest\${itemid}`).value;
+    el.dispatchEvent(new Event('change'));
+    usebutton.disabled=true;
+    // window[`drawnItems\${itemid}`]?.eachLayer(layer => layer.editing?.enabled() && layer.editing.disable());
+}
 
 function AA_GeoJSON2String(geojsonData) {
     if (geojsonData.type === "FeatureCollection" && geojsonData.features.length === 1) {
@@ -238,8 +239,6 @@ function AA_GeoJSON2String(geojsonData) {
     // Return the modified or unmodified GeoJSON object
     return JSON.stringify(geojsonData);
 }
-
-
 
 Loader.load(null, {suggest: true}); // naseptavac
 EOF;
@@ -287,7 +286,7 @@ EOF;
                           <input type=hidden id="coosuggest$js_id">
                         </div>
                         <div class="aa-gps-map" id="mapdiv$js_id" style="height: 200px;"></div>
-                        <input class="aa-gps-use" type=button id="copygps$js_id" value="&larr; {$use_string}" disabled onclick="const el=AA_$('#$input_id'); el.value=AA_$('#coosuggest$js_id').value;el.dispatchEvent(new Event('change'));this.disabled=true;">
+                        <input class="aa-gps-use" type=button id="copygps$js_id" value="&larr; {$use_string}" disabled onclick="AA_GpsUse('#$input_id', '$js_id', this);">
                       </div>
                     </div>
                   </div>

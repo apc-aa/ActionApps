@@ -5067,14 +5067,26 @@ class AA_Stringexpand_Newitem extends AA_Stringexpand_Nevercache {
         $i                     = 0;
         $transformations       = [];
         while (isset($arg_list[$i]) AND isset($arg_list[$i+1])) {  // regular option-text pair
-            if ( (strlen($field_id = $arg_list[$i]) != 16) ) {
-                $i += 2;
-                continue;
+            // accept field id 16 chars long or 17 if ends with +
+            $field_id = $arg_list[$i];
+            $transformation = '';
+            switch (strlen($field_id)) {
+                case 16:
+                    $transformation = 'AA_Transformation_Exactvalues';
+                    break;
+                case 17:
+                    if (substr($field_id, -1) === '+') {
+                        $field_id       = substr($field_id, 0, 16);
+                        $transformation = 'AA_Transformation_AddValue';
+                    }
+                    break;
             }
-            if ( !count($value=json2arr($arg_list[$i+1])) ) {
-                $value = [''];
+            if ($transformation) {
+                if (!count($value = json2arr($arg_list[$i + 1]))) {
+                    $value = [''];
+                }
+                $transformations[$field_id] = new $transformation(['new_content' => $value]);
             }
-            $transformations[$field_id] = new AA_Transformation_Exactvalues(['new_content'=>$value]);
             $i += 2;
         }
         return $transformations;
@@ -5110,17 +5122,18 @@ class AA_Stringexpand_Ensureitem extends AA_Stringexpand_Nevercache {
 }
 
 /** Updates item fields
- *    {updateitem:<long_item_id>[:<field_1>:<new_value_1>:<field_2>:<new_value_2>:...]}
+ *    {updateitem:<long_item_id>[:<field_1>[+]:<new_value_1>:<field_2>[+]:<new_value_2>:...]}
  *
  *  It works only on slices where "Allow anonymous editing of items" is set to "All items" or "Only by Planned tasks - cron|toexecute", right now.
  *  The plan is to work with field permissions in future
  *
  *    {updateitem:c239cb267837a25b4efb5892ca4f4324:headline........:test item:category........:["enviro","social"]}
+ *    {updateitem:c239cb267837a25b4efb5892ca4f4324:relation........+:{ensureitem:...}}
  *
- * c239cb267837a25b4efb5892ca4f4324 is ID of the updated item
- * The values could be single (for headline........), or multiple - written in JSON format.
- *
- * If you want to update the item conditionally just do not fill <long_item_id> in cases you do not want update
+ *  - c239cb267837a25b4efb5892ca4f4324 is ID of the updated item
+ *  - The values could be single (for headline........), or multiple - written in JSON format.
+ *  - If you want to add new value to the field, just append + to the field id
+ *  - If you want to update the item conditionally just do not fill <long_item_id> in cases you do not want update
  *
  * @return string <long_item_id> if updated, nothing if item is not updated
  *

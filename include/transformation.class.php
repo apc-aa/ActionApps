@@ -54,7 +54,7 @@ abstract class AA_Transformation implements \AA\Util\NamedInterface {
      * @param string $field_id
      * @param ItemContent
      * @param bool $silent
-     * @return AA_Value|bool
+     * @return AA_Value|bool|null - null means no change, true means all done (no more transformations needed), AA_Value means new value to store to field
      */
     abstract function transform($field_id, $itemcontent, $silent=true);
 
@@ -359,15 +359,15 @@ class AA_Transformation_Setflag extends AA_Transformation {
  */
 class AA_Transformation_AddValue extends AA_Transformation {
 
-    var $new_flag;
-    var $new_content;
+    protected $new_content;
+    protected $new_flag = 'u'; // get from old
 
     /** AA_Transformation_AddValue function
      * @param $param
      */
     function __construct($param) {
-        $this->new_flag    = $param['new_flag'];
         $this->new_content = $param['new_content'];
+        $this->new_flag    = $param['new_flag'] ?? 'u';   // get from old
     }
 
     /** name function
@@ -386,18 +386,16 @@ class AA_Transformation_AddValue extends AA_Transformation {
 
     /** transform function
      * @param $field_id
-     * @param $itemcontent (by link)
+     * @param ItemContent|AA_Content $itemcontent (by link)
      * @return AA_Value
      */
     function transform($field_id, $itemcontent, $silent=true) {
         $item = GetItemFromContent($itemcontent);
-        $flag = $this->getFlagFromForm($item->getFlag($field_id));
-
         $ret  = $itemcontent->getAaValue($field_id);
-        $ret->setFlag($flag);
-        $ret->addValue($item->subst_alias($this->new_content));
-
-        return $ret;
+        $old = clone $ret;
+        $ret->setFlag($this->getFlagFromForm($item->getFlag($field_id)));
+        $ret->addValue($item->subst_aliases($this->new_content));
+        return ($old == $ret) ? null : $ret;   // '==' is right - compare data. No change - return null
     }
 
     /** htmlSetting function
@@ -408,8 +406,8 @@ class AA_Transformation_AddValue extends AA_Transformation {
     static function htmlSetting($input_prefix, $params) {
         $flag_options = [
             'h' => _m('HTML'),
-                              't' => _m('Plain text'),
-                              'u' => _m('As for other values of this field')
+            't' => _m('Plain text'),
+            'u' => _m('As for other values of this field')
         ];
         ob_start();
         FrmTabCaption();
