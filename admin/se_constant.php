@@ -391,22 +391,25 @@ echo "</td></tr>
  <th><b><a href=\"javascript:SortConstants('used')\">". _m("Used") ."</a></b><br>". _m("times") ."</th>
 </tr>";
 
+$pri_max = 1000;
 $i=0;
 // existing constants
 if ($s_constants) {
     foreach ($s_constants as $v) {
         if ($from_form) {  // get values from form
             ShowConstant($i, $name[$i], $value[$i], $cid[$i], $pri[$i], $using_slices_arr);
+            $pri_max = $pri[$i];
         } else {        // get values from database
             ShowConstant($i, $v["name"], $v["value"], $as_new ? '' : 'x'.unpack_id($v["id"]), $v["pri"], $using_slices_arr);
+            $pri_max = $v['pri'];
         }
         $i++;
     }
 }
 
 // ten rows for possible new constants
-for ($j=0; $j<10; $j++) {
-    ShowConstant($i, "", "", "", 1000+ $j*10);
+for ($j=1; $j<=10; $j++) {
+    ShowConstant($i, "", "", "", $pri_max + $j*10);
     $i++;
 }
 
