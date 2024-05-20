@@ -27,14 +27,21 @@
 
 namespace AA\Later;
 
-class LogCleanup implements LaterInterface
-{
-    protected $time;
-    protected $type;
+class LogCleanup implements LaterInterface {
 
-    function __construct($time, $type='') {
-        $this->time = $time;
-        $this->type = $type;
+    /** @var int delete older than $time in seconds */
+    protected int   $time;
+
+    /** @var array delete only this log types */
+    protected array $type;
+
+    /** @var array delete all log types except this ones */
+    protected array $except;
+
+    function __construct(int $time, array $type=[], array $except=[]) {
+        $this->time   = $time;
+        $this->type   = $type;
+        $this->except = $except;
     }
 
     /** special function called from AA\Later\Toexecute class - used for queued tasks (run form cron)
@@ -46,6 +53,9 @@ class LogCleanup implements LaterInterface
         $where = [['time', $this->time, '<']];
         if ( $this->type ) {
             $where[] = ['type',$this->type];
+        }
+        if ( $this->except ) {
+            $where[] = ['type',$this->except, 's<>'];
         }
         return (new TableCleaner('log', $where))->clean();
     }

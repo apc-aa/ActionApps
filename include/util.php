@@ -910,7 +910,7 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
                 }
             } else {
                 // we can set FLAG_HTML, because the text2html gives the same result as the number itself
-                // if speeds the item->f_h() function a bit
+                // it speeds the item->f_h() function a bit
                 $content[$unpack_id][$row['field_id']][] = ["value" => $row['number'], "flag"  => ($row['flag']|FLAG_HTML)];
             }
         }

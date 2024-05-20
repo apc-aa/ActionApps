@@ -329,7 +329,7 @@ class DB_AA extends AbstractDB
      *     >=       - integer           >=               single             ['date', 1478547854, '>=']
      *     <=       - integer           <=               single             ['date', 1478547854, '<=']
      *     <>       - integer           <>               single             ['date', 1478547854, '<>']
-     *     s<>      - string            <>               single             ['name', $name, 's<>']
+     *     s<>      - string            <>               single or array    ['name', $name, 's<>']
      *     l<>      - longid            <>               single             ['id', $slice_id, 'l<>']
      *     !=       - integer           <>               single             ['date', 1478547854, '!=']   // the same as above - "<>"
      *     ISNULL   -                   IS NULL                             ['number', '', 'ISNULL']
@@ -360,7 +360,12 @@ class DB_AA extends AbstractDB
                 $where[] = "$name LIKE " . qquote($value . '%');
                 continue;
             } elseif ($type == 'BEGIN') {
-                $where[] = "$name LIKE '". addcslashes(quote($value),"_%") ."%'";
+                if (is_array($value)) {
+                    // join conditions by OR
+                    $where[] = '(' . join(' OR ', array_map(fn($v) => "$name LIKE '" . addcslashes(quote($v), "_%") . "%'", $value)) . ')';
+                } else {
+                    $where[] = "$name LIKE '". addcslashes(quote($value),"_%") ."%'";
+                }
                 continue;
             } elseif ($type == 'CONTAIN') {
                 $where[] = "$name LIKE '%". addcslashes(quote($value),"_%") ."%'";

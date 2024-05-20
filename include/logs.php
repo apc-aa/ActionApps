@@ -135,8 +135,12 @@ class AA_Log implements \AA\Expand\InternalExpandInterface {
         return join("\n", $ret);
     }
 
-    static function context($selector='') {
-        return ParamImplode([AA::$module_id,$selector,str_replace(':','_',$_SERVER['REMOTE_ADDR']), ($_SERVER['HTTPS'] ? '' : 'http/'). "{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}"]);
+    static function context(?string $selector=null) {
+        if (is_null($selector)) {
+            ParamImplode([AA::$module_id,'',str_replace(':','_',$_SERVER['REMOTE_ADDR']), ($_SERVER['HTTPS'] ? '' : 'http/'). "{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}"]);
+        }
+        // we need to be searchabe by selector - so in DB index
+        return ParamImplode([$selector, AA::$module_id,str_replace(':','_',$_SERVER['REMOTE_ADDR']), ($_SERVER['HTTPS'] ? '' : 'http/'). "{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}"]);
     }
 
     /** getLastLogEvents function

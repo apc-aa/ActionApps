@@ -413,7 +413,7 @@ class AA_Stringexpand_Internal extends AA_Stringexpand_Nevercache {
 class AA_Stringexpand_Userinfo extends AA_Stringexpand {
 
     /** expand function
-     * @param $user
+     * @param $user - usedID - user as stored in posted_by....... or edited_by....... field
      * @return string name|logintime|logintimes
      */
     function expand($user='', $property='') {
@@ -423,12 +423,11 @@ class AA_Stringexpand_Userinfo extends AA_Stringexpand {
         switch ($property) {
             case 'logintime':  return DB_AA::select1('time', "SELECT time FROM `log`", [
                 ['type', 'LOGIN'],
-                ['params', $user],
-//                ['params', str_replace(':', ':#', $user) . ':%', 'LIKE']
+                ['selector', [$user,":$user"], 'BEGIN'],   // ":$user" is for older log format - could be omitted later in 2024
             ], ['time-']) ?: '';
             case 'logintimes': return join('-',DB_AA::select('time', "SELECT time FROM `log`", [
                 ['type','LOGIN'],
-                ['params',$user],
+                ['selector', [$user,":$user"], 'BEGIN'],   // ":$user" is for older log format - could be omitted later in 2024
             ], ['time-']));
         }
         return perm_username( $user );

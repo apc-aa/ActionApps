@@ -82,6 +82,7 @@ abstract class AbstractDB {
 
     function f($Name) {}
 
+    /** based on my test mysqli contains string[], while db_pdo:mysql returns columns in type based on table column type */
     function record($Name = null) {
         return  $Name ? $this->Record[$Name] : $this->Record;
     }
