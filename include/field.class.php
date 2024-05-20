@@ -74,6 +74,7 @@ class AA_Field implements ArrayAccess, Countable, Iterator {
     protected function sanitizeData() {
         if ($this->data['id'] == 'id..............') {
             $this->data['input_validate'] = 'packedid';
+            $this->data['search_pri'] = 100;  // standard value (redefining 0 from DB)
         }
     }
 
@@ -317,9 +318,9 @@ class AA_Field implements ArrayAccess, Countable, Iterator {
     }
 
     /** getSearchType function
-     * @return array - [text | numeric | date | constants, [relation,<slice_id>], [constants,<constants_name>], [numconstants,<constants_name>]]
+     * @return string[] - [text | numeric | date | constants, [relation,<slice_id>], [constants,<constants_name>], [numconstants,<constants_name>]]
      */
-    function getSearchType() {
+    function getSearchType(): array {
         $field_type = 'numeric';
         $field_add  = '';
         if ($this->data['text_stored']) {
@@ -465,15 +466,15 @@ class AA_Field implements ArrayAccess, Countable, Iterator {
     }
 
     /** getRelation function
-     *  @return array - [relation,<slice_id>] or [constants,<constants_name>]
+     *  @return string[] - [relation,<slice_id>] or [constants,<constants_name>]
      */
-    function getRelation() {
+    function getRelation(): array {
         $showfunc = Widget::parseClassProperties($this->data['input_show_func']);
         if (!$showfunc['const']) {
             return [];
         }
         // prefix indicates select from items
-        return (substr($showfunc['const'],0,7) == "#sLiCe-") ? ['relation', substr($showfunc['const'],7)] : ['constants', $showfunc['const']];
+        return (substr($showfunc['const'],0,7) == "#sLiCe-") ? ['relation', substr($showfunc['const'],7)] : ['constants', (string)$showfunc['const']];
     }
 
     /** isMultiline - @return bool - if the default widget allows block elements  */
@@ -665,29 +666,29 @@ class AA_Fields implements Iterator, Countable {
     ];
 
     /**  @var AA_Field[] - array of object of AA_Field type */
-    var $fields;
+    protected array $fields;
 
     /** id of slice/module ... for which the fields are used */
-    var $master_id;
+    protected string $master_id;
 
     /** collection - each id could have multiple fieldsets.
      *  In fact, we do not use this feature yet, it is just abstraction for
      *  "slice fields" - slice has two field sets - normal fields and
      *  "slice (setting) fields", where id of those fields begins with '_'
      */
-    var $collection;
+    protected int $collection;
 
     /** Array of aliases - for caching purposes */
-    var ?array $aliases;
+    protected ?array $aliases;
 
-    protected $loaded_all;
-    protected $lazy_loaded_no;
+    protected bool $loaded_all;
+    protected int $lazy_loaded_no;
 
     /** AA_Fields function
-     * @param $master_id
-     * @param $collection
+     * @param string $master_id
+     * @param int    $collection
      */
-    function __construct($master_id, $collection = 0) {
+    function __construct(string $master_id, int $collection = 0) {
         $this->master_id      = $master_id;
         $this->fields         = [];
         $this->collection     = $collection;
@@ -697,7 +698,7 @@ class AA_Fields implements Iterator, Countable {
     }
 
     /** use instead of constructor - there was multiple AA_Fields for the same slice - in getSearchFields() */
-    static function factoryFor($master_id, $collection = 0): self {
+    static function factoryFor(string $master_id, int $collection = 0): self {
         static $field_sets = [];
         $key = $master_id . '_' . $collection;
         if (!isset($field_sets[$key])) {
@@ -901,7 +902,7 @@ class AA_Fields implements Iterator, Countable {
     }
 
     /** getSearchArray function
-     * @param int $related_cnt - return also $related_cnt related fields (we do not want it for recurent call)
+     * @param int $related_cnt - return also $related_cnt related fields (we do not want it for recurrent call)
      * @return AA\Util\Searchfields
      */
     function getSearchfields($related_cnt=8) {
@@ -928,12 +929,12 @@ class AA_Fields implements Iterator, Countable {
                         if ($r_fld['search_pri'] == 0) {
                             continue;
                         }
-                        $r_fld['opt_group']  = $opt_group;
+                        $r_fld['opt_group']   = $opt_group;
                         $r_fld['search_pri'] += $related;
-                        $r_fld['order_pri'] = 0;           // ordering by remote field is not supported in QueryZids  //  if ($r_fld['order_pri']>0) { $r_fld['order_pri'] += $related; }
-                        $r_fld['name'] = ' > ' . $r_fld['name'];
-                        $field_expr = $r_fid . '@' . $field_id;
-                        $r_fld['field']   = $field_expr;
+                        $r_fld['order_pri']   = 0;           // ordering by remote field is not supported in QueryZids  //  if ($r_fld['order_pri']>0) { $r_fld['order_pri'] += $related; }
+                        $r_fld['name']        = ' > ' . $r_fld['name'];
+                        $field_expr           = $r_fid . '@' . $field_id;
+                        $r_fld['field']       = $field_expr;
                         $searchfields->addArray($field_expr, $r_fld);
                         if (++$i>$related_cnt) {  // the number of fields in related search is limited to first $related_cnt (just not to be so long for some heavy related slices)
                             break;
@@ -986,7 +987,6 @@ class AA_Fields implements Iterator, Countable {
                 }
             }
         }
-
         return $searchfields;
     }
 

@@ -973,29 +973,35 @@ function getSortFromUrl($sort) {
 
 class AA_Dbcondition {
 
-    private $field;             // string
-    private $operator;          // string
-    private $querystring;       // string
-    private $type;              // text|number   - store type - used for check for c0.number = 'honza'  (which would equals to TRUE in MySQL)
+    private string $field;
+    private string $operator;
+    private string $querystring;
+    private string $type;       // text|number   - store type - used for check for c0.number = 'honza'  (which would equals to TRUE in MySQL)
 
-    /** @var bool - some contitions are different, when is done for joined (content) table - the case with multivalues and "<>" operator */
-    private $joined = false;
-    private $condition = null;
-    private $jointype = null;
-    private $joincond = null;
+    /** @var bool - some conditions are different, when is done for joined (content) table - the case with multivalues and "<>" operator */
+    private bool $joined = false;
+    private string $condition = '';
+    private string $jointype = '';
+    private string $joincond = '';
 
-    function __construct($field, $operator, $querystring, $type = 'text', $joined = false) {
-        $this->field = trim($field);
+    function __construct(string $table, $field, $operator, $querystring, string $type='text', bool $joined=false) {
+
+        $this->field = ($table ? "$table." : ''). trim((string)$field);
 
         // normalize operator
         // we allow modifiers without ':' - like d>, e>=, ... (which bring administrators the possibility to not deal with escaping ':' in some cases)
         // we are also trying to fix administrators mistakes, when they convert > to &gt; so &gt;, ... are valid operator, now
-        $this->operator = str_replace(['#:', ':', '&gt;', '&lt;', '&amp;'], ['', '', '>', '<','&'], trim($operator)); // #: - fix mistaken escaping of d#:>...
+        $this->operator = str_replace(['#:', ':', '&gt;', '&lt;', '&amp;'], ['', '', '>', '<','&'], trim((string)$operator)); // #: - fix mistaken escaping of d#:>...
         if (strlen($this->operator) < 4) {
             $this->operator = AA_Operators::normalize($this->operator);  // d-highlight.......-lt-5  - lt, gt, le, ge, ne are allowed as well
         }
 
-        $this->querystring = $querystring;
+        if ($table==='item' AND AA_Metabase::isPacked('item', $field) AND is_long_id($querystring)) {
+            $this->querystring = pack_id($querystring);
+        } else {
+            $this->querystring = $querystring;
+        }
+
         $this->type        = $type;
         $this->joined      = $joined;
 
@@ -1003,6 +1009,7 @@ class AA_Dbcondition {
         $this->jointype  = $arr[0];
         $this->joincond  = $arr[1];
         $this->condition = $arr[2];
+        $this->table = $table;
     }
 
     function getWhereExp() { return $this->condition; }
@@ -1011,7 +1018,10 @@ class AA_Dbcondition {
 
     function getJoinCond() { return $this->joincond; }
 
-    function _calculate() {
+    /**
+     * @return string[]
+     */
+    function _calculate(): array {
         AA::$debug & 64 && AA::$dbg->log('AA_Dbcondition', $this->field, $this->operator, $this->querystring, $this->type);
 
         $field       = $this->field;
@@ -1155,8 +1165,7 @@ class AA_Dbcondition {
 
             case '<>' :       // for work with multivalues we look for non existatnt join by value
             case '!=' :
-                return $this->joined ? ['LEFT', "($qfield = '$cleanstr')", "($qfield IS NULL)"] :
-                    ['LEFT', "", "($qfield <> '$cleanstr')"];
+                return $this->joined ? ['LEFT', "($qfield = '$cleanstr')", "($qfield IS NULL)"] : ['LEFT', "", "($qfield <> '$cleanstr')"];
 
             case '<=' :
             case '<'  :
@@ -1373,7 +1382,7 @@ function MakeSQLConditions($fields_arr, $conds, $defaultCondsOperator, &$join_ta
                                 continue;
                             }
                         }
-                        $onecond[] = (new AA_Dbcondition($finfo['field'], $cond['operator'], $cond['value']))->getWhereExp();
+                        $onecond[] = (new AA_Dbcondition($finfo['table'] ?? '', $finfo['field'], $cond['operator'], $cond['value']))->getWhereExp();
                         if ($finfo['table']) {
                             $join_tables[$finfo['table']] = true;
                         }
@@ -1673,7 +1682,7 @@ function QueryZids($slices, $conds = "", $sort = "", $type = "ACTIVE", $neverAll
                             $tbl2          = 'c' . $tbl_count++;
                             $select_tabs[] = "LEFT JOIN content as $tbl  ON ($tbl.item_id=item.id AND ($tbl.field_id=$rel_fld OR $tbl.field_id is NULL))
                                               LEFT JOIN content as $tbl2 ON ($tbl2.item_id=UNHEX($tbl.text))";
-                            $cur_cond      = (new AA_Dbcondition($tbl2 . '.text', $cond['operator'], $cond['value']))->getWhereExp();
+                            $cur_cond      = (new AA_Dbcondition($tbl2, 'text', $cond['operator'], $cond['value']))->getWhereExp();
                         } else {
                             $cond_field = AA_Slice::getModule($rel_f_slice)->getField($cf);
                             if (!is_object($cond_field)) {
@@ -1692,10 +1701,10 @@ function QueryZids($slices, $conds = "", $sort = "", $type = "ACTIVE", $neverAll
                                 $select_tabs[] = "LEFT JOIN content as $tbl  ON ($tbl.item_id=item.id AND ($tbl.field_id=$rel_fld OR $tbl.field_id is NULL))
                                                   LEFT JOIN content as $tbl2 ON ($tbl2.item_id=UNHEX($tbl.text) AND ($tbl2.field_id=$cond_flds OR $tbl2.field_id is NULL))";
                             }
-                            $cur_cond = (new AA_Dbcondition($tbl2 . '.' . $cond_field->storageColumn(), $cond['operator'], $cond['value']))->getWhereExp();
-                            if (in_array($cf, ['id..............', 'slice_id........'])) {
-                                $cur_cond = preg_replace("/'([0-9a-f]{32})'/i", "0x\\1", $cur_cond);
-                            }
+                            $cur_cond = (new AA_Dbcondition($tbl2, $cond_field->storageColumn(), $cond['operator'], $cond['value']))->getWhereExp();
+//                            if (in_array($cf, ['id..............', 'slice_id........'])) {
+//                                $cur_cond = preg_replace("/'([0-9a-f]{32})'/i", "0x\\1", $cur_cond);
+//                            }
                         }
                         $select_conds[] = $cur_cond;
                         $sortable[$cf]  = $tbl;  // @todo - test if it works
@@ -1748,10 +1757,10 @@ function QueryZids($slices, $conds = "", $sort = "", $type = "ACTIVE", $neverAll
                             $select_tabs[] = "LEFT JOIN content as $tbl  ON ($tbl.field_id=$rel_fld AND HEX(item.id)=$tbl.text)
                                               LEFT JOIN content as $tbl2 ON ($tbl2.item_id=$tbl.item_id AND ($tbl2.field_id=$cond_flds OR $tbl2.field_id is NULL))";
                         }
-                        $cur_cond = (new AA_Dbcondition($tbl2 . '.' . $cond_field->storageColumn(), $cond['operator'], $cond['value']))->getWhereExp();
-                        if (in_array($cond_flds, ['id..............', 'slice_id........'])) {
-                            $cur_cond = preg_replace("/'([0-9a-f]{32})'/i", "0x\\1", $cur_cond);
-                        }
+                        $cur_cond = (new AA_Dbcondition($tbl2, $cond_field->storageColumn(), $cond['operator'], $cond['value']))->getWhereExp();
+//                        if (in_array($cond_flds, ['id..............', 'slice_id........'])) {
+//                            $cur_cond = preg_replace("/'([0-9a-f]{32})'/i", "0x\\1", $cur_cond);
+//                        }
                         $select_conds[]                             = $cur_cond;
                         $sortable[str_replace("'", "", $cond_flds)] = $tbl;  // @todo - test if it works
                         $cond_flds                                  = '';
@@ -1768,16 +1777,9 @@ function QueryZids($slices, $conds = "", $sort = "", $type = "ACTIVE", $neverAll
 
                 if ($field->storageTable() == 'item') {   // field is stored in table 'item'
                     // Long ID in conds should be specified as unpacked, but in db it is packed
-                    $cur_cond = (new AA_Dbcondition('item.' . $field->storageColumn(), $cond['operator'], $cond['value']))->getWhereExp();
-                    switch ($fid) {
-                        case 'id..............':
-                        case 'slice_id........':
-                            // replace unpaced ids with the packed ones
-                            $cur_cond = preg_replace("/'([0-9a-f]{32})'/i", "0x\\1", $cur_cond);
-                            break;
-                        case 'expiry_date.....':
-                            $ignore_expiry_date = true;
-                            break;
+                    $cur_cond = (new AA_Dbcondition('item', $field->storageColumn(), $cond['operator'], $cond['value']))->getWhereExp();  // 'text' is maybe not correct, but it worked this way so far - no need to change - HM - 2024-05-17
+                    if ($fid == 'expiry_date.....') {
+                        $ignore_expiry_date = true;
                     }
                     $select_conds[] = $cur_cond;
                 } else {
@@ -1789,7 +1791,7 @@ function QueryZids($slices, $conds = "", $sort = "", $type = "ACTIVE", $neverAll
 
             if ($cond_flds != '') {
 
-                $dbcond      = new AA_Dbcondition('c' . $tbl_count . ".$store", $cond['operator'], $cond['value'], $store, true);
+                $dbcond      = new AA_Dbcondition('c'.$tbl_count, $store, $cond['operator'], $cond['value'], $store, true);
                 $dbcjointype = $dbcond->getJoinType();
                 if ($dbcjointype == 'ALL') {
                     // nothing;
@@ -1803,7 +1805,7 @@ function QueryZids($slices, $conds = "", $sort = "", $type = "ACTIVE", $neverAll
 
                     $selcondadd = ($dbcjointype == 'INNER') ? '' : "OR $tbl.field_id is NULL";
 
-                    // fill arrays to be able construct select command
+                    // fill arrays to be able to construct select command
                     $select_conds[] = $dbcond->getWhereExp();
 
                     if ($addjoincond = $dbcond->getJoinCond()) {
@@ -2140,7 +2142,7 @@ function QueryDiscIDs($slice_id, $conds, $sort, $slices) {
                     unset ($select_cond);
                     foreach ($vv as $fid2 => $foo) {
                         if (in_array($fid2, $fields) and $cond['value'] > "") {
-                            $select_cond[] = (new AA_Dbcondition("discussion.$fid2", $cond['operator'], $cond['value']))->getWhereExp();
+                            $select_cond[] = (new AA_Dbcondition('discussion', $fid2, $cond['operator'], $cond['value']))->getWhereExp();
                         }
                     }
                     if (is_array($select_cond)) {

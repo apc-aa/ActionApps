@@ -55,8 +55,9 @@ class AA_Module {
     protected $table_setting;          // Array of specific table settings
     protected $moduleobject_setting;   // Array of module settings
 
-    /** it is better to call it using getModule() - $site = AA_Module_Site::getModule($module_id); */
-    function __construct($id) {
+    /** it is better to call it using getModule() - $site = AA_Module_Site::getModule($module_id);
+     */
+    function __construct(string $id) {
         $this->module_id            = $id;
         $this->module_setting       = null;
         $this->table_setting        = null;
@@ -90,7 +91,7 @@ class AA_Module {
      *   $site        = AA_Module_Site::getModule($module_id)
      *   $slice       = AA_Slice::getModule($module_id)
      *   $some_module = AA_Module::getModule($module_id)  // this is not recommended - we usually know which module it should be
-     *  @param $module_id
+     *  @param string $module_id
      * @return AA_Module|AA_Slice|AA_Module_Site|AA_Module_Alerts|AA_Module_Links|AA_Module_Polls|null
      */
     static public function getModule($module_id): ?AA_Module {
@@ -399,7 +400,7 @@ class AA_Slice extends AA_Module {
     /** AA_Slice function
      * @param $module_id
      */
-    function __construct($module_id) {
+    function __construct(string $module_id) {
         $this->fields         = AA_Fields::factoryFor($module_id);
         $this->dynamic_fields = AA_Fields::factoryFor($module_id, 1);
         parent::__construct($module_id);
