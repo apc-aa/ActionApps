@@ -1382,7 +1382,13 @@ function MakeSQLConditions($fields_arr, $conds, $defaultCondsOperator, &$join_ta
                                 continue;
                             }
                         }
-                        $onecond[] = (new AA_Dbcondition($finfo['table'] ?? '', $finfo['field'], $cond['operator'], $cond['value']))->getWhereExp();
+                        // for Links it contain whole definition of the ink - like "links_cat_cat.state"
+                        if ( strpos($finfo['field'], '.') !== false ) {   // not common case
+                            [$dbtab, $dbfld] = explode('.',$finfo['field'],2);
+                        } else {
+                            [$dbtab, $dbfld] = [$finfo['table'] ?? '', $finfo['field']];
+                        }
+                        $onecond[] = (new AA_Dbcondition($dbtab, $dbfld, $cond['operator'], $cond['value']))->getWhereExp();
                         if ($finfo['table']) {
                             $join_tables[$finfo['table']] = true;
                         }
