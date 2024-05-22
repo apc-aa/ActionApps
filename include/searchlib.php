@@ -996,19 +996,16 @@ class AA_Dbcondition {
             $this->operator = AA_Operators::normalize($this->operator);  // d-highlight.......-lt-5  - lt, gt, le, ge, ne are allowed as well
         }
 
-        if ($table==='item' AND AA_Metabase::isPacked('item', $field) AND is_long_id($querystring)) {
-            $this->querystring = pack_id($querystring);
-        } else {
-            $this->querystring = $querystring;
-        }
-
+        $this->querystring = $querystring;
         $this->type        = $type;
         $this->joined      = $joined;
 
         $arr             = $this->_calculate();
         $this->jointype  = $arr[0];
         $this->joincond  = $arr[1];
-        $this->condition = $arr[2];
+
+        //  could be id or expression like 49d94e8e3379dc951eac78c2cd0f9f65 OR 78d89ac8dd0de0967a6f50ee5408ccdd OR ae076560dd8674b169e7d493d23ca8f2
+        $this->condition = ($table==='item' AND AA_Metabase::isPacked('item', $field)) ? preg_replace("/'([0-9a-f]{32})'/i", "0x\\1", $arr[2]) : $arr[2];
         $this->table = $table;
     }
 

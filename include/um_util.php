@@ -57,7 +57,7 @@ function SelectGU_ID($name, $arr, $selected="", $type="short") {
  */
 function GetFiltered($type, $filter, $to_much, $none) {
     switch( $type ) {
-        case "U": $list = AA::$perm->findUsernames($filter);  break;
+        case "U": $list = AA::$perm->findUsernames($filter, 1000);  break;
         case "G": $list = AA::$perm->findGroups($filter); break;
     }
     if ( !is_array($list) OR !count($list)) {
@@ -67,6 +67,7 @@ function GetFiltered($type, $filter, $to_much, $none) {
     }
     return $list;
 }
+
 /** PrintModulePermModificator function
  * @param $selected_user
  * @return string

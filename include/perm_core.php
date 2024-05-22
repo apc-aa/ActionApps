@@ -494,9 +494,10 @@ class AA_Perm {
 
     /**
      * @param string $pattern
-     * @return array|string - string "too much" if too much users should be listed (LDAP returns it sometimes)
-    */
-    public function findUsernames($pattern) {
+     * @param int    $limit
+     * @return array|string - string "too much" if too many users should be listed (LDAP returns it sometimes)
+     */
+    public function findUsernames($pattern, int $limit=0) {
         $users = [];
         foreach ($this->perm_systems as $perm_sys) {
             if (is_array($new_users = $perm_sys->findUsernames($pattern))) {
@@ -504,6 +505,9 @@ class AA_Perm {
                 $users += $new_users;
             } elseif ($new_users == 'too much') {  // LDAP can give this answer
                 return 'too much';  // probably
+            }
+            if ($limit && count($users) > $limit) {
+                return array_slice($users, 0, $limit, true);
             }
         }
         return $users;
@@ -850,7 +854,7 @@ abstract class AA_Permsystem {
 
     function isUsernameFree($username): bool                                  { return false; }
 
-    /** @return string|array - string "too much" if too much users should be listed (LDAP returns it sometimes) */
+    /** @return string|array - string "too much" if too many users should be listed (LDAP returns it sometimes) */
     function findUsernames($pattern) { return []; }
 
     function findUserByLogin($user_login): array                              { return []; }

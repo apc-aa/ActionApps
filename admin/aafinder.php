@@ -368,9 +368,9 @@ if (strlen($findtext)) {
             'field3'
         ];
 
-        $SQL = "SELECT view.id, view.type, view.slice_id, slice.name FROM view INNER JOIN slice ON view.slice_id = slice.id WHERE ";
+        $SQL = "SELECT `view`.`id`, `view`.`type`, `view`.`slice_id`, `slice`.`name` FROM `view` INNER JOIN `slice` ON `view`.`slice_id` = `slice`.`id` WHERE "; 
         foreach ($fields as $field) {
-            $SQL .= "view.$field LIKE \"%". addcslashes(quote($findtext),'_%')."%\" OR ";
+            $SQL .= "(`view`.`$field` LIKE \"%". addcslashes(quote($findtext),'_%')."%\") OR ";
         }
         $SQL .= "0";
         $db->query($SQL);
