@@ -2801,7 +2801,7 @@ function getFrmTabRow( $row, $mode='td', $attrs=[], $safe=false) {
         if ($safe) {
             // the same as below, just htmlspecialchars() is used
             foreach ($row as $col) {
-                $ret .= (!is_array($col) ? "<$mode>".safe($col)."</$mode>" : "<$mode " . safe($col['attr']) . '>' . safe($col['text']) . "</$mode>");
+                $ret .= (!is_array($col) ? "<$mode><pre>".safe($col)."</pre></$mode>" : "<$mode " . safe($col['attr']) . '><pre>' . safe($col['text']) . "</pre></$mode>");
             }
         } else {
             foreach ($row as $col) {
