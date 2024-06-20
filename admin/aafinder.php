@@ -129,14 +129,19 @@ function AafinderObjectLink($object_id): string {
 }
 
 function AafinderItemLink($item_id, $slice_id='', $no_module_link=false): string {
+    $item = AA_Items::getItem(new zids($item_id, 'l'));
     if (!$slice_id) {
-        if ($item = AA_Items::getItem(new zids($item_id, 'l'))) {
+        if ($item) {
             $slice_id = $item->getSliceID();
         } else {
             return '';
         }
     }
-    $seo = StrExp('item', [$item_id, 'seo.............']) ?: 'Item';
+    $seo = $item->getValue('seo.............') ?: 'Item';
+    if (!$item->isActive()) {
+        $seo = "<s>$seo</s>";
+    }
+
     $info = [];
     $info[] = a_href(get_admin_url('itemedit.php',['id'=>$item_id,'change_id'=>$slice_id,'edit'=>1]), "$seo ($item_id)");
     if (!$no_module_link) {
@@ -206,11 +211,10 @@ function PrintIdsInfo($l_or_s_id) {
         echo "</pre>";
     }
     if ($rec = DB_AA::select([], 'SELECT * FROM `object_text`', [['object_id', $l_or_s_id]])) {
-        echo '<h3>'. _m('Object') .'</h3><pre>';
-        print_r($rec);
-        print_r(DB_AA::select([], 'SELECT * FROM `object_integer`', [['object_id', $l_or_s_id]]));
-        print_r(DB_AA::select([], 'SELECT * FROM `object_float`', [['object_id', $l_or_s_id]]));
-        echo "</pre>";
+        echo '<h3>'. _m('Object') .'</h3>';
+        echo GetHtmlTable($rec, 'key', _m('Object'), false, 'td');
+        echo GetHtmlTable(DB_AA::select([], 'SELECT * FROM `object_integer`', [['object_id', $l_or_s_id]]), 'key', _m('Object'), false, 'td');
+        echo GetHtmlTable(DB_AA::select([], 'SELECT * FROM `object_float`', [['object_id', $l_or_s_id]]), 'key', _m('Object'), false, 'td');
     }
     if ($res = DB_AA::select([], 'SELECT `id`, FROM_UNIXTIME(`time`) as Date, `user`, `type`, `selector`, `params` FROM `log`', [['selector', $l_or_s_id, 'RLIKE']])) {
         echo GetHtmlTable($res, 'key', _m('Log'));
