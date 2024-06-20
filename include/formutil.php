@@ -2793,13 +2793,22 @@ function getFrmInputButtons($buttons, $print_hidden = true, $prefix = ''): strin
  * @param string $mode
  * @return string
  */
-function getFrmTabRow( $row, $mode='td', $attrs=[]) {
+function getFrmTabRow( $row, $mode='td', $attrs=[], $safe=false) {
     $ret = '';
     $add = $attrs ? ' '.htmlattr($attrs) : '';
     if ( isset($row) AND is_array($row) ) {
         $ret .= "\n <tr$add>";
-        foreach ( $row as $col ) {
-            $ret .= ( !is_array($col) ? "<$mode>$col</$mode>" : "<$mode " .$col['attr']. '>'. $col['text'] ."</$mode>");
+        if ($safe) {
+            // the same as below, just htmlspecialchars() is used
+            foreach ($row as $col) {
+                $ret .= (!is_array($col) ? "<$mode>".safe($col)."</$mode>" : "<$mode " . safe($col['attr']) . '>' . safe($col['text']) . "</$mode>");
+            }
+        } else {
+            foreach ($row as $col) {
+                $ret .= (!is_array(
+                    $col
+                ) ? "<$mode>$col</$mode>" : "<$mode " . $col['attr'] . '>' . $col['text'] . "</$mode>");
+            }
         }
         $ret .= "</tr>";
     }
@@ -2844,12 +2853,13 @@ function FrmTabs( $tabs, $tabsId ) {
 /** GetHtmlTable function
  * Returns table based on config array
  * @param array[] $content
- * @param string   $mode = td | th | key
- * @param string   $caption
- * @param bool     $clasic
+ * @param string  $mode = td | th | key
+ * @param string  $caption
+ * @param bool    $clasic
+ * @param string  $safe = 'td' | 'th' | 'all' | ''
  * @return string
  */
-function GetHtmlTable( array $content, $mode='td', $caption='', $clasic=false ): string {
+function GetHtmlTable( array $content, $mode='td', $caption='', $clasic=false, $safe='' ): string {
     if (!$content) {
         return '';
     }
@@ -2861,9 +2871,9 @@ function GetHtmlTable( array $content, $mode='td', $caption='', $clasic=false ):
     $first = true;
     foreach ($content as $row) {
         if ($mode=='th' AND $first) {
-            $ret .= getFrmTabRow( $row , 'th', ['class'=>'aa-tbl-header']);
+            $ret .= getFrmTabRow( $row , 'th', ['class'=>'aa-tbl-header'], in_array($safe, ['th', 'all']));
         } else {
-            $ret .= getFrmTabRow($row);
+            $ret .= getFrmTabRow($row, 'td', [], in_array($safe, ['td', 'all']));
         }
         $first = false;
     }
