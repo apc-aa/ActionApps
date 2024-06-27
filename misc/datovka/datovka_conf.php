@@ -6,8 +6,8 @@ const DATOVKA_CONF = [
         1001 => ['url'=>'https://adamsbeauty.ecn.cz/aa-dev/'],   // url MUST be exactly the same as AA_INSTALL_URL in config.php
         ], // number
     'test' => [
-        'cert'              => AA_BASE_PATH.'/config/certs/ecntest.crt',
-        'atsId'             => '7981e09c632b4bac',
+        'cert'              => AA_BASE_PATH.'/config/certs/myTestCert.crt',
+        'atsId'             => '',                                           // something like 249c562b87ac81a3
         'url_login'         => 'https://www.czebox.cz/as/login',
         'url_GetCredential' => 'https://cert.czebox.cz/asws/extIs2Endpoint',
         'url_SetConcept'    => 'https://cert.czebox.cz/asws/konceptEndpoint',
@@ -16,8 +16,8 @@ const DATOVKA_CONF = [
         'wsdl_SetConcept'   => __DIR__.'/wsdls/SetConcept.wsdl',
         ],
     'standard'     => [
-        'cert'              => AA_BASE_PATH.'/config/certs/ecntest.crt',
-        'atsId'             => '7981e09c632b4bac',
+        'cert'              => AA_BASE_PATH.'/config/certs/myRealCert.crt',
+        'atsId'             => '',                                           // something like 659c562b87ac8115
         'url_login'         => 'https://www.czebox.cz/as/login',
         'url_GetCredential' => 'https://cert.czebox.cz/asws/extIs2Endpoint',
         'url_SetConcept'    => 'https://cert.czebox.cz/asws/konceptEndpoint',
