@@ -560,6 +560,10 @@ class AA_File_Wrapper {
         return $this->url;
     }
 
+    function getMimeType(){
+        return mime_content_type($this->fp);
+    }
+
     //
     // Static
     //

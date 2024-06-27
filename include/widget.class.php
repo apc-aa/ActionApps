@@ -107,17 +107,24 @@ class AA_Property extends AA_Storable {
     var $translations = [];
 
 
-    /** AA_Property function
-     * @param $id
+    /**
+     * examples of properties:
+     * new AA_Property( 'translate_slice', _m("Slice with translations"),      'string', false, true, ['enum', AA_Module::getUserModules('S')], false, _m("the slice used for {tr:text...} translations (the slice needs to have just headline........ field set as 'Allow translation')")),
+     * new AA_Property( 'web_languages',   _m("Languages on website"),         'string', true,  true, ['regexp', ['pattern'=>'/^[a-z]{2}$/','maxlength'=>2]], false, _m('List all languages for which you want to use sitemodule - en, es, cz, ..<br>It is quite necessary if you want to call sitemodule newer way from Apache:<br> RewriteEngine on<br> RewriteRule ^$ /apc-aa/modules/site/site.php [L,QSA]<br> RewriteCond %{REQUEST_FILENAME} !-f<br> RewriteCond %{REQUEST_FILENAME} !-d<br> RewriteRule ^ /apc-aa/modules/site/site.php [L,QSA]<br>')),
+     * new AA_Property( 'page404',         _m("Page not Found (404)"),         'string', false, true, ['enum',   ['1'=>_m('Do not care'),'2'=>_m('Send standard 404 page, when {xid} is empty'),'3'=>_m('Send code below')]], false, _m('When first option "Do not care" is selected (old behavior), you should test unfilled {xid} in your sitemodule yourself')),
+     * new AA_Property( 'ga_id',           _m("Google analytics tracking id"), 'string', false, true, ['text', ['maxlength'=>20]],  false, _m('If you are using {generate:HEAD} and {generate:FOOT} in yor sitemodule code, then the Google Analytics code is generated with this tracking ID. The generated code could be changed in the future when Google changes the snippet.<br>To use user Consent bar, add {eucookies} or {eucookies:OK to use cookies?:OK:more://www.example.cz/cz/cookies-strategy::No:top} in the site.'))
+     *
+     * @param string $id
      * @param $name
-     * @param $type
-     * @param $multi
-     * @param $persistent
-     * @param $validator
-     * @param $required
-     * @param $input_help
-     * @param $input_morehlp
-     * @param $example
+     * @param string $type text | int | bool | float | readonly | <class_name>
+     * @param bool $multi
+     * @param bool $persistent
+     * @param mixed $validator <object> | text | bool | int | float | email | alpha | long_id | short_id | alias | filename | login | password | unique | e_unique | url | all | enum |
+     *                         ['text', ['maxlength'=>20]]  |  ['enum', ['1'=>_m('Yes'),'2'=>_m('No')]]  |  ['regexp', ['pattern'=>'/^[a-z]{2}$/','maxlength'=>2]]
+     * @param bool $required
+     * @param string $input_help
+     * @param string $input_morehlp
+     * @param string $example
      * @param $show_content_type_switch
      * @param $content_type_switch_default
      */
@@ -337,6 +344,29 @@ class AA_Property extends AA_Storable {
         /** @var class-string<AA_Validate> $class_name */
         $class_name = get_class($validator);
         return [$class_name::lastErr(), $class_name::lastErrMsg()];
+    }
+
+    /** convert to right value type, shorten, if needed, ...
+     * @param $value mixed - tha value to be sanitized
+     * @return mixed - based on validator
+     */
+    function sanitizeValue($value) {
+        $validator = $this->getValidator();
+        // test if value is iterable
+        if ($this->isMulti()) {
+            if (!is_iterable($value)) {
+                $value = (array)$value;
+            }
+            foreach($value as &$v) {
+                $v = $validator->sanitize($v);
+            }
+            if ($this->getType()==='text') {                    // remove empty values
+                $value = array_filter($value, 'strlen');
+            }
+        } else {
+            $value = $validator->sanitize($value);
+        }
+        return $value;
     }
 
     /** isObject function */

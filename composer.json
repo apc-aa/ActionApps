@@ -42,7 +42,8 @@
     "ext-simplexml": "*",
     "ext-xml": "*",
     "ext-intl": "*",
-    "ext-pdo": "*"
+    "ext-pdo": "*",
+    "ext-fileinfo": "*"
   },
   "commented-out-r-equire-dev": {
     "codeception/codeception": "^5.1"
@@ -52,7 +53,9 @@
     "ext-openssl": "*",
     "ext-apache": "*",
     "ext-mysqli": "*",
-    "ext-libxml": "*"
+    "ext-libxml": "*",
+    "ext-ftp": "*",
+    "ext-soap": "*"
   },
   "autoload": {
     "classmap": ["include/","src/"],

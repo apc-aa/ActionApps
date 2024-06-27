@@ -2928,6 +2928,29 @@ class AA_Stringexpand_Convert extends AA_Stringexpand {
     }
 }
 
+/** Converts text with characters as html entities like &yacute; to text with accented characters
+ *  {convert2chars:P&rcaron;&iacute;li&scaron; &zcaron;lu&tcaron;ou&ccaron;k&yacute; k&uring;&ncaron; &uacute;p&ecaron;l &dcaron;&aacute;belsk&eacute; &oacute;dy.}
+ */
+class AA_Stringexpand_Convert2chars extends AA_Stringexpand_Nevercache {
+
+    const ACCENTED_ENTITIES = [
+        '&Aacute;' => 'Á', '&aacute;' => 'á', '&Acirc;'  => 'Â', '&acirc;'  => 'â', '&Agrave;' => 'À', '&agrave;' => 'à', '&Aring;'  => 'Å', '&aring;'  => 'å', '&Atilde;' => 'Ã', '&atilde;' => 'ã',
+        '&Auml;'   => 'Ä', '&auml;'   => 'ä', '&Ccedil;' => 'Ç', '&ccedil;' => 'ç', '&Eacute;' => 'É', '&eacute;' => 'é', '&Ecirc;'  => 'Ê', '&ecirc;'  => 'ê', '&Egrave;' => 'È', '&egrave;' => 'è',
+        '&Euml;'   => 'Ë', '&euml;'   => 'ë', '&Iacute;' => 'Í', '&iacute;' => 'í', '&Icirc;'  => 'Î', '&icirc;'  => 'î', '&Igrave;' => 'Ì', '&igrave;' => 'ì', '&Iuml;'   => 'Ï', '&iuml;'   => 'ï',
+        '&Ntilde;' => 'Ñ', '&ntilde;' => 'ñ', '&Oacute;' => 'Ó', '&oacute;' => 'ó', '&Ocirc;'  => 'Ô', '&ocirc;'  => 'ô', '&Ograve;' => 'Ò', '&ograve;' => 'ò', '&Oslash;' => 'Ø', '&oslash;' => 'ø',
+        '&Otilde;' => 'Õ', '&otilde;' => 'õ', '&Ouml;'   => 'Ö', '&ouml;'   => 'ö', '&Uacute;' => 'Ú', '&uacute;' => 'ú', '&Ucirc;'  => 'Û', '&ucirc;'  => 'û', '&Ugrave;' => 'Ù', '&ugrave;' => 'ù', '&uring;' => 'ů', '&Uring;' => 'Ů',
+        '&Uuml;'   => 'Ü', '&uuml;'   => 'ü', '&Yacute;' => 'Ý', '&yacute;' => 'ý', '&Yuml;'   => 'Ÿ', '&yuml;'   => 'ÿ', '&Ccaron;' => 'Č', '&ccaron;' => 'č', '&Dcaron;' => 'Ď', '&dcaron;' => 'ď',
+        '&Ecaron;' => 'Ě', '&ecaron;' => 'ě', '&Ncaron;' => 'Ň', '&ncaron;' => 'ň', '&Rcaron;' => 'Ř', '&rcaron;' => 'ř', '&Scaron;' => 'Š', '&scaron;' => 'š', '&Tcaron;' => 'Ť', '&tcaron;' => 'ť',
+        '&Zcaron;' => 'Ž', '&zcaron;' => 'ž', '&Lacute;' => 'Ĺ', '&lacute;' => 'ĺ', '&Lcaron;' => 'Ľ', '&lcaron;' => 'ľ', '&Racute;' => 'Ŕ', '&racute;' => 'ŕ'];
+
+    /**
+     * @param $text string text with html entities for characters - like &yacute;
+     * @return string
+     */
+    function expand($text='') {
+        return strtr($text, self::ACCENTED_ENTITIES);
+    }
+}
 
 // class AA_Stringexpand_Increase extends AA_Stringexpand {
 //     /** expand function
@@ -9278,7 +9301,7 @@ class AA_Stringexpand_Mail extends AA_Stringexpand_Nevercache {
             $type  = (new AA_Logentry_MR(['type' =>'pg', 'page' =>AA::Un('{item:{xid}:short_id........}')]))->serializeToString();
             $descr = (new AA_Logentry_Mail2reader(['time' =>date("Y-m-d H.i.s"), 'readers' =>$to->count()]))->serializeToString();;
             $owner = $this->getRelatedModules()[0] ?? '';
-            return AA_Mail::sendToReader(AA_Mailtemplate::createFromMailArray($mail_arr,$type, $descr, $owner)->getId(), $to, $to->getFirstSlice());
+            return AA_Mail::sendToReader(AA_Mailtemplate::createFromMailArray($mail_arr, $type, $descr, $owner)->getId(), $to, $to->getFirstSlice());
         }
 
         // else - to definned as mails
@@ -9371,6 +9394,50 @@ class AA_Stringexpand_Formantispam extends AA_Stringexpand_Nevercache {
            div.aaskryto { display:none };
         </style>
         <div class="aaskryto"><input type="text" name="answer" value=""></div>';
+    }
+}
+
+/** Sends Datovka message (CZ state massaging system)
+ *  Be careful - it can send mail on every page load!
+ *  Use as:
+ *    {datovka:1:bkfj8cu:test massage:https#://test.org/doc/report.pdf}   - sends real message to user bkfj8cu on pdf named report.pdf
+ *    {datovka:test:bkfj8cu:test massage:["https#://test.org/img1.png","https#://test.org/img2.png"]}  - sends test message ... with two attachments
+ *    {datovka::bkfj8cu:test massage:["https#://test.org/img1.png","https#://test.org/img2.png"]}      - empty conf means do not send anything
+ *    {datovka:1:bkfj8cu:test massage:{"Report 1":"https://test.org/doc/report.pdf","Second report":"https://test.org/rep2.docx"}} - with named attachments
+ *    {datovka:1:bkfj8cu:test massage:{"Report 1":"https://test.org/doc/report.pdf"},{"dmToHands":"Honza Malik","dmRecipientRefNumber":"vcj. 253"}} - with other possible envelope parameters:
+ *       dmToHands, dmRecipientRefNumber, dmRecipientIdent, dmRecipientOrgUnit, dmRecipientOrgUnitNum, dmSenderRefNumber, dmSenderIdent, dmSenderOrgUnit, dmSenderOrgUnitNum,
+ *       dmLegalTitleLaw, dmLegalTitleYear, dmLegalTitleSect, dmLegalTitlePar, dmLegalTitlePoint, dmPersonalDelivery, dmAllowSubstDelivery
+ *       description of the values dm* - https://info.mojedatovaschranka.cz/info/cs/80.html - WS_manipulace_s_datovymi_zpravami.pdf 2.1
+ */
+class AA_Stringexpand_Datovka extends AA_Stringexpand_Nevercache {
+
+    /**
+     * @param string $conf        "" (- no send) | 1 (real send) | test (send to testing server) - required
+     * @param string $to          - required
+     * @param string $annotation  - required
+     * @param string $attachments - required
+     * @param string $params
+     * @param string $ret_url     - url - the parameter
+     * @return string
+     * @throws Exception
+     */
+    function expand($conf='', $to='', $annotation='', $attachments='', $params='', $ret_url='') {
+        // the massage is already sent and the return url is to this page - we just print result
+        if (array_key_exists('datRes', $_GET)) {
+            return $_GET['datRes'];
+        }
+        // datovka start
+        if (!in_array($conf, ['1', 'test', 'standard']) or !strlen($to) or !strlen($annotation) or !strlen($attachments)) {
+            return '';
+        }
+        $conf = $conf == 'test' ? 'test' : 'standard';
+        $params = json2asoc($params);
+        $ret_url = $ret_url ?: shtml_url(); // if not defined, use current page
+        // huhl($params);
+        $datovka = new Datovka($conf, $to, $annotation, $attachments, $params, $ret_url, AA::$site_id ?: AA::$module_id );
+        $datovka->save();
+        $datovka->startWithLogin();
+        return ''; // this should be reached
     }
 }
 

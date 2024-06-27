@@ -86,6 +86,7 @@ spl_autoload_register(function ($class_name) {
         'sitetree'           => 'modules/site/sitetree.php',
         'AA_Serializable'    => 'include/statestore.php',
         'AA_Storable'        => 'include/statestore.php',
+        'Datovka'            => 'misc/datovka/datovka.php',
         'FormrowWidget'      => 'include/form.class.php',
         'ConvertCharset'     => 'include/convert_charset.class.php',
         'Files'              => 'include/files.class.php',
@@ -256,7 +257,7 @@ class AA_Debug {
         $ret .= '<tr><th>Page generation time</th><td>'. sprintf('%.3g',timestartdiff()).'</td></tr>';
         $ret .= "<tr><th>Memory usage (actual)</th><td>$mem_usage MiB</td></tr>";
         $ret .= "<tr><th>Memory usage (peak)</th><td>$mem_peak MiB</td></tr>";
-        $ret .= '<tr><th>Dababase instances</th><td>'. DB_AA::$_instances_no.'</td></tr>';
+        $ret .= '<tr><th>Dababase instances</th><td>'. DB_AA::$_instances_no.' ('. DB_AA::getDbType() .')</td></tr>';
         $ret .= '<tr><th>(spareDBs)</th><td>'. count($spareDBs).'</td></tr>';
         return $ret.'</table>';
     }
@@ -510,8 +511,20 @@ $spareDBs     = [];
 function getDB() {
     global $spareDBs;
     if (!($db = array_pop($spareDBs))) {
-        // $type = ($_GET['mysqli']==1) ? DB_TYPE : 'db_pdo';
-        $db = new DB_AA(['type' => DB_TYPE, 'host' => DB_HOST, 'database' => DB_NAME, 'user' => DB_USER, 'password' => DB_PASSWORD]);
+        $type = DB_TYPE;
+        //$type = ($_GET['mysqli']==1) ? 'db_mysgl': 'db_pdo:mysql'; //DB_TYPE; // : 'db_pdo:mysql';,
+        //$type = ($_GET['mysqli']==1) ? 'db_mysgl': DB_TYPE;        //DB_TYPE; // : 'db_pdo:mysql';
+        $connection = [
+            'type'          => $type,
+            'host'          => DB_HOST,
+            'database'      => DB_NAME,
+            'user'          => DB_USER,
+            'password'      => DB_PASSWORD,
+            'charset'       => (defined('DB_CHARACTER_SET') AND DB_CHARACTER_SET) ? DB_CHARACTER_SET : '',
+            'collation'     => (defined('DB_COLLATION_CONNECTION') AND DB_COLLATION_CONNECTION) ? DB_COLLATION_CONNECTION : '',
+            'persistent'    => (defined('AA_USE_NON_PERSISTENT_CONNECT') AND AA_USE_NON_PERSISTENT_CONNECT) ? false : true
+        ];
+        $db = new DB_AA($connection);
     }
     return $db;
 }

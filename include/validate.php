@@ -70,6 +70,8 @@ const VALIDATE_ERROR_TOO_LONG         = 406;
 const VALIDATE_ERROR_TOO_SHORT        = 407;
 const VALIDATE_ERROR_WRONG_CHARACTERS = 408;
 const VALIDATE_ERROR_NOT_IN_LIST      = 409;
+const VALIDATE_ERROR_OUT_OF_RANGE_MIN = 411;
+const VALIDATE_ERROR_OUT_OF_RANGE_MAX = 412;
 
 const VALIDATE_ERROR_NOT_FILLED = 410;
 
@@ -150,8 +152,8 @@ class AA_Validate extends AA_Serializable {
     }
 
     /** filter function - returns array of values matching the criteria
-     *      AA_Validate::filter(array('my@mail.cz','your@mail.cz'), 'email')
-     *      AA_Validate::filter($vararray, array('int', array('min'=>0, 'max'=>10))
+     *      AA_Validate::filter(['my@mail.cz','your@mail.cz'], 'email')
+     *      AA_Validate::filter($vararray, ['int', ['min'=>0, 'max'=>10]]
      * @param $var
      * @param $type
      * @return array
@@ -167,6 +169,13 @@ class AA_Validate extends AA_Serializable {
      * @return bool
      */
     public function validate(?string &$var, AA_Content $content_context = null, string $var_id = ''): bool { return true; }
+
+    /** sanitize the value - returns the sanitized value or the default value for the validator
+     * @param $var
+     */
+    public function sanitize($var) {
+        return $this->validate($var) ? (string)$var : '';  // best default for child validators - probably will be redefined there
+    }
 
     /** checks if the variable is empty
      * @param $var
@@ -220,8 +229,8 @@ class AA_Validate_Signed extends AA_Validate {
     public static function getClassProperties(): array {
         return [
             //           id                             name                        type    multi  persist validator, required, help, morehelp, example
-            'min'       => new AA_Property('min',       _m("Alloved minimum value"), 'int', false, true, 'int', false, _m(""), '', 1),
-            'max'       => new AA_Property('max',       _m("Alloved maximum value"), 'int', false, true, 'int', false, _m(""), '', 12),
+            'min'       => new AA_Property('min',       _m("Allowed minimum value"), 'int', false, true, 'int', false, _m(""), '', 1),
+            'max'       => new AA_Property('max',       _m("Allowed maximum value"), 'int', false, true, 'int', false, _m(""), '', 12),
             'step'      => new AA_Property('step',      _m("Step"),                  'int', false, true, 'int', false, _m(""), '', 1),
             'maxlength' => new AA_Property('maxlength', _m("Maximum length"),        'int', false, true, 'int', false, _m(""), '', 15)
         ];
@@ -239,13 +248,25 @@ class AA_Validate_Signed extends AA_Validate {
         }
         $var = (int)$var;
         if (IsSigInt($this->max) and ($var > $this->max)) {
-            return AA_Validate::bad(VALIDATE_ERROR_OUT_OF_RANGE, _m('Out of range - too big'), $var_id);
+            return AA_Validate::bad(VALIDATE_ERROR_OUT_OF_RANGE_MAX, _m('Out of range - too big'), $var_id);
         }
         if (IsSigInt($this->min) and ($var < $this->min)) {
-            return AA_Validate::bad(VALIDATE_ERROR_OUT_OF_RANGE, _m('Out of range - too small'), $var_id);
+            return AA_Validate::bad(VALIDATE_ERROR_OUT_OF_RANGE_MIN, _m('Out of range - too small'), $var_id);
         }
         return true;
     }
+
+    public function sanitize($var) {
+        $var = (int)$var;
+        if (IsSigInt($this->max) AND ($var > $this->max)) {
+            return (int)$this->max;
+        }
+        if (IsSigInt($this->min) AND ($var < $this->min)) {
+            return (int)$this->min;
+        }
+        return $var;
+    }
+
 
     /** returns the type attribute for the HTML 5 <input> tag with possible some
      *  more attributes (like min, max, step, pattern, ...)
@@ -302,6 +323,10 @@ class AA_Validate_Bool extends AA_Validate_Number {
         parent::__construct($param);
         $this->min = 0;
         $this->max = 1;
+    }
+
+    public function sanitize($var) {
+        return (bool)$var;
     }
 }
 
@@ -477,8 +502,8 @@ class AA_Validate_Float extends AA_Validate {
 
     public static function getClassProperties(): array {
         return [                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
-            'f_min'  => new AA_Property( 'f_min',  _m("Alloved minimum value"), 'float', false, true, 'float', false, _m(""), '', '1.0'),
-            'f_max'  => new AA_Property( 'f_max',  _m("Alloved maximum value"), 'float', false, true, 'float', false, _m(""), '', '1000.0'),
+            'f_min'  => new AA_Property( 'f_min',  _m("Allowed minimum value"), 'float', false, true, 'float', false, _m(""), '', '1.0'),
+            'f_max'  => new AA_Property( 'f_max',  _m("Allowed maximum value"), 'float', false, true, 'float', false, _m(""), '', '1000.0'),
         ];
     }
 
@@ -494,12 +519,22 @@ class AA_Validate_Float extends AA_Validate {
         }
         $var = str_replace(',', '.',$var); // Phpfloat does not work well for long int - 123456789012345678901234567890
         if ( !is_null($this->f_max) AND ($var > $this->f_max) ) {
-            return AA_Validate::bad(VALIDATE_ERROR_OUT_OF_RANGE, _m('Out of range - too big'), $var_id);
+            return AA_Validate::bad(VALIDATE_ERROR_OUT_OF_RANGE_MAX, _m('Out of range - too big'), $var_id);
         }
         if ( !is_null($this->f_min) AND ($var < $this->f_min) ) {
-            return AA_Validate::bad(VALIDATE_ERROR_OUT_OF_RANGE, _m('Out of range - too small'), $var_id);
+            return AA_Validate::bad(VALIDATE_ERROR_OUT_OF_RANGE_MIN, _m('Out of range - too small'), $var_id);
         }
         return true;
+    }
+
+    public function sanitize($var) {
+        if ($this->validate($var)) {
+            return (float)$var;
+        }
+        if ( AA_Validate::lastErr() === VALIDATE_ERROR_OUT_OF_RANGE_MAX) {
+            return (float)(is_null($this->f_max) ? 0 : $this->f_max);
+        }
+        return (float)(is_null($this->f_min) ? 0 : $this->f_min);
     }
 }
 
@@ -516,8 +551,8 @@ class AA_Validate_Decimal extends AA_Validate {
 
     public static function getClassProperties(): array {
         return [                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
-                                      'f_min'  => new AA_Property( 'f_min',  _m("Alloved minimum value"), 'float', false, true, 'float', false, _m(""), '', '1.0'),
-                                      'f_max'  => new AA_Property( 'f_max',  _m("Alloved maximum value"), 'float', false, true, 'float', false, _m(""), '', '1000.0'),
+                                      'f_min'  => new AA_Property( 'f_min',  _m("Allowed minimum value"), 'float', false, true, 'float', false, _m(""), '', '1.0'),
+                                      'f_max'  => new AA_Property( 'f_max',  _m("Allowed maximum value"), 'float', false, true, 'float', false, _m(""), '', '1000.0'),
         ];
     }
 
@@ -533,12 +568,22 @@ class AA_Validate_Decimal extends AA_Validate {
         }
         $var = str_replace(',', '.',$var); // Phpfloat does not work well for long int - 123456789012345678901234567890
         if ( !is_null($this->f_max) AND ($var > $this->f_max) ) {
-            return AA_Validate::bad(VALIDATE_ERROR_OUT_OF_RANGE, _m('Out of range - too big'), $var_id);
+            return AA_Validate::bad(VALIDATE_ERROR_OUT_OF_RANGE_MAX, _m('Out of range - too big'), $var_id);
         }
         if ( !is_null($this->f_min) AND ($var < $this->f_min) ) {
-            return AA_Validate::bad(VALIDATE_ERROR_OUT_OF_RANGE, _m('Out of range - too small'), $var_id);
+            return AA_Validate::bad(VALIDATE_ERROR_OUT_OF_RANGE_MIN, _m('Out of range - too small'), $var_id);
         }
         return true;
+    }
+
+    public function sanitize($var) {
+        if ($this->validate($var)) {
+            return (string)$var;
+        }
+        if ( AA_Validate::lastErr() === VALIDATE_ERROR_OUT_OF_RANGE_MAX) {
+            return (string)(is_null($this->f_max) ? 0 : $this->f_max);
+        }
+        return (string)(is_null($this->f_min) ? 0 : $this->f_min);
     }
 }
 

@@ -180,12 +180,13 @@ class AA_Mail extends htmlMimeMail implements \AA\Later\LaterInterface {
         return true;
     }
 
-    /** Adds attachments to the e-mail
-     * @param string $string either colon separated list of files (https#://test.org/img1.png:https#://test.org/img2.png)
-     *                       or json array of files (["https://test.org/img1.png","https://test.org/img2.png"])
-     *                       or json object of files ({"filename1.png":"https://test.org/img1.png","filename2.png":"https://test.org/img2.png"})
-     */
-    protected function addAttachmentFromString(string $string) {
+    /**
+    * @param string $string either colon separated list of files (https#://test.org/img1.png:https#://test.org/img2.png)
+    *                       or json array of files (["https://test.org/img1.png","https://test.org/img2.png"])
+    *                       or json object of files ({"filename1.png":"https://test.org/img1.png","filename2.png":"https://test.org/img2.png"})
+    */
+    static function parseAttachmentsFromString(string $string, bool $extended=false): array {
+        $attachments = [];
         switch ($string[0]) {
             case '[':
                 $att_arr = json2arr($string);
@@ -198,13 +199,26 @@ class AA_Mail extends htmlMimeMail implements \AA\Later\LaterInterface {
         }
         foreach ($att_arr as $name => $attachment) {
             if ($attachment) {
-                if (strlen($att_data = $this->getFile($attachment))) {
+                if (strlen($att_data = AA_File_Wrapper::wrapper($attachment)->contents())) {
                     if (ctype_digit((string)$name)) {
                         $name = basename(parse_url($attachment, PHP_URL_PATH));
                     }
-                    $this->addAttachment($att_data, $name);
+                    $attachments[] = $extended ? ['name' => $name, 'data' => $att_data, 'type' => get_headers($attachment, true)['Content-Type'] ?? ''] : ['name' => $name, 'data' => $att_data];
                 }
             }
+        }
+        return $attachments;
+    }
+
+    /** Adds attachments to the e-mail
+     * @param string $string either colon separated list of files (https#://test.org/img1.png:https#://test.org/img2.png)
+     *                       or json array of files (["https://test.org/img1.png","https://test.org/img2.png"])
+     *                       or json object of files ({"filename1.png":"https://test.org/img1.png","filename2.png":"https://test.org/img2.png"})
+     */
+    protected function addAttachmentFromString(string $string) {
+        $attachments = self::parseAttachmentsFromString($string);
+        foreach ($attachments as $attachment) {
+            $this->addAttachment($attachment['data'], $attachment['name']);
         }
     }
 

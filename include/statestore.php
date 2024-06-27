@@ -108,7 +108,7 @@ abstract class AA_Serializable {
      *        is stored (save()) (when persistent is set to true)
      *      - the object could be edited on html page - the form is automatically
      *        created using the properties
-     * @return array
+     * @return AA_Property[]
      * @see AA_Components
      */
     public static function getClassProperties(): array {
@@ -490,6 +490,13 @@ class AA_Object extends AA_Storable implements AA_iEditable {
             case 'aa_id':         return new AA_Property('aa_id' ,        'Id',         'string', false, true, 'id',     true);
         }
         return null;
+    }
+
+    protected function sanitizeProperties() {
+        $props = static::getClassProperties();
+        foreach ($props as $var => $property) {
+            $this->$var = $property->sanitizeValue($this->$var);
+        }
     }
 
     /** delete function
