@@ -335,17 +335,17 @@ if ( $sh_itm OR $x OR $o OR $seo ) {
     //  $r_state_vars = StoreVariables(array("sh_itm")); // store in session
     if ( $x ) {
         $zid = new zids((int)$x, 's');
-        Hitcounter::hit($zid, 0);
+        Hitcounter::hit($zid);
     }
     elseif ( $seo ) {
         $zid = new zids(explode_ids(StrExp('seo2ids', [$slice_id, $seo])), 'l');
-        Hitcounter::hit($zid, 0);
+        Hitcounter::hit($zid);
     }
     elseif ( $o ) {
         $zid = new zids((int)$o, 's');
     } else {
         $zid = new zids($sh_itm, 'l');
-        Hitcounter::hit($zid, 0);
+        Hitcounter::hit($zid);
     }
     
     if ( !is_object($item = AA_Items::getItem($zid)) OR ($item->getStatusCode()<>1) ) {

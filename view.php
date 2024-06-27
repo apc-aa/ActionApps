@@ -122,7 +122,7 @@ if ($nocache & 2) {  // nocache=2 or nocache=3, ... - second bit set
 
 if ($cacheentry = AA::Pagecache()->getPage($cache_key, $nocache & 1)) {   // nocache=1 or nocache=3, ... - first bit set
     AA::$debug&2 && AA::$dbg->log("view from cache");
-    $cacheentry->processPage(1);
+    $cacheentry->processPage(true);
 } else {
     AA::$debug&2 && AA::$dbg->log("view not found in cache");
     $showview     = new AA_Showview($view_param);

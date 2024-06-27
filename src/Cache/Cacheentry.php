@@ -52,13 +52,14 @@ class Cacheentry
     }
 
     /** send headers, print output and count hit */
-    function processPage($cached = 0)
+    function processPage(bool $cached = false)
     {
         $lastModified = $this->t;     // get the last-modified-date of this very file
         $etag = hash('md5', 'x' . $this->c . 'q'); // get a unique hash of this content (etag) (make it not the same as key in db for (maybe paranoid) security reasons)
         $ifModifiedMatch = isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) ? (strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) == $lastModified) : false;
         $etagMatch = isset($_SERVER['HTTP_IF_NONE_MATCH']) ? (trim($_SERVER['HTTP_IF_NONE_MATCH']) == $etag) : false;   //(etag: unique file hash)
         $cacheability = in_array($this->p, ['public', 'private', 'no-cache']) ? $this->p : 'public';
+        $not_modified = false;
 
         header("Last-Modified: " . gmdate("D, d M Y H:i:s", $lastModified) . " GMT");   // set last-modified header
         header("Etag: $etag");                                                      // set etag-header
@@ -70,13 +71,13 @@ class Cacheentry
         // Maybe we should check also $this->h, if they do not contain 404, 302 or other status code already
         if ($ifModifiedMatch or $etagMatch) {
             header("HTTP/1.1 304 Not Modified");
-            $cached = 1000 * $cached + 304;
+            $not_modified = true;
         } else {
             AA::sendHeaders($this->h);
             echo $this->c;
         }
         if ($this->i) {
-            Hitcounter::hit(new zids($this->i, 'l'), $cached);
+            Hitcounter::hit(new zids($this->i, 'l'), $cached, $not_modified);
         }
     }
 }

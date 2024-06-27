@@ -28,6 +28,7 @@
 namespace AA\Later;
 
 use AA\IO\DB\DB_AA;
+use AA\Optimize\AddDurationLog;
 
 /** Used as object for toexecute - updates item.display_count and hit_archive
  *  based on hit log in hit_short_id and hit_long_id tables
@@ -38,8 +39,7 @@ class HitcounterUpdate implements LaterInterface
 
     /** updateDisplayCount - updates item.display_count and hit_archive based
      *  on hit log in hit_short_id and hit_long_id tables
-     *                     - it also plans the the hit_x..... field counting
-     *                       into toexecute queue
+     *                     - it also plans the hit_x..... field counting into toexecute queue
      *  Special function called from AA\Later\Toexecute class - used for queued tasks (ran form cron)
      * @param array $params - numeric array of additional parameters for the execution passed in time of call
      * @return string - message about execution to be logged
@@ -75,11 +75,21 @@ class HitcounterUpdate implements LaterInterface
             }
         }
 
-        DB_AA::sql("INSERT INTO hit_archive (id, time) SELECT id, time FROM hit_short_id WHERE time < $time");
-        DB_AA::sql("DELETE FROM hit_short_id WHERE time < $time");
+        $is_duration_log_feature = (new AddDurationLog())->test();
 
-        DB_AA::sql("INSERT INTO hit_archive (id, time) SELECT item.short_id, hit_long_id.time FROM hit_long_id INNER JOIN item ON hit_long_id.id=item.id WHERE time < $time");
-        DB_AA::sql("DELETE FROM hit_long_id WHERE time < $time");
+        if ($is_duration_log_feature) {
+            DB_AA::sql("INSERT INTO hit_archive (`id`, `time`, `duration`) SELECT `id`, `time`, SUBSTRING_INDEX(SUBSTRING_INDEX(`info`, ':', 5), ':', -1) AS duration FROM hit_short_id WHERE time < $time");
+            DB_AA::sql("DELETE FROM hit_short_id WHERE time < $time");
+
+            DB_AA::sql("INSERT INTO hit_archive (`id`, `time`, `duration`) SELECT item.short_id, hit_long_id.time, SUBSTRING_INDEX(SUBSTRING_INDEX(`hit_long_id`.`info`, ':', 5), ':', -1) AS duration FROM hit_long_id INNER JOIN item ON hit_long_id.id=item.id WHERE time < $time");
+            DB_AA::sql("DELETE FROM hit_long_id WHERE time < $time");
+        } else {
+            DB_AA::sql("INSERT INTO hit_archive (id, time) SELECT id, time FROM hit_short_id WHERE time < $time");
+            DB_AA::sql("DELETE FROM hit_short_id WHERE time < $time");
+
+            DB_AA::sql("INSERT INTO hit_archive (id, time) SELECT item.short_id, hit_long_id.time FROM hit_long_id INNER JOIN item ON hit_long_id.id=item.id WHERE time < $time");
+            DB_AA::sql("DELETE FROM hit_long_id WHERE time < $time");
+        }
 
         // once a day plan 3 new grouping (which means, that each day is counted
         // 3 times - in case it fails in one or two cases. If it fails three

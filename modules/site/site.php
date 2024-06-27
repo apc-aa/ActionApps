@@ -61,7 +61,7 @@ $site_nocache = (($_REQUEST['nocache'] & 1) OR isset($_POST['aa']) OR (isset($_R
 AA::$debug&2 && AA::$dbg->log("Pagecache site_nocache: $site_nocache, REQUEST:". var_export($_REQUEST, true). ", GET:". var_export($_GET, true). ", POST:". var_export($_POST, true). ", COOKIE:". var_export($_COOKIE, true));
 
 if ($cacheentry = AA::Pagecache()->getPage($cache_key, (string)$site_nocache)) {
-    $cacheentry->processPage(1);
+    $cacheentry->processPage(true);
     if ( AA::$debug ) {
         echo '<br><br>Site cache hit!!!';
         echo AA::$dbg->basic_stat();

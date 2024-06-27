@@ -29,9 +29,24 @@
 
 namespace AA\Util;
 
+use AA_Logentry_H;
 use CVarset;
 use zids;
 
+class AA_Packtime {
+    protected float $time;
+    protected bool $cached;
+    protected bool $not_modified;
+    public function __construct(float $time, bool $cached, bool $not_modified ) {
+        $this->time         = $time;
+        $this->cached       = $cached;
+        $this->not_modified = $not_modified;
+    }
+
+    public function getAsInt(): int {
+        return (new LogarithmIndex(.002,80,63))->getIndex($this->time)*4 + ($this->cached ? 2 : 0) + ($this->not_modified ? 1 : 0);
+    }
+}
 
 /**
  * Hits logged to two temporary tables - hit_short_id (for short item ids) and
@@ -77,9 +92,9 @@ class Hitcounter
      *  We use two temporary tables - hit_short_id (for short item ids) and
      *  hit_long_id (for long item ids).
      * @param zids $zids
-     * @param string $cached
+     * @param bool $cached
      */
-    static function hit($zids, $cached = '-')
+    static function hit($zids, bool $cached = false, bool $not_modified = false)
     {
         if (!is_object($zids) or $zids->isEmpty()) {
             return;
@@ -96,12 +111,19 @@ class Hitcounter
             return;
         }
 
+        $time = timestartdiff();
+        $info = (new AA_Logentry_H([
+            "cached"        => $cached,
+            "not_modified"  => $not_modified,
+            "time"          => $time,
+            "packtime"      => (new AA_Packtime($time, $cached, $not_modified))->getAsInt(),
+            "mem_usage"     => sprintf('%.3g',(memory_get_usage() / (1024*1024))),
+            'uri'           => $_SERVER["REQUEST_URI"],
+        ]))->serializeToString();
+
         $varset = new CVarset;
         $varset->add('time', 'number', time());
         $varset->add('agent', 'text', substr($_SERVER["HTTP_USER_AGENT"], 0, 255));  // @todo - convert to metabase and check the length using metabase real field length
-        $info = (string)$cached;
-        $info .= ':' . timestartdiff();
-        $info .= ':' . $_SERVER["REQUEST_URI"];
         $varset->add('info', 'text', substr($info, 0, 255)); // @todo - convert to metabase and check the length using metabase real field length
 
         if ($zids->use_short_ids()) {

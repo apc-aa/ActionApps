@@ -247,11 +247,11 @@ class PageCache  {
         return $this->store($key, serialize($entry), $str2find, $force);
     }
 
-    function getPage($key, $action='get') {
+    function getPage($key, $action='get'): ?Cacheentry {
         $action = (string)$action;
         $entry = $this->get($key, $action);
         AA::$debug&2 && AA::$dbg->log("Pagecache->getPage(output): ".($entry ? 'cached text' : 'not found'), 'Pagecache action:'.$action);
-        return $entry ? unserialize($entry) : false;
+        return $entry ? unserialize($entry) : null;
     }
 
 

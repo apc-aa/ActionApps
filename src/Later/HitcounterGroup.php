@@ -2,7 +2,9 @@
 
 namespace AA\Later;
 
+use AA;
 use AA\IO\DB\DB_AA;
+use AA\Optimize\AddDurationLog;
 use CVarset;
 
 /** Groups data in hit_archive table
@@ -13,6 +15,8 @@ use CVarset;
  **/
 class HitcounterGroup implements LaterInterface
 {
+    /** @var bool|null caches if we use duration logging for speedup */
+    static ?int $duration_log_feature_from = null;
 
     /** special function called from AA\Later\Toexecute class - used for queued tasks (ran form cron)
      * @param array $params - numeric array of additional parameters for the execution passed in time of call
@@ -21,16 +25,36 @@ class HitcounterGroup implements LaterInterface
      */
     public function toexecutelater($params = [])
     {
+        if (is_null(self::$duration_log_feature_from)) {
+            if ((new AddDurationLog())->test()) {
+                self::$duration_log_feature_from = DB_AA::select1('time', 'SELECT `time` FROM `hit_archive`', [['duration', 0, '<>']], ['time']);
+                // reload table structure from database - in standard metabase we do not have extended hit_archive table
+                AA::Metabase()->loadFromDb(true,['hit_archive']);  // it is not standard table - we have to read it
+            } else {
+                // duration not used
+                self::$duration_log_feature_from = 0;
+            }
+        }
+
+        [$begin, $step] = $params;
+        $time_cond = [['time', $begin, '>='],['time', ($begin + $step), '<']];
+
+        if (self::$duration_log_feature_from AND (self::$duration_log_feature_from < $begin)) {
+            $this->groupHitsDuration($begin, $step, $time_cond);
+        } else {
+            $this->groupHitsBasic($begin, $step, $time_cond);
+        }
+    }
+
+    /** group code for basic log without duration stats - older code */
+    protected function groupHitsBasic(int $begin, int $step, array $time_cond) {
+
         // possible new approach
         // SELECT id, CONCAT(FROM_UNIXTIME(`time`, '%Y-%m-%d'),' ',`id`) as grp, sum(hits) as sum, count(*) as cnt FROM hit_archive WHERE time < 1250000000 GROUP BY grp HAVING cnt > 1
 
-        [$begin, $step] = $params;
-
         $varset = new CVarset;
-        $time_cond = "time >= $begin AND time < " . ($begin + $step);
-        $hits = GetTable2Array("SELECT id, sum(hits) as sum FROM hit_archive WHERE $time_cond GROUP BY id", 'id', 'sum');
-
-        DB_AA::sql("DELETE FROM hit_archive WHERE $time_cond");
+        $hits = DB_AA::select(['id'=>'sum'], 'SELECT `id`, SUM(`hits`) as sum FROM `hit_archive`', $time_cond, null, ['id']);
+        DB_AA::delete('hit_archive', $time_cond);
         if (is_array($hits)) {
             foreach ($hits as $id => $sum) {
                 $varset->clear();
@@ -40,6 +64,39 @@ class HitcounterGroup implements LaterInterface
                 $varset->doInsert('hit_archive');
             }
         }
+    }
+
+    /** group code for extended hit log - with duration stats */
+    protected function groupHitsDuration(int $begin, int $step, array $time_cond) {
+        $hits = DB_AA::select([], 'SELECT `id`,
+            AVG(CASE WHEN (`duration` & 3) = 0 THEN `duration` >> 2 END) << 2 AS avg_0,
+            AVG(CASE WHEN (`duration` & 3) = 1 THEN `duration` >> 2 END) << 2 AS avg_1,
+            AVG(CASE WHEN (`duration` & 3) = 2 THEN `duration` >> 2 END) << 2 AS avg_2,
+            AVG(CASE WHEN (`duration` & 3) = 3 THEN `duration` >> 2 END) << 2 AS avg_3,
+            SUM(CASE WHEN (`duration` & 3) = 0 THEN `hits` END) AS sum_0,
+            SUM(CASE WHEN (`duration` & 3) = 1 THEN `hits` END) AS sum_1,
+            SUM(CASE WHEN (`duration` & 3) = 2 THEN `hits` END) AS sum_2,
+            SUM(CASE WHEN (`duration` & 3) = 3 THEN `hits` END) AS sum_3
+            FROM `hit_archive`', $time_cond, null, ['id']);
+
+        $to_insert = [];
+        foreach ($hits as $hit) {
+            if ($hit['sum_0']>0) {
+                $to_insert[] = ['id'=>$hit['id'], 'hits'=>$hit['sum_0'], 'time'=>$begin, 'duration'=>$hit['avg_0']];
+            }
+            if ($hit['sum_1']>0) {
+                $to_insert[] = ['id'=>$hit['id'], 'hits'=>$hit['sum_1'], 'time'=>$begin, 'duration'=>$hit['avg_1']+1];
+            }
+            if ($hit['sum_2']>0) {
+                $to_insert[] = ['id'=>$hit['id'], 'hits'=>$hit['sum_2'], 'time'=>$begin, 'duration'=>$hit['avg_2']+2];
+            }
+            if ($hit['sum_3']>0) {
+                $to_insert[] = ['id'=>$hit['id'], 'hits'=>$hit['sum_3'], 'time'=>$begin, 'duration'=>$hit['avg_3']+3];
+            }
+        }
+        // exit;
+        DB_AA::delete('hit_archive', $time_cond);
+        AA::Metabase()->doInsertMulti('hit_archive', $to_insert);
     }
 
     /** plan grouping tasks to toexecute queue
@@ -57,7 +114,7 @@ class HitcounterGroup implements LaterInterface
         for ($begin = $grouping_start; $begin + $step >= $oldest; $begin -= $step) {
             $toexecute->laterOnce($this, [$begin, $step], "HitcounterGroup_$begin", 40, time() + 60 * 60 * 24); // once a day
 
-            // by default we plan all the task
+            // by default, we plan all the task
             if (++$no_task == $max_task) {
                 break;
             }
