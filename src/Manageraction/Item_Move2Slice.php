@@ -37,7 +37,7 @@ class Item_Move2Slice extends AbstractManageraction {
     /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
      *
-     *  We extending AA_Storable, because we want to get the state form some
+     *  We are extending AA_Storable, because we want to get the state form some
      *  actions. Action selectbox is able to display settings by AJAX call, where
      *  we need to pass all parameters of the object
      * @return array

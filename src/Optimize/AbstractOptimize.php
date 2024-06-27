@@ -34,6 +34,12 @@ abstract class AbstractOptimize implements \AA\Util\NamedInterface {
     /** @return bool - true if everything is OK */
     public function repair(): bool { return true; }
 
+    /** Reverts the changes made by repair() method
+     *  Normally it should not be needed to revert the changes - used mainly for optional features like AddDurationLog
+     * @return bool - true if everything is OK
+     */
+    public function revert(): bool { return true; }
+
     /** @return bool - true if everything is OK - no action needed */
     public function test4modules(array $modules): bool { return true; }   // test just for specified modules
 
@@ -42,7 +48,7 @@ abstract class AbstractOptimize implements \AA\Util\NamedInterface {
     /** implemented actions within this class
      * @return string[]
      */
-    public static function actions(): array { return ['test', 'repair']; }  // full set is ['test', 'repair', 'test4modules', 'repair4modules']
+    public static function actions(): array { return ['test', 'repair']; }  // full set is ['test', 'repair', 'revert', 'test4modules', 'repair4modules']
 
     /** is action present in this class
      * @param string $action
@@ -52,7 +58,13 @@ abstract class AbstractOptimize implements \AA\Util\NamedInterface {
         return in_array($action, static::actions());
     }
 
-    /** checks if this Optimize class belongs to specified type (like "sql_update") */
+    /** checks if this Optimize class belongs to specified type (like "sql_update")
+     *  full set is:
+     *    sql_update  - should be run on every SQL update of AA
+     *    opt_feature - optional features, which could be added to AA
+     *    add_field   - just tag the add field optimizers
+     *    private_fix - private_fix for site specific repairs - probably not useful for others
+     */
     public static function types(): array { return []; }      // full set is ['sql_update','add_field', 'private_fix']  - private_fix for site specific repairs - probably not useful for others
 
     /** the optimizers are ordered by priority when executed in chain (like for sql_update) */

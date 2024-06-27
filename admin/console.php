@@ -36,6 +36,7 @@ require_once __DIR__ . "/../include/mgettext.php";
 // ----------------------------------------------------------------------------------------
 try {
     $code = InputVars::stringPOST('code');
+    $html = InputVars::boolPOST('html');
 } catch (Exception $e) {}
 
 if (!IsSuperadmin()) {
@@ -56,10 +57,11 @@ $apage->printHead();
 $form_buttons = ["show" => ["type"=>"submit", "value"=>_m("Show")]];
 
 // ------------------------------------------------------------------------------------------
-FrmTabCaption(_m('Console'));
+FrmTabCaption(_m('Console'), $form_buttons);
 FrmTextarea('code', _m('Code'),$code);
+FrmInputChBox('html', _m('HTML output'), $html);
 if (strlen($code)) {
-    FrmStaticText(_m('Result'), '<pre><code>'. safe(AA::Un($code)).'</code></pre>','','',false);
+    FrmStaticText(_m('Result'), $html ? AA::Un($code) : '<pre><code>'. safe(AA::Un($code)).'</code></pre>','','',false);
 }
 FrmTabEnd($form_buttons);
 

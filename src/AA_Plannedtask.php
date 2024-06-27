@@ -176,7 +176,7 @@ class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedI
                 $ret .= ':=' . AA::Un($this->task);
             }
         }
-        AA_Log::write('TOEXECUTE', get_class($this) . ':' . $this->getId(), 'end' . ":$ret:x".AA::$slice_id);
+        // AA_Log::write('TOEXECUTE', get_class($this) . ':' . $this->getId(), 'end' . ":$ret:x".AA::$slice_id);  // logged in Toexecute
         return $ret;
     }
 
@@ -184,22 +184,19 @@ class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedI
      * @param string $id
      * @return string
      */
-    static function toexecuteSelector($id): string
-    {
+    static function toexecuteSelector($id): string {
         return "Plannedtask_$id";
     }
 
     /** method called after save */
-    function aftersave()
-    {
+    function aftersave() {
         $toexecute = new Toexecute;
         $toexecute->cancel_all(self::toexecuteSelector($this->getId()));
         $this->schedule();
     }
 
     /** check if the task is scheduled and if not - schedule it for future execution */
-    function schedule($force_time = null)
-    {
+    function schedule($force_time = null) {
         $time = is_null($force_time) ? $this->nexttime() : $force_time;
         if ($time >= time()) {
             $toexecute = new Toexecute;
@@ -208,8 +205,7 @@ class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedI
         return "$time>=" . time() . ' ';
     }
 
-    static function getForm($oid = null, $owner = null, $otype = null)
-    {
+    static function getForm($oid = null, $owner = null, $otype = null) {
         $form = parent::getForm($oid, $owner, $otype);
         $next_time = DB_AA::select1('execute_after', "SELECT execute_after FROM `toexecute`", [['selector', "Plannedtask_$oid"]]);
         $next_time = $next_time ? date('Y-m-d H:i', $next_time) : _m('not scheduled, yet');

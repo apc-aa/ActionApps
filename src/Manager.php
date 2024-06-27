@@ -910,6 +910,7 @@ class Manager extends AA_Storable {
         } else {
             AA::Stringexpander()->addRequire(get_aa_url('javascript/manager.min.js?v='.AA_JS_VERSION));
             AA::Stringexpander()->addRequire('aa-jslib@1');
+            AA::Stringexpander()->addRequire('AA_AllowMultiselect(\'input[name^="chb["]\', \''. _m("Hold Shift and click to select multiple rows").'\')', 'AA_Req_Load');
             $html = $this->getManagerCode($zids);
         }
         $r_state['manager'][$this->_manager_id]    = $this->getState();

@@ -127,6 +127,7 @@ function escape4js($code) {
  *  returns server name with protocol and port
  */
 function self_server() {
+    $port = '';
     if ( isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ) {
         $PROTOCOL='https';
         if ($_SERVER['SERVER_PORT'] != "443") {
@@ -1975,7 +1976,7 @@ function RestoreVariables(array $r_state_vars) {
 }
 
 /** susbstr with utf in mind */
-function aa_substr($text, $start, $len=null) {
+function aa_substr($text, $start, $len=null): string {
     return mb_substr($text, $start, $len);
 }
 

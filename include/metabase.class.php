@@ -26,6 +26,7 @@
  *
  */
 
+use AA\IO\DB\DB_AA;
 use AA\Managed;
 use AA\Manageraction\Manageractions;
 
@@ -592,6 +593,41 @@ class AA_MbT implements Iterator, ArrayAccess, Countable {
         return $varset;
     }
 
+    /** Prepare data for insert (set right types/values/...)
+     *
+     * @param  string[] $data    data array - all data unpacked. The values are converted to correct ones
+     * @return array ['colname' => 'value', ...]
+     */
+    public function getSQLData(array $data): array {
+        if ( !($cols = $this->getColumns())) {
+            return [];
+        }
+        $ret = [];
+
+        foreach ($cols as $colname => $coldef) {
+            if (isset($data[$colname])) {
+                $value = $data[$colname];
+                // $iskey = $coldef->isKey();
+                $type = $coldef->getFieldType();
+                if ($type == 'int') {
+                    $ret[$colname] = (int)$value;
+                } elseif ($type == 'float') {
+                    $ret[$colname] = (float)$value;
+                } elseif (AA_Metabase::isPacked($this->t, $colname) AND is_long_id($value)) {
+                    $ret[$colname] = '0x' . $value;
+                } else {
+                    $ret[$colname] = qquote(($maxlen = $coldef->getMaxLength()) ? substr($value, 0, $maxlen) : $value);
+                }
+            }
+            if (!isset($ret[$colname])) {
+                $ret[$colname] = 'NULL';
+            }
+        }
+        return $ret;
+    }
+
+
+
     /** Iterator interface */
     public function rewind(): void   { reset($this->c);                        }
     public function current()/*: mixed (not in PHP7.4)*/ { return current($this->c);               }
@@ -911,11 +947,28 @@ class AA_Metabase {
      * @todo   process it as one SQL insert statement
      */
     function doInsertMulti($tablename, $data, $nohalt=null) {
-        $ret = 0;
-        foreach ($data as $record) {
-            $ret += (int)$this->doInsert($tablename, $record, $nohalt);
+        $table = $this->tables[$tablename];
+
+        $chunkSize  = 1000;           // Define chunk size
+        $chunkedData = array_chunk($data, $chunkSize);
+
+        $SQLstart = "INSERT INTO `$tablename` (`". implode('`,`', $table->getColumnNames()). '`) VALUES ';
+        $inserded = 0;
+        foreach ($chunkedData as $chunk) {
+            $SQL = $SQLstart;
+            $values = [];
+            foreach ($chunk as $row) {
+                $sanitizedRow = $table->getSQLData($row);
+                $values[]     = "(" . implode(",", array_values($sanitizedRow)) . ")";
+            }
+            $SQL      .= implode(', ', $values);
+            $num_rows = DB_AA::sql($SQL);
+            if ($num_rows === false) {
+                return false;
+            }
+            $inserded += $num_rows;
         }
-        return $ret;
+        return $inserded;
     }
 
     /** The best (most safe) low-level approach to delete data in the AA table

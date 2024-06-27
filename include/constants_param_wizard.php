@@ -87,13 +87,13 @@ $VALIDATE_TYPES["items"]["number"] = [
     "params"=> [
         [
             "name"=>_m("Min"),
-            "desc"=>_m("Alloved minimum value"),
+            "desc"=>_m("Allowed minimum value"),
             "type"=>"INT",
             "example"=>1
         ],
         [
             "name"=>_m("Max"),
-            "desc"=>_m("Alloved maximum value"),
+            "desc"=>_m("Allowed maximum value"),
             "type"=>"INT",
             "example"=>12
         ],
@@ -109,13 +109,13 @@ $VALIDATE_TYPES["items"]["signed"] = [
     "params"=> [
         [
             "name"=>_m("Min"),
-            "desc"=>_m("Alloved minimum value"),
+            "desc"=>_m("Allowed minimum value"),
             "type"=>"INT",
             "example"=>1
         ],
         [
             "name"=>_m("Max"),
-            "desc"=>_m("Alloved maximum value"),
+            "desc"=>_m("Allowed maximum value"),
             "type"=>"INT",
             "example"=>12
         ],

@@ -148,10 +148,11 @@ class DB_AA extends AbstractDB
      * @param null   $order
      * @return array
      */
-    static function select($column, $query, $where = null, $order = null): array {
+    static function select($column, $query, $where = null, $order = null, ?array $group = null): array {
         $db = getDB();
         $query .= is_array($where) ? ' ' . DB_AA::makeWhere($where) : '';
         $query .= is_array($order) ? ' ' . DB_AA::makeOrder($order) : '';
+        $query .= $group           ? ' ' . DB_AA::makeGroup($group) : '';
 
         $db->query($query);
 
@@ -229,7 +230,7 @@ class DB_AA extends AbstractDB
         return $ret;
     }
 
-    /** used as: DB_AA::delete('perms', array(array('object_type', $object_type), array('objectid', $objectID), array('flag', REL_FLAG_FEED, 'i')));
+    /** used as: DB_AA::delete('perms', [['object_type', $object_type], ['objectid', $objectID], ['flag', REL_FLAG_FEED, 'i']]);
      * @param string $table
      * @param array $where
      * @return false|int
@@ -251,8 +252,19 @@ class DB_AA extends AbstractDB
      * @param string $table
      * @return bool
      */
-    static function exists_table($table) {
+    public static function exists_table(string $table): bool
+    {
         return (false !== DB_AA::select1('', 'SELECT table_schema FROM information_schema.tables', [['table_schema', DB_NAME], ['table_name', $table]]));
+    }
+
+    /** check if Table column exists
+     * @param string $table
+     * @param string $col
+     * @return bool
+     */
+    public static function exists_column(string $table, string $col): bool
+    {
+        return (DB_AA::select1('', 'SELECT COUNT(*) AS count FROM information_schema.columns', [['table_schema', DB_NAME], ['table_name', $table], ['column_name', $col]])['count'] > 0);
     }
 
     /** creates cols string for INSERT or UPDATE
@@ -336,7 +348,8 @@ class DB_AA extends AbstractDB
      *     NOTNULL  -                   IS NOT NULL                         ['number', '', 'NOTNULL']
      *     LIKE     -                   LIKE             single             ['id', '\_%', 'LIKE']
      *     RLIKE    -                   LIKE             single             ['selector', $item_id, 'RLIKE']
-     *     BEGIN    -                   LIKE             single             ['selector', $item_id, 'BEGIN'] // similar to RLIKE, but the value must begin with exact match of the string (including "%" and "_" characters)
+     *     BEGIN    -                   LIKE             single or array    ['selector', $item_id, 'BEGIN'] // similar to RLIKE, but the value must begin with exact match of the string (including "%" and "_" characters)
+     *     NOT BEGIN-                   LIKE             single or array    ['selector', $item_id, 'BEGIN']
      *     CONTAIN  -                   LIKE             single             ['selector', $item_id, 'CONTAIN'] // similar to LIKE, but the value must contain exact match of the string (including "%" and "_" characters)
      *     NOT LIKE -                   NOT LIKE         single             ['id', '\_%', 'NOT LIKE']
      *     FILLED   -                   > ''             single             ['field3', '', 'FILLED']     // not null, not empty, not any whitespace character(s)
@@ -354,7 +367,7 @@ class DB_AA extends AbstractDB
                 $operator = $type;
                 $type = 'i';
             } elseif (($type == 'LIKE') or ($type == 'NOT LIKE')) {
-                $where[] = "$name $type " . qquote($value);
+                $where[] = "$name $type '". addcslashes($value,"'") . "'";    // see field LIKE '\_%'
                 continue;
             } elseif ($type == 'RLIKE') {
                 $where[] = "$name LIKE " . qquote($value . '%');
@@ -365,6 +378,14 @@ class DB_AA extends AbstractDB
                     $where[] = '(' . join(' OR ', array_map(fn($v) => "$name LIKE '" . addcslashes(quote($v), "_%") . "%'", $value)) . ')';
                 } else {
                     $where[] = "$name LIKE '". addcslashes(quote($value),"_%") ."%'";
+                }
+                continue;
+            } elseif ($type == 'NOT BEGIN') {
+                if (is_array($value)) {
+                    // join conditions by OR
+                    $where[] = '(' . join(' AND ', array_map(fn($v) => "$name NOT LIKE '" . addcslashes(quote($v), "_%") . "%'", $value)) . ')';
+                } else {
+                    $where[] = "$name NOT LIKE '". addcslashes(quote($value),"_%") ."%'";
                 }
                 continue;
             } elseif ($type == 'CONTAIN') {
@@ -471,6 +492,13 @@ class DB_AA extends AbstractDB
         return $order ? 'ORDER BY ' . join(',', $order) : '';
     }
 
+    /** generate GROUP BY phrase
+     * @param array $group  fields - ['id','time']
+     * @return string
+     */
+    static protected function makeGroup(array $group): string {
+        return 'GROUP BY ' . join(',', $group);
+    }
 
     /** query function
      * @param $SQL

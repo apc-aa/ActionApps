@@ -116,6 +116,15 @@ class Optimize_Action_Repair4modules extends Optimize_Action_Test {
     public function getName(): string { return _m('Repair current'); }
 }
 
+class Optimize_Action_Revert extends Optimize_Action_Test {
+    const ACTION_NAME = 'revert';
+
+    protected function doAction(AbstractOptimize $optimizer): bool { return $optimizer->revert(); }
+
+    /** @inheritDoc */
+    public function getName(): string { return _m('Revert'); }
+}
+
 
 if (!IsSuperadmin()) {
     AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You don't have permissions to do optimize tests."), "admin");
@@ -132,6 +141,7 @@ $actions->addAction(new Optimize_Action_Test('OptimizeTest'));
 $actions->addAction(new Optimize_Action_Test4modules('OptimizeTest4modules'));
 $actions->addAction(new Optimize_Action_Repair('OptimizeRepair'));
 $actions->addAction(new Optimize_Action_Repair4modules('OptimizeRepair4modules'));
+$actions->addAction(new Optimize_Action_Revert('OptimizeRevert'));
 
 $managed = AA_Components::getManagerConf('AA\\Optimize\\', 'AA\\Optimize\\AbstractOptimize', $actions);
 $managed->setColumn('name', '<b class="{ifeq:{result}:OK:okmsg:ERR:err}">{name}</b><div>{description}</div>{ifset:{resulttxt}:<div><em>_#1</em></div>}' );

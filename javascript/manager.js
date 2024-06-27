@@ -229,3 +229,20 @@ function OpenConstantsWindow(varname, field_name, sel_text, admin_url) {
     constantswindow = open(admin_url + "&field_name=" + field_name + "&var_id=" + varname + "&sel_text=" + encodeURIComponent(sel_text) , "popup", "scrollbars=1,resizable=1,width=640,height=500");
 }
 
+/** allows to select multiple checkboxes by holding shift key */
+function AA_AllowMultiselect(chb_css_rule, title) {
+    const chbxs = AA_$$(chb_css_rule);
+    let lastChecked = null;
+    chbxs.forEach(checkbox => {
+        checkbox.title = title;
+        checkbox.addEventListener('click', function (e) {
+            if (lastChecked && e.shiftKey) {
+                let [start, end] = [Array.from(chbxs).indexOf(this), Array.from(chbxs).indexOf(lastChecked)].sort((a, b) => a - b);
+                for (let i = start; i <= end; i++) {
+                    chbxs[i].checked = lastChecked.checked;
+                }
+            }
+            lastChecked = this;
+        });
+    });
+}

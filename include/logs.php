@@ -63,7 +63,7 @@ class AA_Log implements \AA\Expand\InternalExpandInterface {
      *
      * @param              $event
      * @param string|array $selector - if array, stored as separate entries (for ITEM_DEL, ...)
-     * @param string|array $params - if array, joined
+     * @param string|array|AA_Logentry $params - if array, joined
      * @return bool
      */
     static function write($event, $selector = "", $params = "") {
@@ -71,7 +71,9 @@ class AA_Log implements \AA\Expand\InternalExpandInterface {
             return false;
         }
 
-        if (is_array($params)) {
+        if (is_a($params, 'AA_Logentry')) {
+            $params = $params->serializeToString();
+        } elseif (is_array($params)) {
             $params = ParamImplode($params);
         }
 
@@ -187,7 +189,7 @@ class AA_Log implements \AA\Expand\InternalExpandInterface {
 //    }
 //}
 
-/** Uses AA_Seializable to create log entry. Constructor is taken from AA_Serializable */
+/** Uses AA_Serializable to create log entry. Constructor is taken from AA_Serializable */
 abstract class AA_Logentry extends AA_Serializable {}
 
 /** Mail Template log entry - description */
@@ -210,8 +212,32 @@ class AA_Logentry_MR extends AA_Logentry {
     }
 }
 
+/** Planedtask Toexecute log entry
+ */
+class AA_Logentry_X extends AA_Logentry {
+     public static function getClassProperties(): array {
+         return [
+         'time'       => new AA_Property('time',       _m('Time [s]'), 'string'),
+         'mem_usage'  => new AA_Property('mem_usage',  _m('Memory usage [MB]'), 'string'), // memory usage
+         'mem_peak'   => new AA_Property('mem_peak',   _m('Memory peak [MB]'), 'string'),  // memory peak
+         'ret'        => new AA_Property('ret',        _m('Return code'), 'string'),   // return code
+         'params'     => new AA_Property('params',     _m('Parameters'), 'string'),  // parameters
+         ];
+     }
+}
 
-
-
-
+/** Hitcounter entry
+ */
+class AA_Logentry_H extends AA_Logentry {
+    public static function getClassProperties(): array {
+        return [
+            'cached'       => new AA_Property('cached',       _m('Cached'), 'bool'),
+            'not_modified' => new AA_Property('not_modified', _m('Not Modified (304)'), 'bool'),
+            'time'         => new AA_Property('time',         _m('Time [s]'), 'string'),
+            'packtime'     => new AA_Property('packtime',     _m('Time + Cached + 304'), 'string'),
+            'mem_usage'    => new AA_Property('mem_usage',    _m('Memory usage [MB]'), 'string'),
+            'uri'          => new AA_Property('uri',          _m('Url'), 'string'),
+        ];
+    }
+}
 

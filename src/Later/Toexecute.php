@@ -34,6 +34,7 @@ namespace AA\Later;
 use AA;
 use AA\IO\DB\DB_AA;
 use AA_Log;
+use AA_Logentry_X;
 use Cvarset;
 
 /** AA\Later\Toexecute class - used for many short tasks, such as sending an e-mail for
@@ -226,8 +227,7 @@ class Toexecute {
         AA_Log::write('TOEXECUTE', 'AA\Later\Toexecute', "finished $count/$started in " . sprintf('%.3g',microtime(true) - $execute_start) . "/$allowed_time");
     }
 
-    function _exeOne($task, &$execute_times, $execute_start, $allowed_time)
-    {
+    function _exeOne($task, &$execute_times, $execute_start, $allowed_time) {
         $task_type = get_if($task['selector'], 'aa_unspecified');
         $expected_time = (float)get_if($execute_times[$task_type], 1.0);  // default time expected for one task is 1 second
         $task_start = microtime(true);
@@ -261,7 +261,7 @@ class Toexecute {
         $mem_usage = sprintf('%.3g',(memory_get_usage() / (1024*1024)));
         $mem_peak  = sprintf('%.3g',(memory_get_peak_usage() / (1024*1024)));
 
-        AA_Log::write('TOEXECUTE', $selector, sprintf('%.3g', $execute_times[$task_type]).":{$mem_usage}MB:{$mem_peak}MB:$retcode:" . $task['params']);
+        AA_Log::write('TOEXECUTE', $selector, new AA_Logentry_X(["time"=>sprintf('%.3g', $execute_times[$task_type]), "mem_usage"=>$mem_usage, 'mem_peak'=>$mem_peak, 'ret'=>$retcode, 'params'=>(string)$task['params']]));
         return 1;
     }
 
