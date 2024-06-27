@@ -736,11 +736,10 @@ class AA_Fields implements Iterator, Countable {
         }
         $this->fields = [];
         $flds = implode(',',array_map(fn ($value) => "`$value`", AA_Field::USED_FIELDS));
-        $a = DB_AA::select(['id'=> []], "SELECT $flds FROM `field`", [['slice_id', $this->master_id, 'l'], ['id', '\_%', ($this->collection == 0) ? 'NOT LIKE' : 'LIKE']], ['input_pri']);
+        $a = DB_AA::select(['id'=> []], "SELECT $flds FROM `field`", [['`slice_id`', $this->master_id, 'l'], ['`id`', '_', ($this->collection == 0) ? 'NOT BEGIN' : 'BEGIN']], ['input_pri']);
         foreach ($a as $fid => $data) {
             $this->fields[$fid] = new AA_Field($data);
         }
-
         if (is_long_id($fields_slice = AA_Slice::getModuleProperty($this->master_id, 'fieldslice'))) {
             $str2find = new CacheStr2find($fields_slice);
             $sf = AA::Pagecache()->cacheDb(['AA_Fields','loadFieldFromSlice'], [$fields_slice, $this->master_id], $str2find);
@@ -1003,8 +1002,8 @@ class AA_Fields implements Iterator, Countable {
 
     /** createFieldId function
      *  Create field id from type and number
-     * @param        $ftype
-     * @param string $no
+     * @param string $ftype  field type - headline, abstract, ...
+     * @param string $no     field number
      * @param string $id_type  '.' | '_'
      * @return string
      */

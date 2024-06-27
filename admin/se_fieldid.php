@@ -211,42 +211,25 @@ function ChangeFieldID($old_id, $new_id) {
     }
 
     // replace the field id in table content
-    $db = getDB();
-    $db->query("SELECT id FROM item WHERE slice_id=$xslice_id");
-    while ($db->next_record()) {
-        $item_ids[] = quote($db->f("id"));
-    }
-    freeDB($db);
-    if (count($item_ids)) {
-        DB_AA::sql("UPDATE content SET field_id='$new_id' WHERE item_id IN ('".join("','", $item_ids)."') AND field_id='$old_id'");
-    }
+    DB_AA::sql("UPDATE `content` SET `field_id`='$new_id' WHERE `item_id` IN (SELECT `id` FROM `item` WHERE `slice_id` = $xslice_id) AND `field_id` = '$old_id'");
 }
 
+$nchanges = 0;
 if ($update && $new_id_text && AA::$module_id) {
-    $nchanges = 0;
-    if (strlen($new_id_text) + strlen($new_id_number) <= 16) {
-        $new_id = $new_id_text;
-        for ( $i=0, $ino = 16-strlen($new_id_text)-strlen($new_id_number); $i<$ino; ++$i) {
-            $new_id .= ".";
-        }
-        $new_id .= $new_id_number;
-        if ($old_id != $new_id && strlen ($new_id) == 16) {
-            if (in_array($new_id, RESERVED_IDS)) {
-                $err[] = _m("This ID is reserved")." ($new_id).";
-            } else {
-                // prove the field does not exist
-                $db = getDB();
-                $db->query("SELECT id FROM field WHERE slice_id=$xslice_id AND id='$new_id'");
-                if ($db->next_record()) {
-                    $err[] = _m("This ID is already used")." ($new_id).";
-                }
-                freeDB($db);
-            }
-            if (!count($err)) {
-                ++$nchanges;
-                ChangeFieldID($old_id, $new_id);
-            }
-        }
+    $new_id = AA_Fields::createFieldId($new_id_text, $new_id_number);
+    if ($old_id == $new_id) {
+        $err[] = _m("The new ID is the same as the old one");
+    } elseif (strlen($old_id) <> 16) {
+        $err[] = _m("The old ID is not valid");
+    } elseif (strlen($new_id) <> 16) {
+        $err[] = _m("The new ID is not valid");
+    } elseif (in_array($new_id, RESERVED_IDS)) {
+        $err[] = _m("This ID is reserved")." ($new_id).";
+    } elseif (DB_AA::test("field", [["slice_id", AA::$module_id, 'l'], ["id", $new_id]])) {    // prove the field does not exist
+        $err[] = _m("This ID is already used")." ($new_id).";
+    } else {
+        ++$nchanges;
+        ChangeFieldID($old_id, $new_id);
     }
 }
 
@@ -269,14 +252,15 @@ $footcode = '<script>
 </script>';
 
 
-
 $apage = new AA_Adminpageutil('sliceadmin','field_ids');
 $apage->setTitle(_m("Admin - change Field IDs"));
 $apage->addRequire($footcode, 'AA_Req_Footcode');
-$apage->printHead($err, $Msg);
+
 if ($update) {
-    echo "$nchanges "._m("field IDs were changed").".<br>";
+    $Msg = "$nchanges "._m("field IDs were changed").".";
 }
+
+$apage->printHead($err, $Msg);
 
 FrmTabCaption(_m("Change Field IDs"));
 
@@ -285,31 +269,31 @@ echo"<tr><td>"._m("This page allows to change field IDs. It is a bit dangerous o
 $slice_fields = false;
 foreach ($s_fields as $fid => $fname) {
     if (!in_array($fid, RESERVED_IDS)) {
-        if ( AA_Fields::isSliceField($fid)) {
+         if ( AA_Fields::isSliceField($fid)) {
             $slice_fields = true;
         }
-        echo "<option value='$fid'>$fid";
+        echo "<option>$fid";
     }
 }
 echo "</select> ";
 
 echo _m("to")." <select name='new_id_text' id='new_id_text'>";
 foreach ($d_fields as $fid => $fname) {
-    echo "<option value=\"$fid\">$fid</option>";
+    echo "<option>$fid";
 }
 // if we use also slice setting fields in this slice, then we should generate
 // it also as proposal for renaming
 if ($slice_fields) {
     // once again, but with underscore before field - so it is "slice field"
     foreach ($d_fields as $fid => $fname) {
-        echo "<option value=\"_$fid\">_$fid</option>";
+        echo "<option>_$fid";
     }
 }
 
 echo "</select> <select name='new_id_number'>
 <option value='.'>.";
-for ($i = 1; $i <= 9999; ++$i) {
-    echo "<option>$i</option>";
+for ($i = 1; $i <= 2999; ++$i) {
+    echo "<option>$i";
 }
 echo "</select><br><br></td></tr>";
 
