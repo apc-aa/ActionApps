@@ -477,8 +477,7 @@ class AA_Item {
         $this->content4id->setAaValue($field, $value);
     }
 
-    /** getval function
-     * shortcut for AA_Content->getValue()
+    /** shortcut for AA_Content->getValue()
      * @param $field_id
      * @param $what
      * @return string | false
@@ -487,8 +486,7 @@ class AA_Item {
         return $this->content4id->getValue($field_id, $index);
     }
 
-    /** getFlag function
-     * shortcut for AA_Content->getFlag()
+    /** shortcut for AA_Content->getFlag()
      * @param $field_id
      * @param $what
      * @return bool
@@ -497,8 +495,7 @@ class AA_Item {
         return $this->content4id->getFlag($field_id);
     }
 
-    /** getValues function
-     * shortcut for ItemContent->getValues()
+    /** shortcut for ItemContent->getValues()
      * @param $field_id
      * @return array
      */
@@ -506,8 +503,7 @@ class AA_Item {
         return $this->content4id->getValues($field_id);
     }
 
-    /** getValues function
-     * shortcut for ItemContent->getValues()
+    /** shortcut for ItemContent->getValue()
      * @param string $field_id
      * @param int    $idx
      * @return string | false
@@ -516,16 +512,15 @@ class AA_Item {
         return $this->content4id->getValue($field_id);
     }
 
-    /** getValues function
-     * shortcut for ItemContent->getValues()
+    /** shortcut for ItemContent->getValuesArray()
      * @param $field_id
      * @return array
      */
-    function getValuesArray($field_id) {
+    function getValuesArray($field_id): array {
         return $this->content4id->getValuesArray($field_id);
     }
 
-    /** getAaValue function
+    /**
      * @param $field_id
      * @return AA_Value
      */

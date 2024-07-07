@@ -408,7 +408,7 @@ class AA_Mail_Scheduler implements \AA\Later\LaterInterface {
         if ($this->mail_id AND count($this->reader_ids)) {
             foreach ( $this->reader_ids as $id ) {
                 $item = AA_Item::getItem($id);
-                $to   = $item->getval(FIELDID_EMAIL);
+                $to   = $item->getValuesArray(FIELDID_EMAIL);
                 $mail_count += AA_Mail::sendTemplate($this->mail_id, $to, $item, true);
             }
         }
