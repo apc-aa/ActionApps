@@ -263,6 +263,13 @@ if ( ($insert || $update) AND count($fields) ) {
         $content4id->setValue('flags...........', $content4id->getValue('flags...........') & ~ITEM_FLAG_ANONYMOUS_EDITABLE);
     }
 
+    // id is updated before validation - unique username check needs it
+    // we need to know the new id before mlx->update, since it is written to the MLX control slice
+    if ($insert) {
+        $id = new_id();
+        $content4id->setItemID($id);
+    }
+
     if ( $validate_report = $content4id->validateReport('visible')) {
         foreach ($validate_report as $vr_fid => $vr_err) {
             $err[$vr_fid] =  MsgErr(_m("Error in").' <b>'.$fields->getProperty($vr_fid,'name')."</b> - ".$vr_err[1]);
@@ -270,13 +277,6 @@ if ( ($insert || $update) AND count($fields) ) {
     }
 
     if (!count($err)) {
-
-        // we need to know the new id before mlx->update, since it is written
-        // to the MLX control slice
-        if ($insert) {
-            $id = new_id();
-            $content4id->setItemID($id);
-        }
 
         // mimo change
         if ($lang_control) {

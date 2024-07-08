@@ -706,8 +706,10 @@ class AA_Validate_Unique extends AA_Validate {
             case '2': $this->scope = 'allslices'; break;
         }
 
+        $itm_id = $this->item_id ?: ($content_context ? $content_context->getId() : '');
+
         if ( $this->scope == 'username') {
-            if ( !AA::$perm->isUsernameFree($var) AND ( !$this->item_id OR (AA_Reader::name2Id($var) != $this->item_id))) {
+            if ( !AA::$perm->isUsernameFree($var) AND ( !$itm_id OR (AA_Reader::name2Id($var) != $itm_id))) {
                 return AA_Validate::bad(VALIDATE_ERROR_NOT_UNIQUE, _m('Username is not unique'), $var_id);
             }
             return true;
