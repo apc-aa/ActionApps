@@ -2,7 +2,6 @@
 
 namespace AA\Util;
 
-use AA;
 use AA_Value;
 
 class Langs {
@@ -51,6 +50,16 @@ class Langs {
     public static function getLang($lang_file): string {
         $lang_code = substr($lang_file, 0, strpos($lang_file . '_', '_'));
         return isset(self::$LANGS[$lang_code]) ? $lang_code : substr(DEFAULT_LANG_INCLUDE, 0, strpos(DEFAULT_LANG_INCLUDE, '_') ?: 'en-utf');
+    }
+
+    /** returns lang code ('cz', 'en', 'en-utf8', 'de',...) from given $charset or from default - used in mail templates
+     */
+    public static function fixLang($charset): string {
+        if (isset(self::$LANGS[$charset])) {
+            return $charset;
+        }
+        $lang = substr(self::currentLang(), 0, 2);
+        return (stripos($charset, 'utf') !== false) ? $lang . '-utf8' : $lang;
     }
 
     /** get current lang
