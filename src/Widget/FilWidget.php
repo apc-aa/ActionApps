@@ -101,7 +101,9 @@ class FilWidget extends Widget
         }
         if (!$upload_ok OR $add) {
             foreach ($urls as $url) {
-                $values[] = $url;
+                if (strlen(trim($url))) {
+                    $values[] = $url;
+                }
             }
         }
         return new AA_Value($values, FLAG_HTML);
