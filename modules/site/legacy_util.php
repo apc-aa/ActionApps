@@ -58,10 +58,16 @@ function ModW_str2arr($varnames, $str, $strdef, $reg) {
  *  This is fairly simplistic, just concatennating state, a more
  *  sophisticated sprint version might be needed
  */
-function ModW_arr2str($varnames, $arr) {
+function ModW_arr2str($varnames, $arr, string $strdef='', string $reg=''): string {
     $strout = "";
     for ($i=0, $ino=strlen($varnames); $i<$ino; ++$i) {
         $strout .= $arr[substr($varnames,$i,1)];
+    }
+    if ($reg) {
+        $reg = '`'.str_replace('`','\`',$reg).'`';
+        if (!preg_match($reg, $strout)) {
+            $strout = $strdef;
+        }
     }
     return $strout;
 }
