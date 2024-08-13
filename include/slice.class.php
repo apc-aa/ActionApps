@@ -155,17 +155,13 @@ class AA_Module {
         }
 
         $type = $_module_types[$module_id] ?: 'S';
-        switch ($info) {
-            case 'type':
-                return $type;
-            case 'class':
-                return $MODULEINFO[$type][0];
-            case 'url':
-                return $MODULEINFO[$type][1];
-            case 'menu':
-                return $MODULEINFO[$type][2];
-        }
-        return '';
+        return match ($info) {
+            'type'  => $type,
+            'class' => $MODULEINFO[$type][0],
+            'url'   => $MODULEINFO[$type][1],
+            'menu'  => $MODULEINFO[$type][2],
+            default => '',
+        };
     }
 
     /** AA_Module::getModuleType function
@@ -210,8 +206,7 @@ class AA_Module {
      * @return bool|mixed|null
      */
     static public function getModuleProperty($module_id, $prop) {
-        $module = static::getModule($module_id);
-        return $module ? $module->getProperty($prop) : null;
+        return static::getModule($module_id)?->getProperty($prop);
     }
 
     protected function _isModuleTableProperty($prop) {
@@ -305,7 +300,7 @@ class AA_Module {
 
     /** Checks, if the module_id is OK and the slice is not deleted */
     function isValid() {
-        return !$this->deleted();
+        return !$this->deleted() AND $this->module_setting; // $this->deleted() loads also $this->module_setting and we have to test if the module even exists
     }
 
     /** Checks, if the module_id is OK and the slice is not deleted  */
@@ -607,8 +602,7 @@ class AA_Slice extends AA_Module {
 
     /** @return Widget */
     function getWidget($field_id) {
-        $field = $this->getField($field_id);
-        return $field ? $field->getWidget() : null;
+        return $this->getField($field_id)?->getWidget();
     }
 
     /** getTranslations
@@ -685,7 +679,7 @@ class AA_Slice extends AA_Module {
      */
     function getUrlFromPath($filename) {
         $upload = $this->getUploadBase();
-        if (strpos($filename, $upload['path']) === 0) {
+        if (str_starts_with($filename, $upload['path'])) {
             return $upload['url']. substr($filename,strlen($upload['path']));
         }
         return $filename;
@@ -855,7 +849,7 @@ class AA_Module_Site extends AA_Module {
      *  @return string|false site_id
      */
     public static function getIdFromUrl() {
-        $host2  = (strpos($host = $_SERVER['HTTP_HOST'], 'www.')===0) ? substr($host,4) : 'www.'.$host;
+        $host2  = str_starts_with($host = $_SERVER['HTTP_HOST'], 'www.') ? substr($host,4) : 'www.'.$host;
         $domain_arr = ["http://$host/", "https://$host/","http://$host", "https://$host","http://$host2/", "https://$host2/","http://$host2", "https://$host2"];
         return DB_AA::select1('unpackid', "SELECT LOWER(HEX(id)) AS unpackid FROM `module`", [
             ['type', 'W'],
