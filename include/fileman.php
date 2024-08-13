@@ -41,7 +41,7 @@ $sortable_columns = [
  * @return bool|string
  */
 function filesuffix($filename) {
-    if (!strstr ($filename,".")) {
+    if (!str_contains($filename, ".")) {
         return "";
     }
     $i = strlen($filename);
@@ -66,7 +66,7 @@ function set_directory($dir) {
     $directory = $dir;
     endslash($directory);
     make_secure($directory);
-    if (substr ($directory,0,2) == "./") {
+    if (str_starts_with($directory, "./")) {
         $directory = substr ($directory, 2);
     }
 }
@@ -141,7 +141,7 @@ $filetypes = [
 function get_filetype($filepath) {
     global $filetypes;
 
-    if ($filepath == ".." || substr($filepath,-3) == "/..") {
+    if ($filepath == ".." || str_ends_with($filepath, "/..")) {
         return _m("Parent");
     } elseif (is_dir($filepath)) {
         return _m("Directory");

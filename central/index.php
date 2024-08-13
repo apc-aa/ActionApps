@@ -50,7 +50,7 @@ require_once __DIR__."/../central/include/actionapps.class.php";
 try {
     
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) {}
+} catch (Exception) {}
 
 
 /**

@@ -234,8 +234,7 @@ function createConstsArray($group_id, $admin, &$consts)
         } elseif (strlen($ancestors) % 16 != 0) {
             $error = true;
         // step over one layer
-        } elseif (strlen($ancestors) > strlen($path)
-            && substr ($ancestors,0,strlen($path)) == $path) {
+        } elseif (strlen($ancestors) > strlen($path) && str_starts_with($ancestors, $path)) {
             if (strlen($ancestors)-strlen($path) == 16) {
                 $consts .= ",array(array($col";
                 $depth++;
@@ -443,7 +442,7 @@ function hcUpdate() {
 
             $newvalue = $change[1];
             $new_id = $change[$column_id];
-            if (substr($new_id,0,1) == "#") {
+            if (str_starts_with($new_id, "#")) {
                 $id = q_pack_id (new_id());
                 $shortIDmap[$new_id] = $id;
                 $ancestors = "";

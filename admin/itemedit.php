@@ -95,7 +95,7 @@ try {
     $cancel = InputVars::boolGET('cancel');
     
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) {}
+} catch (Exception) {}
 
 
 

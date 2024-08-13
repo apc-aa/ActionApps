@@ -43,7 +43,7 @@ class AA_Site_Spot_Match {
     }
 
     public static function factoryByString($string, $var=null) {
-        if ( strpos($string,'=:') === 0 ) { // begins with =: - special identification of new matches
+        if (str_starts_with($string, '=:')) { // begins with =: - special identification of new matches
             $arr = ParamExplode($string);
             return new AA_Site_Spot_Match($arr[1], $arr[2]);
         }
@@ -56,13 +56,12 @@ class AA_Site_Spot_Match {
     }
 
     public function match($value) {
-        switch ( $this->op ) {
-            case '=':        return ($value ==  $this->val);
-            case 'REGEXP':   return preg_match('/'. str_replace('/', '\/', $this->val) .'/', $value);
-            case 'contains': return (strlen($value) AND (strpos($this->val, $value) !== false));
-           // case 'empty':    return !strlen(trim($value));
-        }
-        return false;
+        return match ($this->op) {
+            '='        => ($value == $this->val),
+            'REGEXP'   => preg_match('/'.str_replace('/', '\/', $this->val).'/', $value),
+            'contains' => (strlen($value) and str_contains($this->val, $value)),
+            default    => false,
+        };
     }
 }
 
@@ -569,9 +568,7 @@ class sitetree {
 
     function set($what, $id, $value) {
         $s =& $this->tree[$id];
-        if ($s) {
-            $s->set($what,$value);
-        }
+        $s?->set($what, $value);
     }
 
     function getName($id) { return $this->get( 'name', $id ); }

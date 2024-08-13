@@ -681,7 +681,7 @@ class AA_Inputfield {
      */
     function fill_const_arr($slice_field="", $conds=false, $sort=false, $whichitems=AA_BIN_ACT_PEND, $ids_arr=null, $crypted_additional_slice_pwd=null, $tagprefix=null, $const_arr_param=null) {
         $constgroup = $this->param[0];
-        $sid        = (substr($constgroup,0,7) == "#sLiCe-") ? substr($constgroup, 7) : '';
+        $sid        = (str_starts_with($constgroup, "#sLiCe-")) ? substr($constgroup, 7) : '';
 
         if ( isset($this->const_arr) AND is_array($this->const_arr) ) {  // already filled
             return $sid;
@@ -936,7 +936,7 @@ class AA_Inputfield {
 //                case 'fil': [$accepts, $text, $hlp] = $this->param;
 //                            $this->inputFile($accepts, $text, $hlp);
 //                            break;
-                case 'dte': if ( strstr($this->param[0], "'")) {     // old format
+                case 'dte': if (str_contains($this->param[0], "'")) {     // old format
                                 $this->param = explode("'",$this->param[0]);
                             }
                             [$y_range_minus, $y_range_plus, $from_now, $display_type] = $this->param;
@@ -1103,7 +1103,7 @@ class AA_Inputfield {
      *  Print links to document convertors, if convertors are installed
      */
     function get_convertors() {
-        $constants  = array_filter(get_defined_constants(true)['user'], fn ($key) => strpos($key, 'CONV_TEXTFILTERS') === 0, ARRAY_FILTER_USE_KEY);
+        $constants  = array_filter(get_defined_constants(true)['user'], fn ($key) => str_starts_with($key, 'CONV_TEXTFILTERS'), ARRAY_FILTER_USE_KEY);
         $convertors = array_map(fn ($key) => substr($key, 17), array_keys($constants));
         $convtext   = join('/',array_diff($convertors, ['ICONV']));
         $convertor  = "<a class=\"btn aa-convertor\" href=\"javascript:CallConvertor('".self_server(). AA_INSTAL_PATH."', '".$this->varname."')\">$convtext "._m('import') ."</a>";
@@ -1309,7 +1309,7 @@ class AA_Inputfield {
                 $widg .= "<label class=\"aa-langtrans aa-lang-$lang\" id=\"part$id2\" ".($first ? '' : ' style="display:none;"')."><strong class=\"aa-langtrans-label\">$lang</strong>";
 
 
-                $link  = ((substr($value,0,7)==='http://') OR (substr($value,0,8)==='https://')) ? a_href($value, GetAAImage('external-link.png', _m('Show'), 16, 16), ['class'=>'aa-externallink']) : '';
+                $link  = ((str_starts_with($value, 'http://')) OR (str_starts_with($value, 'https://'))) ? a_href($value, GetAAImage('external-link.png', _m('Show'), 16, 16), ['class' =>'aa-externallink']) : '';
                 $widg .= "<input id=\"$id2\" name=\"$name2\" $attr_string ". (($this->required AND $first) ? " required": ''). $GLOBALS['mlxFormControlExtra']. " value=\"$value\" $triggers>$link";
                 $widg .= "</label>";
                 $first = false;
@@ -1319,7 +1319,7 @@ class AA_Inputfield {
 
         } else {
             $value     = safe($val[0]['value']);
-            $link    = ((substr($value,0,7)==='http://') OR (substr($value,0,8)==='https://')) ? a_href($value, GetAAImage('external-link.png', _m('Show'), 16, 16), ['class'=>'aa-externallink']) : '';
+            $link    = ((str_starts_with($value, 'http://')) OR (str_starts_with($value, 'https://'))) ? a_href($value, GetAAImage('external-link.png', _m('Show'), 16, 16), ['class' =>'aa-externallink']) : '';
 
             $widg =  "<input name=\"$name\" $attr_string ". ($this->required ? " required": ''). $GLOBALS['mlxFormControlExtra']." value=\"$value\" $triggers>$link";
         }
@@ -1619,7 +1619,7 @@ class AA_Inputfield {
         $listlen              = get_if($listlen, EDIT_ITEM_COUNT);
         $actions              = get_if($actions, 'DR');
         $actions              = str_replace(['0','1'], ['DR','MDR'],(string)$actions);
-        $movebuttons          = (strpos($actions,'M') !== false);
+        $movebuttons          = (str_contains($actions, 'M'));
         $triggers  = $this->use_triggers_4_slice ? JsTriggers::singleton4id($this->use_triggers_4_slice)->get("select", $name) : '';
 
         if ( $whichitems < 1 ) {
@@ -1649,24 +1649,24 @@ class AA_Inputfield {
              $this->echoo("</div>");
         }
         $this->echoo("</div>\n <div class='aa-iso-foot'>\n");
-        if (strpos($actions,'R') !== false) {
+        if (str_contains($actions, 'R')) {
             $this->echoo("<input type='button' value='". _m("Add") ."' onclick='OpenRelated(\"$name\", \"$sid\", \"$mode\", \"$design\", \"$whichitems\",\"".rawurlencode($conds)."\",\"".rawurlencode($condsrw)."\", \"".rawurlencode($slice_field)."\",\"".get_admin_url('related_sel.php')."\", \"".rawurlencode($sort_by)."\", \"".rawurlencode($listlen)."\" )'>\n");
         }
-        if (strpos($actions,'N') !== false) {
+        if (str_contains($actions, 'N')) {
             $this->echoo("&nbsp;&nbsp;<input type='button' value='". _m("New") ."' onclick=\"OpenWindowTop('". Inputform_url(true, null, $sid, 'close_dialog', null, $name) .  "');\">\n");
         }
-        if (strpos($actions,'E') !== false) {
+        if (str_contains($actions, 'E')) {
             $this->echoo("&nbsp;&nbsp;<input type='button' value='". _m("Edit") ."' onclick=\"EditItemInPopup('". Inputform_url(false, null, $sid, 'close_dialog', null, $name) .  "', document.inputform['".$name."']);\">\n");
         }
         // used mainly by mft
-        if (strpos($actions,'A') !== false) {
+        if (str_contains($actions, 'A')) {
             $this->echoo("&nbsp;&nbsp;<input type='button' value='". _m("New") ."' onclick=\"sb_AddValue(document.inputform['".$name."'], '"._m('Enter the value')."');\">\n");
         }
         // used mainly by mft
-        if (strpos($actions,'C') !== false) {
+        if (str_contains($actions, 'C')) {
             $this->echoo("&nbsp;&nbsp;<input type='button' value='". _m("Change") ."' onclick=\"sb_EditValue(document.inputform['".$name."'], '"._m('Enter the value')."');\">\n");
         }
-        if (strpos($actions,'D') !== false) {
+        if (str_contains($actions, 'D')) {
             $this->echoo("&nbsp;&nbsp;<input type='button' value='". _m("Delete") ."' onclick=\"sb_RemoveItem(document.inputform['".$name."']);\">\n");
         }
         $this->echoo(getFrmJavascript("if (typeof listboxes == 'undefined') { var listboxes = []; };  listboxes[listboxes.length] = '$name';"));
@@ -2573,7 +2573,7 @@ function getFrmSelectEasy($name, $arr, $selected="", array $add= [], $showempty=
     $retval       = "\n<select name=\"$name\" $add>";
     $selectedused = false;
     foreach ((array)$arr as $k => $v) {
-        if (0===strpos($k,'AA_OPTGROUP')) {  // begins with AA_OPTGROUP
+        if (str_starts_with($k, 'AA_OPTGROUP')) {  // begins with AA_OPTGROUP
             $retval .= "\n<optgroup label=\"".safe($v).'">';
             continue;
         }

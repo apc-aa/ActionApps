@@ -48,7 +48,7 @@ function translate_files($old_lang_file, $src_dir, $dst_dir) {
     krsort($consts);
 
     foreach ($consts as $name => $value) {
-        if (substr($name,0,2) != "L_") {
+        if (!str_starts_with($name, "L_")) {
             unset($consts[$name]);
         } else {
             if (strlen($value) <= 1 || ctype_digit((string)$value)) {

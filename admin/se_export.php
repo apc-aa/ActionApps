@@ -68,7 +68,7 @@ try {
     $cancel = InputVars::boolPOST('cancel');
     
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) {}
+} catch (Exception) {}
 
 if (!IfSlPerm(PS_FEEDING)) {
     MsgPage(_m("You have not permissions to export"));

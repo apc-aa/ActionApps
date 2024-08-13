@@ -176,7 +176,7 @@ spl_autoload_register(function ($class_name) {
 
     if (defined('AA_CUSTOM_DIR')) {
         foreach ($CUSTOM_INC_FILES as $inc_def => $inc_file) {
-            if (strpos($class_name, $inc_def) === 0 ) {
+            if (str_starts_with($class_name, $inc_def)) {
                 include_once(__DIR__. '/custom/'. AA_CUSTOM_DIR. '/'. $inc_file);
             }
         }
@@ -557,7 +557,7 @@ function GetTable2Array($SQL, $key="id", $values='aa_all') {
             $val = $db->record();
         } elseif ($values == 'aa_mark') {
             $val = true;
-        } elseif (substr($values,0,7) == 'unpack:') {
+        } elseif (str_starts_with($values, 'unpack:')) {
             $val = unpack_id($db->f(substr($values,7)));
         } elseif (is_string($values) AND array_key_exists( $values, $db->record() )) {
             $val = $db->record($values);
@@ -571,7 +571,7 @@ function GetTable2Array($SQL, $key="id", $values='aa_all') {
             return $val;
         } elseif ( ($key == "NoCoLuMn") OR !$key ) {
             $arr[] = $val;
-        } elseif ( substr($key,0,7) == 'unpack:' ) {
+        } elseif (str_starts_with($key, 'unpack:')) {
             $arr[unpack_id($db->f(substr($key,7)))] = $val;
         } else {
             $arr[$db->f($key)] = $val;

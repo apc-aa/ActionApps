@@ -53,11 +53,11 @@ class AA_Formrow extends AA_Storable {
     function getRowHtml($content, $type=''): string {
         $widget = $this->getWidget();
         // $widget->registerRequires(); // now in _finalizeHtml
-        switch ($type) {
-            case 'ajax': return $widget->getAjaxHtml($this->getRowProperty(), $content);
-            case 'live': return $widget->getliveHtml($this->getRowProperty(), $content);
-        }
-        return $widget->getHtml($this->getRowProperty(), $content);
+        return match ($type) {
+            'ajax'  => $widget->getAjaxHtml($this->getRowProperty(), $content),
+            'live'  => $widget->getliveHtml($this->getRowProperty(), $content),
+            default => $widget->getHtml($this->getRowProperty(), $content),
+        };
     }
 
     // in order we can display row widget (used for editing forms)

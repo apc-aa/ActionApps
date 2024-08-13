@@ -68,7 +68,7 @@ try {
     $cancel = InputVars::boolPOST('cancel');
     
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) {}
+} catch (Exception) {}
 
 
 // FilemanPerms() is defined in perm_core.php, it sets $fileman_dir

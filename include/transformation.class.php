@@ -84,7 +84,7 @@ abstract class AA_Transformation implements \AA\Util\NamedInterface {
         }
         $prefix = $input_id. substr($classname,18);
         foreach ($_REQUEST as $varname => $varvalue) {
-            if (strpos($varname, $prefix) === 0) {
+            if (str_starts_with($varname, $prefix)) {
                 // filter out the prefix
                 $ret[substr($varname,strlen($prefix))] = $varvalue;
             }
@@ -104,16 +104,17 @@ abstract class AA_Transformation implements \AA\Util\NamedInterface {
      *  Common function for many transformations
      **/
     function getFlagFromForm($old_flag) {
-        switch ($this->getParam('new_flag')) {
-                case 'u': return $old_flag;
-                case 'h': return $old_flag | FLAG_HTML;
-                case 't': return $old_flag & ~FLAG_HTML;
-        }
-        return 0;  // should never happen
+        return match ($this->getParam('new_flag')) {
+            'u'     => $old_flag,
+            'h'     => $old_flag | FLAG_HTML,
+            't'     => $old_flag & ~FLAG_HTML,
+            default => 0,                     // should never happen
+        };
+
     }
 
 
-    /** htmlSetting function
+    /**
      * @param $input_prefix
      * @param $params
      */
@@ -465,7 +466,7 @@ class AA_Transformation_ParseMulti extends AA_Transformation {
     function transform($field_id, $itemcontent, $silent=true) {
         $item = GetItemFromContent($itemcontent);
         $flag = $this->getFlagFromForm($item->getFlag($field_id));
-        if (strpos($this->delimiter, 'AA_LANG') !== false) {   // multilangual
+        if (str_contains($this->delimiter, 'AA_LANG')) {   // multilangual
             $delimiter = str_replace('AA_LANG', '([A-Za-z]{2})', preg_quote($this->delimiter, '/'));
             $twos = preg_split("/$delimiter/", $item->subst_alias($this->source), -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
             $i = 0;
@@ -534,11 +535,11 @@ class AA_Strreplace {
      * @return string/false
      */
     function matches($text) {
-        switch ($this->method) {
-            case 'regexp':  return (preg_match($this->pattern, $text) > 0);
-            case 'replace': return ($text == $this->pattern);
-        }
-        return false;
+        return match ($this->method) {
+            'regexp'  => (preg_match($this->pattern, $text) > 0),
+            'replace' => ($text == $this->pattern),
+            default   => false,
+        };
     }
 
     /** replace function
@@ -629,7 +630,7 @@ class AA_Transformation_Translate extends AA_Transformation {
         foreach (explode("\n",$this->translation) as $row) {
             // explode do not eat possible \r at the end - we trim it
             $row = rtrim($row, "\r");
-            if (strpos($row, ':regexp:') === 0) {
+            if (str_starts_with($row, ':regexp:')) {
                 // regular expressions
                 $parts = ParamExplode(substr($row,8));
                 $regexp = array_shift($parts);

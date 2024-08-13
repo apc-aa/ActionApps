@@ -279,10 +279,10 @@ class AA_Condition extends AA_Object {
             case 'CONTAIN':
             case 'LIKE':
             case 'XLIKE':
-                return (strpos($field_value, $this->value) === false) ? false : true;
+                return str_contains($field_value, $this->value);
             case 'BEGIN':
             case 'RLIKE':
-                return (strpos($field_value, $this->value) === 0) ? true : false;
+                return str_starts_with($field_value, $this->value);
             case 'LLIKE':
                 return strpos($field_value, $this->value) == (strlen($field_value) - strlen($this->value));
             case 'REGEXP':
@@ -539,7 +539,7 @@ class AA_Set extends AA_Object {
      * @param $defaultCondsOperator
      */
     function addCondsFromString($string, $defaultCondsOperator = 'RLIKE') {
-        if (substr(inner_trim($string), 0, 2) == 'd-') {
+        if (str_starts_with(inner_trim($string), 'd-')) {
             $this->_parseViewConds($string);
         }
         $this->_parseCondsString($string, $defaultCondsOperator);
@@ -661,7 +661,7 @@ class AA_Set extends AA_Object {
         // with its equivalents
         foreach ($conds as $k => $cond) {
             foreach ($cond as $field => $val) {
-                if (strpos($field, ',') !== false) {
+                if (str_contains($field, ',')) {
                     unset($conds[$k][$field]);
                     foreach (explode(',', $field) as $separate_field) {
                         $conds[$k][$separate_field] = $val;
@@ -697,7 +697,7 @@ class AA_Set extends AA_Object {
      * @param $srt
      */
     function addSortFromString($sort) {
-        if (strpos(ltrim($sort), 'sort[') === 0) {
+        if (str_starts_with(ltrim($sort), 'sort[')) {
             $ret = [];
             parse_str($sort, $ret);
             $this->addSortFromArray($ret['sort']);
@@ -817,7 +817,7 @@ class AA_Set extends AA_Object {
 
                 // d- conds in {item:....:d-..} could be url encoded (as produced by {conds:...})
                 // so if the first and last characetr is encoded quotes, let's decode it
-                if ((substr($val, 0, 3) == '%22') and (substr($val, -3) == '%22')) {
+                if (str_starts_with($val, '%22') and str_ends_with($val, '%22')) {
                     $val = rawurldecode($val);
                 }
 
@@ -1303,7 +1303,7 @@ function ParseEasyConds(&$conds, $defaultCondsOperator = "LIKE") {
         // with its equivalents
         foreach ($conds as $k => $cond) {
             foreach ($cond as $field => $val) {
-                if (strpos($field, ',') !== false) {
+                if (str_contains($field, ',')) {
                     unset($conds[$k][$field]);
                     $fields = explode(',', $field);
                     foreach ($fields as $separate_field) {
@@ -1380,7 +1380,7 @@ function MakeSQLConditions($fields_arr, $conds, $defaultCondsOperator, &$join_ta
                             }
                         }
                         // for Links it contain whole definition of the ink - like "links_cat_cat.state"
-                        if ( strpos($finfo['field'], '.') !== false ) {   // not common case
+                        if (str_contains($finfo['field'], '.')) {   // not common case
                             [$dbtab, $dbfld] = explode('.',$finfo['field'],2);
                         } else {
                             [$dbtab, $dbfld] = [$finfo['table'] ?? '', $finfo['field']];
@@ -1659,8 +1659,8 @@ function QueryZids($slices, $conds = "", $sort = "", $type = "ACTIVE", $neverAll
                 //          (relation.......1 field of the remote slice 7735375488a65e7735375488a65eab2ab2 pointed to current item)
                 //        - the + after <remote_slice_id> - 7735375488a65e7735375488a65eab2ab2+ means we want also non ACTIVE items take in the account
 
-                if (strpos($fid, '@') !== false) {
-                    if (strpos($fid, '/') === false) {
+                if (str_contains($fid, '@')) {
+                    if (!str_contains($fid, '/')) {
                         // first case - the current slice is pointing to another one
                         // Syntax is:
                         //   <remote_field_id>@<local_relation_field_id>
@@ -1725,7 +1725,7 @@ function QueryZids($slices, $conds = "", $sort = "", $type = "ACTIVE", $neverAll
                         [$cond_fld_id, $rel_combi] = explode('@', $fid);
                         [$rel_slice_id, $rel_fld_id] = explode('/', $rel_combi);
                         $rel_bins = AA_BIN_ACTIVE;
-                        if (substr($rel_slice_id, -1) == '+') {
+                        if (str_ends_with($rel_slice_id, '+')) {
                             $rel_bins     = AA_BIN_ALL;
                             $rel_slice_id = trim($rel_slice_id, '+');
                         }
@@ -1815,7 +1815,7 @@ function QueryZids($slices, $conds = "", $sort = "", $type = "ACTIVE", $neverAll
                         $addjoincond = " AND $addjoincond";
                     }
 
-                    if (strpos($cond_flds, 'all_fields') !== false) {  // we are searching all fields in content table
+                    if (str_contains($cond_flds, 'all_fields')) {  // we are searching all fields in content table
                         $select_tabs[] = "$selprefix JOIN content as $tbl ON ($tbl.item_id=item.id $addjoincond)";
                     } elseif ($field_count > 1) {
                         $select_tabs[] = "$selprefix JOIN content as $tbl ON ($tbl.item_id=item.id AND ($tbl.field_id IN ($cond_flds) $selcondadd)$addjoincond)";

@@ -94,7 +94,7 @@ class mgettext_writer_php extends mgettext_writer {
     function prepare_string($str) {
         $str = str_replace(["\\", '"', "$"], ["\\\\",'\\"', "\\$"], $str);
         // write line ends as new lines, but handle two line ends in other way
-        while (strstr($str, "\n\n")) {
+        while (str_contains($str, "\n\n")) {
             $str = str_replace("\n\n", "\\n\n", $str);
         }
         $str = str_replace("\n", "\\n\"\n   .\"", $str);
@@ -152,7 +152,7 @@ class mgettext_writer_po extends mgettext_writer {
     function prepare_string($str) {
         $str = str_replace(["\\", '"'], ["\\\\",'\\"'], $str);
         // write line ends as new lines, but handle two line ends in other way
-        while (strstr($str, "\n\n")) {
+        while (str_contains($str, "\n\n")) {
             $str = str_replace("\n\n", "\\n\n", $str);
         }
         $str = str_replace("\n", "\\n\"\n   \"", $str);
@@ -301,7 +301,7 @@ function php_string($text) {
 
 /** add file to $skiplist or $filelist */
 function mark_file_4_processing($dirname, $fname, $skip, &$skiplist, &$filelist) {
-    if ($skip OR (substr($fname,0,2)=='.#')) {   // ignore also CVS backups
+    if ($skip OR str_starts_with($fname, '.#')) {   // ignore also CVS backups
         $skiplist[$dirname.$fname] = 1;
     } else {
         $filelist[$dirname.$fname] = 1;
@@ -412,7 +412,7 @@ function collect_messages_from_file($base_dir, $filename, &$messages, &$warnings
         $row_start[$irow+1] = strlen($filetext);
         $filetext .= $row;
     }
-    if (!strstr($filetext, "_m")) {
+    if (!str_contains($filetext, "_m")) {
         return;
     }
 

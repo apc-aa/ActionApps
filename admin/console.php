@@ -37,7 +37,7 @@ require_once __DIR__ . "/../include/mgettext.php";
 try {
     $code = InputVars::stringPOST('code');
     $html = InputVars::boolPOST('html');
-} catch (Exception $e) {}
+} catch (Exception) {}
 
 if (!IsSuperadmin()) {
     MsgPage(_m("You have not permissions to access Console"));

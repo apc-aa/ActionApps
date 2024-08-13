@@ -43,17 +43,11 @@
 
         // Error when validating some field.
         case "validate":
-            switch (key ($prop)) {
-            case "con_email.......":
-                echo 'Error in email. This email address is already subscribed. Please use another one.';
-                break;
-            case "headline........":
-                echo 'Error in username. This username is already used. Please try another.'."\n";
-                break;
-            default:
-                echo 'Error in field value ('.key($prop).').<br>'."\n";
-                break;
-            }
+            echo match (key($prop)) {
+                "con_email......." => 'Error in email. This email address is already subscribed. Please use another one.',
+                "headline........" => 'Error in username. This username is already used. Please try another.'."\n",
+                default            => 'Error in field value ('.key($prop).').<br>'."\n",
+            };
             break;
 
         // Error: permissions K.O.

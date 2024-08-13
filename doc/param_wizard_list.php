@@ -98,17 +98,13 @@ foreach ($list["items"] as $name => $item) {
         foreach ($params as $param) {
             echo "<TR>";
             echo "<TD><B>" . nl($param['name']) . "</B></TD><TD>";
-            switch ($param['type']) {
-                case "INT": echo " (" . _m("integer number") . ")";
-                    break;
-                case "STR": echo " (" . _m("any text") . ")";
-                    break;
-                case "STRID":echo " (" . _m("field id") . ")";
-                    break;
-                case "BOOL": echo " (" . _m("boolean: 0=false,1=true") . ")";
-                    break;
-                default : echo "&nbsp;";
-            }
+            echo match ($param['type']) {
+                "INT"   => " ("._m("integer number").")",
+                "STR"   => " ("._m("any text").")",
+                "STRID" => " ("._m("field id").")",
+                "BOOL"  => " ("._m("boolean: 0=false,1=true").")",
+                default => "&nbsp;",
+            };
             echo "</TD>
               <TD>" . nl(processSlashes($param['desc'])) . "</TD>
               <TD>" . nl($param['example']) . "</TD></TR>\n";

@@ -184,7 +184,7 @@ class AA_View_Commands {
                     // you can use also _#CAMPAIGN in url:
                     // {view.php?vid=12&cmd[]=x-34-_%23CAMPAIGN&als[CAMPAIGN]=42525}
                     // (%23 is urlencoded #)
-                    if (substr($k,0,2) != '_#') {
+                    if (!str_starts_with($k, '_#')) {
                         $cmd_part = str_replace('_#'.$k, $v, $cmd_part);
                     }
 

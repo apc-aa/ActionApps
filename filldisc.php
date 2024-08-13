@@ -88,13 +88,12 @@ try {
     // array ( '8de4c6fa4e6…' => 6, )
     $d_item_id = InputVars::idPOST('d_item_id', true);
     // array ( '' => 3, 'f0583c0321e…' => 1, 'd40e80bf3bb…' => 2, )
-    $d_parent = InputVars::idPOST('d_parent', true); // empty
+    $d_parent = InputVars::idPOST('d_parent', true); // empty       // parent id
     // array ( 'opravené d…' => 2, '' => 4, )
     $d_subject = InputVars::stringPOST('d_subject', true); // empty
     // array ( 'http://zpra…' => 6, )
     $url = InputVars::stringPOST('url', true);
-} catch (Exception $e) {}
-
+} catch (Exception) {}
 
 
 

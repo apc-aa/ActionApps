@@ -37,7 +37,7 @@ try {
     $cancel = InputVars::boolPOST('cancel');
     
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) {}
+} catch (Exception) {}
 
 $r_state['linkedit']['old'] = $_POST;  // in case of bad input
 unset($r_msg);

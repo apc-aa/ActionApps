@@ -51,7 +51,7 @@ $COLORNAMES = [
 function mkcolor($color){  
     global $COLORNAMES;
     
-    if (substr($color,0,1) != "#") {
+    if (!str_starts_with($color, "#")) {
         $color = strtolower($color);
         $color = $COLORNAMES[$color];
     }

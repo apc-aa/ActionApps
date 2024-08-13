@@ -244,7 +244,7 @@ function Links_IsPublic() {
  *  Parses folder string (like folder3) and returns folder number (3) or false
  */
 function Links_GetFolder($type) {
-    if ( substr($type,0,6)=='folder' ) {
+    if (str_starts_with($type, 'folder')) {
         return substr($type,6);
     } else {
         return false;
@@ -391,7 +391,7 @@ function Links_GlobalCatSuper($type) {
 
 /** Returns listing of links with the same URL */
 function Links_getUrlReport($url, $format_strings, $checked_id, $tree_start=false) {
-    if ( substr( $url, -1 ) == '/' ) {
+    if (str_ends_with($url, '/')) {
         $url = substr( $url, 0, strlen($url)-1 );  // remove last '/'
     }
 

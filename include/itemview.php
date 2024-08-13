@@ -147,7 +147,7 @@ class itemview {
    * returns true, if view have to show random item (weighted or not)
    */
   function is_random() {
-      return (substr($this->from_record, 0, 6) == 'random');
+      return str_starts_with($this->from_record, 'random');
   }
 
     /** get_output_cached function
@@ -467,14 +467,12 @@ class itemview {
     if ($view_type == "discussion") {
       $CurItem = new AA_Item("", $this->aliases);   // just prepare
       $CurItem->set_parameters($this->parameters);
-      switch ($this->disc['type']) {
-        case 'thread':   $out = $this->get_disc_thread($CurItem); break;
-        case 'fulltext': $out = $this->get_disc_fulltext($CurItem); break;
-        case 'list':     $out = $this->get_disc_list($CurItem); break;
-        case 'add_disc':
-        default:         $out = $this->get_disc_add($CurItem); break;
-      }
-      return $out;
+      return match ($this->disc['type']) {
+            'thread'   => $this->get_disc_thread($CurItem),
+            'fulltext' => $this->get_disc_fulltext($CurItem),
+            'list'     => $this->get_disc_list($CurItem),
+            default    => $this->get_disc_add($CurItem),
+      };
     }
      // other view_type than discussion
 
@@ -491,7 +489,7 @@ class itemview {
             $this->group_fld = $grp_al;   // replaces possible ABCDEFGH alias with _#ABCDEFGH
             $this->zids = new zids(explode_ids(StrExp('order', [join('-',$this->zids->short_or_longids()), $this->group_fld, 'locale'])));
         }
-        elseif ((strlen($this->slice_info['group_by2'])==10) AND (substr($this->slice_info['group_by2'],0,2)=='_#')) {
+        elseif ((strlen($this->slice_info['group_by2'])==10) AND str_starts_with($this->slice_info['group_by2'], '_#')) {
             define('SORT_CONST', ['0' => 'locale', '1' => 'rlocale', '4' => 'numeric', '5' => 'rnumeric']);
             $this->zids = new zids(explode_ids(StrExp('order', [join('-',$this->zids->short_or_longids()), $this->slice_info['group_by2'], SORT_CONST[(int)$this->slice_info['g2_direction']]])));
         }

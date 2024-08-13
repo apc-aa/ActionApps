@@ -36,7 +36,7 @@ try {
     $cancel = InputVars::boolGETPOST('cancel');
     
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) {}
+} catch (Exception) {}
 
 function printChange($field, $change_arr, $original_value="") {
     global $created_by_change; // used for display of initiator of the change

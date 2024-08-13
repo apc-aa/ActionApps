@@ -657,8 +657,7 @@ class AA_Views {
         return $view->load() ? $view : null;  // if exists return
     }
 
-    /** getViewField function
-     *  static function
+    /**
      * @param int $vid
      * @param $field
      * @return null
@@ -666,8 +665,7 @@ class AA_Views {
     static function getViewField($vid, $field) {
         /** @var AA_Views $views */
         $views = AA_Views::singleton();
-        $view  = $views->_getView($vid);
-        return $view ? $view->f($field) : null;
+        return $views->_getView($vid)?->f($field);
     }
 
     /** _getView function

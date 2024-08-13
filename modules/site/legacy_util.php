@@ -55,8 +55,7 @@ function ModW_str2arr($varnames, $str, $strdef, $reg) {
 }
 
 /** Convert an array into a state string, in the order from $varnames
- *  This is fairly simplistic, just concatennating state, a more
- *  sophisticated sprint version might be needed
+ *  This is fairly simplistic, just concatenating state, a more sophisticated sprint version might be needed
  */
 function ModW_arr2str($varnames, $arr, string $strdef='', string $reg=''): string {
     $strout = "";

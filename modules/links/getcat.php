@@ -33,7 +33,7 @@ require_once __DIR__ . "/../../modules/links/util.php";      // module specific 
 
 try {
     $start = InputVars::intGET('start') ?: 1;
-} catch (Exception $e) {}
+} catch (Exception) {}
 
 function PrintCategory( $id, $name, $base, $state, $parent, $level ) {
     echo "<br>";

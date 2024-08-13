@@ -56,7 +56,7 @@ try {
     $cancel = InputVars::boolPOST('cancel');
     
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) {}
+} catch (Exception) {}
 
 
 MoreTimeLimit(600); // set_time_limit to 10 minutes (at least)

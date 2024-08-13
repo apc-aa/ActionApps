@@ -143,7 +143,7 @@ class zids implements Iterator, ArrayAccess, Countable {
      * @return zids
      */
     public function setFromItemArr(array $item_arr) {
-        return $this->clear($this->type)->add(array_map(fn ($k) => rawurldecode(strpos($k, 'x') === 0 ? substr($k, 1) : $k), array_keys($item_arr)));   // in some managers we use 'x' before the item id - remove it
+        return $this->clear($this->type)->add(array_map(fn ($k) => rawurldecode(str_starts_with($k, 'x') ? substr($k, 1) : $k), array_keys($item_arr)));   // in some managers we use 'x' before the item id - remove it
     }
 
     /** copy all data from provided zids */
@@ -170,7 +170,7 @@ class zids implements Iterator, ArrayAccess, Countable {
      * @return zids this
      */
     function addDirty($ids) {
-        if (substr(reset($ids),0,1)=='[') {
+        if (str_starts_with(reset($ids), '[')) {
             $json_ids = [];
             foreach ($ids as $json) {
                 $json_ids = array_merge($json_ids, json_decode($json, true));
@@ -524,11 +524,11 @@ class zids implements Iterator, ArrayAccess, Countable {
         // we need it in the same order as in source
         $ret = [];
         foreach ($this->arr as $idx => $zid ) {
-            switch ($type) {
-                case 'l': $ret[$idx] = $this->s2l[$zid]; break;
-                case 'p': $ret[$idx] = pack_id($this->s2l[$zid]); break;
-                default:  $ret[$idx] = $this->l2s[$zid];
-            }
+            $ret[$idx] = match ($type) {
+                'l'     => $this->s2l[$zid],
+                'p'     => pack_id($this->s2l[$zid]),
+                default => $this->l2s[$zid],
+            };
         }
         return $ret;
     }
@@ -693,11 +693,11 @@ function qquote($str): string {
  */
 function sqlin( $column, $values, $long=false ): string {
     $fce = $long ? 'xpack_id' : 'qquote';
-    switch (count($values)) {
-    case 0: return '0';
-    case 1: return "$column = ".$fce(reset($values));
-    }
-    return "$column IN (". implode(",",array_map($fce, $values)). ')';
+    return match (count($values)) {
+        0       => '0',
+        1       => "$column = ".$fce(reset($values)),
+        default => "$column IN (".implode(",", array_map($fce, $values)).')',
+    };
 }
 
 /** id_t2l function

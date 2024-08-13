@@ -57,7 +57,7 @@ try {
     $cancel = InputVars::boolPOST('cancel');
     
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) {}
+} catch (Exception) {}
 
 const DEFAULT_ADMIN_TOP    = '<tr>\n  <th></th>\n  <th>www</th>\n  <th>name</th>\n</tr>';
 const DEFAULT_ADMIN_HTML   = '<tr>\n  <td><input type=checkbox name=\"chb[x_#ITEM_ID#]\" value=\"1\"></td>\n  <td><a href=\"_#SEO_URL_\">&nbsp;&raquo;&nbsp;</a></td>\n  <td><a href=\"_#EDITITEM\">_#HEADLINE</a><br><small>_#SEO_URL_</small></td>\n</tr>';

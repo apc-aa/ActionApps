@@ -233,10 +233,10 @@ function SetColumnTypes(&$columns, &$primary_aliases, $default_table, $join="", 
                 $cprop["type"] = $col["type"];
                 $cprop["view"]["dbtype"] = $col["type"];
             }
-            if (strstr ($col["flags"], "auto_increment")) {
+            if (str_contains($col["flags"], "auto_increment")) {
                 $cprop["auto_increment"] = 1;
             }
-            if (strstr ($col["flags"], "not_null")) {
+            if (str_contains($col["flags"], "not_null")) {
                 $cprop["not_null"] = 1;
             }
 

@@ -351,7 +351,7 @@ class ConvertCharset {
                     * this is a way of making comments by unicode.org in thair encoding files
                     * and that's where the files are from :-)
                     **/
-                    if (substr($OneLine, 0, 1) != "#") {
+                    if (!str_starts_with($OneLine, "#")) {
                         /**
                         * Sometimes inside the charset file the hex walues are separated by
                         * "space" and sometimes by "tab", the below preg_split can also be used
@@ -361,7 +361,7 @@ class ConvertCharset {
                         /**
                         * Sometimes char is UNDEFINED, or missing so we can't use it for convertion
                         **/
-                        if (substr($HexValue[1], 0, 1) != "#") {
+                        if (!str_starts_with($HexValue[1], "#")) {
                             $ArrayKey   = strtoupper(str_replace(strtolower("0x"), "", $HexValue[1]));
                             $ArrayValue = strtoupper(str_replace(strtolower("0x"), "", $HexValue[0]));
                             $ConvertTable[func_get_arg($i)][$ArrayKey] = $ArrayValue;

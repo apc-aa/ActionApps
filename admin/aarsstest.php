@@ -33,7 +33,7 @@ require_once __DIR__ . "/../include/tv_common.php";
 try {
     $cancel = InputVars::boolPOST('cancel');
     $Msg    = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) {}
+} catch (Exception) {}
 // ----------------------------------------------------------------------------------------
 
 /** tv_field_value function

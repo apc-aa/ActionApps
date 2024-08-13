@@ -42,7 +42,7 @@ require_once __DIR__ . "/../include/item.php";     // GetAliasesFromField funct 
 
 try {
     $cancel = InputVars::boolPOST('cancel');
-} catch (Exception $e) {}
+} catch (Exception) {}
 
 if ($cancel) {
     go_url( StateUrl(self_base() . "index.php"));

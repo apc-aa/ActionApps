@@ -283,7 +283,7 @@ class PhpConsole {
                         return;
                 }
                 $message = [];
-                $message['type'] = strpos($event->tags, 'error,') === 0 ? 'error' : 'debug';
+                $message['type'] = str_starts_with($event->tags, 'error,') ? 'error' : 'debug';
                 $message['subject'] = $event->type;
                 $message['text'] = substr($event->message, 0, self::messageLengthLimit);
 

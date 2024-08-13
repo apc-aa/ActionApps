@@ -107,7 +107,7 @@ try {
     $cancel = InputVars::boolPOST('cancel');
     
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) {}
+} catch (Exception) {}
 
 $slice_fields = AA_Fields::isSliceField($fid);
 
@@ -228,7 +228,7 @@ if ($update) {
             // if we use relation between slices, then the validation should be 'id'
             // and insert function should be ids (which is most important mainly
             // for "Related Item Window" - because without it, the IDS are prefixed by x, y or z)
-            if (substr($input_show_func_c_real,0,7)=='#sLiCe-') {
+            if (str_starts_with($input_show_func_c_real, '#sLiCe-')) {
                 // allowed insert functions are ids, and both computed functions
                 if (!in_array($input_insert_func_f, ['ids','com','co2'])) {
                     $input_insert_func_f = 'ids';
@@ -303,7 +303,7 @@ if ( !$update ) {      // load defaults
 
     for ($iAlias = 1; $iAlias <= 3; $iAlias ++) {
         $GLOBALS["alias".$iAlias]            = substr($fld["alias".$iAlias],2);
-        $GLOBALS["alias".$iAlias."_disable"] = (substr($fld["alias".$iAlias],0,2)=='X#');
+        $GLOBALS["alias".$iAlias."_disable"] = (str_starts_with($fld["alias".$iAlias], 'X#'));
         $GLOBALS["alias".$iAlias."_help"]    = $fld["alias".$iAlias."_help"];
         get_params($fld["alias".$iAlias."_func"], $GLOBALS["alias".$iAlias."_func_f"], $GLOBALS["alias".$iAlias."_func"]);
     }
@@ -322,7 +322,7 @@ if ( !$update ) {      // load defaults
 
     if ( isset($isf_parameters['const'])) {
         get_params($input_show_func_p, $input_show_func_c_real, $input_show_func_p);
-        $input_show_func_c = (substr($input_show_func_c_real,0,7) == '#sLiCe-') ? $input_show_func_c_real : varname4form($input_show_func_c_real);
+        $input_show_func_c = (str_starts_with($input_show_func_c_real, '#sLiCe-')) ? $input_show_func_c_real : varname4form($input_show_func_c_real);
     }
 
     $html_default = $fld["html_default"];

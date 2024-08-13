@@ -74,7 +74,7 @@ class AA_MbC {
     }
 
     function isKey() {
-        return strpos($this->c[3], 'PRI')!==false;
+        return str_contains($this->c[3], 'PRI');
     }
 
     function getName() {
@@ -162,67 +162,25 @@ class AA_MbC {
         // varchar(60)
         // varchar(80)
 
-        switch($this->_getBaseType()) {
-            case 'float':
-            case 'double':
-                $type = 'float'; break;
-
-            case 'int':
-            case 'mediumint':
-            case 'bigint':
-            case 'smallint':
-            case 'tinyint':
-            case 'timestamp':
-                $type = 'int'; break;
-
-            case 'binary':
-            case 'varbinary':
-            case 'char':
-            case 'varchar':
-            case 'enum':
-                $type = 'string'; break;
-
-            // case 'longtext':
-            // case 'mediumtext':
-            // case 'text':
-            default:
-                $type = 'text';
-        }
-        return $type;
+        return match ($this->_getBaseType()) {
+            'float', 'double'                                                => 'float',
+            'int', 'mediumint', 'bigint', 'smallint', 'tinyint', 'timestamp' => 'int',
+            'binary', 'varbinary', 'char', 'varchar', 'enum'                 => 'string',
+            default                                                          => 'text',
+        };
     }
 
     /** @return bool - if the field type is binary or varbinary or *blob */
     public function isBinary(): bool {
-        return ((strpos($this->_getBaseType(),'binary') !== false) or (strpos($this->_getBaseType(),'blob') !== false));
+        return (str_contains($this->_getBaseType(), 'binary') or str_contains($this->_getBaseType(), 'blob'));
     }
 
     private function _getSearchType() {
-        switch($this->_getBaseType()) {
-            case 'float':
-            case 'double':
-
-            case 'int':
-            case 'mediumint':
-            case 'bigint':
-            case 'smallint':
-            case 'tinyint':
-                $type = 'numeric'; break;
-
-            case 'timestamp':
-                $type = 'date'; break;
-
-            // case 'binary':
-            // case 'varbinary':
-            // case 'char':
-            // case 'varchar':
-            // case 'enum':
-            // case 'longtext':
-            // case 'mediumtext':
-            // case 'text':
-            default:
-                $type = 'text';
-        }
-        return $type;
+        return match ($this->_getBaseType()) {
+            'float', 'double', 'int', 'mediumint', 'bigint', 'smallint', 'tinyint' => 'numeric',
+            'timestamp'                                                            => 'date',
+            default                                                                => 'text',
+        };
     }
 
     function getAsProperty(bool $edit=true): ?AA_Property {
@@ -286,18 +244,12 @@ class AA_MbC {
             case 'time':
                 return new AA_Alias($name, "f_d:Y-m-d H:i:s", $this->c[0], $this->c[0]);
         }
-        switch ($this->_getBaseType()) {
-            case 'timestamp' :
-                return new AA_Alias($name, "f_d:Y-m-d H:i:s", $this->c[0], $this->c[0]);
-
-            case 'mediumtext':
-            case 'mediumblob':
-            case 'longblob':
-            case 'longtext'  :
-                return new AA_Alias($name, "f__:{safe:{shorten:_#this:250:3}}", $this->c[0], $this->c[0]);
-                //return GetAliasDef( "f_t:{expandable:{".$this->c[0]."}:30:...:&raquo;:&laquo;}", $this->c[0], $this->c[0]);
-        }
-        return new AA_Alias($name, "f_t::safe", $this->c[0], $this->c[0]); // was f_1 but aa_log.php then showed messed HTML
+        return match ($this->_getBaseType()) {
+            'timestamp'                                        => new AA_Alias($name, "f_d:Y-m-d H:i:s", $this->c[0], $this->c[0]),
+            'mediumtext', 'mediumblob', 'longblob', 'longtext' => new AA_Alias($name, "f__:{safe:{shorten:_#this:250:3}}", $this->c[0], $this->c[0]),
+            default                                            => new AA_Alias($name, "f_t::safe", $this->c[0], $this->c[0]),
+        };
+        // was f_1 but aa_log.php then showed messed HTML
         // return GetAliasDef( "f_t:{expandable:_#this:30:...:&raquo;:&laquo;}", $this->c[0], $this->c[0]);
     }
 
@@ -337,11 +289,11 @@ class AA_MbI {
             $cols[] = is_array($col) ? '`'.$col[0].'`('.$col[1].')' : "`$col`";
         }
         $cols_list = join(',', $cols);
-        switch ($this->s) {
-            case 'P': return "PRIMARY KEY ($cols_list)";
-            case 'U': return 'UNIQUE KEY '.$this->n." ($cols_list)";
-        }
-        return 'KEY '.$this->n." ($cols_list)";
+        return match ($this->s) {
+            'P'     => "PRIMARY KEY ($cols_list)",
+            'U'     => 'UNIQUE KEY '.$this->n." ($cols_list)",
+            default => 'KEY '.$this->n." ($cols_list)",
+        };
     }
 }
 
@@ -630,8 +582,8 @@ class AA_MbT implements Iterator, ArrayAccess, Countable {
 
     /** Iterator interface */
     public function rewind(): void   { reset($this->c);                        }
-    public function current()/*: mixed (not in PHP7.4)*/ { return current($this->c);               }
-    public function key()/*: mixed (not in PHP7.4)*/     { return key($this->c);                   }
+    public function current(): mixed { return current($this->c);               }
+    public function key(): mixed     { return key($this->c);                   }
     public function next(): void     { next($this->c);                         }
     public function valid(): bool    { return (current($this->c) !== false);   }
 
@@ -642,7 +594,7 @@ class AA_MbT implements Iterator, ArrayAccess, Countable {
     public function offsetSet($offset, $value): void { $this->c[$offset] = $value;      }
     public function offsetExists($offset): bool      { return isset($this->c[$offset]); }
     public function offsetUnset($offset): void       { unset($this->c[$offset]);        }
-    public function offsetGet($offset)/*: mixed (not in PHP7.4)*/        { return $this->c[$offset] ?? null; }
+    public function offsetGet($offset): mixed        { return $this->c[$offset] ?? null; }
 }
 
 /** @todo convert to static class variables after move to PHP5 */
@@ -1199,7 +1151,7 @@ class AA_Metabase {
         // all the tables not pressent in the template
         $uncompared = array_diff($metabase->getTableNames(), $this->getTableNames());
         foreach ($uncompared as $tablename) {
-            if (substr($tablename, 0, 4) == 'bck_') {
+            if (str_starts_with($tablename, 'bck_')) {
                 continue;
             }
             $diffs[$tablename] = [

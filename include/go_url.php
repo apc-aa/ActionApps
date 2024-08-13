@@ -77,7 +77,7 @@ function HttpGetParameters($parameters) {
  * @return string
  */
 function StateUrl($url=''): string {
-    return ((strpos($url, 'module_id=')===false) AND is_long_id(AA::$module_id)) ? get_url($url, ['module_id'=>AA::$module_id]) : $url;
+    return ((!str_contains($url, 'module_id=')) AND is_long_id(AA::$module_id)) ? get_url($url, ['module_id' =>AA::$module_id]) : $url;
 }
 
 /**

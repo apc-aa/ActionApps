@@ -43,7 +43,7 @@ try {
     $rssfeed_id    = InputVars::intGET('rssfeed_id'); // optional - for link from rss admin apge
     
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) {}
+} catch (Exception) {}
 
 if (!IfSlPerm(PS_FEEDING)) {
     MsgPage(_m("You have not permissions to change feeding setting"));

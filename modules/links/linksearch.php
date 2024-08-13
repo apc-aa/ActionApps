@@ -30,16 +30,17 @@ https://www.apc.org/
  *  relation, which is not allowed for 'unasigned' liks type
  * @noinspection PhpUnused
  */
-function IsFieldSupported($field_info, $v, $param) {
+function IsFieldSupported($field_info, $v, $param): bool
+{
     $field = $field_info['field'];
       // param is 'type' for this function
-    return ( ($param != 'unasigned' ) OR
-             ( (substr($field, 0, 12) =='links_links.') OR
-               (substr($field, 0, 14) =='links_regions.') OR
-               (substr($field, 0, 15) =='links_link_reg.') OR
-               (substr($field, 0, 16) =='links_languages.') OR
-               (substr($field, 0, 16) =='links_link_lang.') OR
-               (substr($field, 0, 14) =='links_changes.') ) );
+    return ($param != 'unasigned' ) OR
+           str_starts_with($field, 'links_links.') OR
+           str_starts_with($field, 'links_regions.') OR
+           str_starts_with($field, 'links_link_reg.') OR
+           str_starts_with($field, 'links_languages.') OR
+           str_starts_with($field, 'links_link_lang.') OR
+           str_starts_with($field, 'links_changes.');
 }
 
 
@@ -73,13 +74,10 @@ function Links_QueryZIDs($cat_path, $conds, $sort="", $subcat=false, $type="app"
 //    AA::$debug&4 && AA::$dbg->log('wheresql', $where_sql);
 //    AA::$debug&4 && AA::$dbg->log('order', $order_by_sql);
 
-
-    switch ($type) {
-    case 'unasigned':
-    case 'unasigned3':  $SQL = 'SELECT DISTINCT links_links.id  FROM links_links LEFT JOIN links_link_cat ON links_links.id = links_link_cat.what_id ';
-                        break;
-    default:            $SQL = 'SELECT DISTINCT links_links.id  FROM links_categories, links_link_cat, links_links ';
-    }
+    $SQL = match ($type) {
+        'unasigned', 'unasigned3' => 'SELECT DISTINCT links_links.id  FROM links_links LEFT JOIN links_link_cat ON links_links.id = links_link_cat.what_id ',
+        default                   => 'SELECT DISTINCT links_links.id  FROM links_categories, links_link_cat, links_links ',
+    };
 
     if ( $type == 'changed' ) {
         $join_tables['changes'] = true;
@@ -95,7 +93,7 @@ function Links_QueryZIDs($cat_path, $conds, $sort="", $subcat=false, $type="app"
         $SQL .= ' LEFT JOIN links_changes ON links_links.id = links_changes.changed_link_id ';
 
 
-    if ( substr($type,0,9) != 'unasigned' ) {
+    if (!str_starts_with($type, 'unasigned')) {
         $SQL .= '  WHERE links_links.id = links_link_cat.what_id
                      AND links_link_cat.category_id = links_categories.id ';
 

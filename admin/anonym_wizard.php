@@ -50,7 +50,7 @@ try {
     $cancel = InputVars::boolPOST('cancel');
     
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) {}
+} catch (Exception) {}
 
 
 /** GetAnonymousForm function
@@ -169,7 +169,7 @@ elseif ($slice->getProperty('permit_anonymous_edit') == ANONYMOUS_EDIT_NOT_ALLOW
 if ($show_form) {
     $fields = $slice->getFields();
     foreach ($fields as $fid => $foo) {
-        if (substr ($fid,0,13) == "password.....") {
+        if (str_starts_with($fid, "password.....")) {
             if ($show[$fid] && $slice->getProperty('permit_anonymous_edit') != ANONYMOUS_EDIT_PASSWORD) {
                 $warning[] = _m("WARNING: You want to show password, but you did not set 'Authorized by a password field' in Settings - Anonymous editing.");
             }

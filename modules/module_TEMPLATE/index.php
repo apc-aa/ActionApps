@@ -32,7 +32,7 @@ require_once __DIR__ . "/../../include/formutil.php";
 
 try {
     $cancel = InputVars::boolPOST('cancel');
-} catch (Exception $e) {}
+} catch (Exception) {}
 
 // id of the editted module
 $module_id   = AA::$module_id;        // id in long form (32-digit hexadecimal number)

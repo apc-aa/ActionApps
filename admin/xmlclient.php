@@ -73,7 +73,7 @@ try {
     $feed_id    = InputVars::intGET('feed_id');
     $rssfeed_id = InputVars::intGET('rssfeed_id');
     $cancel = InputVars::boolPOST('cancel');
-} catch (Exception $e) {}
+} catch (Exception) {}
 
 ($debugfeed >= 8) && print("\n<br>XMLCLIENT STARTING");
 

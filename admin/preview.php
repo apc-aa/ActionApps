@@ -39,7 +39,7 @@ require_once __DIR__ . "/../include/init_page.php";
 try {
     $return_url = InputVars::stringGET('return_url'); // empty
     $sh_itm = InputVars::idGET('sh_itm', true);
-} catch (Exception $e) {}
+} catch (Exception) {}
 
 $sh_itm     = $_GET['sh_itm'];
 $return_url = $_GET['return_url'];
@@ -65,7 +65,7 @@ if ($preview_url = $slice->getProperty('_url_preview....')) {
 } elseif ('_#SEO_URL_' != ($preview_url = $item->unalias('_#SEO_URL_')))  {
     // Contain _#SEO_URL_ already server?
     // we are really looking for the begining of the string - pos = 0
-    if ( (0!==strpos($preview_url,'http://')) AND (0!==strpos($preview_url,'https://')) AND (0!==strpos($preview_url,'//')) ) {
+    if ( (!str_starts_with($preview_url, 'http://')) AND (!str_starts_with($preview_url, 'https://')) AND (!str_starts_with($preview_url, '//')) ) {
         $preview_url = rtrim($r_slice_view_url,'/').'/'.ltrim($preview_url,'/');
     }
 } else {

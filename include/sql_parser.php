@@ -111,23 +111,21 @@ class SQL_Lex {
     public const S_IMPLICIT           = 18;
     public const S_NO_MORE_TOKENS     = 19;
 
-    /** resolveOperator function
+    /**
      * @param $op
      * @return array
      */
     public static function resolveOperator($op): array {
-        switch ($op) {
-            case '+':
-                return ["type" => SQL_Parser_Constants::TOKEN_TYPE_OPERATOR_AND, "value" => "and"];
-            case '-':
-                return ["type" => SQL_Parser_Constants::TOKEN_TYPE_OPERATOR_NOT, "value" => "not"];
-        }
-        return ["type" => SQL_Parser_Constants::TOKEN_TYPE_UNKNOWN, "value" => "strange operator"];
+        return match ($op) {
+            '+'     => ["type" => SQL_Parser_Constants::TOKEN_TYPE_OPERATOR_AND, "value" => "and"],
+            '-'     => ["type" => SQL_Parser_Constants::TOKEN_TYPE_OPERATOR_NOT, "value" => "not"],
+            default => ["type" => SQL_Parser_Constants::TOKEN_TYPE_UNKNOWN, "value" => "strange operator"],
+        };
     }
 
     /** contains SQL special characters? */
     public static function isSpecial($text): bool {
-        return (strpos(self::SPECIAL, $text) !== false);
+        return str_contains(self::SPECIAL, $text);
     }
 
     ///** isLetter function
@@ -201,19 +199,19 @@ class SQL_Lex {
         if (($input[$i] == self::QUOT) || ($input[$i] == self::APOS)) {
             $tok         = SQL_Lex::tillTheEndingQuotApos($input, $i + 1, $length, $input[$i]);
             $tok["type"] = ($tok["status"] == self::S_OK) ? SQL_Parser_Constants::TOKEN_TYPE_STRING : SQL_Parser_Constants::TOKEN_TYPE_UNKNOWN; // error handling
-        } elseif (strpos(self::SPECIAL, $input[$i]) !== false) {
-            if (strpos(self::OPERATOR, $input[$i]) !== false) { // includes '+' and '-' (one character operators)
+        } elseif (str_contains(self::SPECIAL, $input[$i])) {
+            if (str_contains(self::OPERATOR, $input[$i])) { // includes '+' and '-' (one character operators)
                 $tok["status"] = self::S_OK;
                 $val           = SQL_Lex::resolveOperator($input[$i]);
                 $tok['value']  = $val['value'];    // 'and' (for +) and 'not' (for -)
                 $tok["i"]      = $i + 1;
                 $tok["type"]   = $val["type"];
-            } elseif (strpos(self::LEFT_PARENTHESES, $input[$i]) !== false) { // isLeftParenthesis - includes '(', '[' a '{'
+            } elseif (str_contains(self::LEFT_PARENTHESES, $input[$i])) { // isLeftParenthesis - includes '(', '[' a '{'
                 $tok["status"] = self::S_OK;
                 $tok['value']  = "(";    // all parenthesis are equal
                 $tok["i"]      = $i + 1;
                 $tok["type"]   = SQL_Parser_Constants::TOKEN_TYPE_LEFT_PARENTHESIS;
-            } elseif (strpos(self::RIGHT_PARENTHESES, $input[$i]) !== false) { // isRightParenthesis - includes ')', ']' a '}'
+            } elseif (str_contains(self::RIGHT_PARENTHESES, $input[$i])) { // isRightParenthesis - includes ')', ']' a '}'
                 $tok["status"] = self::S_OK;
                 $tok['value']  = ")";    // all parenthesis are equal
                 $tok["i"]      = $i + 1;

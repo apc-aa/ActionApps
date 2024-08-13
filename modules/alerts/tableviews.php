@@ -282,14 +282,13 @@ function GetAlertsTableView($viewID, $processForm = false): array {
 function FindAlertsUserPermissions() {
     global $Tab, $collectionid;
     $now = time();
-    switch ($Tab) {
-        case 'appb': $where = "status_code = 1 AND start_date > $now"; break;
-        case 'appc': $where = "status_code = 1 AND start_date <= $now AND expiry_date < $now"; break;
-        case 'hold': $where = "status_code = 2"; break;
-        case 'trash':$where = "status_code = 3"; break;
-        case 'app':
-        default: $where = "status_code = 1 AND start_date <= $now AND expiry_date >= $now"; break;
-    }
+    $where = match ($Tab) {
+        'appb'  => "status_code = 1 AND start_date > $now",
+        'appc'  => "status_code = 1 AND start_date <= $now AND expiry_date < $now",
+        'hold'  => "status_code = 2",
+        'trash' => "status_code = 3",
+        default => "status_code = 1 AND start_date <= $now AND expiry_date >= $now",
+    };
 
     $db = getDB();
     $db->query("SELECT `userid`

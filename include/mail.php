@@ -187,16 +187,11 @@ class AA_Mail extends htmlMimeMail implements \AA\Later\LaterInterface {
     */
     static function parseAttachmentsFromString(string $string, bool $extended=false): array {
         $attachments = [];
-        switch ($string[0]) {
-            case '[':
-                $att_arr = json2arr($string);
-                break;
-            case '{':
-                $att_arr = json2asoc($string);
-                break;
-            default:
-                $att_arr = ParamExplode($string);
-        }
+        $att_arr = match ($string[0]) {
+            '['     => json2arr($string),
+            '{'     => json2asoc($string),
+            default => ParamExplode($string),
+        };
         foreach ($att_arr as $name => $attachment) {
             if ($attachment) {
                 if (strlen($att_data = AA_File_Wrapper::wrapper($attachment)->contents())) {

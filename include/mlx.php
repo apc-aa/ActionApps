@@ -154,7 +154,7 @@ class MLXCtrl {
         $fields       = $mlxObj->getCtrlFields();
         foreach( $fields as $fid => $fname ) {
             // is it mlxctrl field (field for one af the languages)?
-            if ( strpos($fid, MLX_LANG2ID_TYPE) === 0) {
+            if (str_starts_with($fid, MLX_LANG2ID_TYPE)) {
                 $this->translations[] = [$fname => $content[$itemid][$fid][0]['value']];
             }
         }
@@ -370,7 +370,7 @@ class MLX {
             $modstr = "";
             $extra  = "";
             // check if id begins with 'mlxctrl'
-            if (strpos($fid, MLX_LANG2ID_TYPE) !== 0) {
+            if (!str_starts_with($fid, MLX_LANG2ID_TYPE)) {
                 continue;
             }
             $mlxout .= "<td class='tabs";
@@ -462,13 +462,10 @@ class MLX {
     {
         foreach($params as $k => $v) {
             $mlx_url .= "$k=";
-            switch(gettype($v)) {
-                case 'boolean':
-                    $mlx_url .= ($v)?"true":"false";
-                    break;
-                default:
-                    $mlx_url .= $v;
-            }
+            $mlx_url .= match (gettype($v)) {
+                'boolean' => $v ? "true" : "false",
+                default   => $v,
+            };
             $mlx_url .= "&";
         }
         return $mlx_url;
@@ -759,7 +756,7 @@ class MLXView {
             return $translations;
         }
         foreach( $fields as $fid =>$fname ) {
-            if ( strpos($fid, MLX_LANG2ID_TYPE) === 0) {
+            if (str_starts_with($fid, MLX_LANG2ID_TYPE)) {
                 $tmptrans[(string)$fname] = $fid;
             }
         }

@@ -28,7 +28,7 @@
 // messages for init_page:
 use AA\Util\InputVars;
 
-$no_slice_id          = true;
+// $no_slice_id          = true;
 $require_default_lang = true;
 
 // const  AA_REGISTER_GLOBALS = true;
@@ -39,7 +39,7 @@ try {
     $cancel = InputVars::boolPOST('cancel');
     
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) {}
+} catch (Exception) {}
 
 /** GetModuleTemplateSelecbox function
  * @param $type

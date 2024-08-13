@@ -53,7 +53,7 @@ try {
     $cancel = InputVars::boolPOST('cancel');
     
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) {}
+} catch (Exception) {}
 
 ['server_url'=>$server_url,'password'=>$password] = DB_AA::select1(['server_url', 'password'], "SELECT server_url, password FROM nodes", [['name',$rem_nodes]]);
 
@@ -62,13 +62,13 @@ if (!($data = FeedUtil::xml_fetch($server_url, ORG_NAME, $password, AuthGetUname
 }
 
 // find out first character of fetched data: if it is not '<' exit
-if (substr($data,0,1) != "<") {
+if (!str_starts_with($data, "<")) {
     AA_Log::write("CSN", AA_Log::context(), "Establishing mode: $data");
-    switch ($data) {
-        case FeedUtil::ERR_NO_SLICE : $err_msg = _m("No slices available. You have not permissions to import any data of that node. Contact the administrator of the remote slice and check, that he obtained your correct username."); break;
-        case FeedUtil::ERR_PASSWORD : $err_msg = _m("Invalid password for the node name:") . " ".ORG_NAME . ". "._m("Contact the administrator of the local node."); break;
-        default:            $err_msg = _m("Remote server returns following error:") . " $data"; break;
-    }
+    $err_msg = match ($data) {
+        FeedUtil::ERR_NO_SLICE => _m("No slices available. You have not permissions to import any data of that node. Contact the administrator of the remote slice and check, that he obtained your correct username."),
+        FeedUtil::ERR_PASSWORD => _m("Invalid password for the node name:")." ".ORG_NAME.". "._m("Contact the administrator of the local node."),
+        default                => _m("Remote server returns following error:")." $data",
+    };
     MsgPage($err_msg, StateUrl(self_base() . "se_inter_import.php")); // $data contains error message
 }                                                                   // from the server module
 

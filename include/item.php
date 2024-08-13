@@ -549,7 +549,7 @@ class AA_Item {
 
     /** checks, if the field looks like the field ID */
     function isField($text): bool {
-        if (substr($this->content4id->getType(),0,2) == '_T') { // some table
+        if (str_starts_with($this->content4id->getType(), '_T')) { // some table
             return AA::Metabase()->isColumn(substr($this->content4id->getType(), 2), $text);
         }
         return $this->content4id->isField($text);
@@ -600,7 +600,7 @@ class AA_Item {
             return (string)$txt;
         }
         // converts plain text to basic html
-        return (strpos($txt, '&') === false) ? nl2br(safe($txt)) : nl2br(preg_replace('/&amp;#(\d+);/', "&#\\1;", safe($txt)));
+        return (!str_contains($txt, '&')) ? nl2br(safe($txt)) : nl2br(preg_replace('/&amp;#(\d+);/', "&#\\1;", safe($txt)));
     }
 
     /** col2Html function - better txt2html function - it replaces also urls...
@@ -1276,7 +1276,7 @@ class AA_Item {
             return $this->RSS_restrict(strtr( $this->f_f($col, $p[0] . ':' . $redirect), '#/', ':/'),500) ;
         }
 
-        if (strpos($p[0],"{") !== false) {
+        if (str_contains($p[0], "{")) {
             // It can't be a field, must be expandable
             return $this->RSS_restrict(strtr( $this->unalias($p[0]), '#/', ':/'),500) ;
         }
@@ -1525,7 +1525,7 @@ class AA_Item {
         while ( $part = strstr( $part, "_#" )) {  // aliases for field content
             $fid = substr( $part, 2, 16 );         // looks like _#headline........
 
-            if ( substr( $fid, 0, 5) == "slice" ) {  // Another special alias _#slice
+            if (str_starts_with($fid, "slice")) {  // Another special alias _#slice
                 //Mitra says: looks like this mucks up _#slice_id........
                 $param = str_replace("_#slice", $this->getval('slice_id........'), $param);
             }
@@ -1739,7 +1739,7 @@ class AA_Item {
         $ret = '';
         foreach ( (array)$categs2print as $v ) {
             $path = GetCategoryPath($v['value']);
-            if ($restrict AND (strpos($path,$restrict)!==0)) {
+            if ($restrict AND (!str_starts_with($path, $restrict))) {
                 continue;   // category is not on restriced branch
             }
             if ($ret) {

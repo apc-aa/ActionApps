@@ -66,7 +66,7 @@ if (!array_key_exists('userfile', $_FILES)) {
             $buffer = [];
             $output = [];
             foreach ($out as $linenum => $line) {
-                if (preg_match("/^<!--Section/",$line)) {
+                if (str_starts_with($line, "<!--Section")) {
                     if ($insidesection==true) {
                         $output = array_merge($output,$buffer);
                         $buffer = [];
@@ -91,7 +91,7 @@ if (!array_key_exists('userfile', $_FILES)) {
             $buffer = [];
             $output = [];
             foreach ($out as $linenum => $line) {
-                if (preg_match("/^<!--Section/",$line)) {
+                if (str_starts_with($line, "<!--Section")) {
                     if ($insidesection==true) {
                         $output = array_merge($output,$buffer);
                         $buffer = [];
@@ -114,7 +114,7 @@ if (!array_key_exists('userfile', $_FILES)) {
             $buffer = [];
             $output = [];
             foreach ($out as $linenum => $line) {
-                if (preg_match("/^<!--Section/",$line)) {
+                if (str_starts_with($line, "<!--Section")) {
                     if ($insidesection==true) {
                         $output = array_merge($output,$buffer);
                         $buffer = [];
@@ -164,7 +164,7 @@ if (!array_key_exists('userfile', $_FILES)) {
             $insidesection=true;
             $output= [];
             foreach ($out as $linenum => $line) {
-                if (preg_match("/<HR>/",$line)) {
+                if (str_contains($line, "<HR>")) {
                     $line=str_replace("<HR>","",$line);
                     $output[]=$line;
                     $insidesection=false;

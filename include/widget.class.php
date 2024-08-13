@@ -327,7 +327,7 @@ class AA_Property extends AA_Storable {
             }
             $empty = false;
 
-            if (is_a($validator, 'AA_Validate_Url') AND (strpos($v,'AA_UPLOAD:')===0)) {   // we are uploading - url will change later   @todo - mark the notvalidated content like AA_UPLOAD in widgets
+            if (is_a($validator, 'AA_Validate_Url') AND str_starts_with($v, 'AA_UPLOAD:')) {   // we are uploading - url will change later   @todo - mark the notvalidated content like AA_UPLOAD in widgets
                 continue;
             }
 

@@ -304,13 +304,11 @@ function getMenu($activeMain, $activeSubmenu = ""): string {
         $title_out   = $title_title . (($title_title AND $title_name) ? ' - ' : '') . $title_name. $title_img;
         $prop_logout = $profile->getProperty('ui_manager', 'top_logout');
 
-        if ( $prop_logout === false ) {
-            $logout_out = '<input type="submit" name="logout" value="'._m('logout').'">';
-        } elseif ( $prop_logout === '' ) {
-            $logout_out = '';
-        } else {
-            $logout_out = '<input type="submit" name="logout" value="'.$profile->getProperty('ui_manager', 'top_logout').'">';
-        }
+        $logout_out = match ($prop_logout) {
+            false   => '<input type="submit" name="logout" value="'._m('logout').'">',
+            ''      => '',
+            default => '<input type="submit" name="logout" value="'.$profile->getProperty('ui_manager', 'top_logout').'">',
+        };
 
         $user_out = GetLabel($profile, 'ui_manager', 'top_userinfo', GetMenuLink('userinfo' == $activeMain, AuthGetUname(), IfSlPerm(PS_EDIT_SELF_USER_DATA), 'admin/um_passwd.php', '', '', 'aa-ui-userinfo'));
 
@@ -418,9 +416,9 @@ function getSubMenuRows(array $aamenuitems, $active ): string {
     foreach ($aamenuitems as $itemshow => $item) {
         $ico = ((is_array($item) AND $item['ico']) ? GetAAImage($item['ico'], $item['title'], 23,23) : '');
 
-        if (substr($itemshow,0,4) == "text") {
+        if (str_starts_with($itemshow, "text")) {
             $ret .= "<li class='aa-leftmenu-text aa-menuname-$itemshow'>$item</li>\n";
-        } elseif (substr($itemshow,0,6) == "header") {
+        } elseif (str_starts_with($itemshow, "header")) {
             if (is_array($item)) {
                 if (!isset($item["cond"]) OR $item["cond"]) {
                     $ret .= "<li class='aa-leftmenu-header aa-menuname-$itemshow' title='" . $item['title'] . "'>" . $item['label'] . "</li>\n";  // $ico not shown for design reasons

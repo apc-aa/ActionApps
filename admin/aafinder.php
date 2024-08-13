@@ -77,7 +77,7 @@ try {
     $go_finditem_edit = InputVars::boolGET('go_finditem_edit'); // convert submit to bool
     
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) {}
+} catch (Exception) {}
 
 if (!IsSuperadmin()) {
     AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You don't have permissions to do search."), "admin");
@@ -89,7 +89,7 @@ if (!IsSuperadmin()) {
 function AafinderFieldLink($field_id, $slice_id, $db_fld=''): string {
     if ($fld = AA_Field::factoryFromDb($field_id, $slice_id)) {
         $txt = $fld->linkToField("$field_id - ". $fld->getName());
-        if ((strpos($db_fld,'alias')===0) AND DB_AA::test('field',[['slice_id',$slice_id,'l'],['id',$field_id],[substr($db_fld,0,6),'X','BEGIN']]) ) {
+        if (str_starts_with($db_fld,'alias') AND DB_AA::test('field',[['slice_id', $slice_id, 'l'], ['id', $field_id], [substr($db_fld,0,6), 'X', 'BEGIN']]) ) {
             $txt = "<s title=\""._m('disabled')."\">$txt</s>";
         }
         return $txt;
@@ -98,25 +98,15 @@ function AafinderFieldLink($field_id, $slice_id, $db_fld=''): string {
 }
 
 function AdminLink($table, $fld, $row): string {
-    switch ($table) {
-        case 'content':
-        case 'discussion':
-        case 'item':
-            return AafinderItemLink($row['iid'], $row['sid'], true);
-        case 'view':
-            return AafinderViewLink($row['iid']);
-        case 'slice':
-            return AafinderModuleeLink($row['iid']);
-        case 'field':
-            return AafinderFieldLink($row['iid'], $row['sid'], $fld);
-        case 'site_spot':
-            return AafinderSiteLink($row['iid'], $row['sid']);
-        case 'object_text':
-        case 'object_integer':
-        case 'object_float':
-            return AafinderObjectLink($row['iid']);
-    }
-    return '';
+    return match ($table) {
+        'content', 'discussion', 'item'                 => AafinderItemLink($row['iid'], $row['sid'], true),
+        'view'                                          => AafinderViewLink($row['iid']),
+        'slice', 'module', 'site', 'polls'              => AafinderModuleeLink($row['iid']),
+        'field'                                         => AafinderFieldLink($row['iid'], $row['sid'], $fld),
+        'site_spot'                                     => AafinderSiteLink($row['iid'], $row['sid']),
+        'object_text', 'object_integer', 'object_float' => AafinderObjectLink($row['iid']),
+        default => '',
+    };
 }
 
 function AafinderObjectLink($object_id): string {
@@ -572,7 +562,10 @@ if ( strlen($go_search) OR strlen($go_replace) ) {
             $table2search['view'] = ['id' => '`id`', 'slice_id' => 'LOWER(HEX(`slice_id`))'];
         }
         if ($searchinslice) {
-            $table2search['slice'] = ['id' => 'LOWER(HEX(`id`))'];
+            $table2search['slice']  = ['id' => 'LOWER(HEX(`id`))'];
+            $table2search['module'] = ['id' => 'LOWER(HEX(`id`))'];
+            $table2search['site']   = ['id' => 'LOWER(HEX(`id`))'];
+            $table2search['polls']  = ['module_id' => 'LOWER(HEX(`id`))'];
         }
         if ($searchinfield) {
             $table2search['field'] = ['id' => '`id`', 'slice_id' => 'LOWER(HEX(`slice_id`))'];

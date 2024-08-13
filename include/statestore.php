@@ -199,13 +199,11 @@ abstract class AA_Serializable {
         foreach ($props as $name => $property) {
             $value = $this->$name;
             if (is_array($value)) {
-                if (count($value) === 0) {
-                    $value = '';
-                } elseif (count($value) === 1) {
-                    $value = $value[0];
-                } else {
-                    $value = json_encode($value);
-                }
+                $value = match (count($value)) {
+                    0       => '',
+                    1       => $value[0],
+                    default => json_encode($value),
+                };
             } elseif (!is_scalar($value)) {
                 warn("property {$name} not storable");
                 $value = '';
@@ -297,7 +295,7 @@ class AA_Storable extends AA_Serializable {
     }
 
     static public function factoryFromState($type, $state) {
-        if ((strlen($state['aa_class']) > 0) AND (strpos($state['aa_class'], $type)===0)) {
+        if ((strlen($state['aa_class']) > 0) AND str_starts_with($state['aa_class'], $type)) {
             // we are able to construct also subclasses, so if the property is marked as AA_Formrow, then the real type
             // of the variable could be AA_Formrow_* (like AA_Formrow_Full, ...)
             $type = $state['aa_class'];
@@ -479,17 +477,15 @@ class AA_Object extends AA_Storable implements AA_iEditable {
     function aftersave() {}
 
     static public function getPropertyObject($property_id) {
-        switch ($property_id) {
-                                                       // id               name          type     multi  persistent validator required
-            case 'aa_type':       return new AA_Property('aa_type' ,      'Object type','string', false, true, 'string', true);
-            case 'aa_name':       return new AA_Property('aa_name' ,      'Name',       'string', false, true, 'string', false);
-            case 'aa_owner':      return new AA_Property('aa_owner' ,     'Owner',      'string', false, true, 'id',     true);
-            case 'aa_version':    return new AA_Property('aa_version' ,   'Version',    'int',    false, true, 'int',    false);
-                                  // helper field aa_subobjects used for quicker load of object
-            case 'aa_subobjects': return new AA_Property('aa_subobjects' ,'Subobjects', 'string', true,  true, 'string', false);
-            case 'aa_id':         return new AA_Property('aa_id' ,        'Id',         'string', false, true, 'id',     true);
-        }
-        return null;
+        return match ($property_id) {
+            'aa_type'       => new AA_Property('aa_type', 'Object type', 'string', false, true, 'string', true),
+            'aa_name'       => new AA_Property('aa_name', 'Name', 'string', false, true, 'string', false),
+            'aa_owner'      => new AA_Property('aa_owner', 'Owner', 'string', false, true, 'id', true),
+            'aa_version'    => new AA_Property('aa_version', 'Version', 'int', false, true, 'int', false),
+            'aa_subobjects' => new AA_Property('aa_subobjects', 'Subobjects', 'string', true, true, 'string', false),     // helper field aa_subobjects used for quicker load of object
+            'aa_id'         => new AA_Property('aa_id', 'Id', 'string', false, true, 'id', true),
+            default         => null,
+        };
     }
 
     protected function sanitizeProperties() {
@@ -1107,7 +1103,7 @@ class AA_Components {
                 $name = str_replace(['.php'], [''],$file);
 
                 // filter out other possible classes
-                if (!$name OR (strpos($name,'Abstract')===0)) {  // We do not want Abstract... classes
+                if (!$name OR str_starts_with($name, 'Abstract')) {  // We do not want Abstract... classes
                     continue;
                 }
 
@@ -1340,13 +1336,10 @@ class AA_Temporary_Table {
             if ($property->isObject()) {
                 continue;
             }
-            switch ($property->getType()) {
-                case 'int':
-                    $fields[] = "$prop_id INT";
-                    break;
-                default:
-                    $fields[] = "$prop_id VARCHAR(255)";
-            }
+            $fields[] = match ($property->getType()) {
+                'int'   => "$prop_id INT",
+                default => "$prop_id VARCHAR(255)",
+            };
         }
         return $fields;
     }

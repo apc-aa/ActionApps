@@ -121,9 +121,8 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
         return $this->arr[$i];
     }
 
-    /** getValues function
-     *  Returns the simple array of values
-     * @param $i
+    /**
+     *  @returns array - the simple array of values
      */
     function getValues() {
         return $this->arr;
@@ -976,7 +975,7 @@ class ItemContent extends AA_Content {
                     if (($field->storageTable()=='item') AND !$field->getProperty('input_show')) {
                         continue;
                     }
-                    if (substr($field->getProperty('input_show_func'), 0,3) === 'fil') {
+                    if (str_starts_with($field->getProperty('input_show_func'), 'fil')) {
                         // special setting for file upload - there we solve the problem
                         // of required fileupload field, but which is empty at this moment
                         $varname = 'v'. unpack_id($field_id).'x';
@@ -1262,7 +1261,7 @@ class ItemContent extends AA_Content {
                 break;
             case 'insert':
                 // reset hit counter fields for new items
-                $hitfields = array_filter($fields->getPriorityArray(), function($fid) { return (substr($fid, 0, 4) == 'hit_' ); });
+                $hitfields = array_filter($fields->getPriorityArray(), function($fid) { return (str_starts_with($fid, 'hit_')); });
                 foreach ($hitfields as $fid ) {
                     $this->setValue($fid, 0);
                 }

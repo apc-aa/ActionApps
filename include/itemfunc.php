@@ -332,7 +332,7 @@ abstract class AA_Inserter extends AA_Serializable implements \AA\Util\NamedInte
             // get add2constant and constgroup (other parameters are irrelevant in here)
             [$constgroup, $maxlength, $fieldsize,$slice_field, $usevalue, $adding, $secondfield, $add2constant] = explode(':', $fnc['param']);
             // add2constant is used in $this->_store - adds new value to constant table
-            if ($add2constant AND $constgroup AND (substr($constgroup,0,7) != "#sLiCe-") AND strlen(trim($value['value']))) {
+            if ($add2constant AND $constgroup AND (!str_starts_with($constgroup, "#sLiCe-")) AND strlen(trim($value['value']))) {
                 $db = getDB();
                 // does this constant already exist?
                 $constgroup = quote($constgroup);
@@ -464,7 +464,7 @@ class AA_Inserter_Ids extends AA_Inserter {
         $text_stored = $this->field->getProperty("text_stored");
 
         $add_mode = substr($value['value'],0,1);          // x=add, y=add mutual, z=add backward
-        if (strpos('txyz', $add_mode) !== false) {
+        if (str_contains('txyz', $add_mode)) {
             $value['value'] = substr($value['value'],1);  // remove x, y or z
         }
         switch( $add_mode ) {
@@ -476,7 +476,7 @@ class AA_Inserter_Ids extends AA_Inserter {
                         // get add2constant and constgroup (other parameters are irrelevant in here)
                         [$constgroup, $others] = explode(':', $fnc['param']);
                         // add2constant is used in $this->_store - adds new value to constant table
-                        if ((substr($constgroup,0,7) == "#sLiCe-") AND strlen(trim($v))) {
+                        if ((str_starts_with($constgroup, "#sLiCe-")) AND strlen(trim($v))) {
                             $sid = substr($constgroup,7);
                             $content4id = new ItemContent();
                             $content4id->setItemID($new_id=new_id());
@@ -1157,7 +1157,7 @@ function ValidateContent4Id(&$err, $slice, $action, $id=0, $do_validate=true, $n
         if ($do_validate && ($action == "insert" || $action == "update")) {
             // special setting for file upload - there we solve the problem
             // of required fileupload field, but which is empty at this moment
-            if ( $field["required"] AND (substr($field["input_show_func"], 0,3) === 'fil')) {
+            if ( $field["required"] AND (str_starts_with($field["input_show_func"], 'fil'))) {
                 ValidateInput($varname, $field["name"], $$varname. $GLOBALS[$varname.'x'] , $err, $field["required"] ? 1 : 0, AA_Validate::factoryByString($field["input_validate"]));
                 continue;
             }

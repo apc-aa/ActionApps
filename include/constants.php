@@ -98,7 +98,7 @@ class AA_Alias {
      * @return AA_Alias|null
      */
     public static function factory(?string $alias, ?string $funct, ?string $field_id, ?string $hlp = '') {
-        if ($alias and (substr($alias, 0, 2) == '_#')) {
+        if ($alias and (str_starts_with($alias, '_#'))) {
             return new AA_Alias($alias, $funct, $field_id, $hlp);
         }
         return null;

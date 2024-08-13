@@ -62,7 +62,7 @@ try {
     $cancel = InputVars::boolPOST('cancel');
     
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) {}
+} catch (Exception) {}
 
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)

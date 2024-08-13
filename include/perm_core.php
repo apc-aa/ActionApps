@@ -716,7 +716,7 @@ class AA_Perm {
         // we allow check for sha1 or MD5+salt hash in Reader slice (in order we can import users to Reader slice from legacy system with sha1/md5+salt passwords)
         // such hashes are then converted to standard hashes in slice using rehashPassword()
         if (!$ret AND $try_old) {
-            if ( (substr($hash,0,3)=='$1$') AND (substr_count($hash, '$')>2) ) {
+            if ( (str_starts_with($hash, '$1$')) AND (substr_count($hash, '$')>2) ) {
                 // we expect hash in the form $1$SALT$MD5HASH - $1$g(WWPuY$24ae086294935697f13106c809033516
                 $salt = substr($hash,3,strrpos($hash, '$')-3);
                 $ret = (md5($password.$salt) === substr($hash,strrpos($hash, '$')+1));

@@ -78,7 +78,7 @@ class GrabberAssignmentform extends AA\IO\Grabber\AbstractGrabber {
      */
     function prepare() {
         foreach (AA_V::Parr() as $varname => $varvalue) {
-            if (strlen($varname)>20 AND substr($varname,0,5)=='asids') {
+            if (strlen($varname)>20 AND str_starts_with($varname, 'asids')) {
                 $item_id       = substr($varname,5);
                 $ids     = explode('~', AA_V::P('asids'    .$item_id));
                 $weights = explode('~', AA_V::P('asweights'.$item_id));
@@ -123,7 +123,7 @@ class GrabberAssignmentform extends AA\IO\Grabber\AbstractGrabber {
 if ( AA_V::P('bsc') == 1 ) {
     $updated = 0;
     foreach (AA_V::Parr() as $varname => $varvalue) {
-        if (strlen($varname)>20 AND substr($varname,0,3)=='bsc') {
+        if (strlen($varname)>20 AND str_starts_with($varname, 'bsc')) {
             $item_id = substr($varname,3);
             $field_content = new AA_Value;
 //            foreach ( explode(',', $varvalue) as $related_id ) {   // older  - Honza 17.8.2016

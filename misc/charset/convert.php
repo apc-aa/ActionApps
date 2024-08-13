@@ -42,7 +42,7 @@ if ( !$source ) {
     exit;
 }
 
-if ((substr($source,0,7) != 'http://') AND (substr($source,0,8) != 'https://')) {
+if ((!str_starts_with($source, 'http://')) AND (!str_starts_with($source, 'https://'))) {
     echo "<--! only http:// (or https://) sources are accepted (for security reasons) -->";
     exit;
 }

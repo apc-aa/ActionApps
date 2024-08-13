@@ -996,12 +996,12 @@ class linkobj {
             $path    = $cattree->getPath($ass->getCategory());
             if ( $general ) {
                 $names[$general]++;
-            } elseif (  substr($path,0,12) == '1,2,4,39,71,' ) {  //Ekolink statni sprava
+            } elseif (str_starts_with($path, '1,2,4,39,71,')) {  //Ekolink statni sprava
                 $names['St�tn� spr�va a samospr�va']++;
-            } elseif ( (substr($path,0,4) == '1,2,') AND
-                       (substr($path,0,9) != '1,2,1222,') AND
-                       (substr($path,0,9) != '1,2,1223,') AND
-                       (substr($path,0,9) != '1,2,1224,') ) {
+            } elseif ( (str_starts_with($path, '1,2,')) AND
+                       (!str_starts_with($path, '1,2,1222,')) AND
+                       (!str_starts_with($path, '1,2,1223,')) AND
+                       (!str_starts_with($path, '1,2,1224,')) ) {
                 $thematic++;
             } else {
                 $other++;

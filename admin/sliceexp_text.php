@@ -40,36 +40,25 @@ require_once __DIR__ . "/../include/searchlib.php";
 require_once __DIR__ . "/../include/xml_serializer.php";
 
 class AA_Slice_Exporter {
-    var $type;
-    var $gzip;
-    var $struct;
-    var $data;
-    var $spec_date;
-    var $from_date;
-    var $to_date;
-    var $hex;
-    var $views;
-    var $to_utf;
 
     // used for conversion data to utf-8
     /**
      * @var ConvertCharset|null
      */
-    var $_encoder;
+    protected $_encoder;
 
-    /** Constructor */
-    function __construct($type, $gzip, $struct, $data, $spec_date, $from_date, $to_date, $hex, $views, $to_utf) {
-        $this->type       = $type;
-        $this->gzip       = $gzip;
-        $this->struct     = $struct;
-        $this->data       = $data;
-        $this->spec_date  = $spec_date;
-        $this->from_date  = $from_date;
-        $this->to_date    = $to_date;
-        $this->hex        = $hex;
-        $this->views      = $views;
-        $this->to_utf     = $to_utf;
-
+    function __construct(
+        protected $type,
+        protected $gzip,
+        protected $struct,
+        protected $data,
+        protected $spec_date,
+        protected $from_date,
+        protected $to_date,
+        protected $hex,
+        protected $views,
+        protected $to_utf,
+    ) {
         $this->_encoder   = null;
     }
 

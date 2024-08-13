@@ -522,7 +522,7 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
      */
     function userIdFormatMatches($uid): bool  {
         // LDAP perms - starting with uid (Users) od cn (Groups)
-        return  ((substr($uid,0,4) == 'uid=') OR (substr($uid,0,3) == 'cn='));
+        return  (str_starts_with($uid, 'uid=') OR str_starts_with($uid, 'cn='));
     }
 
     /** authenticateUsername function

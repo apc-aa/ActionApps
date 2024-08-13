@@ -111,7 +111,7 @@ function go_return_or_url($url, $usejs=false, $session=false) {
  * @param $s
  */
 function endslash(&$s) {
-    if (strlen($s) AND substr($s,-1) != "/") {
+    if (strlen($s) AND !str_ends_with($s, "/")) {
         $s .= "/";
     }
 }
@@ -302,8 +302,8 @@ function NormalizeArrayIndex($arr) {
     }
     $ret = [];
     foreach ($arr as $k => $v) {
-        if ( (($k[0] =='"') AND (substr($k,-1)=='"')) ||
-             (($k[0] =="'") AND (substr($k,-1)=="'")) ) {
+        if ( (($k[0] =='"') AND str_ends_with($k, '"')) ||
+             (($k[0] =="'") AND str_ends_with($k, "'")) ) {
             $k = substr($k, 1, -1);
         }
         $ret[$k] = NormalizeArrayIndex($v);
@@ -379,7 +379,7 @@ function recursive_array_replace($find, $replace, $array) {
 function new_id($mark=0){
     do {
         $id = hash('md5', uniqid('',true));
-    } while ((strpos($id, '00')!==false) OR (strpos($id, '27')!==false) OR (substr($id,30,2)=='20'));
+    } while ((str_contains($id, '00')) OR (str_contains($id, '27')) OR (substr($id,30,2)=='20'));
       // '00' is end of string, '27' is ' and packed '20' is space,
       // which is removed by MySQL
 
@@ -418,7 +418,7 @@ function string2id($str) {
     do {
         $id  = hash('md5',$str);
         $str .= " ";
-    } while ((strpos($id, '00')!==false) OR (strpos($id, '27')!==false) OR (substr($id,30,2)=='20'));
+    } while ((str_contains($id, '00')) OR (str_contains($id, '27')) OR (substr($id,30,2)=='20'));
       // '00' is end of string, '27' is ' and packed '20' is space,
       // which is removed by MySQL
     return $id;
@@ -639,16 +639,16 @@ function CreateBinCondition($bin, $table, bool $ignore_expiry_date=false, bool $
         /* $bin is numeric constant */
         $numeric_bin = max(1,$bin);
     } elseif (is_string($bin)) { /* for backward compatibility */
-        switch ($bin) {
+        $numeric_bin = match ($bin) {
             /* assign to string type it's numeric constant */
-            case 'ACTIVE'  : $numeric_bin = AA_BIN_ACTIVE;  break;  // 1
-            case 'PENDING' : $numeric_bin = AA_BIN_PENDING; break;  // 2
-            case 'EXPIRED' : $numeric_bin = AA_BIN_EXPIRED; break;  // 4
-            case 'HOLDING' : $numeric_bin = AA_BIN_HOLDING; break;  // 8
-            case 'TRASH'   : $numeric_bin = AA_BIN_TRASH;   break;  // 16
-            case 'ALL'     : $numeric_bin = (AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING | AA_BIN_TRASH); break;
-            default        : $numeric_bin = AA_BIN_ACTIVE;  break;  // 1
-        }
+            'ACTIVE'  => AA_BIN_ACTIVE,
+            'PENDING' => AA_BIN_PENDING,
+            'EXPIRED' => AA_BIN_EXPIRED,
+            'HOLDING' => AA_BIN_HOLDING,
+            'TRASH'   => AA_BIN_TRASH,
+            'ALL'     => (AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING | AA_BIN_TRASH),
+            default   => AA_BIN_ACTIVE,
+        };
     } else {
         /* strange case, I think never possible :) */
         $numeric_bin = AA_BIN_ACTIVE;
@@ -695,11 +695,11 @@ function CreateBinCondition($bin, $table, bool $ignore_expiry_date=false, bool $
     if ($numeric_bin & AA_BIN_TRASH) {
         $or_conds[] = " $table.status_code=3 ";
     }
-    switch (count($or_conds)) {
-        case 0:  return ' 1=1 ';
-        case 1:  return ' '. $or_conds[0] .' ';
-    }
-    return ' (('. join(') OR (', $or_conds) .')) ';
+    return match (count($or_conds)) {
+        0       => ' 1=1 ',
+        1       => ' '.$or_conds[0].' ',
+        default => ' (('.join(') OR (', $or_conds).')) ',
+    };
 }
 
 
@@ -858,16 +858,12 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
     $restrict_cond = '';
 
     if ( is_array( $fields2get ) ) {
-        switch ( count($content_fields) ) {
-            case 0:  // we want just some item fields
-                     $restrict_cond = '1=0';
-                     break;
-            case 1:
-                     $restrict_cond = " AND field_id = '". reset($content_fields) ."' ";
-                     break;
-            default:
-                     $restrict_cond = " AND field_id IN ( '". join( "','", $content_fields ) ."' ) ";
-        }
+        $restrict_cond = match (count($content_fields)) {
+            // we want just some item fields
+            0       => '1=0',
+            1       => " AND field_id = '".reset($content_fields)."' ",
+            default => " AND field_id IN ( '".join("','", $content_fields)."' ) ",
+        };
     }
 
     // get content from content table
@@ -886,7 +882,7 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
             $row       = $db->record();
 
             // secret.........* fields should not be part of the $content array
-            if (strpos($row['field_id'],'secret')===0) {
+            if (str_starts_with($row['field_id'], 'secret')) {
                 continue;
             }
 
@@ -977,25 +973,23 @@ function GetItemContentMinimal($zids, $fields2get=false) {
     return ($n_items == 0) ? null : $content;   // null returned if no items found
 }
 
-/** GrabConstantColumn function
- * @param $db
- * @param $column
- * @return array
+/**
  */
-function GrabConstantColumn($db, $column) {
-    switch ($column) {
-        case "name":        return ["value"=> $db->f("name")];
-        case "value":       return ["value"=> $db->f("value"), "flag" => FLAG_HTML];
-        case "pri":         return ["value"=> $db->f("pri")];
-        case "group":       return ["value"=> $db->f("group_id")];
-        case "class":       return ["value"=> $db->f("class")];
-        // case "counter":     return array( "value"=> $i++ );
-        case "id":          return ["value"=> unpack_id($db->f("id") )];
-        case "description": return ["value"=> $db->f("description"), "flag" => FLAG_HTML];
-        case "short_id":    return ["value"=> $db->f("short_id")];
-        case "level":       return ["value"=> strlen($db->f("ancestors"))/16];
-    }
-    return [];
+function GrabConstantColumn($db, $column): array
+{
+    return match ($column) {
+        "name"        => ["value" => $db->f("name")],
+        "value"       => ["value" => $db->f("value"), "flag" => FLAG_HTML],
+        "pri"         => ["value" => $db->f("pri")],
+        "group"       => ["value" => $db->f("group_id")],
+        "class"       => ["value" => $db->f("class")],
+        // "counter"  => ["value" => $i++],
+        "id"          => ["value" => unpack_id($db->f("id"))],
+        "description" => ["value" => $db->f("description"), "flag" => FLAG_HTML],
+        "short_id"    => ["value" => $db->f("short_id")],
+        "level"       => ["value" => strlen($db->f("ancestors")) / 16],
+        default       => [],
+    };
 }
 
 /** GetConstantContent function
@@ -1299,7 +1293,7 @@ function gensalt($saltlen) {
  */
 function split_escaped($pattern, $string, $escape_pattern): array {
     $dummy = chr(0x1E);  // record separator ASCII character - we can use any other, however
-    while (strpos($string, $dummy) !== false) {
+    while (str_contains($string, $dummy)) {
         $dummy .= '^';   // add another strange character to the
     }
     return str_replace($dummy, $pattern, explode($pattern, str_replace($escape_pattern, $dummy, $string)));
@@ -1640,7 +1634,7 @@ class AA_Contentcache {
      * @return bool
      */
     function is_soft($access_code) {
-        return strpos($access_code, 'define') !== 0;
+        return !str_starts_with($access_code, 'define');
     }
 
     /** set function
@@ -1945,7 +1939,7 @@ function IsSpamText($text, $tolerance=4) {
  * @return bool
  */
 function IsAlias($identifier): bool {
-    return  ((substr($identifier,0,2)=='_#') AND ((strlen($identifier)==10) OR ((substr($identifier,0,3)=='_#P') AND ctype_digit((string)substr($identifier,3)))));
+    return  (str_starts_with($identifier, '_#') AND ((strlen($identifier)==10) OR (str_starts_with($identifier, '_#P') AND ctype_digit((string)substr($identifier,3)))));
 }
 
 /** is signed int (ctype_digit do not allow signed numbers)

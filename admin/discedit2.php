@@ -66,7 +66,7 @@ try {
     $cancel = InputVars::boolPOST('cancel');
     
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) {}
+} catch (Exception) {}
 
 $cancel_url = get_url(self_base() . "discedit.php", ['item_id'=>$item_id], true);
 if ($cancel) {

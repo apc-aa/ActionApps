@@ -131,7 +131,7 @@ try {
     $cancel = InputVars::boolPOST('cancel');
     
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) {}
+} catch (Exception) {}
 
 define ('PERMS_STATE', [
     "0" => _m("Not allowed"),

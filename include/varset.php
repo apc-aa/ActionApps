@@ -522,18 +522,15 @@ class Cvarset {
      */
     function makeINSERTorUPDATE($tablename) {
         $this->_doQuery($this->makeSELECT($tablename));
-        switch ($this->last_used_db->num_rows()) {
-            case 0: return $this->makeINSERT($tablename);
-            case 1: return $this->makeUPDATE($tablename);
-            default:
-            // Error: there are several rows with the same key variables
-            return "Error using makeINSERTorUPDATE: " . $this->last_used_db->num_rows(). " rows match the query";
-        }
+        return match ($this->last_used_db->num_rows()) {
+            0       => $this->makeINSERT($tablename),
+            1       => $this->makeUPDATE($tablename),
+                       // Error: there are several rows with the same key variables
+            default => "Error using makeINSERTorUPDATE: ".$this->last_used_db->num_rows()." rows match the query",
+        };
     }
 
-    /** last_insert_id function
-     * @param $tablename
-     * @return
+    /**
      */
     function last_insert_id() {
         return $this->last_used_db->last_insert_id();

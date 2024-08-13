@@ -233,8 +233,11 @@ class AA_Actionapps {
     }
 
     /// Static methods
-    /** create array of all Approved AAs from central database */
-    static function getArray() {
+    /** create array of all Approved AAs from central database
+     * @return AA_Actionapps[]
+     */
+    static function getArray(): array
+    {
         $ret    = [];
         $set = new AA_Set(null, null, ['ORG_NAME' => 'a'], AA_BIN_APPROVED);
         $zids   = Central_QueryZids($set);
@@ -354,13 +357,11 @@ class AA_Module_Definition {
 class AA_Module_Definition_Chunk {
 
     /** module id is unpacked */
-    var $module_id;
+    protected $module_id;
     /** part of the data for the module definition */
-    var $data;
+    protected $data;
 
-    /** Creates array of chunks from given data. The data are splited to more
-     *  chunks, if it is bigger than limit.
-     **/
+    /** Creates array of chunks from given data. The data are split to more chunks, if it is bigger than limit.  **/
     static function factoryArray($module_id, $table, $rows) {
         $chunks = [];
 
@@ -760,16 +761,13 @@ class AA_Sync_Action {
  *  Objects are stored into AA\Later\Toexecute queue for running from Task Manager
  **/
 class AA_Task_Sync implements \AA\Later\LaterInterface {
-    /** AA_Sync_Action object - Action to do */
-    var $sync_action;
 
-    /** AA_Actionapps object  - In which AA we have to do the action */
-    var $actionapps;
-
-    function __construct($sync_action, $actionapps) {
-        $this->sync_action = $sync_action;
-        $this->actionapps  = $actionapps;
-    }
+    function __construct(
+        /** AA_Sync_Action object - Action to do */
+        public $sync_action,
+        /** AA_Actionapps object  - In which AA we have to do the action */
+        public $actionapps,
+    ) {}
 
     /**
      * @param array $params - numeric array of additional parameters for the execution passed in time of call

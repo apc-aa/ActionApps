@@ -39,7 +39,7 @@ require_once __DIR__ . "/../include/init_page.php";
 try {
     $feed_id = InputVars::intGET('feed_id');
     $Msg     = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) {}
+} catch (Exception) {}
 
 if (!IfSlPerm(PS_FEEDING)) {
     MsgPage(_m("You have not permissions to change feeding setting"));

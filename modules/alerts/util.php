@@ -123,7 +123,7 @@ function unsubscribe_reader($slice_id, $au, $c): bool {
         return false;
     }
 
-    if (substr($frequency,0,5) != 'unsub') {  // left old unsub message and date
+    if (!str_starts_with($frequency, 'unsub')) {  // left old unsub message and date
         UpdateField($item_id, $field_id, new AA_Value('unsubscribed:'. date('Y-m-d H:i'). ':au')); // just inform text
         debug("<!--OK: f $field_id unsubscribed-->");
     }

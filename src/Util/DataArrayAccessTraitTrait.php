@@ -34,7 +34,7 @@ trait DataArrayAccessTrait {
     }
 
     /** implements ArrayAccess */
-    public function offsetGet($offset)/*: mixed (not in PHP7.4)*/ {
+    public function offsetGet($offset): mixed {
         return $this->data[$offset] ?? null;
     }
 

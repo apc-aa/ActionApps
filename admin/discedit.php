@@ -49,7 +49,7 @@ try {
     $cancel = InputVars::boolPOST('cancel');
     
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) {}
+} catch (Exception) {}
 
 // check permission to edit discussion - you must be Editor, at least
 if (!IfSlPerm(PS_EDIT_ALL_ITEMS)) {

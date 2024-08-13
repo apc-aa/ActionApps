@@ -340,7 +340,7 @@ class AA_Router_Seo extends AA_Router {
             $home = '/'. \AA\Util\Langs::currentLang();
         }
         // manage links like example.org/?filter=22
-        if (substr($apc,0,2)=='/?') {  // maybe also "#"
+        if (str_starts_with($apc, '/?')) {  // maybe also "#"
             $apc = $home.$apc;
         } elseif ($apc=='/index.php') { // useful for AA behind proxy (HTTP_X_FORWARDED_SERVER) - Appache adds index.php as default path so we have to re
             $apc = $home;
@@ -370,7 +370,7 @@ class AA_Router_Seo extends AA_Router {
             // add xseoX from $home if only the {xlang} is provided -- /cz/   -> /cz/home
             // if (count($arr) < 2) {
             if (count($arr) < 2) {
-                if ((substr(trim($apc), -1) == '/') OR ($arr[0] == $ret['xlang']) OR !count($langs)) {
+                if (str_ends_with(trim($apc), '/') OR ($arr[0] == $ret['xlang']) OR !count($langs)) {
                     // the last OR with $lang is used for backward compatibility - the slash rule will be applied
                     // only to newer sites, where you set web_languages (so for newer sites we are more strict - there must be the ending slash, if we want to use cz/).
                     // However - I think it is not necessary - the links like /cz will work, and /cz2 are not common
@@ -425,9 +425,9 @@ class AA_Router_Seo extends AA_Router {
         return $ret;
     }
 
-    /** ze stavajiciho $apc_state a naparsovaneho query-stringu
-        aktualizuje hodnoty v $apc_state a vrati novy aktualni
-        apc retezec */
+    /** From the current $apc_state and parsed query-string updates the values in $apc_state and returns
+     *  the new current apc string
+     */
     static function newState($apc_state, $query_string) {
         $new_arr = [];
         parse_str($query_string, $new_arr);   // now we have $new_arr['x'], $new_arr['p'], etc.
@@ -488,7 +488,7 @@ class AA_Router_Seo extends AA_Router {
         // {go:xqs_year=2019&xqs_type=enviro}  ==> example.org/...?year=2019&type=enviro&some_other_params_from_old_url
         $xqs_subst = [];
         foreach ($new_arr as $var => $v) {
-            if (strpos($var,'xqs_')===0 AND (strlen($var)>4)) { // begins with 'xqs_'
+            if (str_starts_with($var, 'xqs_') AND (strlen($var)>4)) { // begins with 'xqs_'
                $xqs_subst[substr($var,4)] = $v;
             }
         }
@@ -520,9 +520,15 @@ class AA_Router_Seo extends AA_Router {
      *           3) IDs path of current item - like 2587(2877(3004)) as used
      *              in {item...} syntax (good for breadcrumbs)
      *              (if param = "path")
+     *           4) IDs list from start to current item in the tree - like: 2587-2877-3004
+     *              (if param = "list")
+     *           5) ID of the last item in the tree with specified slice_id
+     *              (if param is slice long_id)
+     *
      * @param string $param specifies, which information you want to get (see above)
      * @param string $url if filled, returns the information about the specified
      *                url instead of the current item
+     *
      * @return string
      */
     function xid($param=null, $url=null) {
@@ -596,12 +602,13 @@ class AA_Router_Seo extends AA_Router {
         return $this->_seocache[$seo_string];
     }
 
-    static function _maxKey($arr, $prefix) {
+    static function _maxKey($arr, $prefix): int
+    {
         $max = 0;
         foreach($arr as $key => $val) {
             $prefix_len = strlen($prefix);
             if ( !empty($val) AND (substr($key,0,$prefix_len) == $prefix) ) {
-                $max = max((int)substr($key,$prefix_len), $max);
+                $max = (int)max((int)substr($key,$prefix_len), $max);
             }
         }
         return $max;

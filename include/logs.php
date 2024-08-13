@@ -152,7 +152,7 @@ class AA_Log implements \AA\Expand\InternalExpandInterface {
      * @return array
      */
     static public function getLastLogEvents($event, $selector = "") {
-        $conds = [['type',$event, (strpos($event, '%') === false) ? '=' : 'LIKE']];
+        $conds = [['type',$event, (!str_contains($event, '%')) ? '=' : 'LIKE']];
         if ($selector != "") {
             $conds[] = ['selector',$selector];
         }

@@ -90,7 +90,7 @@ try {
     $cancel = InputVars::boolPOST('cancel');
     
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) {}
+} catch (Exception) {}
 
 // ----------------------------------------------------------------------------
 /** get_row_count function
@@ -164,7 +164,7 @@ function store_digest_filters() {
 
     foreach ($filters as $rowid => $filter) {
         if (!$filter["description"]) {
-            if (substr ($rowid,0,3) != "new") {
+            if (!str_starts_with($rowid, "new")) {
                 $db->query("DELETE FROM alerts_filter WHERE id=$rowid");
             }
             continue;
@@ -174,7 +174,7 @@ function store_digest_filters() {
         $varset->add("conds", "text", $filter["conds"]);
         $varset->add("vid", "number", $view_id);
 
-        if (substr ($rowid,0,3) != "new") {
+        if (!str_starts_with($rowid, "new")) {
             $SQL = "UPDATE alerts_filter SET ". $varset->makeUPDATE() ." WHERE id='$rowid'";
             if ( !$db->query($SQL)) {
                 $err["DB"] = MsgErr( _m("Can't change slice settings") );
@@ -359,7 +359,7 @@ if ( $update ) {
         AA::Pagecache()->invalidateFor(AA::$module_id);  // invalidate old cached values
 
         foreach ($VIEW_TYPES[$view_type] as $k => $v) {
-            if (substr ($k,0,strlen("function:")) == "function:") {
+            if (str_starts_with($k, "function:")) {
                 $show_fn = "store_".substr($k,strlen("function:"));
                 $show_fn();
             }
@@ -511,7 +511,7 @@ $view_url = AA_INSTAL_URL. "view.php?vid=$view_id";
 //FrmStaticText(_m("Id"), "<a href=\"$view_url\" title=\"". _m('show this view') ."\">$view_id</a>", false, '', '', false );
 
 foreach ($VIEW_TYPES[$view_type] as $k => $v) {
-    if (substr ($k,0,strlen("function:")) == "function:") {
+    if (str_starts_with($k, "function:")) {
         $show_fn = "show_".substr($k,strlen("function:"));
         $show_fn();
     }

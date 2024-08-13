@@ -184,7 +184,7 @@ class aaevent {
         while ($db->next_record()) {
             $reaction_class = $db->f('reaction');
             // security check - class must end with "Event"
-            if ( substr($reaction_class, -5) == 'Event' ) {
+            if (str_ends_with($reaction_class, 'Event')) {
                 $this->handlers[] = new $reaction_class( $db->f('params'), $type, $class, $selector);
             }
         }
@@ -611,7 +611,7 @@ function Event_AddLinkGlobalCat( $type, $slice, $slice_type, &$ret_params, $para
     if ( isset($ret_params) AND is_array($ret_params) ) {
         foreach ( $ret_params as $cid ) {
             $cpath = GetCategoryPath( $cid );
-            if ( substr($cpath, 0, 4) != '1,2,' ) {
+            if (!str_starts_with($cpath, '1,2,')) {
                 // category is not in 'Kormidlo' => do not add link to
                 // subcategories, but only to category itself
                 $final_categories[] = $cid;

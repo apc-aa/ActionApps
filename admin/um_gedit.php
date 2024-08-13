@@ -86,7 +86,7 @@ try {
     $cancel = InputVars::boolGETPOST('cancel');
     
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) {}
+} catch (Exception) {}
 
 if ($cancel) {
     go_url( StateUrl(self_base() . "index.php"));

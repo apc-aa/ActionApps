@@ -235,7 +235,7 @@ function translate_aa_files($aadir, $dstdir)
 
 /// Adds slash at the end of a directory name if it is not yet there.
 function endslash(&$s) {
-    if (strlen ($s) && substr ($s,-1) != "/") {
+    if (strlen($s) && !str_ends_with($s, "/")) {
         $s .= "/";
     }
 }

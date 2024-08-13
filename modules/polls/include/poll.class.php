@@ -88,15 +88,12 @@ class AA_Poll {
      */
     function get_format_strings($design='beforevote') {
         $this->loadSettings();
-        switch ($design) {
-            case 'aftervote':   $design_id = $this->getProperty('aftervote_design_id');
-                                break;
-                                // if not found, take standard design
-            case 'beforevote':  $design_id = false;  // default
-                                break;
-            default:            $design_id = $design;
-        }
-        // set deafault desing, if not specified
+        $design_id = match ($design) {
+            'aftervote'  => $this->getProperty('aftervote_design_id'),
+            'beforevote' => false,
+            default      => $design,
+        };
+        // set deafault design, if not specified
         if (!$design_id) {
             $design_id = $this->getProperty('design_id');
         }

@@ -96,7 +96,7 @@ class Files {
 
         // we have to process dot (extension do not contain it)
         // we must think about the files as 'test' or '.test' as well
-        if ( strpos($path_parts['basename'], '.') === false ) {
+        if (!str_contains($path_parts['basename'], '.')) {
             $extension = '';
             $base      = $path_parts['basename'] .$modificator;
         } else {
@@ -170,7 +170,7 @@ class Files {
 
         // look if type of file is allowed
         if ($type != '') {
-            $file_type = (substr($type,-1)=='*') ? substr($type,0,strpos($type,'/')) : $type;
+            $file_type = (str_ends_with($type, '*')) ? substr($type,0,strpos($type,'/')) : $type;
 
             if ((@strpos($up_file['type'],$file_type)===false)) {
                 Files::lastErr(FILE_ERROR_TYPE_NOT_ALLOWED, _m('type of uploaded file not allowed'));  // set error code
@@ -412,7 +412,7 @@ class Files {
     static function fixPath($path): string {
         $path = (string)$path;
         //append a slash to the path if it doesn't exist.
-        if (!(substr($path,-1) == '/')) {
+        if (!(str_ends_with($path, '/'))) {
             $path .= '/';
         }
         return $path;
@@ -427,7 +427,7 @@ class Files {
      */
     static function makeFile($pathA, $pathB): string {
         $pathA = Files::fixPath($pathA);
-        if (substr($pathB,0,1)=='/') {
+        if (str_starts_with($pathB, '/')) {
             $pathB = substr($pathB,1);
         }
         return $pathA.$pathB;
@@ -577,19 +577,12 @@ class AA_File_Wrapper {
         if (ini_get('allow_url_fopen')) {
             $wrapper = new AA_File_Wrapper($url, $info);
         } else {
-            switch (@$info['scheme']) {
-                case 'http':
-                    $wrapper = new AA_File_HTTP_Wrapper($url, $info);
-                    break;
-                case 'https':
-                    $wrapper = new AA_File_HTTPS_Wrapper($url, $info);
-                    break;
-                case 'ftp':
-                    $wrapper = new AA_File_FTP_Wrapper($url, $info);
-                    break;
-                default:
-                    $wrapper = new AA_File_Wrapper($url, $info);
-            }
+            $wrapper = match (@$info['scheme']) {
+                'http'  => new AA_File_HTTP_Wrapper($url, $info),
+                'https' => new AA_File_HTTPS_Wrapper($url, $info),
+                'ftp'   => new AA_File_FTP_Wrapper($url, $info),
+                default => new AA_File_Wrapper($url, $info),
+            };
         }
         return $wrapper;
     }
@@ -729,7 +722,7 @@ class AA_File_HTTP_Wrapper extends AA_File_Wrapper_Ext {
 				if (preg_match('!^[a-z]+://!', $location)) {
 					$this->url = $location;
 				} else {
-					$newPath = ($this->info['path'] !== '' && strpos($location, '/') !== 0  ? dirname($this->info['path']) . '/' : (strpos($location, '/') === 0 ? '' : '/')) . $location;
+					$newPath = ($this->info['path'] !== '' && !str_starts_with($location, '/') ? dirname($this->info['path']) . '/' : (str_starts_with($location, '/') ? '' : '/')) . $location;
 					$this->info['path'] = $newPath;
 					$this->url = $this->glue_url($this->info);
 				}

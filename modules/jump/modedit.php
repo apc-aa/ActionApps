@@ -55,7 +55,7 @@ try {
     $cancel = InputVars::boolPOST('cancel');
     
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) {}
+} catch (Exception) {}
 
 // create the $jumps array:
 $jumps = AA_Module::getModules('J');

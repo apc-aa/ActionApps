@@ -57,7 +57,7 @@ try {
     $cancel = InputVars::stringGETPOST('cancel');
     
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) {}
+} catch (Exception) {}
 
 
 if (!CheckPerms( AuthGetUid(), "aa", AA_ID, PS_ADD) ) {

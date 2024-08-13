@@ -245,8 +245,6 @@ class Mail_mimePart {
     }
 
     /**
-     * _getEncodedData()
-     *
      * Returns encoded data based upon encoding passed to it
      *
      * @param $data     string - The data to encode.
@@ -255,20 +253,12 @@ class Mail_mimePart {
      */
     private function _getEncodedData($data, $encoding)
     {
-        switch ($encoding) {
-            case '8bit':
-            case '7bit':
-                return $data;
-
-            case 'quoted-printable':
-                return $this->_quotedPrintableEncode($data);
-
-            case 'base64':
-                return rtrim(chunk_split(base64_encode($data), 76, MAIL_MIMEPART_CRLF));
-
-            default:
-                return $data;
-        }
+        return match ($encoding) {
+            '8bit', '7bit'     => $data,
+            'quoted-printable' => $this->_quotedPrintableEncode($data),
+            'base64'           => rtrim(chunk_split(base64_encode($data), 76, MAIL_MIMEPART_CRLF)),
+            default            => $data,
+        };
     }
 
     /**

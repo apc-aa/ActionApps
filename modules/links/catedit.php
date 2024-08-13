@@ -23,7 +23,7 @@ try {
     $cancel = InputVars::boolGETPOST('cancel');
     
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) {}
+} catch (Exception) {}
 
 // id of the editted module (id in long form (32-digit hexadecimal number))
 $module_id  = AA::$module_id;

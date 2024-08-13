@@ -21,7 +21,7 @@ class Langs {
         'ja'      => ['EUC-JP', 'Japanian (EUC-JP)'],
         'hu'      => ['iso-8859-2', 'Magyar (iso-8859-2)'],
         'ro'      => ['iso-8859-2', 'Romanian (iso-8859-2)'],
-        'ru'      => ['windows-1251', 'Russian (windows-1251)'],
+        'ru'      => ['windows-1251', 'Russian (windows-1251)'],    // cyrillic
         'sk'      => ['windows-1250', 'Slovencina (windows-1250)'],
     ];
 

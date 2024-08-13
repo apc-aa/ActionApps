@@ -72,7 +72,7 @@ try {
     $cancel = InputVars::boolPOST('cancel');
     
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) {}
+} catch (Exception) {}
 
 // Make sure you have permissions to do this
 if (!CheckPerms( AuthGetUid(), "aa", AA_ID, PS_ADD) ) {

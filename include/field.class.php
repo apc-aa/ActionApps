@@ -153,7 +153,7 @@ class AA_Field implements ArrayAccess, Countable, Iterator {
             // $this->widget = AA\Widget\Widget::factoryByString($widget_type ? $widget_type : $this->data['input_show_func']);
             $widget_definition_string = $this->data['input_show_func'];
             // legacy - in dates we used ' as delimiter some time in history of AA
-            if ($widget_definition_string AND (strpos($widget_definition_string,'dte:')===0) AND strpos($widget_definition_string,"'")) {
+            if ($widget_definition_string AND (str_starts_with($widget_definition_string, 'dte:')) AND strpos($widget_definition_string,"'")) {
                 $widget_definition_string = str_replace("'",":",$widget_definition_string);
             }
 
@@ -326,7 +326,7 @@ class AA_Field implements ArrayAccess, Countable, Iterator {
         if ($this->data['text_stored']) {
             $field_type = 'text';
         }
-        if (substr($this->data['input_validate'],0,4)=='date') {
+        if (str_starts_with($this->data['input_validate'], 'date')) {
             $field_type = 'date';
         }
         $r = $this->getRelation();
@@ -474,7 +474,7 @@ class AA_Field implements ArrayAccess, Countable, Iterator {
             return [];
         }
         // prefix indicates select from items
-        return (substr($showfunc['const'],0,7) == "#sLiCe-") ? ['relation', substr($showfunc['const'],7)] : ['constants', (string)$showfunc['const']];
+        return (str_starts_with($showfunc['const'], "#sLiCe-")) ? ['relation', substr($showfunc['const'],7)] : ['constants', (string)$showfunc['const']];
     }
 
     /** isMultiline - @return bool - if the default widget allows block elements  */
@@ -513,13 +513,13 @@ class AA_Field implements ArrayAccess, Countable, Iterator {
         $required    = $this->required();
         $show        = $this->getProperty('input_show');
         $aliases     = array_filter([$this->getProperty('alias1'),$this->getProperty('alias2'),$this->getProperty('alias3')]);
-        $separate    = (strpos($this->getProperty('input_before'),'{formbreak') !== false);
+        $separate    = (str_contains($this->getProperty('input_before'), '{formbreak'));
         $text_stored = $this->getProperty('text_stored');
         $type        = $this->getProperty('in_item_tbl') ? "in_item_tbl" : "";
 
         $name = safe($name); $pri=safe($pri);
 
-        $rowclass = ((substr ($id,0,6) == "alerts") ? 'tabtxt_field_alerts' : '');
+        $rowclass = ((str_starts_with($id, "alerts")) ? 'tabtxt_field_alerts' : '');
         if ( $separate ) {
             $rowclass .= ' separator';
         }
@@ -539,7 +539,7 @@ class AA_Field implements ArrayAccess, Countable, Iterator {
 
         $alias_list = join(' ', array_map(
             function($a) use ($id) {
-                return $this->linkToField($a, substr($a, 2), (substr($a, 0, 2) == 'X#') ? ['class' => 'disabled', 'title' => _m('disabled')] : []);
+                return $this->linkToField($a, substr($a, 2), (str_starts_with($a, 'X#')) ? ['class' => 'disabled', 'title' => _m('disabled')] : []);
             }, $aliases));
         echo "<td class=\"aa-flds-aliases\">$alias_list</td>";
         echo "</tr>\n";
@@ -628,7 +628,7 @@ class AA_Field_Slicedef extends AA_Field {
         $this->data['text_stored'] = (int)$data->get_alias_subst('_#FLD_STOR', 1) ? 1 : 0;
 
         $this->aliases = new AA_Aliases;
-        $field_aliases = array_filter($data->getAliasNames(), function ($name) { return (0 === strpos($name, '_#FLD_AN')); });   // $filtered_array = array_filter($array, function ($element) use ($my_value) { return ($element != $my_value); } );
+        $field_aliases = array_filter($data->getAliasNames(), function ($name) { return (str_starts_with($name, '_#FLD_AN')); });   // $filtered_array = array_filter($array, function ($element) use ($my_value) { return ($element != $my_value); } );
         foreach ($field_aliases as $al) {
             if (IsAlias($als = '_#' . $data->get_alias_subst($al, ''))) {
                 $this->aliases->addAlias(new AA_Alias($data->get_alias_subst($als), 'f_t:' . $data->get_alias_subst(str_replace('_#FLD_AN', '_#FLD_AV', $al)), $fid));
@@ -720,7 +720,7 @@ class AA_Fields implements Iterator, Countable {
            return;
         }
 
-        if ( (strpos($fid,'text..') === 0) AND is_long_id($fields_slice = AA_Slice::getModuleProperty($this->master_id, 'fieldslice')) ) {
+        if ( (str_starts_with($fid, 'text..')) AND is_long_id($fields_slice = AA_Slice::getModuleProperty($this->master_id, 'fieldslice')) ) {
             $set = new AA_Set([$fields_slice], new AA_Condition(FIELDID_DYNAMIC_ID, '==', AA_Fields::getFieldNo($fid)));     // FIELDID_DYNAMIC_ID = 'source..........'
             $zids = $set->query();
             $this->fields[$fid] = $zids->count() ? new AA_Field_Slicedef($zids->zid(0), $this->master_id) : '';
@@ -762,10 +762,8 @@ class AA_Fields implements Iterator, Countable {
     }
 
 
-    /** getField function
-     *  @return AA_Field - the field (copy - just because of syntax - it is not possible
-     *  to return null in &function())
-     * @param $field_id
+    /**
+     * @return AA_Field|null - the field
      */
     function getField(string $field_id): ?AA_Field {
         $this->loadField($field_id);
@@ -846,7 +844,7 @@ class AA_Fields implements Iterator, Countable {
         $this->load();
         $no = 10000;
         foreach ($this->fields as  $fid => $foo ) {
-            if ( strpos($fid, $field_type) !== 0 ) {
+            if (!str_starts_with($fid, $field_type)) {
                 continue;
             }
             $last = AA_Fields::getFieldNo($fid);
@@ -1123,14 +1121,14 @@ class AA_Fields implements Iterator, Countable {
      *  @link https://php.net/manual/en/iterator.current.php
      *  @return AA_Field
      */
-    public function current()/*: mixed (not in PHP7.4)*/ { $this->loaded_all || $this->load(); return current($this->fields); }
+    public function current(): mixed { $this->loaded_all || $this->load(); return current($this->fields); }
 
     /**
      * Return the key of the current element
      * @link https://php.net/manual/en/iterator.key.php
      * @return string|null scalar on success, or null on failure.
      */
-    public function key()/*: mixed (not in PHP7.4)*/ { $this->loaded_all || $this->load(); return key($this->fields);                }
+    public function key(): mixed { $this->loaded_all || $this->load(); return key($this->fields);                }
 
     /** Move forward to next element
      *  @link https://php.net/manual/en/iterator.next.php

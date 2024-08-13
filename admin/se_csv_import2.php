@@ -78,7 +78,7 @@ try {
     $cancel = InputVars::boolPOST('cancel');
     
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) {}
+} catch (Exception) {}
 
 /** findNearestText function
  * Returns key of the $array, which value is most similar to given $text

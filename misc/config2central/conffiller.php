@@ -27,7 +27,7 @@ if ($handle = opendir('/data/www/aa-config/')) {
     /* This is the correct way to loop over the directory. */
     while (false !== ($file = readdir($handle))) {
         // do not want files like '.', '..'
-        if (substr($file,-5) != '.conf') {
+        if (!str_ends_with($file, '.conf')) {
             continue;
         }
         $result = file_get_contents("https://odm.colnodo.apc.org/apc-aa-dev/misc/test/confreader.php?file=". rawurlencode($file));

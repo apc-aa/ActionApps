@@ -33,7 +33,7 @@ require_once __DIR__ . "/../include/mgettext.php";
 // ----------------------------------------------------------------------------------------
 try {
     $items = InputVars::stringGETPOST('items');  // could be posted as url parameter as well
-} catch (Exception $e) {}
+} catch (Exception) {}
 
 if (!IfSlPerm(PS_EDIT_ALL_ITEMS)) {
     AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You have not permissions to see statistics"), "admin");

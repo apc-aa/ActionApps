@@ -34,7 +34,7 @@ require_once __DIR__ . "/../include/formutil.php";
 try {
     
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) {}
+} catch (Exception) {}
 
 /** PrintExportRow function
  * Print one row with one 'sliceexport' radiobuttons

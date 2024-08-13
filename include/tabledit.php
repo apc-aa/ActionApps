@@ -380,8 +380,7 @@ class tabledit {
         foreach ($this->cols as $colname => $column) {
             if ($column["view"]["type"] != "hide" && $column["view"]["type"] != "ignore") {
                 $caption = $column["caption"];
-                if ($column["required"] && substr($column["caption"], -1) != "*"
-                && !$column["view"]["readonly"]) {
+                if ($column["required"] && !str_ends_with($column["caption"], "*") && !$column["view"]["readonly"]) {
                     $caption .= " *";
                 }
                 if ($record_count > 0) {
@@ -449,7 +448,7 @@ class tabledit {
      * @return string
      */
     function getAction($viewID) {
-        return $this->action. (strstr($this->action,"?") ? "&" : "?") . "set_tview=".$viewID
+        return $this->action. (str_contains($this->action, "?") ? "&" : "?") . "set_tview=".$viewID
             .($this->is_child ? "#" . $this->viewID : "");
     }
 
@@ -493,11 +492,10 @@ class tabledit {
                 foreach ($tprop["joinfields"] as $thisfield => $joinfield) {
                     $froms[] = $this->view["table"].".$thisfield=".$tname.".$joinfield";
                 }
-                switch ($tprop["jointype"]) {
-                    case "1 to 1":
-                    case "n to 1": $from .= " INNER JOIN "; break;
-                    default:       $from .= " error .. bad jointype .. "; break;
-                }
+                $from .= match ($tprop["jointype"]) {
+                    "1 to 1", "n to 1" => " INNER JOIN ",
+                    default            => " error .. bad jointype .. ",
+                };
                 $from .= $tname." ON ".join(" AND ", $froms);
             }
         }
@@ -657,7 +655,7 @@ class tabledit {
             $visible = $cview["type"] != "ignore" && $cview["type"] != "hide";
             if ($visible && $this->type == "edit") {
                 $caption = $column["caption"];
-                if ($column["required"] && substr($column["caption"], -1) != "*" && !$cview["readonly"]) {
+                if ($column["required"] && !str_ends_with($column["caption"], "*") && !$cview["readonly"]) {
                     $caption .= " *";
                 }
                 echo "<tr>$td<span class=\"te_e_col_head\">".$caption."</span><br>\n";
