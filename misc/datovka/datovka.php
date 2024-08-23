@@ -231,15 +231,50 @@ class Datovka extends AA_Object {
         return $result;
     }
 
+    /** Parses stdClass Object returned by SOAP call to associative array
+     *   From:
+     * stdClass Object (
+     *   [status] => OK
+     *   [userRequestIp] => 78.25.230.18
+     *   [attributes] => stdClass Object (
+     *     [attribute] => [
+     *       [0] => stdClass Object ( [name] => timeLimitedId,       [value] => T08-9f75718882b5317d5fc4bfa4f54d62bb )
+     *       [1] => stdClass Object ( [name] => appToken,            [value] => 491032843381000 )
+     *       [2] => stdClass Object ( [name] => conceptDmId          [value] => )
+     *       [3] => stdClass Object ( [name] => conceptStatusCode    [value] => 1205 )
+     *       [4] => stdClass Object ( [name] => conceptStatusMessage [value] => Odesílatel není oprávněn odesílat Poštovní datové zprávy (např. kvůli nízkému kreditu).)
+     *
+     * To:
+     * ["timeLimitedId"        => "T08-7d5fc4bfa0f54d52bb9f55718e82b531",
+     *  "appToken"             => "492062823391000",
+     *  "conceptDmId"          => "",
+     *  "conceptStatusCode"    => "1205",
+     *  "conceptStatusMessage" => "Odesílatel není oprávněn odesílat Poštovní datové zprávy (např. kvůli nízkému kreditu).",
+     * ]
+     * @param stdClass $response - response object from SOAP call
+     */
+    protected function parseResponseAttributes($response): array {
+        $ret = [];
+        $attributes = $response->attributes->attribute;
+        foreach ($attributes as $attribute) {
+            $ret[$attribute->name] = $attribute->value;
+        }
+        return $ret;
+    }
+
     /**
      */
     public function run() {
         try {
             $result = $this->getCredentials();
+            $resp   = $this->parseResponseAttributes($result);
+            if ( !is_object($result) OR !$resp ) {
+                throw new Exception('Wrong server answer');
+            }
 
-            if (isset($result->attributes->attribute['0']->name) AND $result->attributes->attribute['0']->name == 'timeLimitedId' AND !isset($result->attributes->attribute['3']->value)) {
-                $timeLimitedId = $result->attributes->attribute['0']->value;
-                $result        = $this->prepareConcept($timeLimitedId);
+            if (array_key_exists('timeLimitedId', $resp) AND !array_key_exists('conceptStatusCode', $resp)) {
+                // create concept
+                $result = $this->prepareConcept($resp['timeLimitedId']);
                 if ($result->dmStatus->dmStatusCode == '0000') {
                     $dmID = $result->dmID;
                     go_url(DATOVKA_CONF[$this->conf]['url_ViewConcept'], ['konceptId' => $dmID]);    // DATOVKA_CONF[$this->conf]['atsId'], 'appToken' => $this->getDatovkaId()]);  // redirect to service - https://www.czebox.cz/as/login?atsId=7981e09c632b4bac&appToken=123
@@ -248,10 +283,10 @@ class Datovka extends AA_Object {
                     throw new Exception('Concept not created: ' . $result->dmStatus->dmStatusMessage . ' (' . $result->dmStatus->dmStatusCode . ')');
                 }
             } else {
-                if ($result->status == 'OK' AND $result->attributes->attribute['3']->value == '0000') {
+                if ($result->status == 'OK' AND array_key_exists('conceptStatusCode', $resp) AND $resp['conceptStatusCode'] == '0000') {
                     go_url($this->return_url, ['ds_id' => $this->datovka_id, 'ds_status' => 'OK']); // 'sent';
                 }
-                throw new Exception('Not sent: ' . $result->dmStatus->dmStatusMessage . ' (' . $result->dmStatus->dmStatusCode . ')');
+                throw new Exception("Not sent: {$resp['conceptStatusCode']} ({$resp['conceptStatusMessage']})"); // the error codes and messages are in different position in response, than in timeLimitedId response
             }
         } catch (Exception $e) {
             go_url($this->return_url, ['ds_id' => $this->datovka_id, 'ds_status' => 'ERR', 'ds_msg'=>$e->getMessage()]);
