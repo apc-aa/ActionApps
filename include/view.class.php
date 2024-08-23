@@ -382,9 +382,10 @@ class AA_View {
      *                      set[<vid>]=property1-value1,property2-value2
      *                   or
      *                      set[<vid>][]=property1-value1&set[<vid>][]=property2-value2[,...]
-     * @return array asociative array of properties
+     * @return array associative array of properties
      */
-    public static function parseSettings($set_arr) {
+    public static function parseSettings($set_arr): array
+    {
         define('ALLOW_MULTIPLE', ['banner' => true]);  // you can use set[245]=banner-2-260,banner-10-261
 
         $ret = [];
@@ -402,6 +403,12 @@ class AA_View {
                 }
             }
         }
+
+        /* specific for 'slices' parameter */
+        if ($ret['slices']) {
+            $ret['slices'] = array_filter(explode_ids($ret['slices']), 'is_long_id');
+        }
+
         return $ret;
     }
 
@@ -521,11 +528,6 @@ class AA_View {
         // (view 997 is called inside 1781)
         $arr['forcache'] = [$new_params];
 
-        if ($arr['slices']) {
-            $arr['slices'] = array_filter(explode_ids($arr['slices']), 'is_long_id');
-        }
-
-
         // the parameters for discussion comes (quite not standard way) from globals
         if ($use_globals) {
             if (!$arr["all_ids"]) {
@@ -627,8 +629,7 @@ class AA_Views {
         return xml_serialize("views",$this->a,$i.$ii,$ii,"tname=\"$t\" ".$a);
     }
 
-    /** getView function
-     *  older factory static method - for numeric views only, do not check, if exist
+    /** Older factory static method - for numeric views only, do not check, if exist
      * @param int $vid
      * @return AA_View
      */
@@ -637,8 +638,7 @@ class AA_Views {
         return $views->_getView($vid);
     }
 
-    /** getView function
-     *  main factory static method - allows numeric and named views. Do not create view for non existing/accessible views
+    /** Main factory static method - allows numeric and named views. Do not create view for non existing/accessible views
      * @param int|string $vid
      * @return AA_View|null
      */
@@ -668,7 +668,7 @@ class AA_Views {
         return $views->_getView($vid)?->f($field);
     }
 
-    /** _getView function
+    /**
      * @param int $vid
      * @return AA_View
      */
@@ -679,8 +679,7 @@ class AA_Views {
         return $this->a[$vid];
     }
 
-    /** getSliceViews function
-     *  Returns an array of slice views, caching results in allknownviews
+    /** Returns an array of slice views, caching results in allknownviews
      * @param $slice_id
      * @return AA_View[]
      */
