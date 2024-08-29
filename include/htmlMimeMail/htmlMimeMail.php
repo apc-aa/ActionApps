@@ -321,10 +321,13 @@ class htmlMimeMail {
     {
         $this->html      = $html;
         $this->html_text = $text;
-		if (isset($images_dir)) {
-            $this->_findHtmlImages($images_dir);
-        }
-	}
+        $this->_findHtmlImages($images_dir);
+        // original code from the library, but not OK for us - we are looking for much more image sources, than original, so it makes sense to call it even without $images_dir - HM 2024-03-15
+        // if (isset($images_dir)) {
+        //     $this->_findHtmlImages($images_dir);
+        // }
+
+    }
     /**
      * Function for extracting images from html source. This function will look through the html code
      * supplied by add_html() and find any file that ends in one of the extensions defined in $obj->image_types.
