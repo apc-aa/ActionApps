@@ -84,7 +84,7 @@ try {
 
     $filters = InputVars::arrayPOST('filters'); // ['new0' => ['description' => 'test', 'conds' => 'test'],...]
 
-    $new_templ = InputVars::boolGET('new_templ');
+    // $new_templ = InputVars::boolGET('new_templ');  // no longer used
     $view_view = InputVars::intGET('view_view'); // -
 
     $cancel = InputVars::boolPOST('cancel');
@@ -104,8 +104,10 @@ function get_row_count($s, $cols, $maxrows) {
     return ($retval > $maxrows) ?  $maxrows : $retval;
 }
 
-/** show_digest_filters function
- *  Shows the top part of the Alerts Selection Set view
+/**  Shows the top part of the Alerts Selection Set view
+ *
+ * @noinspection PhpUnused - used down
+ * @see          __FILE__:365 (search "function:"))
  */
 function show_digest_filters() {
     global $view_id;
@@ -145,6 +147,9 @@ function show_digest_filters() {
 
 /** store_digest_filters function
  *  Stores info from the top part of the Alerts Selection Set view
+ *
+ * @noinspection PhpUnused - used down
+ * @see __FILE__:365 (search "function:"))
  */
 function store_digest_filters() {
     global $view_id, $filters, $err;
@@ -277,14 +282,6 @@ if ($view_id) {
     $view      = AA_Views::getViewNumeric($view_id);
     $view_type = $view->f('type');
 } 
-// removed - Zeus server is no longer maintained
-//// else {
-//    // fix for Zeus webserver, which (at least in version 4.2 on PHP 4.3.1/SunOS)
-//    // adds wrong $view_type variable to $_SERVER array, which then redefine
-//    // the $view_type from $_POST array
-//    $view_type = $_POST['view_type'] ?: $_GET['view_type'];
-//}
-
 
 $back_url = ( (($view_type == 'categories') OR ($view_type == 'links')) ?
                 get_aa_url('modules/links/modedit.php') :
@@ -379,7 +376,7 @@ if ( !$update ) {  // set variables from database
     if ( $view_id ) {
         // edit specified view data
         $vw_data = DB_AA::select1('', 'SELECT * FROM view', [['id', $view_id, 'i']]);
-    } elseif ( $new_templ AND $view_view) {
+    } elseif ($view_view) {
         // new view from template
         $vw_data = DB_AA::select1('', 'SELECT * FROM view', [['id', $view_view, 'i']]);
     } elseif ( $view_type == 'inputform') {
@@ -496,13 +493,15 @@ $apage->addRequire('codemirror@5');
 $apage->addRequire($script2run, 'AA_Req_Load');
 $apage->printHead($err, $Msg);
 
-$form_buttons = [
-    'update',
-    'cancel2'   => ['value'=>_m('Show History'), "url"=>\AA\Util\ChangesMonitor::getHistoryUrl("V.".$view_id)],
-    'cancel'    => ["url"=>"se_views.php"],
-    'view_id'   => ['value'=> $view_id],
-    'view_type' => ['value'=> $view_type],
-];
+$form_buttons              = ['update'];
+if ($view_id) {
+    $form_buttons['cancel2']   = ['value'=>_m('Show History'), "url"=>\AA\Util\ChangesMonitor::getHistoryUrl("V.".$view_id)];
+    $form_buttons['asnew'] = ['js'=> '$(\'input[name=&quot;view_id&quot;]\').val(\'\'); $(\'input[name=&quot;update&quot;]\').click();', 'value'=>_m('Save as new')];
+}
+$form_buttons['cancel']    = ["url"=>"se_views.php"];
+$form_buttons['view_id']   = ['value'=> $view_id];
+$form_buttons['view_type'] = ['value'=> $view_type];
+
 
 // Print View Form ----------
 FrmTabCaption(_m("Defined Views"), $form_buttons);
