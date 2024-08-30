@@ -1952,25 +1952,23 @@ class AA_Stringexpand_Daterange extends AA_Stringexpand_Nevercache {
     function expand($start_timestamp='', $end_timestamp='', $year_format='Y') {
         $start_timestamp = (int)$start_timestamp;
         $end_timestamp   = (int)$end_timestamp;
+
+        $starttime = (($time = date("G:i", $start_timestamp)) != "0:00") ? " $time" : '';
+        $endtime   = ( (($time = date("G:i", $end_timestamp)) != "0:00") AND ($time != "23:59") ) ? $time : '';
+
+
         if ( date("j.n.$year_format", $start_timestamp) == date("j.n.$year_format", $end_timestamp) ) {
-            $ret = date("j.n.$year_format", $start_timestamp);
+            $ret = date("j. n. $year_format", $start_timestamp). $starttime;
+            if ($endtime AND ($starttime !== " $endtime")) {
+                $ret .= $starttime ? "-$endtime" : " 0:00-$endtime";
+            }
         } elseif ( date("Y", $start_timestamp) == date("Y", $end_timestamp) ) {
-            $ret = date("j.n.", $start_timestamp). '&nbsp;-&nbsp;'. date("j.n.$year_format", $end_timestamp);
+            $ret = date("j. n. ", $start_timestamp). $starttime. '-'. date("j. n. $year_format", $end_timestamp). " $endtime";
         } else {
-            $ret = date("j.n.$year_format", $start_timestamp). '&nbsp;-&nbsp;'. date("j.n.$year_format", $end_timestamp);
+            $ret = date("j. n. $year_format", $start_timestamp). $starttime. '-'. date("j. n. $year_format", $end_timestamp). " $endtime";
         }
 
-        $starttime = date("G:i", $start_timestamp);
-        if ( $starttime != "0:00") {
-            $ret .= " $starttime";
-        }
-
-        $endtime = date("G:i", $end_timestamp);
-        if( ($endtime != "0:00") AND ( $endtime != "23:59") AND ($endtime != $starttime)) {
-            $ret .= "&nbsp;-&nbsp;$endtime";
-        }
-
-        return $ret;
+        return str_replace([' ','-'], ["\u{202F}","\u{2013}"], trim($ret));  // use &nnbsp; (narrow non-breaking space) and @ndash; UTF characters
     }
 }
 
