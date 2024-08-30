@@ -1963,7 +1963,7 @@ class AA_Stringexpand_Daterange extends AA_Stringexpand_Nevercache {
                 $ret .= $starttime ? "-$endtime" : " 0:00-$endtime";
             }
         } elseif ( date("Y", $start_timestamp) == date("Y", $end_timestamp) ) {
-            $ret = date("j. n. ", $start_timestamp). $starttime. '-'. date("j. n. $year_format", $end_timestamp). " $endtime";
+            $ret = date("j. n.", $start_timestamp). $starttime. '-'. date("j. n. $year_format", $end_timestamp). " $endtime";
         } else {
             $ret = date("j. n. $year_format", $start_timestamp). $starttime. '-'. date("j. n. $year_format", $end_timestamp). " $endtime";
         }
