@@ -9,6 +9,7 @@
 namespace AA\IO\Grabber;
 
 use AA_Property;
+use FTP\Connection;
 use PDO;
 
 /** FTP directory grabber */
@@ -28,7 +29,7 @@ class FilesFTP extends AbstractGrabber
     protected $directory = '';
 
 
-    /** @var resource|false connection to ftp */
+    /** @var Connection|false connection to ftp */
     protected $connection;
     protected array $filepaths = [];
 
@@ -125,7 +126,8 @@ class FilesFTP extends AbstractGrabber
             throw new \Exception('Couldn\'t list files in directory');
         }
 
-        $current_path = '';
+//      $current_path = '';
+        $current_path = $this->directory;
         foreach ($file_list as $file_info) {
 
             // Check for directory change indication
