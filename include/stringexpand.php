@@ -36,8 +36,10 @@
 use AA\Cache\CacheStr2find;
 use AA\FormArray;
 use AA\IO\DB\DB_AA;
+use AA\Optimize\AddDurationLog;
 use AA\Util\Langs;
 use AA\Util\ChangesMonitor;
+use AA\Util\LogarithmIndex;
 use BaconQrCode\Common\ErrorCorrectionLevel;
 use BaconQrCode\Renderer\GDLibRenderer;
 use BaconQrCode\Writer;
@@ -430,7 +432,7 @@ class AA_Stringexpand_Userinfo extends AA_Stringexpand {
                 DB_AA::select('time', "SELECT time FROM `log`", [
                     ['type', 'LOGIN'],
                     ['selector', [$user, ":$user"], 'BEGIN'],   // ":$user" is for older log format - could be omitted later in 2024
-                ], ['time-'])
+                ], ['time-']),
             ),
             default => perm_username($user),
         };
@@ -908,7 +910,7 @@ class AA_Stringexpand_Htmltoggle extends AA_Stringexpand_Nevercache {
      * @param string $switch_state_1
      * @param string $code_1
      * @param string $switch_state_2
-     * @param string $code_2
+     * @param string $code_2    - HTML code displayed as alternative after clicking on the link
      * @param string $position
      * @param string $persistent_id
      * @return string|void
@@ -1361,25 +1363,25 @@ class AA_Stringexpand_Lazy extends AA_Stringexpand_Nevercache { // do not cache 
 
         $script2run = /** @lang JavaScript */
             <<<EOT
-function AA__LoadLazyCallback(ens, ob) {
-    ens.forEach(en => {
-        if ( en.isIntersecting) {
-            const target = en.target;
-            AA__LoadLazyDiv(target);
-            ob.unobserve(target);
-        }
-    });
-}
-function AA__LoadLazyDiv(el) {
-    el.classList.add('aa-updating');
-    AA_Load(el, el.dataset.aaUrl, {method: "POST", headers: {"X-Requested-With": "XMLHttpRequest"}})
-      .catch(error => console.error(error))
-      .finally(() => el.classList.remove('aa-updating'));
-}
-AA_$$('.aa-lazydiv-now').forEach(el => AA__LoadLazyDiv(el));
-const observer = new IntersectionObserver(AA__LoadLazyCallback, { rootMargin: "0px 0px 200px 0px"});
-AA_$$('.aa-lazydiv').forEach(el => observer.observe(el));
-EOT;
+            function AA__LoadLazyCallback(ens, ob) {
+                ens.forEach(en => {
+                    if ( en.isIntersecting) {
+                        const target = en.target;
+                        AA__LoadLazyDiv(target);
+                        ob.unobserve(target);
+                    }
+                });
+            }
+            function AA__LoadLazyDiv(el) {
+                el.classList.add('aa-updating');
+                AA_Load(el, el.dataset.aaUrl, {method: "POST", headers: {"X-Requested-With": "XMLHttpRequest"}})
+                  .catch(error => console.error(error))
+                  .finally(() => el.classList.remove('aa-updating'));
+            }
+            AA_$$('.aa-lazydiv-now').forEach(el => AA__LoadLazyDiv(el));
+            const observer = new IntersectionObserver(AA__LoadLazyCallback, { rootMargin: "0px 0px 200px 0px"});
+            AA_$$('.aa-lazydiv').forEach(el => observer.observe(el));
+            EOT;
 
 
         AA::Stringexpander()->addRequire('aa-jslib');  // for {live...} and now also for AA_$, AA_$$, AA_Load
@@ -3557,6 +3559,134 @@ class AA_Stringexpand_Ids extends AA_Stringexpand {
         $delimiter = $delimiter ?: '-';
         return AA_Stringexpand::joinWithDelimiter($zids->longids(), $delimiter);
     }
+}
+
+/** returns ids of objects based on conds d-...
+ *  {oids:<type>:<slices>:[<conds>[:<sort>[:<delimiter>[:<restrict_ids>[:<limit>]]]]]}
+ *  {oids:datovka:6a435236626262738348478463536272:d-state-&-16384:state-}
+ *  returns dash separated long ids of datovka objects - probably to be used in {oitem:...}
+ */
+class AA_Stringexpand_Oids extends AA_Stringexpand
+{
+    const ALLOWED_OBJECTS = ['datovka'=>'Datovka'];
+
+    /** Do not trim all parameters (the $delimiter parameter could contain space) */
+    static function doTrimParams() { return false; }
+
+    /**
+     *
+     * @param  ?string  $type    - object type - like datovka
+     * @param  string   $modules - could be empty and then we look for objects which are in all related slices of current site
+     * @param  null     $conds
+     * @param  null     $sort   - headline........
+     *                          - category.......1,publish_date....-,headline........
+     *                          - category.......1+publish_date....-headline........
+     *                          - _#HEADLINE
+     *                          - _#HEADLINE-
+     * @param  null     $delimiter
+     * @param  null     $restrict_ids
+     * @param  null     $limit  - could be negative for last $limit ids
+     *
+     * @return string
+     */
+    function expand($type = null, $modules = '', $conds = null, $sort = null, $delimiter = null, $restrict_ids = null, $limit = null)
+    {
+        if ($type = self::getClassForType($type)) {                  // list of allowed object to search
+            return $this->object_query_set($type, $modules, $conds, $sort, $delimiter, $restrict_ids, $limit);
+        }
+        return '';
+    }
+
+    public static function getClassForType(string $type): string {
+        return self::ALLOWED_OBJECTS[strtolower(trim($type))] ?? '';
+    }
+
+    /** Universal object search function - syntax inspired by {ids...}   */
+    protected function object_query_set($type = null, $modules = '', $conds = null, $sort = null, $delimiter = null, $restrict_ids = null, $limit = null)
+    {
+        $modules       = $this->getRelatedModules($modules);
+        $conds         = trim($conds);
+        $sort          = trim($sort);
+        $limit         = (int)trim($limit);
+        $restrict_zids = $restrict_ids ? new zids(explode_ids($restrict_ids), 'l') : null;
+        $delimiter     = $delimiter ?: '-';
+
+        $zids = AA_Object::querySet($type, new AA_Set($modules, $conds, $sort), $restrict_zids);
+        if ($limit > 0) {
+            $zids = $zids->slice(0, $limit);
+        } elseif ($limit < 0) {
+            $zids = $zids->slice($limit, -$limit);
+        }
+        return AA_Stringexpand::joinWithDelimiter($zids->longids(), $delimiter);
+    }
+}
+
+
+/**
+ * Display formatted output using fields/aliases of object (like datovka or others in stored in object_* table)
+ *   {oitem:<ids>:<aa_expression>[:<delimiter>]}
+ *
+ * Main usage is to display some field or alias of given object:
+ *   {oitem:{oids:datovka}:_#STATE___ {stateTxt}:<br>}
+ *
+ * possible aliases / fields for datovka object:
+ *     - _#AA_NAME_ - {aa_name}
+ *     - _#DATOVKA_ - {datovka_id}
+ *     - _#RETURN_U - {return_url}
+ *     - _#ATTACHME - {attachments}
+ *     - _#CONF____ - {conf}
+ *     - _#STATE___ - {state}
+ *     - _#STATETXT - {stateTxt}
+ *     - _#RELATED_ - {related_to}
+ *     - _#DBIDRECI - {dbIDRecipient}
+ *     - _#DMANNOTA - {dmAnnotation}
+ *     - _#DMTOHAND - {dmToHands}
+ *     - _#DMRECIPI - {dmRecipientOrgUnitNum}
+ *     - _#DMSENDER - {dmSenderOrgUnitNum}
+ *     - _#DMLEGALT - {dmLegalTitlePoint}
+ *     - _#DMPERSON - {dmPersonalDelivery}
+ *     - _#DMALLOWS - {dmAllowSubstDelivery}
+ *     - _#AA_ID___ - {aa_id}
+ *     - _#AA_OWNER - {aa_owner}
+ *     - _#AA_OW_NM - {modulefield:{_#AA_OWNER}:name}
+ **/
+class AA_Stringexpand_Oitem extends AA_Stringexpand {
+
+    /** Do not trim all parameters (at least the $delimiter parameter could contain space) */
+    static function doTrimParams() { return false; }
+
+    /** additionalCacheParam function
+     * @param array $params parameters passed to expand (caching could be parameter sensitive).
+     * @return string - for not cache, return random value
+     */
+    function additionalCacheParam(array $params= []) {
+        // if we use {var} in the code, we can't cache the result based on the parameters only
+        return str_contains($params[1], '{var:') ? mt_rand() : '';
+    }
+
+    /**
+     * @param ?string $type   - object type - like datovka
+     * @param string  $ids    - ids of object (probably from {oids:...}) separated by dash '-'
+     * @param string  $format -
+     * @param string  $delim  - delimiter
+     *
+     * @return string
+     */
+    function expand($type=null, $ids='', $format=null, $delim=null) {
+        if ($type = AA_Stringexpand_Oids::getClassForType($type)) {                  // list of allowed object to search
+            return $this->object_format($type, $ids, $format, $delim);
+        }
+        return '';
+    }
+
+    protected function object_format($type=null, $ids=null, $format=null, $delimiter=null) {
+        $zids      = new zids(explode_ids($ids));
+        $aliases   = new AA_Aliases(new AA_Aliasgenerator_Object($type));
+            $fmt       = ['odd_row_format' => trim($format),
+                      'row_delimiter'  => $delimiter ?: '' ];
+        return (new itemview($fmt, $aliases, $zids))->setContentFunct([['AA_Object', 'getContent'], ['class'=>$type]])->get_output();
+    }
+
 }
 
 /** returns ids of items based on Item Set as defined on Admin page
@@ -7114,8 +7244,9 @@ class AA_Stringexpand {
         return AA::Un($text, $remove, $item, $dequote, $itemview);
     }
 
-    /** expand function
-     * @return string
+    /** main function for stringexpanding - overriden in subclasses
+     *  @param string $params - variable for each stringexpand function
+     *  @return string
      */
     function expand() {
         return '';
@@ -7675,36 +7806,89 @@ class AA_Stringexpand_Hitcounter extends AA_Stringexpand {
         }
         $zids   = new zids(explode_ids($ids));
         $s_zids = new zids($zids->shortids(), 's');
-        $hits   = DB_AA::select([], 'SELECT id, time, hits FROM hit_archive', [['id', $s_zids->getArray(), 'i']]);
-        $stat   = [];
-        foreach ($hits as $hit) {
-            $day        = date($group_string, $hit['time']);
-            if ( !isset($stat[$day]) ) {
-                $stat[$day] = [];
-            }
-            $stat[$day][$hit['id']] = isset($stat[$day][$hit['id']]) ? $stat[$day][$hit['id']] + $hit['hits'] : $hit['hits'];
-        }
+        $stat = $this->countStats($s_zids, $group_string, ['HITS', 'DURATION']);  // array of statistics [hits, dur_0, count_0, dur_1, count_1, dur_2, count_2, dur_3, count_3]
         if (count($stat) > 0) {
             $s_ids =  $s_zids->shortids();
             // table header
-            $ret   = "<table>\n  <tr>\n    <th>"._m('Date \ Item ID')."</th>";
+            $ret   = "<table>\n  <tr>\n    <th rowspan=3>"._m('Date \ Item ID')."</th>";
             foreach ($s_ids as $sid) {
                 StrExp('item',[$sid,'_#HEADLINE']);
-                $ret .= "\n". AA::Un("<th title=\"{safe:{item:$sid:_#HEADLINE}}\">$sid<br><small>{shorten:{item:$sid:_#HEADLINE}:10:3}</small></th>");
+                $ret .= "\n". AA::Un("<th title=\"{safe:{item:$sid:_#HEADLINE}}\" colspan=7>$sid<br><small>{shorten:{item:$sid:_#HEADLINE}:10:3}</small></th>");
             }
             $ret   .= "\n  </tr>";
+            $ret .= '<tr>'.str_repeat("<th rowspan=2>Hits</th><th colspan=2>NC+M</th><th colspan=2>NC+NM</th><th colspan=2>C+M</th><th colspan=2>C+NM</th>", count($s_ids));
+            $ret   .= "\n  </tr>";
+            $ret .= '<tr>'.str_repeat("<th>[ms]</th><th>#</th>", 4*count($s_ids));
+                                                                                        // 0 - NOT cached + modified,
+                                                                                        // 1 - NOT cached + not modified,
+                                                                                        // 2 - cached + modified,
+                                                                                        // 3 - cached + not modified
+            $ret   .= "\n  </tr>";
 
+            $timex = new LogarithmIndex(.002,80,63);
             ksort($stat);
             foreach ( $stat as $day => $counts ) {
                 $ret .= "\n  <tr>\n    <td>$day</td>";
                 foreach ($s_ids as $sid) {
-                    $ret .= "\n    <td>".($counts[$sid] ?? '0') ."</td>";
+                    $ret .= "\n    <td>".($counts[$sid][0] ?? '0') ."</td>";
+
+                    $cnt = ($counts[$sid][2] ?? '0');
+                    $ret .= "\n    <td>".($cnt ? StrExp('math', [1000 * $timex->index2float($counts[$sid][1] ?? '0'),1,'EN'])  : 0) ."</td>";
+                    $ret .= "\n    <td>$cnt</td>";
+
+                    $cnt = ($counts[$sid][4] ?? '0');
+                    $ret .= "\n    <td>".($cnt ? StrExp('math', [1000 * $timex->index2float($counts[$sid][3] ?? '0'),1,'EN']) : 0) ."</td>";
+                    $ret .= "\n    <td>$cnt</td>";
+
+                    $cnt = ($counts[$sid][6] ?? '0');
+                    $ret .= "\n    <td>".($cnt ? StrExp('math', [1000 * $timex->index2float($counts[$sid][5] ?? '0'),1,'EN']) : 0) ."</td>";
+                    $ret .= "\n    <td>$cnt</td>";
+
+                    $cnt = ($counts[$sid][8] ?? '0');
+                    $ret .= "\n    <td>".($cnt ? StrExp('math', [1000 * $timex->index2float($counts[$sid][7] ?? '0'),1,'EN']) : 0) ."</td>";
+                    $ret .= "\n    <td>$cnt</td>";
+
                 }
                 $ret .= "\n  </tr>";
             }
             $ret .= "\n</table>";
         }
         return $ret;
+    }
+
+    /**
+     * @param  zids    $s_zids  short zids
+     * @param  string  $group_string
+     * @param  array   $columns         HITS, DURATION
+     *
+     * @return array statistics
+     */
+    public function countStats(zids $s_zids, string $group_string, array $columns): array
+    {
+        $duration_helper = new AddDurationLog();
+        $do_dutation = in_array('DURATION', $columns) AND $duration_helper->test();
+        $duration_from =  $duration_helper->getFromTime();
+
+        $do_hits     = in_array('HITS', $columns);
+        $hits = DB_AA::select([], 'SELECT id, time, hits'.($do_dutation ? ', duration': '') .', duration FROM hit_archive', [['id', $s_zids->getArray(), 'i']]);
+        $stat = [];
+        $empty = $do_dutation ? [0,0.0,0,0.0,0,0.0,0,0.0,0] : [0];  // hits, dur_0, count_0, dur_1, count_1, dur_2, count_2, dur_3, count_3
+        foreach ($hits as $hit) {
+            $day = date($group_string, $hit['time']);
+            if (!isset($stat[$day])) {
+                $stat[$day] = [];
+            }
+            $stat[$day][$hit['id']]   ??= $empty;
+            $stat[$day][$hit['id']][0] += $hit['hits'];
+            if ($do_dutation AND ($hit['time'] >= $duration_from)) {
+                $index    = 1 + (2 * ($hit['duration'] & 3));   // position in array  2, 4, 6, 8
+                $duration = $hit['duration'] >> 2;
+                // weighted average: (old_duration * old_count  + new_duration * new_count) / (old_count + new)
+                $stat[$day][$hit['id']][ $index ]   =  ($stat[$day][$hit['id']][ $index ] * $stat[$day][$hit['id']][ $index + 1 ] + $duration * $hit['hits']) / ($stat[$day][$hit['id']][ $index+1 ] +  $hit['hits']);
+                $stat[$day][$hit['id']][ $index+1 ] += $hit['hits'];
+            }
+        }
+        return $stat;
     }
 }
 
@@ -9379,7 +9563,7 @@ class AA_Stringexpand_Formantispam extends AA_Stringexpand_Nevercache {
 }
 
 /** Sends Datovka message (CZ state massaging system)
- *  Be careful - it can send mail on every page load!
+ *  Be careful - it can send datovka message on every page load!
  *  Use as:
  *    {datovka:1:bkfj8cu:test massage:https#://test.org/doc/report.pdf}   - sends real message to user bkfj8cu on pdf named report.pdf
  *    {datovka:test:bkfj8cu:test massage:["https#://test.org/img1.png","https#://test.org/img2.png"]}  - sends test message ... with two attachments
@@ -9389,20 +9573,22 @@ class AA_Stringexpand_Formantispam extends AA_Stringexpand_Nevercache {
  *       dmToHands, dmRecipientRefNumber, dmRecipientIdent, dmRecipientOrgUnit, dmRecipientOrgUnitNum, dmSenderRefNumber, dmSenderIdent, dmSenderOrgUnit, dmSenderOrgUnitNum,
  *       dmLegalTitleLaw, dmLegalTitleYear, dmLegalTitleSect, dmLegalTitlePar, dmLegalTitlePoint, dmPersonalDelivery, dmAllowSubstDelivery
  *       description of the values dm* - https://info.mojedatovaschranka.cz/info/cs/80.html - WS_manipulace_s_datovymi_zpravami.pdf 2.1
+ *  To see result of datovka in AA you can use {oitem:datovka:{oids:datovka:...}} - it will show you all datovka messages sent from this site (datovka object owner is current site module)
  */
 class AA_Stringexpand_Datovka extends AA_Stringexpand_Nevercache {
 
     /**
-     * @param string $conf        "" (- no send) | 1 (real send) | test (send to testing server) - required
-     * @param string $to          - required
-     * @param string $annotation  - required
-     * @param string $attachments - required
-     * @param string $params
-     * @param string $ret_url     - url - the parameter
+     * @param  string  $conf         "" (- no send) | 1 (real send) | test (send to testing server) - required
+     * @param  string  $to           - required
+     * @param  string  $annotation   - required
+     * @param  string  $attachments  - required
+     * @param  string  $params
+     * @param  string  $ret_url      - url - the parameter
+     * @param  string  $related_to   - may be ItemId to identify the message
      * @return string
      * @throws Exception
      */
-    function expand($conf='', $to='', $annotation='', $attachments='', $params='', $ret_url='') {
+    function expand($conf='', $to='', $annotation='', $attachments='', $params='', $ret_url='', $related_to='') {
         // the massage is already sent and the return url is to this page - we just print result
         if (array_key_exists('datRes', $_GET)) {
             return $_GET['datRes'];
@@ -9415,7 +9601,7 @@ class AA_Stringexpand_Datovka extends AA_Stringexpand_Nevercache {
         $params = json2asoc($params);
         $ret_url = $ret_url ?: shtml_url(); // if not defined, use current page
         // huhl($params);
-        $datovka = new Datovka($conf, $to, $annotation, $attachments, $params, $ret_url, AA::$site_id ?: AA::$module_id );
+        $datovka = new Datovka($conf, $to, $annotation, $attachments, $params, $ret_url, AA::$site_id ?: AA::$module_id, $related_to);
         $datovka->save();
         $datovka->startWithLogin();
         return ''; // this should be reached
@@ -9883,16 +10069,16 @@ class AA_Stringexpand_Manager extends AA_Stringexpand_Nevercache {
                 AA::Stringexpander()->addRequire('dropzone');
 
                 $script2run = <<<EOT
-    function AA_UploadInit(fu_id,field_id,item_id) {
-        var prms = {};
-        prms['aa[all]['+ field_id+'][0]'] = item_id;
-        var aaDz = new Dropzone('#'+fu_id, { url: window.location.href, uploadMultiple: true, params: prms });
-        aaDz.on("completemultiple", function(files) {
-            var f = files[files.length-1];
-            AA__SiteUpdateParts(JSON.parse(f.xhr.response));
-        });
-    };
-EOT;
+                    function AA_UploadInit(fu_id,field_id,item_id) {
+                        var prms = {};
+                        prms['aa[all]['+ field_id+'][0]'] = item_id;
+                        var aaDz = new Dropzone('#'+fu_id, { url: window.location.href, uploadMultiple: true, params: prms });
+                        aaDz.on("completemultiple", function(files) {
+                            var f = files[files.length-1];
+                            AA__SiteUpdateParts(JSON.parse(f.xhr.response));
+                        });
+                    };
+                    EOT;
                 AA::Stringexpander()->addRequire($script2run, 'AA_Req_Run');
 
                 $dz_setup_code = "Dropzone.options.fileup$hash = { paramName: '$input_name' }; AA_UploadInit('fileup$hash','$field','$item_id');";
@@ -10122,7 +10308,7 @@ class AA_Stringexpand_Post_Str_Replace extends AA_Stringexpand_Nevercachenotrim 
 /** Creates "Export to XLSX" button on the table specified by selector:
  *    {tableexport:.xlsexportable}
  *  All the JS libraries are automatically loaded
- *  You must using {generate:HEAD} and {generate:FOOT} in your site module!
+ *  You must be using {generate:HEAD} and {generate:FOOT} in your site module!
  *  We may replace the JS by another with the same functionality in the future,
  *  so do not count on the exact library in the code. The {tableexport} code
  *  will remain functional, however
@@ -10149,7 +10335,7 @@ class AA_Stringexpand_Tableexport extends AA_Stringexpand {
  *    {datatable:<selector>:<options>}
  *    {datatable}, {datatable:#mytable}, {datatable:.datatable:{ paging:false, info:false }}
  *  All the JS libraries are automatically loaded
- *  You must using {generate:HEAD} and {generate:FOOT} in your site module!
+ *  You must be using {generate:HEAD} and {generate:FOOT} in your site module!
  *  Experimental - not able to sort czech and other characters by default (v 1.10.20)
  */
 class AA_Stringexpand_Datatable extends AA_Stringexpand {
@@ -10172,7 +10358,7 @@ class AA_Stringexpand_Datatable extends AA_Stringexpand {
 /** Creates Sortable table matching the $selector (table.sortable by default)
  *    {sortable}, {sortable:#mytable}, {sortable:table.sortable} (default)
  *  All the JS libraries are automatically loaded
- *  You must using {generate:HEAD} and {generate:FOOT} in your site module
+ *  You must be using {generate:HEAD} and {generate:FOOT} in your site module
  */
 class AA_Stringexpand_Sortable extends AA_Stringexpand {
     /** expand function

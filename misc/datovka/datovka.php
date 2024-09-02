@@ -9,7 +9,11 @@ class Datovka extends AA_Object {
 
     protected string $return_url = '';      // return url for the datovka
 
-    protected string $state = '';           // state of the sending process - just for logging purposes
+    protected string $state = '';           // state of the sending process - just for logging purposes - 1:started, 20:timeLimitedId received, 30:concept prepared, 80:sent, 900:Wrong server answer , 920:timeLimitedId not received, 930:concept not prepared, 980:concept not sent
+                                            // we use bit flags to keep track of the process starting from 16 and continue with 2**n where we use n=4,7,10,14,15 (to have reserve) 15 if for errors, the first bites +1 +2.. used for different errors
+    protected string $stateTxt = '';        // description of last state of the sending process - just for logging purposes - 1:started, 20:timeLimitedId received, 30:concept prepared, 80:sent, 900:error, 920:timeLimitedId not received, 930:concept not prepared, 980:concept not sent
+
+    protected string $related_to = '';      // may be ItemId to identify the message
 
     // must be protected or public - AA_Object needs to read it
     protected string $conf = 'standard';    // 'test' | 'standard'
@@ -34,17 +38,15 @@ class Datovka extends AA_Object {
     protected bool $dmPersonalDelivery = false;
     protected bool $dmAllowSubstDelivery = false;
 
-    public function __construct(string $conf = 'standard', string $to = '', string $annotation = '', string $attachments = '', array $params = [], string $return_url='', string $module_id='') {
-        $this->setNew(new_id(), $module_id, 'DS '.date("Y-m-d H:i:s"));
+    public function __construct(string $conf = 'standard', string $to = '', string $annotation = '', string $attachments = '', array $params = [], string $return_url='', string $module_id='', string $related_to='') {
         $system_id = array_keys(array_filter(DATOVKA_CONF['instances'], fn($v) => $v['url'] === AA_INSTAL_URL))[0] ?? 1000;
-
-        //huhl($system_id, AA_INSTAL_URL, DATOVKA_CONF['instances'], array_search(AA_INSTAL_URL, array_column(DATOVKA_CONF['instances'], 'url')), array_column(DATOVKA_CONF['instances'], 'url'));
-        // exit;
-        //$system_id                   = array_search(AA_INSTAL_URL, array_column(DATOVKA_CONF['instances'], 'url')) ?: 1000;
         $this->datovka_id            = random_int(10000000000, 99999999999) * 10000 + $system_id;   // mmmmmmmmmmmaaaa   message_id.aa_did
+        $this->setNew(new_id(), $module_id, "DS {$this->datovka_id} ".date("Y-m-d H:i:s"));
+
         $this->conf                  = $conf;
         $this->return_url            = $return_url;
-        $this->state                 = '1';  // started
+        $this->state                 = 2**4;  // started  16
+        $this->related_to            = $related_to;
         $this->attachments           = $attachments;
         $this->dbIDRecipient         = $to;
         $this->dmAnnotation          = $annotation;
@@ -107,7 +109,9 @@ class Datovka extends AA_Object {
                  'return_url'            => new AA_Property('return_url', _m("Return URL"), 'string'),
                  'attachments'           => new AA_Property('attachments', _m("Attachments"), 'string'), // file paths/names
                  'conf'                  => new AA_Property('conf', _m("Configuration"), 'string', false, true, '', false, _m('standard|test')),
-                 'state'                 => new AA_Property('state', _m("State"), 'string'),
+                 'state'                 => new AA_Property('state', _m("State"), 'int'),
+                 'stateTxt'              => new AA_Property('stateTxt', _m("State text"), 'string'),
+                 'related_to '           => new AA_Property('related_to', _m("Related to"), 'string'),
 
                  'dbIDRecipient'         => new AA_Property('dbIDRecipient', _m("Recipient ID"), 'string', false, true, ['text', ['maxlength'=>7]]),                                                                // $recipientId,            required
                  'dmAnnotation'          => new AA_Property('dmAnnotation', _m("Annotation"), 'string', false, true, ['text', ['maxlength'=>255]]),                       // Textová poznámka (Věc, Předmět, Anotace)                                                       | "Testovaci zprava - PHP" - like Subject, max 255
@@ -146,6 +150,8 @@ class Datovka extends AA_Object {
         ];
 
         $params = ['sessionId' => $_REQUEST['datovkaSessionId']];
+
+        huhl($wsdl, $options, $params);
         return $this->soapCall($wsdl, $options, "authConfirmation", $params);
     }
 
@@ -178,7 +184,7 @@ class Datovka extends AA_Object {
                 'dmUpFileGuid'     => '',
                 'dmFileDescr'      => $f['name'],
                 'dmFormat'         => '',
-                'dmEncodedContent' => $f['data']
+                'dmEncodedContent' => $f['data'],
             ];
         }
 
@@ -263,32 +269,56 @@ class Datovka extends AA_Object {
     }
 
     /**
+     * @param  int     $state
+     * @param  string  $stateTxt
+     *
+     * @return void
+     * @throws Exception
+     */
+    protected function setState(int $state, string $stateTxt=''): void {
+        $this->state    |= $state;  // we add the state to the existing state to keep track, where we were
+        $this->stateTxt = $stateTxt;
+        $this->update(['state', 'stateTxt']);
+    }
+
+    /**
      */
     public function run() {
+        huhl($this);
         try {
             $result = $this->getCredentials();
             $resp   = $this->parseResponseAttributes($result);
+            huhl($result, $resp);
             if ( !is_object($result) OR !$resp ) {
+                $this->setState(2**15, 'Err - Wrong server answer'); // 32768
                 throw new Exception('Wrong server answer');
             }
 
             if (array_key_exists('timeLimitedId', $resp) AND !array_key_exists('conceptStatusCode', $resp)) {
+                $this->setState(2**7, "timeLimitedId received: $resp[timeLimitedId]");  // 128 - step 2
+
                 // create concept
                 $result = $this->prepareConcept($resp['timeLimitedId']);
                 if ($result->dmStatus->dmStatusCode == '0000') {
+                    $this->setState(2**10, 'concept prepared');  // 1024 - step 3
+
                     $dmID = $result->dmID;
                     go_url(DATOVKA_CONF[$this->conf]['url_ViewConcept'], ['konceptId' => $dmID]);    // DATOVKA_CONF[$this->conf]['atsId'], 'appToken' => $this->getDatovkaId()]);  // redirect to service - https://www.czebox.cz/as/login?atsId=7981e09c632b4bac&appToken=123
                     //echo '<a href="https://www.czebox.cz/as/koncept/view?konceptId=' . $dmID . '">https://www.czebox.cz/as/koncept/view?konceptId=' . $dmID . '</a><br>';
                 } else {
+                    $this->setState(2**15+1, 'Err - Concept not prepared');
                     throw new Exception('Concept not created: ' . $result->dmStatus->dmStatusMessage . ' (' . $result->dmStatus->dmStatusCode . ')');
                 }
             } else {
                 if ($result->status == 'OK' AND array_key_exists('conceptStatusCode', $resp) AND $resp['conceptStatusCode'] == '0000') {
+                    $this->setState(2**14, 'sent: '. $resp['conceptStatusMessage']);  // 16384  step 4 - final
                     go_url($this->return_url, ['ds_id' => $this->datovka_id, 'ds_status' => 'OK']); // 'sent';
                 }
-                throw new Exception("Not sent: {$resp['conceptStatusCode']} ({$resp['conceptStatusMessage']})"); // the error codes and messages are in different position in response, than in timeLimitedId response
+                $this->setState(2**15+2, "Err - Concept not sent: $resp[conceptStatusCode] ($resp[conceptStatusMessage])");
+                throw new Exception("Not sent: {$resp['conceptStatusMessage']} ({$resp['conceptStatusCode']})"); // the error codes and messages are in different position in response, than in timeLimitedId response
             }
         } catch (Exception $e) {
+            huhl($e, $this);
             go_url($this->return_url, ['ds_id' => $this->datovka_id, 'ds_status' => 'ERR', 'ds_msg'=>$e->getMessage()]);
         }
     }
