@@ -33,18 +33,39 @@ use AA_Logentry_H;
 use CVarset;
 use zids;
 
+/** used form packing duration to 1B int tttttttcn
+ *   - ttttttt - time index (0-63) - 6 bits - logaritmical scale from 0.002s (0) to 80s (63))
+ *   - c - cached - 1 bit
+ *   - n - not modified - 1 bit
+ *
+ *   there could be the "duration" column in the hit_archive table
+ *      - if present, the duration is counted (for each of 4 groups separately)
+ *          0 - NOT cached + modified,
+ *          1 - NOT cached + not modified,
+ *          2 - cached + modified,
+ *          3 - cached + not modified
+ *      - there is special Optimize function "Add hit duration log feature" for adding the column (so switching this feature on)
+ */
 class AA_Packtime {
-    protected float $time;
+    protected int  $index;
     protected bool $cached;
     protected bool $not_modified;
-    public function __construct(float $time, bool $cached, bool $not_modified ) {
-        $this->time         = $time;
+
+    public function __construct(float $time, bool $cached, bool $not_modified)
+    {
+        $this->index        = (new LogarithmIndex(.002,80,63))->getIndex($time);
         $this->cached       = $cached;
         $this->not_modified = $not_modified;
     }
 
     public function getAsInt(): int {
-        return (new LogarithmIndex(.002,80,63))->getIndex($this->time)*4 + ($this->cached ? 2 : 0) + ($this->not_modified ? 1 : 0);
+        return $this->index*4 + ($this->cached ? 2 : 0) + ($this->not_modified ? 1 : 0);
+    }
+
+    static public function factoryFromInt(int $int): self {
+        $x = new self(0, ($int & 2) != 0, ($int & 1) != 0);
+        $x->index = $int >> 2;
+        return $x;
     }
 }
 

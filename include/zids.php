@@ -69,11 +69,12 @@ use AA\Util\ArrTrait;
 class zids implements Iterator, ArrayAccess, Countable {
     use ArrTrait;
 
-    protected $arr;   // Array of ids of type specified in $t
-    protected $type;  // Type of $a
-    protected $l2s;   // array used for translation from 'long' to 'short' type
-    protected $s2l;   // array used for translation from 'short' to 'long' type
-    protected $_ext;  // array of extended parameters (we are using it when we store group_by additional info into zids)
+    protected array $arr = [];  // Array of ids of type specified in $t
+
+    protected string $type;     // Type of $a
+    protected array $l2s = [];  // array used for translation from 'long' to 'short' type
+    protected array $s2l = [];  // array used for translation from 'short' to 'long' type
+    protected array $_ext = []; // array of extended parameters (we are using it when we store group_by additional info into zids)
 
     /** zids function
      *  Constructor can be called with an array, or a zid
@@ -377,19 +378,14 @@ class zids implements Iterator, ArrayAccess, Countable {
         return $this->clear('l')->add(DB_AA::select('', "SELECT LOWER(HEX(id)) FROM `item`", $where));
     }
 
-    /** slice function
-     * Create a new zids, from a subset of the data,  with the same type
-     * Parameters are same as for "array_slice"
+    /** Create a new zids, from a subset of the data,  with the same type
+     *  Parameters are same as for "array_slice"
      * @param $offset
      * @param $length
      * @return zids
      */
-    function slice($offset, $length=1) {
-        if (is_array($this->arr)) {
-            return new zids(array_slice($this->arr,$offset,$length),$this->type);
-        } else {
-            return new zids(null, $this->type);
-        }
+    function slice($offset, $length=1): zids  {
+        return new zids(array_slice($this->arr,$offset,$length),$this->type);
     }
 
     /** zid function
@@ -397,12 +393,12 @@ class zids implements Iterator, ArrayAccess, Countable {
      * @param $index
      * @return zids
      */
-    function zid($index) {
+    function zid($index): zids {
         return new zids($this->arr[$index], $this->type);
     }
 
     /** get the ids array as is */
-    function getArray() {
+    function getArray(): array {
         return $this->arr;
     }
 

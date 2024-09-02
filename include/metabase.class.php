@@ -29,6 +29,7 @@
 use AA\IO\DB\DB_AA;
 use AA\Managed;
 use AA\Manageraction\Manageractions;
+use AA\Util\Searchfields;
 
 /** AA_Metabase holds the database structure of AA
  *  The database structure in metabase is used for
@@ -485,10 +486,8 @@ class AA_MbT implements Iterator, ArrayAccess, Countable {
         return $aliases;
     }
 
-    /** getSearchArray function
-     *
-     */
-    function getSearchArray() {
+    /** getSearchArray function  */
+    function getSearchArray(): array {
         $fieldarr = [];
         foreach ($this->c as $column_name => $column) {
             // @todo - make alias field type aware
@@ -498,9 +497,9 @@ class AA_MbT implements Iterator, ArrayAccess, Countable {
     }
 
     /** getSearchArray function
-     *  @return \AA\Util\Searchfields
+     *  @return Searchfields
      */
-    function getSearchfields() {
+    function getSearchfields(): Searchfields  {
         $searchfields = new AA\Util\Searchfields();
         foreach ($this->c as $column_name => $column) {
             $searchfields->addArray($column_name, $column->getFieldDef());
@@ -509,7 +508,7 @@ class AA_MbT implements Iterator, ArrayAccess, Countable {
     }
 
     /** returns associative array of table fields filled with '' or 0 (based on column type) */
-    function getEmptyRowArray() {
+    function getEmptyRowArray(): array {
         $fieldarr = [];
         foreach ($this->c as $column_name => $column) {
             $fieldarr[$column_name] = $column->getEmptyValue();
@@ -1014,27 +1013,26 @@ class AA_Metabase {
 //        $this->tables[$tablename]->setFromSQL($tablename, $create_SQL);
 //    }
 
-    /** returns associative array of table fields filled with '' or 0 (based on column type)
-     */
-    function getEmptyRowArray($tablename) {
+    /** returns associative array of table fields filled with '' or 0 (based on column type)  */
+    function getEmptyRowArray($tablename): array  {
         return $this->tables[$tablename]->getEmptyRowArray();
     }
 
     /** getSearchArray function
      * @deprecated - use getSearchfields
      */
-    function getSearchArray($tablename) {
+    function getSearchArray($tablename): array  {
         return $this->tables[$tablename]->getSearchArray();
     }
 
     /** getSearchfields function
      */
-    function getSearchfields($tablename) {
+    function getSearchfields($tablename): Searchfields  {
         return $this->tables[$tablename]->getSearchfields();
     }
 
     /** get zid-object type for key of this table - 's' | 'w' | 'p' | 'l' | '' (error) */
-    public function getZidsType($tablename) {
+    public function getZidsType($tablename): string {
         $keys     = $this->getKeys($tablename);
         if (count($keys) != 1) {
             warn("you can't use this function for [$tablename] table - " . count($keys) . " keys");
@@ -1047,7 +1045,7 @@ class AA_Metabase {
      *          ret[id] = array('column'=>value, ...)
      *          ids are always UNPACKED (as keys as well as in values)
      */
-    function getModuleRows($tablename, $module_id) {
+    function getModuleRows($tablename, $module_id): array {
         $JOIN = [
             // @todo - do the 'constant' better - check the fields setting, and get all the constants used
             'constant'   => ['scr_field' => 'group_id', 'dest_table' => 'constant_slice', 'dest_field' => 'group_id'],

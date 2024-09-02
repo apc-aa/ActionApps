@@ -113,7 +113,6 @@ abstract class AA_Transformation implements \AA\Util\NamedInterface {
 
     }
 
-
     /**
      * @param $input_prefix
      * @param $params
@@ -123,7 +122,7 @@ abstract class AA_Transformation implements \AA\Util\NamedInterface {
 
 class AA_Transformation_Value extends AA_Transformation {
 
-    var $new_flag;
+    var $new_flag;   // 'h' for HTML, 't' for PlainText or 'u' for unchanged
     var $new_content;
 
     /** AA_Transformation_Value function

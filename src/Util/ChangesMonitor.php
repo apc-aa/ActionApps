@@ -11,7 +11,9 @@ namespace AA\Util;
 use AA;
 use AA\IO\DB\DB_AA;
 use AA_GeneralizedArray;
+use AA_Set;
 use Cvarset;
+use zids;
 
 class ChangesMonitor {
 
@@ -161,6 +163,8 @@ class ChangesMonitor {
         return $ret;
     }
 
+
+
     /** get array of change ids with time and user - [id=>[time,user]]
      * @param $resource_id
      * @return array
@@ -194,6 +198,29 @@ class ChangesMonitor {
         $value = [];
         if (trim($resource_id) AND trim($selector)) {
             $value = DB_AA::select1([], "SELECT `change_record`.`value`,`change`.`time`,`change`.`user`,`change`.`type` FROM `change`, `change_record`", [['change.id', 'change_record.change_id', 'j'], ['change.resource_id', $resource_id], ['change.type', 'h'], ['change_record.selector', $selector], ['change_record.value', '', 'FILLED']], ['time-'], abs($step));
+        }
+        return $value ?: [];
+    }
+
+    /** value of the resource at the time
+     * @param string $resource_id
+     * @param string $selector
+     * @param int    $timestamp - time in seconds or nanoseconds
+     * @return array ['value'=>.., 'time'=>.., 'user'=>.., 'type'=>..]
+     */
+    function changeByTime(string $resource_id, string $selector, int $timestamp): array {
+        $value = [];
+        // start debugging
+        AA::$debug = 127;
+        if (trim($resource_id) AND trim($selector) AND $timestamp) {
+            $timestamp = self::toNanotime($timestamp);
+            $value = DB_AA::select1([], "SELECT `change`.`id`,`change_record`.`value`,`change_record`.`selector`, `change`.`time`,`change`.`user`,`change`.`type` FROM `change`, `change_record`", [['change.id', 'change_record.change_id', 'j'], ['change.resource_id', $resource_id], ['change.type', 'h'], ['change.time', $timestamp, '>='], ['change_record.selector', $selector], ['change_record.value', '', 'FILLED']], ['time']);
+            if (!$value) {
+                // if not found change after the specified time, return the current value
+                // works for items right now, but not for other resources
+                $val = \AA_Items::getItemProperty($resource_id, $selector)?->getValues() ?? '';
+                $value = ['value'=>$val, 'time'=>now(), 'user'=>'', 'type'=>'N'];  // type 'N' - probably not used yet, but it indicates, the value is not from history but from current state
+            }
         }
         return $value ?: [];
     }
@@ -289,12 +316,12 @@ class ChangesMonitor {
         }
 
         if ($arr = DB_AA::select([], "SELECT `change`.time, `change`.user, `change_record`.selector, `change_record`.value, `change_record`.priority, `change_record`.type as chtype, `change_record`.change_id, `change`.resource_id, `change`.type
-                                FROM `change`, `change_record`", [['change.id', 'change_record.change_id' , 'j'], ["`change`.resource_id", $resource_ids], ['change.type',$type]], ['change.resource_id', 'change.time', 'change_record.change_id', 'change_record.selector', 'change_record.priority'])) {
+                                FROM `change`, `change_record`", [['change.id', 'change_record.change_id' , 'j'], ["`change`.resource_id", $resource_ids], ['change.type',$type]], ['change.resource_id', 'change.time-', 'change_record.change_id', 'change_record.selector', 'change_record.priority'])) {
             echo "<div class='aa-table'><table class='aa-history'><tr><th>&nbsp;</th><th>field</th><th>value</th><th>priority</th><th>type</th><th>resource</th></tr>";
             $chid = '';
             foreach ($arr as $change) {
                 if ($chid != $change['change_id']) {
-                    echo "<tr><th colspan=6>" . date('Y-m-d H:i:s', self::toTimestamp((int)$change['time'])) . ' -' . perm_username($change['user']) . " <small>($change[type], uid:$change[user], res:$change[resource_id], change:$change[change_id])</small></th></tr>";
+                    echo "<tr><th colspan=6>" . date('Y-m-d H:i:s', self::toTimestamp((int)$change['time'])) . ' - ' . safe(perm_username($change['user'])) . " <small>($change[type], uid:$change[user], res:$change[resource_id], change:$change[change_id], time:$change[time])</small></th></tr>";
                     $chid = $change['change_id'];
                 }
                 echo "<tr><td>&nbsp;</td><td>$change[selector]</td><td><pre>".safe($change['value'])."</pre></td><td>$change[priority]</td><td>$change[chtype]</td><td>".safe($change['resource_id'])."</td></tr>";
@@ -341,4 +368,67 @@ class ChangesMonitor {
     static function toTimestamp(int $sometime): int {
         return ($sometime >	10000000000) ? ($sometime / 1000000000) : $sometime;
     }
+
+    /**  if the time is in seconds, convert it to nanoseconds for DB query
+     * @param int $sometime  time in seconds or nanoseconds
+     * @return int
+     */
+    static function toNanotime(int $sometime): int {
+        return ($sometime >	10000000000) ? $sometime : ($sometime * 1000000000);
+    }
+
+    /**
+     * Loads data from database for given history change (called in manager class)
+     * and stores it in the 'Abstract Data Structure' for use with 'item' class
+     *
+     * @param zids $zids if ids to get from database
+     *
+     * @return array - Abstract Data Structure containing the history change data
+     *                 {@link https://actionapps.org/faq/#1337}
+     *@see GetItemContent(), itemview class, item class
+     */
+    public static function GetHistoryContent($zids): array
+    {
+        if (!$zids or $zids->count() < 1) {
+            return [];
+        }
+
+        // construct WHERE clausule
+        $sel_in = $zids->sqlin(false, true);
+
+        // get history data
+        $SQL = "SELECT * FROM `change` WHERE id $sel_in";
+
+        $content = [];
+        StoreTable2Content($content, $SQL, '', 'id');
+
+        $additional = DB_AA::select([], 'SELECT * FROM `change_record`', [['change_id', $zids->longids()]]);
+        foreach ($additional as $chrec) {
+            $content[$chrec['change_id']][$chrec['selector']][$chrec['priority']] = ['value' => $chrec['value']];
+        }
+        return $content;
+    }
+
+    /** used in Manager class
+     */
+    public static function QueryHistoryZIDs(AA_Set $set): zids
+    {
+        $slice_id = $set->getModules()[0];
+        $conds    = $set->getConds();
+        $sort     = $set->getSort();
+
+        $HISTORY_FIELDS = GetHistoryFields()->getArrayDeprecated();
+
+        $where_sql    = MakeSQLConditions($HISTORY_FIELDS, $conds, 'LIKE', $foo);
+        $order_by_sql = MakeSQLOrderBy($HISTORY_FIELDS, $sort, $foo);
+
+        $SQL = "SELECT DISTINCT `change`.id FROM `change`, `item`  WHERE item.id = UNHEX(change.resource_id) AND item.slice_id = ".xpack_id($slice_id)." AND `change`.type = 'h'";
+
+        //    $SQL  = "SELECT DISTINCT change.id FROM `change`, change_record WHERE change.id = change_record.change_id AND change.resource_id = '$slice_id' ";
+
+        $SQL .= $where_sql.$order_by_sql;
+
+        // get result --------------------------
+        return GetZidsFromSQL($SQL, 'id', 'l');
+}
 }

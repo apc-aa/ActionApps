@@ -40,20 +40,18 @@ class AA_Field implements ArrayAccess, Countable, Iterator {
     const USED_FIELDS = ['id', 'slice_id', 'name', 'input_pri', 'input_help', 'input_morehlp', 'input_default', 'required', 'feed', 'multiple', 'input_show_func', 'search_pri', 'alias1', 'alias1_func', 'alias1_help', 'alias2', 'alias2_func', 'alias2_help', 'alias3', 'alias3_func', 'alias3_help', 'input_before', 'content_edit', 'html_default', 'html_show', 'in_item_tbl', 'input_validate', 'input_insert_func', 'input_show', 'text_stored'];
 
     /** associative array of field data as defined in field table - @see USED_FIELDS */
-    protected $data;
+    protected array $data = [];
 
-    /** associative array of aliases
-     * @var AA_Aliases
-     */
-    protected $aliases = null;
+    /** array of aliases   */
+    protected ?AA_Aliases $aliases = null;
 
     /** class and properties for slice defined fields (replaces input_show_func functionality)  */
-    protected $widget_params = [];
+    protected array $widget_params = [];
 
     /** cache array of all used widgets for this field
      *  @var Widget[]
      */
-    protected $widget = [];
+    protected array $widget = [];
 
     /** AA_Field function
      * @param array|AA_Item $data
@@ -618,7 +616,7 @@ class AA_Field_Slicedef extends AA_Field {
         $this->data['required'] = (int)$data->get_alias_subst('_#FLD_REQ_', 0) ? 1 : 0;
         $this->data['multiple'] = (int)$data->get_alias_subst('_#FLD_MULT', 0);  // 0-2
         $this->data['input_show_func'] = '';
-        $this->widget_params = json_decode($data->get_alias_subst('_#FLD_PARM', ''), true);
+        $this->widget_params = (array)json_decode($data->get_alias_subst('_#FLD_PARM', ''), true);
         $this->widget_params['class'] = Widget::constructClassName($data->get_alias_subst('_#FLD_TYPE', 'fld') ?: 'fld');
         $this->data['search_pri'] = $this->data['input_pri'];
         $this->data['html_default'] = 1;
@@ -1003,9 +1001,9 @@ class AA_Fields implements Iterator, Countable {
      * @param string $ftype  field type - headline, abstract, ...
      * @param string $no     field number
      * @param string $id_type  '.' | '_'
-     * @return string
      */
-    static function createFieldId($ftype, $no="0", $id_type='.') {
+    static function createFieldId($ftype, $no="0", $id_type='.'): string
+    {
         $no = (int)$no;
         if ($no<0 OR $no>99999) {   // maybe the upper boundary could be bigger?
             return '';
@@ -1018,19 +1016,18 @@ class AA_Fields implements Iterator, Countable {
 
     /** Experimental field - now used just for history records
      * @param $fid string
-     * @return string
      */
-    static function createShortId(string $fid) {
+    static function createShortId(string $fid): string
+    {
         return preg_replace("/\.+/", ".", $fid);
     }
 
-    /** getFieldType function
-     *  get field type from id (works also for AA_Core_Fields (without dots))
+    /** get field type from id (works also for AA_Core_Fields (without dots))
      *  - static class function
      * @param $id
-     * @return bool|string
      */
-    static function getFieldType($id) {
+    static function getFieldType($id): string
+    {
         $id = ltrim($id, "_");  // slice (module) fields are prefixed by underscore
         $dot_pos = strpos($id, ".");
         return ($dot_pos === false) ? $id : substr($id, 0, $dot_pos);
@@ -1041,8 +1038,9 @@ class AA_Fields implements Iterator, Countable {
      * @param $id
      * @return string
      */
-    static function getFieldNo($id) {
-        return (string)substr(strrchr($id,'.'), 1);
+    static function getFieldNo($id): string
+    {
+        return substr(strrchr($id,'.'), 1);
     }
 
     /** Returns first field id of specified type

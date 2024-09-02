@@ -1771,10 +1771,7 @@ class AA_Item {
      * Get format string, unalias it and return (not clear why unaliased - Mitra)
      */
     function get_item(): string {
-        // format string
-        $out    = $this->format;
-        $remove = $this->remove;
-        return $this->unalias($out, $remove);
+        return AA::Un($this->format, $this->remove, $this);  // $this->unalias
     }
 
     /** Noncaching equivalent to AA_Items::getItem()

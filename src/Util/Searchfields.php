@@ -15,8 +15,8 @@ use AA;
 class Searchfields implements \Iterator, \ArrayAccess, \Countable {
     use ArrTrait;
 
-    /** @var array fields - arr is ussed also by ArrTrait */
-    protected $arr = [];
+    /** @var array fields - arr is used also by ArrTrait */
+    protected array $arr = [];
 
     /**  Valid searchfield properties  */
     protected const FLDPROPS = [

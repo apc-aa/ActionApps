@@ -48,7 +48,7 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
     const MAX_INDEX = 1000000;
 
     /** array of the values */
-    protected $arr;
+    protected array $arr = [];
 
     /** holds the flag - common for all the values */
     protected $flag;

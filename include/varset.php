@@ -211,8 +211,7 @@ class Cvarset {
         unset ($this->vars[$varname]);
     }
 
-    /** set function
-     *  set variable value
+    /**  set variable value
      * @param string $varname
      * @param string $value
      * @param string $type - integer | number | unpacked | quoted | null | float | date | text
@@ -225,7 +224,7 @@ class Cvarset {
         $this->add($varname, $type, $value);   // it must be assigned this way, because $v is just copy
     }
 
-    /** value function
+    /**
      *  return variable value
      * @param string $varname
      */

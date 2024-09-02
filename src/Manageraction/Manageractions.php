@@ -10,7 +10,7 @@ class Manageractions implements Iterator, ArrayAccess, Countable {
     use \AA\Util\ArrTrait;
 
     /** @var \AA\Manageraction\AbstractManageraction[] */
-    var $arr = [];
+    protected array $arr = [];
 
     function __construct() {
         $this->arr = [];
