@@ -32,6 +32,7 @@ use AA\Manager;
 use AA\Manageraction\AbstractManageraction;
 use AA\Manageraction\Manageractions;
 use AA\Util\AbstractAliasgenerator;
+use AA\Util\ChangesMonitor;
 use AA\Util\InputVars;
 
 // const  AA_REGISTER_GLOBALS = true;
@@ -82,7 +83,7 @@ class Manageraction_History_Apply extends AbstractManageraction {
         $sid = $manager->getModuleId();
         $changes_to_apply = DB_AA::select('id', 'SELECT `change`.id FROM `change`, `item`', [['item.id', 'UNHEX(change.resource_id)', 'j'], ['change.id', $item_zids->longids()], ['slice_id', $sid, 'l']]);
 
-        $changes = GetHistoryContent(new zids($changes_to_apply,'l'));
+        $changes = ChangesMonitor::GetHistoryContent(new zids($changes_to_apply, 'l'));
 
         $updated_items = 0;
         foreach ($changes as $chid => $fields) {
@@ -156,62 +157,6 @@ class AA_Aliasgenerator_History extends AbstractAliasgenerator {
     }
 }
 
-/**
- * Loads data from database for given link ids (called in itemview class)
- * and stores it in the 'Abstract Data Structure' for use with 'item' class
- *
- * @see GetItemContent(), itemview class, item class
- * @param zids $zids if ids to get from database
- * @return array - Abstract Data Structure containing the links data
- *                 {@link https://actionapps.org/faq/#1337}
- */
-function GetHistoryContent($zids) {
-    if (!$zids OR $zids->count()<1) {
-        return [];
-    }
-
-    // construct WHERE clausule
-    $sel_in = $zids->sqlin( false, true );
-
-    // get history data
-    $SQL = "SELECT * FROM `change` WHERE id $sel_in";
-
-    $content = [];
-    StoreTable2Content($content, $SQL, '', 'id');
-
-    $additional = DB_AA::select([], 'SELECT * FROM `change_record`', [['change_id', $zids->longids()]]);
-    foreach ($additional as $chrec) {
-        $content[$chrec['change_id']][$chrec['selector']][$chrec['priority']] = ['value' => $chrec['value']];
-    }
-    return $content;
-}
-
-
-/**
- * @param AA_Set $set
- * @return zids
- */
-function QueryHistoryZIDs(AA_Set $set): zids {
-
-    $slice_id = $set->getModules()[0];
-    $conds    = $set->getConds();
-    $sort     = $set->getSort();
-
-    $HISTORY_FIELDS = GetHistoryFields()->getArrayDeprecated();
-
-    $where_sql      = MakeSQLConditions($HISTORY_FIELDS, $conds, 'LIKE', $foo);
-    $order_by_sql   = MakeSQLOrderBy(   $HISTORY_FIELDS, $sort,  $foo);
-
-    $SQL  = "SELECT DISTINCT `change`.id FROM `change`, `item`  WHERE item.id = UNHEX(change.resource_id) AND item.slice_id = ". xpack_id($slice_id)." AND `change`.type = 'h'";
-
-    //    $SQL  = "SELECT DISTINCT change.id FROM `change`, change_record WHERE change.id = change_record.change_id AND change.resource_id = '$slice_id' ";
-
-    $SQL .=  $where_sql . $order_by_sql;
-
-    // get result --------------------------
-    return GetZidsFromSQL($SQL, 'id', 'l');
-}
-
 
 $actions   = new Manageractions;
 $actions->addAction(new Manageraction_History_Apply('ApplyHistory'));
@@ -242,16 +187,15 @@ $manager_settings = [
              'even_odd_differ'  => false,
              'even_row_format'  => "",
 //           'odd_row_format'   => '<tr><td width="30"><input type="checkbox" name="chb[_#HI_CH_ID]" value=""></td><td><a href="_#EDITLINK">{switch({_#L_NAME__}).:_#L_NAME__:???}</a> (_#L_O_NAME)<div class="tabsmall">_#L_DESCRI<br>(_#CATEG_GO)<br><a href="_#L_URL___" target="_blank">_#L_URL___</a></div></td><td class="tabsmall">{alias:checked:f_d:j.n.Y}<br>{alias:created_by:f_e:username}<br>{alias:edited_by:f_e:username}<br><span style="background:#_#L_VCOLOR;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_#L_VALID_&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>
-             'odd_row_format'   => '<tr><td width="30"><input type="checkbox" name="chb[x_#HI_CH_ID]" value=""></td><td><strong>{item:{_#HI_ITEM_}:_#HEADLINE}</strong></td><td>_#HI_ITEM_</td><td>_#HI_UNAME <small>(_#HI_USER_)</small></td><td>_#HI_TIME_</td></tr>
-             ',
+             'odd_row_format'   => '<tr><td width="30"><input type="checkbox" name="chb[x_#HI_CH_ID]" value=""></td><td><strong>{item:{_#HI_ITEM_}:_#HEADLINE}</strong></td><td>_#HI_ITEM_ <a href="{item:{_#HI_ITEM_}:_#EDITITEM}">&raquo;</a></td><td>_#HI_UNAME <small>(_#HI_USER_)</small></td><td>_#HI_TIME_</td></tr>'."\n",
              'compact_remove'   => '',
              'compact_bottom'   => "</table>",
              'id'               => AA::$module_id
          ],
          //'fields'               => '',
          'aliases'              => new AA_Aliases(new AA_Aliasgenerator_History()),
-         'get_content_funct'    => 'GetHistoryContent',
-         'query_funct'          => 'QueryHistoryZIDs'
+         'get_content_funct'    => 'AA\Util\ChangesMonitor::GetHistoryContent',
+         'query_funct'          => 'AA\Util\ChangesMonitor::QueryHistoryZIDs'
      ],
      'actions'   => $actions,
 ];
