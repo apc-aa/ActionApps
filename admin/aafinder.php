@@ -574,7 +574,8 @@ if ( strlen($go_search) OR strlen($go_replace) ) {
             $table2search['site_spot'] = ['id' => '`spot_id`', 'slice_id' => 'LOWER(HEX(`site_id`))'];
         }
         if ($searchinitems) {
-            $table2search['content'] = ['id' => 'LOWER(HEX(`item_id`))'];
+            // $table2search['content'] = ['id' => 'LOWER(HEX(`item_id`))'];
+            $table2search['content'] = ['id' => 'LOWER(HEX(`item_id`))', 'slice_id' => 'LOWER(HEX(`slice_id`))', 'addtables' => ',`item`', 'addconds' => 'item.id=content.item_id AND '];
         } elseif ($searchincodeitems) {
             $codeslices = DB_AA::select('lid','SELECT LOWER(HEX(`id`)) as lid FROM `slice`',[['type', '___Code', 'BEGIN']]) ?: ['90112233001122330011223300112233'];
             $codeslicesquery = sqlin( 'item.slice_id', $codeslices, true );
