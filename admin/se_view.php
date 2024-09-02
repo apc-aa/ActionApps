@@ -58,7 +58,14 @@ try {
     // array ( 'skhjvbsahjk…' => 27, '' => 2, 'jo' => 2, )
     $field3 = InputVars::stringPOST('field3'); // alpha, empty
     // array ( 'on' => 2, )
-    $flag = InputVars::boolPOST('flag');
+    $flag0 = InputVars::boolPOST('flag0');
+    $flag1 = InputVars::boolPOST('flag1');
+    $flag2 = InputVars::boolPOST('flag2');
+    $flag3 = InputVars::boolPOST('flag3');
+    $flag4 = InputVars::boolPOST('flag4');
+    $flag5 = InputVars::boolPOST('flag5');
+    $flag6 = InputVars::boolPOST('flag6');
+    $flag7 = InputVars::boolPOST('flag7');
     // array ( '<img src=/a…' => 31, )
     $img1 = InputVars::stringPOST('img1');
     // array ( '<img src=/a…' => 31, )
@@ -271,10 +278,9 @@ function ConditionFrm($name, $txt, $val) {
  * @param $val
  */
 function BitFlagFrm($name, $txt, $val) {
-    FrmInputChBox( $name, $txt, $val&1);
-    FrmInputChBox( $name, $txt, $val&2);
-    FrmInputChBox( $name, $txt, $val&4);
-    FrmInputChBox( $name, $txt, $val&8);
+    // the $name if $flag0, $flag1, ..
+    $num = (preg_match('/(\d+)$/', $name, $matches) ? (int)$matches[1] : 0);
+    FrmInputChBox( $name, $txt, $val & (2**$num));
 }
 
 $view_id = (int) $_REQUEST['view_id'];  // sanitize
@@ -308,15 +314,15 @@ $varset      = new Cvarset();
 $p_slice_id  = q_pack_id(AA::$module_id);
 
 
-$VIEW_FIELDS     = getViewFields();
-$VIEW_TYPES      = getViewTypes();
-$VIEW_TYPES_INFO = getViewTypesInfo();
+$VIEW_FIELDS      = getViewFields();
+$view_field_names = getViewTypes()[$view_type];
+$view_type_info   = getViewTypesInfo($view_type);
 
 if ( $update ) {
     do {
         foreach ($VIEW_FIELDS as $k => $v) {
-            if ( $v["validate"] AND $VIEW_TYPES[$view_type][$k] ) {
-                ValidateInput($k, $VIEW_TYPES[$view_type][$k], $$k, $err, false, $v["validate"]);
+            if ( $v["validate"] AND [$k] ) {
+                ValidateInput($k, $view_field_names[$k], $$k, $err, false, $v["validate"]);
             }
         }
         if (count($err)) {
@@ -327,9 +333,17 @@ if ( $update ) {
         //$varset->add("name", "text", substr($name,0,30));
         $varset->add("type", "text", $view_type);
 
+        $add_later= [];
+
         foreach ($VIEW_FIELDS as $k => $v) {
-            if ( $VIEW_TYPES[$view_type][$k] ) {
+            if ( $view_field_names[$k] ) {
                 $insval = $_POST[$k];
+                if ($v["input"] === "bitflag") {
+                    $num             = (preg_match('/^(\D+)(\d+)$/', $k, $matches) ? (int)$matches[2] : 0);
+                    $fld             = $matches[1];
+                    $add_later[$fld] += (int)$$k * (2**$num);
+                    continue;
+                }
                 if ($v["type"] == "bool") {
                     $insval  = $insval  ? 1 : 0;
                 }
@@ -339,10 +353,13 @@ if ( $update ) {
                 $varset->add($k, 'text', $insval);
             }
         }
+        foreach ($add_later as $k => $v) {
+            $varset->add($k, 'number', $v);
+        }
 
         if ( $view_id ) {
             $varset->addkey('id','number', $view_id);
-            if ( !$varset->doUpdate('view', null, "V.$view_id") ) {  // track history
+               if ( !$varset->doUpdate('view', null, "V.$view_id") ) {  // track history
                 $err["DB"] = MsgErr( _m("Can't change slice settings") );
                 break;   // not necessary - we have set the halt_on_error
             }
@@ -355,7 +372,7 @@ if ( $update ) {
         }
         AA::Pagecache()->invalidateFor(AA::$module_id);  // invalidate old cached values
 
-        foreach ($VIEW_TYPES[$view_type] as $k => $v) {
+        foreach ($view_field_names as $k => $v) {
             if (str_starts_with($k, "function:")) {
                 $show_fn = "store_".substr($k,strlen("function:"));
                 $show_fn();
@@ -390,6 +407,17 @@ if ( !$update ) {  // set variables from database
         go_url($back_url);
     }
 
+    // split for datafield fields
+    foreach ($VIEW_FIELDS as $k => $v) {
+        if ($view_field_names[$k]) {
+            if ($v["input"] === "bitflag") {
+                $num         = (preg_match('/^(\D+)(\d+)$/', $k, $matches) ? (int)$matches[2] : 0);
+                $fld         = $matches[1];
+                $vw_data[$k] = (bool)($vw_data[$fld] & (2 ** $num));
+            }
+        }
+    }
+
     if ( $vw_data ) {
         $view_type = $vw_data['type'];
         // fix for old view type
@@ -401,7 +429,7 @@ if ( !$update ) {  // set variables from database
     }
 } else {        // updating - load data into vw_data array
     foreach ($VIEW_FIELDS as $k => $v) {
-        if ( $VIEW_TYPES[$view_type][$k] ) {
+        if ( $view_field_names[$k] ) {
             $vw_data[$k] = $$k;
         }
     }
@@ -410,18 +438,18 @@ if ( !$update ) {  // set variables from database
 // operators array
 $lookup_op = [
     "<"  => "<",
-                    "<=" => "<=",
-                    "="  => "=",
-                    "==" => "== (exact match)",
-                    "<>" => "<>",
-                    ">"  => ">",
-                    ">=" => ">=",
-                    "LIKE"  => "substring (LIKE)",
-                    "RLIKE"  => "begins with ... (RLIKE)",
-                    "ISNULL"  => "not set",
-                    "NOTNULL"  => "is set",
-                    "m:<" => "< now() - x [in seconds]",
-                    "m:>" => "> now() - x [in seconds]"
+    "<=" => "<=",
+    "="  => "=",
+    "==" => "== (exact match)",
+    "<>" => "<>",
+    ">"  => ">",
+    ">=" => ">=",
+    "LIKE"  => "substring (LIKE)",
+    "RLIKE"  => "begins with ... (RLIKE)",
+    "ISNULL"  => "not set",
+    "NOTNULL"  => "is set",
+    "m:<" => "< now() - x [in seconds]",
+    "m:>" => "> now() - x [in seconds]"
 ];
 
 // lookup group of constatnts
@@ -430,8 +458,8 @@ $lookup_groups = GetConstants('lt_groupNames', 'name');
 
 // lookup slice fields
 $lookup_fields[''] = " ";  // default - none
-if ( $VIEW_TYPES_INFO[$view_type]['fields'] ) {
-    $field_func = $VIEW_TYPES_INFO[$view_type]['fields'];
+if ( $view_type_info['fields'] ) {
+    $field_func = $view_type_info['fields'];
     $lf = $field_func();
     $lookup_fields += (is_object($lf) ? $lf->getSearchArray() : $lf);
 } else {
@@ -440,8 +468,6 @@ if ( $VIEW_TYPES_INFO[$view_type]['fields'] ) {
     $lookup_fields = AA_Fields::getFields4Select(AA::$module_id, false, 'name', true, true);
 }
 $slice = AA_Slice::getModule(AA::$module_id);
-//huhl($lookup_fields, $slice->getSearchfields());
-
 
 $headcode = <<<'EOT'
 <script>
@@ -484,7 +510,7 @@ if (($view_type == 'categories') OR ($view_type == 'links')) {
 }
 
 $apage->setTitle(_m("Admin - design View"));
-if ($VIEW_TYPES[$view_type]["even_odd_differ"]) {
+if ($view_field_names["even_odd_differ"]) {
     $apage->addRequire('InitPage();', 'AA_Req_Load');
 }
 $apage->addRequire($headcode, 'AA_Req_Headcode');
@@ -509,14 +535,14 @@ FrmTabCaption(_m("Defined Views"), $form_buttons);
 $view_url = AA_INSTAL_URL. "view.php?vid=$view_id";
 //FrmStaticText(_m("Id"), "<a href=\"$view_url\" title=\"". _m('show this view') ."\">$view_id</a>", false, '', '', false );
 
-foreach ($VIEW_TYPES[$view_type] as $k => $v) {
+foreach ($view_field_names as $k => $v) {
     if (str_starts_with($k, "function:")) {
         $show_fn = "show_".substr($k,strlen("function:"));
         $show_fn();
     }
     // we can define default values for fields (see constants.php)
-    if ( !($value = $vw_data[$k]) && $VIEW_TYPES_INFO[$view_type][$k]['default'] ) {
-        $value = $VIEW_TYPES_INFO[$view_type][$k]['default'];
+    if ( !($value = $vw_data[$k]) && $view_type_info[$k]['default'] ) {
+        $value = $view_type_info[$k]['default'];
     }
 
     $input = $VIEW_FIELDS[$k]["input"];
@@ -543,16 +569,17 @@ foreach ($VIEW_TYPES[$view_type] as $k => $v) {
         case "vid":     FrmInputText($k, $label . " - <a href=\"$view_url\" title=\"" . _m('show this view') . "\">$view_id</a>", $value, 15, 15, false, $help, '', false, '', '[a-z][a-z_0-9]+'); break;
         case "area":    FrmTextarea($k, $label, $value, 4, 50, false, $help, '', 1); break;
         case "areabig": FrmTextarea($k, $label, $value, 15, 80, false, $help, '', 1); break;
-        case "seltype": FrmInputSelect($k, $label, $VIEW_TYPES_INFO[$view_type]['modification'], $value, false, $help); break;
+        case "seltype": FrmInputSelect($k, $label, $view_type_info['modification'], $value, false, $help); break;
         case "selfld":  FrmInputSelect($k, $label, $lookup_fields, $value, false, $help); break;
         case "selgrp":  FrmInputSelect($k, $label, $lookup_groups, $value, false, $help); break;
         case "op":      FrmInputSelect($k, $label, $lookup_op, $value, false, $help); break;
         case "chbox":   FrmInputChBox( $k, $label, $value, false, '', 1, false, $help); break;
-        case "bitflag": BitFlagFrm( $k, $label, $value); break;
+        case "bitflag": FrmInputChBox( $k, $label, $value, false, '', 1, false, $help); break;
+                        // BitFlagFrm( $k, $label, $value); break;
         case "cond":    ConditionFrm(  $k, $label, $value); break;
-        case "order":   OrderFrm(      $k, $label, $value, $lookup_fields, $VIEW_TYPES_INFO[$view_type]['order'] == 'easy'); break;
+        case "order":   OrderFrm(      $k, $label, $value, $lookup_fields, $view_type_info['order'] == 'easy'); break;
         case "orderal": OrderAliasFrm( $k, $label, $value); break;
-        case "group":   OrderFrm(      $k, $label, $value, $lookup_fields, $VIEW_TYPES_INFO[$view_type]['order'] == 'easy', true); break;
+        case "group":   OrderFrm(      $k, $label, $value, $lookup_fields, $view_type_info['order'] == 'easy', true); break;
         case "select":  FrmInputSelect($k, $label, $VIEW_FIELDS[$k]['value'], $vw_data[$k], false, $help); break;
         case "none":    break;
     }
@@ -561,11 +588,11 @@ foreach ($VIEW_TYPES[$view_type] as $k => $v) {
 $slice = AA_Slice::getModule(AA::$module_id);
 $helpbox = '';
 
-switch( $VIEW_TYPES_INFO[$view_type]['aliases'] ) {
+switch( $view_type_info['aliases'] ) {
     case 'disc2mail':   $helpbox .= getAliasHelp(new AA_Aliases(new AA_Aliasgenerator_Discussion2mail()));
     case 'discus':      $helpbox .= getAliasHelp(new AA_Aliases(new AA_Aliasgenerator_Discussion()));
                         break;
-    case 'field':       $helpbox .= getAliasHelp(new AA_Aliases((new AA_Aliasgenerator_Slice(AA::$module_id))->addAliases($VIEW_TYPES_INFO[$view_type]['aliases_additional'])), $slice->getFields());
+    case 'field':       $helpbox .= getAliasHelp(new AA_Aliases((new AA_Aliasgenerator_Slice(AA::$module_id))->addAliases($view_type_info['aliases_additional'])), $slice->getFields());
                         break;
     case 'justids':     $helpbox .= getAliasHelp(new AA_Aliases(new AA_Aliasgenerator_Slicejustids(AA::$module_id)));
                         break;

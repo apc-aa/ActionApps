@@ -472,14 +472,14 @@ const FIELD_UNREADABLE = 1;
 // define( "FIELD_..",                 4 );
 
 /** relation table flags */
-const REL_FLAG_MODULE_DEPEND = 1;  // specifies dependency between site modue and used slices
+const REL_FLAG_MODULE_DEPEND = 1;  // specifies dependency between site module and used slices
 const REL_FLAG_FEED          = 2;  // item is fed using AA feeding (value 2 - compatible with content table)
 const REL_FLAG_SOURCE        = 4;  // item is derived from other item ({newitem }, ...)
 
 /** view table flags */
 const VIEW_FLAG_COMMENTS = 1;    // display HTML comments before and after the view
-const VIEW_FLAG_LOG      = 2;         // write every use to database
-const VIEW_FLAG_DISABLE  = 4;     // view is disabled - no content showed
+const VIEW_FLAG_LOG      = 2;    // write every use to database
+const VIEW_FLAG_DISABLE  = 4;    // view is disabled - no content showed
 
 
 /** inputFeedModes function
@@ -554,8 +554,15 @@ function getViewFields() {
     $VIEW_FIELDS["cond3op"]         = GetViewFieldDef("text", "text", "none");
     $VIEW_FIELDS["cond3cond"]       = GetViewFieldDef("text", "text", "none");
     $VIEW_FIELDS["listlen"]         = GetViewFieldDef("number", "text", "field");
-    $VIEW_FIELDS["flag"]            = GetViewFieldDef("", "bool", "chbox");
-    //$VIEW_FIELDS["flag"]            = GetViewFieldDef("", "bool",   "bitflag" );
+    //$VIEW_FIELDS["flag"]            = GetViewFieldDef("", "bool", "chbox");
+    $VIEW_FIELDS["flag0"]            = GetViewFieldDef("", "bool",   "bitflag" );
+    $VIEW_FIELDS["flag1"]            = GetViewFieldDef("", "bool",   "bitflag" );
+    $VIEW_FIELDS["flag2"]            = GetViewFieldDef("", "bool",   "bitflag" );
+    $VIEW_FIELDS["flag3"]            = GetViewFieldDef("", "bool",   "bitflag" ); // not used
+    $VIEW_FIELDS["flag4"]            = GetViewFieldDef("", "bool",   "bitflag" ); // not used
+    $VIEW_FIELDS["flag5"]            = GetViewFieldDef("", "bool",   "bitflag" ); // not used
+    $VIEW_FIELDS["flag6"]            = GetViewFieldDef("", "bool",   "bitflag" ); // not used
+    $VIEW_FIELDS["flag7"]            = GetViewFieldDef("", "bool",   "bitflag" ); // not used
     $VIEW_FIELDS["scroller"]      = GetViewFieldDef("", "bool", "chbox");
     $VIEW_FIELDS["aditional"]     = GetViewFieldDef("text", "text", "area");
     $VIEW_FIELDS["aditional2"]    = GetViewFieldDef("text", "text", "area");
@@ -656,7 +663,9 @@ function getViewTypes() {
                 "label" => _m("HTML code for \"No item found\" message"),
                 "help"  => _m("use {#} if you do not want print anything"),
             ],
-            "flag"            => _m("Add view ID as HTML comment")
+            "flag0"            => _m("Add view ID as HTML comment"),
+            "flag1"            => _m("Disabled view"),
+            "flag2"            => _m("Log view usage"),
             //                     "aditional" => _m("Additional") );
         ],
 
@@ -677,7 +686,9 @@ function getViewTypes() {
             "cond3op"       => " ",
             "cond3cond"     => " ",
             "noitem_msg"    => _m("HTML code for \"No item found\" message"),
-            "flag"          => _m("Add view ID as HTML comment"),
+            "flag0"         => _m("Add view ID as HTML comment"),
+            "flag1"         => _m("Disabled view"),
+            "flag2"         => _m("Log view usage"),
         ],
 
         'discus'    => [
@@ -703,7 +714,9 @@ function getViewTypes() {
                 "input" => "field",
                 "help"  => _m("Number of e-mail template used for posting new comments to users"),
             ],
-            "flag"            => _m("Allow HTML tags in the comments"),
+            "flag0"            => _m("Allow HTML tags in the comments"),  // different meaning than in other views (historical reasons)
+            "flag1"            => _m("Disabled view"),
+            "flag2"            => _m("Log view usage"),
         ],
 
         // discussion to mail
@@ -765,8 +778,11 @@ function getViewTypes() {
             "listlen"         => _m("Listing length"),
             "noitem_msg"      => _m("HTML code for \"No item found\" message"),
             "even_odd_differ" => _m("Use different HTML code for even rows"),
-            "flag"            => _m("Add view ID as HTML comment"),
+            "flag0"           => _m("Add view ID as HTML comment"),
+            "flag1"           => _m("Disabled view"),
+            "flag2"           => _m("Log view usage"),
         ],
+
 
         'rss' => [
             "field3"       => $field3def,
@@ -795,7 +811,9 @@ function getViewTypes() {
             "field3" => $field3def,
             'name'   => _m("Static page"),
             "odd"    => _m("HTML code"),
-            "flag"   => _m("Add view ID as HTML comment"),
+            "flag0"  => _m("Add view ID as HTML comment"),
+            "flag1"  => _m("Disabled view"),
+            "flag2"  => _m("Log view usage"),
         ],
 
         // for javascript list of items
@@ -820,6 +838,8 @@ function getViewTypes() {
             "cond3cond"    => " ",
             "listlen"      => _m("Listing length"),
             "noitem_msg"   => _m("HTML code for \"No item found\" message"),
+            "flag1"        => _m("Disabled view"),
+            "flag2"        => _m("Log view usage"),
         ],
 
         'calendar' => [
@@ -853,7 +873,9 @@ function getViewTypes() {
             "cond3cond"       => " ",
             "listlen"         => _m("Listing length"),
             "noitem_msg"      => _m("HTML code for \"No item found\" message"),
-            "flag"            => _m("Add view ID as HTML comment"),
+            "flag0"           => _m("Add view ID as HTML comment"),
+            "flag1"           => _m("Disabled view"),
+            "flag2"           => _m("Log view usage"),
         ],
 
         // this view uses also "aditonal" and "aditional3" for the "Group by"
@@ -887,7 +909,9 @@ function getViewTypes() {
             "group_bottom"            => _m("Group bottom format"),
             "listlen"                 => _m("Max number of items"),
             "noitem_msg"              => _m("HTML code for \"No item found\" message"),
-            "flag"                    => _m("Add view ID as HTML comment"),
+            "flag0"                   => _m("Add view ID as HTML comment"),
+            "flag1"                   => _m("Disabled view"),
+            "flag2"                   => _m("Log view usage"),
         ],
 
         // View used for listing of ursl - mainly for listing items for index
@@ -917,7 +941,9 @@ function getViewTypes() {
             "cond3cond"     => " ",
             "listlen"       => _m("Listing length"),
             "noitem_msg"    => _m("HTML code for \"No item found\" message"),
-            "flag"          => _m("Add view ID as HTML comment"),
+            "flag0"         => _m("Add view ID as HTML comment"),
+            "flag1"         => _m("Disabled view"),
+            "flag2"         => _m("Log view usage"),
         ],
 
         // View used in Links module - displays set of link
@@ -951,7 +977,9 @@ function getViewTypes() {
             "cond3cond"       => " ",
             "listlen"         => _m("Listing length"),
             "noitem_msg"      => _m("HTML code for \"No item found\" message"),
-            "flag"            => _m("Add view ID as HTML comment"),
+            "flag0"           => _m("Add view ID as HTML comment"),
+            "flag1"           => _m("Disabled view"),
+            "flag2"           => _m("Log view usage"),
         ],
 
         // View used in Links module - displays set of categories
@@ -985,7 +1013,9 @@ function getViewTypes() {
             "cond3cond"       => " ",
             "listlen"         => _m("Listing length"),
             "noitem_msg"      => _m("HTML code for \"No item found\" message"),
-            "flag"            => _m("Add view ID as HTML comment"),
+            "flag0"           => _m("Add view ID as HTML comment"),
+            "flag1"           => _m("Disabled view"),
+            "flag2"           => _m("Log view usage"),
         ],
         // View used for creating input forms
         'inputform'  => [
@@ -997,94 +1027,101 @@ function getViewTypes() {
             "even"            => _m("Edit item form template"),
             "remove_string"   => _m("Remove strings"),
             //                       "after" => _m("Bottom HTML") ,
-            "flag"            => _m("Add view ID as HTML comment"),
+            "flag0"           => _m("Add view ID as HTML comment"),
+            "flag1"           => _m("Disabled view"),
+            "flag2"           => _m("Log view usage"),
         ],
     ];
 }
 
 /** getViewTypesInfo function
- * @return array
+ * @param string $type - view type
  */
-function getViewTypesInfo() {
-    $VIEW_TYPES_INFO = [];
+function getViewTypesInfo(string $type): array
+{
     // modification - options for modification field of views
     // alias  - which aliases to show
     // order  - 'easy' - show just Ascending/Descending
     // fields - which fields show in selectboxes (slice / 'constant')
-    $VIEW_TYPES_INFO['list']       = [
-        'modification' => [
-            '1' => 'search',
-            '2' => 'parameter',
-            '3' => 'statistic',
-            '4' => 'all in thread',
-            '5' => 'related',
-            '6' => 'keyword related',
+    return match ($type) {
+        'list' => [
+            'modification' => [
+                '1' => 'search',
+                '2' => 'parameter',
+                '3' => 'statistic',
+                '4' => 'all in thread',
+                '5' => 'related',
+                '6' => 'keyword related',
+            ],
+            'aliases' => 'field',
         ],
-        'aliases'      => 'field',
-    ];
-    $VIEW_TYPES_INFO['full']       = [
-        'modification' => [
-            '11' => 'newest',
-            '12' => 'newest with condition',
-            '13' => 'oldest with condition',
-            '14' => 'id',
-            '15' => 'parameter',
+        'full' => [
+            'modification' => [
+                '11' => 'newest',
+                '12' => 'newest with condition',
+                '13' => 'oldest with condition',
+                '14' => 'id',
+                '15' => 'parameter',
+            ],
+            'aliases' => 'field',
         ],
-        'aliases'      => 'field',
-    ];
-    $VIEW_TYPES_INFO['digest']     = ['aliases' => 'field'];
-    $VIEW_TYPES_INFO['discus']     = [
-        'modification' => [
-            '21' => 'timeorder',
-            '22' => 'reverse timeorder',
-            '23' => 'thread',
+        'digest', 'rss', 'javascript' => [
+            'aliases' => 'field',
         ],
-        'aditional'    => ['default' => '<img src="' . AA_INSTAL_PATH . 'images/blank.gif" width=20 height=1>'],
-        'aditional2'   => ['default' => '<input type=button name=sel_ids value="' . _m("Show selected") . '" onClick=showSelectedComments() class="discbuttons">'],
-        'aditional3'   => ['default' => '<input type=button name=all_ids value="' . _m("Show all") . '" onClick=showAllComments() class="discbuttons">'],
-        'aditional4'   => ['default' => '<input type=button name=add_disc value="' . _m("Add new") . '" onClick=showAddComments() class="discbuttons">'],
-        'aliases'      => 'discus',
-    ];
-    $VIEW_TYPES_INFO['disc2mail']  = ['aliases' => 'disc2mail'];
-    $VIEW_TYPES_INFO['seetoo']     = [
-        'modification' => [
-            '31' => 'related',
-            '32' => 'keyword with OR',
-            '33' => 'keyword with AND',
+        'discus' => [
+            'modification' => [
+                '21' => 'timeorder',
+                '22' => 'reverse timeorder',
+                '23' => 'thread',
+            ],
+            'aditional'    => ['default' => '<img src="' . AA_INSTAL_PATH . 'images/blank.gif" width=20 height=1>'],
+            'aditional2'   => ['default' => '<input type=button name=sel_ids value="' . _m("Show selected") . '" onClick=showSelectedComments() class="discbuttons">'],
+            'aditional3'   => ['default' => '<input type=button name=all_ids value="' . _m("Show all") . '" onClick=showAllComments() class="discbuttons">'],
+            'aditional4'   => ['default' => '<input type=button name=add_disc value="' . _m("Add new") . '" onClick=showAddComments() class="discbuttons">'],
+            'aliases'      => 'discus',
         ],
-        'aliases'      => 'field',
-    ];
-    $VIEW_TYPES_INFO['const']      = [
-        'aliases' => 'const',
-        'order'   => 'easy',
-        'fields'  => 'GetConstantFields',
-    ];
-    $VIEW_TYPES_INFO['urls']       = ['aliases' => 'justids'];
-    $VIEW_TYPES_INFO['links']      = [
-        'aliases' => 'links',
-        'order'   => 'easy',
-        'fields'  => 'GetLinkFields',
-    ];
-    $VIEW_TYPES_INFO['categories'] = [
-        'aliases' => 'categories',
-        'order'   => 'easy',
-        'fields'  => 'GetCategoryFields',
-    ];
-    $VIEW_TYPES_INFO['rss']        = ['aliases' => 'field'];
-    $VIEW_TYPES_INFO['calendar']   = [
-        'aliases'            => 'field',
-        'aliases_additional' => (new AA_Aliases())
-            ->addAlias(new AA_Alias('_#CV_TST_1', '', '', _m("Calendar: Time stamp at 0:00 of processed cell")))
-            ->addAlias(new AA_Alias('_#CV_TST_2', '', '', _m("Calendar: Time stamp at 24:00 of processed cell")))
-            ->addAlias(new AA_Alias('_#CV_NUM_D', '', '', _m("Calendar: Day in month of processed cell")))
-            ->addAlias(new AA_Alias('_#CV_NUM_M', '', '', _m("Calendar: Month number of processed cell")))
-            ->addAlias(new AA_Alias('_#CV_NUM_Y', '', '', _m("Calendar: Year number of processed cell"))),
-    ];
-
-    $VIEW_TYPES_INFO['static']     = ['aliases' => 'none'];
-    $VIEW_TYPES_INFO['javascript'] = ['aliases' => 'field'];
-    $VIEW_TYPES_INFO['inputform']  = ['aliases' => ''];
-    return $VIEW_TYPES_INFO;
+        'disc2mail' => [
+            'aliases' => 'disc2mail',
+        ],
+        'seetoo' => [
+            'modification' => [
+                '31' => 'related',
+                '32' => 'keyword with OR',
+                '33' => 'keyword with AND',
+            ],
+            'aliases'      => 'field',
+        ],
+        'const' => [
+            'aliases' => 'const',
+            'order'   => 'easy',
+            'fields'  => 'GetConstantFields',
+        ],
+        'urls' => [
+            'aliases' => 'justids',
+        ],
+        'links' => [
+            'aliases' => 'links',
+            'order'   => 'easy',
+            'fields'  => 'GetLinkFields',
+        ],
+        'categories' => [
+            'aliases' => 'categories',
+            'order'   => 'easy',
+            'fields'  => 'GetCategoryFields',
+        ],
+        'calendar' => [
+            'aliases'            => 'field',
+            'aliases_additional' => (new AA_Aliases())
+                ->addAlias(new AA_Alias('_#CV_TST_1', '', '', _m("Calendar: Time stamp at 0:00 of processed cell")))
+                ->addAlias(new AA_Alias('_#CV_TST_2', '', '', _m("Calendar: Time stamp at 24:00 of processed cell")))
+                ->addAlias(new AA_Alias('_#CV_NUM_D', '', '', _m("Calendar: Day in month of processed cell")))
+                ->addAlias(new AA_Alias('_#CV_NUM_M', '', '', _m("Calendar: Month number of processed cell")))
+                ->addAlias(new AA_Alias('_#CV_NUM_Y', '', '', _m("Calendar: Year number of processed cell"))),
+        ],
+        'static'     => ['aliases' => 'none' ],
+        'inputform'  => ['aliases' => ''],
+        default      => [],
+    };
 }
 
 /** flag in the feedmap table */

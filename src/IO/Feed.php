@@ -729,8 +729,7 @@ class LastEditList {
             'odd_row_format' => '{id..............}-{last_edit.......}',
             'row_delimiter'  => ','
         ];
-        $itemview = new itemview($format, null, $zids, 0, $zids->count(), '', [], ['AA\IO\LastEditList::getContent', []]);
-        $this->lastlist = $itemview->get_output("view");
+        $this->lastlist = (new itemview($format, null, $zids))->setContentFunct(['AA\IO\LastEditList::getContent', []])->get_output("view");
     }
 
     /** used as parameter for $itemview in generating item_id-lastedit pair */

@@ -26,8 +26,9 @@ class HitcounterGroup implements LaterInterface
     public function toexecutelater($params = [])
     {
         if (is_null(self::$duration_log_feature_from)) {
-            if ((new AddDurationLog())->test()) {
-                self::$duration_log_feature_from = DB_AA::select1('time', 'SELECT `time` FROM `hit_archive`', [['duration', 0, '<>']], ['time']);
+            $duration_helper = new AddDurationLog();
+            if ($duration_helper->test()) {
+                self::$duration_log_feature_from = $duration_helper->getFromTime();
                 // reload table structure from database - in standard metabase we do not have extended hit_archive table
                 AA::Metabase()->loadFromDb(true,['hit_archive']);  // it is not standard table - we have to read it
             } else {
@@ -37,17 +38,17 @@ class HitcounterGroup implements LaterInterface
         }
 
         [$begin, $step] = $params;
-        $time_cond = [['time', $begin, '>='],['time', ($begin + $step), '<']];
 
         if (self::$duration_log_feature_from AND (self::$duration_log_feature_from < $begin)) {
-            $this->groupHitsDuration($begin, $step, $time_cond);
+            $this->groupHitsDuration($begin, $step);
         } else {
-            $this->groupHitsBasic($begin, $step, $time_cond);
+            $this->groupHitsBasic($begin, $step);
         }
     }
 
     /** group code for basic log without duration stats - older code */
-    protected function groupHitsBasic(int $begin, int $step, array $time_cond) {
+    protected function groupHitsBasic(int $begin, int $step) {
+        $time_cond = $this->getTimecondition($begin, $step);
 
         // possible new approach
         // SELECT id, CONCAT(FROM_UNIXTIME(`time`, '%Y-%m-%d'),' ',`id`) as grp, sum(hits) as sum, count(*) as cnt FROM hit_archive WHERE time < 1250000000 GROUP BY grp HAVING cnt > 1
@@ -66,9 +67,15 @@ class HitcounterGroup implements LaterInterface
         }
     }
 
-    /** group code for extended hit log - with duration stats */
-    protected function groupHitsDuration(int $begin, int $step, array $time_cond) {
-        $hits = DB_AA::select([], 'SELECT `id`,
+    /**
+     * @param  array  $time_cond
+     *
+     * @return array
+     */
+    public function countHitsDuration(array $time_cond): array
+    {
+        return DB_AA::select([],
+            'SELECT `id`,
             AVG(CASE WHEN (`duration` & 3) = 0 THEN `duration` >> 2 END) << 2 AS avg_0,
             AVG(CASE WHEN (`duration` & 3) = 1 THEN `duration` >> 2 END) << 2 AS avg_1,
             AVG(CASE WHEN (`duration` & 3) = 2 THEN `duration` >> 2 END) << 2 AS avg_2,
@@ -77,7 +84,20 @@ class HitcounterGroup implements LaterInterface
             SUM(CASE WHEN (`duration` & 3) = 1 THEN `hits` END) AS sum_1,
             SUM(CASE WHEN (`duration` & 3) = 2 THEN `hits` END) AS sum_2,
             SUM(CASE WHEN (`duration` & 3) = 3 THEN `hits` END) AS sum_3
-            FROM `hit_archive`', $time_cond, null, ['id']);
+            FROM `hit_archive`',
+            $time_cond, null, ['id']);
+    }
+
+    public function getTimecondition(int $begin, int $step): array
+    {
+        return [['time', $begin, '>='],['time', ($begin + $step), '<']];
+    }
+
+    /** group code for extended hit log - with duration stats */
+    protected function groupHitsDuration(int $begin, int $step) {
+        $time_cond = $this->getTimecondition($begin, $step);
+
+        $hits = $this->countHitsDuration($time_cond);
 
         $to_insert = [];
         foreach ($hits as $hit) {

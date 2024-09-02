@@ -378,7 +378,7 @@ class AA_Showview {
 
                 [ $listlen, $list_from ] = AA_View::getListLength($listlen, $this->_view_param["to"], $this->_view_param["from"], $list_page, $zids->count(), $random);
 
-                $itemview = new itemview($format, $aliases, $zids, $list_from, $listlen, shtml_url(), [], $content_function);
+                $itemview = (new itemview($format, $aliases, $zids, $list_from, $listlen))->setContentFunct($content_function);
                 $itemview->parameter('category_id', $category_id);
                 $itemview->parameter('start_cat',   $this->_view_param['start_cat']);
 
@@ -409,8 +409,7 @@ class AA_Showview {
                             $GLOBALS['mlxView']->postQueryZIDs($zids3,$mlxslice,$slice_id); //.serialize($zids3));
                             $zids->cloneFrom($zids3);
                         }
-                        $itemview = new itemview($format, $slice->aliases($als), $zids, 0, 1, shtml_url());
-                        $ret      = $itemview->get_output("view");
+                        $ret = (new itemview($format, $slice->aliases($als), $zids, 0, 1))->get_output("view");
                         break;
                     }
                 }
@@ -503,7 +502,7 @@ class AA_Showview {
 
                 [$listlen, $list_from] = AA_View::getListLength($listlen, $this->_view_param["to"], $this->_view_param["from"], $list_page, $zids2->count(), $random);
 
-                $itemview = new itemview($format, $aliases, $zids2, $list_from, $listlen, shtml_url(), [], ($view_info['type'] == 'urls') ? 'GetItemContentMinimal' : '');
+                $itemview = (new itemview($format, $aliases, $zids2, $list_from, $listlen))->setContentFunct( ($view_info['type'] == 'urls') ? 'GetItemContentMinimal' : '');
 
                 if (isset($zids2) && ($zids2->count() > ( ctype_digit((string)$list_from) ? (int)$list_from : 0))) { // $list_from could be 'random:number.........1' ...
                     $ret = $itemview->get_output(($view_info['type'] == 'calendar') ? 'calendar' : 'view');

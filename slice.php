@@ -353,8 +353,7 @@ if ( $sh_itm OR $x OR $o OR $seo ) {
     }
 
     if (!isset($hideFulltext)) {
-        $itemview = new itemview($slice_info, $aliases, $zid, 0, 1, MyUrl($encap, $scr_url));
-        echo $itemview->get_output_cached("fulltext");
+        echo (new itemview($slice_info, $aliases, $zid))->get_output_cached("fulltext");
     }
 
     // show discussion if assigned
@@ -395,12 +394,11 @@ if ( $sh_itm OR $x OR $o OR $seo ) {
 // multiple items fulltext view ------------------------------------------------
 if ( $items AND is_array($items) ) {   // shows all $items[] as fulltext one after one
     //  $r_state_vars = StoreVariables(array("items")); // store in session
+    $ids = [];
     foreach( $items as $k => $foo) {
         $ids[] = substr($k,1);    //delete starting character ('x') - used for interpretation of index as string, not number (by PHP)
     }
-    $zids     = new zids($ids,"l");
-    $itemview = new itemview($slice_info, $aliases, $zids, 0, $zids->count(), MyUrl($encap, $scr_url));
-    ExitPage($itemview->get_output_cached("itemlist"));
+    ExitPage((new itemview($slice_info, $aliases, new zids($ids,"l")))->get_output_cached("itemlist"));
 }
 
 // compact view ----------------------------------------------------------------
@@ -576,8 +574,7 @@ if ( !$srch AND !$encap AND !$easy_query ) {
 
 if ($zids->count() > 0) {
 
-    $itemview = new itemview($slice_info, $aliases, $zids, $scr->metapage * ($scr->current - 1), ($group_n ? -$group_n : $scr->metapage), MyUrl($encap, $scr_url));
-
+    $itemview = new itemview($slice_info, $aliases, $zids, $scr->metapage * ($scr->current - 1), ($group_n ? -$group_n : $scr->metapage));
     echo $itemview->get_output_cached("view");
 
     if (($scr->pageCount() > 1) AND !$no_scr AND !$group_n) {

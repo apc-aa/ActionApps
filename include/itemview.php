@@ -51,14 +51,14 @@ require_once __DIR__ . "/stringexpand.php";
  */
 class itemview {
   var $zids;               // zids to show
-  var $from_record;        // from which index begin showing items
+  var string $from_record; // from which index begin showing items - number | 'random[:<weight_field>]'
   var $num_records;        // number of shown records
   var $slice_info;         // record from slice database for current slice
   var $fields;             // array of fields used in this slice  // not used
   var $aliases;            // array of alias definitions. If used with multi-slice,
                            // this variable contains an array of aliases for all slices
                            // aliases[slice_id0] are aliases for slice 0 etc.
-  var $clean_url;          // url of slice page with session id and encap..
+  var $clean_url;          // url of slice page with session id and encap.. - used mainly in discussion views
   var $group_fld;          // id of field for grouping
   var $disc;               // array of discussion parameters (see apc-aa/view.php)
   var $get_content_funct;  // function to call, if we want to get content
@@ -79,7 +79,7 @@ class itemview {
      * @param array  $disc
      * @param string $get_content_funct
      */
-  function __construct($slice_info, $aliases, $zids, $from, $number, $clean_url, $disc = [], $get_content_funct = 'GetItemContent') {
+  function __construct($slice_info, $aliases, $zids, $from = 0, $number = null, $clean_url = '', $disc = [], $get_content_funct = 'GetItemContent') {
 
       $this->slice_info = $slice_info;  // $slice_info is array with these fields:
                                       //      - print_view() function:
@@ -115,13 +115,24 @@ class itemview {
     $this->fields            = '';
     $this->zids              = $zids;
     $this->from_record       = $from;      // number or text "random[:<weight_field>]"
-    $this->num_records       = $number;    // negative number used for displaying n-th group of items only
+    $this->num_records       = $number ?? $zids?->count() ?? '';    // negative number used for displaying n-th group of items only; If null, then all items if provided
     $this->clean_url         = $clean_url;
     $this->disc              = (array)$disc;
     $this->parameters        = [];
     $this->_content          = [];
-    $this->get_content_funct = $get_content_funct ?: 'GetItemContent';
+    $this->setContentFunct($get_content_funct);
   }
+
+    /** Sets calleable function to get Contane
+     * @param string|array $content_funct callable function
+     * @return $this
+     */
+    public function setContentFunct($content_funct): itemview
+    {
+        $this->get_content_funct = $content_funct ?: 'GetItemContent';
+        return $this;
+    }
+
 
   /** parameter function
    *  Optional asociative array of additional parameters
@@ -133,21 +144,11 @@ class itemview {
       $this->parameters[$property] = $value;
   }
 
-  /** assign_items function
-   * @param $zids
-   */
-  function assign_items($zids) {
-      // redefine number of items
-      $idcount = (string)($GLOBALS['QueryIDsCount'] ?: ' 0');
-      $this->aliases["_#ID_COUNT"] = GetAliasDef( "f_t:$idcount",  "id..............", _m("number of found items"));
-      $this->zids = $zids;
-  }
-
   /** is_random function
    * returns true, if view have to show random item (weighted or not)
    */
   function is_random() {
-      return str_starts_with($this->from_record, 'random');
+      return (substr($this->from_record, 0, 6) == 'random');
   }
 
     /** get_output_cached function
@@ -203,13 +204,11 @@ class itemview {
         return $out;
     }
 
-  // show list of discussion items --- useful as search form return value
-
-    /** get_disc_list function
-     * @param AA_Item $CurItem
+    /** show list of discussion items --- useful as search form return value
+     * @param AA_Item  $CurItem
      * @return string
      */
-  function get_disc_list(AA_Item $CurItem): string {
+    private function get_disc_list(AA_Item $CurItem): string {
       $top_html_already_printed = false;
       $out = '';
       if (is_array($this->disc['disc_ids'])) {
@@ -238,12 +237,13 @@ class itemview {
       return $out;
   }
 
-    /** get_disc_thread function
-     *  show discussion comments in the thread mode
-     * @param AA_Item $CurItem
-     * @return string
-     */
-  function get_disc_thread(AA_Item $CurItem): string {
+  /** show discussion comments in the thread mode
+   *
+   * @param AA_Item  $CurItem
+   *
+   * @return string
+   */
+  private function get_disc_thread(AA_Item $CurItem): string {
       $top_html_already_printed = false;
 
       $zids           = QueryDiscussionZIDs($this->disc['item_id'], "", $this->slice_info['d_order']);
@@ -339,12 +339,11 @@ class itemview {
    return $out;
   }
 
-    /** get_disc_fulltext function
-     *  show discussion comments in the fulltext mode
-     * @param AA_Item $CurItem
-     * @return string
-     */
-  function get_disc_fulltext(AA_Item $CurItem): string {
+  /** show discussion comments in the fulltext mode
+   * @param AA_Item  $CurItem
+   * @return string
+   */
+  private function get_disc_fulltext(AA_Item $CurItem): string {
       $CurItem->setformat( $this->slice_info['d_fulltext']);      // set fulltext format
       $zids           = QueryDiscussionZIDs($this->disc['item_id'], $this->disc['ids']);
       $this->_content = GetDiscussionContent($zids, true, $this->disc['html_format'], $this->clean_url);
@@ -387,12 +386,12 @@ class itemview {
       return $out;
   }
 
-    /** get_disc_add function
-     *  show the form for adding discussion comments
-     * @param AA_Item $CurItem
+    /** show the form for adding discussion comments
+     *
+     * @param AA_Item  $CurItem
      * @return string
      */
-  function get_disc_add(AA_Item $CurItem): string {
+  private function get_disc_add(AA_Item $CurItem): string {
       // if parent_id is set => show discussion comment
       $out = '<a name="disc"></a>';
       if ($this->disc['parent_id']) {
@@ -458,9 +457,8 @@ class itemview {
 
   // ----------------------------------------------------------------------------------
 
-    /** get_output
-     *  view_type used internally for different view types
-     * @param $view_type
+    /**
+     * @param STRING $view_type used internally for different view types
      * @return string
      */
   function get_output($view_type=""): string {
@@ -468,10 +466,10 @@ class itemview {
       $CurItem = new AA_Item("", $this->aliases);   // just prepare
       $CurItem->set_parameters($this->parameters);
       return match ($this->disc['type']) {
-            'thread'   => $this->get_disc_thread($CurItem),
-            'fulltext' => $this->get_disc_fulltext($CurItem),
-            'list'     => $this->get_disc_list($CurItem),
-            default    => $this->get_disc_add($CurItem),
+              'thread'   => $this->get_disc_thread($CurItem),
+              'fulltext' => $this->get_disc_fulltext($CurItem),
+              'list'     => $this->get_disc_list($CurItem),
+              default    => $this->get_disc_add($CurItem),
       };
     }
      // other view_type than discussion
@@ -489,7 +487,7 @@ class itemview {
             $this->group_fld = $grp_al;   // replaces possible ABCDEFGH alias with _#ABCDEFGH
             $this->zids = new zids(explode_ids(StrExp('order', [join('-',$this->zids->short_or_longids()), $this->group_fld, 'locale'])));
         }
-        elseif ((strlen($this->slice_info['group_by2'])==10) AND str_starts_with($this->slice_info['group_by2'], '_#')) {
+        elseif ((strlen($this->slice_info['group_by2'])==10) AND (substr($this->slice_info['group_by2'],0,2)=='_#')) {
             define('SORT_CONST', ['0' => 'locale', '1' => 'rlocale', '4' => 'numeric', '5' => 'rnumeric']);
             $this->zids = new zids(explode_ids(StrExp('order', [join('-',$this->zids->short_or_longids()), $this->slice_info['group_by2'], SORT_CONST[(int)$this->slice_info['g2_direction']]])));
         }
@@ -979,12 +977,12 @@ class itemview {
 //                            end of calendar view
 // ----------------------------------------------------------------------------
 
-  /** idcount function
-   *
-   */
-  function idcount() {
-        return $this->zids->count();
-  }
+      /** idcount function
+       *
+       */
+      function idcount() {
+            return $this->zids->count();
+      }
 
 };   //class itemview
 

@@ -197,7 +197,7 @@ function SetImagesContent(&$content, $d_id, $images, $showimages, $imgtags) {
  * @return mixed
  */
 function GetDiscussionFormat($view_info) {
-    $VIEW_TYPES_INFO = getViewTypesInfo();
+    $view_type_info = getViewTypesInfo('discus');
 
     $format['d_name']       = $view_info['name'];
     $format['d_top']        = $view_info['before'];
@@ -205,7 +205,7 @@ function GetDiscussionFormat($view_info) {
     $format['d_fulltext']   = $view_info['even'];
     $format['d_compact']    = $view_info['odd'];
     $format['d_showimages'] = $view_info['even_odd_differ'];
-    $format['d_order']      = $VIEW_TYPES_INFO['discus']['modification'][$view_info['modification']];
+    $format['d_order']      = $view_type_info['modification'][$view_info['modification']];
     $format['slice_id']     = $view_info['slice_id'];
     $format['d_form']       = $view_info['remove_string'];
     $format['d_spacer']     = ($view_info['aditional']  ?: '<img src="'.AA_INSTAL_PATH.'images/blank.gif" width="20" height="1">');

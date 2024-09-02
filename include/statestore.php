@@ -442,8 +442,8 @@ class AA_Object extends AA_Storable implements AA_iEditable {
         $object_id = $this->getId();
 
         $props = static::getClassProperties();
-        foreach ($props as $property) {
-            $property_id   = $property->getId();
+        foreach ($props as $property_id => $property) {
+            //$property_id   = $property->getId();
             $property->save($this->$property_id, $object_id, $this->getOwnerId());
         }
                         //        id                        name                        type    multi  persist validator, required, help, morehelp, example
@@ -471,8 +471,23 @@ class AA_Object extends AA_Storable implements AA_iEditable {
         return $this->aa_id;
     }
 
+    /** Update just selected properties
+     * @param  array  $prop_names  like ['status', 'status_text']
+     * @throws Exception
+     */
+    public function update(array $prop_names): void
+    {
+        // @todo DB Transaction start
+        static::deleteObjects([$this->getId()], $prop_names);
+        $props = static::getClassProperties();
+        $object_id = $this->getId();
+        foreach ($prop_names as $property_id) {
+            $props[$property_id]?->save($this->$property_id, $object_id, $this->getOwnerId());
+        }
+    }
+
     /** will be called after saving of the object
-     *  could do some clenup work in child classes (like AA_Plannedtask)
+     *  could do some cleanup work in child classes (like AA_Plannedtask)
      **/
     function aftersave() {}
 
@@ -503,16 +518,21 @@ class AA_Object extends AA_Storable implements AA_iEditable {
     }
 
     // array of unpacked ids
-    static public function deleteObjects($object_ids) {
+    static public function deleteObjects($object_ids, array $properties=[]): bool
+    {
         // objects consists from object itself and subobjects
         $subobjects_props = AA_Object::loadProperties($object_ids, 'aa_subobjects');
         foreach ($subobjects_props as $arr) {
            $object_ids = array_merge($object_ids, $arr);
         }
         if (count($object_ids = array_unique($object_ids))) {
-            DB_AA::delete_low_priority('object_text',    [['object_id', $object_ids]]);
-            DB_AA::delete_low_priority('object_integer', [['object_id', $object_ids]]);
-            DB_AA::delete_low_priority('object_float',   [['object_id', $object_ids]]);
+            $cond = [['object_id', $object_ids]];
+            if ($properties) {
+                $cond[] = ['property',$properties];
+            }
+            DB_AA::delete_low_priority('object_text',    $cond);
+            DB_AA::delete_low_priority('object_integer', $cond);
+            DB_AA::delete_low_priority('object_float',   $cond);
         }
         return true;
     }
@@ -679,8 +699,8 @@ class AA_Object extends AA_Storable implements AA_iEditable {
    // */
    //    // @todo !!! - rewrite it.
    //    // do the same as in queryZids for any object
-    static function querySet($type, $set, ?zids $restrict_zids=null) {
-
+    static function querySet($type, $set, ?zids $restrict_zids=null): zids
+    {
         $type = is_array($type) ? $type['class'] : $type;
 
         $owners = $set->getModules();
@@ -827,7 +847,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
         }
 
         // construct query --------------------------
-        $SQL        = "SELECT DISTINCT t0.object_id as objectid $select_distinct FROM ";
+        $SQL = "SELECT DISTINCT t0.object_id as objectid $select_distinct FROM ";
         foreach ($tables as $tbl => $table ) {
             $SQL .= $table['join'] .' ';
         }
@@ -842,9 +862,11 @@ class AA_Object extends AA_Storable implements AA_iEditable {
             }
         }
 
-        if ( count($select_order) ) {                                // order ----------
-            $SQL .= " ORDER BY ". implode(', ', $select_order);
+        if ( !count($select_order) ) {                                // order ----------
+            $select_order[] = 't0.id DESC';                           // default order      );
         }
+        $SQL .= " ORDER BY ". implode(', ', $select_order);
+
         // not cached result
         return GetZidsFromSQL( $SQL, 'objectid', 'l');
     }
@@ -1285,7 +1307,8 @@ class AA_Components {
      * @global bool  $debug =1       - many debug messages
      * @return zids
      */
-    static function querySet($settings, $set) {
+    static function querySet($settings, $set): zids
+    {
         $mask       = $settings['mask'];
         $base_class = $settings['class'];
         $arr        = self::getClassArray($mask, null, false);

@@ -64,4 +64,9 @@ class AddDurationLog extends \AA\Optimize\AbstractOptimize {
         $this->message(_m('Column deleted'));
         return true;
     }
+
+    /** get time from which we measure duration */
+    public function getFromTime() {
+        return DB_AA::select1('time', 'SELECT `time` FROM `hit_archive`', [['duration', 0, '<>']], ['time']);
+    }
 }
