@@ -12,6 +12,7 @@ class Datovka extends AA_Object {
     protected string $state = '';           // state of the sending process - just for logging purposes - 1:started, 20:timeLimitedId received, 30:concept prepared, 80:sent, 900:Wrong server answer , 920:timeLimitedId not received, 930:concept not prepared, 980:concept not sent
                                             // we use bit flags to keep track of the process starting from 16 and continue with 2**n where we use n=4,7,10,14,15 (to have reserve) 15 if for errors, the first bites +1 +2.. used for different errors
     protected string $stateTxt = '';        // description of last state of the sending process - just for logging purposes - 1:started, 20:timeLimitedId received, 30:concept prepared, 80:sent, 900:error, 920:timeLimitedId not received, 930:concept not prepared, 980:concept not sent
+    protected string $stateTime = '';       // time of the last state change
 
     protected string $related_to = '';      // may be ItemId to identify the message
 
@@ -46,6 +47,8 @@ class Datovka extends AA_Object {
         $this->conf                  = $conf;
         $this->return_url            = $return_url;
         $this->state                 = 2**4;  // started  16
+        $this->stateTxt              = 'Start';
+        $this->stateTime             = time();
         $this->related_to            = $related_to;
         $this->attachments           = $attachments;
         $this->dbIDRecipient         = $to;
@@ -66,13 +69,11 @@ class Datovka extends AA_Object {
         $this->dmLegalTitlePoint     = $params['dmLegalTitlePoint'] ?? '';
         $this->dmPersonalDelivery    = $params['dmPersonalDelivery'] ?? false;
         $this->dmAllowSubstDelivery  = $params['dmAllowSubstDelivery'] ?? false;
-        huhl($this, $params);
     }
 
     public static function possiblyRedirectToAa($appToken) {
         $system_id = $appToken % 10000;
         $required_install_url = DATOVKA_CONF['instances'][$system_id]['url'];
-        huhl($system_id, $required_install_url, AA_INSTAL_URL, DATOVKA_CONF['instances'][$system_id]['url'] . 'misc/datovka.php?' . http_build_query($_GET));
         if (AA_INSTAL_URL !== $required_install_url) {
             go_url(DATOVKA_CONF['instances'][$system_id]['url'] . 'misc/datovka/service.php?' . http_build_query($_GET));
         }
@@ -111,7 +112,8 @@ class Datovka extends AA_Object {
                  'conf'                  => new AA_Property('conf', _m("Configuration"), 'string', false, true, '', false, _m('standard|test')),
                  'state'                 => new AA_Property('state', _m("State"), 'int'),
                  'stateTxt'              => new AA_Property('stateTxt', _m("State text"), 'string'),
-                 'related_to '           => new AA_Property('related_to', _m("Related to"), 'string'),
+                 'stateTime'             => new AA_Property('stateTime', _m("State time"), 'int'),
+                 'related_to'            => new AA_Property('related_to', _m("Related to"), 'string', false, true, '', false),
 
                  'dbIDRecipient'         => new AA_Property('dbIDRecipient', _m("Recipient ID"), 'string', false, true, ['text', ['maxlength'=>7]]),                                                                // $recipientId,            required
                  'dmAnnotation'          => new AA_Property('dmAnnotation', _m("Annotation"), 'string', false, true, ['text', ['maxlength'=>255]]),                       // Textová poznámka (Věc, Předmět, Anotace)                                                       | "Testovaci zprava - PHP" - like Subject, max 255
@@ -151,7 +153,7 @@ class Datovka extends AA_Object {
 
         $params = ['sessionId' => $_REQUEST['datovkaSessionId']];
 
-        huhl($wsdl, $options, $params);
+        // huhl($wsdl, $options, $params);
         return $this->soapCall($wsdl, $options, "authConfirmation", $params);
     }
 
@@ -218,7 +220,7 @@ class Datovka extends AA_Object {
         ];
         $MessageCreateInput = $this->buildMessage();
 
-        huhl($MessageCreateInput);
+        // huhl($MessageCreateInput);
 
         return $this->soapCall($wsdl, $options, "SetConcept", $MessageCreateInput);
     }
@@ -230,7 +232,7 @@ class Datovka extends AA_Object {
     protected function soapCall($wsdl, $options, $method, $params) {
         $client = new SoapClient($wsdl, $options);
         $result = $client->__soapCall($method, [$params]);
-        huhl('Result is', $result, 'getLastResponse', $client->__getLastResponse(), 'getLastRequest', $client->__getLastRequest(), 'getLastRequestHeaders', $client->__getLastRequestHeaders());
+        // huhl('Result is', $result, 'getLastResponse', $client->__getLastResponse(), 'getLastRequest', $client->__getLastRequest(), 'getLastRequestHeaders', $client->__getLastRequestHeaders());
         if (!is_object($result)) {
             throw new Exception('No result from '. $method);
         }
@@ -276,19 +278,18 @@ class Datovka extends AA_Object {
      * @throws Exception
      */
     protected function setState(int $state, string $stateTxt=''): void {
-        $this->state    |= $state;  // we add the state to the existing state to keep track, where we were
-        $this->stateTxt = $stateTxt;
-        $this->update(['state', 'stateTxt']);
+        $this->state     |= $state;  // we add the state to the existing state to keep track, where we were
+        $this->stateTxt  = $stateTxt;
+        $this->stateTime = time();
+        $this->update(['state', 'stateTxt', 'stateTime']);
     }
 
     /**
      */
     public function run() {
-        huhl($this);
         try {
             $result = $this->getCredentials();
             $resp   = $this->parseResponseAttributes($result);
-            huhl($result, $resp);
             if ( !is_object($result) OR !$resp ) {
                 $this->setState(2**15, 'Err - Wrong server answer'); // 32768
                 throw new Exception('Wrong server answer');
@@ -318,7 +319,6 @@ class Datovka extends AA_Object {
                 throw new Exception("Not sent: {$resp['conceptStatusMessage']} ({$resp['conceptStatusCode']})"); // the error codes and messages are in different position in response, than in timeLimitedId response
             }
         } catch (Exception $e) {
-            huhl($e, $this);
             go_url($this->return_url, ['ds_id' => $this->datovka_id, 'ds_status' => 'ERR', 'ds_msg'=>$e->getMessage()]);
         }
     }
