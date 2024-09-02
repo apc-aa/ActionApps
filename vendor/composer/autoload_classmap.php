@@ -542,6 +542,8 @@ return array(
     'AA_Stringexpand_Next' => $baseDir . '/include/stringexpand.php',
     'AA_Stringexpand_Nocache' => $baseDir . '/include/stringexpand.php',
     'AA_Stringexpand_Now' => $baseDir . '/include/stringexpand.php',
+    'AA_Stringexpand_Oids' => $baseDir . '/include/stringexpand.php',
+    'AA_Stringexpand_Oitem' => $baseDir . '/include/stringexpand.php',
     'AA_Stringexpand_Options' => $baseDir . '/include/stringexpand.php',
     'AA_Stringexpand_Ord' => $baseDir . '/include/stringexpand.php',
     'AA_Stringexpand_Order' => $baseDir . '/include/stringexpand.php',

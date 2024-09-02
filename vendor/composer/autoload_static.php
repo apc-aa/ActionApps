@@ -630,6 +630,8 @@ class ComposerStaticInit43e15006db6c3041e7b8c7c57cf04d54
         'AA_Stringexpand_Next' => __DIR__ . '/../..' . '/include/stringexpand.php',
         'AA_Stringexpand_Nocache' => __DIR__ . '/../..' . '/include/stringexpand.php',
         'AA_Stringexpand_Now' => __DIR__ . '/../..' . '/include/stringexpand.php',
+        'AA_Stringexpand_Oids' => __DIR__ . '/../..' . '/include/stringexpand.php',
+        'AA_Stringexpand_Oitem' => __DIR__ . '/../..' . '/include/stringexpand.php',
         'AA_Stringexpand_Options' => __DIR__ . '/../..' . '/include/stringexpand.php',
         'AA_Stringexpand_Ord' => __DIR__ . '/../..' . '/include/stringexpand.php',
         'AA_Stringexpand_Order' => __DIR__ . '/../..' . '/include/stringexpand.php',
