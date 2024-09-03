@@ -139,7 +139,16 @@ $hit_lid = null;
 //           If not selected, "AA + all Reader Management slices" option is used.
 $perm_mode  = (string)$module->getProperty('perm_mode');
 if ( ($perm_mode == '1') OR ($perm_mode == '2') ) {
-    $rm_slices = $module->getRelatedSlices('ReaderManagement');
+    $tmp_rm_slices = AA_Module_Site::getRelatedModules([AA::$site_id]);
+    // we need to preserve order!
+    $type_slices  = DB_AA::select('', 'SELECT LOWER(HEX(`id`)) AS unpackid FROM slice', [['id', $tmp_rm_slices, 'l'], ['type', 'ReaderManagement']]);
+    $rm_slices = [];
+    foreach ($tmp_rm_slices as $sl) {
+        if (in_array($sl,$type_slices)) {
+            $rm_slices[] = $sl;
+        }
+    }
+
     if ($perm_mode=='1') {
         $rm_slices = array_slice($rm_slices,0,1);
     }

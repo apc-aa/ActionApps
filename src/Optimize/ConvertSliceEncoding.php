@@ -524,9 +524,7 @@ class ConvertSliceEncoding extends AA\Optimize\AbstractOptimize {
     protected function getRelatedModulesOfType(array $modules, string $type, string $filter_charset=''): array {
         if ($type != 'W') {
             $sites = $this->getRelatedModulesOfType($modules, 'W', $filter_charset);
-            foreach ($sites as $site_id) {
-                $modules += AA_Module_Site::getModule($site_id)->getRelatedSlices();  // slices and polls..
-            }
+            $modules += AA_Module_Site::getRelatedModules([$sites]);  // slices and polls..
         }
         $modules = DB_AA::select('', 'SELECT LOWER(HEX(`id`)) AS unpackid FROM module', [['id', $modules, 'l'], ['type', $type]]);
         $ret = [];

@@ -5168,14 +5168,7 @@ class AA_Stringexpand_Newitem extends AA_Stringexpand_Nevercache {
 
         // the template must be in related slices (to not allow to create item in foreign slice)
         $slices = AA::$slice_id ? [AA::$slice_id] : [];
-        if (AA::$site_id) {
-            $slices = array_merge($slices, AA_Module_Site::getModule(AA::$site_id)->getRelatedSlices());
-        } elseif (AA::$slice_id) {
-            $sites = explode_ids(StrExp('modulefield', [AA::$slice_id, 'site_ids']));
-            foreach($sites as $site) {
-                $slices = array_merge($slices, AA_Module_Site::getModule($site)->getRelatedSlices());
-            }
-        }
+        $slices = array_merge($slices, $this->getRelatedModules());
 
         if (!count($slices)) {
             warn('No related slice found');
@@ -5295,9 +5288,7 @@ class AA_Stringexpand_Updateitem extends AA_Stringexpand_Newitem {
         $item_slice = $item->getSliceId();
         $slices = [];
         if (AA::$site_id) {
-            if ($site = AA_Module_Site::getModule(AA::$site_id)) {
-                $slices = $site->getRelatedSlices();
-            }
+            $slices = AA_Module_Site::getRelatedModules([AA::$site_id]);
         } elseif (AA::$module_id) {  // called inside AA admin interface
             $slices = [AA::$module_id];
         } elseif (AA::$slice_id) {  // called in view
@@ -5343,7 +5334,7 @@ class AA_Stringexpand_Modulefield extends AA_Stringexpand {
             // site_id is older, but better is to use site_ids, since it could return more than one ids (dash separated)
             case 'site_ids':
             case 'site_id':
-                return join('-', (array)GetTable2Array("SELECT source_id FROM relation WHERE destination_id='".q_pack_id($slice_id)."' AND flag='".REL_FLAG_MODULE_DEPEND."'", '', 'unpack:source_id'));
+                return join('-', AA_Module_Site::belongsToSites($slice_id));
             case 'charset':
                 return ($m = AA_Module::getModule($slice_id)) ? $m->getCharset() : '';
         }
@@ -5366,7 +5357,7 @@ class AA_Stringexpand_Site extends AA_Stringexpand {
      */
     function expand($site_ids='', $property='') {
         if ($property == 'modules' AND ($site_ids_arr = explode_ids($site_ids))) {
-            return join('-' , AA_Module::filterActive(DB_AA::select('', 'SELECT LOWER(HEX(`destination_id`)) AS unpackid FROM relation', [['source_id', $site_ids_arr, 'l'], ['flag', REL_FLAG_MODULE_DEPEND, 'i']])));
+            return join('-' , AA_Module_Site::getRelatedModules($site_ids_arr));
         }
         return '';
     }
@@ -7332,7 +7323,7 @@ class AA_Stringexpand {
             if (is_object($this->item)) {
                 $slices = explode_ids(AA::Un("{unique:{slice_id........}-{site:{modulefield:{slice_id........}:site_ids}:modules}}", '', $this->item));
             } elseif (AA::$site_id) {
-                $slices = AA_Module_Site::getModule(AA::$site_id)->getRelatedSlices();
+                $slices = AA_Module_Site::getRelatedModules([AA::$site_id], true);
             } elseif (AA::$slice_id) {
                 $slices = explode_ids(AA::Un("{unique:".AA::$slice_id."-{site:{modulefield:".AA::$slice_id.":site_ids}:modules}}"));
             }
@@ -9601,7 +9592,7 @@ class AA_Stringexpand_Datovka extends AA_Stringexpand_Nevercache {
         $params = json2asoc($params);
         $ret_url = $ret_url ?: shtml_url(); // if not defined, use current page
         // huhl($params);
-        $datovka = new Datovka($conf, $to, $annotation, $attachments, $params, $ret_url, AA::$site_id ?: AA::$module_id, $related_to);
+        $datovka = new Datovka($conf, $to, $annotation, $attachments, $params, $ret_url, AA::$module_id ?: AA::$site_id, $related_to);
         $datovka->save();
         $datovka->startWithLogin();
         return ''; // this should be reached

@@ -834,16 +834,10 @@ class AA_Module_Site extends AA_Module {
     const SETTING_CLASS = 'AA_Modulesettings_Site';
     const SETTING_TABLE = 'site';
 
-
     const FLAG_DISABLE   = 1;   // deactivated spot
     const FLAG_JUST_TEXT = 2;   // not used - planed for site speedup
     // (= flag means "don't stringexpand text)"
     const FLAG_COLLAPSE  = 4;   // (visualy) Collapsed spot
-
-
-    protected $_related_slices = null;
-    protected $_related_views  = null;
-
 
     /** get current site id
      *  @return string|false site_id
@@ -979,44 +973,36 @@ class AA_Module_Site extends AA_Module {
         if ($this->_getSpecificTableProperty('flag') == 1) {    // 1 - Use AA_Router_Seo
             // home can contain some logic like: {ifin:{server:SERVER_NAME}:czechweb.cz:/cz/home:/en/home}
             $home       = AA::Un(trim($this->_getSpecificTableProperty('state_file'))) ?: '/' .substr($this->_getModuleTableProperty('lang_file'),0,2). '/';
-            return AA_Router::singleton('AA_Router_Seo', $this->getRelatedSlices(), $home, $this->_getModuleObjectProperty('web_languages'));
+            return AA_Router::singleton('AA_Router_Seo', AA_Module_Site::getRelatedModules([$this->module_id]), $home, $this->_getModuleObjectProperty('web_languages'));
         }
         return null;
     }
 
-    /**
-     * @param string $slice_type - filter just this SLICE! type
-     * @return array - slices and polls
+    /** Get all active related modules to the sites
+     * @param array $sites_ids
+     * @param bool  $myself     - report also ids of the searched sites
+     * @return array
      */
-    function getRelatedSlices($slice_type=''): array {
-        if (is_null($this->_related_slices)) {
-            // could be rewritten to form:  DB_AA::select(array('unpackid'=>'name'), 'SELECT LOWER(HEX(`id`)) AS unpackid, `name` FROM `slice_owner` ORDER BY `name`');
-            $this->_related_slices = AA_Module::filterActive(DB_AA::select('', 'SELECT LOWER(HEX(`destination_id`)) AS unpackid FROM relation', [['source_id', $this->module_id, 'l'], ['flag', REL_FLAG_MODULE_DEPEND, 'i']]));
+    static function getRelatedModules(array $sites_ids, bool $myself=false): array {
+        // chached version
+        $rels = AA::Contentcache()->get_result(['AA\IO\DB\DB_AA','select'], ['', 'SELECT LOWER(HEX(`destination_id`)) AS unpackid FROM relation', [['source_id', $sites_ids, 'l'], ['flag', REL_FLAG_MODULE_DEPEND, 'i']]]);
+        if ($myself) {
+            $rels = array_merge($rels, $sites_ids);
         }
-        if ($slice_type) {
-            // we need to preserve order!
-            $type_slices  = DB_AA::select('', 'SELECT LOWER(HEX(`id`)) AS unpackid FROM slice', [['id', $this->_related_slices, 'l'], ['type', $slice_type]]);
-            $ret = [];
-            foreach ($this->_related_slices as $sl) {
-                if (in_array($sl,$type_slices)) {
-                    $ret[] = $sl;
-                }
-            }
-            return $ret;
-        }
-        return $this->_related_slices;
+        return AA_Module::filterActive($rels);
     }
 
     /** translate view name to view id within all slices of current sitemodule
-     * @param string $vid
-     * @return int - 0 if not found
+     *
+     * @param  string  $vid
+     * @param          $module_id
+     *
+     * @return int - view id or 0 if not found
      */
-    function findViewId($vid) {
-        if (is_null($this->_related_views)) {
-            // get translation table name -> id within all slices of curent sitemodule. Must be ordered by id, in order we return the same id even if the same view name is used
-            $this->_related_views = DB_AA::select(['field3'=>'id'], 'SELECT id, field3 FROM view', [['slice_id', $this->getRelatedSlices(), 'l'], ['field3', '', 'FILLED']], 'id');
-        }
-        return $this->_related_views[$vid] ?: 0;
+    static function findViewId($vid, $module_id): int {
+        // get translation table name -> id within all slices of curent sitemodule. Must be ordered by id, in order we return the same id even if the same view name is used
+        $views = AA::Contentcache()->get_result(['AA\IO\DB\DB_AA','select'], [['field3'=>'id'], 'SELECT id, field3 FROM view', [['slice_id', AA_Module_Site::getRelatedModules([$module_id]), 'l'], ['field3', '', 'FILLED']], 'id']);
+        return (int)$views[$vid] ?: 0;
     }
 
     /** AA_Module_Site::_deleteModules() function - called automatically form AA_Module::deleteModules()

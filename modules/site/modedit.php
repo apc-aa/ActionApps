@@ -286,7 +286,7 @@ $apage->printHead($err, $Msg);
     }
 
     //    $uses_modules = GetTable2Array("SELECT source_id, destination_id FROM relation WHERE source_id='".q_pack_id($module_id)."' AND flag='".REL_FLAG_MODULE_DEPEND."'", "", 'unpack:destination_id');
-    $uses_modules = $module->getRelatedSlices();
+    $uses_modules = AA_Module_Site::getRelatedModules([$module_id]);
     FrmTwoBox('uses_modules[]', _m('Uses slices') , $slice_selection, $uses_modules, 8, false, '', '', "Select all slices which you are using for the site. It is used for caching as well as for seo string search.");
     if ($module_id) {
         FrmStaticText(_m("Additional setting"), AA_Module_Site::getModuleObjectForm($module_id), '', '', false);

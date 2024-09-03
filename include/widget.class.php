@@ -116,7 +116,7 @@ class AA_Property extends AA_Storable {
      *
      * @param string $id
      * @param $name
-     * @param string $type text | int | bool | float | readonly | <class_name>
+     * @param string $type string|text | int | bool | float | readonly | <class_name>
      * @param bool $multi
      * @param bool $persistent
      * @param mixed $validator <object> | text | bool | int | float | email | alpha | long_id | short_id | alias | filename | login | password | unique | e_unique | url | all | enum |
