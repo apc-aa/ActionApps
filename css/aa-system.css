@@ -1,4 +1,4 @@
-/* AA styles from widgets and other components
+    /* AA styles from widgets and other components
  * Dynamicaly loaded if these css rules are not already loaded in the page
  * You can redefine these default by loadidng other css, which will use
  * div#aa-bottom-toolbar {position: fixed;...}  - we use it as test
@@ -43,38 +43,43 @@ div[contenteditable] {
     background-color: #6E1F2C;
     border-color: #5C1823;
 }
+.aa-ok, .aa-err, .aa-info {
+    padding: 8px 15px;
+    margin: 5px 0;
+    font-size: small;
+    border: solid 1px hsl(0deg 0% 35.29% / 51%);
+}
 #aa-message-box {
-    width: 100%;
+    width: 500px !important;
     text-align: center;
     position: fixed;
-    top: 0;
+    top: calc(30vh - 50px);
+    left: calc(50% - 250px);
     z-index: 100;
-    height: 100%;
+    padding: 25px;
+    box-shadow: 0 0 20px hsl(0deg 0% 0% / 45.1%);
+    border: solid 1px hsl(0deg 0% 35.29% / 51%);
 }
-#aa-message-box > div:first-child {
+#aa-message-box:after {
+    content: "";
     display: block;
-    min-width: 20%;
-    max-width: 100%;
-    position: fixed;
-    margin: 5% 28%;
-    box-shadow: 0 0 20px #000;
-    border: solid 1px #5A5A5A;
-    padding: 20px;
-    text-align: left;
-    background: #FFF url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACIAAAAQCAYAAABz9a1kAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAM5JREFUeNrs1TEKhDAQBdCfkEukSKW3iaXgLQRrW+8iRFDJfUQ7b5FdRkih6G6xO6zF/jKkeGT+ENE0zQMfpK5rgS9E4ia5HyRJElRVBWPM5WW6U5YltNZ8kGma4L1HnuenGEJYa9F1HdZ15R3NFYYQWZaxIU47csREhHOODUFRZ4eEGccRRVEghIC2bVkRL7dGSrkhhBBQSv1mfeM46CX6vr8sMCskTdNdJ+Z53sbEjZFHBK3osZiEGYaBFSPfIWKWZWHFiP+nd1fIU4ABALc6ay3UQADkAAAAAElFTkSuQmCC) no-repeat scroll right 7px;
-    max-height: 77%;
-    overflow: auto;
+    width: 16px;
+    height: 16px;
+    position: absolute;
+    right:10px;
+    top:10px;
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACIAAAAQCAYAAABz9a1kAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAM5JREFUeNrs1TEKhDAQBdCfkEukSKW3iaXgLQRrW+8iRFDJfUQ7b5FdRkih6G6xO6zF/jKkeGT+ENE0zQMfpK5rgS9E4ia5HyRJElRVBWPM5WW6U5YltNZ8kGma4L1HnuenGEJYa9F1HdZ15R3NFYYQWZaxIU47csREhHOODUFRZ4eEGccRRVEghIC2bVkRL7dGSrkhhBBQSv1mfeM46CX6vr8sMCskTdNdJ+Z53sbEjZFHBK3osZiEGYaBFSPfIWKWZWHFiP+nd1fIU4ABALc6ay3UQADkAAAAAElFTkSuQmCC);
 }
-#aa-message-box > div:first-child:hover {
+#aa-message-box:hover:after {
     background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACIAAAAQCAYAAABz9a1kAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAANZJREFUeNpivKOn+5+BAqB88RIjAxUAE8MgAYPPIVzW1gwKBw4ycBga4lQMUiO/ew8Du5YW7Rzy7ehRhlfVVQwS/ROwOgbkCNGGRoYX+XkMP69do23U4HIMyBFiTc00cwTWNILuGJgjnufm0MwRIMCCTRDkmJeVFQySU6YyMPz9y/AsI52mjsCbaxiZmMCOYGBkZGBkZx+Y7AuLDlBIvCgrxZmAaeoQLls7lDTx/fhxcDTR2jFMGI5oaMBImGDH0DhkmAg5Au6YU6do6hjG0UpvsDoEIMAAyBtp37K8KBkAAAAASUVORK5CYII=);
 }
-#aa-message-box.aa-err > div:first-child {
+.aa-err {
     background-color: #FFE0DB;
 }
-#aa-message-box.aa-info > div:first-child {
+.aa-info {
     background-color: #FFF9BA;
 }
-#aa-message-box.aa-ok > div:first-child {
+.aa-ok {
     background-color: #E2FAC4;
 }
 /*multi chbox*/
@@ -595,55 +600,92 @@ i.ico.aa-tool-edit:hover {
     margin: 3px 5px 3px 0;
     max-width: 99%;
 }
-.aa-rim i.ico {
+.aa-rim i.ico, .icogroup i.ico {
     font-style: normal;
-    margin: 3px 5px;
+    margin: 0 2px;
     color: #ffffff;
     background: #545350;
     display: inline-block;
-    line-height: 16px;
-    padding: 5px 12px;
+    padding: 2.8px 6.6px 2.2px;
+    min-height: 23px;
     cursor: pointer;
     text-align: center;
-    font-size: 0.75rem;
+    font-size: 12px;
+    vertical-align: middle;
+    line-height: 18px;
+    box-sizing: border-box;
 }
-.aa-rim i.ico:hover {
-    background: rgb(0, 0, 0);
+i.ico.move {
+    background: rgb(0 0 0 / 16%);
 }
-.aa-rim .icogroup {
+i.ico.move:after {
+    content: '\2237';
+    display: inline-block;
+    padding-right: 2px;
+    padding-left: 1px;
+    color: black;
+}
+.icogroup {
     display: flex;
-    padding: 5px 0;
+    padding: 5px 3px;
+}
+.icogroup .icons i.ico {
+    margin-right: 0;
+}
+.icogroup i.ico:before {
+    content: none;
+}
+.icogroup i.ico:hover, .icons i.ico:hover {
+    background-color: black;
+}
+.icogroup i.ico.delete:hover {
+    background-color: #e00303;
+}
+i.ico.move:hover {
+    background: rgb(0 0 0 / 31%);
 }
 .aa-rim .icons {
     flex: 1;
     text-align: right;
+    margin-right: -7px;
 }
-.aa-rim .icogroup i.ico, .aa-rim .icons i.ico {
-	padding: 5px 6px;
-	line-height: 1.1;
+.aa-widget .icogroup {
+	text-align: right;
+	border-left: 0;
+	border-right-width: 1px;
+	padding-right: 2px;
+	padding-left: 20px;
 }
-.aa-rim .icons i.ico {
-    margin-right: 0;
+.aa-iso-list {
+	display:table;
+	border-collapse: collapse;
 }
-.aa-rim .icogroup i.ico.delete {
-    font-style: normal;
-    font-weight: bold;
-    border-radius: 50%;
-    padding: 0;
-    width: 25px;
-    height: 25px;
-    text-align: center;
-    font-size: 12px;
-    line-height: 25px;
-    margin: 2px 5px 0 0;
+.aa-iso-item, .aa-rim .item {
+	background-color: rgb(0 0 0 / 2%);
 }
-.aa-rim i.ico:before {
-    content: none;
+.aa-iso-item{
+	display:table-row;
 }
-.aa-rim i.ico.delete:hover {
-    background-color: #e00303;
+.aa-iso-item > div {
+	display:table-cell;
+	border: 1px solid transparent;
+	border-top-color: rgba(0, 0, 0, 0.21);
+	border-bottom-color: rgba(0, 0, 0, 0.21);
+	border-right-width: 0;
+	padding: 4px 7px;
 }
-.aa-rim .itemselect .delete, .aa-rim .itemgroup .select { display:none; }
+.aa-iso-item > div:first-child {
+	border-left-color: rgba(0, 0, 0, 0.21);
+}
+.aa-iso-item > div:last-child {
+	border-right-color: rgba(0, 0, 0, 0.21);
+}
+.aa-rim footer i.ico {
+    padding: 4px 12px;
+    font-size: 13px;
+    margin: 5px 5px 0 0;
+}
+.aa-rim .itemselect .delete, .aa-rim .itemgroup .select { display:none; } /* asi sem nepatri */
 /*flex*/
 .aa-rim.flex .itemgroup {
     display: flex;
@@ -769,11 +811,12 @@ i.ico.aa-tool-edit:hover {
 /* ala table */
 .aa-group-tbl {
     display: flex;
-    align-items: baseline;
 }
 .aa-group-tbl .aa-field {
+    margin-bottom: 0;
     margin-right: 10px;
     padding-right: 10px;
+    padding-bottom: 6px;
     border-right: 1px solid rgba(0, 0, 0, 0.21);
 }
 .aa-group-tbl .aa-field:last-child {
@@ -781,29 +824,42 @@ i.ico.aa-tool-edit:hover {
 }
 /* real table */
 .aa-rim .itemgroup:has(.aa-field-tbl) {
-    display: table;
+
     border-spacing: 0;
     border-right: 1px solid rgba(0, 0, 0, 0.21);
     border-top: 1px solid rgba(0, 0, 0, 0.21);
 }
 .itemgroup:has(.aa-field-tbl) article.item {
-    display: table-row-group;
+    display: table;
     margin: 0;
     position: relative;
+    border-spacing: 0;
+    border-width: 0;
+    width: 100%;
 }
 .itemgroup:has(.aa-field-tbl) .item > .iteminfo {
-    display: table-row;
+    display:table-row-group;
 }
 .itemgroup:has(.aa-field-tbl) .aa-field-tbl {
+    display: table-row;
+    margin: 0;
+    padding: 5px;
+    border-left: 1px solid rgba(0, 0, 0, 0.21);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.21);
+}
+.itemgroup:has(.aa-field-tbl) .aa-field-tbl .aa-field {
     display: table-cell;
     margin: 0;
     padding: 5px;
     border-left: 1px solid rgba(0, 0, 0, 0.21);
     border-bottom: 1px solid rgba(0, 0, 0, 0.21);
 }
+.itemgroup:has(.aa-field-tbl) .aa-field-tbl .aa-field:last-child {
+    padding-right: 30px;
+}
 .itemgroup:has(.aa-field-tbl) .icogroup {
     position: absolute;
-    right: -27px;
+    right: 0px;
     top: -4px;
 }
 /* ajax*/
@@ -812,9 +868,6 @@ i.ico.aa-tool-edit:hover {
 }
 .aa-group-tbl.aa-group-ajax .aa-field {
     padding-right: 5px;
-}
-.aa-field .ajax_value > br:first-child {
-    display: none;
 }
 /* toggle */
 .aa-group-toggle .togglelink {
