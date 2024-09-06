@@ -220,14 +220,10 @@ class AA_Debug {
     }
 
     function tracestart($func, $text='') {
-        $txt = AA::$debug&128 ? $text : substr($text,0,200);
-        if (AA::$debug&256) {
-            $txt .= "\n<br>".AA_Log::backtrack();
-        }
         if ($func=='Query') {
             $this->_check_repeated($text);
         }
-        $this->_calls[]      = [count($this->_tracestack), $func, DB_AA::$_instances_no.' '.$txt, strlen($text),microtime(true)];
+        $this->_calls[]      = [count($this->_tracestack), $func, $this->shorten_message($text), strlen($text),microtime(true)];
         $this->_tracestack[] = count($this->_calls)-1;
     }
 
@@ -244,7 +240,7 @@ class AA_Debug {
 
     function tracepoint($func, $text='') {
         $text = IsStringable($text) ? (string)$text : print_r($text, true);
-        $this->_calls[]      = [count($this->_tracestack), $func, DB_AA::$_instances_no.' '.substr($text,0,200), strlen($text),microtime(true), microtime(true),'',0];
+        $this->_calls[]      = [count($this->_tracestack), $func, $this->shorten_message($text), strlen($text),microtime(true), microtime(true),'',0];
     }
 
     function basic_stat(): string {
@@ -324,7 +320,10 @@ class AA_Debug {
         $global_dur   = $global_end - $global_start;
 
         // get max of $this->_calls[0][1] (level)
-        $max_level = max(array_column($this->_calls, 0)) ?: 1;
+        $max_level = 1;
+        if ($this->_calls) {
+            $max_level = max(array_column($this->_calls, 0)) ?: 1;
+        }
 
         foreach($this->_calls as $key => $call) {
             $tr_style = 'position: relative;';
@@ -340,7 +339,7 @@ class AA_Debug {
             $dur = sprintf("%.4f", 1000*$dur);
             $expand = ($next_level>$level) ? '<button type=button onclick="AA_DbgToggleRows(this)">'.($level>0 ? '-':'+').'</button>' : '';
             $linediv = "<div class=aa-line style=\"left: $rel_start%; width: $rel_dur%; background-color: $color\"></div>";
-            $ret .= "<tr title=\"{$func} ($dur)\" class=l".str_repeat('_', $level). $style."><td class=num>{$linediv}{$time}</tdnum><td class=num>$dur</td><td class=aa-dbgtoggle>$func{$expand}</td><td>".safe($call[2]).( ($call[3]>200 AND !AA::$debug&128) ? '..+'.($call[3]-200) :'' ).'</td><td>'.safe($call[6]).($call[7]>20? '..+'.($call[7]-20) :'' ).'</td></tr>';
+            $ret .= "<tr title=\"{$func} ($dur)\" class=l".str_repeat('_', $level). $style."><td class=num>{$linediv}{$time}</td><td class=num>$dur</td><td class=aa-dbgtoggle>$func{$expand}</td><td>".safe($call[2]).( ($call[3]>200 AND !AA::$debug&128) ? '..+'.($call[3]-200) :'' ).'</td><td>'.safe($call[6]).($call[7]>20? '..+'.($call[7]-20) :'' ).'</td></tr>';
         }
         $ret .= '</table>';
 
@@ -363,6 +362,19 @@ EOF;
         $ret .= StrExp('sortable');
 
         return $ret;
+    }
+
+    /** internal function to shorten log messages for debug output based on AA::$debug level */
+    protected function shorten_message(string $txt): string
+    {
+        if (!(AA::$debug & 128)) {
+            $txt = substr($txt, 0, 200);
+        }
+        if (AA::$debug&256) {
+            $txt .= "\n<br>".AA_Log::backtrack();
+            $txt .= "\n<br>DBs ".DB_AA::$_instances_no;
+        }
+        return $txt;
     }
 
     function _check_repeated($txt) {

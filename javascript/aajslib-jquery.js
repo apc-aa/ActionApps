@@ -127,6 +127,7 @@ function AA_HtmlToggleCss(link_id, link_text_1, link_text_2, selector) {
     }
 }
 
+/** like AA_Ajax('send_#SITEM_ID', '/apc-aa/view.php?vid=70&cmd[70]=x-70-{id..............}&nocache=3', '', function() { $('#notice_#SITEM_ID').text('emails sent&#58;');} ); */
 function AA_Ajax(div_id, url, param, onload) {
     AA_AjaxCss(jqid(div_id), url, param, onload);
 }

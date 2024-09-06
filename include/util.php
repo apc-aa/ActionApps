@@ -71,7 +71,7 @@ function htmltag($tag, $content, $attr=[]): string {
  * @usage xmltag('name',John,['sex'=>'M'])
  */
 function xmltag($tag, $content, $attr=[]): string {
-    return "<$tag". array_reduce( array_keys($attr), function ($str, $key) use ($attr) { return $str . ' ' . $key . '="' . safexml($attr[$key]) . '"'; }).'>'. safexml($content)."</$tag>";
+    return "<$tag". array_reduce( array_keys($attr), fn($str, $key) => $str . ' ' . $key . '="' . safexml($attr[$key]) . '"').'>'. safexml($content)."</$tag>";
 }
 
 /** expand_return_url function

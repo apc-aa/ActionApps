@@ -6116,7 +6116,7 @@ class AA_Unalias_Callback {
         // if ( preg_match('/^([a-zA-Z_0-9]+):?([^}]*)$/', $out, $parts) ) {
         // the longest php function name in whole PHP is 38 chars - test 40 should be enough
         $initiallen = strspn(strtolower(aa_substr($out,0,40)), 'abcdefghijklmnopqrstuvwxyz0123456789_');
-        if ( $outcmd   = aa_substr($out,0,$initiallen) ) {
+        if ( $outcmd   = aa_substr($out,0,$initiallen) AND (($initiallen === strlen($out)) OR ($out[$initiallen] === ':') ) ) {
             $outparam = aa_substr($out,$initiallen+1);  // skip one more char - delimiter
 
             /** @var class-string<AA_Stringexpand> $class_name */
