@@ -626,7 +626,7 @@ class AA_Field_Slicedef extends AA_Field {
         $this->data['text_stored'] = (int)$data->get_alias_subst('_#FLD_STOR', 1) ? 1 : 0;
 
         $this->aliases = new AA_Aliases;
-        $field_aliases = array_filter($data->getAliasNames(), function ($name) { return (str_starts_with($name, '_#FLD_AN')); });   // $filtered_array = array_filter($array, function ($element) use ($my_value) { return ($element != $my_value); } );
+        $field_aliases = array_filter($data->getAliasNames(), fn($name) => str_starts_with($name, '_#FLD_AN'));   // $filtered_array = array_filter($array, function ($element) use ($my_value) { return ($element != $my_value); } );
         foreach ($field_aliases as $al) {
             if (IsAlias($als = '_#' . $data->get_alias_subst($al, ''))) {
                 $this->aliases->addAlias(new AA_Alias($data->get_alias_subst($als), 'f_t:' . $data->get_alias_subst(str_replace('_#FLD_AN', '_#FLD_AV', $al)), $fid));

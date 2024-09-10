@@ -353,9 +353,7 @@ class AA_Module {
         $all_modules = AA_Module::getModules($module_type, true);
         $user_id =  AuthGetUid();
 
-        return array_filter($all_modules, function ($mid) use ($user_id) {
-            return CheckPerms($user_id, 'slice', $mid, PS_EDIT_SELF_ITEMS);
-        }, ARRAY_FILTER_USE_KEY);
+        return array_filter($all_modules, fn($mid) => CheckPerms($user_id, 'slice', $mid, PS_EDIT_SELF_ITEMS), ARRAY_FILTER_USE_KEY);
     }
 
     /**

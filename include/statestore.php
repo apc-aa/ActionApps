@@ -1135,9 +1135,7 @@ class AA_Components {
             }
         } else {
             $mask_length = strlen($mask);
-            $right_class_names = array_filter(get_declared_classes(), function ($classname) use ($mask_length, $mask) {
-                return substr($classname, 0, $mask_length) == $mask;
-            });
+            $right_class_names = array_filter(get_declared_classes(), fn($classname) => substr($classname, 0, $mask_length) == $mask);
             $right_classes = [];
             foreach ($right_class_names as $classname) {
                 $shortcut = substr($classname, $mask_length);

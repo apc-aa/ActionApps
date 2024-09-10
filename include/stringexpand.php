@@ -4448,14 +4448,14 @@ class AA_Stringexpand_If extends AA_Stringexpand_Nevercachenotrim {
     function expand(...$arg_list) {
         $etalon   = AA_Stringexpand::clearFloat(array_shift($arg_list));
         $cmp      = match (array_shift($arg_list)) {
-            '=',  '==',       'eq'       => function ($a, $b) { return $a == $b; },  // typehints doesn't work for float in php 5.6
-                                                                                     // function(float $a, float $b) { return $a == $b; };  break;
-            '>',  'gt',       '&gt;'     => function ($a, $b) { return $a > $b; },
-            '<',  'lt',       '&lt;'     => function ($a, $b) { return $a < $b; },
-            '>=', '&gt;=',    'ge'       => function ($a, $b) { return $a >= $b; },
-            '<=', '&lt;=',    'le'       => function ($a, $b) { return $a <= $b; },
-            '<>', '&lt;&gt;', 'ne', '!=' => function ($a, $b) { return $a <> $b; },
-            default                      => function ($a, $b) { return false; },
+            '=',  '==',       'eq'       => fn($a, $b) => $a == $b,  // typehints doesn't work for float in php 5.6
+                                                                     // function(float $a, float $b) { return $a == $b; };  break;
+            '>',  'gt',       '&gt;'     => fn($a, $b) => $a > $b,
+            '<',  'lt',       '&lt;'     => fn($a, $b) => $a < $b,
+            '>=', '&gt;=',    'ge'       => fn($a, $b) => $a >= $b,
+            '<=', '&lt;=',    'le'       => fn($a, $b) => $a <= $b,
+            '<>', '&lt;&gt;', 'ne', '!=' => fn($a, $b) => $a <> $b,
+            default                      => fn($a, $b) => false,
         };
         $ret      = false;
         $i        = 0;
@@ -4470,7 +4470,7 @@ class AA_Stringexpand_If extends AA_Stringexpand_Nevercachenotrim {
             // else text
             $ret = $arg_list[$i] ?? '';
         }
-        // _#2 is not very useful but we have it from the times the function was just for one option
+        // _#2 is not very useful, but we have it from the times the function was just for one option
         return str_replace(['_#1','_#2'], [PhpFloat($etalon), $arg_list[0]], $ret);
     }
 
@@ -4747,9 +4747,7 @@ class AA_Stringexpand_Field extends AA_Stringexpand {
             case 'valuetable':
                 if ($w = $field->getWidget() AND is_array($arr = $w->getFormattedOptions())) {
                     // generate html table key -> value
-                    return array_reduce(array_keys($arr), function ($html, $key) use ($arr) {
-                            return $html . "<tr><td>" . htmlspecialchars($key) . "</td><td>" . htmlspecialchars($arr[$key]) . "</td></tr>";
-                        }, '');
+                    return array_reduce(array_keys($arr), fn($html, $key) => $html . "<tr><td>" . htmlspecialchars($key) . "</td><td>" . htmlspecialchars($arr[$key]) . "</td></tr>", '');
                 }
                 return '';
         }

@@ -116,7 +116,7 @@ $actions->addAction(new  AA\Manageraction\View_Move2slice(   'Move2slice', AA::$
 
 $VIEW_TYPES = getViewTypes();
 
-$view_types_ifeq = array_reduce( array_keys($VIEW_TYPES), function ($str, $key) use ($VIEW_TYPES) { return "$str:$key:".str_replace(':','#:',$VIEW_TYPES[$key]['name']); });
+$view_types_ifeq = array_reduce( array_keys($VIEW_TYPES), fn($str, $key) => "$str:$key:".str_replace(':','#:', $VIEW_TYPES[$key]['name']));
 
 $managed = AA::Metabase()->getManagerConf('view', $actions);
 $managed->setColumns([]); // reset columns - use format strings bellow

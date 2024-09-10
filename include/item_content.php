@@ -572,9 +572,7 @@ class AA_Content implements Iterator, ArrayAccess, Countable {
      *  Removes all fields, which do not have value
      */
     function removeEmptyFields() {
-        $this->content = array_filter($this->content, function ($fid) {
-            return array_filter(array_map('trim', $this->getValuesArray($fid)), 'strlen');
-        }, ARRAY_FILTER_USE_KEY);
+        $this->content = array_filter($this->content, fn($fid) => array_filter(array_map('trim', $this->getValuesArray($fid)), 'strlen'), ARRAY_FILTER_USE_KEY);
     }
 
     /** Just helper function for storing data from database to AA_Content

@@ -182,7 +182,7 @@ class inputform {
             // if we edit dynamic slice setting fields, we do not need such buttons
             if (!$slice_fields) {
                 $fields = $slice->getFields($slice_fields);
-                if (!array_find_fnc($fields, function ($f) { return $f->disable_insert_as_new(); })) {
+                if (!array_find_fnc($fields, fn($f) => $f->disable_insert_as_new())) {
                     $buttons += inputform::_getButton('insert_new', 'submit', _m("Insert as new"), $profile->getProperty('ui_inputform', 'edit_btn_insert'));
                 }
                 if (strlen($profile->getProperty('ui_inputform', 'edit_btn_reset')) > 0) {

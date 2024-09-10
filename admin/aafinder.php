@@ -598,10 +598,7 @@ if ( strlen($go_search) OR strlen($go_replace) ) {
 
         echo '<table>';
         foreach ($table2search as $tbl => $tblinfo) {
-            $fields = array_keys(array_filter($metabase->getSearchArray($tbl), function ($col) {
-                return ($col['operators'] == 'text');
-            }));
-
+            $fields = array_keys(array_filter($metabase->getSearchArray($tbl), fn($col) => ($col['operators'] == 'text')));
             $fields = array_diff($fields, array_merge(AA_Metabase::getPacked($tbl), [AA_Metabase::getModuleField($tbl)]));
 
             // huhl($metabase->getSearchArray($tbl),AA_Metabase::getPacked($tbl),AA_Metabase::getModuleField($tbl), );

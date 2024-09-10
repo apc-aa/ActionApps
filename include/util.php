@@ -57,7 +57,7 @@ function a_href($url, $label='', array $attr=[]): string {
 }
 
 function htmlattr(array $attr) {
-    return array_reduce( array_keys($attr), function ($str, $key) use ($attr) { return $str . (strlen($attr[$key]) ? ' ' . $key . '="' . safe($attr[$key]) . '"' : ''); });
+    return array_reduce( array_keys($attr), fn($str, $key) => $str . (strlen($attr[$key]) ? ' ' . $key . '="' . safe($attr[$key]) . '"' : ''));
 }
 
 /** creates html tag with attributes
