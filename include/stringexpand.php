@@ -1351,7 +1351,7 @@ class AA_Stringexpand_Lazy extends AA_Stringexpand_Nevercache { // do not cache 
         $uniqid = gensalt(8); // gensalt is shorter than mt_rand(100000000,999999999);  // mt_rand is quicker than uniqid()
 
         if ($mode == 'nolazy') {
-            return  "<div class=aa-lazydiv-nolazy id=lazy_$uniqid data-aa-url=\"$url\">". StrExp('include',[$url]) ."</div>\n";   // ajax for the same parameters as lazy variant
+            return  "<div class=aa-lazydiv-nolazy id=lazy_$uniqid data-aa-url=\"$url\">". StrExp('include',[$url,'ajax']) ."</div>\n";   // ajax for the same parameters as lazy variant
         }
 
         $ret = "<div class=".(($mode == 'now') ? 'aa-lazydiv-now' : 'aa-lazydiv' ). " id=lazy_$uniqid data-aa-url=\"$url\">";
@@ -6113,8 +6113,10 @@ class AA_Unalias_Callback {
         // OK - it's not a known fixed string, look in various places for the whole string
         // if ( preg_match('/^([a-zA-Z_0-9]+):?([^}]*)$/', $out, $parts) ) {
         // the longest php function name in whole PHP is 38 chars - test 40 should be enough
+
         $initiallen = strspn(strtolower(aa_substr($out,0,40)), 'abcdefghijklmnopqrstuvwxyz0123456789_');
-        if ( $outcmd   = aa_substr($out,0,$initiallen) AND (($initiallen === strlen($out)) OR ($out[$initiallen] === ':') ) ) {
+        if ( $outcmd   = aa_substr($out,0,$initiallen) AND (($initiallen === strlen($out)) OR ($out[$initiallen] === ':')  OR ($out[$initiallen] === '(') ) ) {
+        // if ( $outcmd   = aa_substr($out,0,$initiallen) ) {   // older - it also runs {math on {Math.parse(...
             $outparam = aa_substr($out,$initiallen+1);  // skip one more char - delimiter
 
             /** @var class-string<AA_Stringexpand> $class_name */
