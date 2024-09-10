@@ -366,11 +366,11 @@ class Widget extends AA_Object implements NamedInterface {
     public function getInMatrix(array $records, $ncols, $move_right, $class = ''): string {
 
         $ncols = (int)$ncols;
+        $class = $class ? "class=\"$class\"" : '';
         if (!$ncols) {
-            return implode('', $records);
+            return "<div $class>".implode('', $records)."</div>";
         }
         $nrows = ceil(count($records) / $ncols);
-        $class = $class ? "class=\"$class\"" : '';
         $ret = "<table $class>";
         for ($irow = 0; $irow < $nrows; ++$irow) {
             $ret .= '<tr>';
@@ -840,6 +840,9 @@ class Widget extends AA_Object implements NamedInterface {
                     break;
                 case 'multi_shape':
                     $ret[$pid] = new AA_Property($pid, _m("Multiple shapes"), 'bool', false, true, 'bool', false, _m("Allow multiple shapes at time"), '', "0");
+                    break;
+                case 'other_option':
+                    $ret[$pid] = new AA_Property($pid, _m("Text option for Other"), 'bool', false, true, 'bool', false, _m("Last option is considered as \"Other\" with the possibility to write text value"), '', "0");
                     break;
             }
         }
