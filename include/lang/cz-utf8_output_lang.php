@@ -16,6 +16,15 @@ setlocale(LC_NUMERIC, 'en_US');            // use numeric with dot - there is pr
                                            //   $cmp  = create_function('$b', "return ($etalon $operator". ' $b);');
                                            // float!! value $etalon is then with comma which leads to syntax error
 
+$_m["Search"]
+ = "Vyhledat";
+
+$_m["Load from address"]
+ = "Načíst z pole adresy";
+
+ $_m["Use"]
+ = "Použít";
+
 $_m["new"]
  = "nový";
 
