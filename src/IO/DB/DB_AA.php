@@ -142,17 +142,22 @@ class DB_AA extends AbstractDB
      *                   DB_AA::select(['id'=>[]], 'SELECT id,other FROM `change`');       -> [[id1=>[id=>id1,other=>other1]], [id2=>[id=>id2,other=>other2]], ...]
      *                   DB_AA::select(['id'=>['other']], 'SELECT id,other FROM `change`');  -> [[id1=>[other=>other1]], [id2=>[other=>other2]], ...]
      *                   DB_AA::select('', 'SELECT source_id FROM relation', [['destination_id', $item_id, 'l'], ['flag', REL_FLAG_FEED, 'i']]);
-     * @param        $column
-     * @param        $query
-     * @param null   $where
-     * @param null   $order
+     *
+     * @param              $column
+     * @param              $query
+     * @param  null        $where
+     * @param  null        $order
+     * @param  array|null  $group
+     * @param  int         $rows
+     *
      * @return array
      */
-    static function select($column, $query, $where = null, $order = null, ?array $group = null): array {
+    static function select($column, $query, $where = null, $order = null, ?array $group = null, int $rows=0): array {
         $db = getDB();
         $query .= is_array($where) ? ' ' . DB_AA::makeWhere($where) : '';
         $query .= is_array($order) ? ' ' . DB_AA::makeOrder($order) : '';
         $query .= $group           ? ' ' . DB_AA::makeGroup($group) : '';
+        $query .= ($rows>0)        ? ' LIMIT 0,'.$rows              : '';
 
         $db->query($query);
 

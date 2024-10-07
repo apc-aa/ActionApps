@@ -36,6 +36,7 @@
 
 use AA\IO\DB\DB_AA;
 use AA\Util\Langs;
+use AA\Util\Txt;
 use AA\Widget\Widget;
 
 require_once __DIR__ . "/zids.php"; // Pack and unpack ids
@@ -71,10 +72,10 @@ class AA_Module {
      * @param bool $link
      * @return string
      */
-    static public function getModuleName($module_id, bool $link=false): string {
+    static public function getModuleName($module_id, bool $link=false, ?string $page=null, array $params=[]): string {
         $module = static::getModule($module_id);
         if ($module) {
-            return $link ? a_href(static::getModuleUrl($module_id),$module->getName()) : $module->getName();
+            return $link ? a_href(static::getModuleUrl($module_id, $page, $params), $module->getName()) : $module->getName();
         }
         return '';
     }
@@ -83,8 +84,8 @@ class AA_Module {
      * @param $module_id
      * @return string
      */
-    static public function getModuleUrl($module_id) {
-        return get_aa_url(AA_Module::getModuleInfo('url',$module_id),['change_id'=>$module_id]);
+    static public function getModuleUrl($module_id, ?string $page=null, array $params=[]): string {
+        return get_aa_url($page ?? AA_Module::getModuleInfo('url',$module_id), array_merge(['change_id'=>$module_id], $params));
     }
 
     /** get module - called as:
@@ -294,8 +295,7 @@ class AA_Module {
     }
 
     function getName(): string {
-        $name = (string)$this->_getModuleTableProperty('name');
-        return $this->deleted() ? (Langs::isUTF() ? "××× $name ×××" : "xxx $name xxx")  : $name;
+        return Txt::decoratedName((string)$this->_getModuleTableProperty('name'), $this->deleted());
     }
 
     /** Checks, if the module_id is OK and the slice is not deleted */
@@ -650,8 +650,7 @@ class AA_Slice extends AA_Module {
         return $this->dynamic_setting;
     }
 
-    /** getUploadBase function
-     *  Get the base for the file uploads
+    /** Get the base for the file uploads
      */
     function getUploadBase() {
         $ret = [];
@@ -669,9 +668,7 @@ class AA_Slice extends AA_Module {
         return $ret;
     }
 
-    /** getUrlFromPath function
-     *  Try to transform file path to file url - based on setting of file
-     *  uploads or filemanager
+    /** Try to transform file path to file url - based on setting of file uploads or filemanager
      * @param $filename
      * @return string
      */

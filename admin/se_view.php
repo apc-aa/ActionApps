@@ -91,7 +91,7 @@ try {
 
     $filters = InputVars::arrayPOST('filters'); // ['new0' => ['description' => 'test', 'conds' => 'test'],...]
 
-    // $new_templ = InputVars::boolGET('new_templ');  // no longer used
+    $new_templ = InputVars::boolGET('new_templ');
     $view_view = InputVars::intGET('view_view'); // -
 
     $cancel = InputVars::boolPOST('cancel');
@@ -287,7 +287,8 @@ $view_id = (int) $_REQUEST['view_id'];  // sanitize
 if ($view_id) {
     $view      = AA_Views::getViewNumeric($view_id);
     $view_type = $view->f('type');
-} 
+}
+
 
 $back_url = ( (($view_type == 'categories') OR ($view_type == 'links')) ?
                 get_aa_url('modules/links/modedit.php') :
@@ -312,7 +313,6 @@ if (!IfSlPerm(PS_FULLTEXT)) {
 $err = [];          // error array (Init - just for initializing variable
 $varset      = new Cvarset();
 $p_slice_id  = q_pack_id(AA::$module_id);
-
 
 $VIEW_FIELDS      = getViewFields();
 $view_field_names = getViewTypes()[$view_type];
@@ -393,7 +393,7 @@ if ( !$update ) {  // set variables from database
     if ( $view_id ) {
         // edit specified view data
         $vw_data = DB_AA::select1('', 'SELECT * FROM view', [['id', $view_id, 'i']]);
-    } elseif ($view_view) {
+    } elseif ($new_templ AND $view_view) {
         // new view from template
         $vw_data = DB_AA::select1('', 'SELECT * FROM view', [['id', $view_view, 'i']]);
     } elseif ( $view_type == 'inputform') {
@@ -472,10 +472,9 @@ $slice = AA_Slice::getModule(AA::$module_id);
 $headcode = <<<'EOT'
 <script>
     function InitPage() {
-      [].forEach.call(document.querySelectorAll('tr.cont-even_row_format'), function(e) { e.style.display=(document.f['even_odd_differ'].checked ? 'table-row' : 'none'); });
+      [].forEach.call(document.querySelectorAll('tr.cont-even_row_format'), (e) => { e.style.display=(document.f['even_odd_differ'].checked ? 'table-row' : 'none'); });
        
       EnableClick('even_odd_differ','even')
-      EnableClick('category_sort','category_format')
     }
     function EnableClick(cond,what) {
       document.f[what].disabled = !(document.f[cond].checked);
@@ -631,5 +630,9 @@ $apage->addHelpbox(_m('To include view in your sitemodule webpage use'), '<pre>
      </pre>
      <a href="https://documentation.actionapps.org/en/Syntax#.7Bview.7D_-_Including_Views">'._m('See documentation').'</a>');
 //$apage->printHelpbox();
+
+if ($tab = AA_Log::getLogTable('VIEW', $view_id, IsSuperadmin())) {
+    $apage->addHelpbox(_m('Last from log'), $tab);
+}
 
 $apage->printFoot();

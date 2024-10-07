@@ -29,6 +29,7 @@
 
 use AA\IO\DB\DB_AA;
 use AA\Util\Langs;
+use AA\Util\Txt;
 
 /** Classes for manipulating views,
  * viewobj has static info about views, not anything dependent on parameters
@@ -43,7 +44,7 @@ use AA\Util\Langs;
  */
 
 class AA_View {
-    protected $id;
+    protected int $id;
     protected $fields; // Array of fields
 
     /** Translate sort codes from views to slice
@@ -76,7 +77,7 @@ class AA_View {
 
     /** Checks, if view exists and the slice is not deleted */
     function isValid() {
-        return $this->load() AND !$this->f('deleted');
+        return $this->load() AND !$this->f('deleted') AND !$this->isDisabled();
     }
 
     /** f function
@@ -105,44 +106,52 @@ class AA_View {
     }
 
     /**
-     * @return string - number or name ID of the view
+     * @return int - number ID of the view
      */
-    function getId() {
+    function getId(): int
+    {
         return $this->id;
     }
 
-    /** getLang function
-     *  Returns lang code ('cz', 'en', 'en-utf8', 'de',...)
+    /** @return string lang code ('cz', 'en', 'en-utf8', 'de',...)
      */
-    function getLang()     {
+    function getLang(): string
+    {
         return Langs::getLang($this->f('lang_file'));
     }
 
-    /** jumpLink function
-     *  Generates link to view edit
+    function isDisabled(): bool {
+        return $this->f('flag') & VIEW_FLAG_DISABLE;
+    }
+
+    function doLog(): bool {
+        return $this->f('flag') & VIEW_FLAG_LOG;
+    }
+
+    /** Generates link to view edit
      * @param $name
-     * @return string
      */
-    function jumpLink($name = null) {
-        return "<a href=\"".$this->jumpUrl(). "\">".($name ?: $this->id)."</a>";
+    function jumpLink(bool $name=false): string
+    {
+        $id =  $this->id;
+        if ($this->f('field3')) {
+            $id .= " ({$this->f('field3')})";
+        }
+        if ($name AND $this->f('name')) {
+            $id .= " - {$this->f('name')}";
+        }
+        return a_href($this->jumpUrl(), Txt::decoratedName($id, !$this->isValid()));
     }
 
-    /** jumpUrl function
-     *  Returns Url of view edit
+    /** @returns string Url of view edit
      */
-    function jumpUrl() {
-        return get_admin_url("se_view.php?change_id=".unpack_id($this->f('slice_id')). "&view_id=". $this->id);
+    function jumpUrl(): string
+    {
+        return get_admin_url('se_view.php', ['change_id' => $this->getSliceId(), 'view_id' => $this->id]);
     }
 
-    /** setfields function
-     * @param $rec
-     */
-    function setfields($rec) {
-        $this->fields = $rec;
-    }
 
-    /** setBannerParam function
-     *  sets ['banners']
+    /** Sets ['banners']
      * @param $banner_param
      */
     function setBannerParam($banner_param) {
@@ -412,12 +421,12 @@ class AA_View {
         return $ret;
     }
 
-    /** ParseViewParameters function
-     *  Converts a query string into a data view_params data structure
+    /** Converts a query string into a data view_params data structure
      * @param $query_string
      * @return array
      */
-    public static function parseViewParameters($query_string = "") {
+    public static function parseViewParameters($query_string = ""): array
+    {
         if ($use_globals = (!$query_string or !preg_match("/vid=[a-z]/", $query_string))) {
             // old behavior - we do not want to use global dependency with {view.php} but we did not remove it in times when we wrote {view.php..}{ alias, so we are removing it at least for new "named views"
             global $cmd, $set, $vid, $als;

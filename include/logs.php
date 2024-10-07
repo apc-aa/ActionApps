@@ -125,6 +125,7 @@ class AA_Log implements \AA\Expand\InternalExpandInterface {
            // 'M_FLDI_VLD'
            // LOGIN
            // PWD_REHASH
+           // VIEW
         ];
         return !in_array($event_type, $DO_NOT_LOG);
     }
@@ -137,26 +138,68 @@ class AA_Log implements \AA\Expand\InternalExpandInterface {
         return join("\n", $ret);
     }
 
-    static function context(?string $selector=null) {
-        if (is_null($selector)) {
-            ParamImplode([AA::$module_id,'',str_replace(':','_',$_SERVER['REMOTE_ADDR']), ($_SERVER['HTTPS'] ? '' : 'http/'). "{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}"]);
-        }
-        // we need to be searchabe by selector - so in DB index
+    static function context(?string $selector=null): string
+    {
+        // There was bug - no return - so the last line was used always. We left it this was right now (maybe it is better for compatibility, but could be changed - HM 2024-10-03)
+        // if (is_null($selector)) {
+        //     ParamImplode([AA::$module_id,'',str_replace(':','_',$_SERVER['REMOTE_ADDR']), ($_SERVER['HTTPS'] ? '' : 'http/'). "{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}"]);
+        // }
+
+        // we need to be searchable by selector - so in DB index
         return ParamImplode([$selector, AA::$module_id,str_replace(':','_',$_SERVER['REMOTE_ADDR']), ($_SERVER['HTTPS'] ? '' : 'http/'). "{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}"]);
     }
 
-    /** getLastLogEvents function
-     *  Get events from log
+    static public function getAdminUrl(string $event, string $selector = ""): string {
+        return get_admin_url("aa_log.php?srchbr_akce=1&srchbr_field%5B0%5D=selector&srchbr_oper%5B0%5D=%3D&srchbr_value%5B0%5D=$selector&srchbr_field%5B1%5D=type&srchbr_oper%5B1%5D=%3D&srchbr_value%5B1%5D=$event&srchbr_order%5B0%5D=time&srchbr_order_dir%5B0%5D=on");
+    }
+
+    /** Get events from log
      * @param        $event - type of event
      * @param string $selector
      * @return array
      */
     static public function getLastLogEvents($event, $selector = "") {
-        $conds = [['type',$event, (!str_contains($event, '%')) ? '=' : 'LIKE']];
+        $conds = [['type', $event, (!str_contains($event, '%')) ? '=' : 'LIKE']];
         if ($selector != "") {
-            $conds[] = ['selector',$selector];
+            $conds[] = ['selector', $selector];
         }
         return DB_AA::select1('', 'SELECT * FROM log', $conds, ['id-']);
+    }
+
+    /** Get first 20 rows from log table with possible link to Log page */
+    static public function getLogTable($event, $selector = "", bool $show_log_link = false): string {
+        $conds = [['type', $event, (!str_contains($event, '%')) ? '=' : 'LIKE']];
+        if ($selector != "") {
+            $conds[] = ['selector', $selector];
+        }
+        $tab = DB_AA::select([], 'SELECT * FROM log', $conds, ['id-'], null, 20);
+        if (!$tab) {
+            return '';
+        }
+        $tab       = self::extendTable($tab);
+        $link_div  = $show_log_link ? '<div>'. a_href(AA_Log::getAdminUrl($event, $selector), _m('Log'), ['class' => 'aa-button-show']) . '</div>' : '';
+
+        return GetHtmlTable($tab, 'key'). $link_div;
+    }
+
+    /** parse Params row and extract columns based on AA_Logentry structure */
+    static protected function extendTable(array $tab): array
+    {
+        foreach ($tab as $k => $v) {
+            $logEntry = AA_Logentry::factoryByString($v['params']);
+            if ($logEntry) {
+                $props = $logEntry::getClassProperties();
+                if ($props) {
+                    unset($tab[$k]['params']);
+                    foreach ($props as $prop) {
+                        // if column already exists, add _ to the name
+                        $col = (array_key_exists($prop->id, $tab[$k]) ? '_' : '') . $prop->id;
+                        $tab[$k][$col] = $logEntry->{$prop->id};
+                    }
+                }
+            }
+        }
+        return $tab;
     }
 
     /** Internal aliases for Admin interface
@@ -241,3 +284,13 @@ class AA_Logentry_H extends AA_Logentry {
     }
 }
 
+/** Hitcounter entry
+ */
+class AA_Logentry_W extends AA_Logentry {
+    public static function getClassProperties(): array {
+        return [
+            'time'         => new AA_Property('time',         _m('Time [s]'), 'string'),
+            'uri'          => new AA_Property('uri',          _m('Url'), 'string'),
+        ];
+    }
+}

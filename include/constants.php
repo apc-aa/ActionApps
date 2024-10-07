@@ -478,8 +478,8 @@ const REL_FLAG_SOURCE        = 4;  // item is derived from other item ({newitem 
 
 /** view table flags */
 const VIEW_FLAG_COMMENTS = 1;    // display HTML comments before and after the view
-const VIEW_FLAG_LOG      = 2;    // write every use to database
-const VIEW_FLAG_DISABLE  = 4;    // view is disabled - no content showed
+const VIEW_FLAG_DISABLE  = 2;    // view is disabled - no content showed
+const VIEW_FLAG_LOG      = 4;    // write every use to database
 
 
 /** inputFeedModes function
@@ -555,9 +555,9 @@ function getViewFields() {
     $VIEW_FIELDS["cond3cond"]       = GetViewFieldDef("text", "text", "none");
     $VIEW_FIELDS["listlen"]         = GetViewFieldDef("number", "text", "field");
     //$VIEW_FIELDS["flag"]            = GetViewFieldDef("", "bool", "chbox");
-    $VIEW_FIELDS["flag0"]            = GetViewFieldDef("", "bool",   "bitflag" );
-    $VIEW_FIELDS["flag1"]            = GetViewFieldDef("", "bool",   "bitflag" );
-    $VIEW_FIELDS["flag2"]            = GetViewFieldDef("", "bool",   "bitflag" );
+    $VIEW_FIELDS["flag0"]            = GetViewFieldDef("", "bool",   "bitflag" ); // Add view ID as HTML comment / Allow HTML tags in the comments
+    $VIEW_FIELDS["flag1"]            = GetViewFieldDef("", "bool",   "bitflag" ); // Disabled view
+    $VIEW_FIELDS["flag2"]            = GetViewFieldDef("", "bool",   "bitflag" ); // Log view usage
     $VIEW_FIELDS["flag3"]            = GetViewFieldDef("", "bool",   "bitflag" ); // not used
     $VIEW_FIELDS["flag4"]            = GetViewFieldDef("", "bool",   "bitflag" ); // not used
     $VIEW_FIELDS["flag5"]            = GetViewFieldDef("", "bool",   "bitflag" ); // not used
@@ -616,6 +616,14 @@ function getViewTypes() {
         "label" => _m("vid"),
         "help"  => _m("now possible to use non numeric vid - like: photo_list and usage as {view:photo_list:...} or ..?vid=photo_list... Use only smallcaps - [a-z_]."),
     ];
+
+    $common = [
+        "flag1" => _m("Disabled view"),
+        "flag2" => [
+                     "label" => _m("Log view usage"),
+                     "help"  => _m("Be careful with this. It really logs avery view use! Good for debugging and checking, if disabled view is not used anymore..."),
+              ]];
+
     return [
         'list' => [
             "field3"          => $field3def,
@@ -664,10 +672,8 @@ function getViewTypes() {
                 "help"  => _m("use {#} if you do not want print anything"),
             ],
             "flag0"            => _m("Add view ID as HTML comment"),
-            "flag1"            => _m("Disabled view"),
-            "flag2"            => _m("Log view usage"),
-            //                     "aditional" => _m("Additional") );
-        ],
+                //                     "aditional" => _m("Additional") );
+        ] + $common,
 
         'full' => [
             "field3"        => $field3def,
@@ -687,9 +693,7 @@ function getViewTypes() {
             "cond3cond"     => " ",
             "noitem_msg"    => _m("HTML code for \"No item found\" message"),
             "flag0"         => _m("Add view ID as HTML comment"),
-            "flag1"         => _m("Disabled view"),
-            "flag2"         => _m("Log view usage"),
-        ],
+        ] + $common,
 
         'discus'    => [
             "field3"          => $field3def,
@@ -715,9 +719,7 @@ function getViewTypes() {
                 "help"  => _m("Number of e-mail template used for posting new comments to users"),
             ],
             "flag0"            => _m("Allow HTML tags in the comments"),  // different meaning than in other views (historical reasons)
-            "flag1"            => _m("Disabled view"),
-            "flag2"            => _m("Log view usage"),
-        ],
+        ] + $common,
 
         // discussion to mail
         'disc2mail' => [
@@ -779,9 +781,7 @@ function getViewTypes() {
             "noitem_msg"      => _m("HTML code for \"No item found\" message"),
             "even_odd_differ" => _m("Use different HTML code for even rows"),
             "flag0"           => _m("Add view ID as HTML comment"),
-            "flag1"           => _m("Disabled view"),
-            "flag2"           => _m("Log view usage"),
-        ],
+        ] + $common,
 
 
         'rss' => [
@@ -812,9 +812,7 @@ function getViewTypes() {
             'name'   => _m("Static page"),
             "odd"    => _m("HTML code"),
             "flag0"  => _m("Add view ID as HTML comment"),
-            "flag1"  => _m("Disabled view"),
-            "flag2"  => _m("Log view usage"),
-        ],
+        ] + $common,
 
         // for javascript list of items
         'javascript' => [
@@ -838,9 +836,7 @@ function getViewTypes() {
             "cond3cond"    => " ",
             "listlen"      => _m("Listing length"),
             "noitem_msg"   => _m("HTML code for \"No item found\" message"),
-            "flag1"        => _m("Disabled view"),
-            "flag2"        => _m("Log view usage"),
-        ],
+        ] + $common,
 
         'calendar' => [
             "field3"          => $field3def,
@@ -874,9 +870,7 @@ function getViewTypes() {
             "listlen"         => _m("Listing length"),
             "noitem_msg"      => _m("HTML code for \"No item found\" message"),
             "flag0"           => _m("Add view ID as HTML comment"),
-            "flag1"           => _m("Disabled view"),
-            "flag2"           => _m("Log view usage"),
-        ],
+        ] + $common,
 
         // this view uses also "aditonal" and "aditional3" for the "Group by"
         // radio buttons and for the sort[] box, see se_view.php
@@ -910,9 +904,7 @@ function getViewTypes() {
             "listlen"                 => _m("Max number of items"),
             "noitem_msg"              => _m("HTML code for \"No item found\" message"),
             "flag0"                   => _m("Add view ID as HTML comment"),
-            "flag1"                   => _m("Disabled view"),
-            "flag2"                   => _m("Log view usage"),
-        ],
+        ] + $common,
 
         // View used for listing of ursl - mainly for listing items for index
         // servers (HtDig, MnogoSearch, ...)
@@ -942,9 +934,7 @@ function getViewTypes() {
             "listlen"       => _m("Listing length"),
             "noitem_msg"    => _m("HTML code for \"No item found\" message"),
             "flag0"         => _m("Add view ID as HTML comment"),
-            "flag1"         => _m("Disabled view"),
-            "flag2"         => _m("Log view usage"),
-        ],
+        ] + $common,
 
         // View used in Links module - displays set of link
         'links'      => [
@@ -978,9 +968,7 @@ function getViewTypes() {
             "listlen"         => _m("Listing length"),
             "noitem_msg"      => _m("HTML code for \"No item found\" message"),
             "flag0"           => _m("Add view ID as HTML comment"),
-            "flag1"           => _m("Disabled view"),
-            "flag2"           => _m("Log view usage"),
-        ],
+        ] + $common,
 
         // View used in Links module - displays set of categories
         'categories' => [
@@ -1014,9 +1002,8 @@ function getViewTypes() {
             "listlen"         => _m("Listing length"),
             "noitem_msg"      => _m("HTML code for \"No item found\" message"),
             "flag0"           => _m("Add view ID as HTML comment"),
-            "flag1"           => _m("Disabled view"),
-            "flag2"           => _m("Log view usage"),
-        ],
+        ] + $common,
+
         // View used for creating input forms
         'inputform'  => [
             "field3"          => $field3def,
@@ -1028,9 +1015,7 @@ function getViewTypes() {
             "remove_string"   => _m("Remove strings"),
             //                       "after" => _m("Bottom HTML") ,
             "flag0"           => _m("Add view ID as HTML comment"),
-            "flag1"           => _m("Disabled view"),
-            "flag2"           => _m("Log view usage"),
-        ],
+        ] + $common,
     ];
 }
 

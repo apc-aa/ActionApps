@@ -605,7 +605,8 @@ function explode_ids($ids_string): array {
  * @param $param
  * @return array
  */
-function ParamExplode($param) {
+function ParamExplode($param): array
+{
     // replace all "#:" and <http>"://" with dummy string,
     // convert separators to ##Sx
     // change "#:" to ":" and change back "://" - then split by separation string
@@ -646,7 +647,7 @@ function xpack_id($id) {
     return is_long_id($id) ? "0x$id" : '0';
 }
 
-/** unpack_id
+/**
  * @param $packed_id
  * @return string unpacked md5 id
  */
@@ -654,7 +655,7 @@ function unpack_id($packed_id=''): string {
     return ((string)$packed_id != '0') ? bin2hex($packed_id) : '0';
 }
 
-/** function to double backslashes and apostrophes
+/** double backslashes and apostrophes
  * @param $str
  * @return string
  */

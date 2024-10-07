@@ -135,12 +135,16 @@ class AA_Perm_Resource {
 }
 
 /**  Check, if specified $perm is in $perms list
+ *
  * @param $perms
  * @param $perm
- * @return bool|string
+ *
+ * @return bool
  */
-function IsPerm($perms, $perm){
-    return ( !$perms || !$perm ) ? false : strstr($perms,$perm);
+function IsPerm($perms, $perm): bool
+{
+    return $perms AND $perm AND str_contains($perms, $perm);
+    // return ( !$perms || !$perm ) ? false : strstr($perms,$perm);  // older
 }
 
 /** CheckPerms function
@@ -149,24 +153,20 @@ function IsPerm($perms, $perm){
  * @param $objType
  * @param $objID
  * @param $perm
- * @return bool|string
+ * @return bool
  */
-function CheckPerms( $user_id, $objType, $objID, $perm) {
+function CheckPerms( $user_id, $objType, $objID, $perm): bool
+{
     global $permission_uid, $permission_to;
     if (!$permission_to OR ($permission_uid != $user_id)) {
         AA::$perm->cache($user_id);
     }
 
-    switch($objType) {
-        case "aa":
-            $ret = IsPerm($permission_to["aa"][$objID], $perm);
-            return $ret;
-        case "slice":
-            // huhl($objID, $permission_to["slice"][$objID], $permission_to["aa"][AA_ID], AA_Perm::joinSliceAndAAPerm($permission_to["slice"][$objID], $permission_to["aa"][AA_ID]), $perm);
-            $ret = IsPerm(AA_Perm::joinSliceAndAAPerm($permission_to["slice"][$objID], $permission_to["aa"][AA_ID]), $perm);
-            return $ret;
-        default: return false;
-    }
+    return match ($objType) {
+        "aa"    => IsPerm($permission_to["aa"][$objID], $perm),
+        "slice" => IsPerm(AA_Perm::joinSliceAndAAPerm($permission_to["slice"][$objID], $permission_to["aa"][AA_ID]), $perm),
+        default => false,
+    };
 }
 
 /** get array of slices the user have permission to
@@ -190,24 +190,26 @@ function GetUserSlices(string $perm='') {
 
 /** IfSlPerm function
  *  shortcut for slice permission checking
+ *
  * @param $perm
- * @param $slice
- * @return bool|string
+ * @param $slice_id
+ *
  */
-function IfSlPerm($perm, $slice=null) {
-    return CheckPerms( AuthGetUid(), "slice", $slice ?? AA::$module_id, $perm);
+function IfSlPerm($perm, $slice_id=null): bool
+{
+    return CheckPerms( AuthGetUid(), "slice", $slice_id ?? AA::$module_id, $perm);
 }
 
-/** IsSuperadmin function
+/**
  *  Checks if logged user is superadmin
  */
-function IsSuperadmin() {
+function IsSuperadmin(): bool {
     global $r_superuser, $permission_uid, $permission_to;
     // check all superadmin's global permissions
     if (!$permission_to OR ($permission_uid != AuthGetUid())) {
         AA::$perm->cache(AuthGetUid());
     }
-    return $r_superuser[AA_ID] ?: false;
+    return (bool)$r_superuser[AA_ID] ?: false;
 }
 
 /** IsCatPerm function
@@ -220,7 +222,8 @@ function IsSuperadmin() {
  * @param $cat_path
  * @return bool true if the user has specific $perm for $category
  */
-function IsCatPerm($perm, $cat_path) {
+function IsCatPerm($perm, $cat_path): bool
+{
     global $permission_uid, $permission_to;
 
     //    if (IsPerm( PS_LINKS_COMMON_PERMS, $perm )) // check perms granted to anybody

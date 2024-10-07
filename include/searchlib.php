@@ -389,11 +389,11 @@ class AA_Sortorder extends AA_Object {
 
     function getField() { return $this->field; }
 
-    function getDirection() { return $this->desc; }
+    function getDesc() { return $this->desc ? '-' : ''; }
 
     function getLimit() { return $this->limit; }
 
-    function getAsString() { return ($f = $this->getField()) ? $this->getLimit() . $f . $this->getDirection() : ''; }
+    function getAsString() { return ($f = $this->getField()) ? $this->getLimit() . $f . $this->getDesc() : ''; }
 }
 
 class AA_Set extends AA_Object {

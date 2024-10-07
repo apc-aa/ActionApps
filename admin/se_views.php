@@ -142,7 +142,7 @@ $managed->settings['itemview']['format']['odd_row_format'] = '
                                         <td>
                                           <a href="se_view.php?module_id=_#SLICE_ID&view_id=_#ID______" class="aa-button-edit">' . _m('Edit') .'</a>
                                           <a href="'.AA_INSTAL_URL.'view.php?vid=_#ID______" class="aa-button-show" title="'. _m("show this view") .'">'. _m('Show') .'</a>
-                                          <a href="se_view.php?module_id=_#SLICE_ID&view_view=_#ID______" class="aa-button-new" title="'._m('Create new view from this one').'">' . _m('New') .'</a>
+                                          <a href="se_view.php?module_id=_#SLICE_ID&view_view=_#ID______&new_templ=1&view_type=_#TYPE____" class="aa-button-new" title="'._m('Create new view from this one').'">' . _m('New') .'</a>
                                           <a href="javascript:;" class="aa-button-delete" onclick="if (confirm(\''._m("Are you sure you want to delete selected view?").'\')) {window.location=\'./se_views.php?module_id=_#SLICE_ID&vid=_#ID______&del=1\';}">'. _m("Delete") . '</a>
                                         </td>
                                     </tr>';                      // <td>_#OBJECT__</td><td>_#EXECUTE_</td>

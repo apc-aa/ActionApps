@@ -2092,7 +2092,7 @@ class AA_Stringexpand_Substr extends AA_Stringexpand_Nevercachenotrim {
 /** Allows you to get only the part of ids (first, last, ...) from the list
  *    {limit:<ids>:<offset>[:<length>[:<delimiter>]]}
  *    {limit:12324-353443-533443:0:1}   // returns 12324
- *    {limit:{ids:6353428288a923:d-category........-=-Dodo}:0:1}
+ *    {limit:{ids:6353428288a923:d-category........-==-Dodo}:0:1}
  *  offset and length parameters follows the array_slice() PHP function
  *  @see http://php.net/array_slice
  */
@@ -2194,7 +2194,7 @@ class AA_Stringexpand_Sort extends AA_Stringexpand_Nevercachenotrim {
 /** Next item for the current item in the list
  *    {next:<ids>:<current_id>}
  *    {next:12324-353443-58921:353443}   // returns 58921
- *    {next:{ids:6353428288a923:d-category........-=-Dodo}:566a655e7787b564b8b6565b}
+ *    {next:{ids:6353428288a923:d-category........-==-Dodo}:566a655e7787b564b8b6565b}
  */
 class AA_Stringexpand_Next extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
@@ -2962,10 +2962,10 @@ class AA_Stringexpand_Convert2chars extends AA_Stringexpand_Nevercache {
 // }
 /** Usage:
  *    {view:57::page-{xpage}}
- *    {view:57:{ids:0497ac46076bf257d15f3e030170da92:d-category........-=-Env}}
+ *    {view:57:{ids:0497ac46076bf257d15f3e030170da92:d-category........-==-Env}}
  *    {view:45::group_by-}   // switches off grouping in the view
- *    {view:45:{ids:0497ac46076bf257d15f3e030170da92:d-category........-=-Env}:sort-} or
- *    {view:45:{ids:0497ac46076bf257d15f3e030170da92:d-category........-=-Env}:sort-AAnoSORT}  // switches off view sorting - the items stays in the same order as ids
+ *    {view:45:{ids:0497ac46076bf257d15f3e030170da92:d-category........-==-Env}:sort-} or
+ *    {view:45:{ids:0497ac46076bf257d15f3e030170da92:d-category........-==          -Env}:sort-AAnoSORT}  // switches off view sorting - the items stays in the same order as ids
  *    {view:45::listlen-3,sort-headline........-,from-2}}
  */
 class AA_Stringexpand_View extends AA_Stringexpand {
@@ -3732,7 +3732,7 @@ class AA_Stringexpand_Backlinks extends AA_Stringexpand {
         if ($item) {
             $slice_ids = $slice_ids ?: '{site:{modulefield:{slice_id........}:site_ids}:modules}';
             $sort      = $sort      ? (($sort == '-') ? '': $sort) : 'slice_id........,publish_date....-';
-            return AA::Un("{ids:$slice_ids:d-all_fields-=-{id..............}:$sort}", '', $item);
+            return AA::Un("{ids:$slice_ids:d-all_fields-==-{id..............}:$sort}", '', $item);
         }
 
         return '';
@@ -3842,7 +3842,7 @@ class AA_Stringexpand_Sortid extends AA_Stringexpand_Nevercache {
  *  {treestring:2a4352366262227383484784635362ab:relation.......1:1}
  *  {treestring:2a4352366262227383484784635362ab:relation.......1:1:sort[0][headline........]=a&sort[1][publish_date....]=d}
  *  {treestring:2a4352366262227383484784635362ab:relation.......1:1:headline........:35615a6d5fdfeb23d36d1c94be3cd9b4}
- *  <nav><ul>{itree:{treestring:{ids:b485d20843c0afe29d3e9ce773195635:d-relation........-ISNULL-1-switch.........1-=-0:number..........}::1:number..........}:<li id="menu-_#SEO_____">_#MENULINK<ul>:<li id="menu-_#SEO_____">_#MENULINK</li>::</ul></li>}</ul></nav>
+ *  <nav><ul>{itree:{treestring:{ids:b485d20843c0afe29d3e9ce773195635:d-relation........-ISNULL-1-switch.........1-==-0:number..........}::1:number..........}:<li id="menu-_#SEO_____">_#MENULINK<ul>:<li id="menu-_#SEO_____">_#MENULINK</li>::</ul></li>}</ul></nav>
  */
 class AA_Stringexpand_Treestring extends AA_Stringexpand {
     /** expand function
@@ -4611,7 +4611,7 @@ class AA_Stringexpand_Iftype extends AA_Stringexpand_Nevercache {
 }
 
 
-/** Takes unlimited number of parameters and joins the unempty ones into one
+/** Takes unlimited number of parameters and joins the non-empty ones into one
  *  string using first parameter as delimiter
  *  Example: {join:, :{_#YEAR____}:{_#SIZE____}:{_#SOURCE___}}
  */
@@ -4625,7 +4625,7 @@ class AA_Stringexpand_Join extends AA_Stringexpand_Nevercachenotrim {
      */
     function expand(...$arg_list) {
         $delimiter = array_shift($arg_list);
-        $ret       = array_filter($arg_list, function($str) {return strlen(trim($str))>0;});
+        $ret       = array_filter($arg_list, fn($str) => strlen(trim($str))>0 );
         return ($delimiter=='json') ? json_encode($ret) : join($delimiter, $ret);
     }
 }
@@ -8818,6 +8818,9 @@ class AA_Stringexpand_Array extends AA_Stringexpand_Nevercachenotrim {
      */
     function expand($id='', $cmd='', $par1=null, $par2=null, $par3=null) {
         static $arrays = [];
+        if (!strlen($id)) {
+            return '';
+        }
         if (!isset($arrays[$id])) {
             $arrays[$id] = new AA_Array($id);
         }
@@ -9698,7 +9701,7 @@ class AA_Stringexpand_Recompute extends AA_Stringexpand_Nevercache {
  *                     alias _#BACKLINK could be definned as
  *                       {count:{backlinks:{id..............}::-}}
  *                     or say
- *                       {count:{ids:1450a615da76cae02493aac79e129da9:d-relation........-=-{id..............}}}
+ *                       {count:{ids:1450a615da76cae02493aac79e129da9:d-relation........-==-{id..............}}}
  *
  *  Usage:
  *    {tagcloud:{ids:02e34dc7f9da6473fc84ad662dfe53a}}

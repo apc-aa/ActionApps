@@ -208,10 +208,27 @@ class AA_View_Commands {
 
 class AA_Showview {
     protected $_view_param     = [];
-    protected $_used_slice_ids = [];
 
     function __construct($view_param) {
         $this->_view_param = $view_param;
+    }
+
+    /** perform actions on start output */
+    protected function outputStart(AA_View $view, float $start_time): void
+    {
+        AA::$debug&2 && AA::$dbg->group("view_{$view->getId()}" . '_' . ($start_time));
+    }
+
+    protected function outputEnd(AA_View $view, float $start_time, string $warn_msg = ''): void
+    {
+        if ($warn_msg) {
+            AA::$debug && AA::$dbg->warn($warn_msg);
+        }
+        $vid = $view->getId();
+        AA::$debug&2 && AA::$dbg->groupend("view_$vid" . '_' . ($start_time));
+        if ($view->doLog()) {
+            AA_Log::write('VIEW', $vid, new AA_Logentry_W(["time" => microtime(true) - $start_time, 'uri' => $_SERVER["REQUEST_URI"]]));
+        }
     }
 
     function getViewOutput(): string {
@@ -221,6 +238,8 @@ class AA_Showview {
             return '';
         }
         $vid = $view->getId();
+
+        $this->outputStart($view, $dbgtime);
 
         $als = $this->_view_param["als"];
         $conds = $this->_view_param["conds"];
@@ -246,8 +265,6 @@ class AA_Showview {
 
         $view_info = $view->getViewInfo();
 
-        AA::$debug&2 && AA::$dbg->group("view_$vid" . '_' . ($dbgtime));
-
         if ( isset($this->_view_param["page"]) ) {
             $list_page = (int)$this->_view_param["page"];
         } elseif ($view->f('scroller')==1) {
@@ -257,7 +274,7 @@ class AA_Showview {
         }
 
         if (!$view->isValid()) {
-            AA::$debug&2 && AA::$dbg->groupend("view_$vid".'_'.$dbgtime);
+            $this->outputEnd($view, $dbgtime, 'Not valid view (deleted slice/disabled view)');
             return '';
         }
 
@@ -285,8 +302,7 @@ class AA_Showview {
 
         if ($slice_id = $this->_view_param["slice_id"]) {
             if (!is_long_id($slice_id)) { // unpacked
-                AA::$debug && AA::$dbg->warn("View parameter slice_id is not slice ID. If you want to use more slices, use parameter slices.");
-                AA::$debug&2 && AA::$dbg->groupend("view_$vid".'_'.$dbgtime);
+                $this->outputEnd($view, $dbgtime, "View parameter slice_id is not slice ID. If you want to use more slices, use parameter slices.");
                 return '';
             }
             $view_info["slice_id"] = pack_id($slice_id);  // packed,not quoted
@@ -317,7 +333,7 @@ class AA_Showview {
                     'vid'         => $vid,
                     'html_format' => ($view_info['flag'] & DISCUS_HTML_FORMAT),
                     'parent_id'   => $this->_view_param["parent_id"],
-                    'disc_ids'    => $this->_view_param["disc_ids"]
+                    'disc_ids'    => $this->_view_param["disc_ids"],
                 ];
                 if (($this->_view_param["disc_type"] == "list") || is_array($this->_view_param["disc_ids"])) {
                     $disc['type'] = "list";
@@ -428,7 +444,7 @@ class AA_Showview {
                 }
                 $calendar_conds = [
                     ['operator' => '<',  'value' => mktime (0,0,0,$month+1,1,$year), $view_info['field1'] => 1],
-                    ['operator' => '>=', 'value' => mktime (0,0,0,$month,1,$year),   $view_info['field2'] => 1]
+                    ['operator' => '>=', 'value' => mktime (0,0,0,$month,1,$year),   $view_info['field2'] => 1],
                 ];
                 // Note drops through to next case
 
@@ -469,7 +485,7 @@ class AA_Showview {
 
                 if ($mlxslice = MLXSlice($slice)) {
                     $mlx = $this->_view_param["mlx"] ?: $this->_view_param["MLX"];
-                    //make sure the lang info doesnt get reused with different view
+                    //make sure the lang info doesn't get reused with different view
                     $GLOBALS['mlxView'] = new MLXView($mlx,$mlxslice);
                     $GLOBALS['mlxView']->preQueryZIDs($mlxslice,$conds);
                 }
@@ -538,7 +554,7 @@ class AA_Showview {
                 AA::$headers['encoding'] = $this->_view_param['convertto'];
             }
         }
-        AA::$debug&2 && AA::$dbg->groupend("view_$vid".'_'.$dbgtime);
+        $this->outputEnd($view, $dbgtime);
         return $ret;
     }
 }

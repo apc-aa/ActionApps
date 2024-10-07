@@ -157,7 +157,7 @@ function AafinderSiteLink($spot_id, $module_id): string {
 
 function AafinderViewLink($view_id): string {
     $view = AA_Views::getViewNumeric($view_id);
-    return $view->jumpLink($view_id." -  ".$view->f("name")).' &nbsp; '. ChangesMonitor::getHistoryLink("V.$view_id");
+    return $view->jumpLink(true).' &nbsp; '. ChangesMonitor::getHistoryLink("V.$view_id");
 }
 
 function query_search(array $where, string $phrase): string {
