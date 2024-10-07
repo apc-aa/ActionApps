@@ -223,7 +223,7 @@ $_m["The image will be resampled to be within these limits, while retaining aspe
 $_m["Other fields"]
     = "Ostala polja";
 
-$_m["List of other fields to receive this image, separated by ##"]
+$_m["List of other fields to receive this image, separated by ##. Do not work well for multi uploads."]
     = "Lista ostalih polja za primiti tu slikovnu datoteku, razdvojena sa ##";
 
 $_m["User ID = always store current user ID"]

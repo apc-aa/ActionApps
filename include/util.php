@@ -1215,14 +1215,16 @@ function MsgPage($msg, string $url = '') {
 
 /**  Low level save data to the content table
  *   Should not be used by "user" scripts
- * @param string $item_id long item id
- * @param string $field_id field id
- * @param bool   $text_stored AA_Field['text_stored']
- * @param array  $value ['value'=>.., 'flag'=>..]
- * @param array  $additional
- * @param bool   $delete    - erease the old values
+ *
+ * @param  string      $item_id      long item id
+ * @param  string      $field_id     field id
+ * @param  bool        $text_stored  AA_Field['text_stored']
+ * @param  int|string  $value
+ * @param  int         $order
+ * @param  int         $flag
+ * @param  bool        $delete       - erease the old values
  */
-function StoreToContent($item_id, $field_id, $text_stored, $value, $additional= [], $delete=false) {
+function StoreToContent($item_id, $field_id, $text_stored, $value, int $order, int $flag, bool $delete=false) {
     if (!is_long_id($item_id) OR (strlen($field_id)!=16)) {
         return;
     }
@@ -1231,18 +1233,14 @@ function StoreToContent($item_id, $field_id, $text_stored, $value, $additional= 
     if ($text_stored) {
         // do not store empty values in content table for text_stored fields
         // if ( !$value['value'] ) { return false; }    // can't do it, conditions do not work then (ecn joblist)
-        $varset->add("text", "text", $value['value']);
+        $varset->add("text", "text", $value);
         // set "TEXT stored" flag
-        $varset->add("flag", "number", (int)$value['flag'] | FLAG_TEXT_STORED );
-        if (ctype_digit((string)$additional["order"])) {
-            $varset->add("number", "number", $additional["order"]);
-        } else {
-            $varset->add("number","null");
-        }
+        $varset->add("flag", "number", $flag | FLAG_TEXT_STORED );
+        $varset->add("number", "number", $order);
     } else {
-        $varset->add("number", "number", (int)$value['value']);
+        $varset->add("number", "number", (int)$value);
         // clear "TEXT stored" flag
-        $varset->add("flag",   "number", (int)$value['flag'] & ~FLAG_TEXT_STORED );
+        $varset->add("flag",   "number", $flag & ~FLAG_TEXT_STORED );
     }
 
     // insert item but new field

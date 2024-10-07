@@ -355,13 +355,13 @@ echo "\n     </td>\n</tr>";
 // Find slices, where the constant group is used
 if ($group_id) {
     $using_slices_arr =  DB_AA::select([], "SELECT LOWER(HEX(module.id)) AS unpackid, module.deleted, module.name as sname, field.id as fid, field.name as fname FROM `module`, `field` WHERE module.id = field.slice_id AND (field.input_show_func LIKE '%:$group_id' OR field.input_show_func LIKE '%:$group_id:%')");
-                                    echo "
+    echo "
       <tr><th>"._m("Constants used in slice")."</th>
         <td colspan=\"3\">".join(
             '<br>',
             array_map(
                 fn($arr) => AA_Module::getModuleName($arr['unpackid'], IfSlPerm(PS_FIELDS, $arr['unpackid']), 'admin/se_inputform.php', ['fid' => $arr['fid']])." <small>[".$arr['unpackid']."]</small> (".safe($arr['fname'])." <small>[".safe($arr['fid'])."]</small>)",
-                        $using_slices_arr,
+                $using_slices_arr,
             ),
         )."</td>
       </tr>";

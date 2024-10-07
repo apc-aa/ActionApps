@@ -463,7 +463,7 @@ class AA_Field implements ArrayAccess, Countable, Iterator {
         return $widget_only ? $widget->getOnlyHtml($aa_property, $content, $function) : $widget->getHtml($aa_property, $content, $function);
     }
 
-    /** getRelation function
+    /**
      *  @return string[] - [relation,<slice_id>] or [constants,<constants_name>]
      */
     function getRelation(): array {
@@ -473,6 +473,18 @@ class AA_Field implements ArrayAccess, Countable, Iterator {
         }
         // prefix indicates select from items
         return (str_starts_with($showfunc['const'], "#sLiCe-")) ? ['relation', substr($showfunc['const'],7)] : ['constants', (string)$showfunc['const']];
+    }
+
+    /** get ids of field to store thumbnails
+     *  @return string[] - field_ids
+     */
+    function getInsertOtherFields(): array {
+        $ret = [];
+        $inserter_params = AA_Inserter::parseClassProperties($this->data['input_insert_func']);
+        if (array_key_exists('otherfield', $inserter_params) AND strlen(trim($inserter_params['otherfield']))!==0) {
+            $ret = array_filter(array_map('trim', explode("##",$inserter_params['otherfield'])), 'strlen');
+        }
+        return $ret;
     }
 
     /** isMultiline - @return bool - if the default widget allows block elements  */

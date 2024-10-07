@@ -51,7 +51,7 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
     protected array $arr = [];
 
     /** holds the flag - common for all the values */
-    protected $flag;
+    protected int $flag;
 
     /** AA_Value function
      * @param $value
@@ -111,9 +111,7 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
     }
 
 
-    /** getValue function
-     *  Returns the value for a field. If it is a multi-value
-     *   field, this is the first value.
+    /** Returns the value for a field. If it is a multi-value field, this is the first value.
      * @param $i
      * @return
      */
@@ -128,8 +126,7 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
         return $this->arr;
     }
 
-    /** Returns the value for a field. If it is a multi-value
-     *   field, this is the first value. */
+    /** Returns the value for a field. If it is a multi-value field, this is the first value. */
     function getFlag($i = 0) {
         return $this->flag;
     }
@@ -182,16 +179,6 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
         return $this;
     }
 
-    public function containValue(string $txt): bool {
-        return in_array($txt, $this->arr);
-    }
-
-    /** Remove Value */
-    function removeValues(array $remove): AA_Value {
-        $this->arr = array_diff($this->arr, $remove);
-        return $this;
-    }
-
     /** Set $value - value is normal (numeric) array or string value */
     function setValues($value): AA_Value {
         $this->arr = is_array($value) ? $value : (is_null($value) ? [] : [$value]);
@@ -200,7 +187,18 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
 
     /** Set the flag (for all the values the flag is common at this time) */
     function setFlag($flag): AA_Value {
-        $this->flag = $flag;
+        $this->flag = (int)$flag;
+        return $this;
+    }
+
+
+    public function containValue(string $txt): bool {
+        return in_array($txt, $this->arr);
+    }
+
+    /** Remove Value */
+    function removeValues(array $remove): AA_Value {
+        $this->arr = array_diff($this->arr, $remove);
         return $this;
     }
 
@@ -401,7 +399,7 @@ class AA_Content implements Iterator, ArrayAccess, Countable {
     }
 
     /** get list of fields */
-    function getFields() {
+    function getFields(): array {
         return array_keys($this->content);
     }
 
@@ -836,14 +834,14 @@ class ItemContent extends AA_Content {
     /** isEmpty function
      *
      */
-    function isEmpty() {
+    function isEmpty(): bool {
         return !$this->content;
     }
 
     /** Without $bin returns true if the item is visible - not expired/trashed/pending/...
      *  You can specify bin AA_BIN_ACTIVE or AA_BIN_HOLDING or AA_BIN_TRASH or AA_BIN_ALL or its bitwise combination (the trash and pending is not supported, now)
      */
-    function isActive($bin=AA_BIN_ACTIVE) {
+    function isActive($bin=AA_BIN_ACTIVE): bool {
 
         if ( (($status=$this->getStatusCode()) == 1) AND ($bin & AA_BIN_ACTIVE)) {
             $now = now('step');
@@ -868,22 +866,17 @@ class ItemContent extends AA_Content {
         return $conditions->matches($this);
     }
 
-    /** getFields function
-     *
+    /** @return array of field ids
      */
-    function getFields() {
-        $fields = [];
-        foreach ( $this->content as $field => $foo ) {
-            $fields[] = $field;
-        }
-        return $fields;
+    function getFields(): array {
+        return array_keys($this->content);
     }
 
     /** getItemID function
      * @return string longID
      */
-    function getItemID() {
-        return strlen($id = $this->getValue('unpacked_id.....')) ? $id : unpack_id($this->getValue('id..............'));
+    function getItemID(): string {
+        return strlen($id = $this->getValue('unpacked_id.....')) ? (string)$id : unpack_id($this->getValue('id..............'));
     }
 
     /** redefined AA_Content's function */
@@ -898,8 +891,8 @@ class ItemContent extends AA_Content {
 
     /** getSliceID function
      */
-    function getSliceID() {
-        return strlen($id = $this->getValue('u_slice_id......')) ? $id : unpack_id($this->getValue('slice_id........'));
+    function getSliceID(): string {
+        return strlen($id = $this->getValue('u_slice_id......')) ? (string)$id : unpack_id($this->getValue('slice_id........'));
     }
 
     /** getStatusCode function
@@ -950,10 +943,8 @@ class ItemContent extends AA_Content {
      * @return array of non valid fields like: ['text............'=>[410,'Not filled']]
      */
     function validateReport($type='present', array $ignore=[]): array {
-        $slice      = AA_Slice::getModule($this->getSliceID());
-        $fields     = $slice->getFields();
+        $fields     = AA_Slice::getModule($this->getSliceID())->getFields();
         $ret        = [];
-        //$cur_fields = $this->getFields();
 
         foreach ($fields as $field_id => $field) {
             if (($type=='visible' AND !$field->getProperty('input_show'))) {
@@ -1144,7 +1135,7 @@ class ItemContent extends AA_Content {
      * @param string $context special parameter used for thumbnails - ''|feed
      * @return bool|mixed|string
      */
-    function storeItem( $mode, $flags = [], $context='' ) {
+    function storeItem( $mode, $flags = [], string $context='' ) {
 
         if (! ($slice_id     = $this->getSliceID()))            {return false;}
         if (! ($slice        = AA_Slice::getModule($slice_id))) {return false;}
@@ -1255,7 +1246,7 @@ class ItemContent extends AA_Content {
                 DB_AA::delete('content', $delete_conds);
                 break;
             case 'update':
-                $this->_clean_updated_fields($id, $fields);
+                (new AA_Field_Cleaner($fields))->clean_updated_fields($this, $id);
                 break;
             case 'insert':
                 // reset hit counter fields for new items
@@ -1476,18 +1467,14 @@ class ItemContent extends AA_Content {
             // set this value also to $item in order we can count with it
             // in the next computed field
             $item->setAaValue($fid, $aa_val);
-            $values = $item->getValues($fid);
 
             // delete content just for this computed field
             // $this->_clean_updated_fields($id, $fields);
-            if ($id AND $fid) {
+            if ($fid) {
                 DB_AA::delete('content', [['item_id', $id, 'l'], ['field_id', $fid]]);
             }
 
-            foreach($values as $varr) {
-                //  store the computed value for this field to database
-                AA_Inserter::factoryByString('qte')->setField($field)->execute($field_writer, $id, $varr);
-            }
+            AA_Inserter::factoryByString('qte')->setField($field)->executeMulti($field_writer, $id, $aa_val);
         }
 
         $item_varset = $field_writer->getItemVarset();
@@ -1508,7 +1495,7 @@ class ItemContent extends AA_Content {
     function storeSliceFields($slice_id, $fields) {
         // delete content of all fields, which are in new content array
         // (this means - all not redefined fields are unchanged)
-        $this->_clean_updated_fields($slice_id, $fields);
+        (new AA_Field_Cleaner($fields))->clean_updated_fields($this, $slice_id);
 
         // we use slice_id as item id here
         $this->_store_fields($slice_id, $fields);
@@ -1516,100 +1503,25 @@ class ItemContent extends AA_Content {
         AA::Pagecache()->invalidateFor($slice_id);
     }
 
-    ///** _clean_updated_fields function
-    // *  delete content of all fields, which are in new content array
-    // *  (this means - all not redefined fields are unchanged)
-    // * @param $id
-    // * @param $fields
-    // */
-    //function _clean_updated_fields($id, &$fields) {
-    //    $in = array();
-    //    foreach ($this->content as $fid => $fooo) {
-    //        if (!$fields[$fid]['in_item_tbl']) {
-    //            $in[] = $fid;
-    //        }
-    //    }
-    //    if ($in AND $id) {
-    //        // delete content just for displayed fields
-    //        DB_AA::delete('content', array(array('item_id', $id, 'l'), array('field_id', $in)));
-    //        // note extra images deleted in insert_fnc_fil if needed
-    //    }
-    //}
-
-    /**
-     * @param $id
-     * @param AA_Fields $fields
-     */
-    function _clean_updated_fields($id, $fields) {
-        $in  = [];
-        foreach ($this->content as $fid => $cont) {
-            $fld = $fields->getField($fid);
-            if ($fld AND !$fld->getProperty('in_item_tbl') AND !$fld->isSafeStored()) {   // do not delete 'secret....* ',  'password....', ... fields (the content should be rewritten in Inserter, if all conditions matches)
-                // deal with translations. if only translated values are present, then delete just the specific translation
-                // however - if also basic 0-1000000 indexes are present, clear all the field content
-                $keys = (is_array($cont) AND $cont) ? array_keys($cont) : [0]; // sometimes we want to delete field so no AA_Value is passed (delete file...)
-                foreach ($keys as $k) {
-                    $in[$ind = ($k / AA_Value::MAX_INDEX)][] = $fid;
-                    if ($ind==0) {
-                        continue 2;
-                    }
-                }
-            }
-        }
-        if ($in AND $id) {
-            // delete content just for displayed fields
-            foreach($in as $lang => $field_arr) {
-                if ($lang==0) {
-                    DB_AA::delete('content', [['item_id', $id, 'l'], ['field_id', array_unique($field_arr)]]);
-                } else {
-                    //huhl(DB_AA::makeWhere(array(array('item_id', $id, 'l'), array('field_id', array_unique($field_arr)), array('number', $lang*AA_Value::MAX_INDEX, '>='), array('number', ($lang+1)*AA_Value::MAX_INDEX, '<'))));
-                    //huhl(DB_AA::makeWhere(array(array('item_id', $id, 'l'), array('field_id', array_unique($field_arr)), array('number', 0, '>='), array('number', AA_Value::MAX_INDEX, '<'))));
-                    //huhl($in);
-                    //huhl(DB_AA::select(array(), 'SELECT * FROM content', array(array('item_id', $id, 'l'), array('field_id', array_unique($field_arr)))));
-                    //exit;
-                    DB_AA::delete('content', [['item_id', $id, 'l'], ['field_id', array_unique($field_arr)], ['number', $lang*AA_Value::MAX_INDEX, '>='], ['number', ($lang+1)*AA_Value::MAX_INDEX, '<']]);
-                    DB_AA::delete('content', [['item_id', $id, 'l'], ['field_id', array_unique($field_arr)], ['number', 0, '>='], ['number', AA_Value::MAX_INDEX, '<']]);
-                    DB_AA::delete('content', [['item_id', $id, 'l'], ['field_id', array_unique($field_arr)], ['number', '', 'ISNULL']]);
-                }
-            }
-            // note extra images deleted in insert_fnc_fil if needed
-        }
-    }
-
     /** _store_fields function
      *  private function - goes through content and runs all insert functions
      *  on each field in content array. The content is stored in the database
      *  or in returned item_varset
-     * @param $id
+     * @param string    $id       - item id
      * @param AA_Fields $aa_fields
      * @param string    $context  - special parameter used for thumbnails - ''|feed
      * @return Cvarset
      */
-    function _store_fields($id, $aa_fields, $context='') {
-        $field_writer = new AA_Field_Writer($this->getSliceID());
-        $stop         = false;
+    function _store_fields($id, $aa_fields, string $context='') {
+        $field_writer = new AA_Field_Writer($this->getSliceID(), $context);
 
-        foreach ($this->content as $fid => $cont) {
-            if (!is_array($cont) OR !($fld = $aa_fields->getField($fid))) {
+        foreach ($this as $fid => $cont) {                         // $cont is AA_Value or null if empty
+            if (!$cont OR !($fld = $aa_fields->getField($fid))) {
                 continue;
             }
 
             $inserter = AA_Inserter::factoryByField($fld);
-
-            // file upload needs the $fields array, because it stores some other fields as thumbnails
-            $parameters = is_a($inserter,'AA_Inserter_Fil') ? ["fields" => $aa_fields, "context" => $context] : [];
-
-            // update content table or fill item_varset
-            foreach ($cont as $numkey => $v) {
-
-                $parameters['order'] = (int)$numkey;
-                $inserter->execute($field_writer, $id, $v, $parameters);
-
-                // do not store multiple values if field is not marked as multiple
-                // ERRORNOUS
-                //if( !$f["multiple"]!=1 )
-                    //continue;
-            }
+            $inserter->executeMulti($field_writer, $id, $cont);
         }
         return $field_writer->getItemVarset();
     }
@@ -1673,4 +1585,74 @@ function UpdateField($item_id, $field_id, $field_content, $flags = []) {
     return $updated_items;
 }
 
+
+class AA_Field_Cleaner {
+    public function __construct(protected AA_Fields $fields) {}
+
+    /**
+     * @param  ItemContent  $content  - new content array
+     * @param  string       $id       itemID or sliceID (for slice fields))
+     */
+    function clean_updated_fields(ItemContent $content, $id): void
+    {
+        if (!$id) {
+            return;
+        }
+        $fields_to_delete  = [];
+        $this->fields2delete($fields_to_delete, $content);  // fills $fields_to_delete array
+        if ($fields_to_delete) {
+            // delete content just for displayed fields
+            foreach($fields_to_delete as $lang => $field_arr) {
+                if ($lang==0) {
+                    DB_AA::delete('content', [['item_id', $id, 'l'], ['field_id', array_unique($field_arr)]]);
+                } else {
+                    //huhl(DB_AA::makeWhere(array(array('item_id', $id, 'l'), array('field_id', array_unique($field_arr)), array('number', $lang*AA_Value::MAX_INDEX, '>='), array('number', ($lang+1)*AA_Value::MAX_INDEX, '<'))));
+                    //huhl(DB_AA::makeWhere(array(array('item_id', $id, 'l'), array('field_id', array_unique($field_arr)), array('number', 0, '>='), array('number', AA_Value::MAX_INDEX, '<'))));
+                    //huhl($in);
+                    //huhl(DB_AA::select(array(), 'SELECT * FROM content', array(array('item_id', $id, 'l'), array('field_id', array_unique($field_arr)))));
+                    //exit;
+                    DB_AA::delete('content', [['item_id', $id, 'l'], ['field_id', array_unique($field_arr)], ['number', $lang*AA_Value::MAX_INDEX, '>='], ['number', ($lang+1)*AA_Value::MAX_INDEX, '<']]);
+                    DB_AA::delete('content', [['item_id', $id, 'l'], ['field_id', array_unique($field_arr)], ['number', 0, '>='], ['number', AA_Value::MAX_INDEX, '<']]);
+                    DB_AA::delete('content', [['item_id', $id, 'l'], ['field_id', array_unique($field_arr)], ['number', '', 'ISNULL']]);
+                }
+            }
+        }
+    }
+
+    /** find all fields and indexes to delete
+     */
+    private function fields2delete(array &$in, iterable $content): void
+    {
+        // static $calls = 0;
+        // if ($calls++ > 100) {
+        //     warn("AA_FieldCleaner::fields2delete - too many recursive calls");
+        //     return;
+        // }
+
+        //$more_fields = [];
+        foreach ($content as $fid => $cont) {
+            $fld = $this->fields->getField($fid);
+            if ($fld) {
+                //$more_fields += $fld->getInsertOtherFields();
+                if (!$fld->getProperty('in_item_tbl') and !$fld->isSafeStored()) {   // do not delete 'secret....* ',  'password....', ... fields (the content should be rewritten in Inserter, if all conditions matches)
+                    // deal with translations. if only translated values are present, then delete just the specific translation
+                    // however - if also basic 0-1000000 indexes are present, clear all the field content
+                    $keys = (is_array($cont) and $cont) ? array_keys($cont) : [0]; // sometimes we want to delete field so no AA_Value is passed (delete file...)
+                    foreach ($keys as $k) {
+                        $in[$ind = ($k / AA_Value::MAX_INDEX)][] = $fid;
+                        if ($ind == 0) {
+                            continue 2;
+                        }
+                    }
+                }
+            }
+        }
+        // delete aslo the fields introduces by otherfield of thumbnail feature - abandoned:
+        // not used approach - we delete such fields in executeMulti() in Inserter (it is hard to say, if the field use new values or stores the old values and thumbs are not necessary)
+        // if ($more_fields) {
+        //     // convert $more_fields to array of field_id => [] to be +/- compatible with $content
+        //     $this->fields2delete($in, array_fill_keys($more_fields, []));
+        // }
+    }
+}
 

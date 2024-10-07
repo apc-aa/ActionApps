@@ -52,7 +52,7 @@ class HitcounterStats implements LaterInterface
             foreach ($item_ids as $id) {
                 //$db->query("DELETE FROM content WHERE item_id ='".quote($id)."' AND field_id = '". quote($this->field_id)."'");
                 $value = $hits[$id] ?: 0;
-                StoreToContent(unpack_id($id), $field['id'], $field["text_stored"], ['value' => $value, 'flag' => 0], [], true);
+                StoreToContent(unpack_id($id), $field['id'], $field["text_stored"], $value, 0, 0, true);
             }
         }
         $dbgtime[] = microtime(true);

@@ -181,7 +181,7 @@ $_m["Other fields"]
  = "Otros campos";
 
 // include/constants_param_wizard.php, row 84
-$_m["List of other fields to receive this image, separated by ##"]
+$_m["List of other fields to receive this image, separated by ##. Do not work well for multi uploads."]
  = "Lista de otros campos que reciben esta imágen, separados por ##";
 
 // include/constants_param_wizard.php, row 87
