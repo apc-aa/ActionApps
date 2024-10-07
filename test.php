@@ -12,6 +12,12 @@
   * @author Marek Tichy, Econnect
   * @copyright (c) 2002-3 Association for Progressive Communications
 */
+
+require_once __DIR__."/include/config.php";   // we use some constants from AA in the config
+require_once __DIR__."/include/locsess.php";
+
+use AA\Util\Imgfunc;
+
 ?>
 
 <html>
@@ -25,7 +31,7 @@
 if (extension_loaded('gd')) {
     print("<li>GD is loaded</li>\n");
     require_once __DIR__.'/include/imagefunc.php';
-    PrintSupportedTypes();
+    Imgfunc::printSupportedTypes();
 } else {
     print("<li style=\"color: red; \">Warning: GD is unavailable, image manipulation won't be available</li>\n");
 }

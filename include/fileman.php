@@ -125,13 +125,13 @@ function format_file_size($size) {
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 $filetypes = [
-    _m("HTML file") => ["img"=>"html", "ext"=> ["shtml","html","htm","js"]],
-    _m("Web file") => ["img"=>"ie", "ext"=> ["php","php3","asp"]],
-    _m("Image file") => ["img"=>"image2", "ext"=> ["gif","jpg","jpeg","tiff","img"]],
-    _m("Text file") => ["img"=>"txt", "ext"=> ["txt"]],
-    _m("Directory") => ["img"=>"folder"],
-    _m("Parent") => ["img"=>"parent"],
-    _m("Other") => ["img"=>"oth"]
+    _m("HTML file")  => ["img"=>"html",   "ext"=> ["shtml","html","htm","js"]],
+    _m("Web file")   => ["img"=>"ie",     "ext"=> ["php","php3","asp"]],
+    _m("Image file") => ["img"=>"image2", "ext"=> ["gif","jpg","jpeg","tiff","img","webp","png","avif"]],
+    _m("Text file")  => ["img"=>"txt",    "ext"=> ["txt", "text", "log", "asc", "doc", "rtf", "pdf", "md"]],
+    _m("Directory")  => ["img"=>"folder"],
+    _m("Parent")     => ["img"=>"parent"],
+    _m("Other")      => ["img"=>"oth"]
 ];
 
 /**
