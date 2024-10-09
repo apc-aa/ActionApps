@@ -152,7 +152,7 @@ class AA_Searchbar extends AA_Storable {
         $this->search_row_count_min = $search_row_count_min;
         $this->order_row_count_min  = $order_row_count_min;
         $this->add_empty_search_row = $add_empty_search_row;
-        $this->bookmarks            = new AA_Bookmarks; // stores bookmarks (stored queries)
+        $this->bookmarks            = new AA_Bookmarks($module_id); // stores bookmarks (stored queries)
         $this->search_row           = [];          // internal array - stores current state of search rows
         $this->order_row            = [];          // internal array - stores current state of order rows
         $this->show                 = is_null($show) ? (MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS) : $show;
@@ -167,7 +167,7 @@ class AA_Searchbar extends AA_Storable {
      */
     function update() {
         $srchbr_akce     = $_GET['srchbr_akce'];
-        $srchbr_bookmark = $_GET['srchbr_bookmark'];
+        $srchbr_bookmark = (string)$_GET['srchbr_bookmark'];
         if ( !$srchbr_akce ) {     // no searchbar action
             return;
         }
@@ -660,24 +660,24 @@ class AA_Searchbar extends AA_Storable {
  * bookmarks class - stores queries (searchbar state)
  */
 class AA_Bookmarks {
-    var $bookmarks;                  // array of stored bookmarks
+    protected array $bookmarks = []; // array of stored bookmarks
                                      // bookmarks[] = array('name' => <name>, 'state'=> <searchbar_state>)
-    var $profile;                    // profile, where to store bookmarks
-    var $active_bookmark;            // last used bookmark
+    protected ?AA_Profile $profile;  // profile, where to store bookmarks
+    protected $active_bookmark;      // last used bookmark
 
     /** AA_Bookmarks function
      * constructor
      */
-    function __construct() {
-        global $slice_id;
-        $this->profile = AA_Profile::getProfile(AuthGetUid(), $slice_id); // current user settings
-
-        $this->setFromProfile();
+    function __construct($module_id) {
+        $this->bookmarks = [];               // reset
+        if ($module_id) {
+            $this->profile = AA_Profile::getProfile(AuthGetUid(), $module_id); // current user settings
+            $this->setFromProfile();
+        }
         $this->setLastUsed();
     }
 
-    /** get function
-     *  Get searchbar state for bookmark number $key.
+    /** Get searchbar state for bookmark number $key.
      *  See AA_Storable in statestore.php for more info about 'state'
      * @param string $param key
      * @return array
@@ -686,8 +686,7 @@ class AA_Bookmarks {
         return ($this->is_defined($key) AND is_array($this->bookmarks[$key]['state'])) ? $this->bookmarks[$key]['state'] : [];
     }
 
-    /** getKeeyName function
-     *  Get array of bookmark (<key> => <name>)
+    /** Get array of bookmark (<key> => <name>)
      * @return array 'id'=>'name'
      */
     function getKeyName() {
@@ -703,17 +702,14 @@ class AA_Bookmarks {
         return $ret;
     }
 
-    /** getBookmarkParams function
-     *  Get parameters of bookmark defined by number $key
+    /** Get parameters of bookmark defined by number $key
      * @param $key
-     * @return
      */
     function getBookmarkParams($key) {
         return $this->bookmarks[$key];
     }
 
-    /** is_defined function
-     *  Is the bookmark number $key defined?
+    /** Is the bookmark number $key defined?
      * @param $key
      * @return bool
      */
@@ -721,26 +717,28 @@ class AA_Bookmarks {
         return isset( $this->bookmarks[$key] );
     }
 
-    /** count function
+    /**
      *  Returns number of stored bookmarks
      */
-    function count() {
+    function count(): int
+    {
         return count($this->bookmarks);
     }
-    /** setLastUsed function
-     * @param $last_used
+
+    /**
+     * @param  string  $last_used
      */
-    function setLastUsed($last_used="none") {
+    function setLastUsed(string $last_used="none") {
         $this->active_bookmark = $last_used;
     }
-    /** getLastUsed function
+    /**
      *
      */
     function getLastUsed() {
         return $this->active_bookmark;
     }
 
-    /** setFromProfile function
+    /**
      *
      */
     function setFromProfile(): bool {
@@ -763,14 +761,14 @@ class AA_Bookmarks {
         return true;
     }
 
-    /** store function
-     *  Store bookmark to the database
+    /** Store bookmark to the database
      * @param $name
      * @param $state
      * @param $to_global
      * @return bool
      */
-    function store( $name, $state, $to_global ) {
+    function store( $name, $state, $to_global ): bool
+    {
         if ( !is_object($this->profile) ) {
             return false;
         }
@@ -821,7 +819,7 @@ class AA_Bookmarks {
     }
 
 
-    /** is_global function
+    /**
      * @param $key
      * @return bool
      */
@@ -829,15 +827,16 @@ class AA_Bookmarks {
         return $this->bookmarks[$key]['type'] == '*';
     }
 
-    /** delete function
+    /**
      * @param $key
      * @return bool
      */
-    function delete($key) {
+    function delete($key): bool
+    {
         if ( !is_object($this->profile) ) {
             return false;
         }
-          // if it global bookmark?
+        // is it global bookmark?
         $global = $this->is_global($key);
           // and have we permisson to delete it?
         if ( $global AND !IfSlPerm(PS_BOOKMARK) ) {
@@ -851,7 +850,7 @@ class AA_Bookmarks {
         return true;
     }
 
-    /** updateBookmark function
+    /**
      * @param $key
      * @param $state
      * @return bool
@@ -866,7 +865,7 @@ class AA_Bookmarks {
         return false;
     }
 
-    /** renameBookmark function
+    /**
      * @param $key
      * @param $newname
      * @return bool
@@ -881,15 +880,16 @@ class AA_Bookmarks {
         return false;
     }
 
-    /** bookmark of key $key is currently seleted? */
-    function isSelected($key) {
+    /** bookmark of key $key is currently selected? */
+    function isSelected($key): bool
+    {
         return ctype_digit((string)$this->getLastUsed()) && ($this->getLastUsed() == $key);
     }
 
-    /** getSelectbox function
-     * Return HTML selectbox from bookmarks
+    /** Return HTML selectbox from bookmarks
      */
-    function getSelectbox() {
+    function getSelectbox(): string
+    {
         $ret = '
           <select name="srchbr_bookmark">
              <option value="none" '. (($this->getLastUsed() == "none") ? 'selected' : '') .'>'. _m('Select one...') .'</option>';

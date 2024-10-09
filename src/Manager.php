@@ -446,13 +446,13 @@ class Managed_Table extends Managed {
  */
 class Manager extends AA_Storable {
     /** @var AA_Searchbar  */
-    protected $searchbar;
+    protected ?AA_Searchbar $searchbar;
 
     /** @var string searchbar additional function name */
     protected $searchbar_funct;
 
     /** @var AA_Scroller */
-    protected $scroller;
+    protected ?AA_Scroller $scroller;
 
     /** @var Manageractions  */
     protected $actions;
@@ -617,10 +617,7 @@ class Manager extends AA_Storable {
 
         // get default number of listed items from user's profile
         $this->setListlen( $profile->getProperty('listlen') );
-
-        if ( $this->searchbar ) {
-            $this->searchbar->setFromProfile($profile);
-        }
+        $this->searchbar?->setFromProfile($profile);
     }
 
     /** @return AA_Set object - should be used instead of getConds and getSort
@@ -908,7 +905,7 @@ class Manager extends AA_Storable {
 
             // echo $form->getAjaxHtml('xxx'); // ($_GET['ret_code']);
         } else {
-            AA::Stringexpander()->addRequire(get_aa_url('javascript/manager.min.js?v='.AA_JS_VERSION));
+            AA::Stringexpander()->addRequire(get_aa_url('javascript/manager.min.js', ['v'=>AA_JS_VERSION]));
             AA::Stringexpander()->addRequire('aa-jslib@1');
             AA::Stringexpander()->addRequire('AA_AllowMultiselect(\'input[name^="chb["]\', \''. _m("Hold Shift and click to select multiple rows").'\')', 'AA_Req_Load');
             $html = $this->getManagerCode($zids);
