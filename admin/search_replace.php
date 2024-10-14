@@ -75,7 +75,7 @@ if ( !IfSlPerm(PS_EDIT_ALL_ITEMS)) {
     exit;
 }
 
-$searchbar = new AA_Searchbar();   // mainly for bookmarks
+$searchbar = new AA_Searchbar(AA::$module_id);   // mainly for bookmarks
 $items=$chb;
 
 if ( !$fill ) {               // for the first time - directly from item manager
@@ -91,9 +91,9 @@ if ( !$fill ) {               // for the first time - directly from item manager
     $planned = 0;
     if ($_REQUEST[SEARCH_REPLACE_PREFIX] AND (str_starts_with(strtolower($_REQUEST[SEARCH_REPLACE_PREFIX]), 'aa_transformation_'))) {   // strtolower is fix for php4, where case of any class is small
         $transformation = AA_Object::factory($_REQUEST[SEARCH_REPLACE_PREFIX],AA_Transformation::getRequestVariables(SEARCH_REPLACE_PREFIX, $_REQUEST[SEARCH_REPLACE_PREFIX]));
-        $zids           = ( ($group == 'testitemgroup') ? new zids($testitem) : getZidsFromGroupSelect($group, $items, $searchbar) );
+        $zids           = ( ($group === 'testitemgroup') ? new zids($testitem) : getZidsFromGroupSelect($group, $items, $searchbar) );
 
-        $transformator  = new AA_Transformator($transformation, $field_id, null, $silent, ($silent AND ($field_id=='last_edit.......') AND IsSuperadmin()));
+        $transformator  = new AA_Transformator($transformation, $field_id, null, $silent, ($silent AND ($field_id === 'last_edit.......') AND IsSuperadmin()));
         if ($tasks>0) {
             $zids_chunked = $zids->chunk($tasks);
             $toexecute = new \AA\Later\Toexecute();
@@ -109,9 +109,9 @@ if ( !$fill ) {               // for the first time - directly from item manager
     }
 
     $Msg     = MsgOk(_m("Items selected: %1, Items successfully updated: %2, Items planned: %3", [$zids->count(), $updated_items, $planned]));
-    if ((string)$group == "sel_item") {
+    if ((string)$group === "sel_item") {
         $sel = "LIST";
-    } elseif ((string)$group == "testitemgroup") {
+    } elseif ((string)$group === "testitemgroup") {
         $sel = "TEST";
     } else {
         $sel = get_if($group,"0");  // bookmarks groups are identified by numbers
@@ -124,7 +124,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 echo '
   <link rel=StyleSheet href="'.AA_INSTAL_PATH.'tabledit.css"  title="TableEditCSS">
   <title>'.  _m("Modify items") .'</title>';
-FrmJavascriptFile('javascript/inputform.min.js?v='.AA_JS_VERSION);
+echo getFrmJavascriptFile('javascript/inputform.min.js', ['v'=>AA_JS_VERSION]);
 IncludeManagerJavascript();
 echo '
 </head>
@@ -140,8 +140,8 @@ $slice  = AA_Slice::getModule(AA::$module_id);
 if ( !IsSuperadmin() ) {
     $restricted_fields = [
         'slice_id........' => true,
-                                'id..............' => true,
-                                'short_id........' => true
+        'id..............' => true,
+        'short_id........' => true
     ];
 } else {
     $restricted_fields = ['short_id........' => true];

@@ -527,15 +527,15 @@ class Manager extends AA_Storable {
         // create searchbar, if we have to ------------------------------------
         if ( $settings['searchbar'] ) {
             $this->searchbar = new AA_Searchbar(
-                              $settings['searchbar']['fields'],
-                              'filterform',   // form name is given in this case
-                              $settings['searchbar']['search_row_count_min'],
-                              $settings['searchbar']['order_row_count_min'],
-                              $settings['searchbar']['add_empty_search_row'],
-                              $this->show,
-                              $settings['searchbar']['hint'],
-                              $settings['searchbar']['hint_url'],
-                              $this->module_id
+                $this->module_id,
+                $settings['searchbar']['fields'],   // form name is given in this case
+                'filterform',
+                $settings['searchbar']['search_row_count_min'],
+                $settings['searchbar']['order_row_count_min'],
+                $settings['searchbar']['add_empty_search_row'],
+                $this->show,
+                $settings['searchbar']['hint'],
+                $settings['searchbar']['hint_url']
             );
             $this->searchbar_funct = $settings['searchbar']['function'];
             if ( isset($settings['searchbar']['default_bookmark']) ) {

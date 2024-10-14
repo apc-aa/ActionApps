@@ -88,7 +88,7 @@ try {
 
 $err = [];          // error array (Init - just for initializing variable
 
-$searchbar = new AA_Searchbar();   // mainly for bookmarks
+$searchbar = new AA_Searchbar(AA::$module_id);   // mainly for bookmarks
 $items     = $chb;
 
 //if ( IfSlPerm(PS_EDIT_ALL_ITEMS) ) {
@@ -168,7 +168,7 @@ if ( !$send ) {               // for the first time - directly from item manager
         }
 
         // --- send emails
-        if ( $group == 'testuser') {
+        if ( $group === 'testuser') {
             $mails_to    = explode(',',$testemail);
             $mails_sent  = AA_Mail::sendTemplate($mail_id, $mails_to);
             $users_count = count($mails_to);
@@ -182,10 +182,10 @@ if ( !$send ) {               // for the first time - directly from item manager
         }
         $Msg = MsgOk(_m("Email successfully sent (Users: %1, Emails sent (valid e-mails...): %2, template id: %3)", [$users_count, $mails_sent, $mail_id]));
 
-        if ((string)$group == (string)"sel_item") {
+        if ((string)$group === "sel_item") {
             $sel = "LIST";
             $description .= ' - '. _m('Manualy selected');
-        } elseif ((string)$group == (string)"testuser") {
+        } elseif ((string)$group === "testuser") {
             $sel = "TEST";
             $description .= " - ($testemail)";
         } else {
@@ -209,10 +209,10 @@ $apage->setForm();
 
 $apage->addRequire('ckeditor@4');
 // IncludeManagerJavascript() - start
-// $apage->addRequire(get_aa_url('javascript/aajslib.php?v='.AA_JS_VERSION ));  // already loaded with ckeditor
-$apage->addRequire(get_aa_url('javascript/manager.min.js?v='.AA_JS_VERSION ));
+// $apage->addRequire(get_aa_url('javascript/aajslib.php', ['v'=>AA_JS_VERSION] ));  // already loaded with ckeditor
+$apage->addRequire(get_aa_url('javascript/manager.min.js', ['v'=>AA_JS_VERSION] ));
 // IncludeManagerJavascript() - end
-$apage->addRequire(get_aa_url('javascript/inputform.min.js?v='.AA_JS_VERSION ));
+$apage->addRequire(get_aa_url('javascript/inputform.min.js', ['v'=>AA_JS_VERSION] ));
 
 // removed - maybe we will have to put it back
 //  <link rel="StyleSheet" href="'.AA_INSTAL_PATH.'tabledit.css"  title="TableEditCSS">

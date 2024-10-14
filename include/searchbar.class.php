@@ -137,6 +137,8 @@ class AA_Searchbar extends AA_Storable {
 
     /** AA_Searchbar function
      *  constructor
+     *
+     * @param $hint_url
      * @param $fields AA\Util\Searchfields
      * @param $form_name
      * @param $search_row_count_min
@@ -144,9 +146,8 @@ class AA_Searchbar extends AA_Storable {
      * @param $add_empty_search_row
      * @param $show
      * @param $hint
-     * @param $hint_url
      */
-    function __construct($fields=null, $form_name='foo', $search_row_count_min=1, $order_row_count_min=1, $add_empty_search_row=1, $show=null, $hint='', $hint_url='', ?string $module_id = null) {
+    function __construct(?string $module_id = null, $fields=null, $form_name='foo', $search_row_count_min=1, $order_row_count_min=1, $add_empty_search_row=1, $show=null, $hint='', $hint_url='') {
         $this->fields               = $fields;
         $this->form_name            = $form_name;
         $this->search_row_count_min = $search_row_count_min;
@@ -461,7 +462,8 @@ class AA_Searchbar extends AA_Storable {
      /** getBookmarkNames function
       *  @return array of bookmark names <key> => <name>
       */
-    function getBookmarkNames() {
+    function getBookmarkNames(): array
+    {
         return isset($this->bookmarks) ? $this->bookmarks->getKeyName() : [];
     }
 
@@ -689,7 +691,8 @@ class AA_Bookmarks {
     /** Get array of bookmark (<key> => <name>)
      * @return array 'id'=>'name'
      */
-    function getKeyName() {
+    function getKeyName(): array
+    {
         $ret = [];
         if ( isset($this->bookmarks) AND is_array($this->bookmarks) ) {
             foreach ( $this->bookmarks as $key => $book ) {
