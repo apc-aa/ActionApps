@@ -505,7 +505,7 @@ class DB_ODBC extends AbstractDB {
                     $uniq[] = $res[$i]["name"];
                 }
             }
-            $res["unique"] = join(" ", $uniq);
+            $res["unique"] = implode(" ", $uniq);
         }
 
         // free the result only if we were called on a table
@@ -521,7 +521,7 @@ class DB_ODBC extends AbstractDB {
         $h = odbc_tables($this->Link_ID);
         $i = 0;
         while (odbc_fetch_row($h)) {
-            if (odbc_result($h, 4) == "TABLE") {
+            if (odbc_result($h, 4) === "TABLE") {
                 $return[$i]["table_name"] = odbc_result($h, 3);
                 $return[$i]["tablespace_name"] = odbc_result($h, 1);
                 $return[$i]["database"] = odbc_result($h, 1);

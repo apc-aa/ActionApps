@@ -93,11 +93,11 @@ abstract class AbstractDB {
 
     /* private: error handling */
     function halt($msg) {
-        if ($this->get_halt() == 'no') {
+        if ($this->get_halt() === 'no') {
             return;
         }
         $this->haltmsg($msg);
-        if ($this->get_halt() != 'report') {
+        if ($this->get_halt() !== 'report') {
             die("Session halted.");
         }
     }

@@ -58,8 +58,8 @@ class DB_PDO extends AbstractDB {
 
     /** Quotes table name or column name */
     function quote_identifier(string $str): string {
-        $char = ($this->Server == 'mysql') ? '`' : '"';   // in original was used just '"' character (which is SQL standard and could be OK)
-        return $char. join("$char.$char", explode(".", $str)) . $char;
+        $char = ($this->Server === 'mysql') ? '`' : '"';   // in original was used just '"' character (which is SQL standard and could be OK)
+        return $char. implode("$char.$char", explode(".", $str)) . $char;
     }
 
     /**
@@ -279,6 +279,7 @@ class DB_PDO extends AbstractDB {
             $this->sth = $this->dbh->query($Query_String, PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             $this->halt("SQL Query Failed: $Query_String ". $e->getMessage());
+            return false;
         }
         #if ($this->sth->rowCount()) {
         #	$result = $this->sth->setFetchMode(PDO::FETCH_BOTH); /wasn't required, must be default.
@@ -287,6 +288,7 @@ class DB_PDO extends AbstractDB {
         $this->getErrorInfo();
         if (!$this->sth) {
             $this->halt("SQL Query Failed: ".$Query_String);
+            return false;
         }
 
         return $this->sth;
@@ -672,7 +674,7 @@ class DB_PDO extends AbstractDB {
                     $num = $attnums[$row["num"]];
                     $def = $row["def"];
                     $res[$num]["default"] = $def;
-                    if (substr($def, 0, 8) == 'nextval(') {
+                    if (str_starts_with($def, 'nextval(')) {
                         $res[$num]["extra"] = "auto_increment";
                     }
                 }

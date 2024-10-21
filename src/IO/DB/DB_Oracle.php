@@ -199,7 +199,7 @@ namespace AA\IO\DB;
 //    }
 //
 //    function lock($table, $mode = "write") {
-//        if ($mode == "write") {
+//        if ($mode === "write") {
 //            $result = ora_do($this->Link_ID, "lock table $table in row exclusive mode");
 //        } else {
 //            $result = 1;
@@ -273,7 +273,7 @@ namespace AA\IO\DB;
 //            if ($this->Record['index_name']) {
 //                $res[$i]["flags"] = "INDEX ";
 //            }
-//            $res[$i]["flags"] .= ($this->Record['nullable'] == 'N') ? '' : 'NOT NULL';
+//            $res[$i]["flags"] .= ($this->Record['nullable'] === 'N') ? '' : 'NOT NULL';
 //            $res[$i]["format"] = (int)$this->Record['data_precision'] . "," .
 //                (int)$this->Record['data_scale'];
 //            if ("0,0" == $res[$i]["format"]) {

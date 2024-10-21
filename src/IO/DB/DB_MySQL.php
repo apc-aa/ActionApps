@@ -50,7 +50,7 @@ class DB_MySQL extends AbstractDB {
     /** Quotes table name or column name */
     function quote_identifier(string $str): string {
         $char = '`';   // in original was used just '"' character (which is SQL standard and could be OK)
-        return $char. join("$char.$char", explode(".", $str)) . $char;
+        return $char. implode("$char.$char", explode(".", $str)) . $char;
     }
 
     /* public: connection management */
@@ -198,7 +198,7 @@ class DB_MySQL extends AbstractDB {
         $query = "lock tables ";
         if (is_array($table)) {
             foreach ($table as $key=>$value) {
-                if ($key == "read" && $key != 0) {
+                if ($key === "read" && $key != 0) {
                     $query .= "$value read, ";
                 } else {
                     $query .= "$value $mode, ";
@@ -355,7 +355,7 @@ class DB_MySQL extends AbstractDB {
             }
 
             $res[$i]["key"] = $row["Key"];
-            if ($row["Key"] == 'PRI') {
+            if ($row["Key"] === 'PRI') {
                 $res[$i]["flags"] = 'primary_key';  // to be compatible with db_mysql
             }
             $res[$i]["chars"] = $fsize;

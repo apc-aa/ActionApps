@@ -285,10 +285,10 @@ class DB_OCI8 extends AbstractDB {
             if ($this->Record["index_name"]) {
                 $res[$i]["flags"] = "INDEX ";
             }
-            $res[$i]["flags"] .= ($this->Record["nullable"] == 'N') ? '' : 'NOT NULL';
+            $res[$i]["flags"] .= ($this->Record["nullable"] === 'N') ? '' : 'NOT NULL';
             $res[$i]["format"] = (int)$this->Record["data_precision"] . "," .
                 (int)$this->Record["data_scale"];
-            if ("0,0" == $res[$i]["format"]) {
+            if ("0,0" === $res[$i]["format"]) {
                 $res[$i]["format"] = '';
             }
             $res[$i]["index"] = $this->Record["index_name"];
@@ -370,7 +370,7 @@ class DB_OCI8 extends AbstractDB {
 
     function lock($table, $mode = "write") {
         $this->connect();
-        if ($mode == "write") {
+        if ($mode === "write") {
             $Parse = ociparse($this->Link_ID, "lock table $table in row exclusive mode");
             ociexecute($Parse);
         } else {

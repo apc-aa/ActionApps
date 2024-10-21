@@ -109,7 +109,7 @@ class DB_PgSQL extends AbstractDB {
     }
 
     function lock($table, $mode = "write") {
-        if ($mode == "write") {
+        if ($mode === "write") {
             $result = pg_exec($this->Link_ID, "lock table $table");
         } else {
             $result = 1;

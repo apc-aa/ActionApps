@@ -65,7 +65,7 @@ class DB_AA extends AbstractDB
     }
 
     /** just for debug purposes */
-     static public function getDbType(): string {
+     public static function getDbType(): string {
          $db = getDB();
          $type = $db->getType();
          freeDB($db);
@@ -83,7 +83,7 @@ class DB_AA extends AbstractDB
      * @return array|mixed
      */
     public function __get($name) {
-        if ($name == 'Record') {
+        if ($name === 'Record') {
             return $this->record();
         }
     }
@@ -104,8 +104,8 @@ class DB_AA extends AbstractDB
      */
     public static function select1($column, $query, $where = [], $order = [], int $row=1) {
         $db = getDB();
-        $query .= $where ? ' ' . DB_AA::makeWhere($where) : '';
-        $query .= $order ? ' ' . DB_AA::makeOrder($order) : '';
+        $query .= $where ? ' ' . self::makeWhere($where) : '';
+        $query .= $order ? ' ' . self::makeOrder($order) : '';
 
         $offset = ($row>1) ? (($row-1).',') : '';
 
@@ -154,9 +154,9 @@ class DB_AA extends AbstractDB
      */
     static function select($column, $query, $where = null, $order = null, ?array $group = null, int $rows=0): array {
         $db = getDB();
-        $query .= is_array($where) ? ' ' . DB_AA::makeWhere($where) : '';
-        $query .= is_array($order) ? ' ' . DB_AA::makeOrder($order) : '';
-        $query .= $group           ? ' ' . DB_AA::makeGroup($group) : '';
+        $query .= is_array($where) ? ' ' . self::makeWhere($where) : '';
+        $query .= $group           ? ' ' . self::makeGroup($group) : '';
+        $query .= is_array($order) ? ' ' . self::makeOrder($order) : '';
         $query .= ($rows>0)        ? ' LIMIT 0,'.$rows              : '';
 
         $db->query($query);
@@ -197,7 +197,7 @@ class DB_AA extends AbstractDB
                 }
             } elseif (!is_array($values)) {
                 if (is_string($values)) {
-                    if ($values[0] == '+') {                              // array('id'=>'+other')
+                    if ($values[0] === '+') {                              // array('id'=>'+other')
                         $values = substr($values, 1);
                         while ($db->next_record()) {
                             $ret[$db->record($key)][] = $db->record($values);
@@ -229,7 +229,7 @@ class DB_AA extends AbstractDB
      **/
     static function sql($query, $where = null) {
         $db = getDB();
-        $query .= is_array($where) ? ' ' . DB_AA::makeWhere($where) : '';
+        $query .= is_array($where) ? ' ' . self::makeWhere($where) : '';
         $ret = $db->query($query) ? $db->affected_rows() : false;
         freeDB($db);
         return $ret;
@@ -241,7 +241,7 @@ class DB_AA extends AbstractDB
      * @return false|int
      */
     static function delete($table, $where = null) {
-        return DB_AA::sql("DELETE FROM `$table` ", $where);
+        return self::sql("DELETE FROM `$table` ", $where);
     }
 
     /** LOW PRIORITY version of DB_AA::delete()
@@ -250,7 +250,7 @@ class DB_AA extends AbstractDB
      * @return false|int
      */
     static function delete_low_priority($table, $where = null) {
-        return DB_AA::sql("DELETE LOW_PRIORITY FROM `$table` ", $where);
+        return self::sql("DELETE LOW_PRIORITY FROM `$table` ", $where);
     }
 
     /** check if Table exists
@@ -259,7 +259,7 @@ class DB_AA extends AbstractDB
      */
     public static function exists_table(string $table): bool
     {
-        return (false !== DB_AA::select1('', 'SELECT table_schema FROM information_schema.tables', [['table_schema', DB_NAME], ['table_name', $table]]));
+        return (false !== self::select1('', 'SELECT table_schema FROM information_schema.tables', [['table_schema', DB_NAME], ['table_name', $table]]));
     }
 
     /** check if Table column exists
@@ -269,7 +269,7 @@ class DB_AA extends AbstractDB
      */
     public static function exists_column(string $table, string $col): bool
     {
-        return (DB_AA::select1('', 'SELECT COUNT(*) AS count FROM information_schema.columns', [['table_schema', DB_NAME], ['table_name', $table], ['column_name', $col]])['count'] > 0);
+        return (self::select1('', 'SELECT COUNT(*) AS count FROM information_schema.columns', [['table_schema', DB_NAME], ['table_name', $table], ['column_name', $col]])['count'] > 0);
     }
 
     /** creates cols string for INSERT or UPDATE
@@ -282,19 +282,12 @@ class DB_AA extends AbstractDB
         foreach ($varlist as $vardef) {
             // $vardef is array(varname, value, type)
             [$name, $value, $type] = $vardef;
-            switch ($type) {
-                case "i":
-                    $part = (int)$value;
-                    break;
-                case "l":
-                    $part = xpack_id($value);
-                    break;
-                case "q":
-                    $part = "'$value'";
-                    break;
-                default:
-                    $part = "'" . addslashes($value) . "'";
-            }
+            $part  = match ($type) {
+                "i" => (int)$value,
+                "l" => xpack_id($value),
+                "q" => "'$value'",
+                default => "'".addslashes($value)."'",
+            };
             $cols .= "$delim $name = $part";
             $delim = " ,";
         }
@@ -308,8 +301,8 @@ class DB_AA extends AbstractDB
      * @return false|void
      */
     static function update(string $table, array $varlist, array $where) {
-        $cols = DB_AA::makeCols($varlist);
-        $wh   = DB_AA::makeWhere($where);
+        $cols = self::makeCols($varlist);
+        $wh   = self::makeWhere($where);
         $ret  = false;
         if ($cols and $wh) {
             $db = getDB();
@@ -328,8 +321,8 @@ class DB_AA extends AbstractDB
      *           DB_AA::test(['content','item'], [['content.item_id', 'item.id', 'j'],['item.slice_id', $slice_id, 'l']]);
      */
     static function test($table, $where): bool {
-        $tbl = is_array($table) ? '`' . join('`,`', $table) . '`' : "`$table`";
-        return (false !== DB_AA::select1('', "SELECT " . ($where[0][0]) . " FROM $tbl ", $where));
+        $tbl = is_array($table) ? '`' . implode('`,`', $table) . '`' : "`$table`";
+        return (false !== self::select1('', "SELECT " . ($where[0][0]) . " FROM $tbl ", $where));
     }
 
     /** makeWhere function
@@ -362,7 +355,7 @@ class DB_AA extends AbstractDB
      * @param $tablename
      * @return string
      */
-    static public function makeWhere($varlist) {
+    public static function makeWhere($varlist) {
         $where = [];
         foreach ($varlist as $vardef) {
             // $vardef is array(varname, type, value)
@@ -371,32 +364,32 @@ class DB_AA extends AbstractDB
             if (in_array($type, ['>', '<', '<=', '>=', '<>', '!='])) {
                 $operator = $type;
                 $type = 'i';
-            } elseif (($type == 'LIKE') or ($type == 'NOT LIKE')) {
+            } elseif (($type === 'LIKE') or ($type === 'NOT LIKE')) {
                 $where[] = "$name $type '". addcslashes($value,"'") . "'";    // see field LIKE '\_%'
                 continue;
-            } elseif ($type == 'RLIKE') {
+            } elseif ($type === 'RLIKE') {
                 $where[] = "$name LIKE " . qquote($value . '%');
                 continue;
-            } elseif ($type == 'BEGIN') {
+            } elseif ($type === 'BEGIN') {
                 if (is_array($value)) {
                     // join conditions by OR
-                    $where[] = '(' . join(' OR ', array_map(fn($v) => "$name LIKE '" . addcslashes(quote($v), "_%") . "%'", $value)) . ')';
+                    $where[] = '(' . implode(' OR ', array_map(fn($v) => "$name LIKE '" . addcslashes(quote($v), "_%") . "%'", $value)) . ')';
                 } else {
                     $where[] = "$name LIKE '". addcslashes(quote($value),"_%") ."%'";
                 }
                 continue;
-            } elseif ($type == 'NOT BEGIN') {
+            } elseif ($type === 'NOT BEGIN') {
                 if (is_array($value)) {
                     // join conditions by OR
-                    $where[] = '(' . join(' AND ', array_map(fn($v) => "$name NOT LIKE '" . addcslashes(quote($v), "_%") . "%'", $value)) . ')';
+                    $where[] = '(' . implode(' AND ', array_map(fn($v) => "$name NOT LIKE '" . addcslashes(quote($v), "_%") . "%'", $value)) . ')';
                 } else {
                     $where[] = "$name NOT LIKE '". addcslashes(quote($value),"_%") ."%'";
                 }
                 continue;
-            } elseif ($type == 'CONTAIN') {
+            } elseif ($type === 'CONTAIN') {
                 $where[] = "$name LIKE '%". addcslashes(quote($value),"_%") ."%'";
                 continue;
-            } elseif (($type == 's<>') or ($type == 's!=')) {
+            } elseif (($type === 's<>') or ($type === 's!=')) {
                 if (is_array($value)) {
                     switch (count($value)) {
                         case 0:
@@ -406,22 +399,22 @@ class DB_AA extends AbstractDB
                             $where[] = "$name <> " . qquote(reset($value));
                             break;
                         default:
-                            $where[] = "$name NOT IN (" . join(',', array_map('qquote', $value)) . ")";
+                            $where[] = "$name NOT IN (" . implode(',', array_map('qquote', $value)) . ")";
                     }
                 } else {
                     $where[] = "$name <> " . qquote($value);
                 }
                 continue;
-            } elseif (($type == 'l<>') or ($type == 'l!=')) {
+            } elseif (($type === 'l<>') or ($type === 'l!=')) {
                 $where[] = "$name <> " . xpack_id($value);
                 continue;
-            } elseif ($type == 'FILLED') {
+            } elseif ($type === 'FILLED') {
                 $where[] = "$name > '' ";             // this is kind of trick for - not null, not empty, not any whitespace character(s) - thanks: https://stackoverflow.com/questions/1869264#42723975
                 continue;
-            } elseif ($type == 'ISNULL') {
+            } elseif ($type === 'ISNULL') {
                 $where[] = "$name IS NULL ";
                 continue;
-            } elseif ($type == 'NOTNULL') {
+            } elseif ($type === 'NOTNULL') {
                 $where[] = "$name IS NOT NULL ";
                 continue;
             } else {
@@ -451,16 +444,11 @@ class DB_AA extends AbstractDB
                         $where[] = "$name = " . qquote($value);
                 }
             } else {
-                switch ($type) {
-                    case "i":
-                        $arr = array_map('intval', $value);
-                        break;
-                    case "l":
-                        $arr = array_map('xpack_id', $value);
-                        break;
-                    default:
-                        $arr = array_map('qquote', $value);
-                }
+                $arr = match ($type) {
+                    "i"     => array_map('intval', $value),
+                    "l"     => array_map('xpack_id', $value),
+                    default => array_map('qquote', $value),
+                };
                 switch (count($arr)) {
                     case 0:
                         $where = ["2=1"];
@@ -469,40 +457,35 @@ class DB_AA extends AbstractDB
                         $where[] = "$name $operator " . reset($arr);
                         break;
                     default:
-                        $where[] = "$name IN (" . join(',', $arr) . ")";
+                        $where[] = "$name IN (" . implode(',', $arr) . ")";
                 }
             }
         }
-        return count($where) ? "WHERE " . join(' AND ', $where) : '';
+        return count($where) ? "WHERE " . implode(' AND ', $where) : '';
     }
 
     /** generate order phrase
      * @param $orderarr  array of order fields - ['id','time-']
      * @return string
      */
-    static protected function makeOrder($orderarr) {
+    protected static function makeOrder($orderarr) {
         $order = [];
         foreach ($orderarr as $sort) {
-            switch (substr($sort, -1)) {    // last character
-                case '-':
-                    $order[] = substr($sort, 0, -1) . ' DESC';
-                    break;
-                case '+':
-                    $order[] = substr($sort, 0, -1);
-                    break;
-                default:
-                    $order[] = $sort;
-            }
+            $order[] = match (substr($sort, -1)) {
+                '-' => substr($sort, 0, -1).' DESC',
+                '+' => substr($sort, 0, -1),
+                default => $sort,
+            };
         }
-        return $order ? 'ORDER BY ' . join(',', $order) : '';
+        return $order ? 'ORDER BY ' . implode(',', $order) : '';
     }
 
     /** generate GROUP BY phrase
      * @param array $group  fields - ['id','time']
      * @return string
      */
-    static protected function makeGroup(array $group): string {
-        return 'GROUP BY ' . join(',', $group);
+    protected static function makeGroup(array $group): string {
+        return 'GROUP BY ' . implode(',', $group);
     }
 
     /** query function
@@ -520,7 +503,7 @@ class DB_AA extends AbstractDB
      * @param $msg
      */
     function halt($msg) {
-        if ($this->get_halt() == "no") {
+        if ($this->get_halt() === "no") {
             return;
         }
 
@@ -533,7 +516,7 @@ class DB_AA extends AbstractDB
         // It works pretty well, but if you link the external css on that page,
         // then it is not found, which is unexpected behavior. So, you can't use
         // the variables on that page. Honza, 2007-12-05
-        if (defined('DB_ERROR_PAGE') and ($this->get_halt() == "yes")) {
+        if (defined('DB_ERROR_PAGE') and ($this->get_halt() === "yes")) {
             ob_end_clean();
             // AA_Http::go(DB_ERROR_PAGE, array('Err'=>$this->Errno, 'ErrMsg'=>$this->Error, 'Msg'=>$msg), 'POST', false);
             // sending variables disabled - see the comment above
@@ -548,16 +531,16 @@ class DB_AA extends AbstractDB
         echo "\n<br><b>Error Number:</b>: " . $this->Errno;
         echo "\n<br><b>Error Description:</b>: " . $this->Error;
         echo "\n<br>Please contact " . ERROR_REPORTING_EMAIL . " and report the exact error message.<br>\n";
-        if ($this->get_halt() == "yes") {
+        if ($this->get_halt() === "yes") {
             die("Session halted.");
         }
     }
 
     function quote($string) { return $this->dbase->quote($string); }
 
-    static public function quoteIdentifier(string $str): string {
+    public static function quoteIdentifier(string $str): string {
         $char = in_array(DB_TYPE, ['db_mysql','db_mysqli','db_pdo:mysql']) ? '`' : '"';   // in original was used just '"' character (which is SQL standard and could be OK), but using PDO with mysql needs '`' character
-        return $char. join("$char.$char", explode(".", $str)) . $char;
+        return $char. implode("$char.$char", explode(".", $str)) . $char;
     }
 
     /** you must have $dbase link to quote. If you do not have it, you can use quoteIdentifier() */

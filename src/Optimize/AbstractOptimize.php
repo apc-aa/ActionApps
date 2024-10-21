@@ -95,9 +95,9 @@ abstract class AbstractOptimize implements \AA\Util\NamedInterface {
         $content->setAaValue('actions',     new AA_Value(static::actions()));
         $content->setAaValue('types',       new AA_Value(static::types()));
         $content->setAaValue('priority',    new AA_Value(static::priority()));
-        $res = AbstractOptimize::$action_results[get_class_name(static::class)] ?? '-';
+        $res = self::$action_results[get_class_name(static::class)] ?? '-';
         $content->setAaValue('result',      new AA_Value(($res==='-') ? '' : ($res ? 'OK' : 'ERR'))); // result is '' when no action was performed, OK or ERR as action result
-        $content->setAaValue('resulttxt',   new AA_Value(AbstractOptimize::$action_results_text[get_class_name(static::class)] ?? ''));
+        $content->setAaValue('resulttxt',   new AA_Value(self::$action_results_text[get_class_name(static::class)] ?? ''));
     }
 
     /** This function stores global state for all optimizations.
@@ -119,19 +119,25 @@ abstract class AbstractOptimize implements \AA\Util\NamedInterface {
 
     /** $db->query wrapper - always use it to not execute the command and just
      *  display it, ...
+     *
+     * @throws \RuntimeException
      */
-    function query($SQL) {
+    public function query($SQL) {
         $this->message(safe($SQL));
-        $just_print = AbstractOptimize::justPrint();
+        $just_print = self::justPrint();
 
         if ($just_print) {
-            return;
+            return true;
         }
         if (!$this->db) {
             $this->db = getDb();
             $this->db->set_halt('report');
         }
         $db = $this->db;
-        $db->query($SQL);
+
+        if (!($ret = $db->query($SQL))) {
+            throw new \RuntimeException('db err');  // @todo - better exception text
+        }
+        return $ret;
     }
 }
