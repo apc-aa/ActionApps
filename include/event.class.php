@@ -696,6 +696,7 @@ function Event_ItemUpdated_Efekt( $type, $slice_id, $slice_type, $ret_params, $f
     $email1   = trim($ret_params->getValue('con_email.......'));
     $post_date = trim($ret_params->getValue('post_date.......'));
 
+    // if ((time()-$post_date) > 864000) {  // starsi 10 dni - neposilame - pravdepodobne editace starych dotazů
     if ((time()-$post_date) > 2592000) {  // starsi 30 dni - neposilame - pravdepodobne editace starych dotazů
         return false;
     }
