@@ -61,7 +61,7 @@ function CountItemsInBins() {
 }
 
 if ( !IsSuperadmin() ) {
-    MsgPage(_m("You do not have permission to manage ActionApps instalations"));
+    MsgPage(_m("You do not have permission to manage ActionApps installations"));
     exit;
 }
 
@@ -110,7 +110,8 @@ $managed = $metabase->getManagerConf('central_conf', $actions, $switches);
 $managed->setTitle(_m('ActionApps Central'));
 //         'get_content_funct'    => 'Central_GetAaContent'
 
-$managed->setColumns2show(['ORG_NAME','AA_HTTP_DOMAIN','AA_BASE_DIR']);
+$managed->addColumn('admin_link', _m('Admin Link'), '<a href="_#AA_HTTP_/_#AA_BASE_/admin">Admin</a>');
+$managed->setColumns2show(['ORG_NAME','AA_HTTP_DOMAIN','AA_BASE_DIR', 'admin_link']);
 $manager = new Manager('central', $managed);
 $manager->performActions();
 
