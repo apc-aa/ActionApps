@@ -244,7 +244,7 @@ $headcode = <<<'EOT'
         for (var i = 0; i < listboxes.length; i++) {
            lb = listboxes[i];
            for (var j = 0; j < document.f[lb].length; j++) {
-               document.f[lb].options[j].selected = ( document.f[lb].options[j].value != "wIdThTor" );
+               document.f[lb].options[j].selected = ( document.f[lb].options[j].value !== "wIdThTor" );
            }
         }
         return true;
@@ -256,7 +256,7 @@ EOT;
 $apage = new AA_Adminpageutil('modadmin', 'main');
 $apage->setModuleMenu('modules/site');
 $apage->setTitle($template['W'] ? _m("Add Site") : _m("Edit Site"));
-$apage->addRequire(get_aa_url('/javascript/js_lib.min.js?v='.AA_JS_VERSION, '', false));
+$apage->addRequire(get_aa_url('/javascript/js_lib.min.js', ['v'=>AA_JS_VERSION], false));
 $apage->addRequire($headcode, 'AA_Req_Headcode');
 $apage->addRequire('codemirror@5');
 $apage->setForm();
@@ -266,9 +266,6 @@ $apage->printHead($err, $Msg);
 <form name="f" method=post action="<?php echo StateUrl() ?>" onSubmit="return ModeditSubmit()">
 <?php
     FrmTabCaption(_m("Site"), $form_buttons);
-
-    sitetree::printHiddenRSpotId();
-
 
     ModuleFieldsForm($source_id, $marr = GetModuleFields($source_id), $superadmin, (bool)$template['W'], $new_owner, $new_owner_email);
     $lang_file = rtrim($marr[3],'3');   // trim for old php3 lang file extension

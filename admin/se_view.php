@@ -290,7 +290,7 @@ if ($view_id) {
 }
 
 
-$back_url = ( (($view_type == 'categories') OR ($view_type == 'links')) ?
+$back_url = ( (($view_type === 'categories') OR ($view_type === 'links')) ?
                 get_aa_url('modules/links/modedit.php') :
                 get_admin_url('se_views.php') );
 
@@ -313,6 +313,7 @@ if (!IfSlPerm(PS_FULLTEXT)) {
 $err = [];          // error array (Init - just for initializing variable
 $varset      = new Cvarset();
 $p_slice_id  = q_pack_id(AA::$module_id);
+$slice = AA_Slice::getModule(AA::$module_id);
 
 $VIEW_FIELDS      = getViewFields();
 $view_field_names = getViewTypes()[$view_type];
@@ -344,7 +345,7 @@ if ( $update ) {
                     $add_later[$fld] += (int)$$k * (2**$num);
                     continue;
                 }
-                if ($v["type"] == "bool") {
+                if ($v["type"] === "bool") {
                     $insval  = $insval  ? 1 : 0;
                 }
                 if ($v["max"]) {
@@ -396,9 +397,9 @@ if ( !$update ) {  // set variables from database
     } elseif ($new_templ AND $view_view) {
         // new view from template
         $vw_data = DB_AA::select1('', 'SELECT * FROM view', [['id', $view_view, 'i']]);
-    } elseif ( $view_type == 'inputform') {
+    } elseif ( $view_type === 'inputform') {
         // new view - inputform
-        $vw_data['odd'] = GetInputFormTemplate(); // get current input form template
+        $vw_data['odd'] = (new inputform())->getForm(new ItemContent(), $slice); // get current input form template
     } elseif ( $view_type ) {
         // new view - get default values from view table -
         //            take first view of the same type
@@ -421,7 +422,7 @@ if ( !$update ) {  // set variables from database
     if ( $vw_data ) {
         $view_type = $vw_data['type'];
         // fix for old view type
-        if ($view_type=='script') {
+        if ($view_type === 'script') {
             $view_type = 'javascript';
         }
     } else {
@@ -463,11 +464,9 @@ if ( $view_type_info['fields'] ) {
     $lf = $field_func();
     $lookup_fields += (is_object($lf) ? $lf->getSearchArray() : $lf);
 } else {
-    $serchbar = new AA_Searchbar();
-
+    // $serchbar = new AA_Searchbar();
     $lookup_fields = AA_Fields::getFields4Select(AA::$module_id, false, 'name', true, true);
 }
-$slice = AA_Slice::getModule(AA::$module_id);
 
 $headcode = <<<'EOT'
 <script>
@@ -504,7 +503,7 @@ EOT;
 
 $apage = new AA_Adminpageutil($mainmenu, $submenu);
 
-if (($view_type == 'categories') OR ($view_type == 'links')) {
+if (($view_type === 'categories') OR ($view_type === 'links')) {
     $apage->setModuleMenu('modules/links');
 }
 
@@ -576,9 +575,9 @@ foreach ($view_field_names as $k => $v) {
         case "bitflag": FrmInputChBox( $k, $label, $value, false, '', 1, false, $help); break;
                         // BitFlagFrm( $k, $label, $value); break;
         case "cond":    ConditionFrm(  $k, $label, $value); break;
-        case "order":   OrderFrm(      $k, $label, $value, $lookup_fields, $view_type_info['order'] == 'easy'); break;
+        case "order":   OrderFrm(      $k, $label, $value, $lookup_fields, $view_type_info['order'] === 'easy'); break;
         case "orderal": OrderAliasFrm( $k, $label, $value); break;
-        case "group":   OrderFrm(      $k, $label, $value, $lookup_fields, $view_type_info['order'] == 'easy', true); break;
+        case "group":   OrderFrm(      $k, $label, $value, $lookup_fields, $view_type_info['order'] === 'easy', true); break;
         case "select":  FrmInputSelect($k, $label, $VIEW_FIELDS[$k]['value'], $vw_data[$k], false, $help); break;
         case "none":    break;
     }

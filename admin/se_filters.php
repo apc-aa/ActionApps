@@ -92,9 +92,11 @@ if ( $import_id == "" ) {
 }
 $p_import_id = q_pack_id($import_id);
 
+$slice = AA_Slice::getModule(AA::$module_id);
 
 // lookup (to_categories)
-$group = GetCategoryGroup(AA::$module_id);
+$group =  $slice?->getFields()->getCategoryGroup();
+
 if ( $group ) {
     $db->query("SELECT id, name FROM constant
                  WHERE group_id='$group'
@@ -114,7 +116,7 @@ if ($feed_id = $remote_slices[$import_id]) {   // not comparison! - external fee
 
     $ext_categs = FeedUtil::GetExternalCategories($feed_id, true);  // get also default 'AA_Other_Categor' category
 
-    $imp_count  = sizeof($ext_categs);
+    $imp_count  = count($ext_categs);
 
     if ($ext_categs AND is_array($ext_categs)) {
 
@@ -134,17 +136,16 @@ if ($feed_id = $remote_slices[$import_id]) {   // not comparison! - external fee
         }
     }
 } else {   // inner feeding
-    $imp_group = GetCategoryGroup($import_id);
+// lookup (to_categories)
+    $imp_group =  AA_Slice::getModule($import_id)?->getFields()->getCategoryGroup();
 
     // count number of imported categories
-    $SQL= "SELECT count(*) as cnt FROM constant
-            WHERE group_id='$imp_group'";
+    $SQL= "SELECT count(*) as cnt FROM constant WHERE group_id='$imp_group'";
     $db->query($SQL);
     $imp_count = ($db->next_record() ? $db->f('cnt') : 0);
 
     // preset variables due to feeds database
-    $SQL= "SELECT category_id, to_category_id, all_categories, to_approved FROM feeds
-            WHERE from_id='$p_import_id' AND to_id='$p_slice_id'";
+    $SQL= "SELECT category_id, to_category_id, all_categories, to_approved FROM feeds WHERE from_id='$p_import_id' AND to_id='$p_slice_id'";
     $db->query($SQL);
     while ($db->next_record()) {
         if ( $db->f('all_categories') ) {
@@ -167,11 +168,11 @@ $apage->printHead($err, $Msg);
 $form_buttons= [
     "btn_upd"=> [
         "type"  =>"button",
-                               "value"       =>_m("Update"),
-                               "accesskey"   =>"S",
-                               "add"         =>"onclick=\"UpdateFilters('".AA::$module_id."','".$import_id."')\""
+        "value"       =>_m("Update"),
+        "accesskey"   =>"S",
+        "add"         =>"onclick=\"UpdateFilters('".AA::$module_id."','".$import_id."')\""
     ],
-                    "cancel" => ["url"   =>"se_fields.php"]
+    "cancel" => ["url" =>"se_fields.php"]
 ];
 
 FrmTabCaption(_m("Content Pooling - Configure Filters"), $form_buttons);
@@ -304,7 +305,7 @@ FrmTabEnd($form_buttons);
         url += "&slice_id=" + slice_id
         url += "&import_id=" + import_id
         url += "&feed_id=<?php echo $feed_id ?>"
-        if ((typeof document.f.all_categories == 'undefined') || document.f.all_categories.checked) { // no import cats
+        if ((typeof document.f.all_categories === 'undefined') || document.f.all_categories.checked) { // no import cats
             done = 1
             if ( <?php echo (( isset($to_categories) AND is_array($to_categories)) ? 1 : 0 ) ?> ) {
                 url += "&all=1&C=" + encodeURIComponent(document.f.categ_0.value)

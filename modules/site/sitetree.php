@@ -235,10 +235,10 @@ class spot {
     function Variables()                   { return $this->v; }
 
     function get_translated($what)         { return $this->$what; }
-    function get($what)                    { return $this->get_translated(spot::SPOT_VAR_NAMES[$what]); }
+    function get($what)                    { return $this->get_translated(self::SPOT_VAR_NAMES[$what]); }
 
     function set_translated($what, $value) { $this->$what = $value; }
-    function set($what,$value)             { $this->set_translated(spot::SPOT_VAR_NAMES[$what], $value); }
+    function set($what,$value)             { $this->set_translated(self::SPOT_VAR_NAMES[$what], $value); }
 
     function conditionMatches($state) {
         if ( isset($this->c) AND is_array($this->c) ) {  //c is array of conditions
@@ -258,9 +258,26 @@ class sitetree {
     protected $tree;
     protected $start_id;
 
+    /** @var int Current spot id */
+    protected int $current_id;
+
     function __construct($spot=false) {
-        $this->tree[1]  = new spot( $spot['spot_id'], $spot['name'] ?:'start', $spot['conditions'], $spot['variables'], $spot['spot_id'], [$spot['spot_id']], $spot['flag'] );
-        $this->start_id = $spot['spot_id'];
+        $this->tree[1]    = new spot( $spot['spot_id'], $spot['name'] ?:'start', $spot['conditions'], $spot['variables'], $spot['spot_id'], [$spot['spot_id']], $spot['flag'] );
+        $this->start_id   = (int) $spot['spot_id'];
+        $this->current_id = $this->start_id;
+    }
+
+    /** current_id could be undefined when we deserialize older object */
+    public function __wakeUp() {
+        $this->current_id ??= $this->start_id;
+    }
+
+    public function setCurrentId(int $id) {
+        $this->current_id = $id;
+    }
+
+    public function getCurrentId(): int {
+        return $this->current_id;
     }
 
     /** Creates the spot object and adds it in the sequence (positions) */
@@ -384,7 +401,7 @@ class sitetree {
         $spot_type = $parent->isChoice($spot_id) ? 'choice' : 'sequence';
 
         $destination_parent_id = false;
-        if ($direction == 'moveLeft') {
+        if ($direction === 'moveLeft') {
             // destination_parent - parent of our parent (where we are going to move the spot)
             $destination_parent_id = $parent->get('parent');
         } else {       // 'moveRight'
@@ -392,7 +409,7 @@ class sitetree {
             $sibling_id = $spot_id;
             while (false !== ($sibling_id = $this->getNextSibling($sibling_id))) {
                 if ( $this->haveBranches($sibling_id) ) {
-                    if ($spot_type == 'choice') {
+                    if ($spot_type === 'choice') {
                         // if the moved spot is choice, then we just add it to choices
                         $destination_parent_id = $sibling_id;
                     } else {
@@ -421,7 +438,7 @@ class sitetree {
             return false;
         }
 
-        if ($spot_type == 'choice') {
+        if ($spot_type === 'choice') {
             $this->_addChoice($spot, $destination_parent_id);
         } else {
             $this->_addInSequence($spot, $destination_parent_id);
@@ -624,13 +641,13 @@ class sitetree {
             if ($pos) {
                 // There is a bug that introduced empty positions
                 // this is to skip them.
-                if (($method=='all') OR ($method=='collapsed') OR (($method=='cond') AND !$this->isFlag($pos, AA_Module_Site::FLAG_DISABLE))) {
+                if (($method==='all') OR ($method==='collapsed') OR (($method==='cond') AND !$this->isFlag($pos, AA_Module_Site::FLAG_DISABLE))) {
                     call_user_func_array($functions['spot'], [$pos, $depth]);
                }
 
                 // if this position is collapsed, then print only first position
                 // and skip the others as well as all the choices
-                if (($method == 'collapsed') AND $this->isFlag($pos, AA_Module_Site::FLAG_COLLAPSE)) {  // AA_Module_Site::COLLAPSE - collapsed branches.
+                if (($method === 'collapsed') AND $this->isFlag($pos, AA_Module_Site::FLAG_COLLAPSE)) {  // AA_Module_Site::COLLAPSE - collapsed branches.
                     break;
                 }
 
@@ -646,7 +663,7 @@ class sitetree {
                     $choices_index = 0;
                     foreach ($choices as $k => $cho) {
                         if ($cho) { // skip buggy empty choices
-                            if (($method=='all') OR ($method=='collapsed') OR ($this->conditionMatches($cho, $state) AND !$this->isFlag($cho, AA_Module_Site::FLAG_DISABLE))) {
+                            if (($method==='all') OR ($method==='collapsed') OR ($this->conditionMatches($cho, $state) AND !$this->isFlag($cho, AA_Module_Site::FLAG_DISABLE))) {
 
                                 // sometimes it is useful to call a function before the choice
                                 if ($functions['before_choice']) {
@@ -661,7 +678,7 @@ class sitetree {
                                 }
                                 $choices_index++;
 
-                                if ($method=='cond') {
+                                if ($method==='cond') {
                                     break;                 // one matching spot is enough
                                 }
                             }
@@ -686,10 +703,8 @@ class sitetree {
 
 
     function printSpotName_Start($spot_id, $depth) {
-        global $r_spot_id;
-
         // print the spot itself
-        $this->printSpotHtml($spot_id, $this->getName($spot_id), $spot_id == $r_spot_id, ($this->get('flag', $spot_id) & AA_Module_Site::FLAG_DISABLE));
+        $this->printSpotHtml($spot_id, $this->getName($spot_id), $spot_id == $this->current_id, ($this->get('flag', $spot_id) & AA_Module_Site::FLAG_DISABLE));
 
         // variables defined? - print it
         if (!$this->isFlag($spot_id, AA_Module_Site::FLAG_COLLAPSE) AND ($vars = $this->get('variables', $spot_id))) {
@@ -707,9 +722,9 @@ class sitetree {
         if ($this->isLeaf($spot_id)) {
             $colaps = GetModuleImage('site', $last ? 'l.gif' : 't.gif', '', 21, 13);
         } elseif ($this->get('flag', $spot_id) & AA_Module_Site::FLAG_COLLAPSE) {
-            $colaps = '<a href="'. self::siteAdminPageUrl($spot_id, "akce=m") .'">'. GetModuleImage('site', 'plus.gif', '', 21, 13) .'</a> ';
+            $colaps = a_href(self::siteAdminPageUrl($spot_id, ['akce'=>'m']), GetModuleImage('site', 'plus.gif', '', 21, 13));
         } else {
-            $colaps = '<a href="'. self::siteAdminPageUrl($spot_id, "akce=p") .'">'. GetModuleImage('site', 'minus.gif', '', 21, 13) .'</a> ';
+            $colaps = a_href(self::siteAdminPageUrl($spot_id, ['akce'=>'p']), GetModuleImage('site', 'minus.gif', '', 21, 13));
         }
         echo "\n<div class=\"$class\">$colaps";
 
@@ -726,7 +741,7 @@ class sitetree {
         if ($conditions == '') {
             $conditions = '&nbsp;';
         }
-        echo "\n  <div class=\"conditions\"><a href=\"". self::siteAdminPageUrl($spot_id, "go_sid=$spot_id") . "\">$conditions</a></div>";
+        echo "\n  <div class=\"conditions\">". a_href( self::siteAdminPageUrl($spot_id, ['go_sid'=>$spot_id]), $conditions) ."</div>";
     }
 
     function printChoice_End($spot_id, $depth, $choices_index, $choices_count) {
@@ -738,11 +753,11 @@ class sitetree {
         echo "<tr><th>"._m("Spot&nbsp;variables")."</th><td>";
         if (isset($vars) AND is_array($vars)) {
             foreach ($vars as $k => $v) {
-                echo safe($v) ."<span><a href=\"". self::siteAdminPageUrl($spot_id, "delvar=" . rawurlencode($k)) ."\" class=\"aa-button-delete\">"._m("Delete")."</a></span><br>";
+                echo safe($v) ."<span>". a_href(self::siteAdminPageUrl($spot_id, ["delvar"=>$k]), _m("Delete"), ['class'=>"aa-button-delete"]). "</span><br>";
             }
         }
         echo "<form name=fvar action=\"".$_SERVER['PHP_SELF']."\"><input type='text' name='addvar' value='' size='50'><span><a href='javascript:document.fvar.submit()' class=\"aa-button-new\">"._m("Add")."</a></span>";
-        self::printHiddenRSpotId();
+        echo $this->getCurrentSpotId();
         echo StateHidden();
         echo "</form></td></tr>";
     }
@@ -758,7 +773,7 @@ class sitetree {
                 if ($conds[$v]) {
                     $match = AA_Site_Spot_Match::factoryByString($conds[$v],$v);
                     $warning = (trim($match->val) == $match->val) ? '' : '<div style="color:red;"><small>'._m('Warning: the condition starts or ends with whitespace character. Please check, if it is OK in your expression.').'</small></div>';
-                    echo "$safe_v ($match->op) <strong>".safe($match->val)."</strong> <span><a href=\"". self::siteAdminPageUrl($spot_id, 'delcond=' . rawurlencode($v)) ."\" class=\"aa-button-delete\">"._m("Delete")."</a></span>$warning<br>";
+                    echo "$safe_v ($match->op) <strong>".safe($match->val)."</strong> <span>". a_href(self::siteAdminPageUrl($spot_id, ['delcond' =>$v]), _m("Delete"), ['class'=>"aa-button-delete"]). "</span>$warning<br>";
                 } else {
                     echo "<form name=fcond$i action=\"". $_SERVER['PHP_SELF'] ."\">
                          $safe_k
@@ -771,7 +786,7 @@ class sitetree {
                      <input type='hidden' name='addcondvar' value='$safe_v'>
                      <span><a href='javascript:document.fcond$i.submit()' class=\"aa-button-new\">"._m("Add")."</a></span>";
                     echo StateHidden();
-                    self::printHiddenRSpotId();
+                    echo $this->getCurrentSpotId();
                     echo "</form>";
                 }
                 $i++;
@@ -786,26 +801,27 @@ class sitetree {
 
         // get actions (eye for disable/enable, at this moment
         $action = $disabled ?
-            '<a class=eye href="' . self::siteAdminPageUrl($spot_id, 'akce=e') . '">' . GetModuleImage('site', 'disabled.gif', '', 16, 16) . '</a>' :
-            '<a class=eye href="' . self::siteAdminPageUrl($spot_id, 'akce=h') . '">' . GetModuleImage('site', 'enabled.gif', '', 16, 16) . '</a>';
+            a_href(self::siteAdminPageUrl($spot_id, ['akce'=>'e']), GetModuleImage('site', 'disabled.gif', '', 16, 16), ['class'=>'eye']) :
+            a_href(self::siteAdminPageUrl($spot_id, ['akce'=>'h']), GetModuleImage('site', 'enabled.gif', '', 16, 16), ['class'=>'eye']);
 
         // print the spot <div>
-        echo "<div$class title=\"spot ID: $spot_id\">{$action}<a href=\"" . self::siteAdminPageUrl($spot_id, "go_sid=$spot_id") . "\" class=\"spot\">$spot_name</a></div>";
+        echo "<div$class title=\"spot ID: $spot_id\">{$action}". a_href(self::siteAdminPageUrl($spot_id, ["go_sid"=>$spot_id]), $spot_name ?: '&nbsp;', ['class'=>"spot"]). "</div>";
     }
 
-    public static function printHiddenRSpotId() {
-        print('<input type="hidden" name="spot_id" value="' . $GLOBALS['r_spot_id'] . '">');
+    public function getCurrentSpotId(): string
+    {
+        return '<input type="hidden" name="spot_id" value="' . $this->current_id . '">';
     }
 
-    public static function siteAdminPageUrl($spot_id, $add = null) {
-        global $slice_id;
-        $url = get_url($_SERVER['PHP_SELF'], ['spot_id'  => $spot_id,
-                                              'slice_id' => $slice_id
-        ]);   // Always used this way
-        if ($add) {
-            $url = get_url($url, $add);
-        }
-        // Don't add AA_Session if already there (it isn't in PHP_SELF)
-        return safe(StateUrl($url));
+    public static function siteAdminPageUrl($spot_id, array $add=[]): string
+    {
+        return get_url($_SERVER['PHP_SELF'], ['spot_id' => $spot_id] + $add, true);
+    }
+
+    public static function siteActionLink($spot_id, $action, $text, $img, $link = null, $add=[]): string
+    {
+        $link ??= self::siteAdminPageUrl($spot_id, ['akce' => $action]);
+        $image  = $img ? GetModuleImage('site', $img, '', 16, 16).' ' : '';
+        return a_href($link, "$image$text", $add + ['class' => 'aa-button']);
     }
 };

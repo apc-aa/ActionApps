@@ -54,7 +54,7 @@ class ScheduleAaTasks implements LaterInterface
 
         // clean all older than 40 days
         //                                                          what to clean                          when to run
-        $toexecute->laterOnce(new LogCleanup(now() - (60*60*24*40), [], ['LOGIN']), [], "LogCleanup", 10, now() + (60*60*24));  // delete all log entries older than 40 days except LOGINs
+        $toexecute->laterOnce(new LogCleanup(now() - (60*60*24*40), [], ['LOGIN', 'BM_CREATE', 'BM_DELETE', 'BM_RENAME', 'BM_UPDATE']), [], "LogCleanup", 10, now() + (60*60*24));  // delete all log entries older than 40 days except LOGINs and Bookmark opperations
         // clean all older than 40 days
         $toexecute->laterOnce(new Post2shtmlCleanup(now() - (60*60*24*40)), [], "Post2shtmlCleanup", 10, now() + (60*60*24));
 

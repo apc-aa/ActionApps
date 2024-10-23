@@ -6,6 +6,7 @@ use AA;
 use AA\IO\DB\DB_AA;
 use AA\Later\Toexecute;
 use AA_File_Wrapper;
+use AA_Slice;
 use itemview;
 
 class Feed {
@@ -42,12 +43,12 @@ class Feed {
      */
     function loadRSSFeed($id, ?string $url = null) {
         $this->id   = $id;
-        $this->type = Feed::FEEDTYPE_RSS;
+        $this->type = self::FEEDTYPE_RSS;
 
         //$SQL = "SELECT feed_id, server_url, name, slice_id FROM rssfeeds WHERE feed_id='$id'";
         //$feeddata                    = GetTable2Array($SQL, 'aa_first', 'aa_fields');
         $feeddata              = DB_AA::select1([], "SELECT `feed_id`, `server_url`, `name`, `slice_id` FROM rssfeeds", [['feed_id', $id,]]);
-        $feeddata['feed_type'] = Feed::FEEDTYPE_RSS;
+        $feeddata['feed_type'] = self::FEEDTYPE_RSS;
         // fictive remote slice id, but always the same for the same url
         $feeddata['remote_slice_id'] = pack_id(FeedUtil::attr2id($feeddata['server_url']));
 
@@ -65,7 +66,7 @@ class Feed {
      */
     function loadAAFeed($id, $time = null) {
         $this->id   = $id;
-        $this->type = Feed::FEEDTYPE_APC;
+        $this->type = self::FEEDTYPE_APC;
 
         // $SQL = "SELECT feed_id, password, server_url, name, slice_id, remote_slice_id, newest_item, user_id, remote_slice_name, feed_mode
         //           FROM nodes, external_feeds WHERE nodes.name=external_feeds.node_name AND feed_id='$id'";
@@ -73,7 +74,7 @@ class Feed {
         $feeddata = DB_AA::select1([], "SELECT feed_id, password, server_url, name, slice_id, remote_slice_id, newest_item, user_id, remote_slice_name, feed_mode FROM nodes, external_feeds", [
             ['nodes.name', 'external_feeds.node_name', 'j',], ['feed_id', $id,]
         ]);
-        $feeddata['feed_type'] = ($feeddata['feed_mode'] == 'exact') ? Feed::FEEDTYPE_EXACT : Feed::FEEDTYPE_APC;
+        $feeddata['feed_type'] = ($feeddata['feed_mode'] === 'exact') ? self::FEEDTYPE_EXACT : self::FEEDTYPE_APC;
 
         $this->grabber              = new AA\IO\Grabber\AARSS($id, $feeddata, $this->fire);
         $this->destination_slice_id = unpack_id($feeddata['slice_id']);
@@ -92,7 +93,7 @@ class Feed {
      */
     function feed(string $fire=''): string {
         $fire = $fire ?: $this->fire;
-        $run = ($this->fire == 'write');
+        $run = ($this->fire === 'write');
         $saver = new AA\IO\Saver($this->grabber, null, $this->destination_slice_id, 'by_grabber', 'by_grabber');
         // $saver->run();
         $name     = 'feed&id=' . $this->id . '&type=' . self::getFeedTypeName($this->type);
@@ -108,7 +109,7 @@ class Feed {
                 $ret = 'queued';
                 break;
             case 'display':
-                $ret = join('',$importer->getSources());
+                $ret = implode('',$importer->getSources());
         }
         return $ret;
     }
@@ -135,7 +136,7 @@ class Feed {
      */
     public static function onefeed($feed_id, $feed, $debugfeed, $fire = 'write') {
         $slice_id = unpack_id($feed['slice_id']);
-        if ($fire == 'write') {
+        if ($fire === 'write') {
             $grabber = new AA\IO\Grabber\AARSS($feed_id, $feed, $fire);
             $saver   = new AA\IO\Saver($grabber, null, $slice_id);
             $saver->run();
@@ -239,7 +240,7 @@ class FeedUtil {
         $local_cat_id = $ext_categs[$ext_category_id]['target_category_id'];
         $approved     = $ext_categs[$ext_category_id]['approved'];
 
-        if ($local_cat_id == FeedUtil::UNPACKED_AA_THE_SAME_CATE) {
+        if ($local_cat_id == self::UNPACKED_AA_THE_SAME_CATE) {
             // we have to not rename the category - return original name
             return [$remote_cat_value, $approved];
         }
@@ -264,7 +265,7 @@ class FeedUtil {
 
         // true if filters are set for 'All categories' option (and not separately
         // for each category)
-        $all_categories = FeedUtil::UseAllCategoriesOption($ext_categs);
+        $all_categories = self::UseAllCategoriesOption($ext_categs);
 
         // Create [id] => value array of all items categories
         if (isset($item['categories']) and is_array($item['categories'])) {
@@ -275,7 +276,7 @@ class FeedUtil {
                 [
                     $new_cat,
                     $approved
-                ] = FeedUtil::translteFeedCatid2Value($r_cid, $ext_categs[$r_cid]['value'], $ext_categs, $l_categs, $all_categories);
+                ] = self::translteFeedCatid2Value($r_cid, $ext_categs[$r_cid]['value'], $ext_categs, $l_categs, $all_categories);
                 if (is_null($return_approved)) {
                     $return_approved = $approved;
                 }
@@ -295,7 +296,7 @@ class FeedUtil {
                     [
                         $new_cat,
                         $approved
-                    ] = FeedUtil::translteFeedCatid2Value(self::UNPACKED_AA_OTHER_CATEGOR, $r_value['value'], $ext_categs, $l_categs, $all_categories);
+                    ] = self::translteFeedCatid2Value(self::UNPACKED_AA_OTHER_CATEGOR, $r_value['value'], $ext_categs, $l_categs, $all_categories);
                     if (is_null($return_approved)) {
                         $return_approved = $approved;
                     }
@@ -340,7 +341,7 @@ class FeedUtil {
                     }
                     $db->query($SQL);
                 } else {
-                    $l_cat_id = FeedUtil::MapDefaultCategory($l_categs, $category['value'], $category['catparent']);
+                    $l_cat_id = self::MapDefaultCategory($l_categs, $category['value'], $category['catparent']);
                     $SQL      = "INSERT INTO ef_categories VALUES ('" . $category['value'] . "','" . $category['name'] . "',
                          '" . q_pack_id($category['id']) . "','" . $feed_id . "','" . q_pack_id($l_cat_id) . "','0')";
                     if ($debugfeed >= 8) {
@@ -378,7 +379,7 @@ class FeedUtil {
     public static function updateFieldsMapping($l_slice_id, $r_slice_id, $field_refs, $fields) {
         global $debugfeed;
 
-        [$ext_map, $field_map] = FeedUtil::GetExternalMapping($l_slice_id, $r_slice_id);
+        [$ext_map, $field_map] = self::GetExternalMapping($l_slice_id, $r_slice_id);
         $p_l_slice_id = q_pack_id($l_slice_id);
         $p_r_slice_id = q_pack_id($r_slice_id);
 
@@ -436,8 +437,8 @@ class FeedUtil {
      */
     public static function field2arr($field) {
         global $rss_version;
-        if ((strpos($rss_version, '2.') !== false) or (strpos($rss_version, '0.9') !== false)) {
-            $flag = ((strpos($field, '<') !== false) ? FLAG_HTML : "");
+        if ((str_contains($rss_version, '2.')) or (str_contains($rss_version, '0.9'))) {
+            $flag = ((str_contains($field, '<')) ? FLAG_HTML : "");
         } else { // Must be 1.0 which doesn't have an RSS version
             $flag = FLAG_HTML;
         }
@@ -464,7 +465,9 @@ class FeedUtil {
                 return $try1;
             }
             return self::map1field($vals[2], $item, $channel);
-        } elseif (preg_match("/^DATE\((.*)\)$/", $value, $vals)) { // Postprocess to turn into unix
+        }
+
+        if (preg_match("/^DATE\((.*)\)$/", $value, $vals)) { // Postprocess to turn into unix
             $try1 = self::map1field($vals[1], $item, $channel);
             if ($debugfeed >= 9) {
                 huhl($try1);
@@ -473,7 +476,7 @@ class FeedUtil {
                 // Often won't work cos not iso8601
                 // Wed, 25 Feb 2004 17:19:37 EST   - BAD
                 // 2004-02-25 17:19:37+10:00   GOOD
-                $try1[0]['value'] = FeedUtil::iso8601_to_unixstamp($try1[0]['value']);
+                $try1[0]['value'] = self::iso8601_to_unixstamp($try1[0]['value']);
             }
             if ($try1[0]['value'] == -1) {
                 $try1[0]['value'] = null;
@@ -482,21 +485,31 @@ class FeedUtil {
                 huhl($try1);
             }
             return $try1;
-        } elseif ($value == "NOW") {
+        }
+
+        if ($value === "NOW") {
             return [0 => ['value' => time(), 'flag' => 0]];
-        } elseif (preg_match("~CHANNEL/(.*)~", $value, $vals)) {
-            return [0 => FeedUtil::field2arr($channel[$vals[1]])];
-        } elseif (preg_match("~ITEM/(.*)~", $value, $vals)) {
-            return [0 => FeedUtil::field2arr($item[$vals[1]])];
-        } elseif (preg_match("~DC/(.*)~", $value, $vals)) {
+        }
+
+        if (preg_match("~CHANNEL/(.*)~", $value, $vals)) {
+            return [0 => self::field2arr($channel[$vals[1]])];
+        }
+
+        if (preg_match("~ITEM/(.*)~", $value, $vals)) {
+            return [0 => self::field2arr($item[$vals[1]])];
+        }
+
+        if (preg_match("~DC/(.*)~", $value, $vals)) {
             // Dont believe DC fields can be HTML
             return [0 => ['value' => $item['dc'][$vals[1]], 'flag' => 0]];
-        } elseif ($value == "CONTENT") {
-            // Note this code is repeated above in map1field
-            return [0 => FeedUtil::contentvalue($item)];
-        } else {
-            return $item['fields_content'][$value];
         }
+
+        if ($value === "CONTENT") {
+            // Note this code is repeated above in map1field
+            return [0 => self::contentvalue($item)];
+        }
+
+        return $item['fields_content'][$value];
     }
 
     /** contentvalue function
@@ -640,7 +653,7 @@ class FeedUtil {
      */
     public static function rssid2rssfeed(int $rss_id): string {
         $server_url = DB_AA::select1('server_url', 'SELECT `server_url` FROM `rssfeeds`', [['feed_id',$rss_id,'i']]);
-        return $server_url ? FeedUtil::attr2id($server_url) : '';
+        return $server_url ? self::attr2id($server_url) : '';
     }
 
     /** GetGroupConstants function
@@ -651,7 +664,7 @@ class FeedUtil {
      */
     public static function GetGroupConstants($slice_id) {
         $cat_ids   = [];
-        $cat_group = GetCategoryGroup($slice_id);
+        $cat_group = AA_Slice::getModule($slice_id)?->getFields()->getCategoryGroup();
         if (!$cat_group) {
             return false;
         }

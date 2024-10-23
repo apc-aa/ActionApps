@@ -119,7 +119,7 @@ foreach ($_REQUEST as $k => $v) {
 }
 // ----- input variables normalization - end ----------------------------------
 
-$encap = ( array_key_exists('encap', $_REQUEST) AND ($_REQUEST['encap']=="false") ) ? false : true ;
+$encap = ( array_key_exists('encap', $_REQUEST) AND ($_REQUEST['encap']==="false") ) ? false : true ;
 
 require_once __DIR__."/./include/config.php";
 require_once __DIR__ . "/include/util.php";
@@ -138,7 +138,7 @@ require_once __DIR__ . "/include/locsess.php";
  */
 function MyUrl($encap, $scr_url) {  //sliceID is here just for compatibility with MyUrl function
 
-    $server  = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https' : 'http';
+    $server  = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? 'https' : 'http';
     $server .= '://'. $_SERVER['HTTP_HOST'];
 
     if ( $scr_url ) {  // if included into php script
@@ -166,7 +166,7 @@ function MyUrl($encap, $scr_url) {  //sliceID is here just for compatibility wit
     }
 
     // // not executed - mode is cookie. Could be removed (Honza 16-03-31)
-    // if ( ($this->mode == 'get') AND (!$noquery) ) {
+    // if ( ($this->mode === 'get') AND (!$noquery) ) {
     //    if ($encap) {
     //        $ret .= "?".urlencode($this->name)."=".$this->id;
     //    } else {
@@ -411,30 +411,30 @@ $r_state_vars = StoreVariables(["no_scr","scr_go","order","cat_id", "cat_name", 
 
 // ***** CONDS *****
 
-if ($cat_id AND ($tmpobj = $slice->getFields()) AND ($cat_field = $tmpobj->getCategoryFieldId())) {  // optional parameter cat_id - deprecated - slow ------
-    $cat_group = GetCategoryGroup($slice_id);
+if ($cat_id AND ($flds = $slice->getFields()) AND ($cat_field = $flds->getCategoryFieldId())) {  // optional parameter cat_id - deprecated - slow ------
+    $cat_group = $flds->getCategoryGroup();
     $SQL = "SELECT value FROM constant WHERE group_id = '$cat_group' AND id='". q_pack_id($cat_id) ."'";
     $db->query($SQL);
     if ( $db->next_record() ) {
         $conds[] = [
             $cat_field => 1,
-                          'value'    => $db->f('value'),
-                          'operator' => ($exact ? '=' : 'LIKE')
+            'value'    => $db->f('value'),
+            'operator' => ($exact ? '=' : 'LIKE')
         ];
     }
 } elseif ($cat_name AND ($tmpobj = $slice->getFields()) AND ($cat_field = $tmpobj->getCategoryFieldId()))  {  // optional parameter cat_name -------
     $conds[]     = [
         $cat_field => 1,
-                          'value'    => $cat_name,
-                          'operator' => ($exact ? '=' : 'LIKE')
+        'value'    => $cat_name,
+        'operator' => ($exact ? '=' : 'LIKE')
     ];
 }
 
 if ($restrict) {
     $conds[]     = [
         $restrict  => 1,
-                          'value'    => ((($res_val[0] == '"' OR $res_val[0] == "'") AND $exact != 2 ) ? $res_val : "\"$res_val\""),
-                          'operator' => ($exact ? '=' : 'LIKE')
+        'value'    => ((($res_val[0] === '"' OR $res_val[0] === "'") AND $exact != 2 ) ? $res_val : "\"$res_val\""),
+        'operator' => ($exact ? '=' : 'LIKE')
     ];
 }
 
@@ -489,28 +489,28 @@ if ($group_by) {
     $slice_info["group_by"] = key($sort_tmp[0]);
 }
 elseif ($slice_info['category_sort'] AND ($tmpobj = $slice->getFields()) AND ($group_field = $tmpobj->getCategoryFieldId())) {
-    $grp_odir    = (($order==$group_field) AND ($orderdirection!='d')) ? 'a' : 'd';
+    $grp_odir    = (($order==$group_field) AND ($orderdirection!=='d')) ? 'a' : 'd';
     $sort_tmp[]  = [$group_field => $grp_odir];
 }
 elseif ($slice_info['group_by']) {
-    switch( (string)$slice_info['gb_direction'] ) {  // gb_direction is number
-        case '1': $gbd = '1'; break;      // 1 (1)- ascending by priority
-        case 'd':                         //    d - descending - goes from view (iview) settings
-        case '8': $gbd = 'd'; break;      // d (8)- descending
-        case '9': $gbd = '9'; break;      // 9 (9)- descending by priority (for fields using constants)
-        default:  $gbd = 'a';             // 2 (2)- ascending;
-    }
+    $gbd = match ((string)$slice_info['gb_direction']) {  // gb_direction is number
+        '1'      => '1',    // 1 (1)- ascending by priority
+        'd', '8' => 'd',    // d (8)- descending - 'd' goes from view (iview) settings
+        '9'      => '9',    // 9 (9)- descending by priority (for fields using constants)
+        default  => 'a',    // 2 (2)- ascending;
+    };
+
     $sort_tmp[] = [$slice_info['group_by'] => $gbd];
 }
 
 $sort_tmp = array_merge($sort_tmp, getSortFromUrl($sort));
 
 if ($order) {
-    add2sort($sort_tmp, [$order => (strstr('aAdD19',$orderdirection) ? $orderdirection : 'a')]);
+    add2sort($sort_tmp, [$order => (str_contains('aAdD19', $orderdirection) ? $orderdirection : 'a')]);
 }
 
 // time order the fields in compact view
-add2sort($sort_tmp, ['publish_date....' => (($timeorder == "rev") ? 'a' : 'd')]);
+add2sort($sort_tmp, ['publish_date....' => (($timeorder === "rev") ? 'a' : 'd')]);
 $sort  = $sort_tmp;
 
 //mlx stuff

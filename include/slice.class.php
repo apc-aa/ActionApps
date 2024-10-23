@@ -72,7 +72,7 @@ class AA_Module {
      * @param bool $link
      * @return string
      */
-    static public function getModuleName($module_id, bool $link=false, ?string $page=null, array $params=[]): string {
+    public static function getModuleName($module_id, bool $link=false, ?string $page=null, array $params=[]): string {
         $module = static::getModule($module_id);
         if ($module) {
             return $link ? a_href(static::getModuleUrl($module_id, $page, $params), $module->getName()) : $module->getName();
@@ -84,7 +84,7 @@ class AA_Module {
      * @param $module_id
      * @return string
      */
-    static public function getModuleUrl($module_id, ?string $page=null, array $params=[]): string {
+    public static function getModuleUrl($module_id, ?string $page=null, array $params=[]): string {
         return get_aa_url($page ?? AA_Module::getModuleInfo('url',$module_id), array_merge(['change_id'=>$module_id], $params));
     }
 
@@ -95,12 +95,12 @@ class AA_Module {
      *  @param string $module_id
      * @return AA_Module|AA_Slice|AA_Module_Site|AA_Module_Alerts|AA_Module_Links|AA_Module_Polls|null
      */
-    static public function getModule($module_id): ?AA_Module {
+    public static function getModule($module_id): ?AA_Module {
         if (!is_long_id($module_id)) {
             return null;
         }
         if (!isset(AA_Module::$_modules[$module_id])) {
-            if (($class = get_called_class()) == 'AA_Module') {
+            if (($class = get_called_class()) === 'AA_Module') {
                 // this is not usual case - use it just if you do not know what module is it
                 $class = AA_Module::getModuleInfo('class', $module_id);
             }
@@ -119,7 +119,7 @@ class AA_Module {
      * @param array  $sort      - default ['priority','name']
      * @return array module id => name
      */
-    static public function getModules(string $type, bool $validonly=false, array $sort=[]): array {
+    public static function getModules(string $type, bool $validonly=false, array $sort=[]): array {
         $conds = [];
         if ($type) {
             $conds[] = ['type', $type];
@@ -138,7 +138,7 @@ class AA_Module {
      * @param $module_id
      * @return string
      */
-    static public function getModuleInfo($info, $module_id)
+    public static function getModuleInfo($info, $module_id)
     {
         static $MODULEINFO = [
             //                   class             url                         menu
@@ -169,7 +169,7 @@ class AA_Module {
      * @param $module_id
      * @return string     - S | W | Alerts | J | P | Links
      */
-    static public function getModuleType($module_id) {
+    public static function getModuleType($module_id) {
         return self::getModuleInfo('type', $module_id);
     }
 
@@ -177,7 +177,7 @@ class AA_Module {
      * @param array $module_ids
      * @return bool
      */
-    static public function deleteModules(array $module_ids): bool {
+    public static function deleteModules(array $module_ids): bool {
         foreach ($module_ids as $module_id) {
             /** @var class-string<AA_Module> $class name - it is a string name of class */
             if (!is_long_id($module_id) OR !($class = AA_Module::getModuleInfo('class', $module_id))) {
@@ -196,7 +196,7 @@ class AA_Module {
         return true;
     }
 
-    static public function _deleteModules(array $module_ids): bool {
+    public static function _deleteModules(array $module_ids): bool {
         return true;
     }
 
@@ -206,7 +206,7 @@ class AA_Module {
      * @param $prop
      * @return bool|mixed|null
      */
-    static public function getModuleProperty($module_id, $prop) {
+    public static function getModuleProperty($module_id, $prop) {
         return static::getModule($module_id)?->getProperty($prop);
     }
 
@@ -350,10 +350,10 @@ class AA_Module {
      */
     public static function getUserModules( $module_type = '') {
 
-        $all_modules = AA_Module::getModules($module_type, true);
-        $user_id =  AuthGetUid();
+        $all_modules = self::getModules($module_type, true);
+        $user_id     =  AuthGetUid();
 
-        return array_filter($all_modules, fn($mid) => CheckPerms($user_id, 'slice', $mid, PS_EDIT_SELF_ITEMS), ARRAY_FILTER_USE_KEY);
+        return array_filter($all_modules, static fn($mid) => CheckPerms($user_id, 'slice', $mid, PS_EDIT_SELF_ITEMS), ARRAY_FILTER_USE_KEY);
     }
 
     /**
@@ -363,7 +363,7 @@ class AA_Module {
     public static function filterActive( array $module_ids): array {
         static $active_modules = null;
         if ( is_null($active_modules)) {
-            $active_modules = array_keys(AA_Module::getModules('', true, ['created_at-']));
+            $active_modules = array_keys(self::getModules('', true, ['created_at-']));
         }
         return array_intersect($active_modules, $module_ids);    // do not change the order - this way it is always unique
     }
@@ -373,7 +373,7 @@ class AA_Module {
      * @return array
      */
     public static function belongsToSites(string $module_id): array {
-        return AA_Module::filterActive(DB_AA::select('', 'SELECT LOWER(HEX(`source_id`)) AS unpackid FROM relation', [['destination_id', $module_id, 'l'], ['flag', REL_FLAG_MODULE_DEPEND, 'i']]));
+        return self::filterActive(DB_AA::select('', 'SELECT LOWER(HEX(`source_id`)) AS unpackid FROM relation', [['destination_id', $module_id, 'l'], ['flag', REL_FLAG_MODULE_DEPEND, 'i']]));
     }
 }
 
@@ -460,7 +460,7 @@ class AA_Slice extends AA_Module {
     /** @return html link to slice
      */
     function jumpLink(): string {
-        return "<a href=\"".get_admin_url("index.php?change_id=".$this->getId()). "\">".$this->getName()."</a>";
+        return a_href(get_admin_url("index.php", ['change_id'=>$this->getId()]), $this->getName());
     }
 
     /** type function
@@ -473,7 +473,7 @@ class AA_Slice extends AA_Module {
     /** AA_Slice::getSliceTypes()
      * @return array [type => type name]
      */
-    static public function getSliceTypes(): array {
+    public static function getSliceTypes(): array {
         return [
             'News_EN_tmpl....' => _m('Items'),
             'ReaderManagement' => _m('Reader management'),
@@ -544,7 +544,7 @@ class AA_Slice extends AA_Module {
      * @param array $module_ids
      * @return bool
      */
-    static public function _deleteModules(array $module_ids): bool {
+    public static function _deleteModules(array $module_ids): bool {
         if (!count($module_ids)) {
             return false;     // _m("No such module.")
         }
@@ -749,7 +749,7 @@ class AA_Slice extends AA_Module {
         foreach ($fields as $pri_field_id => $field) {
 
             //  'status_code.....' is not in condition - could be set from defaults
-            if (($pri_field_id=='edited_by.......') || ($pri_field_id=='posted_by.......')) {
+            if (($pri_field_id === 'edited_by.......') || ($pri_field_id === 'posted_by.......')) {
                 continue;   // filed by AA - it could not be filled here
             }
 
@@ -779,9 +779,14 @@ class AA_Slice extends AA_Module {
 
             $sl_id = $this->getId();
             $from_category_id = '';
+
+            $flds = $this->getFields();
             // get this item category_id
-            if ($cat_group = GetCategoryGroup($sl_id)) {
-                if ($cat_field = $this->getFields()->getCategoryFieldId()) {
+
+            // huhl($flds->getCategoryFieldId(), AA_Fields::getBaseFieldId($flds->getRecordArray(), 'text'), AA_Fields::getBaseFieldId($flds->getRecordArray(), 'al'));
+
+            if ($cat_group = $flds->getCategoryGroup()) {
+                if ($cat_field = $flds->getCategoryFieldId()) {
                     if ( $p_cat_id = DB_AA::select1('id', 'SELECT `id` FROM `constant`', [['group_id', $cat_group], ['value', $content->getValue($cat_field)]]) ) {
                         $from_category_id = unpack_id($p_cat_id);
                     }
@@ -790,7 +795,7 @@ class AA_Slice extends AA_Module {
 
             $slice_queue[$sl_id] = ['approved'=>"y", 'category'=>$from_category_id];
             foreach($slice_queue as $sl_id => $val) {
-                if ($val['approved'] == "y") {
+                if ($val['approved'] === "y") {
                     $from_category_id = $val['category'];
                     if ($from_category_id) {
                         $p_from_cat_id = pack_id($from_category_id);
@@ -867,7 +872,7 @@ class AA_Module_Site extends AA_Module {
         $spots =  DB_AA::select(['spot_id'=> []], 'SELECT spot_id, content, flag from site_spot', [['site_id', $module_id, 'l'], ['spot_id', $spot_ids, 'i']]);
 
         foreach ( $spot_ids as $v ) {
-            $out .= ($spots[$v]['flag'] & AA_Module_Site::FLAG_JUST_TEXT) ? $spots[$v]['content'] : AA::Un($spots[$v]['content'], '', $item);
+            $out .= ($spots[$v]['flag'] & self::FLAG_JUST_TEXT) ? $spots[$v]['content'] : AA::Un($spots[$v]['content'], '', $item);
         }
         return $out;
     }
@@ -883,7 +888,7 @@ class AA_Module_Site extends AA_Module {
             exit;
         }
 
-        $out = AA_Module_Site::spotsOutput($this->module_id, $show_ids, $apc_state['item']);
+        $out = self::spotsOutput($this->module_id, $show_ids, $apc_state['item']);
 
         // trim remove whitespaces from start and end (mainly the start - it is better to start right with the code)
         return trim(AA::Stringexpander()->postprocess($out));
@@ -951,7 +956,7 @@ class AA_Module_Site extends AA_Module {
         ];
 
         echo "<br><form method='post' name=fs action=\"". $_SERVER['PHP_SELF'] ."\">";
-        sitetree::printHiddenRSpotId();
+        echo $tree->getCurrentSpotId();
         FrmTabCaption('Edit spot', '', true);
         FrmInputText('name', _m("Spot name"), $tree->get('name', $spot_id), 50, 50, true, false, false);
         FrmTextarea('content', '', $spot_data['content'], 50, 80, false, AA_View::getViewJumpLinks($spot_data['content']), "", true);
@@ -968,7 +973,7 @@ class AA_Module_Site extends AA_Module {
         if ($this->_getSpecificTableProperty('flag') == 1) {    // 1 - Use AA_Router_Seo
             // home can contain some logic like: {ifin:{server:SERVER_NAME}:czechweb.cz:/cz/home:/en/home}
             $home       = AA::Un(trim($this->_getSpecificTableProperty('state_file'))) ?: '/' .substr($this->_getModuleTableProperty('lang_file'),0,2). '/';
-            return AA_Router::singleton('AA_Router_Seo', AA_Module_Site::getRelatedModules([$this->module_id]), $home, $this->_getModuleObjectProperty('web_languages'));
+            return AA_Router::singleton('AA_Router_Seo', self::getRelatedModules([$this->module_id]), $home, $this->_getModuleObjectProperty('web_languages'));
         }
         return null;
     }
@@ -996,7 +1001,7 @@ class AA_Module_Site extends AA_Module {
      */
     static function findViewId($vid, $module_id): int {
         // get translation table name -> id within all slices of curent sitemodule. Must be ordered by id, in order we return the same id even if the same view name is used
-        $views = AA::Contentcache()->get_result(['AA\IO\DB\DB_AA','select'], [['field3'=>'id'], 'SELECT id, field3 FROM view', [['slice_id', AA_Module_Site::getRelatedModules([$module_id]), 'l'], ['field3', '', 'FILLED']], 'id']);
+        $views = AA::Contentcache()->get_result(['AA\IO\DB\DB_AA','select'], [['field3'=>'id'], 'SELECT id, field3 FROM view', [['slice_id', self::getRelatedModules([$module_id]), 'l'], ['field3', '', 'FILLED']], 'id']);
         return (int)$views[$vid] ?: 0;
     }
 
@@ -1004,7 +1009,7 @@ class AA_Module_Site extends AA_Module {
      * @param array $module_ids
      * @return bool
      */
-    static public function _deleteModules(array $module_ids): bool {
+    public static function _deleteModules(array $module_ids): bool {
         if (!count($module_ids)) {
             return false;     // _m("No such module.")
         }
@@ -1025,7 +1030,7 @@ class AA_Module_Alerts extends AA_Module {
      * @param array $module_ids
      * @return bool
      */
-    static public function _deleteModules(array $module_ids): bool {
+    public static function _deleteModules(array $module_ids): bool {
         if (!count($module_ids)) {
             return false;     // _m("No such module.")
         }
@@ -1049,7 +1054,7 @@ class AA_Module_Links extends AA_Module {
      * @param array $module_ids
      * @return bool
      */
-    static public function _deleteModules(array $module_ids): bool {
+    public static function _deleteModules(array $module_ids): bool {
         if (!count($module_ids)) {
             return false;     // _m("No such module.")
         }
@@ -1066,7 +1071,7 @@ class AA_Module_Jump extends AA_Module {
      * @param array $module_ids
      * @return bool
      */
-    static public function _deleteModules(array $module_ids): bool {
+    public static function _deleteModules(array $module_ids): bool {
         // @todo
         return true;
     }
@@ -1080,7 +1085,7 @@ class AA_Module_Polls extends AA_Module {
      * @param array $module_ids
      * @return bool
      */
-    static public function _deleteModules(array $module_ids): bool {
+    public static function _deleteModules(array $module_ids): bool {
         if (!count($module_ids)) {
             return false;     // _m("No such module.")
         }

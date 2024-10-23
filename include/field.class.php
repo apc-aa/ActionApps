@@ -63,14 +63,14 @@ class AA_Field implements ArrayAccess, Countable, Iterator {
     }
 
     public static function factoryFromDb(string $field_id, string $slice_id): ?AA_Field {
-        $flds = implode(',',array_map(fn ($value) => "`$value`", self::USED_FIELDS));
+        $flds = implode(',',array_map(static fn ($value) => "`$value`", self::USED_FIELDS));
         $data = DB_AA::select1('', "SELECT $flds FROM `field`", [['slice_id', $slice_id, 'l'], ['id', $field_id]]);
         return $data ? new AA_Field($data) : null;
     }
 
     /** Check for misconfigured mandatory fields */
     protected function sanitizeData() {
-        if ($this->data['id'] == 'id..............') {
+        if ($this->data['id'] === 'id..............') {
             $this->data['input_validate'] = 'packedid';
             $this->data['search_pri'] = 100;  // standard value (redefining 0 from DB)
         }
@@ -95,7 +95,7 @@ class AA_Field implements ArrayAccess, Countable, Iterator {
      */
     public function isSafeStored() : bool {
         // the content_edit is not yet used - we plan to make able the field to be secured
-        return (($this->data['content_edit'] & FIELD_UNREADABLE) OR (AA_Fields::getFieldType($this->getId()) == 'secret'));     // @todo add also password
+        return (($this->data['content_edit'] & FIELD_UNREADABLE) OR (AA_Fields::getFieldType($this->getId()) === 'secret'));     // @todo add also password
                                                                                                                                 // @todo mark all secure and password fields as FIELD_UNREADABLE
     }
 
@@ -205,15 +205,19 @@ class AA_Field implements ArrayAccess, Countable, Iterator {
         [$validate_type] = explode(":", $this->getProperty('input_validate'), 2);
         [$insert_type]   = explode(":", $this->getProperty('input_insert_func'), 2);
 
-        if ($insert_type == 'pwd') {
+        if ($insert_type === 'pwd') {
             return 'pwd';
-        } elseif ($validate_type == 'date') {
+        }
+        if ($validate_type === 'date') {
             return 'date';
-        } elseif ($insert_type == 'boo') {
+        }
+        if ($insert_type === 'boo') {
             return 'bool';
-        } elseif ($insert_type == 'ids') {
+        }
+        if ($insert_type === 'ids') {
             return 'id';
-        } elseif ($this->getProperty('text_stored')) {  // not used from here down - it is possible to add more types - ids, ...
+        }
+        if ($this->getProperty('text_stored')) {  // not used from here down - it is possible to add more types - ids, ...
             return 'text';
         }
         return 'int';
@@ -240,7 +244,7 @@ class AA_Field implements ArrayAccess, Countable, Iterator {
 
         $var = $_REQUEST[$varname];
 
-        if ($type == 'pwd') {
+        if ($type === 'pwd') {
             $change_var = $_REQUEST[$varname . 'a'];
             $retype_var = $_REQUEST[$varname . 'b'];
             $delete_var = $_REQUEST[$varname . 'd'];
@@ -258,26 +262,36 @@ class AA_Field implements ArrayAccess, Countable, Iterator {
                 return null;
             }
             return new AA_Value($var, FLAG_HTML);
-        } elseif ($type == 'date') {
+        }
+
+        if ($type === 'date') {
             $datectrl = new datectrl($varname);
             if ($datectrl->isUpdatable()) {
                 $datectrl->update();                   // updates datectrl
                 return new AA_Value($datectrl->get_date(), FLAG_HTML);
-            } elseif (isset($var)) {
+            }
+
+            if (isset($var)) {
                 // hidden date field ('hid' widget)
                 return new AA_Value($_REQUEST[$varname], FLAG_HTML);
             }
             return null;
-        } elseif ($type == 'bool') {
+        }
+
+        if ($type === 'bool') {
             // $ret = $this->content[$fid] = new AA_Value(($var ? 1 : 0), FLAG_HTML);  // replaced by the line below - I think it is mistake: $this->content[$fid]
             return new AA_Value(($var ? 1 : 0), FLAG_HTML);
-        } elseif( isset($var) ) {
+        }
+
+        if (isset($var)) {
             if (!is_array($var)) {
                 $var = [0 => $var];
             }
-            $flag = $this->getProperty('html_show') ? ($_REQUEST[$htmlvarname]=="h" ? FLAG_HTML : 0) : $this->getDefaultFormatterFlag();
+            $flag = $this->getProperty('html_show') ? ($_REQUEST[$htmlvarname] === "h" ? FLAG_HTML : 0) : $this->getDefaultFormatterFlag();
             return new AA_Value($var, $flag);
-        } elseif( $_REQUEST[$presence_varname]=='P' ) {           //  elseif (in_array($input_type, ['mse','wi2','iso','hco'])) {  // uses listbox - no value means reset content - never used
+        }
+
+        if ($_REQUEST[$presence_varname] === 'P') {           //  elseif (in_array($input_type, ['mse','wi2','iso','hco'])) {  // uses listbox - no value means reset content - never used
             return new AA_Value('', $this->getDefaultFormatterFlag());
         }
         return null;
@@ -305,7 +319,7 @@ class AA_Field implements ArrayAccess, Countable, Iterator {
     function getConstantGroup() {
         // does this field use constants? Isn't it slice?
         [$field_type, $field_add] = $this->getSearchType();
-        return ( $field_type == 'constants' ) ? $field_add : false;
+        return ( $field_type === 'constants' ) ? $field_add : false;
     }
 
     /** getRecord function
@@ -331,7 +345,7 @@ class AA_Field implements ArrayAccess, Countable, Iterator {
 
         if (!empty($r)) {
             $field_add  = $r[1];
-            $field_type = ($field_type == 'numeric') ? 'numconstants' : $r[0];
+            $field_type = ($field_type === 'numeric') ? 'numconstants' : $r[0];
         }
 
         return [$field_type, $field_add];
@@ -376,7 +390,7 @@ class AA_Field implements ArrayAccess, Countable, Iterator {
         $widget = $this->getWidget();
         $validator = $widget ? $widget->getUpgradedValidator($this->data['input_validate']) : AA_Validate::factoryByString($this->data['input_validate']); // ids for iso widget could be marked - prepended by x, y or z
 //      moved to IsoWidget
-//        if ( (substr($validator_string,0,2)=='id') AND (substr($this->data['input_show_func'],0,3)=='iso') ) {
+//        if ( (substr($validator_string,0,2)==='id') AND (substr($this->data['input_show_func'],0,3)==='iso') ) {
 //            $validator_string = 'markedid';
 //        }
 
@@ -495,7 +509,7 @@ class AA_Field implements ArrayAccess, Countable, Iterator {
 
     /** fields which use Manager Widget prevents using "Insert as new" itemedit action (it makes mess) - use duplicate item in the Itemmanager instead */
     function disable_insert_as_new(): bool {
-        return Widget::parseClassProperties($this->data['input_show_func'])['class'] == 'AA\Widget\MngWidget';
+        return Widget::parseClassProperties($this->data['input_show_func'])['class'] === 'AA\Widget\MngWidget';
     }
 
     function cloneWithId($id) {
@@ -541,20 +555,20 @@ class AA_Field implements ArrayAccess, Countable, Iterator {
         <td><input type=\"checkbox\" name=\"req[$id]\"". ($required ? " checked" : "") ."></td>
         <td><input type=\"checkbox\" name=\"shw[$id]\"". ($show ? " checked" : "") ."></td>";
         echo "<td>".$this->linkToField(_m("Edit"), '', ['class' => 'aa-button-edit'])."</td>";
-        if ( $type=="in_item_tbl" ) {
+        if ( $type === "in_item_tbl" ) {
             echo "<td></td>";
         } else {
             echo "<td><a class=aa-button-delete href=\"javascript:DeleteField('$id')\">". _m("Delete") ."</a></td>";
         }
 
-        $alias_list = join(' ', array_map(
+        $alias_list = implode(' ', array_map(
             function($a) use ($id) {
                 return $this->linkToField($a, substr($a, 2), (str_starts_with($a, 'X#')) ? ['class' => 'disabled', 'title' => _m('disabled')] : []);
             }, $aliases));
         echo "<td class=\"aa-flds-aliases\">$alias_list</td>";
         echo "</tr>\n";
 
-        if ($analyze AND ($type!='in_item_tbl')) {
+        if ($analyze AND ($type !== 'in_item_tbl')) {
             $items       = DB_AA::select1('cnt', 'SELECT count(*) as cnt FROM item', [['item.slice_id', $slice_id, 'l']]);
             $items_field = DB_AA::select1('', 'SELECT count(*) as cnt, count(DISTINCT text) as cntval,  count(DISTINCT number) as cntnum, count(DISTINCT item_id) as cntitm  FROM content, item', [
                 ['content.item_id', 'item.id', 'j'],
@@ -590,7 +604,7 @@ class AA_Field implements ArrayAccess, Countable, Iterator {
             $text_vals = '';
             if ($items_field['cntval'] < 5) {
                 $arr = DB_AA::select('txt', 'SELECT `text`, SUBSTRING(text,1,12) as txt FROM content, item '. DB_AA::makeWhere([['content.item_id','item.id', 'j'], ['item.slice_id',$slice_id, 'l'],['field_id',$id]]). ' GROUP BY `text`');
-                $text_vals = ' ('. join(', ', array_map( fn ($str) => '"'. ((strlen($str) == 12) ? substr($str,0,11).'…' : $str). '"', $arr)). ')';
+                $text_vals = ' ('. implode(', ', array_map( static fn ($str) => '"'. ((strlen($str) === 12) ? substr($str,0,11).'…' : $str). '"', $arr)). ')';
             }
             $distinct_val  = ($text_stored == 1) ? "<u title='field is marked as text stored'>text:$items_field[cntval]</u>$text_vals,num:$items_field[cntnum]" : "text:$items_field[cntval]$text_vals,<u title='field is marked as number stored'>num:$items_field[cntnum]</u>";
             $distinct_text = (($items_field['cntitm']==$items) AND ($items_field[$text_stored==1 ? 'cntval':'cntnum']==1) AND ($items>1)) ? "<b title=\"All the values are the same - maybe you can delete the field\">Distinct values</b>:$distinct_val":"Distinct values:$distinct_val";
@@ -620,7 +634,7 @@ class AA_Field_Slicedef extends AA_Field {
         $fid = AA_Fields::createFieldId('text',$fnumber);
 
         $this->data['id'] = $fid;
-        $this->data['name'] = (($fname = $data->get_alias_subst('_#FLD_NAME', 'AA_NULL')) == 'AA_NULL') ? $data->get_alias_subst('_#HEADLINE', $fid) : $fname;
+        $this->data['name'] = (($fname = $data->get_alias_subst('_#FLD_NAME', 'AA_NULL')) === 'AA_NULL') ? $data->get_alias_subst('_#HEADLINE', $fid) : $fname;
         $this->data['slice_id'] = pack_id($sli_id);
         $this->data['input_pri'] = (int)$data->get_alias_subst('_#FLD_PRI_', 100) ?: 100;
         $this->data['input_help'] = $data->get_alias_subst('_#FLD_HELP', '');
@@ -638,7 +652,7 @@ class AA_Field_Slicedef extends AA_Field {
         $this->data['text_stored'] = (int)$data->get_alias_subst('_#FLD_STOR', 1) ? 1 : 0;
 
         $this->aliases = new AA_Aliases;
-        $field_aliases = array_filter($data->getAliasNames(), fn($name) => str_starts_with($name, '_#FLD_AN'));   // $filtered_array = array_filter($array, function ($element) use ($my_value) { return ($element != $my_value); } );
+        $field_aliases = array_filter($data->getAliasNames(), static fn($name) => str_starts_with($name, '_#FLD_AN'));   // $filtered_array = array_filter($array, function ($element) use ($my_value) { return ($element != $my_value); } );
         foreach ($field_aliases as $al) {
             if (IsAlias($als = '_#' . $data->get_alias_subst($al, ''))) {
                 $this->aliases->addAlias(new AA_Alias($data->get_alias_subst($als), 'f_t:' . $data->get_alias_subst(str_replace('_#FLD_AN', '_#FLD_AV', $al)), $fid));
@@ -731,7 +745,7 @@ class AA_Fields implements Iterator, Countable {
         }
 
         if ( (str_starts_with($fid, 'text..')) AND is_long_id($fields_slice = AA_Slice::getModuleProperty($this->master_id, 'fieldslice')) ) {
-            $set = new AA_Set([$fields_slice], new AA_Condition(FIELDID_DYNAMIC_ID, '==', AA_Fields::getFieldNo($fid)));     // FIELDID_DYNAMIC_ID = 'source..........'
+            $set = new AA_Set([$fields_slice], new AA_Condition(FIELDID_DYNAMIC_ID, '==', self::getFieldNo($fid)));     // FIELDID_DYNAMIC_ID = 'source..........'
             $zids = $set->query();
             $this->fields[$fid] = $zids->count() ? new AA_Field_Slicedef($zids->zid(0), $this->master_id) : '';
         } else {
@@ -745,7 +759,7 @@ class AA_Fields implements Iterator, Countable {
             return;
         }
         $this->fields = [];
-        $flds = implode(',',array_map(fn ($value) => "`$value`", AA_Field::USED_FIELDS));
+        $flds = implode(',',array_map(static fn ($value) => "`$value`", AA_Field::USED_FIELDS));
         $a = DB_AA::select(['id'=> []], "SELECT $flds FROM `field`", [['`slice_id`', $this->master_id, 'l'], ['`id`', '_', ($this->collection == 0) ? 'NOT BEGIN' : 'BEGIN']], ['input_pri']);
         foreach ($a as $fid => $data) {
             $this->fields[$fid] = new AA_Field($data);
@@ -804,7 +818,7 @@ class AA_Fields implements Iterator, Countable {
      * @param $type
      * @return array|null|string
      */
-    function getAliases($additional='', $type='') {
+    function getAliases($additional=null, $type='') {
         if ( !is_null($this->aliases) ) {
             return is_array($additional) ? array_merge($additional, $this->aliases) : $this->aliases;
         }
@@ -821,7 +835,7 @@ class AA_Fields implements Iterator, Countable {
         $this->aliases["_#ITEM_ID_"] = GetAliasDef( "f_1",                  "unpacked_id.....", _m("alias for Item ID"));
         $this->aliases["_#SITEM_ID"] = GetAliasDef( "f_1",                  "short_id........", _m("alias for Short Item ID"));
 
-        if ( $type == 'justids') {  // it is enough for view of urls
+        if ( $type === 'justids') {  // it is enough for view of urls
             // maybe we should make $this->aliases = null (to be recounted next time with all aliases), but there was no problem so far, so we left here quicker solution. Honza 2016-10-20
             return is_array($additional) ? array_merge($additional, $this->aliases) : $this->aliases;
         }
@@ -835,8 +849,8 @@ class AA_Fields implements Iterator, Countable {
         $this->aliases["_#RSS_DATE"] = GetAliasDef(  "f_r",            "SLICEdate",        _m("Date RSS information is generated, in RSS date format"));
         $this->aliases["_#SLI_NAME"] = GetAliasDef(  "f_e:slice_info", "name",             _m("Slice name"));
 
-        $this->aliases["_#MLX_LANG"] = GetAliasDef(  "f_e:mlx_lang",   MLX_CTRLIDFIELD,             _m("Current MLX language"));
-        $this->aliases["_#MLX_DIR_"] = GetAliasDef(  "f_e:mlx_dir",   MLX_CTRLIDFIELD,             _m("HTML markup direction tag (e.g. DIR=RTL)"));
+        $this->aliases["_#MLX_LANG"] = GetAliasDef(  "f_e:mlx_lang",   MLX_CTRLIDFIELD,    _m("Current MLX language"));
+        $this->aliases["_#MLX_DIR_"] = GetAliasDef(  "f_e:mlx_dir",   MLX_CTRLIDFIELD,     _m("HTML markup direction tag (e.g. DIR=RTL)"));
 
         // database stored aliases
         foreach ($this->fields as $field) {
@@ -845,37 +859,33 @@ class AA_Fields implements Iterator, Countable {
         return is_array($additional) ? array_merge($additional, $this->aliases) : $this->aliases;
     }
 
-    /** getCategoryFieldId function
-     *  returns first field id of given field_type (category........, file............)
-     * @param string $field_type
+    /** returns first field id of given field_type (category........, file............)
+     *
+     * @param  string  $field_type
+     *
      * @return string
      */
-    function getCategoryFieldId($field_type = 'category') {
+    function getCategoryFieldId(string $field_type = 'category'): string
+    {
         $this->load();
-        $no = 10000;
-        foreach ($this->fields as  $fid => $foo ) {
-            if (!str_starts_with($fid, $field_type)) {
-                continue;
-            }
-            $last = AA_Fields::getFieldNo($fid);
-            $no = min( $no, ( ($last=='') ? -1 : (integer)$last) );
-        }
-        if ($no==10000) {
-            return '';
-        }
-        $no = ( ($no==-1) ? '.' : (string)$no);
-        return AA_Fields::createFieldId($field_type, $no);
+        return ($keys = array_filter(array_keys($this->fields), static fn($key) => str_starts_with($key, $field_type))) ? min($keys) : '';
     }
 
-    public function getSafeFieldsArray() {
+    /** find group_id for constants of the slice
+     * @param  string  $field_id
+     * @return string|null
+     */
+    public function getCategoryGroup(string $field_id=''): ?string
+    {
+        $fld = $this->getField($field_id ?: $this->getCategoryFieldId());
+        $input_func_str = $fld?->getProperty('input_show_func');
+        return is_string($input_func_str) ? Widget::parseClassProperties($input_func_str)['const'] : null;
+    }
+
+    public function getSafeFieldsArray(): array
+    {
         $this->load();
-        $ret = [];
-        foreach ( $this->fields as $fid => $fld ) {
-            if ($fld->isSafeStored()) {
-                $ret[] = $fid;
-            }
-        }
-        return $ret;
+        return array_keys(array_filter($this->fields, static fn($fld) => $fld->isSafeStored()));
     }
 
     /** getRecordArray function
@@ -920,10 +930,10 @@ class AA_Fields implements Iterator, Countable {
         foreach ( $this->fields as $field_id => $field ) { // in priority order
             $field_name = $field->getProperty('name');
             [$field_type, $values_slice_or_const] = $field->getSearchType();
-            if ($field_type=='relation') {
+            if ($field_type === 'relation') {
                 $field_type = 'constants';
                 if ($related_cnt) {
-                    $related_fields = AA_Fields::factoryFor($values_slice_or_const)->getSearchfields(0);
+                    $related_fields = self::factoryFor($values_slice_or_const)->getSearchfields(0);
                     $related += 1000;
                     $opt_group = $field_name;
 
@@ -968,7 +978,7 @@ class AA_Fields implements Iterator, Countable {
             // this query is slow, but hard to improve
             $related_fields = DB_AA::select([], 'SELECT id, name, LOWER(HEX(slice_id)) as sid FROM `field`', [['input_show_func','___:#sLiCe-' . $this->master_id . '%','LIKE']]);
             foreach ($related_fields as $rf_def) {
-                $related_fields = AA_Fields::factoryFor($rf_def['sid'])->getSearchfields(0);
+                $related_fields = self::factoryFor($rf_def['sid'])->getSearchfields(0);
                 $related += 1000;
                 $opt_group = AA_Module::getModuleName($rf_def['sid']) . ' / ' . $rf_def['name'];
                 // add "-- any text field --" search option
@@ -1001,11 +1011,11 @@ class AA_Fields implements Iterator, Countable {
      *  Returns true, if the passed field id looks like slice setting field
      *  "slice fields" are not used for items, but rather for slice setting.
      *  Such fields are destinguished by underscore on first letter of field_id
-     * @param $field_id
+     * @param string $field_id
      * @return bool
      */
     static function isSliceField($field_id) {
-        return $field_id AND ($field_id[0] == '_');
+        return str_starts_with((string)$field_id, '_');
     }
 
     /** createFieldId function
@@ -1045,8 +1055,7 @@ class AA_Fields implements Iterator, Countable {
         return ($dot_pos === false) ? $id : substr($id, 0, $dot_pos);
     }
 
-    /** getFieldNo function
-     *  get field number from id ('.', '0', '1', '12', ... )
+    /** get field number from id ('.', '0', '1', '12', ... )
      * @param $id
      * @return string
      */
@@ -1055,23 +1064,17 @@ class AA_Fields implements Iterator, Countable {
         return substr(strrchr($id,'.'), 1);
     }
 
-    /** Returns first field id of specified type
-     * @param $fields[]
+    /** Returns first field id of specified type from string array
+     *  Good for external feeds, where we do not have AA_Fields object
+     *  In most cases use getCategoryFieldId for AA_Fields object
+     *
+     * @param $fields_arr  []
      * @param $ftype
-     * @return bool|string
+     *
+     * @return string  - field id | empty string if not found
      */
-    public static function getBaseFieldId($fields, $ftype) {
-        $no = 10000;
-        if (isset($fields) and is_array($fields)) {
-            foreach ($fields as $k => $val) {
-                if (!strstr($val['id'], $ftype)) {
-                    continue;
-                }
-                $last = self::getFieldNo($val['id']);
-                $no   = min($no, (($last == '') ? -1 : (integer)$last));
-            }
-        }
-        return ($no == 10000) ? false : self::createFieldId($ftype, ($no == -1) ? '.' : (string)$no);
+    public static function getBaseFieldId($fields_arr, $ftype): string {
+        return ($flds = array_column(array_filter($fields_arr, static fn($fld) => str_starts_with($fld['id'], $ftype)), 'id')) ? min($flds) : '';
     }
 
     /** Converts real field id into field id as used in the AA form, like:
@@ -1085,7 +1088,7 @@ class AA_Fields implements Iterator, Countable {
      *  post_date______1  ==>  post_date......1
      */
     public static function getFieldIdFromVar($dirty_field_id) {
-        return str_replace('._', '..', str_replace('__', '..', $dirty_field_id));
+        return str_replace(['__', '._'], '..', $dirty_field_id);
     }
 
     /** getFields4Select function
@@ -1097,7 +1100,7 @@ class AA_Fields implements Iterator, Countable {
      */
     static function getFields4Select($slice_id, $slice_fields = false, $order = 'name', $add_empty = false, $add_all=false) {
         $where = [['slice_id',$slice_id,'l']];
-        if ($slice_fields == 'all') {
+        if ($slice_fields === 'all') {
             // all fields (item as well as slice fields) - no additional conditions
             //$slice_fields_where = '';
         } elseif (!$slice_fields) {

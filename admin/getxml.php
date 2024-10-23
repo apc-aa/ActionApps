@@ -131,7 +131,7 @@ function GetFlagFormat($flag) {
  * @return void
  */
 function Error($str) {
-    echo "$str";
+    echo $str;
     exit();
 }
 
@@ -182,13 +182,12 @@ function GetXMLFields( $slice_id, AA_Fields $slice_fields, &$xml_fields_refs, &$
     $xml_fields_refs.="\t</rdf:Bag></aa:fields>\n";
 }
 /** GetXMLCategories
- * @param $slice_id
+ * @param $group_id
  * @param $xml_categories_refs (by link)
  * @param $xml_categories (by link)
  * @return void - modified vars above
  */
-function GetXMLCategories($slice_id, &$xml_categories_refs, &$xml_categories) {
-    $group_id = GetCategoryGroup($slice_id);
+function GetXMLCategories($group_id, &$xml_categories_refs, &$xml_categories) {
     if (!$group_id) {
         return;
     }
@@ -231,31 +230,32 @@ function GetXMLChannel( $slice_id, $xml_fields_refs, $xml_categories_refs, $xml_
                    $xml_items_refs.
                    "\t</channel>\n";
 }
-/** GetBaseFieldContent function
- * @param $slice_fields (by link)
- * @param $ftype
- * @param $content4id
+
+/**
+ * @param  string  $field_id
+ * @param          $content4id
  * @return string - content
  */
-function GetBaseFieldContent($slice_fields, $ftype, $content4id) {
-    if ($ftype=="") {
+function GetBaseFieldContent(string $field_id, $content4id) {
+    if ($field_id === "") {
         return "";
     }
-    $f    = AA_Fields::getBaseFieldId($slice_fields, $ftype);
-    $cont = $content4id[$f][0];
+    $cont = $content4id[$field_id][0];
     return ($cont['flag'] & FLAG_HTML) ? strip_tags($cont['value']) : $cont['value'];
 }
-/** GetXMLFieldData function
+
+/**
  * @param $slice_id
  * @param $field_id
  * @param $content4id
  * @return string - fielddata xml tags
  */
-function GetXMLFieldData($slice_id, $field_id, $content4id) {
+function GetXMLFieldData($slice_id, $field_id, $content4id): string
+{
     $cont_vals = $content4id[$field_id];
 
     // the id should be unpacked for transmition
-    if ( ($field_id == 'id..............') AND (guesstype($cont_vals[0]['value']) == 'p')) {
+    if ( ($field_id === 'id..............') AND (guesstype($cont_vals[0]['value']) === 'p')) {
         $cont_vals[0]['value'] = unpack_id($cont_vals[0]['value']);
     }
 
@@ -270,7 +270,7 @@ function GetXMLFieldData($slice_id, $field_id, $content4id) {
                    "\t\t\t<aa:field rdf:resource=\"".AA_INSTAL_URL."field/$slice_id/$field_id\"/>\n".
                    "\t\t\t<aa:fieldflags>".$v['flag']."</aa:fieldflags>\n".
                    "\t\t\t<aa:format rdf:resource=\"". MEDIAFORMATS[$flag_format]."\"/>\n".
-                   "\t\t\t<rdf:value>". code($v['value'], $flag_format=="HTML"). "</rdf:value>\n".
+                   "\t\t\t<rdf:value>". code($v['value'], $flag_format==="HTML"). "</rdf:value>\n".
                 "\t\t</aa:fielddata></rdf:li>\n";
    }
    return $out;
@@ -288,21 +288,18 @@ function GetXMLItem($slice_id, $item_id, $content4id, AA_Fields $sfields) {
     static $value2const_id;
     static $slice_url;
 
-    $slice_fields = $sfields->getRecordArray(); // @todo - use $sfields directly
-
     // create RSS elements
-    $title       = GetBaseFieldContent($slice_fields,"headline", $content4id);
-    $description = GetBaseFieldContent($slice_fields,"abstract", $content4id);
-    $hl_href     = GetBaseFieldContent($slice_fields,"hl_href",  $content4id);
+    $title       = GetBaseFieldContent($sfields->getCategoryFieldId('headline'), $content4id);
+    $description = GetBaseFieldContent($sfields->getCategoryFieldId('abstract'), $content4id);
+    $hl_href     = GetBaseFieldContent($sfields->getCategoryFieldId('hl_href'),  $content4id);
     $link_only   = $hl_href;
     // older approach is to use link_only field. We do not use this approach for
-    // for newer slices - link is extenal if hl_href is filled. Dot.
-    // $link_only   = GetBaseFieldContent($slice_fields,"link_only",$content4id);
+    // for newer slices - link is external if hl_href is filled. Dot.
+    // $link_only   = GetBaseFieldContent($sfields->getCategoryFieldId('link_only'),  $content4id);
 
     // get slice url for current slice
     if ( !isset($slice_url[$slice_id]) ) {
-        $slice = AA_Slice::getModule($slice_id);
-        $slice_url[$slice_id] = $slice->getProperty('slice_url');
+        $slice_url[$slice_id] = AA_Slice::getModule($slice_id)?->getProperty('slice_url');
     }
 
     $item_link = ($link_only ? $hl_href : con_url($slice_url[$slice_id],"x=".$content4id['short_id........'][0]['value']) );
@@ -315,26 +312,26 @@ function GetXMLItem($slice_id, $item_id, $content4id, AA_Fields $sfields) {
 
     // create fulltext in the element <content:items>
     if (!$link_only) {
-        $f = AA_Fields::getBaseFieldId($slice_fields, "full_text");
+        $f = $sfields->getCategoryFieldId('full_text');
         if ($f) {
             $flag_format = GetFlagFormat($content4id[$f][0]['flag']);
             $xml_items .="\t<content:items><rdf:Bag>\n".
                            "\t\t<rdf:li><content:item>\n".
                               "\t\t\t<content:format rdf:resource=\"". MEDIAFORMATS[$flag_format]."\"/>\n".
-                              "\t\t\t<rdf:value>". code($content4id[$f][0]['value'], $flag_format=="HTML"). "</rdf:value>\n".
+                              "\t\t\t<rdf:value>". code($content4id[$f][0]['value'], $flag_format === "HTML"). "</rdf:value>\n".
                            "\t\t</content:item></rdf:li>\n".
                          "\t</rdf:Bag></content:items>\n";
         }
     }
 
     // create item's categories
-    $item_categs = $content4id[AA_Fields::getBaseFieldId($slice_fields, "category")];
+    $item_categs = $content4id[$sfields->getCategoryFieldId('category')];
 
     if (is_array($item_categs)) {
         // get constants array from database ('val'=>'packed id')
         if ( !isset($value2const_id[$slice_id]) ) {
             // get and store it for later usage (it is static variable
-            $value2const_id[$slice_id] = GetConstants( GetCategoryGroup($slice_id), '', 'id', 'value');
+            $value2const_id[$slice_id] = GetConstants( $sfields->getCategoryGroup(), '', 'id', 'value');
         }
         $xml_items.="\t<aa:categories><rdf:Bag>\n";
         foreach ($item_categs as $k => $v) {
@@ -348,8 +345,8 @@ function GetXMLItem($slice_id, $item_id, $content4id, AA_Fields $sfields) {
 
     // create Dublin Core elements
     foreach ( MAP_DC2AA as $k => $v) {
-        $cont = GetBaseFieldContent($slice_fields,$v,$content4id);
-        if ($v == "publish_date") { // convert publish date
+        $cont = GetBaseFieldContent($sfields->getCategoryFieldId($v),$content4id);
+        if ($v === "publish_date") { // convert publish date
             $cont = FeedUtil::unixstamp_to_iso8601($cont);
         }
         $xml_items .= "\t<dc:$k>".code($cont)."</dc:$k>\n";
@@ -359,19 +356,19 @@ function GetXMLItem($slice_id, $item_id, $content4id, AA_Fields $sfields) {
     //  $f = array("headline", "abstract", "link_only", "hl_href", "full_text" ,"category", "slice_id");
     //  $f = array("full_text" ,"category", "slice_id");
     //  now we will send also category field (there could be (in special case)
-    //  also values, which arn't in category definition (csv filled items, fed, ...)
+    //  also values, which aren't in category definition (csv filled items, fed, ...)
     $f = ["full_text", "slice_id"];
 
-    foreach ( $f as $k => $v) {        // create array of elements, which will be skipped
-        $rss[AA_Fields::getBaseFieldId($slice_fields, $v)] = $v;
+    foreach ( $f as $v) {        // create array of elements, which will be skipped
+        $rss[$sfields->getCategoryFieldId($v)] = $v;
     }
+
     $xml_items .= "\t<aa:fielddatacont><rdf:Bag>\n";
-    foreach ($slice_fields as $k => $v) {
-        if (isset($rss[$k])) {          // do not create rss elements
+    foreach ($sfields->getPriorityArray() as $f) {
+        if (isset($rss[$f])) {          // do not create rss elements
             continue;
         }
-        $xml_items .= GetXMLFieldData($slice_id, $k, $content4id);
-
+        $xml_items .= GetXMLFieldData($slice_id, $f, $content4id);
     }
     $xml_items .="\t</rdf:Bag></aa:fielddatacont>\n".
                  "\t</item>\n";
@@ -477,7 +474,7 @@ if (!$slice_id) {
         $slice_fields                = $sl->getFields();
         $xml_categories_refs         = $xml_fields_refs = "";      // clear fields and categories for this channel
         GetXMLFields(     $sl_id, $slice_fields, $xml_fields_refs,  $xml_fields);   // get fields
-        GetXMLCategories( $sl_id, $xml_categories_refs, $xml_categories ); //get categories
+        GetXMLCategories( $slice_fields->getCategoryGroup(), $xml_categories_refs, $xml_categories ); //get categories
         echo GetXMLChannel( $sl_id, $xml_fields_refs, $xml_categories_refs, $xml_items_refs, $time); // echo channel
     }
     echo $xml_fields;
@@ -572,8 +569,9 @@ if ($ids) {
 }
 
 echo XML_BEGIN;
-GetXMLFields(     $slice_id, $slice->getFields(), $xml_fields_refs,  $xml_fields);   // get fields and fields refs
-GetXMLCategories( $slice_id, $xml_categories_refs, $xml_categories ); //get categories and cat refs
+$flds = $slice->getFields();
+GetXMLFields(     $slice_id, $flds, $xml_fields_refs,  $xml_fields);   // get fields and fields refs
+GetXMLCategories( $flds->getCategoryGroup(), $xml_categories_refs, $xml_categories ); //get categories and cat refs
 echo GetXMLChannel( $slice_id, $xml_fields_refs, $xml_categories_refs,$xml_items_refs,$time); // echo channel
 
 // Channel(s) was already printed, so print fields and categories and also items (feeding mode)

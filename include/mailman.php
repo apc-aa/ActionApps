@@ -47,21 +47,20 @@ class AA_Mailman {
             return;
         }
 
-        if (! @is_dir($MAILMAN_SYNCHRO_DIR)) {
-	        warn('Error: mailman dir not exists '.$MAILMAN_SYNCHRO_DIR);
-            return;
-        }
-        endslash($MAILMAN_SYNCHRO_DIR);
-
         $slice = AA_Slice::getModule($slice_id);
-        $field = $slice->getProperty("mailman_field_lists");
-        if ($slice->getProperty("type") != "ReaderManagement" || ! $field) {
+        $field = $slice?->getProperty("mailman_field_lists");
+        if (!$field || $slice?->getProperty("type") !== "ReaderManagement") {
             return;
         }
-
 
         // Add empty mailing lists
-        if ($group_id = GetCategoryGroup($slice_id, $field)) {
+        if ($group_id = $slice?->getFields()->getCategoryGroup($field)) {
+            if (! @is_dir($MAILMAN_SYNCHRO_DIR)) {
+                warn('Error: mailman dir not exists '.$MAILMAN_SYNCHRO_DIR);
+                return;
+            }
+            endslash($MAILMAN_SYNCHRO_DIR);
+
             $maillists = array_keys(GetConstants($group_id));
             foreach ($maillists as $listname) {
                 self::_createOneFile($slice_id, $field, $listname);
@@ -69,16 +68,15 @@ class AA_Mailman {
         }
     }
 
-
     /** AA_Mailman::_createOneFile function
      *   Creates one file for each mailing list, named the same as the list.
      */
     private static function _createOneFile($slice_id, $field_id, $listname) {
         global $MAILMAN_SYNCHRO_DIR;
         if ($slice_id AND $field_id AND $listname) {
-            $mails = join("\n",AA_Validate::filter(explode('|',str_replace([' ',"\t"], ['',''],AA::Un("{item:{ids:$slice_id:d-$field_id-=-".str_replace('-', '--',$listname)."}:".FIELDID_EMAIL.":|}"))), 'email'));
+            $mails = implode("\n",AA_Validate::filter(explode('|',str_replace([' ', "\t"], ['', ''],AA::Un("{item:{ids:$slice_id:d-$field_id-=-".str_replace('-', '--',$listname)."}:".FIELDID_EMAIL.":|}"))), 'email'));
 
-            if ($fd = fopen($MAILMAN_SYNCHRO_DIR.$listname, "w")) {
+            if ($fd = fopen($MAILMAN_SYNCHRO_DIR.$listname, 'wb')) {
                 fwrite ($fd, $mails);
                 fclose ($fd);
             } else {
@@ -113,7 +111,7 @@ class AA_Mailman {
             $slices[] = unpack_id($db->f("id"));
         }
         foreach ($slices as $slice_id) {
-            AA_Mailman::createSynchroFiles($slice_id);
+            self::createSynchroFiles($slice_id);
         }
         freeDB($db);
     }

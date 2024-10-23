@@ -97,7 +97,7 @@ if (!IfSlPerm(PS_NEW_USER)) {
     exit;
 }
 
-if ( ($submit_action == "grp_del") AND $selected_group ) {
+if ( ($submit_action === "grp_del") AND $selected_group ) {
     DelGroup( $selected_group );     // default is to delete any references as well
     go_url( StateUrl($_SERVER['PHP_SELF']) );
 }
@@ -121,12 +121,12 @@ if ( $GrpSrch ) {
 $all_users = GetFiltered("U", $usr1_flt, _m("Too many users or groups found."), _m("No user (group) found"));
 
 if ( $selected_group ) {
-    if ( $selected_group != "n" ) { // none group selected
+    if ( $selected_group !== "n" ) { // none group selected
         // get list of users and groups right under $selected_group
         $group_users = AA::$perm->getGroupMembers($selected_group);
     }
     if ( !is_array($group_users) ) {
-        $sel_users["n"]['name'] = (( $group_users == "too much" ) ? _m("Too many users or groups found.") : "");
+        $sel_users["n"]['name'] = (( $group_users === "too much" ) ? _m("Too many users or groups found.") : "");
     } else {
         $sel_users = $group_users;
     }
@@ -135,19 +135,11 @@ if ( $selected_group ) {
 $err = [];          // error array (Init - just for initializing variable
 $varset      = new Cvarset();
 
-
 // Process submited form -------------------------------------------------------
 
-if ( $add_submit OR ($submit_action == "update_submit")) {
-
-    // all the actions are in following require_once (we reuse this part of code for
-    // slice wizard ...
+if ( $add_submit OR ($submit_action === "update_submit")) {
+    // all the actions are in following require_once (we reuse this part of code for slice wizard)
     require_once __DIR__ . "/../include/um_gedit.php";
-
-    if (!count($err)) {
-        $Msg = MsgOk(_m("Group successfully added to permission system"));
-        go_url( get_url(StateUrl($_SERVER['PHP_SELF']), 'grp_edit=1&selected_group='. rawurlencode($selected_group)), $Msg);   // @todo Mssg
-    }
 }
 
 
@@ -236,15 +228,15 @@ FrmTabSeparator("");
 FrmTabEnd();
 
 do {
-    if ( $grp_new OR ($grp_edit AND ($selected_group!="n")) ) {
-        if ($grp_edit AND !($submit_action == "update_submit")) {
+    if ( $grp_new OR ($grp_edit AND ($selected_group !== "n")) ) {
+        if ($grp_edit AND !($submit_action === "update_submit")) {
             if ( !is_array($group_data = AA::$perm->getGroup($selected_group))) {
                 break;
             }
             $group_name        = $group_data['name'];
             $group_description = $group_data['description'];
             $aa_users          = AA::$perm->getObjectsPerms(AA_ID, "aa");
-            if (strstr($aa_users[$selected_group], AA_Perm::ROLES["SUPER"]['id'])) {
+            if (str_contains($aa_users[$selected_group], AA_Perm::ROLES["SUPER"]['id'])) {
                 $group_super   = true;
             }
         }
@@ -257,7 +249,7 @@ do {
 echo "\n<form name=\"f\" method=\"post\" action=\"".StateUrl() ."\">";
 
 echo "<br />";
-if ( $grp_edit OR ($submit_action == "update_submit") ) {
+if ( $grp_edit OR ($submit_action === "update_submit") ) {
     FrmTabCaption(_m("Edit group"));
 } else {
     FrmTabCaption(_m("New group"));
@@ -295,7 +287,7 @@ $form_buttons["selected_group"] = ["value"=>$selected_group];
 $form_buttons["posted_users"]   = ["value"=>"0"];
 $form_buttons["submit_action"]  = ["value"=>"0"];
 
-if ( $grp_edit OR ($submit_action == "update_submit") ) {
+if ( $grp_edit OR ($submit_action === "update_submit") ) {
     FrmStaticText(_m("Group Id"), $group_data['uid']);
 }
 

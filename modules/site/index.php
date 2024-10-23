@@ -61,25 +61,9 @@ if ( !($module = AA_Module_Site::getModule($module_id)) ) {
     exit;
 }
 
-// r_spot_id holds current position in the tree
-if (!isset($r_spot_id)) {
-    $r_spot_id = 1;
-    //  $sess->register(r_spot_id);   // Don't use a session variable, its page dependent
-}
-
 if ( !IfSlPerm(PS_MODW_EDIT_CODE) ) {
     MsgPage(_m("You do not have permission to edit items in this slice"));
     exit;
-}
-
-// form send us spot id (prevents 'Back' browser problems, ...)
-if ($spot_id) {
-    $r_spot_id = $spot_id;
-}
-
-// switch to another spot, if the spot is in this site
-if ($go_sid) {
-    $r_spot_id = $go_sid;
 }
 
 if (!($tree = $module->getTree())) {
@@ -88,55 +72,57 @@ if (!($tree = $module->getTree())) {
     exit;
 }
 
-//  try
-/*
-$tree->addInSequence( 0, 'second' );
-$tree->addVariable( 1, 'x' );
-$tree->addChoice( 1, 'choice 1' );
-$tree->addInSequence( 0, 'third' );
-$tree->addInSequence( 2, 'quatro' );
-*/
+if ($spot_id) {
+    $tree->setCurrentId($spot_id);
+}
+
+// switch to another spot, if the spot is in this site
+if ($go_sid) {
+    $tree->setCurrentId($go_sid);
+}
+
+$current_spot_id = $tree->getCurrentId();
 
 switch( $akce ) {
-    case 's': $tree->addInSequence( $r_spot_id, 'spot' ); break;  // Add Spot
-    case 'c': $tree->addChoice($r_spot_id, 'option');   break;  // Add Choice
-    case 'r': $parent = $tree->get( 'parent', $r_spot_id );       // Remove
-              if ($priorsib = $tree->removeSpot($r_spot_id)) {
-                  $r_spot_id = $priorsib; // was set to $parent;
+    case 's': $tree->addInSequence( $current_spot_id, 'spot' ); break;  // Add Spot
+    case 'c': $tree->addChoice($current_spot_id, 'option');   break;  // Add Choice
+    case 'r': $parent = $tree->get( 'parent', $current_spot_id );       // Remove
+              if ($priorsib = $tree->removeSpot($current_spot_id)) {
+                  $current_spot_id = $priorsib; // was set to $parent;
               }
               break;
-    case 'u': $tree->move(          $r_spot_id, 'moveUp' );    break;  // Up
-    case 'd': $tree->move(          $r_spot_id, 'moveDown' );  break;  // Down
-    case 'l': $tree->moveLeftRight( $r_spot_id, 'moveLeft' );  break;  // Left
-    case 'a': $tree->moveLeftRight( $r_spot_id, 'moveRight' ); break;  // Right
+    case 'u': $tree->move(          $current_spot_id, 'moveUp' );    break;  // Up
+    case 'd': $tree->move(          $current_spot_id, 'moveDown' );  break;  // Down
+    case 'l': $tree->moveLeftRight( $current_spot_id, 'moveLeft' );  break;  // Left
+    case 'a': $tree->moveLeftRight( $current_spot_id, 'moveRight' ); break;  // Right
 
-    case 'h': $tree->setFlag($r_spot_id, AA_Module_Site::FLAG_DISABLE);   break;  // Hide
-    case 'e': $tree->clearFlag($r_spot_id, AA_Module_Site::FLAG_DISABLE); break;  // Disable
+    case 'h': $tree->setFlag($current_spot_id, AA_Module_Site::FLAG_DISABLE);   break;  // Hide
+    case 'e': $tree->clearFlag($current_spot_id, AA_Module_Site::FLAG_DISABLE); break;  // Disable
 
-    case 'p': $tree->setFlag($r_spot_id, AA_Module_Site::FLAG_COLLAPSE);   break;  // Collapse
-    case 'm': $tree->clearFlag($r_spot_id, AA_Module_Site::FLAG_COLLAPSE); break;  // Expand
+    case 'p': $tree->setFlag($current_spot_id, AA_Module_Site::FLAG_COLLAPSE);   break;  // Collapse
+    case 'm': $tree->clearFlag($current_spot_id, AA_Module_Site::FLAG_COLLAPSE); break;  // Expand
 }
 
 
 if ($addcond) {
-    $tree->addCondition($r_spot_id, $addcondvar, $addcond, $addcondop);
+    $tree->addCondition($current_spot_id, $addcondvar, $addcond, $addcondop);
 } elseif ($addvar) {
-    $tree->addVariable($r_spot_id, $addvar);
+    $tree->addVariable($current_spot_id, $addvar);
 } elseif ($delvar) {
-    $tree->removeVariable($r_spot_id, $delvar);
+    $tree->removeVariable($current_spot_id, $delvar);
 } elseif ($delcond) {
-    $tree->removeCondition($r_spot_id, $delcond);
+    $tree->removeCondition($current_spot_id, $delcond);
 } elseif ($content OR $name) {
     $varset     = new CVarset();
     $varset->add("content", "text", $content);
 
-    $db_id = DB_AA::select1('id', 'SELECT `id` FROM `site_spot`', [ ['site_id', $module_id, 'l'], ['spot_id', $r_spot_id] ]);
+    $db_id = DB_AA::select1('id', 'SELECT `id` FROM `site_spot`', [ ['site_id', $module_id, 'l'], ['spot_id', $current_spot_id] ]);
     if ($db_id) {
         $varset->addkey("id", "number", $db_id);
         $varset->doUpdate('site_spot', null, "S.$db_id");
     } else {
         $varset->add("site_id", "unpacked", $module_id);
-        $varset->add("spot_id", "number", $r_spot_id);
+        $varset->add("spot_id", "number", $current_spot_id);
         $varset->doInsert('site_spot');
     }
 
@@ -148,7 +134,7 @@ if ($addcond) {
     // $db->query($SQL);
 
     if ($name) {  // do not change to empty
-        $tree->set('name', $r_spot_id, $name);
+        $tree->set('name', $current_spot_id, $name);
     }
 
 }
@@ -158,7 +144,7 @@ if ($addcond OR $delcond OR $content OR $name OR $akce) {
 }
 
 if ($addcond OR $delcond OR $content OR $name OR $akce OR $addvar OR $delvar) {
-    $module->saveTree($tree, $akce=='r');  // delete unused spots after we delete one spot
+    $module->saveTree($tree, $akce==='r');  // delete unused spots after we delete one spot
 }
 
 $apage = new AA_Adminpageutil('modadmin', 'codemanager');
@@ -166,7 +152,7 @@ $apage->setModuleMenu( 'modules/site');
 $apage->setTitle( _m("Editor window - site code manager") );
 $apage->addRequire('codemirror@5');
 $apage->addRequire('aa-jslib');   // {htmltoggle in helpbox}
-$apage->addRequire(get_aa_url('javascript/js_lib.min.js?v='.AA_JS_VERSION, '', false ));
+$apage->addRequire(get_aa_url('javascript/js_lib.min.js', ['v'=>AA_JS_VERSION], false ));
 
 $script2run = ' 
    var opts = { lineWrapping:true, matchBrackets: true, matchTags: true, viewportMargin: 10000, mode: "htmlmixed" };
@@ -179,36 +165,27 @@ $apage->printHead($err, $Msg);
 
 // echo "<style>.CodeMirror { min-height: 500px; } </style>";
 
-function PrintSiteActionLink($r_spot_id, $action, $text, $img, $link=null) {
-    if (!$link) {
-        $link  = sitetree::siteAdminPageUrl($r_spot_id, "akce=$action");
-    }
-    $image = GetModuleImage('site', $img, '', 16, 16);
-    return "<a class=aa-button href=\"$link\">$image $text</a>";
-}
-
 echo '<div class="aa-site-codemanager">
         <div id="sitetree" class="aa-site-tree">
       <table class="aa-w-full">
         <tr>
-          <td>'. PrintSiteActionLink($r_spot_id, 's', _m("Add&nbsp;spot"), 'add_spot.gif') .'</td>
-          <td>'. PrintSiteActionLink($r_spot_id, 'c', _m("Add&nbsp;choice"), 'add_choice.gif') .'</td>
+          <td>'.sitetree::siteActionLink($current_spot_id, 's', _m("Add&nbsp;spot"), 'add_spot.gif').'</td>
+          <td>'.sitetree::siteActionLink($current_spot_id, 'c', _m("Add&nbsp;choice"), 'add_choice.gif').'</td>
         </tr>
         <tr>
-          <td>'. PrintSiteActionLink($r_spot_id, 'u', _m("Move&nbsp;up"), 'up.gif') .'</td>
-          <td>'. PrintSiteActionLink($r_spot_id, 'd', _m("Move&nbsp;down"), 'down.gif') .'</td>
+          <td>'.sitetree::siteActionLink($current_spot_id, 'u', _m("Move&nbsp;up"), 'up.gif').'</td>
+          <td>'.sitetree::siteActionLink($current_spot_id, 'd', _m("Move&nbsp;down"), 'down.gif').'</td>
         </tr>
         <tr>
-          <td>'. PrintSiteActionLink($r_spot_id, 'l', _m("Move&nbsp;left"), 'left.gif') .'</td>
-          <td>'. PrintSiteActionLink($r_spot_id, 'a', _m("Move&nbsp;right"), 'right.gif') .'</td>
+          <td>'.sitetree::siteActionLink($current_spot_id, 'l', _m("Move&nbsp;left"), 'left.gif').'</td>
+          <td>'.sitetree::siteActionLink($current_spot_id, 'a', _m("Move&nbsp;right"), 'right.gif').'</td>
         </tr>
         <tr>
-          <td>'. PrintSiteActionLink($r_spot_id, 'r', _m("Delete"), 'delete.gif', 'javascript:GoIfConfirmed(\''. sitetree::siteAdminPageUrl($r_spot_id, "akce=r") .'\', \''.
-                                            _m("Are you sure you want to delete the spot?") .'\')') .'</td>
+          <td>'.sitetree::siteActionLink($current_spot_id, 'r', _m("Delete"), 'delete.gif', 'javascript:GoIfConfirmed(\''.sitetree::siteAdminPageUrl($current_spot_id, ['akce' => 'r']).'\', \''. _m("Are you sure you want to delete the spot?").'\')').'</td>
           <td>'.
-          (($tree->get('flag', $r_spot_id) & AA_Module_Site::FLAG_DISABLE) ?
-              PrintSiteActionLink($r_spot_id, 'e', _m("Enable"), 'enabled.gif') :
-              PrintSiteActionLink($r_spot_id, 'h', _m("Disable"), 'disabled.gif'))
+          (($tree->get('flag', $current_spot_id) & AA_Module_Site::FLAG_DISABLE) ?
+              sitetree::siteActionLink($current_spot_id, 'e', _m("Enable"), 'enabled.gif')     :
+              sitetree::siteActionLink($current_spot_id, 'h', _m("Disable"), 'disabled.gif'))
               .'</td>
         </tr>
       </table>
@@ -225,7 +202,7 @@ $tree->walkTree($apc_state, 1, $functions, 'collapsed');
 
 echo '</div><div class="aa-site-code">';
 
-$module->showSpot($tree, $r_spot_id);
+$module->showSpot($tree, $current_spot_id);
 
 echo '</div></div>';
 

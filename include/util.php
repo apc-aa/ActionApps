@@ -57,7 +57,7 @@ function a_href($url, $label='', array $attr=[]): string {
 }
 
 function htmlattr(array $attr) {
-    return array_reduce( array_keys($attr), fn($str, $key) => $str . (strlen($attr[$key]) ? ' ' . $key . '="' . safe($attr[$key]) . '"' : ''));
+    return array_reduce( array_keys($attr), static fn($str, $key) => $str . (($attr[$key] != '') ? ' ' . $key . '="' . safe($attr[$key]) . '"' : ''));
 }
 
 /** creates html tag with attributes
@@ -71,7 +71,7 @@ function htmltag($tag, $content, $attr=[]): string {
  * @usage xmltag('name',John,['sex'=>'M'])
  */
 function xmltag($tag, $content, $attr=[]): string {
-    return "<$tag". array_reduce( array_keys($attr), fn($str, $key) => $str . ' ' . $key . '="' . safexml($attr[$key]) . '"').'>'. safexml($content)."</$tag>";
+    return "<$tag". array_reduce( array_keys($attr), static fn($str, $key) => $str . ' ' . $key . '="' . safexml($attr[$key]) . '"').'>'. safexml($content)."</$tag>";
 }
 
 /** expand_return_url function
@@ -128,7 +128,7 @@ function escape4js($code) {
  */
 function self_server() {
     $port = '';
-    if ( isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ) {
+    if ( isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ) {
         $PROTOCOL='https';
         if ($_SERVER['SERVER_PORT'] != "443") {
             $port = ':'. $_SERVER['SERVER_PORT'];
@@ -197,7 +197,7 @@ function shtml_query_string() {
 
 /** check, if the script was called as ajax call */
 function IsAjaxCall(): bool {
-    return (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) AND strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest');
+    return (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) AND strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest');
 }
 
 /** DeBackslash function
@@ -217,7 +217,7 @@ function ParamImplode($param): string {
     if (!is_array($param)) {
         return (string)$param;
     }
-    array_walk($param, function (&$v) {$v = str_replace(':', '#:', $v);});
+    array_walk($param, static function (&$v) {$v = str_replace(':', '#:', $v);});
     return implode(":", $param);
 }
 
@@ -233,7 +233,7 @@ function ConvertEncodingDeep($value, $from=null, $to=null) {
     $to   = $to   ?: 'UTF-8';
     array_walk_recursive(
         $value,
-        function (&$entry) use ($from, $to) {
+        static function (&$entry) use ($from, $to) {
             $entry = iconv($from, "$to//TRANSLIT", $entry);
         }
     );
@@ -427,10 +427,10 @@ function string2id($str) {
 /** now function
  *  returns current date/time as timestamp;
  * @param $step - time could be returned in steps (good for database query speedup)
- * @return float|int
+ * @return int
  */
-function now($step=false) {
-    return (($step!='step') ? time() : ((int)(time()/QUERY_DATE_STEP)+1)*QUERY_DATE_STEP);     // round up
+function now($step=false): int {
+    return (($step!=='step') ? time() : ((int)(time()/QUERY_DATE_STEP)+1)*QUERY_DATE_STEP);     // round up
 }
 
 /** get current time in nanoseconds from 1970 
@@ -463,7 +463,7 @@ function warn($msg) {
     if (AA::$debug) {
         AA::$dbg->log(AA_Log::backtrack());
         $trace = debug_backtrace();
-        AA::$dbg->warn( join('->', [$trace[1]['class'],$trace[1]['function']]).': '.$msg );
+        AA::$dbg->warn( implode('->', [$trace[1]['class'], $trace[1]['function']]).': '.$msg );
     }
 }
 
@@ -475,7 +475,7 @@ function warn($msg) {
 function huhe(...$arg_list) {
     global $errcheck;
     if ($errcheck) {
-        call_user_func_array('huhl', $arg_list);
+        huhl(...$arg_list);
     }
 }
 
@@ -557,8 +557,8 @@ function GetConstants($group, $order='pri', $column='name', $keycolumn='value'):
     $keycolumn = str_replace( 'const_', '', $keycolumn);
 
     $db_order     = $order;
-    $db_column    = ($column    == 'level') ? 'ancestors' : $column;
-    $db_keycolumn = ($keycolumn == 'level') ? 'ancestors' : $keycolumn;
+    $db_column    = ($column    === 'level') ? 'ancestors' : $column;
+    $db_keycolumn = ($keycolumn === 'level') ? 'ancestors' : $keycolumn;
 
     $const_fields = ['id'=>1,'group_id'=>1,'name'=>1,'value'=>1,'class'=>1,'pri'=>1,'ancestors'=>1,'description'=>1,'short_id'=>1];
 
@@ -698,7 +698,7 @@ function CreateBinCondition($bin, $table, bool $ignore_expiry_date=false, bool $
     return match (count($or_conds)) {
         0       => ' 1=1 ',
         1       => ' '.$or_conds[0].' ',
-        default => ' (('.join(') OR (', $or_conds).')) ',
+        default => ' (('.implode(') OR (', $or_conds).')) ',
     };
 }
 
@@ -716,7 +716,7 @@ function CreateBinCondition($bin, $table, bool $ignore_expiry_date=false, bool $
  *                                    like: ['headline........', 'category.......1']
  * @param null  $crypted_additional_slice_pwd
  * @param null  $bin
- * @return array
+ * @return array[]
  */
 function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_password=false, $fields2get=false, $crypted_additional_slice_pwd=null, $bin=null) {
     // Fills array $content with current content of $sel_in items (comma separated ids).
@@ -734,7 +734,7 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
 
     // get content from item table
 
-    $use_short_ids = ($zids->onetype() == 's');
+    $use_short_ids = ($zids->onetype() === 's');
     $metabase      = AA::Metabase();
 
     // if the output fields are restricted, restrict also item fields
@@ -769,7 +769,7 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
             $item_fields[] = 'slice_id';
         }
 
-        $item_fields_sql = join(',', $item_fields);
+        $item_fields_sql = implode(',', $item_fields);
     } else {
         $item_fields_sql = '*';
         $real_item_fields2get = $metabase->getColumnNames('item');
@@ -845,7 +845,7 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
     }
 
     // If its a tagged id, then set the "idtag..........." field
-    if ( $zids->onetype() == 't') {
+    if ( $zids->onetype() === 't') {
         $tags = $zids->gettags();
         foreach ($tags as $k => $v) {
             $content[$k]["idtag..........."][] = ["value" => $v];
@@ -862,7 +862,7 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
             // we want just some item fields
             0       => '1=0',
             1       => " AND field_id = '".reset($content_fields)."' ",
-            default => " AND field_id IN ( '".join("','", $content_fields)."' ) ",
+            default => " AND field_id IN ( '".implode("','", $content_fields)."' ) ",
         };
     }
 
@@ -915,7 +915,7 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
     }
 
     if ($use_short_ids) {
-        // if $zids->onetype() == 's' we should return $content constructed using short_id (to be backward compatible)
+        // if $zids->onetype() === 's' we should return $content constructed using short_id (to be backward compatible)
         // it is deprecated, so maybe rather update calling code to accept $content with unpacked_id keys
         // (there is problem with calling after zids->short_or_longids - say: view.php?vid=26&cmd[26]=x-26-23074  ) Honza 2016-09-30
         $content_long = $content;
@@ -946,7 +946,7 @@ function GetItemContentMinimal($zids, $fields2get=false) {
     if ( !$fields2get ) {
         $fields2get = ['id', 'short_id'];
     }
-    $columns = join(',',$fields2get);
+    $columns = implode(',',$fields2get);
 
     if ( !is_object($zids) ) {
         $zids = new zids( $zids, 'l');
@@ -1056,32 +1056,21 @@ function GetHeadlineFieldID($sid, $slice_field="headline.") {
     return DB_AA::select1('id', "SELECT id FROM field", [['slice_id', $sid, 'l'], ['id', "$slice_field%", 'LIKE']], ['id']);  // false if not found
 }
 
-/** GetCategoryGroup function
- * find group_id for constants of the slice
- * @param $slice_id
- * @param $field
- * @return
+/** find group_id for constants of the slice
+ * @param string $slice_id
+ * @deprecated use AA_Fields->getCategoryGroup() directly
  */
-function GetCategoryGroup($slice_id, $field='') {
-    // first should be category........, then category.......1, etc.
-    $order   = [];
-    $conds   = [['slice_id',$slice_id, 'l']];
-    if ($field) {
-        $conds[] = ['id', $field];
-    } else {
-        $conds[] = ['id', 'category%', 'LIKE'];
-        $order   = ['id'];
-    }
-    $arr = explode( ":", DB_AA::select1('input_show_func', "SELECT input_show_func FROM field", $conds, $order));  // false if not found
-    return $arr[1];
+function GetCategoryGroup($slice_id): ?string
+{
+    return AA_Slice::getModule($slice_id)?->getFields()->getCategoryGroup($field_id);
 }
 
 // -------------------------------------------------------------------------------
 
-/** ParseFnc function
- * Parses the string xxx:yyyy (database stored func) to arr[fce]=xxx [param]=yyyy
+/** Parses the string xxx:yyyy (database stored func) to arr[fce]=xxx [param]=yyyy
  */
-function ParseFnc($s) {
+function ParseFnc($s): array
+{
     $pos = strpos($s,":");
     if ( $pos ) {
         $arr['fnc']   = substr($s, 0, $pos);
@@ -1092,12 +1081,12 @@ function ParseFnc($s) {
     return $arr;
 }
 
-/** safe function
- * identical to old myspecialchars() which replaced htmlspecialchars because of changes in php 5.4
+/** identical to old myspecialchars() which replaced htmlspecialchars because of changes in php 5.4
  * @param string $var
  * @return string - html safe code (used for preparing variable to print in form)
  */
-function safe( $var='' ) {
+function safe( $var='' ): string
+{
     return htmlspecialchars( $var, ENT_QUOTES | ENT_HTML5, 'ISO-8859-1');
 }
 
@@ -1107,7 +1096,8 @@ function safexml( $var='' ): string {
 }
 
 /** replaces all the &apos;, ... html entities */
-function aa_html_entity_decode(string $text) {
+function aa_html_entity_decode(string $text): string
+{
     return html_entity_decode($text, ENT_QUOTES | ENT_HTML5);
 }
 
@@ -1115,7 +1105,8 @@ function aa_html_entity_decode(string $text) {
  * @param string $data
  * @return string
  */
-function bin2url($data) {
+function bin2url($data): string
+{
     return rtrim(strtr(base64_encode($data), '+/', '-_'), '=');
 }
 
@@ -1151,9 +1142,9 @@ function HtmlPageBegin($js_lib=false, $lang=null) {
 ';
 
     if ($js_lib) {
-        FrmJavascriptFile( 'javascript/js_lib.min.js' );
-        FrmJavascriptFile( 'javascript/jquery.min.js' );
-        FrmJavascriptFile( 'javascript/aajslib-jquery.min.js' );
+        echo getFrmJavascriptFile( 'javascript/js_lib.min.js' );
+        echo getFrmJavascriptFile( 'javascript/jquery.min.js' );
+        echo getFrmJavascriptFile( 'javascript/aajslib-jquery.min.js' );
     }
 }
 
@@ -1165,7 +1156,7 @@ function HtmlPageEnd() {
     if (AA::$debug&16) {
         echo AA::$dbg->basic_stat();
         if ($slices4cache) {
-            echo '<br>UsedModules:<br> - ' . join('<br> - ', array_map(fn ($mid) => AA_Module::getModuleName($mid), $slices4cache));
+            echo '<br>UsedModules:<br> - ' . implode('<br> - ', array_map(static fn ($mid) => AA_Module::getModuleName($mid), $slices4cache));
         }
         echo AA::$dbg->duration_stat();
     }
@@ -1274,7 +1265,7 @@ function gensalt($saltlen) {
     } while ($saltlen > strlen($more_sec));
 
     for ($i = 0; $i < $saltlen; $i++) {
-        $salt .= $salt_chars[(mt_rand(0,61)+ord($more_sec[$i])) % 62];
+        $salt .= $salt_chars[(mt_rand(0,61)+ord($more_sec[$i])) % 62];  // mt_rand is faster than random_int (10x) so we use it here, but it is questionable @todo
     }
     return $salt;
 }
@@ -1478,7 +1469,7 @@ class AA_Credentials {
             return true;
         }
         if ($GLOBALS['slice_pwd']) {
-            $this->register(AA_Credentials::encrypt($GLOBALS['slice_pwd']));
+            $this->register(self::encrypt($GLOBALS['slice_pwd']));
         }
         return $this->_pwd[$crypted_slice_pwd] ? true : false;
     }
@@ -1572,7 +1563,7 @@ class AA_Contentcache {
             return $function;
         }
         if (is_array($function)) {
-            return is_object($function[0]) ? get_class($function[0]) . '>' . $function[1] : join('>', $function);
+            return is_object($function[0]) ? get_class($function[0]) . '>' . $function[1] : implode('>', $function);
         }
         return ($function instanceof Closure) ? 'Closure' : var_export($function, true);
     }
@@ -1810,7 +1801,7 @@ class AA_Contentcache {
  * @return string
  */
 function get_if($value, $else, $else2='aa_NoNe', $else3='aa_NoNe') {
-    return $value ?: ($else ?: (($else2=='aa_NoNe') ? $else : (($else3=='aa_NoNe') ? $else2 : $else3)));
+    return $value ?: ($else ?: (($else2==='aa_NoNe') ? $else : (($else3==='aa_NoNe') ? $else2 : $else3)));
 }
 
 /** aa_version function
@@ -1996,6 +1987,16 @@ function aa_trim(string $string='', string $chars=''): string {
 /** strtolower with utf in mind */
 function aa_strtolower($string) {
     return Langs::isUTF() ? mb_strtolower($string) : strtolower($string); // maybe we could count with other languages
+}
+
+/** lcfirst with utf in mind */
+function aa_lcfirst($string) {
+    return Langs::isUTF() ? mb_strtolower(mb_substr($string, 0, 1)).mb_substr($string, 1) : lcfirst($string); // maybe we could count with other languages
+}
+
+/** ucfirst with utf in mind */
+function aa_ucfirst($string) {
+    return Langs::isUTF() ? mb_strtoupper(mb_substr($string, 0, 1)).mb_substr($string, 1) : ucfirst($string); // maybe we could count with other languages
 }
 
 /** strtoupper with utf in mind */
