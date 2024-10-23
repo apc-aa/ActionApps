@@ -139,8 +139,7 @@ class htmlMimeMail {
      * argument of the functions add_html_image() or add_attachment().
      */
     function getFile($filename) {
-        $file = AA_File_Wrapper::wrapper($filename);
-        return $file->contents();
+        return AA_File_Wrapper::wrapper($filename)->contents();
     }
 
     /**
@@ -352,23 +351,21 @@ class htmlMimeMail {
         $i=0;  // counter to use different img_name for the same filename in different directory
         foreach ($images as $img) {
             ++$i;
-            if (strtolower(substr($img,0,4))=='http') {
+            if (stripos($img, 'http') === 0) {
                 $image_path = $img;
                 if ($pos = strpos($img,'/img.php?src=')) {
                     $img_name[$image_path] = (string)$i.basename( parse_url( substr($image_path, $pos+13, strpos($image_path,'&')-$pos-13), PHP_URL_PATH) );
                 } else {
                     $img_name[$image_path] = (string)$i.basename( parse_url($image_path, PHP_URL_PATH) );
                 }
+            } elseif (false !== ($pos = strpos($img,'/img.php?src='))) {
+                // this one is used in new versions of AA - Honza 14.8.2013
+                $image_path            = AA_INSTAL_URL . substr($img,$pos+1);
+                $pos                   = strpos($image_path,'/img.php?src='); // recompute for full url and use the same approach as above
+                $img_name[$image_path] = (string)$i.basename( parse_url( substr($image_path, $pos+13, strpos($image_path,'&')-$pos-13), PHP_URL_PATH) );
             } else {
-                if (false !== ($pos = strpos($img,'/img.php?src='))) {
-                    // this one is used in new versions of AA - Honza 14.8.2013
-                    $image_path            = AA_INSTAL_URL . substr($img,$pos+1);
-                    $pos                   = strpos($image_path,'/img.php?src='); // recompute for full url and use the same approach as above
-                    $img_name[$image_path] = (string)$i.basename( parse_url( substr($image_path, $pos+13, strpos($image_path,'&')-$pos-13), PHP_URL_PATH) );
-                } else {
-                    $image_path            = $images_dir . $img;
-                    $img_name[$image_path] = (string)$i.basename( $image_path );
-                }
+                $image_path            = $images_dir . $img;
+                $img_name[$image_path] = (string)$i.basename( $image_path );
             }
 
             if (!isset($img_content[$image_path])) {
@@ -385,11 +382,11 @@ class htmlMimeMail {
             // $html_images = array_unique($html_images);
             sort($html_images);
 
-            for ( $i=0, $ino=count($html_images); $i<$ino; ++$i) {
-                $image        = $img_content[$html_images[$i]];
-                $ext          = strpos($html_images[$i],'/img.php?src=') ? 'jpg' : substr($html_images[$i], strrpos($html_images[$i], '.') + 1);
+            foreach ($html_images as $iValue) {
+                $image        = $img_content[$iValue];
+                $ext          = strpos($iValue,'/img.php?src=') ? 'jpg' : substr($iValue, strrpos($iValue, '.') + 1);
                 $content_type = $this->image_types[strtolower($ext)];
-                $this->addHtmlImage($image, $img_name[$html_images[$i]], $content_type);
+                $this->addHtmlImage($image, $img_name[$iValue], $content_type);
             }
         }
 
@@ -669,14 +666,14 @@ class htmlMimeMail {
                 $hostname = 'localhost';
             }
 
-            $message_id = sprintf('<%s.%s@%s>', base_convert(time(), 10, 36), base_convert(rand(), 10, 36), $hostname);
+            $message_id = sprintf('<%s.%s@%s>', base_convert(time(), 10, 36), base_convert(mt_rand(), 10, 36), $hostname);
             $this->headers['Message-ID'] = $message_id;
 
             $this->is_built = true;
             return true;
-        } else {
-            return false;
         }
+
+        return false;
     }
 
     /**
@@ -687,7 +684,7 @@ class htmlMimeMail {
         preg_match_all('/(\s?\w*[\x80-\xFF]+\w*\s?)/', $input, $matches);
         foreach ($matches[1] as $value) {
             //$replacement = preg_replace('/([\x20\x80-\xFF])/e', '"=" . strtoupper(dechex(ord("\1")))', $value);
-            $replacement = preg_replace_callback('/([\x20\x80-\xFF])/', fn ($ms) => '=' . strtoupper(dechex(ord($ms[0]))), $value);
+            $replacement = preg_replace_callback('/([\x20\x80-\xFF])/', static fn ($ms) => '=' . strtoupper(dechex(ord($ms[0]))), $value);
             $input       = str_replace($value, '=?' . $charset . '?Q?' . $replacement . '?=', $input);
         }
         return $input;

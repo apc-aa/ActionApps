@@ -177,10 +177,10 @@ $manager_settings = [
 ];
 
 $managed = (new \AA\Managed())->setSettings($manager_settings);
-$managed->setTitle($slice->getName(). ' - '. (($slice->type() == 'ReaderManagement') ? _m('ActionApps - Reader Manager') : _m('ActionApps - Item Manager')));
+$managed->setTitle($slice->getName(). ' - '. (($slice->type() === 'ReaderManagement') ? _m('ActionApps - Reader Manager') : _m('ActionApps - Item Manager')));
 $manager = new Manager('item'.$module_id, $managed);
 
-if ( $change_id OR ($r_state["module_id"] != $module_id)) {
+if ( $change_id OR ($r_state["module_id"] !== $module_id)) {
     // we are here for the first time, or we are switching to another slice
     unset($r_state);
     // set default admin interface settings from user's profile

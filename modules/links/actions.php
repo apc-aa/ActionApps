@@ -61,11 +61,11 @@ function Links_DeleteLink($lid) {
         return _m('Can\'t get asociation information');
     }
 
-    if ( $db->f('base') == 'y' ) {    // we have to find another base for the link
+    if ( $db->f('base') === 'y' ) {    // we have to find another base for the link
         $SQL = "SELECT * FROM links_link_cat WHERE what_id = ". $db->f('what_id'). " AND a_id <> $aid  ORDER BY state DESC";  // visible - highlight - hidden
         $db->query($SQL);
         if ( $db->next_record() ) {
-            if ( $db->f('state') == 'hidden' ) {
+            if ( $db->f('state') === 'hidden' ) {
                 $SQL = "UPDATE links_link_cat SET state='visible', base='y' WHERE a_id = ". $db->f('a_id');
             } else {
                 $SQL = "UPDATE links_link_cat SET base='y' WHERE a_id = ". $db->f('a_id');
@@ -126,14 +126,14 @@ function Links_RefuseLink($param, $lid, $akce_param) {
         return _m('Can\'t get asociation information');
     }
 
-    if ( $db->f('base') == 'y' ) {            // we have to find new base
+    if ( $db->f('base') === 'y' ) {            // we have to find new base
         $SQL = "SELECT * FROM links_link_cat
                    WHERE what_id = ". $db->f('what_id') ."
                    AND base = 'n'
                    ORDER BY proposal, state";  // true links first
         $db->query($SQL);
         if ( $db->next_record() ) {       // link is linked to another category
-            $SQL = ( ( $db->f('state')=='hidden' ) ?
+            $SQL = ( ( $db->f('state')==='hidden' ) ?
                      "UPDATE links_link_cat SET base='y', state='visible'
                        WHERE a_id=".$db->f('a_id') :
                      "UPDATE links_link_cat SET base='y'

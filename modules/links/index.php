@@ -261,8 +261,8 @@ $manager->printHtmlPageBegin();  // html, head, css, title, javascripts
 // js needed for category selection
 
 $tree = new cattree( $links_info['start_id'], true, '<br> - ');
-FrmJavascriptFile('javascript/js_lib.min.js');
-FrmJavascriptFile('javascript/js_lib_links.min.js');   // js for category selection
+echo getFrmJavascriptFile('javascript/js_lib.min.js');
+echo getFrmJavascriptFile('javascript/js_lib_links.min.js');   // js for category selection
 $tree->printTreeData($links_info['start_id'],1,true);
 $cat_tree = $tree->getFrmTree('change', $links_info['start_id'], 'patharea', 'document.filterform.cat_id', false, 250, 8, 'filterform');
 

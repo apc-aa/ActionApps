@@ -79,7 +79,7 @@ abstract class AA_Transformation implements \AA\Util\NamedInterface {
      */
     static function getRequestVariables($input_id, $classname) {
         $ret = [];
-        if ( strtolower(substr($classname,0,18)) != 'aa_transformation_' ) {  // to lower - php4 fix
+        if ( strtolower(substr($classname,0,18)) !== 'aa_transformation_' ) {  // to lower - php4 fix
             return $ret;
         }
         $prefix = $input_id. substr($classname,18);
@@ -326,8 +326,7 @@ class AA_Transformation_Setflag extends AA_Transformation {
     function transform($field_id, $itemcontent, $silent=true) {
         $item = GetItemFromContent($itemcontent);
         $flag = $this->getFlagFromForm($item->getFlag($field_id));
-        $ret  = $itemcontent->getAaValue($field_id);
-        return $ret->setFlag($flag);
+        return $itemcontent->getAaValue($field_id)->setFlag($flag);
     }
 
     /** htmlSetting function
@@ -338,7 +337,7 @@ class AA_Transformation_Setflag extends AA_Transformation {
     static function htmlSetting($input_prefix, $params) {
         $flag_options = [
             'h' => _m('HTML'),
-                              't' => _m('Plain text')
+            't' => _m('Plain text')
         ];
         ob_start();
         FrmTabCaption();
@@ -553,7 +552,7 @@ class AA_Strreplace {
         foreach ( $this->replacements as $replacement) {
             $replacement = str_replace('_#0', $value, $replacement);
             $text = $item->subst_alias($replacement);
-            if ( $text != 'AA_NULL' ) {
+            if ( $text !== 'AA_NULL' ) {
                 $ret[] = $text;
             }
         }
@@ -843,7 +842,7 @@ class AA_Transformation_CopyField extends AA_Transformation {
      * @return AA_Value|false
      */
     function transform($field_id, $itemcontent, $silent=true) {
-        if (($this->field2copy == 'no_field') OR !$field_id OR ($field_id == 'no_field')) {
+        if (($this->field2copy === 'no_field') OR !$field_id OR ($field_id === 'no_field')) {
             $this->message(_m('Source or destination field is not specified.'));
             return false;
         }
@@ -920,7 +919,7 @@ class AA_Transformator implements \AA\Later\LaterInterface {
 
             // transform returns AA_Value
             $field_content = $this->transformation->transform($this->field_id, $itemcontent, $this->silent);
-            if ( !is_a($field_content, 'AA_Value') ) {
+            if ( ! $field_content instanceof \AA_Value) {
                 if ($field_content === true) {  // for recompute - all is already successfully done
                     $updated_items++;
                     $slices2invalidate[$sli_id] = $sli_id;

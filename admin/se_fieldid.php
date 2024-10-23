@@ -42,7 +42,7 @@ require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/varset.php";
 
-require_once __DIR__ . "/../include/util.php"; // tryquery
+require_once __DIR__ . "/../include/util.php";
 
 try {
     // array ( '.', 2038 => 1, 19 => 1, )
@@ -175,14 +175,14 @@ function ChangeFieldID($old_id, $new_id) {
         if (!$keyfield) {
             $keyfield = $settings['primary_part'];
         }
-        $SQL = "SELECT `$keyfield`, `". join("`, `", $settings['fields'])."` FROM `$table`  WHERE ".$settings['slice_id']." = $xslice_id";
+        $SQL = "SELECT `$keyfield`, `". implode("`, `", $settings['fields'])."` FROM `$table`  WHERE ".$settings['slice_id']." = $xslice_id";
         $rows = GetTable2Array ($SQL);
         if (is_array($rows)) {
             foreach ($rows as $row) {
                 $varset->clear();
                 foreach ($settings['fields'] as $field) {
                     $cont = $row[$field];
-                    if (strstr($cont, $old_id)) {
+                    if (str_contains($cont, $old_id)) {
                         $cont = str_replace($old_id, $new_id, $cont);
                         $varset->set($field, $cont, "text");
                     }
@@ -190,7 +190,7 @@ function ChangeFieldID($old_id, $new_id) {
                 if ($varset->vars) {
                     $SQL = "UPDATE $table SET ".$varset->makeUPDATE();
                     $SQL .= " WHERE $keyfield = ";
-                    if ($settings['primary_type'] == "text") {
+                    if ($settings['primary_type'] === "text") {
                         $SQL .= "'".$row[$keyfield]."'";
                     } else {
                         $SQL .= $row[$keyfield];
@@ -205,8 +205,7 @@ function ChangeFieldID($old_id, $new_id) {
     }
 
     foreach (MAINTAIN_SQL as $sql) {
-        $sql = str_replace(":old_id:", $old_id, $sql);
-        $sql = str_replace(":new_id:", $new_id, $sql);
+        $sql = str_replace([":old_id:", ":new_id:"], [$old_id, $new_id], $sql);
         DB_AA::sql($sql);
     }
 
@@ -219,9 +218,9 @@ if ($update && $new_id_text && AA::$module_id) {
     $new_id = AA_Fields::createFieldId($new_id_text, $new_id_number);
     if ($old_id == $new_id) {
         $err[] = _m("The new ID is the same as the old one");
-    } elseif (strlen($old_id) <> 16) {
+    } elseif (strlen($old_id) !== 16) {
         $err[] = _m("The old ID is not valid");
-    } elseif (strlen($new_id) <> 16) {
+    } elseif (strlen($new_id) !== 16) {
         $err[] = _m("The new ID is not valid");
     } elseif (in_array($new_id, RESERVED_IDS)) {
         $err[] = _m("This ID is reserved")." ($new_id).";

@@ -38,7 +38,7 @@ if (!IfSlPerm(PS_FEEDING)) {
     exit;
 }
 
-// if ($mode == "test") { Feed::onefeed($testfeed["feed_id"], $testfeed, 5, 'write'); }
+// if ($mode === "test") { Feed::onefeed($testfeed["feed_id"], $testfeed, 5, 'write'); }
 
 $managed = GetFeedManaged();
 

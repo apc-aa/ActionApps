@@ -35,7 +35,7 @@ class Searchfields implements \Iterator, \ArrayAccess, \Countable {
      */
     public static function factoryFromProperties($properties): \AA\Util\Searchfields {
         $i            = 0;
-        $searchfields = new AA\Util\Searchfields();
+        $searchfields = new self();
 
         foreach ($properties as $prop_id => $property) {
             if ($property->isObject()) {
@@ -188,7 +188,7 @@ class Searchfields implements \Iterator, \ArrayAccess, \Countable {
             }
         }
 
-        return ($type == 'search') ? $search_fields : $search_operators;
+        return ($type === 'search') ? $search_fields : $search_operators;
     }
 
     public function containNumeric() {

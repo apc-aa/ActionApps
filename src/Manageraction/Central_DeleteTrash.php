@@ -74,6 +74,6 @@ class Central_DeleteTrash extends AbstractManageraction {
      */
     function isPerm4Action($manager) {
         // if we want to use it as "action" (not "switch"), then we should be in trash bin
-        return (IsSuperadmin() and (!$this->selected or ($manager->getBin() == 'trash')));
+        return (IsSuperadmin() and (!$this->selected or ($manager->getBin() === 'trash')));
     }
 }

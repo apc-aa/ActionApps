@@ -23,9 +23,9 @@
  *
  *  $dataType - source of data: should contain: "file", "url" or "text"
  *              (default "file")
- *  $url      - url of csv data applied when $dataType == "url"
- *  $upfile   - applied when $dataType == "file"
- *  $text     - applied when $dataType == "text"
+ *  $url      - url of csv data applied when $dataType === "url"
+ *  $upfile   - applied when $dataType === "file"
+ *  $text     - applied when $dataType === "text"
  *
  * PHP version 7.2+
  *
@@ -156,7 +156,7 @@ if ($upload) {
 
     // create array of additional csv parameters
     $addParams['enclosure'] = $enclosure;
-    $addParams['delimiter'] = $delimiter == '\t' ? chr(9) : $delimiter;
+    $addParams['delimiter'] = $delimiter === '\t' ? chr(9) : $delimiter;
     $addParams['caption']   = $caption;
 
     // continue with settings transformation actions
@@ -172,7 +172,7 @@ $apage->setForm(['enctype'=>'multipart/form-data']);
 $apage->printHead($err, $Msg);
 
 if ($preview) { // file preview
-    if (!($handle = fopen($dest_file, "r"))) {
+    if (!($handle = fopen($dest_file, 'rb'))) {
         $err = _m("Cannot open a file for preview");
     } else {
         FrmTabCaption(_m("File preview"));
@@ -251,15 +251,15 @@ if ($preview) { // file preview
     <tr><td>
             <table>
                 <tr>
-                    <td><label><input type="radio" <?php if (!$dataType OR ($dataType == "file")) echo "checked"; ?> name="dataType" value="file">&nbsp;file</label></td>
+                    <td><label><input type="radio" <?php if (!$dataType OR ($dataType === "file")) echo "checked"; ?> name="dataType" value="file">&nbsp;file</label></td>
                     <td><input type="file" name="upfile"></td>
                 </tr>
                 <tr>
-                    <td><label><input type="radio" <?php if ($dataType == "url") echo "checked"; ?> name="dataType" value="url">&nbsp;URL</label></td>
+                    <td><label><input type="radio" <?php if ($dataType === "url") echo "checked"; ?> name="dataType" value="url">&nbsp;URL</label></td>
                     <td><input type="text" name="url" value="<?php echo $url ?>" placeholder="https://" style="width: 98%;"></td>
                 </tr>
                 <tr>
-                    <td><label><input type="radio" <?php if ($dataType == "text") echo "checked"; ?> name="dataType" value="text">&nbsp;text</label></td>
+                    <td><label><input type="radio" <?php if ($dataType === "text") echo "checked"; ?> name="dataType" value="text">&nbsp;text</label></td>
                     <td><textarea name="text" rows="5"><?php echo $text ?></textarea></td>
                 </tr>
             </table>

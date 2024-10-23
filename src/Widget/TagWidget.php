@@ -66,8 +66,8 @@ class TagWidget extends Widget
     //    $input_name = $base_name . '[tag][]';
     //    $input_id = FormArray::formName2Id($input_name);
     //
-    //    // $widget_add    = ($type == 'live') ? " class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"" : '';
-    //    // $widget_add2   = ($type == 'live') ? '<img width=16 height=16 title="'._m('To save changes click here or outside the field.').'" alt="'._m('Save').'" class="'.$base_id.'ico" src="'. AA_INSTAL_PATH.'images/px.gif" style="position:absolute; right:0; top:0;">' : '';
+    //    // $widget_add    = ($type === 'live') ? " class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"" : '';
+    //    // $widget_add2   = ($type === 'live') ? '<img width=16 height=16 title="'._m('To save changes click here or outside the field.').'" alt="'._m('Save').'" class="'.$base_id.'ico" src="'. AA_INSTAL_PATH.'images/px.gif" style="position:absolute; right:0; top:0;">' : '';
     //
     //    // $show_buttons  = $this->getProperty('show_buttons', 'MDAC');
     //
@@ -96,14 +96,14 @@ class TagWidget extends Widget
         $base_id = FormArray::formName2Id($base_name);
         $required = $aa_property->isRequired() ? 'required' : '';
         //$widget_add = '';
-        //$widget_add = ($type == 'live') ? " class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"" : '';   //style=\"padding-right:16px;\"" : '';
-        //$widget_adds = ($type == 'live') ? " class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"" : '';   //style=\"padding-left:16px;\"" : '';
+        //$widget_add = ($type === 'live') ? " class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"" : '';   //style=\"padding-right:16px;\"" : '';
+        //$widget_adds = ($type === 'live') ? " class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"" : '';   //style=\"padding-left:16px;\"" : '';
 
         $attrs = Widget::stdInputAttrs($type, $base_id, ['dirty']);
         $attrs['class'] = trim(($attrs['class'] ?? '') . ' aa-w-full');
         $widget_add = htmlattr($attrs);
 
-        $autofocus = ($type == 'ajax') ? 'autofocus' : '';
+        $autofocus = ($type === 'ajax') ? 'autofocus' : '';
 
 
 
@@ -123,8 +123,8 @@ class TagWidget extends Widget
         // send empty string always - used for sending value, even if the select is empty, so we know, the widget is in use
         $widget =  "<input type=hidden name=\"$input_name\" value=\"\">";
 
-        //$widget    = AA\Widget\Widget::_saveIcon($base_id, $type == 'live', 'left')."<select name=\"$input_name\" id=\"$input_id\"$multiple $required $widget_adds $autofocus>";
-        $widget .= Widget::_saveIcon($base_id, $type == 'live') . "<select name=\"$input_name\" id=\"$input_id\"$multiple $required $autofocus $widget_add>";
+        //$widget    = AA\Widget\Widget::_saveIcon($base_id, $type === 'live', 'left')."<select name=\"$input_name\" id=\"$input_id\"$multiple $required $widget_adds $autofocus>";
+        $widget .= Widget::_saveIcon($base_id, $type === 'live') . "<select name=\"$input_name\" id=\"$input_id\"$multiple $required $autofocus $widget_add>";
         //$selected = $content->getAaValue($aa_property->getId());
         // empty select option for not required fields and also for live selectbox,
         // because people thinks, that the first value is filled in the database (which is not)
@@ -187,7 +187,7 @@ class TagWidget extends Widget
      * @return AA_Validate|null
      */
     public function getUpgradedValidator(string $validator_string): ?AA_Validate {
-        if ( (substr($validator_string,0,2)=='id') AND ((int)$this->getProperty('disable_new', 0) != 1)) {
+        if ( (str_starts_with($validator_string, 'id')) AND ((int)$this->getProperty('disable_new', 0) != 1)) {
             $validator_string = 'text';  // we should allow adding new text here
         }
         return AA_Validate::factoryByString($validator_string);

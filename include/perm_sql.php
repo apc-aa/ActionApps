@@ -365,7 +365,7 @@ class AA_Permsystem_Sql extends AA_Permsystem {
      */
     function getIDsInfo($id) {
         if ($this->userIdFormatMatches($id) AND ($user = DB_AA::select1('', 'SELECT id, name, givenname, uid AS login, sn, mail, type FROM `users`', [['id', $id, 'i']]))) {
-            if ($user['type'] == _m("User") OR ($user['type'] == "User")) {
+            if ($user['type'] == _m("User") OR ($user['type'] === "User")) {
                 $user['type'] = 'User';
                 $user['name'] = $user['givenname']." ".$user['sn'];
             } else {

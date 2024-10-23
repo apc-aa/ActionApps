@@ -162,12 +162,12 @@ function Qvarsetadd($varname, $type, $value) {
  * @param $fnc (by link)
  * @param $params (by link)
  */
-function get_params($src, &$fnc, &$params) {
-    if (strchr ($src,":")) {
-        $params = substr ($src, strpos ($src,":")+1);
-        $fnc = substr ($src, 0, strpos ($src,":"));
-    }
-    else {
+function get_params($src, &$fnc, &$params): void
+{
+    if (str_contains($src, ":")) {
+        $params = substr ($src, strpos($src,":")+1);
+        $fnc = substr ($src, 0, strpos($src,":"));
+    } else {
         $params = "";
         $fnc = $src;
     }
@@ -220,7 +220,7 @@ if ($update) {
 
         // the constants are packed in order it could be easily passed
         // to another script
-        $input_show_func_c_real = ($input_show_func_c[0] == 'v') ? pack_id(substr($input_show_func_c,1)) : $input_show_func_c;
+        $input_show_func_c_real = ($input_show_func_c[0] === 'v') ? pack_id(substr($input_show_func_c,1)) : $input_show_func_c;
         $isf_parameters = $widget_class::getClassProperties();
         $isf            = $input_show_func_f;
         if (isset($isf_parameters['const'])) {
@@ -243,11 +243,11 @@ if ($update) {
 
         Qvarsetadd("input_show_func", "quoted", $isf);
         Qvarsetadd("input_validate", "quoted", "$input_validate_f:$input_validate_p");
-        Qvarsetadd("feed", "quoted", "$feed");
+        Qvarsetadd("feed", "quoted", (string)$feed);
 
         // setting input insert function
         $iif="$input_insert_func_f:$input_insert_func_p";
-        Qvarsetadd("input_insert_func", "quoted", "$iif");
+        Qvarsetadd("input_insert_func", "quoted", $iif);
         Qvarsetadd("html_default", "number", ($html_default ? 1 : 0));
         Qvarsetadd("html_show", "number", ($html_show ? 1 : 0));
         Qvarsetadd("text_stored", "number", $text_stored);
@@ -285,7 +285,7 @@ $constants['AA_OPTGROUP 2'] = _m('Slices');
 
 // add slices to constant array (good for related stories, link to authors ...)
 foreach ($g_modules as $k => $v) {
-    if (($v['type'] == 'S') || ($v['type'] == 'Alerts')) {
+    if (($v['type'] === 'S') || ($v['type'] === 'Alerts')) {
         $constants["#sLiCe-".$k] =  $v['name'];
     }
 }
@@ -379,7 +379,7 @@ $apage->setTitle(_m("Admin - configure Fields"));
 $apage->setSubtitle(_m("WARNING: Do not change this setting if you are not sure what you're doing!"));
 $apage->addRequire('codemirror@5');
 $apage->addRequire('aa-jslib');   // just for AA_Message() copy to clipboard
-$apage->addRequire(get_aa_url('javascript/js_lib.min.js?v='.AA_JS_VERSION, '', false));
+$apage->addRequire(get_aa_url('javascript/js_lib.min.js', ['v'=>AA_JS_VERSION], false));
 
 
 $apage->addRequire($script2run, 'AA_Req_Load');
@@ -431,7 +431,7 @@ FrmInputChBox("translation", _m("Allow translation"), $translation, false, '', 1
 echo "<tr><th>". _m("Default") ."</th>
       <td>";
         // txt and qte is the same, so it is better to use the only one
-        if ($input_default_f == 'qte') {
+        if ($input_default_f === 'qte') {
             $input_default_f = 'txt';
         }
         FrmSelectEasy("input_default_f", AA_Components::getClassArray('AA_Generator_'), $input_default_f);
@@ -523,7 +523,7 @@ for ($iAlias=1; $iAlias <= 3; ++$iAlias) {
     FrmInputSelect($alias_func_f, _m("Function"), $func_types, $$alias_func_f, false, $alias_hlp);
     FrmTextarea($alias_func, _m("Parameters"), $$alias_func, 8, 60, false, AA_View::getViewJumpLinks('view.php?' . $$alias_func)); // added for f_v parameters
     FrmTextarea($alias_help, _m("Description"), $$alias_help, 2, 0);
-    if ($iAlias != 3) {
+    if ($iAlias !== 3) {
         echo "\n    \n<tr class='aa-tab-line'><td colspan=2></td></tr>\n";
     }
 }

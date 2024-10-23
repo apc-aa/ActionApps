@@ -59,10 +59,10 @@ class TxtWidget extends Widget
 
         $attrs = Widget::stdInputAttrs($type, $base_id, ['dirty']);
 
-        $widget_add2 = ($type == 'live') ? '<img width=16 height=16 title="' . _m('To save changes click here or outside the field.') . '" alt="' . _m('Save') . '" class="' . $base_id . 'ico" src="' . AA_INSTAL_PATH . 'images/px.gif" style="position:absolute; right:0;">' : '';
+        $widget_add2 = ($type === 'live') ? '<img width=16 height=16 title="' . _m('To save changes click here or outside the field.') . '" alt="' . _m('Save') . '" class="' . $base_id . 'ico" src="' . AA_INSTAL_PATH . 'images/px.gif" style="position:absolute; right:0;">' : '';
 
         $widget = '';
-        if ( strpos(get_class($this), 'AA\Widget\CodWidget') !== false ) {
+        if (str_contains(get_class($this), 'AA\Widget\CodWidget')) {
             // use specific GetWidgetValue for CodeMirror (we need some non-breaking-space replacement there)
             $widget .= Widget::getWidgetIdentificationCode($base_name, 'cod');
         }
@@ -78,7 +78,7 @@ class TxtWidget extends Widget
 
         $required = $aa_property->isRequired() ? 'required' : '';
 
-        $widget .= ($type == 'normal') ? AA_Formatters::getFormattersRadio($base_name, $aa_property, $value) : AA_Formatters::getHiddenFormatters($base_name, $aa_property, $value); // ajax, live
+        $widget .= ($type === 'normal') ? AA_Formatters::getFormattersRadio($base_name, $aa_property, $value) : AA_Formatters::getHiddenFormatters($base_name, $aa_property, $value); // ajax, live
 
         if ($value->isEmpty()) {
             $value->addValue('');   // display empty textarea at least
@@ -94,7 +94,7 @@ class TxtWidget extends Widget
                 $base['id']       = FormArray::formName2Id($input_name);
                 $base['langcode'] = Langs::getLangName2Code(Langs::getLangNum2Name($i));
             }
-            $widget .= $this->getOneInput($input_name, $i, $val, $attrs, $required, !$aa_property->getContentTypeSwitches() OR ($type == 'live'), $base);
+            $widget .= $this->getOneInput($input_name, $i, $val, $attrs, $required, !$aa_property->getContentTypeSwitches() OR ($type === 'live'), $base);
             $required = ''; // only one is required
         }
 
@@ -119,9 +119,9 @@ class TxtWidget extends Widget
     protected function getOneInput($input_name, $i, $val, $attrs, $required, $no_htmleditor_link, $base)
     {
 
-        $showhtmlarea   = strpos(get_class($this), 'AA\Widget\EdtWidget') !== false;
+        $showhtmlarea   = str_contains(get_class($this), 'AA\Widget\EdtWidget');
 
-        $showcodeeditor = strpos(get_class($this), 'AA\Widget\CodWidget') !== false;
+        $showcodeeditor = str_contains(get_class($this), 'AA\Widget\CodWidget');
         //if ( $showhtmlarea ) {
         // $this->html_radio($showhtmlarea ? false : 'convertors');
 

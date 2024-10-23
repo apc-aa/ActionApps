@@ -45,7 +45,7 @@ function GetTableView($viewID) {
     /* ------------------------------------------------------------------------------------
        polls_design
     */
-    if ($viewID == "polls_design") {
+    if ($viewID === "polls_design") {
         return  [
         "table"     => "polls_design",
         "type"      => "browse",
@@ -68,7 +68,7 @@ function GetTableView($viewID) {
         ];
     }
 
-    if ($viewID == "polls_design_edit") {
+    if ($viewID === "polls_design_edit") {
         $retval = GetTableView("polls_design");
         $retval["type"] = "edit";
         $retval["attrs"] = $attrs_edit;

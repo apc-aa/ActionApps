@@ -322,12 +322,12 @@ class AA_Profile {
      * @return string
      */
     static function addProfileProperty($uid, $slice_id, $property, $field_id, $fnction, $param, $html) {
-        $profile = AA_Profile::getProfile($uid, $slice_id); // user settings
+        $profile = self::getProfile($uid, $slice_id); // user settings
         switch($property) {
             case 'listlen':
             case 'input_view':
             case 'admin_perm':
-                if ( (($property=='admin_perm') AND (strlen($param)==32) ) OR ($param > 0) ) {
+                if ( (($property==='admin_perm') AND (strlen($param)==32) ) OR ($param > 0) ) {
                     $profile->deleteProperty($property);
                     $profile->insertProperty($property, '0', $param);
                     $Msg = MsgOk(_m("Rule added"));
@@ -383,7 +383,7 @@ class AA_Profile {
             case 'ui_inputform':
                 if ( $field_id ) {
                     $profile->deleteProperty($property,$field_id);
-                    $profile->insertProperty($property, $field_id, "$param");
+                    $profile->insertProperty($property, $field_id, (string)$param);
                     $Msg = MsgOk(_m("Rule added"));
                 }
                 break;

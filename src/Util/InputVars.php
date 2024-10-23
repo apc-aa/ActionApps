@@ -138,10 +138,10 @@ class InputVars {
      * @param array  $skip
      */
     public static function QuoteVars(string $method = "get", array $skip = []) {
-        $arr = ($method == "get") ? $_GET : $_POST;
+        $arr = ($method === "get") ? $_GET : $_POST;
         foreach ($arr as $k => $v) {
             if (!isset($skip[$k])) {
-                $GLOBALS[$k] = InputVars::AddslashesArray($v);
+                $GLOBALS[$k] = self::AddslashesArray($v);
             }
         }
     }

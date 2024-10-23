@@ -55,7 +55,7 @@ function CheckAuthentication($drupal_path) {
             chdir(DRUPAL_ROOT);
 
             global $base_url;
-            $base_root = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https' : 'http';
+            $base_root = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? 'https' : 'http';
             $base_url = $base_root .= '://'. preg_replace('/[^a-z0-9-:._]/i', '', $_SERVER['HTTP_HOST']);
 
             if ($dir = trim(dirname($_SERVER['SCRIPT_NAME']), '\,/')) {

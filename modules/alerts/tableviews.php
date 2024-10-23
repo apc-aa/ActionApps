@@ -33,13 +33,13 @@ require_once __DIR__ . "/../../include/locauth.php";
 /** see class tabledit :: var $getTableViewsFn for an explanation of the parameters */
 function GetAlertsTableView($viewID, $processForm = false): array {
 
-    if ($viewID == "email_edit") {
+    if ($viewID === "email_edit") {
         $tableview = GetEmailTableView($viewID);
         $tableview["mainmenu"] = "admin";
         return $tableview;
     }
 
-    if ($viewID == "email") {
+    if ($viewID === "email") {
         $tableview = GetEmailTableView($viewID);
         $tableview["mainmenu"] = "admin";
         $tableview["submenu"] = "email";
@@ -50,7 +50,7 @@ function GetAlertsTableView($viewID, $processForm = false): array {
 
     // ------------------------------------------------------------------------------------
 
-    if ($viewID == "acf") {
+    if ($viewID === "acf") {
         global $collectionid;
 
         $db = getDB();
@@ -75,7 +75,7 @@ function GetAlertsTableView($viewID, $processForm = false): array {
         $myslices = GetUserSlices();
         while ($db->next_record()) {
             $txt = safe($db->f("fdesc"));
-            if (IsSuperadmin() || strchr($myslices[unpack_id($db->f("slice_id"))], PS_FULLTEXT)) {
+            if (IsSuperadmin() || str_contains($myslices[unpack_id($db->f("slice_id"))], PS_FULLTEXT)) {
                 $new_filters[$db->f("filterid")] = $txt;
                 $txt = "<a href='".StateUrl(AA_INSTAL_PATH
                     ."admin/se_view.php?slice_id=".unpack_id($db->f("slice_id"))
@@ -139,7 +139,7 @@ function GetAlertsTableView($viewID, $processForm = false): array {
        Processing form data on Alerts module addition.
     */
 
-    if ($viewID == "modedit") {
+    if ($viewID === "modedit") {
         $alertslangs = Langs::getFiles('alerts');
         return [
         "table" => "module",
@@ -245,7 +245,7 @@ function GetAlertsTableView($viewID, $processForm = false): array {
     /* ------------------------------------------------------------------------------------
        send_emails
     */
-    if ($viewID == "send_emails") {
+    if ($viewID === "send_emails") {
         return [
         "table" => "alerts_collection",
         "type" => "edit",

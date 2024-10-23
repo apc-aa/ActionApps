@@ -55,7 +55,7 @@ AA_WARN
 class AA_Log implements \AA\Expand\InternalExpandInterface {
 
     static function warn(array $params = []) {
-        AA_Log::write('AA_WARN', self::context(), array_merge($params, [AA_Log::backtrack(2)]));
+        self::write('AA_WARN', self::context(), array_merge($params, [self::backtrack(2)]));
     }
 
     /** AA_Log::write function - Write log entry
@@ -67,7 +67,7 @@ class AA_Log implements \AA\Expand\InternalExpandInterface {
      * @return bool
      */
     static function write($event, $selector = "", $params = "") {
-        if ( !AA_Log::isLogable($event) ) {
+        if ( !self::isLogable($event) ) {
             return false;
         }
 
@@ -93,7 +93,8 @@ class AA_Log implements \AA\Expand\InternalExpandInterface {
 
     /** Is the event logable?
      **/
-    static function isLogable($event_type) {
+    static function isLogable($event_type): bool
+    {
         /** By $DO_NOT_LOG array you are able to specify, which events you don't want
          *  to log - it's just like filter
          *  This should be list of all logable events (at least now - 2005-11-9)
@@ -135,7 +136,7 @@ class AA_Log implements \AA\Expand\InternalExpandInterface {
         for (; $remove_steps>0; --$remove_steps) {
             array_shift($ret);
         }
-        return join("\n", $ret);
+        return implode("\n", $ret);
     }
 
     static function context(?string $selector=null): string
@@ -149,8 +150,8 @@ class AA_Log implements \AA\Expand\InternalExpandInterface {
         return ParamImplode([$selector, AA::$module_id,str_replace(':','_',$_SERVER['REMOTE_ADDR']), ($_SERVER['HTTPS'] ? '' : 'http/'). "{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}"]);
     }
 
-    static public function getAdminUrl(string $event, string $selector = ""): string {
-        return get_admin_url("aa_log.php?srchbr_akce=1&srchbr_field%5B0%5D=selector&srchbr_oper%5B0%5D=%3D&srchbr_value%5B0%5D=$selector&srchbr_field%5B1%5D=type&srchbr_oper%5B1%5D=%3D&srchbr_value%5B1%5D=$event&srchbr_order%5B0%5D=time&srchbr_order_dir%5B0%5D=on");
+    public static function getAdminUrl(string $event, string $selector = ""): string {
+        return get_admin_url("aa_log.php", ['srchbr_akce' => 1, 'srchbr_field[0]' => 'selector', 'srchbr_oper[0]' => '=', "srchbr_value[0]=$selector", 'srchbr_field[1]' => 'type', 'srchbr_oper[1]' => '=', 'srchbr_value[1]' => $event, 'srchbr_order[0]' => 'time', 'srchbr_order_dir[0]' => 'on']);
     }
 
     /** Get events from log
@@ -158,7 +159,7 @@ class AA_Log implements \AA\Expand\InternalExpandInterface {
      * @param string $selector
      * @return array
      */
-    static public function getLastLogEvents($event, $selector = "") {
+    public static function getLastLogEvents($event, $selector = "") {
         $conds = [['type', $event, (!str_contains($event, '%')) ? '=' : 'LIKE']];
         if ($selector != "") {
             $conds[] = ['selector', $selector];
@@ -167,7 +168,7 @@ class AA_Log implements \AA\Expand\InternalExpandInterface {
     }
 
     /** Get first 20 rows from log table with possible link to Log page */
-    static public function getLogTable($event, $selector = "", bool $show_log_link = false): string {
+    public static function getLogTable($event, $selector = "", bool $show_log_link = false): string {
         $conds = [['type', $event, (!str_contains($event, '%')) ? '=' : 'LIKE']];
         if ($selector != "") {
             $conds[] = ['selector', $selector];
@@ -177,13 +178,13 @@ class AA_Log implements \AA\Expand\InternalExpandInterface {
             return '';
         }
         $tab       = self::extendTable($tab);
-        $link_div  = $show_log_link ? '<div>'. a_href(AA_Log::getAdminUrl($event, $selector), _m('Log'), ['class' => 'aa-button-show']) . '</div>' : '';
+        $link_div  = $show_log_link ? '<div>'. a_href(self::getAdminUrl($event, $selector), _m('Log'), ['class' => 'aa-button-show']) . '</div>' : '';
 
         return GetHtmlTable($tab, 'key'). $link_div;
     }
 
     /** parse Params row and extract columns based on AA_Logentry structure */
-    static protected function extendTable(array $tab): array
+    protected static function extendTable(array $tab): array
     {
         foreach ($tab as $k => $v) {
             $logEntry = AA_Logentry::factoryByString($v['params']);

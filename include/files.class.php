@@ -56,7 +56,7 @@ class Files {
      */
     static function destinationDir($slice) {
         $upload = $slice->getUploadBase();
-        return Files::_destinationDirCreate($upload['path'], $upload['perms']);
+        return self::_destinationDirCreate($upload['path'], $upload['perms']);
     }
 
     /** aadestinationDir
@@ -64,7 +64,7 @@ class Files {
      *  dir name
      */
     static function aadestinationDir() {
-        return Files::_destinationDirCreate(IMG_UPLOAD_PATH. AA_ID, (int)IMG_UPLOAD_DIR_MODE);
+        return self::_destinationDirCreate(IMG_UPLOAD_PATH. AA_ID, (int)IMG_UPLOAD_DIR_MODE);
     }
 
     /** _destinationDirCreate function
@@ -75,8 +75,8 @@ class Files {
      */
     static function _destinationDirCreate($path, $perms) {
         if (!$path OR !is_dir($path)) {
-            if (!Files::createFolder($path, $perms)) {
-                Files::lastErr(FILE_ERROR_DIR_CREATE, _m("Can't create directory for image uploads"));  // set error code
+            if (!self::createFolder($path, $perms)) {
+                self::lastErr(FILE_ERROR_DIR_CREATE, _m("Can't create directory for image uploads"));  // set error code
                 return false;
             }
         }
@@ -105,7 +105,7 @@ class Files {
         }
         $add = '';
         $i   = 0;
-        while (file_exists($dest_file = Files::makeFile($path_parts['dirname'], "$base$add$extension"))) {
+        while (file_exists($dest_file = self::makeFile($path_parts['dirname'], "$base$add$extension"))) {
             $add = '_'. (++$i);
         }
         return $dest_file;
@@ -118,21 +118,21 @@ class Files {
      * @return bool|string
      */
     static function getUploadedFile($filevarname) {
-        $file_name  = Files::getTmpFilename('tmp');
+        $file_name  = self::getTmpFilename('tmp');
 
         // upload file - todo: error is not returned, if not exist
 
-        if (($dest_file = Files::uploadFile($filevarname, Files::aadestinationDir(), '', 'overwrite', $file_name)) === false) {
+        if (($dest_file = self::uploadFile($filevarname, self::aadestinationDir(), '', 'overwrite', $file_name)) === false) {
             return false;  // error code is already set from Files::uploadFile()
         }
 
         if (($text = file_get_contents($dest_file)) === false) {
-            Files::lastErr(FILE_ERROR_READ, _m("Can't read the file %1", [$dest_file]));  // set error code
+            self::lastErr(FILE_ERROR_READ, _m("Can't read the file %1", [$dest_file]));  // set error code
             return false;
         }
 
         // delete files older than one week in the img_upload directory
-        Files::deleteTmpFiles('tmp');
+        self::deleteTmpFiles('tmp');
 
         return $text;
     }
@@ -157,14 +157,14 @@ class Files {
         $up_file = is_array($filevarname) ? $filevarname : $_FILES[$filevarname];
 
         if (!$dest_dir) {
-            Files::lastErr(FILE_ERROR_NO_DESTINATION, _m('No destination file specified'));  // set error code
+            self::lastErr(FILE_ERROR_NO_DESTINATION, _m('No destination file specified'));  // set error code
             return false;
         }
-        $dest_file = Files::makeFile($dest_dir, Files::escape($filename ?: basename($up_file['name'])));
+        $dest_file = self::makeFile($dest_dir, self::escape($filename ?: basename($up_file['name'])));
 
         // look if the uploaded file exists
         if (!is_uploaded_file($up_file['tmp_name'])) {
-            Files::lastErr(FILE_ERROR_NOT_UPLOADED);  // set error code
+            self::lastErr(FILE_ERROR_NOT_UPLOADED);  // set error code
             return false;
         }
 
@@ -173,7 +173,7 @@ class Files {
             $file_type = (str_ends_with($type, '*')) ? substr($type,0,strpos($type,'/')) : $type;
 
             if ((@strpos($up_file['type'],$file_type)===false)) {
-                Files::lastErr(FILE_ERROR_TYPE_NOT_ALLOWED, _m('type of uploaded file not allowed'));  // set error code
+                self::lastErr(FILE_ERROR_TYPE_NOT_ALLOWED, _m('type of uploaded file not allowed'));  // set error code
                 return false;
             }
         }
@@ -183,27 +183,27 @@ class Files {
                 // nothing to do - file is overwriten, if already exists
                 break;
             case 'backup':
-                if (Files::backupFile($dest_file) === false) {
+                if (self::backupFile($dest_file) === false) {
                     return false;
                 }
                 break; // current file will be overwritten
             case 'new':
             default:
                 // find new name for the file, if the file already exists
-                $dest_file = Files::generateUnusedFilename($dest_file);
+                $dest_file = self::generateUnusedFilename($dest_file);
         }  // else - mode 'overwrite' - file is overwritten
 
         // copy the file from the temp directory to the upload directory, and test for success
         // (if the file already exists, move_uploaded_file will overwrite it!)
         if (!move_uploaded_file($up_file['tmp_name'], $dest_file)) {
-            Files::lastErr(FILE_ERROR_TYPE_NOT_ALLOWED, _m("Can't move image  %1 to %2", [$up_file['tmp_name'], $dest_file]));  // set error code
+            self::lastErr(FILE_ERROR_TYPE_NOT_ALLOWED, _m("Can't move image  %1 to %2", [$up_file['tmp_name'], $dest_file]));  // set error code
             return false;
         }
 
         // now change permissions (if we have to)
         $perms = defined('IMG_UPLOAD_FILE_MODE') ? (int)IMG_UPLOAD_FILE_MODE : 0;
         if ($perms AND !chmod($dest_file, $perms)) {
-            Files::lastErr(FILE_ERROR_CHMOD, _m("Can't change permissions on uploaded file: %1 - %2. See IMG_UPLOAD_FILE_MODE in your config.php", [$dest_file, $perms]));  // set error code
+            self::lastErr(FILE_ERROR_CHMOD, _m("Can't change permissions on uploaded file: %1 - %2. See IMG_UPLOAD_FILE_MODE in your config.php", [$dest_file, $perms]));  // set error code
             return false;
         }
 
@@ -218,20 +218,20 @@ class Files {
      * @return bool|string
      */
     static function createFileFromString($text, $dest_dir, $filename) {
-        $dest_file = Files::makeFile($dest_dir, Files::escape($filename));
+        $dest_file = self::makeFile($dest_dir, self::escape($filename));
         if ($dest_file === '') {
             // lastErr is already set from destinationFile ?;
             return false;
         }
 
         if (!($handle = fopen($dest_file, 'w'))) {
-            Files::lastErr(FILE_ERROR_WRITE, _m("Can't open file for writing: %1", [$dest_file]));  // set error code
+            self::lastErr(FILE_ERROR_WRITE, _m("Can't open file for writing: %1", [$dest_file]));  // set error code
             return false;
         }
 
         // Write $somecontent to our opened file.
         if (fwrite($handle, $text) === false) {
-            Files::lastErr(FILE_ERROR_WRITE, _m("Can't write to file: %1", [$dest_file]));  // set error code
+            self::lastErr(FILE_ERROR_WRITE, _m("Can't write to file: %1", [$dest_file]));  // set error code
             return false;
         }
         fclose($handle);
@@ -262,14 +262,14 @@ class Files {
         }
         if ($handle = opendir($upload_dir)) {
             while (false !== ($file = readdir($handle))) {
-                if (strlen($ident)+42 != strlen($file) || (substr($file,0,strlen($file)-42) != $ident)) {
+                if (strlen($ident)+42 !== strlen($file) || (!str_starts_with($file, $ident))) {
                     continue;
                 }
                 $date=mktime(0,0,0,date("m"),date("d")-7,date("Y")) ;
                 $filedate = mktime (0,0,0,substr($file,-8,2) ,substr($file,-6,2),substr($file,-4,4));
-                $fileName = Files::makeFile($upload_dir, $file);
+                $fileName = self::makeFile($upload_dir, $file);
                 if ($filedate < $date) {
-                    if (Files::delFile($fileName)) {
+                    if (self::delFile($fileName)) {
                         AA_Log::write("FILE IMP.", '', _m("Ok : file deleted ") . $fileName);
                     } else {
                         AA_Log::write("FILE IMP.", '', _m("Error: Cannot delete file") . $fileName);
@@ -294,14 +294,14 @@ class Files {
             return "";
         }
 
-        $destination = Files::generateUnusedFilename($source);
+        $destination = self::generateUnusedFilename($source);
         if (copy($source, $destination)) {
             if (is_file($destination)) {
                 return $destination;
             }
         }
 
-        Files::lastErr(FILE_ERROR_COPY_FAILED, _m('can\'t create backup of the file'));  // set error code
+        self::lastErr(FILE_ERROR_COPY_FAILED, _m('can\'t create backup of the file'));  // set error code
         return false;
     }
 
@@ -323,16 +323,16 @@ class Files {
             return FILE_ERROR_NO_SOURCE;
         }
 
-        $destination_dir = Files::fixPath($destination_dir);
+        $destination_dir = self::fixPath($destination_dir);
 
         if (!is_dir($destination_dir)) {
             return FILE_ERROR_DST_DIR_FAILED;
         }
 
-        $destination = Files::makeFile($destination_dir, Files::escape($destination_file));
+        $destination = self::makeFile($destination_dir, self::escape($destination_file));
 
         if ($unique) {
-            $destination = Files::generateUnusedFilename($destination);
+            $destination = self::generateUnusedFilename($destination);
         }
 
         if (!copy($source, $destination)) {
@@ -389,11 +389,11 @@ class Files {
             $d = dir($folder);
             while (false !== ($entry = $d->read()))	{
                 if ($entry != '.' && $entry != '..') {
-                    $obj = Files::fixPath($folder).$entry;
+                    $obj = self::fixPath($folder).$entry;
                     if (is_file($obj)) {
-                        $deleted &= Files::delFile($obj);
+                        $deleted &= self::delFile($obj);
                     } elseif (is_dir($obj))	{
-                        $deleted &= Files::delFolder($obj, $recursive);
+                        $deleted &= self::delFolder($obj, $recursive);
                     }
                 }
             }
@@ -426,7 +426,7 @@ class Files {
      * @return string combined file path.
      */
     static function makeFile($pathA, $pathB): string {
-        $pathA = Files::fixPath($pathA);
+        $pathA = self::fixPath($pathA);
         if (str_starts_with($pathB, '/')) {
             $pathB = substr($pathB,1);
         }
@@ -455,9 +455,9 @@ class Files {
      * @return string FILE, HTTP, HTTPS, ...
      */
      static function sourceType($filename) {
-         if ( strtoupper(substr($filename,0,5)) == 'HTTPS') return 'HTTPS';
-         if ( strtoupper(substr($filename,0,4)) == 'HTTP')  return 'HTTP';
-         if ( strtoupper(substr($filename,0,3)) == 'FTP')   return 'FTP';
+         if ( strtoupper(substr($filename,0,5)) === 'HTTPS') return 'HTTPS';
+         if ( strtoupper(substr($filename,0,4)) === 'HTTP')  return 'HTTP';
+         if ( strtoupper(substr($filename,0,3)) === 'FTP')   return 'FTP';
          return 'FILE';
      }
 }
@@ -739,7 +739,7 @@ class AA_File_HTTP_Wrapper extends AA_File_Wrapper_Ext {
         // Thanks to php dot net at NOSPAM dot juamei dot com
         // See http://www.php.net/manual/en/function.parse-url.php
         if (!is_array($parsed)) return false;
-        $uri = isset($parsed['scheme']) ? $parsed['scheme'] . ':' . ((strtolower($parsed['scheme']) == 'mailto') ? '' : '//') : '';
+        $uri = isset($parsed['scheme']) ? $parsed['scheme'] . ':' . ((strtolower($parsed['scheme']) === 'mailto') ? '' : '//') : '';
         $uri .= isset($parsed['user']) ? $parsed['user'] . ($parsed['pass'] ? ':' . $parsed['pass'] : '') . '@' : '';
         $uri .= $parsed['host'] ?? '';
         $uri .= isset($parsed['port']) ? ':' . $parsed['port'] : '';
@@ -971,9 +971,10 @@ class AA_Directory_Wrapper {
 
     /** Repository of static variables (trick for PHP4)
      *  The trick for static class variables is used */
-    function _setStatic($varname, $value, $set=true) {
+    static function _setStatic($varname, $value, $set = true)
+    {
         static $variables;
-        if ( $set ) {
+        if ($set) {
             $variables[$varname] = $value;
         }
         return $variables[$varname];
@@ -981,7 +982,8 @@ class AA_Directory_Wrapper {
 
     /** Repository of static variables (trick for PHP4)
      *  The trick for static class variables is used */
-    function _getStatic($varname) {
+    static function _getStatic($varname)
+    {
         return self::_setStatic($varname, null, false);
     }
 
@@ -997,10 +999,10 @@ class AA_Directory_Wrapper {
         if (is_dir ($this->url)) {
             $this->dp = opendir($this->url);
             return $this->dp;
-        } else {
-            self::lastErr(AA_DIRECTORY_WRAPPER_ERROR_NOT_DIR, $this->url . _m(": No such directory"));
-            return false;
         }
+
+        self::lastErr(AA_DIRECTORY_WRAPPER_ERROR_NOT_DIR, $this->url . _m(": No such directory"));
+        return false;
     }
 
     /**
@@ -1073,7 +1075,7 @@ class AA_Directory_Wrapper {
      */
     function makeSubdirWrappers() {
         foreach ($this->subdir_names as $subdir_name) {
-            $return_array[] = AA_Directory_Wrapper::wrapper($subdir_name);
+            $return_array[] = self::wrapper($subdir_name);
         }
         return $return_array;
     }
@@ -1178,7 +1180,7 @@ class AA_Directory_Wrapper {
         $return_array = [];
         if ($this->readWholeDir()) {
             //compare if is it prefered subdir
-            if ($this->url == self::_getStatic('needed_subdir_name')) {
+            if ($this->url === self::_getStatic('needed_subdir_name')) {
                 self::_setStatic('subdir_file_names', $this->file_names);
             }
             if (empty($this->subdir_names)) {
@@ -1186,7 +1188,7 @@ class AA_Directory_Wrapper {
             }
 
             foreach ($this->subdir_names as $subdir_name) {
-                $subdir = AA_Directory_Wrapper::wrapper($this->url . $subdir_name);
+                $subdir = self::wrapper($this->url . $subdir_name);
                 $return_array[$subdir_name] = $subdir->getSubdirNamesRecur();
             }
             return $return_array;

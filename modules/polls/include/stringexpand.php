@@ -52,7 +52,7 @@ class AA_Stringexpand_Poll extends AA_Stringexpand {
                 }
             }
         }
-        return join('',$results);
+        return implode('',$results);
     }
 }
 
@@ -82,8 +82,7 @@ class AA_Stringexpand_Poll_Sum extends AA_Stringexpand_Nevercache {
 
     /** expand function - number of all votes in this poll */
     function expand() {
-        $poll     = AA_Polls::getPoll($this->item->getVal('poll_id'));
-        return $poll->getVotesSum();
+        return AA_Polls::getPoll($this->item->getVal('poll_id'))->getVotesSum();
     }
 }
 

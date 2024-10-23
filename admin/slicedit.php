@@ -161,7 +161,7 @@ if (is_array($create = $_POST['create'])) {
     if ($type = key($create)) {
         $url = StateUrl(AA_INSTAL_PATH. $MODULES[$type]["directory"] . "modedit.php?no_slice_id=1");
         if ( $_POST['template'][$type] ) {
-            $url = get_url( $url, "template%5B$type%5D=". $_POST['template'][$type]);
+            $url = get_url( $url, ["template[$type]" => $_POST['template'][$type]]);
         }
         go_url( $url );
     }
@@ -192,12 +192,12 @@ if (!$sarr) {
     $sarr = [];
 }
 
-if ($_GET['convert']=='utf') {
+if ($_GET['convert'] === 'utf') {
     $optimizer = new AA\Optimize\ConvertSliceEncoding();
     $optimizer->test4modules([$slice_id]);
     $Msg = $optimizer->report();
 }
-if ($_GET['convert']=='doutf') {
+if ($_GET['convert'] === 'doutf') {
     $optimizer = new AA\Optimize\ConvertSliceEncoding();
     $optimizer->repair4modules([$slice_id]);
     $Msg = $optimizer->report();
@@ -226,7 +226,7 @@ FrmTabCaption(_m("Slice"), $form_buttons);
 ModuleFieldsForm($foo_source, $marr = GetModuleFields($foo_source), $superadmin, ($slice_id==""), $new_owner, $new_owner_email);
 
 $convert_action = '';
-if ((DB_CHARACTER_SET == "cp1250") and $slice_id and (AA_Slice::getModule($slice_id)->getCharset() == 'windows-1250')) {
+if ((DB_CHARACTER_SET === "cp1250") and $slice_id and (AA_Slice::getModule($slice_id)->getCharset() === 'windows-1250')) {
     $convert_action = 'Convert encoding of this slice to utf <a href=' . StateUrl($_SERVER['PHP_SELF'] . '?convert=utf') . '>test</a> <a href=' . StateUrl($_SERVER['PHP_SELF'] . '?convert=doutf') . '>convert</a>';
 }
 
@@ -247,7 +247,7 @@ FrmInputSelect("permit_offline_fill", _m("Allow off-line item filling"),        
 
 // Reader Management specific settings (Jakub, 7.2.2003)
 $slice     = AA_Slice::getModule($slice_id);
-if ($slice AND ($slice->getProperty("type") == 'ReaderManagement')) {
+if ($slice AND ($slice->getProperty("type") === 'ReaderManagement')) {
     $slicefields = AA_Fields::getFields4Select($slice_id, false, 'input_pri');
     FrmInputSelect("auth_field_group", _m("Auth Group Field"), $slicefields, $sarr['auth_field_group'], false, "", "../doc/reader.html#auth_field_group");
     FrmInputSelect("mailman_field_lists",_m("Mailman Lists Field"), $slicefields, $sarr['mailman_field_lists'], false, "", "../doc/reader.html#mailman");

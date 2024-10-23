@@ -131,7 +131,7 @@ function GetAnonymousForm($slice, $s_fields, $show, $ok_url, $err_url, $use_show
     ';
 
     if ($form_type != ANONYMOUS_EDIT_NOT_ALLOWED) {
-        $ret .= getFrmJavascript( 'if (typeof(fillform_fields) != "undefined")  fillForm();');
+        $ret .= getFrmJavascript( 'if (typeof(fillform_fields) !== "undefined")  fillForm();');
     }
 
     // restore session back

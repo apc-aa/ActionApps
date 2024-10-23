@@ -42,7 +42,7 @@ $editor_perms = AA::$perm->getModulePerms(AuthGetUid(), $slice_id);
  * @return bool
  */
 function CanChangeRole($user_perm, $editor_perm, $role_perm) {
-    return ((AA_Perm::compare($editor_perm, $user_perm)=="G") AND (AA_Perm::compare($editor_perm, $role_perm)=="G"));
+    return ((AA_Perm::compare($editor_perm, $user_perm)==="G") AND (AA_Perm::compare($editor_perm, $role_perm)==="G"));
 }
 
 /** ChangeRole function
@@ -124,13 +124,13 @@ function AddUserForm(string $usr, string $grp, bool $GrpSrch, bool $UsrSrch, $ed
 
         FrmTabSeparator(_m("Assign new permissions"));
         // determine role of this user
-        if (AA_Perm::compare($editor_perms, AA_Perm::ROLES["SUPER"]['perm']) != "L") {
+        if (AA_Perm::compare($editor_perms, AA_Perm::ROLES["SUPER"]['perm']) !== "L") {
             $curr_role = AA_Perm::ROLES["SUPER"]['id'];
-        } elseif (AA_Perm::compare($editor_perms, AA_Perm::ROLES["ADMINISTRATOR"]['perm']) != "L") {
+        } elseif (AA_Perm::compare($editor_perms, AA_Perm::ROLES["ADMINISTRATOR"]['perm']) !== "L") {
             $curr_role = AA_Perm::ROLES["ADMINISTRATOR"]['id'];
-        } elseif (AA_Perm::compare($editor_perms, AA_Perm::ROLES["EDITOR"]['perm']) != "L") {
+        } elseif (AA_Perm::compare($editor_perms, AA_Perm::ROLES["EDITOR"]['perm']) !== "L") {
             $curr_role = AA_Perm::ROLES["EDITOR"]['id'];
-        } elseif (AA_Perm::compare($editor_perms, AA_Perm::ROLES["AUTHOR"]['perm']) != "L") {
+        } elseif (AA_Perm::compare($editor_perms, AA_Perm::ROLES["AUTHOR"]['perm']) !== "L") {
             $curr_role = AA_Perm::ROLES["AUTHOR"]['id'];
         } else {
             $curr_role = 0;
@@ -148,7 +148,7 @@ function AddUserForm(string $usr, string $grp, bool $GrpSrch, bool $UsrSrch, $ed
 
         $l_counter = 1;
         if (!is_array($addable)) {
-            if ($addable == "too much") {
+            if ($addable === "too much") {
                 echo "<tr><td>" . _m("Too many users or groups found.") . " " . _m("Try to be more specific.") . "</td>\n";
             } else {
                 echo "<tr><td>" . _m("No user (group) found") . "</td>\n";

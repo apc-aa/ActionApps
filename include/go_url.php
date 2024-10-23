@@ -29,10 +29,8 @@
  *
 */
 
-/** con_url function
- *  Escapes url for usage on HTML page
- *  - it is better to use get_url() function and then escape the url before
- *  printing
+/** Escapes url for usage on HTML page
+ *  - it is better to use get_url() function and then escape the url before printing
  * @param $url
  * @param  array|string $params
  * @return string
@@ -83,15 +81,16 @@ function StateUrl($url=''): string {
 /**
  * @return string
  */
-function StateHidden() {
+function StateHidden(): string
+{
     return is_long_id(AA::$module_id) ? '<input type=hidden name=module_id value="'.AA::$module_id.'">' : '';
 }
 
 
-/** Appends any number of QUERY_STRING parameters (separated by &) to given URL,
- *  using appropriate ? or &.
- * @param string $url
- * @param array|string $params
+/** Appends any number of QUERY_STRING parameters (separated by &) to given URL, using appropriate ? or &.
+ * @param  string  $url
+ * @param  array   $params
+ * @param  bool    $state
  * @return string
  */
 function get_url($url, $params=[], $state=false): string {
@@ -143,8 +142,7 @@ function get_help_url($href, $anchor) {
 }
 
 
-/** go_url function
- * Move to another page (must be before any output from script)
+/** Move to another page (must be before any output from script)
  * @param $url
  * @param $add_param array|string
  * @param $usejs
@@ -158,7 +156,7 @@ function go_url($url, $add_param="", $usejs=false, $code=302) {
         $url = get_url($url, $add_param);
     }
 
-    if ( $usejs OR headers_sent() OR ($_SERVER['SERVER_PROTOCOL']=='INCLUDED')) { // SSI included  // INCLUDED does not work 2024 HM
+    if ( $usejs OR headers_sent() OR ($_SERVER['SERVER_PROTOCOL']==='INCLUDED')) { // SSI included  // INCLUDED does not work 2024 HM
         echo '<script>window.location = "'.$url.'";</script>';
     } else {
         header("Location: $url", true, $code);

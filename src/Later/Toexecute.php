@@ -148,7 +148,7 @@ class Toexecute {
      */
     function userQueue($object, $params, $selector, $priority = 100)
     {
-        $this->later($object, $params, $selector, $priority, Toexecute::TOEXECUTE_USER_TASK_TIME);
+        $this->later($object, $params, $selector, $priority, self::TOEXECUTE_USER_TASK_TIME);
     }
 
     /** cancel_all function

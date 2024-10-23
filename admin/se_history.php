@@ -93,7 +93,7 @@ class Manageraction_History_Apply extends AbstractManageraction {
             $doit = false;
 
             foreach ($fields as $fid => $val_arr) {
-                if ((strlen($fid)==16) AND ($fid != 'last_edit.......')) {
+                if ((strlen($fid)===16) AND ($fid !== 'last_edit.......')) {
                     $newcontent4id->setAaValue($fid, new AA_Value($val_arr, FLAG_HTML));   // , $content4id->getFlag($field_id));
                     $doit = true;
                 }

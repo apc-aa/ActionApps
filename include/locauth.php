@@ -44,7 +44,7 @@ class AA_Auth extends Auth {
 
     /** Is some user logged in? The is_authenticated() works differently, so we added this one  */
     public function is_user(): bool {
-        return strlen($this->auth["uid"]) and ($this->auth["uid"] != 'nobody');
+        return strlen($this->auth["uid"]) and ($this->auth["uid"] !== 'nobody');
     }
 
     public function getUid(): string {

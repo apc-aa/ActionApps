@@ -72,33 +72,27 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
  * @return string - the HTML tags to be printed verbatim are back-slashed in the text
  *          e.g. <a ....> is written \<a ...\>
  */
-function processSlashes($s) {
-    $s = str_replace("\\<", safe("<"), $s);
-    $s = str_replace("\\>", safe(">"), $s);
-    return $s;
+function processSlashes($s): string
+{
+    return str_replace(["\\<", "\\>"], [safe("<"), safe(">")], $s);
 }
 
 /** processValue function
  * @param $s
  * @return string replace \r and \n with empty space and " with &quot;
  */
-function processValue($s) {
-    $s = str_replace("\r", "", $s);
-    $s = str_replace("\n", "", $s);
-    $s = str_replace('"', '&quot;', $s);
-    return $s;
+function processValue($s): string
+{
+    return str_replace(["\r", "\n", '"'], ["", "", '&quot;'], $s);
 }
 
 /** processJavaScript function
  * @param $s
  * @return string same as processValue, plus replace ' with \'
  */
-function processJavaScript($s) {
-    $s = str_replace("\r", "", $s);
-    $s = str_replace("\n", "", $s);
-    $s = str_replace('"', '&quot;', $s);
-    $s = str_replace("'", "\\'", $s);
-    return $s;
+function processJavaScript($s): string
+{
+    return str_replace(["\r", "\n", '"', "'"], ["", "", '&quot;', "\\'"], $s);
 }
 
 
@@ -150,7 +144,7 @@ $title = ucfirst($desc['name']) . " " . _m("Wizard");
 $allow_quote = 1;
 if (is_array($desc['params'])) {
     foreach ($desc['params'] as $param) {
-        if ($param['type'] != 'INT' && $param['type'] != 'BOOL') {
+        if ($param['type'] !== 'INT' && $param['type'] !== 'BOOL') {
             $allow_quote = 3;
             break;
         }

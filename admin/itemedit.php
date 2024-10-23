@@ -138,7 +138,7 @@ function CloseDialog($zid = null, $openervar = null, $insert=true, $url2go=null)
     $js .= ($url2go ? "window.location = '$url2go';\n" : "window.close();\n");
 
     // inputform.min.js for SelectRelations
-    echo getHtmlPage(getFrmJavascriptFile('javascript/inputform.min.js?v='.AA_JS_VERSION).  getFrmJavascript($js));
+    echo getHtmlPage(getFrmJavascriptFile('javascript/inputform.min.js', ['v'=>AA_JS_VERSION]).  getFrmJavascript($js));
 }
 
 // Allow edit current slice without slice_pwd
@@ -168,7 +168,7 @@ $add = !( $update OR $cancel OR $insert OR $edit );
 if ($cancel) {
     if ($anonymous) { // anonymous login
         go_url( $r_slice_view_url, '', $encap );
-    } elseif ($return_url=='close_dialog') {
+    } elseif ($return_url === 'close_dialog') {
         // Used for adding item to another slice from itemedit's popup.
         CloseDialog();
     } else {
@@ -195,7 +195,7 @@ $slice_id = AA::$module_id;
 
 // link from public pages sometimes do not contain slice_id
 if ( $id ) {
-    if ((strlen($id)==33) AND strpos(' xyz', $id[0])) {
+    if ((strlen($id)===33) && strpos(' xyz', $id[0])) {
         // x, y, z prefixed ids for new added related items
         $id = substr($id,1);
     }
@@ -210,13 +210,12 @@ if ( $id ) {
 
 // --- Process all AJAX commands and possibly EXIT ---------------------
 
-$content_function = function () use (&$content4id, $slice_id, $edit) {
+$content_function = static function () use (&$content4id, $slice_id, $edit) {
     return (new inputform([]))->dryEvaluate($content4id, AA_Slice::getModule($slice_id), $edit);
 };
 
 $page_changer = new \AA\IO\OnPageChanger($content_function);
 $page_changer->checkAndProcessCall();
-
 
 unset($content4id);
 
@@ -246,7 +245,7 @@ if ( ($insert || $update) AND count($fields) ) {
     $oldcontent4id = [];
 
     // it is needed to call IsEditable() function and GetContentFromForm()
-    if ( $action == "update" ) {
+    if ( $action === "update" ) {
         // if we are editing dynamic slice setting fields (stored in content
         // table), we need to get values from slice's fields
         if ($slice_fields) {
@@ -291,11 +290,11 @@ if ( ($insert || $update) AND count($fields) ) {
 
         page_close();
         if ($preview) {
-            $preview_url = get_url(get_admin_url("preview.php"), "slice_id=$slice_id&sh_itm=$id&return_url=$return_url");
+            $preview_url = get_admin_url("preview.php", ["slice_id" => $slice_id, "sh_itm" => $id, "return_url" => $return_url]);
         }
         if ($anonymous) { // anonymous login
             go_url( $r_slice_view_url, '', $encap );
-        } elseif ($return_url=='close_dialog') {
+        } elseif ($return_url === 'close_dialog') {
             // Used for adding item to another slice from itemedit's popup.
             CloseDialog(new zids($added_to_db, 'l'), $openervar, $insert, $preview_url);
             page_close();
@@ -374,9 +373,9 @@ $inputform_settings['form4update']         = $edit || $update || ($insert && $ad
 $inputform_settings['show_preview_button'] = (($post_preview!=0) OR !isset($post_preview));
 
 $inputform_settings['cancel_url']          =  ($anonymous  ? $r_slice_view_url :
-                                              ($return_url=='close_dialog' ? get_admin_url("itemedit.php?cancel=1&return_url=close_dialog") :
+                                              ($return_url === 'close_dialog' ? get_admin_url("itemedit.php", ['cancel' =>1, 'return_url' =>'close_dialog']) :
                                               ($return_url ? expand_return_url(1) :
-                                              get_admin_url("index.php?cancel=1"))));
+                                              get_admin_url("index.php", ['cancel'=>1]))));
 
 $inputform_settings['hidden']              = [
                              'anonymous'   => (($free OR $anonymous) ? true : ""),

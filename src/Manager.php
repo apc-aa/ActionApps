@@ -79,10 +79,10 @@ class Managed {
      * @return Managed
      */
     public static function factoryFromType(?string $type): Managed {
-        switch (substr($type,0,2)) {
-            case '_T': return new Managed_Table(substr($type,2));
-        }
-        return new Managed_Object($type);
+        return match (substr($type, 0, 2)) {
+            '_T'    => new Managed_Table(substr($type, 2)),
+            default => new Managed_Object($type),
+        };
     }
 
     /** Create specific (unique) string submitted by form from which we can factory right Managed object  */
@@ -178,7 +178,7 @@ class Managed {
                 $colspan = 3;
             }
         }
-        $format_strings['odd_row_format'] = str_replace(Managed::MANGED_URL, $this->getUrl(), $format_strings['odd_row_format']);
+        $format_strings['odd_row_format'] = str_replace(self::MANGED_URL, $this->getUrl(), $format_strings['odd_row_format']);
         $this->setNoitem($format_strings["noitem_msg"]);
 
         if ($this->isAction('add')) {
@@ -400,12 +400,12 @@ class Managed_Table extends Managed {
         $store_mode = $grabber->getStoreMode();        // add | update | insert
         $grabber->finish();    // maybe some finalization in grabber
 
-        if (($store_mode == 'update') AND $this->isAction('edit')) {
+        if (($store_mode === 'update') AND $this->isAction('edit')) {
             // key is stored in aa_id field
             $content[AA::Metabase()->getKeys($this->table)[0]] = $content['aa_id']; // assign using ArrayAccess
             unset($content['aa_id']);
             AA::Metabase()->doUpdate($this->table, $content->getAllAsScalar());
-        } elseif (($store_mode == 'insert') AND $this->isAction('add')) {
+        } elseif (($store_mode === 'insert') AND $this->isAction('add')) {
             $data = $content->getAllAsScalar();
             if ($owner && ($module_field = AA_Metabase::getModuleField($this->table))) {
                 $data[$module_field] = $owner;

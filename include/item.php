@@ -51,7 +51,7 @@ function DefineBaseAliases(&$aliases, $module_id) {
         $aliases["_#SITEM_ID"] = GetAliasDef( "f_1", "short_id........");
     }
     if ( !isset($aliases["_#HEADLINE"]) ) {
-        $aliases["_#HEADLINE"] = GetAliasDef( "f_t::safe",             GetHeadlineFieldID($module_id));
+        $aliases["_#HEADLINE"] = GetAliasDef( "f_t::safe", GetHeadlineFieldID($module_id));
     }
     if ( !isset($aliases["_#JS_HEAD_"]) ) {
         $aliases["_#JS_HEAD_"] = GetAliasDef( "f_t", GetHeadlineFieldID($module_id) ?: 'short_id........');
@@ -215,7 +215,7 @@ function GetFormattedItems($zids, $format, $crypted_additional_slice_pwd=null, $
         $ret[$long_id] = AA::Un($format, '', $item);
     }
 
-    if (!(isset($tagprefix) AND ($zids->onetype() == 't'))) {
+    if (!(isset($tagprefix) AND ($zids->onetype() === 't'))) {
         return $ret;
     }
 
@@ -248,7 +248,7 @@ function GetFormattedItems($zids, $format, $crypted_additional_slice_pwd=null, $
 /** GetFormatedConstants function
  * @param             $constgroup
  * @param             $format
- * @param             $restrict_zids
+ * @param array|null  $restrict_zids
  * @param             $conds
  * @param             $sort
  * @param string|null $for_id if created for some item and _#ITEM_ID_ alias
@@ -295,7 +295,7 @@ function GetItemFromContent($content): ?AA_Item {
     if ( !is_object($content) ) {
         return null;
     }
-    return new AA_Item($content, ($content->getType()=='item') ? new AA_Aliases(new AA_Aliasgenerator_Slice((new ItemContent($content))->getSliceID())) : '');
+    return new AA_Item($content, ($content->getType()==='item') ? new AA_Aliases(new AA_Aliasgenerator_Slice((new ItemContent($content))->getSliceID())) : '');
 }
 
 
@@ -687,7 +687,7 @@ class AA_Item {
     function getahref($url, $txt, $add="", $html=false, $hide=false) {
         if ( $url AND $txt ) {
             // repair url if user omits to write http://
-            if ( substr($url,4)=='www.' ) {
+            if ( substr($url,4)==='www.' ) {
                 $url = '//'.$url;
             }
             // hide email from spam robots
@@ -904,7 +904,7 @@ class AA_Item {
         if ( empty($param) ) {
             return $this->text2Html($this->getval($col), $this->getFlag($col));
         }
-        if ($param=='AA_DashOrLanG') {
+        if ($param==='AA_DashOrLanG') {
             if ($this->isMultilingual($col)) {
                 return $this->text2Html($this->getval($col), $this->getFlag($col));
             } else {
@@ -949,7 +949,7 @@ class AA_Item {
             $time = (int)$time/1000000000; // convert to seconds from nanotime()
         }
         $dstr = (string)date($param, (int)max(-2147483647,min(100000000000,$time)));
-        return (($param != "H:i") ? $dstr : ( ($dstr=="00:00") ? "" : $dstr ));
+        return (($param !== "H:i") ? $dstr : ( ($dstr=="00:00") ? "" : $dstr ));
     }
 
     /** f_i function
@@ -1161,10 +1161,10 @@ class AA_Item {
         c) using the single item_id from b), find the content record that has the
         fulltext blurb
         */
-        if (($fieldToReturn == "id..............") OR ($fieldToReturn == "short_id........")) {
+        if (($fieldToReturn === "id..............") OR ($fieldToReturn === "short_id........")) {
             print("f_q cannot yet return $fieldToReturn fields");
             return '';
-        } elseif ($fieldToMatch == "id..............") {
+        } elseif ($fieldToMatch === "id..............") {
         // Special case id... its not a real field
             $fqsqlid = q_pack_id($stringToMatch);
             $SQL = "SELECT c2.text AS text
@@ -1173,7 +1173,7 @@ class AA_Item {
                          c2.field_id    = '$fieldToReturn' AND
                          c2.item_id     = '$fqsqlid'";
 
-        } elseif ($fieldToMatch == "short_id........") {
+        } elseif ($fieldToMatch === "short_id........") {
             $p_blurbSliceId  = q_pack_id( $p[1] ?: BLURB_SLICE_ID  );
             $SQL = "SELECT c2.text AS text
                     FROM item LEFT JOIN content c2 ON item.id = c2.item_id
@@ -1226,7 +1226,7 @@ class AA_Item {
     function f_r($col, $param=""): string {
         static $title, $link, $description, $q_owner;
 
-        if ($col == 'SLICEdate') {
+        if ($col === 'SLICEdate') {
             return $this->RSS_restrict( gmdate("D, d M Y H:i:s "). "GMT", 100);
         }
 
@@ -1252,13 +1252,13 @@ class AA_Item {
         }
 
         //   return "tt: $col : $param<BR>";
-        if ($col == 'SLICEtitle') {
+        if ($col === 'SLICEtitle') {
             return $title;
         }
-        if ($col == 'SLICElink') {
+        if ($col === 'SLICElink') {
             return $link;
         }
-        if ($col == 'SLICEdesc') {
+        if ($col === 'SLICEdesc') {
             if (!$description) {
                 $owner_name  = GetTable2Array("SELECT name FROM slice_owner WHERE id='$q_owner'",'aa_first','name');
                 $description = $this->RSS_restrict( $owner_name, 400 ).": $title";
@@ -1268,7 +1268,7 @@ class AA_Item {
 
         $p = ParamExplode($param);
 
-        if ($col == 'hl_href.........' && strlen($p[0]) == 16) {
+        if ($col === 'hl_href.........' && strlen($p[0]) == 16) {
             $redirect  = $p[1] ?:
                                         strtr(AA_INSTAL_URL, ':', '#:') .
                                         "slice.php?slice_id=$slice_id&encap=false";
@@ -1374,7 +1374,7 @@ class AA_Item {
             case "slice_info":
                 return StrExp('modulefield', [get_if($this->getSliceID(),$GLOBALS['slice_id']), $col]);
             case "link_edit":
-                return (($p[1]=='anonym') ?
+                return (($p[1]==='anonym') ?
                 get_aa_url('modules/links/linkedit.php?free=anonym&freepwd=anonym&lid='. $this->getval('id')) :
                 get_aa_url('modules/links/linkedit.php?lid='. $this->getval('id')) );
             case "poll_edit":
@@ -1392,13 +1392,13 @@ class AA_Item {
                 $ret   = '';
                 foreach($cat_names as $k => $cat) {
                     $print_cname = $cat['value'];
-                    if ( $cat_highlight[$k]['value']=='highlight' ) {
+                    if ( $cat_highlight[$k]['value']==='highlight' ) {
                         $print_cname = "<b>$print_cname</b>";    // mark highlighted categories
                     }
-                    if ( $cat_proposal[$k]['value']=='y' ) {
+                    if ( $cat_proposal[$k]['value']==='y' ) {
                         $print_cname = "$print_cname (+)";       // mark proposals
                     }
-                    if ( $cat_proposal_delete[$k]['value']=='y' ) {
+                    if ( $cat_proposal_delete[$k]['value']==='y' ) {
                         $print_cname = "$print_cname (-)";       // mark proposals for deletion
                     }
                     $ret .= $delim. '<a href="javascript:SwitchToCat('. $cat_ids[$k]['value']. ")\">$print_cname</a>";
@@ -1412,9 +1412,9 @@ class AA_Item {
                 // (given by set[]=selected-454343 view.php parameter)
                 // we can compare short_ids as well as long ones
                 $data2compare = false;
-                if (($guesstype = guesstype($p[1])) == 's') {
+                if (($guesstype = guesstype($p[1])) === 's') {
                     $data2compare = $this->getval('short_id........');
-                } elseif ($guesstype == 'l') {
+                } elseif ($guesstype === 'l') {
                     $data2compare = $this->getval('unpacked_id.....');
                 }
                 // no short_id or long_id - it must be a constant
@@ -1529,7 +1529,7 @@ class AA_Item {
                 //Mitra says: looks like this mucks up _#slice_id........
                 $param = str_replace("_#slice", $this->getval('slice_id........'), $param);
             }
-            elseif ( $fid == 'unpacked_id.....' ) {
+            elseif ( $fid === 'unpacked_id.....' ) {
                 $param = str_replace( "_#$fid", $this->f_n('id..............'), $param );
             }
             elseif ( $this->isField($fid) ) {
@@ -1568,7 +1568,7 @@ class AA_Item {
             $txt = ( $p[1] ? $pfield : $this->getval($col));
             $flg = ( $p[1] ? FLAG_HTML : $this->getFlag($col));
         }
-        $linktype =  (($ptype && ($ptype!='mailto')) ? "" : "mailto:");
+        $linktype =  (($ptype && ($ptype!=='mailto')) ? "" : "mailto:");
         return $pbegin.$this->getahref( $linktype.$this->getval($col), $txt, $padd, $flg, $phide);
     }
 
@@ -1593,13 +1593,13 @@ class AA_Item {
         }
         $ret = substr($text,$start,$n);
 
-        if ($case == "upper") {
+        if ($case === "upper") {
             $ret = strtoupper ($ret);
         }
-        elseif ($case == "lower") {
+        elseif ($case === "lower") {
             $ret = strtolower ($ret);
         }
-        elseif ($case == "first") {
+        elseif ($case === "first") {
             $ret = ucwords (strtolower ($ret));
         }
 
@@ -1822,7 +1822,7 @@ class AA_Items {
         if (empty($zid)) {
             return false;
         }
-        $items = AA_Items::singleton();
+        $items = self::singleton();
 
         if (!is_object($zid)) {
             $zid = new zids($zid);
@@ -1843,8 +1843,8 @@ class AA_Items {
      * @return AA_Item[] - array(long_id -> AA_Item)
      */
     static function & getItems($zids, $crypted_additional_slice_pwd=null) {
-        AA_Items::preload($zids, $crypted_additional_slice_pwd);
-        $items = AA_Items::singleton();
+        self::preload($zids, $crypted_additional_slice_pwd);
+        $items = self::singleton();
 
         // all is cached, we get all the items in RIGHT ORDER
         $ret = [];
@@ -1858,7 +1858,7 @@ class AA_Items {
     /** @param zids $zids
      */
     static function preload($zids, $crypted_additional_slice_pwd=null) {
-        $items = AA_Items::singleton();
+        $items = self::singleton();
 
         // check for already cached items
         $zids2get = new zids(null, $zids->onetype());
@@ -1886,8 +1886,8 @@ class AA_Items {
      */
     static function getFormatted($zids, $expression, $bin=AA_BIN_ACTIVE): array {
         $res = [];
-        AA_Items::preload($zids);
-        $items = AA_Items::singleton();
+        self::preload($zids);
+        $items = self::singleton();
 
         // all is cached, we get all the items in RIGHT ORDER
         for ( $i=0, $ino=$zids->count(); $i<$ino; ++$i) {
@@ -1905,12 +1905,12 @@ class AA_Items {
      * @return AA_Value|null
      */
     static function getItemProperty($item_zid, $field) {
-        $item = AA_Items::getItem($item_zid);
+        $item = self::getItem($item_zid);
         return $item ? $item->getAaValue($field) : null;
     }
 
     // array of unpacked ids
-    static public function deleteItems($zids) {
+    public static function deleteItems($zids) {
         $ids_arr   = $zids->longids(); // unpacked ids
         $short_arr = $zids->shortids();
         DB_AA::delete_low_priority('item',        [['id',             $ids_arr,   'l']]);
@@ -1925,15 +1925,14 @@ class AA_Items {
         DB_AA::delete_low_priority('hit_long_id', [['id',             $ids_arr,   'l']]);
 
         $ctx = AA_Log::context();
-        AA_Log::write("ITEM_DEL", array_map(fn ($id) => "$id:$ctx", $ids_arr));
+        AA_Log::write("ITEM_DEL", array_map(static fn ($id) => "$id:$ctx", $ids_arr));
 
         ChangesMonitor::deleteChanges($ids_arr);
     }
 
     /** Invalidate item cache */
     function invalidate() {
-        $items = AA_Items::singleton();
-        $items->doInvalidate();
+        self::singleton()->doInvalidate();
     }
 
     /** called just from clear in order internal variables could be private */
@@ -1944,8 +1943,7 @@ class AA_Items {
 
     /** Invalidate item cache */
     function invalidateItem($zid) {
-        $items = AA_Items::singleton();
-        $items->_invalidateLongIdItem($zid->longids(0));
+        self::singleton()->_invalidateLongIdItem($zid->longids(0));
     }
 
     function _invalidateLongIdItem($id) {

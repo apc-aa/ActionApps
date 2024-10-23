@@ -58,7 +58,7 @@ function AA_Load(sel, url, options = {}) {
 
 if (typeof window.AA_GetConf === 'undefined') {
     window.AA_GetConf = function(prop) {
-        if (typeof AA_GetConf.aa_install_path == 'undefined') {
+        if (typeof AA_GetConf.aa_install_path === 'undefined') {
             var src = document.querySelector('script[src*="javascript/aajslib"]').getAttribute('src');
             AA_GetConf.aa_install_path = src.replace(/javascript\/aajslib.*$/, '');
         }
@@ -238,7 +238,7 @@ function DisplayAaResponse(div_id, method, params) {
 
 function AA_Response(method, resp_params, ok_func, err_func) {
     $.post(AA_GetConf('path') + 'central/responder.php?command='+ method, resp_params, function(data) {
-        if ( data.substring(0,5) == 'Error' ) {
+        if ( data.substring(0,5) === 'Error' ) {
             if (typeof err_func != "undefined") {
                 err_func(data);
             }
@@ -264,7 +264,7 @@ function AA_Refresh(id,inside,ok_func) {
 function AA_SendForm(id, refresh, ok_func) {
     var form_id = jqid(id);
     // browser supports HTML5 validation
-    if (typeof $(form_id)[0].checkValidity == 'function') {
+    if (typeof $(form_id)[0].checkValidity === 'function') {
         if (!$(form_id)[0].checkValidity()) {
             // $(form_id)[0].submit();
             // AA_StateChange(base_id, 'invalid');
@@ -375,7 +375,7 @@ function AA_SendWidgetAjax(base_id) {
     var valdiv = jqid('ajaxv_'+base_id);
     var inputs = $(valdiv + ' :input');
 
-    if (typeof inputs[0].checkValidity == 'function') {
+    if (typeof inputs[0].checkValidity === 'function') {
         for(var i = 0; i < inputs.length; i++) {
             if (!inputs[i].checkValidity()) {
                 AA_StateChange(base_id, 'invalid');
@@ -409,7 +409,7 @@ function AA_ReloadAjaxResponse(id, responseText) {
     var items  = (typeof responseText === 'string') ? jQuery.parseJSON(responseText) : responseText;
     var res;
     for (var i in items) {
-        if (i == 'report') {
+        if (i === 'report') {
             continue;
         }
         res = items[i];
@@ -433,7 +433,7 @@ function AA_SendWidgetLive(base_id, liveinput, fnc) {
     var valdivid   = jqid('widget-' + base_id);
 
     // browser supports HTML5 validation
-    if (typeof liveinput.checkValidity == 'function') {
+    if (typeof liveinput.checkValidity === 'function') {
         if (!liveinput.checkValidity()) {
             AA_StateChange(base_id, 'invalid');
             return;
@@ -446,7 +446,7 @@ function AA_SendWidgetLive(base_id, liveinput, fnc) {
 
     $.post(AA_GetConf('path') + 'filler.php', code, function(data) {
         AA_StateChange(base_id, 'normal');
-        if (typeof fnc == 'function') {
+        if (typeof fnc === 'function') {
             fnc();
         }
     });

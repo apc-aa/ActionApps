@@ -97,7 +97,7 @@ function compare_files($f1, $f2) {
     if ($f1[$sort_key] == $f2[$sort_key]) {
         return 0;
     }
-    if ($f1[$sort_key] < $f2[$sort_key] XOR $sort_order=="a") {
+    if ($f1[$sort_key] < $f2[$sort_key] XOR $sort_order==="a") {
         return 1;
     } else {
         return -1;
@@ -308,15 +308,15 @@ function fileman_execute_command($basedir, $directory, $cmd, $arg, $chb, $fmset)
     $arg = $arg[$cmd];
 
     // Click on directory
-    if ($cmd=='chdir'){
+    if ($cmd==='chdir'){
         set_directory($arg);
-    } elseif ($cmd == 'edit') {
+    } elseif ($cmd === 'edit') {
         $fe_filename = $arg;
     }
         // Action taken in caller, which outputs HTML
 
     // Create file
-    elseif ($cmd=='createfile') {
+    elseif ($cmd==='createfile') {
         if ( !preg_match("/^[0-9a-zA-Z_.]*$/", $arg)) {
             $err[] = _m("Wrong file name.");
             return;
@@ -339,7 +339,7 @@ function fileman_execute_command($basedir, $directory, $cmd, $arg, $chb, $fmset)
     }
 
     // Create directory
-    elseif ($cmd=='createdir') {
+    elseif ($cmd==='createdir') {
         if ( !preg_match("/^[0-9a-zA-Z_]*$/", $arg)) {
             $err[] = _m("Wrong directory name.");
             return;
@@ -352,7 +352,7 @@ function fileman_execute_command($basedir, $directory, $cmd, $arg, $chb, $fmset)
     }
 
     // Delete
-    elseif ($cmd=='delete' && is_array($chb)) {
+    elseif ($cmd==='delete' && is_array($chb)) {
         foreach ($chb as $arg => $foo) {
             $f = $basedir.$arg;
             if (is_dir ($f)) {
@@ -370,7 +370,7 @@ function fileman_execute_command($basedir, $directory, $cmd, $arg, $chb, $fmset)
         }
     }
         // Upload file
-    elseif ($cmd=='upload') {
+    elseif ($cmd==='upload') {
         if ((int)FILEMAN_UPLOAD_TIME_LIMIT) { // set time limit for upload
             MoreTimeLimit((int)FILEMAN_UPLOAD_TIME_LIMIT);
         }
@@ -382,7 +382,7 @@ function fileman_execute_command($basedir, $directory, $cmd, $arg, $chb, $fmset)
         }
     }
 
-    elseif ($cmd=='copytmp') {
+    elseif ($cmd==='copytmp') {
         $tmperr = fileman_copy_template(FILEMAN_BASE_DIR."templates/".$arg, FILEMAN_BASE_DIR.$fileman_dir);
         if ($tmperr) {
             $err[] = _m("Error: ").": $tmperr";
@@ -393,7 +393,7 @@ function fileman_execute_command($basedir, $directory, $cmd, $arg, $chb, $fmset)
     elseif ($filename = $fmset['filename']) {
 
         // Save changes
-        if ($cmd=='savefile') {
+        if ($cmd==='savefile') {
             $f       = $basedir.$filename;
             $filedes = fopen ($f,"w");
             if (!$filedes) {
@@ -409,7 +409,7 @@ function fileman_execute_command($basedir, $directory, $cmd, $arg, $chb, $fmset)
         }
 
         // Rename
-        elseif ($cmd=='rename' && $filename) {
+        elseif ($cmd==='rename' && $filename) {
             make_secure($renamearg);
             $newname = dirname ($basedir.$filename)."/".$arg;
             if (file_exists ($newname)) {
@@ -483,7 +483,7 @@ function fileman_copy_template($srcdir, $dstdir): string {
         }
     }
     if (is_array($errfiles)) {
-        return _m("Files with the same names as some in the template already exist. Please change the file names first.") . " (".join(", ",$errfiles).").";
+        return _m("Files with the same names as some in the template already exist. Please change the file names first.") . " (".implode(", ",$errfiles).").";
     }
     foreach ($files as $file) {
         $ft = get_filetype($srcdir."/".$file);

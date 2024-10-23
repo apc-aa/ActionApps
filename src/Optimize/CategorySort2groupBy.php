@@ -34,7 +34,7 @@ class CategorySort2groupBy extends AbstractOptimize {
         $SQL = "SELECT name FROM slice WHERE category_sort>0 AND ((group_by IS NULL) OR (group_by=''))";
         $slice_names = GetTable2Array($SQL, '', 'name');
         if ($slice_names and (count($slice_names) > 0)) {
-            $this->message(_m('%1 slices are not converted', [count($slice_names)]) . '<br> &nbsp; ' . join('<br> &nbsp; ', $slice_names));
+            $this->message(_m('%1 slices are not converted', [count($slice_names)]) . '<br> &nbsp; ' . implode('<br> &nbsp; ', $slice_names));
             return false;
         }
         $this->message(_m('All slices are already converted'));

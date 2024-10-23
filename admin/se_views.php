@@ -103,8 +103,8 @@ $apage->setForm();
 //$apage->setForm(array('action'=>'se_view.php', 'name'=>'fvtype'));
 //$apage->addRequire('codemirror@5');
 $apage->addRequire('aa-jslib');   // just for MarkedActionSelect() in manager.min.js
-$apage->addRequire(get_aa_url('javascript/manager.min.js?v='.AA_JS_VERSION ));
-//$apage->addRequire(get_aa_url('/javascript/js_lib.min.js?v='.AA_JS_VERSION, '', false ));
+$apage->addRequire(get_aa_url('javascript/manager.min.js', ['v'=>AA_JS_VERSION] ));
+//$apage->addRequire(get_aa_url('/javascript/js_lib.min.js', ['v'=>AA_JS_VERSION], false ));
 $apage->addRequire($headcode, 'AA_Req_Headcode');
 $apage->printHead($err, $Msg);
 
@@ -116,7 +116,7 @@ $actions->addAction(new  AA\Manageraction\View_Move2slice(   'Move2slice', AA::$
 
 $VIEW_TYPES = getViewTypes();
 
-$view_types_ifeq = array_reduce( array_keys($VIEW_TYPES), fn($str, $key) => "$str:$key:".str_replace(':','#:', $VIEW_TYPES[$key]['name']));
+$view_types_ifeq = array_reduce( array_keys($VIEW_TYPES), static fn($str, $key) => "$str:$key:".str_replace(':','#:', $VIEW_TYPES[$key]['name']));
 
 $managed = AA::Metabase()->getManagerConf('view', $actions);
 $managed->setColumns([]); // reset columns - use format strings bellow
@@ -205,10 +205,10 @@ echo "<tr>
          <select name=\"view_slice\" OnChange=\"SelectViewSlice()\">";
 // slice selection
 foreach ( $g_modules as $k => $v) {
-    if ( ($v['type'] != 'S') OR !$sliceWview[$k] ) {
+    if ( ($v['type'] !== 'S') OR !$sliceWview[$k] ) {
         continue;                      // we can feed just between slices ('S')
     }
-    $selected = ( (string)AA::$module_id == (string)$k ) ? "selected" : "";
+    $selected = ( (string)AA::$module_id === (string)$k ) ? "selected" : "";
     echo "<option value=\"x$k\" $selected>". safe($v['name']) ."</option>\n";
 }
 echo "   </select>&nbsp;<select name=\"view_view\">
@@ -220,7 +220,7 @@ echo "   </select>&nbsp;<select name=\"view_view\">
 
 echo "</tbody></table></form>";
 
-FrmJavascriptCached("
+echo getFrmJavascriptCached("
   var vs, vv, vn;
   vs=new Array();
   vn=new Array();

@@ -248,7 +248,7 @@ class NewDiscussionCommentEvent {
 //        $CurItem = new AA_Item($columns, $aliases);
 //
 //        // newer version based on email templates
-//        if ( $vid{0} == 't' ) {   // email template
+//        if ( $vid{0} === 't' ) {   // email template
 //            $mail_id = substr($vid,1);
 //            AA_Mail::sendTemplate($mail_id, $maillist, $CurItem);
 //            return false;
@@ -383,6 +383,7 @@ function Event_ItemAfterInsert( $type, $slice_id, $slice_type, $itemContent, $fo
     (new AA_Mysqlauth_Maintain())->schedule();  // plan or replan the maintenance to be run earlier
     AlertsSendWelcome( $slice_id, $itemContent );
     // AlertsSendInstantAlert( $item_id, $slice_id );
+
     AA_Mailman::createSynchroFiles($slice_id);
 
     // notifications

@@ -74,7 +74,7 @@ class Langs {
      */
     public static function getCharset($lang_code = null) {
         if (!$lang_code or !is_array($ret = self::$LANGS[$lang_code])) {
-            $ret = self::$LANGS[(Langs::currentLang())];
+            $ret = self::$LANGS[(self::currentLang())];
         }
         return $ret[0];
     }
@@ -125,6 +125,6 @@ class Langs {
     /** is current (or provided) $charset Unicode?
      */
     public static function isUTF(string $charset = ''): bool {
-        return (stripos(($charset ?: Langs::getCharset()), 'utf-8') !== false);
+        return (stripos(($charset ?: self::getCharset()), 'utf-8') !== false);
     }
 }

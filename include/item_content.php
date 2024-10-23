@@ -71,7 +71,7 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
      */
     static function factory($val): AA_Value {
         if (is_object($val)) {
-            if (strtolower(get_class($val)) == 'aa_value') {
+            if (strtolower(get_class($val)) === 'aa_value') {
                 return $val;
             }
             // we use serialized values for objects.
@@ -215,7 +215,7 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
      * @return AA_Value
      */
     function replaceInValues($search, $replace): AA_Value {
-        array_walk($this->arr, function (&$v) use ($search, $replace) { $v = str_replace($search, $replace, $v); });
+        array_walk($this->arr, static function (&$v) use ($search, $replace) { $v = str_replace($search, $replace, $v); });
         return $this;
     }
 
@@ -229,7 +229,7 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
             $maxindex = 0;
             foreach ($this->arr as $k => $v) {
                 if (strlen($v)) { // do not add index for all empty values
-                    $maxindex = max($maxindex, $k % AA_Value::MAX_INDEX);
+                    $maxindex = max($maxindex, $k % self::MAX_INDEX);
                 }
             }
 
@@ -255,7 +255,7 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
     /** Remove duplicate values from the array */
     function removeDuplicates(): AA_Value {
         reset($this->arr);
-        if (key($this->arr) < AA_Value::MAX_INDEX) {  // do not remove for multilingual
+        if (key($this->arr) < self::MAX_INDEX) {  // do not remove for multilingual
             $this->arr = array_values(array_unique($this->arr));
         }
         return $this;
@@ -526,7 +526,7 @@ class AA_Content implements Iterator, ArrayAccess, Countable {
             }
         } else {
             foreach ($this->content as $fid => $val) {
-                $ret[$fid] = join($delimiter, array_column($val, 'value'));
+                $ret[$fid] = implode($delimiter, array_column($val, 'value'));
             }
         }
         return $ret;
@@ -732,7 +732,7 @@ class ItemContent extends AA_Content {
     function setFieldsFromForm($oldcontent4id, bool $insert, $fields, $profile): bool {
         
         // check, if any data was send to the server (GET is not possible there, I think)
-        if ($_SERVER['REQUEST_METHOD'] != 'POST') {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             return false;
         }
 
@@ -947,10 +947,10 @@ class ItemContent extends AA_Content {
         $ret        = [];
 
         foreach ($fields as $field_id => $field) {
-            if (($type=='visible' AND !$field->getProperty('input_show'))) {
+            if (($type==='visible' AND !$field->getProperty('input_show'))) {
                 continue;
             }
-            if (($type=='present' AND !$this->isSet($field_id))) {
+            if (($type==='present' AND !$this->isSet($field_id))) {
                 continue;
             }
             $property    = $field->getAaProperty();
@@ -961,7 +961,7 @@ class ItemContent extends AA_Content {
                         continue;
                     }
                     // item table fields like publish date should be OK if not displayed on standard inputform
-                    if (($field->storageTable()=='item') AND !$field->getProperty('input_show')) {
+                    if (($field->storageTable()==='item') AND !$field->getProperty('input_show')) {
                         continue;
                     }
                     if (str_starts_with($field->getProperty('input_show_func'), 'fil')) {
@@ -988,7 +988,7 @@ class ItemContent extends AA_Content {
         $slice_id = $this->getSliceID();
         $slice = AA_Slice::getModule($slice_id);
         if (!$slice) {
-            ItemContent::lastErr(ITEMCONTENT_ERROR_NO_SLICE_ID, _m("No Slice Id specified"));  // set error code
+            self::lastErr(ITEMCONTENT_ERROR_NO_SLICE_ID, _m("No Slice Id specified"));  // set error code
             return false;
         }
 
@@ -996,7 +996,7 @@ class ItemContent extends AA_Content {
         if ($invalid) {
             switch ($validate) {
                 case 'STRICT':
-                    ItemContent::lastErr(ITEMCONTENT_ERROR_INVALID, join("\n", array_map(fn ($fld, $err) => "[$fld] ". $err[0].": ". $err[1], array_keys($invalid), $invalid)));
+                    self::lastErr(ITEMCONTENT_ERROR_INVALID, implode("\n", array_map(static fn ($fld, $err) => "[$fld] ".$err[0].": ".$err[1], array_keys($invalid), $invalid)));
                     return false;
                 case 'LOG':
                     foreach ($invalid as $fld => $msg) {
@@ -1033,7 +1033,7 @@ class ItemContent extends AA_Content {
         $new_content->setSliceID($slice->getId());
         $this->content = $new_content->getContent();
         if ($status == SC_NO_BIN) {
-            ItemContent::lastErr(ITEMCONTENT_ERROR_NO_PERM, _m("No Permission to insert Item for user %1", [AuthGetUid()]));  // set error code
+            self::lastErr(ITEMCONTENT_ERROR_NO_PERM, _m("No Permission to insert Item for user %1", [AuthGetUid()]));  // set error code
             return false;
         }
         return true;
@@ -1044,11 +1044,11 @@ class ItemContent extends AA_Content {
 
         $slice = AA_Slice::getModule($this->getSliceID());
         if (!$slice) {
-            ItemContent::lastErr(ITEMCONTENT_ERROR_NO_SLICE_ID, _m("No Slice Id specified"));  // set error code
+            self::lastErr(ITEMCONTENT_ERROR_NO_SLICE_ID, _m("No Slice Id specified"));  // set error code
             return false;
         }
         if (!is_long_id($this->getItemID())) {
-            ItemContent::lastErr(ITEMCONTENT_ERROR_NO_SLICE_ID, _m("Bad Item Id"));  // set error code
+            self::lastErr(ITEMCONTENT_ERROR_NO_SLICE_ID, _m("Bad Item Id"));  // set error code
             return false;
         }
 
@@ -1145,9 +1145,9 @@ class ItemContent extends AA_Content {
 
         $silent       = false;           // do not perform any additional operation (feed, invalidate, compute_fields, ... if not specified by flags)
 
-        $function_params = [$mode, join('-',(array)$flags), $context];  // just for AA_Log
+        $function_params = [$mode, implode('-',(array)$flags), $context];  // just for AA_Log
 
-        if ($mode == 'update_filled') {
+        if ($mode === 'update_filled') {
             $this->removeEmptyFields();
             // and from this point no difference from normal 'update'
         }
@@ -1182,15 +1182,15 @@ class ItemContent extends AA_Content {
 
             /** @noinspection PhpMissingBreakStatementInspection */
             case 'insert_if_new': if (!$this->getItemID()) {
-                                      ItemContent::lastErr(ITEMCONTENT_ERROR_NO_ID, _m("No Id specified (%1 - %2)", [$this->getItemID(), $this->getValue('headline........')]));  // set error code
-                                      AA::$debug&32 && AA::$dbg->traceend('storeItem', ItemContent::lastErrMsg());
+                                      self::lastErr(ITEMCONTENT_ERROR_NO_ID, _m("No Id specified (%1 - %2)", [$this->getItemID(), $this->getValue('headline........')]));  // set error code
+                                      AA::$debug&32 && AA::$dbg->traceend('storeItem', self::lastErrMsg());
                                       return false;
                                   }
                                   if (itemIsDuplicate($this->getItemID())) {
-                                      ItemContent::lastErr(ITEMCONTENT_ERROR_DUPLICATE, _m("Duplicated ID - skiped (%1 - %2)", [$this->getItemID(), $this->getValue('headline........')]));  // set error code
-                                      if ($GLOBALS['errcheck']) huhl(ItemContent::lastErrMsg());
+                                      self::lastErr(ITEMCONTENT_ERROR_DUPLICATE, _m("Duplicated ID - skiped (%1 - %2)", [$this->getItemID(), $this->getValue('headline........')]));  // set error code
+                                      if ($GLOBALS['errcheck']) huhl(self::lastErrMsg());
                                       if ($GLOBALS['debugfeed'] >= 4) print("\n<br>skipping duplicate: ".$this->getValue('headline........'));
-                                      AA::$debug&32 && AA::$dbg->traceend('storeItem', 'skipping duplicate'.ItemContent::lastErrMsg());
+                                      AA::$debug&32 && AA::$dbg->traceend('storeItem', 'skipping duplicate'.self::lastErrMsg());
                                       return false;
                                   }
                                   $mode ='insert';
@@ -1208,16 +1208,16 @@ class ItemContent extends AA_Content {
         $allow_edit['last_edit'] = ($flags[3] AND $silent);
 
         if (!$id) {
-            ItemContent::lastErr(ITEMCONTENT_ERROR_BAD_PARAM, _m("StoreItem for slice %1 - failed parameter check for id = '%2'", [$slice->getName(), $id]));  // set error code
-            if ($GLOBALS['errcheck']) huhl(ItemContent::lastErrMsg());
-            AA::$debug&32 && AA::$dbg->traceend('storeItem', ItemContent::lastErrMsg());
+            self::lastErr(ITEMCONTENT_ERROR_BAD_PARAM, _m("StoreItem for slice %1 - failed parameter check for id = '%2'", [$slice->getName(), $id]));  // set error code
+            if ($GLOBALS['errcheck']) huhl(self::lastErrMsg());
+            AA::$debug&32 && AA::$dbg->traceend('storeItem', self::lastErrMsg());
             return false;
         }                                       
 
         // do not store item, if status_code==SC_NO_BIN
         if ($this->getStatusCode() == SC_NO_BIN) {
-            ItemContent::lastErr(ITEMCONTENT_ERROR_NO_ID, _m("No Status code"));
-            AA::$debug&32 && AA::$dbg->traceend('storeItem', ItemContent::lastErrMsg());
+            self::lastErr(ITEMCONTENT_ERROR_NO_ID, _m("No Status code"));
+            AA::$debug&32 && AA::$dbg->traceend('storeItem', self::lastErrMsg());
             return false;
         }
 
@@ -1250,7 +1250,7 @@ class ItemContent extends AA_Content {
                 break;
             case 'insert':
                 // reset hit counter fields for new items
-                $hitfields = array_filter($fields->getPriorityArray(), function($fid) { return (str_starts_with($fid, 'hit_')); });
+                $hitfields = array_filter($fields->getPriorityArray(), static function($fid) { return (str_starts_with($fid, 'hit_')); });
                 foreach ($hitfields as $fid ) {
                     $this->setValue($fid, 0);
                 }
@@ -1269,7 +1269,7 @@ class ItemContent extends AA_Content {
         $item_varset = $this->_store_fields($id, $fields, $context);
 
         // Alerts module uses moved2active as the time when an item was moved to the active bin
-        if (($mode=='insert') OR (($item_varset->get('status_code') != $oldItemContent->getStatusCode()) AND $item_varset->get('status_code') >= 1)) {
+        if (($mode==='insert') OR (($item_varset->get('status_code') != $oldItemContent->getStatusCode()) AND $item_varset->get('status_code') >= 1)) {
             $item_varset->add("moved2active", "number", $item_varset->get('status_code') > 1 ? 0 : time());
         }
 
@@ -1355,16 +1355,16 @@ class ItemContent extends AA_Content {
 
         $historylog = $slice->getProperty('historylog');
         // ignore last_edit change (there was quite a lot of such changes, where the only change was in this field (in import....))
-        if (($mode != 'insert') AND ($historylog !== '0') AND count($diff = $itemContent->diff($oldItemContent, ['last_edit.......']))) {
+        if (($mode !== 'insert') AND ($historylog !== '0') AND count($diff = $itemContent->diff($oldItemContent, ['last_edit.......']))) {
             ChangesMonitor::singleton()->addHistory($diff);
         }
         // slice setting historylog applied to history as well as to log for item new/update
         if ($historylog !== '0') {
-            AA_Log::write(($mode == 'insert') ? 'ITEM_NEW' : 'ITEM_UPD', AA_Log::context($id), $function_params);
+            AA_Log::write(($mode === 'insert') ? 'ITEM_NEW' : 'ITEM_UPD', AA_Log::context($id), $function_params);
         }
         // events are after ChangeMonitor - sometimes we use {changed:} in the events
         if ($throw_events) {
-            if ($mode == 'insert') {
+            if ($mode === 'insert') {
                 AA_Plannedtask::executeForEvent($slice_id, 'ITEM_NEW', $id);
                 $event->comes('ITEM_NEW', $slice_id, 'S', $itemContent);  // new form event
             } else {
@@ -1396,7 +1396,7 @@ class ItemContent extends AA_Content {
 
         $field_writer = new AA_Field_Writer($this->getSliceID());
 
-        $update       = (($mode == 'update') OR ($mode == 'overwrite') OR ($mode == 'add'));
+        $update       = (($mode === 'update') OR ($mode === 'overwrite') OR ($mode === 'add'));
         $computed_field_exist = false;
 
         if (!$fields) {
@@ -1424,15 +1424,15 @@ class ItemContent extends AA_Content {
                 case 'seo':
                     $seo_alias        = strlen(trim($fnc["param"])) ? $fnc["param"] : '_#HEADLINE';
                     $slice_charset    = $slice->getCharset();
-                    $seo_charset      = ($slice_charset AND $slice_charset != 'utf-8') ? ":$slice_charset" : '';
+                    $seo_charset      = ($slice_charset AND $slice_charset !== 'utf-8') ? ":$slice_charset" : '';
 
                     // seo field is not filled or we "Insert as new" and teh seo is already used (probably we forgot to delete the value)
-                    if (!strlen($this->getValue($fid)) OR (($mode=='insert') AND strlen(str_replace([$this->getItemID(), '-'], ['',''], StrExpand('AA_Stringexpand_Seo2ids', ['all', $this->getValue($fid)], ['item'=>GetItemFromContent($this)]))))) {
+                    if (!strlen($this->getValue($fid)) OR (($mode==='insert') AND strlen(str_replace([$this->getItemID(), '-'], ['',''], StrExpand('AA_Stringexpand_Seo2ids', ['all', $this->getValue($fid)], ['item'=>GetItemFromContent($this)]))))) {
                         $expand_string = '{seoname:{expand:'.$seo_alias.'}:all'.$seo_charset.'}';
                     } else {
                         continue 2;  // next field
                     } 
-                 // $expand_string    = ($mode=='insert') ? '{seoname:{ifset:{@'.$fid.':| /}:_#1:{'.$seo_alias.'}}:all'.$seo_charset.'}' : '{ifset:{@'.$fid.':| /}:_#1:{seoname:{'.$seo_alias.'}:all'.$seo_charset.'}}';
+                 // $expand_string    = ($mode==='insert') ? '{seoname:{ifset:{@'.$fid.':| /}:_#1:{'.$seo_alias.'}}:all'.$seo_charset.'}' : '{ifset:{@'.$fid.':| /}:_#1:{seoname:{'.$seo_alias.'}:all'.$seo_charset.'}}';
                  // $expand_string    = '{ifset:{@'.$fid.':| /}:_#1:{seoname:{'.$seo_alias.'}:all'.$seo_charset.'}}';
                     $expand_delimiter = '| /';     // just some unprobabale string from the line above
                     unset($expand_insert,$expand_update,$recompute);

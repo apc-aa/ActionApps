@@ -71,7 +71,7 @@ class AA_MbC {
     var $c;
 
     function __construct($column) {
-        $this->c = [$column['Field'], $column['Type'], $column['Null']=='YES', $column['Key'], $column['Default'], $column['Extra'], $column['Comment']];
+        $this->c = [$column['Field'], $column['Type'], $column['Null']==='YES', $column['Key'], $column['Default'], $column['Extra'], $column['Comment']];
     }
 
     function isKey() {
@@ -186,9 +186,9 @@ class AA_MbC {
 
     function getAsProperty(bool $edit=true): ?AA_Property {
         $type = $this->getFieldType();
-        if ($this->isKey() OR (strtolower($this->c[5]) == 'auto_increment')) {
+        if ($this->isKey() OR (strtolower($this->c[5]) === 'auto_increment')) {
             // for editing or int/long/packed ids do not allow editing - allow edit keys just for new text field (nodes table)
-            if ($edit OR ($type=='int') OR ($type=='float') OR $this->getMaxLength()<=32) {
+            if ($edit OR ($type==='int') OR ($type==='float') OR $this->getMaxLength()<=32) {
                 return null;
             }
         }
@@ -289,7 +289,7 @@ class AA_MbI {
         foreach ($this->c as $col) {
             $cols[] = is_array($col) ? '`'.$col[0].'`('.$col[1].')' : "`$col`";
         }
-        $cols_list = join(',', $cols);
+        $cols_list = implode(',', $cols);
         return match ($this->s) {
             'P'     => "PRIMARY KEY ($cols_list)",
             'U'     => 'UNIQUE KEY '.$this->n." ($cols_list)",
@@ -338,7 +338,7 @@ class AA_MbT implements Iterator, ArrayAccess, Countable {
             //      [Table] => email [Non_unique] => 0 [Key_name] => PRIMARY [Seq_in_index] => 1 [Column_name] => id [Collation] => A [Cardinality] => 71 [Sub_part] => [Packed] => [Null] => [Index_type] => BTREE [Comment] => )
             foreach ($indexes as $index_part) {
                 if ( !isset($this->i[$index_part['Key_name']])) {
-                    $index_type = ($index_part['Key_name'] == 'PRIMARY') ? 'P' : (($index_part['Non_unique']) ? 'I': 'U' );
+                    $index_type = ($index_part['Key_name'] === 'PRIMARY') ? 'P' : (($index_part['Non_unique']) ? 'I': 'U' );
                     $this->i[$index_part['Key_name']] = new AA_MbI($index_part['Table'], $index_part['Key_name'], $index_type);
                 }
                 $idx = &$this->i[$index_part['Key_name']]; // to work in php4
@@ -394,7 +394,7 @@ class AA_MbT implements Iterator, ArrayAccess, Countable {
      */
     public function getZidsType(string $key): string {
         $column = $this->c[$key];
-        if ($column->getFieldType() == 'int') {
+        if ($column->getFieldType() === 'int') {
             return 's';   // short int
         }
         if ($column->getMaxLength() > 32) {
@@ -423,7 +423,7 @@ class AA_MbT implements Iterator, ArrayAccess, Countable {
                 $table_details[] = "COLLATE='$collation'";
             }
         }
-        return "CREATE TABLE IF NOT EXISTS `$prefix".$this->t."` (\n". join(",\n",$sql_parts) ."\n) ". join(',', $table_details);
+        return "CREATE TABLE IF NOT EXISTS `$prefix".$this->t."` (\n". implode(",\n",$sql_parts) ."\n) ". implode(',', $table_details);
     }
 
     /** returns database structure definition as PHP code (array) */
@@ -433,7 +433,7 @@ class AA_MbT implements Iterator, ArrayAccess, Countable {
             $defs[] = $column->getDefinition();
         }
         $ret  = "\n    '". $this->t ."' => array(";
-        $ret .= join(",", $defs);
+        $ret .= implode(",", $defs);
         $ret .= "\n    )";
         return $ret;
     }
@@ -469,9 +469,7 @@ class AA_MbT implements Iterator, ArrayAccess, Countable {
 //        }
 //    }
 
-    /** generateAliases
-     *
-     */
+    /**   */
     function generateAliases(): AA_Aliases {
         $aliases = new AA_Aliases;
         foreach ($this->c as $column_name => $column) {
@@ -486,7 +484,7 @@ class AA_MbT implements Iterator, ArrayAccess, Countable {
         return $aliases;
     }
 
-    /** getSearchArray function  */
+    /**  */
     function getSearchArray(): array {
         $fieldarr = [];
         foreach ($this->c as $column_name => $column) {
@@ -496,7 +494,7 @@ class AA_MbT implements Iterator, ArrayAccess, Countable {
         return $fieldarr;
     }
 
-    /** getSearchArray function
+    /**
      *  @return Searchfields
      */
     function getSearchfields(): Searchfields  {
@@ -531,7 +529,7 @@ class AA_MbT implements Iterator, ArrayAccess, Countable {
             if (isset($data[$colname])) {
                 $value = $data[$colname];
                 $iskey = $coldef->isKey();
-                if ($coldef->getFieldType() == 'int') {
+                if ($coldef->getFieldType() === 'int') {
                     $varset->add($colname, 'number', (int)$value, $iskey);
                 } elseif (AA_Metabase::isPacked($this->t, $colname)) {
                     $varset->add($colname, 'unpacked', $value, $iskey);
@@ -560,9 +558,9 @@ class AA_MbT implements Iterator, ArrayAccess, Countable {
                 $value = $data[$colname];
                 // $iskey = $coldef->isKey();
                 $type = $coldef->getFieldType();
-                if ($type == 'int') {
+                if ($type === 'int') {
                     $ret[$colname] = (int)$value;
-                } elseif ($type == 'float') {
+                } elseif ($type === 'float') {
                     $ret[$colname] = (float)$value;
                 } elseif (AA_Metabase::isPacked($this->t, $colname) AND is_long_id($value)) {
                     $ret[$colname] = '0x' . $value;
@@ -682,7 +680,7 @@ class AA_Metabase {
         $tablename  = $identifier->getTable();
         $row        = $identifier->getRow();
 
-        if (!AA_Metabase::isTableKeysSupported($tablename)) {
+        if (!self::isTableKeysSupported($tablename)) {
             // you can't use this function for that the table - this is programmers mistake - correct the code
             echo "table $tablename not supported in AA_Metabase::fillKeys()";
             exit;
@@ -692,13 +690,13 @@ class AA_Metabase {
 
         // make sense just for single-keys or two-key, where second key
         // is replaced by $module_field below (for field table)
-        $module_field = AA_Metabase::getModuleField($tablename);
+        $module_field = self::getModuleField($tablename);
         foreach ($keys as $key) {
             if ($key == $module_field) {
                 // we will assign it in next step - reassignModule()
                 continue;
             }
-            $data[$key] = AA_Metabase::isPacked($tablename, $key) ? pack_id($row) : $row;
+            $data[$key] = self::isPacked($tablename, $key) ? pack_id($row) : $row;
         }
         $this->reassignModule($data, $tablename, $module_id);
     }
@@ -708,28 +706,66 @@ class AA_Metabase {
      *  It modifies $data parameter
      */
     function reassignModule(&$data, $tablename, $module_id) {
-        $module_field = AA_Metabase::getModuleField($tablename);
+        $module_field = self::getModuleField($tablename);
         if ($module_field) {
-            $data[$module_field] = AA_Metabase::isPacked($tablename, $module_field) ? pack_id($module_id) : $module_id;
+            $data[$module_field] = self::isPacked($tablename, $module_field) ? pack_id($module_id) : $module_id;
         }
     }
 
     /** static method */
-    function isTableKeysSupported($tablename) {
+    static function isTableKeysSupported($tablename)
+    {
         static $SUPPORTED_TABLES = [
             // single keys
-            'alerts_collection', 'alerts_filter',
-            'auth_log', 'auth_user', 'change', 'change_record',
-            'central_conf', 'constant', 'constant_slice', 'cron',
-            'db_sequence', 'discussion', 'email',
-            'event', 'external_feeds', 'item', 'jump', 'links',
-            'links_cat_cat', 'links_categories', 'links_languages',
-            'links_link_cat', 'links_links', 'links_regions', 'log',
-            'module', 'nodes', 'offline', 'object_float', 'object_integer', 'object_text',
-            'pagecache', 'pagecache_str2find', 'polls', 'polls_answer', 'polls_design',
-            'polls_log', 'post2shtml', 'profile', 'rssfeeds', 'searchlog',
-            'site', 'site_spot', 'slice', 'slice_owner', 'toexecute',
-            'users', 'view', 'wizard_template',
+            'alerts_collection',
+            'alerts_filter',
+            'auth_log',
+            'auth_user',
+            'change',
+            'change_record',
+            'central_conf',
+            'constant',
+            'constant_slice',
+            'cron',
+            'db_sequence',
+            'discussion',
+            'email',
+            'event',
+            'external_feeds',
+            'item',
+            'jump',
+            'links',
+            'links_cat_cat',
+            'links_categories',
+            'links_languages',
+            'links_link_cat',
+            'links_links',
+            'links_regions',
+            'log',
+            'module',
+            'nodes',
+            'offline',
+            'object_float',
+            'object_integer',
+            'object_text',
+            'pagecache',
+            'pagecache_str2find',
+            'polls',
+            'polls_answer',
+            'polls_design',
+            'polls_log',
+            'post2shtml',
+            'profile',
+            'rssfeeds',
+            'searchlog',
+            'site',
+            'site_spot',
+            'slice',
+            'slice_owner',
+            'toexecute',
+            'users',
+            'view',
+            'wizard_template',
             // supported table using double keys (slice_id,id)
             'field',
             // unsupported table using triple keys (slice_id,uid,`function`)
@@ -749,7 +785,7 @@ class AA_Metabase {
      * @return bool
      */
     static function isPacked($tablename, $column) {
-        return in_array($column, AA_Metabase::getPacked($tablename));
+        return in_array($column, self::getPacked($tablename));
     }
 
     /** get type of the column in the table */
@@ -954,7 +990,7 @@ class AA_Metabase {
     private function isKeysFilled($tablename, $varset) {
         if ($table_keys = $this->getKeys($tablename)) {
             foreach ($table_keys as $key) {
-                if (!$varset->get($key)) {  // 0 and null is probably not allowed for key
+                if (!$varset->get((string)$key)) {  // 0 and null is probably not allowed for key
                     return false;
                 }
             }
@@ -989,7 +1025,7 @@ class AA_Metabase {
                 $sql_parts[] = $table->getCreateSql($prefix, $engine_template_table);
             }
         }
-        return join("\n",$sql_parts);
+        return implode("\n",$sql_parts);
     }
 
     /** returns database structure definition as PHP code (array) */
@@ -999,7 +1035,7 @@ class AA_Metabase {
             $defs[]= $table->getDefinition();
         }
         $ret = "array(";
-        $ret .= join(",", $defs);
+        $ret .= implode(",", $defs);
         $ret .= "\n);\n";
         return $ret;
     }
@@ -1066,7 +1102,7 @@ class AA_Metabase {
             $join_sql     = "INNER JOIN $module_table ON $tablename.". $j['scr_field']."=$module_table.".$j['dest_field'];
         }
 
-        $module_field = AA_Metabase::getModuleField($module_table);
+        $module_field = self::getModuleField($module_table);
         if (!$module_field) {
             // you can't use this function for that table - this is programmers mistake - correct the code
             echo "table $tablename not supported in AA_Metabase::getModuleRows() - no module field";
@@ -1088,12 +1124,12 @@ class AA_Metabase {
             $table_key = '';  // we do not use the key
         }
 
-        $module_val   = AA_Metabase::isPacked($module_table, $module_field) ? q_pack_id($module_id) : $module_id;
-        $key_used     = !$table_key ? '' : (AA_Metabase::isPacked($tablename, $table_key) ? "unpack:$table_key" : $table_key);
+        $module_val   = self::isPacked($module_table, $module_field) ? q_pack_id($module_id) : $module_id;
+        $key_used     = !$table_key ? '' : (self::isPacked($tablename, $table_key) ? "unpack:$table_key" : $table_key);
 
         $SQL = "SELECT $tablename.* FROM $tablename $join_sql WHERE $module_table.$module_field = '$module_val'";
 
-        $ret            = GetTable2Array($SQL, $key_used, 'aa_fields');
+        $ret          = GetTable2Array($SQL, $key_used, 'aa_fields');
         if (!is_array($ret)) {
             $ret = [];
         }
@@ -1103,7 +1139,7 @@ class AA_Metabase {
     }
 
     function unpackIds($tablename, &$data) {
-        $packed_columns = AA_Metabase::getPacked($tablename);
+        $packed_columns = self::getPacked($tablename);
         foreach ($packed_columns as $column) {
             foreach ($data as $k => $v) {
                 $data[$k][$column] = unpack_id($v[$column]);
@@ -1112,7 +1148,7 @@ class AA_Metabase {
     }
 
     function packIds($tablename, &$data) {
-        $packed_columns = AA_Metabase::getPacked($tablename);
+        $packed_columns = self::getPacked($tablename);
         foreach ($packed_columns as $column) {
             foreach ($data as $k => $v) {
                 $data[$k][$column] = pack_id($v[$column]);
@@ -1209,7 +1245,7 @@ class AA_Metabase {
         //AA::$debug&2 && AA::$dbg->groupend('meta');
 
         // unpack packed fields, if there are some
-        $packed_columns = AA_Metabase::getPacked($tablename);
+        $packed_columns = self::getPacked($tablename);
         foreach ($packed_columns as $column) {
             foreach ($ret as $k => $v) {
                 $ret[$k]->setValue($column, unpack_id($v->getValue($column)));
@@ -1369,7 +1405,7 @@ class AA_Metabase {
             $columns['_aa_chb'] = ['',"<input name=\"chb[x$key_alias]\" value=\"\" type=checkbox>"];
         }
         if ($buttons) {
-            $columns['_aa_action'] = [_m('Action'), join(' ', $buttons)];
+            $columns['_aa_action'] = [_m('Action'), implode(' ', $buttons)];
         }
 
         $aliasnames = $aliases->getNames();

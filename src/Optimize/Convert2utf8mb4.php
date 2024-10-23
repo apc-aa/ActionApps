@@ -33,7 +33,7 @@ class Convert2utf8mb4 extends AbstractOptimize {
         $collations = array_merge($collations, $this->get_tables('utf8mb3_'));
         $count = 0;
         foreach ($collations as $tablename => $collation) {
-            if (substr($tablename, 0, 4) == 'bck_') {
+            if (str_starts_with($tablename, 'bck_')) {
                 continue;
             }
             $this->message(_m('collation for %1 table is %2', [$tablename, $collation]));
@@ -61,7 +61,7 @@ class Convert2utf8mb4 extends AbstractOptimize {
         $converted = 0;
         $new_collation = '';
         foreach ($collations as $tablename => $collation) {
-            if (substr($tablename, 0, 4) == 'bck_') {
+            if (str_starts_with($tablename, 'bck_')) {
                 continue;
             }
             $new_collation = str_replace($from_colation_prefix, $to_colation_prefix, $collation);

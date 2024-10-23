@@ -92,7 +92,7 @@ class MchWidget extends Widget
         $input_id = FormArray::formName2Id($input_name);
 
         $small  = (count($options) < 7) ? ' aa-mch-options-s' : '';
-        $widget = count($selection) ? ("<div class=\"aa-mch-selected$small\"><strong>" . _m('Selected') . ':</strong><div class="aa-mch-tags">' . join(' ', $selection)) . '</div></div>' : '';
+        $widget = count($selection) ? ("<div class=\"aa-mch-selected$small\"><strong>" . _m('Selected') . ':</strong><div class="aa-mch-tags">' . implode(' ', $selection)) . '</div></div>' : '';
         $widget .= '<div class="aa-mch-list" style="max-height:' . $height . 'px; overflow:auto;">';
         $widget .= "\n<input type=\"hidden\" name=\"$input_name\" id=\"$input_id\" value=\"\">";
         $widget .= $this->getInMatrix($htmlopt, $this->getProperty('columns', 0), $this->getProperty('move_right', false), 'aa-tab-mch');

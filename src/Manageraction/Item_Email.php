@@ -20,7 +20,7 @@ class Item_Email extends AbstractManageraction {
      */
     function isPerm4Action($manager) {
         // $slice = AA_Slice::getModule($manager->getModuleId());
-        // return ($slice->type() == 'ReaderManagement');
+        // return ($slice->type() === 'ReaderManagement');
         return true; // allow in all slices
     }
 }

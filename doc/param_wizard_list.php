@@ -62,16 +62,18 @@ echo "<h1>" . $list["name"] . "s</h1>\n";
 echo '<FORM action="param_wizard_list.php" method="get">' . "\n";
 echo _m("Change to: ") . "<SELECT name=mylist>\n";
 foreach ($lists as $xlist) {
-    if ($xlist == $mylist)
+    if ($xlist == $mylist) {
         continue;
+    }
     $xxlist = $$xlist;
     echo "<OPTION value='$xlist'>" . $xxlist["name"] . "s\n";
 }
 echo "</SELECT>&nbsp;\n";
 echo "<INPUT TYPE=submit value='" . _m("Go") . "'></FORM>\n";
 
-if ($list["hint"])
-    echo $list["hint"] . "<br>";
+if ($list["hint"]) {
+    echo $list["hint"]."<br>";
+}
 
 ksort($list["items"]);
 echo "<table>\n";
@@ -120,10 +122,9 @@ function nl($s) {
     return $s ?: "&nbsp;";
 }
 
-function processSlashes($s) {
-    $s = str_replace("\\<", safe("<"), $s);
-    $s = str_replace("\\>", safe(">"), $s);
-    return $s;
+function processSlashes($s): string
+{
+    return str_replace(["\\<", "\\>"], [safe("<"), safe(">")], $s);
 }
 
 

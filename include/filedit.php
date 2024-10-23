@@ -114,10 +114,8 @@ if ($filetype == _m("Text file") || $filetype == _m("Web file") || $filetype == 
             echo formatAction(_m("Edit").":")."<br>";
             echo "<textarea name='arg[savefile]' cols=\"80\" rows=\"30\">
             </textarea><br>";
-            $value = str_replace ("'", "\\'", $value);
-            $value = str_replace ("\n", "\\n", $value);
-            $value = str_replace ("\r", "\\r", $value);
-            echo "<script>
+            $value = str_replace(["'", "\n", "\r"], ["\\'", "\\n", "\\r"], $value);
+        echo "<script>
                 var edt = 0;
                 var filetext = '$value';
                 document.forms['fileman']['arg[savefile]'].value = filetext;

@@ -193,11 +193,11 @@ class AA_Collection {
             $aliases = $als->getArray();
         }
         AA_Log::write("ALERTS", $ho, "Sent for collection " . $this->id . ": " . ((int)$email_count));
-        AA_Log::write("ALERTS", $ho, join('; ', [
+        AA_Log::write("ALERTS", $ho, implode('; ', [
             "Debug collection " . $this->id,
             $this->_get('email_id_alert'),
-            join(',', (array)$emails),
-            join(',', (array)$aliases)
+            implode(',', (array)$emails),
+            implode(',', (array)$aliases)
         ]));
         return $email_count;
     }
@@ -387,7 +387,7 @@ class AA_Collection {
                     $user_zids = QueryZids([unpack_id($set["info"]->f("slice_id"))], "", $sort, "ACTIVE", 0, $user_zids);
                 }
 
-                $user_text .= get_filter_output_cached($last_fprop["vid"], join (",",$filter_ids), $user_zids);
+                $user_text .= get_filter_output_cached($last_fprop["vid"], implode(",",$filter_ids), $user_zids);
 
                 // $filter_ids = "";   // changed to array() for php 7.1 - Jirka
                 $filter_ids = [];
@@ -433,7 +433,7 @@ class AA_Collection {
             "group"   => _m("Aliases for Alerts Alert"),
             "aliases" => [
                 "_#FILTERS_" => _m("complete filter text"),
-                "_#HOWOFTEN" => _m("howoften") . " (" . join(", ", get_howoften_options()) . ")",
+                "_#HOWOFTEN" => _m("howoften") . " (" . implode(", ", get_howoften_options()) . ")",
                 "_#COLLFORM" => _m("Anonym Form URL (set in Alerts Admin - Settings)"),
                 "_#UNSBFORM" => _m("Unsubscribe Form URL"),
             ]
@@ -442,7 +442,7 @@ class AA_Collection {
         $ali[] = [
             "group"   => _m("Aliases for Alerts Welcome"),
             "aliases" => [
-                "_#HOWOFTEN" => _m("howoften") . " (" . join(", ", get_howoften_options()) . ")",
+                "_#HOWOFTEN" => _m("howoften") . " (" . implode(", ", get_howoften_options()) . ")",
                 "_#COLLFORM" => _m("Collection Form URL (set in Alerts Admin - Settings)"),
                 "_#CONFIRM_" => _m("email confirmed"),
             ]

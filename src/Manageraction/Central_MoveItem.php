@@ -20,15 +20,12 @@ class Central_MoveItem extends AbstractManageraction {
 
     /** Name of this Manager's action */
     public function getName(): string {
-        switch ($this->to_bin) {
-            case 1:
-                return _m('Move to Active');
-            case 2:
-                return _m('Move to Holding bin');
-            case 3:
-                return _m('Move to Trash');
-        }
-        return "";
+        return match ($this->to_bin) {
+            1       => _m('Move to Active'),
+            2       => _m('Move to Holding bin'),
+            3       => _m('Move to Trash'),
+            default => "",
+        };
     }
 
     /** @inheritDoc */
@@ -56,15 +53,15 @@ class Central_MoveItem extends AbstractManageraction {
 
         switch ($this->to_bin) {
             case 1:
-                return ($current_bin != 'app') and
-                    ($current_bin != 'appb') and
-                    ($current_bin != 'appc');
+                return ($current_bin !== 'app') and
+                    ($current_bin !== 'appb') and
+                    ($current_bin !== 'appc');
             // Folder2 is Holding bin - prepared for more than three bins
             case 2:
-                return ($current_bin != 'hold');
+                return ($current_bin !== 'hold');
             // Folder3 is Trash
             case 3:
-                return ($current_bin != 'trash');
+                return ($current_bin !== 'trash');
         }
 
         // should not be reached

@@ -121,19 +121,16 @@ class AA_Formrow_Field extends AA_Formrow {
 
     function getRowProperty(): AA_Property {
         $field  = $this->_getField();
-        $widget = $field->getWidget();
-        return $field->getAaProperty(['multiple'=>$widget::multiple()]);
+        $widget = $field?->getWidget();
+        return $field?->getAaProperty(['multiple'=>$widget::multiple()]);
     }
 
-    function getWidget()      {
-        $field  = $this->_getField();
-        return $field->getWidget();
+    function getWidget() {
+        return $this->_getField()?->getWidget();
     }
 
     private function _getField() {
-        $slice  = AA_Slice::getModule($this->slice_id);
-        $fields = $slice->getFields();
-        return $fields->getField($this->field_id);
+        return AA_Slice::getModule($this->slice_id)?->getFields()->getField($this->field_id);
     }
 
     /**
@@ -195,7 +192,7 @@ class FormrowWidget extends Widget {
         $base_name   = FormArray::getName4Form($aa_property->getId(), $content);
         $input_name  = $base_name ."[]";
         $base_id     = FormArray::formName2Id($base_name);
-        // $widget_add  = ($type == 'live') ? " class=\"live\" onchange=\"AA_SendWidgetLive('$base_id')\"" : '';
+        // $widget_add  = ($type === 'live') ? " class=\"live\" onchange=\"AA_SendWidgetLive('$base_id')\"" : '';
 
         $ser_values   = $content->getValuesArray($aa_property->getId());
         $arr          = [];
@@ -294,7 +291,7 @@ class AA_Form extends AA_Object implements \AA\Util\NamedInterface {
         $this->object_owner = $oowner;
     }
 
-    static public function factoryForm($otype, $oid, $oowner): AA_Form {
+    public static function factoryForm($otype, $oid, $oowner): AA_Form {
         $form = new AA_Form();
         $form->setObject($otype, $oid, $oowner);
         $otype::addFormrows($form);
@@ -307,9 +304,9 @@ class AA_Form extends AA_Object implements \AA\Util\NamedInterface {
             $managed = \AA\Managed::factoryFromType($this->object_type);
             $managed->save($this->object_owner);
             // @todo check permissions, validation, $store_mode state (see readFromForm)
-            return AA_Form::SAVED;
+            return self::SAVED;
         }
-        return AA_Form::PREPARED;
+        return self::PREPARED;
     }
 
     /**

@@ -340,7 +340,7 @@ function SliceEditProcess($slice_id, $user_firstname, $user_surname, $err, $add_
 
                 /* Added by Jakub on June 2002 to support Add slice Wizard */
                 // Copy constants
-                if ($wiz["constants"] == "copy") {
+                if ($wiz["constants"] === "copy") {
                     if (!CopyConstants($slice_id)) {
                         $err[] = _m("Error when copying constants.");
                     }

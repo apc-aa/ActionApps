@@ -375,7 +375,7 @@ class ConvertCharset {
         * For example, it will happen when you save the encoding table file with a wrong name
         *  - of another charset.
         **/
-        if ((func_num_args() > 1) && (count($ConvertTable[$FirstEncoding]) == count($ConvertTable[$SecondEncoding])) && (count(array_diff_assoc($ConvertTable[$FirstEncoding], $ConvertTable[$SecondEncoding])) == 0)) {
+        if ((func_num_args() > 1) && (count($ConvertTable[$FirstEncoding]) === count($ConvertTable[$SecondEncoding])) && !count(array_diff_assoc($ConvertTable[$FirstEncoding], $ConvertTable[$SecondEncoding]))) {
             print $this->DebugOutput(1, 1, "$FirstEncoding, $SecondEncoding");
         }
         return $ConvertTable;
@@ -461,7 +461,7 @@ class ConvertCharset {
         // replace all Windows-1250 accent characters with
         // their non-accent equivalents. Useful for Czech and Slovak languages.
         // Special approach, since Convert class do not do it by itself
-        if (($FromCharset == 'windows-1250') AND ($ToCharset == 'us-ascii')) {
+        if (($FromCharset === 'windows-1250') AND ($ToCharset === 'us-ascii')) {
             $ret = $StringToChange;
             $ret = strtr($ret, "\xE1\xE8\xEF\xEC\xE9\xED\xF2", "\x61\x63\x64\x65\x65\x69\x6E");
             $ret = strtr($ret, "\xF3\xF8\x9A\x9D\xF9\xFA\xFD\x9E\xF4\xBC\xBE", "\x6F\x72\x73\x74\x75\x75\x79\x7A\x6F\x4C\x6C");
@@ -472,7 +472,7 @@ class ConvertCharset {
 
         // replace all utf-8 accent characters with their non-accent equivalents
         // Special approach, since Convert class do not do it by itself
-        if (($FromCharset == 'utf-8') AND ($ToCharset == 'us-ascii')) {
+        if (($FromCharset === 'utf-8') AND ($ToCharset === 'us-ascii')) {
 
             // the strtr and the $table is workaround for systems with broken iconv (RHEL 4 with glibc 2.3.x), where iconv gives bad result just with questionmarks
             $table = [
@@ -491,7 +491,7 @@ class ConvertCharset {
         }
 
         /*
-        if (($FromCharset == $ToCharset) AND ($FromCharset == "utf-8")) {
+        if (($FromCharset == $ToCharset) AND ($FromCharset === "utf-8")) {
             print $this->DebugOutput(0, 4, $FromCharset);
             exit;
         }
@@ -503,87 +503,86 @@ class ConvertCharset {
          *
          * This is the first case. We are convertinf from 1byte chars...
          **/
-        if ($FromCharset != "utf-8") {
+        if ($FromCharset !== "utf-8") {
 
             // Now build table with both charsets for encoding change.
-                $CharsetTable = ($ToCharset != "utf-8") ? $this->MakeConvertTable($FromCharset, $ToCharset) : $this->MakeConvertTable($FromCharset);
-                /**
-                 * For each char in a string...
-                 **/
-                for ($i = 0, $fmax=strlen($StringToChange); $i < $fmax; $i++) {
+            $CharsetTable = ($ToCharset !== "utf-8") ? $this->MakeConvertTable($FromCharset, $ToCharset) : $this->MakeConvertTable($FromCharset);
+            /**
+             * For each char in a string...
+             **/
+            for ($i = 0, $fmax=strlen($StringToChange); $i < $fmax; $i++) {
 
-                    $UnicodeHexChar = "";
-                    $HexChar        = strtoupper(dechex(ord($StringToChange[$i])));
-                    // This is fix from Mario Klingemann, it prevents
-                    // droping chars below 16 because of missing leading 0 [zeros]
-                    if (strlen($HexChar)==1) $HexChar = "0".$HexChar;
-                    //end of fix by Mario Klingemann
-                    // This is quick fix of 10 chars in gsm0338
-                    // Thanks goes to Andrea Carpani who pointed on this problem
-                    // and solve it ;)
-                    if (($FromCharset == "gsm0338") && ($HexChar == '1B')) {
-                        $i++;
-                        $HexChar .= strtoupper(dechex(ord($StringToChange[$i])));
+                $UnicodeHexChar = "";
+                $HexChar        = strtoupper(dechex(ord($StringToChange[$i])));
+                // This is fix from Mario Klingemann, it prevents
+                // droping chars below 16 because of missing leading 0 [zeros]
+                if (strlen($HexChar)===1) {
+                    $HexChar = "0".$HexChar;
+                }
+                //end of fix by Mario Klingemann
+                // This is quick fix of 10 chars in gsm0338
+                // Thanks goes to Andrea Carpani who pointed on this problem
+                // and solve it ;)
+                if (($FromCharset === "gsm0338") && ($HexChar === '1B')) {
+                    $i++;
+                    $HexChar .= strtoupper(dechex(ord($StringToChange[$i])));
+                }
+                // end of workarround on 10 chars from gsm0338
+                if ($ToCharset !== "utf-8") {
+
+                    if (in_array($HexChar, $CharsetTable[$FromCharset])) {
+
+                        $UnicodeHexChar = array_search($HexChar, $CharsetTable[$FromCharset]);
+                        $UnicodeHexChars = explode("+",$UnicodeHexChar);
+                        foreach ($UnicodeHexChars as $UnicodeHexCharElementValue) {
+
+                            if (array_key_exists($UnicodeHexCharElementValue, $CharsetTable[$ToCharset])) {
+                                $NewString .= ($this->Entities == true) ? $this->UnicodeEntity($this->HexToUtf($UnicodeHexCharElementValue)) :
+                                    chr(hexdec($CharsetTable[$ToCharset][$UnicodeHexCharElementValue]));
+                            }  else {
+                                print $this->DebugOutput(0, 1, $StringToChange[$i]);
+                            }
+                        } //for ($UnicodeH...
                     }
-                    // end of workarround on 10 chars from gsm0338
-                    if ($ToCharset != "utf-8") {
-
-                        if (in_array($HexChar, $CharsetTable[$FromCharset])) {
-
-                            $UnicodeHexChar = array_search($HexChar, $CharsetTable[$FromCharset]);
-                            $UnicodeHexChars = explode("+",$UnicodeHexChar);
-                            for ($UnicodeHexCharElement = 0, $forcount = count($UnicodeHexChars); $UnicodeHexCharElement < $forcount; $UnicodeHexCharElement++) {
-
-                                if (array_key_exists($UnicodeHexChars[$UnicodeHexCharElement], $CharsetTable[$ToCharset])) {
-                                    $NewString .= ($this->Entities == true) ? $this->UnicodeEntity($this->HexToUtf($UnicodeHexChars[$UnicodeHexCharElement])) :
-                                                                              chr(hexdec($CharsetTable[$ToCharset][$UnicodeHexChars[$UnicodeHexCharElement]]));
-                                }  else {
-                                        print $this->DebugOutput(0, 1, $StringToChange[$i]);
-                                }
-                            } //for ($UnicodeH...
-                        }
-                        else {
-                            print $this->DebugOutput(0, 2,$StringToChange[$i]);
-                        }
-                    } else {
-                        if (in_array("$HexChar", $CharsetTable[$FromCharset])) {
-                            $UnicodeHexChar = array_search($HexChar, $CharsetTable[$FromCharset]);
-                            /**
-                         * Sometimes there are two or more utf-8 chars per one regular char.
-                             * Extream, example is polish old Mazovia encoding, where one char contains
-                             * two lettes 007a (z) and 0142 (l slash), we need to figure out how to
-                             * solve this problem.
-                             * The letters are merge with "plus" sign, there can be more than two chars.
-                             * In Mazowia we have 007A+0142, but sometimes it can look like this
-                             * 0x007A+0x0142+0x2034 (that string means nothing, it just shows the possibility...)
-                         **/
-                            $UnicodeHexChars = explode("+",$UnicodeHexChar);
-                            for ($UnicodeHexCharElement = 0, $unimax=count($UnicodeHexChars); $UnicodeHexCharElement < $unimax; $UnicodeHexCharElement++) {
-                                $NewString .= ($this->Entities == true) ? $this->UnicodeEntity($this->HexToUtf($UnicodeHexChars[$UnicodeHexCharElement])) : $this->HexToUtf($UnicodeHexChars[$UnicodeHexCharElement]);
-                            } // for
-                        }
-                        else {
-                            print $this->DebugOutput(0, 2, $StringToChange[$i]);
-                        }
+                    else {
+                        print $this->DebugOutput(0, 2,$StringToChange[$i]);
+                    }
+                } elseif (in_array($HexChar, $CharsetTable[$FromCharset])) {
+                    $UnicodeHexChar = array_search($HexChar, $CharsetTable[$FromCharset]);
+                    /**
+                     * Sometimes there are two or more utf-8 chars per one regular char.
+                     * Extream, example is polish old Mazovia encoding, where one char contains
+                     * two lettes 007a (z) and 0142 (l slash), we need to figure out how to
+                     * solve this problem.
+                     * The letters are merge with "plus" sign, there can be more than two chars.
+                     * In Mazowia we have 007A+0142, but sometimes it can look like this
+                     * 0x007A+0x0142+0x2034 (that string means nothing, it just shows the possibility...)
+                     **/
+                    $UnicodeHexChars = explode("+",$UnicodeHexChar);
+                    foreach ($UnicodeHexChars as $UnicodeHexCharElementValue) {
+                        $NewString .= ($this->Entities == true) ? $this->UnicodeEntity($this->HexToUtf($UnicodeHexCharElementValue)) : $this->HexToUtf($UnicodeHexCharElementValue);
                     }
                 }
+                else {
+                    print $this->DebugOutput(0, 2, $StringToChange[$i]);
+                }
+            }
         }
 
         /**
          * This is second case. We are encoding from multibyte char string.
          **/
-        elseif ($FromCharset == "utf-8") {
+        elseif ($FromCharset === "utf-8") {
 
             $CharsetTable = $this->MakeConvertTable($ToCharset);
             foreach ($CharsetTable[$ToCharset] as $UnicodeHexChar => $HexChar) {
-
-                    $EntitieOrChar = ($this->Entities == true) ? $this->UnicodeEntity($this->HexToUtf($UnicodeHexChar)) : chr(hexdec($HexChar));
-                    $StringToChange = str_replace($this->HexToUtf($UnicodeHexChar), $EntitieOrChar, $StringToChange);
+                $EntitieOrChar = ($this->Entities == true) ? $this->UnicodeEntity($this->HexToUtf($UnicodeHexChar)) : chr(hexdec($HexChar));
+                $StringToChange = str_replace($this->HexToUtf($UnicodeHexChar), $EntitieOrChar, $StringToChange);
             }
             $NewString = $StringToChange;
         }
 
-    return $NewString;
+        return $NewString;
     }
 
     /**

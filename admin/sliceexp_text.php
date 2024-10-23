@@ -83,13 +83,13 @@ class AA_Slice_Exporter {
         // but add them in sliceimp.php too!
         $slice["owner"] = unpack_id($slice["owner"]);
 
-        if ($this->type != 'backup') {
-            if (strlen($new_slice_id) != 16) {
+        if ($this->type !== 'backup') {
+            if (strlen($new_slice_id) !== 16) {
                 MsgPage(_m("Wrong slice ID length: ") . strlen($new_slice_id));
                 exit;
-            } else {
-                $uid = unpack_id($new_slice_id);
             }
+
+            $uid = unpack_id($new_slice_id);
         }
 
         $slice["id"] = $uid;
@@ -149,7 +149,7 @@ class AA_Slice_Exporter {
             $conds="";
         }
         $zids=QueryZids([$slobj->getId()], $conds, "", "ALL");
-        if ($zids->count() == 0) {
+        if (!$zids->count()) {
             if ($this->spec_date) {
                 fwrite($temp_file, "<comment>\nThere are no data in selected days (from ".$this->from_date." to ".$this->to_date.").\n</comment>\n");
             } else {
@@ -157,10 +157,9 @@ class AA_Slice_Exporter {
             }
         } else {
             $item_ids   = $zids->longids();
-            $item_count = count($item_ids);
-            for ($i=0; $i<$item_count; $i++) {
-                $content = GetItemContent($item_ids[$i]);
-                fwrite($temp_file, "<data item_id=\"$item_ids[$i]\" gzip=\"".$this->gzip."\">\n" . $this->encode($content, 'item'). "\n</data>\n");
+            foreach ($item_ids as $iValue) {
+                $content = GetItemContent($iValue);
+                fwrite($temp_file, "<data item_id=\"$iValue\" gzip=\"".$this->gzip."\">\n" . $this->encode($content, 'item'). "\n</data>\n");
             }
         }
     }
@@ -181,14 +180,14 @@ class AA_Slice_Exporter {
             exit;
         }
 
-        if ($this->type != 'backup') {
+        if ($this->type !== 'backup') {
             unset($export_slices);
             $export_slices = [$slice_id];
         }
 
         fwrite($temp_file, "<sliceexport version=\"1.1\">\n");
         fwrite($temp_file, "<comment>\nThis text contains exported slices definitions (and/or slices data). You may import them to any ActionApps.\n");
-        if ($this->type != 'backup') {
+        if ($this->type !== 'backup') {
             fwrite($temp_file, "This text is exported slice data for use in another ActionApps installation (new slice_id)\n");
         } else {
             fwrite($temp_file, "This text is backed up slice data with the same slice_id as is in the source slice\n");
@@ -206,17 +205,17 @@ class AA_Slice_Exporter {
             $slobj = AA_Slice::getModule($sid);
             $this->prepareEncoder($slobj->getCharset());
 
-            if ($this->type != 'backup') {
-                if (strlen($new_slice_id) != 16) {
+            if ($this->type !== 'backup') {
+                if (strlen($new_slice_id) !== 16) {
                     MsgPage(_m("Wrong slice ID length:") . strlen($new_slice_id));
                     exit;
-                } else {
-                    $new_slice_idunpack = unpack_id($new_slice_id);
                 }
+
+                $new_slice_idunpack = unpack_id($new_slice_id);
             }
 
             fwrite($temp_file, "<slice id=\"");
-            fwrite($temp_file, ($this->type != 'backup' ? $new_slice_idunpack : $slobj->getId()));
+            fwrite($temp_file, ($this->type !== 'backup' ? $new_slice_idunpack : $slobj->getId()));
             fwrite($temp_file, "\" name=\"".safe($slobj->getName())."\">\n");
 
             if ($this->struct) {

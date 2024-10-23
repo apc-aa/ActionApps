@@ -120,7 +120,7 @@ class datectrl {
         if (!$date) {
             $d = ['year' => 0, 'mon' => 1, 'mday' => 1, 'hours' => 0, 'minutes' => 0, 'seconds' => 0];
         } else {
-            $d = datectrl::isTimestamp($date) ? getdate($date) : getdate();
+            $d = $this->isTimestamp($date) ? getdate($date) : getdate();
         }
         $this->year  = $d["year"];
         $this->month = $d["mon"];
@@ -181,7 +181,7 @@ class datectrl {
         if ($default) {
             $this->setdate_int($default);
         }
-        return (( $this->get_date() > 0  ) OR ($this->get_date()==-3600));
+        return (( $this->get_date() > 0  ) OR ($this->get_date() === -3600));
     }
 
 
@@ -275,7 +275,7 @@ class datectrl {
 
         switch( $this->display_time ) {
             case 1: $time_string = sprintf("%d:%02d",$t[0], $t[1]);
-                    if ($time_string == "0:00") {
+                    if ($time_string === "0:00") {
                         $time_string = '';
                     }
                     break;

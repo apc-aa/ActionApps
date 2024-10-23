@@ -139,7 +139,7 @@ class FilWidget extends Widget
             $input_value = safe($value->getValue($i));
             $link        = $input_value ? a_href($input_value, GetAAImage('external-link.png', _m('Show').' '.$input_value, 16, 16),['class'=>'aa-fil-link']) : '';
             $widget     .= "\n<div class=aa-fil-file>";
-            if (($display_url < 2) AND ($type == 'normal')) {
+            if (($display_url < 2) AND ($type === 'normal')) {
                 $widget .= "<input type=\"text\" class=aa-w-full maxlength=\"$max_characters\" name=\"$input_name\" id=\"$input_id\" value=\"$input_value\"$widget_add> $link";
             } else {
                 $widget .= "<input type=\"hidden\" name=\"$input_name\" id=\"$input_id\" value=\"$input_value\">$link";
@@ -154,7 +154,7 @@ class FilWidget extends Widget
             $widget .= "\n<input type=\"hidden\" name=\"$input_name\" id=\"$input_id\" value=\"1\">";
         }
 
-//        if ($_GET['dd']=='wer') {
+//        if ($_GET['dd']==='wer') {
 //            huhl($display_url, $widget, $value, $value->count(), $content, $this);
 //        }
         // no input was printed, we need to print one
@@ -169,7 +169,7 @@ class FilWidget extends Widget
         //$input_name = "testfileupload";
         $accept  = $allowed_ftypes ? "accept=\"$allowed_ftypes\"" : '';
 
-        if ($type == 'normal') {
+        if ($type === 'normal') {
             $required = ($aa_property->isRequired() AND !$value->count() AND ($display_url > 0)) ? 'required' : '';
             $widget .= "    <br><input type=file class=filepond size=\"$width\"$multiple maxlength=\"$max_characters\" name=\"$input_name\" id=\"$input_id\" $required $accept><!--$type -->";
         } else {

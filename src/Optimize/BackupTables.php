@@ -36,7 +36,7 @@ class BackupTables extends \AA\Optimize\AbstractOptimize {
         $tablenames = $metabase->getTableNames();
 
         foreach ($tablenames as $tablename) {
-            if (substr($tablename, 0, 4) == 'bck_') {
+            if (str_starts_with($tablename, 'bck_')) {
                 continue;
             }
 

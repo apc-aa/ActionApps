@@ -100,7 +100,7 @@ function store_vars() {
     AA::Metabase()->doInsert('post2shtml', ['id'=>$id,'vars'=>serialize($vars),'time'=>time()]);
     if ($shtml_page) {
         $shtml_page  = stripslashes($shtml_page);
-        $shtml_page .= (strchr ($shtml_page,"?") ? "&" : "?") . "post2shtml_id=$id";
+        $shtml_page .= (str_contains($shtml_page, "?") ? "&" : "?") . "post2shtml_id=$id";
         header("HTTP/1.1 Status: 302 Moved Temporarily");
         header("Status: 302 Moved Temporarily");
         header("Location: $shtml_page");

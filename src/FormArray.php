@@ -59,7 +59,7 @@ class FormArray
      * @return string
      * @throws Exception
      */
-    static public function getName4Form($property_id, $content, $item_index = 1)
+    public static function getName4Form($property_id, $content, $item_index = 1)
     {
         $form_field_id = AA_Fields::getVarFromFieldId($property_id);   // post_date......1  ==>  post_date______1
 
@@ -81,12 +81,12 @@ class FormArray
      * @param bool $universal normally we use dash as word separator, but for universal id we use underscore (usable also in JS variable)
      * @return array|string|string[]
      */
-    static public function formName2Id($name, bool $universal= false ) {
+    public static function formName2Id($name, bool $universal= false ) {
         return str_replace([']', '['], ['', $universal ? '_' : '-'], $name);
     }
 
     /** returns array(item_id,field_id) from name of variable used on AA form */
-    static public function parseId4Form($input_name)
+    public static function parseId4Form($input_name)
     {
         // aa[u<item_id>][<field_id>][]
         $parsed = explode(']', $input_name);
@@ -95,7 +95,7 @@ class FormArray
         return [$item_id, $field_id];
     }
 
-    static public function getCharset($aa)
+    public static function getCharset($aa)
     {
         $module_id = self::getOwner($aa);
         if (!$module_id) {
@@ -105,18 +105,18 @@ class FormArray
         return $slice->getCharset();
     }
 
-    static public function getOwner($aa)
+    public static function getOwner($aa)
     {
         if (!is_array($aa)) {
             return false;
         }
         foreach ($aa as $key => $foo) {
-            if ($key[0] == 'n') return substr($key, strpos($key, '_') + 1);
+            if ($key[0] === 'n') return substr($key, strpos($key, '_') + 1);
         }
 
         $item_id = false;
         foreach ($aa as $key => $foo) {
-            if (($key[0] == 'u') OR ($key[0] == 'i')) {
+            if (($key[0] === 'u') OR ($key[0] === 'i')) {
                 $item_id = substr($key, 1);
                 break;
             }

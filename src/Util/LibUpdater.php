@@ -9,7 +9,7 @@ class LibUpdater {
         $defs  = \AA_Requires::systemDefinitions();
         foreach ($defs as $name => $req) {
             $pad_name = str_pad("'$name'",29);
-            if ( strpos($url = $req->getUrl(),'cdn.jsdelivr.net') === false ) {
+            if (!str_contains($url = $req->getUrl(), 'cdn.jsdelivr.net')) {
                 $msg[$name]     = "$name - <span style='color:darkred'>untested - non jsdelivr</span> ($url)";
                 $newdefs[$name] =  "$pad_name => new ". $req->getConstructor().',';
                 continue;
@@ -55,6 +55,6 @@ class LibUpdater {
                 }
             }
         }
-        return join('<br>',$msg). '<br><br><small></small><pre>'. join('<br>',$newdefs).'</pre></small>';
+        return implode('<br>',$msg). '<br><br><small></small><pre>'. implode('<br>',$newdefs).'</pre></small>';
     }
 }

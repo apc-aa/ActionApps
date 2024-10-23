@@ -148,7 +148,7 @@ class itemview {
    * returns true, if view have to show random item (weighted or not)
    */
   function is_random() {
-      return (substr($this->from_record, 0, 6) == 'random');
+      return (str_starts_with($this->from_record, 'random'));
   }
 
     /** get_output_cached function
@@ -256,7 +256,7 @@ class itemview {
       if ($d_tree) {    // if not empty tree
           $CurItem->setformat( $this->slice_info['d_compact']);
 
-          if ($this->slice_info['d_showimages'] || $this->slice_info['d_order'] == 'thread') {
+          if ($this->slice_info['d_showimages'] || $this->slice_info['d_order'] === 'thread') {
               // show discussion in the thread mode
               GetDiscussionThread($d_tree, "0", 0, $outcome);
               if ( $outcome ) {
@@ -462,7 +462,7 @@ class itemview {
      * @return string
      */
   function get_output($view_type=""): string {
-    if ($view_type == "discussion") {
+    if ($view_type === "discussion") {
       $CurItem = new AA_Item("", $this->aliases);   // just prepare
       $CurItem->set_parameters($this->parameters);
       return match ($this->disc['type']) {
@@ -485,11 +485,11 @@ class itemview {
     if ( !$is_random ) {
         if ( $this->group_fld AND ($grp_al = AA_Alias::isAliasLike($this->group_fld, true)) ) {
             $this->group_fld = $grp_al;   // replaces possible ABCDEFGH alias with _#ABCDEFGH
-            $this->zids = new zids(explode_ids(StrExp('order', [join('-',$this->zids->short_or_longids()), $this->group_fld, 'locale'])));
+            $this->zids = new zids(explode_ids(StrExp('order', [implode('-',$this->zids->short_or_longids()), $this->group_fld, 'locale'])));
         }
-        elseif ((strlen($this->slice_info['group_by2'])==10) AND (substr($this->slice_info['group_by2'],0,2)=='_#')) {
+        elseif ((strlen($this->slice_info['group_by2'])===10) && (str_starts_with($this->slice_info['group_by2'], '_#'))) {
             define('SORT_CONST', ['0' => 'locale', '1' => 'rlocale', '4' => 'numeric', '5' => 'rnumeric']);
-            $this->zids = new zids(explode_ids(StrExp('order', [join('-',$this->zids->short_or_longids()), $this->slice_info['group_by2'], SORT_CONST[(int)$this->slice_info['g2_direction']]])));
+            $this->zids = new zids(explode_ids(StrExp('order', [implode('-',$this->zids->short_or_longids()), $this->slice_info['group_by2'], SORT_CONST[(int)$this->slice_info['g2_direction']]])));
         }
         $foo_zids = $this->zids->slice($real_from, ( ($this->num_records < 0) ? MAX_NO_OF_ITEMS_4_GROUP :  $this->num_records ));
     } else { // Selecting random record
@@ -499,8 +499,9 @@ class itemview {
         // not weighted, we can select random id(s)
         for ( $i=0; $i<$this->num_records; $i++) {
           $sel = mt_rand( 0, $this->zids->count() - 1) ;
-          if ( $this->zids->id($sel) )
-            $foo_ids[] = $this->zids->id($sel);
+          if ( $this->zids->id($sel) ) {
+              $foo_ids[] = $this->zids->id($sel);
+          }
         }
         $foo_zids = new zids($foo_ids, $this->zids->onetype());
         $this->zids = $foo_zids;  // Set zids so can index into it
@@ -862,7 +863,7 @@ class itemview {
 
         $out = $this->unaliasWithScroller($this->resolve_calendar_aliases($this->slice_info['compact_top']), $CurItem);
 
-        if ($this->slice_info['calendar_type'] == 'mon_table') {
+        if ($this->slice_info['calendar_type'] === 'mon_table') {
             for ($cell = 7 - $firstday; $cell <= $max_cell; $cell += $row_len) {
                 for ($ievent = 0; $ievent < $max_events; ++$ievent)
                     if ($calendar[$cell][$ievent]["iid"]) {

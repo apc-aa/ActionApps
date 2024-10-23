@@ -139,7 +139,7 @@ function AafinderItemLink($item_id, $slice_id='', $no_module_link=false): string
     }
     $info[] = ChangesMonitor::getHistoryLink($item_id);
     $info[] = a_href(get_admin_url('se_statistics.php', ['change_id'=>$slice_id, 'items'=>$item_id]), _m('Statistics'));
-    return join(' | ', $info);
+    return implode(' | ', $info);
 }
 
 function AafinderModuleeLink($module_id): string {
@@ -152,7 +152,7 @@ function AafinderSiteLink($spot_id, $module_id): string {
     } else {
         $spot_code = "??? $spot_id";
     }
-    return a_href(get_aa_url("modules/site/index.php?slice_id=$module_id&module_id=$module_id&spot_id=$spot_id&go_sid=$spot_id"), $spot_code).' &nbsp; '. ChangesMonitor::getHistoryLink("S.$spot_id");
+        return a_href(get_aa_url("modules/site/index.php", ['slice_id'=>$module_id, 'module_id'=>$module_id, 'spot_id'=>$spot_id, 'go_sid'=>$spot_id]), $spot_code).' &nbsp; '. ChangesMonitor::getHistoryLink("S.$spot_id");
 }
 
 function AafinderViewLink($view_id): string {
@@ -224,8 +224,8 @@ function PrintItemInfo($item_id) {
     echo "<br>Item ID: ".AafinderItemLink($long_id,$sid);
     $format = '_#HEADLINE';
     echo "<br>_#HEADLINE: ". $item->unalias($format);
-    echo "<br>Fed to: ".     join(', ', WhereFed($item->getItemID()));
-    echo "<br>Fed from: ".   join(', ', FromFed($item->getItemID()));
+    echo "<br>Fed to: ".     implode(', ', WhereFed($item->getItemID()));
+    echo "<br>Fed from: ".   implode(', ', FromFed($item->getItemID()));
 
     $long_id = $zid->longids(0);
     if ($long_id) {
@@ -243,7 +243,7 @@ function PrintItemInfo($item_id) {
         $slice = AA_Slice::getModule($sid);
 
         if ($res = DB_AA::select([], "SELECT '' as FieldName, `field_id`, `number`,`text`, `flag` FROM `content`", [['item_id',$long_id, 'l']])) {              // empty FieldName - will be filled later
-            array_walk($res, function (&$v, $k) use ($slice) {
+            array_walk($res, static function (&$v, $k) use ($slice) {
                 $v['FieldName'] =  ($f=$slice->getField($v['field_id'])) ? $f->getName() : '-- invalid --';
                 if (is_long_id($v['text']) and ($hdln = AA::Un("{item:$v[text]:_#HEADLINE}"))) {
                     $v['text'] .= "<br><small>($hdln)</small>";
@@ -257,7 +257,7 @@ function PrintItemInfo($item_id) {
         echo 'show '. ChangesMonitor::getHistoryLink($item_id);
 
         if ($res = DB_AA::select([], "SELECT LOWER(HEX(`item_id`)) as Item, '' as Status, '' as PubDate, '' as ExpDate, '' as LastEdit, '' as FieldName, `field_id`, `number`,`text`, `flag` FROM `content`", [['text',$long_id]])) {
-            array_walk($res, function (&$v, $k) {
+            array_walk($res, static function (&$v, $k) {
                 if (is_long_id($iid = $v['Item'])) {
                     $item = AA_Items::getItem(new zids($iid, 'l'));
                     $v['Item'] .= ' / ' . AA_Module::getModuleName($item->getSliceID());
@@ -364,7 +364,7 @@ if (strlen($findtext)) {
 
         $SQL = "SELECT `view`.`id`, `view`.`type`, `view`.`slice_id`, `slice`.`name` FROM `view` INNER JOIN `slice` ON `view`.`slice_id` = `slice`.`id` WHERE "; 
         foreach ($fields as $field) {
-            $SQL .= "(`view`.`$field` LIKE \"%". addcslashes(quote($findtext),'_%')."%\") OR ";
+            $SQL .= "(`view`.`$field` LIKE '%". addcslashes(quote($findtext),'_%')."%') OR ";
         }
         $SQL .= "0";
         $db->query($SQL);
@@ -400,7 +400,7 @@ if (strlen($findtext)) {
 
         $SQL = 'SELECT slice.name, slice.id FROM slice LEFT JOIN email_notify ON email_notify.slice_id = slice.id WHERE ';
         foreach ($fields as $field) {
-            $SQL .= "$field LIKE \"%". addcslashes(quote($findtext),'_%') ."%\" OR ";
+            $SQL .= "$field LIKE '%". addcslashes(quote($findtext),'_%') ."%' OR ";
         }
         $SQL .= "0";
         $db->query($SQL);
@@ -444,9 +444,9 @@ if (strlen($findtext)) {
 
         $SQL = "SELECT slice_id, id, name FROM field WHERE ";
         foreach ($fields as $field) {
-            $SQL .= "$field LIKE \"%". addcslashes(quote($findtext),'_%') ."%\" OR ";
+            $SQL .= "$field LIKE '%". addcslashes(quote($findtext),'_%') ."%' OR ";
         }
-        $SQL .= "0";
+        $SQL .= '0';
         $db->query($SQL);
         echo "<b>fields</b> <small>(".$db->num_rows()." matching found)</small><br>";
         while ($db->next_record()) {
@@ -464,7 +464,7 @@ if (strlen($findtext)) {
 
         $SQL = "SELECT site_id, spot_id FROM site_spot WHERE ";
         foreach ($fields as $field) {
-            $SQL .= "$field LIKE \"%$like_text%\" OR ";
+            $SQL .= "$field LIKE '%$like_text%' OR ";
         }
         $SQL .= "0";
         $db->query($SQL);
@@ -507,7 +507,7 @@ if (strlen($findtext)) {
 
         $SQL = "SELECT slice_id, discussion.* FROM discussion, item WHERE discussion.item_id = item.id AND (";
         foreach ($fields as $field) {
-            $SQL .= "discussion.$field LIKE \"%". addcslashes(quote($findtext),'_%') ."%\" OR ";
+            $SQL .= "discussion.$field LIKE '%". addcslashes(quote($findtext),'_%') ."%' OR ";
         }
         $SQL .= "0) ORDER BY date";
         $db->query($SQL);
@@ -515,7 +515,7 @@ if (strlen($findtext)) {
         $head = '';
         while ($db->next_record()) {
             if (!$head) {
-                echo ($head = '<table><tr><td>'. join('</td><td>', array_keys($db->record())).'</td></tr>');
+                echo ($head = '<table><tr><td>'. implode('</td><td>', array_keys($db->record())).'</td></tr>');
             }
             $print = $db->record();
             $print['slice_id'] = unpack_id($print['slice_id']);
@@ -523,7 +523,7 @@ if (strlen($findtext)) {
             $print['parent']  = unpack_id($print['parent']);
             $print['item_id'] = AafinderItemLink(unpack_id($print['item_id']), $print['slice_id']);
             $print['date'] = date('Y-m-d H:i:s', (int)$print['date']);
-            echo '<tr><td>'. join('</td><td>', $print).'</td></tr>';
+            echo '<tr><td>'. implode('</td><td>', $print).'</td></tr>';
         }
         echo '</table>';
         echo '<br><br>';
@@ -598,7 +598,7 @@ if ( strlen($go_search) OR strlen($go_replace) ) {
 
         echo '<table>';
         foreach ($table2search as $tbl => $tblinfo) {
-            $fields = array_keys(array_filter($metabase->getSearchArray($tbl), fn($col) => ($col['operators'] == 'text')));
+            $fields = array_keys(array_filter($metabase->getSearchArray($tbl), static fn($col) => ($col['operators'] === 'text')));
             $fields = array_diff($fields, array_merge(AA_Metabase::getPacked($tbl), [AA_Metabase::getModuleField($tbl)]));
 
             // huhl($metabase->getSearchArray($tbl),AA_Metabase::getPacked($tbl),AA_Metabase::getModuleField($tbl), );

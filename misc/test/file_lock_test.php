@@ -3,12 +3,12 @@
 
 require_once __DIR__ . "/../../include/file_lock.php";
 
-$lock = new FileLock ("file_lock");
+$lock = new FileLock("file_lock");
 for ($i=1; $i < 1000; $i++) {
     $lock->lock();
     $fd = fopen ("output.txt", "a");
-    fputs ($fd, $i."\n");
-    fclose ($fd);
+    fwrite($fd, $i."\n");
+    fclose($fd);
     $lock->unlock();
     // to produce some pause
     for ($j=1; $j < 100000; $j++);

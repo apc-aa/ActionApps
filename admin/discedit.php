@@ -64,7 +64,7 @@ $zids     = QueryDiscussionZIDs($item_id);
 $dcontent = GetDiscussionContent($zids, false);
 $tree     = GetDiscussionTree($dcontent);
 
-if ($mode == "hide" || $mode=="delete" || $mode=="deleteall" || $mode=="deleteshown") {
+if ($mode === "hide" || $mode==="delete" || $mode==="deleteall" || $mode==="deleteshown") {
     switch ($mode) {
         case "hide" :
             $h = ( $h ? 1 : 0 );

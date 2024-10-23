@@ -204,7 +204,7 @@ class image_gd extends image {
 
     protected function getImage($image, &$width, &$height) {
 
-        if (is_resource($image) && (get_resource_type($image) == "gd")) {
+        if (is_resource($image) && (get_resource_type($image) === "gd")) {
             $width = @imagesx($image);
             $height = @imagesy($image);
             imagealphablending($image, false);

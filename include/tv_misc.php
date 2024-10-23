@@ -43,13 +43,13 @@ function GetMiscTableView($viewID) {
 
     $p_slice_id = q_pack_id($slice_id);
 
-    if ($viewID == "email_edit") {
+    if ($viewID === "email_edit") {
         $tableview = GetEmailTableView($viewID);
         $tableview["mainmenu"] = "sliceadmin";
         return $tableview;
     }
 
-    if ($viewID == "email") {
+    if ($viewID === "email") {
         $tableview = GetEmailTableView($viewID);
         $tableview["mainmenu"] = "sliceadmin";
         $tableview["submenu"] = "te_emails";
@@ -60,7 +60,7 @@ function GetMiscTableView($viewID) {
     /* ------------------------------------------------------------------------------------
        wt -- browse wizard templates
     */
-    if ($viewID == "wt") {
+    if ($viewID === "wt") {
         return  [
         "table" => "wizard_template",
         "type" => "browse",
@@ -88,7 +88,7 @@ function GetMiscTableView($viewID) {
     /* ------------------------------------------------------------------------------------
        cron
     */
-//    if ($viewID == "cron") {
+//    if ($viewID === "cron") {
 //        $doc_url = "https://apc-aa.sourceforge.net/faq/#cron";
 //        $run_url = get_aa_url('cron.php','',false);
 //        return  [
@@ -122,7 +122,7 @@ function GetMiscTableView($viewID) {
     /* ------------------------------------------------------------------------------------
        log
     */
-    if ($viewID == "log") {
+    if ($viewID === "log") {
         return  [
         "table"     => "log",
         "type"      => "browse",
@@ -152,7 +152,7 @@ function GetMiscTableView($viewID) {
     /* ------------------------------------------------------------------------------------
        searchlog
     */
-    if ($viewID == "searchlog") {
+    if ($viewID === "searchlog") {
         $doc_url = 'https://actionapps.org/faq/detail.shtml?x=1767';
         return  [
         "table"     => "searchlog",
@@ -185,7 +185,7 @@ function GetMiscTableView($viewID) {
     /* ------------------------------------------------------------------------------------
        fields
     */
-    if ($viewID == "fields") {
+    if ($viewID === "fields") {
         return  [
         "table" => "field",
         "type" => "browse",

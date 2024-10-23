@@ -79,13 +79,11 @@ class ObjectForm extends AbstractGrabber
      * @see also getIdMode() method
      */
     function getStoreMode() {
-        switch ($this->_last_store_mode) {
-            case 'add':
-                return 'add';
-            case 'update':
-                return 'update';
-        }
-        return 'insert';
+        return match ($this->_last_store_mode) {
+            'add'    => 'add',
+            'update' => 'update',
+            default  => 'insert',
+        };
     }
 
     /** Method called by the AA\IO\Saver to get next object from the data input */
@@ -120,7 +118,7 @@ class ObjectForm extends AbstractGrabber
         // You can use _#n1_623553373823736362372726 as value, which stands for
         // object id of the object
         foreach ($aa as $dirty_obj_id => $obj_fields) {
-            if ($dirty_obj_id[0] == 'n') {
+            if ($dirty_obj_id[0] === 'n') {
                 $id_trans_table['_#' . $dirty_obj_id] = new_id();
             }
         }
@@ -130,11 +128,11 @@ class ObjectForm extends AbstractGrabber
         foreach ($aa as $dirty_obj_id => $obj_fields) {
 
             // common fields
-            if ($dirty_obj_id == 'all') {
+            if ($dirty_obj_id === 'all') {
                 continue;
             }
 
-            $ident = ObjectForm::_parseDirtyId($dirty_obj_id, $id_trans_table);
+            $ident = self::_parseDirtyId($dirty_obj_id, $id_trans_table);
 
             $id_trans_table[$dirty_obj_id] = $ident['id'];
 

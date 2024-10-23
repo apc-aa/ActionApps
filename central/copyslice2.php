@@ -63,7 +63,7 @@ if ($_POST['copy']) {
                 if ($sid) {
                     // plan the synchronization action to for execution via Task Manager
                     $module_def     = $template_slice_defs[$sid];
-                    $no_sync_tasks += ($dest_aa == 'thisAA') ? $module_def->moduleImport($changed_ids) : $module_def->planModuleImport($aas[$dest_aa], $changed_ids);
+                    $no_sync_tasks += ($dest_aa === 'thisAA') ? $module_def->moduleImport($changed_ids) : $module_def->planModuleImport($aas[$dest_aa], $changed_ids);
                 }
             }
         }
@@ -71,7 +71,7 @@ if ($_POST['copy']) {
             foreach ($_POST['sync_sites'] as $sid) {
                 if ($sid) {
                     $module_def     = $template_site_defs[$sid];
-                    $no_sync_tasks += ($dest_aa == 'thisAA') ? $module_def->moduleImport($changed_ids) : $module_def->planModuleImport($aas[$dest_aa], $changed_ids);
+                    $no_sync_tasks += ($dest_aa === 'thisAA') ? $module_def->moduleImport($changed_ids) : $module_def->planModuleImport($aas[$dest_aa], $changed_ids);
                 }
             }
         }
@@ -79,7 +79,7 @@ if ($_POST['copy']) {
             foreach ($_POST['sync_alerts'] as $aid) {
                 if ($aid) {
                     $module_def     = $template_alerts_defs[$aid];
-                    $no_sync_tasks += ($dest_aa == 'thisAA') ? $module_def->moduleImport($changed_ids) : $module_def->planModuleImport($aas[$dest_aa], $changed_ids);
+                    $no_sync_tasks += ($dest_aa === 'thisAA') ? $module_def->moduleImport($changed_ids) : $module_def->planModuleImport($aas[$dest_aa], $changed_ids);
                 }
             }
         }

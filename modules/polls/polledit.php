@@ -186,7 +186,7 @@ if ($insert  || $update ) {
 $apage = new AA_Adminpageutil('pollsmanager', 'main');
 $apage->setModuleMenu('modules/polls');
 $apage->setTitle($poll_id ? _m("Edit poll") : _m("Add poll"));
-$apage->addRequire(get_aa_url('javascript/inputform.min.js?v='.AA_JS_VERSION ));
+$apage->addRequire(get_aa_url('javascript/inputform.min.js', ['v'=>AA_JS_VERSION] ));
 $apage->setForm();
 $apage->printHead($err, $Msg);
 

@@ -74,7 +74,7 @@ function translate_files($old_lang_file, $src_dir, $dst_dir) {
         foreach ($content as $row) {
             for (reset($consts); $name = key($consts); next($consts)) {
                 // first try the quick search
-                if (strstr($row, $name)) {
+                if (str_contains($row, $name)) {
                     // now replace only when it is not a part of a longer name
                     $row = preg_replace("'([^A-Z0-9_$])".$name."([^A-Z0-9_])'si", "\\1".$consts[$name]."\\2", $row);
                 }

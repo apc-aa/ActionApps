@@ -15,7 +15,7 @@
 namespace kcfinder;
 require "core/autoload.php";
 
-if (!isset($_GET['lng']) || ($_GET['lng'] == 'en') ||
+if (!isset($_GET['lng']) || ($_GET['lng'] === 'en') ||
     ($_GET['lng'] != basename($_GET['lng'])) ||
     !is_file("lang/" . $_GET['lng'] . ".php")
 ) {

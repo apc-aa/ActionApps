@@ -56,7 +56,7 @@ class RequestMonitor
             $detail = ''; //safe(var_export($type));
             $code   = "";
             foreach ($type as $t => $vars) {
-                if (($t != 'P') AND ($t != 'G')) {  // just for POST and GET
+                if (($t !== 'P') AND ($t !== 'G')) {  // just for POST and GET
                     continue;
                 }
                 $detail .= "<h4>$t</h4>";
@@ -76,7 +76,7 @@ class RequestMonitor
                     $table[$name]['valsub'][] = $vartype['sub'];
                     $table[$name]['valempty'][] = $vartype['empty'];
                     $table[$name]['valreq'][] = $vartype['req'];
-                    $table[$name]['vals'][] = join('|', $vals);
+                    $table[$name]['vals'][] = implode('|', $vals);
                     $table[$name]['valsum'][] = var_export(array_count_values(array_map( fn ($str) => ((is_string($str) AND (strlen($str)) > 12) ? substr($str,0,11).'…' : $str), $vals)), true);
                 }
             }
@@ -84,13 +84,13 @@ class RequestMonitor
             foreach ($table as $name => $def) {
                 $ftype = array_keys($def['type']);
                 sort($ftype);
-                $ftype = join('',$ftype);
-                $sum   = safe(join('-',$def['valsum']));
-                $com   = join(', ',array_filter([join('-',$def['valsub']), ((join('-',$def['valempty'])=='1') ? 'empty' :'')]));
-                $f     = "// $sum<br>  &nbsp;   &nbsp;\$$name = InputVars::".join('-',array_unique($def['valmain'])) ."$ftype('$name'". ((join('-',$def['valreq'])=='1') ? ', true' :'') .");". ($com ? "     // $com" : '');
+                $ftype = implode('',$ftype);
+                $sum   = safe(implode('-', $def['valsum']));
+                $com   = implode(', ',array_filter([implode('-', $def['valsub']), ((implode('-', $def['valempty'])=='1') ? 'empty' :'')]));
+                $f     = "// $sum<br>  &nbsp;   &nbsp;\$$name = InputVars::".implode('-',array_unique($def['valmain'])) ."$ftype('$name'". ((implode('-', $def['valreq'])=='1') ? ', true' :'') .");". ($com ? "     // $com" : '');
                 $code .= "<br>  &nbsp;   &nbsp;$f";
                 $detail  .= "<br><b>$f</b>";
-                $detail  .= "<br><small><em>".safe(join('|',$def['vals']))."$sum</em></small>";
+                $detail  .= "<br><small><em>".safe(implode('|', $def['vals']))."$sum</em></small>";
             }
             $code .= '<br>  &nbsp;   &nbsp;$cancel = InputVars::boolPOST(\'cancel\');';
             $code .= '<br>  &nbsp;   &nbsp;$Msg = InputVars::stringGETPOST(\'Msg\');';
@@ -132,7 +132,7 @@ class RequestMonitor
                 $alnum = true;
                 $string = true;
             }
-            if (($vs != '1') and ($vs != '0') and ($vs != 'on')) {
+            if (($vs != '1') and ($vs != '0') and ($vs !== 'on')) {
                 $bool = false;
             }
             if (!ctype_digit((string)$vs)) {

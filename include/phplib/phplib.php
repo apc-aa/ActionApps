@@ -500,7 +500,7 @@ class Auth {
             // Valid auth info
             // Refresh expire info
             // DEFAUTH handling: do not update exp for nobody.
-            if ($uid != "nobody") {
+            if ($uid !== "nobody") {
                 $this->auth["exp"] = time() + (60 * $this->lifetime);
             }
             return;
@@ -552,7 +552,7 @@ class Auth {
   }
 
   function is_authenticated() {
-      if ( !$this->nobody AND ($this->auth["uid"]=='nobody') ) { // nobody setting could be changed for specific page. Honza
+      if ( !$this->nobody AND ($this->auth["uid"]==='nobody') ) { // nobody setting could be changed for specific page. Honza
           return false;
       }
 

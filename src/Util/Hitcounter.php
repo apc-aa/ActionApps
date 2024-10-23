@@ -33,7 +33,7 @@ use AA_Logentry_H;
 use CVarset;
 use zids;
 
-/** used form packing duration to 1B int tttttttcn
+/** used for packing duration to 1B int tttttttcn
  *   - ttttttt - time index (0-63) - 6 bits - logaritmical scale from 0.002s (0) to 80s (63))
  *   - c - cached - 1 bit
  *   - n - not modified - 1 bit
@@ -62,8 +62,8 @@ class AA_Packtime {
         return $this->index*4 + ($this->cached ? 2 : 0) + ($this->not_modified ? 1 : 0);
     }
 
-    static public function factoryFromInt(int $int): self {
-        $x = new self(0, ($int & 2) != 0, ($int & 1) != 0);
+    public static function factoryFromInt(int $int): self {
+        $x = new self(0, ($int & 2) !== 0, ($int & 1) !== 0);
         $x->index = $int >> 2;
         return $x;
     }
@@ -123,11 +123,11 @@ class Hitcounter
 
         // do not count hits from Bots
         $agent = strtolower($_SERVER["HTTP_USER_AGENT"]);
-        if ((false !== strpos($agent, 'bot')) or
-            (false !== strpos($agent, 'crawl')) or
-            (false !== strpos($agent, 'check')) or
-            (false !== strpos($agent, 'spider')) or
-            (false !== strpos($agent, 'download'))
+        if ((str_contains($agent, 'bot')) ||
+            (str_contains($agent, 'crawl')) ||
+            (str_contains($agent, 'check')) ||
+            (str_contains($agent, 'spider')) ||
+            (str_contains($agent, 'download'))
         ) {
             return;
         }

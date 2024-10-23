@@ -30,9 +30,9 @@ use AA\IO\DB\DB_AA;
 require_once __DIR__ . "/../../../include/zids.php"; // Pack and unpack ids
 
 class AA_Poll {
-    var $name;         // The name of the poll
-    var $poll_id;      // The unpacked id of the poll i.e. 32 chars
-    var $content;      // poll content - Record from polls table stored as ItemContent
+    protected $name;         // The name of the poll
+    protected $poll_id;      // The unpacked id of the poll i.e. 32 chars
+    protected ?AA_Content $content = null;  // poll content - Record from polls table stored as ItemContent
     var $_sum;         // sum of all votes of this poll - caching purposes
 
     /** AA_Poll function - constructor
@@ -48,7 +48,7 @@ class AA_Poll {
      * @param $force
      */
     function loadSettings($force=false) {
-        if ( !$force AND isset($this->content) AND is_array($this->content) ) {
+        if ( !$force AND isset($this->content) ) {
             return;
         }
 
@@ -257,7 +257,7 @@ class AA_Poll {
             // we want to display specified poll, or we just voted
             $poll_zids = new zids($request['poll_id']);
         } else {
-            $set       = AA_Poll::generateSet($request['pid'],$request['conds'],$request['sort']);
+            $set       = self::generateSet($request['pid'], $request['conds'], $request['sort']);
             $poll_zids = AA::Metabase()->queryZids(['table'=>'polls'], $set);
             $from      = $request['from'] ? $request['from']-1 : 0;
             $listlen   = get_if($request['listlen'], 1);
@@ -300,20 +300,17 @@ class AA_Polls {
      * @return mixed
      */
     static function getPoll($poll_id) {
-        $polls = AA_Polls::singleton();
-        return $polls->_getPoll($poll_id);
+        return self::singleton()->_getPoll($poll_id);
     }
 
     /** getPollProperty function
      *  static function
      * @param $poll_id
      * @param $field
-     * @return null
+     * @return null|string|false
      */
-    function getPollProperty($poll_id, $field) {
-        $polls = AA_Polls::singleton();
-        $poll  = $polls->_getPoll($poll_id);
-        return $poll ? $poll->getProperty($field) : null;
+    static function getPollProperty($poll_id, $field) {
+        return self::singleton()->_getPoll($poll_id)?->getProperty($field);
     }
 
     /** getName function
@@ -322,7 +319,7 @@ class AA_Polls {
      * @return null
      */
     function getName($poll_id) {
-        return AA_Polls::getPollProperty($poll_id, 'name');
+        return self::getPollProperty($poll_id, 'name');
     }
 
     /** _getPoll function

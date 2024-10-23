@@ -27,7 +27,7 @@ class CodWidget extends TxtWidget
         $ret = '';
         // are there some textareas not converted to CodeMirror?
         if ($this->ids_4_editor) {
-            $ret .= "\n  document.querySelectorAll(\"". join(',',$this->ids_4_editor) .'").forEach( function(el) { CodeMirror.fromTextArea(el, { lineWrapping:true, matchBrackets: true, matchTags: true, viewportMargin: 10000, mode: "htmlmixed", spellcheck:true, inputStyle: "contenteditable" }).on("change", function(editor) {editor.save(); const ta = editor.getTextArea(); if (typeof ta.onchange === "function") { ta.onchange() }; }) });';
+            $ret .= "\n  document.querySelectorAll(\"". implode(',',$this->ids_4_editor) .'").forEach( function(el) { CodeMirror.fromTextArea(el, { lineWrapping:true, matchBrackets: true, matchTags: true, viewportMargin: 10000, mode: "htmlmixed", spellcheck:true, inputStyle: "contenteditable" }).on("change", function(editor) {editor.save(); const ta = editor.getTextArea(); if (typeof ta.onchange === "function") { ta.onchange() }; }) });';
             // clean the list - all textareas are converted
             $this->ids_4_editor = [];
         }

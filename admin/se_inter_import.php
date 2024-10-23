@@ -73,7 +73,7 @@ if ($ext_feeds AND is_array($ext_feeds)) {
     foreach ($ext_feeds as $k => $v) {
         $row['node_name']    = $v['node_name'];
         $row['remote_slice'] = $v['remote_slice_name'];
-        $row['exact']        = ($v['feed_mode']=='exact') ? _m("Exact copy") : '';
+        $row['exact']        = ($v['feed_mode'] === 'exact') ? _m("Exact copy") : '';
         $row['state']        = ($v['node_name'] != $v['name']) ? _m('Missing!!!') : '';
         $row['delete'] = a_href('javascript:Delete('.$k.')',_m('Delete'),['class'=>'aa-button-delete']);
         $rows[] = $row;

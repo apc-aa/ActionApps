@@ -139,7 +139,7 @@ function showSelectionTable() {
         in views of type Alerts Selection Set")."</b></td></tr>";
     } else {
         foreach ($a as $slice_id => $slice) {
-            if (! IsSuperadmin() && ! strchr($myslices[unpack_id($slice_id)], PS_FULLTEXT)) {
+            if (! IsSuperadmin() && !str_contains($myslices[unpack_id($slice_id)], PS_FULLTEXT)) {
                 continue;
             }
             echo "<tr><td rowspan=".count($slice["views"]).">

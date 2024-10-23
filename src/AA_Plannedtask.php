@@ -96,7 +96,7 @@ class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedI
           <table>
             <thead>
             <tr>
-              <th>' . join("</th>\n<th scope=col>", ['', _m('Action'), _m('Name'), _m('Event'), _m('Time') . '<br>' . _m('+ seconds'), _m('Computed time'), _m('Condition'), _m('Scheduled to'), _m('Task'), _m('ID'), _m('Module')]) . '</th>
+              <th>' . implode("</th>\n<th scope=col>", ['', _m('Action'), _m('Name'), _m('Event'), _m('Time') . '<br>' . _m('+ seconds'), _m('Computed time'), _m('Condition'), _m('Scheduled to'), _m('Task'), _m('ID'), _m('Module')]) . '</th>
             </tr>
             </thead>
             <tbody>
@@ -217,7 +217,7 @@ class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedI
         return $form;
     }
 
-    static public function executeForEvent(string $module_id, string $event_id, string $item_id) {
+    public static function executeForEvent(string $module_id, string $event_id, string $item_id) {
         $tasks = AA::Contentcache()->get_result(['AA_Plannedtask', 'getModuleTasks'], [$module_id, $event_id], '', true);
         foreach ($tasks as $task) {
             if (is_long_id($item_id)) {
@@ -236,7 +236,7 @@ class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedI
      * @param string $event_id
      * @return AA_Plannedtask[]
      */
-    static public function getModuleTasks($module_id, $event_id): array {
+    public static function getModuleTasks($module_id, $event_id): array {
         $aa_set = new AA_Set();
         $aa_set->setModules([$module_id]);
         $aa_set->addCondition(new AA_Condition('event', '==', $event_id));

@@ -29,7 +29,7 @@
 
         // Success: everything went O.K.
         case "success":
-            if ($prop == "insert")
+            if ($prop === "insert")
                 echo "Thank you! Please confirm your subscription by using the
                       URL which you receive in a short time in a welcome email.";
             else echo "OK. Changes were successful.";

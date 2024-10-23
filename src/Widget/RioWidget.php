@@ -84,7 +84,7 @@ class RioWidget extends Widget
 
         $attrs = Widget::stdInputAttrs($type, $base_id, ['dirty']);
         $widget_add = htmlattr($attrs);
-        $widget_add2 = ($type == 'live') ? '<img width=16 height=16 title="' . _m('To save changes click here or outside the field.') . '" alt="' . _m('Save') . '" class="' . $base_id . 'ico" src="' . AA_INSTAL_PATH . 'images/px.gif" style="position:absolute; right:0; top:0;">' : '';
+        $widget_add2 = ($type === 'live') ? '<img width=16 height=16 title="' . _m('To save changes click here or outside the field.') . '" alt="' . _m('Save') . '" class="' . $base_id . 'ico" src="' . AA_INSTAL_PATH . 'images/px.gif" style="position:absolute; right:0; top:0;">' : '';
 
         $use_name = $this->getProperty('use_name', false);
         $other    = $this->getProperty('other_option', false);

@@ -263,8 +263,7 @@ class AA_Trees {
      * @noinspection PhpUnused
      */
     static function getTreeString($id, $relation_field, $reverse=false, $sort=null, $slices=null): string {
-        $supertree = AA_Trees::getSupertree($relation_field, $reverse, $sort, $slices);
-        return $supertree->getTreeString($id);
+        return self::getSupertree($relation_field, $reverse, $sort, $slices)->getTreeString($id);
     }
 
     /** getTree function
@@ -273,8 +272,7 @@ class AA_Trees {
      * @return mixed
      */
     static function getIds($id, $relation_field, $reverse=false, $sort=null, $slices=null) {
-        $supertree = AA_Trees::getSupertree($relation_field, $reverse, $sort, $slices);
-        return $supertree->getIds($id);
+        return self::getSupertree($relation_field, $reverse, $sort, $slices)->getIds($id);
     }
 
     /**
@@ -285,7 +283,7 @@ class AA_Trees {
      * @return AA_Supertree|AA_Supertree_Reverse
      */
     static function getSupertree($relation_field, $reverse, $sort, $slices= []) {
-        $trees = AA_Trees::singleton();
+        $trees = self::singleton();
         $key   = get_hash($relation_field, $reverse, $sort, $slices);
         if (!isset($trees->a[$key])) {
             $trees->a[$key] = $reverse ? new AA_Supertree_Reverse($relation_field, $sort, $slices) : new AA_Supertree($relation_field, $sort, $slices);

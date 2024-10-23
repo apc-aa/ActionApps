@@ -220,7 +220,7 @@ function setControlOrAADate(formName, controlName, newValue, datePrefix, html, t
 
 /* gets a control by name in IE and Netscape */
 function getControlByName(formName, controlName) {
-    return (document.forms[formName] == null) ? null : document.forms[formName][controlName];
+    return document.forms[formName] ? document.forms[formName][controlName] : null;
 }
 
 /* sets a control value to the given one - works fine with text fields, hidden fields,
@@ -354,12 +354,12 @@ function getWidgetValue(widget) {
 /* ITEMEDIT.php field JavaScript functions - AA API */
 
 function getField(fieldID) {
-    var val = getControlOrAADate('inputform','v'+unpackID(fieldID), 'tdctr_', ''); // old AA forms
+    const val = getControlOrAADate('inputform', 'v' + unpackID(fieldID), 'tdctr_', ''); // old AA forms
     return (val != null) ? val : getControlValue('inputform', document.querySelector('form[name="'+'inputform'+'"] :is(input,select,textarea)[name*="['+fieldID.replaceAll('.','_')+']"').getAttribute('name'));
 }
 
 function setField(fieldID, newValue) {
-    var myDate = new Date();
+    const myDate = new Date();
     setControlOrAADate('inputform','v'+unpackID(fieldID),newValue,'tdctr_', 0, myDate.getTimezoneOffset()/60);
 }
 
@@ -377,9 +377,8 @@ function showField(fieldID) {
    (items not selected are not sent when a form is submitted) */
 
 function selectAllInBox(formName, controlName) {
-    var myControl = getControlByName(formName, controlName);
-    if (myControl != null) {
-        for (var i = 0; i < myControl.options.length; i++)
-            myControl.options[i].selected = true;
+    const myControl = getControlByName(formName, controlName);
+    if (myControl) {
+        Array.from(myControl.options).forEach(option => option.selected = true);
     }
 }

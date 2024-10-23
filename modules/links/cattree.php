@@ -139,7 +139,7 @@ class cattree {
             $this->assignments[] = new catassignment (
                                         $db->f('category_id'),
                                         $db->f('what_id'),
-                                        $db->f('base')=='n' ? '@' : ' ',
+                                        $db->f('base')==='n' ? '@' : ' ',
                                         self::STATES_CODING[$db->f('state')]);
         }
 
@@ -399,9 +399,9 @@ class cattree {
         if ( $cat2show == -1 ) {
             $cat2show = $this->treeStart;
         }
-        $on = ( ($onWhat == 'change')   ?
+        $on = ( ($onWhat === 'change')   ?
             "onchange=\"GoToCategoryID('', this, '$pathDiv', '$cat_id_fld')\"" :
-            (($onWhat == 'dblclick') ?
+            (($onWhat === 'dblclick') ?
             "ondblclick=\"GoToCategoryID('', this, '$pathDiv', '$cat_id_fld')\"
             onchange=\"ChangeSelectedCat('', this, '$pathDiv', '$cat_id_fld')\""
             :''));
@@ -417,7 +417,7 @@ class cattree {
         // for selectbox which use doubleclick we have to print also 'GO' button,
         // because Netscape 4 do not support dblclick event
         $js_form = "eval(document.$used_form.tree)";
-        if ( $onWhat == 'dblclick' ) {
+        if ( $onWhat === 'dblclick' ) {
             $ret .= '<div><br>
             <a class=aa-button href="javascript:GoToCategoryID(\'\', '.$js_form.', \''.$pathDiv.'\', \''. $cat_id_fld .'\')">'. _m('Switch to category') .'</a>
             </div>';

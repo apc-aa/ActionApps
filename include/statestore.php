@@ -68,7 +68,7 @@ abstract class AA_Serializable {
      *  Creates an object from the string, which is used for storing setting in
      *  the database (older approach). The string looks like:
      *    dte:1:10:1
-     *  which means, that it is the instance of AA\Widget\DteWidget (when $class_mask == 'AA\Widget\Widget')
+     *  which means, that it is the instance of AA\Widget\DteWidget (when $class_mask === 'AA\Widget\Widget')
      *  and the properties are filled with values 1, 10 and 1 (in this order)
      *
      * @param string $string     like dte:1:10:1 in field.input_show_func
@@ -122,7 +122,7 @@ abstract class AA_Serializable {
      *  all persistent properties
      */
     protected static function getPersistentProperties(): array {
-        return array_filter(static::getClassProperties(), fn ($property) => $property->isPersistent());
+        return array_filter(static::getClassProperties(), static fn ($property) => $property->isPersistent());
     }
 
     /** create the name of class from the type and name
@@ -185,7 +185,7 @@ abstract class AA_Serializable {
         // It is there for older 1-parameter classes, where we do not escape ":"
         // like AA_Generator_Txt - we want it as it was written - not split
         if ($join_last AND count($split) AND $name) {
-            $params[$name] .= ':' . join(':', $split);
+            $params[$name] .= ':' . implode(':', $split);
         }
         return $params;
     }
@@ -294,7 +294,7 @@ class AA_Storable extends AA_Serializable {
         return $obj;
     }
 
-    static public function factoryFromState($type, $state) {
+    public static function factoryFromState($type, $state) {
         if ((strlen($state['aa_class']) > 0) AND str_starts_with($state['aa_class'], $type)) {
             // we are able to construct also subclasses, so if the property is marked as AA_Formrow, then the real type
             // of the variable could be AA_Formrow_* (like AA_Formrow_Full, ...)
@@ -435,7 +435,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
      */
     public function save() {
         if ( !$this->aa_owner ) {
-            throw new Exception('No owner set for property '. $this->aa_id. ' - '. $this->aa_name);
+            throw new \RuntimeException('No owner set for property '. $this->aa_id. ' - '. $this->aa_name);
         }
 
         $this->delete();
@@ -491,7 +491,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
      **/
     function aftersave() {}
 
-    static public function getPropertyObject($property_id) {
+    public static function getPropertyObject($property_id) {
         return match ($property_id) {
             'aa_type'       => new AA_Property('aa_type', 'Object type', 'string', false, true, 'string', true),
             'aa_name'       => new AA_Property('aa_name', 'Name', 'string', false, true, 'string', false),
@@ -514,17 +514,15 @@ class AA_Object extends AA_Storable implements AA_iEditable {
      *  Deletes the object from the database including all the subobjects
      */
     function delete() {
-        AA_Object::deleteObjects([$this->getId()]);
+        self::deleteObjects([$this->getId()]);
     }
 
     // array of unpacked ids
-    static public function deleteObjects($object_ids, array $properties=[]): bool
+    public static function deleteObjects($object_ids, array $properties=[]): bool
     {
         // objects consists from object itself and subobjects
-        $subobjects_props = AA_Object::loadProperties($object_ids, 'aa_subobjects');
-        foreach ($subobjects_props as $arr) {
-           $object_ids = array_merge($object_ids, $arr);
-        }
+        $subobjects_props = self::loadProperties($object_ids, 'aa_subobjects');
+        $object_ids = array_merge($object_ids, ...$subobjects_props);
         if (count($object_ids = array_unique($object_ids))) {
             $cond = [['object_id', $object_ids]];
             if ($properties) {
@@ -538,7 +536,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
     }
 
     /** Get all Owners objects (for deletion) */
-    static public function getOwnersObjects($owner_id) {
+    public static function getOwnersObjects($owner_id) {
         return is_long_id($owner_id) ? DB_AA::select( '', 'SELECT object_id FROM `object_text`', [['property', 'aa_owner'], ['value', $owner_id]]) : [];
     }
 
@@ -556,7 +554,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
             if ( is_array($this->$property_id) ) {
                 // all keys are numeric
                 foreach($this->$property_id as $v) {
-                    if ( is_object($v) AND is_subclass_of($v, 'AA_Object')) {
+                    if ( $v instanceof AA_Object) {
                         $ret[] = $v->getId();
                         $ret   = array_merge($ret, $v->_getSubObjects());
                     }
@@ -654,7 +652,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
                     if ($property->isObject()) {
                         if (preg_match('/^[0-9a-f]{32}$/', $val)) {
                             // stored as object (subclass of AA_Object in prvious save())
-                            $tmp_val = AA_Object::load($val, $property->getType());
+                            $tmp_val = self::load($val, $property->getType());
                         } else {
                                 // stores as serialized state
                             $tmp_val = AA_Storable::factoryFromState($property->getType(),  unserialize($val));
@@ -744,10 +742,10 @@ class AA_Object extends AA_Storable implements AA_iEditable {
             $store       = '';
             foreach ( $cond as $fid => $v ) {
                 if ( AA_Condition::CONDS_NOT_FIELD_NAMES[$fid] ) {
-                    if ($fid == 'all_fields') {
+                    if ($fid === 'all_fields') {
                         $cond_flds[] = $fid;
                         $store = 'object_text';
-                    } elseif ($fid == 'all_fields_numeric') {
+                    } elseif ($fid === 'all_fields_numeric') {
                         $cond_flds[] = $fid;
                         $store = 'object_integer';
                     }
@@ -769,7 +767,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
                 $cond_flds[] = $fid;
             }
             if ( !empty($cond_flds) ) {
-                $tbl = (($store == 'object_text') ? 't' : (($store == 'object_integer') ? 'i' : 'f')) . $tables_counter[$store]++;
+                $tbl = (($store === 'object_text') ? 't' : (($store === 'object_integer') ? 'i' : 'f')) . $tables_counter[$store]++;
 
                 // fill arrays to be able to construct select command
                 $tables[$tbl]['cond'] = (new AA_Dbcondition($tbl, "value", $cond['operator'], $cond['value']))->getWhereExp();
@@ -790,7 +788,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
         $select_order    = [];
         $select_distinct = '';
         foreach ($sort as  $sort_no => $srt) {
-            if (key($srt)=='limit') {
+            if (key($srt)==='limit') {
                 next($srt);       // skip the 'limit' record in the array
             }
 
@@ -803,7 +801,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
             // This operatin is quite slow in MySQL, so if you need just
             // one random item (for banner, ...), you should rather use
             // set[]=random-1 parameter for view.php
-            if ( $fid == 'random' ) {
+            if ( $fid === 'random' ) {
                 $select_order[] = 'RAND()';
 
                 // break! - we do not want to create expressions like
@@ -828,7 +826,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
                     continue;
                 }
 
-                $tbl = (($store == 'object_text') ? 't' : (($store == 'object_integer') ? 'i' : 'f')) . $tables_counter[$store]++;
+                $tbl = (($store === 'object_text') ? 't' : (($store === 'object_integer') ? 'i' : 'f')) . $tables_counter[$store]++;
                 $tables[$tbl]['join'] = "LEFT JOIN $store as $tbl ON ($tbl.object_id=t0.object_id AND ". Cvarset::sqlin("$tbl.property", $fid) .')'; // OR $tbl.property is NULL))"; - like in content
 
                 // mark this field as sortable (store without apostrophes)
@@ -837,7 +835,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
 
             // join constant table if we want to sort by priority
             $tab_field_id   = $sortable[$fid] .'.value';
-            $select_order[] = $tab_field_id . (stristr(current( $srt ), 'd') ? ' DESC' : '');
+            $select_order[] = $tab_field_id . (stripos(current($srt), 'd') !== false ? ' DESC' : '');
 
             if ($srt['limit']) {
                 // select_distinct added in order we can group by multiple value fields
@@ -885,7 +883,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
             $obj     = $class::load($id);
 
             if (is_null($obj)) {
-                throw new Exception('object not loaded: '. $id);
+                throw new \RuntimeException('object not loaded: '. $id);
             }
             foreach ($properties as $prop_id => $property) {
                 // @todo - make alias field type aware
@@ -924,7 +922,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
           <table>
           <thead>
             <tr>
-              <th scope=col>'.join("</th>\n<th scope=col>", array_merge( ['',_m('Action')], $fields->getFieldnamesArray(), [_m('ID'), _m('Owner ID'), _m('Owner')])).'</th>
+              <th scope=col>'.implode("</th>\n<th scope=col>", array_merge( ['', _m('Action')], $fields->getFieldnamesArray(), [_m('ID'), _m('Owner ID'), _m('Owner')])).'</th>
             </tr>
           </thead><tbody>
             ';
@@ -941,8 +939,8 @@ class AA_Object extends AA_Storable implements AA_iEditable {
         return '
             <tr>
               <td><input name="chb[x_#AA_ID___]" value="" type="checkbox"></td>
-              <td style="white-space:nowrap;"> '. join(' ', $buttons) .' </td>          
-              <td>'.join("</td>\n<td>", $aliases->getNames()).'</td>
+              <td style="white-space:nowrap;"> '. implode(' ', $buttons) .' </td>          
+              <td>'.implode("</td>\n<td>", $aliases->getNames()).'</td>
             </tr>
             ';
     }
@@ -956,7 +954,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
     static function getManagerConf(Manageractions $actions=null, Manageractions $switches=null): Managed {
         $object_class  = get_called_class();
         $aliases       = new AA_Aliases(new AA_Aliasgenerator_Object(static::class));
-        $search_fields = Searchfields::factoryFromProperties(array_merge(['aa_name' => AA_Object::getPropertyObject('aa_name')], static::getClassProperties()));
+        $search_fields = Searchfields::factoryFromProperties(array_merge(['aa_name' => self::getPropertyObject('aa_name')], static::getClassProperties()));
 
         // MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS | MGR_SB_ALLTEXT | MGR_SB_ALLNUM
         $show              = $search_fields->containNumeric() ? (MGR_ALL & ~MGR_SB_BOOKMARKS) : (MGR_ALL & ~MGR_SB_BOOKMARKS & ~MGR_SB_ALLNUM);
@@ -1049,7 +1047,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
 
 //        $form->addRow(new AA_Formrow_Defaultwidget(AA_Object::getPropertyObject('aa_name')));  // use default widget for the field
         if (static::USES_NAME) {
-            AA_Object::getPropertyObject('aa_name')->addPropertyFormrows($form);  // use default widget for the field
+            self::getPropertyObject('aa_name')?->addPropertyFormrows($form);  // use default widget for the field
         }
 
         // self didn't give us the calling class and we do not have late static bindings in PHP < 5.3
@@ -1135,7 +1133,7 @@ class AA_Components {
             }
         } else {
             $mask_length = strlen($mask);
-            $right_class_names = array_filter(get_declared_classes(), fn($classname) => substr($classname, 0, $mask_length) == $mask);
+            $right_class_names = array_filter(get_declared_classes(), static fn($classname) => substr($classname, 0, $mask_length) == $mask);
             $right_classes = [];
             foreach ($right_class_names as $classname) {
                 $shortcut = substr($classname, $mask_length);
@@ -1168,7 +1166,7 @@ class AA_Components {
      */
     static function getClassArray($mask, $filter=null, $tolower=true): array {
         $classes = self::getClassNames($mask, $filter, $tolower);
-        $arr = array_map(fn ($v) => $v::name(), $classes);
+        $arr = array_map(static fn ($v) => $v::name(), $classes);
         $arr = array_filter($arr, 'trim');  // remove all with empty name()
         asort($arr);
         return $arr;
@@ -1183,7 +1181,7 @@ class AA_Components {
     static function getSelectionCode($mask, $input_id, &$params) {
         $options      = ['AA_Empty' => _m('select ...')];
         $html_options = ['AA_Empty' => ''];
-        foreach (AA_Components::getClassNames($mask) as $selection_class) {
+        foreach (self::getClassNames($mask) as $selection_class) {
             // call static class methods
             $options[$selection_class]      = $selection_class::name();
             $html_options[$selection_class] = $selection_class::htmlSetting($input_id, $params);
@@ -1231,7 +1229,7 @@ class AA_Components {
             $columns['_aa_chb'] = ['',"<input name=\"chb[x{aa_id}]\" value=\"\" type=checkbox>"];
         }
         if ($buttons) {
-            $columns['_aa_action'] = [_m('Action'), join(' ', $buttons)];
+            $columns['_aa_action'] = [_m('Action'), implode(' ', $buttons)];
         }
 
         foreach ($search_fields as $fid => $fld) {
@@ -1294,7 +1292,7 @@ class AA_Components {
     }
 
     /** function to add content fields to getContent of Component for each type of Components (for Manager)*/
-    static public function contentAdd(AA_Content $content) {}
+    public static function contentAdd(AA_Content $content) {}
 
     /**  - Finds link IDs for links according to given  conditions
      * @param array  $settings - array - just one parameter: table, where to search
@@ -1370,7 +1368,7 @@ class AA_Temporary_Table {
      * @return void
      */
     private function create(array $contents) {
-        $fields = join(',', $this->fieldsFromProperties());
+        $fields = implode(',', $this->fieldsFromProperties());
         $SQL = "CREATE TEMPORARY TABLE IF NOT EXISTS {$this->tablename} ({$fields})";
         DB_AA::sql($SQL);
         ($metabase = AA::Metabase())->addTable(AA_MbT::factoryFromDb($this->tablename));

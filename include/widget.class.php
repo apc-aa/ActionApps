@@ -142,7 +142,7 @@ class AA_Property extends AA_Storable {
         $this->show_content_type_switch    = $show_content_type_switch;
         $this->content_type_switch_default = $content_type_switch_default;
         $this->perm                        = $perm;
-        $this->const_arr                   = (is_array($validator) AND ($validator[0]=='enum')) ? $validator[1] : [];
+        $this->const_arr                   = (is_array($validator) AND ($validator[0]==='enum')) ? $validator[1] : [];
         $this->default                     = $default;
         $this->translations                = is_array($translations) ? $translations : [];
     }
@@ -261,7 +261,7 @@ class AA_Property extends AA_Storable {
                 call_user_func_array([$this->type, 'addFormrows'], [$form]);
                 return;
             }
-            throw new Exception('Can\'t generate widget for '.$this->type.' object property');
+            throw new \RuntimeException('Can\'t generate widget for '.$this->type.' object property');
         }
 
         $form->addRow(new AA_Formrow_Full($this, $this->defaultWidget()));
@@ -270,13 +270,13 @@ class AA_Property extends AA_Storable {
     function defaultWidget() {
         $values = $this->getConstants();
         $widget = '';
-        if ($this->type == 'readonly') {
+        if ($this->type === 'readonly') {
             $widget = new \AA\Widget\InfWidget();
-        } elseif ($this->type == 'hidden') {
+        } elseif ($this->type === 'hidden') {
             $widget = new \AA\Widget\HidWidget();
         } elseif ($this->isMulti()) {
             if (empty($values)) {
-                if ($this->type == 'text') {
+                if ($this->type === 'text') {
                     $widget = new \AA\Widget\MflWidget(['rows' => 2, 'row_count' => 1]);
                 } else {
                     $widget = new \AA\Widget\MflWidget(['row_count' => 1]);
@@ -291,10 +291,10 @@ class AA_Property extends AA_Storable {
         elseif (!empty($values)) {
             $widget = new \AA\Widget\SelWidget(['const_arr' => $values]);
         }
-        elseif ($this->type == 'bool') {
+        elseif ($this->type === 'bool') {
             $widget = new \AA\Widget\ChbWidget();
         }
-        elseif ($this->type == 'text') {
+        elseif ($this->type === 'text') {
             $widget = new \AA\Widget\CodWidget();
         }
         else {
@@ -327,7 +327,7 @@ class AA_Property extends AA_Storable {
             }
             $empty = false;
 
-            if (is_a($validator, 'AA_Validate_Url') AND str_starts_with($v, 'AA_UPLOAD:')) {   // we are uploading - url will change later   @todo - mark the notvalidated content like AA_UPLOAD in widgets
+            if (($validator instanceof \AA_Validate_Url) AND str_starts_with($v, 'AA_UPLOAD:')) {   // we are uploading - url will change later   @todo - mark the notvalidated content like AA_UPLOAD in widgets
                 continue;
             }
 
@@ -444,7 +444,7 @@ class AA_Property extends AA_Storable {
 
         // Property type - text | int | bool | float | <class_name>
         if ( !$this->isObject()) {
-            AA_Property::_saveRow($this->id, $value, $this->type, $object_id, $priority);
+            self::_saveRow($this->id, $value, $this->type, $object_id, $priority);
             return true;
         }
 
@@ -452,7 +452,7 @@ class AA_Property extends AA_Storable {
             return true;
         }
 
-        if (is_subclass_of($value, 'AA_Object')) {
+        if ($value instanceof \AA_Object) {
             //  this property is object - so save it (the id of the object is returned)
             $value->setOwnerId($owner_id);
             $sub_object_id = $value->save();
@@ -460,13 +460,15 @@ class AA_Property extends AA_Storable {
             if (!$sub_object_id) {
                 return false;
             }
-            AA_Property::_saveRow($this->id, $sub_object_id, 'text', $object_id, $priority);
-            return true;
-        } elseif (is_subclass_of($value, 'AA_Storable')) {
-            AA_Property::_saveRow($this->id, serialize($value->getState()), $this->type, $object_id, $priority);
+            self::_saveRow($this->id, $sub_object_id, 'text', $object_id, $priority);
             return true;
         }
-        throw new Exception('object is not AA_Storable - ', $this->id);
+
+        if ($value instanceof \AA_Storable) {
+            self::_saveRow($this->id, serialize($value->getState()), $this->type, $object_id, $priority);
+            return true;
+        }
+        throw new \RuntimeException('object is not AA_Storable - ', $this->id);
     }
 
     /** _saveRow function
@@ -475,13 +477,13 @@ class AA_Property extends AA_Storable {
      * @param $type
      * @param $priority
      */
-    static private function _saveRow($property_id, $value, $type, $object_id, $priority=0) {
+    private static function _saveRow($property_id, $value, $type, $object_id, $priority=0) {
         $varset = new CVarset();
         $varset->add('object_id', 'text',   $object_id);
         $varset->add('priority',  'number', $priority);
         $varset->add('property',  'text',   $property_id);
         $varset->add('value',      $type,   $value);        // Property type - text | int | bool | float | <class_name>
-        $varset->doInsert(AA_Property::storageType($type));
+        $varset->doInsert(self::storageType($type));
     }
 }
 
@@ -570,7 +572,7 @@ class AA_Formatters {
      * @return int
      */
     static function getCurrentFormatter($value, $aa_property) {
-        return $value->isEmpty() ? $aa_property->getContentTypeDefault() : ($value->getFlag() & AA_Formatters::STANDARD_FORMATTERS);
+        return $value->isEmpty() ? $aa_property->getContentTypeDefault() : ($value->getFlag() & self::STANDARD_FORMATTERS);
     }
 
 }

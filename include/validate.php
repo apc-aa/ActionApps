@@ -52,7 +52,7 @@ function ValidateInput($variableName, $inputName, $variable, &$err, $needed=fals
                     return false;
                 }
             } elseif (!$validator->validate($var)) {
-                $err["$variableName"] = MsgErr(_m("Error in") . " $inputName - " . AA_Validate::lastErrMsg());
+                $err[(string)$variableName] = MsgErr(_m("Error in") . " $inputName - " . AA_Validate::lastErrMsg());
                 return false;
             }
         }
@@ -146,7 +146,7 @@ class AA_Validate extends AA_Serializable {
     public static function doValidate(&$var, $type) {
         $validator = self::factoryCached($type);
         if ( is_null( $validator ) ) {
-            return AA_Validate::bad(VALIDATE_ERROR_BAD_VALIDATOR, _m('Bad validator type: %1', [$type]));
+            return self::bad(VALIDATE_ERROR_BAD_VALIDATOR, _m('Bad validator type: %1', [$type]));
         }
         return $validator->validate($var);
     }
@@ -708,7 +708,7 @@ class AA_Validate_Unique extends AA_Validate {
 
         $itm_id = $this->item_id ?: ($content_context ? $content_context->getId() : '');
 
-        if ( $this->scope == 'username') {
+        if ( $this->scope === 'username') {
             if ( !AA::$perm->isUsernameFree($var) AND ( !$itm_id OR (AA_Reader::name2Id($var) != $itm_id))) {
                 return AA_Validate::bad(VALIDATE_ERROR_NOT_UNIQUE, _m('Username is not unique'), $var_id);
             }
@@ -721,7 +721,7 @@ class AA_Validate_Unique extends AA_Validate {
         }
         $tables = ['content', 'item'];
         $conds  = [['content.item_id', 'item.id', 'j'], ['item.status_code',1]];  // only approved items
-        if ( $this->scope == 'slice') {
+        if ( $this->scope === 'slice') {
             $slice = null;
             $slice_id = AA::$slice_id ?: AA::$module_id;   // AA\IO\Saver or itemedit.php tells us the current slice
             if ( !$slice_id OR !($slice = AA_Slice::getModule($slice_id)) OR !$slice->getField($field_to_check) ) {
@@ -847,7 +847,7 @@ function get_javascript_field_validation() {
             const invalid_email = /(@.*@)|(\\.\\.)|(@\\.)|(\\.@)|(^\\.)/;
             const valid_email = /^.+@[a-zA-Z0-9\\-\\.]+\\.([a-zA-Z]{2,6}|[0-9]{1,3})$/;
             let myfield, myfield2;
-            if (type == 'pwd') {
+            if (type === 'pwd') {
                 myfield = myform[txtfield+'a'];
                 myfield2 = myform[txtfield+'b'];
             } else {
@@ -861,8 +861,8 @@ function get_javascript_field_validation() {
             const val = myfield.value;
             let err = '';
 
-            if (val == '' && required && (type != 'pwd' || add == 1)) {
-                err = (type == 'pwd') ? '" . _m("This field is required.") . "' : '" . _m("This field is required (marked by *).") . "';
+            if (val == '' && required && (type !== 'pwd' || add == 1)) {
+                err = (type === 'pwd') ? '" . _m("This field is required.") . "' : '" . _m("This field is required (marked by *).") . "';
             } else if (val === '') { 
                 return true;
             }
@@ -919,7 +919,7 @@ function NEW_checkEmail($email) {
         if ( getmxrr($domain,$smtphosts,$mx_weight) or (gethostbyname($domain) != $domain) ) {
             if ( $smtphosts ) {
                 // Put the records together in a array we can sort
-                for ($i=0; $i<count($smtphosts); $i++) {
+                for ($i=0, $iMax = count($smtphosts); $i< $iMax; $i++) {
                     $mxs[$smtphosts[$i]] = $mx_weight[$i];
                 }
                 // Sort them
@@ -938,24 +938,23 @@ function NEW_checkEmail($email) {
                 $odpoved = NEW_get_lines($fp);
                 fwrite($fp, 'quit'."\r\n");
                 fclose($fp);
-                if ( intval(substr($odpoved, 0, 3)) == '250' ) {
+                if (str_starts_with($odpoved, '250')) {
                     return true;
-                } else {
-                    echo 'Error: verification failed: '.$odpoved;
-                    return false;
                 }
+
+                echo 'Error: verification failed: '.$odpoved;
             } else {
                 echo 'Error: connection to 25 failed';
-                return false;
             }
-        } else {
-            echo 'Error: bad domain';
             return false;
         }
-    } else {
-        echo 'Error: email not look like email';
+
+        echo 'Error: bad domain';
         return false;
     }
+
+    echo 'Error: email not look like email';
+    return false;
 }
 
 

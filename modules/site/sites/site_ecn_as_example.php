@@ -134,7 +134,7 @@ if ( isset($s) ) {                          // s stands for SUBWEB (like zpravy 
   $old_s=$s;
   $old_x='';
   $old_p='1';
-  if ( $old_w != 'z' ) // the format in zpravodajstvi stays the same
+  if ( $old_w !== 'z' ) // the format in zpravodajstvi stays the same
     $old_f='';        //CheckS fills the right $f
 }
 
@@ -199,8 +199,10 @@ $apc_state = [
 ];
 
 // $r variable is could be array, so create variables like r0, r1, .. to be used in site
-for ( $i=0; $i< strlen($old_r); $i++)
-  $apc_state['r'.$i] = $old_r[$i];
+for ( $i=0, $iMax = strlen($old_r); $i< $iMax; $i++) {
+    $apc_state['r'.$i] = $old_r[$i];
+}
 
-if ( $dbg )
-  print_r($apc_state);
+if ( $dbg ) {
+    print_r($apc_state);
+}

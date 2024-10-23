@@ -163,7 +163,7 @@ if ($perms = AA::$perm->getObjectsPerms(AA_ID, "aa")) {
             $notusers[]    = $uid;      // non-existent user/group
         } elseif ($perm != AA_Perm::ROLES["SUPER"]['id']) {
             $others[]      = $uid;        // other than super privilege
-        } elseif ($uinfo["type"] == 'Group') {
+        } elseif ($uinfo["type"] === 'Group') {
             $supergroups[] = $uid;   // groups with super privileges
         } else {
             $superusers[]  = $uid;    // users with super privileges

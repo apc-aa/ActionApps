@@ -26,7 +26,7 @@
 */
   $groups = AA::$perm->findGroups($grp);
   if ( !is_array($groups) ) {
-    if ( $groups == "too much" ) {
+    if ( $groups === "too much" ) {
       unset($groups);
       $groups[0] = _m("Too many users or groups found.");
     } else {

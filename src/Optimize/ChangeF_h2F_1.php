@@ -83,7 +83,7 @@ class ChangeF_h2F_1 extends AbstractOptimize {
     protected function fieldtest(AA_Field $fld, string $aliasfld): string {
         $func  = $fld[$aliasfld.'_func'];
 
-        if (($func == 'f_h:') AND ((($fld['html_default']==1) AND ($fld['html_show']==0) AND ($fld['multiple']==0)) OR (strlen($fld['in_item_tbl'])>1) OR ($fld['text_stored']==0))) {
+        if (($func === 'f_h:') AND ((($fld['html_default']==1) AND ($fld['html_show']==0) AND ($fld['multiple']==0)) OR (strlen($fld['in_item_tbl'])>1) OR ($fld['text_stored']==0))) {
             return self::alias_code($fld, $aliasfld, "f_h: used with field marked as non-multiple and html - consider using quicker f_1 function for direct content print");
         }
         return '';

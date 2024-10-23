@@ -51,7 +51,7 @@ class RimWidget extends Widget
         $base_name = FormArray::getName4Form($aa_property->getId(), $content, $this->item_index);
         $base_id = FormArray::formName2Id($base_name);
         $base_name_add = $base_name . '[rim]';
-        //$widget_add    = ($type == 'live') ? " class=\"live\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"" : '';
+        //$widget_add    = ($type === 'live') ? " class=\"live\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"" : '';
         //$use_name     = $this->getProperty('use_name', false);
         //$height       = (int)$this->getProperty('height');
         //if ($height < 1) {
@@ -59,7 +59,7 @@ class RimWidget extends Widget
         //}
 
         $constgroup = $this->getProperty('const');
-        if (!$constgroup OR (substr($constgroup, 0, 7) != "#sLiCe-")) {  // no constants or slice defined
+        if (!$constgroup OR (!str_starts_with($constgroup, "#sLiCe-"))) {  // no constants or slice defined
             return [];                           //  = array();
         }
         $sid = substr($constgroup, 7);
@@ -101,19 +101,19 @@ class RimWidget extends Widget
         $actions2show = $this->getProperty('show_buttons', 'MRND');
         $actbuttons = [];
         $actbuttonsdown = [];
-        if (strpos($actions2show, 'M') !== false) {
+        if (str_contains($actions2show, 'M')) {
             $actbuttonsdown['M'] = '';
         }// @todo
-        if (strpos($actions2show, 'R') !== false) {
+        if (str_contains($actions2show, 'R')) {
             $actbuttonsdown['R'] = "<article><i class=\"ico insert\">add</i><input type=search value onkeyup=\"DisplayAaResponse('flt$base_id', 'Widget_Selection', {s:'$def_slice_id',f:'$def_field_id',q:this.value})\"></article>";
         }// @todo
-        if (strpos($actions2show, 'N') !== false) {
+        if (str_contains($actions2show, 'N')) {
             $actbuttonsdown['N'] = "<article><i class=\"ico new\" onclick=\"OpenWindowTop('" . Inputform_url(true, null, $sid, 'close_dialog', null, $input_name) . "');\">" . _m('new') . '</i></article>';
         }// @todo
-        if (strpos($actions2show, 'D') !== false) {
+        if (str_contains($actions2show, 'D')) {
             $actbuttons['D'] = '<article onclick="this.parentNode.parentNode.parentNode.removeChild(this.parentNode.parentNode)"><i class="ico delete">&#215;</i></article>';
         }// @todo
-        if (strpos($actions2show, 'E') !== false) {
+        if (str_contains($actions2show, 'E')) {
             $actbuttons['E'] = '<article><i class="ico edit">edit</i></article>';
         }// @todo
 
@@ -134,7 +134,7 @@ class RimWidget extends Widget
                              </section>
                              <section class="icogroup">
                                <input type="hidden" name="' . $input_name . '" id="' . $input_id . '" value="' . safe($k) . '">' .
-                join("\n", array_values($actbuttons)) . '
+                implode("\n", array_values($actbuttons)) . '
                              </section>
                            </article>
                            ';
@@ -145,7 +145,7 @@ class RimWidget extends Widget
         $input_id = FormArray::formName2Id($input_name);
 
 
-        $downbuttons = join("\n", array_values($actbuttonsdown));
+        $downbuttons = implode("\n", array_values($actbuttonsdown));
 
 
         $widget .= <<<HTML

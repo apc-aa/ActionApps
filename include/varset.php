@@ -59,7 +59,7 @@ class Cvariable {
      *
      */
     function getValue() {
-        return ($this->type == 'quoted') ? stripslashes($this->value) : $this->value;
+        return ($this->type === 'quoted') ? stripslashes($this->value) : $this->value;
     }
 
     /** getSQLValue function
@@ -152,14 +152,13 @@ class Cvarset {
         return count($this->vars) < 1;
     }
 
-    /** get function
-     *  get variable value
-     * @param $varname
-     * @return bool
+    /** get variable value
+     *
+     * @param  string  $varname
      */
-    function get($varname) {
-        $cv = $this->vars["$varname"];
-        return ( $cv ? $cv->getValue() : false);
+    function get(string $varname) {
+        $cv = $this->vars[$varname];
+        return $cv ? $cv->getValue() : false;
     }
 
     /** getSQLvalue function
@@ -229,8 +228,7 @@ class Cvarset {
      * @param string $varname
      */
     function value($varname){
-        $v = $this->vars["$varname"];
-        return $v->value;
+        return $this->vars[(string)$varname]->value;
     }
 
     /** get key=>value array of variables and values */
@@ -293,7 +291,7 @@ class Cvarset {
             return true;
         }
         $this->last_used_db = getDB();
-        if ( $nohalt=='nohalt' ) {
+        if ( $nohalt==='nohalt' ) {
             $retval = $this->last_used_db->query_halt($SQL,'no');
         } else {
             $retval = $this->last_used_db->query($SQL);
@@ -325,7 +323,7 @@ class Cvarset {
         if (!$arr) {
             return '';
         }
-        return "$command INTO `$tablename` (`". join('`,`', array_keys($arr)) ."`) VALUES (". join(',', array_values($arr)) .")";
+        return "$command INTO `$tablename` (`". implode('`,`', array_keys($arr)) ."`) VALUES (". implode(',', array_values($arr)) .")";
     }
 
     //function _makeInsertReplace($command, $tablename) {
@@ -378,7 +376,7 @@ class Cvarset {
         if ($tablename) {
             $retval = "UPDATE `$tablename` SET";
         }
-        $retval .= " " . join (", ", $updates);
+        $retval .= " " . implode (", ", $updates);
         if ($where = $this->makeWHERE()) {     // assignment
             $retval .= " WHERE ".$where;
         }
@@ -553,12 +551,14 @@ class Cvarset {
                 $arr[] = "'" . quote($v) . "'";
             }
         }
-        if (count($arr) == 1) {
+        if (count($arr) === 1) {
             return "$column = " . $arr[0];
-        } elseif (count($arr) == 0) {
+        }
+
+        if (count($arr) === 0) {
             return "2=1";
         }
-        return "$column IN (" . join(',', $arr) . ")";
+        return "$column IN (" . implode(',', $arr) . ")";
     }
 }
 

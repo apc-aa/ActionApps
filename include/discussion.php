@@ -71,7 +71,7 @@ function QueryDiscussionZIDs($item_id, $ids="", $order='timeorder') {
     }
     $p_item_id = q_pack_id($item_id);
     $SQL = "SELECT id FROM discussion WHERE item_id='$p_item_id' ORDER BY date";
-    if ($order == 'reverse timeorder') {
+    if ($order === 'reverse timeorder') {
         $SQL .=" DESC";
     }
 
@@ -153,13 +153,13 @@ function GetDiscussionContent($zids, $state=true, $html_flag=false, $clean_url='
  */
 function setDiscUrls(&$col, $clean_url, $item_id, $d_id=null) {
     // $tmp_disc_url = get_url($clean_url,"nocache=invalidate&sh_itm=$item_id");
-    $tmp_disc_url = $GLOBALS['apc_state']['router'] ? $clean_url : get_url($clean_url,"sh_itm=$item_id");     // removed nocache=invalidate - testing - Honza 2011-01-19
+    $tmp_disc_url = $GLOBALS['apc_state']['router'] ? $clean_url : get_url($clean_url, ["sh_itm"=>$item_id]);     // removed nocache=invalidate - testing - Honza 2011-01-19
     $col["d_disc_url......"][0]['value'] = $tmp_disc_url."#disc";
     // in urls we do not need to replace & by &amp;
     $col["d_disc_url......"][0]['flag']  = FLAG_HTML;
     if ($d_id) {
-        $col["d_url_fulltext.."][0]['value'] = get_url($tmp_disc_url, "sel_ids=1&ids[x".$d_id."]=1").'#disc';
-        $col["d_url_reply....."][0]['value'] = get_url($tmp_disc_url, "add_disc=1&parent_id=".$d_id). "#disc";
+        $col["d_url_fulltext.."][0]['value'] = get_url($tmp_disc_url, ["sel_ids"=>1, "ids[x$d_id]"=>1]). '#disc';
+        $col["d_url_reply....."][0]['value'] = get_url($tmp_disc_url, ["add_disc"=>1, "parent_id"=>$d_id]). "#disc";
     }
 }
 
@@ -419,7 +419,7 @@ function send2mailList($d_item_id, $new_id) {
             $CurItem = new AA_Item($columns, $aliases);
 
             // newer version based on email templates
-            if ($vid[0] == 't' ) {   // email template
+            if ($vid[0] === 't' ) {   // email template
                 $mail_id = substr($vid,1);
                 $mails   = explode(',', str_replace(' ','',$maillist));
                 AA_Mail::sendTemplate($mail_id, $mails, $CurItem);

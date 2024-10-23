@@ -106,7 +106,7 @@ if ($_REQUEST['convertfrom'] OR $_REQUEST['convertto']) {
     } elseif (is_array($_REQUEST['aa'])) {
         $charset = AA\FormArray::getCharset($_REQUEST['aa']);
     }
-    if ($charset AND ($charset != 'utf-8')) {
+    if ($charset AND ($charset !== 'utf-8')) {
         //print_r($_POST);
         $_POST   = ConvertEncodingDeep($_POST, 'UTF-8', $charset);
         //print_r($_POST);
@@ -131,7 +131,9 @@ function UseShowResult($txt,$url) {
     $_POST["result"]        = $txt;
     // allows fillform to use this data
     $_POST["oldcontent4id"] = InputVars::StripslashesArray($GLOBALS["content4id"]);
-    if (!$url) huhe("Warning: no Url on anonymous form (could be  ok_url or err_url missing");
+    if (!$url) {
+        huhe("Warning: no Url on anonymous form (could be  ok_url or err_url missing");
+    }
     $GLOBALS["shtml_page"] = $url;
     require_once __DIR__ . "/post2shtml.php"; // Beware this doesn't just define functions!
     exit;
@@ -163,12 +165,10 @@ function SendErrorPage(array $txt) {
         echo "</head><body>";
         echo GetPrintArray($txt);
         echo "</body></html>";
+    } elseif (!$_REQUEST["use_post2shtml"]) {
+        go_url($_REQUEST["err_url"], ['result'=>substr(serialize($txt),0,1000)]);
     } else {
-        if (!$_REQUEST["use_post2shtml"]) {
-            go_url($_REQUEST["err_url"], ['result'=>substr(serialize($txt),0,1000)]);
-        } else {
-            UseShowResult($txt,$_REQUEST["err_url"]);
-        }
+        UseShowResult($txt,$_REQUEST["err_url"]);
     }
     exit;
 }
@@ -205,14 +205,14 @@ function SendOkPage($txt, $new_ids = []) {
         // It is better to use extra # in it, in order it is not expanded when the form is displayed:
         // use _##ITEM_ID_ instead of _#ITEM_ID_, ...
         $_REQUEST["ok_url"] = str_replace('_##', '_#', $_REQUEST["ok_url"]);
-        if (false !== strpos($_REQUEST["ok_url"],'_#N')) {
+        if (str_contains($_REQUEST["ok_url"], '_#N')) {
             $new_als = [];
             foreach ($new_ids as $k => $v) {
                 $new_als[] = '_#N'.($k+1).'_ID___';
             }
             $_REQUEST["ok_url"] = str_replace($new_als, $new_ids, $_REQUEST["ok_url"]);
         }
-        if (false !== strpos($_REQUEST["ok_url"], '_#')) {
+        if (str_contains($_REQUEST["ok_url"], '_#')) {
             $item = AA_Item::getItem(new zids(reset($new_ids), 'l'));
             $_REQUEST["ok_url"] = AA::Un($_REQUEST["ok_url"], '', $item);
         }
@@ -227,7 +227,7 @@ function SendOkPage($txt, $new_ids = []) {
             }
             $retcode = $_REQUEST["ret_code"] ?: base64_decode($_REQUEST["ret_code_enc"]);
 
-            if ( $retcode == 'AA_2FA_QR') {   // very special case for 2FA secret
+            if ( $retcode === 'AA_2FA_QR') {   // very special case for 2FA secret
                 $secret = strlen(AuthGetUid()) ? DB_AA::select1('secret', 'SELECT content.text AS secret FROM content', [['field_id', FIELDID_2FA_SECRET], ['item_id', AuthGetUid(), 'l']]) : '';
 
                 $qr = '--';
@@ -245,7 +245,7 @@ function SendOkPage($txt, $new_ids = []) {
                         $slice = AA_Slice::getModule($item->getSliceID());
                         if (!empty($slice)) {
                             $charset = $slice->getCharset();
-                            if ($charset != 'utf-8') {
+                            if ($charset !== 'utf-8') {
                                 $text = ConvertCharset::singleton()->Convert($text, $charset, 'utf-8');
                             }
                         }

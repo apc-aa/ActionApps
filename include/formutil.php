@@ -79,18 +79,6 @@ function varname4form($fid, $type='normal') {
     return $fid ? ('v'. unpack_id($fid) .$additions[$type]) : '';
 }
 
-/** GetInputFormTemplate function
- *  Returns inputform template
- */
-function GetInputFormTemplate() {
-     global $slice_id;
-     $slice = AA_Slice::getModule($slice_id);
-     //           inputform($inputform_settings);
-     $form  = new inputform();
-     // ItemContent in getForm passed by reference
-     return $form->getForm(new ItemContent(), $slice);
-}
-
 /**
  * inputform class - used for displaying input form (item add/edit)
  */
@@ -131,8 +119,9 @@ class inputform {
     }
 
     /** static */
-    function _getButton($key, $type, $default_text, $profile_text, $url = null) {
-        return ($profile_text === '') ? [] : [$key => ['type'=>$type, 'value'=> get_if($profile_text, $default_text), 'url' => $url]];
+    static function _getButton($key, $type, $default_text, $profile_text, $url = null)
+    {
+        return ($profile_text === '') ? [] : [$key => ['type' => $type, 'value' => get_if($profile_text, $default_text), 'url' => $url]];
     }
 
 
@@ -174,28 +163,28 @@ class inputform {
         // create buttons array for top (and lately for bottom of the form) ------------------
         $buttons = [];
         if ( $this->form4update ) {
-            $buttons += inputform::_getButton('update',   'submit', _m("Update"), $profile->getProperty('ui_inputform', 'edit_btn_update'));
-            $buttons += inputform::_getButton('upd_edit', 'submit', _m("Update & Edit"), $profile->getProperty('ui_inputform', 'edit_btn_upd_edit'));
+            $buttons += self::_getButton('update', 'submit', _m("Update"), $profile->getProperty('ui_inputform', 'edit_btn_update'));
+            $buttons += self::_getButton('upd_edit', 'submit', _m("Update & Edit"), $profile->getProperty('ui_inputform', 'edit_btn_upd_edit'));
             if ( $this->show_preview_button ) {
-                $buttons += inputform::_getButton('upd_preview', 'submit', _m("Update & View"), $profile->getProperty('ui_inputform', 'edit_btn_upd_preview'));
+                $buttons += self::_getButton('upd_preview', 'submit', _m("Update & View"), $profile->getProperty('ui_inputform', 'edit_btn_upd_preview'));
             }
             // if we edit dynamic slice setting fields, we do not need such buttons
             if (!$slice_fields) {
                 $fields = $slice->getFields($slice_fields);
-                if (!array_find_fnc($fields, fn($f) => $f->disable_insert_as_new())) {
-                    $buttons += inputform::_getButton('insert_new', 'submit', _m("Insert as new"), $profile->getProperty('ui_inputform', 'edit_btn_insert'));
+                if (!array_find_fnc($fields, static fn($f) => $f->disable_insert_as_new())) {
+                    $buttons += self::_getButton('insert_new', 'submit', _m("Insert as new"), $profile->getProperty('ui_inputform', 'edit_btn_insert'));
                 }
                 if (strlen($profile->getProperty('ui_inputform', 'edit_btn_reset')) > 0) {
                     // reset button display just if it is defined in profile
-                    $buttons += inputform::_getButton('reset', 'reset', _m("Reset form"), $profile->getProperty('ui_inputform', 'edit_btn_reset'));
+                    $buttons += self::_getButton('reset', 'reset', _m("Reset form"), $profile->getProperty('ui_inputform', 'edit_btn_reset'));
                 }
             }
-            $buttons += inputform::_getButton('cancel', 'button', _m("Cancel"), $profile->getProperty('ui_inputform', 'edit_btn_cancel'), $this->cancel_url);
+            $buttons += self::_getButton('cancel', 'button', _m("Cancel"), $profile->getProperty('ui_inputform', 'edit_btn_cancel'), $this->cancel_url);
         } else {
-            $buttons += inputform::_getButton('insert',      'submit', _m("Insert"), $profile->getProperty('ui_inputform', 'add_btn_insert'));
-            $buttons += inputform::_getButton('ins_edit',    'submit', _m("Insert & Edit"), $profile->getProperty('ui_inputform', 'add_btn_ins_edit'));
-            $buttons += inputform::_getButton('ins_preview', 'submit', _m("Insert & View"), $profile->getProperty('ui_inputform', 'add_btn_ins_preview'));
-            $buttons += inputform::_getButton('cancel', 'button', _m("Cancel"), $profile->getProperty('ui_inputform', 'add_btn_cancel'), $this->cancel_url);
+            $buttons += self::_getButton('insert', 'submit', _m("Insert"), $profile->getProperty('ui_inputform', 'add_btn_insert'));
+            $buttons += self::_getButton('ins_edit', 'submit', _m("Insert & Edit"), $profile->getProperty('ui_inputform', 'add_btn_ins_edit'));
+            $buttons += self::_getButton('ins_preview', 'submit', _m("Insert & View"), $profile->getProperty('ui_inputform', 'add_btn_ins_preview'));
+            $buttons += self::_getButton('cancel', 'button', _m("Cancel"), $profile->getProperty('ui_inputform', 'add_btn_cancel'), $this->cancel_url);
         }
         // /buttons  ------------------
 
@@ -399,8 +388,8 @@ class inputform {
     function getFormJavascript(JsTriggers $jsTriggers): string {
         $retval = '';
 
-        AA::Stringexpander()->addRequire(get_aa_url('javascript/inputform.min.js?v='.AA_JS_VERSION,'',false));
-        AA::Stringexpander()->addRequire(get_aa_url('javascript/js_lib.min.js?v='.AA_JS_VERSION,'',false));
+        AA::Stringexpander()->addRequire(get_aa_url('javascript/inputform.min.js', ['v'=>AA_JS_VERSION],false));
+        AA::Stringexpander()->addRequire(get_aa_url('javascript/js_lib.min.js', ['v'=>AA_JS_VERSION],false));
 
         // $retval .= getFrmJavascriptFile( 'javascript/inputform.min.js?v=1' );
         // $retval .= getFrmJavascriptFile( 'javascript/js_lib.min.js' );
@@ -412,7 +401,7 @@ class inputform {
         $retval .= getFrmJavascript( $jscode );
         $retval .= getFrmJavascriptFile('misc/htmleditor/ckeditor.js');
 
-        // AA::Stringexpander()->addRequire(get_aa_url('javascript/constedit.min.js?v='.AA_JS_VERSION,'',false));  // no longer needed - managed by {require:...} in hco
+        // AA::Stringexpander()->addRequire(get_aa_url('javascript/constedit.min.js', ['v'=>AA_JS_VERSION],false));  // no longer needed - managed by {require:...} in hco
 
         return $retval;
     }
@@ -668,14 +657,14 @@ class AA_Inputfield {
      * Fills array used for list selection. Fill it from constant group or
      * slice.
      * It never refills the array (and we relly on this fact in the code)
-     * @param string $slice_field
-     * @param bool   $conds
-     * @param bool   $sort
-     * @param int    $whichitems
-     * @param bool   $ids_arr
-     * @param null   $crypted_additional_slice_pwd
-     * @param        $tagprefix
-     * @param null   $const_arr_param
+     * @param string     $slice_field
+     * @param bool       $conds
+     * @param bool       $sort
+     * @param int        $whichitems
+     * @param array|null $ids_arr
+     * @param null       $crypted_additional_slice_pwd
+     * @param            $tagprefix
+     * @param null       $const_arr_param
      * @return string - unpacked slice_id if array is filled from slice
      * (not so important value, isn't?)
      */
@@ -712,6 +701,7 @@ class AA_Inputfield {
             $this->const_arr = GetFormattedItems( $set->query($zids), $format, $crypted_additional_slice_pwd, $tagprefix);
             // $this->const_arr = GetFormatedItems( $sid, $format, $zids, $whichitems, $conds, $sort, $tagprefix); // older version of the function :honzam03/09
         } elseif ($constgroup) {
+            // $ids_arr is not used now in GetFormatedConstants
             $this->const_arr = GetFormatedConstants($constgroup, $slice_field, $ids_arr, $conds, $sort);
         }
 
@@ -754,7 +744,7 @@ class AA_Inputfield {
     function prepareVars($valtype='first') {
         if (isset($this->value_modified)) {
             $val = $this->value_modified;
-        } elseif ($valtype == 'first') {
+        } elseif ($valtype === 'first') {
             $val = $this->value[0]['value'];
         } else {
             $val = $this->value;
@@ -788,7 +778,7 @@ class AA_Inputfield {
      * @param string $aliasname used for alias name different from 'inputvar'
      */
     function echovar($txt, $part='', $param='', $aliasname='') {
-        if ( $this->result_mode == 'expand' ) {   // write directly to the output
+        if ( $this->result_mode === 'expand' ) {   // write directly to the output
             $this->echoo($txt);
         } else {
             if ($aliasname=='') {
@@ -840,7 +830,7 @@ class AA_Inputfield {
 
         $this->use_triggers_4_slice = $slice_id;  // we are in item editing mode - add triggers
 
-        if ($this->mode == 'freeze') {
+        if ($this->mode === 'freeze') {
             switch ($this->input_type) {
                 case 'chb': $this->value_modified = $this->value[0]['value'] ? _m("set") : _m("unset");
                             $this->staticText();       break;
@@ -873,7 +863,7 @@ class AA_Inputfield {
                             $this->staticText();       break;
 
             }
-        } elseif (($this->mode == 'anonym') OR ($this->mode == 'normal')) {
+        } elseif (($this->mode === 'anonym') OR ($this->mode === 'normal')) {
             switch ($this->input_type) {
 //                case 'inf': $this->staticText();       break;
 
@@ -1094,7 +1084,7 @@ class AA_Inputfield {
         $this->echoo("\n <th ". (($colspan==1) ? '': "colspan=\"$colspan\""). "><div>$name</div>" );  // div for min max width styling HM/SV 2023-11-23
         $this->needed();
         $this->echoo("</th>\n");
-        if ( $plus=='plus' OR $plus=='secrow' ) {
+        if ( $plus === 'plus' OR $plus === 'secrow' ) {
             $this->echoo(' <td>');
         }
     }
@@ -1103,9 +1093,9 @@ class AA_Inputfield {
      *  Print links to document convertors, if convertors are installed
      */
     function get_convertors() {
-        $constants  = array_filter(get_defined_constants(true)['user'], fn ($key) => str_starts_with($key, 'CONV_TEXTFILTERS'), ARRAY_FILTER_USE_KEY);
-        $convertors = array_map(fn ($key) => substr($key, 17), array_keys($constants));
-        $convtext   = join('/',array_diff($convertors, ['ICONV']));
+        $constants  = array_filter(get_defined_constants(true)['user'], static fn ($key) => str_starts_with($key, 'CONV_TEXTFILTERS'), ARRAY_FILTER_USE_KEY);
+        $convertors = array_map(static fn ($key) => substr($key, 17), array_keys($constants));
+        $convtext   = implode('/',array_diff($convertors, ['ICONV']));
         $convertor  = "<a class=\"btn aa-convertor\" href=\"javascript:CallConvertor('".self_server(). AA_INSTAL_PATH."', '".$this->varname."')\">$convtext "._m('import') ."</a>";
 
         return $convertor;
@@ -1175,10 +1165,10 @@ class AA_Inputfield {
         $ret = '';
         if (count($parts)>1) {
             $ret .= "<div class=\"aa-langswitch\">";
-            $ret .= "\n  <input type=button value=\""._m('Translate')."\" class=\"aa-langall\" onclick=\"[].forEach.call(document.querySelectorAll('#".join(",#", array_keys($parts))."'), function(a) { a.style.display='block'; }); this.parentNode.style.display='none';\">";
+            $ret .= "\n  <input type=button value=\""._m('Translate')."\" class=\"aa-langall\" onclick=\"[].forEach.call(document.querySelectorAll('#".implode(",#", array_keys($parts))."'), function(a) { a.style.display='block'; }); this.parentNode.style.display='none';\">";
             //$ret .= "\n  <input type=button value=\""._m('Translate')."\" class=\"aa-langall\" onclick=\"[$('".join("'),$('", array_keys($parts))."')].invoke($(this).hasClassName('aa-open')?'hide':'show');[$('aa-but".join("'),$('aa-but", array_keys($parts))."')].invoke('toggleClassName', 'aa-open', !$(this).hasClassName('aa-open'));$(this).toggleClassName('aa-open')\">";
             foreach ($parts as $id => $prop) {
-                $ret .= "\n     <input type=button value=\"".$prop[0]."\" id=\"aa-but$id\" class=\"".join(' ',$prop[1])."\" onclick=\"this.classList.toggle('aa-open');document.querySelector('#$id').style.display=(this.classList.contains('aa-open')?'block':'none');\">";
+                $ret .= "\n     <input type=button value=\"".$prop[0]."\" id=\"aa-but$id\" class=\"".implode(' ', $prop[1])."\" onclick=\"this.classList.toggle('aa-open');document.querySelector('#$id').style.display=(this.classList.contains('aa-open')?'block':'none');\">";
             }
             $ret .= "\n</div>";
         }
@@ -1275,11 +1265,11 @@ class AA_Inputfield {
         $attrs['maxlength'] = get_if($maxsize, $attrs['maxlength'], 255);
 
         // type number do not support size parameter, so ve have to set max and min (make no sence to do it for numbers > 11 characters - use default)
-        if (($attrs['type']=='number') AND !isset($attrs['max']) AND ($nchars = $attrs['maxlength'] ?: $attrs['size'] ?: 0) AND ($nchars<11)) {
+        if (($attrs['type'] === 'number') AND !isset($attrs['max']) AND ($nchars = $attrs['maxlength'] ?: $attrs['size'] ?: 0) AND ($nchars<11)) {
             $attrs['max'] = pow(10,$nchars)-1;
             $attrs['min'] = $attrs['min'] ?: '0';
         }
-        $attr_string = join(' ', array_map( fn ($k, $v) => "$k=\"$v\"", array_keys($attrs), $attrs));
+        $attr_string = implode(' ', array_map( static fn ($k, $v) => "$k=\"$v\"", array_keys($attrs), $attrs));
 
         $triggers  = $this->use_triggers_4_slice ? JsTriggers::singleton4id($this->use_triggers_4_slice)->get("input", $name) : '';
 
@@ -1314,7 +1304,7 @@ class AA_Inputfield {
                 $widg .= "</label>";
                 $first = false;
             }
-            $widg .= AA_Inputfield::getLangSwitch($parts);
+            $widg .= self::getLangSwitch($parts);
             $widg .= "\n</div>";
 
         } else {
@@ -1431,7 +1421,7 @@ class AA_Inputfield {
                 }
                 $first = false;
             }
-            $widg .= AA_Inputfield::getLangSwitch($parts);
+            $widg .= self::getLangSwitch($parts);
             $widg .= "\n</div>";
         } else {
 
@@ -1537,10 +1527,10 @@ class AA_Inputfield {
                     $selectedused = true;
                     $already_selected[(string)$select_val] = true;  // flag
                 }
-                if ( ($restrict == 'selected')   AND !$selected ) {
+                if ( ($restrict === 'selected')   AND !$selected ) {
                     continue;  // do not print this option
                 }
-                if ( ($restrict == 'unselected') AND $selected  ){
+                if ( ($restrict === 'unselected') AND $selected  ){
                     continue;  // do not print this option
                 }
                 $ret .= "<option value=\"". safe($k) ."\" $selected>".safe($v);    // do not put newlines here in order select:epty css selector works
@@ -1548,7 +1538,7 @@ class AA_Inputfield {
         }
         // now add all values, which is not in the array, but field has this value
         // (this is slice inconsistence, which could go from feeding, ...)
-        if ( isset( $this->selected ) AND is_array( $this->selected ) AND ($restrict != 'unselected')) {
+        if ( isset( $this->selected ) AND is_array( $this->selected ) AND ($restrict !== 'unselected')) {
             foreach ( $this->selected as $k =>$v ) {
                 if ( !$already_selected[$k] ) {
                     $ret .= "<option value=\"". safe($k) ."\" selected class=\"sel_missing\">".safe($k);
@@ -1669,7 +1659,7 @@ class AA_Inputfield {
         if (str_contains($actions, 'D')) {
             $this->echoo("&nbsp;&nbsp;<input type='button' value='". _m("Delete") ."' onclick=\"sb_RemoveItem(document.inputform['".$name."']);\">\n");
         }
-        $this->echoo(getFrmJavascript("if (typeof listboxes == 'undefined') { var listboxes = []; };  listboxes[listboxes.length] = '$name';"));
+        $this->echoo(getFrmJavascript("if (typeof listboxes === 'undefined') { var listboxes = []; };  listboxes[listboxes.length] = '$name';"));
         $this->echoo("</div></div></div>\n");
         $this->helps('plus');
     }
@@ -1759,7 +1749,7 @@ class AA_Inputfield {
     //          <input type='button' value='". _m("Add") ."' onclick='OpenRelated(\"$name\", \"$sid\", \"$mode\", \"$design\", \"$whichitems\",\"".rawurlencode($conds)."\",\"".rawurlencode($condsrw)."\",\"".get_admin_url('related_sel.php')."\" )'>
     //          &nbsp;&nbsp;");
     //        $this->echoo("<input type='button' value='". _m("Delete") ."' onclick=\"sb_RemoveItem(document.inputform['".$name."']);\">\n");
-    //        $this->echoo(getFrmJavascript("if (typeof listboxes == 'undefined') { var listboxes = []; };  listboxes[listboxes.length] = '$name';"));
+    //        $this->echoo(getFrmJavascript("if (typeof listboxes === 'undefined') { var listboxes = []; };  listboxes[listboxes.length] = '$name';"));
     //        $this->echoo("</td></tr></table>\n");
     //    }
     //    $this->helps('plus');
@@ -1825,7 +1815,7 @@ class AA_Inputfield {
         $this->echoo(getFrmJavascript("
             hcInit($hcid);
             hcDeleteLast('$name');
-            if (typeof listboxes == 'undefined') { var listboxes = []; };
+            if (typeof listboxes === 'undefined') { var listboxes = []; };
             listboxes[listboxes.length] = '$name';"));
         $this->helps('plus');
     }
@@ -1985,7 +1975,7 @@ class AA_Inputfield {
         $wi2_selected = get_if( $wi2_selected, _m("Selected") );
 
         // for MoveSelected(), MoveItem()
-        AA::Stringexpander()->addRequire(get_aa_url('javascript/inputform.min.js?v='.AA_JS_VERSION,'',false));
+        AA::Stringexpander()->addRequire(get_aa_url('javascript/inputform.min.js', ['v'=>AA_JS_VERSION],false));
 
         $this->field_name('plus');
         $this->echoo("<div class=\"aa-widget aa-widget-wi2 aa-stdwidget\"><div class='aa-input'>
@@ -2030,7 +2020,7 @@ class AA_Inputfield {
 
         $this->echovar( $out, 'selected' );
 
-        $this->echoo(getFrmJavascript("if (typeof listboxes == 'undefined') { var listboxes = []; };  listboxes[listboxes.length] = '$name';"));
+        $this->echoo(getFrmJavascript("if (typeof listboxes === 'undefined') { var listboxes = []; };  listboxes[listboxes.length] = '$name';"));
         $this->echoo("\n      </div>");
         $this->echoo("\n      <div class='aa-wi2-updown'>
             <input type=button value=\" &#9650; \" class=aa-wi2-up onClick=\"moveItem(this.parentNode.parentNode.querySelector(&quot;select[name='$name']&quot;),'up');\">
@@ -2072,7 +2062,7 @@ class AA_Inputfield {
         $triggers  = $this->use_triggers_4_slice ? JsTriggers::singleton4id($this->use_triggers_4_slice)->get("input", $name) : '';
 
         $this->field_name('plus');
-        if ( $this->mode == 'anonym' ) {
+        if ( $this->mode === 'anonym' ) {
             $this->echovar("<input type=\"password\" name=\"$name\" size=\"$fieldsize\" maxlength=\"255\" autocomplete=\"off\" value=\"\" $triggers>" );
             $this->helps('plus');
         } else {
@@ -2224,6 +2214,17 @@ function FrmInputPwd($name, $txt, $val) {
 function FrmInputEmail($name, $txt, $val,  $maxsize=254, $size=25, $needed=false, $hlp="", $morehlp="", $placeholder='') {
     $input = new AA_Inputfield($val, false, 'normal', $name, $txt, false, $needed, $hlp, $morehlp);
     $input->inputText($maxsize, $size, 'email', $placeholder);
+    echo $input->get_result();
+}
+
+/** Prints date input box
+ * @param        $name
+ * @param        $txt
+ * @param        $val
+ */
+function FrmInputDate($name, $txt, $val, $needed=false, $hlp="", $morehlp="") {
+    $input = new AA_Inputfield($val, false, 'normal', $name, $txt, false, $needed, $hlp, $morehlp);
+    $input->inputText(type: 'date');
     echo $input->get_result();
 }
 
@@ -2702,7 +2703,7 @@ function getFrmInputButtons($buttons, $print_hidden = true, $prefix = ''): strin
         return '';
     }
 
-    $sticky = ($prefix=='top') ? ' style="position: sticky; top: 0; z-index: 5;"' : ''; //z-index - CodeMirror goes over if not > 2
+    $sticky = ($prefix === 'top') ? ' style="position: sticky; top: 0; z-index: 5;"' : ''; //z-index - CodeMirror goes over if not > 2
     $ret = "<div class=aa-tab-buttons $sticky>";
 
     if ($prefix) {
@@ -2718,7 +2719,7 @@ function getFrmInputButtons($buttons, $print_hidden = true, $prefix = ''): strin
         $title = $properties['title'] ? ' title="'.$properties['title'].'"' : '';
         switch($name) {
             case 'update':
-                if ($properties['type'] == 'hidden') {
+                if ($properties['type'] === 'hidden') {
                     $ret .= ' <input type="hidden" name="update" id="'.$prefix .'update"'.$title.' value="'. get_if($properties['value'], "") .'">';
                 } else {
                     $ret .= ' <input type="submit" class="btn-l" name="update" id="'.$prefix .'update"'.$title.' accesskey="S" value=" '. get_if($properties['value'], _m("Update")) ." [^S] " .' ">';
@@ -2766,12 +2767,12 @@ function getFrmInputButtons($buttons, $print_hidden = true, $prefix = ''): strin
                     $onclick = '';
                 }
 
-                if ( !$print_hidden AND ($type == 'hidden') ) {
+                if ( !$print_hidden AND ($type === 'hidden') ) {
                     // do not print hidden fields if print_hidden is false
                     // (used for FrmTabSeparator, to not duplicate hiddens)
                     break;
                 }
-                $nbsp = ( $type == 'hidden' ) ? '' : ' ';
+                $nbsp = ( $type === 'hidden' ) ? '' : ' ';
                 $ret .= $nbsp.'<input type="'.  $type .'"'.$onclick .
                       ' name="'.  $name .
                      '" id="'.  $prefix . $name .
@@ -2863,14 +2864,14 @@ function GetHtmlTable( array $content, $mode='td', $caption='', $clasic=false, $
     if (!$content) {
         return '';
     }
-    if ($mode == 'key') {
+    if ($mode === 'key') {
         array_unshift($content,array_keys(reset($content)));
         $mode = 'th';
     }
     $ret = getFrmTabCaption($caption, [], $clasic ? 'data-aa-class=clasic' : '');
     $first = true;
     foreach ($content as $row) {
-        if ($mode=='th' AND $first) {
+        if ($mode === 'th' AND $first) {
             $ret .= getFrmTabRow( $row , 'th', ['class'=>'aa-tbl-header'], in_array($safe, ['th', 'all']));
         } else {
             $ret .= getFrmTabRow($row, 'td', [], in_array($safe, ['td', 'all']));
@@ -2882,12 +2883,15 @@ function GetHtmlTable( array $content, $mode='td', $caption='', $clasic=false, $
 }
 
 /** getFrmJavascriptFile function
+ *
  * @param        $src
- * @param string $add
+ * @param  string  $add
+ *
  * @return string
  */
-function getFrmJavascriptFile( $src, $add='') {
-    return "\n <script $add src=\"". safe(get_aa_url($src, '', false)) . "\"></script>";
+function getFrmJavascriptFile( $src, $param = [], string $add=''): string
+{
+    return "\n <script $add src=\"". safe(get_aa_url($src, $param, false)) . "\"></script>";
 }
 
 /** getFrmJavascript function
@@ -2920,7 +2924,7 @@ function getFrmJavascriptCached( $jscode, $name, $loadtype = 'async defer' ) {
         $str2find = new CacheStr2find([$name], 'js');
         AA::Pagecache()->store($key, $jscode, $str2find, true);
     }
-    return getFrmJavascriptFile( 'cached.php?keystr='.$key, $loadtype );
+    return getFrmJavascriptFile( 'cached.php', ['keystr'=>$key], $loadtype );
 }
 
 /** getFrmCSS function
@@ -2937,26 +2941,11 @@ function FrmJavascript( $jscode ) {
     echo getFrmJavascript( $jscode );
 }
 
-/** FrmJavascriptFile function
- * @param        $src
- * @param string $add
- */
-function FrmJavascriptFile( $src, $add='' ) {
-    echo getFrmJavascriptFile( $src, $add );
-}
-/** FrmJavascriptCached function
- * @param $jscode
- * @param $name
- */
-function FrmJavascriptCached( $jscode, $name ) {
-    echo getFrmJavascriptCached( $jscode, $name );
-}
-
 /** IncludeManagerJavascript function
  */
 function IncludeManagerJavascript() {
-    FrmJavascriptFile( 'javascript/aajslib-legacy.min.js' );
-    FrmJavascriptFile( 'javascript/manager.min.js' );
+    echo getFrmJavascriptFile( 'javascript/aajslib-legacy.min.js' );
+    echo getFrmJavascriptFile( 'javascript/manager.min.js' );
 }
 
 /** getRadioBookmarkRow function
@@ -2978,7 +2967,7 @@ function getRadioBookmarkRow( $selected, $name, $count, $value, $list_type, $lis
     static $checked = ' checked';  // mark first option when no $group selected
 
     if ( strlen($selected) ) {
-        $checked = (((string)$selected == (string)$value) ? ' checked' : '');
+        $checked = (((string)$selected === (string)$value) ? ' checked' : '');
     }
 
     if ( $safe ) {
@@ -2988,7 +2977,7 @@ function getRadioBookmarkRow( $selected, $name, $count, $value, $list_type, $lis
     <tr>
       <td><input type=radio name=group value=\"$value\" $checked></td>";
 
-    $out .= ((string)$value == "testuser") ? "<td colspan=8>" : "<td>";
+    $out .= ((string)$value === "testuser") ? "<td colspan=8>" : "<td>";
 
     $out .= "$name</td><td>$count</td>";
     // get data about bookmark (who created, last used, ...)
@@ -3006,15 +2995,15 @@ function getRadioBookmarkRow( $selected, $name, $count, $value, $list_type, $lis
         if ($event  = AA_Log::getLastLogEvents("EMAIL_SENT", (string)$value)) {
             $out .= "<td>". date("j.n.Y G:i:s",$event['time']). "</td>";
         } else {
-            $out .= "<td>". _m('Not used, yet'). "</td>";
+            $out .= "<td></td>";
         }
     } else {
         $out .= "<td colspan=\"5\"></td>";
     }
     $out .= "<td>";
-    if ((string)$value != (string)"testuser") {
+    if ((string)$value !== "testuser") {
         $grp = $value;
-        $js = "OpenUsershowPopup('".get_admin_url("usershow.php")."&slice_id=$slice_id&group=$grp&type=$list_type')";
+        $js = "OpenUsershowPopup('".get_admin_url("usershow.php", ['slice_id'=>$slice_id, 'group'=>$grp, 'type'=>$list_type])."')";
         $out .= "<a class=btn href=\"javascript:$js;\">$list_text</a>";
     }
     $out .=  "</td>
@@ -3034,6 +3023,7 @@ function getRadioBookmarkRow( $selected, $name, $count, $value, $list_type, $lis
  *  @param array additional = array( 'text' => 'Test', 'varname'=>'testuser');
  */
 function FrmItemGroupSelect( $items, $searchbar, $selected, $list_type, $messages, $additional=[]) {
+
     $out = '';
     if (is_array($items) AND count($items)) {
         $out = getRadioBookmarkRow( $selected, $messages['selected_items'], count($items), 'sel_item', $list_type, $messages['view_items']);
@@ -3076,7 +3066,7 @@ function FrmItemGroupSelect( $items, $searchbar, $selected, $list_type, $message
  */
 function getZidsFromGroupSelect($group, $items, $searchbar): zids {
     global $slice_id;
-    if ( (string)$group == 'sel_item' ) {  // user specified users
+    if ( (string)$group === 'sel_item' ) {  // user specified users
         $zids = (new zids())->setFromItemArr($items);
     } else {                   // user defined by bookmark
         $conds = false;

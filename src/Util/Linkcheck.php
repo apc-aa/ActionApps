@@ -120,8 +120,8 @@ class Linkcheck {
         } else {
             $urlArray = parse_url($url);
 
-            $urlArray["port"] = $urlArray["port"] ?? (($urlArray["scheme"] == 'https') ? "443" : "80");
-            $protocol = ($urlArray["scheme"] == 'https' && $urlArray["port"] == 443) ? 'ssl://' : '';
+            $urlArray["port"] = $urlArray["port"] ?? (($urlArray["scheme"] === 'https') ? "443" : "80");
+            $protocol = ($urlArray["scheme"] === 'https' && $urlArray["port"] == 443) ? 'ssl://' : '';
             $urlArray["path"] = $urlArray["path"] ?? "/";
             $sock = @fsockopen($protocol . $urlArray["host"], $urlArray["port"], $errnum, $errstr, 10);
 
@@ -133,7 +133,7 @@ class Linkcheck {
                 $dump .= "User-Agent: APC-AA Link Checker (https://actionapps.org/)\r\n";
                 $dump .= "Host: " . $urlArray["host"] . "\r\n";
                 $dump .= "Connection: close\r\n\r\n";
-                fputs($sock, $dump);
+                fwrite($sock, $dump);
                 while (($str = fgets($sock, 1024)) && (($return["code"] == "") || ($return["contentType"] == ""))) {
                     $match = [];
                     if (preg_match("~^http/[0-9]+.[0-9]+ ([0-9]{3})~i", $str, $match)) {

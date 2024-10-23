@@ -49,7 +49,7 @@ function ShowRefreshWizardJavaScript() {
 function GetEmailTableView($viewID) {
     global $attrs_edit, $attrs_browse;
 
-    if ($viewID == "email_edit") {
+    if ($viewID === "email_edit") {
         $mylangs = Langs::getNames();
         return  [
         "table" => "email",
@@ -121,7 +121,7 @@ function GetEmailTableView($viewID) {
     // email: this view browses emails, it is currently used in Alerts module
     //        but may be added anywhere else
 
-    if ($viewID == "email") {
+    if ($viewID === "email") {
         return  [
         "table" => "email",
         "type" => "browse",
@@ -180,11 +180,11 @@ function GetEmailWhere() {
     $myslices = GetUserSlices();
     if (is_array($myslices)) {
         foreach ($myslices as $my_slice_id => $perms) {
-            if (strchr($perms, PS_FULLTEXT)) {
+            if (str_contains($perms, PS_FULLTEXT)) {
                 $restrict_slices[] = q_pack_id($my_slice_id);
             }
         }
-        return "owner_module_id IN ('".join("','",$restrict_slices)."')";
+        return "owner_module_id IN ('".implode("','",$restrict_slices)."')";
     }
     return "(1=0)";
 }

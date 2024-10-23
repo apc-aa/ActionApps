@@ -105,7 +105,7 @@ if (! $tableview["cond"] )  {
 $apage = new AA_Adminpageutil($tableview["mainmenu"], $tableview["submenu"]);
 $apage->setModuleMenu('modules/alerts');
 $apage->setTitle($tableview["caption"]);
-$apage->addRequire(get_aa_url('tabledit.css?v='.AA_JS_VERSION, '', false ));
+$apage->addRequire(get_aa_url('tabledit.css', ['v'=>AA_JS_VERSION], false ));
 $apage->setForm();
 $apage->printHead($err, $Msg);
 
@@ -136,15 +136,15 @@ if ($err) {
     echo "<b>$err</b>";
 }
 
-if (!$err && $tview == "send_emails") {
+if (!$err && $tview === "send_emails") {
     ShowCollectionAddOns();
 }
 
-if (!$err && $tview == "email_edit") {
+if (!$err && $tview === "email_edit") {
     echo AA_Collection::getEmailAliasesHelpbox();
 }
 
-if (!$err && $tview == "acf") {
+if (!$err && $tview === "acf") {
     showSelectionTable();
 }
 

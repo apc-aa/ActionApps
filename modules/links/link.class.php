@@ -68,10 +68,10 @@ class linkassignment {
     function __construct($category, $link, $base, $state=null, $proposal=null, $proposal_delete=null, $priority=null, $id=null) {
         $this->category        = $category;
         $this->link            = $link;
-        $this->base            = $base=='y';
+        $this->base            = $base==='y';
         $this->state           = $state;
-        $this->proposal        = $proposal=='y';
-        $this->proposal_delete = $proposal_delete=='y';
+        $this->proposal        = $proposal==='y';
+        $this->proposal_delete = $proposal_delete==='y';
         $this->priority        = $priority;
         $this->id              = $id;
     }
@@ -99,19 +99,19 @@ class linkassignment {
         $base_state    = $base->getState();
         $base_proposal = $base->isProposal();
 
-        if ( ($this->state == 'hidden') AND ( ($base_state != 'hidden') AND !$base_proposal )) {
+        if ( ($this->state === 'hidden') AND ( ($base_state !== 'hidden') AND !$base_proposal )) {
             $problem[]      = problem_report('hidden_when_base_is_approved', $this->category);
             $this->state    = 'visible';
         }
-        if ( ($this->state == 'hidden') AND !$this->proposal ) {
+        if ( ($this->state === 'hidden') AND !$this->proposal ) {
             $problem[]      = problem_report('hidden_and_not_proposal',$this->category);
             $this->proposal = true;
         }
-        if ( ($this->state != 'hidden')  AND ($this->state != 'visible') AND ($this->state != 'highlight') ) {
+        if ( ($this->state !== 'hidden')  AND ($this->state !== 'visible') AND ($this->state !== 'highlight') ) {
             $problem[]      = problem_report('unknown_state',$this->state);
             $this->state    = 'visible';
         }
-        if ( $this->base AND ($this->state == 'hidden') ) {
+        if ( $this->base AND ($this->state === 'hidden') ) {
             $problem[]      = problem_report('hidden_and_base',$this->category);
             $this->state    = 'visible';
             $this->proposal = true;
@@ -126,21 +126,21 @@ class linkassignment {
         if ( !cattree::singleton()->exists($this->category) ) {
             $problem[] = problem_report('assigned_cat_not_exist',$this->category);
         }
-        if ( ($this->state == 'hidden') AND ( !$base OR (($base->getState() != 'hidden') AND !$base->isProposal() ))) {
+        if ( ($this->state === 'hidden') AND ( !$base OR (($base->getState() !== 'hidden') AND !$base->isProposal() ))) {
             $problem[] = problem_report($base ? 'hidden_when_base_is_approved': 'hidden_and_no_base',$this->category);
             //DoSQL("UPDATE links_link_cat SET state='visible' WHERE a_id='".$this->id."'");
             DB_AA::update('links_link_cat', [['state', 'visible']], [['a_id',$this->id]]);
 
         }
-        if ( ($this->state == 'hidden') AND !$this->proposal ) {
+        if ( ($this->state === 'hidden') AND !$this->proposal ) {
             $problem[] = problem_report('hidden_and_not_proposal',$this->category);
         }
-        if ( ($this->state != 'hidden')  AND
-             ($this->state != 'visible') AND
-             ($this->state != 'highlight') ) {
+        if ( ($this->state !== 'hidden')  AND
+             ($this->state !== 'visible') AND
+             ($this->state !== 'highlight') ) {
             $problem[] = problem_report('unknown_state',$this->state);
         }
-        if ( $this->base AND ($this->state == 'hidden') ) {
+        if ( $this->base AND ($this->state === 'hidden') ) {
             $problem[] = problem_report('hidden_and_base',$this->category);
             //DoSQL("UPDATE links_link_cat SET state='visible', proposal='y' WHERE a_id='".$this->id."'");
             DB_AA::update('links_link_cat', [['state', 'visible'], ['proposal', 'y']], [['a_id',$this->id]]);
@@ -698,7 +698,7 @@ class linkobj {
             $ch_link = new linkobj($db->f('proposal_link_id'));
             $ch_link->load();
             $this->changes[] = [
-                'rejected'=> $db->f('rejected')=='y',
+                'rejected'=> $db->f('rejected')==='y',
                                       'link'    => $ch_link
             ];
         }

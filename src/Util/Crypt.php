@@ -67,7 +67,7 @@ final class Crypt {
      * @param string $pass
      * @return string - $kay modified to exact self::AES256GCM_KEYBYTES bytes
      */
-    static private function createKey($pass) {
+    private static function createKey($pass) {
         if ( ($passlen = strlen($pass)) > self::AES256GCM_KEYBYTES ) {
             return pack("H*", hash('sha256', $pass));
         } elseif ($passlen == self::AES256GCM_KEYBYTES) {

@@ -64,19 +64,19 @@ if (!defined('AA_BASE_PATH')) {
 require_once __DIR__."/phplib/phplib.php";
 require_once __DIR__."/../vendor/autoload.php";
 
-spl_autoload_register(function ($class_name) {
+spl_autoload_register(static function ($class_name) {
     $PAIRS = [
-        'AA_Actionapps'                  => 'central/include/actionapps.class.php',
-        'AA_Auth'                        => 'include/locauth.php',
-        'AA_Components'                  => 'include/statestore.php',
-        'AA_Fields'                      => 'include/field.class.php',
-        'AA\FormArray'                   => 'include/widget.class.php',
-        'AA_Formatters'                  => 'include/widget.class.php',
-        'AA_iEditable'                   => 'include/statestore.php',
-        'AA_Items'                       => 'include/item.php',
-        'AA_Mailman'                     => 'include/mailman.php',
-        'AA_Mysqlauth'                   => 'include/auth.php',
-        'AA_Object'                      => 'include/statestore.php',
+        'AA_Actionapps'      => 'central/include/actionapps.class.php',
+        'AA_Auth'            => 'include/locauth.php',
+        'AA_Components'      => 'include/statestore.php',
+        'AA_Fields'          => 'include/field.class.php',
+        'AA\FormArray'       => 'include/widget.class.php',
+        'AA_Formatters'      => 'include/widget.class.php',
+        'AA_iEditable'       => 'include/statestore.php',
+        'AA_Items'           => 'include/item.php',
+        'AA_Mailman'         => 'include/mailman.php',
+        'AA_Mysqlauth'       => 'include/auth.php',
+        'AA_Object'          => 'include/statestore.php',
         'AA_Perm'            => 'include/perm_core.php',
         'AA_Permsystem_Ldap' => 'include/perm_ldap.php',
         'AA_Permsystem_Sql'  => 'include/perm_sql.php',
@@ -220,7 +220,7 @@ class AA_Debug {
     }
 
     function tracestart($func, $text='') {
-        if ($func=='Query') {
+        if ($func==='Query') {
             $this->_check_repeated($text);
         }
         $this->_calls[]      = [count($this->_tracestack), $func, $this->shorten_message($text), strlen($text),microtime(true)];
@@ -283,7 +283,7 @@ class AA_Debug {
             $row['a'.sprintf('%f',$sum/100000.0).'-'.$func. ++$i] .= '<tr><td>'.safe($func).'</td><td class=num>'.count($times).'</td><td class=num>'.sprintf('%.4f',$sum/count($times)).'</td><td class=num>'.sprintf('%.4f',$sum).'</td><td class=num>'.sprintf('%.4f',1000*max($times)).'</td><td class=num>'.sprintf('%.4f',1000*min($times)).'</td></tr>';
         }
         krsort($row);
-        $ret .= '<table class="aa-stat sortable"><thead><tr><th>function</th><th data-sort=integer>called</th><th data-sort=float>avg</th><th data-sort=float>sum</th><th data-sort=float>max</th><th data-sort=float>min</th></tr></thead><tbody>'.join('',$row).'</tbody><tfoot><tr><th data-sort=float>Sum</th><th></th><th></th><th>'.$sumsum.'</th><th></th><th></th></tr></tfoot></table>';
+        $ret .= '<table class="aa-stat sortable"><thead><tr><th>function</th><th data-sort=integer>called</th><th data-sort=float>avg</th><th data-sort=float>sum</th><th data-sort=float>max</th><th data-sort=float>min</th></tr></thead><tbody>'.implode('',$row).'</tbody><tfoot><tr><th data-sort=float>Sum</th><th></th><th></th><th>'.$sumsum.'</th><th></th><th></th></tr></tfoot></table>';
 
 
         // repeated queries;
@@ -296,21 +296,21 @@ class AA_Debug {
         }
         if ($row) {
             krsort($row);
-            $ret .= '<table class="aa-stat sortable"><tr><th data-sort=integer>used x times</th><th>query</th></tr>' . join('', $row) . '<tr></table>';
+            $ret .= '<table class="aa-stat sortable"><tr><th data-sort=integer>used x times</th><th>query</th></tr>' . implode('', $row) . '<tr></table>';
         }
 
         // longest queries;
         $row    = [];
         $i = 0;
         foreach($this->_calls as $call) {
-            if ($call[1]=="Query") {
+            if ($call[1]==="Query") {
                 $time = sprintf("%.4f", (1000*($call[4]-$_SERVER['REQUEST_TIME_FLOAT'])));
                 $row['a' . sprintf('%012.5f',($call[5]-$call[4])*1000.0). ++$i] = '<tr><td class=num>'.$i.'</td><td class=num>'.$time. '</td><td class=num>'.sprintf('%.4f',($call[5]-$call[4])*1000.0) . '</td><td>' . safe($call[2]) . '</td><td class=num>' . safe($call[6]) . '</td></tr>';
             }
         }
         if ($row) {
             krsort($row);
-            $ret .= '<table class="aa-stat sortable"><tr><th data-sort=integer>#</th><th data-sort=float>time</th><th data-sort=float>duration</th><th>query</th><th data-sort=integer>out</th></tr>' . join('', $row) . '<tr></table>';
+            $ret .= '<table class="aa-stat sortable"><tr><th data-sort=integer>#</th><th data-sort=float>time</th><th data-sort=float>duration</th><th>query</th><th data-sort=integer>out</th></tr>' . implode('', $row) . '<tr></table>';
         }
 
         $ret .= '<table class="aa-stat sortable"><tr><th data-sort=float>time</th><th data-sort=float>duration</th><th>function</th><th>in</th><th data-sort=integer>out</th></tr>';
@@ -510,7 +510,7 @@ class AA {
 }
 
 AA::$debug = (int)($_REQUEST['debug'] ?: $_COOKIE['aa_debug']);  // aa_debug used in admin interface - item manager - left menu
-AA::$dbg   = (AA::$debug[0] == 'f') ? new AA_Debug_Firephp() : ((AA::$debug[0] == 'c') ? new AA_Debug_Console() : new AA_Debug_Console());
+AA::$dbg   = (AA::$debug[0] === 'f') ? new AA_Debug_Firephp() : ((AA::$debug[0] === 'c') ? new AA_Debug_Console() : new AA_Debug_Console());
 
 // This pair of functions remove the guessing about which of $db $db2
 // to use
@@ -565,9 +565,9 @@ function GetTable2Array($SQL, $key="id", $values='aa_all') {
     $db->query($SQL);
 
     while ($db->next_record()) {
-        if ($values == 'aa_all') {
+        if ($values === 'aa_all') {
             $val = $db->record();
-        } elseif ($values == 'aa_mark') {
+        } elseif ($values === 'aa_mark') {
             $val = true;
         } elseif (str_starts_with($values, 'unpack:')) {
             $val = unpack_id($db->f(substr($values,7)));
@@ -578,10 +578,10 @@ function GetTable2Array($SQL, $key="id", $values='aa_all') {
             // $val = DBFields($db);  // I changed the mysql_fetch_array($this->Query_ID, MYSQL_ASSOC) in db_mysql by adding MYSQL_ASSOC, so DBFields is no longer needed
         }
 
-        if ( $key == 'aa_first' ) {
+        if ( $key === 'aa_first' ) {
             freeDB($db);
             return $val;
-        } elseif ( ($key == "NoCoLuMn") OR !$key ) {
+        } elseif ( ($key === "NoCoLuMn") OR !$key ) {
             $arr[] = $val;
         } elseif (str_starts_with($key, 'unpack:')) {
             $arr[unpack_id($db->f(substr($key,7)))] = $val;
@@ -619,11 +619,11 @@ function pageOpen($type = '') {
 
     $sess = new AA_Session;
 
-    if ($type != 'noauth') {
+    if ($type !== 'noauth') {
         if (!is_object($auth)) {
             $auth = new AA_Auth;
         }
-        $auth->set_nobody($type=='nobody');
+        $auth->set_nobody($type==='nobody');
         $auth->start();
     }
 }

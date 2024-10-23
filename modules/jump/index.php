@@ -32,7 +32,7 @@ is_object( $db ) || ($db = getDB());
 $db->query("SELECT * FROM jump WHERE slice_id = '".q_pack_id($slice_id)."'");
 if ($db->next_record()) {
     $dest       = $db->f("destination");
-    $dest      .= strchr($dest,"?") ? "&" : "?";
+    $dest      .= str_contains($dest, "?") ? "&" : "?";
     $instal_url = AA_INSTAL_PATH;
     $url        = StateUrl($instal_url.$dest);
     $change_id  = $db->f("dest_slice_id");

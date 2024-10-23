@@ -55,7 +55,7 @@ function PrintExportRow( $sname, $sid, $odd) {
 
 $apage = new AA_Adminpageutil();
 $apage->setTitle(_m("Export Item to Selected Slice"));
-$apage->addRequire(get_aa_url('javascript/manager.min.js?v='.AA_JS_VERSION ));
+$apage->addRequire(get_aa_url('javascript/manager.min.js', ['v'=>AA_JS_VERSION] ));
 $apage->setForm(['name'=>'incf']);
 $apage->printHead($err, $Msg);
 
@@ -71,17 +71,17 @@ echo '
 $i=1;     // slice checkbox counter
 if ( is_array($g_modules) AND (count($g_modules) > 1) ) {
     foreach ( $g_modules as $sid => $v) {
-        if ( ($v['type'] == 'S') AND    //  we can feed just between slices ('S')
-            ((string)AA::$module_id != (string)$sid) AND
+        if ( ($v['type'] === 'S') AND    //  we can feed just between slices ('S')
+            ((string)AA::$module_id !== (string)$sid) AND
             // we must have autor or editor perms in destination slices
             CheckPerms( AuthGetUid(), "slice", $sid, PS_EDIT_SELF_ITEMS) ) {
-            $odd = (gettype($i/2) == 'integer');
+            $odd = (is_int($i / 2));
             PrintExportRow($v['name'], $sid, $odd);
             $i++;
         }
     }
 }
-if ( $i==1 ) {   // can't feed to any slice
+if ( $i===1 ) {   // can't feed to any slice
   echo '<tr><td colspan="3">'. _m("No permission to set feeding for any slice") .'</td></tr>';
 }
 ?>

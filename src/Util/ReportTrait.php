@@ -38,9 +38,9 @@ trait ReportTrait {
 
         if ($rows) {
             $caption =  is_callable([$this, "getId"]) ? $this->getId() : '';
-            if ($type=='html') {
+            if ($type==='html') {
                 $ret = GetHtmlTable($rows, 'key', $caption);
-            } elseif ($type=='plain') {
+            } elseif ($type==='plain') {
                 $msgs = $caption ? array_merge([['name'=>$caption]], $rows) : $rows;
                 $ret = json_encode($msgs);
             }

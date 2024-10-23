@@ -51,31 +51,35 @@
  */
 function xml_serialize($k, $v, $i, $ii, $a=null) {
     $start = (isset($a) ? "$k $a" : "t tname=\"$k\"");
-    $end   = (isset($a) ? "$k" : "t");
+    $end   = (isset($a) ? (string)$k : "t");
     if (is_null($v)) {
         return "$i<$start />";
     }
-    elseif (is_string($v) || is_integer($v) || is_real($v) || is_bool($v)) {
+
+    if (is_string($v) || is_int($v) || is_float($v) || is_bool($v)) {
         //if ($debug) print "STRING";
         // if contains stuff other than printable ascii and CRLF then hex it
         if (preg_match('/[\000-\011\013-\014\016-\037\200-\377]/',$v)) {
             return "$i<$start coding=\"bin2hex\">".bin2hex($v)."</$end>";
-        } else {
-            return "$i<$start>".safe($v)."</$end>";
         }
+
+        return "$i<$start>".safe($v)."</$end>";
     }
-    elseif (is_array($v)) {
+
+    if (is_array($v)) {
         foreach ($v as $k1 => $v1) {
             $o .= xml_serialize($k1,$v1,$i.$ii,$ii);
         }
         return "$i<$start>$o$i</$end>";
-    } elseif (is_object($v)) {
+    }
+
+    if (is_object($v)) {
         //if ($debug) print "OBJECT";
         if (is_callable([$v,"xml_serialize"])) {
             return $v->xml_serialize($k,$i,$ii,$a);
-        } else {
-            print("ERROR: Can't serialize an Object");
         }
+
+        print("ERROR: Can't serialize an Object");
     } else {
         print("What is $k, if it isn't String, array or object=");
         print_r($v);
@@ -145,7 +149,7 @@ class xml_unserializer {
         } else {
             $this->coding = "";
         }
-        if (($name == "T" || is_callable($name . "_xml_unserialize"))
+        if (($name === "T" || is_callable($name . "_xml_unserialize"))
              && isset($attrs["TNAME"])) {
             $this->name = $attrs["TNAME"];
             unset($attrs["TNAME"]);
@@ -175,7 +179,7 @@ class xml_unserializer {
           case "serialize":
           case "serializezip":
                 $c = base64_decode($this->chardata);
-                if ($this->coding == "serializegzip") {
+                if ($this->coding === "serializegzip") {
                     $c = gzuncompress($c);
                 }
                 $this->top = unserialize($c);

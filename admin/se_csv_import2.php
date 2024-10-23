@@ -212,12 +212,12 @@ class AA_Csv_Importer {
         $this->params['slice_id........']  = $this->slice_id;
 
         $this->actions['id..............'] = $this->itemId;
-        if ($this->itemId == 'old') {
+        if ($this->itemId === 'old') {
             // update items with the id specified in $itemIdMappedFrom field
             $this->mapping['id..............'] = $this->itemIdMappedFrom;
             $this->actions['id..............'] = $this->itemIdMappedActions;
             $this->params['id..............']  = $this->itemIdMappedParams;
-        } elseif ( $this->itemId == 'new' ) {
+        } elseif ( $this->itemId === 'new' ) {
             $this->actions['id..............'] = 'new';  // new_id
         }
     }
@@ -260,7 +260,7 @@ class AA_Csv_Importer {
             if (!$err) {
                 $itemContent->setSliceID($this->slice_id);
                 $added_to_db = $itemContent->storeItem($this->actionIfItemExists, [false]);     // not invalidate cache
-                if ($added_to_db == false) {
+                if (!$added_to_db) {
                     $err = _m("Cannot store item to DB"). ' '. ItemContent::lastErrMsg();
                 }
             }
@@ -414,11 +414,11 @@ class AA_Csv_Importer {
 
                <tr><td colspan="2">Setting item id:</td><tr>
 
-               <tr><td><input type="radio" <?php if ($this->itemId == "new") echo "CHECKED"; ?> name="itemId" value="new"></td>
+               <tr><td><input type="radio" <?php if ($this->itemId === "new") echo "CHECKED"; ?> name="itemId" value="new"></td>
                 <td>Create new id</td>
                </tr>
                <tr>
-               <td><input type="radio" <?php if ($this->itemId == "old") echo "CHECKED"; ?> name="itemId" value="old"></td>
+               <td><input type="radio" <?php if ($this->itemId === "old") echo "CHECKED"; ?> name="itemId" value="old"></td>
                <td><?php
                  echo _m("Map item id from"). '&nbsp';
                  FrmSelectEasy("itemIdMappedFrom", $inFields, $this->itemIdMappedFrom ?: (!$set_default ? '' : $inFields[0]));
@@ -512,7 +512,7 @@ if ($upload) {
 $apage = new AA_Adminpageutil('sliceadmin','CSVimport');
 $apage->setTitle(_m("Admin - Import CSV (2/2) - Mapping and Actions"));
 $apage->setForm();
-$apage->addRequire(get_aa_url('javascript/js_lib.min.js?v='.AA_JS_VERSION, '', false));
+$apage->addRequire(get_aa_url('javascript/js_lib.min.js', ['v'=>AA_JS_VERSION], false));
 $apage->printHead($err, $Msg);
 
 if ($preview) {

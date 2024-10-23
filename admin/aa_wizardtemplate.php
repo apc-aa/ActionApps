@@ -46,7 +46,7 @@ $managed = AA::Metabase()->getManagerConf('wizard_template');
 ///* ------------------------------------------------------------------------------------
 //   wt -- browse wizard templates
 //*/
-//if ($viewID == "wt") {
+//if ($viewID === "wt") {
 //    return  [
 //        "table" => "wizard_template",
 //        "type" => "browse",

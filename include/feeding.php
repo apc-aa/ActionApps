@@ -237,14 +237,14 @@ function FeedItemTo($item_id, $from_slice_id, $destination_id, $approved, $tocat
             case FEEDMAP_FLAG_MAP :
                 if ($fields->getProperty($val,'feed')==STATE_UNFEEDABLE) {
                     continue(2);
-                } else {
-                    $new4id[$newfld] = $content4id[$val];
-                    $minkey = (is_array($new4id[$newfld]) AND $new4id[$newfld]) ? min(array_keys($new4id[$newfld])) : 0; // for language translation we do not start with 0
-                    if ($fields->getProperty($val,'feed')==STATE_FEEDNOCHANGE ) {
-                        $new4id[$newfld][$minkey]['flag'] |= FLAG_FREEZE;  // don't allow to change
-                    } elseif ($fields->getProperty($val,'feed')==STATE_FEEDABLE_UPDATE_LOCKED) {
-                        $new4id[$newfld][$minkey]['flag'] |= FLAG_FREEZE | FLAG_UPDATE;   //update and don't allow to change
-                    }
+                }
+
+                $new4id[$newfld] = $content4id[$val];
+                $minkey          = (is_array($new4id[$newfld]) AND $new4id[$newfld]) ? min(array_keys($new4id[$newfld])) : 0; // for language translation we do not start with 0
+                if ($fields->getProperty($val,'feed')==STATE_FEEDNOCHANGE ) {
+                    $new4id[$newfld][$minkey]['flag'] |= FLAG_FREEZE;  // don't allow to change
+                } elseif ($fields->getProperty($val,'feed')==STATE_FEEDABLE_UPDATE_LOCKED) {
+                    $new4id[$newfld][$minkey]['flag'] |= FLAG_FREEZE | FLAG_UPDATE;   //update and don't allow to change
                 }
                 break;
             // in value you can specify not only new value but you can write there
@@ -282,7 +282,7 @@ function FeedItemTo($item_id, $from_slice_id, $destination_id, $approved, $tocat
 
     if ( !(($map['status_code.....']['feedmap_flag'] == FEEDMAP_FLAG_VALUE) AND
           ((int)$new4id['status_code.....'][0]['value'] > 0)) ) {
-        $new4id['status_code.....'][0]['value'] = ($approved=='y' ? 1 : 2);
+        $new4id['status_code.....'][0]['value'] = ($approved==='y' ? 1 : 2);
     }
     $field_ids = ["post_date", "publish_date","expiry_date", "highlight", "posted_by", "edited_by", "last_edit"];
     foreach($field_ids as $fid) {

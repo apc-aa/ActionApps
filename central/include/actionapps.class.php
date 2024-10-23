@@ -105,10 +105,9 @@ class AA_Actionapps {
         return $this->getValue('AA_ADMIN_PWD');
     }
 
-    /** get value from localy stored data (central_conf) */
+    /** get value from locally stored data (central_conf) */
     function getValue($field) {
-        $ic = $this->local_data;
-        return $ic->getValue($field);
+        return $this->local_data->getValue($field);
     }
 
 
@@ -345,9 +344,9 @@ class AA_Module_Definition {
         }
 
         foreach ($this->data as $table => $rows) {
-            $chunks = array_merge($chunks, AA_Module_Definition_Chunk::factoryArray($this->module_id, $table, $rows));
+            $chunks[] = AA_Module_Definition_Chunk::factoryArray($this->module_id, $table, $rows);
         }
-        return $chunks;
+        return array_merge(...$chunks);  // avoiding array_merge() in loop
     }
 }
 
@@ -427,7 +426,7 @@ class AA_Module_Definition_Chunk {
         foreach ($arr as $table => $idents) {
             $ret .= count($idents). " $table (";
             foreach ($idents as $ident) {
-                $ret .= '['.join(',',$ident).']';
+                $ret .= '['.implode(',',$ident).']';
             }
             $ret .= '); ';
         }
@@ -569,7 +568,7 @@ class AA_Difference {
             return [0 => new AA_Difference('INFO', _m('%1 is not defined for both AAs', [$identifier->toString()]))];
         }
 
-        // if we comparing row values, we can also update whole row at once - so we mark it
+        // if we're comparing row values, we can also update whole row at once - so we mark it
         $is_different = false;
         foreach ($template_arr as $key => $value) {
             $sub_identifier = clone($identifier);
@@ -583,7 +582,7 @@ class AA_Difference {
                 continue;
             }
             if (is_array($value)) {
-                $diff = array_merge($diff, AA_Difference::_compareArray($value, $destination_arr[$key], $sub_identifier, $ignore));
+                $diff = array_merge($diff, self::_compareArray($value, $destination_arr[$key], $sub_identifier, $ignore));
                 // we need to clear the destination array in order we can know,
                 // that there are some additional keys in it (compated to template)
                 unset($destination_arr[$key]);
@@ -592,7 +591,7 @@ class AA_Difference {
                 $diff[] = new AA_Difference('DIFFERENT_VALUE', '&nbsp;&nbsp;&nbsp;-&nbsp;'. _m('There is no such key (%1) in destination slice for %2', [$key, $identifier->toString()]), new AA_Sync_Action('UPDATE_VALUE', $sub_identifier, $value));
             }
             elseif (($value != $destination_arr[$key]) AND !(empty($value) AND empty($destination_arr[$key]))) {  // '' and 0 is considered equal
-               // if we comparing row values, we can also update whole row at once - so we mark it
+               // if we're comparing row values, we can also update whole row at once - so we mark it
                $is_different = true;
 
                $code = '{htmltoggle:&gt;&gt;::&lt;&lt;:'. QuoteColons('
@@ -618,7 +617,7 @@ class AA_Difference {
             // there are no such keys in template
             if ( is_array($value) ) {
                 // I know - we can define the difference right here, but it is better to use the same method as above
-                $diff = array_merge($diff, AA_Difference::_compareArray('',$destination_arr[$key], $sub_identifier, $ignore));
+                $diff = array_merge($diff, self::_compareArray('',$destination_arr[$key], $sub_identifier, $ignore));
             } else {
                 $diff[] = new AA_Difference('DELETED', '&nbsp;&nbsp;&nbsp;-&nbsp;'. _m('There is no such key (%1) in template slice for %2', [$key, $sub_identifier->toString()]), new AA_Sync_Action('UPDATE_VALUE', $sub_identifier, ''));
             }
@@ -673,7 +672,7 @@ class AA_Identifier {
     }
 
     function toString() {
-        return join('->',$this->path);
+        return implode('->',$this->path);
     }
 }
 
@@ -697,7 +696,7 @@ class AA_Sync_Action {
     function printToForm() {
         $packed_action = serialize($this);
         echo '<div>';
-        $state = isset($_POST['sync']) ? in_array($packed_action, (array)$_POST['sync']) : ($this->type != 'UPDATE_VALUE');
+        $state = isset($_POST['sync']) ? in_array($packed_action, (array)$_POST['sync']) : ($this->type !== 'UPDATE_VALUE');
         FrmChBoxEasy('sync[]', $state, '', $packed_action);
         switch ( $this->type ) {
             case 'DELETE': echo _m("Delete"); break;
@@ -734,19 +733,19 @@ class AA_Sync_Action {
         if (!$row) {
             return _m('Wrong command - row is not defined - %1', [$idf->toString()]);
         }
-        if ( ($this->type == 'UPDATE_ROW') OR ($this->type == 'UPDATE_VALUE') ) {
+        if ( ($this->type === 'UPDATE_ROW') OR ($this->type === 'UPDATE_VALUE') ) {
             $data = $this->_getDataArray();
             $metabase->fillKeys($data, $idf);
             $metabase->doUpdate($table, $data);
             return _m('%1 %2 in slice %3 updated', [$table, $row, $module_id]);
         }
-        if ( $this->type == 'INSERT' ) {
+        if ( $this->type === 'INSERT' ) {
             $data = $this->params;
             $metabase->fillKeys($data, $idf);
             $metabase->doInsert($table, $data);
             return _m('%1 %2 inserted into slice %3', [$table, $row, $module_id]);  // field xy inserted into slice yz
         }
-        if ( $this->type == 'DELETE' ) {
+        if ( $this->type === 'DELETE' ) {
             $data = [];
             $metabase->fillKeys($data, $idf);
             $metabase->doDelete($table, $data);
@@ -850,7 +849,7 @@ function Central_QueryZids(AA_Set $set): zids {
     $sort  = $set->getSort();
     $type  = $set->getBins();
 
-    if ($type == AA_BIN_ACTIVE) {
+    if ($type === AA_BIN_ACTIVE) {
           $type = AA_BIN_APPROVED;   // we do not work with dates, here
     }
 

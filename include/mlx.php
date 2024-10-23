@@ -242,13 +242,13 @@ class MLX {
         $content4mlxid    = [];
         $oldcontent4mlxid = [];
         $insert = false;
-        if ((($action == "insert") || ($action == "update")) && $mlxl && $mlxid) {
+        if ((($action === "insert") || ($action === "update")) && $mlxl && $mlxid) {
             $this->trace("Updating control data..");
             $oldcontent4mlx   = GetItemContent($mlxid);
             $oldcontent4mlxid = $oldcontent4mlx[$mlxid];
             $id   = $mlxid;
             $lang = $mlxl;
-        } elseif ((!$content4id->getValue(MLX_CTRLIDFIELD)) || ($action == "insert")) {
+        } elseif ((!$content4id->getValue(MLX_CTRLIDFIELD)) || ($action === "insert")) {
         // create the meta data
             $this->trace("Creating new control data..");
             $id     = new_id();
@@ -374,7 +374,7 @@ class MLX {
                 continue;
             }
             $mlxout .= "<td class='tabs";
-            if (($action == "edit") || ($action == "update")) {
+            if (($action === "edit") || ($action === "update")) {
                 $langid = $this->getLangItem($fname, $content4id, $content4mlxid);
             } elseif ($mlxid) {
                 $langid = $this->getLangItem($fname, $mlxid, $content4mlxid);
@@ -566,7 +566,7 @@ class MLXView {
     function postQueryZIDs($zidsObj, $ctrlSliceID, $slice_id) {
         global $QueryIDsCount;
 
-        if ($this->mode != "MLX") {
+        if ($this->mode !== "MLX") {
             return;
         }
         if ($zidsObj->count() == 0) {
@@ -734,7 +734,7 @@ class MLXView {
             //$o .= unpack_id($db->record(0));
             $lang    = array_search((string)$db->record(1),$translations);
             $itemid  = unpack_id($db->record(0));
-            $o      .= str_replace(["%lang","%itemid"], [$lang,"$itemid"],
+            $o      .= str_replace(["%lang","%itemid"], [$lang,$itemid],
                 $tmpl);
             //__mlx_dbg($db->record());
         }
@@ -915,7 +915,7 @@ class MLXGetText
         if ($this->currentDomainRef['slices'][$slice2add]) {
             return $slice2add;
         }
-        $mode = ($mode=='learn'?1:0);
+        $mode = ($mode==='learn'?1:0);
         $isModeActive = ($mode && 1);
         $this->currentDomainRef['mode'] = $mode;
         $this->currentDomainRef['slices'][$slice2add] = [];
@@ -923,7 +923,7 @@ class MLXGetText
         //__mlx_dbg($fields);
         $lang = strtoupper($lang);
         foreach($fields as $fid => $fname) {
-            if ($fid == 'headline........') {
+            if ($fid === 'headline........') {
                 if ($this->currentDomainRef['defaultLang'] && $this->currentDomainRef['defaultLang'] != $fname) {
                     if ($GLOBALS['errcheck']) {
                         huhl('MLXGetText mixing different default languages in one domain: $domain');
@@ -936,7 +936,7 @@ class MLXGetText
                 break;
             }
         }
-        $isDefLang = ($langField == 'headline........');
+        $isDefLang = ($langField === 'headline........');
         if ($isDefLang && !$isModeActive) {
             return; //default language, nonactive mode
         }
@@ -957,7 +957,7 @@ class MLXGetText
             [$item_id,$field_id,$text] = $db->record();
             $item_id  = unpack_id($item_id);
             $refSlice = &$this->currentDomainRef[$lang];
-            if ($field_id == 'headline........') {
+            if ($field_id === 'headline........') {
                 if ($refSlice[$item_id]) {
                     $refSlice[$text] = $refSlice[$item_id];
                     unset($refSlice[$item_id]);

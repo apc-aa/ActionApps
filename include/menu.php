@@ -205,7 +205,7 @@ function get_aamenus() {
         $items = &$aamenus["itemmanager_submenu"]["items"];
 
         // Add associated Alerts to Item Manager submenu
-        if ($slice->getProperty("type") == "ReaderManagement" ) {
+        if ($slice->getProperty("type") === "ReaderManagement" ) {
             $modules2link = DB_AA::select([], 'SELECT module_id as id, module.name as name FROM alerts_collection AC INNER JOIN module ON AC.module_id = module.id', [['slice_id', AA::$module_id, 'l']]);
             AddAlertsModules($items, $modules2link, _m("Alerts"), _m("List of Alerts modules using this slice as Reader Management."));
 

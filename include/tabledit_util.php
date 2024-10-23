@@ -150,8 +150,8 @@ function SetColumnTypes(&$columns, &$primary_aliases, $default_table, $join="", 
         if (!is_array($column["view"])) {
             $column["view"] = [];
         }
-        $column["view"]["readonly"]     = get_if($column["view"]["readonly"], $default_readonly || $column["view"]["type"] == "userdef" || $column["view"]["type"] == "calculated");
-        if ($column["view"]["type"] == "date") {
+        $column["view"]["readonly"]     = get_if($column["view"]["readonly"], $default_readonly || $column["view"]["type"] === "userdef" || $column["view"]["type"] === "calculated");
+        if ($column["view"]["type"] === "date") {
             // $cols = strlen( date($column["view"]["format"], "31.12.1970") );
             $cols = strlen( date($column["view"]["format"], 0) );
         }
@@ -161,7 +161,7 @@ function SetColumnTypes(&$columns, &$primary_aliases, $default_table, $join="", 
         $column["view"]["size"]["rows"] = get_if($column["view"]["size"]["rows"], 10);
         $column["view"]["html"]         = get_if($column["view"]["html"], false);
         $column["view"]["type"]         = get_if($column["view"]["type"], $column["type"]);
-        if ($column["view"]["type"] == "hidden") {
+        if ($column["view"]["type"] === "hidden") {
             $column["view"]["type"] = "hide";
         }
 
@@ -171,7 +171,7 @@ function SetColumnTypes(&$columns, &$primary_aliases, $default_table, $join="", 
     $db = getDB();
     foreach ($tables as $table => $foo) {
         // Special table name - not real name - used for not database columns
-        if ( $table == 'aa_notable' ) {
+        if ( $table === 'aa_notable' ) {
             continue;    // This is not database column
         }
 
@@ -202,7 +202,7 @@ function SetColumnTypes(&$columns, &$primary_aliases, $default_table, $join="", 
             if ($primary && $primary[$table]) {
                 $is_primary = in_array($col["name"], $primary[$table]);
             } else {
-                $is_primary = ($col["key"] == "PRI");
+                $is_primary = ($col["key"] === "PRI");
             }
             if ($is_primary || $is_join_part) {
                 // create the column if not exists
@@ -218,7 +218,7 @@ function SetColumnTypes(&$columns, &$primary_aliases, $default_table, $join="", 
                         echo "Define only the child (left) fields for join tables! Wrong alias: $alias";
                         exit;
                     }
-                    elseif ($cprop["view"]["type"] == "ignore") {
+                    elseif ($cprop["view"]["type"] === "ignore") {
                         echo "<h2>Column type for a primary key part must not be IGNORE.</h2>";
                         exit;
                     }
@@ -520,7 +520,7 @@ function ProoveVals($val, $columns) {
             if (!ValidateInput($colname, $colname, $val[$colname], $err, $column["required"], $column["validate"])) {
                 return false;
             }
-            if ($column["validate_min"] && $column["validate"] == "number") {
+            if ($column["validate_min"] && $column["validate"] === "number") {
                 if ($val[$colname] < $column["validate_min"] || $val[$colname] > $column["validate_max"]) {
                     $err[$colname] = _m("Value of %1 should be between %2 and %3.", [$colname,$column["validate_min"],$column["validate_max"]]);
                     return false;

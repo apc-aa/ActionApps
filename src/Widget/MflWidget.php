@@ -42,7 +42,7 @@ class MflWidget extends Widget
         $ret = '';
         // are there some textareas not converted to CodeMirror?
         if ($this->ids_4_editor) {
-           $ret .= "\n  document.querySelectorAll(\"". join(',',$this->ids_4_editor) .'").forEach( function(el) { CodeMirror.fromTextArea(el, { lineWrapping:true, matchBrackets: true, matchTags: true, viewportMargin: 10000, mode: "htmlmixed" });});';
+           $ret .= "\n  document.querySelectorAll(\"". implode(',',$this->ids_4_editor) .'").forEach( function(el) { CodeMirror.fromTextArea(el, { lineWrapping:true, matchBrackets: true, matchTags: true, viewportMargin: 10000, mode: "htmlmixed" });});';
 
            // clean the list - all textareas are converted
            $this->ids_4_editor = [];
@@ -78,8 +78,8 @@ class MflWidget extends Widget
         $base_name_add = $base_name . '[mfl]';
 
         $base_id = FormArray::formName2Id($base_name);
-        // $widget_add    = ($type == 'live') ? " class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"" : '';
-        // $widget_add2   = ($type == 'live') ? '<img width=16 height=16 title="'._m('To save changes click here or outside the field.').'" alt="'._m('Save').'" class="'.$base_id.'ico" src="'. AA_INSTAL_PATH.'images/px.gif" style="position:absolute; right:0; top:0;">' : '';
+        // $widget_add    = ($type === 'live') ? " class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"" : '';
+        // $widget_add2   = ($type === 'live') ? '<img width=16 height=16 title="'._m('To save changes click here or outside the field.').'" alt="'._m('Save').'" class="'.$base_id.'ico" src="'. AA_INSTAL_PATH.'images/px.gif" style="position:absolute; right:0; top:0;">' : '';
 
         $row_count = (int)$this->getProperty('row_count', 2);
         $def_rows = (int)$this->getProperty('rows', 1);
@@ -93,13 +93,13 @@ class MflWidget extends Widget
         $widget_onchange = '';
 
         $attrs = Widget::stdInputAttrs($type, $base_id, ['dirty']);
-        if ($type == 'live') {
+        if ($type === 'live') {
             unset($attrs['onchange']);  // adding on the line below
             $widget_onchange = "onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"";
             $widget_add2     = '<img width=16 height=16 title="' . _m('To save changes click here or outside the field.') . '" alt="' . _m('Save') . '" class="' . $base_id . 'ico" src="' . AA_INSTAL_PATH . 'images/px.gif" style="position:absolute; right:0;">';
         }
 
-        if ($inputtype == 'textfield') {
+        if ($inputtype === 'textfield') {
             $attrs = ['type' => 'text'];
             $attrs = array_merge($attrs, $aa_property->getValidator()->getHtmlInputAttr());
             $attrs['size'] = get_if($this->getProperty('width'), $attrs['size']);
@@ -116,7 +116,7 @@ class MflWidget extends Widget
 
         $attr_string = htmlattr($attrs);
 
-        $widget = ($type == 'normal') ? AA_Formatters::getFormattersRadio($base_name, $aa_property, $value) : AA_Formatters::getHiddenFormatters($base_name, $aa_property, $value); // ajax, live
+        $widget = ($type === 'normal') ? AA_Formatters::getFormattersRadio($base_name, $aa_property, $value) : AA_Formatters::getHiddenFormatters($base_name, $aa_property, $value); // ajax, live
         // display at least one option
         for ($i = 0, $ino = max(1, $row_count, $value->count()); $i < $ino; ++$i) {
             $input_name = $base_name_add . "[$i]";
@@ -125,7 +125,7 @@ class MflWidget extends Widget
             $rows = (($my_rows = substr_count($input_value, "\n")) > $def_rows) ? min($my_rows + 2, 30) : $def_rows;
             $required = ($aa_property->isRequired() AND ($i == 0)) ? 'required' : '';
 
-            if ($inputtype == 'textarea') {
+            if ($inputtype === 'textarea') {
                 if ($i > 0) {
                     $widget .= '<br>';
                 }
@@ -139,14 +139,13 @@ class MflWidget extends Widget
                 $widget .= "<div><input $attr_string name=\"$input_name\" id=\"$input_id\" value=\"$input_value\" $required $widget_onchange>$widget_add2</div>";  // do not insert \n here - javascript for sorting tables sorttable do not work then
             }
             $widget_add2 = '';
-            $widget_onchange = ($type == 'live') ? "onchange=\"document.getElementById('".FormArray::formName2Id($base_name_add . "[0]")."').onchange()\"" : '';     
+            $widget_onchange = ($type === 'live') ? "onchange=\"document.getElementById('".FormArray::formName2Id($base_name_add . "[0]")."').onchange()\"" : '';
         }
         $widget = "<div id=\"allrows$base_id\">$widget</div>";
         $img = GetAAImage('icon_new.gif', _m('new'), 17, 17);
-        $attr_string     = str_replace('"', '&quot;', $attr_string);
-        $attr_string     = str_replace(['"',"'"], ['&quot;',"\'"], $attr_string);
-        $widget_onchange = str_replace(['"',"'"], ['&quot;',"\'"], $widget_onchange);
-        if ($inputtype == 'textarea') {
+        $attr_string     = str_replace(['"', '"', "'"], ['&quot;', '&quot;', "\'"], $attr_string);
+        $widget_onchange = str_replace(['"', "'"], ['&quot;', "\'"], $widget_onchange);
+        if ($inputtype === 'textarea') {
             $widget .= "\n<a href=\"javascript:void(0)\" onclick=\"var el=document.createElement('div'); el.innerHTML='<br><textarea $attr_string name=&quot;$base_name" . "[mfl][]&quot; rows=&quot;$rows&quot; $widget_onchange></textarea>'; document.getElementById('allrows$base_id').append(el); CodeMirror.fromTextArea(el.querySelector('textarea'), { lineWrapping:true, matchBrackets: true, matchTags: true, viewportMargin: 10000, mode: &quot;htmlmixed&quot; }); return false;\">$img</a>";
         } else {
             $widget .= "\n<a href=\"javascript:void(0)\" onclick=\"var el=document.createElement('div'); el.innerHTML='<input $attr_string name=&quot;$base_name" . "[mfl][]&quot; value=&quot;&quot; $widget_onchange>'; document.getElementById('allrows$base_id').append(el); return false;\">$img</a>";

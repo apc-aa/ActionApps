@@ -113,9 +113,9 @@ class zids implements Iterator, ArrayAccess, Countable {
 
     /** remove non valid ids */
     function clean() {
-        if ($this->type == "z") {
+        if ($this->type === "z") {
             // find and set current
-            if ( $this->guesstype() == 'z' ) {
+            if ( $this->guesstype() === 'z' ) {
                 $this->clear();
             }
         }
@@ -130,7 +130,7 @@ class zids implements Iterator, ArrayAccess, Countable {
     /** fills $this->>type with current zids type */
     function guesstype() {
         foreach ($this->arr as $val) {
-            if ( ($this->type = guesstype($val)) != 'z' ) {
+            if ( ($this->type = guesstype($val)) !== 'z' ) {
                 break;
             }
         }
@@ -144,7 +144,7 @@ class zids implements Iterator, ArrayAccess, Countable {
      * @return zids
      */
     public function setFromItemArr(array $item_arr) {
-        return $this->clear($this->type)->add(array_map(fn ($k) => rawurldecode(str_starts_with($k, 'x') ? substr($k, 1) : $k), array_keys($item_arr)));   // in some managers we use 'x' before the item id - remove it
+        return $this->clear($this->type)->add(array_map(static fn ($k) => rawurldecode(str_starts_with($k, 'x') ? substr($k, 1) : $k), array_keys($item_arr)));   // in some managers we use 'x' before the item id - remove it
     }
 
     /** copy all data from provided zids */
@@ -184,7 +184,7 @@ class zids implements Iterator, ArrayAccess, Countable {
             if ( !in_array($type, ['s','l']) OR ($id=='0') OR ($id=='')) {
                 continue;
             }
-            if ($this->type == 'z') {
+            if ($this->type === 'z') {
                 $this->type = $type;
             }
             if ($this->type == $type) {
@@ -306,7 +306,7 @@ class zids implements Iterator, ArrayAccess, Countable {
         if ($this->warnid($i,"shortids")) {
             return null;
         }
-        if ( $this->type == 's' ) {
+        if ( $this->type === 's' ) {
             return (isset($i) ? $this->arr[$i] : $this->arr);
         }
         $l_zids = new zids( $this->longids(),'l');  // convert to long (for translation)
@@ -331,7 +331,7 @@ class zids implements Iterator, ArrayAccess, Countable {
      *
      */
     function use_short_ids() {
-        return ($this->type == 's');
+        return ($this->type === 's');
     }
 
     /** id function
@@ -370,7 +370,8 @@ class zids implements Iterator, ArrayAccess, Countable {
      * @param  string $slice_id
      * @return zids
      */
-    public function itemFilter(array $slice_ids) {
+    public function itemFilter(array $slice_ids): zids|static
+    {
         if (($this->count() < 1) OR !$slice_ids) {
             return $this->clear('l');
         }
@@ -411,7 +412,7 @@ class zids implements Iterator, ArrayAccess, Countable {
      * Return associative array, longid->tag;
      */
     function gettags() {
-        if ($this->type != "t") {
+        if ($this->type !== "t") {
             return false;
         }
         $tags = [];
@@ -433,7 +434,7 @@ class zids implements Iterator, ArrayAccess, Countable {
      * @return void|zids
      */
     function retag($zids) {
-        if ($zids->type != "t") {
+        if ($zids->type !== "t") {
             return $this;  // Array is fine
         }
         $tags = [];
@@ -458,20 +459,23 @@ class zids implements Iterator, ArrayAccess, Countable {
     /** sqlin function
      *  Return appropriate SQL for including in WHERE clause
      * Note that some code still does this by hand,
-     * @param $column
-     * @param $asis - returns the ids in long form (not packed even for 'l' type)
+     *
+     * @param  string  $column
+     * @param  bool    $asis  - returns the ids in long form (not packed even for 'l' type)
+     *
      * @return string
      */
-    function sqlin( $column = 'short_or_long', $asis = false ) {
+    function sqlin( string $column = 'short_or_long', bool $asis = false ): string
+    {
         $id_list = '';
         if ($this->count()) {
-            if ( $column == 'short_or_long' ) {
+            if ( $column === 'short_or_long' ) {
                 $column = ( $this->use_short_ids() ? "item.short_id" : "item.id" );
             }
             if ( $asis OR in_array($this->type, ['s','w']) ) {
-                $id_list = join(",",array_map("qquote",$this->arr));
+                $id_list = implode(",",array_map("qquote",$this->arr));
             } else {
-                $id_list = join(",",array_map('xpack_id',$this->longids()));
+                $id_list = implode(",",array_map('xpack_id',$this->longids()));
             }
         }
         if (!$id_list) {
@@ -504,7 +508,7 @@ class zids implements Iterator, ArrayAccess, Countable {
 
     /** translate function
      *  fills $s2l and $l2s array used for translation 'long' <-> 'short' and
-     * @return array of zids in 'long' (for $type=='l') or short form
+     * @return array of zids in 'long' (for $type==='l') or short form
      * @param $type
      */
     function translate($type) {

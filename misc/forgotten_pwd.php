@@ -43,7 +43,7 @@ function validatePwd() {
 <body>
 <?php
 
-$protocol = ( isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == 'on' ) ? 'https://' : 'http://';
+$protocol = ( isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] === 'on' ) ? 'https://' : 'http://';
 
 $full_path = $protocol.$_SERVER['HTTP_HOST'].$script_path;
 
@@ -58,7 +58,7 @@ if (!($do)) {?>
     </form>
     <?php
 }
-if ($do=="chu") { //CHeck User
+if ($do==="chu") { //CHeck User
     if (!($email.$user)) die ("Wrong way, go back !!!");
     if ($user) {
         $by = "headline........";
@@ -88,7 +88,7 @@ if ($do=="chu") { //CHeck User
     $mail->send([$email]);
     echo "The email with the key allowing to reset your password has been sent to you to this email address: $email";
 }
-if ($do=="chk" || $do=="chp") { //CHeck Key or CHange Password
+if ($do==="chk" || $do==="chp") { //CHeck Key or CHange Password
     if (!($key.$user)) die ("Wrong way, go back !!!");
     if (!$userdata=GetUserData($user,"headline........")) die("Can't find the user, sorry. Check the spelling and try again !!!");
     // Check the key
@@ -99,7 +99,7 @@ if ($do=="chk" || $do=="chp") { //CHeck Key or CHange Password
         $pwdkey = md5($username.$email.AA_ID.round(round(now()/60)-$i));
     }
     if ($i>=$KeyVal) die("Wrong or expired key, sorry.");
-    if ($do=="chk") {
+    if ($do==="chk") {
        echo "Type in a new password for $username:<br>";
        ?>
        <form name="myForm" method="post" action="<?php echo $script_path?>" enctype="multipart/form-data" onSubmit="return validatePwd()">

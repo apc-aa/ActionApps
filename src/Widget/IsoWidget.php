@@ -58,7 +58,7 @@ class IsoWidget extends MchWidget
      * @return AA_Validate|null
      */
     public function getUpgradedValidator(string $validator_string): ?AA_Validate {
-        if ( (substr($validator_string,0,2)=='id') ) {
+        if ( (str_starts_with($validator_string, 'id')) ) {
             $validator_string = 'markedid';  // we should allow marked ids
         }
         return AA_Validate::factoryByString($validator_string);

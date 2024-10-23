@@ -121,7 +121,7 @@ $apage = new AA_Adminpageutil('sliceadmin','import');
 $apage->setTitle(_m("Admin - configure Content Pooling"));
 $apage->addRequire($script2run, 'AA_Req_Load');
 $apage->addRequire($headcode, 'AA_Req_Headcode');
-$apage->addRequire(get_aa_url('/javascript/js_lib.min.js?v='.AA_JS_VERSION, '', false));
+$apage->addRequire(get_aa_url('/javascript/js_lib.min.js', ['v'=>AA_JS_VERSION], false));
 $apage->printHead($err, $Msg);
 
 
@@ -174,10 +174,10 @@ FrmTabCaption(_m("Enable export to slice:"));
 <?php
   FrmInputChBox("export_to_all", _m("Enable export to any slice"), $export_to_all, true, "OnClick=\"ExportAllClick()\"");
   if ( isset($exported) AND is_array($exported) ) {
-      FrmStaticText(_m("Currently exported to"), join("<br>", $exported), '', '', false);
+      FrmStaticText(_m("Currently exported to"), implode("<br>", $exported), '', '', false);
   }
   if ( isset($wrong_exp) AND is_array($wrong_exp) ) {
-      FrmStaticText(_m("Wrong export (non existant slice!):"), join("<br>", $wrong_exp), '', '', false);
+      FrmStaticText(_m("Wrong export (non existant slice!):"), implode("<br>", $wrong_exp), '', '', false);
   }
 ?>
 </table></td></tr>

@@ -99,7 +99,7 @@ class PohodaStocks extends AbstractGrabber
 
         $item->setValue('number..........', $dan);         // DPH
 
-        if ($jedn == 'ks') {
+        if ($jedn === 'ks') {
             $item->setValue('price..........1', $cena);
             $item->setValue('price..........2', '');
         } else {

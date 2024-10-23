@@ -335,7 +335,7 @@ class AA_Showview {
                     'parent_id'   => $this->_view_param["parent_id"],
                     'disc_ids'    => $this->_view_param["disc_ids"],
                 ];
-                if (($this->_view_param["disc_type"] == "list") || is_array($this->_view_param["disc_ids"])) {
+                if (($this->_view_param["disc_type"] === "list") || is_array($this->_view_param["disc_ids"])) {
                     $disc['type'] = "list";
                 } elseif ($this->_view_param["add_disc"]) {
                     $disc['type'] = "adddisc";
@@ -378,16 +378,16 @@ class AA_Showview {
                     $conds = $view->getConds($param_conds);
                 }
                 $sort      = $view->getSort($param_sort);
-                if ( $view_info['type'] == 'const' ) {
+                if ( $view_info['type'] === 'const' ) {
                     $zids             = QueryConstantZIDs($view_info['parameter'], $conds, $sort);
                     $content_function = 'GetConstantContent';
-                } elseif ( ($view_info['type'] == 'links') AND $category_id ) {
+                } elseif ( ($view_info['type'] === 'links') AND $category_id ) {
                     $cat_path = Links_GetCategoryColumn( $category_id, 'path');
                     if ( $cat_path ) {
                         $zids             = Links_QueryZIDs($cat_path, $conds, $sort, $this->_view_param['show_subcat']);
                         $content_function = 'Links_GetLinkContent';
                     }
-                } elseif ( ($view_info['type'] == 'categories') AND $category_id ) {
+                } elseif ( ($view_info['type'] === 'categories') AND $category_id ) {
                     $zids             = Links_QueryCatZIDs($category_id, $conds, $sort, $this->_view_param['show_subcat']);
                     $content_function = 'Links_GetCategoryContent';
                 }
@@ -454,7 +454,7 @@ class AA_Showview {
             case 'rss':
             case 'urls':
             case 'script':  // parameters: conds, param_conds, als
-                if ($view_info['type'] == 'rss') {
+                if ($view_info['type'] === 'rss') {
                     AA::$headers['type'] = 'text/xml';
                 }
 
@@ -499,7 +499,7 @@ class AA_Showview {
                 // Note this zids2 is always packed ids, so lost tag information
                 AA::$debug&2 && AA::$dbg->log("getViewOutput retrieved ".(isset($zids2) ? $zids2->count() : 0)." IDS");
 
-                if (isset($zids) && isset($zids2) && ($zids->onetype() == "t")) {
+                if (isset($zids) && isset($zids2) && ($zids->onetype() === "t")) {
                     $zids2 = $zids2->retag($zids);
                 }
 
@@ -518,10 +518,10 @@ class AA_Showview {
 
                 [$listlen, $list_from] = AA_View::getListLength($listlen, $this->_view_param["to"], $this->_view_param["from"], $list_page, $zids2->count(), $random);
 
-                $itemview = (new itemview($format, $aliases, $zids2, $list_from, $listlen))->setContentFunct( ($view_info['type'] == 'urls') ? 'GetItemContentMinimal' : '');
+                $itemview = (new itemview($format, $aliases, $zids2, $list_from, $listlen))->setContentFunct( ($view_info['type'] === 'urls') ? 'GetItemContentMinimal' : '');
 
                 if (isset($zids2) && ($zids2->count() > ( ctype_digit((string)$list_from) ? (int)$list_from : 0))) { // $list_from could be 'random:number.........1' ...
-                    $ret = $itemview->get_output(($view_info['type'] == 'calendar') ? 'calendar' : 'view');
+                    $ret = $itemview->get_output(($view_info['type'] === 'calendar') ? 'calendar' : 'view');
                 } else {
                     $ret = $itemview->unaliasWithScroller($noitem_msg);
                 }

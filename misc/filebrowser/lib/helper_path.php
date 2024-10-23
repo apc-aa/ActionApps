@@ -97,7 +97,7 @@ class path {
     static function normalize($path) {
 
         // Backslash to slash convert
-        if (strtoupper(substr(PHP_OS, 0, 3)) == "WIN") {
+        if (strtoupper(substr(PHP_OS, 0, 3)) === "WIN") {
             $path = preg_replace('/([^\\\])\\\+([^\\\])/s', "$1/$2", $path);
             if (substr($path, -1) == "\\") $path = substr($path, 0, -1);
             if (substr($path, 0, 1) == "\\") $path = "/" . substr($path, 1);

@@ -34,7 +34,7 @@ function IsFieldSupported($field_info, $v, $param): bool
 {
     $field = $field_info['field'];
       // param is 'type' for this function
-    return ($param != 'unasigned' ) OR
+    return ($param !== 'unasigned' ) OR
            str_starts_with($field, 'links_links.') OR
            str_starts_with($field, 'links_regions.') OR
            str_starts_with($field, 'links_link_reg.') OR
@@ -79,7 +79,7 @@ function Links_QueryZIDs($cat_path, $conds, $sort="", $subcat=false, $type="app"
         default                   => 'SELECT DISTINCT links_links.id  FROM links_categories, links_link_cat, links_links ',
     };
 
-    if ( $type == 'changed' ) {
+    if ( $type === 'changed' ) {
         $join_tables['changes'] = true;
     }
 

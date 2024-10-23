@@ -101,7 +101,7 @@ set_directory ($fmset['directory']);
 fileman_execute_command ($basedir, $directory, $cmd, $arg, $chb, $fmset);
 
 // One file page
-if ($cmd == 'edit' || $cmd == 'createfile') {
+if ($cmd === 'edit' || $cmd === 'createfile') {
     $fe_path = $basedir;
     $fe_script = StateUrl("fileman.php");
     $fe_wwwpath = FILEMAN_BASE_URL;
@@ -118,7 +118,7 @@ if ($directory) {
     $apage->setSubtitle(_m("Directory")." ".$directory);
 }
 $apage->setForm(['name'=>'fileman','enctype'=>"multipart/form-data"]);
-$apage->addRequire(get_aa_url('tabledit.css?v='.AA_JS_VERSION, '', false ));
+$apage->addRequire(get_aa_url('tabledit.css', ['v'=>AA_JS_VERSION], false ));
 $apage->printHead($err, $Msg);
 
 
@@ -191,8 +191,8 @@ foreach ($sortable_columns as $sortk => $col) {
         } else {
             $so = $col["sort"];
         }
-        $img = "&nbsp;<img src='../images/".($so == 'd' ? 'up' : 'down').".gif'>";
-        $so  = $so == 'a' ? 'd' : 'a';
+        $img = "&nbsp;<img src='../images/".($so === 'd' ? 'up' : 'down').".gif'>";
+        $so  = $so === 'a' ? 'd' : 'a';
         $so  = "&sort_order=$so";
     } else {
         $so  = "";

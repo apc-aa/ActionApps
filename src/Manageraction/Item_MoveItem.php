@@ -23,15 +23,12 @@ class Item_MoveItem extends AbstractManageraction {
 
     /** Name of this Manager's action */
     public function getName(): string {
-        switch ($this->to_bin) {
-            case 1:
-                return _m('Move to Active');
-            case 2:
-                return _m('Move to Holding bin');
-            case 3:
-                return _m('Move to Trash');
-        }
-        return "";
+        return match ($this->to_bin) {
+            1       => _m('Move to Active'),
+            2       => _m('Move to Holding bin'),
+            3       => _m('Move to Trash'),
+            default => "",
+        };
     }
 
 
@@ -63,7 +60,7 @@ class Item_MoveItem extends AbstractManageraction {
     /** @inheritDoc */
     function perform(Manager $manager, zids $item_zids, $action_param) {
         $sid = $manager->getModuleId();
-        Item_MoveItem::doMove($item_zids->itemFilter([$sid]), $this->to_bin, $sid);
+        self::doMove($item_zids->itemFilter([$sid]), $this->to_bin, $sid);
         AA::Pagecache()->invalidateFor($sid);
         return false;                                     // OK - no error
     }
@@ -76,16 +73,11 @@ class Item_MoveItem extends AbstractManageraction {
         $current_bin = $manager->getBin();
         $module_id   = $manager->getModuleId();
 
-        switch ($this->to_bin) {
-            case 1:
-                return IfSlPerm(PS_ITEMS2ACT, $module_id) and !in_array($current_bin, ['app', 'appb', 'appc']);
-            // Folder2 is Holding bin - prepared for more than three bins
-            case 2:
-                return IfSlPerm(PS_ITEMS2HOLD, $module_id) and ($current_bin != 'hold');
-            // Folder3 is Trash
-            case 3:
-                return IfSlPerm(PS_ITEMS2TRASH, $module_id) and ($current_bin != 'trash');
-        }
-        return false;
+        return match ($this->to_bin) {
+            1 => IfSlPerm(PS_ITEMS2ACT, $module_id) and !in_array($current_bin, ['app', 'appb', 'appc']),
+            2 => IfSlPerm(PS_ITEMS2HOLD, $module_id) and ($current_bin !== 'hold'),        // Folder2 is Holding bin - prepared for more than three bins
+            3 => IfSlPerm(PS_ITEMS2TRASH, $module_id) and ($current_bin !== 'trash'),            // Folder3 is Trash
+            default => false,
+        };
     }
 }

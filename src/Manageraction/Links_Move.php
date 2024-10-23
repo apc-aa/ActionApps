@@ -20,15 +20,12 @@ class Links_Move extends \AA\Manageraction\Links_Check {
 
     /** Name of this Manager's action */
     public function getName(): string {
-        switch ($this->to_bin) {
-            case 1:
-                return _m('Move to Active');
-            case 2:
-                return _m('Move to Holding bin');
-            case 3:
-                return _m('Move to Trash');
-        }
-        return "";
+        return match ($this->to_bin) {
+            1       => _m('Move to Active'),
+            2       => _m('Move to Holding bin'),
+            3       => _m('Move to Trash'),
+            default => "",
+        };
     }
 
     /** @inheritDoc */
@@ -47,15 +44,12 @@ class Links_Move extends \AA\Manageraction\Links_Check {
         $subtree     = $GLOBALS['r_state']['show_subtree'];
         $current_bin = $GLOBALS['r_state']['bin'];
 
-        switch ($this->to_bin) {
-            case 1:
-                return !$subtree && IsCatPerm(PS_LINKS_ADD_LINK, $cid);
-            case 2:
-                return ($current_bin != 'folder2') && IsCatPerm(PS_LINKS_LINK2FOLDER, $cid);
-            case 3:
-                return ($current_bin != 'folder3') && IsCatPerm(PS_LINKS_LINK2FOLDER, $cid);
-        }
-        return false;
+        return match ($this->to_bin) {
+                  1 => !$subtree && IsCatPerm(PS_LINKS_ADD_LINK, $cid),
+                  2 => ($current_bin !== 'folder2') && IsCatPerm(PS_LINKS_LINK2FOLDER, $cid),
+                  3 => ($current_bin !== 'folder3') && IsCatPerm(PS_LINKS_LINK2FOLDER, $cid),
+            default => false,
+        };
     }
 
     /** Checks if the user have enough permission to perform the action

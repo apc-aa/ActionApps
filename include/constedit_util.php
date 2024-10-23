@@ -76,8 +76,7 @@ function getHierConstInitJavaScript($hcid, $group_id, $levelCount=3, $formName='
         // this will be supplied by the database
     $js.= "
         hcConsts[$hcid] = ".createConstsJavaScript ($group_id, $admin).";";
-    $out  = getFrmJavascript($js);
-    return $out ;
+    return getFrmJavascript($js);
 }
 
 /** getHierConstBoxes function
@@ -96,7 +95,9 @@ function getHierConstInitJavaScript($hcid, $group_id, $levelCount=3, $formName='
  */
 function getHierConstBoxes($hcid, $levelCount, $horizontal=0, $targetBox="", $admin=true, $minLevelSelect=0, $boxWidth=0, $levelNames= []) {
     $admin = $admin ? 1 : 0;
-    if ($boxWidth == 0) $boxWidth = $horizontal ? 30 : 70;
+    if ($boxWidth == 0) {
+        $boxWidth = $horizontal ? 30 : 70;
+    }
 
     /* OFMG
        20060421
@@ -106,7 +107,7 @@ function getHierConstBoxes($hcid, $levelCount, $horizontal=0, $targetBox="", $ad
     $this_triggers = JsTriggers::getFromGlobalSliceId("select", $targetBox);
     $aa_onchange_exist = strstr($this_triggers,'aa_onChange(');
     $add_button_trigger = "";
-    if( $aa_onchange_exist ){
+    if ( $aa_onchange_exist ) {
        [,$fieldid,] = explode("'",$aa_onchange_exist,3);
        $add_button_trigger = "aa_onChange('".$fieldid."'); ";
     }
@@ -176,8 +177,10 @@ function createConstsJavaScript($group_id, $admin)
     hcSortArray($data);
 
     $consts = "new Array(";
-    for ( $i=0, $ino=count($data); $i<$ino; ++$i) {
-        if ($i) $consts .= ",";
+    foreach ($data as $i => $iValue) {
+        if ($i) {
+            $consts .= ",";
+        }
         $consts .= printConstsArray($data[$i], $admin);
     }
     $consts .= ")";
@@ -226,23 +229,23 @@ function createConstsArray($group_id, $admin, &$consts)
     foreach ( $data as $ancestors => $col) {
         $error = false;
         if (!$path) {
-            if (strlen($ancestors) != 16) {
+            if (strlen($ancestors) !== 16) {
                 $error = true;
             } else {
                 $consts .= "array($col";
             }
-        } elseif (strlen($ancestors) % 16 != 0) {
+        } elseif (strlen($ancestors) % 16) {
             $error = true;
         // step over one layer
-        } elseif (strlen($ancestors) > strlen($path) && str_starts_with($ancestors, $path)) {
-            if (strlen($ancestors)-strlen($path) == 16) {
+        } elseif (strlen($ancestors) > strlen($path) AND str_starts_with($ancestors, $path)) {
+            if (strlen($ancestors)-strlen($path) === 16) {
                 $consts .= ",array(array($col";
                 $depth++;
             } else {
                 $error = true; // error: missing layer, jump over
             }
-        } elseif (strlen($ancestors) == strlen($path)) {
-            if (substr($ancestors,0,strlen($path)-16) != substr($path,0,strlen($path)-16)) {
+        } elseif (strlen($ancestors) === strlen($path)) {
+            if (!str_starts_with($ancestors, substr($path, 0, -16))) {
                 $error = true;
             } else {
                 $consts .= "),array($col";
@@ -277,7 +280,7 @@ function createConstsArray($group_id, $admin, &$consts)
         foreach ( $error_data as $col) {
             $consts .= "array($col),";
         }
-        $consts = substr ($consts,0,strlen($consts)-1);
+        $consts = substr($consts,0, -1);
     }
 
     $consts .= ")";
@@ -303,9 +306,9 @@ function hcCompareConstants($a, $b) {
 function hcSortArray(&$arr) {
     global $hcCol;
     usort($arr, "hcCompareConstants");
-    for ( $i=0, $ino=count($arr); $i<$ino; ++$i) {
-        if (count ($arr[$i]) > $hcCol["Child"]) {
-            hcSortArray($arr[$i][$hcCol["Child"]]);
+    foreach ($arr as $iValue) {
+        if (count($iValue) > $hcCol["Child"]) {
+            hcSortArray($iValue[$hcCol["Child"]]);
         }
     }
 }
@@ -340,11 +343,11 @@ function printConstsArray(&$arr, $admin) {
             : "");
     if (count ($arr) > $hcCol["Child"]) {
         $retval .= ",new Array(";
-        for ( $i=0, $ino=count($arr[$hcCol["Child"]]); $i<$ino; ++$i) {
+        foreach ($arr[$hcCol["Child"]] as $i => $iValue) {
             if ($i) {
                 $retval .= ",";
             }
-            $retval .= printConstsArray ($arr[$hcCol["Child"]][$i], $admin);
+            $retval .= printConstsArray($arr[$hcCol["Child"]][$i], $admin);
         }
         $retval .= ")";
     }
@@ -387,22 +390,20 @@ function hcUpdate() {
 
     global $hcalldata, $varset;
     if ($hcalldata) {
-        $hcalldata = str_replace("\\'","'",$hcalldata);
-        $hcalldata = str_replace("\\:", "--$--", $hcalldata);
-        $hcalldata = str_replace("\\~", "--$$--", $hcalldata);
-        $chtag = ":changes:";
-        if (strstr ($hcalldata, "$chtag")) {
+        $hcalldata = str_replace(["\\'", "\\:", "\\~"], ["'", "--$--", "--$$--"], $hcalldata);
+        $chtag     = ":changes:";
+        if (str_contains($hcalldata, $chtag)) {
             $changes   = substr ($hcalldata, strpos ($hcalldata,$chtag) + strlen($chtag) + 1);
             $hcalldata = substr ($hcalldata, 0, strpos ($hcalldata,$chtag) - 1);
             $chs       = explode(":", $changes);
             $changes   = [];
             foreach ($chs as $ch) {
-                if (!strchr($ch,"~")) {
+                if (!str_contains($ch, "~")) {
                     continue;
                 }
                 $ar = explode("~",$ch);
-                for ( $i=0, $ino=count($ar); $i<$ino; ++$i) {
-                    $ar[$i] = str_replace ("--$$--","~",str_replace("--$--",":",$ar[$i]));
+                foreach ($ar as $i => $iValue) {
+                    $ar[$i] = str_replace(["--$--", "--$$--"], [":", "~"], $ar[$i]);
                 }
                 $changes[] = $ar;
             }

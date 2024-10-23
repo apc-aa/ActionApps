@@ -68,7 +68,7 @@ class JsTriggers {
 
         if ($this->javascript = (string)AA_Slice::getModuleProperty($this->slice_id, 'javascript')) {
             $all_trig = [];
-            foreach (JsTriggers::CONTROL_TRIGGERS as $ctrigs) {
+            foreach (self::CONTROL_TRIGGERS as $ctrigs) {
                 $all_trig = array_merge($all_trig, $ctrigs);
             }
             $all_trig = array_unique($all_trig);
@@ -95,18 +95,18 @@ class JsTriggers {
     public function get(string $control, string $unpacked_fieldid = '', array $add = []): string {
 
         $this->loadTriggers();
-        $control_triggers = JsTriggers::CONTROL_TRIGGERS[$control];
+        $control_triggers = self::CONTROL_TRIGGERS[$control];
         $retval  = '';
 
         if (!$control_triggers or (!$this->js_trig and !$add)) {
             return '';
         }
 
-        if (substr($unpacked_fieldid, -2) == "[]") {
-            $unpacked_fieldid = substr($unpacked_fieldid, 0, strlen($unpacked_fieldid) - 2);
+        if (str_ends_with($unpacked_fieldid, "[]")) {
+            $unpacked_fieldid = substr($unpacked_fieldid, 0, -2);
         }
-        if (substr($unpacked_fieldid, -1) == "x") {
-            $unpacked_fieldid = substr($unpacked_fieldid, 0, strlen($unpacked_fieldid) - 1);
+        if (str_ends_with($unpacked_fieldid, "x")) {
+            $unpacked_fieldid = substr($unpacked_fieldid, 0, -1);
         }
 
         if (preg_match('/^v[0-9a-f]+$/', $unpacked_fieldid)) {
@@ -124,7 +124,7 @@ class JsTriggers {
             // the commands, but if you do so for onSubmit, you will get:
             //   return BeforeSubmit(); aa_onSubmit('inputform');
             // which is nonsense.
-            if (($ctrig == "onSubmit") and ($add[$ctrig] == "return BeforeSubmit()")) {
+            if (($ctrig === "onSubmit") and ($add[$ctrig] === "return BeforeSubmit()")) {
                 if ($this->js_trig[$ctrig]) {
                     $retval .= " $ctrig=\"if( BeforeSubmit() ){ return aa_$ctrig('$fieldid'); } else { return false; }\"";
                 } else {
@@ -149,14 +149,14 @@ class JsTriggers {
         $this->loadTriggers();
         if ($this->javascript) {
             // modern version of js for field can use own libs - say {require:aa-fillform@1} - without unnecessary aa-jslib@1
-            if (strpos($this->javascript,'{require:') === false) {
+            if (!str_contains($this->javascript, '{require:')) {
                 AA::Stringexpander()->addRequire('aa-jslib@1');
                 AA::Stringexpander()->addRequire('aa-fillform@1');
             }
 
             $events = [];
             foreach ($this->js_trig as $trig => $foo) {
-                foreach (JsTriggers::CONTROL_TRIGGERS as $el => $evs) {
+                foreach (self::CONTROL_TRIGGERS as $el => $evs) {
                     if (in_array($trig,$evs)) {
                         $events[$trig][] = $el;
                     }
@@ -164,10 +164,10 @@ class JsTriggers {
             }
             $listeners = [];
             foreach ($events as $e => $els) {
-                $listeners[] = 'document.querySelectorAll("form[name=inputform] '. join(', form[name=inputform] ', $els).'").forEach(function(el) { el.addEventListener("'.strtolower(substr($e,2)).'", aa_runevent, false); });';
+                $listeners[] = 'document.querySelectorAll("form[name=inputform] '. implode(', form[name=inputform] ', $els).'").forEach(function(el) { el.addEventListener("'.strtolower(substr($e,2)).'", aa_runevent, false); });';
             }
             if ($listeners) {
-                AA::Stringexpander()->addRequire(join("\n",$listeners), 'AA_Req_Load');
+                AA::Stringexpander()->addRequire(implode("\n",$listeners), 'AA_Req_Load');
             }
         }
         return $this->javascript;
@@ -177,7 +177,7 @@ class JsTriggers {
     /** @deprecated  */
     public static function getFromGlobalSliceId(string $control, string $unpacked_fieldid = '', array $add = []): string {
         global $slice_id;
-        return $slice_id ? JsTriggers::singleton4id($slice_id)->get($control, $unpacked_fieldid, $add) : '';
+        return $slice_id ? self::singleton4id($slice_id)->get($control, $unpacked_fieldid, $add) : '';
     }
 
     /** get html table with list of possible triggers
@@ -185,8 +185,8 @@ class JsTriggers {
      */
     public static function getSummary(): string {
         $ret = '';
-        foreach (JsTriggers::CONTROL_TRIGGERS as $control => $trigs) {
-            $ret .= '<tr><td>' . $control . '</td><td>' . join(", ", $trigs) . '</td></tr>';
+        foreach (self::CONTROL_TRIGGERS as $control => $trigs) {
+            $ret .= '<tr><td>' . $control . '</td><td>' . implode(", ", $trigs) . '</td></tr>';
         }
         return $ret;
     }

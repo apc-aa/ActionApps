@@ -139,7 +139,7 @@ if ($update) {
             break;
         }
         foreach ($name as $key => $val) {
-            if ($key == "New_Field") {
+            if ($key === "New_Field") {
                 continue;
             }
             $prior = $pri[$key];
@@ -153,7 +153,7 @@ if ($update) {
 
         $db = getDB();
         foreach ($name as $key => $val) {
-            if ($key == "New_Field") {   // add new field
+            if ($key === "New_Field") {   // add new field
                 if ($val == '') {        // if not filled - don't add the field
                     continue;
                 }
@@ -231,7 +231,7 @@ $all_aliasses = [];
 foreach ($s_fields as $fld) {
     foreach (['alias1','alias2','alias3',] as $fldname) {
         $alias = $fld[$fldname];
-        if (!trim($alias) OR ($alias =='_#UNDEFINE')) {
+        if (!trim($alias) OR ($alias === '_#UNDEFINE')) {
             continue;
         }
         if (isset($all_aliasses[$alias])) {
@@ -310,7 +310,7 @@ FrmTabEnd( $form_buttons);
         if ( !confirm("<?php echo _m("Do you really want to delete this field from this slice?"); ?>")) {
             return;
         }
-        var url="<?php echo StateUrl(get_url('', ["del"=>1,"analyze"=>($analyze OR $fix)] + ($slice_fields ? ['slice_fields'=>1] : []))); ?>"
+        const url = "<?php echo get_url('', ["del" => 1, "analyze" => ($analyze or $fix)] + ($slice_fields ? ['slice_fields' => 1] : []), true); ?>";
         window.location=url + "&fid=" + encodeURIComponent(id);
     }
 </script>

@@ -25,7 +25,7 @@
  *
 */
 
-do  {
+do {
 
     // Procces group data ---------------------
     ValidateInput("group_name",        _m("Name"),        $group_name,        $err, ($add_submit ? true : false), "text");
@@ -46,8 +46,7 @@ do  {
             if ($group_super) {	// set super admin privilege
                 AddPerm($newgroupid, AA_ID, "aa", AA_Perm::ROLES["SUPER"]['id']);
             }
-            $Msg = MsgOk(_m("Group successfully added to permission system"));
-            go_url( get_url(StateUrl($_SERVER['PHP_SELF']), 'GrpSrch=1&grp='. rawurlencode($group_name)), $Msg);  // @todo Mssg
+            go_url( get_url('', ['grp_edit'=>1, 'selected_group' => $newgroupid, 'Msg'=>_m("Group successfully added to permission system")], true));
         }
     } else {
         $grouprecord["uid"] = $selected_group;

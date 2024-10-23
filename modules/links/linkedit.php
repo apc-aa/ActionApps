@@ -305,14 +305,14 @@ if ( $r_state['link_id'] ) {                  // not new link
               AND what_id=".$r_state['link_id'];
     $db->query($SQL);
     while ($db->next_record()) {
-        $i = (( $db->f('base') == 'y' ) ? 0 : ++$idx);
+        $i = (( $db->f('base') === 'y' ) ? 0 : ++$idx);
         $selcatValue[$i]             = NamePath($select_depth,$db->f('path'), $tmp_translate);
         $selcatSelectValue[$i]       = $db->f('id');
         $getPathFromID[$db->f('id')] = $db->f('path');
         $selcatState[$i]             = $db->f('state');
-        $selcatPropAdd[$i]           = (($db->f('proposal')=='y') ?
+        $selcatPropAdd[$i]           = (($db->f('proposal')==='y') ?
                                        MarkChanged(_m('Proposal to add')) : ""); //_m('No proposal to add'));
-        $selcatPropDel[$i]           = (($db->f('proposal_delete')=='y') ?
+        $selcatPropDel[$i]           = (($db->f('proposal_delete')==='y') ?
                                        MarkChanged(_m('Proposal to del')) : ""); //_m('No proposal to del'));
         $displayed_p[$db->f('id')]   = true;
     }
@@ -381,8 +381,8 @@ HtmlPageBegin();
 echo '<title>'. _m('ActionApps') ." - $pagename</title>";
 
 $tree = new cattree($select_start, false, ' > ');
-FrmJavascriptFile('javascript/js_lib.min.js');
-FrmJavascriptFile('javascript/js_lib_links.min.js');   // js for category selection
+echo getFrmJavascriptFile('javascript/js_lib.min.js');
+echo getFrmJavascriptFile('javascript/js_lib_links.min.js');   // js for category selection
 $tree->printTreeData($links_info['tree_start']);
 
 if ( !$r_state['link_id'] ) {  // add new link

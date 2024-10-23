@@ -64,7 +64,7 @@ class MngWidget extends Widget
                 }
             } else {
                 $input_value = new_id();
-                //if (($type == 'ajax') OR ($type == 'live')) {
+                //if (($type === 'ajax') OR ($type === 'live')) {
                  if (is_long_id($item_id)) {
                     // we have to store the connectorID to the database immediately
                    UpdateField($item_id, $property_id, new \AA_Value($input_value, FLAG_HTML), [false,false,false,false]);

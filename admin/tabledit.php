@@ -61,7 +61,7 @@ require_once __DIR__ . "/../include/tv_common.php";
 require_once __DIR__ . "/../include/tv_misc.php";
 
 // is tableview defined in special file (tableviews.php)?
-if ( ($tview[0] == "a") OR (str_starts_with($tview, 'polls')) ) {
+if ( ($tview[0] === "a") OR (str_starts_with($tview, 'polls')) ) {
     $func = "GetTableView";
     require_once __DIR__ . "/../include/tableviews.php";
 } else {
@@ -85,8 +85,8 @@ if ($tableview["modulemenu"]) {
     $apage->setModuleMenu($tableview["modulemenu"]);
 }
 $apage->setForm();
-$apage->addRequire(get_aa_url('tabledit.css?v='.AA_JS_VERSION, '', false ));
-//$apage->addRequire(get_aa_url('javascript/js_lib.min.js?v='.AA_JS_VERSION, '', false ));
+$apage->addRequire(get_aa_url('tabledit.css', ['v'=>AA_JS_VERSION], false ));
+//$apage->addRequire(get_aa_url('javascript/js_lib.min.js', ['v'=>AA_JS_VERSION], false ));
 $apage->printHead($err, $Msg);
 
 ProcessFormData($func, $val, $cmd);
@@ -99,7 +99,7 @@ if ($err) {
     echo "<b>$err</b>";
 }
 
-if (!$err && $tview == "email_edit") {
+if (!$err && $tview === "email_edit") {
     echo AA_Collection::getEmailAliasesHelpbox();
 }
 

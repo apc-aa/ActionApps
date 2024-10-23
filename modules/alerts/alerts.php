@@ -98,7 +98,7 @@ if ($howoften_options[$howoften]) {
     } else {
         $colections = 'all';
     }
-    AA_Log::write("ALERTS", $howoften, 'Start' . ($fix ? '(fix ' . join(',', $colections) . ')' : '(all)'));
+    AA_Log::write("ALERTS", $howoften, 'Start' . ($fix ? '(fix ' . implode(',', $colections) . ')' : '(all)'));
     $mail_count = send_emails($howoften, $colections, "all", true, "");
     AA_Log::write("ALERTS", $howoften, 'Sent: ' . ($mail_count + 0));
     //echo "<br>Count of emails sent is <b>".($mail_count+0)."</b><br>";

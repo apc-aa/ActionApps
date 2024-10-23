@@ -63,7 +63,7 @@ class SQL extends AbstractGrabber
         if ( ctype_alnum($charset) ) {
             $arr[] = 'charset=' . $charset;
         }
-        $this->dsn .= ':'.join(';',$arr);
+        $this->dsn .= ':'.implode(';',$arr);
 
         $this->username         = $username;
         $this->password         = $password;

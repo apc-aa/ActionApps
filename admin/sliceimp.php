@@ -75,13 +75,12 @@ function prove_ID($slice) {
     global $resolve_conflicts, $overwrite, $new_slice_ids;
 
     $res = $resolve_conflicts[$slice["id"]];
-    if ((strlen($res)!=0)&&(strlen($res) != 16))	{
-        if ((strlen($res) != 16)&&(strlen($res) != 32)) {
-            echo "Warning: ". _m("Slice_ID (%1) has wrong length (%2, should be 32)",
-                [$res, strlen ($res)])."<br>\n";
+    if (strlen($res) && (strlen($res) !== 16))	{
+        if ((strlen($res) !== 32)) {
+            echo "Warning: ". _m("Slice_ID (%1) has wrong length (%2, should be 32)", [$res, strlen ($res)])."<br>\n";
         }
         $res = pack_id($res);
-        if (strlen($res) == 16) {
+        if (strlen($res) === 16) {
             $slice["id"] = unpack_id($res);
         }
     }
@@ -126,13 +125,13 @@ function prove_data_ID($data_id) {
     global $data_resolve_conflicts, //Set from data_conflicts_list
            $data_overwrite;
     $res = $data_resolve_conflicts[$data_id];
-    if ($res && strlen($res) != 16)	{
+    if ($res && strlen($res) !== 16)	{
 //        if ((strlen($res) != 16)||(strlen($res) != 32)) {
 //			echo "Warning: ". _m("Slice_data_ID (".$res.") has wrong length (".strlen($res).", should be 32)<br>\n");
 //        }
         $res = q_pack_id($res);
     }
-    if (strlen($res) == 16) {
+    if (strlen($res) === 16) {
         $data_id = unpack_id($res);
     }
     // Find out whether item with the same ID already exists
@@ -175,7 +174,7 @@ function import_slice(&$slice) {
 
     if ($only_slice) { // import slice definition ?
         $IDconflict = !prove_ID($slice);
-        if (($IDconflict)&&($GLOBALS["submit"]!=_m("Insert with new ids"))) {
+        if ($IDconflict && ($GLOBALS["submit"]!=_m("Insert with new ids"))) {
             huhl('ID conflict '.$slice["id"].' '. $slice["name"]);
             $conflicts_ID[$slice["id"]] = $slice["name"];
             $cancel = 0;
@@ -240,7 +239,7 @@ function import_slice_data($slice_id, $id, $content4id, $insert, $feed) {
         }
         $cont            = $content4id[$id];
         $data_IDconflict = !prove_data_ID($id);
-        if (($data_IDconflict)&&($GLOBALS["submit"]!=_m("Insert with new ids"))) {
+        if ($data_IDconflict && ($GLOBALS["submit"]!=_m("Insert with new ids"))) {
             $data_conflicts_ID[$id] = $cont["headline........"][0]['value'];
             $cancel = 0;
             return false;

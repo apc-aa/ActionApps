@@ -178,7 +178,7 @@ class AA_Searchbar extends AA_Storable {
             case 'bookmark':    // bookmark as user bookmark (just for the user)
                 $this->setFromForm();      // set the searchbar from form values
                 if ( trim($answer) ) {
-                    $this->bookmarks->store($answer, $this->getState(), $confirm=='y' );
+                    $this->bookmarks->store($answer, $this->getState(), $confirm==='y' );
                 }
                 return;
             case 'clearsearch':
@@ -365,7 +365,7 @@ class AA_Searchbar extends AA_Storable {
                 $this->order_row[] =
                      [
                          'field' => key($s),
-                            'dir' => (current($s) AND (current($s)!='a')) ? 'd' : 'a'
+                            'dir' => (current($s) AND (current($s)!=='a')) ? 'd' : 'a'
                      ];
             }
         }
@@ -385,7 +385,7 @@ class AA_Searchbar extends AA_Storable {
                 if (isset($cond) AND is_array($cond)) {
                     $field = false;
                     foreach ( $cond as $k=>$c ) {
-                        if ( ($k != 'operator') AND ($k != 'value') ) {
+                        if ( ($k !== 'operator') AND ($k !== 'value') ) {
                             $field = $k;
                             break;
                         }
@@ -564,7 +564,7 @@ class AA_Searchbar extends AA_Storable {
         $ret =  '<div class="aa-formgroup-inline">';
         $ret .=  "<div class=\"aa-orderrow-label\">$searchtext</div>";
         $ret .=  "<div class=\"aa-orderrow-fld\">". getFrmSelectEasy("srchbr_order[$bar]", $order_fields, $fld).'</div>';
-        $ret .=  "<div class=\"aa-orderrow-dir\"><label>". getFrmChBoxEasy("srchbr_order_dir[$bar]", $dir=='d').' '. _m('Descending'). "</label></div>";
+        $ret .=  "<div class=\"aa-orderrow-dir\"><label>". getFrmChBoxEasy("srchbr_order_dir[$bar]", $dir==='d').' '. _m('Descending'). "</label></div>";
         $ret .= "</div>";
         return $ret;
     }
@@ -827,7 +827,7 @@ class AA_Bookmarks {
      * @return bool
      */
     function is_global($key) {
-        return $this->bookmarks[$key]['type'] == '*';
+        return $this->bookmarks[$key]['type'] === '*';
     }
 
     /**
@@ -860,7 +860,7 @@ class AA_Bookmarks {
      */
     function updateBookmark($key, $state): bool {
         $old = $this->bookmarks[$key];
-        $ret = $this->update( $old['name'], $state, $old['type']=='*', $old['id']);
+        $ret = $this->update( $old['name'], $state, $old['type']==='*', $old['id']);
         if ($ret) {
             AA_Log::write("BM_UPDATE", $old['id'], $old['name']);
             return true;
@@ -875,7 +875,7 @@ class AA_Bookmarks {
      */
     function renameBookmark($key, $newname): bool {
         $old = $this->bookmarks[$key];
-        $ret = $this->update( $newname, $old['state'], $old['type']=='*', $old['id']);
+        $ret = $this->update( $newname, $old['state'], $old['type']==='*', $old['id']);
         if ($ret) {
             AA_Log::write("BM_RENAME", $old['id'], [$newname, $old['name']]);
             return true;
@@ -895,7 +895,7 @@ class AA_Bookmarks {
     {
         $ret = '
           <select name="srchbr_bookmark">
-             <option value="none" '. (($this->getLastUsed() == "none") ? 'selected' : '') .'>'. _m('Select one...') .'</option>';
+             <option value="none" '. (($this->getLastUsed() === "none") ? 'selected' : '') .'>'. _m('Select one...') .'</option>';
         foreach ($this->bookmarks as $k => $book) {
             $class = $this->is_global($k)  ? 'class="sel_title"' : '';
             $sel   = $this->isSelected($k) ? 'selected' : '';

@@ -56,9 +56,9 @@ class FldWidget extends Widget
 
         $attrs = Widget::stdInputAttrs($type, $base_id, ['dirty']);
 
-        // $widget_add = ($type == 'live') ? " class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"" : '';   //style=\"padding-right:16px;\"" : '';
+        // $widget_add = ($type === 'live') ? " class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"" : '';   //style=\"padding-right:16px;\"" : '';
         $widget = '';
-        $autofocus = ($type == 'ajax') ? 'autofocus' : '';
+        $autofocus = ($type === 'ajax') ? 'autofocus' : '';
 
         $value = $content->getAaValue($aa_property->getId());
 
@@ -68,7 +68,7 @@ class FldWidget extends Widget
         $attrs['type'] = $this->getProperty('input_type') ?: $attrs['type'] ?: 'text';
 
         // type number does not support size parameter, so we have to set max and min (make no sense to do it for numbers > 11 characters - use default)
-        if ($attrs['type'] == 'number') {
+        if ($attrs['type'] === 'number') {
             if (!isset($attrs['max']) and ($nchars = $attrs['maxlength'] ?: $this->getProperty('max_characters') ?: $attrs['size'] ?: 0) and ($nchars < 11)) {  // $this->getProperty('width') - removed - max should not be set based on widget width
                 $attrs['max'] = pow(10, $nchars) - 1;
                 $attrs['min'] = $attrs['min'] ?: '0';
@@ -125,8 +125,8 @@ class FldWidget extends Widget
     {
         $input_id = FormArray::formName2Id($input_name);
         $input_value = safe($val);
-        $link = ((substr($input_value, 0, 7) === 'http://') OR (substr($input_value, 0, 8) === 'https://')) ? '&nbsp;' . a_href($input_value, GetAAImage('external-link.png', _m('Show'), 16, 16)) : '';
-        $ret = "<input $attr_string name=\"$input_name\" id=\"$input_id\" value=\"$input_value\" $required $widget_add $autofocus>$link" . Widget::_saveIcon($base_id, $type == 'live'); //, 'right', $link ? 16 : 0);
+        $link = ((str_starts_with($input_value, 'http://')) OR (str_starts_with($input_value, 'https://'))) ? '&nbsp;' . a_href($input_value, GetAAImage('external-link.png', _m('Show'), 16, 16)) : '';
+        $ret = "<input $attr_string name=\"$input_name\" id=\"$input_id\" value=\"$input_value\" $required $widget_add $autofocus>$link" . Widget::_saveIcon($base_id, $type === 'live'); //, 'right', $link ? 16 : 0);
         if ($lang = Langs::getLangNum2Name($i)) {
             $langcode  = Langs::getLangName2Code($lang);
             $translate =  ($langcode == $base['langcode']) ? '' :  "<span class=\"btn aa-langtrans-tbtn\" onclick=\"AA_Translate('$input_id', document.getElementById('". $base['id'] ."').value, '".$base['langcode']."', '$langcode');\">". _m("translate from"). ' '. Langs::getLangCode2Name($base['langcode']) . "</span>";

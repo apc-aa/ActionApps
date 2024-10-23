@@ -97,7 +97,7 @@ function confirm_email($slice_id, $aw): bool {
     $set  = new AA_Set($slice_id, new AA_Condition(FIELDID_ACCESS_CODE, '==', $aw));
     $zids = $set->query();
 
-    if ($zids->count() != 1) {
+    if ($zids->count() !== 1) {
         warn("AW not OK: ".$zids->count()." items");
         return false;
     }
@@ -111,7 +111,7 @@ function unsubscribe_reader($slice_id, $au, $c): bool {
     require_once __DIR__ . "/../../include/itemfunc.php";
 
     $readers = DB_AA::select('iid', 'SELECT LOWER(HEX(item.id)) as iid FROM `content`,`item`',[['content.item_id', 'item.id', 'j'],['item.slice_id',$slice_id,'l'],['content.field_id', FIELDID_ACCESS_CODE],['content.text',$au]]);
-    if (count($readers) != 1) {
+    if (count($readers) !== 1) {
         warn("AU not OK: ".count($readers)." items");
         return false;
     }

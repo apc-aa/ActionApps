@@ -88,7 +88,7 @@ if (!CheckPerms( AuthGetUid(), "aa", AA_ID, PS_ADD) ) {
 
 MoreTimeLimit(); // set_time_limit to 5 minutes (at least)
 
-if ($_POST['b_export_type']=='doc') {
+if ($_POST['b_export_type'] === 'doc') {
     $exporter = new AA_Slice_Documentator($b_export_type, $b_export_gzip, $b_export_struct, $b_export_data, $b_export_spec_date, $b_export_from_date, $b_export_to_date, $b_export_hex, $b_export_views, $b_export_to_utf);
 } else {
     $exporter = new AA_Slice_Exporter($b_export_type, $b_export_gzip, $b_export_struct, $b_export_data, $b_export_spec_date, $b_export_from_date, $b_export_to_date, $b_export_hex, $b_export_views, $b_export_to_utf);
@@ -101,7 +101,7 @@ if ($b_export_to_file) {
 
 $apage = new AA_Adminpageutil('aaadmin','sliceexp');
 $apage->setTitle(_m("Export slice structure"));
-//$apage->addRequire(get_aa_url('/javascript/js_lib.min.js?v='.AA_JS_VERSION, '', false ));
+//$apage->addRequire(get_aa_url('/javascript/js_lib.min.js', ['v'=>AA_JS_VERSION], false ));
 $apage->setForm(['id'=>'formf','onsubmit'=>"return validate2()"]);
 $apage->printHead($err, $Msg);
 

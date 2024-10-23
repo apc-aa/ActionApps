@@ -69,7 +69,7 @@ class PageCache  {
      */
     static function globalKeyArray() {
         // valid just for one domain (there are sites, where content is based also on domain - enviro.example.org, culture.example.org, ... )
-        $ks = ['host' => (strpos($host = $_SERVER['HTTP_HOST'], 'www.')===0) ? substr($host,4) : $host];
+        $ks = ['host' => (str_starts_with($host = $_SERVER['HTTP_HOST'], 'www.')) ? substr($host,4) : $host];
         if (isset($GLOBALS['apc_state'])) {
             $ks['apc_state'] = $GLOBALS['apc_state'];
         }
@@ -84,14 +84,14 @@ class PageCache  {
             // do not count with cookie names starting with underscore
             // (Google urchin uses cookies like __utmz which varies very often)
             foreach( $_COOKIE as $key => $val ) {
-                if ( ($key[0] !='_') AND ($key!='AA_Session')) {
+                if ( ($key[0] !='_') AND ($key!=='AA_Session')) {
                     $ks["C$key"] = $val;
                 }
             }
         }
 
         // for JSON request the parameters are in body, but is not parsed into $_POST variable
-        if ($_SERVER['CONTENT_TYPE'] == 'application/json') {
+        if ($_SERVER['CONTENT_TYPE'] === 'application/json') {
             $ks["php-input"] = file_get_contents('php://input');
         }
 
@@ -112,7 +112,7 @@ class PageCache  {
         AA::$debug&2 && AA::$dbg->log("Pagecache->get(key):$key", 'Pagecache action:'.$action);
 
         if ( ENABLE_PAGE_CACHE ) {
-            if ( $action == 'invalidate' ) {
+            if ( $action === 'invalidate' ) {
                 $this->invalidateById( $key );
                 AA::$debug&2 && AA::$dbg->log("Pagecache: return false - invlaidating");
                 return false;
@@ -226,7 +226,8 @@ class PageCache  {
 
             // it is not necessary to check, if the  AA\Later\PagecachePurge is planed
             // store. We check it only once for 1000 (PAGECACHEPURGE_PROBABILITY)
-            if (mt_rand(0,PAGECACHEPURGE_PROBABILITY) == 1) {
+            /** @noinspection RandomApiMigrationInspection */ // mt_rand is used for speed
+            if (mt_rand(0,PAGECACHEPURGE_PROBABILITY) === 1) {
                 // purge only each PAGECACHEPURGE_PROBABILITY-th call of store
                 $cache_purger  = new PagecachePurge();
                 $toexecute     = new Toexecute;
@@ -243,7 +244,7 @@ class PageCache  {
      *  counterpart function
      */
     function storePage($key, Cacheentry $entry, $str2find, $force=false): bool {
-        // @todo - we can use json_encode, when $entry->$h['encoding']=='utf-8' which is quicker, than serialize
+        // @todo - we can use json_encode, when $entry->$h['encoding']==='utf-8' which is quicker, than serialize
         return $this->store($key, serialize($entry), $str2find, $force);
     }
 
@@ -263,7 +264,7 @@ class PageCache  {
         // we will delete it in chuns in order we do not get max_packet_size error from MySQL
         $chunks = array_chunk((array)$keys, 10000);
         foreach ($chunks as $chunk) {
-            $keystring = join("','", $chunk);
+            $keystring = implode("','", $chunk);
             if ( $keystring != '' ) {
                 $varset = new Cvarset();
                 if ( $varset->doDeleteWhere('pagecache', "id IN ('$keystring')", 'nohalt') ) {

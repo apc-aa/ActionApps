@@ -135,20 +135,24 @@ function cron($time = 0) {
                     }
                 }
 
-                if (strstr($value,'/')) {
+                if (str_contains($value, '/')) {
                     [$from,$to,$step] = preg_split('~[/-]~',$value);
-                    for ($i = $from; $i <= $to; $i += $step)
-                        if ($i <= $now_part && $i > $nearest_part)
+                    for ($i = $from; $i <= $to; $i += $step) {
+                        if ($i <= $now_part && $i > $nearest_part) {
                             $nearest_part = $i;
+                        }
+                    }
                 }
                 else {
                     $ranges = explode(',',$value);
                     foreach ($ranges as $range) {
-                        if (strstr ($range,"-")) {
+                        if (str_contains($range, "-")) {
                             [$from,$to] = explode('-',$value);
-                                for ($i = $from; $i <= $to; $i++)
-                                if ($i <= $now_part && $i > $nearest_part)
-                                    $nearest_part = $i;
+                                for ($i = $from; $i <= $to; $i++) {
+                                    if ($i <= $now_part && $i > $nearest_part) {
+                                        $nearest_part = $i;
+                                    }
+                                }
                         }
                         elseif ($range <= $now_part && $range > $nearest_part) {
                             $nearest_part = $range;
@@ -160,7 +164,7 @@ function cron($time = 0) {
             $nearest_time = mktime($nearest["hours"], $nearest["minutes"],0, $nearest["mon"], $nearest["mday"], $now["year"]);
             // mktime does not consider week day. We must shift it manually to the desired week day.
             // This will not work correct when combining week day with month or month day settings.
-            if ($db->f("wday") != "*") {
+            if ($db->f("wday") !== "*") {
                 $wday = getdate ($nearest_time);
                 $diff = (7 - $nearest["wday"] + $wday["wday"]) % 7;
                 $nearest_time -= $diff * 24 * 60 * 60;

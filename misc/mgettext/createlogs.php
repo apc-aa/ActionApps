@@ -50,7 +50,7 @@ function create_logs ($lang_list, $old_lang_files, $log_files)
         foreach ($consts as $name => $value) {
             if (str_starts_with($name, "L_") && $value) {
                 $value = str_replace( ['"',"\n","\r"], ['\\"',"\\n",""], $value);
-                if ($lang == "en") {
+                if ($lang === "en") {
                     fwrite ($fd, "\$_log[\"$value\"][] = \"$name\";\n");
                 } else {
                     fwrite ($fd, "\$_log[\"$name\"] = \"$value\";\n");

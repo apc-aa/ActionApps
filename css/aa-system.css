@@ -50,6 +50,7 @@ div[contenteditable] {
     border: solid 1px hsl(0deg 0% 35.29% / 51%);
 }
 #aa-message-box {
+    background-color: white;
     width: 500px !important;
     text-align: center;
     position: fixed;

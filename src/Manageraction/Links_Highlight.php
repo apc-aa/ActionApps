@@ -19,7 +19,7 @@ class Links_Highlight extends AbstractManageraction {
 
     /** Name of this Manager's action */
     public function getName(): string {
-        return ($this->highlight == 'highlight') ? _m('Highlight Link') : _m('Dehighlight Link');
+        return ($this->highlight === 'highlight') ? _m('Highlight Link') : _m('Dehighlight Link');
     }
 
     /** @inheritDoc */

@@ -48,37 +48,9 @@ $format       = [
     ]
 ];
 
-
 $langs = Langs::getNames();
 
 // ----------------------------------------------------------------------------------
-/** CreateWhereFromList function
- * @param $column
- * @param $list
- * @param $type
- * @return string
- */
-function CreateWhereFromList($column, $list, $type="number") {
-    if (!is_array($list)) {
-        return "1";
-    }
-    if (count ($list) == 0) {
-        return "0";
-    }
-    if ($type == "number") {
-         return $column." IN (". join (",",$list). ")";
-    }
-    else {
-        $in = "";
-        foreach ($list as $item) {
-            if ($in) {
-                $in .= ",";
-            }
-            $in .= "'".addslashes ($item)."'";
-        }
-        return $column." IN ($in)";
-    }
-}
 
 /** SelectModule function
     @return array (unpacked module id => module name), e.g. to create a selectbox
@@ -89,7 +61,7 @@ function SelectModule($all = false) {
     } else {
         // get all slices where we have edit permission
         $myslices = GetUserSlices();
-        if ( isset($myslices) AND is_array($myslices) ) {
+        if ( isset($myslices) && is_array($myslices) ) {
             $zids = new zids(null,'l');
             foreach ( $myslices as $my_slice_id => $perm) {
                 if (IfSlPerm(PS_FULLTEXT, $my_slice_id)) {

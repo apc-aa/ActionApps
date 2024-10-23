@@ -392,7 +392,7 @@ function Links_GlobalCatSuper($type) {
 /** Returns listing of links with the same URL */
 function Links_getUrlReport($url, $format_strings, $checked_id, $tree_start=false) {
     if (str_ends_with($url, '/')) {
-        $url = substr( $url, 0, strlen($url)-1 );  // remove last '/'
+        $url = substr( $url, 0, -1);  // remove last '/'
     }
 
     $url   = addslashes($url);

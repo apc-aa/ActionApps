@@ -40,7 +40,7 @@ class Datovka extends AA_Object {
     protected bool $dmAllowSubstDelivery = false;
 
     public function __construct(string $conf = 'standard', string $to = '', string $annotation = '', string $attachments = '', array $params = [], string $return_url='', string $module_id='', string $related_to='') {
-        $system_id = array_keys(array_filter(DATOVKA_CONF['instances'], fn($v) => $v['url'] === AA_INSTAL_URL))[0] ?? 1000;
+        $system_id = array_keys(array_filter(DATOVKA_CONF['instances'], static fn($v) => $v['url'] === AA_INSTAL_URL))[0] ?? 1000;
         $this->datovka_id            = random_int(10000000000, 99999999999) * 10000 + $system_id;   // mmmmmmmmmmmaaaa   message_id.aa_did
         $this->setNew(new_id(), $module_id, "DS {$this->datovka_id} ".date("Y-m-d H:i:s"));
 
@@ -90,13 +90,13 @@ class Datovka extends AA_Object {
     public static function getFromToken(string $appToken): ?Datovka {
         $datovka_id                  = $appToken;
         $system_id                   = $datovka_id % 10000;
-        $zids = Datovka::querySet('Datovka', new AA_Set(null, new AA_Condition('datovka_id', '==', $datovka_id)));
+        $zids = self::querySet('Datovka', new AA_Set(null, new AA_Condition('datovka_id', '==', $datovka_id)));
         if ($zids->count() !== 1) {
             echo 'Datovka not found';
             return null;
         }
         /** @var Datovka */
-        return Datovka::load($zids->id(),'Datovka');
+        return self::load($zids->id(),'Datovka');
     }
 
 
@@ -191,11 +191,15 @@ class Datovka extends AA_Object {
         }
 
         if (!array_key_exists('dbIDRecipient',$envelope)) {
-            throw new Exception('Missing Recipient parameters for building message.');
-        } elseif (!array_key_exists('dmAnnotation',$envelope)) {
-            throw new Exception('Missing Annotation parameters for building message.');
-        } elseif (!$dmfiles) {
-            throw new Exception('Missing Attachments for building message.');
+            throw new \RuntimeException('Missing Recipient parameters for building message.');
+        }
+
+        if (!array_key_exists('dmAnnotation',$envelope)) {
+            throw new \RuntimeException('Missing Annotation parameters for building message.');
+        }
+
+        if (!$dmfiles) {
+            throw new \RuntimeException('Missing Attachments for building message.');
         }
         return ['dmEnvelope' => $envelope, 'dmFiles' => $dmfiles];
     }
@@ -234,7 +238,7 @@ class Datovka extends AA_Object {
         $result = $client->__soapCall($method, [$params]);
         // huhl('Result is', $result, 'getLastResponse', $client->__getLastResponse(), 'getLastRequest', $client->__getLastRequest(), 'getLastRequestHeaders', $client->__getLastRequestHeaders());
         if (!is_object($result)) {
-            throw new Exception('No result from '. $method);
+            throw new \RuntimeException('No result from '. $method);
         }
         return $result;
     }
@@ -292,7 +296,7 @@ class Datovka extends AA_Object {
             $resp   = $this->parseResponseAttributes($result);
             if ( !is_object($result) OR !$resp ) {
                 $this->setState(2**15, 'Err - Wrong server answer'); // 32768
-                throw new Exception('Wrong server answer');
+                throw new \RuntimeException('Wrong server answer');
             }
 
             if (array_key_exists('timeLimitedId', $resp) AND !array_key_exists('conceptStatusCode', $resp)) {
@@ -308,15 +312,15 @@ class Datovka extends AA_Object {
                     //echo '<a href="https://www.czebox.cz/as/koncept/view?konceptId=' . $dmID . '">https://www.czebox.cz/as/koncept/view?konceptId=' . $dmID . '</a><br>';
                 } else {
                     $this->setState(2**15+1, 'Err - Concept not prepared');
-                    throw new Exception('Concept not created: ' . $result->dmStatus->dmStatusMessage . ' (' . $result->dmStatus->dmStatusCode . ')');
+                    throw new \RuntimeException('Concept not created: ' . $result->dmStatus->dmStatusMessage . ' (' . $result->dmStatus->dmStatusCode . ')');
                 }
             } else {
-                if ($result->status == 'OK' AND array_key_exists('conceptStatusCode', $resp) AND $resp['conceptStatusCode'] == '0000') {
+                if ($result->status === 'OK' AND array_key_exists('conceptStatusCode', $resp) AND $resp['conceptStatusCode'] == '0000') {
                     $this->setState(2**14, 'sent: '. $resp['conceptStatusMessage']);  // 16384  step 4 - final
                     go_url($this->return_url, ['ds_id' => $this->datovka_id, 'ds_status' => 'OK']); // 'sent';
                 }
                 $this->setState(2**15+2, "Err - Concept not sent: $resp[conceptStatusCode] ($resp[conceptStatusMessage])");
-                throw new Exception("Not sent: {$resp['conceptStatusMessage']} ({$resp['conceptStatusCode']})"); // the error codes and messages are in different position in response, than in timeLimitedId response
+                throw new \RuntimeException("Not sent: {$resp['conceptStatusMessage']} ({$resp['conceptStatusCode']})"); // the error codes and messages are in different position in response, than in timeLimitedId response
             }
         } catch (Exception $e) {
             go_url($this->return_url, ['ds_id' => $this->datovka_id, 'ds_status' => 'ERR', 'ds_msg'=>$e->getMessage()]);

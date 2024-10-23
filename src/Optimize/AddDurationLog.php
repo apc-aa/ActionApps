@@ -39,7 +39,7 @@ class AddDurationLog extends \AA\Optimize\AbstractOptimize {
             $this->message(_m('The "duration" column missing in hit_archive table'));
             return false;
         }
-        $this->message(_m('OK - The "duration" column found in hit_archive table'));
+        $this->message(_m('OK - The "duration" column found in hit_archive table. Duration evaluated from %1', [date('Y-m-d H:i:s', $this->getFromTime())]));
         return true;
     }
 

@@ -34,7 +34,7 @@ class Convert2innodb extends AbstractOptimize {
         $engines = DB_AA::select(['TABLE_NAME' => 'ENGINE'], "SELECT TABLE_NAME,ENGINE FROM information_schema.TABLES", [['TABLE_SCHEMA', DB_NAME], ['ENGINE', '', 'NOTNULL'], ['ENGINE', 'InnoDB', 's<>']]);
         $count = 0;
         foreach ($engines as $tablename => $engine) {
-            if (substr($tablename, 0, 4) == 'bck_') {
+            if (str_starts_with($tablename, 'bck_')) {
                 continue;
             }
             $this->message(_m('engine for %1 table is %2', [$tablename, $engine]));
@@ -53,7 +53,7 @@ class Convert2innodb extends AbstractOptimize {
         $engines = DB_AA::select(['TABLE_NAME' => 'ENGINE'], "SELECT TABLE_NAME,ENGINE FROM information_schema.TABLES", [['TABLE_SCHEMA', DB_NAME], ['ENGINE', '', 'NOTNULL'], ['ENGINE', 'InnoDB', 's<>']]);
         $converted = 0;
         foreach ($engines as $tablename => $engine) {
-            if (substr($tablename, 0, 4) == 'bck_') {
+            if (str_starts_with($tablename, 'bck_')) {
                 continue;
             }
             $this->message(_m('Convert table %1 (%2) to InnoDB', [$tablename, $engine]));

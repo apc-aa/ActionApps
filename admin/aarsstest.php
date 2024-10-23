@@ -173,8 +173,8 @@ $apage = new AA_Adminpageutil('aaadmin','aarsstest');
 $apage->setTitle(_m("ActionApps RSS Content Exchange"));
 $apage->setSubtitle(_m("RSS feeds testing page."));
 $apage->setForm();
-$apage->addRequire(get_aa_url('tabledit.css?v='.AA_JS_VERSION, '', false ));
-$apage->addRequire(get_aa_url('javascript/js_lib.min.js?v='.AA_JS_VERSION, '', false ));  // for OpenWindowTop
+$apage->addRequire(get_aa_url('tabledit.css', ['v'=>AA_JS_VERSION], false ));
+$apage->addRequire(get_aa_url('javascript/js_lib.min.js', ['v'=>AA_JS_VERSION], false ));  // for OpenWindowTop
 $apage->printHead($err, $Msg);
 
 

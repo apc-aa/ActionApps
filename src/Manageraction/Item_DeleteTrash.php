@@ -41,7 +41,7 @@ class Item_DeleteTrash extends AbstractManageraction {
         }
 
         // restrict the deletion only to selected items
-        if ($this->selected == 'selected') {
+        if ($this->selected === 'selected') {
             if ($item_zids->count() < 1) {
                 return false;     // OK
             }
@@ -79,6 +79,6 @@ class Item_DeleteTrash extends AbstractManageraction {
      */
     function isPerm4Action($manager) {
         // if we want to use it as "action" (not "switch"), then we should be in trash bin
-        return (IfSlPerm(PS_DELETE_ITEMS) and (!$this->selected or ($manager->getBin() == 'trash')));
+        return (IfSlPerm(PS_DELETE_ITEMS) and (!$this->selected or ($manager->getBin() === 'trash')));
     }
 }

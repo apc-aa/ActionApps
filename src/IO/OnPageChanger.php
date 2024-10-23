@@ -75,7 +75,7 @@ class OnPageChanger  {
         call_user_func($this->content_function);
 
         $parts = AA::Stringexpander()->getDependentParts($vars);
-        if (AA::$encoding != 'utf-8') {
+        if (AA::$encoding !== 'utf-8') {
             $convertor = ConvertCharset::singleton();
             foreach ($parts as $k => $v) {
                 $parts[$k] = $convertor->Convert($v, AA::$encoding, 'utf-8');

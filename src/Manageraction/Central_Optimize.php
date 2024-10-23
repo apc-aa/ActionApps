@@ -79,7 +79,7 @@ class Central_Optimize extends AbstractManageraction {
             $aa    = AA_Actionapps::getActionapps($aa_id);
             $ret[] = $aa->doOptimize($this->optimize_class, $this->optimize_method);
         }
-        return join('<br>', $ret);   // @todo we should rewrite outputs from AA\Manageraction\.. to some standard messages() system
+        return implode('<br>', $ret);   // @todo we should rewrite outputs from AA\Manageraction\.. to some standard messages() system
     }
 
     /** Checks if the user have enough permission to perform the action

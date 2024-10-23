@@ -54,16 +54,16 @@ class mgettext_writer_php extends mgettext_writer {
 
     /** Prints language file header. */
     function write_header($lang) {
-        fputs($this->fd, "<?php\n");
-        fputs($this->fd, "// \$Id$\n");
-        fputs($this->fd, "// Language: ".strtoupper($lang)."\n");
-        fputs($this->fd, "// This file was created automatically by the Mini GetText environment\n");
-        fputs($this->fd, "// on ".date("j.n.Y H:i")."\n\n");
-        fputs($this->fd, "// Do not change this file otherwise than by typing translations on the right of =\n\n");
-        fputs($this->fd, "// Before each message there are links to program code where it was used.\n");
-        fputs($this->fd, "\n");
-        fputs($this->fd, "\$mgettext_lang = \"$lang\";\n");
-        fputs($this->fd, "\n");
+        fwrite($this->fd, "<?php\n");
+        fwrite($this->fd, "// \$Id$\n");
+        fwrite($this->fd, "// Language: ".strtoupper($lang)."\n");
+        fwrite($this->fd, "// This file was created automatically by the Mini GetText environment\n");
+        fwrite($this->fd, "// on ".date("j.n.Y H:i")."\n\n");
+        fwrite($this->fd, "// Do not change this file otherwise than by typing translations on the right of =\n\n");
+        fwrite($this->fd, "// Before each message there are links to program code where it was used.\n");
+        fwrite($this->fd, "\n");
+        fwrite($this->fd, "\$mgettext_lang = \"$lang\";\n");
+        fwrite($this->fd, "\n");
     }
 
     /** Write language constructs */
@@ -75,15 +75,15 @@ class mgettext_writer_php extends mgettext_writer {
             }
         }
         $text .= "\$_m[".$this->prepare_string($pair['message'])."]\n = ".$this->prepare_string($pair['translation']).";\n\n";
-        fputs($this->fd, $text);
+        fwrite($this->fd, $text);
     }
 
     function write_comment($comment) {
-        fputs($this->fd, "# $comment\n");
+        fwrite($this->fd, "# $comment\n");
     }
 
     function write_footer() {
-        fputs($this->fd, "?>\n");
+        fwrite($this->fd, "?>\n");
     }
 
     function close() {
@@ -113,14 +113,14 @@ class mgettext_writer_po extends mgettext_writer {
 
     /** Prints language file header. */
     function write_header($lang) {
-        fputs($this->fd, "# \$Id$\n");
-        fputs($this->fd, "# Language: ".strtoupper($lang)."\n");
-        fputs($this->fd, "# This file was created automatically by the Mini GetText environment\n");
-        fputs($this->fd, "# on ".date("j.n.Y H:i")."\n\n");
-        fputs($this->fd, "# Before each message there are links to program code where it was used.\n");
-        fputs($this->fd, "# \n");
-        fputs($this->fd, "# \$mgettext_lang = \"$lang\";\n");
-        fputs($this->fd, "# \n\n");
+        fwrite($this->fd, "# \$Id$\n");
+        fwrite($this->fd, "# Language: ".strtoupper($lang)."\n");
+        fwrite($this->fd, "# This file was created automatically by the Mini GetText environment\n");
+        fwrite($this->fd, "# on ".date("j.n.Y H:i")."\n\n");
+        fwrite($this->fd, "# Before each message there are links to program code where it was used.\n");
+        fwrite($this->fd, "# \n");
+        fwrite($this->fd, "# \$mgettext_lang = \"$lang\";\n");
+        fwrite($this->fd, "# \n\n");
     }
 
     /** Write language constructs */
@@ -133,15 +133,15 @@ class mgettext_writer_po extends mgettext_writer {
         }
         $text .= "msgid ". $this->prepare_string($pair['message'])."\n";
         $text .= "msgstr ".$this->prepare_string($pair['translation'])."\n\n";
-        fputs($this->fd, $text);
+        fwrite($this->fd, $text);
     }
 
     function write_comment($comment) {
-        fputs($this->fd, "# $comment\n");
+        fwrite($this->fd, "# $comment\n");
     }
 
     function write_footer() {
-        fputs($this->fd, "");
+        fwrite($this->fd, "");
     }
 
     function close() {
@@ -194,8 +194,10 @@ function xmgettext($lang_list, $logfile, $lang_files, $files_base_dir, $files, $
 
     if (is_array($warnings)) {
         echo "<Br>Warnings:<br>";
-        echo join ("<br>", $warnings);
-        if ($stop_on_warning) exit;
+        echo implode ("<br>", $warnings);
+        if ($stop_on_warning) {
+            exit;
+        }
     }
 
     foreach ($lang_list as $lang => $foo) {
@@ -215,7 +217,7 @@ function xmgettext($lang_list, $logfile, $lang_files, $files_base_dir, $files, $
         echo " - ". (is_array($_m) ? count($_m) : 0) .'<br>';
 
         // write the file
-        if ($file_type == 'php') {
+        if ($file_type === 'php') {
             $out = new mgettext_writer_php($langfile);
         } else {
             $out = new mgettext_writer_po(str_replace('php', 'PO', $langfile));
@@ -240,7 +242,7 @@ function xmgettext($lang_list, $logfile, $lang_files, $files_base_dir, $files, $
                 $pair = [];    // clean the variable
                 if ($add_source_links) {
                     foreach ($params["code"] as $filename => $rows) {
-                        $pair['comments'][] = "$filename, row ".join(", ",$rows);
+                        $pair['comments'][] = "$filename, row ".implode(", ",$rows);
                     }
                 }
 
@@ -250,7 +252,7 @@ function xmgettext($lang_list, $logfile, $lang_files, $files_base_dir, $files, $
                     foreach ( $other_translations[$message] as $other => $foo) {
                         $other_join[] = $other;
                     }
-                    $pair['comments'][] = "other translations: ".join (", ", $other_join);
+                    $pair['comments'][] = "other translations: ".implode (", ", $other_join);
                 }
 
                 $mmsg = $_m[$message];
@@ -295,8 +297,7 @@ function add_old_translations($log_files, $lang, &$_m, &$other_translations) {
 
 /** creates php string which could be printed into ph apostroph construct */
 function php_string($text) {
-    $text = str_replace("\\", "\\\\", $text);
-    return  str_replace("'",  "\\'",  $text);
+    return str_replace(["\\", "'"], ["\\\\", "\\'"], $text);
 }
 
 /** add file to $skiplist or $filelist */
@@ -430,20 +431,20 @@ function collect_messages_from_file($base_dir, $filename, &$messages, &$warnings
 
         // comments of all types (#, //, /*)
 
-        if ($comment == "0" && $quotes == "0") {
-            if ($filetext[$pos] == "#") {
+        if ($comment === "0" && $quotes == "0") {
+            if ($filetext[$pos] === "#") {
                 $comment = "#";
-            } elseif (substr($filetext, $pos, 2) == "//") {
+            } elseif (substr($filetext, $pos, 2) === "//") {
                 $comment = "#";
                 $pos++;
-            } elseif (substr ($filetext, $pos, 2) == "/*") {
+            } elseif (substr($filetext, $pos, 2) === "/*") {
                 $comment = "/*";
                 $pos++;
             }
         }
-        elseif ($comment == "#" && $filetext[$pos] == "\n") {
+        elseif ($comment === "#" && $filetext[$pos] === "\n") {
             $comment = "0";
-        } elseif ($comment == "/*" && substr($filetext, $pos, 2) == "*/") {
+        } elseif ($comment === "/*" && substr($filetext, $pos, 2) === "*/") {
             $comment = "0";
             $pos++;
         }
@@ -451,8 +452,8 @@ function collect_messages_from_file($base_dir, $filename, &$messages, &$warnings
         // quotes of both types (", ')
 
         // added ($find != 0) by Honza - do not take care about outer
-        if ($comment == "0" && strchr("\"'", $filetext[$pos])) {
-            if ($pos == 0 || $filetext[$pos-1] != "\\") {
+        if ($comment === "0" && str_contains("\"'", $filetext[$pos])) {
+            if ($pos === 0 || $filetext[$pos-1] !== "\\") {
                 if (!$quotes) {
                     $quotes       = $filetext[$pos];
                 } elseif ($quotes == $filetext[$pos]) {
@@ -468,7 +469,7 @@ function collect_messages_from_file($base_dir, $filename, &$messages, &$warnings
 /*         echo "<br>". (($pos == 0) ? '+' : '.').
                      (!isidletter($filetext[$pos-1]) ? '+' : '.').
                      (($filetext[$pos] == '_') ? '+' : '.').
-                     (($filetext[$pos+1] == 'm') ? '+' : '.').
+                     (($filetext[$pos+1] === 'm') ? '+' : '.').
                      (!isidletter($filetext[$pos+2]) ? '+' : '.'). $filetext[$pos] .", $comment, $find, $quotes, $inner_quotes, $message_part";
  */
         //if ($find) echo $find;
@@ -481,7 +482,7 @@ function collect_messages_from_file($base_dir, $filename, &$messages, &$warnings
             case 0:
                 if (($pos == 0 || !isidletter($filetext[$pos-1]))
                   && ($filetext[$pos] == '_')
-                  && ($filetext[$pos+1] == 'm')
+                  && ($filetext[$pos+1] === 'm')
                   && !isidletter($filetext[$pos+2])) {
                     // _m was the whole identifier
                     $find = 1;
@@ -512,7 +513,7 @@ function collect_messages_from_file($base_dir, $filename, &$messages, &$warnings
                 if (isspace($filetext[$pos])) {
                     break;
                 }
-                if (strchr("\"'", $filetext[$pos])) {
+                if (str_contains("\"'", $filetext[$pos])) {
                     $find = 3;
                     $quotes_start = $inner_quotes = $filetext[$pos];
                 } else {
@@ -523,7 +524,7 @@ function collect_messages_from_file($base_dir, $filename, &$messages, &$warnings
                 break;
             // inside message, e.g. after _m ( " or after _m ( "Hello" . "
             case 3:
-                if (($filetext[$pos]==$inner_quotes) && ($filetext[$pos-1] != "\\") ) {
+                if (($filetext[$pos]==$inner_quotes) && ($filetext[$pos-1] !== "\\") ) {
                     $to_be_evaled = "\$message .= ".$quotes_start.$message_part.$quotes_start.";";
                     $message_part = "";
                     eval($to_be_evaled);
@@ -532,18 +533,18 @@ function collect_messages_from_file($base_dir, $filename, &$messages, &$warnings
                 }
                 else {
                     $message_part .= $filetext[$pos];
-                    if ($filetext[$pos] == '$' && $inner_quotes == '"'
-                     && $filetext[$pos-1] != "\\")
+                    if ($filetext[$pos] === '$' && $inner_quotes === '"' && $filetext[$pos-1] !== "\\") {
                         $warnings[] = "$filename, row $irow: using variable in _m is not allowed";
+                    }
                 }
                 break;
             // after message, e.g. _m ( "Hello"
             case 4:
                 if (isspace($filetext[$pos])) {
                     ;
-                } elseif ($filetext[$pos] == ".") {
+                } elseif ($filetext[$pos] === ".") {
                     $find = 2;
-                } elseif ($filetext[$pos] == "," || $filetext[$pos] == ")") {
+                } elseif ($filetext[$pos] === "," || $filetext[$pos] === ")") {
                     $messages[$message]["code"][$filename][] = $irow;
                     $find = 0;
                 } else {
@@ -558,16 +559,18 @@ function collect_messages_from_file($base_dir, $filename, &$messages, &$warnings
 
 // -------------------------------------------------------------------------------------
 
-function isidletter($c)
-{ return ($c >= 'a' && $c <= 'z')
+function isidletter($c): bool
+{
+    return ($c >= 'a' && $c <= 'z')
       || ($c >= 'A' && $c <= 'Z')
       || ($c >= '0' && $c <= '9')
-      || ($c == '_')
+      || ($c === '_')
       || (ord ($c) > 127);
 }
 
-function isspace($c) {
-    return strchr(" \t\r\n", $c);
+function isspace($c): bool
+{
+    return (bool)strstr(" \t\r\n", $c);
 }
 
 

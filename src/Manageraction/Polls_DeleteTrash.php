@@ -103,7 +103,7 @@ class Polls_DeleteTrash extends AbstractManageraction {
      */
     function isPerm4Action($manager) {
         // if we want to use it as "action" (not "switch"), then we should be in trash bin
-        return (IfSlPerm(PS_DELETE_ITEMS) and (!$this->selected or ($manager->getBin() == 'folder3')));
+        return (IfSlPerm(PS_DELETE_ITEMS) and (!$this->selected or ($manager->getBin() === 'folder3')));
     }
 }
 

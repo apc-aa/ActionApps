@@ -208,11 +208,11 @@ class uploader {
         } elseif (isset($_GET['opener'])) {
             $this->opener['name'] = $_GET['opener'];
 
-            if ($_GET['opener'] == "tinymce") {
+            if ($_GET['opener'] === "tinymce") {
                 if (!isset($this->config['_tinyMCEPath']) || !strlen($this->config['_tinyMCEPath']))
                     $this->opener['name'] = false;
 
-            } elseif ($_GET['opener'] == "tinymce4") {
+            } elseif ($_GET['opener'] === "tinymce4") {
                 if (!isset($_GET['field']))
                     $this->opener['name'] = false;
                 else
@@ -361,7 +361,7 @@ class uploader {
 
     protected function checkFilePath($file) {
         $rPath = realpath($file);
-        if (strtoupper(substr(PHP_OS, 0, 3)) == "WIN") {
+        if (strtoupper(substr(PHP_OS, 0, 3)) === "WIN") {
             $rPath = str_replace("\\", "/", $rPath);
         }
         $rPath   = rtrim($rPath, '/');
@@ -596,7 +596,7 @@ class uploader {
             (($orientation == 8) && !$img->rotate(270))
         )
             return false;
-        if (($orientation >= 2) && ($orientation <= 8) && ($this->imageDriver == "imagick"))
+        if (($orientation >= 2) && ($orientation <= 8) && ($this->imageDriver === "imagick"))
             try {
                 $img->image->setImageProperty('exif:Orientation', "1");
             } catch (\Exception $e) {}
@@ -657,9 +657,9 @@ class uploader {
 
         // Save thumbnail
         $options = array('file' => $thumb);
-        if ($type == "gif")
+        if ($type === "gif")
             $type = "jpeg";
-        if ($type == "jpeg")
+        if ($type === "jpeg")
             $options['quality'] = $this->config['jpegQuality'];
         return $img->output($type, $options);
     }
@@ -706,7 +706,7 @@ class uploader {
     protected function callBack($url, $message="") {
         $message = text::jsValue($message);
 
-        if ((get_class($this) == "kcfinder\\browser") && ($this->action != "browser"))
+        if ((get_class($this) === "kcfinder\\browser") && ($this->action !== "browser"))
             return;
 
         if (isset($this->opener['name'])) {
@@ -714,7 +714,7 @@ class uploader {
             if (method_exists($this, $method))
                 $js = $this->$method($url, $message);
         }
-        if ($this->outputFormat == 'json') {
+        if ($this->outputFormat === 'json') {
           header('Content-Type: application/json');
           $json = $this->callBack_json($url, $message);
           echo json_encode($json);

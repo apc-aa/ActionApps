@@ -168,7 +168,7 @@ if ( $continue ) {
 
     // no slice nor aa perms, but profile is set
     foreach ($profile_users as $usr_id ) {
-        if ( ($usr_id != '*') AND !$slice_users[$usr_id] ) {
+        if ( ($usr_id !== '*') AND !$slice_users[$usr_id] ) {
             $slice_users[$usr_id] = '';  // no rights, just profile rules (applied to users in such group)
         }
     }

@@ -166,11 +166,11 @@ if ($ip_banned_slice_id) {
         $set     = new AA_Set($ip_banned_slice_id, new AA_Condition('keywords........', 'NOTNULL', '1'));
         $kw_item = GetFormattedItems($set->query(), $format);
 
-        $teststring = join('_AA~#^', [$_REQUEST['d_author'], $_REQUEST['d_e_mail'], $_REQUEST['d_body'], $_REQUEST['d_state'], $_REQUEST['d_free1'], $_REQUEST['d_free2'], $_REQUEST['d_url_address'], $_REQUEST['d_url_description']]);
+        $teststring = implode('_AA~#^', [$_REQUEST['d_author'], $_REQUEST['d_e_mail'], $_REQUEST['d_body'], $_REQUEST['d_state'], $_REQUEST['d_free1'], $_REQUEST['d_free2'], $_REQUEST['d_url_address'], $_REQUEST['d_url_description']]);
         foreach ( $kw_item as $kw_id => $kw_string ) {
             $bad_phrases = array_filter(explode('_AA_DeLiM_', $kw_string));
             foreach ($bad_phrases as $bph) {
-                if (strpos($teststring,$bph) !== false) {
+                if (str_contains($teststring, $bph)) {
                     $found_evil = $kw_id;
                     break 2;
                 }

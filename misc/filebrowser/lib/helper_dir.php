@@ -102,7 +102,7 @@ class dir {
         if (!is_dir($dir) || !is_readable($dir))
             return false;
 
-        if (strtoupper(substr(PHP_OS, 0, 3)) == "WIN")
+        if (strtoupper(substr(PHP_OS, 0, 3)) === "WIN")
             $dir = str_replace("\\", "/", $dir);
         $dir = rtrim($dir, "/");
 
@@ -129,7 +129,7 @@ class dir {
             $type = filetype($fullpath);
 
             // If file is a symlink, get the true type of its destination
-            if ($options['followLinks'] && ($type == "link"))
+            if ($options['followLinks'] && ($type === "link"))
                 $type = filetype(realpath($fullpath));
 
             if (($options['types'] === "all") || ($type === $options['types']) ||

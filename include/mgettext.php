@@ -109,9 +109,9 @@ function _m($id, $params=[]): string {
 
     $s = ['\%'];
     $r = ['#$&*'];
-    for ( $i=0, $ino=count($params); $i<$ino; ++$i) {
+    foreach ($params as $i => $iValue) {
         $s[] = '%'.($i+1);
-        $r[] = $params[$i];
+        $r[] = $iValue;
     }
     $s[] = '#$&*';
     $r[] = '%';

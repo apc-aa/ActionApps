@@ -164,7 +164,7 @@ function GetModuleSelection(): string {
     if ( is_array($g_modules) AND (count($g_modules) > 1) AND ($profile->getProperty('ui_manager', 'top_moduleselection') === false)) {
         // create the modulesOptions content:
         $permitted_slices = GetUserSlices();
-        $modules_cond = ($permitted_slices=='all') ? [] : [['module.id', array_keys($permitted_slices), 'l']];
+        $modules_cond = ($permitted_slices==='all') ? [] : [['module.id', array_keys($permitted_slices), 'l']];
 
         $mymodules =  DB_AA::select([], 'SELECT LOWER(HEX(module.id)) AS unpackid, module.type, module.deleted, module.name, slice.type AS slice_type FROM `module` LEFT JOIN `slice` ON module.id=slice.id', $modules_cond, ['module.deleted','module.priority','module.name']);
 
@@ -180,15 +180,15 @@ function GetModuleSelection(): string {
         ];
 
         // do not print deleted modules when you ase not admin of the slice or superadmin
-        if($permitted_slices != 'all') {
+        if($permitted_slices !== 'all') {
             // huhl($_SESSION, AuthGetUid(), $GLOBALS['permission_uid'], AA::$perm->getUserPerms($GLOBALS['permission_uid'], "slice"), AA_Perm::ROLES, $GLOBALS['permission_to']);
-            $mymodules = array_filter($mymodules, fn($slice) => (!$slice['deleted'] OR IfSlPerm(PS_FIELDS, $slice['unpackid'])));  // huhl($slice['name'], $slice['deleted'],  $slice['unpackid'], IfSlPerm(PS_FIELDS, $slice['unpackid']));
+            $mymodules = array_filter($mymodules, static fn($slice) => (!$slice['deleted'] OR IfSlPerm(PS_FIELDS, $slice['unpackid'])));  // huhl($slice['name'], $slice['deleted'],  $slice['unpackid'], IfSlPerm(PS_FIELDS, $slice['unpackid']));
         }
 
         $modules = [];
         foreach ($mymodules as $mymodule) {
             if (($order = $module_types[$mymodule['type']][0]) === 0) {
-                $order = $mymodule['slice_type'] == "ReaderManagement" ? 1 : 0;
+                $order = $mymodule['slice_type'] === "ReaderManagement" ? 1 : 0;
             }
             $name = str_replace("'","`",safe($mymodule['name']));
             if ( $mymodule['deleted'] ) {
@@ -276,7 +276,7 @@ function getMenu($activeMain, $activeSubmenu = ""): string {
         }
 
         // HACKISH: aaadmin menu needs always the _news_ lang file, even in other than slice modules
-        if ($activeMain == "aaadmin") {
+        if ($activeMain === "aaadmin") {
             mgettext_bind(\AA\Util\Langs::currentLang(), 'news');
         }
 
@@ -290,7 +290,7 @@ function getMenu($activeMain, $activeSubmenu = ""): string {
                 $title_img = a_href(AA_INSTAL_PATH . 'doc/reader.html', GetAAImage('alerts.gif', _m('Alerts'), 28, 40));
                 break;
             case 'S':
-                if (AA_Slice::getModuleProperty($slice_id,'type') == "ReaderManagement") {
+                if (AA_Slice::getModuleProperty($slice_id,'type') === "ReaderManagement") {
                     $title_img = a_href(AA_INSTAL_PATH . 'doc/reader.html', GetAAImage('readers.gif', _m('Reader management'), 28, 40));
                 }
                 break;
@@ -330,7 +330,7 @@ function getMenu($activeMain, $activeSubmenu = ""): string {
 
         $links = [];
         foreach ($smmenus as $aamenu =>$aamenuprop) {
-            if ($aamenuprop["level"] == "main") {
+            if ($aamenuprop["level"] === "main") {
                 $links[$aamenu] = GetMenuLink($aamenu == $activeMain, $aamenuprop['label'], $aamenuprop['cond'] ?? true, $aamenuprop['href'], $aamenuprop['exact_href'], $aamenuprop['ico']);
             }
         }
@@ -338,7 +338,7 @@ function getMenu($activeMain, $activeSubmenu = ""): string {
         if ($viewlink = $links['view']) {
             unset($links['view']);
         }
-        $ret .= join(' ',$links);
+        $ret .= implode(' ',$links);
 
         $ret .= '  
                 </nav>

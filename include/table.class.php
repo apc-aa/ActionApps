@@ -200,9 +200,10 @@ class AA_Array {
                 $ret[] = str_replace(['_#1','_#2'], [$v,$k], $exp);
             }
         }
-        return join($join, $ret);
+        return implode($join, $ret);
     }
-    function getFiltered($filter, $delimiter) {
+    function getFiltered($filter, $delimiter): string
+    {
         $ret = preg_grep('/'. preg_quote($filter, '/'). '/', $this->arr);
         return $ret ? AA_Stringexpand::joinWithDelimiter($ret, $delimiter) : '';
     }

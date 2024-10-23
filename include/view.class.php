@@ -212,35 +212,34 @@ class AA_View {
 
     /** old GetViewSort function
      * @param array $param_sort
-     * @return array|bool
+     * @return array|null
      */
-    public function getSort(array $param_sort=[]) {
-        $sort = false;
+    public function getSort(array $param_sort=[]): ?array
+    {
+        $sort = null;
         // grouping
 
         if (array_key_exists('group_by', $param_sort)) {
             if ($param_sort['group_by'] AND !AA_Alias::isAliasLike($param_sort['group_by'], true)) { // we can have group_by= to avoid grouping ({view:55::group_by-})
                 $sort = String2Sort('100000' . $param_sort['group_by']);                             // for aliases, we do not want to sort
             }
-        } else {
-            if ($this->f('group_by1')) {
-                $sort[] = [$this->f('group_by1') => AA_View::VIEW_SORT_DIRECTIONS[$this->f('g1_direction')]];
-            }
+        } elseif ($this->f('group_by1')) {
+            $sort[] = [$this->f('group_by1') => self::VIEW_SORT_DIRECTIONS[$this->f('g1_direction')]];
         }
 
         //sorting
         if (array_key_exists('sort', $param_sort)) {
-            if ($param_sort['sort'] AND $param_sort['sort'] != 'AAnoSORT') {
+            if ($param_sort['sort'] AND $param_sort['sort'] !== 'AAnoSORT') {
                 $set = new AA_Set;
                 $set->addSortFromString($param_sort['sort']);
                 $sort = $set->getSort();
             }
         } else {
             if ($this->f('order1')) {
-                $sort[] = [$this->f('order1') => AA_View::VIEW_SORT_DIRECTIONS[$this->f('o1_direction')]];
+                $sort[] = [$this->f('order1') => self::VIEW_SORT_DIRECTIONS[$this->f('o1_direction')]];
             }
             if ($this->f('order2')) {
-                $sort[] = [$this->f('order2') => AA_View::VIEW_SORT_DIRECTIONS[$this->f('o2_direction')]];
+                $sort[] = [$this->f('order2') => self::VIEW_SORT_DIRECTIONS[$this->f('o2_direction')]];
             }
         }
 
@@ -374,7 +373,7 @@ class AA_View {
                 [$foo_pos, $foo_vid, $foo_fld] = explode('-', $banner);
                 if (ctype_digit((string)$foo_pos) AND strlen($foo_vid)) {
                     $bparam = "vid=$foo_vid";
-                    if ($foo_fld != 'norandom') {
+                    if ($foo_fld !== 'norandom') {
                         $bparam .= "&set[$foo_vid]=random-" . ($foo_fld ?: 1);
                     }
                     $ret['banners'][$foo_pos] = $bparam;
@@ -487,11 +486,11 @@ class AA_View {
                 case 'x':
                     $vid  = $command->getParameter(0);
                     $zids = new zids();
-                    $zids->addDirty(($command->getParameter(1) == 'url') ? $x : $command->getParameterArray(1));
+                    $zids->addDirty(($command->getParameter(1) === 'url') ? $x : $command->getParameterArray(1));
 
                     // This is bizarre code, just incrementing the first item, left as it is
                     // but questioned on apc-aa-coders - mitra
-                    if (($command->getCommand() == 'x') and ($zids->count() > 0)) {
+                    if (($command->getCommand() === 'x') and ($zids->count() > 0)) {
                         \AA\Util\Hitcounter::hit($zids->slice(0));
                     }
                     break;
@@ -500,7 +499,7 @@ class AA_View {
                     // Note param_conds[0] is not otherwise used
                     // It is converted into conds in AA_View->getConds
                     // which is consumed in ParseMultiSelectConds
-                    if ($command->getParameter(0) == 'OR') {
+                    if ($command->getParameter(0) === 'OR') {
                         $param_conds[0] = 'OR';
                         $command_params = $command->getParameterArray(1);
                     } else {
@@ -528,7 +527,7 @@ class AA_View {
             }
         }
 
-        $arr = isset($new_params['set'][$vid]) ? AA_View::parseSettings((array)$new_params['set'][$vid]) : [];
+        $arr = isset($new_params['set'][$vid]) ? self::parseSettings((array)$new_params['set'][$vid]) : [];
 
         // Following line is here just for caching purposes - we are creating cache
         // keystring from view parameters and we need to add all set[] and cmd[]
@@ -643,8 +642,7 @@ class AA_Views {
      * @return AA_View
      */
     static function getViewNumeric($vid) : AA_View {
-        $views = AA_Views::singleton();
-        return $views->_getView($vid);
+        return self::singleton()->_getView($vid);
     }
 
     /** Main factory static method - allows numeric and named views. Do not create view for non existing/accessible views
@@ -662,7 +660,7 @@ class AA_Views {
             return null;
         }
 
-        $view = AA_Views::singleton()->_getView($vid);
+        $view = self::singleton()->_getView($vid);
         return $view->load() ? $view : null;  // if exists return
     }
 
@@ -673,8 +671,7 @@ class AA_Views {
      */
     static function getViewField($vid, $field) {
         /** @var AA_Views $views */
-        $views = AA_Views::singleton();
-        return $views->_getView($vid)?->f($field);
+        return self::singleton()->_getView($vid)?->f($field);
     }
 
     /**
@@ -695,7 +692,7 @@ class AA_Views {
     static function getSliceViews($slice_id) {
         $a = [];
         if ($slice_id) {
-            $views = AA_Views::singleton();
+            $views = self::singleton();
             $SQL   = "SELECT id FROM view WHERE slice_id='". q_pack_id($slice_id) ."'";
             $v_arr = GetTable2Array($SQL, 'NoCoLuMn', 'id');
             if (is_array($v_arr)) {
@@ -704,7 +701,7 @@ class AA_Views {
                     if (!isset($views->a[$id])) {
                         $views->a[$id] = new AA_View($id);
                     }
-                    $a["$id"] = &$views->a[$id];
+                    $a[(string)$id] = &$views->a[$id];
                 }
             }
         }

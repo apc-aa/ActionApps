@@ -92,7 +92,7 @@ class browser extends uploader {
         if ($this->config['disabled']) {
             $message = $this->label("You don't have permissions to browse server.");
             if (in_array($act, array("browser", "upload")) ||
-                (substr($act, 0, 8) == "download")
+                (substr($act, 0, 8) === "download")
             )
                 $this->backMsg($message);
             else {
@@ -112,13 +112,13 @@ class browser extends uploader {
         $this->session['dir'] = path::normalize($this->session['dir']);
 
         // Render the browser
-        if ($act == "browser") {
+        if ($act === "browser") {
             header("X-UA-Compatible: chrome=1");
             header("Content-Type: text/html; charset={$this->charset}");
 
         // Ajax requests
         } elseif (
-            (substr($act, 0, 8) != "download") &&
+            (substr($act, 0, 8) !== "download") &&
             !in_array($act, array("thumb", "upload"))
         )
             header("Content-Type: text/plain; charset={$this->charset}");
@@ -884,7 +884,7 @@ class browser extends uploader {
     protected function errorMsg($message, array $data=null) {
         if (in_array($this->action, array("thumb", "upload", "download", "downloadDir")))
             die($this->label($message, $data));
-        if (($this->action === null) || ($this->action == "browser"))
+        if (($this->action === null) || ($this->action === "browser"))
             $this->backMsg($message, $data);
         else {
             $message = $this->label($message, $data);

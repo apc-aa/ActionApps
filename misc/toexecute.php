@@ -79,7 +79,7 @@ $toexecute->execute();
 
 if (AA::$debug) {
     echo '<br>Dababase instances: '. DB_AA::$_instances_no;
-    echo '<br>UsedModules:<br> - '. join('<br> - ', array_map(fn ($mid) => AA_Module::getModuleName($mid), AA_Module::getUsedModules()));
+    echo '<br>UsedModules:<br> - '. implode('<br> - ', array_map(static fn ($mid) => AA_Module::getModuleName($mid), AA_Module::getUsedModules()));
     echo AA::$dbg->duration_stat();
 }
 

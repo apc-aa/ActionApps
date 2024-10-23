@@ -185,7 +185,7 @@ function GetUserSlices(string $perm='') {
     }
 
     // all slices or filtered by provided $perm
-    return !$perm ? $permission_to['slice'] : array_filter($permission_to['slice'], function($sprms) use ($perm) { return strchr($sprms, $perm); });
+    return !$perm ? $permission_to['slice'] : array_filter($permission_to['slice'], static function($sprms) use ($perm) { return strstr($sprms, $perm); });
 }
 
 /** IfSlPerm function
@@ -325,9 +325,9 @@ function FilemanPerms($slice_id) {
                     $perms_ok = false;
                 } else {
                     $perms_ok = false;
-                    if ($db->f("fileman_access") == "EDITOR" && IfSlPerm(PS_EDIT_ALL_ITEMS)) {
+                    if ($db->f("fileman_access") === "EDITOR" && IfSlPerm(PS_EDIT_ALL_ITEMS)) {
                         $perms_ok = true;
-                    } elseif ($db->f("fileman_access") == "ADMINISTRATOR" && IfSlPerm(PS_FULLTEXT)) {
+                    } elseif ($db->f("fileman_access") === "ADMINISTRATOR" && IfSlPerm(PS_FULLTEXT)) {
                         $perms_ok = true;
                     }
                 }
@@ -352,7 +352,7 @@ function GetUserEmails($type = "") {
     if ($type) {
         $where .= " AND type='$type'";
     }
-    if ($slices == "all") {
+    if ($slices === "all") {
     } elseif (!is_array($slices) || count ($slices) == 0) {
         return [];
     } else {
@@ -360,7 +360,7 @@ function GetUserEmails($type = "") {
         foreach ($slices as $slice => $foo) {
             $slice_ids[] = q_pack_id($slice);
         }
-        $where .= " AND owner_module_id IN ('".join ("','", $slice_ids)."')";
+        $where .= " AND owner_module_id IN ('".implode ("','", $slice_ids)."')";
     }
     return GetTable2Array("SELECT id, description FROM email $where", 'id', 'description');
 }
@@ -506,7 +506,7 @@ class AA_Perm {
             if (is_array($new_users = $perm_sys->findUsernames($pattern))) {
                 // + operator preserves the numeric keys (used in SQL perm), which is crucial
                 $users += $new_users;
-            } elseif ($new_users == 'too much') {  // LDAP can give this answer
+            } elseif ($new_users === 'too much') {  // LDAP can give this answer
                 return 'too much';  // probably
             }
             if ($limit && count($users) > $limit) {
@@ -749,14 +749,14 @@ class AA_Perm {
 
         // Resolve all permission (convert roles into perms)
         foreach ($permission_to["slice"] as $key => $val) {
-            $permission_to["slice"][$key] = AA_Perm::_resolve($val);
+            $permission_to["slice"][$key] = self::_resolve($val);
         }
 
         foreach ($permission_to["aa"] as $key => $val) {
-            if ( IsPerm($val, AA_Perm::ROLES['SUPER']['id']) ) {
+            if ( IsPerm($val, self::ROLES['SUPER']['id']) ) {
                 $r_superuser[$key] = true;
             }
-            $permission_to["aa"][$key] = AA_Perm::_resolve($val);
+            $permission_to["aa"][$key] = self::_resolve($val);
         }
     }
 
@@ -774,8 +774,8 @@ class AA_Perm {
      * @return string
      */
     public static function compare($perms1, $perms2) {
-        $perms1 = AA_Perm::_resolve($perms1);
-        $perms2 = AA_Perm::_resolve($perms2);
+        $perms1 = self::_resolve($perms1);
+        $perms2 = self::_resolve($perms2);
 
         if (strlen($perms1) == strspn($perms1, $perms2)) {
             // perms are equal ?
@@ -796,7 +796,7 @@ class AA_Perm {
     function getModulePerms( $user_id, $objID, $whole=true) {
         $slice_perms = $this->getUserPerms($user_id, "slice", ($whole ? 0 : 1));
         $aa_perms    = $this->getUserPerms($user_id, "aa",    ($whole ? 0 : 1));
-        return AA_Perm::joinSliceAndAAPerm($slice_perms[$objID], $aa_perms[AA_ID]);
+        return self::joinSliceAndAAPerm($slice_perms[$objID], $aa_perms[AA_ID]);
     }
 
     /** AA_Perm::joinSliceAndAAPerm function
@@ -808,11 +808,11 @@ class AA_Perm {
      * @return mixed
      */
     public static function joinSliceAndAAPerm($slice_perm, $aa_perm) {
-        if (AA_Perm::compare($aa_perm, AA_Perm::ROLES["SUPER"]['perm']) == "E") {
+        if (self::compare($aa_perm, self::ROLES["SUPER"]['perm']) === "E") {
             return $aa_perm;
-        } else {
-            return ($slice_perm ?: $aa_perm);
         }
+
+        return ($slice_perm ?: $aa_perm);
     }
 
     /** AA_Perm::_resolve($perms) function
@@ -822,7 +822,7 @@ class AA_Perm {
      * @return string
      */
     private static function _resolve($perms) {
-        foreach (AA_Perm::ROLES as $arr) {
+        foreach (self::ROLES as $arr) {
             $perms = str_replace($arr['id'], $arr['perm'], $perms);
         }
         return $perms;
@@ -1099,7 +1099,7 @@ class AA_Permsystem_Reader extends AA_Permsystem {
      * @return bool
      */
     private function _isUserReader($user_id)      { return is_long_id($user_id);  }
-    private function _isGroupReader($group_id)    { return (is_long_id($group_id) AND (AA_Slice::getModuleProperty($group_id,'type')=='ReaderManagement')); }
+    private function _isGroupReader($group_id)    { return (is_long_id($group_id) AND (AA_Slice::getModuleProperty($group_id,'type')==='ReaderManagement')); }
     private function _isGroupReaderSet($group_id) { return is_marked_by($group_id, 1); }
 
     /** GetReaderIDsInfo function
@@ -1208,8 +1208,7 @@ class AA_Reader {
         $aa_set = new AA_Set($slices, new AA_Condition($field, '==', $value), null, $bin);
 
         // get item id of current user
-        $zid = $aa_set->query();
-        return $zid->longids(0);
+        return $aa_set->query()->longids(0);
     }
 
     /** name2Id function
@@ -1223,7 +1222,7 @@ class AA_Reader {
      * @return mixed
      */
     static function name2Id($username, array $slices=null, $bin=null ) {
-        return AA_Reader::_find(FIELDID_USERNAME, $username, $slices, $bin );
+        return self::_find(FIELDID_USERNAME, $username, $slices, $bin );
     }
 
     /**
@@ -1233,7 +1232,7 @@ class AA_Reader {
      * @return mixed
      */
     static function email2Id($email, array $slices=null, $bin=null) {
-        return AA_Reader::_find(FIELDID_EMAIL, $email, $slices, $bin);
+        return self::_find(FIELDID_EMAIL, $email, $slices, $bin);
     }
 
     /** getReaderSlices function

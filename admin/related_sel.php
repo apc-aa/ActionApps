@@ -170,7 +170,7 @@ $manager_settings = [
      'scroller'  => [
          'listlen'              => ($listlen ?: EDIT_ITEM_COUNT)
      ],
-     'itemview'  => [
+     'itemview'  => [   // itemview is not used in related selection window
          'manager_vid'          => $manager_vid,    // $slice_info['manager_vid'],      // id of view which controls the design
          'format'               => $format,
          //'fields'               => $slice->getFields()->getRecordArray(),
@@ -203,8 +203,8 @@ if ( isset($_GET['sid']) ) {
 $apage = new AA_Adminpageutil();
 //$apage->setTitle(_m('Manage %1', [AA_Plannedtask::name()]));
 //$apage->setSubtitle( _m('You can plan the task for specified time, or as the reaction to some event. The task will be probably sending e-mails using {mail...} expression, or recounting some fields after update by {recount...}') );
-$apage->addRequire(get_aa_url('javascript/js_lib.min.js?v='.AA_JS_VERSION ));
-$apage->addRequire(get_aa_url('javascript/inputform.min.js?v='.AA_JS_VERSION ));
+$apage->addRequire(get_aa_url('javascript/js_lib.min.js', ['v'=>AA_JS_VERSION] ));
+$apage->addRequire(get_aa_url('javascript/inputform.min.js', ['v'=>AA_JS_VERSION] ));
 
 $apage->printWithManager($manager);
 

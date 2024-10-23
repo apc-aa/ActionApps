@@ -44,8 +44,8 @@ class HcoWidget extends Widget
     //    $base_name   = AA\FormArray::getName4Form($aa_property->getId(), $content, $this->item_index);
     //    $base_id     = AA\FormArray::formName2Id($base_name);
     //    $required    = $aa_property->isRequired() ? 'required' : '';
-    //    $widget_add  = ($type == 'live') ? " class=\"live\" onkeydown=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_HcoDisplaySub(); AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"" : '';
-    //    $widget_add2 = ($type == 'live') ? '<img width=16 height=16 title="'._m('To save changes click here or outside the field.').'" alt="'._m('Save').'" class="'.$base_id.'ico" src="'. AA_INSTAL_PATH.'images/px.gif" style="position:absolute; right:0; top:0;">' : '';
+    //    $widget_add  = ($type === 'live') ? " class=\"live\" onkeydown=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_HcoDisplaySub(); AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"" : '';
+    //    $widget_add2 = ($type === 'live') ? '<img width=16 height=16 title="'._m('To save changes click here or outside the field.').'" alt="'._m('Save').'" class="'.$base_id.'ico" src="'. AA_INSTAL_PATH.'images/px.gif" style="position:absolute; right:0; top:0;">' : '';
     //    $widget      = '';
     //
     //    $base_name_add = $base_name . '[hco]';

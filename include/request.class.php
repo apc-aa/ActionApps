@@ -45,8 +45,8 @@ class AA_Http {
     use \AA\Util\LastErrTrait;
 
     /** Move to another page
-     *  new version of go_ur() - could use POST redirect
-     *  static function - called like AA_Http::go("http://ecn.cz", array('a'=>'my string'), 'POST')
+     *  new version of go_url() - could use POST redirect
+     *  static function - called like AA_Http::go("https://ecn.cz", ['a'=>'my string'], 'POST')
      *  @param string $url - destination url
      *  @param array  $parameters = array('a' => 1, 'b' => 'OK boy')
      *  @param string $type  - preffered type. Could be GET or POST, but if headers
@@ -64,11 +64,11 @@ class AA_Http {
 
         // if headers are already sent, we have to use javascript redirect
         if ( headers_sent() ) {
-            AA_Http::_goJs($url, $parameters);
+            self::_goJs($url, $parameters);
             exit;
         }
-        if ($type=='POST') {
-            $response = AA_Http::postRequest($url, $parameters);
+        if ($type==='POST') {
+            $response = self::postRequest($url, $parameters);
             if ($response !== false) {
                 // POST request OK
                 echo $response;
@@ -82,9 +82,7 @@ class AA_Http {
         exit;
     }
 
-    /** Move (redirect) to page $url using javascript
-     *  static function
-     */
+    /** Move (redirect) to page $url using javascript */
     protected static function _goJs($url, array $parameters= []) {
         $url = get_url( $url, $parameters);
         echo '
@@ -96,8 +94,7 @@ class AA_Http {
     }
 
 
-    /** postRequest function
-     *  POST data to the url (using POST request and returns resulted data
+    /** POST data to the url (using POST request and returns resulted data
      * @param       $url
      * @param array $data
      * @param array $headers
@@ -126,7 +123,7 @@ class AA_Http {
         $ret = file_get_contents($url, false, $ctx);
 
         if ($ret === false) {
-            AA_Http::lastErr(2, "Problem reading data from url: $url");  // set error code
+            self::lastErr(2, "Problem reading data from url: $url");  // set error code
             return false;
         }
         return $ret;
@@ -164,7 +161,7 @@ class AA_Response {
     }
 
     function respond() {
-        switch (AA_Response::$Response_type) {
+        switch (self::$Response_type) {
             case 'serialize':
                 echo serialize($this);
                 break;
@@ -301,7 +298,7 @@ class AA_ClientAuth {
             $session_id  = $arr[0];
             $myauth      = $arr[1];
 
-            if ($myauth->getUname() AND $myauth->getUid() AND (trim($myauth->getUid()) != 'nobody')) {
+            if ($myauth->getUname() AND $myauth->getUid() AND (trim($myauth->getUid()) !== 'nobody')) {
                 $x                  = setcookie('AA_Sess', $session_id, $this->_cookie_lifetime, '/');
                 //$y                  = setcookie('AA_Uid', $myauth->getUname(), $this->_cookie_lifetime, '/');
                 $_COOKIE['AA_Sess'] = $session_id;

@@ -48,9 +48,9 @@ class SelWidget extends Widget
         $attrs = Widget::stdInputAttrs($type, $base_id, ['dirty']);
         $widget_add = htmlattr($attrs);
 
-        //$widget_adds = ($type == 'live') ? " class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"" : '';   //style=\"padding-left:16px;\"" : '';
+        //$widget_adds = ($type === 'live') ? " class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"" : '';   //style=\"padding-left:16px;\"" : '';
         $widget = '';
-        $autofocus = ($type == 'ajax') ? 'autofocus' : '';
+        $autofocus = ($type === 'ajax') ? 'autofocus' : '';
 
         // This widget uses constants - show selectbox!
         $input_name = $base_name . "[]";
@@ -58,8 +58,8 @@ class SelWidget extends Widget
         $use_name = $this->getProperty('use_name', false);
         $multiple = self::multiple() ? ' multiple' : '';
 
-        //$widget    = AA\Widget\Widget::_saveIcon($base_id, $type == 'live', 'left')."<select name=\"$input_name\" id=\"$input_id\"$multiple $required $widget_adds $autofocus>";
-        $widget = Widget::_saveIcon($base_id, $type == 'live') . "<select name=\"$input_name\" id=\"$input_id\"$multiple $required $widget_add $autofocus>";
+        //$widget    = AA\Widget\Widget::_saveIcon($base_id, $type === 'live', 'left')."<select name=\"$input_name\" id=\"$input_id\"$multiple $required $widget_adds $autofocus>";
+        $widget = Widget::_saveIcon($base_id, $type === 'live') . "<select name=\"$input_name\" id=\"$input_id\"$multiple $required $widget_add $autofocus>";
         $selected = $content->getAaValue($aa_property->getId());
         // empty select option for not required fields and also for live selectbox,
         // because people thinks, that the first value is filled in the database (which is not)

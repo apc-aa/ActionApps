@@ -200,9 +200,9 @@ class Mail_mimePart {
             $this->_headers['Content-Type'] .= ';' . MAIL_MIMEPART_CRLF . "\t" . 'boundary="' . $boundary . '"';
 
             // Add body parts to $subparts
-            for ( $i=0, $ino=count($this->_subparts); $i<$ino; ++$i) {
+            foreach ($this->_subparts as $iValue) {
                 $headers = [];
-                $tmp = $this->_subparts[$i]->encode();
+                $tmp = $iValue->encode();
                 foreach ($tmp['headers'] as $key => $value) {
                     $headers[] = $key . ': ' . $value;
                 }
@@ -285,16 +285,14 @@ class Mail_mimePart {
                 $char = $line[$i];
                 $dec  = ord($char);
                 $i++;
-                if (($dec == 32) && (!isset($line[$i]))) {
+                if (($dec === 32) && (!isset($line[$i]))) {
                     // convert space at eol only
                     $char = '=20';
-                } elseif ($dec == 9 && isset($line[$i])) {
+                } elseif ($dec === 9 && isset($line[$i])) {
                     ; // Do nothing if a TAB is not on eol
-                } elseif (($dec == 61) || ($dec < 32) || ($dec > 126)) {
+                } elseif (($dec === 61) || ($dec < 32) || ($dec > 126)) {
                     $char = $escape . sprintf('%02X', $dec);
-                } elseif (($dec == 46) && (($newline == '')
-                    || ((strlen($newline) + strlen("=2E")) >= $line_max))
-                ) {
+                } elseif (($dec === 46) && (($newline == '') || ((strlen($newline) + strlen("=2E")) >= $line_max))) {
                     // Bug #9722: convert full-stop at bol,
                     // some Windows servers need this, won't break anything (cipri)
                     // Bug #11731: full-stop at bol also needs to be encoded

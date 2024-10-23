@@ -80,10 +80,10 @@ function myfillform($txt) {
     global $result;
     if ($GLOBALS["post2shtml_id"]) {
         add_post2shtml_vars();
-        return $result['success'] ? '' : join("<br>", $result['validate']);
-    } else {
-        return "";
+        return $result['success'] ? '' : implode("<br>", $result['validate']);
     }
+
+    return "";
 }
 $GLOBALS['eb_functions']['myfillform'] = "myfillform";
 

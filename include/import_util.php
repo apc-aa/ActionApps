@@ -144,7 +144,7 @@ class Actions {
              $done = false;
 
              // fill up the output field with default value, if the action does not exist for the output field, or the action is "default"
-             if (!$action || $action['action']->getAction() == "default") {
+             if (!$action || $action['action']->getAction() === "default") {
                      // case "display_count..." : $v = 0; break;
                 /* Removed - it created data for fields, so it is then updated on Rewrite/Update action, which is not correct
                   switch ($field_id) {
@@ -167,7 +167,7 @@ class Actions {
                  } else {
                      $done = true;
                  }
-             } elseif ($action['action']->getAction() == "new") {
+             } elseif ($action['action']->getAction() === "new") {
                   $done = true;
                   $fieldVal[]['value'] = new_id();
              }
@@ -183,7 +183,7 @@ class Actions {
              }
              if (isset($fieldVal) and is_array($fieldVal)) {
                  // store the output field to the output item content
-                 if ($field_id == 'id..............') {
+                 if ($field_id === 'id..............') {
                      $outputItemContent->setItemId($fieldVal[0]['value']);
                  } else {
                      $outputItemContent->setAaValue($field_id, new AA_Value($fieldVal));
@@ -313,7 +313,7 @@ class Action {
             case "web": {
                 $value = $itemContent->GetValue($from);
                 if ( $value ) {
-                    if (strtolower(substr($value, 0, 4)) != "http")
+                    if (strtolower(substr($value, 0, 4)) !== "http")
                     $value = "https://". $value;
                 }
                 $fvalues[]['value'] = $value;

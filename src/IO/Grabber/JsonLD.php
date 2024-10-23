@@ -114,7 +114,7 @@ class JsonLD extends AbstractGrabber
         $ret = [];
 
         // for now just one splitter type - FeatureCollection
-        if ($this->item_splitter == 'FeatureCollection') {
+        if ($this->item_splitter === 'FeatureCollection') {
             foreach ($json['FeatureCollection'] as $itm) {
                 $ret[] = $itm['properties'];
             }
@@ -134,7 +134,7 @@ class JsonLD extends AbstractGrabber
 
     protected function nextfunction($json) {
         // for now just one non-standard next function - Empty
-        if ($this->next_func == 'None') {
+        if ($this->next_func === 'None') {
             return '';
         }
         // if there is no nextfunction, return empty url

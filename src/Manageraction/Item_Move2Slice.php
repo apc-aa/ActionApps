@@ -59,7 +59,7 @@ class Item_Move2Slice extends AbstractManageraction {
         if (is_array($g_modules) and (count($g_modules) > 1)) {
             foreach ($g_modules as $sid => $v) {
                 //  we can feed just between slices ('S')                                                 // we must have autor or editor perms in destination slices
-                if (($v['type'] == 'S') and ((string)$this->slice_id != (string)$sid) and IfSlPerm(PS_ITEMS2ACT, $sid)) {
+                if (($v['type'] === 'S') and ((string)$this->slice_id != (string)$sid) and IfSlPerm(PS_ITEMS2ACT, $sid)) {
                     $options[$sid] = $v['name'];
                 }
             }

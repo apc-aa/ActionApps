@@ -43,7 +43,7 @@ class AA_Mysqlauth {
     *   @param $slice_id
     */
     static function deleteReaders( $zids, $slice_id ) {
-        if (!AA_Slice::getModuleProperty($slice_id,'auth_field_group') OR (AA_Slice::getModuleProperty($slice_id,'type') != "ReaderManagement")) {
+        if (!AA_Slice::getModuleProperty($slice_id,'auth_field_group') OR (AA_Slice::getModuleProperty($slice_id,'type') !== "ReaderManagement")) {
             return;
         }
 
@@ -62,22 +62,22 @@ class AA_Mysqlauth {
     */
     static function updateReaders( $item_ids, $slice_id ) {
         $sl_auth_field_group = AA_Slice::getModuleProperty($slice_id,'auth_field_group');
-        if (!$sl_auth_field_group OR (AA_Slice::getModuleProperty($slice_id,'type') != "ReaderManagement")) {
+        if (!$sl_auth_field_group OR (AA_Slice::getModuleProperty($slice_id,'type') !== "ReaderManagement")) {
             return;
         }
 
         // This select follows the idea of QueryZids: it uses several times the
         // table content to place several fields on one row.
         $zids    = new zids($item_ids, 'p');
-        $readers = AA_Mysqlauth::getReadersData($slice_id, $zids);
+        $readers = self::getReadersData($slice_id, $zids);
 
         if ( is_array( $readers )) {
             foreach ($readers as $reader) {
                 $reader_obj = new ItemContent($reader);
-                if (AA_Mysqlauth::isActive($reader_obj) AND $reader_obj->isSet($sl_auth_field_group)) {
-                    AA_Mysqlauth::updateReader($reader_obj->getValue(FIELDID_USERNAME), $reader_obj->getValue(FIELDID_PASSWORD), $reader_obj->getValues($sl_auth_field_group));
+                if (self::isActive($reader_obj) AND $reader_obj->isSet($sl_auth_field_group)) {
+                    self::updateReader($reader_obj->getValue(FIELDID_USERNAME), $reader_obj->getValue(FIELDID_PASSWORD), $reader_obj->getValues($sl_auth_field_group));
                 } else {
-                    AA_Mysqlauth::deleteReader($reader_obj->getValue(FIELDID_USERNAME));
+                    self::deleteReader($reader_obj->getValue(FIELDID_USERNAME));
                 }
             }
         }
@@ -121,7 +121,7 @@ class AA_Mysqlauth {
             }
             // Get all reader data for this slice
 
-            $readers = AA_Mysqlauth::getReadersData(unpack_id($slice_id));
+            $readers = self::getReadersData(unpack_id($slice_id));
 
             if ( is_array( $readers )) {
                 foreach ($readers as $reader) {
@@ -132,17 +132,17 @@ class AA_Mysqlauth {
 
                     // Add readers which should be in auth_user but are not
                     // (perhaps moved recently from Pending to Active)
-                    if (AA_Mysqlauth::isActive($reader_obj) AND $reader_obj->isSet($slice["auth_field_group"])) {
+                    if (self::isActive($reader_obj) AND $reader_obj->isSet($slice["auth_field_group"])) {
                         if (! $olduser_exists) {
                             $result["readers added"]++;
-                            AA_Mysqlauth::updateReader($reader_obj->getValue(FIELDID_USERNAME), $reader_obj->getValue(FIELDID_PASSWORD), $reader_obj->getValues($slice["auth_field_group"]));
+                            self::updateReader($reader_obj->getValue(FIELDID_USERNAME), $reader_obj->getValue(FIELDID_PASSWORD), $reader_obj->getValues($slice["auth_field_group"]));
                         }
                     }
                     // Remove readers which are in auth_user but should not
                     // (perhaps moved recently from Active to Expired)
                     elseif ($olduser_exists) {
                         $result["not active readers deleted"]++;
-                        AA_Mysqlauth::deleteReader($reader_obj->getValue(FIELDID_USERNAME));
+                        self::deleteReader($reader_obj->getValue(FIELDID_USERNAME));
                     }
                 }
             }
@@ -209,7 +209,7 @@ class AA_Mysqlauth {
      */
     static function deleteReader($username) {
         DB_AA::delete('auth_user', [['username', $username]]);
-        AA_Mysqlauth::updateGroups($username);
+        self::updateGroups($username);
     }
 
     // --------------------------------------------------------------------------
@@ -220,7 +220,7 @@ class AA_Mysqlauth {
      */
     static function updateReader($username, $password, $groups) {
         DB_AA::sql("REPLACE INTO auth_user (username, passwd, last_changed) VALUES ('".addslashes($username)."', '".addslashes($password)."', ".time().")");
-        AA_Mysqlauth::updateGroups($username, $groups);
+        self::updateGroups($username, $groups);
     }
 
     // --------------------------------------------------------------------------
@@ -242,7 +242,7 @@ class AA_Mysqlauth {
     *   Writes user's groups to the database.
     *   You can specify multiple groups for the user in two ways:
     *      - pass $groups as array( 0 => array('value' => ...),
-    *      - separate groups in $proups string by semicolon ';'
+    *      - separate groups in $groups string by semicolon ';'
     *   @param $username
     *   @param $groups
     */
@@ -308,7 +308,7 @@ class AA_Mysqlauth {
         $newvalue = stripslashes($newvalue);
 
         foreach ($usernames as $name) {
-            AA_Mysqlauth::updateGroups($name, $newvalue);
+            self::updateGroups($name, $newvalue);
         }
     }
 }

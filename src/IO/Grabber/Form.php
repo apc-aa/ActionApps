@@ -117,7 +117,7 @@ class Form extends AbstractGrabber {
         $i = 0;
         foreach ($aa as $type => $file) {
             [$letter, $sid] = explode('_', $type);
-            if ($letter[0] == 'f') {
+            if ($letter[0] === 'f') {
                 unset($aa[$type]);   // remove old form and add new one
                 if (is_array($file['file']['fil']['var'])) {
                     if (!($s = AA_Slice::getModule($sid))) {
@@ -194,7 +194,7 @@ class Form extends AbstractGrabber {
         // You can use _#n1_623553373823736362372726 as value, which stands for
         // item id of the item
         foreach ($aa as $dirty_item_id => $item_fields) {
-            if ($dirty_item_id[0] == 'n') {
+            if ($dirty_item_id[0] === 'n') {
                 $id_trans_table['_#' . $dirty_item_id] = new_id();
             }
         }
@@ -205,7 +205,7 @@ class Form extends AbstractGrabber {
         foreach ($aa as $dirty_item_id => $item_fields) {
 
             // common fields
-            if ($dirty_item_id == 'all') {
+            if ($dirty_item_id === 'all') {
                 continue;
             }
 
@@ -237,7 +237,7 @@ class Form extends AbstractGrabber {
                 $item_fields = array_merge($aa['all'], $item_fields);
             }
 
-            if ($dirty_item_id[0] == 'r') {
+            if ($dirty_item_id[0] === 'r') {
                 $oldcontent4id = new ItemContent();
                 $oldcontent4id->setByItemID(new zids($item_id), true);     // ignore password
                 if (!$oldcontent4id->getSliceID() or !$oldcontent4id->getItemID()) {
@@ -256,7 +256,7 @@ class Form extends AbstractGrabber {
                 $aa_value = Widget::getValue((array)$val_array);
                 $aa_value->replaceInValues($trans_item_alias, $trans_item_ids);
 
-                if (($dirty_item_id[0] == 'r') and ($field_id != 'slice_id........')) {
+                if (($dirty_item_id[0] === 'r') and ($field_id !== 'slice_id........')) {
                     $aa_value = $oldcontent4id->getAaValue($field_id)->removeValues($aa_value->getValues());
                 }
                 $item->setAaValue($field_id, $aa_value);

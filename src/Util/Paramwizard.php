@@ -50,7 +50,7 @@ class Paramwizard {
             $ret['params'] = [];
 
             $props = $class::getClassProperties();
-            if (key($props) == 'const') { // const or slice is not presented in popup
+            if (key($props) === 'const') { // const or slice is not presented in popup
                 array_shift($props);
             }
             foreach ($props as $prop) {

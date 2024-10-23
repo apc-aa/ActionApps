@@ -59,7 +59,7 @@ if (defined('AA_REGISTER_GLOBALS')) {
 }
 // ----- input variables normalization - end
 
-if ($encap == "false") {   // used in itemedit for anonymous form
+if ($encap === "false") {   // used in itemedit for anonymous form
     $encap = false;        // it must be here, because the variable is rewriten (see above)
 }
 
@@ -155,7 +155,7 @@ if (!$no_slice_id) {
         // slice was just deleted, thus is not in $g_modules
         foreach ($g_modules as $mid => $mmodule) {
             // skip AA Core Field slice, if possible
-            if (($mmodule['type']=='S') AND ($mid <>  "41415f436f72655f4669656c64732e2e")) {
+            if (($mmodule['type']==='S') AND ($mid <>  "41415f436f72655f4669656c64732e2e")) {
                 AA::$module_id = $mid;
                 break;
             }
@@ -190,7 +190,7 @@ if (!$no_slice_id) {
 //        $page    = pathinfo( $_SERVER['PHP_SELF'], PATHINFO_BASENAME);
 //        $hdd_dir = "../".$MODULES[$module_type]['directory'];
 //        $web_dir = AA_INSTAL_PATH   .$MODULES[$module_type]['directory'];
-//        if (!file_exists($hdd_dir.$page) OR ($page=='tabledit.php') OR ($module_type=='J') ) {
+//        if (!file_exists($hdd_dir.$page) OR ($page==='tabledit.php') OR ($module_type==='J') ) {
 //            $page = "index.php";
 //        }
 //        if ($web_dir.$page != $_SERVER['PHP_SELF']) {

@@ -29,7 +29,7 @@ class DbInconsistencyConstants extends AbstractOptimize {
         $all_groups = DB_AA::select('group_id', "SELECT DISTINCT group_id FROM `constant`");
         foreach ($all_groups as $grp) {
             if ($grp AND
-                ($grp!='lt_groupNames') AND
+                ($grp!=='lt_groupNames') AND
                 !DB_AA::test('field', [['input_show_func',":$grp",'CONTAIN']]) AND
                 !DB_AA::test('field', [['alias1_func',":$grp",'CONTAIN']]) AND
                 !DB_AA::test('field', [['alias2_func',":$grp",'CONTAIN']]) AND
@@ -84,7 +84,7 @@ class DbInconsistencyConstants extends AbstractOptimize {
                                 'searchinobject' => 1,
                                 'go_search'      => 1
                             ]), $grp),
-                            'values'  =>join(', ', DB_AA::select('c', "SELECT CONCAT(`name`,'->',`value`) as c FROM `constant`", [['group_id',$grp]]))]);
+                            'values'  => implode(', ', DB_AA::select('c', "SELECT CONCAT(`name`,'->',`value`) as c FROM `constant`", [['group_id', $grp]]))]);
             $ret = false;
         }
         $this->message(_m('Found %1 Non ASCII',[count($non_ascii)]));
@@ -102,7 +102,7 @@ class DbInconsistencyConstants extends AbstractOptimize {
                                 'searchinobject' => 1,
                                 'go_search'      => 1
                             ]), $grp),
-                            'values'  =>join(', ', DB_AA::select('c', "SELECT CONCAT(`name`,'->',`value`) as c FROM `constant`", [['group_id',$grp]]))]);
+                            'values'  => implode(', ', DB_AA::select('c', "SELECT CONCAT(`name`,'->',`value`) as c FROM `constant`", [['group_id', $grp]]))]);
             $ret = false;
         }
         $this->message(_m('Found %1 unused constant groups',[count($not_used)]));

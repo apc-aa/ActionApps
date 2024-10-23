@@ -165,11 +165,11 @@ class SQL_Lex {
         $last = $length - 1;
         while (($i < $length) and
             (
-                !SQL_Lex::isSpecial($input[$i])
+                !self::isSpecial($input[$i])
                 or // don't break on apostrophe and minus sign in the middle of words
-                (($input[$i] == '-') and (($i and !SQL_Lex::isSpecial($input[$i - 1])) or ($i == $last)))
+                (($input[$i] === '-') and (($i and !self::isSpecial($input[$i - 1])) or ($i == $last)))
                 or
-                (($input[$i] == "'") and ($i and ($i != $last) and !SQL_Lex::isSpecial($input[$i - 1] . $input[$i + 1])))
+                (($input[$i] === "'") and ($i and ($i != $last) and !self::isSpecial($input[$i - 1] .$input[$i + 1])))
             )) {
             // (false !== strpos("'-", $input[$i])) && ($i != 0) && ($i != $length - 1) && !isSpecial($input[$i-1].$input[$i+1])))) {
             $tok .= $input[$i++];
@@ -197,12 +197,12 @@ class SQL_Lex {
             ];
         }
         if (($input[$i] == self::QUOT) || ($input[$i] == self::APOS)) {
-            $tok         = SQL_Lex::tillTheEndingQuotApos($input, $i + 1, $length, $input[$i]);
+            $tok         = self::tillTheEndingQuotApos($input, $i + 1, $length, $input[$i]);
             $tok["type"] = ($tok["status"] == self::S_OK) ? SQL_Parser_Constants::TOKEN_TYPE_STRING : SQL_Parser_Constants::TOKEN_TYPE_UNKNOWN; // error handling
         } elseif (str_contains(self::SPECIAL, $input[$i])) {
             if (str_contains(self::OPERATOR, $input[$i])) { // includes '+' and '-' (one character operators)
                 $tok["status"] = self::S_OK;
-                $val           = SQL_Lex::resolveOperator($input[$i]);
+                $val           = self::resolveOperator($input[$i]);
                 $tok['value']  = $val['value'];    // 'and' (for +) and 'not' (for -)
                 $tok["i"]      = $i + 1;
                 $tok["type"]   = $val["type"];
@@ -219,7 +219,7 @@ class SQL_Lex {
             }
             $i++;
         } else {
-            $tok         = SQL_Lex::tillTheFirstSpecial($input, $i, $length);
+            $tok         = self::tillTheFirstSpecial($input, $i, $length);
             $tok["type"] = SQL_Parser_Constants::TOKEN_TYPE_UNKNOWN;
         }
         return $tok;
@@ -292,13 +292,13 @@ class SQL_Lex {
         $length = strlen($input);
         $i      = 0;
         do {
-            $r = SQL_Lex::getToken($input, $i, $length);
+            $r = self::getToken($input, $i, $length);
             if ($r["status"] == self::S_OK) {
                 $res[] = $r;
             }
             $i = $r["i"];
         } while ($r["type"] != SQL_Parser_Constants::TOKEN_TYPE_EMPTY_TOKEN);
-        return SQL_Lex::preProcess($res);
+        return self::preProcess($res);
     }
 
 

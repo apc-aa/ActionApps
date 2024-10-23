@@ -70,10 +70,10 @@ class Importer implements \AA\Later\LaterInterface {
             $ret .= ", error items: $err";
         }
         if ($newids = $this->saver->newIds()) {
-            $ret .= '(new['.count($newids).'] '. join(',', array_slice($newids, 0, 3)) .'...)';
+            $ret .= '(new['.count($newids).'] '. implode(',', array_slice($newids, 0, 3)) .'...)';
         }
         if ($upids = $this->saver->updatedIds()) {
-            $ret .= '(updated['.count($upids).'] '. join(',', array_slice($upids, 0, 3)) .'...)';
+            $ret .= '(updated['.count($upids).'] '. implode(',', array_slice($upids, 0, 3)) .'...)';
         }
         return $ret . (($p = $this->saver->report(1, 'plain')) ? ", $p" : '');
     }

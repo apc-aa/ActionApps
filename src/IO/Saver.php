@@ -147,8 +147,8 @@ class Saver implements AA\Later\LaterInterface {
 
             // now the $content4id should be filled in both cases - directfill and indirect
 
-            $id_mode = ($this->id_mode == 'by_grabber') ? $this->grabber->getIdMode() : $this->id_mode;
-            $store_mode = ($this->store_mode == 'by_grabber') ? $this->grabber->getStoreMode() : $this->store_mode;
+            $id_mode = ($this->id_mode === 'by_grabber') ? $this->grabber->getIdMode() : $this->id_mode;
+            $store_mode = ($this->store_mode === 'by_grabber') ? $this->grabber->getStoreMode() : $this->store_mode;
 
             if (!$fire) {
                 $this->message("AA\IO\Saver->run(): id_mode: $id_mode, store_mode: $store_mode, transformed item: ",2);
@@ -204,12 +204,12 @@ class Saver implements AA\Later\LaterInterface {
                             $this->message($zids,2);
                         }
                         if ($zids->count()) {
-                            if (strpos($store_mode, 'update') === false) {
+                            if (!str_contains($store_mode, 'update')) {
                                 continue 2; // another item
                             }
                             $new_item_id = $zids->longids(0);
                         } else {
-                            if (strpos($store_mode, 'insert') === false) {
+                            if (!str_contains($store_mode, 'insert')) {
                                 continue 2; // another item
                             }
                             $new_item_id = new_id();
@@ -234,11 +234,11 @@ class Saver implements AA\Later\LaterInterface {
 
             if ($this->validate AND ($err_arr = $this->test_validate($content4id))) {
                 $err_count++;
-                $this->message(['err' =>"AA\IO\Saver->run(): validate failed: ". join("\n", $err_arr)]);
+                $this->message(['err' =>"AA\IO\Saver->run(): validate failed: ". implode("\n", $err_arr)]);
                 continue;
             }
 
-            if (($store_mode == 'overwrite') OR (substr($store_mode, 0, 6) == 'insert')) {
+            if (($store_mode === 'overwrite') OR (str_starts_with($store_mode, 'insert'))) {
                 if (!$content4id->complete4Insert($this->error_mode)) {
                     $err_count++;
                     $this->message(['err' =>"AA\IO\Saver->run(): complete4Insert failed: " . ItemContent::lastErrMsg()]);
@@ -263,7 +263,7 @@ class Saver implements AA\Later\LaterInterface {
                     $this->message(['err' =>'AA\IO\Saver->run(): storeItem failed or skipped duplicate: '. ItemContent::lastErrMsg()]);
                 } else {
                     // @todo better check of new ids
-                    if ($store_mode == 'insert') {
+                    if ($store_mode === 'insert') {
                         $this->_new_ids[] = $new_item_id;
                     } else {
                         $this->_updated_ids[] = $new_item_id;

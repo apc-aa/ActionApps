@@ -114,7 +114,7 @@ abstract class AbstractGrabber implements \AA\Util\NamedInterface {
         $this->message(__CLASS__.' -> '. __FUNCTION__);
         $this->message("read ". strlen($data). " Bytes of data <br><pre>".safe(substr($data,0,1000))."...</pre>");
 
-        if ($source_encoding AND ($source_encoding!='utf-8')) {
+        if ($source_encoding AND ($source_encoding!=='utf-8')) {
             $data = \ConvertCharset::singleton()->Convert($data, $source_encoding, 'utf-8');
             $this->message("Data converted from $source_encoding to utf-8");
         }

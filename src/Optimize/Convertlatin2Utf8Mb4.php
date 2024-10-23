@@ -32,7 +32,7 @@ class Convertlatin2Utf8Mb4 extends \AA\Optimize\Convert2utf8mb4 {
         $collations = $this->get_tables('latin1_');
         $count = 0;
         foreach ($collations as $tablename => $collation) {
-            if (substr($tablename, 0, 4) == 'bck_') {
+            if (str_starts_with($tablename, 'bck_')) {
                 continue;
             }
             $this->message(_m('collation for %1 table is %2', [$tablename, $collation]));

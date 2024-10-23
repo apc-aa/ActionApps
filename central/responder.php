@@ -96,7 +96,7 @@ class AA_Responder_Get_Modules extends AA_Responder {
     }
 
     function run() {
-        $type_sql = (count($this->types) == 0) ? '' : Cvarset::sqlin('type', $this->types) . ' AND ';
+        $type_sql = !count($this->types) ? '' : Cvarset::sqlin('type', $this->types) . ' AND ';
         $modules  = GetTable2Array("SELECT id, name FROM module WHERE $type_sql deleted=0  ORDER BY type, priority, name", "unpack:id", 'name');
         return new AA_Response($modules);
     }
@@ -327,7 +327,7 @@ class AA_Responder_Tags extends AA_Responder {
             $opts   = $widget->getFormattedOptions($this->item_id, false, $this->input);
             $i=100;
             foreach ($opts as $id => $text) {
-                if (trim($text)==trim($this->input)) {
+                if (trim($text) === trim($this->input)) {
                     // to the front
                     array_unshift($ret, ['id'=>$id, 'text'=>$text]);
                     $found = true;
@@ -339,7 +339,7 @@ class AA_Responder_Tags extends AA_Responder {
                 }
             }
         }
-        if ($trimed AND !$found AND ((int)$widget->getProperty('disable_new', 0) != 1)) {
+        if ($trimed AND !$found AND ((int)$widget->getProperty('disable_new', 0) !== 1)) {
             array_unshift($ret, ['id'=>$this->input, 'text'=>$this->input]);
         }
         header("Content-type: application/json");
@@ -399,7 +399,7 @@ class AA_Responder_Alertitem extends AA_Responder {
 
     function run() {
         $ret = '0';
-        if (is_long_id($this->item_id) AND (strlen($this->collection_id)==5)) {
+        if (is_long_id($this->item_id) AND (strlen($this->collection_id)===5)) {
             //initialize_last();
             //MoreTimeLimit(); // This can take a while
             $ret = send_emails("irregular", [$this->collection_id], $this->test_email, true, $this->item_id);
@@ -447,7 +447,7 @@ if (!$responder->isPerm()) {
 
 $response = $responder->run();
 
-if ($request->getCommand() != 'Logout') {
+if ($request->getCommand() !== 'Logout') {
     page_close();
 }
 

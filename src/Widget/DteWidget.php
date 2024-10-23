@@ -101,7 +101,7 @@ class DteWidget extends Widget
         $base_name = FormArray::getName4Form($aa_property->getId(), $content, $this->item_index);
         $base_id = FormArray::formName2Id($base_name);
         $base_name_add = $base_name . '[dte]';
-        $widget_add = ($type == 'live') ? " class=\"live\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"" : '';
+        $widget_add = ($type === 'live') ? " class=\"live\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"" : '';
 
         $widget = '';
         $delim = '';
@@ -144,7 +144,7 @@ class DteWidget extends Widget
                     $curr_attrs['min'] = $val_attr;
                 }
             }
-            $attr_string = join(' ', array_map(fn ($k, $v) => "$k=\"$v\"", array_keys($attrs), $curr_attrs));
+            $attr_string = implode(' ', array_map(fn ($k, $v) => "$k=\"$v\"", array_keys($attrs), $curr_attrs));
 
             $widget    .= $delim . "\n<input $attr_string name=\"$input_name\" value=\"$val_attr\" id=\"$input_id\"$widget_add{$required}>";
             $delim      = '<br>';

@@ -93,7 +93,7 @@ while ($db->next_record()) {
 // which is only manualy fed)
 $first=true;
 foreach ($g_modules as  $k => $v) {
-    if ($impslices[$k] OR $v['type']!='S' OR $k==AA::$module_id) {
+    if ($impslices[$k] OR $v['type'] !== 'S' OR $k==AA::$module_id) {
         continue;
     }
     if ($first AND isset($impslices) AND is_array($impslices)) {

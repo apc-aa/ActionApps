@@ -101,7 +101,7 @@ function fillForm(): string {
 
     // reader management: aw=ABCDE is sent in welcome
     // emails to confirm the email address
-    if ($slice->getProperty("type") == "ReaderManagement") {
+    if ($slice->getProperty("type") === "ReaderManagement") {
         if ($GLOBALS["aw"]) {
             $GLOBALS["ac"] = $GLOBALS["aw"];
             if (confirm_email($slice_id, $GLOBALS["aw"])) {
@@ -122,7 +122,7 @@ function fillForm(): string {
     // For Reader management slices we use special ways to find the item:
     // either HTTP auth info, or the access code. No other possibility.
 
-    if ($slice->getProperty("type") == "ReaderManagement") {
+    if ($slice->getProperty("type") === "ReaderManagement") {
         if ($slice->getProperty("permit_anonymous_edit") == ANONYMOUS_EDIT_HTTP_AUTH) {
             if ( !$_SERVER["REMOTE_USER"]) {
                 return "<!--Only HTTP authenticated users can edit the reader's data (see slice setting)-->";
@@ -217,7 +217,7 @@ function fillFormWithContent($oldcontent4id): string {
             }
         }
     }
-    $js .= join(",\n", $jsarr). "];\n";
+    $js .= implode(",\n", $jsarr). "];\n";
 
     $js .= /** @lang JavaScript */ "
     function fillForm{$suffix}() {

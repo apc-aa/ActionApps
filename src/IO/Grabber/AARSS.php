@@ -261,18 +261,11 @@ class AARSS extends AbstractGrabber
     public function getSources(): array {
         $feed_type = $this->feed['feed_type'];
 
-        switch ($feed_type) {
-            case Feed::FEEDTYPE_RSS:
-                $xml_data = $this->_getRssData();
-                break;
-            case Feed::FEEDTYPE_EXACT:
-                $xml_data = $this->_getExactData();
-                break;
-            case Feed::FEEDTYPE_APC:
-            default:
-                $xml_data = $this->_getApcData();
-                break;
-        }
+        $xml_data = match ($feed_type) {
+            Feed::FEEDTYPE_RSS   => $this->_getRssData(),
+            Feed::FEEDTYPE_EXACT => $this->_getExactData(),
+            default              => $this->_getApcData(),
+        };
 
         return [$xml_data];
     }
@@ -304,7 +297,7 @@ class AARSS extends AbstractGrabber
         [$xml_data] = $this->getSources();
 
         // Special option - it only dispays fed data
-        if ($this->fire == 'display') {
+        if ($this->fire === 'display') {
             echo $xml_data;
             return false;
         }
@@ -385,7 +378,7 @@ class AARSS extends AbstractGrabber
 
         // Use the APC specific fields from the item
         if ($feed_type == Feed::FEEDTYPE_APC) {
-            $this->cat_field_id = AA_Fields::getBaseFieldId($this->aa_rss['fields'], "category");
+            $this->cat_field_id   = AA_Fields::getBaseFieldId($this->aa_rss['fields'], "category");
             $this->status_code_id = AA_Fields::getBaseFieldId($this->aa_rss['fields'], "status_code");
         }
 

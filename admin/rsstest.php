@@ -135,8 +135,8 @@ if (!$rss_tv["cond"]) {
 $apage = new AA_Adminpageutil('aaadmin','rsstest');
 $apage->setTitle(_m("RSS Feed import test"));
 $apage->setForm();
-$apage->addRequire(get_aa_url('tabledit.css?v='.AA_JS_VERSION, '', false ));
-$apage->addRequire(get_aa_url('javascript/js_lib.min.js?v='.AA_JS_VERSION, '', false ));
+$apage->addRequire(get_aa_url('tabledit.css', ['v'=>AA_JS_VERSION], false ));
+$apage->addRequire(get_aa_url('javascript/js_lib.min.js', ['v'=>AA_JS_VERSION], false ));
 $apage->printHead($err, $Msg);
 
 ProcessFormData('GetRSS_tv', $val, $cmd);

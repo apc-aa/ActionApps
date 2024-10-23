@@ -170,11 +170,11 @@ $translate_lang_file = str_replace ("??","en",$old_lang_files);
 // ----------------------------------------------------------------------------
 
 // Command called from the form:
-if ($cmd == "create logs") {
+if ($cmd === "create logs") {
     create_logs($lang_list, $old_lang_files, $log_files);
-} elseif ($cmd == "update language files" && is_array($update)) {
+} elseif ($cmd === "update language files" && is_array($update)) {
     update_language_files($aadir, $destdir);
-} elseif ($cmd == "convert scripts") {
+} elseif ($cmd === "convert scripts") {
     translate_aa_files($aadir, $translateddir);
 }
 
@@ -284,7 +284,7 @@ echo '</p>
 foreach ( $lang_groups as $group => $members) {
     echo '<tr><td>
         <input type="checkbox" name="update['.$group.']" checked>
-        ??_'.$group.'_lang.php</td><td>'.join (", ", $members).'</td></tr>';
+        ??_'.$group.'_lang.php</td><td>'.implode (", ", $members).'</td></tr>';
 }
 
 echo '</table>';
@@ -330,7 +330,7 @@ if ($show_create_related) {
     <td>
         <p>This will convert the scripts by replacing all occurences of L_ language constants
            by appropriate <code>_m()</code> calls. Translations are taken from the lang file <code>'.$translate_lang_file.'</code>.</p>
-        <p>All files in subdirs <code>'.join(", ",$translate_dirlist).'</code> of <code>'.$aadir.'</code> will be converted and the results placed into <code>'.$translateddir.'</code>.</p>
+        <p>All files in subdirs <code>'.implode(", ",$translate_dirlist).'</code> of <code>'.$aadir.'</code> will be converted and the results placed into <code>'.$translateddir.'</code>.</p>
     </td></tr>
 
     <tr><td colspan="2">

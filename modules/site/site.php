@@ -75,7 +75,7 @@ if ($cacheentry = AA::Pagecache()->getPage($cache_key, (string)$site_nocache)) {
 require_once __DIR__."/../../include/util.php";
 
 function IsInDomain( $domain ): bool {
-    return (($_SERVER['HTTP_HOST'] == $domain)  || ($_SERVER['HTTP_HOST'] == 'www.'.$domain));
+    return (($_SERVER['HTTP_HOST'] == $domain)  || ($_SERVER['HTTP_HOST'] === 'www.'.$domain));
 }
 
 /**
@@ -240,22 +240,22 @@ $is_valid = ($perm_alias = $module->getProperty('perm_alias')) ? AA::Un("{item:$
 
 // --- Process all AJAX commands and possibly EXIT ---------------------
 
-$content_function = function () use (&$module, &$apc_state) {
+$content_function = static function () use (&$module, &$apc_state) {
     // we need to evaluate $page_content in order to reevaluate DependentParts
     $apc_state['xajax'] = 2;  // to not be 1
     return $module->getSite( $apc_state );
 };
 
 $page_changer = new \AA\IO\OnPageChanger($content_function);
-$page_changer->checkAndProcessCall($is_valid == 'Valid');
+$page_changer->checkAndProcessCall($is_valid === 'Valid');
 
 // --- if not EXITEed above, continue
 
 
-$page_content = ($is_valid == 'Valid') ? $module->getSite( $apc_state ) : AA::Stringexpander()->postprocess(AA::Un($module->getProperty('loginpage_code')));
+$page_content = ($is_valid === 'Valid') ? $module->getSite( $apc_state ) : AA::Stringexpander()->postprocess(AA::Un($module->getProperty('loginpage_code')));
 
 // AJAX check
-if ((AA::$headers['encoding'] != 'utf-8') && (AA::$encoding != 'utf-8') && IsAjaxCall()) {
+if ((AA::$headers['encoding'] !== 'utf-8') && (AA::$encoding !== 'utf-8') && IsAjaxCall()) {
     $page_content = ConvertCharset::singleton()->Convert($page_content, AA::$encoding, 'utf-8');
     AA::$headers['encoding'] = 'utf-8';
 }
@@ -273,7 +273,7 @@ if (empty($slices4cache)) {    // can't be combined empty() and assignment = for
 
 // do not cache for logged users
 $cached = "not cached ($site_nocache,". array_key_exists('xuid', $apc_state) .')';
-if (!$site_nocache AND (empty($apc_state['xuid']) or ($apc_state['xuid']=='nobody'))) {
+if (!$site_nocache AND (empty($apc_state['xuid']) or ($apc_state['xuid']==='nobody'))) {
     $str2find = new CacheStr2find($slices4cache);
     $cached = AA::Pagecache()->storePage($cache_key, $cacheentry, $str2find) ? "cached ($cache_key)" : 'not cached in storePage';
 }
@@ -281,7 +281,7 @@ if (!$site_nocache AND (empty($apc_state['xuid']) or ($apc_state['xuid']=='nobod
 if (AA::$debug&2) {
     echo '<br><br>Site cache MIS!!! - '.$cached;
     echo AA::$dbg->basic_stat();
-    echo '<br>UsedModules:<br> - '. join('<br> - ', array_map(fn ($mid) => AA_Module::getModuleName($mid), $slices4cache));
+    echo '<br>UsedModules:<br> - '. implode('<br> - ', array_map(static fn ($mid) => AA_Module::getModuleName($mid), $slices4cache));
     if (AA::$debug&4) {
         echo AA::$dbg->duration_stat();
     }

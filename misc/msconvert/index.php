@@ -21,7 +21,7 @@ echo '
     <meta charset="'.$encoding.'">
   </head>';
 
-  if ($submit=="Import") {
+  if ($submit==="Import") {
       echo "<body onload=\"PasteHTML();\">";
       $view=false;
   } else {
@@ -75,9 +75,8 @@ if (!array_key_exists('userfile', $_FILES)) {
                     }
                     $insidesection=true;
                 } else {
-                    $line = str_replace("&scaron;","š",$line);
-                    $line = str_replace("&Scaron;","Š",$line);
-                    $buffer[]=$line;
+                    $line     = str_replace(["&scaron;", "&Scaron;"], ["š", "Š"], $line);
+                    $buffer[] =$line;
                 }
             }
             $output = array_merge($output,$buffer);
@@ -174,11 +173,11 @@ if (!array_key_exists('userfile', $_FILES)) {
             }
         }
         if ($view AND count($output) ) {
-            echo join("\n",$output)."\n";
+            echo implode("\n",$output)."\n";
         }
         echo "<form name=\"aform\">";
         echo "<input type=hidden name=content value=\"";
-        $stringoutput = join('',$output);
+        $stringoutput = implode('',$output);
         // we need to remove added background color, ...
         $stringoutput=preg_replace("/<\/?div.*>/i","",$stringoutput); // remove all DIVs
         $stringoutput=preg_replace("/ style=\".+\"/i","",$stringoutput); // remove all styles
@@ -198,7 +197,7 @@ if (!array_key_exists('userfile', $_FILES)) {
     } else {
         // ERROR uploading...
         if ($my_uploader->errors) {
-            echo join("<br>",$my_uploader->errors)."<br>";
+            echo implode("<br>",$my_uploader->errors)."<br>";
         }
     }
 }

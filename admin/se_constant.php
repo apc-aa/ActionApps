@@ -357,10 +357,10 @@ if ($group_id) {
     $using_slices_arr =  DB_AA::select([], "SELECT LOWER(HEX(module.id)) AS unpackid, module.deleted, module.name as sname, field.id as fid, field.name as fname FROM `module`, `field` WHERE module.id = field.slice_id AND (field.input_show_func LIKE '%:$group_id' OR field.input_show_func LIKE '%:$group_id:%')");
     echo "
       <tr><th>"._m("Constants used in slice")."</th>
-        <td colspan=\"3\">".join(
+        <td colspan=\"3\">".implode(
             '<br>',
             array_map(
-                fn($arr) => AA_Module::getModuleName($arr['unpackid'], IfSlPerm(PS_FIELDS, $arr['unpackid']), 'admin/se_inputform.php', ['fid' => $arr['fid']])." <small>[".$arr['unpackid']."]</small> (".safe($arr['fname'])." <small>[".safe($arr['fid'])."]</small>)",
+                static fn($arr) => AA_Module::getModuleName($arr['unpackid'], IfSlPerm(PS_FIELDS, $arr['unpackid']), 'admin/se_inputform.php', ['fid' => $arr['fid']])." <small>[".$arr['unpackid']."]</small> (".safe($arr['fname'])." <small>[".safe($arr['fid'])."]</small>)",
                 $using_slices_arr,
             ),
         )."</td>

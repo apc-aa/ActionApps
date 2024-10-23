@@ -92,7 +92,7 @@ abstract class AA_Exporter extends AA_Object {
 
             $item = GetItemFromContent($content4id);
 
-            if ($index == 0) {
+            if ($index === 0) {
                 fwrite($temp_file, $this->_outputStart($item));
             }
             $index++;
@@ -156,7 +156,7 @@ class AA_Exporter_Csv extends AA_Exporter {
 
             $item = GetItemFromContent($content4id);
 
-            if ($index == 0) {
+            if ($index === 0) {
                 $this->_outputStartFile($temp_file, $item);
             }
             $index++;
@@ -292,7 +292,7 @@ class AA_Exporter_Html extends AA_Exporter {
 
         $arr = $this->field_set->getNameArray();
         array_walk($arr, ['AA_Exporter_Html', '_valueSanity'], 'th');
-        return $ret. "\n <tr>" . join("\n  ", $arr)."\n </tr>";
+        return $ret. "\n <tr>" . implode("\n  ", $arr)."\n </tr>";
     }
 
     function _valueSanity(&$value, $key, $entity) {
@@ -302,7 +302,7 @@ class AA_Exporter_Html extends AA_Exporter {
     function _outputItem($item)  {
         $arr = $this->field_set->getValueArray($item);
         array_walk($arr, ['AA_Exporter_Html', '_valueSanity'], 'td');
-        return "\n <tr>" . join("\n  ", $arr)."\n </tr>";
+        return "\n <tr>" . implode("\n  ", $arr)."\n </tr>";
     }
 }
 
@@ -443,13 +443,13 @@ class AA_Fieldset {
     function fieldCount()          { return count($this->_fields); }
     function getDefinition($index) { return $this->_fields[$index]; }
     function getName($index)       { return $this->_names[$index]; }
-    function isField($index)       { return $this->_types[$index] == 'f'; }
+    function isField($index)       { return $this->_types[$index] === 'f'; }
 
     function getValueArray($item)  {
         $arr     = [];
 
         foreach ($this->_fields as $index => $definition) {
-            $recipe = ($this->_types[$index]=='f') ? "{@$definition:|}" : $definition;
+            $recipe = ($this->_types[$index] === 'f') ? "{@$definition:|}" : $definition;
             $arr[]  = AA::Un($recipe, '', $item);
         }
         return $arr;
@@ -546,7 +546,7 @@ class AA_Exportsetings extends AA_Object {
         $set = new AA_Set($slice_id, AA::Un($this->conds), AA::Un($this->sort), $this->bins);
         $fs  = new AA_Fieldset;
 
-        if ($this->grabber_type== 'AA\IO\Grabber\Discussion') {
+        if ($this->grabber_type === 'AA\IO\Grabber\Discussion') {
             $possible_fields = ['d_id............', 'd_parent........','d_item_id.......', 'd_subject.......', 'd_body..........', 'd_author........', 'd_e_mail........', 'd_url_address...', 'd_url_descript..', 'd_date..........', 'd_remote_addr...', 'd_state.........'];
             $grabber         = new Discussion($set);
         } else {
@@ -565,7 +565,7 @@ class AA_Exportsetings extends AA_Object {
                 }
             }
         } else {
-            if ($this->grabber_type== 'AA\IO\Grabber\Discussion') {
+            if ($this->grabber_type === 'AA\IO\Grabber\Discussion') {
                 foreach ($possible_fields as $field_id) {
                     $fs->addField($field_id);
                 }
@@ -576,7 +576,7 @@ class AA_Exportsetings extends AA_Object {
                         continue;
                     }
                     $field = $fields->getField($field_id);
-                    if ($this->type == 'human') {
+                    if ($this->type === 'human') {
                         // try to convert the data to human readable form
                         [$field_type,] = $field->getSearchType();
                         switch ($field_type) {
@@ -601,7 +601,7 @@ class AA_Exportsetings extends AA_Object {
             exit;
         }
 
-        $filename = $this->filename ? AA::Un($this->filename) : date("ymd").'-'.StrExp('seoname', [$slice->getName(), '', $slice->getCharset()]). (($this->grabber_type== 'AA\IO\Grabber\Discussion') ? '-Disc' : ''). '.'.$exporter->getExtension();
+        $filename = $this->filename ? AA::Un($this->filename) : date("ymd").'-'.StrExp('seoname', [$slice->getName(), '', $slice->getCharset()]). (($this->grabber_type === 'AA\IO\Grabber\Discussion') ? '-Disc' : ''). '.'.$exporter->getExtension();
 
         $exporter->sendFile($filename);
     }
@@ -622,7 +622,7 @@ class AA_Exportsetings extends AA_Object {
             a_href(get_aa_url('export.php', ['id=_#AA_ID___'], false), _m('Export'), ['class' => 'aa-button-show']) . ' ' .
             $buttons['DeleteObject'].' 
             </td>          
-              <td>'.join("</td>\n<td>", $aliases->getNames()).'</td>
+              <td>'.implode("</td>\n<td>", $aliases->getNames()).'</td>
             </tr>
             ';
     }

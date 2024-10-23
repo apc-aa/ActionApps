@@ -102,7 +102,7 @@ class Widget extends AA_Object implements NamedInterface {
      */
     protected static function stdInputAttrs($type, $base_id, array $flags=[]): array {
         $attrs = [];
-        if ($type == 'live') {
+        if ($type === 'live') {
             $attrs['class'] = 'live';
             if (in_array('dirty',$flags)) {
                 $attrs['onkeypress'] = "AA_StateChange('$base_id', 'dirty')";
@@ -127,9 +127,8 @@ class Widget extends AA_Object implements NamedInterface {
      * @return string slice with constants | ""
      */
     public function getConstSlice() {
-        return (substr($constgroup = $this->getProperty('const'), 0, 7) == "#sLiCe-") ? substr($constgroup, 7) : '';
+        return (str_starts_with($constgroup = $this->getProperty('const'), "#sLiCe-")) ? substr($constgroup, 7) : '';
     }
-
 
     /** returns array(ids => formatted text) for the current widget based on
      *  the widget settings
@@ -148,7 +147,7 @@ class Widget extends AA_Object implements NamedInterface {
 
         // commented out - used for Related Item Window values
         // $zids = $ids_arr ? new zids($ids_arr) : false;  // transforms content array to zids
-        $ids_arr = false;
+        $ids_arr = null;
 
         $constgroup = $this->getProperty('const');
         if (!$constgroup) {  // no constants or slice defined
@@ -340,10 +339,10 @@ class Widget extends AA_Object implements NamedInterface {
 
         $ret = '';
         foreach ($options as $option) {
-            if (($restrict == 'selected') and !$option['selected']) {
+            if (($restrict === 'selected') and !$option['selected']) {
                 continue;  // do not print this option
             }
-            if (($restrict == 'unselected') and $option['selected']) {
+            if (($restrict === 'unselected') and $option['selected']) {
                 continue;  // do not print this option
             }
             $selected = $option['selected'] ? $select_string : '';
@@ -508,7 +507,7 @@ class Widget extends AA_Object implements NamedInterface {
         $base_name = $winfo['base_name'];
         $base_id = FormArray::formName2Id($base_name);
         $help = $aa_property->getHelp();
-        $class = ($this->getProperty('ajaxtype', '') == 'inline') ? 'aa-widget aa-ajax-inline' : 'aa-widget aa-ajax-open';
+        $class = ($this->getProperty('ajaxtype', '') === 'inline') ? 'aa-widget aa-ajax-inline' : 'aa-widget aa-ajax-open';
         $class .= ' aa-widget-' . $this->getWidgetType();
         $widget_html = "<div class=\"ajax_widget $class\" id=\"widget-$base_id\">";
         $widget_html .= "\n<div class=aa-input>";
@@ -583,12 +582,12 @@ class Widget extends AA_Object implements NamedInterface {
                 $fld_value_arr[$key] = ['value' => $value, 'flag' => $flag];
             } else {
                 $class = '';
-                if ($key == 'wi') {
+                if ($key === 'wi') {
                     $class = Widget::constructClassName($value);
-                } elseif ($key != 'flag') {
+                } elseif ($key !== 'flag') {
                     $class = Widget::constructClassName($key);
                 }
-                if ($class and class_exists($class)) {
+                if ($class && class_exists($class)) {
                     // call function like AA\Widget\DteWidget::getValue($data)
                     // where $data depends on the widget - for example for
                     // date it is array('d'=>array(), 'm'=>array(), 'y'=>array())

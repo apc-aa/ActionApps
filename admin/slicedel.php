@@ -58,7 +58,7 @@ function PrintSlice($id, $name, $type) {
     global $MODULES;
 
     $name = safe($name); $id = safe($id);
-    $url  = (($type=='S') ? './slicedel2.php' : AA_INSTAL_PATH.$MODULES[$type]['directory']."moddelete.php" );
+    $url  = (($type === 'S') ? './slicedel2.php' : AA_INSTAL_PATH.$MODULES[$type]['directory']."moddelete.php" );
 
     echo "<tr>
             <td><input type=\"checkbox\" name=\"deletearr[]\" value=\"$id\"></td>
@@ -104,7 +104,7 @@ FrmInputRadio('slices2show', _m('Slices to show'), ['todelete'=>_m('Marked as "D
 FrmTabSeparator(_m('Slices to delete'));
 
 // -- get views for current slice --
-if ($slices2show == 'all') {
+if ($slices2show === 'all') {
     $SQL = "SELECT * FROM module ORDER BY type, name";
 } else {
     $SQL = "SELECT * FROM module WHERE deleted>0 ORDER BY type, name";

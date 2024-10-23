@@ -362,7 +362,7 @@ class ConvertSliceEncoding extends AA\Optimize\AbstractOptimize {
     public function test4modules(array $modules): bool {
         // $this->justTablecolumsTest($modules);
 
-        if ( DB_CHARACTER_SET != "latin1") {
+        if ( DB_CHARACTER_SET !== "latin1") {
             $this->message(_m('Database (DB_CHARACTER_SET) is not in latin1 encoding. Skipping.'));
             return true;  // all OK - can't do anything
         }
@@ -397,7 +397,7 @@ class ConvertSliceEncoding extends AA\Optimize\AbstractOptimize {
             $SQLs = array_merge($SQLs, $this->getSliceUpdateSlowFinalSqls($slicemodules));
         }
 
-        $this->message(_m('SQL commands to be performed: <br>%1.', [join(';<br>', $SQLs).";"]));
+        $this->message(_m('SQL commands to be performed: <br>%1.', [implode(';<br>', $SQLs).";"]));
 
         return empty($allmodules);
     }
@@ -407,7 +407,7 @@ class ConvertSliceEncoding extends AA\Optimize\AbstractOptimize {
      * @return bool
      */
     public function repair4modules(array $modules): bool {
-        if ( DB_CHARACTER_SET != "latin1") {
+        if ( DB_CHARACTER_SET !== "latin1") {
             $this->message(_m('Database (DB_CHARACTER_SET) is not in latin1 encoding. Skipping.'));
             return true;  // all OK - can't do anything
         }
@@ -425,7 +425,7 @@ class ConvertSliceEncoding extends AA\Optimize\AbstractOptimize {
         $SQLs = array_merge($SQLs, $this->getSliceUpdateSqls($slicemodules));
         $SQLs = array_merge($SQLs, $this->getSiteUpdateSqls($sitemodules));
 
-        $this->message(_m('SQL commands to be performed: <br>%1.', [join(';<br>', $SQLs).";"]));
+        $this->message(_m('SQL commands to be performed: <br>%1.', [implode(';<br>', $SQLs).";"]));
 
         DB_AA::sql('START TRANSACTION');
         foreach ($SQLs as $sql) {
@@ -552,7 +552,7 @@ class ConvertSliceEncoding extends AA\Optimize\AbstractOptimize {
 
     /** go through all modules and return only modules of the $type. Look also into all related slices of site module */
     protected function getRelatedModulesOfType(array $modules, string $type, string $filter_charset=''): array {
-        if ($type != 'W') {
+        if ($type !== 'W') {
             $sites = $this->getRelatedModulesOfType($modules, 'W', $filter_charset);
             $modules += AA_Module_Site::getRelatedModules([$sites]);  // slices and polls..
         }
@@ -576,7 +576,7 @@ class ConvertSliceEncoding extends AA\Optimize\AbstractOptimize {
 
     protected function constructSet(array $cols): string {
         array_walk($cols, function (&$v) { $v = "`$v` = cast(convert(convert(cast(`$v` as binary) using cp1250) using utf8) as binary)"; });
-        return join(', ', $cols);
+        return implode(', ', $cols);
     }
 
     protected function getTextCols(string $tablename): array {
@@ -584,7 +584,7 @@ class ConvertSliceEncoding extends AA\Optimize\AbstractOptimize {
         $metabase = AA::Metabase();
         $cols = $metabase->getColumns($tablename);
         foreach ($cols as $colname => $coldef) {
-            if (($coldef->getFieldType() == 'text') and !$coldef->isBinary()) {
+            if (($coldef->getFieldType() === 'text') and !$coldef->isBinary()) {
                 $ret[] = $colname;
             }
         }
@@ -603,14 +603,14 @@ class ConvertSliceEncoding extends AA\Optimize\AbstractOptimize {
         foreach ($modules as $module_id) {
             foreach ($tablenames as $tablename) {
                 echo "<br><br>$tablename";
-                if (substr($tablename, 0, 4) == 'bck_') {
+                if (str_starts_with($tablename, 'bck_')) {
                     continue;
                 }
                 if ( !($cols = $metabase->getColumns($tablename))) {
                     continue;
                 }
                 foreach ($cols as $colname => $coldef) {
-                    if (($coldef->getFieldType() == 'text') and !$coldef->isBinary()) {
+                    if (($coldef->getFieldType() === 'text') and !$coldef->isBinary()) {
                         echo "<br> &nbsp; $colname ". (AA_Metabase::isPacked($tablename, $colname) ? 'P' : '.'). ($coldef->isBinary() ? 'B' : '.'). ($coldef->isKey() ? 'K' : '.');
                     }
                 }

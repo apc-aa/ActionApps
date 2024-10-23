@@ -335,18 +335,19 @@ class AA_Mail extends htmlMimeMail implements \AA\Later\LaterInterface {
             return false;
         }
 
-        if (is_null($later)) {
-            return $mail->sendLater($to);  // standard - first two mails send, other queue
-        } elseif ($later === true) {
-            return $mail->sendLater($to, true);
-        }
+         if (is_null($later)) {
+             return $mail->sendLater($to);  // standard - first two mails send, other queue
+         }
 
-        $tos  = array_unique(array_map('trim', is_array($to) ? $to : [$to]));
+         if ($later === true) {
+             return $mail->sendLater($to, true);
+         }
+
+         $tos  = array_unique(array_map('trim', is_array($to) ? $to : [$to]));
         return $mail->send($tos);
     }
 
-    /** sendToReader function
-     *  Sends mail defined in e-mail template id $mail_id to all zids (Readers).
+    /** Sends mail defined in e-mail template id $mail_id to all zids (Readers).
      *  Mail template is unaliased using aliases and data form item identified by
      *  $zids (often Reader item). The recipients are Readers itself, by default.
      * @param int    $mail_id
@@ -475,7 +476,7 @@ function html2text($html, $encoding='utf-8') {
         // Strip out html tags
         "'<[/!]*?[^<>]*?>'si",
         // trim end of line whitespaces (also fixes responsivnes when long line is present)
-        ($encoding=='utf-8') ? "'\\h+\\n'u" : "'\\h+\\n'",
+        ($encoding==='utf-8') ? "'\\h+\\n'u" : "'\\h+\\n'",
         // If the previous commands added too much whitespace, delete it
         "'\\n\\n\\n+'si"
     ];

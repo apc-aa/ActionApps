@@ -86,8 +86,8 @@ function get_formatted_date($datestring, $format) {
     for ($i=0, $ino=count($dateparts); $i<$ino; ++$i) {
         $d = $dateparts[$i];
         switch ($formatparts[$i]) {
-            case 'a': $pm = $d == "pm"; break;
-            case 'A': $pm = $d == "PM"; break;
+            case 'a': $pm = $d === "pm"; break;
+            case 'A': $pm = $d === "PM"; break;
             case 'B': gfd_error('B'); break;
             case 'd': $day = $d; break;
             case 'D': break;
@@ -156,7 +156,7 @@ function ColumnFunctions($cview, &$val, $function, $name="", $new_record=false, 
     // value to be shown if the requested value is not a part of the select box array
     $unknown_select_value = "????????";
 
-    if ($function == "show" && $cview["readonly"]) {
+    if ($function === "show" && $cview["readonly"]) {
         $function = "show_ro";
     }
 
@@ -198,8 +198,7 @@ function ColumnFunctions($cview, &$val, $function, $name="", $new_record=false, 
 
         switch ($function) {
         case 'show':
-            $val = str_replace ('<','&lt;',$val);
-            $val = str_replace ('>','&gt;',$val);
+            $val = str_replace(['<', '>'], ['&lt;', '&gt;'], $val);
             echo "<textarea name=\"$name\""
                 ." rows=\"".$cview["size"]["rows"]."\" cols=\"".$cview["size"]["cols"]."\">\n"
                 .$val."</textarea>";
@@ -337,7 +336,7 @@ function ShowColumnValueReadOnly($cview, $show_val, $val, $name="") {
             $show_val = safe($show_val);
         }
     }
-    elseif (($show_val == 0) && is_field_type_numerical($cview["dbtype"]) && ($cview["type"] != "date")) {
+    elseif (($show_val == 0) && is_field_type_numerical($cview["dbtype"]) && ($cview["type"] !== "date")) {
         $show_val = "0";
     }
     else {

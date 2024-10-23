@@ -49,7 +49,7 @@ class Links_Check extends AbstractManageraction {
     }
 
     /** function, which checks permissions in for many Links action classes */
-    static public function permCheck($item_zids, $perm, $allow_nobase4super = false) {
+    public static function permCheck($item_zids, $perm, $allow_nobase4super = false) {
 
         $base_categs = [];
         $check_super = false;

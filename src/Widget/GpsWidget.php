@@ -59,12 +59,12 @@ class GpsWidget extends Widget
                  position: 'bottomright',
                  edit: { featureGroup: drawnItems$js_id, poly: { allowIntersection: false }, remove: false, edit: false },
                  draw: { ";
-                        $drawComponent .= strpos($shapes, 'M') !== false ? 'marker: true'         : ', marker: false';
-                        $drawComponent .= strpos($shapes, 'L') !== false ? ', polyline: true'     : ', polyline: false';
-                        $drawComponent .= strpos($shapes, 'P') !== false ? ', polygon: true'      : ', polygon: false';
-                        $drawComponent .= strpos($shapes, 'R') !== false ? ', rectangle: true'    : ', rectangle: false';
-                        $drawComponent .= false                          ? ', circle: true'       : ', circle: false';        // circles are not supported by toGeoJSON()
-                        $drawComponent .= false                          ? ', circlemarker: true' : ', circlemarker: false';
+                        $drawComponent .= str_contains($shapes, 'M') ? 'marker: true'         : ', marker: false';
+                        $drawComponent .= str_contains($shapes, 'L') ? ', polyline: true'     : ', polyline: false';
+                        $drawComponent .= str_contains($shapes, 'P') ? ', polygon: true'      : ', polygon: false';
+                        $drawComponent .= str_contains($shapes, 'R') ? ', rectangle: true'    : ', rectangle: false';
+                        $drawComponent .= false                      ? ', circle: true'       : ', circle: false';        // circles are not supported by toGeoJSON()
+                        $drawComponent .= false                      ? ', circlemarker: true' : ', circlemarker: false';
                         $drawComponent .= "}
                 });
               map$js_id.addControl(drawControl);

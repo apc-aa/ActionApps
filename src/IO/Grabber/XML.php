@@ -120,7 +120,7 @@ class XML extends AbstractGrabber
      * @throws Exception
      */
     function prepare() {
-        $data = join('', $this->getSources());
+        $data = implode('', $this->getSources());
 
         // remove namespaces (it is pain to work with it in simple XML interface)
         // $data = str_replace(array('<rsp:', '</rsp:'), array('<rsp_', '</rsp_'), $data);

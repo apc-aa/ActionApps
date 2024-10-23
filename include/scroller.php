@@ -215,12 +215,12 @@ class AA_Scroller extends AA_Storable {
                 $ret .= $delimiter;
                 $delimiter = " | ";
                 if ($v) {
-                    $ret .= "<a href=\"" . get_url($url, [$v]) . "\">$k</a>\n";
+                    $ret .= a_href(get_url($url, [$v]), $k) . "\n";
                 } else {
                     $ret .= ($k == $this->current) ? "<span class=active>$k</span>\n" : "<span class=dots>..</span>\n";
                 }
             }
-            $ret .= "| <a href=\"" . get_url($url, ["listlen=99999"]) . "\">" . _m("All") . "</a> &nbsp; ";
+            $ret .= "| ". a_href(get_url($url, ["listlen"=>99999]), _m("All")) . " &nbsp; ";
         }
         return "<div class=pager>$ret <span class=found>(". _m('found').' '. $this->itmcnt .")</span></div>";
     }

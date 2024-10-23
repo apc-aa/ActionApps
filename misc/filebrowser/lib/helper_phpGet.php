@@ -47,7 +47,7 @@ class phpGet {
                 $get = "get_$m";
                 if (self::$check()) {
                     $content = self::$get($url);
-                    if ((($method !== true) && (strtolower($method) != "all")) ||
+                    if ((($method !== true) && (strtolower($method) !== "all")) ||
                         ($content !== false)
                     )
                         break;

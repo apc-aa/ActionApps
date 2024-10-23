@@ -125,7 +125,7 @@ class ChangesMonitor {
     }
 
     // array of unpacked ids
-    static public function deleteChanges($resources_long_ids) {
+    public static function deleteChanges($resources_long_ids) {
         // it is quicker to split it into two deletes because of index type_resource_time
         $changes_ids = DB_AA::select('id', 'SELECT id FROM `change`', [['type', 'h'], ['resource_id', $resources_long_ids]]);
         $changes_ids = array_merge($changes_ids, DB_AA::select('id', 'SELECT id FROM `change`', [['type', 'p'], ['resource_id', $resources_long_ids]]));
@@ -157,7 +157,7 @@ class ChangesMonitor {
         if ($chid) {
             $changes_arr = $this->getProposalByID($chid);
             if (is_array($changes_arr[$resource_id])) {
-                $ret = join('-', array_keys($changes_arr[$resource_id]));
+                $ret = implode('-', array_keys($changes_arr[$resource_id]));
             }
         }
         return $ret;

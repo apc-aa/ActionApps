@@ -184,7 +184,7 @@ class AA_Adminpageutil {
         AA::Stringexpander()->addRequire('css-aa-system');
         AA::Stringexpander()->addRequire(AA_INSTAL_PATH . ADMIN_CSS.'?v='.AA_JS_VERSION);
 
-        if ($errtext = trim(join('<br>',(array)$err))) {
+        if ($errtext = trim(implode('<br>',(array)$err))) {
             //$errtext = 'some text';
             AA::Stringexpander()->addRequire('aa-jslib');
             AA::Stringexpander()->addRequire("AA_Message('".escape4js($errtext)."', 'err')", 'AA_Req_Load');
@@ -220,7 +220,7 @@ class AA_Adminpageutil {
             AA::Stringexpander()->addRequire("if (sessionStorage.getItem('aa_pgtop')>0) { window.scrollTo(0,sessionStorage.getItem('aa_pgtop')); sessionStorage.setItem('aa_pgtop', 0); }", 'AA_Req_Load');
             $frm = "\n<form";
             foreach ($this->form as $k => $v) {
-                if ($k == 'action') {
+                if ($k === 'action') {
                     $frm .= " $k=\"".StateUrl($v) ."\"";
                 } elseif (strlen($v)) {
                     $frm .= " $k=\"$v\"";
@@ -280,10 +280,10 @@ class AA_Adminpageutil {
         }
 
         if (is_array($msg)) {
-            $msg = join(' ', $msg); // probably error messages in divs
+            $msg = implode(' ', $msg); // probably error messages in divs
         }
 
-        $apage = new AA_Adminpageutil($mode == 'admin' ? 'aaadmin' : 'sliceadmin', $menu);
+        $apage = new AA_Adminpageutil($mode === 'admin' ? 'aaadmin' : 'sliceadmin', $menu);
         $apage->setForm();
         $apage->printHead([], $msg);
 

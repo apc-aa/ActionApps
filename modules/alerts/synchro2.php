@@ -136,7 +136,7 @@ function add_fields_2_slice($collectionid, $slice_id) {
             $input_pri += 10;
         }
 
-        if ($fprop["constants"]["items"] == "{FILTERS}") {
+        if ($fprop["constants"]["items"] === "{FILTERS}") {
             $fprop["constants"]["items"] = $filters;
         }
         if ($fprop["constants"]) {

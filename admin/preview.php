@@ -62,7 +62,7 @@ if (empty($item)) {
 
 if ($preview_url = $slice->getProperty('_url_preview....')) {
     $preview_url = $item->unalias($preview_url);
-} elseif ('_#SEO_URL_' != ($preview_url = $item->unalias('_#SEO_URL_')))  {
+} elseif ('_#SEO_URL_' !== ($preview_url = $item->unalias('_#SEO_URL_')))  {
     // Contain _#SEO_URL_ already server?
     // we are really looking for the begining of the string - pos = 0
     if ( (!str_starts_with($preview_url, 'http://')) AND (!str_starts_with($preview_url, 'https://')) AND (!str_starts_with($preview_url, '//')) ) {

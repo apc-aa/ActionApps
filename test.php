@@ -38,7 +38,7 @@ if (extension_loaded('gd')) {
 require_once __DIR__.'/include/config.php';
 
 function checkdir($name,$dir,$mustendslash, $mustwritable) {
-    if ($mustendslash && ! preg_match('`/$`',$dir)) {
+    if ($mustendslash && !str_ends_with($dir, '/')) {
         print("<li style=\"color:red\">$name=$dir should end in a slash</li>\n");
     }
     if (! is_dir($dir)) {

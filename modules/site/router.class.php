@@ -122,7 +122,7 @@ class AA_Router {
             }
         }
 
-        return $this->getParam('scroller_begin'). join($this->getParam('scroller_delimiter'), $arr) . $this->getParam('scroller_end');
+        return $this->getParam('scroller_begin'). implode($this->getParam('scroller_delimiter'), $arr) . $this->getParam('scroller_end');
     }
 
     function getParam($param) {
@@ -349,7 +349,7 @@ class AA_Router_Seo extends AA_Router {
         $parsed_url = parse_url(trim($apc,' \t/') ? $apc : $home);
         $arr        = explode('/', trim($parsed_url['path'],'/'));
         $langs      = array_filter($langs);   // sometimes there is [0] => '' for some reason...
-        $re_lang    = count($langs) ? join('|',$langs) : '[a-z]{2}';
+        $re_lang    = count($langs) ? implode('|',$langs) : '[a-z]{2}';
 
         $matches    = [];
         $ret        = [];
@@ -445,12 +445,12 @@ class AA_Router_Seo extends AA_Router {
             $max       = max($new_x_max, $old_x_max);
             $state     = 'COPY';
             for ( $i=1; $i <= $max; ++$i) {
-                if ($state == 'CLEAR') {
+                if ($state === 'CLEAR') {
                     unset($apc_state['xseo'. $i]);
                 } elseif ($new_arr['xseo'. $i]) {
                     $apc_state['xseo'. $i] = $new_arr['xseo'.$i];
                     $state = 'REDEFINING';
-                } elseif ($state == 'REDEFINING') {
+                } elseif ($state === 'REDEFINING') {
                     unset($apc_state['xseo'. $i]);
                     $state = 'CLEAR';
                 } elseif (!$apc_state['xseo'. $i]) {
@@ -460,7 +460,7 @@ class AA_Router_Seo extends AA_Router {
                     // $apc_state['xseo'. $i] = $apc_state['xseo'. $i];
                 }
             }
-            if ($state != 'COPY') {
+            if ($state !== 'COPY') {
                 $apc_state['xpage'] = '';
             }
         }
@@ -543,7 +543,7 @@ class AA_Router_Seo extends AA_Router {
             // item on specified level
             return $this->_xseo2id($apc['xseo'.$param]);
         }
-        if ($param == 'path') {
+        if ($param === 'path') {
             // tree for breadcrumb - just like 7663(7434(7432))
             $i     = 1;
             $delim = '';
@@ -558,15 +558,15 @@ class AA_Router_Seo extends AA_Router {
             }
             return $path;
         }
-        if (($param == 'list') OR is_long_id($param)) {
+        if (($param === 'list') OR is_long_id($param)) {
             // list of ids - just like 7663-7434-7432
             $i     = 1;
             $ids   = [];
             while (!empty($apc['xseo'.$i])) {
                 $ids[] = $this->_xseo2id($apc['xseo'.$i++]);
             }
-            if ($param == 'list') {
-                return join('-',$ids);
+            if ($param === 'list') {
+                return implode('-',$ids);
             }
             for( $i=count($ids)-1; $i>=0; $i--) {
                 if ( $ids[$i] AND is_object($item = AA_Items::getItem($ids[$i])) AND ($item->getSliceID()==$param) ) {
@@ -597,7 +597,7 @@ class AA_Router_Seo extends AA_Router {
         // Q: Is the cache needed, when AA_Stringexpand_Seo2ids is already cached? Honza 2015-07-16
         // A: Yes - based on measures it seams to be much quicker. Honza 2015-07-16
         if (!isset($this->_seocache[$seo_string])) {
-            $this->_seocache[$seo_string] = substr(StrExp('seo2ids', [join('-',$this->slices), $seo_string]),0,32);
+            $this->_seocache[$seo_string] = substr(StrExp('seo2ids', [implode('-',$this->slices), $seo_string]),0,32);
         }
         return $this->_seocache[$seo_string];
     }
@@ -641,7 +641,7 @@ class AA_Stringexpand_Xid extends AA_Stringexpand_Nevercache {
             return '<div class="aa-error">Err in {xid} - router not found - {xid} is designed for site modules</div>';
         }
         $router = AA_Router::singleton($router_class);
-        if (empty($param) OR ctype_digit((string)$param) OR ($param=='path') OR ($param=='list') OR is_long_id($param)) {
+        if (empty($param) OR ctype_digit((string)$param) OR ($param==='path') OR ($param==='list') OR is_long_id($param)) {
             return $router->xid($param, $url);
         } else {
             return AA::Un('{item:'.$router->xid().':'.$param.'}');
