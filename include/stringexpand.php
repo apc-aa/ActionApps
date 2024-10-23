@@ -5134,6 +5134,11 @@ class AA_Stringexpand_Editable extends AA_Stringexpand_Nevercache {
  * The template must be in related slices (to not allow to create item in foreign slice).
  *
  * The values could be single (for headline........), or multiple - written in JSON format.
+ *
+ * {newitem:c239cb267837a25b4efb5892ca4f4324:7735375488a65e7735375488a65eab2a/relation.......1:copy:category........:["enviro","social"]}
+ *   - item in related slice 773.. through field relation.......1 will be copied and associated with new item (probably some items related data)
+ *   - works 7735375488a65e7735375488a65eab2a/relation.......1:copy,
+ *   - not yet implemented: 7735375488a65e7735375488a65eab2a/*:copy, and @relation.......2:copy for all related items in slice respectively all pointed items by relation.......2 field
  */
 class AA_Stringexpand_Newitem extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
@@ -5152,7 +5157,7 @@ class AA_Stringexpand_Newitem extends AA_Stringexpand_Nevercache {
             return '';
         }
 
-        $transformations = self::_getTransformationsFromArgs($arg_list);
+        [$transformations,$copies] = self::_getTransformationsFromArgs($arg_list);
 
         // move to active, clear seo
         if ( !isset($transformations['status_code.....']) ) {
@@ -5178,19 +5183,43 @@ class AA_Stringexpand_Newitem extends AA_Stringexpand_Nevercache {
         $saver   = new AA\IO\Saver($grabber, $transformations, null, 'insert_if_new', 'new');
         [$ok,$err] = $saver->run();
         $err && warn('Saver run err '. $err. ': '. $saver->report());
-        return join('-',$saver->changedIds());
+
+        $item_inserted = $saver->changedIds()[0];
+
+        // now solve copies
+        foreach( $copies as [$sl,$fi] ) {
+            if (!in_array($sl, $slices, true)) {
+                warn("newitem - itemcopy of $sl/$fi - Slice is not in related slices");
+                continue;
+            }
+            if (!AA_Slice::getModule($sl)?->isField($fi)) {
+                warn("newitem - itemcopy of $sl/$fi - Field is not in slice");
+                continue;
+            }
+            $transformations = [$fi => new AA_Transformation_Exactvalues(['new_content'=> [$item_inserted]])];
+
+            // $fi = $fi === '*' ? 'all_fields' : $fi;  // not yet implemented
+            $grabber = new AA\IO\Grabber\Slice(new AA_Set([$sl], new AA_Condition($fi,'==',$template_long_item_id)));
+            $saver2   = new AA\IO\Saver($grabber, $transformations, null, 'insert_if_new', 'new');
+            [$ok,$err] = $saver2->run();
+            $err && warn("Saver run err for related $sl/$fi ". $err. ': '. $saver2->report());
+        }
+        return implode('-',$saver->changedIds());
     }
 
     /**
      * @param $arg_list
-     * @return array
+     * @return array [$transformations[], $copies[]]
      */
-    static protected function _getTransformationsFromArgs($arg_list) {
+    protected static function _getTransformationsFromArgs($arg_list): array
+    {
         $i                     = 0;
         $transformations       = [];
+        $copies                = [];
         while (isset($arg_list[$i]) AND isset($arg_list[$i+1])) {  // regular option-text pair
             // accept field id 16 chars long or 17 if ends with +
             $field_id = $arg_list[$i];
+            $to_val   = $arg_list[$i + 1];
             $transformation = '';
             switch (strlen($field_id)) {
                 case 16:
@@ -5201,17 +5230,34 @@ class AA_Stringexpand_Newitem extends AA_Stringexpand_Nevercache {
                         $field_id       = substr($field_id, 0, 16);
                         $transformation = 'AA_Transformation_AddValue';
                     }
+                    elseif ($to_val==='copy' && str_starts_with($field_id, '@')) {   // @relation........:copy - make copy of related items pointed to by relation........ field
+                        // not yet implemented
+                    }
+                    break;
+                case 49:  // 7735375488a65e7735375488a65eab2a/relation.......1:copy - make copy of related items in slice 77.. on field relation.......1
+
+                    [$sl,$fi] = explode('/', $field_id, 2);
+                    if ($to_val==='copy' && strlen($fi)===16 && is_long_id($sl)) {
+                        $copies[] = [$sl,$fi];
+                    }
+                    break;
+                case 34:  // 7735375488a65e7735375488a65eab2a/* - make copy of related items in slice 77.. on all fields
+                    // not yet implemented in {newitem...}
+                    [$sl,$fi] = explode('/',$field_id, 2);
+                    if ($to_val==='copy' && $fi==='*' && is_long_id($sl)) {
+                        $copies[] = [$sl,$fi];
+                    }
                     break;
             }
             if ($transformation) {
-                if (!count($value = json2arr($arg_list[$i + 1]))) {
+                if (!count($value = json2arr($to_val))) {
                     $value = [''];
                 }
                 $transformations[$field_id] = new $transformation(['new_content' => $value]);
             }
             $i += 2;
         }
-        return $transformations;
+        return [$transformations,$copies];
     }
 }
 
@@ -5276,9 +5322,9 @@ class AA_Stringexpand_Updateitem extends AA_Stringexpand_Newitem {
 
         if ( !is_object($item = AA_Items::getItem($zid)) ) { warn(_m('No item ID')); return ''; }
 
-        $transformations = self::_getTransformationsFromArgs($arg_list);
+        [$transformations,$copies] = self::_getTransformationsFromArgs($arg_list);
 
-        if ( !count($restrict_fields  = array_filter(array_keys($transformations), function($fld) { return strlen($fld)==16; })) ) {
+        if ( !count($restrict_fields  = array_filter(array_keys($transformations), static function($fld) { return strlen($fld)===16; })) ) {
             warn(_m('No transformations'));
             return '';
         }
@@ -5307,7 +5353,7 @@ class AA_Stringexpand_Updateitem extends AA_Stringexpand_Newitem {
         $grabber = new AA\IO\Grabber\Slice(new AA_Set($slices,null,null,AA_BIN_ALL), $zid, $restrict_fields);
         $saver   = new AA\IO\Saver($grabber, $transformations, $item_slice, 'update');
         $saver->run();
-        return join('-',$saver->changedIds());
+        return implode('-',$saver->changedIds());
     }
 }
 
