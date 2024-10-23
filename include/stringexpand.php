@@ -7930,22 +7930,50 @@ class AA_Stringexpand_Hitcounter extends AA_Stringexpand {
             foreach ($cols as $sid => $sidcols ) {
                 $color = $this->generateSaturatedColor($i++);
                 if (array_filter($sidcols['H'], static fn($v) => $v !== 0)) {
-                    $datasets[] = ['label' => "$sid Hits", 'data' => $sidcols['H'], 'color' => $this->hslToHex($color, 100, 50), 'dash' => [], 'width' => 1];
+                    $datasets[] = ['label' => "$sid Hits", 'data' => $sidcols['H'], 'color' => $this->hslToHex($color, $sid === 'all' ? 0 : 100, 50), 'dash' => [], 'width' => 1];
                 }
                 if (array_filter($sidcols['ncmH'], static fn($v) => $v !== 0)) {
-                    $datasets[] = ['label' => "$sid NC+M", 'data' => $sidcols['ncmH'], 'color' => $this->hslToHex($color, 100, 50), 'dash' => [7, 3]];
+                    $datasets[] = ['label' => "$sid NC+M", 'data' => $sidcols['ncmH'], 'color' => $this->hslToHex($color, $sid === 'all' ? 0 : 100, 50), 'dash' => [7, 3]];
                 }
                 if (array_filter($sidcols['ncnmH'], static fn($v) => $v !== 0)) {
-                    $datasets[] = ['label' => "$sid NC+NM", 'data' => $sidcols['ncnmH'], 'color' => $this->hslToHex($color, 100, 50), 'dash' => [2, 2]];
+                    $datasets[] = ['label' => "$sid NC+NM", 'data' => $sidcols['ncnmH'], 'color' => $this->hslToHex($color, $sid === 'all' ? 0 : 100, 50), 'dash' => [2, 2]];
                 }
                 if (array_filter($sidcols['cmH'], static fn($v) => $v !== 0)) {
-                    $datasets[] = ['label' => "$sid C+M", 'data' => $sidcols['cmH'], 'color' => $this->hslToHex($color, 100, 80), 'dash' => [7,3]];
+                    $datasets[] = ['label' => "$sid C+M", 'data' => $sidcols['cmH'], 'color' => $this->hslToHex($color, $sid === 'all' ? 0 : 100, 80), 'dash' => [7,3]];
                 }
                 if (array_filter($sidcols['cnmH'], static fn($v) => $v !== 0)) {
-                    $datasets[] = ['label' => "$sid C+NM", 'data' => $sidcols['cnmH'], 'color' => $this->hslToHex($color, 100, 80), 'dash' => [2,2]];
+                    $datasets[] = ['label' => "$sid C+NM", 'data' => $sidcols['cnmH'], 'color' => $this->hslToHex($color, $sid === 'all' ? 0 : 100, 80), 'dash' => [2,2]];
                 }
             }
             $ret .= $this->getGraph(1200, 800, $datasets, $labels);
+
+
+            $ret .= "<h3>All items stat</h3>";
+            $datasets = [];
+            $i = 0;
+            $sid = 'all';
+            $sidcols = $cols[$sid];
+
+            foreach (['ncmH', 'ncnmH', 'cmH', 'cnmH'] as $t) {
+                if (isset($sidcols[$t], $sidcols['H']) && count($sidcols[$t]) === count($sidcols['H'])) {
+                    array_walk($sidcols[$t], fn(&$v, $index) => $v = ($sidcols['H'][$index] ?? 0) != 0 ? $v*100 / $sidcols['H'][$index] : 0);
+                }
+            }
+
+                if (array_filter($sidcols['ncmH'], static fn($v) => $v !== 0)) {
+                    $datasets[] = ['label' => "$sid NC+M", 'data' => $sidcols['ncmH'], 'color' => '#ff0000', 'dash' => [7, 3]];
+                }
+                if (array_filter($sidcols['ncnmH'], static fn($v) => $v !== 0)) {
+                    $datasets[] = ['label' => "$sid NC+NM", 'data' => $sidcols['ncnmH'], 'color' => '#ff6666', 'dash' => [2, 2]];
+                }
+                if (array_filter($sidcols['cmH'], static fn($v) => $v !== 0)) {
+                    $datasets[] = ['label' => "$sid C+M", 'data' => $sidcols['cmH'], 'color' => '#66FF66', 'dash' => [7,3]];
+                }
+                if (array_filter($sidcols['cnmH'], static fn($v) => $v !== 0)) {
+                    $datasets[] = ['label' => "$sid C+NM", 'data' => $sidcols['cnmH'], 'color' => '#00FF00', 'dash' => [2,2]];
+                }
+            $ret .= $this->getGraph(1200, 800, $datasets, $labels, 'stacked');
+
 
             $ret .= "<h3>Average Duration</h3>";
             $datasets = [];
@@ -8045,12 +8073,21 @@ class AA_Stringexpand_Hitcounter extends AA_Stringexpand {
                         'position' => 'top',
                     ],
                     'title' => [
-                        'display' => true,
-                        'text' => 'Chart.js Line Chart'
+                        'display' => false,
+                        // 'text' => 'Chart.js Line Chart'
                     ]
                 ]
             ]
         ];
+
+        if ($type==='stacked') {
+            $conf['type'] = 'bar';
+            $conf['options']['scales'] = [
+                'y' => ['stacked' => true],
+                'x' => ['stacked' => true]
+            ];
+        }
+
         $height = $height ?: 300;
         $width  = $width  ?: 600;
         $chart_id = gensalt(8);
