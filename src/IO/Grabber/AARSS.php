@@ -314,7 +314,7 @@ class AARSS extends AbstractGrabber
         }
 
         // if an error occured, write it to the LOG
-        if (($first_char = substr($xml_data, 0, 1)) != "<") {
+        if (($first_char = $xml_data[0]) !== "<") {
             AA_Log::write("CSN", $this->getLogSelector(), "Feeding mode ($feed_debug_name): $xml_data");
             if ($debugfeed >= 1) {
                 print("\n<br>$feed_debug_name:bad data returned (first character &quot;$first_char&quot; (ord=" . ord($first_char) . ") is not &quot;&lt;&quot;):$xml_data");

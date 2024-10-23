@@ -7827,11 +7827,15 @@ class AA_Stringexpand_Packid extends AA_Stringexpand_Nevercache {
 class AA_Stringexpand_Hitcounter extends AA_Stringexpand {
 
     /** expand function
+     *
      * @param $type string type of statistics - currently only "days" statistics is implemented
      * @param $ids  string item ids (long or short) for which you want to display statistics
+     * @param $from string timestamp from which you want to display statistics
      *
      * Example: {hitcounter:days:24457-24474}
      * Example: {hitcounter:days:{ids:76f59b2023b8a4e8d6c57831ef8c8199:d-publish_date....->-1185919200}}
+     * Example: {hitcounter:days:{ids:76f59b2023b8a4e8d6c57831ef8c8199:d-publish_date....->-1185919200}:1729634400}
+     *
      * @return string
      */
     function expand($type='', $ids='', $from='') {
@@ -7849,23 +7853,28 @@ class AA_Stringexpand_Hitcounter extends AA_Stringexpand {
         }
         $zids   = new zids(explode_ids($ids));
         $s_zids = new zids($zids->shortids(), 's');
-        $stat = $this->countStats($s_zids, $group_string, ['HITS', 'DURATION'], (int)$from);  // array of statistics [hits, dur_0, count_0, dur_1, count_1, dur_2, count_2, dur_3, count_3]
+
+        $reports = ['HITS', 'DURATION', 'SUM'];
+        $stat = $this->countStats($s_zids, $group_string, $reports, (int)$from);  // array of statistics [hits, dur_0, count_0, dur_1, count_1, dur_2, count_2, dur_3, count_3]
+
         if (count($stat) > 0) {
             $s_ids =  $s_zids->shortids();
+            if (in_array('SUM', $reports, true)) {
+                $s_ids[] = 'all';
+            }
             // table header
             $ret   = "<table>\n  <tr>\n    <th rowspan=3>"._m('Date \ Item ID')."</th>";
             foreach ($s_ids as $sid) {
-                StrExp('item',[$sid,'_#HEADLINE']);
-                $ret .= "\n". AA::Un("<th title=\"{safe:{item:$sid:_#HEADLINE}}\" colspan=7>$sid<br><small>{shorten:{item:$sid:_#HEADLINE}:10:3}</small></th>");
+                $ret .= "\n". AA::Un("<th title=\"{safe:{item:$sid:_#HEADLINE}}\" colspan=9>$sid<br><small>{shorten:{item:$sid:_#HEADLINE}:10:3}</small></th>");
             }
             $ret   .= "\n  </tr>";
             $ret .= '<tr>'.str_repeat("<th rowspan=2>Hits</th><th colspan=2>NC+M</th><th colspan=2>NC+NM</th><th colspan=2>C+M</th><th colspan=2>C+NM</th>", count($s_ids));
             $ret   .= "\n  </tr>";
             $ret .= '<tr>'.str_repeat("<th>[ms]</th><th>#</th>", 4*count($s_ids));
-                                                                                        // 0 - NOT cached + modified,
-                                                                                        // 1 - NOT cached + not modified,
-                                                                                        // 2 - cached + modified,
-                                                                                        // 3 - cached + not modified
+            // 0 - NOT cached + modified,
+            // 1 - NOT cached + not modified,
+            // 2 - cached + modified,
+            // 3 - cached + not modified
             $ret   .= "\n  </tr>";
 
             $timex = new LogarithmIndex(.002,80,63);
@@ -7913,56 +7922,54 @@ class AA_Stringexpand_Hitcounter extends AA_Stringexpand {
                 $ret .= "\n  </tr>";
             }
             $ret .= "\n</table>";
+
+            $ret .= "<h3>Hits</h3>";
+
+            $datasets = [];
+            $i = 0;
+            foreach ($cols as $sid => $sidcols ) {
+                $color = $this->generateSaturatedColor($i++);
+                if (array_filter($sidcols['H'], static fn($v) => $v !== 0)) {
+                    $datasets[] = ['label' => "$sid Hits", 'data' => $sidcols['H'], 'color' => $this->hslToHex($color, 100, 50), 'dash' => [], 'width' => 1];
+                }
+                if (array_filter($sidcols['ncmH'], static fn($v) => $v !== 0)) {
+                    $datasets[] = ['label' => "$sid NC+M", 'data' => $sidcols['ncmH'], 'color' => $this->hslToHex($color, 100, 50), 'dash' => [7, 3]];
+                }
+                if (array_filter($sidcols['ncnmH'], static fn($v) => $v !== 0)) {
+                    $datasets[] = ['label' => "$sid NC+NM", 'data' => $sidcols['ncnmH'], 'color' => $this->hslToHex($color, 100, 50), 'dash' => [2, 2]];
+                }
+                if (array_filter($sidcols['cmH'], static fn($v) => $v !== 0)) {
+                    $datasets[] = ['label' => "$sid C+M", 'data' => $sidcols['cmH'], 'color' => $this->hslToHex($color, 100, 80), 'dash' => [7,3]];
+                }
+                if (array_filter($sidcols['cnmH'], static fn($v) => $v !== 0)) {
+                    $datasets[] = ['label' => "$sid C+NM", 'data' => $sidcols['cnmH'], 'color' => $this->hslToHex($color, 100, 80), 'dash' => [2,2]];
+                }
+            }
+            $ret .= $this->getGraph(1200, 800, $datasets, $labels);
+
+            $ret .= "<h3>Average Duration</h3>";
+            $datasets = [];
+            $i = 0;
+            foreach ($cols as $sid => $sidcols ) {
+                $color = $this->generateSaturatedColor($i++);
+                if (array_filter($sidcols['ncmD'], static fn($v) => $v !== 0)) {
+                    $datasets[] = ['label' => "$sid NC+M", 'data' => $sidcols['ncmD'], 'color' => $this->hslToHex($color, 100, 50), 'dash' => [7, 3]];
+                }
+                if (array_filter($sidcols['ncnmD'], static fn($v) => $v !== 0)) {
+                    $datasets[] = ['label' => "$sid NC+NM", 'data' => $sidcols['ncnmD'], 'color' => $this->hslToHex($color, 100, 50), 'dash' => [2, 2]];
+                }
+                if (array_filter($sidcols['cmD'], static fn($v) => $v !== 0)) {
+                    $datasets[] = ['label' => "$sid C+M", 'data' => $sidcols['cmD'], 'color' => $this->hslToHex($color, 100, 80), 'dash' => [7,3]];
+                }
+                if (array_filter($sidcols['cnmD'], static fn($v) => $v !== 0)) {
+                    $datasets[] = ['label' => "$sid C+NM", 'data' => $sidcols['cnmD'], 'color' => $this->hslToHex($color, 100, 80), 'dash' => [2, 2]];
+                }
+            }
+
+            $ret .= $this->getGraph(1200, 800, $datasets, $labels);
+            AA::Stringexpander()->addRequire('chartjs@4');
         }
 
-        $ret .= "<h3>Hits</h3>";
-
-        $datasets = [];
-        $i = 0;
-        foreach ($cols as $sid => $sidcols ) {
-            $color = $this->generateSaturatedColor($i++);
-            if (array_filter($sidcols['H'], static fn($v) => $v !== 0)) {
-                $datasets[] = ['label' => "$sid Hits", 'data' => $sidcols['H'], 'color' => $this->hslToHex($color, 100, 50)];
-            }
-            if (array_filter($sidcols['ncmH'], static fn($v) => $v !== 0)) {
-                $datasets[] = ['label' => "$sid NC+M", 'data' => $sidcols['ncmH'], 'color' => $this->hslToHex($color, 100, 60)];
-            }
-            if (array_filter($sidcols['ncnmH'], static fn($v) => $v !== 0)) {
-                $datasets[] = ['label' => "$sid NC+NM", 'data' => $sidcols['ncnmH'], 'color' => $this->hslToHex($color, 100, 70)];
-            }
-            if (array_filter($sidcols['cmH'], static fn($v) => $v !== 0)) {
-                $datasets[] = ['label' => "$sid C+M", 'data' => $sidcols['cmH'], 'color' => $this->hslToHex($color, 100, 80)];
-            }
-            if (array_filter($sidcols['cnmH'], static fn($v) => $v !== 0)) {
-                $datasets[] = ['label' => "$sid C+NM", 'data' => $sidcols['cnmH'], 'color' => $this->hslToHex($color, 100, 90)];
-            }
-        }
-        $ret .= $this->getGraph(1200, 800, $datasets, $labels);
-
-        $ret .= "<h3>Average Duration</h3>";
-        $datasets = [];
-        $i = 0;
-        foreach ($cols as $sid => $sidcols ) {
-            $color = $this->generateSaturatedColor($i++);
-            if (array_filter($sidcols['ncmD'], static fn($v) => $v !== 0)) {
-                $datasets[] = ['label' => "$sid NC+M", 'data' => $sidcols['ncmD'], 'color' => $this->hslToHex($color, 100, 60)];
-            }
-            if (array_filter($sidcols['ncnmD'], static fn($v) => $v !== 0)) {
-                $datasets[] = ['label' => "$sid NC+NM", 'data' => $sidcols['ncnmD'], 'color' => $this->hslToHex($color, 100, 70)];
-            }
-            if (array_filter($sidcols['cmD'], static fn($v) => $v !== 0)) {
-                $datasets[] = ['label' => "$sid C+M", 'data' => $sidcols['cmD'], 'color' => $this->hslToHex($color, 100, 80)];
-            }
-            if (array_filter($sidcols['cnmD'], static fn($v) => $v !== 0)) {
-                $datasets[] = ['label' => "$sid C+NM", 'data' => $sidcols['cnmD'], 'color' => $this->hslToHex($color, 100, 90)];
-            }
-        }
-
-        $ret .= $this->getGraph(1200, 800, $datasets, $labels);
-
-
-
-        AA::Stringexpander()->addRequire('chartjs@4');
         return $ret;
     }
 
@@ -7976,30 +7983,43 @@ class AA_Stringexpand_Hitcounter extends AA_Stringexpand {
     public function countStats(zids $s_zids, string $group_string, array $columns, int $from=0): array
     {
         $duration_helper = new AddDurationLog();
-        $do_dutation     = in_array('DURATION', $columns, true) && $duration_helper->test();
-        $duration_from   =  $do_dutation ? $duration_helper->getFromTime() : 0;
-
+        $do_duration     = in_array('DURATION', $columns, true) && $duration_helper->test();
+        $do_sum          = $do_duration && in_array('SUM', $columns, true);
         $do_hits     = in_array('HITS', $columns, true);
+
+        $duration_from   =  $do_duration ? $duration_helper->getFromTime() : 0;
+
         $conds = [['id', $s_zids->getArray(), 'i']];
         if ($from) {
             $conds[] = ['time', $from, '>='];
         }
-        $hits = DB_AA::select([], 'SELECT id, time, hits'.($do_dutation ? ', duration': '') .' FROM hit_archive', $conds);
+        $hits = DB_AA::select([], 'SELECT id, time, hits'.($do_duration ? ', duration': '') .' FROM hit_archive', $conds);
+
         $stat = [];
-        $empty = $do_dutation ? [0,0.0,0,0.0,0,0.0,0,0.0,0] : [0];  // hits, dur_0, count_0, dur_1, count_1, dur_2, count_2, dur_3, count_3
+        $empty = $do_duration ? [0,0.0,0,0.0,0,0.0,0,0.0,0] : [0];  // hits, dur_0, count_0, dur_1, count_1, dur_2, count_2, dur_3, count_3
         foreach ($hits as $hit) {
-            $day = date($group_string, $hit['time']);
+            ['id'=>$hit_id, 'time'=>$hit_time, 'hits'=>$hit_hits] = $hit;
+            $day = date($group_string, $hit_time);
             if (!isset($stat[$day])) {
                 $stat[$day] = [];
             }
-            $stat[$day][$hit['id']]   ??= $empty;
-            $stat[$day][$hit['id']][0] += $hit['hits'];
-            if ($do_dutation && ($hit['time'] >= $duration_from)) {
+            $stat[$day][$hit_id]   ??= $empty;
+            $stat[$day][$hit_id][0] += $hit_hits;
+            if ($do_sum) {
+                $stat[$day]['all']   ??= $empty;
+                $stat[$day]['all'][0] += $hit_hits;
+            }
+
+            if ($do_duration && ($hit_time >= $duration_from)) {
                 $index    = 1 + (2 * ($hit['duration'] & 3));   // position in array  2, 4, 6, 8
                 $duration = $hit['duration'] >> 2;
                 // weighted average: (old_duration * old_count  + new_duration * new_count) / (old_count + new)
-                $stat[$day][$hit['id']][ $index ]   =  ($stat[$day][$hit['id']][ $index ] * $stat[$day][$hit['id']][ $index + 1 ] + $duration * $hit['hits']) / ($stat[$day][$hit['id']][ $index+1 ] +  $hit['hits']);
-                $stat[$day][$hit['id']][ $index+1 ] += $hit['hits'];
+                $stat[$day][$hit_id][ $index ]   =  ($stat[$day][$hit_id][ $index ] * $stat[$day][$hit_id][ $index + 1 ] + $duration * $hit_hits) / ($stat[$day][$hit_id][ $index+1 ] +  $hit_hits);
+                $stat[$day][$hit_id][ $index+1 ] += $hit_hits;
+                if ($do_sum) {
+                    $stat[$day]['all'][ $index ]   = ($stat[$day]['all'][ $index ] * $stat[$day]['all'][ $index + 1 ] + $duration * $hit_hits) / ($stat[$day]['all'][ $index+1 ] +  $hit_hits);
+                    $stat[$day]['all'][ $index+1 ] += $hit_hits;
+                }
             }
         }
         return $stat;
@@ -8009,7 +8029,7 @@ class AA_Stringexpand_Hitcounter extends AA_Stringexpand {
     protected function getGraph(int $width=0, int $height=0, array $data=[], array $labels=[], string $type='line'): string {
         $datasets = [];
         foreach ($data as $set) {
-            $datasets[] = ['label' => $set['label'],'data' => $set['data'],'borderColor' => $set['color']];
+            $datasets[] = ['label' => $set['label'],'data' => $set['data'],'borderColor' => $set['color'], 'borderDash' => $set['dash'] ?? [], 'tension'=> 0.2, 'borderWidth'=> $set['width'] ?? 2];
         }
 
         $conf = [

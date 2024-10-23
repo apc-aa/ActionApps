@@ -1074,6 +1074,9 @@ class AA_Fields implements Iterator, Countable {
      * @return string  - field id | empty string if not found
      */
     public static function getBaseFieldId($fields_arr, $ftype): string {
+        if (!$fields_arr) {
+            return '';
+        }
         return ($flds = array_column(array_filter($fields_arr, static fn($fld) => str_starts_with($fld['id'], $ftype)), 'id')) ? min($flds) : '';
     }
 

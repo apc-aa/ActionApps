@@ -2228,7 +2228,6 @@ function FrmInputDate($name, $txt, $val, $needed=false, $hlp="", $morehlp="") {
     echo $input->get_result();
 }
 
-
 /** Gets html tag <input type=text .. to 2-column table for use within <form> and <table> tag.
  * @param        $name
  * @param        $txt

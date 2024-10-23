@@ -142,6 +142,8 @@ if (strlen($items)) {
     $template .= '<div>'._m('Items found').': '. StrExp('count', [$items]).'</div>';
     //FrmStaticText(_m('Display Statistics for Item'), AA::Un($template), '', '', false);
     echo AA::Un($template);
+} else {
+    echo MsgOk(_m('No items found'));
 }
 
 echo getFrmTabEnd($form_buttons);

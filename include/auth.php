@@ -249,11 +249,9 @@ class AA_Mysqlauth {
     static function updateGroups($username, $groups = []) {
         DB_AA::delete('auth_group', [['username', $username]]);
 
-        $final_groups = [];
-        foreach( (array)$groups as $group_string ) {
-            $final_groups = array_merge($final_groups, explode(";", $group_string['value']));
-        }
-        foreach (array_unique($final_groups) as $group) {
+        $final_groups = array_unique(array_merge(...array_map(fn($group_string) => explode(";", $group_string['value']), (array)$groups)));
+
+        foreach ($final_groups as $group) {
             if ( $group ) {
                 DB_AA::sql("INSERT INTO auth_group (username, `groups`, last_changed) VALUES ('$username','".addslashes($group)."',".time().")");
             }
