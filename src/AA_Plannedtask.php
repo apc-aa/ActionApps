@@ -140,15 +140,16 @@ class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedI
      */
     static function internal_expand(?AA_Content $content, ...$params): string {
         [$info] = $params;
-        $task_id = $content->getId();
-        switch ($info) {
-            case 'scheduledto':
-                $task = Toexecute::scheduledTask(self::toexecuteSelector($task_id));
-                return '<span title="task.id:' . $task['id'] . '">' . ($task['time'] ? date('Y-m-d H:i:s', $task['time']) : '--') . '</span>';
-            case 'computedtime':
-                $task = AA_Object::load($task_id, 'AA_Plannedtask');
-                $time = $task->nexttime();
-                return $time ? date('Y-m-d H:i:s', $time) : '--';
+        if ($task_id = $content?->getId()) {
+            switch ($info) {
+                case 'scheduledto':
+                    $task = Toexecute::scheduledTask(self::toexecuteSelector($task_id));
+                    return '<span title="task.id:'.$task['id'].'">'.($task['execute_after'] ? date('Y-m-d H:i:s', $task['execute_after']) : '--').'</span>';
+                case 'computedtime':
+                    $task = AA_Object::load($task_id, 'AA_Plannedtask');
+                    $time = $task->nexttime();
+                    return $time ? date('Y-m-d H:i:s', $time) : '--';
+            }
         }
         return '';
     }
