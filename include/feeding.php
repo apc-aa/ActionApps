@@ -216,7 +216,7 @@ function FeedItemTo($item_id, $from_slice_id, $destination_id, $approved, $tocat
     $from_slice  = AA_Slice::getModule($from_slice_id);
     $destination = AA_Slice::getModule($destination_id);
     $fields      = $from_slice->getFields();
-    $catfieldid  = $fields->getCategoryFieldId();
+    $catfieldid  = $fields->firstOfTypeFieldId();
 
     if ( $catfieldid AND ( (string)$tocategory != "0" ) ) {
         $destinationcat = DB_AA::select1('value', 'SELECT value FROM constant', [['id', $tocategory, 'l']]);

@@ -164,7 +164,7 @@ class AA_Profile {
             $this->loadprofile();
         }
         if ( isset($this->properties) AND isset($this->properties[$property]) ) {
-            return ( (string)$selector=='*' ) ? $this->properties[$property] : $this->properties[$property][$selector];
+            return ( (string)$selector==='*' ) ? $this->properties[$property] : $this->properties[$property][$selector];
         }
         return false;
 

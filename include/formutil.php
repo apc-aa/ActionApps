@@ -87,6 +87,7 @@ class inputform {
     var $page_title;
     var $form_action;
     var $form4update;
+    protected bool $form4asnew;
     var $show_preview_button;
     var $cancel_url;
     var $messages;
@@ -98,7 +99,7 @@ class inputform {
     var $hidden;          //
     var $msg;             // stores return code from functions
 
-    // computed values form form fields
+    // computed values from form fields
     var $show_func_used;    // used show functions in the input form
 
     /** inputform function
@@ -110,6 +111,7 @@ class inputform {
         $this->page_title           = $settings['page_title'];
         $this->form_action          = $settings['form_action'];
         $this->form4update          = $settings['form4update'];
+        $this->form4asnew           = $settings['form4asnew'] ?? false;
         $this->show_preview_button  = $settings['show_preview_button'];
         $this->cancel_url           = $settings['cancel_url'];
         $this->messages             = $settings['messages'];
@@ -163,10 +165,12 @@ class inputform {
         // create buttons array for top (and lately for bottom of the form) ------------------
         $buttons = [];
         if ( $this->form4update ) {
-            $buttons += self::_getButton('update', 'submit', _m("Update"), $profile->getProperty('ui_inputform', 'edit_btn_update'));
-            $buttons += self::_getButton('upd_edit', 'submit', _m("Update & Edit"), $profile->getProperty('ui_inputform', 'edit_btn_upd_edit'));
-            if ( $this->show_preview_button ) {
-                $buttons += self::_getButton('upd_preview', 'submit', _m("Update & View"), $profile->getProperty('ui_inputform', 'edit_btn_upd_preview'));
+            if (!$this->form4asnew) {
+                $buttons += self::_getButton('update', 'submit', _m("Update"), $profile->getProperty('ui_inputform', 'edit_btn_update'));
+                $buttons += self::_getButton('upd_edit', 'submit', _m("Update & Edit"), $profile->getProperty('ui_inputform', 'edit_btn_upd_edit'));
+                if ($this->show_preview_button) {
+                    $buttons += self::_getButton('upd_preview', 'submit', _m("Update & View"), $profile->getProperty('ui_inputform', 'edit_btn_upd_preview'));
+                }
             }
             // if we edit dynamic slice setting fields, we do not need such buttons
             if (!$slice_fields) {
@@ -174,7 +178,7 @@ class inputform {
                 if (!array_find_fnc($fields, static fn($f) => $f->disable_insert_as_new())) {
                     $buttons += self::_getButton('insert_new', 'submit', _m("Insert as new"), $profile->getProperty('ui_inputform', 'edit_btn_insert'));
                 }
-                if (strlen($profile->getProperty('ui_inputform', 'edit_btn_reset')) > 0) {
+                if (strlen($profile->getProperty('ui_inputform', 'edit_btn_reset'))) {
                     // reset button display just if it is defined in profile
                     $buttons += self::_getButton('reset', 'reset', _m("Reset form"), $profile->getProperty('ui_inputform', 'edit_btn_reset'));
                 }
@@ -686,8 +690,9 @@ class AA_Inputfield {
             // Could be field_id (then it is grabbed from item and truncated to 50
             // characters, or normal AA format string.
             // Headline is default (if empty "$slice_field" is passed)
+            $slice = AA_Slice::getModule($sid);
             if (!$slice_field) {
-                $slice_field = GetHeadlineFieldID($sid, "headline.");
+                $slice_field = $slice?->getFields()->firstOfTypeFieldId('headline');
                 if (!$slice_field) {
                     $slice_field = '_#HEADLINE';
                 }
@@ -695,7 +700,7 @@ class AA_Inputfield {
             if ( $whichitems < 1 ) {
                 $whichitems = AA_BIN_ACT_PEND;              // fix for older (bool) format
             }
-            $format          = AA_Slice::getModule($sid)->getField($slice_field) ? '{substr:{index:'.$slice_field.'}:0:50}' : $slice_field;
+            $format          = $slice?->getField($slice_field) ? '{substr:{index:'.$slice_field.'}:0:50}' : $slice_field;
             $zids            = is_null($ids_arr) ? false : new zids($ids_arr);  // transforms content array to zids
             $set             = new AA_Set($sid, $conds, $sort, $whichitems);
             $this->const_arr = GetFormattedItems( $set->query($zids), $format, $crypted_additional_slice_pwd, $tagprefix);
@@ -1969,7 +1974,9 @@ class AA_Inputfield {
      */
     function twoBox($rows, $wi2_offer, $wi2_selected, $slice_field='', $whichitems=AA_BIN_ACT_PEND, $conds_str=false, $sort_str=false, $addform='', $add_slice_pwd=false) {
         [$name,$val,$add] = $this->prepareVars('multi');
-        if ( $whichitems < 1 ) $whichitems = AA_BIN_ACT_PEND;              // fix for older (bool) format
+        if ( $whichitems < 1 ) {
+            $whichitems = AA_BIN_ACT_PEND;
+        }              // fix for older (bool) format
         $sid = $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems, null, $add_slice_pwd ? AA_Credentials::encrypt($add_slice_pwd) : null);
         $wi2_offer    = get_if( $wi2_offer,    _m("Offer") );
         $wi2_selected = get_if( $wi2_selected, _m("Selected") );
@@ -2008,7 +2015,7 @@ class AA_Inputfield {
             foreach ( $this->value as $v ) {
                 $key = (string)$v['value'];
                 $selected_values[$key] = $this->const_arr[$key];
-                if (strlen($selected_values[$key])==0) {
+                if (!strlen($selected_values[$key])) {
                     $selected_values[$key] = $key;
                 }
             }
@@ -2026,14 +2033,14 @@ class AA_Inputfield {
             <input type=button value=\" &#9650; \" class=aa-wi2-up onClick=\"moveItem(this.parentNode.parentNode.querySelector(&quot;select[name='$name']&quot;),'up');\">
             <input type=button value=\" &#9660; \" class=aa-wi2-down onClick=\"moveItem(this.parentNode.parentNode.querySelector(&quot;select[name='$name']&quot;), 'down');\"></div>");
 
-        if (!empty($addform) AND !empty($sid)) {
+        if (!empty($addform) && !empty($sid)) {
 
             // for AA_AjaxInsert()
             AA::Stringexpander()->addRequire('aajslib');
 
             $this->echoo("\n<div class='aa-wi2-add'>");
             if (!$slice_field) {
-                $slice_field = '{'.GetHeadlineFieldID($sid, "headline.").'}';
+                $slice_field = '{'.AA_Slice::getModule($sid)?->getFields()->firstOfTypeFieldId('headline').'}';
             }
             $form_url = get_aa_url('form.php', ['form_id' => $addform, 'type' => 'ajax', 'ret_code' => $slice_field]);
             $img      = GetAAImage('icon_new.gif', _m('new'), 17, 17);

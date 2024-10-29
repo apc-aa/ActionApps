@@ -51,15 +51,16 @@ function DefineBaseAliases(&$aliases, $module_id) {
         $aliases["_#SITEM_ID"] = GetAliasDef( "f_1", "short_id........");
     }
     if ( !isset($aliases["_#HEADLINE"]) ) {
-        $aliases["_#HEADLINE"] = GetAliasDef( "f_t::safe", GetHeadlineFieldID($module_id));
+        $headline_field = AA_Slice::getModule($module_id)?->getFields()->firstOfTypeFieldId('headline') ?? '';
+        $aliases["_#HEADLINE"] = GetAliasDef( "f_t::safe", $headline_field);
     }
     if ( !isset($aliases["_#JS_HEAD_"]) ) {
-        $aliases["_#JS_HEAD_"] = GetAliasDef( "f_t", GetHeadlineFieldID($module_id) ?: 'short_id........');
+        $headline_field ??= AA_Slice::getModule($module_id)?->getFields()->firstOfTypeFieldId('headline') ?? '';
+        $aliases["_#JS_HEAD_"] = GetAliasDef( "f_t", $headline_field ?: 'short_id........');
     }
 }
 
-/** GetAliases4Type function
- *  Returns aliases
+/** Returns aliases
  * @param string type - 'const'/'links'/'categories' - just like *view* types
  * @param $additional
  * @return array
@@ -426,6 +427,7 @@ class AA_Item {
      *
      *  Take a look at AA_Item::getItem() (non caching) or
      *  AA_Items::getItem() (caching), if you want to create item from id
+     * @see AA_Item::getItem(), AA_Items::getItem()
      */
     function __construct($content4id='', $aliases='', $format='', $remove='', $param=false){
         $this->set_data($content4id);
@@ -608,7 +610,7 @@ class AA_Item {
      * @return string
      */
     function col2Html($col) {
-        if (!strlen($txt = $this->getval($col)) OR (($flag=$this->getFlag($col)) & FLAG_HTML)) {
+        if (($this->getFlag($col) & FLAG_HTML) || !strlen($txt = $this->getval($col))) {
             return $txt;
         }
         return nl2br(str_replace('  ', ' &ensp;', AA_Stringexpand_Text2html::htmlEscapeAndLinkUrls($txt)));

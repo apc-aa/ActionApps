@@ -27,7 +27,7 @@
 */
 
 // expected at least $slice_id
-// user calling is with $edit for edit item
+// user calling is with $edit for edit item or $edit_new for add new item based on existing one
 // optionally encap="false" if this form is not encapsulated into *.shtml file
 // optionally free and freepwd for anonymous user login (free == login, freepwd == password)
 
@@ -46,7 +46,7 @@
 use AA\Util\Langs;
 use AA\Util\InputVars;
 
-if ( isset($_REQUEST['edit']) OR isset($_REQUEST['add'])) {         // parameter for init_page - we edited new item so
+if ( isset($_REQUEST['edit']) || isset($_REQUEST['edit_new']) || isset($_REQUEST['add'])) {         // parameter for init_page - we edited new item so
     $unset_r_hidden = true;  // clear stored content
 }
 
@@ -74,7 +74,8 @@ try {
     // array ( '' => 153, )
     $anonymous = InputVars::boolPOST('anonymous'); // empty
     // array ( 1 => 246, )
-    $edit = InputVars::boolGET('edit');
+    $edit     = InputVars::boolGET('edit');
+    $edit_new = InputVars::boolGET('edit_new');
     // array ( '4b108926e80…' => 3, '541353ec974…' => 1, '31ac1b7f0be…' => 4, '37904f2f3bd…' => 4, '74c486828a6…' => 24, '79a16c06b61…' => 9, '0dbc7582674…' => 3, 'a3c409eccec…' => 5, '0a51c8215f6…' => 4, 'de8f491a367…' => 2, '845ebaf1f78…' => 1, 'ff380b84dcd…' => 2, '87959928674…' => 13, 'a07ea63a5e4…' => 2, '8f9a8bb4dbe…' => 1, '889f88d2b5b…' => 3, '66637bd5779…' => 3, 'a18c7c29971…' => 1, '5115e57c5f2…' => 2, 'a723bc05045…' => 70, 'ee1b7e3e3d9…' => 1, 'a51d744c1ee…' => 1, '4dc8c4e058f…' => 3, '67fda6a6d37…' => 16, '809cd40c6bb…' => 1, '76cbe350684…' => 51, '88cbbb83ae4…' => 3, '26f1853a7a1…' => 2, '603be11312a…' => 9, 'd0ca57c4e89…' => 1, '5bd78a13b0b…' => 1, )-array ( '4b108926e80…' => 2, '541353ec974…' => 2, '31ac1b7f0be…' => 10, '37904f2f3bd…' => 2, '74c486828a6…' => 13, '79a16c06b61…' => 14, '0dbc7582674…' => 1, 'a3c409eccec…' => 3, '0a51c8215f6…' => 3, 'ff380b84dcd…' => 1, '87959928674…' => 2, '889f88d2b5b…' => 1, 'a723bc05045…' => 56, '4dc8c4e058f…' => 1, '67fda6a6d37…' => 15, '76cbe350684…' => 7, '26f1853a7a1…' => 2, '603be11312a…' => 3, '5bd78a13b0b…' => 1, )
     $id = InputVars::idGETPOST('id'); // -
     // array ( '' => 153, )
@@ -125,11 +126,11 @@ function CloseDialog($zid = null, $openervar = null, $insert=true, $url2go=null)
     $js = '';
     if ($zid) {               // id of new item defined
         // now we need to fill $item in order we can display item headline
-        $content  = new ItemContent($zid);
-        $slice    = AA_Slice::getModule($content->getSliceID());
-        $aliases  = $slice->aliases();
-        DefineBaseAliases($aliases, $content->getSliceID());  // _#JS_HEAD_, ...
-        $item     = new AA_Item($content->getContent(),$aliases);
+        $item = AA_Item::getItem($zid);
+
+        $aliases  = AA_Slice::getModule($item->getSliceID())?->aliases();
+        DefineBaseAliases($aliases, $item->getSliceID());  // _#JS_HEAD_, ...
+        $item->setAliases( (new AA_Aliases())->addFromArray($aliases) ); //      = new AA_Item($content->getContent(),$aliases);
         $function = $insert ? 'SelectRelations' : 'UpdateRelations';
         $item->setformat( "$function('$openervar','".TPS['AMB']['A']['tag']."','".TPS['AMB']['A']['prefix']."','".TPS['AMB']['A']['tag']."_#ITEM_ID_','_#JS_HEAD_');" );
 
@@ -155,6 +156,7 @@ $insert  = false;
 $update  = false;
 $preview = false;
 $go_edit = false;
+$edit    = $edit || $edit_new;
 if ($_POST['insert'])      { $insert = true;                                               }
 if ($_POST['insert_new'])  { $insert = true;                                               }
 if ($_POST['ins_preview']) { $insert = true;                 $preview=true;                }
@@ -174,16 +176,6 @@ if ($cancel) {
     } else {
         go_return_or_url(self_base() . "index.php",true,true);
     }
-}
-
-if ($add) {
-    $action = "add";
-} elseif ($insert) {
-    $action = "insert";
-} elseif ($update) {
-    $action = "update";
-} else {
-    $action = "edit";
 }
 
 // ValidateContent4Id() sets GLOBAL!! variables:
@@ -227,13 +219,23 @@ $slice = AA_Slice::getModule($slice_id);
 // ValidateContent4Id($err, $slice, $action, $id);
 
 // Are we editing dynamic slice setting fields?
-$slice_fields = ($id == $slice->getId());
+$slice_fields = (!$edit_new && ($id === $slice->getId()));
 
 // get slice fields and its priorities in inputform
 $fields = $slice->getFields($slice_fields);
 
 //mimo changes
-$lang_control = MLXSlice($slice);
+if ($lang_control = MLXSlice($slice)) {
+    if ($add) {
+        $action = "add";
+    } elseif ($insert) {
+        $action = "insert";
+    } elseif ($update) {
+        $action = "update";
+    } else {
+        $action = "edit";
+    }
+}
 
 $err = [];          // error array (Init - just for initializing variable
 
@@ -245,7 +247,7 @@ if ( ($insert || $update) AND count($fields) ) {
     $oldcontent4id = [];
 
     // it is needed to call IsEditable() function and GetContentFromForm()
-    if ( $action === "update" ) {
+    if ( $update ) {
         // if we are editing dynamic slice setting fields (stored in content
         // table), we need to get values from slice's fields
         if ($slice_fields) {
@@ -351,7 +353,7 @@ if ($edit) {
 
 // mimo changes
 if ($lang_control) {
-    if (empty($mlx)) {
+    if (is_null($mlx)) {
         $mlx = new MLX($slice);
     }
     [$mlx_formheading,$mlxl,$mlxid] = $mlx->itemform(['encap'=>$encap], $content4id->getContent(),$action,$mlxl,$mlxid);
@@ -370,6 +372,7 @@ $inputform_settings['messages']            = ['err' => $err];
 $inputform_settings['form_action']         = ($_SERVER['DOCUMENT_URI'] != "" ? $_SERVER['DOCUMENT_URI'] :
                                              $_SERVER['PHP_SELF'] . ($return_url ? "?return_url=".rawurlencode($return_url) : ''));
 $inputform_settings['form4update']         = $edit || $update || ($insert && $added_to_db);
+$inputform_settings['form4asnew']          = $edit_new;
 $inputform_settings['show_preview_button'] = (($post_preview!=0) OR !isset($post_preview));
 
 $inputform_settings['cancel_url']          =  ($anonymous  ? $r_slice_view_url :

@@ -1128,7 +1128,7 @@ div[data-aa-required] label:after {
     color: transparent;
     font-size: 0;
 }
-.pager a, .pager .active {
+.pager a, .pager [aria-current] {
     display: inline-block;
     background-color: var(--clr-footer);
     padding: 4px 11px;
@@ -1147,7 +1147,7 @@ div[data-aa-required] label:after {
     background-color: var(--clr-basic-darker);
     color: white;
 }
-.pager .active {
+.pager [aria-current] {
     background-color: var(--clr-dark);
     color: white;
 }

@@ -51,10 +51,10 @@ class AA_Module {
     /** @var array  mark as used for cache - in case we use the module, but do not need $module object itself - like in views  */
     protected static array $_used4cache   = [];
 
-    protected $module_id;
-    protected $module_setting;         // Array of module settings
-    protected $table_setting;          // Array of specific table settings
-    protected $moduleobject_setting;   // Array of module settings
+    protected string $module_id;
+    protected ?array $module_setting;         // Array of module settings
+    protected ?array $table_setting;          // Array of specific table settings
+    protected $moduleobject_setting;          // module settings object
 
     /** it is better to call it using getModule() - $site = AA_Module_Site::getModule($module_id);
      */
@@ -216,10 +216,7 @@ class AA_Module {
 
     protected function _getModuleTableProperty($prop) {
         if (is_null($this->module_setting)) {
-            $this->module_setting = DB_AA::select1('', 'SELECT name, deleted, slice_url, lang_file, created_at, created_by, owner, app_id, priority, flag FROM `module`', [['id', $this->module_id, 'l']]);
-            if (!is_array($this->module_setting)) {
-                $this->module_setting = [];
-            }
+            $this->module_setting = DB_AA::select1('', 'SELECT name, deleted, slice_url, lang_file, created_at, created_by, owner, app_id, priority, flag FROM `module`', [['id', $this->module_id, 'l']]) ?: [];
         }
         return $this->module_setting[$prop] ?? false;
     }
@@ -230,10 +227,8 @@ class AA_Module {
 
     protected function _getSpecificTableProperty($prop) {
         if (is_null($this->table_setting)) {
-            $this->table_setting = DB_AA::select1('', 'SELECT * FROM `' . static::SETTING_TABLE . '`', [['id', $this->module_id, 'l']]);
-            if (!is_array($this->table_setting)) {
-                $this->table_setting = [];
-            } else {
+            $this->table_setting = DB_AA::select1('', 'SELECT * FROM `' . static::SETTING_TABLE . '`', [['id', $this->module_id, 'l']]) ?: [];
+            if ($this->table_setting) {
                 unset($this->table_setting['id']);  // do not use it from here - it is packed - use $this->module_id instead
             }
         }
@@ -290,7 +285,8 @@ class AA_Module {
     }
 
     /** get module ID   */
-    function getId() {
+    function getId(): string
+    {
         return $this->module_id; // Return a 32 character id
     }
 
@@ -619,7 +615,7 @@ class AA_Slice extends AA_Module {
      */
     function getDefaultUploadField(): string {
         $flds = $this->getFields();
-        return (($fid = $flds->getCategoryFieldId('file')) OR ($fid = $flds->getCategoryFieldId('img_upload')) OR ($fid = $flds->getCategoryFieldId('img_src'))) ? $fid : '';
+        return (($fid = $flds->firstOfTypeFieldId('file')) OR ($fid = $flds->firstOfTypeFieldId('img_upload')) OR ($fid = $flds->firstOfTypeFieldId('img_src'))) ? $fid : '';
     }
 
     /** sql_id function - removed - use DB_AA::select1('', 'SELECT * FROM `slice`', [['id',$slobj->getId(), 'l']]); */
@@ -704,13 +700,15 @@ class AA_Slice extends AA_Module {
          ];
     }
 
-    /** aliases function
-     *  Get standard aliases definition from slice's fields
+    /** Get standard aliases definition from slice's fields
+     *
      * @param bool   $additional_aliases
      * @param string $type
-     * @return array|null|string
+     *
+     * @return array|null
      */
-    function aliases($additional_aliases = false, $type='') {
+    function aliases($additional_aliases = false, $type=''): ?array
+    {
         return $this->fields->getAliases($additional_aliases, $type);
     }
 
@@ -783,10 +781,10 @@ class AA_Slice extends AA_Module {
             $flds = $this->getFields();
             // get this item category_id
 
-            // huhl($flds->getCategoryFieldId(), AA_Fields::getBaseFieldId($flds->getRecordArray(), 'text'), AA_Fields::getBaseFieldId($flds->getRecordArray(), 'al'));
+            // huhl($flds->firstOfTypeFieldId(), AA_Fields::getBaseFieldId($flds->getRecordArray(), 'text'), AA_Fields::getBaseFieldId($flds->getRecordArray(), 'al'));
 
             if ($cat_group = $flds->getCategoryGroup()) {
-                if ($cat_field = $flds->getCategoryFieldId()) {
+                if ($cat_field = $flds->firstOfTypeFieldId()) {
                     if ( $p_cat_id = DB_AA::select1('id', 'SELECT `id` FROM `constant`', [['group_id', $cat_group], ['value', $content->getValue($cat_field)]]) ) {
                         $from_category_id = unpack_id($p_cat_id);
                     }

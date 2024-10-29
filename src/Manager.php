@@ -147,7 +147,7 @@ class Managed {
             if ( $view AND !($view->f('deleted')>0) ) {
                 $format_strings = $view->getViewFormat();
                 if ( isset($this->scroller) ) {
-                    $this->scroller->metapage = $view->f('listlen');
+                    $this->scroller->setListlen($view->f('listlen'));
                 }
             }
         } else {
@@ -445,13 +445,12 @@ class Managed_Table extends Managed {
  * It takes care about searchbar, scroller, actions, ...
  */
 class Manager extends AA_Storable {
-    /** @var AA_Searchbar  */
+
     protected ?AA_Searchbar $searchbar;
 
     /** @var string searchbar additional function name */
     protected $searchbar_funct;
 
-    /** @var AA_Scroller */
     protected ?AA_Scroller $scroller;
 
     /** @var Manageractions  */
@@ -550,9 +549,9 @@ class Manager extends AA_Storable {
 
         // create page scroller -----------------------------------------------
         // could be redefined by view (see ['itemview']['manager_vid'])
-        $scroller = new AA_Scroller('st', sess_return_url($_SERVER['PHP_SELF']), $settings['scroller']['listlen']);
+        $this->scroller = new AA_Scroller('st', sess_return_url($_SERVER['PHP_SELF']), $settings['scroller']['listlen'], 0, true);
+//        $scroller = new AA_Scroller('st', sess_return_url($_SERVER['PHP_SELF']), $settings['scroller']['listlen']);
 //        $scroller->addFilter("slice_id", "md5", $this->module_id);
-        $this->scroller = $scroller;
 
         if ( !isset($this->managed->msg_noitem) ) {
             // could be redefined by view (see ['itemview']['manager_vid'])
@@ -721,19 +720,18 @@ class Manager extends AA_Storable {
      * @param $listlen
      */
     function setListlen( $listlen ) {
-        if ( $this->scroller AND ($listlen > 0) ) {
-            $this->scroller->metapage = $listlen;
-            $this->scroller->go2page(1);
+        if ( $this->scroller && ($listlen > 0) ) {
+            $this->scroller->setListlen($listlen)->go2page(1);
         }
     }
 
-    /** go2page function
-     *  Go to specified page (obviously 1) in scroller
+    /** Go to specified page (obviously 1) in scroller
      * @param $page
      */
     function go2page( $page ) {
-        if ( $this->scroller AND ($page > 0) )
+        if ( $this->scroller && ($page > 0) ) {
             $this->scroller->go2page($page);
+        }
     }
 
     /**
@@ -812,7 +810,7 @@ class Manager extends AA_Storable {
 
         // update scroller (items could be deleted, moved, ...)
         if ( isset($this->scroller) ) {
-            $this->scroller->updateScr(sess_return_url($_SERVER['PHP_SELF'])); // use $return_url if set.
+            $this->scroller->update();
             if ( $_GET['listlen'] ) {
                 $this->setListlen($_GET['listlen']);
             }
@@ -973,8 +971,8 @@ class Manager extends AA_Storable {
         $this->scroller->countPages( $ids_count );
 
         // update itemview
-        $itemview->from_record = $this->scroller->metapage * ($this->scroller->current-1);                // from which index begin showing items
-        $itemview->num_records = $this->scroller->metapage;
+        $itemview->num_records = $this->scroller->getListlen();
+        $itemview->from_record = $itemview->num_records * ($this->scroller->getCurrent()-1);                // from which index begin showing items
 
         // big security hole is open if we cache it
         // (links to itemedit.php would stay with session ids in cache

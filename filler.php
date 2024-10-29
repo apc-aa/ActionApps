@@ -437,7 +437,7 @@ if ($insert) {
         break;
     case ANONYMOUS_EDIT_PASSWORD:
         $permok = false;
-        $pwdfield = $slice->getFields()->getCategoryFieldId('password');
+        $pwdfield = $slice->getFields()->firstOfTypeFieldId('password');
         if ($pwdfield) {
               $password = $content4id[$pwdfield][0]['value'];
               $old_password = $oldcontent4id[$pwdfield][0]['value'];

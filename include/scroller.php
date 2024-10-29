@@ -26,20 +26,16 @@
  *
 */
 
-/**	Class AA_Scroller
- *	Implements navigation bar for scrolling through long lists
- */
 
+/**	Scroller - Implements navigation bar for scrolling through long lists.
+ */
 class AA_Scroller extends AA_Storable {
-    var $pgcnt;			            // total page count
-    var $current          = 1;		// current page
-    var $id;			            // scroller id
-    var $visible          = 1;
-    var $sortdir          = 1;
-    var $sortcol          = "";
-    var $itmcnt           = 0;      // total item count
-    var $metapage         = 10;	    // "metapage" size
-    var $urldefault;		        // cache self url
+    protected int    $current = 1;	/** current page     */
+    protected string $id;			/** scroller id - identifies scroller on a web page */
+    protected int    $itmcnt;       /** total item count */
+    protected int    $listlen = 10;	/** page size  */
+    protected string $urldefault;	/** cache self url   */
+    protected bool   $show_all;	    /** if true, scroller will show also 'All' option */
 
     /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
@@ -47,66 +43,51 @@ class AA_Scroller extends AA_Storable {
      */
     public static function getClassProperties(): array {  //  id             name          type   multi  persistent - validator, required, help, morehelp, example
         return [
-            'pgcnt'      => new AA_Property( 'pgcnt'     , _m('Pgcnt'     ), 'int',  false, true),
-            'current'    => new AA_Property( 'current'   , _m('Current'   ), 'int',  false, true),
-            'id'         => new AA_Property( 'id'        , _m('Id'        ), 'text', false, true),
-            'visible'    => new AA_Property( 'visible'   , _m('Visible'   ), 'bool', false, true),
-            'sortdir'    => new AA_Property( 'sortdir'   , _m('Sortdir'   ), 'int',  false, true),
-            'sortcol'    => new AA_Property( 'sortcol'   , _m('Sortcol'   ), 'text', false, true),
-            'itmcnt'     => new AA_Property( 'itmcnt'    , _m('Itmcnt'    ), 'int',  false, true),
-            'metapage'   => new AA_Property( 'metapage'  , _m('Metapage'  ), 'int',  false, true),
-            'urldefault' => new AA_Property( 'urldefault', _m('Urldefault'), 'text', false, true)
+            'current'    => new AA_Property( 'current'   , '', 'int',  false, true),
+            'id'         => new AA_Property( 'id'        , '', 'text', false, true),
+            'itmcnt'     => new AA_Property( 'itmcnt'    , '', 'int',  false, true),
+            'listlen'    => new AA_Property( 'listlen'   , '', 'int',  false, true),
+            'urldefault' => new AA_Property( 'urldefault', '', 'text', false, true),
+            'show_all'   => new AA_Property( 'show_all'  , '', 'bool', false, true)
         ];
     }
 
-    /** AA_Scroller function
-     *  constructor
-     * @param string $id identifies scroller on a web page
-     * @param string $ulr
-     * @param int $pgcnt is the number of pages to scroll
+    /** easy_scroller function
+     * Constructor
+     *
+     * @param  string  $id
+     * @param $url
+     * @param $listlen
+     * @param $itmcnt
      */
-    function __construct($id = "", $url = "", $listlen = 10) {
+    function __construct(string $id="", $url = "", $listlen=10, $itmcnt=0, bool $show_all=false) {
         $this->id         = $id;
-        $this->urldefault = $url;
-        $this->metapage   = $listlen;
-        $this->pgcnt      = 0;
+        $this->listlen    = (int)$listlen;
+        $this->urldefault = (string)$url;
+        $this->itmcnt     = (int)$itmcnt;
         $this->current    = 1;
-        $this->visible    = 1;
+        $this->show_all   = $show_all;
     }
 
-    /** relative function
-     *  return part of a query string for move of $pages relative of current position
-     * @param $pages
-     * @return string
+    /** setShowAll function
+     * @param $val
      */
-    function relative($pages) {
-        return rawurlencode("scr_" . $this->id . "_Mv") . "=" . rawurlencode($pages);
+    function setShowAll($val): static
+    {
+        $this->show_all = $val;
+        return $this;
     }
 
-    /** absolute function
-     *  return part of a query string for move to absolute position $page
-     * @param $page
-     * @return string
-     */
-    function absolute($page) {
-        return rawurlencode("scr_" . $this->id . "_Go") . "=" . rawurlencode($page);
-    }
-
-    /** checkBounds function
-     *  keep current page within bounds
-     */
-    function checkBounds() {
-        if ($this->current < 1) {
-            $this->current = 1;
-        }
-        if ($this->current > $this->pgcnt) {
-            $this->current = max($this->pgcnt,1);
-        }
+    /**  */
+    function setListlen($val): static
+    {
+        $this->listlen = (int)$val;
+        return $this;
     }
 
     /** getListlen function    */
     function getListlen() {
-        return $this->metapage;
+        return $this->listlen;
     }
 
     /** get current number of items  */
@@ -114,84 +95,102 @@ class AA_Scroller extends AA_Storable {
         return $this->itmcnt;
     }
 
-    /** countPages function
-     *  adjust number of pages depends on item count and metapage
-     * @param $itmcnt
-     */
-    function countPages(int $itmcnt) {
-        $this->pgcnt = floor(($itmcnt - 1) / $this->metapage) + 1;
-        $this->checkBounds();
-        $this->itmcnt = $itmcnt;
+    public function getCurrent(): int
+    {
+        return $this->current;
     }
 
     /** go2page function
      * @param $page
      */
-    function go2page($page) {
-        $this->current=$page;
+    function go2page($page): static
+    {
+        $this->current = (int)$page;
         $this->checkBounds();
+        return $this;
     }
 
-    /** pageCount function
-     *  returns number of pages
+    /** Return part of a query string for move to absolute position $page
+     * @param $page
+     * @return string
      */
-    function pageCount() {
-        return floor(($this->itmcnt - 1) / max(1,$this->metapage)) + 1;
+    function absolute($page): string
+    {
+        return rawurlencode("scr_{$this->id}_Go") . "=" . rawurlencode($page);
     }
 
-    /** updateScr function
-     *  process query string and execute commands for this scroller
-     * @param $url
-     */
-    function updateScr($url = "") {
+    /** pageCount function */
+    function pageCount(): int
+    {
+        return (int)floor(($this->itmcnt - 1) / max(1,$this->listlen)) + 1;
+    }
 
-        if ($url) {
-            $this->urldefault = $url;
-        }
-        if (isset($_GET["scr_" . $this->id . "_Vi"])) {
-            $this->visible = $_GET["scr_" . $this->id . "_Vi"];
-        }
-        if ($_GET["scr_" . $this->id . "_Go"]) {
-            $this->current = $_GET["scr_" . $this->id . "_Go"];
-        }
-        if ($_GET["scr_" . $this->id . "_Mv"]) {
-            $this->current += $_GET["scr_" . $this->id . "_Mv"];
-        }
+    /** checkBounds function
+     * Keep current page within bounds
+     */
+    function checkBounds() {
+        $this->current = max(1, min($this->current, $this->pageCount()));
+    }
+
+    /** Adjust number of pages depends on item count and metapage
+     * @param $itmcnt
+     */
+    function countPages($itmcnt): static
+    {
+        $this->itmcnt = (int)$itmcnt;
         $this->checkBounds();
+        return $this;
+    }
+
+    /** update function
+     *  Process query string and execute commands for this scroller
+     *  (based on $itmcnt)
+     */
+    function update() {
+        if ($_GET["scr_{$this->id}_Go"]) {
+            $this->go2page((int)$_GET["scr_{$this->id}_Go"]);
+        }
+        if ($_GET["scr_{$this->id}_Mv"]) {  // old Relative links - not used anymore
+            $this->go2page($this->current + (int)$_GET["scr_{$this->id}_Mv"]);
+        }
     }
 
     /** navarray function
-     * @return array - navigation bar as an array
-     * labels as keys, query string fragments a values
+     *  Return navigation bar as a hash
+     *  labels as keys, query string fragments a values
      */
     function navarray() {
-        if (!$this->pgcnt) {
+        if (!$this->itmcnt) {
             return [];
         }
-        $arr  = [];
-        $mp   = floor(($this->current - 1) / SCROLLER_LENGTH);  // current means current page
-        $from = max(1, $mp * SCROLLER_LENGTH);                // SCROLLER_LENGTH - number of displayed pages in navbab
-        $to   = min(($mp + 1) * SCROLLER_LENGTH + 1, $this->pgcnt);
+        $pgcnt = $this->pageCount();
+        $mp    = floor(($this->current - 1) / SCROLLER_LENGTH);  // current means current page
+        $from  = max(1, $mp * SCROLLER_LENGTH);                // SCROLLER_LENGTH - number of displayed pages in navbab
+        $to    = min(($mp + 1) * SCROLLER_LENGTH + 1, $pgcnt);
+        $arr   = [];
         if ($this->current > 1) {
-            $arr["&laquo;"]  = $this->relative(-1);
+            $arr[_m("Previous")]     = $this->absolute($this->current-1);
         }
         if ($from > 1) {
             $arr["1"]   = $this->absolute(1);
         }
         if ($from > 2) {
-            $arr[".."] = "";
+            $arr[".. "] = "";
         }
         for ($i = $from; $i <= $to; $i++) {
-            $arr[(string)$i] = ($i == $this->current ? "" : $this->absolute($i));
+            $arr[(string)$i] = ($i==$this->current ? "" : $this->absolute($i));
         }
-        if ($to < $this->pgcnt - 1) {
-            $arr[" .. "] = "";
+        if ($to < $pgcnt - 1) {
+            $arr[" .."] = "";
         }
-        if ($to < $this->pgcnt) {
-            $arr[(string) $this->pgcnt] = $this->absolute($this->pgcnt);
+        if ($to < $pgcnt) {
+            $arr[(string)$pgcnt] = $this->absolute($pgcnt);
         }
-        if ($this->current < $this->pgcnt) {
-            $arr["&raquo;"] = $this->relative(1);
+        if ($this->current < $pgcnt) {
+            $arr[_m("Next")] = $this->absolute($this->current+1);
+        }
+        if ($this->show_all) {
+            $arr[_m("All")] = 'listlen=99999';
         }
         return $arr;
     }
@@ -201,10 +200,6 @@ class AA_Scroller extends AA_Storable {
      *  commands are added to $url
      */
     function getNavbar(): string {
-        if (!$this->visible) {
-            return '';
-        }
-        $delimiter = '';
         $arr = $this->navarray();
         $url = $this->urldefault;
 
@@ -212,155 +207,31 @@ class AA_Scroller extends AA_Storable {
 
         if (count($arr) > 1) {
             foreach ($arr as $k => $v) {
-                $ret .= $delimiter;
-                $delimiter = " | ";
+                $ret .= " ";
                 if ($v) {
-                    $ret .= a_href(get_url($url, [$v]), $k) . "\n";
+                    if ($k == $this->current+1 || $k == _m("Next")) {
+                        $add = ['rel' => 'next'];
+                    } elseif (($k && ($k == $this->current - 1)) || $k == _m("Previous")) {
+                        $add = ['rel' => 'prev'];
+                    } else {
+                        $add = [];
+                    }
+                    $ret .= a_href(get_url($url, [$v]), $k, $add) . "\n";
                 } else {
-                    $ret .= ($k == $this->current) ? "<span class=active>$k</span>\n" : "<span class=dots>..</span>\n";
+                    $ret .= ($k == $this->current) ? "<span class=active aria-current=page>$k</span>\n" : "<span class=dots>..</span>\n";
                 }
             }
-            $ret .= "| ". a_href(get_url($url, ["listlen"=>99999]), _m("All")) . " &nbsp; ";
         }
-        return "<div class=pager>$ret <span class=found>(". _m('found').' '. $this->itmcnt .")</span></div>";
+        return "<nav class=pager role=navigation>$ret <span class=found>(". _m('found').' '. $this->itmcnt .")</span></nav>";
     }
 }
 
-/**	Class easy scroller
- *	Implements navigation bar for scrolling through long lists.
- *  No SQL filters support (as in scroller.php)
+/**	Class AA_Scroller_Easy
+ *	Implements navigation bar for scrolling through long lists - for old slice.php
  */
-class AA_Scroller_Easy {
-    var $current = 1;	  /** current page     */
-    var $id;			  /** scroller id - identifies scroller on a web page */
-    var $itmcnt;          /** total item count */
-    var $metapage = 10;	  /** "metapage" size  */
-    var $urldefault;	  /** cache self url   */
-    var $show_all;	      /** if true, scroller will show also 'All' option */
+class AA_Scroller_Easy extends AA_Scroller {
 
-    /** easy_scroller function
-     * Constructor
-     * @param $id
-     * @param $url
-     * @param $metapage
-     * @param $itmcnt
-     */
-    function __construct($id="", $url="", $metapage=10, $itmcnt=0) {
-        $this->id         = $id;
-        $this->metapage   = $metapage;
-        $this->urldefault = $url;
-        $this->itmcnt     = $itmcnt;
-        $this->current    = 1;
-    }
-    /** setShowAll function
-     * @param $val
-     */
-    function setShowAll($val)  { $this->show_all = $val; }
-    /** setMetapage function
-     * @param $val
-     */
-    function setMetapage($val) { $this->metapage = $val; }
-
-    /** Relative function
-     *  Return part of a query string for move of $pages relative
-     *  of current position
-     *  @param $pages
-     */
-    //  --- no longer used
-    //function Relative($pages) {
-    //    return rawurlencode("scr_{$this->id}_Mv") . "=" . urlencode($pages);
-    //}
-
-    /** Absolute function
-     *  Return part of a query string for move to absolute position $page
-     * @param $page
-     * @return string
-     */
-    function Absolute($page) {
-        return rawurlencode("scr_{$this->id}_Go") . "=" . rawurlencode($page);
-    }
-    /** pageCount function
-     *
-     */
-    function pageCount() {
-        return floor(($this->itmcnt - 1) / max(1,$this->metapage)) + 1;
-    }
-
-    /** checkBounds function
-     * Keep current page within bounds
-     */
-    function checkBounds() {
-        if ($this->current < 1) {
-            $this->current = 1;
-        }
-        $pages = $this->pageCount();
-        if ($this->current > $pages) {
-            $this->current = $pages;
-        }
-    }
-
-    /** countPages function
-     *  Adjust number of pages depends on item count and metapage
-     * @param $itmcnt
-     */
-    function countPages($itmcnt) {
-        $this->itmcnt = $itmcnt;
-        $this->checkBounds();
-    }
-
-    /** update function
-     *  Process query string and execute commands for this scroller
-     *  (based on $itmcnt)
-     */
-    function update() {
-        if ($_GET["scr_{$this->id}_Go"]) {
-            $this->current = $_GET["scr_{$this->id}_Go"];
-        }
-        if ($_GET["scr_{$this->id}_Mv"]) {
-            $this->current += $_GET["scr_{$this->id}_Mv"];
-        }
-        $this->checkBounds();
-    }
-
-    /** navarray function
-     *  Return navigation bar as a hash
-     *  labels as keys, query string fragments a values
-     */
-    function navarray() {
-        if (!$this->itmcnt) return [];
-        $pgcnt = $this->pageCount();
-        $mp    = floor(($this->current - 1) / SCROLLER_LENGTH);  // current means current page
-        $from  = max(1, $mp * SCROLLER_LENGTH);                // SCROLLER_LENGTH - number of displayed pages in navbab
-        $to    = min(($mp + 1) * SCROLLER_LENGTH + 1, $pgcnt);
-        $arr   = [];
-        if ($this->current > 1) {
-            $arr[_m("Previous")]     = $this->Absolute($this->current-1);
-        }
-        if ($from > 1) {
-            $arr["1"]   = $this->Absolute(1);
-        }
-        if ($from > 2) {
-            $arr[".. "] = "";
-        }
-        for ($i = $from; $i <= $to; $i++) {
-            $arr[(string)$i] = ($i==$this->current ? "" : $this->Absolute($i));
-        }
-        if ($to < $pgcnt - 1) {
-            $arr[" .."] = "";
-        }
-        if ($to < $pgcnt) {
-            $arr[(string)$pgcnt] = $this->Absolute($pgcnt);
-        }
-        if ($this->current < $pgcnt) {
-            $arr[_m("Next")] = $this->Absolute($this->current+1);
-        }
-        if ($this->show_all) {
-            $arr[_m("All")] = 'listlen=10000';
-        }
-        return $arr;
-    }
-
-    /** getNavbar function
+    /**
      *  Convert array provided by navarray into HTML code
      *  Commands are added to $url
      */
@@ -370,113 +241,37 @@ class AA_Scroller_Easy {
         $i   = 0;
         $arr = $this->navarray();
         if ( count($arr) > 0 ) {
-            $ret .= "\n<div class=\"enclose-scroller\" id=\"scroller-{$this->id}\">";
+            $ret .= "\n<div class=\"enclose-scroller\" role=\"navigation\" id=\"scroller-{$this->id}\">";
             foreach($arr as $k => $v) {
                 if ($i++) {
                     $ret .=  " | ";
                 }
                 if ($v) {
-                    $ret .=  "<a href=\"". $url. "&amp;". $v. "\" class=\"scroller\">$k</a>";
+                    $ret .= a_href(get_url($url, [$v]), $k, ['class'=>'scroller']) . "\n";
+                    //$ret .=  "<a href=\"". $url. "&amp;". $v. "\" class=\"scroller\">$k</a>";
                 } else {
-                    $ret .=  "<span class=\"scroller_actual\">$k</span>";
+                    $ret .=  "<span class=\"scroller_actual\" aria-current=\"page\">$k</span>";
                 }
             }
-            $ret .= "\n<!--/scroller-{$this->id}--></div>";
+            $ret .= "</div>";
         }
         return $ret;
     }
 }
 
-
 // Used  just for {scroller} which should not be used in sitemodules (the {pager} is used there which use AA_Scroller_view of $router->scroller)*/
-class AA_Scroller_Sitemodule {
-    protected $current = 1;	  /** current page     */
-    protected $id;			  /** scroller id - identifies scroller on a web page */
-    protected $itmcnt;          /** total item count */
-    protected $metapage = 10;	  /** "metapage" size  */
+class AA_Scroller_Sitemodule extends AA_Scroller {
 
-    /** view_scroller function
-     * Constructor
+    /**Constructor
+     *
      * @param $id
-     * @param $metapage
+     * @param $listlen
      * @param $itmcnt
      * @param $curr
      */
-    function __construct($id="", $metapage=10, $itmcnt=0, $curr=0) {
-        $this->id         = $id;
-        $this->metapage   = $metapage;
-        $this->itmcnt     = $itmcnt;
-        $this->current    = floor( $curr/$this->metapage ) + 1;
-    }
-
-    /** Absolute function
-     *  Return part of a query string for move to absolute position $page
-     * @param $page
-     * @return string
-     */
-    function Absolute($page) {
-        return rawurlencode("scr_{$this->id}_Go") . "=" . rawurlencode($page);
-    }
-    /** pageCount function
-     *
-     */
-    function pageCount() {
-        return floor(($this->itmcnt - 1) / max(1,$this->metapage)) + 1;
-    }
-
-    /** checkBounds function
-     *  Keep current page within bounds
-     */
-    function checkBounds() {
-        if ($this->current < 1)      { $this->current = 1; }
-        $pages = $this->pageCount();
-        if ($this->current > $pages) { $this->current = $pages; }
-    }
-
-    /** countPages function
-     *  Adjust number of pages depends on item count and metapage
-     * @param $itmcnt
-     */
-    function countPages($itmcnt) {
-        $this->itmcnt = $itmcnt;
-        $this->checkBounds();
-    }
-
-    /** navarray function
-     *  Return navigation bar as a hash
-     *  labels as keys, query string fragments a values
-     */
-    function navarray() {
-        $this->checkBounds();
-        if (!$this->itmcnt) {
-            return [];
-        }
-        $pgcnt = $this->pageCount();
-        $mp    = floor(($this->current - 1) / SCROLLER_LENGTH);  // current means current page
-        $from  = max(1, $mp * SCROLLER_LENGTH);                // SCROLLER_LENGTH - number of displayed pages in navbab
-        $to    = min(($mp + 1) * SCROLLER_LENGTH + 1, $pgcnt);
-        if ($this->current > 1) {
-            $arr[_m('Previous')] = $this->Absolute($this->current-1);
-        }
-        if ($from > 1) {
-            $arr["1"] = $this->Absolute(1);
-        }
-        if ($from > 2) {
-            $arr[".. "] = "";
-        }
-        for ($i=$from; $i <= $to; $i++) {
-            $arr[(string)$i] = ($i==$this->current ? "" : $this->Absolute($i));
-        }
-        if ($to < $pgcnt - 1) {
-            $arr[" .."] = "";
-        }
-        if ($to < $pgcnt) {
-            $arr[(string)$pgcnt] = $this->Absolute($pgcnt);
-        }
-        if ($this->current < $pgcnt) {
-            $arr[_m("Next")] = $this->Absolute($this->current+1);
-        }
-        return $arr;
+    function __construct($id = "", $listlen=10, $itmcnt=0, $curr=0) {
+        parent::__construct($id, "", $listlen, $itmcnt);
+        $this->go2page(floor( $curr/$this->listlen ) + 1);
     }
 
     /** get function
@@ -510,12 +305,10 @@ class AA_Scroller_Sitemodule {
 
             if (!$v) {
                 $out .= "<a class=\"nolink". (($k == $this->current) ? " active" : 'dots') . "\" href=\"#\">$k</a>";
+            } elseif ($target) {
+                $out .= "<a href=\"javascript:void(0)\" onclick=\"AA_Ajax('$target','$v');return false;\" $add>$k</a>";
             } else {
-                if ($target) {
-                    $out .= "<a href=\"javascript:void(0)\" onclick=\"AA_Ajax('$target','$v');return false;\" $add>$k</a>";
-                } else {
-                    $out .= "<a href=\"$url&amp;$v\" $add>$k</a>";
-                }
+                $out .= "<a href=\"$url&amp;$v\" $add>$k</a>";
             }
         }
 
@@ -525,12 +318,12 @@ class AA_Scroller_Sitemodule {
 
 class AA_Scroller_View extends AA_Scroller_Sitemodule {
 
-    /** Absolute function
-     *  Return part of a query string for move to absolute position $page
+    /** Return part of a query string for move to absolute position $page
      * @param $page
      * @return mixed|null|string|string[]
      */
-    function Absolute($page) {
+    function absolute($page): string
+    {
         // used for AJAX scroller in the SEO sitemodule, for example
         $url      = $_SERVER['REQUEST_URI'];
         $replaces = 0;
@@ -542,7 +335,7 @@ class AA_Scroller_View extends AA_Scroller_Sitemodule {
         return get_url($url,'set['.$this->id."]=page-$page");
     }
 
-    /** get function
+    /**
      *  Convert array provided by navarray into HTML code
      *  Commands are added to $url
      * @param string $begin
@@ -553,9 +346,15 @@ class AA_Scroller_View extends AA_Scroller_Sitemodule {
      * @return string
      */
     function get($begin='', $end='', $add='class="scroller"', $nopage='', $target=null) {
+        // $url = con_url($this->urldefault,"scrl=".$this->id);
+        $url = "?scrl=". $this->id;
+        $out = '';
+
+        if ($GLOBALS['apc_state']) {
+            $url .= '&amp;apc='.$GLOBALS['apc_state']['state'];
+        }
         $i   = 0;
         $arr = $this->navarray();
-        $out = '';
 
         if ( count($arr) <= 1 ) {
             return $nopage;
@@ -563,18 +362,15 @@ class AA_Scroller_View extends AA_Scroller_Sitemodule {
 
         foreach($arr as $k => $v) {
             if ($i++) {
-                $out .= '<span class="delimiter"> | </span>';
+                $out .= " | ";
             }
 
             if (!$v) {
-                $out .= ctype_digit((string)$k) ? "<span class=\"active\"> $k </span>" : "<span class=\"dots\"> $k </span>";
+                $out .= "<a class=\"nolink". (($k == $this->current) ? " active" : 'dots') . "\" href=\"#\">$k</a>";
+            } elseif ($target) {
+                $out .= "<a href=\"javascript:void(0)\" onclick=\"AA_Ajax('$target','$v');return false;\" $add>$k</a>";
             } else {
-                $v = safe($v);
-                if ($target) {
-                    $out .= "<a href=\"javascript:void(0)\" onclick=\"AA_Ajax('$target','$v');return false;\" $add>$k</a>";
-                } else {
-                    $out .= "<a href=\"$v\" $add>$k</a>";
-                }
+                $out .= "<a href=\"$url&amp;$v\" $add>$k</a>";
             }
         }
 

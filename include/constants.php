@@ -249,8 +249,7 @@ class AA_Aliases implements Iterator, ArrayAccess, Countable {
         return $this;
     }
 
-    /** getArray function
-     * @deprecated convert the AA code to use AA_Aliases
+    /** @deprecated convert the AA code to use AA_Aliases
      */
     public function getArray(): array {
         $this->lazyGet('lazy_aliases');

@@ -193,21 +193,20 @@ class tabledit {
         // scroller stuff
         $scrname = "te_".$this->viewID;
         global $$scrname;
+
+        /** @var $scroll AA_Scroller */
         $scroll = $$scrname;
         $scrurl = StateUrl($_SERVER['PHP_SELF']."?set_tview=".$this->gotoview2());
 
         if (is_object($scroll)) {
-            $scroll->metapage = $this->view["listlen"];
-            $scroll->countPages($rowcount);
-            $scroll->updateScr($scrurl);
+            $scroll->setListlen($this->view["listlen"])->countPages($rowcount)->update();
         } else {
             $$scrname = new AA_Scroller($scrname, $scrurl);
             $scroll = $$scrname;
             if (is_object($this->sess)) {
                 $this->sess->register($scrname);
             }
-            $scroll->metapage = $this->view["listlen"];
-            $scroll->countPages($rowcount);
+            $scroll->setListlen($this->view["listlen"])->countPages($rowcount);
         }
         $$scrname = $scroll;
 
@@ -237,7 +236,7 @@ class tabledit {
             ." FROM ".$this->getSelectFrom()
             ." WHERE ".$where
             . $orderby
-            ." LIMIT ".($scroll->current-1)*$scroll->metapage.",".$scroll->metapage);
+            ." LIMIT ".($scroll->getCurrent()-1)*$scroll->getListlen().",".$scroll->getListlen());
 
         $record_count = $db->num_rows();
 

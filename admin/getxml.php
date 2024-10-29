@@ -289,13 +289,13 @@ function GetXMLItem($slice_id, $item_id, $content4id, AA_Fields $sfields) {
     static $slice_url;
 
     // create RSS elements
-    $title       = GetBaseFieldContent($sfields->getCategoryFieldId('headline'), $content4id);
-    $description = GetBaseFieldContent($sfields->getCategoryFieldId('abstract'), $content4id);
-    $hl_href     = GetBaseFieldContent($sfields->getCategoryFieldId('hl_href'),  $content4id);
+    $title       = GetBaseFieldContent($sfields->firstOfTypeFieldId('headline'), $content4id);
+    $description = GetBaseFieldContent($sfields->firstOfTypeFieldId('abstract'), $content4id);
+    $hl_href     = GetBaseFieldContent($sfields->firstOfTypeFieldId('hl_href'),  $content4id);
     $link_only   = $hl_href;
     // older approach is to use link_only field. We do not use this approach for
     // for newer slices - link is external if hl_href is filled. Dot.
-    // $link_only   = GetBaseFieldContent($sfields->getCategoryFieldId('link_only'),  $content4id);
+    // $link_only   = GetBaseFieldContent($sfields->firstOfTypeFieldId('link_only'),  $content4id);
 
     // get slice url for current slice
     if ( !isset($slice_url[$slice_id]) ) {
@@ -312,7 +312,7 @@ function GetXMLItem($slice_id, $item_id, $content4id, AA_Fields $sfields) {
 
     // create fulltext in the element <content:items>
     if (!$link_only) {
-        $f = $sfields->getCategoryFieldId('full_text');
+        $f = $sfields->firstOfTypeFieldId('full_text');
         if ($f) {
             $flag_format = GetFlagFormat($content4id[$f][0]['flag']);
             $xml_items .="\t<content:items><rdf:Bag>\n".
@@ -325,7 +325,7 @@ function GetXMLItem($slice_id, $item_id, $content4id, AA_Fields $sfields) {
     }
 
     // create item's categories
-    $item_categs = $content4id[$sfields->getCategoryFieldId('category')];
+    $item_categs = $content4id[$sfields->firstOfTypeFieldId('category')];
 
     if (is_array($item_categs)) {
         // get constants array from database ('val'=>'packed id')
@@ -345,7 +345,7 @@ function GetXMLItem($slice_id, $item_id, $content4id, AA_Fields $sfields) {
 
     // create Dublin Core elements
     foreach ( MAP_DC2AA as $k => $v) {
-        $cont = GetBaseFieldContent($sfields->getCategoryFieldId($v),$content4id);
+        $cont = GetBaseFieldContent($sfields->firstOfTypeFieldId($v),$content4id);
         if ($v === "publish_date") { // convert publish date
             $cont = FeedUtil::unixstamp_to_iso8601($cont);
         }
@@ -360,7 +360,7 @@ function GetXMLItem($slice_id, $item_id, $content4id, AA_Fields $sfields) {
     $f = ["full_text", "slice_id"];
 
     foreach ( $f as $v) {        // create array of elements, which will be skipped
-        $rss[$sfields->getCategoryFieldId($v)] = $v;
+        $rss[$sfields->firstOfTypeFieldId($v)] = $v;
     }
 
     $xml_items .= "\t<aa:fielddatacont><rdf:Bag>\n";
@@ -531,7 +531,7 @@ if ($ids) {
     $start_timestamp      = str_replace(' ', '+', trim($start_timestamp));
     $start_timestamp      = FeedUtil::iso8601_to_unixstamp($start_timestamp);
     $tmpobj               = $slice->getFields();
-    $cat_field            = $tmpobj->getCategoryFieldId();
+    $cat_field            = $tmpobj->firstOfTypeFieldId();
     $now   = now();
 
     $cond  = DB_AA::makeWhere([

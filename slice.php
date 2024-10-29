@@ -411,7 +411,7 @@ $r_state_vars = StoreVariables(["no_scr","scr_go","order","cat_id", "cat_name", 
 
 // ***** CONDS *****
 
-if ($cat_id AND ($flds = $slice->getFields()) AND ($cat_field = $flds->getCategoryFieldId())) {  // optional parameter cat_id - deprecated - slow ------
+if ($cat_id AND ($flds = $slice->getFields()) AND ($cat_field = $flds->firstOfTypeFieldId())) {  // optional parameter cat_id - deprecated - slow ------
     $cat_group = $flds->getCategoryGroup();
     $SQL = "SELECT value FROM constant WHERE group_id = '$cat_group' AND id='". q_pack_id($cat_id) ."'";
     $db->query($SQL);
@@ -422,7 +422,7 @@ if ($cat_id AND ($flds = $slice->getFields()) AND ($cat_field = $flds->getCatego
             'operator' => ($exact ? '=' : 'LIKE')
         ];
     }
-} elseif ($cat_name AND ($tmpobj = $slice->getFields()) AND ($cat_field = $tmpobj->getCategoryFieldId()))  {  // optional parameter cat_name -------
+} elseif ($cat_name AND ($tmpobj = $slice->getFields()) AND ($cat_field = $tmpobj->firstOfTypeFieldId()))  {  // optional parameter cat_name -------
     $conds[]     = [
         $cat_field => 1,
         'value'    => $cat_name,
@@ -488,7 +488,7 @@ if ($group_by) {
     $sort_tmp = $set->getSort();
     $slice_info["group_by"] = key($sort_tmp[0]);
 }
-elseif ($slice_info['category_sort'] AND ($tmpobj = $slice->getFields()) AND ($group_field = $tmpobj->getCategoryFieldId())) {
+elseif ($slice_info['category_sort'] AND ($tmpobj = $slice->getFields()) AND ($group_field = $tmpobj->firstOfTypeFieldId())) {
     $grp_odir    = (($order==$group_field) AND ($orderdirection!=='d')) ? 'a' : 'd';
     $sort_tmp[]  = [$group_field => $grp_odir];
 }
@@ -540,7 +540,7 @@ if (!is_object($scr)) {
 if ($all_scr) { $scr->setShowAll($all_scr); }
 
 // change number of listed items
-if ($listlen) { $scr->setMetapage($listlen); }
+if ($listlen) { $scr->setListlen($listlen); }
 
 // default start page = 1
 if (!$scr_go) { $scr_go = 1; }
@@ -549,8 +549,8 @@ if (!$scr_go) { $scr_go = 1; }
 if ($scrl)    { $scr->update(); }
 
 /** Add scroller aliases - page number, listlen */
-$scr_aliases['_#PAGE_NO_'] = GetAliasDef( 'f_s:'. $scr->current,  '', _m('number of current page (on pagescroller)'));
-$scr_aliases['_#PAGE_LEN'] = GetAliasDef( 'f_s:'. $scr->metapage, '', _m('page length (number of items)'));
+$scr_aliases['_#PAGE_NO_'] = GetAliasDef( 'f_s:'. $scr->getCurrent(),  '', _m('number of current page (on pagescroller)'));
+$scr_aliases['_#PAGE_LEN'] = GetAliasDef( 'f_s:'. $scr->getListlen(), '', _m('page length (number of items)'));
 // aliases array have two form (quite stupid - will be changed in future - TODO)
 // depending on listing for one slice or many slices
 if (!is_array($slices)) {
@@ -565,7 +565,7 @@ if (!is_array($slices)) {
 }
 
 if ( !$scrl ) {
-    $scr->current = $scr_go;
+    $scr->go2page($scr_go);
 }
 
 if ( !$srch AND !$encap AND !$easy_query ) {
@@ -574,7 +574,7 @@ if ( !$srch AND !$encap AND !$easy_query ) {
 
 if ($zids->count() > 0) {
 
-    $itemview = new itemview($slice_info, $aliases, $zids, $scr->metapage * ($scr->current - 1), ($group_n ? -$group_n : $scr->metapage));
+    $itemview = new itemview($slice_info, $aliases, $zids, $scr->getListlen() * ($scr->getCurrent() - 1), ($group_n ? -$group_n : $scr->getListlen()));
     echo $itemview->get_output_cached("view");
 
     if (($scr->pageCount() > 1) AND !$no_scr AND !$group_n) {

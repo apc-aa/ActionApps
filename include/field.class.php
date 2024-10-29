@@ -814,11 +814,14 @@ class AA_Fields implements Iterator, Countable {
     }
 
     /** getAliases function
+     *
      * @param $additional
      * @param $type
-     * @return array|null|string
+     *
+     * @return array|null
      */
-    function getAliases($additional=null, $type='') {
+    function getAliases($additional=null, $type=''): ?array
+    {
         if ( !is_null($this->aliases) ) {
             return is_array($additional) ? array_merge($additional, $this->aliases) : $this->aliases;
         }
@@ -859,13 +862,11 @@ class AA_Fields implements Iterator, Countable {
         return is_array($additional) ? array_merge($additional, $this->aliases) : $this->aliases;
     }
 
-    /** returns first field id of given field_type (category........, file............)
-     *
+    /** returns first field id of given field_type (category........, file............, headline........)
      * @param  string  $field_type
-     *
      * @return string
      */
-    function getCategoryFieldId(string $field_type = 'category'): string
+    public function firstOfTypeFieldId(string $field_type = 'category'): string
     {
         $this->load();
         return ($keys = array_filter(array_keys($this->fields), static fn($key) => str_starts_with($key, $field_type))) ? min($keys) : '';
@@ -877,7 +878,7 @@ class AA_Fields implements Iterator, Countable {
      */
     public function getCategoryGroup(string $field_id=''): ?string
     {
-        $fld = $this->getField($field_id ?: $this->getCategoryFieldId());
+        $fld = $this->getField($field_id ?: $this->firstOfTypeFieldId());
         $input_func_str = $fld?->getProperty('input_show_func');
         return is_string($input_func_str) ? Widget::parseClassProperties($input_func_str)['const'] : null;
     }
@@ -1066,7 +1067,7 @@ class AA_Fields implements Iterator, Countable {
 
     /** Returns first field id of specified type from string array
      *  Good for external feeds, where we do not have AA_Fields object
-     *  In most cases use getCategoryFieldId for AA_Fields object
+     *  In most cases use firstOfTypeFieldId for AA_Fields object
      *
      * @param $fields_arr  []
      * @param $ftype

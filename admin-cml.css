@@ -332,7 +332,7 @@ TD.leftmenuy {
     color: #0000;
     letter-spacing: -4px;
 }
-.pager a, .pager .active {
+.pager a, .pager [aria-current] {
     background-color: #DAE8E1;
     padding: 3px 7px;
     letter-spacing: normal;
@@ -345,7 +345,7 @@ TD.leftmenuy {
     color: #414141;
     letter-spacing: normal;
 }
-.pager a:hover, .pager .active {
+.pager a:hover, .pager [aria-current] {
     background-color: #589868;
     color: white;
 }

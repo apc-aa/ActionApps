@@ -1045,25 +1045,15 @@ function StoreTable2Content(&$content, $SQL, $prefix, $id_field) {
     }
 }
 
-// -------------------------------------------------------------------------------
-/** GetHeadlineFieldID function
- * @param $sid
- * @param $slice_field
- * @return array|bool
- */
-function GetHeadlineFieldID($sid, $slice_field="headline.") {
-    // first should be headline........, then headline.......1, etc.
-    return DB_AA::select1('id', "SELECT id FROM field", [['slice_id', $sid, 'l'], ['id', "$slice_field%", 'LIKE']], ['id']);  // false if not found
-}
 
 /** find group_id for constants of the slice
  * @param string $slice_id
  * @deprecated use AA_Fields->getCategoryGroup() directly
  */
-function GetCategoryGroup($slice_id): ?string
-{
-    return AA_Slice::getModule($slice_id)?->getFields()->getCategoryGroup($field_id);
-}
+//function GetCategoryGroup($slice_id): ?string
+//{
+//    return AA_Slice::getModule($slice_id)?->getFields()->getCategoryGroup($field_id);
+//}
 
 // -------------------------------------------------------------------------------
 
