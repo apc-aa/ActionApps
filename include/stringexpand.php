@@ -1957,7 +1957,7 @@ class AA_Stringexpand_Daterange extends AA_Stringexpand_Nevercache {
             $ret = date("j. n. $year_format", $start_timestamp). $starttime. '-'. date("j. n. $year_format", $end_timestamp). " $endtime";
         }
 
-        return str_replace([' ','-'], ["\u{202F}","\u{2013}"], trim($ret));  // use &nnbsp; (narrow non-breaking space) and @ndash; UTF characters
+        return str_replace([' ','-'], ["\u{202F}","\u{2013}"], trim($ret));  // use &nnbsp; (narrow non-breaking space) and @ndash; UTF characters - possible also use &#8239;
     }
 }
 
@@ -1968,7 +1968,7 @@ class AA_Stringexpand_Daterange extends AA_Stringexpand_Nevercache {
  *
  *   @param $start_timestamp - timestamp of the start date
  *   @param $end_timestamp   - timestamp of the end date - {now} is default
- *   @param $format          - format - %y (for years) is defoult - other values @see PHP date_diff()->format()
+ *   @param $format          - format - %y (for years) is default - other values @see PHP date_diff()->format()
  */
 class AA_Stringexpand_Datediff extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
@@ -4616,7 +4616,7 @@ class AA_Stringexpand_Join extends AA_Stringexpand_Nevercachenotrim {
     function expand(...$arg_list) {
         $delimiter = array_shift($arg_list);
         $ret       = array_filter($arg_list, static fn($str) => trim($str) !== '');
-        return ($delimiter === 'json') ? json_encode($ret) : implode($delimiter, $ret);
+        return ($delimiter === 'json') ? json_encode(array_values($ret)) : implode($delimiter, $ret);
     }
 }
 
