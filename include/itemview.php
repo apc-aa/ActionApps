@@ -676,7 +676,7 @@ class itemview {
             // print category name if needed
             if ($this->group_fld AND strcasecmp($catname,$oldcat)) {
                 if ( $this->num_records >= 0 ) {
-                    if ($oldcat != "_No CaTeg") {
+                    if ($oldcat !== "_No CaTeg") {
                         // print bottom category code for previous category
 
                         // we need to use old values for category bottom

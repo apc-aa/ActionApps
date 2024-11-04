@@ -32,7 +32,7 @@ class fastImage
 
     $this->uri = $uri;
     // Joy - this is a fix for URLs missing "http:"
-    if ($uri[0] == '/' && $uri[1] == '/') {
+    if ($uri[0] === '/' && $uri[1] === '/') {
       $uri = 'http:' . $uri;
     }
 

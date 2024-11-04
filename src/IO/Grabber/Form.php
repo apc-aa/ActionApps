@@ -183,7 +183,7 @@ class Form extends AbstractGrabber {
             // now process the aa[f_54343ea876898b6754e3578a8cc544e6][file][] type of upload and convert it
             // to aa[n1_54343ea876898b6754e3578a8cc544e6][file............][]
             if (($msg = $this->fileUploadToNewItem($files)) !== true) {
-                throw new \Exception($msg);
+                throw new \RuntimeException($msg);
             }
 
             // add it to POSTed variables
@@ -191,7 +191,7 @@ class Form extends AbstractGrabber {
         }
 
         // just prepare ids, in order we can expand
-        // You can use _#n1_623553373823736362372726 as value, which stands for
+        // You can use _#n1_623553373823736362372726 (not _#N1_ID___ here!) as value, which stands for
         // item id of the item
         foreach ($aa as $dirty_item_id => $item_fields) {
             if ($dirty_item_id[0] === 'n') {

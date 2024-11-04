@@ -179,7 +179,7 @@ class Saver implements AA\Later\LaterInterface {
                 // ["relation.......1","year............"]
                 default         :
                     // should be allowed just to slice admins (for security reasons)
-                    if (($id_mode[0] == '[') AND is_array($flds = json_decode($id_mode))) {
+                    if (($id_mode[0] === '[') && is_array($flds = json_decode($id_mode))) {
                         // this allows you to update item based on the key fields.
                         // if $id_mode is ["relation.......1","year............"], then saver searches the slice for the item matching the two fields.
                         // If found, then the item is updated

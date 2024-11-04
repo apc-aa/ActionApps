@@ -476,7 +476,7 @@ class cattree {
             $function($assig->getTo(), $this->catnames[$assig->getTo()], $assig->getBase(), $assig->getState(), $assig->getFrom(), $level);
 
             // not crossreferenced and never ending cycles protection
-            if (($assig->getBase() != '@') AND ($level <= 100)) {
+            if (($assig->getBase() !== '@') AND ($level <= 100)) {
                 $this->walkTree($assig->getTo(), $function, $level+1);
             }
         }

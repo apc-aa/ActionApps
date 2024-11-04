@@ -48,7 +48,7 @@ class AA_Site_Spot_Match {
             return new AA_Site_Spot_Match($arr[1], $arr[2]);
         }
         // special case - for {aa_expresions} we used "=" in history
-        return new AA_Site_Spot_Match(($var AND $var[0]=='{') ? '=' : 'REGEXP', $string);
+        return new AA_Site_Spot_Match(($var AND $var[0] === '{') ? '=' : 'REGEXP', $string);
     }
 
     function implode() {
@@ -243,7 +243,7 @@ class spot {
     function conditionMatches($state) {
         if ( isset($this->c) AND is_array($this->c) ) {  //c is array of conditions
             foreach ($this->c as $var => $cond) {
-                $value = ($var[0]=='{') ? AA::Un($var, '', $state['item']) : $state[$var];
+                $value = ($var[0] === '{') ? AA::Un($var, '', $state['item']) : $state[$var];
                 if ( !(AA_Site_Spot_Match::factoryByString($cond,$var)->match($value)) ) {
                     return false;
                 }
@@ -268,7 +268,7 @@ class sitetree {
     }
 
     /** current_id could be undefined when we deserialize older object */
-    public function __wakeUp() {
+    public function __wakeup() {
         $this->current_id ??= $this->start_id;
     }
 

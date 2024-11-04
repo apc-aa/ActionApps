@@ -45,7 +45,7 @@ class XMLIekis extends AbstractGrabber
         // instance of class iCalFile (external file ical.php)
         if ($handle = opendir($this->dir)) {
             while (false !== ($file = readdir($handle))) {
-                if ($file != "." && $file != "..") {
+                if ($file !== "." && $file !== "..") {
                     $this->_files[] = $file;
                 }
             }

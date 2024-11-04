@@ -178,7 +178,7 @@ class uploader {
             $this->typeURL = "{$this->config['uploadURL']}/{$this->type}";
 
         // SITE ROOT
-        } elseif ($this->config['uploadURL'] == "/") {
+        } elseif ($this->config['uploadURL'] === "/") {
             $this->config['uploadDir'] = strlen($this->config['uploadDir'])
                 ? path::normalize($this->config['uploadDir'])
                 : path::normalize(realpath($_SERVER['DOCUMENT_ROOT']));
@@ -429,12 +429,12 @@ class uploader {
             )))));
 
         // HIDDEN FILENAMES CHECK
-        elseif (substr($file['name'], 0, 1) == ".")
+        elseif (str_starts_with($file['name'], "."))
             return $this->label("File name shouldn't begins with '.'");
 
         // EXTENSION CHECK
         elseif (
-            (substr($file['name'], -1) == ".") ||
+            (str_ends_with($file['name'], ".")) ||
             !$this->validateExtension($extension, $this->type)
         )
             return $this->label("Denied file extension.");
@@ -466,10 +466,10 @@ class uploader {
 
     protected function checkInputDir($dir, $inclType=true, $existing=true) {
         $dir = path::normalize($dir);
-        if (substr($dir, 0, 1) == "/")
+        if (str_starts_with($dir, "/"))
             $dir = substr($dir, 1);
 
-        if ((substr($dir, 0, 1) == ".") || (substr(basename($dir), 0, 1) == "."))
+        if ((str_starts_with($dir, ".")) || (substr(basename($dir), 0, 1) == "."))
             return false;
 
         if ($inclType) {
@@ -503,15 +503,15 @@ class uploader {
         }
 
         $exts = trim($this->types[$type]);
-        if (!strlen($exts) || substr($exts, 0, 1) == "*")
+        if (!strlen($exts) || str_starts_with($exts, "*"))
             return true;
 
-        if (substr($exts, 0, 1) == "!") {
-            $exts = explode(" ", trim(strtolower(substr($exts, 1))));
+        if (str_starts_with($exts, "!")) {
+            $exts = explode(" ", strtolower(trim(substr($exts, 1))));
             return !in_array($ext, $exts);
         }
 
-        $exts = explode(" ", trim(strtolower($exts)));
+        $exts = explode(" ", strtolower(trim($exts)));
         return in_array($ext, $exts);
     }
 

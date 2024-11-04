@@ -33,7 +33,7 @@ class type_mime {
         $type = substr($type, 0, strrpos($type, ";"));
 
         $mimes = $config['params'];
-        if (substr($mimes, 0, 1) == "!") {
+        if (str_starts_with($mimes, "!")) {
             $mimes = trim(substr($mimes, 1));
             return in_array($type , explode(" ", $mimes))
                 ? "You can't upload such files."

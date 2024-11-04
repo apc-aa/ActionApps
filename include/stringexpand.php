@@ -137,7 +137,7 @@ if (ini_get('pcre.jit') == 1) {
  * @return array|mixed
  */
 function json2arr($string, $do_not_filter=false) {
-    if ($string[0] != '[') {
+    if ($string[0] !== '[') {
         $values = [$string];
     } else {
         $values = aa_json_decode($string);
@@ -153,11 +153,11 @@ function json2asoc($string) {
     if (!strlen($string)) {
         return [];
     }
-    if ($string[0] == '{') {
+    if ($string[0] === '{') {
         return aa_json_decode($string, true);
     }
 
-    if ($string[0] == '[') {
+    if ($string[0] === '[') {
         // returns "one" => "one", "two" => "two" for ["one","two"]
         $values = json2arr($string, true);
         return array_combine($values, $values);
@@ -1085,7 +1085,7 @@ class   AA_Stringexpand_Livesearch extends AA_Stringexpand_Nevercache {
      */
     function expand($view_param='', $placeholder='', $default='') {
         $placeholder = safe($placeholder);
-        $def         = ($default == '-') ? 'AADoNotFindAnything' : safe($default);
+        $def         = ($default === '-') ? 'AADoNotFindAnything' : safe($default);
         $id = 'aa-ls'.gensalt(6); // gensalt is shorter than mt_rand(100000000,999999999);
         $view_param  = is_numeric($view_param) ? "$view_param&cmd[$view_param]=c-1-%22AA_LS_QUERY%22" : $view_param;
         $ret = "
@@ -1096,7 +1096,7 @@ class   AA_Stringexpand_Livesearch extends AA_Stringexpand_Nevercache {
                 </form>
               </header>
               <section class=itemgroup onkeydown=AA__Keynavigate>";
-        $ret .= ($default == '-') ? '' : AA::Un("{view.php?vid=". str_replace('AA_LS_QUERY', $def, $view_param). "}");
+        $ret .= ($default === '-') ? '' : AA::Un("{view.php?vid=". str_replace('AA_LS_QUERY', $def, $view_param). "}");
         $ret .= "      </section>
             </article>";
         return $ret;
@@ -3721,7 +3721,7 @@ class AA_Stringexpand_Backlinks extends AA_Stringexpand {
         $item = AA_Items::getItem($item_id);
         if ($item) {
             $slice_ids = $slice_ids ?: '{site:{modulefield:{slice_id........}:site_ids}:modules}';
-            $sort      = $sort      ? (($sort == '-') ? '': $sort) : 'slice_id........,publish_date....-';
+            $sort      = $sort      ? (($sort === '-') ? '': $sort) : 'slice_id........,publish_date....-';
             return AA::Un("{ids:$slice_ids:d-all_fields-==-{id..............}:$sort}", '', $item);
         }
 
@@ -4231,7 +4231,7 @@ class AA_Stringexpand_Options extends AA_Stringexpand {
     function expand($group='', $selected='') {
         $ret      = '';
         $selected = json2arr((string)$selected);
-        if ($group[0] == '[') {
+        if ($group[0] === '[') {
             $constants = json2arr($group, true);
             foreach ($constants as $v) {
                 if (is_array($v)) {
@@ -4911,7 +4911,7 @@ class AA_Stringexpand_Edit extends AA_Stringexpand_Nevercache {
     static function WidgetPropsString2Arr($widget_properties) {
         // const_arr in widget_properties could be specified as (1) JSON object, or as (2) string with JSON object - see examples(1) and (2) above
         $widget_prop = json2asoc($widget_properties);
-        if (isset($widget_prop['const_arr']) AND !is_array($widget_prop['const_arr']) AND (aa_substr($widget_prop['const_arr'],0,2) == '{"')) {
+        if (isset($widget_prop['const_arr']) AND !is_array($widget_prop['const_arr']) AND (str_starts_with($widget_prop['const_arr'], '{"'))) {
             $widget_prop['const_arr'] = json2asoc($widget_prop['const_arr']);
         }
         return $widget_prop;
@@ -5907,7 +5907,7 @@ function expandFilenameWithHttp($parturl, string $type='') {
     $headers  = ($type === 'ajax') ? ['X-Requested-With'=>'XMLHttpRequest'] : [];
     // if no http request - add server name
     if (!(aa_substr($filename, 0, 7) === 'http://') AND !(aa_substr($filename, 0, 8) === 'https://')) {
-        $filename = self_server(). (($filename[0] =='/') ? '' : '/'). $filename;
+        $filename = self_server(). (($filename[0] === '/') ? '' : '/'). $filename;
         if ($_COOKIE) {
             // we resend cookies only for local requests (It could be useful for AA_Auth ...)
             $headers['Cookie'] = http_build_query($_COOKIE, '', '; ');
@@ -6035,12 +6035,14 @@ class AA_Unalias_Callback {
             case "\t":
                 return QuoteColons("{" . $out . "}");
             case '_':         // Look for {_#.........} and expand now, rather than wait till top
-                if ($out[1] == "#") {
+                if ($out[1] === "#") {
                     if (isset($als[aa_substr($out,2)])) {
                         return QuoteColons(AA::Un($als[aa_substr($out,2)], '', $this->item, false, $this->itemview));
-                    } elseif (isset($this->item)) {
+                    }
+
+                    if (isset($this->item)) {
                         // just alias or not so common: {_#SOME_ALSand maybe some text}
-                        return QuoteColons(($outlen == 10) ? $this->item->get_alias_subst($out) : $this->item->substitute_alias_and_remove($out));
+                        return QuoteColons(($outlen === 10) ? $this->item->get_alias_subst($out) : $this->item->substitute_alias_and_remove($out));
                     }
                     //// This somehow did not work for {item:{xid:1}:{ifeq:{_#EVERMA21}:1::...}} so the concept of localcache is removed. Honza 2015-07-27
                     // if (isset($this->_localcache[$loccache_id = $out.$this->item->getItemID()])) {
@@ -6057,7 +6059,7 @@ class AA_Unalias_Callback {
         }
 
         if (is_object($this->item)) {
-            if ($outlen == 16) {
+            if ($outlen === 16) {
                 switch ($out) {
                     case 'unpacked_id.....':
                     case 'id..............':
@@ -7007,9 +7009,9 @@ class AA_Requires {
             $hash = $this->addUsrRequire($require, 'AA_Req_Htm');
         } elseif ($type === 'AA_Req_CSScode') {
             $hash = $this->addUsrRequire($require, 'AA_Req_CSScode');
-        } elseif ((aa_substr($require,-4)=='.css') OR aa_strpos($require,'.css?') OR aa_strpos($require,'.css ') OR aa_strpos($require,'/css?')) {  //  /css? for google fonts
+        } elseif ((aa_substr($require,-4) === '.css') OR aa_strpos($require,'.css?') OR aa_strpos($require,'.css ') OR aa_strpos($require,'/css?')) {  //  /css? for google fonts
             $hash = $this->addUsrRequire($require, 'AA_Req_Css');
-        } elseif (aa_substr($require,-3)=='.js' OR aa_strpos($require,'.js?') OR (aa_strpos($require,'/')!==false)) {
+        } elseif (aa_substr($require,-3) === '.js' OR aa_strpos($require,'.js?') OR (aa_strpos($require,'/')!==false)) {
             $hash = $this->addUsrRequire($require, 'AA_Req_Lib');
         } else {
             $hash = $require;   // must be system require
@@ -7518,7 +7520,7 @@ class AA_Stringexpand_Str_replace extends AA_Stringexpand_Nevercachenotrim {
      */
     function expand($search='', $replace='', $text='') {
         $search  = json2arr($search,true);
-        $replace =  ($replace[0] == '[') ? json2arr($replace,true) : $replace; // the replacement could be string (which then replaces all the occurrences of $searches)
+        $replace =  ($replace[0] === '[') ? json2arr($replace,true) : $replace; // the replacement could be string (which then replaces all the occurrences of $searches)
         return str_replace($search, $replace, $text);
     }
 }
@@ -8310,7 +8312,7 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
         if (AA_HTTP_DOMAIN !== "/") {
             $image = str_replace(AA_HTTP_DOMAIN, '', $image);
         }
-        if ((aa_substr($image,0,4)==="http") OR (aa_substr($image,0,2)=="//")) {
+        if ((aa_substr($image,0,4)==="http") OR (aa_substr($image,0,2) === "//")) {
             $image = preg_replace("~^(http[s]?:)?//(www\.)?(.+)\.([a-z]{1,6})/(.+)~", "\\5", $image);
         }
 
@@ -8470,7 +8472,7 @@ class AA_Stringexpand_Fileinfo extends AA_Stringexpand {
                 if (is_file($filename)) {
                     $size = @filesize($filename);
                 } else {
-                    $fullurl = $url[0]=='/' ? 'https://'.$_SERVER['HTTP_HOST'].$url : $url;
+                    $fullurl = $url[0] === '/' ? 'https://'.$_SERVER['HTTP_HOST'].$url : $url;
                     $size = @strlen(file_get_contents($fullurl));
                 }
 

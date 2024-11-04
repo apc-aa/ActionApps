@@ -36,7 +36,7 @@ if ( isset($scrl) ) {      // page scroller
   $apc_state['p'] = $$pagevar;
 }
 
-if ( ($apc_state["p"] <= 0) OR ($apc_state["p"]=='-') )
+if ( ($apc_state["p"] <= 0) OR ($apc_state["p"] === '-') )
   $apc_state["p"] = 1;
 
 $nocache = 1; // Force nocache until caching problems fixed

@@ -45,7 +45,7 @@ function filesuffix($filename) {
         return "";
     }
     $i = strlen($filename);
-    while ($filename[$i] != ".") {
+    while ($filename[$i] !== ".") {
         $i --;
     }
     return substr ($filename,$i+1);
@@ -76,32 +76,27 @@ function set_directory($dir) {
  * @param $f2
  * @return int
  */
-function compare_files($f1, $f2) {
+function compare_files($f1, $f2): int
+{
     global $sort_key, $sort_order;
 
-    if ($f1["name"]=="..") {
+    if ($f1["name"] === "..") {
         return -1;
     }
-    if ($f2["name"]=="..") {
+    if ($f2["name"] === "..") {
         return 1;
     }
     if ($f1["dir"]) {
-        if ($f2["dir"] && $f1["name"] > $f2["name"]) {
-            return 1;
-        } else {
-            return -1;
-        }
-    } elseif ($f2["dir"]) {
+        return $f2["dir"] && $f1["name"] > $f2["name"] ? 1 : -1;
+    }
+
+    if ($f2["dir"]) {
         return 1;
     }
     if ($f1[$sort_key] == $f2[$sort_key]) {
         return 0;
     }
-    if ($f1[$sort_key] < $f2[$sort_key] XOR $sort_order==="a") {
-        return 1;
-    } else {
-        return -1;
-    }
+    return ($f1[$sort_key] < $f2[$sort_key] xor $sort_order === "a") ? 1 : -1;
 }
 
 /** format_file_size function
@@ -141,22 +136,24 @@ $filetypes = [
 function get_filetype($filepath) {
     global $filetypes;
 
-    if ($filepath == ".." || str_ends_with($filepath, "/..")) {
+    if ($filepath === ".." || str_ends_with($filepath, "/..")) {
         return _m("Parent");
-    } elseif (is_dir($filepath)) {
-        return _m("Directory");
-    } else {
-        $ext = filesuffix($filepath);
-        foreach ($filetypes as $filetype => $val) {
-            if (!$val["ext"]) {
-                continue;
-            }
-            if (in_array($ext, $val["ext"])) {
-                return $filetype;
-            }
-        }
-        return _m("Other");
     }
+
+    if (is_dir($filepath)) {
+        return _m("Directory");
+    }
+
+    $ext = filesuffix($filepath);
+    foreach ($filetypes as $filetype => $val) {
+        if (!$val["ext"]) {
+            continue;
+        }
+        if (in_array($ext, $val["ext"])) {
+            return $filetype;
+        }
+    }
+    return _m("Other");
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -201,14 +198,14 @@ function get_file_array($path, $dirname) {
     else {
         while ($filename = readdir ($dir)) {
             // don't allow to jump higher from base dir
-            if ($filename == "." || ($filename == ".." && !$dirname)) {
+            if ($filename === "." || ($filename === ".." && !$dirname)) {
                 continue;
             }
 
             $filepath = $dirname.$filename;
-            if ($filename == "..") {
+            if ($filename === "..") {
                 $i = strlen ($dirname)-2;
-                while ($i > 0 && $dirname[$i] != "/") $i --;
+                while ($i > 0 && $dirname[$i] !== "/") $i --;
                 $filepath = substr ($dirname, 0, $i);
             }
 
@@ -256,7 +253,7 @@ function file_table($path, $dirname) {
         foreach ($files as $file) {
             $href = StateUrl("fileman.php?cmd=" . ($file["dir"] ? "chdir&arg[chdir]=" : "edit&arg[edit]=") . $file['path'] . "&fmset[directory]=$directory");
             $retval .= "<tr>
-            <td>".($file['name']!=".." ? "<input type=\"checkbox\" name=\"chb[".$file['path']."]\">" : "&nbsp;")."</td>
+            <td>".($file['name'] !== ".." ? "<input type=\"checkbox\" name=\"chb[".$file['path']."]\">" : "&nbsp;")."</td>
             <td><a href=\"$href\"><img src=\"../images/$file[img].gif\" alt=\"".$file['type']."\"></a></td>
             <td><a href=\"$href\">".$file['name']."</a></td>
             <td>".($file["dir"] ? "&nbsp;" : format_file_size($file["size"]))."</td>
@@ -275,8 +272,9 @@ function file_table($path, $dirname) {
 function is_dir_empty($dirname) {
     if ($dir = @opendir($dirname)) {
         while ($filename = readdir ($dir)) {
-            if ($filename != "." && $filename != "..")
+            if ($filename !== "." && $filename !== "..") {
                 return false;
+            }
         }
     }
     else {
@@ -438,16 +436,15 @@ function get_files_subtree($mydir) {
     if (!($dir = opendir($mydir))) {
         return [];
     }
-    else {
-        while ($filename = readdir($dir)) {
-            if ($filename != "." && $filename != "..") {
-                if (!is_dir ($mydir.$filename))
-                    $retval[] = $filename;
-                else {
-                    $sub = get_files_subtree($mydir.$filename);
-                    foreach ($sub as $subfn) {
-                        $retval[] = $filename."/".$subfn;
-                    }
+
+    while ($filename = readdir($dir)) {
+        if ($filename != "." && $filename != "..") {
+            if (!is_dir ($mydir.$filename))
+                $retval[] = $filename;
+            else {
+                $sub = get_files_subtree($mydir.$filename);
+                foreach ($sub as $subfn) {
+                    $retval[] = $filename."/".$subfn;
                 }
             }
         }

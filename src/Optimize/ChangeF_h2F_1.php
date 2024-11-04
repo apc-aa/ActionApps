@@ -38,11 +38,11 @@ class ChangeF_h2F_1 extends AbstractOptimize {
     public function test4modules(array $modules): bool {
         $all_ok = true;
         foreach ($modules as $module_id) {
-            $s_fields = AA_Slice::getModule($module_id)->getFields();
+            $s_fields = AA_Slice::getModule($module_id)?->getFields();
             foreach ($s_fields as $fld) {
                 foreach (['alias1', 'alias2', 'alias3',] as $aliasfld) {
                     $alias = $fld[$aliasfld];
-                    if (!trim($alias) or ($alias == '_#UNDEFINE')) {
+                    if (($alias === '_#UNDEFINE') || !trim($alias)) {
                         continue;
                     }
                     if ($msg = $this->fieldtest($fld, $aliasfld)) {
@@ -62,11 +62,11 @@ class ChangeF_h2F_1 extends AbstractOptimize {
     public function repair4modules(array $modules): bool {
         // $all_ok = true;
         foreach ($modules as $module_id) {
-            $s_fields = AA_Slice::getModule($module_id)->getFields();
+            $s_fields = AA_Slice::getModule($module_id)?->getFields();
             foreach ($s_fields as $fld) {
                 foreach (['alias1', 'alias2', 'alias3',] as $aliasfld) {
                     $alias = $fld[$aliasfld];
-                    if (!trim($alias) or ($alias == '_#UNDEFINE')) {
+                    if (($alias === '_#UNDEFINE') || !trim($alias)) {
                         continue;
                     }
                     if ($this->fieldtest($fld, $aliasfld)) {

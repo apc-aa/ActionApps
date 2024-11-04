@@ -224,7 +224,7 @@ class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedI
             if (is_long_id($item_id)) {
                 $task->setProperty('item_id', $item_id);
             }
-            if (($shift = (int)$task->getProperty('shift')) == 0) {
+            if (($shift = (int)$task->getProperty('shift')) === 0) {
                 $task->toexecutelater();
             } else {
                 $task->schedule(time() + $shift);

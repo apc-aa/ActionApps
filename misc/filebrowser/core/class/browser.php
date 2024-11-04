@@ -222,7 +222,7 @@ class browser extends uploader {
             $this->errorMsg("Please enter new folder name.");
         if (preg_match('/[\/\\\\]/s', $newDir))
             $this->errorMsg("Unallowable characters in folder name.");
-        if (substr($newDir, 0, 1) == ".")
+        if (str_starts_with($newDir, "."))
             $this->errorMsg("Folder name shouldn't begins with '.'");
         if (file_exists("$dir/$newDir"))
             $this->errorMsg("A file or folder with that name already exists.");
@@ -246,7 +246,7 @@ class browser extends uploader {
             $this->errorMsg("Please enter new folder name.");
         if (preg_match('/[\/\\\\]/s', $newName))
             $this->errorMsg("Unallowable characters in folder name.");
-        if (substr($newName, 0, 1) == ".")
+        if (str_starts_with($newName, "."))
             $this->errorMsg("Folder name shouldn't begins with '.'");
         if (!@rename($dir, dirname($dir) . "/$newName"))
             $this->errorMsg("Cannot rename the folder.");
@@ -373,7 +373,7 @@ class browser extends uploader {
             $this->errorMsg("Please enter new file name.");
         if (preg_match('/[\/\\\\]/s', $newName))
             $this->errorMsg("Unallowable characters in file name.");
-        if (substr($newName, 0, 1) == ".")
+        if (str_starts_with($newName, "."))
             $this->errorMsg("File name shouldn't begins with '.'");
         $newName = "$dir/$newName";
         if (file_exists($newName))
@@ -426,7 +426,7 @@ class browser extends uploader {
         $error = array();
         foreach($_POST['files'] as $file) {
             $file = path::normalize($file);
-            if (substr($file, 0, 1) == ".") continue;
+            if (str_starts_with($file, ".")) continue;
             $type = explode("/", $file);
             $type = $type[0];
             if ($type != $this->type) continue;
@@ -437,7 +437,7 @@ class browser extends uploader {
             $ext = file::getExtension($base);
             if (!file_exists($path))
                 $error[] = $this->label("The file '{file}' does not exist.", $replace);
-            elseif (substr($base, 0, 1) == ".")
+            elseif (str_starts_with($base, "."))
                 $error[] = $this->htmlData($base) . ": " . $this->label("File name shouldn't begins with '.'");
             elseif (!$this->validateExtension($ext, $type))
                 $error[] = $this->htmlData($base) . ": " . $this->label("Denied file extension.");
@@ -478,7 +478,7 @@ class browser extends uploader {
         $error = array();
         foreach($_POST['files'] as $file) {
             $file = path::normalize($file);
-            if (substr($file, 0, 1) == ".") continue;
+            if (str_starts_with($file, ".")) continue;
             $type = explode("/", $file);
             $type = $type[0];
             if ($type != $this->type) continue;
@@ -489,7 +489,7 @@ class browser extends uploader {
             $ext = file::getExtension($base);
             if (!file_exists($path))
                 $error[] = $this->label("The file '{file}' does not exist.", $replace);
-            elseif (substr($base, 0, 1) == ".")
+            elseif (str_starts_with($base, "."))
                 $error[] = $this->htmlData($base) . ": " . $this->label("File name shouldn't begins with '.'");
             elseif (!$this->validateExtension($ext, $type))
                 $error[] = $this->htmlData($base) . ": " . $this->label("Denied file extension.");
@@ -528,7 +528,7 @@ class browser extends uploader {
         $error = array();
         foreach($_POST['files'] as $file) {
             $file = path::normalize($file);
-            if (substr($file, 0, 1) == ".") continue;
+            if (str_starts_with($file, ".")) continue;
             $type = explode("/", $file);
             $type = $type[0];
             if ($type != $this->type) continue;
@@ -580,7 +580,7 @@ class browser extends uploader {
         $zipFiles = array();
         foreach ($_POST['files'] as $file) {
             $file = path::normalize($file);
-            if ((substr($file, 0, 1) == ".") || (strpos($file, '/') !== false))
+            if ((str_starts_with($file, ".")) || (strpos($file, '/') !== false))
                 continue;
             $file = "$dir/$file";
             if (!is_file($file) || !is_readable($file) || !$this->checkFilePath($file))
@@ -618,7 +618,7 @@ class browser extends uploader {
         $zipFiles = array();
         foreach ($_POST['files'] as $file) {
             $file = path::normalize($file);
-            if ((substr($file, 0, 1) == "."))
+            if ((str_starts_with($file, ".")))
                 continue;
             $type = explode("/", $file);
             $type = $type[0];
@@ -835,12 +835,12 @@ class browser extends uploader {
     }
 
     protected function getDirInfo($dir, $removable=false) {
-        if ((substr(basename($dir), 0, 1) == ".") || !is_dir($dir) || !is_readable($dir))
+        if ((str_starts_with(basename($dir), ".")) || !is_dir($dir) || !is_readable($dir))
             return false;
         $dirs = dir::content($dir, array('types' => "dir"));
         if (is_array($dirs)) {
             foreach ($dirs as $key => $cdir)
-                if (substr(basename($cdir), 0, 1) == ".")
+                if (str_starts_with(basename($cdir), "."))
                     unset($dirs[$key]);
             $hasDirs = count($dirs) ? true : false;
         } else
@@ -855,7 +855,7 @@ class browser extends uploader {
             'hasDirs' => $hasDirs
         );
 
-        if ($dir == "{$this->config['uploadDir']}/{$this->session['dir']}")
+        if ($dir === "{$this->config['uploadDir']}/{$this->session['dir']}")
             $info['current'] = true;
 
         return $info;

@@ -252,8 +252,8 @@ class SQL_Lex {
                 }
             }
             //        elseif ( $val["type"] == TOKEN_TYPE_OPERATOR ) {
-            //            if ( $val['value'] == "+" ) $val['value'] = "and";
-            //            elseif ( $val['value'] == "-" ) $val['value'] = "not";
+            //            if ( $val['value'] === "+" ) $val['value'] = "and";
+            //            elseif ( $val['value'] === "-" ) $val['value'] = "not";
             //        }
             $newtoks[] = $val;
         }
@@ -405,7 +405,7 @@ class Syntax {
         $la = $this->tList->lookAhead();
         if (($la == SQL_Parser_Constants::TOKEN_TYPE_LEFT_PARENTHESIS) || ($la == SQL_Parser_Constants::TOKEN_TYPE_STRING) || ($la == SQL_Parser_Constants::TOKEN_TYPE_OPERATOR_NOT)) {      // S -> E
             //     echo("S->E<br>\n");//debug
-            if (($val = $this->E()) == "_SYNTAX_ERROR") {
+            if (($val = $this->E()) === "_SYNTAX_ERROR") {
                 return $val;
             }
             if (($err = $this->tList->match(SQL_Parser_Constants::TOKEN_TYPE_EOF))) {
@@ -429,10 +429,10 @@ class Syntax {
             ($la == SQL_Parser_Constants::TOKEN_TYPE_OPERATOR_NOT))        // E -> TE'
         {
             // echo("E->TEap<BR>\n");//debug
-            if (($val = $this->T()) == "_SYNTAX_ERROR") {
+            if (($val = $this->T()) === "_SYNTAX_ERROR") {
                 return $val;
             }
-            if (($foo = $this->Eap()) == "_SYNTAX_ERROR") {
+            if (($foo = $this->Eap()) === "_SYNTAX_ERROR") {
                 return $foo;
             }
             $val .= $foo;
@@ -453,10 +453,10 @@ class Syntax {
                 self::lastErr(4, $err);
                 return "_SYNTAX_ERROR";
             }
-            if (($val = $this->T()) == "_SYNTAX_ERROR") {
+            if (($val = $this->T()) === "_SYNTAX_ERROR") {
                 return $val;
             }
-            if (($foo = $this->Eap()) == "_SYNTAX_ERROR") {
+            if (($foo = $this->Eap()) === "_SYNTAX_ERROR") {
                 return $foo;
             }
             $val = " or " . $val . $foo;
@@ -476,10 +476,10 @@ class Syntax {
         $la = $this->tList->lookAhead();
         if (($la == SQL_Parser_Constants::TOKEN_TYPE_LEFT_PARENTHESIS) || ($la == SQL_Parser_Constants::TOKEN_TYPE_STRING) || ($la == SQL_Parser_Constants::TOKEN_TYPE_OPERATOR_NOT)) {        // T -> FT'
             // echo("T->FTap<BR>\n");//debug
-            if (($val = $this->F()) == "_SYNTAX_ERROR") {
+            if (($val = $this->F()) === "_SYNTAX_ERROR") {
                 return $val;
             }
-            if (($foo = $this->Tap()) == "_SYNTAX_ERROR") {
+            if (($foo = $this->Tap()) === "_SYNTAX_ERROR") {
                 return $foo;
             }
             $val .= $foo;
@@ -500,10 +500,10 @@ class Syntax {
                 self::lastErr(7, $err);
                 return "_SYNTAX_ERROR";
             }
-            if (($val = $this->F()) == "_SYNTAX_ERROR") {
+            if (($val = $this->F()) === "_SYNTAX_ERROR") {
                 return $val;
             }
-            if (($foo = $this->Tap()) == "_SYNTAX_ERROR") {
+            if (($foo = $this->Tap()) === "_SYNTAX_ERROR") {
                 return $foo;
             }
             $val = " and " . $val . $foo;
@@ -527,13 +527,13 @@ class Syntax {
                 self::lastErr(9, $err);
                 return "_SYNTAX_ERROR";
             }
-            if (($foo = $this->G()) == "_SYNTAX_ERROR") {
+            if (($foo = $this->G()) === "_SYNTAX_ERROR") {
                 return $foo;
             }
             $val = "not ($foo)";
         } elseif (($la == SQL_Parser_Constants::TOKEN_TYPE_LEFT_PARENTHESIS) || ($la == SQL_Parser_Constants::TOKEN_TYPE_STRING)) { // F -> G
             //            echo("F->G<BR>\n");//debug
-            if (($val = $this->G()) == "_SYNTAX_ERROR") {
+            if (($val = $this->G()) === "_SYNTAX_ERROR") {
                 return $val;
             }
         } else {
@@ -554,7 +554,7 @@ class Syntax {
                 return "_SYNTAX_ERROR";
             }
             $val = SQL_Parser_Constants::SYNTAX_LEFT_PAR;
-            if (($foo = $this->E()) == "_SYNTAX_ERROR") {
+            if (($foo = $this->E()) === "_SYNTAX_ERROR") {
                 return $foo;
             }
             $val .= $foo;

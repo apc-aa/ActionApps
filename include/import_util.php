@@ -44,7 +44,7 @@ const UPDATE = 2;
  * @return array|false|null
  */
 function getCSV($handle, $delimiter = ';', $enclosure = '"') {
-    if ($delimiter == '\t') {
+    if ($delimiter === '\t') {
         $delimiter = chr(9);  // tabulator ascii
     }
     if (strlen($enclosure) !== 1) {
@@ -160,7 +160,7 @@ class Actions {
                      case 'id..............' : $done = true; $fieldVal[]['value'] = new_id(); break;
                      default :
                    */
-                 if ($action['from'] && ($action['from'] != '__empty__')) {
+                 if ($action['from'] && ($action['from'] !== '__empty__')) {
                      $action['action']->setAction('store');
                  } elseif ($action['action']->getParams()) {
                      $action['action']->setAction('value');

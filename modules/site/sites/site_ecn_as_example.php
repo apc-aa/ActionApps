@@ -165,7 +165,7 @@ if ( isset($scrl) ) {      // page scroller
   $old_p = $$pagevar;
   $old_x='';
 }
-if ( ($old_p <= 0) OR ($old_p=='-') )
+if ( ($old_p <= 0) OR ($old_p === '-') )
   $old_p = 1;
 
 // zaverecna kontrola a pripadna uprava promennych:

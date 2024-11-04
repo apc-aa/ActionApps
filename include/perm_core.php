@@ -980,7 +980,7 @@ class AA_Permsystem_Reader extends AA_Permsystem {
     /** true, if the hash is in old format and needs to be updated with new hash */
     protected function needsRehashPassword($hash): bool {
         return password_needs_rehash($hash, PASSWORD_DEFAULT);
-        // return ( ($hash{0} !== '$') OR (substr($hash,0,3)=='$1$') );
+        // return ( ($hash{0} !== '$') OR (substr($hash,0,3)==='$1$') );
     }
 
     /** updates user password - should be called after successful authentication and if we needsRehashPassword() */

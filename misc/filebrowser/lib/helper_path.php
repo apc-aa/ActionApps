@@ -22,7 +22,7 @@ class path {
   * @return string */
 
     static function rel2abs_url($path) {
-        if (substr($path, 0, 1) == "/") return $path;
+        if (str_starts_with($path, "/")) return $path;
         $dir = @getcwd();
 
         if (!isset($_SERVER['DOCUMENT_ROOT']) || ($dir === false))
@@ -99,14 +99,14 @@ class path {
         // Backslash to slash convert
         if (strtoupper(substr(PHP_OS, 0, 3)) === "WIN") {
             $path = preg_replace('/([^\\\])\\\+([^\\\])/s', "$1/$2", $path);
-            if (substr($path, -1) == "\\") $path = substr($path, 0, -1);
-            if (substr($path, 0, 1) == "\\") $path = "/" . substr($path, 1);
+            if (str_ends_with($path, "\\")) $path = substr($path, 0, -1);
+            if (str_starts_with($path, "\\")) $path = "/" . substr($path, 1);
         }
 
         $path = preg_replace('/\/+/s', "/", $path);
 
         $path = "/$path";
-        if (substr($path, -1) != "/")
+        if (!str_ends_with($path, "/"))
             $path .= "/";
 
         $expr = '/\/([^\/]{1}|[^\.\/]{2}|[^\/]{3,})\/\.\.\//s';

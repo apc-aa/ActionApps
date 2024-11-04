@@ -61,11 +61,11 @@ function GetTimeZone() {
  */
 function safeChars($str) {
     for ( $i=0, $ino=strlen($str); $i<$ino; ++$i) {
-        if ($str[$i] == "\n") {
+        if ($str[$i] === "\n") {
             $retVal .= "\\n";
         }
         if (ord($str[$i]) > 31) {
-            $retVal .= (($str[$i] == "'") ? "\\'" : $str[$i]);
+            $retVal .= (($str[$i] === "'") ? "\\'" : $str[$i]);
         }
     }
     return $retVal;

@@ -39,7 +39,7 @@ if ( isset($scrl) ) {      // page scroller
   $pagevar = "scr_".$scrl."_Go";
   $apc_state['p'] = $$pagevar;
 }
-if ( ($apc_state["p"] <= 0) OR ($apc_state["p"]=='-') )
+if ( ($apc_state["p"] <= 0) OR ($apc_state["p"] === '-') )
   $apc_state["p"] = 1;
 
 // Set up some variables in apc_state

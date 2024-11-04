@@ -120,7 +120,7 @@ class dir {
         $files = array();
         while (($file = @readdir($dh)) !== false) {
 
-            if (($file == '.') || ($file == '..') ||
+            if (($file === '.') || ($file === '..') ||
                 !preg_match($options['pattern'], $file)
             )
                 continue;

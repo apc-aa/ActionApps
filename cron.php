@@ -122,7 +122,7 @@ function cron($time = 0) {
                 $now_part = $now[$part];
 
                 $value = $db->f($part);
-                if ($value == "*") {
+                if ($value === "*") {
                     $nearest[$part] = $realnow[$part];
                     continue;
                 }

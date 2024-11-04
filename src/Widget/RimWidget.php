@@ -80,7 +80,7 @@ class RimWidget extends Widget
         // }
 
         // // "#sLiCe-" prefix indicates select from items
-        // if ( substr($constgroup,0,7) == "#sLiCe-" ) {
+        // if ( substr($constgroup,0,7) === "#sLiCe-" ) {
         //
         //     $bin_filter                   = $this->getProperty('bin_filter', AA_BIN_ACT_PEND);
         //     $tag_prefix                   = $this->getProperty('tag_prefix');  // tag_prfix is deprecated - should not be used

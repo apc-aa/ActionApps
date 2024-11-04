@@ -388,7 +388,7 @@ class Files {
         if ($recursive) {
             $d = dir($folder);
             while (false !== ($entry = $d->read()))	{
-                if ($entry != '.' && $entry != '..') {
+                if ($entry !== '.' && $entry !== '..') {
                     $obj = self::fixPath($folder).$entry;
                     if (is_file($obj)) {
                         $deleted &= self::delFile($obj);
@@ -892,7 +892,7 @@ class AA_File_FTP_Wrapper extends AA_File_Wrapper_Ext {
     function _receiveLine(&$line) {
         do {
             $line = fgets($this->ctrl);
-        } while($line !== false && ($tmp = substr(trim($line), 3, 1)) != ' ' && $tmp != '');
+        } while($line !== false && ($tmp = substr(trim($line), 3, 1)) !== ' ' && $tmp != '');
 
         if ($line !== false) {
             return substr($line, 0, 3);
@@ -1031,7 +1031,7 @@ class AA_Directory_Wrapper {
             if ($this->open()) {
                 while ($file_name = $this->read()) {
                     if (is_dir($this->url . $file_name)) {
-                        if ($file_name != "." && $file_name != "..") {
+                        if ($file_name !== "." && $file_name !== "..") {
                             $this->subdir_names[] = $file_name;
                         }
                     }

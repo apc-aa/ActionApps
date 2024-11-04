@@ -95,12 +95,12 @@ class AA_Table {
         $ret  = '';
 
         // three variants - just for speedup
-        if ($exp == '_#1') {
+        if ($exp === '_#1') {
             // basic get element
             foreach ($cols as $col) {
                 $ret .= $this->getOne($r, $col);
             }
-        } elseif (substr_count($exp,'_#') == substr_count($exp,'_#')) {
+        } elseif (substr_count($exp,'_#1') === substr_count($exp,'_#')) {
             // get element surrounded by some code
             foreach ($cols as $col) {
                 $ret .= str_replace('_#1', $this->getOne($r, $col), $exp);
@@ -193,7 +193,7 @@ class AA_Array {
         }
         $ret = [];
         // speedup
-        if ( !strlen($exp) OR ($exp == '_#1')) {
+        if ( ($exp === '_#1') || !strlen($exp) ) {
             $ret = $work_arr;
         } else {
             foreach ($work_arr as $k => $v) {

@@ -727,7 +727,7 @@ class AA_Item {
         if ( !$ali ) {
             // try alternative alias (old form of _#ITEM_ID_ alias was _#ITEM_ID#. It was bad for
             // unaliasing with colon ':', so we change it, but for compatibility we have to test _#ITEM_ID# too)
-            if ( ! ((substr($alias,9,1)=='#') AND ($ali = $this->aliases->getAlias(substr($alias,0,9).'_')))) {
+            if ( ! ((substr($alias,9,1) === '#') AND ($ali = $this->aliases->getAlias(substr($alias,0,9).'_')))) {
                 return is_null($default) ? $alias : $default;
             }
         }
@@ -1459,7 +1459,7 @@ class AA_Item {
      * @return string
      */
     function f_c($col, $param=""): string {
-        if ( $param[0]=="!" ){
+        if ( $param[0] === "!" ){
             $param = substr($param, 1);
             $negate=true;
         }

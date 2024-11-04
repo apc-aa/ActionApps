@@ -59,7 +59,7 @@ class session {
 
         // Load session configuration
         foreach ($config as $key => $val)
-            $this->config[$key] = ((substr($key, 0, 1) != "_") && isset($session[$key]))
+            $this->config[$key] = ((!str_starts_with($key, "_")) && isset($session[$key]))
                 ? $session[$key]
                 : $val;
 

@@ -49,7 +49,7 @@ class CSV extends AbstractGrabber
     function __construct($file, $direct_input='', $delimiter=',', $enclosure='"', $caption=true, $source_encoding='') {
         $this->file             = $file;
         $this->direct_input     = $direct_input;
-        $this->delimiter        = strlen($delimiter) ? (($delimiter=='\t') ? chr(9) : $delimiter) : ','; // tabulator ascii
+        $this->delimiter        = strlen($delimiter) ? (($delimiter === '\t') ? chr(9) : $delimiter) : ','; // tabulator ascii
         $this->enclosure        = strlen($enclosure) ? $enclosure : '"';
         $this->caption          = $caption;
         $this->source_encoding  = $source_encoding;

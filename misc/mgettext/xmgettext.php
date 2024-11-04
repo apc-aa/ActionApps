@@ -468,7 +468,7 @@ function collect_messages_from_file($base_dir, $filename, &$messages, &$warnings
         }
 /*         echo "<br>". (($pos == 0) ? '+' : '.').
                      (!isidletter($filetext[$pos-1]) ? '+' : '.').
-                     (($filetext[$pos] == '_') ? '+' : '.').
+                     (($filetext[$pos] === '_') ? '+' : '.').
                      (($filetext[$pos+1] === 'm') ? '+' : '.').
                      (!isidletter($filetext[$pos+2]) ? '+' : '.'). $filetext[$pos] .", $comment, $find, $quotes, $inner_quotes, $message_part";
  */
@@ -481,7 +481,7 @@ function collect_messages_from_file($base_dir, $filename, &$messages, &$warnings
             // outside _m()
             case 0:
                 if (($pos == 0 || !isidletter($filetext[$pos-1]))
-                  && ($filetext[$pos] == '_')
+                  && ($filetext[$pos] === '_')
                   && ($filetext[$pos+1] === 'm')
                   && !isidletter($filetext[$pos+2])) {
                     // _m was the whole identifier
@@ -502,7 +502,7 @@ function collect_messages_from_file($base_dir, $filename, &$messages, &$warnings
             case 1:
                 if (isspace($filetext[$pos]))
                     break;
-                elseif ($filetext[$pos] == '(') {
+                elseif ($filetext[$pos] === '(') {
                     $find = 2;
                 } else {
                     $find = 0;

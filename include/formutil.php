@@ -960,7 +960,7 @@ class AA_Inputfield {
                             $this->varname_modify('[]');         // use slightly modified varname
                             // read related items for selected items
                             $sid = $this->fill_const_arr($slice_field, false, false, AA_BIN_ALL, $this->value, null, $tagprefix);  // if we fill it there, it is not refilled in inputSel()
-                            //$sid = (substr($this->param[0],0,7) == "#sLiCe-") ? substr($this->param[0], 7) : '';
+                            //$sid = (substr($this->param[0],0,7) === "#sLiCe-") ? substr($this->param[0], 7) : '';
                             $this->inputRelation($rows, $sid, $mode, $design, $actions, $whichitems, $conds, $condsrw, $slice_field, $sort_by, $listlen);
                             break;
                 case 'hco': [$constgroup, $levelCount, $boxWidth, $rows, $horizontalLevels, $firstSelectable, $levelNames] = $this->param;
