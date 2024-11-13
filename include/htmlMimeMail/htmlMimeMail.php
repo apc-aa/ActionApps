@@ -547,16 +547,9 @@ class htmlMimeMail {
 
         if (!empty($this->html_images)) {
             foreach ($this->html_images as $value) {
-                $this->html = str_replace($value['name'], 'cid:'.$value['cid'], $this->html);
-            }
-        }
-        if (!empty($this->html_images)) {
-            foreach ($this->html_images as $value) {
                 $quoted = preg_quote($value['name'], '/');
-                $cid    = preg_quote($value['cid'], '/');
-
-                $this->html = preg_replace("/src=\"$quoted\"|src='$quoted'/", "src=\"cid:$cid\"", $this->html);
-                $this->html = preg_replace("/background=\"$quoted\"|background='$quoted'/", "background=\"cid:$cid\"", $this->html);
+                $cid    = $value['cid']; // Do not preg_quote the CID - it is just hexadecimals
+                $this->html = preg_replace( "/(src|background)=(\"|')$quoted\\2/i", "$1=$2cid:$cid$2", $this->html);
             }
         }
 
