@@ -691,10 +691,10 @@ class AA_Bookmarks {
     /** Get array of bookmark (<key> => <name>)
      * @return array 'id'=>'name'
      */
-    function getKeyName(): array
+    public function getKeyName(): array
     {
         $ret = [];
-        if ( isset($this->bookmarks) AND is_array($this->bookmarks) ) {
+        if ( $this->bookmarks ) {
             foreach ( $this->bookmarks as $key => $book ) {
                 $name = $book['name'] . ($this->isSelected($key) ? ' -' : '');
                 $ret[(string)$key] = $name;

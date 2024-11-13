@@ -497,9 +497,9 @@ class AA_Showview {
                 }
                 //end mlx stuff
                 // Note this zids2 is always packed ids, so lost tag information
-                AA::$debug&2 && AA::$dbg->log("getViewOutput retrieved ".(isset($zids2) ? $zids2->count() : 0)." IDS");
+                AA::$debug&2 && AA::$dbg->log("getViewOutput retrieved ". $zids2->count()." IDS");
 
-                if (isset($zids) && isset($zids2) && ($zids->onetype() === "t")) {
+                if (isset($zids) && ($zids->onetype() === "t")) {
                     $zids2 = $zids2->retag($zids);
                 }
 
@@ -520,7 +520,7 @@ class AA_Showview {
 
                 $itemview = (new itemview($format, $aliases, $zids2, $list_from, $listlen))->setContentFunct( ($view_info['type'] === 'urls') ? 'GetItemContentMinimal' : '');
 
-                if (isset($zids2) && ($zids2->count() > ( ctype_digit((string)$list_from) ? (int)$list_from : 0))) { // $list_from could be 'random:number.........1' ...
+                if ($zids2->count() > ( ctype_digit((string)$list_from) ? (int)$list_from : 0)) { // $list_from could be 'random:number.........1' ...
                     $ret = $itemview->get_output(($view_info['type'] === 'calendar') ? 'calendar' : 'view');
                 } else {
                     $ret = $itemview->unaliasWithScroller($noitem_msg);

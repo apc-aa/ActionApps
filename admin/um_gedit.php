@@ -343,7 +343,7 @@ FrmTabEnd($form_buttons);
 echo '</form>';
 
 if ( !$add_submit AND !$grp_new) {
-    PrintPermUmPageEnd($MODULES, $mod_types);
+    PrintPermUmPageEnd($mod_types);
 }
 
 $apage->printFoot();

@@ -68,9 +68,10 @@ final class Crypt {
      * @return string - $kay modified to exact self::AES256GCM_KEYBYTES bytes
      */
     private static function createKey($pass) {
-        if ( ($passlen = strlen($pass)) > self::AES256GCM_KEYBYTES ) {
+        if (($passlen = strlen($pass)) > self::AES256GCM_KEYBYTES) {
             return pack("H*", hash('sha256', $pass));
-        } elseif ($passlen == self::AES256GCM_KEYBYTES) {
+        }
+        if ($passlen === self::AES256GCM_KEYBYTES) {
             return $pass;
         }
         return str_pad($pass,self::AES256GCM_KEYBYTES, pack("H*",hash('sha256', $pass)));
@@ -208,8 +209,7 @@ final class Crypt {
     {
         $lsb = self::getLSB($s_bits, $x);
         $X = self::toUInt32Bits($lsb) + 1;
-        $res = self::getMSB(self::getLength($x) - $s_bits, $x).pack('N', $X);
-        return $res;
+        return self::getMSB(self::getLength($x) - $s_bits, $x).pack('N', $X);
     }
     /**
      * @param string $bin
@@ -270,8 +270,7 @@ final class Crypt {
             $parts[$i] = ($parts[$i] >> 1) & 0x7FFFFFFF;
             $parts[$i] = pack('N', $parts[$i]);
         }
-        $res = implode('', $parts);
-        return $res;
+        return implode('', $parts);
     }
     /**
      * @param string $H

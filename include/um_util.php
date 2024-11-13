@@ -89,7 +89,7 @@ function PrintModulePermModificator($selected_user) {
         } else {               // no permission to this module
             // this module should be listed in 'Add perm' listbox
             $mod_2B_add .= "<option value=\"$mid\">".safe($name)."</option>";
-            $mod_types .= GetModuleLetter($type);  // string for javascript
+            $mod_types .= AA_Moduleregistry::info($type,'letter');  // string for javascript
         }                       // to know, what type of module the $mod_2B_add is
     }
 
@@ -135,9 +135,8 @@ function PrintModulePermModificator($selected_user) {
  * @return string
  */
 function GetModulePermRow($mid, $type, $name, $perm, $odd=false) {
-    global $MODULES;
     $ret = "<tr>
-        <td>". $MODULES[$type]['name'] .":&nbsp;". a_href(AA_Module::getModuleUrl($mid), safe($name)). "<br>&nbsp;&nbsp;&nbsp;&nbsp;($mid)</td>
+        <td>". AA_Moduleregistry::info($type, 'name') .":&nbsp;". a_href(AA_Module::getModuleUrl($mid), safe($name)). "<br>&nbsp;&nbsp;&nbsp;&nbsp;($mid)</td>
         <td>";
     if ( isset(AA_Perm::PERMS_ROLES_MODULES[$type]) AND is_array(AA_Perm::PERMS_ROLES_MODULES[$type]) ) {
         foreach (AA_Perm::PERMS_ROLES_MODULES[$type] as $role) {
@@ -213,31 +212,21 @@ function AddUserModulePerms($new_module, $new_module_role, $selected_user) {
     }
 }
 
-/** GetModuleLetter function
- * Returned Module letter is used for as full identification of the module
- * by 1-letter long id (we need it for some javascripts in um_util.php)
- * @param $type
- * @return bool|string
- */
-function GetModuleLetter($type) {
-    global $MODULES;
-    // get 'letter' or first letter of MODULE type
-    return ($MODULES[$type]['letter'] ?: substr($type,0,1));
-}
-
 /** PrintPermUmPageEnd function
- * @param $MODULES
+ *
  * @param $mod_types
  */
-function PrintPermUmPageEnd($MODULES, $mod_types) { ?>
+function PrintPermUmPageEnd($mod_types) { ?>
     <script>
       var mod       = [];
       var mod_names = [];
     <?php
     // tell javascript, which module uses which permission roles
     echo "\n var mod_types='$mod_types';\n";
-    foreach ($MODULES as $k => $v) {
-        $letter = GetModuleLetter($k);             // get 'letter' or first letter of MODULE type
+
+    $module_types = AA_Moduleregistry::singleton();
+    foreach ($module_types as $k => $module_conf) {
+        $letter = $module_conf->get('letter');             // get 'letter' or first letter of MODULE type
         if ( isset(AA_Perm::PERMS_ROLES_MODULES[$k]) AND is_array(AA_Perm::PERMS_ROLES_MODULES[$k]) ) {
             echo " mod[".ord($letter)."] = new Array('". implode("','", AA_Perm::PERMS_ROLES_MODULES[$k]) ."');  // module type $k \n";
             echo " mod_names[".ord($letter)."] = new Array('". implode("','", array_map( '_mdelayed', AA_Perm::PERMS_ROLES_MODULES[$k])) ."');\n";

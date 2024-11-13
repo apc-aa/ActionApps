@@ -49,7 +49,7 @@ class DB_PDO extends AbstractDB {
         return substr(substr($this->quote($str), 1), 0, -1);
     }
 
-    function quote($str) {
+    public function quote($str) {
         if (!$this->connect()) {
             return 0;
         }
@@ -57,7 +57,7 @@ class DB_PDO extends AbstractDB {
     }
 
     /** Quotes table name or column name */
-    function quote_identifier(string $str): string {
+    public function quote_identifier(string $str): string {
         $char = ($this->Server === 'mysql') ? '`' : '"';   // in original was used just '"' character (which is SQL standard and could be OK)
         return $char. implode("$char.$char", explode(".", $str)) . $char;
     }
@@ -134,12 +134,12 @@ class DB_PDO extends AbstractDB {
         return $status;
     }
 
-    function last_insert_id() {
+    public function last_insert_id(): false|string {
         return $this->dbh->lastInsertId();
     }
 
     /* public: connection management */
-    function connect() {
+    public function connect() {
         $Database = $this->Database;
         $Host     = $this->Host;
         $User     = $this->User;
@@ -156,13 +156,10 @@ class DB_PDO extends AbstractDB {
                             echo "Opening $Database<br>\n";
                         }
                         $this->dbh = new PDO("$this->Server:$Database", null, null, [PDO::ATTR_PERSISTENT => true]);
-                        if (!$this->dbh) {
-                            $this->halt("open($Database) failed.");
-                        }
                         break;
                     case "pgsql";
                         $this->dbh = new PDO("$this->Server:host=$Host;dbname=$Database;port=5432", $User);
-                        #       	$this->dbh = new PDO("$this->Server:host=$Host;dbname=$Database;port=5432", $User, $Password);
+                        // $this->dbh = new PDO("$this->Server:host=$Host;dbname=$Database;port=5432", $User, $Password);
                         break;
                     default:
                         $Port = $Port ? ";port=$Port" : '';
@@ -243,12 +240,12 @@ class DB_PDO extends AbstractDB {
     }
 
     /* public: discard the query result */
-    function free() {
+    public function free() {
         $this->sth->closeCursor();
     }
 
     /* public: perform a query */
-    function query($Query_String) {
+    public function query($Query_String) {
         /* No empty queries, please, since PHP4 chokes on them. */
         if ($Query_String == "") {
             /* The empty query string is passed on from the constructor,
@@ -295,10 +292,10 @@ class DB_PDO extends AbstractDB {
     }
 
     /* public get 1 column */
-  function fetch_column($col) {
+  public function fetch_column($col): array {
         if (!$this->sth) {
             $this->halt("fetchColumn called with no query pending.");
-            return 0;
+            return [];
         }
         return array_column($this->sth->fetchAll(PDO::FETCH_ASSOC), $col);
     }
@@ -354,11 +351,12 @@ class DB_PDO extends AbstractDB {
 //    }
 
     /* public: walk result set */
-    function next_record() {
+    public function next_record(): bool
+    {
         $fetch_style = PDO::FETCH_ASSOC; // use as function parameter?
         if (!$this->sth) {
             $this->halt("next_record called with no query pending.");
-            return 0;
+            return false;
         }
 
         if ($this->Debug) {
@@ -377,12 +375,12 @@ class DB_PDO extends AbstractDB {
     }
 
     /* public: position in result set */
-    function seek($pos = 0) {
+    public function seek($pos = 0) {
         die ("Seek function not supported");
     }
 
     /* public: table locking */
-    function lock($table, $mode = "write") {
+    public function lock($table, $mode = "write") {
         $query = "lock tables ";
         if (is_array($table)) {
             foreach ($table as $key=>$value) {
@@ -405,7 +403,7 @@ class DB_PDO extends AbstractDB {
         return $res;
     }
 
-    function unlock() {
+    public function unlock() {
         $res = $this->query("unlock tables");
         if (!$res) {
             $this->halt("unlock() failed.");
@@ -414,26 +412,26 @@ class DB_PDO extends AbstractDB {
     }
 
     /* public: evaluate the result (size, width) */
-    function affected_rows() {
+    public function affected_rows(): int
+    {
         return $this->sth->rowCount();
     }
 
-    function num_rows() {
+    public function num_rows(): int
+    {
         return $this->sth->rowCount();
     }
 
-    function num_fields() {
+    public function num_fields() {
         return $this->sth->columnCount();
     }
 
-    function f($Name) {
-        if (isset($this->Record[$Name])) {
-            return $this->Record[$Name];
-        }
+    public function f($Name) {
+        return $this->Record[$Name] ?? null;
     }
 
     /* public: return table metadata */
-    function metadata($table = "", $full = false) {
+    public function metadata($table = "", $full = false): array|false {
         $count = 0;
         $id = 0;
         $res = [];
@@ -488,23 +486,23 @@ class DB_PDO extends AbstractDB {
                             break;    # 3
                     }
                 }
-                if ((array_search("blob", $res[$i]["flags"]) !== false) and ($res[$i]["pdo_type"] == PDO::PARAM_STR)) {
+                if ((in_array("blob", $res[$i]["flags"])) and ($res[$i]["pdo_type"] == PDO::PARAM_STR)) {
                     $res[$i]["type"] = "text";
                 }
                 $res[$i]["default"] = "";        // pdo metadata does not return default value.
                 $res[$i]["extra"] = "";        // or auto_increment?
                 $res[$i]["comment"] = "";
                 $res[$i]["key"] = "";
-                if (array_search("primary_key", $res[$i]["flags"]) !== false) {
+                if (in_array("primary_key", $res[$i]["flags"], true)) {
                     $res[$i]["key"] = "PRI";
                 }
-                if (array_search("multiple_key", $res[$i]["flags"]) !== false) {
+                if (in_array("multiple_key", $res[$i]["flags"], true)) {
                     $res[$i]["key"] = "MUL";
                 }
-                if (array_search("unique_key", $res[$i]["flags"]) !== false) {
+                if (in_array("unique_key", $res[$i]["flags"], true)) {
                     $res[$i]["key"] = "UNI";
                 }
-                if (array_search("not_null", $res[$i]["flags"]) !== false) {
+                if (in_array("not_null", $res[$i]["flags"], true)) {
                     $res[$i]["null"] = "NO";
                 } else {
                     $res[$i]["null"] = "YES";
@@ -515,34 +513,19 @@ class DB_PDO extends AbstractDB {
             }
         } else {
             $this->connect();
-            switch ($this->Server) {
-                case "pgsql":
-                    $q = "SELECT a.attname AS name, t.typname AS type, a.attlen AS len,
-                a.atttypmod, a.attnotnull AS notnull, a.atthasdef, a.attnum
-                FROM pg_class c,  pg_attribute a, pg_type t
-                WHERE relkind in ('r', 'v') AND (c.relname='$table' or c.relname = lower('$table'))
-            AND a.attname not like '....%' AND a.attnum > 0 AND a.atttypid = t.oid AND a.attrelid = c.oid
-            ORDER BY a.attnum";
-                    break;
-                case "sqlite":
-                    $q = "PRAGMA table_info($table)";
-                    break;
-                case "mssql":
-                    $q = "SELECT COLUMN_NAME, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH, COLLATION_NAME,
-            CHARACTER_SET_NAME, IS_NULLABLE, COLUMN_DEFAULT
-            FROM INFORMATION_SCHEMA.COLUMNS
-            WHERE TABLE_SCHEMA=" . $this->quote($this->Database) . " AND TABLE_NAME=" . $this->quote($table);
-                    break;
-                case "mysql":
-                    $q = "SELECT COLUMN_NAME, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH, COLLATION_NAME,
-            EXTRA, COLUMN_COMMENT, COLUMN_KEY, PRIVILEGES, COLUMN_TYPE,
-            CHARACTER_SET_NAME, IS_NULLABLE, COLUMN_DEFAULT
-            FROM INFORMATION_SCHEMA.COLUMNS
-            WHERE TABLE_SCHEMA=" . $this->quote($this->Database) . " AND TABLE_NAME=" . $this->quote($table);
-                    break;
-                default:
-                    $q = "DESCRIBE " . $this->quote_identifier($table);
-            }
+            $q = match ($this->Server) {
+                "pgsql" => "SELECT a.attname AS name, t.typname AS type, a.attlen AS len, a.atttypmod, a.attnotnull AS notnull, a.atthasdef, a.attnum 
+                              FROM pg_class c,  pg_attribute a, pg_type t 
+                              WHERE relkind in ('r', 'v') AND (c.relname='$table' or c.relname = lower('$table')) AND a.attname not like '....%' AND a.attnum > 0 AND a.atttypid = t.oid AND a.attrelid = c.oid ORDER BY a.attnum",
+                "sqlite" => "PRAGMA table_info($table)",
+                "mssql" => "SELECT COLUMN_NAME, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH, COLLATION_NAME, CHARACTER_SET_NAME, IS_NULLABLE, COLUMN_DEFAULT  
+                              FROM INFORMATION_SCHEMA.COLUMNS             
+                              WHERE TABLE_SCHEMA=".$this->quote($this->Database)." AND TABLE_NAME=".$this->quote($table),
+                "mysql" => "SELECT COLUMN_NAME, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH, COLLATION_NAME, EXTRA, COLUMN_COMMENT, COLUMN_KEY, PRIVILEGES, COLUMN_TYPE, CHARACTER_SET_NAME, IS_NULLABLE, COLUMN_DEFAULT
+                              FROM INFORMATION_SCHEMA.COLUMNS
+                              WHERE TABLE_SCHEMA=".$this->quote($this->Database)." AND TABLE_NAME=".$this->quote($table),
+                default => "DESCRIBE ".$this->quote_identifier($table),
+            };
             try {
                 if (!$stmt = $this->dbh->query($q)) {
                     $this->halt("Metadata query failed.");
@@ -684,33 +667,21 @@ class DB_PDO extends AbstractDB {
     }
 
     /* public: find available table names */
-    function table_names() {
+    public function table_names(): array
+    {
         $this->connect();
         $i = 0;
         $res = [];
-        switch ($this->Server) {
-            case "sybase":
-                $q = "SELECT name FROM sysobjects WHERE type='U'";
-                break;
-            case "sqlite":
-                $q = "SELECT name FROM sqlite_master WHERE type = 'table'";
-                break;
-            case "mysql":
-                $q = "SHOW TABLES";
-                break;
-            case "pgsql":
-                $q = "SELECT c.relname FROM pg_catalog.pg_class c
-            LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
-            WHERE c.relkind IN ('r','') AND n.nspname NOT IN ('pg_catalog', 'pg_toast')
-            AND pg_catalog.pg_table_is_visible(c.oid);";
-                break;
-            case "oracle":
-                $q = "SELECT table_name FROM tabs";
-                break;
-            default:
-                $q = "SELECT table_name FROM information_schema.tables " .
-                    "WHERE table_type = 'BASE TABLE' AND table_schema NOT IN ('pg_catalog', 'information_schema')";
-        }
+        $q = match ($this->Server) {
+            "sybase" => "SELECT name FROM sysobjects WHERE type='U'",
+            "sqlite" => "SELECT name FROM sqlite_master WHERE type = 'table'",
+            "mysql"  => "SHOW TABLES",
+            "pgsql"  => "SELECT c.relname FROM pg_catalog.pg_class c LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+                          WHERE c.relkind IN ('r','') AND n.nspname NOT IN ('pg_catalog', 'pg_toast') AND pg_catalog.pg_table_is_visible(c.oid);",
+            "oracle" => "SELECT table_name FROM tabs",
+            default  => "SELECT table_name FROM information_schema.tables ".
+                          "WHERE table_type = 'BASE TABLE' AND table_schema NOT IN ('pg_catalog', 'information_schema')",
+        };
         if ($stmt = $this->dbh->query($q)) {
             foreach ($stmt as $row) {
                 $res[$i]["table_name"] = $row[0];
@@ -758,7 +729,7 @@ class DB_PDO extends AbstractDB {
     }
 
     /* private: error handling */
-    function halt($msg) {
+    public function halt($msg) {
         $this->getErrorInfo();
         if ($this->Debug) {
             echo $this->Server . "(pdo) error(" . $this->ErrCode . "):" . $this->Errno . " " . $this->Error . $msg;

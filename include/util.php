@@ -209,7 +209,7 @@ function DeBackslash($txt) {
     return str_replace('\\', "", $txt);        // better for two places
 }
 
-/** ParamImplode function
+/** joins values of array into string, values are separated by colon with colon escaping
  * @param $param
  * @return string
  */
@@ -597,19 +597,23 @@ function GetConstants($group, $order='pri', $column='name', $keycolumn='value'):
 /** GetModuleInfo function
  * gets fields from main table of the module
  * @param $module_id
- * @param $type
+ * @param $type string -  restricted to Links and slice
  * @deprecated - use AA_Slice::getModule($slice_id) and silmilar
  * @return array|bool|string
  */
 function GetModuleInfo($module_id, $type) {
-    global $MODULES;
-    if (!$module_id) {
+    $table = match($type) {
+        'Links'  => 'links',
+        'S'      => 'slice',
+        default  => '',
+    };
+    if (!$module_id OR !$table) {
         return false;
     }
 
     // $SQL = "SELECT * FROM " .$MODULES[$type]['table']. " WHERE id = '$p_module_id'";
     // $ret = GetTable2Array($SQL, 'aa_first', 'aa_fields');
-    $ret = DB_AA::select1([], "SELECT * FROM " . $MODULES[$type]['table'], [['id', $module_id, 'l']]);
+    $ret = DB_AA::select1([], "SELECT * FROM " . $table, [['id', $module_id, 'l']]);
 
     if ( $ret AND $ret['reading_password'] ) {
         // do it more secure and do not store it plain
@@ -1278,23 +1282,6 @@ function split_escaped($pattern, $string, $escape_pattern): array {
     return str_replace($dummy, $pattern, explode($pattern, str_replace($escape_pattern, $dummy, $string)));
 }
 
-/** join_escaped function
- * @param $pattern
- * @param $strings
- * @param $escape_pattern
- * @return string
- */
-function join_escaped($pattern, $strings, $escape_pattern) {
-    $retval = '';
-    foreach ((array)$strings as $val) {
-        if ($retval) {
-            $retval .= $pattern;
-        }
-        $retval .= str_replace($pattern, $escape_pattern, $val);
-    }
-    return $retval;
-}
-
 /** join_and_quote function
  * @param $pattern
  * @param $strings
@@ -1320,7 +1307,7 @@ function inner_trim(string $string): string {
 }
 
 function ReadFileSafe($url) {
-    if ( ((stripos($url, 'http://')===0) OR (stripos($url, 'https://')===0)) AND (stripos($url, '..')===false) ) {
+    if ( ((stripos($url, 'http://')===0) OR (stripos($url, 'https://')===0)) AND (!str_contains($url, '..')) ) {
         readfile($url);
     }
 }

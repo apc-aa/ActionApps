@@ -215,9 +215,8 @@ class PhpConsole {
             if(in_array($eventHash, $this->handledMessagesHashes)) {
                 return;
             }
-            else {
-                $this->handledMessagesHashes[] = $eventHash;
-            }
+
+            $this->handledMessagesHashes[] = $eventHash;
         }
         $this->sendEventToClient($event);
     }

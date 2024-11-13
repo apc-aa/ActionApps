@@ -76,20 +76,16 @@ SliceAddForm();
 
 FrmTabCaption(_m("Modules"));
 
-foreach ($MODULES as $type => $module) {
-  if ($module["hide_create_module"]) {
+$module_types = AA_Moduleregistry::singleton();
+foreach ($module_types as $type => $conf) {
+    if ($type === 'S') {
         continue;
     }
-    if ($module["show_templates"]) {
-        $templ_sb = GetModuleTemplateSelecbox($type, $g_modules);
-        if (!$templ_sb) {
-            // continue;
-        }
-    }
-    echo "<tr><td width=\"20%\"><b>"._mdelayed($module['name'])."</b></td><td width=\"60%\">".
-         ($module["show_templates"] ? $templ_sb : "&nbsp;").
-         "</td><td width=\"60%\">
-        <input type=\"submit\" name=\"create[$type]\" value=\""._m("Add")."\"></td></tr>";
+    echo "<tr>
+            <th>".$conf->get('name')."</th>
+            <td>". ($conf->get('use_templates') ? GetModuleTemplateSelecbox($type, $g_modules) : "&nbsp;")."</td>
+            <td><input type=submit name=\"create[$type]\" value=\""._m("Add")."\"></td>
+          </tr>";
 }
 FrmTabEnd();
 echo '<br><br>'. getTabStart();

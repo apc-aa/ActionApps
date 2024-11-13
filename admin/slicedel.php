@@ -24,8 +24,6 @@
  *
 */
 
-// expected $slice_id for edit slice, nothing for adding slice
-
 use AA\Util\InputVars;
 
 $require_default_lang = true;      // do not use module specific language file
@@ -34,7 +32,7 @@ require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
 
 try {
-    $slices2show = InputVars::stringGET('slices2show'); // alpha
+    $slices2show = InputVars::stringGET('slices2show'); // it means modules2show
     $cancel = InputVars::boolPOST('cancel');
     
     $Msg = InputVars::stringGETPOST('Msg');
@@ -45,34 +43,33 @@ if ($cancel) {
 }
 
 if (!IsSuperadmin()) {
-    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You don't have permissions to delete slice."), "admin");
+    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You don't have permissions to delete module."), "admin");
     exit;
 }
-/** PrintSlice function
- * @param $id
+/** Prints a table row with a checkbox and a link
+ * @param $id string module id
  * @param $name
  * @param $type
- * Prints a table row with a checkbox and a link
  */
-function PrintSlice($id, $name, $type) {
-    global $MODULES;
+function PrintModule($id, $name, $type) {
 
     $name = safe($name); $id = safe($id);
-    $url  = (($type === 'S') ? './slicedel2.php' : AA_INSTAL_PATH.$MODULES[$type]['directory']."moddelete.php" );
+    $url  = (($type === 'S') ? './slicedel2.php' : AA_INSTAL_PATH. AA_Moduleregistry::info($type,'dir')."moddelete.php" );
+    $module_type = AA_Moduleregistry::info($type,'name');
 
     echo "<tr>
             <td><input type=\"checkbox\" name=\"deletearr[]\" value=\"$id\"></td>
             <td>$name</td>
-            <td>$type</td>
-            <td><a class=aa-button-delete href=\"javascript:DeleteSlice('$id', '$url')\">". _m("Delete") ."</a></td>
+            <td>$module_type</td>
+            <td><a class=aa-button-delete href=\"javascript:DeleteModule('$id', '$url')\">". _m("Delete") ."</a></td>
             </tr>
          ";
 }
 
 $headcode = '
  <script>
-   function DeleteSlice(id,url2go) {
-     if ( !confirm("'. _m("Do you really want to delete this slice and all its fields and all its items?") .'")) {
+   function DeleteModule(id,url2go) {
+     if ( !confirm("'. _m("Do you really want to delete this module and all its fields and all its items?") .'")) {
          return;
      }
      var url=url2go+"'. StateUrl("?") .'"
@@ -82,7 +79,7 @@ $headcode = '
 ';
 
 $apage = new AA_Adminpageutil('aaadmin','slicedel');
-$apage->setTitle(_m("Admin - Delete Slice"));
+$apage->setTitle(_m("Admin - Delete Module"));
 $apage->setForm(['action'=>'slicedel2.php']);
 $apage->addRequire($headcode, 'AA_Req_Headcode');
 $apage->printHead($err, $Msg);
@@ -97,13 +94,12 @@ if ( !$slices2show ) {
     $slices2show = 'todelete';
 }
 
-FrmTabCaption(_m("Select slice to delete"), $form_buttons);
-FrmInputRadio('slices2show', _m('Slices to show'), ['todelete'=>_m('Marked as "Deleted"'), 'all'=>"All slices"],
+FrmTabCaption(_m("Select module to delete"), $form_buttons);
+FrmInputRadio('slices2show', _m('Modules to show'), ['todelete'=>_m('Marked as "Deleted"'), 'all'=>"All modules"],
               $slices2show, false, _m('This option allows you to display all the slices and delete them, so be careful!'), '', 0, true,
               "onClick='window.location = \"". get_admin_url('slicedel.php') ."&slices2show=\" + this.value'");
-FrmTabSeparator(_m('Slices to delete'));
+FrmTabSeparator(_m('Modules to delete'));
 
-// -- get views for current slice --
 if ($slices2show === 'all') {
     $SQL = "SELECT * FROM module ORDER BY type, name";
 } else {
@@ -112,11 +108,11 @@ if ($slices2show === 'all') {
 
 $db->query($SQL);
 while ( $db->next_record() ) {
-  PrintSlice(unpack_id($db->f('id')), $db->f('name'), $db->f('type') );
+  PrintModule(unpack_id($db->f('id')), $db->f('name'), $db->f('type') );
   $slice_to_delete = true;
 }
 if ( !$slice_to_delete ) {
-  echo "<tr><td>". _m("No slice marked for deletion") ."</td></tr>";
+  echo "<tr><td>". _m("No module marked for deletion") ."</td></tr>";
 }
 
 FrmTabEnd($form_buttons);

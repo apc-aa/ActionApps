@@ -443,9 +443,9 @@ if ($insert) {
               $old_password = $oldcontent4id[$pwdfield][0]['value'];
               $permok = (
                            // Old check, based on text_password flag
-                  ($text_password ? ($password == $old_password) : AA_Perm::comparePwds($password, $old_password))
+                  ($text_password ? ($password === $old_password) : AA_Perm::comparePwds($password, $old_password))
                   // Heuristic based on if old looks encrypted
-                  || ( !in_array(substr($old_password,0,2), ['xx','$2']) && ($old_password == $password)));
+                  || ( !in_array(substr($old_password,0,2), ['xx','$2'], true) && ($old_password === $password)));
         }
         break;
     }

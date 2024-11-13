@@ -2803,11 +2803,11 @@ $_m["You don't have permissions to delete slice."]
     = "Nem�te pr�va k odstran�n� web�ku.";
 
 // admin/slicedel.php, row 66, 84
-$_m["Admin - Delete Slice"]
+$_m["Admin - Delete Module"]
     = "Spr�va web�ku - Vymaz�n� web�ku";
 
 // admin/slicedel.php, row 69
-$_m["Do you really want to delete this slice and all its fields and all its items?"]
+$_m["Do you really want to delete this module and all its fields and all its items?"]
     = "Opravdu chcete smazat tento web�k v�etn� pol��ek a �l�nk�?";
 
 // admin/slicedel.php, row 93
@@ -2816,11 +2816,11 @@ $_m["Delete selected"]
     = "Vymazat vybran�";
 
 // admin/slicedel.php, row 99
-$_m["Select slice to delete"]
+$_m["Select module to delete"]
     = "Vyber web�k pro smaz�n�";
 
 // admin/slicedel.php, row 100
-$_m["Slices to show"]
+$_m["Modules to show"]
     = "";
 
 // admin/slicedel.php, row 100
@@ -2832,11 +2832,11 @@ $_m["This option allows you to display all the slices and delete them, so be car
     = "";
 
 // admin/slicedel.php, row 103
-$_m["Slices to delete"]
+$_m["Modules to delete"]
     = "";
 
 // admin/slicedel.php, row 118
-$_m["No slice marked for deletion"]
+$_m["No module marked for deletion"]
     = "��dn� web�k nebyl ozna�en za vymazan�";
 
 // admin/slicewiz.php, row 53, 56

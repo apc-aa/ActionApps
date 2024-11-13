@@ -179,7 +179,8 @@ class ConvertCharset {
     /** Called like $encoder = ConvertCharset::singleton($from, $to)
      * @return ConvertCharset
      */
-    static function singleton($from_charset = null, $to_charset = null) {
+    static function singleton($from_charset = null, $to_charset = null): ConvertCharset
+    {
         static $instance = null;
         if (is_null($instance)) {
             $instance = new ConvertCharset($from_charset, $to_charset);
@@ -430,11 +431,11 @@ class ConvertCharset {
             print $this->DebugOutput(0, 3, "\$StringToChange");
             return "";
         }
-        elseif (empty($FromCharset)) {
+
+        if (empty($FromCharset)) {
             print $this->DebugOutput(0, 3, "\$FromCharset");
             $FromCharset = 'utf-8';
-        }
-        elseif (empty($ToCharset)) {
+        } elseif (empty($ToCharset)) {
             print $this->DebugOutput(0, 3, "\$ToCharset");
             $ToCharset = 'utf-8';
         }
@@ -567,12 +568,8 @@ class ConvertCharset {
                     print $this->DebugOutput(0, 2, $StringToChange[$i]);
                 }
             }
-        }
-
-        /**
-         * This is second case. We are encoding from multibyte char string.
-         **/
-        elseif ($FromCharset === "utf-8") {
+        } else { // $FromCharset === "utf-8"
+            /** This is second case. We are encoding from multibyte char string.  **/
 
             $CharsetTable = $this->MakeConvertTable($ToCharset);
             foreach ($CharsetTable[$ToCharset] as $UnicodeHexChar => $HexChar) {

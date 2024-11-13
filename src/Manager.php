@@ -144,7 +144,7 @@ class Managed {
         $colspan = 100;
         if ( $manager_vid = $this->settings['itemview']['manager_vid'] ) {
             $view = AA_Views::getViewNumeric($manager_vid);
-            if ( $view AND !($view->f('deleted')>0) ) {
+            if ( !($view->f('deleted')>0) ) {
                 $format_strings = $view->getViewFormat();
                 if ( isset($this->scroller) ) {
                     $this->scroller->setListlen($view->f('listlen'));

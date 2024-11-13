@@ -244,11 +244,7 @@ function Links_IsPublic() {
  *  Parses folder string (like folder3) and returns folder number (3) or false
  */
 function Links_GetFolder($type) {
-    if (str_starts_with($type, 'folder')) {
-        return substr($type,6);
-    } else {
-        return false;
-    }
+    return str_starts_with($type, 'folder') ? substr($type, 6) : false;
 }
 
 /**
@@ -351,11 +347,9 @@ function  Links_LoadGlobalCategories() {
         // constants, but also in 'Description'. The general categories in
         // 'Description' field are the categs are not shown in selectbox
         $tmp = GetConstants($LINK_TYPE_CONSTANTS, 'pri', 'pri', 'description');
-        if ( is_array($tmp) ) {
-            foreach ( $tmp as $k => $pri ) {
-                if ( trim($k) != "" ) {
-                    $LINK_TYPE_CONSTANTS_ARR[$k] = $pri;
-                }
+        foreach ( $tmp as $k => $pri ) {
+            if ( trim($k) !== "" ) {
+                $LINK_TYPE_CONSTANTS_ARR[$k] = $pri;
             }
         }
     }

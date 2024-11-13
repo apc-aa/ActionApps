@@ -429,12 +429,12 @@ class cattree {
     * Returns multiple selectbox with subcategory list
     * @return string selectbox prepared to print
     */
-    function getFrmCatTree($onWhat, $width=250, $name='tree', $rows=8 ) {
-        if (!$name)   $name='tree';
-        if (!$width)  $width=250;
-        if (!$rows)   $rows=8;
-        $ret  = "<select name=\"$name\" size=\"$rows\" $onWhat style=\"width:{$width}px\"></select>";
-        return $ret;
+    function getFrmCatTree($onWhat, $width=250, $name='tree', $rows=8 ): string
+    {
+        if (!$name)  { $name='tree'; }
+        if (!$width) { $width=250;   }
+        if (!$rows)  { $rows=8;      }
+        return "<select name=\"$name\" size=\"$rows\" $onWhat style=\"width:{$width}px\"></select>";
     }
 
     /**

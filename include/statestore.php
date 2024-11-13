@@ -1106,12 +1106,14 @@ class AA_Components {
 
     /** getClassNames function
      *  Return names of all known AA classes, which begins with $mask with "type" as key
+     *
      * @param               $mask
-     * @param callable|null $filter
-     * @param bool          $tolower
+     * @param callable|null  $filter
+     * @param  bool  $tolower
+     *
      * @return array
      */
-    static function getClassNames($mask, ?callable $filter=null, $tolower=true): array {
+    static function getClassNames($mask, ?callable $filter=null, bool $tolower=true): array {
         $right_classes = [];
         if (false !== $pos = strrpos($mask, '\\')) {  // new composer approach with autoload - we can't use  get_declared_classes()
             $classfilter = substr($mask,$pos+1);
@@ -1127,14 +1129,13 @@ class AA_Components {
                     continue;
                 }
 
-                if (strlen($shortcut = str_replace($classfilter,'',$name))) {
+                if (($shortcut = str_replace($classfilter, '', $name)) !== '') {
                     $right_classes[$tolower ? strtolower($shortcut) : $shortcut] = 'AA\\'. $classdir.'\\'.$name;
                 }
             }
         } else {
             $mask_length = strlen($mask);
-            $right_class_names = array_filter(get_declared_classes(), static fn($classname) => substr($classname, 0, $mask_length) == $mask);
-            $right_classes = [];
+            $right_class_names = array_filter(get_declared_classes(), static fn($classname) => str_starts_with($classname, $mask));
             foreach ($right_class_names as $classname) {
                 $shortcut = substr($classname, $mask_length);
                 $right_classes[$tolower ? strtolower($shortcut) : $shortcut] = $classname;

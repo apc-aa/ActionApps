@@ -578,10 +578,12 @@ function GetTable2Array($SQL, $key="id", $values='aa_all') {
             // $val = DBFields($db);  // I changed the mysql_fetch_array($this->Query_ID, MYSQL_ASSOC) in db_mysql by adding MYSQL_ASSOC, so DBFields is no longer needed
         }
 
-        if ( $key === 'aa_first' ) {
+        if ($key === 'aa_first') {
             freeDB($db);
             return $val;
-        } elseif ( ($key === "NoCoLuMn") OR !$key ) {
+        }
+
+        if (($key === "NoCoLuMn") OR !$key) {
             $arr[] = $val;
         } elseif (str_starts_with($key, 'unpack:')) {
             $arr[unpack_id($db->f(substr($key,7)))] = $val;

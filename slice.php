@@ -141,9 +141,11 @@ function MyUrl($encap, $scr_url) {  //sliceID is here just for compatibility wit
     $server  = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? 'https' : 'http';
     $server .= '://'. $_SERVER['HTTP_HOST'];
 
-    if ( $scr_url ) {  // if included into php script
+    if ($scr_url) {  // if included into php script
         return $server.$scr_url;
-    } elseif ($_SERVER["HTTP_X_FORWARDED_SERVER"]) {
+    }
+
+    if ($_SERVER["HTTP_X_FORWARDED_SERVER"]) {
         return '';   // it is impossible to get original script name when AA is hidden after proxy. In this case we will use reletive URL (which is not bad in any case, I think - Honza 2016-11-21)
     }
 
@@ -223,7 +225,6 @@ if ( $inc ) {                   // this section must be after add_vars()
     //  StoreVariables(array("inc")); // store in session
     if ( !preg_match("/^([0-9a-z_])+(\.[0-9a-z]*)?$/i", $inc) ) {
         echo _m("Bad inc parameter - included file must be in the same directory as this .shtml file and must contain only alphanumeric characters"). " $inc";
-        ExitPage();
     } else {
         $fp = @fopen(shtml_base().$inc, "r");    //   if encapsulated
         if (!$fp) {
@@ -231,8 +232,8 @@ if ( $inc ) {                   // this section must be after add_vars()
         } else {
             fpassthru($fp);
         }
-        ExitPage();
     }
+    ExitPage();
 }
 
 // Take any slice to work with
@@ -270,7 +271,7 @@ if (!$slice_info['even_odd_differ']) {
 if ($fview || $iview) {
     if ($fview) {                       // use formating from view for fulltext
         $fview_info = AA_Views::getViewNumeric($fview);
-        if ($fview_info AND ($fview_info->f('deleted')<1)) {
+        if ($fview_info->f('deleted')<1) {
             $slice_info['fulltext_format']        = $fview_info->f('odd');
             $slice_info['fulltext_format_top']    = $fview_info->f('before');
             $slice_info['fulltext_format_bottom'] = $fview_info->f('after');
@@ -279,7 +280,7 @@ if ($fview || $iview) {
     }
     if ($iview) {                       // use formating from view for index
         $iview_info = AA_Views::getViewNumeric($iview);
-        if ($iview_info AND ($iview_info->f('deleted')<1)) {
+        if ($iview_info->f('deleted')<1) {
             $slice_info['group_by']        = $iview_info->f('group_by1');
             $slice_info['gb_direction']    = AA_View::VIEW_SORT_DIRECTIONS[$iview_info->f('g1_direction')];  // views uses different sort codes (historical reasons)
             $slice_info['category_format'] = $iview_info->f('group_title');
@@ -357,7 +358,7 @@ if ( $sh_itm OR $x OR $o OR $seo ) {
     }
 
     // show discussion if assigned
-    $discussion_vid = ( isset($dview) ? $dview : $slice_info['vid']);
+    $discussion_vid = ($dview ?? $slice_info['vid']);
     // you can set dview=0 to not show discussion
     if ($discussion_vid > 0) {
         $db->query("SELECT view.*, slice.flag FROM view, slice

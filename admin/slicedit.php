@@ -134,9 +134,9 @@ try {
 } catch (Exception) {}
 
 define ('PERMS_STATE', [
-    "0" => _m("Not allowed"),
-    "1" => _m("Active"),
-    "2" => _m("Hold bin")
+    0 => _m("Not allowed"),
+    1 => _m("Active"),
+    2 => _m("Hold bin")
 ]);
 
 define ('PERMS_ANONYMOUS_EDIT', [
@@ -159,23 +159,13 @@ if ($cancel) {
 if (is_array($create = $_POST['create'])) {
     reset($create);
     if ($type = key($create)) {
-        $url = StateUrl(AA_INSTAL_PATH. $MODULES[$type]["directory"] . "modedit.php?no_slice_id=1");
+        $url = StateUrl(AA_INSTAL_PATH. AA_Moduleregistry::info($type, 'dir') . "modedit.php?no_slice_id=1");
         if ( $_POST['template'][$type] ) {
             $url = get_url( $url, ["template[$type]" => $_POST['template'][$type]]);
         }
         go_url( $url );
     }
 }
-
-//foreach ($MODULES as $type => $module) {
-//     if ($create[$type]) {
-//         $url = StateUrl(AA_INSTAL_PATH. $module["directory"] . "modedit.php?no_slice_id=1");
-//         if ( $template[$type] ) {
-//             $url = get_url( $url, "template%5B$type%5D=". $template[$type]);
-//         }
-//         go_url( $url );
-//     }
-//}
 
 $err = [];          // error array (Init - just for initializing variable
 $superadmin  = IsSuperadmin();

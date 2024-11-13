@@ -44,42 +44,35 @@ class JsTriggers {
         "body"     => ["onLoad"],
     ];
 
-    protected $js_trig    = null;
-    protected $slice_id   = null;
-    protected $javascript = '';
+    /** @var array|null array with triggers used, e.g. ["onBlur" => 1, "onClick" => 1] which means aa_onBlur, aa_onClick are defined */
+    protected ?array  $js_trig    = null;
+    protected ?string $slice_id   = null;
+    protected string  $javascript = '';
 
     /** called from Singleton4idTrait */
     protected function __construct($id) {
         $this->slice_id = $id;
     }
 
-    /* $js_trig is an array with triggers used, e.g.
-    $js_trig["onBlur"] = 1
-    $js_trig["onClick"] = 1
-    means: aa_onBlur, aa_onClick are defined */
-    /** getTrig function
-     *
-     */
-    protected function loadTriggers() {
+    /** Load $js_trig array */
+    protected function loadTriggers(): array
+    {
         if (!is_null($this->js_trig)) {
             return $this->js_trig;
         }
         $this->js_trig = [];
 
         if ($this->javascript = (string)AA_Slice::getModuleProperty($this->slice_id, 'javascript')) {
-            $all_trig = [];
-            foreach (self::CONTROL_TRIGGERS as $ctrigs) {
-                $all_trig = array_merge($all_trig, $ctrigs);
-            }
-            $all_trig = array_unique($all_trig);
+            $all_trig = array_unique(array_merge(...array_values(self::CONTROL_TRIGGERS)));
 
-            $ws = "[ \t\n\r]*";
+            $ws = "\s*";
             foreach ($all_trig as $trg) {
                 // match e.g. aa_onSubmit( fieldid ) {
-                if (preg_match("/aa_$trg$ws\($ws" . "fieldid$ws\)$ws\{/", $this->javascript)) {
+                if (preg_match("/aa_{$trg}{$ws}\({$ws}fieldid{$ws}\){$ws}\{/", $this->javascript)) {
                     $this->js_trig[$trg] = true;
                 }
             }
+
         }
         return $this->js_trig;
     }
@@ -98,7 +91,7 @@ class JsTriggers {
         $control_triggers = self::CONTROL_TRIGGERS[$control];
         $retval  = '';
 
-        if (!$control_triggers or (!$this->js_trig and !$add)) {
+        if (!$control_triggers OR (!$this->js_trig AND !$add)) {
             return '';
         }
 
@@ -124,7 +117,7 @@ class JsTriggers {
             // the commands, but if you do so for onSubmit, you will get:
             //   return BeforeSubmit(); aa_onSubmit('inputform');
             // which is nonsense.
-            if (($ctrig === "onSubmit") and ($add[$ctrig] === "return BeforeSubmit()")) {
+            if (($ctrig === "onSubmit") AND ($add[$ctrig] === "return BeforeSubmit()")) {
                 if ($this->js_trig[$ctrig]) {
                     $retval .= " $ctrig=\"if( BeforeSubmit() ){ return aa_$ctrig('$fieldid'); } else { return false; }\"";
                 } else {
@@ -157,14 +150,19 @@ class JsTriggers {
             $events = [];
             foreach ($this->js_trig as $trig => $foo) {
                 foreach (self::CONTROL_TRIGGERS as $el => $evs) {
-                    if (in_array($trig,$evs)) {
+                    if (in_array($trig, $evs, true)) {
                         $events[$trig][] = $el;
                     }
                 }
             }
             $listeners = [];
             foreach ($events as $e => $els) {
-                $listeners[] = 'document.querySelectorAll("form[name=inputform] '. implode(', form[name=inputform] ', $els).'").forEach(function(el) { el.addEventListener("'.strtolower(substr($e,2)).'", aa_runevent, false); });';
+                if ($els[0] === 'body') {
+                    // special case for body onload
+                    $listeners[] = "aa_onLoad('');";
+                } else {
+                    $listeners[] = 'document.querySelectorAll("'.implode(', ', array_map(static fn($el) => "form[name=inputform] $el", $els)).'").forEach(function(el) { el.addEventListener("'.strtolower(substr($e,2)).'", aa_runevent, false); });';
+                }
             }
             if ($listeners) {
                 AA::Stringexpander()->addRequire(implode("\n",$listeners), 'AA_Req_Load');

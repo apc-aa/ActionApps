@@ -184,7 +184,7 @@ class AA_SQL_Updater {
      */
     function getOptimizers(): array {
         $optimizers = [];
-        foreach (AA_Components::getClassNames('AA\\Optimize\\', static fn($class) => in_array('sql_update', $class::types())) as $optimize_class) {
+        foreach (AA_Components::getClassNames('AA\\Optimize\\', static fn($class) => in_array('sql_update', $class::types(), true)) as $optimize_class) {
             $optimizers[sprintf("%05s",$optimize_class::priority()).$optimize_class] = AA_Serializable::factory($optimize_class);
         }
         ksort($optimizers);

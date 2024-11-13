@@ -257,10 +257,10 @@ echo "</td></tr>
 <tr><td>&nbsp;</td><td>";
 FrmSelectEasy("gb_header", getViewGroupFunctions(), $gb_header);
 FrmSelectEasy("gb_direction", [
-    '2' => _m("Ascending"),
-    '8' => _m("Descending"),
-    '1' => _m("Ascending by Priority"),
-    '9' => _m("Descending by Priority")
+    2 => _m("Ascending"),
+    8 => _m("Descending"),
+    1 => _m("Ascending by Priority"),
+    9 => _m("Descending by Priority")
 ],
     $gb_direction);
 PrintHelp( _m("'by Priority' is usable just for fields using constants (like category)") );

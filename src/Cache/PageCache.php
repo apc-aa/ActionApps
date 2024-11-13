@@ -112,11 +112,13 @@ class PageCache  {
         AA::$debug&2 && AA::$dbg->log("Pagecache->get(key):$key", 'Pagecache action:'.$action);
 
         if ( ENABLE_PAGE_CACHE ) {
-            if ( $action === 'invalidate' ) {
+            if ($action === 'invalidate') {
                 $this->invalidateById( $key );
                 AA::$debug&2 && AA::$dbg->log("Pagecache: return false - invlaidating");
                 return false;
-            } elseif ( $action == '1' ) {  // nocache=1
+            }
+
+            if ($action === '1') {  // nocache=1
                 AA::$debug&2 && AA::$dbg->log("Pagecache: return false - nocache");
                 return false;
             }
@@ -130,7 +132,7 @@ class PageCache  {
      *  value is then stored into pagecache (database), so next call
      *  of the $function (also from another script) with the same parameters
      *  is returned from cache - function is not performed.
-     *  Use this feature mainly for repeating, time consuming functions!
+     *  Use this feature mainly for repeating, time-consuming functions!
      *  You could use also object methods - then the $function parameter should
      *  be array (see http://php.net/manual/en/function.call-user-func.php)
      * @param $function

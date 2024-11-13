@@ -538,13 +538,13 @@ function AA_Message(text, type) {
       default:     attrs['class'] = 'aa-text';
                    type = 'text';
     }
-    if (text.charAt(0)=='/') {
+    if (text.charAt(0)==='/') {
         AA__systemDiv('aa-message-box', attrs, '<div id="aa-message-box-in"></div>');
         AA_Ajax('aa-message-box-in', text);
     } else {
         AA__systemDiv('aa-message-box', attrs, text.length ? '<div id="aa-message-box-in">'+text+'</div>' : '');
     }
-    if (type != 'text') {
+    if (type !== 'text') {
         setTimeout(function() { $('#aa-message-box').hide(); }, 3000);
     }
 }
@@ -561,7 +561,7 @@ function AA__systemDiv(id, attrs, text) {
     } else {
         if (!$('#aa-bottom-toolbar').length) {
             AA_Toolbar(''); // we need toolbar defined, we need it to test styles
-            if (AA_GetStyle('aa-bottom-toolbar', 'position')!='fixed') {
+            if (document.getElementById('aa-bottom-toolbar')?.getComputedStyle('position')!=='fixed') {
                 AA_LoadCss(AA_GetConf('path') + 'css/aa-system.css');
             }
         }
@@ -606,7 +606,7 @@ function AA_StateChange(id, state) {
 
 /** If condition, call callback directly. Otherwise - load js script from url and execute callback after the script is loaded */
 function AA_LoadJs(condition, callback, url, sync) {
-    if (condition && ((condition!='load_once') || (url && document.querySelector('script[src="'+url+'"]')))) {
+    if (condition && ((condition!=='load_once') || (url && document.querySelector('script[src="'+url+'"]')))) {
         if (callback) {
             callback();
         }
@@ -619,7 +619,7 @@ function AA_LoadJs(condition, callback, url, sync) {
 
         if (script.readyState) { //IE
             script.onreadystatechange = function () {
-                if (script.readyState == "loaded" || script.readyState == "complete") {
+                if (script.readyState === "loaded" || script.readyState === "complete") {
                     script.onreadystatechange = null;
                     if (callback) {
                         callback();
@@ -660,8 +660,7 @@ function AA_LoadCss(url) {
 
 /* function to check the computed value of a style element */
 function AA_GetStyle(id, name) {
-    var element = document.getElementById(id);
-    return element.currentStyle ? element.currentStyle[name] : window.getComputedStyle ? window.getComputedStyle(element, null).getPropertyValue(name) : null;
+    return document.getElementById(id)?.getComputedStyle(name) ?? null;
 }
 
 function AA_SaveEditors() {
@@ -795,7 +794,7 @@ function GetCookie(name) {
     var i    = 0;
     while (i < clen) {
         var j = i + alen;
-        if (document.cookie.substring(i, j) == arg) {
+        if (document.cookie.substring(i, j) === arg) {
             return getCookieVal(j);
         }
         i = document.cookie.indexOf(" ", i) + 1;
@@ -812,7 +811,7 @@ function DeleteCookie(name) {
 }
 
 function ToggleCookie(name,val) {
-    if ( GetCookie(name) != val ) {
+    if ( GetCookie(name) !== val ) {
         SetCookie(name,val);
     } else {
         DeleteCookie(name);

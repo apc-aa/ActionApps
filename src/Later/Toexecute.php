@@ -114,9 +114,8 @@ class Toexecute {
         if ($just_once) {
             if (isset($scheduled[$selector])) {
                 return;
-            } else {
-                $scheduled[$selector] = true;
             }
+            $scheduled[$selector] = true;
         }
 
         $time = (int)$time < time() ? time() : $time; // the same as in later()

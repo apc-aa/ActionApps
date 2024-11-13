@@ -232,7 +232,7 @@ FrmTabCaption(_m("Polls Module general data"), $form_buttons);
 ModuleFieldsForm($source_id, $marr = GetModuleFields($source_id), $superadmin, (bool)$template['P'], $new_owner, $new_owner_email);
 $lang_file = rtrim($marr[3],'3');   // trim for old php3 lang file extension
 
-FrmInputSelect("lang_file", _m("Used Language File"), $MODULES['P']['language_files'], $lang_file);
+FrmInputSelect("lang_file", _m("Used Language File"), AA_Moduleregistry::info('P','langs'), $lang_file);
 
 // module specific...
 

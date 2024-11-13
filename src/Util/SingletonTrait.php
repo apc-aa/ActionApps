@@ -1,21 +1,18 @@
 <?php
-
-
 namespace AA\Util;
 
 trait SingletonTrait {
-    private static $instance;
+    private static ?self $instance = null;
 
     private function __construct() {}
     private function __clone()     {}
-    private function __wakeup()    {}
-    private function __sleep()     {}
+    final public function __wakeup() {}
+    final public function __sleep() { return []; }
 
-    final public static function singleton() {
-        if(!self::$instance) {
-            self::$instance = new self();
+    final public static function singleton(): static {
+        if (static::$instance === null) {
+            static::$instance = new static();
         }
-
-        return self::$instance;
+        return static::$instance;
     }
 }

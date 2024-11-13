@@ -109,6 +109,7 @@ $slice_id      = AA::$module_id;   // @deprecated - use AA::$module_id instead
 
 require_once __DIR__ . "/util.php";  // must be after language include because of lang constants in util.php
 require_once __DIR__ . "/event.class.php";
+require_once __DIR__ . "/slice.class.php";  // AA_Moduleregistry
 
 // array of variables - used to transport variables between pages (instead of dangerous hidden tag)
 $sess->register('r_hidden');
@@ -136,7 +137,7 @@ while ($db->next_record()) {
     if (IsSuperadmin() OR ( !$db->f('deleted') AND $perm_slices[$my_slice_id] )) {
         $g_modules[$my_slice_id] = [
             'name' => $db->f('name'),
-            'type' => $MODULES[$db->f('type')] ? $db->f('type') : 'S'
+            'type' => AA_Moduleregistry::singleton()[$db->f('type')] ? $db->f('type') : 'S'   // @todo remove type and use AA_Module::getModuleType() or AA_Module::getModuleInfo() instead
         ];
     }
 }
@@ -155,7 +156,7 @@ if (!$no_slice_id) {
         // slice was just deleted, thus is not in $g_modules
         foreach ($g_modules as $mid => $mmodule) {
             // skip AA Core Field slice, if possible
-            if (($mmodule['type']==='S') AND ($mid <>  "41415f436f72655f4669656c64732e2e")) {
+            if (($mmodule['type']==='S') AND ($mid !== "41415f436f72655f4669656c64732e2e")) {
                 AA::$module_id = $mid;
                 break;
             }

@@ -844,6 +844,9 @@ class Widget extends AA_Object implements NamedInterface {
                 case 'other_option':
                     $ret[$pid] = new AA_Property($pid, _m("Text option for Other"), 'bool', false, true, 'bool', false, _m("Last option is considered as \"Other\" with the possibility to write text value"), '', "0");
                     break;
+                case 'select_plus':  // maybe later we change it to number to add more options
+                    $ret[$pid] = new AA_Property($pid, _m("Searchable"), 'bool', false, true, 'bool', false, _m("Uses special selectbox widget, which is searchable as substring.<br>Do not relly on current implementation in your possible scripts."), '', "1");
+                    break;
             }
         }
         return $ret;

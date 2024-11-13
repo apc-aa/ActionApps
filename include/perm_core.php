@@ -321,10 +321,8 @@ function FilemanPerms($slice_id) {
             if (IsSuperadmin()) {
                 $perms_ok = true;
             } else {
-                if (!$fileman_dir) {
-                    $perms_ok = false;
-                } else {
-                    $perms_ok = false;
+                $perms_ok = false;
+                if ($fileman_dir) {
                     if ($db->f("fileman_access") === "EDITOR" && IfSlPerm(PS_EDIT_ALL_ITEMS)) {
                         $perms_ok = true;
                     } elseif ($db->f("fileman_access") === "ADMINISTRATOR" && IfSlPerm(PS_FULLTEXT)) {

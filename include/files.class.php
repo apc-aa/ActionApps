@@ -442,11 +442,13 @@ class Files {
     function formatSize($size) {
         if ($size < 1024) {
             return $size.' bytes';
-        } elseif ($size >= 1024 && $size < 1024*1024) {
-            return sprintf('%01.2f',$size/1024.0).' Kb';
-        } else {
-            return sprintf('%01.2f',$size/(1024.0*1024)).' Mb';
         }
+
+        if ($size < 1024*1024) {
+            return sprintf('%01.2f',$size/1024.0).' Kb';
+        }
+
+        return sprintf('%01.2f',$size/(1024.0*1024)).' Mb';
     }
 
     /** sourceType function
@@ -1087,9 +1089,9 @@ class AA_Directory_Wrapper {
     function getFiles() {
         if ($this->readWholeDir()) {
             return $this->makeFileWrappers();
-        } else {
-            return false;
         }
+
+        return false;
     }
 
     /**
@@ -1099,9 +1101,9 @@ class AA_Directory_Wrapper {
     function getSubdirs() {
         if ($this->readWholeDir()) {
             return $this->makeSubdirWrappers();
-        } else {
-            return false;
         }
+
+        return false;
     }
 
     /**
@@ -1116,12 +1118,12 @@ class AA_Directory_Wrapper {
                     $return_array[] = $this->url . $file_name;
                 }
                 return $return_array;
-            } else {
-                return $this->file_names;
             }
-        } else {
-            return false;
+
+            return $this->file_names;
         }
+
+        return false;
     }
 
     /**
@@ -1141,9 +1143,9 @@ class AA_Directory_Wrapper {
                 }
             }
             return $return_array;
-        } else {
-            return false;
         }
+
+        return false;
     }
 
     /**
@@ -1193,9 +1195,9 @@ class AA_Directory_Wrapper {
             }
             return $return_array;
 
-        } else {
-            return [];
         }
+
+        return [];
     }
 
     /**

@@ -90,7 +90,7 @@ class Imgfunc
      *
      * @return false on success or text string with error message
      */
-    public static function resampleImage($simage, $dimage, $new_w, $new_h, $exact): bool
+    public static function resampleImage($simage, $dimage, $new_w, $new_h, $exact)
     {
 
         // if dimensions of new picture are not set, then do not resize

@@ -289,20 +289,20 @@ class AA_Aliases implements Iterator, ArrayAccess, Countable {
     }
 
     /** Iterator interface */
-    public function rewind()  { $this->lazyGet('lazy_aliases'); reset($this->lazy_aliases); }
-    public function current() { $this->lazyGet('lazy_aliases'); return current($this->lazy_aliases); }
-    public function key()     { $this->lazyGet('lazy_aliases'); return key($this->lazy_aliases); }
-    public function next()    { $this->lazyGet('lazy_aliases'); next($this->lazy_aliases); }
-    public function valid()   { $this->lazyGet('lazy_aliases'); return (current($this->lazy_aliases) !== false); }
+    public function rewind(): void   { $this->lazyGet('lazy_aliases'); reset($this->lazy_aliases); }
+    public function current(): mixed { $this->lazyGet('lazy_aliases'); return current($this->lazy_aliases); }
+    public function key(): mixed     { $this->lazyGet('lazy_aliases'); return key($this->lazy_aliases); }
+    public function next(): void     { $this->lazyGet('lazy_aliases'); next($this->lazy_aliases); }
+    public function valid(): bool    { $this->lazyGet('lazy_aliases'); return (current($this->lazy_aliases) !== false); }
 
     /** Countable interface - Returns number of values  */
-    public function count()   { $this->lazyGet('lazy_aliases'); return count($this->lazy_aliases); }
+    public function count(): int     { $this->lazyGet('lazy_aliases'); return count($this->lazy_aliases); }
 
     /** ArrayAccess interface */
-    public function offsetSet($offset, $value) { $this->lazyGet('lazy_aliases'); $this->lazy_aliases[$offset] = $value; }
-    public function offsetExists($offset)      { $this->lazyGet('lazy_aliases'); return isset($this->lazy_aliases[$offset]); }
-    public function offsetUnset($offset)       { $this->lazyGet('lazy_aliases'); unset($this->lazy_aliases[$offset]); }
-    public function offsetGet($offset)         { $this->lazyGet('lazy_aliases'); return $this->lazy_aliases[$offset] ?? null; }
+    public function offsetSet($offset, $value): void { $this->lazyGet('lazy_aliases');$this->lazy_aliases[$offset] = $value; }
+    public function offsetExists($offset): bool      { $this->lazyGet('lazy_aliases'); return isset($this->lazy_aliases[$offset]); }
+    public function offsetUnset($offset): void       { $this->lazyGet('lazy_aliases'); unset($this->lazy_aliases[$offset]); }
+    public function offsetGet($offset): mixed        { $this->lazyGet('lazy_aliases'); return $this->lazy_aliases[$offset] ?? null; }
 }
 
 // There we can mention $FIELD_TYPES, but they are not defined in this file,
@@ -312,75 +312,6 @@ class AA_Aliases implements Iterator, ArrayAccess, Countable {
 // The types are defined APC wide for easy item interchanging between APC nodes
 // (on the other hand, new type can be added just by placing new fileld
 // in database table fields as for 'AA_Core_Fields..' slice).
-
-/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * @global array $MODULES
- *     "name" is a description of the module,
- *     "hide_create_module" doesn't show the module in the Create Slice / Module page
- * @todo convert to AA_Module (AA_Module_site, ...)
- */
-$MODULES = [
-    'S' => [
-        'table'              => 'slice',
-        'name'               => _m('Slice'),
-        'hide_create_module' => 1,
-        'directory'          => "admin/",
-    ],
-    'W' => [
-        'table'          => 'site',
-        'name'           => 'Site',
-        'show_templates' => 1,  // show list of sites on 'create new' - used as templates
-        'directory'      => "modules/site/",
-        'language_files' => [
-            'en-utf8_site_lang.php' => 'en-utf8_site_lang.php',
-            'en_site_lang.php'      => 'en_site_lang.php',
-            'es_site_lang.php'      => 'es_site_lang.php',
-            'es-utf8_site_lang.php' => 'es-utf8_site_lang.php',
-            'cz_site_lang.php'      => 'cz_site_lang.php',
-            'cz-utf8_site_lang.php' => 'cz-utf8_site_lang.php',
-            'sk-utf8_site_lang.php' => 'sk-utf8_site_lang.php',
-        ],
-    ],
-    'J' => [
-        'table'     => 'jump',
-        'name'      => _m('Jump inside AA control panel'),
-        'directory' => "modules/jump/",
-    ],
-    'P' => [
-        'table'          => 'polls',
-        'name'           => _m('Polls for AA'),
-        'show_templates' => 1,
-        'directory'      => "modules/polls/",
-        'language_files' => [
-            "en_polls_lang.php"      => "en_polls_lang.php",
-            "es_polls_lang.php"      => "es_polls_lang.php",
-            "es-utf8_polls_lang.php" => "es-utf8_polls_lang.php",
-            "cz_polls_lang.php"      => "cz_polls_lang.php",
-            "cz-utf8_polls_lang.php" => "cz-utf8_polls_lang.php",
-            "sk-utf8_polls_lang.php" => "sk-utf8_polls_lang.php",
-        ],
-    ],
-
-];
-
-
-$MODULES['Alerts'] = [
-    'table'     => 'module',
-    'name'      => _m('Alerts'),
-    'directory' => "modules/alerts/",
-    'letter'    => 'A',
-];  // letter is used for the modules
-// which indentificator is not 1
-// letter long (we need 1-letter
-// identification for some
-// javascripts in um_util.php
-$MODULES['Links'] = [
-    'table'          => 'links',
-    'name'           => _m('Links'),
-    'show_templates' => 1,
-    'directory'      => "modules/links/",
-    'letter'         => 'L',
-];
 
 
 /** any string - used as parameter to included JS files in order browser can
@@ -580,19 +511,20 @@ function getViewFields() {
     return $VIEW_FIELDS;
 }
 
-function getViewGroupFunctions() {
+function getViewGroupFunctions(): array
+{
     return [
-        '0'   => _m("Whole text"),
-        '1'   => _m("1st letter"),
-        '2'   => '2 ' . _m("letters"),
-        '3'   => '3 ' . _m("letters"),
-        '4'   => '4 ' . _m("letters"),
-        '5'   => '5 ' . _m("letters"),
-        '6'   => '6 ' . _m("letters"),
-        '7'   => '7 ' . _m("letters"),
-        '8'   => '8 ' . _m("letters"),
-        '9'   => '9 ' . _m("letters"),
-        '127' => _m("all before ") . '~'   // we could add 126, 125,...
+        0   => _m("Whole text"),
+        1   => _m("1st letter"),
+        2   => '2 ' . _m("letters"),
+        3   => '3 ' . _m("letters"),
+        4   => '4 ' . _m("letters"),
+        5   => '5 ' . _m("letters"),
+        6   => '6 ' . _m("letters"),
+        7   => '7 ' . _m("letters"),
+        8   => '8 ' . _m("letters"),
+        9   => '9 ' . _m("letters"),
+        127 => _m("all before ") . '~'   // we could add 126, 125,...
     ];
 }
 
@@ -610,7 +542,8 @@ function getViewGroupFunctions() {
  *   See the "digest" view below for an example.
  * @return array
  */
-function getViewTypes() {
+function getViewTypes(): array
+{
     $field3def = [
         "label" => _m("vid"),
         "help"  => _m("now possible to use non numeric vid - like: photo_list and usage as {view:photo_list:...} or ..?vid=photo_list... Use only smallcaps - [a-z_]."),
@@ -1030,22 +963,22 @@ function getViewTypesInfo(string $type): array
     return match ($type) {
         'list' => [
             'modification' => [
-                '1' => 'search',
-                '2' => 'parameter',
-                '3' => 'statistic',
-                '4' => 'all in thread',
-                '5' => 'related',
-                '6' => 'keyword related',
+                1 => 'search',
+                2 => 'parameter',
+                3 => 'statistic',
+                4 => 'all in thread',
+                5 => 'related',
+                6 => 'keyword related',
             ],
             'aliases' => 'field',
         ],
         'full' => [
             'modification' => [
-                '11' => 'newest',
-                '12' => 'newest with condition',
-                '13' => 'oldest with condition',
-                '14' => 'id',
-                '15' => 'parameter',
+                11 => 'newest',
+                12 => 'newest with condition',
+                13 => 'oldest with condition',
+                14 => 'id',
+                15 => 'parameter',
             ],
             'aliases' => 'field',
         ],
@@ -1054,9 +987,9 @@ function getViewTypesInfo(string $type): array
         ],
         'discus' => [
             'modification' => [
-                '21' => 'timeorder',
-                '22' => 'reverse timeorder',
-                '23' => 'thread',
+                21 => 'timeorder',
+                22 => 'reverse timeorder',
+                23 => 'thread',
             ],
             'aditional'    => ['default' => '<img src="' . AA_INSTAL_PATH . 'images/blank.gif" width=20 height=1>'],
             'aditional2'   => ['default' => '<input type=button name=sel_ids value="' . _m("Show selected") . '" onClick=showSelectedComments() class="discbuttons">'],
@@ -1069,9 +1002,9 @@ function getViewTypesInfo(string $type): array
         ],
         'seetoo' => [
             'modification' => [
-                '31' => 'related',
-                '32' => 'keyword with OR',
-                '33' => 'keyword with AND',
+                31 => 'related',
+                32 => 'keyword with OR',
+                33 => 'keyword with AND',
             ],
             'aliases'      => 'field',
         ],

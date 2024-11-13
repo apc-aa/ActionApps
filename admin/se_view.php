@@ -215,8 +215,8 @@ function OrderFrm($name, $txt, $val, $order_fields, $easy_order=false, $group=fa
     $name=safe($name); $txt=safe($txt);
 
     $order_type = $easy_order ?
-        ['0'=>_m("Ascending"), '1' => _m("Descending")] :
-        ['0'=>_m("Ascending"), '1' => _m("Descending"), '2' => _m("Ascending by Priority"), '3' => _m("Descending by Priority")];
+        [0=>_m("Ascending"), 1 => _m("Descending")] :
+        [0=>_m("Ascending"), 1 => _m("Descending"), 2 => _m("Ascending by Priority"), 3 => _m("Descending by Priority")];
     echo "<tr><td><b>$txt</b> ";
     echo "</td>\n<td>";
     FrmSelectEasy($name, $order_fields, $val, ['onchange' => 'InitPage()']);
@@ -239,7 +239,7 @@ function OrderAliasFrm($name, $txt, $val) {
     global $vw_data;
     $name=safe($name); $txt=safe($txt);
 
-    $order_type = ['0'=>_m("Ascending"), '1' => _m("Descending"), '4'=>_m("Ascending (numeric)"),     '5' => _m("Descending (numeric)")];
+    $order_type = [0=>_m("Ascending"), 1 => _m("Descending"), 4=>_m("Ascending (numeric)"), 5 => _m("Descending (numeric)")];
     echo "<tr><td><b>$txt</b> ";
     echo "</td>\n<td><input name=\"$name\" size=\"14\" maxlength=\"10\" value=\"". safe($val) ."\">";
     $dirvarname = substr($name,0,1).substr($name,-1)."_direction";

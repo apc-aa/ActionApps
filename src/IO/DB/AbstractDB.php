@@ -53,46 +53,46 @@ abstract class AbstractDB {
     }
 
     /* public: walk result set */
-    public function next_record() {}
+    public function next_record(): bool { return false;}
 
     /* public: return all the results */
     // function fetch_table() {}
 
     /* public: return all the results */
-    function fetch_column($col) {}
+    public function fetch_column($col): array { return []; }
 
     /* public: position in result set */
-    function seek($pos = 0) {}
+    public function seek($pos = 0) {}
 
     /* public: table locking */
-    function lock($table, $mode="write") {}
+    public function lock($table, $mode="write") {}
 
-    function unlock() {}
+    public function unlock() {}
 
-    function ping() {}
+    public function ping() {}
 
     /* public: evaluate the result (size, width) */
-    function affected_rows() {}
+    public function affected_rows(): int { return 0; }
 
-    function num_rows() {}
+    public function num_rows(): int { return 0; }
 
-    function num_fields() {}
+    public function num_fields() {}
 
-    function last_insert_id() {}
+    public function last_insert_id(): false|string { return false; }
 
-    function f($Name) {}
+    public function f($Name) {}
 
     /** based on my test mysqli contains string[], while db_pdo:mysql returns columns in type based on table column type */
-    function record($Name = null) {
+    public function record($Name = null) {
         return  $Name ? $this->Record[$Name] : $this->Record;
     }
 
-    function metadata($table = "", $full = false) {}
+    public function metadata($table = "", $full = false): array|false { return false; }
 
-    function table_names() {}
+    public function table_names(): array { return []; }
 
     /* private: error handling */
-    function halt($msg) {
+    public function halt($msg) {
         if ($this->get_halt() === 'no') {
             return;
         }
@@ -102,7 +102,7 @@ abstract class AbstractDB {
         }
     }
 
-    function haltmsg($msg) {
+    public function haltmsg($msg) {
         huhl('err');
         printf("<p><b>Database error:</b> %s<br>\n", safe($msg));
         printf("<b>%s Error</b>: %s (%s)</p>\n", get_class_name($this), $this->Errno, $this->Error);

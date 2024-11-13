@@ -402,7 +402,7 @@ $form_buttons["cancel"]        = ["url"=>"um_uedit.php"];
 FrmTabEnd($form_buttons);
 
 if ( !$add_submit AND !$usr_new) {
-    PrintPermUmPageEnd($MODULES, $mod_types);
+    PrintPermUmPageEnd($mod_types);
 }
 
 $apage->printFoot();

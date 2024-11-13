@@ -33,7 +33,7 @@ require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/mgettext.php";
 // ----------------------------------------------------------------------------------------
 try {
-    $items_code      = InputVars::stringGETPOST('items_code');  // could be posted as url parameter as well
+    $items_code = InputVars::stringGETPOST('items_code');  // could be posted as url parameter as well
     $item_count = InputVars::intPOST('item_count');
     $item_set   = InputVars::stringPOST('item_set');
     $date_from  = InputVars::stringPOST('date_from');

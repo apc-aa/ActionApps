@@ -113,7 +113,7 @@ class TagWidget extends Widget
 
         $max_values = (int)$this->getProperty('max_values', 0); // Limit the number of values entered. If 0 or empty, the number is unlimitted
 
-        if (($max_values == 1) AND $required) {
+        if ($required AND ($max_values === 1)) {
             $multiple   = '';
             $max_values = 0;  // if I do not null it, the select2 widget will not allow changing the value
         } else {

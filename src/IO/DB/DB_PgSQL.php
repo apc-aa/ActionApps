@@ -90,7 +90,8 @@ class DB_PgSQL extends AbstractDB {
         return $this->Query_ID;
     }
 
-    function next_record() {
+    function next_record(): bool
+    {
         $this->Record = @pg_fetch_array($this->Query_ID, $this->Row++);
 
         $this->Error = pg_errormessage($this->Link_ID);
@@ -104,11 +105,11 @@ class DB_PgSQL extends AbstractDB {
         return false;
     }
 
-    function seek($pos = 1) {
+    public function seek($pos = 1) {
         $this->Row = $pos;
     }
 
-    function lock($table, $mode = "write") {
+    public function lock($table, $mode = "write") {
         if ($mode === "write") {
             $result = pg_exec($this->Link_ID, "lock table $table");
         } else {
@@ -117,7 +118,7 @@ class DB_PgSQL extends AbstractDB {
         return $result;
     }
 
-    function unlock() {
+    public function unlock() {
         return pg_exec($this->Link_ID, "commit");
     }
 
@@ -159,7 +160,7 @@ class DB_PgSQL extends AbstractDB {
         return $nextid;
     }
 
-    function metadata($table = "", $full = false) {
+    public function metadata($table = "", $full = false) {
         $count = 0;
         $id = 0;
         $res = [];
@@ -196,23 +197,24 @@ class DB_PgSQL extends AbstractDB {
         return $res;
     }
 
-    function affected_rows() {
+    public function affected_rows() {
         return pg_cmdtuples($this->Query_ID);
     }
 
-    function num_rows() {
+    function num_rows(): int
+    {
         return pg_numrows($this->Query_ID);
     }
 
-    function num_fields() {
+    public function num_fields() {
         return pg_numfields($this->Query_ID);
     }
 
-    function f($Name) {
+    public function f($Name) {
         return $this->Record[$Name];
     }
 
-    function table_names() {
+    public function table_names() {
         $this->query("select relname from pg_class where relkind = 'r' and not relname like 'pg_%'");
         $i = 0;
         while ($this->next_record()) {

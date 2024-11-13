@@ -191,10 +191,9 @@ class Linkcheck {
      * @param $valid_codes
      * @return string
      */
-    function add_check($arr, $valid_codes) {
-        $element = $this->remove_old($valid_codes);
-        $element = $arr["timestamp"] . "," . $arr["code"] . ":" . $element;
-        return $element;
+    function add_check($arr, $valid_codes): string
+    {
+        return $arr["timestamp"] . "," .$arr["code"] . ":" .$this->remove_old($valid_codes);
     }
 
     /** remove_old function
@@ -208,7 +207,7 @@ class Linkcheck {
         $valid_codes2 = "";
         if (count($dummy) > 9) {
             for ($i = 0; $i < 10; ++$i) {
-                $valid_codes2 .= $dummy[$i] . ($i == 9 ? "" : ":");
+                $valid_codes2 .= $dummy[$i] . ($i === 9 ? "" : ":");
             }
         } else {
             $valid_codes2 = $valid_codes;
@@ -248,9 +247,7 @@ class Linkcheck {
         }
         // returned number - 1000 is the biggest number, with worst error codes, we want to return
         // 14.64... is the count of linear function with the worst error code weights
-        $ret = round($num * (1000 / 14.644841269841));
-
-        return $ret;
+        return round($num * (1000 / 14.644841269841));
     }
 
 } // end - class AA_Linkcheck

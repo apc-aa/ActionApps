@@ -12,6 +12,9 @@ use AA\FormArray;
 /** Select Box widget */
 class SelWidget extends Widget
 {
+    /** @var array  list of selects for select2 library */
+    protected array $ids_4_select2 = [];
+
 
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
@@ -29,7 +32,35 @@ class SelWidget extends Widget
      * @return array
      */
     public static function getClassProperties(): array {
-        return Widget::propertiesShop(['const', 'slice_field', 'use_name', 'bin_filter', 'filter_conds', 'sort_by', 'additional_slice_pwd', 'const_arr', 'filter_conds_rw']);
+        return Widget::propertiesShop(['const', 'slice_field', 'use_name', 'bin_filter', 'filter_conds', 'sort_by', 'additional_slice_pwd', 'const_arr', 'select_plus']);  // it also counts with 'filter_conds_rw', but it is not used for this widget
+    }
+
+    protected function requireLibs($aa_property, $winfo): array {
+        return ['select2@4','aa-jslib@3'];
+        //    return array_merge(['select2'], parent::requireLibs($aa_property, $winfo));
+    }
+
+    /** script to run after the page DOM is loaded */
+    protected function requireRun($aa_property, $winfo): string {
+        $ret = '';
+        // are there some textareas not converted to CodeMirror?
+        if ($this->ids_4_select2) {
+            $sel2ids = implode(',',$this->ids_4_select2);
+            $ret .= <<<JS
+               const conf = {
+                    matcher: (params, data) => {
+                        if (!params.term) return data;
+                        if (data.text && data.text.toLowerCase().includes(params.term.toLowerCase())) {
+                            return data;
+                        }
+                        return null;
+                    }
+               }
+               document.querySelectorAll('$sel2ids').forEach( function(el) { $(el).select2(conf).on('select2:open', () => { document.querySelector('.select2-search__field').focus();}); } );
+            JS;
+            $this->ids_4_select2 = [];              // clean the list - all textareas are converted
+        }
+        return $ret;
     }
 
     /** Creates base widget HTML, which will be surrounded by Live, Ajxax
@@ -55,6 +86,7 @@ class SelWidget extends Widget
         // This widget uses constants - show selectbox!
         $input_name = $base_name . "[]";
         $input_id = FormArray::formName2Id($input_name);
+        $this->ids_4_select2[] = "#$input_id";
         $use_name = $this->getProperty('use_name', false);
         $multiple = self::multiple() ? ' multiple' : '';
 

@@ -137,10 +137,7 @@ class AA_Router {
                          'scroller_previous'  => _m('&laquo;'),
                          'scroller_length'    => SCROLLER_LENGTH
         ];
-        if (!isset($params[$param])) {
-            return '';
-        }
-        return $params[$param];
+        return $params[$param] ?? '';
     }
 
     /** _scrollerArray function
@@ -643,9 +640,8 @@ class AA_Stringexpand_Xid extends AA_Stringexpand_Nevercache {
         $router = AA_Router::singleton($router_class);
         if (empty($param) OR ctype_digit((string)$param) OR ($param==='path') OR ($param==='list') OR is_long_id($param)) {
             return $router->xid($param, $url);
-        } else {
-            return AA::Un('{item:'.$router->xid().':'.$param.'}');
         }
+        return AA::Un('{item:'.$router->xid().':'.$param.'}');
     }
 }
 

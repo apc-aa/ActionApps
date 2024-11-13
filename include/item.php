@@ -139,10 +139,12 @@ function make_return_url($r1="") {
     global $return_url, $sess;
     if ($r1) {
         return $r1;
-    } elseif ($return_url) {
+    }
+    if ($return_url) {
         return $return_url;
-    } elseif (!$sess) {   // If there is no $sess, then we need a return url, default to self, including parameters
-        // but remove any left over AA_Session, it will be re-added if needed
+    }
+    if (!$sess) {   // If there is no $sess, then we need a return url, default to self, including parameters
+        // but remove any leftover AA_Session, it will be re-added if needed
         return preg_match("/(.*)([?&])AA_Session=[0-9a-f]{32}(.*)/",$_SERVER['REQUEST_URI'],$parts) ? ($parts[1]. $parts[2]. $parts[3]) : $_SERVER['REQUEST_URI'];
     }
     return '';
@@ -705,9 +707,9 @@ class AA_Item {
                     $ret = "<script>\n document.write('<a href=\"".$linkpart[0]."'+'@'+'".$linkpart[1]."\" ".$add.">". $inner ."</a>')\n</script>";
                 }
                 return $ret;
-            } else {
-                return '<a href="'. $url ."\" $add>". $this->text2Html($txt, $html).'</a>';
             }
+
+            return '<a href="'. $url ."\" $add>". $this->text2Html($txt, $html).'</a>';
         }
         return $this->text2Html($txt,$html);
     }
@@ -909,9 +911,9 @@ class AA_Item {
         if ($param==='AA_DashOrLanG') {
             if ($this->isMultilingual($col)) {
                 return $this->text2Html($this->getval($col), $this->getFlag($col));
-            } else {
-                $param = '-';
             }
+
+            $param = '-';
         }
 
         $values = $this->getValues($col);
@@ -1166,7 +1168,9 @@ class AA_Item {
         if (($fieldToReturn === "id..............") OR ($fieldToReturn === "short_id........")) {
             print("f_q cannot yet return $fieldToReturn fields");
             return '';
-        } elseif ($fieldToMatch === "id..............") {
+        }
+
+        if ($fieldToMatch === "id..............") {
         // Special case id... its not a real field
             $fqsqlid = q_pack_id($stringToMatch);
             $SQL = "SELECT c2.text AS text
@@ -1215,7 +1219,6 @@ class AA_Item {
      * @return string
      */
     function RSS_restrict($txt, $len): string {
-        //    return utf8_encode(safe(substr($txt,0,$len)));
         return safe(substr($txt,0,$len));
     }
 
@@ -1605,7 +1608,7 @@ class AA_Item {
             $ret = ucwords (strtolower ($ret));
         }
 
-        if ( $addstr AND (strlen($ret) <> strlen($text))) {
+        if ( $addstr AND (strlen($ret) !== strlen($text))) {
             $ret .= $addstr;
         }
         return $ret;

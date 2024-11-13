@@ -56,14 +56,12 @@ class HitcounterGroup implements LaterInterface
         $varset = new CVarset;
         $hits = DB_AA::select(['id'=>'sum'], 'SELECT `id`, SUM(`hits`) as sum FROM `hit_archive`', $time_cond, null, ['id']);
         DB_AA::delete('hit_archive', $time_cond);
-        if (is_array($hits)) {
-            foreach ($hits as $id => $sum) {
-                $varset->clear();
-                $varset->add('id', 'number', $id);
-                $varset->add('hits', 'number', $sum);
-                $varset->add('time', 'number', $begin);
-                $varset->doInsert('hit_archive');
-            }
+        foreach ($hits as $id => $sum) {
+            $varset->clear();
+            $varset->add('id', 'number', $id);
+            $varset->add('hits', 'number', $sum);
+            $varset->add('time', 'number', $begin);
+            $varset->doInsert('hit_archive');
         }
     }
 

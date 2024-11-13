@@ -95,15 +95,14 @@ class RioWidget extends Widget
         $options = $this->getOptions($selected, $content, $use_name);
         $htmlopt = [];
         for ($i = 0, $ino = count($options); $i < $ino; ++$i) {
-            if ($other AND ($i == $ino-2) AND $options[$ino-1]['mis']) {  // special case - the filled Other option - use mis value added as last option and name from current option
+            if ($other && ($i === $ino-2) && $options[$ino-1]['mis']) {  // special case - the filled Other option - use mis value added as last option and name from current option
                 $opt = $options[$ino-1];
                 $opt['v'] = $options[$i]['v'];
                 $htmlopt[] = $this->getRadioButtonTag($opt, $input_name, $input_id . $i, "$widget_add $required", true);
                 break;
-            } else {
-                ;
-                $htmlopt[] = $this->getRadioButtonTag($options[$i], $input_name, $input_id.$i, "$widget_add $required", ($other and $i == $ino - 1));
             }
+
+            $htmlopt[] = $this->getRadioButtonTag($options[$i], $input_name, $input_id.$i, "$widget_add $required", ($other and $i == $ino - 1));
             // $required     = ''; // for radio it could be in all options
         }
 

@@ -529,7 +529,7 @@ class Cvarset {
 
     /**
      */
-    function last_insert_id() {
+    public function last_insert_id(): string|false {
         return $this->last_used_db->last_insert_id();
     }
 

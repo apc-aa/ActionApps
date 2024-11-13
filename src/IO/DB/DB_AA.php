@@ -492,7 +492,7 @@ class DB_AA extends AbstractDB
      * @param $SQL
      * @return int
      */
-    function query($SQL) {
+    public function query($SQL) {
         AA::$debug & 16 && AA::$dbg->tracestart('Query', $SQL);
         $ret = $this->dbase->query($SQL);
         AA::$debug & 16 && AA::$dbg->traceend('Query', (stripos($SQL, "SELECT") === 0) ? $this->dbase->num_rows() : $this->dbase->affected_rows());
@@ -500,9 +500,10 @@ class DB_AA extends AbstractDB
     }
 
     /** halt function
+     *
      * @param $msg
      */
-    function halt($msg) {
+    public function halt($msg) {
         if ($this->get_halt() === "no") {
             return;
         }
@@ -556,39 +557,39 @@ class DB_AA extends AbstractDB
 
     function free() { $this->dbase->free(); }
 
-    public function next_record() { return $this->dbase->next_record(); }
+    public function next_record(): bool { return $this->dbase->next_record(); }
 
     /* public: return all the results */
-    function fetch_column($col) { return $this->dbase->fetch_column($col); }
+    public function fetch_column($col): array { return $this->dbase->fetch_column($col); }
 
     /* public: position in result set */
-    function seek($pos = 0) { return $this->dbase->seek($pos); }
+    public function seek($pos = 0) { return $this->dbase->seek($pos); }
 
     /* public: table locking */
-    function lock($table, $mode = "write") { return $this->dbase->lock($table, $mode); }
+    public function lock($table, $mode = "write") { return $this->dbase->lock($table, $mode); }
 
-    function unlock() { return $this->dbase->unlock(); }
+    public function unlock() { return $this->dbase->unlock(); }
 
-    function ping() { $this->dbase->ping(); }
+    public function ping() { $this->dbase->ping(); }
 
     /** public: evaluate the result (size, width)
      * @return int
      */
-    function affected_rows() { return $this->dbase->affected_rows(); }
+    public function affected_rows(): int { return $this->dbase->affected_rows(); }
 
-    function num_rows() { return $this->dbase->num_rows(); }
+    public function num_rows(): int { return (int)$this->dbase->num_rows(); }
 
-    function num_fields() { return $this->dbase->num_fields(); }
+    public function num_fields() { return $this->dbase->num_fields(); }
 
-    function last_insert_id() { return $this->dbase->last_insert_id(); }
+    public function last_insert_id(): false|string { return $this->dbase->last_insert_id(); }
 
-    function f($Name) { return $this->dbase->f($Name); }
+    public function f($Name) { return $this->dbase->f($Name); }
 
-    function record($Name = null) { return $this->dbase->record($Name); }
+    public function record($Name = null) { return $this->dbase->record($Name); }
 
-    function metadata($table = "", $full = false) { return $this->dbase->metadata($table, $full); }
+    public function metadata($table = "", $full = false): false|array { return $this->dbase->metadata($table, $full); }
 
-    function table_names() { return $this->dbase->table_names(); }
+    public function table_names(): array { return $this->dbase->table_names(); }
 
-    function haltmsg($msg) { $this->dbase->haltmsg($msg); }
+    public function haltmsg($msg) { $this->dbase->haltmsg($msg); }
 }

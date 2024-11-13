@@ -404,10 +404,8 @@ function fileman_execute_command($basedir, $directory, $cmd, $arg, $chb, $fmset)
                 }
                 fclose ($filedes);
             }
-        }
 
-        // Rename
-        elseif ($cmd==='rename' && $filename) {
+        } elseif ($cmd==='rename') { // Rename
             make_secure($renamearg);
             $newname = dirname ($basedir.$filename)."/".$arg;
             if (file_exists ($newname)) {

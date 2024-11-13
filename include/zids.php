@@ -258,7 +258,8 @@ class zids implements Iterator, ArrayAccess, Countable {
     }
 
     /** Is zids empty? */
-    function isEmpty() {
+    public function isEmpty(): bool
+    {
         return (count($this->arr) < 1);
     }
 
@@ -330,18 +331,25 @@ class zids implements Iterator, ArrayAccess, Countable {
     /** use_short_ids function
      *
      */
-    function use_short_ids() {
+    public function use_short_ids(): bool
+    {
         return ($this->type === 's');
     }
 
-    /** id function
-     * Return nth id, note there is no guarantee what format this will be in, so its
-     * only really useful for serialization or if type is checked as well
+    /** Return nth id
+     *  Note there is no guarantee what format this will be in, so its only really useful for serialization or if type is checked as well
      * @param $idx
      * @return
      */
-    function id($idx=0) {
+    public function id($idx=0) {
         return $this->arr[$idx];
+    }
+
+    /** @return array ids array or part of it
+     *  Note there is no guarantee what format this will be in, so its only really useful for serialization or if type is checked as well
+     */
+    public function ids(?int $offset, ?int $length): array {
+        return is_null($offset) ? $this->arr : array_slice($this->arr, $offset, $length);
     }
 
     /** similar to short_or_longids() but is for one value and counts with string zids ('s', 'l', 'w') */
@@ -367,10 +375,12 @@ class zids implements Iterator, ArrayAccess, Countable {
     }
 
     /** sanitize ids  - restrict (filter) item ids from specified slice
+     *
      * @param  string $slice_id
+     *
      * @return zids
      */
-    public function itemFilter(array $slice_ids): zids|static
+    public function itemFilter(array $slice_ids): static
     {
         if (($this->count() < 1) OR !$slice_ids) {
             return $this->clear('l');
@@ -384,8 +394,9 @@ class zids implements Iterator, ArrayAccess, Countable {
      * @param $offset
      * @param $length
      * @return zids
+     * @see zids->ids() for similar function returning array
      */
-    function slice($offset, $length=1): zids  {
+    public function slice($offset, $length=1): zids  {
         return new zids(array_slice($this->arr,$offset,$length),$this->type);
     }
 

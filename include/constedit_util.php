@@ -295,7 +295,8 @@ function hcCompareConstants($a, $b) {
     global $hcCol;
     if ($a[$hcCol["Prior"]] > $b[$hcCol["Prior"]]) {
         return 1;
-    } elseif ($a[$hcCol["Prior"]] < $b[$hcCol["Prior"]]) {
+    }
+    if ($a[$hcCol["Prior"]] < $b[$hcCol["Prior"]]) {
         return -1;
     }
     return $a[$hcCol["Name"]] > $b[$hcCol["Name"]];

@@ -271,7 +271,7 @@ class Saver implements AA\Later\LaterInterface {
                     $ok_count++;
 
                     // Update relation table to show where came from
-                    if ($new_item_id AND $old_item_id AND ($new_item_id != $old_item_id)) {
+                    if ($old_item_id AND ($new_item_id != $old_item_id)) {
                         AddRelationFeed($new_item_id, $old_item_id, REL_FLAG_SOURCE);
                     }
                 }

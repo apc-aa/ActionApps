@@ -73,7 +73,7 @@ class Langs {
      *  usage: AA\Util\Langs::getCharset();
      */
     public static function getCharset($lang_code = null) {
-        if (!$lang_code or !is_array($ret = self::$LANGS[$lang_code])) {
+        if (!$lang_code OR !is_array($ret = self::$LANGS[$lang_code])) {
             $ret = self::$LANGS[(self::currentLang())];
         }
         return $ret[0];

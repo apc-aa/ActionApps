@@ -40,7 +40,7 @@ class HitcounterStats implements LaterInterface
         $item_ids = DB_AA::select('', 'SELECT id FROM item', [['slice_id', $this->slice_id, 'l']]);
         $dbgtime[] = microtime(true);
 
-        if (is_array($item_ids)) {
+        if ($item_ids) {
             // shuffle - if there are a lot of items, so we reach timelimit, it is better to
             // count hits in random order, so each item will be counted after some time period
             shuffle($item_ids);

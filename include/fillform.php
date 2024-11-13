@@ -101,7 +101,7 @@ function fillForm(): string {
 
     // reader management: aw=ABCDE is sent in welcome
     // emails to confirm the email address
-    if ($slice->getProperty("type") === "ReaderManagement") {
+    if ($slice?->getProperty("type") === "ReaderManagement") {
         if ($GLOBALS["aw"]) {
             $GLOBALS["ac"] = $GLOBALS["aw"];
             if (confirm_email($slice_id, $GLOBALS["aw"])) {
@@ -122,28 +122,28 @@ function fillForm(): string {
     // For Reader management slices we use special ways to find the item:
     // either HTTP auth info, or the access code. No other possibility.
 
-    if ($slice->getProperty("type") === "ReaderManagement") {
-        if ($slice->getProperty("permit_anonymous_edit") == ANONYMOUS_EDIT_HTTP_AUTH) {
+    if ($slice?->getProperty("type") === "ReaderManagement") {
+        if ($slice?->getProperty("permit_anonymous_edit") == ANONYMOUS_EDIT_HTTP_AUTH) {
             if ( !$_SERVER["REMOTE_USER"]) {
                 return "<!--Only HTTP authenticated users can edit the reader's data (see slice setting)-->";
                   // if no user is sent, this is perhaps the subscribe page
                   // which is out of the protected folder
-            } else {
-                $db = getDB();
-                $db->query(
-                  "SELECT item.id FROM content INNER JOIN item
-                   ON content.item_id = item.id
-                   WHERE item.slice_id='".q_pack_id($slice_id)."'
-                   AND content.field_id='".FIELDID_USERNAME."'
-                   AND content.text='".addslashes($_SERVER["REMOTE_USER"])."'");
-                if ($db->num_rows() != 1) {
-                    freeDB($db);
-                    return "<!--HTTP AUTH USER not OK-->";
-                }
-                $db->next_record();
-                $my_item_id = unpack_id($db->f("id"));
-                freeDB($db);
             }
+
+            $db         = getDB();
+            $db->query(
+              "SELECT item.id FROM content INNER JOIN item
+               ON content.item_id = item.id
+               WHERE item.slice_id='".q_pack_id($slice_id)."'
+               AND content.field_id='".FIELDID_USERNAME."'
+               AND content.text='".addslashes($_SERVER["REMOTE_USER"])."'");
+            if ($db->num_rows() != 1) {
+                freeDB($db);
+                return "<!--HTTP AUTH USER not OK-->";
+            }
+            $db->next_record();
+            $my_item_id = unpack_id($db->f("id"));
+            freeDB($db);
         } elseif ($GLOBALS["ac"]) { // access code
             $db = getDB();
             $SQL =
@@ -172,7 +172,7 @@ function fillForm(): string {
 
     $permsok = true;
     // Do not show items which are not allowed to be updated
-    switch ($slice->getProperty("permit_anonymous_edit")) {
+    switch ($slice?->getProperty("permit_anonymous_edit")) {
     case ANONYMOUS_EDIT_NOT_ALLOWED: $permsok = false; break;
     case ANONYMOUS_EDIT_ONLY_ANONYMOUS:
     case ANONYMOUS_EDIT_NOT_EDITED_IN_AA:

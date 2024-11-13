@@ -144,11 +144,6 @@ class AA_Exporter_Csv extends AA_Exporter {
             exit;
         }
 
-        if ( !$temp_file ) {
-            echo _m("Can't create temporary file.");
-            exit;
-        }
-
         $this->grabber->prepare();       // maybe some initialization in grabber
 
         $index = 0;

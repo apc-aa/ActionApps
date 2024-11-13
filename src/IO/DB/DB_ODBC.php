@@ -123,10 +123,11 @@ class DB_ODBC extends AbstractDB {
     }
 
     /* public: walk result set */
-    function next_record() {
+    public function next_record(): bool
+    {
         if (!$this->Query_ID) {
             $this->halt("next_record called with no query pending.");
-            return 0;
+            return false;
         }
 
         $this->Record = [];
@@ -147,7 +148,7 @@ class DB_ODBC extends AbstractDB {
     }
 
     /* public: position in result set */
-    function seek($pos = 0) {
+    public function seek($pos = 0) {
         $this->Row = $pos;
         return 1;
     }
@@ -185,7 +186,7 @@ class DB_ODBC extends AbstractDB {
 
     The function halt()s if a lock cannot be obtained.
     */
-    function lock($table, $mode = "write") {
+    public function lock($table, $mode = "write") {
 
         if (!$this->connect()) {
             return 0; /* we already complained in connect() about that. */
@@ -272,7 +273,7 @@ class DB_ODBC extends AbstractDB {
         return $got_lock;
     }
 
-    function unlock($table = "") {
+    public function unlock($table = "") {
         if (!$this->connect()) {
             return 0; /* we already complained in connect() about that. */
         };
@@ -299,11 +300,12 @@ class DB_ODBC extends AbstractDB {
     }
 
     /* public: evaluate the result (size, width) */
-    function affected_rows() {
+    public function affected_rows() {
         return odbc_num_rows($this->Query_ID);
     }
 
-    function num_rows() {
+    function num_rows(): int
+    {
         # Due to a strange problem with the odbc_fetch_row function it is only
         # possible to walk through the result set once. By storing the row count
         # this problem is avoided.
@@ -346,12 +348,12 @@ class DB_ODBC extends AbstractDB {
         return $num_rows;
     }
 
-    function num_fields() {
+    public function num_fields() {
         # NOTE: this only works after next_record has been called!
         return count($this->Record) / 2;
     }
 
-    function f($Name) {
+    public function f($Name) {
         if (isset($this->Record[$Name])) {
             return $this->Record[strtolower($Name)];
         }
@@ -411,7 +413,7 @@ class DB_ODBC extends AbstractDB {
     }
 
     /* public: return table metadata */
-    function metadata($table = "", $full = false) {
+    public function metadata($table = "", $full = false) {
         $count = 0;
         $id = 0;
         $res = [];
@@ -516,7 +518,7 @@ class DB_ODBC extends AbstractDB {
     }
 
     /* public: find available table names */
-    function table_names() {
+    public function table_names() {
         $this->connect();
         $h = odbc_tables($this->Link_ID);
         $i = 0;
@@ -533,7 +535,7 @@ class DB_ODBC extends AbstractDB {
     }
 
     /* private: error handling */
-    function halt($msg) {
+    public function halt($msg) {
         $this->Errno = 1;
         $this->Error = "General Error (The ODBC interface cannot return detailed error messages).";
         parent::halt($msg);

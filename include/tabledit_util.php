@@ -545,7 +545,7 @@ function GetKey($primary, $columns, $varset) {
         $val   = $varset->get($columns[$alias]["field"]);
         $key[] = $columns[$alias]["view"]["unpacked"] ? unpack_id($val) : safe($val);
     }
-    return join_escaped(":",$key,"#:");
+    return ParamImplode($key);
 }
 
 /** GetKeyFromRecord function
@@ -559,11 +559,12 @@ function GetKeyFromRecord($primary, $columns, $record) {
         echo _m('Table do not have set primary key on single column. You can specify primary key by primary => array (field1, field2, ...) parameter for tableedit').'<br>';
         return;
     }
+    $key = [];
     foreach ($primary as $alias => $v) {
         $val   = $record[$alias];
         $key[] = ($columns[$alias]["view"]["unpacked"] ? unpack_id($val) : safe($val));
     }
-    return join_escaped(":",$key,"#:");
+    return ParamImplode($key);
 }
 
 // -----------------------------------------------------------------------------------

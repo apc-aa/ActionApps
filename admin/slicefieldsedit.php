@@ -143,10 +143,8 @@ $inputform_settings['cancel_url']          = ($return_url === 'close_dialog' ? g
                                               ($return_url ? expand_return_url(1) : get_admin_url("index.php", ['cancel'=>1])));
 
 $inputform_settings['hidden']              = ['openervar'   => $openervar];  // id of variable in parent window (used for popup inputform)
+$inputform_settings['hidden']['id']        = $id;
 
-if ($inputform_settings['form4update']) {
-    $inputform_settings['hidden']['id']    = $id;
-}
 
 if ($vid) {
     $inputform_settings['template'] = $vid;

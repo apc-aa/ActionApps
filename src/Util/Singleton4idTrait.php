@@ -4,7 +4,7 @@
 namespace AA\Util;
 
 trait Singleton4idTrait {
-    private static $instances = [];
+    private static array $instances = [];
 
     final public static function singleton4id($id) {
         if(!self::$instances[$id]) {

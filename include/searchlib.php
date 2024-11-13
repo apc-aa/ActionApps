@@ -718,11 +718,7 @@ class AA_Set extends AA_Object {
      */
     function addSortFromBasicString($sort_string) {
         if ($sort_string) {
-            $sorts = array_filter(explode(',', str_replace(['-', '+', ' '], [
-                '-,',
-                '+,',
-                '+,',
-            ], $sort_string))); // ' ' comes from url category.......1+publish_date.... where + is translated to ' '
+            $sorts = array_filter(explode(',', str_replace(['-', '+', ' '], ['-,', '+,', '+,',], $sort_string))); // ' ' comes from url category.......1+publish_date.... where + is translated to ' '
             foreach ($sorts as $sort) {
                 $retone = [];
                 // is defined group limit?
@@ -1029,13 +1025,13 @@ class AA_Dbcondition {
 
 
         // check for illegal characters in filed_id
-        if (strlen($field) != strspn($field, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.-_")) {
+        if (strlen($field) !== strspn($field, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.-_")) {
             return ['NONE', '', '1=0'];
         }
 
         // search operator for functions (some operators can be in function:operator
         // format - the function is called to $querystring (good for date transform ...)
-        if (in_array($operator[0], ['d', 'e', 'm'])) {
+        if (in_array($operator[0], ['d', 'e', 'm', '-'])) {
             $func        = $operator[0];
             $operator    = substr($operator, 1);
             $querystring = trim($querystring, '"');
@@ -1045,13 +1041,11 @@ class AA_Dbcondition {
                     $querystring = strtotime($querystring);
                     break;
                 case 'e': // european datum style (like 24. 12. 2001)
-                    if (!preg_match("/^ *([0-9]{1,2}) *\. *([0-9]{1,2}) *\. *([0-9]{4}) *$/", $querystring, $part)) {
-                        if (!preg_match("/^ *([[0-9]]{1,2}) *\. *([0-9]{1,2}) *\. *([0-9]{2}) *$/", $querystring, $part)) {
-                            if (!preg_match("/^ *([[0-9]]{1,2}) *\. *([0-9]{1,2}) *$/", $querystring, $part)) {
-                                $querystring = time();
-                                break;
-                            }
-                        }
+                    if (!preg_match("/^ *(\d{1,2}) *\. *(\d{1,2}) *\. *(\d{4}) *$/", $querystring, $part) &&
+                        !preg_match("/^ *(\d{1,2}) *\. *(\d{1,2}) *\. *(\d{2}) *$/", $querystring, $part) &&
+                        !preg_match("/^ *(\d{1,2}) *\. *(\d{1,2}) *$/", $querystring, $part)) {
+                        $querystring = time();
+                        break;
                     }
                     if (($operator === "<=") or ($operator === ">")) {
                         // end of day used for some operators
@@ -1072,7 +1066,7 @@ class AA_Dbcondition {
             $querystring = trim($querystring);
             switch ($operator) {
                 case 'BETWEEN':
-                    if (strlen($querystring) != strspn($querystring, "0123456789+-.,")) {
+                    if (strlen($querystring) !== strspn($querystring, "0123456789+-.,")) {
                         return ['NONE', '', '1=0'];
                     }
                     break;
@@ -1082,7 +1076,7 @@ class AA_Dbcondition {
                     }
                     break;
                 default:
-                    if (strlen($querystring) != strspn($querystring, "0123456789+-.()[]orandtORANDT '\"")) {   // OR AND NOT
+                    if (strlen($querystring) !== strspn($querystring, "0123456789+-.()[]orandtORANDT '\"")) {   // OR AND NOT
                         return ['NONE', '', '1=0'];
                     }
             }
@@ -1875,7 +1869,6 @@ function QueryZids($slices, $conds = "", $sort = "", $type = "ACTIVE", $neverAll
                 if (stripos(current($srt), 'd') !== false) {
                     $select_order .= ' DESC';
                 }
-                $delim = ',';
             } else {
                 if (!$sortable[$fid]) {           // this field is not joined, yet
                     $tbl = 'c' . $tbl_count++;
@@ -1918,8 +1911,8 @@ function QueryZids($slices, $conds = "", $sort = "", $type = "ACTIVE", $neverAll
                         $select_order .= " DESC";
                     }
                 }
-                $delim = ',';
             }
+            $delim = ',';
             if ($srt['limit']) {
                 // select_distinct added in order we can group by multiple value fields
                 // (items are shown more times)

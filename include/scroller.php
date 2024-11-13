@@ -205,7 +205,7 @@ class AA_Scroller extends AA_Storable {
 
         $ret = '';
 
-        if (count($arr) > 1) {
+        if ($this->pageCount() > 1) {
             foreach ($arr as $k => $v) {
                 $ret .= " ";
                 if ($v) {
@@ -240,7 +240,7 @@ class AA_Scroller_Easy extends AA_Scroller {
         $url = con_url($this->urldefault, ['scrl'=>1]);
         $i   = 0;
         $arr = $this->navarray();
-        if ( count($arr) > 0 ) {
+        if ( count($arr) > 1 ) {
             $ret .= "\n<div class=\"enclose-scroller\" role=\"navigation\" id=\"scroller-{$this->id}\">";
             foreach($arr as $k => $v) {
                 if ($i++) {

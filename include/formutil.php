@@ -211,7 +211,7 @@ class inputform {
                 <title>'. $page_title .'</title>
                 {generate:HEAD}
               </head>
-              <body '. $jstriggers->get('body') .' class="aa-ui">';
+              <body class="aa-ui">';   // <body '. $jstriggers->get('body') .' class="aa-ui">    - removed - we call onLoad in FOOT
 
             $html_start .= getMenu(''); // opens two divs - in all cases
             if ($page_title) {
@@ -394,16 +394,17 @@ class inputform {
 
         AA::Stringexpander()->addRequire(get_aa_url('javascript/inputform.min.js', ['v'=>AA_JS_VERSION],false));
         AA::Stringexpander()->addRequire(get_aa_url('javascript/js_lib.min.js', ['v'=>AA_JS_VERSION],false));
+        // field javascript feature - triggers see JsTriggers class
+        AA::Stringexpander()->addRequire(getFrmJavascript($jsTriggers->getJavascriptAndRegisterRequires()), 'AA_Req_Headcode');
 
         // $retval .= getFrmJavascriptFile( 'javascript/inputform.min.js?v=1' );
         // $retval .= getFrmJavascriptFile( 'javascript/js_lib.min.js' );
         // $retval .= getFrmJavascriptFile( 'javascript/aajslib.php' );
 
-        // field javascript feature - triggers see JsTriggers class
-        $jscode = $jsTriggers->getJavascriptAndRegisterRequires();
+        // $jscode = $jsTriggers->getJavascriptAndRegisterRequires();
+        // $retval .= getFrmJavascript( $jscode );
 
-        $retval .= getFrmJavascript( $jscode );
-        $retval .= getFrmJavascriptFile('misc/htmleditor/ckeditor.js');
+        // $retval .= getFrmJavascriptFile('misc/htmleditor/ckeditor.js');
 
         // AA::Stringexpander()->addRequire(get_aa_url('javascript/constedit.min.js', ['v'=>AA_JS_VERSION],false));  // no longer needed - managed by {require:...} in hco
 
@@ -502,15 +503,15 @@ class AA_Inputfield {
         $this->clear();
         $settings = [
             'value'         => is_array($value) ? $value : [0=> ['value'=>$value]],
-                           'html_flag'     => $html_flag,
-                           'mode'          => $mode,
-                           'varname'       => $varname,
-                           'name'          => $name,
-                           'required'      => $required,
-                           'input_help'    => $hlp,
-                           'input_morehlp' => $morehlp,
-                           'additional'    => $add,
-                           'const_arr'     => $arr
+            'html_flag'     => $html_flag,
+            'mode'          => $mode,
+            'varname'       => $varname,
+            'name'          => $name,
+            'required'      => $required,
+            'input_help'    => $hlp,
+            'input_morehlp' => $morehlp,
+            'additional'    => $add,
+            'const_arr'     => $arr
         ];
         $this->setFromArray($settings);
     }
@@ -898,13 +899,19 @@ class AA_Inputfield {
                 // //                      get_if($this->param[2],'class')); // type
                 //            $GLOBALS['list_fnc_edt'][] = $this->varname();
                 //            break;
-                case 'sel': [,$slice_field, $usevalue, $whichitems, $conds_str, $sort_str, $add_slice_pwd, $const_param] = $this->param;
-                            if ( !is_null($item) ) {
-                                $conds_str = $item->unalias($conds_str);
+                case 'sel': [,$slice_field, $usevalue, $whichitems, $conds_str, $sort_str, $add_slice_pwd, $const_param, $select_plus] = $this->param;
+                            if ( $select_plus ) {
+                                $this->inputWidget($item, $slice_id);          // standard new widget
+                            } else {
+                                if (!is_null($item)) {
+                                    $conds_str = $item->unalias($conds_str);
+                                }
+                                if ($whichitems < 1) {
+                                    $whichitems = AA_BIN_ACT_PEND;
+                                }              // fix for older (bool) format
+                                $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems, null, ($add_slice_pwd ? AA_Credentials::encrypt($add_slice_pwd) : null), null, $const_param);  // if we fill it there, it is not refilled in inputSel()
+                                $this->inputSelect($usevalue);
                             }
-                            if ( $whichitems < 1 ) $whichitems = AA_BIN_ACT_PEND;              // fix for older (bool) format
-                            $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems, null, ($add_slice_pwd ? AA_Credentials::encrypt($add_slice_pwd) : null), null, $const_param);  // if we fill it there, it is not refilled in inputSel()
-                            $this->inputSelect($usevalue);
                             break;
 //                case 'rio': [,$ncols, $move_right, $slice_field, $whichitems, $conds_str, $sort_str, $add_slice_pwd, $const_arr] = $this->param;
 //                            if ( !is_null($item) ) {
@@ -1094,16 +1101,14 @@ class AA_Inputfield {
         }
     }
 
-    /** get_convertors function
-     *  Print links to document convertors, if convertors are installed
+    /** Print links to document convertors, if convertors are installed
      */
-    function get_convertors() {
+    protected function get_convertors(): string
+    {
         $constants  = array_filter(get_defined_constants(true)['user'], static fn ($key) => str_starts_with($key, 'CONV_TEXTFILTERS'), ARRAY_FILTER_USE_KEY);
         $convertors = array_map(static fn ($key) => substr($key, 17), array_keys($constants));
         $convtext   = implode('/',array_diff($convertors, ['ICONV']));
-        $convertor  = "<a class=\"btn aa-convertor\" href=\"javascript:CallConvertor('".self_server(). AA_INSTAL_PATH."', '".$this->varname."')\">$convtext "._m('import') ."</a>";
-
-        return $convertor;
+        return "<a class=\"btn aa-convertor\" href=\"javascript:CallConvertor('".self_server(). AA_INSTAL_PATH."', '".$this->varname."')\">$convtext "._m('import') ."</a>";
     }
 
     /** html_radio function
@@ -2036,7 +2041,7 @@ class AA_Inputfield {
         if (!empty($addform) && !empty($sid)) {
 
             // for AA_AjaxInsert()
-            AA::Stringexpander()->addRequire('aajslib');
+            AA::Stringexpander()->addRequire('aa-jslib');
 
             $this->echoo("\n<div class='aa-wi2-add'>");
             if (!$slice_field) {

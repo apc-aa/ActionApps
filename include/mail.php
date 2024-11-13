@@ -513,8 +513,7 @@ function html2text($html, $encoding='utf-8') {
         // evaluate as php
         //"'&#(\d+);'e"     => "chr(\\1)");
 
-    $html = preg_replace($search, $replace, $html);
-    return $html;
+    return preg_replace($search, $replace, $html);
 }
 
 function GetMailManaged(): \AA\Managed {

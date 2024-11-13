@@ -42,7 +42,11 @@ class TxtWidget extends Widget
 
     /** libs to run after the page DOM is loaded */
     protected function requireLibs($aa_property, $winfo): array {
-        return ( count($aa_property->getTranslations())>1 ) ? ['aa-jslib@3'] : [];
+        $ret = ( count($aa_property->getTranslations())>1 ) ? ['aa-jslib@3'] : [];
+        if ($aa_property->getContentTypeSwitches()) {
+            $ret[] = 'ckeditor@4';
+        }
+        return $ret;
     }
 
     /** Creates base widget HTML, which will be surrounded by Live, Ajxax

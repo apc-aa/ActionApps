@@ -567,12 +567,8 @@ class sitetree {
         if ( !$parent_spot_id OR !($choices=$this->get('choices',$parent_spot_id)) ) {
             return false;
         }
-        if (isset($choices) AND is_array($choices)) {
-            foreach ($choices as $v) {
-                if ($v == $spot_id) {
-                    return $this->get('variables',$parent_spot_id);
-                }
-            }
+        if (is_array($choices) && in_array($spot_id, $choices, true)) {
+            return $this->get('variables', $parent_spot_id);
         }
         return false;
     }

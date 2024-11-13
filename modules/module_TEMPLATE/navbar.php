@@ -50,7 +50,7 @@ $nb_manager = ( $editor_page ?
 
 $nb_settings = ( ( $settings_page OR !IfSlPerm(PS_MODW_SETTINGS) ) ?
   '<span class=nbdisable>'. _m("Module Settings") .'</span>':
-  '<a href="'. StateUrl($MODULES[$g_modules[$module_id]['type']]['directory']. "slicedit.php") .'"><span class=nbenable>'. _m("Module Settings") .'</span></a>');
+  '<a href="'. StateUrl(AA_Module::getModuleInfo('dir', $module_id). "slicedit.php") .'"><span class=nbenable>'. _m("Module Settings") .'</span></a>');
 
 $nb_view = (!$r_slice_view_url ?
   '<span class=nbenable>'. _m("View site") .'</span>' :

@@ -554,10 +554,10 @@ class htmlMimeMail {
         }
 
         $null        = null;
-        $attachments = !empty($this->attachments) ? true : false;
-        $html_images = !empty($this->html_images) ? true : false;
-        $html        = !empty($this->html)        ? true : false;
-        $text        = isset($this->text)         ? true : false;
+        $attachments = !empty($this->attachments);
+        $html_images = !empty($this->html_images);
+        $html        = !empty($this->html);
+        $text        = isset($this->text);
 
         switch (true) {
             case $text AND !$attachments:

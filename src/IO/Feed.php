@@ -437,7 +437,7 @@ class FeedUtil {
      */
     public static function field2arr($field) {
         global $rss_version;
-        if ((str_contains($rss_version, '2.')) or (str_contains($rss_version, '0.9'))) {
+        if (str_contains($rss_version, '2.') or str_contains($rss_version, '0.9')) {
             $flag = ((str_contains($field, '<')) ? FLAG_HTML : "");
         } else { // Must be 1.0 which doesn't have an RSS version
             $flag = FLAG_HTML;
@@ -628,11 +628,8 @@ class FeedUtil {
      * @return string id
      */
     public static function attr2id($str) {
-        if (preg_match("~/(items|cat|slices)/([0-9a-f]{32})~", $str, $regs)) { // Looks like an APC id
-            return $regs[2]; // Maybe this should be 0 ?
-        } else {
-            return string2id($str);
-        }
+        // Looks like an APC id
+        return preg_match("~/(items|cat|slices)/([0-9a-f]{32})~", $str, $regs) ? $regs[2] : string2id($str);
     }
 
     /** iso8601_to_unixstamp function

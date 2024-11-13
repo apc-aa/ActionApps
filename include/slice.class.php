@@ -41,10 +41,64 @@ use AA\Widget\Widget;
 
 require_once __DIR__ . "/zids.php"; // Pack and unpack ids
 
-class AA_Module {
+class AA_Moduleconfig {
+    public function __construct(
+        protected string $type,
+        protected string $name,
+        protected string $class,
+        protected string $dir,
+        protected string $menu,
+        protected array  $langs,
+        protected bool   $use_templates,
+    ) {}
+
+    public function get($prop): string|array|bool {
+        return match($prop) {
+            'type', 'name', 'class', 'dir', 'menu', 'langs', 'use_templates' => $this->$prop,
+            'letter' => $this->type[0],
+            'url'    => $this->dir . 'index.php',
+            default  => '',
+        };
+    }
+}
+
+class AA_Moduleregistry implements Iterator, ArrayAccess, Countable {
+    use \AA\Util\ArrTrait, \AA\Util\SingletonTrait;
+
+    /** array of the values */
+    protected array $arr = [];
+
+    private function __construct() {
+        $this->registerModules();
+    }
+
+    private function registerModules(): void
+    {
+        // Get all declared classes
+        $classes = ["AA_Slice", ...array_values(AA_Components::getClassNames('AA_Module_'))];
+
+        // call getModuleconfig() on each class
+        /** @var string $class */
+        foreach ($classes as $class) {
+            /** @var AA_Moduleconfig $conf */
+            $conf = $class::getModuleconfig();
+            $this->arr[$conf->get('type')] = $conf;
+        }
+    }
+
+    /** Returns 'name', 'class', 'dir', 'url', 'menu', 'langs', 'use_templates', 'letter' for module types 'S', 'W', 'Links', ...
+     * @see AA_Module::getModuleInfo() for info based on module_id)
+     * */
+    public static function info(string $type, string $info): string|array|bool {
+        return static::singleton()[$type]?->get($info) ?? '';
+    }
+}
+
+
+abstract class AA_Module {
     /** define, which class is used for module setting - like AA_Modulesettings_Slice */
-    const SETTING_CLASS = '';
-    const SETTING_TABLE = '';
+    protected const SETTING_CLASS = '';
+    protected const SETTING_TABLE = '';
 
     /** array of already constructed modules */
     protected static array $_modules     = [];  // Array unpacked module id -> AA_Module object
@@ -64,6 +118,8 @@ class AA_Module {
         $this->table_setting        = null;
         $this->moduleobject_setting = false;
     }
+
+    abstract public static function getModuleconfig(): AA_Moduleconfig;
 
     /** get module - called as:
      *   $name = AA_Module_Site::getModuleName($module_id)
@@ -133,22 +189,15 @@ class AA_Module {
         return DB_AA::select(['unpackid'=>'name'], 'SELECT LOWER(HEX(`id`)) AS unpackid, `name` FROM `module`', $conds, $sort);
     }
 
-    /** AA_Module::getModuleInfo function
-     * @param $info string
-     * @param $module_id
+    /** Returns 'class', 'url', 'menu', 'letter' for module
+     *
+     * @param $info string  - 'class' | 'url' | 'menu' | 'letter' | 'type'
+     * @param $module_id string
+     *
      * @return string
      */
-    public static function getModuleInfo($info, $module_id)
+    public static function getModuleInfo(string $info, $module_id): string
     {
-        static $MODULEINFO = [
-            //                   class             url                         menu
-            'W'      => ['AA_Module_Site',  'modules/site/index.php',   'modules/site/menu.php'],
-            'S'      => ['AA_Slice',        'admin/index.php',          'include/menu.php'],
-            'Alerts' => ['AA_Module_Alerts','modules/alerts/index.php', 'modules/alerts/menu.php'],
-            'J'      => ['AA_Module_Jump',  'modules/jump/index.php',   'include/menu.php'],
-            'P'      => ['AA_Module_Polls', 'modules/polls/index.php',  'modules/polls/menu.php'],
-            'Links'  => ['AA_Module_Links', 'modules/links/index.php',  'modules/links/menu.php']
-        ];
         static $_module_types = [];
 
         if (empty($_module_types)) {
@@ -156,13 +205,7 @@ class AA_Module {
         }
 
         $type = $_module_types[$module_id] ?: 'S';
-        return match ($info) {
-            'type'  => $type,
-            'class' => $MODULEINFO[$type][0],
-            'url'   => $MODULEINFO[$type][1],
-            'menu'  => $MODULEINFO[$type][2],
-            default => '',
-        };
+        return ($info === 'type') ? $type : AA_Moduleregistry::info($type, $info);
     }
 
     /** AA_Module::getModuleType function
@@ -381,8 +424,8 @@ class AA_Slice extends AA_Module {
 
     protected $feeding_tree = null;     // graph of feeds
 
-    const SETTING_CLASS = 'AA_Modulesettings_Slice';
-    const SETTING_TABLE = 'slice';
+    protected const SETTING_CLASS = 'AA_Modulesettings_Slice';
+    protected const SETTING_TABLE = 'slice';
 
     // computed values form slice fields
     var $show_func_used; // used show functions in the input form
@@ -393,6 +436,14 @@ class AA_Slice extends AA_Module {
         $this->fields         = AA_Fields::factoryFor($module_id);
         $this->dynamic_fields = AA_Fields::factoryFor($module_id, 1);
         parent::__construct($module_id);
+    }
+
+    /** all modules config function
+     *  @see AA_Module::getModuleconfig()
+     *  @inheritDoc
+     */
+    public static function getModuleconfig(): AA_Moduleconfig {
+        return new AA_Moduleconfig('S', _m('Slice'), 'AA_Slice', 'admin/','include/menu.php', [], false);
     }
 
     protected function _getSpecificTableProperty($prop) {
@@ -422,7 +473,7 @@ class AA_Slice extends AA_Module {
             $db_field = ( ($db->f("text")!="") OR ($db->f("flag") & FLAG_TEXT_STORED) ) ? 'text' : 'number';
             $content4id[$db->f("field_id")][] = [
                 "value" => $db->f($db_field),
-                "flag"  => $db->f("flag")
+                "flag"  => $db->f("flag"),
             ];
         }
         freeDB($db);
@@ -477,7 +528,7 @@ class AA_Slice extends AA_Module {
             '___CodeView' => _m('Code - Views / Snippets'),
             '___Constant' => _m('Constant'),
             '___Translate' => _m('Translations'),
-            '___Field' => _m('Field definitions')
+            '___Field' => _m('Field definitions'),
             // 'AA_Core_Fields..' => _m('AA Core'),   // do not return it - it should not be selected
             ];
     }
@@ -523,13 +574,13 @@ class AA_Slice extends AA_Module {
         $ret['expired'] = $this->noExpiredBin() ? 0 : DB_AA::select1('cnt', "SELECT count(*) as cnt FROM item ", [
             ['slice_id', $this->module_id, 'l'],
             ['status_code', 1],
-            ['expiry_date', $now, '<=']
+            ['expiry_date', $now, '<='],
         ]);
         $ret['pending'] = $this->noPendingBin() ? 0 : DB_AA::select1('cnt', "SELECT count(*) as cnt FROM item ", [
             ['slice_id', $this->module_id, 'l'],
             ['status_code', 1],
             ['publish_date', $now, '>'],
-            ['expiry_date', $now, '>']
+            ['expiry_date', $now, '>'],
         ]);
         $ret['app']     = $ret['folder1'] - ($this->noCheckPending() ? 0 : $ret['pending']) - ($this->noCheckExpired() ? 0 : $ret['expired']);
 
@@ -696,7 +747,7 @@ class AA_Slice extends AA_Module {
             "noitem_msg"      => $this->getProperty('admin_noitem_msg'),
             // id is packed (format string are used as itemview
             //               parameter, where $slice_info expected)
-            "id"              => pack_id($this->module_id)
+            "id"              => pack_id($this->module_id),
          ];
     }
 
@@ -829,13 +880,29 @@ class AA_Slice extends AA_Module {
 }
 
 class AA_Module_Site extends AA_Module {
-    const SETTING_CLASS = 'AA_Modulesettings_Site';
-    const SETTING_TABLE = 'site';
+    protected const SETTING_CLASS = 'AA_Modulesettings_Site';
+    protected const SETTING_TABLE = 'site';
 
     const FLAG_DISABLE   = 1;   // deactivated spot
     const FLAG_JUST_TEXT = 2;   // not used - planed for site speedup
     // (= flag means "don't stringexpand text)"
     const FLAG_COLLAPSE  = 4;   // (visualy) Collapsed spot
+
+
+    /** all modules config function
+     *  @see AA_Module::getModuleconfig()
+     *  @inheritDoc
+     */
+    public static function getModuleconfig(): AA_Moduleconfig {
+        return new AA_Moduleconfig('W', _m('Site'), 'AA_Module_Site',  'modules/site/',   'modules/site/menu.php', ['en-utf8_site_lang.php' => 'EN Site',
+                                                                                                                             'en_site_lang.php'      => 'EN Site (old - 8bit)',
+                                                                                                                             'es-utf8_site_lang.php' => 'ES Site',
+                                                                                                                             'es_site_lang.php'      => 'ES Site (old - 8bit)',
+                                                                                                                             'cz-utf8_site_lang.php' => 'CZ Site',
+                                                                                                                             'cz_site_lang.php'      => 'CZ Site (old - 8bit)',
+                                                                                                                             'sk-utf8_site_lang.php' => 'SK Site',
+        ], true);
+    }
 
     /** get current site id
      *  @return string|false site_id
@@ -846,7 +913,7 @@ class AA_Module_Site extends AA_Module {
         return DB_AA::select1('unpackid', "SELECT LOWER(HEX(id)) AS unpackid FROM `module`", [
             ['type', 'W'],
             ['deleted', '0', 'i'],
-            ['slice_url', $domain_arr]
+            ['slice_url', $domain_arr],
         ]);
     }
 
@@ -898,7 +965,7 @@ class AA_Module_Site extends AA_Module {
             $tree = unserialize($structure);
         } elseif ($spotrow = DB_AA::select1('', "SELECT * FROM site_spot", [
             ['site_id', $this->module_id, 'l'],
-            ['spot_id', '1']
+            ['spot_id', '1'],
         ])) {  // false if not found
             // get information about start spot (=start of the tree)
             $tree = new sitetree($spotrow);
@@ -935,7 +1002,7 @@ class AA_Module_Site extends AA_Module {
     public function showSpot(sitetree $tree, $spot_id) {
         $spot_data = DB_AA::select1('', 'SELECT id, content FROM site_spot', [
             ['site_id', $this->module_id, 'l'],
-            ['spot_id', $spot_id, 'i']
+            ['spot_id', $spot_id, 'i'],
         ]);
         FrmTabCaption('Spot Settings','',true);
         FrmStaticText(_m('Spot ID'), "[$spot_id] - " . _m('You can include this spot code in another spot by using {sitespot:%1}', [$spot_id]));
@@ -949,8 +1016,8 @@ class AA_Module_Site extends AA_Module {
         $form_buttons= ['submit',
                         "cancel"=> [
                             'value'=>_m('Show History'),
-                            "url"  =>\AA\Util\ChangesMonitor::getHistoryUrl("S.$spot_data[id]")
-                        ]
+                            "url"  =>\AA\Util\ChangesMonitor::getHistoryUrl("S.$spot_data[id]"),
+                        ],
         ];
 
         echo "<br><form method='post' name=fs action=\"". $_SERVER['PHP_SELF'] ."\">";
@@ -1022,7 +1089,15 @@ class AA_Module_Alerts extends AA_Module {
     // const SETTING_CLASS = 'AA_Modulesettings_Site';
 
     // !!! this will not work - id in alerts_collection is not module ID
-    const SETTING_TABLE = 'alerts_collection';
+    protected const SETTING_TABLE = 'alerts_collection';
+
+    /** all modules config function
+     *  @see AA_Module::getModuleconfig()
+     *  @inheritDoc
+     */
+    public static function getModuleconfig(): AA_Moduleconfig {
+        return new AA_Moduleconfig('Alerts', _m('Alerts'), 'AA_Module_Alerts', 'modules/alerts/', 'modules/alerts/menu.php', [], false);
+    }
 
     /** AA_Module_Alerts::_deleteModules() function - called automatically form AA_Module::deleteModules()
      * @param array $module_ids
@@ -1048,6 +1123,14 @@ class AA_Module_Links extends AA_Module {
     // const SETTING_CLASS = 'AA_Modulesettings_Site';
     // const SETTING_TABLE = 'alerts_collection';
 
+    /** all modules config function
+     *  @see AA_Module::getModuleconfig()
+     *  @inheritDoc
+     */
+    public static function getModuleconfig(): AA_Moduleconfig {
+        return new AA_Moduleconfig('Links', _m('Links'), 'AA_Module_Links', 'modules/links/', 'modules/links/menu.php', [], true);
+    }
+
     /** AA_Module_Links::_deleteModules() function - called automatically form AA_Module::deleteModules()
      * @param array $module_ids
      * @return bool
@@ -1065,6 +1148,14 @@ class AA_Module_Jump extends AA_Module {
     // const SETTING_CLASS = 'AA_Modulesettings_Site';
     // const SETTING_TABLE = 'alerts_collection';
 
+    /** all modules config function
+     *  @see AA_Module::getModuleconfig()
+     *  @inheritDoc
+     */
+    public static function getModuleconfig(): AA_Moduleconfig {
+        return new AA_Moduleconfig('J', _m('Jump inside AA control panel'), 'AA_Module_Jump', 'modules/jump/', 'include/menu.php', [], false);
+    }
+
     /** AA_Module_Jump::_deleteModules() function - called automatically form AA_Module::deleteModules()
      * @param array $module_ids
      * @return bool
@@ -1078,6 +1169,20 @@ class AA_Module_Jump extends AA_Module {
 class AA_Module_Polls extends AA_Module {
     // const SETTING_CLASS = 'AA_Modulesettings_Site';
     // const SETTING_TABLE = 'alerts_collection';
+
+    /** all modules config function
+     *  @see AA_Module::getModuleconfig()
+     *  @inheritDoc
+     */
+    public static function getModuleconfig(): AA_Moduleconfig {
+        return new AA_Moduleconfig('P', _m('Polls for AA'), 'AA_Module_Polls', 'modules/polls/', 'modules/polls/menu.php', ["en_polls_lang.php"      => "EN Polls (old - 8bit)",
+                                                                                                                                     "es-utf8_polls_lang.php" => "ES Polls",
+                                                                                                                                     "es_polls_lang.php"      => "ES Polls (old - 8bit)",
+                                                                                                                                     "cz-utf8_polls_lang.php" => "CZ Polls",
+                                                                                                                                     "cz_polls_lang.php"      => "CZ Polls (old - 8bit)",
+                                                                                                                                     "sk-utf8_polls_lang.php" => "SK Polls",
+        ], true);
+    }
 
     /** AA_Module_Polls::_deleteModules() function - called automatically form AA_Module::deleteModules()
      * @param array $module_ids
@@ -1133,7 +1238,7 @@ class AA_Modulesettings_Slice extends AA_AbstractModulesettings {
             'fieldslice'      => new AA_Property( 'fieldslice',      _m("Fields defined by another slice"), 'string',  false, true, 'id', false, _m('You can use special slice for additional fields definition. There you can write slice ID, which define the fields.<br>Could be used for data slice, which stores values for user created forms.')),
             'historylog'      => new AA_Property( 'historylog',      _m("Store item history for N days"), 'string',  false, true, '', false, _m('ALL - do not delele history log (default)<br>0 - do not store item history (nor ITEM_UPD/ITEM_NEW events in Log)<br><em>number</em> - days after which will be history of items deleted')),
             'nocheck_pending' => new AA_Property( 'nocheck_pending', _m("No pending items"), 'string',  false, true, '', false, _m('1 - disable pending bin completely in this slice (act publish_date field as normal one)<br>{aa-expression} - if evaluated as 1, disable pending check (for view, slice, {ids...}) (use {if:{qss:..}, {var:..}, {server:..} expression here)')),
-            'nocheck_expired' => new AA_Property( 'nocheck_expired', _m("No expired items"), 'string',  false, true, '', false, _m('1 - disable expired bin completely in this slice (act expiry_date field as normal one)<br>{aa-expression} - if evaluated as 1, disable expiry date check (for view, slice, {ids...}) (use {if:{qss:..}, {var:..}, {server:..} expression here)'))
+            'nocheck_expired' => new AA_Property( 'nocheck_expired', _m("No expired items"), 'string',  false, true, '', false, _m('1 - disable expired bin completely in this slice (act expiry_date field as normal one)<br>{aa-expression} - if evaluated as 1, disable expiry date check (for view, slice, {ids...}) (use {if:{qss:..}, {var:..}, {server:..} expression here)')),
              // do not forget to add new property to  isProperty!
         ];
     }
@@ -1170,13 +1275,13 @@ class AA_Modulesettings_Site extends AA_AbstractModulesettings {
             'translate_slice' => new AA_Property( 'translate_slice',  _m("Slice with translations"),                'string', false, true, ['enum', AA_Module::getUserModules('S')], false, _m("the slice used for {tr:text...} translations (the slice needs to have just headline........ field set as 'Allow translation')")),
             'add_aliases'     => new AA_Property( 'add_aliases',      _m("Additional aliases"),                     'string', true,  true, ['enum',   AA_Module::getUserModules('W')], false, _m('Select sitemodule, where we have to look for additional {_:...} aliases')),
             'web_languages'   => new AA_Property( 'web_languages',    _m("Languages on website"),                   'string', true,  true, ['regexp', ['pattern'=>'/^[a-z]{2}$/','maxlength'=>2]], false, _m('List all languages for which you want to use sitemodule - en, es, cz, ..<br>It is quite necessary if you want to call sitemodule newer way from Apache:<br> RewriteEngine on<br> RewriteRule ^$ /apc-aa/modules/site/site.php [L,QSA]<br> RewriteCond %{REQUEST_FILENAME} !-f<br> RewriteCond %{REQUEST_FILENAME} !-d<br> RewriteRule ^ /apc-aa/modules/site/site.php [L,QSA]<br>')),
-            'page404'         => new AA_Property( 'page404',          _m("Page not Found (404)"),                   'string', false, true, ['enum',   ['1'=>_m('Do not care'),'2'=>_m('Send standard 404 page, when {xid} is empty'),'3'=>_m('Send code below')]], false, _m('When first option "Do not care" is selected (old behavior), you should test unfilled {xid} in your sitemodule yourself')),
+            'page404'         => new AA_Property( 'page404',          _m("Page not Found (404)"),                   'string', false, true, ['enum',   [1=>_m('Do not care'),2=>_m('Send standard 404 page, when {xid} is empty'),3=>_m('Send code below')]], false, _m('When first option "Do not care" is selected (old behavior), you should test unfilled {xid} in your sitemodule yourself')),
             'page404_code'    => new AA_Property( 'page404_code',     _m("HTML code for \"Page not Found\" (404)"), 'text',   false, true),
             'sitemap_alias'   => new AA_Property( 'sitemap_alias',    _m("sitemap.xml alias"),                      'string', false, true, '', false, _m('The sitemap.xml will be generated from all slices (in order above) where the specified alias (say _#SMAP_URL) exists. The alias should generate full url of the item in each slice. For private/hidden items it should generate empty string in order the URL is not shown.')),
             'perm_alias'      => new AA_Property( 'perm_alias',       _m("Permission alias"),                       'string', false, true, '', false, _m('You can define the alias, which will be checked for all the displayed {xid} (=pages). If the value will be word "Valid", then the page will be shown. Otherwise the loginform (see below) will be shown. Of course, you do not need to use this feature and do it older way - directly in the tree of sitemodule.')),
             'loginpage_code'  => new AA_Property( 'loginpage_code',   _m("HTML code for \"Login page\""),           'text',   false, true),
-            'perm_mode'       => new AA_Property( 'perm_mode',        _m("User login databases"),                   'string', false, true, ['enum',  ['1'=>_m('first Reader Management slice listed in Uses slices'),'2'=>_m('all Reader Management slices listed in Uses slices'),'3'=>_m('AA + all Reader Management slices in AA (old behavior)')]], false, _m('First Reader Management slice is encouraged option - only the people from this slice is allowed to login to public pages. If not selected, "AA + all Reader Management slices" option is used.')),
-            'ga_id'           => new AA_Property( 'ga_id',            _m("Google analytics tracking id"),           'string', false, true, ['text', ['maxlength'=>20]],  false, _m('If you are using {generate:HEAD} and {generate:FOOT} in yor sitemodule code, then the Google Analytics code is generated with this tracking ID. The generated code could be changed in the future when Google changes the snippet.<br>To use user Consent bar, add {eucookies} or {eucookies:OK to use cookies?:OK:more://www.example.cz/cz/cookies-strategy::No:top} in the site.'))
+            'perm_mode'       => new AA_Property( 'perm_mode',        _m("User login databases"),                   'string', false, true, ['enum',  [1=>_m('first Reader Management slice listed in Uses slices'),2=>_m('all Reader Management slices listed in Uses slices'),3=>_m('AA + all Reader Management slices in AA (old behavior)')]], false, _m('First Reader Management slice is encouraged option - only the people from this slice is allowed to login to public pages. If not selected, "AA + all Reader Management slices" option is used.')),
+            'ga_id'           => new AA_Property( 'ga_id',            _m("Google analytics tracking id"),           'string', false, true, ['text', ['maxlength'=>20]],  false, _m('If you are using {generate:HEAD} and {generate:FOOT} in yor sitemodule code, then the Google Analytics code is generated with this tracking ID. The generated code could be changed in the future when Google changes the snippet.<br>To use user Consent bar, add {eucookies} or {eucookies:OK to use cookies?:OK:more://www.example.cz/cz/cookies-strategy::No:top} in the site.')),
         ];
     }
 

@@ -168,7 +168,7 @@ class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedI
         }
         $condition = trim($this->condition);
         $condition_res = strlen($condition) ? trim(AA::Un($condition)) : '1';
-        if (!strlen($condition_res) or ((string)$condition_res === '0')) {
+        if (!strlen($condition_res) OR ($condition_res === '0')) {
             $ret .= ":Cond not met - $condition ($condition_res)";
         } else {
             if (is_long_id($this->item_id)) {

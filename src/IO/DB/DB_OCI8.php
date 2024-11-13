@@ -176,7 +176,8 @@ class DB_OCI8 extends AbstractDB {
         }
     }
 
-    function next_record() {
+    function next_record(): bool
+    {
         /* IF clause added to prevent a error when tried to read an empty "$this->Parse". */
         if ($this->autoCount and ($this->num_rows() == $this->Row)) {
             return 0;
@@ -219,11 +220,11 @@ class DB_OCI8 extends AbstractDB {
         return $stat;
     }
 
-    function seek($pos = 0) {
+    public function seek($pos = 0) {
         $this->Row = $pos;
     }
 
-    function metadata($table = "", $full = false) {
+    public function metadata($table = "", $full = false) {
         $count = 0;
         $id = 0;
         $res = [];
@@ -311,19 +312,20 @@ class DB_OCI8 extends AbstractDB {
     }
 
 
-    function affected_rows() {
+    public function affected_rows() {
         return ocirowcount($this->Parse);
     }
 
-    function num_rows() {
+    function num_rows(): int
+    {
         return $this->num_rows;
     }
 
-    function num_fields() {
+    public function num_fields() {
         return ocinumcols($this->Parse);
     }
 
-    function f($Name) {
+    public function f($Name) {
         return $this->Record[$Name];
     }
 
@@ -362,13 +364,13 @@ class DB_OCI8 extends AbstractDB {
         ocilogoff($this->Link_ID);
     }
 
-    function halt($msg) {
+    public function halt($msg) {
         $this->Error = $this->ErrArray["message"];
         $this->Errno = $this->ErrArray["code"];
         parent::halt($msg);
     }
 
-    function lock($table, $mode = "write") {
+    public function lock($table, $mode = "write") {
         $this->connect();
         if ($mode === "write") {
             $Parse = ociparse($this->Link_ID, "lock table $table in row exclusive mode");
@@ -379,11 +381,11 @@ class DB_OCI8 extends AbstractDB {
         return $result;
     }
 
-    function unlock() {
+    public function unlock() {
         return $this->query("commit");
     }
 
-    function table_names() {
+    public function table_names() {
         $this->connect();
         $this->query("SELECT table_name,tablespace_name FROM user_tables");
         $i = 0;

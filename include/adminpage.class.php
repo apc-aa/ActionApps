@@ -142,7 +142,7 @@ class AA_Adminpageutil {
 
     public function getPageBegin()
     {
-        $out = '<!DOCTYPE html>
+        return '<!DOCTYPE html>
 <html>
 <head>
   <link rel="SHORTCUT ICON" href="' . AA_INSTAL_PATH . 'images/favicon.ico">
@@ -153,7 +153,6 @@ class AA_Adminpageutil {
   </head>
   <body>
 ';
-        return $out;
     }
 
     public function getPageEnd()

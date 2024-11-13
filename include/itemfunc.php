@@ -772,14 +772,15 @@ class AA_Inserter_Fil extends AA_Inserter {
             $mode = 'upload';
         }
 
-        if (($mode === 'oldval') OR ($mode==='upload' AND (!$up_file['name'] OR ($up_file['name']==='none'))) OR ($fieldwriter->getContext() === 'feed')) { // no upload - store old value?
+        if (($mode==='upload' AND (!$up_file['name'] OR ($up_file['name']==='none'))) OR ($fieldwriter->getContext() === 'feed')) { // no upload - store old value?
             // store specified file URL if nothing was uploaded
             parent::execute($fieldwriter, $item_id, $value, $order, $flag);
             return;
         }
 
-
-        $slice = $fieldwriter->getSlice();
+        if (!($slice = $fieldwriter->getSlice())) {
+            return;
+        }
         if ($mode === 'upload') {
             if (($dest_file = $this->uploadFile($up_file, $item_id, $slice, $fid)) === false) {   // error
                 $err[$fid] = Files::lastErrMsg();
@@ -874,7 +875,7 @@ class AA_Inserter_Fil extends AA_Inserter {
         $potentional_fields = $this->field->getInsertOtherFields();
 
         foreach ($potentional_fields as $fid) {
-            if (($fnc = $slice?->getField($fid)?->getProperty('input_insert_func')) AND str_starts_with($fnc, 'fil')) {
+            if (($fnc = $slice->getField($fid)?->getProperty('input_insert_func')) AND str_starts_with($fnc, 'fil')) {
                 $ret[] = $fid;
             } else {
                 warn("Insert function for field '$fid' for thumbnail of '{$this->field->getId()}' is not a File Inserter.");

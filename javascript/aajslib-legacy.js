@@ -8498,6 +8498,8 @@ function AA_WindowUnloadQ(e) {
     e.returnValue = "Changes are not saved. Do you really want to exit this page?";
 }
 
+
+// next function till AA__doChange are vanilla -----------------------------
 function AA_SiteUpdate(item, field, value, action) {
   if (['u','i','r'].indexOf(action) === -1) {
     action = 'u';
@@ -8506,28 +8508,69 @@ function AA_SiteUpdate(item, field, value, action) {
   params['aa['+action+item+']['+field+'][0]'] = value;
   AA__doChange(params);
 }
-                                                
+
 /* template not implemented, field and values pairs could be multiple field, value, field, value, ... */
 function AA_SiteNewitem(slice, template, field, value) {
-  var params = {};
-  params['aa[n1_'+slice+']['+field+'][0]'] = value;
-    AA__doChange(params);
+  let params = {};
+  for (var i = 2, len = arguments.length; i < len; i += 2) {
+    if (len > i + 1) {
+      params['aa[n1_' + slice + '][' + arguments[i] + '][0]'] = arguments[i + 1];
+    }
+  }
+  AA__doChange(params);
 }
 
-function AA__doChange(params) {
-  new Ajax.Request(window.location.href, {
-      parameters: params,
-      requestHeaders: {Accept: 'application/json'},
-      onSuccess: function(transport) {
-            for (var i in transport.responseJSON) {
-                if (i == 'message') {
-                    AA_Message(transport.responseJSON[i]);
-                } else {
-                    $$("[data-aa-part='"+i+"'").invoke('replace', transport.responseJSON[i]);
-                }
-            }
-      }
-  });
+function AA_SiteEdit(item, cmdvar) {
+  var params = {};
+  params[cmdvar] = item;
+  params['aaedit'] = cmdvar;
+  AA__doChange(params, 'get');
+}
+
+function AA_SiteSendForm(form) {
+  AA__doChange(new FormData(form));
+  return false;
+}
+
+function AA__SiteUpdateParts(data) {
+  for (var i in data) {
+    if (i === 'message') {
+      document.querySelectorAll('article.aa-updating[data-aa-part]').forEach(function(elem) {
+        elem.classList.remove('aa-updating');
+      });
+      AA_Message(data[i], 'err');
+    } else {
+      document.querySelectorAll("[data-aa-part='" + i + "']").forEach(function(elem) {
+        elem.outerHTML = data[i];
+      });
+    }
+  }
+}
+
+function AA__doChange(params, type) {
+  const headers = {'X-Requested-With': 'xmlhttprequest'};
+  const base_url = window.location.href.split('#')[0];
+  if (type === 'get') {
+    const url = base_url + '?' + new URLSearchParams(params).toString();
+    fetch(url, { method: 'GET', credentials: 'same-origin', headers: headers })
+        .then(response => response.json())
+        .then(data => AA__SiteUpdateParts(data))
+        .catch(error => console.error('Error:', error));
+  } else if (params instanceof FormData) {
+    fetch(base_url, { method: 'POST', body: params, credentials: 'same-origin', headers: headers })
+        .then(response => response.json())
+        .then(data => AA__SiteUpdateParts(data))
+        .catch(error => console.error('Error:', error));
+  } else {
+    const formData = new URLSearchParams();
+    for (let key in params) {
+      formData.append(key, params[key]);
+    }
+    fetch(base_url, { method: 'POST', headers: { ...headers, 'Content-Type': 'application/x-www-form-urlencoded' }, body: formData.toString(), credentials: 'same-origin' })
+        .then(response => response.json())
+        .then(data => AA__SiteUpdateParts(data))
+        .catch(error => console.error('Error:', error));
+  }
 }
 
 function AA_Translate(input_id, text, from, to) {

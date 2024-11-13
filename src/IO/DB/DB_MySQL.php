@@ -143,10 +143,11 @@ class DB_MySQL extends AbstractDB {
 
 
         /* public: walk result set */
-    function next_record() {
+    public function next_record(): bool
+    {
         if (!is_object($this->Result)) {
             $this->halt("next_record called with no query pending.");
-            return 0;
+            return false;
         }
 
         ++$this->Row;
@@ -162,7 +163,7 @@ class DB_MySQL extends AbstractDB {
     }
 
     /* public: return all the results */
-    function fetch_column($col) {
+    public function fetch_column($col): array {
         if (!is_object($this->Result)) {
             $this->halt("next_record called with no query pending.");
             return [];
@@ -172,7 +173,7 @@ class DB_MySQL extends AbstractDB {
 
 
     /* public: position in result set */
-    function seek($pos = 0) {
+    public function seek($pos = 0) {
         $status = @mysqli_data_seek($this->Result, $pos);
         if ($status) {
             $this->Row = $pos;
@@ -192,7 +193,7 @@ class DB_MySQL extends AbstractDB {
     }
 
     /* public: table locking */
-    function lock($table, $mode = "write") {
+    public function lock($table, $mode = "write") {
         $this->connect();
 
         $query = "lock tables ";
@@ -216,7 +217,7 @@ class DB_MySQL extends AbstractDB {
         return $res;
     }
 
-    function unlock() {
+    public function unlock() {
         $this->connect();
 
         $res = @mysqli_query($this->Link_ID, "unlock tables");
@@ -227,7 +228,7 @@ class DB_MySQL extends AbstractDB {
         return $res;
     }
 
-    function ping() {
+    public function ping() {
         if (is_null($this->Link_ID)) {
             $this->connect();
             return;
@@ -248,30 +249,29 @@ class DB_MySQL extends AbstractDB {
 
     /* public: evaluate the result (size, width) */
     /**  @return int   */
-    function affected_rows() {
-        return @mysqli_affected_rows($this->Link_ID);
+    public function affected_rows(): int {
+        return (int)@mysqli_affected_rows($this->Link_ID);
     }
 
-    function num_rows() {
-        return @mysqli_num_rows($this->Result);
+    public function num_rows(): int
+    {
+        return (int)@mysqli_num_rows($this->Result);
     }
 
-    function num_fields() {
+    public function num_fields() {
         return @mysqli_num_fields($this->Result);
     }
 
-    function last_insert_id() {
-        return @mysqli_insert_id($this->Link_ID);
+    public function last_insert_id(): false|string {
+        return (string)@mysqli_insert_id($this->Link_ID);
     }
 
-    function f($Name) {
-        if (isset($this->Record[$Name])) {
-            return $this->Record[$Name];
-        }
+    public function f($Name) {
+        return $this->Record[$Name] ?? null;
     }
 
     /* public: return table metadata */
-    function metadata($table = "", $full = false) {
+    public function metadata($table = "", $full = false): array|false {
         $count = 0;
         $id = 0;
         $res = [];
@@ -373,7 +373,8 @@ class DB_MySQL extends AbstractDB {
         return $res;
     }
 
-    function table_names() {
+    public function table_names(): array
+    {
         $this->query("SHOW TABLES");
         $i = 0;
         $return = [];
@@ -387,7 +388,7 @@ class DB_MySQL extends AbstractDB {
     }
 
     /* private: error handling */
-    function halt($msg) {
+    public function halt($msg) {
         if ($this->Link_ID) {
             $this->Error = @mysqli_error($this->Link_ID);
             $this->Errno = @mysqli_errno($this->Link_ID);

@@ -139,12 +139,15 @@ function GetUserData($identification,$findby="headline........") {
     // get item id of current user
     $zid = QueryZids($slices, $conds, '', 'ACTIVE', 1, false, '=' );
     //var_dump($conds);
-    if ( $zid->count()<1 )      return false;
+    if ( $zid->count()<1 ) {
+        return false;
+    }
 
     $content = GetItemContent($zid);
-    if ( !is_array($content) )  return false;
+    if ( !is_array($content) ) {
+        return false;
+    }
 
-    $ret= reset($content);
-    return $ret;
+    return reset($content);
 }
 ?>

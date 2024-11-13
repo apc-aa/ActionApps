@@ -159,19 +159,14 @@ class itemview {
         //create keystring from values, which exactly identifies resulting content
 
         if ( $this->is_random() ) {                         // don't cache random item
-            $res = $this->get_output($view_type);
-            return $res;
+            return $this->get_output($view_type);
         }
 
         if (isset($this->zids)) {
-            $keystr = get_hash($this->slice_info, $view_type, $this->from_record, $this->num_records, ((isset($this->zids)) ? $this->zids->id(0) : ""));
-        }
-        $number_of_ids = ( ($this->num_records < 0) ? MAX_NO_OF_ITEMS_4_GROUP :  // negative used for displaying n-th group of items only
-            $this->from_record+$this->num_records );
-        for ( $i=$this->from_record; $i<$number_of_ids; $i++) {
-            if (isset($this->zids)) {
-                $keystr .= $this->zids->id($i);
-            }
+            $keystr = get_hash($this->slice_info, $view_type, $this->from_record, $this->num_records, $this->zids->id(0));
+            $number_of_ids = ( ($this->num_records < 0) ? MAX_NO_OF_ITEMS_4_GROUP :  // negative used for displaying n-th group of items only
+                                                          $this->from_record+$this->num_records );
+            $keystr .= implode('-', $this->zids->ids($this->from_record, $number_of_ids));
         }
         $key = get_hash('outp', $keystr, $this->disc, $this->aliases, PageCache::globalKeyArray());
 
@@ -488,7 +483,7 @@ class itemview {
             $this->zids = new zids(explode_ids(StrExp('order', [implode('-',$this->zids->short_or_longids()), $this->group_fld, 'locale'])));
         }
         elseif ((strlen($this->slice_info['group_by2'])===10) && (str_starts_with($this->slice_info['group_by2'], '_#'))) {
-            define('SORT_CONST', ['0' => 'locale', '1' => 'rlocale', '4' => 'numeric', '5' => 'rnumeric']);
+            define('SORT_CONST', [0 => 'locale', 1 => 'rlocale', 4 => 'numeric', 5 => 'rnumeric']);
             $this->zids = new zids(explode_ids(StrExp('order', [implode('-',$this->zids->short_or_longids()), $this->slice_info['group_by2'], SORT_CONST[(int)$this->slice_info['g2_direction']]])));
         }
         $foo_zids = $this->zids->slice($real_from, ( ($this->num_records < 0) ? MAX_NO_OF_ITEMS_4_GROUP :  $this->num_records ));
