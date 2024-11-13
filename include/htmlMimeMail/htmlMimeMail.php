@@ -401,7 +401,7 @@ class htmlMimeMail {
             'body'   => $file,
             'name'   => $name,
             'c_type' => $c_type,
-            'cid'    => md5(uniqid(time()))
+            'cid'    => md5(uniqid(time(), true))
         ];
     }
 
@@ -552,11 +552,11 @@ class htmlMimeMail {
         }
         if (!empty($this->html_images)) {
             foreach ($this->html_images as $value) {
-                $quoted = preg_quote($value['name']);
-                $cid    = preg_quote($value['cid']);
+                $quoted = preg_quote($value['name'], '/');
+                $cid    = preg_quote($value['cid'], '/');
 
-                $this->html = preg_replace("#src=\"$quoted\"|src='$quoted'#", "src=\"cid:$cid\"", $this->html);
-                $this->html = preg_replace("#background=\"$quoted\"|background='$quoted'#", "background=\"cid:$cid\"", $this->html);
+                $this->html = preg_replace("/src=\"$quoted\"|src='$quoted'/", "src=\"cid:$cid\"", $this->html);
+                $this->html = preg_replace("/background=\"$quoted\"|background='$quoted'/", "background=\"cid:$cid\"", $this->html);
             }
         }
 
