@@ -30,12 +30,13 @@
 /**	Scroller - Implements navigation bar for scrolling through long lists.
  */
 class AA_Scroller extends AA_Storable {
-    protected int    $current = 1;	/** current page     */
-    protected string $id;			/** scroller id - identifies scroller on a web page */
-    protected int    $itmcnt;       /** total item count */
-    protected int    $listlen = 10;	/** page size  */
-    protected string $urldefault;	/** cache self url   */
-    protected bool   $show_all;	    /** if true, scroller will show also 'All' option */
+    /** null values just for upgrade from older AA and scrollers in sessions */
+    protected ?int    $current = 1;	   /** current page     */
+    protected ?string $id;			   /** scroller id - identifies scroller on a web page */
+    protected ?int    $itmcnt;         /** total item count */
+    protected ?int    $listlen = 10;   /** page size  */
+    protected ?string $urldefault;	   /** cache self url   */
+    protected ?bool   $show_all;	   /** if true, scroller will show also 'All' option */
 
     /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
@@ -68,6 +69,14 @@ class AA_Scroller extends AA_Storable {
         $this->current    = 1;
         $this->show_all   = $show_all;
     }
+
+    /** current_id could be undefined when we deserialize older object */
+    public function __wakeup() {
+        $this->itmcnt  ??= 0;
+        $this->listlen ??= 0;
+        $this->current ??= 1;
+    }
+
 
     /** setShowAll function
      * @param $val
