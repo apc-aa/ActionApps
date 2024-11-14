@@ -774,10 +774,9 @@ class AA_Stringexpand_Facebook extends AA_Stringexpand_Nevercache {
         $share  = 'false';
         $width  = 120;
         $height = 21;
-        if ($type ==  '+share') {
+        if ($type === '+share') {
             $share  = 'true';
             $width  = 165;
-            $height = 21;
         }
         return "<iframe src=\"https://www.facebook.com/plugins/like.php?href=".rawurlencode($url)."&amp;width=$width&amp;layout=button_count&amp;action=like&amp;size=small&amp;show_faces=false&amp;share=$share&amp;height=$height\" width=\"$width\" height=\"$height\" style=\"border:none;overflow:hidden\" scrolling=no frameborder=0 allowTransparency=true allow=\"encrypted-media\"></iframe>";
     }
@@ -3351,10 +3350,8 @@ class AA_Treecache {
         }
         $ids     = explode_ids($ids_string);
         $results = [];
-        if ( is_array($ids) ) {
-            foreach ( $ids as $item_id ) {
-                $results[] = $this->_get_item($item_id, $this->content);
-            }
+        foreach ( $ids as $item_id ) {
+            $results[] = $this->_get_item($item_id, $this->content);
         }
         return AA_Stringexpand_Item::itemJoin($results, $this->delim);
     }
@@ -4194,7 +4191,7 @@ class AA_Stringexpand_Constants extends AA_Stringexpand {
     function expand($group='', $format='', $delimiter='') {
         $ret      = [];
         $constants = GetConstants(trim($group));
-        if (is_array($constants)) {
+        if ($constants) {
             switch (trim($format)) {
                 case 'name':  $format = '_#NAME###_'; break;
                 case '':
@@ -4247,7 +4244,7 @@ class AA_Stringexpand_Options extends AA_Stringexpand {
             }
         } else {
             $constants = GetConstants(trim($group));
-            if (is_array($constants)) {
+            if ($constants) {
                 foreach ($constants as $k => $v) {
                     $sel  = in_array((string)$k,$selected) ? ' selected' : '';
                     $ret .= "\n  <option value=\"".safe($k)."\"$sel>".safe($v)."</option>";
@@ -5151,7 +5148,7 @@ class AA_Stringexpand_Newitem extends AA_Stringexpand_Nevercache {
 
         // move to active, clear seo
         if ( !isset($transformations['status_code.....']) ) {
-            $transformations['status_code.....'] = new AA_Transformation_Exactvalues(['new_content'=> [1]]);
+            $transformations['status_code.....'] = new AA_Transformation_Exactvalues(['new_content'=> [1]]); // It is rewritten be the setting on Slice Admin - bin for Anonymous Insert
         }
         if ( !isset($transformations['seo.............']) ) {
             $transformations['seo.............'] = new AA_Transformation_Exactvalues(['new_content'=> ['']]);
@@ -5310,7 +5307,10 @@ class AA_Stringexpand_Updateitem extends AA_Stringexpand_Newitem {
     function expand(...$arg_list) {
         $zid      = new zids(array_shift($arg_list), 'l');
 
-        if ( !is_object($item = AA_Items::getItem($zid)) ) { warn(_m('No item ID')); return ''; }
+        if ( !is_object($item = AA_Items::getItem($zid)) ) {
+            warn(_m('No item ID'));
+            return '';
+        }
 
         [$transformations,$copies] = self::_getTransformationsFromArgs($arg_list);
 
@@ -5545,47 +5545,68 @@ class AA_Stringexpand_Pager extends AA_Stringexpand_Nevercache {
  *
  *  Must be issued inside the view
  *
- *  Now it is possibile to use {pager} on views called by AJAX (for live searches, ...).
+ *  Now it is possible to use {pager} on views called by AJAX (for live searches, ...).
  *  Just put the parameter "div-id" to pager:
  *           {pager:resuts}
  *  where result is the div id, in which the view dispays the values
  *           <div id="results">..view output there</div>
  */
-class AA_Stringexpand_Pagermore extends AA_Stringexpand_Nevercache {
-// @todo - experimental - not finished
+//class AA_Stringexpand_Pagermore extends AA_Stringexpand_Nevercache {
+//// @todo - experimental - not finished
+//
+//
+//    // not needed right now for Nevercached functions, but who knows in the future
+//    /** additionalCacheParam function - the same as for AA_Stringexpand_Pager @todo - check if need change
+//     * @param array $params parameters passed to expand (caching could be parameter sensitive).
+//     * @return string - for not cache, return random value
+//     */
+//    function additionalCacheParam(array $params= []) {
+//        global $apc_state;
+//        $itemview = $this->itemview;
+//        return !is_object($itemview) ? '' : serialize($apc_state['router']).':'.$itemview->num_records.':'.$itemview->idcount().':'.$itemview->from_record;
+//    }
+//
+//
+//    /** expand function
+//     * @param $property
+//     * @return mixed|string
+//     */
+//    function expand($name="") {
+//        $hash   = get_short_hash('pagermore', $name);
+//        $cmdvar = 'aapg_'.$hash;
+//
+//        $itemview = $this->itemview;
+//        if (!isset($itemview) OR ($itemview->num_records < 0) ) {   //negative is for n-th group display
+//            return "Err in {pager} - pager not valid without a view, or for group display";
+//        }
+//
+//        $code = gensalt(8);
+//
+//        $ret  = '<div data-aa-part="'.$hash.'">'.$code.'</div>';
+//
+//        AA::Stringexpander()->setDependentParts([$cmdvar], $hash, $ret);
+//        AA::Stringexpander()->addRequire('aa-jslib');  // for AA_SiteNewitem, ...
+//
+//        return $ret.'<article><i class="ico edit" onclick="AA_SiteEdit(\'2\',\''.$cmdvar.'\');">' . 2 . '</i></article>';
+//    }
 
 
-    // not needed right now for Nevercached functions, but who knows in the future
-    /** additionalCacheParam function
-     * @param array $params parameters passed to expand (caching could be parameter sensitive).
-     * @return string - for not cache, return random value
-     */
-    function additionalCacheParam(array $params= []) {
-        global $apc_state;
-        $itemview = $this->itemview;
-        return !is_object($itemview) ? '' : serialize($apc_state['router']).':'.$itemview->num_records.':'.$itemview->idcount().':'.$itemview->from_record;
-    }
-
-    /** expand function
-     * @param $property
-     * @return mixed|string
-     */
-    function expand() {
-        global $apc_state;
-
-        $itemview = $this->itemview;
-        if (!isset($itemview) OR ($itemview->num_records < 0) ) {   //negative is for n-th group display
-            return "Err in {pager} - pager not valid without a view, or for group display";
-        }
-
-        AA::Stringexpander()->addRequire('aa-jslib');  // for AA_Ajax
-
-        $target = '';
-
-        $viewScr = new AA_Scroller_View($itemview->slice_info['vid'], $itemview->num_records, $itemview->idcount(), $itemview->from_record);
-        return $viewScr->get( '', '', '', '', $target);
-    }
-}
+////    function expand() {
+////        global $apc_state;
+////
+////        $itemview = $this->itemview;
+////        if (!isset($itemview) OR ($itemview->num_records < 0) ) {   //negative is for n-th group display
+////            return "Err in {pager} - pager not valid without a view, or for group display";
+////        }
+////
+////        AA::Stringexpander()->addRequire('aa-jslib');  // for AA_Ajax
+////
+////        $target = '';
+////
+////        $viewScr = new AA_Scroller_View($itemview->slice_info['vid'], $itemview->num_records, $itemview->idcount(), $itemview->from_record);
+////        return $viewScr->get( '', '', '', '', $target);
+////    }
+//}
 
 /** switches off internal stringexpand cache or pagecache
  *  {nocache} or {nocache:2} switches off internal stringexpand cache for all {aa-expressions} (we use it in email templates, where the parameters are sent by {define})
@@ -5729,10 +5750,8 @@ class AA_Stringexpand_Dictionary extends AA_Stringexpand {
 
         $text = strtr($text, $replace_pairs);
 
-        // finally - removing additional vaste text 'AA#@' - recovering original
-        // word delimiters
-        $text = str_replace('AA#@', '', $text);
-        return $text;
+        // finally - removing additional vaste text 'AA#@' - recovering original word delimiters
+        return str_replace('AA#@', '', $text);
     }
 
     /** getDictReplacePairs function
@@ -6164,7 +6183,8 @@ class AA_Unalias_Callback {
             if (class_exists($class_name = AA_Serializable::constructClassName($outcmd, 'AA_Stringexpand_'))) {
                 return StrExpand($class_name, $class_name::parseParam($outparam), ['item'=>$this->item, 'itemview'=> $this->itemview], true);
             }
-            elseif ( is_callable($fnctn = "stringexpand_$outcmd") ) {  // old version of stringexpand_ functions (could be in old custom aa setups)
+
+            if (is_callable($fnctn = "stringexpand_$outcmd")) {  // old version of stringexpand_ functions (could be in old custom aa setups)
                 if (!strlen($outparam)) {
                     $ebres = @$fnctn();
                 } else {
@@ -6183,28 +6203,28 @@ class AA_Unalias_Callback {
         if (isset($GLOBALS['apc_state'][$out])) {
             return QuoteColons(AA::Un($GLOBALS['apc_state'][$out], '', $this->item, false, $this->itemview));
         }
-        // Pass these in URLs like als[foo]=bar,
-        // Note that 8 char aliases like als[foo12345] will expand with _#foo12345
-        elseif (isset($als[$out])) {
+
+        if (isset($als[$out])) {
             return QuoteColons(AA::Un($als[$out], '', $this->item, false, $this->itemview));
         }
-        elseif (aa_substr($out,0,8) === "mlx_view") {
+
+        if (aa_substr($out,0,8) === "mlx_view") {
             if(!$GLOBALS['mlxView']) {
                 return (string)$out;
             }
             //$param = array_map('DeQuoteColons',ParamExplode($parts[2]));
-            return $GLOBALS['mlxView']->getTranslations($this->item->getval('id..............'),
-                $this->item->getval('slice_id........'),array_map('DeQuoteColons',ParamExplode($parts[2])));
+            return $GLOBALS['mlxView']->getTranslations($this->item->getval('id..............'), $this->item->getval('slice_id........'),array_map('DeQuoteColons',ParamExplode($parts[2])));
         }
+        // Pass these in URLs like als[foo]=bar,
+        // Note that 8 char aliases like als[foo12345] will expand with _#foo12345
         // Put the braces back around the text and quote them if we can't match
-        else {
-            // Don't warn if { followed by non-alphabetic, e.g. in Javascript
-            // Fix javascript to avoid this warning, typically add space after {
-            // if ($errcheck && preg_match("/^[a-zA-Z_]/",$out)) {
-            //     huhl("Couldn't expand: \"{$out}\"");
-            // }
-            return QuoteColons("{" . $out . "}");
-        }
+
+        // Don't warn if { followed by non-alphabetic, e.g. in Javascript
+        // Fix javascript to avoid this warning, typically add space after {
+        // if ($errcheck && preg_match("/^[a-zA-Z_]/",$out)) {
+        //     huhl("Couldn't expand: \"{$out}\"");
+        // }
+        return QuoteColons("{" . $out . "}");
     }
 }
 
@@ -8482,8 +8502,7 @@ class AA_Stringexpand_Fileinfo extends AA_Stringexpand {
                     }
                     $size_kb = round($size/1024, 1);
                     $size_mb = round($size/1048576, 1);
-                    $size    = ($size <= 1048576) ? $size_kb." kB" : $size_mb." MB";
-                    return $size;
+                    return ($size <= 1048576) ? $size_kb." kB" : $size_mb." MB";
                 }
                 break;
             case 'link':
@@ -10381,11 +10400,8 @@ class AA_Stringexpand_Manager extends AA_Stringexpand_Nevercache {
     }
 }
 
-
-/**
- * Class AA_Stringexpand_Partdiv
- * usage as:  {partdiv:mysite{id..............}:["aaedit","{_#SLICE_ID}"]:<article> ... </article>}
- *
+/** Class AA_Stringexpand_Partdiv
+ *  usage as:  {partdiv:mysite{id..............}:["aaedit","{_#SLICE_ID}"]:<article> ... </article>}
  */
 class AA_Stringexpand_Partdiv extends AA_Stringexpand {
     /**
@@ -10406,7 +10422,6 @@ class AA_Stringexpand_Partdiv extends AA_Stringexpand {
         return $ret;
     }
 }
-
 
 /** Translation
  *  usage: {tr:Send}
