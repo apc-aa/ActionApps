@@ -1387,6 +1387,7 @@ class AA_Inputfield {
         $this->html_radio(!$showhtmlarea);
 
         if (!$showhtmlarea AND $showrich_href ) {
+            AA::Stringexpander()->addRequire('ckeditor');
             AA::Stringexpander()->addRequire("if (CKEDITOR.env.isCompatible) { [].forEach.call(document.querySelectorAll('.aa-arealink'), function(e) { e.style.display=''; }); }", 'AA_Req_Run');
 //                    $widg .= getFrmJavascript( 'showHTMLAreaLink("'.$id2.'");');
         }
