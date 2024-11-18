@@ -8542,7 +8542,7 @@ function AA__SiteUpdateParts(data) {
     } else {
       document.querySelectorAll("[data-aa-part='" + i + "']").forEach(function(elem) {
         if (elem.getAttribute('data-aa-part-update') === 'add') {
-          elem.outerHTML += data[i];
+          elem.innerHTML += data[i];
         } else {
           elem.outerHTML = data[i];
         }
