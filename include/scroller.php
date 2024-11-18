@@ -377,8 +377,7 @@ class AA_Scroller_Easy extends AA_Scroller {
  */
 class AA_Scroller_Sitemodule extends AA_Scroller {
 
-    /** get function
-     *  Convert array provided by navarray into HTML code
+    /** Convert array provided by navarray into HTML code
      *  Commands are added to $url
      *
      * @param $begin
@@ -422,7 +421,7 @@ class AA_Scroller_Sitemodule extends AA_Scroller {
     }
 }
 
-class AA_Scroller_View extends AA_Scroller {
+class AA_Scroller_View extends AA_Scroller_Sitemodule {
 
     /** Return part of a query string for move to absolute position $page
      *  used by navarray
@@ -436,53 +435,10 @@ class AA_Scroller_View extends AA_Scroller {
         $replaces = 0;
 
         $new_url  = preg_replace('/page-(\d+)/', "page-$page", $url, -1, $replaces);
-        if ($replaces == 1) {
+        if ($replaces === 1) {
             return $new_url;
         }
         return get_url($url,'set['.$this->id."]=page-$page");
-    }
-
-    /**
-     *  Convert array provided by navarray into HTML code
-     *  Commands are added to $url
-     * @param string $begin
-     * @param string $end
-     * @param string $add
-     * @param string $nopage
-     * @param string $target
-     * @return string
-     */
-    public function get($begin='', $end='', $add='class="scroller"', $nopage='', $target=null): string
-    {
-        // $url = con_url($this->urldefault,"scrl=".$this->id);
-        $url = "?scrl=". $this->id;
-        $out = '';
-
-        if ($GLOBALS['apc_state']) {
-            $url .= '&amp;apc='.$GLOBALS['apc_state']['state'];
-        }
-        $i   = 0;
-        $arr = $this->navarray();
-
-        if ( count($arr) <= 1 ) {
-            return $nopage;
-        }
-
-        foreach($arr as $k => $v) {
-            if ($i++) {
-                $out .= " | ";
-            }
-
-            if (!$v) {
-                $out .= "<a class=\"nolink". (($k == $this->current) ? " active" : 'dots') . "\" href=\"#\">$k</a>";
-            } elseif ($target) {
-                $out .= "<a href=\"javascript:void(0)\" onclick=\"AA_Ajax('$target','$v');return false;\" $add>$k</a>";
-            } else {
-                $out .= "<a href=\"$url&amp;$v\" $add>$k</a>";
-            }
-        }
-
-        return $begin.$out.$end;
     }
 }
 
@@ -517,36 +473,6 @@ class AA_Scroller_Router extends AA_Scroller {
     public function scroller(string $target=''): string {
         $nav = $this->nav($target);
         return $nav ? $this->scroller_begin. $nav . $this->scroller_end : $this->scroller_nopage;
-
-//        //$page       = floor( $itemview->from_record/$itemview->num_records ) + 1;
-//        //$max        = floor(($itemview->idcount() - 1) / max(1,$itemview->num_records)) + 1;
-//
-//        $page       = $this->current;
-//        $max        = $this->pageCount();
-//
-//        if ($max<=1) {
-//            return $this->scroller_nopage;
-//        }
-//        if ($page<1)    { $page = 1; }
-//        if ($page>$max) { $page = $max; }
-//
-//        $nav_arr = $this->navarray();
-//        $add     = $this->scroller_add;
-//        $arr     = [];
-//
-//        foreach ( $nav_arr as $k => $v) {
-//            if ( $v ) {
-//                if ($target) {
-//                    $arr[] = "<a href=\"javascript:void(0)\" onclick=\"AA_Ajax('$target','$v');return false;\" $add>$k</a>";
-//                } else {
-//                    $arr[] = "<a href=\"$v\" $add>$k</a>";
-//                }
-//            } else {
-//                $arr[] = ctype_digit((string)$k) ? "<span class=\"active\"> $k </span>" : "<span class=\"dots\"> $k </span>";
-//            }
-//        }
-//
-//        return $this->scroller_begin. implode($this->scroller_delimiter, $arr) . $this->scroller_end;
     }
 
     /** decorates listing $html and adds infinite scroller */
@@ -557,7 +483,7 @@ class AA_Scroller_Router extends AA_Scroller {
         $nav = $this->nav('', true);
 
         // data-aa-part-update=add - for AA_SiteUpdateParts to append the content; hidden nav is used for infinite loading
-        $ret  = "<div data-aa-part=\"$hash\" data-aa-part-update=add>$html</div><nav id='aapg-nav-$hash' style='visibility: hidden'>$nav</nav>";
+        $ret  = "<div data-aa-part=\"$hash\" data-aa-part-update=add  class='aa-div-infinite'>$html</div><nav id='aapg-nav-$hash' style='visibility: hidden' class='aa-nav-infinite'>$nav</nav>";
 
         AA::Stringexpander()->setDependentParts([$cmdvar], $hash, $html);
         AA::Stringexpander()->addRequire('aa-jslib');  // for AA_SiteEdit, ...
@@ -571,18 +497,6 @@ class AA_Scroller_Router extends AA_Scroller {
                         .then(response => response.json())
                         .then(data => AA__SiteUpdateParts(data));
                 };
-                // loading of previous page on demand
-                // const loadPreviousButton = document.getElementById('load-previous');
-                // loadPreviousButton.addEventListener('click', async () => {
-                //     if (currentPage > 1) {
-                //         currentPage--;
-                //         await loadPageContent(currentPage);
-                //         window.history.pushState({}, '', `/cz${currentPage}/aktualne`);
-                //     }
-                //     if (currentPage <= 1) {
-                //         loadPreviousButton.style.display = 'none';
-                //     }
-                // });
                 const loadMoreObserver = new IntersectionObserver(entries => {
                     entries.forEach((entry) => {
                         if (entry.isIntersecting) {
