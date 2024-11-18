@@ -284,7 +284,7 @@ class AA_Scroller extends AA_Storable {
             $arr[] = $this->link($this->current+1, $this->scroller_next, ['rel'=>'next'], [], $target);
         }
         if (!$all AND $this->show_all) {
-            $arr[] = $this->link($this->current, (string)$this->current, [], ['listlen'=>99999], $target);
+            $arr[] = $this->link($this->current, $this->scroller_all, [], ['listlen'=>99999], $target);
         }
         return implode($this->scroller_delimiter, $arr);
     }
