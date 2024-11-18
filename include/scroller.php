@@ -87,8 +87,8 @@ class AA_Scroller extends AA_Storable {
         $this->scroller_end       = '';
         $this->scroller_add       = '';
         $this->scroller_nopage    = '';
-        $this->scroller_next      = _m("Previous");
-        $this->scroller_previous  = _m("Next");
+        $this->scroller_next      = _m("Next");
+        $this->scroller_previous  = _m("Previous");
         $this->scroller_all       = _m("All");
         $this->scroller_length    = SCROLLER_LENGTH;
     }
