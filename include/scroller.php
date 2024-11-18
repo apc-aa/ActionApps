@@ -598,7 +598,7 @@ class AA_Scroller_Router extends AA_Scroller {
                                 next.setAttribute('aria-current', 'page');
                                 const nextUrl = next.getAttribute('href');
                                 loadPageContent(nextUrl);
-                                window.history.pushState({}, '', nextUrl);  // plus bonus
+                                // window.history.pushState({}, '', nextUrl);  // no - we do not want user to bookmark second, ... page - at least you are not able to go to previous one. And the content of second page is shifting anyway.
                             }
                         }
                       });                    
