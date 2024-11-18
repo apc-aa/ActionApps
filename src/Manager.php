@@ -549,7 +549,7 @@ class Manager extends AA_Storable {
 
         // create page scroller -----------------------------------------------
         // could be redefined by view (see ['itemview']['manager_vid'])
-        $this->scroller = new AA_Scroller('st', sess_return_url($_SERVER['PHP_SELF']), $settings['scroller']['listlen'], 0, true);
+        $this->scroller = new AA_Scroller('st', $settings['scroller']['listlen'], 0, sess_return_url($_SERVER['PHP_SELF']), 1, true);
 //        $scroller = new AA_Scroller('st', sess_return_url($_SERVER['PHP_SELF']), $settings['scroller']['listlen']);
 //        $scroller->addFilter("slice_id", "md5", $this->module_id);
 

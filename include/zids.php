@@ -503,7 +503,7 @@ class zids implements Iterator, ArrayAccess, Countable {
      *  If items are from more than one slice, then it returns the random of them
      */
     function getFirstSlice() {
-        if ($this->count() == 0) {
+        if (!$this->count()) {
             return false;
         }
         foreach ($this->arr as $i => $id ) {

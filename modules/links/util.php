@@ -406,7 +406,7 @@ function Links_getUrlReport($url, $format_strings, $checked_id, $tree_start=fals
     // url nahore
     // zarazeno v kategorii
     $out = "";
-    if ( $links_zids->count() != 0 ) {
+    if ( $links_zids->count() ) {
         // function - we need trnslate _m() on use (not at include time)
         $itemview = (new itemview($format_strings, new AA_Aliases(new AA_Aliasgenerator_Link), $links_zids, 0, 100))->setContentFunct('Links_GetLinkContent');
         $out      = $itemview->get_output("view");

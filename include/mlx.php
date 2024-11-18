@@ -569,7 +569,7 @@ class MLXView {
         if ($this->mode !== "MLX") {
             return;
         }
-        if ($zidsObj->count() == 0) {
+        if (!$zidsObj->count()) {
             return;
         }
 

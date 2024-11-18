@@ -8541,7 +8541,11 @@ function AA__SiteUpdateParts(data) {
       AA_Message(data[i], 'err');
     } else {
       document.querySelectorAll("[data-aa-part='" + i + "']").forEach(function(elem) {
-        elem.outerHTML = data[i];
+        if (elem.getAttribute('data-aa-part-update') === 'add') {
+          elem.outerHTML += data[i];
+        } else {
+          elem.outerHTML = data[i];
+        }
       });
     }
   }

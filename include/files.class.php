@@ -262,7 +262,7 @@ class Files {
         }
         if ($handle = opendir($upload_dir)) {
             while (false !== ($file = readdir($handle))) {
-                if (strlen($ident)+42 !== strlen($file) || (!str_starts_with($file, $ident))) {
+                if (!str_starts_with($file, $ident) || (strlen($ident) + 42 !== strlen($file))) {
                     continue;
                 }
                 $date=mktime(0,0,0,date("m"),date("d")-7,date("Y")) ;

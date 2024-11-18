@@ -326,41 +326,6 @@ class AA_View {
         return xml_serialize("view",$f,$i.$ii,$ii,"tname=\"$t\" ".$a);
     }
 
-    /** GetListLength function
-     * @param $listlen
-     * @param $to
-     * @param $from
-     * @param $page
-     * @param $idscount
-     * @param $random
-     * @return array
-     */
-    public static function getListLength($listlen, $to, $from, $page, $idscount, $random) {
-        $list_from = max(0, $from - 1);    // user counts items from 1, we from 0
-        $list_to   = max(0, $to - 1);      // user counts items from 1, we from 0
-
-        if ($to > 0) {
-            $listlen = max(0, $list_to - $list_from + 1);
-        }
-
-        if ($page) {      // split listing to pages
-            // Format:  <page>-<number of pages>
-            $pos = strpos($page, '-');
-            if ($pos) {
-                $no_of_pages = substr($page, $pos + 1);
-                $page_n      = substr($page, 0, $pos) - 1;    // count from zero
-                // to be last page shorter than others if there is bad number of items
-                $list_from = $page_n * floor($idscount / $no_of_pages);
-                $listlen   = floor(($idscount * ($page_n + 1)) / $no_of_pages) - floor(($idscount * $page_n) / $no_of_pages);
-            } else {
-                // second parameter is not specified - take listlen parameter
-                // we can also specify both - page and from, which means from the item xy on the page p
-                $list_from += $listlen * ($page - 1);
-            }
-        }
-        return [$listlen, $random ?: ($list_from ?: 0)];
-    }
-
     /** ParseBannerParam function
      *  Parses banner url parameter (for view.php as well as for slice.php
      *  (banner parameter format: banner-<position in list>-<banner vid>-[<weight_field>]

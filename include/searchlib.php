@@ -1574,7 +1574,7 @@ function QueryZids($slices, $conds = "", $sort = "", $type = "ACTIVE", $neverAll
 
     AA::$debug & 2 && AA::$dbg->log("QueryZids - start:<br>Conds=", $conds, "<br>Sort=", $sort, "<br>Slices=", implode('-', $slices));
 
-    if (is_object($restrict_zids) and ($restrict_zids->count() == 0)) {
+    if (is_object($restrict_zids) AND !$restrict_zids->count()) {
         return new zids(); // restrict_zids defined but empty - no result
     }
 
@@ -2076,7 +2076,7 @@ function QueryConstantZIDs($group_id, $conds, $sort=null, $restrict_zids = null,
     $SQL .= $where_sql . $order_by_sql;
 
     if (is_object($restrict_zids)) {
-        if ($restrict_zids->count() == 0) {
+        if (!$restrict_zids->count()) {
             return new zids(); // restrict_zids defined but empty - no result
         }
         $SQL .= ' AND ' . $restrict_zids->sqlin();

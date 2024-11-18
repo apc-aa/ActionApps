@@ -201,7 +201,7 @@ class tabledit {
         if (is_object($scroll)) {
             $scroll->setListlen($this->view["listlen"])->countPages($rowcount)->update();
         } else {
-            $$scrname = new AA_Scroller($scrname, $scrurl);
+            $$scrname = new AA_Scroller($scrname, $this->view["listlen"], 0, $scrurl);
             $scroll = $$scrname;
             if (is_object($this->sess)) {
                 $this->sess->register($scrname);

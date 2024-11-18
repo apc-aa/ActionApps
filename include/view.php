@@ -231,6 +231,50 @@ class AA_Showview {
         }
     }
 
+    protected function getListLength(AA_View $view, int $idscount): array {
+        $listlen           = (int)$this->_view_param["listlen"] ?: (int)$view->f('listlen');
+        $to                = (int)$this->_view_param["to"];
+        $from              = (int)$this->_view_param["from"];
+        $scroller_settings = (int)$view->f('scroller');
+
+        if ($this->_view_param["random"]) {
+            $random = (($this->_view_param["random"] == 1) ? 'random' : 'random:' . $this->_view_param["random"]);
+        } else {
+            $random = 0;
+        }
+
+        $page = 0;
+        if ( isset($this->_view_param["page"]) ) {
+            $page = (int)$this->_view_param["page"];
+        } elseif ($scroller_settings===1 OR $scroller_settings===2) {  // 1 accept xpage, 2 use continuing page
+            $page = (int)$GLOBALS['apc_state']['xpage'];
+        }
+
+        $list_from = max(0, $from - 1);    // user counts items from 1, we from 0
+        $list_to   = max(0, $to - 1);      // user counts items from 1, we from 0
+
+        if ($to > 0) {
+            $listlen = max(0, $list_to - $list_from + 1);
+        }
+
+        if ($page) {      // split listing to pages
+            // Format:  <page>-<number of pages>
+            $pos = strpos($page, '-');
+            if ($pos) {
+                $no_of_pages = substr($page, $pos + 1);
+                $page_n      = substr($page, 0, $pos) - 1;    // count from zero
+                // to be last page shorter than others if there is bad number of items
+                $list_from = $page_n * floor($idscount / $no_of_pages);
+                $listlen   = floor(($idscount * ($page_n + 1)) / $no_of_pages) - floor(($idscount * $page_n) / $no_of_pages);
+            } else {
+                // second parameter is not specified - take listlen parameter
+                // we can also specify both - page and from, which means from the item xy on the page p
+                $list_from += $listlen * ($page - 1);
+            }
+        }
+        return [$listlen, $random ?: ($list_from ?: 0)];
+    }
+
     function getViewOutput(): string {
         $dbgtime = microtime(true);
 
@@ -254,9 +298,6 @@ class AA_Showview {
         // $item_ids   = $this->_view_param["item_ids"];
         $zids = $this->_view_param["zids"];
         //  $use_short_ids = $this->_view_param["use_short_ids"];
-        if ($this->_view_param["random"]) {
-            $random = (($this->_view_param["random"] == 1) ? 'random' : 'random:' . $this->_view_param["random"]);
-        }
 
         $selected_item = $this->_view_param["selected"];      // used for boolean (1|0) _#SELECTED
 
@@ -267,7 +308,7 @@ class AA_Showview {
 
         if ( isset($this->_view_param["page"]) ) {
             $list_page = (int)$this->_view_param["page"];
-        } elseif ($view->f('scroller')==1) {
+        } elseif (in_array((int)$view->f('scroller'), [1,2], true)) {  // 1 accept xpage, 2 use continuing page
             $list_page = (int)$GLOBALS['apc_state']['xpage'];
         } else {
             $list_page = 0;
@@ -297,8 +338,6 @@ class AA_Showview {
         if ( $this->_view_param["banner"] ) {
             $view->setBannerParam(AA_View::parseBannerParam($this->_view_param["banner"]));  // if banner set format
         }
-
-        $listlen    = $this->_view_param["listlen"] ?: $view->f('listlen');
 
         if ($slice_id = $this->_view_param["slice_id"]) {
             if (!is_long_id($slice_id)) { // unpacked
@@ -392,7 +431,7 @@ class AA_Showview {
                     $content_function = 'Links_GetCategoryContent';
                 }
 
-                [ $listlen, $list_from ] = AA_View::getListLength($listlen, $this->_view_param["to"], $this->_view_param["from"], $list_page, $zids->count(), $random);
+                [ $listlen, $list_from ] = $this->getListLength($view, $zids->count());
 
                 $itemview = (new itemview($format, $aliases, $zids, $list_from, $listlen))->setContentFunct($content_function);
                 $itemview->parameter('category_id', $category_id);
@@ -409,8 +448,7 @@ class AA_Showview {
             case 'full':  // parameters: zids, als
                 $format = $view->getViewFormat($selected_item);
                 AA::$debug&8 && AA::$dbg->log("view type - full - zids",$zids);
-                if ( isset($zids) AND ($zids->count() > 0) ) {
-                    $slice = AA_Slice::getModule($slice_id);
+                if ( isset($zids) AND $zids->count() AND ($slice = AA_Slice::getModule($slice_id))) {
                     $bins   = AA_BIN_ACTIVE | ($slice->isExpiredContentAllowed() ? AA_BIN_EXPIRED : 0) | ($slice->isPendingContentAllowed() ? AA_BIN_PENDING : 0);
                     $zids  = QueryZids([], '', '', $bins, 0, $zids);
                     AA::$debug&8 && AA::$dbg->log("view type - full - cleanzids",$zids);
@@ -516,7 +554,7 @@ class AA_Showview {
                     $format['g2_direction'] = $view_info['g2_direction'];
                 }
 
-                [$listlen, $list_from] = AA_View::getListLength($listlen, $this->_view_param["to"], $this->_view_param["from"], $list_page, $zids2->count(), $random);
+                [$listlen, $list_from] = $this->getListLength($view, $zids2->count());
 
                 $itemview = (new itemview($format, $aliases, $zids2, $list_from, $listlen))->setContentFunct( ($view_info['type'] === 'urls') ? 'GetItemContentMinimal' : '');
 
@@ -524,6 +562,10 @@ class AA_Showview {
                     $ret = $itemview->get_output(($view_info['type'] === 'calendar') ? 'calendar' : 'view');
                 } else {
                     $ret = $itemview->unaliasWithScroller($noitem_msg);
+                }
+
+                if ($view_info['type'] === 'list' AND $view->f('scroller') == 2 AND $GLOBALS['apc_state']['router']) {
+                    $ret = AA_Router::singleton($GLOBALS['apc_state']['router'])->getScroller($itemview)->infinite($ret);
                 }
                 break;
 

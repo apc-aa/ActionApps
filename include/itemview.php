@@ -549,7 +549,7 @@ class itemview {
 
     // count hit for random item - it is used for banners, so it is important
     // to count display number
-    if ( $is_random AND ($this->zids->count()==1) ) {
+    if ( $is_random AND ($this->zids->count()===1) ) {
         Hitcounter::hit($this->zids);
     }
 
@@ -566,14 +566,14 @@ class itemview {
         $out = $this->slice_info['fulltext_format_top'];
         for ( $i=0; $i<$this->num_records; $i++ ) {
           $iid = $this->zids->short_or_longids($real_from+$i);
-          if ( !$iid )
-            continue;                                     // iid = quoted or short id
+          if ( !$iid ) {
+              continue;
+          }                                     // iid = quoted or short id
 
           $this->setColumns($CurItem, $iid);   // set right content for aliases
 
             // print item
-          $CurItem->setformat( $this->slice_info['fulltext_format'],
-                               $this->slice_info['fulltext_remove']);
+          $CurItem->setformat( $this->slice_info['fulltext_format'], $this->slice_info['fulltext_remove']);
           $out .= $CurItem->get_item();
         }
         $out .= $this->unaliasWithScroller($this->slice_info['fulltext_format_bottom'], $CurItem);

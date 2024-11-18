@@ -606,7 +606,7 @@ function get_view_settings_cached($vid) {
 function get_filter_output_cached($vid, $filter_settings, $zids) {
     static $cached_filter_outputs;
 
-    if ($zids->count() == 0) {
+    if (!$zids->count()) {
         return "";
     }
     if ( !isset($cached_filter_outputs[$filter_settings])) {

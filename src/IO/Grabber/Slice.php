@@ -63,7 +63,7 @@ class Slice extends AbstractGrabber
      */
     function prepare() {
         $zids = $this->set->query($this->restrict_zids);
-        if ($this->restrict_zids AND ($zids->count() != $this->restrict_zids->count())) {
+        if ($this->restrict_zids AND ($zids->count() !== $this->restrict_zids->count())) {
             warn('Not all restrict_zids found - '.$this->restrict_zids->count().' vs '.$zids->count().' found');
         }
         $this->_longids = $zids->longids();

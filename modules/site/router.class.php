@@ -94,86 +94,9 @@ class AA_Router {
         $this->web_languages = $web_languages;
     }
 
-    /** view scroller function
-     * @param $page - current page
-     * @param $max - number of pages
-     * @return mixed|string
-     */
-    function scroller($page, $max, $target=null) {
-        if ($max<=1) {
-            return $this->getParam('scroller_nopage');
-        }
-        if ($page<1)    { $page = 1; }
-        if ($page>$max) { $page = $max; }
-
-        $nav_arr = $this->_scrollerArray($page, $max);
-        $add     = $this->getParam('scroller_add');
-        $arr     = [];
-
-        foreach ( $nav_arr as $k => $v) {
-            if ( $v ) {
-                if ($target) {
-                   $arr[] = "<a href=\"javascript:void(0)\" onclick=\"AA_Ajax('$target','$v');return false;\" $add>$k</a>";
-                } else {
-                   $arr[] = "<a href=\"$v\" $add>$k</a>";
-                }
-            } else {
-                $arr[] = ctype_digit((string)$k) ? "<span class=\"active\"> $k </span>" : "<span class=\"dots\"> $k </span>";
-            }
-        }
-
-        return $this->getParam('scroller_begin'). implode($this->getParam('scroller_delimiter'), $arr) . $this->getParam('scroller_end');
-    }
-
-    function getParam($param) {
-        $params = [
-                         'page_variable'      => 'xpage',
-                         'scroller_delimiter' => '<span class="delimiter"> | </span>',
-                         'scroller_begin'     => '',
-                         'scroller_end'       => '',
-                         'scroller_add'       => '',
-                         'scroller_nopage'    => '',
-                         'scroller_next'      => _m('&raquo;'),
-                         'scroller_previous'  => _m('&laquo;'),
-                         'scroller_length'    => SCROLLER_LENGTH
-        ];
-        return $params[$param] ?? '';
-    }
-
-    /** _scrollerArray function
-     *  Return navigation bar as a hash
-     *  labels as keys, query string fragments a values
-     */
-    function _scrollerArray($page, $max) {
-        $variable = $this->getParam('page_variable');
-        $scrl_len = $this->getParam('scroller_length');
-        $mp       = floor(($page - 1) / $scrl_len);  // current means current page
-        $from     = max(1, $mp * $scrl_len);                // SCROLLER_LENGTH - number of displayed pages in navbab
-        $to       = min(($mp + 1) * $scrl_len + 1, $max);
-        $arr      = [];
-
-        if ($page > 1) {
-            $arr[$this->getParam('scroller_previous')] = $this->go2url($variable.'='.($page-1));
-        }
-        if ($from > 1) {
-            $arr["1"] = $this->go2url("$variable=1");
-        }
-        if ($from > 2) {
-            $arr[".. "] = "";
-        }
-        for ($i=$from; $i <= $to; ++$i) {
-            $arr[(string)$i] = ($i==$page ? "" : $this->go2url("$variable=$i"));
-        }
-        if ($to < $max - 1) {
-            $arr[" .."] = "";
-        }
-        if ($to < $max) {
-            $arr[(string)$max] = $this->go2url("$variable=$max");
-        }
-        if ($page < $max) {
-            $arr[$this->getParam('scroller_next')] = $this->go2url($variable.'='.($page+1));
-        }
-        return $arr;
+    public function getScroller(itemview $itemview): AA_Scroller_Router
+    {
+        return AA_Scroller_Router::fromItemview($itemview)->setRouter($this);
     }
 
     /** static function - calling from outside is not necessary, now
@@ -195,8 +118,6 @@ class AA_Router {
 
     // should be refined in subclass
     function parse($url='') { return []; }
-
-
 }
 
 

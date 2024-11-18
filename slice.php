@@ -534,7 +534,7 @@ if ($mlxslice) {
 if (!is_object($scr)) {
     $sess->register('scr');
     $scr_url_param = get_url(($scr_url ? StateUrl("$scr_url") : MyUrl($encap, $scr_url)), is_array($als) ? ['als'=>$als] : '');
-    $scr = new AA_Scroller_Easy( 'scr', $scr_url_param, $slice_info['d_listlen'], $zids->count());
+    $scr = new AA_Scroller_Easy('scr', $slice_info['d_listlen'], $zids->count(), $scr_url_param);
 }
 
 // display 'All' option in scroller

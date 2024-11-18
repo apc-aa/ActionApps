@@ -1339,7 +1339,7 @@ class AA_Stringexpand_Lazy extends AA_Stringexpand_Nevercache { // do not cache 
      * @param string $url
      * @param string $placeholder
      * @param string $mode - 'nolazy' for direct load - {lazy:/apc-aa/view.php?vid=15::nolazy}
-     *                     - 'now'    for lazy load with imediate start (no Intersection observer)
+     *                     - 'now'    for lazy load with immediate start (no Intersection observer)
      * @return string
      */
     function expand($url='', $placeholder='', $mode='') {
@@ -1399,7 +1399,7 @@ function calculate($exp) {
     while ($replaces) {
         $exp = str_replace(['{', '}', ' ',"\t", "\r", "\n", '&#8239;', ',', '(+', '(-', '(*', '(/', '(%', '(&', '(|', '+)', '-)', '*)', '/)', '%)', '&)', '|)', '()', '++', '--', '**'], ['(', ')', '', '', '', '', '', '.', '(0+', '(0-', '(0*', '(0/', '(0%', '(0&', '(0|', '+0)', '-0)', '*0)', '/0)', '%0)', '&0)', '|0)', '0', '+', '-', '*'], $exp, $replaces);
     }
-    if (strspn($exp, '0123456789.+-*/%&|()E') != strlen($exp)) {
+    if (strspn($exp, '0123456789.+-*/%&|()E') !== strlen($exp)) {
         return 'wrong characters';
     }
     try {
@@ -2310,7 +2310,7 @@ class AA_Stringexpand_Previous extends AA_Stringexpand_Nevercache {
 
 /** Escapes the text for CSV export */
 function Csv_escape($text, $char=',') {
-    return (strcspn($text, $char."\"\n\r") == strlen($text)) ? $text : '"'.str_replace('"', '""', str_replace("\r\n", "\n", $text)).'"';
+    return (strcspn($text, $char."\"\n\r") === strlen($text)) ? $text : '"'.str_replace('"', '""', str_replace("\r\n", "\n", $text)).'"';
 }
 
 /**
@@ -5474,8 +5474,7 @@ class AA_Stringexpand_Scroller extends AA_Stringexpand {
         if (!isset($itemview) OR ($itemview->num_records < 0) ) {   //negative is for n-th group display
             return "Scroller not valid without a view, or for group display";
         }
-        $viewScr = new AA_Scroller_Sitemodule($itemview->slice_info['vid'], $itemview->num_records, $itemview->idcount(), $itemview->from_record);
-        return $viewScr->get( $begin, $end, $add, $nopage);
+        return AA_Scroller_Sitemodule::fromItemview($itemview)->get( $begin, $end, $add, $nopage);
     }
 }
 
@@ -5512,6 +5511,8 @@ class AA_Stringexpand_Pager extends AA_Stringexpand_Nevercache {
     function expand($target=null) {
         global $apc_state;
 
+        $target = (string)$target;
+
         $itemview = $this->itemview;
         if (!isset($itemview) OR ($itemview->num_records < 0) ) {   //negative is for n-th group display
             return "Err in {pager} - pager not valid without a view, or for group display";
@@ -5523,17 +5524,10 @@ class AA_Stringexpand_Pager extends AA_Stringexpand_Nevercache {
 
         if (!isset($apc_state['router'])) {
             // used for AJAX scroller in the SEO sitemodule, for example
-            $viewScr = new AA_Scroller_View($itemview->slice_info['vid'], $itemview->num_records, $itemview->idcount(), $itemview->from_record);
-            return $viewScr->get( '', '', '', '', $target);
+            return AA_Scroller_View::fromItemview($itemview)->get( '', '', '', '', $target);
         }
 
-        $class_name = $apc_state['router'];
-//        $router = new $class_name;
-        $router     = AA_Router::singleton($class_name);
-        $page       = floor( $itemview->from_record/$itemview->num_records ) + 1;
-        $max        = floor(($itemview->idcount() - 1) / max(1,$itemview->num_records)) + 1;
-
-        return $router->scroller($page, $max, $target);
+        return AA_Router::singleton($apc_state['router'])->getScroller($itemview)->scroller($target);
     }
 }
 

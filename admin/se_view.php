@@ -579,6 +579,7 @@ foreach ($view_field_names as $k => $v) {
         case "orderal": OrderAliasFrm( $k, $label, $value); break;
         case "group":   OrderFrm(      $k, $label, $value, $lookup_fields, $view_type_info['order'] === 'easy', true); break;
         case "select":  FrmInputSelect($k, $label, $VIEW_FIELDS[$k]['value'], $vw_data[$k], false, $help); break;
+        case "rioscrl": FrmInputRadio($k, $label, [0 => _m("No"), 1 => _m("Accept {xpage}"), 2 => _m("Use infinite scrolling")], $value, false, $help); break;  // Scroller
         case "none":    break;
     }
 }
