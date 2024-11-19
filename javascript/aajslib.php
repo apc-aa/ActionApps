@@ -761,7 +761,7 @@ function AA_LoadCss(url) {
 
 /* function to check the computed value of a style element */
 function AA_GetStyle(id, name) {
-    return document.getElementById(id)?.getComputedStyle(name) ?? null;
+    return window.getComputedStyle(document.getElementById(id))?.getPropertyValue(name) ?? null;
 }
 
 function AA_SaveEditors() {

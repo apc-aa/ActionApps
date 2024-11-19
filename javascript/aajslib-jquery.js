@@ -561,7 +561,7 @@ function AA__systemDiv(id, attrs, text) {
     } else {
         if (!$('#aa-bottom-toolbar').length) {
             AA_Toolbar(''); // we need toolbar defined, we need it to test styles
-            if (document.getElementById('aa-bottom-toolbar')?.getComputedStyle('position')!=='fixed') {
+            if (window.getComputedStyle(document.getElementById('aa-bottom-toolbar'))?.getPropertyValue('position')!=='fixed') {
                 AA_LoadCss(AA_GetConf('path') + 'css/aa-system.css');
             }
         }
@@ -660,7 +660,7 @@ function AA_LoadCss(url) {
 
 /* function to check the computed value of a style element */
 function AA_GetStyle(id, name) {
-    return document.getElementById(id)?.getComputedStyle(name) ?? null;
+    return window.getComputedStyle(document.getElementById(id))?.getPropertyValue(name) ?? null;
 }
 
 function AA_SaveEditors() {
