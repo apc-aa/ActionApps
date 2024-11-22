@@ -776,7 +776,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
                 } else {
                     $tables[$tbl]['join'] = "LEFT JOIN $store as $tbl ON ($tbl.object_id=t0.object_id AND " . Cvarset::sqlin("$tbl.property", $cond_flds) . ')'; // OR $tbl.property is NULL))"; - like in content
                 }
-                if (count($cond_flds) == 1) {
+                if (count($cond_flds) === 1) {
                     // mark this field as sortable (store without apostrofs)
                     $sortable[ reset($cond_flds) ] = $tbl;
                 }

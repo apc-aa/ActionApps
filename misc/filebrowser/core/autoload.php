@@ -15,7 +15,7 @@
 spl_autoload_register(function($path) {
     $path = explode("\\", $path);
 
-    if (count($path) == 1)
+    if (count($path) === 1)
         return;
 
     [$ns, $class] = $path;

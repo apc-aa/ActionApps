@@ -1013,7 +1013,7 @@ class linkobj {
         if ( $thematic AND $this->data['type'] ) {
             $this->problem[] = problem_report('general_link_assigned_to_thematic',$names,$thematic);
         }
-        if ( (count($names)==1) AND !$this->data['type'] AND !$thematic) {
+        if ( (count($names)===1) AND !$this->data['type'] AND !$thematic) {
             $SQL = "UPDATE links_links SET type='".key($names)."' WHERE id='".$this->lid."'";
             $this->problem[] = problem_report('thematic_link_assigned_in_general_repairable',$names,$thematic);
             echo "<br>$SQL";

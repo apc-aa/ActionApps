@@ -484,15 +484,9 @@ FrmInputChBox("html_default", _m("'HTML' as default"), $html_default, false, '',
 FrmTextarea("input_help", _m("Help for this field"), $input_help, 2, 50, false, _m("Shown help for this field"));
 FrmInputText("input_morehlp", _m("More help"), $input_morehlp, 254, '', false, _m("Text shown after user click on '?' in input form"));
 FrmTextarea("input_before", _m("Before HTML code"), $input_before, 4, 50, false, _m("Code shown in input form before this field"));
-
 echo $tab_separator;
-echo "
-     <tr>
-      <th>". _m("Feeding mode") ."</th>
-      <td>". getFrmSelectEasy("feed", inputFeedModes(), $feed) .
-      "<div class=tabhlp>". _m("Should the content of this field be copied to another slice if it is fed?") ."</div>
-      </td>
-     </tr>";
+FrmStaticText(_m("Feeding mode"), getFrmSelectEasy("feed", inputFeedModes(), $feed),  _m("Should the content of this field be copied to another slice if it is fed?"), "", false);
+
 echo getFrmTabInnerSeparator(_m("ALIASES used in views to print field content (%1)", [$fld['id']]));
 
 

@@ -618,7 +618,7 @@ class AA_Content implements Iterator, ArrayAccess, Countable {
                     $v2['value'] = stripslashes($v2['value']);
                     $s[]         = $v2['html'] ? $v2['value'] : safe($v2['value']);
                 }
-                if (count($s) == 1) {
+                if (count($s) === 1) {
                     echo $s[0];
                 } else {
                     echo "[ " . implode(", ", $s) . " ]";

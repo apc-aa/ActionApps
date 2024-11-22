@@ -357,7 +357,7 @@ class AA_Mail extends htmlMimeMail implements \AA\Later\LaterInterface {
      */
     static function sendToReader($mail_id, zids $zids, $slice_id): int {
         $chunks = array_chunk($zids->longids(),50);  // plan 50 mails in one shot
-        if (count($chunks)==1) {
+        if (count($chunks)===1) {
             // less than 50 mails - schedule right now
             $mail_scheduler = new AA_Mail_Scheduler($mail_id,$chunks[0], $slice_id);
             $mail_scheduler->schedule();  // right now

@@ -635,7 +635,7 @@ class AA_Set extends AA_Object {
                 unset($conds[$k]);
                 continue;             // bad condition - ignore
             }
-            if (!isset($cond['value']) && (count($cond) == 1)) {
+            if (!isset($cond['value']) && (count($cond) === 1)) {
                 $conds[$k]['value'] = reset($cond);
             }
             if (!isset($cond['operator'])) {
@@ -1271,7 +1271,7 @@ function ParseEasyConds(&$conds, $defaultCondsOperator = "LIKE") {
                 unset($conds[$k]);
                 continue;             // bad condition - ignore
             }
-            if (!isset($cond['value']) && (count($cond) == 1)) {
+            if (!isset($cond['value']) && (count($cond) === 1)) {
                 $conds[$k]['value'] = reset($cond);
             }
             if (!isset($cond['operator'])) {
@@ -1385,7 +1385,7 @@ function MakeSQLConditions($fields_arr, $conds, $defaultCondsOperator, &$join_ta
                         }
                     }
                 }  // between conditions inside one cond is OR
-                if (count($onecond) == 1) {
+                if (count($onecond) === 1) {
                     $ret[] = $onecond[0];
                 } elseif (count($onecond) > 1) {
                     $ret[] = '( ' . implode(' OR ', $onecond) . ')';
@@ -1953,7 +1953,7 @@ function QueryZids($slices, $conds = "", $sort = "", $type = "ACTIVE", $neverAll
 
     if (!empty($slices)) {
         $slices_SQL = implode(",", array_map("xpack_id", $slices));
-        $SQL        .= 'item.slice_id' . ((count($slices) == 1) ? " = $slices_SQL AND " :
+        $SQL        .= 'item.slice_id' . ((count($slices) === 1) ? " = $slices_SQL AND " :
                 " IN ($slices_SQL) AND ");
     }
 

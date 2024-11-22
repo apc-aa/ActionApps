@@ -418,7 +418,7 @@ function string2id($str) {
     do {
         $id  = hash('md5',$str);
         $str .= " ";
-    } while ((str_contains($id, '00')) OR (str_contains($id, '27')) OR (substr($id,30,2)=='20'));
+    } while ((str_contains($id, '00')) OR (str_contains($id, '27')) OR (substr($id,30,2)==='20'));
       // '00' is end of string, '27' is ' and packed '20' is space,
       // which is removed by MySQL
     return $id;

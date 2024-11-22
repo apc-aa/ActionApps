@@ -296,7 +296,7 @@ class image_gd extends image {
         if (!isset($args[0]))
             return false;
 
-        if (count($args[0]) == 3) {
+        if (count($args[0]) === 3) {
             [$r, $g, $b] = $args[0];
 
         } elseif (preg_match($exprRGB, $args[0], $match)) {
@@ -314,7 +314,7 @@ class image_gd extends image {
             $g = hexdec("$g$g");
             $b = hexdec("$b$b");
 
-        } elseif ((count($args) == 3) &&
+        } elseif ((count($args) === 3) &&
             preg_match($exprByte, $args[0]) &&
             preg_match($exprByte, $args[1]) &&
             preg_match($exprByte, $args[2])

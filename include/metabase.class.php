@@ -1070,7 +1070,7 @@ class AA_Metabase {
     /** get zid-object type for key of this table - 's' | 'w' | 'p' | 'l' | '' (error) */
     public function getZidsType($tablename): string {
         $keys     = $this->getKeys($tablename);
-        if (count($keys) != 1) {
+        if (count($keys) !== 1) {
             warn("you can't use this function for [$tablename] table - " . count($keys) . " keys");
             return '';
         }
@@ -1110,10 +1110,10 @@ class AA_Metabase {
         }
 
         $table_keys   = $this->getKeys($tablename);
-        if (count($table_keys) == 1) {
+        if (count($table_keys) === 1) {
             $table_key = $table_keys[0];
         }
-        elseif ((count($table_keys) == 2) AND in_array($module_field, $table_keys)) {
+        elseif ((count($table_keys) === 2) AND in_array($module_field, $table_keys)) {
             // two keys, but one of them is module_id, which is OK
             $table_key = ($table_keys[0] == $module_field) ? $table_keys[1] : $table_keys[0];
         }
@@ -1216,7 +1216,7 @@ class AA_Metabase {
         $tablename = $settings['table'];
         $metabase = AA::Metabase();
         $keys = $metabase->getKeys($tablename);
-        if (count($keys) != 1) {
+        if (count($keys) !== 1) {
             // you can't use this function for that table - this is programmers mistake - correct the code
             echo "Missing key for table $tablename in AA_Metabase::getContent()";
             exit;
@@ -1282,7 +1282,7 @@ class AA_Metabase {
         $join_tables = [];   // not used in this function
 
         $keys        = $this->getKeys($tablename);
-        if (count($keys) != 1) {
+        if (count($keys) !== 1) {
             // you can't use this function for that table - this is programmers mistake - correct the code
             echo "Missing key for table $tablename in AA::Metabase()->queryZids()";
             exit;
@@ -1391,7 +1391,7 @@ class AA_Metabase {
         $buttons = [];
         $key_alias = '';
         // for now, we support only tables with 1-column key, but it could be extended to id|module type of id later
-        if (count($keys)==1) {
+        if (count($keys)===1) {
             $actions->addAction(new \AA\Manageraction\Table_Row_Delete('DeleteTRow'));
             // $key_alias = $aliases->getNamesForField($keys[0])[0];
             $key_alias = "{rawurlencode:{".$keys[0]."}}";

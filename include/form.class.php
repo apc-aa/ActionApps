@@ -313,7 +313,8 @@ class AA_Form extends AA_Object implements \AA\Util\NamedInterface {
      * @return string
      * @throws Exception
      */
-    function getObjectEditHtml() {
+    function getObjectEditHtml(): string
+    {
         $content = $this->_getContent();
 
         $html    = $this->getRowsHtml($content);
@@ -333,7 +334,8 @@ class AA_Form extends AA_Object implements \AA\Util\NamedInterface {
      * @return string
      * @throws Exception
      */
-    function getAjaxHtml($ret_code, $type='add') {
+    function getAjaxHtml($ret_code, $type='add'): string
+    {
         if (!isset($this->object_type)) { $this->object_type = 'AA_Item'; } // older forms stored in database do not have this field set
         $this->object_owner = $this->getOwnerId();                          // slice_id is the same as the slice_id of the form (where it is defined)
 
@@ -363,7 +365,8 @@ class AA_Form extends AA_Object implements \AA\Util\NamedInterface {
      * @return string
      * @throws Exception
      */
-    function getEditFormHtml($type='live') {
+    function getEditFormHtml($type='live'): string
+    {
         if (!$this->object_id) {
             return '';
         }
@@ -383,7 +386,8 @@ class AA_Form extends AA_Object implements \AA\Util\NamedInterface {
      * @return string
      * @throws Exception
      */
-    public function getRowsHtml($content, $type='') {
+    public function getRowsHtml($content, $type=''): string
+    {
         $ret = '';
         foreach($this->rows as $row) {
             $ret .= $row->getRowHtml($content, $type);
@@ -395,7 +399,8 @@ class AA_Form extends AA_Object implements \AA\Util\NamedInterface {
      * @return AA_Content
      * @throws Exception
      */
-    private function _getContent() {
+    private function _getContent(): AA_Content
+    {
         if (empty($this->object_id)) {
             $content = new AA_Content();
             $content->setOwnerId($this->object_owner);
