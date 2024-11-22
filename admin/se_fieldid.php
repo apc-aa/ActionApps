@@ -210,7 +210,8 @@ function ChangeFieldID($old_id, $new_id) {
     }
 
     // replace the field id in table content
-    DB_AA::sql("UPDATE `content` SET `field_id`='$new_id' WHERE `item_id` IN (SELECT `id` FROM `item` WHERE `slice_id` = $xslice_id) AND `field_id` = '$old_id'");
+    DB_AA::sql("UPDATE content c INNER JOIN item i ON c.item_id = i.id SET c.field_id = '$new_id' WHERE i.slice_id = $xslice_id AND c.field_id = '$old_id';");
+    // DB_AA::sql("UPDATE `content` SET `field_id`='$new_id' WHERE `item_id` IN (SELECT `id` FROM `item` WHERE `slice_id` = $xslice_id) AND `field_id` = '$old_id'");  // slow
 }
 
 $nchanges = 0;
