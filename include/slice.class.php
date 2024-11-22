@@ -284,12 +284,16 @@ abstract class AA_Module {
         return empty($class) ? null : $class::isProperty($prop);
     }
 
+    protected static function getModuleObjectId($module_id): string {
+        return empty(static::SETTING_CLASS) ? '' : string2id(static::SETTING_CLASS . $module_id);
+    }
+
     protected function _getModuleObjectProperty($prop) {
         if ($this->moduleobject_setting === false) {
             // tho object id is derived from SETTING_CLASS name and module_id
             /** @var class-string<AA_AbstractModulesettings> $class name - it is string name of class */
             $class = static::SETTING_CLASS;
-            $this->moduleobject_setting = empty($class) ? null : $class::load(string2id($class.$this->module_id));
+            $this->moduleobject_setting = empty(static::SETTING_CLASS) ? null : $class::load(static::getModuleObjectId($this->module_id));
         }
         return is_null($this->moduleobject_setting) ? null : $this->moduleobject_setting->getProperty($prop);
     }
@@ -299,7 +303,7 @@ abstract class AA_Module {
         $class = static::SETTING_CLASS;
         if ($module_id AND !empty($class)) {
             // make sure the slicesettings object for this slice exists
-            $modulesetings_id = string2id($class.$module_id);
+            $modulesetings_id = static::getModuleObjectId($module_id);
             if (is_null($class::load($modulesetings_id))) {
                 $modulesetings = new $class;
                 $modulesetings->setNew($modulesetings_id, $module_id);
@@ -311,11 +315,12 @@ abstract class AA_Module {
         }
     }
 
-    public static function getModuleObjectForm($module_id) {
+    public static function getModuleObjectForm($module_id): string
+    {
         /** @var class-string<AA_AbstractModulesettings> $class name - it is string name of class */
         $class = static::SETTING_CLASS;
         if ($module_id AND !empty($class)) {
-            return AA_Form::factoryForm($class, string2id($class.$module_id), $module_id)->getObjectEditHtml();
+            return AA_Form::factoryForm($class, static::getModuleObjectId($module_id), $module_id)->getObjectEditHtml();
         }
         return '';
     }
@@ -910,11 +915,13 @@ class AA_Module_Site extends AA_Module {
     public static function getIdFromUrl() {
         $host2  = str_starts_with($host = $_SERVER['HTTP_HOST'], 'www.') ? substr($host,4) : 'www.'.$host;
         $domain_arr = ["http://$host/", "https://$host/","http://$host", "https://$host","http://$host2/", "https://$host2/","http://$host2", "https://$host2"];
-        return DB_AA::select1('unpackid', "SELECT LOWER(HEX(id)) AS unpackid FROM `module`", [
-            ['type', 'W'],
-            ['deleted', '0', 'i'],
-            ['slice_url', $domain_arr],
-        ]);
+        if ($id = DB_AA::select1('unpackid', "SELECT LOWER(HEX(id)) AS unpackid FROM `module`", [ ['type', 'W'], ['deleted', '0', 'i'], ['slice_url', $domain_arr] ]) ) {
+            return $id;
+        }
+        return DB_AA::select1('mid', "SELECT `o3`.`value` AS mid FROM `object_text` o1, `object_text` o2, `object_text` o3",
+            [['o2.object_id', 'o1.object_id', 'j'], ['o3.object_id', 'o1.object_id', 'j'],
+             ['o1.property','alternate_url'], ['o1.value', $domain_arr],
+             ['o2.property','aa_type'],['o2.value','AA_Modulesettings_Site'], ['o3.property','aa_owner']], ['o3.id']);
     }
 
 
@@ -1263,7 +1270,7 @@ class AA_Modulesettings_Site extends AA_AbstractModulesettings {
 
     /** check, if the $prop is the property of this object */
     static function isProperty($prop): bool {
-        return in_array($prop, ['translate_slice', 'add_aliases', 'web_languages', 'page404', 'page404_code', 'sitemap_alias', 'perm_alias', 'loginpage_code', 'perm_mode', 'ga_id']);
+        return in_array($prop, ['translate_slice', 'add_aliases', 'web_languages', 'page404', 'page404_code', 'sitemap_alias', 'perm_alias', 'loginpage_code', 'perm_mode', 'ga_id', 'alternate_url']);
     }
 
     /** allows storing object in database
@@ -1282,6 +1289,7 @@ class AA_Modulesettings_Site extends AA_AbstractModulesettings {
             'loginpage_code'  => new AA_Property( 'loginpage_code',   _m("HTML code for \"Login page\""),           'text',   false, true),
             'perm_mode'       => new AA_Property( 'perm_mode',        _m("User login databases"),                   'string', false, true, ['enum',  [1=>_m('first Reader Management slice listed in Uses slices'),2=>_m('all Reader Management slices listed in Uses slices'),3=>_m('AA + all Reader Management slices in AA (old behavior)')]], false, _m('First Reader Management slice is encouraged option - only the people from this slice is allowed to login to public pages. If not selected, "AA + all Reader Management slices" option is used.')),
             'ga_id'           => new AA_Property( 'ga_id',            _m("Google analytics tracking id"),           'string', false, true, ['text', ['maxlength'=>20]],  false, _m('If you are using {generate:HEAD} and {generate:FOOT} in yor sitemodule code, then the Google Analytics code is generated with this tracking ID. The generated code could be changed in the future when Google changes the snippet.<br>To use user Consent bar, add {eucookies} or {eucookies:OK to use cookies?:OK:more://www.example.cz/cz/cookies-strategy::No:top} in the site.')),
+            'alternate_url'   => new AA_Property( 'alternate_url',    _m("Alternate URL"),                          'string', true,  true, '',  false, _m('Another domain(s) for which the web should be visible. However, consider to use server-side redirect to use single domain, which is SEO more friendly.')),
         ];
     }
 
