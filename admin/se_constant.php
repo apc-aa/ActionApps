@@ -52,6 +52,8 @@ try {
     $group_id = InputVars::stringGETPOST('group_id'); // -alnum
     // array ( )
     $name = InputVars::arrayPOST('name');
+    // array ( )
+    $desc = InputVars::arrayPOST('desc');
     // array ( 'JVFTGMCGHC' => 1, 'Aaaaaaa' => 1, 'IUYTF' => 1, )
     $new_group_id = InputVars::stringPOST('new_group_id'); // alpha
     // array ( )
@@ -111,14 +113,16 @@ if ( $group_id ) {
 }
 
 /** ShowConstant function
+ *
  * @param      $id
  * @param      $name
  * @param      $value
+ * @param      $desc
  * @param      $cid
  * @param      $pri
  * @param null|array $using_slices_arr
  */
-function ShowConstant($id, $name, $value, $cid, $pri, ?array $using_slices_arr=null) {
+function ShowConstant($id, $name, $value, $desc, $cid, $pri, ?array $using_slices_arr=null, array $sizes) {
     $count = '';
     if (is_array($using_slices_arr) AND count($using_slices_arr)) {
         $count = 0;
@@ -128,13 +132,14 @@ function ShowConstant($id, $name, $value, $cid, $pri, ?array $using_slices_arr=n
         }
     }
 
-    $name = safe($name); $value=safe($value); $pri=safe($pri); $cid=safe($cid); $id=safe($id);
+    $name = safe($name); $value=safe($value); $desc=safe($desc); $pri=safe($pri); $cid=safe($cid); $id=safe($id);
 
     echo "
     <tr>
-      <td><input type=\"text\" name=\"name[$id]\" size=\"60\" maxlength=\"149\" value=\"$name\"></td>
-      <td><input type=\"text\" name=\"value[$id]\" size=\"60\" maxlength=\"255\" value=\"$value\">
+      <td><input type=\"text\" name=\"name[$id]\" size=\"{$sizes['name']}\" maxlength=\"149\" value=\"$name\"></td>
+      <td><input type=\"text\" name=\"value[$id]\" size=\"{$sizes['value']}\" maxlength=\"255\" value=\"$value\">
           <input type=\"hidden\" name=\"cid[$id]\" value=\"$cid\"></td>
+      <td><input type=\"text\" name=\"desc[$id]\" size=\"{$sizes['desc']}\" maxlength=\"250\" value=\"$desc\"></td>
       <td><input type=\"text\" name=\"pri[$id]\" size=\"4\" maxlength=\"4\" value=\"$pri\"></td>
       <td>$count<input type=\"hidden\" name=\"used[$id]\" value=\"".str_pad($count, 7, "0", STR_PAD_LEFT)."\"></td>";
     echo "</tr>\n";
@@ -209,6 +214,7 @@ if ($update) {
             $val       = $value[$key];
             ValidateInput("nam", _m("Name"), $nam, $err, false, "text");   // if not filled it will be deleted
             ValidateInput("val", _m("Value"), $val, $err, false, "text");
+            ValidateInput("desc", _m("Description"), $desc, $err, false, "text");
             ValidateInput("prior", _m("Priority"), $prior, $err, false, "number");
         }
 
@@ -270,7 +276,7 @@ if ($update) {
                 }
                 continue;
             }
-            $data_constant = ['id'=> $category_id, 'name' => $name[$key], 'value' => $value[$key], 'pri' => ( $pri[$key] ?: 1000)];
+            $data_constant = ['id'=> $category_id, 'name' => $name[$key], 'value' => $value[$key], 'description' => $desc[$key], 'pri' => ( $pri[$key] ?: 1000)];
             if (false !== ($oldval = DB_AA::select1('value', 'SELECT `value` FROM `constant`',[['id',$category_id,'l']]))) {
                 if ($propagate_changes) {
                     propagateChanges($group_id, $category_id, $value[$key], $oldval);
@@ -300,9 +306,7 @@ if ($update) {
 }
 
 // lookup constants
-if ($group_id OR $as_new) {
-    $s_constants = DB_AA::select([], 'SELECT `id`, `name`, `value`, `pri` FROM `constant`', [['group_id', ( $as_new ?: $group_id )]], ['pri', 'name']);
-}
+$s_constants = ($group_id OR $as_new) ? DB_AA::select([], 'SELECT `id`, `name`, `value`, `description`, `pri` FROM `constant`', [['group_id', ( $as_new ?: $group_id )]], ['pri', 'name']) : [];
 
 $apage = new AA_Adminpageutil('sliceadmin','fields');
 $apage->setTitle(_m("Admin - Constants Setting"));
@@ -341,7 +345,7 @@ $form_buttons["fid"]         = ["value" => $fid];
 
 
 echo "<th>"._m("Constant Group") ."</th>
-  <td colspan=\"3\">";
+  <td colspan=\"4\">";
 
 if ( $group_id ) {
     echo safe($group_id);
@@ -357,7 +361,7 @@ if ($group_id) {
     $using_slices_arr =  DB_AA::select([], "SELECT LOWER(HEX(module.id)) AS unpackid, module.deleted, module.name as sname, field.id as fid, field.name as fname FROM `module`, `field` WHERE module.id = field.slice_id AND (field.input_show_func LIKE '%:$group_id' OR field.input_show_func LIKE '%:$group_id:%')");
     echo "
       <tr><th>"._m("Constants used in slice")."</th>
-        <td colspan=\"3\">".implode(
+        <td colspan=\"4\">".implode(
             '<br>',
             array_map(
                 static fn($arr) => AA_Module::getModuleName($arr['unpackid'], IfSlPerm(PS_FIELDS, $arr['unpackid']), 'admin/se_inputform.php', ['fid' => $arr['fid']])." <small>[".$arr['unpackid']."]</small> (".safe($arr['fname'])." <small>[".safe($arr['fid'])."]</small>)",
@@ -369,7 +373,7 @@ if ($group_id) {
 
 echo "
 <tr><th>"._m("Constant group owner - slice")."</th>
-<td colspan=\"3\">";
+<td colspan=\"4\">";
 
 if (!$constant_info["owner_id"] || !$group_id) {
     echo _m("Whoever first updates values becomes owner.");
@@ -388,13 +392,18 @@ if (!$constant_info["owner_id"] || !$group_id) {
 $propagate_ch = ( $group_id ? $constant_info["propagate"] : 1);   // default is checked for new constant group;
 
 echo "</td></tr>
-<tr><th>"._m("Propagate changes into current items")."</th><td colspan=\"3\"><input type=\"checkbox\" name=\"propagate_changes\"".($propagate_ch ? " checked" : "")."></td></tr>
+<tr><th>"._m("Propagate changes into current items")."</th><td colspan=\"4\"><input type=\"checkbox\" name=\"propagate_changes\"".($propagate_ch ? " checked" : "")."></td></tr>
 <tr class='aa-tbl-header'>
  <th><b><a href=\"javascript:SortConstants('name')\">". _m("Name") ."</a></b><br>". _m("shown&nbsp;on&nbsp;inputpage") ."</th>
  <th><b><a href=\"javascript:SortConstants('value')\">". _m("Value") ."</a></b><br>". _m("stored&nbsp;in&nbsp;database") ."</th>
+ <th><b><a href=\"javascript:SortConstants('desc')\">". _m("Description") ."</a></b><br>". _m("can be viewed by {constant:&lt;group&gt;:&lt;value&gt;:description}") ."</th>
  <th><b><a href=\"javascript:SortPri()\">". _m("Priority") ."</a></b><br>". _m("constant&nbsp;order") ."</th>
  <th><b><a href=\"javascript:SortConstants('used')\">". _m("Used") ."</a></b><br>". _m("times") ."</th>
 </tr>";
+
+$SIZES = ['name'=> min(80, max(40, 40, ...array_map('strlen', array_column($s_constants, 'name')))),  // find max length in $name arr and use that value, but minimum 10 and max 60
+          'value'=>min(80, max(40, 40, ...array_map('strlen', array_column($s_constants, 'value')))),
+          'desc'=>min(80, max(40, 40, ...array_map('strlen', array_column($s_constants, 'description'))))];
 
 $pri_max = 1000;
 $i=0;
@@ -402,10 +411,10 @@ $i=0;
 if ($s_constants) {
     foreach ($s_constants as $v) {
         if ($from_form) {  // get values from form
-            ShowConstant($i, $name[$i], $value[$i], $cid[$i], $pri[$i], $using_slices_arr);
+            ShowConstant($i, $name[$i], $value[$i], $desc[$i], $cid[$i], $pri[$i], $using_slices_arr, $SIZES);
             $pri_max = $pri[$i];
         } else {        // get values from database
-            ShowConstant($i, $v["name"], $v["value"], $as_new ? '' : 'x'.unpack_id($v["id"]), $v["pri"], $using_slices_arr);
+            ShowConstant($i, $v["name"], $v["value"], $v["description"], $as_new ? '' : 'x'.unpack_id($v["id"]), $v["pri"], $using_slices_arr, $SIZES);
             $pri_max = $v['pri'];
         }
         $i++;
@@ -414,7 +423,7 @@ if ($s_constants) {
 
 // ten rows for possible new constants
 for ($j=1; $j<=10; $j++) {
-    ShowConstant($i, "", "", "", $pri_max + $j*10);
+    ShowConstant($i, "", "", "", "", $pri_max + $j*10, null, $SIZES);
     $i++;
 }
 
