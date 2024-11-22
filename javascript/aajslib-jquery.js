@@ -201,7 +201,7 @@ function AA_HtmlAjaxToggleCss(link_id, link_text_1, link_text_2, selector_hide, 
         $(link).html(link_text_2);
     } else {
         swap = $(selector_update).html(); $(selector_update).html($(link).attr("data-aa-oldval")); $(link).attr("data-aa-oldval", swap);
-        if (!$(link).attr("data-aa-oldval").trim().length) {
+        if (!$(link).attr("data-aa-oldval")?.trim().length) {
             $(selector_hide).hide('fast');
         }
         $(link).html(link_text_1);
