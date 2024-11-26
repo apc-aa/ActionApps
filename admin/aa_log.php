@@ -40,9 +40,17 @@ if ( !IsSuperadmin() ) {
     MsgPage(_m("You do not have permission to manage ActionApps logs"));
     exit;
 }
+$css = <<<CSS
+  .aacolid, .aacoluser, .aacoltime, .aacoltype, .aacolselector { font-size: var(--sz-xs); }
+  .aacolselector { overflow-wrap: anywhere; }
+  CSS;
+
+AA::Stringexpander()->addRequire($css, 'AA_Req_CSScode');
 
 $managed = AA::Metabase()->getManagerConf('log');
 $managed->settings['searchbar']['default_sort'] =  [0 => ['time' => 'd']];
+$managed->setColumn('params', '{internal:AA_Log:print}');
+$managed->setColumn('_aa_action', '');   // do not display Edit and Delete action buttons on the row
 
 $apage = new AA_Adminpageutil('aaadmin', 'log');
 $apage->setTitle(_m("View Log"));
