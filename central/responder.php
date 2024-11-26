@@ -38,7 +38,7 @@ class AA_Responder extends AA_Object {
     /** by default only superadmins are allowed to perform remote operations */
     function isPerm() { return IsSuperadmin(); }
 
-    public static function name(): string   { return str_replace('AA_Responder_', '', get_called_class()); }
+    public static function name(): string   { return str_replace('AA_Responder_', '', static::class); }
 }
 
 /** Used for autentication

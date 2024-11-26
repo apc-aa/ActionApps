@@ -980,6 +980,6 @@ class itemview {
             return $this->zids->count();
       }
 
-};   //class itemview
+}   //class itemview
 
 

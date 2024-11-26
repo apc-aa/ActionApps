@@ -177,7 +177,7 @@ class MLXCtrl {
         }
         return false;
     }
-};
+}
 
 /** MLX - MultiLingual eXtension
  *  How it works:
@@ -486,7 +486,7 @@ class MLX {
      * @param $v
      */
     function trace($v) {}
-};
+}
 
 class MLXView {
 
@@ -1045,7 +1045,7 @@ class MLXGetText
         StoreItem( new_id(), $sliceid, $content4id, true,true,false);
         $GLOBALS['varset'] = $old_varset;
     }
-};
+}
 /** stringexpand_m function
  *
  */

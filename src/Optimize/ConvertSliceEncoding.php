@@ -487,7 +487,7 @@ class ConvertSliceEncoding extends AA\Optimize\AbstractOptimize {
                 $ret[] = "UPDATE `view` SET " . $this->constructSet($this->getTextCols('view')) . " WHERE " . sqlin('slice_id', $modules, true);
             }
             if ( $this->constructSet($this->getTextCols('alerts_filter')) ) {
-                $ret[] = "UPDATE `alerts_filter` SET " . $this->constructSet($this->getTextCols('alerts_filter')) . " WHERE `vid` IN ( SELECT `id` FROM `view` WHERE " . sqlin('slice_id', $modules, true) . ")";;
+                $ret[] = "UPDATE `alerts_filter` SET " . $this->constructSet($this->getTextCols('alerts_filter')) . " WHERE `vid` IN ( SELECT `id` FROM `view` WHERE " . sqlin('slice_id', $modules, true) . ")";
             // change_record takes too much time to convert - moved outside of the transaction as the last SQL
             //$ret[] = "UPDATE `change_record` SET " . $this->constructSet($this->getTextCols('change_record')) . " WHERE `change_id` IN ( SELECT `id` FROM `change` WHERE `resource_id` IN ( SELECT LOWER(HEX(`id`)) FROM `item` WHERE " . sqlin('slice_id', $modules, true) . "))";
             }

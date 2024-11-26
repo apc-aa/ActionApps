@@ -156,7 +156,7 @@ abstract class AA_Module {
             return null;
         }
         if (!isset(AA_Module::$_modules[$module_id])) {
-            if (($class = get_called_class()) === 'AA_Module') {
+            if (($class = static::class) === 'AA_Module') {
                 // this is not usual case - use it just if you do not know what module is it
                 $class = AA_Module::getModuleInfo('class', $module_id);
             }

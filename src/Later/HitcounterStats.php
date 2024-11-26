@@ -60,7 +60,7 @@ class HitcounterStats implements LaterInterface
         return count($item_ids) . '-' . number_format($dbgtime[1] - $dbgtime[0], 2) . '-' . number_format($dbgtime[2] - $dbgtime[1], 2) . '-' . number_format($dbgtime[3] - $dbgtime[2], 2);
     }
 
-    public static function getStats(string $slice_id, int $from=0, int $to=0, $order=true, $limit=0): array {
+    public static function getStats(array $slice_ids, int $from=0, int $to=0, $order=true, $limit=0): array {
         $where = [['hit_archive.id', 'item.short_id', 'j']];
         if ($from) {
             $where[] = ['time', $from, '>='];
@@ -68,8 +68,8 @@ class HitcounterStats implements LaterInterface
         if ($to) {
             $where[] = ['time', $to, '<='];
         }
-        if ( $slice_id ) {
-            $where[] = ['item.slice_id', $slice_id, 'l'];
+        if ( $slice_ids ) {
+            $where[] = ['item.slice_id', $slice_ids, 'l'];
         }
         $order = $order ? ['count-'] : null;
         return DB_AA::select(['id'=>'count'], "SELECT LOWER(HEX(`item`.`id`)) as id, sum(`hits`) as count FROM `hit_archive`, `item`", $where, $order, ['hit_archive.id'], $limit);

@@ -105,7 +105,7 @@ class DB_PDO extends AbstractDB {
     function execute($param=array()) {
         if (!$this->connect()) {
             return 0;
-        };
+        }
         if (!is_array($param)) {
             $param = func_get_args();
         }
@@ -263,7 +263,7 @@ class DB_PDO extends AbstractDB {
                 echo "Complain Again!!";
             }
             return 0; /* we already complained in connect() about that. */
-        };
+        }
 
         if ($this->Debug) {
             echo "Still Connected, ";

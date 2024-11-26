@@ -67,7 +67,6 @@ if ( !IsSuperadmin() ) {
 
 // we do not manage more "modules" here, so unique id is OK
 $module_id = '43656e7472616c2d41412d61646d696e';
-$metabase  = AA::Metabase();
 
 $actions   = new Manageractions;
 $actions->addAction(new Central_MoveItem('Activate', 1));
@@ -90,7 +89,7 @@ $switches->addAction(new Central_Tab('Tab2', 'hold'));
 $switches->addAction(new Central_Tab('Tab3', 'trash'));
 $switches->addAction(new Central_DeleteTrash('DeleteTrash',false));
 
-$managed = $metabase->getManagerConf('central_conf', $actions, $switches);
+$managed = AA::Metabase()->getManagerConf('central_conf', $actions, $switches);
 //$manager_settings['itemview']['format']['compact_top'] = '
 //                                          <table>';
 //$manager_settings['itemview']['format']['odd_row_format'] = '

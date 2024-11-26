@@ -519,7 +519,7 @@ function Event_ItemsMoved( $type, $slice_id, $slice_type, $item_ids, $new_status
  */
 function Event_ConstantBeforeUpdate( $type, $slice_id, $slice_type, &$newvalue, $oldvalue, $constant_id ) {
     return true;
-};
+}
 
 /** Event_ConstantUpdated function
  *  Called after propagating a change in a constant value - called for all changed category value

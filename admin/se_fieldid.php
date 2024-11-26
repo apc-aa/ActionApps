@@ -301,7 +301,7 @@ $form_buttons =  [
     "update" => ["type" => "hidden", "value" => "1"],
     "update",
     "cancel" => ["url" => "se_fields.php"]
-];;
+];
 FrmTabEnd($form_buttons);
 
 $rows = [[_m("Id"), _m("Field")]];

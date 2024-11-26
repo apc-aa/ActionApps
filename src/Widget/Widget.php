@@ -464,7 +464,7 @@ class Widget extends AA_Object implements NamedInterface {
         $required = $winfo['required'];
         $help = $aa_property->getHelp();
         $class = $aa_property->getTranslations() ? 'aa-widget aa-langdiv' : 'aa-widget';
-        $class .= ' aa-widget-' . strtolower(AA_Components::getClassType(get_called_class(), 'Widget'));
+        $class .= ' aa-widget-' . strtolower(AA_Components::getClassType(static::class, 'Widget'));
         $class .= ' aa-stdwidget';
 
         $this->registerRequires($aa_property, $winfo);
@@ -496,7 +496,7 @@ class Widget extends AA_Object implements NamedInterface {
      *  @retruns string wi2, sel, ....
      */
     protected function getWidgetType(): string {
-        return strtolower(AA_Components::getClassType(get_called_class(), 'Widget'));
+        return strtolower(AA_Components::getClassType(static::class, 'Widget'));
     }
 
     /** Creates all common ajax editing buttons to be used by different inputs
@@ -544,7 +544,7 @@ class Widget extends AA_Object implements NamedInterface {
         // $help = $aa_property->getHelp();  //not used
         $widget_html = '<div class=aa-input>' . $winfo['html'] . '</div>'; //. ($help ? "\n    <div class=\"aa-help\"><small>$help</small></div>\n" :'');
         $class = 'aa-widget aa-live';
-        $class .= ' aa-widget-' . strtolower(AA_Components::getClassType(get_called_class(), 'Widget'));
+        $class .= ' aa-widget-' . strtolower(AA_Components::getClassType(static::class, 'Widget'));
 
         $this->registerRequires($aa_property, $winfo);
         return "<div class=\"$class\"" . ($winfo['required'] ? ' data-aa-required' : '') . " id=\"widget-$base_id\" style=\"display:inline; position:relative;\">" . $widget_html . "</div>";

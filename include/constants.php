@@ -115,7 +115,7 @@ class AA_Alias {
      * @return string alias with _# or empty string
      */
     public static function isAliasLike(string $text, bool $raw = false): string {
-        if (preg_match("/^_#[A-Z0-9_#]{8}$/", $text) === 1) {;   // pattern="_#[A-Z0-9_#]{8} - used also in se_field.php UI"
+        if (preg_match("/^_#[A-Z0-9_#]{8}$/", $text) === 1) {   // pattern="_#[A-Z0-9_#]{8} - used also in se_field.php UI"
             return $text;
         }
         return ($raw AND (preg_match("/^[A-Z0-9_#]{8}$/", $text) === 1)) ? "_#$text" : '';

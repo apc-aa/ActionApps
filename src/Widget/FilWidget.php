@@ -212,7 +212,7 @@ class FilWidget extends Widget
 
         if ($url AND AA_Validate::doValidate($url, 'url')) {
             $link = '&nbsp;' . a_href($url, GetAAImage('external-link.png', _m('Show'), 16, 16));
-        };
+        }
 
         return AA::Un('{ajax:' . $content->getId() . ':' . $aa_property->getId() . ':{({item:' . $content->getId() . ':' . $aa_property->getId() . '})}' . $link . '<br><input type=button value=' . _m('Upload') . '>}');
         // add JS OK Function

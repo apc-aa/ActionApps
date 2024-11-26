@@ -187,7 +187,7 @@ class AA_Adminpageutil {
             //$errtext = 'some text';
             AA::Stringexpander()->addRequire('aa-jslib');
             AA::Stringexpander()->addRequire("AA_Message('".escape4js($errtext)."', 'err')", 'AA_Req_Load');
-        };
+        }
 
         // this also fills AA::Stringexpander required libs, so we can continue with postprocess
         // $out        = $form->getObjectEditHtml();

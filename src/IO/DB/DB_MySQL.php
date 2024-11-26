@@ -111,7 +111,7 @@ class DB_MySQL extends AbstractDB {
 
         if (is_null($this->Link_ID) and !$this->connect()) {
             return 0; /* we already complained in connect() about that. */
-        };
+        }
 
         // New query, discard previous result.
         if (is_object($this->Result)) {

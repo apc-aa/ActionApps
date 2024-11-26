@@ -145,7 +145,7 @@ class AA_Profile {
      * @param $uid
      */
     function set($property, $selector, $value, $type='u', $id='', $uid='') {
-        $this->properties[$property][$selector] = [$value,$type, $id, $uid];
+        $this->properties[$property][$selector] = [(string)$value, (string)$type, (string)$id, (string)$uid];
     }
 
 

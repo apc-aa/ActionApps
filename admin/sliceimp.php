@@ -419,10 +419,10 @@ foreach ($data_conflicts_ID as $c_id => $name) {
         <p>
             <?php if ($only_slice) { ?>
                 <input type="hidden" name="only_slice" value="1">
-            <?php };
+            <?php }
             if ($only_data) { ?>
                 <input type="hidden" name="only_data" value="1">
-            <?php }; ?>
+            <?php } ?>
             <input type="submit" name="submit" VALUE="<?php echo _m("Overwrite") ?>">
             <input type="submit" name="submit" VALUE="<?php echo _m("Insert") ?>">
             <input type="submit" name="submit" VALUE="<?php echo _m("Insert with new ids") ?>">

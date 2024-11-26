@@ -372,7 +372,7 @@ class AA_Mail extends htmlMimeMail implements \AA\Later\LaterInterface {
         }
         return $zids->count();
     }
-};
+}
 
 /** Helps split email generation into chunks - 50 mails each task
  *  there were problems with more than 1000 mails - it wasn't possible to plan it in one shot

@@ -132,5 +132,5 @@ class AA_Auth extends Auth {
         }
         return false;
     }
-};
+}
 

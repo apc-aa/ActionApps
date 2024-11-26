@@ -251,7 +251,7 @@ class spot {
         }
         return true;
     }
-};
+}
 
 class sitetree {
     /** @var spot[] -  Array of spots */
@@ -820,4 +820,4 @@ class sitetree {
         $image  = $img ? GetModuleImage('site', $img, '', 16, 16).' ' : '';
         return a_href($link, "$image$text", $add + ['class' => 'aa-button']);
     }
-};
+}

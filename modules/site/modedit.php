@@ -260,6 +260,9 @@ $apage->addRequire(get_aa_url('/javascript/js_lib.min.js', ['v'=>AA_JS_VERSION],
 $apage->addRequire($headcode, 'AA_Req_Headcode');
 $apage->addRequire('codemirror@5');
 $apage->setForm();
+
+$object_frm = AA_Module_Site::getModuleObjectForm($module_id);  // must be before printHead - this allows to automatically load codemirror/select2 in the head (printHead is called after $form->getObjectEditHtml)
+
 $apage->printHead($err, $Msg);
 
 ?>
@@ -286,7 +289,7 @@ $apage->printHead($err, $Msg);
     $uses_modules = AA_Module_Site::getRelatedModules([$module_id]);
     FrmTwoBox('uses_modules[]', _m('Uses slices') , $slice_selection, $uses_modules, 8, false, '', '', "Select all slices which you are using for the site. It is used for caching as well as for seo string search.");
     if ($module_id) {
-        FrmStaticText(_m("Additional setting"), AA_Module_Site::getModuleObjectForm($module_id), '', '', false);
+        FrmStaticText(_m("Additional setting"), $object_frm, '', '', false);
     }
 
     FrmTabEnd($form_buttons);

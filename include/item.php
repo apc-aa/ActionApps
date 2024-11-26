@@ -1793,7 +1793,7 @@ class AA_Item {
         $zid   = (is_object($zid) ? $zid : new zids($zid));
         return GetItemFromContent(new ItemContent($zid));
     }
-};
+}
 
 /**
  * Class AA_Items

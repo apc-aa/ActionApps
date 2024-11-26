@@ -114,19 +114,19 @@ FrmTabEnd($form_buttons);
 
 echo '<br><br><div class=aa-tab-title>'._m('Display Statistics for Item').'</div>';
 
-huhl($date_from);
+$slices = [AA::$module_id];
 
 // determine, which items to show
 $items = match ($item_set) {
-    'all'        => implode('-', array_keys(HitcounterStats::getStats(AA::$module_id, 0, 0, true, $item_count))),
-    'year'       => implode('-', array_keys(HitcounterStats::getStats(AA::$module_id, time() - 60 * 60 * 24 * 365, 0, true, $item_count))),
-    'month'      => implode('-', array_keys(HitcounterStats::getStats(AA::$module_id, time() - 60 * 60 * 24 * 30, 0, true, $item_count))),
-    'week'       => implode('-', array_keys(HitcounterStats::getStats(AA::$module_id, time() - 60 * 60 * 24 * 7, 0, true, $item_count))),
-    'day'        => implode('-', array_keys(HitcounterStats::getStats(AA::$module_id, time() - 60 * 60 * 24, 0, true, $item_count))),
-    'last_year'  => implode('-', array_keys(HitcounterStats::getStats(AA::$module_id, time() - 60 * 60 * 24 * 365 * 2, time() - 60 * 60 * 24 * 365, true, $item_count))),
-    'last_month' => implode('-', array_keys(HitcounterStats::getStats(AA::$module_id, time() - 60 * 60 * 24 * 30 * 2, time() - 60 * 60 * 24 * 30, true, $item_count))),
-    'last_week'  => implode('-', array_keys(HitcounterStats::getStats(AA::$module_id, time() - 60 * 60 * 24 * 7 * 2, time() - 60 * 60 * 24 * 7, true, $item_count))),
-    'last_day'   => implode('-', array_keys(HitcounterStats::getStats(AA::$module_id, time() - 60 * 60 * 24 * 2, time() - 60 * 60 * 24, true, $item_count))),
+    'all'        => implode('-', array_keys(HitcounterStats::getStats($slices, 0, 0, true, $item_count))),
+    'year'       => implode('-', array_keys(HitcounterStats::getStats($slices, time() - 60 * 60 * 24 * 365, 0, true, $item_count))),
+    'month'      => implode('-', array_keys(HitcounterStats::getStats($slices, time() - 60 * 60 * 24 * 30, 0, true, $item_count))),
+    'week'       => implode('-', array_keys(HitcounterStats::getStats($slices, time() - 60 * 60 * 24 * 7, 0, true, $item_count))),
+    'day'        => implode('-', array_keys(HitcounterStats::getStats($slices, time() - 60 * 60 * 24, 0, true, $item_count))),
+    'last_year'  => implode('-', array_keys(HitcounterStats::getStats($slices, time() - 60 * 60 * 24 * 365 * 2, time() - 60 * 60 * 24 * 365, true, $item_count))),
+    'last_month' => implode('-', array_keys(HitcounterStats::getStats($slices, time() - 60 * 60 * 24 * 30 * 2, time() - 60 * 60 * 24 * 30, true, $item_count))),
+    'last_week'  => implode('-', array_keys(HitcounterStats::getStats($slices, time() - 60 * 60 * 24 * 7 * 2, time() - 60 * 60 * 24 * 7, true, $item_count))),
+    'last_day'   => implode('-', array_keys(HitcounterStats::getStats($slices, time() - 60 * 60 * 24 * 2, time() - 60 * 60 * 24, true, $item_count))),
     'exact'      => StrExp('ids', [AA::$module_id, '', '', '-', AA::Un($items_code) ?: 'xxx']),
     default      => '',
 };

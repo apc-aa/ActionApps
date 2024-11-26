@@ -259,7 +259,7 @@ class Managed {
         if ($format === '') {
             unset($this->columns[$col]);
         } else {
-            $this->columns[$col][1] = $format;;
+            $this->columns[$col][1] = $format;
         }
         return $this;
     }

@@ -90,7 +90,7 @@ class DB_ODBC extends AbstractDB {
 
         if (!$this->connect()) {
             return 0; /* we already complained in connect() about that. */
-        };
+        }
 
         # New query, discard previous result.
         if ($this->Query_ID) {
@@ -190,7 +190,7 @@ class DB_ODBC extends AbstractDB {
 
         if (!$this->connect()) {
             return 0; /* we already complained in connect() about that. */
-        };
+        }
 
         $getsql = sprintf("INSERT into %s (%s, %s) VALUES ('%s', 0)",
             $this->Lock_Table,
@@ -260,7 +260,6 @@ class DB_ODBC extends AbstractDB {
             if (!$got_lock) {
                 $waittime = $currtime + 0.5;
                 while ($waittime > $this->getmicrotime()) {
-                    ;
                 }
             }
         }
@@ -276,7 +275,7 @@ class DB_ODBC extends AbstractDB {
     public function unlock($table = "") {
         if (!$this->connect()) {
             return 0; /* we already complained in connect() about that. */
-        };
+        }
 
         # Note: this unlocks ALL tables if $table is blank!
         if ($table == "") {
@@ -338,9 +337,9 @@ class DB_ODBC extends AbstractDB {
                     } else {
                         $i = $j;
                     }
-                };
+                }
                 //printf("$i $j $k <br>");
-            };
+            }
             $num_rows = $i;
         }
 
@@ -364,7 +363,7 @@ class DB_ODBC extends AbstractDB {
     function nextid($seq_name) {
         if (!$this->connect()) {
             return 0; /* we already complained in connect() about that. */
-        };
+        }
 
         if ($this->lock($this->Seq_Table)) {
             /* get sequence number (locked) and increment */

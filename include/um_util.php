@@ -75,7 +75,7 @@ function GetFiltered($type, $filter, $to_much, $none) {
  */
 function PrintModulePermModificator($selected_user) {
     $perm_slices = AA::$perm->getUserPerms($selected_user, "slice", 1);  // there are not only Slices, but other Modules too
-    $all_modules = AA_Module::getModules('', false, ['deleted','type', 'name']);
+    $all_modules = AA_Module::getModules('', false, ['deleted','type', 'priority', 'name']);
 
     $i=0;
     $current_perm_table = '';

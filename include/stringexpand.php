@@ -4996,7 +4996,7 @@ class AA_Stringexpand_Ajax extends AA_Stringexpand_Nevercache {
         $ret = '';
         if ( $field_id) {
             $item = $item_id ? AA_Items::getItem(new zids($item_id)) : $this->item;
-            if (!empty($item)) {
+            if (!empty($item) AND !$item->isEmpty()) {
                 $show_alias  = ($show_alias == '') ? "{alias:$field_id:f_h:, }" : $show_alias;
                 if (strlen(trim($repre_value = $item->subst_alias($show_alias))) < 1) {
                     $repre_value = '--';
@@ -6654,7 +6654,7 @@ class AA_Req {
      */
     function getConstructor() {
         $sri = $this->integrity ? ",'".$this->integrity."'" : '';
-        return get_called_class().'(['.implode(',', array_map(static fn ($dep) => "\"$dep\"", $this->depend)). ']'. $sri;
+        return static::class.'(['.implode(',', array_map(static fn ($dep) => "\"$dep\"", $this->depend)). ']'. $sri;
     }
 }
 
@@ -6785,7 +6785,7 @@ class AA_Req_Lib extends AA_Req {
         if ($this->depend) {
             $param[] = "[" . implode(',', array_map(static fn ($dep) => "'$dep'", $this->depend)) . ']';
         }
-        return get_called_class()."(". implode(', ', $param). ")";
+        return static::class."(". implode(', ', $param). ")";
     }
 }
 
@@ -6852,7 +6852,7 @@ class AA_Req_Htm extends AA_Req {
         if ($this->depend) {
             $param[] = "array(" . implode(',', array_map(static fn ($dep) => "'$dep'", $this->depend)) . ')';
         }
-        return get_called_class()."(". implode(', ', $param). ")";
+        return static::class."(". implode(', ', $param). ")";
     }
 }
 
@@ -9754,7 +9754,7 @@ class AA_Stringexpand_Mail extends AA_Stringexpand_Nevercache {
         // the path is different for Readers and direct mails
         if ($to instanceof zids) {  // Readers - we go for template
             $type  = (new AA_Logentry_MR(['type' =>'pg', 'page' =>AA::Un('{item:{xid}:short_id........}')]))->serializeToString();
-            $descr = (new AA_Logentry_Mail2reader(['time' =>date("Y-m-d H.i.s"), 'readers' =>$to->count()]))->serializeToString();;
+            $descr = (new AA_Logentry_Mail2reader(['time' =>date("Y-m-d H.i.s"), 'readers' =>$to->count()]))->serializeToString();
             $owner = $this->getRelatedModules()[0] ?? '';
             return AA_Mail::sendToReader(AA_Mailtemplate::createFromMailArray($mail_arr, $type, $descr, $owner)->getId(), $to, $to->getFirstSlice());
         }

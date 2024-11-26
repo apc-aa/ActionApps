@@ -541,7 +541,7 @@ function collect_messages_from_file($base_dir, $filename, &$messages, &$warnings
             // after message, e.g. _m ( "Hello"
             case 4:
                 if (isspace($filetext[$pos])) {
-                    ;
+                    // do nothing
                 } elseif ($filetext[$pos] === ".") {
                     $find = 2;
                 } elseif ($filetext[$pos] === "," || $filetext[$pos] === ")") {

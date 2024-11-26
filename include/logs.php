@@ -155,20 +155,22 @@ class AA_Log implements \AA\Expand\InternalExpandInterface {
     }
 
     /** Get events from log
-     * @param        $event - type of event
-     * @param string $selector
+     *
+     * @param  string  $event  - type of event
+     * @param  string  $selector
+     *
      * @return array
      */
-    public static function getLastLogEvents($event, $selector = "") {
+    public static function getLastLogEvents(string $event, string $selector = "") {
         $conds = [['type', $event, (!str_contains($event, '%')) ? '=' : 'LIKE']];
-        if ($selector != "") {
+        if ($selector !== "") {
             $conds[] = ['selector', $selector];
         }
         return DB_AA::select1('', 'SELECT * FROM log', $conds, ['id-']);
     }
 
     /** Get first 20 rows from log table with possible link to Log page */
-    public static function getLogTable($event, $selector = "", bool $show_log_link = false): string {
+    public static function getLogTable(string $event, $selector = "", bool $show_log_link = false): string {
         $conds = [['type', $event, (!str_contains($event, '%')) ? '=' : 'LIKE']];
         if ($selector != "") {
             $conds[] = ['selector', $selector];
@@ -204,13 +206,30 @@ class AA_Log implements \AA\Expand\InternalExpandInterface {
     }
 
     /** Internal aliases for Admin interface
-     *  @usage {internal:AA_Log:RSS#:21:3600}
+     *  @usage {internal:AA_Log:entries:CSN:RSS#:22:3600} - display number of entries in log for CSN event with selector RSS:{feed_id} in last 3600 seconds
      */
     static function internal_expand(?AA_Content $content, ...$params): string {
-        [$type,$selector,$seconds] = $params;
-        $seconds = (int)$seconds ?: 3600;
-
-        return (!$type OR !$selector) ? '' : (string)DB_AA::select1('cnt', "SELECT count(*) as cnt FROM `log`", [['type',$type], ['selector',$selector], ['time',time()-$seconds, '>=']]);
+        $info = array_shift($params);
+        switch ($info) {
+            case 'count':  // number of entries for type / selector in last seconds
+                [$type, $selector, $seconds] = $params;
+                $seconds = (int)$seconds ?: 3600;
+                return (!$type or !$selector) ? '' : (string)DB_AA::select1('cnt', "SELECT count(*) as cnt FROM `log`", [['type', $type], ['selector', $selector], ['time', time() - $seconds, '>=']]);
+            case 'print':  // print entries for type / selector in last seconds
+                if ($content AND ($logEntry = AA_Logentry::factoryByString($content->getValue('params')))) {
+                    $css = <<<CSScode
+                        .aa-log-entry { display: flex;gap: .5rem;
+                          & div { position: relative;display: flex;flex-direction: column;align-items: flex-start;
+                            & label { font-size: 0.7rem; color: #666; margin-bottom: -.5rem; line-height: .9rem;}
+                            & span { font-size: .8rem; }
+                        }}
+                    CSScode;
+                    AA::Stringexpander()->addRequire($css, 'AA_Req_CSScode');
+                    return $logEntry->getPrintRow();
+                }
+                return '';
+        }
+        return '';
     }
 }
 
@@ -234,7 +253,22 @@ class AA_Log implements \AA\Expand\InternalExpandInterface {
 //}
 
 /** Uses AA_Serializable to create log entry. Constructor is taken from AA_Serializable */
-abstract class AA_Logentry extends AA_Serializable {}
+abstract class AA_Logentry extends AA_Serializable {
+    public function getPrintRow(): string
+    {
+        $props = $this::getClassProperties();
+        $ret = '';
+        foreach ($props as $id => $prop) {
+            $name = safe($prop->name);
+            $val  = safe(trim($this->$id));
+            if ( $val !== '') {
+                $ret .= "<div class=aa-log-entry><label>$name</label><span>$val</span></div>";
+            }
+        }
+        return '<div class=aa-log-entry>'.$ret.'</div>';
+    }
+
+}
 
 /** Mail Template log entry - description */
 class AA_Logentry_Mail2reader extends AA_Logentry {

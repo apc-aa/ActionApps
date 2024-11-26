@@ -133,7 +133,7 @@ abstract class AA_Serializable {
      */
     static function constructClassName($name, $class_mask=null): string {
         $name       = ucwords(strtolower(str_replace('-', '', $name)));    // str_replace probably for validator e-mail, but maybe not necessary
-        $class_mask = rtrim($class_mask,'_') ?: get_called_class();
+        $class_mask = rtrim($class_mask,'_') ?: static::class;
         if (($pos=strrpos($class_mask, '\\')) !== false) {
             return substr_replace($class_mask, "\\$name", $pos, 1);
         }
@@ -151,7 +151,7 @@ abstract class AA_Serializable {
 
         // the first parameter is the class identifier - the parameters start then
         [$class_shortcut, $prop_string] = explode(':', $string, 2);
-        $class  = self::constructClassName($class_shortcut, get_called_class().'_');
+        $class  = self::constructClassName($class_shortcut, static::class.'_');
         $params = ['class' => $class];
 
         if ( class_exists($class) ) {
@@ -192,7 +192,7 @@ abstract class AA_Serializable {
 
     /** Reverse to parseClassProperties */
     public function serializeToString(): string {
-        $class_shotcut = AA_Components::getClassType(get_called_class(), 'AA_Logentry_');
+        $class_shotcut = AA_Components::getClassType(static::class, 'AA_Logentry_');
         $parts = [$class_shotcut];
         $props = static::getPersistentProperties();
 
@@ -329,7 +329,7 @@ class AA_Storable extends AA_Serializable {
             $ret['aa_version'] = $version;
         }
         // we need the exact class in order we can factor the object from state
-        $ret['aa_class']   = get_called_class();
+        $ret['aa_class']   = static::class;
         return $ret;
     }
 
@@ -417,7 +417,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
     /** getObjectType */
     function getObjectType() {
         // return $this->aa_type;     // no aa_type here
-        return get_called_class();
+        return static::class;
     }
 
     function getProperty($property_id, $default=null) {
@@ -952,7 +952,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
      * @return Managed
      */
     static function getManagerConf(Manageractions $actions=null, Manageractions $switches=null): Managed {
-        $object_class  = get_called_class();
+        $object_class  = static::class;
         $aliases       = new AA_Aliases(new AA_Aliasgenerator_Object(static::class));
         $search_fields = Searchfields::factoryFromProperties(array_merge(['aa_name' => self::getPropertyObject('aa_name')], static::getClassProperties()));
 
@@ -1149,10 +1149,10 @@ class AA_Components {
 
 
     /** get 'Cod' from AA\Widget\CodWidget
-     *  called as:  AA_Components::getClassType(get_called_class(),'Widget');
+     *  called as:  AA_Components::getClassType(static::class,'Widget');
      *              AA_Components::getClassType(get_class($widget),'Widget')
      *              AA_Components::getClassType($class_name)
-     * @param string $classname - probably from get_called_class()
+     * @param string $classname - probably from static::class
      * @param string $mask      - removed class start (like 'Widget' from 'CodWidget')
      * @return string
      */

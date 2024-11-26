@@ -789,7 +789,7 @@ class AA_Inputfield {
         } else {
             if ($aliasname=='') {
                 $aliasname='inputvar';
-            };
+            }
             $alias = $aliasname.':'.$this->id. ($part  ? ":$part"  : ''). ($param ? ":$param" : '');
             AA::Contentcache()->set($alias, $txt);
             $this->echoo('{'.$alias.'}');
@@ -2970,10 +2970,10 @@ function IncludeManagerJavascript() {
  * @param      $list_type - items preview type ('items' | 'users') @see usershow.php
  * @param      $list_text
  * @param bool $safe - escape html entities in name?
- * @param null $bookmark_id
+ * @param string|null $bookmark_id
  * @return string
  */
-function getRadioBookmarkRow( $selected, $name, $count, $value, $list_type, $list_text, $safe=true, $bookmark_id=null) {
+function getRadioBookmarkRow( $selected, $name, $count, $value, $list_type, $list_text, bool $safe=true, ?string $bookmark_id=null): string {
     global $slice_id;
 
     static $checked = ' checked';  // mark first option when no $group selected
@@ -3054,7 +3054,7 @@ function FrmItemGroupSelect( $items, $searchbar, $selected, $list_type, $message
                      </tr>";
             foreach ( $book_arr as $k => $v ) {
                 $bookparams = $searchbar->getBookmarkParams($k);
-                $out .= getRadioBookmarkRow( $selected, $v, count(getZidsFromGroupSelect($k, $items, $searchbar)), $k, $list_type, $messages['view_items'], true, is_array($bookparams) ? $bookparams['id'] : null);
+                $out .= getRadioBookmarkRow( $selected, $v, count(getZidsFromGroupSelect($k, $items, $searchbar)), $k, $list_type, $messages['view_items'], true, $bookparams['id'] ?? null);
             }
         }
         $out .= getRadioBookmarkRow( $selected, _m('All active items'),         count(getZidsFromGroupSelect('AA_BIN_ACTIVE' , $items, $searchbar)), 'AA_BIN_ACTIVE', $list_type, $messages['view_items']);

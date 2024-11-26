@@ -593,29 +593,24 @@ class Auth {
     // Authentication dummies. Must be overridden by user.
     //
     function auth_loginform($msg = '') {
-        ;
     }
 
     /**
      * @return string uid
      */
     function auth_validatelogin() {
-        ;
     }
 
     /**
      * @return bool
      */
     function auth_refreshlogin() {
-        ;
     }
 
     function auth_registerform() {
-        ;
     }
 
     function auth_doregister() {
-        ;
     }
 }
 

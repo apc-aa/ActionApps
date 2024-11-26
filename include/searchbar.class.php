@@ -460,19 +460,19 @@ class AA_Searchbar extends AA_Storable {
     }
 
      /** getBookmarkNames function
-      *  @return array of bookmark names <key> => <name>
+      *  @return array of bookmark names '<key>' => '<name>'
       */
     function getBookmarkNames(): array
     {
         return isset($this->bookmarks) ? $this->bookmarks->getKeyName() : [];
     }
 
-    /** getBookmarkParams function
-     * @param $key
-     * @return bool
+    /**
+     * @param  string  $key
      */
-    function getBookmarkParams($key) {
-        return isset($this->bookmarks) ? $this->bookmarks->getBookmarkParams($key) : false;
+    public function getBookmarkParams(string $key): ?array
+    {
+        return $this->bookmarks?->getBookmarkParams($key);
     }
 
     public function isEmpty($bar):bool {
@@ -662,7 +662,7 @@ class AA_Searchbar extends AA_Storable {
  * bookmarks class - stores queries (searchbar state)
  */
 class AA_Bookmarks {
-    protected array $bookmarks = []; // array of stored bookmarks
+    protected array $bookmarks = []; // array of stored bookmarks  [<int> => ['name' => <name>, 'state'=> <searchbar_state>, ...]]
                                      // bookmarks[] = array('name' => <name>, 'state'=> <searchbar_state>)
     protected ?AA_Profile $profile;  // profile, where to store bookmarks
     protected $active_bookmark;      // last used bookmark
@@ -706,9 +706,9 @@ class AA_Bookmarks {
     }
 
     /** Get parameters of bookmark defined by number $key
-     * @param $key
+     * @param  string  $key
      */
-    function getBookmarkParams($key) {
+    function getBookmarkParams(string $key): ?array {
         return $this->bookmarks[$key];
     }
 
@@ -716,7 +716,8 @@ class AA_Bookmarks {
      * @param $key
      * @return bool
      */
-    function is_defined($key) {
+    function is_defined($key): bool
+    {
         return isset( $this->bookmarks[$key] );
     }
 
@@ -753,11 +754,11 @@ class AA_Bookmarks {
         if ( isset($b_arr) AND is_array($b_arr) ) {
             foreach ( $b_arr as $selector => $property_arr ) {
                 $this->bookmarks[] = [
-                    'name' => $selector,
-                                           'state'=> unserialize($property_arr[0]),
-                                           'type' => $property_arr[1],
-                                           'id'   => $property_arr[2],
-                                           'uid'  => $property_arr[3]
+                    'name' => (string)$selector,
+                    'state'=> unserialize($property_arr[0]),
+                    'type' => (string)$property_arr[1],
+                    'id'   => (string)$property_arr[2],
+                    'uid'  => (string)$property_arr[3]
                 ];
             }
         }

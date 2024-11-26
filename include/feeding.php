@@ -453,7 +453,7 @@ function GetFeedManaged(): \AA\Managed {
     $managed->setWidgetSetting('feed_id',                                       ['name'=>_m('ID')]);
     $managed->setWidgetSetting('server_url',                                    ['name'=>_m('URL of the feed'), 'help'=> _m("e.g. https://www.someplace.com/rss/index.xml").'<br>'._m("Do NOT change this URL if you already set the Mapping (or update mapping after the change). The mapping is tied to this url!")]);
     $managed->setWidgetSetting('name',                                          ['name'=>_m('RSS Feed name')]);
-    $logtext = '<span title="'._m('warnings last hour').'">{internal:AA_Log:CSN:RSS#:{feed_id}:3600}</span> / <span title="'._m('warnings last day').'">{internal:AA_Log:CSN:RSS#:{feed_id}:86400}</span> / <span title="'._m('warnings last month').'">{internal:AA_Log:CSN:RSS#:{feed_id}:2592000}</span>';
+    $logtext = '<span title="'._m('warnings last hour').'">{internal:AA_Log:count:CSN:RSS#:{feed_id}:3600}</span> / <span title="'._m('warnings last day').'">{internal:AA_Log:count:CSN:RSS#:{feed_id}:86400}</span> / <span title="'._m('warnings last month').'">{internal:AA_Log:count:CSN:RSS#:{feed_id}:2592000}</span>';
 
     if (IsSuperadmin()) {
         $logtext = a_href(get_admin_url('aa_log.php?&srchbr_akce=1&srchbr_field%5B0%5D=selector&srchbr_oper%5B0%5D==&srchbr_value%5B0%5D=RSS:{feed_id}&srchbr_order%5B0%5D=time&srchbr_order_dir%5B0%5D=on'), $logtext);

@@ -85,7 +85,7 @@ class AA_Collection {
     function getReaders($how_often = null) {
         if (!($slice          = $this->getReaderSlice())) {
             return new zids();
-        };
+        }
         $field_howoften = getAlertsField(FIELDID_HOWOFTEN, $this->id);
 
         $aa_set         = new AA_Set($slice->getId(), new AA_Condition(FIELDID_MAIL_CONFIRMED, '==', 1));
