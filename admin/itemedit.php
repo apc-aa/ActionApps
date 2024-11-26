@@ -91,6 +91,8 @@ try {
     // array ( '' => 30, )
     // $v616c65727473312e2e2e2e5073746669 = InputVars::nonePOST('v616c65727473312e2e2e2e5073746669'); // empty
 
+    $vid = InputVars::stringGET('vid'); // display as view $vid
+
     $post_preview = $_REQUEST['post_preview'] ?? true;
 
     $cancel = InputVars::boolGET('cancel');

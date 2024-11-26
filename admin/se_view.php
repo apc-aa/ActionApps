@@ -326,6 +326,7 @@ if ( $update ) {
                 ValidateInput($k, $view_field_names[$k], $$k, $err, false, $v["validate"]);
             }
         }
+
         if (count($err)) {
             break;
         }
@@ -400,6 +401,7 @@ if ( !$update ) {  // set variables from database
     } elseif ( $view_type === 'inputform') {
         // new view - inputform
         $vw_data['odd'] = (new inputform())->getForm(new ItemContent(), $slice); // get current input form template
+        $vw_data['type'] = 'inputform';
     } elseif ( $view_type ) {
         // new view - get default values from view table -
         //            take first view of the same type
