@@ -56,7 +56,7 @@ class AA_Collection {
         $this->slice_url        = null;
     }
 
-    function _get( $property ) {
+    protected function getProp( $property ) {
         if ( is_null($this->reader_slice_id) ) {
             //$data = GetTable2Array('SELECT * FROM alerts_collection WHERE id = \''. $this->id .'\'', 'aa_first', 'aa_fields');
             $data = DB_AA::select1([], 'SELECT * FROM alerts_collection', [['id', $this->id]]);
@@ -68,11 +68,11 @@ class AA_Collection {
         return $this->$property;
     }
 
-    function getReaderSlice()    { return AA_Slice::getModule($this->_get('reader_slice_id'));  }
+    function getReaderSlice()    { return AA_Slice::getModule($this->getProp('reader_slice_id'));  }
 
     function getSliceUrl()       {
         if ( is_null($this->slice_url) ) {
-            $this->slice_url = DB_AA::select1('slice_url', "SELECT slice_url FROM `module`", [[ 'id', $this->_get('alerts_module_id'), 'l' ]]);
+            $this->slice_url = DB_AA::select1('slice_url', "SELECT slice_url FROM `module`", [['id', $this->getProp('alerts_module_id'), 'l' ]]);
                               //GetTable2Array('SELECT slice_url FROM module WHERE id=\''.q_pack_id($alerts_id).'\'', 'aa_first', 'slice_url');
         }
         return $this->slice_url;
@@ -120,9 +120,9 @@ class AA_Collection {
     public function sendEmails($ho, $emails, $update, $item_id, $reader_id) {
 
         // allow to access Reader data (and the data of all the slices with the same password)
-        AA_Credentials::singleton()->loadFromSlice($this->_get('reader_slice_id'));
+        AA_Credentials::singleton()->loadFromSlice($this->getProp('reader_slice_id'));
 
-        $GLOBALS['apc_state']['xlang'] = substr(AA_Module_Alerts::getModule($this->_get('alerts_module_id'))->getLang(),0,2);
+        $GLOBALS['apc_state']['xlang'] = substr(AA_Module_Alerts::getModule($this->getProp('alerts_module_id'))->getLang(),0,2);
 
         // get array of all filters of current collection ($collection_id)
         // !if $update is set (default), then it updates date for lastsent - for
@@ -168,7 +168,7 @@ class AA_Collection {
                     $aliases      = array_merge($reader_slice->aliases(), $als->getArray());
                     $item         = new AA_Item($readerContent, $aliases);
 
-                    if (AA_Mail::sendTemplate($this->_get('email_id_alert'), $readerContent->getValue(FIELDID_EMAIL), $item)) {
+                    if (AA_Mail::sendTemplate($this->getProp('email_id_alert'), $readerContent->getValue(FIELDID_EMAIL), $item)) {
                         AA_Log::write("ALERTS", $ho, $this->id . ": " . $readerContent->getValue(FIELDID_EMAIL). ' queued');
                         $email_count++;
                     }
@@ -186,7 +186,7 @@ class AA_Collection {
             $als->addTextAlias("_#UNSBFORM", get_url($this->getSliceUrl(), ['au'=>'ABCDE','c'=>$this->id]));
             $item = new AA_Item('', $als);
             foreach ( (array)$emails as $email ) {
-                if (AA_Mail::sendTemplate($this->_get('email_id_alert'), $email, $item)) {
+                if (AA_Mail::sendTemplate($this->getProp('email_id_alert'), $email, $item)) {
                     $email_count++;
                 }
             }
@@ -195,7 +195,7 @@ class AA_Collection {
         AA_Log::write("ALERTS", $ho, "Sent for collection " . $this->id . ": " . ((int)$email_count));
         AA_Log::write("ALERTS", $ho, implode('; ', [
             "Debug collection " . $this->id,
-            $this->_get('email_id_alert'),
+            $this->getProp('email_id_alert'),
             implode(',', (array)$emails),
             implode(',', (array)$aliases)
         ]));

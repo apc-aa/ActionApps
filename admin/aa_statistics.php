@@ -126,9 +126,7 @@ FrmTabEnd($form_buttons);
 echo '<br><br><div class=aa-tab-title>'._m('Display Statistics for Item').'</div>';
 
 $slices = [];
-if ($for_module==='all') {
-    $slices = [];
-} else {
+if ($for_module !== 'all') {
     $type = AA_Module::getModuleType($for_module);
     if ($type === 'W') {
         $slices = AA_Module_Site::getRelatedModules([$for_module]);

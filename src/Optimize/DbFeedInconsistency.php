@@ -38,7 +38,7 @@ class DbFeedInconsistency extends AbstractOptimize {
         $SQL = "SELECT from_id,to_id FROM feeds LEFT JOIN slice ON feeds.to_id=slice.id
                 WHERE slice.id IS NULL";
         $err = GetTable2Array($SQL, "unpack:from_id", 'unpack:to_id');
-        if (is_array($err) and count($err) > 0) {
+        if (is_array($err) and count($err)) {
             foreach ($err as $from_id => $to_id) {
                 $this->message(_m('Wrong destination slice id: %1 -> %2', [safe(AA_Slice::getModuleName($from_id)), $to_id]));
             }
@@ -49,7 +49,7 @@ class DbFeedInconsistency extends AbstractOptimize {
         $SQL = "SELECT from_id,to_id FROM feeds LEFT JOIN slice ON feeds.from_id=slice.id
                 WHERE slice.id IS NULL";
         $err = GetTable2Array($SQL, "unpack:from_id", 'unpack:to_id');
-        if (is_array($err) and count($err) > 0) {
+        if (is_array($err) and count($err)) {
             foreach ($err as $from_id => $to_id) {
                 $this->message(_m('Wrong source slice id: %1 -> %2', [$from_id, safe(AA_Slice::getModuleName($to_id))]));
             }
@@ -71,7 +71,7 @@ class DbFeedInconsistency extends AbstractOptimize {
         $SQL = "SELECT to_id FROM feeds LEFT JOIN slice ON feeds.to_id=slice.id WHERE slice.id IS NULL";
         $err = GetTable2Array($SQL, '', 'unpack:to_id');
 
-        if (is_array($err) and count($err) > 0) {
+        if (is_array($err) and count($err)) {
             foreach ($err as $wrong_slice_id) {
                 $SQL = 'DELETE FROM `feeds` WHERE `to_id`=\'' . q_pack_id($wrong_slice_id) . '\'';
                 $db->query($SQL);
@@ -82,7 +82,7 @@ class DbFeedInconsistency extends AbstractOptimize {
         $SQL = "SELECT from_id FROM feeds LEFT JOIN slice ON feeds.from_id=slice.id WHERE slice.id IS NULL";
         $err = GetTable2Array($SQL, '', 'unpack:from_id');
 
-        if (is_array($err) and count($err) > 0) {
+        if (is_array($err) and count($err)) {
             foreach ($err as $wrong_slice_id) {
                 $SQL = 'DELETE FROM `feeds` WHERE `from_id`=\'' . q_pack_id($wrong_slice_id) . '\'';
                 $db->query($SQL);

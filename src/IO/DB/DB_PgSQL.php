@@ -160,7 +160,8 @@ class DB_PgSQL extends AbstractDB {
         return $nextid;
     }
 
-    public function metadata($table = "", $full = false) {
+    public function metadata($table = "", $full = false): false|array
+    {
         $count = 0;
         $id = 0;
         $res = [];
@@ -197,7 +198,8 @@ class DB_PgSQL extends AbstractDB {
         return $res;
     }
 
-    public function affected_rows() {
+    public function affected_rows(): int
+    {
         return pg_cmdtuples($this->Query_ID);
     }
 
@@ -214,7 +216,8 @@ class DB_PgSQL extends AbstractDB {
         return $this->Record[$Name];
     }
 
-    public function table_names() {
+    public function table_names(): array
+    {
         $this->query("select relname from pg_class where relkind = 'r' and not relname like 'pg_%'");
         $i = 0;
         while ($this->next_record()) {

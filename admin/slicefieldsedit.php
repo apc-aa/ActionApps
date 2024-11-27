@@ -96,7 +96,7 @@ if ( $update AND !count($err) AND $fields->count() ) {
     // removed $oldcontent4id (see ItemContent::storeItem)
     $content4id->storeSliceFields( $slice_id, $fields );
 
-    if (!count($err) AND !$go_edit) {
+    if (!$go_edit) {
         page_close();
         go_return_or_url(self_base() . "index.php",true,true);
     }

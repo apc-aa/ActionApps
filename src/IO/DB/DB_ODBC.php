@@ -299,7 +299,8 @@ class DB_ODBC extends AbstractDB {
     }
 
     /* public: evaluate the result (size, width) */
-    public function affected_rows() {
+    public function affected_rows(): int
+    {
         return odbc_num_rows($this->Query_ID);
     }
 
@@ -412,7 +413,8 @@ class DB_ODBC extends AbstractDB {
     }
 
     /* public: return table metadata */
-    public function metadata($table = "", $full = false) {
+    public function metadata($table = "", $full = false): false|array
+    {
         $count = 0;
         $id = 0;
         $res = [];
@@ -517,7 +519,8 @@ class DB_ODBC extends AbstractDB {
     }
 
     /* public: find available table names */
-    public function table_names() {
+    public function table_names(): array
+    {
         $this->connect();
         $h = odbc_tables($this->Link_ID);
         $i = 0;

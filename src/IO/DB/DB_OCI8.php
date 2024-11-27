@@ -224,7 +224,8 @@ class DB_OCI8 extends AbstractDB {
         $this->Row = $pos;
     }
 
-    public function metadata($table = "", $full = false) {
+    public function metadata($table = "", $full = false): false|array
+    {
         $count = 0;
         $id = 0;
         $res = [];
@@ -312,7 +313,8 @@ class DB_OCI8 extends AbstractDB {
     }
 
 
-    public function affected_rows() {
+    public function affected_rows(): int
+    {
         return ocirowcount($this->Parse);
     }
 
@@ -385,7 +387,8 @@ class DB_OCI8 extends AbstractDB {
         return $this->query("commit");
     }
 
-    public function table_names() {
+    public function table_names(): array
+    {
         $this->connect();
         $this->query("SELECT table_name,tablespace_name FROM user_tables");
         $i = 0;

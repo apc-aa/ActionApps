@@ -84,7 +84,6 @@ class Cvariable {
                     $quote = false;
                 } else {
                     huhe('There should be unpacked long id: '. $this->value ."(in $this->name)");
-                    $ret = "";
                 }
                 break;
             case "quoted":

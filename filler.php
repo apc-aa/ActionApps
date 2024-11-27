@@ -288,9 +288,6 @@ if (ctype_digit((string)$_REQUEST['respuesta'])) {
     }
 }
 
-
-
-
 // new version of filling - through aa[] array allowing multiple items to store
 //      aa[i63556a45e4e67b654a3a986a548e8bc9][headline_______1][]
 //      aa[n1_54343ea876898b6754e3578a8cc544e6][publish_date____][]
@@ -367,8 +364,7 @@ if (!is_array($oldcontent4id)) {
 // by using ItemContent object in near future)
 ValidateContent4Id($err_valid, $slice, $insert ? "insert" : "update", $my_item_id, !$notvalidate, $notshown);
 
-if (count($err_valid) > 1) {
-    unset($err_valid["Init"]);
+if (count($err_valid)) {
     $zids = new zids(null, 'l');
     foreach ( $err_valid as $field_zid => $msg) {
         $zids->add(substr($field_zid,1));  // remove first 'v' in the name

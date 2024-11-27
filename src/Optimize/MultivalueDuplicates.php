@@ -35,7 +35,7 @@ class MultivalueDuplicates extends AbstractOptimize {
         $SQL = "SELECT `item_id`, `field_id`, `text`, `number`, count(*) AS `cnt` FROM `content` WHERE (flag & 64) GROUP BY `item_id`, `field_id`, `text`, `number` HAVING `cnt` >1";
         $err_text = GetTable2Array($SQL, '', 'aa_fields');
 
-        if (is_array($err_text) and count($err_text) > 0) {
+        if (is_array($err_text) and count($err_text)) {
             $this->message(_m('%1 duplicates found in text fields', [count($err_text)]));
             foreach ($err_text as $wrong) {
                 $this->message(_m('Duplicates (%4) in item %1 - field %2 - value %3', [
@@ -51,7 +51,7 @@ class MultivalueDuplicates extends AbstractOptimize {
         $SQL = "SELECT `item_id`, `field_id`, `number`, count(*) AS `cnt` FROM `content` WHERE (flag & 64) = 0 GROUP BY `item_id`, `field_id`, `number` HAVING `cnt` >1";
         $err_num = GetTable2Array($SQL, '', 'aa_fields');
 
-        if (is_array($err_num) and count($err_num) > 0) {
+        if (is_array($err_num) and count($err_num)) {
             $this->message(_m('%1 duplicates found in numeric fields', [count($err_num)]));
             foreach ($err_num as $wrong) {
                 $this->message(_m('Duplicates (%4) in item %1 - field %2 - value %3 - numeric', [
@@ -81,7 +81,7 @@ class MultivalueDuplicates extends AbstractOptimize {
         $SQL = "SELECT `item_id`, `field_id`, `text`, count(*) AS `cnt` FROM `content` WHERE (flag & 64) GROUP BY `item_id`, `field_id`, `text` HAVING `cnt` >1";
         $err_text = GetTable2Array($SQL, '', 'aa_fields');
 
-        if (is_array($err_text) and count($err_text) > 0) {
+        if (is_array($err_text) and count($err_text)) {
             $this->message(_m('%1 duplicates found in text fields', [count($err_text)]));
             foreach ($err_text as $wrong) {
                 $SQL = "DELETE FROM `content` WHERE item_id='" . quote($wrong['item_id']) . "' AND field_id='" . quote($wrong['field_id']) . "' AND text='" . quote($wrong['text']) . "' LIMIT " . ($wrong['cnt'] - 1);
@@ -93,7 +93,7 @@ class MultivalueDuplicates extends AbstractOptimize {
         $SQL = "SELECT `item_id`, `field_id`, `number`, count(*) AS `cnt` FROM `content` WHERE (flag & 64) = 0 GROUP BY `item_id`, `field_id`, `number` HAVING `cnt` >1";
         $err_num = GetTable2Array($SQL, '', 'aa_fields');
 
-        if (is_array($err_num) and count($err_num) > 0) {
+        if (is_array($err_num) and count($err_num)) {
             $this->message(_m('%1 duplicates found in numeric fields', [count($err_num)]));
             foreach ($err_num as $wrong) {
                 $SQL = "DELETE FROM `content` WHERE item_id='" . quote($wrong['item_id']) . "' AND field_id='" . quote($wrong['field_id']) . "' AND number='" . quote($wrong['number']) . "' LIMIT " . ($wrong['cnt'] - 1);

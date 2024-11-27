@@ -899,8 +899,6 @@ i.ico.move:hover {
 }
 /* events */
 .aa-updating {
-    -webkit-mask-image: linear-gradient(to right, transparent, #fff, transparent);
-    -webkit-mask-size: 300% 100%;
     mask-image: linear-gradient(to right, transparent, #fff, transparent);
     mask-size: 300% 100%;
     animation: aa-loader 3s infinite alternate;

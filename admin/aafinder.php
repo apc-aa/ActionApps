@@ -128,12 +128,14 @@ function AafinderItemLink($item_id, $slice_id='', $no_module_link=false): string
         }
     }
     $seo = $item->getValue('seo.............') ?: 'Item';
+    $hdln = current(AA_Items::getFormatted(new zids($item_id, 'l'), '_#HEADLINE', AA_BIN_ALL));  // we want also headline of items in trash
+
     if (!$item->isActive()) {
         $seo = "<s>$seo</s>";
     }
 
     $info = [];
-    $info[] = a_href(get_admin_url('itemedit.php',['id'=>$item_id,'change_id'=>$slice_id,'edit'=>1]), "$seo ($item_id)");
+    $info[] = a_href(get_admin_url('itemedit.php',['id'=>$item_id,'change_id'=>$slice_id,'edit'=>1]), "$seo ($item_id) '$hdln'");
     if (!$no_module_link) {
         $info[] = AA_Slice::getModuleName($slice_id, true);
     }
@@ -260,12 +262,11 @@ function PrintItemInfo($item_id) {
             array_walk($res, static function (&$v, $k) {
                 if (is_long_id($iid = $v['Item'])) {
                     $item = AA_Items::getItem(new zids($iid, 'l'));
-                    $v['Item'] .= ' / ' . AA_Module::getModuleName($item->getSliceID());
+                    $v['Item'] = AafinderItemLink($iid, $item->getSliceID());
                     $hdln = current(AA_Items::getFormatted(new zids($iid, 'l'), '_#HEADLINE', AA_BIN_ALL));  // we want also headline of items in trash
                     if ($hdln) {
                         $v['Item'] .= "<br><small>($hdln)</small>";
                     }
-                    $v['Item'] .= "<br><small>".ChangesMonitor::getHistoryLink($iid)."</small>";
                     $v['Status'] = $item->getStatusCode();
                     $v['PubDate'] = date('j.n.Y H:i:s', (int)$item->getval('publish_date....'));
                     $v['ExpDate'] = date('j.n.Y H:i:s', (int)$item->getval('expiry_date.....'));

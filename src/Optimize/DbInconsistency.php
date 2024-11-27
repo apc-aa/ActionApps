@@ -37,7 +37,7 @@ class DbInconsistency extends AbstractOptimize {
         // test wrong destination slices
         $SQL = "SELECT slice_id FROM item LEFT JOIN slice ON item.slice_id=slice.id WHERE slice.id IS NULL";
         $err = GetTable2Array($SQL, '', "unpack:slice_id");
-        if (is_array($err) and count($err) > 0) {
+        if (is_array($err) and count($err)) {
             foreach ($err as $s_id) {
                 $this->message(_m('Wrong slice id in item table: %1', [$s_id]));
             }
@@ -47,7 +47,7 @@ class DbInconsistency extends AbstractOptimize {
         // test wrong destination slices
         $SQL = "SELECT item_id, text FROM content LEFT JOIN item ON content.item_id=item.id WHERE item.id IS NULL";
         $err = GetTable2Array($SQL, "unpack:item_id", 'text');
-        if (is_array($err) and count($err) > 0) {
+        if (is_array($err) and count($err)) {
             foreach ($err as $item_id => $text) {
                 $this->message(_m('Wrong item id in content table: %1 -> %2', [$item_id, $text]));
             }
@@ -57,7 +57,7 @@ class DbInconsistency extends AbstractOptimize {
         // test wrong source slices
         $SQL = "SELECT item_id, subject FROM discussion LEFT JOIN item ON discussion.item_id=item.id WHERE item.id IS NULL";
         $err = GetTable2Array($SQL, "unpack:item_id", 'subject');
-        if (is_array($err) and count($err) > 0) {
+        if (is_array($err) and count($err)) {
             foreach ($err as $item_id => $text) {
                 $this->message(_m('Wrong item id in discussion table: %1 -> %2', [$item_id, $text]));
             }
@@ -78,7 +78,7 @@ class DbInconsistency extends AbstractOptimize {
         // test wrong content records
         $SQL = "SELECT slice_id FROM item LEFT JOIN slice ON item.slice_id=slice.id WHERE slice.id IS NULL";
         $err = GetTable2Array($SQL, '', "unpack:slice_id");
-        if (is_array($err) and count($err) > 0) {
+        if (is_array($err) and count($err)) {
             foreach ($err as $s_id) {
                 $SQL = 'DELETE FROM `item` WHERE `slice_id`=\'' . q_pack_id($s_id) . '\'';
                 $db->query($SQL);
@@ -89,7 +89,7 @@ class DbInconsistency extends AbstractOptimize {
         // test wrong content records
         $SQL = "SELECT item_id FROM content LEFT JOIN item ON content.item_id=item.id WHERE item.id IS NULL";
         $err = GetTable2Array($SQL, "", 'unpack:item_id');
-        if (is_array($err) and count($err) > 0) {
+        if (is_array($err) and count($err)) {
             foreach ($err as $item_id) {
                 $SQL = 'DELETE FROM `content` WHERE `item_id`=\'' . q_pack_id($item_id) . '\'';
                 $db->query($SQL);
@@ -100,7 +100,7 @@ class DbInconsistency extends AbstractOptimize {
         // test wrong source slices
         $SQL = "SELECT item_id FROM discussion LEFT JOIN item ON discussion.item_id=item.id WHERE item.id IS NULL";
         $err = GetTable2Array($SQL, '', "unpack:item_id");
-        if (is_array($err) and count($err) > 0) {
+        if (is_array($err) and count($err)) {
             foreach ($err as $item_id) {
                 $SQL = 'DELETE FROM `discussion` WHERE `item_id`=\'' . q_pack_id($item_id) . '\'';
                 $db->query($SQL);
