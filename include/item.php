@@ -615,7 +615,7 @@ class AA_Item {
         if (($this->getFlag($col) & FLAG_HTML) || !strlen($txt = $this->getval($col))) {
             return $txt;
         }
-        return nl2br(str_replace('  ', ' &ensp;', AA_Stringexpand_Text2html::htmlEscapeAndLinkUrls($txt)));
+        return StrExp('text2html', [$txt]);
     }
 
     /** getbaseurl function

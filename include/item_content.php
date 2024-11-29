@@ -136,6 +136,15 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
         return $this->flag & AA_Formatters::STANDARD_FORMATTERS;
     }
 
+    /** converts plain text values to HTML */
+    public function reformatToHtml(): self {
+        if (!($this->flag & AA_Formatters::RAW)) {
+            $this->flag |= AA_Formatters::RAW;
+            array_walk($this->arr, static fn(&$v) => $v = StrExp('text2html', [$v]));
+        }
+        return $this;
+    }
+
     /** @return true, if the value do not contain any data */
     function isEmpty() {
         return count($this->arr) < 1;
@@ -630,20 +639,20 @@ class AA_Content implements Iterator, ArrayAccess, Countable {
     }
 
     /** Iterator interface */
-    public function rewind()      { reset($this->content); }
-    public function current()     { return $this->getAaValue(key($this->content)); }
-    public function key()         { return key($this->content); }
-    public function next()        { next($this->content); }
+    public function rewind(): void { reset($this->content); }
+    public function current(): AA_Value { return $this->getAaValue(key($this->content)); }
+    public function key(): mixed { return key($this->content); }
+    public function next(): void { next($this->content); }
     public function valid(): bool { return (current($this->content) !== false); }
 
     /** Countable interface - Returns number of values  */
     public function count(): int                { return count($this->content); }
 
     /** ArrayAccess interface */
-    public function offsetSet($offset, $value)  { $this->setAaValue($offset, $value); }
+    public function offsetSet($offset, $value): void { $this->setAaValue($offset, $value); }
     public function offsetExists($offset): bool { return is_array($this->content[$offset]); }
-    public function offsetUnset($offset)        { unset($this->content[$offset]); }
-    public function offsetGet($offset)          { return is_array($this->content[$offset]) ? $this->getAaValue($offset) : null; }
+    public function offsetUnset($offset): void { unset($this->content[$offset]); }
+    public function offsetGet($offset): ?AA_Value { return is_array($this->content[$offset]) ? $this->getAaValue($offset) : null; }
 }
 
 const ITEMCONTENT_ERROR_BAD_PARAM   = 200;

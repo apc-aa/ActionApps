@@ -556,7 +556,7 @@ class Widget extends AA_Object implements NamedInterface {
     }
 
     /**
-     * @param array $data4field  (or sometimes string)
+     * @param array $data4field
      * @return AA_Value for the data send by the widget
      *       The data submitted by form usually looks like
      *       aa[n1_54343ea876898b6754e3578a8cc544e6][headline________][]=Hi
@@ -574,19 +574,19 @@ class Widget extends AA_Object implements NamedInterface {
      *   where "dte" points to the AA\Widget\DteWidget. The method AA\Widget\DteWidget::getValue()
      *   is called to grab the value (or multivalues) from the submitted form
      */
-    public static function getValue($data4field): AA_Value {
+    public static function getValue(array $data4field): AA_Value {
         $flag = $data4field['flag'] & FLAG_HTML;
         $fld_value_arr = [];
 
-        foreach ((array)$data4field as $key => $value) {
+        foreach ($data4field as $key => $value) {
             if (ctype_digit((string)$key)) {
                 $fld_value_arr[$key] = ['value' => $value, 'flag' => $flag];
             } else {
                 $class = '';
                 if ($key === 'wi') {
-                    $class = Widget::constructClassName($value);
+                    $class = self::constructClassName($value);
                 } elseif ($key !== 'flag') {
-                    $class = Widget::constructClassName($key);
+                    $class = self::constructClassName($key);
                 }
                 if ($class && class_exists($class)) {
                     // call function like AA\Widget\DteWidget::getValue($data)
@@ -594,7 +594,7 @@ class Widget extends AA_Object implements NamedInterface {
                     // date it is array('d'=>array(), 'm'=>array(), 'y'=>array())
 
                     // there is no need to go through array - we do not expect more widgets for one variable
-                    return $class::getWidgetValue((array)$data4field);
+                    return $class::getWidgetValue($data4field);
                 }
             }
         }

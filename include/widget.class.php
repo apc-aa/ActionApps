@@ -90,12 +90,12 @@ class AA_Property extends AA_Storable {
      *  However, it is just an idea right now (we still have just HTML and
      *  plain text)
      */
-    var $show_content_type_switch;
+    var int $show_content_type_switch;
 
     /** Default value for content type switch
     *   (FLAG_HTML at this moment)
     */
-    var $content_type_switch_default;
+    var int $content_type_switch_default;
 
     /** @todo some kind of perms - who can edit/change, ... - not defined, yet */
     var $perm;
@@ -139,8 +139,8 @@ class AA_Property extends AA_Storable {
         $this->input_help                  = $input_help;
         $this->input_morehlp               = $input_morehlp;
         $this->example                     = $example;
-        $this->show_content_type_switch    = $show_content_type_switch;
-        $this->content_type_switch_default = $content_type_switch_default;
+        $this->show_content_type_switch    = (int)$show_content_type_switch;
+        $this->content_type_switch_default = (int)$content_type_switch_default;
         $this->perm                        = $perm;
         $this->const_arr                   = (is_array($validator) AND ($validator[0]==='enum')) ? $validator[1] : [];
         $this->default                     = $default;
@@ -185,8 +185,8 @@ class AA_Property extends AA_Storable {
     /** @return string[] */
     function getTranslations()        { return $this->translations;  }
 
-    function getContentTypeSwitches() { return $this->show_content_type_switch;    }
-    function getContentTypeDefault()  { return $this->content_type_switch_default; }
+    public function getContentTypeSwitches(): int { return $this->show_content_type_switch;    }
+    public function getContentTypeDefault(): int  { return $this->content_type_switch_default; }
 
     public function getValidator(): AA_Validate {
         if (!is_object($this->_validator)) {
@@ -492,20 +492,20 @@ class AA_Property extends AA_Storable {
 */
 class AA_Formatters {
 
-    const RAW       = 1;   // former HTML - see constants.php - FLAG_HTML
+    public const RAW = 1;   // former HTML - see constants.php - FLAG_HTML
 
-    const TEXT2HTML = 0;   // default
+    public const TEXT2HTML = 0;   // default
 
-    /** bit-field representig, which formatters we want to show. 65535
+    /** bit-field representing, which formatters we want to show. 65535
      *   means "all standard formatters", which means all 16 standard formatters.
      *   We use just two, at this moment - HTML (=1) and PLAIN (=2)
      *   (we will continue on bit basis, so next formatter would be xxx (=4))
      */
-    const STANDARD_FORMATTERS = 1;   // default  0 | 1 -  TEXT2HTML | RAW | ... (will be increased up to 65535 after adding 128 - TEXY, ....)
+    public const STANDARD_FORMATTERS = 1;   // default  0 | 1 -  TEXT2HTML | RAW | ... (will be increased up to 65535 after adding 128 - TEXY, ....)
 
     /** @returns string id of formatter */
     public static function getType(int $formatter): string {
-        return ($formatter==1) ? 'plain' : 'html';
+        return ($formatter===1) ? 'plain' : 'html';
     }
 
     /**
@@ -561,8 +561,8 @@ class AA_Formatters {
      * @param AA_Value    $value
      * @return string
      */
-    static function getHiddenFormatters($basevarname, $aa_property, $value) {
-        $flag_frmtr  = self::getCurrentFormatter($value, $aa_property);
+    static function getHiddenFormatters($basevarname, $aa_property, $value, ?int $set_to=null) {
+        $flag_frmtr  = $set_to ?? self::getCurrentFormatter($value, $aa_property);
         return $flag_frmtr ? '<input type=hidden name="'.$basevarname.'[flag]" value="'.$flag_frmtr.'">' : '';
     }
 
@@ -571,7 +571,8 @@ class AA_Formatters {
      * @param AA_Property $aa_property
      * @return int
      */
-    static function getCurrentFormatter($value, $aa_property) {
+    static function getCurrentFormatter($value, $aa_property): int
+    {
         return $value->isEmpty() ? $aa_property->getContentTypeDefault() : ($value->getFlag() & self::STANDARD_FORMATTERS);
     }
 
