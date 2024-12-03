@@ -19,12 +19,12 @@ class Item_DeleteTrash extends AbstractManageraction {
      *  With $selected=true  it is used as "action" of manager
      *  With $selected=false it is used as "switch" of manager (left menu)
      */
-    var $selected;
+    protected bool $selected;
 
     /** Constructor - fills the information about the target bin */
-    function __construct($id, $selected = false) {
-        $this->selected = $selected;
+    function __construct($id, bool $selected = false) {
         parent::__construct($id);
+        $this->selected = $selected;
     }
 
     /** Name of this Manager's action */
@@ -41,7 +41,7 @@ class Item_DeleteTrash extends AbstractManageraction {
         }
 
         // restrict the deletion only to selected items
-        if ($this->selected === 'selected') {
+        if ($this->selected) {
             if ($item_zids->count() < 1) {
                 return false;     // OK
             }
