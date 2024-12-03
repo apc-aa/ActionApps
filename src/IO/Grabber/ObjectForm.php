@@ -145,7 +145,7 @@ class ObjectForm extends AbstractGrabber
             }
             foreach ($obj_fields as $field_id => $val_array) {
                 // get the content of the field (values and flags)
-                $aa_value = Widget::getValue($val_array);
+                $aa_value = Widget::getValue((array)$val_array);
                 $aa_value->replaceInValues($trans_obj_alias, $trans_obj_ids);
                 $content->setAaValue($field_id, $aa_value);
             }

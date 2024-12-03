@@ -90,7 +90,7 @@ class CTK extends AbstractGrabber
         $ftext = '';
         foreach ($polozka->ContentItem->DataContent->body->p as $f) {
             $ftext .= $f->asXML() . "\n";
-        };
+        }
 	// cisteni kodu
 	$EraseCTKStrings = ['<span class="linkTagNoBg">', '<i class="icon-ico-arrow-up icon"/></span>'];
 	$ftext = str_replace($EraseCTKStrings,'',$ftext);

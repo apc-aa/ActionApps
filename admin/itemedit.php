@@ -306,7 +306,7 @@ if ( ($insert || $update) AND count($fields) ) {
         } elseif ($preview) {
             go_url( $preview_url );
         } elseif ($go_edit) {   // if go_edit - continue to edit again
-            go_url( Inputform_url(false, $added_to_db, $slice_id, '', null, null, false) );
+            go_url( Inputform_url(false, $added_to_db, $slice_id, '', $vid, null, false) );
         } else {
             go_return_or_url(self_base() . "index.php",true,true);
         }
@@ -389,13 +389,16 @@ $inputform_settings['hidden']              = [
                              'openervar'   => $openervar
 ];  // id of variable in parent window (used for popup inputform)
 
+if ( $vid ) {
+    $inputform_settings['template'] = $vid;
+    $inputform_settings['hidden']['vid'] = $vid;
+}
+
+
 if ( $inputform_settings['form4update'] ) {
     $inputform_settings['hidden']['id']    = $id;
 }
 
-if ( $vid ) {
-    $inputform_settings['template'] = $vid;
-}
 
 //AddPermObject($slice_id, "slice");    // no special permission added - only superuser can access
 $form = new inputform($inputform_settings);

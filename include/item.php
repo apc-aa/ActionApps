@@ -178,23 +178,23 @@ function Inputform_url($add, $iid, $sid='', $ret_url='', $vid = null, $var = nul
     $return_url = make_return_url($ret_url);
 
     if ($iid) {
-        $param[] = "id=$iid";
+        $param['id'] = $iid;
     }
-    $param[] = ($add ? 'add=1' : 'edit=1');
-    $param[] = "encap=false";
+    $param[$add ? 'add' : 'edit'] = 1;
+    $param['encap'] = "false";
     if ($sid) {
-        $param[] = "slice_id=$sid";
+        $param['slice_id'] = $sid;
     }
     if ($return_url) {
-        $param[] = 'return_url='. rawurlencode($return_url);
+        $param['return_url'] = $return_url;
     }
     if ($var) {
-        $param[] = "openervar=$var";  // id of variable in parent window (used for popup inputform)
+        $param['openervar'] = $var;  // id of variable in parent window (used for popup inputform)
     }
     if ($vid) {
-        $param[] = "vid=$vid";
+        $param['vid'] = $vid;
     } elseif (isset($profile) AND $profile->getProperty('input_view')) {
-        $param[] = 'vid='.$profile->getProperty('input_view');
+        $param['vid'] = $profile->getProperty('input_view');
     }
     return $safe ? con_url('itemedit.php',$param) : get_url('itemedit.php',$param);
 }
