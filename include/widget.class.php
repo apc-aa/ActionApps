@@ -343,7 +343,7 @@ class AA_Property extends AA_Storable {
         }
         /** @var class-string<AA_Validate> $class_name */
         $class_name = get_class($validator);
-        return [$class_name::lastErr(), $class_name::lastErrMsg()];
+        return [$class_name::lastErr(), $class_name::lastErrMsg()];  // [int, string]
     }
 
     /** convert to right value type, shorten, if needed, ...

@@ -965,7 +965,7 @@ class ItemContent extends AA_Content {
             $property    = $field->getAaProperty();
             if ($validreport = $property->validateDetailed($this)) {
                 // if the inserter generates the content itself, it is not necessary to have it filled
-                if ($validreport[0] == VALIDATE_ERROR_NOT_FILLED) {
+                if ($validreport[0] === VALIDATE_ERROR_NOT_FILLED) {
                     if (AA_Inserter::factoryByField($field)->isContentSelfGenerated()) {
                         continue;
                     }

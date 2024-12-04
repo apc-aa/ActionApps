@@ -643,11 +643,12 @@ class AA_Field_Slicedef extends AA_Field {
         $this->data['multiple'] = (int)$data->get_alias_subst('_#FLD_MULT', 0);  // 0-2
         $this->data['input_show_func'] = '';
         $this->widget_params = (array)json_decode($data->get_alias_subst('_#FLD_PARM', ''), true);
-        $this->widget_params['class'] = Widget::constructClassName($data->get_alias_subst('_#FLD_TYPE', 'fld') ?: 'fld');
+        $fld_type = $data->get_alias_subst('_#FLD_TYPE', 'fld') ?: 'fld';
+        $this->widget_params['class'] = Widget::constructClassName($fld_type);
         $this->data['search_pri'] = $this->data['input_pri'];
         $this->data['html_default'] = 1;
         $this->data['input_validate'] = $data->get_alias_subst('_#FLD_VALI', '');
-        $this->data['input_insert_func'] = $data->get_alias_subst('_#FLD_INS_', 'qte');
+        $this->data['input_insert_func'] = $data->get_alias_subst('_#FLD_INS_', ($fld_type === 'fil') ? 'fil' : 'qte');
         $this->data['input_show'] = (int)$data->get_alias_subst('_#FLD_SHOW', 1) ? 1 : 0;
         $this->data['text_stored'] = (int)$data->get_alias_subst('_#FLD_STOR', 1) ? 1 : 0;
 
