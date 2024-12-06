@@ -32,7 +32,7 @@ class FldWidget extends Widget
      * @return array
      */
     public static function getClassProperties(): array {
-        return Widget::propertiesShop(['max_characters', 'width', 'input_type']);
+        return Widget::propertiesShop(['max_characters', 'width', 'input_type', 'placeholder']);
     }
 
     /** libs to run after the page DOM is loaded */
@@ -66,6 +66,9 @@ class FldWidget extends Widget
 
         $attrs = array_merge($attrs, $aa_property->getValidator()->getHtmlInputAttr());
         $attrs['type'] = $this->getProperty('input_type') ?: $attrs['type'] ?: 'text';
+        if ($this->getProperty('placeholder')) {
+            $attrs['placeholder'] = $this->getProperty('placeholder');
+        }
 
         // type number does not support size parameter, so we have to set max and min (make no sense to do it for numbers > 11 characters - use default)
         if ($attrs['type'] === 'number') {

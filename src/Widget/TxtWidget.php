@@ -72,6 +72,10 @@ class TxtWidget extends Widget
         }
         $widget .= $widget_add2;
 
+        if ($type === 'ajax') {
+            $attrs['autofocus'] = 'autofocus';
+        }
+
         $value = $content->getAaValue($aa_property->getId());
         $def_rows = $this->getProperty('rows', 4);
 
@@ -106,6 +110,7 @@ class TxtWidget extends Widget
             }
             $widget .= $this->getOneInput($input_name, $i, $val, $attrs, $required, !$aa_property->getContentTypeSwitches() OR ($type === 'live'), $base);
             $required = ''; // only one is required
+            unset($attrs['autofocus']);
         }
 
         // if CKEditor called outside AA - in sitemodule, we have to tell, which slice to use for image uploads
