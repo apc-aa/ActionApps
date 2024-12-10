@@ -8,6 +8,8 @@
 
 namespace AA\Widget;
 use AA\FormArray;
+use AA_Content;
+use AA_Property;
 
 /** Manager widget */
 class MngWidget extends Widget
@@ -37,13 +39,15 @@ class MngWidget extends Widget
 
     /** Creates base widget HTML, which will be surrounded by Live, Ajxax
      *  or normal decorations (added by _finalize*Html)
-     *  @param \AA_Property $aa_property
-     *  @param \AA_Content  $content
-     *  @param string       $type normal|live|ajax
+     *
+     * @param  AA_Property  $aa_property
+     * @param  AA_Content   $content
+     * @param  string       $type  normal|live|ajax
+     *
      *  @return array
      *  @throws \Exception
      */
-    function _getRawHtml($aa_property, $content, $type = 'normal'): array {
+    function _getRawHtml(AA_Property $aa_property, AA_Content $content, string $type = 'normal'): array {
         $property_id = $aa_property->getId();
         $item_id     = $content->getId();
         $base_name   = FormArray::getName4Form($property_id, $content, $this->item_index);

@@ -45,12 +45,13 @@ class AA_Formrow extends AA_Storable {
     function getWidget()      {}
 
     /**
-     * @param AA_Content $content
-     * @param string     $type
+     * @param  AA_Content  $content
+     * @param  string      $type
+     *
      * @return string
      * @throws Exception
      */
-    function getRowHtml($content, $type=''): string {
+    function getRowHtml(AA_Content $content, string $type=''): string {
         $widget = $this->getWidget();
         // $widget->registerRequires(); // now in _finalizeHtml
         return match ($type) {
@@ -78,7 +79,7 @@ class AA_Formrow_Text extends AA_Formrow {
     function __construct($text=null) { // default values are needed for AA_Storable's construction
         $this->text = $text;
     }
-    function getRowHtml($content, $type=''): string {
+    function getRowHtml(AA_Content $content, string $type=''): string {
         return '<div>'.$this->text.'</div>';
     }
 }
@@ -179,13 +180,15 @@ class FormrowWidget extends Widget {
 
     /** Creates base widget HTML, which will be surrounded by Live, Ajxax
      *  or normal decorations (added by _finalize*Html)
-     *  @param AA_Property $aa_property
-     *  @param AA_Content  $content
-     *  @param string      $type normal|live|ajax
+     *
+     * @param  AA_Property  $aa_property
+     * @param  AA_Content   $content
+     * @param  string       $type  normal|live|ajax
+     *
      *  @return array
      *  @throws Exception
      */
-    function _getRawHtml($aa_property, $content, $type='normal'): array {
+    function _getRawHtml(AA_Property $aa_property, AA_Content $content, string $type='normal'): array {
         // $property_id  = $aa_property->getId();
         // $input_name   = AA\FormArray::getName4Form($property_id, $content)."[formrow][]";
 
@@ -361,11 +364,13 @@ class AA_Form extends AA_Object implements \AA\Util\NamedInterface {
     }
 
     /** Edit item form
-     * @param string $type ajax|live
+     *
+     * @param  string  $type  ajax|live
+     *
      * @return string
      * @throws Exception
      */
-    function getEditFormHtml($type='live'): string
+    public function getEditFormHtml(string $type='live'): string
     {
         if (!$this->object_id) {
             return '';
@@ -379,14 +384,15 @@ class AA_Form extends AA_Object implements \AA\Util\NamedInterface {
         return $html;
     }
 
-    /** @todo write permission function, which modifies the form based on the
-     *        actual user's permissions and profile
-     * @param AA_Content $content
-     * @param string     $type normal|ajax|live
+    /** @param AA_Content $content
+     * @param  string  $type  normal|ajax|live
+     *
      * @return string
      * @throws Exception
+     *@todo   write permission function, which modifies the form based on the
+     *        actual user's permissions and profile
      */
-    public function getRowsHtml($content, $type=''): string
+    public function getRowsHtml(AA_Content $content, string $type=''): string
     {
         $ret = '';
         foreach($this->rows as $row) {

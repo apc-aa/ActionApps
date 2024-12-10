@@ -8,6 +8,8 @@
 
 namespace AA\Widget;
 use AA\FormArray;
+use AA_Content;
+use AA_Property;
 use AA_Validate;
 use AA_Value;
 use zids;
@@ -47,13 +49,15 @@ class TagWidget extends Widget
 
     /** Creates base widget HTML, which will be surrounded by Live, Ajax
      *  or normal decorations (added by _finalize*Html)
-     *  @param \AA_Property $aa_property
-     *  @param \AA_Content  $content
-     *  @param string       $type normal|live|ajax
+     *
+     * @param  AA_Property  $aa_property
+     * @param  AA_Content   $content
+     * @param  string       $type  normal|live|ajax
+     *
      *  @return array
      *  @throws \Exception
      */
-    function _getRawHtml($aa_property, $content, $type = 'normal'): array {
+    function _getRawHtml(AA_Property $aa_property, AA_Content $content, string $type = 'normal'): array {
         $def_field_id = $aa_property->getId();
         $def_slice_id = $content->getOwnerId();
         $def_item_id  = $content->getId() ?: '';

@@ -491,7 +491,8 @@ class AA_Object extends AA_Storable implements AA_iEditable {
      **/
     function aftersave() {}
 
-    public static function getPropertyObject($property_id) {
+    public static function getPropertyObject($property_id): ?AA_Property
+    {
         return match ($property_id) {
             'aa_type'       => new AA_Property('aa_type', 'Object type', 'string', false, true, 'string', true),
             'aa_name'       => new AA_Property('aa_name', 'Name', 'string', false, true, 'string', false),

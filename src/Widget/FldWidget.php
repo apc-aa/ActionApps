@@ -10,6 +10,7 @@ namespace AA\Widget;
 use AA\FormArray;
 use AA_Content;
 use AA\Util\Langs;
+use AA_Property;
 
 
 /** Text Field widget */
@@ -43,13 +44,15 @@ class FldWidget extends Widget
 
     /** Creates base widget HTML, which will be surrounded by Live, Ajax
      *  or normal decorations (added by _finalize*Html)
-     *  @param \AA_Property $aa_property
-     *  @param AA_Content   $content
-     *  @param string       $type normal|live|ajax
+     *
+     * @param  AA_Property  $aa_property
+     * @param AA_Content    $content
+     * @param  string       $type  normal|live|ajax
+     *
      *  @return array
      *  @throws \Exception
      */
-    function _getRawHtml($aa_property, $content, $type = 'normal'): array {
+    function _getRawHtml(AA_Property $aa_property, AA_Content $content, string $type = 'normal'): array {
         $base_name = FormArray::getName4Form($aa_property->getId(), $content, $this->item_index);
         $base_id = FormArray::formName2Id($base_name);
         $required = $aa_property->isRequired() ? 'required' : '';
@@ -89,6 +92,18 @@ class FldWidget extends Widget
             $attrs['maxlength'] = get_if($this->getProperty('max_characters'), $attrs['maxlength'], 255);
         }
 
+        $datalist = '';
+        if ($this instanceof \AA\Widget\PreWidget) {
+            // $widget .= Widget::getWidgetIdentificationCode($base_name, 'pre');   // not necessary, I think - we can stay with Fld styles...
+            $options  = $this->getOptions(null, $content, (bool)$this->getProperty('use_name', false));
+            if ($options) {
+                $datalist_id = $base_id. '_lst';
+                $datalist = "<datalist id=\"{$datalist_id}\">".$this->getSelectOptions($options)."</datalist>";
+                $attrs['list'] = $datalist_id;
+            }
+        }
+
+
         $attr_string = htmlattr($attrs);
 
         if ($value->isEmpty()) {
@@ -107,6 +122,7 @@ class FldWidget extends Widget
             $required = ''; // only one is required
             $autofocus = '';
         }
+        $widget .= $datalist;
 
         return ['html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired()];
     }

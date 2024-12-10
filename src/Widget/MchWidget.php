@@ -8,6 +8,8 @@
 
 namespace AA\Widget;
 use AA\FormArray;
+use AA_Content;
+use AA_Property;
 use AA_Value;
 
 /** Multiple Checkboxes widget */
@@ -51,13 +53,15 @@ class MchWidget extends Widget
 
     /** Creates base widget HTML, which will be surrounded by Live, Ajxax
      *  or normal decorations (added by _finalize*Html)
-     *  @param \AA_Property $aa_property
-     *  @param \AA_Content  $content
-     *  @param string       $type normal|live|ajax
+     *
+     * @param  AA_Property  $aa_property
+     * @param  AA_Content   $content
+     * @param  string       $type  normal|live|ajax
+     *
      *  @return array
      *  @throws \Exception
      */
-    function _getRawHtml($aa_property, $content, $type = 'normal'): array {
+    function _getRawHtml(AA_Property $aa_property, AA_Content $content, string $type = 'normal'): array {
         $base_name = FormArray::getName4Form($aa_property->getId(), $content, $this->item_index);
         $base_id = FormArray::formName2Id($base_name);
         $base_name_add = $base_name . '[mch]';
@@ -65,14 +69,13 @@ class MchWidget extends Widget
         $attrs = Widget::stdInputAttrs($type, $base_id);
         $widget_add = htmlattr($attrs);
 
-        $use_name = $this->getProperty('use_name', false);
         $height = (int)$this->getProperty('height');
         if ($height < 1) {
             $height = 400;
         }
 
         $selected = $content->getAaValue($aa_property->getId());
-        $options = $this->getOptions($selected, $content, $use_name);
+        $options = $this->getOptions($selected, $content, (bool)$this->getProperty('use_name', false));
         $htmlopt = [];
         for ($i = 0, $ino = count($options); $i < $ino; ++$i) {
             $input_name = $base_name_add . "[$i]";

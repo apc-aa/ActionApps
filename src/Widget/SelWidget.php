@@ -8,6 +8,8 @@
 
 namespace AA\Widget;
 use AA\FormArray;
+use AA_Content;
+use AA_Property;
 
 /** Select Box widget */
 class SelWidget extends Widget
@@ -65,13 +67,15 @@ class SelWidget extends Widget
 
     /** Creates base widget HTML, which will be surrounded by Live, Ajxax
      *  or normal decorations (added by _finalize*Html)
-     *  @param \AA_Property $aa_property
-     *  @param \AA_Content  $content
-     *  @param string       $type normal|live|ajax
+     *
+     * @param  AA_Property  $aa_property
+     * @param  AA_Content   $content
+     * @param  string       $type  normal|live|ajax
+     *
      *  @return array
      *  @throws \Exception
      */
-    function _getRawHtml($aa_property, $content, $type = 'normal'): array {
+    function _getRawHtml(AA_Property $aa_property, AA_Content $content, string $type = 'normal'): array {
         $base_name = FormArray::getName4Form($aa_property->getId(), $content, $this->item_index);
         $base_id = FormArray::formName2Id($base_name);
         $required = $aa_property->isRequired() ? 'required' : '';
@@ -87,7 +91,6 @@ class SelWidget extends Widget
         $input_name = $base_name . "[]";
         $input_id = FormArray::formName2Id($input_name);
         $this->ids_4_select2[] = "#$input_id";
-        $use_name = $this->getProperty('use_name', false);
         $multiple = self::multiple() ? ' multiple' : '';
 
         //$widget    = AA\Widget\Widget::_saveIcon($base_id, $type === 'live', 'left')."<select name=\"$input_name\" id=\"$input_id\"$multiple $required $widget_adds $autofocus>";
@@ -96,7 +99,7 @@ class SelWidget extends Widget
         // empty select option for not required fields and also for live selectbox,
         // because people thinks, that the first value is filled in the database (which is not)
         $add_empty = (!$required ? 1 : 2);
-        $options = $this->getOptions($selected, $content, $use_name, false, $add_empty);
+        $options = $this->getOptions($selected, $content, (bool)$this->getProperty('use_name', false), false, $add_empty);
         $widget .= $this->getSelectOptions($options);
         $widget .= "</select>";
 

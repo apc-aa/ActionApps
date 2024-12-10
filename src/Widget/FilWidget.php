@@ -9,6 +9,7 @@
 namespace AA\Widget;
 use AA;
 use AA\FormArray;
+use AA_Content;
 use AA_Property;
 use AA_Validate;
 use AA_Value;
@@ -112,13 +113,15 @@ class FilWidget extends Widget
 
     /** Creates base widget HTML, which will be surrounded by Live, Ajax
      *  or normal decorations (added by _finalize*Html)
-     *  @param AA_Property $aa_property
-     *  @param \AA_Content $content
-     *  @param string      $type normal|live|ajax
+     *
+     * @param  AA_Property  $aa_property
+     * @param  AA_Content   $content
+     * @param  string       $type  normal|live|ajax
+     *
      *  @return array
      *  @throws \Exception
      */
-    function _getRawHtml($aa_property, $content, $type = 'normal'): array {
+    function _getRawHtml(AA_Property $aa_property, AA_Content $content, string $type = 'normal'): array {
         $base_name = FormArray::getName4Form($aa_property->getId(), $content, $this->item_index);
         $base_id = FormArray::formName2Id($base_name);
 
@@ -198,13 +201,15 @@ class FilWidget extends Widget
     }
 
     /** Get Live HTML widget (in place editing)
-     * @param AA_Property $aa_property  - the variable
-     * @param \AA_Content  $content      - contain the value of property to display
-     * @param null $function
+     *
+     * @param  AA_Property  $aa_property  - the variable
+     * @param  AA_Content   $content      - contain the value of property to display
+     * @param  null         $function
+     *
      * @return string - widget HTML for using as Live component (in place editing)
      * @throws \Exception
      */
-    function getLiveHtml($aa_property, $content, $function = null)
+    function getLiveHtml(AA_Property $aa_property, AA_Content $content, $function = null)
     {
         //return $this->getAjaxHtml($aa_property, $content);
         // this is not standard implementation - we reuse Ajax function instead of Live function, because it is more natural for file upload

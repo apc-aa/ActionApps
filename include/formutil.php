@@ -1938,8 +1938,8 @@ class AA_Inputfield {
             $out .= "$varsecfield.value=this.options[this.selectedIndex].value\">";      // could be just this.value, but in this case I want to be consistent with this.options[this.selectedIndex].text method above
         } else {
             $out .= ($adding ?
-                     " onchange=\"add_to_line($name, this.options[this.selectedIndex].value)\">" :
-                     " onchange=\"$name.value=this.options[this.selectedIndex].value\">");
+                     " onchange=\"add_to_line($name, this.value)\">" :
+                     " onchange=\"$name.value=this.value\">");
         }
         $out .= $this->get_options( $this->const_arr, $usevalue, $secondfield, 'all', true); // add empty option
         $out .= '</select>';

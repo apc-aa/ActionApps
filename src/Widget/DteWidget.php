@@ -8,6 +8,8 @@
 
 namespace AA\Widget;
 use AA\FormArray;
+use AA_Content;
+use AA_Property;
 use AA_Value;
 use datectrl;
 
@@ -36,13 +38,15 @@ class DteWidget extends Widget
 
     /** Creates base widget HTML, which will be surrounded by Live, Ajxax
      *  or normal decorations (added by _finalize*Html)
-     *  @param \AA_Property $aa_property
-     *  @param \AA_Content  $content
-     *  @param string       $type normal|live|ajax
+     *
+     * @param  AA_Property  $aa_property
+     * @param  AA_Content   $content
+     * @param  string       $type  normal|live|ajax
+     *
      *  @return array
      *  @throws \Exception
      */
-    function _getRawHtml($aa_property, $content, $type = 'normal'): array {
+    function _getRawHtml(AA_Property $aa_property, AA_Content $content, string $type = 'normal'): array {
         // time parameter==date or all is totally unset - use alternative
         if (($this->getProperty('show_time',0)==2) OR (!$this->getProperty('relative',0) AND !$this->getProperty('start_year',0) AND !$this->getProperty('end_year',0) AND !$this->getProperty('show_time',0)))  {
             return $this->_getRawHtml_dateinput($aa_property, $content, $type);
@@ -59,8 +63,8 @@ class DteWidget extends Widget
 
         $delim = '';
         $from_now = $this->getProperty('relative', 0);
-        $y_range_minus = $this->getProperty('start_year', $from_now ? 1  : date('Y')-1);
-        $y_range_plus = $this->getProperty('end_year',    $from_now ? 10 : date('Y')+10);
+        $y_range_minus = $this->getProperty('start_year', $from_now ? 1  : (int)date('Y')-1);
+        $y_range_plus = $this->getProperty('end_year',    $from_now ? 10 : (int)date('Y')+10);
         $display_time = $this->getProperty('show_time', 0);
 
         $datectrl = new datectrl('', $y_range_minus, $y_range_plus, $from_now, $display_time, $aa_property->isRequired());

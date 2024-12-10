@@ -55,6 +55,7 @@ if (!$_GET['form_id']) {
     exit;
 }
 
+/** @var AA_Form $form */
 $form = AA_Object::load($_GET['form_id'], 'AA_Form');
 
 if (is_null($form)) {

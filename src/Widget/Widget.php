@@ -251,14 +251,17 @@ class Widget extends AA_Object implements NamedInterface {
 
     /** returns options array with marked selected options, missing options,...
      *  This method is rewritten get_options() method form formutil.php
-     * @param AA_Value   $selected
-     * @param AA_Content $content
-     * @param bool       $use_name
-     * @param bool       $testval
-     * @param int        $add_empty
+     *
+     * @param  AA_Value|null    $selected
+     * @param  AA_Content|null  $content
+     * @param  bool             $use_name
+     * @param  bool             $testval
+     * @param  int              $add_empty
+     *
      * @return array
      */
-    public function getOptions($selected = null, $content = null, $use_name = false, $testval = false, $add_empty = 0) {
+    public function getOptions(?AA_Value $selected = null, ?AA_Content $content = null, bool $use_name = false, bool $testval = false, int $add_empty = 0): array
+    {
         $selectedused = false;
         $empty_present = false;
 
@@ -273,9 +276,7 @@ class Widget extends AA_Object implements NamedInterface {
             // not filled, yet - so fill it
             // Fills array used for list selection. Fill it from constant group or slice.
             // function is rewritten fill_const_arr().
-
-            $item_id = is_object($content) ? $content->getId() : null;
-            $this->_const_arr = $this->getFormattedOptions($item_id);  // Initialize
+            $this->_const_arr = $this->getFormattedOptions($content?->getId());  // Initialize
         }
 
         foreach ($this->_const_arr as $k => $v) {
@@ -318,10 +319,10 @@ class Widget extends AA_Object implements NamedInterface {
             }
         }
 
-        if (($add_empty == 1) AND !$empty_present) {
+        if (($add_empty === 1) AND !$empty_present) {
             // put empty option to the front
             array_unshift($ret, ['k' => '', 'v' => '', 'selected' => !$selectedused, 'mis' => false]);
-        } elseif (($add_empty == 2) AND !$selectedused AND !$empty_present) {
+        } elseif (($add_empty === 2) AND !$selectedused AND !$empty_present) {
             array_unshift($ret, ['k' => '', 'v' => '', 'selected' => true, 'mis' => false, 'justdefault' => true]);
         }
         return $ret;
@@ -329,12 +330,14 @@ class Widget extends AA_Object implements NamedInterface {
 
     /** returns select options created from given array
      *  This method is rewritten get_options() method form formutil.php
-     * @param array  $options
-     * @param string $restrict
-     * @param bool   $do_not_select
+     *
+     * @param  array   $options
+     * @param  string  $restrict
+     * @param  bool    $do_not_select
+     *
      * @return string
      */
-    public function getSelectOptions($options, $restrict = 'all', $do_not_select = false) {
+    public function getSelectOptions(array $options, string $restrict = 'all', bool $do_not_select = false): string {
 
         $select_string = ($do_not_select ? ' class="sel_on"' : ' selected class="sel_on"');
 
@@ -390,35 +393,41 @@ class Widget extends AA_Object implements NamedInterface {
 
     /** Creates base widget HTML, which will be surrounded by Live, Ajxax
      *  or normal decorations (added by _finalize*Html)
-     * @param AA_Property $aa_property
-     * @param AA_Content  $content
-     * @param string      $type normal|live|ajax
+     *
+     * @param  AA_Property  $aa_property
+     * @param AA_Content    $content
+     * @param  string       $type  normal|live|ajax
+     *
      * @return array
      * @throws Exception
      */
-    public function _getRawHtml($aa_property, $content, $type = 'normal'): array { return []; }
+    public function _getRawHtml(AA_Property $aa_property, AA_Content $content, string $type = 'normal'): array { return []; }
 
     /** Get widget HTML for using in form
-     * @param AA_Property $aa_property   - the variable
-     * @param AA_Content  $content       - contain the value of property to display
+     *
+     * @param  AA_Property  $aa_property  - the variable
+     * @param AA_Content    $content      - contain the value of property to display
      *                                   - never empty - it contain at least aa_owner for new objects
-     * @param null        $function
+     * @param null          $function
+     *
      * @return string - widget HTML for using in form
      * @throws Exception
      */
-    public function getHtml($aa_property, $content, $function = null): string {
+    public function getHtml(AA_Property $aa_property, AA_Content $content, $function = null): string {
         return $this->_finalizeHtml($this->_getRawHtml($aa_property, $content), $aa_property);
     }
 
     /** Get just widget HTML for using in form - without label...
-     * @param AA_Property $aa_property   - the variable
-     * @param AA_Content  $content       - contain the value of property to display
+     *
+     * @param  AA_Property  $aa_property  - the variable
+     * @param AA_Content    $content      - contain the value of property to display
      *                                   - never empty - it contain at least aa_owner for new objects
-     * @param null        $function
+     * @param null          $function
+     *
      * @return string - just widget HTML for using in form - without label...
      * @throws Exception
      */
-    public function getOnlyHtml($aa_property, $content, $function = null): string {
+    public function getOnlyHtml(AA_Property $aa_property, AA_Content $content, $function = null): string {
         return $this->_finalizeHtml($this->_getRawHtml($aa_property, $content), $aa_property, true);
     }
 
@@ -481,13 +490,15 @@ class Widget extends AA_Object implements NamedInterface {
 
 
     /** Get widget HTML for using as AJAX component
-     * @param AA_Property $aa_property - the variable
-     * @param AA_Content  $content     - contain the value of property to display
-     * @param null        $function
+     *
+     * @param  AA_Property  $aa_property  - the variable
+     * @param AA_Content    $content      - contain the value of property to display
+     * @param null          $function
+     *
      * @return string - widget HTML for using as AJAX component (in place editing)
      * @throws Exception
      */
-    public function getAjaxHtml($aa_property, $content, $function = null): string {
+    public function getAjaxHtml(AA_Property $aa_property, AA_Content $content, $function = null): string {
         return $this->_finalizeAjaxHtml($this->_getRawHtml($aa_property, $content, 'ajax'), $aa_property);
     }
 
@@ -527,13 +538,15 @@ class Widget extends AA_Object implements NamedInterface {
     }
 
     /** Get Live HTML widget (in place editing)
-     * @param AA_Property $aa_property - the variable
-     * @param AA_Content  $content     - contain the value of property to display
-     * @param null        $function
+     *
+     * @param  AA_Property  $aa_property  - the variable
+     * @param AA_Content    $content      - contain the value of property to display
+     * @param null          $function
+     *
      * @return string - widget HTML for using as Live component (in place editing)
      * @throws Exception
      */
-    public function getLiveHtml($aa_property, $content, $function = null) {
+    public function getLiveHtml(AA_Property $aa_property, AA_Content $content, $function = null) {
         // add JS OK Function
         return str_replace('AA_LIVE_OK_FUNC', $function ?: "''", $this->_finalizeLiveHtml($this->_getRawHtml($aa_property, $content, 'live'), $aa_property));
     }

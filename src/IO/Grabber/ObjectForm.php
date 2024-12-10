@@ -89,7 +89,7 @@ class ObjectForm extends AbstractGrabber
     /** Method called by the AA\IO\Saver to get next object from the data input */
     function getItem() {
         if (!($tostore = current($this->_content))) {
-            return false;
+            return null;
         }
         next($this->_content);
         $this->_last_store_mode = $tostore[1];

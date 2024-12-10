@@ -8,6 +8,8 @@
 
 namespace AA\Widget;
 use AA\FormArray;
+use AA_Content;
+use AA_Property;
 
 /** Radio Button widget */
 class RioWidget extends Widget
@@ -70,13 +72,15 @@ class RioWidget extends Widget
 
     /** Creates base widget HTML, which will be surrounded by Live, Ajxax
      *  or normal decorations (added by _finalize*Html)
-     *  @param \AA_Property $aa_property
-     *  @param \AA_Content  $content
-     *  @param string       $type normal|live|ajax
+     *
+     * @param  AA_Property  $aa_property
+     * @param  AA_Content   $content
+     * @param  string       $type  normal|live|ajax
+     *
      *  @return array
      *  @throws \Exception
      */
-    function _getRawHtml($aa_property, $content, $type = 'normal'): array {
+    function _getRawHtml(AA_Property $aa_property, AA_Content $content, string $type = 'normal'): array {
         $base_name = FormArray::getName4Form($aa_property->getId(), $content, $this->item_index);
         $base_id = FormArray::formName2Id($base_name);
 
@@ -86,13 +90,12 @@ class RioWidget extends Widget
         $widget_add = htmlattr($attrs);
         $widget_add2 = ($type === 'live') ? '<img width=16 height=16 title="' . _m('To save changes click here or outside the field.') . '" alt="' . _m('Save') . '" class="' . $base_id . 'ico" src="' . AA_INSTAL_PATH . 'images/px.gif" style="position:absolute; right:0; top:0;">' : '';
 
-        $use_name = $this->getProperty('use_name', false);
         $other    = $this->getProperty('other_option', false);
 
         $input_name = $base_name . "[]";
         $input_id = FormArray::formName2Id($input_name);
         $selected = $content->getAaValue($aa_property->getId());
-        $options = $this->getOptions($selected, $content, $use_name);
+        $options = $this->getOptions($selected, $content, (bool)$this->getProperty('use_name', false));
         $htmlopt = [];
         for ($i = 0, $ino = count($options); $i < $ino; ++$i) {
             if ($other && ($i === $ino-2) && $options[$ino-1]['mis']) {  // special case - the filled Other option - use mis value added as last option and name from current option

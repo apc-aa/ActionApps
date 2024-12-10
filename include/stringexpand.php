@@ -10161,6 +10161,7 @@ class AA_Stringexpand_Form extends AA_Stringexpand_Nevercache {
      * @return string
      */
     function expand($form_id='', $ok_code='') {
+        /** @var $form AA_Form */
         if (!$form_id OR !($form = AA_Object::load($form_id, 'AA_Form'))) {
             return '';
         }
