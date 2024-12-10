@@ -57,7 +57,7 @@ function a_href($url, $label='', array $attr=[]): string {
 }
 
 function htmlattr(array $attr) {
-    return array_reduce( array_keys($attr), static fn($str, $key) => $str . (($attr[$key] != '') ? ' ' . $key . '="' . safe($attr[$key]) . '"' : ''));
+    return array_reduce( array_keys($attr), static fn($str, $key) => $str . (($attr[$key] !== '') ? ' ' . $key . '="' . safe($attr[$key]) . '"' : ''));
 }
 
 /** creates html tag with attributes
@@ -1065,14 +1065,8 @@ function StoreTable2Content(&$content, $SQL, $prefix, $id_field) {
  */
 function ParseFnc($s): array
 {
-    $pos = strpos($s,":");
-    if ( $pos ) {
-        $arr['fnc']   = substr($s, 0, $pos);
-        $arr['param'] = substr($s, $pos+1);
-    } else {
-        $arr['fnc']   = $s;
-    }
-    return $arr;
+    $parts = explode(":", $s, 2);
+    return ['fnc' => $parts[0], 'param' => $parts[1] ?? ''];
 }
 
 /** identical to old myspecialchars() which replaced htmlspecialchars because of changes in php 5.4

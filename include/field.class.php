@@ -298,7 +298,7 @@ class AA_Field implements ArrayAccess, Countable, Iterator {
     }
 
     /** getAliases function
-     *
+     * @deprecated  - use aliases class AA_Aliases
      */
     function getAliases() {
         // maybe filled here in previous call, or filled in constructor for item defined fields
@@ -383,8 +383,8 @@ class AA_Field implements ArrayAccess, Countable, Iterator {
      * @param array $widget_properties ['multiple'=> , 'required'=> , 'name'=> , 'input_help'=> , 'html_show' => , 'html_default' => ]
      * @return AA_Property
      */
-    function getAaProperty($widget_properties= []) {
-
+    function getAaProperty($widget_properties= []): AA_Property
+    {
         $translations = $this->getTranslations();
 
         $widget = $this->getWidget();
@@ -633,30 +633,57 @@ class AA_Field_Slicedef extends AA_Field {
         }
         $fid = AA_Fields::createFieldId('text',$fnumber);
 
-        $this->data['id'] = $fid;
-        $this->data['name'] = (($fname = $data->get_alias_subst('_#FLD_NAME', 'AA_NULL')) === 'AA_NULL') ? $data->get_alias_subst('_#HEADLINE', $fid) : $fname;
-        $this->data['slice_id'] = pack_id($sli_id);
-        $this->data['input_pri'] = (int)$data->get_alias_subst('_#FLD_PRI_', 100) ?: 100;
-        $this->data['input_help'] = $data->get_alias_subst('_#FLD_HELP', '');
-        $this->data['input_default'] = $data->get_alias_subst('_#FLD_DEFA', '');  // txt
-        $this->data['required'] = (int)$data->get_alias_subst('_#FLD_REQ_', 0) ? 1 : 0;
-        $this->data['multiple'] = (int)$data->get_alias_subst('_#FLD_MULT', 0);  // 0-2
-        $this->data['input_show_func'] = '';
-        $this->widget_params = (array)json_decode($data->get_alias_subst('_#FLD_PARM', ''), true);
-        $fld_type = $data->get_alias_subst('_#FLD_TYPE', 'fld') ?: 'fld';
-        $this->widget_params['class'] = Widget::constructClassName($fld_type);
-        $this->data['search_pri'] = $this->data['input_pri'];
-        $this->data['html_default'] = 1;
-        $this->data['input_validate'] = $data->get_alias_subst('_#FLD_VALI', '');
-        $this->data['input_insert_func'] = $data->get_alias_subst('_#FLD_INS_', ($fld_type === 'fil') ? 'fil' : 'qte');
-        $this->data['input_show'] = (int)$data->get_alias_subst('_#FLD_SHOW', 1) ? 1 : 0;
-        $this->data['text_stored'] = (int)$data->get_alias_subst('_#FLD_STOR', 1) ? 1 : 0;
+        // tmp array for alias substitution
+        $fld_eval = [];
+        $fld_eval['_#FLD_NAME'] = (($fname = $data->get_alias_subst('_#FLD_NAME', 'AA_NULL')) === 'AA_NULL') ? $data->get_alias_subst('_#HEADLINE', $fid) : $fname;
+        $fld_eval['_#FLD_PRI_'] = (int)$data->get_alias_subst('_#FLD_PRI_', 100) ?: 100;
+        $fld_eval['_#FLD_HELP'] = $data->get_alias_subst('_#FLD_HELP', '');
+        $fld_eval['_#FLD_DEFA'] = $data->get_alias_subst('_#FLD_DEFA', '');  // txt
+        $fld_eval['_#FLD_REQ_'] = (int)$data->get_alias_subst('_#FLD_REQ_', 0) ? 1 : 0;
+        $fld_eval['_#FLD_MULT'] = (int)$data->get_alias_subst('_#FLD_MULT', 0);  // 0-2
+        $fld_eval['_#FLD_PARM'] = $data->get_alias_subst('_#FLD_PARM', '');
+        $fld_eval['_#FLD_TYPE'] = $data->get_alias_subst('_#FLD_TYPE', 'fld') ?: 'fld';
+        $fld_eval['_#FLD_VALI'] = $data->get_alias_subst('_#FLD_VALI', '');
+        $fld_eval['_#FLD_INS_'] = $data->get_alias_subst('_#FLD_INS_', ($fld_eval['_#FLD_TYPE'] === 'fil') ? 'fil' : 'qte');
+        $fld_eval['_#FLD_SHOW'] = (int)$data->get_alias_subst('_#FLD_SHOW', 1) ? 1 : 0;
+        $fld_eval['_#FLD_STOR'] = (int)$data->get_alias_subst('_#FLD_STOR', 1) ? 1 : 0;
+
+        $this->data['id']                = $fid;
+        $this->data['name']              = $fld_eval['_#FLD_NAME'];
+        $this->data['slice_id']          = pack_id($sli_id);
+        $this->data['input_pri']         = $fld_eval['_#FLD_PRI_'];
+        $this->data['input_help']        = $fld_eval['_#FLD_HELP'];
+        $this->data['input_default']     = $fld_eval['_#FLD_DEFA'];
+        $this->data['required']          = $fld_eval['_#FLD_REQ_'];
+        $this->data['multiple']          = $fld_eval['_#FLD_MULT'];
+        $this->data['input_show_func']   = '';
+        $this->widget_params             = (array)json_decode($fld_eval['_#FLD_PARM'], true);
+        $this->widget_params['class']    = Widget::constructClassName($fld_eval['_#FLD_TYPE']);
+        $this->data['search_pri']        = $this->data['input_pri'];
+        $this->data['html_default']      = 1;
+        $this->data['input_validate']    = $fld_eval['_#FLD_VALI'];
+        $this->data['input_insert_func'] = $fld_eval['_#FLD_INS_'];
+        $this->data['input_show']        = $fld_eval['_#FLD_SHOW'];
+        $this->data['text_stored']       = $fld_eval['_#FLD_STOR'];
+
+        // we want to replace _#FLD_STOR as well as {_#FLD_STOR}
+        $fld_eval_plus = [];
+        foreach ($fld_eval as $k => $v) {
+            $fld_eval_plus['{'.$k.'}'] = $v;
+            $fld_eval_plus[$k] = $v;
+        }
 
         $this->aliases = new AA_Aliases;
         $field_aliases = array_filter($data->getAliasNames(), static fn($name) => str_starts_with($name, '_#FLD_AN'));   // $filtered_array = array_filter($array, function ($element) use ($my_value) { return ($element != $my_value); } );
         foreach ($field_aliases as $al) {
             if (IsAlias($als = '_#' . $data->get_alias_subst($al, ''))) {
-                $this->aliases->addAlias(new AA_Alias($data->get_alias_subst($als), 'f_t:' . $data->get_alias_subst(str_replace('_#FLD_AN', '_#FLD_AV', $al)), $fid));
+                // you can use _#FLD_* aliases in the alias definition - we simply replace it here
+                if ($a_alias = $data->getAlias($av = str_replace('_#FLD_AN', '_#FLD_A_', $al))) {    // new and possibly better way to specify alias - no need to {packid:7B}@_#FLD_ID__:, {packid:7D}...
+                    $this->aliases->addAlias(new AA_Alias($als, strtr($a_alias->getFuncDef(), $fld_eval_plus), $fid));
+                } else {
+                    // old variant - will be probably removed in future
+                    $this->aliases->addAlias(new AA_Alias($data->get_alias_subst($als), 'f_t:' . $data->get_alias_subst(str_replace('_#FLD_AN', '_#FLD_AV', $al)), $fid));
+                }
             }
         }
     }
@@ -768,6 +795,7 @@ class AA_Fields implements Iterator, Countable {
         if (is_long_id($fields_slice = AA_Slice::getModuleProperty($this->master_id, 'fieldslice'))) {
             $str2find = new CacheStr2find($fields_slice);
             $sf = AA::Pagecache()->cacheDb(['AA_Fields','loadFieldFromSlice'], [$fields_slice, $this->master_id], $str2find);
+            // $sf = AA_Fields::loadFieldFromSlice($fields_slice, $this->master_id);
             $this->fields = array_merge($this->fields, $sf);
         }
 

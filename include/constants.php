@@ -69,13 +69,13 @@ function GetAliasDef($fce, $field = '', $hlp = '') {
 
 class AA_Alias {
     /** @var string */
-    private $alias;
+    private string $alias;
     /** @var string */
-    private $funct;
+    private string $funct;
     /** @var string */
-    private $field_id;
+    private string $field_id;
     /** @var string */
-    private $hlp;
+    private string $hlp;
 
     /** AA_Alias function
      * @param string $alias
@@ -121,13 +121,27 @@ class AA_Alias {
         return ($raw AND (preg_match("/^[A-Z0-9_#]{8}$/", $text) === 1)) ? "_#$text" : '';
     }
 
-    /** getArray function
+    /**
      * @return array
+     * @deprecated - use getFnc() and getParam() instead
      */
     function getArray(): array {
         // $fce = ParamImplode(array_merge(array($this->funct),$this->parameters));
         return ['fce' => $this->funct, 'param' => $this->field_id, 'hlp' => $this->hlp];
     }
+
+    public function getFnc(): string {
+        return ParseFnc($this->funct)['fnc'];
+    }
+
+    public function getFncParam(): string {
+        return ParseFnc($this->funct)['param'];
+    }
+
+    public function getFuncDef(): string {
+        return $this->funct;
+    }
+
 
     /** get alias name
      * @return string

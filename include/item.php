@@ -679,6 +679,10 @@ class AA_Item {
         $this->aliases = $aliases;
     }
 
+    public function getAlias(string $alias): ?AA_Alias {
+        return $this->aliases->getAlias($alias);
+    }
+
     /** getahref function
      * get link from url and text
      * @param $url
@@ -734,11 +738,8 @@ class AA_Item {
             }
         }
 
-        $ali_arr = $ali->getArray();
-
         // get from "f_d:mm-hh" array fnc="f_d", param="mm-hh"
-        $function = ParseFnc($ali_arr['fce']);
-        $fce      = $function['fnc'];
+        $fce      = $ali->getFnc();
 
         if (!is_callable([$this,$fce])) {
             return _m('Error: wrong alias function %1 for %2', [$fce,$alias]);
@@ -746,8 +747,8 @@ class AA_Item {
 
         // call function (called by function reference (pointer))
         // like f_d("start_date......", "mm-dd")
-        $field_id = get_if($use_field, $ali_arr['param']);
-        $param    = str_replace('_#this', '{'.$field_id.'}', $function['param']);
+        $field_id = get_if($use_field, $ali->getField());
+        $param    = str_replace('_#this', '{'.$field_id.'}', $ali->getFncParam());
         AA::$debug&8 && AA::$dbg->tracestart($fce, $param);
         $ret = (string)$this->$fce($field_id, $param);
         AA::$debug&8 && AA::$dbg->traceend($fce, $ret);
