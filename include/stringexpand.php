@@ -2002,7 +2002,7 @@ class AA_Stringexpand_Distance extends AA_Stringexpand_Nevercache {
         $latTo   = deg2rad(calculate($lat2));
         $lonTo   = deg2rad(calculate($lon2));
         //huhl($lat1, $latFrom, $lon1, $lonFrom, $lat2, $latTo, $lon2, $lonTo);
-        return (int)($EARTHRADIUS * 2 * asin(sqrt(pow(sin(($latTo - $latFrom) / 2), 2) + cos($latFrom) * cos($latTo) * pow(sin(($lonTo - $lonFrom) / 2), 2))));
+        return (int)($EARTHRADIUS * 2 * asin(sqrt((sin(($latTo - $latFrom) / 2) ** 2) + cos($latFrom) * cos($latTo) * (sin(($lonTo - $lonFrom) / 2) ** 2))));
     }
 }
 
@@ -2034,7 +2034,7 @@ class AA_Stringexpand_Gps extends AA_Stringexpand_Nevercache {
         // 49°58'4.508"N, 12°30'10.790"E
         // -49°58'4.508"N, -12°30'10.790"E
         // 49°58'4.508"S, 12°30'10.790"W
-        elseif ( preg_match('/^([-+])?(\d*[.,]?\d+)°(?:(\d*[.,]?\d+)\')?(?:(\d*[.,]?\d+)(?:"|\'\'))?([NWSE]?),?([-+])?(\d*[.,]?\d+)°(?:(\d*[.,]?\d+)\')?(?:(\d*[.,]?\d+)(?:"|\'\'))?([NWSE]?)$/', aa_html_entity_decode(inner_trim($gps)), $p) ) {
+        elseif ( preg_match('/^([-+])?(\d*[.,]?\d+)°(?:(\d*[.,]?\d+)\')?(?:(\d*[.,]?\d+)(?:"|\'\'))?([NWSE]?),?([-+])?(\d*[.,]?\d+)°(?:(\d*[.,]?\d+)\')?(?:(\d*[.,]?\d+)(?:"|\'\'))?([NWSE]?)$/u', aa_html_entity_decode(inner_trim($gps)), $p) ) {
             $num1 = (($p[1] === '-' OR strtoupper($p[5]) === 'S' OR strtoupper($p[5]) === 'W') ? '-' : '') .((float)$p[2] + ((float)$p[3]/60) + ((float)$p[4]/3600));
             $num2 = (($p[6] === '-' OR strtoupper($p[10]) === 'S' OR strtoupper($p[10]) === 'W') ? '-' : '') .((float)$p[7] + ((float)$p[8]/60) + ((float)$p[9]/3600));
             [$lat, $lon] = (in_array(strtoupper($p[5]), ['E','W'])) ? [$num2, $num1] : [$num1, $num2];
@@ -7171,7 +7171,8 @@ class AA_Requires {
             'select2@4'                   => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.full.min.js', 'sha256-gtZlnMWqbrBdDWvmCQCgfiA3kq8J4FMqQ4a8Tvmgopk=', ['jquery@3','_css-select2@4']),
             'select2@3'                   => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/Select2@3.5.7/select2.min.js', 'sha256-xd6tWPqy/mxhxXcvyda/fncm94RXOR6918/lDx6Ckb8=', ['jquery@3','_css-select2@3']),
             'eucookies@1'                 => new AA_Req_Footlib('https://cdn.jsdelivr.net/gh/honzito/smart-eu-cookies@0.9.2/src/smart-eu-cookies.min.js async', 'sha384-zoVmFcp060tXD33v8RW5gAyVr8JV6p42dOucvqkNWbXZuJvwQAGhu1Ld9/dSbFXk'),
-            'sortable@1'                  => new AA_Req_Footlib('https://cdn.jsdelivr.net/gh/honzito/plain.sortable@1.3.0/sortable.min.js', 'sha384-Ykq5gOjnWMRB6SAvIl0EnfHZLxYXGM0NIVT6GKOfpIidUn1nhK0EIAHxDqhIAoTF', ['_css-sortable@1']),  // no async - script needs to be loaded to run Sortable.find()...
+            'sortable@1'                  => new AA_Req_Footlib('https://cdn.jsdelivr.net/gh/honzito/plain.sortable@1.3.0/sortable.min.js', 'sha384-Ykq5gOjnWMRB6SAvIl0EnfHZLxYXGM0NIVT6GKOfpIidUn1nhK0EIAHxDqhIAoTF', ['_css-sortable@1']),  // no async - script needs to be loaded to run Sortable.find()... // see orderable for sortablejs
+            'orderable@1'                 => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js', 'sha256-bQqDH8GbS66FF5etM5MVfoYa+3hiRZwRImNZsn4sQzc='),  // another sortable for drag&drop ordering
             'datatable@1'                 => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/datatables.net@1.11.3/js/jquery.dataTables.min.js', 'sha256-gOJ/T3VMQ0Brwz7VYrLoVAQ+NE0a5vHoj1vXI1HUIzY=', ['jquery@3']),
             'form-saver@1'                => new AA_Req_Footlib(get_aa_url('javascript/form-saver/form-saver.min.js', ['ver'=>AA_JS_VERSION],false), '', ['deserialize@2']),
             'deserialize@2'               => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/jquery-deserialize@2.0.0/src/jquery.deserialize.js', 'sha256-iQpPGsHQZs7cuArBkNIa6QOJlnnf8A1RBfMLxp/MLVI=', ['jquery@3']),
@@ -8451,7 +8452,7 @@ class AA_Stringexpand_Qrpay extends AA_Stringexpand {
  *  Usage:
  *     {fileinfo:{file............}:size}  - returns size of the file
  *
- *  @author Adam Sanchez
+ *  @author Adam Sanchez, Honza Malík
  **/
 class AA_Stringexpand_Fileinfo extends AA_Stringexpand {
 
@@ -8465,6 +8466,9 @@ class AA_Stringexpand_Fileinfo extends AA_Stringexpand {
      *                       typesize
      *                       crc
      *                       time
+     *                       mime     - mime like image/jpeg
+     *                       ifwebimg - url of the img if it is web image displayable by <img src=""> tag; empty if not
+     *
      * @return int|string|void
      */
     function expand($url='', $info='') {
@@ -8516,8 +8520,23 @@ class AA_Stringexpand_Fileinfo extends AA_Stringexpand {
                     return  @filemtime($filename);
                 }
                 break;
+            case 'mime':
+                return $this->getMimeType($url);
+            case 'ifwebimg': // returns url if it is web image displayable by <img src=""> tag
+                return in_array($this->getMimeType($url), ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/avif', 'image/svg+xml', 'image/bmp'], true) ? $url : '';
         }
         return '';
+    }
+
+    protected function getMimeType($url): string {
+        $filename = str_replace(IMG_UPLOAD_URL, IMG_UPLOAD_PATH, $url);
+        $mimeType = '';
+        if (is_file($filename)) {
+            $finfo = finfo_open(FILEINFO_MIME_TYPE);
+            $mimeType = finfo_file($finfo, $filename);
+            finfo_close($finfo);
+        }
+        return $mimeType ?: '';
     }
 }
 
@@ -10354,7 +10373,7 @@ class AA_Stringexpand_Manager extends AA_Stringexpand_Nevercache {
             if ($mode_arr['F']) {
 
                 $input_name =  "aa[f_".reset($slices_arr)."][file][fil][var]";  // we are making it compatible with widget to easier file upload handling (rearangeAaFilesArray())
-//              fallback would be nice, but it uses <form>, so we sometimes endup with <form> inside another <form>, which is not allowed. It is solveable (by dynamic form at thee and of page...)
+//              fallback would be nice, but it uses <form>, so we sometimes endup with <form> inside another <form>, which is not allowed. It is solveable (by dynamic form at the and of page...)
 //              $inner_code .= "<article class=\"item\" id=\"fileup$hash\"><form action=\".\"><input name=\"aa[all][$field][0]\" type=\"hidden\" value=\"$item_id\" /><div class=\"fallback\"><input name=\"".$input_name."[]\" type=\"file\" multiple /></div></form>".$mode_arr['F']."</article>";
                 $inner_code .= "<article class=\"item\" id=\"fileup$hash\">".$mode_arr['F']."</article>";
                 AA::Stringexpander()->addRequire('dropzone');
