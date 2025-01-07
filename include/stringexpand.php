@@ -1908,14 +1908,11 @@ class AA_Stringexpand_Range extends AA_Stringexpand_Nevercache {
         foreach ($vals as $val) {
             if (is_null($from)) {
                 $from = $val;
-                $last = $val;
-            } elseif ($val == $last+1) {
-                $last = $val;
-            } else {
+            } elseif ($val != $last+1) {
                 $ranges[] = ($from == $last) ? $from : $from.'-'.$last;
                 $from = $val;
-                $last = $val;
             }
+            $last = $val;
         }
         if (!is_null($from)) {
             $ranges[] = ($from == $last) ? $from : $from.'-'.$last;
@@ -8684,8 +8681,8 @@ class AA_Stringexpand_Qs extends AA_Stringexpand_Nevercachenotrim {
 class AA_Stringexpand_Qss extends AA_Stringexpand_Qs {
 
     //  expand($variable_name='', $delimiter=null) {
-    function expand(...$arg_list) {
-        return safe(call_user_func_array('parent::' . __FUNCTION__, $arg_list));
+    function expand($variable_name = '', $delimiter = null) {
+        return safe(parent::expand($variable_name, $delimiter));
     }
 }
 
@@ -9729,7 +9726,8 @@ class AA_Stringexpand_Mail extends AA_Stringexpand_Nevercache {
      * @param string $cc
      * @param string $bcc
      * @param string $attachments - single as string: "url1", multiple as json: ["url1",..], or as json with names {"name1":"url1",...}
-     * @return int|string|void
+     *
+     * @return string
      */
     function expand($condition='', $to='', $subject='', $body='', $lang='', $from='', $reply_to='', $errors_to='', $sender='', $cc='', $bcc='', $attachments='') {
 
