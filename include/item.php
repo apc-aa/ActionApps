@@ -646,16 +646,15 @@ class AA_Item {
      * @return string
      */
     function getitemurl($extern, $extern_url, $redirect, $condition=true, $no_sess=false): string {
-        if ( $extern ) {      // link_only
-            return ($extern_url ?: NO_OUTER_LINK_URL);
+        if ($extern && ($extern_url = trim($extern_url)) !== "") {      // link_only
+            return $extern_url;
         }
         if ( !$condition ) {
             return '';
         }
 
-        $url_param = ( $GLOBALS['USE_SHORT_URL'] ?
-                                    "x=". $this->getval('short_id........') :
-                                    "sh_itm=". $this->getItemID());
+        $url_param = ( $GLOBALS['USE_SHORT_URL'] ? "x=". $this->getval('short_id........') :
+                                                   "sh_itm=". $this->getItemID());
 
         return con_url( $this->getbaseurl($redirect, $no_sess), $url_param );
     }
