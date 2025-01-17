@@ -116,14 +116,15 @@ function GetHidden($itemform_id) {
     }
 }
 */
-/** CloseDialog function
+
+/** On close Related Item Window - we need to copy the new item id to the widget
  * @param $zid=null
  * @param $openervar=null
  * @param $insert=true
  * @param $url2go=null
  *
  */
-function CloseDialog($zid = null, $openervar = null, $insert=true, $url2go=null) {
+function CloseDialog(?zids $zid = null, string $openervar = '', bool $insert=true, ?string $url2go=null) {
     // Used for adding item to another slice from itemedit's popup.
     $js = '';
     if ($zid) {               // id of new item defined
@@ -133,10 +134,15 @@ function CloseDialog($zid = null, $openervar = null, $insert=true, $url2go=null)
         $aliases  = AA_Slice::getModule($item->getSliceID())?->aliases();
         DefineBaseAliases($aliases, $item->getSliceID());  // _#JS_HEAD_, ...
         $item->setAliases( (new AA_Aliases())->addFromArray($aliases) ); //      = new AA_Item($content->getContent(),$aliases);
-        $function = $insert ? 'SelectRelations' : 'UpdateRelations';
-        $item->setformat( "$function('$openervar','".TPS['AMB']['A']['tag']."','".TPS['AMB']['A']['prefix']."','".TPS['AMB']['A']['tag']."_#ITEM_ID_','_#JS_HEAD_');" );
 
-        $js = $item->get_item() ."\n";
+        if (str_starts_with($openervar,'/rim/')) {
+            // parse the openervar - like /rim/[sid]/[fid]/[base_id]
+            [$sid,$fid,$base_id] = explode('/',substr($openervar,5));
+            $js = "window.opener.AA_RimUpdateId('$base_id', '$sid', '$fid', '$zid[0]', ". ($insert ? 1 : 0). ");";
+        } else {
+            $item->setformat( ($insert ? 'SelectRelations' : 'UpdateRelations') ."('$openervar','".TPS['AMB']['A']['tag']."','".TPS['AMB']['A']['prefix']."','".TPS['AMB']['A']['tag']."_#ITEM_ID_','_#JS_HEAD_');" );
+            $js = $item->get_item() ."\n";
+        }
     }
     $js .= ($url2go ? "window.location = '$url2go';\n" : "window.close();\n");
 
@@ -210,6 +216,7 @@ $content_function = static function () use (&$content4id, $slice_id, $edit) {
 
 $page_changer = new \AA\IO\OnPageChanger($content_function);
 $page_changer->checkAndProcessCall();
+
 
 unset($content4id);
 
@@ -299,7 +306,7 @@ if ( ($insert || $update) AND count($fields) ) {
         if ($anonymous) { // anonymous login
             go_url( $r_slice_view_url, '', $encap );
         } elseif ($return_url === 'close_dialog') {
-            // Used for adding item to another slice from itemedit's popup.
+            // Used for adding item to another slice from itemedit's popup - Related Item Window - iso widget, ....
             CloseDialog(new zids($added_to_db, 'l'), $openervar, $insert, $preview_url);
             page_close();
             exit;

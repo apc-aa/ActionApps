@@ -104,7 +104,7 @@ class AA_Property extends AA_Storable {
     var $const_arr = [];
 
     /** @var string[] of two letters shortcuts for languages used in this slice for translations - array('en','cz','es') */
-    var $translations = [];
+    protected array $translations = [];
 
 
     /**
@@ -183,7 +183,7 @@ class AA_Property extends AA_Storable {
     function getConstants()           { return $this->const_arr;     }
 
     /** @return string[] */
-    function getTranslations()        { return $this->translations;  }
+    function getTranslations(): array { return $this->translations;  }
 
     public function getContentTypeSwitches(): int { return $this->show_content_type_switch;    }
     public function getContentTypeDefault(): int  { return $this->content_type_switch_default; }

@@ -347,7 +347,7 @@ class AA_Responder_Tags extends AA_Responder {
     }
 }
 
-/** return html selectbox of fields in given slice */
+/** return html with items matching the filter for specified widget - add new relation for WidgetRim */
 class AA_Responder_Widget_Selection extends AA_Responder {
     /** array of module types to get */
     var $slice_id;
@@ -372,6 +372,38 @@ class AA_Responder_Widget_Selection extends AA_Responder {
         return new AA_Response(ConvertCharset::singleton()->Convert($ret, $slice->getCharset(), 'utf-8'));
     }
 }
+
+
+/** return html for item formatted as specified in widget in slice_id/field_id */
+class AA_Responder_Formatted_By_Widget extends AA_Responder {
+    /** array of module types to get */
+    protected string $slice_id;
+    protected string $field_id;
+    protected string $item_id;
+    protected string $base_id;
+
+    function  __construct($param=null) {
+        // the slice id and the field id defines the field, where the widget is DEFINED
+        $this->slice_id = $param['s'];
+        $this->field_id = $param['f'];
+        $this->item_id  = $param['i'];
+        $this->base_id  = $param['b'];
+    }
+
+    function isPerm() { return true; }
+
+    function run() {
+        $ret   = '';
+        $slice = AA_Slice::getModule($this->slice_id);
+
+        if ($slice AND ($widget = $slice->getWidget($this->field_id))) {
+            mgettext_bind($slice->getLang(), 'output');
+            $ret = $widget->getRelatedItemsHtml(new zids($this->item_id, 'l'), $this->base_id, $this->field_id, $this->slice_id);   //zids $zids, string $base_id, string $sid, string $def_field_id, string $def_slice_id): string {
+        }
+        return new AA_Response(ConvertCharset::singleton()->Convert($ret, $slice->getCharset(), 'utf-8'));
+    }
+}
+
 
 /** return sends one item in mail to alert irregular readers collection */
 class AA_Responder_Alertitem extends AA_Responder {

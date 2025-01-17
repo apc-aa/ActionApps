@@ -109,7 +109,7 @@ class Form extends AbstractGrabber {
         return $ret;
     }
 
-    /** process the   aa[f_54343ea876898b6754e3578a8cc544e6][file][fil][var][] type of upload produced by {manager} and
+    /** process the   aa[f_54343ea876898b6754e3578a8cc544e6][file][fil][var][] type of upload produced by {manager} and RimWidget and
      *  convert it to aa[n1_54343ea876898b6754e3578a8cc544e6][file............][fil][var][]
      * @return true|string - string is error
      */
@@ -233,7 +233,7 @@ class Form extends AbstractGrabber {
             $item->setItemID($item_id);
 
             // join common fields (the specific fields win in the battle of common and specific content)
-            if (isset($aa['all'])) {
+            if (isset($aa['all']) and is_array($aa['all'])) {
                 $item_fields = array_merge($aa['all'], $item_fields);
             }
 

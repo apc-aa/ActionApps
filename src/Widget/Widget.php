@@ -568,6 +568,11 @@ class Widget extends AA_Object implements NamedInterface {
         return '';
     }
 
+    /** get HTML for one or more related items from another slice based on this widget configuration  */
+    public function getRelatedItemsHtml(zids $zids, string $base_id, string $def_field_id, string $def_slice_id): string {
+        return '';
+    }
+
     /**
      * @param array $data4field
      * @return AA_Value for the data send by the widget

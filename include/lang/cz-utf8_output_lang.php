@@ -518,3 +518,7 @@ $_m["E-mail unsubscribed"]
 
 $_m["drop files here or click to upload"]
     = "přetáhněte soubory sem nebo klikněte pro nahrání";
+
+$_m["edit"]
+    = "upravit";
+

@@ -4343,7 +4343,7 @@ class AA_Stringexpand_Iftext extends AA_Stringexpand_Nevercachenotrim {
 /** Boolean comparison to exact value: 1
  *  Example: {if1:{_#IS_PUBLI}:_#HEADLINE:no public yet}
  */
-class AA_Stringexpand_If1 extends AA_Stringexpand_Nevercache {
+class AA_Stringexpand_If1 extends AA_Stringexpand_Nevercachenotrim {
 
     /** expand function
      * @param $condition
@@ -4352,7 +4352,7 @@ class AA_Stringexpand_If1 extends AA_Stringexpand_Nevercache {
      * @return string
      */
     function expand($condition='', $text='', $else_text='') {
-        return ((string)$condition=='1') ? $text : $else_text;
+        return (trim($condition)==='1') ? $text : $else_text;
     }
 }
 
@@ -4360,7 +4360,7 @@ class AA_Stringexpand_If1 extends AA_Stringexpand_Nevercache {
  * Example: {ifbit:{bitset..........}:8:1}    // the same as {ifeq:{math:{bitset..........}&8}:8:1}
  * Example: {ifbit:{bitset..........}:31:1+2+4+8+16 set (_#2):15:1+2+4+8 set (_#2):12:4+8 set (_#2):0}  // multiple conditions - returns the first matching - "4+8 set (12)" for number 13 in {bitset..........}
  */
-class AA_Stringexpand_Ifbit extends AA_Stringexpand_Nevercache {
+class AA_Stringexpand_Ifbit extends AA_Stringexpand_Nevercachenotrim {
 
     /** expand function
      * @param $condition
@@ -6073,7 +6073,7 @@ class AA_Unalias_Callback {
                 switch ($out) {
                     case 'unpacked_id.....':
                     case 'id..............':
-                        return $this->item->getItemID();   // should be called in QuoteColons(), but we don't need it
+                        return $this->item->getID();       // should be called in QuoteColons(), but we don't need it  getId works for AA_Content as well - not only getItemId
                     case 'slice_id........':
                         return $this->item->getSliceID();
                     case 'short_id........':
@@ -6103,7 +6103,10 @@ class AA_Unalias_Callback {
         }
 
         // if in_array - for speedup
+        // counterparts to AA_Stringexpand_Const..., AA_Stringexpand_Alias..., AA_Stringexpand_Math..., AA_Stringexpand_Include..., AA_Stringexpand_View..., AA_Stringexpand_Dequote..., AA_Stringexpand_List...
         if (in_array(aa_substr($out, 0, 5), ['const', 'alias', 'math(', 'inclu', 'view.', 'dequo', 'list:'])) {
+
+            // like AA_Stringexpand_Const
             // look for {const_*:} for changing viewing type of constants
             if ((aa_substr($out, 0, 6) === "const_") AND isset($this->item)) {
                 // $what - name of column (e.g. from const_name we get name)
@@ -6119,25 +6122,38 @@ class AA_Unalias_Callback {
 
                 return QuoteColons($value);
             }
+
+            // like AA_Stringexpand_Alias
             // s - multiline - without it, it does not work for expressions across multiple lines
-            elseif ( (aa_substr($out, 0, 5)==='alias') AND isset($this->item) AND preg_match('/^alias:([^:]*):([a-zA-Z0-9_]{1,3}):?(.*)$/s', $out, $parts) ) {
+            if ( (aa_substr($out, 0, 5)==='alias') AND isset($this->item) AND preg_match('/^alias:([^:]*):([a-zA-Z0-9_]{1,3}):?(.*)$/s', $out, $parts) ) {
                 // call function (called by function reference (pointer))
                 // like f_d("start_date......", "m-d")
                 if ($parts[1] && !$this->item->isField($parts[1])) {
                     huhe("Warning: $out: $parts[1] is not a field, don't wrap it in { } ");
                 }
                 $fce     = $parts[2];
+                // if is callable $this->item->$fce
+                if (!is_callable([$this->item, $fce])) {
+                    huhe("Warning: $out: $fce is not a callable method of the item");
+                    return '';
+                }
                 return QuoteColons($this->item->$fce($parts[1], $parts[3]));
                 // QuoteColons used to mark colons, which is not parameter separators.
             }
-            elseif ( aa_substr($out, 0, 5) === "math(" ) {
+
+            // like AA_Stringexpand_Math
+            if ( aa_substr($out, 0, 5) === "math(" ) {
                 // replace math
                 return QuoteColons( parseMath(DeQuoteColons(AA::Un(aa_substr($out,5), '', $this->item, false, $this->itemview))) ); // Need to unalias in case expression contains _#XXX or ( )
             }
-            elseif ( aa_substr($out, 0, 5) === "list:" ) {       // like AA_Stringexpand_List
+
+            // like AA_Stringexpand_List
+            if ( aa_substr($out, 0, 5) === "list:" ) {       // like AA_Stringexpand_List
                 return QuoteColons(parseLoop($out, $this->item));
             }
-            elseif ( aa_substr($out, 0, 8) === "include(" ) {
+
+            // like AA_Stringexpand_Include
+            if ( aa_substr($out, 0, 8) === "include(" ) {
                 // include file
                 if ( !($pos = aa_strpos($out,')')) ) {
                     return "";
@@ -6146,7 +6162,9 @@ class AA_Unalias_Callback {
                 return QuoteColons($fileout);
                 // QuoteColons used to mark colons, which is not parameter separators.
             }
-            elseif ( (aa_substr($out,0,9) === 'view.php?') OR (aa_substr($out,0,10) === 'view.php3?') ) {
+
+            // like AA_Stringexpand_View
+            if ( (aa_substr($out,0,9) === 'view.php?') OR (aa_substr($out,0,10) === 'view.php3?') ) {
                 // CKEditor editor replaces & with &amp; so we need to change it back
                 $param      = str_replace(['&amp;','-&lt;','-&gt;','&lt;-','&gt;-'], ['&','-<','->','<-','>-'], aa_substr($out, (aa_substr($out,0,9) === 'view.php?') ? 9 : 10));
                 // do not store in the pagecache, but store into contentcache
@@ -6155,9 +6173,11 @@ class AA_Unalias_Callback {
 
                 return QuoteColons(AA::Contentcache()->get_result([$showview,'getViewOutput']));
             }
+
+            // like AA_Stringexpand_Dequote
             // This is a little hack to enable a field to contain expandable { ... } functions
             // if you don't use this then the field will be quoted to protect syntactical characters
-            elseif ( aa_substr($out, 0, 8) === "dequote:" ) {   // like AA_Stringexpand_Dequote
+            if ( aa_substr($out, 0, 8) === "dequote:" ) {   // like AA_Stringexpand_Dequote
                 return DeQuoteColons(aa_substr($out,8));
             }
         }
@@ -9562,13 +9582,13 @@ class AA_Stringexpand_Xpath extends AA_Stringexpand {
      * @return string
      */
     function expand($string="", $query='', $attr='', $delimiter='AA_PrintJustFirst') {
-        if (!$query) {
+        if (!$query OR !strlen($string = trim($string))) {
             return '';
         }
         // We first try with loadXML - it is less tolerant but more correct.
         // The loadHTML is too HTML specific (<link>xxx</link> tag in XML is parsed as always empty since in HTML is always empty)
         $doc = new DOMDocument();
-        if (!$doc->loadXML( ($string = trim($string)), LIBXML_PARSEHUGE)) {
+        if (!$doc->loadXML($string, LIBXML_PARSEHUGE)) {
             warn('loadXML() failed - trying to use loadHTML()'. var_export(libxml_get_last_error(),true));
             if (!$doc->loadHTML($string)) {   // I tried to contentcached this load to save time on parsing document, but it had absolutely no effect - PHP 7.0 - Honza 2017-01-25
                 warn('Not possible to parse XML - loadXML() and loadHTML failed.'. var_export(libxml_get_last_error(),true));

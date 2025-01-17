@@ -85,6 +85,11 @@ class FormArray
         return str_replace([']', '['], ['', $universal ? '_' : '-'], $name);
     }
 
+    /** aa-ud359b5b4e82a6cd9e40750ca6771b077-relation_______4 -> aa[ud359b5b4e82a6cd9e40750ca6771b077][relation_______4]" */
+    public static function formId2Name(string $id) {
+        return str_replace(['aa-', '-'], ['aa[', ']['], $id).']';
+    }
+
     /** returns array(item_id,field_id) from name of variable used on AA form */
     public static function parseId4Form($input_name)
     {
@@ -97,12 +102,7 @@ class FormArray
 
     public static function getCharset($aa)
     {
-        $module_id = self::getOwner($aa);
-        if (!$module_id) {
-            return '';
-        }
-        $slice = AA_Slice::getModule($module_id);
-        return $slice->getCharset();
+        return !($module_id = self::getOwner($aa)) ? '' : AA_Slice::getModule($module_id)?->getCharset();
     }
 
     public static function getOwner($aa)
