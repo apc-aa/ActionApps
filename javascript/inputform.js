@@ -130,9 +130,9 @@ function UpdateRelations(var_id, tag, prefix, taggedid, headline) {
 
 function moveItem(selectbox, type) {
     var si = selectbox.selectedIndex;
-    if ( (type=='up') && (si > 0)) {
+    if ( (type==='up') && (si > 0)) {
         selectbox.insertBefore(selectbox.options[si], selectbox.options[si - 1]);
-    } else if ((type=='down') && ((si+1) < selectbox.length)) {
+    } else if ((type==='down') && ((si+1) < selectbox.length)) {
         selectbox.insertBefore(selectbox.options[si], selectbox.options[si+1].nextSibling);
     }
 }
@@ -146,7 +146,7 @@ function MoveSelected(left, right) {
         temptxt = left.options[i].text
         tempval = left.options[i].value
         length  = right.length
-        if( (length == 1) && (right.options[0].value=='wIdThTor') ){  // blank rows are just for <select> size setting
+        if( (length === 1) && (right.options[0].value==='wIdThTor') ){  // blank rows are just for <select> size setting
             right.options[0].text = temptxt;
             right.options[0].value = tempval;
         } else {
@@ -157,13 +157,13 @@ function MoveSelected(left, right) {
         i=left.selectedIndex
     }
     // now select next option
-    if( left.length != 0 ) {
+    if( left.length !== 0 ) {
         left.selectedIndex = ((last_selected < left.length) && (last_selected > 0) ? last_selected : 0);
     }
 }
 
 function add_to_line(inputbox, value) {
-    if (inputbox.value.length != 0) {
+    if (inputbox.value.length !== 0) {
         inputbox.value=inputbox.value+","+value;
     } else {
         inputbox.value=value;

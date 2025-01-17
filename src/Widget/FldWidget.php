@@ -76,7 +76,7 @@ class FldWidget extends Widget
         // type number does not support size parameter, so we have to set max and min (make no sense to do it for numbers > 11 characters - use default)
         if ($attrs['type'] === 'number') {
             if (!isset($attrs['max']) and ($nchars = $attrs['maxlength'] ?: $this->getProperty('max_characters') ?: $attrs['size'] ?: 0) and ($nchars < 11)) {  // $this->getProperty('width') - removed - max should not be set based on widget width
-                $attrs['max'] = pow(10, $nchars) - 1;
+                $attrs['max'] = (10 ** $nchars) - 1;
                 $attrs['min'] = $attrs['min'] ?: '0';
             }
         } else {
@@ -148,7 +148,7 @@ class FldWidget extends Widget
         $ret = "<input $attr_string name=\"$input_name\" id=\"$input_id\" value=\"$input_value\" $required $widget_add $autofocus>$link" . Widget::_saveIcon($base_id, $type === 'live'); //, 'right', $link ? 16 : 0);
         if ($lang = Langs::getLangNum2Name($i)) {
             $langcode  = Langs::getLangName2Code($lang);
-            $translate =  ($langcode == $base['langcode']) ? '' :  "<span class=\"btn aa-langtrans-tbtn\" onclick=\"AA_Translate('$input_id', document.getElementById('". $base['id'] ."').value, '".$base['langcode']."', '$langcode');\">". _m("translate from"). ' '. Langs::getLangCode2Name($base['langcode']) . "</span>";
+            $translate =  ($langcode == $base['langcode']) ? '' :  "<span class=\"btn aa-langtrans-tbtn\" onclick=\"AA_Translate(document.getElementById('". $base['id'] ."').value, '".$base['langcode']."', '$langcode').then(txt => document.getElementById('$input_id').value = txt);\">". _m("translate from"). ' '. Langs::getLangCode2Name($base['langcode']) . "</span>";
             $ret = "<div class=\"aa-langtrans aa-lang-$lang\"><strong class=\"aa-langtrans-label\">$lang</strong>$ret $translate</div>";
         }
         return "<div class='aa-one-val'>$ret</div>";

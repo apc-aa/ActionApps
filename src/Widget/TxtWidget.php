@@ -181,10 +181,16 @@ class TxtWidget extends Widget
             $langcode  = Langs::getLangName2Code($lang);
             $translate = '';
 
-            // the AA_Translate do not work on CKEditor nor CodeMirror, yet
-            // @todo make AA_Translate work on CKEditor and CodeMirror
-            if (!$showhtmlarea AND !$showcodeeditor AND ($langcode != $base['langcode'])) {
-                $translate =  "<span class=\"btn aa-langtrans-tbtn\" onclick=\"AA_Translate('$input_id', document.getElementById('" . $base['id'] . "').value, '" . $base['langcode'] . "', '$langcode');\">" . _m("translate from") . ' ' . Langs::getLangCode2Name($base['langcode']) . "</span>";
+            // the AA_Translate do not work on CodeMirror, yet
+            // @todo make AA_Translate work on CodeMirror
+            if ($langcode != $base['langcode']) {
+                if ($showhtmlarea) {
+                    $translate =  "<span class=\"btn aa-langtrans-tbtn\" onclick=\"AA_Translate(CKEDITOR.instances['".$base['id']."'].getData(), '" . $base['langcode'] . "', '$langcode').then(txt => CKEDITOR.instances['$input_id'].setData(txt));\">" . _m("translate from") . ' ' . Langs::getLangCode2Name($base['langcode']) . "</span>";
+                } else if ($showcodeeditor) {
+                    $translate = "<span class=\"btn aa-langtrans-tbtn\" onclick=\"AA_Translate(document.getElementById('".$base['id']."').value, '".$base['langcode']."', '$langcode').then(txt => document.getElementById('$input_id').nextSibling.CodeMirror.setValue(txt));\">" ._m("translate from").' '.Langs::getLangCode2Name($base['langcode'])."</span>";
+                } else {
+                    $translate = "<span class=\"btn aa-langtrans-tbtn\" onclick=\"AA_Translate(document.getElementById('".$base['id']."').value, '".$base['langcode']."', '$langcode').then(txt => document.getElementById('$input_id').value = txt);\">" ._m("translate from").' '.Langs::getLangCode2Name($base['langcode'])."</span>";
+                }
             }
             $ret = "<div class=\"aa-langtrans aa-lang-$lang\"><strong class=\"aa-langtrans-label\">$lang</strong>$ret$translate</div>";
         }

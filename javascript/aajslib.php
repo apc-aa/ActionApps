@@ -362,7 +362,7 @@ function AA_Refresh(id,inside,ok_func) {
 }
 
 /*return first element up the DOM tree matching css */
-function AA_up(el, css) { return $(el).up(css); }
+// function AA_up(el, css) { return $(el).up(css); }  // use el.closest(css)
 
 /** Send the form by AJAX and on success displays the ok_html text
  *  @param id        - form id
@@ -824,22 +824,11 @@ function AA__doChange(params) {
   });
 }
 
-function AA_Translate(input_id, text, from, to) {
-    var url = "https://translate.googleapis.com/translate_a/single?client=gtx&sl="+from+"&tl="+to+"&dt=t&q="+ encodeURIComponent(text);
-
-    new Ajax.Request(url, {
-        requestHeaders: {Accept: 'application/json'},
-        onSuccess: function(transport) {
-            var ret='';
-            var textarr = transport.responseJSON[0];
-            if (textarr) {
-                for ( var i=0; i < textarr.length; i++ ) {
-                    ret += textarr[i][0];
-                }
-            }
-            $(input_id).setValue(ret);
-        }
-    });
+function AA_Translate(text, from, to) {
+    const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${from}&tl=${to}&dt=t&q=${encodeURIComponent(text)}`;
+    return fetch(url).then(response => response.json()).then(data => {
+       return data[0]?.map(item => item[0]).join('') || '';
+    })
 }
 
 /* Cookies */
