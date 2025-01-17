@@ -147,103 +147,144 @@ EOF;
 
     protected function requireLibCode($aa_property, $winfo): string  {
         return /** @lang JavaScript */ <<<EOF
-function AA_GpsShowGeo(map, itemid, geojsonData, title, drawnItems) {
-    // Clear previous items if you wish to display only the latest GeoJSON
-    drawnItems.clearLayers();
-    
-    // if geojsonData is string, convert to object
-    if (typeof geojsonData === "string") {
-      geojsonData = geojsonData.trim();
-      // check if the value is in format "lat lon" or GeoJSON by regexp
-      let match = geojsonData.match(/^([+-]?(\d*[.])?\d+)\s([+-]?(\d*[.])?\d+)$/);
-      if (match) {
-          geojsonData  = {"type":"Point","coordinates":[match[3], match[1]]};
-      } else {
-        try {
-            geojsonData = JSON.parse(geojsonData);
-        } catch (e) {
-            console.error("Invalid GeoJSON data");
-            return;
-        }
-      }
-    }
-    if (geojsonData) {
-        L.geoJSON(geojsonData, {
-            onEachFeature: function (feature, layer) {
-                layer.on('click', function () {
-                    layer.editing.enable();
-                });
-                layer.on("edit", function(event) {
-                    AA_GpsPrepareResults(`#coosuggest\${itemid}`, `#copygps\${itemid}`, layer.toGeoJSON());
-                });
-                layer.on("drag", function(event) {
-                    AA_GpsPrepareResults(`#coosuggest\${itemid}`, `#copygps\${itemid}`, layer.toGeoJSON());
-                });
+        function AA_GpsShowGeo(map, itemid, geojsonData, title, drawnItems) {
+            // Clear previous items if you wish to display only the latest GeoJSON
+            drawnItems.clearLayers();
+            
+            // if geojsonData is string, convert to object
+            /*if (typeof geojsonData === "string") {
+              geojsonData = geojsonData.trim();
+              // check if the value is in format "lat lon" or GeoJSON by regexp
+              let match = geojsonData.match(/^([+-]?(\d*[.])?\d+)\s([+-]?(\d*[.])?\d+)$/);
+              if (match) {
+                  geojsonData  = {"type":"Point","coordinates":[match[3], match[1]]};
+              } else {
+                try {
+                    geojsonData = JSON.parse(geojsonData);
+                } catch (e) {
+                    console.error("Invalid GeoJSON data");
+                    return;
+                }
+              }
             }
-        }).addTo(drawnItems);        
+            */
+            
+            if (typeof geojsonData === "string") {
+              geojsonData = geojsonData.trim();
+            
+              // Pattern 1: Basic signed degrees with optional directions
+              let r1 = /^([-+])?\s?(\d+(\.\d+)?)\s?([NWSE]?)[,\s]+([-+])?\s?(\d+(\.\d+)?)\s?([NWSE]?)$/i;
+              let m1 = geojsonData.match(r1);
+              if (m1) {
+                let dirLat = m1[4].toUpperCase(), dirLon = m1[8].toUpperCase();
+                let num1 = ((m1[1]==='-'||dirLat==='S'||dirLat==='W')?'-':'')+m1[2];
+                let num2 = ((m1[5]==='-'||dirLon==='S'||dirLon==='W')?'-':'')+m1[6];
+                let lat = parseFloat((['E','W'].includes(dirLat))?num2:num1);
+                let lon = parseFloat((['E','W'].includes(dirLat))?num1:num2);
+                geojsonData = {type:"Point",coordinates:[lon,lat]};
+              } else {
+                // Pattern 2: Degrees/minutes/seconds with directions
+                let r2 = /^([-+])?(\d+(\.\d+)?)°(?:(\d+(\.\d+)?)')?(?:(\d+(\.\d+)?)(?:"|'))?([NWSE]?),?\s*([-+])?(\d+(\.\d+)?)°(?:(\d+(\.\d+)?)')?(?:(\d+(\.\d+)?)(?:"|'))?([NWSE]?)$/iu;
+                let m2 = geojsonData.match(r2);
+                if (m2) {
+                  let degLat = parseFloat(m2[2])||0, minLat = parseFloat(m2[4])||0, secLat = parseFloat(m2[6])||0;
+                  let dirLat = m2[8].toUpperCase();
+                  let degLon = parseFloat(m2[10])||0, minLon = parseFloat(m2[12])||0, secLon = parseFloat(m2[14])||0;
+                  let dirLon = m2[16].toUpperCase();
+                  let valLat = degLat+(minLat/60)+(secLat/3600), valLon = degLon+(minLon/60)+(secLon/3600);
+                  if (m2[1]==='-'||dirLat==='S'||dirLat==='W') valLat = -valLat;
+                  if (m2[9]==='-'||dirLon==='S'||dirLon==='W') valLon = -valLon;
+                  let lat = (['E','W'].includes(dirLat))?valLon:valLat;
+                  let lon = (['E','W'].includes(dirLat))?valLat:valLon;
+                  geojsonData = {type:"Point",coordinates:[lon,lat]};
+                } else {
+                  try {
+                    geojsonData = JSON.parse(geojsonData);
+                  } catch(e) {
+                    console.error("Invalid input");
+                    return;
+                  }
+                }
+              }
+            }    
+            
+            if (geojsonData) {
+                L.geoJSON(geojsonData, {
+                    onEachFeature: function (feature, layer) {
+                        layer.on('click', function () {
+                            layer.editing.enable();
+                        });
+                        layer.on("edit", function(event) {
+                            AA_GpsPrepareResults(`#coosuggest\${itemid}`, `#copygps\${itemid}`, layer.toGeoJSON());
+                        });
+                        layer.on("drag", function(event) {
+                            AA_GpsPrepareResults(`#coosuggest\${itemid}`, `#copygps\${itemid}`, layer.toGeoJSON());
+                        });
+                    }
+                }).addTo(drawnItems);        
+                
+                // Fit map bounds to the added GeoJSON
+                map.fitBounds(drawnItems.getBounds());
+                AA_GpsPrepareResults(`#coosuggest\${itemid}`, `#copygps\${itemid}`, geojsonData);
+            } else {
+                console.error("Invalid or empty GeoJSON data");
+            }
+        }
         
-        // Fit map bounds to the added GeoJSON
-        map.fitBounds(drawnItems.getBounds());
-        AA_GpsPrepareResults(`#coosuggest\${itemid}`, `#copygps\${itemid}`, geojsonData);
-    } else {
-        console.error("Invalid or empty GeoJSON data");
-    }
-}
-
-function AA_GpsShowMarker(map, itemid, lat, lon, title) {
-    AA_$(`#coosuggest\${itemid}`).value = `\${lat} \${lon}`;
-    map.setView([lat, lon], 15);
-    
-    let marker = null;
-    map.eachLayer((layer) => { if (layer instanceof L.Marker) {
-        marker = layer;
-    }});
-    
-    if (marker) {
-       marker.setLatLng([lat, lon]);
-    } else {
-       marker = L.marker([lat, lon], {"title":title, draggable: true, autoPan: true}).on('dragend', (e) => {
-         AA_GpsPrepareResults(`#coosuggest\${itemid}`, `#copygps\${itemid}`, {"type":"Point","coordinates":[marker.getLatLng().lng.toFixed(6), marker.getLatLng().lat.toFixed(6)]});
-       }).addTo(map);
-    }
-    map.fitBounds(marker.getLatLng().toBounds(100)); // 50m radius
-    AA_GpsPrepareResults(`#coosuggest\${itemid}`, `#copygps\${itemid}`, {"type":"Point","coordinates":[lon,lat]});
-}
-
-function AA_GpsPrepareResults(resultinput, usebutton, geojson) {
-    AA_$(usebutton).disabled=false;
-    AA_$(resultinput).value = AA_GeoJSON2String(geojson);
-}
-function AA_GpsUse(aainput, itemid, usebutton) {
-    const el=AA_$(aainput); 
-    el.value=AA_$(`#coosuggest\${itemid}`).value;
-    el.dispatchEvent(new Event('change'));
-    usebutton.disabled=true;
-    // window[`drawnItems\${itemid}`]?.eachLayer(layer => layer.editing?.enabled() && layer.editing.disable());
-}
-
-function AA_GeoJSON2String(geojsonData) {
-    if (geojsonData.type === "FeatureCollection" && geojsonData.features.length === 1) {
-        geojsonData = geojsonData.features[0];
-    }
-    if (geojsonData.type === "Feature") {
-        geojsonData = geojsonData.geometry;
-    }
-
-    // Check if the resulting or original data is a Point
-    if (geojsonData.type === "Feature" && geojsonData.geometry && geojsonData.geometry.type === "Point") {
-        return `\${geojsonData.geometry.coordinates[1]} \${geojsonData.geometry.coordinates[0]}`;
-    } else if (geojsonData.type === "Point") {
-        // Direct Point without being a Feature
-        return `\${geojsonData.coordinates[1]} \${geojsonData.coordinates[0]}`;
-    }
-
-    // Return the modified or unmodified GeoJSON object
-    return JSON.stringify(geojsonData);
-}
-
-Loader.load(null, {suggest: true}); // naseptavac
-EOF;
+        function AA_GpsShowMarker(map, itemid, lat, lon, title) {
+            AA_$(`#coosuggest\${itemid}`).value = `\${lat} \${lon}`;
+            map.setView([lat, lon], 15);
+            
+            let marker = null;
+            map.eachLayer((layer) => { if (layer instanceof L.Marker) {
+                marker = layer;
+            }});
+            
+            if (marker) {
+               marker.setLatLng([lat, lon]);
+            } else {
+               marker = L.marker([lat, lon], {"title":title, draggable: true, autoPan: true}).on('dragend', (e) => {
+                 AA_GpsPrepareResults(`#coosuggest\${itemid}`, `#copygps\${itemid}`, {"type":"Point","coordinates":[marker.getLatLng().lng.toFixed(6), marker.getLatLng().lat.toFixed(6)]});
+               }).addTo(map);
+            }
+            map.fitBounds(marker.getLatLng().toBounds(100)); // 50m radius
+            AA_GpsPrepareResults(`#coosuggest\${itemid}`, `#copygps\${itemid}`, {"type":"Point","coordinates":[lon,lat]});
+        }
+        
+        function AA_GpsPrepareResults(resultinput, usebutton, geojson) {
+            AA_$(usebutton).disabled=false;
+            AA_$(resultinput).value = AA_GeoJSON2String(geojson);
+        }
+        function AA_GpsUse(aainput, itemid, usebutton) {
+            const el=AA_$(aainput); 
+            el.value=AA_$(`#coosuggest\${itemid}`).value;
+            el.dispatchEvent(new Event('change'));
+            usebutton.disabled=true;
+            // window[`drawnItems\${itemid}`]?.eachLayer(layer => layer.editing?.enabled() && layer.editing.disable());
+        }
+        
+        function AA_GeoJSON2String(geojsonData) {
+            if (geojsonData.type === "FeatureCollection" && geojsonData.features.length === 1) {
+                geojsonData = geojsonData.features[0];
+            }
+            if (geojsonData.type === "Feature") {
+                geojsonData = geojsonData.geometry;
+            }
+        
+            // Check if the resulting or original data is a Point
+            if (geojsonData.type === "Feature" && geojsonData.geometry && geojsonData.geometry.type === "Point") {
+                return `\${geojsonData.geometry.coordinates[1]} \${geojsonData.geometry.coordinates[0]}`;
+            } else if (geojsonData.type === "Point") {
+                // Direct Point without being a Feature
+                return `\${geojsonData.coordinates[1]} \${geojsonData.coordinates[0]}`;
+            }
+        
+            // Return the modified or unmodified GeoJSON object
+            return JSON.stringify(geojsonData);
+        }
+        
+        Loader.load(null, {suggest: true}); // naseptavac
+        EOF;
 
     }
 
