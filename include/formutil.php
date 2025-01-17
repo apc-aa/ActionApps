@@ -1276,7 +1276,7 @@ class AA_Inputfield {
 
         // type number do not support size parameter, so ve have to set max and min (make no sence to do it for numbers > 11 characters - use default)
         if (($attrs['type'] === 'number') AND !isset($attrs['max']) AND ($nchars = $attrs['maxlength'] ?: $attrs['size'] ?: 0) AND ($nchars<11)) {
-            $attrs['max'] = pow(10,$nchars)-1;
+            $attrs['max'] = (10 ** $nchars) -1;
             $attrs['min'] = $attrs['min'] ?: '0';
         }
         $attr_string = implode(' ', array_map( static fn ($k, $v) => "$k=\"$v\"", array_keys($attrs), $attrs));

@@ -1154,8 +1154,8 @@ class AA_Item {
         // can use either the 'headline......' format or "You static text here"
         $stringToMatch   = get_if( $this->getval($stringToMatch_Raw), $stringToMatch_Raw);
 
-        $fieldToMatch    = quote(     $p[2] ?: BLURB_FIELD_TO_MATCH  );
-        $fieldToReturn   = quote(     $p[3] ?: BLURB_FIELD_TO_RETURN );
+        $fieldToMatch    = quote( $p[2] ?: (defined('BLURB_FIELD_TO_MATCH')  ? BLURB_FIELD_TO_MATCH : ''));
+        $fieldToReturn   = quote( $p[3] ?: (defined('BLURB_FIELD_TO_RETURN') ? BLURB_FIELD_TO_RETURN : ''));
         /*
         This SQL effectively narrows down through three sets:
         a) all the items from our blurb slice
@@ -1180,14 +1180,14 @@ class AA_Item {
                          c2.item_id     = '$fqsqlid'";
 
         } elseif ($fieldToMatch === "short_id........") {
-            $p_blurbSliceId  = q_pack_id( $p[1] ?: BLURB_SLICE_ID  );
+            $p_blurbSliceId  = q_pack_id( $p[1] ?: ( defined('BLURB_SLICE_ID') ? BLURB_SLICE_ID : '' ));
             $SQL = "SELECT c2.text AS text
                     FROM item LEFT JOIN content c2 ON item.id = c2.item_id
                     WHERE slice_id  = '$p_blurbSliceId' AND
                          item.short_id = '$stringToMatch' AND
                          c2.field_id    = '$fieldToReturn'";
         } else {
-            $p_blurbSliceId  = q_pack_id( $p[1] ?: BLURB_SLICE_ID  );
+            $p_blurbSliceId  = q_pack_id( $p[1] ?: ( defined('BLURB_SLICE_ID') ? BLURB_SLICE_ID : '' ));
             $SQL = "SELECT c2.text AS text
                     FROM item LEFT JOIN content c1 ON item.id = c1.item_id
                               LEFT JOIN content c2 ON item.id = c2.item_id

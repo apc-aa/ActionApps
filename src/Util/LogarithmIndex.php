@@ -37,7 +37,7 @@ class LogarithmIndex
      */
     function calculateStep()
     {
-        return pow($this->end / $this->start, 1 / $this->maxIndex);
+        return ($this->end / $this->start) ** (1 / $this->maxIndex);
     }
 
     /** generate table with index boundaries

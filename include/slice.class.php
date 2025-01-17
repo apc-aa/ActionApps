@@ -655,11 +655,10 @@ class AA_Slice extends AA_Module {
         return $this->getField($field_id)?->getWidget();
     }
 
-    /** getTranslations
-     *  Returns array of two letters shortcuts for languages used in this slice for translations - array('en','cz','es')
+    /** @return array of two letters shortcuts for languages used in this slice for translations - array('en','cz','es')
      */
-    function getTranslations()  {
-        return $this->getProperty('translations');
+    public function getTranslations(): array  {
+        return (array)$this->getProperty('translations');
     }
 
     /** for translated fields - if not translated, use default language of the module */
@@ -1266,7 +1265,6 @@ class AA_Modulesettings_Site extends AA_AbstractModulesettings {
 
     /** do not display Name property on the form by default */
     const USES_NAME = false;
-
 
     /** check, if the $prop is the property of this object */
     static function isProperty($prop): bool {

@@ -233,7 +233,7 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
      * @param string[] $translations
      * @return AA_Value
      */
-    function fixTranslations($translations): AA_Value {
+    function fixTranslations(array $translations): AA_Value {
         if ($translations) {
             $maxindex = 0;
             foreach ($this->arr as $k => $v) {
