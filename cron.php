@@ -187,7 +187,7 @@ function cron($time = 0) {
         }
         elseif ($nearest_part > -1 && $nearest_time > $db->f("last_run")) {
             DB_AA::sql("UPDATE cron SET last_run=".$time." WHERE id=".$db->f("id"));
-            fopen($url,"r");
+            fopen($url, 'rb');
         }
     }
     if ($_GET['debug']) echo "</body></html>";

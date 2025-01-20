@@ -35,7 +35,7 @@ if (is_array($_FILES['csv_filex'])) {
 
     if ($_FILES["csv_filex"]["error"] == UPLOAD_ERR_OK) {
         $varset = new CVarset;
-        $handle = fopen($_FILES["csv_filex"]["tmp_name"], 'r');
+        $handle = fopen($_FILES["csv_filex"]["tmp_name"], 'rb');
 
         $keys = false;
         while (($data = fgetcsv($handle, 10000)) !== FALSE) {

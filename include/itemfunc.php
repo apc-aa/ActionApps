@@ -778,14 +778,18 @@ class AA_Inserter_Fil extends AA_Inserter {
             return;
         }
 
+
+
         if (!($slice = $fieldwriter->getSlice())) {
             return;
         }
+
         if ($mode === 'upload') {
             if (($dest_file = $this->uploadFile($up_file, $item_id, $slice, $fid)) === false) {   // error
                 $err[$fid] = Files::lastErrMsg();
                 return;
             }
+
             $resampled_name = $dest_file;
         } else { // thumb
             $dest_file = ParamExplode($value)[1];
@@ -812,11 +816,16 @@ class AA_Inserter_Fil extends AA_Inserter {
         }
 
         $value = $slice->getUrlFromPath($resampled_name);
+
         // store link to uploaded file
         parent::execute($fieldwriter, $item_id, $value, $order, $flag);
     }
 
-    protected function uploadFile(array $up_file, $item_id, $slice, $fid): string {
+    /**
+     * @return bool|string
+     */
+    protected function uploadFile(array $up_file, $item_id, $slice, $fid)
+    {
         // determine filename ----
         $filename = null;
         if (strlen($this->nametemplate)) {

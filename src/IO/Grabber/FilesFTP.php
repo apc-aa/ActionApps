@@ -187,7 +187,7 @@ class FilesFTP extends AbstractGrabber
 
     protected function getFtpFileContent($remote_file) {
         // Open a temporary stream to read the file content
-        $temp_handle = fopen('php://temp', 'r+');
+        $temp_handle = fopen('php://temp', 'rb+');
         $file_content = '';
         if (ftp_fget($this->connection, $temp_handle, $remote_file)) {
             // Rewind the stream to the beginning

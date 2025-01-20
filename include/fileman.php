@@ -323,11 +323,11 @@ function fileman_execute_command($basedir, $directory, $cmd, $arg, $chb, $fmset)
             $arg .= ".html";
         }
         $newfile = $basedir.$directory.$arg;
-        if (file_exists ($newfile)) {
+        if (file_exists($newfile)) {
             $err[] = _m("File already exists")." ($newfilename).";
             return;
         }
-        if (!fopen ($newfile, "w")) {
+        if (!fopen($newfile, 'wb')) {
             $err[] = _m("Unable to create file")." $newfilename.";
             return;
         }
@@ -393,12 +393,12 @@ function fileman_execute_command($basedir, $directory, $cmd, $arg, $chb, $fmset)
         // Save changes
         if ($cmd==='savefile') {
             $f       = $basedir.$filename;
-            $filedes = fopen ($f,"w");
+            $filedes = fopen($f, 'wb');
             if (!$filedes) {
                 $err[] = _m("Unable to open file for writing")." ($filename).";
             }
             else {
-                $bytes = fwrite ($filedes, $arg);
+                $bytes = fwrite($filedes, $arg);
                 if ($bytes == -1) {
                     $err[] = _m("Error writing to file")." $filename.";
                 }
@@ -407,11 +407,11 @@ function fileman_execute_command($basedir, $directory, $cmd, $arg, $chb, $fmset)
 
         } elseif ($cmd==='rename') { // Rename
             make_secure($renamearg);
-            $newname = dirname ($basedir.$filename)."/".$arg;
+            $newname = dirname($basedir.$filename)."/".$arg;
             if (file_exists ($newname)) {
                 $err[] = _m("File with this name already exists")." ($arg).";
             }
-            elseif (!rename ($basedir.$filename, $newname)) {
+            elseif (!rename($basedir.$filename, $newname)) {
                 $err[] = _m("Unable to rename")." $filename.";
             }
         }
@@ -463,17 +463,17 @@ function fileman_copy_template($srcdir, $dstdir): string {
     ];
 
     $db = getDB();
-    $db->query("SELECT name FROM slice WHERE id = '".q_pack_id ($slice_id)."'");
+    $db->query("SELECT name FROM slice WHERE id = '".q_pack_id($slice_id)."'");
     $db->next_record();
     $aliases["_#SLICNAME"] = $db->f('name');
     freeDB($db);
 
-    if (!is_dir ($srcdir)) {
+    if (!is_dir($srcdir)) {
         return _m("Wrong directory name")." ($srcdir)";
     }
-    $files = get_files_subtree ($srcdir);
+    $files = get_files_subtree($srcdir);
     foreach ($files as $file) {
-        if (file_exists ($dstdir."/".$file)) {
+        if (file_exists($dstdir."/".$file)) {
             $errfiles[] = $file;
         }
     }
@@ -483,21 +483,21 @@ function fileman_copy_template($srcdir, $dstdir): string {
     foreach ($files as $file) {
         $ft = get_filetype($srcdir."/".$file);
         if ($ft == _m("HTML file") || $ft == _m("Text file")) {
-            $fd = fopen ($dstdir."/".$file, "w");
+            $fd = fopen($dstdir."/".$file, 'wb');
             if (!$fd) {
                 return _m("Unable to create file")." $dstdir/$file.";
             }
-            $fcontent = file ($srcdir."/".$file);
+            $fcontent = file($srcdir."/".$file);
             foreach ($fcontent as $frow) {
                 foreach ($aliases as $alias => $replace) {
-                    $frow = str_replace ($alias, $replace, $frow);
+                    $frow = str_replace($alias, $replace, $frow);
                 }
-                fwrite ($fd, $frow);
+                fwrite($fd, $frow);
             }
         } else {
-            copy ($srcdir."/".$file, $dstdir."/".$file);
+            copy($srcdir."/".$file, $dstdir."/".$file);
         }
-        chmod ($dstdir."/".$file, FILEMAN_MODE_FILE);
+        chmod($dstdir."/".$file, FILEMAN_MODE_FILE);
     }
     return '';
 }

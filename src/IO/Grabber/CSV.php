@@ -118,7 +118,7 @@ class CSV extends AbstractGrabber
         $data = implode('', $this->getSources());
 
         // fgetcsv works on streams - we have to use stream (we do not want to use str_getcsv() - it is hard to work with \n inside fields)
-        $stream = fopen('php://memory', 'r+');
+        $stream = fopen('php://memory', 'rb+');
         fwrite($stream, $data);
         rewind($stream);
         $array = fgetcsv($stream, 0, $this->delimiter, $this->enclosure);

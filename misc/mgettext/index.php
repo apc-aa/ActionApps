@@ -200,7 +200,7 @@ function update_language_files($aadir, $destdir)
             unset ($log_group_processed);
         }
         if (!$log_group_processed) {
-            $fd = fopen ($logfile, "w");
+            $fd = fopen ($logfile, 'wb');
             fwrite ($fd, "<?php \$log_group_processed = \"$langfiles\"; ?>\n");
             fclose ($fd);
             chmod ($logfile, 0664);

@@ -340,7 +340,7 @@ class ConvertCharset {
                 print $this->DebugOutput(0, 0, CONVERT_TABLES_DIR . $FileName); //Print an error message
                 exit;
             }
-            $FileWithEncTabe = fopen(CONVERT_TABLES_DIR . $FileName, "r") or die(); //This die(); is just to make sure...
+            $FileWithEncTabe = fopen(CONVERT_TABLES_DIR . $FileName, 'rb') or die(); //This die(); is just to make sure...
             while (!feof($FileWithEncTabe)) {
                 /**
                 * We asume that line is not longer

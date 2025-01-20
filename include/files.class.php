@@ -196,7 +196,8 @@ class Files {
         // copy the file from the temp directory to the upload directory, and test for success
         // (if the file already exists, move_uploaded_file will overwrite it!)
         if (!move_uploaded_file($up_file['tmp_name'], $dest_file)) {
-            self::lastErr(FILE_ERROR_TYPE_NOT_ALLOWED, _m("Can't move image  %1 to %2", [$up_file['tmp_name'], $dest_file]));  // set error code
+            $last_error = error_get_last();
+            self::lastErr(FILE_ERROR_COPY_FAILED, _m("Can't move image  %1 to %2 (%3)", [$up_file['tmp_name'], $dest_file, $last_error['message']]));  // set error code
             return false;
         }
 
@@ -224,7 +225,7 @@ class Files {
             return false;
         }
 
-        if (!($handle = fopen($dest_file, 'w'))) {
+        if (!($handle = fopen($dest_file, 'wb'))) {
             self::lastErr(FILE_ERROR_WRITE, _m("Can't open file for writing: %1", [$dest_file]));  // set error code
             return false;
         }
@@ -522,10 +523,12 @@ class AA_File_Wrapper {
 
 	/**
      * Open the file.
+     *
      * @param $mode string only 'r' (read-only) is currently supported
+     *
      * @return boolean
      */
-    function open($mode = 'r') {
+    function open(string $mode = 'rb') {
         $this->fp = null;
         try {
             $this->fp = fopen($this->url, $mode);
@@ -684,10 +687,12 @@ class AA_File_HTTP_Wrapper extends AA_File_Wrapper_Ext {
 
 
     /** open function
-     * @param $mode
+     *
+     * @param  string $mode
+     *
      * @return AA_File_Wrapper|bool
      */
-    function open($mode = 'r') {
+    function open(string $mode = 'rb') {
         $host = $this->info['host'] ?? $this->defaultHost;
         $port = isset($this->info['port']) ? (int)$this->info['port'] : $this->defaultPort;
         $path = $this->info['path'] ?? $this->defaultPath;
@@ -778,10 +783,12 @@ class AA_File_FTP_Wrapper extends AA_File_Wrapper_Ext {
     var $ctrl;
 	/**
 	 * Open the file.
-	 * @param $mode string See fopen for mode string options.
+     *
+     * @param $mode string See fopen for mode string options.
+	 *
 	 * @return boolean True iff success.
      */
-    function open($mode = 'r') {
+    function open(string $mode = 'rb') {
         $user = $this->info['user'] ?? 'anonymous';
         $pass = $this->info['pass'] ?? 'user@example.com';
         $host = $this->info['host'] ?? 'localhost';

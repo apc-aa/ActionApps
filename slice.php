@@ -224,11 +224,11 @@ if ($slicetext) {
 if ( $inc ) {                   // this section must be after add_vars()
     //  StoreVariables(array("inc")); // store in session
     if ( !preg_match("/^([0-9a-z_])+(\.[0-9a-z]*)?$/i", $inc) ) {
-        echo _m("Bad inc parameter - included file must be in the same directory as this .shtml file and must contain only alphanumeric characters"). " $inc";
+        echo _m("Bad inc parameter - included file must be in the same directory as this .shtml file and must contain only alphanumeric characters"). safe(" $inc");
     } else {
-        $fp = @fopen(shtml_base().$inc, "r");    //   if encapsulated
+        $fp = @fopen(shtml_base().$inc, 'rb');    //   if encapsulated
         if (!$fp) {
-            echo _m("No such file") ." $inc";
+            echo _m("No such file") .safe(" $inc");
         } else {
             fpassthru($fp);
         }
@@ -480,7 +480,7 @@ if ($order) {
 }
 
 if ($debug) {
-    echo "<BR>Group by: -$group_by- <br>Slice_info[category_sort] -$slice_info[category_sort]-<br>slice_info[group_by] -$slice_info[group_by]-";
+    echo "<br>Group by: - ".safe($group_by)." - <br>Slice_info[category_sort] - ". safe($slice_info['category_sort'])." -<br>slice_info[group_by] - ". safe($slice_info['group_by'])." -";
 }
 
 if ($group_by) {

@@ -88,10 +88,10 @@ $filetype = get_filetype($fe_filename);
 if ($filetype == _m("Text file") || $filetype == _m("Web file") || $filetype == _m("HTML file")) {
 
     // don't edit the file if you won't be able to save it - only show it's contents
-    $filedes = @fopen ($fe_path.$fe_filename, "a");
+    $filedes = @fopen ($fe_path.$fe_filename, 'ab');
     if ($filedes) {
         fclose ($filedes);
-        $filedes = fopen ($fe_path.$fe_filename, "r");
+        $filedes = fopen ($fe_path.$fe_filename, 'rb');
         $value = "";
         while (!feof ($filedes)) {
             $value .= fgets($filedes, 4096);
@@ -120,12 +120,12 @@ if ($filetype == _m("Text file") || $filetype == _m("Web file") || $filetype == 
                 var filetext = '$value';
                 document.forms['fileman']['arg[savefile]'].value = filetext;
             </script>";
-            echo fileAction ("savefile", _m("Save changes"))
-                .fileAction ("reset", _m("Reset content"));
+            echo fileAction("savefile", _m("Save changes"))
+                .fileAction("reset", _m("Reset content"));
 //            }
     }
     else {
-        $filedes = @fopen ($fe_path.$fe_filename, "r");
+        $filedes = @fopen($fe_path.$fe_filename, 'rb');
         if ($filedes) {
             echo formatAction(_m("File content").":")."<br>";
             while (!feof ($filedes)) {

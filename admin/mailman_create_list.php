@@ -97,16 +97,16 @@ if ($create_list && $admin_email && $list_name && $admin_password) {
 function add_mailman_list($admin_email, $list_name, $admin_password, $groupid) {
 
     $db = getDB();
-    $db->query ("SELECT * FROM constant WHERE group_id='".addslashes($groupid)."' AND name='".$list_name."'");
+    $db->query("SELECT * FROM constant WHERE group_id='".addslashes($groupid)."' AND name='".$list_name."'");
     if ($db->next_record()) {
         echo _m("Error: This list name is already used.");
         freeDB($db);
         return;
     }
-    $db->query ("SELECT MAX(pri) AS max_pri FROM constant WHERE group_id='".addslashes($groupid)."'");
+    $db->query("SELECT MAX(pri) AS max_pri FROM constant WHERE group_id='".addslashes($groupid)."'");
     $db->next_record();
     $pri = $db->f("max_pri") + 100;
-    if (! $db->query ("INSERT INTO constant (id, group_id, name, value, pri) VALUES ('".q_pack_id(new_id())."', '".addslashes($groupid)."', '$list_name', '$list_name', $pri)")) {
+    if (! $db->query("INSERT INTO constant (id, group_id, name, value, pri) VALUES ('".q_pack_id(new_id())."', '".addslashes($groupid)."', '$list_name', '$list_name', $pri)")) {
         echo "Internal Error with DB.";
         freeDB($db);
         return;
@@ -114,19 +114,19 @@ function add_mailman_list($admin_email, $list_name, $admin_password, $groupid) {
     freeDB($db);
 
     global $MAILMAN_SYNCHRO_DIR;
-    endslash ($MAILMAN_SYNCHRO_DIR);
-    $filelock = new FileLock ($MAILMAN_SYNCHRO_DIR.".mailman_lock");
+    endslash($MAILMAN_SYNCHRO_DIR);
+    $filelock = new FileLock($MAILMAN_SYNCHRO_DIR.".mailman_lock");
     if (! $filelock->Lock()) {
         echo "Internal Error when creating lock file.";
         return;
     }
 
-    if (! ($fd = fopen ($MAILMAN_SYNCHRO_DIR.".mailman", "a"))) {
+    if (! ($fd = fopen($MAILMAN_SYNCHRO_DIR.".mailman", 'ab'))) {
         echo "Internal Error when creating request file.";
         return;
     }
-    fwrite ($fd, "createnew $list_name $admin_email $admin_password\n");
-    fclose ($fd);
+    fwrite($fd, "createnew $list_name $admin_email $admin_password\n");
+    fclose($fd);
 
     if (! $filelock->Unlock()) {
         echo "Internal Error when deleting lock file.";

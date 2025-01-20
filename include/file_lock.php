@@ -71,17 +71,17 @@ class FileLock {
             return true;
         do {
             clearstatcache();
-            $locked_outside = file_exists ($this->filename);
+            $locked_outside = file_exists($this->filename);
             if ($locked_outside) {
                 sleep (1);
             } else {
-                $fd = @fopen ($this->filename, "w");
+                $fd = @fopen($this->filename, 'wb');
                 // Proove that nobody else created the file in the meantime
                 // between file_exists() and fopen().
                 // Note: this is not 100% sure, because somebody could have
                 // already the file deleted again, but this is very unprobable.
                 clearstatcache();
-                $locked_outside = ! $fd && file_exists ($this->filename);
+                $locked_outside = ! $fd && file_exists($this->filename);
             }
         } while ($locked_outside);
         $this->locked = $fd;
@@ -89,7 +89,7 @@ class FileLock {
             $last_error = true;
             return false;
         }
-        fclose ($fd);
+        fclose($fd);
         return true;
     }
 
@@ -100,7 +100,7 @@ class FileLock {
     function Unlock() {
         $last_error = false;
         if ($this->locked)
-            $last_error = ! unlink ($this->filename);
+            $last_error = ! unlink($this->filename);
         $this->locked = $last_error;
         return ! $last_error;
     }
@@ -116,10 +116,10 @@ class FileLock {
             return true;
         }
         clearstatcache();
-        if (file_exists ($this->filename)) {
+        if (file_exists($this->filename)) {
             return false;
         }
-        $fd = @fopen ($this->filename, "w");
+        $fd = @fopen($this->filename, 'wb');
         $this->locked = $fd;
         if ($fd) {
             return true;
@@ -127,7 +127,7 @@ class FileLock {
         // The file could not be created but not because somebody else created it:
         // this is an error (see also Lock())
         clearstatcache();
-        if (! file_exists ($this->filename)) {
+        if (! file_exists($this->filename)) {
             $last_error = true;
         }
         return false;

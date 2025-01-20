@@ -132,7 +132,7 @@ if ($upload OR $preview) {
             }
             break;
         case 'url':
-            if ( ($handle = fopen($url, 'r')) === false ) {
+            if ( ($handle = fopen($url, 'rb')) === false ) {
                 $err[] = _m('Cannot read input url');
             } else {
                 fclose($handle);

@@ -6,7 +6,7 @@ require_once __DIR__ . "/../../include/file_lock.php";
 $lock = new FileLock("file_lock");
 for ($i=1; $i < 1000; $i++) {
     $lock->lock();
-    $fd = fopen ("output.txt", "a");
+    $fd = fopen("output.txt", 'ab');
     fwrite($fd, $i."\n");
     fclose($fd);
     $lock->unlock();

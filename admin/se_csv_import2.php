@@ -241,7 +241,7 @@ class AA_Csv_Importer {
 
         MoreTimeLimit(IMPORTFILE_TIME_LIMIT);	// set time for the executing this script
 
-        $handle       = fopen($this->fileName,"r");
+        $handle       = fopen($this->fileName, 'rb');
         $numProcessed = 0;
         $numError     = 0;
 
@@ -309,7 +309,7 @@ class AA_Csv_Importer {
 
         $slf = array_merge(['unpacked_id.....' => 'Item id'], $slice_fields->getNameArray());
 
-        $handle = fopen($this->fileName, "r");
+        $handle = fopen($this->fileName, 'rb');
 
         FrmTabCaption(_m("Mapping preview"));
         FrmTabRow($slf);			// print output fields

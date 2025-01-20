@@ -64,7 +64,7 @@ function getCSV($handle, $delimiter = ';', $enclosure = '"') {
  * @return array
  */
 function createFieldNames($fileName, $addParams) {
-    $handle = fopen($fileName,"r");
+    $handle = fopen($fileName, 'rb');
     $fn = getCSV($handle,$addParams['delimiter'],$addParams['enclosure']);
     fclose($handle);
     if (!is_array($fn)) {
