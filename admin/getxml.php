@@ -414,7 +414,7 @@ function GetXMLItemsRefs(array $items_ids): string {
  * @param $cat_field
  * @return array
  */
-function RestrictIdsByCategory( $ids, $categories, $slice_id, $content, $cat_field ) {
+function RestrictIdsByCategory( $ids, $categories, $slice_id, array $content, $cat_field ) {
     $new_ids = [];
     if ( !is_array($ids) OR !is_array($categories) ) {
         return $new_ids;                              // empty array
