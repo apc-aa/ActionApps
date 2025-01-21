@@ -144,7 +144,7 @@ function GetUserData($identification,$findby="headline........") {
     }
 
     $content = GetItemContent($zid);
-    if ( !is_array($content) ) {
+    if ( !$content ) {
         return false;
     }
 

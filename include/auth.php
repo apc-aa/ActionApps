@@ -71,24 +71,24 @@ class AA_Mysqlauth {
         $zids    = new zids($item_ids, 'p');
         $readers = self::getReadersData($slice_id, $zids);
 
-        if ( is_array( $readers )) {
-            foreach ($readers as $reader) {
-                $reader_obj = new ItemContent($reader);
-                if (self::isActive($reader_obj) AND $reader_obj->isSet($sl_auth_field_group)) {
-                    self::updateReader($reader_obj->getValue(FIELDID_USERNAME), $reader_obj->getValue(FIELDID_PASSWORD), $reader_obj->getValues($sl_auth_field_group));
-                } else {
-                    self::deleteReader($reader_obj->getValue(FIELDID_USERNAME));
-                }
+        foreach ($readers as $reader) {
+            $reader_obj = new ItemContent($reader);
+            if (self::isActive($reader_obj) AND $reader_obj->isSet($sl_auth_field_group)) {
+                self::updateReader($reader_obj->getValue(FIELDID_USERNAME), $reader_obj->getValue(FIELDID_PASSWORD), $reader_obj->getValues($sl_auth_field_group));
+            } else {
+                self::deleteReader($reader_obj->getValue(FIELDID_USERNAME));
             }
         }
     }
 
     /** AA_Mysqlauth::getReadersData function
+     *
      * @param $slice_id
-     * @param $restrict_zids = false
+     * @param $restrict_zids  = false
+     *
      * @return array
      */
-    static function getReadersData($slice_id, $restrict_zids=false) {
+    public static function getReadersData($slice_id, $restrict_zids=false): array {
         $auth_field_group = AA_Slice::getModuleProperty($slice_id,'auth_field_group');
         $zids  = QueryZids( [$slice_id], '', '', 'ALL', 0, $restrict_zids);
         return GetItemContent($zids, false, true, ['id..............','status_code.....','slice_id........', 'publish_date....', 'expiry_date.....', $auth_field_group, FIELDID_USERNAME, FIELDID_PASSWORD]);
@@ -123,27 +123,25 @@ class AA_Mysqlauth {
 
             $readers = self::getReadersData(unpack_id($slice_id));
 
-            if ( is_array( $readers )) {
-                foreach ($readers as $reader) {
-                    $reader_obj = new ItemContent($reader);
+            foreach ($readers as $reader) {
+                $reader_obj = new ItemContent($reader);
 
-                    $olduser_exists = $oldusers[$reader_obj->getValue(FIELDID_USERNAME)];
-                    unset($oldusers[$reader_obj->getValue(FIELDID_USERNAME)]);
+                $olduser_exists = $oldusers[$reader_obj->getValue(FIELDID_USERNAME)];
+                unset($oldusers[$reader_obj->getValue(FIELDID_USERNAME)]);
 
-                    // Add readers which should be in auth_user but are not
-                    // (perhaps moved recently from Pending to Active)
-                    if (self::isActive($reader_obj) AND $reader_obj->isSet($slice["auth_field_group"])) {
-                        if (! $olduser_exists) {
-                            $result["readers added"]++;
-                            self::updateReader($reader_obj->getValue(FIELDID_USERNAME), $reader_obj->getValue(FIELDID_PASSWORD), $reader_obj->getValues($slice["auth_field_group"]));
-                        }
+                // Add readers which should be in auth_user but are not
+                // (perhaps moved recently from Pending to Active)
+                if (self::isActive($reader_obj) AND $reader_obj->isSet($slice["auth_field_group"])) {
+                    if (! $olduser_exists) {
+                        $result["readers added"]++;
+                        self::updateReader($reader_obj->getValue(FIELDID_USERNAME), $reader_obj->getValue(FIELDID_PASSWORD), $reader_obj->getValues($slice["auth_field_group"]));
                     }
-                    // Remove readers which are in auth_user but should not
-                    // (perhaps moved recently from Active to Expired)
-                    elseif ($olduser_exists) {
-                        $result["not active readers deleted"]++;
-                        self::deleteReader($reader_obj->getValue(FIELDID_USERNAME));
-                    }
+                }
+                // Remove readers which are in auth_user but should not
+                // (perhaps moved recently from Active to Expired)
+                elseif ($olduser_exists) {
+                    $result["not active readers deleted"]++;
+                    self::deleteReader($reader_obj->getValue(FIELDID_USERNAME));
                 }
             }
         }

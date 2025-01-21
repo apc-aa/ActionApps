@@ -96,13 +96,12 @@ class AA_Collection {
         return $aa_set->query();
     }
 
-    function getReadersSelectArray($how_often = null) {
+    public function getReadersSelectArray($how_often = null): array
+    {
         $ret = [];
         $content4ids = GetItemContent($this->getReaders($how_often), false, true, [FIELDID_USERNAME, FIELDID_EMAIL]);
-        if ( is_array($content4ids) ) {
-            foreach ($content4ids as $reader_id => $content4id ) {
-                $ret[$reader_id] = trim( $content4id[FIELDID_USERNAME][0]['value'] . ' ('. $content4id[FIELDID_EMAIL][0]['value'] . ')');
-            }
+        foreach ($content4ids as $reader_id => $content4id ) {
+            $ret[$reader_id] = trim( $content4id[FIELDID_USERNAME][0]['value'] . ' ('. $content4id[FIELDID_EMAIL][0]['value'] . ')');
         }
         return $ret;
     }

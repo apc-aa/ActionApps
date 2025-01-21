@@ -1077,14 +1077,15 @@ class AA_Field_Writer {
 // ----------------------- show functions --------------------------------------
 // moved to formutil into AA_Inputfield class (formutil.php)
 // -----------------------------------------------------------------------------
-/** IsEditable function
- * @param $fieldcontent
- * @param AA_Field $field
- * @param AA_Profile $profile
+/**
+ * @param  int         $fieldflag
+ * @param  AA_Field    $field
+ * @param  AA_Profile  $profile
+ *
  * @return bool
  */
-function IsEditable($fieldcontent, $field, $profile): bool {
-    return (!($fieldcontent[0]['flag'] & FLAG_FREEZE)
+function IsEditable(int $fieldflag, AA_Field $field, AA_Profile $profile): bool {
+    return (!($fieldflag & FLAG_FREEZE)
         AND $field->getProperty("input_show")
         AND !$profile->getProperty('hide',$field->getId())
         AND !$profile->getProperty('hide&fill',$field->getId())
@@ -1121,10 +1122,7 @@ function StoreItem( $id, $slice_id, $content4id, $insert, $invalidatecache=true,
 
 /** Validates new content, sets defaults, reads dates from the 3-selectbox-AA-format,
  *   sets global variables:
- *       $oldcontent4id
  *       $special input variables
- *
- *   This function is used in itemedit.php, filler.php and file_import.php.
  *
  *   @author Jakub Adamek, Econnect, January 2003
  *           Most of the code is taken from itemedit.php, created by Honza.
@@ -1141,12 +1139,8 @@ function StoreItem( $id, $slice_id, $content4id, $insert, $invalidatecache=true,
  * @param array $notshown is an optional array ("field_id"=>1,...) of fields
  *                          not shown in the anonymous form
  */
-//./admin/itemedit.php:       ValidateContent4Id($err, $slice, $action, $id);
-//./admin/slicefieldsedit.php:ValidateContent4Id($err, $slice, $action, $id);
-//./filler.php:               ValidateContent4Id($err_valid, $slice, $insert ? "insert" : "update", $my_item_id, !$notvalidate, $notshown);
 
-function ValidateContent4Id(&$err, $slice, $action, $id=0, $do_validate=true, $notshown=[]) {
-    global $oldcontent4id;
+function ValidateContent4Id(&$err, $slice, $action, $id=0, $do_validate=true, $notshown=[]): ?AA_Content {
 
     $profile = AA_Profile::getProfile(AuthGetUid(), $slice->getId()); // current user settings
 
@@ -1162,15 +1156,14 @@ function ValidateContent4Id(&$err, $slice, $action, $id=0, $do_validate=true, $n
     $fields = $slice->getFields($slice_fields);
 
     // it is needed to call IsEditable() function and GetContentFromForm()
+    $oldcontent4id = null;
     if ( $action === "update" ) {
         // if we are editing dynamic slice setting fields (stored in content
         // table), we need to get values from slice's fields
         if ($slice_fields) {
-            $oldcontent    = $slice->get_dynamic_setting_content(true);
-            $oldcontent4id = $oldcontent->getContent();   // shortcut
+            $oldcontent4id = $slice->get_dynamic_setting_content(true);
         } else {
-            $oldcontent = GetItemContent($id);
-            $oldcontent4id = $oldcontent[$id];   // shortcut
+            $oldcontent4id = new ItemContent($id);
         }
     }
 
@@ -1209,7 +1202,7 @@ function ValidateContent4Id(&$err, $slice, $action, $id=0, $do_validate=true, $n
             $default_val  = addslashes($default->getValue());
         }
 
-        $editable = IsEditable($oldcontent4id[$pri_field_id], $field, $profile) && !$notshown[$varname];
+        $editable = IsEditable($oldcontent4id->getFlag($pri_field_id), $field, $profile) && !$notshown[$varname];
 
         // Run the "validation" which changes field values
         if ($editable && ($action === "insert" || $action === "update")) {
@@ -1234,11 +1227,11 @@ function ValidateContent4Id(&$err, $slice, $action, $id=0, $do_validate=true, $n
                     $$varname = ParamImplode(['AA_PASSWD',$$change_varname]);
                 } elseif ($$delete_varname) {
                     $$varname = '';
-                } elseif ($action === "update") {
+                } elseif ( ($action === "update") AND $oldcontent4id) {
                     // store the original password to use it in
                     // insert_fnc_pwd when it is not changed
                     // $$varname = $oldcontent4id[$pri_field_id][0]['value'];
-                    $$varname = ParamImplode(['AA_PASSWD_CRYPTED',$oldcontent4id[$pri_field_id][0]['value']]);
+                    $$varname = ParamImplode(['AA_PASSWD_CRYPTED',$oldcontent4id->getValue($pri_field_id)]);
                 }
             }
         }
@@ -1287,4 +1280,5 @@ function ValidateContent4Id(&$err, $slice, $action, $id=0, $do_validate=true, $n
             }
         }
     }
+    return $oldcontent4id;
 }

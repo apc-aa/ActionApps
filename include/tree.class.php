@@ -58,22 +58,20 @@ class AA_Supertree {
         while (1) {
             $content4ids   = GetItemContent($new_subitems, false, false, ['id..............','slice_id........', $this->_relation_field], null, AA_BIN_ACTIVE);
 
-            $invalid = array_merge($invalid, array_diff($new_subitems, array_keys((array)$content4ids)));
+            $invalid = array_merge($invalid, array_diff($new_subitems, array_keys($content4ids)));
 
             $new = [];
-            if (is_array($content4ids) ) {
-                foreach ($content4ids as $item_id => $columns) {
-                    $sid = $columns['u_slice_id......'][0]['value'];
-                    if (count($this->_restrict_slices) AND !in_array($sid, $this->_restrict_slices)) {
-                        $invalid = array_merge($invalid, [$item_id]);
-                        continue;
-                    }
-                    // mark module_id
-                    $this->_modules[$sid] = true;
-                    $next  = $this->_compactValue($columns[$this->_relation_field]);
-                    $new   = array_merge($new,$next);
-                    $this->_i[$item_id] = $next;
+            foreach ($content4ids as $item_id => $columns) {
+                $sid = $columns['u_slice_id......'][0]['value'];
+                if (count($this->_restrict_slices) AND !in_array($sid, $this->_restrict_slices)) {
+                    $invalid = array_merge($invalid, [$item_id]);
+                    continue;
                 }
+                // mark module_id
+                $this->_modules[$sid] = true;
+                $next  = $this->_compactValue($columns[$this->_relation_field]);
+                $new   = array_merge($new,$next);
+                $this->_i[$item_id] = $next;
             }
 
             $new_subitems = array_diff($new, array_keys($this->_i));

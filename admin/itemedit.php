@@ -253,16 +253,16 @@ if ( ($insert || $update) AND count($fields) ) {
 
     // prepare content4id array before call StoreItem function
     $content4id    = new ItemContent;
-    $oldcontent4id = [];
+    $oldcontent4id = null;
 
     // it is needed to call IsEditable() function and GetContentFromForm()
     if ( $update ) {
         // if we are editing dynamic slice setting fields (stored in content
         // table), we need to get values from slice's fields
         if ($slice_fields) {
-            $oldcontent4id = $slice->get_dynamic_setting_content(true)->getContent();   // shortcut
+            $oldcontent4id = $slice->get_dynamic_setting_content(true);   // shortcut
         } else {
-            $oldcontent4id = GetItemContent($id)[$id];   // shortcut
+            $oldcontent4id = new ItemContent($id);   // shortcut
         }
     }
 

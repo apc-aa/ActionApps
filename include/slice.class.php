@@ -794,10 +794,7 @@ class AA_Slice extends AA_Module {
         $fields      = $this->getFields($slice_fields);
 
         // it is needed to call IsEditable() function and GetContentFromForm()
-        if ( $id ) {
-            $oldcontent = GetItemContent($id);
-            $oldcontent4id = $oldcontent[$id];   // shortcut
-        }
+        $oldcontent4id = $id ? new ItemContent($id) : null;
 
         foreach ($fields as $pri_field_id => $field) {
 
@@ -807,7 +804,7 @@ class AA_Slice extends AA_Module {
             }
 
             // prepare javascript function for validation of the form
-            if ( $shown_fields[$pri_field_id] AND IsEditable($oldcontent4id[$pri_field_id], $field, $profile) ) {
+            if ( $shown_fields[$pri_field_id] AND IsEditable($oldcontent4id ? $oldcontent4id->getFlag($pri_field_id) : 0, $field, $profile) ) {
 
                 // fill show_func_used array - used on several places
                 // to distinguish, which javascripts we should include and

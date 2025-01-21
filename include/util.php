@@ -709,8 +709,9 @@ function CreateBinCondition($bin, $table, bool $ignore_expiry_date=false, bool $
 
 /** GetItemContent function
  * Basic function to get item content. Use this function, not direct SQL queries.
+ *
  * @param       $zids
- * @param bool  $unused_use_short_ids // no longer used
+ * @param bool  $unused_use_short_ids  // no longer used
  * @param bool  $ignore_reading_password
  *                                    Use carefully only when you are sure the data is used safely and not viewed
  *                                    to unauthorized persons.
@@ -720,9 +721,10 @@ function CreateBinCondition($bin, $table, bool $ignore_expiry_date=false, bool $
  *                                    like: ['headline........', 'category.......1']
  * @param null  $crypted_additional_slice_pwd
  * @param null  $bin
- * @return array[]
+ *
+ * @return array
  */
-function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_password=false, $fields2get=false, $crypted_additional_slice_pwd=null, $bin=null) {
+function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_password=false, $fields2get=false, $crypted_additional_slice_pwd=null, $bin = null): array {
     // Fills array $content with current content of $sel_in items (comma separated ids).
 
     // construct WHERE clause
@@ -731,7 +733,7 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
     }
 
     if (!$zids->count()) {
-        return null;
+        return [];
     }
 
     AA::$debug&32 && AA::$dbg->tracestart('GetItemContent', $zids->count());
@@ -831,7 +833,7 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
                 $ERR_VALUE = [["value" => _m("Error: Missing Reading Password"), "flag"  => FLAG_HTML]];
                 foreach ($content as $unpack_id => $c4id) {
                     $unpermitted[$unpack_id] = true;
-                    foreach ($c4id as $fid => $foo) {
+                    foreach ($c4id as $fid => $foo2) {
                         // at least id and slice_id should be correct.............. for AA_Items::getItems()
                         if ( !in_array($fid, ['id..............','slice_id........','unpacked_id.....','u_slice_id......'])) {
                             $content[$unpack_id][$fid] = $ERR_VALUE;
@@ -845,7 +847,7 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
     // Skip the rest if no items found
     if (empty($content)) {
         AA::$debug&32 && AA::$dbg->traceend('GetItemContent');
-        return null;
+        return [];
     }
 
     // If its a tagged id, then set the "idtag..........." field
@@ -876,7 +878,7 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
     // in content table is updated too
 
     // do we want any content field?
-    if ( $restrict_cond != '1=0' ) {
+    if ( $restrict_cond !== '1=0' ) {
         $db = getDB();
         $SQL = "SELECT * FROM content WHERE $new_sel_in $restrict_cond ORDER BY item_id, number"; // usable just for multivalues
         $db->query($SQL);

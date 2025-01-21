@@ -60,7 +60,6 @@ AA::setEncoding(Langs::getCharset());
 
 $id = AA::$module_id;
 
-
 if ($cancel) {
     go_return_or_url(self_base() . "index.php",true,true);
 }
@@ -74,12 +73,8 @@ if ($update) {
     $action = "edit";
 }
 
-// ValidateContent4Id() sets GLOBAL!! variables:
-//   $show_func_used   - list of show func used in the form
-//   $oldcontent4id
-
-$slice = AA_Slice::getModule($slice_id);
-ValidateContent4Id($err, $slice, $action, $id);
+$slice = AA_Slice::getModule(AA::$module_id);
+$oldcontent4id = ValidateContent4Id($err, $slice, $action, $id);
 $fields = $slice->getFields(true);
 
 //  update database

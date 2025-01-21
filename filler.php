@@ -356,13 +356,7 @@ if (!$my_item_id) {
     $insert = ! DB_AA::test('item', [['id', $my_item_id, 'l']]);
 }
 
-if (!is_array($oldcontent4id)) {
-    $oldcontent4id = [];
-}
-// Fills also global variable $oldcontent4id (which is NOT! DB quoted)
-// (so $oldcontent4id is incompatible with $content4id - should be fixed
-// by using ItemContent object in near future)
-ValidateContent4Id($err_valid, $slice, $insert ? "insert" : "update", $my_item_id, !$notvalidate, $notshown);
+$oldcontent4id = ValidateContent4Id($err_valid, $slice, $insert ? "insert" : "update", $my_item_id, !$notvalidate, $notshown);
 
 if (count($err_valid)) {
     $zids = new zids(null, 'l');
@@ -375,7 +369,7 @@ if (count($err_valid)) {
 // prepare content4id array before calling StoreItem (content4id is QUOTED!)
 $c4id = new ItemContent();
 $c4id->setItemID($my_item_id);
-$c4id->setFromForm( $slice, $my_item_id, $oldcontent4id, $insert );
+$c4id->setFromForm( $slice, $my_item_id, new ItemContent($oldcontent4id), $insert );
 
 $content4id = $c4id->getContent();
 

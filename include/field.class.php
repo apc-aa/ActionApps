@@ -107,35 +107,35 @@ class AA_Field implements ArrayAccess, Countable, Iterator {
         return $this->data[$property];
     }
 
-    /** getId
+    /**
      * @return string - id of the field
      */
     function getId() {
         return $this->getProperty('id');
     }
 
-    /** getName function
+    /**
      * @return string - name of the field
      */
     function getName() {
         return $this->getProperty('name');
     }
 
-    /** getSliceId function
+    /**
      * @return string - long id of the slice of this field
      */
     function getSliceId() {
         return unpack_id($this->getProperty('slice_id'));
     }
 
-    /** required function
+    /**
      * @return boolean value if the field is required  (must be filled)
      */
     function required() {
         return (bool) $this->getProperty('required');
     }
 
-    /** getWidget function
+    /**
      * @param $widget_type - wi2|sel|...
      *                       used, when we want to use another widget, than the default one
      *                       usually not used
@@ -225,11 +225,12 @@ class AA_Field implements ArrayAccess, Countable, Iterator {
 
 
     /**
-     * @param array $oldcontent4id
-     * @param bool  $insert
+     * @param  AA_Content|null  $oldcontent4id
+     * @param  bool             $insert
+     *
      * @return AA_Value|null
      */
-    function readValueFromOldtypeForm($oldcontent4id, bool $insert) {
+    function readValueFromOldtypeForm(?AA_Content $oldcontent4id, bool $insert) {
 
         $fid = $this->getId();
         // "v" prefix - database field var
@@ -253,11 +254,11 @@ class AA_Field implements ArrayAccess, Countable, Iterator {
                 $var = ParamImplode(['AA_PASSWD', $change_var]);
             } elseif ($delete_var) {
                 $var = '';
-            } elseif (!$insert) {
+            } elseif (!$insert AND $oldcontent4id) {
                 // store the original password to use it in
                 // insert_fnc_pwd when it is not changed
                 // $$varname = $oldcontent4id[$pri_field_id][0]['value'];
-                $var = ParamImplode(['AA_PASSWD_CRYPTED', $oldcontent4id[$fid][0]['value']]);
+                $var = ParamImplode(['AA_PASSWD_CRYPTED', $oldcontent4id->getValue($fid)]);
             } else {
                 return null;
             }

@@ -329,7 +329,7 @@ class inputform {
 
         // just read the data from posted form, if it was already posted (on error, ...)
         $content_from_form = new ItemContent();
-        $content_from_form->setFieldsFromForm($content4id->getContent(), !$edit, $fields, $profile);
+        $content_from_form->setFieldsFromForm($content4id, !$edit, $fields, $profile);
 
         $ret = '';
         $fids = $fields->getPriorityArray();
@@ -349,7 +349,7 @@ class inputform {
             // ----- collect all field_* parameters in order we can call display function
 
             // field_mode - how to display the field
-            $field_mode  = !IsEditable($content4id->getValues($fid), $field, $profile) ? 'freeze' : ($form4anonymous_wizard ? 'anonym' : 'normal');
+            $field_mode  = !IsEditable($content4id->getFlag($fid), $field, $profile) ? 'freeze' : ($form4anonymous_wizard ? 'anonym' : 'normal');
 
             if ( $edit ) {
                 $fval = $content4id->getAaValue($fid);

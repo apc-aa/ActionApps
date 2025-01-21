@@ -127,7 +127,8 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
     }
 
     /** Returns the value for a field. If it is a multi-value field, this is the first value. */
-    function getFlag($i = 0) {
+    public function getFlag(): int
+    {
         return $this->flag;
     }
 
@@ -489,19 +490,16 @@ class AA_Content implements Iterator, ArrayAccess, Countable {
         return ($def_lang_num = Langs::getLangName2Num($def_lang)); // array of preferred languages in priority order.
     }
 
-    function getFlag($field_id) {
-        if (is_array($this->content[$field_id])) {
-            $curr = reset($this->content[$field_id]);
-            return $curr['flag'];
-        }
-        return false;
+    public function getFlag($field_id): int
+    {
+        return is_array($this->content[$field_id]) ? (int)reset($this->content[$field_id])['flag'] : 0;
     }
 
     /** getValues function
      * @param string $field_id
      * @return array
      */
-    function getValues($field_id): array {
+    public function getValues($field_id): array {
         return is_array($a = $this->content[$field_id]) ? $a : [] ;
     }
 
@@ -509,14 +507,14 @@ class AA_Content implements Iterator, ArrayAccess, Countable {
      * @param $field_id
      * @return array
      */
-    function getValuesArray($field_id): array {
+    public function getValuesArray($field_id): array {
         return empty($this->content[$field_id]) ? [] : array_column($this->content[$field_id],'value');
     }
 
     /** use mainly for reporting
      * @return array
      */
-    function getAllAsArray(): array {
+    public function getAllAsArray(): array {
         $ret = [];
         foreach ($this->content as $fid => $val) {
             $ret[$fid] = array_column($val,'value');
@@ -527,7 +525,7 @@ class AA_Content implements Iterator, ArrayAccess, Countable {
     /** use mainly for table data save
      * @return array
      */
-    function getAllAsScalar(string $delimiter = null): array {
+    public function getAllAsScalar(string $delimiter = null): array {
         $ret = [];
         if (is_null($delimiter)) {
             foreach ($this->content as $fid => $val) {
@@ -546,7 +544,7 @@ class AA_Content implements Iterator, ArrayAccess, Countable {
      * @param array      $ignore
      * @return ChangeProposal[]
      */
-    function diff($object2compare, array $ignore=[]): array {
+    public function diff($object2compare, array $ignore=[]): array {
         $changes = [];
         $item_id = $this->getId();
         foreach ($this->content as $fid => $a) {
@@ -723,7 +721,7 @@ class ItemContent extends AA_Content {
         }
         $zid           = is_object($item_id) ? $item_id : new zids($item_id);
         $content       = GetItemContent($zid, false, $ignore_reading_password);
-        $this->content = is_array($content) ? reset($content) : [];
+        $this->content = $content ? reset($content) : [];
         return true;
     }
 
@@ -731,14 +729,16 @@ class ItemContent extends AA_Content {
      *  Functions tries to fill all the fields from the form. It do not add any
      *  item specific fields (like status_code), so it could be used also for
      *  dynamic "slice setting fields"
-     * @param array      $oldcontent4id
-     * @param bool       $insert
-     * @param AA_Fields  $fields
-     * @param AA_Profile $profile
+     *
+     * @param  AA_Content|null  $oldcontent4id
+     * @param  bool             $insert
+     * @param  AA_Fields        $fields
+     * @param  AA_Profile       $profile
+     *
      * @return bool
      * @throws Exception
      */
-    function setFieldsFromForm($oldcontent4id, bool $insert, $fields, $profile): bool {
+    function setFieldsFromForm(?AA_Content $oldcontent4id, bool $insert, AA_Fields $fields, AA_Profile $profile): bool {
         
         // check, if any data was send to the server (GET is not possible there, I think)
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -747,16 +747,13 @@ class ItemContent extends AA_Content {
 
         $aacontent4id = null; // modern input format - introduced with [rim]
         if ($_POST['aa'] OR $_FILES['aa']) {
-            //$grabber = new AA_Grabber_Form();
             $grabber = new AA\IO\Grabber\Form();
-            $grabber->prepare();    // maybe some initialization in grabber
-            $aacontent4id = $grabber->getItem();
-            $grabber->finish();
+            $aacontent4id = $insert ? $grabber->getFirstItem() : ($oldcontent4id ? $grabber->getItemWithId($oldcontent4id->getId()) : null);
         }
 
         foreach ($fields as $pri_field_id => $field) {
             // to content array add just displayed fields (see ShowForm())
-            if (!IsEditable($oldcontent4id[$pri_field_id], $field, $profile) AND !$insert) {
+            if (!IsEditable($oldcontent4id ? $oldcontent4id->getFlag($pri_field_id) : 0, $field, $profile) AND !$insert) {
                 continue;
             }
 
@@ -799,13 +796,17 @@ class ItemContent extends AA_Content {
     /** setFromForm function
      *  Fills content4id - values in content4id are NOT quoted (addslashes)
      *  (new version of previous GetContentFromForm() function)
-     * @param AA_Slice $slice
-     * @param string $id  - item/slice id or empty if item insert
-     * @param array $oldcontent4id
-     * @param bool $insert
+     *
+     * @param  AA_Slice          $slice
+     * @param  string            $id  - item/slice id or empty if item insert
+     * @param  AA_Content|null  $oldcontent4id
+     * @param  bool              $insert
+     * @param  bool              $slice_fields
+     *
      * @return bool
+     * @throws Exception
      */
-    function setFromForm($slice, $id, $oldcontent4id=[], bool $insert=true, $slice_fields=false): bool {
+    function setFromForm($slice, $id, ?AA_Content $oldcontent4id=null, bool $insert=true, $slice_fields=false): bool {
 
         $fields  = $slice->getFields($slice_fields);
         $profile = AA_Profile::getProfile(AuthGetUid(), $slice->getId()); // current user settings
@@ -824,11 +825,11 @@ class ItemContent extends AA_Content {
         // the status_code must be set in order we can use email_notify()
         // in StoreItem() function.
         if (!$insert AND !$this->getStatusCode()) {
-            $this->setValue('status_code.....', max(1,$oldcontent4id['status_code.....'][0]['value']));
+            $this->setValue('status_code.....', max(1,$oldcontent4id ? $oldcontent4id->getValue('status_code.....') : 1));
         }
 
-        if (!$insert) {
-            $this->setValue('flags...........', $oldcontent4id["flags..........."][0]['value']);
+        if (!$insert AND $oldcontent4id) {
+            $this->setValue('flags...........', $oldcontent4id->getValue('flags...........'));
         }
 
         // id of an item (for update)

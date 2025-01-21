@@ -1841,7 +1841,7 @@ class AA_Items {
         }
 
         $content = GetItemContent($zid, false, false, false, $crypted_additional_slice_pwd);
-        return is_array($content) ? $items->_store(GetItemFromContent(new ItemContent(reset($content)))) : false;
+        return $content ? $items->_store(GetItemFromContent(new ItemContent(reset($content)))) : false;
     }
 
     /** @param zids $zids

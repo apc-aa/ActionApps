@@ -31,7 +31,7 @@ class Slice extends AbstractGrabber
 
     private $_longids;
     /** list if files to grab - internal array */
-    private $_content_cache;
+    private array $_content_cache;
     /**  */
     private $_index;
 

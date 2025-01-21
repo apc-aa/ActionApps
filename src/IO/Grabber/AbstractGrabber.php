@@ -182,6 +182,32 @@ abstract class AbstractGrabber implements \AA\Util\NamedInterface {
         return $ret;
     }
 
+    /**  Go through items and return the first (should be only one) with given id)
+     * @return ItemContent|AA_Content|null
+     */
+    public function getItemWithId(string $id): ?AA_Content {
+        $ret = null;
+        $this->prepare();
+        while ($item = $this->getItem()) {
+            if ($item->getId() == $id) {
+                $ret = $item;
+                break;
+            }
+        }
+        $this->finish();
+        return $ret;
+    }
+
+    /**  Get first item
+     * @return ItemContent|AA_Content|null
+     */
+    public function getFirstItem(): ?AA_Content {
+        $this->prepare();
+        $item = $this->getItem();
+        $this->finish();
+        return $item;
+    }
+
 
     /** If AA\IO\Saver::store_mode is 'by_grabber' then this method tells Saver,
      *  how to store the item.
