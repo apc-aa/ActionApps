@@ -1108,8 +1108,7 @@ function url2bin($data) {
     return base64_decode(str_pad(strtr($data, '-_', '+/'), strlen($data) % 4, '='));
 }
 
-/** HtmlPageBegin function
- * Prints HTML start page tags (html begin, encoding, style sheet, but no title).
+/** Prints HTML start page tags (html begin, encoding, style sheet, but no title).
  * Chooses the right encoding by get_mgettext_lang().
  * @param bool   $js_lib      if true, includes js_lib.min.js javascript
  * @param $lang

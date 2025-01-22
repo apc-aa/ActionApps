@@ -51,7 +51,7 @@ $item_count = $item_count ?: 5;
 //   var opts = { lineWrapping:true, matchBrackets: true, matchTags: true, viewportMargin: 10000, mode: "htmlmixed" };
 //   window.cm_items  = CodeMirror.fromTextArea(document.getElementById("items"), opts);
 //   ';
-$apage = new AA_Adminpageutil('sliceadmin','statistics');
+$apage = new AA_Adminpageutil('aaadmin','statistics');
 $apage->setTitle(_m("Admin - Statistics"));
 //$apage->addRequire($script2run, 'AA_Req_Load');
 $apage->addRequire('chartjs@4');

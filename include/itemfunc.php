@@ -1202,7 +1202,7 @@ function ValidateContent4Id(&$err, $slice, $action, $id=0, $do_validate=true, $n
             $default_val  = addslashes($default->getValue());
         }
 
-        $editable = IsEditable($oldcontent4id->getFlag($pri_field_id), $field, $profile) && !$notshown[$varname];
+        $editable = IsEditable($oldcontent4id ? $oldcontent4id->getFlag($pri_field_id) : 0, $field, $profile) && !$notshown[$varname];
 
         // Run the "validation" which changes field values
         if ($editable && ($action === "insert" || $action === "update")) {
