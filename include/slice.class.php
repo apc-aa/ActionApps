@@ -490,15 +490,13 @@ class AA_Slice extends AA_Module {
      * @return bool|mixed|null
      */
     function getProperty($prop) {
+        $ret = parent::getProperty($prop);
         // test slice table property, module table property and moduleobject property
-        if ( !is_null($ret=parent::getProperty($prop)) ) {
-            return $ret;
-        }
-        if (AA_Fields::isSliceField($prop)) {
+        if (is_null($ret) && AA_Fields::isSliceField($prop)) {
             $this->loadsettingfields();
-            return $this->dynamic_setting->getValue($prop);
+            $ret = $this->dynamic_setting->getValue($prop);
         }
-        return null;
+        return $ret;
     }
 
     /**

@@ -852,7 +852,10 @@ class AA_Fields implements Iterator, Countable {
      */
     function getAliases($additional=null, $type=''): ?array
     {
+        AA::$debug&32 && AA::$dbg->tracestart('Fields->getAliases', $type.' '.count($this->fields)) ;
+
         if ( !is_null($this->aliases) ) {
+            AA::$debug&32 && AA::$dbg->traceend('Fields->getAliases', 'cache '. count($this->aliases). ' '. count($additional));
             return is_array($additional) ? array_merge($additional, $this->aliases) : $this->aliases;
         }
         $this->load();
@@ -869,6 +872,7 @@ class AA_Fields implements Iterator, Countable {
         $this->aliases["_#SITEM_ID"] = GetAliasDef( "f_1",                  "short_id........", _m("alias for Short Item ID"));
 
         if ( $type === 'justids') {  // it is enough for view of urls
+            AA::$debug&32 && AA::$dbg->traceend('Fields->getAliases', count($this->aliases). ' '. count($additional));
             // maybe we should make $this->aliases = null (to be recounted next time with all aliases), but there was no problem so far, so we left here quicker solution. Honza 2016-10-20
             return is_array($additional) ? array_merge($additional, $this->aliases) : $this->aliases;
         }
@@ -893,7 +897,7 @@ class AA_Fields implements Iterator, Countable {
             }
         }
 
-        AA::$debug&2 && AA::$dbg->log("getAliases end");
+        AA::$debug&32 && AA::$dbg->traceend('Fields->getAliases', count($this->aliases). ' '. count($additional));
         return is_array($additional) ? array_merge($additional, $this->aliases) : $this->aliases;
     }
 
