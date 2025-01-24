@@ -20,7 +20,7 @@ $_m["Alias for comment ID<br>\n"
 
 # End of unused messages
 // ./slice.php, row 179
-$_m["Bad inc parameter - included file must be in the same directory as this .shtml file and must contain only alphanumeric characters"]
+$_m["Bad inc parameter - included file must contain only alphanumeric characters"]
  = "Error en par�metro - el archivo a incluir debe estar en la misma carpeta que este .shtml y debe contener �nicamente caracteres alfanum�ricos";
 
 // ./slice.php, row 184

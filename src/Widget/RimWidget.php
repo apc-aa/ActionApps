@@ -52,10 +52,10 @@ class RimWidget extends Widget
     protected function requireLibCode($aa_property, $winfo): string
     {
         return <<<JS
-        function AA_RimAdd2Current(add_btn) {
-            const widget = add_btn.closest('.aa-widget'); 
+        function AA_RimAdd2Current(item) {
+            const widget = item.closest('.aa-widget'); 
             widget.querySelector('.id2add').name=widget.getAttribute('data-aa-basename')+'[rim][]';
-            const added = widget.querySelector('.itemgroup').appendChild(add_btn.closest('.item'));
+            const added = widget.querySelector('.itemgroup').appendChild(item);
             const btns_str = widget.querySelector('template').innerHTML.replaceAll('***_#id***', widget.querySelector('.id2add').value);
             const buttons = document.createRange().createContextualFragment(btns_str);            
             added.querySelector('.icogroup').appendChild(buttons);
@@ -85,7 +85,7 @@ class RimWidget extends Widget
      * @return array
      */
     public static function getClassProperties(): array {
-        return Widget::propertiesShop(['const', 'slice_field', 'show_buttons', 'item_template', 'bin_filter', 'filter_conds', 'sort_by', 'additional_slice_pwd', 'const_arr', 'filter_conds_rw']);
+        return Widget::propertiesShop(['const', 'slice_field', 'show_buttons', 'item_template', 'bin_filter', 'filter_conds', 'sort_by', 'additional_slice_pwd', 'const_arr', 'filter_conds_rw', 'item_width']);
     }
 
     /** Creates base widget HTML, which will be surrounded by Live, Ajxax
@@ -143,7 +143,7 @@ class RimWidget extends Widget
         $input_name = $base_name_add . "[]";
         $actions2show = $this->getProperty('show_buttons', 'MRND');
 
-        $widget = '<article class="aa-rim relactionitem flex">
+        $widget = '<article class="aa-rim aa-related-item flex">
                               <section class="itemgroup'.(str_contains($actions2show, 'M') ? ' orderable' : '').'">';
 
         $def_field_id = $aa_property->getId();
@@ -223,7 +223,7 @@ class RimWidget extends Widget
             $input_name =  "aa[f_".$sid."][file][fil][var]";  // we are making it compatible with widget to easier file upload handling (rearangeAaFilesArray())
 //              fallback would be nice, but it uses <form>, so we sometimes endup with <form> inside another <form>, which is not allowed. It is solveable (by dynamic form at the and of page...)
 //              $inner_code .= "<article class=\"item\" id=\"fileup$base_id\"><form action=\".\"><input name=\"aa[all][$field][0]\" type=\"hidden\" value=\"$item_id\" /><div class=\"fallback\"><input name=\"".$input_name."[]\" type=\"file\" multiple /></div></form>".$mode_arr['F']."</article>";
-            $actbuttonsdown['F'] = "<article class=\"item\" id=\"fileup$hash\">"._m('drop files here or click to upload')."</article>";
+            $actbuttonsdown['F'] = "<article id=\"fileup$hash\">"._m('drop files here or click to upload')."</article>";
             AA::Stringexpander()->addRequire('dropzone');
 
             $filerurl = AA_INSTAL_URL.'filler.php';
@@ -253,6 +253,10 @@ class RimWidget extends Widget
     public function getRelatedItemsHtml(zids $zids, string $base_id, string $def_field_id, string $def_slice_id): string {
         $input_name = FormArray::formId2Name($base_id)."[rim][]";
 
+        if ($item_width = $this->getProperty('item_width')) {
+            $item_width = ctype_digit((string)$item_width) ? " style=\"width:${item_width}px\"" : " style=\"width:$item_width\"";
+        }
+
         $buttons = $this->getButtons($base_id, $def_field_id, $def_slice_id);
         $ret = '';
         $options = $this->getFormattedOptions(null, $zids);
@@ -260,7 +264,7 @@ class RimWidget extends Widget
             $id  = safe($id);
             $btn = str_replace('***_#id***', $id, $buttons);
             $ret .= <<<HTML
-                       <article class="item">
+                       <article class="item" $item_width>
                            <section class="iteminfo"> $html </section>
                            <section class="icogroup">
                                <input type="hidden" name="$input_name" value="$id">
@@ -274,18 +278,22 @@ class RimWidget extends Widget
 
     /** function which offers filtered selections for current widget */
     function getFilterSelection($searchstring): string {
+        if ($item_width = $this->getProperty('item_width')) {
+            $item_width = ctype_digit((string)$item_width) ? " style=\"width:${item_width}px\"" : " style=\"width:$item_width\"";
+        }
+
         $options = $this->getFormattedOptions(null, false, $searchstring);
         $ret = '';
-        foreach ($options as $k => $v) {
-            $ret .= '<article class="item">
-                             <section class="iteminfo">
-                               ' . $v . '
-                             </section>
-                             <section class="icogroup">
-                               <input type="hidden" name="" value="' . safe($k) . '" class="id2add"><article class="select" onclick="AA_RimAdd2Current(this)"><i class="ico select">+</i></article>
-                             </section>
-                           </article>
-                           ';
+        foreach ($options as $id => $v) {
+            $id  = safe($id);
+            $ret .= <<<HTML
+                       <article class="item"  onclick="AA_RimAdd2Current(this)" $item_width>
+                           <section class="iteminfo"> $v </section>
+                           <section class="icogroup">
+                               <input type="hidden" name="" value="$id" class="id2add"><article class="select" onclick="event.stopPropagation(); AA_RimAdd2Current(this.closest('.item'))"><i class="ico select">+</i></article>
+                           </section>
+                       </article>
+                    HTML;
         }
         return $ret;
     }

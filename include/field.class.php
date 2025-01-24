@@ -887,8 +887,13 @@ class AA_Fields implements Iterator, Countable {
 
         // database stored aliases
         foreach ($this->fields as $field) {
-            $this->aliases = array_merge($this->aliases, $field->getAliases());
+            $fals = $field->getAliases();
+            foreach ($fals as $key => $value) {   // converted from array_merge which was really slow on many (dynamic) fields
+                $this->aliases[$key] = $value;
+            }
         }
+
+        AA::$debug&2 && AA::$dbg->log("getAliases end");
         return is_array($additional) ? array_merge($additional, $this->aliases) : $this->aliases;
     }
 

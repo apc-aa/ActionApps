@@ -90,7 +90,7 @@ $_m["December"]
 
 
 // ./slice.php, row 179
-$_m["Bad inc parameter - included file must be in the same directory as this .shtml file and must contain only alphanumeric characters"]
+$_m["Bad inc parameter - included file must contain only alphanumeric characters"]
  = "Error en parámetro - el archivo a incluir debe estar en la misma carpeta que este .shtml y debe contener únicamente caracteres alfanuméricos";
 
 // ./slice.php, row 184

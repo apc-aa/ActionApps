@@ -288,7 +288,7 @@ class AA_Responder_Get_Fields extends AA_Responder {
             }
             $current_types += DB_AA::select(['id' => 'name'], 'SELECT `id`, `name` FROM `field`', [['slice_id', $this->slice_id, 'l'], ['id', '\_%', 'NOT LIKE'], ['in_item_tbl', ['',0]]], ['name']);
 
-            $ret = "\n <select name=\"ftype\"  onchange=\"document.querySelector('input[name=&quot;name[New_Field]&quot;]').value=this.options[this.selectedIndex].text;\" >";
+            $ret = "\n <select name=\"ftype\"  onchange=\"let newin=document.querySelector('input[name=&quot;name[New_Field]&quot;]');newin.value=this.options[this.selectedIndex].text;newin.focus();newin.select();\" >";
             foreach ($current_types as $k => $v) {
                 $ret .= "\n  <option value=\"" . $this->slice_id . '-' . safe($k) . '"> ' . safe($v) . " </option>";
             }
@@ -366,7 +366,7 @@ class AA_Responder_Widget_Selection extends AA_Responder {
     function run() {
         $ret   = '';
         $slice = AA_Slice::getModule($this->slice_id);
-        if ($slice AND ($widget = $slice->getWidget($this->field_id))) {
+        if ($slice AND ($widget = $slice->getWidget($this->field_id)) AND trim($this->input)) {
             $ret = $widget->getFilterSelection($this->input);
         }
         return new AA_Response(ConvertCharset::singleton()->Convert($ret, $slice->getCharset(), 'utf-8'));

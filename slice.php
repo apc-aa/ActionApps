@@ -224,7 +224,7 @@ if ($slicetext) {
 if ( $inc ) {                   // this section must be after add_vars()
     //  StoreVariables(array("inc")); // store in session
     if ( !preg_match("/^([0-9a-z_])+(\.[0-9a-z]*)?$/i", $inc) ) {
-        echo _m("Bad inc parameter - included file must be in the same directory as this .shtml file and must contain only alphanumeric characters"). safe(" $inc");
+        echo _m("Bad inc parameter - included file must contain only alphanumeric characters"). safe(" $inc");
     } else {
         $fp = @fopen(shtml_base().$inc, 'rb');    //   if encapsulated
         if (!$fp) {

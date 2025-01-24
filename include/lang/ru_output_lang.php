@@ -13,7 +13,7 @@ $mgettext_lang = "ru";
 # Unused messages
 # End of unused messages
 // ./slice.php, row 179
-$_m["Bad inc parameter - included file must be in the same directory as this .shtml file and must contain only alphanumeric characters"]
+$_m["Bad inc parameter - included file must contain only alphanumeric characters"]
  = "";
 
 // ./slice.php, row 184

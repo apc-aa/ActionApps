@@ -10417,7 +10417,7 @@ class AA_Stringexpand_Manager extends AA_Stringexpand_Nevercache {
 
         }
 
-        $ret  = '<article class="aa-rim relactionitem'.($standard_mgr ? '' : ' aa-rim-tbl').'" data-aa-part="'.$hash.'">
+        $ret  = '<article class="aa-rim aa-related-item'.($standard_mgr ? '' : ' aa-rim-tbl').'" data-aa-part="'.$hash.'">
                     <section class="itemgroup">'
             .$inner_code.'
                     </section>

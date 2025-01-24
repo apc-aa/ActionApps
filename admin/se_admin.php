@@ -113,7 +113,11 @@ if ($update) {
 }
 
 if ( AA::$module_id!="" ) {  // set variables from database
-    $SQL = "SELECT admin_format, admin_format_top, admin_format_bottom,
+
+    ['admin_format' => $admin_format, 'admin_format_top' => $admin_format_top, 'admin_format_bottom' => $admin_format_bottom, 'admin_remove' => $admin_remove, 'admin_noitem_msg' => $admin_noitem_msg]
+        = (array)DB_AA::select1('', 'SELECT `admin_format`, `admin_format_top`, `admin_format_bottom`, `admin_remove`, `admin_noitem_msg` FROM `slice`', [['id',AA::$module_id,'l']]);
+
+/*    $SQL = "SELECT admin_format, admin_format_top, admin_format_bottom,
                    admin_remove, admin_noitem_msg
             FROM slice WHERE id='". q_pack_id(AA::$module_id)."'";
     $db->query($SQL);
@@ -124,7 +128,7 @@ if ( AA::$module_id!="" ) {  // set variables from database
         $admin_remove        = $db->f('admin_remove');
         $admin_noitem_msg    = $db->f('admin_noitem_msg');
     }
-
+*/
     $default_profile = AA_Profile::getProfile('*', AA::$module_id);
     $inputform_vid   = $default_profile->getProperty('input_view');
 }
@@ -181,7 +185,8 @@ FrmTextarea("admin_noitem_msg", _m("HTML code for \"No item found\" message"), $
     4, 60, false, _m("Code to be printed when no item is filled (or user have no permission to any item in the slice)")
     . '<br>' . AA_View::getViewJumpLinks($admin_noitem_msg), '', 1);
 FrmInputSelect("inputform_sel", _m("Use special view"), $inputform_vids, $inputform_vid, false,
-             _m("You can set special view - template for the Inputform on \"Design\" -> \"View\" page (inputform view)"));
+    _m("You can set special view - template for the Inputform on \"Design\" -> \"View\" page (inputform view)")
+    . '<br>' . AA_Views::getView($inputform_vid)?->jumpLink());
 $slice = AA_Slice::getModule(AA::$module_id);
 
 FrmTabEnd($form_buttons);

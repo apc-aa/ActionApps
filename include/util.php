@@ -1112,20 +1112,28 @@ function url2bin($data) {
  * Chooses the right encoding by get_mgettext_lang().
  * @param bool   $js_lib      if true, includes js_lib.min.js javascript
  * @param $lang
+ * @see AA_Adminpageutil->getPageBegin()
  */
-function HtmlPageBegin($js_lib=false, $lang=null) {
+function HtmlPageBegin($js_lib=false, $lang=null, $inc_by_require=false) {
     AA::setEncoding(Langs::getCharset($lang));
     $headers = AA::getHeaders();
     // fix for Chrome 57 which do not allow to send HTML in POST request sometimes (ERR_BLOCKED_BY_XSS_AUDITOR) - HM 2017-04-24
     $headers['x-xss-protection'] = 'X-XSS-Protection: 0';
     AA::sendHeaders($headers);
+    $inc_css = '';
+    if ($inc_by_require) {
+        AA::Stringexpander()->addRequire('css-aa-system');
+        AA::Stringexpander()->addRequire(AA_INSTAL_PATH . ADMIN_CSS.'?v='.AA_JS_VERSION);
+    } else {
+        $inc_css = '<link rel="stylesheet" href="'.(AA_INSTAL_PATH .ADMIN_CSS).'?v='.AA_JS_VERSION.'"><link rel="stylesheet" href="'.AA_INSTAL_PATH. 'css/aa-system.css?v='.AA_JS_VERSION.'">';
+    }
+
     echo
 '<!DOCTYPE html>
 <html lang="'.Langs::getLangName2Code($lang).'">
   <head>
     <link rel="SHORTCUT ICON" href="'. AA_INSTAL_PATH .'images/favicon.ico">
-    <link rel="stylesheet" href="'.(AA_INSTAL_PATH .ADMIN_CSS).'?v='.AA_JS_VERSION.'">
-    <link rel="stylesheet" href="'.AA_INSTAL_PATH. 'css/aa-system.css?v='.AA_JS_VERSION.'">
+    '.$inc_css.'
     <meta charset="'.AA::$encoding.'">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 ';

@@ -7159,7 +7159,7 @@ $_m["Deprecated: selects tag set ('AMB' / 'GYR'). Ask Mitra for more details."]
     = "";
 
 // include/widget.class.php, row 1097
-$_m["Which action buttons to show:<br>M - Move (up and down)<br>D - Delete relation,<br>R - add Relation to existing item<br>N - insert new item in related slice and make it related<br>E - Edit related item<br>Use 'DR' (default), 'MDRNE', just 'N' or any other combination. The order of letters M,D,R,N,E is not important."]
+$_m["Which action to show:<br>M - Move (change order)<br>D - Delete relation,<br>R - add Relation to existing item<br>N - insert New item in related slice and make it related<br>E - Edit related item<br>F - File upload to related slice (just for Related Item Manager Widget)<br><br>Use 'DR' (default), 'MDRNEF', just 'N' or any other combination. The order of letters M,D,R,N,E,F is not important."]
     = "";
 
 // include/widget.class.php, row 1101

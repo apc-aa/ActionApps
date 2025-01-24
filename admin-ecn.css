@@ -804,7 +804,7 @@ li.aa-leftmenu-header {
 	padding-bottom: 3px;
 }
 .aa-rim .item {
-    background-color: var(--clr-basic-light) !important; /* only for tlk*/
+    background-color: var(--clr-basic-light) /* only for tlk*/;
 }
 td.scroller {background: #a0a0a0;}
 /**/

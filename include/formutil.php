@@ -197,7 +197,7 @@ class inputform {
         if ( $this->display_aa_begin_end ) {
             $page_title = get_if($profile->getProperty('ui_inputform', $this->form4update ? 'edit_title' : 'add_title'), $this->page_title);
 
-            HtmlPageBegin(false, $slice->getLang());   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
+            HtmlPageBegin(false, $slice->getLang(), true);   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 
             // adding to $form just for {generate:HEAD}. Honza 2017-06-13
 

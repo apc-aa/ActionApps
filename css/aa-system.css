@@ -548,6 +548,7 @@ i.ico.aa-tool-edit:hover {
 /* rim widget */
 .aa-rim .dz-clickable {
     padding: 5px 10px;
+    background-color: #ffffff;
     font-style: italic;
     color: #4f4f4f;
     letter-spacing: 0.03em;
@@ -573,7 +574,7 @@ i.ico.aa-tool-edit:hover {
 }
 .aa-rim .item {
     border: 1px solid rgba(0, 0, 0, 0.21);
-    border-bottom: 0;
+    border-bottom-width: 0;
     justify-content: space-between;
     align-items: flex-start;
     display: flex;
@@ -625,6 +626,9 @@ i.ico.move:after {
     padding-right: 2px;
     padding-left: 1px;
     color: black;
+}
+.aa-rim i.ico.edit {
+    font-size: 11px;
 }
 .icogroup {
     display: flex;
@@ -694,21 +698,54 @@ i.ico.move:hover {
     box-sizing: border-box;
 }
 .aa-rim.flex .item {
-    width: 25%;
+    width: 250px;
+    min-width: min-content;
+    border-bottom-width: 1px;
     box-sizing: border-box;
     flex-basis: auto;
-    flex-grow: 1;
+    flex-grow: 0;
     flex-shrink: 1;
+    margin: 0 5px 5px 0;
+    font-size: 12px;
+}
+.aa-rim.flex footer {
+    margin: 10px 0 10px;
+    width: auto;
+}
+.aa-rim.flex footer .ico {
+    margin: 3px 5px 3px 0;
+}
+.aa-rim.flex footer article {
+    width: auto;
+    border-width: 0;
+    box-sizing: border-box;
+    font-size: 12px;
+    min-width: auto;
+    padding-right: 10px;
+}
+.aa-rim.flex footer article input {
+    padding: 4px;
+}
+.aa-widget .aa-rim.flex .icogroup {
+    padding-left: 0;
+}
+.aa-rim.flex .item-search i {
+    margin: 0;
+}
+.aa-rim.flex .itemselect {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
 }
 .aa-rim .toggleclass {
     margin-top: 10px;
 }
-.aa-rim .dz-clickable {
-    padding: 5px 10px;
-    background-color: #ffffff;
-    font-style: italic;
-    color: gray;
-    letter-spacing: 0.03em;
+.aa-rim.flex footer .dz-clickable {
+    background-color: white;
+    font-size: 13px;
+    padding: 4px 15px;
+    margin: 3px 5px 3px 0;
+    border: dashed 1px #969696;
 }
 .aa-form-saver__btn {
     border: solid 1px #cccccc;

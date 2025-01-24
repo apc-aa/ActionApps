@@ -782,7 +782,7 @@ class Widget extends AA_Object implements NamedInterface {
                     $ret[$pid] = new AA_Property($pid, _m("Tag Prefix"), 'string', false, true, 'string', false, _m("Deprecated: selects tag set ('AMB' / 'GYR'). Ask Mitra for more details."), '', 'AMB');
                     break;
                 case 'show_buttons':
-                    $ret[$pid] = new AA_Property($pid, _m("Buttons to show"), 'string', false, true, 'string', false, _m("Which action buttons to show:<br>M - Move (up and down)<br>D - Delete relation,<br>R - add Relation to existing item<br>N - insert new item in related slice and make it related<br>E - Edit related item<br>Use 'DR' (default), 'MDRNE', just 'N' or any other combination. The order of letters M,D,R,N,E is not important."), '', 'MDR');
+                    $ret[$pid] = new AA_Property($pid, _m("Buttons to show"), 'string', false, true, 'string', false, _m("Which action to show:<br>M - Move (change order)<br>D - Delete relation,<br>R - add Relation to existing item<br>N - insert New item in related slice and make it related<br>E - Edit related item<br>F - File upload to related slice (just for Related Item Manager Widget)<br><br>Use 'DR' (default), 'MDRNEF', just 'N' or any other combination. The order of letters M,D,R,N,E,F is not important."), '', 'MDR');
                     break;
                 case 'level_count':
                     $ret[$pid] = new AA_Property($pid, _m("Level count"), 'int', false, true, 'int', false, _m("Count of level boxes"), '', "3");
@@ -867,6 +867,9 @@ class Widget extends AA_Object implements NamedInterface {
                     break;
                 case 'placeholder':
                     $ret[$pid] = new AA_Property($pid, _m("Placeholder"), 'string', false, true, 'string', false, _m("Placeholder for input"), '', "fill in the format ...");
+                    break;
+                case 'item_width':
+                    $ret[$pid] = new AA_Property($pid, _m("Width"), 'string', false, true, 'string', false, _m("Width of one displayed item in pixels (300) or in % (50%)<br>Minimum is 150px, default is 250px.<br>For one item per row use 100%."), '', "100%");
                     break;
             }
         }
