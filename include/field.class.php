@@ -897,7 +897,7 @@ class AA_Fields implements Iterator, Countable {
             }
         }
 
-        AA::$debug&32 && AA::$dbg->traceend('Fields->getAliases', count($this->aliases). ' '. count($additional));
+        AA::$debug&32 && AA::$dbg->traceend('Fields->getAliases', count($this->aliases));
         return is_array($additional) ? array_merge($additional, $this->aliases) : $this->aliases;
     }
 
