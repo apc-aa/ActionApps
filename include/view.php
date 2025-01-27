@@ -519,7 +519,7 @@ class AA_Showview {
 
                 $sort  = $view->getSort($param_sort);
 
-                AA::$debug&2 && AA::$dbg->log("viewparams",$aliases, $conds, $sort);
+                AA::$debug&64 && AA::$dbg->log("viewparams",$aliases, $conds, $sort);
 
                 if ($mlxslice = MLXSlice($slice)) {
                     $mlx = $this->_view_param["mlx"] ?: $this->_view_param["MLX"];
@@ -527,7 +527,9 @@ class AA_Showview {
                     $GLOBALS['mlxView'] = new MLXView($mlx,$mlxslice);
                     $GLOBALS['mlxView']->preQueryZIDs($mlxslice,$conds);
                 }
+
                 $bin   = ($zids AND $slice->isExpiredContentAllowed()) ? (AA_BIN_ACTIVE | AA_BIN_EXPIRED) : AA_BIN_ACTIVE;
+
                 $zids2 = QueryZids($zids ? false : (is_array($slices) ? $slices : [$slice_id]), $conds, $sort, $bin, 0, $zids);
 
                 if ($mlxslice) {
@@ -535,13 +537,13 @@ class AA_Showview {
                 }
                 //end mlx stuff
                 // Note this zids2 is always packed ids, so lost tag information
-                AA::$debug&2 && AA::$dbg->log("getViewOutput retrieved ". $zids2->count()." IDS");
+                AA::$debug&64 && AA::$dbg->log("getViewOutput retrieved ". $zids2->count()." IDS");
 
                 if (isset($zids) && ($zids->onetype() === "t")) {
                     $zids2 = $zids2->retag($zids);
                 }
 
-                AA::$debug&2 && AA::$dbg->log("getViewOutput: Filtered ids=",$zids2);
+                AA::$debug&64 && AA::$dbg->log("getViewOutput: Filtered ids=",$zids2);
 
                 $format = $view->getViewFormat($selected_item);
                 $format['calendar_month'] = $month;
@@ -578,7 +580,7 @@ class AA_Showview {
                 break;
         }
 
-        AA::$debug&2 && AA::$dbg->log("getViewOutput: ret=",$ret);
+        AA::$debug&64 && AA::$dbg->log("getViewOutput: ret=",$ret);
 
         // user could make the view to display view ID before and after the view output
         // which is useful mainly for debugging. See view setting in admin interface

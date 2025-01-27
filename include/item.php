@@ -329,7 +329,7 @@ class AA_Aliasgenerator_Slice extends \AA\Util\AbstractAliasgenerator {
 class AA_Aliasgenerator_Slicejustids extends AA_Aliasgenerator_Slice {
     public static function getAliasesFromParams(array $params): AA_Aliases {
         $slice = AA_Slice::getModule($params['slice_id']);
-        return $slice ? (new AA_Aliases())->addFromArray($slice->aliases(false, 'justids')) : new AA_Aliases();
+        return $slice ? (new AA_Aliases())->addFromArray($slice->aliases(null, 'justids')) : new AA_Aliases();
     }
 }
 

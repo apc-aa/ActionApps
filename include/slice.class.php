@@ -760,7 +760,7 @@ class AA_Slice extends AA_Module {
      *
      * @return array|null
      */
-    function aliases($additional_aliases = false, $type=''): ?array
+    function aliases($additional_aliases = null, $type=''): ?array
     {
         return $this->fields->getAliases($additional_aliases, $type);
     }

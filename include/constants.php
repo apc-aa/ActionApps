@@ -295,7 +295,7 @@ class AA_Aliases implements Iterator, ArrayAccess, Countable {
         $this->lazyGet('lazy_aliases');
         $ret = [];
         foreach ($this->lazy_aliases as $name => $a) {
-            if ($a->getField() == $fld) {
+            if ($a->getField() === $fld) {
                 $ret[] = $name;
             }
         }
