@@ -411,7 +411,7 @@ function send2mailList($d_item_id, $new_id) {
             $columns   = reset($d_content);  // get first element
 
             // get aliases
-            $aliases = (new AA_Aliases(new AA_Aliasgenerator_Discussion))->getArray();
+            $aliases = new AA_Aliases(new AA_Aliasgenerator_Discussion);
             for ($i=2, $ino=count($item_params); $i<$ino; ++$i) {
                 FillFakeAlias($columns, $aliases, "_#ITEMPAR".($i+1), $item_params[$i]);
             }

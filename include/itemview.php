@@ -55,10 +55,12 @@ class itemview {
   var $num_records;        // number of shown records
   var $slice_info;         // record from slice database for current slice
   var $fields;             // array of fields used in this slice  // not used
-  var $aliases;            // array of alias definitions. If used with multi-slice,
-                           // this variable contains an array of aliases for all slices
-                           // aliases[slice_id0] are aliases for slice 0 etc.
-  var $clean_url;          // url of slice page with session id and encap.. - used mainly in discussion views
+  //protected $aliases;      // array of alias definitions. @deprecated
+                           //  If used with multi-slice, this variable contains an array of aliases for all slices aliases[slice_id0] are aliases for slice 0 etc - Do we still use it HM 2025-01-27
+    protected AA_Aliases $aa_aliases;   // new aliases AA_Aliases object
+    protected array $multi_aliases = [];   // array of slice_id => AA_Aliases for multislice itemviews
+
+    var $clean_url;          // url of slice page with session id and encap.. - used mainly in discussion views
   var $group_fld;          // id of field for grouping
   var $disc;               // array of discussion parameters (see apc-aa/view.php)
   var $get_content_funct;  // function to call, if we want to get content
@@ -97,31 +99,44 @@ class itemview {
                                       //   banners
                                       //   group_by2, g2_direction  // allows to sort by alias
 
-    $this->group_fld  = $slice_info['group_by'];
+      $this->group_fld  = $slice_info['group_by'];
 
-    $this->aliases    = is_object($aliases) ? $aliases->getArray() : ( is_array($aliases) ? $aliases : [] );
-    // add special alias, which is = 1 for selected item (given by
-    // set[34]=selected-43535 view.php parameter
-    if ( !$this->aliases['_#SELECTED'] AND $slice_info['selected_item'] ) {
-        $this->aliases['_#SELECTED'] = ['fce'=>'f_e:selected:'.$slice_info['selected_item'], "param"=>"", "hlp"=>""];
-    }
+      //$this->aliases    = $aliases instanceof \AA_Aliases ? $aliases->getArray() : ( is_array($aliases) ? $aliases : [] );
+      $this->aa_aliases = $aliases instanceof \AA_Aliases ? $aliases : ( is_array($aliases) ? (new AA_Aliases())->addFromArray($aliases) : new AA_Aliases() );
 
-    // we fill the ID_COUNT now, because the global $GLOBALS['QueryIDsCount'] variable is
-    // most probably filled by the right value. Later the $QueryIDsCount could be damaged
-    // mainly if you use nested views, ... {view.php?vid=} which makes new queries
-    $idcount = (string)($GLOBALS['QueryIDsCount'] ?: ' 0');
-    $this->aliases["_#ID_COUNT"] = GetAliasDef( "f_t:$idcount",  "id..............", _m("number of found items"));
+      // add special alias, which is = 1 for selected item (given by
+      // set[34]=selected-43535 view.php parameter
+      if ($slice_info['selected_item'] AND !$this->aa_aliases->isAlias('_#SELECTED')) {
+          $this->aa_aliases->addAlias(new AA_Alias('_#SELECTED', 'f_e:selected:'.$slice_info['selected_item'], 'id..............', _m('Selected item')));
+      }
 
-    $this->fields            = '';
-    $this->zids              = $zids;
-    $this->from_record       = $from;      // number or text "random[:<weight_field>]"
-    $this->num_records       = $number ?? $zids?->count() ?? '';    // negative number used for displaying n-th group of items only; If null, then all items if provided
-    $this->clean_url         = $clean_url;
-    $this->disc              = (array)$disc;
-    $this->parameters        = [];
-    $this->_content          = [];
-    $this->setContentFunct($get_content_funct);
+      // we fill the ID_COUNT now, because the global $GLOBALS['QueryIDsCount'] variable is
+      // most probably filled by the right value. Later the $QueryIDsCount could be damaged
+      // mainly if you use nested views, ... {view.php?vid=} which makes new queries
+      $idcount = (string)($GLOBALS['QueryIDsCount'] ?: ' 0');
+      $this->aa_aliases->addAlias(new AA_Alias('_#ID_COUNT', "f_t:$idcount", 'id..............', _m('number of found items')));
+
+      $this->fields            = '';
+      $this->zids              = $zids;
+      $this->from_record       = $from;      // number or text "random[:<weight_field>]"
+      $this->num_records       = $number ?? $zids?->count() ?? '';    // negative number used for displaying n-th group of items only; If null, then all items if provided
+      $this->clean_url         = $clean_url;
+      $this->disc              = (array)$disc;
+      $this->parameters        = [];
+      $this->_content          = [];
+      $this->multi_aliases     = [];
+      $this->setContentFunct($get_content_funct);
   }
+
+    /** set array of slice_id => AA_Aliases for multislice itemviews
+     *
+     * @param  AA_Aliases[] $multi_aliases
+     */
+    public function setMultiAliases(array $multi_aliases): itemview
+    {
+        $this->multi_aliases = $multi_aliases;
+        return $this;
+    }
 
     /** Sets calleable function to get Contane
      * @param string|array $content_funct callable function
@@ -168,7 +183,7 @@ class itemview {
                                                           $this->from_record+$this->num_records );
             $keystr .= implode('-', $this->zids->ids($this->from_record, $number_of_ids));
         }
-        $key = get_hash('outp', $keystr, $this->disc, $this->aliases, PageCache::globalKeyArray());
+        $key = get_hash('outp', $keystr, $this->disc, $this->aa_aliases, $this->multi_aliases, PageCache::globalKeyArray());
 
         global $str2find_passon;
         if ( !$GLOBALS['nocache'] && ($res = AA::Pagecache()->get($key)) ) {
@@ -429,7 +444,8 @@ class itemview {
   function unaliasWithScroller($txt, $item=null): string {
       // If no item is specified, then still try and expand aliases using parameters
       if (!$item) {
-          $item = new AA_Item(null,$this->aliases,null,null,$this->parameters);
+          // @todo we should cont with multi_aliases here
+          $item = new AA_Item(null,$this->aa_aliases,null,null,$this->parameters);
       }
       return AA::Un($txt, '', $item, true, $this);
   }
@@ -444,10 +460,15 @@ class itemview {
       // hack for searching in multiple slices. This is not so nice part
       // of code - we mix there $aliases[<alias>] with $aliases[<p_slice_id>][<alias>]
       // used (filled) in slice.php
+
+      AA::$debug&32 && AA::$dbg->tracestart('itemview->setColumns-Als', count($this->aa_aliases));
       $CurItem->set_data($this->_content[$iid]);
-      // slice_id... in content is packed!!!
-      $p_slice_id = addslashes($CurItem->getval('slice_id........'));
-      $CurItem->setAliases((new AA_Aliases())->addFromArray(is_array($this->aliases[$p_slice_id]) ? $this->aliases[$p_slice_id] : $this->aliases));
+      if ($this->multi_aliases AND ($als = $this->multi_aliases[$CurItem->getSliceID()])) {
+          $CurItem->setAliases($als);
+      } else {
+          $CurItem->setAliases($this->aa_aliases);
+      }
+      AA::$debug&32 && AA::$dbg->traceend('itemview->setColumns-Als');
   }
 
   // ----------------------------------------------------------------------------------
@@ -458,7 +479,7 @@ class itemview {
      */
   function get_output($view_type=""): string {
     if ($view_type === "discussion") {
-      $CurItem = new AA_Item("", $this->aliases);   // just prepare
+      $CurItem = new AA_Item("", $this->aa_aliases);   // just prepare
       $CurItem->set_parameters($this->parameters);
       return match ($this->disc['type']) {
               'thread'   => $this->get_disc_thread($CurItem),
@@ -524,7 +545,7 @@ class itemview {
         $this->_content = call_user_func_array($this->get_content_funct, [$foo_zids]);
     }
 
-    $CurItem = new AA_Item("", $this->aliases);   // just prepare
+    $CurItem = new AA_Item("", $this->aa_aliases);   // just prepare
     $CurItem->set_parameters($this->parameters);
 
     // process the random selection (based on weight)
@@ -777,7 +798,7 @@ class itemview {
      *  send content via reference to be quicker
      */
     function get_output_calendar() {
-        $CurItem = new AA_Item("", $this->aliases);   // just prepare
+        $CurItem = new AA_Item("", $this->aa_aliases);   // just prepare
         $CurItem->set_parameters($this->parameters);
 
         $month = $this->slice_info['calendar_month'];

@@ -9,12 +9,13 @@ use LazyloaderInterface;
 abstract class AbstractAliasgenerator implements LazyloaderInterface {
 
     /**
-     * @var AA_Aliases $add_aliases
+     * @var AA_Aliases|null $add_aliases
      */
-    protected $add_aliases = null;
+    protected ?AA_Aliases $add_aliases = null;
 
     /** caches aliases for the same parameters */
     public function lazyLoad() {
+        /** @var AA_Aliases $gen */
         $gen = AA::Contentcache()->get_result([
             static::class,
             'getAliasesFromParams',

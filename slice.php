@@ -316,18 +316,27 @@ $add_aliases['_#SESSION_'] = GetAliasDef( 'f_e:session', 'id..............', _m(
 // if banner parameter supplied => set format
 $slice_info = array_merge( $slice_info, AA_View::parseBannerParam($banner));
 
+$multi_aliases = [];
 // get alias list from database and possibly from url
 // if working with multi-slice, get aliases for all slices
 if (!is_array($slices)) {
     $aliases = $slice->aliases();
     array_add($add_aliases, $aliases);
 } else {
+    $aa_add_aliases = new AA_Aliases();
+    if (is_array($als)) {
+        $aa_add_aliases->addFromArray($als);
+    }
+    if (is_array($add_aliases)) {
+        $aa_add_aliases->addFromArray($add_aliases);
+    }
     foreach ($slices as $sid) {
         // hack for searching in multiple slices. This is not so nice part
         // of code - we mix there $aliases[<alias>] with $aliases[<p_slice_id>][<alias>]
         // it is needed by itemview::set_column() (see include/itemview.php)
-        $aliases[q_pack_id($sid)] = AA_Slice::getModule($sid)->aliases($als);
-        array_add($add_aliases, $aliases[q_pack_id($sid)]);
+        $multi_aliases[$sid] = new AA_Aliases((new AA_Aliasgenerator_Slice($sid))->addAliases($aa_add_aliases));
+        // AA_Slice::getModule($sid)->aliases($als);
+        // array_add($add_aliases, $aliases[q_pack_id($sid)]);
     }
 }
 
@@ -354,7 +363,7 @@ if ( $sh_itm OR $x OR $o OR $seo ) {
     }
 
     if (!isset($hideFulltext)) {
-        echo (new itemview($slice_info, $aliases, $zid))->get_output_cached("fulltext");
+        echo (new itemview($slice_info, $aliases, $zid))->setMultiAliases($multi_aliases)->get_output_cached("fulltext");
     }
 
     // show discussion if assigned
@@ -399,7 +408,7 @@ if ( $items AND is_array($items) ) {   // shows all $items[] as fulltext one aft
     foreach( $items as $k => $foo) {
         $ids[] = substr($k,1);    //delete starting character ('x') - used for interpretation of index as string, not number (by PHP)
     }
-    ExitPage((new itemview($slice_info, $aliases, new zids($ids,"l")))->get_output_cached("itemlist"));
+    ExitPage((new itemview($slice_info, $aliases, new zids($ids,"l")))->setMultiAliases($multi_aliases)->get_output_cached("itemlist"));
 }
 
 // compact view ----------------------------------------------------------------
@@ -576,6 +585,8 @@ if ( !$srch AND !$encap AND !$easy_query ) {
 if ($zids->count() > 0) {
 
     $itemview = new itemview($slice_info, $aliases, $zids, $scr->getListlen() * ($scr->getCurrent() - 1), ($group_n ? -$group_n : $scr->getListlen()));
+    $itemview->setMultiAliases($multi_aliases);
+
     echo $itemview->get_output_cached("view");
 
     if (($scr->pageCount() > 1) AND !$no_scr AND !$group_n) {

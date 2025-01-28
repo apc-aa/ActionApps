@@ -65,25 +65,17 @@ function DefineBaseAliases(&$aliases, $module_id) {
  * @param $additional
  * @return array
  */
-function GetAliases4Type( $type, $additional="" ) {
-    $aliases = [];
-    switch ( $type ) {
-        case 'const':
-            $aliases = (new AA_Aliases(new AA_Aliasgenerator_Constant()))->getArray();
-            break;
-        case 'links':
-            // function - we need trnslate _m() on use (not at include time)
-            $aliases = (new AA_Aliases(new AA_Aliasgenerator_Link()))->getArray();       // defined in modules/links/constant.php
-            break;
-        case 'categories':
-            // function - we need trnslate _m() on use (not at include time)
-            $aliases = (new AA_Aliases(new AA_Aliasgenerator_Category()))->getArray();   // defined in modules/links/constant.php
-            break;
-    }
+function GetAliases4Type( $type, $additional=[] ): AA_Aliases {
+    $aliases = match ($type) {
+        'const'      => new AA_Aliases(new AA_Aliasgenerator_Constant()),
+        'links'      => new AA_Aliases(new AA_Aliasgenerator_Link()),
+        'categories' => new AA_Aliases(new AA_Aliasgenerator_Category()),
+        default      => new AA_Aliases(),
+    };
 
     // add additional aliases
-    if ( isset( $additional ) AND is_array( $additional ) ) {
-        $aliases = array_merge($aliases, $additional);
+    if ( $additional AND is_array( $additional ) ) {
+        $aliases->addFromArray($additional);
     }
     return $aliases;
 }
@@ -93,17 +85,18 @@ function GetAliases4Type( $type, $additional="" ) {
  * Adds new $alias to $aliases array and creates fake field for it
  *  (to $content4id array). The value for the field is set to $value (and $flag)
  * @param $content4id
- * @param $aliases
+ * @param AA_Aliases $aliases
  * @param $alias
  * @param $value
  * @param $flag
  */
-function FillFakeAlias(&$content4id, &$aliases, $alias, $value, $flag=FLAG_HTML) {
+function FillFakeAlias(&$content4id, $aliases, $alias, $value, $flag=FLAG_HTML) {
     do {
         $colname = AA_Fields::createFieldId( strtolower( substr( $alias,2,12 )));
     } while ( isset($content4id[$colname]) );
     $content4id[$colname][] = ["value" => $value, "flag" => $flag];
-    $aliases[$alias] = GetAliasDef("f_1", $colname, _m("Alias for %1", [$colname]));
+    $aliases->addAlias(new AA_Alias($alias, 'f_1', $colname, _m("Alias for %1", [$colname])));
+    // old - [$alias] = GetAliasDef("f_1", $colname, _m("Alias for %1", [$colname]));
 }
 
 /** sess_return_url function
@@ -433,7 +426,7 @@ class AA_Item {
      */
     function __construct($content4id='', $aliases='', $format='', $remove='', $param=false){
         $this->set_data($content4id);
-        if (is_object($aliases)) {
+        if ($aliases instanceof AA_Aliases) {
             $this->aliases = $aliases;
         } else {
             $this->aliases = new AA_Aliases();
@@ -748,9 +741,11 @@ class AA_Item {
         // like f_d("start_date......", "mm-dd")
         $field_id = get_if($use_field, $ali->getField());
         $param    = str_replace('_#this', '{'.$field_id.'}', $ali->getFncParam());
+        AA::$debug&32 && AA::$dbg->tracestart($alias, $param);
         AA::$debug&8 && AA::$dbg->tracestart($fce, $param);
         $ret = (string)$this->$fce($field_id, $param);
         AA::$debug&8 && AA::$dbg->traceend($fce, $ret);
+        AA::$debug&32 && AA::$dbg->traceend($alias, $ret);
         return $ret;
     }
 

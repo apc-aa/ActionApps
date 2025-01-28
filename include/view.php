@@ -412,8 +412,7 @@ class AA_Showview {
                     $category_id = Links_SliceID2Category($slice_id);             // get default category for the view
                 }
                 $format    = $view->getViewFormat($selected_item);
-                $aliases   = GetAliases4Type($view_info['type'],$als);
-                if (!$conds) {          // conds could be defined via cmd[]=d command
+            if (!$conds) {          // conds could be defined via cmd[]=d command
                     $conds = $view->getConds($param_conds);
                 }
                 $sort      = $view->getSort($param_sort);
@@ -433,7 +432,7 @@ class AA_Showview {
 
                 [ $listlen, $list_from ] = $this->getListLength($view, $zids->count());
 
-                $itemview = (new itemview($format, $aliases, $zids, $list_from, $listlen))->setContentFunct($content_function);
+                $itemview = (new itemview($format, GetAliases4Type($view_info['type'],$als), $zids, $list_from, $listlen))->setContentFunct($content_function);
                 $itemview->parameter('category_id', $category_id);
                 $itemview->parameter('start_cat',   $this->_view_param['start_cat']);
 
@@ -509,11 +508,14 @@ class AA_Showview {
                 $slice   = AA_Slice::getModule($slice_id);
                 $aliases = array_merge($slice->aliases($als), AA_View::getViewAliases($conds));
 
+                $multi_aliases = [];
                 if (is_array($slices)) {
+                    $aa_add_aliases = new AA_Aliases();
+                    if (is_array($als)) {
+                        $aa_add_aliases->addFromArray($als);
+                    }
                     foreach ($slices as $sid) {
-                        if ($m = AA_Slice::getModule($sid)) {
-                            $aliases[q_pack_id($sid)] = $m->aliases($als);
-                        }
+                        $multi_aliases[$sid] = new AA_Aliases((new AA_Aliasgenerator_Slice($sid))->addAliases($aa_add_aliases));
                     }
                 }
 
@@ -558,7 +560,7 @@ class AA_Showview {
 
                 [$listlen, $list_from] = $this->getListLength($view, $zids2->count());
 
-                $itemview = (new itemview($format, $aliases, $zids2, $list_from, $listlen))->setContentFunct( ($view_info['type'] === 'urls') ? 'GetItemContentMinimal' : '');
+                $itemview = (new itemview($format, $aliases, $zids2, $list_from, $listlen))->setMultiAliases($multi_aliases)->setContentFunct( ($view_info['type'] === 'urls') ? 'GetItemContentMinimal' : '');
 
                 if ($zids2->count() > ( ctype_digit((string)$list_from) ? (int)$list_from : 0)) { // $list_from could be 'random:number.........1' ...
                     $ret = $itemview->get_output(($view_info['type'] === 'calendar') ? 'calendar' : 'view');

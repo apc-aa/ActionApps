@@ -279,6 +279,11 @@ class AA_Aliases implements Iterator, ArrayAccess, Countable {
         return $this->lazy_aliases[$name];
     }
 
+    public function isAlias(string $name): bool {
+        $this->lazyGet('lazy_aliases');
+        return array_key_exists($name, $this->lazy_aliases);
+    }
+
     function getAliases() {
         $this->lazyGet('lazy_aliases');
         return $this->lazy_aliases;
