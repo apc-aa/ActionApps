@@ -553,18 +553,14 @@ class AA_View {
         return $arr;
     }
 
-    /** GetViewAliases function
-     * @param $als
-     * @return array
+    /**
+     * @param  AA_Aliases  $aliases
+     * @param  array       $conds
      */
-    public static function getViewAliases($conds) {
-        $ret = [];
-        if (is_array($conds)) {
-            foreach ($conds as $k => $v) {
-                $ret[str_pad('_#VIEW_C' . ($k + 1), 10, '_')] = GetAliasDef('f_s:' . $v['value']);
-            }
+    public static function addViewAliases(AA_Aliases $aliases, array $conds): void {
+        foreach ($conds as $k => $v) {
+            $aliases->addTextAlias(str_pad('_#VIEW_C' . ($k + 1), 10, '_'), $v['value']);
         }
-        return $ret;
     }
 
     /** GetAliasesFromUrl function

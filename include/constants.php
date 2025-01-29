@@ -106,7 +106,7 @@ class AA_Alias {
 
     /** just make sure the alias is in correct _#SOME_ALS format */
     public static function ensureAlias(string $alias): string {
-        return '_#' . strtoupper(substr($alias . '________', 2, 8));
+        return '_#'.substr(strtoupper($alias).'________', 2, 8);
     }
 
     /** test if the text looks like alias (_#ABCDEFGH)

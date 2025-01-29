@@ -765,6 +765,12 @@ class AA_Slice extends AA_Module {
         return $this->fields->getAliases($additional_aliases, $type);
     }
 
+    function aa_aliases(?AA_Aliases $additional_aliases = null): AA_Aliases
+    {
+        return new AA_Aliases((new AA_Aliasgenerator_Slice($this->getId()))->addAliases($additional_aliases));
+    }
+
+
     /**
      * @return int
      */

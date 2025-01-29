@@ -505,8 +505,17 @@ class AA_Showview {
                     }
                 }
 
+                $aa_add_aliases = new AA_Aliases();
+                if (is_array($als)) {
+                    $aa_add_aliases->addFromArray($als);
+                }
+                if (is_array($conds)) {
+                    AA_View::addViewAliases($aa_add_aliases, $conds);
+                }
+
                 $slice   = AA_Slice::getModule($slice_id);
-                $aliases = array_merge($slice->aliases($als), AA_View::getViewAliases($conds));
+                // $aliases = array_merge($slice->aliases($als), AA_View::getViewAliases($conds));
+                $aliases = $slice->aa_aliases($aa_add_aliases);
 
                 $multi_aliases = [];
                 if (is_array($slices)) {
