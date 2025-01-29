@@ -667,7 +667,7 @@ function xpack_id($id) {
  * @return string unpacked md5 id
  */
 function unpack_id($packed_id=''): string {
-    return ((string)$packed_id != '0') ? bin2hex($packed_id) : '0';
+    return $packed_id != '0' ? bin2hex($packed_id) : '0';
 }
 
 /** double backslashes and apostrophes

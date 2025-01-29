@@ -54,7 +54,7 @@ class RimWidget extends Widget
         return <<<JS
         function AA_RimAdd2Current(item) {
             const widget = item.closest('.aa-widget'); 
-            widget.querySelector('.id2add').name=widget.getAttribute('data-aa-basename')+'[rim][]';
+            item.querySelector('.id2add').name=widget.getAttribute('data-aa-basename')+'[rim][]';
             const added = widget.querySelector('.itemgroup').appendChild(item);
             const btns_str = widget.querySelector('template').innerHTML.replaceAll('***_#id***', widget.querySelector('.id2add').value);
             const buttons = document.createRange().createContextualFragment(btns_str);            
