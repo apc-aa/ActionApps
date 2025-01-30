@@ -329,6 +329,7 @@ function getControlValue(formName, controlName) {
     return ret;
 }
 
+/*
 function aa_runevent(e) {
     var func = "aa_on" + e.type.charAt(0).toUpperCase() + e.type.slice(1);
     var fld = e.target.name.match(/aa\[[^\]]*\]\[([a-z0-9_]*)\]/);
@@ -340,7 +341,6 @@ function aa_runevent(e) {
     }
 }
 
-/*
 function getWidgetByName(formName, field) {
     var el = document.querySelector('form[name="'+formName+'"] input[name*="['+field.replaceAll('.','_')+']"');
     return el ? el.closest('.aa-widget') : null;

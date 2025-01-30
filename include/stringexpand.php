@@ -8314,10 +8314,10 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
 
         $title = safe(strip_tags($title));
         $alt_title = $title ? " title=\"$title\" alt=\"$title\"" : '';
-        $webp_src = $src. '&amp;f=webp';
+        $webp_src = $src. '&amp;f=avif';
 
         $ret =  "<picture class=aa-picture>";
-        $ret .= "\n  <source srcset=\"$webp_src\" type=image/webp>";
+        $ret .= "\n  <source srcset=\"$webp_src\" type=image/avif>";
         $ret .= "\n  <img src=\"$src\" width=$w height=$h $add loading=lazy $alt_title>";  // lazy is enough on img for <picture> element
         $ret .= "\n</picture>";
         

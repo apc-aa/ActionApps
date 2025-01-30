@@ -251,7 +251,7 @@ class inputform {
         $tabs  = [];
         if ( $form_parts ) {
             for ( $idx=0; $idx <= $form_parts; $idx++ ) {
-                $tabs['formrow'.(string)$idx] = get_if( $form_part_names[$idx], _m('Part'). " ".($idx+1));
+                $tabs['formrow'.$idx] = get_if($form_part_names[$idx], _m('Part'). " ".($idx+1));
             }
             // print tabs for form switching
             if ( $form_part_pos & 1 ) {  // 1 ~ top
@@ -395,7 +395,8 @@ class inputform {
         AA::Stringexpander()->addRequire(get_aa_url('javascript/inputform.min.js', ['v'=>AA_JS_VERSION],false));
         AA::Stringexpander()->addRequire(get_aa_url('javascript/js_lib.min.js', ['v'=>AA_JS_VERSION],false));
         // field javascript feature - triggers see JsTriggers class
-        AA::Stringexpander()->addRequire(getFrmJavascript($jsTriggers->getJavascriptAndRegisterRequires()), 'AA_Req_Headcode');
+        $js4form = AA::Un($jsTriggers->getJavascriptAndRegisterRequires());  // could contain {require:...} - so Un() is needed
+        AA::Stringexpander()->addRequire(getFrmJavascript($js4form), 'AA_Req_Headcode');
 
         // $retval .= getFrmJavascriptFile( 'javascript/inputform.min.js?v=1' );
         // $retval .= getFrmJavascriptFile( 'javascript/js_lib.min.js' );
@@ -811,12 +812,10 @@ class AA_Inputfield {
      *
      */
     function _fillSelected() {
-        if ( !isset( $this->selected ) ) {  // not cached yet => create selected array
-            if ( isset($this->value) AND is_array($this->value) ) {
-                foreach ( $this->value as $v ) {
-                    if ( strlen( (string)$v['value'] ) ) {
-                        $this->selected[(string)$v['value']] = true;
-                    }
+        if (!isset($this->selected) AND isset($this->value) AND is_array($this->value)) { // not cached yet => create selected array
+            foreach ( $this->value as $v ) {
+                if ( strlen( (string)$v['value'] ) ) {
+                    $this->selected[(string)$v['value']] = true;
                 }
             }
         }
@@ -2913,7 +2912,7 @@ function getFrmJavascriptFile( $src, $param = [], string $add=''): string
  */
 function getFrmJavascript($jscode , bool $onload=false): string {
     if ($onload) {
-        $jscode = "document.addEventListener('DOMContentLoaded', function() { $jscode });";
+        $jscode = "document.addEventListener('DOMContentLoaded', () => { $jscode });";
     }
     return "\n<script>\n  $jscode \n</script>\n";
 }

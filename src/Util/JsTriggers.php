@@ -156,16 +156,30 @@ class JsTriggers {
                 }
             }
             $listeners = [];
+            $script2run = '';
             foreach ($events as $e => $els) {
                 if ($els[0] === 'body') {
                     // special case for body onload
                     $listeners[] = "aa_onLoad('');";
                 } else {
                     $listeners[] = 'document.querySelectorAll("'.implode(', ', array_map(static fn($el) => "form[name=inputform] $el", $els)).'").forEach(function(el) { el.addEventListener("'.strtolower(substr($e,2)).'", aa_runevent, false); });';
+                    $script2run = <<<'JS'
+                        function aa_runevent(e) {
+                            const fnc = `aa_on${e.type.charAt(0).toUpperCase()}${e.type.slice(1)}`;
+                            const match = e.target.name.match(/aa\[[^\]]*\]\[([a-z0-9_]*)\]/);
+                            const fld = match ? match[1].replaceAll('_', '.') : null;
+                            if (fld && typeof window[fnc] === "function") {
+                                window[fnc](fld);
+                            }
+                        }                    
+                        JS;
                 }
             }
             if ($listeners) {
                 AA::Stringexpander()->addRequire(implode("\n",$listeners), 'AA_Req_Load');
+            }
+            if ($script2run) {
+                AA::Stringexpander()->addRequire($script2run, 'AA_Req_Run');
             }
         }
         return $this->javascript;
