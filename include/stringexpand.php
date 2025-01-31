@@ -8314,10 +8314,11 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
 
         $title = safe(strip_tags($title));
         $alt_title = $title ? " title=\"$title\" alt=\"$title\"" : '';
-        $webp_src = $src. '&amp;f=avif';
+        $format = str_contains(strtolower($src), '.pdf') ? 'webp' : 'avif';  // phpThumb for some reason do not generate avif for pdf; HM 2025-01-31
+        $webp_src = $src. "&amp;f=$format";
 
         $ret =  "<picture class=aa-picture>";
-        $ret .= "\n  <source srcset=\"$webp_src\" type=image/avif>";
+        $ret .= "\n  <source srcset=\"$webp_src\" type=\"image/$format\">";
         $ret .= "\n  <img src=\"$src\" width=$w height=$h $add loading=lazy $alt_title>";  // lazy is enough on img for <picture> element
         $ret .= "\n</picture>";
         
