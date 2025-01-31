@@ -8570,18 +8570,19 @@ class AA_Stringexpand_Filelink extends AA_Stringexpand {
     static function doTrimParams() { return false; }
 
     /**
-     * @param string $url
-     * @param string $text
-     * @param string $text_before
+     * @param string  $url
+     * @param string  $fname
+     * @param string  $text_before
+     *
      * @return string|void
      */
-    function expand($url='', $text='', $text_before='') {
+    function expand($url = '', $fname='', $text_before='') {
         if (empty($url)) {
             return '';
         }
-        $filename = $text ?: basename(parse_url($url, PHP_URL_PATH));
-        $fileinfo = implode(' - ', [StrExp('fileinfo', [$url, 'type']), StrExp('fileinfo', [$url, 'size'])]);
-        $fileinfo = $fileinfo ? " [$fileinfo]" : '';
+        $filename     = $fname ?: basename(parse_url($url, PHP_URL_PATH));
+        $fileinfo     = implode(' - ', [StrExp('fileinfo', [$url, 'type']), StrExp('fileinfo', [$url, 'size'])]);
+        $fileinfo     = $fileinfo ? " [$fileinfo]" : '';
         $fielinfo_htm = $fileinfo ? "&nbsp;<span class=\"fileinfo\">". str_replace(' ','&nbsp;', $fileinfo).'</span>' : '';
 
         return "$text_before<a href=\"$url\" title=\"$filename$fileinfo\">$filename</a>$fielinfo_htm";

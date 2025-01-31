@@ -52,8 +52,9 @@ class RimWidget extends Widget
     protected function requireLibCode($aa_property, $winfo): string
     {
         return <<<JS
-        function AA_RimAdd2Current(item) {
+        function AA_RimAdd2Current(item) { 
             const widget = item.closest('.aa-widget'); 
+            item.onclick = null;
             item.querySelector('.id2add').name=widget.getAttribute('data-aa-basename')+'[rim][]';
             const added = widget.querySelector('.itemgroup').appendChild(item);
             const btns_str = widget.querySelector('template').innerHTML.replaceAll('***_#id***', widget.querySelector('.id2add').value);
@@ -170,11 +171,13 @@ class RimWidget extends Widget
 
         $widget .= <<<HTML
                        </section>
-                       <footer>
-                         <input type="hidden" name="$input_name" id="$input_id" value="">
-                         $downbuttons
-                       </footer>
-                       <section class="itemselect" id=flt$base_id>
+                       <section class="itemsearcher">
+                         <footer>
+                           <input type="hidden" name="$input_name" id="$input_id" value="">
+                           $downbuttons
+                         </footer>
+                         <section class="itemselect" id=flt$base_id>
+                         </section>
                        </section>
                      </article>
                    HTML;
