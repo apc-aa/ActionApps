@@ -1790,17 +1790,20 @@ function get_if($value, $else, $else2='aa_NoNe', $else3='aa_NoNe') {
  */
 function aa_version($format='full') {
     $version = '2025.1';
-    $full    = 'ActionApps '.$version.' ($Date$, $Revision$), PHP '.phpversion().', REMOTE_ADDR: '.$_SERVER['REMOTE_ADDR'];
-    switch ($format) {
-        case 'svn': return (int) substr($full, strpos($full, 'Revision')+10);
-        case 'svn2':
-            $rev = file_get_contents(AA_BASE_PATH. ".svn/entries", FILE_TEXT, null, 0, 20);
-            $rev = explode("\n", $rev);
-            return $rev[3];
-        case 'aa':  return $version;
-        case 'php':  return phpversion();
-    }
-    return $full;
+    $full    = 'ActionApps '.$version.' ($Date$, $Revision$), PHP '.PHP_VERSION.', REMOTE_ADDR: '.$_SERVER['REMOTE_ADDR'];
+    return match ($format) {
+        'svn'  => (int)substr($full, strpos($full, 'Revision') + 10),              // svn version of util.php (which is +/- similar to svn version of AA)
+        'svn2' => trim(shell_exec("svnversion ".escapeshellarg(AA_BASE_PATH))),   // more accurate for whole AA, but slower
+        'aa'   => $version,
+        'php'  => PHP_VERSION,
+        default => $full,
+    };
+
+    /* svn2 for SVN < 1.7
+       $rev = file_get_contents(AA_BASE_PATH. ".svn/entries", false, null, 0, 20);
+       $rev = explode("\n", $rev);
+       return $rev[3];
+    */
 }
 
 class CookieManager {

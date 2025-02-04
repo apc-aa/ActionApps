@@ -43,6 +43,10 @@
     "ext-intl": "*",
     "ext-pdo": "*",
     "ext-fileinfo": "*"
+  }
+  ,
+  "require-dev": {
+    "roave/security-advisories": "dev-latest"
   },
   "commented-out-r-equire-dev": {
     "codeception/codeception": "^5.1"

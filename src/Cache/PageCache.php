@@ -232,8 +232,7 @@ class PageCache  {
             if (mt_rand(0,PAGECACHEPURGE_PROBABILITY) === 1) {
                 // purge only each PAGECACHEPURGE_PROBABILITY-th call of store
                 $cache_purger  = new PagecachePurge();
-                $toexecute     = new Toexecute;
-                $toexecute->laterOnce($cache_purger, [$this->cacheTime], 'PagecachePurge', 101, now() + 300);  // run it once in 5 minutes
+                (new Toexecute)->laterOnce($cache_purger, [$this->cacheTime], 'PagecachePurge', 101, now() + 300);  // run it once in 5 minutes
             }
             $ret = true;
         }

@@ -319,9 +319,7 @@ class Session {
         if (isset($_SERVER['HTTPS'])) {
             $ret['cookie_secure'] = 1;
         }
-        if (version_compare(phpversion(), '7.3.0', '>=')) {
-            $ret['cookie_samesite'] = 'Lax';   // we changed it from Strict, which do not accept links from e-mails to the site, where you are logged in (HM 2020-04-21)
-        }
+        $ret['cookie_samesite'] = 'Lax';   // we changed it from Strict, which do not accept links from e-mails to the site, where you are logged in (HM 2020-04-21)
         // $ret['read_and_close'] = true;  // no locking - @todo - use it when we do not store to the session - just we read
         return $ret;
     }
@@ -332,9 +330,7 @@ class Session {
         if (isset($_SERVER['HTTPS'])) {
             $ret['secure'] = 1;
         }
-        if (version_compare(phpversion(), '7.3.0', '>=')) {
-            $ret['samesite'] = 'Lax';    // we changed it from Strict, which do not accept links from e-mails to the site, where you are logged in (HM 2020-04-21)
-        }
+        $ret['samesite'] = 'Lax';    // we changed it from Strict, which do not accept links from e-mails to the site, where you are logged in (HM 2020-04-21)
         return $ret;
     }
 

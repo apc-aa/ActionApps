@@ -91,6 +91,14 @@ class AA_Log implements \AA\Expand\InternalExpandInterface {
         return true;
     }
 
+    public static function writeIfChanged(string $event, string $selector, AA_Logentry $params): bool
+    {
+        if ($last = self::getLastLogEvents($event, $selector) AND ($last['params'] === $params->serializeToString())) {
+            return false;
+        }
+        return self::write($event, $selector, $params);
+    }
+
     /** Is the event logable?
      **/
     static function isLogable($event_type): bool
@@ -127,6 +135,7 @@ class AA_Log implements \AA\Expand\InternalExpandInterface {
            // LOGIN
            // PWD_REHASH
            // VIEW
+           // SYS_STAT
         ];
         return !in_array($event_type, $DO_NOT_LOG);
     }
@@ -223,7 +232,7 @@ class AA_Log implements \AA\Expand\InternalExpandInterface {
                             & label { font-size: 0.7rem; color: #666; margin-bottom: -.5rem; line-height: .9rem;}
                             & span { font-size: .8rem; }
                         }}
-                    CSScode;
+                        CSScode;
                     AA::Stringexpander()->addRequire($css, 'AA_Req_CSScode');
                     return $logEntry->getPrintRow();
                 }
@@ -326,6 +335,21 @@ class AA_Logentry_W extends AA_Logentry {
         return [
             'time'         => new AA_Property('time',         _m('Time [s]'), 'string'),
             'uri'          => new AA_Property('uri',          _m('Url'), 'string'),
+        ];
+    }
+}
+
+/** System status log entry
+ */
+class AA_Logentry_Sys extends AA_Logentry {
+    public static function getClassProperties(): array {
+        return [
+            'aa'  => new AA_Property('aa',  _m('AA'), 'string'),
+            'svn' => new AA_Property('svn', _m('SVN AA (util.php)'), 'string'),
+            'php' => new AA_Property('php', _m('PHP'), 'string'),
+            'db'  => new AA_Property('db',  _m('DB'), 'string'),
+            'mem' => new AA_Property('mem', _m('Memory'), 'string'),
+            'cpu' => new AA_Property('cpu', _m('CPU'), 'string'),
         ];
     }
 }

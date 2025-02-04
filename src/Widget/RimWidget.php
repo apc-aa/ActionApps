@@ -182,9 +182,6 @@ class RimWidget extends Widget
                      </article>
                    HTML;
 
-        // <article><i class="ico megainsert">přetánout</i></article>
-        // <article><i class="ico new">nový</i></article>
-
         return ['html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired()];
     }
 
