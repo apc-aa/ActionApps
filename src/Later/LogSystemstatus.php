@@ -51,7 +51,7 @@ class LogSystemstatus implements LaterInterface
             'aa'  => aa_version('aa'),
             'svn' => aa_version('svn2'). ' ('. aa_version('svn'). ')',
             'php' => PHP_VERSION,
-            'db' => DB_AA::select1('ver', 'SELECT VERSION() as ver'),
+            'db' => DB_AA::select1('ver', 'SELECT VERSION() as ver'). '/'. DB_AA::getDbType(),
             'mem' => trim(shell_exec("free -m | awk 'NR==2{print $2 \" MB\"}'")),
             'cpu' => trim(str_replace('Model name:', '', shell_exec("lscpu | grep 'Model name:'"))),
         ];
