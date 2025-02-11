@@ -22,7 +22,7 @@
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
  * @link      https://www.apc.org/ APC
  *
-*/
+ */
 
 use AA\Later\HitcounterStats;
 use AA\Util\InputVars;
@@ -37,6 +37,8 @@ try {
     $item_count = InputVars::intPOST('item_count');
     $item_set   = InputVars::stringPOST('item_set');
     $date_from  = InputVars::stringPOST('date_from');
+    $for_module = InputVars::stringPOST('for_module');
+    $show       = InputVars::boolPOST('show');
 } catch (Exception) {}
 
 if (!IfSlPerm(PS_EDIT_ALL_ITEMS)) {
@@ -80,14 +82,14 @@ define ('ITEM_SETS', [
     'last_month' => _m('Top last month'),
     'last_week'  => _m('Top last week'),
     'last_day'   => _m('Top last day'),
-    ]);
+]);
 
 // ------------------------------------------------------------------------------------------
 FrmTabCaption(_m('Item Statistics'));
 FrmInputSelect('item_set', _m('Show items'), ITEM_SETS, $item_set, true);
 FrmTextarea('items_code', _m('Exact items to show'), $items_code, 4, 60, false, _m('dash-separated list of item ids/short_ids or AA expression like {ids:{_#SLICE_ID}:d-publish_date....-gt-{timestamp:2023-08-22}}}'));
 FrmInputNumber('item_count', _m('Number of items to show'), $item_count, 1, 9999, true);
-FrmInputDate('date_from', _m('From date'), $date_from, );
+FrmInputDatetime('date_from', _m('From date'), $date_from, );
 
 //        //$widget_definition_string = 'dte::::2';
 //        $widget_definition_string = 'mch:::::::::{"1"#:"Yes","0"#:"No"}:';
@@ -95,13 +97,17 @@ FrmInputDate('date_from', _m('From date'), $date_from, );
 //        $widget_class = $params['class'];
 
 $w = Widget::factoryByName('mch', ['const_arr' => HITCOUNTER_OPTIONS]);
- //echo $w->getHtml(new AA_Property( 'stats', _m('Items to show'), 'string', true), (new AA_Content())->setId('admin_statistics')->setValue('stats','1324567899'));
+//echo $w->getHtml(new AA_Property( 'stats', _m('Items to show'), 'string', true), (new AA_Content())->setId('admin_statistics')->setValue('stats','1324567899'));
 
-if ($_POST) {
-    $grabber = new AA\IO\Grabber\ObjectForm();
-    $grabber->prepare();
-    $content = $grabber->getItem();
-    $grabber->finish();
+if (is_array($_POST['aa'] ?? null)) {
+    try {
+        $grabber = new AA\IO\Grabber\ObjectForm();
+        $grabber->prepare();
+        $content = $grabber->getItem();
+        $grabber->finish();
+    } catch (Exception $e) {
+        $content = (new AA_Content())->setId('admin_statistics');
+    }
     // huhl($grabber->getAllItems());
 } else {
     $content = (new AA_Content())->setId('admin_statistics');
@@ -111,41 +117,46 @@ echo $w->getHtml(new AA_Property( 'stats', _m('Stats to show'), 'string', true),
 
 FrmTabEnd($form_buttons);
 
+if ($show) {
 
-echo '<br><br><div class=aa-tab-title>'._m('Display Statistics for Item').'</div>';
+    echo '<br><br><div class=aa-tab-title>'._m('Display Statistics for Item').'</div>';
 
-$slices = [AA::$module_id];
+    $slices = [AA::$module_id];
 
 // determine, which items to show
-$items = match ($item_set) {
-    'all'        => implode('-', array_keys(HitcounterStats::getStats($slices, 0, 0, true, $item_count))),
-    'year'       => implode('-', array_keys(HitcounterStats::getStats($slices, time() - 60 * 60 * 24 * 365, 0, true, $item_count))),
-    'month'      => implode('-', array_keys(HitcounterStats::getStats($slices, time() - 60 * 60 * 24 * 30, 0, true, $item_count))),
-    'week'       => implode('-', array_keys(HitcounterStats::getStats($slices, time() - 60 * 60 * 24 * 7, 0, true, $item_count))),
-    'day'        => implode('-', array_keys(HitcounterStats::getStats($slices, time() - 60 * 60 * 24, 0, true, $item_count))),
-    'last_year'  => implode('-', array_keys(HitcounterStats::getStats($slices, time() - 60 * 60 * 24 * 365 * 2, time() - 60 * 60 * 24 * 365, true, $item_count))),
-    'last_month' => implode('-', array_keys(HitcounterStats::getStats($slices, time() - 60 * 60 * 24 * 30 * 2, time() - 60 * 60 * 24 * 30, true, $item_count))),
-    'last_week'  => implode('-', array_keys(HitcounterStats::getStats($slices, time() - 60 * 60 * 24 * 7 * 2, time() - 60 * 60 * 24 * 7, true, $item_count))),
-    'last_day'   => implode('-', array_keys(HitcounterStats::getStats($slices, time() - 60 * 60 * 24 * 2, time() - 60 * 60 * 24, true, $item_count))),
-    'exact'      => StrExp('ids', [AA::$module_id, '', '', '-', AA::Un($items_code) ?: 'xxx']),
-    default      => '',
-};
+    $items = match ($item_set) {
+        'all'        => implode('-', array_keys(HitcounterStats::getStats($slices, 0, 0, true, $item_count))),
+        'year'       => implode('-', array_keys(HitcounterStats::getStats($slices, time() - 60 * 60 * 24 * 365, 0, true, $item_count))),
+        'month'      => implode('-', array_keys(HitcounterStats::getStats($slices, time() - 60 * 60 * 24 * 30, 0, true, $item_count))),
+        'week'       => implode('-', array_keys(HitcounterStats::getStats($slices, time() - 60 * 60 * 24 * 7, 0, true, $item_count))),
+        'day'        => implode('-', array_keys(HitcounterStats::getStats($slices, time() - 60 * 60 * 24, 0, true, $item_count))),
+        'last_year'  => implode('-', array_keys(HitcounterStats::getStats($slices, time() - 60 * 60 * 24 * 365 * 2, time() - 60 * 60 * 24 * 365, true, $item_count))),
+        'last_month' => implode('-', array_keys(HitcounterStats::getStats($slices, time() - 60 * 60 * 24 * 30 * 2, time() - 60 * 60 * 24 * 30, true, $item_count))),
+        'last_week'  => implode('-', array_keys(HitcounterStats::getStats($slices, time() - 60 * 60 * 24 * 7 * 2, time() - 60 * 60 * 24 * 7, true, $item_count))),
+        'last_day'   => implode('-', array_keys(HitcounterStats::getStats($slices, time() - 60 * 60 * 24 * 2, time() - 60 * 60 * 24, true, $item_count))),
+        'exact'      => StrExp('ids', [AA::$module_id, '', '', '-', AA::Un($items_code) ?: 'xxx']),
+        default      => '',
+    };
 
-if (strlen($items)) {
-    $template = '<div class=aa-table>';
-    foreach ($content->getValuesArray('stats') as $code) {
-        $name = HITCOUNTER_OPTIONS[$code];
+    if (strlen($items)) {
         $from = $date_from ? strtotime($date_from) : 0;
-        $template .= "<h2>$name</h2>\n{hitcounter:$code:$items:$from}\n";
-    }
-    $template .= '</div>';
-    $template .= '<div>'._m('Items found').': '. StrExp('count', [$items]).'</div>';
-    //FrmStaticText(_m('Display Statistics for Item'), AA::Un($template), '', '', false);
-    echo AA::Un($template);
-} else {
-    echo MsgOk(_m('No items found'));
-}
+        $template = '<div class=aa-table>';
+        foreach ($content->getValuesArray('stats') as $code) {
+            $name = HITCOUNTER_OPTIONS[$code];
+            $template .= "<h2>$name</h2>\n{hitcounter:$code:$items:$from}\n";
+        }
+        $template .= '</div>';
+        $template .= '<div>'._m('Items found').': '. StrExp('count', [$items]).'</div>';
+        //FrmStaticText(_m('Display Statistics for Item'), AA::Un($template), '', '', false);
+        echo AA::Un($template);
 
-echo getFrmTabEnd($form_buttons);
+        if ($tab = AA_Log::getLogTable('SYS_STAT', 'basic', $from, 0, IsSuperadmin())) {
+            $apage->addHelpbox(_m('Server configuration changes'), $tab);
+        }
+    } else {
+        echo MsgOk(_m('No items found'));
+    }
+}
+// echo getFrmTabEnd($form_buttons);
 
 $apage->printFoot();

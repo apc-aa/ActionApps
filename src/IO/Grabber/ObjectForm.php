@@ -102,7 +102,7 @@ class ObjectForm extends AbstractGrabber
      */
     function prepare() {
         $this->_content = [];
-        if (!isset($_POST['aa']) OR !is_array($_POST['aa'])) {
+        if (!is_array($_POST['aa'] ?? null)) {
             throw new \Exception('No data in POST');
         }
 

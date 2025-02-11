@@ -179,12 +179,18 @@ class AA_Log implements \AA\Expand\InternalExpandInterface {
     }
 
     /** Get first 20 rows from log table with possible link to Log page */
-    public static function getLogTable(string $event, $selector = "", bool $show_log_link = false): string {
+    public static function getLogTable(string $event, $selector = "", int $from=0, int $to=0, bool $show_log_link = false): string {
         $conds = [['type', $event, (!str_contains($event, '%')) ? '=' : 'LIKE']];
         if ($selector != "") {
             $conds[] = ['selector', $selector];
         }
-        $tab = DB_AA::select([], 'SELECT * FROM log', $conds, ['id-'], null, 20);
+        if ($from) {
+            $conds[] = ['time', $from, '>='];
+        }
+        if ($to) {
+            $conds[] = ['time', $to, '<='];
+        }
+        $tab = DB_AA::select([], 'SELECT FROM_UNIXTIME(`time`) as `time` , `user`, `params` FROM log', $conds, ['id-'], null, 20);
         if (!$tab) {
             return '';
         }

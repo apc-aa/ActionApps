@@ -170,7 +170,8 @@ class zids implements Iterator, ArrayAccess, Countable {
      *  wrong values are not added
      * @return zids this
      */
-    function addDirty($ids) {
+    function addDirty($ids): static
+    {
         if (str_starts_with(reset($ids), '[')) {
             $json_ids = [];
             foreach ($ids as $json) {

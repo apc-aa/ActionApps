@@ -774,7 +774,8 @@ class AA_Slice extends AA_Module {
     /**
      * @return int
      */
-    function allowed_bin_4_user() {
+    function allowed_bin_4_user(): int
+    {
         // put the item into the right bin
         $bin2fill = IfSlPerm(PS_EDIT_ALL_ITEMS, $this->module_id) ? 1 : (int) $this->getProperty("permit_anonymous_post");
         return ($bin2fill < 1) ? SC_NO_BIN : $bin2fill;

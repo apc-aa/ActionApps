@@ -217,7 +217,7 @@ class Form extends AbstractGrabber {
                 $item                            = AA_Item::getItem($item_id);
                 $item_fields['slice_id________'] = [pack_id($item->getSliceID())];
             } // new items
-            else {
+            elseif ($dirty_item_id[0] === 'n') {
                 $item_id    = $id_trans_table['_#' . $dirty_item_id];
                 $store_mode = 'new';
 
@@ -225,6 +225,8 @@ class Form extends AbstractGrabber {
                 $item_slice_id = substr($dirty_item_id, strpos($dirty_item_id, '_') + 1);
                 // and add slice_id field to the item
                 $item_fields['slice_id________'] = [pack_id($item_slice_id)];
+            } else {
+                continue;
             }
             $id_trans_table[$dirty_item_id] = $item_id;
 

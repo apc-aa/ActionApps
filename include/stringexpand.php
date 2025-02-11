@@ -3012,7 +3012,8 @@ class AA_Stringexpand_Polls extends AA_Stringexpand_Nevercache {
  *    {ids:5367e68a88b82887baac311c30544a71:d-headline........-=-{conds:{qs:type}:1}}
  *  or
  *    {ids:5367e68a88b82887baac311c30544a71:d-headline........-==-{conds:category.......3:==}}  // see the third parameter (==) in the last example
- *  works also for multivalue variable (type[] $_GET variable in the last example)
+ *                                                                {conds:["sky","ice"]:1}
+ *  both works also for multivalue variable (type[] $_GET variable in the last example)
  *
  *  The syntax is:
  *     {conds:<field or text>[:<mode>]}

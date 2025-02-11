@@ -2240,6 +2240,17 @@ function FrmInputDate($name, $txt, $val, $needed=false, $hlp="", $morehlp="") {
     echo $input->get_result();
 }
 
+/** Prints datetime input box
+ * @param        $name
+ * @param        $txt
+ * @param        $val
+ */
+function FrmInputDatetime($name, $txt, $val, $needed=false, $hlp="", $morehlp="") {
+    $input = new AA_Inputfield($val, false, 'normal', $name, $txt, false, $needed, $hlp, $morehlp);
+    $input->inputText(type: 'datetime-local');
+    echo $input->get_result();
+}
+
 /** Gets html tag <input type=text .. to 2-column table for use within <form> and <table> tag.
  * @param        $name
  * @param        $txt

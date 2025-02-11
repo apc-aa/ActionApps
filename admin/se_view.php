@@ -633,7 +633,7 @@ $apage->addHelpbox(_m('To include view in your sitemodule webpage use'), '<pre>
      <a href="https://documentation.actionapps.org/en/Syntax#.7Bview.7D_-_Including_Views">'._m('See documentation').'</a>');
 //$apage->printHelpbox();
 
-if ($tab = AA_Log::getLogTable('VIEW', $view_id, IsSuperadmin())) {
+if ($tab = AA_Log::getLogTable('VIEW', $view_id, 0, 0, IsSuperadmin())) {
     $apage->addHelpbox(_m('Last from log'), $tab);
 }
 

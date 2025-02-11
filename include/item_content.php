@@ -1042,7 +1042,7 @@ class ItemContent extends AA_Content {
         }
         $new_content->setSliceID($slice->getId());
         $this->content = $new_content->getContent();
-        if ($status == SC_NO_BIN) {
+        if ($status === SC_NO_BIN) {
             self::lastErr(ITEMCONTENT_ERROR_NO_PERM, _m("No Permission to insert Item for user %1", [AuthGetUid()]));  // set error code
             return false;
         }
