@@ -27,6 +27,11 @@ class DB_AA extends AbstractDB
     /* public: constructor */
     function __construct(array $connection) {
 
+        // in reality, we switched all the databases to PDO
+        if (in_array($connection['type'], ['db_mysql', 'db_mysqli'])) {
+            $connection['type'] = 'db_pdo:mysql';
+        }
+
         [$type,$driver] = explode(':',$connection['type'].':');  // $driver used in  PDO: db_pdo:mysql, ...
 
         self::$_instances_no++;
@@ -39,10 +44,6 @@ class DB_AA extends AbstractDB
                 break;
             case 'db_odbc':
                 $this->dbase = new DB_ODBC($connection);
-                break;
-            case 'db_pdo':
-                $connection['driver'] = $driver;
-                $this->dbase = new DB_PDO($connection);
                 break;
             case 'db_pgsql':
                 $this->dbase = new DB_PgSQL($connection);
@@ -57,9 +58,14 @@ class DB_AA extends AbstractDB
 //            case 'db_oracle':
 //                $this->dbase = new DB_Oracle($connection);
 //                break;
+            case 'db_pdo':
+                $connection['driver'] = $driver;
+                $this->dbase = new DB_PDO($connection);
+                break;
             case 'db_mysql':
             case 'db_mysqli':
             default:
+
                 $this->dbase = new DB_MySQL($connection);
         }
     }
