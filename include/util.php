@@ -818,7 +818,7 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
         foreach ($real_item_fields2get as $item_fid) {
             // FLAG_HTML does not mean in fact, that the content is in HTML, but it rather means, that we should not call txt2html function on the content
             // we do not need to call txt2html() to any of the item table fields
-            $content[$unpack_id][AA_Fields::createFieldId($item_fid)][] = ["value" => $row[$item_fid], "flag"  => FLAG_HTML];
+            $content[$unpack_id][AA_Fields::createFieldId($item_fid)][] = ["value" => (string)$row[$item_fid], "flag"  => FLAG_HTML];  // value is string - it was string for mysql_* DB acces, with PDO it could be int - so convert
         }
     }
     freeDB($db);
@@ -1080,7 +1080,7 @@ function safe( $var='' ): string
     return htmlspecialchars( $var, ENT_QUOTES | ENT_HTML5, 'ISO-8859-1');
 }
 
-/** qoutes utf string for use in xml attributes and content */
+/** quotes utf string for use in xml attributes and content */
 function safexml( $var='' ): string {
     return htmlspecialchars( $var, ENT_QUOTES | ENT_SUBSTITUTE | ENT_XML1, 'UTF-8');
 }

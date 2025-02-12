@@ -170,14 +170,17 @@ if ($show) {
         $template .= '<div>'._m('Items found').': '. StrExp('count', [$items]).'</div>';
         //FrmStaticText(_m('Display Statistics for Item'), AA::Un($template), '', '', false);
         echo AA::Un($template);
-
-        if ($tab = AA_Log::getLogTable('SYS_STAT', 'basic', $from, 0, IsSuperadmin())) {
-            $apage->addHelpbox(_m('Server configuration changes'), $tab);
-        }
     } else {
         echo MsgOk(_m('No items found'));
     }
 }
 // echo getFrmTabEnd($form_buttons);
+
+if ($tab = AA_Log::getLogTable('SYS_STAT', 'basic', $from ?: time()-60*60*24*7 , 0, IsSuperadmin())) {
+    echo '<br><br><br>';
+    $apage->addHelpbox(_m('Server configuration changes'), $tab);
+}
+
+
 
 $apage->printFoot();

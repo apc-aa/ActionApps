@@ -97,25 +97,22 @@ const XML_BEGIN = '<'.'?xml version="1.0" encoding="UTF-8"?'. ">\n".
 
 //-------------------------- Function definitons -------------------------------
 
-/** The output must be in utf-8. Unfortunatelly PHP do not support conversion
+/** The output must be in utf-8. Unfortunately PHP do not support conversion
   * form other than iso-8895-1 charsets to UTF-8, yet, so we have to use special
   * another conversion class for it
   */
 /** code function
+ *
  * @param $v
- * @param $cdata=false
+ *
  * @return string converted
  */
-function code($v, $cdata=false) {
+function code($v) {
     static $encoder;
     if ( !$encoder ) {
         $encoder = new ConvertCharset;
     }
-    if ( !$cdata ) {
-        return $encoder->Convert(safe($v), $GLOBALS['g_slice_encoding'], 'utf-8');
-    }
-    // no htmlspecialchars, here
-    return '<![CDATA['.$encoder->Convert($v, $GLOBALS['g_slice_encoding'], 'utf-8').']]>';
+    return safexml($encoder->Convert($v, $GLOBALS['g_slice_encoding'], 'utf-8'));
 }
 
 /** GetFlagFormat function
@@ -270,7 +267,7 @@ function GetXMLFieldData($slice_id, $field_id, $content4id): string
                    "\t\t\t<aa:field rdf:resource=\"".AA_INSTAL_URL."field/$slice_id/$field_id\"/>\n".
                    "\t\t\t<aa:fieldflags>".$v['flag']."</aa:fieldflags>\n".
                    "\t\t\t<aa:format rdf:resource=\"". MEDIAFORMATS[$flag_format]."\"/>\n".
-                   "\t\t\t<rdf:value>". code($v['value'], $flag_format==="HTML"). "</rdf:value>\n".
+                   "\t\t\t<rdf:value>".code($v['value']). "</rdf:value>\n".
                 "\t\t</aa:fielddata></rdf:li>\n";
    }
    return $out;
@@ -305,9 +302,9 @@ function GetXMLItem($slice_id, $item_id, $content4id, AA_Fields $sfields) {
     $item_link = ($link_only ? $hl_href : con_url($slice_url[$slice_id],"x=".$content4id['short_id........'][0]['value']) );
 
     $xml_items = "<item rdf:about=\"".AA_INSTAL_URL     ."items/$item_id\">\n".
-                  "\t<title>"         .code($title)      ."</title>\n".
-                  "\t<description>"   .code($description)."</description>\n".
-                  "\t<link>"          .code($item_link)  ."</link>\n".
+                  "\t<title>".code($title)      ."</title>\n".
+                  "\t<description>".code($description)."</description>\n".
+                  "\t<link>".code($item_link)  ."</link>\n".
                   "\t<dc:identifier>$item_id</dc:identifier>\n";
 
     // create fulltext in the element <content:items>
@@ -318,7 +315,7 @@ function GetXMLItem($slice_id, $item_id, $content4id, AA_Fields $sfields) {
             $xml_items .="\t<content:items><rdf:Bag>\n".
                            "\t\t<rdf:li><content:item>\n".
                               "\t\t\t<content:format rdf:resource=\"". MEDIAFORMATS[$flag_format]."\"/>\n".
-                              "\t\t\t<rdf:value>". code($content4id[$f][0]['value'], $flag_format === "HTML"). "</rdf:value>\n".
+                              "\t\t\t<rdf:value>".code($content4id[$f][0]['value']). "</rdf:value>\n".
                            "\t\t</content:item></rdf:li>\n".
                          "\t</rdf:Bag></content:items>\n";
         }

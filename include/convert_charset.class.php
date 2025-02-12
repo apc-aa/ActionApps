@@ -418,6 +418,8 @@ class ConvertCharset {
      **/
     function Convert($StringToChange, $FromCharset = null, $ToCharset = null, $TurnOnEntities = false): string {
 
+        $StringToChange = (string)$StringToChange; // it returned nonsence for 0 as int for iso-8859-1 to utf-8
+
         // get default conversions, if it is not specified in parameter
         if ( is_null($FromCharset) ) {
             $FromCharset = $this->from_charset;
@@ -428,15 +430,12 @@ class ConvertCharset {
 
         /** Check are there all variables **/
         if ($StringToChange == "") {
-            print $this->DebugOutput(0, 3, "\$StringToChange");
             return "";
         }
 
         if (empty($FromCharset)) {
-            print $this->DebugOutput(0, 3, "\$FromCharset");
             $FromCharset = 'utf-8';
         } elseif (empty($ToCharset)) {
-            print $this->DebugOutput(0, 3, "\$ToCharset");
             $ToCharset = 'utf-8';
         }
 
@@ -454,8 +453,7 @@ class ConvertCharset {
          * Of course, you can make a conversion from one charset to the same one :)
          * but I feel obligate to let you know about it.
          **/
-        if ($FromCharset == $ToCharset) {
-            print $this->DebugOutput(1, 0, $FromCharset);
+        if ($FromCharset === $ToCharset) {
             return $StringToChange;
         }
 

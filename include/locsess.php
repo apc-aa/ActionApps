@@ -533,7 +533,7 @@ function getDB() {
             'user'          => DB_USER,
             'password'      => DB_PASSWORD,
             'charset'       => (defined('DB_CHARACTER_SET') AND DB_CHARACTER_SET) ? DB_CHARACTER_SET : '',
-            'collation'     => (defined('DB_COLLATION_CONNECTION') AND DB_COLLATION_CONNECTION) ? DB_COLLATION_CONNECTION : '',
+            'collation'     => (defined('DB_COLLATION_CONNECTION') AND DB_COLLATION_CONNECTION AND (DB_COLLATION_CONNECTION !== 'latin1')) ? DB_COLLATION_CONNECTION : '',   // for some old AAs there was latin1, which is not valid in PDO - use latin1_swedish_ci or we take the default
             'persistent'    => (defined('AA_USE_NON_PERSISTENT_CONNECT') AND AA_USE_NON_PERSISTENT_CONNECT) ? false : true
         ];
         $db = new DB_AA($connection);
