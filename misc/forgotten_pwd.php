@@ -137,7 +137,7 @@ function GetUserData($identification,$findby="headline........") {
     }
     freeDB($db);
     // get item id of current user
-    $zid = QueryZids($slices, $conds, '', 'ACTIVE', 1, false, '=' );
+    $zid = QueryZids($slices, $conds, '', 'ACTIVE', 1, false, '=');
     //var_dump($conds);
     if ( $zid->count()<1 ) {
         return false;

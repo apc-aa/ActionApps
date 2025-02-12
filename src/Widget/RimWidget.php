@@ -176,7 +176,10 @@ class RimWidget extends Widget
                            <input type="hidden" name="$input_name" id="$input_id" value="">
                            $downbuttons
                          </footer>
-                         <section class="itemselect" id=flt$base_id>
+                         <section class="itemselect" id=flt$base_id style="visibility:hidden">
+                           <section class="itemgroup">
+                               {$this->getFilterSelection('', 10)}
+                           </section>
                          </section>
                        </section>
                      </article>
@@ -203,15 +206,14 @@ class RimWidget extends Widget
         return implode("\n", array_values($actbuttons));
     }
 
-
     public function getButtonsDown(AA_Property $aa_property, AA_Content $content, string $base_id, string $sid, string $def_field_id, string $def_slice_id): string
     {
         $actions2show = $this->getProperty('show_buttons', 'MRND');
 
         $actbuttonsdown = [];
         if (str_contains($actions2show, 'R')) {
-            $actbuttonsdown['R'] = "<article><!--i class=\"ico insert\">add</i--><input type=search placeholder='"._m('search in existing')
-                ."' value onkeyup=\"DisplayAaResponse('flt$base_id', 'Widget_Selection', {s:'$def_slice_id',f:'$def_field_id',q:this.value})\"></article>";
+//            $actbuttonsdown['R'] = "<article><!--i class=\"ico insert\">add</i--><input type=search placeholder='"._m('search in existing')."' value onkeyup=\"DisplayAaResponse('flt$base_id', 'Widget_Selection', {s:'$def_slice_id',f:'$def_field_id',q:this.value})\"></article>";
+            $actbuttonsdown['R'] = "<article><!--i class=\"ico insert\">add</i--><input type=search placeholder='"._m('search in existing')."' value onkeyup=\"AA_$('#flt$base_id').style.visibility='visible'; DisplayAaResponse('flt$base_id',   'Widget_Selection', {s:'$def_slice_id',f:'$def_field_id',q:this.value})\" onblur=\"setTimeout(() => AA_$('#flt$base_id').style.visibility=(this === document.activeElement) ? 'visible':'hidden', 100)\"></article>";
         }
         if (str_contains($actions2show, 'N')) {
             $actbuttonsdown['N'] = "<article><i class=\"ico new\" onclick=\"OpenWindowTop('".Inputform_url(true, null, $sid, 'close_dialog', null, "/rim/$def_slice_id/$def_field_id/$base_id")."');\">"._m('new').'</i></article>';
@@ -259,7 +261,7 @@ class RimWidget extends Widget
 
         $buttons = $this->getButtons($base_id, $def_field_id, $def_slice_id);
         $ret = '';
-        $options = $this->getFormattedOptions(null, $zids);
+        $options = $this->getFormattedOptions('', $zids);
         foreach ($options as $id => $html) {
             $id  = safe($id);
             $btn = str_replace('***_#id***', $id, $buttons);
@@ -276,21 +278,23 @@ class RimWidget extends Widget
         return $ret;
     }
 
-    /** function which offers filtered selections for current widget */
-    function getFilterSelection($searchstring): string {
+    /** function which offers filtered selections for current widget
+     *  @param  int  $limit
+     */
+    public function getFilterSelection(string $searchstring, int $limit = 0): string {
         if ($item_width = $this->getProperty('item_width')) {
             $item_width = ctype_digit((string)$item_width) ? " style=\"width:${item_width}px\"" : " style=\"width:$item_width\"";
         }
 
-        $options = $this->getFormattedOptions(null, false, $searchstring);
+        $options = $this->getFormattedOptions('', null, $searchstring, false, $limit);
         $ret = '';
         foreach ($options as $id => $v) {
             $id  = safe($id);
             $ret .= <<<HTML
-                       <article class="item"  onclick="AA_RimAdd2Current(this)" $item_width>
+                       <article class="item"  onclick="event.stopPropagation(); this.closest('.aa-rim').querySelector('input[type=search]').focus(); AA_RimAdd2Current(this)" $item_width>
                            <section class="iteminfo"> $v </section>
                            <section class="icogroup">
-                               <input type="hidden" name="" value="$id" class="id2add"><article class="select" onclick="event.stopPropagation(); AA_RimAdd2Current(this.closest('.item'))"><i class="ico select">+</i></article>
+                               <input type="hidden" name="" value="$id" class="id2add"><article class="select" onclick="event.stopPropagation(); this.closest('.aa-rim').querySelector('input[type=search]').focus(); AA_RimAdd2Current(this.closest('.item'))"><i class="ico select">+</i></article>
                            </section>
                        </article>
                     HTML;

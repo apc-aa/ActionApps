@@ -734,7 +734,7 @@ class LastEditList {
      */
     function setFromSlice($conds, $slice) {
         ParseEasyConds($conds);
-        $zids    = QueryZids( [$slice->getId()], $conds, '', 'ALL');
+        $zids    = QueryZids([$slice->getId()], $conds, '', 'ALL');
         $format  = [
             'odd_row_format' => '{id..............}-{last_edit.......}',
             'row_delimiter'  => ','

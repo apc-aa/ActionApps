@@ -132,13 +132,16 @@ class Widget extends AA_Object implements NamedInterface {
 
     /** returns array(ids => formatted text) for the current widget based on
      *  the widget settings
-     * @param $for_id         string - long item id
-     * @param $restrict_zids  zids[]
-     * @param $searchterm
-     * @param $ignore_filters bool
+     *
+     * @param  string     $for_id          long item id
+     * @param  zids|null  $restrict_zids
+     * @param  string     $searchterm
+     * @param  bool       $ignore_filters  bool
+     * @param  int        $limit
+     *
      * @return array
      */
-    public function getFormattedOptions($for_id = null, $restrict_zids = false, $searchterm = '', $ignore_filters = false) {
+    public function getFormattedOptions(string $for_id = '', ?zids $restrict_zids = null, string $searchterm = '', bool $ignore_filters = false, int $limit = 0): array {
 
         $values_array = $this->getProperty('const_arr');  // is associative!
         if (!empty($values_array)) {          // values assigned directly
@@ -205,9 +208,9 @@ class Widget extends AA_Object implements NamedInterface {
                 // $sf = AA_Slice::getModule($sid)->getField($slice_field) ? $slice_field : GetHeadlineFieldID($sid);
                 $set->addCondition(new AA_Condition('all_fields', 'LIKE', "\"$searchterm\""));
             }
-            return GetFormattedItems($set->query($restrict_zids), $format, $crypted_additional_slice_pwd, $tag_prefix);
+            return GetFormattedItems($set->query($restrict_zids, $limit), $format, $crypted_additional_slice_pwd, $tag_prefix);
         }
-        return GetFormatedConstants($constgroup, $slice_field, $ids_arr, $filter_conds, $sort_by, $for_id);
+        return GetFormatedConstants($constgroup, $slice_field, $ids_arr, $filter_conds, $sort_by, $for_id, $limit);
     }
 
 
@@ -276,7 +279,7 @@ class Widget extends AA_Object implements NamedInterface {
             // not filled, yet - so fill it
             // Fills array used for list selection. Fill it from constant group or slice.
             // function is rewritten fill_const_arr().
-            $this->_const_arr = $this->getFormattedOptions($content?->getId());  // Initialize
+            $this->_const_arr = $this->getFormattedOptions($content?->getId() ?: '');  // Initialize
         }
 
         foreach ($this->_const_arr as $k => $v) {
@@ -309,7 +312,7 @@ class Widget extends AA_Object implements NamedInterface {
             if (!$already_selected[$k]) {
                 $val_txt = $k;
                 if ($this->getProperty('const') and is_long_id($k)) {
-                    $opt = $this->getFormattedOptions(null, new zids($k, 'l'), '', true);
+                    $opt = $this->getFormattedOptions('', new zids($k, 'l'), '', true);
                     if (!strlen($val_txt = $opt[$k])) {
                         $val_txt = $k;
                     }
@@ -563,8 +566,8 @@ class Widget extends AA_Object implements NamedInterface {
         return "<div class=\"$class\"" . ($winfo['required'] ? ' data-aa-required' : '') . " id=\"widget-$base_id\" style=\"display:inline; position:relative;\">" . $widget_html . "</div>";
     }
 
-    /** function which offers filtered selections for current widget */
-    public function getFilterSelection($searchstring): string {
+    /** function which offers filtered selections for current widget * * @param  int  $limit*/
+    public function getFilterSelection(string $searchstring, int $limit = 0): string {
         return '';
     }
 

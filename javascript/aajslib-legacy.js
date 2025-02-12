@@ -6,9 +6,25 @@
  *
 /*--------------------------------------------------------------------------*/
 
+
+/** Common part of aajslib-* library - the one in vanilla JS
+ *
+ *  @package UserOutput
+ *  @version $Id$
+ *  @author Honza Malik <honza.malik@ecn.cz>
+ *  @copyright Ecn Studio, Honza Malik, 2023-07-12
+ */
+
+// polyfills - will be removed when the incompatible browsers are not supported by its creator
+if (window.NodeList && !NodeList.prototype.forEach) { NodeList.prototype.forEach = Array.prototype.forEach; }
+/** shortcut to parent.querySelector() */
+if (typeof AA_$ !== 'function')  { var AA_$ = (sel, el = document) => el.querySelector(sel); }
+/** shortcut to parent.querySelectorAll() */
+if (typeof AA_$$ !== 'function') { var AA_$$ = (sel, el = document) => Array.from(el.querySelectorAll(sel)); }
+
 if (typeof window.AA_GetConf === 'undefined') {
     window.AA_GetConf = function(prop) {
-        if (typeof AA_GetConf.aa_install_path == 'undefined') {
+        if (typeof AA_GetConf.aa_install_path === 'undefined') {
             var src = document.querySelector('script[src*="javascript/aajslib"]').getAttribute('src');
             AA_GetConf.aa_install_path = src.replace(/javascript\/aajslib.*$/, '');
         }
@@ -16,9 +32,350 @@ if (typeof window.AA_GetConf === 'undefined') {
             case 'path':
                 return AA_GetConf.aa_install_path;
             case 'loader':
-                return '<img src="' + AA_GetConf.aa_install_path + 'images/loader.gif" border=0 width=16 height=16>';
+                return '<img src="' + AA_GetConf.aa_install_path + 'images/loader.gif" width=16 height=16 class=aa-loader>';
+            case 'lang':
+                return document.documentElement.lang.substring(0,2);
         }
     }
+}
+
+/** rewrite of AA_AjaxInsert, which uses prototype.js to vanilla JS */
+function AA_AjaxInsert(a_obj, form_url) {
+    var new_div_id = a_obj.id + '_ins';
+    if ( document.getElementById(new_div_id) == null ) {
+        var new_div  = document.createElement('div');
+        new_div.id = new_div_id;
+        a_obj.innerHTML =  '<img src="' + AA_GetConf('path') + 'images/icon_close.gif" width=16 height=16>';
+        a_obj.parentNode.insertBefore(new_div, a_obj.nextSibling);
+        AA_Ajax(new_div_id, form_url);
+    } else {
+        a_obj.innerHTML =  '<img src="' + AA_GetConf('path') + 'images/icon_new.gif" width=16 height=16>';
+        document.getElementById(new_div_id).remove();
+    }
+}
+
+/** calls AA responder with permissions of current user and displays returned
+ *  html code into div_id
+ *  Usage:
+ *     FrmSelectEasy('from_slice', $slice_array, $from_slice, 'onchange="DisplayAaResponse(\'fieldselection\', \'Get_Fields\', {slice_id:this.value})"');
+ *     echo '<div id="fieldselection"></div>';
+ **/
+function DisplayAaResponse(div_id, method, params) {
+    AA_AjaxCss('#'+CSS.escape(div_id), AA_GetConf('path') + 'central/responder.php?command='+ method, params);
+}
+
+/* text - string or url (begins with '/')
+ * type - err | ok | info | [text]
+ */
+function AA_Message(text, type) {
+    var attrs = {'id': 'aa-message-box', 'onclick': '$(this).hide()'};
+    switch(type) {
+        case 'err':  attrs['class'] = 'aa-err';  break;
+        case 'ok':   attrs['class'] = 'aa-ok';   break;
+        case 'info': attrs['class'] = 'aa-info'; break;
+        default:     attrs['class'] = 'aa-text';
+            type = 'text';
+    }
+    if (text.charAt(0)==='/') {
+        AA__systemDiv('aa-message-box', attrs, '<div id="aa-message-box-in"></div>');
+        AA_Ajax('aa-message-box-in', text);
+    } else {
+        AA__systemDiv('aa-message-box', attrs, text.length ? '<div id="aa-message-box-in">'+text+'</div>' : '');
+    }
+    if (type !== 'text') {
+        setTimeout(function() { $('#aa-message-box').hide(); }, 3000);
+    }
+}
+
+function AA_Toolbar(text) {
+    AA__systemDiv('aa-bottom-toolbar', {'id': 'aa-bottom-toolbar'}, text);
+}
+
+/** If condition, call callback directly. Otherwise - load js script from url and execute callback after the script is loaded */
+function AA_LoadJs(condition, callback, url, sync) {
+    if (condition && ((condition!=='load_once') || (url && document.querySelector('script[src="'+url+'"]')))) {
+        if (callback) {
+            callback();
+        }
+    } else {
+        var script = document.createElement("script")
+        script.type = "text/javascript";
+        if (sync) {
+            script.async = false;
+        }
+
+        if (script.readyState) { //IE
+            script.onreadystatechange = function () {
+                if (script.readyState === "loaded" || script.readyState === "complete") {
+                    script.onreadystatechange = null;
+                    if (callback) {
+                        callback();
+                    }
+                }
+            };
+        } else { //Others
+            script.onload = function () {
+                if (callback) {
+                    callback();
+                }
+            };
+        }
+
+        script.src = url;
+        document.getElementsByTagName("head")[0].append(script);
+    }
+}
+
+/** internal AA function for function call after all the scripts are loaded */
+function AA_IsLoaded() {
+    if (AA_IsLoaded.cnt) {
+        --AA_IsLoaded.cnt; // count to zero
+    }
+    if (!AA_IsLoaded.cnt && AA_IsLoaded.callback) {
+        AA_IsLoaded.callback();
+        AA_IsLoaded.callback = undefined;       // run it just once
+    }
+}
+
+function AA_LoadCss(url) {
+    var link = document.querySelector('link[href="'+url+'"]');
+    if (url && !link) {
+        link  = document.createElement('link');
+        link.rel  = 'stylesheet';
+        link.href = url;
+        document.getElementsByTagName('head')[0].append(link);
+    }
+    return link;
+}
+/* function to check the computed value of a style element */
+function AA_GetStyle(id, name) {
+    return window.getComputedStyle(document.getElementById(id))?.getPropertyValue(name) ?? null;
+}
+
+// used in window.addEventListener("beforeunload", AA_WindowUnloadQ)
+function AA_WindowUnloadQ(e) {
+    e.preventDefault();
+    // The text is not displayed in most modern browsers, but the value must be set;
+    e.returnValue = "Changes are not saved. Do you really want to exit this page?";
+}
+
+function AA_SiteUpdate(item, field, value, action) {
+    if (['u','i','r'].indexOf(action) === -1) {
+        action = 'u';
+    }
+    var params = {};
+    params['aa['+action+item+']['+field+'][0]'] = value;
+    AA__doChange(params);
+}
+
+/* template not implemented, field and values pairs could be multiple field, value, field, value, ... */
+function AA_SiteNewitem(slice, template, field, value) {
+    let params = {};
+    for (var i = 2, len = arguments.length; i < len; i+=2) {
+        if (len > i+1) {
+            params['aa[n1_'+slice+']['+arguments[i]+'][0]'] = arguments[i+1];
+        }
+    }
+    AA__doChange(params);
+}
+function AA_SiteEdit(item, cmdvar) {
+    AA__doChange({[cmdvar]:item,'aaedit':cmdvar}, 'get');
+}
+function AA_SiteSendForm(form) {
+    AA__doChange(new FormData(form));
+    return false;
+}
+
+function AA__SiteUpdateParts(data) {
+    // CKEditors (and CodeMirrors, ..) are now loaded automatically - no need to do any extra work here HM 2021-09-21
+    for (var i in data) {
+        if (i === 'message') {
+            document.querySelectorAll('article.aa-updating[data-aa-part]').forEach(function(elem) {
+                elem.classList.remove('aa-updating');
+            });
+            AA_Message(data[i], 'err');
+        } else {
+            document.querySelectorAll("[data-aa-part='" + i + "']").forEach(function(elem) {
+                if (elem.getAttribute('data-aa-part-update') === 'add') {
+                    elem.outerHTML += data[i];  // or innerHTML? (as was in prototype version)
+                } else {
+                    elem.outerHTML = data[i];
+                }
+            });
+        }
+    }
+}
+
+/* older - jQyery version of the function
+function AA__doChange(params, type) {
+    if (type === 'get') {
+        $.get(window.location.href, params, AA__SiteUpdateParts);
+    } else if (params instanceof FormData) {
+        $.ajax({
+            url         : window.location.href,
+            data        : params,
+            cache       : false,
+            contentType : false,
+            processData : false,
+            type        : 'POST',
+            success     : AA__SiteUpdateParts
+        });
+    } else {
+        $.post(window.location.href, params, AA__SiteUpdateParts);
+    }
+}
+*/
+function AA__doChange(params, type) {
+    const headers = {'X-Requested-With': 'xmlhttprequest'};
+    const base_url = window.location.href.split('#')[0];
+    if (type === 'get') {
+        const url = base_url + '?' + new URLSearchParams(params).toString();
+        fetch(url, { method: 'GET', credentials: 'same-origin', headers: headers })
+            .then(response => response.json())
+            .then(data => AA__SiteUpdateParts(data))
+            .catch(error => console.error('Error:', error));
+    } else if (params instanceof FormData) {
+        fetch(base_url, { method: 'POST', body: params, credentials: 'same-origin', headers: headers })
+            .then(response => response.json())
+            .then(data => AA__SiteUpdateParts(data))
+            .catch(error => console.error('Error:', error));
+    } else {
+        const formData = new URLSearchParams();
+        for (let key in params) {
+            formData.append(key, params[key]);
+        }
+        fetch(base_url, { method: 'POST', headers: { ...headers, 'Content-Type': 'application/x-www-form-urlencoded' }, body: formData.toString(), credentials: 'same-origin' })
+            .then(response => response.json())
+            .then(data => AA__SiteUpdateParts(data))
+            .catch(error => console.error('Error:', error));
+    }
+}
+
+function AA_Translate(text, from, to) {
+    const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${from}&tl=${to}&dt=t&q=${encodeURIComponent(text)}`;
+    return fetch(url).then(response => response.json()).then(data => {
+        return data[0]?.map(item => item[0]).join('') || '';
+    })
+}
+
+
+/* Cookies */
+function SetCookie(name, value, plustime) {
+    var coo = encodeURIComponent(name) + "=" + encodeURIComponent(value);
+    plustime = (typeof plustime === "undefined") ? (1000 * 60 * 60 * 24) : plustime;   // a day
+    var expires = new Date();
+    expires.setTime(expires.getTime() + plustime);
+    coo += "; expires=" + expires.toGMTString() + "; path=/";
+    coo += (window.location.protocol === 'https:') ? ';secure;samesite=lax' : '';
+    document.cookie = coo;
+    // + ((expires == null) ? "" : ("; expires=" + expires.toGMTString()))
+    // + ((path == null)    ? "" : ("; path=" + path))
+    // + ((domain == null)  ? "" : ("; domain=" + domain))
+    // + ((secure == true)  ? "; secure" : "");
+}
+
+function getCookieVal(offset) {
+    var endstr = document.cookie.indexOf(";", offset);
+    if (endstr === -1) {
+        endstr = document.cookie.length;
+    }
+    return decodeURIComponent(document.cookie.substring(offset, endstr));
+}
+
+function GetCookie(name) {
+    var arg  = name + "=";
+    var alen = arg.length;
+    var clen = document.cookie.length;
+    var i    = 0;
+    while (i < clen) {
+        var j = i + alen;
+        if (document.cookie.substring(i, j) === arg) {
+            return getCookieVal(j);
+        }
+        i = document.cookie.indexOf(" ", i) + 1;
+        if (i === 0) break;
+    }
+    return null;
+}
+
+function DeleteCookie(name) {
+    var exp = new Date();
+    exp.setTime (exp.getTime() - 1);
+    var cval = GetCookie (name);
+    document.cookie = name + "=" + cval + "; expires=" + exp.toGMTString() + "; path=/";
+}
+
+function ToggleCookie(name,val) {
+    if ( GetCookie(name) !== val ) {
+        SetCookie(name,val);
+    } else {
+        DeleteCookie(name);
+    }
+}
+
+function AA_NewId() {
+    // Private array of chars to use
+    var chars = '0123456789abcdefgh'.split('');
+
+    var uuid = [];
+
+    // we do not want to have 0 as the first char in pair
+    for (var i = 0; i < 16; i++) {
+        uuid[2*i]   = chars[0 | (Math.random()*15+1)];
+        uuid[2*i+1] = chars[0 | (Math.random()*16)];
+    }
+    return uuid.join('');
+}
+
+function displayInput(valdivid, item_id, fid, widget_type, widget_properties, context) {
+    // already editing ?
+    var el = document.getElementById(valdivid);
+    switch (el.getAttribute('data-aa-edited')) {
+        case '1': return;
+        //case '2': document.getElementById(valdivid).setAttribute("data-aa-edited", "0");  // the state 2 is needed for Firefox 3.0 - Storno not works
+        //          return;
+    }
+
+    el.setAttribute("data-aa-oldval", el.innerHTML);
+    var width = el.offsetWidth;
+    el.innerHTML = AA_GetConf('loader');
+    var lang = AA_GetConf('lang');
+    AA_Response('Get_Widget', { "field_id": fid, "item_id": item_id, "widget_type": widget_type, "widget_properties": widget_properties, lang: lang, context: context}, function(responseText) {
+        // var style = 'position:absolute; left:0px; top:0px; width:'+width+'px; z-index:1000;';
+        if (width>200) {
+            responseText = responseText.replace('class="ajax_widget aa-widget aa-ajax-open"', 'class="ajax_widget aa-widget aa-ajax-open" style="width:'+width+'px;"');
+        }
+        el.innerHTML = responseText;
+        el.setAttribute("data-aa-edited", "1");
+        var firstInput = el.querySelector('input, select, textarea');
+        if (firstInput != null) {
+            firstInput.focus();
+            if (firstInput.tagName.toLowerCase()==="textarea") {
+                // add keydown event handler on firstElement
+                firstInput.addEventListener('keydown', event => {
+                    switch (event.key) {
+                        case "Escape": el.querySelector('input.cancel-button')?.click(); break; // Esc
+                    }
+                });
+            } else {
+                firstInput.addEventListener('keydown', event => {
+                    switch (event.key) {
+                        case "Escape": el.querySelector('input.cancel-button')?.click(); break;
+                        case "Enter":  el.querySelector('input.save-button')?.click(); break;
+                        case "Tab":
+                            const current = event.target.closest('div.ajax_container');
+                            if (current) {
+                                const containers = [...document.querySelectorAll('div.ajax_container')];
+                                el.querySelector('input.save-button')?.click();
+                                containers[containers.indexOf(current) + 1]?.click();
+                            }
+                            break;
+                    }
+                });
+
+            }
+        }
+    });
 }
 
 var AA_Config = {
@@ -7779,10 +8136,7 @@ Object.extend(Control.Tabs.prototype,{
 });
 if(typeof(Object.Event) != 'undefined')
     Object.Event.extend(Control.Tabs);
-// polyfills - will be removed when the incompatible browsers will not be supported by its creator
-if (window.NodeList && !NodeList.prototype.forEach) {
-    NodeList.prototype.forEach = Array.prototype.forEach;
-}
+
 
 // switch current item in gallery
 function AA_GalleryGoto(photo_div, viewid, sitemid, galeryid, thumb_id) {
@@ -7794,6 +8148,63 @@ function AA_GalleryGoto(photo_div, viewid, sitemid, galeryid, thumb_id) {
         $(thumb_id).parentNode.scrollTop = $(thumb_id).offsetTop - $(thumb_id).parentNode.offsetTop - 50;
     }
 }
+
+function AA_Ajax(div, url, param, onload) {
+  $(div).update(AA_GetConf('loader'));
+  if( onload && typeof onload === "function" ) {
+    if (param && typeof param === 'object' ) {
+      param['onSuccess'] = onload;
+    } else {
+      param = {onSuccess: onload};
+    }
+  }
+  new Ajax.Updater(div, url, param);
+}
+
+
+// AA_Load: Fetches HTML, injects it into the target element,
+// executes inline scripts, and calls an optional onload callback.
+async function AA_Load(sel, url, options = {}, onload = () => {}) {
+  const res = await fetch(url, options);
+  const html = await res.text();
+  const el = sel instanceof HTMLElement ? sel : document.querySelector(sel);
+  el.innerHTML = html;
+  el.querySelectorAll('script').forEach(s => {
+    const ns = document.createElement('script');
+    [...s.attributes].forEach(attr => ns.setAttribute(attr.name, attr.value));
+    ns.text = s.text;
+    s.parentNode.replaceChild(ns, s);
+  });
+  onload(el);
+  return el;
+}
+
+// AA_AjaxCss: Inserts a loader then loads new content via AA_Load.
+function AA_AjaxCss(selector, url, param) {
+  const el = document.querySelector(selector);
+  if (!el) return;
+  // Display the loader from configuration.
+  el.innerHTML = AA_GetConf('loader');
+  const options = param  ? {  method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' },  body: new URLSearchParams(param) } : {};
+  AA_Load(selector, url, options);
+}
+function AA_InsertHtml(into_id, code) {
+  $(into_id).insert(code);
+}
+
+function AA_AjaxInsert(a_obj, form_url) {
+  var new_div_id = $(a_obj).identify() + '_ins';
+  if ( $(new_div_id) == null ) {
+    var new_div  = new Element('div', { 'id': new_div_id});
+    $(a_obj).update(AA_Config.icon_close);
+    new Insertion.After(a_obj, new_div);
+    AA_Ajax(new_div, form_url);
+  } else {
+    $(a_obj).update(AA_Config.icon_new);
+    $(new_div_id).remove();
+  }
+}
+
 
 // now AA specific functions
 function AA_HtmlToggle(link_id, link_text_1, div_id_1, link_text_2, div_id_2, persist_id) {
@@ -7858,22 +8269,11 @@ function AA_HtmlAjaxToggleCss(link_id, link_text_1, link_text_2, selector_hide, 
     }
 }
 
-/** calls AA responder with permissions of current user and displays returned
- *  html code into div_id
- *  Usage:
- *     FrmSelectEasy('from_slice', $slice_array, $from_slice, 'onchange="DisplayAaResponse(\'fieldselection\', \'Get_Fields\', {slice_id:this.value})"');
- *     echo '<div id="fieldselection"></div>';
- **/
-function DisplayAaResponse(div_id, method, params) {
-    $(div_id).update(AA_GetConf('loader'));
-    new Ajax.Updater(div_id, AA_GetConf('path') + 'central/responder.php?command='+ method, {parameters: params});
-}
-
 function AA_Response(method, resp_params, ok_func, err_func) {
     new Ajax.Request(AA_GetConf('path') + 'central/responder.php?command='+ method, {
          parameters: resp_params,
          onSuccess: function(transport) {
-             if( transport.responseText.substring(0,5) == 'Error' ) {
+             if( transport.responseText.substring(0,5) === 'Error' ) {
                  err_func(transport.responseText);
              } else {
                  ok_func(transport.responseText);
@@ -7882,116 +8282,31 @@ function AA_Response(method, resp_params, ok_func, err_func) {
     });
 }
 
-/** do not use any library dependencies */
-function displayInput(valdivid, item_id, fid, widget_type, widget_properties, context) {
-  // already editing ?
-  var el = document.getElementById(valdivid);
-  switch (el.getAttribute('data-aa-edited')) {
-    case '1': return;
-      //case '2': document.getElementById(valdivid).setAttribute("data-aa-edited", "0");  // the state 2 is needed for Firefox 3.0 - Storno not works
-      //          return;
+
+/** Refreshes the id using the data-aa-url attribute.
+ *  If that attribute is not present, finds the first up in the DOM
+ */
+function AA_Refresh(id,inside,ok_func) {
+  var refresh_id  = id || this;
+  var refresh_url = $(id).readAttribute('data-aa-url');
+  if (!refresh_url) {
+    refresh_id  = $(id).up('*[data-aa-url]');
+    refresh_url = $(refresh_id).readAttribute('data-aa-url');
   }
+  $(refresh_id).update(AA_GetConf('loader'));
 
-  el.setAttribute("data-aa-oldval", el.innerHTML);
-  var width = el.offsetWidth;
-
-  el.innerHTML = AA_GetConf('loader');
-  AA_Response('Get_Widget', { "field_id": fid, "item_id": item_id, "widget_type": widget_type, "widget_properties": widget_properties, context: context}, function(responseText) {
-    // var style = 'position:absolute; left:0px; top:0px; width:'+width+'px; z-index:1000;';
-    if (width>200) {
-      responseText = responseText.replace('class="ajax_widget aa-widget aa-ajax-open"', 'class="ajax_widget aa-widget aa-ajax-open" style="width:'+width+'px;"');
-    }
-    el.innerHTML = responseText;
-    el.setAttribute("data-aa-edited", "1");
-    var firstInput = el.querySelector('input, select, textarea');
-    if (firstInput != null) {
-      firstInput.focus();
-      if (firstInput.tagName.toLowerCase()==="textarea") {
-        // add keydown event handler on firstElement
-        firstInput.addEventListener('keydown', function(event) {
-          switch (event.key) {
-            case "Escape": el.querySelector('input.cancel-button').click(); break; // Esc
-          }
-        });
+  new Ajax.Request(refresh_url, {
+    onSuccess: function(transport) {
+      if (inside) {
+        $(refresh_id).update(transport.responseText);
       } else {
-        firstInput.addEventListener('keydown', function(event) {
-          switch (event.key) {
-            case "Escape": el.querySelector('input.cancel-button').click(); break;
-            case "Enter"   : el.querySelector('input.save-button').click(); break;
-            //case "Tab": //@todo
-          }
-        });
-
+        $(refresh_id).replace(transport.responseText);
+      }
+      if (typeof ok_func != "undefined") {
+        ok_func();
       }
     }
   });
-}
-
-/** return back old value - CANCEL pressed on AJAX widget */
-function DisplayInputBack(input_id) {
-    var valdivid = 'ajaxv_'+input_id
-    $(valdivid).update($(valdivid).readAttribute('data-aa-oldval'));
-    // $(valdivid).setAttribute('data-aa-edited', '2');    // no longer needed  state 2 - we use stopPropagation() in widget Ajax
-    $(valdivid).setAttribute('data-aa-edited', '0');
-}
-
-function AA_Ajax(div, url, param, onload) {
-    $(div).update(AA_GetConf('loader'));
-    if( onload && typeof onload === "function" ) {
-        if (param && typeof param === 'object' ) {
-            param['onSuccess'] = onload;
-        } else {
-            param = {onSuccess: onload};
-        }
-    }
-    new Ajax.Updater(div, url, param);
-}
-
-function AA_AjaxCss(selector, url, param) {
-    $$(selector).invoke('update', AA_GetConf('loader'));
-    new Ajax.Request(url, {
-        onSuccess: function(transport) {
-            $$(selector).invoke('update', transport.responseText);  // new value
-        }
-    });
-}
-
-function AA_InsertHtml(into_id, code) {
-   $(into_id).insert(code);
-}
-
-function AA_AjaxInsert(a_obj, form_url) {
-    var new_div_id = $(a_obj).identify() + '_ins';
-    if ( $(new_div_id) == null ) {
-        var new_div  = new Element('div', { 'id': new_div_id});
-        $(a_obj).update(AA_Config.icon_close);
-        new Insertion.After(a_obj, new_div);
-        AA_Ajax(new_div, form_url);
-    } else {
-        $(a_obj).update(AA_Config.icon_new);
-        $(new_div_id).remove();
-    }
-}
-
-/** Send the form by AJAX and on success refreshes the content of page
- *  @param id        - form id
- *  @param refresh   - id of the html element, which you want to refresh.
- *                   - Such element must have data-aa-url attributes
- *  @param ok_html   - function to call after the page update
- *  Note, that the form action atribute must be RELATIVE (not with 'http://...')
- */
-function SendAjaxForm(id, refresh, ok_func) {
-    $(id).insert(AA_GetConf('loader'));
-    $(id).request({encoding:   'windows-1250',
-                   onComplete: function(transport){
-                       if (typeof refresh != "undefined") {
-                           AA_Refresh(refresh,false,ok_func);
-                       } else {
-                           new Insertion.After($(id).up('div'), new Element('div').update(transport.responseText));
-                           // close form and display add icon
-                           AA_AjaxInsert($(id).up('div').previous(), '');
-                       }
-                   }});
 }
 
 /** Send the form by AJAX and on success displays the ok_html text
@@ -8037,31 +8352,16 @@ function AA_AjaxSendForm(form_id, url) {
     });
 }
 
-/** Refreshes the id using the data-aa-url attribute.
- *  If that attribute is not present, finds the first up in the DOM
- */
-function AA_Refresh(id,inside,ok_func) {
-    var refresh_id  = id || this;
-    var refresh_url = $(id).readAttribute('data-aa-url');
-    if (!refresh_url) {
-        refresh_id  = $(id).up('*[data-aa-url]');
-        refresh_url = $(refresh_id).readAttribute('data-aa-url');
-    }
-    $(refresh_id).update(AA_GetConf('loader'));
 
-    new Ajax.Request(refresh_url, {
-        onSuccess: function(transport) {
-            if (inside) {
-                $(refresh_id).update(transport.responseText);
-            } else {
-                $(refresh_id).replace(transport.responseText);
-            }
-            if (typeof ok_func != "undefined") {
-                ok_func();
-            }
-        }
-    });
+/** return back old value - CANCEL pressed on AJAX widget */
+function DisplayInputBack(input_id) {
+  var valdivid = 'ajaxv_'+input_id
+  $(valdivid).update($(valdivid).readAttribute('data-aa-oldval'));
+  // $(valdivid).setAttribute('data-aa-edited', '2');    // no longer needed  state 2 - we use stopPropagation() in widget Ajax
+  $(valdivid).setAttribute('data-aa-edited', '0');
 }
+
+
 
 /*return first element up the DOM tree matching css */
 // function AA_up(el, css) { return $(el).up(css); } // use el.closest(css)
@@ -8174,136 +8474,6 @@ function AA_SendWidgetLive(id, liveinput, fnc) {
     });
 }
 
-/** This function replaces the older one - proposeChange
- *  The main chane is, that now we use standard AA input names:
- *   aa[i<item_id>][<field_id>][]
- */
-function AA_StateChange(id, state) {
-    var outstyle = {};
-    var icoimg   = '';
-    var elems    = $$('*[id ^="'+id+'"]');
-
-    switch (state) {
-    case 'dirty':
-        elems.invoke('removeClassName', 'normal');
-        elems.invoke('removeClassName', 'updating');
-        outstyle = {'outlineColor': '#E4B600', 'outlineWidth': '1px', 'outlineStyle': 'solid'};
-        icoimg   = 'images/save.png';
-        break;
-    case 'updating':
-        elems.invoke('removeClassName', 'dirty');
-        elems.invoke('removeClassName', 'normal');
-        outstyle = {'outlineColor': '#E4B600', 'outlineWidth': '1px', 'outlineStyle': 'dashed'};
-        icoimg   = 'images/loader.gif';
-        break;
-    case 'normal':
-    default:
-        elems.invoke('removeClassName', 'dirty');
-        elems.invoke('removeClassName', 'updating');
-        outstyle = {'outline': 'none'};
-        icoimg   = 'images/px.gif';
-        break;
-    }
-    elems.invoke('addClassName', state);
-    $$('select[id ^="'+id+'"]').invoke('setStyle', outstyle);
-    $$('input[id ^="'+id+'"]').invoke('setStyle', outstyle);
-    $$('textarea[id ^="'+id+'"]').invoke('setStyle', outstyle);
-    $$('img.'+id+'ico').each(function(img) {img.setAttribute('src', AA_GetConf('path')+icoimg); });
-}
-
-/** Deprecated
- *  For backward compatibility only. Use $(element).update('text') from
- *  aajslib.php instead.
- */
-function SetContent(id,txt) {
-    // function replaces html code of a an HTML element (identified by id)
-    // by another code
-    $(id).update(txt);
-}
-
-function proposeChange(combi_id, item_id, fid, change) {
-    const valdivid = 'ajaxv_' + combi_id;
-    const alias_name = $(valdivid).readAttribute('data-aa-alias');
-    let do_change;
-    if (typeof do_change == 'undefined') {
-        do_change = 1;
-    }
-
-    new Ajax.Request(AA_GetConf('path') + 'misc/proposefieldchange.php', {
-        parameters: { field_id:   fid,
-                      item_id:    item_id,
-                      alias_name: alias_name,
-                      content:    $F('ajaxi_'+combi_id),     // encodeURIComponent(document.getElementById('ajaxi_'+combi_id).value)
-                      do_change:  do_change
-                     },
-        onSuccess: function(transport) {
-            if ( change ) {
-                $('ajaxv_'+combi_id).update(transport.responseText);  // new value
-                $('ajaxch_'+combi_id).update('');
-            } else {
-                $('ajaxv_'+combi_id).update( $('ajaxh_'+combi_id).value);  // restore old content
-                $('ajaxch_'+combi_id).update($('ajaxch_'+combi_id).innerHTML + '<span class="ajax_change">Navrhovaná změna: ' + transport.responseText +'</span><br>');
-            }
-            $(valdivid).setAttribute("data-aa-edited", "0");
-        }
-    });
-}
-
-/** grabs Item_id from aa variable in AA form */
-//function GetItemIdFromId4Form(input_id) {
-//    // aa[i<item_id>][<field_id>][]
-//    var parsed = input_id.split("]");
-//    return parsed[0].substring(4);
-//}
-//
-///** Grabs Field id from aa variable in AA form */
-//function GetFieldIdFromId4Form(input_id) {
-//    // aa[i<item_id>][<field_id>][]
-//    var parsed = input_id.split("]");
-//    var dirty_field_id = parsed[1].substring(1);
-//    dirty_field_id = dirty_field_id.replace('__', '..');
-//    dirty_field_id = dirty_field_id.replace('__', '..');
-//    dirty_field_id = dirty_field_id.replace('__', '..');
-//    dirty_field_id = dirty_field_id.replace('__', '..');
-//    dirty_field_id = dirty_field_id.replace('__', '..');
-//    dirty_field_id = dirty_field_id.replace('__', '..');
-//    dirty_field_id = dirty_field_id.replace('__', '..');
-//    dirty_field_id = dirty_field_id.replace('__', '..');
-//    dirty_field_id = dirty_field_id.replace('._', '..');
-//    return dirty_field_id;
-//}
-
-function AcceptChange(change_id, divid) {
-   new Ajax.Request(AA_GetConf('path') + 'misc/proposefieldchange.php', {
-        parameters: { change_id:  change_id },
-        onSuccess: function(transport) {
-            $(divid).update(transport.responseText);  // new value
-            $('zmena_cmds'+divid).update('');
-            $('zmena'+divid).update('');
-        }
-    });
-}
-
-function CancelChanges(item_id, fid, divid) {
-   new Ajax.Request(AA_GetConf('path') + 'misc/proposefieldchange.php', {
-        parameters: { cancel_changes: 1,
-                      field_id:       fid,
-                      item_id:        item_id
-                    },
-        onSuccess: function(transport) {
-            $(divid).update(transport.responseText);  // new value
-            $('zmena_cmds'+divid).update('');
-            $('zmena'+divid).update('');
-        }
-    });
-}
-
-
-function isArray(obj) {
-   return (obj.constructor.toString().indexOf("Array") != -1);
-}
-
-
 /** rotates the element - hide/show .rot-hide, add/remove class "active" for .rot-active
  *  called as:
  * <div id="mydiv">
@@ -8360,28 +8530,7 @@ function AA__liveSearch(id, viewparam, deflt) {
     }
 }
 
-/* text - string or url (begins with '/')
- * type - err | ok | info | [text]
- */
-function AA_Message(text, type) {
-    var attrs = {'id': 'aa-message-box', 'onclick': '$(this).hide()'};
-    switch(type) {
-      case 'err':  attrs['class'] = 'aa-err';  break;
-      case 'ok':   attrs['class'] = 'aa-ok'; break;
-      case 'info': attrs['class'] = 'aa-info'; break;
-      default:     attrs['class'] = 'aa-text';
-                   type = 'text';
-    }
-    if (text.charAt(0)=='/') {
-        AA__systemDiv('aa-message-box', attrs, '<div id="aa-message-box-in"></div>');
-        AA_Ajax('aa-message-box-in', text);
-    } else {
-        AA__systemDiv('aa-message-box', attrs, '<div id="aa-message-box-in">'+text+'</div>');
-    }
-    if (type != 'text') {
-        setTimeout(function() { $('aa-message-box').hide(); }, 5000);
-    }
-}
+
 
 function AA__systemDiv(id, attrs, text) {
     var box = $(id);
@@ -8403,72 +8552,44 @@ function AA__systemDiv(id, attrs, text) {
     }
 }
 
-function AA_Toolbar(text) {
-    AA__systemDiv('aa-bottom-toolbar', {'id': 'aa-bottom-toolbar'}, text);
-}
+/** This function replaces the older one - proposeChange
+ *  The main chane is, that now we use standard AA input names:
+ *   aa[i<item_id>][<field_id>][]
+ */
+function AA_StateChange(id, state) {
+  var outstyle = {};
+  var icoimg   = '';
+  var elems    = $$('*[id ^="'+id+'"]');
 
-function AA_LoadJs(condition, callback, url, sync) {
-    if (condition && ((condition!='load_once') || (url && document.querySelector('script[src="'+url+'"]')))) {
-        if (callback) {
-            callback();
-        }
-    } else {
-        var script   = document.createElement("script")
-        script.type  = "text/javascript";
-        if (sync) {
-            script.async = false;
-        }
-
-        if (script.readyState) { //IE
-            script.onreadystatechange = function () {
-                if (script.readyState == "loaded" || script.readyState == "complete") {
-                    script.onreadystatechange = null;
-                    if (callback) {
-                        callback()
-                    }
-                }
-            };
-        } else { //Others
-            script.onload = function () {
-                if (callback) {
-                    callback()
-                }
-            };
-        }
-
-        script.src = url;
-        document.getElementsByTagName("head")[0].append(script);
-    }
-}
-
-/** internal AA function for function call after all the scripts are loaded */
-function AA_IsLoaded() {
-    if (AA_IsLoaded.cnt) {
-        --AA_IsLoaded.cnt; // count to zero
-    }
-    if (!AA_IsLoaded.cnt && AA_IsLoaded.callback) {
-        AA_IsLoaded.callback();
-        AA_IsLoaded.callback = undefined;       // run it just once
-    }
+  switch (state) {
+    case 'dirty':
+      elems.invoke('removeClassName', 'normal');
+      elems.invoke('removeClassName', 'updating');
+      outstyle = {'outlineColor': '#E4B600', 'outlineWidth': '1px', 'outlineStyle': 'solid'};
+      icoimg   = 'images/save.png';
+      break;
+    case 'updating':
+      elems.invoke('removeClassName', 'dirty');
+      elems.invoke('removeClassName', 'normal');
+      outstyle = {'outlineColor': '#E4B600', 'outlineWidth': '1px', 'outlineStyle': 'dashed'};
+      icoimg   = 'images/loader.gif';
+      break;
+    case 'normal':
+    default:
+      elems.invoke('removeClassName', 'dirty');
+      elems.invoke('removeClassName', 'updating');
+      outstyle = {'outline': 'none'};
+      icoimg   = 'images/px.gif';
+      break;
+  }
+  elems.invoke('addClassName', state);
+  $$('select[id ^="'+id+'"]').invoke('setStyle', outstyle);
+  $$('input[id ^="'+id+'"]').invoke('setStyle', outstyle);
+  $$('textarea[id ^="'+id+'"]').invoke('setStyle', outstyle);
+  $$('img.'+id+'ico').each(function(img) {img.setAttribute('src', AA_GetConf('path')+icoimg); });
 }
 
 
-function AA_LoadCss(url) {
-    var link = document.querySelector('link[href="'+url+'"]');
-    if (url && !link) {
-        link  = document.createElement('link');
-        link.rel  = 'stylesheet';
-        link.href = url;
-        document.getElementsByTagName('head')[0].append(link);
-    }
-    return link;
-}
-
-/* function to check the computed value of a style element */
-function AA_GetStyle(id, name) {
-    var element = document.getElementById(id);
-    return element.currentStyle ? element.currentStyle[name] : window.getComputedStyle ? window.getComputedStyle(element, null).getPropertyValue(name) : null;
-}
 
 function AA_SaveEditors() {
   var params = {'inline':1};
@@ -8491,168 +8612,117 @@ function AA_SaveEditors() {
   });
 }
 
-// used in window.addEventListener("beforeunload", AA_WindowUnloadQ)
-function AA_WindowUnloadQ(e) {
-    e.preventDefault();
-    // The text is not displayed in most modern browsers, but the value must be set;
-    e.returnValue = "Changes are not saved. Do you really want to exit this page?";
+/** Deprecated
+ *  For backward compatibility only. Use $(element).update('text') from
+ *  aajslib.php instead.
+ */
+function SetContent(id,txt) {
+  // function replaces html code of a an HTML element (identified by id)
+  // by another code
+  $(id).update(txt);
 }
 
+/** Send the form by AJAX and on success refreshes the content of page
+ *  @param id        - form id
+ *  @param refresh   - id of the html element, which you want to refresh.
+ *                   - Such element must have data-aa-url attributes
+ *  @param ok_html   - function to call after the page update
+ *  Note, that the form action atribute must be RELATIVE (not with 'http://...')
+ */
+function SendAjaxForm(id, refresh, ok_func) {
+  $(id).insert(AA_GetConf('loader'));
+  $(id).request({encoding:   'windows-1250',
+    onComplete: function(transport){
+      if (typeof refresh != "undefined") {
+        AA_Refresh(refresh,false,ok_func);
+      } else {
+        new Insertion.After($(id).up('div'), new Element('div').update(transport.responseText));
+        // close form and display add icon
+        AA_AjaxInsert($(id).up('div').previous(), '');
+      }
+    }});
+}
 
-// next function till AA__doChange are vanilla -----------------------------
-function AA_SiteUpdate(item, field, value, action) {
-  if (['u','i','r'].indexOf(action) === -1) {
-    action = 'u';
+function proposeChange(combi_id, item_id, fid, change) {
+  const valdivid = 'ajaxv_' + combi_id;
+  const alias_name = $(valdivid).readAttribute('data-aa-alias');
+  let do_change;
+  if (typeof do_change == 'undefined') {
+    do_change = 1;
   }
-  var params = {};
-  params['aa['+action+item+']['+field+'][0]'] = value;
-  AA__doChange(params);
-}
 
-/* template not implemented, field and values pairs could be multiple field, value, field, value, ... */
-function AA_SiteNewitem(slice, template, field, value) {
-  let params = {};
-  for (var i = 2, len = arguments.length; i < len; i += 2) {
-    if (len > i + 1) {
-      params['aa[n1_' + slice + '][' + arguments[i] + '][0]'] = arguments[i + 1];
+  new Ajax.Request(AA_GetConf('path') + 'misc/proposefieldchange.php', {
+    parameters: { field_id:   fid,
+      item_id:    item_id,
+      alias_name: alias_name,
+      content:    $F('ajaxi_'+combi_id),     // encodeURIComponent(document.getElementById('ajaxi_'+combi_id).value)
+      do_change:  do_change
+    },
+    onSuccess: function(transport) {
+      if ( change ) {
+        $('ajaxv_'+combi_id).update(transport.responseText);  // new value
+        $('ajaxch_'+combi_id).update('');
+      } else {
+        $('ajaxv_'+combi_id).update( $('ajaxh_'+combi_id).value);  // restore old content
+        $('ajaxch_'+combi_id).update($('ajaxch_'+combi_id).innerHTML + '<span class="ajax_change">Navrhovaná změna: ' + transport.responseText +'</span><br>');
+      }
+      $(valdivid).setAttribute("data-aa-edited", "0");
     }
-  }
-  AA__doChange(params);
+  });
 }
 
-function AA_SiteEdit(item, cmdvar) {
-  var params = {};
-  params[cmdvar] = item;
-  params['aaedit'] = cmdvar;
-  AA__doChange(params, 'get');
-}
+/** grabs Item_id from aa variable in AA form */
+//function GetItemIdFromId4Form(input_id) {
+//    // aa[i<item_id>][<field_id>][]
+//    var parsed = input_id.split("]");
+//    return parsed[0].substring(4);
+//}
+//
+///** Grabs Field id from aa variable in AA form */
+//function GetFieldIdFromId4Form(input_id) {
+//    // aa[i<item_id>][<field_id>][]
+//    var parsed = input_id.split("]");
+//    var dirty_field_id = parsed[1].substring(1);
+//    dirty_field_id = dirty_field_id.replace('__', '..');
+//    dirty_field_id = dirty_field_id.replace('__', '..');
+//    dirty_field_id = dirty_field_id.replace('__', '..');
+//    dirty_field_id = dirty_field_id.replace('__', '..');
+//    dirty_field_id = dirty_field_id.replace('__', '..');
+//    dirty_field_id = dirty_field_id.replace('__', '..');
+//    dirty_field_id = dirty_field_id.replace('__', '..');
+//    dirty_field_id = dirty_field_id.replace('__', '..');
+//    dirty_field_id = dirty_field_id.replace('._', '..');
+//    return dirty_field_id;
+//}
 
-function AA_SiteSendForm(form) {
-  AA__doChange(new FormData(form));
-  return false;
-}
-
-function AA__SiteUpdateParts(data) {
-  for (var i in data) {
-    if (i === 'message') {
-      document.querySelectorAll('article.aa-updating[data-aa-part]').forEach(function(elem) {
-        elem.classList.remove('aa-updating');
-      });
-      AA_Message(data[i], 'err');
-    } else {
-      document.querySelectorAll("[data-aa-part='" + i + "']").forEach(function(elem) {
-        if (elem.getAttribute('data-aa-part-update') === 'add') {
-          elem.innerHTML += data[i];
-        } else {
-          elem.outerHTML = data[i];
-        }
-      });
+function AcceptChange(change_id, divid) {
+  new Ajax.Request(AA_GetConf('path') + 'misc/proposefieldchange.php', {
+    parameters: { change_id:  change_id },
+    onSuccess: function(transport) {
+      $(divid).update(transport.responseText);  // new value
+      $('zmena_cmds'+divid).update('');
+      $('zmena'+divid).update('');
     }
-  }
+  });
 }
 
-function AA__doChange(params, type) {
-  const headers = {'X-Requested-With': 'xmlhttprequest'};
-  const base_url = window.location.href.split('#')[0];
-  if (type === 'get') {
-    const url = base_url + '?' + new URLSearchParams(params).toString();
-    fetch(url, { method: 'GET', credentials: 'same-origin', headers: headers })
-        .then(response => response.json())
-        .then(data => AA__SiteUpdateParts(data))
-        .catch(error => console.error('Error:', error));
-  } else if (params instanceof FormData) {
-    fetch(base_url, { method: 'POST', body: params, credentials: 'same-origin', headers: headers })
-        .then(response => response.json())
-        .then(data => AA__SiteUpdateParts(data))
-        .catch(error => console.error('Error:', error));
-  } else {
-    const formData = new URLSearchParams();
-    for (let key in params) {
-      formData.append(key, params[key]);
+function CancelChanges(item_id, fid, divid) {
+  new Ajax.Request(AA_GetConf('path') + 'misc/proposefieldchange.php', {
+    parameters: { cancel_changes: 1,
+      field_id:       fid,
+      item_id:        item_id
+    },
+    onSuccess: function(transport) {
+      $(divid).update(transport.responseText);  // new value
+      $('zmena_cmds'+divid).update('');
+      $('zmena'+divid).update('');
     }
-    fetch(base_url, { method: 'POST', headers: { ...headers, 'Content-Type': 'application/x-www-form-urlencoded' }, body: formData.toString(), credentials: 'same-origin' })
-        .then(response => response.json())
-        .then(data => AA__SiteUpdateParts(data))
-        .catch(error => console.error('Error:', error));
-  }
+  });
 }
 
-function AA_Translate(text, from, to) {
-    const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${from}&tl=${to}&dt=t&q=${encodeURIComponent(text)}`;
-    return fetch(url).then(response => response.json()).then(data => {
-       return data[0]?.map(item => item[0]).join('') || '';
-    })
+function isArray(obj) {
+  return (obj.constructor.toString().indexOf("Array") != -1);
 }
-
-/* Cookies */
-function SetCookie(name, value, plustime) {
-    var coo = encodeURIComponent(name) + "=" + encodeURIComponent(value);
-   plustime = (typeof plustime === "undefined") ? (1000 * 60 * 60 * 24) : plustime;   // a day
-   var expires = new Date();
-   expires.setTime(expires.getTime() + plustime);
-    coo += "; expires=" + expires.toGMTString() + "; path=/";
-    coo += (window.location.protocol == 'https:') ? ';secure;samesite=lax' : '';
-    document.cookie = coo;
-    // + ((expires == null) ? "" : ("; expires=" + expires.toGMTString()))
-    // + ((path == null)    ? "" : ("; path=" + path))
-    // + ((domain == null)  ? "" : ("; domain=" + domain))
-    // + ((secure == true)  ? "; secure" : "");
-}
-
-function getCookieVal(offset) {
-    var endstr = document.cookie.indexOf(";", offset);
-    if (endstr === -1) {
-        endstr = document.cookie.length;
-    }
-    return decodeURIComponent(document.cookie.substring(offset, endstr));
-}
-
-function GetCookie(name) {
-    var arg = name + "=";
-    var alen = arg.length;
-    var clen = document.cookie.length;
-    var i = 0;
-    while (i < clen) {
-        var j = i + alen;
-        if (document.cookie.substring(i, j) == arg) {
-            return getCookieVal(j);
-        }
-        i = document.cookie.indexOf(" ", i) + 1;
-        if (i == 0) break;
-    }
-    return null;
-}
-
-function DeleteCookie(name) {
-    var exp = new Date();
-    exp.setTime (exp.getTime() - 1);
-    var cval = GetCookie (name);
-    document.cookie = name + "=" + cval + "; expires=" + exp.toGMTString() + "; path=/";
-}
-
-function ToggleCookie(name,val) {
-    if ( GetCookie(name) != val ) {
-        SetCookie(name,val);
-    } else {
-        DeleteCookie(name);
-    }
-}
-
-function AA_NewId() {
-    // Private array of chars to use
-    var chars = '0123456789abcdefgh'.split('');
-
-    var uuid = [];
-
-    // we do not want to have 0 as the first char in pair
-    for (var i = 0; i < 16; i++) {
-        uuid[2*i]   = chars[0 | (Math.random()*15+1)];
-        uuid[2*i+1] = chars[0 | (Math.random()*16)];
-    }
-    return uuid.join('');
-}
-
-
 
 
 /* ----------------------------------------------------------
@@ -8785,3 +8855,4 @@ function unpackToForm(data){
 
   Element.addMethods({ simulate: Event.simulate });
 })()
+

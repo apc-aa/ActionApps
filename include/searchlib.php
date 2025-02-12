@@ -461,17 +461,19 @@ class AA_Set extends AA_Object {
 
     /** New main function to get item ids from database based on conditions...
      *  Should replace QueryZids() in future
-     * @param zids $restrict_zids
+     *
+     * @param  null  $restrict_zids
+     * @param  int   $limit
+     *
      * @return zids
      */
-    public function query($restrict_zids = null, $limit = null): zids {
+    public function query($restrict_zids = null, int $limit = 0): zids {
         if (!$this->postsort) {
             return QueryZids($this->getModules(), $this->getConds(), $this->getSort(), $this->getBins(), 0, $restrict_zids, 'LIKE', $limit);
         }
         // no limit...
         $unsorted_zids = QueryZids($this->getModules(), $this->getConds(), $this->getSort(), $this->getBins(), 0, $restrict_zids, 'LIKE');
         $sorted_ids =  explode_ids(StrExp('order', [implode('-', $unsorted_zids->longids()), $this->postsort[0]['alias'], $this->postsort[0]['order'] ]));
-        $limit = (int)$limit;
         if (!$limit) {
             return new zids($sorted_ids, 'l');
         }
@@ -1512,37 +1514,37 @@ function QueryZidsSet(AA_Set $set): zids {
 /** QueryZids function
  *  Finds item IDs for items to be shown in a slice / view
  *
- * @param array  $slices        array of slices in which to look for items
+ * @param array   $slices        array of slices in which to look for items
  *                              could be false. if you specify restrict_zids
- * @param array  $conds         search conditions (see FAQ)
- * @param array  $sort          sort fields (see FAQ)
- * @param string $type
+ * @param array   $conds         search conditions (see FAQ)
+ * @param array   $sort          sort fields (see FAQ)
+ * @param string  $type
  *                              sets status, pub_date and expiry_date according to specified type:
  *                              ACTIVE | EXPIRED | PENDING | HOLDING | TRASH | ALL.
  *                              If you want to specify it in conds, set to ALL.
  *
- * @param bool   $neverAllItems
+ * @param bool    $neverAllItems
  *                              if no conds[] apply (all are wrong formatted or empty),
  *                              should the function generate an empty set?
  *                              Otherwise, all items from given slices are returned.
  *
- * @param array  $restrict_zids
+ * @param array   $restrict_zids
  *                              ids are packed but not quoted in $restrict_ids or short.
  *                              Use it if you want to choose only from a set of items
  *                              (used by E-mail Alerts and related item view
  *                              (for sorting and eliminating of expired items)).
  *
- * @param string $defaultCondsOperator
+ * @param string  $defaultCondsOperator
  *                              replaces the default "LIKE" for conditions with no operator set
  *
- * @param bool   $use_cache     should be the cache searched for the result? -- no longer used used
+ * @param bool    $use_cache     should be the cache searched for the result? -- no longer used used
  *
  * @return zids - A zids object with a list of the ids that match the query.
  *
- * @global  bool $debug         (in) many debug messages
- * @global  bool $debugfields   (in) useful mainly for multiple slices mode -- views info about field_ids
+ * @global  bool  $debug         (in) many debug messages
+ * @global  bool  $debugfields   (in) useful mainly for multiple slices mode -- views info about field_ids
  *                              used in conds[] but not existing in some of the slices
- * @global  int  $QueryIDsCount (out) is set to the count of IDs returned
+ * @global  int   $QueryIDsCount (out) is set to the count of IDs returned
  *
  *   Parameter format example:
  *   <pre>
@@ -1564,7 +1566,7 @@ function QueryZidsSet(AA_Set $set): zids {
  *   </pre>
  * @deprecated - use $aa_set->query() instead
  */
-function QueryZids($slices, $conds = "", $sort = "", $type = "ACTIVE", $neverAllItems = 0, $restrict_zids = null, $defaultCondsOperator = "LIKE", $limit = null): zids {
+function QueryZids($slices, $conds = "", $sort = "", $type = "ACTIVE", $neverAllItems = 0, $restrict_zids = null, $defaultCondsOperator = "LIKE", int $limit = 0): zids {
 
     // select * from item, content as c1, content as c2 where item.id=c1.item_id AND item.id=c2.item_id AND       c1.field_id IN ('fulltext........', 'abstract..........') AND c2.field_id = 'keywords........' AND c1.text like '%eufonie%' AND c2.text like '%eufonie%' AND item.highlight = '1';
 
@@ -1992,7 +1994,7 @@ function QueryZids($slices, $conds = "", $sort = "", $type = "ACTIVE", $neverAll
     }
 
     if ($limit > 0) {
-        $SQL .= ' LIMIT ' . (int)$limit;
+        $SQL .= ' LIMIT ' . $limit;
     }
 
     // add comment to the SQL command (for debug purposes)
@@ -2034,13 +2036,14 @@ function QueryZids($slices, $conds = "", $sort = "", $type = "ACTIVE", $neverAll
  *                         Use it if you want to choose only from a set of constants
  * @param string     $defaultCondsOperator
  *                         replaces the default "RLIKE" for conditions with no operator set
+ * @param int        $limit    limit the number of results
  *
  * @return zids object with a list of the ids that match the query.
  *
  *   Parameter format example - {see QueryZids, FAQ}
  *   Fields definition - {see include/constants.php}
  */
-function QueryConstantZIDs($group_id, $conds, $sort=null, $restrict_zids = null, $defaultCondsOperator = "RLIKE") {
+function QueryConstantZIDs($group_id, $conds, $sort=null, $restrict_zids = null, $defaultCondsOperator = "RLIKE", int $limit = 0): zids {
     if (!trim($group_id)) {
         return new zids();
     }
@@ -2080,6 +2083,10 @@ function QueryConstantZIDs($group_id, $conds, $sort=null, $restrict_zids = null,
             return new zids(); // restrict_zids defined but empty - no result
         }
         $SQL .= ' AND ' . $restrict_zids->sqlin();
+    }
+
+    if ($limit > 0) {
+        $SQL .= ' LIMIT ' . $limit;
     }
 
     // get result --------------------------

@@ -732,10 +732,22 @@ i.ico.move:hover {
 .aa-rim.flex .item-search i {
     margin: 0;
 }
-.aa-rim.flex .itemselect {
+.aa-rim.itemsearcher {
+    position: relative;
     width: 100%;
+}
+.aa-rim.flex .itemselect {
+    width: calc(100% - 40px);
     display: flex;
     flex-wrap: wrap;
+    min-height: 300px;
+    max-height: 400px;
+    padding: 5px;
+    overflow-y: auto;
+    background: #ccc;
+    border: 1px solid rgba(0, 0, 0, 0.21);
+    position: absolute;
+    z-index: 300;
 }
 .aa-rim .toggleclass {
     margin-top: 10px;

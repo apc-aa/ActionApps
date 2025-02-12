@@ -319,7 +319,7 @@ class AA_Collection {
                     $zids  = new zids(null, "p");
                     if ($all_ids) {
                         // find items for the given filter
-                        $zids = QueryZids([$slice_id], $conds, $sort, "ACTIVE", 0, new zids( $all_ids,'p' ));
+                        $zids = QueryZids([$slice_id], $conds, $sort, "ACTIVE", 0, new zids($all_ids, 'p'));
                     }
 
                     $retval[$fid] = [

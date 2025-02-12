@@ -133,7 +133,7 @@ class TagWidget extends Widget
         // empty select option for not required fields and also for live selectbox,
         // because people thinks, that the first value is filled in the database (which is not)
         //$options = $this->getOptions($selected, $content);
-        $sel_options_plain = $this->getFormattedOptions(null, new zids($content->getValuesArray($aa_property->getId()), 'l'));
+        $sel_options_plain = $this->getFormattedOptions('', new zids($content->getValuesArray($aa_property->getId()), 'l'));
         $sel_options = [];
         foreach ($sel_options_plain as $k => $v) {
             $sel_options[] = ['k'=>$k, 'v'=>$v, 'selected'=>true];

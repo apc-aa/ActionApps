@@ -155,7 +155,7 @@ if ( is_array($r_userstate['items']) ) {
     $zids->setFromItemArr($r_userstate['items']);
 }
 
-$zids = QueryZids( [AA::$module_id], $conds, $sort, 'ACTIVE', 0, $r_userstate['items'] ? $zids : false);
+$zids = QueryZids([AA::$module_id], $conds, $sort, 'ACTIVE', 0, $r_userstate['items'] ? $zids : false);
 
 echo $manager->getSearchbarBegin();
 echo $manager->getSearchbarEnd();   // close the searchbar form

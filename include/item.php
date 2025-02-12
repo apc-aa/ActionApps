@@ -200,7 +200,8 @@ function Inputform_url($add, $iid, $sid='', $ret_url='', $vid = null, $var = nul
  * @param $tagprefix - array as defined in itemfunc.php
  * @return array
  */
-function GetFormattedItems($zids, $format, $crypted_additional_slice_pwd=null, $tagprefix=null) {
+function GetFormattedItems($zids, $format, $crypted_additional_slice_pwd=null, $tagprefix=null): array
+{
     $ret  = [];
     if ( $zids->count() <= 0 ) {
         return $ret;
@@ -242,25 +243,28 @@ function GetFormattedItems($zids, $format, $crypted_additional_slice_pwd=null, $
 }
 
 /** GetFormatedConstants function
+ *
  * @param             $constgroup
  * @param             $format
  * @param array|null  $restrict_zids
  * @param             $conds
  * @param             $sort
- * @param string|null $for_id if created for some item and _#ITEM_ID_ alias
+ * @param  string     $for_id  if created for some item and _#ITEM_ID_ alias
+ *
  * @return array
  * @todo Teach itemview to return array (instead of whole listing) and convert
  *                            those functions (GetFormattedConstants() and GetFormattedItems())
  *                            to itemview
  */
-function GetFormatedConstants($constgroup, $format, $restrict_zids, $conds, $sort, ?string $for_id=null) {
+function GetFormatedConstants($constgroup, $format, $restrict_zids, $conds, $sort, string $for_id= '', int $limit=0): array
+{
     if (!trim($constgroup)) {
         return [];
     }
 
     $conds = String2Conds( $conds );
     $sort  = String2Sort( $sort ?: 'sort[0][const_pri]=a');
-    $zids  = QueryConstantZIDs($constgroup, $conds, $sort, $restrict_zids);
+    $zids  = QueryConstantZIDs($constgroup, $conds, $sort, $restrict_zids, 'RLIKE', $limit);
     if ( $zids->count() <= 0 ) {
         return [];
     }

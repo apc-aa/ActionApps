@@ -90,7 +90,7 @@ class AA_Mysqlauth {
      */
     public static function getReadersData($slice_id, $restrict_zids=false): array {
         $auth_field_group = AA_Slice::getModuleProperty($slice_id,'auth_field_group');
-        $zids  = QueryZids( [$slice_id], '', '', 'ALL', 0, $restrict_zids);
+        $zids  = QueryZids([$slice_id], '', '', 'ALL', 0, $restrict_zids);
         return GetItemContent($zids, false, true, ['id..............','status_code.....','slice_id........', 'publish_date....', 'expiry_date.....', $auth_field_group, FIELDID_USERNAME, FIELDID_PASSWORD]);
     }
 
