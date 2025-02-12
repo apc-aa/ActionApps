@@ -64,7 +64,7 @@ if ($hide_value) {
 }
 ?>
 
-<?php showHierConstBoxes($hcid, $levelCount, $levelsHorizontal, "", true, 0, 0, $levelNames); ?>
+<?php showHierConstBoxes($hcid, (int)$levelCount, (bool)$levelsHorizontal, "", true, 0, 0, (array)$levelNames); ?>
 
 <table>
     <tr><td>

@@ -74,7 +74,8 @@ const TPS = [
  * @param $type
  * @return string
  */
-function varname4form($fid, $type='normal') {
+function varname4form($fid, $type='normal'): string
+{
     $additions = ['normal' => '', 'multi' => '[]', 'file' => 'x'];
     return $fid ? ('v'. unpack_id($fid) .$additions[$type]) : '';
 }
@@ -440,34 +441,34 @@ function getAAField( $settings ) {
  * AA_Inputfield class - used for displaying input field
  */
 class AA_Inputfield {
-    var $id;               // field id (like headline........) -
-                           //  - we generate html variable name from id: v435...
-    var $input_type;       // shortcut of 'input type' (like 'fld','sel','mse')
-    var $varname;          // name of the field in html form
-    var $varname_modified; // modified name of the field in html form
-    var $param;            // parameter array for this inputtype (already exploded)
-    var $name;             // user frieldly name 'Publish Date'
-    var $value;            // current value of the field in [0]['value'] form
-    var $html_flag;        // field (value) is/isn't HTML formated
-    var $mode;             // 'normal' - just show input type
-                           // 'freeze' - display as static
-                           // 'anonym' - special display of field on anonym form
-                           //            (used for passwords, ...)
-    var $input_before;     // HTML code displayed before the field
-    var $required;         // boolean - is this field required (needed)?
-    var $input_help;       // help/description text for the field
-    var $input_morehlp;    // url, where user will jump after (s)he click on '?'
-    var $additional;       // additional code for input (like 'class="chleba")
-    var $html_rb_show;     // show HTML/Plaintext radiobutton?
+    var $id;                                 // field id (like headline........) -
+    //  - we generate html variable name from id: v435...
+    var $input_type;                         // shortcut of 'input type' (like 'fld','sel','mse')
+    protected string $varname = '';          // name of the field in html form
+    protected string $varname_modified = ''; // modified name of the field in html form
+    var $param;                              // parameter array for this inputtype (already exploded)
+    var $name;                               // user frieldly name 'Publish Date'
+    var $value;                              // current value of the field in [0]['value'] form
+    var $html_flag;                          // field (value) is/isn't HTML formated
+    var $mode;                               // 'normal' - just show input type
+                                             // 'freeze' - display as static
+                                             // 'anonym' - special display of field on anonym form
+                                             //            (used for passwords, ...)
+    var $input_before;                       // HTML code displayed before the field
+    var $required;                           // boolean - is this field required (needed)?
+    var $input_help;                         // help/description text for the field
+    var $input_morehlp;                      // url, where user will jump after (s)he click on '?'
+    var $additional;                         // additional code for input (like 'class="chleba")
+    var $html_rb_show;                       // show HTML/Plaintext radiobutton?
 
-    var $valid;            // string validation function used - could be 'number' or 'number:0:9999' - in order og getClassProperties of AA_Validate_Number
-                           // (this function we added in order we can use this class for AA Admin forms as well)
-    var $translations;     // field allows translation
-    var $dbfield;          // contains name of database field. It is often
-                           // empty, so we will use varname, but there are some
-                           // cases, where we use different database field than
-                           // the varname (for examlpe "name" is good database
-                           // column name, but wrong for HTML form)
+    var $valid;                              // string validation function used - could be 'number' or 'number:0:9999' - in order og getClassProperties of AA_Validate_Number
+                                             // (this function we added in order we can use this class for AA Admin forms as well)
+    var $translations;                       // field allows translation
+    var $dbfield;                            // contains name of database field. It is often
+                                             // empty, so we will use varname, but there are some
+                                             // cases, where we use different database field than
+                                             // the varname (for examlpe "name" is good database
+                                             // column name, but wrong for HTML form)
 
     // --- privates ---
     /** @var string $result Collects output of the field  */
@@ -718,31 +719,35 @@ class AA_Inputfield {
         return $sid; // in most cases not very important information, but used in inputRelation() input type
     }
 
-    /** varname_modify function
+    /**
      *  Modifies varname in case we need to display two (or more) inputs
      *  for one field (varname_modified is used instead of varname - if set).
-     * @param $add
+     *
+     * @param  string  $add
+     *
      * @return string
      */
-    function varname_modify($add) {
+    public function varname_modify(string $add): string
+    {
         return ($this->varname_modified = $this->varname . $add);
     }
 
-    /** varname function
-     *  Returns curent varname
+    /**
+     *  @return string current varname
      */
-    function varname() {
+    function varname(): string
+    {
         return get_if($this->varname_modified, $this->varname);
     }
 
-    /** getDbfield function
+    /**
      *
      */
     function getDbfield() {
         return get_if($this->dbfield, $this->varname());
     }
 
-    /** prepareVars function
+    /**
      * Grabs common variables from object. Internal function used as shortcut
      * in most of input functions (maybe all)
      * @param $valtype
@@ -971,7 +976,7 @@ class AA_Inputfield {
                             break;
                 case 'hco': [$constgroup, $levelCount, $boxWidth, $rows, $horizontalLevels, $firstSelectable, $levelNames] = $this->param;
                             $this->varname_modify('[]');         // use slightly modified varname
-                            $this->hierarchicalConstant($constgroup, $levelCount, $boxWidth, $rows, $horizontalLevels, $firstSelectable, explode('~',$levelNames));
+                            $this->hierarchicalConstant((string)$constgroup, (int)$levelCount, (int)$boxWidth, (int)$rows, (bool)$horizontalLevels, (int)$firstSelectable, explode('~',$levelNames));
                             break;
                 case 'pwd':  // handled in passwordModify
                             [$fieldsize, $change_pwd_label, $retype_pwd_label, $delete_pwd_label, $change_pwd_help, $retype_pwd_help] = $this->param;
@@ -1776,7 +1781,7 @@ class AA_Inputfield {
      * @param int    $firstSelect
      * @param string $levelNames
      */
-    function hierarchicalConstant($group_id, $levelCount, $boxWidth, $rows, $horizontal=0, $firstSelect=0, $levelNames="") {
+    function hierarchicalConstant(string $group_id, int $levelCount, int $boxWidth, int $rows, bool $horizontal=false, int $firstSelect=0, array $levelNames=[]) {
         static $hcid = 0;
         $hcid++;   // this is hc identifier
         [$name,$val,$add] = $this->prepareVars('multi');

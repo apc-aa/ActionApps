@@ -93,7 +93,7 @@ function getHierConstInitJavaScript($hcid, $group_id, $levelCount=3, $formName='
  * @param  $levelNames = array() - names for the level boxes (if you don't like Level 0, Level 1, etc.)
  * @return string
  */
-function getHierConstBoxes($hcid, $levelCount, $horizontal=0, $targetBox="", $admin=true, $minLevelSelect=0, $boxWidth=0, $levelNames= []) {
+function getHierConstBoxes($hcid, int $levelCount, bool $horizontal=false, string $targetBox="", $admin=true, $minLevelSelect=0, int $boxWidth=0, array $levelNames= []) {
     $admin = $admin ? 1 : 0;
     if ($boxWidth == 0) {
         $boxWidth = $horizontal ? 30 : 70;
@@ -113,20 +113,22 @@ function getHierConstBoxes($hcid, $levelCount, $horizontal=0, $targetBox="", $ad
     }
 
     $out = "<table>";
-    if ($horizontal) $out .= "<tr>";
+    if ($horizontal) {
+        $out .= "<tr>";
+    }
     $widthTxt = str_repeat("m",$boxWidth);
 
     for ($i=0; $i < $levelCount; ++$i) {
         if ($admin) {
             $buttonAdd = "<input type=\"button\" value=\""._m("Add new")."\" onClick=\"hcAddNew($hcid,$i)\">";
             $buttonSelect = "<input type=\"button\" value=\""._m("Select")."\" onClick=\"hcSelectItem($hcid,$i,1)\">";
-        }
-        else {
+        } else {
             $buttonAdd = "";
-            if ($minLevelSelect > $i) $buttonSelect = "";
-            else $buttonSelect = "<input type=\"button\" value=\""._m("Select")."\" onClick=\"hcAddItemTo($hcid,$i,'$targetBox'); ".$add_button_trigger."\">";
+            $buttonSelect = $minLevelSelect > $i ? "" : "<input type=\"button\" value=\""._m("Select")."\" onClick=\"hcAddItemTo($hcid,$i,'$targetBox'); ".$add_button_trigger."\">";
         }
-        if (!$levelNames[$i]) $levelNames[$i] = _m("Level")." $i";
+        if (!$levelNames[$i]) {
+            $levelNames[$i] = _m("Level")." $i";
+        }
         if ($horizontal) {
             $out .= "
               <td width=\"10%\"><b>".$levelNames[$i]."</b><br>
@@ -146,7 +148,9 @@ function getHierConstBoxes($hcid, $levelCount, $horizontal=0, $targetBox="", $ad
         }
     }
 
-    if ($horizontal) $out .= "</tr>";
+    if ($horizontal) {
+        $out .= "</tr>";
+    }
     $out .= "</table>";
     return $out;
 }
@@ -159,7 +163,8 @@ function showHierConstInitJavaScript($hcid, $group_id, $levelCount=3, $formName=
 /** showHierConstBoxes function
  *
  */
-function showHierConstBoxes($hcid, $levelCount, $horizontal=0, $targetBox="", $admin=true, $minLevelSelect=0, $boxWidth=0, $levelNames= []) {
+function showHierConstBoxes($hcid, int $levelCount, bool $horizontal=false, string $targetBox="", bool $admin=true, int $minLevelSelect=0, int $boxWidth=0, array $levelNames= []): void
+{
     echo getHierConstBoxes($hcid, $levelCount, $horizontal, $targetBox, $admin, $minLevelSelect, $boxWidth, $levelNames);
 }
 
