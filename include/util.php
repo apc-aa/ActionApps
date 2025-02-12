@@ -1789,7 +1789,7 @@ function get_if($value, $else, $else2='aa_NoNe', $else3='aa_NoNe') {
  *  file, for better version information
  */
 function aa_version($format='full') {
-    $version = '2025.1';
+    $version = '2025.2';
     $full    = 'ActionApps '.$version.' ($Date$, $Revision$), PHP '.PHP_VERSION.', REMOTE_ADDR: '.$_SERVER['REMOTE_ADDR'];
     return match ($format) {
         'svn'  => (int)substr($full, strpos($full, 'Revision') + 10),              // svn version of util.php (which is +/- similar to svn version of AA)
