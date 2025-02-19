@@ -335,7 +335,7 @@ class FeedUtil {
                     // remote category is in the ef_categories table, so update name and value
                     $SQL = "UPDATE ef_categories SET category_name='" . $category['name'] . "',
                          category='" . $category['value'] . "'
-                         WHERE feed_id='$feed_id' AND category_id='" . q_pack_id($r_cat_id) . "'";
+                         WHERE feed_id='$feed_id' AND category_id=" . xpack_id($r_cat_id);
                     if ($debugfeed >= 8) {
                         print("\n<br>$SQL");
                     }
@@ -343,7 +343,7 @@ class FeedUtil {
                 } else {
                     $l_cat_id = self::MapDefaultCategory($l_categs, $category['value'], $category['catparent']);
                     $SQL      = "INSERT INTO ef_categories VALUES ('" . $category['value'] . "','" . $category['name'] . "',
-                         '" . q_pack_id($category['id']) . "','" . $feed_id . "','" . q_pack_id($l_cat_id) . "','0')";
+                         " . xpack_id($category['id']) . ",'" . $feed_id . "'," . xpack_id($l_cat_id) . ",'0')";
                     if ($debugfeed >= 8) {
                         print("\n<br>$SQL");
                     }
@@ -358,7 +358,7 @@ class FeedUtil {
                 if (isset($cat_refs[$r_cat_id])) {
                     continue;
                 }
-                $SQL = "DELETE FROM ef_categories WHERE feed_id='$feed_id' AND category_id='" . q_pack_id($r_cat_id) . "'";
+                $SQL = "DELETE FROM ef_categories WHERE feed_id='$feed_id' AND category_id=" . xpack_id($r_cat_id);
                 if ($debugfeed >= 8) {
                     print("\n<br>$SQL");
                 }
@@ -380,8 +380,8 @@ class FeedUtil {
         global $debugfeed;
 
         [$ext_map, $field_map] = self::GetExternalMapping($l_slice_id, $r_slice_id);
-        $p_l_slice_id = q_pack_id($l_slice_id);
-        $p_r_slice_id = q_pack_id($r_slice_id);
+        $p_l_slice_id = xpack_id($l_slice_id);
+        $p_r_slice_id = xpack_id($r_slice_id);
 
         // add new ones
         $db = getDB();
@@ -392,8 +392,8 @@ class FeedUtil {
                     // remote field is in the feedmap table => update name
                     if ($ext_map[$r_field_id] != $new_name) { // update if field name changed on remote AA
                         $SQL = "UPDATE feedmap SET from_field_name='" . quote($new_name) . "'
-                            WHERE from_slice_id='$p_r_slice_id'
-                            AND to_slice_id='$p_l_slice_id'
+                            WHERE from_slice_id=$p_r_slice_id
+                            AND to_slice_id=$p_l_slice_id
                             AND from_field_id='$r_field_id'";
                         if ($debugfeed >= 8) {
                             print("\n<br>$SQL");
@@ -401,7 +401,7 @@ class FeedUtil {
                         $db->query($SQL);
                     }
                 } else {
-                    $SQL = "INSERT INTO feedmap VALUES('$p_r_slice_id','$r_field_id','$p_l_slice_id','$r_field_id','" . FEEDMAP_FLAG_EXTMAP . "','','" . quote($new_name) . "')";
+                    $SQL = "INSERT INTO feedmap VALUES($p_r_slice_id,'$r_field_id',$p_l_slice_id,'$r_field_id','" . FEEDMAP_FLAG_EXTMAP . "','','" . quote($new_name) . "')";
                     if ($debugfeed >= 8) {
                         print("\n<br>$SQL");
                     }
@@ -416,8 +416,8 @@ class FeedUtil {
         $db = getDB();
         foreach ($ext_map as $r_field_id => $foo) {
             if (!$field_refs[$r_field_id]) {
-                $SQL = "DELETE FROM feedmap WHERE from_slice_id='$p_r_slice_id'
-                    AND to_slice_id='$p_l_slice_id'
+                $SQL = "DELETE FROM feedmap WHERE from_slice_id=$p_r_slice_id
+                    AND to_slice_id=$p_l_slice_id
                     AND from_field_id='$r_field_id'";
                 if ($debugfeed >= 8) {
                     print("\n<br>$SQL");
@@ -592,7 +592,7 @@ class FeedUtil {
         $map_from = [];
 
         $db = getDB();
-        $db->query("SELECT * FROM feedmap WHERE from_slice_id='" . q_pack_id($r_slice_id) . "' AND to_slice_id='" . q_pack_id($l_slice_id) . "' ORDER BY from_field_name");
+        $db->query("SELECT * FROM feedmap WHERE from_slice_id=" . xpack_id($r_slice_id) . " AND to_slice_id=" . xpack_id($l_slice_id) . " ORDER BY from_field_name");
         while ($db->next_record()) {
             switch ($f = $db->f('flag')) {
                 case FEEDMAP_FLAG_EXTMAP :

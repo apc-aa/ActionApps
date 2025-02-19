@@ -7,7 +7,7 @@ use function _m;
 use function freeDB;
 use function getDB;
 use function GetTable2Array;
-use function q_pack_id;
+use function xpack_id;
 
 /** Testing if feeds table do not contain relations to non existant slices
  */
@@ -73,7 +73,7 @@ class DbFeedInconsistency extends AbstractOptimize {
 
         if (is_array($err) and count($err)) {
             foreach ($err as $wrong_slice_id) {
-                $SQL = 'DELETE FROM `feeds` WHERE `to_id`=\'' . q_pack_id($wrong_slice_id) . '\'';
+                $SQL = 'DELETE FROM `feeds` WHERE `to_id`=' . xpack_id($wrong_slice_id);
                 $db->query($SQL);
             }
         }
@@ -84,7 +84,7 @@ class DbFeedInconsistency extends AbstractOptimize {
 
         if (is_array($err) and count($err)) {
             foreach ($err as $wrong_slice_id) {
-                $SQL = 'DELETE FROM `feeds` WHERE `from_id`=\'' . q_pack_id($wrong_slice_id) . '\'';
+                $SQL = 'DELETE FROM `feeds` WHERE `from_id`=' . xpack_id($wrong_slice_id);
                 $db->query($SQL);
             }
         }

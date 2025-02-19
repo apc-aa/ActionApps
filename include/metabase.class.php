@@ -1371,10 +1371,13 @@ class AA_Metabase {
     }
 
     /** generate manager from database structure
-     * @param string              $tablename
-     * @param Manageractions|null $actions
-     * @param Manageractions|null $switches
-     * @param array               $set         - like ['edit_url' => 'some_url.php?id=_#id']
+     *
+     * @param  string               $tablename
+     * @param  Manageractions|null  $actions
+     * @param  Manageractions|null  $switches
+     * @param  array                $set  - like ['edit_url' => 'some_url.php?id=_#id']
+     * @param  array                $addbuttons  - like ['Validate' => a_href('https://validator.w3.org/feed/...', _m('Validate')), but also negative 'Edit' => false, to remove the button, 'Delete' => false
+     *
      * @return Managed
      */
     function getManagerConf(string $tablename, Manageractions $actions=null, Manageractions $switches=null, array $set=[], array $addbuttons=[]): Managed {
@@ -1392,11 +1395,15 @@ class AA_Metabase {
         $key_alias = '';
         // for now, we support only tables with 1-column key, but it could be extended to id|module type of id later
         if (count($keys)===1) {
-            $actions->addAction(new \AA\Manageraction\Table_Row_Delete('DeleteTRow'));
+            if ( $addbuttons['Delete'] ?? true ) {    // not ['Edit'=>false]
+                $actions->addAction(new \AA\Manageraction\Table_Row_Delete('DeleteTRow'));
+            }
             // $key_alias = $aliases->getNamesForField($keys[0])[0];
             $key_alias = "{rawurlencode:{".$keys[0]."}}";
-            $edit_url = array_key_exists('edit_url', $set) ? str_replace('_#id', "{rawurlencode:{".$keys[0]."}}", $set['edit_url']) : get_url('', ["id={rawurlencode:{".$keys[0]."}}"], true);  // can't be shorted - we need {} aroud the key_alias; $key_alias is sefe()d, which we not need
-            $buttons['Edit'] = a_href($edit_url, _m('Edit'), ['class' => 'aa-button-edit']);
+            if ( $addbuttons['Edit'] ?? true ) {
+                $edit_url = array_key_exists('edit_url', $set) ? str_replace('_#id', "{rawurlencode:{".$keys[0]."}}", $set['edit_url']) : get_url('', ["id={rawurlencode:{".$keys[0]."}}"], true);  // can't be shorted - we need {} aroud the key_alias; $key_alias is sefe()d, which we not need
+                $buttons['Edit'] = a_href($edit_url, _m('Edit'), ['class' => 'aa-button-edit']);
+            }
         }
         $buttons = array_merge($buttons, $actions->getManagerButtons('', $key_alias, AA::$module_id), $addbuttons);
 

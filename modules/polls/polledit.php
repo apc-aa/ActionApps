@@ -208,7 +208,9 @@ if ($poll_id) {
 <?php
 FrmTabCaption(_m("Insert question and answers"), $form_buttons);
 
-$where = $poll_id ? "id='$poll_id'" : "module_id = '$p_module_id' AND status_code = 0";
+$p_module_id = xpack_id(AA::$module_id);
+
+$where = $poll_id ? "id='$poll_id'" : "module_id=$p_module_id AND status_code = 0";
 $SQL  = "SELECT design_id, aftervote_design_id, params, set_cookies, ip_lock_timeout, locked, ip_locking, logging, expiry_date, publish_date, headline FROM polls WHERE $where";
 $poll_fields = GetTable2Array($SQL, 'aa_first');
 if (is_array($poll_fields)) {
@@ -251,7 +253,7 @@ FrmInputText("params", _m("Parameters"), $params);
 
 FrmTabSeparator(_m("Polls design templates"));
 
-$SQL     = "SELECT id, name FROM polls_design WHERE (module_id='$p_module_id')";
+$SQL     = "SELECT id, name FROM polls_design WHERE (module_id=$p_module_id)";
 $designs = GetTable2Array($SQL, 'id', 'name');
 
 $designs = \AA\IO\DB\DB_AA::select(['id'=>'name'], 'SELECT id, name FROM polls_design', [['module_id', AA::$module_id, 'l']]);

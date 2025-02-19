@@ -72,7 +72,7 @@ function SelectModule($all = false) {
         $where = $zids->sqlin('id');
     }
 
-    $SQL = "SELECT id, name FROM module WHERE $where OR id = '".q_pack_id($GLOBALS['slice_id'])."' ORDER BY name";
+    $SQL = "SELECT id, name FROM module WHERE $where OR id=".xpack_id($GLOBALS['slice_id'])." ORDER BY name";
     return GetTable2Array($SQL, $key="unpack:id", 'name');
 }
 

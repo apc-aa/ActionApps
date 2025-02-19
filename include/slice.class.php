@@ -470,7 +470,7 @@ class AA_Slice extends AA_Module {
             return;
         }
         $db = getDB();
-        $SQL = "SELECT * FROM content WHERE item_id = '".q_pack_id($this->module_id)."' ORDER BY content.number";
+        $SQL = "SELECT * FROM content WHERE item_id = ".xpack_id($this->module_id)." ORDER BY content.number";
         $db->query($SQL);
         $content4id = [];
         while ($db->next_record()) {
@@ -861,7 +861,7 @@ class AA_Slice extends AA_Module {
                            feeds.to_approved, feeds.to_category_id
                      FROM slice, feeds LEFT JOIN feedperms ON feedperms.from_id=feeds.from_id
                     WHERE feeds.from_id = slice.id
-                      AND feeds.from_id='". q_pack_id($sl_id) ."'
+                      AND feeds.from_id=". xpack_id($sl_id) ."
                       AND (slice.export_to_all=1
                        OR  feedperms.to_id = feeds.to_id)";  // check perms to feed, too
                     $db->query($SQL);

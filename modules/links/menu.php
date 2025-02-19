@@ -213,7 +213,7 @@ function CreateMenu4Views( $foo ): array {
     $menu = [];
     $db = getDB();
 
-    $SQL = "SELECT id, name, type FROM view WHERE slice_id='". q_pack_id($slice_id)."'";
+    $SQL = "SELECT id, name, type FROM view WHERE slice_id=". xpack_id($slice_id);
     $db->query( $SQL );
     while ($db->next_record()) {
         $menu['view'.$db->f('id')] = CreateMenuItem( $db->f('name'), 'admin/se_view.php?view_id='.$db->f('id').'&view_type='.$db->f('type'));  // label, href [, cond]

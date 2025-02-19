@@ -69,8 +69,8 @@ function QueryDiscussionZIDs($item_id, $ids="", $order='timeorder') {
     if ( !$item_id ) {
         return false;
     }
-    $p_item_id = q_pack_id($item_id);
-    $SQL = "SELECT id FROM discussion WHERE item_id='$p_item_id' ORDER BY date";
+    $p_item_id = xpack_id($item_id);
+    $SQL = "SELECT id FROM discussion WHERE item_id=$p_item_id ORDER BY date";
     if ($order === 'reverse timeorder') {
         $SQL .=" DESC";
     }
@@ -330,7 +330,7 @@ function DeleteNode($tree, $d_content, $d_id) {
     $parent = $d_content[$d_id]["d_parent........"][0]['value'];
 
     foreach($tree[$d_id] as $child => $foo) {
-        DB_AA::sql("UPDATE discussion SET parent='".($parent == "0" ? "" : q_pack_id($parent))."' WHERE id='".q_pack_id($child)."'");
+        DB_AA::sql("UPDATE discussion SET parent=".($parent == "0" ? "''" : xpack_id($parent))." WHERE id=".xpack_id($child));
     }
 }
 
@@ -342,18 +342,18 @@ function DeleteNode($tree, $d_content, $d_id) {
  * @param $slice_id
  */
 function DeleteDiscForItem($item_id, $slice_id, $state=99999) {
-    $p_item_id = q_pack_id($item_id);
+    $p_item_id = xpack_id($item_id);
 
     // 99999 - just unused number (state is 0-shown or 1-hidden)
     $where = ($state == 99999) ? '' : " AND state = '".($state ? 1 : 0)."'";
 
     $db = getDB();
     // check perms -  if the item is in the right slice
-    $SQL = "SELECT slice_id FROM item WHERE id='$p_item_id'";
+    $SQL = "SELECT slice_id FROM item WHERE id=$p_item_id";
     $db->query($SQL);
     $db->next_record();
     if (unpack_id($db->f('slice_id')) == $slice_id) {
-        $db->query("DELETE FROM discussion WHERE item_id='".q_pack_id($item_id)."' $where");
+        $db->query("DELETE FROM discussion WHERE item_id=".xpack_id($item_id)." $where");
     }
     freeDB($db);
 }
@@ -365,9 +365,9 @@ function DeleteDiscForItem($item_id, $slice_id, $state=99999) {
  */
 function updateDiscussionCount($item_id) {
     $all       = $hide = 0;
-    $p_item_id = q_pack_id($item_id);
+    $p_item_id = xpack_id($item_id);
     $db = getDB();
-    $SQL       = "SELECT * FROM discussion WHERE item_id='$p_item_id'";
+    $SQL       = "SELECT * FROM discussion WHERE item_id=$p_item_id";
     $db->query($SQL);
     while ($db->next_record()) {
         $all++;
@@ -376,7 +376,7 @@ function updateDiscussionCount($item_id) {
         }
     }
 
-    $SQL= "UPDATE item SET disc_count='$all', disc_app='". ($all-$hide) ."' WHERE id='$p_item_id'";
+    $SQL= "UPDATE item SET disc_count='$all', disc_app='". ($all-$hide) ."' WHERE id=$p_item_id";
     $db->query($SQL);
     freeDB($db);
 }
@@ -397,8 +397,7 @@ function send2mailList($d_item_id, $new_id) {
                  content INNER JOIN item ON item.id = content.item_id INNER JOIN
                  field ON content.field_id = field.id
                  AND field.slice_id = item.slice_id
-                 WHERE item.id='".q_pack_id($d_item_id)."'
-                 AND field.name = 'DiscussionMailList'");
+                 WHERE item.id=".xpack_id($d_item_id)." AND field.name = 'DiscussionMailList'");
     if ($db->next_record()) {
         $item_params = split_escaped(":", $db->f("text"), "#:");
         [$vid, $maillist] = $item_params;
@@ -468,7 +467,7 @@ function send2mailList($d_item_id, $new_id) {
                     $mail->setHeader("Sender",    $maildef["sender"]);
                 }
 
-                $db->query("SELECT lang_file FROM slice INNER JOIN item ON item.slice_id = slice.id WHERE item.id='".q_pack_id($d_item_id)."'");
+                $db->query("SELECT lang_file FROM slice INNER JOIN item ON item.slice_id = slice.id WHERE item.id=".xpack_id($d_item_id));
                 $db->next_record();
                 $mail->setCharset(Langs::getCharset(substr($db->f("lang_file"),0,2)));
                 $mail->send([$maillist]);

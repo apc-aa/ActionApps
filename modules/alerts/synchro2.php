@@ -211,7 +211,7 @@ function getReaderManagementSlices () {
     if (is_array($slices)) {
         $delim = "";
         foreach ($slices as $slice_id => $foo) {
-            $where .= $delim . "'".q_pack_id ($slice_id)."'";
+            $where .= $delim . xpack_id ($slice_id);
             $delim = ",";
         }
         $SQL .= " AND id IN (".$where.")";

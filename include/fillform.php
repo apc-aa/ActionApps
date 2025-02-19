@@ -134,7 +134,7 @@ function fillForm(): string {
             $db->query(
               "SELECT item.id FROM content INNER JOIN item
                ON content.item_id = item.id
-               WHERE item.slice_id='".q_pack_id($slice_id)."'
+               WHERE item.slice_id=".xpack_id($slice_id)."
                AND content.field_id='".FIELDID_USERNAME."'
                AND content.text='".addslashes($_SERVER["REMOTE_USER"])."'");
             if ($db->num_rows() != 1) {
@@ -149,7 +149,7 @@ function fillForm(): string {
             $SQL =
                 "SELECT item.id FROM content INNER JOIN item
                  ON content.item_id = item.id
-                 WHERE item.slice_id='".q_pack_id($slice_id)."'
+                 WHERE item.slice_id=".xpack_id($slice_id)."
                  AND content.field_id='".FIELDID_ACCESS_CODE."'
                  AND content.text='".$GLOBALS["ac"]."'";
             $db->query($SQL);

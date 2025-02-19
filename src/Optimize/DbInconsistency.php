@@ -6,7 +6,7 @@ use function _m;
 use function freeDB;
 use function getDB;
 use function GetTable2Array;
-use function q_pack_id;
+use function xpack_id;
 
 /** Testing if feeds table do not contain relations to non-existent slices
  */
@@ -80,7 +80,7 @@ class DbInconsistency extends AbstractOptimize {
         $err = GetTable2Array($SQL, '', "unpack:slice_id");
         if (is_array($err) and count($err)) {
             foreach ($err as $s_id) {
-                $SQL = 'DELETE FROM `item` WHERE `slice_id`=\'' . q_pack_id($s_id) . '\'';
+                $SQL = 'DELETE FROM `item` WHERE `slice_id`=' . xpack_id($s_id);
                 $db->query($SQL);
                 $this->message(_m('Data for slice id %1 in item table deleted', [$s_id]));
             }
@@ -91,7 +91,7 @@ class DbInconsistency extends AbstractOptimize {
         $err = GetTable2Array($SQL, "", 'unpack:item_id');
         if (is_array($err) and count($err)) {
             foreach ($err as $item_id) {
-                $SQL = 'DELETE FROM `content` WHERE `item_id`=\'' . q_pack_id($item_id) . '\'';
+                $SQL = 'DELETE FROM `content` WHERE `item_id`=' . xpack_id($item_id);
                 $db->query($SQL);
                 $this->message(_m('Data for item id %1 in content table deleted', [$item_id]));
             }
@@ -102,7 +102,7 @@ class DbInconsistency extends AbstractOptimize {
         $err = GetTable2Array($SQL, '', "unpack:item_id");
         if (is_array($err) and count($err)) {
             foreach ($err as $item_id) {
-                $SQL = 'DELETE FROM `discussion` WHERE `item_id`=\'' . q_pack_id($item_id) . '\'';
+                $SQL = 'DELETE FROM `discussion` WHERE `item_id`=' . xpack_id($item_id);
                 $db->query($SQL);
                 $this->message(_m('Data for item id %1 in discussion table deleted', [$item_id]));
             }

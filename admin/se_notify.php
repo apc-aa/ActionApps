@@ -92,13 +92,13 @@ try {
  */
 function save_notify2db($slice_id, $function, $emails) {
     global $db;
-    $p_slice_id = q_pack_id($slice_id);
+    $p_slice_id = xpack_id($slice_id);
     // split $notify_holding_item_e textarea into array
     $arr = explode("\n", $emails);
     foreach ($arr as $uid) {
         $uid = trim($uid);
         if ( AA_Validate::doValidate($uid, 'email')) {
-            $SQL = "INSERT INTO email_notify (uid, slice_id, function) VALUES ( '$uid', '$p_slice_id', $function)";
+            $SQL = "INSERT INTO email_notify (uid, slice_id, function) VALUES ( '$uid', $p_slice_id, $function)";
             $db->query($SQL);
         }
     }
@@ -190,14 +190,14 @@ SELECT notify_holding_item_s,      notify_holding_item_b,
        notify_holding_item_edit_s, notify_holding_item_edit_b,
        notify_active_item_s,       notify_active_item_b,
        notify_active_item_edit_s,  notify_active_item_edit_b
- FROM slice WHERE id='".q_pack_id(AA::$module_id)."'";
+ FROM slice WHERE id=".xpack_id(AA::$module_id);
 $db->query($SQL);
 if ($db->next_record()) {
     RestoreVariables($db->record());
 }
 
 // grab variables from email_notify
-$SQL                       = "SELECT uid, function FROM email_notify WHERE slice_id='".q_pack_id(AA::$module_id)."'";
+$SQL                       = "SELECT uid, function FROM email_notify WHERE slice_id=".xpack_id(AA::$module_id);
 $notify_active_item_edit_e = $notify_active_item_e = $notify_holding_item_edit_e = $notify_holding_item_e = '';
 
 $result = $db->query($SQL);

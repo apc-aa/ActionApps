@@ -138,7 +138,7 @@ if ( ($insert AND $superadmin) OR $update ) {
             // Maybe we could allow also administrators to change $select_start in
             // future
 
-            $p_module_id = q_pack_id($module_id);
+            $p_module_id = xpack_id($module_id);
 
             $varset->clear();
 
@@ -149,7 +149,7 @@ if ( ($insert AND $superadmin) OR $update ) {
 
             // defaults - we use the same table for all links. The setting of defaults to 1
             // flags this as default for this poll module
-            $SQL = "UPDATE links SET ". $varset->makeUPDATE() . " WHERE (id='$p_module_id')";
+            $SQL = "UPDATE links SET ". $varset->makeUPDATE() . " WHERE (id=$p_module_id)";
             if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
                 $err["DB"] = MsgErr("Can't change links table");
                 break;
@@ -198,10 +198,10 @@ if ( ($insert AND $superadmin) OR $update ) {
 // And the form -----------------------------------------------------
 
 $source_id   = ($template['Links'] ? substr($template['Links'],1) : $module_id );
-$p_source_id = q_pack_id( $source_id );
+$p_source_id = xpack_id( $source_id );
 
 // load module specific data
-$SQL= " SELECT * FROM links WHERE id='$p_source_id'";
+$SQL= " SELECT * FROM links WHERE id=$p_source_id";
 
 $db->query($SQL);
 if ($db->next_record()) {

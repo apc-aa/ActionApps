@@ -56,7 +56,7 @@ if (!IfSlPerm(PS_FEEDING)) {
   exit;
 }
 
-$p_from_slice_id = q_pack_id($from_slice_id);
+$p_from_slice_id = xpack_id($from_slice_id);
 
 $err = [];       // error array (Init - just for initializing variable)
 
@@ -64,7 +64,7 @@ $err = [];       // error array (Init - just for initializing variable)
 [$map_to,$field_map] = FeedUtil::GetExternalMapping(AA::$module_id, $from_slice_id);
 
 // First we DELETE current fields mapping and then INSERT new.
-$db->query("DELETE FROM feedmap WHERE from_slice_id = '$p_from_slice_id' AND to_slice_id = '$p_slice_id' ");
+$db->query("DELETE FROM feedmap WHERE from_slice_id=$p_from_slice_id AND to_slice_id = '$p_slice_id' ");
 
 // insert into feedmap
 $catVS = new Cvarset();

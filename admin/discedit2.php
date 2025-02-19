@@ -114,7 +114,7 @@ if ($update) {
         $varset->add("free1", "text", $free1);
         $varset->add("free2", "text", $free2);
 
-        $SQL = "UPDATE discussion SET ". $varset->makeUPDATE() . " WHERE id='" .q_pack_id($d_id)."'";
+        $SQL = "UPDATE discussion SET ". $varset->makeUPDATE() . " WHERE id=" .xpack_id($d_id);
         $db->query($SQL);
 
         AA::Pagecache()->invalidateFor(AA::$module_id);  // invalidate old cached values
@@ -124,7 +124,7 @@ if ($update) {
 }
 
 // set variables from table discussion
-$SQL= " SELECT * FROM discussion WHERE id='".q_pack_id($d_id)."'";
+$SQL= " SELECT * FROM discussion WHERE id=".xpack_id($d_id);
 $db->query($SQL);
 if ($db->next_record()) {
     RestoreVariables($db->record());

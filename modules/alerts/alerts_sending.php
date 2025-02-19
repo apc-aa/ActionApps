@@ -233,7 +233,7 @@ class AA_Collection {
             AND CH.collectionid='".$this->id."'";
         $db = getDB();
         if ($item_id) {
-            $db->query("SELECT slice_id FROM item WHERE id='".q_pack_id($item_id)."'");
+            $db->query("SELECT slice_id FROM item WHERE id=".xpack_id($item_id));
             if (!$db->next_record()) {
                 freeDB($db);
                 return [];
@@ -272,7 +272,7 @@ class AA_Collection {
         $retval = [];
 
         foreach ( $slices as $slice_id => $slice ) {
-            $p_slice_id   = q_pack_id($slice_id);
+            $p_slice_id   = xpack_id($slice_id);
 
             /*
             this query is carefully made to include only items, which:
@@ -293,10 +293,10 @@ class AA_Collection {
             $SQL = "SELECT id FROM item ";
 
             if ($item_id) {
-                $SQL .= "WHERE id = '".q_pack_id($item_id)."'";
+                $SQL .= "WHERE id = ".xpack_id($item_id);
             } else {
                 $SQL .=
-                "WHERE slice_id = '$p_slice_id' AND
+                "WHERE slice_id = $p_slice_id AND
                        publish_date <= $now AND expiry_date >= $last "  // a) 2. and b) 2.
                    ."AND ((moved2active BETWEEN $last AND $now) "       // a) 1.
                          ."OR (moved2active < $last "                   // b) 1.

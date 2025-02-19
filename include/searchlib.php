@@ -1202,7 +1202,7 @@ function ProoveFieldNames($slices, $conds) {
             foreach ($cond as $key => $foo) {
                 // @todo - we do not check the headline........@relation.......1 kind of fields
                 if (!AA_Condition::CONDS_NOT_FIELD_NAMES[$key] and !strpos($key, '@') and !$slice->isField($key)) {
-                    warn("Field <b>$key</b> does not exist in slice <b>$slice_id</b> (" . q_pack_id($slice_id) . ").");
+                    warn("Field <b>$key</b> does not exist in slice <b>$slice_id</b>.");
                 }
             }
         }
@@ -2203,7 +2203,7 @@ function QueryDiscIDs($slice_id, $conds, $sort, $slices) {
         $SQL        .= ' item.slice_id' . ((count($slices) === 1) ? " = $slices_SQL AND " :
                 " IN ($slices_SQL) AND ");
     } elseif ($slice_id) {
-        $SQL .= " item.slice_id = '" . q_pack_id($slice_id) . "'";
+        $SQL .= " item.slice_id=" . xpack_id($slice_id);
     }
 
     if (isset($select_conds) AND is_array($select_conds)) {    // conditions -----

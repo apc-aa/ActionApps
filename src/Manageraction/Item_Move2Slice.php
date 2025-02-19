@@ -90,7 +90,7 @@ class Item_Move2Slice extends AbstractManageraction {
 
         // check if there are no ids from bad slice (attack???)
         $wherein = " AND " . $item_zids->sqlin('id');
-        $SQL     = "SELECT id FROM item WHERE slice_id = '" . q_pack_id($this->slice_id) . "' $wherein";
+        $SQL     = "SELECT id FROM item WHERE slice_id = " . xpack_id($this->slice_id) . " $wherein";
 
         $zids_to_move = new zids(GetTable2Array($SQL, '', 'id'), 'p');
 
@@ -98,7 +98,7 @@ class Item_Move2Slice extends AbstractManageraction {
             return false;     // OK
         }
 
-        DB_AA::sql("UPDATE item SET slice_id = '" . q_pack_id($dest_slice_id) . "' WHERE " . $zids_to_move->sqlin('id'));
+        DB_AA::sql("UPDATE item SET slice_id = " . xpack_id($dest_slice_id) . " WHERE " . $zids_to_move->sqlin('id'));
 
         AA::Pagecache()->invalidateFor([$this->slice_id, $dest_slice_id]);  // invalidate old cached values
 

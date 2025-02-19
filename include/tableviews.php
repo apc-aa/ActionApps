@@ -54,7 +54,7 @@ function GetTableView($viewID) {
         "modulemenu"=> "modules/polls",
         "readonly"  => true,
         "addrecord" => false,
-        "where"     => "(module_id='". q_pack_id($slice_id)."')",
+        "where"     => "(module_id=". xpack_id($slice_id).")",
         "cond"      => CheckPerms( AuthGetUid(), "slice", $slice_id, PS_MODP_EDIT_DESIGN),
         "title"     => _m("Polls Design"),
         "caption"   => _m("Polls Design"),

@@ -463,7 +463,7 @@ function fileman_copy_template($srcdir, $dstdir): string {
     ];
 
     $db = getDB();
-    $db->query("SELECT name FROM slice WHERE id = '".q_pack_id($slice_id)."'");
+    $db->query("SELECT name FROM slice WHERE id = ".xpack_id($slice_id));
     $db->next_record();
     $aliases["_#SLICNAME"] = $db->f('name');
     freeDB($db);

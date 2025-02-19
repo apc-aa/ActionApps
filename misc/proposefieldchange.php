@@ -134,7 +134,7 @@ if ( AA_V::P('bsc') == 1 ) {
             }
             // we do not use special field now - we just assign the SA and
             // Aktivity as normal (but form foreign plan)
-            UpdateFieldContent($item_id, 'relation........', $field_content, [false,false,false]);
+            UpdateFieldContent($item_id, 'relation........', $field_content, ItemContent::FLAG_JUST_STORE);
             ++$updated;
         }
     }

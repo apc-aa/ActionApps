@@ -9282,7 +9282,8 @@ class AA_Stringexpand_History extends AA_Stringexpand {
         $format = $format ?: '_#val';
         foreach ($changes as $ch) {
             if ($ch) {
-                $retarr[] = str_replace(['_#val', '_#date', '_#user', '_#timestamp'], [$ch['value'], date('Y-m-d H:i:s', ChangesMonitor::toTimestamp((int)$ch['time'])), $ch['user'], date('U', ChangesMonitor::toTimestamp($ch['time']))], $format);
+                $val = is_array($ch['value']) ? ((count($ch['value']) < 2) ? reset($ch['value']) : json_encode($ch['value'])) : $ch['value'];  // could be array if the the history is not found, so we grab the value from the item
+                $retarr[] = str_replace(['_#val', '_#date', '_#user', '_#timestamp'], [$val, date('Y-m-d H:i:s', ChangesMonitor::toTimestamp((int)$ch['time'])), $ch['user'], date('U', ChangesMonitor::toTimestamp($ch['time']))], $format);
             }
         }
         return implode($delimiter, $retarr);

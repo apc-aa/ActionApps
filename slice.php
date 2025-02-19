@@ -370,8 +370,7 @@ if ( $sh_itm OR $x OR $o OR $seo ) {
     $discussion_vid = ($dview ?? $slice_info['vid']);
     // you can set dview=0 to not show discussion
     if ($discussion_vid > 0) {
-        $db->query("SELECT view.*, slice.flag FROM view, slice
-                     WHERE slice.id='".q_pack_id($slice_id)."' AND view.id=$discussion_vid");
+        $db->query("SELECT view.*, slice.flag FROM view, slice WHERE slice.id=".xpack_id($slice_id)." AND view.id=$discussion_vid");
         if ($db->next_record()) {
             $view_info = $db->record();
 
@@ -423,7 +422,7 @@ $r_state_vars = StoreVariables(["no_scr","scr_go","order","cat_id", "cat_name", 
 
 if ($cat_id AND ($flds = $slice->getFields()) AND ($cat_field = $flds->firstOfTypeFieldId())) {  // optional parameter cat_id - deprecated - slow ------
     $cat_group = $flds->getCategoryGroup();
-    $SQL = "SELECT value FROM constant WHERE group_id = '$cat_group' AND id='". q_pack_id($cat_id) ."'";
+    $SQL = "SELECT value FROM constant WHERE group_id = '$cat_group' AND id=". xpack_id($cat_id);
     $db->query($SQL);
     if ( $db->next_record() ) {
         $conds[] = [

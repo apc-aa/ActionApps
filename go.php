@@ -53,12 +53,12 @@ if ( !$sh_itm ) {
 }
 
 is_object( $db ) || ($db = getDB());
-$p_id = q_pack_id($sh_itm);
+$p_id = xpack_id($sh_itm);
 
 // get source item id and slice
 
 $SQL = "SELECT source_id, slice_url FROM slice, relation, item
-        WHERE relation.destination_id='$p_id'
+        WHERE relation.destination_id=$p_id
         AND relation.source_id=item.id
         AND slice.id = item.slice_id
         AND relation.flag = '" . REL_FLAG_FEED . "'";  // feed bit
@@ -72,7 +72,7 @@ if ($db->next_record()) {
     $item = unpack_id($db->f('source_id'));
     $slice_url = ($db->f('slice_url'));
 } else { // if this item is not fed - give its own id
-    $SQL = "SELECT slice_url FROM slice, item  WHERE item.slice_id=slice.id  AND item.id = '$p_id'";
+    $SQL = "SELECT slice_url FROM slice, item  WHERE item.slice_id=slice.id  AND item.id = $p_id";
     $db->query($SQL);
     if ($db->next_record()) {
         $item = $sh_itm;

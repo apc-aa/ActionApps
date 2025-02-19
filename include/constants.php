@@ -572,7 +572,7 @@ function getViewTypes(): array
         "flag1" => _m("Disabled view"),
         "flag2" => [
                      "label" => _m("Log view usage"),
-                     "help"  => _m("Be careful with this. It really logs avery view use! Good for debugging and checking, if disabled view is not used anymore..."),
+                     "help"  => _m("Be careful with this. It really logs every view use! Good for debugging and checking, if disabled view is not used anymore..."),
               ]];
 
     return [

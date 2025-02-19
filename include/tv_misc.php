@@ -41,7 +41,7 @@ function GetMiscTableView($viewID) {
 //  global $attrs_edit, $attrs_browse, $format, $langs;
     global              $attrs_browse;
 
-    $p_slice_id = q_pack_id($slice_id);
+    $p_slice_id = xpack_id($slice_id);
 
     if ($viewID === "email_edit") {
         $tableview = GetEmailTableView($viewID);
@@ -197,7 +197,7 @@ function GetMiscTableView($viewID) {
         "title" => _m ("Configure Fields"),
         "caption" => _m("Configure Fields"),
         "attrs" => $attrs_browse,
-        "where" => "slice_id='$p_slice_id'",
+        "where" => "slice_id=$p_slice_id",
         "primary" => ['slice_id', 'id'],
         "fields" => [
             "id"              => ["view" => ["type" => "text", "readonly" => true]],

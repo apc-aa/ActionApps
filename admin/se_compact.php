@@ -124,8 +124,7 @@ if ( $update ) {
           // historical reasons
         $varset->add("noitem_msg", "text", $noitem_msg ?: " " );
 
-        if ( !$db->query("UPDATE slice SET ". $varset->makeUPDATE() . "
-                          WHERE id='".q_pack_id(AA::$module_id)."'")) {
+        if ( !$db->query("UPDATE slice SET ". $varset->makeUPDATE() . " WHERE id=".xpack_id(AA::$module_id))) {
             $err["DB"] = MsgErr( _m("Can't change slice settings") );
             break;   // not necessary - we have set the halt_on_error
         }
@@ -141,8 +140,7 @@ if ( AA::$module_id!="" ) {  // set variables from database - always
 /*  $SQL= " SELECT odd_row_format, even_row_format, even_odd_differ, compact_top,
                  compact_bottom, compact_remove, category_sort, category_format,
                  category_top, category_bottom, noitem_msg */
-    $SQL = " SELECT *
-          FROM slice WHERE id='". q_pack_id(AA::$module_id)."'";
+  $SQL = " SELECT * FROM slice WHERE id=". xpack_id(AA::$module_id);
   $db->query($SQL);
     if ($db->next_record()) {
         $odd_row_format  = $db->f('odd_row_format');
@@ -163,7 +161,7 @@ if ( AA::$module_id!="" ) {  // set variables from database - always
         }
         $noitem_msg      = $db->f('noitem_msg');
         if (!$group_by && $category_sort) {
-            $db->query("SELECT id FROM field WHERE id LIKE 'category.......%' AND slice_id='".q_pack_id(AA::$module_id)."'");
+            $db->query("SELECT id FROM field WHERE id LIKE 'category.......%' AND slice_id=".xpack_id(AA::$module_id));
             if ($db->next_record()) {
                 $group_by = $db->f("id");
                 $gb_direction  = "2";      // number 2 represents 'a' - ascending (because gb_direction in number)

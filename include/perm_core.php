@@ -311,7 +311,7 @@ function FilemanPerms($slice_id) {
         $perms_ok = false;
     } else {
         $db = getDB();
-        $db->query("SELECT fileman_access, fileman_dir FROM slice WHERE id='".q_pack_id($slice_id)."'");
+        $db->query("SELECT fileman_access, fileman_dir FROM slice WHERE id=".xpack_id($slice_id));
 
         if ($db->num_rows() != 1) {
             $perms_ok = false;
@@ -985,7 +985,7 @@ class AA_Permsystem_Reader extends AA_Permsystem {
     protected function rehashPassword($user_id, $password) {
         if ($user_id AND $password) {
             AA_Log::write('PWD_REHASH', AA_Log::context($user_id));
-            UpdateField($user_id, FIELDID_PASSWORD, new AA_Value(ParamImplode(['AA_PASSWD',$password])), [false,false,false]); // we do not need to invalidate cache - from the outside it is the same
+            UpdateField($user_id, FIELDID_PASSWORD, new AA_Value(ParamImplode(['AA_PASSWD',$password])), ItemContent::FLAG_JUST_STORE); // we do not need to invalidate cache - from the outside it is the same
         }
     }
 

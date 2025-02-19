@@ -51,9 +51,7 @@ try {
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception) {}
 
-
 $module_id   = AA::$module_id;
-$p_module_id = q_pack_id($module_id);
 
 if ( !($module = AA_Module_Site::getModule($module_id)) ) {
     MsgErr(_m("Site module not found"));

@@ -953,10 +953,16 @@ class AA_Inputfield {
                             }
                             break;
                 case 'pre': [, $maxlength, $fieldsize, $slice_field, $usevalue, $adding, $secondfield, $add2constant, $whichitems, $conds_str, $sort_str, $add_slice_pwd, $const_param] = $this->param;
-                            // add2constant is used in insert_fnc_qte - adds new value to constant table
-                            if ( $whichitems < 1 ) $whichitems = AA_BIN_ACT_PEND;              // fix for older (bool) format
-                            $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems, null, ($add_slice_pwd ? AA_Credentials::encrypt($add_slice_pwd) : null), null, $const_param);
-                            $this->inputPreSelect($maxlength, $fieldsize, $adding, $secondfield, $usevalue );
+                            // add2constant is used in AA_Inserter - adds new value to constant table
+                            if ( $whichitems < 1 ) {
+                                $whichitems = AA_BIN_ACT_PEND;              // fix for older (bool) format
+                            }
+                            if ($adding OR $secondfield) {
+                                $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems, null, ($add_slice_pwd ? AA_Credentials::encrypt($add_slice_pwd) : null), null, $const_param);
+                                $this->inputPreSelect($maxlength, $fieldsize, $adding, $secondfield, $usevalue);
+                            } else {
+                                $this->inputWidget($item, $slice_id);          // standard
+                            }
                             break;
                 case 'tpr': $this->textareaPreSelect(get_if($this->param[1],4),    // rows
                                                      get_if($this->param[2],60));  // cols

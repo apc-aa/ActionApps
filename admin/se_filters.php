@@ -90,7 +90,7 @@ if ( $import_id == "" ) {
     reset($impslices);
     $import_id = key($impslices);
 }
-$p_import_id = q_pack_id($import_id);
+$p_import_id = xpack_id($import_id);
 
 $slice = AA_Slice::getModule(AA::$module_id);
 
@@ -145,7 +145,7 @@ if ($feed_id = $remote_slices[$import_id]) {   // not comparison! - external fee
     $imp_count = ($db->next_record() ? $db->f('cnt') : 0);
 
     // preset variables due to feeds database
-    $SQL= "SELECT category_id, to_category_id, all_categories, to_approved FROM feeds WHERE from_id='$p_import_id' AND to_id='$p_slice_id'";
+    $SQL= "SELECT category_id, to_category_id, all_categories, to_approved FROM feeds WHERE from_id=$p_import_id AND to_id='$p_slice_id'";
     $db->query($SQL);
     while ($db->next_record()) {
         if ( $db->f('all_categories') ) {

@@ -216,9 +216,7 @@ class AA_Profile {
      *  (used on revoking the perms for user on a slice)
      */
     function delUserProfile() {
-        $this->do_sql("DELETE FROM profile WHERE      uid='". $this->user_id ."'
-                                             AND slice_id='". q_pack_id($this->module_id) ."'",
-                      "Can't delete profile");
+        $this->do_sql("DELETE FROM profile WHERE uid='". $this->user_id ."' AND slice_id=". xpack_id($this->module_id), "Can't delete profile");
     }
 
     /** insertProperty function
@@ -231,7 +229,7 @@ class AA_Profile {
     function insertProperty($property, $selector, $value, $global=false) {
         $property = quote($property); $selector = quote($selector); $value = quote($value);
         $last_id = $this->do_sql("INSERT INTO profile (slice_id, uid, property, selector, value)
-                                         VALUES ('". q_pack_id($this->module_id) ."','". ($global ? '*' : $this->user_id) ."','$property','$selector','$value')",
+                                         VALUES (". xpack_id($this->module_id) .",'". ($global ? '*' : $this->user_id) ."','$property','$selector','$value')",
                       "Can't update profile");
         return $last_id;
     }
@@ -244,7 +242,7 @@ class AA_Profile {
         $property = quote($property); $selector = quote($selector);
         $this->do_sql("DELETE FROM profile WHERE property='$property'
                                              AND      uid='". ($global ? '*' : $this->user_id) ."'
-                                             AND slice_id='". q_pack_id($this->module_id) ."'".
+                                             AND slice_id=". xpack_id($this->module_id).
                               ($selector ? " AND selector = '$selector' " : ''),
                        "Can't delete profile");
     }
@@ -252,8 +250,8 @@ class AA_Profile {
     /** Copies the profile form one user to another
      **/
     static function copyProfile($slice_id, $from_uid, $to_uid) {
-        $p_slice_id = q_pack_id($slice_id);
-        $rules      = GetTable2Array("SELECT * FROM profile WHERE slice_id='$p_slice_id' AND (uid='$from_uid')");
+        $p_slice_id = xpack_id($slice_id);
+        $rules      = GetTable2Array("SELECT * FROM profile WHERE slice_id=$p_slice_id AND (uid='$from_uid')");
         $varset     = new CVarset;
         foreach ($rules as $row) {
             $varset->resetFromRecord($row);
@@ -288,7 +286,7 @@ class AA_Profile {
         if ($id) {
             $SQL .= " AND id='".$id."'";
         }
-        $SQL .= " AND slice_id='". q_pack_id($this->module_id) ."'";
+        $SQL .= " AND slice_id=". xpack_id($this->module_id);
         $this->do_sql($SQL,"Can't delete profile");
     }
 

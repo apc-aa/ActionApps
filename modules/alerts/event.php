@@ -39,7 +39,7 @@ function AlertsSendWelcome( $slice_id, $itemContent ) {
     $mydb->query("SELECT alerts_collection.id, slice_url, emailid_welcome
         FROM alerts_collection INNER JOIN module
         ON alerts_collection.module_id = module.id
-        WHERE alerts_collection.slice_id='".q_pack_id($slice_id)."'");
+        WHERE alerts_collection.slice_id=".xpack_id($slice_id));
 
     $slice   = AA_Slice::getModule($slice_id);
     $aliases = $slice->aliases();
@@ -76,14 +76,14 @@ function AlertsSendWelcome( $slice_id, $itemContent ) {
 */
 function AlertsSendInstantAlert( $item_id, $slice_id ) {
     $db = getDB();
-    $db->query ("SELECT moved2active, publish_date, expiry_date FROM item  WHERE id = '".q_pack_id($item_id)."'");
+    $db->query ("SELECT moved2active, publish_date, expiry_date FROM item  WHERE id=".xpack_id($item_id));
 
     if ($db->next_record() && $db->f("moved2active") && time() >= $db->f("publish_date") && time() <= $db->f("expiry_date")) {
         $db->query ("
             SELECT DISTINCT ACF.collectionid FROM alerts_collection_filter ACF
             INNER JOIN alerts_filter AF ON ACF.filterid = AF.id
             INNER JOIN view ON view.id = AF.vid
-            WHERE view.slice_id='".q_pack_id($slice_id)."'");
+            WHERE view.slice_id=".xpack_id($slice_id));
         while ($db->next_record()) {
             $collection_ids[] = $db->f("collectionid");
         }
@@ -92,7 +92,7 @@ function AlertsSendInstantAlert( $item_id, $slice_id ) {
             MoreTimeLimit();  // This can take a while
             send_emails("instant", $collection_ids, "", true, $item_id);
             // We must reset moved2active so that the item is not re-sent on update.
-            $db->query ("UPDATE item SET moved2active = 0 WHERE id='" .q_pack_id($item_id)."'");
+            $db->query ("UPDATE item SET moved2active = 0 WHERE id=" .xpack_id($item_id));
         }
     }
     freeDB($db);

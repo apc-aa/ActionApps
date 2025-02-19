@@ -78,14 +78,14 @@ if ($change_to_cmd && ($change_to != $collectionprop["slice_id"]))	{
         echo "<b>".delete_fields_from_slice($collectionid, $collectionprop["slice_id"])."</b><br><br>";
     }
     if ($change_to) {
-        $db->query ("UPDATE alerts_collection SET slice_id='".q_pack_id($change_to)."' WHERE id='$collectionid'");
+        $db->query ("UPDATE alerts_collection SET slice_id=".xpack_id($change_to)." WHERE id='$collectionid'");
     } else {
         $db->query ("UPDATE alerts_collection SET slice_id = NULL WHERE id='$collectionid'");
     }
     $collectionprop["slice_id"] = $change_to;
 }
 
-$db->query ("SELECT name FROM slice WHERE id = '". q_pack_id($collectionprop["slice_id"])."'");
+$db->query ("SELECT name FROM slice WHERE id=". xpack_id($collectionprop["slice_id"]));
 if ($db->next_record()) {
     $slice_name = $db->f("name");
     $slice_set  = true;

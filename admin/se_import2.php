@@ -96,7 +96,7 @@ do {
   }
   foreach ($feedto as $to => $val) {
       if ( $val ) {
-            $SQL = "DELETE FROM feedperms WHERE from_id = '$p_slice_id' AND to_id='". q_pack_id($to). "'";
+            $SQL = "DELETE FROM feedperms WHERE from_id = '$p_slice_id' AND to_id=". xpack_id($to);
             $db->query( $SQL );
             AA_Log::write("FEED_DSBLE", AA::$module_id.":$val");
         }
@@ -131,7 +131,7 @@ do {
 
   foreach ($feedfrom as $from => $val) {  // delete removed feeds
       if ( $val ) {
-            $SQL = "DELETE FROM feeds WHERE to_id = '$p_slice_id' AND from_id='". q_pack_id($from). "'";
+            $SQL = "DELETE FROM feeds WHERE to_id = '$p_slice_id' AND from_id=". xpack_id($from);
             $db->query( $SQL );
             AA_Log::write("FEED_DEL", AA::$module_id.":$val");
         }

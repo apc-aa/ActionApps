@@ -676,6 +676,8 @@ class ItemContent extends AA_Content {
 
     use \AA\Util\LastErrTrait;
 
+    public const FLAG_JUST_STORE = [false, false, false, false];
+
     /** ItemContent function
      *  Constructor which takes content for ID or item_id (unpacked).
      * @param $content4id  array|string|AA_Content - array, object or item id
@@ -1138,10 +1140,10 @@ class ItemContent extends AA_Content {
      *                      ($this->getItemID()) is not in the database.
      *                      Otherwise, it is skipped (not stored)
      * @param array  $flags additional item processing flags.:
-     *                  $flags[0] - invalidatecache - should we invalidate the cache for the slice?
-     *                  $flags[1] - feed            - process feeding (as in the slice setting)?
-     *                  $flags[2] - throw_events    - issue update/insert event?
-     *                  $flags[3] - allow_last_edit - allow rewrite last_edit field from $this content
+     *                  $flags[0] - invalidatecache - should we invalidate the cache for the slice?    - default true (if not mode=update_silent)
+     *                  $flags[1] - feed            - process feeding (as in the slice setting)?       - default true (if not mode=update_silent)
+     *                  $flags[2] - throw_events    - issue update/insert event?                       - default true (if not mode=update_silent)
+     *                  $flags[3] - allow_last_edit - allow rewrite last_edit field from $this content - default false (works for true in mode=update_silent)
      * @param string $context special parameter used for thumbnails - ''|feed
      * @return bool|mixed|string
      */
@@ -1565,12 +1567,12 @@ function itemIsDuplicate($item_id) {
  * @param string $item_id long item id
  * @param string $field_id field id
  * @param string|AA_Value $field_content
- * @param array $flags   =  // invalidate cache, feed, throw events
+ * @param array $flags   =  // invalidate cache, feed, throw events, allow edit last_edit
  * @return int
  */
 function UpdateField($item_id, $field_id, $field_content, $flags = []) {
     if (!$flags) {
-        $flags = [true, false, true];   // invalidate cache, not feed, throw events, not allow edit last_edit
+        $flags = [true, false, true, false];   // invalidate cache, not feed, throw events, not allow edit last_edit
     }
     $content4id = new ItemContent();
     $content4id->setByItemID($item_id, true);     // ignore password

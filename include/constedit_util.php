@@ -494,13 +494,13 @@ function CopyConstants($slice_id){
 
     // max. length of the group_id field
     $max_group_id_len = 16;
-    $q_slice_id       = q_pack_id($slice_id);
+    $q_slice_id       = xpack_id($slice_id);
 
     $db->query("SELECT name FROM constant WHERE group_id='lt_groupNames'");
     while ($db->next_record()) {
         $group_list[] = $db->f("name");
     }
-    $db->query("SELECT id, input_show_func FROM field WHERE slice_id ='$q_slice_id'");
+    $db->query("SELECT id, input_show_func FROM field WHERE slice_id =$q_slice_id");
     while ($db->next_record()) {
         $shf = $db->f("input_show_func");
         if (strlen ($shf) > 4) {
@@ -559,7 +559,7 @@ function CopyConstants($slice_id){
         foreach ( $fields as $field_id => $shf) {
             if (!$db->query("UPDATE field SET input_show_func = '"
                 .addslashes(str_replace ($old_id, $new_id, $shf))."'
-                WHERE id='$field_id' AND slice_id='$q_slice_id'")) {
+                WHERE id='$field_id' AND slice_id=$q_slice_id")) {
                 $err[] = "Could not update fields.";
                 freeDB($db);
                 return false;

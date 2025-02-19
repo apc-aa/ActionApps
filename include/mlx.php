@@ -947,7 +947,7 @@ class MLXGetText
         $sql = "SELECT  c1.item_id,c1.field_id,c1.text FROM `content` AS c1" //`field_id`,`text`c2.field_id,c2.text
                 ." LEFT JOIN `item` AS c2 ON ("
                 ." c2.id=c1.item_id )"
-                ." WHERE ( c2.slice_id='".q_pack_id($slice2add)."'"
+                ." WHERE ( c2.slice_id=".xpack_id($slice2add)
                 ." AND c2.status_code=1"
                 ." AND ( c1.field_id='headline........'"
                 .(!$isDefLang?" OR c1.field_id='".$langField."'":"")

@@ -113,7 +113,6 @@ if ($from_slice_id == "") {
     reset($impslices);
     $from_slice_id = key($impslices);
 }
-$p_from_slice_id = q_pack_id($from_slice_id);
 
 // get mapping from table
 [$map_to,$field_map] = FeedUtil::GetExternalMapping(AA::$module_id, $from_slice_id);

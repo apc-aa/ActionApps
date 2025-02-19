@@ -94,18 +94,18 @@ function prove_ID($slice) {
     // back-up old ids, if you want import slice definition with new id
     $new_slice_ids[$slice["id"]] = new_id();
 
-    $slice_id = q_pack_id($slice["id"]);
+    $slice_id = xpack_id($slice["id"]);
     //echo "$slice_id";
-    $SQL = "SELECT `id` FROM `slice` WHERE `id`= '$slice_id'";
+    $SQL = "SELECT `id` FROM `slice` WHERE `id`=$slice_id";
 
     global $db;
     $db->query($SQL);
     if ($db->next_record()) {
         // if we want to overwrite, delete old slice definition
         if ($GLOBALS["submit"] == _m("Overwrite")) {
-            $SQL = "DELETE FROM slice WHERE id='$slice_id'";	$db->query($SQL);
-            $SQL = "DELETE FROM field WHERE slice_id='$slice_id'";	$db->query($SQL);
-            $SQL = "DELETE FROM module WHERE id='$slice_id'"; $db->query($SQL);
+            $SQL = "DELETE FROM slice WHERE id=$slice_id";	$db->query($SQL);
+            $SQL = "DELETE FROM field WHERE slice_id=$slice_id";	$db->query($SQL);
+            $SQL = "DELETE FROM module WHERE id=$slice_id"; $db->query($SQL);
             $overwrite = true;
         } else {
             return false;

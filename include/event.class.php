@@ -346,7 +346,7 @@ function Event_ItemNewComment( $type, $item_id, $slice_type, $disc_id, $foo, $fo
         $mail_id = AA_Views::getViewField($view_id, 'aditional6');
     } else {
         // get id of e-mail template from first discussion view of the slice
-        $mail_id = GetTable2Array("SELECT aditional6 FROM view WHERE slice_id='".q_pack_id($slice_id)."' AND type='discus' ORDER BY id", 'aa_first', 'aditional6');
+        $mail_id = GetTable2Array("SELECT aditional6 FROM view WHERE slice_id=".xpack_id($slice_id)." AND type='discus' ORDER BY id", 'aa_first', 'aditional6');
     }
 
     if ( $mail_id < 1 ) {

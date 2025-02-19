@@ -205,7 +205,6 @@ if ( $insert || $update ) {
 // And the form -----------------------------------------------------
 
 $source_id   = ($template['P'] ? substr($template['P'],1) : $module_id );
-$p_source_id = q_pack_id( $source_id );
 
 // load module specific data
 [ $status_code, $headline, $publish_date, $expiry_date, $locked, $logging, $ip_locking, $ip_lock_timeout, $set_cookies, $cookies_prefix, $design_id, $params] = array_values((array)DB_AA::select1('', "SELECT status_code, headline, publish_date, expiry_date, locked, logging, ip_locking, ip_lock_timeout, set_cookies, cookies_prefix, design_id, params FROM polls", [

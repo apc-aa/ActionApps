@@ -144,7 +144,7 @@ if ($add || $update) {
         }
         AA::$module_id = $module_id;
         $slice_id      = $module_id;
-        $p_module_id   = q_pack_id($module_id);
+        $p_module_id   = xpack_id($module_id);
 
         // store used modules into relation table
         DB_AA::delete('relation', [['source_id', $module_id, 'l'],['flag',REL_FLAG_MODULE_DEPEND,'i']]);
@@ -163,7 +163,7 @@ if ($add || $update) {
             $varset->add("state_file",   "text",   $state_file);
             $varset->add("flag",         "number", $router);
 
-            $SQL = "UPDATE site SET ". $varset->makeUPDATE() . " WHERE id='$p_module_id'";
+            $SQL = "UPDATE site SET ". $varset->makeUPDATE() . " WHERE id=$p_module_id";
             if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
                 $err["DB"] = MsgErr("Can't change site");
                 break;
@@ -210,10 +210,10 @@ if ($add || $update) {
 // And the form -----------------------------------------------------
 
 $source_id   = ($template['W'] ? $template_id : $module_id );
-$p_source_id = q_pack_id( $source_id );
+$p_source_id = xpack_id( $source_id );
 
 // load module specific data
-$SQL= " SELECT * FROM site WHERE id='$p_source_id'";
+$SQL= " SELECT * FROM site WHERE id=$p_source_id";
 $db->query($SQL);
 if ($db->next_record()) {
     RestoreVariables($db->record());

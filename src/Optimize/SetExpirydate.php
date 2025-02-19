@@ -7,7 +7,7 @@ use AA_Slice;
 use function _m;
 use function freeDB;
 use function getDB;
-use function q_pack_id;
+use function xpack_id;
 
 /** Set Expiry date to maximum value for items in slices, where expiry_date.....
  *  field is not shown. It also sets the field's default to that value.
@@ -62,7 +62,7 @@ class SetExpirydate extends AbstractOptimize {
             ['input_show', 0, 'i',],
         ]);
         foreach ($slices as $sid => $default) {
-            $db->query("UPDATE item SET expiry_date=2145826800 WHERE slice_id='" . q_pack_id($sid) . "'");
+            $db->query("UPDATE item SET expiry_date=2145826800 WHERE slice_id=" . xpack_id($sid));
             //huhl("UPDATE item SET expiry_date=2145826800 WHERE slice_id='".q_pack_id($sid)."'");
             $this->message(_m('items changed: %1 in slice: %2 (%3)', [
                 $db->affected_rows(),
@@ -70,7 +70,7 @@ class SetExpirydate extends AbstractOptimize {
                 AA_Slice::getModuleName($sid),
             ]));
 
-            $db->query("UPDATE field SET input_default='never:' WHERE id='expiry_date.....' AND slice_id='" . q_pack_id($sid) . "'");
+            $db->query("UPDATE field SET input_default='never:' WHERE id='expiry_date.....' AND slice_id=" . xpack_id($sid));
             //huhl("UPDATE field SET input_default='txt:2145826800' WHERE id='expiry_date.....' AND slice_id='".q_pack_id($sid)."'");
             $this->message(_m('field default changed for expiry_date..... in %1 (%2)', [
                 $sid,

@@ -654,7 +654,7 @@ class AA_Views {
         $a = [];
         if ($slice_id) {
             $views = self::singleton();
-            $SQL   = "SELECT id FROM view WHERE slice_id='". q_pack_id($slice_id) ."'";
+            $SQL   = "SELECT id FROM view WHERE slice_id=". xpack_id($slice_id);
             $v_arr = GetTable2Array($SQL, 'NoCoLuMn', 'id');
             if (is_array($v_arr)) {
                 foreach ($v_arr as $id) {

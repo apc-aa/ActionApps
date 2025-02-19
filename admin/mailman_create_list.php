@@ -81,7 +81,7 @@ if (! $slice->getProperty("mailman_field_lists")) {
 }
 
 $db = getDB();
-$db->query("SELECT field.input_show_func, field.name FROM field WHERE slice_id='".q_pack_id(AA::$module_id)."' AND id='" .$slice->getProperty("mailman_field_lists")."'");
+$db->query("SELECT field.input_show_func, field.name FROM field WHERE slice_id=".xpack_id(AA::$module_id)." AND id='" .$slice->getProperty("mailman_field_lists")."'");
 $db->next_record();
 $field_name = $db->f("name");
 [,$groupid] = explode(":", $db->f("input_show_func"));
@@ -106,7 +106,7 @@ function add_mailman_list($admin_email, $list_name, $admin_password, $groupid) {
     $db->query("SELECT MAX(pri) AS max_pri FROM constant WHERE group_id='".addslashes($groupid)."'");
     $db->next_record();
     $pri = $db->f("max_pri") + 100;
-    if (! $db->query("INSERT INTO constant (id, group_id, name, value, pri) VALUES ('".q_pack_id(new_id())."', '".addslashes($groupid)."', '$list_name', '$list_name', $pri)")) {
+    if (! $db->query("INSERT INTO constant (id, group_id, name, value, pri) VALUES (".xpack_id(new_id()).", '".addslashes($groupid)."', '$list_name', '$list_name', $pri)")) {
         echo "Internal Error with DB.";
         freeDB($db);
         return;

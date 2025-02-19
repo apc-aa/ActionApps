@@ -27,7 +27,7 @@ require_once __DIR__ . "/../../include/mgettext.php";
 function GetCollection($slice_id) {
     $SQL =  "SELECT AC.*, module.name, module.lang_file, module.slice_url
               FROM alerts_collection AC INNER JOIN module ON AC.module_id = module.id
-              WHERE module_id='".q_pack_id($slice_id)."'";
+              WHERE module_id=".xpack_id($slice_id);
     $ret = GetTable2Array($SQL, 'aa_first');
     if (is_array($ret)) {
         $ret['module_id'] = unpack_id($ret['module_id']);

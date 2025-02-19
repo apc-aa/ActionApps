@@ -70,7 +70,7 @@ if ($mode === "hide" || $mode==="delete" || $mode==="deleteall" || $mode==="dele
             $h = ( $h ? 1 : 0 );
             $dcontent[$d_id]["d_state........."][0]['value'] = $h;
 
-            $db->query("UPDATE discussion SET state='$h' WHERE id='".q_pack_id($d_id)."'");
+            $db->query("UPDATE discussion SET state='$h' WHERE id=".xpack_id($d_id));
             break;
         case "delete":
             DeleteNode($tree, $dcontent, $d_id);

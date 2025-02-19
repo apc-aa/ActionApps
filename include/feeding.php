@@ -48,15 +48,15 @@ function GetFieldMapping($from_slice_id, $destination_id) {
         return [];
     }
 
-    $p_from_slice_id  = q_pack_id($from_slice_id);
-    $p_destination_id = q_pack_id($destination_id);
+    $p_from_slice_id  = xpack_id($from_slice_id);
+    $p_destination_id = xpack_id($destination_id);
 
     $db = getDb();
     // fill $m array with mapping set by user on mapping page (and stored to db)
     $SQL = "SELECT from_field_id, to_field_id, flag, value
               FROM feedmap
-             WHERE from_slice_id = '$p_from_slice_id'
-               AND to_slice_id = '$p_destination_id'";
+             WHERE from_slice_id = $p_from_slice_id
+               AND to_slice_id = $p_destination_id";
     $db->query($SQL);
     while ( $db->next_record() ) {
         switch ($db->f('flag')) {
@@ -98,10 +98,8 @@ function GetBaseItem($item_id) {
 
     while ($item_id) {
         $dest_id = $item_id;
-        $p_dest_id = q_pack_id($dest_id);
-        $SQL=  "SELECT source_id FROM relation
-                 WHERE  destination_id = '$p_dest_id'
-                   AND ((flag & ". REL_FLAG_FEED .") != 0)";
+        $p_dest_id = xpack_id($dest_id);
+        $SQL=  "SELECT source_id FROM relation WHERE  destination_id = $p_dest_id AND ((flag & ". REL_FLAG_FEED .") != 0)";
         $db->query($SQL);
         $item_id = $db->next_record() ? unpack_id($db->f('source_id')) : false;
     }
@@ -187,15 +185,17 @@ function FeedJoin($columns, $fields, $params, &$result) {
 
 /** FeedItemTo function
  * copy one item
- * @param $item_id
- * @param $from_slice_id
- * @param $destination_id
- * @param $approved
- * @param $tocategory
- * @param $content
+ *
+ * @param         $item_id
+ * @param         $from_slice_id
+ * @param         $destination_id
+ * @param         $approved
+ * @param         $tocategory
+ * @param  array  $content
+ *
  * @return bool|mixed|string
  */
-function FeedItemTo($item_id, $from_slice_id, $destination_id, $approved, $tocategory=0, $content="") {
+function FeedItemTo($item_id, $from_slice_id, $destination_id, $approved, $tocategory = 0, array $content=[]) {
 
     if ( $destination_id == $from_slice_id ) { // don't feed into the same slice
         return false;
@@ -306,10 +306,10 @@ function FeedItemTo($item_id, $from_slice_id, $destination_id, $approved, $tocat
  */
 function AddRelationFeed($dest_id, $source_id, $flag = REL_FLAG_FEED) {
     if ($dest_id != $source_id) {
-        $p_dest_id = q_pack_id($dest_id);
-        $p_source_id = q_pack_id($source_id);
+        $p_dest_id = xpack_id($dest_id);
+        $p_source_id = xpack_id($source_id);
         // update relation table - stores where is what fed
-        DB_AA::sql("INSERT INTO relation (destination_id, source_id, flag ) VALUES ( '$p_dest_id', '$p_source_id', '$flag' )");
+        DB_AA::sql("INSERT INTO relation (destination_id, source_id, flag ) VALUES ( $p_dest_id, $p_source_id, '$flag' )");
     }
 }
 
@@ -434,22 +434,27 @@ function FeedItem(ItemContent $content): bool {
     return true;
 }
 
-function GetFeedManaged(): \AA\Managed {
+function GetFeedManaged(bool $extended = false): \AA\Managed {
     $buttons  = [
         'Map'      => a_href(get_admin_url('se_mapping.php', ['rssfeed_id={feed_id}']), _m('Map'), ['class' => 'aa-button']),
         'Queue'    => a_href(get_admin_url('xmlclient.php',  ['rssfeed_id={feed_id}']), _m('Run (queue)'), ['class' => 'aa-button-run']),
-        'Test'     => a_href(get_admin_url('xmlclient.php',  ['rssfeed_id={feed_id}&fill=0']), _m('Test'), ['class' => 'aa-button-test']),
+        'Test'     => a_href(get_admin_url('xmlclient.php',  ['rssfeed_id={feed_id}&fill=0&debugfeed=9']), _m('Test'), ['class' => 'aa-button-test']),
         'Source'   => a_href(get_admin_url('xmlclient.php',  ['rssfeed_id={feed_id}&display=1']), _m('Source'), ['class' => 'aa-button-show']),
         'Validate' => a_href('https://validator.w3.org/feed/check.cgi?url={safe:{server_url}}', _m('Validate'), ['class' => 'aa-button-test']),
     ];
-
     $managed = AA::Metabase()->getManagerConf('rssfeeds',null,null,[],$buttons);
-    $managed->setColumns2show(['name','server_url','feed_id', 'warnings']);
+
     $managed->setColumn('server_url', '<a href="{server_url}">{shorten:{server_url}:60:3}</a>');
 
     $managed->setModule(AA::$module_id);
-    $managed->setWidgetSetting('slice_id', ['enum'=>AA_Module::getUserModules(), 'name'=>_m('Owner')]);
-    $managed->setWidgetSetting('slice_id', ['type'=>'hidden', 'name'=>_m('Owner')]);
+    $managed->setWidgetSetting('slice_id', ['enum'=>AA_Module::getUserModules(), 'name'=>_m('Local slice')]);
+    if ($extended) {
+        $managed->setColumns2show(['name','server_url','feed_id', 'warnings', 'slice_id']);
+        $managed->setColumn('slice_id', '{modulefield:{slice_id}:name}');
+    } else {
+        $managed->setColumns2show(['name','server_url','feed_id', 'warnings']);
+        $managed->setWidgetSetting('slice_id', ['type'=>'hidden', 'name'=>_m('Local slice')]);
+    }
     $managed->setWidgetSetting('feed_id',                                       ['name'=>_m('ID')]);
     $managed->setWidgetSetting('server_url',                                    ['name'=>_m('URL of the feed'), 'help'=> _m("e.g. https://www.someplace.com/rss/index.xml").'<br>'._m("Do NOT change this URL if you already set the Mapping (or update mapping after the change). The mapping is tied to this url!")]);
     $managed->setWidgetSetting('name',                                          ['name'=>_m('RSS Feed name')]);
@@ -462,3 +467,58 @@ function GetFeedManaged(): \AA\Managed {
     return $managed;
 }
 
+function GetAAFeedManaged(): \AA\Managed {
+    $base_feed_url = AA_INSTAL_URL .'admin/xmlclient.php?feed_id={feed_id}&time={rawurlencode:{newest_item}}';
+    $buttons  = [
+        'Test'     => a_href(get_url($base_feed_url, ['fill'=> 0, 'debugfeed'=>9]), _m('Test'), ['class' => 'aa-button-test']),
+        'Source'   => a_href(get_url($base_feed_url, ['display' =>1 ]), _m('Source'), ['class' => 'aa-button-show']),
+        'Validate' => a_href(get_url('https://validator.w3.org/feed/check.cgi?url='. str_replace(['?','&'],['%3F','%26'],get_url($base_feed_url, ['display'=>1]))), _m('Validate'), ['class' => 'aa-button-test']),
+        'Queue'    => a_href($base_feed_url, _m('Run (queue)'), ['class' => 'aa-button-run']),
+        'Map'      => a_href(get_admin_url('se_mapping.php', ['feed_id={feed_id}']), _m('Map'), ['class' => 'aa-button']),
+        'Edit'     => false,
+        'Delete'   => false,
+    ];
+
+    // Old tabledit functions
+    //
+    //function tv_field_value($feed_id,$param,$var) {
+    //    return "+'&$param='+encodeURIComponent(document.tv_aarsstest.elements['val[$feed_id][$var]'].value)";
+    //}
+    ///** showFeedActions function
+    // * @param $feed_id
+    // * @return string - set of links
+    // * @noinspection PhpUnused
+    // */
+    //    function showFeedActions($feed_id) {
+    //        $url = "'".AA_INSTAL_URL ."admin/xmlclient.php?feed_id=$feed_id'".
+    //            tv_field_value($feed_id,'fill','fire').
+    //            tv_field_value($feed_id,'time','newest_item').
+    //            tv_field_value($feed_id,'debugfeed','debug');
+    //        $out  = "<a href=\"javascript:OpenWindowTop($url)\" title=\"downloads remote items from the feed and possibly store it to the desired slice (if 'write' checkbox is checked\">"._m('feed')."</a>&nbsp;";
+    //        $out .= "<a href=\"javascript:OpenWindowTop('https://validator.w3.org/feed/check.cgi?url='+encodeURIComponent($url+'&display=1'))\" title=\"checks the validity of the feed by feedvalidator.org\">"._m('validate')."</a>&nbsp;";
+    //        $out .= "<a href=\"javascript:OpenWindowTop($url+'&display=1')\" title=\"displays the source data in new window\">"._m('show')."</a>";
+    //        return $out;
+    //}
+
+    $managed = AA::Metabase()->getManagerConf('external_feeds',null,null,[],$buttons);
+    $managed->setModule(AA::$module_id);
+    $managed->setColumns2show(['name',  'feed_id', 'node_name', 'remote_slice_id', 'slice_id', 'feed_mode', 'warnings', 'newest_item' ]);
+    $managed->setAction('add', false);
+    $managed->setAction('edit', false);
+
+    $managed->setColumn('slice_id', '{modulefield:{slice_id}:name}<br><small>{slice_id}</small>');
+    $managed->setColumn('remote_slice_id', '{remote_slice_name}<br><small>{remote_slice_id}</small>');
+
+    $managed->setWidgetSetting('node_name',  ['name'=>_m('Remote node')]);
+    $managed->setWidgetSetting('slice_id',  ['name'=>_m('Local slice')]);
+    $managed->setWidgetSetting('remote_slice_id',  ['name'=>_m('Remote slice')]);
+    $managed->setWidgetSetting('feed_id', ['name'=>_m('ID')]);
+
+    $logtext = '<span title="'._m('warnings last hour').'">{internal:AA_Log:count:CSN:RSS#:{feed_id}:3600}</span> / <span title="'._m('warnings last day').'">{internal:AA_Log:count:CSN:RSS#:{feed_id}:86400}</span> / <span title="'._m('warnings last month').'">{internal:AA_Log:count:CSN:RSS#:{feed_id}:2592000}</span>';
+    if (IsSuperadmin()) {
+        $logtext = a_href(get_admin_url('aa_log.php?&srchbr_akce=1&srchbr_field%5B0%5D=selector&srchbr_oper%5B0%5D==&srchbr_value%5B0%5D=RSS:{feed_id}&srchbr_order%5B0%5D=time&srchbr_order_dir%5B0%5D=on'), $logtext);
+    }
+    $managed->addColumn('warnings',_m('Warnings in log [hour/day/month]'), $logtext);
+
+    return $managed;
+}

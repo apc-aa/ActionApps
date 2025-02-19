@@ -94,8 +94,7 @@ if ($update) {
         $varset->add("admin_format_bottom", "text", $admin_format_bottom);
         $varset->add("admin_remove",        "text", $admin_remove);
         $varset->add("admin_noitem_msg",    "text", $admin_noitem_msg);
-        if ( !$db->query("UPDATE slice SET ". $varset->makeUPDATE() .
-                         "WHERE id='".q_pack_id(AA::$module_id)."'")) {
+        if ( !$db->query("UPDATE slice SET ". $varset->makeUPDATE() ." WHERE id=".xpack_id(AA::$module_id))) {
             $err["DB"] = MsgErr( _m("Can't change slice settings") );
             break;    // not necessary - we have set the halt_on_error
         }

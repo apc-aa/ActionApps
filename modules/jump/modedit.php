@@ -75,20 +75,20 @@ $apage->printHead($err, $Msg);
 
 if ($update) {
     if (!$jump_id) $jump_id = new_id ();
-    $q_jump_id = q_pack_id ($jump_id);
+    $q_jump_id = xpack_id ($jump_id);
 
     $varset = new Cvarset();
     $varset->clear();
     $varset->add("destination", "text", $jump_url);
     $varset->add("dest_slice_id", "unpacked", $dest_id);
 
-    $db->query("SELECT * FROM module WHERE id='$q_jump_id'");
+    $db->query("SELECT * FROM module WHERE id=$q_jump_id");
     if ($db->next_record()) {
-        $db->query("UPDATE jump SET ".$varset->makeUPDATE() ." WHERE slice_id='$q_jump_id'");
+        $db->query("UPDATE jump SET ".$varset->makeUPDATE() ." WHERE slice_id=$q_jump_id");
 
         $varset->clear();
         $varset->add("name","text",$jump_name);
-        $db->query("UPDATE module SET ".$varset->makeUPDATE() ." WHERE id='$q_jump_id'");
+        $db->query("UPDATE module SET ".$varset->makeUPDATE() ." WHERE id=$q_jump_id");
     }
     else {
         $varset->add("slice_id", "unpacked", $jump_id);
@@ -117,7 +117,7 @@ if (!$jump_id) {
 } else {
     $db->query("SELECT name,destination,dest_slice_id FROM jump INNER JOIN module
             ON jump.slice_id = module.id
-            WHERE jump.slice_id = '".q_pack_id ($jump_id)."'");
+            WHERE jump.slice_id = ".xpack_id($jump_id));
     if ($db->next_record()) {
         $jump_name = $db->f("name");
         $jump_url = $db->f("destination");

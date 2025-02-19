@@ -171,7 +171,6 @@ function Links_CountLinkInBins($cat_path) {
 
 // id of the editted module (id in long form (32-digit hexadecimal number))
 $module_id   = AA::$module_id;
-$p_module_id = q_pack_id($module_id); // packed to 16-digit as stored in database
 $links_info  = GetModuleInfo($module_id,'Links');
 
 $actions   = new Manageractions;

@@ -1171,26 +1171,25 @@ class AA_Item {
 
         if ($fieldToMatch === "id..............") {
         // Special case id... its not a real field
-            $fqsqlid = q_pack_id($stringToMatch);
+            $fqsqlid = xpack_id($stringToMatch);
             $SQL = "SELECT c2.text AS text
                     FROM content c2
-                    WHERE
-                         c2.field_id    = '$fieldToReturn' AND
-                         c2.item_id     = '$fqsqlid'";
+                    WHERE c2.field_id    = '$fieldToReturn' AND
+                          c2.item_id     = $fqsqlid";
 
         } elseif ($fieldToMatch === "short_id........") {
-            $p_blurbSliceId  = q_pack_id( $p[1] ?: ( defined('BLURB_SLICE_ID') ? BLURB_SLICE_ID : '' ));
+            $p_blurbSliceId  = xpack_id( $p[1] ?: ( defined('BLURB_SLICE_ID') ? BLURB_SLICE_ID : '' ));
             $SQL = "SELECT c2.text AS text
                     FROM item LEFT JOIN content c2 ON item.id = c2.item_id
-                    WHERE slice_id  = '$p_blurbSliceId' AND
+                    WHERE slice_id  = $p_blurbSliceId AND
                          item.short_id = '$stringToMatch' AND
                          c2.field_id    = '$fieldToReturn'";
         } else {
-            $p_blurbSliceId  = q_pack_id( $p[1] ?: ( defined('BLURB_SLICE_ID') ? BLURB_SLICE_ID : '' ));
+            $p_blurbSliceId  = xpack_id( $p[1] ?: ( defined('BLURB_SLICE_ID') ? BLURB_SLICE_ID : '' ));
             $SQL = "SELECT c2.text AS text
                     FROM item LEFT JOIN content c1 ON item.id = c1.item_id
                               LEFT JOIN content c2 ON item.id = c2.item_id
-                    WHERE slice_id  = '$p_blurbSliceId' AND
+                    WHERE slice_id  = $p_blurbSliceId AND
                          c1.field_id    = '$fieldToMatch' AND
                          c2.field_id    = '$fieldToReturn' AND
                          c1.text        = '".addslashes($stringToMatch)."'";
@@ -1235,13 +1234,13 @@ class AA_Item {
         }
 
         $slice_id   = $this->getSliceID();
-        $p_slice_id = q_pack_id($slice_id);
+        $p_slice_id = xpack_id($slice_id);
 
         if (! $title) {
             if ($slice_id==""){ echo "Error: slice_id not defined"; exit; }
 
             // RSS chanel (= slice) info
-            $SQL = "SELECT name, slice_url, owner FROM module WHERE id='$p_slice_id'";
+            $SQL = "SELECT name, slice_url, owner FROM module WHERE id=$p_slice_id";
 
             $db  = getDB(); $db->query($SQL);
             if (!$db->next_record()) {

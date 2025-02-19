@@ -50,7 +50,7 @@ class Item_MoveItem extends AbstractManageraction {
             // older and slower approach - needs GetItemContent() ...
             // UpdateField($id, 'status_code.....', $val, [false, false, false]);   // invalidate cache, feed, throw events
             $newcontent4id->setItemID($id);
-            if ($newcontent4id->storeItem( 'update', [false, true, true] )) {    // !invalidatecache, feed, throw_events
+            if ($newcontent4id->storeItem( 'update', [false, true, true, false] )) {    // !invalidatecache, feed, throw_events
                 ++$updated_items;
             }
         }
