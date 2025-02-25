@@ -98,7 +98,7 @@ class TfaWidget extends Widget
      * @param $data4field - ['tfa'=>['gen'=>1,'usr'=>,'pwd'=>,'otc'=>)
      *   This method coverts such data to AA_Value.
      */
-    public static function getWidgetValue(array $data4field): AA_Value
+    public static function getWidgetValue(array $data4field, ?AA_Value $default): AA_Value
     {
         $data4field = $data4field['tfa'];
         if (is_array($data4field) AND isset($data4field['usr'])) {

@@ -171,7 +171,7 @@ class DteWidget extends Widget
      * @param $data4field - ['dte'=>['y'=>[], 'm'=>[], 'd'=>[], 't'=>[]]]  - for select based date OR ...
      *                      ['dte'=>['i'=>[]]                              - for <input type=date> based date
      */
-    public static function getWidgetValue(array $data4field): AA_Value
+    public static function getWidgetValue(array $data4field, ?AA_Value $default): AA_Value
     {
         $data4field = $data4field['dte'];
         $values = [];

@@ -407,6 +407,9 @@ const FLAG_TEXT_STORED = 64;   // value is stored in the text field (and not num
 const ITEM_FLAG_FEED               = 2;   // item is fed
 const ITEM_FLAG_OFFLINE            = 8;   // off-line filled or imported from file
 const ITEM_FLAG_ANONYMOUS_EDITABLE = 32;    // anonymously added and thus anonymously editable (reset on every use of itemedit.php)
+//const ITEM_FLAG_INNER_UNSET        = 128;   // inner flag - by this value tells Widget, that the HTML/PLAIN text flag is not set and should be rewritten from Field setting;
+//                                            //  never stored to database, so the value could be used if you will need it
+//       - not used - solved by $default value for AA_Widget - getValue()
 
 /** states of feed field of field table */
 const STATE_FEEDABLE               = 0;

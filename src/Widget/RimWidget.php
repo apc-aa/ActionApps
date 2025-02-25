@@ -302,11 +302,11 @@ class RimWidget extends Widget
         return $ret;
     }
 
-    public static function getWidgetValue(array $data4field): AA_Value
+    public static function getWidgetValue(array $data4field, ?AA_Value $default): AA_Value
     {
         $data4field['mch'] = $data4field['rim'];
         unset($data4field['rim']);
-        return MchWidget::getWidgetValue($data4field);
+        return MchWidget::getWidgetValue($data4field, $default);
     }
 
     /** @inheritDoc */

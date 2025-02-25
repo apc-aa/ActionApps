@@ -250,6 +250,16 @@ function PrintItemInfo($item_id) {
                 if (is_long_id($v['text']) and ($hdln = AA::Un("{item:$v[text]:_#HEADLINE}"))) {
                     $v['text'] .= "<br><small>($hdln)</small>";
                 }
+                $flags = '';
+                if ($v['flag'] & FLAG_HTML) { $flags .= '<span  title="">HTML '; }
+                if ($v['flag'] & FLAG_FEED) { $flags .= '<span title="item is fed">FEED</span> '; }
+                if ($v['flag'] & FLAG_FREEZE) { $flags .= '<span  title="content can\'t be changed">FREEZE</span> '; }
+                if ($v['flag'] & 8) { $flags .= '<span  title="offline filled - no more used flag">OFFLINE</span> '; }   // no more used
+                if ($v['flag'] & FLAG_UPDATE) { $flags .= '<span  title="content should be updated if source is changed (after feeding)">UPDATE</span> '; }
+                if ($v['flag'] & FLAG_TEXT_STORED) { $flags .= '<span  title="value is stored in the text field (and not number field of content table)">TEXT</span> '; }
+                if ($v['flag'] & ITEM_FLAG_ANONYMOUS_EDITABLE ) { $flags .= '<span  title="anonymously added and thus anonymously editable (reset on every use of itemedit.php)">ANONYMEDITABLE</span> '; }
+                $v['flag'] .= "<br><small>($flags)</small>";
+
             });
             echo GetHtmlTable($res, 'key', _m('Content table records for the item'));
         }

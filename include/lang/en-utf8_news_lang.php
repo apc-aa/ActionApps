@@ -5675,7 +5675,7 @@ $_m["Form"]
  = "";
 
 // include/grabber.class.php, row 677
-$_m["Grabbs data POSTed by AA form"]
+$_m["Grabs data POSTed by AA form"]
  = "";
 
 // include/sliceadd.php, row 103

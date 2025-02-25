@@ -577,7 +577,9 @@ class Widget extends AA_Object implements NamedInterface {
     }
 
     /**
-     * @param array $data4field
+     * @param  array          $data4field
+     * @param  AA_Value|null  $default   -  default used just for HTML flag, right now
+     *
      * @return AA_Value for the data send by the widget
      *       The data submitted by form usually looks like
      *       aa[n1_54343ea876898b6754e3578a8cc544e6][headline________][]=Hi
@@ -595,8 +597,8 @@ class Widget extends AA_Object implements NamedInterface {
      *   where "dte" points to the AA\Widget\DteWidget. The method AA\Widget\DteWidget::getValue()
      *   is called to grab the value (or multivalues) from the submitted form
      */
-    public static function getValue(array $data4field): AA_Value {
-        $flag = $data4field['flag'] & FLAG_HTML;
+    public static function getValue(array $data4field, ?AA_Value $default=null): AA_Value {
+        $flag = ($data4field['flag'] ?? $default?->getFlag() ?? 0) & FLAG_HTML;
         $fld_value_arr = [];
 
         foreach ($data4field as $key => $value) {
@@ -615,7 +617,7 @@ class Widget extends AA_Object implements NamedInterface {
                     // date it is array('d'=>array(), 'm'=>array(), 'y'=>array())
 
                     // there is no need to go through array - we do not expect more widgets for one variable
-                    return $class::getWidgetValue($data4field);
+                    return $class::getWidgetValue($data4field, $default);
                 }
             }
         }
@@ -625,9 +627,9 @@ class Widget extends AA_Object implements NamedInterface {
     /** @return AA_Value for the data send by the widget
      *   Fallback for all the widgets (probably not used - widgets use standard getValue or widget specific getWidgetValue)
      */
-    public static function getWidgetValue(array $data4field): AA_Value
+    public static function getWidgetValue(array $data4field, ?AA_Value $default): AA_Value
     {
-        $flag = $data4field['flag'] & FLAG_HTML;
+        $flag = ($data4field['flag'] ?? $default?->getFlag() ?? 0) & FLAG_HTML;
         $fld_value_arr = [];
 
         foreach ($data4field as $key => $value) {

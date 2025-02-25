@@ -164,9 +164,9 @@ class TagWidget extends Widget
      *       aa[n1_54343ea876898b6754e3578a8cc544e6][switch__________][tag][]=bc9032bb4bd0751086ccc773a36ab936
      *       aa[n1_54343ea876898b6754e3578a8cc544e6][switch__________][tag][]=test
      */
-    public static function getWidgetValue(array $data4field): AA_Value
+    public static function getWidgetValue(array $data4field, ?AA_Value $default): AA_Value
     {
-        $flag = $data4field['flag'] & FLAG_HTML;
+        $flag = ($data4field['flag'] ?? $default?->getFlag() ?? 0) & FLAG_HTML;
         $data4field = $data4field['tag'];
         $fld_value_arr = [];
 

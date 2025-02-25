@@ -68,7 +68,7 @@ class Form extends AbstractGrabber {
      *  Description is in HTML
      */
     public static function description(): string {
-        return _m('Grabbs data POSTed by AA form');
+        return _m('Grabs data POSTed by AA form');
     }
 
     /** If AA\IO\Saver::store_mode is 'by_grabber' then this method tells Saver,
@@ -214,8 +214,18 @@ class Form extends AbstractGrabber {
             // 'i': edited item - insert = field content is added to the existing content of the field
             if ($store_mode = $UPDATE_MODES[$dirty_item_id[0]]) {
                 $item_id                         = substr($dirty_item_id, 1);
-                $item                            = AA_Item::getItem($item_id);
-                $item_fields['slice_id________'] = [pack_id($item->getSliceID())];
+                if (! ($item_slice_id = AA_Slice::getSliceIdFromItemId($item_id))) {
+                    continue;
+                }
+                $item_fields['slice_id________'] = [pack_id($item_slice_id)];
+
+                $oldcontent4id = new ItemContent();
+                $oldcontent4id->setByItemID(new zids($item_id), true);     // ignore password
+                // if ($dirty_item_id[0] === 'r') {
+                if (!$oldcontent4id->getSliceID() or !$oldcontent4id->getItemID()) {
+                    continue;
+                }
+
             } // new items
             elseif ($dirty_item_id[0] === 'n') {
                 $item_id    = $id_trans_table['_#' . $dirty_item_id];
@@ -239,23 +249,30 @@ class Form extends AbstractGrabber {
                 $item_fields = array_merge($aa['all'], $item_fields);
             }
 
-            if ($dirty_item_id[0] === 'r') {
-                $oldcontent4id = new ItemContent();
-                $oldcontent4id->setByItemID(new zids($item_id), true);     // ignore password
-                if (!$oldcontent4id->getSliceID() or !$oldcontent4id->getItemID()) {
-                    continue;
-                }
+
+            // This is new - 2025-02-25 - see if it do not break something, but it should not
+            if (!($slice = AA_Slice::getModule($item_slice_id))) {
+                continue;
             }
 
             foreach ($item_fields as $dirty_field_id => $val_array) {
                 // create full_text......1 from full_text______1
                 $field_id = AA_Fields::getFieldIdFromVar($dirty_field_id);
 
+                // if field is not found, skip it
+                // This is new - 2025-02-25 - see if it do not break something, but it should not
+                if (!($field = $slice?->getField($field_id))) {
+                    continue;
+                }
+                $default_val = ($store_mode==='new') ? $field->getDefault() : $oldcontent4id->getAaValue($field_id);
+
                 // Get the content of the field (values and flags)
                 // Convert to array - designers sometimes set (wrongly) as scalar:
                 //    <input type="hidden" name="aa[n1_f803d8dc...2b][relation________]" value="{_#ITEM_ID_}">  - right is ..aa[n1_f803d8dc...2b][relation________][0]...
                 //  (which somehow works in PHP<8) - now we typecasting it to array to be sure
-                $aa_value = Widget::getValue((array)$val_array);
+
+                // default used just for HTML flag, right now
+                $aa_value = Widget::getValue((array)$val_array, $default_val);
                 $aa_value->replaceInValues($trans_item_alias, $trans_item_ids);
 
                 if (($dirty_item_id[0] === 'r') and ($field_id !== 'slice_id........')) {

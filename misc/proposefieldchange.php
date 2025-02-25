@@ -55,7 +55,7 @@ function GetRepreValue($item_id, $field_id, $alias_name='') {
 }
 
 
-/** AA\IO\AbstractGrabber\AbstractGrabber\Form - Grabbs data POSTed by AA form
+/** AA\IO\AbstractGrabber\AbstractGrabber\Form - Grabs data POSTed by AA form
 */
 class GrabberAssignmentform extends AA\IO\Grabber\AbstractGrabber {
     var $_items;            /** list if files to grab - internal array */

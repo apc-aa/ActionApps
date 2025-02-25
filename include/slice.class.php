@@ -499,6 +499,11 @@ class AA_Slice extends AA_Module {
         return $ret;
     }
 
+    /** Gets the slice_ID for the item_ID or '' */
+    public static function getSliceIdFromItemId(string $item_id): string {
+        return DB_AA::select1('usid', 'SELECT LOWER(HEX(`slice_id`)) as usid FROM item', [['id', $item_id, 'l']]) ?: '';
+    }
+
     /**
      * @param bool $fname
      * @return bool

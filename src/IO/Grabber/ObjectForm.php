@@ -11,7 +11,7 @@ namespace AA\IO\Grabber;
 use AA\Widget\Widget;
 use AA_Content;
 
-/** AA\IO\AbstractGrabber\AbstractGrabber\ObjectForm - Grabbs data POSTed by AA form
+/** AA\IO\AbstractGrabber\AbstractGrabber\ObjectForm - Grabs data POSTed by AA form
  *
  *  The format of the data is followiing
  *  (this is new format, which allows to fill or modify more objects at once
@@ -63,7 +63,7 @@ class ObjectForm extends AbstractGrabber
      *  Description is in HTML
      */
     public static function description(): string {
-        return _m('Grabbs data POSTed by AA form');
+        return _m('Grabs data POSTed by AA form');
     }
 
     /** If AA\IO\Saver::store_mode is 'by_grabber' then this method tells Saver,

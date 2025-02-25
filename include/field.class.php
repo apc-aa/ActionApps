@@ -175,10 +175,12 @@ class AA_Field implements ArrayAccess, Countable, Iterator {
 
 
     /** getDefault function
-     * @param bool $with_profile
+     *
+     * @param  bool  $with_profile
+     *
      * @return AA_Value
      */
-    function getDefault( $with_profile=false ): AA_Value {
+    public function getDefault( bool $with_profile=false ): AA_Value {
         if ($with_profile) {
             $profile   = AA_Profile::getProfile(AuthGetUid(), $this->getSliceId()); // current user settings
             if ($profile_value = $profile->getProperty('predefine', $this->getId())) {

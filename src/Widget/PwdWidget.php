@@ -71,7 +71,7 @@ class PwdWidget extends Widget
      * @param $data4field - ['pwd'=>['new1'=>MyPassword]]
      *   This method coverts such data to AA_Value.
      */
-    public static function getWidgetValue(array $data4field): AA_Value
+    public static function getWidgetValue(array $data4field, ?AA_Value $default): AA_Value
     {
         $data4field = $data4field['pwd'];
         if (is_array($data4field) AND isset($data4field['new1'])) {

@@ -36,9 +36,9 @@ class CodWidget extends TxtWidget
 
     /** @return AA_Value for the data send by the widget
      */
-    public static function getWidgetValue(array $data4field): AA_Value
+    public static function getWidgetValue(array $data4field, ?AA_Value $default): AA_Value
     {
-        return parent::getWidgetValue($data4field)->replaceInValues(["\xc2\xa0"], [' ']);
+        return parent::getWidgetValue($data4field, $default)->replaceInValues(["\xc2\xa0"], [' ']);
     }
 
     /** getClassProperties function of AA_Serializable

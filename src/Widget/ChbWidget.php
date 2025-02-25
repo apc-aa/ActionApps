@@ -93,9 +93,9 @@ class ChbWidget extends Widget
      *   This method coverts such data to AA_Value.
      *
      */
-    public static function getWidgetValue(array $data4field): AA_Value
+    public static function getWidgetValue(array $data4field, ?AA_Value $default): AA_Value
     {
-        $flag = $data4field['flag'] & FLAG_HTML;
+        $flag = ($data4field['flag'] ?? $default?->getFlag() ?? 0) & FLAG_HTML;
         $data4field = $data4field['chb'];
 
         $fld_value_arr = [];

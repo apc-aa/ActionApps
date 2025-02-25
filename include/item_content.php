@@ -598,7 +598,7 @@ class AA_Content implements Iterator, ArrayAccess, Countable {
     }
 
     /** Show the item in one row of table  */
-    function __toString(): string {
+    /*function __toString(): string {
         $tab = [];
         foreach ($this->content as $fid => $v) {
             $val = array_column($v,'value');
@@ -606,6 +606,7 @@ class AA_Content implements Iterator, ArrayAccess, Countable {
         }
         return GetHtmlTable([$tab],'key');
     }
+    */
 
     /** showAsRowInTable function
      *  Show the item in one row in a table according to the order specified
@@ -771,15 +772,15 @@ class ItemContent extends AA_Content {
         return true;
     }
 
-    /** setFieldsFromForm function
-     *  Functions tries to fill all the fields from the form. It do not add any
+    /** Function tries to fill all the fields from the form. It do not add any
      *  item specific fields (like status_code), so it could be used also for
      *  dynamic "slice setting fields"
-     * @param AA_Fields  $fields
-     * @param AA_Profile $profile
+     *
+     * @param  AA_Fields   $fields
+     * @param  AA_Profile  $profile
      */
-    function setFieldsFromProfile($fields, $profile) {
-
+    protected function setFieldsFromProfile(AA_Fields $fields, AA_Profile $profile): void
+    {
         foreach ($fields as $pri_field_id => $field) {
             // set default in case of insert & no value
             if (!$this->content[$pri_field_id]) {

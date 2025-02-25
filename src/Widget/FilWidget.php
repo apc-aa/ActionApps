@@ -79,7 +79,7 @@ class FilWidget extends Widget
      *
      * @param $data4field - ['fil'=>['var'=>[], 'url'=>[]]
      */
-    public static function getWidgetValue(array $data4field): AA_Value
+    public static function getWidgetValue(array $data4field, ?AA_Value $default): AA_Value
     {
         $data4field = $data4field['fil'];
         $uploads = (array)$data4field['var'];
