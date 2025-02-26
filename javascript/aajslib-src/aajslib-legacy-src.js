@@ -6,8 +6,8 @@
  *
 /*--------------------------------------------------------------------------*/
 
-
 INCLUDE_AAJSLIB_COMMON
+
 
 var AA_Config = {
     get AA_INSTAL_PATH() { return AA_GetConf("path") },

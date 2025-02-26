@@ -6,7 +6,6 @@
  *
 /*--------------------------------------------------------------------------*/
 
-
 /** Common part of aajslib-* library - the one in vanilla JS
  *
  *  @package UserOutput
@@ -188,7 +187,7 @@ function AA_SiteSendForm(form) {
 
 function AA__SiteUpdateParts(data) {
     // CKEditors (and CodeMirrors, ..) are now loaded automatically - no need to do any extra work here HM 2021-09-21
-    for (var i in data) {
+    for (let i in data) {
         if (i === 'message') {
             document.querySelectorAll('article.aa-updating[data-aa-part]').forEach(function(elem) {
                 elem.classList.remove('aa-updating');
@@ -197,7 +196,7 @@ function AA__SiteUpdateParts(data) {
         } else {
             document.querySelectorAll("[data-aa-part='" + i + "']").forEach(function(elem) {
                 if (elem.getAttribute('data-aa-part-update') === 'add') {
-                    elem.outerHTML += data[i];  // or innerHTML? (as was in prototype version)
+                    elem.innerHTML += data[i];  // or innerHTML? (as was in prototype version)
                 } else {
                     elem.outerHTML = data[i];
                 }
@@ -377,6 +376,7 @@ function displayInput(valdivid, item_id, fid, widget_type, widget_properties, co
         }
     });
 }
+
 
 var AA_Config = {
     get AA_INSTAL_PATH() { return AA_GetConf("path") },
