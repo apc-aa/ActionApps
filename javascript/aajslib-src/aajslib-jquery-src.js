@@ -32,7 +32,6 @@ https://www.apc.org/
 INCLUDE_AAJSLIB_COMMON
 
 
-
 /** replaces jQuery $xx.load(url) - used as AA_Load(xx,url)
  * @param {HTMLElement|string} sel
  * @param {string} url
