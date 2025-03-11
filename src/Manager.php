@@ -328,6 +328,7 @@ class Managed_Object extends Managed {
 
     /** @inheritDoc */
     public function save(?string $owner): void {
+        /** @var AA_Object $object */
         $object = call_user_func_array([$this->class, 'factoryFromForm'], [$owner, $this->class]);
         // @todo check permissions, validation, $store_mode state (see readFromForm)
         $object->save();

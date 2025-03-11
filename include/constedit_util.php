@@ -574,16 +574,14 @@ function CopyConstants($slice_id){
  *   Looks into database if the group already exists. If yes, it returns modified,
  *   but unique group name
  *
- * @param $group_id
- * @return mixed|string
+ * @param  string  $group_id
  */
-function get_unique_group_id($group_id) {
+function get_unique_group_id(string $group_id): string {
     $db = getDB();
 
     $group_id = str_replace(':','-',$group_id);  // we don't need ':'
 
-    $db->query("SELECT value FROM constant WHERE group_id = 'lt_groupNames'
-                AND value LIKE '".quote($group_id)."%'");
+    $db->query("SELECT value FROM constant WHERE group_id = 'lt_groupNames' AND value LIKE '".quote($group_id)."%'");
     while ($db->next_record()) {
         $gnames[$db->f("value")] = 1;
     }
@@ -604,17 +602,18 @@ function get_unique_group_id($group_id) {
 *    Adds a new constant group. Sets priority increasingly in the same
 *   order as are the constants in @c $items.
 *
-*   @author Jakub Adamek, Econnect, January 2003
 *   @param string $group_id Desired group name, may be changed on conflicts
 *                           and $unique is set
 *   @param array $constants2import array('name'=>.., 'value'=>.., 'pri'=>.., 'group'=>..)
+*
 *   @return true|string - true on success or error string if it fails
+*@author Jakub Adamek, Econnect, January 2003
 */
-function add_constant_group($group_id, $constants2import)
+function add_constant_group(string $group_id, $constants2import)
 {
     $db = getDB();
 
-    if ( strlen($group_id) < 1 ) {
+    if ($group_id === '') {
         return _m("No group id specified");
     }
 

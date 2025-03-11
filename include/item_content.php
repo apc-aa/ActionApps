@@ -179,7 +179,7 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
      *  If the value is set, it is added as multivalue
      */
     function addStringValue(string $val, string $lang=''): AA_Value {
-        if (strlen($val)) {
+        if ($val !== '') {
             $index = Langs::getLangName2Num($lang);
             while (isset($this->arr[$index])) {
                 $index++;
@@ -1435,7 +1435,7 @@ class ItemContent extends AA_Content {
             // computed field?
             switch ($fnc["fnc"]) {
                 case 'seo':
-                    $seo_alias        = strlen(trim($fnc["param"])) ? $fnc["param"] : '_#HEADLINE';
+                    $seo_alias        = trim($fnc["param"]) !== '' ? $fnc["param"] : '_#HEADLINE';
                     $slice_charset    = $slice->getCharset();
                     $seo_charset      = ($slice_charset AND $slice_charset !== 'utf-8') ? ":$slice_charset" : '';
 

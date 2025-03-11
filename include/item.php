@@ -791,7 +791,7 @@ class AA_Item {
             //search for alias definition (fce,param,hlp)
             $substitution = $this->get_alias_subst( "_#".(substr($vparam,0,8)));
 
-            if ( strlen($substitution) ) {   // alias produced some output, so we can remove
+            if ($substitution !== '') {   // alias produced some output, so we can remove
                 // strings in previous section and we can start new section
                 $clear_output .= str_replace($remove_arr, "", $out).$substitution;
                 $out           = '';  // start with clear string

@@ -152,7 +152,7 @@ class AA_Mail extends htmlMimeMail implements \AA\Later\LaterInterface {
     /** record array('subject','body','header_from','reply_to','errors_to','sender','lang','html','cc','bcc','attachments')  */
     function setFromArray(array $record) {
         // do not send empty emails
-        if ( !strlen(trim($record["body"]))) {
+        if (trim($record["body"]) === '') {
             return false;
         }
 

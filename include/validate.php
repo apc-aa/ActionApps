@@ -182,7 +182,7 @@ class AA_Validate extends AA_Serializable {
      * @return bool
      */
     function varempty($var) : bool {
-        return strlen(trim((string)$var))==0;
+        return trim((string)$var) === '';
     }
 
     /** bad function
@@ -348,7 +348,7 @@ class AA_Validate_Regexp extends AA_Validate {
 
     function __construct($param= []) {
         parent::__construct($param);
-        if (!strlen(trim($this->empty_expression))) {
+        if (trim($this->empty_expression) === '') {
             $this->empty_expression = '/^\s*$/';
         }
     }

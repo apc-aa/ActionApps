@@ -819,7 +819,7 @@ class AA_Inputfield {
     function _fillSelected() {
         if (!isset($this->selected) AND isset($this->value) AND is_array($this->value)) { // not cached yet => create selected array
             foreach ( $this->value as $v ) {
-                if ( strlen( (string)$v['value'] ) ) {
+                if ((string)$v['value'] !== '') {
                     $this->selected[(string)$v['value']] = true;
                 }
             }
@@ -1303,7 +1303,7 @@ class AA_Inputfield {
             foreach($this->translations as $lang) {
                 $lang_id           = Langs::getLangName2Num($lang);  // converts two letter lang code into number used for translation fields (cz -> 78000000, en -> 118000000, ...)
                 $value             = safe($val[$lang_id]['value']);
-                if ( !strlen($value) AND $first) {
+                if ( $value === '' AND $first) {
                     // if the translation is not set try to use standard value (possibly filled before we set the translations for the field)
                     $value = $val[0]['value'];
                 }
@@ -1311,7 +1311,7 @@ class AA_Inputfield {
                 $name2             = $name."[$lang_id]";
                 $id2               = $name.'-'.$lang_id;
                 $classes           = [$first ?'aa-open' : ''];
-                if (strlen(trim($value))) {
+                if (trim($value) !== '') {
                     $classes[] = 'aa-filled';
                 }
                 $parts["part$id2"] = [$lang, $classes];
@@ -1418,7 +1418,7 @@ class AA_Inputfield {
             foreach($this->translations as $lang) {
                 $lang_id           = Langs::getLangName2Num($lang);  // converts two letter lang code into number used for translation fields (cz -> 78000000, en -> 118000000, ...)
                 $value             = safe($val[$lang_id]['value']);
-                if ( !strlen($value) AND $first) {
+                if ( $value === '' AND $first) {
                     // if the translation is not set try to use standard value (possibly filled before we set the translations for the field)
                     $value = $val[0]['value'];
                 }
@@ -1428,7 +1428,7 @@ class AA_Inputfield {
                 $name2             = $name."[$lang_id]";
                 $id2               = $name.'-'.$lang_id;
                 $classes           = [$first ?'aa-open' : ''];
-                if (strlen(trim($value))) {
+                if (trim($value) !== '') {
                     $classes[] = 'aa-filled';
                 }
                 $parts["part$id2"] = [$lang, $classes];

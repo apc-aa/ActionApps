@@ -46,7 +46,7 @@ if ($_POST['update']) {
     $invalidatefor = [AA::$module_id];
     $sites = AA_Module::getModules('W', true);
     foreach ($sites as $site_id => $site) {
-        if (in_array(AA::$module_id, (array)AA_Module_Site::getModuleProperty($site_id, 'add_aliases'))) {
+        if (in_array(AA::$module_id, (array)AA_Module_Site::getModuleProperty($site_id, 'add_aliases'), true)) {
             $invalidatefor[] = $site_id;
         }
     }

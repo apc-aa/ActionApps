@@ -122,7 +122,7 @@ abstract class AbstractOptimize implements \AA\Util\NamedInterface {
      *
      * @throws \RuntimeException
      */
-    public function query($SQL) {
+    public function query($SQL): bool {
         $this->message(safe($SQL));
         $just_print = self::justPrint();
 

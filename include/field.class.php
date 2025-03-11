@@ -498,7 +498,7 @@ class AA_Field implements ArrayAccess, Countable, Iterator {
     function getInsertOtherFields(): array {
         $ret = [];
         $inserter_params = AA_Inserter::parseClassProperties($this->data['input_insert_func']);
-        if (array_key_exists('otherfield', $inserter_params) AND strlen(trim($inserter_params['otherfield']))!==0) {
+        if (array_key_exists('otherfield', $inserter_params) AND trim($inserter_params['otherfield']) !== '') {
             $ret = array_filter(array_map('trim', explode("##",$inserter_params['otherfield'])), 'strlen');
         }
         return $ret;

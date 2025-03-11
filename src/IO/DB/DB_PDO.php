@@ -6,7 +6,7 @@ use PDO;
 use PDOException;
 use PDOStatement;
 
-class DB_PDO extends AbstractDB {
+class DB_PDO  {
 
     /* public: connection parameters */
     protected $Host       = "";
@@ -27,7 +27,9 @@ class DB_PDO extends AbstractDB {
     protected $Record   = [];
     protected $Row;
 
-    /* public: current error number and error text */
+    protected $Halt_On_Error = 'yes'; // "yes" (halt with message), "no" (ignore errors quietly), "report" (ignore error, but spit a warning)
+    protected $Errno  = 0;
+    protected $Error  = "";
     protected $ErrCode = 0;
 
     /* public: this is an api revision, not a CVS revision. */
@@ -44,10 +46,6 @@ class DB_PDO extends AbstractDB {
      * @var int|PDOStatement
      */
     protected $sth = 0;
-
-    function escape_string($str) {
-        return substr(substr($this->quote($str), 1), 0, -1);
-    }
 
     public function quote($str) {
         if (!$this->connect()) {
@@ -67,7 +65,6 @@ class DB_PDO extends AbstractDB {
      * @param array $connection
      */
     function __construct(array $connection) {
-        parent::__construct($connection);
         $this->Database   = $connection['database']   ?? '';
         $this->Host       = $connection['host']       ?? '';
         $this->User       = $connection['user']       ?? '';
@@ -102,12 +99,9 @@ class DB_PDO extends AbstractDB {
         return $this->dbh->rollback();
     }
 
-    function execute($param=array()) {
+    function execute(array $param=[]) {
         if (!$this->connect()) {
             return 0;
-        }
-        if (!is_array($param)) {
-            $param = func_get_args();
         }
         if (!count(array_filter(array_keys($param), 'is_string'))) { // this is NOT an associative array, so we cannot bindValue or bindParams
             if (!$status = $this->sth->execute($param)) {
@@ -120,8 +114,6 @@ class DB_PDO extends AbstractDB {
             foreach ($param as $key => &$val) {
                 if ($val === null) {
                     $this->sth->bindValue($key, $val, PDO::PARAM_NULL);
-                } else if ($val === "''") {
-                    $this->sth->bindValue($key, $val, PDO::PARAM_STR);
                 } else {
                     $this->sth->bindParam($key, $val);
                 }
@@ -245,7 +237,8 @@ class DB_PDO extends AbstractDB {
     }
 
     /* public: perform a query */
-    public function query($Query_String) {
+    public function query($Query_String): bool
+    {
         /* No empty queries, please, since PHP4 chokes on them. */
         if ($Query_String == "") {
             /* The empty query string is passed on from the constructor,
@@ -255,14 +248,14 @@ class DB_PDO extends AbstractDB {
             if ($this->Debug) {
                 echo "no query specified.";
             }
-            return 0;
+            return false;
         }
 
         if (!$this->connect()) {
             if ($this->Debug) {
                 echo "Complain Again!!";
             }
-            return 0; /* we already complained in connect() about that. */
+            return false; /* we already complained in connect() about that. */
         }
 
         if ($this->Debug) {
@@ -288,7 +281,7 @@ class DB_PDO extends AbstractDB {
             return false;
         }
 
-        return $this->sth;
+        return true;
     }
 
     /* public get 1 column */
@@ -374,13 +367,9 @@ class DB_PDO extends AbstractDB {
         return $stat;
     }
 
-    /* public: position in result set */
-    public function seek($pos = 0) {
-        die ("Seek function not supported");
-    }
-
     /* public: table locking */
-    public function lock($table, $mode = "write") {
+    public function lock($table, $mode = "write"): bool
+    {
         $query = "lock tables ";
         if (is_array($table)) {
             foreach ($table as $key=>$value) {
@@ -395,20 +384,19 @@ class DB_PDO extends AbstractDB {
         } else {
             $query .= "`$table` $mode";
         }
-        $res = $this->query($query);
-        if (!$res) {
+        if (!$this->query($query)) {
             $this->halt("lock() failed.");
-            return 0;
+            return false;
         }
-        return $res;
+        return true;
     }
 
-    public function unlock() {
-        $res = $this->query("unlock tables");
-        if (!$res) {
+    public function unlock(): bool
+    {
+        if (!$this->query("unlock tables")) {
             $this->halt("unlock() failed.");
         }
-        return $res;
+        return true;
     }
 
     /* public: evaluate the result (size, width) */
@@ -422,7 +410,7 @@ class DB_PDO extends AbstractDB {
         return $this->sth->rowCount();
     }
 
-    public function num_fields() {
+    public function num_fields(): int {
         return $this->sth->columnCount();
     }
 
@@ -430,10 +418,14 @@ class DB_PDO extends AbstractDB {
         return $this->Record[$Name] ?? null;
     }
 
+    /** based on my test mysqli contains string[], while db_pdo:mysql returns columns in type based on table column type */
+    public function record($Name = null) {
+        return  $Name ? $this->Record[$Name] : $this->Record;
+    }
+
     /* public: return table metadata */
-    public function metadata($table = "", $full = false): array|false {
+    public function metadata(string $table=""): array|false {
         $count = 0;
-        $id = 0;
         $res = [];
         $stmt = false;
         $hasdef = false;
@@ -452,7 +444,7 @@ class DB_PDO extends AbstractDB {
 ## Unfortunately, it's broken, as it can't tell the difference between TEXT & BLOB
 ## If your database server does not support DESCRIBE, you may turn this back on.
 ## Also does not return default values or auto_increment data.
-## pdo_type retuned was always 2 (PDO::PARAM_STR) in my testing.
+## pdo_type returned was always 2 (PDO::PARAM_STR) in my testing.
 ## PHP MANUAL STATES "getColumnMeta() Warning: This function is EXPERIMENTAL.
 ## The behaviour of this function, its name, and surrounding documentation may
 ## change without notice in a future release of PHP.
@@ -737,6 +729,58 @@ class DB_PDO extends AbstractDB {
         if (function_exists("EventLog")) {
             EventLog($this->Server . "(pdo) error(" . $this->ErrCode . "):" . $this->Errno . " " . $this->Error, $msg, "Error");
         }
-        parent::halt($msg);
+        if ($this->get_halt() === 'no') {
+            return;
+        }
+        // if you want to display special error page, then define DB_ERROR_PAGE
+        // in config.php file. You can use following variables on that page
+        // (in case you will use php page):
+        // $_POST['Err'], $_POST['ErrMsg'] and $_POST['Msg'] variables
+        // --- Disabled -- AA_Http::go() for POST works in the way, that the
+        // page content is grabbed into variable and printed on current page.
+        // It works pretty well, but if you link the external css on that page,
+        // then it is not found, which is unexpected behavior. So, you can't use
+        // the variables on that page. Honza, 2007-12-05
+        if (defined('DB_ERROR_PAGE') and ($this->get_halt() === "yes")) {
+            ob_end_clean();
+            // AA_Http::go(DB_ERROR_PAGE, array('Err'=>$this->Errno, 'ErrMsg'=>$this->Error, 'Msg'=>$msg), 'POST', false);
+            // sending variables disabled - see the comment above
+            if ( headers_sent()) {
+                echo sprintf('<script>window.location = "%s";</script>', DB_ERROR_PAGE);
+            } else {
+                header("Location: ". DB_ERROR_PAGE, true, 302);
+            }
+        }
+
+        $this->haltmsg($msg);
+        if ($this->get_halt() !== 'report') {
+            die("Session halted.");
+        }
+    }
+
+    public function haltmsg($msg) {
+        printf("<p><b>Database error:</b> %s<br>\n", safe($msg));
+        printf("<b>%s Error</b>: %s (%s)</p>\n", get_class_name($this), $this->Errno, $this->Error);
+    }
+
+    public function set_halt(string $mode): bool {
+        if (!in_array($mode, ['yes','report','no'])) {
+            return false;
+        }
+        $this->Halt_On_Error = $mode;
+        return true;
+    }
+
+    public function get_halt(): string {
+        return $this->Halt_On_Error;
+    }
+
+
+    public function query_halt(string $Query_String, string $mode) {
+        $store = $this->Halt_On_Error;
+        $this->set_halt($mode);
+        $ret = $this->query($Query_String);
+        $this->set_halt($store);
+        return $ret;
     }
 }

@@ -518,7 +518,7 @@ class AA_File_Wrapper {
      * @return string
      */
     function contents() {
-        return strlen(trim($this->url)) ? file_get_contents($this->url) : '';
+        return trim($this->url) !== '' ? file_get_contents($this->url) : '';
     }
 
 	/**

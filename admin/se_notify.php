@@ -152,7 +152,7 @@ if ( $update ) {
     $up .= "notify_active_item_edit_b = '" . $notify_active_item_edit_b ."' ";
 
     $SQL    = "UPDATE slice set $up WHERE id = '$p_slice_id'";
-    $result = $db->query($SQL);
+    $db->query($SQL);
 
   // in email_notify
 
@@ -161,10 +161,10 @@ if ( $update ) {
   //   ideally we would have transaction that would roll back, but mysql
   //   does not have these transactions
     $SQL    = "delete from email_notify where slice_id = 'not_transition'";
-    $result = $db->query($SQL);
+    $db->query($SQL);
 
     $SQL    = "update email_notify SET slice_id = 'not_transition' WHERE slice_id='$p_slice_id'";
-    $result = $db->query($SQL);
+    $db->query($SQL);
 
   // insert all the records into email_notify
 
@@ -175,7 +175,7 @@ if ( $update ) {
 
   // delete the backed-up users
     $SQL    = "DELETE FROM email_notify WHERE slice_id='not_transition'";
-    $result = $db->query($SQL);
+    $db->query($SQL);
 
 }
 
@@ -200,7 +200,7 @@ if ($db->next_record()) {
 $SQL                       = "SELECT uid, function FROM email_notify WHERE slice_id=".xpack_id(AA::$module_id);
 $notify_active_item_edit_e = $notify_active_item_e = $notify_holding_item_edit_e = $notify_holding_item_e = '';
 
-$result = $db->query($SQL);
+$db->query($SQL);
 while ($db->next_record()) {
     switch ($db->record('function')) {
         case 1: $notify_holding_item_e      .= $db->record('uid') . "\n"; break;

@@ -49,11 +49,11 @@ class AA_Http {
      *  static function - called like AA_Http::go("https://ecn.cz", ['a'=>'my string'], 'POST')
      *  @param string $url - destination url
      *  @param array  $parameters = array('a' => 1, 'b' => 'OK boy')
-     *  @param string $type  - preffered type. Could be GET or POST, but if headers
+     *  @param string $type  - preferred type. Could be GET or POST, but if headers
      *                 are already sent, then we use javascript for redirection
      *  @param bool   $sess_close - try to close session, if the session is set
      *                      we do not want to try it, when database connection
-     *                      error ocures, for example
+     *                      error occurs, for example
      **/
     public static function go(string $url, array $parameters, string $type='GET', bool $sess_close=true) {
         global $sess;
@@ -68,7 +68,7 @@ class AA_Http {
             exit;
         }
         if ($type==='POST') {
-            $response = self::postRequest($url, $parameters);
+            $response = self::Request($url, $parameters, [], 'POST');
             if ($response !== false) {
                 // POST request OK
                 echo $response;
@@ -95,19 +95,22 @@ class AA_Http {
 
 
     /** POST data to the url (using POST request and returns resulted data
+     *
      * @param       $url
-     * @param array $data
+     * @param array $data      - parameters
      * @param array $headers
+     * @param string $method   - default is POST
+     *
      * @return false|string $result[]
      * inspired by http://netevil.org/blog/2006/nov/http-post-from-php-without-curl
      */
-    public static function postRequest($url, array $data=[], array $headers=[]) {
-
-        if ($data OR $headers) {
-            $opts = null;
+    public static function Request($url, array $data=[], array $headers=[], string $method=''): false|string
+    {
+        $opts = [];
+        if ($data OR $headers OR $method) {
+            $method = in_array($method, ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD'], true) ? $method : 'POST';  // all possible HTTP methods
             if ($data) {
-                $data = http_build_query($data);
-                $opts = ['http' => ['method' => 'POST', 'content' => $data]];
+                $opts['content'] = http_build_query($data);
             }
 
             if ($headers) {
@@ -115,15 +118,18 @@ class AA_Http {
                 foreach ($headers as $k => $v) {
                     $header .= "$k: $v\r\n";
                 }
-                $opts['http']['header'] = $header;
+                $opts['header'] = $header;
+            }
+            if ($opts OR $method !== 'GET') {
+                $opts['method'] = $method;
             }
         }
 
-        $ctx = $opts ? stream_context_create($opts) : null;
+        $ctx = $opts ? stream_context_create(['http' => $opts]) : null;
         $ret = file_get_contents($url, false, $ctx);
 
         if ($ret === false) {
-            self::lastErr(2, "Problem reading data from url: $url");  // set error code
+            self::lastErr(2, sprintf("Problem reading data from url: %s (%s)",$url, error_get_last()["message"]));  // set error code
             return false;
         }
         return $ret;
@@ -237,7 +243,7 @@ class AA_Request {
 //           $r = unserialize($ask_arr['request']);
 //           huhl($ask_arr, unserialize($ask_arr['request']), $r->params['sync'][0], unserialize($r->params['sync'][0]), unserialize(str_replace("'", "\'", $r->params['sync'][0])), $url);
 //       }
-        $result = AA_Http::postRequest($url, $ask_arr, $headers);
+        $result = AA_Http::Request($url, $ask_arr, $headers);
 
         if ( $result === false ) {
             //echo "<br>Error - response: ". AA_Http::lastErrMsg();

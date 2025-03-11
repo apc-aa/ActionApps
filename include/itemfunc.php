@@ -377,7 +377,7 @@ abstract class AA_Inserter extends AA_Serializable implements \AA\Util\NamedInte
             // get add2constant and constgroup (other parameters are irrelevant in here)
             [$constgroup, $maxlength, $fieldsize,$slice_field, $usevalue, $adding, $secondfield, $add2constant] = explode(':', $fnc['param']);
             // add2constant is used in $this->_store - adds new value to constant table
-            if ($add2constant AND $constgroup AND (!str_starts_with($constgroup, "#sLiCe-")) AND strlen(trim($value))) {
+            if ($add2constant AND $constgroup AND (!str_starts_with($constgroup, "#sLiCe-")) AND trim($value) !== '') {
                 $db = getDB();
                 // does this constant already exist?
                 $constgroup = quote($constgroup);
@@ -518,7 +518,7 @@ class AA_Inserter_Ids extends AA_Inserter {
                         // get add2constant and constgroup (other parameters are irrelevant in here)
                         [$constgroup, $others] = explode(':', $fnc['param']);
                         // add2constant is used in $this->_store - adds new value to constant table
-                        if ((str_starts_with($constgroup, "#sLiCe-")) AND strlen(trim($v))) {
+                        if ((str_starts_with($constgroup, "#sLiCe-")) AND trim($v) !== '') {
                             $sid = substr($constgroup,7);
                             $content4id = new ItemContent();
                             $content4id->setItemID($new_id=new_id());
@@ -957,7 +957,7 @@ class AA_Inserter_2fa extends AA_Inserter {
         [$aa_const, $username, $password, $code2fa] = ParamExplode($value);
 
         if ($aa_const === 'AA_2FASECRET') {
-            if (!strlen($username) OR !($uid = AA::$perm->authenticateUsername($username, $password, $code2fa)) OR ($uid != AuthGetUid())) {
+            if ($username === '' OR !($uid = AA::$perm->authenticateUsername($username, $password, $code2fa)) OR ($uid != AuthGetUid())) {
                 return '';
             }
             $ga = new PHPGangsta_GoogleAuthenticator();
@@ -965,7 +965,7 @@ class AA_Inserter_2fa extends AA_Inserter {
 
             $this->crypt_phrase = trim($this->crypt_phrase);
 
-            if (strlen($this->crypt_phrase)) {
+            if ($this->crypt_phrase !== '') {
                 if (is_long_id($uid) AND ($item = AA_Items::getItem(new zids($uid)))) {
                     $phrase = AA::Un($this->crypt_phrase,'',$item);
                 } else {

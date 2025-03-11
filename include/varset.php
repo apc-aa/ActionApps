@@ -386,7 +386,7 @@ class Cvarset {
     /** before doUpdate you can call saveHistory() to store changes */
     function saveHistory($tablename, $id): string {
         $this->_doQuery($this->makeSELECT($tablename));
-        if ($this->last_used_db->num_rows() != 1) {
+        if ($this->last_used_db->num_rows() !== 1) {
             // Error: there are several rows with the same key variables
             return "Error using doUpdate: " . $this->last_used_db->num_rows(). " rows match the query";
         }
@@ -582,7 +582,7 @@ function is_field_type_numerical($field_type) {
  *   @param array  $omit_columns [optional] array ($column_name, ...) - fields to be omitted
  *   @param array  $id_columns   [optional] array ($column_name, ...) - fields with the 16 byte ID to be generated for each row a new one
  */
-function CopyTableRows($table, $where, $set_columns, $omit_columns = "", $id_columns = "") {
+function CopyTableRows(string $table, $where, $set_columns, $omit_columns = "", $id_columns = "") {
     if (!$omit_columns) {
         $omit_columns = [];
     }

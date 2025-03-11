@@ -7,22 +7,14 @@ use AA;
 use AA_Http;
 
 /** proxy class for other db engines */
-class DB_AA extends AbstractDB
+class DB_AA
 {
-
-    /** @var string DB connection - host  */
-    // protected $Host;
-    /** @var string DB connection - database name  */
-    // protected $Database;
-    /** @var string DB connection - username  */
-    // protected $User;
-    /** @var string DB connection - password  */
-    // protected $Password;
 
     /** @var string database link  */
     protected $dbase;
 
     public static $_instances_no = 0;
+
 
     /* public: constructor */
     function __construct(array $connection) {
@@ -35,39 +27,8 @@ class DB_AA extends AbstractDB
         [$type,$driver] = explode(':',$connection['type'].':');  // $driver used in  PDO: db_pdo:mysql, ...
 
         self::$_instances_no++;
-        switch (mb_strtolower($type)) {
-            case 'db_mssql':
-                $this->dbase = new DB_MSSQL($connection);
-                break;
-            case 'db_oci8':
-                $this->dbase = new DB_OCI8($connection);
-                break;
-            case 'db_odbc':
-                $this->dbase = new DB_ODBC($connection);
-                break;
-            case 'db_pgsql':
-                $this->dbase = new DB_PgSQL($connection);
-                break;
-            case 'db_sybase':
-                $this->dbase = new DB_Sybase($connection);
-                break;
-// removed - the database classes are unmaintained
-//            case 'db_msql':
-//                $this->dbase = new DB_mSQL($connection);
-//                break;
-//            case 'db_oracle':
-//                $this->dbase = new DB_Oracle($connection);
-//                break;
-            case 'db_pdo':
-                $connection['driver'] = $driver;
-                $this->dbase = new DB_PDO($connection);
-                break;
-            case 'db_mysql':
-            case 'db_mysqli':
-            default:
-
-                $this->dbase = new DB_MySQL($connection);
-        }
+        $connection['driver'] = $driver;
+        $this->dbase = new DB_PDO($connection);
     }
 
     /** just for debug purposes */
@@ -495,97 +456,36 @@ class DB_AA extends AbstractDB
     }
 
     /** query function
+     *
      * @param $SQL
-     * @return int
+     *
+     * @return bool
      */
-    public function query($SQL) {
+    public function query($SQL): bool {
         AA::$debug & 16 && AA::$dbg->tracestart('Query', $SQL);
         $ret = $this->dbase->query($SQL);
         AA::$debug & 16 && AA::$dbg->traceend('Query', (stripos($SQL, "SELECT") === 0) ? $this->dbase->num_rows() : $this->dbase->affected_rows());
         return $ret;
     }
 
-    /** halt function
-     *
-     * @param $msg
-     */
-    public function halt($msg) {
-        if ($this->get_halt() === "no") {
-            return;
-        }
-
-        // if you want to display special error page, then define DB_ERROR_PAGE
-        // in config.php file. You can use following variables on that page
-        // (in case you will use php page):
-        // $_POST['Err'], $_POST['ErrMsg'] and $_POST['Msg'] variables
-        // --- Disabled -- AA_Http::go() for POST works in the way, that the
-        // page content is grabbed into variable and printed on current page.
-        // It works pretty well, but if you link the external css on that page,
-        // then it is not found, which is unexpected behavior. So, you can't use
-        // the variables on that page. Honza, 2007-12-05
-        if (defined('DB_ERROR_PAGE') and ($this->get_halt() === "yes")) {
-            ob_end_clean();
-            // AA_Http::go(DB_ERROR_PAGE, array('Err'=>$this->Errno, 'ErrMsg'=>$this->Error, 'Msg'=>$msg), 'POST', false);
-            // sending variables disabled - see the comment above
-            AA_Http::go(DB_ERROR_PAGE, [], 'GET', false);
-            exit;
-        }
-
-        // If you do not want (for security reasons) display messages like:
-        // "Database error: mysql_pconnect(mysqldbserver, aadbuser, $Password) failed."
-        // then just define DB_ERROR_PAGE constant in your config.php file
-        echo "\n<br><b>Database error:</b> $msg";
-        echo "\n<br><b>Error Number:</b>: " . $this->Errno;
-        echo "\n<br><b>Error Description:</b>: " . $this->Error;
-        echo "\n<br>Please contact " . ERROR_REPORTING_EMAIL . " and report the exact error message.<br>\n";
-        if ($this->get_halt() === "yes") {
-            die("Session halted.");
-        }
-    }
-
-    function quote($string) { return $this->dbase->quote($string); }
+    function quote(string $string) { return $this->dbase->quote($string); }
 
     public static function quoteIdentifier(string $str): string {
         $char = in_array(DB_TYPE, ['db_mysql','db_mysqli','db_pdo:mysql']) ? '`' : '"';   // in original was used just '"' character (which is SQL standard and could be OK), but using PDO with mysql needs '`' character
         return $char. implode("$char.$char", explode(".", $str)) . $char;
     }
 
-    /** you must have $dbase link to quote. If you do not have it, you can use quoteIdentifier() */
-    function quote_identifier(string $str): string { return $this->dbase->quote_identifier($str); }
-
-    function connect() { return $this->dbase->connect(); }
-
-    function connect_failed($message = '') { $this->dbase->connect_failed($message); }
-
-    public function set_halt(string $mode): bool { return $this->dbase->set_halt($mode); }
-
-    public function get_halt(): string { return $this->dbase->get_halt(); }
-
-    function free() { $this->dbase->free(); }
-
     public function next_record(): bool { return $this->dbase->next_record(); }
 
     /* public: return all the results */
     public function fetch_column($col): array { return $this->dbase->fetch_column($col); }
-
-    /* public: position in result set */
-    public function seek($pos = 0) { return $this->dbase->seek($pos); }
-
-    /* public: table locking */
-    public function lock($table, $mode = "write") { return $this->dbase->lock($table, $mode); }
-
-    public function unlock() { return $this->dbase->unlock(); }
-
-    public function ping() { $this->dbase->ping(); }
 
     /** public: evaluate the result (size, width)
      * @return int
      */
     public function affected_rows(): int { return $this->dbase->affected_rows(); }
 
-    public function num_rows(): int { return (int)$this->dbase->num_rows(); }
-
-    public function num_fields() { return $this->dbase->num_fields(); }
+    public function num_rows(): int { return $this->dbase->num_rows(); }
 
     public function last_insert_id(): false|string { return $this->dbase->last_insert_id(); }
 
@@ -593,9 +493,11 @@ class DB_AA extends AbstractDB
 
     public function record($Name = null) { return $this->dbase->record($Name); }
 
-    public function metadata($table = "", $full = false): false|array { return $this->dbase->metadata($table, $full); }
+    public function metadata(string $table=""): false|array { return $this->dbase->metadata($table); }
 
     public function table_names(): array { return $this->dbase->table_names(); }
 
-    public function haltmsg($msg) { $this->dbase->haltmsg($msg); }
+    public function set_halt(string $mode): bool { return $this->dbase->set_halt($mode); }
+
+    public function query_halt(string $Query_String, string $mode): bool { return $this->dbase->query_halt($Query_String, $mode); }
 }
