@@ -1243,7 +1243,7 @@ class AA_Stringexpand_Expandable extends AA_Stringexpand_Nevercachenotrim {
      */
     function expand($text='', $length=49, $add='', $switch_state_1='', $switch_state_2='') {
         // it is nonsense to show expandable trigger if both contents are empty
-        if (($text = trim($text)) == '') {
+        if (($text = trim($text)) === '') {
             return '';
         }
 
@@ -1253,7 +1253,7 @@ class AA_Stringexpand_Expandable extends AA_Stringexpand_Nevercachenotrim {
 
         if ($switch_state_1 == '') {
             $switch_state_1 = '[+]';
-            if (trim($switch_state_2) == '') {
+            if (trim($switch_state_2) === '') {
                 $switch_state_2 = '[-]';
             }
         }
@@ -1853,7 +1853,7 @@ class AA_Stringexpand_Date extends AA_Stringexpand_Nevercache {
      * @return bool
      */
     static function isEmptyDate($timestamp): bool {
-        return ((trim($timestamp,'0')=='') OR (IsSigInt((string)$timestamp) AND abs($timestamp) < 86400));
+        return ((trim($timestamp,'0')==='') OR (IsSigInt((string)$timestamp) AND abs($timestamp) < 86400));
     }
 }
 
@@ -5839,28 +5839,44 @@ class AA_Stringexpand_Dictionary extends AA_Stringexpand {
     }
 }
 
-/** include file, first parameter is filename, second is hints on where to find it **/
+/** include file / URL {include:<url>:<type>:<headers>}
+ *  $url     - filename / URL
+ *  $type    - hint on where to find it  (http, ajax, site, readfile, GET, POST, PUT, DELETE, PATCH, OPTIONS, HEAD, fileman) - http is default
+ *  $headers - additional headers for http request
+ *  {include:https#://api.example.cz/getdata/my_ID:GET:{jsonasoc:Content-Type:application/json:key:478484a5c4e54b584e54a54c5b7899}}
+ */
 class AA_Stringexpand_Include extends AA_Stringexpand {
     /** expand function
      * @param string $fn - filename
      * @param string $type - hints on where to find it
      * @return array|string
      */
-    function expand($fn='', $type='') {
+    function expand($fn='', $type='', $headers='') {
         if (!$fn) {
-            return "";
+            return '';
         }
         // Could extend this to recognize | seperated alternatives
         if (!$type) {
             $type = "http";  // Backward compatability
         }
+        $headers = json2asoc($headers);
+
         switch ($type) {
+            case 'GET':
+            case 'POST':
+            case 'PUT':
+            case 'DELETE':
+            case 'PATCH':
+            case 'OPTIONS':
+            case 'HEAD':
+                if (false === ($ret = AA_Http::Request($fn, [], $headers, $type))) {
+                    warn(AA_Http::lastErrMsg());
+                }
+                return $ret;
             case "http":
-                $fileout = expandFilenameWithHttp($fn);
-                break;
+                return expandFilenameWithHttp($fn, '', $headers);
             case "ajax":
-                $fileout = expandFilenameWithHttp($fn, 'ajax');
-                break;
+                return expandFilenameWithHttp($fn, 'ajax', $headers);
             case "fileman":
                 // Note this won't work if called from a Static view because no slice_id available
                 // This should be fixed.
@@ -5873,59 +5889,58 @@ class AA_Stringexpand_Include extends AA_Stringexpand {
                     return "";
                 }
                 $fileman_dir = AA_Slice::getModuleProperty($mysliceid,'fileman_dir');
-            // Note dropthrough from case "fileman"
+                $filename = FILEMAN_BASE_DIR . $fileman_dir . "/" . $fn;
+                $file = AA_File_Wrapper::wrapper($filename);
+                // $file->contents(); opens the stream, reads the data and close the stream
+                return $file->contents();
             case "site":
-                if ($type === "site") {
-                    if (!($fileman_dir = $GLOBALS['site_fileman_dir'])) {
-                        // if ($errcheck) huhl("No site_fileman_dir defined in site file");
-                        return "";
-                    }
+                if (!($fileman_dir = $GLOBALS['site_fileman_dir'])) {
+                    // if ($errcheck) huhl("No site_fileman_dir defined in site file");
+                    return "";
                 }
                 $filename = FILEMAN_BASE_DIR . $fileman_dir . "/" . $fn;
                 $file = AA_File_Wrapper::wrapper($filename);
                 // $file->contents(); opens the stream, reads the data and close the stream
-                $fileout = $file->contents();
-                break;
+                return $file->contents();
             case "readfile": //simple support for reading static html (use at own risk)
                 $filename = $_SERVER["DOCUMENT_ROOT"] . "/" . $fn;
                 $file = AA_File_Wrapper::wrapper($filename);
                 // $file->contents(); opens the stream, reads the data and close the stream
-                $fileout = $file->contents();
-                break;
-            default:
-                // if ($errcheck) huhl("Trying to expand include, but no valid type: $type");
-                return '';
+                return $file->contents();
         }
-        return $fileout;
+        return '';
     }
 }
 
 
-/** expandFilenameWithHttp function
- *  Expand any quotes in the parturl, and fetch via http
+/** Expand any quotes in the parturl, and fetch via http
  * @param string $parturl
  * @param string $type
  * @return false|string
  */
-function expandFilenameWithHttp($parturl, string $type='') {
+function expandFilenameWithHttp($parturl, string $type='', array $headers=[]): false|string
+{
     $filename = str_replace( 'URL_PARAMETERS', DeBackslash(shtml_query_string()), $parturl);
 
     // filename do not use colons as separators => dequote before callig
-    if (!$filename || trim($filename)=="") {
-        return "";
+    if (!$filename || trim($filename)==='') {
+        return '';
     }
 
-    $headers  = ($type === 'ajax') ? ['X-Requested-With'=>'XMLHttpRequest'] : [];
+    if ($type === 'ajax') {
+        $headers['X-Requested-With'] = 'XMLHttpRequest';
+    }
+
     // if no http request - add server name
-    if (!(aa_substr($filename, 0, 7) === 'http://') AND !(aa_substr($filename, 0, 8) === 'https://')) {
+    if (!str_starts_with($filename, 'http://') AND !str_starts_with($filename, 'https://')) {
         $filename = self_server(). (($filename[0] === '/') ? '' : '/'). $filename;
-        if ($_COOKIE) {
+        if ($_COOKIE AND !array_key_exists('Cookie', $headers)) {
             // we resend cookies only for local requests (It could be useful for AA_Auth ...)
             $headers['Cookie'] = http_build_query($_COOKIE, '', '; ');
         }
     }
 
-    return AA_Http::postRequest($filename, [], $headers);
+    return AA_Http::Request($filename, [], $headers);
 }
 
 /** Get $_SERVER[<variable>] value
