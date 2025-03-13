@@ -29,6 +29,7 @@
     "firebase/php-jwt": "v6.*",
     "mobiledetect/mobiledetectlib": "2.*",
     "phpgangsta/googleauthenticator": "dev-master",
+    "softcreatr/jsonpath": "*",
     "horde/text_diff": "v3.*",
     "honzito/qr-platba": "@dev",
     "honzito/phpthumb": "dev-justcode",

@@ -172,7 +172,7 @@ function json2asoc($string) {
  */
 function aa_json_decode($string, $asoc=false) {
     if (AA::$encoding AND (AA::$encoding !== 'utf-8')) {
-        if ( ($arr = json_decode(ConvertEncoding($string, AA::$encoding),$asoc)) == null) {
+        if ( ($arr = json_decode(ConvertEncoding($string, AA::$encoding),$asoc)) === null) {
             return [];
         }
         $values = ConvertEncodingDeep($arr,'utf-8', AA::$encoding);
@@ -475,7 +475,7 @@ class AA_Stringexpand_Define extends AA_Stringexpand_Nevercachenotrim {
     /**
      * @param string $name
      * @param string $expression
-     * @return string|void
+     * @return string
      */
     function expand($name='', $expression='') {
         if (strlen($name = trim($name))) {
@@ -484,6 +484,121 @@ class AA_Stringexpand_Define extends AA_Stringexpand_Nevercachenotrim {
         return '';
     }
 }
+
+class AA_Stringexpand_Definejson extends AA_Stringexpand_Nevercachenotrim {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // cache is used by expand function itself
+
+    /**
+     * @param string $name
+     * @param string $expression
+     * @return string|void
+     */
+    function expand($name='', $expression='') {
+        if (strlen($name = trim($name))) {
+            AA::Contentcache()->set("definejson:$name", aa_json_decode($expression));
+        }
+        return '';
+    }
+}
+
+// not usable at this moment - use {jsonpath:...}
+// class AA_Stringexpand_Varjson extends AA_Stringexpand_Nevercachenotrim {
+//     // Never cached (extends AA_Stringexpand_Nevercache)
+//     // cache is used by expand function itself
+//
+//     /**
+//      * @param string $name
+//      * @return string
+//      */
+//     function expand($name='', $expression='') {
+//         if (($name = trim($name)) === '') {
+//             return '';
+//         }
+//         if ( count(func_get_args()) === 2 ) {
+//             // going to define var
+//             $expression = aa_json_decode($expression);
+//             AA::Contentcache()->set("definejson:$name", $expression);
+//         } else {
+//             // going to print var
+//
+//             // replace inputform field
+//             $expression = AA::Contentcache()->get("definejson:$name");
+//             // @todo - replace parameters
+//         }
+//         return $expression;
+//     }
+// }
+
+/** returns part of the JSON based on <JSONpath> query
+ *  Use as:
+ *      {jsonpath:{"data": [{"email"#: "some@example.com","status"#: 1},{"email"#: "anothe@example.com","status"#: 3}]}:$.data[?(@.email=="some@example.com")].status}  // directly by JSONpath
+ *      {jsonpath:{"data": [{"email"#: "some@example.com","status"#: 1},{"email"#: "anothe@example.com","status"#: 3}]}:$.data[?(@.email=="some@example.com")]:status}  // JSONpath returns stucture and we tak attribute by third parameter
+ *      {jsonpath:{"data": [{"email"#: "some@example.com","status"#: 1},{"email"#: "anothe@example.com","status"#: 3}]}:$.data[?(@.email=="some@example.com")]}  // returns result structure as JSON
+ *
+ *      {defineJSON:JSONsubscribers:{include:https#://example.cz/lists/2/subscribers?per_page=5000:GET:{jsonasoc:Content-Type:application/json}}}  // stores parsed! JSON to JSON variable
+ *      {jsonpath:JSONsubscribers:$.data[?(@.email=="some@example.com")].status}                                                                   // run JSONPath on parsed var
+ *      {jsonpath:JSONsubscribers:$.data[?(@.email=~ /^a.* /)].email::-}                                                                           // coma separated list of emails beginning with 'a'
+ *
+ *      {define:parsed_json_varname:{jsonpath:{include:https#://example.cz/lists/2/subscribers?per_page=5000:GET:{jsonasoc:Content-Type:application/json}}:$.data[?(@.email=~ /^a.* /)]:varjson}}  // retuns name of temporary varJSON variable, in which the JSON is stored
+ *      {jsonpath:{var:parsed_json_varname}:$:email}                                                                                                                                               // then tdo query on that stored JSON structure
+ */
+class AA_Stringexpand_Jsonpath extends AA_Stringexpand {
+    /** Do not trim all parameters ($delimiter could contain spaces at the beginning) */
+    static function doTrimParams() { return false; }
+
+    /** expand function
+     * @param $string - JSON variable defined by {definejson} or JSON string (possibly loaded with {include:<url>})
+     * @param $query - JSONPath query - @see JSONPath documentation
+     * @param $attr - if empty, the <text> value of the matching element is returned
+     *                     if specified, then the attribute is returned (like width attribute of image in third example above)
+     *                     use 'XML' if you want to get the whole inner HTML
+     * @param $delimiter - by default, it returns just first matching value.
+     *                     If specified, then all matching texts are returned delimited by <delimiter>
+     * @return string
+     */
+    function expand($string="", $query='', $attr='', $delimiter='AA_PrintJustFirst') {
+        $string = trim($string);
+        $query  = trim($query);
+        $attr   = trim($attr);
+        if ($string==="" OR $query==="") {
+            return '';
+        }
+        if (($json = AA::Contentcache()->get("definejson:$string")) === false) {
+            $json = aa_json_decode($string);
+        }
+        try {
+            $entries = (new \Flow\JSONPath\JSONPath($json))->find($query)->getData();
+        } catch (\Flow\JSONPath\JSONPathException $e) {
+            warn($e->getMessage());
+            return '';
+        }
+
+        $ret = '';
+        foreach ($entries as $entry) {
+            if ($attr==='JSON') {
+                $ret .= json_encode($entry);
+            } elseif (aa_strtolower($attr)==='varjson')  {
+                $varname = '_JSV'. get_short_hash($entry);
+                AA::Contentcache()->set("definejson:$varname", $entry);
+                $ret .= $varname;
+            } elseif ($attr !== '')  {
+                $val = is_array($entry) ? $entry[$attr] : (is_object($entry) ? $entry->$attr : '');
+                $ret .= is_scalar($val) ? $val : json_encode($val);
+            } else {
+                $ret .= is_scalar($entry) ? $entry : json_encode($entry);
+            }
+            if ($delimiter === 'AA_PrintJustFirst') {
+                break;
+            }
+            $ret .= $delimiter;
+        }
+        return $ret;
+    }
+}
+
+
+
 
 /** Prints defined named expression. Used with conjunction {define:..}
  *  Could be also used for defining and printing the variable
@@ -502,10 +617,10 @@ class AA_Stringexpand_Var extends AA_Stringexpand_Nevercachenotrim {
      * @return string
      */
     function expand($name='', $expression='') {
-        if (!strlen($name = trim($name))) {
+        if (($name = trim($name)) === '') {
             return '';
         }
-        if ( count(func_get_args())==2 ) {
+        if ( count(func_get_args()) === 2 ) {
             // going to define var
 
             AA::Contentcache()->set("define:$name", $expression);
@@ -5839,10 +5954,12 @@ class AA_Stringexpand_Dictionary extends AA_Stringexpand {
     }
 }
 
-/** include file / URL {include:<url>:<type>:<headers>}
+/** include file / URL {include:<url>:<type>:<headers>:<body>:<err>}
  *  $url     - filename / URL
  *  $type    - hint on where to find it  (http, ajax, site, readfile, GET, POST, PUT, DELETE, PATCH, OPTIONS, HEAD, fileman) - http is default
  *  $headers - additional headers for http request
+ *  $body    - body for POST, PUT, DELETE, PATCH requests
+ *  $err     - error message if the request fails
  *  {include:https#://api.example.cz/getdata/my_ID:GET:{jsonasoc:Content-Type:application/json:key:478484a5c4e54b584e54a54c5b7899}}
  */
 class AA_Stringexpand_Include extends AA_Stringexpand {

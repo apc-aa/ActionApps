@@ -25,6 +25,7 @@ class ComposerStaticInit43e15006db6c3041e7b8c7c57cf04d54
         ),
         'F' => 
         array (
+            'Flow\\JSONPath\\' => 14,
             'Firebase\\JWT\\' => 13,
         ),
         'D' => 
@@ -54,6 +55,10 @@ class ComposerStaticInit43e15006db6c3041e7b8c7c57cf04d54
         'Horde\\Exception\\' => 
         array (
             0 => __DIR__ . '/..' . '/horde/exception/src',
+        ),
+        'Flow\\JSONPath\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/softcreatr/jsonpath/src',
         ),
         'Firebase\\JWT\\' => 
         array (
@@ -102,15 +107,8 @@ class ComposerStaticInit43e15006db6c3041e7b8c7c57cf04d54
         'AA\\Doit\\RequestMonitor' => __DIR__ . '/../..' . '/src/Doit/RequestMonitor.php',
         'AA\\Expand\\InternalExpandInterface' => __DIR__ . '/../..' . '/src/Expand/InternalExpandInterface.php',
         'AA\\FormArray' => __DIR__ . '/../..' . '/src/FormArray.php',
-        'AA\\IO\\DB\\AbstractDB' => __DIR__ . '/../..' . '/src/IO/DB/AbstractDB.php',
         'AA\\IO\\DB\\DB_AA' => __DIR__ . '/../..' . '/src/IO/DB/DB_AA.php',
-        'AA\\IO\\DB\\DB_MSSQL' => __DIR__ . '/../..' . '/src/IO/DB/DB_MSSQL.php',
-        'AA\\IO\\DB\\DB_MySQL' => __DIR__ . '/../..' . '/src/IO/DB/DB_MySQL.php',
-        'AA\\IO\\DB\\DB_OCI8' => __DIR__ . '/../..' . '/src/IO/DB/DB_OCI8.php',
-        'AA\\IO\\DB\\DB_ODBC' => __DIR__ . '/../..' . '/src/IO/DB/DB_ODBC.php',
         'AA\\IO\\DB\\DB_PDO' => __DIR__ . '/../..' . '/src/IO/DB/DB_PDO.php',
-        'AA\\IO\\DB\\DB_PgSQL' => __DIR__ . '/../..' . '/src/IO/DB/DB_PgSQL.php',
-        'AA\\IO\\DB\\DB_Sybase' => __DIR__ . '/../..' . '/src/IO/DB/DB_Sybase.php',
         'AA\\IO\\Feed' => __DIR__ . '/../..' . '/src/IO/Feed.php',
         'AA\\IO\\FeedUtil' => __DIR__ . '/../..' . '/src/IO/Feed.php',
         'AA\\IO\\Grabber\\AARSS' => __DIR__ . '/../..' . '/src/IO/Grabber/AARSS.php',
@@ -538,6 +536,7 @@ class ComposerStaticInit43e15006db6c3041e7b8c7c57cf04d54
         'AA_Stringexpand_Debuglog' => __DIR__ . '/../..' . '/include/stringexpand.php',
         'AA_Stringexpand_Decrypt' => __DIR__ . '/../..' . '/include/stringexpand.php',
         'AA_Stringexpand_Define' => __DIR__ . '/../..' . '/include/stringexpand.php',
+        'AA_Stringexpand_Definejson' => __DIR__ . '/../..' . '/include/stringexpand.php',
         'AA_Stringexpand_Detect' => __DIR__ . '/../..' . '/include/stringexpand.php',
         'AA_Stringexpand_Dictionary' => __DIR__ . '/../..' . '/include/stringexpand.php',
         'AA_Stringexpand_Distance' => __DIR__ . '/../..' . '/include/stringexpand.php',
@@ -731,6 +730,7 @@ class ComposerStaticInit43e15006db6c3041e7b8c7c57cf04d54
         'AA_Stringexpand_Utfnormalize' => __DIR__ . '/../..' . '/include/stringexpand.php',
         'AA_Stringexpand_Validate' => __DIR__ . '/../..' . '/include/stringexpand.php',
         'AA_Stringexpand_Var' => __DIR__ . '/../..' . '/include/stringexpand.php',
+        'AA_Stringexpand_Varjson' => __DIR__ . '/../..' . '/include/stringexpand.php',
         'AA_Stringexpand_Version' => __DIR__ . '/../..' . '/include/stringexpand.php',
         'AA_Stringexpand_View' => __DIR__ . '/../..' . '/include/stringexpand.php',
         'AA_Stringexpand_Xmlfield' => __DIR__ . '/../..' . '/include/stringexpand.php',
@@ -860,6 +860,18 @@ class ComposerStaticInit43e15006db6c3041e7b8c7c57cf04d54
         'Firebase\\JWT\\JWTExceptionWithPayloadInterface' => __DIR__ . '/..' . '/firebase/php-jwt/src/JWTExceptionWithPayloadInterface.php',
         'Firebase\\JWT\\Key' => __DIR__ . '/..' . '/firebase/php-jwt/src/Key.php',
         'Firebase\\JWT\\SignatureInvalidException' => __DIR__ . '/..' . '/firebase/php-jwt/src/SignatureInvalidException.php',
+        'Flow\\JSONPath\\AccessHelper' => __DIR__ . '/..' . '/softcreatr/jsonpath/src/AccessHelper.php',
+        'Flow\\JSONPath\\Filters\\AbstractFilter' => __DIR__ . '/..' . '/softcreatr/jsonpath/src/Filters/AbstractFilter.php',
+        'Flow\\JSONPath\\Filters\\IndexFilter' => __DIR__ . '/..' . '/softcreatr/jsonpath/src/Filters/IndexFilter.php',
+        'Flow\\JSONPath\\Filters\\IndexesFilter' => __DIR__ . '/..' . '/softcreatr/jsonpath/src/Filters/IndexesFilter.php',
+        'Flow\\JSONPath\\Filters\\QueryMatchFilter' => __DIR__ . '/..' . '/softcreatr/jsonpath/src/Filters/QueryMatchFilter.php',
+        'Flow\\JSONPath\\Filters\\QueryResultFilter' => __DIR__ . '/..' . '/softcreatr/jsonpath/src/Filters/QueryResultFilter.php',
+        'Flow\\JSONPath\\Filters\\RecursiveFilter' => __DIR__ . '/..' . '/softcreatr/jsonpath/src/Filters/RecursiveFilter.php',
+        'Flow\\JSONPath\\Filters\\SliceFilter' => __DIR__ . '/..' . '/softcreatr/jsonpath/src/Filters/SliceFilter.php',
+        'Flow\\JSONPath\\JSONPath' => __DIR__ . '/..' . '/softcreatr/jsonpath/src/JSONPath.php',
+        'Flow\\JSONPath\\JSONPathException' => __DIR__ . '/..' . '/softcreatr/jsonpath/src/JSONPathException.php',
+        'Flow\\JSONPath\\JSONPathLexer' => __DIR__ . '/..' . '/softcreatr/jsonpath/src/JSONPathLexer.php',
+        'Flow\\JSONPath\\JSONPathToken' => __DIR__ . '/..' . '/softcreatr/jsonpath/src/JSONPathToken.php',
         'FormrowWidget' => __DIR__ . '/../..' . '/include/form.class.php',
         'Horde\\Exception\\HordeException' => __DIR__ . '/..' . '/horde/exception/src/HordeException.php',
         'Horde\\Exception\\LastError' => __DIR__ . '/..' . '/horde/exception/src/LastError.php',

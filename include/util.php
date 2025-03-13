@@ -1569,7 +1569,7 @@ class AA_Contentcache {
      * @return mixed
      */
     function _get_result($key, $function, $params, string $ident, $stable=false) {
-        if ($stable) { // not possible to shothand it, because of the reference
+        if ($stable) { // not possible to shorthand it, because of the reference
             $content = &$this->content_stable;
         } else {
             $content = &$this->content;
@@ -1672,7 +1672,7 @@ class AA_Contentcache {
      *  each push, should have pop counterpart call, which restores previous value
      *  used with push_arr for storing view qs parameters when entering view, for example
      * @param $access_code
-     * @param $arr
+     * @param $val
      */
     function push($access_code, $val) {
         if ( $this->exists($access_code) ) {
@@ -1682,13 +1682,8 @@ class AA_Contentcache {
         $this->set($access_code, $val);
     }
 
-    /** push function
-     *  stores value for access_code to cache and backups the old values
-     *  each push, should have pop counterpart call, which restores previous value
-     *  used with push_arr for storing view qs parameters when entering view, for example
+    /** pop function
      * @param $access_code
-     * @param $arr
-     * @return false
      */
     function pop($access_code) {
         $ret = $this->get($access_code);

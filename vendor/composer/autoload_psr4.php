@@ -11,6 +11,7 @@ return array(
     'Horde\\Translation\\' => array($vendorDir . '/horde/translation/src'),
     'Horde\\Text\\Diff\\' => array($vendorDir . '/horde/text_diff/src'),
     'Horde\\Exception\\' => array($vendorDir . '/horde/exception/src'),
+    'Flow\\JSONPath\\' => array($vendorDir . '/softcreatr/jsonpath/src'),
     'Firebase\\JWT\\' => array($vendorDir . '/firebase/php-jwt/src'),
     'Defr\\QRPlatba\\' => array($vendorDir . '/honzito/qr-platba/src'),
     'DASPRiD\\Enum\\' => array($vendorDir . '/dasprid/enum/src'),

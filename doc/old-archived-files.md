@@ -52,3 +52,14 @@ _No longer maintained. Removed 2022-02-25 - honzam (see older apc-aa branches to
   Developed in the time of expensive dialup connection when it was too expensive to fill and edit the item form on the internet
   Files in  /misc/offline2slice was ment to be copied to user's computer  
   _No longer maintained. Removed 2021-01-29 - honzam (see older apc-aa branches to get the code)_     
+
+/src/IO/DB/
+  .../DB_MSSQL.php
+  .../DB_ODBC.php
+  .../DB_Oracle.php
+  .../DB_PgSQL.php
+  .../DB_mSQL.php
+  .../DB_Sybase.php
+  .../DB_OCI8.php
+  PHPLib based database drivers for different databases - now replaced by PDO, which suppoerts prepared statements, transactions...
+  _No longer maintained. Removed 2026-03-11 - honzam (see older apc-aa branches to get the code)_     
