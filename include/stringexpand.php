@@ -5961,6 +5961,7 @@ class AA_Stringexpand_Dictionary extends AA_Stringexpand {
  *  $body    - body for POST, PUT, DELETE, PATCH requests
  *  $err     - error message if the request fails
  *  {include:https#://api.example.cz/getdata/my_ID:GET:{jsonasoc:Content-Type:application/json:key:478484a5c4e54b584e54a54c5b7899}}
+ *  {include:https#://example.cz/api/data:POST:{"Content-Type"#:"application/json"}:{"data":"xy"}:Error _#status, _#errmsg}
  */
 class AA_Stringexpand_Include extends AA_Stringexpand {
     /** expand function
@@ -5968,7 +5969,7 @@ class AA_Stringexpand_Include extends AA_Stringexpand {
      * @param string $type - hints on where to find it
      * @return array|string
      */
-    function expand($fn='', $type='', $headers='') {
+    function expand($fn='', $type='', $headers='', $data='', $err='') {
         if (!$fn) {
             return '';
         }
@@ -5986,14 +5987,14 @@ class AA_Stringexpand_Include extends AA_Stringexpand {
             case 'PATCH':
             case 'OPTIONS':
             case 'HEAD':
-                if (false === ($ret = AA_Http::Request($fn, [], $headers, $type))) {
+                if (false === ($ret = AA_Http::request($fn, $data, $headers, $type, $err))) {
                     warn(AA_Http::lastErrMsg());
                 }
                 return $ret;
             case "http":
-                return expandFilenameWithHttp($fn, '', $headers);
+                return expandFilenameWithHttp($fn, '', $headers, $data, $err);
             case "ajax":
-                return expandFilenameWithHttp($fn, 'ajax', $headers);
+                return expandFilenameWithHttp($fn, 'ajax', $headers, $data, $err);
             case "fileman":
                 // Note this won't work if called from a Static view because no slice_id available
                 // This should be fixed.
@@ -6035,7 +6036,7 @@ class AA_Stringexpand_Include extends AA_Stringexpand {
  * @param string $type
  * @return false|string
  */
-function expandFilenameWithHttp($parturl, string $type='', array $headers=[]): false|string
+function expandFilenameWithHttp($parturl, string $type='', array $headers=[], $data='', $err=''): false|string
 {
     $filename = str_replace( 'URL_PARAMETERS', DeBackslash(shtml_query_string()), $parturl);
 
@@ -6057,7 +6058,7 @@ function expandFilenameWithHttp($parturl, string $type='', array $headers=[]): f
         }
     }
 
-    return AA_Http::Request($filename, [], $headers);
+    return AA_Http::request($filename, $data, $headers, '', $err);
 }
 
 /** Get $_SERVER[<variable>] value

@@ -68,7 +68,7 @@ class AA_Http {
             exit;
         }
         if ($type==='POST') {
-            $response = self::Request($url, $parameters, [], 'POST');
+            $response = self::request($url, $parameters, [], 'POST');
             if ($response !== false) {
                 // POST request OK
                 echo $response;
@@ -94,23 +94,28 @@ class AA_Http {
     }
 
 
-    /** POST data to the url (using POST request and returns resulted data
+    /** Request to the url (using POST request or other methods and returns resulted data)
      *
-     * @param       $url
-     * @param array $data      - parameters
-     * @param array $headers
-     * @param string $method   - default is POST
+     * @param                $url
+     * @param  string|array  $data    - parameters
+     * @param  array         $headers
+     * @param  string  $method  - default is POST
+     * @param  string  $err     -
      *
      * @return false|string $result[]
      * inspired by http://netevil.org/blog/2006/nov/http-post-from-php-without-curl
      */
-    public static function Request($url, array $data=[], array $headers=[], string $method=''): false|string
+    public static function request($url, string|array $data=[], array $headers=[], string $method='', string $err=''): false|string
     {
         $opts = [];
         if ($data OR $headers OR $method) {
             $method = in_array($method, ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD'], true) ? $method : 'POST';  // all possible HTTP methods
-            if ($data) {
+            if ($data AND is_array($data)) {
                 $opts['content'] = http_build_query($data);
+                $headers['Content-Length'] = strlen($opts['content']);
+            } elseif (is_string($data) AND $data !== '') {
+                $opts['content'] = $data;
+                $headers['Content-Length'] = strlen($opts['content']);
             }
 
             if ($headers) {
@@ -130,7 +135,15 @@ class AA_Http {
 
         if ($ret === false) {
             self::lastErr(2, sprintf("Problem reading data from url: %s (%s)",$url, error_get_last()["message"]));  // set error code
-            return false;
+            if ($err) {
+                if ( str_contains($err, '_#') ) {
+                    $statusCode = (isset($http_response_header) && preg_match('{HTTP\/\S*\s(\d{3})}', $http_response_header[0], $match)) ? $match[1] : '';
+                    $ret = str_replace(['_#status', '_#errmsg'], [$statusCode, error_get_last()["message"]], $err);
+                } else {
+                    $ret = $err;
+                }
+            }
+            return $ret;
         }
         return $ret;
     }
@@ -243,7 +256,7 @@ class AA_Request {
 //           $r = unserialize($ask_arr['request']);
 //           huhl($ask_arr, unserialize($ask_arr['request']), $r->params['sync'][0], unserialize($r->params['sync'][0]), unserialize(str_replace("'", "\'", $r->params['sync'][0])), $url);
 //       }
-        $result = AA_Http::Request($url, $ask_arr, $headers);
+        $result = AA_Http::request($url, $ask_arr, $headers);
 
         if ( $result === false ) {
             //echo "<br>Error - response: ". AA_Http::lastErrMsg();
