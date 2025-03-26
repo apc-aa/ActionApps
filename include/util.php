@@ -56,12 +56,15 @@ function a_href($url, $label='', array $attr=[]): string {
     return '<a href="'.safe($url) ."\" $add>$label</a>";
 }
 
+/* @usage htmlattr(['class'=>['info','disabled']])  // any attr could be array */
 function htmlattr(array $attr) {
-    return array_reduce( array_keys($attr), static fn($str, $key) => $str . (($attr[$key] !== '') ? ' ' . $key . '="' . safe($attr[$key]) . '"' : ''));
+    return array_reduce( array_keys($attr), static fn($str, $key) => $str . (($attr[$key] !== '') ? ' ' . $key . '="' . safe(is_array($attr[$key]) ? implode(' ', $attr[$key]) : $attr[$key]) . '"' : ''));
 }
 
 /** creates html tag with attributes
+ *
  * @usage htmltag('div','text',['class'=>'info'])
+ * @usage htmltag('div','text',['class'=>['info','disabled']])  // any attr could be array
  */
 function htmltag($tag, $content, $attr=[]): string {
     return "<$tag". htmlattr($attr).'>'. $content ."</$tag>";
@@ -1906,7 +1909,7 @@ function IsSpamText($text, $tolerance=4) {
  * @return bool
  */
 function IsAlias($identifier): bool {
-    return  (str_starts_with($identifier, '_#') AND ((strlen($identifier)==10) OR (str_starts_with($identifier, '_#P') AND ctype_digit((string)substr($identifier,3)))));
+    return  (str_starts_with($identifier, '_#') AND ((strlen($identifier)===10) OR (str_starts_with($identifier, '_#P') AND ctype_digit(substr($identifier,3)))));
 }
 
 /** is signed int (ctype_digit do not allow signed numbers)

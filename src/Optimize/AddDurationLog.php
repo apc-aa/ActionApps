@@ -65,8 +65,9 @@ class AddDurationLog extends \AA\Optimize\AbstractOptimize {
         return true;
     }
 
-    /** get time from which we measure duration */
+    /** get time from which we measure duration
+     * @todo Cache it forever - this query is quite slow */
     public function getFromTime() {
-        return DB_AA::select1('time', 'SELECT `time` FROM `hit_archive`', [['duration', 0, '<>']], ['time']);
+        return DB_AA::select1('time', 'SELECT `time` FROM `hit_archive`', [['duration', 0, '<>'],['time', 1717192800, '>']], ['time']);  // big speedup - 2024-06-01 - this feature is there from 2024-06-27 in SVN so we check only part of the table
     }
 }

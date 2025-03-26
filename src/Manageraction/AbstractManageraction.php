@@ -102,7 +102,7 @@ abstract class AbstractManageraction extends AA_Storable {
     /** Perform the action - main function
      * @param \AA\Manager         $manager      which Manager
      * @param zids                $item_zids    with what Items
-     * @param array               $action_param additional parameters to the action
+     * @param string|array        $action_param additional parameters to the action
      * @return string|false false is OK, string contain Error message
      */
     function perform(\AA\Manager $manager, zids $item_zids, $action_param) {

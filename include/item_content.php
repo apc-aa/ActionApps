@@ -994,10 +994,12 @@ class ItemContent extends AA_Content {
     }
 
     /** validates and fills content with default and hidden fields in order it could be stored into database
-     * @param string $validate   LOG | STRICT | QUIET
+     *
+     * @param  string  $validate  LOG | STRICT | QUIET
+     *
      * @return bool
      */
-    function complete4Insert($validate='LOG') {
+    function complete4Insert(string $validate='LOG') {
         $slice_id = $this->getSliceID();
         $slice = AA_Slice::getModule($slice_id);
         if (!$slice) {

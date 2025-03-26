@@ -97,7 +97,8 @@ class AA_Alias {
      * @param string|null $hlp
      * @return AA_Alias|null
      */
-    public static function factory(?string $alias, ?string $funct, ?string $field_id, ?string $hlp = '') {
+    public static function factory(?string $alias, ?string $funct, ?string $field_id, ?string $hlp = ''): ?AA_Alias
+    {
         if ($alias and (str_starts_with($alias, '_#'))) {
             return new AA_Alias($alias, $funct, $field_id, $hlp);
         }
@@ -119,6 +120,18 @@ class AA_Alias {
             return $text;
         }
         return ($raw AND (preg_match("/^[A-Z0-9_#]{8}$/", $text) === 1)) ? "_#$text" : '';
+    }
+
+    /** Is this alias disabled? */
+    public function isDisabled(): bool {
+        return str_starts_with($this->getAlias(), 'X#');
+    }
+
+    /** can we move the alias to another field? (=field independent) */
+    public function isMoveable(): bool {
+        $fnc = $this->getFnc();
+        $prm = $this->getFncParam();
+        return (($fnc === 'f__') OR ($fnc === 'f_t' AND strlen($prm)>12)) AND !str_contains($prm,'_#this');   // @todo - make the check more accurate (see ChangeF_t2F__) - 12 - not just :csv, but also :safe, :javascript, :urlencode, :striptags, :rss, :conds, :asis, :substitute, :debug
     }
 
     /**

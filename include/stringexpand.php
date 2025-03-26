@@ -1272,7 +1272,7 @@ class AA_Stringexpand_Shorten extends AA_Stringexpand_Nevercachenotrim {
      * @param $text_add
      * @return string
      */
-    public static function shorten_middle($text, $length)
+    public static function shorten_middle($text, $length): string
     {
         $text = trim(strip_tags($text));
         $ret = aa_substr($text, 0, $length / 2 - 1) . '…';
@@ -5961,7 +5961,7 @@ class AA_Stringexpand_Dictionary extends AA_Stringexpand {
  *  $body    - body for POST, PUT, DELETE, PATCH requests
  *  $err     - error message if the request fails
  *  {include:https#://api.example.cz/getdata/my_ID:GET:{jsonasoc:Content-Type:application/json:key:478484a5c4e54b584e54a54c5b7899}}
- *  {include:https#://example.cz/api/data:POST:{"Content-Type"#:"application/json"}:{"data":"xy"}:Error _#status, _#errmsg}
+ *  {include:https#://example.cz/api/data:POST:{"Content-Type":"application/json"}:{"data":"xy"}:Error _#status, _#errmsg}
  */
 class AA_Stringexpand_Include extends AA_Stringexpand {
     /** expand function

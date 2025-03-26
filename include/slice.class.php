@@ -365,17 +365,18 @@ abstract class AA_Module {
         return null;
     }
 
-    /** getLang function
+    /**
      *  Returns lang code ('cz', 'en', 'en-utf8', 'de',...)
      */
     function getLang()     {
         return Langs::getLang($this->_getModuleTableProperty('lang_file'));
     }
 
-    /** getCharset function
+    /**
      *  Returns character encoding for the slice ('windows-1250', ...)
      */
-    function getCharset()     {
+    public function getCharset(): string
+    {
         return Langs::getCharset($this->getLang());   // like 'windows-1250'
     }
 

@@ -42,7 +42,7 @@ class AA_Field implements ArrayAccess, Countable, Iterator {
     /** associative array of field data as defined in field table - @see USED_FIELDS */
     protected array $data = [];
 
-    /** array of aliases   */
+    /** array of enabled aliases (not X#.. )  */
     protected ?AA_Aliases $aliases = null;
 
     /** class and properties for slice defined fields (replaces input_show_func functionality)  */
@@ -300,13 +300,14 @@ class AA_Field implements ArrayAccess, Countable, Iterator {
         return null;
     }
 
-    /** getAliases function
-     * @deprecated  - use aliases class AA_Aliases
+    /**
+     * @returns AA_Aliases - just enabled aliases (not X#...))
      */
-    function getAliases() {
+    public function getAliases(): AA_Aliases
+    {
         // maybe filled here in previous call, or filled in constructor for item defined fields
         if ($this->aliases) {
-            return $this->aliases->getArray();
+            return $this->aliases;
         }
         $this->aliases = new AA_Aliases;
         $f = $this->data;
@@ -315,7 +316,7 @@ class AA_Field implements ArrayAccess, Countable, Iterator {
         $this->aliases->addAlias(AA_Alias::factory($f['alias1'], $f['alias1_func'], $f['id'], $f['alias1_help']));
         $this->aliases->addAlias(AA_Alias::factory($f['alias2'], $f['alias2_func'], $f['id'], $f['alias2_help']));
         $this->aliases->addAlias(AA_Alias::factory($f['alias3'], $f['alias3_func'], $f['id'], $f['alias3_help']));
-        return $this->aliases->getArray();
+        return $this->aliases;
     }
 
     /**  function finds group_id in field.input_show_func parameter */
@@ -539,7 +540,13 @@ class AA_Field implements ArrayAccess, Countable, Iterator {
         $pri         = $this->getProperty('input_pri');
         $required    = $this->required();
         $show        = $this->getProperty('input_show');
-        $aliases     = array_filter([$this->getProperty('alias1'),$this->getProperty('alias2'),$this->getProperty('alias3')]);
+
+        $aliases = [];
+        $this->getProperty('alias1') && $aliases[] = [1, new AA_Alias($this->getProperty('alias1'), $this->getProperty('alias1_func'), $this->getProperty('id'), $this->getProperty('alias1_help'))];
+        $this->getProperty('alias2') && $aliases[] = [2, new AA_Alias($this->getProperty('alias2'), $this->getProperty('alias2_func'), $this->getProperty('id'), $this->getProperty('alias2_help'))];
+        $this->getProperty('alias3') && $aliases[] = [3, new AA_Alias($this->getProperty('alias3'), $this->getProperty('alias3_func'), $this->getProperty('id'), $this->getProperty('alias3_help'))];
+
+        //$aliases     = array_filter([$this->getProperty('alias1'),$this->getProperty('alias2'),$this->getProperty('alias3')]);
         $separate    = (str_contains($this->getProperty('input_before'), '{formbreak'));
         $text_stored = $this->getProperty('text_stored');
         $type        = $this->getProperty('in_item_tbl') ? "in_item_tbl" : "";
@@ -565,10 +572,22 @@ class AA_Field implements ArrayAccess, Countable, Iterator {
         }
 
         $alias_list = implode(' ', array_map(
-            function($a) use ($id) {
-                return $this->linkToField($a, substr($a, 2), (str_starts_with($a, 'X#')) ? ['class' => 'disabled', 'title' => _m('disabled')] : []);
-            }, $aliases));
-        echo "<td class=\"aa-flds-aliases\">$alias_list</td>";
+            function (array $arr) {
+                [$pos, $a] = $arr;
+                $attrs = ['data-fld'=>$a->getField()."|$pos", 'title' => substr($a->getFuncDef(),0,100)];
+                $aname = $a->getAlias();
+                if ($a->isMoveable()) {
+                    $aname .= '<i class="ico move"></i>';
+                    $attrs['class'][] = 'aa-moveable';
+                }
+                if ($a->isDisabled()) {
+                    $attrs['class'][] = 'disabled';
+                    $attrs['title'] = _m('disabled') . ': '.$attrs['title'];
+                }
+                return $this->linkToField($aname, substr($a->getAlias(), 2), $attrs);
+            },
+            $aliases));
+        echo "<td class=\"aa-flds-aliases\" data-fld=\"$id\">$alias_list</td>";
         echo "</tr>\n";
 
         if ($analyze AND ($type !== 'in_item_tbl')) {
@@ -893,7 +912,7 @@ class AA_Fields implements Iterator, Countable {
 
         // database stored aliases
         foreach ($this->fields as $field) {
-            $fals = $field->getAliases();
+            $fals = $field->getAliases()->getArray();
             foreach ($fals as $key => $value) {   // converted from array_merge which was really slow on many (dynamic) fields
                 $this->aliases[$key] = $value;
             }

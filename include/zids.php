@@ -616,10 +616,11 @@ function explode_ids($ids_string): array {
  *  but, we still need zids.php and those 3 functions for cache
  */
 
-/** ParamExplode function
+/**
  * explodes $param by ":". The "#:" means true ":" - don't separate
+ *
  * @param $param
- * @return array
+ * @return string[]
  */
 function ParamExplode($param): array
 {
