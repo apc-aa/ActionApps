@@ -49,6 +49,8 @@ try {
     $fid = InputVars::stringGET('fid');
     // array ( 'change all' => 2, )
     $fix = InputVars::boolPOST('fix');
+    $move_als    = InputVars::stringGET('move_als');
+    $move_als_to = InputVars::stringGET('move_als_to');
     // array ( '41415f436f7…' => 30, '4085d9fe61e…' => 5, '4429a8e44bb…' => 1, )
     $from_slice = InputVars::idPOST('from_slice');
     // array ( '41415f436f7…' => 30, '4085d9fe61e…' => 5, '4429a8e44bb…' => 1, )
@@ -130,6 +132,41 @@ if ($del) {
     AA::Pagecache()->invalidateFor(AA::$module_id);  // invalidate old cached values
 
     $Msg = MsgOk(_m("Field delete OK"));
+}
+
+if ($move_als AND $move_als_to) {
+    [$m_name,$m_fid,$m_pos]  = explode('|',$move_als,3);   // _#HEADLINE|headline........|2
+    $m_pos = (int)$m_pos;
+
+    if (strlen($m_name)!==10 OR strlen($m_fid)!==16 OR $m_pos<1 OR $m_pos>3 OR strlen($move_als_to)!==16) {
+        $Msg = MsgErr(_m('Invalid move alias parameters'));
+    } elseif ($source = DB_AA::select1('', "SELECT alias{$m_pos} AS ax, alias{$m_pos}_func AS ax_func, alias{$m_pos}_help AS ax_help FROM field", [['id',$m_fid], ['alias'.$m_pos,$m_name], ['slice_id',AA::$module_id,'l']])) {  // not necessary - we have set the halt_on_error
+        $dest_pos = 0;
+        if (DB_AA::test('field', [['id', $move_als_to], ['alias1', ''], ['slice_id', AA::$module_id, 'l']])) {
+            $dest_pos = 1;
+        } elseif (DB_AA::test('field', [['id', $move_als_to], ['alias2', ''], ['slice_id', AA::$module_id, 'l']])) {
+            $dest_pos = 2;
+        } elseif (DB_AA::test('field', [['id', $move_als_to], ['alias3', ''], ['slice_id', AA::$module_id, 'l']])) {
+            $dest_pos = 3;
+        }
+
+        if ($dest_pos===0) {
+            $Msg = MsgErr(_m('No free space for alias in this field'));
+        } else {
+            $data_field = ['id'                    => $move_als_to,
+                           'slice_id'              => AA::$module_id,
+                           "alias{$dest_pos}"      => $source['ax'],
+                           "alias{$dest_pos}_func" => $source['ax_func'],
+                           "alias{$dest_pos}_help" => $source['ax_help']
+            ];
+            if (AA::Metabase()->doUpdate('field', $data_field)) {
+                $data_field = ['id' => $m_fid, 'slice_id' => AA::$module_id, "alias{$m_pos}" => '', "alias{$m_pos}_func" => '', "alias{$m_pos}_help" => ''];
+                if (AA::Metabase()->doUpdate('field', $data_field)) {
+                    $Msg = MsgOk(_m("Alias moved OK"));
+                }
+            }
+        }
+    }
 }
 
 
@@ -241,9 +278,40 @@ foreach ($s_fields as $fld) {
     }
 }
 
+// allow alias move to another field
+$QUESTION = _m("Do you really want to move alias to another field?");
+$MOD_ID = AA::$module_id;
+$aliasmovejs = <<<JS
+    document.querySelectorAll('td.aa-flds-aliases').forEach(td => {
+    Sortable.create(td, {
+    group: 'alias-group',  // same group allows movement across cells
+    animation: 150,
+    draggable: '.aa-moveable',
+    ghostClass: 'orderableghost',
+    swapThreshold: 0.5,
+    handle: 'i',
+    onAdd: function (e) {
+      if (confirm("$QUESTION")) {
+          window.location='?' + new URLSearchParams({ module_id: '$MOD_ID', move_als: e.item.textContent+'|'+e.item.dataset.fld, move_als_to: e.target.dataset.fld}).toString();
+      }
+  }
+  });
+});
+JS;
+
+$css = <<<CSS
+  .orderableghost  { opacity: 0.5; }
+  CSS;
+
+
 $apage = new AA_Adminpageutil('sliceadmin',$slice_fields ? 'slice_fields' : 'fields');
 $apage->setTitle(_m("Admin - configure Fields"));
 $apage->addRequire('aa-jslib');
+
+$apage->addRequire('orderable');
+$apage->addRequire($css, 'AA_Req_CSScode');
+$apage->addRequire($aliasmovejs, 'AA_Req_Load');
+
 //$apage->addRequire("DisplayAaResponse('fieldselection', 'Get_Fields', {slice_id:'". get_if($from_slice, unpack_id('AA_Core_Fields..')) ."'});", 'AA_Req_Load');
 $apage->addRequire("document.querySelector('select[name=from_slice]').dispatchEvent(new Event('change'));", 'AA_Req_Load');
 $apage->printHead($err, $Msg);
