@@ -619,13 +619,15 @@ i.ico.aa-tool-edit:hover {
 }
 i.ico.move {
     background: rgb(0 0 0 / 16%);
+    cursor: move;
 }
 i.ico.move:after {
-    content: '\2237';
+    content: '⠿';
     display: inline-block;
     padding-right: 2px;
-    padding-left: 1px;
+    padding-left: 2px;
     color: black;
+    font-style: normal;
 }
 .aa-rim i.ico.edit {
     font-size: 11px;
