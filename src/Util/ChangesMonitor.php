@@ -211,7 +211,6 @@ class ChangesMonitor {
     function changeByTime(string $resource_id, string $selector, int $timestamp): array {
         $value = [];
         // start debugging
-        AA::$debug = 127;
         if (trim($resource_id) AND trim($selector) AND $timestamp) {
             $timestamp = self::toNanotime($timestamp);
             $value = DB_AA::select1([], "SELECT `change`.`id`,`change_record`.`value`,`change_record`.`selector`, `change`.`time`,`change`.`user`,`change`.`type` FROM `change`, `change_record`", [['change.id', 'change_record.change_id', 'j'], ['change.resource_id', $resource_id], ['change.type', 'h'], ['change.time', $timestamp, '>='], ['change_record.selector', $selector], ['change_record.value', '', 'FILLED']], ['time']);
@@ -317,14 +316,21 @@ class ChangesMonitor {
 
         if ($arr = DB_AA::select([], "SELECT `change`.time, `change`.user, `change_record`.selector, `change_record`.value, `change_record`.priority, `change_record`.type as chtype, `change_record`.change_id, `change`.resource_id, `change`.type
                                 FROM `change`, `change_record`", [['change.id', 'change_record.change_id' , 'j'], ["`change`.resource_id", $resource_ids], ['change.type',$type]], ['change.resource_id', 'change.time-', 'change_record.change_id', 'change_record.selector', 'change_record.priority'])) {
-            echo "<div class='aa-table'><table class='aa-history'><tr><th>&nbsp;</th><th>field</th><th>value</th><th>priority</th><th>type</th><th>resource</th></tr>";
+            echo "<div class='aa-table'><table class='aa-history'><tr><th>&nbsp;</th><th>field</th><th>value</th><th>diff".Difftext::renderHtml(_m("newer\neee<br>www"), _m("older\neee<br>wqqq"))."</th><th>priority</th><th>type</th><th>resource</th></tr>";
             $chid = '';
-            foreach ($arr as $change) {
-                if ($chid != $change['change_id']) {
-                    echo "<tr><th colspan=6>" . date('Y-m-d H:i:s', self::toTimestamp((int)$change['time'])) . ' - ' . safe(perm_username($change['user'])) . " <small>($change[type], uid:$change[user], res:$change[resource_id], change:$change[change_id], time:$change[time])</small></th></tr>";
+            foreach ($arr as $key => $change) {
+                if ($chid !== $change['change_id']) {
+                    echo "<tr><th colspan=7>" . date('Y-m-d H:i:s', self::toTimestamp((int)$change['time'])) . ' - ' . safe(perm_username($change['user'])) . " <small>($change[type], uid:$change[user], res:$change[resource_id], change:$change[change_id], time:$change[time])</small></th></tr>";
                     $chid = $change['change_id'];
                 }
-                echo "<tr><td>&nbsp;</td><td>$change[selector]</td><td><pre>".safe($change['value'])."</pre></td><td>$change[priority]</td><td>$change[chtype]</td><td>".safe($change['resource_id'])."</td></tr>";
+                $value = \AA_Adminlink::richValue($change['value']);
+
+                echo sprintf(
+                    "<tr><td>&nbsp;</td><td>$change[selector]</td><td><pre>%s</pre></td><td>$change[priority]</td><td>$change[chtype]</td><td>%s</td></tr>",
+                    $value,
+                    //array_key_exists($key+1,$arr) ? Difftext::renderHtml($change['value'], $arr[$key+1]['value']) : '',
+                    safe($change['resource_id'])
+                );
             }
             echo "</table></div>";
         }

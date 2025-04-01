@@ -20,7 +20,7 @@ class PohodaStocks extends AbstractGrabber
     protected $file;
     /** list if files to grab - internal array */
     private $_items;
-    private $_last_store_mode;
+    private string $_last_store_mode;
 
     function __construct($file) {
         $this->file = $file;
@@ -42,7 +42,8 @@ class PohodaStocks extends AbstractGrabber
      *  how to store the item.
      * @see also getIdMode() method
      */
-    function getStoreMode() {
+    public function getStoreMode(): string
+    {
         return $this->_last_store_mode;
     }
 

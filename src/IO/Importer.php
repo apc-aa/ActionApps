@@ -36,7 +36,7 @@ class Importer implements \AA\Later\LaterInterface {
     /** @var Saver  */
     protected $saver;
 
-    protected $run=true;
+    protected bool $run=true;
 
     /**
      * Importer constructor.
@@ -51,8 +51,8 @@ class Importer implements \AA\Later\LaterInterface {
         $this->run   = $run;
     }
 
-    /**
-     * @return string
+    /** loads all the data based on grabber setting and return it
+     * @return array
      */
     public function getSources(): array {
         return $this->saver->getSources();

@@ -4,7 +4,7 @@ namespace AA\Optimize;
 
 use function _m;
 
-/** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
+/** Recreates the new field types to be used as templates (in "ActionApps Core" slice) */
 class AddIpFieldTemplate extends \AA\Optimize\AddSeoFieldTemplate {
 
     public static function name(): string { return _m("Add ip field template"); }

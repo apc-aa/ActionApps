@@ -70,7 +70,8 @@ class ObjectForm extends AbstractGrabber
      *  how to store the object.
      * @see also getStoreMode() method
      */
-    function getIdMode() {
+    public function getIdMode(): string
+    {
         return 'old';
     }
 
@@ -78,7 +79,8 @@ class ObjectForm extends AbstractGrabber
      *  how to store the object.
      * @see also getIdMode() method
      */
-    function getStoreMode() {
+    public function getStoreMode(): string
+    {
         return match ($this->_last_store_mode) {
             'add'    => 'add',
             'update' => 'update',

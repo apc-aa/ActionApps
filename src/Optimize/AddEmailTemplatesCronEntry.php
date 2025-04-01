@@ -6,7 +6,7 @@ use AA;
 use AA\IO\DB\DB_AA;
 use function _m;
 
-/** Adds email templates for Alerts module **/
+/** Adds email templates for Alerts module */
 class AddEmailTemplatesCronEntry extends \AA\Optimize\AbstractOptimize {
 
     /**  {@inheritdoc} Implementation of \AA\Util\NamedInterface */

@@ -5,7 +5,7 @@ namespace AA\Optimize;
 use function _m;
 use const AA_INSTAL_PATH;
 
-/** Recreates the template view - javascript**/
+/** Recreates the template view - javascript */
 class RedefineViewJavascriptTemplates extends \AA\Optimize\RedefineViewDiscusTemplates {
 
     public static function name(): string { return _m("Redefine javascript template view"); }

@@ -6,7 +6,7 @@ use AA;
 use AA\IO\DB\DB_AA;
 use function _m;
 
-/** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
+/** Recreates the new field types to be used as templates (in "ActionApps Core" slice) */
 class AddSeoFieldTemplate extends \AA\Optimize\AbstractOptimize {
 
     /** Name function

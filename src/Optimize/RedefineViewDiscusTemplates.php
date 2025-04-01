@@ -6,7 +6,7 @@ use AA\IO\DB\DB_AA;
 use function _m;
 use const AA_BASE_DIR;
 
-/** Recreates the template view - discus **/
+/** Recreates the template view - discus */
 class RedefineViewDiscusTemplates extends \AA\Optimize\AbstractOptimize {
 
     /**  {@inheritdoc} Implementation of \AA\Util\NamedInterface */

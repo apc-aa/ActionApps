@@ -163,7 +163,7 @@ const DEBUG_MODE         = -1;
  * @access public
  *
  * @link http://www.unicode.org Unicode Homepage
- **/
+ */
 class ConvertCharset {
     var $Entities; // This value keeps information if output should be with numeric entities.
 
@@ -211,7 +211,7 @@ class ConvertCharset {
      * @param string $UnicodeString Input Unicode string (1 char can take more than 1 byte)
      * @return string This is an input string olso with unicode chars, bus saved as entities
      * @see HexToUtf()
-     **/
+     */
     function UnicodeEntity($UnicodeString) {
         $OutString  = "";
         $StringLenght = strlen($UnicodeString);
@@ -280,7 +280,7 @@ class ConvertCharset {
      * @param string $UtfCharInHex Hexadecimal value of a unicode char.
      * @return string Encoded hexadecimal value as a regular char.
      * @see UnicodeEntity()
-     **/
+     */
     function HexToUtf($UtfCharInHex) {
         $OutputChar = "";
         $UtfCharInDec = hexdec($UtfCharInHex);
@@ -327,14 +327,14 @@ class ConvertCharset {
      * @param string $FirstEncoding Name of first encoding and first encoding filename (thay have to be the same)
      * @param string $SecondEncoding Name of second encoding and second encoding filename (thay have to be the same). Optional for building a joined table.
      * @return array Table necessary to change one encoding to another.
-     **/
+     */
     function MakeConvertTable($FirstEncoding, $SecondEncoding = "") {
         $ConvertTable = [];
         for ($i = 0, $fmax=func_num_args(); $i < $fmax; $i++) {
             /**
             * Because func_*** can't be used inside of another function call
             * we have to save it as a separate value.
-            **/
+            */
             $FileName = func_get_arg($i);
             if (!is_file(CONVERT_TABLES_DIR . $FileName)) {
                 print $this->DebugOutput(0, 0, CONVERT_TABLES_DIR . $FileName); //Print an error message
@@ -345,23 +345,23 @@ class ConvertCharset {
                 /**
                 * We asume that line is not longer
                 * than 1024 which is the default value for fgets function
-                **/
+                */
                 if ($OneLine=trim(fgets($FileWithEncTabe))) {
                     /**
                     * We don't need all comment lines. I check only for "#" sign, because
                     * this is a way of making comments by unicode.org in thair encoding files
                     * and that's where the files are from :-)
-                    **/
+                    */
                     if (!str_starts_with($OneLine, "#")) {
                         /**
                         * Sometimes inside the charset file the hex walues are separated by
                         * "space" and sometimes by "tab", the below preg_split can also be used
                         * to split files where separator is a ",", "\r", "\n" and "\f"
-                        **/
+                        */
                         $HexValue = preg_split("/[\s,]+/", $OneLine, 3);  //We need only first 2 values
                         /**
                         * Sometimes char is UNDEFINED, or missing so we can't use it for convertion
-                        **/
+                        */
                         if (!str_starts_with($HexValue[1], "#")) {
                             $ArrayKey   = strtoupper(str_replace(strtolower("0x"), "", $HexValue[1]));
                             $ArrayValue = strtoupper(str_replace(strtolower("0x"), "", $HexValue[0]));
@@ -375,7 +375,7 @@ class ConvertCharset {
         * The last thing is to check if by any reason both encoding tables are not the same.
         * For example, it will happen when you save the encoding table file with a wrong name
         *  - of another charset.
-        **/
+        */
         if ((func_num_args() > 1) && (count($ConvertTable[$FirstEncoding]) === count($ConvertTable[$SecondEncoding])) && !count(array_diff_assoc($ConvertTable[$FirstEncoding], $ConvertTable[$SecondEncoding]))) {
             print $this->DebugOutput(1, 1, "$FirstEncoding, $SecondEncoding");
         }
@@ -415,7 +415,7 @@ class ConvertCharset {
      * @param boolean $TurnOnEntities Set to true or 1 if you want to use numeric entities instead of regular chars.
      * @return string Converted string in brand-new encoding :)
      * @version 1.1 BETA 2003-10-21 01:09
-     **/
+     */
     function Convert($StringToChange, $FromCharset = null, $ToCharset = null, $TurnOnEntities = false): string {
 
         $StringToChange = (string)$StringToChange; // it returned nonsence for 0 as int for iso-8859-1 to utf-8
@@ -428,7 +428,7 @@ class ConvertCharset {
             $ToCharset   = $this->to_charset;
         }
 
-        /** Check are there all variables **/
+        /** Check are there all variables */
         if ($StringToChange == "") {
             return "";
         }
@@ -439,20 +439,20 @@ class ConvertCharset {
             $ToCharset = 'utf-8';
         }
 
-        /** Now a few variables need to be set. **/
+        /** Now a few variables need to be set. */
         $NewString      = "";
         $this->Entities = $TurnOnEntities;
 
         /**
          * For all people who like to use uppercase for charset encoding names :)
-         **/
+         */
         $FromCharset = strtolower($FromCharset);
         $ToCharset   = strtolower($ToCharset);
 
         /**
          * Of course, you can make a conversion from one charset to the same one :)
          * but I feel obligate to let you know about it.
-         **/
+         */
         if ($FromCharset === $ToCharset) {
             return $StringToChange;
         }
@@ -501,14 +501,14 @@ class ConvertCharset {
          * encoding table to write proper entities.
          *
          * This is the first case. We are convertinf from 1byte chars...
-         **/
+         */
         if ($FromCharset !== "utf-8") {
 
             // Now build table with both charsets for encoding change.
             $CharsetTable = ($ToCharset !== "utf-8") ? $this->MakeConvertTable($FromCharset, $ToCharset) : $this->MakeConvertTable($FromCharset);
             /**
              * For each char in a string...
-             **/
+             */
             for ($i = 0, $fmax=strlen($StringToChange); $i < $fmax; $i++) {
 
                 $UnicodeHexChar = "";
@@ -556,7 +556,7 @@ class ConvertCharset {
                      * The letters are merge with "plus" sign, there can be more than two chars.
                      * In Mazowia we have 007A+0142, but sometimes it can look like this
                      * 0x007A+0x0142+0x2034 (that string means nothing, it just shows the possibility...)
-                     **/
+                     */
                     $UnicodeHexChars = explode("+",$UnicodeHexChar);
                     foreach ($UnicodeHexChars as $UnicodeHexCharElementValue) {
                         $NewString .= ($this->Entities == true) ? $this->UnicodeEntity($this->HexToUtf($UnicodeHexCharElementValue)) : $this->HexToUtf($UnicodeHexCharElementValue);
@@ -567,7 +567,7 @@ class ConvertCharset {
                 }
             }
         } else { // $FromCharset === "utf-8"
-            /** This is second case. We are encoding from multibyte char string.  **/
+            /** This is second case. We are encoding from multibyte char string. */
 
             $CharsetTable = $this->MakeConvertTable($ToCharset);
             foreach ($CharsetTable[$ToCharset] as $UnicodeHexChar => $HexChar) {
@@ -596,7 +596,7 @@ class ConvertCharset {
      * @param int $Number Following message number
      * @param mixed $Value This walue is whatever you want, usualy it's some parameter value, for better message understanding.
      * @return string String with a proper message.
-     **/
+     */
     function DebugOutput($Group, $Number, $Value = false) {
         //$Debug[$Group][$Number] = "Message, can by with $Value";
         //$Group[0] - Errors

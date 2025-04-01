@@ -5,7 +5,7 @@ namespace AA\Optimize;
 use AA\IO\DB\DB_AA;
 use function _m;
 
-/** Recreates the "ActionApps Core" constants (delete and insert). **/
+/** Recreates the "ActionApps Core" constants (delete and insert). */
 class RedefineCoreConstants extends \AA\Optimize\AbstractOptimize {
 
     /** Name function

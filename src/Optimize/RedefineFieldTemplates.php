@@ -36,7 +36,7 @@ use const ERROR_REPORTING_EMAIL;
 
 /** Recreates the "ActionApps Core" slice fields (delete and insert). The fields
  *  form the "ActionApps Core" slice is used as template fields for other slices
- **/
+ */
 class RedefineFieldTemplates extends \AA\Optimize\AbstractOptimize {
 
     /** Name function

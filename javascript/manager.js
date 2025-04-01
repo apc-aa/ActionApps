@@ -75,7 +75,7 @@ function GetItemsArrayString() {
     var itemsstring='';
     var delim='';
     for( var i=0; i<len; i++ ) {
-        if( (document.itemsform.elements[i].name.substring(0,3) == 'chb') &&
+        if( (document.itemsform.elements[i].name.substring(0,3) === 'chb') &&
              document.itemsform.elements[i].checked ) { // checkboxes
             itemsstring += delim + 'items' + document.itemsform.elements[i].name.substring(3);
             delim = '&';

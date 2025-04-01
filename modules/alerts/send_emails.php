@@ -51,7 +51,7 @@ function ShowCollectionAddOns() {
     }
 
     echo "<br><br>\n    <form name=\"example[form]\" method=\"post\">";
-    FrmTabCaption(_m('Send now an example alert email to email'),'',true) ;
+    FrmTabCaption(_m('Send now an example alert email to email'), [], true) ;
 
     if ($example["go"]) {
         $mail_count = send_emails($example["howoften"], [$collectionid],  [$example["email"]], false, "");
@@ -70,7 +70,7 @@ function ShowCollectionAddOns() {
     $reader_mails = $collection->getReadersSelectArray();
     asort($reader_mails);
 
-    FrmTabCaption(_m('Send now an example alert email to Reader'),'',true) ;
+    FrmTabCaption(_m('Send now an example alert email to Reader'), [], true) ;
     FrmInputSelect("example[reader]",_m('Reader'), $reader_mails, $example["reader"]);
     FrmInputSelect("example[howoftenr]", _m("as if"), get_howoften_options(), $example["howoftenr"]);
     FrmTabEnd(['example[goreader]' => ['type'=> 'submit', 'value'=>_m("Go!")]]);

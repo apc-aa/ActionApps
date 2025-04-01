@@ -29,7 +29,7 @@
 /** @param $slice_id   - long id of slice
  *  @param $sh_itm     - long id of item
  *  @param $return_url - where to go after hit OK button
- **/
+ */
 
 // const  AA_REGISTER_GLOBALS = true;
 use AA\Util\InputVars;

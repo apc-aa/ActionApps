@@ -9,7 +9,7 @@ use function _m;
  *  This script DELETES all the current tables (slice, item, ...) where we have
  *  bck_table and renames all backup tables (bck_slice, bck_item, ...) to right
  *  names (slice, item, ...).
- **/
+ */
 class DropBackupTables extends \AA\Optimize\AbstractOptimize {
 
     /** Name function

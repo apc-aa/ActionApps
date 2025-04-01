@@ -36,7 +36,7 @@ INCLUDE_AAJSLIB_COMMON
  * @param {HTMLElement|string} sel
  * @param {string} url
  * @param {object} options fetch parameters like {method: "POST", headers: {"X-Requested-With": "XMLHttpRequest"}}
- **/
+*/
 function AA_Load(sel, url, options = {}) {
     return fetch(url,options)
         .then(response => response.text())

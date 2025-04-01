@@ -488,7 +488,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
 
     /** will be called after saving of the object
      *  could do some cleanup work in child classes (like AA_Plannedtask)
-     **/
+     */
     function aftersave() {}
 
     public static function getPropertyObject($property_id): ?AA_Property

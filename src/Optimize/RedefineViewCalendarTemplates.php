@@ -4,7 +4,7 @@ namespace AA\Optimize;
 
 use function _m;
 
-/** Recreates the template view - calendar**/
+/** Recreates the template view - calendar */
 class RedefineViewCalendarTemplates extends \AA\Optimize\RedefineViewDiscusTemplates {
 
     public static function name(): string { return _m("Redefine calendar template view"); }

@@ -75,7 +75,8 @@ class Form extends AbstractGrabber {
      *  how to store the item.
      * @see also getStoreMode() method
      */
-    function getIdMode() {
+    public function getIdMode(): string
+    {
         return 'old';
     }
 
@@ -83,7 +84,8 @@ class Form extends AbstractGrabber {
      *  how to store the item.
      * @see also getIdMode() method
      */
-    function getStoreMode() {
+    public function getStoreMode(): string
+    {
         switch ($this->_last_store_mode) {
             case 'add':
                 return 'add';

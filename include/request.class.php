@@ -54,7 +54,7 @@ class AA_Http {
      *  @param bool   $sess_close - try to close session, if the session is set
      *                      we do not want to try it, when database connection
      *                      error occurs, for example
-     **/
+     */
     public static function go(string $url, array $parameters, string $type='GET', bool $sess_close=true) {
         global $sess;
 
@@ -228,7 +228,7 @@ class AA_Request {
 
     /** static member function called like:
      *     $request = AA_Request::decode($_POST['request']);
-     **/
+     */
     public static function decode(string $posted_data) {
         return unserialize($posted_data);
     }

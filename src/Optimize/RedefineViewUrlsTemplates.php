@@ -4,7 +4,7 @@ namespace AA\Optimize;
 
 use function _m;
 
-/** Recreates the template view - urls**/
+/** Recreates the template view - urls */
 class RedefineViewUrlsTemplates extends \AA\Optimize\RedefineViewDiscusTemplates {
 
     public static function name(): string { return _m("Redefine urls template view"); }

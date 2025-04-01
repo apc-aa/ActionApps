@@ -4,7 +4,7 @@ namespace AA\Optimize;
 
 use function _m;
 
-/** Recreates the template view - static**/
+/** Recreates the template view - static */
 class RedefineViewStaticTemplates extends \AA\Optimize\RedefineViewDiscusTemplates {
 
     public static function name(): string { return _m("Redefine static template view"); }

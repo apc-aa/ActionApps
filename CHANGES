@@ -401,7 +401,7 @@ The changes could be tracked on:
 18-11-07 - all AA admin pages converted to AA_Adminpageutil aproach
 (honzam) - better implementation of AA admin menu
          - AA UI improved - removed old links to documentation
-         - fixed multiple chckboxes weidget, when diplayes through {live} or {ajax} - the deselecting by click
+         - fixed multiple chckboxes weidget, when displayed through {live} or {ajax} - the deselecting by click
            on the tag now works as expected
          - better html entities escaping for display in HTML
          - fix - sitemodule marked as deleted now do not show any output
@@ -2935,15 +2935,15 @@ The changes could be tracked on:
            classes, now
          - fixed some problems with packed ids in search
          - class view converted to AA_View
-09-04-07 - new posibility to copy also Alerts Module in Central
+09-04-07 - new possibility to copy also Alerts Module in Central
 (honzam) - fixed back button for site manager  site manager inner links contain
-           module_id, so the back link works site modeles
+           module_id, so the back link works site modules
          - fixed Polls design setting - it did not work for some poll ids
 09-03-12 - discussions: do not accept comments for not existing items
 (honzam)   or the items which are in thrash or holding bin
          - new optimize script "Delete discussion comments for not existing
            items"
-         - diplayed more informations about item on AA -> AA Finder page
+         - displayed more information about item on AA -> AA Finder page
          - fix: discussion comments are deleted correctly if you delete
            the item (=empty the trash bin)
          - fixed {live:} for checkboxes - the field is set correctly to 0

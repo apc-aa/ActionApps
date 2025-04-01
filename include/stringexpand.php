@@ -247,7 +247,7 @@ class AA_Stringexpand_Colonescape extends AA_Stringexpand_Nevercachenotrim {
     }
 }
 
-/** include file, first parameter is filename, second is hints on where to find it **/
+/** include file, first parameter is filename, second is hints on where to find it */
 class AA_Stringexpand_Switch extends AA_Stringexpand_Nevercache {
 
     /** redefine parseParam - we can't use the standard function - there is problem with:
@@ -2569,7 +2569,7 @@ class AA_Stringexpand_Asciiname extends AA_Stringexpand_Nevercache {
 
 /** Encodes string for JSON - (quotes, newlines) ' => \', ... and converts to utf-8 if it is not
  * could be used also for <div onclick="SetText( {safe:{jsonstring:{_#FULLTEXT}}} );">
- **/
+ */
 class AA_Stringexpand_Jsonstring extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // No reason to cache this simple function
@@ -2648,48 +2648,48 @@ class AA_Stringexpand_Utfnormalize extends AA_Stringexpand_Nevercache {
 class AA_Stringexpand_Text2html extends AA_Stringexpand_Nevercachenotrim {
     /** Do not trim all parameters (maybe we can?) */
 
-    const TYPOGRAPH_NO_BREAK_LINE = [
+    private const TYPOGRAPH_NO_BREAK_LINE_CZ = [
         //one-letter prepositions
         ' a ' => ' a&nbsp;',
         '(a ' => '(a&nbsp;',
         ' A ' => ' A&nbsp;',
-        'A ' => 'A&nbsp;',
+     // 'A ' => 'A&nbsp;',
         '(A ' => '(A&nbsp;',
         ' i ' => ' i&nbsp;',
         '(i ' => '(i&nbsp;',
         ' I ' => ' I&nbsp;',
-        'I ' => 'I&nbsp;',
+     // 'I ' => 'I&nbsp;',
         '(I ' => '(I&nbsp;',
         ' o ' => ' o&nbsp;',
         '(o ' => '(o&nbsp;',
         ' O ' => ' O&nbsp;',
-        'O ' => 'O&nbsp;',
+     // 'O ' => 'O&nbsp;',
         '(O ' => '(O&nbsp;',
         ' u ' => ' u&nbsp;',
         '(u ' => '(u&nbsp;',
         ' U ' => ' U&nbsp;',
-        'U ' => 'U&nbsp;',
+     // 'U ' => 'U&nbsp;',
         '(U ' => '(U&nbsp;',
         ' s ' => ' s&nbsp;',
         '(s ' => '(s&nbsp;',
         ' S ' => ' S&nbsp;',
-        'S ' => 'S&nbsp;',
+     // 'S ' => 'S&nbsp;',
         '(S ' => '(S&nbsp;',
         ' z ' => ' z&nbsp;',
         '(z ' => '(z&nbsp;',
         ' Z ' => ' Z&nbsp;',
-        'Z ' => 'Z&nbsp;',
+     // 'Z ' => 'Z&nbsp;',
         '(Z ' => '(Z&nbsp;',
         ' k ' => ' k&nbsp;',
         '(k ' => '(k&nbsp;',
         ' K ' => ' K&nbsp;',
-        'K ' => 'K&nbsp;',
+     // 'K ' => 'K&nbsp;',
         '(K ' => '(K&nbsp;',
         ' v ' => ' v&nbsp;',
         '(v ' => '(v&nbsp;',
         '&nbsp;v ' => '&nbsp;v&nbsp;', //two prepositions can happen here
         ' V ' => ' V&nbsp;',
-        'V ' => 'V&nbsp;',
+     // 'V ' => 'V&nbsp;',
         '(V ' => '(V&nbsp;',
         //shortenings
         ' str. ' => ' str.&nbsp;',
@@ -2712,7 +2712,7 @@ class AA_Stringexpand_Text2html extends AA_Stringexpand_Nevercachenotrim {
         ' dm³' =>'&nbsp;dm³',
         ' mm³' =>'&nbsp;dm³',
         ' kg' =>'&nbsp;kg',
-        ' h' =>'&nbsp;h',
+     // ' h' =>'&nbsp;h',
         ' %' =>'&nbsp;%',
         ' °C' =>'&nbsp;°C',
         ' Kč' =>'&nbsp;Kč',
@@ -2767,8 +2767,37 @@ class AA_Stringexpand_Text2html extends AA_Stringexpand_Nevercachenotrim {
      * @param $text
      * @return string
      */
-    function expand($text='') {
-        return nl2br(str_replace('  ', ' &ensp;', self::htmlEscapeAndLinkUrls($text)));
+    function expand($text='', $type='') {
+        return match ($type) {
+            'CZHTML' => self::typography($text, 'CZ', true),
+            default => nl2br(str_replace('  ', ' &ensp;', self::htmlEscapeAndLinkUrls($text))),
+        };
+    }
+
+    public static function typography(string $text, string $type='', bool $html=false): string
+    {
+        $rules = self::TYPOGRAPH_NO_BREAK_LINE_CZ;
+        $rules_keys = array_keys($rules);
+        $rules_values = array_values($rules);
+        if (!$html) {
+            return strtr($text, $rules);
+        }
+        // Protect HTML tags by splitting them - works also on not-well formed HTML
+        $parts = preg_split('/(<[^>]+>)/', $text, -1, PREG_SPLIT_DELIM_CAPTURE);
+
+
+        foreach ($parts as $i => $part) {
+            // Modify only text outside HTML tags
+            if ($part !== '' AND $part[0] !== '<') {
+
+                // huhl($parts[$i], strtr($parts[$i], $rules));
+
+                $parts[$i] = str_replace($rules_keys, $rules_values, $part);
+                // $parts[$i] = strtr($parts[$i], $rules);
+            }
+        }
+
+        return implode('', $parts);
     }
 
     /**
@@ -2867,7 +2896,7 @@ class AA_Stringexpand_Text2html extends AA_Stringexpand_Nevercachenotrim {
 /** Converts the content of the field to html better than standard {text............} command would do
  *  (makes html links from urls...)Checks the text for urls and make it clickable
  */
-class AA_Stringexpand_Field2html extends AA_Stringexpand_Text2html {
+class AA_Stringexpand_Field2html extends AA_Stringexpand_Nevercachenotrim {
 
     /** additionalCacheParam function
      * @param array $params parameters passed to expand (caching could be parameter sensitive).
@@ -3205,7 +3234,7 @@ class AA_Stringexpand_Conds extends AA_Stringexpand_Nevercache {
  * trees works exactly the same way, as {itree}, but {itree} has more logical
  * parameter order (due to backward compatibility), so you are encouraged to use
  * {itree} - @see {itree} for more info on tree string representation.
- **/
+ */
 class AA_Stringexpand_Item extends AA_Stringexpand {
 
     /** Do not trim all parameters (at least the $delimiter parameter could contain space) */
@@ -3749,7 +3778,7 @@ class AA_Stringexpand_Oids extends AA_Stringexpand
  *     - _#AA_ID___ - {aa_id}
  *     - _#AA_OWNER - {aa_owner}
  *     - _#AA_OW_NM - {modulefield:{_#AA_OWNER}:name}
- **/
+ */
 class AA_Stringexpand_Oitem extends AA_Stringexpand {
 
     /** Do not trim all parameters (at least the $delimiter parameter could contain space) */
@@ -5080,7 +5109,7 @@ class AA_Stringexpand_Live extends AA_Stringexpand_Edit {
  *  {ajax::number..........:_#ANSWER__::sel:{"const_arr":{"0":"no","1":"yes"}}}
  *
  *  Editing could be switched off by defining the constant AA_FLAG_NOEDIT: {define:AA_FLAG_NOEDIT:1}
- **/
+ */
 class AA_Stringexpand_Ajax extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // It works with database, so it should always look in the database
@@ -5466,7 +5495,7 @@ class AA_Stringexpand_Updateitem extends AA_Stringexpand_Newitem {
  *  Usage:
  *         {modulefield:2e637469436961532d65732e332e446a:charset}
  *         {modulefield:{_#SLICE_ID}:url}
- **/
+ */
 class AA_Stringexpand_Modulefield extends AA_Stringexpand {
     /** expand function
      * @param $property
@@ -5496,7 +5525,7 @@ class AA_Stringexpand_Modulefield extends AA_Stringexpand {
  *  (currently only "modules" - dash separated list of slices in the site)
  *  I use it for example for computing of seo name:
  *  {ifset:{seo.............}:_#1:{seoname:{_#HEADLINE}:{site:{modulefield:{_#SLICE_ID}:site_ids}:modules}}}
- **/
+ */
 class AA_Stringexpand_Site extends AA_Stringexpand {
     /** expand function
      * @param $property
@@ -5512,7 +5541,7 @@ class AA_Stringexpand_Site extends AA_Stringexpand {
 
 /** Get html code of the site's spot with specified ID
  *  {sitespot:8}
- **/
+ */
 class AA_Stringexpand_Sitespot extends AA_Stringexpand {
 
     /** expand function
@@ -6063,7 +6092,7 @@ function expandFilenameWithHttp($parturl, string $type='', array $headers=[], $d
 
 /** Get $_SERVER[<variable>] value
  *   {server:REMOTE_ADDR}, {server:SERVER_NAME}, {server:HTTP_HOST}, {server:REFERER},...
- **/
+ */
 class AA_Stringexpand_Server extends AA_Stringexpand_Nevercache {
     /** expand function
      * @param $variable
@@ -7904,7 +7933,7 @@ class AA_Stringexpand_Gethostbyaddr extends AA_Stringexpand {
 
 /** Prints version of AA as full-string, AA version (2.11.0), or svn revision (2368)
  *  {version[:aa|svn|svn2]}
- **/
+ */
 class AA_Stringexpand_Version extends AA_Stringexpand_Nevercachenotrim {
 
     /** @param string $string full|svn|svn2|aa */
@@ -8335,7 +8364,7 @@ class AA_Stringexpand_Hitcounter extends AA_Stringexpand {
  *  {avatar:<img_url>:[<person_name>]:[<avatar-size>]}
  *  Usage:
  *     <div class="dis-avatar">{avatar:{img_url.........}:{_#HEADLINE}}</div>
- **/
+ */
 class AA_Stringexpand_Avatar extends AA_Stringexpand {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // No reason to cache this simple function
@@ -8377,7 +8406,7 @@ class AA_Stringexpand_Avatar extends AA_Stringexpand {
  *
  *  for phpThumb params see http://phpthumb.sourceforge.net/demo/demo/phpThumb.demo.demo.php
  *  (phpThumb library is the part of AA)
- **/
+ */
 class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // No reason to cache this simple function
@@ -8496,7 +8525,7 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
  *
  *  for phpThumb params see http://phpthumb.sourceforge.net/demo/demo/phpThumb.demo.demo.php
  *  (phpThumb library is the part of AA)
- **/
+ */
 class AA_Stringexpand_Imgtext extends AA_Stringexpand_Nevercachenotrim {
 
     /** expand function
@@ -8549,7 +8578,7 @@ class AA_Stringexpand_Imgtext extends AA_Stringexpand_Nevercachenotrim {
  *  @param $size - size of the image in pixels (default 300)
  *  @param $margin - margin (default 2)
  *  @returns string base64 encoded image (empty one on error))
- **/
+ */
 class AA_Stringexpand_Qrcode extends AA_Stringexpand {
     function expand($text='', $size='', $margin='') {
         if (!trim($text)) {
@@ -8580,7 +8609,7 @@ class AA_Stringexpand_Qrcode extends AA_Stringexpand {
  *  @param $due_date - due date - YYYY-MM-DD
  *  @param $specific_symbol - specific symbol - 1-10 digits
  *  @param $recipient_name - recipient name - 1-35 alphanumeric characters
- **/
+ */
 class AA_Stringexpand_Qrpay extends AA_Stringexpand {
     function expand($account='', $amount='', $currency='', $reference_number='', $message='', $due_date='', $specific_symbol='', $recipient_name='') {
         if (!$account OR !$amount) {
@@ -8605,7 +8634,7 @@ class AA_Stringexpand_Qrpay extends AA_Stringexpand {
  *     {fileinfo:{file............}:size}  - returns size of the file
  *
  *  @author Adam Sanchez, Honza Malík
- **/
+ */
 class AA_Stringexpand_Fileinfo extends AA_Stringexpand {
 
     /**
@@ -8698,7 +8727,7 @@ class AA_Stringexpand_Fileinfo extends AA_Stringexpand {
  *  Usage:
  *     {filelink:{file............}:{text............}:Download#: }
  *     returns: <a href="http://..." title="Document [PDF - 157 kB]">Document</a> [PDF - 157 kB]
- **/
+ */
 class AA_Stringexpand_Filelink extends AA_Stringexpand {
     /** Do not trim all parameters ($text_before could have space at the end) */
     static function doTrimParams() { return false; }

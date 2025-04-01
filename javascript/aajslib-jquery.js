@@ -81,7 +81,7 @@ function AA_AjaxInsert(a_obj, form_url) {
  *  Usage:
  *     FrmSelectEasy('from_slice', $slice_array, $from_slice, 'onchange="DisplayAaResponse(\'fieldselection\', \'Get_Fields\', {slice_id:this.value})"');
  *     echo '<div id="fieldselection"></div>';
- **/
+ */
 function DisplayAaResponse(div_id, method, params) {
     AA_AjaxCss('#'+CSS.escape(div_id), AA_GetConf('path') + 'central/responder.php?command='+ method, params);
 }
@@ -405,7 +405,7 @@ function displayInput(valdivid, item_id, fid, widget_type, widget_properties, co
  * @param {HTMLElement|string} sel
  * @param {string} url
  * @param {object} options fetch parameters like {method: "POST", headers: {"X-Requested-With": "XMLHttpRequest"}}
- **/
+*/
 function AA_Load(sel, url, options = {}) {
     return fetch(url,options)
         .then(response => response.text())

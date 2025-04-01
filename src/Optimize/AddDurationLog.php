@@ -8,7 +8,7 @@ use function _m;
 
 /** Add column to hit_archive table which will store duration/cache/not_modified records for the hit
  * Optional AA feature
- **/
+ */
 class AddDurationLog extends \AA\Optimize\AbstractOptimize {
 
     /** Name function

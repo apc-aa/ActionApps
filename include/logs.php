@@ -100,7 +100,7 @@ class AA_Log implements \AA\Expand\InternalExpandInterface {
     }
 
     /** Is the event logable?
-     **/
+     */
     static function isLogable($event_type): bool
     {
         /** By $DO_NOT_LOG array you are able to specify, which events you don't want

@@ -55,41 +55,49 @@ class Saver implements AA\Later\LaterInterface {
     protected $slice_id;
 
     /** store-policy - how to store - by_grabber | update | update_silent | update/insert | add | overwrite | insert_as_new | insert_new | insert | insert_if_new */
-    protected $store_mode;
+    protected string $store_mode;
 
     /** id-policy    - how to construct id - old | new | combined | ["<field_id.......1>",...] */
-    protected $id_mode;
+    protected string $id_mode;
 
     /** how to deal with errors LOG | STRICT */
-    protected $error_mode;
+    protected string $error_mode;
 
-    /** {aa-expression} - expression to validate the inserted item - if set, all rows must begin with '1' or contain just white characters for storing the item
-     *
-     * @var array
+    /** [{aa-expression},..] - expression to validate the inserted item - if set, all rows must begin with '1' or contain just white characters for storing the item
      */
-    private $validate = [];
+    private array $validate = [];
+
+    /** [{aa-expression},..] - expression to compute - if set, all rows are evaluated (unaliased) - could by used with $fire=false to test inserted data  */
+    private array $compute = [];
+
+    /** key for compute array - probably like {id}, ...   */
+    private ?string $compute_key = null;
+
+    /** [key=>[aa-expression-result,..],..] - computed expressions (with computed keys) for all items */
+    private array $compute_results = [];
 
     /** array of newly inserted ids (after run()) - the long ones */
-    private $_new_ids = [];
+    private array $_new_ids = [];
 
     /** array of ids of rewritten items (after run()) - the long ones */
-    private $_updated_ids = [];
+    private array $_updated_ids = [];
 
     /** array of slice ids with rewritten items (after run()) - the long ones */
-    private $_updated_slices = [];
+    private array $_updated_slices = [];
 
     // protected $_messages = [];
 
 
     /** AA\IO\Saver function
-     * @param \AA\IO\Grabber\AbstractGrabber $grabber
-     * @param AA_Transformation[]            $transformations
-     * @param string                         $slice_id
-     * @param string                         $store_mode          @see  Saver::$store_mode
-     * @param string                         $id_mode
-     * @param string                         $error_mode
+     *
+     * @param \AA\IO\Grabber\AbstractGrabber  $grabber
+     * @param AA_Transformation[]             $transformations
+     * @param string                          $slice_id
+     * @param  string                         $store_mode  @see  Saver::$store_mode
+     * @param  string                         $id_mode
+     * @param  string                         $error_mode
      */
-    function __construct(AA\IO\Grabber\AbstractGrabber $grabber, $transformations = null, $slice_id = null, $store_mode = '', $id_mode = '', $error_mode = '') {
+    function __construct(AA\IO\Grabber\AbstractGrabber $grabber, $transformations=null, $slice_id=null, string $store_mode='', string $id_mode='', string $error_mode='') {
         $this->grabber         = $grabber;
         $this->transformations = is_array($transformations) ? $transformations : [];
         $this->slice_id        = $slice_id;
@@ -107,11 +115,13 @@ class Saver implements AA\Later\LaterInterface {
 
     /** run function
      * Now import all items to the slice
-     * @param bool $fire
+     *
+     * @param  bool  $fire
+     *
      * @return int[] count of [changed,error] items
      */
-    function run($fire = true) {
-
+    public function run(bool $fire = true): array
+    {
         try {
             $this->grabber->prepare();    // maybe some initialization in grabber
         } catch (\Exception $e) {
@@ -189,7 +199,7 @@ class Saver implements AA\Later\LaterInterface {
                         $set = new AA_Set([$this->slice_id]);
                         foreach ($flds as $fld) {
                             $condval = $content4id->getValue($fld);
-                            if (!strlen(trim($condval))) {
+                            if (trim($condval) === '') {
                                 $err_count++;
                                 $this->message(['err' =>"AA\IO\Saver->run(): key condition empty for $fld"]);
                                 continue 3; // another item
@@ -232,7 +242,9 @@ class Saver implements AA\Later\LaterInterface {
 
             AA::$slice_id = $content4id->getSliceID();   // pass validator the current slice of added item for slice unique
 
-            if ($this->validate AND ($err_arr = $this->test_validate($content4id))) {
+            $item = ($this->compute OR $this->validate) ? new \AA_Item($content4id) : null;
+
+            if ($this->validate AND ($err_arr = $this->test_validate($item))) {
                 $err_count++;
                 $this->message(['err' =>"AA\IO\Saver->run(): validate failed: ". implode("\n", $err_arr)]);
                 continue;
@@ -250,6 +262,12 @@ class Saver implements AA\Later\LaterInterface {
                     $this->message(['err' =>"AA\IO\Saver->run(): validate4Update failed: " . ItemContent::lastErrMsg()]);
                     continue;
                 }
+            }
+
+            if ($this->compute) {
+                is_null($this->compute_key)
+                    ? $this->compute_results[] = $this->compute_arr($this->compute, $item)
+                    : $this->compute_results[trim(AA::Un($this->compute_key, '', $item))] = $this->compute_arr($this->compute, $item);
             }
 
             $this->_updated_slices[$content4id->getOwnerId()] = true;
@@ -293,18 +311,17 @@ class Saver implements AA\Later\LaterInterface {
     }
 
     /** Checks if the item is valid based on custom validate string
-     * @param $content4id
+     * @param  \AA_Item|null  $item
      * @return array array of error strings (empty array [] on success
      */
-    protected function test_validate($content4id): array {
+    protected function test_validate(?\AA_Item $item): array {
         $err_array    = [];
-        $item = new \AA_Item($content4id);
-        foreach ($this->validate as $test) {
-            $validate_str = trim(AA::Un($test, '', $item));
+        $unaliased = $this->compute_arr($this->validate, $item);
+        foreach ($unaliased as $validate_str) {
             $array        = preg_split("/\R/", $validate_str);
             foreach ($array as $row) {
                 $row = trim($row);
-                if ($row AND ($row[0] != '1')) {
+                if ($row AND ($row[0] !== '1')) {
                     $err_array[] = $row;
                 }
             }
@@ -312,21 +329,30 @@ class Saver implements AA\Later\LaterInterface {
         return $err_array;
     }
 
+    /** unalias all the strings in the array - used in validate and compute */
+    private function compute_arr(array $arr, ?\AA_Item $item): array {
+        return array_map(static fn($exp) => trim(AA::Un($exp, '', $item)), $arr);
+    }
+
     /** Returns array of long new saved ids */
-    function newIds() {
+    public function newIds(): array
+    {
         return $this->_new_ids;
     }
 
     /** Returns array of long updated ids */
-    function updatedIds() {
+    public function updatedIds(): array
+    {
         return $this->_updated_ids;
     }
 
-    function changedIds() {
+    public function changedIds(): array
+    {
         return array_merge($this->_new_ids, $this->_updated_ids);
     }
 
-    function changedModules() {
+    public function changedModules(): array
+    {
         return array_keys($this->_updated_slices);
     }
 
@@ -363,5 +389,23 @@ class Saver implements AA\Later\LaterInterface {
     public function addValidate(string $validate): Saver {
         $this->validate[] = $validate;
         return $this;
+    }
+
+    /**
+     * @param  array        $texts
+     * @param  string|null  $key
+     *
+     * @return Saver
+     */
+    public function setCompute(array $texts, ?string $key=null): Saver {
+        $this->compute     = $texts;
+        $this->compute_key = $key;
+        return $this;
+    }
+
+    /** Returns result of computes */
+    public function getComputeResults(): array
+    {
+        return $this->compute_results;
     }
 }

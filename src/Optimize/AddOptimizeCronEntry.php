@@ -5,7 +5,7 @@ namespace AA\Optimize;
 use AA\IO\DB\DB_AA;
 use function _m;
 
-/** Adds cron entry for Database Optimalization into AA cron **/
+/** Adds cron entry for Database Optimalization into AA cron */
 class AddOptimizeCronEntry extends \AA\Optimize\AbstractOptimize {
 
     /**  {@inheritdoc} Implementation of \AA\Util\NamedInterface */

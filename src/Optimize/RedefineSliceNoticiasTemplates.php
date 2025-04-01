@@ -6,7 +6,7 @@ use AA\IO\DB\DB_AA;
 use function _m;
 use const AA_BASE_DIR;
 
-/** Recreates the template (example) slice - Noticas - ES **/
+/** Recreates the template (example) slice - Noticas - ES */
 class RedefineSliceNoticiasTemplates extends \AA\Optimize\AbstractOptimize {
 
     /** Name function

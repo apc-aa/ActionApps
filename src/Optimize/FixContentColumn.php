@@ -10,7 +10,7 @@ use function quote;
 
 /** Set flag FLAG_TEXT_STORED for all content, where field is marked as text
  *  field, and reset it for numer fields
- **/
+ */
 class FixContentColumn extends AbstractOptimize {
 
     /** Name function

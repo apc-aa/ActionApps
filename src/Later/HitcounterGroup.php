@@ -12,7 +12,7 @@ use CVarset;
  *  hit_1..., ... field statistics as well as for item display statistics.
  *  On the other hand the amount of data is huge, so we group the hit count for
  *  item on day basis (for older hits)
- **/
+ */
 class HitcounterGroup implements LaterInterface
 {
     /** @var bool|null caches if we use duration logging for speedup */

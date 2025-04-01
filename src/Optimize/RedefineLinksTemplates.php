@@ -7,7 +7,7 @@ use AA\IO\DB\DB_AA;
 use function _m;
 use function unpack_id;
 
-/** Recreates the default Links module template **/
+/** Recreates the default Links module template */
 class RedefineLinksTemplates extends \AA\Optimize\AbstractOptimize {
 
     /**  {@inheritdoc} Implementation of \AA\Util\NamedInterface */

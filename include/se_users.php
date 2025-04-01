@@ -107,7 +107,7 @@ function AddUserForm(string $usr, string $grp, bool $GrpSrch, bool $UsrSrch, $ed
     ];
 
     echo '<form method="post" action="' . StateUrl() . '">';
-    echo getFrmTabCaption(_m("Search user or group"), '', 'data-aa-class=clasic');
+    echo getFrmTabCaption(_m("Search user or group"), [], ['data-aa-class' => 'clasic']);
     echo '
     <tr>
         <th width="30%">' . _m("Users") . '</th>

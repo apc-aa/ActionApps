@@ -85,81 +85,109 @@ if (!IsSuperadmin()) {
 }
 // ----------------------------------------------------------------------------------------
 
+class AA_Adminlink {
 
-function AafinderFieldLink($field_id, $slice_id, $db_fld=''): string {
-    if ($fld = AA_Field::factoryFromDb($field_id, $slice_id)) {
-        $txt = $fld->linkToField("$field_id - ". $fld->getName());
-        if (str_starts_with($db_fld,'alias') AND DB_AA::test('field',[['slice_id', $slice_id, 'l'], ['id', $field_id], [substr($db_fld,0,6), 'X', 'BEGIN']]) ) {
-            $txt = "<s title=\""._m('disabled')."\">$txt</s>";
+    public static function fieldLink($field_id, $slice_id, $db_fld = ''): string
+    {
+        if ($fld = AA_Field::factoryFromDb($field_id, $slice_id)) {
+            $txt = $fld->linkToField("$field_id - ".$fld->getName());
+            if (str_starts_with($db_fld, 'alias') and DB_AA::test('field', [['slice_id', $slice_id, 'l'], ['id', $field_id], [substr($db_fld, 0, 6), 'X', 'BEGIN']])) {
+                $txt = "<s title=\""._m('disabled')."\">$txt</s>";
+            }
+            return $txt;
         }
-        return $txt;
+        return '';
     }
-    return '';
-}
 
-function AdminLink($table, $fld, $row): string {
-    return match ($table) {
-        'content', 'discussion', 'item'                 => AafinderItemLink($row['iid'], $row['sid'], true),
-        'view'                                          => AafinderViewLink($row['iid']),
-        'slice', 'module', 'site', 'polls'              => AafinderModuleeLink($row['iid']),
-        'field'                                         => AafinderFieldLink($row['iid'], $row['sid'], $fld),
-        'site_spot'                                     => AafinderSiteLink($row['iid'], $row['sid']),
-        'object_text', 'object_integer', 'object_float' => AafinderObjectLink($row['iid']),
-        default => '',
-    };
-}
-
-function AafinderObjectLink($object_id): string {
-    if ($obj = AA_Object::load($object_id)) {
-        $name = ($obj->getName()==$obj->getProperty('alias')) ? $obj->getName() : $obj->getName(). ' ('. $obj->getProperty('alias').')';
-        $url = $obj->getAdminUrl();
-        return ($url ? a_href($url, $name) : $name). ' ('. $obj->getObjectType(). ' - '. AA_Slice::getModuleName($obj->getOwnerId()) .') &nbsp; '. ChangesMonitor::getHistoryLink($object_id);
+    public static function linkByTable($table, $fld, $row): string
+    {
+        return match ($table) {
+            'content', 'discussion', 'item' => self::itemLink($row['iid'], $row['sid'], true),
+            'view' => self::viewLink($row['iid']),
+            'slice', 'module', 'site', 'polls' => self::moduleLink($row['iid']),
+            'field' => self::fieldLink($row['iid'], $row['sid'], $fld),
+            'site_spot' => self::siteLink($row['iid'], $row['sid']),
+            'object_text', 'object_integer', 'object_float' => self::objectLink($row['iid']),
+            default => '',
+        };
     }
-    return '';
-}
 
-function AafinderItemLink($item_id, $slice_id='', $no_module_link=false): string {
-    $item = AA_Items::getItem(new zids($item_id, 'l'));
-    if (!$slice_id) {
-        if ($item) {
-            $slice_id = $item->getSliceID();
+    public static function objectLink($object_id): string
+    {
+        if ($obj = AA_Object::load($object_id)) {
+            $name = ($obj->getName() === $obj->getProperty('alias')) ? $obj->getName() : $obj->getName().' ('.$obj->getProperty('alias').')';
+            $url  = $obj->getAdminUrl();
+            return ($url ? a_href($url, $name) : $name).' ('.$obj->getObjectType().' - '.AA_Slice::getModuleName($obj->getOwnerId()).') &nbsp; '.ChangesMonitor::getHistoryLink($object_id);
+        }
+        return '';
+    }
+
+    public static function moduleLink($module_id): string
+    {
+        return AA_Module::getModuleName($module_id, true)." ($module_id) &nbsp; ".ChangesMonitor::getHistoryLink($module_id);
+    }
+
+    public static function siteLink($spot_id, $module_id): string
+    {
+        if (($module = AA_Module_Site::getModule($module_id)) and ($tree = $module->getTree())) {
+            $spot_code = ($tree->get('flag', $spot_id) & AA_Module_Site::FLAG_DISABLE) ? "<s>$spot_id</s>" : "<b>$spot_id</b>";
         } else {
-            return '';
+            $spot_code = "??? $spot_id";
         }
-    }
-    $seo = $item->getValue('seo.............') ?: 'Item';
-    $hdln = current(AA_Items::getFormatted(new zids($item_id, 'l'), '_#HEADLINE', AA_BIN_ALL));  // we want also headline of items in trash
-
-    if (!$item->isActive()) {
-        $seo = "<s>$seo</s>";
+        return a_href(get_aa_url("modules/site/index.php", ['slice_id' => $module_id, 'module_id' => $module_id, 'spot_id' => $spot_id, 'go_sid' => $spot_id]), $spot_code).' &nbsp; '
+            .ChangesMonitor::getHistoryLink("S.$spot_id");
     }
 
-    $info = [];
-    $info[] = a_href(get_admin_url('itemedit.php',['id'=>$item_id,'change_id'=>$slice_id,'edit'=>1]), "$seo ($item_id) '$hdln'");
-    if (!$no_module_link) {
-        $info[] = AA_Slice::getModuleName($slice_id, true);
+    public static function viewLink($view_id): string
+    {
+        $view = AA_Views::getViewNumeric($view_id);
+        return $view->jumpLink(true).' &nbsp; '.ChangesMonitor::getHistoryLink("V.$view_id");
     }
-    $info[] = ChangesMonitor::getHistoryLink($item_id);
-    $info[] = a_href(get_admin_url('se_statistics.php', ['change_id'=>$slice_id, 'items'=>$item_id]), _m('Statistics'));
-    return implode(' | ', $info);
-}
 
-function AafinderModuleeLink($module_id): string {
-    return AA_Module::getModuleName($module_id, true). " ($module_id) &nbsp; ". ChangesMonitor::getHistoryLink($module_id);
-}
+    /** Prints link to Item with many details for Superuser in AA Admin interface */
+    public static function itemLink($item_id, $slice_id = '', $no_module_link = false): string
+    {
+        $item = AA_Items::getItem(new zids($item_id, 'l'));
+        if (!$slice_id) {
+            if ($item) {
+                $slice_id = $item->getSliceID();
+            } else {
+                return '';
+            }
+        }
+        $seo  = $item->getValue('seo.............') ?: 'Item';
+        $hdln = current(AA_Items::getFormatted(new zids($item_id, 'l'), '_#HEADLINE', AA_BIN_ALL));  // we want also headline of items in trash
+        $hdln = ($hdln and $hdln !== '_#HEADLINE') ? " ($hdln)" : '';
 
-function AafinderSiteLink($spot_id, $module_id): string {
-    if ( ($module = AA_Module_Site::getModule($module_id)) AND ($tree = $module->getTree()) ) {
-        $spot_code =  ($tree->get('flag', $spot_id) & AA_Module_Site::FLAG_DISABLE) ? "<s>$spot_id</s>" : "<b>$spot_id</b>";
-    } else {
-        $spot_code = "??? $spot_id";
+        if (!$item->isActive()) {
+            $seo = "<s>$seo</s>";
+        }
+
+        $info   = [];
+        $info[] = a_href(get_admin_url('itemedit.php', ['id' => $item_id, 'change_id' => $slice_id, 'edit' => 1]), "$seo$hdln");
+        if (!$no_module_link) {
+            $info[] = AA_Slice::getModuleName($slice_id, true);
+        }
+        $info[] = ChangesMonitor::getHistoryLink($item_id);
+        $info[] = a_href(get_admin_url('se_statistics.php', ['change_id' => $slice_id, 'items' => $item_id]), _m('Statistics'));
+        return $item_id. self::additionalInfo($info);
     }
-        return a_href(get_aa_url("modules/site/index.php", ['slice_id'=>$module_id, 'module_id'=>$module_id, 'spot_id'=>$spot_id, 'go_sid'=>$spot_id]), $spot_code).' &nbsp; '. ChangesMonitor::getHistoryLink("S.$spot_id");
-}
 
-function AafinderViewLink($view_id): string {
-    $view = AA_Views::getViewNumeric($view_id);
-    return $view->jumpLink(true).' &nbsp; '. ChangesMonitor::getHistoryLink("V.$view_id");
+    public static function richValue(mixed $value): string
+    {
+        if (is_long_id($value)) {
+            return self::itemLink($value);
+        }
+        if ((int)$value >=883609200 AND (int)$value <= 2208985200) {   // 1998 - 2040
+            return $value.self::additionalInfo([date("Y-m-d H:i", (int)$value)]);
+        }
+        return safe($value);
+    }
+
+    public static function additionalInfo(array $texts): string
+    {
+        return "<br><small>".implode(' | ', $texts)."</small>";
+    }
 }
 
 function query_search(array $where, string $phrase): string {
@@ -173,7 +201,7 @@ function query_search(array $where, string $phrase): string {
 
     $items = [[_m('Item'), 'short_id', 'status_code', 'publish_date', 'last_edit', 'edited_by']];
     foreach ($arr as $f) {
-        $items[]    = [AafinderItemLink($f['iid'], $f['slice_id']), $f['short_id'], $f['status_code'], date('Y-m-d H:i', (int)$f['post_date']), date('Y-m-d H:i',(int)$f['last_edit']),$f['edited_by']];
+        $items[]    = [AA_Adminlink::itemLink($f['iid'], $f['slice_id']), $f['short_id'], $f['status_code'], date('Y-m-d H:i', (int)$f['post_date']), date('Y-m-d H:i',(int)$f['last_edit']), $f['edited_by']];
     }
 
     return $output. GetHtmlTable($items, 'th'). '<br><br>';
@@ -184,7 +212,7 @@ function PrintIdsInfo($l_or_s_id) {
     if (is_short_id($l_or_s_id)) {
         if (DB_AA::test('view', [['id', $l_or_s_id, 'i']])) {
             echo '<h3>View</h3><pre>';
-            echo AafinderViewLink($l_or_s_id) . "<br>";
+            echo AA_Adminlink::viewLink($l_or_s_id). "<br>";
             echo "</pre>";
         }
         return;
@@ -195,18 +223,18 @@ function PrintIdsInfo($l_or_s_id) {
 
     if (DB_AA::test('slice', [['id', $l_or_s_id, 'l']])) {
         echo '<h3>'. _m('Slice') .'</h3><pre>';
-        echo AafinderModuleeLink($l_or_s_id). "<br>";
+        echo AA_Adminlink::moduleLink($l_or_s_id). "<br>";
         echo "</pre>";
     } elseif (DB_AA::test('module', [['id', $l_or_s_id, 'l']])) {
         echo '<h3>'. _m('Module') .'</h3><pre>';
-        echo AafinderModuleeLink($l_or_s_id). "<br>";
+        echo AA_Adminlink::moduleLink($l_or_s_id). "<br>";
         echo "</pre>";
     }
     if ($rec = DB_AA::select([], 'SELECT * FROM `object_text`', [['object_id', $l_or_s_id]])) {
         echo '<h3>'. _m('Object') .'</h3>';
-        echo GetHtmlTable($rec, 'key', _m('Object'), false, 'td');
-        echo GetHtmlTable(DB_AA::select([], 'SELECT * FROM `object_integer`', [['object_id', $l_or_s_id]]), 'key', _m('Object'), false, 'td');
-        echo GetHtmlTable(DB_AA::select([], 'SELECT * FROM `object_float`', [['object_id', $l_or_s_id]]), 'key', _m('Object'), false, 'td');
+        echo GetHtmlTable($rec, 'key', _m('Object'), 'td');
+        echo GetHtmlTable(DB_AA::select([], 'SELECT * FROM `object_integer`', [['object_id', $l_or_s_id]]), 'key', _m('Object'), 'td');
+        echo GetHtmlTable(DB_AA::select([], 'SELECT * FROM `object_float`', [['object_id', $l_or_s_id]]), 'key', _m('Object'), 'td');
     }
     if ($res = DB_AA::select([], 'SELECT `id`, FROM_UNIXTIME(`time`) as Date, `user`, `type`, `selector`, `params` FROM `log`', [['selector', $l_or_s_id, 'RLIKE']])) {
         echo GetHtmlTable($res, 'key', _m('Log'));
@@ -223,11 +251,9 @@ function PrintItemInfo($item_id) {
     }
     $long_id = $item->getItemID();
     $sid     = $item->getSliceID();
-    echo "<br>Item ID: ".AafinderItemLink($long_id,$sid);
-    $format = '_#HEADLINE';
-    echo "<br>_#HEADLINE: ". $item->unalias($format);
-    echo "<br>Fed to: ".     implode(', ', WhereFed($item->getItemID()));
-    echo "<br>Fed from: ".   implode(', ', FromFed($item->getItemID()));
+    echo "<br>Item ID: ".AA_Adminlink::itemLink($long_id, $sid);
+    if ($arr = WhereFed($item->getItemID())) { echo "<br>Fed to: ".   implode(', ', $arr); }
+    if ($arr = FromFed($item->getItemID()))  { echo "<br>Fed from: ". implode(', ', $arr); }
 
     $long_id = $zid->longids(0);
     if ($long_id) {
@@ -272,11 +298,7 @@ function PrintItemInfo($item_id) {
             array_walk($res, static function (&$v, $k) {
                 if (is_long_id($iid = $v['Item'])) {
                     $item = AA_Items::getItem(new zids($iid, 'l'));
-                    $v['Item'] = AafinderItemLink($iid, $item->getSliceID());
-                    $hdln = current(AA_Items::getFormatted(new zids($iid, 'l'), '_#HEADLINE', AA_BIN_ALL));  // we want also headline of items in trash
-                    if ($hdln) {
-                        $v['Item'] .= "<br><small>($hdln)</small>";
-                    }
+                    $v['Item'] = AA_Adminlink::itemLink($iid, $item->getSliceID());
                     $v['Status'] = $item->getStatusCode();
                     $v['PubDate'] = date('j.n.Y H:i:s', (int)$item->getval('publish_date....'));
                     $v['ExpDate'] = date('j.n.Y H:i:s', (int)$item->getval('expiry_date.....'));
@@ -381,7 +403,7 @@ if (strlen($findtext)) {
         $db->query($SQL);
         echo "<b>views</b> <small>(".$db->num_rows()." matching found)</small><br>";
         while ($db->next_record()) {
-            echo AafinderViewLink($db->f("id")). "<br>\n";
+            echo AA_Adminlink::viewLink($db->f("id")). "<br>\n";
         }
         echo '<br><br>';
     }
@@ -461,7 +483,7 @@ if (strlen($findtext)) {
         $db->query($SQL);
         echo "<b>fields</b> <small>(".$db->num_rows()." matching found)</small><br>";
         while ($db->next_record()) {
-            echo $db->f("name")." ".AafinderFieldLink($db->f("id"), unpack_id($db->f("slice_id"))). "<br>";
+            echo $db->f("name")." ".AA_Adminlink::fieldLink($db->f("id"), unpack_id($db->f("slice_id"))). "<br>";
         }
         echo '<br><br>';
     }
@@ -481,7 +503,7 @@ if (strlen($findtext)) {
         $db->query($SQL);
         echo "<b>site spots</b> <small>(".$db->num_rows()." matching found)</small><br>";
         while ($db->next_record()) {
-            echo AafinderSiteLink($db->f("spot_id"), unpack_id($db->f("site_id"))). "<br>";
+            echo AA_Adminlink::siteLink($db->f("spot_id"), unpack_id($db->f("site_id"))). "<br>";
         }
         echo '<br><br>';
 
@@ -532,7 +554,7 @@ if (strlen($findtext)) {
             $print['slice_id'] = unpack_id($print['slice_id']);
             $print['id'] = unpack_id($print['id']);
             $print['parent']  = unpack_id($print['parent']);
-            $print['item_id'] = AafinderItemLink(unpack_id($print['item_id']), $print['slice_id']);
+            $print['item_id'] = AA_Adminlink::itemLink(unpack_id($print['item_id']), $print['slice_id']);
             $print['date'] = date('Y-m-d H:i:s', (int)$print['date']);
             echo '<tr><td>'. implode('</td><td>', $print).'</td></tr>';
         }
@@ -645,7 +667,7 @@ if ( strlen($go_search) OR strlen($go_replace) ) {
                             }
                         }
                         $code = str_replace('AA_$@MArK%', '<span style="background-color:#DDD">', safe($code)) . '</span>';
-                        $row[0] = "<small>" . AdminLink($tbl, $fld, $t) . "</small>";
+                        $row[0] = "<small>" .AA_Adminlink::linkByTable($tbl, $fld, $t). "</small>";
                         $row[1] = "<small>". AA_Module::getModuleName($t['sid'],true)."</small>";
                         $row[2] = "<small> $code</small>";
                         FrmTabRow($row);

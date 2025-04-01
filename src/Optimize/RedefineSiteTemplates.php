@@ -5,7 +5,7 @@ namespace AA\Optimize;
 use AA\IO\DB\DB_AA;
 use function _m;
 
-/** Recreates the default site module template **/
+/** Recreates the default site module template */
 class RedefineSiteTemplates extends \AA\Optimize\AbstractOptimize {
 
     /**  {@inheritdoc} Implementation of \AA\Util\NamedInterface */

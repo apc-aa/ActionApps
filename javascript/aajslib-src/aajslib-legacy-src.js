@@ -8431,7 +8431,7 @@ function unpackToForm(data){
  *
  *    $('foo').simulate('click'); // => fires "click" event on an element with id=foo
  *
- **/
+*/
 (function(){
 
   var eventMatchers = {

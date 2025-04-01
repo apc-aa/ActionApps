@@ -360,7 +360,7 @@ class AA_Module_Definition_Chunk {
     /** part of the data for the module definition */
     protected $data;
 
-    /** Creates array of chunks from given data. The data are split to more chunks, if it is bigger than limit.  **/
+    /** Creates array of chunks from given data. The data are split to more chunks, if it is bigger than limit. */
     static function factoryArray($module_id, $table, $rows) {
         $chunks = [];
 
@@ -758,7 +758,7 @@ class AA_Sync_Action {
 
 /** Stores the synchronization action which should be performed on remote AA
  *  Objects are stored into AA\Later\Toexecute queue for running from Task Manager
- **/
+ */
 class AA_Task_Sync implements \AA\Later\LaterInterface {
 
     function __construct(
@@ -781,7 +781,7 @@ class AA_Task_Sync implements \AA\Later\LaterInterface {
 
 /** Stores the synchronization action which should be performed on remote AA
  *  Objects are stored into AA\Later\Toexecute queue for running from Task Manager
- **/
+ */
 class AA_Task_Import_Module_Chunk implements \AA\Later\LaterInterface {
 
     /** @var AA_Module_Definition $module_definition_chunk -  object or similar for import */

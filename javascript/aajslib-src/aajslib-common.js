@@ -50,7 +50,7 @@ function AA_AjaxInsert(a_obj, form_url) {
  *  Usage:
  *     FrmSelectEasy('from_slice', $slice_array, $from_slice, 'onchange="DisplayAaResponse(\'fieldselection\', \'Get_Fields\', {slice_id:this.value})"');
  *     echo '<div id="fieldselection"></div>';
- **/
+*/
 function DisplayAaResponse(div_id, method, params) {
     AA_AjaxCss('#'+CSS.escape(div_id), AA_GetConf('path') + 'central/responder.php?command='+ method, params);
 }

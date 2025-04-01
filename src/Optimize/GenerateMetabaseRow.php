@@ -7,7 +7,7 @@ use function _m;
 
 /** Prints out the metabase row for include/metabase.class.php file
  *  (used by AA developers to update database definition tempate)"
- **/
+ */
 class GenerateMetabaseRow extends AbstractOptimize {
 
     /** Name function

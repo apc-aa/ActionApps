@@ -248,7 +248,7 @@ class AA_Profile {
     }
 
     /** Copies the profile form one user to another
-     **/
+     */
     static function copyProfile($slice_id, $from_uid, $to_uid) {
         $p_slice_id = xpack_id($slice_id);
         $rules      = GetTable2Array("SELECT * FROM profile WHERE slice_id=$p_slice_id AND (uid='$from_uid')");

@@ -4,7 +4,7 @@ namespace AA\Optimize;
 
 use function _m;
 
-/** Recreates the template view - categories**/
+/** Recreates the template view - categories */
 class RedefineViewCategoriesTemplates extends \AA\Optimize\RedefineViewDiscusTemplates {
 
     public static function name(): string { return _m("Redefine categories template view"); }

@@ -204,6 +204,6 @@ $module->showSpot($tree, $current_spot_id);
 
 echo '</div></div>';
 
-$apage->addHelpbox(_m('Possible system requires - &lcub;require:...&rcub; or &lcub;require:["...","..."]&rcub;'), GetHtmlTable(AA_Requires::getAvailableLibs(),'th'), true);
+$apage->addHelpbox(_m('Possible system requires - &lcub;require:...&rcub; or &lcub;require:["...","..."]&rcub;'), GetHtmlTable(AA_Requires::getAvailableLibs(), 'th'), true);
 
 $apage->printFoot();

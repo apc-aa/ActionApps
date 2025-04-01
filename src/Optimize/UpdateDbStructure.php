@@ -12,7 +12,7 @@ use function _m;
  *  is created as tmp_*, then the content from old table is copied and if
  *  everything is OK, then the old table is renamed to bck_* and tmp_*
  *  is renamed to new table
- **/
+ */
 class UpdateDbStructure extends \AA\Optimize\AbstractOptimize {
 
     /** Name function

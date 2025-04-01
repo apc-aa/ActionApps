@@ -5,7 +5,7 @@ namespace AA\Optimize;
 use AA\IO\DB\DB_AA;
 use function _m;
 
-/** Adds cron entry for Alerts Sending into AA cron **/
+/** Adds cron entry for Alerts Sending into AA cron */
 class AddAlertsCronEntry extends \AA\Optimize\AbstractOptimize {
 
     /**  {@inheritdoc} Implementation of \AA\Util\NamedInterface */

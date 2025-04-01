@@ -91,12 +91,13 @@ class Slice extends AbstractGrabber
         $this->_content_cache = GetItemContent(new zids(array_slice($this->_longids, $this->_index, 100), 'l'), '', false, $this->restrict_fields);
     }
 
-    function getCharset() {
+    public function getCharset(): string
+    {
         $modules = $this->set->getModules();
         if ($module = AA_Slice::getModule($modules[0])) {
             return $module->getCharset();
         }
-        return 'UTF-8';
+        return 'utf-8';
     }
 
     function finish() {

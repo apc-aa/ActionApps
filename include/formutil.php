@@ -248,7 +248,7 @@ class inputform {
         echo $this->getFormStart();
 
         //echo getFrmTabCaption('', $buttons, 'id="inputtab"', 'id="inputtabrows"');
-        echo getFrmTabCaption('', $buttons, 'id="inputtab"');
+        echo getFrmTabCaption('', $buttons, ['id' => "inputtab"]);
         $tabs  = [];
         if ( $form_parts ) {
             for ( $idx=0; $idx <= $form_parts; $idx++ ) {
@@ -2638,29 +2638,30 @@ function getFrmSelectEasy($name, $arr, $selected="", array $add= [], $showempty=
 }
 
 /**
- * @param string $outer_add  - if contains class="aa-table", then the newer design is used
- * @return string
+ * @param  array  $attr
  */
-function getTabStart($outer_add='') {
-    //return (strpos($add, 'aa-table')!==false) ? "<table $add>" : '<table bgcolor="'. COLOR_TABTITBG .'" '.$add.'>';
-    return "<div $outer_add>";  // @todo convert to htmltag()
+function getTabStart(array $attr = []): string
+{
+    return '<div '.htmlattr($attr).'>';
 }
 
 
 /** FrmTabCaption function
  * Prints start of form table with caption and possibly additional tags (classes) to tables
- * @param string $caption
- * @param string $buttons
- * @param string $outer_add
- * @param bool   $simple no table stripping
+ *
+ * @param  string  $caption
+ * @param  array   $buttons
+ * @param  array   $outer_add
+ * @param  bool    $simple  no table stripping
+ *
  * @return string
  */
-function getFrmTabCaption($caption = '', $buttons = '', $outer_add = '', $simple=false) {
+function getFrmTabCaption(string $caption = '', array $buttons = [], array $outer_add = [], bool $simple=false) {
     $ret = getTabStart($outer_add);
     if ($buttons) {
         $ret .= getFrmInputButtons($buttons, true, 'top');
     }
-    if ($caption != "") {
+    if ($caption !== "") {
         $ret .= "\n <div class=\"aa-tab-title\">$caption</div>";
     }
     $table_add_class = $simple ? ' aa-table-simple' : '';
@@ -2668,8 +2669,9 @@ function getFrmTabCaption($caption = '', $buttons = '', $outer_add = '', $simple
     return $ret;
 }
 
-function FrmTabCaption($caption = '', $buttons = '', $simple=false) {
-    echo getFrmTabCaption($caption, $buttons, 'data-aa-class=clasic', $simple);
+function FrmTabCaption(string $caption = '', array $buttons = [], bool $simple=false): void
+{
+    echo getFrmTabCaption($caption, $buttons, ['data-aa-class' => 'clasic'], $simple);
 }
 
 /**
@@ -2677,7 +2679,8 @@ function FrmTabCaption($caption = '', $buttons = '', $simple=false) {
  * @param bool $simple no table stripping
  * @return void
  */
-function FrmTabSeparator($subtitle, bool $simple=false) {
+function FrmTabSeparator($subtitle, bool $simple=false): void
+{
     echo getFrmTabSeparator($subtitle, $simple);
 }
 
@@ -2724,10 +2727,11 @@ function FrmTabEnd( $buttons=false ) {
 
 
 /** returns buttons based on $buttons array. It also adds slice_id
- * Maybe better is to use (@param $buttons
- * @param string $bgcolor
+ *
+ * @param array  $buttons
  * @param bool   $print_hidden - if false, prints all $buttons except the hidden fields
  * @param string $prefix       - prefix for button ids
+ *
  * @return string
  *@see FrmTabEnd())
  */
@@ -2886,14 +2890,15 @@ function FrmTabs( $tabs, $tabsId ) {
 
 /** GetHtmlTable function
  * Returns table based on config array
- * @param array[] $content
- * @param string  $mode = td | th | key
- * @param string  $caption
- * @param bool    $clasic
- * @param string  $safe = 'td' | 'th' | 'all' | ''
+ *
+ * @param array[]  $content
+ * @param  string  $mode  = td | th | key
+ * @param  string  $caption
+ * @param  string  $safe  = 'td' | 'th' | 'all' | ''
+ *
  * @return string
  */
-function GetHtmlTable( array $content, $mode='td', $caption='', $clasic=false, $safe='' ): string {
+function GetHtmlTable( array $content, string $mode='td', string $caption='', string $safe='' ): string {
     if (!$content) {
         return '';
     }
@@ -2901,7 +2906,7 @@ function GetHtmlTable( array $content, $mode='td', $caption='', $clasic=false, $
         array_unshift($content,array_keys(reset($content)));
         $mode = 'th';
     }
-    $ret = getFrmTabCaption($caption, [], $clasic ? 'data-aa-class=clasic' : '');
+    $ret = getFrmTabCaption($caption, [], ['class'=>'top']);
     $first = true;
     foreach ($content as $row) {
         if ($mode === 'th' AND $first) {

@@ -628,7 +628,7 @@ class itemview {
             if ($zidx >= $zidscount) {
                 break;
             }
-            /* mimo hack -- put this on a stack **/
+            /* mimo hack -- put this on a stack */
             if (!$GLOBALS['QueryIDsIndex'])          { $GLOBALS['QueryIDsIndex']          = []; }
             if (!$GLOBALS['QueryIDsPageIndex'])      { $GLOBALS['QueryIDsPageIndex']      = []; }
             if (!$GLOBALS['QueryIDsGroupIndex'])     { $GLOBALS['QueryIDsGroupIndex']     = []; }
@@ -746,7 +746,7 @@ class itemview {
             /*$GLOBALS['QueryIDsIndex']     = $zidx;  // So that _#ITEMINDX = f_e:itemindex can find it
             $GLOBALS['QueryIDsPageIndex'] = $i;     // So that _#PAGEINDX = f_e:pageindex can find it
             */
-            /*mimo hack, clear the end of the stack **/
+            /*mimo hack, clear the end of the stack */
             $last_ii  = array_pop($GLOBALS['QueryIDsIndex']);
             $last_pi  = array_pop($GLOBALS['QueryIDsPageIndex']);
             $last_gi  = array_pop($GLOBALS['QueryIDsGroupIndex']);

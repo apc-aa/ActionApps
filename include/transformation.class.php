@@ -102,7 +102,7 @@ abstract class AA_Transformation implements \AA\Util\NamedInterface {
 
     /** Reads new flag value from user's HTML form
      *  Common function for many transformations
-     **/
+    */
     function getFlagFromForm($old_flag) {
         return match ($this->getParam('new_flag')) {
             'u'     => $old_flag,

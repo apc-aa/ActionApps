@@ -41,10 +41,10 @@ abstract class AbstractGrabber implements \AA\Util\NamedInterface {
     use \AA\Util\ReportTrait;
 
     /** @var array of domain and time of the last request to them - used with $load_frequency to  limit request frequency to domains*/
-    protected static $last_request_4_domain = [];
+    protected static array $last_request_4_domain = [];
 
-    /** @var float wait in order we do not contact the same domain more often than $load_frequency miliseconds */
-    protected $load_frequency = null;
+    /** @var float|null wait in order we do not contact the same domain more often than $load_frequency miliseconds */
+    protected ?float $load_frequency = null;
 
     /** @todo - not yet implemented */
     static function factoryFromFile($file): AbstractGrabber {
@@ -165,7 +165,7 @@ abstract class AbstractGrabber implements \AA\Util\NamedInterface {
      * @return AA_Content[]  or ItemContent[]
      * @throws \Exception
      */
-    public function getAllItems(string $key=''): array {
+    final public function getAllItems(string $key=''): array {
         $this->prepare();
         $ret = [];
         if ($key) {
@@ -213,7 +213,8 @@ abstract class AbstractGrabber implements \AA\Util\NamedInterface {
      *  how to store the item.
      * @see also getStoreMode() method
      */
-    function getIdMode() {
+    public function getIdMode(): string
+    {
         return 'combined';
     }
 
@@ -221,7 +222,8 @@ abstract class AbstractGrabber implements \AA\Util\NamedInterface {
      *  how to store the item.
      * @see also getIdMode() method
      */
-    function getStoreMode() {
+    public function getStoreMode(): string
+    {
         return 'insert_if_new';
     }
 
@@ -234,8 +236,9 @@ abstract class AbstractGrabber implements \AA\Util\NamedInterface {
     }
 
     /** get data encoding - like UTF-8, windows-1250, ... */
-    function getCharset() {
-        return 'UTF-8';
+    public function getCharset(): string
+    {
+        return 'utf-8';
     }
 
     /** Function called by AA\IO\Saver after we get the last item from the data input  */
@@ -243,10 +246,12 @@ abstract class AbstractGrabber implements \AA\Util\NamedInterface {
     }
 
     /**
-     * @param float $load_frequency - how often we can contact domain in miliseconds - 1000.0 = 1s
+     * @param  float  $load_frequency  - how often we can contact domain in miliseconds - 1000.0 = 1s
+     *
      * @return AbstractGrabber
      */
-    public function setLoadFrequency($load_frequency) {
+    public function setLoadFrequency(float $load_frequency): static
+    {
         $this->load_frequency = $load_frequency;
         return $this;
     }

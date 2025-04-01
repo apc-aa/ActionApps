@@ -27,7 +27,7 @@
 
 /** User's tasks are planed for that time (2033-05-18 05:33:20) - it is never
  *  executed from cron
- **/
+ */
 
 namespace AA\Later;
 

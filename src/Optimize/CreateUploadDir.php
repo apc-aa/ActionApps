@@ -6,7 +6,7 @@ use AA_Slice;
 use Files;
 use function _m;
 
-/** Creates upload directory for current slice (if not already created) **/
+/** Creates upload directory for current slice (if not already created) */
 class CreateUploadDir extends AbstractOptimize {
 
     /** Name function

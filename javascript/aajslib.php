@@ -172,7 +172,7 @@ function AA_HtmlAjaxToggleCss(link_id, link_text_1, link_text_2, selector_hide, 
  *  Usage:
  *     FrmSelectEasy('from_slice', $slice_array, $from_slice, 'onchange="DisplayAaResponse(\'fieldselection\', \'Get_Fields\', {slice_id:this.value})"');
  *     echo '<div id="fieldselection"></div>';
- **/
+*/
 function DisplayAaResponse(div_id, method, params) {
     $(div_id).update(AA_GetConf('loader'));
     new Ajax.Updater(div_id, AA_GetConf('path') + 'central/responder.php?command='+ method, {parameters: params});
@@ -977,7 +977,7 @@ function unpackToForm(data){
  *
  *    $('foo').simulate('click'); // => fires "click" event on an element with id=foo
  *
- **/
+*/
 (function(){
 
   var eventMatchers = {

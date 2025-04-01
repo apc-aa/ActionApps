@@ -44,23 +44,22 @@ $mlxScriptsTable = [
 
 /** @deprecated: using mlxctrl instead
     the field type in the Control Slice whose name sets the
-    field in the item in Content Slice that links to the Control Item **/
+    field in the item in Content Slice that links to the Control Item */
 //define ('MLX_ITEM2MLX_FIELD','lang_code.......');
 const MLX_CTRLIDFIELD = 'mlxctrl.........';
 
 
 /** what field type stores <lang> => <item id> info
-   ('text' means anything beginning with 'mlxctrl' **/
+   ('text' means anything beginning with 'mlxctrl' */
 const MLX_LANG2ID_TYPE = 'mlxctrl';
 
 /** the following settings are for debugging, performance
-    you can overwrite them in your config.php
-**/
+    you can overwrite them in your config.php */
 
 /** there is a problem with views and caching mlx-ed results
     at least in combination with site module, disable at own
     risk (btw, I dont think this caching brings alot better
-    performance) **/
+    performance) */
 if (!defined('MLX_NOVIEWCACHE')) {
     define ('MLX_NOVIEWCACHE',0);
 }
@@ -69,7 +68,7 @@ if (!defined('MLX_OPTIMIZE')) {
     define ('MLX_OPTIMIZE',0);
 }
 
-/** HTML defines **/
+/** HTML defines */
 define ('MLX_HTML_TABHD',"\n"
 ."<tr>\n"
 ."  <td colspan=\"5\">\n"
@@ -141,8 +140,8 @@ function MLXSlice($slice) {
  */
 class MLXCtrl {
 
-    var $itemid;       /** itemid in MLX control slice **/
-    var $translations; /** (0=>("EN"=>"itemid"),..) **/
+    var $itemid;       /** itemid in MLX control slice */
+    var $translations; /** (0=>("EN"=>"itemid"),..) */
     /** MLXCtrl function
      * @param $itemid
      * @param $mlxObj

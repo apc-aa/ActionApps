@@ -1018,7 +1018,7 @@ class AA_Module_Site extends AA_Module {
             ['site_id', $this->module_id, 'l'],
             ['spot_id', $spot_id, 'i'],
         ]);
-        FrmTabCaption('Spot Settings','',true);
+        FrmTabCaption('Spot Settings', [], true);
         FrmStaticText(_m('Spot ID'), "[$spot_id] - " . _m('You can include this spot code in another spot by using {sitespot:%1}', [$spot_id]));
 
         $tree->printVariables($spot_id, $tree->get('variables',$spot_id));
@@ -1036,7 +1036,7 @@ class AA_Module_Site extends AA_Module {
 
         echo "<br><form method='post' name=fs action=\"". $_SERVER['PHP_SELF'] ."\">";
         echo $tree->getCurrentSpotId();
-        FrmTabCaption('Edit spot', '', true);
+        FrmTabCaption('Edit spot', [], true);
         FrmInputText('name', _m("Spot name"), $tree->get('name', $spot_id), 50, 50, true, false, false);
         FrmTextarea('content', '', $spot_data['content'], 50, 80, false, AA_View::getViewJumpLinks($spot_data['content']), "", true);
         FrmTabEnd($form_buttons);

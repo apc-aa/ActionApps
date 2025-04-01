@@ -548,7 +548,7 @@ class AA_Router_Seo extends AA_Router {
  *  @param string $param specifies, which information you want to get (see above)
  *  @param string $url   if filled, returns the information about the specified
  *                       url instead of the current item
- **/
+ */
 class AA_Stringexpand_Xid extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // Cached inside the router itself
@@ -572,7 +572,7 @@ class AA_Stringexpand_Xid extends AA_Stringexpand_Nevercache {
  *               for /cz/project/about-us returns "project"
  *  {xseo:3}   - returns {xseo1} - third directory level in url
  *  @param string $level specifies, which information you want to get (see above)
- **/
+ */
 class AA_Stringexpand_Xseo extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     /** expand function */

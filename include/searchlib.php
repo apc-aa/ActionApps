@@ -1561,7 +1561,7 @@ function QueryZidsSet(AA_Set $set): zids {
  *   sort[0][category........]='1';    // order items by category priority - ascending
  *   sort[0][category........]='9';    // order items by category priority - descending
  *   sort[0]=random;                   // order items in random order (it is quite database intensive,
- *                                     // so if you want to diplay just one random item, use set[]=random-1
+ *                                     // so if you want to display just one random item, use set[]=random-1
  *                                     // view parameter instead)
  *   </pre>
  * @deprecated - use $aa_set->query() instead

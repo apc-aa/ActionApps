@@ -830,7 +830,7 @@ class AA_Metabase {
     /** static method
      *  @todo - would be probably better to move it to AA_MbT
      *  @todo - convert to static class members for PHP5
-     **/
+     */
     static function getPacked($tablename) {
         static $PACKED = [
             'alerts_collection'   => ['module_id','slice_id'],

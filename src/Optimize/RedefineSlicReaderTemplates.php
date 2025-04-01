@@ -6,7 +6,7 @@ use AA\IO\DB\DB_AA;
 use function _m;
 use const AA_BASE_DIR;
 
-/** Recreates the template (example) slice - Reader Management **/
+/** Recreates the template (example) slice - Reader Management */
 class RedefineSlicReaderTemplates extends \AA\Optimize\AbstractOptimize {
 
     /** Name function

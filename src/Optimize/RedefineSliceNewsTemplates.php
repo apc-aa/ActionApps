@@ -7,7 +7,7 @@ use function _m;
 use const AA_BASE_DIR;
 use const AA_HTTP_DOMAIN;
 
-/** Recreates the template (example) slice - News EN **/
+/** Recreates the template (example) slice - News EN */
 class RedefineSliceNewsTemplates extends \AA\Optimize\AbstractOptimize {
 
     /** Name function
