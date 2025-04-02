@@ -577,7 +577,7 @@ class AA_Field implements ArrayAccess, Countable, Iterator {
                 $attrs = ['data-fld'=>$a->getField()."|$pos", 'title' => substr($a->getFuncDef(),0,100)];
                 $aname = $a->getAlias();
                 if ($a->isMoveable()) {
-                    $aname .= '<i class="ico move"></i>';
+                    $aname .= '<i class="ico move" title="'._m('Move to another field').'"></i>';
                     $attrs['class'][] = 'aa-moveable';
                 }
                 if ($a->isDisabled()) {

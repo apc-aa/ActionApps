@@ -152,7 +152,8 @@ $headcode = '<script>
     window.cm_bot.setValue(  "'. DEFAULT_ADMIN_BOTTOM.'");
     window.cm_msg.setValue(  "'. DEFAULT_ADMIN_MSG.'");
   }
-</script>';
+</script>
+';
 
 $apage = new AA_Adminpageutil('sliceadmin','config');
 $apage->setTitle(_m("Admin - design Item Manager view"));

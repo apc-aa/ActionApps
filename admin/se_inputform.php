@@ -93,6 +93,7 @@ try {
     $input_validate_f = InputVars::stringSlashedPOST('input_validate_f');
     // array ( '' => 21, ':' => 1, 'con_email..…' => 1, 'headline...…' => 2, 'Kvakoš 765…' => 18, )
     $input_validate_p = InputVars::stringSlashedPOST('input_validate_p'); // empty
+    $show_in_search   = InputVars::boolPOST('show_in_search');
     // array ( 'Přihlásit' => 4, )
     $submit = InputVars::boolPOST('submit');
     // array ( 1 => 27, 0 => 15, )
@@ -251,6 +252,7 @@ if ($update) {
         Qvarsetadd("html_default", "number", ($html_default ? 1 : 0));
         Qvarsetadd("html_show", "number", ($html_show ? 1 : 0));
         Qvarsetadd("text_stored", "number", $text_stored);
+        Qvarsetadd("search_pri",  "number", $show_in_search ? 100 : 0);   // standard value is 100, zero means no search (no other meaning of this field, I think. HM 2025-04-02)
 
         $varset->addkey('id', 'text', $fid);
         $varset->addkey('slice_id', 'unpacked', AA::$module_id);
@@ -325,11 +327,12 @@ if ( !$update ) {      // load defaults
         $input_show_func_c = (str_starts_with($input_show_func_c_real, '#sLiCe-')) ? $input_show_func_c_real : varname4form($input_show_func_c_real);
     }
 
-    $html_default = $fld["html_default"];
-    $html_show    = $fld["html_show"];
-    $feed         = $fld["feed"];
-    $text_stored  = $fld["text_stored"];
-    $translation  = $fld["multiple"] & 2;
+    $html_default   = $fld["html_default"];
+    $html_show      = $fld["html_show"];
+    $feed           = $fld["feed"];
+    $text_stored    = $fld["text_stored"];
+    $translation    = $fld["multiple"] & 2;
+    $show_in_search = $fld["search_pri"] != 0;
 }
 
 
@@ -367,9 +370,9 @@ $headcode = '
   function ResetAlias(number) {
       document.querySelector("input[name=alias"+number+"]").value = "";
       document.querySelector("select[name=alias"+number+"_func_f]").value = "";
-      if (number == 1) { window.cm_a1.setValue(""); }
-      if (number == 2) { window.cm_a2.setValue(""); }
-      if (number == 3) { window.cm_a3.setValue(""); }
+      if (number === 1) { window.cm_a1.setValue(""); }
+      if (number === 2) { window.cm_a2.setValue(""); }
+      if (number === 3) { window.cm_a3.setValue(""); }
       document.querySelector("textarea[name=alias"+number+"_help]").value = "";
   }
 </script>';
@@ -486,6 +489,7 @@ FrmInputText("input_morehlp", _m("More help"), $input_morehlp, 254, '', false, _
 FrmTextarea("input_before", _m("Before HTML code"), $input_before, 4, 50, false, _m("Code shown in input form before this field"));
 echo $tab_separator;
 FrmStaticText(_m("Feeding mode"), getFrmSelectEasy("feed", inputFeedModes(), $feed),  _m("Should the content of this field be copied to another slice if it is fed?"), "", false);
+FrmInputChBox("show_in_search", _m("Searchable in AA Item Manager"), $show_in_search, false, '', 1, false, _m('The field is shown in Search box in Item Manager.'));
 
 echo getFrmTabInnerSeparator(_m("ALIASES used in views to print field content (%1)", [$fld['id']]));
 
