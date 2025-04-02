@@ -618,16 +618,30 @@ i.ico.aa-tool-edit:hover {
     box-sizing: border-box;
 }
 i.ico.move {
-    background: rgb(0 0 0 / 16%);
+    display: inline-block;
     cursor: move;
+    line-height: 16px;
+    padding-left: 2px;
+    padding-right: 2px;
+    color: #9867a7;
 }
 i.ico.move:after {
-    content: '⠿';
+    content: '\2725';
     display: inline-block;
-    padding-right: 2px;
-    padding-left: 2px;
-    color: black;
+    padding-right: 1px;
+    padding-left: 1px;
     font-style: normal;
+    font-size: 15px;
+}
+.icogroup i.ico.move {
+    color: #6e5523;
+    background: rgb(0 0 0 / 9%);
+}
+i.ico.move:hover {
+    background: rgb(0 0 0 / 9%);
+}
+.aa-rim i.ico.move:not(.delete):hover {
+    background: #ebdabe;
 }
 .aa-rim i.ico.edit {
     font-size: 11px;
@@ -642,14 +656,8 @@ i.ico.move:after {
 .icogroup i.ico:before {
     content: none;
 }
-.icogroup i.ico:hover, .icons i.ico:hover {
-    background-color: black;
-}
 .icogroup i.ico.delete:hover {
     background-color: #e00303;
-}
-i.ico.move:hover {
-    background: rgb(0 0 0 / 31%);
 }
 .aa-rim .icons {
     flex: 1;
