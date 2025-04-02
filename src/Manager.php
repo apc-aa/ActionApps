@@ -887,13 +887,10 @@ class Manager extends AA_Storable {
         if (($_GET['id'] AND $this->managed->isAction('edit')) OR ($_GET['add'] AND $this->managed->isAction('add'))) {
 
             $form = $this->managed->getForm($_GET['id'], $this->module_id);
-            $form_buttons = [
-                "update",
-                "cancel",
-            ];
+            $form_buttons = [ "update", "cancel"];
 
             $html = '<form name="f" method="post" action="'. StateUrl() .'">';
-            $html .= getFrmTabCaption(_m("Edit id") . ': ' . $_GET['id'], $form_buttons);
+            $html .= getFrmTabCaption(_m("Edit id").': '.$_GET['id'], $form_buttons);
             $html .= '<tr><td colspan="2">';
             $html .= $form->getObjectEditHtml();
 //            $html .= $form->getEditFormHtml();

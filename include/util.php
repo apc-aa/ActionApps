@@ -1113,16 +1113,15 @@ function url2bin($data) {
 
 /** Prints HTML start page tags (html begin, encoding, style sheet, but no title).
  * Chooses the right encoding by get_mgettext_lang().
- * @param bool   $js_lib      if true, includes js_lib.min.js javascript
- * @param $lang
+ *
+ * @param  bool    $js_lib  if true, includes js_lib.min.js javascript
+ * @param  string  $lang
+ *
  * @see AA_Adminpageutil->getPageBegin()
  */
-function HtmlPageBegin($js_lib=false, $lang=null, $inc_by_require=false) {
-    AA::setEncoding(Langs::getCharset($lang));
-    $headers = AA::getHeaders();
-    // fix for Chrome 57 which do not allow to send HTML in POST request sometimes (ERR_BLOCKED_BY_XSS_AUDITOR) - HM 2017-04-24
-    $headers['x-xss-protection'] = 'X-XSS-Protection: 0';
-    AA::sendHeaders($headers);
+function HtmlPageBegin(bool $js_lib=false, string $lang= '', bool $inc_by_require=false): void
+{
+    AA::sendAdminHeaders($lang);
     $inc_css = '';
     if ($inc_by_require) {
         AA::Stringexpander()->addRequire('css-aa-system');

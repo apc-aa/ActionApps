@@ -395,7 +395,7 @@ $form_buttons = [
     "cancel"   => ["url"=>"se_fields.php" .($slice_fields ? '?slice_fields=1':'')]
 ];
 
-FrmTabCaption(_m("Field properties") . ': ' . safe($fld['name'] . ' (' . $fld['id'] . ')'), $form_buttons, true);
+FrmTabCaption(_m("Field properties").': '.safe($fld['name'].' ('.$fld['id'].')'), $form_buttons, true);
 
 $isc_arr = AA_Components::getClassArray('AA\\Widget\\Widget');
 

@@ -434,7 +434,7 @@ class AA {
     /** @var  AA_Metabase $metabase */
     private static $metabase       = null;
 
-    static function getHeaders(): array {
+    public static function getHeaders(): array {
         $ret = [];
         $ret['type'] = 'Content-Type: '. (AA::$headers['type'] ?: 'text/html') .'; charset='.(AA::$headers['encoding'] ?: AA::$encoding ?: Langs::getCharset());
         if (isset(AA::$headers['status'])) {
@@ -504,9 +504,41 @@ class AA {
     }
 
     // typically called as AA::sendHeaders(AA::getHeaders());
-    static function sendHeaders(array $headers) {
+    static function sendHeaders(array $headers): void
+    {
         foreach ($headers as $header) { header($header); }
     }
+
+    /** send all security headers for AA Admin pages */
+    public static function sendAdminHeaders($lang=null): void
+    {
+        self::setEncoding(Langs::getCharset($lang));
+
+        $headers = self::getHeaders();
+        // fix for Chrome 57 which do not allow to send HTML in POST request sometimes (ERR_BLOCKED_BY_XSS_AUDITOR) - HM 2017-04-24
+        // $headers['XSS']  = 'X-XSS-Protection: 0';  // modern browsers do not use it - it is deprecated - HM 2025-04
+
+        // Clickjacking protection
+        $headers['XFO']  = 'X-Frame-Options: SAMEORIGIN';
+        // MIME-sniffing protection
+        $headers['XCTO'] = 'X-Content-Type-Options: nosniff';
+        // Privacy-friendly referrer info
+        $headers['RP']   = 'Referrer-Policy: strict-origin-when-cross-origin';
+
+        // Recommended but not tested, yet. HM 2025-04
+        // // Strict HTTPS - ( added by server itself in our case - HM 2025-04 )
+        // header('Strict-Transport-Security: max-age=63072000; includeSubDomains; preload');
+        // // XSS & resource loading policy
+        // header("Content-Security-Policy: default-src 'self'; script-src 'self'; object-src 'none'; frame-ancestors 'self'");
+        // // Limit browser APIs
+        // header("Permissions-Policy: geolocation=(), microphone=(), camera=()");
+        // // Context isolation to protect against cross-origin attacks
+        // header('Cross-Origin-Opener-Policy: same-origin');
+        // header('Cross-Origin-Resource-Policy: same-origin');
+
+        self::sendHeaders($headers);
+    }
+
 }
 
 AA::$debug = (int)($_REQUEST['debug'] ?: $_COOKIE['aa_debug']);  // aa_debug used in admin interface - item manager - left menu

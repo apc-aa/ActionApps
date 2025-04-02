@@ -96,7 +96,7 @@ $form_buttons = [
 
 if ($rows) {
     array_unshift($rows, [_m("Remote slice"), _m("Node"), _m("Exact copy"), _m("State"), _m("Delete")]);
-    echo GetHtmlTable($rows,'th', _m("Existing remote imports into the slice") . " <b>" . AA_Slice::getModuleName(AA::$module_id) . "</b>");
+    echo GetHtmlTable($rows, 'th', _m("Existing remote imports into the slice")." <b>".AA_Slice::getModuleName(AA::$module_id)."</b>");
 } else {
     echo _m("No remote imports into the slice") . " <b>" . AA_Slice::getModuleName(AA::$module_id) . "</b>";
 }

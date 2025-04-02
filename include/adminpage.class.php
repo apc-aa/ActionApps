@@ -131,15 +131,6 @@ class AA_Adminpageutil {
         $this->require[] = [$require, $type];
     }
 
-
-    public function sendHeaders()
-    {
-        $headers = AA::getHeaders();
-        // fix for Chrome 57 which do not allow to send HTML in POST request sometimes (ERR_BLOCKED_BY_XSS_AUDITOR) - HM 2017-04-24
-        $headers['x-xss-protection'] = 'X-XSS-Protection: 0';
-        AA::sendHeaders($headers);
-    }
-
     public function getPageBegin()
     {
         return '<!DOCTYPE html>
@@ -170,8 +161,7 @@ class AA_Adminpageutil {
 
     public function printHead($err=[], $Msg='')
     {
-        AA::setEncoding(Langs::getCharset());
-        $this->sendHeaders();
+        AA::sendAdminHeaders();
 
         $html_start = $this->getPageBegin();
 

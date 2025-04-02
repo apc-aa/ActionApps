@@ -316,7 +316,8 @@ class ChangesMonitor {
 
         if ($arr = DB_AA::select([], "SELECT `change`.time, `change`.user, `change_record`.selector, `change_record`.value, `change_record`.priority, `change_record`.type as chtype, `change_record`.change_id, `change`.resource_id, `change`.type
                                 FROM `change`, `change_record`", [['change.id', 'change_record.change_id' , 'j'], ["`change`.resource_id", $resource_ids], ['change.type',$type]], ['change.resource_id', 'change.time-', 'change_record.change_id', 'change_record.selector', 'change_record.priority'])) {
-            echo "<div class='aa-table'><table class='aa-history'><tr><th>&nbsp;</th><th>field</th><th>value</th><th>diff".Difftext::renderHtml(_m("newer\neee<br>www"), _m("older\neee<br>wqqq"))."</th><th>priority</th><th>type</th><th>resource</th></tr>";
+//            echo "<div class='aa-table'><table class='aa-history'><tr><th>&nbsp;</th><th>field</th><th>value</th><th>diff".Difftext::renderHtml(_m("newer\neee<br>www"), _m("older\neee<br>wqqq"))."</th><th>priority</th><th>type</th><th>resource</th></tr>";
+            echo "<div class='aa-table'><table class='aa-history'><tr><th>&nbsp;</th><th>field</th><th>value</th><th>priority</th><th>type</th><th>resource</th></tr>";
             $chid = '';
             foreach ($arr as $key => $change) {
                 if ($chid !== $change['change_id']) {

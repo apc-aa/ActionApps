@@ -368,7 +368,8 @@ abstract class AA_Module {
     /**
      *  Returns lang code ('cz', 'en', 'en-utf8', 'de',...)
      */
-    function getLang()     {
+    public function getLang(): string
+    {
         return Langs::getLang($this->_getModuleTableProperty('lang_file'));
     }
 
