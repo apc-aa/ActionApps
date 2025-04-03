@@ -11,6 +11,7 @@ namespace AA\Util;
 use AA;
 use AA\IO\DB\DB_AA;
 use AA_GeneralizedArray;
+use AA_Items;
 use AA_Set;
 use Cvarset;
 use zids;
@@ -323,11 +324,13 @@ class ChangesMonitor {
                 if ($chid !== $change['change_id']) {
                     echo "<tr><th colspan=7>" . date('Y-m-d H:i:s', self::toTimestamp((int)$change['time'])) . ' - ' . safe(perm_username($change['user'])) . " <small>($change[type], uid:$change[user], res:$change[resource_id], change:$change[change_id], time:$change[time])</small></th></tr>";
                     $chid = $change['change_id'];
+                    $flds = ($slice_id = AA_Items::getItem(new zids($change['resource_id'], 'l'))?->getSliceID()) ? \AA_Fields::factoryFor($slice_id) : null;
                 }
                 $value = \AA_Adminlink::richValue($change['value']);
+                $field = $change['selector']. ($flds ? \AA_Adminlink::additionalInfo([$flds->getProperty($change['selector'], 'name')]) : '');
 
                 echo sprintf(
-                    "<tr><td>&nbsp;</td><td>$change[selector]</td><td><pre>%s</pre></td><td>$change[priority]</td><td>$change[chtype]</td><td>%s</td></tr>",
+                    "<tr><td>&nbsp;</td><td>$field</td><td><pre>%s</pre></td><td>$change[priority]</td><td>$change[chtype]</td><td>%s</td></tr>",
                     $value,
                     //array_key_exists($key+1,$arr) ? Difftext::renderHtml($change['value'], $arr[$key+1]['value']) : '',
                     safe($change['resource_id'])

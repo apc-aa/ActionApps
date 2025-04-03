@@ -915,7 +915,7 @@ The changes could be tracked on:
            _#FLD_PARM, validator by _#FLD_VALI, insert function by _#FLD_INS_,
            show/not show by _#FLD_SHOW and text stored/numeric by _#FLD_STOR.
            With this feature it is possible to let user to create public forms
-           with its own fioelds just by let him insert the item to special
+           with its own fields just by let him insert the item to special
            "fields" slice
          - new {colonescape:val1} - escapes colon as internaly used in AA.
            It is special case function - more internal one:

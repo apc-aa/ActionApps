@@ -144,7 +144,7 @@ class Widget extends AA_Object implements NamedInterface {
     public function getFormattedOptions(string $for_id = '', ?zids $restrict_zids = null, string $searchterm = '', bool $ignore_filters = false, int $limit = 0): array {
 
         $values_array = $this->getProperty('const_arr');  // is associative!
-        if (!empty($values_array)) {          // values assigned directly
+        if (is_array($values_array) AND count($values_array)) {          // values assigned directly
             return $values_array;               //  = array();
         }
 

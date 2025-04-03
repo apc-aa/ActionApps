@@ -157,12 +157,14 @@ class AA_Field implements ArrayAccess, Countable, Iterator {
 
             $params       = $widget_definition_string ? Widget::parseClassProperties($widget_definition_string) : $this->widget_params;
             $widget_class = $widget_type ? Widget::constructClassName($widget_type) : $params['class'];
+
             if (!class_exists($widget_class)) {
                 if (!class_exists($widget_class = $params['class'])) {
                     $widget_class = 'AA\Widget\NulWidget';
                 }
             }
             $w = AA_Object::factory($widget_class, $params);
+
             if ($properties) {
                 // for security reasons we do not want to redefine const (Constants/Slices)
                 unset($properties['const'], $properties['bin_filter'], $properties['filter_conds']);
@@ -680,7 +682,12 @@ class AA_Field_Slicedef extends AA_Field {
         $this->data['multiple']          = $fld_eval['_#FLD_MULT'];
         $this->data['input_show_func']   = '';
         $this->widget_params             = (array)json_decode($fld_eval['_#FLD_PARM'], true);
+        // equivalent of: $params[$name] = $property->isMulti() ? json2asoc($value) : $value;  // const_arr for widget uses this, for example
+        if (array_key_exists('const_arr', $this->widget_params)) {
+            $this->widget_params['const_arr'] = json2asoc($this->widget_params['const_arr']);
+        }
         $this->widget_params['class']    = Widget::constructClassName($fld_eval['_#FLD_TYPE']);
+
         $this->data['search_pri']        = $this->data['input_pri'];
         $this->data['html_default']      = 1;
         $this->data['input_validate']    = $fld_eval['_#FLD_VALI'];
@@ -947,18 +954,6 @@ class AA_Fields implements Iterator, Countable {
     {
         $this->load();
         return array_keys(array_filter($this->fields, static fn($fld) => $fld->isSafeStored()));
-    }
-
-    /** getRecordArray function
-     *  @deprecated - for backward compatibility only
-     */
-    function getRecordArray() {
-        $this->load();
-        $ret = [];
-        foreach ( $this->fields as $fid => $fld ) { // in priority order
-            $ret[$fid] = $fld->getRecord();
-        }
-        return $ret;
     }
 
     /** getNameArray function */

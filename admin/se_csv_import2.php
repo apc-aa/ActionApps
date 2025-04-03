@@ -47,6 +47,7 @@ require_once __DIR__ . "/../include/feeding.php";
 try {
     // array ( 'insert_new' => 1, 'overwrite' => 1, )
     $actionIfItemExists = InputVars::stringPOST('actionIfItemExists');
+    $insertSilent = InputVars::boolPOST('insertSilent');
     // array ( )
     $actions = InputVars::arrayPOST('actions'); // alpha
     // array ( 'YTozOntzOjk…' => 2, )-array ( 'YTozOntzOjk…' => 2, )
@@ -124,6 +125,9 @@ class AA_Csv_Importer {
     var $itemIdMappedParams;
     var $actionIfItemExists;
 
+    /** @var bool Do not send mails to readers from Alerts, do not update mailinglists, ... */
+    protected bool $insertSilent = false;
+
     var $auth_uid;
 
 /** AA_Csv_Importer function
@@ -146,6 +150,7 @@ class AA_Csv_Importer {
         $this->itemIdMappedActions = $_REQUEST['itemIdMappedActions'];
         $this->itemIdMappedParams  = $_REQUEST['itemIdMappedParams'];
         $this->actionIfItemExists  = $_REQUEST['actionIfItemExists'];
+        $this->insertSilent        = (bool)$_REQUEST['insertSilent'];
         $this->addParams           = unserialize(url2bin($_REQUEST['addParamsSerial']));
         $this->auth_uid            = AuthGetUid();
     }
@@ -259,7 +264,7 @@ class AA_Csv_Importer {
 
             if (!$err) {
                 $itemContent->setSliceID($this->slice_id);
-                $added_to_db = $itemContent->storeItem($this->actionIfItemExists, [false]);     // not invalidate cache
+                $added_to_db = $itemContent->storeItem($this->actionIfItemExists, $this->insertSilent ? ItemContent::FLAG_JUST_STORE : [false]);     // not invalidate cache
                 if (!$added_to_db) {
                     $err = _m("Cannot store item to DB"). ' '. ItemContent::lastErrMsg();
                 }
@@ -338,7 +343,8 @@ class AA_Csv_Importer {
 /** printForm function
  * @param $set_default
  */
-    function printForm($set_default) {
+    public function printForm(bool $set_default): void
+    {
         //----------------------------------------------------------------------------
         // Create output fields
 
@@ -446,6 +452,7 @@ class AA_Csv_Importer {
         ];
 
         FrmInputRadio('actionIfItemExists', _m('If the item id is already in the slice'), $storage_mode, !$set_default ? $this->actionIfItemExists : "insert_if_new", true, '', '', 1);
+        FrmInputChBox('insertSilent', _m('Silent'), !$set_default ? $this->insertSilent : false, false, '', 1, false, _m("Do not perform any other operations like evaluate-computed-field, feed, send e-mail to Readers of Alerts..."));
         FrmTabSeparator(_m("Data source"));
         FrmInputText('fileName', _m('Source'), $this->fileName, 254, 100);
 

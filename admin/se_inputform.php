@@ -488,8 +488,8 @@ FrmTextarea("input_help", _m("Help for this field"), $input_help, 2, 50, false, 
 FrmInputText("input_morehlp", _m("More help"), $input_morehlp, 254, '', false, _m("Text shown after user click on '?' in input form"));
 FrmTextarea("input_before", _m("Before HTML code"), $input_before, 4, 50, false, _m("Code shown in input form before this field"));
 echo $tab_separator;
-FrmStaticText(_m("Feeding mode"), getFrmSelectEasy("feed", inputFeedModes(), $feed),  _m("Should the content of this field be copied to another slice if it is fed?"), "", false);
 FrmInputChBox("show_in_search", _m("Searchable in AA Item Manager"), $show_in_search, false, '', 1, false, _m('The field is shown in Search box in Item Manager.'));
+FrmStaticText(_m("Feeding mode"), getFrmSelectEasy("feed", inputFeedModes(), $feed),  _m("Should the content of this field be copied to another slice if it is fed?"), "", false);
 
 echo getFrmTabInnerSeparator(_m("ALIASES used in views to print field content (%1)", [$fld['id']]));
 
