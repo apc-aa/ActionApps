@@ -164,6 +164,7 @@ class AA_Adminlink {
         }
 
         $info   = [];
+        $info[] = self::searchLink($item_id);
         $info[] = a_href(get_admin_url('itemedit.php', ['id' => $item_id, 'change_id' => $slice_id, 'edit' => 1]), "$seo$hdln");
         if (!$no_module_link) {
             $info[] = AA_Slice::getModuleName($slice_id, true);
@@ -173,6 +174,16 @@ class AA_Adminlink {
         return $item_id. self::additionalInfo($info);
     }
 
+    public static function searchLink(string $searchtext, string $label="🔍"): string
+    {
+        return a_href(
+            get_admin_url('aafinder.php', ['search' => $searchtext, 'searchinview' => 1, 'searchinslice' => 1, 'searchinfield' => 1, 'searchinspot' => 1, 'searchinobject' => 1, 'searchincodeitems' => 1, 'go_search' => 1]),
+            $label
+        );
+    }
+
+
+    /** enhance value - item_id, date */
     public static function richValue(mixed $value): string
     {
         if (is_long_id($value)) {
@@ -184,9 +195,11 @@ class AA_Adminlink {
         return safe($value);
     }
 
+
+    /** Prints additional info box */
     public static function additionalInfo(array $texts): string
     {
-        return "<br><small>".implode(' | ', $texts)."</small>";
+        return '<div class="tabhlp">'.implode(' | ', $texts)."</div>";
     }
 }
 
