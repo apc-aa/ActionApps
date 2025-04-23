@@ -45,7 +45,7 @@ class GpsWidget extends Widget
 
     // inherited from \AA\Widget\Widget
     protected function requireLibs($aa_property, $winfo): array {
-        return ['leaflet', 'leaflet-draw', 'aa-fillform', 'https://api.mapy.cz/loader.js'];
+        return ['leaflet', 'leaflet-draw', 'aa-fillform'];
     }
 
     /** script to run after the page DOM is loaded */
@@ -74,7 +74,7 @@ class GpsWidget extends Widget
               // Ensure only one shape is drawn at a time
               map$js_id.on(L.Draw.Event.CREATED, function(event) {";
             $drawComponent .= $multi_shape ? '' : "\ndrawnItems$js_id.clearLayers();";  // Clear existing layers
-            $drawComponent .= "                
+            $drawComponent .= <<<JS
                 const layer = event.layer;
                 drawnItems$js_id.addLayer(layer);
                 layer.editing.enable(); // Automatically enable editing
@@ -86,49 +86,57 @@ class GpsWidget extends Widget
                 });
                 AA_GpsPrepareResults('#coosuggest$js_id', '#copygps$js_id', drawnItems$js_id.toGeoJSON());
               });
-              suggest$js_id.addListener('suggest', function(suggestData) {
-                AA_GpsShowGeo(map$js_id, '$js_id', {'type':'Point','coordinates':[suggestData.data.longitude.toFixed(6), suggestData.data.latitude.toFixed(6)]}, inputEl$js_id.value, drawnItems$js_id);
+              
+              inputEl$js_id.addEventListener('input', function () {
+                  AA_GpsSuggestListener(this, optsEl$js_id, map$js_id, '$js_id', drawnItems$js_id);
               });
+                            
               if (valEl$js_id.value) {
                   AA_GpsShowGeo(map$js_id, '$js_id', valEl$js_id.value, '', drawnItems$js_id);
               }
-              ";
+              
+          JS;
         } else {
-            $drawComponent = "
-              suggest$js_id.addListener('suggest', function(suggestData) {
-                AA_GpsShowMarker(map$js_id, '$js_id', suggestData.data.latitude.toFixed(6) , suggestData.data.longitude.toFixed(6), inputEl$js_id.value, drawnItems$js_id);
+            $drawComponent = <<<JS
+              inputEl$js_id.addEventListener('input', function () {
+                  AA_GpsSuggestListener(this, optsEl$js_id, map$js_id, '$js_id', drawnItems$js_id);
               });
               let match = valEl$js_id.value.match(/^([+-]?(\d*[.])?\d+)\s([+-]?(\d*[.])?\d+)$/);
               if (match) {
                   AA_GpsShowMarker(map$js_id, '$js_id', match[1], match[3], '', drawnItems$js_id);
               }
-              ";
+              
+            JS;
         }
 
-        return /** @lang JavaScript */ <<<EOF
-  const inputEl$js_id = AA_$('#adresa4suggest$js_id');
-  const valEl$js_id = AA_$('#$val_id');
-  const suggest$js_id = new SMap.Suggest(inputEl$js_id);
-  const map$js_id = L.map('mapdiv$js_id', {zoomSnap: 0, zoomControl: false });
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' }).addTo(map$js_id);
-  L.control.zoom({position: 'bottomleft'}).addTo(map$js_id);
-
-  // Set up drawing controls
-  const drawnItems$js_id = new L.FeatureGroup();
-  map$js_id.addLayer(drawnItems$js_id);
-  
-  $drawComponent
-  
-EOF;
+        return <<<JS
+            const inputEl$js_id = AA_$('#adresa4suggest$js_id');
+            const optsEl$js_id  = AA_$('#optssuggest$js_id');    
+            const valEl$js_id = AA_$('#$val_id');
+            const map$js_id = L.map('mapdiv$js_id', {zoomSnap: 0, zoomControl: false });
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' }).addTo(map$js_id);
+            L.control.zoom({position: 'bottomleft'}).addTo(map$js_id);
+          
+            // Set up drawing controls
+            const drawnItems$js_id = new L.FeatureGroup();
+            map$js_id.addLayer(drawnItems$js_id);
+            
+            $drawComponent
+            
+          JS;
     }
 
     protected function requireCssCode($aa_property, $winfo): string  {
         /** @lang CSS */
         return '.aa-widget-gps input[type="button"][disabled] { background-color: #dfdfdf; cursor: default;} 
-          .aa-widget-gps .smap-suggest .item { justify-content: initial; } 
           .aa-gps-content { display: flex; }
           .aa-gps-suggest-box { position: relative; flex: 1; margin: 2px 0 0 7px; }
-          .aa-gps-suggest { position: absolute; top: -2px; right: 1px; z-index: 1100; }
+          .aa-gps-suggest { position: absolute; top: -2px; right: 1px; z-index: 1100;  width: 321px;}
+          .aa-gps-suggest-item { background: white; border: 1px solid silver; border-bottom: 0; border-top-color: #dfdfdf; padding: 8px 27px; line-height: 1.4; font-size: 0.955rem; }
+          .aa-gps-suggest-item:hover { background-color:  #f7f7f7; }
+          .aa-gps-suggest-item strong { color: black; font-size: 1rem; }
+          .aa-widget-gps .aa-gps-suggest input[type="button"] { position: absolute; top: 2px; right: 0; }
+          .aa-gps-suggest input[type="search"] { padding: 4px 5px; margin-left: 0; line-height: 18px; width: 180px; }          
           .aa-gps-map { width: 100%; }
           .aa-widget-gps input[type="button"] { padding: 5px 12px; margin: 0; }
           .aa-gps-use { position: absolute; top: 0; z-index: 1100; }
@@ -146,7 +154,7 @@ EOF;
     }
 
     protected function requireLibCode($aa_property, $winfo): string  {
-        return /** @lang JavaScript */ <<<EOF
+        return <<<JS
         function AA_GpsShowGeo(map, itemid, geojsonData, title, drawnItems) {
             // Clear previous items if you wish to display only the latest GeoJSON
             drawnItems.clearLayers();
@@ -231,6 +239,41 @@ EOF;
             }
         }
         
+        function AA_GpsSuggestListener(inputEl, optsEl, map, jsId, drawnItems) {
+            const query = inputEl.value;
+            if (query.length < 3) {
+                optsEl.innerHTML = '';
+                return;
+            }
+
+            // fetch(`https://nominatim.openstreetmap.org/search?format=json&q=\${encodeURIComponent(query)}&countrycodes=cz&addressdetails=1&limit=5`)
+            fetch(`https://photon.komoot.io/api/?q=\${encodeURIComponent(query)}&limit=5&lat=50.3&lon=14.95`)
+                .then(res => res.json())
+                .then(data => {
+                    optsEl.innerHTML = '';
+                    data.features.forEach(item => {
+                        const option = document.createElement('div');
+                        option.className = 'aa-gps-suggest-item';
+                        // //const mainName = item.address.city || item.address.town || item.address.village || item.address.county || item.display_name.split(',')[0];
+                        // //const extraInfo = item.display_name.replace(mainName + ', ', '');
+                        // option.innerHTML = (([f, ...r] = item.display_name.split(',').map(s => s.trim())), `<strong>\${f}</strong>\${r.length ? '<br><em>' + r.join(', ') + '</em>' : ''}`);
+                        // //option.textContent = item.display_name;
+                        const mainName = [item.properties.name, item.properties.street, item.properties.housenumber, item.properties.district].filter(Boolean).join(', ');
+                        const extraInfo = [item.properties.city, item.properties.state, item.properties.country].filter(Boolean).join(', ');
+                        option.innerHTML = `<strong>\${mainName}</strong><div>\${extraInfo}</div>`;
+        
+                        option.style.cursor = 'pointer';
+                        option.addEventListener('click', () => {
+                            inputEl.value = mainName;
+                            optsEl.innerHTML = '';
+                            AA_GpsShowGeo(map, jsId, item.geometry, inputEl.value, drawnItems);
+                        });
+                        optsEl.appendChild(option);
+                    });
+                })
+                .catch(err => console.error('Maps API error:', err));
+        }
+        
         function AA_GpsShowMarker(map, itemid, lat, lon, title) {
             AA_$(`#coosuggest\${itemid}`).value = `\${lat} \${lon}`;
             map.setView([lat, lon], 15);
@@ -282,9 +325,7 @@ EOF;
             // Return the modified or unmodified GeoJSON object
             return JSON.stringify(geojsonData);
         }
-        
-        Loader.load(null, {suggest: true}); // naseptavac
-        EOF;
+        JS;
 
     }
 
@@ -315,6 +356,7 @@ EOF;
         $input_value = safe($value->getValue());
 
         $msg_search = _m('Search');
+
         $load_from_fld_btn = ( $load_from_fld = $this->getProperty('load_from_fld', '') ) ? "<input type=button id=\"copyaddr$js_id\" value=\"" . _m('Load from address') . "\" onclick=\"AA_$('#adresa4suggest$js_id').value=getField('$load_from_fld');AA_$('#adresa4suggest$js_id').dispatchEvent(new Event('input'));\">" : '';
 
         $use_string = _m("Use");
@@ -326,7 +368,8 @@ EOF;
                       <div><input $attr_string name="$input_name" id="$input_id" value="$input_value" $required></div>
                       <div class="aa-gps-suggest-box"  id="mapout$js_id">
                         <div class="aa-gps-suggest">
-                          <input type=search id="adresa4suggest$js_id" placeholder="$msg_search">
+                          <input type=search id="adresa4suggest$js_id" placeholder="$msg_search" onkeydown="if (event.key === 'Enter') event.preventDefault();" autocomplete="off" aria-autocomplete="list">
+                          <div class="aa-gps-suggest-options" id="optssuggest$js_id"></div>
                           $load_from_fld_btn
                           <input type=hidden id="coosuggest$js_id">
                         </div>

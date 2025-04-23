@@ -149,7 +149,8 @@ function json2arr($string, $do_not_filter=false) {
  * @param $string
  * @return array
  */
-function json2asoc($string) {
+function json2asoc($string): array
+{
     if (!strlen($string)) {
         return [];
     }
