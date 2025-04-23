@@ -683,7 +683,7 @@ class AA_Field_Slicedef extends AA_Field {
         $this->data['input_show_func']   = '';
         $this->widget_params             = (array)json_decode($fld_eval['_#FLD_PARM'], true);
         // equivalent of: $params[$name] = $property->isMulti() ? json2asoc($value) : $value;  // const_arr for widget uses this, for example
-        if (array_key_exists('const_arr', $this->widget_params)) {
+        if (array_key_exists('const_arr', $this->widget_params) AND is_string($this->widget_params['const_arr'])) {
             $this->widget_params['const_arr'] = json2asoc($this->widget_params['const_arr']);
         }
         $this->widget_params['class']    = Widget::constructClassName($fld_eval['_#FLD_TYPE']);
