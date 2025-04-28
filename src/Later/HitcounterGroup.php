@@ -16,7 +16,7 @@ use CVarset;
 class HitcounterGroup implements LaterInterface
 {
     /** @var bool|null caches if we use duration logging for speedup */
-    static ?int $duration_log_feature_from = null;
+    private static ?int $duration_log_feature_from = null;
 
     /** special function called from AA\Later\Toexecute class - used for queued tasks (ran form cron)
      * @param array $params - numeric array of additional parameters for the execution passed in time of call
@@ -39,7 +39,7 @@ class HitcounterGroup implements LaterInterface
 
         [$begin, $step] = $params;
 
-        if (self::$duration_log_feature_from AND (self::$duration_log_feature_from < $begin)) {
+        if (self::$duration_log_feature_from AND (self::$duration_log_feature_from <= ($begin+$step))) {
             $this->groupHitsDuration($begin, $step);
         } else {
             $this->groupHitsBasic($begin, $step);
@@ -92,7 +92,8 @@ class HitcounterGroup implements LaterInterface
     }
 
     /** group code for extended hit log - with duration stats */
-    protected function groupHitsDuration(int $begin, int $step) {
+    protected function groupHitsDuration(int $begin, int $step): void
+    {
         $time_cond = $this->getTimecondition($begin, $step);
 
         $hits = $this->countHitsDuration($time_cond);
@@ -120,7 +121,7 @@ class HitcounterGroup implements LaterInterface
     /** plan grouping tasks to toexecute queue
      *  - by default we plan all the task
      */
-    function plan($max_task = 0)
+    public function plan(int $max_task = 0): void
     {
         $oldest = GetTable2Array("SELECT min( time ) as oldest FROM `hit_archive`", 'aa_first', 'oldest');
         $grouping_start = mktime(0, 0, 0, date("m"), date("d") - 8, date("Y")); // week ago
@@ -133,7 +134,7 @@ class HitcounterGroup implements LaterInterface
             $toexecute->laterOnce($this, [$begin, $step], "HitcounterGroup_$begin", 40, time() + 60 * 60 * 24); // once a day
 
             // by default, we plan all the task
-            if (++$no_task == $max_task) {
+            if (++$no_task === $max_task) {
                 break;
             }
         }

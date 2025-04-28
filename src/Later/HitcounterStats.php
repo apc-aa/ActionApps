@@ -10,7 +10,7 @@ use AA\IO\DB\DB_AA;
 class HitcounterStats implements LaterInterface
 {
 
-    /** For which slice we will cout the hits */
+    /** For which slice we will count the hits */
     var $slice_id;
 
     /** For which field we will cont the hits (hit_1...., hit_2...) */
