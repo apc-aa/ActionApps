@@ -2017,21 +2017,21 @@ class AA_Stringexpand_Range extends AA_Stringexpand_Nevercache {
      */
     function expand($intvalues='') {
         $ranges = [];
-        $vals    = explode('-',$intvalues);
+        $vals   = array_map('intval', explode_ids($intvalues));
         natsort($vals);
         $from    = null;
         $last    = null;
         foreach ($vals as $val) {
             if (is_null($from)) {
                 $from = $val;
-            } elseif ($val != $last+1) {
-                $ranges[] = ($from == $last) ? $from : $from.'-'.$last;
+            } elseif ($val !== $last+1) {
+                $ranges[] = ($from === $last) ? $from : $from.'-'.$last;
                 $from = $val;
             }
             $last = $val;
         }
         if (!is_null($from)) {
-            $ranges[] = ($from == $last) ? $from : $from.'-'.$last;
+            $ranges[] = ($from === $last) ? $from : $from.'-'.$last;
         }
         return implode(', ',$ranges);
     }
@@ -5002,7 +5002,7 @@ class AA_Stringexpand_Edit extends AA_Stringexpand_Nevercache {
      * @param null $function
      * @param null $widget_type
      * @param $widget_properties
-     * @return string|void
+     * @return string
      */
     function expand($item_id='', $field_id='', $required=null, $function=null, $widget_type=null, $widget_properties=null) {
         return $this->_getWidget('getOnlyHtml',$item_id, $field_id, $required, $function, $widget_type, $widget_properties);
@@ -5018,7 +5018,8 @@ class AA_Stringexpand_Edit extends AA_Stringexpand_Nevercache {
      * @param $widget_properties
      * @return string
      */
-    protected function _getWidget($type, $item_id, $field_id, $required, $function, $widget_type, $widget_properties) {
+    protected function _getWidget($type, $item_id, $field_id, $required, $function, $widget_type, $widget_properties): string
+    {
         $ret = '';
         if ( $field_id) {
             $itemcontent = $item_id ? new ItemContent($item_id) : ($this->item ? $this->item->getItemContent() : null );
@@ -5066,7 +5067,7 @@ class AA_Stringexpand_Editfull extends AA_Stringexpand_Edit {
      * @param null $required
      * @param null $function
      * @param null $widget_type
-     * @return string|void
+     * @return string
      */
     function expand($item_id='', $field_id='', $required=null, $function=null, $widget_type=null, $widget_properties=null) {
         return $this->_getWidget('getHtml',$item_id, $field_id, $required, $function, $widget_type, $widget_properties);
@@ -5092,7 +5093,7 @@ class AA_Stringexpand_Live extends AA_Stringexpand_Edit {
      * @param null $required
      * @param null $function
      * @param null $widget_type
-     * @return string|void
+     * @return string
      */
     function expand($item_id='', $field_id='', $required=null, $function=null, $widget_type=null, $widget_properties=null) {
         return $this->_getWidget('getLiveHtml',$item_id, $field_id, $required, $function, $widget_type, $widget_properties);
