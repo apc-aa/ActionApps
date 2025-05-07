@@ -952,7 +952,7 @@ class AA_Item {
             $time = (int)$time/1000000000; // convert to seconds from nanotime()
         }
         $dstr = (string)date($param, (int)max(-2147483647,min(100000000000,$time)));
-        return (($param !== "H:i") ? $dstr : ( ($dstr=="00:00") ? "" : $dstr ));
+        return (($param !== "H:i") ? $dstr : ( ($dstr==="00:00") ? "" : $dstr ));
     }
 
     /** f_i function

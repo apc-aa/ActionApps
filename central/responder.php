@@ -165,20 +165,20 @@ class AA_Responder_Do_Import_Module_Chunk extends AA_Responder {
 
 /** return html widget for the field of item */
 class AA_Responder_Get_Widget extends AA_Responder {
-    protected $field_id;
-    protected $item_id;
-    protected $widget_type;
-    protected $widget_properties;
-    protected $lang;
-    protected $context;   // slice_pwd (spwd) for now
+    protected string $field_id;
+    protected string $item_id;
+    protected string $widget_type;
+    protected string $widget_properties;
+    protected string $lang;
+    protected string $context;   // slice_pwd (spwd) for now
 
     function __construct($param=null) {
-        $this->field_id             = $param['field_id'];
-        $this->item_id              = $param['item_id'];
-        $this->widget_type          = $param['widget_type'];
-        $this->widget_properties    = $param['widget_properties'];
-        $this->lang                 = $param['lang'];
-        $this->context              = $param['context'];
+        $this->field_id             = (string)$param['field_id'];
+        $this->item_id              = (string)$param['item_id'];
+        $this->widget_type          = (string)$param['widget_type'];
+        $this->widget_properties    = (string)$param['widget_properties'];
+        $this->lang                 = (string)$param['lang'];
+        $this->context              = (string)$param['context'];
     }
 
     function isPerm() { return true; }  //return true;

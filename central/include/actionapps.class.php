@@ -43,7 +43,7 @@ class AA_Actionapps {
      */
 
     /** local data (central_conf table) in ItemContent structure */
-    var $local_data;
+    private ItemContent $local_data;
 
     var $last_error = '';
 
@@ -68,7 +68,7 @@ class AA_Actionapps {
      *    'FILEMAN_UPLOAD_TIME_LIMIT', 'AA_ADMIN_USER', 'AA_ADMIN_PWD',
      *    'status_code'));
      */
-    function __construct($content4id) {
+    function __construct(ItemContent $content4id) {
         $this->local_data          = $content4id;
         $this->_remote_session_id  = null;
         $this->_remote_session_id_time  = 0;
@@ -91,7 +91,8 @@ class AA_Actionapps {
     }
 
     /** url of remote AAs - like "https://example.org/apc-aa/"  */
-    function getComunicatorUrl() {
+    function getComunicatorUrl(): string
+    {
         return Files::makeFile($this->getValue('AA_HTTP_DOMAIN'). $this->getValue('AA_BASE_DIR'), 'central/responder.php');
     }
 

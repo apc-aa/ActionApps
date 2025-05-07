@@ -96,16 +96,16 @@ class Linkcheck {
         '505'   => ["comment" => "HTTP Version Not Supported", "weight" => "5"],
     ];
 
-    /** check_irl function
-     *  check url - returns error codes, content type, error weight and comment
+    /** check url - returns error codes, content type, error weight and comment
      * @param $url
      * @return array
      */
     function check_url($url) {
         $return = [];
         $time   = time();
-        if (!preg_match("~^https?://~i", $url)) {
-            if (preg_match("/^mailto:/i", $url)) {
+        $url_part = aa_strtolower(substr($url, strrpos($url, 10)));
+        if (!str_starts_with($url_part, 'http://') && !str_starts_with($url_part, 'https://')) {
+            if (str_starts_with($url_part, 'mailto:')) {
                 $url = trim(preg_replace("/^mailto:(.+)/i", "\\1", $url));
                 [$brugernavn, $host] = explode("@", $url);
                 $dnsCheck = checkdnsrr($host, "MX");
