@@ -44,10 +44,10 @@ class FileLock {
     var $filename;
     /** boolean, true if the lock is locked, i.e. the file exists and was
     *   created by this object */
-    var $locked;
+    var $locked = false;
     /** boolean, true if the file could not be created or deleted in the last operation
     *   because of missing permissions. Every operation resets this flag. */
-    var $last_error;
+    var $last_error = false;
 
     /** FileLock function
      * Constructor: takes full path to the lock file.
@@ -55,8 +55,6 @@ class FileLock {
      */
     function __construct($filename) {
         $this->filename = $filename;
-        $this->locked = false;
-        $this->last_error = false;
     }
 
     /** Lock function

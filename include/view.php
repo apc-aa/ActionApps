@@ -90,7 +90,7 @@ class ViewCommand {
 class AA_View_Commands {
 
     /** @var ViewCommand[] */
-    var $commands;     /** array of objects of ViewCommand class */
+    var $commands = [];     /** array of objects of ViewCommand class */
 
     /** AA_View_Commands function
      *  constructor - calls parseCommand()
@@ -98,7 +98,6 @@ class AA_View_Commands {
      * @param $als
      */
     function __construct($cmd, $als=false) {
-        $this->commands = [];
         $this->parseCommand($cmd, $als);
     }
 

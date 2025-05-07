@@ -385,7 +385,7 @@ require_once __DIR__ . "/item_content.php";  // for ItemContent class
 class AA_Perm {
 
     /** @var AA_Permsystem[] */
-    private $perm_systems;
+    private $perm_systems = [];
 
     /** @var $perm_mode - '' | 'cron' - currently used only for toexecute task for ANONYMOUS_EDIT_CRON permission  */
     private $perm_mode;
@@ -445,7 +445,6 @@ class AA_Perm {
             // user. (S)he can just add links
 
     function __construct($systems) {
-        $this->perm_systems = [];
         foreach ($systems as $system_name) {
             $system_name = 'AA_Permsystem_' . ucfirst($system_name);
             $this->perm_systems[$system_name] = new $system_name;

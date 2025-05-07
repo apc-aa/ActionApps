@@ -239,11 +239,9 @@ class Session {
     */
     function set_id($sid = '') {
         if ($sid = (string)$sid) {
-            $ok = session_id($sid);
-        } else {
-            $ok = session_id();
+            return session_id($sid);
         }
-        return $ok;
+        return session_id();
     } // end func id
 
     /**

@@ -407,20 +407,18 @@ class AA_Fieldset {
      *  (element could be "headline........" as well as "_#HEADLINE _#ABSTRACT")
      *  the type is stored in $_type array
      */
-    var $_fields;
+    var $_fields = [];
 
     /** array of types of fields - corresponds to $_fields array
      *  values are [f|a]  (= field | aliases )
      */
-    var $_types;
+    var $_types = [];
 
     /** array of field names - corresponds to $_fields array    */
-    var $_names;
+    var $_names = [];
 
-    function __construct() {
-        $this->_fields = [];
-        $this->_types  = [];
-        $this->_names  = [];
+    function __construct()
+    {
     }
 
     function addField($field_id, $field_name='') {

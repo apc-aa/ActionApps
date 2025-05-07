@@ -266,7 +266,10 @@ class PhpConsole {
     }
 
     protected function sendEventToClient(PhpConsoleEvent $event) {
-        if(!self::$isEnabledOnClient || self::$isDisabled) {
+        if (!self::$isEnabledOnClient) {
+            return;
+        }
+        if (self::$isDisabled) {
             return;
         }
         $message = [];
@@ -414,10 +417,13 @@ class PhpConsole {
         $event->trace = debug_backtrace();
 
         $this->handle($event);
-
-        if(self::$callOldErrorHandler && $this->oldErrorHandler) {
-            call_user_func_array($this->oldErrorHandler, [$code, $message, $file, $line]);
+        if (!self::$callOldErrorHandler) {
+            return;
         }
+        if (!$this->oldErrorHandler) {
+            return;
+        }
+        call_user_func_array($this->oldErrorHandler, [$code, $message, $file, $line]);
     }
 
     /***************************************************************
@@ -440,11 +446,14 @@ class PhpConsole {
         $event->trace = $exception->getTrace();
 
         $this->handle($event);
-
         // TODO: check if need to throw
-        if(self::$callOldExceptionsHandler && $this->oldExceptionsHandler) {
-            call_user_func($this->oldExceptionsHandler, $exception);
+        if (!self::$callOldExceptionsHandler) {
+            return;
         }
+        if (!$this->oldExceptionsHandler) {
+            return;
+        }
+        call_user_func($this->oldExceptionsHandler, $exception);
     }
 
     /***************************************************************

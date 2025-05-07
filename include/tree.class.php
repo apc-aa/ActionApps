@@ -27,19 +27,17 @@
 
 
 class AA_Supertree {
-    protected array $_i;        // Array of items
+    protected array $_i = [];        // Array of items
     protected $_relation_field;  //
     protected $_sort;     // sort array().
                           // Currently wors only for Reverse trees. @todo
-    protected array $_modules;  // Array of modules
+    protected array $_modules = [];  // Array of modules
 
     protected $_restrict_slices;  // Array of allowed slices
 
     function __construct($relation_field, $sort=null, $slices= []) {
         $this->_relation_field  = $relation_field;
         $this->_sort            = $sort;
-        $this->_i               = [];
-        $this->_modules         = [];
         $this->_restrict_slices = $slices;
     }
 
@@ -119,22 +117,24 @@ class AA_Supertree {
         $ret = '';
         $xid = end($current_ids);
 
-        foreach($ids as $mid) {
-            if ($item = AA_Items::getItem(new zids($mid, 'l'))) {
-                if ($menu_txt = trim($item->subst_alias($code))) {
-                    $inpath = in_array($mid, $current_ids) ? 'inpath' : '';
-                    if ($expanded OR $inpath) {
-                        $this->load($mid);
-                        $sub  = empty($this->_i[$mid]) ? '' : $this->getMenu($this->_i[$mid], $current_ids, $code, true, $expanded, $exp_button);
-                        $ret .= '  <li id="menu-'.$mid.'" class="'.$inpath.($mid==$xid  ? ' xidmatch':'').'">';
-                        $ret .= $menu_txt;
-                        $ret .= ($exp_button AND strlen($sub)) ? '<i class=aa-ico-expand onclick="this.closest(\'li\').classList.toggle(\'inpath\');"></i>' : '' ;
-                        $ret .= $sub;
-                        $ret .= "</li>\n";
-                    } else {
-                        $ret .= "  <li id=\"menu-$mid\">$menu_txt</li>\n";
-                    }
-                }
+        foreach ($ids as $mid) {
+            if (!($item = AA_Items::getItem(new zids($mid, 'l')))) {
+                continue;
+            }
+            if (!($menu_txt = trim($item->subst_alias($code)))) {
+                continue;
+            }
+            $inpath = in_array($mid, $current_ids) ? 'inpath' : '';
+            if ($expanded OR $inpath) {
+                $this->load($mid);
+                $sub  = empty($this->_i[$mid]) ? '' : $this->getMenu($this->_i[$mid], $current_ids, $code, true, $expanded, $exp_button);
+                $ret .= '  <li id="menu-'.$mid.'" class="'.$inpath.($mid==$xid  ? ' xidmatch':'').'">';
+                $ret .= $menu_txt;
+                $ret .= ($exp_button AND strlen($sub)) ? '<i class=aa-ico-expand onclick="this.closest(\'li\').classList.toggle(\'inpath\');"></i>' : '' ;
+                $ret .= $sub;
+                $ret .= "</li>\n";
+            } else {
+                $ret .= "  <li id=\"menu-$mid\">$menu_txt</li>\n";
             }
         }
         if (!$inner AND $ret AND (false !== ($pos = strrpos($ret, 'class="inpath')))) {

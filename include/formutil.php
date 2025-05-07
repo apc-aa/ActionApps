@@ -3105,29 +3105,28 @@ function FrmItemGroupSelect( $items, $searchbar, $selected, $list_type, $message
 function getZidsFromGroupSelect($group, $items, $searchbar): zids {
     global $slice_id;
     if ( (string)$group === 'sel_item' ) {  // user specified users
-        $zids = (new zids())->setFromItemArr($items);
-    } else {                   // user defined by bookmark
-        $conds = false;
-        $sort  = false;
-        $bins  = null;
-        switch ((string)$group) {
-            case 'AA_BIN_ACTIVE':  $bins = AA_BIN_ACTIVE;  break;
-            case 'AA_ALL':         $bins = AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING | AA_BIN_TRASH;  break;
-            case 'AA_BIN_PENDING': $bins = AA_BIN_PENDING; break;
-            case 'AA_BIN_EXPIRED': $bins = AA_BIN_EXPIRED; break;
-            case 'AA_BIN_HOLDING': $bins = AA_BIN_HOLDING; break;
-            case 'AA_BIN_TRASH':   $bins = AA_BIN_TRASH;   break;
-            default:
-                if ( $searchbar->setFromBookmark($group) ) {
-                    $set   = $searchbar->getSet();
-                    $bins  = AA_BIN_ACTIVE;
-                    $conds = $set->getConds();
-                    $sort  = $set->getSort();
-                }
-        }
-        $zids  = is_null($bins) ? new zids() : QueryZids( [$slice_id], $conds, $sort,  $bins);
+        return (new zids())->setFromItemArr($items);
     }
-    return $zids;
+    // user defined by bookmark
+    $conds = false;
+    $sort  = false;
+    $bins  = null;
+    switch ((string)$group) {
+        case 'AA_BIN_ACTIVE':  $bins = AA_BIN_ACTIVE;  break;
+        case 'AA_ALL':         $bins = AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING | AA_BIN_TRASH;  break;
+        case 'AA_BIN_PENDING': $bins = AA_BIN_PENDING; break;
+        case 'AA_BIN_EXPIRED': $bins = AA_BIN_EXPIRED; break;
+        case 'AA_BIN_HOLDING': $bins = AA_BIN_HOLDING; break;
+        case 'AA_BIN_TRASH':   $bins = AA_BIN_TRASH;   break;
+        default:
+            if ( $searchbar->setFromBookmark($group) ) {
+                $set   = $searchbar->getSet();
+                $bins  = AA_BIN_ACTIVE;
+                $conds = $set->getConds();
+                $sort  = $set->getSort();
+            }
+    }
+    return is_null($bins) ? new zids() : QueryZids( [$slice_id], $conds, $sort,  $bins);
 }
 
 /** FrmItemListForm function

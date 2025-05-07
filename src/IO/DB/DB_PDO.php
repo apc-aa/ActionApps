@@ -361,9 +361,13 @@ class DB_PDO  {
         $this->getErrorInfo();
 
         $stat = is_array($this->Record);
-        if (!$stat && $this->Auto_Free) {
-            $this->free();
+        if ($stat) {
+            return $stat;
         }
+        if (!$this->Auto_Free) {
+            return $stat;
+        }
+        $this->free();
         return $stat;
     }
 
@@ -706,9 +710,8 @@ class DB_PDO  {
         }
         if ($stmt = $this->dbh->query($q)) {
             return $stmt->fetchColumn();
-        } else {
-            return false;
         }
+        return false;
     }
 
     function getErrorInfo() {

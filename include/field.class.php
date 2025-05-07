@@ -502,7 +502,7 @@ class AA_Field implements ArrayAccess, Countable, Iterator {
         $ret = [];
         $inserter_params = AA_Inserter::parseClassProperties($this->data['input_insert_func']);
         if (array_key_exists('otherfield', $inserter_params) AND trim($inserter_params['otherfield']) !== '') {
-            $ret = array_filter(array_map('trim', explode("##",$inserter_params['otherfield'])), 'strlen');
+            return array_filter(array_map('trim', explode("##",$inserter_params['otherfield'])), 'strlen');
         }
         return $ret;
     }
@@ -747,7 +747,7 @@ class AA_Fields implements Iterator, Countable {
     ];
 
     /**  @var AA_Field[] - array of object of AA_Field type */
-    protected array $fields;
+    protected array $fields = [];
 
     /** id of slice/module ... for which the fields are used */
     protected string $master_id;
@@ -760,10 +760,10 @@ class AA_Fields implements Iterator, Countable {
     protected int $collection;
 
     /** Array of aliases - for caching purposes */
-    protected ?array $aliases;
+    protected ?array $aliases = null;
 
-    protected bool $loaded_all;
-    protected int $lazy_loaded_no;
+    protected bool $loaded_all = false;
+    protected int $lazy_loaded_no = 0;
 
     /** AA_Fields function
      * @param string $master_id
@@ -771,11 +771,7 @@ class AA_Fields implements Iterator, Countable {
      */
     function __construct(string $master_id, int $collection = 0) {
         $this->master_id      = $master_id;
-        $this->fields         = [];
         $this->collection     = $collection;
-        $this->aliases        = null;
-        $this->loaded_all     = false;
-        $this->lazy_loaded_no = 0;
     }
 
     /** use instead of constructor - there was multiple AA_Fields for the same slice - in getSearchFields() */

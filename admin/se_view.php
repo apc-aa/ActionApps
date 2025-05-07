@@ -412,13 +412,15 @@ if ( !$update ) {  // set variables from database
 
     // split for datafield fields
     foreach ($VIEW_FIELDS as $k => $v) {
-        if ($view_field_names[$k]) {
-            if ($v["input"] === "bitflag") {
-                $num         = (preg_match('/^(\D+)(\d+)$/', $k, $matches) ? (int)$matches[2] : 0);
-                $fld         = $matches[1];
-                $vw_data[$k] = (bool)($vw_data[$fld] & (2 ** $num));
-            }
+        if (!$view_field_names[$k]) {
+            continue;
         }
+        if ($v["input"] !== "bitflag") {
+            continue;
+        }
+        $num         = (preg_match('/^(\D+)(\d+)$/', $k, $matches) ? (int)$matches[2] : 0);
+        $fld         = $matches[1];
+        $vw_data[$k] = (bool)($vw_data[$fld] & (2 ** $num));
     }
 
     if ( $vw_data ) {

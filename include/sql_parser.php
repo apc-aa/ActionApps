@@ -311,14 +311,13 @@ class SQL_Lex {
 
 class TokenList {
     protected $tList;
-    protected $index;
+    protected $index = 0;
 
     /** TokenList function
      * @param $t
      */
     function __construct($t) {
         $this->tList = $t;
-        $this->index = 0;
     }
 
     /** lookAhead function  */

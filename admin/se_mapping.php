@@ -41,7 +41,7 @@ try {
     // array ( '4429a8e44bb…' => 4, 'dcf6f197e02…' => 1, 'e1f2cde4860…' => 1, '164ced40da0…' => 6, )
     $from_slice_id = InputVars::idGET('from_slice_id');
     $rssfeed_id    = InputVars::intGET('rssfeed_id'); // optional - for link from rss admin apge
-    
+
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception) {}
 

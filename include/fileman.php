@@ -198,10 +198,12 @@ function get_file_array($path, $dirname) {
     else {
         while ($filename = readdir ($dir)) {
             // don't allow to jump higher from base dir
-            if ($filename === "." || ($filename === ".." && !$dirname)) {
+            if ($filename === ".") {
                 continue;
             }
-
+            if ($filename === ".." && !$dirname) {
+                continue;
+            }
             $filepath = $dirname.$filename;
             if ($filename === "..") {
                 $i = strlen ($dirname)-2;
@@ -272,9 +274,13 @@ function file_table($path, $dirname) {
 function is_dir_empty($dirname) {
     if ($dir = @opendir($dirname)) {
         while ($filename = readdir ($dir)) {
-            if ($filename !== "." && $filename !== "..") {
-                return false;
+            if ($filename === ".") {
+                continue;
             }
+            if ($filename === "..") {
+                continue;
+            }
+            return false;
         }
     }
     else {

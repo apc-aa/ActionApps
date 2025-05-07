@@ -41,19 +41,14 @@ require_once __DIR__ . "/../../modules/alerts/util.php";
 class AA_Collection {
 
     var $id;                 /** Collection ID   */
-    var $reader_slice_id;    /** Slice id of Reder slice */
-    var $alerts_module_id;   /** Module id of Alerts */
-    var $email_id_welcome;   /** Id of welcome email template */
-    var $email_id_alert;     /** Id of alert email template */
-    var $slice_url;          /** Used for caching of slice_url */
+    var $reader_slice_id = null;    /** Slice id of Reder slice */
+    var $alerts_module_id = null;   /** Module id of Alerts */
+    var $email_id_welcome = null;   /** Id of welcome email template */
+    var $email_id_alert = null;     /** Id of alert email template */
+    var $slice_url = null;          /** Used for caching of slice_url */
 
     function __construct($collection_id) {
         $this->id               = $collection_id;
-        $this->reader_slice_id  = null;
-        $this->alerts_module_id = null;
-        $this->email_id_welcome = null;
-        $this->email_id_alert   = null;
-        $this->slice_url        = null;
     }
 
     protected function getProp( $property ) {

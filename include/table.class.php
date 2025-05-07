@@ -32,9 +32,9 @@ class AA_Table {
 
     /** long item id of the tree root */
     var $id;
-    var $rows;
-    var $colindex;  // Array of column indexes
-    var $attrs;     // Array of attribute names
+    var $rows = [];
+    var $colindex = [];  // Array of column indexes
+    var $attrs = [];     // Array of attribute names
 
     /** Constructor
      * @param $id
@@ -42,9 +42,6 @@ class AA_Table {
      */
     function __construct($id) {
         $this->id       = $id;
-        $this->rows     = [];
-        $this->colindex = [];
-        $this->attrs    = [];
     }
 
     function set($r, $c, $value, $attribute='') {
@@ -137,7 +134,7 @@ class AA_Table {
             $ret .= '</tr>';
         }
         if ($ret) {
-            $ret = '<table>'.$ret.'</table>';
+            return '<table>'.$ret.'</table>';
         }
         return $ret;
     }
@@ -150,14 +147,13 @@ class AA_Table {
 class AA_Array {
 
     var $id;
-    var $arr;
+    var $arr = [];
 
     /** Constructor
      * @param $id
      */
     function __construct($id) {
         $this->id      = $id;
-        $this->arr     = [];
     }
 
     function set($i, $value) {

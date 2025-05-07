@@ -75,7 +75,7 @@ try {
 
     $value = InputVars::arrayPOST('value');
     $cancel = InputVars::boolPOST('cancel');
-    
+
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception) {}
 

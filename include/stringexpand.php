@@ -176,11 +176,9 @@ function aa_json_decode($string, $asoc=false) {
         if ( ($arr = json_decode(ConvertEncoding($string, AA::$encoding),$asoc)) === null) {
             return [];
         }
-        $values = ConvertEncodingDeep($arr,'utf-8', AA::$encoding);
-    } else {
-        $values = json_decode($string,$asoc) ?: [];
+        return ConvertEncodingDeep($arr,'utf-8', AA::$encoding);
     }
-    return $values;
+    return json_decode($string,$asoc) ?: [];
 }
 
 
@@ -322,13 +320,16 @@ class AA_Stringexpand_User extends AA_Stringexpand {
             case 'password': return $_SERVER['PHP_AUTH_PW'];
             case 'role' : // returns users permission to slice
             case 'permission' :
-                if ( IfSlPerm(AA_Perm::ROLES['SUPER']['perm']) ) {
+                if (IfSlPerm(AA_Perm::ROLES['SUPER']['perm'])) {
                     return 'super';
-                } elseif ( IfSlPerm(AA_Perm::ROLES['ADMINISTRATOR']['perm'] ) ) {
+                }
+                if (IfSlPerm(AA_Perm::ROLES['ADMINISTRATOR']['perm'] )) {
                     return 'administrator';
-                } elseif ( IfSlPerm(AA_Perm::ROLES['EDITOR']['perm'] ) ) {
+                }
+                elseif ( IfSlPerm(AA_Perm::ROLES['EDITOR']['perm'] ) ) {
                     return 'editor';
-                } elseif ( IfSlPerm(AA_Perm::ROLES['AUTHOR']['perm'] ) ) {
+                }
+                elseif ( IfSlPerm(AA_Perm::ROLES['AUTHOR']['perm'] ) ) {
                     return 'author';
                 }
                 return 'undefined';
@@ -6070,7 +6071,6 @@ class AA_Stringexpand_Include extends AA_Stringexpand {
 function expandFilenameWithHttp($parturl, string $type='', array $headers=[], $data='', $err=''): false|string
 {
     $filename = str_replace( 'URL_PARAMETERS', DeBackslash(shtml_query_string()), $parturl);
-
     // filename do not use colons as separators => dequote before callig
     if (!$filename || trim($filename)==='') {
         return '';
@@ -6719,7 +6719,7 @@ class AA_Stringexpander implements \AA\Later\LaterInterface {
             $out = str_replace($search_arr, $replace_arr, $out);
         }
         if (count($search_arr2)) {
-            $out = str_replace($search_arr2, $replace_arr2, $out);
+            return str_replace($search_arr2, $replace_arr2, $out);
         }
         return $out;
     }
@@ -9693,10 +9693,13 @@ class AA_Stringexpand_Changepwd  extends AA_Stringexpand_Nevercache {
 
         if (isset($_POST['aapwd3'])) {    // Change Password
             return AA_Password_Manager_Reader::changePassword($_POST['aapwd3'], $_POST['aapwd3b'], $_POST['aakey'], $_POST['aauser'],$from_email);
-        } elseif (isset($_GET['aapwd2'])) {
+        }
+
+        if (isset($_GET['aapwd2'])) {
             [$key, $user] = explode('-',$_GET['aapwd2']);
             return AA_Password_Manager_Reader::getChangeForm($key, $user);
-        } elseif (isset($_REQUEST['aapwd1'])) {        // Check User
+        }
+        elseif (isset($_REQUEST['aapwd1'])) {        // Check User
             return AA_Password_Manager_Reader::askForMail($_REQUEST['aapwd1'], $reader_slice_id, $from_email);
         }
 

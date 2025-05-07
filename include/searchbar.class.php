@@ -112,8 +112,8 @@ class AA_Searchbar extends AA_Storable {
     protected $form_name;       // name of the form (for submit)
 
     /** @var AA_Searchbar_Row[]   */
-    protected $search_row;     // internal array - stores current state of search rows
-    protected $order_row;      // internal array - stores current state of order rows
+    protected $search_row = [];     // internal array - stores current state of search rows
+    protected $order_row = [];      // internal array - stores current state of order rows
     protected $bookmarks;      // internal object - stores bookmarks (stored queries)
 
     // state variables (class settings)
@@ -153,9 +153,7 @@ class AA_Searchbar extends AA_Storable {
         $this->search_row_count_min = $search_row_count_min;
         $this->order_row_count_min  = $order_row_count_min;
         $this->add_empty_search_row = $add_empty_search_row;
-        $this->bookmarks            = new AA_Bookmarks($module_id); // stores bookmarks (stored queries)
-        $this->search_row           = [];          // internal array - stores current state of search rows
-        $this->order_row            = [];          // internal array - stores current state of order rows
+        $this->bookmarks            = new AA_Bookmarks($module_id);          // internal array - stores current state of order rows
         $this->show                 = is_null($show) ? (MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS) : $show;
         $this->hint                 = $hint;
         $this->hint_url             = $hint_url;
@@ -671,7 +669,6 @@ class AA_Bookmarks {
      * constructor
      */
     function __construct($module_id) {
-        $this->bookmarks = [];               // reset
         if ($module_id) {
             $this->profile = AA_Profile::getProfile(AuthGetUid(), $module_id); // current user settings
             $this->setFromProfile();

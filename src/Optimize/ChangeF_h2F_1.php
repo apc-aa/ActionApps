@@ -42,7 +42,10 @@ class ChangeF_h2F_1 extends AbstractOptimize {
             foreach ($s_fields as $fld) {
                 foreach (['alias1', 'alias2', 'alias3',] as $aliasfld) {
                     $alias = $fld[$aliasfld];
-                    if (($alias === '_#UNDEFINE') || !trim($alias)) {
+                    if ($alias === '_#UNDEFINE') {
+                        continue;
+                    }
+                    if (!trim($alias)) {
                         continue;
                     }
                     if ($msg = $this->fieldtest($fld, $aliasfld)) {
@@ -66,7 +69,10 @@ class ChangeF_h2F_1 extends AbstractOptimize {
             foreach ($s_fields as $fld) {
                 foreach (['alias1', 'alias2', 'alias3',] as $aliasfld) {
                     $alias = $fld[$aliasfld];
-                    if (($alias === '_#UNDEFINE') || !trim($alias)) {
+                    if ($alias === '_#UNDEFINE') {
+                        continue;
+                    }
+                    if (!trim($alias)) {
                         continue;
                     }
                     if ($this->fieldtest($fld, $aliasfld)) {

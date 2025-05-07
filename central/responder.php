@@ -353,14 +353,13 @@ class AA_Responder_Widget_Selection extends AA_Responder {
     protected string $slice_id;
     protected string $input;
     protected string $field_id;
-    protected int    $limit;
+    protected int    $limit = 50;
 
     function  __construct($param=null) {
         // the slice id and the field id defines the field, where the widget is DEFINED
         $this->slice_id = (string)$param['s'];
         $this->field_id = (string)$param['f'];
         $this->input    = (string)$param['q'];
-        $this->limit    = 50;
     }
 
     function isPerm() { return true; }
@@ -422,11 +421,12 @@ class AA_Responder_Alertitem extends AA_Responder {
     }
 
     function isPerm() {
-        if (is_long_id($this->item_id)) {
-            if ($item = AA_Items::getItem(new zids($this->item_id, 'l'))) {
-                // @todo should we check also collection_id???
-                return IfSlPerm(PS_EDIT_ALL_ITEMS, $item->getSliceID());
-            }
+        if (!is_long_id($this->item_id)) {
+            return false;
+        }
+        if ($item = AA_Items::getItem(new zids($this->item_id, 'l'))) {
+            // @todo should we check also collection_id???
+            return IfSlPerm(PS_EDIT_ALL_ITEMS, $item->getSliceID());
         }
         return false;
     }

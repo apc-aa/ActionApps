@@ -45,21 +45,10 @@ class AA_Slice_Exporter {
     /**
      * @var ConvertCharset|null
      */
-    protected $_encoder;
+    protected $_encoder = null;
 
-    function __construct(
-        protected $type,
-        protected $gzip,
-        protected $struct,
-        protected $data,
-        protected $spec_date,
-        protected $from_date,
-        protected $to_date,
-        protected $hex,
-        protected $views,
-        protected $to_utf,
-    ) {
-        $this->_encoder   = null;
+    function __construct(protected $type, protected $gzip, protected $struct, protected $data, protected $spec_date, protected $from_date, protected $to_date, protected $hex, protected $views, protected $to_utf)
+    {
     }
 
     /** exportOneSliceStruct function
@@ -319,11 +308,9 @@ class AA_Slice_Exporter {
             if ($this->gzip) {
                 $content = gzcompress($content);
             }
-            $content = safe(base64_encode($content));
-        } else {
-            $content = xml_serialize($type, $content, "\n", "    ", $add);
+            return safe(base64_encode($content));
         }
-        return $content;
+        return xml_serialize($type, $content, "\n", "    ", $add);
     }
 
     function convertToUtf($text) {

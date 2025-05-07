@@ -38,15 +38,15 @@ class AA_Scroller extends AA_Storable {
     protected ?string $urldefault;	   /** cache self url   */
     protected ?bool   $show_all;	   /** if true, scroller will show also 'All' option */
 
-    protected string $scroller_delimiter;
-    protected string $scroller_begin;
-    protected string $scroller_end;
-    protected string $scroller_add;
-    protected string $scroller_nopage;
+    protected string $scroller_delimiter = ' ';
+    protected string $scroller_begin = '';
+    protected string $scroller_end = '';
+    protected string $scroller_add = '';
+    protected string $scroller_nopage = '';
     protected string $scroller_next;
     protected string $scroller_previous;
     protected string $scroller_all;
-    protected string $scroller_length;
+    protected int $scroller_length = SCROLLER_LENGTH;
 
 
 
@@ -81,16 +81,9 @@ class AA_Scroller extends AA_Storable {
         $this->itmcnt     = (int)$itmcnt;
         $this->go2page(floor( $current/$this->listlen ) + 1); // sets $this->current
         $this->show_all   = $show_all;
-
-        $this->scroller_delimiter = ' ';
-        $this->scroller_begin     = '';
-        $this->scroller_end       = '';
-        $this->scroller_add       = '';
-        $this->scroller_nopage    = '';
         $this->scroller_next      = _m("Next");
         $this->scroller_previous  = _m("Previous");
         $this->scroller_all       = _m("All");
-        $this->scroller_length    = SCROLLER_LENGTH;
     }
 
     /** factory scroller from itemview object */

@@ -29,11 +29,11 @@ class Slice extends AbstractGrabber
     /** @var array possible subset of fields - used in {updateitem:...} for field value update */
     protected $restrict_fields;
 
-    private $_longids;
+    private $_longids = [];
     /** list if files to grab - internal array */
-    private array $_content_cache;
+    private array $_content_cache = [];
     /**  */
-    private $_index;
+    private $_index = 0;
 
     /**  */
 
@@ -41,9 +41,6 @@ class Slice extends AbstractGrabber
         $this->set = $set;
         $this->restrict_zids = $restrict_zids;
         $this->restrict_fields = is_array($restrict_fields) ? $restrict_fields : false;
-        $this->_longids = [];
-        $this->_content_cache = [];
-        $this->_index = 0;
     }
 
     /** Name of the grabber - used for grabber selection box */

@@ -218,7 +218,7 @@ function SetColumnTypes(&$columns, &$primary_aliases, $default_table, $join="", 
                         echo "Define only the child (left) fields for join tables! Wrong alias: $alias";
                         exit;
                     }
-                    elseif ($cprop["view"]["type"] === "ignore") {
+                    if ($cprop["view"]["type"] === "ignore") {
                         echo "<h2>Column type for a primary key part must not be IGNORE.</h2>";
                         exit;
                     }

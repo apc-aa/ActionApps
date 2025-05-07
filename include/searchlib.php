@@ -1708,62 +1708,59 @@ function QueryZids($slices, $conds = "", $sort = "", $type = "ACTIVE", $neverAll
                         $sortable[$cf]  = $tbl;  // @todo - test if it works
                         $cond_flds      = '';
                         continue;
-                    } else {
-                        // second case - the remote slice is pointing to current one
-                        // Syntax is:
-                        //   <remote_field_id>@<remote_slice_id>/<remote_relation_field_id>
-                        //   headline........@7735375488a65e7735375488a65eab2a/relation.......1
-                        //   headline........@7735375488a65e7735375488a65eab2a+/relation.......1
-                        //   - search in headline field of all related items
-                        //     (relation.......1 field of the remote slice 7735375488a65e7735375488a65eab2a pointed to current item)
-                        //   - the + after <remote_slice_id> - 7735375488a65e7735375488a65eab2a+ means we want also non-ACTIVE items take in the account
-                        [$cond_fld_id, $rel_combi] = explode('@', $fid);
-                        [$rel_slice_id, $rel_fld_id] = explode('/', $rel_combi);
-                        $rel_bins = AA_BIN_ACTIVE;
-                        if (str_ends_with($rel_slice_id, '+')) {
-                            $rel_bins     = AA_BIN_ALL;
-                            $rel_slice_id = trim($rel_slice_id, '+');
-                        }
-                        $rel_slice = AA_Slice::getModule($rel_slice_id);
-                        if (!is_object($rel_slice)) {
-                            AA::$debug && AA::$dbg->warn("Skipping $fid in conds[]: $rel_slice_id is not slice.");
-                            continue;            // bad field_id or not defined condition - skip
-                        }
-
-                        $cond_field = $rel_slice->getField($cond_fld_id);
-                        if (!is_object($cond_field)) {
-                            AA::$debug && AA::$dbg->warn("Skipping $fid in conds[]: $cond_fld_id is not field of $rel_slice_id.");
-                            continue;            // bad field_id or not defined condition - skip
-                        }
-
-                        $rel_field = $rel_slice->getField($rel_fld_id);
-                        if (!is_object($rel_field)) {
-                            AA::$debug && AA::$dbg->warn("Skipping $fid in conds[]: $rel_fld_id is not field of $rel_slice_id.");
-                            continue;            // bad field_id or not defined condition - skip
-                        }
-
-                        $cond_flds = "'$cond_fld_id'";
-                        $rel_fld   = "'$rel_fld_id'";
-                        $tbl       = 'c' . $tbl_count++;
-                        $tbl2      = 'c' . $tbl_count++;
-                        if ($cond_field->storageTable() === 'item') {   // field is stored in table 'item'
-                            $rel_bins_cond = ($rel_bins != AA_BIN_ALL) ? " AND " . CreateBinCondition($rel_bins, $tbl2) : '';
-                            // Long ID in conds should be specified as unpacked, but in db it is packed
-                            $select_tabs[] = "LEFT JOIN content as $tbl  ON ($tbl.field_id=$rel_fld AND HEX(item.id)=$tbl.text)
-                                              LEFT JOIN item as $tbl2 ON ($tbl2.id=$tbl.item_id AND $tbl2.slice_id=" . xpack_id($rel_slice_id) . "$rel_bins_cond)";
-                        } else {
-                            $select_tabs[] = "LEFT JOIN content as $tbl  ON ($tbl.field_id=$rel_fld AND HEX(item.id)=$tbl.text)
-                                              LEFT JOIN content as $tbl2 ON ($tbl2.item_id=$tbl.item_id AND ($tbl2.field_id=$cond_flds OR $tbl2.field_id is NULL))";
-                        }
-                        $cur_cond = (new AA_Dbcondition($tbl2, $cond_field->storageColumn(), $cond['operator'], $cond['value']))->getWhereExp();
-//                        if (in_array($cond_flds, ['id..............', 'slice_id........'])) {
-//                            $cur_cond = preg_replace("/'([0-9a-f]{32})'/i", "0x\\1", $cur_cond);
-//                        }
-                        $select_conds[]                             = $cur_cond;
-                        $sortable[str_replace("'", "", $cond_flds)] = $tbl;  // @todo - test if it works
-                        $cond_flds                                  = '';
-                        continue;
                     }
+                    // second case - the remote slice is pointing to current one
+                    // Syntax is:
+                    //   <remote_field_id>@<remote_slice_id>/<remote_relation_field_id>
+                    //   headline........@7735375488a65e7735375488a65eab2a/relation.......1
+                    //   headline........@7735375488a65e7735375488a65eab2a+/relation.......1
+                    //   - search in headline field of all related items
+                    //     (relation.......1 field of the remote slice 7735375488a65e7735375488a65eab2a pointed to current item)
+                    //   - the + after <remote_slice_id> - 7735375488a65e7735375488a65eab2a+ means we want also non-ACTIVE items take in the account
+                    [$cond_fld_id, $rel_combi] = explode('@', $fid);
+                    [$rel_slice_id, $rel_fld_id] = explode('/', $rel_combi);
+                    $rel_bins = AA_BIN_ACTIVE;
+                    if (str_ends_with($rel_slice_id, '+')) {
+                        $rel_bins     = AA_BIN_ALL;
+                        $rel_slice_id = trim($rel_slice_id, '+');
+                    }
+                    $rel_slice = AA_Slice::getModule($rel_slice_id);
+                    if (!is_object($rel_slice)) {
+                        AA::$debug && AA::$dbg->warn("Skipping $fid in conds[]: $rel_slice_id is not slice.");
+                        continue;            // bad field_id or not defined condition - skip
+                    }
+                    $cond_field = $rel_slice->getField($cond_fld_id);
+                    if (!is_object($cond_field)) {
+                        AA::$debug && AA::$dbg->warn("Skipping $fid in conds[]: $cond_fld_id is not field of $rel_slice_id.");
+                        continue;            // bad field_id or not defined condition - skip
+                    }
+                    $rel_field = $rel_slice->getField($rel_fld_id);
+                    if (!is_object($rel_field)) {
+                        AA::$debug && AA::$dbg->warn("Skipping $fid in conds[]: $rel_fld_id is not field of $rel_slice_id.");
+                        continue;            // bad field_id or not defined condition - skip
+                    }
+                    $cond_flds = "'$cond_fld_id'";
+                    $rel_fld   = "'$rel_fld_id'";
+                    $tbl       = 'c' . $tbl_count++;
+                    $tbl2      = 'c' . $tbl_count++;
+                    if ($cond_field->storageTable() === 'item') {   // field is stored in table 'item'
+                        $rel_bins_cond = ($rel_bins != AA_BIN_ALL) ? " AND " . CreateBinCondition($rel_bins, $tbl2) : '';
+                        // Long ID in conds should be specified as unpacked, but in db it is packed
+                        $select_tabs[] = "LEFT JOIN content as $tbl  ON ($tbl.field_id=$rel_fld AND HEX(item.id)=$tbl.text)
+                                              LEFT JOIN item as $tbl2 ON ($tbl2.id=$tbl.item_id AND $tbl2.slice_id=" . xpack_id($rel_slice_id) . "$rel_bins_cond)";
+                    } else {
+                        $select_tabs[] = "LEFT JOIN content as $tbl  ON ($tbl.field_id=$rel_fld AND HEX(item.id)=$tbl.text)
+                                              LEFT JOIN content as $tbl2 ON ($tbl2.item_id=$tbl.item_id AND ($tbl2.field_id=$cond_flds OR $tbl2.field_id is NULL))";
+                    }
+                    $cur_cond = (new AA_Dbcondition($tbl2, $cond_field->storageColumn(), $cond['operator'], $cond['value']))->getWhereExp();
+                    //                        if (in_array($cond_flds, ['id..............', 'slice_id........'])) {
+                    //                            $cur_cond = preg_replace("/'([0-9a-f]{32})'/i", "0x\\1", $cur_cond);
+                    //                        }
+                    $select_conds[]                             = $cur_cond;
+                    $sortable[str_replace("'", "", $cond_flds)] = $tbl;
+                    // @todo - test if it works
+                    $cond_flds                                  = '';
+                    continue;
                 }
 
                 $field = $fields->getField($fid);

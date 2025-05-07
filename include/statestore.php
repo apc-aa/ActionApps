@@ -156,7 +156,7 @@ abstract class AA_Serializable {
 
         if ( class_exists($class) ) {
             // ask class which parameters uses - call AA\Widget\TxtWidget::getClassProperties()), for example
-            $params = array_merge($params, self::parseProperties((string)$prop_string, $class::getClassProperties(), true));
+            return array_merge($params, self::parseProperties((string)$prop_string, $class::getClassProperties(), true));
         }
         return $params;
     }
@@ -1143,7 +1143,7 @@ class AA_Components {
             }
         }
         if (is_callable($filter)) {
-            $right_classes = array_filter($right_classes, $filter);
+            return array_filter($right_classes, $filter);
         }
         return $right_classes;
     }

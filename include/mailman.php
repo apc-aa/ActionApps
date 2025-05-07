@@ -49,7 +49,10 @@ class AA_Mailman {
 
         $slice = AA_Slice::getModule($slice_id);
         $field = $slice?->getProperty("mailman_field_lists");
-        if (!$field || $slice?->getProperty("type") !== "ReaderManagement") {
+        if (!$field) {
+            return;
+        }
+        if ($slice?->getProperty("type") !== "ReaderManagement") {
             return;
         }
 

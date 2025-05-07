@@ -92,7 +92,7 @@ class AA_Adminlink {
         if ($fld = AA_Field::factoryFromDb($field_id, $slice_id)) {
             $txt = $fld->linkToField("$field_id - ".$fld->getName());
             if (str_starts_with($db_fld, 'alias') and DB_AA::test('field', [['slice_id', $slice_id, 'l'], ['id', $field_id], [substr($db_fld, 0, 6), 'X', 'BEGIN']])) {
-                $txt = "<s title=\""._m('disabled')."\">$txt</s>";
+                return "<s title=\""._m('disabled')."\">$txt</s>";
             }
             return $txt;
         }

@@ -1825,12 +1825,12 @@ class CookieManager {
 }
 
 class AA_GeneralizedArray {
-    protected $arr;
+    protected $arr = [];
 
     /** AA_GeneralizedArray function
      */
-    function __construct() {
-        $this->arr = [];
+    function __construct()
+    {
     }
 
     /** add function

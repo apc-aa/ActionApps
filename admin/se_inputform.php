@@ -198,7 +198,7 @@ if ($update) {
             Qvarsetadd("alias".$iAlias."_func", "quoted", $GLOBALS["alias".$iAlias."_func_f"].":".$GLOBALS["alias".$iAlias."_func"]);
         }
 
-        
+
 
         if (count($err)) {
             break;

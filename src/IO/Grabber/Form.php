@@ -52,11 +52,11 @@ use zids;
  *   is called to grab the value (or multivalues) from the submitted form
  */
 class Form extends AbstractGrabber {
-    private $_items;
+    private $_items = [];
     private $_last_store_mode;
 
-    function __construct() {
-        $this->_items = [];
+    function __construct()
+    {
     }
 
     /** Name of the grabber - used for grabber selection box */

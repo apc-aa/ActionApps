@@ -106,17 +106,14 @@ abstract class AA_Module {
     protected static array $_used4cache   = [];
 
     protected string $module_id;
-    protected ?array $module_setting;         // Array of module settings
-    protected ?array $table_setting;          // Array of specific table settings
-    protected $moduleobject_setting;          // module settings object
+    protected ?array $module_setting = null;         // Array of module settings
+    protected ?array $table_setting = null;          // Array of specific table settings
+    protected $moduleobject_setting = false;          // module settings object
 
     /** it is better to call it using getModule() - $site = AA_Module_Site::getModule($module_id);
      */
     function __construct(string $id) {
         $this->module_id            = $id;
-        $this->module_setting       = null;
-        $this->table_setting        = null;
-        $this->moduleobject_setting = false;
     }
 
     abstract public static function getModuleconfig(): AA_Moduleconfig;

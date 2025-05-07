@@ -36,12 +36,27 @@ class htmlMimeMail {
      * An array of embedded images/objects
      * @var array
      */
-	private $html_images;
+	private $html_images = [];
     /**
      * An array of recognised image types for the findHtmlImages() method
      * @var array
      */
-	private $image_types;
+
+    /**
+     * If you want the auto load functionality to find other image/file types, add the
+     * extension and content type here.
+     */
+	private $image_types = [
+     'gif'    => 'image/gif',
+     'jpg'    => 'image/jpeg',
+     'jpeg'    => 'image/jpeg',
+     'jpe'    => 'image/jpeg',
+     'bmp'    => 'image/bmp',
+     'png'    => 'image/png',
+     'tif'    => 'image/tiff',
+     'tiff'    => 'image/tiff',
+     'swf'    => 'application/x-shockwave-flash'
+ ];
     /**
      * Parameters that affect the build process
      * @var array
@@ -56,12 +71,12 @@ class htmlMimeMail {
      * The main message headers
      * @var array
      */
-	private $headers;
+	private $headers = [];
     /**
      * Whether the message has been built or not
      * @var boolean
      */
-	private $is_built;
+	private $is_built = false;
     /**
      * The return path address. If not set the From: address is used instead
      * @var string
@@ -77,29 +92,6 @@ class htmlMimeMail {
      * if supplied.
      */
     function __construct() {
-        /**
-         * Initialise some variables.
-         */
-        $this->html_images = [];
-        $this->headers     = [];
-        $this->is_built    = false;
-
-        /**
-         * If you want the auto load functionality to find other image/file types, add the
-         * extension and content type here.
-         */
-        $this->image_types = [
-            'gif'    => 'image/gif',
-            'jpg'    => 'image/jpeg',
-            'jpeg'    => 'image/jpeg',
-            'jpe'    => 'image/jpeg',
-            'bmp'    => 'image/bmp',
-            'png'    => 'image/png',
-            'tif'    => 'image/tiff',
-            'tiff'    => 'image/tiff',
-            'swf'    => 'application/x-shockwave-flash'
-        ];
-
         /**
          * Set these up
          */
@@ -427,12 +419,10 @@ class htmlMimeMail {
         $params['encoding']     = $this->build_params['text_encoding'];
         $params['charset']      = $this->build_params['text_charset'];
         if (is_object($obj)) {
-            $return = $obj->addSubpart($text, $params);
-        } else {
-            $return = new Mail_mimePart($text, $params);
+            return $obj->addSubpart($text, $params);
         }
 
-        return $return;
+        return new Mail_mimePart($text, $params);
     }
 
     /**
@@ -444,12 +434,10 @@ class htmlMimeMail {
         $params['encoding']     = $this->build_params['html_encoding'];
         $params['charset']      = $this->build_params['html_charset'];
         if (is_object($obj)) {
-            $return = $obj->addSubpart($this->html, $params);
-        } else {
-            $return = new Mail_mimePart($this->html, $params);
+            return $obj->addSubpart($this->html, $params);
         }
 
-        return $return;
+        return new Mail_mimePart($this->html, $params);
     }
 
     /**
@@ -470,12 +458,10 @@ class htmlMimeMail {
     {
         $params['content_type'] = 'multipart/alternative';
         if (is_object($obj)) {
-            $return = $obj->addSubpart('', $params);
-        } else {
-            $return = new Mail_mimePart('', $params);
+            return $obj->addSubpart('', $params);
         }
 
-        return $return;
+        return new Mail_mimePart('', $params);
     }
 
     /**
@@ -485,12 +471,10 @@ class htmlMimeMail {
     {
         $params['content_type'] = 'multipart/related';
         if (is_object($obj)) {
-            $return = $obj->addSubpart('', $params);
-        } else {
-            $return = new Mail_mimePart('', $params);
+            return $obj->addSubpart('', $params);
         }
 
-        return $return;
+        return new Mail_mimePart('', $params);
     }
 
     /**

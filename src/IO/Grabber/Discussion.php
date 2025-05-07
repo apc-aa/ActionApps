@@ -19,19 +19,16 @@ class Discussion extends AbstractGrabber
 
     protected $set;
     /** AA_Set specifies the slice, conds and sort */
-    private $_longids;
+    private $_longids = [];
     /** list if files to grab - internal array */
-    private $_content_cache;
+    private $_content_cache = [];
     /**  */
-    private $_index;
+    private $_index = 0;
 
     /**  */
 
     function __construct($set) {
         $this->set = $set;
-        $this->_longids = [];
-        $this->_content_cache = [];
-        $this->_index = 0;
     }
 
     /** Name of the grabber - used for grabber selection box */

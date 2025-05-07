@@ -113,12 +113,12 @@ class Cvariable {
 
 class Cvarset {
     /** @var array Cvariable */
-    var $vars;          // array of variables
+    var $vars = [];          // array of variables
     /**
      * @var DB_AA
      */
-    var $last_used_db;  // database handler
-    var $just_print;    // debug option - just prints the query (not implemented for all methods!!!)
+    var $last_used_db = null;  // database handler
+    var $just_print = false;    // debug option - just prints the query (not implemented for all methods!!!)
 
     /** Cvarset function
      *  constructor - also good for filling the varset
@@ -126,9 +126,6 @@ class Cvarset {
      */
     function __construct( $arr= []) {
         $TRANS              = ['i'=>'number', 's'=>'text', 'q'=>'quoted', 'l'=>'unpacked'];
-        $this->vars         = [];
-        $this->last_used_db = null;
-        $this->just_print   = false;
 
         foreach ( $arr as $def ) {
             $this->add($def[0], isset($def[2]) ? $TRANS[$def[2]] : 'text', $def[1]);

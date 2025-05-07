@@ -1595,7 +1595,7 @@ function UpdateField($item_id, $field_id, $field_content, $flags = []) {
     $updated_items = 0;
 
     if ($newcontent4id->storeItem( 'update', $flags )) {    // invalidatecache, not feed, throw_events, not allow edit last_edit
-        $updated_items = 1;
+        return 1; // updated_items
     }
     return $updated_items;
 }

@@ -11,12 +11,11 @@ use zids;
  */
 class Links_Check extends AbstractManageraction {
 
-    protected $perm;
+    protected $perm = PS_LINKS_CHECK_LINK;
 
     /** Constructor - fills the information about the target bin */
     function __construct($id) {
         parent::__construct($id);
-        $this->perm = PS_LINKS_CHECK_LINK;
     }
 
     /** Name of this Manager's action */

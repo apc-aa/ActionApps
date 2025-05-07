@@ -33,14 +33,13 @@ class AA_Poll {
     protected $name;         // The name of the poll
     protected $poll_id;      // The unpacked id of the poll i.e. 32 chars
     protected ?AA_Content $content = null;  // poll content - Record from polls table stored as ItemContent
-    var $_sum;         // sum of all votes of this poll - caching purposes
+    var $_sum = null;         // sum of all votes of this poll - caching purposes
 
     /** AA_Poll function - constructor
      * @param $poll_id
      */
     function __construct($poll_id) {
         $this->poll_id = $poll_id; // unpacked id
-        $this->_sum    = null;
     }
 
     /** loadSettings function

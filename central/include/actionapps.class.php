@@ -48,13 +48,13 @@ class AA_Actionapps {
     var $last_error = '';
 
     /** cached remote session ID */
-    var $_remote_session_id;
+    var $_remote_session_id = null;
 
     /** time when we get remote session ID. We do not use sessions older than ...*/
-    var $_remote_session_id_time;
+    var $_remote_session_id_time = 0;
 
     /** cached remote data - like AA name, ... */
-    var $_cached;
+    var $_cached = [];
 
     /** constructor - create AA_Actionapps object from ItemContent object
      *  grabbed from central_conf table.
@@ -70,9 +70,6 @@ class AA_Actionapps {
      */
     function __construct(ItemContent $content4id) {
         $this->local_data          = $content4id;
-        $this->_remote_session_id  = null;
-        $this->_remote_session_id_time  = 0;
-        $this->_cached             = [];
     }
 
     /** getActionapps function
@@ -633,10 +630,9 @@ class AA_Difference {
 class AA_Identifier {
 
     /**  $path[0] ~ module_id, [1] ~ table, [2] ~ row, [3] ~ column */
-    var $path;
+    var $path = [];
 
     function __construct($module_id=null, $table=null, $row=null, $column=null) {
-        $this->path = [];
         if ($module_id) {
             $this->path[0] = $module_id;
             if ($table) {

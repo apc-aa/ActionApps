@@ -263,7 +263,10 @@ class Files {
         }
         if ($handle = opendir($upload_dir)) {
             while (false !== ($file = readdir($handle))) {
-                if (!str_starts_with($file, $ident) || (strlen($ident) + 42 !== strlen($file))) {
+                if (!str_starts_with($file, $ident)) {
+                    continue;
+                }
+                if (strlen($ident) + 42 !== strlen($file)) {
                     continue;
                 }
                 $date=mktime(0,0,0,date("m"),date("d")-7,date("Y")) ;
@@ -500,7 +503,7 @@ class AA_File_Wrapper {
 	/** @var resource the file descriptor */
     var $fp;
     /** @var int used in http */
-    var $redirects;
+    var $redirects = 5;
 
     /** AA_File_Wrapper function
      * Constructor.
@@ -510,7 +513,6 @@ class AA_File_Wrapper {
 	function __construct($url, $info) {
         $this->url = $url;
         $this->info = $info;
-        $this->redirects = 5;
     }
 
 	/**
@@ -580,16 +582,14 @@ class AA_File_Wrapper {
     static function wrapper($url) {
         $info = parse_url($url);
         if (ini_get('allow_url_fopen')) {
-            $wrapper = new AA_File_Wrapper($url, $info);
-        } else {
-            $wrapper = match (@$info['scheme']) {
-                'http'  => new AA_File_HTTP_Wrapper($url, $info),
-                'https' => new AA_File_HTTPS_Wrapper($url, $info),
-                'ftp'   => new AA_File_FTP_Wrapper($url, $info),
-                default => new AA_File_Wrapper($url, $info),
-            };
+            return new AA_File_Wrapper($url, $info);
         }
-        return $wrapper;
+        return match (@$info['scheme']) {
+            'http'  => new AA_File_HTTP_Wrapper($url, $info),
+            'https' => new AA_File_HTTPS_Wrapper($url, $info),
+            'ftp'   => new AA_File_FTP_Wrapper($url, $info),
+            default => new AA_File_Wrapper($url, $info),
+        };
     }
 }
 
@@ -871,11 +871,13 @@ class AA_File_FTP_Wrapper extends AA_File_Wrapper_Ext {
         // Retrieve file
         $this->_send('RETR', $path);
         $rc = $this->_receive();
-        if ($rc != '125' && $rc != '150') {
-            return false;
+        if ($rc == '125') {
+            return true;
         }
-
-        return true;
+        if ($rc == '150') {
+            return true;
+        }
+        return false;
     }
 	/**
 	 * Internal function to write to the connection.
@@ -949,19 +951,19 @@ class AA_Directory_Wrapper {
     var $info;
 
     /** @var $dp int the directory descriptor */
-    var $dp;
+    var $dp = NULL;
 
     /** @var $is_read bool specified if the content od directory is read */
-    var $is_read;
+    var $is_read = false;
 
     /** @var $subdir_names array of subdir names */
-    var $subdir_names;
+    var $subdir_names = [];
 
     /** @var $file_names array of file names */
-    var $file_names;
+    var $file_names = [];
 
     /** @var string $reg_file_filter filter applied to file names */
-    var $reg_file_filter;
+    var $reg_file_filter = false;
 
     /**
      * Constructor.
@@ -971,11 +973,6 @@ class AA_Directory_Wrapper {
     function __construct($url, $info) {
         $this->url             = Files::fixPath($url);
         $this->info            = $info;
-        $this->dp              = NULL;
-        $this->is_read         = false;
-        $this->subdir_names    = [];
-        $this->file_names      = [];
-        $this->reg_file_filter = false;
     }
 
     /** Repository of static variables (trick for PHP4)

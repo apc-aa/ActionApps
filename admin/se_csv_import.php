@@ -85,7 +85,7 @@ try {
     // array ( 'http://' => 1, '' => 5, 'ííííí�…' => 1, )
     $url = InputVars::stringPOST('url'); // empty
     $cancel = InputVars::boolPOST('cancel');
-    
+
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception) {}
 

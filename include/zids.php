@@ -87,7 +87,6 @@ class zids implements Iterator, ArrayAccess, Countable {
         // $inittype is for where type is known
         // Note it refers to the type of ELEMENTS if it is an array
         $this->type = $inittype;
-        $this->arr  = [];  // Make sure at least empty array
         $this->_ext = is_array($extended_att) ? $extended_att : [];
 
         if (empty($initial)) {

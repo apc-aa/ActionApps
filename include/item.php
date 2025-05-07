@@ -609,7 +609,10 @@ class AA_Item {
      * @return string
      */
     function col2Html($col) {
-        if (($this->getFlag($col) & FLAG_HTML) || !strlen($txt = $this->getval($col))) {
+        if ($this->getFlag($col) & FLAG_HTML) {
+            return $txt;
+        }
+        if (!strlen($txt = $this->getval($col))) {
             return $txt;
         }
         return StrExp('text2html', [$txt]);
@@ -628,7 +631,7 @@ class AA_Item {
 
         // add state variable, if defined (apc - AA Pointer Cache)
         if ( $GLOBALS['apc_state'] AND $GLOBALS['apc_state']['state'] ) {
-            $url_base = con_url( $url_base, 'apc='.$GLOBALS['apc_state']['state'] );
+            return con_url( $url_base, 'apc='.$GLOBALS['apc_state']['state'] );
         }
         return $url_base;
     }
@@ -701,12 +704,10 @@ class AA_Item {
                 $inner = $linkpart[2] . ($linkpart[3] ? "'+'@'+'".$linkpart[3] : '');
                 if (!$add) {
                     // new approach - do not support $add
-                    $ret = "<script>var el=document.createElement('a');el.setAttribute('href','$link');el.innerHTML='$inner';var scrs=document.getElementsByTagName('script');var scr=scrs[scrs.length-1];scr.parentNode.insertBefore(el,scr);</script>";
-                } else {
-                    // old, but hart to replace by createElement
-                    $ret = "<script>\n document.write('<a href=\"".$linkpart[0]."'+'@'+'".$linkpart[1]."\" ".$add.">". $inner ."</a>')\n</script>";
+                    return "<script>var el=document.createElement('a');el.setAttribute('href','$link');el.innerHTML='$inner';var scrs=document.getElementsByTagName('script');var scr=scrs[scrs.length-1];scr.parentNode.insertBefore(el,scr);</script>";
                 }
-                return $ret;
+                // old, but hart to replace by createElement
+                return "<script>\n document.write('<a href=\"".$linkpart[0]."'+'@'+'".$linkpart[1]."\" ".$add.">". $inner ."</a>')\n</script>";
             }
 
             return '<a href="'. $url ."\" $add>". $this->text2Html($txt, $html).'</a>';

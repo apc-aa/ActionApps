@@ -949,9 +949,13 @@ class tabledit {
 
         echo $text ?: "&nbsp;";
         // show the text label for bottom buttons and for insert
-        if ($text && ($place === "down" || $new_record)) {
-            echo "<br><a href=\"$url\"><span class=\"te_button_text\">".$bt["alt"]."</span></a>";
+        if (!$text) {
+            return;
         }
+        if (!($place === "down" || $new_record)) {
+            return;
+        }
+        echo "<br><a href=\"$url\"><span class=\"te_button_text\">".$bt["alt"]."</span></a>";
     }
 
     // -----------------------------------------------------------------------------------

@@ -46,7 +46,6 @@ class AA_Mailtemplate implements AA_iEditable, ArrayAccess, Countable, Iterator 
     protected $data = [];
 
     function __construct($id=null) {
-        $this->data = [];
         if ($id and ctype_digit((string)$id)) {
             $template = AA_Metabase::getContent(new zids($id, 's'), ['table' => 'email']);
             if ($template[$id]) {
@@ -193,14 +192,16 @@ class AA_Mail extends htmlMimeMail implements \AA\Later\LaterInterface {
             default => ParamExplode($string),
         };
         foreach ($att_arr as $name => $attachment) {
-            if ($attachment) {
-                if (strlen($att_data = AA_File_Wrapper::wrapper($attachment)->contents())) {
-                    if (ctype_digit((string)$name)) {
-                        $name = basename(parse_url($attachment, PHP_URL_PATH));
-                    }
-                    $attachments[] = $extended ? ['name' => $name, 'data' => $att_data, 'type' => get_headers($attachment, true)['Content-Type'] ?? ''] : ['name' => $name, 'data' => $att_data];
-                }
+            if (!$attachment) {
+                continue;
             }
+            if (!strlen($att_data = AA_File_Wrapper::wrapper($attachment)->contents())) {
+                continue;
+            }
+            if (ctype_digit((string)$name)) {
+                $name = basename(parse_url($attachment, PHP_URL_PATH));
+            }
+            $attachments[] = $extended ? ['name' => $name, 'data' => $att_data, 'type' => get_headers($attachment, true)['Content-Type'] ?? ''] : ['name' => $name, 'data' => $att_data];
         }
         return $attachments;
     }

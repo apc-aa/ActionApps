@@ -271,13 +271,12 @@ class AA_MbI {
     var $t; // table name
     var $n; // index name
     var $s; // sort of index P|U|I  (= PRIMARY|UNIQUE|INDEX)
-    var $c; // columns array (array of column names of array (name,part) for partial column index (like text(10))
+    var $c = []; // columns array (array of column names of array (name,part) for partial column index (like text(10))
 
     function __construct($table, $name, $sort) {
         $this->t = $table;
         $this->n = $name;
         $this->s = $sort;
-        $this->c = [];
     }
 
     function addColumn($position, $column, $sub_part='') {
@@ -306,13 +305,13 @@ class AA_MbT implements Iterator, ArrayAccess, Countable {
     var $t;
 
     /** @var string[] of PRIMARY KEY columns */
-    var $k;
+    var $k = [];
 
     /** @var AA_MbI[] array of INDEXES: array(index_name => AA_MbI) */
-    var $i;
+    var $i = [];
 
     /** @var AA_MbC[] array of table columns */
-    var $c;
+    var $c = [];
 
     /** @var string[] array of table flags - like ENGINE=InnoDB, DEFAULT CHARSET=cp1250 */
     var $f;
@@ -322,9 +321,6 @@ class AA_MbT implements Iterator, ArrayAccess, Countable {
     // the indexes, generate sql_update script, ...
     function __construct($tablename, $columns, $indexes='') {
         $this->t = $tablename;
-        $this->c = [];
-        $this->k = [];
-        $this->i = [];
         foreach ($columns as $column) {
             $aa_column  = new AA_MbC($column);
             $this->c[$column['Field']] = new AA_MbC($column);

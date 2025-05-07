@@ -93,26 +93,19 @@ function xml_serialize($k, $v, $i, $ii, $a=null) {
  * @usage $data = (new xml_unserializer())->parse($xml_data);
  */
 class xml_unserializer {
-    var $stack;          // stack of items above oen being worked on
-    var $chardata;          // Current string of CDATA
-    var $top;        // Element we are working on
-    var $coding;   // set to bin2hex when coded id
-    var $debug;          // set to true to debug this
+    var $stack = [];          // stack of items above oen being worked on
+    var $chardata = "";          // Current string of CDATA
+    var $top = null;        // Element we are working on
+    var $coding = "";   // set to bin2hex when coded id
+    var $debug = false;          // set to true to debug this
     var $parser;
-    var $namestack;
-    var $codingstack;
+    var $namestack = [];
+    var $codingstack = [];
     var $name;      // Name of the current array
     /** xml_unserializer function
      *
      */
     function __construct() {
-        $this->stack       = [];
-        $this->namestack   = [];
-        $this->codingstack = [];
-        $this->chardata    = "";
-        $this->top         = null;
-        $this->coding      = "";
-        $this->debug       = false;
         $this->parser      = xml_parser_create();
         xml_set_object($this->parser, $this);
         xml_set_element_handler($this->parser, "startElement", "endElement");

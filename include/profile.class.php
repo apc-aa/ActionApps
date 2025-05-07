@@ -188,10 +188,11 @@ class AA_Profile {
      * @return AA_Value|null
      */
     function getFormFieldValue($field_id) {
-        if (!($profile_value = $this->getProperty('hide&fill',$field_id))) {
-            if (!($profile_value = $this->getProperty('fill',$field_id))) {
-                return null;
-            }
+        if ($profile_value = $this->getProperty('hide&fill',$field_id)) {
+            return $this->parseContentProperty($profile_value);
+        }
+        if (!($profile_value = $this->getProperty('fill',$field_id))) {
+            return null;
         }
         return $this->parseContentProperty($profile_value);
     }

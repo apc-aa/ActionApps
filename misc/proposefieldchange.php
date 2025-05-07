@@ -58,11 +58,11 @@ function GetRepreValue($item_id, $field_id, $alias_name='') {
 /** AA\IO\AbstractGrabber\AbstractGrabber\Form - Grabs data POSTed by AA form
 */
 class GrabberAssignmentform extends AA\IO\Grabber\AbstractGrabber {
-    var $_items;            /** list if files to grab - internal array */
+    var $_items = [];            /** list if files to grab - internal array */
     var $_index;              /**  */
 
-    function __construct() {
-        $this->_items = [];
+    function __construct()
+    {
     }
 
     /** Name of the grabber - used for grabber selection box */

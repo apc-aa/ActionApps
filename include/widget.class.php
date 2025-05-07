@@ -223,12 +223,20 @@ class AA_Property extends AA_Storable {
         } else {
             $new_value = $context_content->getAaValue($fid);
         }
+        //      if ($profile->getProperty('hide',$fid) || !$this->validate($new_value) || $new_value->isEmpty()) {
+        //      if ($profile->getProperty('hide',$fid) || !$this->validate($new_value->getValues()) ) {  // HM 2016-10-14
 
-//      if ($profile->getProperty('hide',$fid) || !$this->validate($new_value) || $new_value->isEmpty()) {
-//      if ($profile->getProperty('hide',$fid) || !$this->validate($new_value->getValues()) ) {  // HM 2016-10-14
-        if ($profile->getProperty('hide',$fid) || !$this->isValid($context_content) || $new_value->isEmpty()) {  // not valid values we replace with default here. However, it should already be validated, so we should not reach this
+        // not valid values we replace with default here. However, it should already be validated, so we should not reach this
+        if ($profile->getProperty('hide',$fid)) {
             return $this->default;
         }
+        if (!$this->isValid($context_content)) {
+            return $this->default;
+        }
+        if ($new_value->isEmpty()) {
+            return $this->default;
+        }
+
         return $new_value;
     }
 

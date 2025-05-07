@@ -66,7 +66,7 @@ class AA_Router {
     protected $apc;
     protected $slices;
     protected $home;
-    protected $web_languages;
+    protected $web_languages = [];
 
     /** @var AA_Router $_instance
      * Store the single instance of Database
@@ -76,7 +76,6 @@ class AA_Router {
     function __construct($slices=null, $home='') {
         $this->slices = is_array($slices) ? $slices : [];
         $this->home   = $home;
-        $this->web_languages = [];
     }
 
     /** @return AA_Router */
