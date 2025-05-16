@@ -154,9 +154,9 @@ class inputform {
         $remove_string = '';
 
         // design of form could be customized by view
-        if ( $this->template AND ($view = AA_Views::getViewNumeric($this->template))) {
+        if ( $this->template && ($view = AA_Views::getViewNumeric($this->template))) {
             // we can use different forms for 'EDIT' and 'ADD' item => (even/odd)
-            $form          = ($edit AND $view->f('even_odd_differ')) ? $view->f('even') : $view->f('odd');
+            $form          = ($edit && $view->f('even_odd_differ')) ? $view->f('even') : $view->f('odd');
             $remove_string = $view->f('remove_string');
         }
 
@@ -267,7 +267,7 @@ class inputform {
 
         echo $out;
 
-        if ( $form_parts AND ($form_part_pos & 2)) {  // 2 ~ bottom
+        if ( $form_parts && $form_part_pos & 2) {  // 2 ~ bottom
             // print tabs for form switching
             FrmTabs( $tabs, 'formtabs2' );
         }
@@ -337,9 +337,9 @@ class inputform {
         foreach ($fids as $fid) {
             $field = $fields->getField($fid);
 
-            if ( ($form4anonymous_wizard  AND !$show[$fid]) OR
-                 (!$form4anonymous_wizard AND (!$field->getProperty('input_show') OR
-                                         $profile->getProperty('hide',$fid) OR
+            if ( ($form4anonymous_wizard  && !$show[$fid]) ||
+                 (!$form4anonymous_wizard && (!$field->getProperty('input_show') ||
+                                         $profile->getProperty('hide',$fid) ||
                                          $profile->getProperty('hide&fill',$fid)))) {
                 // do not show this field
                 continue;
@@ -350,7 +350,7 @@ class inputform {
             // ----- collect all field_* parameters in order we can call display function
 
             // field_mode - how to display the field
-            $field_mode  = !IsEditable($content4id->getFlag($fid), $field, $profile) ? 'freeze' : ($form4anonymous_wizard ? 'anonym' : 'normal');
+            $field_mode  = IsEditable($content4id->getFlag($fid), $field, $profile) ? ($form4anonymous_wizard ? 'anonym' : 'normal') : ('freeze');
 
             if ( $edit ) {
                 $fval = $content4id->getAaValue($fid);
@@ -410,14 +410,15 @@ class inputform {
 
         // AA::Stringexpander()->addRequire(get_aa_url('javascript/constedit.min.js', ['v'=>AA_JS_VERSION],false));  // no longer needed - managed by {require:...} in hco
 
-        return $retval;
+        return '';
+        // return $retval;
     }
 
     /** getFormStart function
      *  Get form tag with right enctype and triggers
      *  Must be called after getForm since $this->show_func_used must be already filled
      */
-    function getFormStart() {
+    function getFormStart(): string {
         // uses fileupload?
         $html_form_type = $this->show_func_used['fil'] ? 'enctype="multipart/form-data"' : '';
         return "<form name=\"inputform\" $html_form_type method=\"post\" action=\"" . $this->form_action .'"'.
@@ -652,7 +653,7 @@ class AA_Inputfield {
      */
     function implodeVal($delim=',') {
         $ret = '';
-        if ( isset($this->value) AND is_array($this->value) ) {
+        if ( isset($this->value) && is_array($this->value) ) {
             foreach ( $this->value as $v ) {
                 $ret .= ($ret ? $delim : ''). $v['value']; // add value separator just if field is filled
             }
@@ -679,7 +680,7 @@ class AA_Inputfield {
         $constgroup = $this->param[0];
         $sid        = (str_starts_with($constgroup, "#sLiCe-")) ? substr($constgroup, 7) : '';
 
-        if ( isset($this->const_arr) AND is_array($this->const_arr) ) {  // already filled
+        if ( isset($this->const_arr) && is_array($this->const_arr) ) {  // already filled
             return $sid;
         }
 
@@ -713,7 +714,7 @@ class AA_Inputfield {
             $this->const_arr = GetFormatedConstants($constgroup, $slice_field, $ids_arr, $conds, $sort);
         }
 
-        if ( !isset($this->const_arr) OR !is_array($this->const_arr) ) {
+        if ( !isset($this->const_arr) || !is_array($this->const_arr) ) {
             $this->const_arr = [];
         }
         return $sid; // in most cases not very important information, but used in inputRelation() input type
@@ -873,7 +874,7 @@ class AA_Inputfield {
                             $this->staticText();       break;
 
             }
-        } elseif (($this->mode === 'anonym') OR ($this->mode === 'normal')) {
+        } elseif ($this->mode === 'anonym' || $this->mode === 'normal') {
             switch ($this->input_type) {
 //                case 'inf': $this->staticText();       break;
 
@@ -957,7 +958,7 @@ class AA_Inputfield {
                             if ( $whichitems < 1 ) {
                                 $whichitems = AA_BIN_ACT_PEND;              // fix for older (bool) format
                             }
-                            if ($adding OR $secondfield) {
+                            if ($adding || $secondfield) {
                                 $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems, null, ($add_slice_pwd ? AA_Credentials::encrypt($add_slice_pwd) : null), null, $const_param);
                                 $this->inputPreSelect($maxlength, $fieldsize, $adding, $secondfield, $usevalue);
                             } else {
@@ -1106,7 +1107,7 @@ class AA_Inputfield {
         $this->echoo("\n <th ". (($colspan==1) ? '': "colspan=\"$colspan\""). "><div>$name</div>" );  // div for min max width styling HM/SV 2023-11-23
         $this->needed();
         $this->echoo("</th>\n");
-        if ( $plus === 'plus' OR $plus === 'secrow' ) {
+        if ( $plus === 'plus' || $plus === 'secrow' ) {
             $this->echoo(' <td>');
         }
     }
@@ -1131,7 +1132,7 @@ class AA_Inputfield {
         if ( $this->html_rb_show ) {
             $htmlvar     = $varname."html";
             $radio_html  = "<input type=\"radio\" name=\"$htmlvar\" value=\"h\"". (  $this->html_flag ? " checked>" : ">" );
-            $radio_plain = "<input type=\"radio\" name=\"$htmlvar\" value=\"t\"". ( !$this->html_flag ? " checked>" : ">" );
+            $radio_plain = "<input type=\"radio\" name=\"$htmlvar\" value=\"t\"". ( $this->html_flag ? ">" : " checked>" );
             $htmlareaedit= "<a href=\"javascript:openHTMLAreaFullscreen('".$varname."');\">"._m("Edit in HTMLArea")."</a>"; // used for HTMLArea
             // conversions menu
             $convertor   = $conv ? $this->get_convertors() : false;
@@ -1168,7 +1169,7 @@ class AA_Inputfield {
      * @param string $labeladd
      * @return string
      */
-    function getRadioButtonTag($k, $v, $add='', $labeladd='') {
+    function getRadioButtonTag($k, $v, $add='', $labeladd=''): string {
         $name  = $this->varname();
         $triggers  = $this->use_triggers_4_slice ? JsTriggers::getFromGlobalSliceId("input", $name) : '';
         $ret   = "<label $labeladd><input type=radio name='$name' value='". safe($k) ."' $add $triggers";
@@ -1285,7 +1286,7 @@ class AA_Inputfield {
         $attrs['maxlength'] = get_if($maxsize, $attrs['maxlength'], 255);
 
         // type number do not support size parameter, so ve have to set max and min (make no sence to do it for numbers > 11 characters - use default)
-        if (($attrs['type'] === 'number') AND !isset($attrs['max']) AND ($nchars = $attrs['maxlength'] ?: $attrs['size'] ?: 0) AND ($nchars<11)) {
+        if ($attrs['type'] === 'number' && !isset($attrs['max']) && ($nchars = $attrs['maxlength'] ?: $attrs['size'] ?: 0) && $nchars<11) {
             $attrs['max'] = (10 ** $nchars) -1;
             $attrs['min'] = $attrs['min'] ?: '0';
         }
@@ -1303,7 +1304,7 @@ class AA_Inputfield {
             foreach($this->translations as $lang) {
                 $lang_id           = Langs::getLangName2Num($lang);  // converts two letter lang code into number used for translation fields (cz -> 78000000, en -> 118000000, ...)
                 $value             = safe($val[$lang_id]['value']);
-                if ( $value === '' AND $first) {
+                if ( $value === '' && $first) {
                     // if the translation is not set try to use standard value (possibly filled before we set the translations for the field)
                     $value = $val[0]['value'];
                 }
@@ -1319,8 +1320,8 @@ class AA_Inputfield {
                 $widg .= "<label class=\"aa-langtrans aa-lang-$lang\" id=\"part$id2\" ".($first ? '' : ' style="display:none;"')."><strong class=\"aa-langtrans-label\">$lang</strong>";
 
 
-                $link  = ((str_starts_with($value, 'http://')) OR (str_starts_with($value, 'https://'))) ? a_href($value, GetAAImage('external-link.png', _m('Show'), 16, 16), ['class' =>'aa-externallink']) : '';
-                $widg .= "<input id=\"$id2\" name=\"$name2\" $attr_string ". (($this->required AND $first) ? " required": ''). $GLOBALS['mlxFormControlExtra']. " value=\"$value\" $triggers>$link";
+                $link  = (str_starts_with($value, 'http://') || str_starts_with($value, 'https://')) ? a_href($value, GetAAImage('external-link.png', _m('Show'), 16, 16), ['class' =>'aa-externallink']) : '';
+                $widg .= "<input id=\"$id2\" name=\"$name2\" $attr_string ". (($this->required && $first) ? " required": ''). $GLOBALS['mlxFormControlExtra']. " value=\"$value\" $triggers>$link";
                 $widg .= "</label>";
                 $first = false;
             }
@@ -1329,7 +1330,7 @@ class AA_Inputfield {
 
         } else {
             $value     = safe($val[0]['value']);
-            $link    = ((str_starts_with($value, 'http://')) OR (str_starts_with($value, 'https://'))) ? a_href($value, GetAAImage('external-link.png', _m('Show'), 16, 16), ['class' =>'aa-externallink']) : '';
+            $link    = (str_starts_with($value, 'http://') || str_starts_with($value, 'https://')) ? a_href($value, GetAAImage('external-link.png', _m('Show'), 16, 16), ['class' =>'aa-externallink']) : '';
 
             $widg =  "<input name=\"$name\" $attr_string ". ($this->required ? " required": ''). $GLOBALS['mlxFormControlExtra']." value=\"$value\" $triggers>$link";
         }
@@ -1396,7 +1397,7 @@ class AA_Inputfield {
         $this->echoo(' <td>');
         $this->html_radio(!$showhtmlarea);
 
-        if (!$showhtmlarea AND $showrich_href ) {
+        if (!$showhtmlarea && $showrich_href ) {
             AA::Stringexpander()->addRequire('ckeditor');
             AA::Stringexpander()->addRequire("if (CKEDITOR.env.isCompatible) { [].forEach.call(document.querySelectorAll('.aa-arealink'), function(e) { e.style.display=''; }); }", 'AA_Req_Run');
 //                    $widg .= getFrmJavascript( 'showHTMLAreaLink("'.$id2.'");');
@@ -1418,7 +1419,7 @@ class AA_Inputfield {
             foreach($this->translations as $lang) {
                 $lang_id           = Langs::getLangName2Num($lang);  // converts two letter lang code into number used for translation fields (cz -> 78000000, en -> 118000000, ...)
                 $value             = safe($val[$lang_id]['value']);
-                if ( $value === '' AND $first) {
+                if ( $value === '' && $first) {
                     // if the translation is not set try to use standard value (possibly filled before we set the translations for the field)
                     $value = $val[0]['value'];
                 }
@@ -1436,7 +1437,7 @@ class AA_Inputfield {
                 $widg .= "<label class=\"aa-langtrans aa-lang-$lang\" id=\"part$id2\" ".($first ? '' : ' style="display:none;"')."><strong class=\"aa-langtrans-label\">$lang</strong>";
                 $widg .= "<textarea id=\"$id2\" name=\"$name2\"$areaclass rows=\"$rows\" ".$GLOBALS['mlxFormControlExtra']."$colsy$maxlen class=aa-w-full style=\"height:{$rows_css}em;\" $triggers>$value</textarea>\n";
                 $widg .= "</label>";
-                if (!$showhtmlarea AND $showrich_href ) {
+                if (!$showhtmlarea && $showrich_href ) {
                     AA::Stringexpander()->addRequire("if (CKEDITOR.env.isCompatible) { [].forEach.call(document.querySelectorAll('.aa-arealink'), function(e) { e.style.display=''; }); }", 'AA_Req_Run');
 //                    $widg .= getFrmJavascript( 'showHTMLAreaLink("'.$id2.'");');
                 }
@@ -1548,10 +1549,10 @@ class AA_Inputfield {
                     $selectedused = true;
                     $already_selected[(string)$select_val] = true;  // flag
                 }
-                if ( ($restrict === 'selected')   AND !$selected ) {
+                if ( $restrict === 'selected' && !$selected ) {
                     continue;  // do not print this option
                 }
-                if ( ($restrict === 'unselected') AND $selected  ){
+                if ( $restrict === 'unselected' && $selected  ){
                     continue;  // do not print this option
                 }
                 $ret .= "<option value=\"". safe($k) ."\" $selected>".safe($v);    // do not put newlines here in order select:epty css selector works
@@ -1873,7 +1874,7 @@ class AA_Inputfield {
 
         $this->echoo($widget->stdFormStart($aa_property));
 
-        if (is_null($item) OR $item->isEmpty()) {
+        if (is_null($item) || $item->isEmpty()) {
             $this->echovar($field->getWidgetNewHtml(null, null, null, null, $this->getAaValue(), null, true));
         } else {
             // another approach would be, but it had troubles in InfWidget with {manager:...{_#ITEM_ID_}...}
@@ -2595,7 +2596,7 @@ function FrmSelectEasy($name, $arr, $selected="", array $add=[]) {
  * @param bool   $showempty - display select even if is empty (for two boxes of user admin... )
  * @return string
  */
-function getFrmSelectEasy($name, $arr, $selected="", array $add= [], $showempty=false) {
+function getFrmSelectEasy($name, $arr, $selected="", array $add= [], $showempty=false): string {
     $name=safe($name); // safe($add) - NO! - do not safe it
 
     if ((!is_array($arr) OR empty($arr)) AND !$showempty) {
@@ -2612,7 +2613,7 @@ function getFrmSelectEasy($name, $arr, $selected="", array $add= [], $showempty=
             continue;
         }
         $retval .= "\n <option value=\"". safe($k)."\"";
-        if ((string)$selected == (string)$k) {
+        if ((string)$selected === (string)$k) {
             $retval .= ' selected class="sel_on"';
             $selectedused = true;
         }
@@ -2629,7 +2630,7 @@ function getFrmSelectEasy($name, $arr, $selected="", array $add= [], $showempty=
     }
 
     // now add all values, which is not in the array, but field has this value
-    if ($selected AND !$selectedused) {
+    if ($selected && !$selectedused) {
         $retval .= "\n <option value=\"". safe($selected) ."\" selected class=\"sel_missing\">".safe($selected);
     }
 
@@ -2656,7 +2657,7 @@ function getTabStart(array $attr = []): string
  *
  * @return string
  */
-function getFrmTabCaption(string $caption = '', array $buttons = [], array $outer_add = [], bool $simple=false) {
+function getFrmTabCaption(string $caption = '', array $buttons = [], array $outer_add = [], bool $simple=false): string {
     $ret = getTabStart($outer_add);
     if ($buttons) {
         $ret .= getFrmInputButtons($buttons, true, 'top');
@@ -2712,7 +2713,7 @@ function getFrmTabInnerSeparator($subtitle): string {
  * @param bool $buttons
  * @return string
  */
-function getFrmTabEnd( $buttons=false ) {
+function getFrmTabEnd( $buttons=false ): string {
     $ret = "\n</table>";
     if ( $buttons ) {
         $ret .= getFrmInputButtons($buttons, true, 'bottom');
@@ -2804,7 +2805,7 @@ function getFrmInputButtons($buttons, $print_hidden = true, $prefix = ''): strin
                     $onclick = '';
                 }
 
-                if ( !$print_hidden AND ($type === 'hidden') ) {
+                if ( !$print_hidden && $type === 'hidden' ) {
                     // do not print hidden fields if print_hidden is false
                     // (used for FrmTabSeparator, to not duplicate hiddens)
                     break;
@@ -2834,7 +2835,7 @@ function getFrmInputButtons($buttons, $print_hidden = true, $prefix = ''): strin
 function getFrmTabRow( $row, $mode='td', $attrs=[], $safe=false) {
     $ret = '';
     $add = $attrs ? ' '.htmlattr($attrs) : '';
-    if ( isset($row) AND is_array($row) ) {
+    if ( isset($row) && is_array($row) ) {
         $ret .= "\n <tr$add>";
         if ($safe) {
             // the same as below, just htmlspecialchars() is used
@@ -2868,7 +2869,7 @@ function FrmTabRow( $row ) {
  * @return string
  */
 function getFrmTabs( $tabs, $tabsId ) {
-    if ( isset($tabs) AND is_array($tabs) ) {
+    if ( isset($tabs) && is_array($tabs) ) {
         $ret = "\n <tr id=\"$tabsId\"><td colspan=\"2\" class=\"tabsrow\">";
         $non = '';
         foreach ( $tabs as $class => $name ) {
@@ -2909,7 +2910,7 @@ function GetHtmlTable( array $content, string $mode='td', string $caption='', st
     $ret = getFrmTabCaption($caption, [], ['class'=>'top']);
     $first = true;
     foreach ($content as $row) {
-        if ($mode === 'th' AND $first) {
+        if ($mode === 'th' && $first) {
             $ret .= getFrmTabRow( $row , 'th', ['class'=>'aa-tbl-header'], in_array($safe, ['th', 'all']));
         } else {
             $ret .= getFrmTabRow($row, 'td', [], in_array($safe, ['td', 'all']));
@@ -3063,9 +3064,9 @@ function getRadioBookmarkRow( $selected, $name, $count, $value, $list_type, $lis
 function FrmItemGroupSelect( $items, $searchbar, $selected, $list_type, $messages, $additional=[]) {
 
     $out = '';
-    if (is_array($items) AND count($items)) {
+    if (is_array($items) && count($items)) {
         $out = getRadioBookmarkRow( $selected, $messages['selected_items'], count($items), 'sel_item', $list_type, $messages['view_items']);
-    } elseif ( isset($searchbar) AND is_object($searchbar) ) {
+    } elseif ( isset($searchbar) && is_object($searchbar) ) {
         $book_arr = $searchbar->getBookmarkNames();
         if ( count($book_arr) ) {
             $out .= "<tr>
@@ -3136,7 +3137,7 @@ function getZidsFromGroupSelect($group, $items, $searchbar): zids {
 function FrmItemListForm($items) {
     $out = '<form name="itform" method="post">';
     if (is_array($items)) {
-        foreach ($items as $key=> $it) {
+        foreach (array_keys($items) as $key) {
             $out .= '<input type="hidden" name="items['.$key.']" value="">';
         }
     }
@@ -3154,7 +3155,7 @@ function FrmItemListForm($items) {
 function getSelectWithParam($name, $arr, $selected="", $html_setting=null) {
     $add = ["onchange"=>"ShowThisTagClass('fswp$name', 'div', 'fswp_'+this.value, 'fswp_')"];
     $ret = getFrmSelectEasy($name, $arr, $selected, $add);
-    if (isset($html_setting) AND is_array($html_setting)) {
+    if (isset($html_setting) && is_array($html_setting)) {
         $ret .= "\n<div id=\"fswp$name\">";
         foreach($html_setting as $value => $html) {
             $ret .= "\n  <div class=\"fswp_$value\" style=\"display:none\">$html</div>";

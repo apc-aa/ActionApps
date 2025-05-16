@@ -93,17 +93,17 @@ while ($db->next_record()) {
 // which is only manualy fed)
 $first=true;
 foreach ($g_modules as  $k => $v) {
-    if ($impslices[$k] OR $v['type'] !== 'S' OR $k==AA::$module_id) {
+    if ($impslices[$k] || $v['type'] !== 'S' || $k==AA::$module_id) {
         continue;
     }
-    if ($first AND isset($impslices) AND is_array($impslices)) {
+    if ($first && isset($impslices) && is_array($impslices)) {
         $impslices[0] = '---------------';             // put delimiter there
     }
     $impslices[$k] = $v['name'];
     $first=false;
 }
 
-if (!isset($impslices) OR !is_array($impslices)){
+if (!isset($impslices) || !is_array($impslices)){
     MsgPage(_m("There are no imported slices"), self_base() . "se_import.php");
     exit;
 }
@@ -130,17 +130,17 @@ $from_fields[_m("-- Value --")]             = _m("-- Value --");
 $from_fields[_m("-- Joined fields --")]     = _m("-- Joined fields --");
 $from_fields[_m("-- RSS field or expr --")] = _m("-- RSS field or expr --");
 
-if (!$remote_slices[$from_slice_id]) {      // local fields : from slice fields
+if (!$remote_slices[$from_slice_id]) {
+    // local fields : from slice fields
     $from_fields += AA_Fields::getFields4Select($from_slice_id);
-} else {                                     // remote fields : from feedmap table
-    if (isset($map_to) && is_array($map_to)) {
-        foreach ($map_to as $k => $v) {
-            $from_fields[$k] = $v;
-        }
+} elseif (isset($map_to) && is_array($map_to)) {
+    // remote fields : from feedmap table
+    foreach ($map_to as $k => $v) {
+        $from_fields[$k] = $v;
     }
 }
 
-foreach ($to_fields as  $k => $v) {
+foreach (array_keys($to_fields) as  $k) {
     if (!isset($field_map[$k])) {
         $field_map[$k] =  $from_fields[$k] ? ["feedmap_flag"=>FEEDMAP_FLAG_MAP,"value"=>$k] :
                                              ["feedmap_flag"=>FEEDMAP_FLAG_EMPTY,"value"=>""];

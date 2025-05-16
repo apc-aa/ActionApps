@@ -210,9 +210,9 @@ class AA_Router_Seo extends AA_Router {
             $this->apc['xuser'] = AuthGetUname();
             $this->apc['xuid']  = AuthGetUid();
 
-            if (AuthGetUname() AND $_REQUEST["ok_url"]) {
+            if (AuthGetUname() && $_REQUEST["ok_url"]) {
                 go_url($_REQUEST["ok_url"]);
-            } elseif (!AuthGetUname() AND $_REQUEST["err_url"]) {
+            } elseif (!AuthGetUname() && $_REQUEST["err_url"]) {
                 go_url($_REQUEST["err_url"]);
             }
         }
@@ -271,7 +271,7 @@ class AA_Router_Seo extends AA_Router {
         $matches    = [];
         $ret        = [];
         if (!(preg_match("/^($re_lang)([0-9]*)([^-0-9]*)[-]?(.*)/", $arr[0], $matches))) {
-            if (count($langs) AND trim($arr[0])) {
+            if (count($langs) && trim($arr[0])) {
                 // if we define web_languages in Site Module setting (so for newer sites), then we can use pages without
                 // the first directory - so instead of /en/users we can use just /users (xlang will be filled form first web_language)
                 array_unshift($arr,$langs[0]);
@@ -386,7 +386,7 @@ class AA_Router_Seo extends AA_Router {
             $apc_state['xseo'. ($x_max+1)] = $new_arr['xseoadd'];
         }
         // xseo changed - reset pager
-        if (($new_x_max > 0) OR (!empty($new_arr['xseoadd']))) {
+        if ($new_x_max > 0 || !empty($new_arr['xseoadd'])) {
             $apc_state['xpage'] = '';
             $apc_state['xqs']   = '';
         }
@@ -405,7 +405,7 @@ class AA_Router_Seo extends AA_Router {
         // {go:xqs_year=2019&xqs_type=enviro}  ==> example.org/...?year=2019&type=enviro&some_other_params_from_old_url
         $xqs_subst = [];
         foreach ($new_arr as $var => $v) {
-            if (str_starts_with($var, 'xqs_') AND (strlen($var)>4)) { // begins with 'xqs_'
+            if (str_starts_with($var, 'xqs_') && strlen($var)>4) { // begins with 'xqs_'
                $xqs_subst[substr($var,4)] = $v;
             }
         }
@@ -420,7 +420,7 @@ class AA_Router_Seo extends AA_Router {
             $apc_state['xseo'.$i] = '';
         }
         $apc_state['xseo']   = ($x_max>0) ? $apc_state['xseo'. $x_max] : '';
-        if (empty($apc_state['xseo']) AND ($x_max>1)) {
+        if (empty($apc_state['xseo']) && $x_max>1) {
             $apc_state['xseo']   = $apc_state['xseo'. ($x_max-1)];
         }
 
@@ -475,7 +475,7 @@ class AA_Router_Seo extends AA_Router {
             }
             return $path;
         }
-        if (($param === 'list') OR is_long_id($param)) {
+        if ($param === 'list' || is_long_id($param)) {
             // list of ids - just like 7663-7434-7432
             $i     = 1;
             $ids   = [];
@@ -486,7 +486,7 @@ class AA_Router_Seo extends AA_Router {
                 return implode('-',$ids);
             }
             for( $i=count($ids)-1; $i>=0; $i--) {
-                if ( $ids[$i] AND is_object($item = AA_Items::getItem($ids[$i])) AND ($item->getSliceID()==$param) ) {
+                if ( $ids[$i] && is_object($item = AA_Items::getItem($ids[$i])) && $item->getSliceID()==$param ) {
                     return $ids[$i];
                 }
             }
@@ -524,7 +524,7 @@ class AA_Router_Seo extends AA_Router {
         $max = 0;
         foreach($arr as $key => $val) {
             $prefix_len = strlen($prefix);
-            if ( !empty($val) AND (substr($key,0,$prefix_len) == $prefix) ) {
+            if ( !empty($val) && substr($key,0,$prefix_len) == $prefix ) {
                 $max = (int)max((int)substr($key,$prefix_len), $max);
             }
         }
@@ -558,7 +558,7 @@ class AA_Stringexpand_Xid extends AA_Stringexpand_Nevercache {
             return '<div class="aa-error">Err in {xid} - router not found - {xid} is designed for site modules</div>';
         }
         $router = AA_Router::singleton($router_class);
-        if (empty($param) OR ctype_digit((string)$param) OR ($param==='path') OR ($param==='list') OR is_long_id($param)) {
+        if (empty($param) || ctype_digit((string)$param) || $param==='path' || $param==='list' || is_long_id($param)) {
             return $router->xid($param, $url);
         }
         return AA::Un('{item:'.$router->xid().':'.$param.'}');

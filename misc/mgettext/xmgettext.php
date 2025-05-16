@@ -91,7 +91,7 @@ class mgettext_writer_php extends mgettext_writer {
     }
 
     /** Prepares a string to be printed in double quotes into a file. */
-    function prepare_string($str) {
+    function prepare_string($str): string {
         $str = str_replace(["\\", '"', "$"], ["\\\\",'\\"', "\\$"], $str);
         // write line ends as new lines, but handle two line ends in other way
         while (str_contains($str, "\n\n")) {
@@ -149,7 +149,7 @@ class mgettext_writer_po extends mgettext_writer {
     }
 
     /** Prepares a string to be printed in double quotes into a file. */
-    function prepare_string($str) {
+    function prepare_string($str): string {
         $str = str_replace(["\\", '"'], ["\\\\",'\\"'], $str);
         // write line ends as new lines, but handle two line ends in other way
         while (str_contains($str, "\n\n")) {
@@ -302,7 +302,7 @@ function php_string($text) {
 
 /** add file to $skiplist or $filelist */
 function mark_file_4_processing($dirname, $fname, $skip, &$skiplist, &$filelist) {
-    if ($skip OR str_starts_with($fname, '.#')) {   // ignore also CVS backups
+    if ($skip || str_starts_with($fname, '.#')) {   // ignore also CVS backups
         $skiplist[$dirname.$fname] = 1;
     } else {
         $filelist[$dirname.$fname] = 1;
@@ -353,7 +353,7 @@ function collect_messages($logfile, $files_base_dir, $files, &$messages, &$warni
     // echo "<br> skiplist:";
     // print_r($skiplist);
     if (is_array($skiplist)) {
-        foreach ($skiplist as $skipfile => $foo) {
+        foreach (array_keys($skiplist) as $skipfile) {
             unset($filelist[$skipfile]);
         }
     }
@@ -524,7 +524,7 @@ function collect_messages_from_file($base_dir, $filename, &$messages, &$warnings
                 break;
             // inside message, e.g. after _m ( " or after _m ( "Hello" . "
             case 3:
-                if (($filetext[$pos]==$inner_quotes) && ($filetext[$pos-1] !== "\\") ) {
+                if (($filetext[$pos] === $inner_quotes) && ($filetext[$pos-1] !== "\\") ) {
                     $to_be_evaled = "\$message .= ".$quotes_start.$message_part.$quotes_start.";";
                     $message_part = "";
                     eval($to_be_evaled);

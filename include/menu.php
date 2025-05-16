@@ -74,14 +74,15 @@ function get_aamenus() {
         "label" => GetLabel($profile,'ui_manager','top_additem', '+ '. _m("Add Item")),
         "href"  => "admin/itemedit.php?add=1$input_view",
         "cond"  => ($profile->getProperty('ui_manager', 'top_additem') !== ''),
-        "level" => "main"
+        "level" => "main",
+        "class" => "aa-ui-btn-additem",
     ];
 
     $aamenus["itemmanager"] = [
         "label"   => get_if($profile->getProperty('ui_manager', 'top_itemmanager'), _m("Item Manager")),
         "title"   => _m("Item Manager"),
         "href"    => "admin/index.php?Tab=app",
-        "cond"  => ($profile->getProperty('ui_manager', 'top_itemmanager') !== '') OR IsSuperadmin(),
+        "cond"  => $profile->getProperty('ui_manager', 'top_itemmanager') !== '' || IsSuperadmin(),
         "level"   => "main",
         "submenu" => "itemmanager_submenu"
     ];
@@ -90,7 +91,7 @@ function get_aamenus() {
         "label"   => get_if($profile->getProperty('ui_manager', 'top_sliceadmin'), _m("Slice Admin")),
         "title"   => _m("Slice Administration"),
         "href"    => "admin/se_fields.php",
-        "cond"    => (IfSlPerm(PS_FIELDS) AND ($profile->getProperty('ui_manager', 'top_sliceadmin') !== '')) OR IsSuperadmin(),
+        "cond"    => (IfSlPerm(PS_FIELDS) && $profile->getProperty('ui_manager', 'top_sliceadmin') !== '') || IsSuperadmin(),
         "level"   => "main",
         "submenu" => "sliceadmin_submenu"
     ];
@@ -162,7 +163,7 @@ function get_aamenus() {
         ]
     ];
 
-    if ( $slice AND $slice->getProperty("mailman_field_lists")) {
+    if ( $slice && $slice->getProperty("mailman_field_lists")) {
         $aamenus["sliceadmin_submenu"]["items"]["mailman_create_list"] = [
             "cond"  => IfSlPerm(PS_FIELDS),
             "href"  => "admin/mailman_create_list.php",
@@ -177,8 +178,8 @@ function get_aamenus() {
             "header1"     => GetLabel($profile,'ui_manager', 'itemmanager_submenu_header1', _m("Folders")),
             "additem"     => ["cond"=> $profile->getProperty('ui_manager', 'itemmanager_submenu_additem'),        'hide' => !$profile->getProperty('ui_manager', 'itemmanager_submenu_additem'),                                                                          "label"=>$profile->getProperty('ui_manager', 'itemmanager_submenu_additem'), "href"  => "admin/itemedit.php?add=1$input_view"],
             "app"         => ["cond"=> ($profile->getProperty('ui_manager', 'itemmanager_submenu_app')   !== ''), 'hide' => ($profile->getProperty('ui_manager', 'itemmanager_submenu_app')   === ''), "href"=>"admin/index.php?Tab1a=1", 'ico'=>'ico-items.png',      "label"=>GetLabel($profile,'ui_manager', 'itemmanager_submenu_app'  , _m("Active")." <span class='aa-bin-cnt'>". $r_state['bin_cnt']['app'] ."</span>")],
-            "appb"        => ["cond"=> (($profile->getProperty('ui_manager', 'itemmanager_submenu_appb') !== '') AND (!$slice OR !$slice->noPendingBin())), 'hide' => ($profile->getProperty('ui_manager', 'itemmanager_submenu_appb')  === ''), "href"=>"admin/index.php?Tab1b=1", 'ico'=>'ico-items-pend.png', "label"=>GetLabel($profile,'ui_manager', 'itemmanager_submenu_appb' , _m("... pending")." <span class='aa-bin-cnt'>". $r_state['bin_cnt']['pending'] ."</span>"), "show"=>true],
-            "appc"        => ["cond"=> (($profile->getProperty('ui_manager', 'itemmanager_submenu_appc') !== '') AND (!$slice OR !$slice->noExpiredBin())), 'hide' => ($profile->getProperty('ui_manager', 'itemmanager_submenu_appc')  === ''), "href"=>"admin/index.php?Tab1c=1", 'ico'=>'ico-items-exp.png',  "label"=>GetLabel($profile,'ui_manager', 'itemmanager_submenu_appc' , _m("... expired")." <span class='aa-bin-cnt'>". $r_state['bin_cnt']['expired'] ."</span>"), "show"=>true],
+            "appb"        => ["cond"=> ($profile->getProperty('ui_manager', 'itemmanager_submenu_appb') !== '' && (!$slice || !$slice->noPendingBin())), 'hide' => ($profile->getProperty('ui_manager', 'itemmanager_submenu_appb')  === ''), "href"=>"admin/index.php?Tab1b=1", 'ico'=>'ico-items-pend.png', "label"=>GetLabel($profile,'ui_manager', 'itemmanager_submenu_appb' , _m("... pending")." <span class='aa-bin-cnt'>". $r_state['bin_cnt']['pending'] ."</span>"), "show"=>true],
+            "appc"        => ["cond"=> ($profile->getProperty('ui_manager', 'itemmanager_submenu_appc') !== '' && (!$slice || !$slice->noExpiredBin())), 'hide' => ($profile->getProperty('ui_manager', 'itemmanager_submenu_appc')  === ''), "href"=>"admin/index.php?Tab1c=1", 'ico'=>'ico-items-exp.png',  "label"=>GetLabel($profile,'ui_manager', 'itemmanager_submenu_appc' , _m("... expired")." <span class='aa-bin-cnt'>". $r_state['bin_cnt']['expired'] ."</span>"), "show"=>true],
             "hold"        => ["cond"=> ($profile->getProperty('ui_manager', 'itemmanager_submenu_hold')  !== ''), 'hide' => ($profile->getProperty('ui_manager', 'itemmanager_submenu_hold')  === ''), "href"=>"admin/index.php?Tab2=1",  'ico'=>'ico-holdbin.png',    "label"=>GetLabel($profile,'ui_manager', 'itemmanager_submenu_hold' , _m("Hold bin")." <span class='aa-bin-cnt'>". $r_state['bin_cnt']['folder2'] ."</span>")],
             "trash"       => ["cond"=> ($profile->getProperty('ui_manager', 'itemmanager_submenu_trash') !== ''), 'hide' => ($profile->getProperty('ui_manager', 'itemmanager_submenu_trash') === ''), "href"=>"admin/index.php?Tab3=1",  'ico'=>'ico-trashbin.png',   "label"=>GetLabel($profile,'ui_manager', 'itemmanager_submenu_trash', _m("Trash bin")." <span class='aa-bin-cnt'>". $r_state['bin_cnt']['folder3'] ."</span>")]
         ]
@@ -194,10 +195,10 @@ function get_aamenus() {
 
     $aamenus["itemmanager_submenu"]['items'] += [
             "header2"     => GetLabel($profile,'ui_manager', 'itemmanager_submenu_header2', _m("Misc")),
-            "slice_fld"   => ["cond"=>(IfSlPerm(PS_EDIT_ALL_ITEMS) AND $slice AND $slice->getFields(true)->count() AND ($profile->getProperty('ui_manager', 'itemmanager_submenu_slice_fld') !== '')), 'hide' => ($profile->getProperty('ui_manager', 'itemmanager_submenu_slice_fld')   === ''), "href"=>"admin/slicefieldsedit.php?edit=1", "label"=>GetLabel($profile,'ui_manager','itemmanager_submenu_slice_fld', _m("Setting"))],
-            "empty_trash" => ["cond"=>(IfSlPerm(PS_DELETE_ITEMS) AND ($profile->getProperty('ui_manager', 'itemmanager_submenu_empty_trash') !== '')), 'hide' => ($profile->getProperty('ui_manager', 'itemmanager_submenu_empty_trash')   === ''), "href"=>"admin/index.php?DeleteTrash=1", "label"=>GetLabel($profile,'ui_manager','itemmanager_submenu_empty_trash', _m("Empty trash")), "js"=>"EmptyTrashQuestion('{href}','"._m("Are You sure to empty trash?")."')"],
-            "CSVimport"   => ["cond"=>(IfSlPerm(PS_EDIT_ALL_ITEMS) AND ($profile->getProperty('ui_manager', 'itemmanager_submenu_CSVimport') !== '')), 'hide' => ($profile->getProperty('ui_manager', 'itemmanager_submenu_CSVimport')   === ''), "href"=>"admin/se_csv_import.php",          "label"=>GetLabel($profile,'ui_manager','itemmanager_submenu_CSVimport', _m("Import CSV"))],
-            "debug"       => ["cond"=>(IsSuperadmin() AND ($profile->getProperty('ui_manager', 'itemmanager_submenu_debug')   !== '')),                'hide' => ($profile->getProperty('ui_manager', 'itemmanager_submenu_debug')   === '') AND !IsSuperadmin(),                  "js"  =>"ToggleCookie('aa_debug','1')","label"=>GetLabel($profile,'ui_manager','itemmanager_submenu_debug',  ($_COOKIE['aa_debug'] ? _m("Set Debug OFF") : _m("Set Debug ON")))]
+            "slice_fld"   => ["cond"=>(IfSlPerm(PS_EDIT_ALL_ITEMS) && $slice && $slice->getFields(true)->count() && $profile->getProperty('ui_manager', 'itemmanager_submenu_slice_fld') !== ''), 'hide' => ($profile->getProperty('ui_manager', 'itemmanager_submenu_slice_fld')   === ''), "href"=>"admin/slicefieldsedit.php?edit=1", "label"=>GetLabel($profile,'ui_manager','itemmanager_submenu_slice_fld', _m("Setting"))],
+            "empty_trash" => ["cond"=>(IfSlPerm(PS_DELETE_ITEMS) && $profile->getProperty('ui_manager', 'itemmanager_submenu_empty_trash') !== ''), 'hide' => ($profile->getProperty('ui_manager', 'itemmanager_submenu_empty_trash')   === ''), "href"=>"admin/index.php?DeleteTrash=1", "label"=>GetLabel($profile,'ui_manager','itemmanager_submenu_empty_trash', _m("Empty trash")), "js"=>"EmptyTrashQuestion('{href}','"._m("Are You sure to empty trash?")."')"],
+            "CSVimport"   => ["cond"=>(IfSlPerm(PS_EDIT_ALL_ITEMS) && $profile->getProperty('ui_manager', 'itemmanager_submenu_CSVimport') !== ''), 'hide' => ($profile->getProperty('ui_manager', 'itemmanager_submenu_CSVimport')   === ''), "href"=>"admin/se_csv_import.php",          "label"=>GetLabel($profile,'ui_manager','itemmanager_submenu_CSVimport', _m("Import CSV"))],
+            "debug"       => ["cond"=>(IsSuperadmin() && $profile->getProperty('ui_manager', 'itemmanager_submenu_debug')   !== ''),                'hide' => $profile->getProperty('ui_manager', 'itemmanager_submenu_debug')   === '' && !IsSuperadmin(),                  "js"  =>"ToggleCookie('aa_debug','1')","label"=>GetLabel($profile,'ui_manager','itemmanager_submenu_debug',  ($_COOKIE['aa_debug'] ? _m("Set Debug OFF") : _m("Set Debug ON")))]
     ];
 
     if ($slice && IfSlPerm(PS_EDIT_ALL_ITEMS)) {

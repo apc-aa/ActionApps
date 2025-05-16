@@ -23,7 +23,7 @@ https://www.apc.org/
 */
 function normalize_arr($arr) {
     $ret = false;
-    if ( isset($arr) AND is_array($arr) ) {
+    if ( isset($arr) && is_array($arr) ) {
         foreach ($arr as $v) {
             if ( isset($v) ) {
                 $ret[] = $v;
@@ -48,7 +48,7 @@ class AA_Site_Spot_Match {
             return new AA_Site_Spot_Match($arr[1], $arr[2]);
         }
         // special case - for {aa_expresions} we used "=" in history
-        return new AA_Site_Spot_Match(($var AND $var[0] === '{') ? '=' : 'REGEXP', $string);
+        return new AA_Site_Spot_Match(($var && $var[0] === '{') ? '=' : 'REGEXP', $string);
     }
 
     function implode() {
@@ -59,7 +59,7 @@ class AA_Site_Spot_Match {
         return match ($this->op) {
             '='        => ($value == $this->val),
             'REGEXP'   => preg_match('/'.str_replace('/', '\/', $this->val).'/', $value),
-            'contains' => (strlen($value) and str_contains($this->val, $value)),
+            'contains' => (strlen($value) && str_contains($this->val, $value)),
             default    => false,
         };
     }
@@ -181,7 +181,7 @@ class spot {
         return false;
     }
 
-    function moveUp( $spot_id ) {
+    function moveUp( $spot_id ): bool {
         $this->normalize();  // just check, if there are no problems in this spot
 
         // search in options
@@ -205,7 +205,7 @@ class spot {
         return false;
     }
 
-    function moveDown( $spot_id ) {
+    function moveDown( $spot_id ): bool {
         $this->normalize();  // just check, if there are no problems in this spot
 
         // search in options
@@ -219,7 +219,7 @@ class spot {
         }
         //search in sequence
         if (false !== ($k = array_search($spot_id, (array)$this->po))) {
-            if (($k==0) OR ($k==count($this->po)-1)) {    // can't move to the first position in sequence
+            if ($k==0 || $k==count($this->po)-1) {    // can't move to the first position in sequence
                 return false;
             }
             $this->po[$k]   = $this->po[$k+1];
@@ -281,7 +281,7 @@ class sitetree {
     }
 
     /** Creates the spot object and adds it in the sequence (positions) */
-    function addInSequence($where, $name, $conditions=false, $variables=false, $flag=false) {
+    function addInSequence($where, $name, $conditions=false, $variables=false, $flag=false): bool {
         // parent is not set yet (set by addInSequence() in next step);
         $spot = new spot( $this->new_id(), $name, $conditions, $variables, false, $flag );
         if ($this->_addInSequence($spot, $where)) {
@@ -292,7 +292,7 @@ class sitetree {
     }
 
     /** Adds already created spot object into sequence (positions array) */
-    function _addInSequence($spot, $where) {
+    function _addInSequence($spot, $where): bool {
         //get real parent
         $parent_spot =& $this->tree[$where];
 
@@ -322,7 +322,7 @@ class sitetree {
      * @param bool $flag
      * @return bool
      */
-    function addChoice($where, $name, $conditions = false, $variables = false, $flag = false) {
+    function addChoice($where, $name, $conditions = false, $variables = false, $flag = false): bool {
         // parent is not set yet (set by addChoice() in next step);
         $new_id = $this->new_id();
         $spot = new spot( $new_id, $name, $conditions, $variables, false, [$new_id], $flag );
@@ -334,7 +334,7 @@ class sitetree {
     }
 
     /** Adds already created spot object in the choices array */
-    function _addChoice($spot, $where) {
+    function _addChoice($spot, $where): bool {
         //get real parent
         $where_spot =& $this->tree[$where];
         if (!$where_spot->get('variables')) {  // before creating choice must be defined the list of dependency variables
@@ -348,7 +348,7 @@ class sitetree {
     function removeSpot( $spot_id ) {
         $spot =& $this->tree[$spot_id];
 
-        if ($spot AND $spot->isLeaf()) {
+        if ($spot && $spot->isLeaf()) {
             $parent_id = $spot->get('parent');
             $parent =& $this->tree[$parent_id];
             if (!$parent) {
@@ -387,7 +387,7 @@ class sitetree {
      * @param string $direction - 'moveLeft' or 'moveRight'
      * @return bool
      */
-    function moveLeftRight($spot_id, $direction) {
+    function moveLeftRight($spot_id, $direction): bool {
         $spot =& $this->tree[$spot_id];
         if (!$spot) {
             return false;
@@ -416,7 +416,7 @@ class sitetree {
                         // in case the spot is normal sequence spot, then we
                         // have to add it to first option
                         $choices = $this->get('choices', $sibling_id);
-                        $destination_parent_id = ((is_array($choices) AND isset($choices[0])) ? $choices[0] : false);
+                        $destination_parent_id = ((is_array($choices) && isset($choices[0])) ? $choices[0] : false);
                     }
                     break;
                 }
@@ -472,7 +472,7 @@ class sitetree {
             if (!$pos) {     // There was a bug that introduced empty
                 continue;    // positions - this is to skip them.
             }
-            if (!$found AND ($pos == $spot_id)) {
+            if (!$found && $pos == $spot_id) {
                 $found = true;
                 continue;
             }
@@ -486,7 +486,7 @@ class sitetree {
         return false;
     }
 
-    function addVariable($where, $var) {
+    function addVariable($where, $var): bool {
         //get real parent
         $where_spot =& $this->tree[$where];
         if (!$where_spot) {
@@ -496,7 +496,7 @@ class sitetree {
         return true;
     }
 
-    function removeVariable($where, $var) {
+    function removeVariable($where, $var): bool {
         //get real parent
         $where_spot =& $this->tree[$where];
         if (!$where_spot) {
@@ -506,7 +506,7 @@ class sitetree {
         return true;
     }
 
-    function addCondition( $where, $var, $cond, $op) {
+    function addCondition( $where, $var, $cond, $op): bool {
         //get real parent
         if (!$this->isChoice($where)) {
             return false;
@@ -516,7 +516,7 @@ class sitetree {
         return true;
     }
 
-    function removeCondition( $where, $var ) {
+    function removeCondition( $where, $var ): bool {
         //get real parent
         $where_spot =& $this->tree[$where];
         if (!$where_spot) {
@@ -552,7 +552,7 @@ class sitetree {
             return false;
         }
         $parent_spot_id = $spot->get('parent');
-        if (!$parent_spot_id OR !($vars=$this->get('variables',$parent_spot_id))) {
+        if (!$parent_spot_id || !($vars=$this->get('variables',$parent_spot_id))) {
             return false;
         }
         return $vars;
@@ -564,7 +564,7 @@ class sitetree {
             return false;
         }
         $parent_spot_id = $spot->get('parent');
-        if ( !$parent_spot_id OR !($choices=$this->get('choices',$parent_spot_id)) ) {
+        if ( !$parent_spot_id || !($choices=$this->get('choices',$parent_spot_id)) ) {
             return false;
         }
         if (is_array($choices) && in_array($spot_id, $choices, true)) {
@@ -587,12 +587,12 @@ class sitetree {
     function getName($id) { return $this->get( 'name', $id ); }
     function exist($id)  { return isset($this->tree[$id]); }
 
-    function haveBranches($id) {
-        return $this->get('choices', $id) ? true : false;
+    function haveBranches($id): bool {
+        return (bool) $this->get('choices', $id);
     }
 
-    function isSequenceStart($id) {
-        return $this->get('positions', $id) ? true : false;
+    function isSequenceStart($id): bool {
+        return (bool) $this->get('positions', $id);
     }
 
     function isLeaf($id)  {
@@ -643,7 +643,7 @@ class sitetree {
 
                 // if this position is collapsed, then print only first position
                 // and skip the others as well as all the choices
-                if (($method === 'collapsed') AND $this->isFlag($pos, AA_Module_Site::FLAG_COLLAPSE)) {  // AA_Module_Site::COLLAPSE - collapsed branches.
+                if ($method === 'collapsed' && $this->isFlag($pos, AA_Module_Site::FLAG_COLLAPSE)) {  // AA_Module_Site::COLLAPSE - collapsed branches.
                     break;
                 }
 
@@ -703,7 +703,7 @@ class sitetree {
         $this->printSpotHtml($spot_id, $this->getName($spot_id), $spot_id == $this->current_id, ($this->get('flag', $spot_id) & AA_Module_Site::FLAG_DISABLE));
 
         // variables defined? - print it
-        if (!$this->isFlag($spot_id, AA_Module_Site::FLAG_COLLAPSE) AND ($vars = $this->get('variables', $spot_id))) {
+        if (!$this->isFlag($spot_id, AA_Module_Site::FLAG_COLLAPSE) && ($vars = $this->get('variables', $spot_id))) {
             echo "\n  <div class=\"variables\">(". implode(',',$vars) .')</div>';
         }
     }
@@ -747,7 +747,7 @@ class sitetree {
 
     function printVariables( $spot_id, $vars ) {
         echo "<tr><th>"._m("Spot&nbsp;variables")."</th><td>";
-        if (isset($vars) AND is_array($vars)) {
+        if (isset($vars) && is_array($vars)) {
             foreach ($vars as $k => $v) {
                 echo safe($v) ."<span>". a_href(self::siteAdminPageUrl($spot_id, ["delvar"=>$k]), _m("Delete"), ['class'=>"aa-button-delete"]). "</span><br>";
             }
@@ -760,7 +760,7 @@ class sitetree {
 
     function printConditions($spot_id, $conds, $vars) {
         echo "<tr><th>"._m("Spot&nbsp;conditions")."</th><td>";
-        if ( isset($vars) AND is_array($vars) ) {
+        if ( isset($vars) && is_array($vars) ) {
             $i=0;
             foreach ($vars as $k => $v) {
                 $safe_v = safe($v);

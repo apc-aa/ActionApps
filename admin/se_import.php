@@ -144,7 +144,7 @@ FrmTabCaption(_m("Enable export to slice:"));
 <td>
 <select name="export_n" size="8">
   <?php
-  if ( isset($export_to) AND is_array($export_to)) {
+  if ( isset($export_to) && is_array($export_to)) {
       foreach ($all_slices as $s_id => $name) {
           if ( $export_to[$s_id] == "" ) {
               echo "<option value=\"$s_id\"> $name </option>";
@@ -162,7 +162,7 @@ FrmTabCaption(_m("Enable export to slice:"));
 <td>
 <select name="export_y" size="8" multiple>
   <?php
-  if ( isset($export_to) AND is_array($export_to)) {
+  if ( isset($export_to) && is_array($export_to)) {
       foreach ($export_to as $s_id => $name) {
           echo "<option value=\"$s_id\"> $name </option>";
       }
@@ -173,10 +173,10 @@ FrmTabCaption(_m("Enable export to slice:"));
 <tr><td colspan="3"><table>
 <?php
   FrmInputChBox("export_to_all", _m("Enable export to any slice"), $export_to_all, true, "OnClick=\"ExportAllClick()\"");
-  if ( isset($exported) AND is_array($exported) ) {
+  if ( isset($exported) && is_array($exported) ) {
       FrmStaticText(_m("Currently exported to"), implode("<br>", $exported), '', '', false);
   }
-  if ( isset($wrong_exp) AND is_array($wrong_exp) ) {
+  if ( isset($wrong_exp) && is_array($wrong_exp) ) {
       FrmStaticText(_m("Wrong export (non existant slice!):"), implode("<br>", $wrong_exp), '', '', false);
   }
 ?>
@@ -199,7 +199,7 @@ FrmTabCaption(_m("Enable export to slice:"));
 <td>
 <select name="import_n" size="8">
   <?php
-  if ( isset($importable) AND is_array($importable)) {
+  if ( isset($importable) && is_array($importable)) {
       foreach ($importable as $s_id => $name) {
           if ( $imported[$s_id] == "" ) {
               echo "<option value=\"$s_id\"> $name </option>";
@@ -213,7 +213,7 @@ FrmTabCaption(_m("Enable export to slice:"));
 <td>
 <select name="import_y" size="8">
   <?php
-  if ( isset($imported) AND is_array($imported)) {
+  if ( isset($imported) && is_array($imported)) {
     foreach ($imported as $id => $name) {
         echo "<option value=\"$id\"> $name </option>";
     }

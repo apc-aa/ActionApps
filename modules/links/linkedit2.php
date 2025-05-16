@@ -124,7 +124,7 @@ if ( $lid ) {
 $new_link = new linkobj($r_state['link_id']);
 $new_link->loadFromForm($r_err);
 
-if ( $r_err AND (count($r_err) > 1)) {
+if ( $r_err && count($r_err) > 1) {
     page_close();
     go_url( con_url($senderUrlErr, "getOldV=1"));
 }

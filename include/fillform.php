@@ -31,7 +31,7 @@
  * @param $fillConds
  * @return string
  */
-function fillFormFromVars($fillConds) {
+function fillFormFromVars($fillConds): string {
     global $err;
 
     // init used objects
@@ -80,7 +80,7 @@ function safeChars($str) {
 function fillForm(): string {
     global $my_item_id, $slice_id, $oldcontent4id;
     // get slice_id if not specified - try get it from $my_item_id
-    if ( !$slice_id AND $my_item_id ) {
+    if ( !$slice_id && $my_item_id ) {
         $zid = new zids( $my_item_id, 'l' );
         $content = GetItemContentMinimal($zid, ['id','slice_id']);
         if ($p_slice_id = $content[$my_item_id]["slice_id........"][0]['value']) {
@@ -90,8 +90,8 @@ function fillForm(): string {
     // get slice_id if not specified - try get it from $oldcontent4id
     if (!$slice_id AND $oldcontent4id AND is_array($oldcontent4id)) {
         if ( $p_slice_id = $oldcontent4id["slice_id........"][0]['value'] ) {
-            $slice_id = unpack_id($p_slice_id);
-        }
+        $slice_id = unpack_id($p_slice_id);
+    }
     }
     if ( !$slice_id ) {
         return "<!-- fillform.php: Slice ID not set, but it could be OK -->";
@@ -210,7 +210,7 @@ function fillFormWithContent($oldcontent4id): string {
                     $myvalue = safeChars($field['value']);
                     $control_id = 'v'.unpack_id($field_id);
                     // field password.......x is used to authenticate item edit
-                    if (!in_array(substr($field_id, 0, 10), ['password..','secret....']) AND !in_array($field_id, ['id..............', 'slice_id........'])) {
+                    if (!in_array(substr($field_id, 0, 10), ['password..','secret....']) && !in_array($field_id, ['id..............', 'slice_id........'])) {
                         $jsarr[] = "\t['$form','$control_id','$myvalue','tdctr_','". ($field["flag"] & FLAG_HTML ? "h" : "t")."',$timezone]";
                     }
                 }
@@ -284,7 +284,7 @@ function fillConds() {
     if (is_array($dateConds)) {
         $timezone = GetTimeZone();
         foreach ($dateConds as $i => $dateField) {
-            if (isset($conds[$i]['value']) AND $conds[$i]['value']) {
+            if (isset($conds[$i]['value']) && $conds[$i]['value']) {
                 $js .= "setControlOrAADate ('$form','$dateField','". strtotime($conds[$i]['value'])."','',0,$timezone);\n";
             }
         }

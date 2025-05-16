@@ -37,7 +37,7 @@ function CheckP( $p ) {
   return ((integer)$p>0) ? (integer)$p : 1;
 }
 
-function CheckT( $t ) {
+function CheckT( $t ): string {
   return '-';
 }
 
@@ -118,7 +118,7 @@ if ( !$apc ) {
   else $apc = 'zzvx--';
 }
 
-if ( preg_match( "/^([a-zA-Z0-9_])([a-zA-Z0-9_])([a-zA-Z0-9_-])([a-zA-Z_]+)([-]|[0-9]+)([a-zA-Z_-])([0-9]*)/", $apc, $vars ))
+if ( preg_match( "/^(\\w)(\\w)([a-zA-Z0-9_-])([a-zA-Z_]+)([-]|\\d+)([a-zA-Z_-])(\\d*)/", $apc, $vars ))
   [$old_state,$old_w,$old_s,$old_f,$old_r,$old_p,$old_t,$old_x] = $vars;
  else
   [$old_w,$old_s,$old_f,$old_r,$old_p,$old_t] = ['z', 'z', 'v', 'x', '-', '-'];
@@ -141,7 +141,7 @@ if ( isset($s) ) {                          // s stands for SUBWEB (like zpravy 
 if ( isset($f) ) {$old_f=$f; $old_x='';$old_p='1';}    // f stands for FILTER (like zivotni protredi - z, kultura - k) - used only on zpravodajsvi page yet
 if ( isset($r) ) {
   if ( is_array($r)) {
-    foreach ($r as $k => $foo) {
+    foreach (array_keys($r) as $k) {
         $max_index = max($max_index, $k);
     }
     $max_index = max( $max_index, strlen($old_r)-1 );
@@ -165,7 +165,7 @@ if ( isset($scrl) ) {      // page scroller
   $old_p = $$pagevar;
   $old_x='';
 }
-if ( ($old_p <= 0) OR ($old_p === '-') )
+if ( $old_p <= 0 || $old_p === '-' )
   $old_p = 1;
 
 // zaverecna kontrola a pripadna uprava promennych:

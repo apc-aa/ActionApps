@@ -112,7 +112,7 @@ class AA_Operators {
     /** getJsDefinition function
      *
      */
-    static function getJsDefinition() {
+    static function getJsDefinition(): string {
         return '
             var operator_names  = new Array();
             var operator_values = new Array();
@@ -222,7 +222,7 @@ class AA_Condition extends AA_Object {
      * @param $condition_number
      * @return string conditions in short form  headline........-RLIKE-Action...
      */
-    function getAsString($condition_number = 0) {
+    function getAsString($condition_number = 0): string {
         $val = str_replace('-', '--', $this->value);
         if ($val[0] === '-') {  // we do not want triple --- like in: expiry_date.....-m:<- --432000
             $val = " $val";
@@ -234,7 +234,7 @@ class AA_Condition extends AA_Object {
      * @param $condition_number
      * @return string conditions in long form  conds[0][operator]=BEGIN&conds[0][headline........]=1&conds[0][value]=Action...
      */
-    function getAsLongString($condition_number = 0) {
+    function getAsLongString($condition_number = 0): string {
         $ret = [];
         foreach ($this->fields as $cond_field) {
             $ret[] = "conds[$condition_number][$cond_field]=1";
@@ -258,7 +258,7 @@ class AA_Condition extends AA_Object {
      * @param $itemcontent
      * @return bool
      */
-    function matches($itemcontent) {
+    function matches($itemcontent): bool {
         foreach ($this->fields as $field) {
             foreach ($itemcontent->getValues($field) as $val) {
                 if ($this->_compare($val['value'])) {
@@ -296,11 +296,11 @@ class AA_Condition extends AA_Object {
                 return !preg_match('/' . str_replace('/', '\/', AA_REGEXP_MAIL) . '/', $field_value);
             case 'BETWEEN':
                 $arr = explode(",", $this->value);
-                return (((int)$field_value >= (int)$arr[0]) and ((int)$field_value <= (int)$arr[1]));
+                return ((int)$field_value >= (int)$arr[0] && (int)$field_value <= (int)$arr[1]);
             case 'ISNULL':
                 return ($field_value == '');
             case 'NOTNULL':
-                return ($field_value <> '');
+                return ($field_value != '');
             case '==' :                                           // exact match - no SQL parsing
             case '='  :
                 return $field_value == $this->value;
@@ -641,7 +641,7 @@ class AA_Set extends AA_Object {
                 $conds[$k]['value'] = reset($cond);
             }
             if (!isset($cond['operator'])) {
-                if (is_array($defaultCondsOperator) or ($defaultCondsOperator instanceof ArrayAccess)) {
+                if (is_array($defaultCondsOperator) || $defaultCondsOperator instanceof ArrayAccess) {
                     if (is_array($defaultCondsOperator[key($cond)])) {
                         $conds[$k]['operator'] = get_if($defaultCondsOperator[key($cond)]['operator'], 'LIKE');
                     } else {
@@ -652,12 +652,12 @@ class AA_Set extends AA_Object {
                 }
             }
             if (!($cond['operator'] === 'ISNULL') and !($cond['operator'] === 'NOTNULL') and !($cond['operator'] === 'ISMAIL') and !($cond['operator'] === 'NOTMAIL')) {
-                // The value could be empty for ISNULL, NOTNULL, ISMAIL or NOTMAIL operators
+            // The value could be empty for ISNULL, NOTNULL, ISMAIL or NOTMAIL operators
                 if (!isset($conds[$k]['value']) or ($conds[$k]['value'] == "")) {
-                    // For other operators we should remove all conditions without value
-                    unset ($conds[$k]);
-                }
+                // For other operators we should remove all conditions without value
+                unset ($conds[$k]);
             }
+        }
         }
 
         // and now replace all united conds (like conds[0][headline........,abstract........]=1)
@@ -760,7 +760,7 @@ class AA_Set extends AA_Object {
      *     3)   sort[0][headline........]=d&sort[0][limit]=5
      */
     function addSortFromArray($sort) {
-        if ($sort and is_array($sort)) {
+        if ($sort && is_array($sort)) {
             ksort($sort, SORT_NUMERIC); // it is not sorted and the order is important
             foreach ($sort as $k => $srt) {
                 if ($srt) {
@@ -800,7 +800,7 @@ class AA_Set extends AA_Object {
      * @param $command
      * @return bool
      */
-    function addFromCommand($command) {
+    function addFromCommand($command): bool {
         if ($command->getCommand() !== 'd') {
             return false;
         }
@@ -816,7 +816,7 @@ class AA_Set extends AA_Object {
 
                 // d- conds in {item:....:d-..} could be url encoded (as produced by {conds:...})
                 // so if the first and last characetr is encoded quotes, let's decode it
-                if (str_starts_with($val, '%22') and str_ends_with($val, '%22')) {
+                if (str_starts_with($val, '%22') && str_ends_with($val, '%22')) {
                     $val = rawurldecode($val);
                 }
 
@@ -865,7 +865,7 @@ class AA_Set extends AA_Object {
     /**
      * @return string
      */
-    function getSortAsString() {
+    function getSortAsString(): string {
         $ret = [];
         foreach ($this->sort as $sortorder) {
             $ret[] = $sortorder->getAsString();
@@ -922,7 +922,7 @@ class AA_Set extends AA_Object {
      * @return bool
      * @todo allow to compare not only fields, but also aliases
      */
-    function matches($itemcontent) {
+    function matches($itemcontent): bool {
         foreach ($this->conds as $condition) {
             if (!$condition->matches($itemcontent)) {
                 // we must met all the conditions criteria
@@ -972,6 +972,7 @@ function getSortFromUrl($sort) {
 
 class AA_Dbcondition {
 
+    private string $table;
     private string $field;
     private string $operator;
     private string $querystring;
@@ -1004,7 +1005,7 @@ class AA_Dbcondition {
         $this->joincond  = $arr[1];
 
         //  could be id or expression like 49d94e8e3379dc951eac78c2cd0f9f65 OR 78d89ac8dd0de0967a6f50ee5408ccdd OR ae076560dd8674b169e7d493d23ca8f2
-        $this->condition = ($table==='item' AND AA_Metabase::isPacked('item', $field)) ? preg_replace("/'([0-9a-f]{32})'/i", "0x\\1", $arr[2]) : $arr[2];
+        $this->condition = ($table==='item' && AA_Metabase::isPacked('item', $field)) ? preg_replace("/'([0-9a-f]{32})'/i", "0x\\1", $arr[2]) : $arr[2];
         $this->table = $table;
     }
 
@@ -1049,7 +1050,7 @@ class AA_Dbcondition {
                         $querystring = time();
                         break;
                     }
-                    if (($operator === "<=") or ($operator === ">")) {
+                    if ($operator === "<=" || $operator === ">") {
                         // end of day used for some operators
                         $querystring = mktime(23, 59, 59, $part[2], $part[1], $part[3]);
                     } else {
@@ -1113,7 +1114,7 @@ class AA_Dbcondition {
 
         $querystring = stripslashes($querystring);
         $querystring = (string)$querystring;   // to be able to do string operations
-        $cleanstr    = quote((($querystring[0] === '"') or ($querystring[0] === "'")) ? substr($querystring, 1, -1) : $querystring);
+        $cleanstr    = quote(($querystring[0] === '"' || $querystring[0] === "'") ? substr($querystring, 1, -1) : $querystring);
 
         switch ($operator) {
             case 'LIKE':
@@ -1186,7 +1187,7 @@ class AA_Dbcondition {
  */
 function ProoveFieldNames($slices, $conds) {
 
-    if (!is_array($slices) or !is_array($conds)) {
+    if (!is_array($slices) || !is_array($conds)) {
         return;
     }
 
@@ -1196,12 +1197,12 @@ function ProoveFieldNames($slices, $conds) {
             continue;
         }
         foreach ($conds as $cond) {
-            if (!(isset($cond) and is_array($cond))) {
+            if (!(isset($cond) && is_array($cond))) {
                 continue;
             }
-            foreach ($cond as $key => $foo) {
+            foreach (array_keys($cond) as $key) {
                 // @todo - we do not check the headline........@relation.......1 kind of fields
-                if (!AA_Condition::CONDS_NOT_FIELD_NAMES[$key] and !strpos($key, '@') and !$slice->isField($key)) {
+                if (!AA_Condition::CONDS_NOT_FIELD_NAMES[$key] && !strpos($key, '@') && !$slice->isField($key)) {
                     warn("Field <b>$key</b> does not exist in slice <b>$slice_id</b>.");
                 }
             }
@@ -1277,7 +1278,7 @@ function ParseEasyConds(&$conds, $defaultCondsOperator = "LIKE") {
                 $conds[$k]['value'] = reset($cond);
             }
             if (!isset($cond['operator'])) {
-                if (is_array($defaultCondsOperator) or ($defaultCondsOperator instanceof ArrayAccess)) {
+                if (is_array($defaultCondsOperator) || $defaultCondsOperator instanceof ArrayAccess) {
                     if (is_array($defaultCondsOperator[key($cond)])) {
                         $conds[$k]['operator'] = get_if($defaultCondsOperator[key($cond)]['operator'], 'LIKE');
                     } else {
@@ -1288,12 +1289,12 @@ function ParseEasyConds(&$conds, $defaultCondsOperator = "LIKE") {
                 }
             }
             if (!($cond['operator'] === 'ISNULL') and !($cond['operator'] === 'NOTNULL') and !($cond['operator'] === 'ISMAIL') and !($cond['operator'] === 'NOTMAIL')) {
-                // The value could be empty for ISNULL, NOTNULL, ISMAIL or NOTMAIL operators
+            // The value could be empty for ISNULL, NOTNULL, ISMAIL or NOTMAIL operators
                 if (!isset($conds[$k]['value']) or ($conds[$k]['value'] == "")) {
-                    // For other operators we should remove all conditions without value
-                    unset ($conds[$k]);
-                }
+                // For other operators we should remove all conditions without value
+                unset ($conds[$k]);
             }
+        }
         }
         // and now replace all united conds (like conds[0][headline........,abstract........]=1)
         // with its equivalents
@@ -1363,23 +1364,24 @@ function MakeSQLConditions($fields_arr, $conds, $defaultCondsOperator, &$join_ta
 
     AA::$debug & 2 && AA::$dbg->log("<br>Conds after ParseEasyConds():", $conds, "<br>--");
 
-    if (isset($conds) and is_array($conds)) {
+    if (isset($conds) && is_array($conds)) {
         foreach ($conds as $cond) {
-            if (isset($cond) and is_array($cond)) {
+            if (isset($cond) && is_array($cond)) {
                 $onecond = [];                    // clear
                 foreach ($cond as $fid => $v) {
                     $finfo = $fields_arr[$fid];
                     if (isset($finfo) and is_array($finfo)) {
                         if ($additional_field_cond) {
                             if (!$additional_field_cond($finfo, $v, $add_param)) {
-                                continue;
-                            }
+                            continue;
+                        }
                         }
                         // for Links it contain whole definition of the ink - like "links_cat_cat.state"
                         if (str_contains($finfo['field'], '.')) {   // not common case
                             [$dbtab, $dbfld] = explode('.',$finfo['field'],2);
                         } else {
-                            [$dbtab, $dbfld] = [$finfo['table'] ?? '', $finfo['field']];
+                            $dbtab = $finfo['table'] ?? '';
+                            $dbfld = $finfo['field'];
                         }
                         $onecond[] = (new AA_Dbcondition($dbtab, $dbfld, $cond['operator'], $cond['value']))->getWhereExp();
                         if ($finfo['table']) {
@@ -1395,7 +1397,7 @@ function MakeSQLConditions($fields_arr, $conds, $defaultCondsOperator, &$join_ta
             }
         }
     }
-    return (isset($ret) and is_array($ret)) ? ' AND ( ' . implode(' AND ', $ret) . ') ' : '';
+    return (isset($ret) && is_array($ret)) ? ' AND ( ' . implode(' AND ', $ret) . ') ' : '';
 }
 
 /** MakeSQLOrderBy function
@@ -1409,9 +1411,9 @@ function MakeSQLConditions($fields_arr, $conds, $defaultCondsOperator, &$join_ta
  * @return string
  */
 function MakeSQLOrderBy($fields_arr, $sort, &$join_tables, $additional_field_cond = '', $add_param = false) {
-    if (isset($sort) and is_array($sort)) {
+    if (isset($sort) && is_array($sort)) {
         foreach ($sort as $srt) {
-            if (isset($srt) and is_array($srt)) {
+            if (isset($srt) && is_array($srt)) {
                 // random order
                 // This operatin is quite slow in MySQL, so if you need just
                 // one random item (for banner, ...), you should rather use
@@ -1429,8 +1431,8 @@ function MakeSQLOrderBy($fields_arr, $sort, &$join_tables, $additional_field_con
                 if ($finfo and is_array($finfo)) {
                     if ($additional_field_cond) {
                         if (!$additional_field_cond($finfo, current($srt), $add_param)) {
-                            continue;
-                        }
+                        continue;
+                    }
                     }
                     $ret[] = $finfo['field'] . ((stripos(current($srt), 'd') !== false) ? " DESC" : "");
                     if ($finfo['table']) {
@@ -1440,7 +1442,7 @@ function MakeSQLOrderBy($fields_arr, $sort, &$join_tables, $additional_field_con
             }
         }
     }
-    return (isset($ret) AND is_array($ret)) ? ' ORDER BY ' . implode(' , ', $ret) : '';
+    return (isset($ret) && is_array($ret)) ? ' ORDER BY ' . implode(' , ', $ret) : '';
 }
 
 /** GetZidsFromSQL function - get zids from database
@@ -1576,7 +1578,7 @@ function QueryZids($slices, $conds = "", $sort = "", $type = "ACTIVE", $neverAll
 
     AA::$debug & 2 && AA::$dbg->log("QueryZids - start:<br>Conds=", $conds, "<br>Sort=", $sort, "<br>Slices=", implode('-', $slices));
 
-    if (is_object($restrict_zids) AND !$restrict_zids->count()) {
+    if (is_object($restrict_zids) && !$restrict_zids->count()) {
         return new zids(); // restrict_zids defined but empty - no result
     }
 
@@ -1593,14 +1595,14 @@ function QueryZids($slices, $conds = "", $sort = "", $type = "ACTIVE", $neverAll
     if ((is_array($conds) and count($conds)) or (is_array($sort) and count($sort))) {
         if (empty($slices)) {
             if (is_object($restrict_zids)) {
-                $sid = $restrict_zids->getFirstSlice();
-                if ($sid) {
-                    $slices[] = $sid;
-                }
+            $sid = $restrict_zids->getFirstSlice();
+            if ($sid) {
+                $slices[] = $sid;
             }
         }
+        }
         // get the fields for the first slice (used as template - we expect that all slices in the query has the same structure)
-        if (!empty($slices) and ($slice = AA_Slice::getModule(reset($slices)))) {
+        if (!empty($slices) && ($slice = AA_Slice::getModule(reset($slices)))) {
             // @todo convert whole $slices to AA_Slice
             // access the fields through slice - it is better for caching of values
             $fields = $slice->getFields();
@@ -1765,7 +1767,7 @@ function QueryZids($slices, $conds = "", $sort = "", $type = "ACTIVE", $neverAll
 
                 $field = $fields->getField($fid);
 
-                if (is_null($field) or $v == "") {
+                if (is_null($field) || $v == "") {
                     AA::$debug && AA::$dbg->warn("Skipping '$fid' in conds[]: not known.");
                     continue;            // bad field_id or not defined condition - skip
                 }
@@ -1824,7 +1826,7 @@ function QueryZids($slices, $conds = "", $sort = "", $type = "ACTIVE", $neverAll
     $delim           = '';
     $select_distinct = '';
 
-    if (!is_array($sort) or count($sort) < 1) {
+    if (!is_array($sort) || count($sort) < 1) {
         $select_order = is_object($restrict_zids) ? '' : 'item.publish_date DESC';   // default item order
     } else {
         foreach ($sort as $sort_no => $srt) {
@@ -1881,7 +1883,7 @@ function QueryZids($slices, $conds = "", $sort = "", $type = "ACTIVE", $neverAll
 
                 // join constant table if we want to sort by priority
                 $direction = current($srt);
-                if (str_contains($direction, '1') or str_contains($direction, '9')) { // sort by priority
+                if (str_contains($direction, '1') || str_contains($direction, '9')) { // sort by priority
                     if (!($constgroup = $field->getConstantGroup())) {
                         // no constant group defined - can't assign priority
                         continue;
@@ -1944,7 +1946,7 @@ function QueryZids($slices, $conds = "", $sort = "", $type = "ACTIVE", $neverAll
 
     // construct query --------------------------
     $SQL = "SELECT DISTINCT item.id as itemid $select_distinct FROM item ";
-    if (isset($select_tabs) and is_array($select_tabs)) {
+    if (isset($select_tabs) && is_array($select_tabs)) {
         $SQL .= ' ' . implode(' ', $select_tabs);
     }
 
@@ -1958,20 +1960,18 @@ function QueryZids($slices, $conds = "", $sort = "", $type = "ACTIVE", $neverAll
 
     if (is_object($restrict_zids)) {
         $SQL .= " " . $restrict_zids->sqlin() . " AND ";
-    } else {
+    } elseif (!$slices_SQL) {
         // slice(s) or $restrict_zids MUST be specified (in order we can get answer in limited time)
-        if (!$slices_SQL) {
-            return new zids();
-        }
+        return new zids();
     }
 
-    if (!$slice AND $slices) {
+    if (!$slice && $slices) {
         $slice = AA_Slice::getModule(reset($slices));
     }
 
     /** @todo deal with no slice id for restrict_zids without conds */
-    $ignore_expiry_date  = ($slice AND $slice->noCheckExpired($ignore_expiry_date));
-    $ignore_publish_date = ($slice AND $slice->noCheckPending());
+    $ignore_expiry_date  = ($slice && $slice->noCheckExpired($ignore_expiry_date));
+    $ignore_publish_date = ($slice && $slice->noCheckPending());
 
     // not this way - HM 2023:
     // // $ignore_expiry_date  = $ignore_expiry_date  AND $slice AND $slice->isExpiredContentAllowed();  // expiry date is not so strict (we historically used it before allowing pending items - for archives, old events, ...)
@@ -1979,7 +1979,7 @@ function QueryZids($slices, $conds = "", $sort = "", $type = "ACTIVE", $neverAll
 
     $SQL .= CreateBinCondition($type, 'item', $ignore_expiry_date, $ignore_publish_date);
 
-    if (isset($select_conds) and is_array($select_conds)) {     // conditions -----
+    if (isset($select_conds) && is_array($select_conds)) {     // conditions -----
         $SQL .= " AND (" . implode(") AND (", $select_conds) . ") ";
     }
 
@@ -2046,7 +2046,7 @@ function QueryConstantZIDs($group_id, $conds, $sort=null, $restrict_zids = null,
     }
 
     // set default sortorder for constants if sortorder is not set
-    if (!is_array($sort) or count($sort) < 1) {
+    if (!is_array($sort) || count($sort) < 1) {
         $sort[] = ['const_priority' => 'a'];
         $sort[] = ['const_name' => 'a'];
     }
@@ -2131,7 +2131,7 @@ function QueryDiscIDs($slice_id, $conds, $sort, $slices) {
     if (is_array($conds)) {
         $tbl_count = 0;
         foreach ($conds as $cond) {
-            if (!is_array($cond) or !$cond['discussion'] or !$cond['operator'] or ($cond['value'] == "")) {
+            if (!is_array($cond) || !$cond['discussion'] || !$cond['operator'] || $cond['value'] == "") {
                 continue;             // bad condition - ignore
             }
 
@@ -2140,7 +2140,7 @@ function QueryDiscIDs($slice_id, $conds, $sort, $slices) {
                 if ($fid === 'discussion') {
                     unset ($select_cond);
                     foreach ($vv as $fid2 => $foo) {
-                        if (in_array($fid2, $fields) and $cond['value'] > "") {
+                        if (in_array($fid2, $fields) && $cond['value'] > "") {
                             $select_cond[] = (new AA_Dbcondition('discussion', $fid2, $cond['operator'], $cond['value']))->getWhereExp();
                         }
                     }
@@ -2203,7 +2203,7 @@ function QueryDiscIDs($slice_id, $conds, $sort, $slices) {
         $SQL .= " item.slice_id=" . xpack_id($slice_id);
     }
 
-    if (isset($select_conds) AND is_array($select_conds)) {    // conditions -----
+    if (isset($select_conds) && is_array($select_conds)) {    // conditions -----
         $SQL .= " AND (" . implode(") AND (", $select_conds) . ") ";
     }
 

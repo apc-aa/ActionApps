@@ -106,7 +106,7 @@ class itemview {
 
       // add special alias, which is = 1 for selected item (given by
       // set[34]=selected-43535 view.php parameter
-      if ($slice_info['selected_item'] AND !$this->aa_aliases->isAlias('_#SELECTED')) {
+      if ($slice_info['selected_item'] && !$this->aa_aliases->isAlias('_#SELECTED')) {
           $this->aa_aliases->addAlias(new AA_Alias('_#SELECTED', 'f_e:selected:'.$slice_info['selected_item'], 'id..............', _m('Selected item')));
       }
 
@@ -162,7 +162,7 @@ class itemview {
   /** is_random function
    * returns true, if view have to show random item (weighted or not)
    */
-  function is_random() {
+  function is_random(): bool {
       return (str_starts_with($this->from_record, 'random'));
   }
 
@@ -204,7 +204,7 @@ class itemview {
      * @param $empty
      * @return string
      */
-    function get_disc_buttons($empty) {
+    function get_disc_buttons($empty): string {
         $out = '';
         if (!$empty) {
             $out .= $this->slice_info['d_sel_butt'];
@@ -361,7 +361,7 @@ class itemview {
       if ($this->disc['ids'] && is_array($this->disc['ids']) && is_array($this->_content)) {  // show selected cooments
           foreach ($this->_content as $id => $val) {
               // if hidden => skip  OR if the comment is already in the outcome => skip
-              if (($val["hide"] == true) OR $outcome[$id]) {
+              if ($val["hide"] == true || $outcome[$id]) {
                   continue;
               }
               GetDiscussionThread($d_tree, $id, 1, $outcome);
@@ -371,7 +371,7 @@ class itemview {
       }
 
       $out = '<a name="disc"></a>';
-      if ( isset($outcome) AND is_array($outcome) ) {
+      if ( isset($outcome) && is_array($outcome) ) {
           foreach( $outcome as $d_id => $images ) {
               $this->setColumns($CurItem, $d_id);
               $depth = count($images)-1;
@@ -463,7 +463,7 @@ class itemview {
 
       AA::$debug&32 && AA::$dbg->tracestart('itemview->setColumns-Als', count($this->aa_aliases));
       $CurItem->set_data($this->_content[$iid]);
-      if ($this->multi_aliases AND ($als = $this->multi_aliases[$CurItem->getSliceID()])) {
+      if ($this->multi_aliases && ($als = $this->multi_aliases[$CurItem->getSliceID()])) {
           $CurItem->setAliases($als);
       } else {
           $CurItem->setAliases($this->aa_aliases);
@@ -499,7 +499,7 @@ class itemview {
 
     // fill the foo_ids - ids to itemids to get from database
     if ( !$is_random ) {
-        if ( $this->group_fld AND ($grp_al = AA_Alias::isAliasLike($this->group_fld, true)) ) {
+        if ( $this->group_fld && ($grp_al = AA_Alias::isAliasLike($this->group_fld, true)) ) {
             $this->group_fld = $grp_al;   // replaces possible ABCDEFGH alias with _#ABCDEFGH
             $this->zids = new zids(explode_ids(StrExp('order', [implode('-',$this->zids->short_or_longids()), $this->group_fld, 'locale'])));
         }
@@ -570,7 +570,7 @@ class itemview {
 
     // count hit for random item - it is used for banners, so it is important
     // to count display number
-    if ( $is_random AND ($this->zids->count()===1) ) {
+    if ( $is_random && $this->zids->count()===1 ) {
         Hitcounter::hit($this->zids);
     }
 
@@ -620,7 +620,7 @@ class itemview {
         $zidscount = $this->zids->count();
         for ( $i=0; $i<$number_of_ids; ++$i ) {
             // display banner, if you have to
-            if ( $this->slice_info['banners'] AND ($this->slice_info['banners'][$i]) ) {
+            if ( $this->slice_info['banners'] && $this->slice_info['banners'][$i] ) {
                 $out .= (new AA_Showview(AA_View::parseViewParameters($this->slice_info['banners'][$i])))->getViewOutput();
             }
 
@@ -687,10 +687,10 @@ class itemview {
             }
 
             // should we display row_delimiter (see category_top below!)
-            $print_delimiter = (($i > 0) AND isset($this->slice_info['row_delimiter']));
+            $print_delimiter = ($i > 0 && isset($this->slice_info['row_delimiter']));
 
             // print category name if needed
-            if ($this->group_fld AND strcasecmp($catname,$oldcat)) {
+            if ($this->group_fld && strcasecmp($catname,$oldcat)) {
                 if ( $this->num_records >= 0 ) {
                     if ($oldcat !== "_No CaTeg") {
                         // print bottom category code for previous category
@@ -724,13 +724,13 @@ class itemview {
                 $oldcat = $catname;
             }
 
-            if ( ($this->num_records < 0) AND ($group_n != -$this->num_records )) {
+            if ( $this->num_records < 0 && $group_n != -$this->num_records) {
                 continue;    // we have to display just -$this->num_records-th group
             }
 
 
             // print item
-            $CurItem->setformat( (($i%2) AND $this->slice_info['even_odd_differ']) ?
+            $CurItem->setformat( ($i%2 && $this->slice_info['even_odd_differ']) ?
                                  $this->slice_info['even_row_format'] : $this->slice_info['odd_row_format'],
                                  $this->slice_info['compact_remove'] );
 
@@ -779,7 +779,7 @@ class itemview {
      * @param $day
      * @return string
      */
-    function resolve_calendar_aliases($txt,$day="") {
+    function resolve_calendar_aliases($txt,$day=""): string {
         $month = (int)$this->slice_info['calendar_month'];
         $year  = (int)$this->slice_info['calendar_year'];
 
@@ -797,7 +797,7 @@ class itemview {
     /** get_output_calendar function
      *  send content via reference to be quicker
      */
-    function get_output_calendar() {
+    function get_output_calendar(): string {
         $CurItem = new AA_Item("", $this->aa_aliases);   // just prepare
         $CurItem->set_parameters($this->parameters);
 
@@ -927,7 +927,7 @@ class itemview {
                             }
                         }
                         // do not print empty calendar rows ...
-                        if ($outrow AND $we_have_event_this_week) {
+                        if ($outrow && $we_have_event_this_week) {
                             $out .= "\n<tr>$outrow</tr>";
                             $row_for_week_printed = true;
                         }

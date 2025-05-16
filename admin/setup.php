@@ -255,11 +255,7 @@ switch ($phase) {
       $super["userpassword"] = $password1;
       $super["givenname"] = $fname;
       $super["sn"] = $lname;
-      if ($email) {
-         $super["mail"][] = $email;
-      } else {
-         $super["mail"][] = "";
-      }
+      $super["mail"][] = $email ? $email : "";
 
       // Try to create the account
 

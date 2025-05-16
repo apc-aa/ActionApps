@@ -60,7 +60,7 @@ $expVS       = new Cvarset();
 $slice      = AA_Slice::getModule(AA::$module_id);
 
 // update export_to_all switch
-if ( ($slice->getProperty('export_to_all') ? 1:0) != ($to_all ? 1:0) ) {
+if ( ($slice->getProperty('export_to_all') ? 1:0) !== ($to_all ? 1:0) ) {
     $SQL = "UPDATE slice SET export_to_all=". ($to_all ? 1 : 0) ." WHERE id='$p_slice_id'";
     $db->query($SQL);
     AA_Log::write(($to_all ? "FEED2ALL_1" : "FEED2ALL_0"), AA::$module_id);
@@ -78,7 +78,7 @@ $feedto = DB_AA::select(['unid'=>true], "SELECT LOWER(HEX(`to_id`)) AS unid FROM
 //}
 
 do {
-    if ( isset($E) AND is_array($E) ) {  // Export to any slice
+    if ( isset($E) && is_array($E) ) {  // Export to any slice
         foreach ($E as $val) {
             if ( $feedto[$val] ) {
                 $feedto[$val] = false;      // this feed is allready in database => don't change
@@ -109,7 +109,7 @@ do {
 $feedfrom = DB_AA::select(['unid'=>true], "SELECT LOWER(HEX(`from_id`)) AS unid FROM `feeds`", [['to_id',AA::$module_id,'l']]);
 
 do {
-    if ( isset($I) AND is_array($I) ) {  // insert to categories
+    if ( isset($I) && is_array($I) ) {  // insert to categories
         foreach ($I as $val) {
             if ( $feedfrom[$val] ) {
                 $feedfrom[$val] = false;      // this feed is allready in database => don't change
@@ -139,8 +139,8 @@ do {
 } while (false);
 
 
-if ( !count($err) ) {
-    if ( isset($I) AND is_array($I) ) {   // slice imports some slices
+if ( $err === [] ) {
+    if ( isset($I) && is_array($I) ) {   // slice imports some slices
         go_url( StateUrl(self_base() . "se_filters.php") ."&Msg=" . rawurlencode(MsgOk(_m("Content Pooling update successful"))));
     } else {
         go_url( StateUrl(self_base() . "se_import.php") ."&Msg=" . rawurlencode(MsgOk(_m("Content Pooling update successful"))));

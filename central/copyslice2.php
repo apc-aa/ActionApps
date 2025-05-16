@@ -44,7 +44,7 @@ if ($_POST['copy']) {
     $limit = [];
     if ($sync_items) { $limit['items']       = true; }
     if ($sync_defs)  { $limit['definitions'] = true; }
-    if (count($limit) > 0) {
+    if (count($limit)) {
         $template_slice_defs = $aas[$_POST['template_aa']]->requestDefinitions('Slice', $_POST['sync_slices'], $limit);
     }
     $template_site_defs   = $aas[$_POST['template_aa']]->requestDefinitions('Site',    $_POST['sync_sites']);
@@ -58,7 +58,7 @@ if ($_POST['copy']) {
         foreach ($_POST['sync_sites']  as $mid) { $changed_ids[$mid] = new_id(); }
         foreach ($_POST['sync_alerts'] as $mid) { $changed_ids[$mid] = new_id(); }
 
-        if (is_array($_POST['sync_slices']) AND (count($limit) > 0)) {
+        if (is_array($_POST['sync_slices']) && count($limit)) {
             foreach ($_POST['sync_slices'] as $sid) {
                 if ($sid) {
                     // plan the synchronization action to for execution via Task Manager

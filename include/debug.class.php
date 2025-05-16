@@ -107,7 +107,7 @@ class AA_Debug_Console extends AA_Debug {
     function _do($func, $params) {
         $code = '';
         foreach ($params as $a) {
-            if (is_array($a) OR (is_object($a) && !is_callable([$a,"__toString"]))) {
+            if (is_array($a) || is_object($a) && !is_callable([$a,"__toString"])) {
                 $a = print_r($a, true);
             }
             // we used escape4js, but it is sometimes not defined yet

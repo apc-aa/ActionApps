@@ -79,7 +79,7 @@ function new_collection_id() {
 
 // ----------------------------------------------------------------------------------------
 
-function getAlertsField($field_id, $collection_id) {
+function getAlertsField($field_id, $collection_id): string {
     return substr($field_id.".............", 0, 16 - strlen ($collection_id)). $collection_id;
 }
 

@@ -149,12 +149,7 @@ class xml_unserializer {
         } else {
             $this->name = $name;
         }
-        if (isset($attrs) && count($attrs)) {
-            $this->top = $attrs;
-        }
-        else {
-            $this->top = null;
-        }
+        $this->top = isset($attrs) && count($attrs) ? $attrs : null;
         $this->chardata = "";
     }
 

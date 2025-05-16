@@ -113,10 +113,10 @@ class zids implements Iterator, ArrayAccess, Countable {
     /** remove non valid ids */
     function clean() {
         if ($this->type === "z") {
-            // find and set current
+        // find and set current
             if ( $this->guesstype() === 'z' ) {
-                $this->clear();
-            }
+            $this->clear();
+        }
         }
         switch ($this->type) {
             case 's': $this->arr = array_values(array_filter($this->arr, 'is_short_id'));  break;
@@ -181,13 +181,13 @@ class zids implements Iterator, ArrayAccess, Countable {
         foreach ((array)$ids as $id) {
             $id   = trim($id);
             $type = guesstype($id);
-            if ( !in_array($type, ['s','l']) OR ($id=='0') OR ($id=='')) {
+            if ( !in_array($type, ['s','l']) || $id=='0' || $id=='') {
                 continue;
             }
             if ($this->type === 'z') {
                 $this->type = $type;
             }
-            if ($this->type == $type) {
+            if ($this->type === $type) {
                 $this->arr[] = $id;
             }
         }
@@ -202,14 +202,14 @@ class zids implements Iterator, ArrayAccess, Countable {
      * @return zids this
      */
     function add($ids) {
-        if ( isset($ids) AND is_object($ids) ) {           // zids
+        if ( isset($ids) && is_object($ids) ) {           // zids
             if ($this->isEmpty()) {
                 $this->arr  = $ids->arr;
                 $this->type = $ids->onetype();
-            } elseif ($ids->onetype() == $this->onetype()) {
+            } elseif ($ids->onetype() === $this->onetype()) {
                 $this->arr = array_merge($this->arr, (array)$ids->arr);
             }
-        } elseif ( isset($ids) AND is_array($ids) ) {      // array of ids
+        } elseif ( isset($ids) && is_array($ids) ) {      // array of ids
             $this->arr = array_merge($this->arr, $ids);
         } elseif ( $ids ) {                                // id
             $this->arr[] = $ids;
@@ -266,8 +266,8 @@ class zids implements Iterator, ArrayAccess, Countable {
     /** warnid function
      * Quick check to warn if item doesn't exist
      */
-    function warnid($i=null,$warnstr="") {
-        if ( (isset($i) and !(isset($this->arr[$i]))) ) {
+    function warnid($i=null,$warnstr=""): bool {
+        if ( (isset($i) && !(isset($this->arr[$i]))) ) {
             huhe("Warning: zids: $warnstr, item $i doesn't exist, returning null");
             return true;
         }
@@ -284,7 +284,7 @@ class zids implements Iterator, ArrayAccess, Countable {
         if ($this->warnid($i,"longids")) {
             return null;
         }
-        if ( !isset($i) AND ($this->count()<1) ) {
+        if ( !isset($i) && $this->count()<1 ) {
             return [];
         }
         switch ($this->type) {
@@ -382,7 +382,7 @@ class zids implements Iterator, ArrayAccess, Countable {
      */
     public function itemFilter(array $slice_ids): static
     {
-        if (($this->count() < 1) OR !$slice_ids) {
+        if ($this->count() < 1 || !$slice_ids) {
             return $this->clear('l');
         }
         $where = [['slice_id',$slice_ids,'l'],$this->getDbWhereArray()];
@@ -483,7 +483,7 @@ class zids implements Iterator, ArrayAccess, Countable {
             if ( $column === 'short_or_long' ) {
                 $column = ( $this->use_short_ids() ? "item.short_id" : "item.id" );
             }
-            if ( $asis OR in_array($this->type, ['s','w']) ) {
+            if ( $asis || in_array($this->type, ['s','w']) ) {
                 $id_list = implode(",",array_map("qquote",$this->arr));
             } else {
                 $id_list = implode(",",array_map('xpack_id',$this->longids()));
@@ -506,7 +506,7 @@ class zids implements Iterator, ArrayAccess, Countable {
         if (!$this->count()) {
             return false;
         }
-        foreach ($this->arr as $i => $id ) {
+        foreach (array_keys($this->arr) as $i ) {
             $zid = $this->zid($i);
             $SQL        = "SELECT slice_id FROM item WHERE ". $zid->sqlin();
             $p_slice_id = GetTable2Array($SQL, 'aa_first', 'slice_id');
@@ -575,7 +575,7 @@ class zids implements Iterator, ArrayAccess, Countable {
  * @param $str
  * @return string
  */
-function guesstype($str) {
+function guesstype($str): string {
     $s = strlen($str);
     if (($s < 12) AND (ctype_digit((string) $str) OR ($str==''))) {
         return 's';
@@ -583,10 +583,10 @@ function guesstype($str) {
     if (is_string_id($str)) { // packed id newer starts with '
         return 'w';  // text id
     }
-    if (($s >= 12) AND ($s <= 16)) {
+    if ($s >= 12 && $s <= 16) {
         return 'p';
     }
-    if (($s >= 24) AND ($s <= 32) AND ctype_xdigit($str)) {
+    if ($s >= 24 && $s <= 32 && ctype_xdigit($str)) {
         return 'l';
     }
     if ($s > 32) {
@@ -597,8 +597,8 @@ function guesstype($str) {
 }
 
 /** type validating functions */
-function is_short_id($id): bool  { return (strlen($id) < 12) AND ctype_digit((string) $id); }
-function is_long_id($id): bool   { return ((strlen($id)==32) AND ctype_xdigit($id)); }
+function is_short_id($id): bool  { return strlen($id) < 12 && ctype_digit((string) $id); }
+function is_long_id($id): bool   { return (strlen($id)==32 && ctype_xdigit($id)); }
 function is_packed_id($id): bool { return (strlen($id)==16); }
 function is_string_id($id): bool { return ($id[0] == "'"); }
 

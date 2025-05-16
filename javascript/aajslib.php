@@ -800,7 +800,7 @@ function AA_SiteUpdate(item, field, value, action) {
   params['aa['+action+item+']['+field+'][0]'] = value;
   AA__doChange(params);
 }
-                                                
+
 /* template not implemented, field and values pairs could be multiple field, value, field, value, ... */
 function AA_SiteNewitem(slice, template, field, value) {
   var params = {};

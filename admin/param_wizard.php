@@ -101,7 +101,7 @@ function processJavaScript($s): string
  * @param $param[]
  * @return string
  */
-function GetWizardRow($name, $param) {
+function GetWizardRow($name, $param): string {
     $ret     = '';
     $example = processValue($param['example']);
     $hlp     = '';
@@ -129,7 +129,7 @@ $CLASS_WIZARDS = [
     'DEFAULT_VALUE_TYPES' => 'AA_Generator_',
 ];
 
-if ($_GET['list'] AND $CLASS_WIZARDS[$_GET['list']]) {
+if ($_GET['list'] && $CLASS_WIZARDS[$_GET['list']]) {
     $pw = new \AA\Util\Paramwizard();
     $desc = $pw->getParamWizardArr($item, $CLASS_WIZARDS[$_GET['list']]);
 } else {

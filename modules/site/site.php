@@ -33,7 +33,7 @@ require_once __DIR__."/../../include/zids.php";
 require_once __DIR__."/../../include/locauth.php";
 
 $auth4cache = '';
-if ($_COOKIE['AA_Session'] AND !isset($_REQUEST['username'])) {   // do not authenticate new user - we could restrict reader slices later
+if ($_COOKIE['AA_Session'] && !isset($_REQUEST['username'])) {   // do not authenticate new user - we could restrict reader slices later
     pageOpen('nobody');   // define $sess and $auth; login user, if (s)he tries to; "nobody" allowed
     $auth4cache = AuthGetUid();
 }
@@ -138,7 +138,7 @@ $hit_lid = null;
 //           people from this slice is allowed to login to public pages.
 //           If not selected, "AA + all Reader Management slices" option is used.
 $perm_mode  = (string)$module->getProperty('perm_mode');
-if ( ($perm_mode == '1') OR ($perm_mode == '2') ) {
+if ( $perm_mode == '1' || $perm_mode == '2' ) {
     $tmp_rm_slices = AA_Module_Site::getRelatedModules([AA::$site_id]);
     // we need to preserve order!
     $type_slices  = DB_AA::select('', 'SELECT LOWER(HEX(`id`)) AS unpackid FROM slice', [['id', $tmp_rm_slices, 'l'], ['type', 'ReaderManagement']]);
@@ -206,7 +206,7 @@ if ($module->getProperty('flag') == 1) {    // 1 - Use AA_Router_Seo
     //        $apc_state = $router->parse("/$lang_file/_404-not-found");
 } elseif ( $module->getProperty('state_file') ) {
     // in the following file we should define apc_state variable
-    require_once "legacy_util.php";
+    require_once __DIR__ . "/legacy_util.php";
     require_once __DIR__."/sites/site_".$module->getProperty('state_file');
     $apc_state['4cacheQS'] = shtml_query_string();
     $_REQUEST['nocache'] = $_REQUEST['nocache'] ?: $nocache;
@@ -260,7 +260,7 @@ if ((AA::$headers['encoding'] !== 'utf-8') && (AA::$encoding !== 'utf-8') && IsA
     AA::$headers['encoding'] = 'utf-8';
 }
 
-$cacheentry = new Cacheentry($page_content, AA::getHeaders(), $hit_lid, ((is_object($auth) AND $auth->is_user()) ? 'private' : 'public'));
+$cacheentry = new Cacheentry($page_content, AA::getHeaders(), $hit_lid, ((is_object($auth) && $auth->is_user()) ? 'private' : 'public'));
 $cacheentry->processPage();
 
 // changed the way, how to get $slices4cache - now we ask for module ids really

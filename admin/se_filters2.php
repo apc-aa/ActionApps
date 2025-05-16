@@ -91,7 +91,7 @@ if ($feed_id) { // cross server feeding
         // Note all external categories MUST be stored in the ef_categories
         // table even if no feed (we need to have listing of external categs)
         if ( is_array( $ext_categs ) ) {
-            foreach ( $ext_categs as $id => $v ) {
+            foreach ( array_keys($ext_categs) as $id ) {
                 $ext_categs[$id]['target_category_id'] = '';   // do not feed
                 $ext_categs[$id]['approved']           = 0;
             }
@@ -152,11 +152,11 @@ if ($feed_id) { // cross server feeding
         if ( !$catVS->doINSERT('feeds')) {
             $err["DB"] .= MsgErr("Can't add import from $import_id");
         }
-    } elseif (isset($_GET['F']) AND is_array($_GET['F'])) {            // insert to categories
+    } elseif (isset($_GET['F']) && is_array($_GET['F'])) {            // insert to categories
         foreach ($_GET['F'] as $index => $val) {
             $from_cat = ParseIdA($val, $app);
             $to_cat = $_GET['T'][$index];
-            if ( ($to_cat == FeedUtil::UNPACKED_AA_THE_SAME_CATE) OR ($to_cat == "0") ) { // "0" is from older versions - it could be never "0"
+            if ( $to_cat == FeedUtil::UNPACKED_AA_THE_SAME_CATE || $to_cat == "0" ) { // "0" is from older versions - it could be never "0"
                 $to_cat = $from_cat;
             }
             $catVS->clear();

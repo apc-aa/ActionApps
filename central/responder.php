@@ -49,7 +49,7 @@ class AA_Responder_Get_Sessionid extends AA_Responder {
     function __construct($param=null) {}
 
     /** every authenticated user can get his/her session_id */
-    function isPerm() { return true; }
+    function isPerm(): bool { return true; }
 
     function run() {
         global $sess, $auth;
@@ -65,7 +65,7 @@ class AA_Responder_Logout extends AA_Responder {
     function __construct($param=null) {}
 
     /** every authenticated user can get his/her session_id */
-    function isPerm() { return true; }
+    function isPerm(): bool { return true; }
 
     function run() {
         global $sess;
@@ -181,7 +181,7 @@ class AA_Responder_Get_Widget extends AA_Responder {
         $this->context              = (string)$param['context'];
     }
 
-    function isPerm() { return true; }  //return true;
+    function isPerm(): bool { return true; }  //return true;
 
     function run() {
 
@@ -270,7 +270,7 @@ class AA_Responder_Get_Fields extends AA_Responder {
 
     function __construct($param=null) {
         $this->slice_id     = $param['slice_id'];
-        $this->slice_fields = $param['slice_fields'] ? true : false;
+        $this->slice_fields = (bool) $param['slice_fields'];
     }
 
     function isPerm() { return IfSlPerm(PS_FIELDS); }
@@ -315,14 +315,14 @@ class AA_Responder_Tags extends AA_Responder {
         $this->item_id  = (string)$param['i'];
     }
 
-    function isPerm() { return true; }
+    function isPerm(): bool { return true; }
 
     function run() {
         $ret    = [];
         $trimed = trim($this->input);
         $field  = AA_Slice::getModule($this->slice_id)->getField($this->field_id);
         $found  = false;
-        if ($field AND $trimed) {
+        if ($field && $trimed) {
             $widget = $field->getWidget();
             $opts   = $widget->getFormattedOptions($this->item_id, null, $this->input);
             $i=100;
@@ -334,12 +334,12 @@ class AA_Responder_Tags extends AA_Responder {
                 } else {
                     $ret[] = ['id'=>$id, 'text'=>$text];
                 }
-                if (!(--$i)) {
+                if (--$i === 0) {
                     break;
                 }
             }
         }
-        if ($trimed AND !$found AND ((int)$widget->getProperty('disable_new', 0) !== 1)) {
+        if ($trimed && !$found && (int)$widget->getProperty('disable_new', 0) !== 1) {
             array_unshift($ret, ['id'=>$this->input, 'text'=>$this->input]);
         }
         header("Content-type: application/json");
@@ -362,12 +362,12 @@ class AA_Responder_Widget_Selection extends AA_Responder {
         $this->input    = (string)$param['q'];
     }
 
-    function isPerm() { return true; }
+    function isPerm(): bool { return true; }
 
     function run() {
         $ret   = '';
         $slice = AA_Slice::getModule($this->slice_id);
-        if ($slice AND ($widget = $slice->getWidget($this->field_id)) AND $this->input !== '') {
+        if ($slice && ($widget = $slice->getWidget($this->field_id)) && $this->input !== '') {
             $ret = $widget->getFilterSelection(trim($this->input), $this->limit);
         }
         return new AA_Response(ConvertCharset::singleton()->Convert($ret, $slice->getCharset(), 'utf-8'));
@@ -391,13 +391,13 @@ class AA_Responder_Formatted_By_Widget extends AA_Responder {
         $this->base_id  = $param['b'];
     }
 
-    function isPerm() { return true; }
+    function isPerm(): bool { return true; }
 
     function run() {
         $ret   = '';
         $slice = AA_Slice::getModule($this->slice_id);
 
-        if ($slice AND ($widget = $slice->getWidget($this->field_id))) {
+        if ($slice && ($widget = $slice->getWidget($this->field_id))) {
             mgettext_bind($slice->getLang(), 'output');
             $ret = $widget->getRelatedItemsHtml(new zids($this->item_id, 'l'), $this->base_id, $this->field_id, $this->slice_id);   //zids $zids, string $base_id, string $sid, string $def_field_id, string $def_slice_id): string {
         }
@@ -433,7 +433,7 @@ class AA_Responder_Alertitem extends AA_Responder {
 
     function run() {
         $ret = '0';
-        if (is_long_id($this->item_id) AND (strlen($this->collection_id)===5)) {
+        if (is_long_id($this->item_id) && strlen($this->collection_id)===5) {
             //initialize_last();
             //MoreTimeLimit(); // This can take a while
             $ret = send_emails("irregular", [$this->collection_id], $this->test_email, true, $this->item_id);

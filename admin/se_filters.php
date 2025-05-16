@@ -81,7 +81,7 @@ while ($db->next_record()) {
     $remote_slices[unpack_id($db->f('remote_slice_id'))] = $db->f('feed_id');
 }
 
-if ( !isset($impslices) OR !is_array($impslices)){
+if ( !isset($impslices) || !is_array($impslices)){
     AA_Adminpageutil::MsgPageMenu(StateUrl(self_base() . "se_import.php"), _m("There are no imported slices"), "sliceadmin", "filters");
     exit;
 }
@@ -118,7 +118,7 @@ if ($feed_id = $remote_slices[$import_id]) {   // not comparison! - external fee
 
     $imp_count  = count($ext_categs);
 
-    if ($ext_categs AND is_array($ext_categs)) {
+    if ($ext_categs && is_array($ext_categs)) {
 
         // check, if we use 'All categories' option
         $all_categories = FeedUtil::UseAllCategoriesOption($ext_categs);
@@ -204,7 +204,7 @@ if ($imp_count) {
 </td>
 
 <td><?php
-if ( isset($to_categories) AND is_array($to_categories) ) {
+if ( isset($to_categories) && is_array($to_categories) ) {
     FrmSelectEasy("categ_0", $to_categories, $categ_0);
 } else {
     echo "<span>". _m("No category defined") ."</span>";
@@ -227,7 +227,7 @@ function PrintOneRow($id, $cat_name, $i) {
     FrmChBoxEasy($chboxname, $chboxcat[$id] );
     echo "</td>\n<td>". $cat_name. "</td><td>";
     $selectname = "categ_". $i;
-    if ( isset($to_categories) AND is_array($to_categories) ) {
+    if ( isset($to_categories) && is_array($to_categories) ) {
         FrmSelectEasy($selectname, $to_categories, $selcat[$id] ?? $id);
     } else {
         echo "<span>". _m("No category defined") ."</span>";
@@ -283,7 +283,7 @@ FrmTabEnd($form_buttons);
     function AllCategClick() {
         for (let i=1; i<=<?php echo $imp_count?>; i++ ) {
             DisableClick('document.f.all_categories','document.f.chbox_'+i)
-            if ( <?php echo (( isset($to_categories) AND is_array($to_categories)) ? 1 : 0 ) ?> ) {
+            if ( <?php echo (( isset($to_categories) && is_array($to_categories)) ? 1 : 0 ) ?> ) {
                 DisableClick('document.f.all_categories', 'document.f.categ_' + i)
             }
             DisableClick('document.f.all_categories','document.f.approved_'+i)
@@ -307,7 +307,7 @@ FrmTabEnd($form_buttons);
         url += "&feed_id=<?php echo $feed_id ?>"
         if ((typeof document.f.all_categories === 'undefined') || document.f.all_categories.checked) { // no import cats
             done = 1
-            if ( <?php echo (( isset($to_categories) AND is_array($to_categories)) ? 1 : 0 ) ?> ) {
+            if ( <?php echo (( isset($to_categories) && is_array($to_categories)) ? 1 : 0 ) ?> ) {
                 url += "&all=1&C=" + encodeURIComponent(document.f.categ_0.value)
                 url += "-" + (document.f.approved_0.checked ? 1 : 0)
             } else {
@@ -317,7 +317,7 @@ FrmTabEnd($form_buttons);
             for (var i = 1; i <= <?php echo $imp_count?>; i++) {
                 if (document.f['chbox_'+i].checked) {
                     done = 1
-                    if ( <?php echo (( isset($to_categories) AND is_array($to_categories)) ? 1 : 0 ) ?> ) {
+                    if ( <?php echo (( isset($to_categories) && is_array($to_categories)) ? 1 : 0 ) ?> ) {
                         url += "&T%5B%5D=" + encodeURIComponent(document.f['categ_'+i].value)
                     } else {
                         url += "&T%5B%5D=0"

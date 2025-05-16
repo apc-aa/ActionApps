@@ -61,23 +61,22 @@ function email_notify($slice_id, $event, $item_id) {
 
     if ($notify_body = $slice->getProperty($prefix . '_b')) {
         if ($emails = DB_AA::select('uid','SELECT `uid` FROM `email_notify`',[['slice_id',$slice_id,'l'],['function',$event, 'i']])) {
-            // ignore reading password
-            $item = AA_Items::getItem(new zids($item_id), $slice->getProperty('reading_password'));
-
-            if ($item) {
-                $body = $item->unalias($notify_body);
+        // ignore reading password
+        $item = AA_Items::getItem(new zids($item_id), $slice->getProperty('reading_password'));
+        if ($item) {
+            $body = $item->unalias($notify_body);
                 if (trim($body)) {
-                    $subject = $item->unalias($slice->getProperty($prefix . '_s'));
+                $subject = $item->unalias($slice->getProperty($prefix . '_s'));
 
-                    $mail = new AA_Mail();
-                    $mail->setBasicHeaders(['sender' => ALERTS_EMAIL]);
-                    $mail->setSubject($subject);
-                    $mail->setHtml($body, html2text($body));
-                    $mail->setCharset($slice->getCharset());
-                    $mail->send($emails);
-                }
+                $mail = new AA_Mail();
+                $mail->setBasicHeaders(['sender' => ALERTS_EMAIL]);
+                $mail->setSubject($subject);
+                $mail->setHtml($body, html2text($body));
+                $mail->setCharset($slice->getCharset());
+                $mail->send($emails);
             }
         }
     }
+}
 }
 

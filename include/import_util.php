@@ -181,7 +181,7 @@ class Actions {
                      return $err;
                  }
              }
-             if (isset($fieldVal) and is_array($fieldVal)) {
+             if (isset($fieldVal) && is_array($fieldVal)) {
                  // store the output field to the output item content
                  if ($field_id === 'id..............') {
                      $outputItemContent->setItemId($fieldVal[0]['value']);
@@ -312,8 +312,7 @@ class Action {
             }
             case "web": {
                 $value = $itemContent->GetValue($from);
-                if ( $value ) {
-                    if (strtolower(substr($value, 0, 4)) !== "http")
+                if ( $value && strtolower(substr($value, 0, 4)) !== "http" ) {
                     $value = "https://". $value;
                 }
                 $fvalues[]['value'] = $value;
@@ -353,7 +352,7 @@ class Action {
                 $items = explode($delimiter,trim($itemContent->GetValue($from)));
                 foreach ( $items as $k => $save ) {
                     $ind = $k;
-                    if ($langs[$k] and strlen($langs[$k])==2) {  // cz | en | de | ..
+                    if ($langs[$k] && strlen($langs[$k])==2) {  // cz | en | de | ..
                         $ind = Langs::getLangName2Num(strtolower($langs[$k]));
                     }
                     $fvalues[$ind]['value'] = trim($save);
@@ -424,7 +423,7 @@ class Action {
             }
         }
         // set HTML flag and add slashes because of SQL syntax
-        if (isset($fvalues) AND is_array($fvalues)) {
+        if (isset($fvalues) && is_array($fvalues)) {
             foreach ( $fvalues as $k => $v ) {
                 if ($this->html) {
                     $v['flag'] = $this->html;

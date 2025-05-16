@@ -112,7 +112,7 @@ class AA_View_Commands {
     /** count function
      *  @return int number of commands in the set
      */
-    function count() {
+    function count(): int {
         return count($this->commands);
     }
     /** reset function
@@ -170,7 +170,7 @@ class AA_View_Commands {
         foreach( (array)$cmd as $cmd_part ) {
 
             // substitute url aliases in cmd
-            if (isset($als) AND is_array($als)) {
+            if (isset($als) && is_array($als)) {
                 foreach ($als as $k => $v) {
                     // we are replacing the aliases in the url, so you can write
                     // something like {view.php?vid=12&cmd[]=x-34-CAMPAIGN&als[CAMPAIGN]=42525}
@@ -245,7 +245,7 @@ class AA_Showview {
         $page = 0;
         if ( isset($this->_view_param["page"]) ) {
             $page = (int)$this->_view_param["page"];
-        } elseif ($scroller_settings===1 OR $scroller_settings===2) {  // 1 accept xpage, 2 use continuing page
+        } elseif ($scroller_settings===1 || $scroller_settings===2) {  // 1 accept xpage, 2 use continuing page
             $page = (int)$GLOBALS['apc_state']['xpage'];
         }
 
@@ -354,7 +354,7 @@ class AA_Showview {
         // collect used slices for cache invalidation
         AA_Module::mark4cache(is_array($slices) ? array_merge([$slice_id], $slices) : [$slice_id]);
 
-        if (!AA::$site_id AND !AA::$slice_id) {  // it is used as allpage main module to find {_:alias} aliases when called outside of site module
+        if (!AA::$site_id && !AA::$slice_id) {  // it is used as allpage main module to find {_:alias} aliases when called outside of site module
             AA::$slice_id = $slice_id;
         }
 
@@ -396,7 +396,7 @@ class AA_Showview {
                 // discussion fulltext (good for discussion search)
                 $durl = ( $this->_view_param["disc_url"] ?: shtml_url());
                 // add state variable, if defined (apc - AA Pointer Cache)
-                if ( $GLOBALS['apc_state'] AND !$GLOBALS['apc_state']['router'] ) {
+                if ( $GLOBALS['apc_state'] && !$GLOBALS['apc_state']['router'] ) {
                     $durl = con_url($durl,'apc='.$GLOBALS['apc_state']['state']);
                 }
 
@@ -418,13 +418,13 @@ class AA_Showview {
                 if ( $view_info['type'] === 'const' ) {
                     $zids             = QueryConstantZIDs($view_info['parameter'], $conds, $sort);
                     $content_function = 'GetConstantContent';
-                } elseif ( ($view_info['type'] === 'links') AND $category_id ) {
+                } elseif ( $view_info['type'] === 'links' && $category_id ) {
                     $cat_path = Links_GetCategoryColumn( $category_id, 'path');
                     if ( $cat_path ) {
                         $zids             = Links_QueryZIDs($cat_path, $conds, $sort, $this->_view_param['show_subcat']);
                         $content_function = 'Links_GetLinkContent';
                     }
-                } elseif ( ($view_info['type'] === 'categories') AND $category_id ) {
+                } elseif ( $view_info['type'] === 'categories' && $category_id ) {
                     $zids             = Links_QueryCatZIDs($category_id, $conds, $sort, $this->_view_param['show_subcat']);
                     $content_function = 'Links_GetCategoryContent';
                 }
@@ -446,7 +446,7 @@ class AA_Showview {
             case 'full':  // parameters: zids, als
                 $format = $view->getViewFormat($selected_item);
                 AA::$debug&8 && AA::$dbg->log("view type - full - zids",$zids);
-                if ( isset($zids) AND $zids->count() AND ($slice = AA_Slice::getModule($slice_id))) {
+                if ( isset($zids) && $zids->count() && ($slice = AA_Slice::getModule($slice_id))) {
                     $bins   = AA_BIN_ACTIVE | ($slice->isExpiredContentAllowed() ? AA_BIN_EXPIRED : 0) | ($slice->isPendingContentAllowed() ? AA_BIN_PENDING : 0);
                     $zids  = QueryZids([], '', '', $bins, 0, $zids);
                     AA::$debug&8 && AA::$dbg->log("view type - full - cleanzids",$zids);
@@ -538,7 +538,7 @@ class AA_Showview {
                     $GLOBALS['mlxView']->preQueryZIDs($mlxslice,$conds);
                 }
 
-                $bin   = ($zids AND $slice->isExpiredContentAllowed()) ? (AA_BIN_ACTIVE | AA_BIN_EXPIRED) : AA_BIN_ACTIVE;
+                $bin   = ($zids && $slice->isExpiredContentAllowed()) ? (AA_BIN_ACTIVE | AA_BIN_EXPIRED) : AA_BIN_ACTIVE;
 
                 $zids2 = QueryZids($zids ? false : (is_array($slices) ? $slices : [$slice_id]), $conds, $sort, $bin, 0, $zids);
 
@@ -576,7 +576,7 @@ class AA_Showview {
                     $ret = $itemview->unaliasWithScroller($noitem_msg);
                 }
 
-                if ($view_info['type'] === 'list' AND $view->f('scroller') == 2 AND $GLOBALS['apc_state']['router']) {
+                if ($view_info['type'] === 'list' && $view->f('scroller') == 2 && $GLOBALS['apc_state']['router']) {
                     $ret = AA_Router::singleton($GLOBALS['apc_state']['router'])->getScroller($itemview)->infinite($ret);
                 }
                 break;
@@ -598,7 +598,7 @@ class AA_Showview {
             $ret = "<!-- $vid -->$ret<!-- /$vid, ". (microtime(true) - $dbgtime) .", ". date("y-m-d H:i:s", (int)$dbgtime). " -->";
         }
 
-        if ($this->_view_param['convertto'] OR $this->_view_param['convertfrom'] ) {
+        if ($this->_view_param['convertto'] || $this->_view_param['convertfrom'] ) {
             if (!$this->_view_param['convertfrom']) {
                 $slice                     = AA_Slice::getModule($slice_id);
                 $this->_view_param['convertfrom'] = $slice->getCharset();

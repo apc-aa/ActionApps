@@ -95,7 +95,7 @@ $group_id  = (strlen($group_id) > 1) ? pack_id(substr($group_id,1)) : null;
 $back_url  = ($return_url ? ($fid    ? con_url($return_url,"fid=".$fid) : $return_url) : "index.php");
 $from_form = false;  // display the values from form (after unsucessful update)
 
-if ($deleteGroup AND $group_id) {
+if ($deleteGroup && $group_id) {
     delete_constant_group($group_id);
     go_url(StateUrl($back_url));
 }
@@ -124,7 +124,7 @@ if ( $group_id ) {
  */
 function ShowConstant($id, $name, $value, $desc, $cid, $pri, ?array $using_slices_arr=null, array $sizes) {
     $count = '';
-    if (is_array($using_slices_arr) AND count($using_slices_arr)) {
+    if (is_array($using_slices_arr) && count($using_slices_arr)) {
         $count = 0;
         foreach ($using_slices_arr as $arr) {
             $set = new AA_Set([$arr['unpackid']], new AA_Condition($arr['fid'], '==', $value), null, AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING);
@@ -206,7 +206,7 @@ if ($hcalldata || $hierarch) {
 if ($update) {
     $from_form = true;
     do {
-        if (!(isset($name) AND is_array($name))) {
+        if (!(isset($name) && is_array($name))) {
             break;
         }
         foreach ($name as $key => $nam) {
@@ -306,7 +306,7 @@ if ($update) {
 }
 
 // lookup constants
-$s_constants = ($group_id OR $as_new) ? DB_AA::select([], 'SELECT `id`, `name`, `value`, `description`, `pri` FROM `constant`', [['group_id', ( $as_new ?: $group_id )]], ['pri', 'name']) : [];
+$s_constants = ($group_id || $as_new) ? DB_AA::select([], 'SELECT `id`, `name`, `value`, `description`, `pri` FROM `constant`', [['group_id', ( $as_new ?: $group_id )]], ['pri', 'name']) : [];
 
 $apage = new AA_Adminpageutil('sliceadmin','fields');
 $apage->setTitle(_m("Admin - Constants Setting"));
@@ -377,7 +377,7 @@ echo "
 
 if (!$constant_info["owner_id"] || !$group_id) {
     echo _m("Whoever first updates values becomes owner.");
-} elseif ($chown AND is_array($g_modules) AND (count($g_modules) > 1) ) {
+} elseif ($chown && is_array($g_modules) && count($g_modules) > 1 ) {
     // display the select box to change group owner if requested ($chown)
     echo "<select name=\"new_owner_id\">";
     foreach ($g_modules as $k => $v) {

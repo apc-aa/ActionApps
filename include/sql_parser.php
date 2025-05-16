@@ -257,22 +257,22 @@ class SQL_Lex {
             //        }
             $newtoks[] = $val;
         }
-        if (isset($newtoks) and is_array($newtoks)) {
+        if (isset($newtoks) && is_array($newtoks)) {
             reset($newtoks);
             while ($t1 = current($newtoks)) {
                 $newtoks2[] = $t1;
                 $t2         = next($newtoks);
                 if ($t1["type"] == SQL_Parser_Constants::TOKEN_TYPE_STRING) {
                     if (($t2) && (($t2["type"] == SQL_Parser_Constants::TOKEN_TYPE_STRING) || ($t2["type"] == SQL_Parser_Constants::TOKEN_TYPE_LEFT_PARENTHESIS) || ($t2["type"] == SQL_Parser_Constants::TOKEN_TYPE_OPERATOR_NOT))) {
-                        $newtoks2[] = [
-                            "status" => self::S_IMPLICIT,
-                            "value"  => "and",
-                            "i"      => $t1["i"],
-                            "type"   => SQL_Parser_Constants::TOKEN_TYPE_OPERATOR_AND,
-                        ];
-                    }
+                    $newtoks2[] = [
+                        "status" => self::S_IMPLICIT,
+                        "value"  => "and",
+                        "i"      => $t1["i"],
+                        "type"   => SQL_Parser_Constants::TOKEN_TYPE_OPERATOR_AND,
+                    ];
                 }
             }
+        }
         }
         $newtoks2[] = [
             "status" => self::S_IMPLICIT,

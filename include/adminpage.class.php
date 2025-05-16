@@ -131,7 +131,7 @@ class AA_Adminpageutil {
         $this->require[] = [$require, $type];
     }
 
-    public function getPageBegin()
+    public function getPageBegin(): string
     {
         return '<!DOCTYPE html>
 <html>
@@ -146,7 +146,7 @@ class AA_Adminpageutil {
 ';
     }
 
-    public function getPageEnd()
+    public function getPageEnd(): string
     {
         $ret ='';
         if ($this->form) {

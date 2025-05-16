@@ -97,13 +97,13 @@ if (!IfSlPerm(PS_NEW_USER)) {
     exit;
 }
 
-if ( ($submit_action === "grp_del") AND $selected_group ) {
+if ( $submit_action === "grp_del" && $selected_group ) {
     DelGroup( $selected_group );     // default is to delete any references as well
     go_url( StateUrl($_SERVER['PHP_SELF']) );
 }
 
 $sess->register("rgrp");
-if ( $grp OR $GrpSrch ) {
+if ( $grp || $GrpSrch ) {
     $rgrp = $grp;
 }
 
@@ -137,7 +137,7 @@ $varset      = new Cvarset();
 
 // Process submited form -------------------------------------------------------
 
-if ( $add_submit OR ($submit_action === "update_submit")) {
+if ( $add_submit || $submit_action === "update_submit") {
     // all the actions are in following require_once (we reuse this part of code for slice wizard)
     require_once __DIR__ . "/../include/um_gedit.php";
 }
@@ -228,8 +228,8 @@ FrmTabSeparator("");
 FrmTabEnd();
 
 do {
-    if ( $grp_new OR ($grp_edit AND ($selected_group !== "n")) ) {
-        if ($grp_edit AND !($submit_action === "update_submit")) {
+    if ( $grp_new || ($grp_edit && $selected_group !== "n" )) {
+        if ($grp_edit && $submit_action !== "update_submit") {
             if ( !is_array($group_data = AA::$perm->getGroup($selected_group))) {
                 break;
             }
@@ -249,7 +249,7 @@ do {
 echo "\n<form name=\"f\" method=\"post\" action=\"".StateUrl() ."\">";
 
 echo "<br />";
-if ( $grp_edit OR ($submit_action === "update_submit") ) {
+if ( $grp_edit || $submit_action === "update_submit" ) {
     FrmTabCaption(_m("Edit group"));
 } else {
     FrmTabCaption(_m("New group"));
@@ -264,7 +264,7 @@ if ( $grp_edit OR ($submit_action === "update_submit") ) {
 
 // User data ---------------------------------------------------
 
-if ( $grp_new OR $add_submit ) {
+if ( $grp_new || $add_submit ) {
     // buttons for adding new group
     $form_buttons = [
         "add_submit" => ["type"=>"submit","value"=>_m("Add"),"accesskey"=>"S"],
@@ -287,11 +287,11 @@ $form_buttons["selected_group"] = ["value"=>$selected_group];
 $form_buttons["posted_users"]   = ["value"=>"0"];
 $form_buttons["submit_action"]  = ["value"=>"0"];
 
-if ( $grp_edit OR ($submit_action === "update_submit") ) {
+if ( $grp_edit || $submit_action === "update_submit" ) {
     FrmStaticText(_m("Group Id"), $group_data['uid']);
 }
 
-if ($grp_new OR ($selected_group AND AA::$perm->isUserEditable($selected_group))) {
+if ($grp_new || $selected_group && AA::$perm->isUserEditable($selected_group)) {
     FrmInputText("group_name", _m("Name"), $group_name, 50, 50, true);
     FrmInputText("group_description", _m("Description"), $group_description, 50, 50);
 } else {
@@ -302,9 +302,9 @@ if ($grp_new OR ($selected_group AND AA::$perm->isUserEditable($selected_group))
 FrmInputChBox("group_super", _m("Superadmin group"), $group_super);
 echo '</table></td></tr>';
 
-if ( !$add_submit AND !$grp_new ) {
+if ( !$add_submit && !$grp_new ) {
 
-    if ($selected_group AND AA::$perm->isUserEditable($selected_group)) {
+    if ($selected_group && AA::$perm->isUserEditable($selected_group)) {
 
         FrmTabSeparator(_m("Users"));
 
@@ -342,7 +342,7 @@ FrmTabEnd($form_buttons);
 
 echo '</form>';
 
-if ( !$add_submit AND !$grp_new) {
+if ( !$add_submit && !$grp_new) {
     PrintPermUmPageEnd($mod_types);
 }
 

@@ -80,7 +80,7 @@ try {
 // prepare Get variables
 if ( $_GET['display'] ) {
     $fire = 'display';
-} elseif ( isset($_GET['fill']) AND ($_GET['fill']==0) ) {
+} elseif ( isset($_GET['fill']) && $_GET['fill']==0 ) {
     $fire = 'test';
 } else {
     $fire = 'write';   // default
@@ -117,7 +117,7 @@ if ($feed_id) {          // just one specified APC feed
         }
     }
     if ( is_array($generalfeeds) ) {
-        foreach ( $generalfeeds as $id => $name ) {
+        foreach ( array_keys($generalfeeds) as $id ) {
             $todo_feed[] = ['type'=>'general', 'id'=>$id];
         }
     }

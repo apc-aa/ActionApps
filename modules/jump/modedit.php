@@ -68,7 +68,7 @@ if ($edit && !$jump_id && count ($jumps)) {
 
 
 $apage = new AA_Adminpageutil('aaadmin', 'jumpedit');
-$apage->setTitle(!$jump_id ? _m("Create new Jump module") : _m("Edit Jump module"));
+$apage->setTitle($jump_id ? _m("Edit Jump module") : _m("Create new Jump module"));
 $apage->addRequire('aa-jslib@1');
 $apage->setForm();
 $apage->printHead($err, $Msg);
@@ -160,7 +160,7 @@ echo '
      <tr><th>'._m("Jump to slice").":</th>
         <td><select name=dest_id>";
 //        <option value=''>* * * Don't change slice * * *";
-     if ( is_array($g_modules) AND (count($g_modules) > 1) ) {
+     if ( is_array($g_modules) && count($g_modules) > 1 ) {
         foreach ($g_modules as $k => $v) {
             echo "<option value=\"". safe($k)."\"";
             if ( $dest_id == $k ) echo " selected";

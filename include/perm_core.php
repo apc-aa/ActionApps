@@ -143,7 +143,7 @@ class AA_Perm_Resource {
  */
 function IsPerm($perms, $perm): bool
 {
-    return $perms AND $perm AND str_contains($perms, $perm);
+    return $perms && $perm && str_contains($perms, $perm);
     // return ( !$perms || !$perm ) ? false : strstr($perms,$perm);  // older
 }
 
@@ -158,7 +158,7 @@ function IsPerm($perms, $perm): bool
 function CheckPerms( $user_id, $objType, $objID, $perm): bool
 {
     global $permission_uid, $permission_to;
-    if (!$permission_to OR ($permission_uid != $user_id)) {
+    if (!$permission_to || $permission_uid != $user_id) {
         AA::$perm->cache($user_id);
     }
 
@@ -177,7 +177,7 @@ function GetUserSlices(string $perm='') {
     global $permission_uid, $permission_to;
     $user_id = AuthGetUid();
 
-    if (!$permission_to OR ($permission_uid != $user_id)) {
+    if (!$permission_to || $permission_uid != $user_id) {
         AA::$perm->cache($user_id);
     }
     if (IsPerm($permission_to['aa'][AA_ID], PS_MANAGE_ALL_SLICES) ) {
@@ -206,7 +206,7 @@ function IfSlPerm($perm, $slice_id=null): bool
 function IsSuperadmin(): bool {
     global $r_superuser, $permission_uid, $permission_to;
     // check all superadmin's global permissions
-    if (!$permission_to OR ($permission_uid != AuthGetUid())) {
+    if (!$permission_to || $permission_uid != AuthGetUid()) {
         AA::$perm->cache(AuthGetUid());
     }
     return (bool)$r_superuser[AA_ID] ?: false;
@@ -228,11 +228,11 @@ function IsCatPerm($perm, $cat_path): bool
 
     //    if (IsPerm( PS_LINKS_COMMON_PERMS, $perm )) // check perms granted to anybody
     //        return true;
-    if ( !$cat_path OR !$perm ) {
+    if ( !$cat_path || !$perm ) {
         return false;
     }
 
-    if (!$permission_to OR ($permission_uid != AuthGetUid())) {
+    if (!$permission_to || $permission_uid != AuthGetUid()) {
         AA::$perm->cache(AuthGetUid());
     }
 
@@ -283,7 +283,7 @@ function ChangeCatPermAsIn($category, $template) {
 
     // Delete all old perms
     if ( $oldPerms ) {
-        foreach ($oldPerms as  $uid => $perm ) {
+        foreach (array_keys($oldPerms) as $uid ) {
             DelPerm($uid, $category_perm_id, 'slice');
         }
     }
@@ -355,7 +355,7 @@ function GetUserEmails($type = "") {
         return [];
     } else {
         $slice_ids = [];
-        foreach ($slices as $slice => $foo) {
+        foreach (array_keys($slices) as $slice) {
             $slice_ids[] = q_pack_id($slice);
         }
         $where .= " AND owner_module_id IN ('".implode ("','", $slice_ids)."')";
@@ -552,7 +552,7 @@ class AA_Perm {
      * array("mail => $mail", "name => $cn", "type => "User" : "Group"")
      */
     public function getIDsInfo($uid) {
-        if ( $uid AND ($ps = $this->_whichUsersystem($uid))) {
+        if ( $uid && ($ps = $this->_whichUsersystem($uid))) {
             return $ps->getIDsInfo($uid);
         }
         return false;
@@ -585,7 +585,7 @@ class AA_Perm {
      * @return bool - true, if the User data (name, mail, ..) could be edited on AA Permission page
      */
     public function isUserEditable($uid) {
-        if ( $uid AND ($ps = $this->_whichUsersystem($uid))) {
+        if ( $uid && ($ps = $this->_whichUsersystem($uid))) {
             return $ps->isUserEditable($uid);
         }
         return false;
@@ -596,7 +596,7 @@ class AA_Perm {
      * @return bool - true, if the Group can accept members by direst write - AddMember, .. (Reader group and ReaderSet are not writable, for example)
      */
     public function isGroupWritable($gid) {
-        if ( $gid AND ($ps = $this->_whichUsersystem($gid))) {
+        if ( $gid && ($ps = $this->_whichUsersystem($gid))) {
             return $ps->isGroupWritable();
         }
         return false;
@@ -607,7 +607,7 @@ class AA_Perm {
      * @return array
      */
     function getGroupMembers($group_id) {
-        if ( $group_id AND ($ps = $this->_whichUsersystem($group_id))) {
+        if ( $group_id && ($ps = $this->_whichUsersystem($group_id))) {
             return $ps->getGroupMembers($group_id);
         }
         return [];
@@ -682,7 +682,7 @@ class AA_Perm {
      * @param $password
      * @return bool|string
      */
-    public static function cryptPwd($password) {
+    public static function cryptPwd($password): string {
         return password_hash($password, PASSWORD_DEFAULT);
         // remove whole code below for php7 - in php 7.2 the mcrypt is no longer works anyway
         //        if (function_exists('mcrypt_create_iv')) {
@@ -715,8 +715,8 @@ class AA_Perm {
 
         // we allow check for sha1 or MD5+salt hash in Reader slice (in order we can import users to Reader slice from legacy system with sha1/md5+salt passwords)
         // such hashes are then converted to standard hashes in slice using rehashPassword()
-        if (!$ret AND $try_old) {
-            if ( (str_starts_with($hash, '$1$')) AND (substr_count($hash, '$')>2) ) {
+        if (!$ret && $try_old) {
+            if ( str_starts_with($hash, '$1$') && substr_count($hash, '$')>2 ) {
                 // we expect hash in the form $1$SALT$MD5HASH - $1$g(WWPuY$24ae086294935697f13106c809033516
                 $salt = substr($hash,3,strrpos($hash, '$')-3);
                 $ret = (md5($password.$salt) === substr($hash,strrpos($hash, '$')+1));
@@ -944,7 +944,7 @@ class AA_Permsystem_Reader extends AA_Permsystem {
         $user_id   = AA_Reader::name2Id($username, $this->rm_slices);
         $user_info = AA_Reader::getReaderItemContent($user_id);
 
-        if ( !$user_info->isEmpty() AND AA_Perm::comparePwds($password, $pwdhash = $user_info->getValue(FIELDID_PASSWORD), true) ) {
+        if ( !$user_info->isEmpty() && AA_Perm::comparePwds($password, $pwdhash = $user_info->getValue(FIELDID_PASSWORD), true) ) {
             // Maintenance now - the username / pwd is correct
             if ($this->needsRehashPassword($pwdhash)) {
                 $this->rehashPassword($user_id, $password);
@@ -982,7 +982,7 @@ class AA_Permsystem_Reader extends AA_Permsystem {
 
     /** updates user password - should be called after successful authentication and if we needsRehashPassword() */
     protected function rehashPassword($user_id, $password) {
-        if ($user_id AND $password) {
+        if ($user_id && $password) {
             AA_Log::write('PWD_REHASH', AA_Log::context($user_id));
             UpdateField($user_id, FIELDID_PASSWORD, new AA_Value(ParamImplode(['AA_PASSWD',$password])), ItemContent::FLAG_JUST_STORE); // we do not need to invalidate cache - from the outside it is the same
         }
@@ -996,7 +996,7 @@ class AA_Permsystem_Reader extends AA_Permsystem {
      */
     function isUsernameFree($username): bool {
         // search not only Active bin, but also Holding bin, Pending, ...
-        return AA_Reader::name2Id($username, null, AA_BIN_ALL) ? false : true;
+        return !(bool) AA_Reader::name2Id($username, null, AA_BIN_ALL);
     }
 
     /** true, if the Group can accept members by direct write - AddMember, .. (Reader group and ReaderSet are not writable, for example) */
@@ -1096,7 +1096,7 @@ class AA_Permsystem_Reader extends AA_Permsystem {
      * @return bool
      */
     private function _isUserReader($user_id)      { return is_long_id($user_id);  }
-    private function _isGroupReader($group_id)    { return (is_long_id($group_id) AND (AA_Slice::getModuleProperty($group_id,'type')==='ReaderManagement')); }
+    private function _isGroupReader($group_id)    { return (is_long_id($group_id) && AA_Slice::getModuleProperty($group_id,'type')==='ReaderManagement'); }
     private function _isGroupReaderSet($group_id) { return is_marked_by($group_id, 1); }
 
     /** GetReaderIDsInfo function

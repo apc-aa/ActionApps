@@ -43,7 +43,7 @@ class AA_Mysqlauth {
     *   @param $slice_id
     */
     static function deleteReaders( $zids, $slice_id ) {
-        if (!AA_Slice::getModuleProperty($slice_id,'auth_field_group') OR (AA_Slice::getModuleProperty($slice_id,'type') !== "ReaderManagement")) {
+        if (!AA_Slice::getModuleProperty($slice_id,'auth_field_group') || AA_Slice::getModuleProperty($slice_id,'type') !== "ReaderManagement") {
             return;
         }
 
@@ -62,7 +62,7 @@ class AA_Mysqlauth {
     */
     static function updateReaders( $item_ids, $slice_id ) {
         $sl_auth_field_group = AA_Slice::getModuleProperty($slice_id,'auth_field_group');
-        if (!$sl_auth_field_group OR (AA_Slice::getModuleProperty($slice_id,'type') !== "ReaderManagement")) {
+        if (!$sl_auth_field_group || AA_Slice::getModuleProperty($slice_id,'type') !== "ReaderManagement") {
             return;
         }
 
@@ -73,7 +73,7 @@ class AA_Mysqlauth {
 
         foreach ($readers as $reader) {
             $reader_obj = new ItemContent($reader);
-            if (self::isActive($reader_obj) AND $reader_obj->isSet($sl_auth_field_group)) {
+            if (self::isActive($reader_obj) && $reader_obj->isSet($sl_auth_field_group)) {
                 self::updateReader($reader_obj->getValue(FIELDID_USERNAME), $reader_obj->getValue(FIELDID_PASSWORD), $reader_obj->getValues($sl_auth_field_group));
             } else {
                 self::deleteReader($reader_obj->getValue(FIELDID_USERNAME));
@@ -131,7 +131,7 @@ class AA_Mysqlauth {
 
                 // Add readers which should be in auth_user but are not
                 // (perhaps moved recently from Pending to Active)
-                if (self::isActive($reader_obj) AND $reader_obj->isSet($slice["auth_field_group"])) {
+                if (self::isActive($reader_obj) && $reader_obj->isSet($slice["auth_field_group"])) {
                     if (! $olduser_exists) {
                         $result["readers added"]++;
                         self::updateReader($reader_obj->getValue(FIELDID_USERNAME), $reader_obj->getValue(FIELDID_PASSWORD), $reader_obj->getValues($slice["auth_field_group"]));
@@ -228,8 +228,8 @@ class AA_Mysqlauth {
      * @return bool
      */
     static function isActive($reader) {
-        return ($reader->getValue('status_code.....') == SC_ACTIVE) AND
-               ($reader->getValue('publish_date....') <= time()) AND
+        return ($reader->getValue('status_code.....') == SC_ACTIVE) &&
+               ($reader->getValue('publish_date....') <= time()) &&
                ($reader->getValue('expiry_date.....') >= time());
     }
 
@@ -281,7 +281,7 @@ class AA_Mysqlauth {
      * @param $newvalue
      */
     static function changeGroups($constant_id, $oldvalue, $newvalue) {
-        if (empty($newvalue) OR ($oldvalue == $newvalue)) {
+        if (empty($newvalue) || $oldvalue == $newvalue) {
             return;
         }
         if (false === ($group_id = DB_AA::select1('group_id', 'SELECT group_id FROM `constant`', [['id', $constant_id, 'l']]))) {

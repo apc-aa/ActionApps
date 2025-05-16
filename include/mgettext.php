@@ -103,7 +103,7 @@ function _m($id, $params=[]): string {
         $retval = (string)$id;
     }
 
-    if (!$params or !is_array($params)) {
+    if (!$params || !is_array($params)) {
         return $retval;
     }
 

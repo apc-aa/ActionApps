@@ -233,7 +233,7 @@ class AA_Scroller extends AA_Storable {
 
     protected function nav(string $target='', bool $all=false): string
     {
-        if (!$this->itmcnt or (($pgcnt = $this->pageCount()) < 2)) {
+        if (!$this->itmcnt || ($pgcnt = $this->pageCount()) < 2) {
             return '';
         }
 
@@ -247,7 +247,7 @@ class AA_Scroller extends AA_Storable {
         }
         $arr   = [];
 
-        if (!$all AND $this->current > 1) {
+        if (!$all && $this->current > 1) {
             $arr[] = $this->link($this->current-1, $this->scroller_previous, ['rel'=>'prev'], [], $target);
         }
         if ($from > 1) {
@@ -273,10 +273,10 @@ class AA_Scroller extends AA_Storable {
         if ($to < $pgcnt) {
             $arr[] = $this->link($pgcnt, (string)$pgcnt, [], [], $target);
         }
-        if (!$all AND $this->current < $pgcnt) {
+        if (!$all && $this->current < $pgcnt) {
             $arr[] = $this->link($this->current+1, $this->scroller_next, ['rel'=>'next'], [], $target);
         }
-        if (!$all AND $this->show_all) {
+        if (!$all && $this->show_all) {
             $arr[] = $this->link($this->current, $this->scroller_all, [], ['listlen'=>99999], $target);
         }
         return implode($this->scroller_delimiter, $arr);

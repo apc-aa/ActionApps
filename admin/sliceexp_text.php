@@ -303,7 +303,7 @@ class AA_Slice_Exporter {
             $content = $this->convertToUtf($content);
         }
 
-        if ($this->hex OR $this->gzip) {
+        if ($this->hex || $this->gzip) {
             $content = serialize($content);
             if ($this->gzip) {
                 $content = gzcompress($content);

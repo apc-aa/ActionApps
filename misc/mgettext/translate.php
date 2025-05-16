@@ -50,12 +50,10 @@ function translate_files($old_lang_file, $src_dir, $dst_dir) {
     foreach ($consts as $name => $value) {
         if (!str_starts_with($name, "L_")) {
             unset($consts[$name]);
+        } elseif (strlen($value) <= 1 || ctype_digit((string)$value)) {
+            $consts[$name] = "\"$value\"";
         } else {
-            if (strlen($value) <= 1 || ctype_digit((string)$value)) {
-                $consts[$name] = "\"$value\"";
-            } else {
-                $consts[$name] = "_m(\"".str_replace( ['"',"\n","\r"], ['\\"',"\\n",""],  $value)."\")";
-            }
+            $consts[$name] = "_m(\"".str_replace( ['"',"\n","\r"], ['\\"',"\\n",""],  $value)."\")";
         }
     }
 
@@ -86,7 +84,7 @@ function translate_files($old_lang_file, $src_dir, $dst_dir) {
         if (!$fd) {
             echo " write permission denied<br>";
         }
-        if (!$new_content or !$fd) {
+        if (!$new_content || !$fd) {
             continue;
         }
         foreach ($new_content as $row) {

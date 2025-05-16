@@ -111,7 +111,7 @@ if ($update) {
     }
 }
 
-if ( AA::$module_id!="" ) {  // set variables from database
+if ( AA::$module_id != "" ) {  // set variables from database
 
     ['admin_format' => $admin_format, 'admin_format_top' => $admin_format_top, 'admin_format_bottom' => $admin_format_bottom, 'admin_remove' => $admin_remove, 'admin_noitem_msg' => $admin_noitem_msg]
         = (array)DB_AA::select1('', 'SELECT `admin_format`, `admin_format_top`, `admin_format_bottom`, `admin_remove`, `admin_noitem_msg` FROM `slice`', [['id',AA::$module_id,'l']]);

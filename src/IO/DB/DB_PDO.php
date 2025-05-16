@@ -103,7 +103,7 @@ class DB_PDO  {
         if (!$this->connect()) {
             return 0;
         }
-        if (!count(array_filter(array_keys($param), 'is_string'))) { // this is NOT an associative array, so we cannot bindValue or bindParams
+        if (!array_filter(array_keys($param), 'is_string')) { // this is NOT an associative array, so we cannot bindValue or bindParams
             if (!$status = $this->sth->execute($param)) {
                 if ($this->Debug) {
                     var_dump($param);
@@ -166,7 +166,7 @@ class DB_PDO  {
                         if ($this->persistent) {
                             $options[PDO::ATTR_PERSISTENT] = true;
                         }
-                        if ($this->collation AND  $this->charset) {
+                        if ($this->collation && $this->charset) {
                             $options[PDO::MYSQL_ATTR_INIT_COMMAND] = "SET NAMES '$this->charset' COLLATE '$this->collation'";
                         }
                         //huhl($dsn, $User, $Password, $options);
@@ -188,18 +188,18 @@ class DB_PDO  {
                     if ($this->Debug) {
                         echo "Creating sqlite functions...";
                     }
-                    $this->dbh->sqliteCreateFunction('now', function () { return date('Y-m-d H:i:s'); }, 0);
-                    $this->dbh->sqliteCreateFunction('year', function () { return date('Y'); }, 0);
-                    $this->dbh->sqliteCreateFunction('month', function () { return date('n'); }, 0);
-                    $this->dbh->sqliteCreateFunction('day', function () { return date('j'); }, 0);
-                    $this->dbh->sqliteCreateFunction('hour', function () { return date('G'); }, 0);
-                    $this->dbh->sqliteCreateFunction('minute', function () { return date('i'); }, 0);
-                    $this->dbh->sqliteCreateFunction('second', function () { return date('s'); }, 0);
+                    $this->dbh->sqliteCreateFunction('now', function (): string { return date('Y-m-d H:i:s'); }, 0);
+                    $this->dbh->sqliteCreateFunction('year', function (): string { return date('Y'); }, 0);
+                    $this->dbh->sqliteCreateFunction('month', function (): string { return date('n'); }, 0);
+                    $this->dbh->sqliteCreateFunction('day', function (): string { return date('j'); }, 0);
+                    $this->dbh->sqliteCreateFunction('hour', function (): string { return date('G'); }, 0);
+                    $this->dbh->sqliteCreateFunction('minute', function (): string { return date('i'); }, 0);
+                    $this->dbh->sqliteCreateFunction('second', function (): string { return date('s'); }, 0);
                     $this->dbh->sqliteCreateFunction('unix_timestamp', function ($string = '') { return strtotime($string); });
                     $this->dbh->sqliteCreateFunction('compress', 'gzcompress');
                     $this->dbh->sqliteCreateFunction('uncompress', 'gzuncompress');
                     $this->dbh->sqliteCreateFunction('length', 'strlen', 1);
-                    $this->dbh->sqliteCreateFunction('substring', function ($string, $from, $length) {
+                    $this->dbh->sqliteCreateFunction('substring', function ($string, $from, $length): string {
                         return substr($string, $from - 1, $length);
                     }, 3);
                     $this->dbh->sqliteCreateFunction('md5', 'md5', 1);
@@ -208,12 +208,10 @@ class DB_PDO  {
                     $this->dbh->sqliteCreateFunction('if', function ($condition, $expr1, $expr2 = null) {
                         return $condition ? $expr1 : $expr2;
                     });
-                    $this->dbh->sqliteCreateFunction('concat', function () {
-                        $args = func_get_args();
+                    $this->dbh->sqliteCreateFunction('concat', function (...$args): string {
                         return implode('', $args);
                     });
-                    $this->dbh->sqliteCreateFunction('concat_ws', function () {
-                        $args = func_get_args();
+                    $this->dbh->sqliteCreateFunction('concat_ws', function (...$args): string {
                         $sep = array_shift($args);
                         return implode($sep, $args);
                     });
@@ -222,7 +220,7 @@ class DB_PDO  {
                     $this->dbh->sqliteCreateFunction('regexp', function ($pattern, $value) {
                         #mb_internal_encoding('UTF-8'); // multibyte character encoding
                         #mb_regex_encoding('UTF-8');	// should be set at the application level
-                        return (false !== mb_ereg($pattern, $value)) ? 1 : 0;
+                        return (mb_ereg($pattern, $value)) ? 1 : 0;
                     });
                     break;
             }
@@ -466,7 +464,7 @@ class DB_PDO  {
             }
             for ($i = 0; $i < $stmt->columnCount(); $i++) {
                 $res[$i] = $stmt->getColumnMeta($i);
-                if ((array_key_exists("native_type", $res[$i])) and (!array_key_exists("type", $res[$i]))) {
+                if (array_key_exists("native_type", $res[$i]) && !array_key_exists("type", $res[$i])) {
                     $res[$i]["type"] = strtolower($res[$i]["native_type"]);
                 }
                 if (!array_key_exists("type", $res[$i])) {
@@ -482,7 +480,7 @@ class DB_PDO  {
                             break;    # 3
                     }
                 }
-                if ((in_array("blob", $res[$i]["flags"])) and ($res[$i]["pdo_type"] == PDO::PARAM_STR)) {
+                if (in_array("blob", $res[$i]["flags"]) && $res[$i]["pdo_type"] == PDO::PARAM_STR) {
                     $res[$i]["type"] = "text";
                 }
                 $res[$i]["default"] = "";        // pdo metadata does not return default value.
@@ -498,11 +496,7 @@ class DB_PDO  {
                 if (in_array("unique_key", $res[$i]["flags"], true)) {
                     $res[$i]["key"] = "UNI";
                 }
-                if (in_array("not_null", $res[$i]["flags"], true)) {
-                    $res[$i]["null"] = "NO";
-                } else {
-                    $res[$i]["null"] = "YES";
-                }
+                $res[$i]["null"] = in_array("not_null", $res[$i]["flags"], true) ? "NO" : "YES";
                 $len = @$res[$i]["len"] ? $res[$i]["len"] : $res[$i]["length"];
                 $res[$i]["chars"] = $len / 3;    ## this / 3 might only be for utf-8;
                 $count++;
@@ -568,7 +562,7 @@ class DB_PDO  {
                     $ftype = $type;
                 }
                 $res[$i]["chars"] = $fsize;
-                if ((array_key_exists("atttypmod", $row)) and ($row["atttypmod"] > 0)) {
+                if (array_key_exists("atttypmod", $row) && $row["atttypmod"] > 0) {
                     $res[$i]["chars"] = $row["atttypmod"];
                 } //pgsql
                 if (array_key_exists("attnum", $row)) {
@@ -578,18 +572,13 @@ class DB_PDO  {
                 $res[$i]["type"] = $ftype;
                 $res[$i]["attr"] = $fattr;   /* eg unsigned */
                 if (array_key_exists("notnull", $row)) {
-                    if ($row["notnull"]) {
-                        $null = "NO";
-                    } else {
-                        $null = "YES";
-                    } // sqlite & pgsql
-                } else {
-                    if (array_key_exists("Null", $row)) {
-                        $null = $row["Null"];        // MySQL DESCRIBE
-                    }
+                    $null = $row["notnull"] ? "NO" : "YES";
+                    // sqlite & pgsql
+                } elseif (array_key_exists("Null", $row)) {
+                    $null = $row["Null"];        // MySQL DESCRIBE
                 }
                 $res[$i]["null"] = $null;
-                if ((array_key_exists("atthasdef", $row)) and ($row["atthasdef"])) {
+                if (array_key_exists("atthasdef", $row) && $row["atthasdef"]) {
                     $hasdef = true;
                 }
                 // mysql
@@ -744,7 +733,7 @@ class DB_PDO  {
         // It works pretty well, but if you link the external css on that page,
         // then it is not found, which is unexpected behavior. So, you can't use
         // the variables on that page. Honza, 2007-12-05
-        if (defined('DB_ERROR_PAGE') and ($this->get_halt() === "yes")) {
+        if (defined('DB_ERROR_PAGE') && $this->get_halt() === "yes") {
             ob_end_clean();
             // AA_Http::go(DB_ERROR_PAGE, array('Err'=>$this->Errno, 'ErrMsg'=>$this->Error, 'Msg'=>$msg), 'POST', false);
             // sending variables disabled - see the comment above

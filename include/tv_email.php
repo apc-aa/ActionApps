@@ -172,7 +172,7 @@ function GetEmailTableView($viewID) {
 /** GetEmailWhere function
  *
  */
-function GetEmailWhere() {
+function GetEmailWhere(): string {
     if (IsSuperadmin()) {
         return "(1=1)";
     }

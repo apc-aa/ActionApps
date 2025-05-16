@@ -88,7 +88,7 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
      */
     static function factoryFromJson($json): AA_Value {
         $aav = new AA_Value();
-        if (($json[0] === '[') and (!is_null($arr = json_decode($json, true)))) {
+        if ($json[0] === '[' && !is_null($arr = json_decode($json, true))) {
             $aav->setValues(array_values($arr));
         } else {
             $aav->setValues($json);
@@ -166,7 +166,7 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
                 while (array_key_exists($key, $this->arr)) {
                     $key++;
                 }
-                $this->arr[$key] = is_array($val) ? $val['value'] : (!is_object($val) ? $val : serialize($val));
+                $this->arr[$key] = is_array($val) ? $val['value'] : (is_object($val) ? serialize($val) : $val);
                 // @todo check, if $val->getSomething is callable
             }
         } elseif (!is_null($value)) {
@@ -249,7 +249,7 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
                 $lang_id = Langs::getLangName2Num($lang);  // converts two letter lang code into number used for translation fields (cz -> 78000000, en -> 118000000, ...)
                 for ($i = 0; $i <= $maxindex; $i++) {
                     $value = $this->arr[$lang_id + $i] ?? '';
-                    if (!strlen($value) and $first and isset($this->arr[$i])) {
+                    if (!strlen($value) && $first && isset($this->arr[$i])) {
                         // if the translation is not set try to use standard value (possibly filled before we set the translations for the field)
                         $value = $this->arr[$i];
                     }
@@ -443,7 +443,7 @@ class AA_Content implements Iterator, ArrayAccess, Countable {
             return $idx;
         }
         // the same test as in isMultilingual($field_id) above;
-        if ( (key($a)>=AA_Value::MAX_INDEX) AND ($idx<AA_Value::MAX_INDEX) ) {
+        if ( key($a)>=AA_Value::MAX_INDEX && $idx<AA_Value::MAX_INDEX ) {
             if (strlen($a[$index = AA::$langnum[0]+$idx]['value'])) {
                 return $index;
             }
@@ -552,14 +552,14 @@ class AA_Content implements Iterator, ArrayAccess, Countable {
                 continue;
             }
             $b = $object2compare->getValuesArray($fid);
-            if ($this->getValuesArray($fid) != $b) {
+            if ($this->getValuesArray($fid) !== $b) {
                 $changes[] = new ChangeProposal($item_id, $fid, $b);
             }
         }
         // search for values not present in current object
         $b_fields = $object2compare->getFields();
         foreach ($b_fields as $fid) {
-            if (empty($this->content[$fid]) AND !in_array($fid, $ignore)) {
+            if (empty($this->content[$fid]) && !in_array($fid, $ignore)) {
                 $changes[] = new ChangeProposal($item_id, $fid, $object2compare->getValuesArray($fid));
             }
         }
@@ -687,7 +687,7 @@ class ItemContent extends AA_Content {
         if ($content4id) {
             if ( is_array($content4id) ) {
                 $this->setFromArray($content4id);
-            } elseif (is_object($content4id) AND in_array(get_class_name($content4id), ['AA_Content','AA_Item','ItemContent'])) {
+            } elseif (is_object($content4id) && in_array(get_class_name($content4id), ['AA_Content','AA_Item','ItemContent'])) {
                 $this->content = $content4id->getContent();
             } else {
                 $this->setByItemID($content4id);  // zids or string id
@@ -749,7 +749,7 @@ class ItemContent extends AA_Content {
         }
 
         $aacontent4id = null; // modern input format - introduced with [rim]
-        if ($_POST['aa'] OR $_FILES['aa']) {
+        if ($_POST['aa'] || $_FILES['aa']) {
             $grabber = new AA\IO\Grabber\Form();
             $aacontent4id = $insert ? $grabber->getFirstItem() : ($oldcontent4id ? $grabber->getItemWithId($oldcontent4id->getId()) : null);
         }
@@ -760,7 +760,7 @@ class ItemContent extends AA_Content {
                 continue;
             }
 
-            if ($aacontent4id AND $aacontent4id->isSet($pri_field_id) AND (!in_array($pri_field_id, ['id..............', 'slice_id........']))) {
+            if ($aacontent4id && $aacontent4id->isSet($pri_field_id) && !in_array($pri_field_id, ['id..............', 'slice_id........'])) {
                 $this->content[$pri_field_id] = $aacontent4id->getValues($pri_field_id);
                 continue;
             }
@@ -831,7 +831,7 @@ class ItemContent extends AA_Content {
             $this->setValue('status_code.....', max(1,$oldcontent4id ? $oldcontent4id->getValue('status_code.....') : 1));
         }
 
-        if (!$insert AND $oldcontent4id) {
+        if (!$insert && $oldcontent4id) {
             $this->setValue('flags...........', $oldcontent4id->getValue('flags...........'));
         }
 
@@ -856,16 +856,15 @@ class ItemContent extends AA_Content {
      */
     function isActive($bin=AA_BIN_ACTIVE): bool {
 
-        if ( (($status=$this->getStatusCode()) == 1) AND ($bin & AA_BIN_ACTIVE)) {
+        if ( ($status=$this->getStatusCode()) == 1 && $bin & AA_BIN_ACTIVE) {
             $now = now('step');
             if (($this->getPublishDate() <= $now) OR (($slice = AA_Slice::getModule($this->getSliceID())) AND $slice->isPendingContentAllowed())) {
                 if (($this->getExpiryDate() > $now) OR (($slice = $slice ?: AA_Slice::getModule($this->getSliceID())) AND $slice->isExpiredContentAllowed())) {
-                    return true;
-                }
+                return true;
             }
-        } elseif (($status==2) AND ($bin & AA_BIN_HOLDING)) {
+        } elseif ($status==2 && $bin & AA_BIN_HOLDING) {
             return true;
-        } elseif (($status==3) AND ($bin & AA_BIN_TRASH)) {
+        } elseif ($status==3 && $bin & AA_BIN_TRASH) {
             return true;
         }
         return false;
@@ -960,10 +959,10 @@ class ItemContent extends AA_Content {
         $ret        = [];
 
         foreach ($fields as $field_id => $field) {
-            if (($type==='visible' AND !$field->getProperty('input_show'))) {
+            if (($type==='visible' && !$field->getProperty('input_show'))) {
                 continue;
             }
-            if (($type==='present' AND !$this->isSet($field_id))) {
+            if (($type==='present' && !$this->isSet($field_id))) {
                 continue;
             }
             $property    = $field->getAaProperty();
@@ -974,7 +973,7 @@ class ItemContent extends AA_Content {
                         continue;
                     }
                     // item table fields like publish date should be OK if not displayed on standard inputform
-                    if (($field->storageTable()==='item') AND !$field->getProperty('input_show')) {
+                    if ($field->storageTable()==='item' && !$field->getProperty('input_show')) {
                         continue;
                     }
                     if (str_starts_with($field->getProperty('input_show_func'), 'fil')) {
@@ -982,7 +981,7 @@ class ItemContent extends AA_Content {
                         // of required fileupload field, but which is empty at this moment
                         $varname = 'v'. unpack_id($field_id).'x';
                         // @todo check is_uploaded_file(). Use Files:: for it. Could be array() of files.
-                        if ( isset($_FILES[$varname]) AND $_FILES[$varname]['tmp_name'] ) {  // old form of file upload
+                        if ( isset($_FILES[$varname]) && $_FILES[$varname]['tmp_name'] ) {  // old form of file upload
                             continue;
                         }
                     }
@@ -999,7 +998,7 @@ class ItemContent extends AA_Content {
      *
      * @return bool
      */
-    function complete4Insert(string $validate='LOG') {
+    function complete4Insert(string $validate='LOG'): bool {
         $slice_id = $this->getSliceID();
         $slice = AA_Slice::getModule($slice_id);
         if (!$slice) {
@@ -1055,7 +1054,7 @@ class ItemContent extends AA_Content {
     }
 
     /** validates and fills content with default and hidden fields in order it could be stored into database */
-    function validate4Update() {
+    function validate4Update(): bool {
 
         $slice = AA_Slice::getModule($this->getSliceID());
         if (!$slice) {
@@ -1177,7 +1176,7 @@ class ItemContent extends AA_Content {
                                   $id     = $this->getItemID();
                                   break;
             case 'update/insert': // not tested, yet...
-                                  if (!$this->getItemID() OR !itemIsDuplicate($this->getItemID())) {
+                                  if (!$this->getItemID() || !itemIsDuplicate($this->getItemID())) {
                                       $mode = 'insert';
                                       $id   = $this->getItemID() ?: new_id();
                                   } else {
@@ -1189,7 +1188,7 @@ class ItemContent extends AA_Content {
                                   $mode ='insert';
                                   break;
             case 'insert_new':    // if item is duplicate or id is not defined, store it as new item
-                                  $id = (!$this->getItemID() OR itemIsDuplicate($this->getItemID())) ? new_id() : $this->getItemID();
+                                  $id = (!$this->getItemID() || itemIsDuplicate($this->getItemID())) ? new_id() : $this->getItemID();
                                   $mode ='insert';
                                   break;
             case 'insert':        $id = get_if($this->getItemID(), new_id());
@@ -1220,7 +1219,7 @@ class ItemContent extends AA_Content {
         $feed                    = $flags[1] ?? !$silent;
         $throw_events            = $flags[2] ?? !$silent;
         $allow_edit              = [];
-        $allow_edit['last_edit'] = ($flags[3] AND $silent);
+        $allow_edit['last_edit'] = ($flags[3] && $silent);
 
         if (!$id) {
             self::lastErr(ITEMCONTENT_ERROR_BAD_PARAM, _m("StoreItem for slice %1 - failed parameter check for id = '%2'", [$slice->getName(), $id]));  // set error code
@@ -1265,7 +1264,7 @@ class ItemContent extends AA_Content {
                 break;
             case 'insert':
                 // reset hit counter fields for new items
-                $hitfields = array_filter($fields->getPriorityArray(), static function($fid) { return (str_starts_with($fid, 'hit_')); });
+                $hitfields = array_filter($fields->getPriorityArray(), static function($fid): bool { return (str_starts_with($fid, 'hit_')); });
                 foreach ($hitfields as $fid ) {
                     $this->setValue($fid, 0);
                 }
@@ -1284,7 +1283,7 @@ class ItemContent extends AA_Content {
         $item_varset = $this->_store_fields($id, $fields, $context);
 
         // Alerts module uses moved2active as the time when an item was moved to the active bin
-        if (($mode==='insert') OR (($item_varset->get('status_code') != $oldItemContent->getStatusCode()) AND $item_varset->get('status_code') >= 1)) {
+        if ($mode==='insert' || $item_varset->get('status_code') != $oldItemContent->getStatusCode() && $item_varset->get('status_code') >= 1) {
             $item_varset->add("moved2active", "number", $item_varset->get('status_code') > 1 ? 0 : time());
         }
 
@@ -1298,7 +1297,7 @@ class ItemContent extends AA_Content {
             case 'update':
             case 'add':
                 if ($silent) {
-                    if ($allow_edit['last_edit'] AND $this->getValue('last_edit')) {
+                    if ($allow_edit['last_edit'] && $this->getValue('last_edit')) {
                         $item_varset->add("last_edit", "date", (int)$this->getValue('last_edit'));
                     }
                 } else {
@@ -1344,11 +1343,10 @@ class ItemContent extends AA_Content {
         $itemContent->setByItemID($id,true);     // ignore reading password
 
         // look for computed fields and update it (based on the stored item)
-        if (!$silent) {
-            if ( $itemContent->updateComputedFields($fields, $mode) ) {
-                // if computed fields are updated, reread the content
-                $itemContent->setByItemID($id,true); // ignore reading password
-            }
+        if (!$silent && $itemContent->updateComputedFields($fields, $mode)) {
+            // if computed fields are updated, reread the content
+            $itemContent->setByItemID($id,true);
+            // ignore reading password
         }
 
         $zid = new zids($id,'l');
@@ -1370,7 +1368,7 @@ class ItemContent extends AA_Content {
 
         $historylog = $slice->getProperty('historylog');
         // ignore last_edit change (there was quite a lot of such changes, where the only change was in this field (in import....))
-        if (($mode !== 'insert') AND ($historylog !== '0') AND count($diff = $itemContent->diff($oldItemContent, ['last_edit.......']))) {
+        if ($mode !== 'insert' && $historylog !== '0' && count($diff = $itemContent->diff($oldItemContent, ['last_edit.......']))) {
             ChangesMonitor::singleton()->addHistory($diff);
         }
         // slice setting historylog applied to history as well as to log for item new/update
@@ -1400,7 +1398,7 @@ class ItemContent extends AA_Content {
      */
     function updateComputedFields(?AA_Fields $fields = null, string $mode = 'update', array $restrict_fields = []): bool {
 
-        if (!($id = $this->getItemID()) OR $this->isEmpty()) {  // the recomputed item is already deleted, probably
+        if (!($id = $this->getItemID()) || $this->isEmpty()) {  // the recomputed item is already deleted, probably
             return false;
         }
 
@@ -1411,7 +1409,7 @@ class ItemContent extends AA_Content {
 
         $field_writer = new AA_Field_Writer($this->getSliceID());
 
-        $update       = (($mode === 'update') OR ($mode === 'overwrite') OR ($mode === 'add'));
+        $update       = ($mode === 'update' || $mode === 'overwrite' || $mode === 'add');
         $computed_field_exist = false;
 
         if (!$fields) {
@@ -1420,7 +1418,7 @@ class ItemContent extends AA_Content {
 
         foreach ($fields as $fid => $field) {
 
-            if ( count($restrict_fields) AND !in_array($fid, $restrict_fields)) {
+            if ( count($restrict_fields) && !in_array($fid, $restrict_fields)) {
                 // we can restrict the recomputed fields in {recompute}
                 // so - skip not recomputed fields
                 continue;
@@ -1439,7 +1437,7 @@ class ItemContent extends AA_Content {
                 case 'seo':
                     $seo_alias        = trim($fnc["param"]) !== '' ? $fnc["param"] : '_#HEADLINE';
                     $slice_charset    = $slice->getCharset();
-                    $seo_charset      = ($slice_charset AND $slice_charset !== 'utf-8') ? ":$slice_charset" : '';
+                    $seo_charset      = ($slice_charset && $slice_charset !== 'utf-8') ? ":$slice_charset" : '';
 
                     // seo field is not filled or we "Insert as new" and teh seo is already used (probably we forgot to delete the value)
                     if (!strlen($this->getValue($fid)) OR (($mode==='insert') AND strlen(str_replace([$this->getItemID(), '-'], ['',''], StrExpand('AA_Stringexpand_Seo2ids', ['all', $this->getValue($fid)], ['item'=>GetItemFromContent($this)]))))) {
@@ -1531,7 +1529,7 @@ class ItemContent extends AA_Content {
         $field_writer = new AA_Field_Writer($this->getSliceID(), $context);
 
         foreach ($this as $fid => $cont) {                         // $cont is AA_Value or null if empty
-            if (!$cont OR !($fld = $aa_fields->getField($fid))) {
+            if (!$cont || !($fld = $aa_fields->getField($fid))) {
                 continue;
             }
 
@@ -1573,7 +1571,7 @@ function itemIsDuplicate($item_id) {
  * @param array $flags   =  // invalidate cache, feed, throw events, allow edit last_edit
  * @return int
  */
-function UpdateField($item_id, $field_id, $field_content, $flags = []) {
+function UpdateField($item_id, $field_id, $field_content, $flags = []): int {
     if (!$flags) {
         $flags = [true, false, true, false];   // invalidate cache, not feed, throw events, not allow edit last_edit
     }
@@ -1592,12 +1590,11 @@ function UpdateField($item_id, $field_id, $field_content, $flags = []) {
     $newcontent4id->setAaValue($field_id, $field_content);
     $newcontent4id->setItemID($item_id);
     $newcontent4id->setSliceID($sli_id);
-    $updated_items = 0;
 
     if ($newcontent4id->storeItem( 'update', $flags )) {    // invalidatecache, not feed, throw_events, not allow edit last_edit
         return 1; // updated_items
     }
-    return $updated_items;
+    return 0; // updated_items
 }
 
 
@@ -1648,19 +1645,19 @@ class AA_Field_Cleaner {
         foreach ($content as $fid => $cont) {
             $fld = $this->fields->getField($fid);
             if ($fld) {
-                //$more_fields += $fld->getInsertOtherFields();
+            //$more_fields += $fld->getInsertOtherFields();
                 if (!$fld->getProperty('in_item_tbl') and !$fld->isSafeStored()) {   // do not delete 'secret....* ',  'password....', ... fields (the content should be rewritten in Inserter, if all conditions matches)
-                    // deal with translations. if only translated values are present, then delete just the specific translation
-                    // however - if also basic 0-1000000 indexes are present, clear all the field content
+                // deal with translations. if only translated values are present, then delete just the specific translation
+                // however - if also basic 0-1000000 indexes are present, clear all the field content
                     $keys = (is_array($cont) and $cont) ? array_keys($cont) : [0]; // sometimes we want to delete field so no AA_Value is passed (delete file...)
-                    foreach ($keys as $k) {
-                        $in[$ind = ($k / AA_Value::MAX_INDEX)][] = $fid;
-                        if ($ind == 0) {
-                            continue 2;
-                        }
+                foreach ($keys as $k) {
+                    $in[$ind = ($k / AA_Value::MAX_INDEX)][] = $fid;
+                    if ($ind == 0) {
+                        continue 2;
                     }
                 }
             }
+        }
         }
         // delete aslo the fields introduces by otherfield of thumbnail feature - abandoned:
         // not used approach - we delete such fields in executeMulti() in Inserter (it is hard to say, if the field use new values or stores the old values and thumbs are not necessary)

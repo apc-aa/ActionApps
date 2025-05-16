@@ -153,7 +153,7 @@ if ( $continue ) {
     $profile_users = AA_Profile::getUsersForModule(AA::$module_id);  // sometimes could be set profile to group, which have no rights right now, but profile is set (and is counted for the user)
 
     // if conflicts slice perms and aa perms - solve it
-    foreach ( $slice_users as $usr_id => $foo ) {
+    foreach ( array_keys($slice_users) as $usr_id ) {
         if ( $aa_users[$usr_id] ) {
             $slice_users[$usr_id] = AA_Perm::joinSliceAndAAPerm($slice_users[$usr_id], $aa_users[$usr_id]);
         }
@@ -168,7 +168,7 @@ if ( $continue ) {
 
     // no slice nor aa perms, but profile is set
     foreach ($profile_users as $usr_id ) {
-        if ( ($usr_id !== '*') AND !$slice_users[$usr_id] ) {
+        if ( $usr_id !== '*' && !$slice_users[$usr_id] ) {
             $slice_users[$usr_id] = '';  // no rights, just profile rules (applied to users in such group)
         }
     }

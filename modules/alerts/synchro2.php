@@ -119,7 +119,7 @@ function add_fields_2_slice($collectionid, $slice_id) {
     // count of added fields
     $nadded = 0;
 
-    foreach ($alerts_specific_fields as $field_id => $foo) {
+    foreach (array_keys($alerts_specific_fields) as $field_id) {
         $fprop = &$alerts_specific_fields[$field_id];
 
         $varset->clear();
@@ -149,7 +149,7 @@ function add_fields_2_slice($collectionid, $slice_id) {
 
                 // prepare array for adding to constants
                 $constants = [];
-                if (isset($fprop["constants"]["items"]) AND is_array($fprop["constants"]["items"])) {
+                if (isset($fprop["constants"]["items"]) && is_array($fprop["constants"]["items"])) {
                     foreach ( $fprop["constants"]["items"] as $value => $name ) {
                         $constants[] = ['name'=>$name, 'value'=>$value];
                     }
@@ -181,7 +181,7 @@ function delete_fields_from_slice($collectionid, $slice_id) {
     $varset->addkey ("slice_id", "unpacked", $slice_id);
 
     $db = getDB();
-    foreach ($alerts_specific_fields as $field_id => $foo) {
+    foreach (array_keys($alerts_specific_fields) as $field_id) {
         $varset->addkey("id", "text", $field_id);
 
         $db->query($varset->makeSELECT ("field"));
@@ -210,7 +210,7 @@ function getReaderManagementSlices () {
         AND id <> '".addslashes($collectionprop["sliceid"])."'";
     if (is_array($slices)) {
         $delim = "";
-        foreach ($slices as $slice_id => $foo) {
+        foreach (array_keys($slices) as $slice_id) {
             $where .= $delim . xpack_id ($slice_id);
             $delim = ",";
         }

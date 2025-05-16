@@ -95,7 +95,7 @@ if ($do==="chk" || $do==="chp") { //CHeck Key or CHange Password
     $username = $userdata["headline........"][0]['value'];
     $email    = $userdata["con_email......."][0]['value'];
     $i=-1;
-    while ($i++<$KeyVal && $pwdkey!=$key) {
+    while ($i++<$KeyVal && $pwdkey != $key) {
         $pwdkey = md5($username.$email.AA_ID.round(round(now()/60)-$i));
     }
     if ($i>=$KeyVal) die("Wrong or expired key, sorry.");

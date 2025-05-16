@@ -99,19 +99,19 @@ class linkassignment {
         $base_state    = $base->getState();
         $base_proposal = $base->isProposal();
 
-        if ( ($this->state === 'hidden') AND ( ($base_state !== 'hidden') AND !$base_proposal )) {
+        if ( $this->state === 'hidden' && ($base_state !== 'hidden' && !$base_proposal)) {
             $problem[]      = problem_report('hidden_when_base_is_approved', $this->category);
             $this->state    = 'visible';
         }
-        if ( ($this->state === 'hidden') AND !$this->proposal ) {
+        if ( $this->state === 'hidden' && !$this->proposal ) {
             $problem[]      = problem_report('hidden_and_not_proposal',$this->category);
             $this->proposal = true;
         }
-        if ( ($this->state !== 'hidden')  AND ($this->state !== 'visible') AND ($this->state !== 'highlight') ) {
+        if ( $this->state !== 'hidden' && $this->state !== 'visible' && $this->state !== 'highlight' ) {
             $problem[]      = problem_report('unknown_state',$this->state);
             $this->state    = 'visible';
         }
-        if ( $this->base AND ($this->state === 'hidden') ) {
+        if ( $this->base && $this->state === 'hidden' ) {
             $problem[]      = problem_report('hidden_and_base',$this->category);
             $this->state    = 'visible';
             $this->proposal = true;
@@ -132,15 +132,13 @@ class linkassignment {
             DB_AA::update('links_link_cat', [['state', 'visible']], [['a_id',$this->id]]);
 
         }
-        if ( ($this->state === 'hidden') AND !$this->proposal ) {
+        if ( $this->state === 'hidden' && !$this->proposal ) {
             $problem[] = problem_report('hidden_and_not_proposal',$this->category);
         }
-        if ( ($this->state !== 'hidden')  AND
-             ($this->state !== 'visible') AND
-             ($this->state !== 'highlight') ) {
+        if ( $this->state !== 'hidden' && $this->state !== 'visible' && $this->state !== 'highlight' ) {
             $problem[] = problem_report('unknown_state',$this->state);
         }
-        if ( $this->base AND ($this->state === 'hidden') ) {
+        if ( $this->base && $this->state === 'hidden' ) {
             $problem[] = problem_report('hidden_and_base',$this->category);
             //DoSQL("UPDATE links_link_cat SET state='visible', proposal='y' WHERE a_id='".$this->id."'");
             DB_AA::update('links_link_cat', [['state', 'visible'], ['proposal', 'y']], [['a_id',$this->id]]);
@@ -222,7 +220,7 @@ class linkassignment {
 
 
     function dbSave(): bool {
-        if ( !$this->category OR !$this->link ) return false;
+        if ( !$this->category || !$this->link ) return false;
         $varset = new Cvarset();
 
         $varset->addArray(['category_id', 'what_id', 'base', 'state', 'priority', 'proposal', 'proposal_delete']);
@@ -247,7 +245,7 @@ class linkassignment {
     function isProposal()           { return $this->proposal;        }
     function isProposal_delete()    { return $this->proposal_delete; }
     function setLink($lid)          { $this->link = $lid;            }
-    function setBase($base)         { $this->base = ($base ? true : false); }
+    function setBase($base)         { $this->base = ((bool) $base); }
     function setProposal($v)        { $this->proposal        = $v;   }
     function setProposal_delete($v) { $this->proposal_delete = $v;   }
 }
@@ -278,7 +276,7 @@ class assignmentset {
 
     /** Load category assignments for current link */
     function load( $force=false ) {
-        if ( !$force AND isset($this->assignments) AND is_array($this->assignments) ) return;
+        if ( !$force && $this->assignments !== null && is_array($this->assignments) ) return;
         $lid = $this->lid;
 
         $db = getDB();
@@ -320,7 +318,7 @@ class assignmentset {
     }
 
 
-    function count() {
+    function count(): int {
         $this->load();
         if ( !isset($this->assignments) ) return 0;
         return count($this->assignments);
@@ -341,7 +339,7 @@ class assignmentset {
      */
     function downgrade_general() {
         if ( !isset($this->assignments) ) return;
-        foreach ( $this->assignments as $k => $ass ) {
+        foreach ( array_keys($this->assignments) as $k ) {
             // do not use $ass - it is just copy of object in $this->assignments
             if ( !$this->assignments[$k]->downgrade_general() ) {
                 $remove[$k] = true;  // if you can't downgrade (category have no parent), then mark it for removal
@@ -357,7 +355,7 @@ class assignmentset {
         if ( !isset($this->assignments) ) return;
         debug('remove_duplicity begin:', $this->assignments);
         $already_assigned = [];
-        foreach ( $this->assignments as $k => $ass ) {
+        foreach ( array_keys($this->assignments) as $k ) {
             // first we check, if the assignment is valid (is category exists)
             if ( !$this->assignments[$k]->checkExistence() ) {
                 // category do not exist - remove assignment
@@ -368,8 +366,7 @@ class assignmentset {
             $cat = $this->assignments[$k]->getCategory();
             if ( isset($already_assigned[$cat]) ) {
                 // already assigned => remove current category (if it is not base)
-                if ( !$this->assignments[$k]->isBase() OR
-                      $this->assignments[$already_assigned[$cat]]->isBase() ) {
+                if ( !$this->assignments[$k]->isBase() || $this->assignments[$already_assigned[$cat]]->isBase() ) {
                     // do not remove base (remove it only if there are more
                     // bases which is database error, so we repair it this way)
                     $remove[$k] = true;
@@ -390,7 +387,7 @@ class assignmentset {
     /** Set specified caregory assignment as base */
     function set_base($category_id) {
         if ( !isset($this->assignments) ) return false;
-        foreach ( $this->assignments as $k => $ass ) {
+        foreach ( array_keys($this->assignments) as $k ) {
             $this->assignments[$k]->setBase( $this->assignments[$k]->getCategory()==$category_id );
         }
         return true;
@@ -423,7 +420,7 @@ class assignmentset {
     function remove_nolinks() {
         if ( !isset($this->assignments) ) return;
         $cattree = cattree::singleton();
-        foreach ( (array)$this->assignments as $k => $ass ) {
+        foreach ( array_keys((array)$this->assignments) as $k ) {
             // check, if category is allowed to have links
             if ( $cattree->isNolinks($this->assignments[$k]->getCategory()) ) {
                 $remove[$k] = true;
@@ -437,7 +434,7 @@ class assignmentset {
      */
     function fix_assignments($base) {
         if ( !isset($this->assignments) OR !isset($base)) return;
-        foreach ( $this->assignments as $k => $ass ) {
+        foreach ( array_keys($this->assignments) as $k ) {
             $this->assignments[$k]->fixState( $base );
         }
     }
@@ -467,7 +464,7 @@ debug('assignmentset.change: new',  $new);
 
         // first look on old assignments to see, what we can delete
         foreach ( (array)$this->assignments as $old_a ) {
-            if ( !$new->isAssigned($old_a->getCategory()) AND !$old_a->isPerm(PS_LINKS_DELETE_LINK)) {
+            if ( !$new->isAssigned($old_a->getCategory()) && !$old_a->isPerm(PS_LINKS_DELETE_LINK)) {
                 // we do not have permission to delete this link - just mark it for deletion
                 $old_a->setProposal_delete(true);
                 $proposal_deletes[] = $old_a;
@@ -528,7 +525,7 @@ debug('assignmentset.change: completely done', $this->assignments);
     }
 
     function define_lid($lid) {
-        foreach ( (array)$this->assignments as $k => $ass ) {
+        foreach ( array_keys((array)$this->assignments) as $k ) {
             $this->assignments[$k]->setLink($lid);
         }
     }
@@ -558,8 +555,7 @@ debug('assignmentset.change: completely done', $this->assignments);
      *  (not from database!!)
      */
     function remove($toremove) {
-        if ( isset($toremove)          AND is_array($toremove) AND
-             isset($this->assignments) AND is_array($this->assignments) ) {
+        if ( isset($toremove) && is_array($toremove) && $this->assignments !== null && is_array($this->assignments) ) {
             foreach ( $this->assignments as $k => $ass ) {
                 if ( $toremove[$k] ) continue;
                 $newass[] = $ass;
@@ -664,7 +660,7 @@ class linkobj {
     /** load link data from database (if not loaded already) */
     function load( $force=false ) {
         if ( !$this->lid ) return;
-        if ( !$force AND isset($this->data) AND is_array($this->data) ) return;
+        if ( !$force && $this->data !== null && is_array($this->data) ) return;
 
         $db = getDB();
 
@@ -851,7 +847,7 @@ class linkobj {
     }
 
     // returns if the link is empty or if it have filled any data
-    function isEmpty() {
+    function isEmpty(): bool {
         global $LINK_DATA_FIELDS;
         if ( isset($this->data) AND is_array($this->data) ) {
             // search for any data in link data
@@ -930,13 +926,13 @@ class linkobj {
         }
 
         // Regions
-        foreach ( (array)$this->region as $id => $foo ) {
+        foreach ( array_keys((array)$this->region) as $id ) {
             $SQL = 'INSERT INTO links_link_reg (link_id, region_id) VALUES ('.$this->lid.", $id)";
             $db->query($SQL);
         }
 
         // Languages
-        foreach ( (array)$this->language as $id => $foo ) {
+        foreach ( array_keys((array)$this->language) as $id ) {
             $SQL = 'INSERT INTO links_link_lang (link_id, lang_id) VALUES ('.$this->lid.", $id)";
             $db->query($SQL);
         }
@@ -1010,10 +1006,10 @@ class linkobj {
         if ( count($names)>1 ) {
             $this->problem[] = problem_report('category_assigned_to_more_general_categories',$names,$thematic);
         }
-        if ( $thematic AND $this->data['type'] ) {
+        if ( $thematic && $this->data['type'] ) {
             $this->problem[] = problem_report('general_link_assigned_to_thematic',$names,$thematic);
         }
-        if ( (count($names)===1) AND !$this->data['type'] AND !$thematic) {
+        if ( count($names)===1 && !$this->data['type'] && !$thematic) {
             $SQL = "UPDATE links_links SET type='".key($names)."' WHERE id='".$this->lid."'";
             $this->problem[] = problem_report('thematic_link_assigned_in_general_repairable',$names,$thematic);
             echo "<br>$SQL";

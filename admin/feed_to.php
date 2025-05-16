@@ -69,10 +69,10 @@ echo '
      </tr>';
 
 $i=1;     // slice checkbox counter
-if ( is_array($g_modules) AND (count($g_modules) > 1) ) {
+if ( is_array($g_modules) && count($g_modules) > 1 ) {
     foreach ( $g_modules as $sid => $v) {
-        if ( ($v['type'] === 'S') AND    //  we can feed just between slices ('S')
-            ((string)AA::$module_id !== (string)$sid) AND
+        if ( ($v['type'] === 'S') &&    //  we can feed just between slices ('S')
+            ((string)AA::$module_id !== (string)$sid) &&
             // we must have autor or editor perms in destination slices
             CheckPerms( AuthGetUid(), "slice", $sid, PS_EDIT_SELF_ITEMS) ) {
             $odd = (is_int($i / 2));

@@ -51,7 +51,7 @@ function SliceAddForm(bool $wizard=false, bool $display_views_constants=false): 
 
     FrmTabCaption(_m("Slice"));
 
-    if ($templates AND isset($temp_slices) AND is_array($temp_slices)) {
+    if ($templates && isset($temp_slices) && is_array($temp_slices)) {
         echo "<tr><td colspan=3>" . _m("To create the new Slice, please choose a template.\n        The new slice will inherit the template's default fields.  \n        You can also choose a non-template slice to base the new slice on, \n        if it has the fields you want.") . "</TD></TR>";
     }
     echo '<tr><td colspan="3"><input type="hidden" name="no_slice_id" value="1"></td></tr>';
@@ -73,7 +73,7 @@ function SliceAddForm(bool $wizard=false, bool $display_views_constants=false): 
         echo "<tr><td colspan=3>" . _m("No templates") . "</td></tr>";
     }
 
-    if (isset($temp_slices) and is_array($temp_slices)) {
+    if (isset($temp_slices) && is_array($temp_slices)) {
         echo "<tr><th>" . _m("Slice") . "</th>\n <td>";
         FrmSelectEasy('template_id2', $temp_slices, AA::$module_id);
         echo '</td><td>';

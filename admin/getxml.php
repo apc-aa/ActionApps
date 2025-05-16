@@ -150,7 +150,7 @@ function GetFeedingSlices( $node_name, $user) {
   * @param $user
   * @return bool next_record from db of permissions
   */
-function CheckFeedingPermissions( $slice_id, $node_name, $user ) {
+function CheckFeedingPermissions( $slice_id, $node_name, $user ): bool {
     return (bool)DB_AA::select1('slice_id', "SELECT slice_id FROM ef_permissions", [
         ['slice_id', $slice_id, 'l'],
         ['node', [$node_name, '']],
@@ -214,7 +214,7 @@ function GetXMLCategories($group_id, &$xml_categories_refs, &$xml_categories) {
  * @param $time
  * @return string - xml <channel>
  */
-function GetXMLChannel( $slice_id, $xml_fields_refs, $xml_categories_refs, $xml_items_refs, $time) {
+function GetXMLChannel( $slice_id, $xml_fields_refs, $xml_categories_refs, $xml_items_refs, $time): string {
     $slice = AA_Slice::getModule($slice_id);
     return "\t<channel rdf:about=\"".AA_INSTAL_URL."slices/$slice_id\">\n".
                    "\t\t<title>".code($slice->getProperty('name'))."</title>\n".
@@ -252,7 +252,7 @@ function GetXMLFieldData($slice_id, $field_id, $content4id): string
     $cont_vals = $content4id[$field_id];
 
     // the id should be unpacked for transmition
-    if ( ($field_id === 'id..............') AND (guesstype($cont_vals[0]['value']) === 'p')) {
+    if ( $field_id === 'id..............' && guesstype($cont_vals[0]['value']) === 'p') {
         $cont_vals[0]['value'] = unpack_id($cont_vals[0]['value']);
     }
 
@@ -281,7 +281,7 @@ function GetXMLFieldData($slice_id, $field_id, $content4id): string
  * @param $sfields
  * @return string xml_items
  */
-function GetXMLItem($slice_id, $item_id, $content4id, AA_Fields $sfields) {
+function GetXMLItem($slice_id, $item_id, $content4id, AA_Fields $sfields): string {
     static $value2const_id;
     static $slice_url;
 
@@ -413,7 +413,7 @@ function GetXMLItemsRefs(array $items_ids): string {
  */
 function RestrictIdsByCategory( $ids, $categories, $slice_id, array $content, $cat_field ) {
     $new_ids = [];
-    if ( !is_array($ids) OR !is_array($categories) ) {
+    if ( !is_array($ids) || !is_array($categories) ) {
         return $new_ids;                              // empty array
     }
 
@@ -489,7 +489,7 @@ $slice = AA_Slice::getModule($slice_id);
 
 $GLOBALS['g_slice_encoding'] = $slice->getCharset();
 
-if ($exact AND !$ids) {
+if ($exact && !$ids) {
 
     /** newer - 'exact' feeding mode based on conditions
      *

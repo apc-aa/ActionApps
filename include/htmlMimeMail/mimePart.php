@@ -272,7 +272,7 @@ class Mail_mimePart {
      * @access private
      * @return bool|string
      */
-    function _quotedPrintableEncode($input , $line_max = 76)
+    function _quotedPrintableEncode($input , $line_max = 76): string
     {
         $lines  = preg_split("/\r?\n/", $input);
         $eol    = MAIL_MIMEPART_CRLF;

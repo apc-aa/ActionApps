@@ -315,29 +315,29 @@ class AA_Searchbar extends AA_Storable {
 
         switch ($version) {
             case 1:             /* Stored as
-                                [search_row] => Array (
-                                    [0] => Array (
-                                            [field] => headline........
-                                            [value] => ff
-                                            [oper]  => RLIKE
-                                            [readonly] => )
-                                    [1] => Array (
-                                            [field] => headline........
-                                            [value] =>
-                                            [oper] => RLIKE
-                                            [readonly] => )) */
-                $new_search_row = [];
-                foreach ($state['search_row'] as $k => $row) {
-                    $new_search_row[$k] = [
-                        'condition' => [
-                                                     'fields'   => [$row['field']],
-                                                     'operator' => $row['oper'],
-                                                     'value'    => $row['value']
-                        ],
-                                                 'readonly' => $row['readonly']
-                    ];
-                }
-                $state['search_row'] = $new_search_row;
+               [search_row] => Array (
+                   [0] => Array (
+                           [field] => headline........
+                           [value] => ff
+                           [oper]  => RLIKE
+                           [readonly] => )
+                   [1] => Array (
+                           [field] => headline........
+                           [value] =>
+                           [oper] => RLIKE
+                           [readonly] => )) */
+            $new_search_row = [];
+            foreach ($state['search_row'] as $k => $row) {
+                $new_search_row[$k] = [
+                    'condition' => [
+                                                 'fields'   => [$row['field']],
+                                                 'operator' => $row['oper'],
+                                                 'value'    => $row['value']
+                    ],
+                                             'readonly' => $row['readonly']
+                ];
+            }
+            $state['search_row'] = $new_search_row;
         }
         return $state;
     }
@@ -347,7 +347,7 @@ class AA_Searchbar extends AA_Storable {
      *  (through stored seaches feature), which do not use AA_Searchbar_Row
      * @return 2
      */
-    static function version() {
+    static function version(): int {
         return 2;
     }
 
@@ -358,12 +358,12 @@ class AA_Searchbar extends AA_Storable {
      */
     function addOrder( $sort ) {
         // fill order_row variable
-        if (isset($sort) AND is_array($sort)) {
+        if (isset($sort) && is_array($sort)) {
             foreach ( $sort as $s ) {
                 $this->order_row[] =
                      [
                          'field' => key($s),
-                            'dir' => (current($s) AND (current($s)!=='a')) ? 'd' : 'a'
+                            'dir' => (current($s) && current($s)!=='a') ? 'd' : 'a'
                      ];
             }
         }
@@ -378,12 +378,12 @@ class AA_Searchbar extends AA_Storable {
      */
     function addSearch($conds, $readonly=false) {
         // fill search_row variable
-        if (isset($conds) AND is_array($conds)) {
+        if (isset($conds) && is_array($conds)) {
             foreach ( $conds as $cond ) {
-                if (isset($cond) AND is_array($cond)) {
+                if (isset($cond) && is_array($cond)) {
                     $field = false;
-                    foreach ( $cond as $k=>$c ) {
-                        if ( ($k !== 'operator') AND ($k !== 'value') ) {
+                    foreach ( array_keys($cond) as $k ) {
+                        if ( $k !== 'operator' && $k !== 'value' ) {
                             $field = $k;
                             break;
                         }
@@ -403,7 +403,7 @@ class AA_Searchbar extends AA_Storable {
         // $profile = AA_Profile::getProfile(AuthGetUid(), $slice_id); // current user settings
         // $this->setFromProfile($profile);
         $order_fields = $this->fields->getOrderArray();
-        if (($this->order_row_count_min > 0) AND isset( $order_fields['publish_date....'])) {
+        if ($this->order_row_count_min > 0 && isset( $order_fields['publish_date....'])) {
             $this->addOrder( [0=> ['publish_date....' => 'd']]);
         }
     }
@@ -474,7 +474,7 @@ class AA_Searchbar extends AA_Storable {
     }
 
     public function isEmpty($bar):bool {
-        return empty($this->search_row[$bar]) OR !strlen($this->search_row[$bar]->getValue());
+        return empty($this->search_row[$bar]) || !strlen($this->search_row[$bar]->getValue());
     }
 
     /** get_search_bar function
@@ -538,7 +538,7 @@ class AA_Searchbar extends AA_Storable {
         $ret .=  '<button type="button" class="btn btn-secondary" onclick="SearchBarAction(\''.$this->form_name. "', 'clearsearch', false, false)\">". _m('Clear') ."</button>";
         if ($this->show & MGR_SB_BOOKMARKS) {
             $ret .= '<button type="button" class="btn btn-secondary" onclick="SearchBarAction(\'' . $this->form_name . "', 'bookmark', '" . _m('Stored search name') . "'," .
-                (!IfSlPerm(PS_BOOKMARK) ? "false" : "'" . _m('You have the permission to add stored search globally. Do you want to add this query as global (common to all slice users)?') . "'") . ")\">" . _m('Store search') . "</button>";
+                (IfSlPerm(PS_BOOKMARK) ? "'" . _m('You have the permission to add stored search globally. Do you want to add this query as global (common to all slice users)?') . "'" : "false") . ")\">" . _m('Store search') . "</button>";
         }
 
         if ($this->hint != "") {
@@ -556,7 +556,7 @@ class AA_Searchbar extends AA_Storable {
      */
     function get_order_bar($bar): string {
         $order_fields = $this->fields->getOrderArray();
-        [$dir, $fld] = ( isset($this->order_row[$bar]) AND is_array($this->order_row[$bar]) ) ?  [safe($this->order_row[$bar]['dir']), $this->order_row[$bar]['field']] :  ["a", $order_fields[0]];
+        [$dir, $fld] = ( isset($this->order_row[$bar]) && is_array($this->order_row[$bar]) ) ?  [safe($this->order_row[$bar]['dir']), $this->order_row[$bar]['field']] :  ["a", $order_fields[0]];
 
         $searchtext  = _m('Order');
         $ret =  '<div class="aa-formgroup-inline">';
@@ -622,8 +622,8 @@ class AA_Searchbar extends AA_Storable {
 
         if ($this->show & MGR_SB_BOOKMARKS) {
             if ( $this->bookmarks->count() > 0 ) {
-                $ret .= $this->get_bar_bookmarks();
-            }
+            $ret .= $this->get_bar_bookmarks();
+        }
         }
 
         $ret .= '</div>
@@ -682,7 +682,7 @@ class AA_Bookmarks {
      * @return array
      */
     function getState($key) : array {
-        return ($this->is_defined($key) AND is_array($this->bookmarks[$key]['state'])) ? $this->bookmarks[$key]['state'] : [];
+        return ($this->is_defined($key) && is_array($this->bookmarks[$key]['state'])) ? $this->bookmarks[$key]['state'] : [];
     }
 
     /** Get array of bookmark (<key> => <name>)
@@ -748,7 +748,7 @@ class AA_Bookmarks {
         }
         $this->bookmarks = [];               // reset
         $b_arr = $this->profile->get('bookmark', '*');  // get all bookmark properties for user
-        if ( isset($b_arr) AND is_array($b_arr) ) {
+        if ( isset($b_arr) && is_array($b_arr) ) {
             foreach ( $b_arr as $selector => $property_arr ) {
                 $this->bookmarks[] = [
                     'name' => (string)$selector,
@@ -773,7 +773,7 @@ class AA_Bookmarks {
         if ( !is_object($this->profile) ) {
             return false;
         }
-        if ( $to_global AND !IfSlPerm(PS_BOOKMARK) ) {
+        if ( $to_global && !IfSlPerm(PS_BOOKMARK) ) {
             return false;
         }
           // store to database
@@ -799,11 +799,11 @@ class AA_Bookmarks {
      * @param $id
      * @return bool
      */
-    function update( $name, $state, $to_global, $id) {
+    function update( $name, $state, $to_global, $id): bool {
         if ( !is_object($this->profile) ) {
             return false;
         }
-        if ( $to_global AND !IfSlPerm(PS_BOOKMARK) ) {
+        if ( $to_global && !IfSlPerm(PS_BOOKMARK) ) {
             return false;
         }
           // store to database
@@ -840,7 +840,7 @@ class AA_Bookmarks {
         // is it global bookmark?
         $global = $this->is_global($key);
           // and have we permisson to delete it?
-        if ( $global AND !IfSlPerm(PS_BOOKMARK) ) {
+        if ( $global && !IfSlPerm(PS_BOOKMARK) ) {
             return false;
         }
           // store to database

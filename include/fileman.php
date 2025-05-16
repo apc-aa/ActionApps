@@ -40,7 +40,7 @@ $sortable_columns = [
  * @param $filename
  * @return bool|string
  */
-function filesuffix($filename) {
+function filesuffix($filename): string {
     if (!str_contains($filename, ".")) {
         return "";
     }
@@ -103,7 +103,7 @@ function compare_files($f1, $f2): int
  * @param $size
  * @return bool|string
  */
-function format_file_size($size) {
+function format_file_size($size): string {
     $i = strlen ($size) % 3;
     if ($i == 0) {
         $i = 3;
@@ -271,7 +271,7 @@ function file_table($path, $dirname) {
  * @param $dirname
  * @return bool
  */
-function is_dir_empty($dirname) {
+function is_dir_empty($dirname): bool {
     if ($dir = @opendir($dirname)) {
         while ($filename = readdir ($dir)) {
             if ($filename === ".") {
@@ -344,7 +344,7 @@ function fileman_execute_command($basedir, $directory, $cmd, $arg, $chb, $fmset)
 
     // Create directory
     elseif ($cmd==='createdir') {
-        if ( !preg_match("/^[0-9a-zA-Z_]*$/", $arg)) {
+        if ( !preg_match("/^\\w*\$/", $arg)) {
             $err[] = _m("Wrong directory name.");
             return;
         }
@@ -357,7 +357,7 @@ function fileman_execute_command($basedir, $directory, $cmd, $arg, $chb, $fmset)
 
     // Delete
     elseif ($cmd==='delete' && is_array($chb)) {
-        foreach ($chb as $arg => $foo) {
+        foreach (array_keys($chb) as $arg) {
             $f = $basedir.$arg;
             if (is_dir ($f)) {
                 if (!is_dir_empty($f)) {
@@ -365,11 +365,8 @@ function fileman_execute_command($basedir, $directory, $cmd, $arg, $chb, $fmset)
                 } elseif (!rmdir ($f)) {
                     $err[] = _m("Unable to delete directory")." $arg.";
                 }
-            }
-            else {
-                if (!unlink ($f)) {
-                    $err[] = _m("Unable to delete file")." $arg.";
-                }
+            } elseif (!unlink ($f)) {
+                $err[] = _m("Unable to delete file")." $arg.";
             }
         }
     }

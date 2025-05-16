@@ -112,13 +112,13 @@ if (!IfSlPerm(PS_NEW_USER)) {
     exit;
 }
 
-if ( ($submit_action === "usr_del") AND $selected_user ) {
+if ( $submit_action === "usr_del" && $selected_user ) {
     DelUser( $selected_user );    // default is to delete any references as well
     go_url( StateUrl($_SERVER['PHP_SELF']) );
 }
 
 $sess->register("rusr");
-if ( $usr OR $UsrSrch ) {
+if ( $usr || $UsrSrch ) {
     $rusr = $usr;
 }
 
@@ -151,7 +151,7 @@ if ( $selected_user ) {
     if ( $selected_user !== "n" ) { // none user selected
         $user_groups = AA::$perm->getMembership($selected_user,1);   // get list of groups in which the user is (just first level groups)
     }
-    if ( !isset($user_groups) OR !is_array($user_groups) ) {
+    if ( !isset($user_groups) || !is_array($user_groups) ) {
         $sel_groups["n"]['name'] = (( $user_groups === "too much" ) ? _m("Too much groups found.") : "");
     } else {
         foreach ($user_groups as $foo_gid) {
@@ -164,7 +164,7 @@ if ( $selected_group ) {
     if ( $selected_group !== "n" ) { // none group selected
         $groups_user = AA::$perm->getGroupMembers($selected_group);   // get list of users and groups right under $selected_group
     }
-    if ( !isset($group_users) OR !is_array($group_users) ) {
+    if ( !isset($group_users) || !is_array($group_users) ) {
         $sel_users["n"]['name'] = (( $group_users === "too much" ) ? _m("Too many users or groups found.") : "");
     } else {
         $sel_users = $groups_user;
@@ -176,7 +176,7 @@ $varset      = new Cvarset();
 
 // Process submited form -------------------------------------------------------
 
-if ($add_submit OR ($submit_action === "update_submit")) {
+if ($add_submit || $submit_action === "update_submit") {
 
     $err = ProcessUser($submit_action, $selected_user, $err, $add_submit, $user_login, $user_surname, $user_firstname, $user_password1, $user_password2, $user_mail1, $user_mail2, $user_mail3, $user_super, $um_uedit_no_go_url, $posted_groups, $sel_groups, $perm_mod, $new_module, $new_module_role);
 
@@ -269,7 +269,7 @@ FrmTabSeparator("");
 <?php
 FrmTabEnd();
 
-if ( !($usr_new OR ($usr_edit AND ($selected_user !== "n"))) ) {
+if ( !($usr_new || ($usr_edit && ($selected_user !== "n"))) ) {
     $apage->printFoot();
     exit;
 }
@@ -306,7 +306,7 @@ do {
 
 // User data ---------------------------------------------------
 
-if ( $usr_edit OR ($submit_action === "update_submit") ) {
+if ( $usr_edit || $submit_action === "update_submit" ) {
     FrmTabCaption(_m("Edit User"));
     FrmStaticText(_m("Login name"), $user_data['login']);
     FrmStaticText(_m("User Id"), $user_data['id']);
@@ -315,7 +315,7 @@ if ( $usr_edit OR ($submit_action === "update_submit") ) {
     FrmInputText("user_login", _m("Login name"), $user_login, 50, 50, true);
 }
 
-if ( !($usr_edit OR ($submit_action === "update_submit")) OR AA::$perm->isUserEditable($selected_user)) {
+if ( !($usr_edit || ($submit_action === "update_submit")) || AA::$perm->isUserEditable($selected_user)) {
     FrmInputPwd("user_password1", _m("Password"), $user_password1);
     FrmInputPwd("user_password2", _m("Retype password"), $user_password2);
     FrmInputText("user_firstname", _m("First name"), $user_firstname, 50, 50, true);
@@ -327,19 +327,19 @@ if ( !($usr_edit OR ($submit_action === "update_submit")) OR AA::$perm->isUserEd
 //  FrmInputEmail("user_mail3",_m("E-mail")." 3",    $user_mail3, 50, 50, false);
 FrmInputChBox("user_super",   _m("Superadmin account"), $user_super);
 
-if ( !$add_submit AND !$usr_new) {
+if ( !$add_submit && !$usr_new) {
 
     // User - group membership -----------------------------------------
 
     FrmTabSeparator(_m("Groups"));
-    array_walk($all_groups, static function (&$v, $k) {$v = ((($userlogin = AA::$perm->getUserLoginName($k)) == $v['name']) OR !$userlogin) ? $v['name'] : $v['name']. " ($userlogin)";});
+    array_walk($all_groups, static function (&$v, $k) {$v = ((($userlogin = AA::$perm->getUserLoginName($k)) == $v['name']) || !$userlogin) ? $v['name'] : $v['name']. " ($userlogin)";});
     $writable_groups        = array_filter($all_groups, [AA::$perm, 'isGroupWritable'], ARRAY_FILTER_USE_KEY);
     $user_writable_groups   = array_filter($sel_groups, [AA::$perm, 'isGroupWritable'], ARRAY_FILTER_USE_KEY);
     $user_unwritable_groups = array_diff_key($sel_groups, $user_writable_groups);
 
     FrmTwoBox('sel_groups_sel', _m("Groups"), $writable_groups, array_keys($user_writable_groups), 8, false, _m("All Writable Groups"), _m("User's Groups"));
 
-    array_walk($user_unwritable_groups, static function (&$v, $k) {$v = ((($userlogin = AA::$perm->getUserLoginName($k)) == $v['name']) OR !$userlogin) ? $v['name'] : $v['name']. " ($userlogin)";});
+    array_walk($user_unwritable_groups, static function (&$v, $k) {$v = (($userlogin = AA::$perm->getUserLoginName($k)) == $v['name'] || !$userlogin) ? $v['name'] : $v['name']. " ($userlogin)";});
 
     if ($user_unwritable_groups) {
         FrmStaticText(_m("Member of Unwritable Groups"), implode("<br>\n", $user_unwritable_groups), '', '', false);
@@ -369,7 +369,7 @@ if ( !$add_submit AND !$usr_new) {
     $mod_types = PrintModulePermModificator($selected_user);   // shared with um_gedit.php
 }
 
-if ($usr_new or $add_submit) {
+if ($usr_new || $add_submit) {
     // buttons for adding new user
     $form_buttons = [
         "add_submit"=> [
@@ -401,7 +401,7 @@ $form_buttons["cancel"]        = ["url"=>"um_uedit.php"];
 
 FrmTabEnd($form_buttons);
 
-if ( !$add_submit AND !$usr_new) {
+if ( !$add_submit && !$usr_new) {
     PrintPermUmPageEnd($mod_types);
 }
 

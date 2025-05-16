@@ -242,8 +242,8 @@ function endslash(&$s) {
 
 // ----------------------------------------------------------------------------
 
-if (isset($lang_list) AND is_array($lang_list)) {
-    foreach ( $lang_list as $k => $v ) {
+if (isset($lang_list) && is_array($lang_list)) {
+    foreach ( array_keys($lang_list) as $k ) {
         $langs2print .= $delim. $k;
         $delim = ', ';
     }

@@ -87,7 +87,7 @@ if ( !IfSlPerm(PS_LINKS_EDIT_LINKS) ) {
 /** Special function used for setting of additional searchbar properties */
 function Links_UpdateStateFromFilter() {
     global $r_state;
-    $r_state["show_subtree"] = ($_REQUEST['show_subtree'] ? true : false);
+    $r_state["show_subtree"] = ((bool) $_REQUEST['show_subtree']);
     $r_state['cat_id']       = $_REQUEST['cat_id'];
     $r_state['cat_path']     = GetCategoryPath( $r_state['cat_id'] );
 }
@@ -234,7 +234,7 @@ $manager_settings = [
      'switches'  => $switches
 ];
 
-if ( $change_id OR ($r_state["module_id"] != $module_id)) {
+if ( $change_id || $r_state["module_id"] != $module_id) {
     // we are here for the first time or we are switching to another slice
     unset($r_state);
     // set default admin interface settings from user's profile

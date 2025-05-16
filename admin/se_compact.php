@@ -136,7 +136,7 @@ if ( $update ) {
     }
 }
 
-if ( AA::$module_id!="" ) {  // set variables from database - always
+if ( AA::$module_id != "" ) {  // set variables from database - always
 /*  $SQL= " SELECT odd_row_format, even_row_format, even_odd_differ, compact_top,
                  compact_bottom, compact_remove, category_sort, category_format,
                  category_top, category_bottom, noitem_msg */
@@ -250,7 +250,7 @@ FrmTextarea("compact_bottom", _m("Bottom HTML"), $compact_bottom, 4, 50, false,
     . '<br>' . AA_View::getViewJumpLinks($compact_bottom), '', 1);
 echo "<tr><th>"._m("Group by")."</th><td>";
 FrmSelectEasy("group_by", $lookup_fields, $group_by);
-echo "<br>"."";
+echo '<br>';
 echo "</td></tr>
 <tr><td>&nbsp;</td><td>";
 FrmSelectEasy("gb_header", getViewGroupFunctions(), $gb_header);

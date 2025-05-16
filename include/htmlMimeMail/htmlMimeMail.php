@@ -544,28 +544,28 @@ class htmlMimeMail {
         $text        = isset($this->text);
 
         switch (true) {
-            case $text AND !$attachments:
+            case $text && !$attachments:
                 $message = &$this->_addTextPart($null, $this->text);
                 break;
 
-            case !$text AND $attachments AND !$html:
+            case !$text && $attachments && !$html:
                 $message = &$this->_addMixedPart();
 
-                for ( $i=0, $ino=count($this->attachments); $i<$ino; ++$i) {
-                    $this->_addAttachmentPart($message, $this->attachments[$i]);
+                foreach ($this->attachments as $i => $attachment) {
+                    $this->_addAttachmentPart($message, $attachment);
                 }
                 break;
 
-            case $text AND $attachments:
+            case $text && $attachments:
                 $message = &$this->_addMixedPart();
                 $this->_addTextPart($message, $this->text);
 
-                for ( $i=0, $ino=count($this->attachments); $i<$ino; ++$i) {
-                    $this->_addAttachmentPart($message, $this->attachments[$i]);
+                foreach ($this->attachments as $i => $attachment) {
+                    $this->_addAttachmentPart($message, $attachment);
                 }
                 break;
 
-            case $html AND !$attachments AND !$html_images:
+            case $html && !$attachments && !$html_images:
                 if (!is_null($this->html_text)) {
                     $message = &$this->_addAlternativePart($null);
                     $this->_addTextPart($message, $this->html_text);
@@ -575,7 +575,7 @@ class htmlMimeMail {
                 }
                 break;
 
-            case $html AND !$attachments AND $html_images:
+            case $html && !$attachments && $html_images:
                 if (!is_null($this->html_text)) {
                     $message = &$this->_addAlternativePart($null);
                     $this->_addTextPart($message, $this->html_text);
@@ -585,12 +585,12 @@ class htmlMimeMail {
                     $related = &$message;
                 }
                 $this->_addHtmlPart($related);
-                for ( $i=0, $ino=count($this->html_images); $i<$ino; ++$i) {
-                    $this->_addHtmlImagePart($related, $this->html_images[$i]);
+                foreach ($this->html_images as $i => $html_image) {
+                    $this->_addHtmlImagePart($related, $html_image);
                 }
                 break;
 
-            case $html AND $attachments AND !$html_images:
+            case $html && $attachments && !$html_images:
                 $message = &$this->_addMixedPart();
                 if (!is_null($this->html_text)) {
                     $alt = &$this->_addAlternativePart($message);
@@ -599,12 +599,12 @@ class htmlMimeMail {
                 } else {
                     $this->_addHtmlPart($message);
                 }
-                for ( $i=0, $ino=count($this->attachments); $i<$ino; ++$i) {
-                    $this->_addAttachmentPart($message, $this->attachments[$i]);
+                foreach ($this->attachments as $i => $attachment) {
+                    $this->_addAttachmentPart($message, $attachment);
                 }
                 break;
 
-            case $html AND $attachments AND $html_images:
+            case $html && $attachments && $html_images:
                 $message = &$this->_addMixedPart();
                 if (!is_null($this->html_text)) {
                     $alt = &$this->_addAlternativePart($message);
@@ -614,11 +614,11 @@ class htmlMimeMail {
                     $rel = &$this->_addRelatedPart($message);
                 }
                 $this->_addHtmlPart($rel);
-                for ( $i=0, $ino=count($this->html_images); $i<$ino; ++$i) {
-                    $this->_addHtmlImagePart($rel, $this->html_images[$i]);
+                foreach ($this->html_images as $i => $html_image) {
+                    $this->_addHtmlImagePart($rel, $html_image);
                 }
-                for ( $i=0, $ino=count($this->attachments); $i<$ino; ++$i) {
-                    $this->_addAttachmentPart($message, $this->attachments[$i]);
+                foreach ($this->attachments as $i => $attachment) {
+                    $this->_addAttachmentPart($message, $attachment);
                 }
                 break;
 
@@ -680,7 +680,7 @@ class htmlMimeMail {
      * @return mixed
      */
    public function send($recipients) {
-        if ( !(isset($recipients) AND is_array($recipients)) ) {
+        if ( !(isset($recipients) && is_array($recipients)) ) {
             return false;
         }
 

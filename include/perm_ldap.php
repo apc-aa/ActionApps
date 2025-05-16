@@ -506,7 +506,7 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
     function isUserEditable(): bool { return true; }
 
     /** Creates a password hash for given Permsystem */
-    public static function generatePasswordHash($password) {
+    public static function generatePasswordHash($password): string {
         // $hash = "{md5}". base64_encode(pack("H*",md5($user["userpassword"])));  // old version
 
         // new version of password hash - sha-512 - 2019-01-15 HM
@@ -522,7 +522,7 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
      */
     function userIdFormatMatches($uid): bool  {
         // LDAP perms - starting with uid (Users) od cn (Groups)
-        return  (str_starts_with($uid, 'uid=') OR str_starts_with($uid, 'cn='));
+        return  (str_starts_with($uid, 'uid=') || str_starts_with($uid, 'cn='));
     }
 
     /** authenticateUsername function
@@ -533,7 +533,7 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
      * @return false|string - uid if user is authenticated, else false.
      */
     public function authenticateUsername($username, $password, $code2fa = '') {
-        if (!$username or !$password) {         // no password => anonymous in LDAP
+        if (!$username || !$password) {         // no password => anonymous in LDAP
             return false;
         }
 
@@ -801,7 +801,7 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
                 $last_groups[] = $array[$i]["dn"];
                 $groups[$array[$i]["dn"]] = true;
             }
-        } while ( is_array($last_groups) AND ($flags==0) );
+        } while ( is_array($last_groups) && $flags==0 );
 
         ldap_close($ds);
         if (is_array($groups)) {

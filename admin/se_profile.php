@@ -77,10 +77,8 @@ if ( $del ) {
     $Msg = MsgOk(_m("Rule deleted"));
 }
 
-if ( $add ) {
-    if (!AA_Profile::addProfileProperty($uid, AA::$module_id, $property, $field_id, $fnction, $param, $html)) {
-        $Msg = MsgOk(_m("Error: Can't add rule"));
-    }
+if ( $add && !AA_Profile::addProfileProperty($uid, AA::$module_id, $property, $field_id, $fnction, $param, $html) ) {
+    $Msg = MsgOk(_m("Error: Can't add rule"));
 }
 
 if ( $set_as ) {
@@ -247,7 +245,7 @@ echo '</form>
 
 $set_as_from = GetTable2Array("SELECT DISTINCT uid FROM profile WHERE slice_id='$p_slice_id' AND (uid <>'$uid') AND (uid <>'*')", 'uid', 'uid');
 
-if (is_array($set_as_from) AND (count($set_as_from) > 0)) {
+if (is_array($set_as_from) && count($set_as_from)) {
     foreach ($set_as_from as $from_uid) {
         $set_as_from[$from_uid] = perm_username($from_uid);
     }

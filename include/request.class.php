@@ -58,7 +58,7 @@ class AA_Http {
     public static function go(string $url, array $parameters, string $type='GET', bool $sess_close=true) {
         global $sess;
 
-        if (is_object($sess) AND $sess_close) {
+        if (is_object($sess) && $sess_close) {
             page_close();
         }
 
@@ -108,12 +108,12 @@ class AA_Http {
     public static function request($url, string|array $data=[], array $headers=[], string $method='', string $err=''): false|string
     {
         $opts = [];
-        if ($data OR $headers OR $method) {
+        if ($data || $headers || $method) {
             $method = in_array($method, ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD'], true) ? $method : 'POST';  // all possible HTTP methods
-            if ($data AND is_array($data)) {
+            if ($data && is_array($data)) {
                 $opts['content'] = http_build_query($data);
                 $headers['Content-Length'] = strlen($opts['content']);
-            } elseif (is_string($data) AND $data !== '') {
+            } elseif (is_string($data) && $data !== '') {
                 $opts['content'] = $data;
                 $headers['Content-Length'] = strlen($opts['content']);
             }
@@ -125,7 +125,7 @@ class AA_Http {
                 }
                 $opts['header'] = $header;
             }
-            if ($opts OR $method !== 'GET') {
+            if ($opts || $method !== 'GET') {
                 $opts['method'] = $method;
             }
         }
@@ -214,7 +214,7 @@ class AA_Request {
         $this->params  = $params;
     }
 
-    function _requestVal() {
+    function _requestVal(): string {
         return serialize($this);
     }
 
@@ -222,7 +222,7 @@ class AA_Request {
         return ['request' => $this->_requestVal()];
     }
 
-    function encode4Url() {
+    function encode4Url(): string {
         return rawurlencode(base64_encode($this->_requestVal()));
     }
 
@@ -317,7 +317,7 @@ class AA_ClientAuth {
             $session_id  = $arr[0];
             $myauth      = $arr[1];
 
-            if ($myauth->getUname() AND $myauth->getUid() AND (trim($myauth->getUid()) !== 'nobody')) {
+            if ($myauth->getUname() && $myauth->getUid() && trim($myauth->getUid()) !== 'nobody') {
                 $x                  = setcookie('AA_Sess', $session_id, $this->_cookie_lifetime, '/');
                 //$y                  = setcookie('AA_Uid', $myauth->getUname(), $this->_cookie_lifetime, '/');
                 $_COOKIE['AA_Sess'] = $session_id;

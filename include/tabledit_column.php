@@ -83,8 +83,8 @@ function get_formatted_date($datestring, $format) {
     $month3_names = ["Jan"=>1,"Feb"=>2,"Mar"=>3,"Apr"=>4,"May"=>5,"Jun"=>6,"Jul"=>7,"Aug"=>8,"Sep"=>9,"Oct"=>10,"Nov"=>11,"Dec"=>12];
 
     // assing date parts to format parts
-    for ($i=0, $ino=count($dateparts); $i<$ino; ++$i) {
-        $d = $dateparts[$i];
+    foreach ($dateparts as $i => $datepart) {
+        $d = $datepart;
         switch ($formatparts[$i]) {
             case 'a': $pm = $d === "pm"; break;
             case 'A': $pm = $d === "PM"; break;
@@ -129,11 +129,11 @@ function get_formatted_date($datestring, $format) {
     // mktime replaces missing values by today's values
     if (!isset($year)) {
         if (!isset($day)) {
-            if (!isset($month)) {
-                return mktime( $hour, $minute, $second);
-            }
-            else return mktime( $hour, $minute, $second, $month);
+        if (!isset($month)) {
+            return mktime( $hour, $minute, $second);
         }
+            else return mktime( $hour, $minute, $second, $month);
+    }
         else return mktime( $hour, $minute, $second, $month, $day);
     }
     else return mktime( $hour, $minute, $second, $month, $day, $year);

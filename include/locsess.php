@@ -230,7 +230,9 @@ class AA_Debug {
     function traceend(string $func, string $text='') {
         $time = microtime(true);
         $indx = array_pop($this->_tracestack);
-        array_push($this->_calls[$indx], $time, substr($text,0,20), strlen($text));
+        $this->_calls[$indx][] = $time;
+        $this->_calls[$indx][] = substr($text,0,20);
+        $this->_calls[$indx][] = strlen($text);
 
         if (!is_array($this->_duration[$func])) {
             $this->_duration[$func] = [];
@@ -339,7 +341,7 @@ class AA_Debug {
             $dur = sprintf("%.4f", 1000*$dur);
             $expand = ($next_level>$level) ? '<button type=button onclick="AA_DbgToggleRows(this)">'.($level>0 ? '-':'+').'</button>' : '';
             $linediv = "<div class=aa-line style=\"left: $rel_start%; width: $rel_dur%; background-color: $color\"></div>";
-            $ret .= "<tr title=\"{$func} ($dur)\" class=l".str_repeat('_', $level). $style."><td class=num>{$linediv}{$time}</td><td class=num>$dur</td><td class=aa-dbgtoggle>$func{$expand}</td><td>".safe($call[2]).( ($call[3]>200 AND !AA::$debug&128) ? '..+'.($call[3]-200) :'' ).'</td><td>'.safe($call[6]).($call[7]>20? '..+'.($call[7]-20) :'' ).'</td></tr>';
+            $ret .= "<tr title=\"{$func} ($dur)\" class=l".str_repeat('_', $level). $style."><td class=num>{$linediv}{$time}</td><td class=num>$dur</td><td class=aa-dbgtoggle>$func{$expand}</td><td>".safe($call[2]).( ($call[3]>200 && !AA::$debug&128) ? '..+'.($call[3]-200) :'' ).'</td><td>'.safe($call[6]).($call[7]>20? '..+'.($call[7]-20) :'' ).'</td></tr>';
         }
         $ret .= '</table>';
 
@@ -386,7 +388,7 @@ EOF;
         echo "<small><em>$time</em></small><br>\n";
 
         foreach ($params as $a) {
-            if (false AND is_object($a) && is_callable([$a,"__toString"])) {
+            if (false && (is_object($a) && is_callable([$a,"__toString"]))) {
                 print $a;
             } else {
                 print_r($a);
@@ -564,9 +566,9 @@ function getDB() {
             'database'      => DB_NAME,
             'user'          => DB_USER,
             'password'      => DB_PASSWORD,
-            'charset'       => (defined('DB_CHARACTER_SET') AND DB_CHARACTER_SET) ? DB_CHARACTER_SET : '',
-            'collation'     => (defined('DB_COLLATION_CONNECTION') AND DB_COLLATION_CONNECTION AND (DB_COLLATION_CONNECTION !== 'latin1')) ? DB_COLLATION_CONNECTION : '',   // for some old AAs there was latin1, which is not valid in PDO - use latin1_swedish_ci or we take the default
-            'persistent'    => (defined('AA_USE_NON_PERSISTENT_CONNECT') AND AA_USE_NON_PERSISTENT_CONNECT) ? false : true
+            'charset'       => (defined('DB_CHARACTER_SET') && DB_CHARACTER_SET) ? DB_CHARACTER_SET : '',
+            'collation'     => (defined('DB_COLLATION_CONNECTION') && DB_COLLATION_CONNECTION && DB_COLLATION_CONNECTION !== 'latin1') ? DB_COLLATION_CONNECTION : '',   // for some old AAs there was latin1, which is not valid in PDO - use latin1_swedish_ci or we take the default
+            'persistent'    => (defined('AA_USE_NON_PERSISTENT_CONNECT') && AA_USE_NON_PERSISTENT_CONNECT) ? false : true
         ];
         $db = new DB_AA($connection);
     }
@@ -603,7 +605,7 @@ function GetTable2Array($SQL, $key="id", $values='aa_all') {
             $val = true;
         } elseif (str_starts_with($values, 'unpack:')) {
             $val = unpack_id($db->f(substr($values,7)));
-        } elseif (is_string($values) AND array_key_exists( $values, $db->record() )) {
+        } elseif (is_string($values) && array_key_exists( $values, $db->record() )) {
             $val = $db->record($values);
         } else {  // true or 'aa_fields'
             $val = $db->record();
@@ -615,7 +617,7 @@ function GetTable2Array($SQL, $key="id", $values='aa_all') {
             return $val;
         }
 
-        if (($key === "NoCoLuMn") OR !$key) {
+        if ($key === "NoCoLuMn" || !$key) {
             $arr[] = $val;
         } elseif (str_starts_with($key, 'unpack:')) {
             $arr[unpack_id($db->f(substr($key,7)))] = $val;

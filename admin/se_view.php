@@ -290,7 +290,7 @@ if ($view_id) {
 }
 
 
-$back_url = ( (($view_type === 'categories') OR ($view_type === 'links')) ?
+$back_url = ( ($view_type === 'categories' || $view_type === 'links') ?
                 get_aa_url('modules/links/modedit.php') :
                 get_admin_url('se_views.php') );
 
@@ -322,7 +322,7 @@ $view_type_info   = getViewTypesInfo($view_type);
 if ( $update ) {
     do {
         foreach ($VIEW_FIELDS as $k => $v) {
-            if ( $v["validate"] AND [$k] ) {
+            if ( $v["validate"] && [$k] ) {
                 ValidateInput($k, $view_field_names[$k], $$k, $err, false, $v["validate"]);
             }
         }
@@ -395,7 +395,7 @@ if ( !$update ) {  // set variables from database
     if ( $view_id ) {
         // edit specified view data
         $vw_data = DB_AA::select1('', 'SELECT * FROM view', [['id', $view_id, 'i']]);
-    } elseif ($new_templ AND $view_view) {
+    } elseif ($new_templ && $view_view) {
         // new view from template
         $vw_data = DB_AA::select1('', 'SELECT * FROM view', [['id', $view_view, 'i']]);
     } elseif ( $view_type === 'inputform') {
@@ -507,7 +507,7 @@ EOT;
 
 $apage = new AA_Adminpageutil($mainmenu, $submenu);
 
-if (($view_type === 'categories') OR ($view_type === 'links')) {
+if ($view_type === 'categories' || $view_type === 'links') {
     $apage->setModuleMenu('modules/links');
 }
 

@@ -210,10 +210,10 @@ class Session {
     * @access public
     */
     public function self_url() {
-      if ($_SERVER['REQUEST_URI'] AND strpos($_SERVER['REQUEST_URI'],'?')) {
+      if ($_SERVER['REQUEST_URI'] && strpos($_SERVER['REQUEST_URI'],'?')) {
           $qs = substr($_SERVER['REQUEST_URI'],strpos($_SERVER['REQUEST_URI'], '?'));
       } else {
-          $qs = (isset($_SERVER["QUERY_STRING"]) AND ("" != $_SERVER["QUERY_STRING"])) ? '?' . $_SERVER["QUERY_STRING"] : '';
+          $qs = (isset($_SERVER["QUERY_STRING"]) && "" != $_SERVER["QUERY_STRING"]) ? '?' . $_SERVER["QUERY_STRING"] : '';
       }
       return $this->url($_SERVER["PHP_SELF"] . $qs);
     }
@@ -253,7 +253,7 @@ class Session {
     *
     */
     function freeze() {
-        foreach ($_SESSION as $key => $foo) {
+        foreach (array_keys($_SESSION) as $key) {
             $_SESSION[$key] = $GLOBALS[$key];
         }
     }
@@ -282,7 +282,7 @@ class Session {
         }
 
         $lifetime = $this->get_sec_lifetime();
-        if (($lifetime > 0) AND (ini_get('session.gc_maxlifetime') < $lifetime)) {
+        if ($lifetime > 0 && ini_get('session.gc_maxlifetime') < $lifetime) {
             // default value is 1440, so session would expire after 24 mins
             ini_set('session.gc_maxlifetime', $lifetime);
         }
@@ -361,7 +361,7 @@ class Session {
 
             // check cookies first.
             if(!isset($_COOKIE[$this->name]) &&  (strpos($_SERVER['REQUEST_URI'],$mysid) || $_POST[$this->name])) {
-                if(isset($_SESSION[$this->session_ip]) && $_SESSION[$this->session_ip] <> $_SERVER['REMOTE_ADDR']) {
+                if(isset($_SESSION[$this->session_ip]) && $_SESSION[$this->session_ip] != $_SERVER['REMOTE_ADDR']) {
                     // we have no session cookie, a SID in the request,
                     // the session exists, but the saved IP is
                     $sess_forged = true;
@@ -546,7 +546,7 @@ class Auth {
   }
 
   function is_authenticated() {
-      if ( !$this->nobody AND ($this->auth["uid"]==='nobody') ) { // nobody setting could be changed for specific page. Honza
+      if ( !$this->nobody && $this->auth["uid"]==='nobody' ) { // nobody setting could be changed for specific page. Honza
           return false;
       }
 

@@ -85,7 +85,7 @@ if (!$silent) {
       <p>See instructions directly in this file (sql_update.php) on the server.</p>';
 }
 
-if ( !constant('ACCESS_CODE') OR (strlen(constant('ACCESS_CODE'))<10) ) {
+if ( !constant('ACCESS_CODE') || strlen(constant('ACCESS_CODE'))<10 ) {
     echo '<p>For update or restore you need to edit this script on the server
           (sql_update.php) and fill there some Access Code which you then fill
           also here (it is for security reasons).</p>
@@ -121,7 +121,7 @@ if (!$_GET['silent']) {
           </form>';
 }
 
-if ( (strlen($_GET['acccode'])<10) OR ($_GET['acccode']!=constant('ACCESS_CODE')) ) {
+if ( strlen($_GET['acccode'])<10 || $_GET['acccode'] != constant('ACCESS_CODE') ) {
     echo '</body></html>';
     exit;
 }
@@ -149,7 +149,7 @@ class AA_SQL_Updater {
         return $result;
     }
 
-    function restore() {
+    function restore(): bool {
         $optimizer = new RestoreBckTables();
         $optimizer->repair();
         $this->message($optimizer->report());

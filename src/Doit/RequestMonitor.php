@@ -56,7 +56,7 @@ class RequestMonitor
             $detail = ''; //safe(var_export($type));
             $code   = "";
             foreach ($type as $t => $vars) {
-                if (($t !== 'P') AND ($t !== 'G')) {  // just for POST and GET
+                if ($t !== 'P' && $t !== 'G') {  // just for POST and GET
                     continue;
                 }
                 $detail .= "<h4>$t</h4>";
@@ -77,7 +77,7 @@ class RequestMonitor
                     $table[$name]['valempty'][] = $vartype['empty'];
                     $table[$name]['valreq'][] = $vartype['req'];
                     $table[$name]['vals'][] = implode('|', $vals);
-                    $table[$name]['valsum'][] = var_export(array_count_values(array_map( fn ($str) => ((is_string($str) AND (strlen($str)) > 12) ? substr($str,0,11).'…' : $str), $vals)), true);
+                    $table[$name]['valsum'][] = var_export(array_count_values(array_map( fn ($str) => ((is_string($str) && (strlen($str)) > 12) ? substr($str,0,11).'…' : $str), $vals)), true);
                 }
             }
             ksort($table);
@@ -132,7 +132,7 @@ class RequestMonitor
                 $alnum = true;
                 $string = true;
             }
-            if (($vs != '1') and ($vs != '0') and ($vs !== 'on')) {
+            if ($vs != '1' && $vs != '0' && $vs !== 'on') {
                 $bool = false;
             }
             if (!ctype_digit((string)$vs)) {
@@ -178,7 +178,7 @@ class RequestMonitor
     }
 
     protected function join2pages(string $page, string $type, ?string $serialized_arr): bool {
-        if (!$serialized_arr or !is_array($arr = unserialize($serialized_arr))) {
+        if (!$serialized_arr || !is_array($arr = unserialize($serialized_arr))) {
             return false;
         }
 

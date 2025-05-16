@@ -108,7 +108,7 @@ foreach ($fmap as $to_field_id => $val) {
 
 // Write external fields, which did not map.
 if ($map_to && is_array($map_to)) {
-    foreach ($map_to as $from_field_id => $foo) {
+    foreach (array_keys($map_to) as $from_field_id) {
         $catVS->clear();
         $catVS->add("from_slice_id", "unpacked", $from_slice_id);
         $catVS->add("to_slice_id", "unpacked", AA::$module_id);

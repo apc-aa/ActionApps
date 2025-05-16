@@ -88,8 +88,8 @@ $preset_value = new AA_Value();
 if ($sel_text) {
     $content_tmp = explode(" OR ", $sel_text);
     if (is_array($content_tmp)) {
-        for ( $i=0, $ino=count($content_tmp); $i<$ino; ++$i) {
-            $preset_value->addValue(trim($content_tmp[$i],'"'));
+        foreach ($content_tmp as $i => $singleContent_tmp) {
+            $preset_value->addValue(trim($singleContent_tmp,'"'));
         }
     }
 }

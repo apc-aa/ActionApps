@@ -66,7 +66,7 @@ class AA_Log implements \AA\Expand\InternalExpandInterface {
      * @param string|array|AA_Logentry $params - if array, joined
      * @return bool
      */
-    static function write($event, $selector = "", $params = "") {
+    static function write($event, $selector = "", $params = ""): bool {
         if ( !self::isLogable($event) ) {
             return false;
         }
@@ -93,7 +93,7 @@ class AA_Log implements \AA\Expand\InternalExpandInterface {
 
     public static function writeIfChanged(string $event, string $selector, AA_Logentry $params): bool
     {
-        if ($last = self::getLastLogEvents($event, $selector) AND ($last['params'] === $params->serializeToString())) {
+        if (($last = self::getLastLogEvents($event, $selector)) && $last['params'] === $params->serializeToString()) {
             return false;
         }
         return self::write($event, $selector, $params);
@@ -140,7 +140,7 @@ class AA_Log implements \AA\Expand\InternalExpandInterface {
         return !in_array($event_type, $DO_NOT_LOG);
     }
 
-    static function backtrack($remove_steps=1) {
+    static function backtrack($remove_steps=1): string {
         $ret = explode("\n", str_replace(AA_BASE_PATH, '', (new Exception() )->getTraceAsString()));
         for (; $remove_steps>0; --$remove_steps) {
             array_shift($ret);
@@ -171,7 +171,7 @@ class AA_Log implements \AA\Expand\InternalExpandInterface {
      * @return array
      */
     public static function getLastLogEvents(string $event, string $selector = "") {
-        $conds = [['type', $event, (!str_contains($event, '%')) ? '=' : 'LIKE']];
+        $conds = [['type', $event, (str_contains($event, '%')) ? 'LIKE' : '=']];
         if ($selector !== "") {
             $conds[] = ['selector', $selector];
         }
@@ -180,7 +180,7 @@ class AA_Log implements \AA\Expand\InternalExpandInterface {
 
     /** Get first 20 rows from log table with possible link to Log page */
     public static function getLogTable(string $event, $selector = "", int $from=0, int $to=0, bool $show_log_link = false): string {
-        $conds = [['type', $event, (!str_contains($event, '%')) ? '=' : 'LIKE']];
+        $conds = [['type', $event, (str_contains($event, '%')) ? 'LIKE' : '=']];
         if ($selector != "") {
             $conds[] = ['selector', $selector];
         }
@@ -229,9 +229,9 @@ class AA_Log implements \AA\Expand\InternalExpandInterface {
             case 'count':  // number of entries for type / selector in last seconds
                 [$type, $selector, $seconds] = $params;
                 $seconds = (int)$seconds ?: 3600;
-                return (!$type or !$selector) ? '' : (string)DB_AA::select1('cnt', "SELECT count(*) as cnt FROM `log`", [['type', $type], ['selector', $selector], ['time', time() - $seconds, '>=']]);
+                return (!$type || !$selector) ? '' : (string)DB_AA::select1('cnt', "SELECT count(*) as cnt FROM `log`", [['type', $type], ['selector', $selector], ['time', time() - $seconds, '>=']]);
             case 'print':  // print entries for type / selector in last seconds
-                if ($content AND ($logEntry = AA_Logentry::factoryByString($content->getValue('params')))) {
+                if ($content && ($logEntry = AA_Logentry::factoryByString($content->getValue('params')))) {
                     $css = <<<CSScode
                         .aa-log-entry { display: flex;gap: .5rem;
                           & div { position: relative;display: flex;flex-direction: column;align-items: flex-start;

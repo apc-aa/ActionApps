@@ -133,16 +133,16 @@ function add_user_and_welcome($welcome_id, $user_login, $slice_id, $role) {
  * @return array
  */
 function SliceEditProcess($slice_id, $user_firstname, $user_surname, $err, $add_submit, $user_login, $user_password1, $user_password2, $user_mail1, $user_mail2, $user_mail3, $user_super, $um_uedit_no_go_url, $selected_user, ?string $posted_groups, $sel_groups, $perm_mod, $new_module, $new_module_role, $add, $update, $owner, $new_owner, $new_owner_email, $name, $slice_url, $slice_type, $upload_url, $priority, $permit_anonymous_post, $permit_anonymous_edit, $permit_offline_fill, $lang_file, $d_listlen, $mlxctrl, $fileman_access, $fileman_dir, $template, $deleted, $flag_allow_expired, $auth_field_group, $mailman_field_lists, $reading_password, $flag_allow_pending, $set_template_id, $wiz, $user_role) {
-    if ($slice_id) {  // edit slice
+    if ($slice_id) {
+        // edit slice
         if (!IfSlPerm(PS_EDIT)) {
             MsgPage(_m("You have not permissions to edit this slice"));
             exit;
         }
-    } else {          // add slice
-        if (!CheckPerms(AuthGetUid(), "aa", AA_ID, PS_ADD)) {
-            MsgPage(_m("You have not permissions to add slice"));
-            exit;
-        }
+    } elseif (!CheckPerms(AuthGetUid(), "aa", AA_ID, PS_ADD)) {
+        // add slice
+        MsgPage(_m("You have not permissions to add slice"));
+        exit;
     }
 
 // Add new editor / administrator from Wizard page
@@ -199,7 +199,7 @@ function SliceEditProcess($slice_id, $user_firstname, $user_surname, $err, $add_
             ValidateInput("fileman_access", _m("File Manager Access"), $fileman_access, $err, false, "text");
             ValidateInput("fileman_dir", _m("File Manager Directory"), $fileman_dir, $err, false, "filename");
 
-            if ($fileman_dir and DB_AA::test('slice', [['fileman_dir', $fileman_dir], ['id', $slice_id, 'l<>']])) {
+            if ($fileman_dir && DB_AA::test('slice', [['fileman_dir', $fileman_dir], ['id', $slice_id, 'l<>']])) {
                 $err[] = _m("This File Manager Directory is already used by another slice.");
             }
 
@@ -342,17 +342,17 @@ function SliceEditProcess($slice_id, $user_firstname, $user_surname, $err, $add_
                 // Copy constants
                 if ($wiz["constants"] === "copy") {
                     if (!CopyConstants($slice_id)) {
-                        $err[] = _m("Error when copying constants.");
-                    }
+                    $err[] = _m("Error when copying constants.");
+                }
                 }
                 // Copy views
                 if ($wiz["copyviews"] && $slice_id && $set_template_id) {
                     if (!CopyTableRows("view",
-                        "slice_id=" . xpack_id($set_template_id),
-                        ["slice_id" => q_pack_id($slice_id)],
-                        ["id"])) {
-                        $err[] = _m("Error when copying views.");
-                    }
+                    "slice_id=" . xpack_id($set_template_id),
+                    ["slice_id" => q_pack_id($slice_id)],
+                    ["id"])) {
+                    $err[] = _m("Error when copying views.");
+                }
                 }
 
                 // Add new editor / administrator privileges from Wizard page

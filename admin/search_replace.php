@@ -89,11 +89,11 @@ if ( !$fill ) {               // for the first time - directly from item manager
     $zids          = new zids;
     $updated_items = 0;
     $planned = 0;
-    if ($_REQUEST[SEARCH_REPLACE_PREFIX] AND (str_starts_with(strtolower($_REQUEST[SEARCH_REPLACE_PREFIX]), 'aa_transformation_'))) {   // strtolower is fix for php4, where case of any class is small
+    if ($_REQUEST[SEARCH_REPLACE_PREFIX] && str_starts_with(strtolower($_REQUEST[SEARCH_REPLACE_PREFIX]), 'aa_transformation_')) {   // strtolower is fix for php4, where case of any class is small
         $transformation = AA_Object::factory($_REQUEST[SEARCH_REPLACE_PREFIX],AA_Transformation::getRequestVariables(SEARCH_REPLACE_PREFIX, $_REQUEST[SEARCH_REPLACE_PREFIX]));
         $zids           = ( ($group === 'testitemgroup') ? new zids($testitem) : getZidsFromGroupSelect($group, $items, $searchbar) );
 
-        $transformator  = new AA_Transformator($transformation, $field_id, null, $silent, ($silent AND ($field_id === 'last_edit.......') AND IsSuperadmin()));
+        $transformator  = new AA_Transformator($transformation, $field_id, null, $silent, ($silent && $field_id === 'last_edit.......' && IsSuperadmin()));
         if ($tasks>0) {
             $zids_chunked = $zids->chunk($tasks);
             $toexecute = new \AA\Later\Toexecute();

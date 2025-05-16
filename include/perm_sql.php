@@ -83,7 +83,7 @@ function AddUser($user, $flags = 0) {
  *  $user_id is DN
  * @return bool
  */
-function DelUser($user_id, $flags = 3) {
+function DelUser($user_id, $flags = 3): bool {
      // To keep integrity of AA we should also delete all references
      // to this group
      if ($flags & 1) {
@@ -105,7 +105,7 @@ function DelUser($user_id, $flags = 3) {
  *  changes user entry in permission system
  * @return bool
  */
-function ChangeUser($user, $flags = 0) {
+function ChangeUser($user, $flags = 0): bool {
     $varset = new CVarset([
                                 ['mail'     , (is_array($user['mail']) ? $user['mail'][0] : $user['mail'])],
                                 ['name'     , $user["givenname"]." ".$user["sn"]],
@@ -151,7 +151,7 @@ function AddGroup($group, $flags = 0) {
  * @param int $flags
  * @return bool
  */
-function DelGroup($group_id, $flags = 3) {
+function DelGroup($group_id, $flags = 3): bool {
      // cancel other people's membership in this group
      DB_AA::delete('membership', [['groupid', $group_id]]);
 
@@ -176,7 +176,7 @@ function DelGroup($group_id, $flags = 3) {
  * @param int   $flags
  * @return bool
  */
-function ChangeGroup($group, $flags = 0) {
+function ChangeGroup($group, $flags = 0): bool {
     $varset = new CVarset([
                                 ['name'       , $group["name"]],
                                 ['description', $group["description"]]
@@ -194,7 +194,7 @@ function ChangeGroup($group, $flags = 0) {
  * @param $flags
  */
 function AddGroupMember($group_id, $id, $flags = 0) {
-    if ($group_id AND $id) {
+    if ($group_id && $id) {
         DelGroupMember($group_id, $id);
         $varset = new CVarset([['groupid',$group_id], ['memberid',$id]]);
         $varset->doInsert('membership');
@@ -219,7 +219,7 @@ function DelGroupMember($group_id, $id, $flags = 0) {
  * @param $flags
  * @return bool
  */
-function AddPermObject($objectID, $objectType, $flags = 0) {
+function AddPermObject($objectID, $objectType, $flags = 0): bool {
     // we don't need to do that in mysql
     return true;
 }
@@ -231,7 +231,7 @@ function AddPermObject($objectID, $objectType, $flags = 0) {
  * @param $flags
  * @return bool
  */
-function DelPermObject($objectID, $objectType, $flags = 0) {
+function DelPermObject($objectID, $objectType, $flags = 0): bool {
     // we don't need to do that in mysql
     return true;
 }
@@ -296,7 +296,7 @@ class AA_Permsystem_Sql extends AA_Permsystem {
      */
     function userIdFormatMatches($uid): bool  {
         // SQL perms - we are using numbers
-        return (ctype_digit((string) $uid) AND ($uid < PHP_INT_MAX));  // just to not take long id like: 31326131643531393335636265386634
+        return (ctype_digit((string) $uid) && $uid < PHP_INT_MAX);  // just to not take long id like: 31326131643531393335636265386634
     }
 
     /** authenticateUsername function
@@ -364,8 +364,8 @@ class AA_Permsystem_Sql extends AA_Permsystem {
      * array("mail" => $mail, "name" => $cn, "type" => "User" : "Group")
      */
     function getIDsInfo($id) {
-        if ($this->userIdFormatMatches($id) AND ($user = DB_AA::select1('', 'SELECT id, name, givenname, uid AS login, sn, mail, type FROM `users`', [['id', $id, 'i']]))) {
-            if ($user['type'] == _m("User") OR ($user['type'] === "User")) {
+        if ($this->userIdFormatMatches($id) && ($user = DB_AA::select1('', 'SELECT id, name, givenname, uid AS login, sn, mail, type FROM `users`', [['id', $id, 'i']]))) {
+            if ($user['type'] == _m("User") || $user['type'] === "User") {
                 $user['type'] = 'User';
                 $user['name'] = $user['givenname']." ".$user['sn'];
             } else {
@@ -416,7 +416,7 @@ class AA_Permsystem_Sql extends AA_Permsystem {
             foreach ($groupids as $gid) {
                 // Realize that it has already checked a group and eliminate it.
 
-                if ( $gid AND !in_array($gid, $all_groups) ) {  // eliminate also $gid == 0 - nonsence, but sometimes it is in DB
+                if ( $gid && !in_array($gid, $all_groups) ) {  // eliminate also $gid == 0 - nonsence, but sometimes it is in DB
                     $last_groups[] = $gid;
                     $all_groups[]  = $gid;
                 }

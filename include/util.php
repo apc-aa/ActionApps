@@ -84,7 +84,7 @@ function xmltag($tag, $content, $attr=[]): string {
  */
 function expand_return_url($session=true): string {
     global $return_url, $sess;
-    return ($session AND is_object($sess)) ? StateUrl($return_url) : $return_url;
+    return ($session && is_object($sess)) ? StateUrl($return_url) : $return_url;
 }
 
 /** go_return_or_url function
@@ -114,7 +114,7 @@ function go_return_or_url($url, $usejs=false, $session=false) {
  * @param $s
  */
 function endslash(&$s) {
-    if (strlen($s) AND !str_ends_with($s, "/")) {
+    if (strlen($s) && !str_ends_with($s, "/")) {
         $s .= "/";
     }
 }
@@ -177,7 +177,7 @@ function shtml_base(): string {
 /** shtml_url function
  * returns url of current shtml file
  */
-function shtml_url() {
+function shtml_url(): string {
     return (self_server(). document_uri());
 }
 
@@ -191,7 +191,7 @@ function shtml_query_string() {
 
     // get off magic quotes
 
-    return ($_SERVER['REQUEST_URI'] AND strpos($_SERVER['REQUEST_URI'],'?')) ?
+    return ($_SERVER['REQUEST_URI'] && strpos($_SERVER['REQUEST_URI'],'?')) ?
                         substr($_SERVER['REQUEST_URI'],strpos($_SERVER['REQUEST_URI'], '?')+1) :
                   ( isset($_SERVER['REDIRECT_QUERY_STRING_UNESCAPED'])    ?
                         stripslashes($_SERVER['REDIRECT_QUERY_STRING_UNESCAPED']) :
@@ -200,7 +200,7 @@ function shtml_query_string() {
 
 /** check, if the script was called as ajax call */
 function IsAjaxCall(): bool {
-    return (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) AND strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest');
+    return (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest');
 }
 
 /** DeBackslash function
@@ -305,8 +305,8 @@ function NormalizeArrayIndex($arr) {
     }
     $ret = [];
     foreach ($arr as $k => $v) {
-        if ( (($k[0] =='"') AND str_ends_with($k, '"')) ||
-             (($k[0] =="'") AND str_ends_with($k, "'")) ) {
+        if ( ($k[0] =='"' && str_ends_with($k, '"')) ||
+             ($k[0] =="'" && str_ends_with($k, "'")) ) {
             $k = substr($k, 1, -1);
         }
         $ret[$k] = NormalizeArrayIndex($v);
@@ -382,7 +382,7 @@ function recursive_array_replace($find, $replace, $array) {
 function new_id($mark=0){
     do {
         $id = hash('md5', uniqid('',true));
-    } while ((str_contains($id, '00')) OR (str_contains($id, '27')) OR (substr($id,30,2)=='20'));
+    } while (str_contains($id, '00') || str_contains($id, '27') || substr($id,30,2)=='20');
       // '00' is end of string, '27' is ' and packed '20' is space,
       // which is removed by MySQL
 
@@ -421,7 +421,7 @@ function string2id($str) {
     do {
         $id  = hash('md5',$str);
         $str .= " ";
-    } while ((str_contains($id, '00')) OR (str_contains($id, '27')) OR (substr($id,30,2)==='20'));
+    } while (str_contains($id, '00') || str_contains($id, '27') || substr($id,30,2)==='20');
       // '00' is end of string, '27' is ' and packed '20' is space,
       // which is removed by MySQL
     return $id;
@@ -575,7 +575,7 @@ function GetConstants($group, $order='pri', $column='name', $keycolumn='value'):
     if ( !$const_fields[$db_keycolumn] ) {
         $db_keycolumn = 'value'; $keycolumn = 'value';
     }
-    $fields = ($db_column==$db_keycolumn ? $db_column : "$db_keycolumn, $db_column");
+    $fields = ($db_column === $db_keycolumn ? $db_column : "$db_keycolumn, $db_column");
 
     $SQL = "SELECT $fields FROM constant WHERE group_id='$group' $order_by";
     $db->query($SQL);
@@ -610,7 +610,7 @@ function GetModuleInfo($module_id, $type) {
         'S'      => 'slice',
         default  => '',
     };
-    if (!$module_id OR !$table) {
+    if (!$module_id || !$table) {
         return false;
     }
 
@@ -618,7 +618,7 @@ function GetModuleInfo($module_id, $type) {
     // $ret = GetTable2Array($SQL, 'aa_first', 'aa_fields');
     $ret = DB_AA::select1([], "SELECT * FROM " . $table, [['id', $module_id, 'l']]);
 
-    if ( $ret AND $ret['reading_password'] ) {
+    if ( $ret && $ret['reading_password'] ) {
         // do it more secure and do not store it plain
         // (we should be careful - mainly with debug outputs)
         $ret['reading_password'] = AA_Credentials::encrypt($ret['reading_password']);
@@ -710,7 +710,7 @@ function CreateBinCondition($bin, $table, bool $ignore_expiry_date=false, bool $
 }
 
 
-/** GetItemContent function
+/**
  * Basic function to get item content. Use this function, not direct SQL queries.
  *
  * @param       $zids
@@ -769,12 +769,12 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
         if ( !in_array('id', $item_fields) ) {
             $item_fields[] = 'id';
         }
-        if ( $use_short_ids AND !in_array('short_id', $item_fields) ) {
+        if ( $use_short_ids && !in_array('short_id', $item_fields) ) {
             $item_fields[] = 'short_id';
         }
 
         // we need slice_id for each item, if we have to count with slice permissions
-        if ( !$ignore_reading_password AND !in_array('slice_id', $item_fields) ) {
+        if ( !$ignore_reading_password && !in_array('slice_id', $item_fields) ) {
             $item_fields[] = 'slice_id';
         }
 
@@ -828,7 +828,7 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
 
     if (!$ignore_reading_password) {
         $credentials = AA_Credentials::singleton();
-        foreach ($slices as $unpack_slice_id => $foo) {
+        foreach (array_keys($slices) as $unpack_slice_id) {
             if (!$credentials->checkSlice($unpack_slice_id, $crypted_additional_slice_pwd)) {
                 // it should be rare
 
@@ -836,7 +836,7 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
                 $ERR_VALUE = [["value" => _m("Error: Missing Reading Password"), "flag"  => FLAG_HTML]];
                 foreach ($content as $unpack_id => $c4id) {
                     $unpermitted[$unpack_id] = true;
-                    foreach ($c4id as $fid => $foo2) {
+                    foreach (array_keys($c4id) as $fid) {
                         // at least id and slice_id should be correct.............. for AA_Items::getItems()
                         if ( !in_array($fid, ['id..............','slice_id........','unpacked_id.....','u_slice_id......'])) {
                             $content[$unpack_id][$fid] = $ERR_VALUE;
@@ -903,8 +903,8 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
             }
 
             // which database field is used (from 05/15/2004 we have FLAG_TEXT_STORED set for text-field-stored values
-            if ( ($row['flag'] & FLAG_TEXT_STORED) OR (strlen($row['text'])>0)) {
-                if (is_array($content[$unpack_id][$row['field_id']][0]) AND ($content[$unpack_id][$row['field_id']][0]['value'] == $row['text'])) {
+            if ( $row['flag'] & FLAG_TEXT_STORED || strlen($row['text'])>0) {
+                if (is_array($content[$unpack_id][$row['field_id']][0]) && $content[$unpack_id][$row['field_id']][0]['value'] == $row['text']) {
                     // ignore content duplicates (there could be more that two values for field
                     // with the same number (=NULL) - the ones which comes from "add value to field" operation)
                     continue;
@@ -1188,7 +1188,7 @@ function MsgPage($msg, string $url = '') {
       </head>
     <body>";
 
-    if (isset($msg) AND is_array($msg)) {
+    if (isset($msg) && is_array($msg)) {
         echo GetPrintArray($msg);
     } else {
         echo "<p>$msg</p><br><br>";
@@ -1215,7 +1215,7 @@ function MsgPage($msg, string $url = '') {
  * @param  bool        $delete       - erease the old values
  */
 function StoreToContent($item_id, $field_id, $text_stored, $value, int $order, int $flag, bool $delete=false) {
-    if (!is_long_id($item_id) OR (strlen($field_id)!=16)) {
+    if (!is_long_id($item_id) || strlen($field_id) != 16) {
         return;
     }
     $varset = new Cvarset();
@@ -1312,7 +1312,7 @@ function inner_trim(string $string): string {
 }
 
 function ReadFileSafe($url) {
-    if ( ((stripos($url, 'http://')===0) OR (stripos($url, 'https://')===0)) AND (!str_contains($url, '..')) ) {
+    if ( (stripos($url, 'http://')===0 || stripos($url, 'https://')===0) && !str_contains($url, '..') ) {
         readfile($url);
     }
 }
@@ -1412,7 +1412,7 @@ function get_class_name($object, $add_id=false) {
     if ($pos = strrpos($classname, '\\')) {
         $classname = substr($classname, $pos + 1);
     }
-    if ($add_id AND method_exists($object, 'getId')) {
+    if ($add_id && method_exists($object, 'getId')) {
         $classname .= ":" . $object->getId();
     }
     return $classname;
@@ -1446,14 +1446,14 @@ class AA_Credentials {
      * @param string $crypted_additional_slice_pwd
      * @return bool
      */
-    function checkCryptedPassword($crypted_slice_pwd, $crypted_additional_slice_pwd=null) {
-        if (!$crypted_slice_pwd OR $this->_pwd[$crypted_slice_pwd] OR $crypted_slice_pwd == $crypted_additional_slice_pwd) {
+    function checkCryptedPassword($crypted_slice_pwd, $crypted_additional_slice_pwd=null): bool {
+        if (!$crypted_slice_pwd || $this->_pwd[$crypted_slice_pwd] || $crypted_slice_pwd == $crypted_additional_slice_pwd) {
             return true;
         }
         if ($GLOBALS['slice_pwd']) {
             $this->register(self::encrypt($GLOBALS['slice_pwd']));
         }
-        return $this->_pwd[$crypted_slice_pwd] ? true : false;
+        return (bool) $this->_pwd[$crypted_slice_pwd];
     }
 
     /** Load reading_password from slice
@@ -1621,9 +1621,8 @@ class AA_Contentcache {
         }
     }
 
-    /** get function
-     *  Get value for $access_code.
-     * @param $access_code
+    /** Get value for $access_code.
+     *  @param $access_code
      *  @return false if the value is not cached for the $access_code (use ===)
      */
     function get($access_code) {
@@ -1879,7 +1878,7 @@ class AA_GeneralizedArray {
  * @param $text
  * @return bool
  */
-function IsSpamText($text, $tolerance=4) {
+function IsSpamText($text, $tolerance=4): bool {
     // we do not accept any text using something like:
     //     [url=https://example.net]Example.net[/url]
     if (substr_count(strtolower($text), '[/url]')) {
@@ -1894,12 +1893,8 @@ function IsSpamText($text, $tolerance=4) {
     if ( $link_count < ($tolerance+1) ) {
         return false;
     }
-
     // link density - text of 250 characters could contain one link (in average)
-    if ( ($text_length/$link_count)>250 ) {
-        return false;
-    }
-    return true;
+    return !(($text_length/$link_count)>250);
 }
 
 /** checks, if the identifier looks like alias. Used in {ifset:{_#HEADLINE}:...}
@@ -1919,7 +1914,7 @@ function IsSigInt($var): bool { // like function is_signed(),function is_number(
     if (is_int(filter_var($var, FILTER_VALIDATE_INT))) {
         return true;
     }
-    return (strlen($var) AND is_int(filter_var(ltrim($var,'0'), FILTER_VALIDATE_INT)));  // the 04 is int
+    return (strlen($var) && is_int(filter_var(ltrim($var,'0'), FILTER_VALIDATE_INT)));  // the 04 is int
 }
 
 /** check, if variable could be converted to string
@@ -1960,7 +1955,7 @@ function aa_strrpos($haystack , $needle , $offset = 0) {
 
 /** trim  with utf in mind */
 function aa_trim(string $string='', string $chars=''): string {
-    return (empty($chars) and Langs::isUTF()) ? preg_replace("/^\s+|\s+$/u", "", $string) : trim($string, $chars);
+    return (empty($chars) && Langs::isUTF()) ? preg_replace("/^\s+|\s+$/u", "", $string) : trim($string, $chars);
     // trim($string, " \t\n\r\0\x0B\xA0");  // standard + chr(160) - hard space   // does not work for UTF characters - the hardspace \xA0 can break some UTF chars - "MŠ" for example
 }
 
@@ -2008,7 +2003,7 @@ function array_trim_all($arr) {
 /** Get Authorization Header
  * @return string
  */
-function get_authorization_header() {
+function get_authorization_header(): string {
     $ret='';
     if (isset($_SERVER['Authorization'])) {
         $ret = $_SERVER['Authorization'];

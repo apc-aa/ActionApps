@@ -48,7 +48,7 @@ try {
  */
 function GetModuleTemplateSelecbox($type, $g_modules) {
     $ret = '';
-    if (isset($g_modules) AND is_array($g_modules) ) {
+    if (isset($g_modules) && is_array($g_modules) ) {
         foreach ($g_modules as $mid => $mod) {
             if ( $mod['type']==$type ) {
                 $ret .=  "\n  <option value=\"x$mid\">".$mod['name']."</option>";

@@ -78,7 +78,7 @@ class GrabberAssignmentform extends AA\IO\Grabber\AbstractGrabber {
      */
     function prepare() {
         foreach (AA_V::Parr() as $varname => $varvalue) {
-            if (strlen($varname)>20 AND str_starts_with($varname, 'asids')) {
+            if (strlen($varname)>20 && str_starts_with($varname, 'asids')) {
                 $item_id       = substr($varname,5);
                 $ids     = explode('~', AA_V::P('asids'    .$item_id));
                 $weights = explode('~', AA_V::P('asweights'.$item_id));
@@ -123,7 +123,7 @@ class GrabberAssignmentform extends AA\IO\Grabber\AbstractGrabber {
 if ( AA_V::P('bsc') == 1 ) {
     $updated = 0;
     foreach (AA_V::Parr() as $varname => $varvalue) {
-        if (strlen($varname)>20 AND str_starts_with($varname, 'bsc')) {
+        if (strlen($varname)>20 && str_starts_with($varname, 'bsc')) {
             $item_id = substr($varname,3);
             $field_content = new AA_Value;
 //            foreach ( explode(',', $varvalue) as $related_id ) {   // older  - Honza 17.8.2016
@@ -143,7 +143,7 @@ if ( AA_V::P('bsc') == 1 ) {
 // Snerovadlo assignment
 elseif ( AA_V::P('assignment') == 1 ) {
     $updated = 0;
-    if (AA_V::P('assourceplan') AND AA_V::P('asdestplan')) {
+    if (AA_V::P('assourceplan') && AA_V::P('asdestplan')) {
 
         $set = new AA_Set('de6a767322ed6040d4b745f5c16a7683');
         $set->addCondition(new AA_Condition('relation.......2', '==', AA_V::P('assourceplan')));
@@ -198,14 +198,14 @@ elseif ( AA_V::P('assignment') == 1 ) {
     echo $encoder->Convert($repre_value, $charset, 'utf-8');
 }
 */
-elseif (AA_V::P('cancel_changes') AND AA_V::P('item_id') AND AA_V::P('field_id')) {
+elseif (AA_V::P('cancel_changes') && AA_V::P('item_id') && AA_V::P('field_id')) {
     $changes = new ChangesMonitor();
     $changes->deleteProposalForSelector(AA_V::P('item_id'), AA_V::P('field_id'));
     $encoder = new ConvertCharset;
     $repre_value = GetRepreValue(AA_V::P('item_id'), AA_V::P('field_id'), AA_V::P('alias_name'));
     echo $encoder->Convert($repre_value, 'windows-1250', 'utf-8');
 }
-elseif (AA_V::P('do_change') AND AA_V::P('item_id') AND AA_V::P('field_id')) {
+elseif (AA_V::P('do_change') && AA_V::P('item_id') && AA_V::P('field_id')) {
     $encoder       = new ConvertCharset;
     $val           = $encoder->Convert(AA_V::P('content'), 'utf-8', 'windows-1250');
     UpdateFieldContent(AA_V::P('item_id'), AA_V::P('field_id'), new AA_Value($val));
@@ -215,7 +215,7 @@ elseif (AA_V::P('do_change') AND AA_V::P('item_id') AND AA_V::P('field_id')) {
     $repre_value = GetRepreValue(AA_V::P('item_id'), AA_V::P('field_id'), AA_V::P('alias_name'));
     echo $encoder->Convert($repre_value, 'windows-1250', 'utf-8');
 }
-elseif (AA_V::P('item_id') AND AA_V::P('field_id')) {
+elseif (AA_V::P('item_id') && AA_V::P('field_id')) {
     $encoder = new ConvertCharset;
     $text = $encoder->Convert(AA_V::P('content'), 'utf-8', 'windows-1250');
 

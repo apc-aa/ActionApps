@@ -142,7 +142,7 @@ class AA_Property extends AA_Storable {
         $this->show_content_type_switch    = (int)$show_content_type_switch;
         $this->content_type_switch_default = (int)$content_type_switch_default;
         $this->perm                        = $perm;
-        $this->const_arr                   = (is_array($validator) AND ($validator[0]==='enum')) ? $validator[1] : [];
+        $this->const_arr                   = (is_array($validator) && $validator[0]==='enum') ? $validator[1] : [];
         $this->default                     = $default;
         $this->translations                = is_array($translations) ? $translations : [];
     }
@@ -191,8 +191,8 @@ class AA_Property extends AA_Storable {
     public function getValidator(): AA_Validate {
         if (!is_object($this->_validator)) {
             if (is_null($this->_validator = AA_Validate::factoryCached($this->_validator))) {
-                $this->_validator = AA_Validate::factoryCached('all');
-            }
+            $this->_validator = AA_Validate::factoryCached('all');
+        }
         }
         return $this->_validator;
     }
@@ -335,7 +335,7 @@ class AA_Property extends AA_Storable {
             }
             $empty = false;
 
-            if (($validator instanceof \AA_Validate_Url) AND str_starts_with($v, 'AA_UPLOAD:')) {   // we are uploading - url will change later   @todo - mark the notvalidated content like AA_UPLOAD in widgets
+            if ($validator instanceof \AA_Validate_Url && str_starts_with($v, 'AA_UPLOAD:')) {   // we are uploading - url will change later   @todo - mark the notvalidated content like AA_UPLOAD in widgets
                 continue;
             }
 
@@ -343,7 +343,7 @@ class AA_Property extends AA_Storable {
                 break;
             }
         }
-        if ($empty AND $this->isRequired()) {
+        if ($empty && $this->isRequired()) {
             return [VALIDATE_ERROR_NOT_FILLED, _m("Not filled (%1)", [$this->getId()])];
         }
         if ( $valid ) {
@@ -383,7 +383,7 @@ class AA_Property extends AA_Storable {
     }
 
     /** @return string - table, where the property would be stored */
-    static function storageType($type) {  // AA_Object needs to access the method
+    static function storageType($type): string {  // AA_Object needs to access the method
         switch ($type) {
         case 'string':
         case 'text':   return 'object_text';
@@ -402,7 +402,7 @@ class AA_Property extends AA_Storable {
 
     /** isRequired function */
     function isRequired() {
-        return $this->required AND !in_array(trim($this->id,'.'), ['short_id','status_code','post_date','last_edit','display_count','disc_count','disc_app','moved2active']);
+        return $this->required && !in_array(trim($this->id,'.'), ['short_id','status_code','post_date','last_edit','display_count','disc_count','disc_app','moved2active']);
     }
 
     /** isPersistent function */
@@ -546,7 +546,7 @@ class AA_Formatters {
 
         $ret  = '<div class=aa-formatters>';
         foreach ($formatters as $bit => $formdef) {
-            if (($bit==0) OR ($contenttypes & $bit)) {
+            if ($bit==0 || $contenttypes & $bit) {
                 $ret .= ' <label><input type=radio name="'.$basevarname.'[flag]" value="'.$bit.'"'. (($flag_frmtr == $bit) ? ' checked' : ''). '>'.$formdef[1].'</label>';
             }
         }

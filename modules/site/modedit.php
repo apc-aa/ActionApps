@@ -91,7 +91,9 @@ if ($cancel) {
 }
 
 $err = [];          // error array (Init - just for initializing variable
-is_object( $db ) || ($db = getDB());
+if (!is_object( $db )) {
+    $db = getDB();
+}
 
 $varset      = new CVarset();
 $superadmin  = IsSuperadmin();
@@ -102,11 +104,10 @@ if ($template_id) {        // add module
         MsgPage(_m("You have not permissions to add slice"));
         exit;
     }
-} else {                    // edit module
-    if (!CheckPerms( AuthGetUid(), "slice", $module_id, PS_MODW_SETTINGS)) {
-        MsgPage(_m("You have not permissions to edit this slice"));
-        exit;
-    }
+} elseif (!CheckPerms( AuthGetUid(), "slice", $module_id, PS_MODW_SETTINGS)) {
+    // edit module
+    MsgPage(_m("You have not permissions to edit this slice"));
+    exit;
 }
 
 

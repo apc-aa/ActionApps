@@ -83,10 +83,8 @@ if (!is_dir (FILEMAN_BASE_DIR)) {
 
 $basedir = FILEMAN_BASE_DIR.$fileman_dir;
 
-if (!is_dir ($basedir) && !file_exists ($basedir)) {
-    if (!mkdir ($basedir, FILEMAN_MODE_DIR)) {
-        AA_Adminpageutil::MsgPageMenu("index.php", _m("Unable to mkdir") . " '" . $basedir . "'", "admin", "fileman");
-    }
+if (!is_dir ($basedir) && !file_exists ($basedir) && !mkdir ($basedir, FILEMAN_MODE_DIR)) {
+    AA_Adminpageutil::MsgPageMenu("index.php", _m("Unable to mkdir") . " '" . $basedir . "'", "admin", "fileman");
 }
 
 if (IsSuperadmin()) {
@@ -186,11 +184,7 @@ if (!$sortable_columns[$sort_key]) {
 }
 foreach ($sortable_columns as $sortk => $col) {
     if ($sort_key == $sortk) {
-        if ($sort_order) {
-            $so = $sort_order;
-        } else {
-            $so = $col["sort"];
-        }
+        $so = $sort_order ? $sort_order : $col["sort"];
         $img = "&nbsp;<img src='../images/".($so === 'd' ? 'up' : 'down').".gif'>";
         $so  = $so === 'a' ? 'd' : 'a';
         $so  = "&sort_order=$so";

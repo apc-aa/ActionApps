@@ -175,7 +175,7 @@ function Links_Move2Folder($lid, $folder) {
  * for given link and category
  */
 function Links_GetAsociationId($lid, $cid) {
-    if ( !$lid OR !$cid ) {
+    if ( !$lid || !$cid ) {
         return false;
     }
     return DB_AA::select1('a_id', 'SELECT a_id FROM links_link_cat', [

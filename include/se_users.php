@@ -42,7 +42,7 @@ $editor_perms = AA::$perm->getModulePerms(AuthGetUid(), $slice_id);
  * @return bool
  */
 function CanChangeRole($user_perm, $editor_perm, $role_perm) {
-    return ((AA_Perm::compare($editor_perm, $user_perm)==="G") AND (AA_Perm::compare($editor_perm, $role_perm)==="G"));
+    return (AA_Perm::compare($editor_perm, $user_perm)==="G" && AA_Perm::compare($editor_perm, $role_perm)==="G");
 }
 
 /** ChangeRole function
@@ -140,7 +140,7 @@ function AddUserForm(string $usr, string $grp, bool $GrpSrch, bool $UsrSrch, $ed
         $aa_users    = AA::$perm->getObjectsPerms(AA_ID, "aa");   // higher than slice
 
         // add aa users too
-        foreach ($aa_users as $usr_id => $foo) {
+        foreach (array_keys($aa_users) as $usr_id) {
             if (!$slice_users[$usr_id]) {
                 $slice_users[$usr_id] = $aa_users[$usr_id];
             }

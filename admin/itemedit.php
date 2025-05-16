@@ -173,7 +173,7 @@ if ($_POST['update'])      {                 $update = true;                    
 if ($_POST['upd_preview']) {                 $update = true; $preview=true;                }
 if ($_POST['upd_edit'])    {                 $update = true;                $go_edit=true; }
 
-$add = !( $update OR $cancel OR $insert OR $edit );
+$add = !( $update || $cancel || $insert || $edit );
 
 if ($cancel) {
     if ($anonymous) { // anonymous login
@@ -249,7 +249,7 @@ if ($lang_control = MLXSlice($slice)) {
 $err = [];          // error array (Init - just for initializing variable
 
 //  update database
-if ( ($insert || $update) AND count($fields) ) {
+if ( ($insert || $update) && count($fields) ) {
 
     // prepare content4id array before call StoreItem function
     $content4id    = new ItemContent;
@@ -347,7 +347,7 @@ if ($edit) {
     $perm_edit_all  = IfSlPerm(PS_EDIT_ALL_ITEMS);
     $item_user = $content4id->getValue('posted_by.......');
     $real_user = AuthGetUid();
-    if (!( $perm_edit_all || ( $item_user == $real_user ) )) {
+    if (!$perm_edit_all && $item_user != $real_user) {
         $err["DB"] = MsgErr(_m("Error: You have no rights to edit item."));
         MsgPage($err);
         exit;
@@ -382,7 +382,7 @@ $inputform_settings['form_action']         = ($_SERVER['DOCUMENT_URI'] != "" ? $
                                              $_SERVER['PHP_SELF'] . ($return_url ? "?return_url=".rawurlencode($return_url) : ''));
 $inputform_settings['form4update']         = $edit || $update || ($insert && $added_to_db);
 $inputform_settings['form4asnew']          = $edit_new;
-$inputform_settings['show_preview_button'] = (($post_preview!=0) OR !isset($post_preview));
+$inputform_settings['show_preview_button'] = ($post_preview != 0 || !isset($post_preview));
 
 $inputform_settings['cancel_url']          =  ($anonymous  ? $r_slice_view_url :
                                               ($return_url === 'close_dialog' ? get_admin_url("itemedit.php", ['cancel' =>1, 'return_url' =>'close_dialog']) :
@@ -390,7 +390,7 @@ $inputform_settings['cancel_url']          =  ($anonymous  ? $r_slice_view_url :
                                               get_admin_url("index.php", ['cancel'=>1]))));
 
 $inputform_settings['hidden']              = [
-                             'anonymous'   => (($free OR $anonymous) ? true : ""),
+                             'anonymous'   => (($free || $anonymous) ? true : ""),
                              'mlxid'       => $mlxid,
                              'mlxl'        => $mlxl,
                              'openervar'   => $openervar
@@ -409,7 +409,7 @@ if ( $inputform_settings['form4update'] ) {
 
 //AddPermObject($slice_id, "slice");    // no special permission added - only superuser can access
 $form = new inputform($inputform_settings);
-$form->printForm($content4id, $slice, ($edit OR $update));
+$form->printForm($content4id, $slice, ($edit || $update));
 
 page_close();
 

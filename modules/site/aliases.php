@@ -45,7 +45,7 @@ $apage->printWithManager(new Manager('aliasfunc' . AA::$module_id, AA_Aliasfunc:
 if ($_POST['update']) {
     $invalidatefor = [AA::$module_id];
     $sites = AA_Module::getModules('W', true);
-    foreach ($sites as $site_id => $site) {
+    foreach (array_keys($sites) as $site_id) {
         if (in_array(AA::$module_id, (array)AA_Module_Site::getModuleProperty($site_id, 'add_aliases'), true)) {
             $invalidatefor[] = $site_id;
         }

@@ -44,7 +44,7 @@ function GetCommonMenu(AA_Profile $profile): array {
         "label"   => GetLabel($profile,'ui_manager','top_aaadmin', _m("AA")),
         "title"   => _m("AA Administration"),
         "href"    => "admin/aafinder.php",
-        "cond"    => IsSuperadmin() AND ($profile->getProperty('ui_manager', 'top_aaadmin') !== ''),
+        "cond"    => IsSuperadmin() && $profile->getProperty('ui_manager', 'top_aaadmin') !== '',
         "level"   => "main",
         "submenu" => "aaadmin_submenu"
     ];
@@ -109,7 +109,7 @@ function GetCommonMenu(AA_Profile $profile): array {
         "label"   => GetLabel($profile,'ui_manager','top_central', _m("Central")),
         "title"   => _m("AA Central"),
         "href"    => "central/index.php",
-        "cond"    => IsSuperadmin() AND ($profile->getProperty('ui_manager', 'top_central') !== ''),
+        "cond"    => IsSuperadmin() && $profile->getProperty('ui_manager', 'top_central') !== '',
         "level"   => "main",
         "submenu" => "central_submenu"
     ];
@@ -162,7 +162,7 @@ function GetModuleSelection(): string {
 
     $profile = AA_Profile::getProfile(AuthGetUid(), AA::$module_id); // current user settings
 
-    if ( is_array($g_modules) AND (count($g_modules) > 1) AND ($profile->getProperty('ui_manager', 'top_moduleselection') === false)) {
+    if ( is_array($g_modules) && count($g_modules) > 1 && $profile->getProperty('ui_manager', 'top_moduleselection') === false) {
         // create the modulesOptions content:
         $permitted_slices = GetUserSlices();
         $modules_cond = ($permitted_slices==='all') ? [] : [['module.id', array_keys($permitted_slices), 'l']];
@@ -183,7 +183,7 @@ function GetModuleSelection(): string {
         // do not print deleted modules when you ase not admin of the slice or superadmin
         if($permitted_slices !== 'all') {
             // huhl($_SESSION, AuthGetUid(), $GLOBALS['permission_uid'], AA::$perm->getUserPerms($GLOBALS['permission_uid'], "slice"), AA_Perm::ROLES, $GLOBALS['permission_to']);
-            $mymodules = array_filter($mymodules, static fn($slice) => (!$slice['deleted'] OR IfSlPerm(PS_FIELDS, $slice['unpackid'])));  // huhl($slice['name'], $slice['deleted'],  $slice['unpackid'], IfSlPerm(PS_FIELDS, $slice['unpackid']));
+            $mymodules = array_filter($mymodules, static fn($slice) => (!$slice['deleted'] || IfSlPerm(PS_FIELDS, $slice['unpackid'])));  // huhl($slice['name'], $slice['deleted'],  $slice['unpackid'], IfSlPerm(PS_FIELDS, $slice['unpackid']));
         }
 
         $modules = [];
@@ -209,7 +209,7 @@ function GetModuleSelection(): string {
         foreach ($modules as $order => $mods) {
             if ( $display_modtypes ) {
                 foreach ($module_types as $module_type) {
-                    if ($module_type[0] == $order) {
+                    if ($module_type[0] === $order) {
                         $options .= '<optgroup label="'.$module_type[1].'">';   // &#x1f464;&#x1f468; men symbol
                     }
                 }
@@ -217,7 +217,7 @@ function GetModuleSelection(): string {
             //        asort ($mods);
             foreach ($mods as $id => $name) {
                 $mod_dir = AA_Module::getModuleInfo('url',$id);
-                $val = (($mydir == $mod_dir) ? '' : AA_INSTAL_PATH.$mod_dir). "?module_id=$id";
+                $val = (($mydir === $mod_dir) ? '' : AA_INSTAL_PATH.$mod_dir). "?module_id=$id";
                 $options .= '<option value="' . $val .'"';
                 if (AA::$module_id == $id) {
                     $options .= ' selected';
@@ -299,7 +299,7 @@ function getMenu($activeMain, $activeSubmenu = ""): string {
 
         $title_title = GetLabel($profile, 'ui_manager', 'top_title', $smmenus[$activeMain]['title']);
         $title_name  = safe($slice_id ? AA_Module::getModuleName($slice_id) : _m("New slice"));
-        $title_out   = $title_title . (($title_title AND $title_name) ? ' - ' : '') . $title_name. $title_img;
+        $title_out   = $title_title . (($title_title && $title_name) ? ' - ' : '') . $title_name. $title_img;
         $prop_logout = $profile->getProperty('ui_manager', 'top_logout');
 
         $logout_out = match ($prop_logout) {
@@ -332,7 +332,7 @@ function getMenu($activeMain, $activeSubmenu = ""): string {
         $links = [];
         foreach ($smmenus as $aamenu =>$aamenuprop) {
             if ($aamenuprop["level"] === "main") {
-                $links[$aamenu] = GetMenuLink($aamenu == $activeMain, $aamenuprop['label'], $aamenuprop['cond'] ?? true, $aamenuprop['href'], $aamenuprop['exact_href'], $aamenuprop['ico']);
+                $links[$aamenu] = GetMenuLink($aamenu == $activeMain, $aamenuprop['label'], $aamenuprop['cond'] ?? true, $aamenuprop['href'], $aamenuprop['exact_href'], $aamenuprop['ico'], $aamenuprop['class'] ?? '');
             }
         }
 
@@ -384,7 +384,7 @@ function GetMenuLink($active, $label, $cond, $aa_href, $exact_href='', $ico='', 
     $cssclass  = $active ? 'nbactive' : 'nbenable';
     $cssclass .= $add_css ? ' '.$add_css : '';
 
-    if (AA::$module_id AND $cond) {
+    if (AA::$module_id && $cond) {
         $href = $exact_href;
         if (!$href) {
             $href = get_aa_url($aa_href);
@@ -412,13 +412,13 @@ function getSubMenuRows(array $aamenuitems, $active ): string {
     $ret = '';
 
     foreach ($aamenuitems as $itemshow => $item) {
-        $ico = ((is_array($item) AND $item['ico']) ? GetAAImage($item['ico'], $item['title'], 23,23) : '');
+        $ico = ((is_array($item) && $item['ico']) ? GetAAImage($item['ico'], $item['title'], 23,23) : '');
 
         if (str_starts_with($itemshow, "text")) {
             $ret .= "<li class='aa-leftmenu-text aa-menuname-$itemshow'>$item</li>\n";
         } elseif (str_starts_with($itemshow, "header")) {
             if (is_array($item)) {
-                if (!isset($item["cond"]) OR $item["cond"]) {
+                if (!isset($item["cond"]) || $item["cond"]) {
                     $ret .= "<li class='aa-leftmenu-header aa-menuname-$itemshow' title='" . $item['title'] . "'>" . $item['label'] . "</li>\n";  // $ico not shown for design reasons
                 }
             } elseif ($item !== '') {

@@ -40,8 +40,8 @@ use AA\IO\DB\DB_AA;
  * @param $validator AA_Validate|string|array  ['number',['min'=>0,'max'=>999]])
  * @return bool
  */
-function ValidateInput($variableName, $inputName, $variable, &$err, $needed=false, $validator="all") {
-    if (is_string($validator) or is_array($validator)) {
+function ValidateInput($variableName, $inputName, $variable, &$err, $needed=false, $validator="all"): bool {
+    if (is_string($validator) || is_array($validator)) {
         $validator = AA_Validate::factoryCached($validator);
     }
     if (is_object($validator)) {
@@ -247,10 +247,10 @@ class AA_Validate_Signed extends AA_Validate {
             return AA_Validate::bad(VALIDATE_ERROR_BAD_TYPE, _m('No integer value') . "'$var'", $var_id);
         }
         $var = (int)$var;
-        if (IsSigInt($this->max) and ($var > $this->max)) {
+        if (IsSigInt($this->max) && $var > $this->max) {
             return AA_Validate::bad(VALIDATE_ERROR_OUT_OF_RANGE_MAX, _m('Out of range - too big'), $var_id);
         }
-        if (IsSigInt($this->min) and ($var < $this->min)) {
+        if (IsSigInt($this->min) && $var < $this->min) {
             return AA_Validate::bad(VALIDATE_ERROR_OUT_OF_RANGE_MIN, _m('Out of range - too small'), $var_id);
         }
         return true;
@@ -258,10 +258,10 @@ class AA_Validate_Signed extends AA_Validate {
 
     public function sanitize($var) {
         $var = (int)$var;
-        if (IsSigInt($this->max) AND ($var > $this->max)) {
+        if (IsSigInt($this->max) && $var > $this->max) {
             return (int)$this->max;
         }
-        if (IsSigInt($this->min) AND ($var < $this->min)) {
+        if (IsSigInt($this->min) && $var < $this->min) {
             return (int)$this->min;
         }
         return $var;
@@ -279,7 +279,7 @@ class AA_Validate_Signed extends AA_Validate {
         if (IsSigInt($this->max)) {
             $ret['max'] = $this->max;
         }
-        if (IsSigInt($this->step) and ($this->step > 1)) {
+        if (IsSigInt($this->step) && $this->step > 1) {
             $ret['step'] = $this->step;
         }
         if ($this->maxlength > 0) {
@@ -287,7 +287,7 @@ class AA_Validate_Signed extends AA_Validate {
         } elseif ($this->max > 0) {
             $ret['maxlength']  = (int)($this->max/10+1);
         }
-        if ($ret['maxlength'] AND ($ret['maxlength'] < 60)) {
+        if ($ret['maxlength'] && $ret['maxlength'] < 60) {
             $ret['size']       = ((int)$ret['maxlength']+2);
         }
         return $ret;
@@ -325,7 +325,7 @@ class AA_Validate_Bool extends AA_Validate_Number {
         $this->max = 1;
     }
 
-    public function sanitize($var) {
+    public function sanitize($var): bool {
         return (bool)$var;
     }
 }
@@ -368,7 +368,7 @@ class AA_Validate_Regexp extends AA_Validate {
      * @return bool
      */
     public function validate(?string &$var, AA_Content $content_context = null, string $var_id = ''): bool {
-        if ( ($this->maxlength > 0) AND (strlen($var) > $this->maxlength) ) {
+        if ( $this->maxlength > 0 && strlen($var) > $this->maxlength ) {
             return AA_Validate::bad(VALIDATE_ERROR_TOO_LONG, _m('Too long'), $var_id);
         }
         if ( strlen($this->pattern) < 3 ) {
@@ -391,7 +391,7 @@ class AA_Validate_Regexp extends AA_Validate {
     function getHtmlInputAttr() {
         $ret = ['type'=>'text'];
         if ($this->maxlength > 0)                               { $ret['maxlength']  = (int)$this->maxlength; }
-        if (($this->maxlength > 0) AND ($this->maxlength < 60)) { $ret['size']       = ((int)$this->maxlength+2); }
+        if ($this->maxlength > 0 && $this->maxlength < 60) { $ret['size']       = ((int)$this->maxlength+2); }
         if (strlen($this->pattern) > 2)                         { $ret['pattern']    = substr($this->pattern, 1, -1); } // we need to convert /^[a-z]*$/ to ^[a-z]*$
         return $ret;
     }
@@ -514,20 +514,20 @@ class AA_Validate_Float extends AA_Validate {
      * @return bool
      */
     public function validate(?string &$var, AA_Content $content_context = null, string $var_id = ''): bool {
-        if ( !preg_match('/^[-+]?(([0-9]*[.,]?[0-9]+([ed][-+]?[0-9]+)?)|(inf)|(nan))$/i', $var) ) {  // is_float($var) is not OK - at least it does not allow 123
+        if ( !preg_match('/^[-+]?((\d*[.,]?\d+([ed][-+]?\d+)?)|(inf)|(nan))$/i', $var) ) {  // is_float($var) is not OK - at least it does not allow 123
             return AA_Validate::bad(VALIDATE_ERROR_BAD_TYPE, _m('No float value'), $var_id);
         }
         $var = str_replace(',', '.',$var); // Phpfloat does not work well for long int - 123456789012345678901234567890
-        if ( !is_null($this->f_max) AND ($var > $this->f_max) ) {
+        if ( !is_null($this->f_max) && $var > $this->f_max ) {
             return AA_Validate::bad(VALIDATE_ERROR_OUT_OF_RANGE_MAX, _m('Out of range - too big'), $var_id);
         }
-        if ( !is_null($this->f_min) AND ($var < $this->f_min) ) {
+        if ( !is_null($this->f_min) && $var < $this->f_min ) {
             return AA_Validate::bad(VALIDATE_ERROR_OUT_OF_RANGE_MIN, _m('Out of range - too small'), $var_id);
         }
         return true;
     }
 
-    public function sanitize($var) {
+    public function sanitize($var): float {
         if ($this->validate($var)) {
             return (float)$var;
         }
@@ -567,16 +567,16 @@ class AA_Validate_Decimal extends AA_Validate {
             return AA_Validate::bad(VALIDATE_ERROR_BAD_TYPE, _m('No decimal value'), $var_id);
         }
         $var = str_replace(',', '.',$var); // Phpfloat does not work well for long int - 123456789012345678901234567890
-        if ( !is_null($this->f_max) AND ($var > $this->f_max) ) {
+        if ( !is_null($this->f_max) && $var > $this->f_max ) {
             return AA_Validate::bad(VALIDATE_ERROR_OUT_OF_RANGE_MAX, _m('Out of range - too big'), $var_id);
         }
-        if ( !is_null($this->f_min) AND ($var < $this->f_min) ) {
+        if ( !is_null($this->f_min) && $var < $this->f_min ) {
             return AA_Validate::bad(VALIDATE_ERROR_OUT_OF_RANGE_MIN, _m('Out of range - too small'), $var_id);
         }
         return true;
     }
 
-    public function sanitize($var) {
+    public function sanitize($var): string {
         if ($this->validate($var)) {
             return (string)$var;
         }
@@ -709,7 +709,7 @@ class AA_Validate_Unique extends AA_Validate {
         $itm_id = $this->item_id ?: ($content_context ? $content_context->getId() : '');
 
         if ( $this->scope === 'username') {
-            if ( !AA::$perm->isUsernameFree($var) AND ( !$itm_id OR (AA_Reader::name2Id($var) != $itm_id))) {
+            if ( !AA::$perm->isUsernameFree($var) && (!$itm_id || AA_Reader::name2Id($var) != $itm_id)) {
                 return AA_Validate::bad(VALIDATE_ERROR_NOT_UNIQUE, _m('Username is not unique'), $var_id);
             }
             return true;
@@ -724,7 +724,7 @@ class AA_Validate_Unique extends AA_Validate {
         if ( $this->scope === 'slice') {
             $slice = null;
             $slice_id = AA::$slice_id ?: AA::$module_id;   // AA\IO\Saver or itemedit.php tells us the current slice
-            if ( !$slice_id OR !($slice = AA_Slice::getModule($slice_id)) OR !$slice->getField($field_to_check) ) {
+            if ( !$slice_id || !($slice = AA_Slice::getModule($slice_id)) || !$slice->getField($field_to_check) ) {
                 return AA_Validate::bad(VALIDATE_ERROR_BAD_PARAMETER, _m('Wrong parameter field_id for unique check'), $var_id);
             }
             $conds[] = ['item.slice_id', $slice_id, 'l'];
@@ -815,7 +815,7 @@ class AA_Validate_Text extends AA_Validate {
      * @return bool
      */
     public function validate(?string &$var, AA_Content $content_context = null, string $var_id = ''): bool {
-        if ( ($this->maxlength > 0) AND (strlen($var) > $this->maxlength) ) {
+        if ( $this->maxlength > 0 && strlen($var) > $this->maxlength ) {
             return AA_Validate::bad(VALIDATE_ERROR_TOO_LONG, _m('Too long'), $var_id);
         }
         return true;
@@ -827,7 +827,7 @@ class AA_Validate_Text extends AA_Validate {
     function getHtmlInputAttr() {
         $ret = ['type'=>'text'];
         if ($this->maxlength > 0)                               { $ret['maxlength']  = (int)$this->maxlength; }
-        if (($this->maxlength > 0) AND ($this->maxlength < 60)) { $ret['size']       = ((int)$this->maxlength+2); }
+        if ($this->maxlength > 0 && $this->maxlength < 60) { $ret['size']       = ((int)$this->maxlength+2); }
         return $ret;
     }
 }
@@ -835,7 +835,7 @@ class AA_Validate_Text extends AA_Validate {
 /** get_javascript_field_validation function
 * used in tabledit.php and itemedit.php
 */
-function get_javascript_field_validation() {
+function get_javascript_field_validation(): string {
     /* javascript params:
        myform = the form object
        txtfield = field name in the form
@@ -910,16 +910,16 @@ function NEW_get_lines($fp) {
     return $data;
 }
 
-function NEW_checkEmail($email) {
+function NEW_checkEmail($email): bool {
     // checks proper syntax
     if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
         // gets domain name
         [$username,$domain]=explode('@',$email);
         // checks for if MX records in the DNS
-        if ( getmxrr($domain,$smtphosts,$mx_weight) or (gethostbyname($domain) != $domain) ) {
+        if ( getmxrr($domain,$smtphosts,$mx_weight) || gethostbyname($domain) !== $domain ) {
             if ( $smtphosts ) {
                 // Put the records together in a array we can sort
-                for ($i=0, $iMax = count($smtphosts); $i< $iMax; $i++) {
+                foreach ($smtphosts as $i => $smtphost) {
                     $mxs[$smtphosts[$i]] = $mx_weight[$i];
                 }
                 // Sort them

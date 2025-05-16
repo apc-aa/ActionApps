@@ -47,7 +47,7 @@ class AA_Poll {
      * @param $force
      */
     function loadSettings($force=false) {
-        if ( !$force AND isset($this->content) ) {
+        if ( !$force && isset($this->content) ) {
             return;
         }
 
@@ -119,7 +119,7 @@ class AA_Poll {
     }
 
     /** @return true, if the string is column in polls table */
-    function isField($string) {
+    function isField($string): bool {
         static $columns = null;
         if (is_null($columns)) {
             $metabase = AA::Metabase();
@@ -151,7 +151,7 @@ class AA_Poll {
         if ($this->getProperty('ip_locking') == 1) {
 
             // ip_lock_timeout = 0 means it is locked forever
-            if ($this->getProperty('ip_lock_timeout') <> 0) {
+            if ($this->getProperty('ip_lock_timeout') != 0) {
                 $varset->doDeleteWhere('polls_ip_lock', "poll_id='$poll_id' AND timestamp < ". ($current_time - $this->getProperty('ip_lock_timeout')));
             }
 
@@ -183,7 +183,7 @@ class AA_Poll {
                 $varset->doInsert('polls_log');
             }
         }
-        return $vote_invalid ? false : true;
+        return !(bool) $vote_invalid;
     }
 
 
@@ -247,7 +247,7 @@ class AA_Poll {
      */
     static function processPoll($request) {
 
-        if (isset($request['vote_id']) AND isset($request['poll_id']) AND !isset($request['novote'])) {
+        if (isset($request['vote_id']) && isset($request['poll_id']) && !isset($request['novote'])) {
             $poll = AA_Polls::getPoll($request['poll_id']);
             $poll->registerVote($request['vote_id']);
         }
@@ -274,7 +274,7 @@ class AA_Poll {
             $ret   .= $poll->getOutput($design);
         }
 
-        if ($request['convertto'] OR $request['convertfrom'] ) {
+        if ($request['convertto'] || $request['convertfrom'] ) {
             $ret = ConvertCharset::singleton()->Convert($ret, $request['convertfrom'], $request['convertto']);
         } elseif (IsAjaxCall()) {
             $ret = ConvertCharset::singleton()->Convert($ret, AA_Module_Polls::getModule($poll->id())->getCharset(), 'utf-8');

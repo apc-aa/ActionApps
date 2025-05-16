@@ -306,7 +306,7 @@ function FindAlertsUserPermissions() {
 
 function AlertsModeditAfterInsert($varset) {
     // called for all tables
-    if ($varset->get("module_id") AND is_long_id($module_id = unpack_id($varset->get("module_id")))) {
+    if ($varset->get("module_id") && is_long_id($module_id = unpack_id($varset->get("module_id")))) {
         AddPermObject($module_id, "slice");
         AA::$module_id = $module_id;
     }

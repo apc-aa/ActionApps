@@ -63,7 +63,7 @@ class aahandler {
      * @param $slice_type
      * @return bool
      */
-    function matches( $type, $slice, $slice_type ) {
+    function matches( $type, $slice, $slice_type ): bool {
         if ( !$this->conds ) {
             return true;   // no conditions are set for handler - do it always
         }
@@ -124,7 +124,7 @@ class aaevent {
      *                               each event $type (mainly old values)
      * @return bool
      */
-    function comes($type, $slice, $slice_type, &$ret_params, $params='', $params2='') {
+    function comes($type, $slice, $slice_type, &$ret_params, $params='', $params2=''): bool {
         $this->returns = []; // unset it
         if ( !is_array($this->handlers) ) {
             $this->handlers = $this->get_handlers($type, $slice, $slice_type);
@@ -216,7 +216,7 @@ class NewDiscussionCommentEvent {
      * @param $slice_type
      * @return bool
      */
-    function matches( $type, $slice, $slice_type ) {
+    function matches( $type, $slice, $slice_type ): bool {
         return true;
     }
 
@@ -318,7 +318,7 @@ function AddNotification($type, $class, $selector, $reaction, $params) {
  * @param $foo2
  * @return bool
  */
-function Event_ItemNewComment( $type, $item_id, $slice_type, $disc_id, $foo, $foo2 ) {
+function Event_ItemNewComment( $type, $item_id, $slice_type, $disc_id, $foo, $foo2 ): bool {
 
     $emails = GetNotifications($type, $slice_type, $item_id);
 
@@ -377,7 +377,7 @@ function Event_ItemNewComment( $type, $item_id, $slice_type, $disc_id, $foo, $fo
  * @param             $foo2
  * @return bool
  */
-function Event_ItemAfterInsert( $type, $slice_id, $slice_type, $itemContent, $foo, $foo2 ) {
+function Event_ItemAfterInsert( $type, $slice_id, $slice_type, $itemContent, $foo, $foo2 ): bool {
     $item_id = $itemContent->getItemID();
     AA_Mysqlauth::updateReaders( [pack_id( $item_id )], $slice_id );  // maybe not necessary - AA_Mysqlauth_Maintain probably solves it HM 2024-01-16
     (new AA_Mysqlauth_Maintain())->schedule();  // plan or replan the maintenance to be run earlier
@@ -405,7 +405,7 @@ function Event_ItemAfterInsert( $type, $slice_id, $slice_type, $itemContent, $fo
  * @param             $foo2
  * @return bool
  */
-function Event_ItemAfterUpdate( $type, $slice_id, $slice_type, $itemContent, $oldItemContent, $foo2 ) {
+function Event_ItemAfterUpdate( $type, $slice_id, $slice_type, $itemContent, $oldItemContent, $foo2 ): bool {
 
     $item_id = $itemContent->getItemID();
 
@@ -448,7 +448,7 @@ function Event_CommentAfterInsert( $type, $slice_id, $slice_type, &$itemContent,
  * @param             $foo2
  * @return bool
  */
-function Event_ItemBeforeUpdate( $type, $slice_id, $slice_type, $itemContent, $oldItemContent, $foo2 ) {
+function Event_ItemBeforeUpdate( $type, $slice_id, $slice_type, $itemContent, $oldItemContent, $foo2 ): bool {
     // Delete reader from Auth tables because if the username changes,
     // AA_Mysqlauth::updateReaders can not recognize it.
     // AA_Mysqlauth::deleteReaders( new zids($itemContent->getItemID(), 'l'), $slice_id );   // AA_Mysqlauth_Maintain probably solves it HM 2024-01-16 (there were multiple DELETEs in Event_ItemBeforeUpdate and Event_ItemAfterUpdate on each readers update)
@@ -466,7 +466,7 @@ function Event_ItemBeforeUpdate( $type, $slice_id, $slice_type, $itemContent, $o
  * @param        $foo2
  * @return bool
  */
-function Event_ItemBeforeInsert( $type, $slice_id, $slice_type, &$itemContent, $foo, $foo2 ) {
+function Event_ItemBeforeInsert( $type, $slice_id, $slice_type, &$itemContent, $foo, $foo2 ): bool {
     return true;
 }
 
@@ -480,7 +480,7 @@ function Event_ItemBeforeInsert( $type, $slice_id, $slice_type, &$itemContent, $
  * @param        $foo2
  * @return bool
  */
-function Event_ItemsBeforeDelete( $type, $slice_id, $slice_type, $zids, $foo, $foo2 ) {
+function Event_ItemsBeforeDelete( $type, $slice_id, $slice_type, $zids, $foo, $foo2 ): bool {
     /* It is not really necessary to delete the readers from Auth tables,
        because they should be deleted on moving to Trash bin. But it is
        perhaps better to make sure. */
@@ -517,7 +517,7 @@ function Event_ItemsMoved( $type, $slice_id, $slice_type, $item_ids, $new_status
  * @param string $constant_id Unpacked ID of constant from the constant table.
  * @return bool
  */
-function Event_ConstantBeforeUpdate( $type, $slice_id, $slice_type, &$newvalue, $oldvalue, $constant_id ) {
+function Event_ConstantBeforeUpdate( $type, $slice_id, $slice_type, &$newvalue, $oldvalue, $constant_id ): bool {
     return true;
 }
 
@@ -565,7 +565,7 @@ function Event_ConstantGroupUpdated($type, $slice_id, $slice_type, $ret_params, 
  * @param string $params2 - old (previous) global category name or false
  * @return bool
  */
-function Event_AddLinkGlobalCat( $type, $slice, $slice_type, &$ret_params, $params, $params2) {
+function Event_AddLinkGlobalCat( $type, $slice, $slice_type, &$ret_params, $params, $params2): bool {
     global $LINK_TYPE_CONSTANTS;
 
     // quite Econnectonous code
@@ -574,7 +574,7 @@ function Event_AddLinkGlobalCat( $type, $slice, $slice_type, &$ret_params, $para
 
     // if new link type is not general (global) category or general category
     // was already set - return
-    if ( !( trim($name)) OR trim($oldname) ) {
+    if ( !( trim($name)) || trim($oldname) ) {
         return false;
     }
 
@@ -599,7 +599,7 @@ function Event_AddLinkGlobalCat( $type, $slice, $slice_type, &$ret_params, $para
     // Example: 1,2-1,2,1223:1,2,4-1,2,4,43:1,2,983-1,2,983,1226:1,2,984-1,2,984,1229:1,2,985-1,2,985,1232:1,2,986-1,2,986,1235:1,2,987-1,2,987,1238
     $trans_string = str_replace( ["\n","\t","\r",' '], '', $general_cat['description'] );
     $translations = explode(':', $trans_string);             // parse
-    if ( isset($translations) AND is_array($translations) ) {
+    if ( isset($translations) && is_array($translations) ) {
         foreach ( $translations as $k ) {
             [$from,$to] = explode('-', $k);
             $trans[$from] = $to;
@@ -609,7 +609,7 @@ function Event_AddLinkGlobalCat( $type, $slice, $slice_type, &$ret_params, $para
     // get categories in which we have to create global category
     // = categories and all subcategories - 1,2,33,88 => 1,2; 1,2,33; 1,2,33,88
     $final_categories = [];     // clear return categories
-    if ( isset($ret_params) AND is_array($ret_params) ) {
+    if ( isset($ret_params) && is_array($ret_params) ) {
         foreach ( $ret_params as $cid ) {
             $cpath = GetCategoryPath( $cid );
             if (!str_starts_with($cpath, '1,2,')) {
@@ -642,7 +642,7 @@ function Event_AddLinkGlobalCat( $type, $slice, $slice_type, &$ret_params, $para
     // where we want to add link (without translation or global cat. creation)
 
     // go through desired categories and translate it, if we have to
-    if ( isset($subcategories) AND isset($trans) ) {
+    if ( isset($subcategories) && isset($trans) ) {
         foreach ( $subcategories as $cid => $path ) {
             foreach ( $trans as $from => $to ) {
                 if ( $path == $from ) {        // translate this category
@@ -659,7 +659,7 @@ function Event_AddLinkGlobalCat( $type, $slice, $slice_type, &$ret_params, $para
     // So, finaly create categories, if not created yet and build the result
     // category list
     $ret_params = $final_categories;  // add non-Kormidlo categories
-    if (!$subcat_translated AND count($ret_params)<=0) {
+    if (!$subcat_translated && count($ret_params)<=0) {
         return false;       // no category to assign - seldom case
     }
 
@@ -668,7 +668,7 @@ function Event_AddLinkGlobalCat( $type, $slice, $slice_type, &$ret_params, $para
     // we have $subcat_translated[] AND $ret_params[] already prefilled
     foreach ( $subcat_translated as $cid => $path ) {
         $sub_cat_id = $tree->subcatExist($cid, $name);
-        if ( !$sub_cat_id AND ($tree->getName($cid) != $name) ) {
+        if ( !$sub_cat_id && $tree->getName($cid) != $name ) {
             $sub_cat_id = Links_AddCategory($name, $cid, $path);
             Links_AssignCategory($cid, $sub_cat_id, $general_cat['pri']);
         }

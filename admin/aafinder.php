@@ -91,7 +91,7 @@ class AA_Adminlink {
     {
         if ($fld = AA_Field::factoryFromDb($field_id, $slice_id)) {
             $txt = $fld->linkToField("$field_id - ".$fld->getName());
-            if (str_starts_with($db_fld, 'alias') and DB_AA::test('field', [['slice_id', $slice_id, 'l'], ['id', $field_id], [substr($db_fld, 0, 6), 'X', 'BEGIN']])) {
+            if (str_starts_with($db_fld, 'alias') && DB_AA::test('field', [['slice_id', $slice_id, 'l'], ['id', $field_id], [substr($db_fld, 0, 6), 'X', 'BEGIN']])) {
                 return "<s title=\""._m('disabled')."\">$txt</s>";
             }
             return $txt;
@@ -114,7 +114,7 @@ class AA_Adminlink {
 
     public static function objectLink($object_id): string
     {
-        if ($obj = AA_Object::load($object_id)) {
+        if (($obj = AA_Object::load($object_id))) {
             $name = ($obj->getName() === $obj->getProperty('alias')) ? $obj->getName() : $obj->getName().' ('.$obj->getProperty('alias').')';
             $url  = $obj->getAdminUrl();
             return ($url ? a_href($url, $name) : $name).' ('.$obj->getObjectType().' - '.AA_Slice::getModuleName($obj->getOwnerId()).') &nbsp; '.ChangesMonitor::getHistoryLink($object_id);
@@ -129,7 +129,7 @@ class AA_Adminlink {
 
     public static function siteLink($spot_id, $module_id): string
     {
-        if (($module = AA_Module_Site::getModule($module_id)) and ($tree = $module->getTree())) {
+        if (($module = AA_Module_Site::getModule($module_id)) && ($tree = $module->getTree())) {
             $spot_code = ($tree->get('flag', $spot_id) & AA_Module_Site::FLAG_DISABLE) ? "<s>$spot_id</s>" : "<b>$spot_id</b>";
         } else {
             $spot_code = "??? $spot_id";
@@ -157,7 +157,7 @@ class AA_Adminlink {
         }
         $seo  = $item->getValue('seo.............') ?: 'Item';
         $hdln = current(AA_Items::getFormatted(new zids($item_id, 'l'), '_#HEADLINE', AA_BIN_ALL));  // we want also headline of items in trash
-        $hdln = ($hdln and $hdln !== '_#HEADLINE') ? " ($hdln)" : '';
+        $hdln = ($hdln && $hdln !== '_#HEADLINE') ? " ($hdln)" : '';
 
         if (!$item->isActive()) {
             $seo = "<s>$seo</s>";
@@ -189,7 +189,7 @@ class AA_Adminlink {
         if (is_long_id($value)) {
             return self::itemLink($value);
         }
-        if ((int)$value >=883609200 AND (int)$value <= 2208985200) {   // 1998 - 2040
+        if ((int)$value >=883609200 && (int)$value <= 2208985200) {   // 1998 - 2040
             return $value.self::additionalInfo([date("Y-m-d H:i", (int)$value)]);
         }
         return safe($value);
@@ -286,7 +286,7 @@ function PrintItemInfo($item_id) {
         if ($res = DB_AA::select([], "SELECT '' as FieldName, `field_id`, `number`,`text`, `flag` FROM `content`", [['item_id',$long_id, 'l']])) {              // empty FieldName - will be filled later
             array_walk($res, static function (&$v, $k) use ($slice) {
                 $v['FieldName'] =  ($f=$slice->getField($v['field_id'])) ? $f->getName() : '-- invalid --';
-                if (is_long_id($v['text']) and ($hdln = AA::Un("{item:$v[text]:_#HEADLINE}"))) {
+                if (is_long_id($v['text']) && ($hdln = AA::Un("{item:$v[text]:_#HEADLINE}"))) {
                     $v['text'] .= "<br><small>($hdln)</small>";
                 }
                 $flags = '';
@@ -598,7 +598,7 @@ if ($go_finditem_edit && $finditem_edit && $finditem_edit_op) {
     }
 }
 
-if ( strlen($go_search) OR strlen($go_replace) ) {
+if ( strlen($go_search) || strlen($go_replace) ) {
     $row = [];
     if ( strlen($search) OR ( strlen($go_replace) AND (strlen($replace)>5) ) ) {
         $metabase = AA::Metabase();
@@ -685,7 +685,7 @@ if ( strlen($go_search) OR strlen($go_replace) ) {
                         $row[2] = "<small> $code</small>";
                         FrmTabRow($row);
                     }
-                } elseif (strlen($go_replace) AND strlen($search) AND (strlen($replace) > 5)) {
+                } elseif (strlen($go_replace) && strlen($search) && strlen($replace) > 5) {
                     $replace_str = str_replace('{#AAA}', '', $replace);
                     $SQL = "UPDATE `$tbl` SET `$fld` = REPLACE(`$fld`, '" . quote($search) . "', '" . quote($replace_str) . "')";
                     $rep = DB_AA::sql($SQL);
@@ -739,11 +739,11 @@ FrmTabSeparator(_m("Search"));
 echo '<tr><td>';
 echo '<form name="f_findtext" action="">';
 echo '<b>'._m('Find in').'</b>
-      <label><input type="checkbox" name="findinseo"    value="1" '. ((!$findtext OR $findinseo)? 'checked':'').'>'._m("ID & SEO").'</label>&nbsp;&nbsp;
-      <label><input type="checkbox" name="findinview"   value="1" '. ((!$findtext OR $findinview)? 'checked':'').'>'._m("Views").'</label>&nbsp;&nbsp;
-      <label><input type="checkbox" name="findinslice"  value="1" '. ((!$findtext OR $findinslice)? 'checked':'').'>'._m("Slices").'</label>&nbsp;&nbsp;
-      <label><input type="checkbox" name="findinfield"  value="1" '. ((!$findtext OR $findinfield)? 'checked':'').'>'._m("Fields").'</label>&nbsp;&nbsp;
-      <label><input type="checkbox" name="findinspot"   value="1" '. ((!$findtext OR $findinspot)? 'checked':'').'>'._m("Site spots").'</label>&nbsp;&nbsp;
+      <label><input type="checkbox" name="findinseo"    value="1" '. ((!$findtext || $findinseo)? 'checked':'').'>'._m("ID & SEO").'</label>&nbsp;&nbsp;
+      <label><input type="checkbox" name="findinview"   value="1" '. ((!$findtext || $findinview)? 'checked':'').'>'._m("Views").'</label>&nbsp;&nbsp;
+      <label><input type="checkbox" name="findinslice"  value="1" '. ((!$findtext || $findinslice)? 'checked':'').'>'._m("Slices").'</label>&nbsp;&nbsp;
+      <label><input type="checkbox" name="findinfield"  value="1" '. ((!$findtext || $findinfield)? 'checked':'').'>'._m("Fields").'</label>&nbsp;&nbsp;
+      <label><input type="checkbox" name="findinspot"   value="1" '. ((!$findtext || $findinspot)? 'checked':'').'>'._m("Site spots").'</label>&nbsp;&nbsp;
       <label><input type="checkbox" name="findindiscus" value="1" '. ((                      $findindiscus)? 'checked':'').'>'._m("Discussion comments").'</label>&nbsp;&nbsp;
     <br>
     <input type="text" name="findtext" value="'.safe($findtext).'" size=120>&nbsp;&nbsp;
@@ -753,11 +753,11 @@ echo '</td></tr><tr><td>';
 
 echo '<form name="f_replace" action="">';
 echo '<b>'._m('Search and Replace in').'</b>
-      <label><input type="checkbox" name="searchinview"      value="1" '. ((!$search OR $searchinview)? 'checked':'').'>'._m("Views").'</label>&nbsp;&nbsp;
-      <label><input type="checkbox" name="searchinslice"     value="1" '. ((!$search OR $searchinslice)? 'checked':'').'>'._m("Slices").'</label>&nbsp;&nbsp;
-      <label><input type="checkbox" name="searchinfield"     value="1" '. ((!$search OR $searchinfield)? 'checked':'').'>'._m("Fields").'</label>&nbsp;&nbsp;
-      <label><input type="checkbox" name="searchinspot"      value="1" '. ((!$search OR $searchinspot)? 'checked':'').'>'._m("Site spots").'</label>&nbsp;&nbsp;
-      <label><input type="checkbox" name="searchinobject"    value="1" '. ((!$search OR $searchinobject)? 'checked':'').'>'._m("Objects").'</label>&nbsp;&nbsp;
+      <label><input type="checkbox" name="searchinview"      value="1" '. ((!$search || $searchinview)? 'checked':'').'>'._m("Views").'</label>&nbsp;&nbsp;
+      <label><input type="checkbox" name="searchinslice"     value="1" '. ((!$search || $searchinslice)? 'checked':'').'>'._m("Slices").'</label>&nbsp;&nbsp;
+      <label><input type="checkbox" name="searchinfield"     value="1" '. ((!$search || $searchinfield)? 'checked':'').'>'._m("Fields").'</label>&nbsp;&nbsp;
+      <label><input type="checkbox" name="searchinspot"      value="1" '. ((!$search || $searchinspot)? 'checked':'').'>'._m("Site spots").'</label>&nbsp;&nbsp;
+      <label><input type="checkbox" name="searchinobject"    value="1" '. ((!$search || $searchinobject)? 'checked':'').'>'._m("Objects").'</label>&nbsp;&nbsp;
       <label><input type="checkbox" name="searchincodeitems" value="1" '. ((                $searchincodeitems)? 'checked':'').' title="'._m("Items from slices with 'Slice Type' like Code... ").'">'._m("Code Items").'</label>&nbsp;&nbsp;
       <label><input type="checkbox" name="searchinitems"     value="1" '. ((                    $searchinitems)? 'checked':'').'>'._m("All Items").'</label>&nbsp;&nbsp;
       <label><input type="checkbox" name="searchinhistory"   value="1" '. ((                    $searchinhistory)? 'checked':'').'>'._m("History").'</label>&nbsp;&nbsp;

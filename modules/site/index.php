@@ -110,7 +110,7 @@ if ($addcond) {
     $tree->removeVariable($current_spot_id, $delvar);
 } elseif ($delcond) {
     $tree->removeCondition($current_spot_id, $delcond);
-} elseif ($content OR $name) {
+} elseif ($content || $name) {
     $varset     = new CVarset();
     $varset->add("content", "text", $content);
 
@@ -137,11 +137,11 @@ if ($addcond) {
 
 }
 
-if ($addcond OR $delcond OR $content OR $name OR $akce) {
+if ($addcond || $delcond || $content || $name || $akce) {
     AA::Pagecache()->invalidateFor($module_id);  // invalidate old cached values
 }
 
-if ($addcond OR $delcond OR $content OR $name OR $akce OR $addvar OR $delvar) {
+if ($addcond || $delcond || $content || $name || $akce || $addvar || $delvar) {
     $module->saveTree($tree, $akce==='r');  // delete unused spots after we delete one spot
 }
 

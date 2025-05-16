@@ -267,7 +267,7 @@ FrmTabCaption(_m("Change Field IDs"));
 echo"<tr><td>"._m("This page allows to change field IDs. It is a bit dangerous operation and may last long.\n    You need to do it only in special cases, like using search form for multiple slices. <br><br>\n    Choose a field ID to be changed and the new name and number, the dots ..... will be\n    added automatically.<br>")."</td></tr>
 <tr><td><br>"._m("Change from").": <select name='old_id' id='old_id'>";
 $slice_fields = false;
-foreach ($s_fields as $fid => $fname) {
+foreach (array_keys($s_fields) as $fid) {
     if (!in_array($fid, RESERVED_IDS)) {
          if ( AA_Fields::isSliceField($fid)) {
             $slice_fields = true;
@@ -278,14 +278,14 @@ foreach ($s_fields as $fid => $fname) {
 echo "</select> ";
 
 echo _m("to")." <select name='new_id_text' id='new_id_text'>";
-foreach ($d_fields as $fid => $fname) {
+foreach (array_keys($d_fields) as $fid) {
     echo "<option>$fid";
 }
 // if we use also slice setting fields in this slice, then we should generate
 // it also as proposal for renaming
 if ($slice_fields) {
     // once again, but with underscore before field - so it is "slice field"
-    foreach ($d_fields as $fid => $fname) {
+    foreach (array_keys($d_fields) as $fid) {
         echo "<option>_$fid";
     }
 }

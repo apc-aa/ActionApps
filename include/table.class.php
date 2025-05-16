@@ -80,7 +80,7 @@ class AA_Table {
     }
 
     function getOne($r, $c, $att='1') {
-        if (isset($this->colindex[$c]) AND isset($this->rows[$r])) {
+        if (isset($this->colindex[$c]) && isset($this->rows[$r])) {
             $val_arr = $this->rows[$r][$this->colindex[$c]];
             return is_array($val_arr) ? $val_arr[$att] : '';
         }
@@ -181,7 +181,7 @@ class AA_Array {
         return $this->arr[(string)$i];
     }
 
-    function getAll($exp="_#1", $join='', $sort='') {
+    function getAll($exp="_#1", $join='', $sort=''): string {
         $work_arr = $this->arr;
         switch ($sort) {
             case 'key':  ksort($work_arr, SORT_NUMERIC);  break;

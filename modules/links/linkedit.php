@@ -42,7 +42,7 @@ function printChange($field, $change_arr, $original_value="") {
     global $created_by_change; // used for display of initiator of the change
     $i=0;
     foreach ( (array)$change_arr as $key => $val) {
-        if ( trim($original_value) != trim($val) ) {
+        if ( trim($original_value) !== trim($val) ) {
 //            echo "$field:<br>".trim($original_value)."<br>".trim($val);
 
             $hidden_field = $field .'_hid'. $i++;
@@ -149,16 +149,16 @@ if ( $getOldV ){  // error message - fill old values
     $reg  = $r_state['linkedit']['old']['reg'];
     $lang = $r_state['linkedit']['old']['lang'];
 
-    for ( $i=0, $ino=count($reg); $i<$ino; ++$i) {
+    foreach ($reg as $i => $singleReg) {
         $reg_checked[$reg[$i]]=true;
     }
-    for ( $i=0, $ino=count($lang); $i<$ino; ++$i) {
+    foreach ($lang as $i => $singleLang) {
         $lang_checked[$lang[$i]]=true;
     }
 }
 
 // get edited link data
-if ( !$getOldV AND $r_state['link_id'] ) {
+if ( !$getOldV && $r_state['link_id'] ) {
     $id            = $db_link['id'];
     $aa_name       = $db_link['name'];
     $original_name = $db_link['original_name'];
@@ -454,7 +454,7 @@ echo '
     printChange('description', $description_change, $description);
 
     // do not show general categories to public (anonymous) users
-    if ( !Links_IsPublic() AND $link_types) {
+    if ( !Links_IsPublic() && $link_types) {
         FrmInputSelect( 'type', _m('Link type'), $link_types, $type, false, _m('Select the type, if the link belongs to some special category'), get_help_url(AA_LINKS_HELP_LINK,"obecna-kategorie"));
         printChange('type', $type_change, $type);
     } else {
@@ -546,16 +546,16 @@ if ( !Links_IsPublic() OR ($r_state['link_id'] AND $type) ) {
       <tr><td width="50%"><b>'. _m('Region') .'</b><div class="tabhlp"><i>'. _m('select up to 4 regions') .'</i></div></td>
           <td><b>'. _m('Language') .'</b><div class="tabhlp"><i>'. _m('select pege\'s languages') .'</i></div></td></tr>
       <tr><td>';
-    if ( isset($regId) AND is_array($regId) ) {
-        for ( $i=0, $ino=count($regId); $i<$ino; ++$i) {
-            echo '<input type="checkbox" name="reg[]" value="'.$regId[$i].'" '.$regChecked[$i].'>'.$regName[$i].' '.$reg_changes[$i].'<br>';
+    if ( isset($regId) && is_array($regId) ) {
+        foreach ($regId as $i => $singleRegId) {
+            echo '<input type="checkbox" name="reg[]" value="'.$singleRegId.'" '.$regChecked[$i].'>'.$regName[$i].' '.$reg_changes[$i].'<br>';
         }
     }
     echo '</td>
            <td>';
-    if ( isset($langId) AND is_array($langId) ) {
-        for ( $i=0, $ino=count($langId); $i<$ino; ++$i) {
-            echo '<input type="checkbox" name="lang[]" value="'.$langId[$i].'" '.$langChecked[$i].'>'.$langName[$i].' '.$lang_changes[$i].'<br>';
+    if ( isset($langId) && is_array($langId) ) {
+        foreach ($langId as $i => $singleLangId) {
+            echo '<input type="checkbox" name="lang[]" value="'.$singleLangId.'" '.$langChecked[$i].'>'.$langName[$i].' '.$lang_changes[$i].'<br>';
         }
     }
 

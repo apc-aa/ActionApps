@@ -110,7 +110,7 @@ class AA_Actionapps {
 
 
     /** name of AA as in local table*/
-    function getName() {
+    function getName(): string {
         return $this->getValue('ORG_NAME'). ' ('. $this->getValue('AA_HTTP_DOMAIN'). $this->getValue('AA_BASE_DIR'). ')';
     }
 
@@ -190,7 +190,7 @@ class AA_Actionapps {
 
     /** Main communication function - returns AA_Response object */
     function getResponse($request) {
-        if ( !$this->_remote_session_id OR $this->_remote_session_id_time < (now() - 10*60)) {  // 10 minutes
+        if ( !$this->_remote_session_id || $this->_remote_session_id_time < (now() - 10*60)) {  // 10 minutes
             $response = $this->_authenticate();
             if ($response->isError()) {
                 $this->last_error = $response->getError();
@@ -556,13 +556,13 @@ class AA_Difference {
 
     static function _compareArray($template_arr, $destination_arr, $identifier, $ignore) {
         $diff       = [];
-        if (! is_array($template_arr) AND is_array($destination_arr)) {
+        if (! is_array($template_arr) && is_array($destination_arr)) {
             return [0 => new AA_Difference('DELETED', _m('%1 is not array in template slice', [$identifier->toString()]), new AA_Sync_Action('DELETE', $identifier))];
         }
-        if ( is_array($template_arr) AND !is_array($destination_arr)) {
+        if ( is_array($template_arr) && !is_array($destination_arr)) {
             return [0 => new AA_Difference('NEW', _m('%1 is not array in destination slice', [$identifier->toString()]), new AA_Sync_Action('INSERT', $identifier, $template_arr))];
         }
-        if ( !is_array($template_arr) AND !is_array($destination_arr)) {
+        if ( !is_array($template_arr) && !is_array($destination_arr)) {
             return [0 => new AA_Difference('INFO', _m('%1 is not defined for both AAs', [$identifier->toString()]))];
         }
 
@@ -588,7 +588,7 @@ class AA_Difference {
             elseif (!array_key_exists($key,$destination_arr)) {
                 $diff[] = new AA_Difference('DIFFERENT_VALUE', '&nbsp;&nbsp;&nbsp;-&nbsp;'. _m('There is no such key (%1) in destination slice for %2', [$key, $identifier->toString()]), new AA_Sync_Action('UPDATE_VALUE', $sub_identifier, $value));
             }
-            elseif (($value != $destination_arr[$key]) AND !(empty($value) AND empty($destination_arr[$key]))) {  // '' and 0 is considered equal
+            elseif ($value != $destination_arr[$key] && !(empty($value) && empty($destination_arr[$key]))) {  // '' and 0 is considered equal
                // if we're comparing row values, we can also update whole row at once - so we mark it
                $is_different = true;
 
@@ -668,7 +668,7 @@ class AA_Identifier {
         return;
     }
 
-    function toString() {
+    function toString(): string {
         return implode('->',$this->path);
     }
 }
@@ -730,7 +730,7 @@ class AA_Sync_Action {
         if (!$row) {
             return _m('Wrong command - row is not defined - %1', [$idf->toString()]);
         }
-        if ( ($this->type === 'UPDATE_ROW') OR ($this->type === 'UPDATE_VALUE') ) {
+        if ( $this->type === 'UPDATE_ROW' || $this->type === 'UPDATE_VALUE' ) {
             $data = $this->_getDataArray();
             $metabase->fillKeys($data, $idf);
             $metabase->doUpdate($table, $data);

@@ -94,7 +94,7 @@ abstract class AA_Serializable {
     function setProperties($params= []) {
         $class = get_class($this);
         $props = $class::getClassProperties();
-        foreach ($props as $name =>$property) {
+        foreach (array_keys($props) as $name) {
             if (isset($params[$name])) {
                 $this->$name = $params[$name];
             }
@@ -184,7 +184,7 @@ abstract class AA_Serializable {
         // is there rest? Add all the values to the last parameter
         // It is there for older 1-parameter classes, where we do not escape ":"
         // like AA_Generator_Txt - we want it as it was written - not split
-        if ($join_last AND count($split) AND $name) {
+        if ($join_last && count($split) && $name) {
             $params[$name] .= ':' . implode(':', $split);
         }
         return $params;
@@ -196,7 +196,7 @@ abstract class AA_Serializable {
         $parts = [$class_shotcut];
         $props = static::getPersistentProperties();
 
-        foreach ($props as $name => $property) {
+        foreach (array_keys($props) as $name) {
             $value = $this->$name;
             if (is_array($value)) {
                 $value = match (count($value)) {
@@ -295,7 +295,7 @@ class AA_Storable extends AA_Serializable {
     }
 
     public static function factoryFromState($type, $state) {
-        if ((strlen($state['aa_class']) > 0) AND str_starts_with($state['aa_class'], $type)) {
+        if (strlen($state['aa_class']) > 0 && str_starts_with($state['aa_class'], $type)) {
             // we are able to construct also subclasses, so if the property is marked as AA_Formrow, then the real type
             // of the variable could be AA_Formrow_* (like AA_Formrow_Full, ...)
             $type = $state['aa_class'];
@@ -560,7 +560,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
                         $ret   = array_merge($ret, $v->_getSubObjects());
                     }
                 }
-            } elseif ( is_object($this->$property_id) AND is_subclass_of($this->$property_id, 'AA_Object') ) {
+            } elseif ( is_object($this->$property_id) && is_subclass_of($this->$property_id, 'AA_Object') ) {
                 $obj   = $this->$property_id;
                 $ret[] = $obj->getId();
                 $ret   = array_merge($ret, $obj->_getSubObjects());
@@ -706,7 +706,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
         $conds  = $set->getConds();
         $sort   = $set->getSort();
 
-        if (is_object($restrict_zids) AND !$restrict_zids->count()) {
+        if (is_object($restrict_zids) && !$restrict_zids->count()) {
             return new zids(); // restrict_zids defined but empty - no result
         }
 
@@ -754,7 +754,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
                 }
 
                 $field = $properties[$fid];
-                if ( empty($field) OR ($v=="")) {
+                if ( empty($field) || $v=="") {
                     AA::$debug&2 && AA::$dbg->log("skipping $fid in conds[]: not known $fid or empty condition");
                     continue;
                 }
@@ -772,7 +772,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
 
                 // fill arrays to be able to construct select command
                 $tables[$tbl]['cond'] = (new AA_Dbcondition($tbl, "value", $cond['operator'], $cond['value']))->getWhereExp();
-                if ( in_array('all_fields', $cond_flds) OR in_array('all_fields_numeric', $cond_flds) ) {
+                if ( in_array('all_fields', $cond_flds) || in_array('all_fields_numeric', $cond_flds) ) {
                     $tables[$tbl]['join'] = "LEFT JOIN $store as $tbl ON ($tbl.object_id=t0.object_id)";
                 } else {
                     $tables[$tbl]['join'] = "LEFT JOIN $store as $tbl ON ($tbl.object_id=t0.object_id AND " . Cvarset::sqlin("$tbl.property", $cond_flds) . ')'; // OR $tbl.property is NULL))"; - like in content
@@ -1126,7 +1126,7 @@ class AA_Components {
                 $name = str_replace(['.php'], [''],$file);
 
                 // filter out other possible classes
-                if (!$name OR str_starts_with($name, 'Abstract')) {  // We do not want Abstract... classes
+                if (!$name || str_starts_with($name, 'Abstract')) {  // We do not want Abstract... classes
                     continue;
                 }
 

@@ -340,7 +340,7 @@ class ConvertCharset {
                 print $this->DebugOutput(0, 0, CONVERT_TABLES_DIR . $FileName); //Print an error message
                 exit;
             }
-            $FileWithEncTabe = fopen(CONVERT_TABLES_DIR . $FileName, 'rb') or die(); //This die(); is just to make sure...
+            ($FileWithEncTabe = fopen(CONVERT_TABLES_DIR . $FileName, 'rb')) || die(); //This die(); is just to make sure...
             while (!feof($FileWithEncTabe)) {
                 /**
                 * We asume that line is not longer
@@ -390,7 +390,7 @@ class ConvertCharset {
      * @param bool $dot        - allow dot in the escaped sequence
      * @return string
      */
-    function escape($string, $encoding=null, $dot=false) {
+    function escape($string, $encoding=null, $dot=false): string {
         $base  = html_entity_decode($string, ENT_QUOTES);
         if ($encoding) {
             $base  = $this->Convert($base, $encoding, 'us-ascii');
@@ -460,7 +460,7 @@ class ConvertCharset {
         // replace all Windows-1250 accent characters with
         // their non-accent equivalents. Useful for Czech and Slovak languages.
         // Special approach, since Convert class do not do it by itself
-        if (($FromCharset === 'windows-1250') AND ($ToCharset === 'us-ascii')) {
+        if ($FromCharset === 'windows-1250' && $ToCharset === 'us-ascii') {
             $ret = $StringToChange;
             $ret = strtr($ret, "\xE1\xE8\xEF\xEC\xE9\xED\xF2", "\x61\x63\x64\x65\x65\x69\x6E");
             $ret = strtr($ret, "\xF3\xF8\x9A\x9D\xF9\xFA\xFD\x9E\xF4\xBC\xBE", "\x6F\x72\x73\x74\x75\x75\x79\x7A\x6F\x4C\x6C");
@@ -471,7 +471,7 @@ class ConvertCharset {
 
         // replace all utf-8 accent characters with their non-accent equivalents
         // Special approach, since Convert class do not do it by itself
-        if (($FromCharset === 'utf-8') AND ($ToCharset === 'us-ascii')) {
+        if ($FromCharset === 'utf-8' && $ToCharset === 'us-ascii') {
 
             // the strtr and the $table is workaround for systems with broken iconv (RHEL 4 with glibc 2.3.x), where iconv gives bad result just with questionmarks
             $table = [

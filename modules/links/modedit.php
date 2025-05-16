@@ -97,11 +97,10 @@ if ($template['Links']) {        // add module
         MsgPage(_m('No permission to add module'));
         exit;
     }
-} else {                    // edit module
-    if (!CheckPerms( AuthGetUid(), "slice", $module_id, PS_LINKS_SETTINGS)) {
-        MsgPage(_m('No permission to edit module'));
-        exit;
-    }
+} elseif (!CheckPerms( AuthGetUid(), "slice", $module_id, PS_LINKS_SETTINGS)) {
+    // edit module
+    MsgPage(_m('No permission to edit module'));
+    exit;
 }
 
 if ( ($insert AND $superadmin) OR $update ) {
@@ -133,7 +132,7 @@ if ( ($insert AND $superadmin) OR $update ) {
         $slice_id = $module_id;
 
         // now set all module specific settings
-        if ( $update AND $superadmin) {
+        if ( $update && $superadmin) {
             // tree_start and select_start could be changed only by superadmin
             // Maybe we could allow also administrators to change $select_start in
             // future
@@ -154,7 +153,7 @@ if ( ($insert AND $superadmin) OR $update ) {
                 $err["DB"] = MsgErr("Can't change links table");
                 break;
             }
-        } elseif ($insert AND $superadmin) { // insert (add)
+        } elseif ($insert && $superadmin) { // insert (add)
             $varset->clear();
 
             $p_template_id = ( $template['Links'] ?

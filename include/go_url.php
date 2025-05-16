@@ -75,7 +75,7 @@ function HttpGetParameters($parameters) {
  * @return string
  */
 function StateUrl($url=''): string {
-    return ((!str_contains($url, 'module_id=')) AND is_long_id(AA::$module_id)) ? get_url($url, ['module_id' =>AA::$module_id]) : $url;
+    return (!str_contains($url, 'module_id=') && is_long_id(AA::$module_id)) ? get_url($url, ['module_id' =>AA::$module_id]) : $url;
 }
 
 /**
@@ -137,7 +137,7 @@ function get_admin_url($href='', $params='', $state=true): string {
  * @param $anchor
  * @return string
  */
-function get_help_url($href, $anchor) {
+function get_help_url($href, $anchor): string {
     return $href."#".$anchor;
 }
 
@@ -156,7 +156,7 @@ function go_url($url, $add_param="", $usejs=false, $code=302) {
         $url = get_url($url, $add_param);
     }
 
-    if ( $usejs OR headers_sent() OR ($_SERVER['SERVER_PROTOCOL']==='INCLUDED')) { // SSI included  // INCLUDED does not work 2024 HM
+    if ( $usejs || headers_sent() || $_SERVER['SERVER_PROTOCOL']==='INCLUDED') { // SSI included  // INCLUDED does not work 2024 HM
         echo '<script>window.location = "'.$url.'";</script>';
     } else {
         header("Location: $url", true, $code);

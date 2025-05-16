@@ -310,7 +310,7 @@ class AA_Exporter_Html_Download extends AA_Exporter_Html {
     }
 
     /* returns default file extension.  */
-    function getExtension() {
+    function getExtension(): string {
         return 'html';
     }
 }
@@ -324,7 +324,7 @@ class AA_Exporter_Excel extends AA_Exporter_Html {
     }
 
     /* returns default file extension.  */
-    function getExtension() {
+    function getExtension(): string {
         return 'xls';
     }
 }
@@ -433,7 +433,7 @@ class AA_Fieldset {
         $this->_types[]  = 'd';
     }
 
-    function fieldCount()          { return count($this->_fields); }
+    function fieldCount(): int     { return count($this->_fields); }
     function getDefinition($index) { return $this->_fields[$index]; }
     function getName($index)       { return $this->_names[$index]; }
     function isField($index)       { return $this->_types[$index] === 'f'; }
@@ -528,7 +528,7 @@ class AA_Exportsetings extends AA_Object {
         $slice_id = $this->aa_owner;
         $slice  = AA_Slice::getModule($slice_id);
 
-        if (!$slice OR !$slice->isValid()) {
+        if (!$slice || !$slice->isValid()) {
             echo _m('No slice specified');
             exit;
         }
@@ -557,33 +557,31 @@ class AA_Exportsetings extends AA_Object {
                     $fs->addAlias($f);
                 }
             }
-        } else {
-            if ($this->grabber_type === 'AA\IO\Grabber\Discussion') {
-                foreach ($possible_fields as $field_id) {
-                    $fs->addField($field_id);
-                }
-            } else {
-                foreach ($possible_fields as $field_id) {
-                    // skip packed fields
-                    if ( in_array($field_id, ['id..............', 'slice_id........'])) {
-                        continue;
-                    }
-                    $field = $fields->getField($field_id);
-                    if ($this->type === 'human') {
-                        // try to convert the data to human readable form
-                        [$field_type,] = $field->getSearchType();
-                        switch ($field_type) {
-                            case 'date':     $fs->addAlias('{date:Y-m-d H#:i:{'.$field_id.'}}', $field->getProperty('name')); break;
-                            case 'relation': $fs->addAlias('{item:{@'.$field_id.':-}:_#HEADLINE:|}', $field->getProperty('name')); break;
-                            default:         $fs->addField($field_id, $field->getProperty('name'));
-                        }
-                    } else {
-                        $fs->addField($field_id, $field->getProperty('name'));
-                    }
-                }
-                $fs->addField('u_slice_id......', 'Slice ID');
-                $fs->addField('unpacked_id.....', 'Item ID');
+        } elseif ($this->grabber_type === 'AA\IO\Grabber\Discussion') {
+            foreach ($possible_fields as $field_id) {
+                $fs->addField($field_id);
             }
+        } else {
+            foreach ($possible_fields as $field_id) {
+                // skip packed fields
+                if ( in_array($field_id, ['id..............', 'slice_id........'])) {
+                    continue;
+                }
+                $field = $fields->getField($field_id);
+                if ($this->type === 'human') {
+                    // try to convert the data to human readable form
+                    [$field_type,] = $field->getSearchType();
+                    switch ($field_type) {
+                        case 'date':     $fs->addAlias('{date:Y-m-d H#:i:{'.$field_id.'}}', $field->getProperty('name')); break;
+                        case 'relation': $fs->addAlias('{item:{@'.$field_id.':-}:_#HEADLINE:|}', $field->getProperty('name')); break;
+                        default:         $fs->addField($field_id, $field->getProperty('name'));
+                    }
+                } else {
+                    $fs->addField($field_id, $field->getProperty('name'));
+                }
+            }
+            $fs->addField('u_slice_id......', 'Slice ID');
+            $fs->addField('unpacked_id.....', 'Item ID');
         }
 
         MoreTimeLimit(3600); // set_time_limit to 1 hour (at least)
@@ -606,7 +604,7 @@ class AA_Exportsetings extends AA_Object {
      * @param $buttons
      * @return string
      */
-    protected static function getManagerRowHtml($fields, $aliases, $buttons) {
+    protected static function getManagerRowHtml($fields, $aliases, $buttons): string {
         return '
             <tr>
               <td><input name="chb[x_#AA_ID___]" value="" type="checkbox"></td>

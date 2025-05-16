@@ -92,14 +92,14 @@ function NamePath($skip, $path, $translate, $separator = " > ", $url="", $whole=
     $ids       = explode(",",$path);
     $name      = '';
     $delimiter = '';
-    if ( isset($ids) AND is_array($ids)) {
+    if ( isset($ids) && is_array($ids)) {
         $last=end($ids);
         if ( $url ) {
             foreach ($ids as $catid) {
                 if (--$skip >= 0) {
                     continue;
                 }
-                if ( ($catid != $last) OR $whole ) { // do not make link for last category
+                if ( $catid !== $last || $whole ) { // do not make link for last category
                     $name .= $delimiter."<a href=\"$url$catid\" $target_atrib>".$translate[$catid]."</a>";
                 } else {
                     $name .= $delimiter.$translate[$catid];
@@ -132,7 +132,7 @@ function Links_Category2SliceID($cid) {
  * @param $sl_id
  * @return int
  */
-function Links_SliceID2Category($sl_id) {
+function Links_SliceID2Category($sl_id): int {
     $psl_id = q_pack_id($sl_id);
     return (int) substr( $psl_id, 0, strspn($psl_id, "1234567890"));
 }
@@ -147,7 +147,7 @@ function Links_SliceID2Category($sl_id) {
  *                 {@link https://actionapps.org/faq/#1337}
  */
 function Links_GetLinkContent($zids) {
-    if (!$zids OR $zids->count()<1) {
+    if (!$zids || $zids->count()<1) {
         return [];
     }
 
@@ -165,7 +165,7 @@ function Links_GetLinkContent($zids) {
         $changes_map[$db->f('proposal_link_id')] = $db->f('changed_link_id');
     }
 
-    if ( isset($changes_ids) AND is_array($changes_ids) ) {
+    if ( isset($changes_ids) && is_array($changes_ids) ) {
         $changes_where = ' OR id '. (count($changes_ids)>1 ? 'IN ('. implode( ",", $changes_ids ). ')' : "='". $changes_ids[0] ."'");
     }
 
@@ -220,7 +220,7 @@ function Links_GetLinkContent($zids) {
  */
 function Links_GetCategoryContent($zids) {
     $content = [];
-    if ($zids AND !$zids->isEmpty()) {
+    if ($zids && !$zids->isEmpty()) {
         $categs = DB_AA::select([], 'SELECT * FROM `links_categories`', [['id', $zids->getArray(), 'i']]);
         foreach ($categs as $record) {
             $foo_id = $record['id'];
@@ -336,7 +336,7 @@ $GENERAL_CATS['Kalend��e akc�']                             = ['pri' => 30
 $GENERAL_CATS['Ostatn� akce']                               = ['pri' => 3060, 'super' => 'Akce'];
 
  /** Fills $LINK_TYPE_CONSTANTS_ARR by general categories (if not filled, yet) */
-function  Links_LoadGlobalCategories() {
+function  Links_LoadGlobalCategories(): bool {
     global $LINK_TYPE_CONSTANTS, $LINK_TYPE_CONSTANTS_ARR;
     if ( !$LINK_TYPE_CONSTANTS ) {
         return false;
@@ -363,7 +363,7 @@ function  Links_LoadGlobalCategories() {
  */
 function Links_IsGlobalCategory($type) {
     global $LINK_TYPE_CONSTANTS_ARR;
-    if ( !Links_LoadGlobalCategories() OR !$LINK_TYPE_CONSTANTS_ARR[$type] ) {
+    if ( !Links_LoadGlobalCategories() || !$LINK_TYPE_CONSTANTS_ARR[$type] ) {
         return false;
     }
     return $type;
@@ -372,7 +372,7 @@ function Links_IsGlobalCategory($type) {
 /** Returns priority of general category (for sorting) */
 function  Links_GlobalCatPriority($type) {
     global $LINK_TYPE_CONSTANTS_ARR;
-    if ( !Links_LoadGlobalCategories() OR !$LINK_TYPE_CONSTANTS_ARR[$type] ) {
+    if ( !Links_LoadGlobalCategories() || !$LINK_TYPE_CONSTANTS_ARR[$type] ) {
         return 0;
     }
     return $LINK_TYPE_CONSTANTS_ARR[$type];

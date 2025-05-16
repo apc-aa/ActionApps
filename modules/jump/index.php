@@ -28,7 +28,9 @@ require_once __DIR__ . "/../../include/init_page.php";
 require_once __DIR__ . "/../../include/varset.php";
 require_once __DIR__ . "/../../include/view.php";
 
-is_object( $db ) || ($db = getDB());
+if (!is_object( $db )) {
+    $db = getDB();
+}
 $db->query("SELECT * FROM jump WHERE slice_id = ".xpack_id($slice_id));
 if ($db->next_record()) {
     $dest       = $db->f("destination");

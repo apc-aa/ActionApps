@@ -74,7 +74,7 @@ class AA_MbC {
         $this->c = [$column['Field'], $column['Type'], $column['Null']==='YES', $column['Key'], $column['Default'], $column['Extra'], $column['Comment']];
     }
 
-    function isKey() {
+    function isKey(): bool {
         return str_contains($this->c[3], 'PRI');
     }
 
@@ -82,7 +82,7 @@ class AA_MbC {
         return $this->c[0];
     }
 
-    private function _getBaseType() {
+    private function _getBaseType(): string {
         $dbtype = strtolower($this->c[1]);
         return substr($dbtype, 0, strspn($dbtype, "abcdefghijklmnopqrstuvwxyz"));
     }
@@ -90,7 +90,7 @@ class AA_MbC {
     /** @return int max length of the field if we know it */
     public function getMaxLength(): int {
         $part = [];
-        return preg_match("/\(([0-9]*)\)/", $this->c[1], $part) ? (int)$part[1] : 0;
+        return preg_match("/\\((\\d*)\\)/", $this->c[1], $part) ? (int)$part[1] : 0;
     }
 
     /** @return string - database field type - 'float' | 'int' | 'string' | 'text' */
@@ -173,7 +173,7 @@ class AA_MbC {
 
     /** @return bool - if the field type is binary or varbinary or *blob */
     public function isBinary(): bool {
-        return (str_contains($this->_getBaseType(), 'binary') or str_contains($this->_getBaseType(), 'blob'));
+        return (str_contains($this->_getBaseType(), 'binary') || str_contains($this->_getBaseType(), 'blob'));
     }
 
     private function _getSearchType() {
@@ -187,10 +187,10 @@ class AA_MbC {
     function getAsProperty(bool $edit=true): ?AA_Property {
         $type = $this->getFieldType();
         if ($this->isKey() OR (strtolower($this->c[5]) === 'auto_increment')) {
-            // for editing or int/long/packed ids do not allow editing - allow edit keys just for new text field (nodes table)
+        // for editing or int/long/packed ids do not allow editing - allow edit keys just for new text field (nodes table)
             if ($edit OR ($type==='int') OR ($type==='float') OR $this->getMaxLength()<=32) {
-                return null;
-            }
+            return null;
+        }
         }
         // $id,       $name,     $type, $multi, $persistent, $validator, $required, $input_help, $input_morehlp='', $example='', $show_content_type_switch=0, $content_type_switch_default=, $perms=null, $default=null) {
         $validator = ($len = $this->getMaxLength()) ? [$type,['maxlength'=>$len]] : $type;
@@ -198,7 +198,7 @@ class AA_MbC {
         return  new AA_Property( $this->c[0], _mdelayed($this->c[0]), $type, false,  true, $validator, $required, $this->c[6]);
     }
 
-    function getCreateSql() {
+    function getCreateSql(): string {
         $SQL  = '`'.  $this->c[0] .'`';                     // column name
         $SQL .= ' '.  $this->c[1];                          // column definition
         if (!$this->c[2]) {                                 // NULL ?
@@ -224,7 +224,7 @@ class AA_MbC {
 
     /** returns database structure definition as PHP code (array)
      *  not used, yet (and question is, if ever) */
-    function getDefinition() {
+    function getDefinition(): string {
         $ret  = "\n        '".$this->c[0]."' => array(";
         if ($this->c[0]) { $ret .= "\n            'Field'   => \"".$this->c[0].'",';  }
         if ($this->c[1]) { $ret .= "\n            'Type'    => \"".$this->c[1].'",';  }
@@ -382,7 +382,7 @@ class AA_MbT implements Iterator, ArrayAccess, Countable {
     }
 
     function isKey($columnname): bool {
-        return ($this->k[$columnname] ? true : false);
+        return ((bool) $this->k[$columnname]);
     }
 
     /** get type of this key for zids object - 's' | 'w' | 'p' | 'l'
@@ -423,7 +423,7 @@ class AA_MbT implements Iterator, ArrayAccess, Countable {
     }
 
     /** returns database structure definition as PHP code (array) */
-    function getDefinition() {
+    function getDefinition(): string {
         $defs = [];
         foreach ($this->c as $column) {
             $defs[] = $column->getDefinition();
@@ -558,7 +558,7 @@ class AA_MbT implements Iterator, ArrayAccess, Countable {
                     $ret[$colname] = (int)$value;
                 } elseif ($type === 'float') {
                     $ret[$colname] = (float)$value;
-                } elseif (AA_Metabase::isPacked($this->t, $colname) AND is_long_id($value)) {
+                } elseif (AA_Metabase::isPacked($this->t, $colname) && is_long_id($value)) {
                     $ret[$colname] = '0x' . $value;
                 } else {
                     $ret[$colname] = qquote(($maxlen = $coldef->getMaxLength()) ? substr($value, 0, $maxlen) : $value);
@@ -709,7 +709,7 @@ class AA_Metabase {
     }
 
     /** static method */
-    static function isTableKeysSupported($tablename)
+    static function isTableKeysSupported($tablename): bool
     {
         static $SUPPORTED_TABLES = [
             // single keys
@@ -780,7 +780,7 @@ class AA_Metabase {
      * @param $column
      * @return bool
      */
-    static function isPacked($tablename, $column) {
+    static function isPacked($tablename, $column): bool {
         return in_array($column, self::getPacked($tablename));
     }
 
@@ -872,7 +872,7 @@ class AA_Metabase {
      * @return bool|int   0|false on error
      */
     function doUpdate($tablename, $data) {
-        if ( ($varset = $this->getVarset4Data($tablename, $data)) AND $this->isKeysFilled($tablename, $varset)) {
+        if ( ($varset = $this->getVarset4Data($tablename, $data)) && $this->isKeysFilled($tablename, $varset)) {
             return $varset->doUpdate($tablename);
         }
         return false;
@@ -913,7 +913,7 @@ class AA_Metabase {
      * @return bool|int   0|false on error
      */
     function doReplace($tablename, $data, $nohalt=null) {
-        if ( ($varset = $this->getVarset4Data($tablename, $data)) AND $this->isKeysFilled($tablename, $varset)) {
+        if ( ($varset = $this->getVarset4Data($tablename, $data)) && $this->isKeysFilled($tablename, $varset)) {
             return $varset->doTrueReplace($tablename, $nohalt);
         }
         return false;
@@ -962,7 +962,7 @@ class AA_Metabase {
      * @return bool|int   0|false on error
      */
     function doDelete(string $tablename, array $keydata) {
-        if ( ($varset = $this->getVarset4Data($tablename, $keydata)) AND $this->isKeysFilled($tablename, $varset)) {
+        if ( ($varset = $this->getVarset4Data($tablename, $keydata)) && $this->isKeysFilled($tablename, $varset)) {
             return $varset->doDelete($tablename);
         }
         return false;
@@ -983,7 +983,7 @@ class AA_Metabase {
      * @param Cvarset $varset
      * @return bool
      */
-    private function isKeysFilled($tablename, $varset) {
+    private function isKeysFilled($tablename, $varset): bool {
         if ($table_keys = $this->getKeys($tablename)) {
             foreach ($table_keys as $key) {
                 if (!$varset->get((string)$key)) {  // 0 and null is probably not allowed for key
@@ -1003,10 +1003,10 @@ class AA_Metabase {
         $db     = getDb();
         $tables = $db->table_names();
         foreach ($tables as $table) {
-            if ($only_tables and !in_array($table['table_name'], $only_tables)) {
+            if ($only_tables && !in_array($table['table_name'], $only_tables)) {
                 continue;
             }
-            if ( !$regular or !in_array(substr($table['table_name'],0,4), ['bck_', 'tmp_'])) {
+            if ( !$regular || !in_array(substr($table['table_name'],0,4), ['bck_', 'tmp_'])) {
                 $this->tables[$table['table_name']] = AA_MbT::factoryFromDb($table['table_name']);
             }
         }
@@ -1025,7 +1025,7 @@ class AA_Metabase {
     }
 
     /** returns database structure definition as PHP code (array) */
-    function getDefinition() {
+    function getDefinition(): string {
         $defs = [];
         foreach ($this->tables as $table) {
             $defs[]= $table->getDefinition();
@@ -1109,7 +1109,7 @@ class AA_Metabase {
         if (count($table_keys) === 1) {
             $table_key = $table_keys[0];
         }
-        elseif ((count($table_keys) === 2) AND in_array($module_field, $table_keys)) {
+        elseif (count($table_keys) === 2 && in_array($module_field, $table_keys)) {
             // two keys, but one of them is module_id, which is OK
             $table_key = ($table_keys[0] == $module_field) ? $table_keys[1] : $table_keys[0];
         }
@@ -1121,7 +1121,7 @@ class AA_Metabase {
         }
 
         $module_val   = self::isPacked($module_table, $module_field) ? q_pack_id($module_id) : $module_id;
-        $key_used     = !$table_key ? '' : (self::isPacked($tablename, $table_key) ? "unpack:$table_key" : $table_key);
+        $key_used     = $table_key ? (self::isPacked($tablename, $table_key) ? "unpack:$table_key" : $table_key) : ('');
 
         $SQL = "SELECT $tablename.* FROM $tablename $join_sql WHERE $module_table.$module_field = '$module_val'";
 
@@ -1172,7 +1172,7 @@ class AA_Metabase {
             $table_sql_2 = $metabase->getCreateSql($tablename);
 
             $diffs[$tablename] = [
-                'equal'  => (str_replace($eq_vars, $eq_novars, $table_sql_1) == str_replace($eq_vars, $eq_novars, $table_sql_2)),
+                'equal'  => (str_replace($eq_vars, $eq_novars, $table_sql_1) === str_replace($eq_vars, $eq_novars, $table_sql_2)),
                 'table1' => $table_sql_1,
                 'table2' => $table_sql_2,
             ];

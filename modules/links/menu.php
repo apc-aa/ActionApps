@@ -45,7 +45,7 @@ require_once __DIR__ . "/../../include/mgettext.php";
 //mgettext_bind(substr(LANG_FILE,0,2), 'news');
 
 // make sure LINKS module specific constants are defined - should be defined in config.php
-defined('AA_LINKS_HELP_MAIN') OR define('AA_LINKS_HELP_MAIN', '');
+defined('AA_LINKS_HELP_MAIN') || define('AA_LINKS_HELP_MAIN', '');
 
 // I don't want to call AA menus as early as including menu.php, because some permissions' functions are called. Hence I call get_aamenus in showMenu().
 

@@ -80,7 +80,7 @@ if ($cancel) {
 
 $slice = AA_Slice::getModule(AA::$module_id);
 
-if (!IfSlPerm(PS_FIELDS) OR !$slice) {
+if (!IfSlPerm(PS_FIELDS) || !$slice) {
     AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You have not permissions to change fields settings"), "admin");
     exit;
 }
@@ -134,11 +134,11 @@ if ($del) {
     $Msg = MsgOk(_m("Field delete OK"));
 }
 
-if ($move_als AND $move_als_to) {
+if ($move_als && $move_als_to) {
     [$m_name,$m_fid,$m_pos]  = explode('|',$move_als,3);   // _#HEADLINE|headline........|2
     $m_pos = (int)$m_pos;
 
-    if (strlen($m_name)!==10 OR strlen($m_fid)!==16 OR $m_pos<1 OR $m_pos>3 OR strlen($move_als_to)!==16) {
+    if (strlen($m_name)!==10 || strlen($m_fid)!==16 || $m_pos<1 || $m_pos>3 || strlen($move_als_to)!==16) {
         $Msg = MsgErr(_m('Invalid move alias parameters'));
     } elseif ($source = DB_AA::select1('', "SELECT alias{$m_pos} AS ax, alias{$m_pos}_func AS ax_func, alias{$m_pos}_help AS ax_help FROM field", [['id',$m_fid], ['alias'.$m_pos,$m_name], ['slice_id',AA::$module_id,'l']])) {  // not necessary - we have set the halt_on_error
         $dest_pos = 0;
@@ -172,7 +172,7 @@ if ($move_als AND $move_als_to) {
 
 if ($update) {
     do {
-        if (!(isset($name) AND is_array($name))) {
+        if (!(isset($name) && is_array($name))) {
             break;
         }
         foreach ($name as $key => $val) {
@@ -268,7 +268,7 @@ $all_aliasses = [];
 foreach ($s_fields as $fld) {
     foreach (['alias1','alias2','alias3',] as $fldname) {
         $alias = $fld[$fldname];
-        if (!trim($alias) OR ($alias === '_#UNDEFINE')) {
+        if (!trim($alias) || $alias === '_#UNDEFINE') {
             continue;
         }
         if (isset($all_aliasses[$alias])) {
@@ -361,7 +361,7 @@ FrmTabCaption('', $form_buttons);
 <tbody>
 <?php
 foreach ( $s_fields as $fld) {
-    $fld->showFieldAdminRow($analyze OR $fix);
+    $fld->showFieldAdminRow($analyze || $fix);
 }
 $form_buttons['slice_fields'] = ['value' => ($slice_fields ? 1 : 0)];
 
@@ -378,7 +378,7 @@ FrmTabEnd( $form_buttons);
         if ( !confirm("<?php echo _m("Do you really want to delete this field from this slice?"); ?>")) {
             return;
         }
-        const url = "<?php echo get_url('', ["del" => 1, "analyze" => ($analyze or $fix)] + ($slice_fields ? ['slice_fields' => 1] : []), true); ?>";
+        const url = "<?php echo get_url('', ["del" => 1, "analyze" => ($analyze || $fix)] + ($slice_fields ? ['slice_fields' => 1] : []), true); ?>";
         window.location=url + "&fid=" + encodeURIComponent(id);
     }
 </script>

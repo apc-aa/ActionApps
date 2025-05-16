@@ -147,7 +147,7 @@ class DB_AA
         } else {
             $key = key($column);
             $values = reset($column);
-            if (ctype_digit((string)$key) or empty($key)) {
+            if (ctype_digit((string)$key) || empty($key)) {
                 if (!is_array($values)) {
                     while ($db->next_record()) {
                         $ret[] = $db->record($values);
@@ -271,7 +271,7 @@ class DB_AA
         $cols = self::makeCols($varlist);
         $wh   = self::makeWhere($where);
         $ret  = false;
-        if ($cols and $wh) {
+        if ($cols && $wh) {
             $db = getDB();
             $db->query("UPDATE `$table` SET $cols $wh");
             $ret = $db->affected_rows();
@@ -331,7 +331,7 @@ class DB_AA
             if (in_array($type, ['>', '<', '<=', '>=', '<>', '!='])) {
                 $operator = $type;
                 $type = 'i';
-            } elseif (($type === 'LIKE') or ($type === 'NOT LIKE')) {
+            } elseif ($type === 'LIKE' || $type === 'NOT LIKE') {
                 $where[] = "$name $type '". addcslashes($value,"'") . "'";    // see field LIKE '\_%'
                 continue;
             } elseif ($type === 'RLIKE') {
@@ -356,7 +356,7 @@ class DB_AA
             } elseif ($type === 'CONTAIN') {
                 $where[] = "$name LIKE '%". addcslashes(quote($value),"_%") ."%'";
                 continue;
-            } elseif (($type === 's<>') or ($type === 's!=')) {
+            } elseif ($type === 's<>' || $type === 's!=') {
                 if (is_array($value)) {
                     switch (count($value)) {
                         case 0:
@@ -372,7 +372,7 @@ class DB_AA
                     $where[] = "$name <> " . qquote($value);
                 }
                 continue;
-            } elseif (($type === 'l<>') or ($type === 'l!=')) {
+            } elseif ($type === 'l<>' || $type === 'l!=') {
                 $where[] = "$name <> " . xpack_id($value);
                 continue;
             } elseif ($type === 'FILLED') {

@@ -28,7 +28,7 @@
 do {
 
     // Procces group data ---------------------
-    ValidateInput("group_name",        _m("Name"),        $group_name,        $err, ($add_submit ? true : false), "text");
+    ValidateInput("group_name",        _m("Name"),        $group_name,        $err, ((bool) $add_submit), "text");
     ValidateInput("group_description", _m("Description"), $group_description, $err, false,                        "text");
     if ( count($err)) {
         break;
@@ -67,8 +67,8 @@ do {
         $assigned_users = array_map('rawurldecode', explode(",",$posted_users));
     }
 
-    if (isset($sel_users) AND is_array($sel_users) AND ($sel_users["n"]=="")) {
-        foreach ( $sel_users as $foo_uid => $foo_val) {
+    if (isset($sel_users) && is_array($sel_users) && $sel_users["n"]=="") {
+        foreach ( array_keys($sel_users) as $foo_uid) {
             DelGroupMember($selected_group, $foo_uid);
         }
     }

@@ -68,7 +68,7 @@ $SQL       = "SELECT feed_id, name, node_name, remote_slice_id, remote_slice_nam
 $ext_feeds = GetTable2Array($SQL, 'feed_id');
 
 $rows = [];
-if ($ext_feeds AND is_array($ext_feeds)) {
+if ($ext_feeds && is_array($ext_feeds)) {
     $row = [];
     foreach ($ext_feeds as $k => $v) {
         $row['node_name']    = $v['node_name'];

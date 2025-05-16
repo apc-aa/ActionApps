@@ -48,7 +48,7 @@ $nb_manager = ( $editor_page ?
   '<span class=nbdisable>'. _m("Code Manager") .'</span>':
   '<a href="'. StateUrl("index.php"). '"><span class=nbenable>'. _m("Code Manager") .'</span></a>');
 
-$nb_settings = ( ( $settings_page OR !IfSlPerm(PS_MODW_SETTINGS) ) ?
+$nb_settings = ( ( $settings_page || !IfSlPerm(PS_MODW_SETTINGS) ) ?
   '<span class=nbdisable>'. _m("Module Settings") .'</span>':
   '<a href="'. StateUrl(AA_Module::getModuleInfo('dir', $module_id). "slicedit.php") .'"><span class=nbenable>'. _m("Module Settings") .'</span></a>');
 
@@ -60,7 +60,7 @@ $nb_logo = '<a href="'. AA_INSTAL_PATH .'"><img src="'.$nb_backpath.'../images/a
 
 $nb_go = '<span class=nbenable>'. _m("Go") .'</span>';
 
-$nb_usermng = ( (!IfSlPerm(PS_NEW_USER) OR $usermng_page) ?
+$nb_usermng = ( (!IfSlPerm(PS_NEW_USER) || $usermng_page) ?
   '<span class=nbdisable>'. _m("Users") .'</span>' :
   '<a href="'. StateUrl("um_uedit.php") .'"><span class=nbenable>'. _m("Users") .'</span></a>');
 

@@ -205,7 +205,7 @@ echo "<tr>
          <select name=\"view_slice\" OnChange=\"SelectViewSlice()\">";
 // slice selection
 foreach ( $g_modules as $k => $v) {
-    if ( ($v['type'] !== 'S') OR !$sliceWview[$k] ) {
+    if ( $v['type'] !== 'S' || !$sliceWview[$k] ) {
         continue;                      // we can feed just between slices ('S')
     }
     $selected = ( (string)AA::$module_id === (string)$k ) ? "selected" : "";

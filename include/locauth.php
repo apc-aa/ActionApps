@@ -44,7 +44,7 @@ class AA_Auth extends Auth {
 
     /** Is some user logged in? The is_authenticated() works differently, so we added this one  */
     public function is_user(): bool {
-        return strlen($this->auth["uid"]) and ($this->auth["uid"] !== 'nobody');
+        return strlen($this->auth["uid"]) && $this->auth["uid"] !== 'nobody';
     }
 
     public function getUid(): string {
@@ -78,7 +78,7 @@ class AA_Auth extends Auth {
 
         bind_mgettext_domain(DEFAULT_LANG_INCLUDE);
 
-        if (!$login_msg and $username) {
+        if (!$login_msg && $username) {
             $login_msg = '<div style="color:red;"><b>' . _m("Either your username or your password is not valid") . '</b></div>';
             $login_msg .= '<div>' . _m("Please try again!") . '</div>';
             $login_msg .= '<div>' . _m("If you are sure you have typed the correct password, please e-mail <a href=mailto:%1>%1</a>", [ERROR_REPORTING_EMAIL]) . '</div>';
@@ -124,10 +124,10 @@ class AA_Auth extends Auth {
     }
 
     function auth_preauth() {
-        if (isset($_POST['username']) and isset($_POST['password'])) {
+        if (isset($_POST['username']) && isset($_POST['password'])) {
             return $this->_validatelogin($_POST['username'], $_POST['password'], $_POST['code2fa']);
         }
-        if (isset($_GET['username']) and isset($_GET['password'])) {
+        if (isset($_GET['username']) && isset($_GET['password'])) {
             return $this->_validatelogin($_GET['username'], $_GET['password'], $_GET['code2fa']);
         }
         return false;

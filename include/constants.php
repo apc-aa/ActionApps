@@ -99,7 +99,7 @@ class AA_Alias {
      */
     public static function factory(?string $alias, ?string $funct, ?string $field_id, ?string $hlp = ''): ?AA_Alias
     {
-        if ($alias and (str_starts_with($alias, '_#'))) {
+        if ($alias && str_starts_with($alias, '_#')) {
             return new AA_Alias($alias, $funct, $field_id, $hlp);
         }
         return null;
@@ -119,7 +119,7 @@ class AA_Alias {
         if (preg_match("/^_#[A-Z0-9_#]{8}$/", $text) === 1) {   // pattern="_#[A-Z0-9_#]{8} - used also in se_field.php UI"
             return $text;
         }
-        return ($raw AND (preg_match("/^[A-Z0-9_#]{8}$/", $text) === 1)) ? "_#$text" : '';
+        return ($raw && preg_match("/^[A-Z0-9_#]{8}$/", $text) === 1) ? "_#$text" : '';
     }
 
     /** Is this alias disabled? */
@@ -131,7 +131,7 @@ class AA_Alias {
     public function isMoveable(): bool {
         $fnc = $this->getFnc();
         $prm = $this->getFncParam();
-        return (($fnc === 'f__') OR ($fnc === 'f_t' AND strlen($prm)>12)) AND !str_contains($prm,'_#this');   // @todo - make the check more accurate (see ChangeF_t2F__) - 12 - not just :csv, but also :safe, :javascript, :urlencode, :striptags, :rss, :conds, :asis, :substitute, :debug
+        return (($fnc === 'f__') || ($fnc === 'f_t' && strlen($prm)>12)) && !str_contains($prm,'_#this');   // @todo - make the check more accurate (see ChangeF_t2F__) - 12 - not just :csv, but also :safe, :javascript, :urlencode, :striptags, :rss, :conds, :asis, :substitute, :debug
     }
 
     /**

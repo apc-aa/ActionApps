@@ -72,12 +72,12 @@ class AA_View {
         if (!isset($this->fields) OR $force) {
             $this->fields = DB_AA::select1([], 'SELECT view.*, module.deleted, module.lang_file FROM view, module', [['module.id', 'view.slice_id', 'j'], ['view.id', $this->id]]);
         }
-        return $this->fields ? true : false;
+        return (bool) $this->fields;
     }
 
     /** Checks, if view exists and the slice is not deleted */
     function isValid() {
-        return $this->load() AND !$this->f('deleted') AND !$this->isDisabled();
+        return $this->load() && !$this->f('deleted') && !$this->isDisabled();
     }
 
     /** f function
@@ -137,7 +137,7 @@ class AA_View {
         if ($this->f('field3')) {
             $id .= " ({$this->f('field3')})";
         }
-        if ($name AND $this->f('name')) {
+        if ($name && $this->f('name')) {
             $id .= " - {$this->f('name')}";
         }
         return a_href($this->jumpUrl(), Txt::decoratedName($id, !$this->isValid()));
@@ -200,7 +200,7 @@ class AA_View {
      * @param $param
      */
     protected function resolveCondsConflict(&$conds, $fld, $op, $val, $param) {
-        if ($fld AND $op) {
+        if ($fld && $op) {
             $conds[] = [
                 'operator' => $op,
                 'value'    => (strlen((string)$param)>0 ? $param : $val),  // param could be also "0"
@@ -220,7 +220,7 @@ class AA_View {
         // grouping
 
         if (array_key_exists('group_by', $param_sort)) {
-            if ($param_sort['group_by'] AND !AA_Alias::isAliasLike($param_sort['group_by'], true)) { // we can have group_by= to avoid grouping ({view:55::group_by-})
+            if ($param_sort['group_by'] && !AA_Alias::isAliasLike($param_sort['group_by'], true)) { // we can have group_by= to avoid grouping ({view:55::group_by-})
                 $sort = String2Sort('100000' . $param_sort['group_by']);                             // for aliases, we do not want to sort
             }
         } elseif ($this->f('group_by1')) {
@@ -229,7 +229,7 @@ class AA_View {
 
         //sorting
         if (array_key_exists('sort', $param_sort)) {
-            if ($param_sort['sort'] AND $param_sort['sort'] !== 'AAnoSORT') {
+            if ($param_sort['sort'] && $param_sort['sort'] !== 'AAnoSORT') {
                 $set = new AA_Set;
                 $set->addSortFromString($param_sort['sort']);
                 $sort = $set->getSort();
@@ -243,7 +243,7 @@ class AA_View {
             }
         }
 
-        if ($param_sort['group_limit'] AND count($sort)>0) {
+        if ($param_sort['group_limit'] && count($sort)>0) {
             reset($sort);   // go to first record
             $sort[key($sort)]['limit'] = $param_sort['group_limit'];
         }
@@ -336,7 +336,7 @@ class AA_View {
         if ($banner_arr) {
             foreach ((array)$banner_arr as $banner) {
                 [$foo_pos, $foo_vid, $foo_fld] = explode('-', $banner);
-                if (ctype_digit((string)$foo_pos) AND strlen($foo_vid)) {
+                if (ctype_digit((string)$foo_pos) && strlen($foo_vid)) {
                     $bparam = "vid=$foo_vid";
                     if ($foo_fld !== 'norandom') {
                         $bparam .= "&set[$foo_vid]=random-" . ($foo_fld ?: 1);
@@ -391,7 +391,7 @@ class AA_View {
      */
     public static function parseViewParameters($query_string = ""): array
     {
-        if ($use_globals = (!$query_string or !preg_match("/vid=[a-z]/", $query_string))) {
+        if ($use_globals = (!$query_string || !preg_match("/vid=[a-z]/", $query_string))) {
             // old behavior - we do not want to use global dependency with {view.php} but we did not remove it in times when we wrote {view.php..}{ alias, so we are removing it at least for new "named views"
             global $cmd, $set, $vid, $als;
             global $x;   // url parameter - used for cmd[]=x-111-url view parameter
@@ -455,7 +455,7 @@ class AA_View {
 
                     // This is bizarre code, just incrementing the first item, left as it is
                     // but questioned on apc-aa-coders - mitra
-                    if (($command->getCommand() === 'x') and ($zids->count() > 0)) {
+                    if ($command->getCommand() === 'x' && $zids->count() > 0) {
                         \AA\Util\Hitcounter::hit($zids->slice(0));
                     }
                     break;
@@ -615,8 +615,12 @@ class AA_Views {
             $vid = (int)$vid;
         } elseif (AA::$site_id ) {
             $vid = AA_Module_Site::findViewId($vid, AA::$site_id);
-        } elseif ( is_long_id($m = AA::$module_id ?: AA::$slice_id) AND strlen($vid) ) {  // for planned tasks, for example
-            $vid = DB_AA::select1('id', 'SELECT id FROM view', [['slice_id', $m, 'l'], ['field3', $vid]]);
+        } elseif ( is_long_id($m = AA::$module_id ?: AA::$slice_id) && strlen($vid) ) {  // for planned tasks, for example
+            if (AA_Module::getModuleType($m) === 'W') {
+                $vid = AA_Module_Site::findViewId($vid, $m);
+            } else {
+                $vid = DB_AA::select1('id', 'SELECT id FROM view', [['slice_id', $m, 'l'], ['field3', $vid]]);
+            }
         } else {
             return null;
         }

@@ -84,7 +84,7 @@ class PageCache  {
             // do not count with cookie names starting with underscore
             // (Google urchin uses cookies like __utmz which varies very often)
             foreach( $_COOKIE as $key => $val ) {
-                if ( ($key[0] !== '_') AND ($key!=='AA_Session')) {
+                if ( $key[0] !== '_' && $key!=='AA_Session') {
                     $ks["C$key"] = $val;
                 }
             }
@@ -190,7 +190,7 @@ class PageCache  {
      */
     function getById($keyid) {
         $arr   = DB_AA::select1('', 'SELECT stored, content FROM `pagecache`', [['id', $keyid]]);
-        return ( $arr AND ((time() - $this->cacheTime) < $arr['stored']) ) ? $arr['content'] : false;
+        return ( $arr && (time() - $this->cacheTime) < $arr['stored'] ) ? $arr['content'] : false;
     }
 
     /** set function
@@ -208,7 +208,7 @@ class PageCache  {
     function store($key, $content, $str2find, $force=false): bool {
         $ret = false;
 
-        AA::$debug&2 && AA::$dbg->log("Pagecache->store(key):$key", 'Pagecache str2find:'.join(',', $str2find->getStrings()), 'Pagecache content (length):'.strlen($content), 'Pagecache cache_nostore:'.$this->cache_nostore );
+        AA::$debug&2 && AA::$dbg->log("Pagecache->store(key):$key", 'Pagecache str2find:'.implode(',', $str2find->getStrings()), 'Pagecache content (length):'.strlen($content), 'Pagecache cache_nostore:'.$this->cache_nostore );
 
         if ($force OR (ENABLE_PAGE_CACHE AND !$this->cache_nostore)) {  // $this->cache_nostore used if {user:xxxx} alias is used
             AA::$debug&2 && AA::$dbg->log("Pagecache->store(): - storing");

@@ -213,7 +213,7 @@ ValidateInput("description", _m('Category description'),   $description, $r_err,
 ValidateInput("additional",  _m('Additional information'), $additional,  $r_err, false, "text");
 ValidateInput("note",        _m('Editor\'s note'),         $note,        $r_err, false, "text");
 
-if (!$r_err OR (count($r_err) <= 1)) {
+if (!$r_err || count($r_err) <= 1) {
     $varset->add("name",        "text", $cat_name);
     $varset->add("description", "text", $description);
     $varset->add("additional",  "text", $additional);
@@ -267,7 +267,7 @@ if ($subcatIds) {
         $newNotBaseSubcat[$db->f('what_id')] = $db->f('what_id');
 }
 
-if (isset($ids) && is_array($ids) && $subcatIds!="") {
+if (isset($ids) && is_array($ids) && $subcatIds != "") {
     $pri = 0.0;
     foreach ($ids as $key => $insertedId) {
         $pri += 1.0;
@@ -300,7 +300,7 @@ if (isset($ids) && is_array($ids) && $subcatIds!="") {
 }
 
 // unassign old base subcategories
-if (isset($oldBaseSubcat) AND is_array($oldBaseSubcat) ) {
+if (isset($oldBaseSubcat) && is_array($oldBaseSubcat) ) {
     foreach ($oldBaseSubcat as $key => $val) {
         if ($val=="" ) { // this category was reassigned
             continue;

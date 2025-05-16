@@ -95,7 +95,7 @@ class AA_Field implements ArrayAccess, Countable, Iterator {
      */
     public function isSafeStored() : bool {
         // the content_edit is not yet used - we plan to make able the field to be secured
-        return (($this->data['content_edit'] & FIELD_UNREADABLE) OR (AA_Fields::getFieldType($this->getId()) === 'secret'));     // @todo add also password
+        return ($this->data['content_edit'] & FIELD_UNREADABLE || AA_Fields::getFieldType($this->getId()) === 'secret');     // @todo add also password
                                                                                                                                 // @todo mark all secure and password fields as FIELD_UNREADABLE
     }
 
@@ -151,17 +151,15 @@ class AA_Field implements ArrayAccess, Countable, Iterator {
             // $this->widget = AA\Widget\Widget::factoryByString($widget_type ? $widget_type : $this->data['input_show_func']);
             $widget_definition_string = $this->data['input_show_func'];
             // legacy - in dates we used ' as delimiter some time in history of AA
-            if ($widget_definition_string AND (str_starts_with($widget_definition_string, 'dte:')) AND strpos($widget_definition_string,"'")) {
+            if ($widget_definition_string && str_starts_with($widget_definition_string, 'dte:') && strpos($widget_definition_string,"'")) {
                 $widget_definition_string = str_replace("'",":",$widget_definition_string);
             }
 
             $params       = $widget_definition_string ? Widget::parseClassProperties($widget_definition_string) : $this->widget_params;
             $widget_class = $widget_type ? Widget::constructClassName($widget_type) : $params['class'];
 
-            if (!class_exists($widget_class)) {
-                if (!class_exists($widget_class = $params['class'])) {
-                    $widget_class = 'AA\Widget\NulWidget';
-                }
+            if (!class_exists($widget_class) && !class_exists($widget_class = $params['class'])) {
+                $widget_class = 'AA\Widget\NulWidget';
             }
             $w = AA_Object::factory($widget_class, $params);
 
@@ -258,7 +256,7 @@ class AA_Field implements ArrayAccess, Countable, Iterator {
                 $var = ParamImplode(['AA_PASSWD', $change_var]);
             } elseif ($delete_var) {
                 $var = '';
-            } elseif (!$insert AND $oldcontent4id) {
+            } elseif (!$insert && $oldcontent4id) {
                 // store the original password to use it in
                 // insert_fnc_pwd when it is not changed
                 // $$varname = $oldcontent4id[$pri_field_id][0]['value'];
@@ -501,7 +499,7 @@ class AA_Field implements ArrayAccess, Countable, Iterator {
     function getInsertOtherFields(): array {
         $ret = [];
         $inserter_params = AA_Inserter::parseClassProperties($this->data['input_insert_func']);
-        if (array_key_exists('otherfield', $inserter_params) AND trim($inserter_params['otherfield']) !== '') {
+        if (array_key_exists('otherfield', $inserter_params) && trim($inserter_params['otherfield']) !== '') {
             return array_filter(array_map('trim', explode("##",$inserter_params['otherfield'])), 'strlen');
         }
         return $ret;
@@ -592,7 +590,7 @@ class AA_Field implements ArrayAccess, Countable, Iterator {
         echo "<td class=\"aa-flds-aliases\" data-fld=\"$id\">$alias_list</td>";
         echo "</tr>\n";
 
-        if ($analyze AND ($type !== 'in_item_tbl')) {
+        if ($analyze && $type !== 'in_item_tbl') {
             $items       = DB_AA::select1('cnt', 'SELECT count(*) as cnt FROM item', [['item.slice_id', $slice_id, 'l']]);
             $items_field = DB_AA::select1('', 'SELECT count(*) as cnt, count(DISTINCT text) as cntval,  count(DISTINCT number) as cntnum, count(DISTINCT item_id) as cntitm  FROM content, item', [
                 ['content.item_id', 'item.id', 'j'],
@@ -623,7 +621,7 @@ class AA_Field implements ArrayAccess, Countable, Iterator {
                 ['field_id', $id],
                 ['text', '']
             ]);
-            $empty_text    = (($items_field['cnt']==$empty) AND ($items>0)) ? "<b title=\"All empty - maybe you can delete the field\">Empty fields</b>":"Empty fields";
+            $empty_text    = ($items_field['cnt']==$empty && $items>0) ? "<b title=\"All empty - maybe you can delete the field\">Empty fields</b>":"Empty fields";
 
             $text_vals = '';
             if ($items_field['cntval'] < 5) {
@@ -631,8 +629,8 @@ class AA_Field implements ArrayAccess, Countable, Iterator {
                 $text_vals = ' ('. implode(', ', array_map( static fn ($str) => '"'. ((strlen($str) === 12) ? substr($str,0,11).'…' : $str). '"', $arr)). ')';
             }
             $distinct_val  = ($text_stored == 1) ? "<u title='field is marked as text stored'>text:$items_field[cntval]</u>$text_vals,num:$items_field[cntnum]" : "text:$items_field[cntval]$text_vals,<u title='field is marked as number stored'>num:$items_field[cntnum]</u>";
-            $distinct_text = (($items_field['cntitm']==$items) AND ($items_field[$text_stored==1 ? 'cntval':'cntnum']==1) AND ($items>1)) ? "<b title=\"All the values are the same - maybe you can delete the field\">Distinct values</b>:$distinct_val":"Distinct values:$distinct_val";
-            $distinct_html = (($items_field['cntitm']==$items) AND ($items==$num_html) AND ($items>1)) ? "<b title=\"All values marked as HTML\">HTML</b>:$num_html" : "HTML:$num_html";
+            $distinct_text = ($items_field['cntitm']==$items && $items_field[$text_stored==1 ? 'cntval':'cntnum']==1 && $items>1) ? "<b title=\"All the values are the same - maybe you can delete the field\">Distinct values</b>:$distinct_val":"Distinct values:$distinct_val";
+            $distinct_html = ($items_field['cntitm']==$items && $items==$num_html && $items>1) ? "<b title=\"All values marked as HTML\">HTML</b>:$num_html" : "HTML:$num_html";
             echo "<tr><td colspan=8><small title=\"Items\">Items:$items</small> / <small title=\"Items with field\">Fields:$items_field[cnt]</small> / <small>$distinct_text</small> / <small title=\"Distinct Items with field\">Distinct Items with field:$items_field[cntitm]</small> / <small title=\"Text fields\">Text fields:$text_rows</small> / <small title=\"Numeric fields\">Numeric fields:$num_rows</small> / <small title=\"Empty fields\">$empty_text:$empty</small> / <small title=\"fields amrked as HTML\">$distinct_html</small></td></tr>";
         }
     }
@@ -683,7 +681,7 @@ class AA_Field_Slicedef extends AA_Field {
         $this->data['input_show_func']   = '';
         $this->widget_params             = (array)json_decode($fld_eval['_#FLD_PARM'], true);
         // equivalent of: $params[$name] = $property->isMulti() ? json2asoc($value) : $value;  // const_arr for widget uses this, for example
-        if (array_key_exists('const_arr', $this->widget_params) AND is_string($this->widget_params['const_arr'])) {
+        if (array_key_exists('const_arr', $this->widget_params) && is_string($this->widget_params['const_arr'])) {
             $this->widget_params['const_arr'] = json2asoc($this->widget_params['const_arr']);
         }
         $this->widget_params['class']    = Widget::constructClassName($fld_eval['_#FLD_TYPE']);
@@ -788,7 +786,7 @@ class AA_Fields implements Iterator, Countable {
      * @param string $fid
      */
     function loadField(string $fid) {
-        if ( $this->loaded_all or !is_null($this->fields[$fid]) ) {
+        if ( $this->loaded_all || !is_null($this->fields[$fid]) ) {
             return;
         }
 
@@ -797,7 +795,7 @@ class AA_Fields implements Iterator, Countable {
            return;
         }
 
-        if ( (str_starts_with($fid, 'text..')) AND is_long_id($fields_slice = AA_Slice::getModuleProperty($this->master_id, 'fieldslice')) ) {
+        if ( str_starts_with($fid, 'text..') && is_long_id($fields_slice = AA_Slice::getModuleProperty($this->master_id, 'fieldslice')) ) {
             $set = new AA_Set([$fields_slice], new AA_Condition(FIELDID_DYNAMIC_ID, '==', self::getFieldNo($fid)));     // FIELDID_DYNAMIC_ID = 'source..........'
             $zids = $set->query();
             $this->fields[$fid] = $zids->count() ? new AA_Field_Slicedef($zids->zid(0), $this->master_id) : '';
@@ -1066,7 +1064,7 @@ class AA_Fields implements Iterator, Countable {
      * @param string $field_id
      * @return bool
      */
-    static function isSliceField($field_id) {
+    static function isSliceField($field_id): bool {
         return str_starts_with((string)$field_id, '_');
     }
 
@@ -1079,7 +1077,7 @@ class AA_Fields implements Iterator, Countable {
     static function createFieldId($ftype, $no="0", $id_type='.'): string
     {
         $no = (int)$no;
-        if ($no<0 OR $no>99999) {   // maybe the upper boundary could be bigger?
+        if ($no<0 || $no>99999) {   // maybe the upper boundary could be bigger?
             return '';
         }
         if ($no == 0) {

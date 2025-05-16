@@ -143,7 +143,7 @@ if (! $admin_email) {
  * @param string $s
  * @return string - $s in <b> and spaces are replaced by "&nbsp;"
  */
-function caption($s) {
+function caption($s): string {
     return "<b>".str_replace (" ","&nbsp;",$s)."&nbsp;*</b>";
 }
 

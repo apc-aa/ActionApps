@@ -297,11 +297,11 @@ class AA_Profile {
      * @return bool
      */
     function do_sql($SQL, $err="") {
-        if ( !$this->module_id OR !$this->user_id ) {
+        if ( !$this->module_id || !$this->user_id ) {
             return false;
         }
         $db = getDB();
-        if (!$db->query($SQL) AND $err) {
+        if (!$db->query($SQL) && $err) {
             $this->err["DB"] = $err;
         }
         $last_id = $db->last_insert_id();

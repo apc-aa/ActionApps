@@ -63,7 +63,7 @@ class FileLock {
      *   If you call Lock() twice without calling Unlock(), the second
      *   time it immediately return @c true.
      */
-    function Lock() {
+    function Lock(): bool {
         $last_error = false;
         if ($this->locked)
             return true;
@@ -108,7 +108,7 @@ class FileLock {
      *   be created. Check $this->last_error if you are not sure the permissions
      *   were OK.
      */
-    function Trylock() {
+    function Trylock(): bool {
         $last_error = false;
         if ($this->locked) {
             return true;

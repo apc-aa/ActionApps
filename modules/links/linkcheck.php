@@ -36,7 +36,9 @@ require_once __DIR__ . "/../../include/locsess.php";   // DB_AA definition
 require_once __DIR__ . "/../../include/zids.php";
 require_once __DIR__ . "/../../include/util.php";
 
-is_object( $db ) || ($db = getDB());
+if (!is_object( $db )) {
+    $db = getDB();
+}
 
 require_once __DIR__ . "/../../include/linkcheck.class.php";
 

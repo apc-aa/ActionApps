@@ -274,7 +274,7 @@ class AA_Transformation_Recompute extends AA_Transformation {
      * @param bool $silent
      * @return AA_Value|bool
      */
-    function transform($field_id, $itemcontent, $silent=true) {
+    function transform($field_id, $itemcontent, $silent=true): bool {
         $itemcontent->updateComputedFields(null, 'update', $silent ? [$field_id] : []);
         return true; // this means: Success - no other operations are needed
     }
@@ -780,7 +780,7 @@ class AA_Transformation_Regexpreplace extends AA_Transformation {
         foreach ( $itemcontent->getValues($field_id) as $source ) {
             $ret->setFlag($source['flag']);
             $text = preg_replace('~'.$this->searchpattern.'~', $this->replacestring, $source['value'], -1, $count);
-            if ($count AND $this->unalias) {
+            if ($count && $this->unalias) {
                 $text = $item->subst_alias($text);
             }
             $ret->addValue($text);
@@ -842,7 +842,7 @@ class AA_Transformation_CopyField extends AA_Transformation {
      * @return AA_Value|false
      */
     function transform($field_id, $itemcontent, $silent=true) {
-        if (($this->field2copy === 'no_field') OR !$field_id OR ($field_id === 'no_field')) {
+        if ($this->field2copy === 'no_field' || !$field_id || $field_id === 'no_field') {
             $this->message(_m('Source or destination field is not specified.'));
             return false;
         }
@@ -912,7 +912,7 @@ class AA_Transformator implements \AA\Later\LaterInterface {
 
             $sli_id  = $itemcontent->getSliceID();
             $item_id = $itemcontent->getItemID();
-            if (!$sli_id OR !$item_id) {
+            if (!$sli_id || !$item_id) {
                 // Probably: item not found, for some reason
                 continue;
             }

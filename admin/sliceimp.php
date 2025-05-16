@@ -71,7 +71,7 @@ $varset     = new Cvarset();
  * @param array $slice
  * @return bool
  */
-function prove_ID($slice) {
+function prove_ID($slice): bool {
     global $resolve_conflicts, $overwrite, $new_slice_ids;
 
     $res = $resolve_conflicts[$slice["id"]];
@@ -121,7 +121,7 @@ function prove_ID($slice) {
  * @return bool
  */
  // same function as above, but for table item and content
-function prove_data_ID($data_id) {
+function prove_data_ID($data_id): bool {
     global $data_resolve_conflicts, //Set from data_conflicts_list
            $data_overwrite;
     $res = $data_resolve_conflicts[$data_id];
@@ -174,7 +174,7 @@ function import_slice(&$slice) {
 
     if ($only_slice) { // import slice definition ?
         $IDconflict = !prove_ID($slice);
-        if ($IDconflict && ($GLOBALS["submit"]!=_m("Insert with new ids"))) {
+        if ($IDconflict && ($GLOBALS["submit"] != _m("Insert with new ids"))) {
             huhl('ID conflict '.$slice["id"].' '. $slice["name"]);
             $conflicts_ID[$slice["id"]] = $slice["name"];
             $cancel = 0;
@@ -221,7 +221,7 @@ function import_slice(&$slice) {
  * @return bool
  */
  // returns false on failure, but ignored
-function import_slice_data($slice_id, $id, $content4id, $insert, $feed) {
+function import_slice_data($slice_id, $id, $content4id, $insert, $feed): bool {
     global $data_IDconflict,
            $data_conflicts_ID,
            $cancel,
@@ -233,13 +233,13 @@ function import_slice_data($slice_id, $id, $content4id, $insert, $feed) {
            $new_slice_ids;
     if ($only_data) { // import slice items ?
         $slice = AA_Slice::getModule($slice_id);
-        if (!$slice OR !$slice->getFields()->count()) {
+        if (!$slice || !$slice->getFields()->count()) {
             $data_import_failure[] = $id." No fields for slice_id=$slice_id";
             return false;
         }
         $cont            = $content4id[$id];
         $data_IDconflict = !prove_data_ID($id);
-        if ($data_IDconflict && ($GLOBALS["submit"]!=_m("Insert with new ids"))) {
+        if ($data_IDconflict && ($GLOBALS["submit"] != _m("Insert with new ids"))) {
             $data_conflicts_ID[$id] = $cont["headline........"][0]['value'];
             $cancel = 0;
             return false;
@@ -387,7 +387,7 @@ foreach ($conflicts_ID as $c_id => $name) {
     if ($view_IDconflict) { ?>
         <tr>
             <td>
-                <b><?php echo sprintf(_m("<p>Views with some of the same IDs exist already. Please edit on the right hands side of the arrow</p>")) ?></b></p>
+                <b><?php echo _m("<p>Views with some of the same IDs exist already. Please edit on the right hands side of the arrow</p>") ?></b></p>
                 <p>
 <textarea name="view_conflicts_list" rows=<?php echo count($view_conflicts_ID) ?> cols="90">
 <?php
@@ -402,7 +402,7 @@ foreach ($view_conflicts_ID as $c_id => $name) {
     if ($data_IDconflict) { ?>
 
         <tr><td>
-        <b><?php echo sprintf(_m("<p>Slice content with some of the IDs exist already. Change the IDs on the right side of the arrow.<br> Use only hexadecimal characters 0-9,a-f. </p>")) ?></b></p>
+        <b><?php echo _m("<p>Slice content with some of the IDs exist already. Change the IDs on the right side of the arrow.<br> Use only hexadecimal characters 0-9,a-f. </p>") ?></b></p>
         <p>
         <textarea name="data_conflicts_list" rows=<?php echo count($data_conflicts_ID) ?> cols="90">
 <?php

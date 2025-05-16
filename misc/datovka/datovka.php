@@ -294,12 +294,12 @@ class Datovka extends AA_Object {
         try {
             $result = $this->getCredentials();
             $resp   = $this->parseResponseAttributes($result);
-            if ( !is_object($result) OR !$resp ) {
+            if ( !is_object($result) || !$resp ) {
                 $this->setState(2**15, 'Err - Wrong server answer'); // 32768
                 throw new \RuntimeException('Wrong server answer');
             }
 
-            if (array_key_exists('timeLimitedId', $resp) AND !array_key_exists('conceptStatusCode', $resp)) {
+            if (array_key_exists('timeLimitedId', $resp) && !array_key_exists('conceptStatusCode', $resp)) {
                 $this->setState(2**7, "timeLimitedId received: $resp[timeLimitedId]");  // 128 - step 2
 
                 // create concept
@@ -315,7 +315,7 @@ class Datovka extends AA_Object {
                     throw new \RuntimeException('Concept not created: ' . $result->dmStatus->dmStatusMessage . ' (' . $result->dmStatus->dmStatusCode . ')');
                 }
             } else {
-                if ($result->status === 'OK' AND array_key_exists('conceptStatusCode', $resp) AND $resp['conceptStatusCode'] == '0000') {
+                if ($result->status === 'OK' && array_key_exists('conceptStatusCode', $resp) && $resp['conceptStatusCode'] == '0000') {
                     $this->setState(2**14, 'sent: '. $resp['conceptStatusMessage']);  // 16384  step 4 - final
                     go_url($this->return_url, ['ds_id' => $this->datovka_id, 'ds_status' => 'OK']); // 'sent';
                 }

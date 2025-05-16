@@ -41,7 +41,7 @@ function SelectGU_ID(string $name, $arr, $selected="", $type="short") {
     if ( !is_array($arr)) {
         $arr = [];
     }
-    array_walk($arr, static function (&$v, $k) {$v = ((($userlogin = AA::$perm->getUserLoginName($k)) == $v['name']) OR !$userlogin) ? $v['name'] : $v['name']. " ($userlogin)";});
+    array_walk($arr, static function (&$v, $k) {$v = (($userlogin = AA::$perm->getUserLoginName($k)) == $v['name'] || !$userlogin) ? $v['name'] : $v['name']. " ($userlogin)";});
     $attrs = ['id' => $name, 'style' =>"min-width:100px;"];
     if ($type === 'multi') {
         $attrs['size'] = '8';
@@ -79,7 +79,7 @@ function PrintModulePermModificator($selected_user) {
 
     $i=0;
     $current_perm_table = '';
-    foreach ( $all_modules as $mid => $foo ) {
+    foreach ( array_keys($all_modules) as $mid ) {
         $name = AA_Module::getModuleName($mid);
         $type = AA_Module::getModuleType($mid);
         if ( $perm_slices[$mid] ) {
@@ -134,11 +134,11 @@ function PrintModulePermModificator($selected_user) {
  * @param $odd
  * @return string
  */
-function GetModulePermRow($mid, $type, $name, $perm, $odd=false) {
+function GetModulePermRow($mid, $type, $name, $perm, $odd=false): string {
     $ret = "<tr>
         <td>". AA_Moduleregistry::info($type, 'name') .":&nbsp;". a_href(AA_Module::getModuleUrl($mid), safe($name)). "<br>&nbsp;&nbsp;&nbsp;&nbsp;($mid)</td>
         <td>";
-    if ( isset(AA_Perm::PERMS_ROLES_MODULES[$type]) AND is_array(AA_Perm::PERMS_ROLES_MODULES[$type]) ) {
+    if ( isset(AA_Perm::PERMS_ROLES_MODULES[$type]) && is_array(AA_Perm::PERMS_ROLES_MODULES[$type]) ) {
         foreach (AA_Perm::PERMS_ROLES_MODULES[$type] as $role) {
             $ret .= "<label><input type=\"radio\" name=\"perm_mod[x$mid]\" value=\"$role\"";
             $ret .= ( AA_Perm::compare($perm,AA_Perm::ROLES[$role]['id'])==='E' ) ? ' checked>' : '>';
@@ -181,7 +181,7 @@ function PrintModuleAddRow($mod_options, $no) {
  * @param $selected_user
  */
 function ChangeUserModulePerms($perm_mod, $selected_user) {
-    if ( isset($perm_mod) AND is_array($perm_mod) ) {
+    if ( isset($perm_mod) && is_array($perm_mod) ) {
         $perm_slices = AA::$perm->getUserPerms($selected_user, "slice", 1);  // there are not only Slices, but other Modules too
         foreach ($perm_mod as $xmid => $role) {
             $mid = substr($xmid,1);   // removes first 'x' character (makes index string)
@@ -203,9 +203,9 @@ function ChangeUserModulePerms($perm_mod, $selected_user) {
  * @param $selected_user
  */
 function AddUserModulePerms($new_module, $new_module_role, $selected_user) {
-    if ( isset($new_module) AND is_array($new_module) ) {
+    if ( isset($new_module) && is_array($new_module) ) {
         foreach ($new_module as $no => $mid) {
-            if ( (trim($mid) != "") AND isset(AA_Perm::ROLES[$new_module_role[$no]]) ) {
+            if ( trim($mid) != "" && isset(AA_Perm::ROLES[$new_module_role[$no]]) ) {
                 AddPerm($selected_user, $mid, 'slice', AA_Perm::ROLES[$new_module_role[$no]]['id']);
             }
         }
@@ -227,7 +227,7 @@ function PrintPermUmPageEnd($mod_types) { ?>
     $module_types = AA_Moduleregistry::singleton();
     foreach ($module_types as $k => $module_conf) {
         $letter = $module_conf->get('letter');             // get 'letter' or first letter of MODULE type
-        if ( isset(AA_Perm::PERMS_ROLES_MODULES[$k]) AND is_array(AA_Perm::PERMS_ROLES_MODULES[$k]) ) {
+        if ( isset(AA_Perm::PERMS_ROLES_MODULES[$k]) && is_array(AA_Perm::PERMS_ROLES_MODULES[$k]) ) {
             echo " mod[".ord($letter)."] = new Array('". implode("','", AA_Perm::PERMS_ROLES_MODULES[$k]) ."');  // module type $k \n";
             echo " mod_names[".ord($letter)."] = new Array('". implode("','", array_map( '_mdelayed', AA_Perm::PERMS_ROLES_MODULES[$k])) ."');\n";
         }
@@ -252,9 +252,9 @@ function PrintPermUmPageEnd($mod_types) { ?>
  * @param             $selected_user
  */
 function ChangeUserGroups(?string $posted_groups, $sel_groups, $selected_user) {
-    if ( isset($sel_groups) AND is_array($sel_groups) AND ($sel_groups["n"]=="")) {
+    if ( isset($sel_groups) && is_array($sel_groups) && $sel_groups["n"]=="") {
         // first we remove user from all groups
-        foreach ($sel_groups as $foo_gid => $foo) {
+        foreach (array_keys($sel_groups) as $foo_gid) {
             DelGroupMember($foo_gid, $selected_user);
         }
     }
@@ -288,7 +288,7 @@ function FillUserRecord(&$err, $user_login, $user_surname, $user_firstname, $use
     ValidateInput("user_surname", _m("Surname"), $user_surname, $err, true, "text");
     ValidateInput("user_firstname", _m("First name"), $user_firstname, $err, true, "text");
     // if unchanged password, don't post it
-    if (($user_password1 !== "nOnEwpAsswD") OR ($user_password2 !== "nOnEwpAsswD")) {
+    if ($user_password1 !== "nOnEwpAsswD" || $user_password2 !== "nOnEwpAsswD") {
         ValidateInput("user_password1", _m("Password"), $user_password1, $err, true, "password");
         ValidateInput("user_password2", _m("Retype password"), $user_password2, $err, true, "password");
         if ( $user_password1 != $user_password2 ) {
@@ -343,11 +343,9 @@ function NewUserData(&$err, $uid, &$userrecord, $user_super, $um_uedit_no_go_url
  */
 function ChangeUserData(&$err, $uid, &$userrecord, $user_super) {
     $userrecord["uid"] = $uid;
-    if (AA::$perm->isUserEditable($uid)) {
-        if (!ChangeUser($userrecord)) {
-            $err["LDAP"] = MsgErr(_m("Can't change user"));
-            return;
-        }
+    if (AA::$perm->isUserEditable($uid) && !ChangeUser($userrecord)) {
+        $err["LDAP"] = MsgErr(_m("Can't change user"));
+        return;
     }
     if ($user_super !== 'AA_NO_CHANGE') {
         if ($user_super) {		// set or revoke super admin privilege
@@ -384,7 +382,7 @@ function ProcessUser(string $submit_action, $selected_user, array $err, bool $ad
     // following code (in do {}) is used also in slice wizard
     do {
         // Procces user data -------------------------------------------------------
-        if (($submit_action !== "update_submit") or AA::$perm->isUserEditable($selected_user)) {
+        if ($submit_action !== "update_submit" || AA::$perm->isUserEditable($selected_user)) {
             $userrecord = FillUserRecord($err, ($add_submit ? $user_login : 'nOnEwlOgiN'), $user_surname, $user_firstname, $user_password1, $user_password2, $user_mail1, $user_mail2, $user_mail3);
         }
 

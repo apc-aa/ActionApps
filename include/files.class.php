@@ -74,11 +74,12 @@ class Files {
      * @return bool
      */
     static function _destinationDirCreate($path, $perms) {
-        if (!$path OR !is_dir($path)) {
+        if (!$path || !is_dir($path)) {
             if (!self::createFolder($path, $perms)) {
-                self::lastErr(FILE_ERROR_DIR_CREATE, _m("Can't create directory for image uploads"));  // set error code
-                return false;
-            }
+            self::lastErr(FILE_ERROR_DIR_CREATE, _m("Can't create directory for image uploads"));
+            // set error code
+            return false;
+        }
         }
         return $path;
     }
@@ -203,7 +204,7 @@ class Files {
 
         // now change permissions (if we have to)
         $perms = defined('IMG_UPLOAD_FILE_MODE') ? (int)IMG_UPLOAD_FILE_MODE : 0;
-        if ($perms AND !chmod($dest_file, $perms)) {
+        if ($perms && !chmod($dest_file, $perms)) {
             self::lastErr(FILE_ERROR_CHMOD, _m("Can't change permissions on uploaded file: %1 - %2. See IMG_UPLOAD_FILE_MODE in your config.php", [$dest_file, $perms]));  // set error code
             return false;
         }
@@ -244,7 +245,7 @@ class Files {
      * @param $ident
      * @return string
      */
-    static function getTmpFilename($ident) {
+    static function getTmpFilename($ident): string {
         return $ident . "_" . hash('md5', uniqid('',true)) . "_" . date("mdY");
     }
 
@@ -299,10 +300,8 @@ class Files {
         }
 
         $destination = self::generateUnusedFilename($source);
-        if (copy($source, $destination)) {
-            if (is_file($destination)) {
-                return $destination;
-            }
+        if (copy($source, $destination) && is_file($destination)) {
+            return $destination;
         }
 
         self::lastErr(FILE_ERROR_COPY_FAILED, _m('can\'t create backup of the file'));  // set error code
@@ -354,7 +353,7 @@ class Files {
      * @param $perms
      * @return boolean true if the new folder is created, false otherwise.
      */
-    static function createFolder($newFolder, $perms=0777) {
+    static function createFolder($newFolder, $perms=0777): bool {
         mkdir($newFolder, $perms);
         return chmod($newFolder, $perms);
     }
@@ -404,9 +403,7 @@ class Files {
             $d->close();
         }
 
-        $deleted &= (is_dir($folder) ? rmdir($folder) : false);
-
-        return $deleted;
+        return $deleted & (is_dir($folder) ? rmdir($folder) : false);
     }
 
     /**  Append a / to the path if required.
@@ -443,7 +440,7 @@ class Files {
      * @param int $size the raw filesize
      * @return string formated file size.
      */
-    function formatSize($size) {
+    function formatSize($size): string {
         if ($size < 1024) {
             return $size.' bytes';
         }
@@ -460,7 +457,7 @@ class Files {
      * @param string $filename the name of file (with path, protocol, ...)
      * @return string FILE, HTTP, HTTPS, ...
      */
-     static function sourceType($filename) {
+     static function sourceType($filename): string {
          if ( strtoupper(substr($filename,0,5)) === 'HTTPS') return 'HTTPS';
          if ( strtoupper(substr($filename,0,4)) === 'HTTP')  return 'HTTP';
          if ( strtoupper(substr($filename,0,3)) === 'FTP')   return 'FTP';
@@ -788,7 +785,7 @@ class AA_File_FTP_Wrapper extends AA_File_Wrapper_Ext {
 	 *
 	 * @return boolean True iff success.
      */
-    function open(string $mode = 'rb') {
+    function open(string $mode = 'rb'): bool {
         $user = $this->info['user'] ?? 'anonymous';
         $pass = $this->info['pass'] ?? 'user@example.com';
         $host = $this->info['host'] ?? 'localhost';
@@ -828,7 +825,7 @@ class AA_File_FTP_Wrapper extends AA_File_Wrapper_Ext {
 	 * @param $path string Path to file
 	 * @return boolean True iff success
      */
-    function _open($user, $pass, $path) {
+    function _open($user, $pass, $path): bool {
         // Connection establishment
         if ($this->_receive() != '220') {
             return false;
@@ -900,7 +897,7 @@ class AA_File_FTP_Wrapper extends AA_File_Wrapper_Ext {
 	 * @param $line string Reference to receive read data
 	 * @return string|false
      */
-    function _receiveLine(&$line) {
+    function _receiveLine(&$line): string|false {
         do {
             $line = fgets($this->ctrl);
         } while($line !== false && ($tmp = substr(trim($line), 3, 1)) !== ' ' && $tmp != '');
@@ -1032,7 +1029,7 @@ class AA_Directory_Wrapper {
     /**
      * Read whole content of directory to class arrays if needed, fill the class arrays
      */
-    function readWholeDir() {
+    function readWholeDir(): bool {
         if (!$this->is_read) {
             if ($this->open()) {
                 while ($file_name = $this->read()) {

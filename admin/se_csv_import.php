@@ -113,7 +113,7 @@ $slice = AA_Slice::getModule(AA::$module_id);
 // by unique id function. The path is upload_directory/csv_data.
 // Delete old csv data in the upload_directory/csv_data.
 
-if ($upload OR $preview) {
+if ($upload || $preview) {
 
     // create unique file name
     unset($err);
@@ -183,7 +183,7 @@ if ($preview) { // file preview
 
         if (!$caption) {
             $head_row = [];
-            for ( $i=0, $ino=count($csvRec); $i<$ino; ++$i) {
+            foreach ($csvRec as $i => $singleCsvRec) {
                 $head_row[] = "Field ".($i+1);
             }
             FrmTabRow($head_row);
@@ -251,7 +251,7 @@ if ($preview) { // file preview
     <tr><td>
             <table>
                 <tr>
-                    <td><label><input type="radio" <?php if (!$dataType OR ($dataType === "file")) echo "checked"; ?> name="dataType" value="file">&nbsp;file</label></td>
+                    <td><label><input type="radio" <?php if (!$dataType || $dataType === "file") echo "checked"; ?> name="dataType" value="file">&nbsp;file</label></td>
                     <td><input type="file" name="upfile"></td>
                 </tr>
                 <tr>

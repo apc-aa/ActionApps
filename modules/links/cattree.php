@@ -98,7 +98,7 @@ class cattree {
         $apri  = (integer) Links_GlobalCatPriority($aname);
         $bpri  = (integer) Links_GlobalCatPriority($bname);
 
-        if ( $apri == $bpri ) {
+        if ( $apri === $bpri ) {
             return strcmp($aname, $bname);
         }
         return (( $apri < $bpri ) ? -1 : 1);
@@ -249,13 +249,13 @@ class cattree {
         $ids          = explode(",",$path);
         $last         = end($ids);
         $delimiter    = '';
-        if ( isset($ids) AND is_array($ids)) {
+        if ( isset($ids) && is_array($ids)) {
             if ( $url ) {
                 foreach ( $ids as $catid ) {
                     if (--$skip >= 0) {
                         continue;
                     }
-                    if ( ($catid != $last) OR $whole ) { // do not make link for last category
+                    if ( $catid !== $last || $whole ) { // do not make link for last category
                         $name .= "$delimiter<a href=\"$url$catid\" $target_atrib>".$this->getName($catid)."</a>";
                     } else {
                         $name .= $delimiter.$this->getName($catid);
@@ -295,7 +295,7 @@ class cattree {
         $delim = '';
         foreach ((array)$this->assignments as $assig) {
             $to = $assig->getTo();
-            if (!$print_general AND $this->isGeneral($to)) {
+            if (!$print_general && $this->isGeneral($to)) {
                 // do not display global categories in the tree. General
                 // categories are automatic - user can't should not see it in
                 // admin interface
@@ -309,7 +309,7 @@ class cattree {
 
         // make 00100110011... string matching global categories
         $general = new bitfield;
-        foreach ((array)$this->catnames as $cid => $cname) {
+        foreach (array_keys((array)$this->catnames) as $cid) {
             $general->setbit( $cid, $this->isGeneral($cid) );
         }
 
@@ -441,7 +441,7 @@ class cattree {
     * Returns multiple selectbox with subcategory list
     * @return string selectbox prepared to print
     */
-    function getFrmSubCatList($withState, $onWhat, $cat2show, $width=250, $name='tree', $rows=8 ) {
+    function getFrmSubCatList($withState, $onWhat, $cat2show, $width=250, $name='tree', $rows=8 ): string {
         if (!$name)   $name='tree';
         if (!$width)  $width=250;
         if (!$rows)   $rows=8;
@@ -476,7 +476,7 @@ class cattree {
             $function($assig->getTo(), $this->catnames[$assig->getTo()], $assig->getBase(), $assig->getState(), $assig->getFrom(), $level);
 
             // not crossreferenced and never ending cycles protection
-            if (($assig->getBase() !== '@') AND ($level <= 100)) {
+            if ($assig->getBase() !== '@' && $level <= 100) {
                 $this->walkTree($assig->getTo(), $function, $level+1);
             }
         }
@@ -557,7 +557,7 @@ class bitfield {
     }
 
     /** returns as string - like "0001001011100100110" */
-    function getAsString() {
+    function getAsString(): string {
         return substr($this->field,0,$this->length);
     }
 

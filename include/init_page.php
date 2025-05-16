@@ -117,24 +117,26 @@ $sess->register('r_hidden');
 // sometimes we need to not unset hidden - popup for related stories ...
 // only acceptor can read values. For others, they are destroyed.
 $my_document_uri = $_SERVER['DOCUMENT_URI'] ?: $_SERVER['PHP_SELF'];
-if ( !$save_hidden AND ($unset_r_hidden OR $r_hidden["hidden_acceptor"] != $my_document_uri)) {
+if ( !$save_hidden && ($unset_r_hidden || $r_hidden["hidden_acceptor"] != $my_document_uri)) {
     unset( $r_hidden );
 }
 $after_login = !$no_slice_id && !AA::$module_id;
 $perm_slices = GetUserSlices();
 
-if ( !$no_slice_id AND !IsSuperadmin() AND !$perm_slices[AA::$module_id] AND !$after_login ) {
+if ( !$no_slice_id && !IsSuperadmin() && !$perm_slices[AA::$module_id] && !$after_login ) {
     MsgPage(_m("You do not have permission to edit items in the slice:").' '. safe(AA_Slice::getModuleName(AA::$module_id)));
     exit;
 }
 
-is_object( $db ) || ($db = getDB());
+if (!is_object( $db )) {
+    $db = getDB();
+}
 
 // Create g_modules: a global array which holds user editable modules
 $db->query("SELECT id, name, type, deleted FROM module ORDER BY priority, name");
 while ($db->next_record()) {
     $my_slice_id = unpack_id($db->f('id'));
-    if (IsSuperadmin() OR ( !$db->f('deleted') AND $perm_slices[$my_slice_id] )) {
+    if (IsSuperadmin() || !$db->f('deleted') && $perm_slices[$my_slice_id]) {
         $g_modules[$my_slice_id] = [
             'name' => $db->f('name'),
             'type' => AA_Moduleregistry::singleton()[$db->f('type')] ? $db->f('type') : 'S'   // @todo remove type and use AA_Module::getModuleType() or AA_Module::getModuleInfo() instead
@@ -152,11 +154,11 @@ if (!$no_slice_id) {
     }
 
 
-    if ($after_login OR !$g_modules[AA::$module_id]) {
+    if ($after_login || !$g_modules[AA::$module_id]) {
         // slice was just deleted, thus is not in $g_modules
         foreach ($g_modules as $mid => $mmodule) {
             // skip AA Core Field slice, if possible
-            if (($mmodule['type']==='S') AND ($mid !== "41415f436f72655f4669656c64732e2e")) {
+            if ($mmodule['type']==='S' && $mid !== "41415f436f72655f4669656c64732e2e") {
                 AA::$module_id = $mid;
                 break;
             }
@@ -205,7 +207,7 @@ if (!$no_slice_id) {
 
 freeDB($db);
 
-$mgettext_file    = (!$require_default_lang AND ($r_lang_file != "")) ? $r_lang_file : DEFAULT_LANG_INCLUDE;
+$mgettext_file    = (!$require_default_lang && $r_lang_file != "") ? $r_lang_file : DEFAULT_LANG_INCLUDE;
 bind_mgettext_domain($mgettext_file);
 AA::$lang         = strtolower(substr($mgettext_file,0,2));      // actual language - two letter shortcut cz / es / en
 AA::$langnum      = [Langs::getLangName2Num(AA::$lang)]; // array of prefered languages in priority order.

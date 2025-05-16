@@ -120,8 +120,8 @@ FrmTabCaption(_m("Inter node export settings"));
          <?php
            if ($perms && is_array($perms)) {
                foreach ($perms as $perm) {
-                   $n = (!$perm['node']) ? "All Nodes" : $perm['node'];
-                   $u = (!$perm['user']) ? "All Users" : $perm['user'];
+                   $n = ($perm['node']) ? $perm['node'] : "All Nodes";
+                   $u = ($perm['user']) ? $perm['user'] : "All Users";
                    $str = str_replace(" ","&nbsp;",substr($n."                              ",0,30)."  ");
                    echo "<option value=\"".$perm['node']."~".$perm['user']."\">".
                      $str.$u."</option>";

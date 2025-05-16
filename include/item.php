@@ -74,7 +74,7 @@ function GetAliases4Type( $type, $additional=[] ): AA_Aliases {
     };
 
     // add additional aliases
-    if ( $additional AND is_array( $additional ) ) {
+    if ( $additional && is_array( $additional ) ) {
         $aliases->addFromArray($additional);
     }
     return $aliases;
@@ -186,7 +186,7 @@ function Inputform_url($add, $iid, $sid='', $ret_url='', $vid = null, $var = nul
     }
     if ($vid) {
         $param['vid'] = $vid;
-    } elseif (isset($profile) AND $profile->getProperty('input_view')) {
+    } elseif (isset($profile) && $profile->getProperty('input_view')) {
         $param['vid'] = $profile->getProperty('input_view');
     }
     return $safe ? con_url('itemedit.php',$param) : get_url('itemedit.php',$param);
@@ -212,7 +212,7 @@ function GetFormattedItems($zids, $format, $crypted_additional_slice_pwd=null, $
         $ret[$long_id] = AA::Un($format, '', $item);
     }
 
-    if (!(isset($tagprefix) AND ($zids->onetype() === 't'))) {
+    if (!(isset($tagprefix) && $zids->onetype() === 't')) {
         return $ret;
     }
 
@@ -601,7 +601,7 @@ class AA_Item {
             return (string)$txt;
         }
         // converts plain text to basic html
-        return (!str_contains($txt, '&')) ? nl2br(safe($txt)) : nl2br(preg_replace('/&amp;#(\d+);/', "&#\\1;", safe($txt)));
+        return (str_contains($txt, '&')) ? nl2br(preg_replace('/&amp;#(\d+);/', "&#\\1;", safe($txt))) : nl2br(safe($txt));
     }
 
     /** col2Html function - better txt2html function - it replaces also urls...
@@ -627,10 +627,10 @@ class AA_Item {
         global $sess;
 
         // redirecting to another page?
-        $url_base = ( $redirect ?: (($no_sess OR !is_object($sess))  ? '' : StateUrl()) );
+        $url_base = ( $redirect ?: (($no_sess || !is_object($sess))  ? '' : StateUrl()) );
 
         // add state variable, if defined (apc - AA Pointer Cache)
-        if ( $GLOBALS['apc_state'] AND $GLOBALS['apc_state']['state'] ) {
+        if ( $GLOBALS['apc_state'] && $GLOBALS['apc_state']['state'] ) {
             return con_url( $url_base, 'apc='.$GLOBALS['apc_state']['state'] );
         }
         return $url_base;
@@ -692,7 +692,7 @@ class AA_Item {
      * @return string
      */
     function getahref($url, $txt, $add="", $html=false, $hide=false) {
-        if ( $url AND $txt ) {
+        if ( $url && $txt ) {
             // repair url if user omits to write http://
             if ( substr($url,4)==='www.' ) {
                 $url = '//'.$url;
@@ -728,11 +728,11 @@ class AA_Item {
 
         // is this really alias?
         if ( !$ali ) {
-            // try alternative alias (old form of _#ITEM_ID_ alias was _#ITEM_ID#. It was bad for
-            // unaliasing with colon ':', so we change it, but for compatibility we have to test _#ITEM_ID# too)
+        // try alternative alias (old form of _#ITEM_ID_ alias was _#ITEM_ID#. It was bad for
+        // unaliasing with colon ':', so we change it, but for compatibility we have to test _#ITEM_ID# too)
             if ( ! ((substr($alias,9,1) === '#') AND ($ali = $this->aliases->getAlias(substr($alias,0,9).'_')))) {
-                return is_null($default) ? $alias : $default;
-            }
+            return is_null($default) ? $alias : $default;
+        }
         }
 
         // get from "f_d:mm-hh" array fnc="f_d", param="mm-hh"
@@ -770,7 +770,7 @@ class AA_Item {
             while(($begin = strpos($rest, '_#')) !== false) {
                 $maybe_alias  = substr($rest,$begin,10);
                 $substitution = $this->get_alias_subst( $maybe_alias );
-                if ($maybe_alias == $substitution) {
+                if ($maybe_alias === $substitution) {
                     // it is not alias - we move just ..._# to ret, which helps with cases like "link:_#SEO_URL_#_#LASTEDIT"
                     $ret .= substr($rest,0,$begin+2);
                     $rest = substr($rest,$begin+2);
@@ -1056,15 +1056,11 @@ class AA_Item {
         [         , $field ]               = ParamExplode($param);  // we need $field unexpanded
         [ $plength, $pfield, $pparagraph ] = $this->subst_aliases( ParamExplode($param) );
         $value = $this->getval($col);
-        if ($value AND !($col == $field)) {  // special case - return whole field
+        if ($value && $col != $field) {  // special case - return whole field
             return $this->text2Html( $value, $this->getFlag($col) );
         }
 
-        if ($pparagraph) {
-            $shorted_text = StrExp('shorten', [get_if($value, $pfield), $plength]);
-        } else {
-            $shorted_text = substr($value, 0, $plength);
-        }
+        $shorted_text = $pparagraph ? StrExp('shorten', [get_if($value, $pfield), $plength]) : substr($value, 0, $plength);
         return strip_tags( $shorted_text );
     }
 
@@ -1165,7 +1161,7 @@ class AA_Item {
         c) using the single item_id from b), find the content record that has the
         fulltext blurb
         */
-        if (($fieldToReturn === "id..............") OR ($fieldToReturn === "short_id........")) {
+        if ($fieldToReturn === "id.............." || $fieldToReturn === "short_id........") {
             print("f_q cannot yet return $fieldToReturn fields");
             return '';
         }
@@ -1425,7 +1421,7 @@ class AA_Item {
                 if ( !$data2compare ) {
                     $data2compare = $this->getval('const_value');
                 }
-                return (( (string)$p[1] == (string)$data2compare ) ? '1' : '0');
+                return (( (string)$p[1] === (string)$data2compare ) ? '1' : '0');
             case 'username':    // prints user name from its id
                 return perm_username( $this->getval($col) );
             case 'mlx_lang':    // print the current mlx language (the desired or default one instead of the lang_code...)
@@ -1471,7 +1467,7 @@ class AA_Item {
         [$pcond, $pbegin, $pend, $pnone, $pccol, $pskip_col] = $this->subst_aliases($p);
 
         $cond = ( $p[4] ? $pccol : $this->subst_alias($col) );
-        if ( $cond != $pcond ) {
+        if ( $cond !== $pcond ) {
             $negate = !$negate;
         }
         if (!$pskip_col) {
@@ -1607,7 +1603,7 @@ class AA_Item {
             $ret = ucwords (strtolower ($ret));
         }
 
-        if ( $addstr AND (strlen($ret) !== strlen($text))) {
+        if ( $addstr && strlen($ret) !== strlen($text)) {
             $ret .= $addstr;
         }
         return $ret;
@@ -1642,7 +1638,7 @@ class AA_Item {
         for ( $i=0; $i < $to; ++$i ) {
             $first  = $i*2;
             $second = $first +1;
-            if ( ($p[$first] != '') AND preg_match('`'.str_replace('`','\`',$p[$first]).'`' , $colvalue ) ) {
+            if ( $p[$first] != '' && preg_match('`'.str_replace('`','\`',$p[$first]).'`' , $colvalue ) ) {
                 return (string)$p[$second];
             }
         }
@@ -1738,12 +1734,12 @@ class AA_Item {
 
         $categs2print = $catseparator ? $this->getValues($col) :
                                         [0=> ['value'=>$this->parameters['category_id']]]; // current category
-        $linklast     = $catseparator ? true : false;
+        $linklast     = (bool) $catseparator;
 
         $ret = '';
         foreach ( (array)$categs2print as $v ) {
             $path = GetCategoryPath($v['value']);
-            if ($restrict AND (!str_starts_with($path, $restrict))) {
+            if ($restrict && !str_starts_with($path, $restrict)) {
                 continue;   // category is not on restriced branch
             }
             if ($ret) {
@@ -1752,14 +1748,14 @@ class AA_Item {
             $way = explode(',', $path);
             $start_count = $start;
             $delimiter = '';
-            if ( isset($way) AND is_array($way)) {
+            if ( isset($way) && is_array($way)) {
                 $last = $linklast ? '' : end($way);
                 foreach ( $way as $catid ) {
                     if ($start_count-- > 0) {
                         continue;
                     }
                     $cat_url   = con_url( $url_base, 'cat='.$catid.$urlprm);
-                    $ret      .= ( ( $catid == $last ) ?  // do not make link for last category
+                    $ret      .= ( ( $catid === $last ) ?  // do not make link for last category
                         $delimiter.$translate[$catid]['name'] :
                         $delimiter."<a href=\"$cat_url\">".$translate[$catid]['name']."</a>" );
                     $delimiter = $separator;
@@ -1782,15 +1778,10 @@ class AA_Item {
      *
      *  Creates item object just from item id and fills all necessary structures
      *
-     * @param  zids|string|string[] zid     - an item id - zid object, unpacked or short id
-     * @return AA_Item|bool
+     * @param  zids|null $zid  - an item id
      */
-    static function getItem($zid) {
-        if (empty($zid)) {
-            return false;
-        }
-        $zid   = (is_object($zid) ? $zid : new zids($zid));
-        return GetItemFromContent(new ItemContent($zid));
+    static function getItem(?zids $zid): ?AA_Item  {
+        return $zid ? GetItemFromContent(new ItemContent($zid)) : null;
     }
 
 }
@@ -1804,7 +1795,7 @@ class AA_Items {
     use \AA\Util\SingletonTrait;
 
     /** Array of all items grabbed from database during rendering of the page
-     *  Array short item id -> AA_Item object (short for smaller memmory usage)
+     *  Array short item id -> AA_Item object (short for smaller memory usage)
      */
     protected $_i = [];
 
@@ -1818,14 +1809,15 @@ class AA_Items {
      *  database just once during the page creation.
      *
      *  Creates item object just from item id and fills all necessary structures
-     * @param  $zid zids    - an item id - zid object, unpacked or short id
+     *
+     * @param  $zid                          zids    - an item id - zid object, unpacked or short id
      * @param  $crypted_additional_slice_pwd string
      * @param  $renew bool  - regenerate the item form database
-     * @return AA_Item|bool|mixed|null
+     *
      */
-    static function getItem($zid, $crypted_additional_slice_pwd=null, $renew=false) {
+    static function getItem($zid, $crypted_additional_slice_pwd=null, $renew = false): ?AA_Item {
         if (empty($zid)) {
-            return false;
+            return null;
         }
         $items = self::singleton();
 
@@ -1834,14 +1826,13 @@ class AA_Items {
         }
 
         // Do we want to count with inner cache (probably yes)
-        if (!$renew) {
-            if ($item = $items->_getFromCache($zid)) {  // assignment
-                return $item;
-            }
+        if (!$renew && ($item = $items->_getFromCache($zid))) {
+            // assignment
+            return $item;
         }
 
         $content = GetItemContent($zid, false, false, false, $crypted_additional_slice_pwd);
-        return $content ? $items->_store(GetItemFromContent(new ItemContent(reset($content)))) : false;
+        return $content ? $items->_store(GetItemFromContent(new ItemContent(reset($content)))) : null;
     }
 
     /** @param zids $zids
@@ -1897,7 +1888,7 @@ class AA_Items {
         // all is cached, we get all the items in RIGHT ORDER
         for ( $i=0, $ino=$zids->count(); $i<$ino; ++$i) {
             $item = $items->_getFromCache($zids->zid($i));
-            if ($item AND (($bin==AA_BIN_ALL) OR $item->isActive($bin))) {  // AA_BIN_ALL - all items - speedup - no need to check
+            if ($item && ($bin==AA_BIN_ALL || $item->isActive($bin))) {  // AA_BIN_ALL - all items - speedup - no need to check
                 $res[$item->getItemId()] = strlen($expression) ? $item->subst_alias($expression) : '';       // long item id
             }
         }
@@ -1971,7 +1962,7 @@ class AA_Items {
         // long or packed
         $id = $zid->longids(0);
         // long id, so we look for translation to short one
-        if ( isset($this->_l2s[$id]) AND isset($this->_i[$this->_l2s[$id]]) ) {
+        if ( isset($this->_l2s[$id]) && isset($this->_i[$this->_l2s[$id]]) ) {
             return $this->_i[$this->_l2s[$id]];
         }
         return null;
@@ -1979,9 +1970,10 @@ class AA_Items {
 
     /**
      * @param $item AA_Item
+     *
      * @return AA_Item
      */
-    function _store($item) {
+    function _store(AA_Item $item): AA_Item {
         $short_id                       = $item->getval('short_id........');
         $this->_i[$short_id]            = &$item;    // cache it
         $this->_l2s[$item->getItemId()] = $short_id;

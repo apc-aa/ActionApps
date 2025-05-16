@@ -46,7 +46,7 @@ class AA_Mailtemplate implements AA_iEditable, ArrayAccess, Countable, Iterator 
     protected $data = [];
 
     function __construct($id=null) {
-        if ($id and ctype_digit((string)$id)) {
+        if ($id && ctype_digit((string)$id)) {
             $template = AA_Metabase::getContent(new zids($id, 's'), ['table' => 'email']);
             if ($template[$id]) {
                 $this->data = $template[$id]->getAllAsScalar();
@@ -118,7 +118,7 @@ class AA_Mail extends htmlMimeMail implements \AA\Later\LaterInterface {
     protected $reader_id   = '';
 
     /** used in AA_Log after toexecute */
-    function getId() {
+    function getId(): string {
         return $this->template_id.':'.$this->reader_id;
     }
 
@@ -149,7 +149,7 @@ class AA_Mail extends htmlMimeMail implements \AA\Later\LaterInterface {
     }
 
     /** record array('subject','body','header_from','reply_to','errors_to','sender','lang','html','cc','bcc','attachments')  */
-    function setFromArray(array $record) {
+    function setFromArray(array $record): bool {
         // do not send empty emails
         if (trim($record["body"]) === '') {
             return false;
@@ -239,15 +239,13 @@ class AA_Mail extends htmlMimeMail implements \AA\Later\LaterInterface {
             }
 
             // first two mails in the script send directly (for better UX)
-            if (!$all_later AND (++$send_mails_total < 3)) {
+            if (!$all_later && ++$send_mails_total < 3) {
                 $this->send([$to]);
                 ++$sent;
-            } else {
+            } elseif ($toexecute->later($this, [[$to]], 'AA_Mail'.$this->getId())) {
                 // Yes, two nested arrays - mail->send() accepts array($to) and
                 // all parameters to later must be in another only one array
-                if ( $toexecute->later($this, [[$to]], 'AA_Mail'.$this->getId())) {
-                    ++$sent;
-                }
+                ++$sent;
             }
         }
         return $sent;
@@ -360,14 +358,14 @@ class AA_Mail extends htmlMimeMail implements \AA\Later\LaterInterface {
         $chunks = array_chunk($zids->longids(),50);  // plan 50 mails in one shot
         if (count($chunks)===1) {
             // less than 50 mails - schedule right now
-            $mail_scheduler = new AA_Mail_Scheduler($mail_id,$chunks[0], $slice_id);
+            $mail_scheduler = new AA_Mail_Scheduler((int)$mail_id,$chunks[0], $slice_id);
             $mail_scheduler->schedule();  // right now
         } else {
             // more than 50 - plan scheduling
             // there were problems with more than 1000 mails - it wasn't possible to plan it in one shot
             $toexecute  = new Toexecute;
             foreach ($chunks as $chunk) {
-                $mail_scheduler = new AA_Mail_Scheduler($mail_id, $chunk, $slice_id);
+                $mail_scheduler = new AA_Mail_Scheduler((int)$mail_id, $chunk, $slice_id);
                 $toexecute->later($mail_scheduler, [], "AA_Mail_Scheduler:$mail_id", 105);      // a bit higher priority than mail sending
             }
         }
@@ -380,20 +378,23 @@ class AA_Mail extends htmlMimeMail implements \AA\Later\LaterInterface {
  *  @see AA_Mail::sendToReader();
  */
 class AA_Mail_Scheduler implements \AA\Later\LaterInterface {
-    protected $mail_id;
-    protected $reader_ids;
+    protected int $mail_id;
+
+    /** @var array $reader_ids - array of reader ids (longId) */
+    protected array $reader_ids;
 
     /** @var string $slice_id slice of the Readers - used for slice credentials */
     protected $slice_id;
 
-    function __construct($mail_id, $reader_ids, $slice_id) {
+    function __construct(int $mail_id, array $reader_ids, $slice_id) {
         $this->mail_id    = $mail_id;
         $this->reader_ids = $reader_ids;
         $this->slice_id   = $slice_id;
     }
 
     /** this will be written to AA_Log after toexecute. No other purpose */
-    function getId() {
+    function getId(): int
+    {
        return $this->mail_id;
     }
 
@@ -402,9 +403,9 @@ class AA_Mail_Scheduler implements \AA\Later\LaterInterface {
         AA_Credentials::singleton()->loadFromSlice($this->slice_id);
 
         $mail_count = 0;
-        if ($this->mail_id AND count($this->reader_ids)) {
+        if ($this->mail_id && count($this->reader_ids)) {
             foreach ( $this->reader_ids as $id ) {
-                $item = AA_Item::getItem($id);
+                $item = AA_Item::getItem(new zids($id, 'l'));
                 $to   = $item->getValuesArray(FIELDID_EMAIL);
                 $mail_count += AA_Mail::sendTemplate($this->mail_id, $to, $item, true);
             }
@@ -452,7 +453,7 @@ function html2text($html, $encoding='utf-8') {
         $html_ahref = current($html_ahrefs[0]);
         next($html_ahrefs[0]);
         preg_match ( "'$ahref(.*)</[ \t]*a[ \t]*>(.*)'si", $html_ahref. $html_part , $matches);
-        if ( $matches[1] == $matches[2] ) {
+        if ( $matches[1] === $matches[2] ) {
             $html .= $matches[1]. $matches[3];
         } else {
             $html .= $matches[2]. ' {'. $matches[1] .'}'. $matches[3];

@@ -142,7 +142,7 @@ function SetColumnTypes(&$columns, &$primary_aliases, $default_table, $join="", 
     $tables          = [];
 
     // set column defaults and find all tables used in $columns
-    foreach ($columns as $colname => $foo) {
+    foreach (array_keys($columns) as $colname) {
         $column = &$columns[$colname];
         $column["table"]                = get_if($column["table"], $default_table);
         $column["field"]                = get_if($column["field"], $colname);
@@ -169,7 +169,7 @@ function SetColumnTypes(&$columns, &$primary_aliases, $default_table, $join="", 
     }
 
     $db = getDB();
-    foreach ($tables as $table => $foo) {
+    foreach (array_keys($tables) as $table) {
         // Special table name - not real name - used for not database columns
         if ( $table === 'aa_notable' ) {
             continue;    // This is not database column
@@ -180,7 +180,7 @@ function SetColumnTypes(&$columns, &$primary_aliases, $default_table, $join="", 
         foreach ($cols as $col) {
             // find the column
             unset ($cprop);
-            foreach ($columns as $alias => $foo) {
+            foreach (array_keys($columns) as $alias) {
                 if ($columns[$alias]["field"] == $col["name"] && $columns[$alias]["table"] == $table) {
                     $cprop = &$columns[$alias];
                     break;
@@ -199,11 +199,7 @@ function SetColumnTypes(&$columns, &$primary_aliases, $default_table, $join="", 
             }
 
             // is it a part of the primary key?
-            if ($primary && $primary[$table]) {
-                $is_primary = in_array($col["name"], $primary[$table]);
-            } else {
-                $is_primary = ($col["key"] === "PRI");
-            }
+            $is_primary = $primary && $primary[$table] ? in_array($col["name"], $primary[$table]) : $col["key"] === "PRI";
             if ($is_primary || $is_join_part) {
                 // create the column if not exists
                 if (!$cprop) {
@@ -302,7 +298,7 @@ function TableDelete($table, $key, $columns, $primary_aliases, $error_msg="", $t
  * @param $be_cautios
  * @return bool - true if successful, false if not
  */
-function TableUpdate($val, $columns, $primary_aliases, $error_msg="", $triggers = "", $be_cautious=1) {
+function TableUpdate($val, $columns, $primary_aliases, $error_msg="", $triggers = "", $be_cautious=1): bool {
     global $err;
 
     if (!ProoveVals($val, $columns)) {
@@ -482,7 +478,7 @@ function RunColumnFunctions(&$val, $columns, $table, $join) {
     }
 
     // change the values for appropriate column types
-    foreach ( $val as $col => $value) {
+    foreach ( array_keys($val) as $col) {
         // defined in tabledit_column.php
         ColumnFunctions($columns[$col]["view"], $val[$col], "form");
     }
@@ -513,7 +509,7 @@ function RunColumnFunctions(&$val, $columns, $table, $join) {
  * @param $columns
  * @return bool
  */
-function ProoveVals($val, $columns) {
+function ProoveVals($val, $columns): bool {
     global $err;
     foreach ( $columns as $colname => $column) {
         if ($column["validate"] || $column["required"]) {
@@ -522,11 +518,11 @@ function ProoveVals($val, $columns) {
             }
             if ($column["validate_min"] && $column["validate"] === "number") {
                 if ($val[$colname] < $column["validate_min"] || $val[$colname] > $column["validate_max"]) {
-                    $err[$colname] = _m("Value of %1 should be between %2 and %3.", [$colname,$column["validate_min"],$column["validate_max"]]);
-                    return false;
-                }
+                $err[$colname] = _m("Value of %1 should be between %2 and %3.", [$colname,$column["validate_min"],$column["validate_max"]]);
+                return false;
             }
         }
+    }
     }
     return true;
 }
@@ -555,12 +551,12 @@ function GetKey($primary, $columns, $varset) {
  * @return string|void
  */
 function GetKeyFromRecord($primary, $columns, $record) {
-    if ( !isset($primary) OR !is_array($primary)) {
+    if ( !isset($primary) || !is_array($primary)) {
         echo _m('Table do not have set primary key on single column. You can specify primary key by primary => array (field1, field2, ...) parameter for tableedit').'<br>';
         return;
     }
     $key = [];
-    foreach ($primary as $alias => $v) {
+    foreach (array_keys($primary) as $alias) {
         $val   = $record[$alias];
         $key[] = ($columns[$alias]["view"]["unpacked"] ? unpack_id($val) : safe($val));
     }
@@ -586,7 +582,7 @@ function AddKeyValues($varset, $val, $primary, $columns, $auto_increment = true)
         exit;
     }
 
-    foreach ($primary as $alias => $foo) {
+    foreach (array_keys($primary) as $alias) {
         $colname = $columns[$alias]["field"];
         $value   = $val[$alias];
         if ($auto_increment || !$columns[$alias]["auto_increment"]) {

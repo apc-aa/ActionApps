@@ -92,11 +92,10 @@ if ($template['P']) {        // add module
         MsgPage(_m("You have not permissions to add polls"));
         exit;
     }
-} else {                    // edit module
-    if (!CheckPerms( AuthGetUid(), "slice", $module_id, PS_MODP_SETTINGS)) {
-        MsgPage(_m("You have not permissions to edit this polls"));
-        exit;
-    }
+} elseif (!CheckPerms( AuthGetUid(), "slice", $module_id, PS_MODP_SETTINGS)) {
+    // edit module
+    MsgPage(_m("You have not permissions to edit this polls"));
+    exit;
 }
 
 if ( $insert || $update ) {

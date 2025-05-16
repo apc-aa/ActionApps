@@ -282,7 +282,7 @@ class MLX {
         $content4mlxid["expiry_date....."][0]['value'] = time() + 200*365*24*60*60;
         $content4mlxid["status_code....."][0]['value'] = 1;
         $p_id = pack_id($id);
-        if ((strlen($id) != 32) || (strlen($p_id)!=16)) {
+        if ((strlen($id) != 32) || (strlen($p_id) != 16)) {
             $this->fatal("MLX update: mlxid corrupted: $id ".strlen($id).", $p_id");
         }
 
@@ -352,11 +352,7 @@ class MLX {
                 }
                 $GLOBALS['v'. unpack_id(MLX_CTRLIDFIELD)]= q_pack_id($mlxid);
                 //check if lang is set, set to default from MLX
-                if (!$lang) {
-                    $GLOBALS['v'. unpack_id('lang_code.......')] = $mlxCtrl->getDefLangName();
-                } else {
-                    $GLOBALS['v'. unpack_id('lang_code.......')] = $lang;
-                }
+                $GLOBALS['v'. unpack_id('lang_code.......')] = $lang ? $lang : $mlxCtrl->getDefLangName();
                 //$this->dbg($GLOBALS['v'. unpack_id('lang_code.......')]);
                 //$this->dbg(GetItemContent($mlxid));
                 break;
@@ -424,11 +420,7 @@ class MLX {
      * @return bool|string
      */
     function getLangItem($lang, $content4id, &$content4mlxid) {
-        if (is_array($content4id)) {
-            $mlxid = unpack_id($content4id[MLX_CTRLIDFIELD][0]['value']);
-        } else {
-            $mlxid = $content4id;
-        }
+        $mlxid = is_array($content4id) ? unpack_id($content4id[MLX_CTRLIDFIELD][0]['value']) : $content4id;
         //mlxid should now hold the itemid of the mlx info
         if (!$mlxid) {
             return false;
@@ -891,7 +883,7 @@ class MLXGetText
      * @param $slice_id
      * @return string
      */
-    function command(&$args,$slice_id=0) {
+    function command(&$args,$slice_id=0): string {
 //		__mlx_dbg($args,"command args");
 //		__mlx_dbg($slice_id,"command slice");
         call_user_func_array([&$this, $args[0]], [&$args,&$slice_id]);
@@ -923,10 +915,8 @@ class MLXGetText
         $lang = strtoupper($lang);
         foreach($fields as $fid => $fname) {
             if ($fid === 'headline........') {
-                if ($this->currentDomainRef['defaultLang'] && $this->currentDomainRef['defaultLang'] != $fname) {
-                    if ($GLOBALS['errcheck']) {
-                        huhl('MLXGetText mixing different default languages in one domain: $domain');
-                    }
+                if ($this->currentDomainRef['defaultLang'] && $this->currentDomainRef['defaultLang'] != $fname && $GLOBALS['errcheck']) {
+                    huhl('MLXGetText mixing different default languages in one domain: $domain');
                 }
                 $this->currentDomainRef['defaultLang'] = $fname;
             }
@@ -949,7 +939,7 @@ class MLXGetText
                 ." WHERE ( c2.slice_id=".xpack_id($slice2add)
                 ." AND c2.status_code=1"
                 ." AND ( c1.field_id='headline........'"
-                .(!$isDefLang?" OR c1.field_id='".$langField."'":"")
+                .($isDefLang?"":" OR c1.field_id='".$langField."'")
                 ."))";
             $db->query($sql);
         while( $db->next_record() ) {
@@ -960,21 +950,17 @@ class MLXGetText
                 if ($refSlice[$item_id]) {
                     $refSlice[$text] = $refSlice[$item_id];
                     unset($refSlice[$item_id]);
+                } elseif ($isDefLang) {
+                    $refSlice[$text] = MLX_NOTRANSLATION;
                 } else {
-                    if ($isDefLang) {
-                        $refSlice[$text] = MLX_NOTRANSLATION;
-                    } else {
-                        $refSlice[$item_id] = $text;
-                    }
+                    $refSlice[$item_id] = $text;
                 }
             } elseif ($field_id == $langField) {
                 if ($refSlice[$item_id]) {
                     if ($isModeActive) {
                         $refSlice[$refSlice[$item_id]] = $text;
-                    } else {
-                        if ($text != '') {
-                            $refSlice[$refSlice[$item_id]] = $text;
-                        }
+                    } elseif ($text != '') {
+                        $refSlice[$refSlice[$item_id]] = $text;
                     }
                     unset($refSlice[$item_id]);
                 } else {
@@ -1025,7 +1011,7 @@ class MLXGetText
         __mlx_dbg($args,__function__);
         $old_varset = $GLOBALS['varset'];
         if (!is_callable('StoreItem')) {
-            require_once('itemfunc.php');
+            require_once(__DIR__ . '/itemfunc.php');
         }
         $array = array_keys($this->currentDomainRef['slices']);  // variable is neccessary - end() need call by reference
         $sliceid = end($array);

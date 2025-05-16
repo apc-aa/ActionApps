@@ -86,7 +86,7 @@ if ( $update ) {
                 break;
             }
 
-            if ($cond AND $name) {
+            if ($cond && $name) {
                 $set = new AA_Set($sli, $cond, $sort);
                 $set->setName($name);
                 $set->setOwnerId(AA::$module_id);

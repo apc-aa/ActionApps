@@ -39,16 +39,14 @@ class AA_Stringexpand_Poll extends AA_Stringexpand {
      * @param $expression
      * @return string
      */
-    function expand($ids_string='', $expression='') {
+    function expand($ids_string='', $expression=''): string {
         $ids     = explode_ids($ids_string);
         $results = [];
         foreach ( $ids as $poll_id ) {
             if ( $poll_id ) {
                 $poll = AA_Polls::getPoll($poll_id);
-                if ($poll) {
-                    if ($expression) {
-                        $results[$poll_id] = $poll->unalias($expression);
-                    }
+                if ($poll && $expression) {
+                    $results[$poll_id] = $poll->unalias($expression);
                 }
             }
         }

@@ -113,7 +113,7 @@ function GetBaseItem($item_id) {
  * @param $destination
  * @return bool
  */
-function IsItemFed($item_id, $destination) {
+function IsItemFed($item_id, $destination): bool {
     $p_destination = q_pack_id($destination);
     $base_id       = GetBaseItem($item_id);  // Trace back to the original id
 
@@ -218,7 +218,7 @@ function FeedItemTo($item_id, $from_slice_id, $destination_id, $approved, $tocat
     $fields      = $from_slice->getFields();
     $catfieldid  = $fields->firstOfTypeFieldId();
 
-    if ( $catfieldid AND ( (string)$tocategory != "0" ) ) {
+    if ( $catfieldid && (string)$tocategory != "0" ) {
         $destinationcat = DB_AA::select1('value', 'SELECT value FROM constant', [['id', $tocategory, 'l']]);
     }
 
@@ -240,7 +240,7 @@ function FeedItemTo($item_id, $from_slice_id, $destination_id, $approved, $tocat
                 }
 
                 $new4id[$newfld] = $content4id[$val];
-                $minkey          = (is_array($new4id[$newfld]) AND $new4id[$newfld]) ? min(array_keys($new4id[$newfld])) : 0; // for language translation we do not start with 0
+                $minkey          = (is_array($new4id[$newfld]) && $new4id[$newfld]) ? min(array_keys($new4id[$newfld])) : 0; // for language translation we do not start with 0
                 if ($fields->getProperty($val,'feed')==STATE_FEEDNOCHANGE ) {
                     $new4id[$newfld][$minkey]['flag'] |= FLAG_FREEZE;  // don't allow to change
                 } elseif ($fields->getProperty($val,'feed')==STATE_FEEDABLE_UPDATE_LOCKED) {
@@ -267,10 +267,9 @@ function FeedItemTo($item_id, $from_slice_id, $destination_id, $approved, $tocat
         $new4id[$newfld][$minkey]['flag'] |= FLAG_FEED;      // mark as fed
 
         // category mapping
-        if ( $newfld == $catfieldid ) {
-            if ( (string)$tocategory != "0" ) {    // if 0 - don't change category
-                $new4id[$newfld][$minkey]['value'] = $destinationcat;
-            }
+        if ( $newfld == $catfieldid && (string)$tocategory != "0" ) {
+            // if 0 - don't change category
+            $new4id[$newfld][$minkey]['value'] = $destinationcat;
         }
     }
 
@@ -280,8 +279,7 @@ function FeedItemTo($item_id, $from_slice_id, $destination_id, $approved, $tocat
     // Use it only when 'Value' is used for status_code (we do not want to copy
     // status_code field from source item (since it is always '1')
 
-    if ( !(($map['status_code.....']['feedmap_flag'] == FEEDMAP_FLAG_VALUE) AND
-          ((int)$new4id['status_code.....'][0]['value'] > 0)) ) {
+    if ( !($map['status_code.....']['feedmap_flag'] == FEEDMAP_FLAG_VALUE && (int)$new4id['status_code.....'][0]['value'] > 0) ) {
         $new4id['status_code.....'][0]['value'] = ($approved==='y' ? 1 : 2);
     }
     $field_ids = ["post_date", "publish_date","expiry_date", "highlight", "posted_by", "edited_by", "last_edit"];
@@ -330,7 +328,7 @@ function WhereFed($item_id) {
  */
 function UpdateFedItem($item_id, $slice_id, $dest_id, $destination_id) {
 
-    if (($item_id == $dest_id) OR ($slice_id==$destination_id)) {
+    if ($item_id == $dest_id || $slice_id==$destination_id) {
         return;
     }
 
@@ -352,7 +350,7 @@ function UpdateFedItem($item_id, $slice_id, $dest_id, $destination_id) {
     foreach($destcontent4id as $key => $fval) {
 
         // skip field, if field from source item is not mapped to dest
-        if (!isset($map[$key]) or ($map[$key]['feedmap_flag'] != FEEDMAP_FLAG_MAP)) {
+        if (!isset($map[$key]) || $map[$key]['feedmap_flag'] != FEEDMAP_FLAG_MAP) {
             continue;
         }
         $val = $map[$key]['val'];

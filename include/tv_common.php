@@ -63,7 +63,7 @@ function SelectModule($all = false) {
         $myslices = GetUserSlices();
         if ( isset($myslices) && is_array($myslices) ) {
             $zids = new zids(null,'l');
-            foreach ( $myslices as $my_slice_id => $perm) {
+            foreach ( array_keys($myslices) as $my_slice_id) {
                 if (IfSlPerm(PS_FULLTEXT, $my_slice_id)) {
                     $zids->add($my_slice_id);
                 }

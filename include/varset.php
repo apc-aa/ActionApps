@@ -243,7 +243,7 @@ class Cvarset {
      * @param array $arr
      */
     function setFromArray($arr) {
-        foreach ( $this->vars as $varname => $variable ) {
+        foreach ( array_keys($this->vars) as $varname ) {
             $this->set($varname, $arr[$varname]);
         }
     }
@@ -304,7 +304,7 @@ class Cvarset {
      * @param $tablename
      * @return string
      */
-    function _makeInsertReplace($command, $tablename) {
+    function _makeInsertReplace($command, $tablename): string {
         if ( !($cols = AA::Metabase()->getColumns($tablename))) {
             return '';
         }
@@ -537,7 +537,7 @@ class Cvarset {
      * @param $values
      * @return string
      */
-    static function sqlin($column, $values) {
+    static function sqlin($column, $values): string {
         if (!is_array($values)) {
             $values = [$values];
         }
@@ -563,7 +563,7 @@ class Cvarset {
  * @param $field_type
  * @return bool
  */
-function is_field_type_numerical($field_type) {
+function is_field_type_numerical($field_type): bool {
     return in_array($field_type, ["float","double","decimal","int","timestamp"]);
 }
 
@@ -579,8 +579,8 @@ function is_field_type_numerical($field_type) {
  *   @param array  $omit_columns [optional] array ($column_name, ...) - fields to be omitted
  *   @param array  $id_columns   [optional] array ($column_name, ...) - fields with the 16 byte ID to be generated for each row a new one
  */
-function CopyTableRows(string $table, $where, $set_columns, $omit_columns = "", $id_columns = "") {
-    if (!$omit_columns) {
+function CopyTableRows(string $table, $where, $set_columns, $omit_columns = "", $id_columns = ""): bool {
+    if (!$omit_columns ) {
         $omit_columns = [];
     }
     if (!$id_columns) {

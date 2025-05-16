@@ -44,7 +44,6 @@ class CacheStr2find {
      * @param string $type
      */
     function __construct( $strings=null, $type='M') {   // it was $type=slice_id, but for cache it is better to use shorter - M
-        $this->strings = [];
         $this->add($strings, $type);
     }
 
@@ -93,7 +92,7 @@ class CacheStr2find {
     function store($keyid) {
         $varset = new Cvarset( [['pagecache_id', $keyid], ['str2find','']]);
         $varset->doDeleteWhere('pagecache_str2find', "pagecache_id='$keyid'" );
-        foreach ((array)$this->strings as $str => $v) {
+        foreach (array_keys((array)$this->strings) as $str) {
             $varset->set('str2find', $str);
             $varset->doInsert('pagecache_str2find');
         }

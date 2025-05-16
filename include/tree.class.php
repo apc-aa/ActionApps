@@ -61,7 +61,7 @@ class AA_Supertree {
             $new = [];
             foreach ($content4ids as $item_id => $columns) {
                 $sid = $columns['u_slice_id......'][0]['value'];
-                if (count($this->_restrict_slices) AND !in_array($sid, $this->_restrict_slices)) {
+                if (count($this->_restrict_slices) && !in_array($sid, $this->_restrict_slices)) {
                     $invalid = array_merge($invalid, [$item_id]);
                     continue;
                 }
@@ -125,19 +125,19 @@ class AA_Supertree {
                 continue;
             }
             $inpath = in_array($mid, $current_ids) ? 'inpath' : '';
-            if ($expanded OR $inpath) {
+            if ($expanded || $inpath) {
                 $this->load($mid);
                 $sub  = empty($this->_i[$mid]) ? '' : $this->getMenu($this->_i[$mid], $current_ids, $code, true, $expanded, $exp_button);
                 $ret .= '  <li id="menu-'.$mid.'" class="'.$inpath.($mid==$xid  ? ' xidmatch':'').'">';
                 $ret .= $menu_txt;
-                $ret .= ($exp_button AND strlen($sub)) ? '<i class=aa-ico-expand onclick="this.closest(\'li\').classList.toggle(\'inpath\');"></i>' : '' ;
+                $ret .= ($exp_button && strlen($sub)) ? '<i class=aa-ico-expand onclick="this.closest(\'li\').classList.toggle(\'inpath\');"></i>' : '' ;
                 $ret .= $sub;
                 $ret .= "</li>\n";
             } else {
                 $ret .= "  <li id=\"menu-$mid\">$menu_txt</li>\n";
             }
         }
-        if (!$inner AND $ret AND (false !== ($pos = strrpos($ret, 'class="inpath')))) {
+        if (!$inner && $ret && false !== ($pos = strrpos($ret, 'class="inpath'))) {
             // add "active" to the closest active menu entry on final recursive return
             $ret = substr_replace($ret, 'class="inpath active', $pos, 13);
         }

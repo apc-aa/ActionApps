@@ -74,7 +74,7 @@ if ( !IfSlPerm(PS_EDIT_ALL_ITEMS)) {
     exit;
 }
 
-if ( !$_GET['type'] AND $r_userstate['type'] ) {
+if ( !$_GET['type'] && $r_userstate['type'] ) {
     $type = $r_userstate['type'];
 }
 
@@ -121,7 +121,7 @@ $manager = new Manager('users'.AA::$module_id, (new \AA\Managed())->setSettings(
 // the configuration then could be Bookmarked
 
 
-if ( !isset($r_userstate) OR $group OR isset($items)) {
+if ( !isset($r_userstate) || $group || isset($items)) {
     // we are here for the first time
     unset($r_userstate);
     // set default admin interface settings from user's profile
@@ -146,7 +146,7 @@ $manager->printHtmlPageBegin(true);  // html, head, css, title, javascripts
 $conds = $manager->getConds();
 $sort  = $manager->getSort();
 
-if (!$sort AND $default_sort_field) {
+if (!$sort && $default_sort_field) {
     $sort[0][$default_sort_field]="a";
 }
 

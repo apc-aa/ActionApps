@@ -168,12 +168,12 @@ if (!array_key_exists('userfile', $_FILES)) {
                 $line=str_replace("<HR>","",$line);
                 $output[]=$line;
                 $insidesection=false;
-            } else {
-                if ($insidesection==true) $output[]=$line;
+            } elseif ($insidesection==true) {
+                $output[]=$line;
             }
         }
     }
-    if ($view AND count($output) ) {
+    if ($view && count($output) ) {
         echo implode("\n",$output)."\n";
     }
     echo "<form name=\"aform\">";

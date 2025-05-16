@@ -32,7 +32,7 @@ use AA\Util\InputVars;
 use AA\Util\Langs;
 
 
-if ( isset($_REQUEST['edit']) OR isset($_REQUEST['add'])) {         // parameter for init_page - we edited new item so
+if ( isset($_REQUEST['edit']) || isset($_REQUEST['add'])) {         // parameter for init_page - we edited new item so
     $unset_r_hidden = true;  // clear stored content
 }
 
@@ -67,18 +67,14 @@ if ($cancel) {
 $go_edit = false;
 if ($_POST['upd_edit'])    {$update = true; $go_edit=true; }
 
-if ($update) {
-    $action = "update";
-} else {
-    $action = "edit";
-}
+$action = $update ? "update" : "edit";
 
 $slice = AA_Slice::getModule(AA::$module_id);
 $oldcontent4id = ValidateContent4Id($err, $slice, $action, $id);
 $fields = $slice->getFields(true);
 
 //  update database
-if ( $update AND !count($err) AND $fields->count() ) {
+if ( $update && !count($err) && $fields->count() ) {
 
     $profile = AA_Profile::getProfile(AuthGetUid(), $slice->getId()); // current user settings
 

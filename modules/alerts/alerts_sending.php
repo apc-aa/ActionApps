@@ -371,7 +371,7 @@ class AA_Collection {
 
         foreach ( $filters as $filterid => $fprop ) {
             // Send items from filters with "group" not set when the view changes.
-            if ( $last_fprop["vid"] != $fprop["vid"] AND $filter_ids AND $user_zids->count()) {
+            if ( $last_fprop["vid"] != $fprop["vid"] && $filter_ids && $user_zids->count()) {
                 // WARNING - HACK: we need to sort the zids according to the common
                 // sort[]: we use the same global trick as in createFilterText
                 if ($last_fprop["sort"]) {

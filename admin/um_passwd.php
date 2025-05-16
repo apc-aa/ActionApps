@@ -55,7 +55,7 @@ if ($cancel) {
     go_url( StateUrl(self_base() . "index.php"));
 }
 
-if (!IfSlPerm(PS_EDIT_SELF_USER_DATA) OR !AA::$perm->isUserEditable(AuthGetUid())) {
+if (!IfSlPerm(PS_EDIT_SELF_USER_DATA) || !AA::$perm->isUserEditable(AuthGetUid())) {
     AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You have not permissions to change user data"), "admin");
     exit;
 }
@@ -64,7 +64,7 @@ $err = [];          // error array (Init - just for initializing variable
 $varset      = new Cvarset();
 
 $user_data = AA::$perm->getIDsInfo(AuthGetUid());
-if ( $update ) {
+if ($update) {
     // Procces user data -------------------------------------------------------
     ValidateInput("user_password_old", _m("Current password"), $user_password_old, $err, true, "password");
     if ( !AA::$perm->authenticateUsername(AuthGetUname(), $user_password_old, '') ) {
@@ -79,19 +79,19 @@ if ( $update ) {
     if ( !count($err) ) {
         $Msg = MsgOk(_m("User data modified"));
     }
-} else {
+} elseif (is_array($user_data)) {
     // !update - get data
-     if (is_array($user_data)) {
-        $user_login     = $user_data['login'];
-        $user_firstname = $user_data['givenname'];
-        $user_surname   = $user_data['sn'];
-        $user_password1 = "nOnEwpAsswD";    // unchanged password
-        $user_password2 = "nOnEwpAsswD";    // unchanged password
-        if ( is_array($user_data['mails'])) {
-            $user_mail1 = $user_data['mails'][0];
-            $user_mail2 = $user_data['mails'][1];
-            $user_mail3 = $user_data['mails'][2];
-        }
+    $user_login     = $user_data['login'];
+    $user_firstname = $user_data['givenname'];
+    $user_surname   = $user_data['sn'];
+    $user_password1 = "nOnEwpAsswD";
+    // unchanged password
+    $user_password2 = "nOnEwpAsswD";
+    // unchanged password
+    if ( is_array($user_data['mails'])) {
+        $user_mail1 = $user_data['mails'][0];
+        $user_mail2 = $user_data['mails'][1];
+        $user_mail3 = $user_data['mails'][2];
     }
 }
 

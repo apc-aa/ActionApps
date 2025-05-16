@@ -93,7 +93,7 @@ function getHierConstInitJavaScript($hcid, $group_id, $levelCount=3, $formName='
  * @param  $levelNames = array() - names for the level boxes (if you don't like Level 0, Level 1, etc.)
  * @return string
  */
-function getHierConstBoxes($hcid, int $levelCount, bool $horizontal=false, string $targetBox="", $admin=true, $minLevelSelect=0, int $boxWidth=0, array $levelNames= []) {
+function getHierConstBoxes($hcid, int $levelCount, bool $horizontal=false, string $targetBox="", $admin=true, $minLevelSelect=0, int $boxWidth=0, array $levelNames= []): string {
     $admin = $admin ? 1 : 0;
     if ($boxWidth == 0) {
         $boxWidth = $horizontal ? 30 : 70;
@@ -175,7 +175,7 @@ function showHierConstBoxes($hcid, int $levelCount, bool $horizontal=false, stri
  * @param $admin - admin pages
  * @return string
  */
-function createConstsJavaScript($group_id, $admin)
+function createConstsJavaScript($group_id, $admin): string
 {
     createConstsArray($group_id, $admin, $myconsts);
     eval('$data = '.$myconsts.';');
@@ -242,7 +242,7 @@ function createConstsArray($group_id, $admin, &$consts)
         } elseif (strlen($ancestors) % 16) {
             $error = true;
         // step over one layer
-        } elseif (strlen($ancestors) > strlen($path) AND str_starts_with($ancestors, $path)) {
+        } elseif (strlen($ancestors) > strlen($path) && str_starts_with($ancestors, $path)) {
             if (strlen($ancestors)-strlen($path) === 16) {
                 $consts .= ",array(array($col";
                 $depth++;
@@ -258,7 +258,7 @@ function createConstsArray($group_id, $admin, &$consts)
         } else {
             $consts .= ")";
             $level=0;
-            while (substr($ancestors,0,$level*16) == substr($path,0,$level*16)) {
+            while (substr($ancestors,0,$level*16) === substr($path,0,$level*16)) {
                 ++$level;
             }
             for ($i = 0, $ino = strlen($path); $i < $ino / 16 - $level && $depth > 0; ++$i) {
@@ -332,7 +332,7 @@ function ff($str) {
  * @param $admin
  * @return string
  */
-function printConstsArray(&$arr, $admin) {
+function printConstsArray(&$arr, $admin): string {
     global $hcCol;
     $value = ff($arr[$hcCol["Value"]]);
     if (ff($arr[$hcCol["Name"]]) == $value) {
@@ -408,7 +408,7 @@ function hcUpdate() {
                     continue;
                 }
                 $ar = explode("~",$ch);
-                foreach ($ar as $i => $iValue) {
+                foreach (array_keys($ar) as $i) {
                     $ar[$i] = str_replace(["--$--", "--$$--"], [":", "~"], $ar[$i]);
                 }
                 $changes[] = $ar;
@@ -429,11 +429,7 @@ function hcUpdate() {
             $shortIDmap[$db->f("short_id")] = addslashes($db->f("id"));
 
         $db->query("SELECT propagate FROM constant_slice WHERE group_id='$qgroup_id'");
-        if ($db->next_record()) {
-            $propagate_changes = $db->f("propagate");
-        } else {
-            $propagate_changes = false;
-        }
+        $propagate_changes = $db->next_record() ? $db->f("propagate") : false;
 
         foreach ($changes as $change) {
             $column_id = 4;
@@ -488,7 +484,7 @@ function hcUpdate() {
  * @param $slice_id
  * @return bool
  */
-function CopyConstants($slice_id){
+function CopyConstants($slice_id): bool{
     global $err, $debug;
     $db = getDB();
 
@@ -623,7 +619,7 @@ function add_constant_group(string $group_id, $constants2import)
         return _m("This constant group already exists");
     }
 
-    if (!is_array($constants2import) OR (count($constants2import) < 1)) {
+    if (!is_array($constants2import) || count($constants2import) < 1) {
         return _m('No constants specified');
     }
 

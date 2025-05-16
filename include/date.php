@@ -82,7 +82,7 @@ class datectrl {
         $yearvar  = trim($_REQUEST["tdctr_" . $this->name . "_year"]);
 
         // no date
-        if ( strlen($yearvar) AND !(int)$yearvar) {
+        if ( strlen($yearvar) && !(int)$yearvar) {
             $this->time  = 0;
             $this->day   = 0;
             $this->month = 0;
@@ -109,7 +109,7 @@ class datectrl {
      */
     function isUpdatable() {
         $n = $this->name;
-        return (isset($_REQUEST["tdctr_{$n}_time"]) OR isset($_REQUEST["tdctr_{$n}_day"]) OR isset($_REQUEST["tdctr_{$n}_month"]) OR isset($_REQUEST["tdctr_{$n}_year"]));
+        return (isset($_REQUEST["tdctr_{$n}_time"]) || isset($_REQUEST["tdctr_{$n}_day"]) || isset($_REQUEST["tdctr_{$n}_month"]) || isset($_REQUEST["tdctr_{$n}_year"]));
     }
 
     /** setdate_int function
@@ -135,7 +135,7 @@ class datectrl {
      */
     function isTimestamp($timestamp) {
         // return ctype_digit((string)$timestamp) AND ($timestamp > -2147483647) AND ($timestamp < 2147483648);  // wrong - ctype_digit is not work with negative values
-        return IsSigInt($timestamp) AND ($timestamp > -2147483647) AND ($timestamp < 100000000000);
+        return IsSigInt($timestamp) && $timestamp > -2147483647 && $timestamp < 100000000000;
     }
 
     /** get_date function
@@ -156,7 +156,7 @@ class datectrl {
     /** get_datestring function
      *  get stored date as integer
      */
-    function get_datestring() {
+    function get_datestring(): string {
         return  $this->day. " - ". $this->month." - ".$this->year." ". $this->time;
     }
 
@@ -171,7 +171,7 @@ class datectrl {
      */
     function ValidateDate($inputName, &$err, $required=true, $default='0')  {
         $date = $this->get_date();
-        if ( $this->isTimestamp($date) AND ($date != 0)) {
+        if ( $this->isTimestamp($date) && $date != 0) {
             return true;
         }
         if ($required) {
@@ -181,7 +181,7 @@ class datectrl {
         if ($default) {
             $this->setdate_int($default);
         }
-        return (( $this->get_date() > 0  ) OR ($this->get_date() === -3600));
+        return ($this->get_date() > 0 || $this->get_date() === -3600);
     }
 
 
@@ -199,7 +199,7 @@ class datectrl {
      * print select box for day
      * @return string
      */
-    function getdayselect() {
+    function getdayselect(): string {
         return "<select name=\"tdctr_" . $this->name . "_day\"". JsTriggers::getFromGlobalSliceId("select", $this->name) .">".$this->getDayOptions()."</select>";
     }
 
@@ -219,12 +219,12 @@ class datectrl {
      * print select box for month
      * @return string
      */
-    function getmonthselect() {
+    function getmonthselect(): string {
         return "<select name=\"tdctr_" . $this->name . "_month\"". JsTriggers::getFromGlobalSliceId("select", $this->name) .">".$this->getMonthOptions()."</select>";
     }
 
     function isEmpty() {
-        return (!$this->year OR ($this->year==1970 AND $this->month==1 AND $this->day==1));
+        return (!$this->year || $this->year==1970 && $this->month==1 && $this->day==1);
     }
 
     function getYearOptions() {
@@ -251,7 +251,7 @@ class datectrl {
         }
 
         // now add all values, which is not in the array, but field has this value
-        if ($this->year AND !$selectedused) {
+        if ($this->year && !$selectedused) {
             $ret .= "<option value=\"". safe($this->year) ."\" selected class=\"sel_missing\">".safe($this->year)."</option>";
         }
         return $ret;
@@ -261,7 +261,7 @@ class datectrl {
      * print select box for year
      * @return string
      */
-    function getyearselect() {
+    function getyearselect(): string {
         return "<select name=\"tdctr_" . $this->name . "_year\"". JsTriggers::getFromGlobalSliceId("select", $this->name) . ($this->required ? 'required' : '' ) .">".$this->getYearOptions()."</select>";
     }
 
@@ -291,7 +291,7 @@ class datectrl {
      * print select box for time
      * @return string
      */
-    function gettimeselect() {
+    function gettimeselect(): string {
         if (!$this->isTimeDisplayed()) {
             return "";
         }

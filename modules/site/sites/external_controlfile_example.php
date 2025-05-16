@@ -100,10 +100,8 @@ function ApcStr2Arr($varnames, $str, $strdef, $reg) {
     if (!$str) { $str = $strdef; }
     $varout = [];
     $reg    = '`'.str_replace('`','\`',$reg).'`';
-    if (!(preg_match($reg, $str, $vars))) {
-        if (!(preg_match($reg, $strdef, $vars))) {
-            print("Error initial string $strdef doesn't match regexp $reg\n<br>");
-        }
+    if (!(preg_match($reg, $str, $vars)) && !(preg_match($reg, $strdef, $vars))) {
+        print("Error initial string $strdef doesn't match regexp $reg\n<br>");
     }
     for ($i=0, $ino = min(strlen($varnames),count($vars)-1); $i < $ino; ++$i) {
         $varout[substr($varnames,$i,1)] = $vars[$i+1];
