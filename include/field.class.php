@@ -95,7 +95,7 @@ class AA_Field implements ArrayAccess, Countable, Iterator {
      */
     public function isSafeStored() : bool {
         // the content_edit is not yet used - we plan to make able the field to be secured
-        return ($this->data['content_edit'] & FIELD_UNREADABLE || AA_Fields::getFieldType($this->getId()) === 'secret');     // @todo add also password
+        return (($this->data['content_edit'] & FIELD_UNREADABLE) || (AA_Fields::getFieldType($this->getId()) === 'secret'));     // @todo add also password
                                                                                                                                 // @todo mark all secure and password fields as FIELD_UNREADABLE
     }
 
@@ -497,12 +497,11 @@ class AA_Field implements ArrayAccess, Countable, Iterator {
      *  @return string[] - field_ids
      */
     function getInsertOtherFields(): array {
-        $ret = [];
         $inserter_params = AA_Inserter::parseClassProperties($this->data['input_insert_func']);
         if (array_key_exists('otherfield', $inserter_params) && trim($inserter_params['otherfield']) !== '') {
             return array_filter(array_map('trim', explode("##",$inserter_params['otherfield'])), 'strlen');
         }
-        return $ret;
+        return [];
     }
 
     /** isMultiline - @return bool - if the default widget allows block elements  */

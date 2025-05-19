@@ -625,7 +625,7 @@ class Manager extends AA_Storable {
      */
     function getSet() {
         $set = $this->searchbar ? $this->searchbar->getSet() :  new AA_Set;
-        if (!$this->all_modules AND $this->module_id) {
+        if (!$this->all_modules && $this->module_id) {
             $set->setModules([$this->module_id]);
         }
         $BIN_CONDS   = [
@@ -824,7 +824,7 @@ class Manager extends AA_Storable {
 
 
         // for managed class
-        if ($this->managed->isAction('edit') OR $this->managed->isAction('add')) {
+        if ($this->managed->isAction('edit') || $this->managed->isAction('add')) {
             if ($_POST['aa']) {
                 $form = $this->managed->getForm($_GET['id'], $this->module_id);
 
@@ -885,7 +885,7 @@ class Manager extends AA_Storable {
 
         $zids = $zids ?? $this->getZids();
 
-        if (($_GET['id'] AND $this->managed->isAction('edit')) OR ($_GET['add'] AND $this->managed->isAction('add'))) {
+        if (($_GET['id'] && $this->managed->isAction('edit')) || ($_GET['add'] && $this->managed->isAction('add'))) {
 
             $form = $this->managed->getForm($_GET['id'], $this->module_id);
             $form_buttons = [ "update", "cancel"];

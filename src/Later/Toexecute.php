@@ -199,7 +199,7 @@ class Toexecute {
     function executeTask($tasks)
     {
 
-        if (!is_array($tasks) or !count($tasks)) {
+        if (!is_array($tasks) || !count($tasks)) {
             return;
         }
 

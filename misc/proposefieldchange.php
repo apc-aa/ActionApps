@@ -51,7 +51,7 @@ function GetRepreValue($item_id, $field_id, $alias_name='') {
     // get the item directly from the database
     $item        = AA_Item::getItem(new zids($item_id));
     $repre_value = $alias_name ? $item->subst_alias('_#'.$alias_name) : $item->f_h($field_id);
-    return (strlen($repre_value) > 0) ? $repre_value : '--';
+    return strlen($repre_value) ? $repre_value : '--';
 }
 
 

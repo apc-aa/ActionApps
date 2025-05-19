@@ -135,7 +135,7 @@ class AA_Collection {
         }
 
         // Find all users who should receive anything
-        if ( !is_array($emails) OR !count($emails) ) {
+        if ( !is_array($emails) || !count($emails) ) {
 
             // get all confirmed users for this collection and frequency
             $zids = is_null($reader_id) ? $this->getReaders($ho) : new zids($reader_id, 'l');

@@ -210,7 +210,7 @@ class PageCache  {
 
         AA::$debug&2 && AA::$dbg->log("Pagecache->store(key):$key", 'Pagecache str2find:'.implode(',', $str2find->getStrings()), 'Pagecache content (length):'.strlen($content), 'Pagecache cache_nostore:'.$this->cache_nostore );
 
-        if ($force OR (ENABLE_PAGE_CACHE AND !$this->cache_nostore)) {  // $this->cache_nostore used if {user:xxxx} alias is used
+        if ($force || (ENABLE_PAGE_CACHE && !$this->cache_nostore)) {  // $this->cache_nostore used if {user:xxxx} alias is used
             AA::$debug&2 && AA::$dbg->log("Pagecache->store(): - storing");
             $varset = new Cvarset( [['content', $content], ['stored', time()]]);
             $varset->addkey('id', 'text', $key);

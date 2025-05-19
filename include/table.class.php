@@ -57,7 +57,7 @@ class AA_Table {
             $val = [];
         }
         $attribute = (string)$attribute;
-        if (strlen($attribute)==0) {
+        if (!strlen($attribute)) {
             $attribute = '1';
         }
         $val[$attribute] = $value;

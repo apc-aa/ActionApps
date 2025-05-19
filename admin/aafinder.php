@@ -600,7 +600,7 @@ if ($go_finditem_edit && $finditem_edit && $finditem_edit_op) {
 
 if ( strlen($go_search) || strlen($go_replace) ) {
     $row = [];
-    if ( strlen($search) OR ( strlen($go_replace) AND (strlen($replace)>5) ) ) {
+    if ( strlen($search) || ( strlen($go_replace) && (strlen($replace)>5) ) ) {
         $metabase = AA::Metabase();
 
         $table2search = [];

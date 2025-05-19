@@ -133,7 +133,7 @@ class spot {
     }
 
     function isLeaf() {
-        return ((!is_array($this->ch) OR (count($this->ch)<1)) AND (!is_array($this->po) OR (count($this->po)<2)));
+        return ((!is_array($this->ch) || (count($this->ch)<1)) && (!is_array($this->po) || (count($this->po)<2)));
     }
 
     /** Returns true, if the $spot_id is in sequence of this spot (position) */
@@ -637,7 +637,7 @@ class sitetree {
             if ($pos) {
                 // There is a bug that introduced empty positions
                 // this is to skip them.
-                if (($method==='all') OR ($method==='collapsed') OR (($method==='cond') AND !$this->isFlag($pos, AA_Module_Site::FLAG_DISABLE))) {
+                if (($method==='all') || ($method==='collapsed') || (($method==='cond') && !$this->isFlag($pos, AA_Module_Site::FLAG_DISABLE))) {
                     call_user_func_array($functions['spot'], [$pos, $depth]);
                }
 
@@ -659,7 +659,7 @@ class sitetree {
                     $choices_index = 0;
                     foreach ($choices as $k => $cho) {
                         if ($cho) { // skip buggy empty choices
-                            if (($method==='all') OR ($method==='collapsed') OR ($this->conditionMatches($cho, $state) AND !$this->isFlag($cho, AA_Module_Site::FLAG_DISABLE))) {
+                            if (($method==='all') || ($method==='collapsed') || ($this->conditionMatches($cho, $state) && !$this->isFlag($cho, AA_Module_Site::FLAG_DISABLE))) {
 
                                 // sometimes it is useful to call a function before the choice
                                 if ($functions['before_choice']) {

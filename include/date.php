@@ -134,7 +134,7 @@ class datectrl {
      *  it is perfectly possible to increase the max value, however
      */
     function isTimestamp($timestamp) {
-        // return ctype_digit((string)$timestamp) AND ($timestamp > -2147483647) AND ($timestamp < 2147483648);  // wrong - ctype_digit is not work with negative values
+        // return ctype_digit((string)$timestamp) && ($timestamp > -2147483647) AND ($timestamp < 2147483648);  // wrong - ctype_digit is not work with negative values
         return IsSigInt($timestamp) && $timestamp > -2147483647 && $timestamp < 100000000000;
     }
 

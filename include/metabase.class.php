@@ -186,9 +186,9 @@ class AA_MbC {
 
     function getAsProperty(bool $edit=true): ?AA_Property {
         $type = $this->getFieldType();
-        if ($this->isKey() OR (strtolower($this->c[5]) === 'auto_increment')) {
+        if ($this->isKey() || (strtolower($this->c[5]) === 'auto_increment')) {
         // for editing or int/long/packed ids do not allow editing - allow edit keys just for new text field (nodes table)
-            if ($edit OR ($type==='int') OR ($type==='float') OR $this->getMaxLength()<=32) {
+            if ($edit || ($type==='int') || ($type==='float') || $this->getMaxLength()<=32) {
             return null;
         }
         }
@@ -204,7 +204,7 @@ class AA_MbC {
         if (!$this->c[2]) {                                 // NULL ?
             $SQL .= ' NOT NULL';
         }
-        if (strlen($this->c[4]) > 0) {
+        if (strlen($this->c[4])) {
             // look for keywords for default
             if ( $this->c[4] === 'CURRENT_TIMESTAMP' ) {
                 // we ignore it, because DEFAULT CURRENT_TIMESTAMP is

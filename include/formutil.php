@@ -818,7 +818,7 @@ class AA_Inputfield {
      *
      */
     function _fillSelected() {
-        if (!isset($this->selected) AND isset($this->value) AND is_array($this->value)) { // not cached yet => create selected array
+        if (!isset($this->selected) && isset($this->value) && is_array($this->value)) { // not cached yet => create selected array
             foreach ( $this->value as $v ) {
                 if ((string)$v['value'] !== '') {
                     $this->selected[(string)$v['value']] = true;
@@ -1560,7 +1560,7 @@ class AA_Inputfield {
         }
         // now add all values, which is not in the array, but field has this value
         // (this is slice inconsistence, which could go from feeding, ...)
-        if ( isset( $this->selected ) AND is_array( $this->selected ) AND ($restrict !== 'unselected')) {
+        if ( isset( $this->selected ) && is_array( $this->selected ) && ($restrict !== 'unselected')) {
             foreach ( $this->selected as $k =>$v ) {
                 if ( !$already_selected[$k] ) {
                     $ret .= "<option value=\"". safe($k) ."\" selected class=\"sel_missing\">".safe($k);
@@ -2028,7 +2028,7 @@ class AA_Inputfield {
 
         // we need values in second box sorted just like in values
         $selected_values = [];
-        if ( isset($this->value) AND is_array($this->value) ) {
+        if ( isset($this->value) && is_array($this->value) ) {
             foreach ( $this->value as $v ) {
                 $key = (string)$v['value'];
                 $selected_values[$key] = $this->const_arr[$key];
@@ -2599,7 +2599,7 @@ function FrmSelectEasy($name, $arr, $selected="", array $add=[]) {
 function getFrmSelectEasy($name, $arr, $selected="", array $add= [], $showempty=false): string {
     $name=safe($name); // safe($add) - NO! - do not safe it
 
-    if ((!is_array($arr) OR empty($arr)) AND !$showempty) {
+    if ((!is_array($arr) || empty($arr)) && !$showempty) {
         return '';
     }
     if (is_array($add)) {
@@ -3178,7 +3178,7 @@ function getAliasHelp(AA_Aliases $aliases, ?AA_Fields $fields = null): string {
         // if it is possible point to alias editing page
         $fld     = $v->getField();
         $aliasedit = ( !$fld ? "&nbsp;" : "<a href=\"". con_url("./se_inputform.php", ['fid'=>$fld], true) ."\">". _m("Edit") . "</a>");
-        if ($fields AND $fields->isField($fld) AND !$fields->getProperty($fld,'input_show')) {
+        if ($fields && $fields->isField($fld) && !$fields->getProperty($fld,'input_show')) {
             $ali = "<span class=\"disabled\">$ali</span>";
         }
         $rows[] = [$ali, safe($v->getHelp()), $aliasedit];

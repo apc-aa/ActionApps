@@ -103,7 +103,7 @@ if ($template['Links']) {        // add module
     exit;
 }
 
-if ( ($insert AND $superadmin) OR $update ) {
+if ( ($insert && $superadmin) || $update ) {
     do {
         if ( !$owner )  { // insert new owner
             if ( !( $owner = CreateNewOwner($new_owner, $new_owner_email, $err, $varset))) {

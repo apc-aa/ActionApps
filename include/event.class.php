@@ -659,7 +659,7 @@ function Event_AddLinkGlobalCat( $type, $slice, $slice_type, &$ret_params, $para
     // So, finaly create categories, if not created yet and build the result
     // category list
     $ret_params = $final_categories;  // add non-Kormidlo categories
-    if (!$subcat_translated && count($ret_params)<=0) {
+    if (!$subcat_translated && !count($ret_params)) {
         return false;       // no category to assign - seldom case
     }
 

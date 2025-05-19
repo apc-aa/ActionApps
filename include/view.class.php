@@ -69,7 +69,7 @@ class AA_View {
      * @return bool
      */
     function load( $force=false ): bool {
-        if (!isset($this->fields) OR $force) {
+        if (!isset($this->fields) || $force) {
             $this->fields = DB_AA::select1([], 'SELECT view.*, module.deleted, module.lang_file FROM view, module', [['module.id', 'view.slice_id', 'j'], ['view.id', $this->id]]);
         }
         return (bool) $this->fields;
@@ -243,7 +243,7 @@ class AA_View {
             }
         }
 
-        if ($param_sort['group_limit'] && count($sort)>0) {
+        if ($param_sort['group_limit'] && count($sort)) {
             reset($sort);   // go to first record
             $sort[key($sort)]['limit'] = $param_sort['group_limit'];
         }

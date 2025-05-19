@@ -221,7 +221,7 @@ class AARSS extends AbstractGrabber
         }
 
         // No items to fed?
-        if (count($ids) <= 0) {
+        if (!count($ids)) {
             return '';
         }
 

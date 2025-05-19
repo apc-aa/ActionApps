@@ -61,7 +61,7 @@ function GetFiltered($type, $filter, $to_much, $none) {
         case "U": $list = AA::$perm->findUsernames($filter, 1000);  break;
         case "G": $list = AA::$perm->findGroups($filter); break;
     }
-    if ( !is_array($list) OR !count($list)) {
+    if ( !is_array($list) || !count($list)) {
         $msg = (( $list === "too much" ) ? $to_much : $none);
         unset($list);
         $list["n"]['name'] = $msg;

@@ -449,7 +449,7 @@ class AA_Searchbar extends AA_Storable {
         foreach ($this->search_row as $row) {
             $set->addCondition($row->getCondition());
         }
-        if ( isset($this->order_row) AND is_array($this->order_row) ) {
+        if ( isset($this->order_row) && is_array($this->order_row) ) {
             foreach ( $this->order_row as $s ) {
                 $set->addSortorder(new AA_Sortorder([$s['field'] => $s['dir']]));
             }
@@ -602,7 +602,7 @@ class AA_Searchbar extends AA_Storable {
         $empty = false;   // flag - true if the last printed searchrow is empty
 
         if ($this->show & MGR_SB_SEARCHROWS) {
-            while ( ($count_sb < $this->search_row_count_min) OR ($this->add_empty_search_row AND !$empty) OR !$this->isEmpty($count_sb) ) {
+            while ( ($count_sb < $this->search_row_count_min) || ($this->add_empty_search_row && !$empty) || !$this->isEmpty($count_sb) ) {
                 $empty = $this->isEmpty($count_sb);
                 $ret  .= $this->get_search_bar($count_sb++);
             }

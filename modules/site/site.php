@@ -56,7 +56,7 @@ $cache_key = get_hash('site', PageCache::globalKeyArray(), $_SERVER['REQUEST_URI
 // store nocache to the variable (since it should be set for some view and we
 // do not want to have it set for whole site.
 // temporary solution - should be solved on view level (not global nocache) - TODO
-$site_nocache = (($_REQUEST['nocache'] & 1) OR isset($_POST['aa']) OR (isset($_REQUEST['username']) AND isset($_REQUEST['password'])) OR $_REQUEST['logout']);
+$site_nocache = (($_REQUEST['nocache'] & 1) || isset($_POST['aa']) || (isset($_REQUEST['username']) && isset($_REQUEST['password'])) || $_REQUEST['logout']);
 
 AA::$debug&2 && AA::$dbg->log("Pagecache site_nocache: $site_nocache, REQUEST:". var_export($_REQUEST, true). ", GET:". var_export($_GET, true). ", POST:". var_export($_POST, true). ", COOKIE:". var_export($_COOKIE, true));
 

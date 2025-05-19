@@ -38,12 +38,12 @@ class ReadersLogin2id extends AbstractOptimize {
             return false;
         }
         $posted_by_found = $this->_test_field($readers, 'posted_by');
-        if (count($posted_by_found) > 0) {
+        if (count($posted_by_found)) {
             $this->message(_m('%1 login names from reader slice found as records in item.posted_by which is wrong (There should be reader ID from AA v2.8.1). "Repair" will correct it.', [count($posted_by_found)]));
             $ret = false;
         }
         $edited_by_found = $this->_test_field($readers, 'edited_by');
-        if (count($edited_by_found) > 0) {
+        if (count($edited_by_found)) {
             $this->message(_m('%1 login names from reader slice found as records in item.edited_by which is wrong (There should be reader ID from AA v2.8.1). "Repair" will correct it.', [count($edited_by_found)]));
             $ret = false;
         }
@@ -82,14 +82,14 @@ class ReadersLogin2id extends AbstractOptimize {
         $posted_by_found = $this->_test_field($readers, 'posted_by');
         $edited_by_found = $this->_test_field($readers, 'edited_by');
         $db = getDb();
-        if (count($posted_by_found) > 0) {
+        if (count($posted_by_found)) {
             foreach ($posted_by_found as $r_id => $r_login) {
                 $SQL = "UPDATE item SET posted_by = '$r_id' WHERE posted_by = '$r_login'";
                 $db->query($SQL);
                 $this->message(_m('Column item.posted_by updated for %1 (id: %2).', [$r_login, $r_id]));
             }
         }
-        if (count($edited_by_found) > 0) {
+        if (count($edited_by_found)) {
             foreach ($edited_by_found as $r_id => $r_login) {
                 $SQL = "UPDATE item SET edited_by = '$r_id' WHERE edited_by = '$r_login'";
                 $db->query($SQL);

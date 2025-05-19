@@ -577,7 +577,7 @@ class zids implements Iterator, ArrayAccess, Countable {
  */
 function guesstype($str): string {
     $s = strlen($str);
-    if (($s < 12) AND (ctype_digit((string) $str) OR ($str==''))) {
+    if (($s < 12) && (ctype_digit((string) $str) || ($str==''))) {
         return 's';
     }
     if (is_string_id($str)) { // packed id newer starts with '

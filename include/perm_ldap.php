@@ -393,7 +393,7 @@ function AddPerm($id, $objectID, $objectType, $perm, $flags = 0) {
         $new["apcaci"][] = "$id:$perm";
     }
 
-    if (count($new) > 0) {
+    if (count($new)) {
         $r=ldap_mod_replace($ds, $basedn, $new);
     } else {
         $r=ldap_mod_del($ds, $basedn, $old);

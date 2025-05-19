@@ -60,7 +60,7 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
      */
     function __construct($value = null, $flag = null) {
         $this->clear()->addValue($value);
-        $this->setFlag(!is_null($flag) ? $flag : ((is_array($value) and is_array($value[0])) ? $value[0]['flag'] : 0));
+        $this->setFlag(!is_null($flag) ? $flag : ((is_array($value) && is_array($value[0])) ? $value[0]['flag'] : 0));
     }
 
     /** For creating value from any value
@@ -709,7 +709,7 @@ class ItemContent extends AA_Content {
         }
 
         // changed this from [a-z_]+\.+[0-9]*$ because of alerts[12]....abcde
-        return (((strlen($field_id)==16) AND preg_match('/^[a-z0-9_]+\.+[0-9A-Za-z]*$/',$field_id)) OR array_key_exists($field_id, $f_def));
+        return (((strlen($field_id)===16) && preg_match('/^[a-z0-9_]+\.+[0-9A-Za-z]*$/',$field_id)) || array_key_exists($field_id, $f_def));
     }
 
     /** setByItemID function
@@ -756,7 +756,7 @@ class ItemContent extends AA_Content {
 
         foreach ($fields as $pri_field_id => $field) {
             // to content array add just displayed fields (see ShowForm())
-            if (!IsEditable($oldcontent4id ? $oldcontent4id->getFlag($pri_field_id) : 0, $field, $profile) AND !$insert) {
+            if (!IsEditable($oldcontent4id ? $oldcontent4id->getFlag($pri_field_id) : 0, $field, $profile) && !$insert) {
                 continue;
             }
 
@@ -827,7 +827,7 @@ class ItemContent extends AA_Content {
 
         // the status_code must be set in order we can use email_notify()
         // in StoreItem() function.
-        if (!$insert AND !$this->getStatusCode()) {
+        if (!$insert && !$this->getStatusCode()) {
             $this->setValue('status_code.....', max(1,$oldcontent4id ? $oldcontent4id->getValue('status_code.....') : 1));
         }
 
@@ -860,7 +860,8 @@ class ItemContent extends AA_Content {
             $now = now('step');
             if (($this->getPublishDate() <= $now) OR (($slice = AA_Slice::getModule($this->getSliceID())) AND $slice->isPendingContentAllowed())) {
                 if (($this->getExpiryDate() > $now) OR (($slice = $slice ?: AA_Slice::getModule($this->getSliceID())) AND $slice->isExpiredContentAllowed())) {
-                return true;
+                    return true;
+                }
             }
         } elseif ($status==2 && $bin & AA_BIN_HOLDING) {
             return true;
@@ -1440,7 +1441,7 @@ class ItemContent extends AA_Content {
                     $seo_charset      = ($slice_charset && $slice_charset !== 'utf-8') ? ":$slice_charset" : '';
 
                     // seo field is not filled or we "Insert as new" and teh seo is already used (probably we forgot to delete the value)
-                    if (!strlen($this->getValue($fid)) OR (($mode==='insert') AND strlen(str_replace([$this->getItemID(), '-'], ['',''], StrExpand('AA_Stringexpand_Seo2ids', ['all', $this->getValue($fid)], ['item'=>GetItemFromContent($this)]))))) {
+                    if (!strlen($this->getValue($fid)) || (($mode==='insert') && strlen(str_replace([$this->getItemID(), '-'], ['',''], StrExpand('AA_Stringexpand_Seo2ids', ['all', $this->getValue($fid)], ['item'=>GetItemFromContent($this)]))))) {
                         $expand_string = '{seoname:{expand:'.$seo_alias.'}:all'.$seo_charset.'}';
                     } else {
                         continue 2;  // next field
@@ -1646,10 +1647,10 @@ class AA_Field_Cleaner {
             $fld = $this->fields->getField($fid);
             if ($fld) {
             //$more_fields += $fld->getInsertOtherFields();
-                if (!$fld->getProperty('in_item_tbl') and !$fld->isSafeStored()) {   // do not delete 'secret....* ',  'password....', ... fields (the content should be rewritten in Inserter, if all conditions matches)
+                if (!$fld->getProperty('in_item_tbl') && !$fld->isSafeStored()) {   // do not delete 'secret....* ',  'password....', ... fields (the content should be rewritten in Inserter, if all conditions matches)
                 // deal with translations. if only translated values are present, then delete just the specific translation
                 // however - if also basic 0-1000000 indexes are present, clear all the field content
-                    $keys = (is_array($cont) and $cont) ? array_keys($cont) : [0]; // sometimes we want to delete field so no AA_Value is passed (delete file...)
+                    $keys = (is_array($cont) && $cont) ? array_keys($cont) : [0]; // sometimes we want to delete field so no AA_Value is passed (delete file...)
                 foreach ($keys as $k) {
                     $in[$ind = ($k / AA_Value::MAX_INDEX)][] = $fid;
                     if ($ind == 0) {

@@ -903,7 +903,7 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
             }
 
             // which database field is used (from 05/15/2004 we have FLAG_TEXT_STORED set for text-field-stored values
-            if ( $row['flag'] & FLAG_TEXT_STORED || strlen($row['text'])>0) {
+            if ( $row['flag'] & FLAG_TEXT_STORED || strlen($row['text'])) {
                 if (is_array($content[$unpack_id][$row['field_id']][0]) && $content[$unpack_id][$row['field_id']][0]['value'] == $row['text']) {
                     // ignore content duplicates (there could be more that two values for field
                     // with the same number (=NULL) - the ones which comes from "add value to field" operation)
@@ -1903,7 +1903,7 @@ function IsSpamText($text, $tolerance=4): bool {
  * @return bool
  */
 function IsAlias($identifier): bool {
-    return  (str_starts_with($identifier, '_#') AND ((strlen($identifier)===10) OR (str_starts_with($identifier, '_#P') AND ctype_digit(substr($identifier,3)))));
+    return  (str_starts_with($identifier, '_#') && ((strlen($identifier)===10) || (str_starts_with($identifier, '_#P') && ctype_digit(substr($identifier,3)))));
 }
 
 /** is signed int (ctype_digit do not allow signed numbers)

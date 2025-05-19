@@ -21,7 +21,7 @@ class RequestMonitor
             if (count($_GET))                   { $request_monitorow_row['get']     = serialize($_GET); }
             if (count($_POST))                  { $request_monitorow_row['post']    = serialize($_POST); }
             if (count($_COOKIE))                { $request_monitorow_row['cookie']  = serialize($_COOKIE); }
-            if ($_SESSION AND count($_SESSION)) { $request_monitorow_row['session'] = serialize($_SESSION); }
+            if ($_SESSION && count($_SESSION)) { $request_monitorow_row['session'] = serialize($_SESSION); }
             if (DB_AA::exists_table('tmp_request_monitor')) {
                 AA::Metabase()->loadFromDb(false,['tmp_request_monitor']);  // it is not standard table - we have to read it
                 AA::Metabase()->doInsert('tmp_request_monitor',$request_monitorow_row);

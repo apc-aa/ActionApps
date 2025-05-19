@@ -216,7 +216,7 @@ class AA_Stringexpand_Jsonasoc extends AA_Stringexpand_Nevercachenotrim {
 
         $i        = 0;
         $arr      = [];
-        while (isset($arg_list[$i]) AND isset($arg_list[$i+1])) {  // regular option-text pair
+        while (isset($arg_list[$i]) && isset($arg_list[$i+1])) {  // regular option-text pair
             if ( !strlen($field_id = trim($arg_list[$i])) ) {
                 $i += 2;
                 continue;
@@ -7519,7 +7519,7 @@ class AA_Stringexpand {
     /** replace parameters _#P1, _#P2, ... by the supplied ones */
     static function replaceParams($text, $arg_list)
     {
-        if (count($arg_list) > 0) {
+        if (count($arg_list)) {
             $trans = [];
             foreach ($arg_list as $key => $param) {
                 // param is dequoted, but we need escape colons, here - the result is passed back to AA_Stringexpand

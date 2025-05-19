@@ -55,7 +55,7 @@ class FieldDuplicates extends \AA\Optimize\AbstractOptimize {
         // $varset->setDebug();
 
         $duplicates = $this->_check_table();
-        if (count($duplicates) == 0) {
+        if (!count($duplicates)) {
             $this->message(_m('No duplicates found'));
             return true;
         }

@@ -164,7 +164,7 @@ class FilesFTP extends AbstractGrabber
 
     /** Method called by the AA\IO\Saver to get next item from the data input */
     function getItem() {
-        if ( !count($this->filepaths) OR !($file = current($this->filepaths))) {
+        if ( !count($this->filepaths) || !($file = current($this->filepaths))) {
             return false;
         }
         $item = new \ItemContent();

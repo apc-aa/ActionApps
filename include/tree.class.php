@@ -79,7 +79,7 @@ class AA_Supertree {
         }
 
         // remove all links to invalid items
-        if (count($invalid) > 0) {
+        if (count($invalid)) {
             foreach ($this->_i as $item_id => $next) {
                 $this->_i[$item_id] = array_diff($next, $invalid);
             }

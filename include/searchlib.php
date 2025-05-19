@@ -2195,7 +2195,7 @@ function QueryDiscIDs($slice_id, $conds, $sort, $slices) {
             FROM discussion INNER JOIN item ON item.id = discussion.item_id
             WHERE ";
 
-    if (is_array($slices) AND (count($slices) > 0)) {
+    if (is_array($slices) && count($slices)) {
         $slices_SQL = implode(",", array_map("xpack_id", $slices));
         $SQL        .= ' item.slice_id' . ((count($slices) === 1) ? " = $slices_SQL AND " :
                 " IN ($slices_SQL) AND ");

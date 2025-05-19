@@ -553,7 +553,7 @@ class FeedUtil {
             ];
         }
         freeDB($db);
-        if ($add_other and (count($ext_categs) > 0) and !isset($ext_categs[unpack_id('AA_Other_Categor')])) {
+        if ($add_other && count($ext_categs) && !isset($ext_categs[unpack_id('AA_Other_Categor')])) {
             $ext_categs[self::UNPACKED_AA_OTHER_CATEGOR] = [
                 "value"              => 'AA_Other_Categor',
                 "name"               => _m('Other categories'),

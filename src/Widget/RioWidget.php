@@ -63,7 +63,7 @@ class RioWidget extends Widget
             }
         }
         $ret = "\n<label$class><input type=radio name=\"$input_name\" id=\"$input_id\" value='" . safe($option['k']) . "' $add";
-        if ($option['selected'] OR ($other AND $option['mis'])) {
+        if ($option['selected'] || ($other && $option['mis'])) {
             $ret .= " checked";
         }
         $ret .= "><span>" . safe($option['v']) . "    </span>$input_text</label>";

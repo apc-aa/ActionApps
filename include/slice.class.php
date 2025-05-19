@@ -220,7 +220,7 @@ abstract class AA_Module {
     public static function deleteModules(array $module_ids): bool {
         foreach ($module_ids as $module_id) {
             /** @var class-string<AA_Module> $class name - it is a string name of class */
-            if (!is_long_id($module_id) OR !($class = AA_Module::getModuleInfo('class', $module_id))) {
+            if (!is_long_id($module_id) || !($class = AA_Module::getModuleInfo('class', $module_id))) {
                 return false;     // _m("No such module.")
             }
             if (!$class::_deleteModules([$module_id])) {
@@ -298,7 +298,7 @@ abstract class AA_Module {
     public static function processModuleObject($module_id) {
         /** @var class-string<AA_AbstractModulesettings> $class name - it is string name of class */
         $class = static::SETTING_CLASS;
-        if ($module_id AND !empty($class)) {
+        if ($module_id && !empty($class)) {
             // make sure the slicesettings object for this slice exists
             $modulesetings_id = static::getModuleObjectId($module_id);
             if (is_null($class::load($modulesetings_id))) {
@@ -316,7 +316,7 @@ abstract class AA_Module {
     {
         /** @var class-string<AA_AbstractModulesettings> $class name - it is string name of class */
         $class = static::SETTING_CLASS;
-        if ($module_id AND !empty($class)) {
+        if ($module_id && !empty($class)) {
             return AA_Form::factoryForm($class, static::getModuleObjectId($module_id), $module_id)->getObjectEditHtml();
         }
         return '';
@@ -341,7 +341,7 @@ abstract class AA_Module {
 
     /** Checks, if the module_id is OK and the slice is not deleted */
     function isValid() {
-        return !$this->deleted() AND $this->module_setting; // $this->deleted() loads also $this->module_setting and we have to test if the module even exists
+        return !$this->deleted() && $this->module_setting; // $this->deleted() loads also $this->module_setting and we have to test if the module even exists
     }
 
     /** Checks, if the module_id is OK and the slice is not deleted  */
@@ -465,7 +465,7 @@ class AA_Slice extends AA_Module {
      * @param $force
      */
     function loadsettingfields($force=false) {
-        if ( !$force AND is_object($this->dynamic_setting) ) {
+        if ( !$force && is_object($this->dynamic_setting) ) {
             return;
         }
         $db = getDB();
@@ -474,7 +474,7 @@ class AA_Slice extends AA_Module {
         $content4id = [];
         while ($db->next_record()) {
             // which database field is used (from 05/15/2004 we have FLAG_TEXT_STORED set for text-field-stored values
-            $db_field = ( ($db->f("text")!="") OR ($db->f("flag") & FLAG_TEXT_STORED) ) ? 'text' : 'number';
+            $db_field = ( ($db->f("text")!="") || ($db->f("flag") & FLAG_TEXT_STORED) ) ? 'text' : 'number';
             $content4id[$db->f("field_id")][] = [
                 "value" => $db->f($db_field),
                 "flag"  => $db->f("flag"),
@@ -672,7 +672,7 @@ class AA_Slice extends AA_Module {
      */
     function getDefaultUploadField(): string {
         $flds = $this->getFields();
-        return (($fid = $flds->firstOfTypeFieldId('file')) OR ($fid = $flds->firstOfTypeFieldId('img_upload')) OR ($fid = $flds->firstOfTypeFieldId('img_src'))) ? $fid : '';
+        return (($fid = $flds->firstOfTypeFieldId('file')) || ($fid = $flds->firstOfTypeFieldId('img_upload')) || ($fid = $flds->firstOfTypeFieldId('img_src'))) ? $fid : '';
     }
 
     /** sql_id function - removed - use DB_AA::select1('', 'SELECT * FROM `slice`', [['id',$slobj->getId(), 'l']]); */
@@ -693,7 +693,7 @@ class AA_Slice extends AA_Module {
     function get_dynamic_setting_content($ignore_reading_password = false) {
         if (!$ignore_reading_password) {
             if (!AA_Credentials::singleton()->checkCryptedPassword($this->getProperty('reading_password'))) {   // $this->getProperty('reading_password') is encrypted
-                if ($GLOBALS['errcheck'] OR $GLOBALS['debug']) {
+                if ($GLOBALS['errcheck'] || $GLOBALS['debug']) {
                     huhe(_m("Error: Missing Reading Password"));
                 }
                 return null;
@@ -708,7 +708,7 @@ class AA_Slice extends AA_Module {
     function getUploadBase() {
         $ret = [];
         $fileman_dir = $this->getProperty('fileman_dir');
-        if ($fileman_dir AND is_dir(FILEMAN_BASE_DIR.$fileman_dir)) {
+        if ($fileman_dir && is_dir(FILEMAN_BASE_DIR.$fileman_dir)) {
             $ret['path']  = FILEMAN_BASE_DIR.$fileman_dir."/items";
             $ret['url']   = FILEMAN_BASE_URL.$fileman_dir."/items";
             $ret['perms'] = FILEMAN_MODE_DIR;
@@ -813,7 +813,7 @@ class AA_Slice extends AA_Module {
             }
 
             // prepare javascript function for validation of the form
-            if ( $shown_fields[$pri_field_id] AND IsEditable($oldcontent4id ? $oldcontent4id->getFlag($pri_field_id) : 0, $field, $profile) ) {
+            if ( $shown_fields[$pri_field_id] && IsEditable($oldcontent4id ? $oldcontent4id->getFlag($pri_field_id) : 0, $field, $profile) ) {
 
                 // fill show_func_used array - used on several places
                 // to distinguish, which javascripts we should include and
@@ -877,7 +877,7 @@ class AA_Slice extends AA_Module {
                             continue;
                         }
                         $approved = $db->f('to_approved') ? "y" : "n";
-                        if (($p_from_cat_id == $db->f('category_id')) OR $db->f('all_categories')) {
+                        if (($p_from_cat_id == $db->f('category_id')) || $db->f('all_categories')) {
                             $slice_queue[$to_id] = $this->feeding_tree[$sl_id][$to_id] = ['approved'=>$approved, 'category'=>unpack_id($db->f('to_category_id'))];
                         }
                     }
@@ -932,7 +932,7 @@ class AA_Module_Site extends AA_Module {
 
     /** for translated fields - if not translated, use default language of the module */
     function getDefaultLang() {
-        if (($translate_slice = $this->getProperty('translate_slice')) AND is_array($translations = AA_Slice::getModuleProperty($translate_slice,'translations'))) {
+        if (($translate_slice = $this->getProperty('translate_slice')) && is_array($translations = AA_Slice::getModuleProperty($translate_slice,'translations'))) {
             return $translations[0];
         }
         return $this->getLang();

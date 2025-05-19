@@ -287,7 +287,7 @@ class AA_Router_Seo extends AA_Router {
             // add xseoX from $home if only the {xlang} is provided -- /cz/   -> /cz/home
             // if (count($arr) < 2) {
             if (count($arr) < 2) {
-                if (str_ends_with(trim($apc), '/') OR ($arr[0] == $ret['xlang']) OR !count($langs)) {
+                if (str_ends_with(trim($apc), '/') || ($arr[0] == $ret['xlang']) || !count($langs)) {
                     // the last OR with $lang is used for backward compatibility - the slash rule will be applied
                     // only to newer sites, where you set web_languages (so for newer sites we are more strict - there must be the ending slash, if we want to use cz/).
                     // However - I think it is not necessary - the links like /cz will work, and /cz2 are not common

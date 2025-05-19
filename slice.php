@@ -94,7 +94,7 @@ use AA\Util\Hitcounter;
 use AA\Util\InputVars;
 
 function add2sort(&$sort, $sarr) {
-    if (isset($sort) AND is_array($sort)) {
+    if (isset($sort) && is_array($sort)) {
         foreach ($sort as $s) {
             if (key($s) == key($sarr)) {
                 return;  // do not add new sort value to the sort array (it is already presented)
@@ -119,7 +119,7 @@ foreach ($_REQUEST as $k => $v) {
 }
 // ----- input variables normalization - end ----------------------------------
 
-$encap = ( array_key_exists('encap', $_REQUEST) AND ($_REQUEST['encap']==="false") ) ? false : true ;
+$encap = ( array_key_exists('encap', $_REQUEST) && ($_REQUEST['encap']==="false") ) ? false : true ;
 
 require_once __DIR__."/./include/config.php";
 require_once __DIR__ . "/include/util.php";
@@ -205,12 +205,12 @@ if ($encap) {                    // adds values from QUERY_STRING_UNESCAPED
     add_vars("");                //       and REDIRECT_STRING_UNESCAPED
     // if we use input type="buton" for submitting of form, then it adds x and y
     // variables, which we do not want (x means (unfortunately) - item id in AA)
-    if (isset($x) AND isset($y) AND ctype_digit((string)$x) AND ctype_digit((string)$y) AND isset($conds)) {
+    if (isset($x) && isset($y) && ctype_digit((string)$x) && ctype_digit((string)$y) && isset($conds)) {
         unset($x);
     }
 }
 
-if ( (($key != $lock) OR $scrl) AND is_array($r_state_vars) ) {  // command is for other slice on page
+if ( (($key != $lock) || $scrl) && is_array($r_state_vars) ) {  // command is for other slice on page
     RestoreVariables($r_state_vars);          // or scroller
 }
 
@@ -237,7 +237,7 @@ if ( $inc ) {                   // this section must be after add_vars()
 }
 
 // Take any slice to work with
-if (!$slice_id AND is_array($slices)) {
+if (!$slice_id && is_array($slices)) {
     reset ($slices);
     $slice_id = current($slices);
 }
@@ -252,7 +252,7 @@ is_object( $db ) || ($db = getDB());
 $slice      = AA_Slice::getModule($slice_id);
 $slice_info = GetModuleInfo($slice_id, 'S');       // get slice info
 
-if (!$slice_info OR $slice_info['deleted']>0) {
+if (!$slice_info || $slice_info['deleted']>0) {
     ExitPage(_m("Invalid slice number or slice was deleted") . " (ID: $slice_id)");
 }
 if ($slice_info['d_listlen']==0) {
@@ -301,7 +301,7 @@ if (!$encap) {
     Page_HTML_Begin($slice_info['name']);
 }
 
-if ($bigsrch OR $easy_query) {  // big search form or authomatical search form
+if ($bigsrch || $easy_query) {  // big search form or authomatical search form
     ExitPage('<!-- bigsrch parameter is NOT SUPPORTED IN AA v 1.5+ <br>easy_query is  NOT SUPPORTED IN AA v 2.50+ <br>See <a href="https://actionapps.org/faq/#215">AA FAQ</a> for more details. -->');
 }
 
@@ -341,7 +341,7 @@ if (!is_array($slices)) {
 }
 
 // fulltext view ---------------------------------------------------------------
-if ( $sh_itm OR $x OR $o OR $seo ) {
+if ( $sh_itm || $x || $o || $seo ) {
     //  $r_state_vars = StoreVariables(array("sh_itm")); // store in session
     if ( $x ) {
         $zid = new zids((int)$x, 's');
@@ -358,7 +358,7 @@ if ( $sh_itm OR $x OR $o OR $seo ) {
         Hitcounter::hit($zid);
     }
     
-    if ( !is_object($item = AA_Items::getItem($zid)) OR ($item->getStatusCode()<>1) ) {
+    if ( !is_object($item = AA_Items::getItem($zid)) || ($item->getStatusCode()<>1) ) {
        ExitPage();
     }
 
@@ -401,7 +401,7 @@ if ( $sh_itm OR $x OR $o OR $seo ) {
 }
 
 // multiple items fulltext view ------------------------------------------------
-if ( $items AND is_array($items) ) {   // shows all $items[] as fulltext one after one
+if ( $items && is_array($items) ) {   // shows all $items[] as fulltext one after one
     //  $r_state_vars = StoreVariables(array("items")); // store in session
     $ids = [];
     foreach( $items as $k => $foo) {
@@ -420,7 +420,7 @@ $r_state_vars = StoreVariables(["no_scr","scr_go","order","cat_id", "cat_name", 
 
 // ***** CONDS *****
 
-if ($cat_id AND ($flds = $slice->getFields()) AND ($cat_field = $flds->firstOfTypeFieldId())) {  // optional parameter cat_id - deprecated - slow ------
+if ($cat_id && ($flds = $slice->getFields()) && ($cat_field = $flds->firstOfTypeFieldId())) {  // optional parameter cat_id - deprecated - slow ------
     $cat_group = $flds->getCategoryGroup();
     $SQL = "SELECT value FROM constant WHERE group_id = '$cat_group' AND id=". xpack_id($cat_id);
     $db->query($SQL);
@@ -431,7 +431,7 @@ if ($cat_id AND ($flds = $slice->getFields()) AND ($cat_field = $flds->firstOfTy
             'operator' => ($exact ? '=' : 'LIKE')
         ];
     }
-} elseif ($cat_name AND ($tmpobj = $slice->getFields()) AND ($cat_field = $tmpobj->firstOfTypeFieldId()))  {  // optional parameter cat_name -------
+} elseif ($cat_name && ($tmpobj = $slice->getFields()) && ($cat_field = $tmpobj->firstOfTypeFieldId()))  {  // optional parameter cat_name -------
     $conds[]     = [
         $cat_field => 1,
         'value'    => $cat_name,
@@ -442,7 +442,7 @@ if ($cat_id AND ($flds = $slice->getFields()) AND ($cat_field = $flds->firstOfTy
 if ($restrict) {
     $conds[]     = [
         $restrict  => 1,
-        'value'    => ((($res_val[0] === '"' OR $res_val[0] === "'") AND $exact != 2 ) ? $res_val : "\"$res_val\""),
+        'value'    => ((($res_val[0] === '"' || $res_val[0] === "'") && $exact != 2 ) ? $res_val : "\"$res_val\""),
         'operator' => ($exact ? '=' : 'LIKE')
     ];
 }
@@ -462,7 +462,7 @@ if (is_array($conds)) {
             $conds[$k]['value'] = strtr($v['value'], $als);
         }
     }
-} elseif ( is_string($conds) AND strlen($conds) ) {
+} elseif ( is_string($conds) && strlen($conds) ) {
     // we can use also conds=d-switch..........-=-1
     $tmp_set = new AA_Set(null, $conds);
     $conds   = $tmp_set->getConds();
@@ -497,8 +497,8 @@ if ($group_by) {
     $sort_tmp = $set->getSort();
     $slice_info["group_by"] = key($sort_tmp[0]);
 }
-elseif ($slice_info['category_sort'] AND ($tmpobj = $slice->getFields()) AND ($group_field = $tmpobj->firstOfTypeFieldId())) {
-    $grp_odir    = (($order==$group_field) AND ($orderdirection!=='d')) ? 'a' : 'd';
+elseif ($slice_info['category_sort'] && ($tmpobj = $slice->getFields()) && ($group_field = $tmpobj->firstOfTypeFieldId())) {
+    $grp_odir    = (($order==$group_field) && ($orderdirection!=='d')) ? 'a' : 'd';
     $sort_tmp[]  = [$group_field => $grp_odir];
 }
 elseif ($slice_info['group_by']) {
@@ -577,7 +577,7 @@ if ( !$scrl ) {
     $scr->go2page($scr_go);
 }
 
-if ( !$srch AND !$encap AND !$easy_query ) {
+if ( !$srch && !$encap && !$easy_query ) {
     pCatSelector(MyUrl($encap, $scr_url), $slice_id);
 }
 
@@ -588,12 +588,12 @@ if ($zids->count() > 0) {
 
     echo $itemview->get_output_cached("view");
 
-    if (($scr->pageCount() > 1) AND !$no_scr AND !$group_n) {
+    if (($scr->pageCount() > 1) && !$no_scr && !$group_n) {
         echo $scr->getNavbar();
     }
 } else {
     // test if the noitem_msg is filled (be careful - "0" should be considered as filled)
-    echo (isset($slice_info['noitem_msg']) AND (strlen($slice_info['noitem_msg']) > 0)) ?               // <!--Vacuum--> is keyword for removing 'no item message'
+    echo (isset($slice_info['noitem_msg']) && strlen($slice_info['noitem_msg'])) ?               // <!--Vacuum--> is keyword for removing 'no item message'
           str_replace( '<!--Vacuum-->', '', AA::Un($slice_info['noitem_msg'])) : ("<div>"._m("No item found") ."</div>");
 }
 

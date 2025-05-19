@@ -193,7 +193,7 @@ if (!$no_slice_id) {
 //        $page    = pathinfo( $_SERVER['PHP_SELF'], PATHINFO_BASENAME);
 //        $hdd_dir = "../".$MODULES[$module_type]['directory'];
 //        $web_dir = AA_INSTAL_PATH   .$MODULES[$module_type]['directory'];
-//        if (!file_exists($hdd_dir.$page) OR ($page==='tabledit.php') OR ($module_type==='J') ) {
+//        if (!file_exists($hdd_dir.$page) || ($page==='tabledit.php') || ($module_type==='J') ) {
 //            $page = "index.php";
 //        }
 //        if ($web_dir.$page != $_SERVER['PHP_SELF']) {

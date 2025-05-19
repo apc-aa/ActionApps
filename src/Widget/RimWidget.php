@@ -117,9 +117,9 @@ class RimWidget extends Widget
         $sid = substr($constgroup, 7);
 
         // $restrict_zids could be removed from this check. Honza 2015-06-11
-        // $filter_conds    = ($ignore_filters AND $restrict_zids) ? '' : $this->getProperty('filter_conds');
+        // $filter_conds    = ($ignore_filters && $restrict_zids) ? '' : $this->getProperty('filter_conds');
         // // filter_conds_rw - changeable conditions - could come as paremeter widget_properties
-        // $filter_conds_rw = ($ignore_filters AND $restrict_zids) ? '' : $this->getProperty('filter_conds_rw');
+        // $filter_conds_rw = ($ignore_filters && $restrict_zids) ? '' : $this->getProperty('filter_conds_rw');
         // $sort_by         = $this->getProperty('sort_by');
         // $slice_field     = $this->getProperty('slice_field');
         //

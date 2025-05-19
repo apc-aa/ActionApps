@@ -126,7 +126,7 @@ class linkassignment {
         if ( !cattree::singleton()->exists($this->category) ) {
             $problem[] = problem_report('assigned_cat_not_exist',$this->category);
         }
-        if ( ($this->state === 'hidden') AND ( !$base OR (($base->getState() !== 'hidden') AND !$base->isProposal() ))) {
+        if ( ($this->state === 'hidden') && ( !$base || (($base->getState() !== 'hidden') AND !$base->isProposal() ))) {
             $problem[] = problem_report($base ? 'hidden_when_base_is_approved': 'hidden_and_no_base',$this->category);
             //DoSQL("UPDATE links_link_cat SET state='visible' WHERE a_id='".$this->id."'");
             DB_AA::update('links_link_cat', [['state', 'visible']], [['a_id',$this->id]]);
@@ -408,7 +408,7 @@ class assignmentset {
                 $base = $this->assignments[$k];
             }
         }
-        if ( !$base AND (count($this->assignments)>0) ) {
+        if ( !$base && count($this->assignments) ) {
             reset($this->assignments);
             $this->assignments[key($this->assignments)]->setBase(true);
             $base = $this->assignments[key($this->assignments)];
@@ -433,7 +433,7 @@ class assignmentset {
      *  $base assignment MUST be set before we call this function
      */
     function fix_assignments($base) {
-        if ( !isset($this->assignments) OR !isset($base)) return;
+        if ( !isset($this->assignments) || !isset($base)) return;
         foreach ( array_keys($this->assignments) as $k ) {
             $this->assignments[$k]->fixState( $base );
         }
@@ -982,7 +982,7 @@ class linkobj {
         $this->load();
 
         // TODO - next row is wrong - assignments is not array
-        if ( !isset($this->assignments) OR !is_array($this->assignments) ) return;
+        if ( !isset($this->assignments) || !is_array($this->assignments) ) return;
         $cattree = cattree::singleton();
         $names    = [];
         $thematic = 0;
@@ -1017,7 +1017,7 @@ class linkobj {
             $db->query($SQL);
             freeDB($db);
         }
-        elseif ( (count($names)>0) AND !$this->data['type'] ) {
+        elseif ( count($names) && !$this->data['type'] ) {
             $this->problem[] = problem_report('thematic_link_assigned_in_general',$names,$thematic);
       }
     }

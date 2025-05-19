@@ -48,7 +48,7 @@ class DteWidget extends Widget
      */
     function _getRawHtml(AA_Property $aa_property, AA_Content $content, string $type = 'normal'): array {
         // time parameter==date or all is totally unset - use alternative
-        if (($this->getProperty('show_time',0)==2) OR (!$this->getProperty('relative',0) AND !$this->getProperty('start_year',0) AND !$this->getProperty('end_year',0) AND !$this->getProperty('show_time',0)))  {
+        if (($this->getProperty('show_time',0)==2) || (!$this->getProperty('relative',0) && !$this->getProperty('start_year',0) && !$this->getProperty('end_year',0) && !$this->getProperty('show_time',0)))  {
             return $this->_getRawHtml_dateinput($aa_property, $content, $type);
         }
 

@@ -524,7 +524,7 @@ echo      '</td>
 
 // show the organization information only to real editors or to public, if
 // the link is of special type
-if ( !Links_IsPublic() OR ($r_state['link_id'] AND $type) ) {
+if ( !Links_IsPublic() || ($r_state['link_id'] && $type) ) {
        FrmTabSeparator(_m('Organization') . getFrmMoreHelp(get_help_url(AA_LINKS_HELP_LINK, "kontakt")));
        FrmInputText('org_city', _m('City'), $org_city, 250, 50);
        printChange( 'org_city', $org_city_change, $org_city );

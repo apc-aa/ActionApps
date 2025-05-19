@@ -153,7 +153,7 @@ class cattree {
 
     /** Not filled yet? ==> Fill it from database  */
     function updateIfNeeded() {
-        if (!isset($this->catnames) OR !is_array($this->catnames)) {
+        if (!isset($this->catnames) || !is_array($this->catnames)) {
             $this->update();
         }
     }
@@ -164,7 +164,7 @@ class cattree {
     */
     function subcatExist($parentid, $name) {
         $this->updateIfNeeded();
-        if ( isset($this->ancesors_idx) AND is_array($this->ancesors_idx[$parentid]) ) {
+        if ( isset($this->ancesors_idx) && is_array($this->ancesors_idx[$parentid]) ) {
             foreach ( $this->ancesors_idx[$parentid] as $idx ) {
                 $assig = $this->assignments[$idx];
                 debug('<br>====? ',$this->catnames[$assig->getTo()],$name);
@@ -467,7 +467,7 @@ class cattree {
      * @return bool
      */
     function walkTree($start_id, $function, $level=0): bool {
-        if (!isset($this->ancesors_idx) OR !is_array($this->ancesors_idx[$start_id])) {
+        if (!isset($this->ancesors_idx) || !is_array($this->ancesors_idx[$start_id])) {
             return false;
         }
 

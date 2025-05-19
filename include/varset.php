@@ -292,7 +292,7 @@ class Cvarset {
         } else {
             $retval = $this->last_used_db->query($SQL);
         }
-        if ($retval AND mb_stripos(' '.$SQL, 'INSERT')) {
+        if ($retval && mb_stripos(' '.$SQL, 'INSERT')) {
             $retval = $this->last_used_db->last_insert_id() ?: PHP_INT_MAX;
         }
         freeDB($this->last_used_db);

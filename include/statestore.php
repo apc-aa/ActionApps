@@ -295,7 +295,7 @@ class AA_Storable extends AA_Serializable {
     }
 
     public static function factoryFromState($type, $state) {
-        if (strlen($state['aa_class']) > 0 && str_starts_with($state['aa_class'], $type)) {
+        if (strlen($state['aa_class']) && str_starts_with($state['aa_class'], $type)) {
             // we are able to construct also subclasses, so if the property is marked as AA_Formrow, then the real type
             // of the variable could be AA_Formrow_* (like AA_Formrow_Full, ...)
             $type = $state['aa_class'];
@@ -623,7 +623,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
         // @todo optimize the load
         //    - get used tables from properties,
         //    - load object from database in one step using aa_subobjects property of the objects
-        if ( (!$type AND !($type = self::loadProperty($id, 'aa_type'))) OR !class_exists($type)) {
+        if ( (!$type && !($type = self::loadProperty($id, 'aa_type'))) || !class_exists($type)) {
             return null;
         }
         $key = "$id|$type";

@@ -94,7 +94,7 @@ class AA_Profile {
         if ( $force ) {
             unset( $this->properties );  // refresh from database
         }
-        if ( !$this->module_id OR (isset($this->properties) AND is_array($this->properties)) ) {
+        if ( !$this->module_id || (isset($this->properties) && is_array($this->properties)) ) {
             return;
         }
         $this->properties = [];
@@ -163,7 +163,7 @@ class AA_Profile {
         if ( !$no_load ) {
             $this->loadprofile();
         }
-        if ( isset($this->properties) AND isset($this->properties[$property]) ) {
+        if ( isset($this->properties) && isset($this->properties[$property]) ) {
             return ( (string)$selector==='*' ) ? $this->properties[$property] : $this->properties[$property][$selector];
         }
         return false;
@@ -326,7 +326,7 @@ class AA_Profile {
             case 'listlen':
             case 'input_view':
             case 'admin_perm':
-                if ( (($property==='admin_perm') AND (strlen($param)==32) ) OR ($param > 0) ) {
+                if ( (($property==='admin_perm') && (strlen($param)===32) ) || ($param > 0) ) {
                     $profile->deleteProperty($property);
                     $profile->insertProperty($property, '0', $param);
                     $Msg = MsgOk(_m("Rule added"));

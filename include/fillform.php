@@ -88,7 +88,7 @@ function fillForm(): string {
         }
     }
     // get slice_id if not specified - try get it from $oldcontent4id
-    if (!$slice_id AND $oldcontent4id AND is_array($oldcontent4id)) {
+    if (!$slice_id && $oldcontent4id && is_array($oldcontent4id)) {
         if ( $p_slice_id = $oldcontent4id["slice_id........"][0]['value'] ) {
         $slice_id = unpack_id($p_slice_id);
     }

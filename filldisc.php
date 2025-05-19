@@ -231,7 +231,7 @@ aaevent::singleton()->comes('ITEM_NEW_COMMENT', $d_item_id, 'Item', $new_id );
 
 send2mailList($d_item_id, $new_id);
 
-if ($_REQUEST['send_reactions'] AND AA_Validate::doValidate($d_e_mail, 'email')) {
+if ($_REQUEST['send_reactions'] && AA_Validate::doValidate($d_e_mail, 'email')) {
     AddNotification('ITEM_NEW_COMMENT', 'Item', $d_item_id, 'email', $d_e_mail);
 }
 

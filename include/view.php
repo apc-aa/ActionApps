@@ -594,7 +594,7 @@ class AA_Showview {
 
         // user could make the view to display view ID before and after the view output
         // which is useful mainly for debugging. See view setting in admin interface
-        if ( AA::$debug OR ($ret AND ($view_info['flag'] & VIEW_FLAG_COMMENTS)) ) {
+        if ( AA::$debug || ($ret && ($view_info['flag'] & VIEW_FLAG_COMMENTS)) ) {
             $ret = "<!-- $vid -->$ret<!-- /$vid, ". (microtime(true) - $dbgtime) .", ". date("y-m-d H:i:s", (int)$dbgtime). " -->";
         }
 

@@ -490,7 +490,7 @@ class itemview {
     }
      // other view_type than discussion
 
-    if ( !( isset($this->zids) AND is_object($this->zids) )) {
+    if ( !( isset($this->zids) && is_object($this->zids) )) {
       return '';
     }
 
@@ -940,7 +940,7 @@ class itemview {
                 $outrow = "";
                 for ($cell = $firstcell; $cell < $firstcell + $row_len; ++$cell) {
                     $events = $calendar[$cell];
-                    if ($this->slice_info['even_odd_differ'] && count($events) == 0) {
+                    if ($this->slice_info['even_odd_differ'] && !count($events)) {
                         $footer = $this->slice_info['aditional2'];
                     } else {
                         $footer = $this->slice_info['category_bottom'];
@@ -958,7 +958,7 @@ class itemview {
             for ($cell = $min_cell; $cell <= $max_cell; ++$cell) {
                 $calendar_aliases["_#CV_NUM_D"] = $cell;
                 $events = $calendar[$cell];
-                if ($this->slice_info['even_odd_differ'] AND !count($events)) {
+                if ($this->slice_info['even_odd_differ'] && !count($events)) {
                     $header = $this->slice_info['aditional'];
                     $footer = $this->slice_info['aditional2'];
                 } else {

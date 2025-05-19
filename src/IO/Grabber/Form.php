@@ -155,8 +155,8 @@ class Form extends AbstractGrabber {
     function prepare() {
 
         $this->_items = [];
-        if (!isset($_POST['aa']) or !is_array($_POST['aa'])) {
-            if (!isset($_FILES['aa']) or !is_array($_FILES['aa'])) {
+        if (!isset($_POST['aa']) || !is_array($_POST['aa'])) {
+            if (!isset($_FILES['aa']) || !is_array($_FILES['aa'])) {
                 $this->message(['err' => _m('no POST nor FILES sent')]);
                 return false;
             }

@@ -335,7 +335,7 @@ abstract class AA_Inserter extends AA_Serializable implements \AA\Util\NamedInte
 
         // this check is maybe no necessary
         $slice = $field_writer->getSlice();
-        if (!$slice OR !$slice->isValid()) {
+        if (!$slice || !$slice->isValid()) {
             $err['field_writer'] = _m("Slice with id '%1' is not valid.", [$field_writer->getSliceId()]);
             return;
         }
@@ -373,11 +373,11 @@ abstract class AA_Inserter extends AA_Serializable implements \AA\Util\NamedInte
         // if input function is 'selectbox with presets' and add2connstant flag is set,
         // store filled value to constants
         $fnc = ParseFnc($this->field->getProperty("input_show_func"));   // input show function
-        if ($fnc AND ($fnc['fnc']==='pre')) {
+        if ($fnc && ($fnc['fnc']==='pre')) {
             // get add2constant and constgroup (other parameters are irrelevant in here)
             [$constgroup, $maxlength, $fieldsize,$slice_field, $usevalue, $adding, $secondfield, $add2constant] = explode(':', $fnc['param']);
             // add2constant is used in $this->_store - adds new value to constant table
-            if ($add2constant AND $constgroup AND (!str_starts_with($constgroup, "#sLiCe-")) AND trim($value) !== '') {
+            if ($add2constant && $constgroup && (!str_starts_with($constgroup, "#sLiCe-")) && trim($value) !== '') {
                 $db = getDB();
                 // does this constant already exist?
                 $constgroup = quote($constgroup);
@@ -410,7 +410,7 @@ abstract class AA_Inserter extends AA_Serializable implements \AA\Util\NamedInte
             // ... which is not correct because in 'in_item_tbl' database field
             // we store REAL database field names from aadb.item table (honzam)
 
-            if (($fid === 'expiry_date') AND (date("Hi",($v = (int)$value)) == "0000")) {
+            if (($fid === 'expiry_date') && (date("Hi",($v = (int)$value)) == "0000")) {
                 // $value += 86399;
                 // if time is not specified, take end of day 23:59:59
                 // !!it is not working for daylight saving change days !!!
@@ -514,11 +514,11 @@ class AA_Inserter_Ids extends AA_Inserter {
                 $v = $value;
                 if ( !is_long_id($v)) {
                     $fnc = ParseFnc($this->field->getProperty("input_show_func"));   // input show function
-                    if ($fnc AND ($fnc['fnc']==='tag')) {
+                    if ($fnc && ($fnc['fnc']==='tag')) {
                         // get add2constant and constgroup (other parameters are irrelevant in here)
                         [$constgroup, $others] = explode(':', $fnc['param']);
                         // add2constant is used in $this->_store - adds new value to constant table
-                        if ((str_starts_with($constgroup, "#sLiCe-")) AND trim($v) !== '') {
+                        if ((str_starts_with($constgroup, "#sLiCe-")) && trim($v) !== '') {
                             $sid = substr($constgroup,7);
                             $content4id = new ItemContent();
                             $content4id->setItemID($new_id=new_id());
@@ -568,7 +568,7 @@ class AA_Inserter_Uid extends AA_Inserter {
 
     public function execute(AA_Field_Writer $fieldwriter, $item_id, $value, int $order = 0, int $flag = 0) {
         $val = ($value and IsSuperadmin()) ? $value
-                                           : ((AuthGetUid() ?: ((strlen($value) > 0) ? $value : '9999999999')));
+                                           : ((AuthGetUid() ?: (strlen($value) ? $value : '9999999999')));
         parent::execute($fieldwriter, $item_id, $val, $order, $flag);
     }
 
@@ -587,7 +587,7 @@ class AA_Inserter_Log extends AA_Inserter {
 
     public function execute(AA_Field_Writer $fieldwriter, $item_id, $value, int $order = 0, int $flag = 0) {
         // if not $auth, it is from anonymous posting
-        $val = (AuthGetUname() ?: ((strlen($value)>0) ? $value : 'anonymous'));
+        $val = (AuthGetUname() ?: (strlen($value) ? $value : 'anonymous'));
         parent::execute($fieldwriter, $item_id, $val, $order, $flag);
     }
 
@@ -772,7 +772,7 @@ class AA_Inserter_Fil extends AA_Inserter {
             $mode = 'upload';
         }
 
-        if (($mode==='upload' AND (!$up_file['name'] OR ($up_file['name']==='none'))) OR ($fieldwriter->getContext() === 'feed')) { // no upload - store old value?
+        if (($mode==='upload' && (!$up_file['name'] || ($up_file['name']==='none'))) || ($fieldwriter->getContext() === 'feed')) { // no upload - store old value?
             // store specified file URL if nothing was uploaded
             parent::execute($fieldwriter, $item_id, $value, $order, $flag);
             return;
@@ -884,7 +884,7 @@ class AA_Inserter_Fil extends AA_Inserter {
         $potentional_fields = $this->field->getInsertOtherFields();
 
         foreach ($potentional_fields as $fid) {
-            if (($fnc = $slice->getField($fid)?->getProperty('input_insert_func')) AND str_starts_with($fnc, 'fil')) {
+            if (($fnc = $slice->getField($fid)?->getProperty('input_insert_func')) && str_starts_with($fnc, 'fil')) {
                 $ret[] = $fid;
             } else {
                 warn("Insert function for field '$fid' for thumbnail of '{$this->field->getId()}' is not a File Inserter.");
@@ -919,7 +919,7 @@ class AA_Inserter_Pwd extends AA_Inserter {
         [$aa_const, $password] = ParamExplode($value);
 
         if ($aa_const === 'AA_PASSWD') {
-            if ($this->bck_field AND $fieldwriter->getSlice()?->isField($this->bck_field)) {
+            if ($this->bck_field && $fieldwriter->getSlice()?->isField($this->bck_field)) {
                 // $password is_a decrypted here
                 $backup = $this->crypt_phrase ? StrExp('encrypt', [$password, $this->crypt_phrase]) : $password;
                 // store backup value to specified field
@@ -957,7 +957,7 @@ class AA_Inserter_2fa extends AA_Inserter {
         [$aa_const, $username, $password, $code2fa] = ParamExplode($value);
 
         if ($aa_const === 'AA_2FASECRET') {
-            if ($username === '' OR !($uid = AA::$perm->authenticateUsername($username, $password, $code2fa)) OR ($uid != AuthGetUid())) {
+            if ($username === '' || !($uid = AA::$perm->authenticateUsername($username, $password, $code2fa)) || ($uid != AuthGetUid())) {
                 return '';
             }
             $ga = new PHPGangsta_GoogleAuthenticator();
@@ -966,7 +966,7 @@ class AA_Inserter_2fa extends AA_Inserter {
             $this->crypt_phrase = trim($this->crypt_phrase);
 
             if ($this->crypt_phrase !== '') {
-                if (is_long_id($uid) AND ($item = AA_Items::getItem(new zids($uid)))) {
+                if (is_long_id($uid) && ($item = AA_Items::getItem(new zids($uid)))) {
                     $phrase = AA::Un($this->crypt_phrase,'',$item);
                 } else {
                     $phrase = AA::Un($this->crypt_phrase);
@@ -1086,10 +1086,10 @@ class AA_Field_Writer {
  */
 function IsEditable(int $fieldflag, AA_Field $field, AA_Profile $profile): bool {
     return (!($fieldflag & FLAG_FREEZE)
-        AND $field->getProperty("input_show")
-        AND !$profile->getProperty('hide',$field->getId())
-        AND !$profile->getProperty('hide&fill',$field->getId())
-        AND !$profile->getProperty('fill',$field->getId()));
+        && $field->getProperty("input_show")
+        && !$profile->getProperty('hide',$field->getId())
+        && !$profile->getProperty('hide&fill',$field->getId())
+        && !$profile->getProperty('fill',$field->getId()));
 }
 
 // -----------------------------------------------------------------------------
@@ -1227,7 +1227,7 @@ function ValidateContent4Id(&$err, $slice, $action, $id=0, $do_validate=true, $n
                     $$varname = ParamImplode(['AA_PASSWD',$$change_varname]);
                 } elseif ($$delete_varname) {
                     $$varname = '';
-                } elseif ( ($action === "update") AND $oldcontent4id) {
+                } elseif ( ($action === "update") && $oldcontent4id) {
                     // store the original password to use it in
                     // insert_fnc_pwd when it is not changed
                     // $$varname = $oldcontent4id[$pri_field_id][0]['value'];
@@ -1240,7 +1240,7 @@ function ValidateContent4Id(&$err, $slice, $action, $id=0, $do_validate=true, $n
         if ($do_validate && ($action === "insert" || $action === "update")) {
             // special setting for file upload - there we solve the problem
             // of required fileupload field, but which is empty at this moment
-            if ( $field["required"] AND (str_starts_with($field["input_show_func"], 'fil'))) {
+            if ( $field["required"] && (str_starts_with($field["input_show_func"], 'fil'))) {
                 ValidateInput($varname, $field["name"], $$varname. $GLOBALS[$varname.'x'] , $err, $field["required"] ? 1 : 0, AA_Validate::factoryByString($field["input_validate"]));
                 continue;
             }
@@ -1275,7 +1275,7 @@ function ValidateContent4Id(&$err, $slice, $action, $id=0, $do_validate=true, $n
                 //case 'id':
                 default:
                     // status code is never required
-                    ValidateInput($varname, $field["name"], $$varname, $err, ($field["required"] AND ($pri_field_id!=='status_code.....')) ? 1 : 0, AA_Validate::factoryByString($field["input_validate"]));
+                    ValidateInput($varname, $field["name"], $$varname, $err, ($field["required"] && ($pri_field_id!=='status_code.....')) ? 1 : 0, AA_Validate::factoryByString($field["input_validate"]));
                     break;
             }
         }

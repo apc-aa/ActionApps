@@ -95,7 +95,7 @@ if ($_REQUEST['context'] ?? '') {
     AA_Credentials::singleton()->importFromToken($_REQUEST['context']);
 }
 
-if ($_REQUEST['convertfrom'] OR $_REQUEST['convertto']) {
+if ($_REQUEST['convertfrom'] || $_REQUEST['convertto']) {
     $_POST   = ConvertEncodingDeep($_POST, $_REQUEST['convertfrom'], $_REQUEST['convertto']);
 } elseif ($_REQUEST['inline']) {
     if ($_REQUEST['slice_id']) {
@@ -106,7 +106,7 @@ if ($_REQUEST['convertfrom'] OR $_REQUEST['convertto']) {
     } elseif (is_array($_REQUEST['aa'])) {
         $charset = AA\FormArray::getCharset($_REQUEST['aa']);
     }
-    if ($charset AND ($charset !== 'utf-8')) {
+    if ($charset && ($charset !== 'utf-8')) {
         //print_r($_POST);
         $_POST   = ConvertEncodingDeep($_POST, 'UTF-8', $charset);
         //print_r($_POST);
@@ -241,7 +241,7 @@ function SendOkPage($txt, $new_ids = []) {
                 foreach ($new_ids as $long_id) {
                     $item = AA_Item::getItem(new zids($long_id, 'l'));
                     $text = AA::Un($retcode, '', $item);
-                    if ($text and $item) {
+                    if ($text && $item) {
                         $slice = AA_Slice::getModule($item->getSliceID());
                         if (!empty($slice)) {
                             $charset = $slice->getCharset();
@@ -291,7 +291,7 @@ if (ctype_digit((string)$_REQUEST['respuesta'])) {
 // new version of filling - through aa[] array allowing multiple items to store
 //      aa[i63556a45e4e67b654a3a986a548e8bc9][headline_______1][]
 //      aa[n1_54343ea876898b6754e3578a8cc544e6][publish_date____][]
-if ( isset($_POST['aa']) OR isset($_FILES['aa']) ) {
+if ( isset($_POST['aa']) || isset($_FILES['aa']) ) {
 
     if ($_COOKIE['AA_Session']) {
         // this defines $auth object so, the "Last Changed By" is set to correct user
@@ -320,7 +320,7 @@ if ( isset($_POST['aa']) OR isset($_FILES['aa']) ) {
     $saver   = new AA\IO\Saver($grabber, null, null, 'by_grabber', '', ($_REQUEST["err_url"] ? 'STRICT' : 'LOG'));
     [$ok,$err] = $saver->run();
 
-    if ($err and $_REQUEST["err_url"]) {
+    if ($err && $_REQUEST["err_url"]) {
         SendErrorPage( ["report" => $saver->report()] );
     } else {
         SendOkPage( ["report" => $saver->report()], $saver->changedIds());
@@ -341,7 +341,7 @@ if ( !$slice_id ) {
 AA::$slice_id = $slice_id;
 $slice        = AA_Slice::getModule($slice_id);
 
-if (!is_object($slice) OR !$slice->isValid()) {
+if (!is_object($slice) || !$slice->isValid()) {
     SendErrorPage(["fatal"=>_m("Bad slice ID")]);
 }
 

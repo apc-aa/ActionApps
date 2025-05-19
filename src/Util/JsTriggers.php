@@ -91,7 +91,7 @@ class JsTriggers {
         $control_triggers = self::CONTROL_TRIGGERS[$control];
         $retval  = '';
 
-        if (!$control_triggers OR (!$this->js_trig AND !$add)) {
+        if (!$control_triggers || (!$this->js_trig && !$add)) {
             return '';
         }
 
