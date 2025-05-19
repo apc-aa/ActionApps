@@ -56,6 +56,7 @@ use zids;
 
 class Managed {
 
+    public $scroller;
     const MANGED_URL        = 'AA_MaNaGeD_UrL';
     //  it is public for now, in order we can easily change the setting - $managed->settings[...] == ...
     public $settings        = [];
@@ -144,7 +145,7 @@ class Managed {
         $colspan = 100;
         if ( $manager_vid = $this->settings['itemview']['manager_vid'] ) {
             $view = AA_Views::getViewNumeric($manager_vid);
-            if ( !($view->f('deleted')>0) ) {
+            if ( $view->f('deleted') == 0 ) {
                 $format_strings = $view->getViewFormat();
                 if ( isset($this->scroller) ) {
                     $this->scroller->setListlen($view->f('listlen'));
@@ -226,7 +227,7 @@ class Managed {
      * @return Managed
      */
     public function setNoitem(?string $text): Managed {
-        if (isset($text) AND strlen($text)) {
+        if (isset($text) && strlen($text)) {
             $this->msg_noitem = $text;
         }
         return $this;
@@ -401,12 +402,12 @@ class Managed_Table extends Managed {
         $store_mode = $grabber->getStoreMode();        // add | update | insert
         $grabber->finish();    // maybe some finalization in grabber
 
-        if (($store_mode === 'update') AND $this->isAction('edit')) {
+        if ($store_mode === 'update' && $this->isAction('edit')) {
             // key is stored in aa_id field
             $content[AA::Metabase()->getKeys($this->table)[0]] = $content['aa_id']; // assign using ArrayAccess
             unset($content['aa_id']);
             AA::Metabase()->doUpdate($this->table, $content->getAllAsScalar());
-        } elseif (($store_mode === 'insert') AND $this->isAction('add')) {
+        } elseif ($store_mode === 'insert' && $this->isAction('add')) {
             $data = $content->getAllAsScalar();
             if ($owner && ($module_field = AA_Metabase::getModuleField($this->table))) {
                 $data[$module_field] = $owner;
@@ -750,7 +751,7 @@ class Manager extends AA_Storable {
      * @return zids
      */
     public function getPostedItems(): zids {
-        if (!is_array($_REQUEST['chb']) AND ($_POST['aa_akce_all']=='1')) {
+        if (!is_array($_REQUEST['chb']) && $_POST['aa_akce_all']=='1') {
             return $this->getZids();
         }
         return (new zids([], $this->managed->getZidsType()))->setFromItemArr($_POST['chb'] ?? $_GET['chb'] ?? []);
@@ -777,7 +778,7 @@ class Manager extends AA_Storable {
 
         // call custom searchbar function (if searchbar action invoked)
         // used for additional search functions like 'category search' in Links
-        if ( $this->searchbar_funct AND $_REQUEST['srchbr_akce'] ) {
+        if ( $this->searchbar_funct && $_REQUEST['srchbr_akce'] ) {
             $function2call = $this->searchbar_funct;
             $function2call();
         }
@@ -791,10 +792,10 @@ class Manager extends AA_Storable {
         $item_zids = $this->getPostedItems(); // in some managers we use 'x' before the item id - remove it
 
         // new approach uses AA\Manageractions
-        if ($akce AND is_object($this->actions)) {
+        if ($akce && is_object($this->actions)) {
             $actions   = $this->actions;
             $action2do = $actions->getAction($akce);
-            if ( $action2do AND $action2do->isPerm4Perform($this, $item_zids, $_REQUEST['akce_param'])) {
+            if ( $action2do && $action2do->isPerm4Perform($this, $item_zids, $_REQUEST['akce_param'])) {
                 $this->msg[] = $action2do->perform($this, $item_zids, $_REQUEST['akce_param']);
             }
         }
@@ -803,7 +804,7 @@ class Manager extends AA_Storable {
         if (is_object($this->switches)) {
             $switches     = $this->switches;
             foreach ( $switches as $sw => $switch ) {
-                if ( isset($_GET[$sw]) AND $switch->isPerm4Perform($this, $item_zids, $_GET[$sw])) {
+                if ( isset($_GET[$sw]) && $switch->isPerm4Perform($this, $item_zids, $_GET[$sw])) {
                     $this->msg[] = $switch->perform($this, $item_zids, $_GET[$sw]);
                 }
             }

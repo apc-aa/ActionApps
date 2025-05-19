@@ -9,7 +9,7 @@ use zids;
 class Item_Gobookmark extends AbstractManageraction {
 
     /** @inheritDoc */
-    function perform(Manager $manager, zids $item_zids, $action_param) {
+    function perform(Manager $manager, zids $item_zids, $action_param): bool {
         $manager->setFromBookmark($_GET['GoBookmark']);
         $manager->go2page(1);
         return false;        // OK

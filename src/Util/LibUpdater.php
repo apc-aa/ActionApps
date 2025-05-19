@@ -3,7 +3,7 @@
 namespace AA\Util;
 
 class LibUpdater {
-    public function getUpdatedsystemDefinitions() {
+    public function getUpdatedsystemDefinitions(): string {
         $msg     = [];
         $newdefs = [];
         $defs  = \AA_Requires::systemDefinitions();

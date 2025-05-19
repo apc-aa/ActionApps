@@ -93,14 +93,14 @@ class FilWidget extends Widget
         $upload_ok = false;
         if (!empty($uploads)) {
             foreach ($uploads as $file) {
-                if (isset($file['error']) AND ($file['error']==0)) { // 0 means UPLOAD_ERR_OK - sometimes (when using FormData JS API) the array is present even for empty field upload
+                if (isset($file['error']) && $file['error']==0) { // 0 means UPLOAD_ERR_OK - sometimes (when using FormData JS API) the array is present even for empty field upload
                     $upload_ok = true;
                     // the information about file is in array - ['name'=>..,'type'=>..,'tmp_name'=>..,'error'=>..,'size'=>..]
                     $values[] = 'AA_UPLOAD:' . serialize($file);
                 }
             }
         }
-        if (!$upload_ok OR $add) {
+        if (!$upload_ok || $add) {
             foreach ($urls as $url) {
                 if (strlen(trim($url))) {
                     $values[] = $url;
@@ -142,7 +142,7 @@ class FilWidget extends Widget
             $input_value = safe($value->getValue($i));
             $link        = $input_value ? a_href($input_value, GetAAImage('external-link.png', _m('Show').' '.$input_value, 16, 16),['class'=>'aa-fil-link']) : '';
             $widget     .= "\n<div class=aa-fil-file>";
-            if (($display_url < 2) AND ($type === 'normal')) {
+            if ($display_url < 2 && $type === 'normal') {
                 $widget .= "<input type=\"text\" class=aa-w-full maxlength=\"$max_characters\" name=\"$input_name\" id=\"$input_id\" value=\"$input_value\"$widget_add> $link";
             } else {
                 $widget .= "<input type=\"hidden\" name=\"$input_name\" id=\"$input_id\" value=\"$input_value\">$link";
@@ -151,7 +151,7 @@ class FilWidget extends Widget
         }
 
         // if the widget is multiple, then it behaves differently with deletion - the old uploads are not cleaned unless you say so
-        if ($widget AND $multiple) {
+        if ($widget && $multiple) {
             $input_name = $base_name . "[fil][add]";
             $input_id = FormArray::formName2Id($input_name);
             $widget .= "\n<input type=\"hidden\" name=\"$input_name\" id=\"$input_id\" value=\"1\">";
@@ -161,7 +161,7 @@ class FilWidget extends Widget
 //            huhl($display_url, $widget, $value, $value->count(), $content, $this);
 //        }
         // no input was printed, we need to print one
-        if (!$widget AND ($display_url == 0)) {
+        if (!$widget && $display_url == 0) {
             $input_name = $base_name . "[fil][url][0]";
             $input_id = FormArray::formName2Id($input_name);
             $widget = "\n<input type=\"text\" size=\"$width\" maxlength=\"$max_characters\" name=\"$input_name\" id=\"$input_id\" value=\"\"$widget_add>";
@@ -173,7 +173,7 @@ class FilWidget extends Widget
         $accept  = $allowed_ftypes ? "accept=\"$allowed_ftypes\"" : '';
 
         if ($type === 'normal') {
-            $required = ($aa_property->isRequired() AND !$value->count() AND ($display_url > 0)) ? 'required' : '';
+            $required = ($aa_property->isRequired() && !$value->count() && $display_url > 0) ? 'required' : '';
             $widget .= "    <br><input type=file class=filepond size=\"$width\"$multiple maxlength=\"$max_characters\" name=\"$input_name\" id=\"$input_id\" $required $accept><!--$type -->";
         } else {
             $url_params = [
@@ -215,7 +215,7 @@ class FilWidget extends Widget
         // this is not standard implementation - we reuse Ajax function instead of Live function, because it is more natural for file upload
         $url = $content->getValue($aa_property->getId());
 
-        if ($url AND AA_Validate::doValidate($url, 'url')) {
+        if ($url && AA_Validate::doValidate($url, 'url')) {
             $link = '&nbsp;' . a_href($url, GetAAImage('external-link.png', _m('Show'), 16, 16));
         }
 

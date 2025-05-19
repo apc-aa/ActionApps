@@ -132,7 +132,7 @@ class XML extends AbstractGrabber
         if ( $nss = $xml->getNamespaces(true) ) {
             if ($this->fake_namespaces) {
                 $search = [];
-                foreach ($nss as $prefix => $url) {
+                foreach (array_keys($nss) as $prefix) {
                     $search[] = "<$prefix:";
                     $search[] = "</$prefix:";
                     $search[] = "xmlns:$prefix";

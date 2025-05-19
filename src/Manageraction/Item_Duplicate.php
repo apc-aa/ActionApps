@@ -22,7 +22,7 @@ class Item_Duplicate extends AbstractManageraction {
     }
 
     /** @inheritDoc */
-    function perform(Manager $manager, zids $item_zids, $action_param) {
+    function perform(Manager $manager, zids $item_zids, $action_param): bool {
         $sid = $manager->getModuleId();
 
         $grabber = new AA\IO\Grabber\Slice(new AA_Set([$sid], null, null, AA_BIN_ALL), $item_zids->itemFilter([$sid]));

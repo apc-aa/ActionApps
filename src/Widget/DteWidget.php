@@ -144,7 +144,7 @@ class DteWidget extends Widget
                 if (isset($curr_attrs['max']) and (strtotime($curr_attrs['max']) < strtotime($val_attr))) {
                     $curr_attrs['max'] = $val_attr;
                 }
-                if (isset($curr_attrs['min']) and (strtotime($curr_attrs['min']) > strtotime($val_attr))) {
+                if (isset($curr_attrs['min']) && strtotime($curr_attrs['min']) > strtotime($val_attr)) {
                     $curr_attrs['min'] = $val_attr;
                 }
             }
@@ -193,12 +193,12 @@ class DteWidget extends Widget
 
             for ($i = 0; $i < $max; ++$i) {
                 // no date
-                if (isset($years[$i]) AND !(int)$years[$i]) {
+                if (isset($years[$i]) && !(int)$years[$i]) {
                     $values[] = 0;
                     continue;
                 }
                 // check if anything is filled
-                if (!(int)$years[$i] AND !(int)$months[$i] AND !(int)$days[$i] AND !$times[$i]) {
+                if (!(int)$years[$i] && !(int)$months[$i] && !(int)$days[$i] && !$times[$i]) {
                     continue;
                 }
                 $year = $years[$i] ?: date('Y'); // specified year or current

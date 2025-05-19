@@ -132,7 +132,7 @@ class JsonLD extends AbstractGrabber
         return $this;
     }
 
-    protected function nextfunction($json) {
+    protected function nextfunction($json): string {
         // for now just one non-standard next function - Empty
         if ($this->next_func === 'None') {
             return '';

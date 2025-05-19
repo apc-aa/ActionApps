@@ -9,7 +9,7 @@ use zids;
 class Links_DeleteTrash extends AbstractManageraction {
 
     /** @inheritDoc */
-    function perform(Manager $manager, zids $item_zids, $action_param) {
+    function perform(Manager $manager, zids $item_zids, $action_param): bool {
         $db = getDB();
 
         // first delete the trashed links

@@ -58,7 +58,7 @@ class Item_MoveItem extends AbstractManageraction {
     }
 
     /** @inheritDoc */
-    function perform(Manager $manager, zids $item_zids, $action_param) {
+    function perform(Manager $manager, zids $item_zids, $action_param): bool {
         $sid = $manager->getModuleId();
         self::doMove($item_zids->itemFilter([$sid]), $this->to_bin, $sid);
         AA::Pagecache()->invalidateFor($sid);
@@ -74,9 +74,9 @@ class Item_MoveItem extends AbstractManageraction {
         $module_id   = $manager->getModuleId();
 
         return match ($this->to_bin) {
-            1 => IfSlPerm(PS_ITEMS2ACT, $module_id) and !in_array($current_bin, ['app', 'appb', 'appc']),
-            2 => IfSlPerm(PS_ITEMS2HOLD, $module_id) and ($current_bin !== 'hold'),        // Folder2 is Holding bin - prepared for more than three bins
-            3 => IfSlPerm(PS_ITEMS2TRASH, $module_id) and ($current_bin !== 'trash'),            // Folder3 is Trash
+            1 => IfSlPerm(PS_ITEMS2ACT, $module_id) && !in_array($current_bin, ['app', 'appb', 'appc']),
+            2 => IfSlPerm(PS_ITEMS2HOLD, $module_id) && $current_bin !== 'hold',        // Folder2 is Holding bin - prepared for more than three bins
+            3 => IfSlPerm(PS_ITEMS2TRASH, $module_id) && $current_bin !== 'trash',            // Folder3 is Trash
             default => false,
         };
     }

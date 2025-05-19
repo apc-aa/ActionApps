@@ -63,7 +63,7 @@ class MngWidget extends Widget
         // This allows us to use manager even for nonstored items and maybe other features (shared constants) in future
         if (!strlen($input_value)) {
             if (IsAjaxCall()) {
-                if (!($_SESSION['AA_4ajax'] AND $_SESSION['AA_4ajax']['w_mng'] AND ($input_value = $_SESSION['AA_4ajax']['w_mng'][$sess_var]))) {
+                if (!($_SESSION['AA_4ajax'] && $_SESSION['AA_4ajax']['w_mng'] && ($input_value = $_SESSION['AA_4ajax']['w_mng'][$sess_var]))) {
                     warn("No cookie value for connector");
                 }
             } else {

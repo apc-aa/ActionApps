@@ -199,7 +199,7 @@ class FeedUtil {
      * @param $d
      * @return string
      */
-    public static function http_fetch($url, $d = null) {
+    public static function http_fetch($url, $d = null): string {
         if (isset($d)) {
             $param = [];
             foreach ($d as $k => $v) {
@@ -234,7 +234,7 @@ class FeedUtil {
     public static function translteFeedCatid2Value($remote_cat_id, $remote_cat_value, $ext_categs, $l_categs, $all_categories) {
 
         // we have set mapping for this category
-        $ext_category_id = ((!$all_categories and isset($ext_categs[$remote_cat_id])) ?
+        $ext_category_id = ((!$all_categories && isset($ext_categs[$remote_cat_id])) ?
             $remote_cat_id : self::UNPACKED_AA_OTHER_CATEGOR);
 
         $local_cat_id = $ext_categs[$ext_category_id]['target_category_id'];
@@ -268,7 +268,7 @@ class FeedUtil {
         $all_categories = self::UseAllCategoriesOption($ext_categs);
 
         // Create [id] => value array of all items categories
-        if (isset($item['categories']) and is_array($item['categories'])) {
+        if (isset($item['categories']) && is_array($item['categories'])) {
             // This categories are regular categories on remote slice, so it
             // should have value defined
             // This categories are set in special $item[categories] array
@@ -287,7 +287,7 @@ class FeedUtil {
                 }
             }
         }
-        if ($cat_field_id and is_array($item['fields_content'][$cat_field_id])) {
+        if ($cat_field_id && is_array($item['fields_content'][$cat_field_id])) {
             // Now do the same also for "dirty" categories - categories, which are
             // not in the list of current remote categories (item has another than
             // listed category - strange, but obvious (due feeding, importing, ...)
@@ -328,7 +328,7 @@ class FeedUtil {
         $db = getDB();
         // add new categories or update categories' fields
         if (isset($cat_refs) && is_array($cat_refs)) {
-            foreach ($cat_refs as $r_cat_id => $foo) {
+            foreach (array_keys($cat_refs) as $r_cat_id) {
                 $category = $categs[$r_cat_id];
 
                 if ($ext_categs[$r_cat_id]) {
@@ -353,8 +353,8 @@ class FeedUtil {
         }
 
         // remove the categories from table, which were not sent
-        if (isset($ext_categs) and is_array($ext_categs)) {
-            foreach ($ext_categs as $r_cat_id => $foo) {
+        if (isset($ext_categs) && is_array($ext_categs)) {
+            foreach (array_keys($ext_categs) as $r_cat_id) {
                 if (isset($cat_refs[$r_cat_id])) {
                     continue;
                 }
@@ -385,8 +385,8 @@ class FeedUtil {
 
         // add new ones
         $db = getDB();
-        if (isset($field_refs) and is_array($field_refs)) {
-            foreach ($field_refs as $r_field_id => $val) {
+        if (isset($field_refs) && is_array($field_refs)) {
+            foreach (array_keys($field_refs) as $r_field_id) {
                 $new_name = $fields[$r_field_id]['name'];
                 if ($ext_map && $ext_map[$r_field_id]) {
                     // remote field is in the feedmap table => update name
@@ -437,7 +437,7 @@ class FeedUtil {
      */
     public static function field2arr($field) {
         global $rss_version;
-        if (str_contains($rss_version, '2.') or str_contains($rss_version, '0.9')) {
+        if (str_contains($rss_version, '2.') || str_contains($rss_version, '0.9')) {
             $flag = ((str_contains($field, '<')) ? FLAG_HTML : "");
         } else { // Must be 1.0 which doesn't have an RSS version
             $flag = FLAG_HTML;
@@ -570,9 +570,9 @@ class FeedUtil {
      * @param $ext_categs (by link)
      * @return bool
      */
-    public static function UseAllCategoriesOption($ext_categs) {
+    public static function UseAllCategoriesOption($ext_categs): bool {
         foreach ($ext_categs as $k => $v) {
-            if ($v['target_category_id'] and ($k != self::UNPACKED_AA_OTHER_CATEGOR)) {
+            if ($v['target_category_id'] && $k != self::UNPACKED_AA_OTHER_CATEGOR) {
                 return false;
             }
         }
@@ -708,7 +708,7 @@ class FeedUtil {
      * @param $t
      * @return string
      */
-    public static function unixstamp_to_iso8601($t) {
+    public static function unixstamp_to_iso8601($t): string {
         $tz = date("Z", $t) / 60;
         $tm = $tz % 60;
         $tz /= 60;

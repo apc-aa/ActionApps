@@ -117,7 +117,7 @@ class JsTriggers {
             // the commands, but if you do so for onSubmit, you will get:
             //   return BeforeSubmit(); aa_onSubmit('inputform');
             // which is nonsense.
-            if (($ctrig === "onSubmit") AND ($add[$ctrig] === "return BeforeSubmit()")) {
+            if ($ctrig === "onSubmit" && $add[$ctrig] === "return BeforeSubmit()") {
                 if ($this->js_trig[$ctrig]) {
                     $retval .= " $ctrig=\"if( BeforeSubmit() ){ return aa_$ctrig('$fieldid'); } else { return false; }\"";
                 } else {

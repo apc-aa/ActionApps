@@ -27,7 +27,7 @@ class RedefineSiteTemplates extends \AA\Optimize\AbstractOptimize {
         $ret = true;
 
         $row_count = DB_AA::select1('count', 'SELECT count(*) as count FROM module', [['id', 'SiteTemplate....']]);
-        if ($row_count <> 1) {
+        if ($row_count != 1) {
             $this->message(_m('Site Module template should be recreated'));
             $ret = false;
         }

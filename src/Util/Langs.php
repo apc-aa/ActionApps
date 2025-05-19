@@ -74,7 +74,7 @@ class Langs {
      */
     public static function getCharset($lang_code = null): string
     {
-        if (!$lang_code OR !is_array($ret = self::$LANGS[$lang_code])) {
+        if (!$lang_code || !is_array($ret = self::$LANGS[$lang_code])) {
             $ret = self::$LANGS[(self::currentLang())];
         }
         return $ret[0] ?? 'utf-8';
@@ -100,12 +100,12 @@ class Langs {
     /** reverse function to getLangNumber
      *  78000000 -> cz, 78000001 -> cz, 118000000 -> en...
      */
-    public static function getLangNum2Name($langnumber) {
+    public static function getLangNum2Name($langnumber): string {
         if ($langnumber < AA_Value::MAX_INDEX) {
             return '';
         }
         $num = $langnumber / AA_Value::MAX_INDEX - 1;
-        return chr(intval($num / 26) + 97) . chr(($num % 26) + 97);
+        return chr((int) ($num / 26) + 97) . chr(($num % 26) + 97);
     }
 
     /** combine getLangNum2Name and getLangName2Code

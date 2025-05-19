@@ -5958,7 +5958,7 @@ The changes could be tracked on:
 02-06-17 - patched PHPLib is part of AA, now (use 'cvs update -d' to get it)
          - fillform.php works with scroller (fillconds)
          - removed call-time passed-by-reference variables in function calls
-         - better variable handling if magic_qoutes are not set (no more
+         - better variable handling if magic_quotes are not set (no more
            warning displayed)
          - f_t alias function parameter used for unaliasing string
 --------------------

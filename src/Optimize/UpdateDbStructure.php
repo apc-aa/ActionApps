@@ -55,11 +55,11 @@ class UpdateDbStructure extends \AA\Optimize\AbstractOptimize {
             if ($diff['equal']) {
                 //huhl($diff);
                 $this->message(_m('<em>Tables %1 are identical.</em><br>', [$tablename]));
-            } else if ($diff['table1'] == '') {
+            } elseif ($diff['table1'] == '') {
                 $this->message(_m('<em>Table <b>%1</b> is <b>not needed</b>. You can <b>manually</b> delete it.</em><br>', [$tablename]));
                 $this->message(Difftext::renderHtml($diff['table2'], $diff['table1']));
                 $different = true;
-            } else if ($diff['table2'] == '') {
+            } elseif ($diff['table2'] == '') {
                 $this->message(_m('<em>Table <b>%1</b> is <b>new</b>.</em><br>', [$tablename]));
                 $this->message(Difftext::renderHtml($diff['table2'], $diff['table1']));
                 $different = true;

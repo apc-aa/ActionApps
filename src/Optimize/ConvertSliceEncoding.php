@@ -561,7 +561,7 @@ class ConvertSliceEncoding extends AA\Optimize\AbstractOptimize {
         if ($filter_charset) {
             foreach ($modules as $module_id) {
                 $module = \AA_Module::getModule($module_id);
-                if ($module->getCharset() == $filter_charset) {
+                if ($module->getCharset() === $filter_charset) {
                     $this->message(_m('"<b>%1</b>" module <b>could</b> be converted.', [$module->getName()]));
                     $ret[] = $module_id;
                 } else {
@@ -584,7 +584,7 @@ class ConvertSliceEncoding extends AA\Optimize\AbstractOptimize {
         $metabase = AA::Metabase();
         $cols = $metabase->getColumns($tablename);
         foreach ($cols as $colname => $coldef) {
-            if (($coldef->getFieldType() === 'text') and !$coldef->isBinary()) {
+            if ($coldef->getFieldType() === 'text' && !$coldef->isBinary()) {
                 $ret[] = $colname;
             }
         }
@@ -610,7 +610,7 @@ class ConvertSliceEncoding extends AA\Optimize\AbstractOptimize {
                     continue;
                 }
                 foreach ($cols as $colname => $coldef) {
-                    if (($coldef->getFieldType() === 'text') and !$coldef->isBinary()) {
+                    if ($coldef->getFieldType() === 'text' && !$coldef->isBinary()) {
                         echo "<br> &nbsp; $colname ". (AA_Metabase::isPacked($tablename, $colname) ? 'P' : '.'). ($coldef->isBinary() ? 'B' : '.'). ($coldef->isKey() ? 'K' : '.');
                     }
                 }

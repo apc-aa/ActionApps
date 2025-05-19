@@ -50,7 +50,7 @@ class Item_Feed extends AbstractManageraction {
      * @param \AA\Manager $manager
      * @return bool
      */
-    function isPerm4Action($manager) {
+    function isPerm4Action($manager): bool {
         return true;
     }
 }

@@ -74,7 +74,7 @@ class PwdWidget extends Widget
     public static function getWidgetValue(array $data4field, ?AA_Value $default): AA_Value
     {
         $data4field = $data4field['pwd'];
-        if (is_array($data4field) AND isset($data4field['new1'])) {
+        if (is_array($data4field) && isset($data4field['new1'])) {
             return new AA_Value(ParamImplode(['AA_PASSWD', $data4field['new1'], $data4field['new2'], $data4field['old']]), FLAG_HTML);
         }
         // older version without the possibility to provide old passwords

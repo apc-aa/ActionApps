@@ -61,7 +61,7 @@ class SetExpirydate extends AbstractOptimize {
             ['id', 'expiry_date.....',],
             ['input_show', 0, 'i',],
         ]);
-        foreach ($slices as $sid => $default) {
+        foreach (array_keys($slices) as $sid) {
             $db->query("UPDATE item SET expiry_date=2145826800 WHERE slice_id=" . xpack_id($sid));
             //huhl("UPDATE item SET expiry_date=2145826800 WHERE slice_id='".q_pack_id($sid)."'");
             $this->message(_m('items changed: %1 in slice: %2 (%3)', [

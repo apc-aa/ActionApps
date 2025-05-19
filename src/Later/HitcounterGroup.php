@@ -39,7 +39,7 @@ class HitcounterGroup implements LaterInterface
 
         [$begin, $step] = $params;
 
-        if (self::$duration_log_feature_from AND (self::$duration_log_feature_from <= ($begin+$step))) {
+        if (self::$duration_log_feature_from && self::$duration_log_feature_from <= ($begin+$step)) {
             $this->groupHitsDuration($begin, $step);
         } else {
             $this->groupHitsBasic($begin, $step);

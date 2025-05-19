@@ -27,7 +27,7 @@ final class Crypt {
      * @return string
      * @throws \Exception
      */
-    public static function encryptAesGcm($text, $pass) {
+    public static function encryptAesGcm($text, $pass): string {
         $key   = self::createKey($pass);
         $nonce = mb_substr(bin2url(random_bytes(self::AES256GCM_NPUBBYTES)),0,self::AES256GCM_NPUBBYTES,'8bit'); // nonce is already base64_url encoded
 
@@ -87,7 +87,7 @@ final class Crypt {
      * @return string
      * @throws \Exception
      */
-    private static function encryptWithPHP($K, $key_length, $IV, $P = null, $A = null) {
+    private static function encryptWithPHP($K, $key_length, $IV, $P = null, $A = null): string {
         [$J0, $v, $a_len_padding, $H] = self::common($K, $key_length, $IV, $A);
         $C = self::getGCTR($K, $key_length, self::getInc(32, $J0), $P);
         $u = self::calcVector($C);
@@ -117,7 +117,7 @@ final class Crypt {
         $c_len_padding = self::addPadding($C);
         $S = self::getHash($H, $A.str_pad('', $v / 8, "\0").$C.str_pad('', $u / 8, "\0").$a_len_padding.$c_len_padding);
         $T1 = self::getMSB(self::AES256GCM_TAGBYTES*8, self::getGCTR($K, $key_length, $J0, $S));
-        return ($T == $T1) ? $ret : false;    // Unable to decrypt or to verify the tag
+        return ($T === $T1) ? $ret : false;    // Unable to decrypt or to verify the tag
     }
 
 
@@ -138,7 +138,7 @@ final class Crypt {
             $J0 = $IV.pack('H*', '00000001');
         } else {
             $s = self::calcVector($IV);
-            if (($s + 64) % 8 <> 0) {
+            if (($s + 64) % 8 != 0) {
                 throw new \Exception('Unable to decrypt or to verify the tag.');
             }
             $packed_iv_len = pack('N', $iv_len);
@@ -164,7 +164,7 @@ final class Crypt {
      *
      * @return string
      */
-    private static function addPadding($value)
+    private static function addPadding($value): string
     {
         return str_pad(pack('N', self::getLength($value)), 8, "\0", STR_PAD_LEFT);
     }
@@ -183,7 +183,7 @@ final class Crypt {
      *
      * @return string
      */
-    private static function getMSB($num_bits, $x)
+    private static function getMSB($num_bits, $x): string
     {
         $num_bytes = $num_bits / 8;
         return mb_substr($x, 0, $num_bytes, '8bit');
@@ -194,7 +194,7 @@ final class Crypt {
      *
      * @return string
      */
-    private static function getLSB($num_bits, $x)
+    private static function getLSB($num_bits, $x): string
     {
         $num_bytes = ($num_bits / 8);
         return mb_substr($x, -$num_bytes, null, '8bit');
@@ -205,7 +205,7 @@ final class Crypt {
      *
      * @return string
      */
-    private static function getInc($s_bits, $x)
+    private static function getInc($s_bits, $x): string
     {
         $lsb = self::getLSB($s_bits, $x);
         $X = self::toUInt32Bits($lsb) + 1;
@@ -253,7 +253,7 @@ final class Crypt {
      *
      * @return string
      */
-    private static function shiftStringToRight($input)
+    private static function shiftStringToRight($input): string
     {
         $width = 4;
         $parts = array_map('self::toUInt32Bits', str_split($input, $width));
@@ -296,7 +296,7 @@ final class Crypt {
      *
      * @return string
      */
-    private static function getGCTR($K, $key_length, $ICB, $X)
+    private static function getGCTR($K, $key_length, $ICB, $X): string
     {
         if (empty($X)) {
             return '';

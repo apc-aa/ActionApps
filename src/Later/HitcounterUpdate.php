@@ -45,7 +45,7 @@ class HitcounterUpdate implements LaterInterface
      * @return string - message about execution to be logged
      * @see \AA\Later\LaterInterface
      */
-    public function toexecutelater($params= []) {
+    public function toexecutelater($params= []): string {
 
         // we can't count with current second, since the records for current
         // second could grow. Two seconds back should be OK.

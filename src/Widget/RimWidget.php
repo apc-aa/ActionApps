@@ -111,7 +111,7 @@ class RimWidget extends Widget
         //}
 
         $constgroup = $this->getProperty('const');
-        if (!$constgroup OR (!str_starts_with($constgroup, "#sLiCe-"))) {  // no constants or slice defined
+        if (!$constgroup || !str_starts_with($constgroup, "#sLiCe-")) {  // no constants or slice defined
             return [];                           //  = array();
         }
         $sid = substr($constgroup, 7);

@@ -242,26 +242,25 @@ class Saver implements AA\Later\LaterInterface {
 
             AA::$slice_id = $content4id->getSliceID();   // pass validator the current slice of added item for slice unique
 
-            $item = ($this->compute OR $this->validate) ? new \AA_Item($content4id) : null;
+            $item = ($this->compute || $this->validate) ? new \AA_Item($content4id) : null;
 
-            if ($this->validate AND ($err_arr = $this->test_validate($item))) {
+            if ($this->validate && ($err_arr = $this->test_validate($item))) {
                 $err_count++;
                 $this->message(['err' =>"AA\IO\Saver->run(): validate failed: ". implode("\n", $err_arr)]);
                 continue;
             }
 
-            if (($store_mode === 'overwrite') OR (str_starts_with($store_mode, 'insert'))) {
+            if ($store_mode === 'overwrite' || str_starts_with($store_mode, 'insert')) {
                 if (!$content4id->complete4Insert($this->error_mode)) {
                     $err_count++;
                     $this->message(['err' =>"AA\IO\Saver->run(): complete4Insert failed: " . ItemContent::lastErrMsg()]);
                     continue;
                 }
-            } else { // @todo do validation for updates
-                if (!$content4id->validate4Update()) {
-                    $err_count++;
-                    $this->message(['err' =>"AA\IO\Saver->run(): validate4Update failed: " . ItemContent::lastErrMsg()]);
-                    continue;
-                }
+            } elseif (!$content4id->validate4Update()) {
+                // @todo do validation for updates
+                $err_count++;
+                $this->message(['err' =>"AA\IO\Saver->run(): validate4Update failed: " . ItemContent::lastErrMsg()]);
+                continue;
             }
 
             if ($this->compute) {
@@ -289,7 +288,7 @@ class Saver implements AA\Later\LaterInterface {
                     $ok_count++;
 
                     // Update relation table to show where came from
-                    if ($old_item_id AND ($new_item_id != $old_item_id)) {
+                    if ($old_item_id && $new_item_id != $old_item_id) {
                         AddRelationFeed($new_item_id, $old_item_id, REL_FLAG_SOURCE);
                     }
                 }
@@ -321,7 +320,7 @@ class Saver implements AA\Later\LaterInterface {
             $array        = preg_split("/\R/", $validate_str);
             foreach ($array as $row) {
                 $row = trim($row);
-                if ($row AND ($row[0] !== '1')) {
+                if ($row && $row[0] !== '1') {
                     $err_array[] = $row;
                 }
             }

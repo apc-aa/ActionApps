@@ -29,7 +29,7 @@ class View_Move2slice extends \AA\Manageraction\Item_Move2Slice {
 
         $dest_slice_id = $action_param['dest_slice_id'];
 
-        if (!IfSlPerm(PS_FULLTEXT, $this->slice_id) or !IfSlPerm(PS_FULLTEXT, $dest_slice_id)) {    // permission to delete items and add items in destination slice?
+        if (!IfSlPerm(PS_FULLTEXT, $this->slice_id) || !IfSlPerm(PS_FULLTEXT, $dest_slice_id)) {    // permission to delete items and add items in destination slice?
             return _m("You have not permissions to move views");
         }
 

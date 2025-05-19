@@ -27,7 +27,7 @@ class HitcounterStats implements LaterInterface
      * @return string - message about execution to be logged
      * @see \AA\Later\LaterInterface
      */
-    public function toexecutelater($params = [])
+    public function toexecutelater($params = []): string
     {
         $dbgtime = [microtime(true)];
 
@@ -75,13 +75,13 @@ class HitcounterStats implements LaterInterface
         return DB_AA::select(['id'=>'count'], "SELECT LOWER(HEX(`item`.`id`)) as id, sum(`hits`) as count FROM `hit_archive`, `item`", $where, $order, ['hit_archive.id'], $limit);
     }
 
-    function getDays()
+    function getDays(): int
     {
         return (int)substr($this->field_id, 4);
     }
 
     /** used as identifier for AA_Log when run from toexecute */
-    function getId()
+    function getId(): string
     {
         return $this->slice_id . "/" . $this->field_id;
     }

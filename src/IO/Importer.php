@@ -63,7 +63,7 @@ class Importer implements \AA\Later\LaterInterface {
      *  @return string - message about execution to be logged
      *  @see \AA\Later\LaterInterface
      */
-    public function toexecutelater($params= []) {
+    public function toexecutelater($params= []): string {
         [$ok,$err] = $this->saver->run($this->run);
         $ret = "items OK: $ok";
         if ($err) {

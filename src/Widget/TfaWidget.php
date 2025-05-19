@@ -101,7 +101,7 @@ class TfaWidget extends Widget
     public static function getWidgetValue(array $data4field, ?AA_Value $default): AA_Value
     {
         $data4field = $data4field['tfa'];
-        if (is_array($data4field) AND isset($data4field['usr'])) {
+        if (is_array($data4field) && isset($data4field['usr'])) {
             return new AA_Value(ParamImplode([(($data4field['gen']==1) ? 'AA_2FASECRET' : 'AA_doNotGenerate'), $data4field['usr'], $data4field['pwd'], $data4field['otc']]), FLAG_HTML);
         }
         return new AA_Value('', FLAG_HTML); // ? or something else ?

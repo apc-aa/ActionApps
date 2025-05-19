@@ -117,7 +117,7 @@ class TagWidget extends Widget
 
         $max_values = (int)$this->getProperty('max_values', 0); // Limit the number of values entered. If 0 or empty, the number is unlimitted
 
-        if ($required AND ($max_values === 1)) {
+        if ($required && $max_values === 1) {
             $multiple   = '';
             $max_values = 0;  // if I do not null it, the select2 widget will not allow changing the value
         } else {
@@ -172,7 +172,7 @@ class TagWidget extends Widget
 
         foreach ((array)$data4field as $key => $value) {
             $value = trim($value);
-            if (strlen($value) AND ctype_digit((string)$key)) {
+            if (strlen($value) && ctype_digit((string)$key)) {
                 $fld_value_arr[] = ['value' => (is_long_id($value) ? '':'t') .$value, 'flag' => $flag];
             }
         }
@@ -191,7 +191,7 @@ class TagWidget extends Widget
      * @return AA_Validate|null
      */
     public function getUpgradedValidator(string $validator_string): ?AA_Validate {
-        if ( (str_starts_with($validator_string, 'id')) AND ((int)$this->getProperty('disable_new', 0) != 1)) {
+        if ( str_starts_with($validator_string, 'id') && (int)$this->getProperty('disable_new', 0) != 1) {
             $validator_string = 'text';  // we should allow adding new text here
         }
         return AA_Validate::factoryByString($validator_string);

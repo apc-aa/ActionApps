@@ -150,7 +150,7 @@ foreach ($discussion_fields as $field => $tolerance) {
 // test if the sender IP is not blocked by special slice
 $ip_address         = $_SERVER['REMOTE_ADDR'];
 $ip_banned_slice_id = $slice->getProperty('_ip_banned......');
-$found_evil         = false;
+$found_evil         = null;
 if ($ip_banned_slice_id) {
     $subnet_ip_address = substr($ip_address,0,strrpos($ip_address, '.'));
     $aa_set = new AA_Set($ip_banned_slice_id, new AA_Condition('ip..............', '=', "\"$ip_address\" OR \"$subnet_ip_address\""));
@@ -171,7 +171,7 @@ if ($ip_banned_slice_id) {
             $bad_phrases = array_filter(explode('_AA_DeLiM_', $kw_string));
             foreach ($bad_phrases as $bph) {
                 if (str_contains($teststring, $bph)) {
-                    $found_evil = $kw_id;
+                    $found_evil = new zids($kw_id, 'l');
                     break 2;
                 }
             }

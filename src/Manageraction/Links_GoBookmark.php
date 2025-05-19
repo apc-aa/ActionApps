@@ -9,7 +9,7 @@ use zids;
 class Links_GoBookmark extends AbstractManageraction {
 
     /** @inheritDoc */
-    function perform(Manager $manager, zids $item_zids, $action_param) {
+    function perform(Manager $manager, zids $item_zids, $action_param): bool {
         global $links_info;
 
         $start_id   = $links_info['start_id'];

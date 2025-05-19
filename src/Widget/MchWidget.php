@@ -77,10 +77,10 @@ class MchWidget extends Widget
         $selected = $content->getAaValue($aa_property->getId());
         $options = $this->getOptions($selected, $content, (bool)$this->getProperty('use_name', false));
         $htmlopt = [];
-        for ($i = 0, $ino = count($options); $i < $ino; ++$i) {
+        foreach ($options as $i => $option) {
             $input_name = $base_name_add . "[$i]";
             $input_id = FormArray::formName2Id($input_name);
-            $htmlopt[] = $this->getOneChBoxTag($options[$i], $input_name, $input_id, $widget_add);
+            $htmlopt[] = $this->getOneChBoxTag($option, $input_name, $input_id, $widget_add);
         }
 
         $selection = [];

@@ -65,7 +65,7 @@ class InputVars {
      */
     public static function idGET(string $name, bool $required = false): string {
         $ret = is_long_id((string)$_GET[$name]) ? (string)$_GET[$name] : '';
-        if ($required AND !$ret) {
+        if ($required && !$ret) {
             throw new \Exception('Required, but not filed.');
         }
         return $ret;
@@ -102,7 +102,7 @@ class InputVars {
      */
     public static function idGETPOST(string $name, bool $required = false): string {
         $ret = is_long_id((string)$_GET[$name]) ? (string)$_GET[$name] : (is_long_id((string)$_POST[$name]) ? (string)$_POST[$name] : '');
-        if ($required AND !$ret) {
+        if ($required && !$ret) {
             throw new \Exception('Required, but not filed.');
         }
         return $ret;

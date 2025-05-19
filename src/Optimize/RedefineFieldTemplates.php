@@ -67,7 +67,7 @@ class RedefineFieldTemplates extends \AA\Optimize\AbstractOptimize {
             ['id', 'headline'],
             ['slice_id', 'AA_Core_Fields..'],
         ]);
-        if ($row_count <> 1) {
+        if ($row_count != 1) {
             $this->message(_m('teplate fields are not prenent'));
             $ret = false;
         }

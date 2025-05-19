@@ -144,7 +144,7 @@ class Widget extends AA_Object implements NamedInterface {
     public function getFormattedOptions(string $for_id = '', ?zids $restrict_zids = null, string $searchterm = '', bool $ignore_filters = false, int $limit = 0): array {
 
         $values_array = $this->getProperty('const_arr');  // is associative!
-        if (is_array($values_array) AND count($values_array)) {          // values assigned directly
+        if (is_array($values_array) && count($values_array)) {          // values assigned directly
             return $values_array;               //  = array();
         }
 
@@ -158,9 +158,9 @@ class Widget extends AA_Object implements NamedInterface {
         }
 
         // $restrict_zids could be removed from this check. Honza 2015-06-11
-        $filter_conds = ($ignore_filters and $restrict_zids) ? '' : $this->getProperty('filter_conds');
+        $filter_conds = ($ignore_filters && $restrict_zids) ? '' : $this->getProperty('filter_conds');
         // filter_conds_rw - changeable conditions - could come as paremeter widget_properties
-        $filter_conds_rw = ($ignore_filters and $restrict_zids) ? '' : $this->getProperty('filter_conds_rw');
+        $filter_conds_rw = ($ignore_filters && $restrict_zids) ? '' : $this->getProperty('filter_conds_rw');
         $sort_by = $this->getProperty('sort_by');
         $slice_field = $this->getProperty('slice_field');
 
@@ -171,7 +171,7 @@ class Widget extends AA_Object implements NamedInterface {
 
         // is the conds contain aliases, unalias it - Just for speedup for the cases the unaliasing is not needed
         $check = " $filter_conds $filter_conds_rw $sort_by";
-        if (strpos($check, '{') or strpos($check, '_#')) {
+        if (strpos($check, '{') || strpos($check, '_#')) {
             $item = is_long_id($for_id) ? AA_Items::getItem(new zids($for_id)) : null;
             $filter_conds    = AA::Un($filter_conds,'',$item);
             $filter_conds_rw = AA::Un($filter_conds_rw,'',$item);
@@ -244,7 +244,7 @@ class Widget extends AA_Object implements NamedInterface {
         if (is_object($aa_value)) {
             for ($i = 0, $ino = $aa_value->count(); $i < $ino; ++$i) {
                 $val = $aa_value->getValue($i);
-                if (strlen($val)) {
+                if (strlen($val) !== 0) {
                     $this->_selected[(string)$val] = true;
                 }
             }
@@ -303,7 +303,7 @@ class Widget extends AA_Object implements NamedInterface {
             if ($select_val==='') {
                 $empty_present = true;
             }
-            $ret[] = ['k' => $k, 'v' => $v, 'selected' => ($selected ? true : false), 'mis' => false];
+            $ret[] = ['k' => $k, 'v' => $v, 'selected' => ((bool) $selected), 'mis' => false];
         }
 
         // now add all values, which is not in the array, but field has this value
@@ -311,7 +311,7 @@ class Widget extends AA_Object implements NamedInterface {
         foreach ($this->_selected as $k => $foo) {
             if (!$already_selected[$k]) {
                 $val_txt = $k;
-                if ($this->getProperty('const') and is_long_id($k)) {
+                if ($this->getProperty('const') && is_long_id($k)) {
                     $opt = $this->getFormattedOptions('', new zids($k, 'l'), '', true);
                     if (!strlen($val_txt = $opt[$k])) {
                         $val_txt = $k;
@@ -322,10 +322,10 @@ class Widget extends AA_Object implements NamedInterface {
             }
         }
 
-        if (($add_empty === 1) AND !$empty_present) {
+        if ($add_empty === 1 && !$empty_present) {
             // put empty option to the front
             array_unshift($ret, ['k' => '', 'v' => '', 'selected' => !$selectedused, 'mis' => false]);
-        } elseif (($add_empty === 2) AND !$selectedused AND !$empty_present) {
+        } elseif ($add_empty === 2 && !$selectedused && !$empty_present) {
             array_unshift($ret, ['k' => '', 'v' => '', 'selected' => true, 'mis' => false, 'justdefault' => true]);
         }
         return $ret;
@@ -346,10 +346,10 @@ class Widget extends AA_Object implements NamedInterface {
 
         $ret = '';
         foreach ($options as $option) {
-            if (($restrict === 'selected') and !$option['selected']) {
+            if ($restrict === 'selected' && !$option['selected']) {
                 continue;  // do not print this option
             }
-            if (($restrict === 'unselected') and $option['selected']) {
+            if ($restrict === 'unselected' && $option['selected']) {
                 continue;  // do not print this option
             }
             $selected = $option['selected'] ? $select_string : '';
@@ -484,7 +484,7 @@ class Widget extends AA_Object implements NamedInterface {
         $ret = "<div class=\"$class\"" . ($required ? ' data-aa-required' : '') . " id=\"widget-$base_id\" data-aa-basename=\"$base_name\">\n";
         $ret .= $widget_only ? '' : "  <label for=\"" . FormArray::formName2Id($winfo['last_input_name']) . "\">" . $aa_property->getName() . "</label>\n";
         $ret .= "  <div class=\"aa-input\">\n";
-        $ret .= $winfo['html'] . (($help and !$widget_only) ? "\n    <div class=\"aa-help\"><small>$help</small></div>\n" : '');
+        $ret .= $winfo['html'] . (($help && !$widget_only) ? "\n    <div class=\"aa-help\"><small>$help</small></div>\n" : '');
         $ret .= "  </div>\n";
         $ret .= "</div>\n";
 

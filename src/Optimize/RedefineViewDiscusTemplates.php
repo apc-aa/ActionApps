@@ -40,7 +40,7 @@ class RedefineViewDiscusTemplates extends \AA\Optimize\AbstractOptimize {
             ['slice_id', 'AA_Core_Fields..'],
             ['type', $this->_viewType()],
         ]);
-        if ($row_count <> 1) {
+        if ($row_count != 1) {
             $this->message(_m('"%1" template view is not defined', [$this->_viewType()]));
             $ret = false;
         }

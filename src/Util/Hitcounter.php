@@ -117,7 +117,7 @@ class Hitcounter
      */
     static function hit($zids, bool $cached = false, bool $not_modified = false)
     {
-        if (!is_object($zids) or $zids->isEmpty()) {
+        if (!is_object($zids) || $zids->isEmpty()) {
             return;
         }
 

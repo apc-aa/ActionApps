@@ -45,7 +45,7 @@ class CopyItemsFromBackup extends AbstractOptimize {
     }
 
     protected function copyFomBackup(array $ids, string $item_table_bck, string $content_table_bck, bool $delete=true): bool {
-        if (!$ids OR !DB_AA::exists_table($item_table_bck) OR !DB_AA::exists_table($content_table_bck)) {
+        if (!$ids || !DB_AA::exists_table($item_table_bck) || !DB_AA::exists_table($content_table_bck)) {
             return false;
         }
 

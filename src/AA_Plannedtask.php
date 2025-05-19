@@ -89,7 +89,7 @@ class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedI
     }
 
     /** Manager top HTML  */
-    protected static function getManagerTopHtml($fields)
+    protected static function getManagerTopHtml($fields): string
     {
         return _m('Current time on server') . ' ' . date('Y-m-d H:i') .
             '
@@ -104,7 +104,7 @@ class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedI
     }
 
     /** Manager row HTML  */
-    protected static function getManagerRowHtml($fields, $aliases, $buttons)
+    protected static function getManagerRowHtml($fields, $aliases, $buttons): string
     {
         return '
             <tr>
@@ -197,7 +197,7 @@ class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedI
     }
 
     /** check if the task is scheduled and if not - schedule it for future execution */
-    function schedule($force_time = null) {
+    function schedule($force_time = null): string {
         $time = is_null($force_time) ? $this->nexttime() : $force_time;
         if ($time >= time()) {
             $toexecute = new Toexecute;

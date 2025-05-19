@@ -19,7 +19,7 @@ class Links_Delete extends AbstractManageraction {
     }
 
     /** @inheritDoc */
-    function perform(Manager $manager, zids $item_zids, $action_param) {
+    function perform(Manager $manager, zids $item_zids, $action_param): bool {
         foreach ($item_zids as $lid) {
             Links_DeleteLink($lid);
         }

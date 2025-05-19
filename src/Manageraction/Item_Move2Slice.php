@@ -56,10 +56,10 @@ class Item_Move2Slice extends AbstractManageraction {
         global $g_modules;
 
         $options = [];
-        if (is_array($g_modules) and (count($g_modules) > 1)) {
+        if (is_array($g_modules) && count($g_modules) > 1) {
             foreach ($g_modules as $sid => $v) {
                 //  we can feed just between slices ('S')                                                 // we must have autor or editor perms in destination slices
-                if (($v['type'] === 'S') and ((string)$this->slice_id != (string)$sid) and IfSlPerm(PS_ITEMS2ACT, $sid)) {
+                if ($v['type'] === 'S' && (string)$this->slice_id !== (string)$sid && IfSlPerm(PS_ITEMS2ACT, $sid)) {
                     $options[$sid] = $v['name'];
                 }
             }
@@ -80,7 +80,7 @@ class Item_Move2Slice extends AbstractManageraction {
 
         $dest_slice_id = $action_param['dest_slice_id'];
 
-        if (!IfSlPerm(PS_DELETE_ITEMS, $this->slice_id) or !IfSlPerm(PS_ITEMS2ACT, $dest_slice_id)) {    // permission to delete items and add items in destination slice?
+        if (!IfSlPerm(PS_DELETE_ITEMS, $this->slice_id) || !IfSlPerm(PS_ITEMS2ACT, $dest_slice_id)) {    // permission to delete items and add items in destination slice?
             return _m("You have not permissions to move items");
         }
 

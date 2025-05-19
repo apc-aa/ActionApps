@@ -110,7 +110,7 @@ class TxtWidget extends Widget
                 $base['id']       = FormArray::formName2Id($input_name);
                 $base['langcode'] = Langs::getLangName2Code(Langs::getLangNum2Name($i));
             }
-            $widget .= $this->getOneInput($input_name, $i, $val, $attrs, $required, !$aa_property->getContentTypeSwitches() OR ($type === 'live'), $base);
+            $widget .= $this->getOneInput($input_name, $i, $val, $attrs, $required, !$aa_property->getContentTypeSwitches() || $type === 'live', $base);
             $required = ''; // only one is required
             unset($attrs['autofocus']);
         }
@@ -155,7 +155,7 @@ class TxtWidget extends Widget
         $areaclass = '';
         $htmlareaedit = '';
 
-        if ($showhtmlarea OR $showcodeeditor) {
+        if ($showhtmlarea || $showcodeeditor) {
             // add this textarea to the list for CKEditor creation or CodeMirror
             $this->ids_4_editor[] = '#'.$input_id;
             // $attrs['class'] = 'ckeditor';
@@ -186,7 +186,7 @@ class TxtWidget extends Widget
             if ($langcode != $base['langcode']) {
                 if ($showhtmlarea) {
                     $translate =  "<span class=\"btn aa-langtrans-tbtn\" onclick=\"AA_Translate(CKEDITOR.instances['".$base['id']."'].getData(), '" . $base['langcode'] . "', '$langcode').then(txt => CKEDITOR.instances['$input_id'].setData(txt));\">" . _m("translate from") . ' ' . Langs::getLangCode2Name($base['langcode']) . "</span>";
-                } else if ($showcodeeditor) {
+                } elseif ($showcodeeditor) {
                     $translate = "<span class=\"btn aa-langtrans-tbtn\" onclick=\"AA_Translate(document.getElementById('".$base['id']."').value, '".$base['langcode']."', '$langcode').then(txt => document.getElementById('$input_id').nextSibling.CodeMirror.setValue(txt));\">" ._m("translate from").' '.Langs::getLangCode2Name($base['langcode'])."</span>";
                 } else {
                     $translate = "<span class=\"btn aa-langtrans-tbtn\" onclick=\"AA_Translate(document.getElementById('".$base['id']."').value, '".$base['langcode']."', '$langcode').then(txt => document.getElementById('$input_id').value = txt);\">" ._m("translate from").' '.Langs::getLangCode2Name($base['langcode'])."</span>";

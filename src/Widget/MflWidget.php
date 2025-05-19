@@ -127,7 +127,7 @@ class MflWidget extends Widget
             $input_id = FormArray::formName2Id($input_name);
             $input_value = safe($value->getValue($i));
             $rows = (($my_rows = substr_count($input_value, "\n")) > $def_rows) ? min($my_rows + 2, 30) : $def_rows;
-            $required = ($aa_property->isRequired() AND ($i == 0)) ? 'required' : '';
+            $required = ($aa_property->isRequired() && $i == 0) ? 'required' : '';
 
             if ($inputtype === 'textarea') {
                 if ($i > 0) {
@@ -177,7 +177,7 @@ class MflWidget extends Widget
         $fld_value_arr = [];
 
         foreach ((array)$data4field as $key => $value) {
-            if (ctype_digit((string)$key) AND strlen($value)) {
+            if (ctype_digit((string)$key) && strlen($value)) {
                 $fld_value_arr[$key] = ['value' => $value, 'flag' => $flag];
             }
         }

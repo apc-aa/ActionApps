@@ -133,7 +133,7 @@ class FilesFTP extends AbstractGrabber
             // Check for directory change indication
             // Split the raw list line to extract file attributes
             $file_details = preg_split("/\s+/", $file_info, 9);
-            if ((count($file_details) === 1) AND ($file_details[0][0] === '/')) {
+            if (count($file_details) === 1 && $file_details[0][0] === '/') {
                 $current_path = rtrim($file_details[0], ':/');
                 continue;
             }
@@ -141,20 +141,20 @@ class FilesFTP extends AbstractGrabber
             $file_name = $file_details[8];
 
             // Determine the full path
-            if (($file_details[0][0] !== 'd') AND strlen($file_name) AND ($file_name !== '.')  AND ($file_name !== '..')) {  // exclude directory entries
+            if ($file_details[0][0] !== 'd' && strlen($file_name) && $file_name !== '.' && $file_name !== '..') {  // exclude directory entries
                 $full_name = $current_path . '/' . $file_name;
                 // if include is set, check if the file matches any of the regexp in the list
-                if (count($this->include) AND !count(array_filter($this->include, fn($regex) => preg_match($regex, $full_name)))) {
+                if (count($this->include) && !array_filter($this->include, fn($regex) => preg_match($regex, $full_name))) {
                     continue;
                 }
                 // if exclude is set, check if the file matches any of the regexp in the list
-                if (count($this->exclude) AND count(array_filter($this->exclude, fn($regex) => preg_match($regex, $full_name)))) {
+                if (count($this->exclude) && count(array_filter($this->exclude, fn($regex) => preg_match($regex, $full_name)))) {
                     continue;
                 }
                 $this->filepaths[] = $full_name;
             }
 
-            if ($this->max_files AND count($this->filepaths) >= $this->max_files) {
+            if ($this->max_files && count($this->filepaths) >= $this->max_files) {
                 break;
             }
         }
@@ -172,12 +172,24 @@ class FilesFTP extends AbstractGrabber
             $info = ['name','dir','path','size','mtime'];
         }
         // parse the file name
-        in_array('name',$info)    AND $item->setValue('name', basename($file));
-        in_array('dir',$info)     AND $item->setValue('dir',  dirname($file));
-        in_array('path',$info)    AND $item->setValue('path', $file);
-        in_array('size',$info)    AND $item->setValue('size',  ftp_size($this->connection, $file));
-        in_array('mtime',$info)   AND $item->setValue('mtime', ftp_mdtm($this->connection, $file));
-        in_array('content',$info) AND $item->setValue('content', $this->getFtpFileContent($file));
+        if (in_array('name',$info)) {
+            $item->setValue('name', basename($file));
+        }
+        if (in_array('dir',$info)) {
+            $item->setValue('dir',  dirname($file));
+        }
+        if (in_array('path',$info)) {
+            $item->setValue('path', $file);
+        }
+        if (in_array('size',$info)) {
+            $item->setValue('size',  ftp_size($this->connection, $file));
+        }
+        if (in_array('mtime',$info)) {
+            $item->setValue('mtime', ftp_mdtm($this->connection, $file));
+        }
+        if (in_array('content',$info)) {
+            $item->setValue('content', $this->getFtpFileContent($file));
+        }
         //               'content' => get_file_content($conn_id, $full_path)
         // $item->setValue('content', ftp_get($this->connection, $file, 'php://output', FTP_BINARY));
         next($this->filepaths);

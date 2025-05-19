@@ -44,10 +44,7 @@ class FixContentColumn extends AbstractOptimize {
             $statistic[$row['name'] . ' ' . $row['field_id']]++;
 
             if ($index < 240) {
-                $this->message(_m('slice %1: field_id: %2 item_id: %3', [
-                    unpack_id($row['name'], $row['item_id']),
-                    $row['field_id'],
-                ]));
+                $this->message(_m('slice %1: field_id: %2 item_id: %3', [$row['name'], unpack_id($row['item_id']), $row['field_id']]));
             }
             if ($index == 240) {
                 $this->message(_m('and more...'));

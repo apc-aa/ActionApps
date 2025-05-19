@@ -86,7 +86,7 @@ class FormArray
     }
 
     /** aa-ud359b5b4e82a6cd9e40750ca6771b077-relation_______4 -> aa[ud359b5b4e82a6cd9e40750ca6771b077][relation_______4]" */
-    public static function formId2Name(string $id) {
+    public static function formId2Name(string $id): string {
         return str_replace(['aa-', '-'], ['aa[', ']['], $id).']';
     }
 
@@ -102,7 +102,7 @@ class FormArray
 
     public static function getCharset($aa)
     {
-        return !($module_id = self::getOwner($aa)) ? '' : AA_Slice::getModule($module_id)?->getCharset();
+        return ($module_id = self::getOwner($aa)) ? AA_Slice::getModule($module_id)?->getCharset() : '';
     }
 
     public static function getOwner($aa)
@@ -110,13 +110,13 @@ class FormArray
         if (!is_array($aa)) {
             return false;
         }
-        foreach ($aa as $key => $foo) {
+        foreach (array_keys($aa) as $key) {
             if ($key[0] === 'n') return substr($key, strpos($key, '_') + 1);
         }
 
         $item_id = false;
-        foreach ($aa as $key => $foo) {
-            if (($key[0] === 'u') OR ($key[0] === 'i')) {
+        foreach (array_keys($aa) as $key) {
+            if ($key[0] === 'u' || $key[0] === 'i') {
                 $item_id = substr($key, 1);
                 break;
             }

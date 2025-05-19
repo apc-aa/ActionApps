@@ -54,7 +54,7 @@ class DbBinaryTrailingZeros extends AbstractOptimize {
 //                        echo "<br> &nbsp; $tablename . $colname ";
                     $this->_fixCol($tablename,$colname);
                 }
-                if (($coldef->getFieldType() === 'text') and !$coldef->isBinary()) {
+                if ($coldef->getFieldType() === 'text' && !$coldef->isBinary()) {
                    // echo "<br> &nbsp; $colname ". (AA_Metabase::isPacked($tablename, $colname) ? 'P' : '.'). ($coldef->isBinary() ? 'B' : '.'). ($coldef->isKey() ? 'K' : '.');
                 }
             }

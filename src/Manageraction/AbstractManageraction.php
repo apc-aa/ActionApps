@@ -77,7 +77,7 @@ abstract class AbstractManageraction extends AA_Storable {
     public function getButton(string $manager_url, string $id_alias, string $module_alias): array {
         $ret = [];
         $b = $this->getButtonDef();
-        if ($b  AND !$b['attr']['class']) {
+        if ($b && !$b['attr']['class']) {
             $b['attr']['class'] = 'aa-button';
         }
         if ($b) {

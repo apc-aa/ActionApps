@@ -100,7 +100,8 @@ class Linkcheck {
      * @param $url
      * @return array
      */
-    function check_url($url) {
+    function check_url($url): array
+    {
         $return = [];
         $time   = time();
         $url_part = aa_strtolower(substr($url, strrpos($url, 10)));
@@ -109,11 +110,7 @@ class Linkcheck {
                 $url = trim(preg_replace("/^mailto:(.+)/i", "\\1", $url));
                 [$brugernavn, $host] = explode("@", $url);
                 $dnsCheck = checkdnsrr($host, "MX");
-                if ($dnsCheck) {
-                    $return["code"] = "OK";
-                } else {
-                    $return["code"] = "ERROR";
-                }
+                $return["code"] = $dnsCheck ? "OK" : "ERROR";
             } else {
                 $return["code"] = "N/A";
             }
@@ -136,7 +133,7 @@ class Linkcheck {
                 fwrite($sock, $dump);
                 while (($str = fgets($sock, 1024)) && (($return["code"] == "") || ($return["contentType"] == ""))) {
                     $match = [];
-                    if (preg_match("~^http/[0-9]+.[0-9]+ ([0-9]{3})~i", $str, $match)) {
+                    if (preg_match("~^http/\\d+.\\d+ (\\d{3})~i", $str, $match)) {
                         $return["code"] = $match[1];
                     }
                     if (preg_match("~^Content-Type: (.*)~", $str, $match)) {
@@ -220,11 +217,12 @@ class Linkcheck {
      * @param $valid_codes
      * @return float
      */
-    function count_weight($valid_codes) {
+    function count_weight($valid_codes): float {
         $dummy = explode(":", $valid_codes);
         rsort($dummy); // sort descend (newest is first)
-        for ($i = 0, $ino = count($dummy); $i < $ino; ++$i) {
-            [$arr[$i]["time"], $arr[$i]["code"]] = explode(",", $dummy[$i]); // split to array
+        foreach ($dummy as $i => $singleDummy) {
+            [$arr[$i]["time"], $arr[$i]["code"]] = explode(",", $singleDummy);
+            // split to array
             /*
             if ($i == 0) { // latest timestamp
                 $latest = $arr[$i]["time"];

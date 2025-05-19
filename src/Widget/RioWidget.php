@@ -105,7 +105,7 @@ class RioWidget extends Widget
                 break;
             }
 
-            $htmlopt[] = $this->getRadioButtonTag($options[$i], $input_name, $input_id.$i, "$widget_add $required", ($other and $i == $ino - 1));
+            $htmlopt[] = $this->getRadioButtonTag($options[$i], $input_name, $input_id.$i, "$widget_add $required", ($other && $i === $ino - 1));
             // $required     = ''; // for radio it could be in all options
         }
 

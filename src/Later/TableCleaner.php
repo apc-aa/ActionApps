@@ -46,7 +46,7 @@ class TableCleaner
     public function clean(): string
     {
         $ret = 'Err - wrong params';
-        if ($this->table and $this->where) {
+        if ($this->table && $this->where) {
             if ( ($rows = DB_AA::delete($this->table, $this->where)) === false) {
                 $ret = 'Err - SQL delete';
             } else {

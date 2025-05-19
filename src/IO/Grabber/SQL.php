@@ -54,7 +54,7 @@ class SQL extends AbstractGrabber
         if ( ctype_alnum($dbname) ) {
             $arr[] = 'dbname=' . $dbname;
         }
-        if ( filter_var($host, FILTER_VALIDATE_IP) or ctype_alnum($host) ) {
+        if ( filter_var($host, FILTER_VALIDATE_IP) || ctype_alnum($host) ) {
             $arr[] = 'host=' . $host;
         }
         if ( ctype_digit((string)$port) ) {
@@ -117,7 +117,7 @@ class SQL extends AbstractGrabber
         try {
             $this->db       = new PDO($this->dsn, $this->username, $this->password);
         } catch (\PDOException $e) {
-            throw new \Exception('not possible to connect to DB');
+            throw new \Exception('not possible to connect to DB', $e->getCode(), $e);
 	    }
         $this->message('connected');
 	    $this->dbresult = $this->db->query($this->sql);
@@ -126,7 +126,7 @@ class SQL extends AbstractGrabber
 
     /** Method called by the AA\IO\Saver to get next item from the data input */
     function getItem() {
-        if (!$this->dbresult or (false === ($data = $this->dbresult->fetch(PDO::FETCH_ASSOC)))) {
+        if (!$this->dbresult || false === ($data = $this->dbresult->fetch(PDO::FETCH_ASSOC))) {
             return false;
         }
         $item = new \ItemContent();

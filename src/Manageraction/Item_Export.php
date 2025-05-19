@@ -19,7 +19,7 @@ class Item_Export extends AbstractManageraction {
     }
 
     /** @inheritDoc */
-    function perform(Manager $manager, zids $item_zids, $action_param) {
+    function perform(Manager $manager, zids $item_zids, $action_param): bool {
 
         if ($item_zids->count() > 0) {
             $exportset = AA_Object::factory('AA_Exportsetings', [

@@ -45,7 +45,7 @@ class OnPageChanger  {
         if (IsAjaxCall()) {
             header("Content-type: application/json");
             if (!$additional_validity_check) {
-                if (is_object($auth) AND $auth->is_user()) {
+                if (is_object($auth) && $auth->is_user()) {
                     echo json_encode(['message'=>_m('No permission for current user.')]);
                 } else {
                     // @todo - show login
@@ -54,7 +54,7 @@ class OnPageChanger  {
                 exit;
             }
 
-            if (is_array($_POST['aa']) OR is_array($_FILES['aa'])) {
+            if (is_array($_POST['aa']) || is_array($_FILES['aa'])) {
                 $grabber = new AA\IO\Grabber\Form();
                 $saver   = new AA\IO\Saver($grabber, null, null, 'by_grabber');
                 // $saver - > check Perms @todo

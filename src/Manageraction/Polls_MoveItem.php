@@ -31,7 +31,7 @@ class Polls_MoveItem extends AbstractManageraction {
     }
 
     /** @inheritDoc */
-    function perform(Manager $manager, zids $item_zids, $action_param) {
+    function perform(Manager $manager, zids $item_zids, $action_param): bool {
         $SQL = "UPDATE polls SET status_code = '" . $this->to_bin . "' WHERE " . $item_zids->sqlin('id', true);
         DB_AA::sql($SQL);
         return false;                                     // OK - no error
@@ -46,15 +46,13 @@ class Polls_MoveItem extends AbstractManageraction {
 
         switch ($this->to_bin) {
             case 1:
-                return IfSlPerm(PS_ITEMS2ACT) and   ($current_bin !== 'app') and
-                                                    ($current_bin !== 'appb') and
-                                                    ($current_bin !== 'appc');
+                return IfSlPerm(PS_ITEMS2ACT) && $current_bin !== 'app' && $current_bin !== 'appb' && $current_bin !== 'appc';
 
             case 2:   // Folder2 is Holding bin - prepared for more than three bins
-                return IfSlPerm(PS_ITEMS2HOLD) and  ($current_bin !== 'folder2');
+                return IfSlPerm(PS_ITEMS2HOLD) && $current_bin !== 'folder2';
 
             case 3:   // Folder3 is Trash
-                return IfSlPerm(PS_ITEMS2TRASH) and ($current_bin !== 'folder3');
+                return IfSlPerm(PS_ITEMS2TRASH) && $current_bin !== 'folder3';
         }
         // should not be reached
         return false;

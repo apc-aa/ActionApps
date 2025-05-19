@@ -82,7 +82,7 @@ abstract class AbstractGrabber implements \AA\Util\NamedInterface {
      * @return false|string data
      */
     protected function loadUrl(string $url, ?string $post_body = ''): string {
-        $context = !($post_body) ? null : stream_context_create(['http' => ['method'  => 'POST', 'header'  => 'Content-Type: text/xml', 'content' => $post_body ]]);
+        $context = $post_body ? stream_context_create(['http' => ['method'  => 'POST', 'header'  => 'Content-Type: text/xml', 'content' => $post_body ]]) : null;
         return file_get_contents($url, false, $context);
     }
 
@@ -114,7 +114,7 @@ abstract class AbstractGrabber implements \AA\Util\NamedInterface {
         $this->message(__CLASS__.' -> '. __FUNCTION__);
         $this->message("read ". strlen($data). " Bytes of data <br><pre>".safe(substr($data,0,1000))."...</pre>");
 
-        if ($source_encoding AND ($source_encoding!=='utf-8')) {
+        if ($source_encoding && $source_encoding!=='utf-8') {
             $data = \ConvertCharset::singleton()->Convert($data, $source_encoding, 'utf-8');
             $this->message("Data converted from $source_encoding to utf-8");
         }

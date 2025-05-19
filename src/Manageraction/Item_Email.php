@@ -18,7 +18,7 @@ class Item_Email extends AbstractManageraction {
      * @param \AA\Manager $manager
      * @return bool
      */
-    function isPerm4Action($manager) {
+    function isPerm4Action($manager): bool {
         // $slice = AA_Slice::getModule($manager->getModuleId());
         // return ($slice->type() === 'ReaderManagement');
         return true; // allow in all slices

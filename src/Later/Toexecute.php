@@ -226,7 +226,7 @@ class Toexecute {
         AA_Log::write('TOEXECUTE', 'AA\Later\Toexecute', "finished $count/$started in " . sprintf('%.3g',microtime(true) - $execute_start) . "/$allowed_time");
     }
 
-    function _exeOne($task, &$execute_times, $execute_start, $allowed_time) {
+    function _exeOne($task, &$execute_times, $execute_start, $allowed_time): int {
         $task_type = get_if($task['selector'], 'aa_unspecified');
         $expected_time = (float)get_if($execute_times[$task_type], 1.0);  // default time expected for one task is 1 second
         $task_start = microtime(true);
@@ -243,7 +243,7 @@ class Toexecute {
         $varset->doUpdate('toexecute');
 
         $object = unserialize($task['object']);
-        if (is_object($object) and !is_a($object, '__PHP_Incomplete_Class', false)) {
+        if (is_object($object) && !is_a($object, '__PHP_Incomplete_Class', false)) {
             $retcode = $this->execute_one($object, unserialize($task['params']));
             $this->message($retcode);
             $selector = get_class_name($object, true);
@@ -271,7 +271,7 @@ class Toexecute {
      */
     function execute_one($object, $params)
     {
-        if (!is_object($object) or is_a($object, '__PHP_Incomplete_Class', false)) {
+        if (!is_object($object) || is_a($object, '__PHP_Incomplete_Class', false)) {
             return 'Toexecute:execute_one: No object: ' . serialize($object); // Error
         }
         set_time_limit(max(30, ini_get('max_execution_time')));   // 30 seconds (at least) for each task

@@ -95,7 +95,7 @@ class PohodaStocks extends AbstractGrabber
 
         $dan = $VAT_RATES[(string)$polozka->stk_sellingRateVAT];
         $cena = round((string)$polozka->stk_sellingPrice * (($dan + 100.0) / 100.0), 1);
-        $cena = ((float)round($cena) == (float)$cena) ? round($cena) : $cena;
+        $cena = ((float)round($cena) === (float)$cena) ? round($cena) : $cena;
         $jedn = (string)$polozka->stk_unit;
 
         $item->setValue('number..........', $dan);         // DPH

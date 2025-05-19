@@ -16,7 +16,7 @@ class Central_Linkcheck extends AbstractManageraction {
     }
 
     /** @inheritDoc */
-    function perform(Manager $manager, zids $item_zids, $action_param) {
+    function perform(Manager $manager, zids $item_zids, $action_param): false|string {
         if (count($item_zids) < 1) {
             return false;                                     // OK - no error
         }

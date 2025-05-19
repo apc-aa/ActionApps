@@ -9,7 +9,7 @@ use zids;
 class Links_Tab extends AbstractManageraction {
 
     /** @inheritDoc */
-    function perform(Manager $manager, zids $item_zids, $action_param) {
+    function perform(Manager $manager, zids $item_zids, $action_param): bool {
         $GLOBALS['r_state']['bin'] = $action_param;
         $manager->go2page(1);
         return false;     // OK - no errors

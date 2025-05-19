@@ -72,7 +72,7 @@ class Central_Optimize extends AbstractManageraction {
     }
 
     /** @inheritDoc */
-    function perform(Manager $manager, zids $item_zids, $action_param) {
+    function perform(Manager $manager, zids $item_zids, $action_param): string {
         $ret = [];
 
         foreach ($item_zids as $aa_id) {

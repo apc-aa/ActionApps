@@ -195,7 +195,7 @@ class Form extends AbstractGrabber {
         // just prepare ids, in order we can expand
         // You can use _#n1_623553373823736362372726 (not _#N1_ID___ here!) as value, which stands for
         // item id of the item
-        foreach ($aa as $dirty_item_id => $item_fields) {
+        foreach (array_keys($aa) as $dirty_item_id) {
             if ($dirty_item_id[0] === 'n') {
                 $id_trans_table['_#' . $dirty_item_id] = new_id();
             }
@@ -224,7 +224,7 @@ class Form extends AbstractGrabber {
                 $oldcontent4id = new ItemContent();
                 $oldcontent4id->setByItemID(new zids($item_id), true);     // ignore password
                 // if ($dirty_item_id[0] === 'r') {
-                if (!$oldcontent4id->getSliceID() or !$oldcontent4id->getItemID()) {
+                if (!$oldcontent4id->getSliceID() || !$oldcontent4id->getItemID()) {
                     continue;
                 }
 
@@ -247,7 +247,7 @@ class Form extends AbstractGrabber {
             $item->setItemID($item_id);
 
             // join common fields (the specific fields win in the battle of common and specific content)
-            if (isset($aa['all']) and is_array($aa['all'])) {
+            if (isset($aa['all']) && is_array($aa['all'])) {
                 $item_fields = array_merge($aa['all'], $item_fields);
             }
 
@@ -277,7 +277,7 @@ class Form extends AbstractGrabber {
                 $aa_value = Widget::getValue((array)$val_array, $default_val);
                 $aa_value->replaceInValues($trans_item_alias, $trans_item_ids);
 
-                if (($dirty_item_id[0] === 'r') and ($field_id !== 'slice_id........')) {
+                if ($dirty_item_id[0] === 'r' && $field_id !== 'slice_id........') {
                     $aa_value = $oldcontent4id->getAaValue($field_id)->removeValues($aa_value->getValues());
                 }
                 $item->setAaValue($field_id, $aa_value);

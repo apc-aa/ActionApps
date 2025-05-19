@@ -20,7 +20,7 @@ class Links_Move2Cat extends AbstractManageraction {
     }
 
     /** @inheritDoc */
-    function perform(Manager $manager, zids $item_zids, $action_param) {
+    function perform(Manager $manager, zids $item_zids, $action_param): bool {
         if (ctype_digit((string)$action_param)) {
             foreach ($item_zids as $lid) {
                 Links_DeleteLink($lid);

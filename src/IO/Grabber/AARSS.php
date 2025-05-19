@@ -133,7 +133,7 @@ class AARSS extends AbstractGrabber
     /** _getRssData function
      *
      */
-    function _getRssData() {
+    function _getRssData(): string {
         return trim(FeedUtil::http_fetch($this->feed['server_url']), "\xef\xbb\xbf \t\n\r\0\x0B"); // remove also BOM (the first three characters)
     }
 
@@ -147,7 +147,7 @@ class AARSS extends AbstractGrabber
         // select external categories in format
         // array('unpacked_cat_id'=> array( 'value'=>, 'name'=>, 'approved'=>, 'target_category_id'=>))
         $cat_ids = [];
-        if ($this->ext_categs AND is_array($this->ext_categs)) {
+        if ($this->ext_categs && is_array($this->ext_categs)) {
             foreach ($this->ext_categs as $ext_cat_id => $ext_cat) {
                 if ($ext_cat['target_category_id']) {  // the feeding is set for this categor
                     $cat_ids[] = $ext_cat_id;
@@ -211,7 +211,7 @@ class AARSS extends AbstractGrabber
         // Get all ids, which was updated later than items in local slice
         $ids = [];   // initialize
         foreach ($remote_pairs as $id => $time) {
-            if (!isset($local_pairs[$id]) OR ($local_pairs[$id] < $time)) {
+            if (!isset($local_pairs[$id]) || $local_pairs[$id] < $time) {
                 $ids[] = $id;  // array of ids to ask for
             }
         }
@@ -350,7 +350,7 @@ class AARSS extends AbstractGrabber
             FeedUtil::updateCategories($this->feed_id, $this->l_categs, $this->ext_categs, $this->aa_rss['channels'][$this->r_slice_id]['categories'], $this->aa_rss['categories']);
         }
 
-        if (($feed_type == Feed::FEEDTYPE_APC) OR ($feed_type == Feed::FEEDTYPE_EXACT)) {
+        if ($feed_type == Feed::FEEDTYPE_APC || $feed_type == Feed::FEEDTYPE_EXACT) {
             //Update the field names and add new fields to feedmap table
             FeedUtil::updateFieldsMapping($this->slice_id, $this->r_slice_id, $this->aa_rss['channels'][$this->r_slice_id]['fields'], $this->aa_rss['fields']);
         }

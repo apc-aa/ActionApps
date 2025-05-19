@@ -29,7 +29,7 @@ class Links_Move extends \AA\Manageraction\Links_Check {
     }
 
     /** @inheritDoc */
-    function perform(Manager $manager, zids $item_zids, $action_param) {
+    function perform(Manager $manager, zids $item_zids, $action_param): bool {
         $SQL = "UPDATE links_links SET folder = '" . $this->to_bin . "' WHERE " . $item_zids->sqlin('id', true);
         DB_AA::sql($SQL);
         return false;                                     // OK - no error
@@ -60,6 +60,6 @@ class Links_Move extends \AA\Manageraction\Links_Check {
      */
     function isPerm4Perform($manager, $item_zids, $action_param) {
         $perm_needed = ($manager->getBin() == 1 ? PS_LINKS_LINK2ACT : PS_LINKS_LINK2FOLDER);
-        return $this->isPerm4Action($manager) and \AA\Manageraction\Links_Check::permCheck($item_zids, $perm_needed, true);
+        return $this->isPerm4Action($manager) && \AA\Manageraction\Links_Check::permCheck($item_zids, $perm_needed, true);
     }
 }

@@ -30,9 +30,9 @@ class ChangeF_t2F__ extends ChangeF_h2F_1 {
         ['fnc'=>$fnc, 'param'=>$param ] = ParseFnc($fld[$aliasfld.'_func']);
 
         // conditions taken from f_t
-        if ($fnc === 'f_t' and strlen($param)) {
+        if ($fnc === 'f_t' && strlen($param)) {
             $p = ParamExplode($param);
-            if ( !isset($p[1]) or !in_array($p[1], ['csv', 'safe', 'javascript', 'urlencode', 'striptags', 'rss', 'conds', 'asis', 'substitute', 'debug', ''])) { // added '' since in f_t it takes different formula
+            if ( !isset($p[1]) || !in_array($p[1], ['csv', 'safe', 'javascript', 'urlencode', 'striptags', 'rss', 'conds', 'asis', 'substitute', 'debug', ''])) { // added '' since in f_t it takes different formula
                 return self::alias_code($fld, $aliasfld, "f_t: used for code - consider using quicker f__ function");
             }
         }

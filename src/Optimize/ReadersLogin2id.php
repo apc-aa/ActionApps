@@ -60,7 +60,7 @@ class ReadersLogin2id extends AbstractOptimize {
         $editors = GetTable2Array($SQL, $item_field, 'aa_mark');
         $ret = [];
         foreach ($readers as $r_id => $reader) {
-            if ($reader['name'] and isset($editors[$reader['name']])) {
+            if ($reader['name'] && isset($editors[$reader['name']])) {
                 $ret[$r_id] = $reader['name'];
             }
         }

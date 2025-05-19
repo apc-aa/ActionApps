@@ -119,7 +119,7 @@ class ObjectForm extends AbstractGrabber
         // just prepare ids, in order we can expand
         // You can use _#n1_623553373823736362372726 as value, which stands for
         // object id of the object
-        foreach ($aa as $dirty_obj_id => $obj_fields) {
+        foreach (array_keys($aa) as $dirty_obj_id) {
             if ($dirty_obj_id[0] === 'n') {
                 $id_trans_table['_#' . $dirty_obj_id] = new_id();
             }

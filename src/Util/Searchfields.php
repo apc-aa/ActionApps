@@ -127,7 +127,7 @@ class Searchfields implements \Iterator, \ArrayAccess, \Countable {
             if ($v['order_pri'] > 0 ) {
                 // orderfields could be splited into groups
                 // one group is always with order_pri 0-999, 1000-1999, ...
-                if ( $last_pri AND (floor($last_pri/1000) != floor($v['order_pri']/1000)) ) {
+                if ( $last_pri && floor($last_pri/1000) !== floor($v['order_pri']/1000) ) {
                     $order_fields['AA_OPTGROUP '.$last_pri] = ($v['opt_group'] ?: '---------------');
                 }
                 $last_pri = $v['order_pri'];
@@ -178,7 +178,7 @@ class Searchfields implements \Iterator, \ArrayAccess, \Countable {
             if ($v['search_pri'] > 0 ) {           // not searchable fields
                 // searchfields could be splited into groups
                 // one group is always with search_pri 0-999, 1000-1999, ...
-                if ( $last_pri AND (floor($last_pri/1000) != floor($v['search_pri']/1000)) ) {
+                if ( $last_pri && floor($last_pri/1000) !== floor($v['search_pri']/1000) ) {
                     $search_fields['AA_OPTGROUP '.$last_pri] = ($v['opt_group'] ?: '---------------');
                     $search_operators[$fid] = 'text';
                 }
@@ -191,7 +191,7 @@ class Searchfields implements \Iterator, \ArrayAccess, \Countable {
         return ($type === 'search') ? $search_fields : $search_operators;
     }
 
-    public function containNumeric() {
+    public function containNumeric(): bool {
         return in_array('numeric', array_column($this->arr,'operators'));
     }
 
