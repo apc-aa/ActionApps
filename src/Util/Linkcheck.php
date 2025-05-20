@@ -49,106 +49,202 @@ class Linkcheck {
     // http codes, error names and their weight
     private const HTTP_ERROR_CODES = [
         // first 3 are for checking domain from email
-        'N/A'   => ["comment" => "Non HTTP", "weight" => "5"],
-        'OK'    => ["comment" => "Valid hostname", "weight" => "0"],
-        'ERROR' => ["comment" => "Invalid hostname", "weight" => "5"],
+        'N/A'   => [ "comment" => "Non HTTP",                         "weight" => 5 ],
+        'OK'    => [ "comment" => "Valid hostname",                   "weight" => 0 ],
+        'ERROR' => [ "comment" => "Invalid hostname",                 "weight" => 5 ],
         // http error codes
-        '999'   => ["comment" => "No response", "weight" => "5"],
-        '100'   => ["comment" => "Continue", "weight" => "0"],
-        '101'   => ["comment" => "Switching Protocols", "weight" => "0"],
-        '200'   => ["comment" => "OK", "weight" => "0"],
-        '201'   => ["comment" => "Created", "weight" => "0"],
-        '202'   => ["comment" => "Accepted", "weight" => "0"],
-        '203'   => ["comment" => "Non-Authoritative Information", "weight" => "0"],
-        '204'   => ["comment" => "No Content", "weight" => "1"],
-        '205'   => ["comment" => "Reset Content", "weight" => "0"],
-        '206'   => ["comment" => "Partial Content", "weight" => "0"],
-        '300'   => ["comment" => "Multiple Choices", "weight" => "2"],
-        '301'   => ["comment" => "Moved Permanently", "weight" => "1"],
-        '302'   => ["comment" => "Found", "weight" => "1"],
-        '303'   => ["comment" => "See Other", "weight" => "2"],
-        '304'   => ["comment" => "Not Modified", "weight" => "2"],
-        '305'   => ["comment" => "Use Proxy", "weight" => "3"],
-        '307'   => ["comment" => "Temporary Redirect", "weight" => "1"],
-        '400'   => ["comment" => "Bad Request", "weight" => "5"],
-        '401'   => ["comment" => "Unauthorized", "weight" => "4"],
-        '402'   => ["comment" => "Payment Required", "weight" => "3"],
-        '403'   => ["comment" => "Forbidden", "weight" => "5"],
-        '404'   => ["comment" => "Not Found", "weight" => "5"],
-        '405'   => ["comment" => "Method Not Allowed", "weight" => "5"],
-        '406'   => ["comment" => "Not Acceptable", "weight" => "5"],
-        '407'   => ["comment" => "Proxy Authentication Required", "weight" => "5"],
-        '408'   => ["comment" => "Request Timeout", "weight" => "5"],
-        '409'   => ["comment" => "Conflict", "weight" => "5"],
-        '410'   => ["comment" => "Gone", "weight" => "5"],
-        '411'   => ["comment" => "Length Required", "weight" => "5"],
-        '412'   => ["comment" => "Precondition Failed", "weight" => "5"],
-        '413'   => ["comment" => "Request Entity Too Large", "weight" => "5"],
-        '414'   => ["comment" => "Request-URI Too Long", "weight" => "5"],
-        '415'   => ["comment" => "Unsupported Media Type", "weight" => "5"],
-        '416'   => ["comment" => "Requested Range Not Satisfiable", "weight" => "5"],
-        '417'   => ["comment" => "Expectation Failed", "weight" => "5"],
-        '500'   => ["comment" => "Internal Server Error", "weight" => "5"],
-        '501'   => ["comment" => "Not Implemented", "weight" => "5"],
-        '502'   => ["comment" => "Bad Gateway", "weight" => "5"],
-        '503'   => ["comment" => "Service Unavailable", "weight" => "5"],
-        '504'   => ["comment" => "Gateway Timeout", "weight" => "5"],
-        '505'   => ["comment" => "HTTP Version Not Supported", "weight" => "5"],
+        '999'   => [ "comment" => "No response",                      "weight" => 5 ],
+        '100'   => [ "comment" => "Continue",                         "weight" => 0 ],
+        '101'   => [ "comment" => "Switching Protocols",              "weight" => 0 ],
+        '102'   => [ "comment" => "Processing",                       "weight" => 0 ], // WebDAV RFC2518
+        '103'   => [ "comment" => "Early Hints",                      "weight" => 0 ], // RFC8297
+        // Successful 2xx
+        '200'   => [ "comment" => "OK",                               "weight" => 0 ],
+        '201'   => [ "comment" => "Created",                          "weight" => 0 ],
+        '202'   => [ "comment" => "Accepted",                         "weight" => 0 ],
+        '203'   => [ "comment" => "Non-Authoritative Information",    "weight" => 0 ],
+        '204'   => [ "comment" => "No Content",                       "weight" => 1 ],
+        '205'   => [ "comment" => "Reset Content",                    "weight" => 0 ],
+        '206'   => [ "comment" => "Partial Content",                  "weight" => 0 ],
+        '207'   => [ "comment" => "Multi-Status",                     "weight" => 2 ], // WebDAV RFC4918
+        '208'   => [ "comment" => "Already Reported",                 "weight" => 2 ], // WebDAV RFC5842
+        '226'   => [ "comment" => "IM Used",                          "weight" => 1 ], // RFC3229
+        // Redirection 3xx
+        '300'   => [ "comment" => "Multiple Choices",                 "weight" => 2 ],
+        '301'   => [ "comment" => "Moved Permanently",                "weight" => 1 ],
+        '302'   => [ "comment" => "Found",                            "weight" => 1 ],
+        '303'   => [ "comment" => "See Other",                        "weight" => 2 ],
+        '304'   => [ "comment" => "Not Modified",                     "weight" => 2 ],
+        '305'   => [ "comment" => "Use Proxy",                        "weight" => 3 ],
+        '306'   => [ "comment" => "Unused",                           "weight" => 3 ],
+        '307'   => [ "comment" => "Temporary Redirect",               "weight" => 1 ],
+        '308'   => [ "comment" => "Permanent Redirect",               "weight" => 1 ], // RFC7538
+        // Client Error 4xx
+        '400'   => [ "comment" => "Bad Request",                      "weight" => 5 ],
+        '401'   => [ "comment" => "Unauthorized",                     "weight" => 4 ],
+        '402'   => [ "comment" => "Payment Required",                 "weight" => 3 ],
+        '403'   => [ "comment" => "Forbidden",                        "weight" => 5 ],
+        '404'   => [ "comment" => "Not Found",                        "weight" => 5 ],
+        '405'   => [ "comment" => "Method Not Allowed",               "weight" => 5 ],
+        '406'   => [ "comment" => "Not Acceptable",                   "weight" => 5 ],
+        '407'   => [ "comment" => "Proxy Authentication Required",    "weight" => 5 ],
+        '408'   => [ "comment" => "Request Timeout",                  "weight" => 5 ],
+        '409'   => [ "comment" => "Conflict",                         "weight" => 5 ],
+        '410'   => [ "comment" => "Gone",                             "weight" => 5 ],
+        '411'   => [ "comment" => "Length Required",                  "weight" => 5 ],
+        '412'   => [ "comment" => "Precondition Failed",              "weight" => 5 ],
+        '413'   => [ "comment" => "Content Too Large",                "weight" => 5 ], // RFC9110
+        '414'   => [ "comment" => "URI Too Long",                     "weight" => 5 ], // RFC9110
+        '415'   => [ "comment" => "Unsupported Media Type",           "weight" => 5 ],
+        '416'   => [ "comment" => "Range Not Satisfiable",            "weight" => 5 ], // RFC9110
+        '417'   => [ "comment" => "Expectation Failed",               "weight" => 5 ],
+        '418'   => [ "comment" => "I'm a teapot",                     "weight" => 3 ], // RFC2324
+        '421'   => [ "comment" => "Misdirected Request",              "weight" => 4 ], // RFC7540
+        '422'   => [ "comment" => "Unprocessable Content",            "weight" => 4 ], // RFC9110
+        '423'   => [ "comment" => "Locked",                           "weight" => 4 ], // WebDAV
+        '424'   => [ "comment" => "Failed Dependency",                "weight" => 4 ], // WebDAV
+        '425'   => [ "comment" => "Too Early",                        "weight" => 3 ], // RFC8470
+        '426'   => [ "comment" => "Upgrade Required",                 "weight" => 3 ],
+        '428'   => [ "comment" => "Precondition Required",            "weight" => 4 ], // RFC6585
+        '429'   => [ "comment" => "Too Many Requests",                "weight" => 4 ], // RFC6585
+        '431'   => [ "comment" => "Request Header Fields Too Large",  "weight" => 4 ], // RFC6585
+        '451'   => [ "comment" => "Unavailable For Legal Reasons",    "weight" => 5 ], // RFC7725
+        // Server Error 5xx
+        '500'   => [ "comment" => "Internal Server Error",            "weight" => 5 ],
+        '501'   => [ "comment" => "Not Implemented",                  "weight" => 5 ],
+        '502'   => [ "comment" => "Bad Gateway",                      "weight" => 5 ],
+        '503'   => [ "comment" => "Service Unavailable",              "weight" => 5 ],
+        '504'   => [ "comment" => "Gateway Timeout",                  "weight" => 5 ],
+        '505'   => [ "comment" => "HTTP Version Not Supported",       "weight" => 5 ],
+        '506'   => [ "comment" => "Variant Also Negotiates",          "weight" => 5 ], // RFC2295
+        '507'   => [ "comment" => "Insufficient Storage",             "weight" => 5 ], // WebDAV
+        '508'   => [ "comment" => "Loop Detected",                    "weight" => 5 ], // WebDAV
+        '510'   => [ "comment" => "Not Extended",                     "weight" => 5 ], // RFC2774
+        '511'   => [ "comment" => "Network Authentication Required",  "weight" => 5 ], // RFC6585
     ];
-
     /** check url - returns error codes, content type, error weight and comment
      * @param $url
      * @return array
      */
-    function check_url($url): array
+    public function check_url(string $url): array
     {
-        $return = [];
-        $time   = time();
-        $url_part = aa_strtolower(substr($url, strrpos($url, 10)));
-        if (!str_starts_with($url_part, 'http://') && !str_starts_with($url_part, 'https://')) {
-            if (str_starts_with($url_part, 'mailto:')) {
-                $url = trim(preg_replace("/^mailto:(.+)/i", "\\1", $url));
-                [$brugernavn, $host] = explode("@", $url);
+        $result = [
+            'code'         => null,
+            'comment'      => null,
+            'weight'       => null,
+            'timestamp'    => time(),
+            'content_type' => null,
+            'mime'         => null,
+            'charset'      => null,
+            'redir'        => null,
+            'redir_chain'  => [],
+            'http_codes'   => [],
+            'error'        => null,
+        ];
+
+        // mailto nebo ne-HTTP link
+        $url_lower = strtolower(substr($url, 0, 10));
+        if (!str_starts_with($url_lower, 'http://') && !str_starts_with($url_lower, 'https://')) {
+            if (str_starts_with($url_lower, 'mailto:')) {
+                $email = trim(preg_replace("/^mailto:(.+)/i", "\\1", $url));
+                [$username, $host] = explode("@", $email);
                 $dnsCheck = checkdnsrr($host, "MX");
-                $return["code"] = $dnsCheck ? "OK" : "ERROR";
+                $code = $dnsCheck ? "OK" : "ERROR";
+                $result['code'] = $code;
+                $result['comment'] = self::HTTP_ERROR_CODES[$code]['comment'] ?? 'Unknown';
+                $result['weight']  = self::HTTP_ERROR_CODES[$code]['weight'] ?? 5;
             } else {
-                $return["code"] = "N/A";
+                $result['code'] = "N/A";
             }
-        } else {
-            $urlArray = parse_url($url);
+            $result['comment'] = self::HTTP_ERROR_CODES['N/A']['comment'];
+            $result['weight']  = self::HTTP_ERROR_CODES['N/A']['weight'];
+            return $result;
+        }
 
-            $urlArray["port"] = $urlArray["port"] ?? (($urlArray["scheme"] === 'https') ? "443" : "80");
-            $protocol = ($urlArray["scheme"] === 'https' && $urlArray["port"] == 443) ? 'ssl://' : '';
-            $urlArray["path"] = $urlArray["path"] ?? "/";
-            $sock = @fsockopen($protocol . $urlArray["host"], $urlArray["port"], $errnum, $errstr, 10);
+        // --- cURL inicializace ---
+        $ch = curl_init();
 
-            $return["url"] = $url;
-            if (!$sock) {
-                $return["code"] = "999";
-            } else {
-                $dump = "HEAD " . $urlArray["path"] . " HTTP/1.1\r\n";
-                $dump .= "User-Agent: APC-AA Link Checker (https://actionapps.org/)\r\n";
-                $dump .= "Host: " . $urlArray["host"] . "\r\n";
-                $dump .= "Connection: close\r\n\r\n";
-                fwrite($sock, $dump);
-                while (($str = fgets($sock, 1024)) && (($return["code"] == "") || ($return["contentType"] == ""))) {
-                    $match = [];
-                    if (preg_match("~^http/\\d+.\\d+ (\\d{3})~i", $str, $match)) {
-                        $return["code"] = $match[1];
-                    }
-                    if (preg_match("~^Content-Type: (.*)~", $str, $match)) {
-                        $return["contentType"] = $match[1];
-                    }
-                }
-                fclose($sock);
-                flush();
+        // get chain redirects using callback (PHP 7.1+)
+        curl_setopt_array($ch, [
+            CURLOPT_URL            => $url,
+            CURLOPT_NOBODY         => true, // HEAD request (do not fetch body)
+            CURLOPT_HEADER         => true, // we want headers
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_MAXREDIRS      => 10,
+            CURLOPT_USERAGENT      => 'APC-AA Link Checker (https://actionapps.org/)',
+            CURLOPT_CONNECTTIMEOUT => 7,
+            CURLOPT_TIMEOUT        => 10,
+            CURLOPT_SSL_VERIFYPEER => true,
+            CURLOPT_SSL_VERIFYHOST => 2,
+        ]);
+
+        // Get redirect chain
+        $chain = [];
+        curl_setopt($ch, CURLOPT_HEADERFUNCTION, function ($curl, $header) use (&$chain) {
+            if (preg_match('~^Location:\s*(.+)~i', $header, $m)) {
+                $chain[] = trim($m[1]);
+            }
+            return strlen($header);
+        });
+
+        $response = curl_exec($ch);
+
+        if ($response === false) {
+            $result['code'] = "999";
+            $result['comment'] = 'No response (' . curl_error($ch) . ')';
+            $result['weight'] = 5;
+            $result['error'] = curl_error($ch);
+            curl_close($ch);
+            return $result;
+        }
+
+        // Get info about redirects and returned codes
+        $info        = curl_getinfo($ch);
+        $http_code   = $info['http_code'];
+        $finalUrl    = $info['url'];
+        $contentType = $info['content_type'] ?? null;
+
+        curl_close($ch);
+        
+        // get all codes from Location chain from response headers
+        $headers = explode("\r\n\r\n", trim($response));
+        $http_codes = [];
+        foreach ($headers as $headerBlock) {
+            if (preg_match('~HTTP/\d+\.\d+\s+(\d{3})~', $headerBlock, $matches)) {
+                $http_codes[] = $matches[1];
             }
         }
-        $return["comment"]   = self::HTTP_ERROR_CODES[$return["code"]]["comment"];
-        $return["weight"]    = self::HTTP_ERROR_CODES[$return["code"]]["weight"];
-        $return["timestamp"] = $time;
-        return $return;
+
+        $result['content_type'] = $contentType;
+
+        [$type, $params]        = explode(';', $contentType . ';', 2);
+        $result['mime']         = trim($type);
+        $result['charset']      = preg_match('/charset\s*=\s*"?([^\s;"]+)"?/i', $params, $m) ? strtolower($m[1]) : '';
+
+        if ($chain) {  // redirects
+            $result['redir_chain'] = $chain;
+            $result['http_codes'] = $http_codes;
+            $result['redir']  = $finalUrl;
+            $result['code'] = $http_codes ? (string) $http_codes[0] : (string) $http_code;
+            $result['comment'] = self::HTTP_ERROR_CODES[$result['code']]['comment'] ?? 'Unknown';
+            $result['weight']  = self::HTTP_ERROR_CODES[$result['code']]['weight'] ?? 5;
+
+            // modify weight by the status of the final url
+
+            // last value of http_codes is the last code
+            $last_code = end($http_codes);
+            $result['weight'] = min( 5, max( $result['weight'], self::HTTP_ERROR_CODES[$last_code]['weight']));  // weight not 0 but taken from last code
+            $result['comment'] .= " - Redirected [$last_code]";
+            return $result;
+        } 
+
+        $result['code'] = (string) $http_code;
+        $result['comment'] = self::HTTP_ERROR_CODES[$http_code]['comment'] ?? 'Unknown';
+        $result['weight']  = self::HTTP_ERROR_CODES[$http_code]['weight'] ?? 5;
+        return $result;
     }
+
 
     /** checking function
      *  checking - runs check_url for links (count defined in LINKS_VALIDATION_COUNT)
@@ -164,7 +260,7 @@ class Linkcheck {
         for ($i = 0; $i < $max; ++$i) {
 
             $l_id  = $links['id'];
-            $l_url = $links['url'];
+            $l_url = (string)$links['url'];
             $l_vc  = $links['valid_codes'];
             $l_vr  = $links['valid_rank'];
 

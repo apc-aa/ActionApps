@@ -221,7 +221,8 @@ function query_search(array $where, string $phrase): string {
 }
 
 
-function PrintIdsInfo($l_or_s_id) {
+function PrintIdsInfo($l_or_s_id): void
+{
     if (is_short_id($l_or_s_id)) {
         if (DB_AA::test('view', [['id', $l_or_s_id, 'i']])) {
             echo '<h3>View</h3><pre>';
@@ -255,7 +256,8 @@ function PrintIdsInfo($l_or_s_id) {
 }
 
 
-function PrintItemInfo($item_id) {
+function PrintItemInfo($item_id): void
+{
     $zid = new zids($item_id);
     $item = AA_Items::getItem($zid);
     PrintIdsInfo($item_id);

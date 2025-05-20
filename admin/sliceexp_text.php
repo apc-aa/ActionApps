@@ -58,7 +58,8 @@ class AA_Slice_Exporter {
      * @param $temp_file
      * Writes to file
      */
-    function exportOneSliceStruct($slobj, $new_slice_id, $temp_file) {
+    function exportOneSliceStruct($slobj, $new_slice_id, $temp_file): void
+    {
 
         $slice = DB_AA::select1('', 'SELECT * FROM `slice`', [['id', $slobj->getId(), 'l']]);
         if (!$slice) {
@@ -107,7 +108,8 @@ class AA_Slice_Exporter {
      * @param          $temp_file
      * @return void - writes to file
      */
-    function exportOneSliceViews(AA_Slice $slobj, $temp_file) {
+    function exportOneSliceViews(AA_Slice $slobj, $temp_file): void
+    {
         if (!($views = AA_Views::getSliceViews($slobj->getId()))) {
             return;
         }
@@ -125,7 +127,8 @@ class AA_Slice_Exporter {
     }
 
 
-    function exportOneSliceData($slobj, $temp_file) {
+    function exportOneSliceData($slobj, $temp_file): void
+    {
         if ($this->spec_date) {
             $conds = [];
             $conds[0]["operator"]         = "d:>=";
@@ -234,7 +237,8 @@ class AA_Slice_Exporter {
      * @param $export_slices
      * @param $new_slice_id
      */
-    function exportToFile($slice_id, $export_slices, $new_slice_id) {
+    function exportToFile($slice_id, $export_slices, $new_slice_id): void
+    {
         if ($this->gzip != 1) {
             $this->gzip = 0;
         }
@@ -260,7 +264,8 @@ class AA_Slice_Exporter {
      * @param $export_slices
      * @param $new_slice_id
      */
-     function exportToForm($slice_id, $export_slices, $new_slice_id) {
+     function exportToForm($slice_id, $export_slices, $new_slice_id): void
+     {
 
         if ($this->gzip != 1) {
             $this->gzip = 0;
@@ -291,14 +296,16 @@ class AA_Slice_Exporter {
             </tr></td>";
     }
 
-    function prepareEncoder($charset) {
+    function prepareEncoder($charset): void
+    {
         if ($this->to_utf) {
             $this->_encoder = new ConvertCharset($charset, 'utf-8');
         }
     }
 
     /** Converts text or values of array to utf, if it is requested */
-    function encode($content, $type, $add=null) {
+    function encode($content, $type, $add=null): string
+    {
         if ($this->to_utf) {
             $content = $this->convertToUtf($content);
         }
@@ -338,7 +345,8 @@ class AA_Slice_Documentator extends AA_Slice_Exporter {
      * @param $temp_file
      * @return void - writes to file
      */
-    function exportOneSliceStruct($slobj, $new_slice_id, $temp_file) {
+    function exportOneSliceStruct($slobj, $new_slice_id, $temp_file): void
+    {
 
         $slice = DB_AA::select1('', 'SELECT * FROM `slice`', [['id', $slobj->getId(), 'l']]);
         if (!$slice) {
@@ -428,7 +436,8 @@ class AA_Slice_Documentator extends AA_Slice_Exporter {
      * @param $export_slices
      * @param $new_slice_id
      */
-     function exportToForm($slice_id, $export_slices, $new_slice_id) {
+     function exportToForm($slice_id, $export_slices, $new_slice_id): void
+     {
 
         if ($this->gzip != 1) {
             $this->gzip = 0;

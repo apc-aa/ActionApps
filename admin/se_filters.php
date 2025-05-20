@@ -219,7 +219,8 @@ if ( isset($to_categories) && is_array($to_categories) ) {
  *  @param $cat_name
  *  @param $i
  */
-function PrintOneRow($id, $cat_name, $i) {
+function PrintOneRow($id, $cat_name, $i): void
+{
     global $chboxcat, $selcat, $chboxapp, $to_categories;
 
     echo "<tr><td>";

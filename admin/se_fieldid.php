@@ -96,7 +96,8 @@ $varset = new Cvarset();
  * @param $old_id
  * @param $new_id
  */
-function ChangeFieldID($old_id, $new_id) {
+function ChangeFieldID($old_id, $new_id): void
+{
     define("MAINTAIN_FIELDS", [
         "slice" => [
             "primary"      => "id",  // primary key

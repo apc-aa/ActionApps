@@ -67,7 +67,8 @@ class Manageraction_History_Apply extends AbstractManageraction {
     }
 
     /** @inheritDoc */
-    function perform(Manager $manager, zids $item_zids, $action_param) {
+    function perform(Manager $manager, zids $item_zids, $action_param): string|false
+    {
 
         if ( !IfSlPerm(PS_EDIT) ) {    // permission to delete items?
             /** @todo Should be changed to different permission */
@@ -108,10 +109,12 @@ class Manageraction_History_Apply extends AbstractManageraction {
     }
 
     /** Checks if the user have enough permission to perform the action
-     * @param \AA\Manager $manager
-     * @return bool|string
+     *
+     * @param \AA\Manager  $manager
+     *
+     * @return bool
      */
-    function isPerm4Action($manager) {
+    function isPerm4Action($manager):bool {
         /** @todo Should be changed to different permission */
         return IfSlPerm(PS_EDIT);
     }
@@ -121,7 +124,8 @@ class Manageraction_History_Apply extends AbstractManageraction {
  * List of fields, which will be listed in searchbar in Manager (search)
  * @return AA\Util\Searchfields
  */
-function GetHistoryFields() {  // function - we need trnslate _m() on use (not at include time)
+function GetHistoryFields(): \AA\Util\Searchfields
+{  // function - we need trnslate _m() on use (not at include time)
     $searchfields = new AA\Util\Searchfields();
     //   id                     $name,                        $field,                 operators='text', $table=false, $search_pri=false, $order_pri=false
     //$searchfields->add('id'                  , _m('Id'),                    'links_links.id',                'numeric', false,          0,    0);

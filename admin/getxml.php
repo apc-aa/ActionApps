@@ -50,12 +50,13 @@
 use AA\IO\DB\DB_AA;
 use AA\IO\FeedUtil;
 use AA\IO\LastEditList;
+use JetBrains\PhpStorm\NoReturn;
 
 /**
  * @param $value
  * @return array|string
  */
-function AddslashesDeep($value)   { return is_array($value) ? array_map('AddslashesDeep',   $value) : addslashes($value);   }
+function AddslashesDeep($value): array|string { return is_array($value) ? array_map('AddslashesDeep',   $value) : addslashes($value);   }
 
 foreach ($_REQUEST as $k => $v) {
     $$k = AddslashesDeep($v);
@@ -107,7 +108,8 @@ const XML_BEGIN = '<'.'?xml version="1.0" encoding="UTF-8"?'. ">\n".
  *
  * @return string converted
  */
-function code($v) {
+function code($v): string
+{
     static $encoder;
     if ( !$encoder ) {
         $encoder = new ConvertCharset;
@@ -119,7 +121,8 @@ function code($v) {
  * @param $flag
  * @return string - "HTML"/"PLAIN"
  */
-function GetFlagFormat($flag) {
+function GetFlagFormat($flag): string
+{
     return ($flag & FLAG_HTML) ? "HTML" : "PLAIN";
 }
 
@@ -127,7 +130,9 @@ function GetFlagFormat($flag) {
  * @param $str
  * @return void
  */
-function Error($str) {
+#[NoReturn]
+function Error($str): void
+{
     echo $str;
     exit();
 }
@@ -138,7 +143,8 @@ function Error($str) {
  * @param $user
  * @return array of unpacked slice ids
  */
-function GetFeedingSlices( $node_name, $user) {
+function GetFeedingSlices( $node_name, $user): array
+{
     return DB_AA::select('', "SELECT LOWER(HEX(`slice_id`)) AS unpackid FROM ef_permissions", [['node',[$node_name,'']],['user', [$user,'']] ]);
 }
 
@@ -166,7 +172,8 @@ function CheckFeedingPermissions( $slice_id, $node_name, $user ): bool {
  * @param $xml_fields_refs (by link)
  * @param $xml_fields (by link)
  */
-function GetXMLFields( $slice_id, AA_Fields $slice_fields, &$xml_fields_refs, &$xml_fields) {
+function GetXMLFields( $slice_id, AA_Fields $slice_fields, &$xml_fields_refs, &$xml_fields): void
+{
     $xml_fields_refs.="\t<aa:fields><rdf:Bag>\n";
 
     foreach ( $slice_fields as $k =>$v) {
@@ -184,7 +191,8 @@ function GetXMLFields( $slice_id, AA_Fields $slice_fields, &$xml_fields_refs, &$
  * @param $xml_categories (by link)
  * @return void - modified vars above
  */
-function GetXMLCategories($group_id, &$xml_categories_refs, &$xml_categories) {
+function GetXMLCategories($group_id, &$xml_categories_refs, &$xml_categories): void
+{
     if (!$group_id) {
         return;
     }
@@ -233,7 +241,8 @@ function GetXMLChannel( $slice_id, $xml_fields_refs, $xml_categories_refs, $xml_
  * @param          $content4id
  * @return string - content
  */
-function GetBaseFieldContent(string $field_id, $content4id) {
+function GetBaseFieldContent(string $field_id, $content4id): string
+{
     if ($field_id === "") {
         return "";
     }
@@ -381,7 +390,8 @@ function GetXMLItem($slice_id, $item_id, $content4id, AA_Fields $sfields): strin
  *
  *
  */
-function CreateXMLItems($slice_id, $items_ids, $content, AA_Fields $slice_fields) {
+function CreateXMLItems($slice_id, $items_ids, $content, AA_Fields $slice_fields): void
+{
     foreach ($items_ids as $id)  {
         echo GetXMLItem($slice_id, $id, $content[$id], $slice_fields);
     }
@@ -411,7 +421,8 @@ function GetXMLItemsRefs(array $items_ids): string {
  * @param $cat_field
  * @return array
  */
-function RestrictIdsByCategory( $ids, $categories, $slice_id, array $content, $cat_field ) {
+function RestrictIdsByCategory( $ids, $categories, $slice_id, array $content, $cat_field ): array
+{
     $new_ids = [];
     if ( !is_array($ids) || !is_array($categories) ) {
         return $new_ids;                              // empty array

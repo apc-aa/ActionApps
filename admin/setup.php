@@ -35,7 +35,7 @@
 //  1) in $_POST,$_GET,$_COOKIE,$_REQUEST variables the values are not quoted
 //  2) the variables are imported in global scope and is quoted
 // We are trying to remove any dependecy on the point 2) and use only $_* superglobals
-function AddslashesDeep($value)   { return is_array($value) ? array_map('AddslashesDeep',   $value) : addslashes($value);   }
+function AddslashesDeep($value): array|string { return is_array($value) ? array_map('AddslashesDeep',   $value) : addslashes($value);   }
 
 foreach ($_REQUEST as $k => $v) {
     $$k = AddslashesDeep($v);
@@ -54,7 +54,8 @@ bind_mgettext_domain(DEFAULT_LANG_INCLUDE);
 /** HtmlStart function
  *  Prints title,body,h1
  */
-function HtmlStart() {
+function HtmlStart(): void
+{
     HtmlPageBegin();
     echo "<title>" . _m("ActionApps Setup") . "</title></head>\n";
     echo "<body>\n";
@@ -65,14 +66,16 @@ function HtmlStart() {
 /** NoAction function
  *  Prints a message
  */
-function NoAction() {
+function NoAction(): void
+{
     echo _m("This script can't be used on a configured system.");
 }
 /** PrintErr function
  * @param $err
  * Prints every value in $err
  */
-function PrintErr($err) {
+function PrintErr($err): void
+{
     foreach($err as $value) {
         echo $value;
     }
@@ -81,7 +84,8 @@ function PrintErr($err) {
 /** SuperForm function
  *  Prints a form
  */
-function SuperForm() {
+function SuperForm(): void
+{
   global $login, $password1, $password2, $fname, $lname, $email;
   ?>
   <form action="setup.php">
@@ -110,7 +114,8 @@ function SuperForm() {
 /** InitForm function
  * Prints two messages and a form
  */
-function InitForm() {
+function InitForm(): void
+{
    echo _m("Welcome! Use this script to create the superadmin account.<p>If you are installing a new copy of AA, press <b>Init</b>.<br>");
    echo _m("If you deleted your superadmin account by mistake, press <b>Recover</b>.<br>");
    ?>
@@ -125,7 +130,8 @@ function InitForm() {
 /** HtmlEnd function
  *  Prints end of html tags
  */
-function HtmlEnd() {
+function HtmlEnd(): void
+{
    echo "</div></body></html>";
 }
 

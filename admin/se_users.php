@@ -75,7 +75,8 @@ function IfLink( $cond, $url, $txt, $class='btn btn-secondary'): string {
  * @param $usr_id
  * @param $editor_perm
  */
-function PrintUser($perm, $usr_id, $editor_perm) {
+function PrintUser($perm, $usr_id, $editor_perm): void
+{
 
     $username   = perm_username($usr_id);
     $usr_id_enc = rawurlencode($usr_id);

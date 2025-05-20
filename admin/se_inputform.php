@@ -138,7 +138,8 @@ $varset = new Cvarset();
  * @param $needed
  * @param $type
  */
-function QValidateInput($variableName, $inputName, $variable, &$err, $needed, $type) {
+function QValidateInput($variableName, $inputName, $variable, &$err, $needed, $type): void
+{
     if ($variable !== null) {
         ValidateInput($variableName, $inputName, $variable, $err, $needed, $type);
     }
@@ -149,7 +150,8 @@ function QValidateInput($variableName, $inputName, $variable, &$err, $needed, $t
  * @param $type
  * @param $value
  */
-function Qvarsetadd($varname, $type, $value) {
+function Qvarsetadd($varname, $type, $value): void
+{
     global $varset;
     if ($value !== null) {
         $varset->add($varname, $type, $value);

@@ -134,7 +134,8 @@ echo '<table>';
  * @param $value
  * @return string - the value in <strong>
  */
-function formatAction($value) {
+function formatAction($value): string
+{
     return "<strong>$value</strong>";
 }
 
@@ -144,7 +145,8 @@ function formatAction($value) {
  *   @param string $value - the internationalized string to display
  *   @return string - an HTML button
  */
-function fileAction($name,$value) {
+function fileAction($name,$value): string
+{
      return "<input type=\"button\" name=\"button$name\" value=\"$value\" onclick=\"command('$name')\">&nbsp;&nbsp;";
 }
 

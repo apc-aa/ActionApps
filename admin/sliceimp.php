@@ -162,7 +162,8 @@ function prove_data_ID($data_id): bool {
  * @return string slice_id
  */
 // imports one slice (called by XML parser)
-function import_slice(&$slice) {
+function import_slice(&$slice): string
+{
     global $IDconflict,
            $conflicts_ID,
            $cancel,

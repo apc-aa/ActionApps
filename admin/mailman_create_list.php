@@ -94,7 +94,8 @@ if ($create_list && $admin_email && $list_name && $admin_password) {
  * Creates a new mailman list
  * @return void - none on error
  */
-function add_mailman_list($admin_email, $list_name, $admin_password, $groupid) {
+function add_mailman_list($admin_email, $list_name, $admin_password, $groupid): void
+{
 
     $db = getDB();
     $db->query("SELECT * FROM constant WHERE group_id='".addslashes($groupid)."' AND name='".$list_name."'");

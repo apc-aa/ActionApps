@@ -46,7 +46,8 @@ try {
  * @param $g_modules
  * @return string - a html select box or false if g_modules is null or not an array
  */
-function GetModuleTemplateSelecbox($type, $g_modules) {
+function GetModuleTemplateSelecbox($type, $g_modules): string
+{
     $ret = '';
     if (isset($g_modules) && is_array($g_modules) ) {
         foreach ($g_modules as $mid => $mod) {
@@ -55,7 +56,7 @@ function GetModuleTemplateSelecbox($type, $g_modules) {
             }
         }
     }
-    return $ret ? "<select name=\"template[$type]\">$ret\n</select>" : false;
+    return $ret ? "<select name=\"template[$type]\">$ret\n</select>" : '';
 }
 
 

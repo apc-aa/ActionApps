@@ -124,7 +124,8 @@ function GetHidden($itemform_id) {
  * @param $url2go=null
  *
  */
-function CloseDialog(?zids $zid = null, string $openervar = '', bool $insert=true, ?string $url2go=null) {
+function CloseDialog(?zids $zid = null, string $openervar = '', bool $insert=true, ?string $url2go=null): void
+{
     // Used for adding item to another slice from itemedit's popup.
     $js = '';
     if ($zid) {               // id of new item defined

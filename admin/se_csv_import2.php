@@ -88,7 +88,8 @@ try {
  * @param $array
  * @return string
  */
-function findNearestText($fid, $text, $array) {
+function findNearestText($fid, $text, $array): string
+{
     if (isset($array[$fid]))       {  return $fid; }
     if (isset($array[trim($fid)])) {  return trim($fid); }
     $ret = '__empty__';
@@ -138,7 +139,8 @@ class AA_Csv_Importer {
 /** loadFromRequest function
  *
  */
-    function loadFromRequest() {
+    function loadFromRequest(): void
+    {
         $this->slice_id            = AA::$module_id;
         $this->fileName            = $_REQUEST['fileName'];
         $this->actions             = $_REQUEST['actions'];
@@ -168,21 +170,24 @@ class AA_Csv_Importer {
 /** setFilename function
  * @param $filename
  */
-    function setFilename($filename) {
+    function setFilename($filename): void
+    {
         $this->fileName            = $filename;
     }
 
 /** getSliceId function
  * @return string slice ID
  */
-    function getSliceId() {
+    function getSliceId(): string
+    {
         return $this->slice_id;
     }
 
 /** check function
  *
  */
-    function check() {
+    function check(): void
+    {
         if (!CheckPerms( $this->auth_uid, "slice", $this->slice_id, PS_EDIT_ALL_ITEMS)) {
             MsgPage(_m("You have not permissions to setting "));
             exit;
@@ -203,7 +208,8 @@ class AA_Csv_Importer {
 /** prepare function
  *
  */
-    function _prepare() {
+    function _prepare(): void
+    {
         if (!isset($this->itemId)) {
             $this->itemId = "new";
         }
@@ -230,7 +236,8 @@ class AA_Csv_Importer {
 /** upload function
  *
  */
-    function upload() {
+    function upload(): void
+    {
         $this->_prepare();
 
         //-----------------------------------------------------------------------------
@@ -302,7 +309,8 @@ class AA_Csv_Importer {
 /** preview function
  *
  */
-    function preview() {
+    function preview(): void
+    {
         $this->_prepare();
 
         $slice         = AA_Slice::getModule($this->slice_id);
@@ -494,7 +502,8 @@ if ( $load ) {
  * @param $value
  *
  */
-function SaveObjectProperty($obj_id, $property, $value) {
+function SaveObjectProperty($obj_id, $property, $value): void
+{
     $varset = new CVarset();
     $varset->add('object_id', 'text', $obj_id);
     $varset->add('property',  'text', $property);

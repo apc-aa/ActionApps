@@ -90,7 +90,8 @@ try {
  * @param $function
  * @param $emails
  */
-function save_notify2db($slice_id, $function, $emails) {
+function save_notify2db($slice_id, $function, $emails): void
+{
     global $db;
     $p_slice_id = xpack_id($slice_id);
     // split $notify_holding_item_e textarea into array

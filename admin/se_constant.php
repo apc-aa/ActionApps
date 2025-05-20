@@ -122,7 +122,8 @@ if ( $group_id ) {
  * @param      $pri
  * @param null|array $using_slices_arr
  */
-function ShowConstant($id, $name, $value, $desc, $cid, $pri, ?array $using_slices_arr=null, array $sizes) {
+function ShowConstant($id, $name, $value, $desc, $cid, $pri, ?array $using_slices_arr, array $sizes): void
+{
     $count = '';
     if (is_array($using_slices_arr) && count($using_slices_arr)) {
         $count = 0;
@@ -152,7 +153,8 @@ function ShowConstant($id, $name, $value, $desc, $cid, $pri, ?array $using_slice
  * @param string $newvalue The new value with added slashes (e.g. from a form)
  * @param        $oldvalue
  */
-function propagateChanges($group_id, $constant_id, $newvalue, $oldvalue) {
+function propagateChanges($group_id, $constant_id, $newvalue, $oldvalue): void
+{
     global $Msg;
 
     if ($oldvalue == $newvalue) return;

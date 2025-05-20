@@ -51,7 +51,8 @@ if (!IsSuperadmin()) {
  * @param $name
  * @param $type
  */
-function PrintModule($id, $name, $type) {
+function PrintModule($id, $name, $type): void
+{
 
     $name = safe($name); $id = safe($id);
     $url  = (($type === 'S') ? './slicedel2.php' : AA_INSTAL_PATH. AA_Moduleregistry::info($type,'dir')."moddelete.php" );

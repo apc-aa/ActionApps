@@ -93,7 +93,8 @@ $varset = new Cvarset();
  * @param      $slice_id
  * @param bool $slice_fields
  */
-function ShowNewField($from_slice, $slice_id, bool $slice_fields) {
+function ShowNewField($from_slice, $slice_id, bool $slice_fields): void
+{
     $id       = 'New_Field';
     $name     = '';
     $show     = true;

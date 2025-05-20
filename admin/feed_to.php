@@ -43,7 +43,8 @@ try {
  * @param $odd
  * @return void
  */
-function PrintExportRow( $sname, $sid, $odd) {
+function PrintExportRow( $sname, $sid, $odd): void
+{
     echo '
     <tr>
       <td>'. safe($sname). '</td>

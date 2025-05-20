@@ -101,13 +101,16 @@ try {
 
 // ----------------------------------------------------------------------------
 /** get_row_count function
- * @param $s
- * @param $cols
- * @param $maxrows
+ *
+ * @param       $s
+ * @param  int  $cols
+ * @param  int  $maxrows
+ *
  * @return number of rows
  */
-function get_row_count($s, $cols, $maxrows) {
-    $retval = 1 + strlen ($s) / $cols;
+function get_row_count($s, int $cols, int $maxrows): int
+{
+    $retval = (int)(1 + strlen($s) / $cols);
     return ($retval > $maxrows) ?  $maxrows : $retval;
 }
 
@@ -116,7 +119,8 @@ function get_row_count($s, $cols, $maxrows) {
  * @noinspection PhpUnused - used down
  * @see          __FILE__:365 (search "function:"))
  */
-function show_digest_filters() {
+function show_digest_filters(): void
+{
     global $view_id;
 
     // Show the radio buttons "Group by selection"
@@ -158,7 +162,8 @@ function show_digest_filters() {
  * @noinspection PhpUnused - used down
  * @see __FILE__:365 (search "function:"))
  */
-function store_digest_filters() {
+function store_digest_filters(): void
+{
     global $view_id, $filters, $err;
     $db = getDB ();
     if (!$view_id) {
@@ -210,7 +215,8 @@ function store_digest_filters() {
  * @param $order_fields
  * @param $easy_order=false
  */
-function OrderFrm($name, $txt, $val, $order_fields, $easy_order=false, $group=false) {
+function OrderFrm($name, $txt, $val, $order_fields, $easy_order=false, $group=false): void
+{
     global $vw_data;
     $name=safe($name); $txt=safe($txt);
 
@@ -235,7 +241,8 @@ function OrderFrm($name, $txt, $val, $order_fields, $easy_order=false, $group=fa
  * @param $txt
  * @param $val
  */
-function OrderAliasFrm($name, $txt, $val) {
+function OrderAliasFrm($name, $txt, $val): void
+{
     global $vw_data;
     $name=safe($name); $txt=safe($txt);
 
@@ -253,7 +260,8 @@ function OrderAliasFrm($name, $txt, $val) {
  * @param $txt
  * @param $val
  */
-function ConditionFrm($name, $txt, $val) {
+function ConditionFrm($name, $txt, $val): void
+{
     global $lookup_fields, $lookup_op, $vw_data;
     $name=safe($name); $txt=safe($txt);
     echo "<tr><td><b>$txt</b> ";
@@ -277,7 +285,8 @@ function ConditionFrm($name, $txt, $val) {
  * @param $txt
  * @param $val
  */
-function BitFlagFrm($name, $txt, $val) {
+function BitFlagFrm($name, $txt, $val): void
+{
     // the $name if $flag0, $flag1, ..
     $num = (preg_match('/(\d+)$/', $name, $matches) ? (int)$matches[1] : 0);
     FrmInputChBox( $name, $txt, $val & (2**$num));
