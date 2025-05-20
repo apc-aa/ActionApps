@@ -24,26 +24,31 @@ class Links_Check extends AbstractManageraction {
     }
 
     /** @inheritDoc */
-    function perform(Manager $manager, zids $item_zids, $action_param): bool {
+    function perform(Manager $manager, zids $item_zids, $action_param): string|false
+    {
         DB_AA::sql("UPDATE links_links SET checked = '" . time() . "', checked_by = '" . AuthGetUid() . "' WHERE " . $item_zids->sqlin('id', true));
         return false;                                     // OK - no error
     }
 
     /** Checks if the user have enough permission to perform the action
-     * @param \AA\Manager $manager
+     *
+     * @param \AA\Manager  $manager
+     *
      * @return bool
      */
-    function isPerm4Action($manager) {
+    function isPerm4Action($manager):bool {
         return IsCatPerm($this->perm, $GLOBALS['r_state']['cat_path']);
     }
 
     /** Checks if the user have enough permission to perform the action
-     * @param \AA\Manager $manager
-     * @param             $item_zids
-     * @param             $action_param
+     *
+     * @param \AA\Manager  $manager
+     * @param              $item_zids
+     * @param              $action_param
+     *
      * @return bool
      */
-    function isPerm4Perform($manager, $item_zids, $action_param) {
+    function isPerm4Perform($manager, $item_zids, $action_param):bool {
         return $this->isPerm4Action($manager) && self::permCheck($item_zids, $this->perm);       // _m('No permission to change state of the link');  // error
     }
 

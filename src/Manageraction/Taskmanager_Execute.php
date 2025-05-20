@@ -17,7 +17,8 @@ class Taskmanager_Execute extends AbstractManageraction {
     }
 
     /** @inheritDoc */
-    function perform(Manager $manager, zids $item_zids, $action_param) {
+    function perform(Manager $manager, zids $item_zids, $action_param): string|false
+    {
 
         if (!IfSlPerm(PS_EDIT)) {    // permission to delete items?
             /** @todo Should be changed to different permission */
@@ -34,10 +35,12 @@ class Taskmanager_Execute extends AbstractManageraction {
     }
 
     /** Checks if the user have enough permission to perform the action
-     * @param \AA\Manager $manager
-     * @return bool|string
+     *
+     * @param \AA\Manager  $manager
+     *
+     * @return bool
      */
-    function isPerm4Action($manager) {
+    function isPerm4Action($manager):bool {
         /** @todo Should be changed to different permission */
         // if we want to use it as "action" (not "switch"), then we should be in trash bin
         return IfSlPerm(PS_EDIT);

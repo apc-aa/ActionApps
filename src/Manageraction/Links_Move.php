@@ -29,17 +29,20 @@ class Links_Move extends \AA\Manageraction\Links_Check {
     }
 
     /** @inheritDoc */
-    function perform(Manager $manager, zids $item_zids, $action_param): bool {
+    function perform(Manager $manager, zids $item_zids, $action_param): string|false
+    {
         $SQL = "UPDATE links_links SET folder = '" . $this->to_bin . "' WHERE " . $item_zids->sqlin('id', true);
         DB_AA::sql($SQL);
         return false;                                     // OK - no error
     }
 
     /** Checks if the user have enough permission to perform the action
-     * @param \AA\Manager $manager
+     *
+     * @param \AA\Manager  $manager
+     *
      * @return bool
      */
-    function isPerm4Action($manager) {
+    function isPerm4Action($manager):bool {
         $cid         = $GLOBALS['r_state']['cat_path'];
         $subtree     = $GLOBALS['r_state']['show_subtree'];
         $current_bin = $GLOBALS['r_state']['bin'];
@@ -53,12 +56,14 @@ class Links_Move extends \AA\Manageraction\Links_Check {
     }
 
     /** Checks if the user have enough permission to perform the action
-     * @param \AA\Manager $manager
-     * @param             $item_zids
-     * @param             $action_param
+     *
+     * @param \AA\Manager  $manager
+     * @param              $item_zids
+     * @param              $action_param
+     *
      * @return bool
      */
-    function isPerm4Perform($manager, $item_zids, $action_param) {
+    function isPerm4Perform($manager, $item_zids, $action_param): bool {
         $perm_needed = ($manager->getBin() == 1 ? PS_LINKS_LINK2ACT : PS_LINKS_LINK2FOLDER);
         return $this->isPerm4Action($manager) && \AA\Manageraction\Links_Check::permCheck($item_zids, $perm_needed, true);
     }

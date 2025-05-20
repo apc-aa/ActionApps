@@ -629,6 +629,12 @@ input[type="radio"] {
      letter-spacing: 0.03em;
      position: relative;
 }
+.aa-ui-nav .navbar a.aa-ui-btn-additem {
+    background: #02a388;
+    border-color: #02a388;
+    color: white;
+}
+
 .aa-ui-nav .navbar a.nbactive {
   color: black;
   background-color: var(--clr-basic-dark);

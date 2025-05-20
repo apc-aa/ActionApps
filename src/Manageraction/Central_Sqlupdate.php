@@ -26,7 +26,8 @@ class Central_Sqlupdate extends AbstractManageraction {
     }
 
     /** @inheritDoc */
-    function perform(Manager $manager, zids $item_zids, $action_param) {
+    function perform(Manager $manager, zids $item_zids, $action_param): string|false
+    {
         $item_ids = $item_zids->shortids();
 
         if (count($item_ids) < 1) {
@@ -51,10 +52,12 @@ class Central_Sqlupdate extends AbstractManageraction {
     }
 
     /** Checks if the user have enough permission to perform the action
-     * @param \AA\Manager $manager
+     *
+     * @param \AA\Manager  $manager
+     *
      * @return bool
      */
-    function isPerm4Action($manager) {
+    function isPerm4Action($manager):bool {
         return IsSuperadmin();
     }
 }

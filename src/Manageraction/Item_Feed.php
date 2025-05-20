@@ -31,7 +31,8 @@ class Item_Feed extends AbstractManageraction {
     }
 
     /** @inheritDoc */
-    function perform(Manager $manager, zids $item_zids, $action_param) {
+    function perform(Manager $manager, zids $item_zids, $action_param): string|false
+    {
         if (!$action_param) {
             return _m('No slice selected');
         }
@@ -47,7 +48,9 @@ class Item_Feed extends AbstractManageraction {
     }
 
     /** Checks if the user have enough permission to perform the action
-     * @param \AA\Manager $manager
+     *
+     * @param \AA\Manager  $manager
+     *
      * @return bool
      */
     function isPerm4Action($manager): bool {

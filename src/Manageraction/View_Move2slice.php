@@ -22,7 +22,8 @@ class View_Move2slice extends \AA\Manageraction\Item_Move2Slice {
     }
 
     /** @inheritDoc */
-    function perform(Manager $manager, zids $item_zids, $action_param) {
+    function perform(Manager $manager, zids $item_zids, $action_param): string|false
+    {
         if (strlen($action_param['dest_slice_id']) < 1) {
             return _m('No slice selected');
         }
@@ -54,10 +55,12 @@ class View_Move2slice extends \AA\Manageraction\Item_Move2Slice {
     }
 
     /** Checks if the user have enough permission to perform the action
-     * @param \AA\Manager $manager
-     * @return bool|string
+     *
+     * @param \AA\Manager  $manager
+     *
+     * @return bool
      */
-    function isPerm4Action($manager) {
+    function isPerm4Action($manager):bool {
         return IfSlPerm(PS_FULLTEXT, $this->slice_id);
     }
 }

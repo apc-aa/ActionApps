@@ -20,7 +20,8 @@ class Links_Move2Cat extends AbstractManageraction {
     }
 
     /** @inheritDoc */
-    function perform(Manager $manager, zids $item_zids, $action_param): bool {
+    function perform(Manager $manager, zids $item_zids, $action_param): string|false
+    {
         if (ctype_digit((string)$action_param)) {
             foreach ($item_zids as $lid) {
                 Links_DeleteLink($lid);
@@ -31,10 +32,12 @@ class Links_Move2Cat extends AbstractManageraction {
     }
 
     /** Checks if the user have enough permission to perform the action
-     * @param \AA\Manager $manager
+     *
+     * @param \AA\Manager  $manager
+     *
      * @return bool
      */
-    function isPerm4Action($manager) {
+    function isPerm4Action($manager):bool {
         return !$GLOBALS['r_state']['show_subtree'] && IsCatPerm(PS_LINKS_DELETE_LINK, $GLOBALS['r_state']['cat_path']);
     }
 }

@@ -9,7 +9,8 @@ use zids;
 class Links_GoCateg extends AbstractManageraction {
 
     /** @inheritDoc */
-    function perform(Manager $manager, zids $item_zids, $action_param): bool {
+    function perform(Manager $manager, zids $item_zids, $action_param): string|false
+    {
         global $r_state;
         // TODO - refresh permission for new category!!!
         $cpath = GetCategoryPath((int)$action_param);

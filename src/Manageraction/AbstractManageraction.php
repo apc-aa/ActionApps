@@ -100,30 +100,36 @@ abstract class AbstractManageraction extends AA_Storable {
     }
 
     /** Perform the action - main function
+     *
      * @param \AA\Manager         $manager      which Manager
      * @param zids                $item_zids    with what Items
      * @param string|array        $action_param additional parameters to the action
+     *
      * @return string|false false is OK, string contain Error message
      */
-    function perform(\AA\Manager $manager, zids $item_zids, $action_param) {
+    function perform(\AA\Manager $manager, zids $item_zids, $action_param): string|false {
         return false;
     }
 
     /** Checks if the user have enough permission to PERFORM the action on items
+     *
      * @param \AA\Manager $manager
      * @param                     $item_zids
      * @param                     $action_param
+     *
      * @return bool
      */
-    function isPerm4Perform($manager, $item_zids, $action_param) {
+    function isPerm4Perform($manager, $item_zids, $action_param): bool {
         return $this->isPerm4Action($manager);  // in most cases it is enough
     }
 
     /** Checks if the user have enough permission to allow him/her to SELECT the action
+     *
      * @param \AA\Manager $manager
+     *
      * @return bool
      */
-    function isPerm4Action($manager) {
+    function isPerm4Action($manager): bool {
         return true;
     }
 

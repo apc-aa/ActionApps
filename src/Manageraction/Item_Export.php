@@ -19,7 +19,8 @@ class Item_Export extends AbstractManageraction {
     }
 
     /** @inheritDoc */
-    function perform(Manager $manager, zids $item_zids, $action_param): bool {
+    function perform(Manager $manager, zids $item_zids, $action_param): string|false
+    {
 
         if ($item_zids->count() > 0) {
             $exportset = AA_Object::factory('AA_Exportsetings', [
@@ -35,10 +36,12 @@ class Item_Export extends AbstractManageraction {
     }
 
     /** Checks if the user have enough permission to perform the action
-     * @param \AA\Manager $manager
-     * @return bool|string
+     *
+     * @param \AA\Manager  $manager
+     *
+     * @return bool
      */
-    function isPerm4Action($manager) {
+    function isPerm4Action($manager):bool {
         return IfSlPerm(PS_EDIT_ALL_ITEMS);
     }
 }

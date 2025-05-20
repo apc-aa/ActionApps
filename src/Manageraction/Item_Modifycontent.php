@@ -13,10 +13,12 @@ class Item_Modifycontent extends AbstractManageraction {
     // uses setOpenUrl() method to open search_replace.php window
 
     /** Checks if the user have enough permission to perform the action
-     * @param \AA\Manager $manager
-     * @return bool|string
+     *
+     * @param \AA\Manager  $manager
+     *
+     * @return bool
      */
-    function isPerm4Action($manager) {
+    function isPerm4Action($manager):bool {
         return IfSlPerm(PS_EDIT_ALL_ITEMS);
     }
 }

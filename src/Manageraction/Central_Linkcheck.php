@@ -16,7 +16,8 @@ class Central_Linkcheck extends AbstractManageraction {
     }
 
     /** @inheritDoc */
-    function perform(Manager $manager, zids $item_zids, $action_param): false|string {
+    function perform(Manager $manager, zids $item_zids, $action_param): string|false
+    {
         if (count($item_zids) < 1) {
             return false;                                     // OK - no error
         }
@@ -42,10 +43,12 @@ class Central_Linkcheck extends AbstractManageraction {
     }
 
     /** Checks if the user have enough permission to perform the action
-     * @param \AA\Manager $manager
+     *
+     * @param \AA\Manager  $manager
+     *
      * @return bool
      */
-    function isPerm4Action($manager) {
+    function isPerm4Action($manager):bool {
         return IsSuperadmin();
     }
 }
