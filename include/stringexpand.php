@@ -11085,7 +11085,7 @@ class AA_Stringexpand_Linkcheck extends AA_Stringexpand_Nevercache {
         if ($format==='') {
             $format = '_#code';
         }
-        $ret  = str_replace(['_#span', '_#code', '_#text', '_#weight', '_#color', '_#redir', '_#mime', '_#charset', '_#duration'], ['<span style="background-color:_#color" title="_#text">_#code</span>', $status['code'], $status['comment'], $status['weight'], self::STATUCOLORS[$status['weight']], $status['final_url'], $status['mime'], $status['charset'], $time], $format);
+        $ret  = str_replace(['_#span', '_#code', '_#text', '_#weight', '_#color', '_#redir', '_#mime', '_#charset', '_#duration'], ['<span style="background-color:_#color" title="_#text">_#code</span>', $status['code'], $status['comment'], $status['weight'], self::STATUCOLORS[$status['weight']], $status['redir'], $status['mime'], $status['charset'], $time], $format);
         return $ret;
     }
 }
