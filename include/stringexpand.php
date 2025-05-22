@@ -11059,7 +11059,7 @@ class AA_Stringexpand_Go extends AA_Stringexpand_Nevercache {
  * @usage {linkcheck:{url............}}  - the same as {linkcheck:{url............}:_#code}
  * @usage {linkcheck:{url............}:_#span}
  * @usage {linkcheck:{url............}:<span style="background-color#:_#color" title="_#text">_#code</span>}
- * Possible aliases are: _#span, _#code, _#text, _#weight, _#color, _#redir, _#mime, _#charset, _#duration
+ * Possible aliases are: _#span, _#code, _#text, _#weight, _#color, _#redir, _#hops, _#mime, _#charset, _#duration
  */
 class AA_Stringexpand_Linkcheck extends AA_Stringexpand_Nevercache {
     private const STATUCOLORS = [
@@ -11080,13 +11080,11 @@ class AA_Stringexpand_Linkcheck extends AA_Stringexpand_Nevercache {
         $linkcheck = new AA\Util\Linkcheck();
         $time = microtime(true);
         $status    = $linkcheck->check_url($url);
-        $time = round(microtime(true) - $time, 2);
-
+        $time = round(microtime(true) - $time, 3);
         if ($format==='') {
             $format = '_#code';
         }
-        $ret  = str_replace(['_#span', '_#code', '_#text', '_#weight', '_#color', '_#redir', '_#mime', '_#charset', '_#duration'], ['<span style="background-color:_#color" title="_#text">_#code</span>', $status['code'], $status['comment'], $status['weight'], self::STATUCOLORS[$status['weight']], $status['redir'], $status['mime'], $status['charset'], $time], $format);
-        return $ret;
+        return str_replace(['_#span', '_#code', '_#text', '_#weight', '_#color', '_#redir', '_#hops', '_#mime', '_#charset', '_#duration'], ['<span style="background-color:_#color" title="_#text">_#code</span>', $status['code'], $status['comment'], $status['weight'], self::STATUCOLORS[$status['weight']], $status['redir'], count($status['redir_chain']) ?: '', $status['mime'], $status['charset'], $time], $format);
     }
 }
 
