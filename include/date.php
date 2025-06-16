@@ -30,7 +30,8 @@ use AA\Util\JsTriggers;
 /** monthnames function
  *  @return array month names
  */
-function monthNames() {
+function monthNames(): array
+{
     return [1 => _m('January'), _m('February'), _m('March'), _m('April'), _m('May'), _m('June'), _m('July'), _m('August'), _m('September'), _m('October'), _m('November'), _m('December')];
 }
 
@@ -42,16 +43,16 @@ function monthNames() {
 //
 
 class datectrl {
-    var $name;
-    var $time;
-    var $day;
-    var $month;
-    var $year;
-    var $y_range_plus;    // how many years + display in year select list
-    var $y_range_minus;   // how many years + display in year select list
-    var $from_now;        // year range is in relation to today's date/selected date
-    var $display_time;    // display time too
-    var $required;
+    private $name;
+    private $time;
+    private $day;
+    private $month;
+    private $year;
+    private $y_range_plus;    // how many years + display in year select list
+    private $y_range_minus;   // how many years + display in year select list
+    private $from_now;        // year range is in relation to today's date/selected date
+    private $display_time;    // display time too
+    private $required;
 
     /** datectrl function
      *  constructor
@@ -75,7 +76,8 @@ class datectrl {
     /** update function
      * process form data
      */
-    function update() {
+    function update(): void
+    {
         $timevar  = trim($_REQUEST["tdctr_" . $this->name . "_time"]);
         $dayvar   = trim($_REQUEST["tdctr_" . $this->name . "_day"]);
         $monthvar = trim($_REQUEST["tdctr_" . $this->name . "_month"]);
@@ -107,7 +109,8 @@ class datectrl {
     /** if the form sent contain this widget
      * @return bool
      */
-    function isUpdatable() {
+    function isUpdatable(): bool
+    {
         $n = $this->name;
         return (isset($_REQUEST["tdctr_{$n}_time"]) || isset($_REQUEST["tdctr_{$n}_day"]) || isset($_REQUEST["tdctr_{$n}_month"]) || isset($_REQUEST["tdctr_{$n}_year"]));
     }
@@ -116,7 +119,8 @@ class datectrl {
      *  set date, format form integer
      * @param $date
      */
-    function setdate_int($date) {
+    function setdate_int($date): void
+    {
         if (!$date) {
             $d = ['year' => 0, 'mon' => 1, 'mday' => 1, 'hours' => 0, 'minutes' => 0, 'seconds' => 0];
         } else {
@@ -133,7 +137,8 @@ class datectrl {
      *  takes ages for PHP to evaluate the date() function then. (php 5.2.6))
      *  it is perfectly possible to increase the max value, however
      */
-    function isTimestamp($timestamp) {
+    function isTimestamp($timestamp): bool
+    {
         // return ctype_digit((string)$timestamp) && ($timestamp > -2147483647) AND ($timestamp < 2147483648);  // wrong - ctype_digit is not work with negative values
         return IsSigInt($timestamp) && $timestamp > -2147483647 && $timestamp < 100000000000;
     }
@@ -141,7 +146,8 @@ class datectrl {
     /** get_date function
      *  get stored date as integer
      */
-    function get_date() {
+    function get_date(): false|int
+    {
         // time is not set ?
         if (!$this->year) {
             // we have to return 0, beacause mktime(0,0,0,0,0,0) == 943916400
@@ -169,7 +175,8 @@ class datectrl {
      * @param $default = '0'
      * @return bool
      */
-    function ValidateDate($inputName, &$err, $required=true, $default='0')  {
+    function ValidateDate($inputName, &$err, $required=true, $default='0'): bool
+    {
         $date = $this->get_date();
         if ( $this->isTimestamp($date) && $date != 0) {
             return true;
@@ -185,7 +192,8 @@ class datectrl {
     }
 
 
-    function getDayOptions() {
+    function getDayOptions(): string
+    {
         $ret = '';
         $at  = getdate(time());
         $sel = ($this->day != 0 ? $this->day : $at["mday"]);
@@ -204,7 +212,8 @@ class datectrl {
     }
 
 
-    function getMonthOptions() {
+    function getMonthOptions(): string
+    {
         $months  = monthNames();
         $at      = getdate(time());
         $sel     = ($this->month != 0 ? $this->month : $at["mon"]);
@@ -223,11 +232,13 @@ class datectrl {
         return "<select name=\"tdctr_" . $this->name . "_month\"". JsTriggers::getFromGlobalSliceId("select", $this->name) .">".$this->getMonthOptions()."</select>";
     }
 
-    function isEmpty() {
+    function isEmpty(): bool
+    {
         return (!$this->year || $this->year==1970 && $this->month==1 && $this->day==1);
     }
 
-    function getYearOptions() {
+    function getYearOptions(): string
+    {
         $at           = getdate(time());
         $from         = ( $this->from_now ? $at["year"] - $this->y_range_minus : $this->y_range_minus );
         $to           = ( $this->from_now ? $at["year"] + $this->y_range_plus  : $this->y_range_plus );
@@ -269,7 +280,8 @@ class datectrl {
         return $this->display_time;
     }
 
-    function getTimeString() {
+    function getTimeString(): string
+    {
         $t = explode( ":", $this->time );
         $time_string = '';
 

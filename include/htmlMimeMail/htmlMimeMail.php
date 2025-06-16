@@ -34,19 +34,16 @@ class htmlMimeMail {
 	private $html_text;
     /**
      * An array of embedded images/objects
-     * @var array
      */
-	private $html_images = [];
+	private array $html_images = [];
     /**
      * An array of recognised image types for the findHtmlImages() method
      * @var array
-     */
-
-    /**
+     *
      * If you want the auto load functionality to find other image/file types, add the
      * extension and content type here.
      */
-	private $image_types = [
+	private array $image_types = [
      'gif'    => 'image/gif',
      'jpg'    => 'image/jpeg',
      'jpeg'    => 'image/jpeg',
@@ -59,34 +56,27 @@ class htmlMimeMail {
  ];
     /**
      * Parameters that affect the build process
-     * @var array
      */
-	private $build_params;
+	private array $build_params = [];
     /**
      * Array of attachments
-     * @var array
      */
-	private $attachments;
+	private array $attachments = [];
     /**
      * The main message headers
-     * @var array
      */
-	private $headers = [];
+	private array $headers = [];
     /**
      * Whether the message has been built or not
      * @var boolean
      */
-	private $is_built = false;
+	private bool $is_built = false;
     /**
      * The return path address. If not set the From: address is used instead
      * @var string
      */
-	private $return_path;
-    /**
-     * Array of information needed for smtp sending
-     * @var array
-     */
-	private $smtp_params;
+	private string $return_path;
+
     /**
      * Constructor function. Sets the headers
      * if supplied.
@@ -113,13 +103,6 @@ class htmlMimeMail {
             $helo = 'localhost';
         }
 
-        $this->smtp_params['host'] = 'localhost';
-        $this->smtp_params['port'] = 25;
-        $this->smtp_params['helo'] = $helo;
-        $this->smtp_params['auth'] = false;
-        $this->smtp_params['user'] = '';
-        $this->smtp_params['pass'] = '';
-
         /**
          * Make sure the MIME version header is first.
          */
@@ -130,14 +113,15 @@ class htmlMimeMail {
      * This function will read a file in from a supplied filename and return it. This can then be given as the first
      * argument of the functions add_html_image() or add_attachment().
      */
-    function getFile($filename) {
+    function getFile($filename): string
+    {
         return AA_File_Wrapper::wrapper($filename)->contents();
     }
 
     /**
      * Accessor to set the CRLF style
      */
-	public function setCrlf($crlf = "\n")
+	public function setCrlf($crlf = "\n"): void
     {
         if (!defined('CRLF')) {
             define('CRLF', $crlf, true);
@@ -149,33 +133,9 @@ class htmlMimeMail {
     }
 
     /**
-     * Accessor to set the SMTP parameters
-     */
-	public function setSMTPParams($host = null, $port = null, $helo = null, $auth = null, $user = null, $pass = null)
-    {
-		if (!is_null($host)) {
-			$this->smtp_params['host'] = $host;
-		}
-		if (!is_null($port)) {
-			$this->smtp_params['port'] = $port;
-		}
-		if (!is_null($helo)) {
-			$this->smtp_params['helo'] = $helo;
-		}
-		if (!is_null($auth)) {
-			$this->smtp_params['auth'] = $auth;
-		}
-		if (!is_null($user)) {
-			$this->smtp_params['user'] = $user;
-        }
-		if (!is_null($pass)) {
-			$this->smtp_params['pass'] = $pass;
-		}
-	}
-    /**
      * Accessor function to set the text encoding
      */
-	public function setTextEncoding($encoding = '7bit')
+	public function setTextEncoding($encoding = '7bit'): void
     {
         $this->build_params['text_encoding'] = $encoding;
     }
@@ -183,7 +143,7 @@ class htmlMimeMail {
     /**
      * Accessor function to set the HTML encoding
      */
-	public function setHtmlEncoding($encoding = 'quoted-printable')
+	public function setHtmlEncoding($encoding = 'quoted-printable'): void
     {
         $this->build_params['html_encoding'] = $encoding;
     }
@@ -191,7 +151,7 @@ class htmlMimeMail {
     /**
      * Accessor function to set the text charset
      */
-	public function setTextCharset($charset = 'ISO-8859-1')
+	public function setTextCharset($charset = 'ISO-8859-1'): void
     {
         $this->build_params['text_charset'] = $charset;
     }
@@ -199,7 +159,7 @@ class htmlMimeMail {
     /**
      * Accessor function to set the HTML charset
      */
-	public function setHtmlCharset($charset = 'ISO-8859-1')
+	public function setHtmlCharset($charset = 'ISO-8859-1'): void
     {
         $this->build_params['html_charset'] = $charset;
     }
@@ -207,7 +167,7 @@ class htmlMimeMail {
     /**
      * Accessor function to set the header encoding charset
      */
-	public function setHeadCharset($charset = 'ISO-8859-1')
+	public function setHeadCharset($charset = 'ISO-8859-1'): void
     {
         $this->build_params['head_charset'] = $charset;
     }
@@ -215,7 +175,7 @@ class htmlMimeMail {
     /**
      * Accessor function to set the text wrap count
      */
-	public function setTextWrap($count = 998)
+	public function setTextWrap($count = 998): void
     {
         $this->build_params['text_wrap'] = $count;
     }
@@ -223,7 +183,7 @@ class htmlMimeMail {
     /**
      * Accessor to set a header
      */
-	public function setHeader($name, $value)
+	public function setHeader($name, $value): void
     {
         $this->headers[$name] = $value;
     }
@@ -231,7 +191,7 @@ class htmlMimeMail {
     /**
      * Accessor to add a Subject: header
      */
-	public function setSubject($subject)
+	public function setSubject($subject): void
     {
         $this->headers['Subject'] = $subject;
     }
@@ -239,7 +199,7 @@ class htmlMimeMail {
     /**
      * Accessor to add a From: header
      */
-	public function setFrom($from)
+	public function setFrom($from): void
     {
         $this->headers['From'] = $from;
     }
@@ -250,7 +210,7 @@ class htmlMimeMail {
      *
      * @param mixed $priority The priority to use.
      */
-    function setPriority($priority = 'normal')
+    function setPriority($priority = 'normal'): void
     {
         switch (strtolower($priority)) {
             case 'high':
@@ -276,7 +236,7 @@ class htmlMimeMail {
     /**
      * Accessor to set the return path
      */
-	public function setReturnPath($return_path)
+	public function setReturnPath(string $return_path): void
     {
         $this->return_path = $return_path;
     }
@@ -284,7 +244,7 @@ class htmlMimeMail {
     /**
      * Accessor to add a Cc: header
      */
-	public function setCc($cc)
+	public function setCc($cc): void
     {
         $this->headers['Cc'] = is_array($cc) ? implode(",", $cc) : $cc;
     }
@@ -292,7 +252,7 @@ class htmlMimeMail {
     /**
      * Accessor to add a Bcc: header
      */
-	public function setBcc($bcc)
+	public function setBcc($bcc): void
     {
         $this->headers['Bcc'] = is_array($bcc) ? implode(",", $bcc) : $bcc;
     }
@@ -300,7 +260,7 @@ class htmlMimeMail {
     /**
      * Adds plain text. Use this function when NOT sending html email
      */
-	public function setText($text = '')
+	public function setText($text = ''): void
     {
         $this->text = $text;
     }
@@ -308,7 +268,7 @@ class htmlMimeMail {
     /**
      * Adds a html part to the mail. Also replaces image names with content-id's.
      */
-	public function setHtml($html, $text = null, $images_dir = null)
+	public function setHtml($html, $text = null, $images_dir = null): void
     {
         $this->html      = $html;
         $this->html_text = $text;
@@ -326,7 +286,8 @@ class htmlMimeMail {
      *
      * @author Dan Allen
      */
-	private function _findHtmlImages($images_dir) {
+	private function _findHtmlImages($images_dir): void
+    {
         // Build the list of image extensions
         $extensions = array_keys($this->image_types);
 
@@ -387,7 +348,7 @@ class htmlMimeMail {
     /**
      * Adds an image to the list of embedded images.
      */
-	public function addHtmlImage($file, $name = '', $c_type='application/octet-stream')
+	public function addHtmlImage($file, $name = '', $c_type='application/octet-stream'): void
     {
         $this->html_images[] = [
             'body'   => $file,
@@ -400,7 +361,7 @@ class htmlMimeMail {
     /**
      * Adds a file to the list of attachments.
      */
-	public function addAttachment($file, $name = '', $c_type='application/octet-stream', $encoding = 'base64')
+	public function addAttachment($file, $name = '', $c_type='application/octet-stream', $encoding = 'base64'): void
     {
         $this->attachments[] = [
             'body'     => $file,
@@ -443,8 +404,8 @@ class htmlMimeMail {
     /**
      * Starts a message with a mixed part
      */
-   private function &_addMixedPart()
-    {
+   private function &_addMixedPart(): Mail_mimePart
+   {
         $params['content_type'] = 'multipart/mixed';
         $return = new Mail_mimePart('', $params);
 
@@ -480,8 +441,8 @@ class htmlMimeMail {
     /**
      * Adds an html image subpart to a mime_part object
      */
-   private function _addHtmlImagePart($obj, $value)
-    {
+   private function _addHtmlImagePart($obj, $value): void
+   {
         $params['content_type'] = $value['c_type'];
         $params['encoding']     = 'base64';
         $params['disposition']  = 'inline';
@@ -493,8 +454,8 @@ class htmlMimeMail {
     /**
      * Adds an attachment subpart to a mime_part object
      */
-   private function _addAttachmentPart($obj, $value)
-    {
+   private function _addAttachmentPart($obj, $value): void
+   {
         $params['content_type'] = $value['c_type'];
         $params['encoding']     = $value['encoding'];
         $params['disposition']  = 'attachment';
@@ -521,7 +482,7 @@ class htmlMimeMail {
      * $params['head_charset']  - The character set to use for header encoding should it be needed.
      *                          - Default is ISO-8859-1
      */
-    function buildMessage($params = [])
+    function buildMessage($params = []): bool
     {
         if (!empty($params)) {
             foreach ($params as $key => $value) {
@@ -677,11 +638,11 @@ class htmlMimeMail {
      * Sends the mail.
      *
      * @param  array  $recipients
-     * @return mixed
      */
-   public function send($recipients) {
+   public function send($recipients): int
+   {
         if ( !(isset($recipients) && is_array($recipients)) ) {
-            return false;
+            return 0;
         }
 
         if (!defined('CRLF')) {
@@ -716,7 +677,7 @@ class htmlMimeMail {
             $this->headers['Subject'] = $subject;
         }
 
-        return $result;
+        return $result ? count($recipients) : 0;
     }
 
     /**

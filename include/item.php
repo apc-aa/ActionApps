@@ -26,8 +26,10 @@
 */
 
 use AA\IO\DB\DB_AA;
+use AA\Util\AbstractAliasgenerator;
 use AA\Util\Langs;
 use AA\Util\ChangesMonitor;
+use AA\Util\SingletonTrait;
 
 require_once __DIR__ . "/stringexpand.php";
 if (file_exists(__DIR__ . "/usr_aliasfnc.php")) {
@@ -43,7 +45,8 @@ require_once __DIR__ . "/../modules/links/constants.php";
  * @param $aliases
  * @param $module_id
  */
-function DefineBaseAliases(&$aliases, $module_id) {
+function DefineBaseAliases(&$aliases, $module_id): void
+{
     if ( !isset($aliases["_#ITEM_ID_"]) ) {
         $aliases["_#ITEM_ID_"] = GetAliasDef( "f_1", "unpacked_id.....");
     }
@@ -61,9 +64,11 @@ function DefineBaseAliases(&$aliases, $module_id) {
 }
 
 /** Returns aliases
- * @param string type - 'const'/'links'/'categories' - just like *view* types
- * @param $additional
- * @return array
+ *
+ * @param  string  $type  type - 'const'/'links'/'categories' - just like *view* types
+ * @param  array   $additional
+ *
+ * @return AA_Aliases
  */
 function GetAliases4Type( $type, $additional=[] ): AA_Aliases {
     $aliases = match ($type) {
@@ -90,7 +95,8 @@ function GetAliases4Type( $type, $additional=[] ): AA_Aliases {
  * @param $value
  * @param $flag
  */
-function FillFakeAlias(&$content4id, $aliases, $alias, $value, $flag=FLAG_HTML) {
+function FillFakeAlias(&$content4id, $aliases, $alias, $value, $flag=FLAG_HTML): void
+{
     do {
         $colname = AA_Fields::createFieldId( strtolower( substr( $alias,2,12 )));
     } while ( isset($content4id[$colname]) );
@@ -106,11 +112,11 @@ function FillFakeAlias(&$content4id, $aliases, $alias, $value, $flag=FLAG_HTML) 
  *
  * make_return_url
  * global function to get return_url
- * this function may replaced by extension of $sess as a method $sess->return_url().
+ * this function may be replaced by extension of $sess as a method $sess->return_url().
  * @param $url
- * @return mixed|string
  */
-function sess_return_url($url) {
+function sess_return_url($url): string
+{
     global $return_url;
 
     // decode and return $return_url OR return for standard APC-AA behavier
@@ -125,10 +131,13 @@ function sess_return_url($url) {
  *
  *  make_return_url
  * function make_return_url($prifix="&return_url=")
- * @param $r1
- * @return mixed|string
+ *
+ * @param  string|null  $r1
+ *
+ * @return string|null
  */
-function make_return_url($r1="") {
+function make_return_url(?string $r1=""): ?string
+{
     global $return_url, $sess;
     if ($r1) {
         return $r1;
@@ -146,15 +155,18 @@ function make_return_url($r1="") {
 /** Inputform_url function
  *  helper function which create link to inputform from item manager
  * (_#EDITITEM, f_e:add, ...)
- * @param bool $add
- * @param string $iid
- * @param $sid - for edditing it is not necessary
- * @param $ret_url
- * @param $vid
- * @param $var
+ *
+ * @param  bool         $add
+ * @param  string       $iid
+ * @param  string       $sid  - for edditing it is not necessary
+ * @param  string|null  $ret_url
+ * @param  null         $vid
+ * @param  null         $var
+ * @param  bool         $safe
+ *
  * @return string
  */
-function Inputform_url($add, $iid, $sid='', $ret_url='', $vid = null, $var = null, $safe=true): string {
+function Inputform_url($add, $iid, $sid='', ?string $ret_url='', $vid = null, $var = null, $safe=true): string {
     global $profile;
 
     // $admin_path = AA_INSTAL_URL. "admin/itemedit.php";
@@ -288,8 +300,10 @@ function GetFormatedConstants($constgroup, $format, $restrict_zids, $conds, $sor
 
 /** GetItemFromContent function
  * Creates item object just from item_content
+ *
  * @param $content  ItemContent|AA_Content object
- * @return AA_Item
+ *
+ * @return AA_Item|null
  */
 function GetItemFromContent($content): ?AA_Item {
     if ( !is_object($content) ) {
@@ -302,7 +316,7 @@ function GetItemFromContent($content): ?AA_Item {
 /** cached slice aliases
  *  @usage new AA_Aliases(new AA_Aliasgenerator_Slice($slice_id))
  */
-class AA_Aliasgenerator_Slice extends \AA\Util\AbstractAliasgenerator {
+class AA_Aliasgenerator_Slice extends AbstractAliasgenerator {
     protected $slice_id;
 
     public function __construct(string $slice_id) {
@@ -335,7 +349,7 @@ class AA_Aliasgenerator_Slicejustids extends AA_Aliasgenerator_Slice {
 /** cached discussion aliases
  *  @usage new AA_Aliases(new AA_Aliasgenerator_Discussion())
  */
-class AA_Aliasgenerator_Discussion extends \AA\Util\AbstractAliasgenerator {
+class AA_Aliasgenerator_Discussion extends AbstractAliasgenerator {
 
     public static function getAliasesFromParams(array $params): AA_Aliases {
 
@@ -367,7 +381,7 @@ class AA_Aliasgenerator_Discussion extends \AA\Util\AbstractAliasgenerator {
 /** cached discussion2mail aliases
  *  @usage new AA_Aliases(new AA_Aliasgenerator_Discussion2mail())
  */
-class AA_Aliasgenerator_Discussion2mail extends \AA\Util\AbstractAliasgenerator {
+class AA_Aliasgenerator_Discussion2mail extends AbstractAliasgenerator {
 
     public static function getAliasesFromParams(array $params): AA_Aliases {
         $aliases = new AA_Aliases;
@@ -383,7 +397,7 @@ class AA_Aliasgenerator_Discussion2mail extends \AA\Util\AbstractAliasgenerator 
 /** cached constants aliases
  *  @usage new AA_Aliases(new AA_Aliasgenerator_Constant())
  */
-class AA_Aliasgenerator_Constant extends \AA\Util\AbstractAliasgenerator {
+class AA_Aliasgenerator_Constant extends AbstractAliasgenerator {
 
     public static function getAliasesFromParams(array $params): AA_Aliases {
         $aliases = new AA_Aliases;
@@ -409,12 +423,12 @@ class AA_Aliasgenerator_Constant extends \AA\Util\AbstractAliasgenerator {
 
 class AA_Item {
     /** @var ItemContent  */
-    protected $content4id;        // ItemContent array for this Item (like from GetItemContent)
-    protected $format;            // format string with aliases
-    protected $remove;            // remove string
+    private $content4id;        // ItemContent array for this Item (like from GetItemContent)
+    private $format;            // format string with aliases
+    private $remove;            // remove string
     /** @var AA_Aliases|null  */
-    protected $aliases;           // AA_Aliases with possible generator for alias lazy load
-    protected $parameters;        // optional additional parameters - copied from itemview->parameters
+    private $aliases;           // AA_Aliases with possible generator for alias lazy load
+    private $parameters;        // optional additional parameters - copied from itemview->parameters
 
     /** item function
      *  Constructor
@@ -447,7 +461,8 @@ class AA_Item {
      * @param $format
      * @param $remove
      */
-    function setformat( $format, $remove="") {
+    function setformat( $format, $remove=""): void
+    {
         $this->format = $format;
         $this->remove = $remove;
     }
@@ -457,7 +472,8 @@ class AA_Item {
      *  Used for category_id (in Links module) ...
      * @param $parameters
      */
-    function set_parameters($parameters) {
+    function set_parameters($parameters): void
+    {
         $this->parameters = $parameters;
     }
 
@@ -465,7 +481,8 @@ class AA_Item {
      * sets content (ItemContent object or older - content4id array)
      * @param $content4id
      */
-    function set_data($content4id) {
+    function set_data($content4id): void
+    {
         $this->content4id = (is_object($content4id) ? $content4id : new ItemContent($content4id));
     }
 
@@ -474,13 +491,16 @@ class AA_Item {
      * @param $field string
      * @param $value AA_Value
      */
-    function setAaValue($field, $value) {
+    function setAaValue($field, $value): void
+    {
         $this->content4id->setAaValue($field, $value);
     }
 
     /** shortcut for AA_Content->getValue()
-     * @param $field_id
-     * @param $what
+     *
+     * @param       $field_id
+     * @param  int  $index
+     *
      * @return string | false
      */
     function getval($field_id, $index=0) {
@@ -488,11 +508,13 @@ class AA_Item {
     }
 
     /** shortcut for AA_Content->getFlag()
+     *
      * @param $field_id
-     * @param $what
+     *
      * @return bool
      */
-    function getFlag($field_id) {
+    function getFlag($field_id): bool
+    {
         return $this->content4id->getFlag($field_id);
     }
 
@@ -500,16 +522,19 @@ class AA_Item {
      * @param $field_id
      * @return array
      */
-    function getValues($field_id) {
+    function getValues($field_id): array
+    {
         return $this->content4id->getValues($field_id);
     }
 
     /** shortcut for ItemContent->getValue()
-     * @param string $field_id
-     * @param int    $idx
+     *
+     * @param  string  $field_id
+     *
      * @return string | false
      */
-    function getValue($field_id) {
+    function getValue($field_id): false|string
+    {
         return $this->content4id->getValue($field_id);
     }
 
@@ -529,21 +554,24 @@ class AA_Item {
         return $this->content4id->getAaValue($field_id);
     }
 
-    function isEmpty() { return $this->content4id->isEmpty(); }
+    function isEmpty(): bool { return $this->content4id->isEmpty(); }
 
     /** Without $bin returns true if the item is visible - not expired/trashed/pending/...
      *  You can specify bin AA_BIN_ACTIVE or AA_BIN_HOLDING or AA_BIN_TRASH or AA_BIN_ALL or its bitwise combination (the trash and pending is not supported, now)
      * @return bool
      */
-    function isActive($bin=AA_BIN_ACTIVE) {
+    function isActive($bin=AA_BIN_ACTIVE): bool
+    {
         return $this->content4id->isActive($bin);
     }
 
-    function getStatusCode() {
+    function getStatusCode(): int
+    {
         return $this->content4id->getStatusCode();
     }
 
-    function isMultilingual($field_id) {
+    function isMultilingual($field_id): bool
+    {
         return $this->content4id->isMultilingual($field_id);
     }
 
@@ -560,34 +588,39 @@ class AA_Item {
      *  @deprecated - for backward compatibility (used in AA_Object getContent)
      *  @return array
      */
-    function getContent() {
+    function getContent(): array
+    {
         return $this->content4id->getContent();
     }
 
     /** getItemContent function
-     * @return ItemContent
      */
-    function getItemContent() {
+    function getItemContent(): AA_Content
+    {
         return $this->content4id;
     }
 
     /** getItemID function */
-    function getItemId() {
+    function getItemId(): string
+    {
         return $this->content4id->getItemID();
     }
 
     /** getId */
-    function getId() {
+    function getId(): string
+    {
         return $this->content4id->getId();
     }
 
     /** getSliceID function  */
-    function getSliceID() {
+    function getSliceID(): string
+    {
         return $this->content4id->getSliceID();
     }
 
     /** getOwnerID function  */
-    function getOwnerID() {
+    function getOwnerID(): string
+    {
         return $this->content4id->getSliceID();
     }
 
@@ -605,10 +638,13 @@ class AA_Item {
     }
 
     /** col2Html function - better txt2html function - it replaces also urls...
+     *
      * @param $col
-     * @return string
+     *
+     * @return false|string
      */
-    function col2Html($col) {
+    function col2Html($col): false|string
+    {
         if ($this->getFlag($col) & FLAG_HTML) {
             return $txt;
         }
@@ -619,11 +655,14 @@ class AA_Item {
     }
 
     /** getbaseurl function
-     * @param $redirect
-     * @param $no_sess
-     * @return mixed|string
+     *
+     * @param  string|null  $redirect
+     * @param               $no_sess
+     *
+     * @return string
      */
-    function getbaseurl($redirect, $no_sess) {
+    function getbaseurl(?string $redirect, $no_sess): string
+    {
         global $sess;
 
         // redirecting to another page?
@@ -638,14 +677,16 @@ class AA_Item {
 
     /** getitemurl function
      * get item url - take in mind: item_id, external links and redirection
-     * @param $extern
-     * @param $extern_url
-     * @param $redirect
-     * @param $condition
-     * @param $no_sess
+     *
+     * @param               $extern
+     * @param               $extern_url
+     * @param  string|null  $redirect
+     * @param  bool         $condition
+     * @param  bool         $no_sess
+     *
      * @return string
      */
-    function getitemurl($extern, $extern_url, $redirect, $condition=true, $no_sess=false): string {
+    function getitemurl($extern, $extern_url, ?string $redirect, $condition=true, $no_sess=false): string {
         if ($extern && ($extern_url = trim($extern_url)) !== "") {      // link_only
             return $extern_url;
         }
@@ -662,7 +703,8 @@ class AA_Item {
     /**
      *  get array of alias names
      */
-    public function getAliasNames() {
+    public function getAliasNames(): array
+    {
         return $this->aliases->getNames();
     }
 
@@ -670,11 +712,13 @@ class AA_Item {
      *   add new alias if not exist yet
      *   @deprecated Should be added to aliases not to $item
      */
-    public function addAlias(AA_Alias $alias) {
+    public function addAlias(AA_Alias $alias): void
+    {
         $this->aliases->addAlias($alias);
     }
 
-    public function setAliases(AA_Aliases $aliases) {
+    public function setAliases(AA_Aliases $aliases): void
+    {
         $this->aliases = $aliases;
     }
 
@@ -691,7 +735,8 @@ class AA_Item {
      * @param $hide
      * @return string
      */
-    function getahref($url, $txt, $add="", $html=false, $hide=false) {
+    function getahref($url, $txt, $add="", $html=false, $hide=false): string
+    {
         if ( $url && $txt ) {
             // repair url if user omits to write http://
             if ( substr($url,4)==='www.' ) {
@@ -822,10 +867,12 @@ class AA_Item {
      * @param $var
      * @return string|string[]
      */
-    function subst_aliases( $var ) {
+    function subst_aliases( $var ): array|string
+    {
         if ( !is_array( $var ) ) {
             return $this->subst_alias( $var );
         }
+        $ret = [];
         foreach ( $var as $k => $v ) {
             $ret[$k] = $this->subst_alias( $v );
         }
@@ -1506,9 +1553,11 @@ class AA_Item {
      *     txt           - if txt is field_id content is shown as link, else txt
      *     condition_fld - field id - if no content of this field, no link
      *     addition      - additional parameter to <a tag (like target=_blank)
-     * @param $col
-     * @param $param
-     * @return
+     *
+     * @param          $col
+     * @param  string  $param
+     *
+     * @return string
      */
 
     function f_v($col, $param=""): string {
@@ -1626,9 +1675,11 @@ class AA_Item {
      *   if $col==<from2> the function returns <to2>
      *   else it returns <dafault>
      *   <to1>, <to2>, ... and <default> can be field ids
-     * @param $col
-     * @param $param
-     * @return
+     *
+     * @param          $col
+     * @param  string  $param
+     *
+     * @return string
      */
     function f_x($col, $param=""): string {
         $p        = $this->subst_aliases( ParamExplode($param) );
@@ -1792,15 +1843,15 @@ class AA_Item {
  */
 class AA_Items {
 
-    use \AA\Util\SingletonTrait;
+    use SingletonTrait;
 
     /** Array of all items grabbed from database during rendering of the page
      *  Array short item id -> AA_Item object (short for smaller memory usage)
      */
-    protected $_i = [];
+    private $_i = [];
 
     /** translation table from long ids to short ones */
-    protected $_l2s;
+    private $_l2s;
 
     /** Item caching function
      *
@@ -1838,7 +1889,8 @@ class AA_Items {
     /** @param zids $zids
      * @return AA_Item[] - array(long_id -> AA_Item)
      */
-    static function & getItems($zids, $crypted_additional_slice_pwd=null) {
+    static function & getItems($zids, $crypted_additional_slice_pwd=null): array
+    {
         self::preload($zids, $crypted_additional_slice_pwd);
         $items = self::singleton();
 
@@ -1853,7 +1905,8 @@ class AA_Items {
 
     /** @param zids $zids
      */
-    static function preload($zids, $crypted_additional_slice_pwd=null) {
+    static function preload($zids, $crypted_additional_slice_pwd=null): void
+    {
         $items = self::singleton();
 
         // check for already cached items
@@ -1866,7 +1919,7 @@ class AA_Items {
         }
 
         // do we need some not cached items?
-        if ($zids2get->count() > 0) {
+        if ($zids2get->count()) {
             // yes we store it in the cache first
             $content = GetItemContent($zids2get, false, false, false, $crypted_additional_slice_pwd);
             for ( $i=0, $ino=$zids2get->count(); $i<$ino; ++$i) {
@@ -1900,13 +1953,14 @@ class AA_Items {
      * @param             $field
      * @return AA_Value|null
      */
-    static function getItemProperty($item_zid, $field) {
-        $item = self::getItem($item_zid);
-        return $item ? $item->getAaValue($field) : null;
+    public static function getItemProperty($item_zid, $field): ?AA_Value
+    {
+        return self::getItem($item_zid)?->getAaValue($field);
     }
 
     // array of unpacked ids
-    public static function deleteItems($zids) {
+    public static function deleteItems($zids): void
+    {
         $ids_arr   = $zids->longids(); // unpacked ids
         $short_arr = $zids->shortids();
         DB_AA::delete_low_priority('item',        [['id',             $ids_arr,   'l']]);
@@ -1927,22 +1981,26 @@ class AA_Items {
     }
 
     /** Invalidate item cache */
-    function invalidate() {
+    function invalidate(): void
+    {
         self::singleton()->doInvalidate();
     }
 
     /** called just from clear in order internal variables could be private */
-    function doInvalidate() {
+    function doInvalidate(): void
+    {
         $this->_i = [];
         $this->_l2s = [];
     }
 
     /** Invalidate item cache */
-    function invalidateItem($zid) {
+    function invalidateItem($zid): void
+    {
         self::singleton()->_invalidateLongIdItem($zid->longids(0));
     }
 
-    function _invalidateLongIdItem($id) {
+    function _invalidateLongIdItem($id): void
+    {
         if (isset($this->_i[$this->_l2s[$id]])) {
             unset($this->_i[$this->_l2s[$id]]);
         }
@@ -1952,7 +2010,8 @@ class AA_Items {
      * @param $zid zids
      * @return AA_Item|null
      */
-    function _getFromCache($zid) {
+    function _getFromCache($zid): ?AA_Item
+    {
         if ( $zid->use_short_ids() ) {
             $id = $zid->id();
             // is it cached under its id (we expect short id here)

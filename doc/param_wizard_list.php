@@ -27,10 +27,12 @@
   Shows all the help to all the list items (i.e. all alias functions, all field types)
  */
 
+use AA\Util\Langs;
+
 require_once __DIR__."/../include/config.php";
 require_once __DIR__ . "/../include/util.php";
 require_once __DIR__ . "/../include/mgettext.php";
-mgettext_bind(\AA\Util\Langs::currentLang(), 'param_wizard');
+mgettext_bind(Langs::currentLang(), 'param_wizard');
 require_once __DIR__ . "/../include/constants_param_wizard.php";
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)

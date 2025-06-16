@@ -31,6 +31,7 @@
 //
 
 use AA\IO\DB\DB_AA;
+use AA\Managed;
 
 require_once __DIR__ . "/stringexpand.php"; // for translateString()
 
@@ -40,7 +41,8 @@ require_once __DIR__ . "/stringexpand.php"; // for translateString()
  * @param $destination_id
  * @return array
  */
-function GetFieldMapping($from_slice_id, $destination_id) {
+function GetFieldMapping($from_slice_id, $destination_id): array
+{
     $fields_from = AA_Slice::getModule($from_slice_id)->getFields()->getPriorityArray();
     $fields_to   = AA_Slice::getModule($destination_id)->getFields()->getPriorityArray();
 
@@ -89,10 +91,13 @@ function GetFieldMapping($from_slice_id, $destination_id) {
 
 /** GetBaseItem function
  * get base item of $item_id from relation table
- * @param $item_id
- * @return mixed
+ *
+ * @param  string  $item_id
+ *
+ * @return string
  */
-function GetBaseItem($item_id) {
+function GetBaseItem(string $item_id): string
+{
     $db = getDb();
     $dest_id = $item_id;
 
@@ -109,11 +114,13 @@ function GetBaseItem($item_id) {
 
 /** IsItemFed function
  * find if item was already fed to $destination slice or it comes from it
- * @param $item_id
- * @param $destination
+ *
+ * @param  string  $item_id
+ * @param  string  $destination
+ *
  * @return bool
  */
-function IsItemFed($item_id, $destination): bool {
+function IsItemFed(string $item_id, string $destination): bool {
     $p_destination = q_pack_id($destination);
     $base_id       = GetBaseItem($item_id);  // Trace back to the original id
 
@@ -127,7 +134,7 @@ function IsItemFed($item_id, $destination): bool {
 
     // Test array for containing an item fed from same baseid
     foreach ($sources as $source_id) {
-        if ($base_id == GetBaseItem($source_id)) {
+        if ($base_id === GetBaseItem($source_id)) {
             return true;
         }
     }
@@ -147,7 +154,8 @@ function IsItemFed($item_id, $destination): bool {
  *  @return void - changed $result
  *  @author   Jakub Adamek
  */
-function FeedJoin($columns, $fields, $params, &$result) {
+function FeedJoin($columns, $fields, $params, &$result): void
+{
     $params = str_replace ("#:","#~",$params);
     $params = explode(":",$params);
     $i = 0;
@@ -186,18 +194,19 @@ function FeedJoin($columns, $fields, $params, &$result) {
 /** FeedItemTo function
  * copy one item
  *
- * @param         $item_id
- * @param         $from_slice_id
- * @param         $destination_id
- * @param         $approved
- * @param         $tocategory
- * @param  array  $content
+ * @param  string  $item_id
+ * @param  string  $from_slice_id
+ * @param  string  $destination_id
+ * @param          $approved
+ * @param  int     $tocategory
+ * @param  array   $content
  *
- * @return bool|mixed|string
+ * @return string|false
  */
-function FeedItemTo($item_id, $from_slice_id, $destination_id, $approved, $tocategory = 0, array $content=[]) {
+function FeedItemTo(string $item_id, string $from_slice_id,string $destination_id, $approved, $tocategory = 0, array $content=[]): string|false
+{
 
-    if ( $destination_id == $from_slice_id ) { // don't feed into the same slice
+    if ( $destination_id === $from_slice_id ) { // don't feed into the same slice
         return false;
     }
 
@@ -302,7 +311,8 @@ function FeedItemTo($item_id, $from_slice_id, $destination_id, $approved, $tocat
  * @param     $source_id
  * @param int $flag
  */
-function AddRelationFeed($dest_id, $source_id, $flag = REL_FLAG_FEED) {
+function AddRelationFeed($dest_id, $source_id, $flag = REL_FLAG_FEED): void
+{
     if ($dest_id != $source_id) {
         $p_dest_id = xpack_id($dest_id);
         $p_source_id = xpack_id($source_id);
@@ -311,11 +321,13 @@ function AddRelationFeed($dest_id, $source_id, $flag = REL_FLAG_FEED) {
     }
 }
 
-function FromFed($item_id) {
+function FromFed($item_id): array
+{
     return array_map('unpack_id', DB_AA::select('', 'SELECT source_id FROM relation', [['destination_id', $item_id, 'l'], ['flag', REL_FLAG_FEED, 'i']]));
 }
 
-function WhereFed($item_id) {
+function WhereFed($item_id): array
+{
     return array_map('unpack_id', DB_AA::select('', 'SELECT destination_id FROM relation', [['source_id', $item_id, 'l'], ['flag', REL_FLAG_FEED, 'i']]));
 }
 
@@ -326,7 +338,8 @@ function WhereFed($item_id) {
  * @param $dest_id
  * @param $destination_id
  */
-function UpdateFedItem($item_id, $slice_id, $dest_id, $destination_id) {
+function UpdateFedItem($item_id, $slice_id, $dest_id, $destination_id): void
+{
 
     if ($item_id == $dest_id || $slice_id==$destination_id) {
         return;
@@ -376,7 +389,8 @@ function UpdateFedItem($item_id, $slice_id, $dest_id, $destination_id) {
  * @param $slice_id
  * @return bool
  */
-function UpdateItems($item_id, $slice_id) {     // function UpdateItems($item_id, $slice_id, $tree)
+function UpdateItems($item_id, $slice_id): bool
+{     // function UpdateItems($item_id, $slice_id, $tree)
     $items  = [$item_id => $slice_id];
     $update = false;
 
@@ -400,7 +414,9 @@ function UpdateItems($item_id, $slice_id) {     // function UpdateItems($item_id
 
 /** FeedItem function
  *  Feeds item to all appropriate slices
- * @param ItemContent $content4id - fed item
+ *
+ * @param  ItemContent  $content
+ *
  * @return bool
  */
 function FeedItem(ItemContent $content): bool {
@@ -432,7 +448,7 @@ function FeedItem(ItemContent $content): bool {
     return true;
 }
 
-function GetFeedManaged(bool $extended = false): \AA\Managed {
+function GetFeedManaged(bool $extended = false): Managed {
     $buttons  = [
         'Map'      => a_href(get_admin_url('se_mapping.php', ['rssfeed_id={feed_id}']), _m('Map'), ['class' => 'aa-button']),
         'Queue'    => a_href(get_admin_url('xmlclient.php',  ['rssfeed_id={feed_id}']), _m('Run (queue)'), ['class' => 'aa-button-run']),
@@ -465,7 +481,7 @@ function GetFeedManaged(bool $extended = false): \AA\Managed {
     return $managed;
 }
 
-function GetAAFeedManaged(): \AA\Managed {
+function GetAAFeedManaged(): Managed {
     $base_feed_url = AA_INSTAL_URL .'admin/xmlclient.php?feed_id={feed_id}&time={rawurlencode:{newest_item}}';
     $buttons  = [
         'Test'     => a_href(get_url($base_feed_url, ['fill'=> 0, 'debugfeed'=>9]), _m('Test'), ['class' => 'aa-button-test']),

@@ -30,6 +30,7 @@
 */
 
 use AA\IO\DB\DB_AA;
+use AA\Later\LaterInterface;
 use AA\Later\Toexecute;
 
 require_once __DIR__ . "/util.php";
@@ -42,7 +43,8 @@ class AA_Mysqlauth {
     *   @param zids $zids non-quoted packed IDs
     *   @param $slice_id
     */
-    static function deleteReaders( $zids, $slice_id ) {
+    static function deleteReaders( $zids, $slice_id ): void
+    {
         if (!AA_Slice::getModuleProperty($slice_id,'auth_field_group') || AA_Slice::getModuleProperty($slice_id,'type') !== "ReaderManagement") {
             return;
         }
@@ -60,7 +62,8 @@ class AA_Mysqlauth {
     *   @param array $item_ids non-quoted packed IDs
     *   @param $slice_id
     */
-    static function updateReaders( $item_ids, $slice_id ) {
+    static function updateReaders( $item_ids, $slice_id ): void
+    {
         $sl_auth_field_group = AA_Slice::getModuleProperty($slice_id,'auth_field_group');
         if (!$sl_auth_field_group || AA_Slice::getModuleProperty($slice_id,'type') !== "ReaderManagement") {
             return;
@@ -97,12 +100,13 @@ class AA_Mysqlauth {
     // --------------------------------------------------------------------------
     /** AA_Mysqlauth::maintenance function
     *   Adds readers moved automatically from Pending to Active, deletes readers moved from
-    *   Active to Expired. Does some sanity checks also. Writes the results to
-    *   the table <em>auth_log</em>.
+    *   Active to Expired. Does some sanity checks also. Writes the results to AA LOG
+     *  (previously writes to 'auth_log' table, but now removed - HM - 2025)
     *
     *   This function should be called once a day from cron.
     */
-    static function maintenance() {
+    static function maintenance(): string
+    {
         $db = getDB();
         $result = [];
 
@@ -112,11 +116,11 @@ class AA_Mysqlauth {
             $oldusers[$db->f("username")] = 1;
         }
 
-        $slices = GetTable2Array("SELECT id, auth_field_group FROM slice WHERE type='ReaderManagement'");
+        $slices = GetTable2Array("SELECT id, auth_field_group FROM slice WHERE type='ReaderManagement' AND auth_field_group > ''");
 
         // Work slice by slice
         foreach ($slices as $slice_id => $slice) {
-            if (! $slice["auth_field_group"]) {
+            if (! $slice["auth_field_group"]) {   // often is "0"
                 continue;
             }
             // Get all reader data for this slice
@@ -183,29 +187,16 @@ class AA_Mysqlauth {
             $db->query("DELETE FROM auth_group WHERE username IN ('".join_and_quote("','", $usernames)."')");
         }
 
-        if ($GLOBALS["log_auth_results"]) {
-            $log = '';
-            // Log the results
-            if (!is_array($result)) {
-                $log = "Nothing changed.";
-            } else {
-                foreach ($result as $msg => $count) {
-                    if ($log) {
-                        $log .= "\n";
-                    }
-                    $log .= $msg.": ".$count;
-                }
-            }
-            $db->query("INSERT INTO auth_log (result, created) VALUES ('".addslashes($log)."', ".time().")");
-        }
         freeDB($db);
+        return is_array($result) ? implode("\n", array_map(static fn($msg, $count) => $msg.": ".$count, array_keys($result), $result)) : "Nothing changed.";
     }
 
     // --------------------------------------------------------------------------
     /** AA_Mysqlauth::deleteReader function
      * @param $username
      */
-    static function deleteReader($username) {
+    static function deleteReader($username): void
+    {
         DB_AA::delete('auth_user', [['username', $username]]);
         self::updateGroups($username);
     }
@@ -216,7 +207,8 @@ class AA_Mysqlauth {
      * @param $password
      * @param $groups
      */
-    static function updateReader($username, $password, $groups) {
+    static function updateReader($username, $password, $groups): void
+    {
         DB_AA::sql("REPLACE INTO auth_user (username, passwd, last_changed) VALUES ('".addslashes($username)."', '".addslashes($password)."', ".time().")");
         self::updateGroups($username, $groups);
     }
@@ -227,7 +219,8 @@ class AA_Mysqlauth {
      * @param $reader
      * @return bool
      */
-    static function isActive($reader) {
+    static function isActive($reader): bool
+    {
         return ($reader->getValue('status_code.....') == SC_ACTIVE) &&
                ($reader->getValue('publish_date....') <= time()) &&
                ($reader->getValue('expiry_date.....') >= time());
@@ -244,7 +237,8 @@ class AA_Mysqlauth {
     *   @param $username
     *   @param $groups
     */
-    static function updateGroups($username, $groups = []) {
+    static function updateGroups($username, $groups = []): void
+    {
         DB_AA::delete('auth_group', [['username', $username]]);
 
         $final_groups = array_unique(array_merge(...array_map(fn($group_string) => explode(";", $group_string['value']), (array)$groups)));
@@ -280,7 +274,8 @@ class AA_Mysqlauth {
      * @param $oldvalue
      * @param $newvalue
      */
-    static function changeGroups($constant_id, $oldvalue, $newvalue) {
+    static function changeGroups($constant_id, $oldvalue, $newvalue): void
+    {
         if (empty($newvalue) || $oldvalue == $newvalue) {
             return;
         }
@@ -309,15 +304,17 @@ class AA_Mysqlauth {
     }
 }
 
-class AA_Mysqlauth_Maintain implements \AA\Later\LaterInterface {
+class AA_Mysqlauth_Maintain implements LaterInterface {
 
-    public function toexecutelater($params= []) {
-        AA_Mysqlauth::maintenance();
+    public function toexecutelater($params= []): string
+    {
+        return AA_Mysqlauth::maintenance();
     }
 
-    function schedule(): void {
+    function schedule(): string {
         AA::$debug&32 && AA::$dbg->info('AA_Mysqlauth_Maintain::schedule');
         (new Toexecute)->laterOnce($this, [], self::class, 100, now()+2, true); // when deleting many items (readers), we need to wait for the end of the transaction to run it only once
+        return '';
     }
 }
 

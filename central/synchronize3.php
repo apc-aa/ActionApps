@@ -26,7 +26,8 @@ require_once __DIR__ . "/../include/formutil.php";
 
 
 
-function CompareSliceDefs($template_slice_defs, $comp_slice_defs, $mapping) {
+function CompareSliceDefs($template_slice_defs, $comp_slice_defs, $mapping): array
+{
     // resulting array of all differences between selected slices
     $differences = [];
     if ( is_array($template_slice_defs) ) {

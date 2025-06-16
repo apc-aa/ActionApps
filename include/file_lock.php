@@ -41,19 +41,18 @@
 class FileLock {
 
     /// full path to the lock file
-    var $filename;
+    private string $filename;
+
     /** boolean, true if the lock is locked, i.e. the file exists and was
     *   created by this object */
-    var $locked = false;
-    /** boolean, true if the file could not be created or deleted in the last operation
-    *   because of missing permissions. Every operation resets this flag. */
-    var $last_error = false;
+    private bool $locked = false;
 
     /** FileLock function
      * Constructor: takes full path to the lock file.
-     * @param $filename
+     *
+     * @param  string  $filename
      */
-    function __construct($filename) {
+    function __construct(string $filename) {
         $this->filename = $filename;
     }
 
@@ -64,9 +63,10 @@ class FileLock {
      *   time it immediately return @c true.
      */
     function Lock(): bool {
-        $last_error = false;
-        if ($this->locked)
+        if ($this->locked) {
             return true;
+        }
+        $fd = false;
         do {
             clearstatcache();
             $locked_outside = file_exists($this->filename);
@@ -82,9 +82,8 @@ class FileLock {
                 $locked_outside = ! $fd && file_exists($this->filename);
             }
         } while ($locked_outside);
-        $this->locked = $fd;
+        $this->locked = (bool)$fd;
         if (! $fd) {
-            $last_error = true;
             return false;
         }
         fclose($fd);
@@ -95,21 +94,20 @@ class FileLock {
      *   Releases the file. Should always return @c true, otherwise it is
      *   an internal error.
      */
-    function Unlock() {
+    function Unlock(): bool
+    {
         $last_error = false;
-        if ($this->locked)
-            $last_error = ! unlink($this->filename);
+        if ($this->locked) {
+            $last_error = !unlink($this->filename);
+        }
         $this->locked = $last_error;
-        return ! $last_error;
+        return !$last_error;
     }
 
     /** Trylock function
-     *   Tries to create the file. Returns @c false if the lock-file could not
-     *   be created. Check $this->last_error if you are not sure the permissions
-     *   were OK.
+     *   Tries to create the file. Returns @c false if the lock-file could not be created.
      */
     function Trylock(): bool {
-        $last_error = false;
         if ($this->locked) {
             return true;
         }
@@ -118,16 +116,13 @@ class FileLock {
             return false;
         }
         $fd = @fopen($this->filename, 'wb');
-        $this->locked = $fd;
+        $this->locked = (bool)$fd;
         if ($fd) {
             return true;
         }
         // The file could not be created but not because somebody else created it:
         // this is an error (see also Lock())
         clearstatcache();
-        if (! file_exists($this->filename)) {
-            $last_error = true;
-        }
         return false;
     }
 }

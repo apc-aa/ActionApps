@@ -165,25 +165,25 @@ const DEBUG_MODE         = -1;
  * @link http://www.unicode.org Unicode Homepage
  */
 class ConvertCharset {
-    var $Entities; // This value keeps information if output should be with numeric entities.
+    private bool $Entities; // This value keeps information if output should be with numeric entities.
 
     /** Default conversions for this convertor */
-    var $from_charset;
-    var $to_charset;
+    private ?string $from_charset;
+    private ?string $to_charset;
 
-    function __construct($from_charset = null, $to_charset = null) {
+    function __construct(?string $from_charset = null, ?string $to_charset = null) {
         $this->from_charset = $from_charset;
         $this->to_charset   = $to_charset;
     }
 
-    /** Called like $encoder = ConvertCharset::singleton($from, $to)
+    /** Called like $encoder = ConvertCharset::singleton()
      * @return ConvertCharset
      */
-    static function singleton($from_charset = null, $to_charset = null): ConvertCharset
+    public static function singleton(): ConvertCharset
     {
         static $instance = null;
         if (is_null($instance)) {
-            $instance = new ConvertCharset($from_charset, $to_charset);
+            $instance = new ConvertCharset();
         }
         return $instance;
     }
@@ -212,7 +212,8 @@ class ConvertCharset {
      * @return string This is an input string olso with unicode chars, bus saved as entities
      * @see HexToUtf()
      */
-    function UnicodeEntity($UnicodeString) {
+    function UnicodeEntity($UnicodeString): string
+    {
         $OutString  = "";
         $StringLenght = strlen($UnicodeString);
         for ($CharPosition = 0; $CharPosition < $StringLenght; $CharPosition++) {
@@ -281,13 +282,19 @@ class ConvertCharset {
      * @return string Encoded hexadecimal value as a regular char.
      * @see UnicodeEntity()
      */
-    function HexToUtf($UtfCharInHex) {
+    function HexToUtf($UtfCharInHex): string
+    {
         $OutputChar = "";
         $UtfCharInDec = hexdec($UtfCharInHex);
-        if (    $UtfCharInDec<128)    $OutputChar .= chr($UtfCharInDec);
-        elseif ($UtfCharInDec<2048)   $OutputChar .= chr(($UtfCharInDec>>6)+192). chr(($UtfCharInDec&63)+128);
-        elseif ($UtfCharInDec<65536)  $OutputChar .= chr(($UtfCharInDec>>12)+224).chr((($UtfCharInDec>>6)&63)+128). chr(($UtfCharInDec&63)+128);
-        elseif ($UtfCharInDec<2097152)$OutputChar .= chr($UtfCharInDec>>18+240).  chr((($UtfCharInDec>>12)&63)+128).chr(($UtfCharInDec>>6)&63+128). chr($UtfCharInDec&63+128);
+        if (    $UtfCharInDec<128) {
+            $OutputChar .= chr($UtfCharInDec);
+        } elseif ($UtfCharInDec<2048) {
+            $OutputChar .= chr(($UtfCharInDec >> 6) + 192).chr(($UtfCharInDec & 63) + 128);
+        } elseif ($UtfCharInDec<65536) {
+            $OutputChar .= chr(($UtfCharInDec >> 12) + 224).chr((($UtfCharInDec >> 6) & 63) + 128).chr(($UtfCharInDec & 63) + 128);
+        } elseif ($UtfCharInDec<2097152) {
+            $OutputChar .= chr($UtfCharInDec >> 18 + 240).chr((($UtfCharInDec >> 12) & 63) + 128).chr(($UtfCharInDec >> 6) & 63 + 128).chr($UtfCharInDec & 63 + 128);
+        }
         return $OutputChar;
     }
 
@@ -328,7 +335,8 @@ class ConvertCharset {
      * @param string $SecondEncoding Name of second encoding and second encoding filename (thay have to be the same). Optional for building a joined table.
      * @return array Table necessary to change one encoding to another.
      */
-    function MakeConvertTable($FirstEncoding, $SecondEncoding = "") {
+    function MakeConvertTable($FirstEncoding, $SecondEncoding = ""): array
+    {
         $ConvertTable = [];
         for ($i = 0, $fmax=func_num_args(); $i < $fmax; $i++) {
             /**
@@ -441,7 +449,7 @@ class ConvertCharset {
 
         /** Now a few variables need to be set. */
         $NewString      = "";
-        $this->Entities = $TurnOnEntities;
+        $this->Entities = (bool)$TurnOnEntities;
 
         /**
          * For all people who like to use uppercase for charset encoding names :)
@@ -536,8 +544,7 @@ class ConvertCharset {
                         foreach ($UnicodeHexChars as $UnicodeHexCharElementValue) {
 
                             if (array_key_exists($UnicodeHexCharElementValue, $CharsetTable[$ToCharset])) {
-                                $NewString .= ($this->Entities == true) ? $this->UnicodeEntity($this->HexToUtf($UnicodeHexCharElementValue)) :
-                                    chr(hexdec($CharsetTable[$ToCharset][$UnicodeHexCharElementValue]));
+                                $NewString .= $this->Entities ? $this->UnicodeEntity($this->HexToUtf($UnicodeHexCharElementValue)) : chr(hexdec($CharsetTable[$ToCharset][$UnicodeHexCharElementValue]));
                             }  else {
                                 print $this->DebugOutput(0, 1, $StringToChange[$i]);
                             }
@@ -559,7 +566,7 @@ class ConvertCharset {
                      */
                     $UnicodeHexChars = explode("+",$UnicodeHexChar);
                     foreach ($UnicodeHexChars as $UnicodeHexCharElementValue) {
-                        $NewString .= ($this->Entities == true) ? $this->UnicodeEntity($this->HexToUtf($UnicodeHexCharElementValue)) : $this->HexToUtf($UnicodeHexCharElementValue);
+                        $NewString .= $this->Entities ? $this->UnicodeEntity($this->HexToUtf($UnicodeHexCharElementValue)) : $this->HexToUtf($UnicodeHexCharElementValue);
                     }
                 }
                 else {
@@ -571,7 +578,7 @@ class ConvertCharset {
 
             $CharsetTable = $this->MakeConvertTable($ToCharset);
             foreach ($CharsetTable[$ToCharset] as $UnicodeHexChar => $HexChar) {
-                $EntitieOrChar = ($this->Entities == true) ? $this->UnicodeEntity($this->HexToUtf($UnicodeHexChar)) : chr(hexdec($HexChar));
+                $EntitieOrChar = $this->Entities ? $this->UnicodeEntity($this->HexToUtf($UnicodeHexChar)) : chr(hexdec($HexChar));
                 $StringToChange = str_replace($this->HexToUtf($UnicodeHexChar), $EntitieOrChar, $StringToChange);
             }
             $NewString = $StringToChange;
@@ -597,7 +604,8 @@ class ConvertCharset {
      * @param mixed $Value This walue is whatever you want, usualy it's some parameter value, for better message understanding.
      * @return string String with a proper message.
      */
-    function DebugOutput($Group, $Number, $Value = false) {
+    function DebugOutput($Group, $Number, $Value = false): string
+    {
         //$Debug[$Group][$Number] = "Message, can by with $Value";
         //$Group[0] - Errors
         //$Group[1] - Notice

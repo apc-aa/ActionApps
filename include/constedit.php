@@ -95,7 +95,10 @@ if ($hide_value) {
     <tr><td colspan="2"><input type="button" onClick="hcSendAll('<?php echo $hcid ?>');" value="<?php echo _m("Save all changes to database")?>"></td></tr>
     <tr><td colspan="2"><?php echo _m("View settings") ?>: <input type="checkbox" name='hierarch' checked><?php echo _m("Hierarchical") ?>&nbsp;
 <input type="checkbox" name="hide_value" <?php if ($hide_value) { echo "checked"; } echo ">"._m("Hide value")?>&nbsp;
-<input type="checkbox" name="levelsHorizontal" <?php if ($levelsHorizontal) echo "checked"; echo ">"._m("Levels horizontal"); ?>&nbsp;&nbsp;
+<input type="checkbox" name="levelsHorizontal" <?php if ($levelsHorizontal) {
+    echo "checked";
+}
+echo ">"._m("Levels horizontal"); ?>&nbsp;&nbsp;
 <?php echo _m("Level count")?>&nbsp;<input type="text" name="levelCount" value="<?php echo safe($levelCount); ?>" size=2></td></tr>
 </table>
 </td></tr></table>

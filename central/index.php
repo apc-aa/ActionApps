@@ -29,6 +29,7 @@
 // @todo only_action option which prints on the output the result of the action
 // Then it could be used as AJAX call for this action!
 
+use AA\IO\DB\DB_AA;
 use AA\Manager;
 use AA\Manageraction\Central_DeleteTrash;
 use AA\Manageraction\Central_Linkcheck;
@@ -50,14 +51,15 @@ require_once __DIR__."/../central/include/actionapps.class.php";
 try {
     
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception) {}
+} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
 
 /**
  * @return int[]
  */
-function CountItemsInBins() {
-    return \AA\IO\DB\DB_AA::select(['folder'=>'cnt'], "SELECT CONCAT('folder', status_code) as folder, count(*) as cnt  FROM central_conf GROUP BY status_code");
+function CountItemsInBins(): array
+{
+    return DB_AA::select(['folder'=>'cnt'], "SELECT CONCAT('folder', status_code) as folder, count(*) as cnt  FROM central_conf GROUP BY status_code");
 }
 
 if ( !IsSuperadmin() ) {

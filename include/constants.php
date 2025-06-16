@@ -41,7 +41,8 @@ require_once __DIR__ . "/mgettext.php";
  * @param $order_pri  = false
  * @return array
  */
-function GetFieldDef($name, $field, $operators = 'text', $table = false, $search_pri = false, $order_pri = false) {
+function GetFieldDef($name, $field, $operators = 'text', $table = false, $search_pri = false, $order_pri = false): array
+{
     $ret = ['name' => $name, 'field' => $field, 'operators' => $operators];
     if ($table) {
         $ret['table'] = $table;
@@ -62,7 +63,8 @@ function GetFieldDef($name, $field, $operators = 'text', $table = false, $search
  * @param $hlp   = ''
  * @return array
  */
-function GetAliasDef($fce, $field = '', $hlp = '') {
+function GetAliasDef($fce, $field = '', $hlp = ''): array
+{
     return ['fce' => $fce, 'param' => $field, 'hlp' => $hlp];
 }
 
@@ -191,12 +193,13 @@ interface LazyloaderInterface {
 trait LazyloadTrait {
     private $lazy_loaders = [];
 
-    final public function addLoader(string $var, LazyloaderInterface $loader) {
+    final public function addLoader(string $var, LazyloaderInterface $loader): static {
         $this->lazy_loaders[$var] = $loader;
         return $this;
     }
 
-    final public function lazyGet($var) {
+    final public function lazyGet($var): void
+    {
         if (array_key_exists($var, $this->lazy_loaders)) {
             $this->$var = $this->lazy_loaders[$var]->lazyLoad();
             unset($this->lazy_loaders[$var]);   // loader is used once and then removed, so we will not use it next time
@@ -225,7 +228,7 @@ class AA_Aliases implements Iterator, ArrayAccess, Countable {
     /** addAlias function
      * @param AA_Alias|null $alias
      */
-    function addAlias(?AA_Alias $alias): AA_Aliases {
+    function addAlias(?AA_Alias $alias): static {
         $this->lazyGet('lazy_aliases');
         if ($alias) {
             $this->lazy_aliases[$alias->getAlias()] = $alias;
@@ -234,7 +237,7 @@ class AA_Aliases implements Iterator, ArrayAccess, Countable {
     }
 
     /** adds another AA_Aliases */
-    public function add(AA_Aliases $aliases): AA_Aliases {
+    public function add(AA_Aliases $aliases): static {
         $this->lazyGet('lazy_aliases');
         $this->lazy_aliases = array_merge($this->lazy_aliases, $aliases->getAliases());
         return $this;
@@ -244,7 +247,7 @@ class AA_Aliases implements Iterator, ArrayAccess, Countable {
      * @param $alias_name
      * @param $text
      */
-    function addTextAlias($alias_name, $text): AA_Aliases {
+    function addTextAlias($alias_name, $text): static {
         $this->addAlias(new AA_Alias($alias_name, ParamImplode(['f_p', $text]), "id.............."));
         return $this;
     }
@@ -253,7 +256,7 @@ class AA_Aliases implements Iterator, ArrayAccess, Countable {
      * @param AA_Property[] $properties
      * @return $this
      */
-    function addFromProperties(array $properties): AA_Aliases {
+    function addFromProperties(array $properties): static {
         foreach ($properties as $prop_id => $property) {
             if ($property->isObject()) {
                 continue;
@@ -269,7 +272,7 @@ class AA_Aliases implements Iterator, ArrayAccess, Countable {
      * @return AA_Aliases
      * @deprecated
      */
-    function addFromArray(array $alias_arr): AA_Aliases {
+    function addFromArray(array $alias_arr): static {
         foreach ($alias_arr as $aid => $als) {
             $this->addAlias(new AA_Alias($aid, $als['fce'], $als['param'], $als['hlp']));
         }
@@ -297,7 +300,8 @@ class AA_Aliases implements Iterator, ArrayAccess, Countable {
         return array_key_exists($name, $this->lazy_aliases);
     }
 
-    function getAliases() {
+    function getAliases(): array
+    {
         $this->lazyGet('lazy_aliases');
         return $this->lazy_aliases;
     }
@@ -393,7 +397,8 @@ const MAX_NO_OF_ITEMS_4_GROUP = 1000;
 const NO_PICTURE_URL  = AA_INSTAL_URL . 'images/blank.gif';
 const NO_PICTURE_DATA = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';   // smallest 1px transparent gif
 
-function GetConstantFields() {  // function - we need translate _m() on use (not at include time)
+function GetConstantFields(): array
+{  // function - we need translate _m() on use (not at include time)
     return [
         'const_short_id'    => GetFieldDef(_m('Short Id'), 'constant.short_id', 'numeric'),
         'const_name'        => GetFieldDef(_m('Name'), 'constant.name', 'text'),
@@ -450,7 +455,8 @@ const VIEW_FLAG_LOG      = 4;    // write every use to database
 /** inputFeedModes function
  * @return array
  */
-function inputFeedModes() {
+function inputFeedModes(): array
+{
     return [
         STATE_FEEDABLE               => _m("Feed"),
         STATE_UNFEEDABLE             => _m("Do not feed"),
@@ -467,7 +473,8 @@ function inputFeedModes() {
  * @param $value = false
  * @return array
  */
-function GetViewFieldDef($validate, $type, $input, $value = false) {
+function GetViewFieldDef($validate, $type, $input, $value = false): array
+{
     $ret = ["validate" => $validate, "type" => $type, "input" => $input];
     if ($value) {
         $ret['value'] = $value;
@@ -478,7 +485,8 @@ function GetViewFieldDef($validate, $type, $input, $value = false) {
 /** getViewFields function
  * @return array
  */
-function getViewFields() {
+function getViewFields(): array
+{
     $VIEW_FIELDS = [];
     // se_views.php - view field definition
     /* Jakub added a special field "function:function_name" which calls function show_function_name() to show a special form part and store_function_name() to store form data. */
@@ -1130,7 +1138,8 @@ const SC_NO_BIN      = 4;
 /** getFilemanAccesses function
  * @return array
  */
-function getFilemanAccesses() {
+function getFilemanAccesses(): array
+{
     return [
         "0"             => _m("Superadmin"),
         //    "EDITOR" => _m("Slice Editor"),

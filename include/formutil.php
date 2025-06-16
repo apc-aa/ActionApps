@@ -84,45 +84,42 @@ function varname4form($fid, $type='normal'): string
  * inputform class - used for displaying input form (item add/edit)
  */
 class inputform {
-    var $display_aa_begin_end;
-    var $page_title;
-    var $form_action;
-    var $form4update;
-    protected bool $form4asnew;
-    var $show_preview_button;
-    var $cancel_url;
-    var $messages;
+    private bool $display_aa_begin_end;
+    private string $page_title;
+    private string $form_action;
+    private bool $form4update;
+    private bool $form4asnew;
+    private bool $show_preview_button;
+    private string $cancel_url;
+    private array $messages;
 
-    var $template;        // if you want to display alternate form design,
-                          // template holds view_id of such template
-                          // view type 'inputform'
-    var $formheading;     // add extra form heading here (default none, used by MLX)
-    var $hidden;          //
-    var $msg;             // stores return code from functions
+    private int $template; // if you want to display alternate form design, template holds view_id of such template view type 'inputform'
+    private string $formheading;     // add extra form heading here (default none, used by MLX)
+    private array $hidden;          //
 
     // computed values from form fields
-    var $show_func_used;    // used show functions in the input form
+    private ?array $show_func_used = null;    // used show functions in the input form
 
     /** inputform function
      *  Constructor - initializes inputform
      * @param $settings
      */
     function __construct($settings= []) {
-        $this->display_aa_begin_end = $settings['display_aa_begin_end'];
-        $this->page_title           = $settings['page_title'];
-        $this->form_action          = $settings['form_action'];
-        $this->form4update          = $settings['form4update'];
+        $this->display_aa_begin_end = (bool)$settings['display_aa_begin_end'];
+        $this->page_title           = (string)$settings['page_title'];
+        $this->form_action          = (string)$settings['form_action'];
+        $this->form4update          = (bool)$settings['form4update'];
         $this->form4asnew           = $settings['form4asnew'] ?? false;
-        $this->show_preview_button  = $settings['show_preview_button'];
-        $this->cancel_url           = $settings['cancel_url'];
-        $this->messages             = $settings['messages'];
-        $this->template             = $settings['template'];
-        $this->formheading          = $settings['formheading']; //aded for MLX
-        $this->hidden               = $settings['hidden'];      // array of hidden fields to be added to the form
+        $this->show_preview_button  = (bool)$settings['show_preview_button'];
+        $this->cancel_url           = (string)$settings['cancel_url'];
+        $this->messages             = (array)$settings['messages'];
+        $this->template             = (int)$settings['template'];  // most probably it is int
+        $this->formheading          = (string)$settings['formheading']; //aded for MLX
+        $this->hidden               = (array)$settings['hidden'];      // array of hidden fields to be added to the form
     }
 
     /** static */
-    static function _getButton($key, $type, $default_text, $profile_text, $url = null)
+    static function _getButton($key, $type, $default_text, $profile_text, $url = null): array
     {
         return ($profile_text === '') ? [] : [$key => ['type' => $type, 'value' => get_if($profile_text, $default_text), 'url' => $url]];
     }
@@ -132,9 +129,9 @@ class inputform {
      * @param ItemContent $content4id
      * @param AA_Slice    $slice
      * @param bool        $edit
-     * @return mixed
      */
-    function dryEvaluate($content4id, $slice, $edit) {
+    function dryEvaluate($content4id, $slice, $edit): string
+    {
         $form = $this->getForm($content4id, $slice, $edit);
         $out  = AA::Un($form, '', GetItemFromContent($content4id));
         return  AA::Stringexpander()->postprocess($out); // to replace  {generate:HEAD} with dynamic javascripts needed by inputform
@@ -147,7 +144,8 @@ class inputform {
      * @param $slice_fields - true, if we want to edit "slice setting fields"
      *                         which are stored in content table
      */
-    function printForm($content4id, $slice, $edit, $slice_fields=false) {
+    function printForm($content4id, $slice, $edit, $slice_fields=false): void
+    {
         // Get the default form and FILL CONTENTCACHE with fields
         // This function also fills the $this->show_func_used [and $this->js_proove_fields ...not used already]
         $form          = $this->getForm($content4id, $slice, $edit, '', $slice_fields);
@@ -272,10 +270,8 @@ class inputform {
             FrmTabs( $tabs, 'formtabs2' );
         }
 
-        if (is_array($this->hidden)) {
-            foreach ( $this->hidden as $name => $value) {
-                $buttons[$name]         = ['value' => $value];
-            }
+        foreach ( $this->hidden as $name => $value) {
+            $buttons[$name]         = ['value' => $value];
         }
 
         // add rest "hidden buttons" to the end of form
@@ -312,7 +308,8 @@ class inputform {
      * @param             $slice_fields
      * @return string
      */
-    function getForm($content4id, $slice, $edit=false, $show=null, $slice_fields=false) {
+    function getForm($content4id, $slice, $edit=false, $show=null, $slice_fields=false): string
+    {
         $profile   = AA_Profile::getProfile(AuthGetUid(), $slice->getId()); // current user settings
         $fields = $slice->getFields($slice_fields);
 
@@ -384,10 +381,12 @@ class inputform {
         return $ret;
     }
 
-    /** getFormJavascript
+    /**
      *  Get validation, triggers and gui javascript for used fields on Add/Edit Form
      *  Must be called after getForm since $this->show_func_used must be already filled
-     * @param JsTriggers $jstriggers
+     *
+     * @param  JsTriggers  $jsTriggers
+     *
      * @return string
      */
     function getFormJavascript(JsTriggers $jsTriggers): string {
@@ -432,7 +431,8 @@ class inputform {
  * @param array $settings
  * @return AA_Inputfield
  */
-function getAAField( $settings ) {
+function getAAField( $settings ): AA_Inputfield
+{
     $x = new AA_Inputfield();
     $x->setFromArray( $settings );
     return $x;
@@ -442,30 +442,30 @@ function getAAField( $settings ) {
  * AA_Inputfield class - used for displaying input field
  */
 class AA_Inputfield {
-    var $id;                                 // field id (like headline........) -
+    private $id;                                 // field id (like headline........) -
     //  - we generate html variable name from id: v435...
-    var $input_type;                         // shortcut of 'input type' (like 'fld','sel','mse')
-    protected string $varname = '';          // name of the field in html form
-    protected string $varname_modified = ''; // modified name of the field in html form
-    var $param;                              // parameter array for this inputtype (already exploded)
-    var $name;                               // user frieldly name 'Publish Date'
-    var $value;                              // current value of the field in [0]['value'] form
-    var $html_flag;                          // field (value) is/isn't HTML formated
-    var $mode;                               // 'normal' - just show input type
+    private $input_type;                         // shortcut of 'input type' (like 'fld','sel','mse')
+    private string $varname = '';          // name of the field in html form
+    private string $varname_modified = ''; // modified name of the field in html form
+    private $param;                              // parameter array for this inputtype (already exploded)
+    private $name;                               // user frieldly name 'Publish Date'
+    private $value;                              // current value of the field in [0]['value'] form
+    private $html_flag;                          // field (value) is/isn't HTML formated
+    private $mode;                               // 'normal' - just show input type
                                              // 'freeze' - display as static
                                              // 'anonym' - special display of field on anonym form
                                              //            (used for passwords, ...)
-    var $input_before;                       // HTML code displayed before the field
-    var $required;                           // boolean - is this field required (needed)?
-    var $input_help;                         // help/description text for the field
-    var $input_morehlp;                      // url, where user will jump after (s)he click on '?'
-    var $additional;                         // additional code for input (like 'class="chleba")
-    var $html_rb_show;                       // show HTML/Plaintext radiobutton?
+    private $input_before;                       // HTML code displayed before the field
+    private $required;                           // boolean - is this field required (needed)?
+    private $input_help;                         // help/description text for the field
+    private $input_morehlp;                      // url, where user will jump after (s)he click on '?'
+    private $additional;                         // additional code for input (like 'class="chleba")
+    private bool $html_rb_show;                  // show HTML/Plaintext radiobutton?
 
-    var $valid;                              // string validation function used - could be 'number' or 'number:0:9999' - in order og getClassProperties of AA_Validate_Number
+    private $valid;                              // string validation function used - could be 'number' or 'number:0:9999' - in order og getClassProperties of AA_Validate_Number
                                              // (this function we added in order we can use this class for AA Admin forms as well)
-    var $translations;                       // field allows translation
-    var $dbfield;                            // contains name of database field. It is often
+    private ?array $translations = [];                       // field allows translation
+    private $dbfield;                            // contains name of database field. It is often
                                              // empty, so we will use varname, but there are some
                                              // cases, where we use different database field than
                                              // the varname (for examlpe "name" is good database
@@ -473,21 +473,21 @@ class AA_Inputfield {
 
     // --- privates ---
     /** @var string $result Collects output of the field  */
-    protected $result;           // result string (depends on result_mode if variables are as aliases or it is expanded)
+    private $result;           // result string (depends on result_mode if variables are as aliases or it is expanded)
 
     /** @var string $result_mode expand | template
      *                           expand   - input fields are normally printed;
      *                           template - field is printed as alias
      *                             {inputfield:...} and content is stored into contentcache
      */
-    protected $result_mode;
-    protected $value_modified;   // sometimes we have to modify value before output
-    protected $selected;         // helper array used for quick search, if specified
+    private $result_mode;
+    private $value_modified;   // sometimes we have to modify value before output
+    private $selected;         // helper array used for quick search, if specified
                            // value is selected (mainly for multivalues)
-    protected $const_arr;        // array of constants used for selections (selectbox, radio, ...)
-    protected $msg;                         // stores return code from functions
+    private $const_arr;        // array of constants used for selections (selectbox, radio, ...)
+    private $msg;                         // stores return code from functions
 
-    protected $use_triggers_4_slice = 0;  // shall the input contain aa_onXxxx() triggers? used for item-editing widgets
+    private $use_triggers_4_slice = 0;  // shall the input contain aa_onXxxx() triggers? used for item-editing widgets
 
     /** AA_Inputfield function
      * Constructor - initializes AA_Inputfield
@@ -530,14 +530,16 @@ class AA_Inputfield {
     /** setValue function
      * @param $value
      */
-    function setValue($value) {
+    function setValue($value): void
+    {
         $this->value = [0=> ['value'=>$value]];
     }
 
     /**
      * @param AA_Value $val
      */
-    function setAaValue($val) {
+    function setAaValue($val): void
+    {
         $arr         = $val->getValues();
         $this->value = [];
         foreach ($arr as $k => $v) {
@@ -549,15 +551,17 @@ class AA_Inputfield {
     /**
      * @return AA_Value
      */
-    function getAaValue() {
+    function getAaValue(): AA_Value
+    {
         return new AA_Value($this->value, $this->html_flag);
     }
 
     /**
-     * @param AA_Validate $validator
+     * @param  AA_Validate  $valid
+     *
      * @return AA_Inputfield
      */
-    public function setValidator(AA_Validate $valid): AA_Inputfield {
+    public function setValidator(AA_Validate $valid): static {
         $this->valid = $valid;
         return $this;
     }
@@ -565,7 +569,8 @@ class AA_Inputfield {
     /** getDefaults function
      * private function - Returns list of class variables and its defaults
      */
-    function getDefaults() {
+    function getDefaults(): array
+    {
         return [
             'value'         =>  [0 => ['value' => '']],
                       'html_flag'     => true,
@@ -587,7 +592,8 @@ class AA_Inputfield {
     /** clear function
      * Set all class variables to its defaults
      */
-    function clear() {
+    function clear(): void
+    {
         foreach ( $this->getDefaults() as $propname => $defvalue ) {
             $this->$propname = $defvalue;
         }
@@ -595,7 +601,8 @@ class AA_Inputfield {
     /** setFormArray function
      * @param $settings
      */
-    function setFromArray( $settings ) {
+    function setFromArray( $settings ): void
+    {
         foreach ( $this->getDefaults() as $propname => $defvalue) {
             if ( isset($settings[$propname]) ) {
                 $this->$propname = $settings[$propname];
@@ -607,7 +614,8 @@ class AA_Inputfield {
      *  Sets object variables according to field setting
      * @param AA_Field $field_arr
      */
-    function setFromField($field) {
+    function setFromField($field): void
+    {
         // $field_arr = $field->getRecord();  // now we use ArrayAccess
 
         $this->id            = $field['id'];
@@ -623,11 +631,11 @@ class AA_Inputfield {
         $funct = array_values(Widget::parseClassProperties($field['input_show_func']));
         $this->input_type    = substr(strtolower($funct[0]),-9,3);    // grab from AA\Widget\FldWidget
         $this->param         = array_slice( $funct, 1 );
-        $this->html_rb_show  = $field['html_show'];
+        $this->html_rb_show  = (bool)$field['html_show'];
         $this->valid         = $field['input_validate'];
 
         if ($field['multiple'] & 2) {   // translation
-            $this->translations = AA_Slice::getModule(unpack_id($field['slice_id']))->getTranslations();
+            $this->translations = AA_Slice::getModule(unpack_id($field['slice_id']))?->getTranslations() ?: [];
         }
         // removed - const_arr should be in input_show_func param
         // if ( isset($field["const_arr"]) ) {
@@ -640,7 +648,8 @@ class AA_Inputfield {
      * @param $err
      * @return bool
      */
-    function validate($value, &$err) {
+    function validate($value, &$err): bool
+    {
         return ValidateInput($this->varname, $this->name, $value, $err, $this->required, $this->valid);
     }
 
@@ -651,7 +660,8 @@ class AA_Inputfield {
      * @param $delim
      * @return string
      */
-    function implodeVal($delim=',') {
+    function implodeVal($delim=','): string
+    {
         $ret = '';
         if ( isset($this->value) && is_array($this->value) ) {
             foreach ( $this->value as $v ) {
@@ -676,7 +686,8 @@ class AA_Inputfield {
      * @return string - unpacked slice_id if array is filled from slice
      * (not so important value, isn't?)
      */
-    function fill_const_arr($slice_field="", $conds=false, $sort=false, $whichitems=AA_BIN_ACT_PEND, $ids_arr=null, $crypted_additional_slice_pwd=null, $tagprefix=null, $const_arr_param=null) {
+    function fill_const_arr($slice_field="", $conds=false, $sort=false, $whichitems=AA_BIN_ACT_PEND, $ids_arr=null, $crypted_additional_slice_pwd=null, $tagprefix=null, $const_arr_param=null): string
+    {
         $constgroup = $this->param[0];
         $sid        = (str_starts_with($constgroup, "#sLiCe-")) ? substr($constgroup, 7) : '';
 
@@ -744,7 +755,7 @@ class AA_Inputfield {
     /**
      *
      */
-    function getDbfield() {
+    public function getDbfield() {
         return get_if($this->dbfield, $this->varname());
     }
 
@@ -754,7 +765,8 @@ class AA_Inputfield {
      * @param $valtype
      * @return array
      */
-    function prepareVars($valtype='first') {
+    function prepareVars($valtype='first'): array
+    {
         if (isset($this->value_modified)) {
             $val = $this->value_modified;
         } elseif ($valtype === 'first') {
@@ -769,7 +781,8 @@ class AA_Inputfield {
      *  Echo wrapper - prints output to string instead of to output
      * @param $txt
      */
-    function echoo($txt) {
+    function echoo($txt): void
+    {
         $this->result .= $txt;
     }
 
@@ -790,7 +803,8 @@ class AA_Inputfield {
      * @param string $param
      * @param string $aliasname used for alias name different from 'inputvar'
      */
-    function echovar($txt, $part='', $param='', $aliasname='') {
+    function echovar($txt, $part='', $param='', $aliasname=''): void
+    {
         if ( $this->result_mode === 'expand' ) {   // write directly to the output
             $this->echoo($txt);
         } else {
@@ -809,7 +823,8 @@ class AA_Inputfield {
      * @param $ret_val
      * @return string
      */
-    function if_selected($option, $ret_val) {
+    function if_selected($option, $ret_val): string
+    {
         // fill selected array from value
         $this->_fillSelected();
         return $this->selected[(string)$option] ? $ret_val : '';
@@ -817,7 +832,8 @@ class AA_Inputfield {
     /** _fillSelected function
      *
      */
-    function _fillSelected() {
+    function _fillSelected(): void
+    {
         if (!isset($this->selected) && isset($this->value) && is_array($this->value)) { // not cached yet => create selected array
             foreach ( $this->value as $v ) {
                 if ((string)$v['value'] !== '') {
@@ -833,7 +849,8 @@ class AA_Inputfield {
      * @param AA_Item $item
      * @param string  $slice_id
      */
-    function get( $item, $slice_id ) {
+    function get( $item, $slice_id ): string
+    {
         // @todo check, how to do it better - this do not work if "slice_field" parameter uses {subst...} for example
         AA::Stringexpander()->unaliasArray($this->param);
         $this->result_mode = 'template';
@@ -1050,19 +1067,22 @@ class AA_Inputfield {
     /** needed function
      * functions to show additional field data
      */
-    protected function needed() {
+    private function needed(): void
+    {
         if ( $this->required ) {
             $this->echoo( "&nbsp;*" );
         }
     }
 
-    protected function help($hlp) {
+    private function help($hlp): void
+    {
         if ( $hlp ) {
             $this->echoo( "<div class=\"tabhlp\">$hlp</div>" );
         }
     }
 
-    protected function morehelp($hlp) {
+    private function morehelp($hlp): void
+    {
         if ( $hlp ) {
             $this->echoo( "<a href=".safe($hlp)." target='_blank' class='aa-morehelp'>?</a>" );
         }
@@ -1070,11 +1090,13 @@ class AA_Inputfield {
 
     /** helps function
      * shows help message and link to more help document, if set
+     *
      * @param $plus
      * @param $hlp
      * @param $more_hlp
      */
-    protected function helps($plus=false, $hlp=null, $more_hlp=null ) {
+    private function helps($plus=false, $hlp=null, $more_hlp=null ): void
+    {
         $this->morehelp(is_null($more_hlp) ? $this->input_morehlp : $more_hlp );
         $this->help(    is_null($hlp)      ? $this->input_help    : $hlp );
         if ( $plus ) {
@@ -1083,21 +1105,25 @@ class AA_Inputfield {
     }
 
     /** field_tr - begin of field row
-     * @param bool $start
-     * @param bool $mark_single
+     *
+     * @param  bool  $start
+     * @param  bool  $mark_single
      */
-    protected function field_tr(bool $start=true, bool $mark_single=false) {
+    private function field_tr(bool $start=true, bool $mark_single=false): void
+    {
         $start  = $start ? ' fieldstart' : '';
         $start .= $mark_single ? ' aa-singlecol' : '';
         $this->echoo("\n<tr class=\"formrow{formpart}$start cont-".$this->varname."\">");
     }
 
     /** Prints field name (and 'needed' sign - star) in table cell for inputform
+     *
      * @param $plus
      * @param $colspan
      * @param $name
      */
-    protected function field_name($plus=false, $colspan=1, $name=null ) {
+    private function field_name($plus=false, $colspan=1, $name=null ): void
+    {
         $name = is_null($name) ? $this->name : $name;
         switch( $plus ) {
         case 'plus':    $this->field_tr();
@@ -1114,7 +1140,7 @@ class AA_Inputfield {
 
     /** Print links to document convertors, if convertors are installed
      */
-    protected function get_convertors(): string
+    private function get_convertors(): string
     {
         $constants  = array_filter(get_defined_constants(true)['user'], static fn ($key) => str_starts_with($key, 'CONV_TEXTFILTERS'), ARRAY_FILTER_USE_KEY);
         $convertors = array_map(static fn ($key) => substr($key, 17), array_keys($constants));
@@ -1126,7 +1152,8 @@ class AA_Inputfield {
      * Prints html/plan_text radiobutton
      * @param bool $conv
      */
-    function html_radio($conv = false) {
+    function html_radio($conv = false): void
+    {
         $varname = $this->varname;
 
         if ( $this->html_rb_show ) {
@@ -1179,10 +1206,12 @@ class AA_Inputfield {
     }
 
     /**
-     * @param array $parts
+     * @param array  $parts
+     *
      * @return string
      */
-    protected static function getLangSwitch($parts) {
+    private static function getLangSwitch($parts): string
+    {
         $ret = '';
         if (count($parts)>1) {
             $ret .= "<div class=\"aa-langswitch\">";
@@ -1204,7 +1233,8 @@ class AA_Inputfield {
      * @param $changeorder
      * @param $colspan
      */
-    function inputChBox($changeorder=false, $colspan=1){
+    function inputChBox($changeorder=false, $colspan=1): void
+    {
         [$name,$val,$add] = $this->prepareVars();
 
         $this->field_tr();
@@ -1228,7 +1258,8 @@ class AA_Inputfield {
      * @param $from_now
      * @param $display_time
      */
-    function dateSelect($y_range_minus=5, $y_range_plus=5, $from_now=false, $display_time=false) {
+    function dateSelect($y_range_minus=5, $y_range_plus=5, $from_now=false, $display_time=false): void
+    {
         [$name,$val,$add] = $this->prepareVars();
 
         $datectrl = new datectrl($this->varname(), $y_range_minus, $y_range_plus, $from_now, $display_time, $this->required);
@@ -1256,7 +1287,8 @@ class AA_Inputfield {
      * @param string $placeholder
      * @param string $pattern
      */
-    function inputText($maxsize=255, $size=25, $type="text", $placeholder='', $pattern='') {
+    function inputText($maxsize=255, $size=25, $type="text", $placeholder='', $pattern=''): void
+    {
         [$name,$val,$add] = $this->prepareVars('multi');
 
         $attrs = ['type'=>'text'];
@@ -1347,9 +1379,12 @@ class AA_Inputfield {
     * @param $safing
     * @param $type
     */
-    function staticText($safing=true, $type='first') {
+    function staticText($safing=true, $type='first'): void
+    {
         [$name,$val,$add] = $this->prepareVars($type);
-        if ( $safing ) $val   = safe($val);
+        if ( $safing ) {
+            $val = safe($val);
+        }
         $this->field_name('plus');
         $this->echovar( $val );
         $this->helps('plus');
@@ -1360,7 +1395,8 @@ class AA_Inputfield {
     * for use within <form> and <table> tag
     * @param $safing
     */
-    function hidden($safing=true) {
+    function hidden($safing=true): void
+    {
         [$name,$val,$add] = $this->prepareVars();
         if ( $safing ) {
             $val=safe($val);
@@ -1382,7 +1418,7 @@ class AA_Inputfield {
      * @param bool $showhtmlarea
      * @param int $maxlength
      */
-    function textarea($rows = 4, $cols = 60, $single = false, $showrich_href = true, $showhtmlarea = false, $maxlength = 0)
+    function textarea($rows = 4, $cols = 60, $single = false, $showrich_href = true, $showhtmlarea = false, $maxlength = 0): void
     {
 
         [$name,$val,$add] = $this->prepareVars('multi');
@@ -1463,7 +1499,8 @@ class AA_Inputfield {
      * @param int  $ncols
      * @param bool $move_right
      */
-    function inputRadio($ncols=0, $move_right=true) {
+    function inputRadio($ncols=0, $move_right=true): void
+    {
         [$name,$val,$add] = $this->prepareVars('multi');
         $records = [];
         foreach ( $this->const_arr as $k => $v ) {
@@ -1480,7 +1517,8 @@ class AA_Inputfield {
      * @param      $move_right
      * @param null $height
      */
-    function printInMatrix_Frm($records, $ncols, $move_right, $height=null) {
+    function printInMatrix_Frm($records, $ncols, $move_right, $height=null): void
+    {
         //[$name,$val,$add] = $this->prepareVars('multi');
         $ret = '';
         $this->field_name('plus');
@@ -1523,7 +1561,8 @@ class AA_Inputfield {
      * @param $do_not_select
      * @return string
      */
-    function get_options( $arr, $usevalue=false, $testval=false, $restrict='all', $add_empty=false, $do_not_select=false) {
+    function get_options( $arr, $usevalue=false, $testval=false, $restrict='all', $add_empty=false, $do_not_select=false): string
+    {
         $selectedused  = false;
         $select_string = ( $do_not_select ? ' class="sel_on"' : ' selected class="sel_on"');
 
@@ -1570,7 +1609,7 @@ class AA_Inputfield {
         }
         if ( $add_empty ) {
             $emptyret = "<option value=\"\"";
-            if ($selectedused == false) {
+            if (!$selectedused) {
                 $emptyret .= ' selected class="sel_on"';
             }
            $emptyret .= '> </option>';
@@ -1584,7 +1623,8 @@ class AA_Inputfield {
      * for use within <form> and <table> tag
      * @param $rows
      */
-    function inputMultiSelect($rows=6) {
+    function inputMultiSelect($rows=6): void
+    {
         [$name,$val,$add] = $this->prepareVars('multi');
         $rows                 = get_if($rows, 6);
         $triggers  = $this->use_triggers_4_slice ? JsTriggers::singleton4id($this->use_triggers_4_slice)->get("select", $name) : '';
@@ -1625,7 +1665,8 @@ class AA_Inputfield {
      * @param string $condsrw
      * @param string $slice_field
      */
-    function inputRelation($rows=6, $sid='', $mode='AMB', $design=false, $actions='MDR', $whichitems=AA_BIN_ACT_PEND, $conds="", $condsrw="", $slice_field='', $sort_by='', $listlen=0) {
+    function inputRelation($rows=6, $sid='', $mode='AMB', $design=false, $actions='MDR', $whichitems=AA_BIN_ACT_PEND, $conds="", $condsrw="", $slice_field='', $sort_by='', $listlen=0): void
+    {
         [$name,$val,$add] = $this->prepareVars('multi');
         // backward compatibility - 0 means "not show move buttons", 1 - "show"
         $listlen              = get_if($listlen, EDIT_ITEM_COUNT);
@@ -1780,15 +1821,17 @@ class AA_Inputfield {
 
     /** hierarchicalConstant function
      *  shows boxes allowing to choose constant in a hiearchical way
-     * @param        $group_id
-     * @param        $levelCount
-     * @param        $boxWidth
-     * @param        $rows
-     * @param int    $horizontal
-     * @param int    $firstSelect
-     * @param string $levelNames
+     *
+     * @param  string  $group_id
+     * @param  int     $levelCount
+     * @param  int     $boxWidth
+     * @param  int     $rows
+     * @param  bool    $horizontal
+     * @param  int     $firstSelect
+     * @param  array   $levelNames
      */
-    function hierarchicalConstant(string $group_id, int $levelCount, int $boxWidth, int $rows, bool $horizontal=false, int $firstSelect=0, array $levelNames=[]) {
+    function hierarchicalConstant(string $group_id, int $levelCount, int $boxWidth, int $rows, bool $horizontal=false, int $firstSelect=0, array $levelNames=[]): void
+    {
         static $hcid = 0;
         $hcid++;   // this is hc identifier
         [$name,$val,$add] = $this->prepareVars('multi');
@@ -1847,7 +1890,8 @@ class AA_Inputfield {
     * for use within <form> and <table> tag
     * @param $usevalue
     */
-    function inputSelect($usevalue=false) {
+    function inputSelect($usevalue=false): void
+    {
         [$name,$val,$add] = $this->prepareVars();
         $this->fill_const_arr();
         $triggers  = $this->use_triggers_4_slice ? JsTriggers::singleton4id($this->use_triggers_4_slice)->get("select", $name) : '';
@@ -1864,7 +1908,8 @@ class AA_Inputfield {
      * @param AA_Item $item
      * @param string $slice_id
      */
-    function inputWidget($item, $slice_id) {
+    function inputWidget($item, $slice_id): void
+    {
         if ( !($field = AA_Slice::getModule($slice_id)->getField($this->id)) ) {
             return;
         }
@@ -1898,7 +1943,8 @@ class AA_Inputfield {
     * @param $text
     * @param $hlp
     */
-    function inputFile($accepts="*/*", $text="", $hlp="") {
+    function inputFile($accepts="*/*", $text="", $hlp=""): void
+    {
         [$name,$val,$add] = $this->prepareVars();
         if ( !$accepts ) {
             $accepts = '*/*';
@@ -1929,7 +1975,8 @@ class AA_Inputfield {
     * @param $secondfield
     * @param $usevalue
     */
-    function inputPreSelect($maxsize=254, $size=25, $adding=0, $secondfield="", $usevalue=false) {
+    function inputPreSelect($maxsize=254, $size=25, $adding=0, $secondfield="", $usevalue=false): void
+    {
         [$name,$val,$add] = $this->prepareVars();
         $this->fill_const_arr();
 
@@ -1961,7 +2008,8 @@ class AA_Inputfield {
      * @param $rows
      * @param $cols
      */
-    function textareaPreSelect($rows=4, $cols=60) {
+    function textareaPreSelect($rows=4, $cols=60): void
+    {
         [$name,$val,$add] = $this->prepareVars();
         $this->fill_const_arr();
         $val=safe($val);
@@ -1989,7 +2037,8 @@ class AA_Inputfield {
      * @param string $addform
      * @param bool   $add_slice_pwd
      */
-    function twoBox($rows, $wi2_offer, $wi2_selected, $slice_field='', $whichitems=AA_BIN_ACT_PEND, $conds_str=false, $sort_str=false, $addform='', $add_slice_pwd=false) {
+    function twoBox($rows, $wi2_offer, $wi2_selected, $slice_field='', $whichitems=AA_BIN_ACT_PEND, $conds_str=false, $sort_str=false, $addform='', $add_slice_pwd=false): void
+    {
         [$name,$val,$add] = $this->prepareVars('multi');
         if ( $whichitems < 1 ) {
             $whichitems = AA_BIN_ACT_PEND;
@@ -2077,7 +2126,8 @@ class AA_Inputfield {
      * @param $change_pwd_help
      * @param $retype_pwd_help
      */
-    function passwordModify( $fieldsize, $change_pwd_label, $retype_pwd_label, $delete_pwd_label, $change_pwd_help, $retype_pwd_help) {
+    function passwordModify( $fieldsize, $change_pwd_label, $retype_pwd_label, $delete_pwd_label, $change_pwd_help, $retype_pwd_help): void
+    {
         [$name,$val,$add] = $this->prepareVars();
         $change_pwd_label = get_if($change_pwd_label, _m("Change Password"));
         $retype_pwd_label = get_if($retype_pwd_label, _m("Retype Password"));
@@ -2122,7 +2172,8 @@ class AA_Inputfield {
      * Local URL Picker | Omar/Jaime | 11-06-2005
      * @param $url
      */
-    function inputLocalURLPick($url) {
+    function inputLocalURLPick($url): void
+    {
         [$name,$val] = $this->prepareVars();
         $this->field_name('plus');
         $triggers  = $this->use_triggers_4_slice ? JsTriggers::singleton4id($this->use_triggers_4_slice)->get("input", $name) : '';
@@ -2142,13 +2193,23 @@ class AA_Inputfield {
 
     /** Hidden field added to inputs, which sends no POST variable if unfilled
      *  (so we do not know the widget for the field was shown)
-     * @param string $name
+     *
+     * @param string  $name
+     *
      * @return string
      */
-    protected function presentFieldIndicator(string $name): string
+    private function presentFieldIndicator(string $name): string
     {
         $present_hidden_flag_name = str_replace(['[',']'], '', $name) . 'p';
         return "<input type=hidden name=\"$present_hidden_flag_name\" value=P>";
+    }
+
+    /**
+     * @param  bool $html_rb_show
+     */
+    public function setShowHtmlRadio(bool $html_rb_show): void
+    {
+        $this->html_rb_show = $html_rb_show;
     }
 
 }
@@ -2161,7 +2222,8 @@ class AA_Inputfield {
  * @param $hint
  * @return string
  */
-function getFrmMoreHelp($hlp_url, $hint="") {
+function getFrmMoreHelp($hlp_url, $hint=""): string
+{
     if ( $hlp_url ) {
         return a_href($hlp_url,'?', ['title'=>$hint, 'target'=>'_blank', 'class'=>'aa-morehelp']);
     }
@@ -2181,7 +2243,8 @@ function getFrmMoreHelp($hlp_url, $hint="") {
  * @param $hlp
  * @param $morehlp
  */
-function FrmInputChBox($name, $txt, $checked=true, $changeorder=false, $add="", $colspan=1, $needed=false, $hlp="", $morehlp="") {
+function FrmInputChBox($name, $txt, $checked=true, $changeorder=false, $add="", $colspan=1, $needed=false, $hlp="", $morehlp=""): void
+{
     $input = new AA_Inputfield($checked, false, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp);
     $input->inputChBox($changeorder, $colspan);
     echo $input->get_result();
@@ -2189,20 +2252,19 @@ function FrmInputChBox($name, $txt, $checked=true, $changeorder=false, $add="", 
 
 
 /** Gets html tag <input type=text .. to 2-column table  for use within <form> and <table> tag.
- * @param        $name
- * @param        $txt
- * @param        $val
- * @param int    $maxsize
- * @param int    $size
- * @param bool   $needed
- * @param string $hlp
- * @param string $morehlp
- * @param bool   $html
- * @param string $type  allows to show <INPUT type=PASSWORD> field as well
- *                      (and perhaps BUTTON and SUBMIT also, but I do not see
- *                      any usage) - added by Jakub, 28.1.2003
- * @param string $placeholder
- * @param string $pattern
+ *
+ * @param          $name
+ * @param          $txt
+ * @param          $val
+ * @param  int     $maxsize
+ * @param  int     $size
+ * @param  bool    $needed
+ * @param  string  $hlp
+ * @param  string  $morehlp
+ * @param  bool    $html
+ * @param  string  $placeholder
+ * @param  string  $pattern
+ *
  * @return string
  */
 function getFrmText($name, $txt, $val, $maxsize=254, $size=25, $needed=false, $hlp="", $morehlp="", $html=false, $placeholder='', $pattern=''): string {
@@ -2215,7 +2277,8 @@ function getFrmText($name, $txt, $val, $maxsize=254, $size=25, $needed=false, $h
 /** Prints html tag <input type=text .. to 2-column table  for use within <form> and <table> tag.
  * @see getFrmText
  */
-function FrmInputText($name, $txt, $val, $maxsize=254, $size=25, $needed=false, $hlp="", $morehlp="", $html=false, $placeholder='', $pattern='') {
+function FrmInputText($name, $txt, $val, $maxsize=254, $size=25, $needed=false, $hlp="", $morehlp="", $html=false, $placeholder='', $pattern=''): void
+{
     echo getFrmText($name, $txt, $val, $maxsize, $size, $needed, $hlp, $morehlp, $html, $placeholder, $pattern);
 }
 
@@ -2224,7 +2287,8 @@ function FrmInputText($name, $txt, $val, $maxsize=254, $size=25, $needed=false, 
  * @param        $txt
  * @param        $val
  */
-function FrmInputPwd($name, $txt, $val) {
+function FrmInputPwd($name, $txt, $val): void
+{
     $input = new AA_Inputfield($val, false, 'normal', $name, $txt, false, true);
     $input->inputText(50, 50, 'password');
     echo $input->get_result();
@@ -2235,7 +2299,8 @@ function FrmInputPwd($name, $txt, $val) {
  * @param        $txt
  * @param        $val
  */
-function FrmInputEmail($name, $txt, $val,  $maxsize=254, $size=25, $needed=false, $hlp="", $morehlp="", $placeholder='') {
+function FrmInputEmail($name, $txt, $val,  $maxsize=254, $size=25, $needed=false, $hlp="", $morehlp="", $placeholder=''): void
+{
     $input = new AA_Inputfield($val, false, 'normal', $name, $txt, false, $needed, $hlp, $morehlp);
     $input->inputText($maxsize, $size, 'email', $placeholder);
     echo $input->get_result();
@@ -2246,7 +2311,8 @@ function FrmInputEmail($name, $txt, $val,  $maxsize=254, $size=25, $needed=false
  * @param        $txt
  * @param        $val
  */
-function FrmInputDate($name, $txt, $val, $needed=false, $hlp="", $morehlp="") {
+function FrmInputDate($name, $txt, $val, $needed=false, $hlp="", $morehlp=""): void
+{
     $input = new AA_Inputfield($val, false, 'normal', $name, $txt, false, $needed, $hlp, $morehlp);
     $input->inputText(type: 'date');
     echo $input->get_result();
@@ -2257,7 +2323,8 @@ function FrmInputDate($name, $txt, $val, $needed=false, $hlp="", $morehlp="") {
  * @param        $txt
  * @param        $val
  */
-function FrmInputDatetime($name, $txt, $val, $needed=false, $hlp="", $morehlp="") {
+function FrmInputDatetime($name, $txt, $val, $needed=false, $hlp="", $morehlp=""): void
+{
     $input = new AA_Inputfield($val, false, 'normal', $name, $txt, false, $needed, $hlp, $morehlp);
     $input->inputText(type: 'datetime-local');
     echo $input->get_result();
@@ -2293,7 +2360,8 @@ function getFrmNumber($name, $txt, $val, $min=0, $max=9999, $needed=false, $hlp=
 /** Prints html tag <input type=text .. to 2-column table for use within <form> and <table> tag.
  * @see FrmInputNumber
  */
-function FrmInputNumber($name, $txt, $val, $min=0, $max=9999, $needed=false, $hlp="", $morehlp="", $placeholder='') {
+function FrmInputNumber($name, $txt, $val, $min=0, $max=9999, $needed=false, $hlp="", $morehlp="", $placeholder=''): void
+{
     echo getFrmNumber($name, $txt, $val, $min, $max, $needed, $hlp, $morehlp, $placeholder);
 }
 
@@ -2305,7 +2373,8 @@ function FrmInputNumber($name, $txt, $val, $min=0, $max=9999, $needed=false, $hl
  * @param string $morehlp
  * @param bool $safing
  */
-function FrmStaticText($txt, $val, $hlp = "", $morehlp = "", $safing = true) {
+function FrmStaticText($txt, $val, $hlp = "", $morehlp = "", $safing = true): void
+{
     $input = new AA_Inputfield($val, false, 'normal', '', $txt, '', false, $hlp, $morehlp);
     $input->staticText($safing);
     echo $input->get_result();
@@ -2327,7 +2396,8 @@ function getFrmHidden($name, $val, $safing=true ): string {
  * @param string $val
  * @param bool $safing
  */
-function FrmHidden($name, $val, $safing=true ) {
+function FrmHidden($name, $val, $safing=true ): void
+{
     echo getFrmHidden($name, $val, $safing);
 }
 
@@ -2346,12 +2416,13 @@ function FrmHidden($name, $val, $safing=true ) {
  * @param bool   $showrich_href
  * @param int    $maxlength
  */
-function FrmTextarea($name, $txt, $val, $rows=4, $cols=60, $needed=false, $hlp="", $morehlp="", $single=false, $showrich_href=false, $maxlength=0) {
+function FrmTextarea($name, $txt, $val, $rows=4, $cols=60, $needed=false, $hlp="", $morehlp="", $single=false, $showrich_href=false, $maxlength=0): void
+{
     $html  = false;   // it was in parameter, but was never used in the code /honzam 05/15/2004
     $add   = false;   // in parameter, but never filled. Honza 24.4.2013
     $input = new AA_Inputfield($val, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp);
     if ($showrich_href) {
-        $input->html_rb_show = true;
+        $input->setShowHtmlRadio(true);
     }
     $input->textarea($rows, $cols, $single, $showrich_href, false, $maxlength);
     echo $input->get_result();
@@ -2369,7 +2440,8 @@ function FrmTextarea($name, $txt, $val, $rows=4, $cols=60, $needed=false, $hlp="
  *                         2 - hour:minutes - if time is 00:00, it shows nothing
  *                         3 - hour:minutes
  */
-function FrmDate($name, $txt, $val, $needed=false, $hlp="", $morehlp="", $display_time=0) {
+function FrmDate($name, $txt, $val, $needed=false, $hlp="", $morehlp="", $display_time=0): void
+{
     $html  = false;   // in parameter, but never filled. Honza 24.4.2013
     $add   = false;   // in parameter, but never filled. Honza 24.4.2013
     $input = new AA_Inputfield($val, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp);
@@ -2398,7 +2470,8 @@ function getFrmInputMultiSelect($name, $txt, $arr, $selected="", $rows=5, $neede
 /** FrmInputMultiSelect function Prints html tag <select multiple .. to 2-column table for use within <form> and <table> tag
  * @see getFrmText
  */
-function FrmInputMultiSelect($name, $txt, $arr, $selected="", $rows=5, $needed=false, $hlp="", $morehlp="") {
+function FrmInputMultiSelect($name, $txt, $arr, $selected="", $rows=5, $needed=false, $hlp="", $morehlp=""): void
+{
     echo getFrmInputMultiSelect($name, $txt, $arr, $selected, $rows, $needed, $hlp, $morehlp);
 }
 
@@ -2418,7 +2491,8 @@ function FrmInputMultiSelect($name, $txt, $arr, $selected="", $rows=5, $needed=f
      * @param $move_right
      * @param $add
      */
-    function FrmInputRadio($name, $txt, $arr, $selected="", $needed=false, $hlp="", $morehlp="", $ncols=0, $move_right=true, $add='') {
+    function FrmInputRadio($name, $txt, $arr, $selected="", $needed=false, $hlp="", $morehlp="", $ncols=0, $move_right=true, $add=''): void
+    {
         $html  = false;   // in parameter, but never filled. Honza 24.4.2013
         $input = new AA_Inputfield($selected, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp, $arr);
         $input->inputRadio($ncols, $move_right);
@@ -2438,7 +2512,8 @@ function FrmInputMultiSelect($name, $txt, $arr, $selected="", $rows=5, $needed=f
  * @param string $morehlp
  * @param string $actions
  */
-function FrmInputMultiText($name, $txt, $arr, $selected="", $rows=5, $needed=false, $hlp="", $morehlp="", $actions='MDAC') {
+function FrmInputMultiText($name, $txt, $arr, $selected="", $rows=5, $needed=false, $hlp="", $morehlp="", $actions='MDAC'): void
+{
     $html  = false;   // in parameter, but never filled. Honza 24.4.2013
     $add   = false;   // in parameter, but never filled. Honza 24.4.2013
     $input = new AA_Inputfield($selected, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp, $arr);
@@ -2458,7 +2533,8 @@ function FrmInputMultiText($name, $txt, $arr, $selected="", $rows=5, $needed=fal
  * @param $morehlp
  * @param $usevalue
  */
-function FrmInputSelect($name, $txt, $arr, $selected="", $needed=false, $hlp="", $morehlp="", $usevalue=false) {
+function FrmInputSelect($name, $txt, $arr, $selected="", $needed=false, $hlp="", $morehlp="", $usevalue=false): void
+{
     $html  = false;   // in parameter, but never filled. Honza 24.4.2013
     $add   = false;   // in parameter, but never filled. Honza 24.4.2013
     $input = new AA_Inputfield($selected, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp, $arr);
@@ -2477,7 +2553,8 @@ function FrmInputSelect($name, $txt, $arr, $selected="", $needed=false, $hlp="",
  * @param string $hlp
  * @param string $morehlp
  */
-function FrmInputFile($name, $txt, $val, $needed=false, $accepts="image/*", $hlp="", $morehlp="" ) {
+function FrmInputFile($name, $txt, $val, $needed=false, $accepts="image/*", $hlp="", $morehlp="" ): void
+{
     $html  = false;   // in parameter, but never filled. Honza 24.4.2013
     $add   = false;   // in parameter, but never filled. Honza 24.4.2013
     $input = new AA_Inputfield($val, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp);
@@ -2501,7 +2578,8 @@ function FrmInputFile($name, $txt, $val, $needed=false, $accepts="image/*", $hlp
  * @param $secondfield
  * @param $usevalue
  */
-function FrmInputPreSelect($name, $txt, $arr, $val, $maxsize=254, $size=25, $needed=false, $hlp="", $morehlp="", $adding=0, $secondfield="", $usevalue=false) {
+function FrmInputPreSelect($name, $txt, $arr, $val, $maxsize=254, $size=25, $needed=false, $hlp="", $morehlp="", $adding=0, $secondfield="", $usevalue=false): void
+{
     $html  = false;   // in parameter, but never filled. Honza 24.4.2013
     $add   = false;   // in parameter, but never filled. Honza 24.4.2013
     $input = new AA_Inputfield($val, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp, $arr);
@@ -2522,7 +2600,8 @@ function FrmInputPreSelect($name, $txt, $arr, $val, $maxsize=254, $size=25, $nee
  * @param $hlp
  * @param $morehlp
  */
-function FrmTwoBox($name, $txt, $arr, $selected, $rows, $needed=false, $wi2_offer='', $wi2_selected='', $hlp="", $morehlp="") {
+function FrmTwoBox($name, $txt, $arr, $selected, $rows, $needed=false, $wi2_offer='', $wi2_selected='', $hlp="", $morehlp=""): void
+{
     $html  = false;   // in parameter, but never filled. Honza 24.4.2013
     $add   = false;   // in parameter, but never filled. Honza 24.4.2013
     $sel = [];
@@ -2541,7 +2620,8 @@ function FrmTwoBox($name, $txt, $arr, $selected, $rows, $needed=false, $wi2_offe
  * if $txt, shows help message
  * @param $txt string
  */
-function PrintHelp( $txt ) {
+function PrintHelp( $txt ): void
+{
     if ( $txt ) {
         echo "<div class=\"tabhlp\">$txt</div>";
     }
@@ -2555,7 +2635,8 @@ function PrintHelp( $txt ) {
  * @param string $value
  * @param string $id
  */
-function FrmChBoxEasy($name, $checked=true, $add="", $value='', $id='') {
+function FrmChBoxEasy($name, $checked=true, $add="", $value='', $id=''): void
+{
     echo getFrmChBoxEasy($name, $checked, $add, $value, $id);
 }
 
@@ -2584,7 +2665,8 @@ function getFrmChBoxEasy($name, $checked=true, $add="", $value='', $id=''): stri
  * @param $selected
  * @param array $add
  */
-function FrmSelectEasy($name, $arr, $selected="", array $add=[]) {
+function FrmSelectEasy($name, $arr, $selected="", array $add=[]): void
+{
     echo getFrmSelectEasy($name, $arr, $selected, $add);
 }
 
@@ -2722,7 +2804,8 @@ function getFrmTabEnd( $buttons=false ): string {
     return $ret;
 }
 
-function FrmTabEnd( $buttons=false ) {
+function FrmTabEnd( $buttons=false ): void
+{
     echo getFrmTabEnd($buttons);
 }
 
@@ -2832,7 +2915,8 @@ function getFrmInputButtons($buttons, $print_hidden = true, $prefix = ''): strin
  * @param string $mode
  * @return string
  */
-function getFrmTabRow( $row, $mode='td', $attrs=[], $safe=false) {
+function getFrmTabRow( $row, $mode='td', $attrs=[], $safe=false): string
+{
     $ret = '';
     $add = $attrs ? ' '.htmlattr($attrs) : '';
     if ( isset($row) && is_array($row) ) {
@@ -2858,7 +2942,8 @@ function getFrmTabRow( $row, $mode='td', $attrs=[], $safe=false) {
  * Prints table row with calls defined in array
  * @param $row
  */
-function FrmTabRow( $row ) {
+function FrmTabRow( $row ): void
+{
     echo getFrmTabRow( $row );
 }
 
@@ -2868,7 +2953,8 @@ function FrmTabRow( $row ) {
  * @param $tabsId
  * @return string
  */
-function getFrmTabs( $tabs, $tabsId ) {
+function getFrmTabs( $tabs, $tabsId ): string
+{
     if ( isset($tabs) && is_array($tabs) ) {
         $ret = "\n <tr id=\"$tabsId\"><td colspan=\"2\" class=\"tabsrow\">";
         $non = '';
@@ -2884,7 +2970,8 @@ function getFrmTabs( $tabs, $tabsId ) {
  * @param $tabs
  * @param $tabsId
  */
-function FrmTabs( $tabs, $tabsId ) {
+function FrmTabs( $tabs, $tabsId ): void
+{
     echo getFrmTabs( $tabs, $tabsId );
 }
 
@@ -2956,7 +3043,8 @@ function getFrmJavascript($jscode , bool $onload=false): string {
  * @param string $loadtype
  * @return string
  */
-function getFrmJavascriptCached( $jscode, $name, $loadtype = 'async defer' ) {
+function getFrmJavascriptCached( $jscode, $name, $loadtype = 'async defer' ): string
+{
     $key  = get_hash('jscache', $jscode);
 
     if (!AA::Pagecache()->getById($key)) {     // not in cache, yet
@@ -2970,19 +3058,22 @@ function getFrmJavascriptCached( $jscode, $name, $loadtype = 'async defer' ) {
  * @param $stylecode
  * @return string
  */
-function getFrmCSS( $stylecode ) {
+function getFrmCSS( $stylecode ): string
+{
     return "\n<style>\n  $stylecode \n</style>\n";
 }
 /** FrmJavascript function
  * @param $jscode
  */
-function FrmJavascript( $jscode ) {
+function FrmJavascript( $jscode ): void
+{
     echo getFrmJavascript( $jscode );
 }
 
 /** IncludeManagerJavascript function
  */
-function IncludeManagerJavascript() {
+function IncludeManagerJavascript(): void
+{
     echo getFrmJavascriptFile( 'javascript/aajslib-legacy.min.js' );
     echo getFrmJavascriptFile( 'javascript/manager.min.js' );
 }
@@ -3053,15 +3144,16 @@ function getRadioBookmarkRow( $selected, $name, $count, $value, $list_type, $lis
 
 /** FrmItemGroupSelect function
  *   Allows select items group (used for bulk e-mails as well as for Find&Replace)
- *  @param array $items - array of item ids with 'x' prefix
- *  @param AA_Searchbar $searchbar
- *  @param string $selected - selected group
- *  @param string $list_type - items preview type ('items' | 'users') @see usershow.php
- *  @param array  $messages - $messages['view_items']     = _m("View Recipients")
- *                            messages['selected_items'] = _m('Selected users')
- *  @param array additional = array( 'text' => 'Test', 'varname'=>'testuser');
+ *  @param array         $items       - array of item ids with 'x' prefix
+ *  @param AA_Searchbar  $searchbar
+ *  @param string        $selected    - selected group
+ *  @param string        $list_type   - items preview type ('items' | 'users') @see usershow.php
+ *  @param array         $messages    - $messages['view_items']     = _m("View Recipients")
+ *                                      messages['selected_items'] = _m('Selected users')
+ *  @param array         $additional  additional = array( 'text' => 'Test', 'varname'=>'testuser');
  */
-function FrmItemGroupSelect( $items, $searchbar, $selected, $list_type, $messages, $additional=[]) {
+function FrmItemGroupSelect( $items, $searchbar, $selected, $list_type, $messages, $additional=[]): void
+{
 
     $out = '';
     if (is_array($items) && count($items)) {
@@ -3134,7 +3226,8 @@ function getZidsFromGroupSelect($group, $items, $searchbar): zids {
  *  Lists selected items to special form - used by manager.min.js to show items
  * @param $items
  */
-function FrmItemListForm($items) {
+function FrmItemListForm($items): void
+{
     $out = '<form name="itform" method="post">';
     if (is_array($items)) {
         foreach (array_keys($items) as $key) {
@@ -3152,7 +3245,8 @@ function FrmItemListForm($items) {
  * @param $html_setting
  * @return string
  */
-function getSelectWithParam($name, $arr, $selected="", $html_setting=null) {
+function getSelectWithParam($name, $arr, $selected="", $html_setting=null): string
+{
     $add = ["onchange"=>"ShowThisTagClass('fswp$name', 'div', 'fswp_'+this.value, 'fswp_')"];
     $ret = getFrmSelectEasy($name, $arr, $selected, $add);
     if (isset($html_setting) && is_array($html_setting)) {
@@ -3167,9 +3261,10 @@ function getSelectWithParam($name, $arr, $selected="", $html_setting=null) {
 
 /**
  *  get alias names as help for fulltext and compact format page
- * @param AA_Aliases $aliases
- * @param bool       $fields
- * @param string     $buttons
+ *
+ * @param  AA_Aliases      $aliases
+ * @param  AA_Fields|null  $fields
+ *
  * @return string
  */
 function getAliasHelp(AA_Aliases $aliases, ?AA_Fields $fields = null): string {

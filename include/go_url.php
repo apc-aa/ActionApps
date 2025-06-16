@@ -43,7 +43,8 @@ function con_url($url, $params=[], $state=false): string {
  * @param array|string $parameters
  * @return string
  */
-function HttpGetParameters($parameters) {
+function HttpGetParameters($parameters): string
+{
     $param_string = '';
     if (!is_array($parameters)) {
         $param_string = $parameters;
@@ -147,7 +148,8 @@ function get_help_url($href, $anchor): string {
  * @param $add_param array|string
  * @param $usejs
  */
-function go_url($url, $add_param="", $usejs=false, $code=302) {
+function go_url($url, $add_param="", $usejs=false, $code=302): void
+{
     global $sess;
     if (is_object($sess)) {
         page_close();

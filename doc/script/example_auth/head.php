@@ -8,7 +8,8 @@ $options = [
 ];
 $a = new AA_ClientAuth($options);
 
-function displayUserbox($a) {
+function displayUserbox($a): void
+{
     // getUid() returns username of the user (=login name) or false, if the user
     // is not known. In such case we provide user with loginform
     // getUid() do not perform any remote checks in the authentication,

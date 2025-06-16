@@ -38,18 +38,21 @@
 */
 
 
+use AA\Managed;
 use AA\Manageraction\Manageractions;
+use AA\Manageraction\Taskmanager_Delete;
+use AA\Manageraction\Taskmanager_Execute;
 
 
 //------------------ Actions for Task Manager --------------------------------
 
 /** Generates manager settings for aa_toexecute.php and se_taskmanager.php
- * @return \AA\Managed - manager settings
+ * @return Managed - manager settings
  */
-function GetToexecuteManagerSettings(): \AA\Managed {
+function GetToexecuteManagerSettings(): Managed {
     $actions   = new Manageractions;
-    $actions->addAction(new \AA\Manageraction\Taskmanager_Execute('ExecuteTaskAction'));
-    $actions->addAction(new \AA\Manageraction\Taskmanager_Delete('DeleteTaskAction'));
+    $actions->addAction(new Taskmanager_Execute('ExecuteTaskAction'));
+    $actions->addAction(new Taskmanager_Delete('DeleteTaskAction'));
 
     //$switches  = new AA\Manageractions;  // we do not need switches here
 

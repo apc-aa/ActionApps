@@ -48,7 +48,8 @@ abstract class AA_Exporter extends AA_Object {
         $this->grabber   = $params['grabber'];
     }
 
-    function sendFile($file_name) {
+    function sendFile($file_name): void
+    {
 
         $temp_file = $this->_createTmpFile();
         $this->_contentHeaders($file_name);
@@ -69,14 +70,6 @@ abstract class AA_Exporter extends AA_Object {
         exit;
     }
 
-    /** exporter function
-     *  Generate the output and write to a temporary file
-     *  I'm assuming $export_slices contains UNPACKED slice ids
-     * @param $slice_id
-     * @param $export_slices
-     * @param $new_slice_id
-     * @return bool|resource
-     */
     function _createTmpFile() {
         $temp_file = tmpfile();
 
@@ -107,11 +100,12 @@ abstract class AA_Exporter extends AA_Object {
         return $temp_file;
     }
 
-    function _outputStart($item)  { return ''; }
-    function _outputItem($item)   { return ''; }
-    function _outputEnd($item)    { return ''; }
+    function _outputStart($item): string { return ''; }
+    function _outputItem($item): string { return ''; }
+    function _outputEnd($item): string { return ''; }
 
-    function _contentHeaders($file_name)    {
+    function _contentHeaders($file_name): void
+    {
         header('Content-Description: File Transfer');
         header('Content-Type: application/octet-stream');
         header('Content-Disposition: attachment; filename='.basename($file_name));
@@ -121,21 +115,14 @@ abstract class AA_Exporter extends AA_Object {
     /* returns default file extension. By default it is last part of this class
      * name, but you can redefine it in the subclasses, of course
      */
-    function getExtension() {
+    function getExtension(): string
+    {
         return strtolower(substr(get_class($this),12));
     }
 }
 
 class AA_Exporter_Csv extends AA_Exporter {
 
-    /** exporter function
-     *  Generate the output and write to a temporary file
-     *  I'm assuming $export_slices contains UNPACKED slice ids
-     * @param $slice_id
-     * @param $export_slices
-     * @param $new_slice_id
-     * @return bool|resource
-     */
     function _createTmpFile() {
         $temp_file = tmpfile();
 
@@ -163,7 +150,8 @@ class AA_Exporter_Csv extends AA_Exporter {
     }
 
 
-    function _outputStartFile($file, $item)  {
+    function _outputStartFile($file, $item): void
+    {
         $fs      = $this->field_set;
         $out_arr = [];
         $count   = $fs->fieldCount();
@@ -174,7 +162,8 @@ class AA_Exporter_Csv extends AA_Exporter {
         fputcsv($file, $out_arr);
     }
 
-    function _outputItemFile($file, $item)  {
+    function _outputItemFile($file, $item): void
+    {
         fputcsv($file, $this->field_set->getValueArray($item));
     }
 }
@@ -265,7 +254,8 @@ class AA_Exporter_Excel extends AA_Exporter {
 
 class AA_Exporter_Html extends AA_Exporter {
 
-    function getCharset() {
+    function getCharset(): ?string
+    {
         static $_charset = null;
         if (is_null($_charset)) {
             $_charset = $this->grabber->getCharset();
@@ -273,15 +263,18 @@ class AA_Exporter_Html extends AA_Exporter {
         return $_charset;
     }
 
-    function _contentHeaders($file_name)    {
+    function _contentHeaders($file_name): void
+    {
         header('Content-Type: text/html; charset='.$this->getCharset());
     }
 
-    function _outputEnd($item)   {
+    function _outputEnd($item): string
+    {
         return "\n</table></body></html>";  // EOF
     }
 
-    function _outputStart($item)  {
+    function _outputStart($item): string
+    {
         $ret  = '<!DOCTYPE html>';
         $ret .= '<html><head><meta charset="'.$this->getCharset().'"><title>ActionApps Export</title></head><body><table>';
 
@@ -290,11 +283,13 @@ class AA_Exporter_Html extends AA_Exporter {
         return $ret. "\n <tr>" . implode("\n  ", $arr)."\n </tr>";
     }
 
-    function _valueSanity(&$value, $key, $entity) {
+    function _valueSanity(&$value, $key, $entity): void
+    {
         $value = "<$entity>". safe($value) ."</$entity>";
     }
 
-    function _outputItem($item)  {
+    function _outputItem($item): string
+    {
         $arr = $this->field_set->getValueArray($item);
         array_walk($arr, ['AA_Exporter_Html', '_valueSanity'], 'td');
         return "\n <tr>" . implode("\n  ", $arr)."\n </tr>";
@@ -302,7 +297,8 @@ class AA_Exporter_Html extends AA_Exporter {
 }
 
 class AA_Exporter_Html_Download extends AA_Exporter_Html {
-    function _contentHeaders($file_name)    {
+    function _contentHeaders($file_name): void
+    {
         header('Content-Description: File Transfer');
         header('Content-Type: application/octet-stream');
         header('Content-Disposition: attachment; filename='.basename($file_name));
@@ -316,7 +312,8 @@ class AA_Exporter_Html_Download extends AA_Exporter_Html {
 }
 
 class AA_Exporter_Excel extends AA_Exporter_Html {
-    function _contentHeaders($file_name)    {
+    function _contentHeaders($file_name): void
+    {
         header('Content-Description: File Transfer');
         header('Content-Type: application/vnd.ms-excel;charset:UTF-8');
         header('Content-Disposition: attachment; filename='.basename($file_name));
@@ -407,27 +404,29 @@ class AA_Fieldset {
      *  (element could be "headline........" as well as "_#HEADLINE _#ABSTRACT")
      *  the type is stored in $_type array
      */
-    var $_fields = [];
+    private array $_fields = [];
 
     /** array of types of fields - corresponds to $_fields array
      *  values are [f|a]  (= field | aliases )
      */
-    var $_types = [];
+    private array $_types = [];
 
     /** array of field names - corresponds to $_fields array    */
-    var $_names = [];
+    private array $_names = [];
 
     function __construct()
     {
     }
 
-    function addField($field_id, $field_name='') {
+    function addField($field_id, $field_name=''): void
+    {
         $this->_fields[] = $field_id;
         $this->_names[]  = $field_name;
         $this->_types[]  = 'f';
     }
 
-    function addAlias($field_id, $field_name='') {
+    function addAlias($field_id, $field_name=''): void
+    {
         $this->_fields[] = $field_id;
         $this->_names[]  = $field_name;
         $this->_types[]  = 'd';
@@ -436,9 +435,10 @@ class AA_Fieldset {
     function fieldCount(): int     { return count($this->_fields); }
     function getDefinition($index) { return $this->_fields[$index]; }
     function getName($index)       { return $this->_names[$index]; }
-    function isField($index)       { return $this->_types[$index] === 'f'; }
+    function isField($index): bool { return $this->_types[$index] === 'f'; }
 
-    function getValueArray($item)  {
+    function getValueArray($item): array
+    {
         $arr     = [];
 
         foreach ($this->_fields as $index => $definition) {
@@ -448,7 +448,8 @@ class AA_Fieldset {
         return $arr;
     }
 
-    function getNameArray($short=false)  {
+    function getNameArray($short=false): array
+    {
         $arr     = [];
         foreach ($this->_fields as $index => $definition) {
             $arr[]  = $this->_names[$index] . ($short ? '' : " ($definition)");
@@ -524,7 +525,8 @@ class AA_Exportsetings extends AA_Object {
         ];
     }
 
-    function export($restrict_zids=null) {
+    function export($restrict_zids=null): void
+    {
         $slice_id = $this->aa_owner;
         $slice  = AA_Slice::getModule($slice_id);
 

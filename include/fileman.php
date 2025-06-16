@@ -35,10 +35,10 @@ $sortable_columns = [
 ];
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-/** filesuffix function
- *  returns the suffix part of the filename (beginning with the last dot (.) in the filename)
+/**
  * @param $filename
- * @return bool|string
+ *
+ * @return string returns the suffix part of the filename (beginning with the last dot (.) in the filename)
  */
 function filesuffix($filename): string {
     if (!str_contains($filename, ".")) {
@@ -54,14 +54,16 @@ function filesuffix($filename): string {
 /** make_secure function
  * @param $filename
  */
-function make_secure(&$filename) {
+function make_secure(&$filename): void
+{
     $filename = str_replace ("..","",$filename);
 }
 
 /** set_directory function
  * @param $dir
  */
-function set_directory($dir) {
+function set_directory($dir): void
+{
     global $directory;
     $directory = $dir;
     endslash($directory);
@@ -100,8 +102,10 @@ function compare_files($f1, $f2): int
 }
 
 /** format_file_size function
+ *
  * @param $size
- * @return bool|string
+ *
+ * @return string
  */
 function format_file_size($size): string {
     $i = strlen ($size) % 3;
@@ -133,7 +137,8 @@ $filetypes = [
  * @param string $filepath
  * @return int|string
  */
-function get_filetype($filepath) {
+function get_filetype($filepath): int|string
+{
     global $filetypes;
 
     if ($filepath === ".." || str_ends_with($filepath, "/..")) {
@@ -176,7 +181,8 @@ function get_filetype($filepath) {
  * @param $dirname
  * @return array
  */
-function get_file_array($path, $dirname) {
+function get_file_array($path, $dirname): array
+{
     global $filetypes;
 
     endslash($path);
@@ -207,7 +213,9 @@ function get_file_array($path, $dirname) {
             $filepath = $dirname.$filename;
             if ($filename === "..") {
                 $i = strlen ($dirname)-2;
-                while ($i > 0 && $dirname[$i] !== "/") $i --;
+                while ($i > 0 && $dirname[$i] !== "/") {
+                    $i--;
+                }
                 $filepath = substr ($dirname, 0, $i);
             }
 
@@ -246,7 +254,8 @@ function get_file_array($path, $dirname) {
  * @param $dirname
  * @return string
  */
-function file_table($path, $dirname) {
+function file_table($path, $dirname): string
+{
     global $directory;
 
     $files = get_file_array ($path, $dirname);
@@ -298,7 +307,8 @@ function is_dir_empty($dirname): bool {
  * @param $chb
  * @param $fmset
  */
-function fileman_execute_command($basedir, $directory, $cmd, $arg, $chb, $fmset) {
+function fileman_execute_command($basedir, $directory, $cmd, $arg, $chb, $fmset): void
+{
     global $err,
         // set to the name of file which should be viewed by filedit.php
         $fe_filename,
@@ -429,7 +439,8 @@ function fileman_execute_command($basedir, $directory, $cmd, $arg, $chb, $fmset)
  * @param $mydir
  * @return array
  */
-function get_files_subtree($mydir) {
+function get_files_subtree($mydir): array
+{
     endslash($mydir);
     if (!is_dir ($mydir)) {
         return [];
@@ -438,11 +449,12 @@ function get_files_subtree($mydir) {
         return [];
     }
 
+    $retval = [];
     while ($filename = readdir($dir)) {
-        if ($filename != "." && $filename != "..") {
-            if (!is_dir ($mydir.$filename))
+        if ($filename !== "." && $filename !== "..") {
+            if (!is_dir ($mydir.$filename)) {
                 $retval[] = $filename;
-            else {
+            } else {
                 $sub = get_files_subtree($mydir.$filename);
                 foreach ($sub as $subfn) {
                     $retval[] = $filename."/".$subfn;

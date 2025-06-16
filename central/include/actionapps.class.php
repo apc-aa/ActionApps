@@ -28,6 +28,7 @@ https://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+use AA\Later\LaterInterface;
 use AA\Later\Toexecute;
 
 
@@ -45,16 +46,16 @@ class AA_Actionapps {
     /** local data (central_conf table) in ItemContent structure */
     private ItemContent $local_data;
 
-    var $last_error = '';
+    private ?int $last_error = null;
 
     /** cached remote session ID */
-    var $_remote_session_id = null;
+    private ?string $_remote_session_id = null;
 
     /** time when we get remote session ID. We do not use sessions older than ...*/
-    var $_remote_session_id_time = 0;
+    private int $_remote_session_id_time = 0;
 
     /** cached remote data - like AA name, ... */
-    var $_cached = [];
+    private array $_cached = [];
 
     /** constructor - create AA_Actionapps object from ItemContent object
      *  grabbed from central_conf table.
@@ -118,7 +119,8 @@ class AA_Actionapps {
      *  Currently this function is not needed, since name of AA is pased
      *  by constructor (which is much quicker)
      */
-    function requestAAName() {
+    function requestAAName(): string
+    {
         if ( is_null($this->_cached['org_name'])) {
             $response = $this->getResponse( new AA_Request('Get_Aaname') );
             if ($response->isError()) {
@@ -152,7 +154,8 @@ class AA_Actionapps {
      *  (like slice properties, fields, views, ...). It is returned for all the
      *  slices in array
      */
-    function requestDefinitions($type, $ids, $limited = []) {
+    function requestDefinitions($type, $ids, $limited = []): array
+    {
         // We will use rather one call which returns all the data for all the
         // slices, since it is much quicker than separate call for each slice
         $response = $this->getResponse( new AA_Request('Get_Module_Defs', ['type'=>$type, 'ids'=>$ids, 'limited'=>$limited]) );
@@ -180,7 +183,7 @@ class AA_Actionapps {
     /** Imports slice to the current AA. The id of slice is the same as in
      *  definition
      */
-    function importModuleChunk($definition_chunk) {
+    function importModuleChunk(AA_Module_Definition_Chunk $definition_chunk) {
         // We will use rather one call which returns all the data for all the
         // slices, since it is much quicker than separate call for each slice
 
@@ -203,28 +206,21 @@ class AA_Actionapps {
         // return $request->ask($this->getComunicatorUrl(), array('username' => $this->getAccessUsername(), 'password' =>$this->getAccessPassword()));
     }
 
-    /**
-     * @return string
-     */
-    public function getLastError()
-    {
-        return $this->last_error;
-    }
-
     function _authenticate() {
         $request  = new AA_Request('Get_Sessionid');
         // $response = $request->ask($this->getComunicatorUrl(), array('free' => $this->getAccessUsername(), 'freepwd' =>$this->getAccessPassword()));
         $response = $request->ask($this->getComunicatorUrl(), ['username' => $this->getAccessUsername(), 'password' =>$this->getAccessPassword()]);
         if ( !$response->isError() ) {
             $arr = $response->getResponse();
-            $this->setSession($arr[0]);
+            $this->setSession((string)$arr[0]);
         } else {
             $this->last_error = $response->getError();
         }
         return $response;
     }
 
-    function setSession($session_id) {
+    private function setSession(string $session_id): void
+    {
         $this->_remote_session_id      = $session_id;
         $this->_remote_session_id_time = now();
     }
@@ -282,12 +278,14 @@ class AA_Module_Definition {
         $this->clear();
     }
 
-    function clear() {
+    function clear(): void
+    {
         $this->module_id = null;
         $this->data      = [];
     }
 
-    function loadForId($module_id, $limited=false) {
+    function loadForId($module_id, $limited=false): void
+    {
         $this->module_id = $module_id;
         $this->clear();
         // should be overloaded in childs
@@ -316,7 +314,8 @@ class AA_Module_Definition {
         quicker. Also, there was some problem when there was different encoding
         in the modules.
     */
-    function planModuleImport($aa, $replaces=null) {
+    function planModuleImport($aa, $replaces=null): int
+    {
         $chunks    = $this->_getChunks($replaces);
         $toexecute = new Toexecute;
         foreach ($chunks as $chunk) {
@@ -327,7 +326,8 @@ class AA_Module_Definition {
     }
 
     /** special import - to this AA - no need to plan, no need to chunk */
-    function moduleImport($replaces=null) {
+    function moduleImport($replaces=null): int
+    {
         $chunks = $this->_getChunks($replaces);
         foreach ($chunks as $chunk) {
             $chunk->importModuleChunk();
@@ -335,7 +335,8 @@ class AA_Module_Definition {
         return count($chunks);
     }
 
-    protected function _getChunks($replaces) {
+    protected function _getChunks($replaces): array
+    {
         $chunks = [];
         if (is_array($replaces)) {
             $this->data = recursive_array_replace(array_keys($replaces), array_values($replaces), $this->data);
@@ -359,7 +360,8 @@ class AA_Module_Definition_Chunk {
     protected $data;
 
     /** Creates array of chunks from given data. The data are split to more chunks, if it is bigger than limit. */
-    static function factoryArray($module_id, $table, $rows) {
+    static function factoryArray($module_id, $table, $rows): array
+    {
         $chunks = [];
 
         // maximum 1000 rows in one chunk
@@ -375,7 +377,8 @@ class AA_Module_Definition_Chunk {
         $this->data      = [$table => $rows];
     }
 
-    function importModuleChunk() {
+    public function importModuleChunk(): array
+    {
 
         $metabase    = AA::Metabase();
 
@@ -419,7 +422,8 @@ class AA_Module_Definition_Chunk {
         return $ret;
     }
 
-    function _formatReport($arr) {
+    function _formatReport($arr): string
+    {
         $ret = '';
         foreach ($arr as $table => $idents) {
             $ret .= count($idents). " $table (";
@@ -434,7 +438,8 @@ class AA_Module_Definition_Chunk {
 
 class AA_Module_Definition_Slice extends AA_Module_Definition {
 
-    function loadForId($module_id, $limited= []) {
+    function loadForId($module_id, $limited= []): void
+    {
         $this->clear();
         $this->module_id = $module_id;
         $metabase        = AA::Metabase();
@@ -496,7 +501,8 @@ class AA_Module_Definition_Slice extends AA_Module_Definition {
 
 class AA_Module_Definition_Site extends AA_Module_Definition {
 
-    function loadForId($module_id, $limited=false) {
+    function loadForId($module_id, $limited=false): void
+    {
         $this->clear();
         $this->module_id = $module_id;
         $metabase        = AA::Metabase();
@@ -512,7 +518,8 @@ class AA_Module_Definition_Site extends AA_Module_Definition {
 
 class AA_Module_Definition_Alerts extends AA_Module_Definition {
 
-    function loadForId($module_id, $limited=false) {
+    function loadForId($module_id, $limited=false): void
+    {
         $this->clear();
         $this->module_id = $module_id;
         $metabase        = AA::Metabase();
@@ -532,19 +539,20 @@ class AA_Module_Definition_Alerts extends AA_Module_Definition {
 
 class AA_Difference {
 
-    var $description;
-    var $type;           // INFO | DIFFERENT_ROW | DIFFERENT_VALUE | NEW | DELETED
+    private string $description;
+    private string $type;           // INFO | DIFFERENT_ROW | DIFFERENT_VALUE | NEW | DELETED
     /** array of AA_Sync_Actions defining, what we can do with this difference */
-    var $actions;
+    private array $actions;
 
     /** */
-    function __construct($type, $description, $actions= []) {
+    function __construct(string $type, string $description, $actions= []) {
         $this->type        = $type;
         $this->description = $description;
         $this->actions     = empty($actions) ? [] : (is_array($actions) ? $actions : [$actions]);
     }
 
-    function printOut() {
+    function printOut(): void
+    {
         echo "\n<tr class=\"diff_".strtolower($this->type)."\"><td>". $this->description .'</td><td>';
         foreach ($this->actions as $action) {
             $action->printToForm();
@@ -630,7 +638,7 @@ class AA_Difference {
 class AA_Identifier {
 
     /**  $path[0] ~ module_id, [1] ~ table, [2] ~ row, [3] ~ column */
-    var $path = [];
+    private array $path = [];
 
     function __construct($module_id=null, $table=null, $row=null, $column=null) {
         if ($module_id) {
@@ -655,7 +663,8 @@ class AA_Identifier {
     /** Parses the identifier string (like "Configuraci�n->field->category........")
      *  static member function - called like $idf = AA_Identifier::factoryFromString($idf_string)
      */
-    function factoryFromString($idf) {
+    function factoryFromString($idf): AA_Identifier
+    {
         [$module_id, $table, $row, $column] = explode('->', $idf);
         return new AA_Identifier($module_id, $table, $row, $column);
     }
@@ -663,7 +672,8 @@ class AA_Identifier {
     /** creates identifier which identifies one part of the current idenftifier
      *  say '534633'->view->32  ---> .sub('name') ---> '534633'->view->32->name
      */
-    function sub($sub_id) {
+    function sub($sub_id): void
+    {
         $this->path[] = $sub_id;
         return;
     }
@@ -676,21 +686,22 @@ class AA_Identifier {
 /** Class which defines synchronization actions */
 class AA_Sync_Action {
     /** action type  - DELETE | INSERT | UPDATE_ROW | UPDATE_VALUE */
-    var $type;
+    private string $type;
 
     /** AA_Identifier object holding something like 'My Slice->view->678->name' */
-    var $identifier;
+    private AA_Identifier $identifier;
 
     /** action parameters (field's data). Could be scalar as well as array */
-    var $params;
+    private $params;
 
-    function __construct($type, $identifier, $params=null) {
+    function __construct(string $type, AA_Identifier $identifier, $params=null) {
         $this->type       = $type;
         $this->identifier = $identifier;
         $this->params     = $params;
     }
 
-    function printToForm() {
+    function printToForm(): void
+    {
         $packed_action = serialize($this);
         echo '<div>';
         $state = isset($_POST['sync']) ? in_array($packed_action, (array)$_POST['sync']) : ($this->type !== 'UPDATE_VALUE');
@@ -756,38 +767,39 @@ class AA_Sync_Action {
 /** Stores the synchronization action which should be performed on remote AA
  *  Objects are stored into AA\Later\Toexecute queue for running from Task Manager
  */
-class AA_Task_Sync implements \AA\Later\LaterInterface {
+class AA_Task_Sync implements LaterInterface {
 
     function __construct(
         /** AA_Sync_Action object - Action to do */
         public $sync_action,
         /** AA_Actionapps object  - In which AA we have to do the action */
-        public $actionapps,
+        public AA_Actionapps $actionapps,
     ) {}
 
     /**
      * @param array $params - numeric array of additional parameters for the execution passed in time of call
      * @return string - message about execution to be logged
      */
-    public function toexecutelater($params= []) {
+    public function toexecutelater($params= []): string
+    {
         // synchronize accepts array of sync_actions, so it is possible
         // to do more action by one call
-        return $this->actionapps->synchronize([$this->sync_action]);
+        return (string)$this->actionapps->synchronize([$this->sync_action]);
     }
 }
 
 /** Stores the synchronization action which should be performed on remote AA
  *  Objects are stored into AA\Later\Toexecute queue for running from Task Manager
  */
-class AA_Task_Import_Module_Chunk implements \AA\Later\LaterInterface {
+class AA_Task_Import_Module_Chunk implements LaterInterface {
 
-    /** @var AA_Module_Definition $module_definition_chunk -  object or similar for import */
-    protected $module_definition_chunk;
+    /** @var AA_Module_Definition_Chunk $module_definition_chunk -  object or similar for import */
+    protected AA_Module_Definition_Chunk $module_definition_chunk;
 
     /** @var AA_Actionapps $actionapps object in which AA we have to do the action */
     protected $actionapps;
 
-    function __construct($module_definition_chunk, AA_Actionapps $actionapps) {
+    function __construct(AA_Module_Definition_Chunk $module_definition_chunk, AA_Actionapps $actionapps) {
         $this->module_definition_chunk = $module_definition_chunk;
         $this->actionapps              = $actionapps;
     }
@@ -797,7 +809,8 @@ class AA_Task_Import_Module_Chunk implements \AA\Later\LaterInterface {
      * @return string - message about execution to be logged
      * @see \AA\Later\LaterInterface
      */
-    public function toexecutelater($params= []) {
+    public function toexecutelater($params= []): string
+    {
         // synchronize accepts array of sync_actions, so it is possible
         // to do more action by one call
         return $this->actionapps->importModuleChunk($this->module_definition_chunk);
@@ -816,7 +829,8 @@ class AA_Task_Import_Module_Chunk implements \AA\Later\LaterInterface {
  * @return array - Abstract Data Structure containing the links data
  *                 {@link https://actionapps.org/faq/#1337}
  */
-function Central_GetAaContent($zids) {
+function Central_GetAaContent($zids): array
+{
     $content = [];
     $ret     = [];
 

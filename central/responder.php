@@ -33,7 +33,7 @@ require_once __DIR__."/include/init_central.php";
  */
 class AA_Responder extends AA_Object {
 
-    function run()    { return new AA_Response();}
+    function run(): AA_Response { return new AA_Response();}
 
     /** by default only superadmins are allowed to perform remote operations */
     function isPerm() { return IsSuperadmin(); }
@@ -51,7 +51,8 @@ class AA_Responder_Get_Sessionid extends AA_Responder {
     /** every authenticated user can get his/her session_id */
     function isPerm(): bool { return true; }
 
-    function run() {
+    function run(): AA_Response
+    {
         global $sess, $auth;
         return new AA_Response([$sess->id(), $auth]);
     }
@@ -67,7 +68,8 @@ class AA_Responder_Logout extends AA_Responder {
     /** every authenticated user can get his/her session_id */
     function isPerm(): bool { return true; }
 
-    function run() {
+    function run(): AA_Response
+    {
         global $sess;
         $ret = ['sessid'=>$sess->id(), 'command' => $GLOBALS['request']->getCommand()];
         if (is_object($sess)) {
@@ -81,7 +83,8 @@ class AA_Responder_Logout extends AA_Responder {
 class AA_Responder_Get_Aaname extends AA_Responder {
     function __construct($param=null) {}
 
-    function run() {
+    function run(): AA_Response
+    {
         return new AA_Response(['org_name'=>ORG_NAME, 'domain'=>AA_HTTP_DOMAIN]);
     }
 }
@@ -89,13 +92,14 @@ class AA_Responder_Get_Aaname extends AA_Responder {
 /** @return array of information about AA - org_name, domain */
 class AA_Responder_Get_Modules extends AA_Responder {
     /** array of module types to get */
-    var $types;
+    private $types;
 
     function __construct($param=null) {
         $this->types = is_array($param['types']) ? $param['types'] : [];
     }
 
-    function run() {
+    function run(): AA_Response
+    {
         $type_sql = !count($this->types) ? '' : Cvarset::sqlin('type', $this->types) . ' AND ';
         $modules  = GetTable2Array("SELECT id, name FROM module WHERE $type_sql deleted=0  ORDER BY type, priority, name", "unpack:id", 'name');
         return new AA_Response($modules);
@@ -106,17 +110,18 @@ class AA_Responder_Get_Modules extends AA_Responder {
  *  properties, fields, views, ...). It is returned for all the slices in array
  */
 class AA_Responder_Get_Module_Defs extends AA_Responder {
-    var $ids;
-    var $limited;  // array - limits the definitions sent
-    var $type;     // module type
+    private array $ids;
+    private array $limited;  // array - limits the definitions sent
+    private string $type;     // module type
 
     function __construct($param) {
         $this->ids     = is_array($param['ids']) ? $param['ids'] : [];
         $this->limited = is_array($param['limited']) ? $param['limited'] : [];
-        $this->type    = $param['type'];
+        $this->type    = (string)$param['type'];
     }
 
-    function run() {
+    function run(): AA_Response
+    {
         $ret        = [];
         $class_name = 'AA_Module_Definition_'. $this->type;
         foreach ( $this->ids as $sid ) {
@@ -131,13 +136,14 @@ class AA_Responder_Get_Module_Defs extends AA_Responder {
  *  properties, fields, views, ...). It is returned for all the slices in array
  */
 class AA_Responder_Do_Synchronize extends AA_Responder {
-    var $sync_commands;
+    private array $sync_commands;
 
     function __construct($param) {
         $this->sync_commands = is_array($param['sync']) ? $param['sync'] : [];
     }
 
-    function run() {
+    function run(): AA_Response
+    {
         $ret = [];
         foreach ( $this->sync_commands as $serialized_command ) {
             $cmd = unserialize($serialized_command);
@@ -149,13 +155,14 @@ class AA_Responder_Do_Synchronize extends AA_Responder {
 
 /** imports the slice to the database */
 class AA_Responder_Do_Import_Module_Chunk extends AA_Responder {
-    var $definition_chunk;
+    private ?AA_Module_Definition_Chunk $definition_chunk;
 
     function __construct($param) {
         $this->definition_chunk = $param['definition_chunk'];
     }
 
-    function run() {
+    function run(): AA_Response
+    {
         AA_Log::write('IMPORT', AA_Log::context(), 'start: '. serialize($this->definition_chunk));
         $ret = $this->definition_chunk->importModuleChunk();
         AA_Log::write('IMPORT', AA_Log::context(), 'result: '. $ret);
@@ -183,7 +190,8 @@ class AA_Responder_Get_Widget extends AA_Responder {
 
     function isPerm(): bool { return true; }  //return true;
 
-    function run() {
+    function run(): AA_Response
+    {
 
         $item         = AA_Item::getItem(new zids($this->item_id));
         $iid          = $item->getItemID();
@@ -265,17 +273,18 @@ class AA_Responder_Get_Widget extends AA_Responder {
 /** return html selectbox of fields in given slice */
 class AA_Responder_Get_Fields extends AA_Responder {
     /** array of module types to get */
-    var $slice_id;
-    var $slice_fields;  // bool
+    private string $slice_id;
+    private bool $slice_fields;  // bool
 
     function __construct($param=null) {
-        $this->slice_id     = $param['slice_id'];
+        $this->slice_id     = (string) $param['slice_id'];
         $this->slice_fields = (bool) $param['slice_fields'];
     }
 
     function isPerm() { return IfSlPerm(PS_FIELDS); }
 
-    function run() {
+    function run(): AA_Response
+    {
         $ret = '';
         if ($slice = AA_Slice::getModule($this->slice_id)) {
             $encoder = new ConvertCharset;
@@ -317,7 +326,8 @@ class AA_Responder_Tags extends AA_Responder {
 
     function isPerm(): bool { return true; }
 
-    function run() {
+    function run(): AA_Response
+    {
         $ret    = [];
         $trimed = trim($this->input);
         $field  = AA_Slice::getModule($this->slice_id)->getField($this->field_id);
@@ -364,7 +374,8 @@ class AA_Responder_Widget_Selection extends AA_Responder {
 
     function isPerm(): bool { return true; }
 
-    function run() {
+    function run(): AA_Response
+    {
         $ret   = '';
         $slice = AA_Slice::getModule($this->slice_id);
         if ($slice && ($widget = $slice->getWidget($this->field_id)) && $this->input !== '') {
@@ -393,7 +404,8 @@ class AA_Responder_Formatted_By_Widget extends AA_Responder {
 
     function isPerm(): bool { return true; }
 
-    function run() {
+    function run(): AA_Response
+    {
         $ret   = '';
         $slice = AA_Slice::getModule($this->slice_id);
 
@@ -431,7 +443,8 @@ class AA_Responder_Alertitem extends AA_Responder {
         return false;
     }
 
-    function run() {
+    function run(): AA_Response
+    {
         $ret = '0';
         if (is_long_id($this->item_id) && strlen($this->collection_id)===5) {
             //initialize_last();

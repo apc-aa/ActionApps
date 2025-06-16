@@ -2,6 +2,8 @@
 
 use AA\FormArray;
 use AA\IO\Grabber\ObjectForm;
+use AA\Managed;
+use AA\Util\NamedInterface;
 use AA\Widget\Widget;
 use AA\Widget\HidWidget;
 
@@ -37,12 +39,12 @@ use AA\Widget\HidWidget;
 
 
 class AA_Formrow extends AA_Storable {
-    function getRowProperty(): AA_Property {}
+    function getRowProperty(): ?AA_Property { return null; }
 
     /**
-     * @return AA\Widget\Widget
+     * @return AA\Widget\Widget|null
      */
-    function getWidget()      {}
+    function getWidget()      { return null; }
 
     /**
      * @param  AA_Content  $content
@@ -62,7 +64,8 @@ class AA_Formrow extends AA_Storable {
     }
 
     // in order we can display row widget (used for editing forms)
-    public static function addFormrows($form) {
+    public static function addFormrows($form): void
+    {
         $slice  = AA_Slice::getModule($form->object_owner);
         $fields = $slice->getFields();
         $f_arr  = $fields->getNameArray();
@@ -95,7 +98,7 @@ class AA_Formrow_Full extends AA_Formrow {
         $this->widget         = $widget;
     }
 
-    function getRowProperty(): AA_Property { return $this->property; }
+    function getRowProperty(): ?AA_Property { return $this->property; }
 
     function getWidget()      { return $this->widget; }
 
@@ -120,7 +123,7 @@ class AA_Formrow_Field extends AA_Formrow {
         $this->slice_id       = $slice_id;
     }
 
-    function getRowProperty(): AA_Property {
+    function getRowProperty(): ?AA_Property {
         $field  = $this->_getField();
         $widget = $field?->getWidget();
         return $field?->getAaProperty(['multiple'=>$widget::multiple()]);
@@ -130,7 +133,8 @@ class AA_Formrow_Field extends AA_Formrow {
         return $this->_getField()?->getWidget();
     }
 
-    private function _getField() {
+    private function _getField(): null
+    {
         return AA_Slice::getModule($this->slice_id)?->getFields()->getField($this->field_id);
     }
 
@@ -229,7 +233,7 @@ class FormrowWidget extends Widget {
  *  The code could be a bit confusing since this class manages forms, but the
  *  forms are also manageable as form - that's why it must implement some
  *  AA_Object's methods */
-class AA_Form extends AA_Object implements \AA\Util\NamedInterface {
+class AA_Form extends AA_Object implements NamedInterface {
 
     /** @var AA_Formrow[] */
     protected $rows = [];
@@ -277,18 +281,20 @@ class AA_Form extends AA_Object implements \AA\Util\NamedInterface {
      * @return $this
      * @throws Exception
      */
-    function addProperties(array $props): self {
+    function addProperties(array $props): static {
         foreach ($props as $prop ) {
             $prop->addPropertyFormrows($this);
         }
         return $this;
     }
 
-    function addRow(AA_Formrow $row) {
+    function addRow(AA_Formrow $row): void
+    {
         $this->rows[] = $row;
     }
 
-    function setObject($otype, $oid, $oowner) {
+    function setObject($otype, $oid, $oowner): void
+    {
         $this->object_type  = $otype;
         $this->object_id    = $oid;
         $this->object_owner = $oowner;
@@ -301,10 +307,11 @@ class AA_Form extends AA_Object implements \AA\Util\NamedInterface {
         return $form;
     }
 
-    function process($aa) {
+    function process($aa): int
+    {
         if ( !empty($aa) ) {
             // update or insert
-            $managed = \AA\Managed::factoryFromType($this->object_type);
+            $managed = Managed::factoryFromType($this->object_type);
             $managed->save($this->object_owner);
             // @todo check permissions, validation, $store_mode state (see readFromForm)
             return self::SAVED;
@@ -411,7 +418,7 @@ class AA_Form extends AA_Object implements \AA\Util\NamedInterface {
             $content = new AA_Content();
             $content->setOwnerId($this->object_owner);
         } else {
-            $managed  = \AA\Managed::factoryFromType($this->object_type);
+            $managed  = Managed::factoryFromType($this->object_type);
             $contents = $managed->getContent(new zids($this->object_id, $managed->getZidsType()));
 
             // $contents = call_user_func_array([$this->object_type, 'getContent'], [['class'=>$this->object_type, 'owner'=>$this->object_owner], new zids($this->object_id)]);
@@ -423,7 +430,8 @@ class AA_Form extends AA_Object implements \AA\Util\NamedInterface {
     }
 
     /** AA_iEditable method - creates Object from the form data */
-    public static function factoryFromForm($oowner, $otype=null) {
+    public static function factoryFromForm($oowner, $otype=null): AA_Form
+    {
         $grabber = new ObjectForm();
         $grabber->prepare();    // maybe some initialization in grabber
         // we expect just one form - no need to loop through contents
@@ -457,7 +465,7 @@ class AA_Form extends AA_Object implements \AA\Util\NamedInterface {
     // public static function addFormrows($form);
 
     /** AA_iEditable method - save the object to the database */
-    // public        function save();
+    // public        function save(): false|string;
 }
 
 

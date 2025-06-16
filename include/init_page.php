@@ -39,6 +39,7 @@
  * @return array|string
  */
 
+use AA\Doit\RequestMonitor;
 use AA\Util\Langs;
 
 $encap ??= $_REQUEST['encap'] ?? false;
@@ -50,7 +51,7 @@ $free  ??= $_REQUEST['free'] ?? false;
 //  1) in $_POST,$_GET,$_COOKIE,$_REQUEST variables the values are not quoted
 //  2) the variables are imported in global scope and is quoted
 // We are trying to remove any dependecy on the point 2) and use only $_* superglobals
-function AddslashesDeep($value)   { return is_array($value) ? array_map('AddslashesDeep',   $value) : addslashes($value);   }
+function AddslashesDeep($value): array|string { return is_array($value) ? array_map('AddslashesDeep',   $value) : addslashes($value);   }
 
 if (defined('AA_REGISTER_GLOBALS')) {
     foreach ($_REQUEST as $k => $v) {
@@ -73,7 +74,7 @@ if ($free) {
 
 require_once __DIR__ . "/locauth.php";
 
-(new \AA\Doit\RequestMonitor())->record();
+(new RequestMonitor())->record();
 
 
 // Save before getting the session stored variables
@@ -205,7 +206,7 @@ if (!$no_slice_id) {
 //    }
 }
 
-freeDB($db);
+// freeDB($db);   we left it open for /admin/ scripts  - otherwise we have to ask getDB() for every admin page (which is OK as well)
 
 $mgettext_file    = (!$require_default_lang && $r_lang_file != "") ? $r_lang_file : DEFAULT_LANG_INCLUDE;
 bind_mgettext_domain($mgettext_file);

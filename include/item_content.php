@@ -28,9 +28,11 @@
 */
 
 use AA\IO\DB\DB_AA;
+use AA\Util\ArrTrait;
 use AA\Util\Langs;
 use AA\Util\ChangeProposal;
 use AA\Util\ChangesMonitor;
+use AA\Util\LastErrTrait;
 
 require_once __DIR__ . "/locsess.php";    // DB_AA object definition
 require_once __DIR__ . "/feeding.php";
@@ -42,16 +44,16 @@ require_once __DIR__ . "/itemfunc.php";
  *          - the values are always plain (= no quoting, no htmlspecialchars...)
  */
 class AA_Value implements Iterator, ArrayAccess, Countable {
-    use \AA\Util\ArrTrait;
+    use ArrTrait;
 
     /** you can use MAX_INDEX numerical values for multivalues - bigger indexes are used for language translations */
-    const MAX_INDEX = 1000000;
+    public const MAX_INDEX = 1000000;
 
     /** array of the values */
     protected array $arr = [];
 
     /** holds the flag - common for all the values */
-    protected int $flag;
+    private int $flag;
 
     /** AA_Value function
      * @param $value
@@ -112,8 +114,9 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
 
 
     /** Returns the value for a field. If it is a multi-value field, this is the first value.
-     * @param $i
-     * @return
+     *
+     * @param  int  $i
+     *
      */
     function getValue($i = 0) {
         return $this->arr[$i];
@@ -122,7 +125,8 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
     /**
      *  @returns array - the simple array of values
      */
-    function getValues() {
+    function getValues(): array
+    {
         return $this->arr;
     }
 
@@ -138,7 +142,7 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
     }
 
     /** converts plain text values to HTML */
-    public function reformatToHtml(): self {
+    public function reformatToHtml(): static {
         if (!($this->flag & AA_Formatters::RAW)) {
             $this->flag |= AA_Formatters::RAW;
             array_walk($this->arr, static fn(&$v) => $v = StrExp('text2html', [$v]));
@@ -147,14 +151,16 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
     }
 
     /** @return true, if the value do not contain any data */
-    function isEmpty() {
+    function isEmpty(): bool
+    {
         return count($this->arr) < 1;
     }
 
     /** Add Value
      *  $ic->setAaValue('headline........', new AA_Value([AA\Util\AA_Langs::getLangName2Num($translations[0]) => $text], $html_flag));
      */
-    function addValue($value) {
+    function addValue($value): static
+    {
         if (is_array($value)) {
             // normal array(val1, val2, ...) used or used AA array used
             // in AA_ItemContent - [0]['value'] = ..
@@ -178,7 +184,7 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
     /** Add one string value possibly with language
      *  If the value is set, it is added as multivalue
      */
-    function addStringValue(string $val, string $lang=''): AA_Value {
+    function addStringValue(string $val, string $lang=''): static {
         if ($val !== '') {
             $index = Langs::getLangName2Num($lang);
             while (isset($this->arr[$index])) {
@@ -190,13 +196,13 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
     }
 
     /** Set $value - value is normal (numeric) array or string value */
-    function setValues($value): AA_Value {
+    function setValues($value): static {
         $this->arr = is_array($value) ? $value : (is_null($value) ? [] : [$value]);
         return $this;
     }
 
     /** Set the flag (for all the values the flag is common at this time) */
-    function setFlag($flag): AA_Value {
+    function setFlag($flag): static {
         $this->flag = (int)$flag;
         return $this;
     }
@@ -207,13 +213,13 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
     }
 
     /** Remove Value */
-    function removeValues(array $remove): AA_Value {
+    function removeValues(array $remove): static {
         $this->arr = array_diff($this->arr, $remove);
         return $this;
     }
 
     /** clear function  */
-    function clear(): AA_Value {
+    function clear(): static {
         $this->arr  = [];
         $this->flag = 0;
         return $this;
@@ -224,7 +230,7 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
      * @param string|array $replace
      * @return AA_Value
      */
-    function replaceInValues($search, $replace): AA_Value {
+    function replaceInValues($search, $replace): static {
         array_walk($this->arr, static function (&$v) use ($search, $replace) { $v = str_replace($search, $replace, $v); });
         return $this;
     }
@@ -234,7 +240,7 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
      * @param string[] $translations
      * @return AA_Value
      */
-    function fixTranslations(array $translations): AA_Value {
+    function fixTranslations(array $translations): static {
         if ($translations) {
             $maxindex = 0;
             foreach ($this->arr as $k => $v) {
@@ -263,7 +269,7 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
     }
 
     /** Remove duplicate values from the array */
-    function removeDuplicates(): AA_Value {
+    function removeDuplicates(): static {
         reset($this->arr);
         if (key($this->arr) < self::MAX_INDEX) {  // do not remove for multilingual
             $this->arr = array_values(array_unique($this->arr));
@@ -328,7 +334,7 @@ class AA_Content implements Iterator, ArrayAccess, Countable {
      * @param $field_id string
      * @param $value AA_Value
      */
-    function setAaValue($field_id, $value): self {
+    function setAaValue($field_id, $value): static {
         if (is_object($value)) {
             // we expect AA_Value object here
             $this->content[$field_id] = $value->getArray();
@@ -337,13 +343,13 @@ class AA_Content implements Iterator, ArrayAccess, Countable {
     }
 
     /** set object id based on id_field setting for this content */
-    function setId($id): self {
+    function setId($id): static {
         $this->setAaValue($this->id_field, new AA_Value( $id ));
         return $this;
     }
 
     /** set object id based on id_field setting for this content */
-    function setOwnerId($id): self {
+    function setOwnerId($id): static {
         $this->setAaValue($this->owner_field, new AA_Value( $id ));
         return $this;
     }
@@ -353,7 +359,7 @@ class AA_Content implements Iterator, ArrayAccess, Countable {
      * @param $csvRec     []
      * @param $fieldNames []
      */
-    function setFromCSVArray($csvRec, $fieldNames): self {
+    function setFromCSVArray($csvRec, $fieldNames): static {
         $i = 0;
         foreach ($fieldNames as $k => $foo) {
             $this->content[$k][0]['value'] = $csvRec[$i++];
@@ -362,7 +368,8 @@ class AA_Content implements Iterator, ArrayAccess, Countable {
     }
 
     /** set object id based on id_field setting for this content */
-    function addValue($field_id, $value) {
+    function addValue($field_id, $value): static
+    {
         $this->content[$field_id][] = ['value'=>$value, 'flag'=>0];
         return $this;
     }
@@ -371,7 +378,7 @@ class AA_Content implements Iterator, ArrayAccess, Countable {
      * @param array $content4id
      * @return AA_Content
      */
-    function setFromArray(array $content4id): self {
+    function setFromArray(array $content4id): static {
         $this->content = $content4id;
         return $this;
     }
@@ -380,23 +387,26 @@ class AA_Content implements Iterator, ArrayAccess, Countable {
      * @param string $id_field
      * @return AA_Content
      */
-    public function setIdField(string $id_field): self  {
+    public function setIdField(string $id_field): static  {
         $this->id_field = $id_field;
         return $this;
     }
 
     /** get object id based on id_field setting for this content */
-    function getId() {
+    function getId(): false|string
+    {
         return $this->getValue($this->id_field);
     }
 
     /** get owner id based on id_field setting for this content */
-    function getOwnerId() {
+    function getOwnerId(): false|string
+    {
         return $this->getValue($this->owner_field);
     }
 
     /**  */
-    function getName() {
+    function getName(): false|string
+    {
         return $this->getValue('aa_name');
     }
 
@@ -426,16 +436,17 @@ class AA_Content implements Iterator, ArrayAccess, Countable {
      * @param string $field_id ISD of the field
      * @return bool
      */
-    function isMultilingual($field_id) {
+    function isMultilingual($field_id): bool
+    {
         return is_array($a = $this->content[$field_id]) && (key($a) >= AA_Value::MAX_INDEX);
     }
 
     /** count internal index for n-th value taking into account the multilingual fields
      * @param string $field_id
      * @param int $idx
-     * @return int | false
      */
-    protected function getIndex($field_id, $idx=0) {
+    protected function getIndex($field_id, $idx=0): int|false
+    {
         if ( !is_array($a = $this->content[$field_id]) ) {
             return false;
         }
@@ -471,7 +482,7 @@ class AA_Content implements Iterator, ArrayAccess, Countable {
      * @param string $val
      * @param int    $idx
      */
-    function setValue($field_id, $val, $idx=0): self {
+    function setValue($field_id, $val, $idx=0): static {
         $this->content[$field_id][$idx]['value'] = $val;
         return $this;
     }
@@ -569,14 +580,16 @@ class AA_Content implements Iterator, ArrayAccess, Countable {
     /** @return array - Abstract Data Structure of current object
      *  @deprecated - for backward compatibility (used in AA_Object getContent)
      */
-    function getContent() {
+    function getContent(): array
+    {
         return $this->content;
     }
 
     /** Special function for specific usage in storeItem with update_filled
      *  Removes all fields, which do not have value
      */
-    function removeEmptyFields() {
+    function removeEmptyFields(): void
+    {
         $this->content = array_filter($this->content, fn($fid) => array_filter(array_map('trim', $this->getValuesArray($fid)), 'strlen'), ARRAY_FILTER_USE_KEY);
     }
 
@@ -614,7 +627,8 @@ class AA_Content implements Iterator, ArrayAccess, Countable {
      * @param $slf
      * @param $tr_att
      */
-    function showAsRowInTable($slf, $tr_att = "") {
+    function showAsRowInTable($slf, $tr_att = ""): void
+    {
         echo "<tr " . $tr_att . " >";
         foreach ($slf as $k => $foo) {
             if (!($v = $this->content[$k])) {
@@ -675,7 +689,7 @@ const ITEMCONTENT_ERROR_INVALID     = 205;
  */
 class ItemContent extends AA_Content {
 
-    use \AA\Util\LastErrTrait;
+    use LastErrTrait;
 
     public const FLAG_JUST_STORE = [false, false, false, false];
 
@@ -708,8 +722,7 @@ class ItemContent extends AA_Content {
             $f_def = array_flip(array_merge(GetLinkFields()->getFieldidsArray(), array_keys(GetCategoryFields()), array_keys(GetConstantFields())));
         }
 
-        // changed this from [a-z_]+\.+[0-9]*$ because of alerts[12]....abcde
-        return (((strlen($field_id)===16) && preg_match('/^[a-z0-9_]+\.+[0-9A-Za-z]*$/',$field_id)) || array_key_exists($field_id, $f_def));
+        return AA_Field::isValidFieldId($field_id) || array_key_exists($field_id, $f_def);
     }
 
     /** setByItemID function
@@ -873,7 +886,6 @@ class ItemContent extends AA_Content {
 
     /** matches function
      * @param $conditions
-     * @return
      */
     function matches($conditions) {
         return $conditions->matches($this);
@@ -893,12 +905,14 @@ class ItemContent extends AA_Content {
     }
 
     /** redefined AA_Content's function */
-    function getId() {
+    function getId(): string
+    {
         return $this->getItemID();
     }
 
     /** redefined AA_Content's function */
-    function getOwnerId() {
+    function getOwnerId(): string
+    {
         return $this->getSliceID();
     }
 
@@ -945,7 +959,8 @@ class ItemContent extends AA_Content {
     /** setSliceID function
      * @param $value
      */
-    function setSliceID($value) {
+    function setSliceID($value): void
+    {
         $this->setValue("slice_id........", pack_id($value));
     }
 
@@ -1067,7 +1082,7 @@ class ItemContent extends AA_Content {
             return false;
         }
 
-        // start from scretch with new content
+        // start from scratch with new content
         //$new_content = new ItemContent;
         //$fields      = $slice->getFields();
         //$profile     = AA_Profile::getProfile(AuthGetUid(), $slice->getId()); // current user settings
@@ -1148,9 +1163,9 @@ class ItemContent extends AA_Content {
      *                  $flags[2] - throw_events    - issue update/insert event?                       - default true (if not mode=update_silent)
      *                  $flags[3] - allow_last_edit - allow rewrite last_edit field from $this content - default false (works for true in mode=update_silent)
      * @param string $context special parameter used for thumbnails - ''|feed
-     * @return bool|mixed|string
      */
-    function storeItem( $mode, $flags = [], string $context='' ) {
+    function storeItem( $mode, $flags = [], string $context='' ): string|false
+    {
 
         if (! ($slice_id     = $this->getSliceID()))            {return false;}
         if (! ($slice        = AA_Slice::getModule($slice_id))) {return false;}
@@ -1203,8 +1218,12 @@ class ItemContent extends AA_Content {
                                   }
                                   if (itemIsDuplicate($this->getItemID())) {
                                       self::lastErr(ITEMCONTENT_ERROR_DUPLICATE, _m("Duplicated ID - skiped (%1 - %2)", [$this->getItemID(), $this->getValue('headline........')]));  // set error code
-                                      if ($GLOBALS['errcheck']) huhl(self::lastErrMsg());
-                                      if ($GLOBALS['debugfeed'] >= 4) print("\n<br>skipping duplicate: ".$this->getValue('headline........'));
+                                      if ($GLOBALS['errcheck']) {
+                                          huhl(self::lastErrMsg());
+                                      }
+                                      if ($GLOBALS['debugfeed'] >= 4) {
+                                          print("\n<br>skipping duplicate: ".$this->getValue('headline........'));
+                                      }
                                       AA::$debug&32 && AA::$dbg->traceend('storeItem', 'skipping duplicate'.self::lastErrMsg());
                                       return false;
                                   }
@@ -1224,7 +1243,9 @@ class ItemContent extends AA_Content {
 
         if (!$id) {
             self::lastErr(ITEMCONTENT_ERROR_BAD_PARAM, _m("StoreItem for slice %1 - failed parameter check for id = '%2'", [$slice->getName(), $id]));  // set error code
-            if ($GLOBALS['errcheck']) huhl(self::lastErrMsg());
+            if ($GLOBALS['errcheck']) {
+                huhl(self::lastErrMsg());
+            }
             AA::$debug&32 && AA::$dbg->traceend('storeItem', self::lastErrMsg());
             return false;
         }                                       
@@ -1506,7 +1527,8 @@ class ItemContent extends AA_Content {
      * @param $slice_id
      * @param AA_Fields $fields
      */
-    function storeSliceFields($slice_id, $fields) {
+    function storeSliceFields($slice_id, $fields): void
+    {
         // delete content of all fields, which are in new content array
         // (this means - all not redefined fields are unchanged)
         (new AA_Field_Cleaner($fields))->clean_updated_fields($this, $slice_id);
@@ -1526,7 +1548,8 @@ class ItemContent extends AA_Content {
      * @param string    $context  - special parameter used for thumbnails - ''|feed
      * @return Cvarset
      */
-    function _store_fields($id, $aa_fields, string $context='') {
+    function _store_fields($id, $aa_fields, string $context=''): Cvarset
+    {
         $field_writer = new AA_Field_Writer($this->getSliceID(), $context);
 
         foreach ($this as $fid => $cont) {                         // $cont is AA_Value or null if empty
@@ -1560,7 +1583,8 @@ class ItemContent extends AA_Content {
  * @param $item_id
  * @return bool
  */
-function itemIsDuplicate($item_id) {
+function itemIsDuplicate($item_id): bool
+{
     return DB_AA::test('item', [['id', $item_id, 'l']]);
 }
 
@@ -1600,7 +1624,7 @@ function UpdateField($item_id, $field_id, $field_content, $flags = []): int {
 
 
 class AA_Field_Cleaner {
-    public function __construct(protected AA_Fields $fields) {}
+    public function __construct(private AA_Fields $fields) {}
 
     /**
      * @param  ItemContent  $content  - new content array

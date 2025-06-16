@@ -1,4 +1,7 @@
 <?php
+
+use AA\Util\Txt;
+
 /**
  *
  * PHP version 7.2+
@@ -85,16 +88,19 @@ class AA_Debug_Firephp extends AA_Debug {
         parent::__construct();
     }
 
-    function _groupstart($group) {
+    function _groupstart($group): void
+    {
         $this->_console->group($group)->open();
         $this->_console->log($group);
     }
 
-    function _groupend($group) {
+    function _groupend($group): void
+    {
         $this->_console->group($group)->close();
     }
 
-    function _do($func, $params) {
+    function _do($func, $params): void
+    {
         $this->_console->log(microtime(true) - $this->_starttime['main']);
         foreach ($params as $var) {
             call_user_func_array([$this->_console, $func], [$var]);
@@ -104,7 +110,8 @@ class AA_Debug_Firephp extends AA_Debug {
 
 
 class AA_Debug_Console extends AA_Debug {
-    function _do($func, $params) {
+    function _do($func, $params): void
+    {
         $code = '';
         foreach ($params as $a) {
             if (is_array($a) || is_object($a) && !is_callable([$a,"__toString"])) {
@@ -117,17 +124,20 @@ class AA_Debug_Console extends AA_Debug {
         $this->_script($code);
     }
 
-    function _groupstart($group) {
+    function _groupstart($group): void
+    {
         $this->_script("console.group();");
         $this->_do('log', [$group]);
     }
 
-    function _groupend($group) {
+    function _groupend($group): void
+    {
         $this->_script("console.groupEnd();");
         $this->_do('log', [$group]);
     }
 
-    function _script($code) {
+    function _script($code): void
+    {
         echo  "\n<script>\n  $code\n</script>\n";
     }
 }
@@ -138,14 +148,16 @@ class AA_Debug_Phpconsole extends AA_Debug {
         parent::__construct();
     }
 
-    function _groupstart($group) {
+    function _groupstart($group): void
+    {
         $this->_do($group, $group);
     }
 
-    function _groupend($group) {
+    function _groupend($group): void {
     }
 
-    function _do($func, $params) {
+    function _do($func, $params): void
+    {
         PhpConsole::debug(microtime(true) - $this->_starttime['main'], 'log');
         foreach ($params as $var) {
             PhpConsole::debug($var, $func);
@@ -177,12 +189,12 @@ class PhpConsole {
     /**
      * @var PhpConsole
      */
-    protected static $instance;
+    private static $instance;
 
-    protected $handledMessagesHashes = [];
-    protected $sourceBasePath;
+    private $handledMessagesHashes = [];
+    private $sourceBasePath;
 
-    protected function __construct($handleErrors, $handleExceptions, $sourceBasePath) {
+    private function __construct($handleErrors, $handleExceptions, $sourceBasePath) {
         if($handleErrors) {
             $this->initErrorsHandler();
         }
@@ -195,7 +207,8 @@ class PhpConsole {
         $this->initClient();
     }
 
-    public static function start($handleErrors = true, $handleExceptions = true, $sourceBasePath = null) {
+    public static function start($handleErrors = true, $handleExceptions = true, $sourceBasePath = null): void
+    {
         if(self::$instance) {
             die('PhpConsole already started');
         }
@@ -209,7 +222,8 @@ class PhpConsole {
         return self::$instance;
     }
 
-    protected function handle(PhpConsoleEvent $event) {
+    private function handle(PhpConsoleEvent $event): void
+    {
         if(self::$ignoreRepeatedEvents) {
             $eventHash = md5($event->message . $event->file . $event->line);
             if(in_array($eventHash, $this->handledMessagesHashes)) {
@@ -237,15 +251,16 @@ class PhpConsole {
     const cookieSizeLimit = 4000;
     const messageLengthLimit = 2500;
 
-    protected static $isEnabledOnClient;
-    protected static $isDisabled;
-    protected static $messagesBuffer = [];
-    protected static $bufferLength = 0;
-    protected static $messagesSent = 0;
-    protected static $cookiesSent = 0;
-    protected static $index = 0;
+    private static $isEnabledOnClient;
+    private static $isDisabled;
+    private static $messagesBuffer = [];
+    private static $bufferLength = 0;
+    private static $messagesSent = 0;
+    private static $cookiesSent = 0;
+    private static $index = 0;
 
-    protected function initClient() {
+    private function initClient(): void
+    {
         if(self::$isEnabledOnClient === null) {
             self::setEnabledOnServer();
             self::$isEnabledOnClient = self::isEnabledOnClient();
@@ -255,17 +270,20 @@ class PhpConsole {
         }
     }
 
-    protected static function isEnabledOnClient() {
+    private static function isEnabledOnClient(): bool
+    {
         return isset($_COOKIE[self::clientProtocolCookie]) && $_COOKIE[self::clientProtocolCookie] == self::serverProtocol;
     }
 
-    protected static function setEnabledOnServer() {
+    private static function setEnabledOnServer(): void
+    {
         if(!isset($_COOKIE[self::serverProtocolCookie]) || $_COOKIE[self::serverProtocolCookie] != self::serverProtocol) {
             self::setCookie(self::serverProtocolCookie, self::serverProtocol);
         }
     }
 
-    protected function sendEventToClient(PhpConsoleEvent $event) {
+    private function sendEventToClient(PhpConsoleEvent $event): void
+    {
         if (!self::$isEnabledOnClient) {
             return;
         }
@@ -294,7 +312,8 @@ class PhpConsole {
         }
     }
 
-    protected function convertTraceToArray($traceData, $eventFile = null, $eventLine = null) {
+    private function convertTraceToArray($traceData, $eventFile = null, $eventLine = null): array
+    {
         $trace = [];
         foreach($traceData as $call) {
             if((isset($call['class']) && $call['class'] == __CLASS__) || (!$trace && isset($call['file']) && $call['file'] == $eventFile && $call['line'] == $eventLine)) {
@@ -312,7 +331,7 @@ class PhpConsole {
                     }
                     else {
                         $arg = var_export($arg, 1);
-                        $args[] = strlen($arg) > 12 ? substr($arg, 0, 8) . '...\'' : $arg;
+                        $args[] = Txt::shorten($arg, 12, '…\'');
                     }
                 }
             }
@@ -328,7 +347,8 @@ class PhpConsole {
         return $trace;
     }
 
-    protected static function pushMessageToBuffer($message) {
+    private static function pushMessageToBuffer($message): void
+    {
         $encodedMessageLength = strlen(rawurlencode(json_encode($message)));
         if(self::$bufferLength + $encodedMessageLength > self::cookieSizeLimit) {
             self::flushMessagesBuffer();
@@ -337,11 +357,13 @@ class PhpConsole {
         self::$bufferLength += $encodedMessageLength;
     }
 
-    protected static function getNextIndex() {
+    private static function getNextIndex(): int|string
+    {
         return substr(number_format(microtime(1), 3, '', ''), -6) + self::$index++;
     }
 
-    public static function flushMessagesBuffer() {
+    public static function flushMessagesBuffer(): void
+    {
         if(self::$messagesBuffer) {
             self::sendMessages(self::$messagesBuffer);
             self::$bufferLength = 0;
@@ -356,14 +378,16 @@ class PhpConsole {
         }
     }
 
-    protected static function setCookie($name, $value) {
+    private static function setCookie($name, $value): void
+    {
         if(headers_sent($file, $line)) {
             die('PhpConsole ERROR: setcookie() failed because haders are sent (' . $file . ':' . $line . '). Try to use ob_start()');
         }
         setcookie($name, $value, null, '/');
     }
 
-    protected static function sendMessages($messages) {
+    private static function sendMessages($messages): void
+    {
         self::setCookie(self::messagesCookiePrefix . self::getNextIndex(), json_encode($messages));
     }
 
@@ -371,12 +395,13 @@ class PhpConsole {
     ERRORS
      **************************************************************/
 
-    protected $codesTags = [E_ERROR => 'fatal', E_WARNING => 'warning', E_PARSE => 'fatal', E_NOTICE => 'notice', E_CORE_ERROR => 'fatal', E_CORE_WARNING => 'warning', E_COMPILE_ERROR => 'fatal', E_COMPILE_WARNING => 'warning', E_USER_ERROR => 'fatal', E_USER_WARNING => 'warning', E_USER_NOTICE => 'notice', E_STRICT => 'warning'];
-    protected $codesNames = [E_ERROR => 'E_ERROR', E_WARNING => 'E_WARNING', E_PARSE => 'E_PARSE', E_NOTICE => 'E_NOTICE', E_CORE_ERROR => 'E_CORE_ERROR', E_CORE_WARNING => 'E_CORE_WARNING', E_COMPILE_ERROR => 'E_COMPILE_ERROR', E_COMPILE_WARNING => 'E_COMPILE_WARNING', E_USER_ERROR => 'E_USER_ERROR', E_USER_WARNING => 'E_USER_WARNING', E_USER_NOTICE => 'E_USER_NOTICE', E_STRICT => 'E_STRICT'];
-    protected $notCompitableCodes = ['E_RECOVERABLE_ERROR' => 'warning', 'E_DEPRECATED' => 'warning'];
-    protected $oldErrorHandler;
+    private $codesTags = [E_ERROR => 'fatal', E_WARNING => 'warning', E_PARSE => 'fatal', E_NOTICE => 'notice', E_CORE_ERROR => 'fatal', E_CORE_WARNING => 'warning', E_COMPILE_ERROR => 'fatal', E_COMPILE_WARNING => 'warning', E_USER_ERROR => 'fatal', E_USER_WARNING => 'warning', E_USER_NOTICE => 'notice', E_STRICT => 'warning'];
+    private $codesNames = [E_ERROR => 'E_ERROR', E_WARNING => 'E_WARNING', E_PARSE => 'E_PARSE', E_NOTICE => 'E_NOTICE', E_CORE_ERROR => 'E_CORE_ERROR', E_CORE_WARNING => 'E_CORE_WARNING', E_COMPILE_ERROR => 'E_COMPILE_ERROR', E_COMPILE_WARNING => 'E_COMPILE_WARNING', E_USER_ERROR => 'E_USER_ERROR', E_USER_WARNING => 'E_USER_WARNING', E_USER_NOTICE => 'E_USER_NOTICE', E_STRICT => 'E_STRICT'];
+    private $notCompitableCodes = ['E_RECOVERABLE_ERROR' => 'warning', 'E_DEPRECATED' => 'warning'];
+    private $oldErrorHandler;
 
-    protected function initErrorsHandler() {
+    private function initErrorsHandler(): void
+    {
         ini_set('display_errors', false);
         ini_set('html_errors', false);
         ini_set('ignore_repeated_errors', self::$ignoreRepeatedEvents);
@@ -393,14 +418,16 @@ class PhpConsole {
         register_shutdown_function([$this, 'checkFatalError']);
     }
 
-    public function checkFatalError() {
+    public function checkFatalError(): void
+    {
         $error = error_get_last();
         if($error) {
             $this->handleError($error['type'], $error['message'], $error['file'], $error['line']);
         }
     }
 
-    public function handleError($code = null, $message = null, $file = null, $line = null) {
+    public function handleError($code = null, $message = null, $file = null, $line = null): void
+    {
         if(error_reporting() == 0) { // if error has been supressed with an @
             return;
         }
@@ -430,13 +457,15 @@ class PhpConsole {
     EXCEPTIONS
      **************************************************************/
 
-    protected $oldExceptionsHandler;
+    private $oldExceptionsHandler;
 
-    protected function initExceptionsHandler() {
+    private function initExceptionsHandler(): void
+    {
         $this->oldExceptionsHandler = set_exception_handler([$this, 'handleException']);
     }
 
-    public function handleException(Exception $exception) {
+    public function handleException(Exception $exception): void
+    {
         $event = new PhpConsoleEvent();
         $event->message = $exception->getMessage();
         $event->tags = 'error,fatal,exception,' . get_class($exception);
@@ -460,7 +489,8 @@ class PhpConsole {
     DEBUG
      **************************************************************/
 
-    public static function debug($message, $tags = 'debug') {
+    public static function debug($message, $tags = 'debug'): void
+    {
         if(self::$instance) {
             $event = new PhpConsoleEvent();
             $event->message = $message;
