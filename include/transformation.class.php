@@ -27,6 +27,10 @@
  *
 */
 
+use AA\Later\LaterInterface;
+use AA\Util\NamedInterface;
+use AA\Util\ReportTrait;
+
 
 /** AA_Transformation - parent class for all Transformations, which is used for
  *  changing Item values - typically when we import item. The Input item has
@@ -35,8 +39,8 @@
  *
  *  Main method is transform(), which do the all work.
  */
-abstract class AA_Transformation implements \AA\Util\NamedInterface {
-    use \AA\Util\ReportTrait;
+abstract class AA_Transformation implements NamedInterface {
+    use ReportTrait;
 
     var $parameters = [];
 
@@ -51,12 +55,14 @@ abstract class AA_Transformation implements \AA\Util\NamedInterface {
     public static function description(): string  { return ''; }
 
     /** transform function
-     * @param string $field_id
-     * @param ItemContent
-     * @param bool $silent
+     *
+     * @param string       $field_id
+     * @param ItemContent  $itemcontent
+     * @param bool         $silent
+     *
      * @return AA_Value|bool|null - null means no change, true means all done (no more transformations needed), AA_Value means new value to store to field
      */
-    abstract function transform($field_id, $itemcontent, $silent=true);
+    abstract function transform($field_id, $itemcontent, $silent=true): AA_Value|bool|null;
 
     /** Construct name of input form variable
      *  It consists of classname, so we are able to guess which variable
@@ -68,7 +74,8 @@ abstract class AA_Transformation implements \AA\Util\NamedInterface {
      * @param string $classname
      * @return string
      */
-    static function _getVarname($name, $input_id, $classname) {
+    static function _getVarname($name, $input_id, $classname): string
+    {
         return $input_id . substr($classname, 18) . $name;
     }
 
@@ -77,9 +84,10 @@ abstract class AA_Transformation implements \AA\Util\NamedInterface {
      * @param $classname
      * @return string[]
      */
-    static function getRequestVariables($input_id, $classname) {
+    static function getRequestVariables($input_id, $classname): array
+    {
         $ret = [];
-        if ( strtolower(substr($classname,0,18)) !== 'aa_transformation_' ) {  // to lower - php4 fix
+        if (stripos($classname, 'aa_transformation_') !== 0) {  // to lower - php4 fix
             return $ret;
         }
         $prefix = $input_id. substr($classname,18);
@@ -103,7 +111,8 @@ abstract class AA_Transformation implements \AA\Util\NamedInterface {
     /** Reads new flag value from user's HTML form
      *  Common function for many transformations
     */
-    function getFlagFromForm($old_flag) {
+    function getFlagFromForm($old_flag): int|string
+    {
         return match ($this->getParam('new_flag')) {
             'u'     => $old_flag,
             'h'     => $old_flag | FLAG_HTML,
@@ -153,7 +162,8 @@ class AA_Transformation_Value extends AA_Transformation {
      * @param bool $silent
      * @return AA_Value
      */
-    function transform($field_id, $itemcontent, $silent=true) {
+    function transform($field_id, $itemcontent, $silent=true): AA_Value|bool|null
+    {
         $item = GetItemFromContent($itemcontent);
         $text = $item->subst_alias($this->getParam('new_content'));
         $flag = $this->getFlagFromForm($item->getFlag($field_id));
@@ -165,7 +175,8 @@ class AA_Transformation_Value extends AA_Transformation {
      * @param $params
      * @return string
      */
-    static function htmlSetting($input_prefix, $params) {
+    static function htmlSetting($input_prefix, $params): string
+    {
         $flag_options = [
             'h' => _m('HTML'),
                               't' => _m('Plain text'),
@@ -218,7 +229,8 @@ class AA_Transformation_Exactvalues extends AA_Transformation {
      * @param $itemcontent (by link)
      * @return AA_Value
      */
-    function transform($field_id, $itemcontent, $silent=true) {
+    function transform($field_id, $itemcontent, $silent=true): AA_Value|bool|null
+    {
         $item = GetItemFromContent($itemcontent);
         $text = $this->getParam('new_content');
         $flag = $item->getFlag($field_id);
@@ -230,7 +242,8 @@ class AA_Transformation_Exactvalues extends AA_Transformation {
      * @param $params
      * @return string
      */
-    static function htmlSetting($input_prefix, $params) {
+    static function htmlSetting($input_prefix, $params): string
+    {
         ob_start();
         FrmTabCaption();
         FrmStaticText('', self::description());
@@ -274,7 +287,8 @@ class AA_Transformation_Recompute extends AA_Transformation {
      * @param bool $silent
      * @return AA_Value|bool
      */
-    function transform($field_id, $itemcontent, $silent=true): bool {
+    function transform($field_id, $itemcontent, $silent=true): AA_Value|bool|null
+    {
         $itemcontent->updateComputedFields(null, 'update', $silent ? [$field_id] : []);
         return true; // this means: Success - no other operations are needed
     }
@@ -284,7 +298,8 @@ class AA_Transformation_Recompute extends AA_Transformation {
      * @param $params
      * @return string
      */
-    static function htmlSetting($input_prefix, $params) {
+    static function htmlSetting($input_prefix, $params): string
+    {
         ob_start();
         FrmTabCaption();
         FrmStaticText('', self::description());
@@ -323,7 +338,8 @@ class AA_Transformation_Setflag extends AA_Transformation {
      * @param $itemcontent (by link)
      * @return array
      */
-    function transform($field_id, $itemcontent, $silent=true) {
+    function transform($field_id, $itemcontent, $silent=true): AA_Value|bool|null
+    {
         $item = GetItemFromContent($itemcontent);
         $flag = $this->getFlagFromForm($item->getFlag($field_id));
         return $itemcontent->getAaValue($field_id)->setFlag($flag);
@@ -334,7 +350,8 @@ class AA_Transformation_Setflag extends AA_Transformation {
      * @param $params
      * @return string
      */
-    static function htmlSetting($input_prefix, $params) {
+    static function htmlSetting($input_prefix, $params): string
+    {
         $flag_options = [
             'h' => _m('HTML'),
             't' => _m('Plain text')
@@ -388,7 +405,8 @@ class AA_Transformation_AddValue extends AA_Transformation {
      * @param ItemContent|AA_Content $itemcontent (by link)
      * @return AA_Value
      */
-    function transform($field_id, $itemcontent, $silent=true) {
+    function transform($field_id, $itemcontent, $silent=true): AA_Value|bool|null
+    {
         $item = GetItemFromContent($itemcontent);
         $ret  = $itemcontent->getAaValue($field_id);
         $old = clone $ret;
@@ -402,7 +420,8 @@ class AA_Transformation_AddValue extends AA_Transformation {
      * @param $params
      * @return string
      */
-    static function htmlSetting($input_prefix, $params) {
+    static function htmlSetting($input_prefix, $params): string
+    {
         $flag_options = [
             'h' => _m('HTML'),
             't' => _m('Plain text'),
@@ -461,7 +480,8 @@ class AA_Transformation_ParseMulti extends AA_Transformation {
      * @param $itemcontent (by link)
      * @return AA_Value
      */
-    function transform($field_id, $itemcontent, $silent=true) {
+    function transform($field_id, $itemcontent, $silent=true): AA_Value|bool|null
+    {
         $item = GetItemFromContent($itemcontent);
         $flag = $this->getFlagFromForm($item->getFlag($field_id));
         if (str_contains($this->delimiter, 'AA_LANG')) {   // multilangual
@@ -484,7 +504,8 @@ class AA_Transformation_ParseMulti extends AA_Transformation {
      * @param $params
      * @return string
      */
-    static function htmlSetting($input_prefix, $params) {
+    static function htmlSetting($input_prefix, $params): string
+    {
         $flag_options = [
             'h' => _m('HTML'),
             't' => _m('Plain text'),
@@ -513,26 +534,29 @@ class AA_Transformation_ParseMulti extends AA_Transformation {
  *  class
  */
 class AA_Strreplace {
-    var $method;
-    var $pattern;
-    var $replacements; // array
+    private string $method;
+    private string $pattern;
+    private array $replacements;
 
-    /** AA_Strreplace function
-     * @param $method
-     * @param $pattern
-     * @param $replacements
+    /**
+     * @param  string  $method
+     * @param  string  $pattern
+     * @param  array   $replacements
      */
-    function __construct( $method, $pattern, $replacements ) {
+    function __construct(string $method, string $pattern, array $replacements ) {
         $this->method       = $method;
         $this->pattern      = $pattern;
         $this->replacements = $replacements;
     }
 
     /** matches function
+     *
      * @param $text
-     * @return string/false
+     *
+     * @return bool
      */
-    function matches($text) {
+    function matches($text): bool
+    {
         return match ($this->method) {
             'regexp'  => (preg_match($this->pattern, $text) > 0),
             'replace' => ($text == $this->pattern),
@@ -546,7 +570,8 @@ class AA_Strreplace {
      * @param $item (by link)
      * @return array
      */
-    function replace($value, $item) {
+    function replace($value, $item): array
+    {
         $ret = [];
 
         foreach ( $this->replacements as $replacement) {
@@ -592,10 +617,11 @@ class AA_Transformation_Translate extends AA_Transformation {
      * @param bool $silent
      * @return AA_Value|false
      */
-    function transform($field_id, $itemcontent, $silent=true) {
+    function transform($field_id, $itemcontent, $silent=true): AA_Value|bool|null
+    {
         if (!$this->translation) {
             $this->message(_m('No translations specified.'));
-            return false;
+            return null;
         }
 
         $item = GetItemFromContent($itemcontent);
@@ -623,7 +649,8 @@ class AA_Transformation_Translate extends AA_Transformation {
     /** _parseTranslation function
      * @return $translations array
      */
-    function & _parseTranslation() {
+    function & _parseTranslation(): array
+    {
         $translations = [];
         foreach (explode("\n",$this->translation) as $row) {
             // explode do not eat possible \r at the end - we trim it
@@ -647,7 +674,8 @@ class AA_Transformation_Translate extends AA_Transformation {
      * @param $params
      * @return string
      */
-    static function htmlSetting($input_prefix, $params) {
+    static function htmlSetting($input_prefix, $params): string
+    {
         $flag_options = [
             'h' => _m('HTML'),
                               't' => _m('Plain text'),
@@ -700,10 +728,11 @@ class AA_Transformation_Replace extends AA_Transformation {
      * @param $itemcontent (by link)
      * @return AA_Value|false
      */
-    function transform($field_id, $itemcontent, $silent=true) {
+    function transform($field_id, $itemcontent, $silent=true): AA_Value|bool|null
+    {
         if (!$this->searchpattern) {
             $this->message(_m('No searchstring specified.'));
-            return false;
+            return null;
         }
 
         $ret = new AA_Value;
@@ -719,7 +748,8 @@ class AA_Transformation_Replace extends AA_Transformation {
      * @param $params
      * @return string
      */
-    static function htmlSetting($input_prefix, $params) {
+    static function htmlSetting($input_prefix, $params): string
+    {
         ob_start();
         FrmTabCaption();
         FrmStaticText('', self::description());
@@ -767,10 +797,11 @@ class AA_Transformation_Regexpreplace extends AA_Transformation {
      * @param $itemcontent (by link)
      * @return AA_Value|false
      */
-    function transform($field_id, $itemcontent, $silent=true) {
+    function transform($field_id, $itemcontent, $silent=true): AA_Value|bool|null
+    {
         if (!$this->searchpattern) {
             $this->message(_m('No searchstring specified.'));
-            return false;
+            return null;
         }
         $ret     = new AA_Value;
         $count   = 0;
@@ -793,7 +824,8 @@ class AA_Transformation_Regexpreplace extends AA_Transformation {
      * @param $params
      * @return string
      */
-    static function htmlSetting($input_prefix, $params) {
+    static function htmlSetting($input_prefix, $params): string
+    {
         ob_start();
         FrmTabCaption();
         FrmStaticText('', self::description(), "", "", false);
@@ -841,10 +873,11 @@ class AA_Transformation_CopyField extends AA_Transformation {
      * @param bool $silent
      * @return AA_Value|false
      */
-    function transform($field_id, $itemcontent, $silent=true) {
+    function transform($field_id, $itemcontent, $silent=true): AA_Value|bool|null
+    {
         if ($this->field2copy === 'no_field' || !$field_id || $field_id === 'no_field') {
             $this->message(_m('Source or destination field is not specified.'));
-            return false;
+            return null;
         }
         // get content from $field2copy field of current item
         return $itemcontent->getAaValue($this->field2copy);
@@ -855,7 +888,8 @@ class AA_Transformation_CopyField extends AA_Transformation {
      * @param $params
      * @return string
      */
-    static function htmlSetting($input_prefix, $params) {
+    static function htmlSetting($input_prefix, $params): string
+    {
         ob_start();
         FrmTabCaption();
         FrmStaticText('', self::description());
@@ -870,7 +904,7 @@ class AA_Transformation_CopyField extends AA_Transformation {
 }
 
 
-class AA_Transformator implements \AA\Later\LaterInterface {
+class AA_Transformator implements LaterInterface {
 
     /** @var zids|null */
     protected $zids   = null;
@@ -948,18 +982,19 @@ class AA_Transformator implements \AA\Later\LaterInterface {
         return $updated_items;
     }
 
-    public function setZids(zids $zids): AA_Transformator {
+    public function setZids(zids $zids): static {
         $this->zids = $zids;
         return $this;
     }
 
-    public function setField(string $field_id): AA_Transformator {
+    public function setField(string $field_id): static {
         $this->field_id = $field_id;
         return $this;
     }
 
     /** @inheritDoc  */
-    public function toexecutelater($params = []) {
+    public function toexecutelater($params = []): string
+    {
         $num = $this->transform();
         return "OK: $num";
     }

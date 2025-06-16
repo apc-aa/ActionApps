@@ -11,5 +11,7 @@ for ($i=1; $i < 1000; $i++) {
     fclose($fd);
     $lock->unlock();
     // to produce some pause
-    for ($j=1; $j < 100000; $j++);
+    for ($j=1; $j < 100000; $j++) {
+        ;
+    }
 }

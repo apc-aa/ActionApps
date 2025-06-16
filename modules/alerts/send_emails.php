@@ -32,7 +32,8 @@ https://www.apc.org/
 
 require_once __DIR__ . "/alerts_sending.php";
 
-function ShowCollectionAddOns() {
+function ShowCollectionAddOns(): void
+{
     global $example, $fire, $collectionid;
 
     initialize_last();
@@ -107,7 +108,8 @@ function ShowCollectionAddOns() {
 
 }
 
-function showSelectionTable() {
+function showSelectionTable(): void
+{
     $db = getDB();
     $db->query (
         "SELECT view.slice_id, slice.name AS slice_name,

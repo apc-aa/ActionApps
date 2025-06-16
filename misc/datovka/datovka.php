@@ -71,7 +71,8 @@ class Datovka extends AA_Object {
         $this->dmAllowSubstDelivery  = $params['dmAllowSubstDelivery'] ?? false;
     }
 
-    public static function possiblyRedirectToAa($appToken) {
+    public static function possiblyRedirectToAa($appToken): void
+    {
         $system_id = $appToken % 10000;
         $required_install_url = DATOVKA_CONF['instances'][$system_id]['url'];
         if (AA_INSTAL_URL !== $required_install_url) {
@@ -290,7 +291,8 @@ class Datovka extends AA_Object {
 
     /**
      */
-    public function run() {
+    public function run(): void
+    {
         try {
             $result = $this->getCredentials();
             $resp   = $this->parseResponseAttributes($result);
@@ -327,7 +329,8 @@ class Datovka extends AA_Object {
         }
     }
 
-    public function startWithLogin() {
+    public function startWithLogin(): void
+    {
         go_url(DATOVKA_CONF[$this->conf]['url_login'], ['atsId' => DATOVKA_CONF[$this->conf]['atsId'], 'appToken' => $this->getDatovkaId()]);  // redirect to service - https://www.czebox.cz/as/login?atsId=7981e09c632b4bac&appToken=123
     }
 }

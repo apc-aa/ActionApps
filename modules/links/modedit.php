@@ -80,7 +80,7 @@ try {
     $cancel = InputVars::boolPOST('cancel');
     
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception) {}
+} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
 if ($cancel) {
     go_url( StateUrl(self_base() . "index.php"));
@@ -125,7 +125,7 @@ if ( ($insert && $superadmin) || $update ) {
         }
 
         // write all fields needed for module table
-        $module_id = WriteModuleFields(($update && $module_id) ? $module_id : false, $superadmin, 'Links', $name, $slice_url, $priority, $lang_file, $owner, $deleted, Links_Category2SliceID($start_id));
+        $module_id = WriteModuleFields(($update && $module_id) ? $module_id : null, $superadmin, 'Links', $name, $slice_url, $priority, $lang_file, $owner, $deleted, Links_Category2SliceID($start_id));
         if ( !$module_id ) {       // error?
             break;
         }

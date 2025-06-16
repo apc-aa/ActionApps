@@ -89,7 +89,7 @@ try {
     $cancel = InputVars::boolPOST('cancel');
     
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception) {}
+} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
 unset($r_state['linkedit']);
 $r_state['linkedit']['old'] = $_POST;  // in case of bad input

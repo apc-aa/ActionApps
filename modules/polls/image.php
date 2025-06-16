@@ -48,7 +48,8 @@ $COLORNAMES = [
     "aqua"   => "#00FFFF"
 ];
 
-function mkcolor($color){  
+function mkcolor($color): array
+{
     global $COLORNAMES;
     
     if (!str_starts_with($color, "#")) {

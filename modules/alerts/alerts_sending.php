@@ -63,7 +63,9 @@ class AA_Collection {
         return $this->$property;
     }
 
-    function getReaderSlice()    { return AA_Slice::getModule($this->getProp('reader_slice_id'));  }
+    function getReaderSlice(): ?AA_Module {
+        return AA_Slice::getModule($this->getProp('reader_slice_id'));
+    }
 
     function getSliceUrl()       {
         if ( is_null($this->slice_url) ) {
@@ -77,7 +79,8 @@ class AA_Collection {
      * @param null $how_often
      * @return zids
      */
-    function getReaders($how_often = null) {
+    function getReaders($how_often = null): zids
+    {
         if (!($slice          = $this->getReaderSlice())) {
             return new zids();
         }
@@ -111,7 +114,8 @@ class AA_Collection {
      * @param null   $reader_id
      * @return int - count of emails sent
      */
-    public function sendEmails($ho, $emails, $update, $item_id, $reader_id) {
+    public function sendEmails($ho, $emails, $update, $item_id, $reader_id): int
+    {
 
         // allow to access Reader data (and the data of all the slices with the same password)
         AA_Credentials::singleton()->loadFromSlice($this->getProp('reader_slice_id'));
@@ -407,7 +411,8 @@ class AA_Collection {
      *  List of email types with translated description.
      *  You should never list email types directly, always call this function.
      */
-    public static function get_email_types() {
+    public static function get_email_types(): array
+    {
         return [
             "alerts alert"         => _m("alerts alert"),
             "alerts welcome"       => _m("alerts welcome"),
@@ -497,7 +502,8 @@ class AA_Collection {
  * @param null   $reader_id
  * @return int - count of emails sent
  */
-function send_emails($ho, $collection_ids, $emails, $update, $item_id, $reader_id = null) {
+function send_emails($ho, $collection_ids, $emails, $update, $item_id, $reader_id = null): int
+{
 
     /* get all (or just some, if $collection_ids specified) collections and put
        the infop into $colls array */
@@ -521,7 +527,8 @@ function send_emails($ho, $collection_ids, $emails, $update, $item_id, $reader_i
 *   for all unfilled filter / howoften combinations
 *   to a value depending on howoften, i.e. to one week ago for weekly etc.
 */
-function initialize_last() {
+function initialize_last(): void
+{
     $now = getdate();
 
     $init["instant"] = time();

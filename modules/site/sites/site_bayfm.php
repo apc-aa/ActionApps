@@ -18,7 +18,9 @@ $apc_init = '---26';   // Home page itemid = 10
 
 $apc_state = ModW_str2arr($apc_varnames, $apc, $apc_init, $apc_reg);
 
-if (isset($site_id)) $apc_state['site_id'] = $site_id;  // Make site_id available:
+if (isset($site_id)) {
+    $apc_state['site_id'] = $site_id;
+}  // Make site_id available:
 
 /* Sample code for keeping history
 if ($m) {
@@ -30,17 +32,24 @@ if ($m) {
 }
 */
 
-if (isset($p)) $apc_state = array_merge($apc_state, ['p' => $p, 'x' => '-']); //page
-if (isset($t)) $apc_state['t'] = $t; //Switch to special mode (text only, print ...)
-if (isset($i)) $apc_state['i'] = $i; //item id to display
+if (isset($p)) {
+    $apc_state = array_merge($apc_state, ['p' => $p, 'x' => '-']);
+} //page
+if (isset($t)) {
+    $apc_state['t'] = $t;
+} //Switch to special mode (text only, print ...)
+if (isset($i)) {
+    $apc_state['i'] = $i;
+} //item id to display
 
 // Handle paging
 if ( isset($scrl) ) {      // page scroller
   $pagevar = "scr_".$scrl."_Go";
   $apc_state['p'] = $$pagevar;
 }
-if ( $apc_state["p"] <= 0 || $apc_state["p"] === '-' )
-  $apc_state["p"] = 1;
+if ( $apc_state["p"] <= 0 || $apc_state["p"] === '-' ) {
+    $apc_state["p"] = 1;
+}
 
 // Set up some variables in apc_state
 $apc_state['state'] =  ModW_arr2str($apc_varnames,$apc_state);
@@ -52,7 +61,9 @@ $apc_state["site_url"] = "index.shtml?".$relargs;
 // Read item from database
 $apc_state["item"] = ModW_id2item($apc_state["i"],true);
 
-if ($debug) huhl("<pre>New State=",$apc_state);
+if ($debug) {
+    huhl("<pre>New State=", $apc_state);
+}
 
 // list of all slices used in site. Site module uses cache. If you change the slice
 // (you add item, ...), the cache should be cleared for this slice, in order site
@@ -76,7 +87,8 @@ $als['additem'] = '<a href="{alias::f_e:add}"><img src="' . AA_INSTAL_PATH . 'im
 
 // And functions
 
-function myfillform($txt) {
+function myfillform($txt): string
+{
     global $result;
     if ($GLOBALS["post2shtml_id"]) {
         add_post2shtml_vars();

@@ -111,7 +111,8 @@ class zids implements Iterator, ArrayAccess, Countable {
     }
 
     /** remove non valid ids */
-    function clean() {
+    function clean(): void
+    {
         if ($this->type === "z") {
         // find and set current
             if ( $this->guesstype() === 'z' ) {
@@ -127,7 +128,8 @@ class zids implements Iterator, ArrayAccess, Countable {
     }
 
     /** fills $this->>type with current zids type */
-    function guesstype() {
+    function guesstype(): string
+    {
         foreach ($this->arr as $val) {
             if ( ($this->type = guesstype($val)) !== 'z' ) {
                 break;
@@ -142,12 +144,14 @@ class zids implements Iterator, ArrayAccess, Countable {
      * @param array $item_arr
      * @return zids
      */
-    public function setFromItemArr(array $item_arr) {
+    public function setFromItemArr(array $item_arr): zids
+    {
         return $this->clear($this->type)->add(array_map(static fn ($k) => rawurldecode(str_starts_with($k, 'x') ? substr($k, 1) : $k), array_keys($item_arr)));   // in some managers we use 'x' before the item id - remove it
     }
 
     /** copy all data from provided zids */
-    public function cloneFrom(zids $zids) {
+    public function cloneFrom(zids $zids): void
+    {
         $this->arr  = $zids->arr;
         $this->type = $zids->type;
         $this->_ext = $zids->_ext;
@@ -157,7 +161,8 @@ class zids implements Iterator, ArrayAccess, Countable {
      * @param $inittype
      * @return zids
      */
-    function clear($inittype = 'z') {
+    function clear($inittype = 'z'): static
+    {
         $this->arr  = [];
         $this->type = $inittype;
         $this->_ext = [];
@@ -201,7 +206,8 @@ class zids implements Iterator, ArrayAccess, Countable {
      * @param zids|array|string $ids
      * @return zids this
      */
-    function add($ids) {
+    function add($ids): static
+    {
         if ( isset($ids) && is_object($ids) ) {           // zids
             if ($this->isEmpty()) {
                 $this->arr  = $ids->arr;
@@ -224,9 +230,10 @@ class zids implements Iterator, ArrayAccess, Countable {
      *   The type must be already set (from init).
      * @param $ids
      */
-    function union($ids = "") {
+    function union($ids = ""): void
+    {
         $this->add($ids);
-        if ($this->count() > 0 ) {
+        if ($this->count() ) {
             // we can't use array_unique because we need to preserve key range 0..x
             sort ($this->arr);
             $last = "XXXXXXXX";
@@ -252,7 +259,8 @@ class zids implements Iterator, ArrayAccess, Countable {
      * @return string one-character type for standard types
      * be careful of how extension types are handled
      */
-    function onetype() {
+    function onetype(): string
+    {
         // TODO - handle other types than single character types
         return $this->type;
     }
@@ -278,13 +286,12 @@ class zids implements Iterator, ArrayAccess, Countable {
      *  Return an array of long ids
      *  TODO: look at where used, typically used in interface to pre-zid code
      * @param $i
-     * @return array|int|string|null
      */
     function longids($i=null) {
         if ($this->warnid($i,"longids")) {
             return null;
         }
-        if ( !isset($i) && $this->count()<1 ) {
+        if ( !isset($i) && !$this->count() ) {
             return [];
         }
         switch ($this->type) {
@@ -363,7 +370,8 @@ class zids implements Iterator, ArrayAccess, Countable {
     /**
      * @return array used for where condition for item table in DB_AA::select*
      */
-    public function getDbWhereArray() {
+    public function getDbWhereArray(): array
+    {
         switch ($this->type) {
             case 'p': return ['id', $this->arr];
             case 'l': return ['id', $this->arr, 'l'];
@@ -422,7 +430,8 @@ class zids implements Iterator, ArrayAccess, Countable {
     /** gettags function
      * Return associative array, longid->tag;
      */
-    function gettags() {
+    function gettags(): false|array
+    {
         if ($this->type !== "t") {
             return false;
         }
@@ -437,35 +446,7 @@ class zids implements Iterator, ArrayAccess, Countable {
         return $tags;
     }
 
-    /** retag function
-     *  Restore tags in array, by looking for ids in zids2
-     *   Return resulting new zids
-     *   Reasonably efficent, only loops through each array once
-     * @param $zids
-     * @return void|zids
-     */
-    function retag($zids) {
-        if ($zids->type !== "t") {
-            return $this;  // Array is fine
-        }
-        $tags = [];
-        foreach ($zids->a as $v) {
-            switch ($this->type) {
-                case 'p': $k = pack_id(id_t2l($v)); break;
-                default:
-                          warn("<br>Error: zids: can't retag array of type '".$this->type."', tell mitra");
-                          return;
-            }
-            $tags[$k]=$v;
-        }
-        $b = [];
-        if ( $this->count() > 0 ) {
-            foreach ($this->arr as $v) {
-                $b[] = $tags[$v];
-            }
-        }
-        return new zids($b,"t");
-    }
+    // retag() function  // retag function was allways broken - removed from codebase, HM 2025
 
     /** sqlin function
      *  Return appropriate SQL for including in WHERE clause
@@ -502,7 +483,8 @@ class zids implements Iterator, ArrayAccess, Countable {
      *  Returns the slice id for the ids
      *  If items are from more than one slice, then it returns the random of them
      */
-    function getFirstSlice() {
+    function getFirstSlice(): false|string
+    {
         if (!$this->count()) {
             return false;
         }
@@ -522,7 +504,8 @@ class zids implements Iterator, ArrayAccess, Countable {
      * @return array of zids in 'long' (for $type==='l') or short form
      * @param $type
      */
-    function translate($type) {
+    function translate($type): array
+    {
         $db = getDB();
         $SQL = "SELECT id, short_id FROM item WHERE ". $this->sqlin();
         $db->query($SQL);
@@ -598,13 +581,13 @@ function guesstype($str): string {
 
 /** type validating functions */
 function is_short_id($id): bool  { return strlen($id) < 12 && ctype_digit((string) $id); }
-function is_long_id($id): bool   { return (strlen($id)==32 && ctype_xdigit($id)); }
-function is_packed_id($id): bool { return (strlen($id)==16); }
-function is_string_id($id): bool { return ($id[0] == "'"); }
+function is_long_id($id): bool   { return (strlen($id)===32 && ctype_xdigit($id)); }
+function is_packed_id($id): bool { return (strlen($id)===16); }
+function is_string_id($id): bool { return ($id[0] === "'"); }
 
 /** used instead of explode ('-'... which returns [0 => ''] for empty string and not empty string
  *  @return string[] - array of non-empty ids
- *  @param  string   - dash-separated-ids
+ *  @param  string  $ids_string  - dash-separated-ids
  */
 function explode_ids($ids_string): array {
     return array_filter(array_map('trim',explode('-',$ids_string)));
@@ -627,12 +610,15 @@ function ParamExplode($param): array
     // convert separators to ##Sx
     // change "#:" to ":" and change back "://" - then split by separation string
     // replaces in order
+
+    // tested preg_split('/(?<!#:)(?<!http)(?<!https):/', $param) but it was slower than str_replace() + explode() - HM 2025
     return explode('##Sx', str_replace(['#:', 'tp://', 'tps://', ':', '~@|_'], ['~@|_', 'tp~@|_//', 'tps~@|_//', '##Sx', ':'], $param));
 }
 
 
 /** @see also get_short_hash for shorter hash */
-function get_hash(...$arg_list) {
+function get_hash(...$arg_list): string
+{
     // return md5(json_encode($arg_list));
     // return md5(var_export($arg_list, true));
     // return md5(serialize($arg_list));
@@ -640,7 +626,8 @@ function get_hash(...$arg_list) {
 }
 
 /** shortest possible hash which uses only url, DOM and JS identifier safe characters. Contains only a-zA-Z0-9, starts with character. */
-function get_short_hash(...$arg_list) {
+function get_short_hash(...$arg_list): string
+{
     // we do not need '-' - it is bad for DOM identifiers, '+' is bad for urls, '/' and even '_' has some problems in Dropzone, so we remove it as well.
     // We use Q as escape, so we replace Q as well to be able to convert back, if needed
     $hash = str_replace(['Q','+','/'], ['QA','QB','QC'], rtrim(base64_encode(hash('crc32b', serialize($arg_list), true)), '='));
@@ -653,12 +640,14 @@ function get_short_hash(...$arg_list) {
  * @return string packed md5 id, not quoted !!!
  * Note that pack_id is used in many places where it is NOT 128 bit ids.
  */
-function pack_id($unpacked_id) {
+function pack_id($unpacked_id): string
+{
     return ((string)$unpacked_id == "0" ? "0" : @pack("H*",trim($unpacked_id)));
 }
 
 // better version of pack_id()
-function xpack_id($id) {
+function xpack_id($id): string
+{
     // must be 32 character long hexadecimal number
     return is_long_id($id) ? "0x$id" : '0';
 }

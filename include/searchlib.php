@@ -38,7 +38,8 @@ class AA_Operators {
     /** getEnum function
      *
      */
-    static function getEnum() {
+    static function getEnum(): array
+    {
         return [
             'enum',
             [
@@ -102,7 +103,9 @@ class AA_Operators {
     }
 
     /** Returns standard operator for database OR AA_Condition conditions
-     * @param string $operator
+     *
+     * @param  string|null  $operator
+     *
      * @return string
      */
     public static function normalize(?string $operator): string {
@@ -185,14 +188,16 @@ class AA_Condition extends AA_Object {
     /** getFields function
      *  Access function to condition field
      */
-    function getFields() {
+    function getFields(): array
+    {
         return $this->fields;
     }
 
     /** getOperator function
      * Access function to condition operator
      */
-    function getOperator() {
+    function getOperator(): string
+    {
         return $this->operator;
     }
 
@@ -275,7 +280,8 @@ class AA_Condition extends AA_Object {
      * @param $field_value
      * @return bool
      */
-    function _compare($field_value) {
+    function _compare($field_value): bool
+    {
         switch ($this->operator) {
             case 'CONTAIN':
             case 'LIKE':
@@ -334,9 +340,9 @@ class AA_Condition extends AA_Object {
  */
 class AA_Sortorder extends AA_Object {
 
-    protected $field;
-    protected $desc;    // 0|1  - direction ASCENDING, DESC
-    protected $limit;   // number
+    protected string $field = '';
+    protected bool   $desc  = false;    // 0|1  - direction ASCENDING, DESC
+    protected $limit;   // number or '' - no limit
 
     /// Static ///
 
@@ -359,14 +365,15 @@ class AA_Sortorder extends AA_Object {
             if ($key === 'limit') {
                 $this->limit = $val;
             } else {
-                $this->field = $key;
+                $this->field = (string)$key;
                 $this->desc  = ($val === 'd');
             }
         }
     }
 
     /** clear function */
-    function clear() {
+    function clear(): void
+    {
         $this->field = '';
         $this->desc  = false;
         $this->limit = '';   // '' is not 0
@@ -377,7 +384,8 @@ class AA_Sortorder extends AA_Object {
      *
      *  Mainly for backward compatibility with old - array approach
      */
-    function getArray() {
+    function getArray(): array
+    {
         if (!$this->field) {
             return [];
         }
@@ -388,13 +396,13 @@ class AA_Sortorder extends AA_Object {
         return $ret;
     }
 
-    function getField() { return $this->field; }
+    function getField(): string { return $this->field; }
 
-    function getDesc() { return $this->desc ? '-' : ''; }
+    function getDesc(): string { return $this->desc ? '-' : ''; }
 
     function getLimit() { return $this->limit; }
 
-    function getAsString() { return ($f = $this->getField()) ? $this->getLimit() . $f . $this->getDesc() : ''; }
+    function getAsString(): string { return ($f = $this->getField()) ? $this->getLimit() . $f . $this->getDesc() : ''; }
 }
 
 class AA_Set extends AA_Object {
@@ -451,7 +459,7 @@ class AA_Set extends AA_Object {
             }
         }
         $this->setModules($slices);
-        $this->bins = $bins;
+        $this->bins = (int) ($bins ?? AA_BIN_ACTIVE); // default is AA_BIN_ACTIVE
     }
 
     /** @inheritDoc */
@@ -483,7 +491,7 @@ class AA_Set extends AA_Object {
     /** clear function
      *
      */
-    function clear(): AA_Set {
+    function clear(): static {
         $this->conds    = [];
         $this->sort     = [];
         $this->postsort = [];
@@ -496,7 +504,7 @@ class AA_Set extends AA_Object {
      * @param $bins int bitfield
      *              AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING | AA_BIN_TRASH
      */
-    function setBins($bins): AA_Set {
+    function setBins($bins): static {
         $this->bins = $bins;
         return $this;
     }
@@ -504,7 +512,7 @@ class AA_Set extends AA_Object {
     /** set the slices/modules
      * @param $slices array of slice ids
      */
-    function setModules($slices): AA_Set {
+    function setModules($slices): static {
         if (is_array($slices)) {
             $this->slices = $slices;
         } elseif (is_string($slices)) {
@@ -518,7 +526,7 @@ class AA_Set extends AA_Object {
     /** addCondition function
      * @param $condition
      */
-    function addCondition($condition): AA_Set {
+    function addCondition($condition): static {
         if ($condition) {
             $this->conds[] = $condition;
         }
@@ -528,7 +536,7 @@ class AA_Set extends AA_Object {
     /** addSortorder function
      * @param $sortorder
      */
-    function addSortorder($sortorder): AA_Set {
+    function addSortorder($sortorder): static {
         if ($sortorder) {
             $this->sort[] = $sortorder;
         }
@@ -541,7 +549,8 @@ class AA_Set extends AA_Object {
      * @param $string
      * @param $defaultCondsOperator
      */
-    function addCondsFromString($string, $defaultCondsOperator = 'RLIKE') {
+    function addCondsFromString($string, $defaultCondsOperator = 'RLIKE'): void
+    {
         if (str_starts_with(inner_trim($string), 'd-')) {
             $this->_parseViewConds($string);
         }
@@ -554,7 +563,8 @@ class AA_Set extends AA_Object {
      * @param $conds_string
      * @param $defaultCondsOperator
      */
-    function _parseCondsString($conds_string, $defaultCondsOperator) {
+    function _parseCondsString($conds_string, $defaultCondsOperator): void
+    {
         if (empty($conds_string)) {
             return;
         }
@@ -569,7 +579,8 @@ class AA_Set extends AA_Object {
      * @param $conds
      * @param $defaultCondsOperator
      */
-    function addCondsFromArray($conds, $defaultCondsOperator = 'RLIKE') {
+    function addCondsFromArray($conds, $defaultCondsOperator = 'RLIKE'): void
+    {
         if (!is_array($conds)) {
             return;
         }
@@ -697,9 +708,11 @@ class AA_Set extends AA_Object {
      *           3)   sort[0][headline........]=d&sort[0][limit]=5
      *
      *  The "group limit" means that we want maximum 4 items of each category.
-     * @param $srt
+     *
+     * @param $sort
      */
-    function addSortFromString($sort) {
+    function addSortFromString($sort): void
+    {
         if (str_starts_with(ltrim($sort), 'sort[')) {
             $ret = [];
             parse_str($sort, $ret);
@@ -718,7 +731,8 @@ class AA_Set extends AA_Object {
      *  array( 'limit' => 4, 'category........' => d )
      * @param $sort_string
      */
-    function addSortFromBasicString($sort_string) {
+    function addSortFromBasicString($sort_string): void
+    {
         if ($sort_string) {
             $sorts = array_filter(explode(',', str_replace(['-', '+', ' '], ['-,', '+,', '+,',], $sort_string))); // ' ' comes from url category.......1+publish_date.... where + is translated to ' '
             foreach ($sorts as $sort) {
@@ -759,7 +773,8 @@ class AA_Set extends AA_Object {
      *     2)   sort[0] = 5headline........-
      *     3)   sort[0][headline........]=d&sort[0][limit]=5
      */
-    function addSortFromArray($sort) {
+    function addSortFromArray($sort): void
+    {
         if ($sort && is_array($sort)) {
             ksort($sort, SORT_NUMERIC); // it is not sorted and the order is important
             foreach ($sort as $k => $srt) {
@@ -787,7 +802,8 @@ class AA_Set extends AA_Object {
      * @param string $string - like:   d-headline........,category.......1-BEGIN-Bio
      * @return bool
      */
-    function _parseViewConds($string) {
+    function _parseViewConds($string): bool
+    {
         $commands = new AA_View_Commands($string);
         $command  = $commands->get('d');
         if (!$command) {
@@ -877,12 +893,14 @@ class AA_Set extends AA_Object {
     /** getModules function
      *  retruns $modules array - mainly for backward compatibility
      */
-    function getModules() {
+    function getModules(): array
+    {
         return $this->slices;
     }
 
     /** @return int bins bitfield - AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING | AA_BIN_TRASH */
-    function getBins() {
+    function getBins(): int
+    {
         return $this->bins;
     }
 
@@ -893,7 +911,8 @@ class AA_Set extends AA_Object {
 
     /** @return string representing the condition (for {ids} or {view}, ...)
      */
-    function getCondsAsString() {
+    function getCondsAsString(): string
+    {
         $ret   = '';
         $delim = 'd-';
         foreach ($this->conds as $k => $condition) {
@@ -909,7 +928,8 @@ class AA_Set extends AA_Object {
      * @param $value
      * @return bool
      */
-    static function check($field, $value) {
+    static function check($field, $value): bool
+    {
         return ($field && ($value !== 'AAnoCONDITION'));
     }
 
@@ -965,7 +985,8 @@ class AA_Set extends AA_Object {
  *     2)   sort[0] = 5headline........-
  *     3)   sort[0][headline........]=d&sort[0][limit]=5
  */
-function getSortFromUrl($sort) {
+function getSortFromUrl($sort): array
+{
     return (new AA_Set(null, null, $sort))->getSort();
 }
 
@@ -1009,11 +1030,11 @@ class AA_Dbcondition {
         $this->table = $table;
     }
 
-    function getWhereExp() { return $this->condition; }
+    function getWhereExp(): string { return $this->condition; }
 
-    function getJoinType() { return $this->jointype; }
+    function getJoinType(): string { return $this->jointype; }
 
-    function getJoinCond() { return $this->joincond; }
+    function getJoinCond(): string { return $this->joincond; }
 
     /**
      * @return string[]
@@ -1185,7 +1206,8 @@ class AA_Dbcondition {
  * @param $slices
  * @param $conds
  */
-function ProoveFieldNames($slices, $conds) {
+function ProoveFieldNames($slices, $conds): void
+{
 
     if (!is_array($slices) || !is_array($conds)) {
         return;
@@ -1224,7 +1246,8 @@ function ProoveFieldNames($slices, $conds) {
  * @param $conds
  * @author (c) Jakub, May 2002
  */
-function ParseMultiSelectConds(&$conds) {
+function ParseMultiSelectConds(&$conds): void
+{
     if (!is_array($conds)) {
         return;
     }
@@ -1265,7 +1288,8 @@ function ParseMultiSelectConds(&$conds) {
  * @param array $defaultCondsOperator - could be scalar (default), but also
  *                                    array: field_id => array('operator'=>'LIKE') or object Searchfields
  */
-function ParseEasyConds(&$conds, $defaultCondsOperator = "LIKE") {
+function ParseEasyConds(&$conds, $defaultCondsOperator = "LIKE"): void
+{
     if (is_array($conds)) {
         // In first step we remove conds with wrong syntax (like conds[xx]=yy)
         // and replace easy conds with extended syntax conds
@@ -1344,7 +1368,8 @@ function String2Sort($sort_string): array
  * @param          $add_param
  * @return string
  */
-function MakeSQLConditions($fields_arr, $conds, $defaultCondsOperator, &$join_tables, $additional_field_cond = '', $add_param = false) {
+function MakeSQLConditions($fields_arr, $conds, $defaultCondsOperator, &$join_tables, $additional_field_cond = '', $add_param = false): string
+{
 
     ParseMultiSelectConds($conds);
 
@@ -1410,7 +1435,8 @@ function MakeSQLConditions($fields_arr, $conds, $defaultCondsOperator, &$join_ta
  * @param          $add_param
  * @return string
  */
-function MakeSQLOrderBy($fields_arr, $sort, &$join_tables, $additional_field_cond = '', $add_param = false) {
+function MakeSQLOrderBy($fields_arr, $sort, &$join_tables, $additional_field_cond = '', $add_param = false): string
+{
     if (isset($sort) && is_array($sort)) {
         foreach ($sort as $srt) {
             if (isset($srt) && is_array($srt)) {
@@ -1516,37 +1542,36 @@ function QueryZidsSet(AA_Set $set): zids {
 /** QueryZids function
  *  Finds item IDs for items to be shown in a slice / view
  *
- * @param array   $slices        array of slices in which to look for items
- *                              could be false. if you specify restrict_zids
- * @param array   $conds         search conditions (see FAQ)
- * @param array   $sort          sort fields (see FAQ)
- * @param string  $type
- *                              sets status, pub_date and expiry_date according to specified type:
- *                              ACTIVE | EXPIRED | PENDING | HOLDING | TRASH | ALL.
- *                              If you want to specify it in conds, set to ALL.
+ * @param  array   $slices        array of slices in which to look for items
+ *                                could be false. if you specify restrict_zids
+ * @param  string  $conds         search conditions (see FAQ)
+ * @param  string  $sort          sort fields (see FAQ)
+ * @param  string  $type
+ *                                sets status, pub_date and expiry_date according to specified type:
+ *                                ACTIVE | EXPIRED | PENDING | HOLDING | TRASH | ALL.
+ *                                If you want to specify it in conds, set to ALL.
  *
- * @param bool    $neverAllItems
- *                              if no conds[] apply (all are wrong formatted or empty),
- *                              should the function generate an empty set?
- *                              Otherwise, all items from given slices are returned.
+ * @param  int     $neverAllItems
+ *                                if no conds[] apply (all are wrong formatted or empty),
+ *                                should the function generate an empty set?
+ *                                Otherwise, all items from given slices are returned.
  *
- * @param array   $restrict_zids
- *                              ids are packed but not quoted in $restrict_ids or short.
- *                              Use it if you want to choose only from a set of items
- *                              (used by E-mail Alerts and related item view
- *                              (for sorting and eliminating of expired items)).
+ * @param  null    $restrict_zids
+ *                                ids are packed but not quoted in $restrict_ids or short.
+ *                                Use it if you want to choose only from a set of items
+ *                                (used by E-mail Alerts and related item view
+ *                                (for sorting and eliminating of expired items)).
  *
- * @param string  $defaultCondsOperator
- *                              replaces the default "LIKE" for conditions with no operator set
- *
- * @param bool    $use_cache     should be the cache searched for the result? -- no longer used used
+ * @param  string  $defaultCondsOperator
+ *                                replaces the default "LIKE" for conditions with no operator set
+ * @param  int     $limit
  *
  * @return zids - A zids object with a list of the ids that match the query.
  *
- * @global  bool  $debug         (in) many debug messages
- * @global  bool  $debugfields   (in) useful mainly for multiple slices mode -- views info about field_ids
- *                              used in conds[] but not existing in some of the slices
- * @global  int   $QueryIDsCount (out) is set to the count of IDs returned
+ * @global  bool   $debug         (in) many debug messages
+ * @global  bool   $debugfields   (in) useful mainly for multiple slices mode -- views info about field_ids
+ *                                used in conds[] but not existing in some of the slices
+ * @global  int    $QueryIDsCount (out) is set to the count of IDs returned
  *
  *   Parameter format example:
  *   <pre>
@@ -2025,15 +2050,15 @@ function QueryZids($slices, $conds = "", $sort = "", $type = "ACTIVE", $neverAll
 
 /** QueryConstantZIDs function
  *  Finds constant ZIDs for constants to be shown in a slice / view
- * @param string     $group_id constant group to search in
- * @param array      $conds    search conditions {see QueryZids, FAQ}
- * @param array[]    $sort     sort fields       {see QueryZids, FAQ}
- * @param string     $type     not used, yet
- * @param array|null $restrict_zids
- *                         Use it if you want to choose only from a set of constants
- * @param string     $defaultCondsOperator
- *                         replaces the default "RLIKE" for conditions with no operator set
- * @param int        $limit    limit the number of results
+ *
+ * @param  string  $group_id  constant group to search in
+ * @param  array   $conds     search conditions {see QueryZids, FAQ}
+ * @param  null    $sort      sort fields       {see QueryZids, FAQ}
+ * @param  null    $restrict_zids
+ *                            Use it if you want to choose only from a set of constants
+ * @param  string  $defaultCondsOperator
+ *                            replaces the default "RLIKE" for conditions with no operator set
+ * @param  int     $limit     limit the number of results
  *
  * @return zids object with a list of the ids that match the query.
  *

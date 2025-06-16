@@ -96,7 +96,8 @@ function new_state(&$new_state, $x, $p, $d, $t, $scrl) {
  *  the regular expression then use $strdef
  *  e.g. ApcStr2Arr("tpmi",$apc,"--h-",	"^([-p])([-]|[0-9]+)([hbsfcCt])([-]|[0-9]+)";
  */
-function ApcStr2Arr($varnames, $str, $strdef, $reg) {
+function ApcStr2Arr($varnames, $str, $strdef, $reg): array
+{
     if (!$str) { $str = $strdef; }
     $varout = [];
     $reg    = '`'.str_replace('`','\`',$reg).'`';
@@ -113,7 +114,8 @@ function ApcStr2Arr($varnames, $str, $strdef, $reg) {
  *  This is fairly simplistic, just concatennating state, a more
  *  sophisticated sprint version might be needed
  */
-function ApcArr2Str($varnames, $arr) {
+function ApcArr2Str($varnames, $arr): string
+{
     $strout = "";
     for ($i=0, $ino = strlen($varnames); $i < $ino; ++$i) {
         $strout .= $arr[substr($varnames,$i,1)];

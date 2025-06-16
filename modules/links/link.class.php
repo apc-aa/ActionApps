@@ -34,11 +34,13 @@ use AA\IO\DB\DB_AA;
  * @param mixed ...$problems
  * @return array
  */
-function problem_report(...$problems) {
+function problem_report(...$problems): array
+{
     return $problems;
 }
 
-function print_problem($problem) {
+function print_problem($problem): void
+{
     echo "<div class=\"problem\">$problem</div>";
 }
 
@@ -79,19 +81,21 @@ class linkassignment {
     /** Copies all assignment data (except ID) to new assignment object
      *  and possibly sets category
      */
-    function create_new($cid=null, $priority=null) {
+    function create_new($cid=null, $priority=null): static
+    {
         return new linkassignment($cid ?? $this->category, $this->link, $this->base, $this->state, $this->proposal, $this->proposal_delete, $priority ?? $this->priority);
     }
 
     /** Returns if the assignment is OK - if category exists */
-    function checkExistence() {
+    function checkExistence(): bool {
         return cattree::singleton()->exists($this->category);
     }
 
     /** Fixes the state based on state of the base assignment
      *  $base assignment MUST be set before we call this function
      */
-    function fixState( $base ) {
+    function fixState( $base ): false|array
+    {
         if ( !$base ) {
             $problem[] = problem_report('base_not_defined_for_fixState',$this->category);
             return false;
@@ -121,7 +125,8 @@ class linkassignment {
 
 
     /** $base_state - state of base assignment - good for repair of some kind of problems */
-    function check_problems($base) {
+    function check_problems($base): array
+    {
         $problem= [];
         if ( !cattree::singleton()->exists($this->category) ) {
             $problem[] = problem_report('assigned_cat_not_exist',$this->category);
@@ -162,12 +167,13 @@ class linkassignment {
         return cattree::singleton()->getName($this->category);
     }
 
-    function isPerm($action) {
+    function isPerm($action): bool {
         return IsCatPerm( $action, cattree::singleton()->getPath($this->category) );
     }
 
     /** Returns new assignment to general category */
-    function transform($cid,$general) {
+    function transform($cid,$general): ?static
+    {
         global $GENERAL_TRANSFORM_RULES;
         $cattree = cattree::singleton();
         $path   = $cattree->getPath($cid);
@@ -193,14 +199,15 @@ class linkassignment {
                 $sub_cid   = $cattree->ensureExists($super_cid, $general);
                 return $this->create_new(get_if($sub_cid,$cid), Links_GlobalCatPriority($general));
         }
-        return false;
+        return null;
     }
 
     /** Copies the link to all subcategories based on setting of general
      *  categories.
      *  Returns array of new assignments
      */
-    function generalize($general) {
+    function generalize($general): array
+    {
         if ( !$general ) {
             return [$this];
         }
@@ -220,7 +227,9 @@ class linkassignment {
 
 
     function dbSave(): bool {
-        if ( !$this->category || !$this->link ) return false;
+        if ( !$this->category || !$this->link ) {
+            return false;
+        }
         $varset = new Cvarset();
 
         $varset->addArray(['category_id', 'what_id', 'base', 'state', 'priority', 'proposal', 'proposal_delete']);
@@ -241,13 +250,13 @@ class linkassignment {
     function getState()             { return $this->state;           }
     function getPriority()          { return $this->priority;        }
     function getId()                { return $this->id;              }
-    function isBase()               { return $this->base;            }
-    function isProposal()           { return $this->proposal;        }
-    function isProposal_delete()    { return $this->proposal_delete; }
-    function setLink($lid)          { $this->link = $lid;            }
-    function setBase($base)         { $this->base = ((bool) $base); }
-    function setProposal($v)        { $this->proposal        = $v;   }
-    function setProposal_delete($v) { $this->proposal_delete = $v;   }
+    function isBase(): bool { return $this->base;            }
+    function isProposal(): bool { return $this->proposal;        }
+    function isProposal_delete(): bool { return $this->proposal_delete; }
+    function setLink($lid): void { $this->link = $lid;            }
+    function setBase($base): void { $this->base = ((bool) $base); }
+    function setProposal($v): void { $this->proposal = $v;   }
+    function setProposal_delete($v): void { $this->proposal_delete = $v;   }
 }
 
 /** AssignmentSet */
@@ -264,19 +273,24 @@ class assignmentset {
     }
 
     /** Unset all current values (if any) */
-    function clear() {
+    function clear(): void
+    {
         unset($this->lid);
         unset($this->assignments);
     }
 
     /** Adds assignment to the assignmentset */
-    function add($category, $link, $base, $state=null, $proposal=null, $proposal_delete=null, $priority=null, $id=null) {
+    function add($category, $link, $base, $state=null, $proposal=null, $proposal_delete=null, $priority=null, $id=null): void
+    {
         $this->assignments[] = new linkassignment($category, $link, $base, $state, $proposal, $proposal_delete, $priority, $id);
     }
 
     /** Load category assignments for current link */
-    function load( $force=false ) {
-        if ( !$force && $this->assignments !== null && is_array($this->assignments) ) return;
+    function load( $force=false ): void
+    {
+        if ( !$force && $this->assignments !== null && is_array($this->assignments) ) {
+            return;
+        }
         $lid = $this->lid;
 
         $db = getDB();
@@ -297,7 +311,8 @@ class assignmentset {
     }
 
     /** Load category set from Input Form */
-    function loadFromForm() {
+    function loadFromForm(): void
+    {
         $new_ass = new assignmentset();
         $base = true;          // mark first assignment as base
         for ( $i=0; $i<$GLOBALS['selcatCount']; $i++) {
@@ -320,14 +335,14 @@ class assignmentset {
 
     function count(): int {
         $this->load();
-        if ( !isset($this->assignments) ) return 0;
-        return count($this->assignments);
+        return !isset($this->assignments) ? 0 : count($this->assignments);
     }
 
     /** Normalizes link assignments - if the link is badly assigned, then it
      *  repairs it.
      */
-    function normalize($general=null) {
+    function normalize($general=null): void
+    {
         $this->downgrade_general();   // Make all General assignments Thematic
         $this->remove_duplicity();
         $base = $this->define_base();
@@ -337,8 +352,11 @@ class assignmentset {
     /** Make all assignments Thematic (base > Kormidlo > Enviro > Organizations
      *  are downgraded to the first thematic: base > Kormidlo > Enviro
      */
-    function downgrade_general() {
-        if ( !isset($this->assignments) ) return;
+    function downgrade_general(): void
+    {
+        if ( !isset($this->assignments) ) {
+            return;
+        }
         foreach ( array_keys($this->assignments) as $k ) {
             // do not use $ass - it is just copy of object in $this->assignments
             if ( !$this->assignments[$k]->downgrade_general() ) {
@@ -351,8 +369,11 @@ class assignmentset {
     /** Remove assignments to the same category and also assignments
      *  to non-existing category
      */
-    function remove_duplicity() {
-        if ( !isset($this->assignments) ) return;
+    function remove_duplicity(): void
+    {
+        if ( !isset($this->assignments) ) {
+            return;
+        }
         debug('remove_duplicity begin:', $this->assignments);
         $already_assigned = [];
         foreach ( array_keys($this->assignments) as $k ) {
@@ -385,8 +406,11 @@ class assignmentset {
     }
 
     /** Set specified caregory assignment as base */
-    function set_base($category_id) {
-        if ( !isset($this->assignments) ) return false;
+    function set_base($category_id): bool
+    {
+        if ( !isset($this->assignments) ) {
+            return false;
+        }
         foreach ( array_keys($this->assignments) as $k ) {
             $this->assignments[$k]->setBase( $this->assignments[$k]->getCategory()==$category_id );
         }
@@ -397,8 +421,11 @@ class assignmentset {
      *  assignments (if any). If not base defined, base is set to first
      *  assignment
      */
-    function define_base() {
-        if ( !isset($this->assignments) ) return false;
+    function define_base(): false|linkassignment
+    {
+        if ( !isset($this->assignments) ) {
+            return false;
+        }
         $base = false;   // not found yet
         foreach ( $this->assignments as $k => $ass ) {
             if ( $base ) {
@@ -417,8 +444,11 @@ class assignmentset {
     }
 
     /** Remove all assignments to categories with 'nolinks' flag set */
-    function remove_nolinks() {
-        if ( !isset($this->assignments) ) return;
+    function remove_nolinks(): void
+    {
+        if ( !isset($this->assignments) ) {
+            return;
+        }
         $cattree = cattree::singleton();
         foreach ( array_keys((array)$this->assignments) as $k ) {
             // check, if category is allowed to have links
@@ -432,8 +462,11 @@ class assignmentset {
     /** Fixes the state based on stete of the base assignment
      *  $base assignment MUST be set before we call this function
      */
-    function fix_assignments($base) {
-        if ( !isset($this->assignments) || !isset($base)) return;
+    function fix_assignments($base): void
+    {
+        if ( !isset($this->assignments) || !isset($base)) {
+            return;
+        }
         foreach ( array_keys($this->assignments) as $k ) {
             $this->assignments[$k]->fixState( $base );
         }
@@ -455,7 +488,8 @@ class assignmentset {
     /** Updates link assignment - changes assignment based on new values
      *  (probably from form)
      */
-    function change($new) {
+    function change($new): void
+    {
 
 debug('assignmentset.change: this', $this);
 debug('assignmentset.change: new',  $new);
@@ -514,7 +548,8 @@ debug('assignmentset.change: nearly done', $this->assignments);
 debug('assignmentset.change: completely done', $this->assignments);
     }
 
-    function generalize($general) {
+    function generalize($general): void
+    {
         if ( !$general ) { return; }
         $new_ass = [];
         foreach ( (array)$this->assignments as $ass ) {
@@ -524,13 +559,15 @@ debug('assignmentset.change: completely done', $this->assignments);
         $this->assignments = $new_ass;
     }
 
-    function define_lid($lid) {
+    function define_lid($lid): void
+    {
         foreach ( array_keys((array)$this->assignments) as $k ) {
             $this->assignments[$k]->setLink($lid);
         }
     }
 
-    function save($general, $lid=null) {
+    function save($general, $lid=null): void
+    {
         if ( $lid ) {
             $this->define_lid($lid);
         }
@@ -554,10 +591,13 @@ debug('assignmentset.change: completely done', $this->assignments);
     /** Removes the assignment identified by its key from this assignmentset
      *  (not from database!!)
      */
-    function remove($toremove) {
+    function remove($toremove): void
+    {
         if ( isset($toremove) && is_array($toremove) && $this->assignments !== null && is_array($this->assignments) ) {
             foreach ( $this->assignments as $k => $ass ) {
-                if ( $toremove[$k] ) continue;
+                if ( $toremove[$k] ) {
+                    continue;
+                }
                 $newass[] = $ass;
             }
             unset( $this->assignments );
@@ -565,10 +605,13 @@ debug('assignmentset.change: completely done', $this->assignments);
         }
     }
 
-    function getBase() {
+    function getBase(): false|linkassignment
+    {
         $this->load();
         foreach ( (array)$this->assignments as $k => $ass ) {
-            if ( $ass->isBase() )  return $this->assignments[$k];
+            if ( $ass->isBase() ) {
+                return $this->assignments[$k];
+            }
         }
         return false;
     }
@@ -589,20 +632,28 @@ debug('assignmentset.change: completely done', $this->assignments);
         return $problem;
     }
 
-    function check_bases() {
+    function check_bases(): array
+    {
         $this->load();
         if ( isset($this->assignments) )  {
             $bases = 0;
             foreach ( $this->assignments as $ass ) {
-                if ( $ass->isBase() ) $bases++;
+                if ( $ass->isBase() ) {
+                    $bases++;
+                }
             }
-            if ( $bases==0 ) return problem_report('no_base');
-            if ( $bases> 1 ) return problem_report('more_bases',$bases);
+            if ( $bases==0 ) {
+                return problem_report('no_base');
+            }
+            if ( $bases> 1 ) {
+                return problem_report('more_bases', $bases);
+            }
         }
         return [];
     }
 }
 
+/** @var AA_Inputfield[] $LINK_DATA_FIELDS */
 $LINK_DATA_FIELDS = [
     // we need to define dbfield for name (we can't use 'name' as fieldname
     // because it makes problems in javascript if the input name is 'name'
@@ -641,7 +692,8 @@ class linkobj {
     }
 
     /** unset all current values (if any) */
-    function clear() {
+    function clear(): void
+    {
         unset($this->lid);
         unset($this->data);
         unset($this->region);
@@ -650,7 +702,8 @@ class linkobj {
         $this->assignments->clear();
     }
 
-    function numberOfAssignments() {
+    function numberOfAssignments(): int
+    {
         if ( $this->assignments ) {
             return $this->assignments->count();
         }
@@ -658,9 +711,14 @@ class linkobj {
     }
 
     /** load link data from database (if not loaded already) */
-    function load( $force=false ) {
-        if ( !$this->lid ) return;
-        if ( !$force && $this->data !== null && is_array($this->data) ) return;
+    function load( $force=false ): void
+    {
+        if ( !$this->lid ) {
+            return;
+        }
+        if ( !$force && $this->data !== null && is_array($this->data) ) {
+            return;
+        }
 
         $db = getDB();
 
@@ -709,7 +767,8 @@ class linkobj {
 
     /** Fill link data from the form
      *  Returns result of validation of the form data*/
-    function loadFromForm(&$err) {
+    function loadFromForm(&$err): true|int
+    {
         global $LINK_DATA_FIELDS;
         $ret = true;
         // load all form data
@@ -748,7 +807,8 @@ class linkobj {
     }
 
     /** Counts Checksum for link's data (not assignments). Used for comarison. */
-    function dataChecksum() {
+    function dataChecksum(): string
+    {
         global $LINK_DATA_FIELDS;
         $str = '';
         // create string of all values
@@ -765,7 +825,8 @@ class linkobj {
         return md5($str);  // return md5 checksum
     }
 
-    function addProposal($proposal) {
+    function addProposal($proposal): void
+    {
         $proposal->assignments->clear(); // proposal can't have assignments
         unset($proposal->lid);           // proposal will have new id
         $proposal->data['folder']=1;     // proposal are not in trash/holding or so
@@ -780,7 +841,8 @@ class linkobj {
     /** if the link have proposal, it removes the proposals which are the same
      *  as any other proposal (or base link)
      */
-    function removeTheSameProposals() {
+    function removeTheSameProposals(): void
+    {
         $marked[$this->dataChecksum()] = true;  // mark current link
         foreach ( (array)$this->changes as $change ) {
             $md5 = $change['link']->dataChecksum();
@@ -793,7 +855,8 @@ class linkobj {
     }
 
     /** Changes the data of the link */
-    function changeData($new_link) {
+    function changeData($new_link): void
+    {
         $this->data     = $new_link->data;
         $this->language = $new_link->language;
         $this->region   = $new_link->region;
@@ -804,7 +867,8 @@ class linkobj {
      *  categories are added at the end (on storing the link to the database).
      *  If the link is badly assigned, then it repairs it
      */
-    function normalize() {
+    function normalize(): void
+    {
         if ($this->numberOfAssignments() > 0) {
             $this->assignments->normalize($this->isGeneral());
             $this->removeTheSameProposals();
@@ -830,7 +894,8 @@ class linkobj {
     /** Changes this link according to new link (new link is probably submitted
      *  change from user)
      */
-    function tryChange($new_link) {
+    function tryChange($new_link): string
+    {
         if ( $this->isPerm(PS_LINKS_EDIT_LINKS) ) {
             $this->changeData($new_link);
             $ret = 'CHANGED';
@@ -912,9 +977,9 @@ class linkobj {
             $varset->add("votes",      "number", 2);
             $varset->add("plus_votes", "number", 1);
 
-            $varset->doINSERT('links_links');
+            $this->lid = $varset->doINSERT('links_links'); // last inserted id
             // get inserted link id
-            if (!($this->lid = $varset->last_insert_id())) {
+            if (!$this->lid) {
                 huhl("Error - Last inserted ID is lost");
                 exit;
             }
@@ -958,14 +1023,16 @@ class linkobj {
     }
 
     /**      */
-    function check_problems() {
+    function check_problems(): void
+    {
         $this->load();
         $this->problem = $this->assignments->check_problems(); // array
         $this->check_changes();
         $this->check_general_categories();
     }
 
-    function check_changes() {
+    function check_changes(): void
+    {
         $this->load();
         foreach ( (array)$this->changes as $change ) {
             if ( $change['rejected'] ) {
@@ -978,11 +1045,14 @@ class linkobj {
         }
     }
 
-    function check_general_categories() {
+    function check_general_categories(): void
+    {
         $this->load();
 
         // TODO - next row is wrong - assignments is not array
-        if ( !isset($this->assignments) || !is_array($this->assignments) ) return;
+        if ( !isset($this->assignments) || !is_array($this->assignments) ) {
+            return;
+        }
         $cattree = cattree::singleton();
         $names    = [];
         $thematic = 0;
@@ -1026,10 +1096,13 @@ class linkobj {
     /** Deletes link itself. This function should be used only in conjunction
      *  with deleteSetting()
      */
-    function dbDeleteData() {
+    function dbDeleteData(): void
+    {
         $db = getDB();
         $lid = $this->lid;
-        if ( !$lid ) return;
+        if ( !$lid ) {
+            return;
+        }
         // delete the main link data
         $db->query("DELETE from links_links where id='$lid'");
         freeDB($db);
@@ -1038,11 +1111,14 @@ class linkobj {
     /** Delete all link data except link itself
      * (used for update -> not change link_id)
      */
-    function dbDeleteSetting() {
+    function dbDeleteSetting(): void
+    {
         $db = getDB();
 
         $lid = $this->lid;
-        if ( !$lid ) return;
+        if ( !$lid ) {
+            return;
+        }
 
         $to_delete = GetTable2Array("SELECT proposal_link_id from links_changes
                                       WHERE changed_link_id='$lid'",
@@ -1066,7 +1142,8 @@ class linkobj {
     }
 
     /** Deletes all the link including assignments, changes, ... */
-    function dbDelete() {
+    function dbDelete(): void
+    {
         $this->dbDeleteSetting();
         $this->dbDeleteData();
     }

@@ -67,7 +67,8 @@ class PageCache  {
      *  Return string to use in keystr for cache if could do a stringexpand
      *  Returns part of keystring
      */
-    static function globalKeyArray() {
+    static function globalKeyArray(): array
+    {
         // valid just for one domain (there are sites, where content is based also on domain - enviro.example.org, culture.example.org, ... )
         $ks = ['host' => (str_starts_with($host = $_SERVER['HTTP_HOST'], 'www.')) ? substr($host,4) : $host];
         if (isset($GLOBALS['apc_state'])) {
@@ -104,11 +105,14 @@ class PageCache  {
 
     /** get function
      *  Returns cached information or false
-     * @param $key
-     * @param string $action
-     * @return bool
+     *
+     * @param          $key
+     * @param  string  $action
+     *
+     * @return false|string
      */
-    function get($key, string $action='get') {
+    function get($key, string $action='get'): false|string
+    {
         AA::$debug&2 && AA::$dbg->log("Pagecache->get(key):$key", 'Pagecache action:'.$action);
 
         if ( ENABLE_PAGE_CACHE ) {
@@ -139,9 +143,9 @@ class PageCache  {
      * @param $params
      * @param $str2find
      * @param $action
-     * @return bool|mixed
      */
-    function cacheDb($function, $params, $str2find, $action='get') {
+    function cacheDb($function, $params, $str2find, $action='get'): mixed
+    {
         $action = (string)$action;
         $key = get_hash($function, $params);
         if ( $res = $this->get($key, $action) ) {
@@ -161,9 +165,9 @@ class PageCache  {
      * @param $params
      * @param $str2find
      * @param $action
-     * @return bool|false|mixed
      */
-    function cacheMemDb($function, $params, $str2find, $action='get') {
+    function cacheMemDb($function, $params, $str2find, $action='get'): mixed
+    {
         $key = get_hash($function, $params);
         if ($res = AA::Contentcache()->get($key)) {
             return $res;
@@ -177,9 +181,9 @@ class PageCache  {
      *  Wrapper for contentcache->get_result
      * @param $function
      * @param $params
-     * @return mixed
      */
-    function cacheMem($function, $params) {
+    function cacheMem($function, $params): mixed
+    {
         return AA::Contentcache()->get_result( $function, $params );
     }
 
@@ -188,7 +192,8 @@ class PageCache  {
      * @param $keyid
      * @return string|false
      */
-    function getById($keyid) {
+    function getById($keyid): false|string
+    {
         $arr   = DB_AA::select1('', 'SELECT stored, content FROM `pagecache`', [['id', $keyid]]);
         return ( $arr && (time() - $this->cacheTime) < $arr['stored'] ) ? $arr['content'] : false;
     }
@@ -196,13 +201,15 @@ class PageCache  {
     /** set function
      *  Cache information based on $keyString
      *  Returns database identifier of the cache value (MD5 of keystring)
-     * @param $keyString
-     * @param $content
-     * @param CacheStr2find $str2find
-     * @param $force   - if true, the content is stored into cache even
-     *                 if ENABLE_PAGE_CACHE is false (we use cache for cached
-     *                 javascript in admin interface (modules selectbox
-     *                 for example), so we need to use cache here)
+     *
+     * @param                 $key
+     * @param                 $content
+     * @param  CacheStr2find  $str2find
+     * @param  bool           $force  - if true, the content is stored into cache even
+     *                                if ENABLE_PAGE_CACHE is false (we use cache for cached
+     *                                javascript in admin interface (modules selectbox
+     *                                for example), so we need to use cache here)
+     *
      * @return bool
      */
     function store($key, $content, $str2find, $force=false): bool {
@@ -261,7 +268,8 @@ class PageCache  {
      *  Remove specified ids from cache
      * @param $keys
      */
-    function invalidateById( $keys ) {
+    function invalidateById( $keys ): void
+    {
         // we will delete it in chuns in order we do not get max_packet_size error from MySQL
         $chunks = array_chunk((array)$keys, 10000);
         foreach ($chunks as $chunk) {
@@ -276,11 +284,13 @@ class PageCache  {
         }
     }
 
-    /** invalidateById function
-     *  Remove specified ids from cache
-     * @param $keys
+    /**
+     * @param $time
+     *
+     * @return string
      */
-    static function invalidateOlder( $time ) {
+    static function invalidateOlder( $time ): string
+    {
         $highest_old_pid = DB_AA::select1('id', 'SELECT id FROM pagecache', [['stored', $time, '<']], ['id-']);
         $highest_old_id  = DB_AA::select1('id', 'SELECT id FROM pagecache_str2find', [['pagecache_id', $highest_old_pid]]);
         if ($highest_old_id) {
@@ -295,7 +305,8 @@ class PageCache  {
      * @param string | array $strings
      * @param string         $type
      */
-    function invalidateFor($strings, $type='M') {
+    function invalidateFor($strings, $type='M'): void
+    {
         // We do not want to report errors here. Sometimes this SQL leads to:
         //   "MySQL Error: 1213 (Deadlock found when trying to get lock; Try
         //    restarting transaction)" error.
@@ -319,7 +330,8 @@ class PageCache  {
     /** invalidate function
      *  Remove cached information for all rows
      */
-    function invalidate() {
+    function invalidate(): void
+    {
         DB_AA::delete('pagecache_str2find');
         DB_AA::delete('pagecache');
     }

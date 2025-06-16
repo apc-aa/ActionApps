@@ -12,18 +12,18 @@ require_once __DIR__ . "/../../modules/links/util.php";
 require_once __DIR__ . "/../../modules/links/linksearch.php";
 
 try {
-    /**  @var string checked_id  link_id of checked link */
+    //checked_id  link_id of checked link
     $checked_id = InputVars::intGET('checked_id', true);
 
-    /**  @var string tree_start  from which category you have to search */
+    // tree_start - from which category you have to search
     $tree_start = InputVars::intGET('tree_start', true);
 
-    /** @var string $url url to check */
+    // url to check
     $url = InputVars::stringGET('url', true);
     $cancel = InputVars::boolPOST('cancel');
     
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception) {}
+} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
 // HTML page start
 HtmlPageBegin();

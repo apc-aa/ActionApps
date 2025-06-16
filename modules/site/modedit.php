@@ -82,7 +82,7 @@ try {
     $cancel = InputVars::boolPOST('cancel');
     
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception) {}
+} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
 $template_id = $template['W'] ? substr($template['W'],1) : unpack_id('SiteTemplate....');
 
@@ -138,7 +138,7 @@ if ($add || $update) {
         }
 
         // write all fields needed for module table
-        $module_id = WriteModuleFields(($update && $module_id) ? $module_id : false, $superadmin, 'W', $name, $slice_url, $priority, $lang_file, $owner, $deleted );
+        $module_id = WriteModuleFields(($update && $module_id) ? $module_id : null, $superadmin, 'W', $name, $slice_url, $priority, $lang_file, $owner, $deleted );
 
         if (!$module_id) {   // error?
             break;
@@ -159,8 +159,8 @@ if ($add || $update) {
         }
 
         // now set all module specific settings
+        $varset->clear();
         if ( $update ) {
-            $varset->clear();
             $varset->add("state_file",   "text",   $state_file);
             $varset->add("flag",         "number", $router);
 
@@ -170,7 +170,6 @@ if ($add || $update) {
                 break;
             }
         } else { // insert (add)
-            $varset->clear();
             // prepare varset variables for setFromArray() function
             $varset->addArray(['id','structure','state_file'], ['flag']);
 

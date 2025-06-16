@@ -38,7 +38,8 @@ require_once __DIR__ . "/../../include/mgettext.php";
 
 // I don't want to call AA menus as early as including menu.php, because some permissions' functions are called. Hence I call get_aamenus in showMenu().
 
-function get_aamenus() {
+function get_aamenus(): array
+{
     global $r_slice_view_url, $slice_id;
 
     $aamenus["view"] = [

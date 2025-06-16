@@ -23,7 +23,7 @@ try {
     $cancel = InputVars::boolGETPOST('cancel');
     
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception) {}
+} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
 // id of the editted module (id in long form (32-digit hexadecimal number))
 $module_id  = AA::$module_id;
@@ -35,8 +35,9 @@ if ( !isset($r_err) ) {
     $sess->register('r_msg');
 }
 
-if ($cancel)
-    go_url( StateUrl(self_base() . "index.php"));
+if ($cancel) {
+    go_url(StateUrl(self_base()."index.php"));
+}
 
 if ( !$cid ) {
     $cid = (int)$r_state['cat_id'];
@@ -127,10 +128,12 @@ echo '
        <td>&nbsp;</td>
        <td>&nbsp;</td>
        <td>';
-if ( IsCatPerm(PS_LINKS_ADD_SUBCATEGORY, $r_state['cat_path']) )
-    echo ' <a class=aa-button-new href="javascript:NewCateg(\''._m('New subcategory').'\')">'. _m('Add') .'</a> &nbsp; ';
-if ( IsCatPerm(PS_LINKS_DEL_SUBCATEGORY, $r_state['cat_path']) )
-    echo ' <a class=aa-button-delete href="javascript:DelCateg(\''._m('Remove selected subcategory?').'\')">'. _m('Del') .'</a> &nbsp; ';
+if ( IsCatPerm(PS_LINKS_ADD_SUBCATEGORY, $r_state['cat_path']) ) {
+    echo ' <a class=aa-button-new href="javascript:NewCateg(\''._m('New subcategory').'\')">'._m('Add').'</a> &nbsp; ';
+}
+if ( IsCatPerm(PS_LINKS_DEL_SUBCATEGORY, $r_state['cat_path']) ) {
+    echo ' <a class=aa-button-delete href="javascript:DelCateg(\''._m('Remove selected subcategory?').'\')">'._m('Del').'</a> &nbsp; ';
+}
     echo ' <a class=aa-button href="javascript:ChangeStateCateg(\'document.f.selcat\')">'. _m('Change state') .'</a>';
 
     FrmTabEnd( [

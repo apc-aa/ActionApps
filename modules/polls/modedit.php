@@ -25,6 +25,7 @@ https://www.apc.org/
 */
 
 use AA\IO\DB\DB_AA;
+use AA\Optimize\AddPolls;
 use AA\Util\InputVars;
 
 if ($_GET['template']['P'] ?? null ) {
@@ -74,7 +75,7 @@ try {
     $cancel = InputVars::boolPOST('cancel');
     
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception) {}
+} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
 
 if ($cancel) {
@@ -123,7 +124,7 @@ if ( $insert || $update ) {
         }
 
         // write all fields needed for module table
-        $module_id = WriteModuleFields( ($update && $module_id) ? $module_id : false, $superadmin, 'P', $name, $slice_url, $priority, $lang_file, $owner, $deleted );
+        $module_id = WriteModuleFields( ($update && $module_id) ? $module_id : null, $superadmin, 'P', $name, $slice_url, $priority, $lang_file, $owner, $deleted );
 
         if ( !$module_id ) {      // error?
             break;
@@ -166,7 +167,7 @@ if ( $insert || $update ) {
                 $varset->resetFromRecord($db->record());
             } else {
                 warn("Bad template id");
-                $varset->resetFromRecord(\AA\Optimize\AddPolls::POLLS_DEFAULT_VALUES);
+                $varset->resetFromRecord(AddPolls::POLLS_DEFAULT_VALUES);
             }
             $varset->set("id",             new_id(),        "text");
             $varset->set("module_id",      $module_id,      "unpacked");

@@ -41,7 +41,8 @@ require_once __DIR__ . "/../../modules/alerts/util.php";
 
 set_collectionid();
 
-function get_aamenus() {
+function get_aamenus(): array
+{
     global $slice_id;
 
     $aamenus["admin"] = [

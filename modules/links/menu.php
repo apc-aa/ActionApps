@@ -49,7 +49,8 @@ defined('AA_LINKS_HELP_MAIN') || define('AA_LINKS_HELP_MAIN', '');
 
 // I don't want to call AA menus as early as including menu.php, because some permissions' functions are called. Hence I call get_aamenus in showMenu().
 
-function get_aamenus() {
+function get_aamenus(): array
+{
     global $r_slice_view_url,
            $linkedit,
            $r_state,

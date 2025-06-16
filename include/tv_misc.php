@@ -36,7 +36,8 @@ require_once __DIR__ . "/tv_email.php";
  * @param $processForm
  * @return array
  */
-function GetMiscTableView($viewID) {
+function GetMiscTableView($viewID): array
+{
     global $slice_id;
 //  global $attrs_edit, $attrs_browse, $format, $langs;
     global              $attrs_browse;
@@ -230,7 +231,7 @@ function GetMiscTableView($viewID) {
         ]
         ];
     }
-
+    return [];
 
 } // end of GetTableView
 

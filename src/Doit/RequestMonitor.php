@@ -5,6 +5,7 @@ namespace AA\Doit;
 
 use AA;
 use AA\IO\DB\DB_AA;
+use AA\Util\Txt;
 
 
 /** request monitor - developer temporary tool for catching all the REQUEST variables in order we can remove
@@ -77,7 +78,7 @@ class RequestMonitor
                     $table[$name]['valempty'][] = $vartype['empty'];
                     $table[$name]['valreq'][] = $vartype['req'];
                     $table[$name]['vals'][] = implode('|', $vals);
-                    $table[$name]['valsum'][] = var_export(array_count_values(array_map( fn ($str) => ((is_string($str) && (strlen($str)) > 12) ? substr($str,0,11).'…' : $str), $vals)), true);
+                    $table[$name]['valsum'][] = var_export(array_count_values(array_map( fn ($str) => (is_string($str) ? Txt::shorten($str,12) : $str), $vals)), true);
                 }
             }
             ksort($table);

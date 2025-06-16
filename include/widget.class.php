@@ -25,6 +25,17 @@
  *
 */
 
+use AA\Widget\ChbWidget;
+use AA\Widget\CodWidget;
+use AA\Widget\FldWidget;
+use AA\Widget\HidWidget;
+use AA\Widget\InfWidget;
+use AA\Widget\MchWidget;
+use AA\Widget\MflWidget;
+use AA\Widget\MseWidget;
+use AA\Widget\SelWidget;
+use AA\Widget\Widget;
+
 
 /** AA_Property class defines one variable in AA. It is describes the datatype,
  *  (numeric, date, string), constraints (range of values, length, if it is
@@ -68,7 +79,7 @@ class AA_Property extends AA_Storable {
     var $required;
 
     /** AA_Value - default value for the field. If value for store not matching the validation, the default is used*/
-    var $default;
+    private ?AA_Value $default;
 
     /** Help text for the property */
     var $input_help;
@@ -174,12 +185,12 @@ class AA_Property extends AA_Storable {
 
 
     /** getters */
-    function getId()                  { return $this->id;            }
+    function getId(): string { return $this->id;            }
     function getName()                { return $this->name;          }
-    function getType()                { return $this->type;          }
-    function getHelp()                { return $this->input_help;    }
-    function getMorehelp()            { return $this->input_morehlp; }
-    function getExample()             { return $this->example;       }
+    function getType(): string { return $this->type;          }
+    function getHelp(): string { return $this->input_help;    }
+    function getMorehelp(): string { return $this->input_morehlp; }
+    function getExample(): string { return $this->example;       }
     function getConstants()           { return $this->const_arr;     }
 
     /** @return string[] */
@@ -198,24 +209,31 @@ class AA_Property extends AA_Storable {
     }
 
     /** setters */
-    function setHelp($val)     { $this->input_help = (string)$val; return $this; }
-    function setExample($val)  { $this->example    =         $val; return $this; }
-    function setName($val)     { $this->name       = (string)$val; return $this; }
+    function setHelp($val): static
+    { $this->input_help = (string)$val; return $this; }
+    function setExample($val): static
+    { $this->example =         $val; return $this; }
+    function setName($val): static
+    { $this->name = (string)$val; return $this; }
 
-    public function setValidator($validator)  { $this->_validator = $validator; }   // we do not create AA_Validator object here, because then it makes infinite loop - AA_Property contains validator...        $val; return $this; }
+    public function setValidator($validator): void { $this->_validator = $validator; }   // we do not create AA_Validator object here, because then it makes infinite loop - AA_Property contains validator...        $val; return $this; }
 
     /** set the Values array and also the validator */
-    function setConstants($arr) {
+    function setConstants($arr): void
+    {
         $this->const_arr = (array) $arr;
         $this->_validator = new AA_Validate_Enum(['possible_values'=>array_keys($this->const_arr)]);
     }
 
     /** called before StoreItem to fill the field with correct data
-     * @param AA_Content $context_content   // we pass here whole AA_Content in order we know the context - Item_id (for Unique, ...)
-     * @param AA_Profile $profile
-     * @return mixed|null
+     *
+     * @param AA_Content  $context_content  // we pass here whole AA_Content in order we know the context - Item_id (for Unique, ...)
+     * @param AA_Profile  $profile
+     *
+     * @return AA_Value|null
      */
-    function completeProperty4Insert(AA_Content $context_content, AA_Profile $profile) {
+    function completeProperty4Insert(AA_Content $context_content, AA_Profile $profile): ?AA_Value
+    {
         $fid           = $this->getId();
         $profile_value = $profile->getProperty('hide&fill',$fid) ?: $profile->getProperty('fill',$fid);
         if ($profile_value !== false) {
@@ -242,7 +260,6 @@ class AA_Property extends AA_Storable {
 
     /** Converts AA_Value to real property value (scalar, Array, ...)
      *  @param $aa_value AA_Value
-     *  @return array
      */
     function toValue($aa_value) {
         $validator = $this->getValidator();
@@ -275,38 +292,39 @@ class AA_Property extends AA_Storable {
         $form->addRow(new AA_Formrow_Full($this, $this->defaultWidget()));
     }
 
-    function defaultWidget() {
+    function defaultWidget(): Widget
+    {
         $values = $this->getConstants();
         $widget = '';
         if ($this->type === 'readonly') {
-            $widget = new \AA\Widget\InfWidget();
+            $widget = new InfWidget();
         } elseif ($this->type === 'hidden') {
-            $widget = new \AA\Widget\HidWidget();
+            $widget = new HidWidget();
         } elseif ($this->isMulti()) {
             if (empty($values)) {
                 if ($this->type === 'text') {
-                    $widget = new \AA\Widget\MflWidget(['rows' => 2, 'row_count' => 1]);
+                    $widget = new MflWidget(['rows' => 2, 'row_count' => 1]);
                 } else {
-                    $widget = new \AA\Widget\MflWidget(['row_count' => 1]);
+                    $widget = new MflWidget(['row_count' => 1]);
                 }
             }
             elseif (count($values) < 5) {
-                $widget = new \AA\Widget\MchWidget(['const_arr' => $values]);
+                $widget = new MchWidget(['const_arr' => $values]);
             } else {
-                $widget = new \AA\Widget\MseWidget(['const_arr' => $values]);
+                $widget = new MseWidget(['const_arr' => $values]);
             }
         }
         elseif (!empty($values)) {
-            $widget = new \AA\Widget\SelWidget(['const_arr' => $values]);
+            $widget = new SelWidget(['const_arr' => $values]);
         }
         elseif ($this->type === 'bool') {
-            $widget = new \AA\Widget\ChbWidget();
+            $widget = new ChbWidget();
         }
         elseif ($this->type === 'text') {
-            $widget = new \AA\Widget\CodWidget();
+            $widget = new CodWidget();
         }
         else {
-            $widget = new \AA\Widget\FldWidget();
+            $widget = new FldWidget();
         }
         return $widget;
     }
@@ -315,7 +333,8 @@ class AA_Property extends AA_Storable {
      * @param AA_Content $context_content
      * @return bool
      */
-    function isValid(AA_Content $context_content) {
+    function isValid(AA_Content $context_content): bool
+    {
         return !$this->validateDetailed($context_content);
     }
 
@@ -323,7 +342,8 @@ class AA_Property extends AA_Storable {
      * @param AA_Content $context_content
      * @return array  - empty array means OK - valid
      */
-    function validateDetailed(AA_Content $context_content) {
+    function validateDetailed(AA_Content $context_content): array
+    {
         $aa_val    = $context_content->getAaValue($this->getId());
 
         $valid     = true;
@@ -358,7 +378,8 @@ class AA_Property extends AA_Storable {
      * @param $value mixed - tha value to be sanitized
      * @return mixed - based on validator
      */
-    function sanitizeValue($value) {
+    function sanitizeValue($value): mixed
+    {
         $validator = $this->getValidator();
         // test if value is iterable
         if ($this->isMulti()) {
@@ -378,7 +399,8 @@ class AA_Property extends AA_Storable {
     }
 
     /** isObject function */
-    function isObject() {
+    function isObject(): bool
+    {
         return !in_array($this->type, ['text', 'string', 'int', 'bool', 'float', 'readonly', 'hidden']);
     }
 
@@ -396,27 +418,32 @@ class AA_Property extends AA_Storable {
     }
 
     /** isMulti function */
-    function isMulti() {
+    function isMulti(): bool
+    {
         return $this->multi;
     }
 
     /** isRequired function */
-    function isRequired() {
+    function isRequired(): bool
+    {
         return $this->required && !in_array(trim($this->id,'.'), ['short_id','status_code','post_date','last_edit','display_count','disc_count','disc_app','moved2active']);
     }
 
     /** isPersistent function */
-    function isPersistent() {
+    function isPersistent(): bool
+    {
         return $this->persistent;
     }
 
     /** save property to the database
+     *
      * @param $value
      * @param $priority
-     * @return bool
+     *
      * @throws Exception
      */
-    function save($value, $object_id, $owner_id='') {
+    function save($value, $object_id, $owner_id=''): bool
+    {
         $ret = true;
         if ($this->isMulti()) {
             if ( is_array($value) ) {
@@ -443,7 +470,8 @@ class AA_Property extends AA_Storable {
      * @return bool
      * @throws Exception
      */
-    private function _saveSingle($value, $object_id, $priority, $owner_id) {
+    private function _saveSingle($value, $object_id, $priority, $owner_id): bool
+    {
 //      not necessary - we must call validate before object saving,
 //      so this kind of thig is already spotted
 //      if ( is_array($value) ) {
@@ -485,7 +513,8 @@ class AA_Property extends AA_Storable {
      * @param $type
      * @param $priority
      */
-    private static function _saveRow($property_id, $value, $type, $object_id, $priority=0) {
+    private static function _saveRow($property_id, $value, $type, $object_id, $priority=0): void
+    {
         $varset = new CVarset();
         $varset->add('object_id', 'text',   $object_id);
         $varset->add('priority',  'number', $priority);
@@ -537,7 +566,8 @@ class AA_Formatters {
      * @param AA_Value    $value
      * @return string
      */
-    static function getFormattersRadio($basevarname, $aa_property, $value) {
+    static function getFormattersRadio($basevarname, $aa_property, $value): string
+    {
         if (!($contenttypes = $aa_property->getContentTypeSwitches())) {
             return self::getHiddenFormatters($basevarname, $aa_property, $value);
         }
@@ -569,7 +599,8 @@ class AA_Formatters {
      * @param AA_Value    $value
      * @return string
      */
-    static function getHiddenFormatters($basevarname, $aa_property, $value, ?int $set_to=null) {
+    static function getHiddenFormatters($basevarname, $aa_property, $value, ?int $set_to=null): string
+    {
         $flag_frmtr  = $set_to ?? self::getCurrentFormatter($value, $aa_property);
         return $flag_frmtr ? '<input type=hidden name="'.$basevarname.'[flag]" value="'.$flag_frmtr.'">' : '';
     }

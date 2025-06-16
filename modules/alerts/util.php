@@ -36,7 +36,8 @@ function GetCollection($slice_id) {
     return $ret;
 }
 
-function set_collectionid() {
+function set_collectionid(): void
+{
     global $collectionid, $collectionprop, $no_slice_id;
 
     if (!$no_slice_id) {
@@ -51,7 +52,8 @@ function set_collectionid() {
     }
 }
 
-function get_howoften_options() {
+function get_howoften_options(): array
+{
     $retval = [];
     $retval["instant"]   = _m("instant");
     $retval["daily"]     = _m("daily");
@@ -62,7 +64,8 @@ function get_howoften_options() {
     return $retval;
 }
 
-function get_bin_names() {
+function get_bin_names(): array
+{
     return [
         1 => _m("Active"),
         2 => _m("Holding bin"),

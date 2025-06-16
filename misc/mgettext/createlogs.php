@@ -31,17 +31,21 @@ https://www.apc.org/
 $dir = "/raid/www/htdocs/work.ecn.cz/aa_jakub/";
 
 /** Creates a log containing old language file content to be added into mini-gettext language files. */
-function create_logs ($lang_list, $old_lang_files, $log_files)
+function create_logs ($lang_list, $old_lang_files, $log_files): void
 {
     foreach ($lang_list as $lang => $foo) {
         $old_lang_file = str_replace ("??", $lang, $old_lang_files);
-        if (!file_exists ($old_lang_file))
+        if (!file_exists ($old_lang_file)) {
             continue;
+        }
         $logfile = str_replace ("??", $lang, $log_files);
-        if (file_exists ($logfile) && filesize ($logfile) > 0)
+        if (file_exists ($logfile) && filesize ($logfile) > 0) {
             continue;
+        }
         $fd = fopen ($logfile, "wb");
-        if (!$fd) return;
+        if (!$fd) {
+            return;
+        }
         chmod ($logfile, 0777);
         fwrite ($fd,"<?php
             // this is a log file of the language translation on ".date("d.j.Y H:i")."\n\n");
@@ -61,7 +65,10 @@ function create_logs ($lang_list, $old_lang_files, $log_files)
         fclose ($fd);
         break;
     }
-    if ($lang) echo '<span style="color: red; ">Log <b>' .$logfile. '</b> created.</span>';
-    else echo '<span style="color: red; ">All logs are created.</span>';
+    if ($lang) {
+        echo '<span style="color: red; ">Log <b>'.$logfile.'</b> created.</span>';
+    } else {
+        echo '<span style="color: red; ">All logs are created.</span>';
+    }
 }
 

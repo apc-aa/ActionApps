@@ -279,7 +279,8 @@ function GetAlertsTableView($viewID, $processForm = false): array {
 
 // ----------------------------------------------------------------------------------
 
-function FindAlertsUserPermissions() {
+function FindAlertsUserPermissions(): array
+{
     global $Tab, $collectionid;
     $now = time();
     $where = match ($Tab) {
@@ -304,7 +305,8 @@ function FindAlertsUserPermissions() {
 
 // ----------------------------------------------------------------------------------
 
-function AlertsModeditAfterInsert($varset) {
+function AlertsModeditAfterInsert($varset): void
+{
     // called for all tables
     if ($varset->get("module_id") && is_long_id($module_id = unpack_id($varset->get("module_id")))) {
         AddPermObject($module_id, "slice");

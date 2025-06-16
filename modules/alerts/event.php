@@ -33,7 +33,8 @@ require_once __DIR__ . "/../../modules/alerts/alerts_sending.php";
 /** Sends welcome e-mail to newly subscribed readers, which means new
 *   "items" appearing in a Reader Management Slice.
 */
-function AlertsSendWelcome( $slice_id, $itemContent ) {
+function AlertsSendWelcome( $slice_id, $itemContent ): void
+{
     $mydb = getDB();
 
     $mydb->query("SELECT alerts_collection.id, slice_url, emailid_welcome
@@ -74,7 +75,8 @@ function AlertsSendWelcome( $slice_id, $itemContent ) {
 *   by the regular call from the cron.php script in the same way
 *   as daily, weekly or monthly alerts.
 */
-function AlertsSendInstantAlert( $item_id, $slice_id ) {
+function AlertsSendInstantAlert( $item_id, $slice_id ): void
+{
     $db = getDB();
     $db->query ("SELECT moved2active, publish_date, expiry_date FROM item  WHERE id=".xpack_id($item_id));
 

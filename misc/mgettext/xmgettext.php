@@ -53,7 +53,8 @@ class mgettext_writer_php extends mgettext_writer {
     }
 
     /** Prints language file header. */
-    function write_header($lang) {
+    function write_header($lang): void
+    {
         fwrite($this->fd, "<?php\n");
         fwrite($this->fd, "// \$Id$\n");
         fwrite($this->fd, "// Language: ".strtoupper($lang)."\n");
@@ -67,7 +68,8 @@ class mgettext_writer_php extends mgettext_writer {
     }
 
     /** Write language constructs */
-    function write_pair($pair) {
+    function write_pair($pair): void
+    {
         $text = "";
         if ($pair['comments']) {
             foreach ( $pair['comments'] as $comment ) {
@@ -78,15 +80,18 @@ class mgettext_writer_php extends mgettext_writer {
         fwrite($this->fd, $text);
     }
 
-    function write_comment($comment) {
+    function write_comment($comment): void
+    {
         fwrite($this->fd, "# $comment\n");
     }
 
-    function write_footer() {
+    function write_footer(): void
+    {
         fwrite($this->fd, "?>\n");
     }
 
-    function close() {
+    function close(): void
+    {
         fclose($this->fd);
     }
 
@@ -112,7 +117,8 @@ class mgettext_writer_po extends mgettext_writer {
     }
 
     /** Prints language file header. */
-    function write_header($lang) {
+    function write_header($lang): void
+    {
         fwrite($this->fd, "# \$Id$\n");
         fwrite($this->fd, "# Language: ".strtoupper($lang)."\n");
         fwrite($this->fd, "# This file was created automatically by the Mini GetText environment\n");
@@ -124,7 +130,8 @@ class mgettext_writer_po extends mgettext_writer {
     }
 
     /** Write language constructs */
-    function write_pair($pair) {
+    function write_pair($pair): void
+    {
         $text = "";
         if ($pair['comments']) {
             foreach ( $pair['comments'] as $comment ) {
@@ -136,15 +143,18 @@ class mgettext_writer_po extends mgettext_writer {
         fwrite($this->fd, $text);
     }
 
-    function write_comment($comment) {
+    function write_comment($comment): void
+    {
         fwrite($this->fd, "# $comment\n");
     }
 
-    function write_footer() {
+    function write_footer(): void
+    {
         fwrite($this->fd, "");
     }
 
-    function close() {
+    function close(): void
+    {
         fclose($this->fd);
     }
 
@@ -188,7 +198,8 @@ class mgettext_writer_po extends mgettext_writer {
 *                         If empty, no logs are used.
 * $param bool   $add_source_links Should xmgettext add commentary specifying where was the message used?
 */
-function xmgettext($lang_list, $logfile, $lang_files, $files_base_dir, $files, $chmod=0664, $stop_on_warning=true, $old_logs="", $add_source_links=true, $file_type='php') {
+function xmgettext($lang_list, $logfile, $lang_files, $files_base_dir, $files, $chmod=0664, $stop_on_warning=true, $old_logs="", $add_source_links=true, $file_type='php'): void
+{
     MoreTimeLimit(3600); // 1 hour
     collect_messages($logfile, $files_base_dir, $files, $messages, $warnings);
 
@@ -273,7 +284,8 @@ function xmgettext($lang_list, $logfile, $lang_files, $files_base_dir, $files, $
 // -------------------------------------------------------------------------------------
 
 /** Adds translations from logs from old language files to $_m. */
-function add_old_translations($log_files, $lang, &$_m, &$other_translations) {
+function add_old_translations($log_files, $lang, &$_m, &$other_translations): void
+{
     $file = str_replace("??","en",$log_files);
     if (!file_exists($file)) {
         echo "ERROR: $file does not exist<br>";
@@ -296,12 +308,14 @@ function add_old_translations($log_files, $lang, &$_m, &$other_translations) {
 }
 
 /** creates php string which could be printed into ph apostroph construct */
-function php_string($text) {
+function php_string(string $text): string
+{
     return str_replace(["\\", "'"], ["\\\\", "\\'"], $text);
 }
 
 /** add file to $skiplist or $filelist */
-function mark_file_4_processing($dirname, $fname, $skip, &$skiplist, &$filelist) {
+function mark_file_4_processing($dirname, $fname, $skip, &$skiplist, &$filelist): void
+{
     if ($skip || str_starts_with($fname, '.#')) {   // ignore also CVS backups
         $skiplist[$dirname.$fname] = 1;
     } else {
@@ -322,7 +336,7 @@ function mark_file_4_processing($dirname, $fname, $skip, &$skiplist, &$filelist)
 *                    $messages [message_text]["code"][filename][row_number]
 * @param array $warnings (output) wrong syntax warnings
 */
-function collect_messages($logfile, $files_base_dir, $files, &$messages, &$warnings)
+function collect_messages($logfile, $files_base_dir, $files, &$messages, &$warnings): void
 {
     // creates a log file allowing to process lots of files
 
@@ -331,7 +345,7 @@ function collect_messages($logfile, $files_base_dir, $files, &$messages, &$warni
     }
     echo "<br>collect_messages()";
     foreach ( $files as $fname) {
-        $skip = ($fname[0] == "-");
+        $skip = ($fname[0] === "-");
         if ($skip) {
             $fname = substr ($fname, 1);
         }
@@ -405,7 +419,7 @@ function collect_messages($logfile, $files_base_dir, $files, &$messages, &$warni
 
 /**  Parses the file to find all _m() calls. See more info in collect_messages.
 */
-function collect_messages_from_file($base_dir, $filename, &$messages, &$warnings)
+function collect_messages_from_file($base_dir, $filename, &$messages, &$warnings): void
 {
     $content = file($base_dir.$filename);
     $filetext = "";
@@ -422,7 +436,9 @@ function collect_messages_from_file($base_dir, $filename, &$messages, &$warnings
     $comment       = "0";
     $irow          = 1;
 
-    if ($debug) echo "<br><br><hr>File $filename";
+    if ($debug) {
+        echo "<br><br><hr>File $filename";
+    }
 
     for ( $pos=0, $posno=strlen($filetext); $pos<$posno; ++$pos) {
         if ($row_start[$irow+1] && $row_start[$irow+1] <= $pos) {
@@ -500,13 +516,10 @@ function collect_messages_from_file($base_dir, $filename, &$messages, &$warnings
                 break;
             // after _m
             case 1:
-                if (isspace($filetext[$pos]))
+                if (isspace($filetext[$pos])) {
                     break;
-                elseif ($filetext[$pos] === '(') {
-                    $find = 2;
-                } else {
-                    $find = 0;
                 }
+                $find = ($filetext[$pos] === '(') ? 2 : 0;
                 break;
             // after _m (
             case 2:

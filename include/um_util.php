@@ -37,7 +37,8 @@ require_once __DIR__ . "/constants.php";
  * @param          $selected
  * @param string   $type  short | multi
  */
-function SelectGU_ID(string $name, $arr, $selected="", $type="short") {
+function SelectGU_ID(string $name, $arr, $selected="", $type="short"): void
+{
     if ( !is_array($arr)) {
         $arr = [];
     }
@@ -56,7 +57,8 @@ function SelectGU_ID(string $name, $arr, $selected="", $type="short") {
  * @param $none
  * @return array
  */
-function GetFiltered($type, $filter, $to_much, $none) {
+function GetFiltered($type, $filter, $to_much, $none): array
+{
     switch( $type ) {
         case "U": $list = AA::$perm->findUsernames($filter, 1000);  break;
         case "G": $list = AA::$perm->findGroups($filter); break;
@@ -73,7 +75,8 @@ function GetFiltered($type, $filter, $to_much, $none) {
  * @param $selected_user
  * @return string
  */
-function PrintModulePermModificator($selected_user) {
+function PrintModulePermModificator($selected_user): string
+{
     $perm_slices = AA::$perm->getUserPerms($selected_user, "slice", 1);  // there are not only Slices, but other Modules too
     $all_modules = AA_Module::getModules('', false, ['deleted','type', 'priority', 'name']);
 
@@ -159,7 +162,8 @@ function GetModulePermRow($mid, $type, $name, $perm, $odd=false): string {
  * @param $mod_options
  * @param $no
  */
-function PrintModuleAddRow($mod_options, $no) {
+function PrintModuleAddRow($mod_options, $no): void
+{
     echo "<tr>
            <td><select name=\"new_module[$no]\" onchange=\"SetRole($no)\">
                  <option> </option>
@@ -180,7 +184,8 @@ function PrintModuleAddRow($mod_options, $no) {
  * @param $perm_mod
  * @param $selected_user
  */
-function ChangeUserModulePerms($perm_mod, $selected_user) {
+function ChangeUserModulePerms($perm_mod, $selected_user): void
+{
     if ( isset($perm_mod) && is_array($perm_mod) ) {
         $perm_slices = AA::$perm->getUserPerms($selected_user, "slice", 1);  // there are not only Slices, but other Modules too
         foreach ($perm_mod as $xmid => $role) {
@@ -202,7 +207,8 @@ function ChangeUserModulePerms($perm_mod, $selected_user) {
  * @param $new_module_role
  * @param $selected_user
  */
-function AddUserModulePerms($new_module, $new_module_role, $selected_user) {
+function AddUserModulePerms($new_module, $new_module_role, $selected_user): void
+{
     if ( isset($new_module) && is_array($new_module) ) {
         foreach ($new_module as $no => $mid) {
             if ( trim($mid) != "" && isset(AA_Perm::ROLES[$new_module_role[$no]]) ) {
@@ -216,7 +222,8 @@ function AddUserModulePerms($new_module, $new_module_role, $selected_user) {
  *
  * @param $mod_types
  */
-function PrintPermUmPageEnd($mod_types) { ?>
+function PrintPermUmPageEnd($mod_types): void
+{ ?>
     <script>
       var mod       = [];
       var mod_names = [];
@@ -251,7 +258,8 @@ function PrintPermUmPageEnd($mod_types) { ?>
  * @param             $sel_groups
  * @param             $selected_user
  */
-function ChangeUserGroups(?string $posted_groups, $sel_groups, $selected_user) {
+function ChangeUserGroups(?string $posted_groups, $sel_groups, $selected_user): void
+{
     if ( isset($sel_groups) && is_array($sel_groups) && $sel_groups["n"]=="") {
         // first we remove user from all groups
         foreach (array_keys($sel_groups) as $foo_gid) {
@@ -281,7 +289,8 @@ function ChangeUserGroups(?string $posted_groups, $sel_groups, $selected_user) {
  * @param $user_mail3
  * @return array
  */
-function FillUserRecord(&$err, $user_login, $user_surname, $user_firstname, $user_password1, $user_password2,  $user_mail1, $user_mail2='', $user_mail3='') {
+function FillUserRecord(&$err, $user_login, $user_surname, $user_firstname, $user_password1, $user_password2,  $user_mail1, $user_mail2='', $user_mail3=''): array
+{
 
     $userrecord = [];
     ValidateInput("user_login", _m("Login name"), $user_login, $err, true, "login");
@@ -321,7 +330,8 @@ function FillUserRecord(&$err, $user_login, $user_surname, $user_firstname, $use
  * @param $user_super
  * @param $um_uedit_no_go_url
  */
-function NewUserData(&$err, $uid, &$userrecord, $user_super, $um_uedit_no_go_url) {
+function NewUserData(&$err, $uid, &$userrecord, $user_super, $um_uedit_no_go_url): void
+{
     $userrecord["uid"] = $uid;
     if (!($newuserid = AddUser($userrecord))) {
         $err["LDAP"] = MsgErr( _m("It is impossible to add user to permission system") );
@@ -341,7 +351,8 @@ function NewUserData(&$err, $uid, &$userrecord, $user_super, $um_uedit_no_go_url
  * @param $userrecord
  * @param $user_super
  */
-function ChangeUserData(&$err, $uid, &$userrecord, $user_super) {
+function ChangeUserData(&$err, $uid, &$userrecord, $user_super): void
+{
     $userrecord["uid"] = $uid;
     if (AA::$perm->isUserEditable($uid) && !ChangeUser($userrecord)) {
         $err["LDAP"] = MsgErr(_m("Can't change user"));

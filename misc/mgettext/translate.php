@@ -39,7 +39,8 @@ require_once __DIR__ . "/../../include/mgettext.php";
 *    @param     $src_dir -- all files from this directory will be processed
 *    @param     $dst_dir -- here will be the translated files saved
 */
-function translate_files($old_lang_file, $src_dir, $dst_dir) {
+function translate_files($old_lang_file, $src_dir, $dst_dir): void
+{
     MoreTimeLimit(3600); // 1 hour
 
     include $old_lang_file;

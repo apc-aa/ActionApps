@@ -36,18 +36,20 @@ class AA_V {
     static function P($var) { return $_POST[$var];   }
     static function G($var) { return $_GET[$var];    }
     static function C($var) { return $_COOKIE[$var]; }
-    static function Parr()  { return $_POST;         }
+    static function Parr(): array { return $_POST;         }
 }
 
 /** field_content is AA_Value object */
-function UpdateFieldContent($item_id, $field_id, $field_content, $flags = []) {
+function UpdateFieldContent($item_id, $field_id, $field_content, $flags = []): void
+{
     $changes       = new ChangesMonitor();
     $changes->addHistory([new ChangeProposal($item_id, $field_id, [GetRepreValue($item_id, $field_id)])]);
 
     UpdateField($item_id, $field_id, $field_content, $flags);
 }
 
-function GetRepreValue($item_id, $field_id, $alias_name='') {
+function GetRepreValue($item_id, $field_id, $alias_name=''): string
+{
     // get the item directly from the database
     $item        = AA_Item::getItem(new zids($item_id));
     $repre_value = $alias_name ? $item->subst_alias('_#'.$alias_name) : $item->f_h($field_id);
@@ -76,7 +78,8 @@ class GrabberAssignmentform extends AA\IO\Grabber\AbstractGrabber {
      /** Possibly preparation of grabber - it is called directly before getItem()
      *  method is called - it means "we are going really to grab the data
      */
-    function prepare() {
+    function prepare(): void
+    {
         foreach (AA_V::Parr() as $varname => $varvalue) {
             if (strlen($varname)>20 && str_starts_with($varname, 'asids')) {
                 $item_id       = substr($varname,5);
@@ -113,7 +116,8 @@ class GrabberAssignmentform extends AA\IO\Grabber\AbstractGrabber {
         return $item;
     }
 
-    function finish() {
+    function finish(): void
+    {
         $this->_items = [];
     }
 }
@@ -150,7 +154,7 @@ elseif ( AA_V::P('assignment') == 1 ) {
         $set->addCondition(new AA_Condition('relation.......3', '==', AA_V::P('asdestplan')));
         $zids = $set->query();
 
-        if ($zids->count() > 0) {
+        if ($zids->count() ) {
             $now  = now();
 
             $SQL  = "UPDATE item SET status_code = '3', last_edit   = '$now', edited_by   = '". quote(AuthGetUid() ?: '9999999999')."'";

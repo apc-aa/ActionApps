@@ -29,6 +29,7 @@
 */
 
 use AA\IO\DB\DB_AA;
+use AA\Util\ChangesMonitor;
 
 /** Cvarset - class for storing variables
  *          - simplifies database manipulation (by Cvarset class below)
@@ -58,7 +59,8 @@ class Cvariable {
     /** getValue function
      *
      */
-    function getValue() {
+    function getValue(): string
+    {
         return ($this->type === 'quoted') ? stripslashes($this->value) : $this->value;
     }
 
@@ -68,7 +70,8 @@ class Cvariable {
      *
      * @return float|int|string
      */
-    function getSQLValue($column=null) {
+    function getSQLValue($column=null)
+    {
         $ret = '';
         $quote = true;
 
@@ -113,12 +116,8 @@ class Cvariable {
 
 class Cvarset {
     /** @var array Cvariable */
-    var $vars = [];          // array of variables
-    /**
-     * @var DB_AA
-     */
-    var $last_used_db = null;  // database handler
-    var $just_print = false;    // debug option - just prints the query (not implemented for all methods!!!)
+    private array $vars = [];          // array of variables
+    private bool $just_print = false;    // debug option - just prints the query (not implemented for all methods!!!)
 
     /** Cvarset function
      *  constructor - also good for filling the varset
@@ -132,27 +131,33 @@ class Cvarset {
         }
     }
 
-    function setDebug() {
+    function setDebug(): static
+    {
         $this->just_print = true;
+        return $this;
     }
 
     /** clear function
      *  clears whole varset
      */
-    function clear() {
+    function clear(): static
+    {
         $this->vars = [];
+        return $this;
     }
 
     /** Returns true, is the varset do not contain any variable */
-    function isEmpty() {
-        return count($this->vars) < 1;
+    public function isEmpty(): bool
+    {
+        return empty($this->vars);
     }
 
     /** get variable value
      *
      * @param  string  $varname
      */
-    function get(string $varname) {
+    function get(string $varname): string|false
+    {
         $cv = $this->vars[$varname];
         return $cv ? $cv->getValue() : false;
     }
@@ -173,7 +178,8 @@ class Cvarset {
      * @param string $value
      * @param bool   $iskey
      */
-    function add($varname, $type="text", $value="", $iskey=false) {
+    function add($varname, $type="text", $value="", $iskey=false): void
+    {
         $this->vars[$varname]= new Cvariable($varname, $type, $value, $iskey);
     }
 
@@ -182,7 +188,8 @@ class Cvarset {
      * @param string[] $arr
      * @param string   $type
      */
-    function addglobals(array $arr, $type="quoted") {
+    function addglobals(array $arr, $type="quoted"): void
+    {
         foreach ( $arr as $varname ) {
             $this->vars[$varname]= new Cvariable($varname, $type, $GLOBALS[$varname]);
         }
@@ -194,7 +201,8 @@ class Cvarset {
      * @param string $type - integer | number | unpacked | quoted | null | float | date | text
      * @param string $value
      */
-    function addkey($varname, $type="text", $value="") {
+    function addkey($varname, $type="text", $value=""): void
+    {
         $this->vars[$varname] = new Cvariable($varname, $type, $value, true);
     }
 
@@ -202,7 +210,8 @@ class Cvarset {
      *  remove variable from varset
      * @param string $varname
      */
-    function remove($varname) {
+    function remove($varname): void
+    {
         unset ($this->vars[$varname]);
     }
 
@@ -211,7 +220,8 @@ class Cvarset {
      * @param string $value
      * @param string $type - integer | number | unpacked | quoted | null | float | date | text
      */
-    function set($varname, $value, $type="") {
+    function set($varname, $value, $type=""): void
+    {
         if ( $type=="" ) {
             $v    = $this->vars[$varname];
             $type = $v->type;
@@ -242,7 +252,8 @@ class Cvarset {
      *  set variables values due to array
      * @param array $arr
      */
-    function setFromArray($arr) {
+    function setFromArray($arr): void
+    {
         foreach ( array_keys($this->vars) as $varname ) {
             $this->set($varname, $arr[$varname]);
         }
@@ -252,7 +263,8 @@ class Cvarset {
      *  Fills varset with data grabbed from database ($db->record())
      * @param $record
      */
-    function resetFromRecord($record) {
+    function resetFromRecord($record): void
+    {
         $this->clear();
         foreach ( $record as $name => $value ) {
             if ( !ctype_digit((string)$name) ) {
@@ -266,7 +278,8 @@ class Cvarset {
      * @param string[] $text_fields
      * @param string[] $num_fields
      */
-    function addArray(array $text_fields, array $num_fields=[]) {
+    function addArray(array $text_fields, array $num_fields=[]): void
+    {
         foreach ($text_fields as $name) {
             $this->add($name, "text");
         }
@@ -277,25 +290,35 @@ class Cvarset {
 
     /** _doQuery function
      *  Private function: executes qiven query)
+     *
      * @param $SQL
      * @param $nohalt     'nohalt' - do not halt on database error
-     * @return bool|int   0|false on error, int on success. If INSERT, returns last inserted id or PHP_INT_MAX if not provided
+     *
+     * @return bool|int   false on error, int on success.
+     *                    If INSERT - returns last inserted id or PHP_INT_MAX if not provided
+     *                    If SELECT - returns number of returned rows
+     *
      */
-    function _doQuery($SQL, $nohalt=null) {
+    function _doQuery($SQL, $nohalt=null): bool|int
+    {
         if ($this->just_print) {
             huhl($SQL);
             return true;
         }
-        $this->last_used_db = getDB();
+        $db = getDB();
         if ( $nohalt==='nohalt' ) {
-            $retval = $this->last_used_db->query_halt($SQL,'no');
+            $retval = $db->query_halt($SQL,'no');
         } else {
-            $retval = $this->last_used_db->query($SQL);
+            $retval = $db->query($SQL);
         }
-        if ($retval && mb_stripos(' '.$SQL, 'INSERT')) {
-            $retval = $this->last_used_db->last_insert_id() ?: PHP_INT_MAX;
+        if ($retval) {
+            if (str_starts_with($SQL, 'INSERT')) {
+                $retval = $db->last_insert_id() ?: PHP_INT_MAX;
+            } elseif (str_starts_with($SQL, 'SELECT')) {
+                $retval = $db->num_rows();   // this is quick - no DB roundtrip
+            }
         }
-        freeDB($this->last_used_db);
+        freeDB($db);
         return $retval;
     }
 
@@ -344,7 +367,8 @@ class Cvarset {
      * @param $tablename
      * @return string
      */
-    function makeINSERT($tablename) {
+    function makeINSERT($tablename): string
+    {
         return $this->_makeInsertReplace('INSERT', $tablename);
     }
 
@@ -353,7 +377,8 @@ class Cvarset {
      * @param $nohalt     'nohalt' - do not halt on database error
      * @return bool|int   0|false on error, int on success. If INSERT, returns last inserted id or PHP_INT_MAX if not provided
      */
-    function doInsert($tablename, $nohalt=null) {
+    function doInsert($tablename, $nohalt=null): bool|int
+    {
         return $this->_doQuery($this->makeINSERT($tablename), $nohalt);
     }
 
@@ -362,7 +387,8 @@ class Cvarset {
      * @param $tablename
      * @return string
      */
-    function makeUPDATE($tablename = "") {
+    function makeUPDATE($tablename = ""): string
+    {
         $updates = [];
         foreach ( $this->vars as  $varname => $variable ) {
             if (!$variable->iskey) {
@@ -381,19 +407,18 @@ class Cvarset {
 
 
     /** before doUpdate you can call saveHistory() to store changes */
-    function saveHistory($tablename, $id): string {
-        $this->_doQuery($this->makeSELECT($tablename));
-        if ($this->last_used_db->num_rows() !== 1) {
+    private function saveHistory($tablename, $id): string {
+        $data = DB_AA::select([], $this->makeSELECT($tablename));
+        if (count($data) !== 1) {
             // Error: there are several rows with the same key variables
-            return "Error using doUpdate: " . $this->last_used_db->num_rows(). " rows match the query";
+            return "Error using doUpdate: ".count($data)." rows match the query";
         }
-        $this->last_used_db->next_record();
-        $data = $this->last_used_db->record();
+        $data = $data[0]; // we have only one row
         $packed = AA_Metabase::getPacked($tablename);
         foreach ($packed as $col) {
            $data[$col] = unpack_id($data[$col]);
         }
-        \AA\Util\ChangesMonitor::singleton()->addHistory(\AA\Util\ChangesMonitor::getDiff($id, $data, $this->getArray()));
+        ChangesMonitor::singleton()->addHistory(ChangesMonitor::getDiff($id, $data, $this->getArray()));
         return '';
     }
 
@@ -401,9 +426,9 @@ class Cvarset {
      * @param        $tablename
      * @param        $nohalt
      * @param string $history_key 16 character long resource id - if presented, history is written to database
-     * @return int|void
      */
-    function doUpdate($tablename, $nohalt=null, $history_key='') {
+    function doUpdate($tablename, $nohalt=null, $history_key=''): bool|int
+    {
         if ($history_key) {
             $this->saveHistory($tablename, substr($history_key,0,32));
         }
@@ -449,7 +474,8 @@ class Cvarset {
      * @param $tablename
      * @return string
      */
-    function makeSELECT($tablename) {
+    function makeSELECT($tablename): string
+    {
         $where = $this->makeWHERE();
         return ($where ? "SELECT * FROM `$tablename` WHERE ".$where :
                          "SELECT * FROM `$tablename`");
@@ -460,7 +486,8 @@ class Cvarset {
      * @param $where
      * @return string
      */
-    function makeDELETE($tablename, $where=null) {
+    function makeDELETE($tablename, $where=null): string
+    {
         if ( is_null($where) ) {
             $where = $this->makeWHERE();
         }
@@ -490,7 +517,8 @@ class Cvarset {
      * @param $tablename
      * @return string
      */
-    function makeWHERE($tablename="") {
+    function makeWHERE($tablename=""): string
+    {
         $where = "";
         foreach ( $this->vars as $varname => $variable) {
             if ($variable->iskey) {
@@ -513,20 +541,17 @@ class Cvarset {
      * @param $tablename
      * @return string
      */
-    function makeINSERTorUPDATE($tablename) {
-        $this->_doQuery($this->makeSELECT($tablename));
-        return match ($this->last_used_db->num_rows()) {
+    function makeINSERTorUPDATE($tablename): string
+    {
+        $where = $this->makeWHERE();
+        $rows = DB_AA::select1('cnt', "SELECT count(*) as cnt FROM `$tablename`", $where ? " WHERE $where" : "");
+
+        return match ($rows) {
             0       => $this->makeINSERT($tablename),
             1       => $this->makeUPDATE($tablename),
                        // Error: there are several rows with the same key variables
-            default => "Error using makeINSERTorUPDATE: ".$this->last_used_db->num_rows()." rows match the query",
+            default => "Error using makeINSERTorUPDATE: $rows rows match the query",
         };
-    }
-
-    /**
-     */
-    public function last_insert_id(): string|false {
-        return $this->last_used_db->last_insert_id();
     }
 
     // Static //

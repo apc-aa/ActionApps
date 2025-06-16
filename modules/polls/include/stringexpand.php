@@ -64,9 +64,9 @@ class AA_Stringexpand_Poll_Share extends AA_Stringexpand_Nevercache {
 
     /** expand function
      * @param $max - maximum the votes for the answer could reach, default is 100
-     * @return float|int
      */
-    function expand($max='') {
+    function expand($max=''): string
+    {
         $poll     = AA_Polls::getPoll($this->item->getVal('poll_id'));
         $sum      = $poll->getVotesSum();
         $quotient = $max ?: 100;
@@ -79,7 +79,8 @@ class AA_Stringexpand_Poll_Share extends AA_Stringexpand_Nevercache {
 class AA_Stringexpand_Poll_Sum extends AA_Stringexpand_Nevercache {
 
     /** expand function - number of all votes in this poll */
-    function expand() {
+    function expand(): string
+    {
         return AA_Polls::getPoll($this->item->getVal('poll_id'))->getVotesSum();
     }
 }

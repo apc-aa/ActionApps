@@ -31,7 +31,9 @@ https://www.apc.org/
 /** For Links_QueryZids() - called also from /misc/toexecute.php */
 
 use AA\IO\DB\DB_AA;
+use AA\Later\LaterInterface;
 use AA\Later\Toexecute;
+use AA\Util\SingletonTrait;
 
 require_once __DIR__ . "/../../modules/links/linksearch.php";
 
@@ -59,10 +61,11 @@ class catassignment {
 
 /**
  * cattree class - handles tree of categories
+ * @method static singleton()
  */
 class cattree {
 
-    use \AA\Util\SingletonTrait;
+    use SingletonTrait;
 
     var $treeStart;      // where to start - category root
     var $go_to_empty;    // boolean - should we go to the empty subcategories?
@@ -92,7 +95,8 @@ class cattree {
      * @param object $a ,$b - instances of catassignment class
      * @return int
      */
-    function cmp_assignments( $a, $b ) {
+    function cmp_assignments( $a, $b ): int
+    {
         $aname = $this->catnames[$a->getTo()];
         $bname = $this->catnames[$b->getTo()];
         $apri  = (integer) Links_GlobalCatPriority($aname);
@@ -105,11 +109,13 @@ class cattree {
     }
 
     /** Sort categories assignments by name - general categories goes at the end*/
-    function sort_categories() {
+    function sort_categories(): void
+    {
         usort($this->assignments, [$this, "cmp_assignments"]);
     }
 
-    function update() {
+    function update(): void
+    {
         $db = getDB();
         unset( $this->catnames );
         unset( $this->catpaths );
@@ -152,7 +158,8 @@ class cattree {
     }
 
     /** Not filled yet? ==> Fill it from database  */
-    function updateIfNeeded() {
+    function updateIfNeeded(): void
+    {
         if (!isset($this->catnames) || !is_array($this->catnames)) {
             $this->update();
         }
@@ -162,7 +169,8 @@ class cattree {
     /** Search category $parenid, if there exist subcategory of name $name
     *  @returns int|false - id of found category or false
     */
-    function subcatExist($parentid, $name) {
+    function subcatExist($parentid, $name): false|int
+    {
         $this->updateIfNeeded();
         if ( isset($this->ancesors_idx) && is_array($this->ancesors_idx[$parentid]) ) {
             foreach ( $this->ancesors_idx[$parentid] as $idx ) {
@@ -177,7 +185,8 @@ class cattree {
     }
 
     /** Exist the categoery in the cattree? */
-    function exists($cid) {
+    function exists($cid): bool
+    {
         $this->updateIfNeeded();
         return !is_null($this->catnames[$cid]);
     }
@@ -220,7 +229,8 @@ class cattree {
     }
 
     /** Returs category id of parent category */
-    function getParent($cid) {
+    function getParent($cid): false|string
+    {
         $this->updateIfNeeded();
         $ids = explode(",", $this->getPath($cid));
         if ( count($ids) < 2 ) {
@@ -242,7 +252,8 @@ class cattree {
     //   url: ""      - do not make links on categories
     //        url     - make links to categories except the last one
     //   whole - if set, make links to all categories
-    function getNamePath($cid, $skip=0, $separator = " > ", $url=false, $whole=false, $target="") {
+    function getNamePath($cid, $skip=0, $separator = " > ", $url=false, $whole=false, $target=""): string
+    {
         $this->updateIfNeeded();
         $path         = $this->getPath($cid);
         $target_atrib = (($target != "") ? " target=\"$target\" " : "");
@@ -285,7 +296,8 @@ class cattree {
     * @param string $toId (see fromId, Links_GetTreeDefinition())
     * @param string special string identifying if category $base{n} is base categ.
     */
-    function printTreeData($treeStart=-1, $select_depth=1, $print_general=false) {
+    function printTreeData($treeStart=-1, $select_depth=1, $print_general=false): void
+    {
         $this->updateIfNeeded();
         if ( $treeStart == -1 ) {
             $treeStart = $this->treeStart;
@@ -376,7 +388,8 @@ class cattree {
      * @param int $cat_id_field hidden form field which stores selected category
      * @return string
      */
-    function goCategory($cid, $pathDiv="", $cat_id_fld="", $form="") {
+    function goCategory($cid, $pathDiv="", $cat_id_fld="", $form=""): string
+    {
         return getFrmJavascript("GoToCategoryID('$cid', eval('document.$form.tree'), '$pathDiv', '$cat_id_fld')\n", true);
     }
 
@@ -394,7 +407,8 @@ class cattree {
      * @param string $in_form
      * @return string selectbox prepared to print
      */
-    function getFrmTree($onWhat, $cat2show = -1, $pathDiv = "", $cat_id_fld = "", $form = "", $width = 250, $rows = 8, $in_form = "") {
+    function getFrmTree($onWhat, $cat2show = -1, $pathDiv = "", $cat_id_fld = "", $form = "", $width = 250, $rows = 8, $in_form = ""): string
+    {
         $this->updateIfNeeded();
         if ( $cat2show == -1 ) {
             $cat2show = $this->treeStart;
@@ -442,9 +456,15 @@ class cattree {
     * @return string selectbox prepared to print
     */
     function getFrmSubCatList($withState, $onWhat, $cat2show, $width=250, $name='tree', $rows=8 ): string {
-        if (!$name)   $name='tree';
-        if (!$width)  $width=250;
-        if (!$rows)   $rows=8;
+        if (!$name) {
+            $name = 'tree';
+        }
+        if (!$width) {
+            $width = 250;
+        }
+        if (!$rows) {
+            $rows = 8;
+        }
         $ret = "<select name=\"$name\" size=\"$rows\" $onWhat style=\"width:{$width}px\">";
         if (isset($this->ancesors_idx) AND is_array($this->ancesors_idx[$cat2show])) {
             foreach ($this->ancesors_idx[$cat2show] as $idx) {  // start position
@@ -484,7 +504,8 @@ class cattree {
     }
 
     /** Counts links in all categories */
-    function count_all_links() {
+    function count_all_links(): void
+    {
         $this->updateIfNeeded();
         $toexecute   = new Toexecute;
         $linkcounter = new linkcounter;
@@ -501,7 +522,7 @@ class cattree {
 }
 
 /** class used just for counting of links */
-class linkcounter implements \AA\Later\LaterInterface {
+class linkcounter implements LaterInterface {
 
     /** constructor */
     function __construct() {}
@@ -527,7 +548,8 @@ class linkcounter implements \AA\Later\LaterInterface {
      *  @return string - message about execution to be logged
      *  @see \AA\Later\LaterInterface
      */
-    public function toexecutelater($params= []) {
+    public function toexecutelater($params= []): string
+    {
         [$cpath] = $params;
         return $this->get_link_count($cpath, true);
     }
@@ -548,7 +570,8 @@ class bitfield {
     var $length = 0;
 
     /** Sets $pos-th bit to true or false. Positions are counted from 0 */
-    function setbit($pos, $val=true) {
+    function setbit($pos, $val=true): void
+    {
         if ( $pos >= strlen($this->field) ) {
             $this->field  .= str_repeat("0",100);   // we add always 100 characters (it is quicker, than go with step of 1)
         }

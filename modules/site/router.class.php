@@ -25,6 +25,7 @@ https://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+use AA\Util\Langs;
 
 
 /** AA_Router - base class for all routers
@@ -79,7 +80,8 @@ class AA_Router {
     }
 
     /** @return AA_Router */
-    public static function singleton($type, $slices=null, $home='', $web_languages=null) {
+    public static function singleton($type, $slices=null, $home='', $web_languages=null): AA_Router
+    {
         if (!isset(self::$_instance)) {
             self::$_instance = new $type($slices, $home);
         }
@@ -89,7 +91,8 @@ class AA_Router {
         return self::$_instance;
     }
 
-    protected function setWebLangs(array $web_languages) {
+    protected function setWebLangs(array $web_languages): void
+    {
         $this->web_languages = $web_languages;
     }
 
@@ -104,19 +107,20 @@ class AA_Router {
      */
     static function getState($apc_state): string { return '';  }
 
-    function go2url($query_string) {
+    function go2url($query_string): string
+    {
         global $apc_state;
         return static::getState(static::newState($apc_state, $query_string));
     }
 
     // should be refined in subclass
-    function xid($param=null, $url=null)   { return ''; }
+    function xid($param=null, $url=null): string { return ''; }
 
     // should be refined in subclass
-    function xuser($param='') { return ''; }
+    function xuser($param=''): string { return ''; }
 
     // should be refined in subclass
-    function parse($url='') { return []; }
+    function parse($url=''): array { return []; }
 }
 
 
@@ -174,7 +178,8 @@ class AA_Router_Seo extends AA_Router {
      * @param $url
      * @return array
      */
-    function parse($url='') {
+    function parse($url=''): array
+    {
         global $auth;
 
         $this->apc          = self::parseApc($url, $this->home, $this->web_languages);
@@ -254,7 +259,7 @@ class AA_Router_Seo extends AA_Router {
     /** static function - calling from outside is not necessary, now */
     static function parseApc($apc, $home='', $langs= []) {
         if (!$home) {
-            $home = '/'. \AA\Util\Langs::currentLang();
+            $home = '/'. Langs::currentLang();
         }
         // manage links like example.org/?filter=22
         if (str_starts_with($apc, '/?')) {  // maybe also "#"
@@ -448,7 +453,8 @@ class AA_Router_Seo extends AA_Router {
      *
      * @return string
      */
-    function xid($param=null, $url=null) {
+    function xid($param=null, $url=null): string
+    {
 
         $apc = empty($url) ? $this->apc : self::parseApc($url, $this->home, $this->web_languages);
 
@@ -524,7 +530,7 @@ class AA_Router_Seo extends AA_Router {
         $max = 0;
         foreach($arr as $key => $val) {
             $prefix_len = strlen($prefix);
-            if ( !empty($val) && substr($key,0,$prefix_len) == $prefix ) {
+            if ( !empty($val) && strpos($key, $prefix) === 0) {
                 $max = (int)max((int)substr($key,$prefix_len), $max);
             }
         }
@@ -552,7 +558,8 @@ class AA_Stringexpand_Xid extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // Cached inside the router itself
     /** expand function */
-    function expand($param='', $url='') {
+    function expand($param='', $url=''): string
+    {
         $router_class = $GLOBALS['apc_state']['router'];
         if (empty($router_class)) {
             return '<div class="aa-error">Err in {xid} - router not found - {xid} is designed for site modules</div>';
@@ -575,8 +582,9 @@ class AA_Stringexpand_Xid extends AA_Stringexpand_Nevercache {
 class AA_Stringexpand_Xseo extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     /** expand function */
-    function expand($level='') {
-        return $GLOBALS['apc_state']['xseo'.(ctype_digit((string)$level) ? (int)$level : '' )];
+    function expand($level=''): string
+    {
+        return $GLOBALS['apc_state']['xseo'.(ctype_digit((string)$level) ? $level : '' )];
     }
 }
 

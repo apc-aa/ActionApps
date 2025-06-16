@@ -28,7 +28,9 @@
 */
 
 use AA\IO\DB\DB_AA;
+use AA\Util\Hitcounter;
 use AA\Util\Langs;
+use AA\Util\SingletonTrait;
 use AA\Util\Txt;
 
 /** Classes for manipulating views,
@@ -76,15 +78,16 @@ class AA_View {
     }
 
     /** Checks, if view exists and the slice is not deleted */
-    function isValid() {
+    function isValid(): bool
+    {
         return $this->load() && !$this->f('deleted') && !$this->isDisabled();
     }
 
     /** f function
      * @param $field
-     * @return string
      */
-    function f( $field ) {
+    function f( $field ): ?string
+    {
         if ( !$field ) {
             return '';
         }
@@ -101,7 +104,8 @@ class AA_View {
     /**
      * @return string - long id of the slice of this view
      */
-    function getSliceId() {
+    function getSliceId(): string
+    {
         return unpack_id($this->f('slice_id'));
     }
 
@@ -154,7 +158,8 @@ class AA_View {
     /** Sets ['banners']
      * @param $banner_param
      */
-    function setBannerParam($banner_param) {
+    function setBannerParam($banner_param): void
+    {
         $this->fields = array_merge( (array)$this->fields, $banner_param);
     }
 
@@ -164,7 +169,8 @@ class AA_View {
      * @param array $param_conds possibly redefinition of conds from url (cmd[]=c)
      * @return array conditions array
      */
-    public function getConds($param_conds= []) {
+    public function getConds($param_conds= []): array
+    {
         // If param_conds[0] = "OR" as set by ParseViewParameters then set valuejoin
         // used by ParseMultiSelectConds
 
@@ -187,7 +193,8 @@ class AA_View {
     /**
      * @return AA_Set of the view
      */
-    public function getSet() {
+    public function getSet(): AA_Set
+    {
         return new AA_Set([$this->getSliceId()], $this->getConds(), $this->getSort());
     }
 
@@ -199,7 +206,8 @@ class AA_View {
      * @param $val
      * @param $param
      */
-    protected function resolveCondsConflict(&$conds, $fld, $op, $val, $param) {
+    protected function resolveCondsConflict(&$conds, $fld, $op, $val, $param): void
+    {
         if ($fld && $op) {
             $conds[] = [
                 'operator' => $op,
@@ -254,7 +262,8 @@ class AA_View {
      * @param $selected_item
      * @return array
      */
-    function getViewFormat($selected_item='') {
+    function getViewFormat($selected_item=''): array
+    {
         $format                        = [];
         $format['group_by']            = $this->fields['group_by1'];
         $format['gb_header']           = $this->fields['gb_header'];
@@ -321,7 +330,8 @@ class AA_View {
      * @param $a
      * @return string
      */
-    function xml_serialize($t,$i,$ii,$a) {
+    function xml_serialize($t,$i,$ii,$a): string
+    {
         $f = $this->getViewInfo();
         return xml_serialize("view",$f,$i.$ii,$ii,"tname=\"$t\" ".$a);
     }
@@ -455,8 +465,8 @@ class AA_View {
 
                     // This is bizarre code, just incrementing the first item, left as it is
                     // but questioned on apc-aa-coders - mitra
-                    if ($command->getCommand() === 'x' && $zids->count() > 0) {
-                        \AA\Util\Hitcounter::hit($zids->slice(0));
+                    if ($command->getCommand() === 'x' && $zids->count()) {
+                        Hitcounter::hit($zids->slice(0));
                     }
                     break;
 
@@ -567,7 +577,8 @@ class AA_View {
      * @param $als
      * @return array
      */
-    public static function getAliasesFromUrl($als) {
+    public static function getAliasesFromUrl($als): array
+    {
         $ret = [];
         if (is_array($als)) {
             foreach ($als as $k => $v) {
@@ -583,7 +594,7 @@ class AA_View {
  */
 class AA_Views {
 
-    use \AA\Util\SingletonTrait;
+    use SingletonTrait;
 
     protected $a = [];
 
@@ -594,7 +605,8 @@ class AA_Views {
      * @param $a
      * @return string
      */
-    function xml_serialize($t,$i,$ii,$a) {
+    function xml_serialize($t,$i,$ii,$a): string
+    {
         return xml_serialize("views",$this->a,$i.$ii,$ii,"tname=\"$t\" ".$a);
     }
 
@@ -603,14 +615,15 @@ class AA_Views {
      * @return AA_View
      */
     static function getViewNumeric($vid) : AA_View {
-        return self::singleton()->_getView($vid);
+        return self::singleton()->_getView((int)$vid);
     }
 
     /** Main factory static method - allows numeric and named views. Do not create view for non existing/accessible views
      * @param int|string $vid
      * @return AA_View|null
      */
-    static function getView($vid) {
+    static function getView($vid): ?AA_View
+    {
         if (ctype_digit((string)$vid)) {
             $vid = (int)$vid;
         } elseif (AA::$site_id ) {
@@ -625,25 +638,28 @@ class AA_Views {
             return null;
         }
 
-        $view = self::singleton()->_getView($vid);
+        $view = self::singleton()->_getView((int)$vid);
         return $view->load() ? $view : null;  // if exists return
     }
 
     /**
-     * @param int $vid
-     * @param $field
+     * @param  int     $vid
+     * @param  string  $field
+     *
      * @return null
      */
-    static function getViewField($vid, $field) {
+    static function getViewField(int $vid, string $field): ?string
+    {
         /** @var AA_Views $views */
         return self::singleton()->_getView($vid)?->f($field);
     }
 
     /**
-     * @param int $vid
+     * @param  int  $vid
+     *
      * @return AA_View
      */
-    function _getView($vid) : AA_View {
+    function _getView(int $vid) : AA_View {
         if (!isset($this->a[$vid])) {
             $this->a[$vid] = new AA_View($vid);
         }
@@ -654,7 +670,8 @@ class AA_Views {
      * @param $slice_id
      * @return AA_View[]
      */
-    static function getSliceViews($slice_id) {
+    static function getSliceViews($slice_id): array
+    {
         $a = [];
         if ($slice_id) {
             $views = self::singleton();

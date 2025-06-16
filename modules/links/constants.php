@@ -30,6 +30,7 @@ https://www.apc.org/
 
 // make sure LINKS module specific constants are defined - should be defined in config.php
 use AA\Util\AbstractAliasgenerator;
+use AA\Util\Searchfields;
 
 defined('AA_LINKS_HELP_CATEGORY') || define('AA_LINKS_HELP_CATEGORY', '');
 defined('AA_LINKS_HELP_MAIN')     || define('AA_LINKS_HELP_MAIN', '');
@@ -50,7 +51,8 @@ const LINKS_NOT_BASE_CAT = 'n';
 /** List of fields, which will be listed in searchbar in Links Manager (search)
  *  (modules/links/index.php)
  */
-function GetLinkFields() {  // function - we need trnslate _m() on use (not at include time)
+function GetLinkFields(): Searchfields
+{  // function - we need trnslate _m() on use (not at include time)
     $searchfields = new AA\Util\Searchfields();
                    //   id                     $name,                        $field,                 operators='text', $table=false, $search_pri=false, $order_pri=false
     $searchfields->add('id'                  , _m('Id'),                    'links_links.id',                'numeric', false,          0,    0);
@@ -162,7 +164,8 @@ class AA_Aliasgenerator_Link extends AbstractAliasgenerator {
 /** List of fields, which will be listed in searchbar in Links Manager (search)
  * (modules/links/index.php)
  */
-function GetCategoryFields() {  // function - we need trnslate _m() on use (not at include time)
+function GetCategoryFields(): array
+{  // function - we need trnslate _m() on use (not at include time)
     return [
      'id'          => GetFieldDef( _m('Id'),          'links_categories.id',          'numeric', false,           10, 10),
      'name'        => GetFieldDef( _m('Name'),        'links_categories.name',        'text',    false,           20, 20),

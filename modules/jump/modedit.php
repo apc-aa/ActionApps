@@ -55,7 +55,7 @@ try {
     $cancel = InputVars::boolPOST('cancel');
     
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception) {}
+} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
 // create the $jumps array:
 $jumps = AA_Module::getModules('J');
@@ -74,7 +74,9 @@ $apage->setForm();
 $apage->printHead($err, $Msg);
 
 if ($update) {
-    if (!$jump_id) $jump_id = new_id ();
+    if (!$jump_id) {
+        $jump_id = new_id();
+    }
     $q_jump_id = xpack_id ($jump_id);
 
     $varset = new Cvarset();
@@ -149,7 +151,9 @@ if ($jump_id) {
 echo '<br>
 <form name=f action="'.StateUrl("modedit.php").'" method="post">
 <input type=hidden name="jump_id" value="'.$jump_id.'">';
-if ($edit) echo "<input type=hidden name='edit' value='1'>";
+if ($edit) {
+    echo "<input type=hidden name='edit' value='1'>";
+}
 FrmTabCaption(_m("Edit module"));
 echo '
      <tr><th>'._m("Module name").':</th>
@@ -163,11 +167,14 @@ echo '
      if ( is_array($g_modules) && count($g_modules) > 1 ) {
         foreach ($g_modules as $k => $v) {
             echo "<option value=\"". safe($k)."\"";
-            if ( $dest_id == $k ) echo " selected";
+            if ( $dest_id == $k ) {
+                echo " selected";
+            }
             echo ">". safe($v['name']);
         }
+     } else {
+         echo "<option>No module exists";
      }
-     else echo "<option>No module exists";
      echo "</select></td>
      </tr>
      <tr><th>"._m("Module ID").":</th><td>$jump_id</td></tr>";

@@ -36,7 +36,8 @@ require_once __DIR__ . "/../modules/alerts/util.php";
 /** ShowRefreshWizardJavaScript function
  *  Shows JavaScript which updates the Wizard frame, if it exists.
  */
-function ShowRefreshWizardJavaScript() {
+function ShowRefreshWizardJavaScript(): void
+{
     FrmJavascript( 'if (top.wizardFrame != null) top.wizardFrame.wizard_form.submit();' );
 }
 
@@ -46,7 +47,8 @@ function ShowRefreshWizardJavaScript() {
  * @param $viewID
  * @return array
  */
-function GetEmailTableView($viewID) {
+function GetEmailTableView($viewID): array
+{
     global $attrs_edit, $attrs_browse;
 
     if ($viewID === "email_edit") {
@@ -168,6 +170,7 @@ function GetEmailTableView($viewID) {
         ]
         ];
     }
+    return [];
 }
 /** GetEmailWhere function
  *
@@ -193,7 +196,8 @@ function GetEmailWhere(): string {
  * @param $varset
  * @noinspection PhpUnused
  */
-function EmailAfterInsert($varset) {
+function EmailAfterInsert($varset): void
+{
     ShowRefreshWizardJavaScript();
 }
 

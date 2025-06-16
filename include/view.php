@@ -42,46 +42,53 @@ require_once __DIR__."/mlx.php";
  *  one command
  */
 class ViewCommand {
-    var $command;      /** type of the command (like x, c, d, v, ...) */
-    var $parameters;   /** command parameters */
+    private string $command;      /** type of the command (like x, c, d, v, ...) */
+    private array $parameters;   /** command parameters */
 
-    /** ViewCommand function
-     *  constructor
-     *  @param $command string - the letter indicating the command (x, c, d, v, ...)
+    /**
+     *  @param $command    string - the letter indicating the command (x, c, d, v, ...)
      *  @param $parameters string[] of command parameters
      */
-    function __construct($command, $parameters) {
+    function __construct(string $command, array $parameters) {
         $this->command    = $command;
         $this->parameters = $parameters;
     }
 
     /** addParameters function
+     *
      * @param $parameters
      */
-    function addParameters($parameters) {
+    public function addParameters($parameters): void
+    {
         $this->parameters = array_merge($this->parameters, $parameters);
     }
 
     /** getCommand function
      * @return string
      */
-    function getCommand() {
+    public function getCommand(): string
+    {
         return $this->command;
     }
 
     /** getParameter function
-     * @param $index
-     * @return string
+     *
+     * @param  int  $index
+     *
      */
-    function getParameter($index) {
+    public function getParameter(int $index): ?string
+    {
         return $this->parameters[$index];
     }
 
     /** getParameterArray function
-     * @param $offset
+     *
+     * @param  int  $offset
+     *
      * @return string[]
      */
-    function getParameterArray($offset=0) {
+    public function getParameterArray(int $offset=0): array
+    {
         return array_slice($this->parameters, $offset);
     }
 }
@@ -90,7 +97,7 @@ class ViewCommand {
 class AA_View_Commands {
 
     /** @var ViewCommand[] */
-    var $commands = [];     /** array of objects of ViewCommand class */
+    private array $commands = [];     /** array of objects of ViewCommand class */
 
     /** AA_View_Commands function
      *  constructor - calls parseCommand()
@@ -105,42 +112,45 @@ class AA_View_Commands {
      *  @return ViewCommand command given by command letter (say 'd')
      * @param $command
      */
-    function get($command) {
+    function get($command): ?ViewCommand
+    {
         return $this->commands[$command];
     }
 
     /** count function
      *  @return int number of commands in the set
      */
-    function count(): int {
+    public function count(): int {
         return count($this->commands);
     }
     /** reset function
-     * @return ViewCommand
      */
-    function reset() {
+    public function reset(): ViewCommand|false
+    {
         return reset($this->commands);
     }
     /** next function
-     * @return ViewCommand
      */
-    function next() {
+    public function next(): ViewCommand|false
+    {
         return next($this->commands);
     }
     /** current function
-     * @return ViewCommand
      */
-    function current() {
+    function current(): ViewCommand|false
+    {
         return current($this->commands);
     }
 
 
     /** addCommand function
      *  add new command to the command set
-     *  @param $command string - the letter indicating the command (x, c, d, v, ...)
+     *
+     *  @param $command    string - the letter indicating the command (x, c, d, v, ...)
      *  @param $parameters array of command patameters
      */
-    function addCommand($command, $parameters) {
+    function addCommand(string $command, array $parameters): void
+    {
         // only one command of specific type must be present
         if ( isset($this->commands[$command]) ) {
             // if the command is already set, then the parameters are appended
@@ -160,7 +170,8 @@ class AA_View_Commands {
      * @param array $als array of aliases used to expand inside cmd
      *                   (als[] obviously comes from url, as well)
      */
-    function parseCommand($cmd, $als=false) {
+    function parseCommand($cmd, $als=false): void
+    {
 
         AA::$debug&2 && AA::$dbg->log("<br>ParseCommand - cmd:", $cmd);
 
@@ -450,7 +461,7 @@ class AA_Showview {
                     $bins   = AA_BIN_ACTIVE | ($slice->isExpiredContentAllowed() ? AA_BIN_EXPIRED : 0) | ($slice->isPendingContentAllowed() ? AA_BIN_PENDING : 0);
                     $zids  = QueryZids([], '', '', $bins, 0, $zids);
                     AA::$debug&8 && AA::$dbg->log("view type - full - cleanzids",$zids);
-                    if ( $zids->count() > 0 ) {
+                    if ( $zids->count() ) {
                         //mlx stuff
                         if ($mlxslice = MLXSlice($slice)) {  //mlx stuff, display the item's translation
                             $mlx = ($this->_view_param["mlx"]?: $this->_view_param["MLX"]);
@@ -549,11 +560,10 @@ class AA_Showview {
                 // Note this zids2 is always packed ids, so lost tag information
                 AA::$debug&64 && AA::$dbg->log("getViewOutput retrieved ". $zids2->count()." IDS");
 
-                if (isset($zids) && ($zids->onetype() === "t")) {
-                    $zids2 = $zids2->retag($zids);
-                }
-
-                AA::$debug&64 && AA::$dbg->log("getViewOutput: Filtered ids=",$zids2);
+                // I do not like tagged ids idea so I want to remove it. The following code in retag function was always broken, so now removed, HM 2025
+                // if (isset($zids) && ($zids->onetype() === "t")) {
+                //     $zids2 = $zids2->retag($zids);
+                // }
 
                 $format = $view->getViewFormat($selected_item);
                 $format['calendar_month'] = $month;

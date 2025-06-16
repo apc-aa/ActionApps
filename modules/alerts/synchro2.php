@@ -40,7 +40,8 @@ require_once __DIR__ . "/../../modules/alerts/util.php";
  * @param string $collectionid - 5 letters id of collection
  * @return array
  */
-function get_alerts_specific_fields($collectionid) {
+function get_alerts_specific_fields($collectionid): array
+{
     /* Fields to be added into the Reader Management Slice.
        Field ID consists of "alerts1/2/3/4", dots, and collection ID, e.g. "alerts1.....154".
     */
@@ -94,7 +95,8 @@ function get_alerts_specific_fields($collectionid) {
  *   @param string $collectionid 5 letters logn collection id
  *   @param string $slice_id	long ID of Reader Management Slice
  *	 @return string Message about the number of field added. */
-function add_fields_2_slice($collectionid, $slice_id) {
+function add_fields_2_slice($collectionid, $slice_id): string
+{
     $alerts_specific_fields = get_alerts_specific_fields ($collectionid);
 
     // find current Alerts Name
@@ -202,7 +204,8 @@ function delete_fields_from_slice($collectionid, $slice_id) {
 
 /** Returns array (unpacked_slice_id => name) of slices which contain
 *   all fields listed in $required_fields_in_reader_management. */
-function getReaderManagementSlices () {
+function getReaderManagementSlices (): array
+{
     global $slice_id, $collectionprop;
 
     $slices = GetUserSlices();

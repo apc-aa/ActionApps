@@ -33,9 +33,10 @@ require_once __DIR__ . "/../../modules/links/util.php";      // module specific 
 
 try {
     $start = InputVars::intGET('start') ?: 1;
-} catch (Exception) {}
+} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
-function PrintCategory( $id, $name, $base, $state, $parent, $level ) {
+function PrintCategory( $id, $name, $base, $state, $parent, $level ): void
+{
     echo "<br>";
     while ( $level-- ) {
         echo '.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';

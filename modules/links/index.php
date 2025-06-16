@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 // used in init_page.php script to include config.php from the right directory
 
+use AA\Managed;
 use AA\Manager;
 use AA\Manageraction\Links_Add2Cat;
 use AA\Manageraction\Links_Check;
@@ -72,7 +73,7 @@ try {
     $cancel = InputVars::boolPOST('cancel');
     
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception) {}
+} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
 
 // Check permissions for this page.
@@ -85,14 +86,16 @@ if ( !IfSlPerm(PS_LINKS_EDIT_LINKS) ) {
 }
 
 /** Special function used for setting of additional searchbar properties */
-function Links_UpdateStateFromFilter() {
+function Links_UpdateStateFromFilter(): void
+{
     global $r_state;
     $r_state["show_subtree"] = ((bool) $_REQUEST['show_subtree']);
     $r_state['cat_id']       = $_REQUEST['cat_id'];
     $r_state['cat_path']     = GetCategoryPath( $r_state['cat_id'] );
 }
 
-function Links_CountLinkInBins($cat_path) {
+function Links_CountLinkInBins($cat_path): array
+{
     $db = getDB();
     // unasigned
     $SQL = 'SELECT count(DISTINCT links_links.id) as count FROM links_links
@@ -251,7 +254,7 @@ if ( $change_id || $r_state["module_id"] != $module_id) {
 
 $manager_id = 'links'. $module_id;  // no special meaning - just manager id
 
-$manager = new Manager($manager_id, (new \AA\Managed())->setSettings($manager_settings)->setTitle( _m('ActionApps - Links Manager')));
+$manager = new Manager($manager_id, (new Managed())->setSettings($manager_settings)->setTitle( _m('ActionApps - Links Manager')));
 $manager->performActions();
 $manager->printHtmlPageBegin();  // html, head, css, title, javascripts
 

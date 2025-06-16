@@ -26,6 +26,7 @@ https://www.apc.org/
 use AA\IO\DB\DB_AA;
 use AA\Optimize\AbstractOptimize;
 use AA\Optimize\RestoreBckTables;
+use AA\Util\ReportTrait;
 
 
 /** FILL SOME ACCESS CODE HERE !!!
@@ -129,9 +130,10 @@ if ( strlen($_GET['acccode'])<10 || $_GET['acccode'] != constant('ACCESS_CODE') 
 //require_once __DIR__."/update.optimize.class.php";
 
 class AA_SQL_Updater {
-    use \AA\Util\ReportTrait;
+    use ReportTrait;
 
-    function test() {
+    function test(): bool
+    {
         $optimizers = $this->getOptimizers();
         $msg        = '<table>';
         $result     = true;
@@ -156,7 +158,8 @@ class AA_SQL_Updater {
         return true;
     }
 
-    function update() {
+    function update(): bool
+    {
         $optimizers = $this->getOptimizers();
         $msg        = '<table>';
         $result     = true;

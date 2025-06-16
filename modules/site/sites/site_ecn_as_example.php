@@ -17,6 +17,7 @@ function CheckS( $s, $w ) {
     case 'z': return ($s && strpos( ' zmktas', $s )) ? $s : 'z';
     case 'n': return ($s && strpos( ' NFPIJV', $s )) ? $s : 'N';
   }
+  return false;
 }
 
 function CheckF( $f, $w ) {
@@ -33,7 +34,8 @@ function CheckR( $r, $w ) {
   }
 }
 
-function CheckP( $p ) {
+function CheckP( $p ): int
+{
   return ((integer)$p>0) ? (integer)$p : 1;
 }
 
@@ -41,7 +43,8 @@ function CheckT( $t ): string {
   return '-';
 }
 
-function CheckX( $x ) {
+function CheckX( $x ): int|string
+{
   return ((integer)$x>0) ? (integer)$x : '-';
 }
 
@@ -91,37 +94,38 @@ if ( !$apc ) {
     if ( $db->next_record() ) {
       $apc = $db->f('text');
       // pomocna promena, ktera nam rekne, ze jde o staticky text a ne zpravu
-      $texty = ( unpack_id($db->f('slice_id')) == '21c8416923d4b6c58abc7ed664651802' );  // Ecn - texty
+      $texty = ( unpack_id($db->f('slice_id')) === '21c8416923d4b6c58abc7ed664651802' );  // Ecn - texty
     }
     $apc .= substr('zzvx--',-( 6-strlen($apc) ));
   }
-  elseif ( IsInDomain('zpravodajstvi.ecn.cz') ) $apc = 'zzvx--';
-  elseif ( IsInDomain('enviro.ecn.cz') ) $apc = 'zzzx--';
-  elseif ( IsInDomain('soc.ecn.cz') ) $apc = 'zzsx--';
-  elseif ( IsInDomain('lprava.ecn.cz') ) $apc = 'zzlx--';
-  elseif ( IsInDomain('kultura.ecn.cz') ) $apc = 'zzkx--';
-  elseif ( IsInDomain('gender.ecn.cz') ) $apc = 'zzgx--';
-  elseif ( IsInDomain('regiony.ecn.cz') ) $apc = 'zzrx--';
-  elseif ( IsInDomain('internet.ecn.cz') ) $apc = 'zzix--';
-  elseif ( IsInDomain('econnect.ecn.cz') ) $apc = 'e31x1--';
-  elseif ( IsInDomain('nno.ecn.cz') ) $apc = 'nN1x--';
-  elseif ( IsInDomain('fundraising.ecn.cz') ) $apc = 'nF1x--';
-  elseif ( IsInDomain('granty.ecn.cz') ) $apc = 'nF2x--';
-  elseif ( IsInDomain('prace.ecn.cz') ) $apc = 'nJ1x--';
-  elseif ( IsInDomain('joblist.ecn.cz') ) $apc = 'nJ1x--';
-  elseif ( IsInDomain('legislativa.ecn.cz') ) $apc = 'nP1x--';
-  elseif ( IsInDomain('kauzy.ecn.cz') ) $apc = 'nP2x1--';
-  elseif ( IsInDomain('podpora.ecn.cz') ) $apc = 'e61x1-73165';
-  elseif ( IsInDomain('sluzby.ecn.cz') ) $apc = 'e71x1--';
-  elseif ( IsInDomain('objednavka.ecn.cz') ) $apc = 'e81x1-88866';
-  elseif ( IsInDomain('cenik.ecn.cz') ) $apc = 'e91x1--';
-  else $apc = 'zzvx--';
+  elseif ( IsInDomain('zpravodajstvi.ecn.cz') ) { $apc = 'zzvx--';       }
+  elseif ( IsInDomain('enviro.ecn.cz') )        { $apc = 'zzzx--';       }
+  elseif ( IsInDomain('soc.ecn.cz') )           { $apc = 'zzsx--';       }
+  elseif ( IsInDomain('lprava.ecn.cz') )        { $apc = 'zzlx--';       }
+  elseif ( IsInDomain('kultura.ecn.cz') )       { $apc = 'zzkx--';       }
+  elseif ( IsInDomain('gender.ecn.cz') )        { $apc = 'zzgx--';       }
+  elseif ( IsInDomain('regiony.ecn.cz') )       { $apc = 'zzrx--';       }
+  elseif ( IsInDomain('internet.ecn.cz') )      { $apc = 'zzix--';       }
+  elseif ( IsInDomain('econnect.ecn.cz') )      { $apc = 'e31x1--';      }
+  elseif ( IsInDomain('nno.ecn.cz') )           { $apc = 'nN1x--';       }
+  elseif ( IsInDomain('fundraising.ecn.cz') )   { $apc = 'nF1x--';       }
+  elseif ( IsInDomain('granty.ecn.cz') )        { $apc = 'nF2x--';       }
+  elseif ( IsInDomain('prace.ecn.cz') )         { $apc = 'nJ1x--';       }
+  elseif ( IsInDomain('joblist.ecn.cz') )       { $apc = 'nJ1x--';       }
+  elseif ( IsInDomain('legislativa.ecn.cz') )   { $apc = 'nP1x--';       }
+  elseif ( IsInDomain('kauzy.ecn.cz') )         { $apc = 'nP2x1--';      }
+  elseif ( IsInDomain('podpora.ecn.cz') )       { $apc = 'e61x1-73165';  }
+  elseif ( IsInDomain('sluzby.ecn.cz') )        { $apc = 'e71x1--';      }
+  elseif ( IsInDomain('objednavka.ecn.cz') )    { $apc = 'e81x1-88866';  }
+  elseif ( IsInDomain('cenik.ecn.cz') )         { $apc = 'e91x1--';      }
+  else                                          { $apc = 'zzvx--';       }
 }
 
-if ( preg_match( "/^(\\w)(\\w)([a-zA-Z0-9_-])([a-zA-Z_]+)([-]|\\d+)([a-zA-Z_-])(\\d*)/", $apc, $vars ))
-  [$old_state,$old_w,$old_s,$old_f,$old_r,$old_p,$old_t,$old_x] = $vars;
- else
-  [$old_w,$old_s,$old_f,$old_r,$old_p,$old_t] = ['z', 'z', 'v', 'x', '-', '-'];
+if ( preg_match( "/^(\\w)(\\w)([a-zA-Z0-9_-])([a-zA-Z_]+)([-]|\\d+)([a-zA-Z_-])(\\d*)/", $apc, $vars )) {
+    [$old_state, $old_w, $old_s, $old_f, $old_r, $old_p, $old_t, $old_x] = $vars;
+} else {
+     [$old_w, $old_s, $old_f, $old_r, $old_p, $old_t] = ['z', 'z', 'v', 'x', '-', '-'];
+}
 
 if ( isset($w) ) {                          // w stands for WEB (like zpravodajstvi - z, econnect - e, nno - n
   switch($w) {
@@ -135,7 +139,9 @@ if ( isset($s) ) {                          // s stands for SUBWEB (like zpravy 
   $old_x='';
   $old_p='1';
   if ( $old_w !== 'z' ) // the format in zpravodajstvi stays the same
-    $old_f='';        //CheckS fills the right $f
+  {
+      $old_f = '';
+  }        //CheckS fills the right $f
 }
 
 if ( isset($f) ) {$old_f=$f; $old_x='';$old_p='1';}    // f stands for FILTER (like zivotni protredi - z, kultura - k) - used only on zpravodajsvi page yet
@@ -165,8 +171,9 @@ if ( isset($scrl) ) {      // page scroller
   $old_p = $$pagevar;
   $old_x='';
 }
-if ( $old_p <= 0 || $old_p === '-' )
-  $old_p = 1;
+if ( $old_p <= 0 || $old_p === '-' ) {
+    $old_p = 1;
+}
 
 // zaverecna kontrola a pripadna uprava promennych:
 $old_w = CheckW( $old_w );

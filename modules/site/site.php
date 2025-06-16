@@ -24,6 +24,7 @@ use AA\Cache\Cacheentry;
 use AA\Cache\CacheStr2find;
 use AA\Cache\PageCache;
 use AA\IO\DB\DB_AA;
+use AA\IO\OnPageChanger;
 use AA\Util\Langs;
 
 require_once __DIR__."/../../include/config.php";
@@ -81,7 +82,8 @@ function IsInDomain( $domain ): bool {
 /**
  * @param null $page
  */
-function Die404($page=null) {
+function Die404($page=null): void
+{
     function_exists('http_response_code') ? http_response_code(404) : header( ($_SERVER['SERVER_PROTOCOL'] ?: 'HTTP/1.0'). ' 404 Not Found');
     if (!is_null($page)) {
         header('Content-Type: '. (AA::$headers['type'] ?: 'text/html') .'; charset='.(AA::$headers['encoding'] ?: AA::$encoding ?: Langs::getCharset()));
@@ -246,7 +248,7 @@ $content_function = static function () use (&$module, &$apc_state) {
     return $module->getSite( $apc_state );
 };
 
-$page_changer = new \AA\IO\OnPageChanger($content_function);
+$page_changer = new OnPageChanger($content_function);
 $page_changer->checkAndProcessCall($is_valid === 'Valid');
 
 // --- if not EXITEed above, continue

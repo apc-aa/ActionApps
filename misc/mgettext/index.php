@@ -139,7 +139,9 @@ $show_create_related = false;
    The PHP files which you translate from language constants to mgettext will be placed there.*/
 $translateddir = $destdir."translated/";
 // should be the translations from language constants added to the mgettext language files?
-if (!$addlogs) $addlogs = false;
+if (!$addlogs) {
+    $addlogs = false;
+}
 
 /* $old_group, $old_lang_files and $log_files are used when creating log files
    which enable to include language constants into mgettext language files. */
@@ -180,7 +182,7 @@ if ($cmd === "create logs") {
 
 // ----------------------------------------------------------------------------
 
-function update_language_files($aadir, $destdir)
+function update_language_files($aadir, $destdir): void
 {
     global $update, $lang_groups, $addlogs, $lang_list, $file_type;
     //echo $aadir." ".$destdir;    @mkdir ($destdir, 0777);
@@ -217,7 +219,7 @@ function update_language_files($aadir, $destdir)
 
 // ----------------------------------------------------------------------------
 
-function translate_aa_files($aadir, $dstdir)
+function translate_aa_files($aadir, $dstdir): void
 {
     global $translate_dirlist, $translate_lang_file;
     @mkdir($dstdir,0777);
@@ -234,7 +236,8 @@ function translate_aa_files($aadir, $dstdir)
 // ----------------------------------------------------------------------------
 
 /// Adds slash at the end of a directory name if it is not yet there.
-function endslash(&$s) {
+function endslash(&$s): void
+{
     if (strlen($s) && !str_ends_with($s, "/")) {
         $s .= "/";
     }
@@ -263,9 +266,9 @@ echo '
 </td><td>
     <p>This script creates and updates mini-gettext language files. ';
 
-if ($show_create_related)
-    echo 'It also allows to replace language constants to calls of the
-    _m() function.';
+if ($show_create_related) {
+    echo 'It also allows to replace language constants to calls of the _m() function.';
+}
 
 echo '</p>
 

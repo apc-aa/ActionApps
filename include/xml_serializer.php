@@ -49,7 +49,8 @@
  * @param $a
  * @return string
  */
-function xml_serialize($k, $v, $i, $ii, $a=null) {
+function xml_serialize($k, $v, $i, $ii, $a=null): string
+{
     $start = (isset($a) ? "$k $a" : "t tname=\"$k\"");
     $end   = (isset($a) ? (string)$k : "t");
     if (is_null($v)) {
@@ -116,7 +117,8 @@ class xml_unserializer {
      * @param $xml_data
      * @return null|string
      */
-    function parse($xml_data) {
+    function parse($xml_data): ?string
+    {
         if (!xml_parse($this->parser, $xml_data, true)) {
             $ret =  sprintf("XML parse error: %s at line %d", xml_error_string(xml_get_error_code($this->parser)), xml_get_current_line_number($this->parser));
             xml_parser_free($this->parser);
@@ -129,7 +131,8 @@ class xml_unserializer {
      * @param $name
      * @param $attrs
      */
-    function startElement($parser, $name, $attrs) {
+    function startElement($parser, $name, $attrs): void
+    {
         if ($this->debug) {
             huhl("\n:start='".$name."'",$attrs,$this);
         }
@@ -158,7 +161,8 @@ class xml_unserializer {
      * @param $parser
      * @param $name
      */
-    function endElement($parser,$name) {
+    function endElement($parser,$name): void
+    {
         if ($this->debug) {
             huhl("\n:end='".$name."'",$this);
         }
@@ -210,13 +214,16 @@ class xml_unserializer {
             }
             $this->chardata = ""; $this->coding = "";
         }
-        if ($this->debug)  huhl("END:$name: els=",$this->stack,"Top=",$this->top);
+        if ($this->debug) {
+            huhl("END:$name: els=", $this->stack, "Top=", $this->top);
+        }
     }
     /** charD function
      * @param $parser
      * @param $data
      */
-    function charD($parser, $data) {
+    function charD($parser, $data): void
+    {
         if ($this->debug) {
             huhl("\n:charD='".$data."'");
         }

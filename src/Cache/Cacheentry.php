@@ -52,7 +52,7 @@ class Cacheentry
     }
 
     /** send headers, print output and count hit */
-    function processPage(bool $cached = false)
+    function processPage(bool $cached = false): void
     {
         $lastModified = $this->t;     // get the last-modified-date of this very file
         $etag = hash('md5', 'x' . $this->c . 'q'); // get a unique hash of this content (etag) (make it not the same as key in db for (maybe paranoid) security reasons)

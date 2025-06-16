@@ -55,12 +55,15 @@ use AA\IO\Grabber\AARSS_Parser;
  * @param $v
  * @return string
  */
-function decode($v) {
+function decode($v): string
+{
     static $encoder;
     if ( !$encoder ) {
         $encoder = new ConvertCharset;
     }
-    if ($GLOBALS['debugfeed'] >=8) huhl("decode: UTF-8 ---> ". $GLOBALS['g_slice_encoding']. ": $v");
+    if ($GLOBALS['debugfeed'] >=8) {
+        huhl("decode: UTF-8 ---> ".$GLOBALS['g_slice_encoding'].": $v");
+    }
     return $encoder->Convert($v, 'utf-8', $GLOBALS['g_slice_encoding']);
 }
 
@@ -69,7 +72,8 @@ function decode($v) {
  * @param $name
  * @param $attrs
  */
-function startElement($parser, $name, $attrs) {
+function startElement($parser, $name, $attrs): void
+{
   global $cur_tag,
          $rdf_modules,
          $channel_uri,
@@ -147,7 +151,8 @@ function startElement($parser, $name, $attrs) {
  * @param $parser
  * @param $name
  */
-function endElement($parser, $name) {
+function endElement($parser, $name): void
+{
   global $cur_tag,
          $aa_rss,
          $channel_uri, $channel,
@@ -166,7 +171,9 @@ function endElement($parser, $name) {
 
     case "^RSS^CHANNEL":
     case "^RDF:RDF^RSS:CHANNEL":
-      if (!($channel_uri)) $channel_uri = string2id($channel['title']);   // RSS 0.9
+      if (!($channel_uri)) {
+          $channel_uri = string2id($channel['title']);
+      }   // RSS 0.9
       $aa_rss['channels'][$channel_uri] = $channel;
       $channel = [];
       break;
@@ -184,10 +191,11 @@ function endElement($parser, $name) {
     case "^RSS^CHANNEL^ITEM":			// RSS 0.9
     case "^RDF:RDF^RSS:ITEM":
       // dc elements decode
-      if (isset($item['dc']))
-        foreach ($item['dc'] as $k => $v) {
-            $item['dc'][$k] = decode($v);
-        }
+      if (isset($item['dc'])) {
+          foreach ($item['dc'] as $k => $v) {
+              $item['dc'][$k] = decode($v);
+          }
+      }
       if (!($item_uri)) { $item_uri = string2id($item['title'] . $item["link"] . $item['description']); } // RSS 0.9
       $aa_rss['items'][$item_uri] = $item;
       $item = [];
@@ -212,7 +220,8 @@ function endElement($parser, $name) {
  * @param $parser
  * @param $data
  */
-function charD($parser, $data) {
+function charD($parser, $data): void
+{
  global $cur_tag,
          $aa_rss, $channel, $category, $field, $item,
          $fulltext_content, $fielddata,$content_format;
@@ -273,10 +282,11 @@ function charD($parser, $data) {
 /** aa_rss_parse function
  *  Parse feed, return array or false on failure
  * $GLOBALS['g_slice_encoding'] - destination slice encoding - must be set
+ *
  * @param $xml_data
- * @return array|bool|mixed
  */
-function aa_rss_parse($xml_data, string $feed_id='') {
+function aa_rss_parse($xml_data, string $feed_id=''): ?array
+{
     global $cur_tag, $aa_rss, $channel, $category, $field, $item, $fulltext_content, $fielddata, $content_format;
 
     if ($GLOBALS['debugfeed'] >=8) {
@@ -308,9 +318,11 @@ function aa_rss_parse($xml_data, string $feed_id='') {
     if (!xml_parse($xml_parser, $xml_data)) {
         $err = sprintf("Feed %s: XML parse error: %s at line %d", $feed_id, xml_error_string(xml_get_error_code($xml_parser)), xml_get_current_line_number($xml_parser));
         print("\nXML_RSSPARSE:ERR:$err");
-        return false;
+        return null;
     }
-    if ($GLOBALS['debugfeed'] >=8) huhl("aa_rss_parse:Parsed ok array=",$aa_rss);
+    if ($GLOBALS['debugfeed'] >=8) {
+        huhl("aa_rss_parse:Parsed ok array=", $aa_rss);
+    }
     xml_parser_free($xml_parser);
     return $aa_rss;
 }

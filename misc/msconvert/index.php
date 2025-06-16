@@ -1,6 +1,6 @@
 <?php
 
-function AddslashesDeep($value)   { return is_array($value) ? array_map('AddslashesDeep',   $value) : addslashes($value);   }
+function AddslashesDeep($value): array|string { return is_array($value) ? array_map('AddslashesDeep',   $value) : addslashes($value);   }
 foreach ($_REQUEST as $k => $v) {
     $$k = AddslashesDeep($v);
 }
@@ -40,7 +40,9 @@ if (!array_key_exists('userfile', $_FILES)) {
     <input type="submit" value="Preview">
     <input type="submit" name="submit" value="Import">
     <?php
-        if ($encoding) echo "<input type=\"hidden\" name=\"encoding\" value=\"$encoding\">";
+        if ($encoding) {
+            echo "<input type=\"hidden\" name=\"encoding\" value=\"$encoding\">";
+        }
     ?>
     </form>
     <?php
@@ -68,13 +70,11 @@ if (!array_key_exists('userfile', $_FILES)) {
         $output = [];
         foreach ($out as $linenum => $line) {
             if (str_starts_with($line, "<!--Section")) {
-                if ($insidesection==true) {
+                if ($insidesection) {
                     $output = array_merge($output,$buffer);
-                    $buffer = [];
-                } else {
-                    $buffer= [];
                 }
-                $insidesection=true;
+                $buffer        = [];
+                $insidesection =true;
             } else {
                 $line     = str_replace(["&scaron;", "&Scaron;"], ["š", "Š"], $line);
                 $buffer[] =$line;
@@ -92,13 +92,11 @@ if (!array_key_exists('userfile', $_FILES)) {
         $output = [];
         foreach ($out as $linenum => $line) {
             if (str_starts_with($line, "<!--Section")) {
-                if ($insidesection==true) {
+                if ($insidesection) {
                     $output = array_merge($output,$buffer);
-                    $buffer = [];
-                } else {
-                    $buffer= [];
                 }
-                $insidesection=true;
+                $buffer        = [];
+                $insidesection =true;
             } else {
                 $buffer[]=$line;
             }
@@ -115,13 +113,11 @@ if (!array_key_exists('userfile', $_FILES)) {
         $output = [];
         foreach ($out as $linenum => $line) {
             if (str_starts_with($line, "<!--Section")) {
-                if ($insidesection==true) {
+                if ($insidesection) {
                     $output = array_merge($output,$buffer);
-                    $buffer = [];
-                } else {
-                    $buffer= [];
                 }
-                $insidesection=true;
+                $buffer        = [];
+                $insidesection =true;
             } else {
                 $buffer[]=$line;
             }
@@ -142,10 +138,10 @@ if (!array_key_exists('userfile', $_FILES)) {
         $output= [];
         foreach ($out as $linenum => $line) {
             if (preg_match("/body/i",$line)) {
-                if ($insidesection==true) {
+                if ($insidesection) {
                     $output=array_merge($output,$buffer);
-                    $buffer= [];
-                } else $buffer= [];
+                }
+                $buffer        = [];
                 $insidesection = true;
             } else {
                 $buffer[] = $line;
@@ -168,7 +164,7 @@ if (!array_key_exists('userfile', $_FILES)) {
                 $line=str_replace("<HR>","",$line);
                 $output[]=$line;
                 $insidesection=false;
-            } elseif ($insidesection==true) {
+            } elseif ($insidesection) {
                 $output[]=$line;
             }
         }

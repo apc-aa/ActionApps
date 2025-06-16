@@ -98,7 +98,8 @@ function expand_return_url($session=true): string {
  * @param $session
  * @param $add_param
  */
-function go_return_or_url($url, $usejs=false, $session=false) {
+function go_return_or_url($url, $usejs=false, $session=false): void
+{
     global $return_url;
 
     if ($return_url) {
@@ -113,7 +114,8 @@ function go_return_or_url($url, $usejs=false, $session=false) {
  *  Adds slash at the end of a directory name if it is not yet there.
  * @param $s
  */
-function endslash(&$s) {
+function endslash(&$s): void
+{
     if (strlen($s) && !str_ends_with($s, "/")) {
         $s .= "/";
     }
@@ -122,14 +124,16 @@ function endslash(&$s) {
 /** backslash quotes, remove newlines, escape </script, which will make the code broken
  *  use as: echo "el.insertAdjacentHTML('afterbegin',".escape4js($code).");";
  */
-function escape4js($code) {
+function escape4js($code): string
+{
     return str_replace( ["\\", "'","\r\n","\n","\r",'<script','</script'], ["\\\\", "\\'",'\n','\n','\n','\x3Cscript','\x3C/script'], $code );   // remove newlines ...
 }
 
 /** self_server function
  *  returns server name with protocol and port
  */
-function self_server() {
+function self_server(): string
+{
     $port = '';
     if ( isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ) {
         $PROTOCOL='https';
@@ -184,7 +188,8 @@ function shtml_url(): string {
 /** shtml_query_string function
  *  returns query string passed to shtml file (variables are not quoted)
  */
-function shtml_query_string() {
+function shtml_query_string(): string
+{
     // there is problem (at least with QUERY_STRING_UNESCAPED), when
     // param=a%26a&second=2 is returned as param=a\\&a\\&second=2 - we can't
     // explode it! - that's why we use $REQUEST_URI, if possible
@@ -206,9 +211,9 @@ function IsAjaxCall(): bool {
 /** DeBackslash function
  *  skips terminating backslashes
  * @param $txt
- * @return mixed
  */
-function DeBackslash($txt) {
+function DeBackslash(string $txt): string
+{
     return str_replace('\\', "", $txt);        // better for two places
 }
 
@@ -250,7 +255,8 @@ function ConvertEncodingDeep($value, $from=null, $to=null) {
  * @param string $from  source      encoding utf-8|windows-1250|us-ascii|...  - utf-8 is default
  * @param string $to    destination encoding utf-8|windows-1250|us-ascii|...  - utf-8 is default
  */
-function ConvertEncoding($str, $from, $to='UTF-8') {
+function ConvertEncoding($str, $from, $to='UTF-8'): false|string
+{
     $from = $from ?: 'UTF-8';
     $to   = $to   ?: 'UTF-8';
     //return function_exists('mb_convert_encoding') ? mb_convert_encoding($str, $to, $from) : iconv($from, "$to//TRANSLIT",$str);  // does not work with windows-1250
@@ -261,9 +267,9 @@ function ConvertEncoding($str, $from, $to='UTF-8') {
  *  Adds variables passed by QUERY_STRING_UNESCAPED (or user $query_string)
  *   to GLOBALS.
  * @param $query_string
- * @return array|mixed
  */
-function add_vars($query_string="", $where='GLOBALS') {
+function add_vars($query_string="", $where='GLOBALS'): array
+{
     $varstring = ( $query_string ?: shtml_query_string() );
 
     if ( !$varstring ) {
@@ -297,7 +303,6 @@ function add_vars($query_string="", $where='GLOBALS') {
 /** NormalizeArrayIndex function
  *  Removes starting and closing quotes from array index
  * @param $arr ["key"]=...   transforms to arr[key]=...
- * @return mixed
  */
 function NormalizeArrayIndex($arr) {
     if (!is_array($arr)) {
@@ -305,8 +310,8 @@ function NormalizeArrayIndex($arr) {
     }
     $ret = [];
     foreach ($arr as $k => $v) {
-        if ( ($k[0] =='"' && str_ends_with($k, '"')) ||
-             ($k[0] =="'" && str_ends_with($k, "'")) ) {
+        if ( ($k[0] === '"' && str_ends_with($k, '"')) ||
+             ($k[0] === "'" && str_ends_with($k, "'")) ) {
             $k = substr($k, 1, -1);
         }
         $ret[$k] = NormalizeArrayIndex($v);
@@ -319,7 +324,8 @@ function NormalizeArrayIndex($arr) {
  * @param $source
  * @param $target
  */
-function array_add($source, &$target) {
+function array_add($source, &$target): void
+{
     foreach ( (array)$source as $k => $v) {
         if (!isset($target[$k])) {
             $target[$k] = $v;
@@ -338,9 +344,9 @@ function array_add($source, &$target) {
  *    array_merge_append( $conds[0]['value']=x, $conds[0][operator]=LIKE )
  *    results in $conds[0] = array( 'value'=>'x', 'operator'=>'LIKE' )
  *  no PHP function do it ($a+$b nor array_merge()  array_merge_recursive())
- * @return mixed
  */
-function array_merge_append(&$array, $newValues) {
+function array_merge_append(array &$array, $newValues): array
+{
     foreach ($newValues as $key => $value ) {
         if ( !isset($array[$key]) || !is_array($array[$key]) || !is_array($value)) {
             $array[$key] = $value;
@@ -352,7 +358,8 @@ function array_merge_append(&$array, $newValues) {
 }
 
 /** the same as array_merge_append but operates on $GLOBALS which is not possible to pass as reference in PHP>=8.1 */
-function array_merge_append_global($newValues) {
+function array_merge_append_global($newValues): void
+{
     foreach ($newValues as $key => $value ) {
         if ( !isset($GLOBALS[$key]) || !is_array($GLOBALS[$key]) || !is_array($value)) {
             $GLOBALS[$key] = $value;
@@ -363,7 +370,8 @@ function array_merge_append_global($newValues) {
     }
 }
 
-function recursive_array_replace($find, $replace, $array) {
+function recursive_array_replace($find, $replace, $array): array|string
+{
     if (!is_array($array)) {
         return str_replace($find, $replace, $array);
     }
@@ -377,12 +385,12 @@ function recursive_array_replace($find, $replace, $array) {
 /** new_id function
  *  returns new unpacked md5 unique id, except these which can  force unexpected end of string
  * @param $mark
- * @return mixed|string
  */
-function new_id($mark=0){
+function new_id($mark=0): string
+{
     do {
         $id = hash('md5', uniqid('',true));
-    } while (str_contains($id, '00') || str_contains($id, '27') || substr($id,30,2)=='20');
+    } while (str_contains($id, '00') || str_contains($id, '27') || substr($id,30,2)==='20');
       // '00' is end of string, '27' is ' and packed '20' is space,
       // which is removed by MySQL
 
@@ -404,9 +412,10 @@ function new_id($mark=0){
  * @param $mark
  *  @return true, if the $id is marked by $mark - @see new_id()
  */
-function is_marked_by($id, $mark) {
+function is_marked_by($id, $mark): bool
+{
     // now only supports mark 1-15
-    return (substr($id, $mark*2-1, 2) == '27');
+    return (substr($id, $mark*2-1, 2) === '27');
 }
 
 
@@ -417,7 +426,8 @@ function is_marked_by($id, $mark) {
  *  can be used to compare the hashes as well as create new item id (combining
  *  item id of fed item and slice_id, for example - @see xml_fetch.php)
  */
-function string2id($str) {
+function string2id($str): string
+{
     do {
         $id  = hash('md5',$str);
         $str .= " ";
@@ -449,7 +459,8 @@ function nanotime():int {
  *  variable count of variables
  * @param mixed ...$messages
  */
-function debug(...$messages) {
+function debug(...$messages): void
+{
     // could be toggled from Item Manager left menu 'debug' (by Superadmins!)
     if ( $_COOKIE['aa_debug'] != 1 ) {
         return;
@@ -462,7 +473,8 @@ function debug(...$messages) {
 /** Debug warn function - when something is not OK
  * @param string $msg
  */
-function warn($msg) {
+function warn($msg): void
+{
     if (AA::$debug) {
         AA::$dbg->log(AA_Log::backtrack());
         $trace = debug_backtrace();
@@ -475,7 +487,8 @@ function warn($msg) {
  * Use to catch cases in the code which shouldn't exist, but are handled anyway.
  * @param mixed ...$arg_list
  */
-function huhe(...$arg_list) {
+function huhe(...$arg_list): void
+{
     global $errcheck;
     if ($errcheck) {
         huhl(...$arg_list);
@@ -485,7 +498,8 @@ function huhe(...$arg_list) {
 /** return time from start of the script (page start) in seconds (float)
  * @return float
  */
-function timestartdiff() {
+function timestartdiff(): float
+{
     $start_time = $_SERVER['REQUEST_TIME_FLOAT'] ?: (float)$_SERVER['REQUEST_TIME'];  // FLOAT version is not in PHP <5.4
     return microtime(true) - $start_time;
 }
@@ -519,7 +533,8 @@ function huh(...$vars): void {
  * @param $a
  * Gets all values from array for printing
  */
-function GetPrintArray($a) {
+function GetPrintArray($a): string
+{
     $ret = '';
     if (is_array($a)) {
         foreach ( $a as $val) {
@@ -599,19 +614,22 @@ function GetConstants($group, $order='pri', $column='name', $keycolumn='value'):
 
 /** GetModuleInfo function
  * gets fields from main table of the module
+ *
  * @param $module_id
  * @param $type string -  restricted to Links and slice
- * @deprecated - use AA_Slice::getModule($slice_id) and silmilar
- * @return array|bool|string
+ *
+ * @return array
+ *@deprecated - use AA_Slice::getModule($slice_id) and silmilar
  */
-function GetModuleInfo($module_id, $type) {
+function GetModuleInfo($module_id, $type): array
+{
     $table = match($type) {
         'Links'  => 'links',
         'S'      => 'slice',
         default  => '',
     };
     if (!$module_id || !$table) {
-        return false;
+        return [];
     }
 
     // $SQL = "SELECT * FROM " .$MODULES[$type]['table']. " WHERE id = '$p_module_id'";
@@ -951,7 +969,8 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
  * @param $fields2get
  * @return array|null
  */
-function GetItemContentMinimal($zids, $fields2get=false) {
+function GetItemContentMinimal($zids, $fields2get=false): ?array
+{
     if ( !$fields2get ) {
         $fields2get = ['id', 'short_id'];
     }
@@ -1003,10 +1022,13 @@ function GrabConstantColumn($db, $column): array
 
 /** GetConstantContent function
  *  Fills Abstract data srtructure for Constants
+ *
  * @param $zids
- * @return array|bool
+ *
+ * @return false|array
  */
-function GetConstantContent( $zids ) {
+function GetConstantContent( $zids): false|array
+{
     if ( !$zids ) {
         return false;
     }
@@ -1042,7 +1064,8 @@ function GetConstantContent( $zids ) {
  * @param $id_field
  * @deprecated use directly AA_Content::StoreTable2AaContent()
  */
-function StoreTable2Content(&$content, $SQL, $prefix, $id_field) {
+function StoreTable2Content(&$content, $SQL, $prefix, $id_field): void
+{
     $data = GetTable2Array($SQL, 'NoCoLuMn', 'aa_fields');
     if ( is_array($data) ) {
         foreach ( $data as $row ) {
@@ -1104,10 +1127,13 @@ function bin2url($data): string
 }
 
 /** reverse Base64url version of base64
- * @param string $data
- * @return bool|string
+ *
+ * @param string  $data
+ *
+ * @return false|string
  */
-function url2bin($data) {
+function url2bin($data): false|string
+{
     return base64_decode(str_pad(strtr($data, '-_', '+/'), strlen($data) % 4, '='));
 }
 
@@ -1149,7 +1175,8 @@ function HtmlPageBegin(bool $js_lib=false, string $lang= '', bool $inc_by_requir
 
 
 // use instead of </body></html> on pages which show menu
-function HtmlPageEnd() {
+function HtmlPageEnd(): void
+{
     global $slices4cache;
     AA::$debug&2 && AA::$dbg->info('time: '. timestartdiff());
     if (AA::$debug&16) {
@@ -1173,7 +1200,8 @@ function HtmlPageEnd() {
  * @param $code
  * @return string
  */
-function getHtmlPage($code) {
+function getHtmlPage($code): string
+{
     return "<!DOCTYPE html>\n<html>\n<head>\n</head>\n<body>\n  $code \n</body>\n</html>";
 }
 
@@ -1182,7 +1210,8 @@ function getHtmlPage($code) {
  * @param $msg        - displayed message
  * @param string $url - where to go if user clicks on Back link on this message page
  */
-function MsgPage($msg, string $url = '') {
+function MsgPage($msg, string $url = ''): void
+{
     HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
     echo "<title>" . _m("Toolkit news message") . "</title>
       </head>
@@ -1214,7 +1243,8 @@ function MsgPage($msg, string $url = '') {
  * @param  int         $flag
  * @param  bool        $delete       - erease the old values
  */
-function StoreToContent($item_id, $field_id, $text_stored, $value, int $order, int $flag, bool $delete=false) {
+function StoreToContent($item_id, $field_id, $text_stored, $value, int $order, int $flag, bool $delete=false): void
+{
     if (!is_long_id($item_id) || strlen($field_id) != 16) {
         return;
     }
@@ -1254,7 +1284,8 @@ function StoreToContent($item_id, $field_id, $text_stored, $value, int $order, i
  * @param $saltlen
  * @return string
  */
-function gensalt($saltlen) {
+function gensalt($saltlen): string
+{
     $salt_chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456589";
     $more_sec = '';
     $salt = '';
@@ -1292,7 +1323,8 @@ function split_escaped($pattern, $string, $escape_pattern): array {
  * @param $strings
  * @return string
  */
-function join_and_quote( $pattern, $strings ) {
+function join_and_quote( $pattern, $strings ): string
+{
     $retval = '';
     foreach ((array)$strings as $string) {
         if ($retval) {
@@ -1311,7 +1343,8 @@ function inner_trim(string $string): string {
     return str_replace([' ', "\n", "\t", "\r"], '', $string);
 }
 
-function ReadFileSafe($url) {
+function ReadFileSafe($url): void
+{
     if ( (stripos($url, 'http://')===0 || stripos($url, 'https://')===0) && !str_contains($url, '..') ) {
         readfile($url);
     }
@@ -1328,7 +1361,8 @@ function ReadFileSafe($url) {
  *
  * @author Jakub Adamek, Econnect, December 2002
  */
-function add_post2shtml_vars($delete = true) {
+function add_post2shtml_vars($delete = true): void
+{
     global $post2shtml_id;
     add_vars();
     if (!$post2shtml_id) {
@@ -1357,9 +1391,10 @@ function add_post2shtml_vars($delete = true) {
 /** getSelectBoxFromParamWizard function
  *  Creates values for a select box showing some param wizard section.
  * @param $var
- * @return mixed
  */
-function getSelectBoxFromParamWizard($var) {
+function getSelectBoxFromParamWizard(array $var): array
+{
+    $retval = [];
     foreach ($var["items"] as $value => $prop) {
         $retval[$value] = $prop["name"];
     }
@@ -1375,7 +1410,8 @@ function getSelectBoxFromParamWizard($var) {
  * @param string $add_path
  * @return string
  */
-function GetAAImage($filename, $alt, $width, $height, $add='', $add_path='') {
+function GetAAImage($filename, $alt, $width, $height, $add='', $add_path=''): string
+{
     $image_path = AA_BASE_PATH.   $add_path. "images/$filename";
     $image_url  = AA_INSTAL_PATH. $add_path. "images/$filename";
     $title      = ($alt ? "title=\"$alt\"" : '');
@@ -1398,16 +1434,20 @@ function GetAAImage($filename, $alt, $width, $height, $add='', $add_path='') {
  * @param $add
  * @return string
  */
-function GetModuleImage($module, $filename, $alt='', $width=0, $height=0, $add='') {
+function GetModuleImage($module, $filename, $alt='', $width=0, $height=0, $add=''): string
+{
     return GetAAImage($filename, $alt, $width, $height, $add, "modules/$module/");
 }
 
 /** returns $object's class name without namespace and possibly Id for logging purposes
- * @param string|object $object
- * @param bool $add_id
- * @return false|string
+ *
+ * @param string|object  $object
+ * @param  bool          $add_id
+ *
+ * @return string
  */
-function get_class_name($object, $add_id=false) {
+function get_class_name($object, bool $add_id=false): string
+{
     $classname = is_object($object) ? get_class($object) : $object;
     if ($pos = strrpos($classname, '\\')) {
         $classname = substr($classname, $pos + 1);
@@ -1436,7 +1476,8 @@ class AA_Credentials {
      * @param string $crypted_additional_slice_pwd
      * @return bool
      */
-    function checkSlice($slice_id, $crypted_additional_slice_pwd=null) {
+    function checkSlice($slice_id, $crypted_additional_slice_pwd=null): bool
+    {
         // AA_Slice::getModuleProperty($slice_id,'reading_password') is encrypted
         return $this->checkCryptedPassword(AA_Slice::getModuleProperty($slice_id,'reading_password'), $crypted_additional_slice_pwd);
     }
@@ -1459,11 +1500,13 @@ class AA_Credentials {
     /** Load reading_password from slice
      * @param $slice_id
      */
-    function loadFromSlice($slice_id) {
+    function loadFromSlice($slice_id): void
+    {
         $this->register(AA_Slice::getModuleProperty($slice_id,'reading_password'));  // AA_Slice::getModuleProperty($slice_id,'reading_password') is encrypted
     }
 
-    function register($crypted_slice_pwd) {
+    function register($crypted_slice_pwd): void
+    {
         if (!empty($crypted_slice_pwd)) {
             $this->_pwd[$crypted_slice_pwd] = true;
         }
@@ -1474,7 +1517,8 @@ class AA_Credentials {
         return AA_Stringexpand_Encrypt::get_time_token(['spwd'=> array_keys($this->_pwd)]);
     }
 
-    public function importFromToken(string $timetoken) {
+    public function importFromToken(string $timetoken): void
+    {
         $arr = AA_Stringexpand_Encrypt::decrypt_time_token($timetoken);
         if ( is_array($arr) && is_array($arr['spwd']) ) {
             foreach ($arr['spwd'] as $crypted_slice_pwd) {
@@ -1485,7 +1529,8 @@ class AA_Credentials {
 
     /** wrapper function
      *  called as AA_Credentials::encrypt($reading_password) */
-    static function encrypt($pwd) {
+    static function encrypt($pwd): string
+    {
         return hash('md5', $pwd);
     }
 }
@@ -1604,7 +1649,8 @@ class AA_Contentcache {
      * @param $access_code string  - access code to check
      * @return bool
      */
-    function is_soft($access_code) {
+    function is_soft($access_code): bool
+    {
         return !str_starts_with($access_code, 'define');
     }
 
@@ -1613,7 +1659,8 @@ class AA_Contentcache {
      * @param $access_code
      * @param $val
      */
-    function set($access_code, $val) {
+    function set($access_code, $val): void
+    {
         if ($this->is_soft($access_code)) {
             $this->content[hash('md5', $access_code)] = [$val, 0, 0];
         } else {
@@ -1625,7 +1672,8 @@ class AA_Contentcache {
      *  @param $access_code
      *  @return false if the value is not cached for the $access_code (use ===)
      */
-    function get($access_code) {
+    function get($access_code): false|string
+    {
         $key = hash('md5', $access_code);
         if ($this->is_soft($access_code)) {
             if ( isset($this->content[$key]) ) {
@@ -1642,7 +1690,8 @@ class AA_Contentcache {
      * @param $access_code
      * @return bool
      */
-    function exists($access_code) {
+    function exists($access_code): bool
+    {
         return isset($this->content[hash('md5', $access_code)]);
     }
 
@@ -1651,7 +1700,8 @@ class AA_Contentcache {
      * clear key or all content from contentcache
      * @param $key
      */
-    function clear($key=null) {
+    function clear($key=null): void
+    {
         if (!is_null($key)) {
             unset($this->content[$key]);
             unset($this->content_stable[$key]);
@@ -1663,7 +1713,8 @@ class AA_Contentcache {
 
     /** clear_soft function
      */
-    function clear_soft() {
+    function clear_soft(): void
+    {
         $this->content = [];
     }
 
@@ -1675,7 +1726,8 @@ class AA_Contentcache {
      * @param $access_code
      * @param $val
      */
-    function push($access_code, $val) {
+    function push($access_code, $val): void
+    {
         if ( $this->exists($access_code) ) {
             // backup access code - arr underscore before (with possible recursion)
             $this->push('_'.$access_code, $this->get($access_code));
@@ -1686,7 +1738,8 @@ class AA_Contentcache {
     /** pop function
      * @param $access_code
      */
-    function pop($access_code) {
+    function pop($access_code): false|string
+    {
         $ret = $this->get($access_code);
         if ( $this->exists('_'.$access_code) ) {
             $this->set($access_code, $this->pop('_'.$access_code)); // with recurcsion
@@ -1774,7 +1827,6 @@ class AA_Contentcache {
  * @param $value
  * @param $else
  * @param $else2
- * @return string
  */
 function get_if($value, $else, $else2='aa_NoNe', $else3='aa_NoNe') {
     return $value ?: ($else ?: (($else2==='aa_NoNe') ? $else : (($else3==='aa_NoNe') ? $else2 : $else3)));
@@ -1784,7 +1836,8 @@ function get_if($value, $else, $else2='aa_NoNe', $else3='aa_NoNe') {
  *  Version of AA - automatically included also date and revision of util.php
  *  file, for better version information
  */
-function aa_version($format='full') {
+function aa_version($format='full'): string
+{
     $version = '2025.2';
     $full    = 'ActionApps '.$version.' ($Date$, $Revision$), PHP '.PHP_VERSION.', REMOTE_ADDR: '.$_SERVER['REMOTE_ADDR'];
     return match ($format) {
@@ -1810,7 +1863,8 @@ class CookieManager {
      * @param $value
      * @param $time int seconds - like 60*60*24*2
      */
-    function set($name, $value, $time=0, $path='/') {
+    function set($name, $value, $time=0, $path='/'): void
+    {
         setcookie('AA_'.$name, $value, $time ? time() + $time : 0, $path, $_SERVER['HTTP_HOST']);
     }
 
@@ -1824,7 +1878,7 @@ class CookieManager {
 }
 
 class AA_GeneralizedArray {
-    protected $arr = [];
+    private array $arr = [];
 
     /** AA_GeneralizedArray function
      */
@@ -1836,7 +1890,8 @@ class AA_GeneralizedArray {
      * @param $value
      * @param $coordinates
      */
-    function add($value, $coordinates) {
+    function add($value, $coordinates): void
+    {
         $arr =& $this->arr;
         // make sure the position exist
         foreach ( $coordinates as $key ) {
@@ -1851,9 +1906,9 @@ class AA_GeneralizedArray {
 
     /** getValues function
      * @param $coordinates
-     * @return array|mixed|null
      */
-    function getValues($coordinates) {
+    function getValues($coordinates): ?array
+    {
         $arr =& $this->arr;
         // make sure the position exist
         foreach ( $coordinates as $key ) {
@@ -1927,7 +1982,8 @@ function IsStringable($var): bool { // like function is_signed(),function is_num
 }
 
 /** RestoreVariables to global context - kind of @deprecated */
-function RestoreVariables(array $r_state_vars) {
+function RestoreVariables(array $r_state_vars): void
+{
     foreach ($r_state_vars as $k => $v) {
         $GLOBALS[$k] = $v;
     }
@@ -1944,12 +2000,14 @@ function aa_strlen($text) {
 }
 
 /** strpos with utf in mind */
-function aa_strpos($haystack , $needle , $offset = 0) {
+function aa_strpos($haystack , $needle , $offset = 0): false|int
+{
     return mb_strpos($haystack , $needle , $offset);
 }
 
 /** strrpos with utf in mind */
-function aa_strrpos($haystack , $needle , $offset = 0) {
+function aa_strrpos($haystack , $needle , $offset = 0): false|int
+{
     return mb_strrpos($haystack , $needle , $offset);
 }
 
@@ -1960,22 +2018,26 @@ function aa_trim(string $string='', string $chars=''): string {
 }
 
 /** strtolower with utf in mind */
-function aa_strtolower($string) {
+function aa_strtolower($string): string
+{
     return Langs::isUTF() ? mb_strtolower($string) : strtolower($string); // maybe we could count with other languages
 }
 
 /** lcfirst with utf in mind */
-function aa_lcfirst($string) {
+function aa_lcfirst($string): string
+{
     return Langs::isUTF() ? mb_strtolower(mb_substr($string, 0, 1)).mb_substr($string, 1) : lcfirst($string); // maybe we could count with other languages
 }
 
 /** ucfirst with utf in mind */
-function aa_ucfirst($string) {
+function aa_ucfirst($string): string
+{
     return Langs::isUTF() ? mb_strtoupper(mb_substr($string, 0, 1)).mb_substr($string, 1) : ucfirst($string); // maybe we could count with other languages
 }
 
 /** strtoupper with utf in mind */
-function aa_strtoupper($string) {
+function aa_strtoupper($string): string
+{
     return Langs::isUTF() ? mb_strtoupper($string) : strtoupper($string); // maybe we could count with other languages
 }
 

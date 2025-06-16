@@ -16,7 +16,9 @@ $apc_init = '--h-s-';
 
 $apc_state = ModW_str2arr($apc_varnames, $apc, $apc_init, $apc_reg);
 
-if (isset($site_id)) $apc_state['site_id'] = $site_id;  // Make site_id available:
+if (isset($site_id)) {
+    $apc_state['site_id'] = $site_id;
+}  // Make site_id available:
 
 if ($m) {
     $apc_state['w'] = $apc_state['v'];
@@ -26,9 +28,15 @@ if ($m) {
     $apc_state['p'] = '1';
 }
 
-if (isset($p)) $apc_state = array_merge($apc_state, ['p' => $p, 'x' => '-']); //page
-if (isset($t)) $apc_state['t'] = $t; //Switch to special mode (text only, print ...)
-if (isset($i)) $apc_state['i'] = $i; //item id to display
+if (isset($p)) {
+    $apc_state = array_merge($apc_state, ['p' => $p, 'x' => '-']);
+} //page
+if (isset($t)) {
+    $apc_state['t'] = $t;
+} //Switch to special mode (text only, print ...)
+if (isset($i)) {
+    $apc_state['i'] = $i;
+} //item id to display
 
 // Handle paging
 if ( isset($scrl) ) {      // page scroller
@@ -36,8 +44,9 @@ if ( isset($scrl) ) {      // page scroller
   $apc_state['p'] = $$pagevar;
 }
 
-if ( $apc_state["p"] <= 0 || $apc_state["p"] === '-' )
-  $apc_state["p"] = 1;
+if ( $apc_state["p"] <= 0 || $apc_state["p"] === '-' ) {
+    $apc_state["p"] = 1;
+}
 
 $nocache = 1; // Force nocache until caching problems fixed
 
@@ -52,7 +61,9 @@ $apc_state["site_url"] = "/gp/draft.shtml?".$relargs;
 // Read item from database
 $apc_state["item"] = ModW_id2item($apc_state["i"],true);
 
-if ($debug) huhl("<pre>New State=",$apc_state);
+if ($debug) {
+    huhl("<pre>New State=", $apc_state);
+}
 
 // list of all slices used in site. Site module uses cache. If you change the slice
 // (you add item, ...), the cache should be cleared for this slice, in order site

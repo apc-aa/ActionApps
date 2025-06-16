@@ -64,7 +64,8 @@ function IsFieldSupported($field_info, $v, $param): bool
  * @global int   $QueryIDsCount - set to the count of IDs returned
  * @return zids
  */
-function Links_QueryZIDs($cat_path, $conds, $sort="", $subcat=false, $type="app") {
+function Links_QueryZIDs($cat_path, $conds, $sort="", $subcat=false, $type="app"): zids
+{
     $LINKS_FIELDS = GetLinkFields();
 
     $where_sql    = MakeSQLConditions($LINKS_FIELDS, $conds, $LINKS_FIELDS, $join_tables, 'IsFieldSupported', $type);
@@ -83,14 +84,17 @@ function Links_QueryZIDs($cat_path, $conds, $sort="", $subcat=false, $type="app"
         $join_tables['changes'] = true;
     }
 
-    if ( $join_tables['regions'] )
+    if ( $join_tables['regions'] ) {
         $SQL .= ' LEFT JOIN links_link_reg ON links_links.id = links_link_reg.link_id
                   LEFT JOIN links_regions ON links_regions.id = links_link_reg.region_id ';
-    if ( $join_tables['languages'] )
+    }
+    if ( $join_tables['languages'] ) {
         $SQL .= ' LEFT JOIN links_link_lang ON links_links.id = links_link_lang.link_id
                   LEFT JOIN links_languages ON links_languages.id = links_link_lang.lang_id ';
-    if ( $join_tables['changes'] )
+    }
+    if ( $join_tables['changes'] ) {
         $SQL .= ' LEFT JOIN links_changes ON links_links.id = links_changes.changed_link_id ';
+    }
 
 
     if (!str_starts_with($type, 'unasigned')) {
@@ -152,7 +156,8 @@ function Links_QueryZIDs($cat_path, $conds, $sort="", $subcat=false, $type="app"
  * @global int   $QueryIDsCount - set to the count of IDs returned
  * @return zids
  */
-function Links_QueryCatZIDs($cid, $conds, $sort= [], $subcat=false, $type="app") {
+function Links_QueryCatZIDs($cid, $conds, $sort= [], $subcat=false, $type="app"): zids
+{
     $CATEGORY_FIELDS = GetCategoryFields();
     $cid = (int)$cid;
 

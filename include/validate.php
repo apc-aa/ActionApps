@@ -29,6 +29,7 @@
 */
 
 use AA\IO\DB\DB_AA;
+use AA\Util\LastErrTrait;
 
 /** ValidateInput function
  *  Validate users input. Error is reported in $err array
@@ -82,7 +83,7 @@ const VALIDATE_ERROR_NOT_FILLED = 410;
  */
 class AA_Validate extends AA_Serializable {
 
-    use \AA\Util\LastErrTrait;
+    use LastErrTrait;
 
     /** Returns validators for standard data types
      * @param string|array $v_type - string, or array($type,$parameter)
@@ -143,7 +144,8 @@ class AA_Validate extends AA_Serializable {
      * @param $type
      * @return bool
      */
-    public static function doValidate(&$var, $type) {
+    public static function doValidate(&$var, $type): bool
+    {
         $validator = self::factoryCached($type);
         if ( is_null( $validator ) ) {
             return self::bad(VALIDATE_ERROR_BAD_VALIDATOR, _m('Bad validator type: %1', [$type]));
@@ -158,7 +160,8 @@ class AA_Validate extends AA_Serializable {
      * @param $type
      * @return array
      */
-    public static function filter($vararray, $type) {
+    public static function filter($vararray, $type): array
+    {
         return array_filter((array)$vararray, [self::factoryCached($type),'validate']);
     }
 
@@ -173,7 +176,8 @@ class AA_Validate extends AA_Serializable {
     /** sanitize the value - returns the sanitized value or the default value for the validator
      * @param $var
      */
-    public function sanitize($var) {
+    public function sanitize($var)
+    {
         return $this->validate($var) ? (string)$var : '';  // best default for child validators - probably will be redefined there
     }
 
@@ -198,7 +202,8 @@ class AA_Validate extends AA_Serializable {
     }
 
     /** returns the type attribute for the HTML 5 <input> tag with possible some more attributes (like min, max, step, pattern, ...) */
-    public function getHtmlInputAttr() {
+    public function getHtmlInputAttr(): array
+    {
         return [];
     }
 
@@ -256,7 +261,8 @@ class AA_Validate_Signed extends AA_Validate {
         return true;
     }
 
-    public function sanitize($var) {
+    public function sanitize($var)
+    {
         $var = (int)$var;
         if (IsSigInt($this->max) && $var > $this->max) {
             return (int)$this->max;
@@ -271,7 +277,8 @@ class AA_Validate_Signed extends AA_Validate {
     /** returns the type attribute for the HTML 5 <input> tag with possible some
      *  more attributes (like min, max, step, pattern, ...)
      */
-    function getHtmlInputAttr() {
+    function getHtmlInputAttr(): array
+    {
         $ret = ['type' => 'number', 'pattern' => '-?[0-9]*'];
         if (IsSigInt($this->min)) {
             $ret['min'] = $this->min;
@@ -308,7 +315,8 @@ class AA_Validate_Number extends AA_Validate_Signed {
     /** returns the type attribute for the HTML 5 <input> tag with possible some
      *  more attributes (like min, max, step, pattern, ...)
      */
-    function getHtmlInputAttr() {
+    function getHtmlInputAttr(): array
+    {
         $ret = parent::getHtmlInputAttr();
         $ret['pattern']='?[0-9]*';
         return $ret;
@@ -325,7 +333,7 @@ class AA_Validate_Bool extends AA_Validate_Number {
         $this->max = 1;
     }
 
-    public function sanitize($var): bool {
+    public function sanitize($var) {
         return (bool)$var;
     }
 }
@@ -388,7 +396,8 @@ class AA_Validate_Regexp extends AA_Validate {
     /** returns the type attribute for the HTML 5 <input> tag with possible some
      *  more attributes (like min, max, step, pattern, ...)
      */
-    function getHtmlInputAttr() {
+    function getHtmlInputAttr(): array
+    {
         $ret = ['type'=>'text'];
         if ($this->maxlength > 0)                               { $ret['maxlength']  = (int)$this->maxlength; }
         if ($this->maxlength > 0 && $this->maxlength < 60) { $ret['size']       = ((int)$this->maxlength+2); }
@@ -409,7 +418,8 @@ class AA_Validate_Url extends AA_Validate_Regexp {
     /** returns the type attribute for the HTML 5 <input> tag with possible some
      *  more attributes (like min, max, step, pattern, ...)
      */
-    function getHtmlInputAttr() {
+    function getHtmlInputAttr(): array
+    {
         return ['type'=> 'url', 'pattern'=>"^http(s?):\/\/\S+\.\S+"];
     }
 }
@@ -426,7 +436,8 @@ class AA_Validate_Email extends AA_Validate_Regexp {
     /** returns the type attribute for the HTML 5 <input> tag with possible some
      *  more attributes (like min, max, step, pattern, ...)
      */
-    function getHtmlInputAttr() {
+    function getHtmlInputAttr(): array
+    {
         return ['type'=>'email'];
     }
 }
@@ -439,7 +450,8 @@ class AA_Validate_Id extends AA_Validate {
     /** returns the type attribute for the HTML 5 <input> tag with possible some
      *  more attributes (like min, max, step, pattern, ...)
      */
-    function getHtmlInputAttr() {
+    function getHtmlInputAttr(): array
+    {
         return ['type'=>'text', 'pattern'=>'[0-9a-f]{32}'];
     }
 
@@ -527,7 +539,7 @@ class AA_Validate_Float extends AA_Validate {
         return true;
     }
 
-    public function sanitize($var): float {
+    public function sanitize($var) {
         if ($this->validate($var)) {
             return (float)$var;
         }
@@ -576,7 +588,7 @@ class AA_Validate_Decimal extends AA_Validate {
         return true;
     }
 
-    public function sanitize($var): string {
+    public function sanitize($var) {
         if ($this->validate($var)) {
             return (string)$var;
         }
@@ -631,7 +643,8 @@ class AA_Validate_Login extends AA_Validate {
     /** returns the type attribute for the HTML 5 <input> tag with possible some
      *  more attributes (like min, max, step, pattern, ...)
      */
-    function getHtmlInputAttr() {
+    function getHtmlInputAttr(): array
+    {
         return ['type'=>'text', 'pattern'=>'[a-zA-Z0-9]{3,32}'];
     }
 }
@@ -659,7 +672,8 @@ class AA_Validate_Pwd extends AA_Validate {
     /** returns the type attribute for the HTML 5 <input> tag with possible some
      *  more attributes (like min, max, step, pattern, ...)
      */
-    function getHtmlInputAttr() {
+    function getHtmlInputAttr(): array
+    {
         return ['type'=>'password', 'min'=>'5'];
     }
 }
@@ -792,7 +806,8 @@ class AA_Validate_Eunique extends AA_Validate {
     /** returns the type attribute for the HTML 5 <input> tag with possible some
      *  more attributes (like min, max, step, pattern, ...)
      */
-    function getHtmlInputAttr() {
+    function getHtmlInputAttr(): array
+    {
         return ['type'=>'email'];
     }
 }
@@ -824,7 +839,8 @@ class AA_Validate_Text extends AA_Validate {
     /** returns the type attribute for the HTML 5 <input> tag with possible some
      *  more attributes (like min, max, step, pattern, ...)
      */
-    function getHtmlInputAttr() {
+    function getHtmlInputAttr(): array
+    {
         $ret = ['type'=>'text'];
         if ($this->maxlength > 0)                               { $ret['maxlength']  = (int)$this->maxlength; }
         if ($this->maxlength > 0 && $this->maxlength < 60) { $ret['size']       = ((int)$this->maxlength+2); }
@@ -899,7 +915,8 @@ function get_javascript_field_validation(): string {
 // not used yet
 // @author Jirka Reischig 28.2.2012
 //
-function NEW_get_lines($fp) {
+function NEW_get_lines($fp): string
+{
     $data = "";
     while($str = @fgets($fp,515)) {
         $data .= $str;

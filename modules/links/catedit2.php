@@ -37,7 +37,7 @@ try {
     $cancel = InputVars::boolPOST('cancel');
     
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception) {}
+} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
 $r_state['linkedit']['old'] = $_POST;  // in case of bad input
 unset($r_msg);
@@ -47,7 +47,8 @@ unset($r_err);
 // Checks if category has subcategories or links
 // (for deletion, so it does not count links in trash and it also do not count
 //  proposals) - It is question is we haven't to count proposals
-function IsCatEmpty($category_id) {
+function IsCatEmpty($category_id): bool
+{
     //  $path = GetCategoryPath($category_id);
     //  $app_zids  = Links_QueryZIDs($path, '', '', true, 'app');
     //  $hold_zids = Links_QueryZIDs($path, '', '', true, 'folder2');
@@ -77,18 +78,21 @@ function IsCatEmpty($category_id) {
 }
 
 // Delete one category assignment
-function DeleteCatAssignment($parent, $child) {
+function DeleteCatAssignment($parent, $child): void
+{
     DB_AA::delete('links_cat_cat', [['what_id', $child, 'i'], ['category_id', $parent, 'i']]);
 }
 
 // Delete one category
-function DeleteCategory($catId) {
+function DeleteCategory($catId): void
+{
     DB_AA::delete('links_link_cat',   [['category_id', $catId, 'i']]);
     DB_AA::delete('links_cat_cat',    [['category_id', $catId, 'i']]);
     DB_AA::delete('links_categories', [['id', $catId, 'i']]);
 }
 
-function ChangeCatPriority($category_id, $insertedId, $pri, $state, $name) {
+function ChangeCatPriority($category_id, $insertedId, $pri, $state, $name): void
+{
     // General categories have its own priorities
     $new_pri = Links_GlobalCatPriority($name);
     if ( $new_pri ) {
@@ -97,13 +101,15 @@ function ChangeCatPriority($category_id, $insertedId, $pri, $state, $name) {
     DB_AA::sql("UPDATE links_cat_cat SET priority=$pri, state='$state' WHERE category_id = $category_id AND what_id = $insertedId");
 }
 
-function ChangeCatState($category_id, $insertedId, $state) {
+function ChangeCatState($category_id, $insertedId, $state): void
+{
     // General categories have its own priorities
     DB_AA::sql("UPDATE links_cat_cat SET state='$state' WHERE category_id = $category_id AND what_id = $insertedId");
 }
 
 // Moves this category to another subtree or delete (if clear and no link to it)
-function UnassignBaseCategory($parent, $child) {
+function UnassignBaseCategory($parent, $child): void
+{
     global $r_msg, $r_err;
 
     $db = getDB();
@@ -185,13 +191,15 @@ function GetPureName($name, &$state) {
 
 // End of function definitions -------------------------------------------------
 
-if ($cancel)
-    go_url( StateUrl(self_base() . "index.php"));
+if ($cancel) {
+    go_url(StateUrl(self_base()."index.php"));
+}
 
 
 // we always sending cat id - it prevent us of bug with 'Back' browser button
-if ( $cid )
-   $r_state['cat_id'] = $cid;
+if ( $cid ) {
+    $r_state['cat_id'] = $cid;
+}
 
 $cpath = GetCategoryPath( $cid );
 if ( IsCatPerm( PS_LINKS_EDIT_CATEGORY, $cpath ) ) {
@@ -251,8 +259,9 @@ $SQL = "SELECT what_id FROM links_cat_cat
 
 $db->query($SQL);                            //    - 'n' was deleted
 
-while ( $db->next_record() )
+while ( $db->next_record() ) {
     $oldBaseSubcat[$db->f('what_id')] = $db->f('what_id');
+}
 
 // Lookup new not base subcategories
 if ($subcatIds) {
@@ -263,8 +272,9 @@ if ($subcatIds) {
 
     $db->query($SQL);
 
-    while ( $db->next_record() )
+    while ( $db->next_record() ) {
         $newNotBaseSubcat[$db->f('what_id')] = $db->f('what_id');
+    }
 }
 
 if (isset($ids) && is_array($ids) && $subcatIds != "") {

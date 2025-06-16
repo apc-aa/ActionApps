@@ -21,7 +21,8 @@ https://www.apc.org/
 
 /** Removes empty positions and normalizes keys to be from 0 to x with step of 1
 */
-function normalize_arr($arr) {
+function normalize_arr($arr): array
+{
     $ret = false;
     if ( isset($arr) && is_array($arr) ) {
         foreach ($arr as $v) {
@@ -42,7 +43,8 @@ class AA_Site_Spot_Match {
             $this->val = $val;
     }
 
-    public static function factoryByString($string, $var=null) {
+    public static function factoryByString($string, $var=null): AA_Site_Spot_Match
+    {
         if (str_starts_with($string, '=:')) { // begins with =: - special identification of new matches
             $arr = ParamExplode($string);
             return new AA_Site_Spot_Match($arr[1], $arr[2]);
@@ -51,14 +53,16 @@ class AA_Site_Spot_Match {
         return new AA_Site_Spot_Match(($var && $var[0] === '{') ? '=' : 'REGEXP', $string);
     }
 
-    function implode() {
+    function implode(): string
+    {
         return ParamImplode(['=',$this->op, $this->val]);
     }
 
-    public function match($value) {
+    public function match($value): bool
+    {
         return match ($this->op) {
             '='        => ($value == $this->val),
-            'REGEXP'   => preg_match('/'.str_replace('/', '\/', $this->val).'/', $value),
+            'REGEXP'   => (bool)preg_match('/'.str_replace('/', '\/', $this->val).'/', $value),
             'contains' => (strlen($value) && str_contains($this->val, $value)),
             default    => false,
         };
@@ -106,43 +110,52 @@ class spot {
         $this->f  = $flag;
     }
 
-    function addInSequence($spot) {
+    function addInSequence($spot): void
+    {
         $this->po[] = $spot->Id();
         $spot->set('parent', $this->Id());  // set/repair parent of inserted spot
     }
 
-    function addChoice($spot) {
+    function addChoice($spot): void
+    {
         $this->ch[] = $spot->Id();
         $spot->set('parent', $this->Id());  // set/repair parent of inserted spot
     }
 
-    function addVariable($name) {
+    function addVariable($name): void
+    {
         $this->v[$name] = $name;
     }
 
-    function removeVariable($name) {
+    function removeVariable($name): void
+    {
         unset($this->v[$name]);
     }
 
-    function addCondition($var, $match) {
+    function addCondition($var, $match): void
+    {
         $this->c[$var] = $match->implode();
     }
 
-    function removeCondition($name) {
+    function removeCondition($name): void
+    {
         unset($this->c[$name]);
     }
 
-    function isLeaf() {
+    function isLeaf(): bool
+    {
         return ((!is_array($this->ch) || (count($this->ch)<1)) && (!is_array($this->po) || (count($this->po)<2)));
     }
 
     /** Returns true, if the $spot_id is in sequence of this spot (position) */
-    function isSequence($spot_id) {
+    function isSequence($spot_id): bool
+    {
         return (false !== ($k = array_search($spot_id, (array)$this->po)));
     }
 
     /** Returns true, if the $spot_id is choice of this spot */
-    function isChoice($spot_id) {
+    function isChoice($spot_id): bool
+    {
         return (false !== ($k = array_search($spot_id, (array)$this->ch)));
     }
 
@@ -151,7 +164,8 @@ class spot {
     *     - removes empty positions (where they come from?)
     *     - normalizes keys to be from 0 to .. with step of 1
     */
-    function normalize() {
+    function normalize(): void
+    {
         $this->po = normalize_arr($this->po);
         $this->ch = normalize_arr($this->ch);
     }
@@ -237,10 +251,11 @@ class spot {
     function get_translated($what)         { return $this->$what; }
     function get($what)                    { return $this->get_translated(self::SPOT_VAR_NAMES[$what]); }
 
-    function set_translated($what, $value) { $this->$what = $value; }
-    function set($what,$value)             { $this->set_translated(self::SPOT_VAR_NAMES[$what], $value); }
+    function set_translated($what, $value): void { $this->$what = $value; }
+    function set($what,$value): void { $this->set_translated(self::SPOT_VAR_NAMES[$what], $value); }
 
-    function conditionMatches($state) {
+    function conditionMatches($state): bool
+    {
         if ( isset($this->c) AND is_array($this->c) ) {  //c is array of conditions
             foreach ($this->c as $var => $cond) {
                 $value = ($var[0] === '{') ? AA::Un($var, '', $state['item']) : $state[$var];
@@ -272,7 +287,8 @@ class sitetree {
         $this->current_id ??= $this->start_id;
     }
 
-    public function setCurrentId(int $id) {
+    public function setCurrentId(int $id): void
+    {
         $this->current_id = $id;
     }
 
@@ -368,7 +384,8 @@ class sitetree {
      * @param $direction string - 'moveDown' or 'moveLeft'
      * @return bool
      */
-    function move($spot_id, $direction) {
+    function move($spot_id, $direction): bool
+    {
         $spot =& $this->tree[$spot_id];
         if (!$spot) {
             return false;
@@ -526,7 +543,8 @@ class sitetree {
         return true;
     }
 
-    function setFlag($spot_id, $flag) {
+    function setFlag($spot_id, $flag): void
+    {
         $current_flag = $this->get('flag', $spot_id);
 
         // set "structural" flag - stored in structure (not in site_spot table)
@@ -534,7 +552,8 @@ class sitetree {
         $this->set('flag', $spot_id, $current_flag); // wite the state also to the structure
     }
 
-    function clearFlag($spot_id, $flag) {
+    function clearFlag($spot_id, $flag): void
+    {
         $current_flag = $this->get('flag', $spot_id);
 
         // set "structural" flag - stored in structure (not in site_spot table)
@@ -542,7 +561,8 @@ class sitetree {
         $this->set('flag', $spot_id, $current_flag); // wite the state also to the structure
     }
 
-    function isFlag($spot_id, $flag) {
+    function isFlag($spot_id, $flag): int
+    {
         return $this->get('flag', $spot_id) & $flag;
     }
 
@@ -579,13 +599,14 @@ class sitetree {
         return $s ? $s->get($what) : false;
     }
 
-    function set($what, $id, $value) {
+    function set($what, $id, $value): void
+    {
         $s =& $this->tree[$id];
         $s?->set($what, $value);
     }
 
     function getName($id) { return $this->get( 'name', $id ); }
-    function exist($id)  { return isset($this->tree[$id]); }
+    function exist($id): bool { return isset($this->tree[$id]); }
 
     function haveBranches($id): bool {
         return (bool) $this->get('choices', $id);
@@ -595,12 +616,14 @@ class sitetree {
         return (bool) $this->get('positions', $id);
     }
 
-    function isLeaf($id)  {
+    function isLeaf($id): bool
+    {
         $s =& $this->tree[$id];
         return $s->isLeaf();
     }
 
-    function conditionMatches( $id, $state ) {
+    function conditionMatches( $id, $state ): bool
+    {
         $s =& $this->tree[$id];
         return $s ? $s->conditionMatches($state) : false;
     }
@@ -609,7 +632,8 @@ class sitetree {
     /** get all spot ids in the tree
      *  @return array
      */
-    public function getAllSpotIds() {
+    public function getAllSpotIds(): array
+    {
         $foo_apc  = [];
         $spot_ids = [];
         $this->walkTree($foo_apc, 1, function ($spot_id) use (&$spot_ids) { $spot_ids[] = $spot_id; }, 'all');
@@ -620,7 +644,8 @@ class sitetree {
      *
      *
      */
-    function walkTree(&$state, $id, $functions, $method='cond', $depth=0) {
+    function walkTree(&$state, $id, $functions, $method='cond', $depth=0): void
+    {
         // $functions could be array which defines the callback functions,
         // or nonarray - just main - spot -  function
         if (!is_array($functions)) {
@@ -698,7 +723,8 @@ class sitetree {
     } // function
 
 
-    function printSpotName_Start($spot_id, $depth) {
+    function printSpotName_Start($spot_id, $depth): void
+    {
         // print the spot itself
         $this->printSpotHtml($spot_id, $this->getName($spot_id), $spot_id == $this->current_id, ($this->get('flag', $spot_id) & AA_Module_Site::FLAG_DISABLE));
 
@@ -708,7 +734,8 @@ class sitetree {
         }
     }
 
-    function printChoice_Start($spot_id, $depth, $choices_index, $choices_count) {
+    function printChoice_Start($spot_id, $depth, $choices_index, $choices_count): void
+    {
         // begin of the choice (open <div>)
 
         // last choice in the list is special
@@ -740,12 +767,14 @@ class sitetree {
         echo "\n  <div class=\"conditions\">". a_href( self::siteAdminPageUrl($spot_id, ['go_sid'=>$spot_id]), $conditions) ."</div>";
     }
 
-    function printChoice_End($spot_id, $depth, $choices_index, $choices_count) {
+    function printChoice_End($spot_id, $depth, $choices_index, $choices_count): void
+    {
         // close previously opened <div class="choice">
         echo "\n</div>";
     }
 
-    function printVariables( $spot_id, $vars ) {
+    function printVariables( $spot_id, $vars ): void
+    {
         echo "<tr><th>"._m("Spot&nbsp;variables")."</th><td>";
         if (isset($vars) && is_array($vars)) {
             foreach ($vars as $k => $v) {
@@ -758,7 +787,8 @@ class sitetree {
         echo "</form></td></tr>";
     }
 
-    function printConditions($spot_id, $conds, $vars) {
+    function printConditions($spot_id, $conds, $vars): void
+    {
         echo "<tr><th>"._m("Spot&nbsp;conditions")."</th><td>";
         if ( isset($vars) && is_array($vars) ) {
             $i=0;
@@ -791,7 +821,8 @@ class sitetree {
         echo "</td></tr>";
     }
 
-    public function printSpotHtml($spot_id, $spot_name, $selected, $disabled) {
+    public function printSpotHtml($spot_id, $spot_name, $selected, $disabled): void
+    {
         // get class for this spot div
         $class = ($selected) ? ' class="selected"' : '';
 

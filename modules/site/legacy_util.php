@@ -29,7 +29,8 @@ https://www.apc.org/
 
 // id = an item id, unpacked or short
 // short_ids = boolean indicating type of $ids (default is false => unpacked)
-function ModW_id2item($id,$use_short_ids="false") {
+function ModW_id2item($id,$use_short_ids="false"): ?AA_Item
+{
     return AA_Items::getItem(new zids($id, $use_short_ids ? 's' : 'l'));
 }
 
@@ -38,7 +39,8 @@ function ModW_id2item($id,$use_short_ids="false") {
  *  the regular expression then use $strdef
  *  e.g. ModW_str2arr("tpmi",$apc,"--h-",	"^([-p])([-]|[0-9]+)([hbsfcCt])([-]|[0-9]+)";
  */
-function ModW_str2arr($varnames, $str, $strdef, $reg) {
+function ModW_str2arr($varnames, $str, $strdef, $reg): array
+{
     if (!$str) { $str = $strdef; }
     $varout = [];
     $reg    = '`'.str_replace('`','\`',$reg).'`';

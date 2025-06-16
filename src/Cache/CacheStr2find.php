@@ -52,7 +52,8 @@ class CacheStr2find {
      * @param string[] $strings
      * @param string   $type
      */
-    function add($strings, $type='M') {    // it was $type=slice_id, but for cache it is better to use shorter - M (like Module id)
+    function add($strings, $type='M'): void
+    {    // it was $type=slice_id, but for cache it is better to use shorter - M (like Module id)
         if ( !$strings ) {
             return;
         }
@@ -72,7 +73,8 @@ class CacheStr2find {
     /** add_str2find function
      * @param CacheStr2find $str2find
      */
-    function add_str2find($str2find) {
+    function add_str2find($str2find): void
+    {
         if ( is_a($str2find, 'AA\Cache\CacheStr2find') ) {
             foreach ($str2find->strings as $k => $v) {
                 $this->strings[$k] = true;   // copy all the $str2find ids to this
@@ -82,14 +84,16 @@ class CacheStr2find {
 
     /** clear function
      */
-    function clear() {
+    function clear(): void
+    {
         $this->strings = [];
     }
 
     /** store function
      * @param $keyid
      */
-    function store($keyid) {
+    function store($keyid): void
+    {
         $varset = new Cvarset( [['pagecache_id', $keyid], ['str2find','']]);
         $varset->doDeleteWhere('pagecache_str2find', "pagecache_id='$keyid'" );
         foreach (array_keys((array)$this->strings) as $str) {

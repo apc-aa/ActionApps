@@ -32,6 +32,7 @@
 
 */
  // used in init_page.php script to include config.php from the right directory
+use AA\IO\DB\DB_AA;
 use AA\Util\InputVars;
 
 $directory_depth = '../';
@@ -65,7 +66,7 @@ try {
     $cancel = InputVars::boolPOST('cancel');
     
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception) {}
+} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
 // Check permissions for this page.
 
@@ -256,7 +257,7 @@ FrmTabSeparator(_m("Polls design templates"));
 $SQL     = "SELECT id, name FROM polls_design WHERE (module_id=$p_module_id)";
 $designs = GetTable2Array($SQL, 'id', 'name');
 
-$designs = \AA\IO\DB\DB_AA::select(['id'=>'name'], 'SELECT id, name FROM polls_design', [['module_id', AA::$module_id, 'l']]);
+$designs = DB_AA::select(['id'=>'name'], 'SELECT id, name FROM polls_design', [['module_id', AA::$module_id, 'l']]);
 
 
 FrmInputSelect("design_id",           _m("Select design type - before vote"), $designs, $design_id, true);

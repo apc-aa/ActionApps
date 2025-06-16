@@ -59,7 +59,9 @@ if (!($do)) {?>
     <?php
 }
 if ($do==="chu") { //CHeck User
-    if (!($email.$user)) die ("Wrong way, go back !!!");
+    if (!($email.$user)) {
+        die ("Wrong way, go back !!!");
+    }
     if ($user) {
         $by = "headline........";
         $id = $user;
@@ -69,7 +71,9 @@ if ($do==="chu") { //CHeck User
         $id = $email;
     }
     // check if we can find the user either by username (preffered as it's unique) or email address
-    if (!$userdata=GetUserData($id,$by)) die("Can't find the user, sorry. Check the spelling and try again !!!");
+    if (!$userdata=GetUserData($id,$by)) {
+        die("Can't find the user, sorry. Check the spelling and try again !!!");
+    }
     // generate MD5 hash
     $username = $userdata["headline........"][0]['value'];
     $email    = $userdata["con_email......."][0]['value'];
@@ -89,8 +93,12 @@ if ($do==="chu") { //CHeck User
     echo "The email with the key allowing to reset your password has been sent to you to this email address: $email";
 }
 if ($do==="chk" || $do==="chp") { //CHeck Key or CHange Password
-    if (!($key.$user)) die ("Wrong way, go back !!!");
-    if (!$userdata=GetUserData($user,"headline........")) die("Can't find the user, sorry. Check the spelling and try again !!!");
+    if (!($key.$user)) {
+        die ("Wrong way, go back !!!");
+    }
+    if (!$userdata=GetUserData($user,"headline........")) {
+        die("Can't find the user, sorry. Check the spelling and try again !!!");
+    }
     // Check the key
     $username = $userdata["headline........"][0]['value'];
     $email    = $userdata["con_email......."][0]['value'];
@@ -98,7 +106,9 @@ if ($do==="chk" || $do==="chp") { //CHeck Key or CHange Password
     while ($i++<$KeyVal && $pwdkey != $key) {
         $pwdkey = md5($username.$email.AA_ID.round(round(now()/60)-$i));
     }
-    if ($i>=$KeyVal) die("Wrong or expired key, sorry.");
+    if ($i>=$KeyVal) {
+        die("Wrong or expired key, sorry.");
+    }
     if ($do==="chk") {
        echo "Type in a new password for $username:<br>";
        ?>
@@ -119,8 +129,11 @@ if ($do==="chk" || $do==="chp") { //CHeck Key or CHange Password
        //$fields["password........"]["input_insert_func"] = "qte:";
        $userdata["password........"][0]['value']        = ParamImplode(['AA_PASSWD',$password]);
        $update = StoreItem( $itemID, $sliceID, $userdata, false, true, false ); // insert, invalidatecache, feed
-       if ($update) echo "Your password has been updated."; else
-       die ("There was an error updating your password. Please contact ".ERROR_REPORTING_EMAIL);
+       if ($update) {
+           echo "Your password has been updated.";
+       } else {
+           die ("There was an error updating your password. Please contact ".ERROR_REPORTING_EMAIL);
+       }
     }
 }
 /** Fills content array for current loged user */

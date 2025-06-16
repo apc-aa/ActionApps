@@ -26,6 +26,7 @@
 */
 
 use AA\IO\DB\DB_AA;
+use AA\Util\SingletonTrait;
 
 require_once __DIR__ . "/../../../include/zids.php"; // Pack and unpack ids
 
@@ -46,7 +47,8 @@ class AA_Poll {
      *  Load $this from the DB for any of $fields not already loaded
      * @param $force
      */
-    function loadSettings($force=false) {
+    function loadSettings($force=false): void
+    {
         if ( !$force && isset($this->content) ) {
             return;
         }
@@ -57,8 +59,10 @@ class AA_Poll {
     }
 
     /** getProperty function
+     *
      * @param $fname
-     * @return
+     *
+     * @return false|string
      */
     function getProperty($fname) {
         $this->loadSettings();
@@ -68,7 +72,8 @@ class AA_Poll {
     /** Get Unpacked Module ID */
     function getModuleId() { return unpack_id($this->getProperty('module_id')); }
 
-    function getVotesSum() {
+    function getVotesSum(): int
+    {
         if (is_null($this->_sum)){
             $this->_sum = (int)GetTable2Array("SELECT SUM(votes) as sum FROM polls_answer WHERE poll_id = '".$this->poll_id."'", 'aa_first', 'sum');
         }
@@ -85,7 +90,8 @@ class AA_Poll {
      * @param string $design  beforevote|aftervote|<design_id>
      * @return array
      */
-    function get_format_strings($design='beforevote') {
+    function get_format_strings($design='beforevote'): array
+    {
         $this->loadSettings();
         $design_id = match ($design) {
             'aftervote'  => $this->getProperty('aftervote_design_id'),
@@ -128,7 +134,8 @@ class AA_Poll {
         return in_array($string, $columns);
     }
 
-    function unalias($expression) {
+    function unalias($expression): false|string
+    {
         $this->loadSettings();
         if ($this->isField($expression)) {
             return $this->getProperty($expression);
@@ -137,7 +144,8 @@ class AA_Poll {
         return $item->get_item();
     }
 
-    function registerVote($vote_id) {
+    function registerVote($vote_id): bool
+    {
         $vote_invalid = false;
         $current_time = now();
         $poll_id       = $this->id();
@@ -187,7 +195,8 @@ class AA_Poll {
     }
 
 
-    function getOutput($design='beforevote') {
+    function getOutput($design='beforevote'): string
+    {
         $format   = $this->get_format_strings($design);
 
         $set = new AA_Set;
@@ -198,14 +207,16 @@ class AA_Poll {
         return (new itemview($format, new AA_Aliases(new AA_Aliasgenerator_Answer), $zids))->setContentFunct([['AA_Metabase', 'getContent'], ['table' => 'polls_answer']])->get_output();
     }
 
-    function display($design='beforevote') {
+    function display($design='beforevote'): void
+    {
         echo $this->getOutput($design);
     }
 
     /** called like $set=AA_Poll::generateSet()
      *  It creates the set based on the conds and sort array
      */
-    static function generateSet($pid,$conds=null,$sort=null) {
+    static function generateSet($pid,$conds=null,$sort=null): AA_Set
+    {
         $set = new AA_Set;
         $set->addCondition(new AA_Condition('module_id',   '==', xpack_id($pid)));
         // there is also one poll which acts as template - managed from Polls Admin
@@ -245,7 +256,8 @@ class AA_Poll {
     /** called like: echo AA_Poll::processPoll($_REQUEST)
      *  It process all the options/vodes and displays the result for the poll
      */
-    static function processPoll($request) {
+    static function processPoll($request): string
+    {
 
         if (isset($request['vote_id']) && isset($request['poll_id']) && !isset($request['novote'])) {
             $poll = AA_Polls::getPoll($request['poll_id']);
@@ -289,16 +301,22 @@ class AA_Poll {
  */
 class AA_Polls {
 
-    use \AA\Util\SingletonTrait;
+    use SingletonTrait;
 
-    protected $a = [];     // Array poll_id -> AA_Poll object
+    /**
+     * @var AA_Poll[]
+     */
+    protected array $a = [];     // Array poll_id -> AA_Poll object
 
     /** getPoll function
      *  main factory  method
+     *
      * @param $poll_id
-     * @return mixed
+     *
+     * @return AA_Poll
      */
-    static function getPoll($poll_id) {
+    static function getPoll($poll_id): AA_Poll
+    {
         return self::singleton()->_getPoll($poll_id);
     }
 
@@ -322,10 +340,13 @@ class AA_Polls {
     }
 
     /** _getPoll function
+     *
      * @param $poll_id
-     * @return mixed
+     *
+     * @return AA_Poll
      */
-    function & _getPoll($poll_id) {
+    private function & _getPoll($poll_id): AA_Poll
+    {
         if (!isset($this->a[$poll_id])) {
             $this->a[$poll_id] = new AA_Poll($poll_id);
         }

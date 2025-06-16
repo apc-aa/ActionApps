@@ -36,9 +36,10 @@ try {
     $cancel = InputVars::boolGETPOST('cancel');
     
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception) {}
+} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
-function printChange($field, $change_arr, $original_value="") {
+function printChange($field, $change_arr, $original_value=""): void
+{
     global $created_by_change; // used for display of initiator of the change
     $i=0;
     foreach ( (array)$change_arr as $key => $val) {
@@ -55,7 +56,8 @@ function printChange($field, $change_arr, $original_value="") {
     }
 }
 
-function MarkChanged($txt) {
+function MarkChanged($txt): string
+{
     return "<span class=\"change\">$txt</span>";
 }
 
@@ -189,18 +191,18 @@ if ( $r_state['link_id'] ) {
 
 if ( $r_state['link_id'] ) {                  // not new link
     // link region info
-    $SQL= "SELECT region_id FROM links_link_reg
-            WHERE link_id=".$r_state['link_id'];
+    $SQL= "SELECT region_id FROM links_link_reg WHERE link_id=".$r_state['link_id'];
     $db->query($SQL);
-    while ( $db->next_record() )
-        $region[$db->f('region_id')]=true;
+    while ( $db->next_record() ) {
+        $region[$db->f('region_id')] = true;
+    }
 
     // link language info
-    $SQL= "SELECT lang_id FROM links_link_lang
-            WHERE link_id=".$r_state['link_id'];
+    $SQL= "SELECT lang_id FROM links_link_lang WHERE link_id=".$r_state['link_id'];
     $db->query($SQL);
-    while ( $db->next_record() )
-        $language[$db->f('lang_id')]=true;
+    while ( $db->next_record() ) {
+        $language[$db->f('lang_id')] = true;
+    }
 
     // lookup - changes proposal
     $SQL= "SELECT * FROM links_changes, links_links
@@ -264,10 +266,11 @@ while ($db->next_record()) {
         (($region_changes[$fid] == $change_no ) ? "" : MarkChanged(_m('Proposal to uncheck'))) :    // "" means 'Unchanged'
         (($region_changes[$fid] == 0 )          ? "" : MarkChanged(_m('Proposal to check'))));    // "" means 'Unchanged'
     if (!$update) {
-        if ($getOldV)
+        if ($getOldV) {
             $regChecked[] = ($reg_checked[$fid] ? "checked" : ' ');
-        else
+        } else {
             $regChecked[] = ($region[$fid] ? "checked" : ' ');
+        }
     }
 }
 
@@ -282,10 +285,11 @@ while ($db->next_record()) {
         (($language_changes[$fid] == $change_no ) ? "" : MarkChanged(_m('Proposal to uncheck')) ) :   // "" means 'Unchanged'
         (($language_changes[$fid] == 0 )          ? "" : MarkChanged(_m('Proposal to check')) ));            // "" means 'Unchanged'
     if (!$update) {
-        if ($getOldV)
+        if ($getOldV) {
             $langChecked[] = ($lang_checked[$fid] ? "checked" : ' ');
-        else
+        } else {
             $langChecked[] = ($language[$fid] ? "checked" : ' ');
+        }
     }
 }
 
@@ -366,8 +370,9 @@ for ( $i=0 ; $i < CATEGORIES_COUNT_TO_MANAGE; ++$i ) {
 
 $selcatCount = max( $idx, CATEGORIES_COUNT_TO_MANAGE );
 
-if (isset($checked_url))
+if (isset($checked_url)) {
     $url = $checked_url;
+}
 
 // AND now display the form --------------------------------------------------
 
