@@ -49,7 +49,8 @@ class LogCleanup implements LaterInterface {
      * @return string - message about execution to be logged
      * @see \AA\Later\LaterInterface
      */
-    public function toexecutelater($params= []) {
+    public function toexecutelater($params= []): string
+    {
         $where = [['time', $this->time, '<']];
         if ( $this->type ) {
             $where[] = ['type',$this->type];

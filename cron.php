@@ -63,7 +63,8 @@ MoreTimeLimit(3600); // set_time_limit to 1 hour (at least)
  * @param int $time the UNIX timestamp to simulate behaviour on a given date
  *                  - if omitted, uses the current time
  */
-function cron($time = 0) {
+function cron($time = 0): void
+{
 
     if ($_GET['debug']) {
         echo "<html><body>";
@@ -73,7 +74,9 @@ function cron($time = 0) {
     $translate["mon"] = ["jan"=>1,"feb"=>2,"mar"=>3,"apr"=>4,"may"=>5,"jun"=>6,"jul"=>7,"aug"=>8,"sep"=>9,"oct"=>10,"nov"=>11,"dec"=>12];
     $translate["wday"] = ["sun"=>0,"mon"=>1,"tue"=>2,"wed"=>3,"thu"=>4,"fri"=>5,"sat"=>6,"7"=>0];
 
-    if (!$time) $time = time();
+    if (!$time) {
+        $time = time();
+    }
 
     $db = getDB();
 
@@ -190,12 +193,16 @@ function cron($time = 0) {
             fopen($url, 'rb');
         }
     }
-    if ($_GET['debug']) echo "</body></html>";
+    if ($_GET['debug']) {
+        echo "</body></html>";
+    }
 }
 
 // Use this for debug purposes
 /*
-is_object( $db ) || ($db = getDB());
+if (!is_object( $db )) {
+    $db = getDB();
+}
 $db->query("UPDATE cron SET last_run = NULL");
 
 $time = time();

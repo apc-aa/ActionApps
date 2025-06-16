@@ -249,7 +249,8 @@ class Linkcheck {
     /** checking function
      *  checking - runs check_url for links (count defined in LINKS_VALIDATION_COUNT)
      */
-    function checking() {
+    function checking(): void
+    {
         $db = getDB();
 
         // select from links_links, ordered by validated (timestamp),
@@ -294,7 +295,8 @@ class Linkcheck {
      * @param $valid_codes
      * @return string
      */
-    function remove_old($valid_codes) {
+    function remove_old($valid_codes): string
+    {
         $dummy = explode(":", $valid_codes);
         rsort($dummy);
         $valid_codes2 = "";

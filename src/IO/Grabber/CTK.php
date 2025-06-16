@@ -59,7 +59,8 @@ class CTK extends AbstractGrabber
     /** Possibly preparation of grabber - it is called directly before getItem()
      *  method is called - it means "we are going really to grab the data
      */
-    function prepare() {
+    function prepare(): void
+    {
         #$data = file_get_contents($this->file);
         #$xml  = simplexml_load_string($data);
         $xml = simplexml_load_file($this->file);
@@ -72,7 +73,8 @@ class CTK extends AbstractGrabber
     }
 
     /** Method called by the AA\IO\Saver to get next item from the data input */
-    function getItem() {
+    function getItem(): false|ItemContent
+    {
         if (!($polozka = current($this->_items))) {
             return false;
         }

@@ -11,8 +11,11 @@ namespace AA\Util;
 
 
 use AA;
+use ArrayAccess;
+use Countable;
+use Iterator;
 
-class Searchfields implements \Iterator, \ArrayAccess, \Countable {
+class Searchfields implements Iterator, ArrayAccess, Countable {
     use ArrTrait;
 
     /** @var array fields - arr is used also by ArrTrait */
@@ -31,9 +34,10 @@ class Searchfields implements \Iterator, \ArrayAccess, \Countable {
 
     /**
      * @param $properties
-     * @return \AA\Util\Searchfields
+     *
+     * @return Searchfields
      */
-    public static function factoryFromProperties($properties): \AA\Util\Searchfields {
+    public static function factoryFromProperties($properties): Searchfields {
         $i            = 0;
         $searchfields = new self();
 
@@ -80,14 +84,16 @@ class Searchfields implements \Iterator, \ArrayAccess, \Countable {
      * @param int    $order_pri orderbar  priority (0 = "do not show in orderbar")
      * @param string $opt_group
      */
-    public function add( $id, $name, $field, $operators='text', $table='', $search_pri=0, $order_pri=0, $opt_group='') {
+    public function add( $id, $name, $field, $operators='text', $table='', $search_pri=0, $order_pri=0, $opt_group=''): void
+    {
         if (!$id) {
             return;
         }
         $this->arr[$id] = ['name' =>$name, 'field' =>$field, 'operators' =>$operators, 'table' =>$table, 'search_pri' =>$search_pri, 'order_pri' =>$order_pri, 'opt_group' =>$opt_group];
     }
 
-    public function addArray( $id, array $fld) {
+    public function addArray( $id, array $fld): void
+    {
         if (!$id) {
             return;
         }
@@ -100,7 +106,8 @@ class Searchfields implements \Iterator, \ArrayAccess, \Countable {
      * @param bool $add_allnum
      * @return array
      */
-    public function getSearchArray($add_alltext=true, $add_allnum=true) {
+    public function getSearchArray($add_alltext=true, $add_allnum=true): array
+    {
         return $this->generateArray('search', $add_alltext, $add_allnum);
     }
 
@@ -109,14 +116,16 @@ class Searchfields implements \Iterator, \ArrayAccess, \Countable {
      * @param bool $add_allnum
      * @return array
      */
-    public function getOperatorsArray($add_alltext=true, $add_allnum=true) {
+    public function getOperatorsArray($add_alltext=true, $add_allnum=true): array
+    {
         return $this->generateArray('operators', $add_alltext, $add_allnum);
     }
 
     /**
      * @return array
      */
-    public function getOrderArray() {
+    public function getOrderArray(): array
+    {
         $order_fields     = [];
         $fields           = $this->arr;
 
@@ -140,14 +149,16 @@ class Searchfields implements \Iterator, \ArrayAccess, \Countable {
     /** Return array of field ids
      * @return array
      */
-    public function getFieldidsArray() {
+    public function getFieldidsArray(): array
+    {
         return array_keys($this->arr);
     }
 
     /** Return array of field names
      * @return array
      */
-    public function getFieldnamesArray() {
+    public function getFieldnamesArray(): array
+    {
         return array_column($this->arr,'name');
     }
 
@@ -157,7 +168,8 @@ class Searchfields implements \Iterator, \ArrayAccess, \Countable {
      * @param bool $add_allnum
      * @return array
      */
-    private function generateArray($type, $add_alltext=true, $add_allnum=true) {
+    private function generateArray($type, $add_alltext=true, $add_allnum=true): array
+    {
         $search_fields    = [];
         $search_operators = [];
         $fields           = $this->arr;
@@ -201,7 +213,8 @@ class Searchfields implements \Iterator, \ArrayAccess, \Countable {
      *  @param $b array second
      *  @return integer  (0 or 1 or -1)
      */
-    protected static function searchfields_cmp($a, $b) {
+    protected static function searchfields_cmp($a, $b): int
+    {
         if ($a['search_pri'] == $b['search_pri']) {
             return 0;
         }
@@ -213,7 +226,8 @@ class Searchfields implements \Iterator, \ArrayAccess, \Countable {
      * @param $b
      * @return int
      */
-    protected static function orderfields_cmp($a, $b) {
+    protected static function orderfields_cmp($a, $b): int
+    {
         if ($a['order_pri'] == $b['order_pri']) {
             return 0;
         }
@@ -225,7 +239,8 @@ class Searchfields implements \Iterator, \ArrayAccess, \Countable {
      * @todo - replace all calls with Searfield object
      * @return array - old searchfield array for backward compatibility in some functions
      */
-    public function getArrayDeprecated() {
+    public function getArrayDeprecated(): array
+    {
         return $this->arr;
     }
 

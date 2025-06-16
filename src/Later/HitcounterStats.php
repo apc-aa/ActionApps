@@ -11,12 +11,12 @@ class HitcounterStats implements LaterInterface
 {
 
     /** For which slice we will count the hits */
-    var $slice_id;
+    private string $slice_id;
 
     /** For which field we will cont the hits (hit_1...., hit_2...) */
-    var $field_id;
+    private string $field_id;
 
-    function __construct($slice_id, $field_id)
+    function __construct(string $slice_id, string $field_id)
     {
         $this->slice_id = $slice_id;
         $this->field_id = $field_id;

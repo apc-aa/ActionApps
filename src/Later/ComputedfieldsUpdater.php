@@ -9,7 +9,7 @@ class ComputedfieldsUpdater implements LaterInterface
 
     /** plan filed updater process for future time based on field settings
      */
-    function plan()
+    function plan(): void
     {
 
         $fields2count = GetTable2Array("SELECT id, slice_id, input_insert_func FROM field WHERE slice_id <> 'AA_Core_Fields..' AND input_insert_func LIKE 'co2:%'", '');
@@ -60,7 +60,7 @@ class ComputedfieldsUpdater implements LaterInterface
      * @return string - message about execution to be logged
      * @see \AA\Later\LaterInterface
      */
-    public function toexecutelater($params = [])
+    public function toexecutelater($params = []): string
     {
         [$sid] = $params;
         $aa_set = new AA_Set();
@@ -79,7 +79,8 @@ class ComputedfieldsUpdater implements LaterInterface
         $item_updater = new ComputedfieldsItemUpdater();
         $toexecute = new Toexecute;
         foreach ($chunks as $k => $ids) {
-                $toexecute->laterOnce($item_updater, [$sid, $ids], "AA_ComputedfieldsItem_Updater_" . $sid . '_' . $k, 40, time() + 10);
+            $toexecute->laterOnce($item_updater, [$sid, $ids], "AA_ComputedfieldsItem_Updater_" . $sid . '_' . $k, 40, time() + 10);
         }
+        return _m("Planed %1 chunks with %2 items", [count($chunks), count($long_ids)]);
     }
 }

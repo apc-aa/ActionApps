@@ -5,6 +5,7 @@ namespace AA\Optimize;
 use AA;
 use AA\IO\DB\DB_AA;
 use AA_Metabase;
+use AA_Module;
 use AA_Module_Site;
 
 class ConvertSliceEncoding extends AA\Optimize\AbstractOptimize {
@@ -323,7 +324,7 @@ class ConvertSliceEncoding extends AA\Optimize\AbstractOptimize {
       value ...
 
 
-    auth_log  // hardly ever used - log table for special MySQLAuth - could stay as it is
+    auth_log  // hardly ever used (and now removed HM 2025) - log table for special MySQLAuth - could stay as it is
       result ...
 
     cron     // not specific to module. Content is not needed to recode
@@ -560,7 +561,7 @@ class ConvertSliceEncoding extends AA\Optimize\AbstractOptimize {
         $ret = [];
         if ($filter_charset) {
             foreach ($modules as $module_id) {
-                $module = \AA_Module::getModule($module_id);
+                $module = AA_Module::getModule($module_id);
                 if ($module->getCharset() === $filter_charset) {
                     $this->message(_m('"<b>%1</b>" module <b>could</b> be converted.', [$module->getName()]));
                     $ret[] = $module_id;
@@ -622,7 +623,7 @@ class ConvertSliceEncoding extends AA\Optimize\AbstractOptimize {
             /*
               alerts_filter - conds, description
               auth_group - username, groups      ??
-              auth_log   - result
+              auth_log   - result  // removed table HM 2025
               auth_user  - username, password    ??
               change_record - value
               constant - name, value, ancestors ??, description

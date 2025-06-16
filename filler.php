@@ -68,7 +68,7 @@ use AA\Util\InputVars;
 //  1) in $_POST,$_GET,$_COOKIE,$_REQUEST variables the values are not quoted
 //  2) the variables are imported in global scope and is quoted
 // We are trying to remove any dependecy on the point 2) and use only $_* superglobals
-function AddslashesDeep($value)   { return is_array($value) ? array_map('AddslashesDeep',   $value) : addslashes($value);   }
+function AddslashesDeep($value): array|string { return is_array($value) ? array_map('AddslashesDeep',   $value) : addslashes($value);   }
 
 foreach ($_REQUEST as $k => $v) {
     $$k = AddslashesDeep($v);
@@ -126,7 +126,8 @@ require_once __DIR__ . "/include/feeding.php";
 require_once __DIR__ . "/include/zids.php";
 
 
-function UseShowResult($txt,$url) {
+function UseShowResult($txt,$url): void
+{
     // allows to call a script showing the error results from fillform
     $_POST["result"]        = $txt;
     // allows fillform to use this data
@@ -146,7 +147,8 @@ function UseShowResult($txt,$url) {
  * else generates an error page with the $txt message.
  * @param string[] $txt error message to print
  */
-function SendErrorPage(array $txt) {
+function SendErrorPage(array $txt): void
+{
     // $wap variable is set in filler-wap.php
     if ($GLOBALS['wap']) {
         header("Content-type: text/vnd.wap.wml");
@@ -177,7 +179,8 @@ function SendErrorPage(array $txt) {
  * Loads a page if posting is successful. If the ok_url parameter is passed,
  * redirects to the specified URL, else returns to the calling page.
  */
-function SendOkPage($txt, $new_ids = []) {
+function SendOkPage($txt, $new_ids = []): void
+{
 
     // $wap variable if set in filler-wap.php
     if ($GLOBALS['wap']) {

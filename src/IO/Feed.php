@@ -41,7 +41,8 @@ class Feed {
      * @param             $id
      * @param string|null $url = null
      */
-    function loadRSSFeed($id, ?string $url = null) {
+    function loadRSSFeed($id, ?string $url = null): void
+    {
         $this->id   = $id;
         $this->type = self::FEEDTYPE_RSS;
 
@@ -64,7 +65,8 @@ class Feed {
      * @param $id
      * @param $time = null
      */
-    function loadAAFeed($id, $time = null) {
+    function loadAAFeed($id, $time = null): void
+    {
         $this->id   = $id;
         $this->type = self::FEEDTYPE_APC;
 
@@ -119,7 +121,8 @@ class Feed {
      * @param $type
      * @return string
      */
-    public static function getFeedTypeName($type) {
+    public static function getFeedTypeName($type): string
+    {
         return (($type == 1) ? 'RSS' : (($type == 2) ? 'APC' : 'EXACT'));
     }
 
@@ -134,7 +137,8 @@ class Feed {
      *                       display - only display the data from the feed
      *
      */
-    public static function onefeed($feed_id, $feed, $debugfeed, $fire = 'write') {
+    public static function onefeed($feed_id, $feed, $debugfeed, $fire = 'write'): void
+    {
         $slice_id = unpack_id($feed['slice_id']);
         if ($fire === 'write') {
             $grabber = new AA\IO\Grabber\AARSS($feed_id, $feed, $fire);
@@ -183,7 +187,8 @@ class FeedUtil {
      *                             (can be empty)
      * @return string
      */
-    public static function xml_fetch($url, $node_name, $password, $user, $slice_id, $start_timestamp, $categories) {
+    public static function xml_fetch($url, $node_name, $password, $user, $slice_id, $start_timestamp, $categories): string
+    {
         $d["node_name"]       = $node_name;
         $d["password"]        = $password;
         $d["user"]            = $user;
@@ -231,7 +236,8 @@ class FeedUtil {
      * @param $all_categories
      * @return array
      */
-    public static function translteFeedCatid2Value($remote_cat_id, $remote_cat_value, $ext_categs, $l_categs, $all_categories) {
+    public static function translteFeedCatid2Value($remote_cat_id, $remote_cat_value, $ext_categs, $l_categs, $all_categories): array
+    {
 
         // we have set mapping for this category
         $ext_category_id = ((!$all_categories && isset($ext_categs[$remote_cat_id])) ?
@@ -257,7 +263,6 @@ class FeedUtil {
      * @param $ext_categs - remote categories array (structure with name, value,
      *                    target_category_id, approved)
      * @param $l_categs - local categories array [id] => (name, value, parent_id)
-     * @return mixed|null
      */
     public static function translateCategories($cat_field_id, &$item, $ext_categs, $l_categs) {
 
@@ -273,10 +278,7 @@ class FeedUtil {
             // should have value defined
             // This categories are set in special $item[categories] array
             foreach ($item['categories'] as $r_cid) {
-                [
-                    $new_cat,
-                    $approved
-                ] = self::translteFeedCatid2Value($r_cid, $ext_categs[$r_cid]['value'], $ext_categs, $l_categs, $all_categories);
+                [$new_cat, $approved] = self::translteFeedCatid2Value($r_cid, $ext_categs[$r_cid]['value'], $ext_categs, $l_categs, $all_categories);
                 if (is_null($return_approved)) {
                     $return_approved = $approved;
                 }
@@ -293,10 +295,7 @@ class FeedUtil {
             // listed category - strange, but obvious (due feeding, importing, ...)
             foreach ($item['fields_content'][$cat_field_id] as $r_value) {
                 if (!$used_values[trim($r_value['value'])]) {
-                    [
-                        $new_cat,
-                        $approved
-                    ] = self::translteFeedCatid2Value(self::UNPACKED_AA_OTHER_CATEGOR, $r_value['value'], $ext_categs, $l_categs, $all_categories);
+                    [$new_cat, $approved] = self::translteFeedCatid2Value(self::UNPACKED_AA_OTHER_CATEGOR, $r_value['value'], $ext_categs, $l_categs, $all_categories);
                     if (is_null($return_approved)) {
                         $return_approved = $approved;
                     }
@@ -323,7 +322,8 @@ class FeedUtil {
      * @param $cat_refs
      * @param $categs
      */
-    public static function updateCategories($feed_id, &$l_categs, $ext_categs, $cat_refs, $categs) {
+    public static function updateCategories($feed_id, &$l_categs, $ext_categs, $cat_refs, $categs): void
+    {
         global $debugfeed;
         $db = getDB();
         // add new categories or update categories' fields
@@ -336,19 +336,15 @@ class FeedUtil {
                     $SQL = "UPDATE ef_categories SET category_name='" . $category['name'] . "',
                          category='" . $category['value'] . "'
                          WHERE feed_id='$feed_id' AND category_id=" . xpack_id($r_cat_id);
-                    if ($debugfeed >= 8) {
-                        print("\n<br>$SQL");
-                    }
-                    $db->query($SQL);
                 } else {
                     $l_cat_id = self::MapDefaultCategory($l_categs, $category['value'], $category['catparent']);
                     $SQL      = "INSERT INTO ef_categories VALUES ('" . $category['value'] . "','" . $category['name'] . "',
                          " . xpack_id($category['id']) . ",'" . $feed_id . "'," . xpack_id($l_cat_id) . ",'0')";
-                    if ($debugfeed >= 8) {
-                        print("\n<br>$SQL");
-                    }
-                    $db->query($SQL);
                 }
+                if ($debugfeed >= 8) {
+                    print("\n<br>$SQL");
+                }
+                $db->query($SQL);
             }
         }
 
@@ -376,7 +372,8 @@ class FeedUtil {
      * @param $field_refs
      * @param $fields
      */
-    public static function updateFieldsMapping($l_slice_id, $r_slice_id, $field_refs, $fields) {
+    public static function updateFieldsMapping($l_slice_id, $r_slice_id, $field_refs, $fields): void
+    {
         global $debugfeed;
 
         [$ext_map, $field_map] = self::GetExternalMapping($l_slice_id, $r_slice_id);
@@ -435,7 +432,8 @@ class FeedUtil {
      * @param $field
      * @return array
      */
-    public static function field2arr($field) {
+    public static function field2arr($field): array
+    {
         global $rss_version;
         if (str_contains($rss_version, '2.') || str_contains($rss_version, '0.9')) {
             $flag = ((str_contains($field, '<')) ? FLAG_HTML : "");
@@ -454,7 +452,8 @@ class FeedUtil {
      * how to interpret it.
      */
 
-    public static function map1field($value, $item, $channel) {
+    public static function map1field($value, $item, $channel): array
+    {
         global $debugfeed;
         if ($debugfeed >= 8) {
             print("\n<br>xmlclient:map1field:$value");
@@ -517,7 +516,8 @@ class FeedUtil {
      * @param $item
      * @return array
      */
-    public static function contentvalue($item) {
+    public static function contentvalue($item): array
+    {
         $flag = "";
         if (isset($item['content'][self::HTML])) { // HTML is constant!!!
             // choose HTML content first
@@ -540,7 +540,8 @@ class FeedUtil {
      *                      already
      * @return array
      */
-    public static function GetExternalCategories($feed_id, $add_other = false) {
+    public static function GetExternalCategories($feed_id, $add_other = false): array
+    {
         $db         = getDB();
         $ext_categs = [];
         $db->query("SELECT category_id, category, category_name, target_category_id, approved FROM ef_categories WHERE feed_id='$feed_id' ORDER BY category_name");
@@ -587,7 +588,8 @@ class FeedUtil {
      * @param $r_slice_id
      * @return array
      */
-    public static function GetExternalMapping($l_slice_id, $r_slice_id) {
+    public static function GetExternalMapping($l_slice_id, $r_slice_id): array
+    {
         $map_to   = [];
         $map_from = [];
 
@@ -627,7 +629,8 @@ class FeedUtil {
      * while non APC strings need the whole string hashed.
      * @return string id
      */
-    public static function attr2id($str) {
+    public static function attr2id($str): string
+    {
         // Looks like an APC id
         return preg_match("~/(items|cat|slices)/([0-9a-f]{32})~", $str, $regs) ? $regs[2] : string2id($str);
     }
@@ -636,7 +639,8 @@ class FeedUtil {
      * @param $t
      * @return false|int
      */
-    public static function iso8601_to_unixstamp($t) {
+    public static function iso8601_to_unixstamp($t): false|int
+    {
         // It seems to be better to use strtotime() function instead custom parsing as
         // it supports also RFC-822 date time (e.g. "Fri, 30 Jun 2006 00:00:00 +0200")
         // used in rss feeds.
@@ -656,14 +660,17 @@ class FeedUtil {
     /** GetGroupConstants function
      *  Returns Category definitions for specified slice
      *  $cat[<unpacked_id>] = array( 'name'=> , 'value'=> 'parent_id'=> );
+     *
      * @param $slice_id
-     * @return array|bool
+     *
+     * @return array
      */
-    public static function GetGroupConstants($slice_id) {
+    public static function GetGroupConstants($slice_id): array
+    {
         $cat_ids   = [];
         $cat_group = AA_Slice::getModule($slice_id)?->getFields()->getCategoryGroup();
         if (!$cat_group) {
-            return false;
+            return [];
         }
 
         $db  = getDB();
@@ -684,7 +691,6 @@ class FeedUtil {
      * @param $categories (by link)
      * @param $value
      * @param $parent_id
-     * @return int|null|string
      */
     public static function MapDefaultCategory(&$categories, $value, $parent_id) {
         // try to find the same category
@@ -732,7 +738,8 @@ class LastEditList {
      *  @param $conds
      *  @param $slice (by link)
      */
-    function setFromSlice($conds, $slice) {
+    function setFromSlice($conds, $slice): void
+    {
         ParseEasyConds($conds);
         $zids    = QueryZids([$slice->getId()], $conds, '', 'ALL');
         $format  = [
@@ -750,14 +757,16 @@ class LastEditList {
     /** setList function
      * @param $list
      */
-    function setList($list) {
+    function setList($list): void
+    {
         $this->lastlist = $list;
     }
 
     /** printList function
      *
      */
-    function printList() {        // print() can't be name of the method :-( -
+    function printList(): void
+    {        // print() can't be name of the method :-( -
         echo $this->lastlist;     // parse error, unexpected T_PRINT, expecting
     }                             // T_STRING (php 4.3.10),
     // so I postfixed all functions with *List :-(
@@ -771,7 +780,8 @@ class LastEditList {
     /** getPairs function
      *
      */
-    function getPairs() {
+    function getPairs(): array
+    {
         $ret = [];
         foreach (explode(',', $this->lastlist) as $pair) {
             [$id,$time] = explode('-', $pair);

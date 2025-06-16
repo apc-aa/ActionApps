@@ -58,7 +58,7 @@ use AA\Cache\Cacheentry;
 use AA\Cache\CacheStr2find;
 use AA\Cache\PageCache;
 
-function AddslashesDeep($value)   { return is_array($value) ? array_map('AddslashesDeep',   $value) : addslashes($value);   }
+function AddslashesDeep($value): array|string { return is_array($value) ? array_map('AddslashesDeep',   $value) : addslashes($value);   }
 
 foreach ($_REQUEST as $k => $v) {
     $$k = AddslashesDeep($v);

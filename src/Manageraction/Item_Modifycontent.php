@@ -2,6 +2,8 @@
 
 namespace AA\Manageraction;
 
+use AA\Manager;
+
 /** Manager action */
 class Item_Modifycontent extends AbstractManageraction {
 
@@ -14,7 +16,7 @@ class Item_Modifycontent extends AbstractManageraction {
 
     /** Checks if the user have enough permission to perform the action
      *
-     * @param \AA\Manager  $manager
+     * @param Manager  $manager
      *
      * @return bool
      */

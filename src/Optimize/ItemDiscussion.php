@@ -33,7 +33,7 @@ class ItemDiscussion extends AbstractOptimize {
     public function test(): bool {
         $SQL = 'SELECT count(*) as disc_count, item_id FROM `discussion` LEFT JOIN item ON discussion.item_id = item.id WHERE item.short_id IS NULL GROUP BY discussion.item_id';
         $problems = GetTable2Array($SQL, "unpack:item_id", 'disc_count');
-        if ($problems == false) {
+        if (!$problems) {
             $this->message(_m('No problems found'));
             return true;
         }
@@ -58,7 +58,7 @@ class ItemDiscussion extends AbstractOptimize {
         $db->query($SQL);
         $SQL = "DELETE FROM `discussion` WHERE item_id = ''";
         $db->query($SQL);
-        $this->message(_m('%1 problems solved', [count($problems)]));
+        $this->message(_m('%1 problems solved', [count((array)$problems)]));
         freeDb($db);
         return true;
     }

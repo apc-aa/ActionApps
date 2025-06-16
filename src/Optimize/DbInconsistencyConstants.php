@@ -3,6 +3,8 @@
 namespace AA\Optimize;
 
 use AA\IO\DB\DB_AA;
+use AA\Util\Adminlink;
+
 use function _m;
 
 /** Testing if feeds table do not contain relations to non-existent slices
@@ -75,7 +77,7 @@ class DbInconsistencyConstants extends AbstractOptimize {
 
         foreach ($non_ascii as $grp) {
             $this->message(['problem' =>_m('Non ASCII chars in group_id'),
-                            'group'   => \AA_Adminlink::searchLink($grp, $grp),
+                            'group'   => Adminlink::searchLink($grp, $grp),
                             'values'  => implode(', ', DB_AA::select('c', "SELECT CONCAT(`name`,'->',`value`) as c FROM `constant`", [['group_id', $grp]]))]);
             $ret = false;
         }
@@ -85,7 +87,7 @@ class DbInconsistencyConstants extends AbstractOptimize {
 
         foreach ($not_used as $grp) {
             $this->message(['problem' =>_m('Not used constant group'),
-                            'group'   => \AA_Adminlink::searchLink($grp, $grp),
+                            'group'   => Adminlink::searchLink($grp, $grp),
                             'values'  => implode(', ', DB_AA::select('c', "SELECT CONCAT(`name`,'->',`value`) as c FROM `constant`", [['group_id', $grp]]))]);
             $ret = false;
         }

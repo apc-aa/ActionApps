@@ -11,6 +11,7 @@ use AA\FormArray;
 use AA_Content;
 use AA_Item;
 use AA_Property;
+use Exception;
 
 /** Info text - just Output */
 class InfWidget extends Widget
@@ -43,7 +44,7 @@ class InfWidget extends Widget
      * @param  string       $type  normal|live|ajax
      *
      *  @return array
-     *  @throws \Exception
+     *  @throws Exception
      */
     function _getRawHtml(AA_Property $aa_property, AA_Content $content, string $type = 'normal'): array {
         $property_id = $aa_property->getId();

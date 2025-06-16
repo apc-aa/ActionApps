@@ -37,7 +37,8 @@ class ToexecuteCleanup implements LaterInterface
      * @return string - message about execution to be logged
      * @see \AA\Later\LaterInterface
      */
-    public function toexecutelater($params= []) {
+    public function toexecutelater($params= []): string
+    {
         return (new TableCleaner('toexecute', [['priority',0,'i']]))->clean();
     }
 }

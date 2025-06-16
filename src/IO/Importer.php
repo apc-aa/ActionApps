@@ -28,9 +28,10 @@
 namespace AA\IO;
 
 
+use AA\Later\LaterInterface;
 use AA\Util\NamedInterface;
 
-class Importer implements \AA\Later\LaterInterface {
+class Importer implements LaterInterface {
     protected $id;
 
     /** @var Saver  */

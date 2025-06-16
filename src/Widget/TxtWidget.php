@@ -133,7 +133,7 @@ class TxtWidget extends Widget
      * @param array $base
      * @return string
      */
-    protected function getOneInput($input_name, $i, $val, $attrs, $required, $no_htmleditor_link, $base)
+    protected function getOneInput($input_name, $i, $val, $attrs, $required, $no_htmleditor_link, $base): string
     {
 
         $showhtmlarea   = $this instanceof \AA\Widget\EdtWidget;

@@ -2,6 +2,7 @@
 
 namespace AA\Manageraction;
 
+use AA\Manager;
 use AA_Property;
 use AA_Storable;
 use zids;
@@ -16,14 +17,13 @@ use zids;
 abstract class AbstractManageraction extends AA_Storable {
 
     var $id;
-    /** @var string */
-    var $open_url;
-    /** @var string */
-    var $open_url_add;
-    /** @var string */
+
+    protected string $open_url = '';
+
+    protected string $open_url_add = '';
 
     /** constructor - assigns identifier of action */
-    function __construct($id, $open_url = null, $open_url_add = null) {
+    function __construct($id, string $open_url = '', string $open_url_add = '') {
         $this->id = $id;
         if ($open_url) {
             $this->setOpenUrl($open_url, $open_url_add);
@@ -54,17 +54,17 @@ abstract class AbstractManageraction extends AA_Storable {
     /** ID of this Manager's action
      * @return string
      */
-    function getId() { return $this->id; }
+    function getId(): string { return $this->id; }
 
     /** Should this action open new window? And if so, which one?
      * @return string
      */
-    function getOpenUrl() { return $this->open_url; }
+    function getOpenUrl(): string { return $this->open_url; }
 
     /** Any addition to url
      * @return string
      */
-    function getOpenUrlAdd() { return $this->open_url_add; }
+    function getOpenUrlAdd(): string { return $this->open_url_add; }
 
     /** if you want to generate button to manager, redefine this method
      * @return array   ['label'=>, 'attr'=>, 'cond'] */
@@ -91,29 +91,30 @@ abstract class AbstractManageraction extends AA_Storable {
     }
 
     /**
-     * @param string      $url
-     * @param string|null $add
+     * @param string $url
+     * @param string $add
      */
-    function setOpenUrl($url, $add = null) {
+    public function setOpenUrl(string $url, string $add=''): void
+    {
         $this->open_url     = $url;
         $this->open_url_add = $add;
     }
 
     /** Perform the action - main function
      *
-     * @param \AA\Manager         $manager      which Manager
+     * @param Manager         $manager      which Manager
      * @param zids                $item_zids    with what Items
      * @param string|array        $action_param additional parameters to the action
      *
      * @return string|false false is OK, string contain Error message
      */
-    function perform(\AA\Manager $manager, zids $item_zids, $action_param): string|false {
+    function perform(Manager $manager, zids $item_zids, $action_param): string|false {
         return false;
     }
 
     /** Checks if the user have enough permission to PERFORM the action on items
      *
-     * @param \AA\Manager $manager
+     * @param Manager $manager
      * @param                     $item_zids
      * @param                     $action_param
      *
@@ -125,7 +126,7 @@ abstract class AbstractManageraction extends AA_Storable {
 
     /** Checks if the user have enough permission to allow him/her to SELECT the action
      *
-     * @param \AA\Manager $manager
+     * @param Manager $manager
      *
      * @return bool
      */
@@ -134,7 +135,8 @@ abstract class AbstractManageraction extends AA_Storable {
     }
 
     /** Does this action have some settings, which should be displayed? */
-    function isSetting() {
+    function isSetting(): bool
+    {
         return is_callable([$this, 'htmlSettings']);
     }
 }

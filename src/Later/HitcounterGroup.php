@@ -15,7 +15,7 @@ use CVarset;
  */
 class HitcounterGroup implements LaterInterface
 {
-    /** @var bool|null caches if we use duration logging for speedup */
+    /** @var int|null caches if we use duration logging for speedup */
     private static ?int $duration_log_feature_from = null;
 
     /** special function called from AA\Later\Toexecute class - used for queued tasks (ran form cron)
@@ -23,7 +23,7 @@ class HitcounterGroup implements LaterInterface
      * @return string - message about execution to be logged
      * @see \AA\Later\LaterInterface
      */
-    public function toexecutelater($params = [])
+    public function toexecutelater($params = []): string
     {
         if (is_null(self::$duration_log_feature_from)) {
             $duration_helper = new AddDurationLog();
@@ -39,15 +39,19 @@ class HitcounterGroup implements LaterInterface
 
         [$begin, $step] = $params;
 
+        $type = 'basic';
         if (self::$duration_log_feature_from && self::$duration_log_feature_from <= ($begin+$step)) {
             $this->groupHitsDuration($begin, $step);
+            $type = 'duration';
         } else {
             $this->groupHitsBasic($begin, $step);
         }
+        return "$type;$begin;$step";
     }
 
     /** group code for basic log without duration stats - older code */
-    protected function groupHitsBasic(int $begin, int $step) {
+    protected function groupHitsBasic(int $begin, int $step): void
+    {
         $time_cond = $this->getTimecondition($begin, $step);
 
         // possible new approach

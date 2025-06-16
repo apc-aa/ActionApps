@@ -51,6 +51,7 @@ use AA_Searchbar;
 use AA_Set;
 use AA_Storable;
 use AA_Views;
+use Exception;
 use itemview;
 use zids;
 
@@ -90,7 +91,7 @@ class Managed {
     public function getType(): string { return ''; }
 
 
-    public function setAction(string $action, $state = true): Managed {
+    public function setAction(string $action, $state = true): static {
         $this->add_action[$action] = $state;
         return $this;
     }
@@ -131,7 +132,7 @@ class Managed {
     /**
      * @param array $settings
      */
-    public function setSettings(array $settings): Managed {
+    public function setSettings(array $settings): static {
         $this->settings = $settings;
         return $this;
     }
@@ -195,7 +196,7 @@ class Managed {
      * @param string $url
      * @return Managed
      */
-    public function setUrl(string $url): Managed {
+    public function setUrl(string $url): static {
         $this->url = $url;
         return $this;
     }
@@ -208,7 +209,7 @@ class Managed {
      * @param string $module_id
      * @return Managed
      */
-    public function setModule(string $module_id): Managed {
+    public function setModule(string $module_id): static {
         $this->settings['module_id'] = $module_id;
         return $this;
     }
@@ -217,7 +218,7 @@ class Managed {
      * @param string $text
      * @return Managed
      */
-    public function setTitle(string $text): Managed {
+    public function setTitle(string $text): static {
         $this->msg_title = $text;
         return $this;
     }
@@ -226,7 +227,7 @@ class Managed {
      * @param string|null $text
      * @return Managed
      */
-    public function setNoitem(?string $text): Managed {
+    public function setNoitem(?string $text): static {
         if (isset($text) && strlen($text)) {
             $this->msg_noitem = $text;
         }
@@ -237,7 +238,7 @@ class Managed {
      * @param string $text
      * @return Managed
      */
-    public function setAbout(string $text): Managed {
+    public function setAbout(string $text): static {
         $this->msg_about = $text;
         return $this;
     }
@@ -246,7 +247,7 @@ class Managed {
      * @param array $columns
      * @return Managed
      */
-    public function setColumns(array $columns): Managed  {
+    public function setColumns(array $columns): static  {
         $this->columns = $columns;
         return $this;
     }
@@ -256,7 +257,7 @@ class Managed {
      * @param $format
      * @return Managed
      */
-    public function setColumn(string $col, string $format): Managed  {
+    public function setColumn(string $col, string $format): static  {
         if ($format === '') {
             unset($this->columns[$col]);
         } else {
@@ -273,7 +274,7 @@ class Managed {
      * @param string $format The column format
      * @return Managed The Manager object with the newly added column
      */
-    public function addColumn(string $col, string $name, string $format): Managed  {
+    public function addColumn(string $col, string $name, string $format): static  {
         $this->columns[$col] = [$name, $format];
         return $this;
     }
@@ -303,7 +304,7 @@ class Managed {
     }
 
     /** Set which typ of zids it uses - 's' | 'l' | 'w' */
-    public function setZidsType(string $zids_type): Managed {
+    public function setZidsType(string $zids_type): static {
         $this->zids_type = $zids_type;
         return $this;
     }
@@ -453,16 +454,14 @@ class Manager extends AA_Storable {
     /** @var string searchbar additional function name */
     protected $searchbar_funct;
 
-    protected ?AA_Scroller $scroller;
+    protected ?AA_Scroller $scroller   = null;
 
-    /** @var Manageractions  */
-    protected $actions;
+    protected ?Manageractions $actions = null;
 
     protected $actions_hint;
     protected $actions_hint_url;
 
-    /** @var Manageractions  */
-    protected $switches;
+    protected ?Manageractions $switches = null;
 
     protected $query_funct = [];
 
@@ -584,12 +583,14 @@ class Manager extends AA_Storable {
     /** get module id of the module, which is managed by the manager
      * @return string
      */
-    function getModuleId() {
+    function getModuleId(): string
+    {
         return $this->module_id;
     }
 
     /** sets the bin, where we are */
-    function setBin($bin) {
+    function setBin($bin): void
+    {
         $this->bin = $bin;
     }
 
@@ -599,12 +600,13 @@ class Manager extends AA_Storable {
     }
 
     /** setRestrictionConds */
-    function setRestrictionConds(array $conds) {
+    function setRestrictionConds(array $conds): void
+    {
         $this->restrict_conds = $conds;
     }
 
     /** do not restrict the manager just to one module */
-    function setAllModules(): self {
+    function setAllModules(): static {
         $this->all_modules = true;
         return $this;
     }
@@ -613,7 +615,8 @@ class Manager extends AA_Storable {
      *  initial manager setting from user's profile
      * @param AA_Profile $profile
      */
-    function setFromProfile($profile) {
+    function setFromProfile($profile): void
+    {
         // set default admin interface settings from user's profile
 
         // get default number of listed items from user's profile
@@ -623,7 +626,8 @@ class Manager extends AA_Storable {
 
     /** @return AA_Set object - should be used instead of getConds and getSort
      */
-    function getSet() {
+    function getSet(): AA_Set
+    {
         $set = $this->searchbar ? $this->searchbar->getSet() :  new AA_Set;
         if (!$this->all_modules && $this->module_id) {
             $set->setModules([$this->module_id]);
@@ -652,43 +656,42 @@ class Manager extends AA_Storable {
      * Get conditios (conds[] array) for *_QueryIDs from set
      * @deprecated - use getSet() instead
      */
-    function getConds() {
-        $set = $this->getSet();
-        return $set->getConds();
+    function getConds(): array
+    {
+        return $this->getSet()->getConds();
     }
 
     /** getSort function
      * Get sort[] array for *_QueryIDs from set
      * @deprecated - use getSet() instead
      */
-    function getSort() {
-        $set = $this->getSet();
-        return $set->getSort();
+    function getSort(): array
+    {
+        return $this->getSet()->getSort();
     }
 
     /**
      * @return array 'id'=>'name'
      */
-    function getBookmarkNames() {
+    function getBookmarkNames(): array
+    {
         if ( $this->searchbar ) {
             return $this->searchbar->getBookmarkNames();
         }
         return [];
     }
 
-    function setFromBookmark($bookmark_id) {
-        if ( $this->searchbar ) {
-            $this->searchbar->setFromBookmark($bookmark_id);
-        }
+    function setFromBookmark($bookmark_id): void
+    {
+        $this->searchbar?->setFromBookmark($bookmark_id);
     }
 
     /** resetSearchBar function
      *  Resets the searchbar (both - Search and Order)
      */
-    function resetSearchBar() {
-        if ( $this->searchbar ) {
-            $this->searchbar->resetSearchAndOrder();
-        }
+    public function resetSearchBar(): void
+    {
+        $this->searchbar?->resetSearchAndOrder();
     }
 
     /** addOrderBar function
@@ -697,10 +700,9 @@ class Manager extends AA_Storable {
      *               value other than 'a' means DESCENDING
      * for description @see searchbar.class.php
      */
-    function addOrderBar($sort) {
-        if ( $this->searchbar ) {
-            $this->searchbar->addOrder($sort);
-        }
+    public function addOrderBar($sort): void
+    {
+        $this->searchbar?->addOrder($sort);
     }
 
 
@@ -711,17 +713,17 @@ class Manager extends AA_Storable {
      * @param bool $readonly
      * @see searchbar.class.php for description
      */
-    function addSearchBar($conds, bool $readonly=false) {
-        if ( $this->searchbar ) {
-            $this->searchbar->addSearch($conds, $readonly);
-        }
+    public function addSearchBar($conds, bool $readonly=false): void
+    {
+        $this->searchbar?->addSearch($conds, $readonly);
     }
 
     /** setListlen function
      *  Sets listing length - number of items per page
      * @param $listlen
      */
-    function setListlen( $listlen ) {
+    function setListlen( $listlen ): void
+    {
         if ( $this->scroller && ($listlen > 0) ) {
             $this->scroller->setListlen($listlen)->go2page(1);
         }
@@ -730,21 +732,11 @@ class Manager extends AA_Storable {
     /** Go to specified page (obviously 1) in scroller
      * @param $page
      */
-    function go2page( $page ) {
+    public function go2page( $page ): void
+    {
         if ( $this->scroller && ($page > 0) ) {
             $this->scroller->go2page($page);
         }
-    }
-
-    /**
-     * @param string $akce
-     * @return null|Manageraction\AbstractManageraction
-     */
-    function getAction($akce) {
-        if (!is_object($this->actions)) {
-            return null;
-        }
-        return $this->actions->getAction($akce);
     }
 
     /**
@@ -759,14 +751,12 @@ class Manager extends AA_Storable {
 
     /** performActions function
      */
-    function performActions() {
-
-        $akce = $_REQUEST['akce'];
+    function performActions(): void
+    {
 
         /** used for AJAX display of action parameters */
         if ( $_GET['display_params'] ) {
-            $action2display = $this->getAction($_GET['display_params']);
-            if ($action2display) {
+            if ($action2display = $this->actions?->getAction((string)$_GET['display_params'])) {
                 echo $action2display->htmlSettings();
             }
             exit;
@@ -788,22 +778,20 @@ class Manager extends AA_Storable {
             $this->searchbar->update();
         }
 
-        /** @var zids $item_zids */
         $item_zids = $this->getPostedItems(); // in some managers we use 'x' before the item id - remove it
 
         // new approach uses AA\Manageractions
-        if ($akce && is_object($this->actions)) {
-            $actions   = $this->actions;
-            $action2do = $actions->getAction($akce);
+        $akce = (string)$_REQUEST['akce'];
+        if ($akce && $this->actions) {
+            $action2do = $this->actions->getAction($akce);
             if ( $action2do && $action2do->isPerm4Perform($this, $item_zids, $_REQUEST['akce_param'])) {
                 $this->msg[] = $action2do->perform($this, $item_zids, $_REQUEST['akce_param']);
             }
         }
 
         // new approach uses AA\Manageractions
-        if (is_object($this->switches)) {
-            $switches     = $this->switches;
-            foreach ( $switches as $sw => $switch ) {
+        if ($this->switches) {
+            foreach ($this->switches as $sw => $switch ) {
                 if ( isset($_GET[$sw]) && $switch->isPerm4Perform($this, $item_zids, $_GET[$sw])) {
                     $this->msg[] = $switch->perform($this, $item_zids, $_GET[$sw]);
                 }
@@ -811,7 +799,7 @@ class Manager extends AA_Storable {
         }
 
         // update scroller (items could be deleted, moved, ...)
-        if ( isset($this->scroller) ) {
+        if ( $this->scroller ) {
             $this->scroller->update();
             if ( $_GET['listlen'] ) {
                 $this->setListlen($_GET['listlen']);
@@ -877,7 +865,7 @@ class Manager extends AA_Storable {
     /**
      * @param zids|null $zids  @deprecated - manager should generate the zids from its own settings
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     function getDisplayPage(zids $zids=null): string {
         global $r_state;
@@ -918,7 +906,8 @@ class Manager extends AA_Storable {
      * and includes necessary javascripts for manager
      * @param bool $head_end
      */
-    function printHtmlPageBegin($head_end = false) {
+    function printHtmlPageBegin($head_end = false): void
+    {
         // Print HTML start page (html begin, encoding, style sheet, no title)
         HtmlPageBegin();
         // manager javascripts - must be included
@@ -962,7 +951,7 @@ class Manager extends AA_Storable {
         $itemview = $this->managed->getItemview($zids, $this->module_id, $this->scroller->getListlen());
 
         $ids_count = $zids->count();
-        if ( $ids_count == 0 ) {
+        if ( !$ids_count ) {
             $ret .= "<div>". $itemview->unaliasWithScroller($this->managed->msg_noitem). "</div></form><br>";
             return $ret;
         }
@@ -990,7 +979,7 @@ class Manager extends AA_Storable {
             $options = '';
 
             // new approach uses AA\Manageractions
-            if (is_object($this->actions)) {
+            if ($this->actions) {
                 $i       = 1;  // we start on 1 because first option is "Select action:"
 
                 foreach( $this->actions as $action ) {

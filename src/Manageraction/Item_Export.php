@@ -22,7 +22,7 @@ class Item_Export extends AbstractManageraction {
     function perform(Manager $manager, zids $item_zids, $action_param): string|false
     {
 
-        if ($item_zids->count() > 0) {
+        if ($item_zids->count()) {
             $exportset = AA_Object::factory('AA_Exportsetings', [
                 'grabber_type' => 'AA\IO\Grabber\Slice',
                 'format'       => 'AA_Exporter_Excel',

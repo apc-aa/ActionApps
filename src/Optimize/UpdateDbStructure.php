@@ -5,6 +5,8 @@ namespace AA\Optimize;
 use AA;
 use AA\Util\Difftext;
 use AA_Metabase;
+use RuntimeException;
+
 use function _m;
 
 /** Updates the database structure for AA. It checks all the tables in current
@@ -135,7 +137,7 @@ class UpdateDbStructure extends \AA\Optimize\AbstractOptimize {
 
                 $this->query('COMMIT');
                 $this->message(_m('%1 done.', [$tablename]));
-            } catch (\RuntimeException $e) {
+            } catch (RuntimeException $e) {
                 // Rollback the transaction if any query fails
                 $this->query('ROLLBACK');
                 // Log the error message or handle the exception as needed

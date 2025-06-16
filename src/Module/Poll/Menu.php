@@ -14,7 +14,8 @@ use AA_Profile;
 
 class Menu
 {
-    public static function get_menu() {
+    public static function get_menu(): array
+    {
         global $r_slice_view_url, $r_state, $polledit, $slice_id;
 
         $module_location = "modules/polls/";

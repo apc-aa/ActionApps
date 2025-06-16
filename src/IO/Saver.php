@@ -28,22 +28,26 @@
 namespace AA\IO;
 
 use AA;
+use AA\IO\Grabber\AbstractGrabber;
+use AA\Util\ReportTrait;
 use AA_Condition;
+use AA_Item;
 use AA_Set;
 use AA_Transformation;
+use Exception;
 use ItemContent;
 
 /** Saver class - Used for filling items into AA
- * @param \AA\IO\Grabber\AbstractGrabber grabber          - provides source for item data
+ * @param AbstractGrabber grabber          - provides source for item data
  * @param $transformations - defines, how the source item should be transformed
  *                            into destination item
  */
 class Saver implements AA\Later\LaterInterface {
-    use \AA\Util\ReportTrait {
+    use ReportTrait {
         report as protected traitreport;
     }
 
-    /** @var \AA\IO\Grabber\AbstractGrabber the object which delivers the data */
+    /** @var AbstractGrabber the object which delivers the data */
     protected $grabber;
 
     /** describes, what to do with data before storing
@@ -67,7 +71,7 @@ class Saver implements AA\Later\LaterInterface {
      */
     private array $validate = [];
 
-    /** [{aa-expression},..] - expression to compute - if set, all rows are evaluated (unaliased) - could by used with $fire=false to test inserted data  */
+    /** [{aa-expression},..] - expression to compute - if set, all rows are evaluated (unaliased) - could be used with $fire=false to test inserted data  */
     private array $compute = [];
 
     /** key for compute array - probably like {id}, ...   */
@@ -90,14 +94,14 @@ class Saver implements AA\Later\LaterInterface {
 
     /** AA\IO\Saver function
      *
-     * @param \AA\IO\Grabber\AbstractGrabber  $grabber
+     * @param AbstractGrabber  $grabber
      * @param AA_Transformation[]             $transformations
      * @param string                          $slice_id
      * @param  string                         $store_mode  @see  Saver::$store_mode
      * @param  string                         $id_mode
      * @param  string                         $error_mode
      */
-    function __construct(AA\IO\Grabber\AbstractGrabber $grabber, $transformations=null, $slice_id=null, string $store_mode='', string $id_mode='', string $error_mode='') {
+    function __construct(AbstractGrabber $grabber, $transformations=null, $slice_id=null, string $store_mode='', string $id_mode='', string $error_mode='') {
         $this->grabber         = $grabber;
         $this->transformations = is_array($transformations) ? $transformations : [];
         $this->slice_id        = $slice_id;
@@ -107,7 +111,8 @@ class Saver implements AA\Later\LaterInterface {
     }
 
     /** resets item / slice counters */
-    function clear_ids() {
+    function clear_ids(): void
+    {
         $this->_new_ids = [];
         $this->_updated_ids = [];
         $this->_updated_slices = [];
@@ -124,7 +129,7 @@ class Saver implements AA\Later\LaterInterface {
     {
         try {
             $this->grabber->prepare();    // maybe some initialization in grabber
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->message("grabber->prepare() Error: ". $e->getMessage());
             return [0,1];
         }
@@ -242,7 +247,7 @@ class Saver implements AA\Later\LaterInterface {
 
             AA::$slice_id = $content4id->getSliceID();   // pass validator the current slice of added item for slice unique
 
-            $item = ($this->compute || $this->validate) ? new \AA_Item($content4id) : null;
+            $item = ($this->compute || $this->validate) ? new AA_Item($content4id) : null;
 
             if ($this->validate && ($err_arr = $this->test_validate($item))) {
                 $err_count++;
@@ -310,10 +315,10 @@ class Saver implements AA\Later\LaterInterface {
     }
 
     /** Checks if the item is valid based on custom validate string
-     * @param  \AA_Item|null  $item
+     * @param  AA_Item|null  $item
      * @return array array of error strings (empty array [] on success
      */
-    protected function test_validate(?\AA_Item $item): array {
+    protected function test_validate(?AA_Item $item): array {
         $err_array    = [];
         $unaliased = $this->compute_arr($this->validate, $item);
         foreach ($unaliased as $validate_str) {
@@ -329,7 +334,7 @@ class Saver implements AA\Later\LaterInterface {
     }
 
     /** unalias all the strings in the array - used in validate and compute */
-    private function compute_arr(array $arr, ?\AA_Item $item): array {
+    private function compute_arr(array $arr, ?AA_Item $item): array {
         return array_map(static fn($exp) => trim(AA::Un($exp, '', $item)), $arr);
     }
 
@@ -362,7 +367,8 @@ class Saver implements AA\Later\LaterInterface {
      *  @return string - message about execution to be logged
      *  @see \AA\Later\LaterInterface
      */
-    public function toexecutelater($params= []) {
+    public function toexecutelater($params= []): string
+    {
         $ret = $this->run();
         return "OK: $ret[0], Err: $ret[1]";
     }
@@ -385,7 +391,7 @@ class Saver implements AA\Later\LaterInterface {
      * @param string $validate
      * {aa-expression} - expression to validate the inserted item - if set, must be equal to '1' for storing the item
      */
-    public function addValidate(string $validate): Saver {
+    public function addValidate(string $validate): static {
         $this->validate[] = $validate;
         return $this;
     }
@@ -396,7 +402,7 @@ class Saver implements AA\Later\LaterInterface {
      *
      * @return Saver
      */
-    public function setCompute(array $texts, ?string $key=null): Saver {
+    public function setCompute(array $texts, ?string $key=null): static {
         $this->compute     = $texts;
         $this->compute_key = $key;
         return $this;

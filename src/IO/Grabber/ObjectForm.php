@@ -10,6 +10,7 @@ namespace AA\IO\Grabber;
 
 use AA\Widget\Widget;
 use AA_Content;
+use Exception;
 
 /** AA\IO\AbstractGrabber\AbstractGrabber\ObjectForm - Grabs data POSTed by AA form
  *
@@ -100,12 +101,13 @@ class ObjectForm extends AbstractGrabber
 
     /** Possibly preparation of grabber - it is called directly before getObject()
      *  method is called - it means "we are going really to grab the data
-     * @throws \Exception
+     * @throws Exception
      */
-    function prepare() {
+    function prepare(): void
+    {
         $this->_content = [];
         if (!is_array($_POST['aa'] ?? null)) {
-            throw new \Exception('No data in POST');
+            throw new Exception('No data in POST');
         }
 
         /** the object ids are in the form of i<object_id> for edited objects,
@@ -161,7 +163,8 @@ class ObjectForm extends AbstractGrabber
     /** Function called by AA\IO\Saver after we get the last object from the data
      *  input
      */
-    function finish() {
+    function finish(): void
+    {
         $this->_content = [];
     }
 
@@ -172,7 +175,8 @@ class ObjectForm extends AbstractGrabber
      *    class
      *    owner
      */
-    private static function _parseDirtyId($dirty_obj_id, $id_trans_table) {
+    private static function _parseDirtyId($dirty_obj_id, $id_trans_table): array
+    {
         $ret = [];
         switch ($dirty_obj_id[0]) {
             case 'u':

@@ -40,7 +40,8 @@ class OnPageChanger  {
         $this->content_function = $content_function;
     }
 
-    public function checkAndProcessCall($additional_validity_check=true) {
+    public function checkAndProcessCall(bool $additional_validity_check=true): void
+    {
         global $auth;
         if (IsAjaxCall()) {
             header("Content-type: application/json");
@@ -70,7 +71,8 @@ class OnPageChanger  {
         }
     }
 
-    protected function sendPartsAndExit($vars, $add_error_msg ='') {
+    protected function sendPartsAndExit($vars, $add_error_msg =''): void
+    {
         // we need to evaluate $page_content in order to reevaluate DependentParts
         call_user_func($this->content_function);
 

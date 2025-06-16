@@ -51,7 +51,7 @@ class FixDatewidget extends AbstractOptimize {
      */
     public function repair(): bool {
         //$metabase = AA::Metabase();
-        $changed = DB_AA::sql("UPDATE field SET input_show_func=REPLACE(input_show_func, \"'\", ':')", [['input_show_func', "dte:%'%", 'LIKE' ]]);
+        $changed = DB_AA::sql("UPDATE field SET `input_show_func`=REPLACE(`input_show_func`, \"'\", ':')", [['input_show_func', "dte:%'%", 'LIKE' ]]);
         $this->message(_m('Fixed %1 fields', [$changed]));
         return true;
     }

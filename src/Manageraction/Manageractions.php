@@ -2,29 +2,30 @@
 
 namespace AA\Manageraction;
 
+use AA\Util\ArrTrait;
 use ArrayAccess;
 use Countable;
 use Iterator;
 
 class Manageractions implements Iterator, ArrayAccess, Countable {
-    use \AA\Util\ArrTrait;
+    use ArrTrait;
 
-    /** @var \AA\Manageraction\AbstractManageraction[] */
+    /** @var AbstractManageraction[] */
     protected array $arr = [];
 
-    function __construct()
-    {
-    }
+    public function __construct()    {}
 
     /**
      * @param $id
-     * @return \AA\Manageraction\AbstractManageraction|null
+     *
+     * @return AbstractManageraction|null
      */
-    function getAction($id) {
+    public function getAction($id): ?AbstractManageraction
+    {
         return $this->arr[$id] ?: null;
     }
 
-    function getManagerButtons(string $manager_url, string $id_alias, string $module_alias): array {
+    public function getManagerButtons(string $manager_url, string $id_alias, string $module_alias): array {
         $btns = [];
         foreach ($this->arr as $a) {
             $btns = array_merge($btns, $a->getButton($manager_url, $id_alias, $module_alias));
@@ -33,10 +34,12 @@ class Manageractions implements Iterator, ArrayAccess, Countable {
     }
 
     /**
-     * @param \AA\Manageraction\AbstractManageraction $action
-     * @return \AA\Manageraction\AbstractManageraction
+     * @param  AbstractManageraction  $action
+     *
+     * @return AbstractManageraction
      */
-    function addAction($action) {
+    public function addAction($action): AbstractManageraction
+    {
         return $this->arr[$action->getId()] = $action;
     }
 

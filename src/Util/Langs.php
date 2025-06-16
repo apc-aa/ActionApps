@@ -25,7 +25,8 @@ class Langs {
         'sk'      => ['windows-1250', 'Slovencina (windows-1250)'],
     ];
 
-    public static function getFiles($type = 'news') {
+    public static function getFiles($type = 'news'): array
+    {
         $arr = [];
         foreach (self::$LANGS as $k => $l) {
             $arr[$k . '_' . $type . '_lang.php'] = $l[1];
@@ -33,7 +34,8 @@ class Langs {
         return $arr;
     }
 
-    public static function getCharsets() {
+    public static function getCharsets(): array
+    {
         $arr = [];
         foreach (self::$LANGS as $k => $l) {
             $arr[$l[0]] = $l[0];
@@ -41,7 +43,8 @@ class Langs {
         return $arr;
     }
 
-    public static function getNames() {
+    public static function getNames(): array
+    {
         return array_map(fn ($l) => $l[1], self::$LANGS);
     }
 
@@ -117,7 +120,8 @@ class Langs {
 
     /** translate displayed lang name to standardized language code - cz -> cs
      */
-    public static function getLangName2Code($lang) {
+    public static function getLangName2Code($lang): string
+    {
         $lang = substr($lang, 0, 2);
         $LANGS = ['cz' => 'cs'];
         return $LANGS[$lang] ?: $lang;

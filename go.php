@@ -52,7 +52,9 @@ if ( !$sh_itm ) {
     exit;
 }
 
-is_object( $db ) || ($db = getDB());
+if (!is_object( $db )) {
+    $db = getDB();
+}
 $p_id = xpack_id($sh_itm);
 
 // get source item id and slice

@@ -20,11 +20,13 @@
     The function add_vars is copied from in aaa/include/util.php */
 
 # skips terminating backslashes
-function DeBackslash($txt) {
+function DeBackslash($txt): array|string
+{
 	return str_replace('\\', "", $txt);        // better for two places
 }   
 
-function add_vars($query_string="") {
+function add_vars($query_string=""): int
+{
   if ( $query_string ) {
       $varstring = $query_string;
   } elseif (isset($_SERVER['REDIRECT_QUERY_STRING_UNESCAPED'])) {
@@ -36,33 +38,35 @@ function add_vars($query_string="") {
   $a = explode("&",$varstring);
   $i = 0;
 
-  while ($i < count ($a)) {
-    unset($index1); 
-    unset($index2); 
-    unset($lvalue); 
-    unset($value); 
-    $pos = strpos($a[$i], "=");
-    if($pos) {
-      $lvalue = substr($a[$i],0,$pos);
-      $value  = rawurldecode(DeBackslash(substr($a[$i],$pos+1)));
-    }  
-    if (!preg_match("/^(.+)\[(.*)\]/i", $lvalue, $c))   // is it array variable[]
-      $GLOBALS[rawurldecode(DeBackslash($lvalue))]= $value;   # normal variable
-    else {
-      $index1 = rawurldecode(DeBackslash($c[2]));
-      if (preg_match("/^(.+)\[(.*)\]/i", $c[1], $d)) { // for double array variable[][]
-        $index2  = rawurldecode(DeBackslash($d[2]));
-        $varname = rawurldecode(DeBackslash($d[1]));
-      } else 
-        $varname  = rawurldecode(DeBackslash($c[1]));
-      if( isset($index2) ) 
-        $GLOBALS[$varname][$index2][$index1] = $value;
-       else 
-        $GLOBALS[$varname][$index1] = $value;
+    while ($i < count ($a)) {
+        unset($index1);
+        unset($index2);
+        unset($lvalue);
+        unset($value);
+        $pos = strpos($a[$i], "=");
+        if($pos) {
+            $lvalue = substr($a[$i],0,$pos);
+            $value  = rawurldecode(DeBackslash(substr($a[$i],$pos+1)));
+        }
+        if (!preg_match("/^(.+)\[(.*)\]/i", $lvalue, $c)) {  // is it array variable[]
+            $GLOBALS[rawurldecode(DeBackslash($lvalue))] = $value;   # normal variable
+        } else {
+            $index1 = rawurldecode(DeBackslash($c[2]));
+            if (preg_match("/^(.+)\[(.*)\]/i", $c[1], $d)) { // for double array variable[][]
+                $index2  = rawurldecode(DeBackslash($d[2]));
+                $varname = rawurldecode(DeBackslash($d[1]));
+            } else {
+                $varname = rawurldecode(DeBackslash($c[1]));
+            }
+            if( isset($index2) ) {
+                $GLOBALS[$varname][$index2][$index1] = $value;
+            } else {
+                $GLOBALS[$varname][$index1] = $value;
+            }
+        }
+        $i++;
     }
-    $i++;
-  }
-  return $i;
+    return $i;
 }
 
 add_vars();
@@ -95,16 +99,18 @@ echo "<input type=hidden name='set[74]'>";
 
 echo "Cambiar a: ";
 echo "<select name='month' onChange='saveMonthYear();'>";
-for ($i=1; $i <= 12; ++$i) 
+for ($i=1; $i <= 12; ++$i) {
     echo "<option value=$i".($month == $i ? " selected" : "").">".$L_MONTH[$i];
+}
 echo "</select>&nbsp;&nbsp;";
 
 echo "<select name='year' onChange='saveMonthYear();'>";
 $thisyear = getdate();
 $thisyear = $thisyear["year"];
 // show 1 year before and 10 years after the current year
-for ($y=$thisyear - 1; $y <= $thisyear + 10; ++$y) 
-    echo "<option value=$y".($year == $y ? " selected": "").">$y";
+for ($y=$thisyear - 1; $y <= $thisyear + 10; ++$y) {
+    echo "<option value=$y".($year == $y ? " selected" : "").">$y";
+}
 echo "</select>";
 
 echo "</form>";

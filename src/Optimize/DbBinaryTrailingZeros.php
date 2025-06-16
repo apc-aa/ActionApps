@@ -63,7 +63,8 @@ class DbBinaryTrailingZeros extends AbstractOptimize {
     }
     
     /** Helper _fixTable function */
-    function _fixCol($table, $field) {
+    function _fixCol($table, $field): void
+    {
         $db = getDb();
         $SQL = "UPDATE `$table` SET `$field`=TRIM(TRAILING '\0' FROM `$field`)";
         $this->message($SQL);
@@ -212,7 +213,8 @@ class DbBinaryTrailingZeros extends AbstractOptimize {
     }
 
     /** Helper _fixTable function */
-    function _fixTable($table, $field, $definition) {
+    function _fixTable($table, $field, $definition): void
+    {
         $db = getDb();
         $SQL = "ALTER TABLE `$table` CHANGE `$field` `$field` $definition";
         $db->query($SQL);

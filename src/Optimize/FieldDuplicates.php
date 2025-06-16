@@ -75,7 +75,8 @@ class FieldDuplicates extends \AA\Optimize\AbstractOptimize {
         return true;
     }
 
-    function _check_table() {
+    function _check_table(): array
+    {
         // does the table exist at all?
         $field_exists = GetTable2Array("SHOW TABLES LIKE 'field'", "aa_first");
         if (!$field_exists) {

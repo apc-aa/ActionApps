@@ -33,6 +33,7 @@ namespace AA\Later;
 
 use AA;
 use AA\IO\DB\DB_AA;
+use AA\Util\ReportTrait;
 use AA_Log;
 use AA_Logentry_X;
 use Cvarset;
@@ -58,7 +59,7 @@ use Cvarset;
  *  by inserting some data in the database.
  */
 class Toexecute {
-    use \AA\Util\ReportTrait;
+    use ReportTrait;
 
     const TOEXECUTE_USER_TASK_TIME =  2000000000;
 
@@ -67,17 +68,19 @@ class Toexecute {
      *  Such task is called from cron (the order depends on priority)
      *  selector is used for identifying class of task - used for deletion
      *  of duplicated task
-     * @param        $object
-     * @param array $params
-     * @param string $selector
-     * @param int $priority
-     * @param        $time
-     * @return bool|mixed|string
+     *
+     * @param         $object
+     * @param  array  $params
+     * @param string  $selector
+     * @param  int    $priority
+     * @param         $time
+     *
+     * @return string|true
      * @example: we need to recount all links in all categories (Links module),
      *           so we need to cancel all older "recount" tasks, since it will
      *           be doubled in the queue (we call cancel_all() method for it)
      */
-    function later($object, $params = [], $selector = '', $priority = 100, $time = null)
+    function later($object, $params = [], $selector = '', $priority = 100, $time = null): string|true
     {
         $varset = new Cvarset([
             ['created', time()],
@@ -108,7 +111,8 @@ class Toexecute {
      * @param int|null $time
      * @param bool     $just_once - this task (based on selector) is (re)planed only once in script execution (AA_Mysqlauth_Maintain we want to schedule once - not on every deleted item))
      */
-    function laterOnce(object $object, array $params, string $selector, int $priority = 100, ?int $time = null, bool $just_once=false) {
+    function laterOnce(object $object, array $params, string $selector, int $priority = 100, ?int $time = null, bool $just_once=false): void
+    {
         static $scheduled = [];  // selector => true for tasks where $just_once is true
 
         if ($just_once) {
@@ -145,7 +149,7 @@ class Toexecute {
      *  toexecute table (which also means, that such task are never autoexecuted
      *  from the cron)
      */
-    function userQueue($object, $params, $selector, $priority = 100)
+    function userQueue($object, $params, $selector, $priority = 100): void
     {
         $this->later($object, $params, $selector, $priority, self::TOEXECUTE_USER_TASK_TIME);
     }
@@ -153,7 +157,7 @@ class Toexecute {
     /** cancel_all function
      * @param $selector
      */
-    function cancel_all($selector)
+    function cancel_all($selector): void
     {
         $varset = new Cvarset;
         $varset->doDeleteWhere('toexecute', "selector='" . quote($selector) . "'");
@@ -161,7 +165,7 @@ class Toexecute {
 
     /** execute function - function called periodically from /misc/toexecute.php
      */
-    function execute()
+    function execute(): void
     {
 
         // MoreTimeLimit();  // try to set 5 minutes to run
@@ -196,7 +200,7 @@ class Toexecute {
     /** Executes as many tasks from the $tasks array as time allows
      * @param $tasks - array of ids of tasks to execute
      */
-    function executeTask($tasks)
+    function executeTask($tasks): void
     {
 
         if (!is_array($tasks) || !count($tasks)) {
@@ -265,17 +269,19 @@ class Toexecute {
     }
 
     /** execute_one function
+     *
      * @param $object
      * @param $params
-     * @return mixed|string
+     *
+     * @return string
      */
-    function execute_one($object, $params)
+    function execute_one($object, $params): string
     {
         if (!is_object($object) || is_a($object, '__PHP_Incomplete_Class', false)) {
             return 'Toexecute:execute_one: No object: ' . serialize($object); // Error
         }
         set_time_limit(max(30, ini_get('max_execution_time')));   // 30 seconds (at least) for each task
-        return call_user_func([$object, 'toexecutelater'], (array)$params);
+        return $object->toexecutelater((array)$params);
     }
 } // end of toexecute class
 

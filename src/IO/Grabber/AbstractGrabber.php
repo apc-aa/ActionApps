@@ -29,16 +29,20 @@
 
 namespace AA\IO\Grabber;
 
+use AA\Util\NamedInterface;
+use AA\Util\ReportTrait;
 use AA_Components;
 use AA_Content;
 use AA_Form;
+use ConvertCharset;
+use Exception;
 use ItemContent;
 
 /** AA\IO\AbstractGrabber\AbstractGrabber - Base class, which is used as abstraction for data input
  *  From this class we derive concrete data grabbers, like RSS, AARSS, CSV, ...
  */
-abstract class AbstractGrabber implements \AA\Util\NamedInterface {
-    use \AA\Util\ReportTrait;
+abstract class AbstractGrabber implements NamedInterface {
+    use ReportTrait;
 
     /** @var array of domain and time of the last request to them - used with $load_frequency to  limit request frequency to domains*/
     protected static array $last_request_4_domain = [];
@@ -77,9 +81,11 @@ abstract class AbstractGrabber implements \AA\Util\NamedInterface {
     protected function loadAuth(): bool { return true; }
 
     /** the real low level get data from url - used in loadData() as higher level function
-     * @param string      $url
-     * @param string|null $post_body
-     * @return false|string data
+     *
+     * @param  string       $url
+     * @param  string|null  $post_body
+     *
+     * @return string data
      */
     protected function loadUrl(string $url, ?string $post_body = ''): string {
         $context = $post_body ? stream_context_create(['http' => ['method'  => 'POST', 'header'  => 'Content-Type: text/xml', 'content' => $post_body ]]) : null;
@@ -87,14 +93,17 @@ abstract class AbstractGrabber implements \AA\Util\NamedInterface {
     }
 
     /** loads data form, url or direct input
-     * @param string $url
-     * @param string $direct_input
-     * @param string $post_body
-     * @param string $source_encoding
-     * @return string
-     * @throws \Exception
+     *
+     * @param  string  $url
+     * @param  string  $direct_input
+     * @param  string  $post_body
+     * @param  string  $source_encoding
+     *
+     * @return false|string
+     * @throws Exception
      */
-    protected function loadData($url, $direct_input='', $post_body='', $source_encoding='') {
+    protected function loadData($url, $direct_input='', $post_body='', $source_encoding=''): false|string
+    {
         if (strlen($direct_input)) {
             return $direct_input;
         }
@@ -105,17 +114,17 @@ abstract class AbstractGrabber implements \AA\Util\NamedInterface {
         }
 
         if (false === $this->loadAuth()) {
-            throw new \Exception('Authentication error: ' . $url);
+            throw new Exception('Authentication error: ' . $url);
         }
 
         if (false === ($data = $this->loadUrl($url, $post_body))) {
-            throw new \Exception('file not loaded: ' . $url);
+            throw new Exception('file not loaded: ' . $url);
         }
         $this->message(__CLASS__.' -> '. __FUNCTION__);
         $this->message("read ". strlen($data). " Bytes of data <br><pre>".safe(substr($data,0,1000))."...</pre>");
 
         if ($source_encoding && $source_encoding!=='utf-8') {
-            $data = \ConvertCharset::singleton()->Convert($data, $source_encoding, 'utf-8');
+            $data = ConvertCharset::singleton()->Convert($data, $source_encoding, 'utf-8');
             $this->message("Data converted from $source_encoding to utf-8");
         }
 
@@ -134,7 +143,8 @@ abstract class AbstractGrabber implements \AA\Util\NamedInterface {
      * @param $params
      * @return string
      */
-    static function htmlSetting($input_prefix, $params) {     // $input_prefix - here grabber_id
+    static function htmlSetting($input_prefix, $params): string
+    {     // $input_prefix - here grabber_id
         $properties = static::getClassProperties();
         $form = new AA_Form;
         foreach ($properties as $id => $property) {
@@ -154,16 +164,15 @@ abstract class AbstractGrabber implements \AA\Util\NamedInterface {
 
     /** getItem function
      *  Method called by the AA\IO\Saver to get next item from the data input
-     * @return ItemContent|AA_Content
+     * @return ItemContent|AA_Content|null
      */
-    function getItem() {
-    }
+    function getItem() { return null; }
 
     /** getAllItems function
      *  Shortcut method to get array of all the Items
      * @param string $key if you want to get items as indexed array
      * @return AA_Content[]  or ItemContent[]
-     * @throws \Exception
+     * @throws Exception
      */
     final public function getAllItems(string $key=''): array {
         $this->prepare();
@@ -183,7 +192,11 @@ abstract class AbstractGrabber implements \AA\Util\NamedInterface {
     }
 
     /**  Go through items and return the first (should be only one) with given id)
-     * @return ItemContent|AA_Content|null
+     *
+     * @param  string  $id
+     *
+     * @return AA_Content|null
+     * @throws Exception
      */
     public function getItemWithId(string $id): ?AA_Content {
         $ret = null;
@@ -199,7 +212,9 @@ abstract class AbstractGrabber implements \AA\Util\NamedInterface {
     }
 
     /**  Get first item
-     * @return ItemContent|AA_Content|null
+     *
+     * @return AA_Content|null
+     * @throws Exception
      */
     public function getFirstItem(): ?AA_Content {
         $this->prepare();
@@ -230,7 +245,7 @@ abstract class AbstractGrabber implements \AA\Util\NamedInterface {
     /** prepare function
      *  Possibly preparation of grabber - it is called directly before getItem()
      *  method is called - it means "we are going really to grab the data
-     *  @throws \Exception
+     *  @throws Exception
      */
     function prepare() {
     }
@@ -259,7 +274,8 @@ abstract class AbstractGrabber implements \AA\Util\NamedInterface {
     /** wait in order we do not contact the same domain more often than $protect miliseconds
      * @param string $domain
      */
-    protected function waitForDomain($domain) {
+    protected function waitForDomain($domain): void
+    {
         $time_diff = microtime(true) - (self::$last_request_4_domain[$domain] ?: 0);
         if ($time_diff < ($this->load_frequency / 1000.0)) {   // protect is in miliseconds, $time_diff in seconds
             usleep((int)(1000000 * (($this->load_frequency / 1000.0) - $time_diff)));

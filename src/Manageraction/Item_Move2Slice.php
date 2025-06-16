@@ -52,7 +52,8 @@ class Item_Move2Slice extends AbstractManageraction {
     /** Defines the HTNML for parameters. All parameters stored into akce_param[]
      *  array will be passed to perform() method for action execution
      */
-    function htmlSettings() {
+    function htmlSettings(): false|string
+    {
         global $g_modules;
 
         $options = [];

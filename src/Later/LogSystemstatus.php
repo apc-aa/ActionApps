@@ -41,8 +41,9 @@ class LogSystemstatus implements LaterInterface
      * @return string - message about execution to be logged
      * @see \AA\Later\LaterInterface
      */
-    public function toexecutelater($params= []) {
-        AA_Log::writeIfChanged('SYS_STAT', 'basic', new AA_Logentry_Sys($this->getSystemInfo()));
+    public function toexecutelater($params= []): string
+    {
+        return AA_Log::writeIfChanged('SYS_STAT', 'basic', new AA_Logentry_Sys($this->getSystemInfo()));
     }
 
     public function getSystemInfo(): array

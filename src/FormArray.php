@@ -7,6 +7,7 @@
  */
 
 namespace AA;
+use AA_Content;
 use AA_Fields;
 use AA_Item;
 use AA_Items;
@@ -54,12 +55,12 @@ class FormArray
      *       aa[n1_54343ea876898b6754e3578a8cc544e6][publish_date____][]
      *
      * @param $property_id string
-     * @param $content \AA_Content
+     * @param $content AA_Content
      * @param $item_index int
      * @return string
      * @throws Exception
      */
-    public static function getName4Form($property_id, $content, $item_index = 1)
+    public static function getName4Form($property_id, $content, $item_index = 1): string
     {
         $form_field_id = AA_Fields::getVarFromFieldId($property_id);   // post_date......1  ==>  post_date______1
 
@@ -77,11 +78,14 @@ class FormArray
     }
 
     /** returns string to be used as input id
-     * @param string $name
-     * @param bool $universal normally we use dash as word separator, but for universal id we use underscore (usable also in JS variable)
-     * @return array|string|string[]
+     *
+     * @param string  $name
+     * @param  bool   $universal  normally we use dash as word separator, but for universal id we use underscore (usable also in JS variable)
+     *
+     * @return string
      */
-    public static function formName2Id($name, bool $universal= false ) {
+    public static function formName2Id($name, bool $universal = false ): string
+    {
         return str_replace([']', '['], ['', $universal ? '_' : '-'], $name);
     }
 
@@ -91,7 +95,7 @@ class FormArray
     }
 
     /** returns array(item_id,field_id) from name of variable used on AA form */
-    public static function parseId4Form($input_name)
+    public static function parseId4Form($input_name): array
     {
         // aa[u<item_id>][<field_id>][]
         $parsed = explode(']', $input_name);
@@ -100,18 +104,20 @@ class FormArray
         return [$item_id, $field_id];
     }
 
-    public static function getCharset($aa)
+    public static function getCharset($aa): ?string
     {
         return ($module_id = self::getOwner($aa)) ? AA_Slice::getModule($module_id)?->getCharset() : '';
     }
 
-    public static function getOwner($aa)
+    public static function getOwner($aa): false|string
     {
         if (!is_array($aa)) {
             return false;
         }
         foreach (array_keys($aa) as $key) {
-            if ($key[0] === 'n') return substr($key, strpos($key, '_') + 1);
+            if ($key[0] === 'n') {
+                return substr($key, strpos($key, '_') + 1);
+            }
         }
 
         $item_id = false;

@@ -105,7 +105,8 @@ class XML extends AbstractGrabber
         return $properties;
     }
 
-    public function useFakeNamespaces() {
+    public function useFakeNamespaces(): static
+    {
         $this->fake_namespaces = true;
         return $this;
     }
@@ -119,7 +120,8 @@ class XML extends AbstractGrabber
      *  method is called - it means "we are going really to grab the data
      * @throws Exception
      */
-    function prepare() {
+    function prepare(): void
+    {
         $data = implode('', $this->getSources());
 
         // remove namespaces (it is pain to work with it in simple XML interface)
@@ -168,7 +170,8 @@ class XML extends AbstractGrabber
     }
 
     /** Method called by the AA\IO\Saver to get next item from the data input */
-    function getItem() {
+    function getItem(): false|ItemContent
+    {
         if (false === ($xml = current($this->_items))) {
             return false;
         }

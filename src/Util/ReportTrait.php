@@ -10,7 +10,8 @@ trait ReportTrait {
      * @param string|array|object $row
      * @param int          $verbosity
      */
-    protected function message($row, int $verbosity = 1) {
+    protected function message($row, int $verbosity = 1): void
+    {
         if (is_array($row)) {
             $m = $row;
         } elseif (is_object($row)) {
@@ -51,7 +52,8 @@ trait ReportTrait {
     /** Clear report function
      * unsets all current messages
      */
-    public function clear_report() {
+    public function clear_report(): void
+    {
         unset($this->messages);
         $this->messages = [];
     }

@@ -93,7 +93,8 @@ https://www.apc.org/
 use AA\Util\Hitcounter;
 use AA\Util\InputVars;
 
-function add2sort(&$sort, $sarr) {
+function add2sort(&$sort, $sarr): void
+{
     if (isset($sort) && is_array($sort)) {
         foreach ($sort as $s) {
             if (key($s) == key($sarr)) {
@@ -112,7 +113,7 @@ function add2sort(&$sort, $sarr) {
 //  1) in $_POST,$_GET,$_COOKIE,$_REQUEST variables the values are not quoted
 //  2) the variables are imported in global scope and is quoted
 // We are trying to remove any dependecy on the point 2) and use only $_* superglobals
-function AddslashesDeep($value)   { return is_array($value) ? array_map('AddslashesDeep',   $value) : addslashes($value);   }
+function AddslashesDeep($value): array|string { return is_array($value) ? array_map('AddslashesDeep',   $value) : addslashes($value);   }
 
 foreach ($_REQUEST as $k => $v) {
     $$k = AddslashesDeep($v);
@@ -136,7 +137,8 @@ require_once __DIR__ . "/include/locsess.php";
 /** MyUrl function - was in sessions before, but now it is used just in this script, so moved here and rewritten to handle encap (=shtml)/not encap version
  *  rewriten to return URL of shtml page that includes this script instead to return self url of this script.
  */
-function MyUrl($encap, $scr_url) {  //sliceID is here just for compatibility with MyUrl function
+function MyUrl($encap, $scr_url): string
+{  //sliceID is here just for compatibility with MyUrl function
 
     $server  = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? 'https' : 'http';
     $server .= '://'. $_SERVER['HTTP_HOST'];
@@ -247,7 +249,9 @@ if (!$slice_id && is_array($slices)) {
 // We will do it during rewrite AA to $_GET[] variable handling (probably)
 $slice_id   = trim($slice_id);
 
-is_object( $db ) || ($db = getDB());
+if (!is_object( $db )) {
+    $db = getDB();
+}
 
 $slice      = AA_Slice::getModule($slice_id);
 $slice_info = GetModuleInfo($slice_id, 'S');       // get slice info
@@ -581,7 +585,7 @@ if ( !$srch && !$encap && !$easy_query ) {
     pCatSelector(MyUrl($encap, $scr_url), $slice_id);
 }
 
-if ($zids->count() > 0) {
+if ($zids->count()) {
 
     $itemview = new itemview($slice_info, $aliases, $zids, $scr->getListlen() * ($scr->getCurrent() - 1), ($group_n ? -$group_n : $scr->getListlen()));
     $itemview->setMultiAliases($multi_aliases);

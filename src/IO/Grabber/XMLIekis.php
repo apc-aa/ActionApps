@@ -40,7 +40,8 @@ class XMLIekis extends AbstractGrabber
     /** Possibly preparation of grabber - it is called directly before getItem()
      *  method is called - it means "we are going really to grab the data
      */
-    function prepare() {
+    function prepare(): void
+    {
         $this->_files = [];
         // instance of class iCalFile (external file ical.php)
         if ($handle = opendir($this->dir)) {
@@ -55,7 +56,8 @@ class XMLIekis extends AbstractGrabber
     }
 
     /** Method called by the AA\IO\Saver to get next item from the data input */
-    function getItem() {
+    function getItem(): false|ItemContent
+    {
         if (!($file = current($this->_files))) {
             return false;
         }

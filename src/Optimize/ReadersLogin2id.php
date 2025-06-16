@@ -54,7 +54,8 @@ class ReadersLogin2id extends AbstractOptimize {
      *  by login name (instead of item_id)
      * @return array of such users
      */
-    function _test_field($readers, $item_field) {
+    function _test_field($readers, $item_field): array
+    {
         // get posted_by, edit_by, ... array:  posted_by => 1
         $SQL = "SELECT DISTINCT $item_field FROM item";
         $editors = GetTable2Array($SQL, $item_field, 'aa_mark');

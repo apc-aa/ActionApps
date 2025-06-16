@@ -10,6 +10,7 @@ namespace AA\Widget;
 
 use AA_Content;
 use AA_Property;
+use Exception;
 
 /** Two Boxes widget */
 class Wi2Widget extends MchWidget {
@@ -43,7 +44,7 @@ class Wi2Widget extends MchWidget {
      * @param  string       $type  normal|live|ajax
      *
      *  @return array
-     *  @throws \Exception
+     *  @throws Exception
      */
     function _getRawHtml(AA_Property $aa_property, AA_Content $content, string $type = 'normal'): array {
         $this->setProperty('columns', 1);

@@ -9,7 +9,9 @@
 namespace AA\IO\Grabber;
 
 use AA_Property;
+use Exception;
 use FTP\Connection;
+use ItemContent;
 use PDO;
 
 /** FTP directory grabber */
@@ -102,19 +104,20 @@ class FilesFTP extends AbstractGrabber
 
     /** Possibly preparation of grabber - it is called directly before getItem()
      *  method is called - it means "we are going really to grab the data
-     * @throws \Exception
+     * @throws Exception
      */
-    function prepare() {
+    function prepare(): void
+    {
         $this->connection = ftp_connect($this->server);
 
         if (!$this->connection) {
-            throw new \Exception('not possible to connect to FTP server');
+            throw new Exception('not possible to connect to FTP server');
         }
 
         // Login to FTP server
         if (!ftp_login($this->connection, $this->username, $this->password)) {
             ftp_close($this->connection);
-            throw new \Exception('not possible to login to FTP server - user/pwd');
+            throw new Exception('not possible to login to FTP server - user/pwd');
         }
         // Enable passive mode
         ftp_pasv($this->connection, true);
@@ -123,7 +126,7 @@ class FilesFTP extends AbstractGrabber
         $file_list = ftp_rawlist($this->connection, $this->directory, true);
 
         if ($file_list === false) {
-            throw new \Exception('Couldn\'t list files in directory');
+            throw new Exception('Couldn\'t list files in directory');
         }
 
 //      $current_path = '';
@@ -163,11 +166,12 @@ class FilesFTP extends AbstractGrabber
     }
 
     /** Method called by the AA\IO\Saver to get next item from the data input */
-    function getItem() {
+    function getItem(): false|ItemContent
+    {
         if ( !count($this->filepaths) || !($file = current($this->filepaths))) {
             return false;
         }
-        $item = new \ItemContent();
+        $item = new ItemContent();
         if (!count($info = array_intersect($this->info, ['name','dir','path','size','mtime','content']))) {
             $info = ['name','dir','path','size','mtime'];
         }
@@ -197,7 +201,8 @@ class FilesFTP extends AbstractGrabber
         return $item;
     }
 
-    protected function getFtpFileContent($remote_file) {
+    protected function getFtpFileContent($remote_file): false|string
+    {
         // Open a temporary stream to read the file content
         $temp_handle = fopen('php://temp', 'rb+');
         $file_content = '';
@@ -214,7 +219,8 @@ class FilesFTP extends AbstractGrabber
 
     /** Function called by AA\IO\Saver after we get the last item from the data input
      */
-    function finish() {
+    function finish(): void
+    {
         // close connections
         if ($this->connection) {
             ftp_close($this->connection);

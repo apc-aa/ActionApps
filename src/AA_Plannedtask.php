@@ -126,7 +126,7 @@ class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedI
             ';
     }
 
-    function nexttime()
+    function nexttime(): int
     {
         // every 5 min
         if (!strlen($time = trim($this->getProperty('time')))) {
@@ -190,7 +190,8 @@ class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedI
     }
 
     /** method called after save */
-    function aftersave() {
+    function aftersave(): void
+    {
         $toexecute = new Toexecute;
         $toexecute->cancel_all(self::toexecuteSelector($this->getId()));
         $this->schedule();
@@ -218,7 +219,8 @@ class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedI
         return $form;
     }
 
-    public static function executeForEvent(string $module_id, string $event_id, string $item_id) {
+    public static function executeForEvent(string $module_id, string $event_id, string $item_id): void
+    {
         $tasks = AA::Contentcache()->get_result(['AA_Plannedtask', 'getModuleTasks'], [$module_id, $event_id], '', true);
         foreach ($tasks as $task) {
             if (is_long_id($item_id)) {

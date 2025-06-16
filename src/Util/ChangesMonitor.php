@@ -10,10 +10,12 @@ namespace AA\Util;
 
 use AA;
 use AA\IO\DB\DB_AA;
+use AA_Fields;
 use AA_GeneralizedArray;
 use AA_Items;
 use AA_Set;
 use Cvarset;
+use kcfinder\httpCache;
 use zids;
 
 class ChangesMonitor {
@@ -60,7 +62,7 @@ class ChangesMonitor {
     static function getDiff($id, $old, $new): array
     {
         $changes = [];
-        if (is_array($old) AND is_array($new)) {
+        if (is_array($old) && is_array($new)) {
             foreach ($new as $fid => $a) {
                 if ($old[$fid] != $a) {
                     $changes[] = new ChangeProposal($id, $fid, [$old[$fid]]);
@@ -74,7 +76,8 @@ class ChangesMonitor {
      * @param      $resource_id
      * @return string url to history table in AA Admin interface
      */
-    static function getHistoryUrl($resource_id) {
+    static function getHistoryUrl($resource_id): string
+    {
         return get_admin_url('aafinder.php', ['showhistory' => $resource_id]);
     }
 
@@ -82,7 +85,8 @@ class ChangesMonitor {
      * @param      $resource_id
      * @return string url to history table in AA Admin interface
      */
-    static function getHistoryLink($resource_id) {
+    static function getHistoryLink($resource_id): string
+    {
         $history_entries = self::getChangeList($resource_id);
         return $history_entries ? a_href(self::getHistoryUrl($resource_id), _m('history (%1)', [count($history_entries)])) : '';
     }
@@ -126,7 +130,7 @@ class ChangesMonitor {
     }
 
     // array of unpacked ids
-    public static function deleteChanges($resources_long_ids) {
+    public static function deleteChanges($resources_long_ids): bool {
         // it is quicker to split it into two deletes because of index type_resource_time
         $changes_ids = DB_AA::select('id', 'SELECT id FROM `change`', [['type', 'h'], ['resource_id', $resources_long_ids]]);
         $changes_ids = array_merge($changes_ids, DB_AA::select('id', 'SELECT id FROM `change`', [['type', 'p'], ['resource_id', $resources_long_ids]]));
@@ -139,7 +143,8 @@ class ChangesMonitor {
     /** deleteProposal
      * @param $change_id
      */
-    function deleteProposal($change_id) {
+    function deleteProposal($change_id): void
+    {
         $varset = new Cvarset;
         $varset->doDeleteWhere('change_record', "change_id = '" . quote($change_id) . "'");
         $varset->clear();
@@ -183,7 +188,7 @@ class ChangesMonitor {
      */
     function lastChangeDate($resource_id, $selector): int {
         $time = 0;
-        if (trim($resource_id) AND trim($selector)) {
+        if (trim($resource_id) && trim($selector)) {
             $time = DB_AA::select1('time', "SELECT time FROM `change`, `change_record`", [['change.id', 'change_record.change_id', 'j'], ['change.resource_id', $resource_id], ['change.type', 'h'], ['change_record.selector', $selector]], ['time-']);
         }
         return $time ? self::toTimestamp((int)$time) : 0;
@@ -197,7 +202,7 @@ class ChangesMonitor {
      */
     function changeByStep(string $resource_id, string $selector, int $step=-1): array {
         $value = [];
-        if (trim($resource_id) AND trim($selector)) {
+        if (trim($resource_id) && trim($selector)) {
             $value = DB_AA::select1([], "SELECT `change_record`.`value`,`change`.`time`,`change`.`user`,`change`.`type` FROM `change`, `change_record`", [['change.id', 'change_record.change_id', 'j'], ['change.resource_id', $resource_id], ['change.type', 'h'], ['change_record.selector', $selector], ['change_record.value', '', 'FILLED']], ['time-'], abs($step));
         }
         return $value ?: [];
@@ -212,7 +217,7 @@ class ChangesMonitor {
     function changeByTime(string $resource_id, string $selector, int $timestamp): array {
         $value = [];
         // start debugging
-        if (trim($resource_id) AND trim($selector) AND $timestamp) {
+        if (trim($resource_id) && trim($selector) && $timestamp) {
             $timestamp = self::toNanotime($timestamp);
             $value = DB_AA::select1([], "SELECT `change`.`id`,`change_record`.`value`,`change_record`.`selector`, `change`.`time`,`change`.`user`,`change`.`type` FROM `change`, `change_record`", [['change.id', 'change_record.change_id', 'j'], ['change.resource_id', $resource_id], ['change.type', 'h'], ['change.time', $timestamp, '>='], ['change_record.selector', $selector], ['change_record.value', '', 'FILLED']], ['time']);
             if (!$value) {
@@ -231,18 +236,18 @@ class ChangesMonitor {
      * @return array [['value'=>.., 'time'=>.., 'user'=>.., 'type'=>..]]
      */
     function changesAll(string $resource_id, string $selector): array {
-        $values = [];
-        if (trim($resource_id) AND trim($selector)) {
-            $values = DB_AA::select([], "SELECT `change_record`.`value`,`change`.`time`,`change`.`user`,`change`.`type` FROM `change`, `change_record`", [['change.id', 'change_record.change_id', 'j'], ['change.resource_id', $resource_id], ['change.type', 'h'], ['change_record.selector', $selector], ['change_record.value', '', 'FILLED']], ['time-']);
+        if (trim($resource_id) && trim($selector)) {
+            return DB_AA::select([], "SELECT `change_record`.`value`,`change`.`time`,`change`.`user`,`change`.`type` FROM `change`, `change_record`", [['change.id', 'change_record.change_id', 'j'], ['change.resource_id', $resource_id], ['change.type', 'h'], ['change_record.selector', $selector], ['change_record.value', '', 'FILLED']], ['time-']);
         }
-        return $values;
+        return [];
     }
 
     /** deleteProposalForSelector function
      * @param $resource_id
      * @param $selector
      */
-    function deleteProposalForSelector($resource_id, $selector) {
+    function deleteProposalForSelector($resource_id, $selector): void
+    {
         $changes_ids = GetTable2Array("SELECT DISTINCT change_id  FROM `change` LEFT JOIN `change_record` ON `change`.id = `change_record`.change_id
                                          WHERE `change`.resource_id = '" . quote($resource_id) . "' AND `change`.type = 'p' AND `change_record`.selector = '" . quote($selector) . "'", '', 'change_id');
         if (is_array($changes_ids)) {
@@ -279,7 +284,7 @@ class ChangesMonitor {
      */
     function _get($resource_ids, $type): array
     {
-        if (!is_array($resource_ids) OR (count($resource_ids) < 1)) {
+        if (!is_array($resource_ids) || count($resource_ids) < 1) {
             return [];
         }
 
@@ -308,32 +313,55 @@ class ChangesMonitor {
         return $ret;
     }
 
+    /** CSS for better table look */
+    private function getCSS(): string
+    {
+        return <<<HTML
+               <style>
+                 table.aa-history {
+                   td {
+                     vertical-align: top;
+                     .aa-hist-content {
+                         width: 32%;
+                     }
+                   }
+                   pre {
+                     white-space: break-spaces;
+                   }
+                 }
+               </style>
+               HTML;
+    }
 
     /** experimental display function - prints the table with all changes  */
     function display($resource_ids, $type = 'h'): void {
-        if (!is_array($resource_ids) OR (count($resource_ids) < 1)) {
+        if (!is_array($resource_ids) || count($resource_ids) < 1) {
             return;
         }
 
         if ($arr = DB_AA::select([], "SELECT `change`.time, `change`.user, `change_record`.selector, `change_record`.value, `change_record`.priority, `change_record`.type as chtype, `change_record`.change_id, `change`.resource_id, `change`.type
                                 FROM `change`, `change_record`", [['change.id', 'change_record.change_id' , 'j'], ["`change`.resource_id", $resource_ids], ['change.type',$type]], ['change.resource_id', 'change.time-', 'change_record.change_id', 'change_record.selector', 'change_record.priority'])) {
 //            echo "<div class='aa-table'><table class='aa-history'><tr><th>&nbsp;</th><th>field</th><th>value</th><th>diff".Difftext::renderHtml(_m("newer\neee<br>www"), _m("older\neee<br>wqqq"))."</th><th>priority</th><th>type</th><th>resource</th></tr>";
-            echo "<div class='aa-table'><table class='aa-history'><tr><th>&nbsp;</th><th>field</th><th>value</th><th>priority</th><th>type</th><th>resource</th></tr>";
+            echo $this->getCSS();
+            echo "<div class='aa-table'><table class='aa-history'><tr class=aa-tbl-header><th>&nbsp;</th><th>field</th><th class='aa-hist-content'>value</th><th class='aa-hist-content'>diff</th><th>priority</th><th>type</th><th>resource</th></tr>";
             $chid = '';
+
             foreach ($arr as $key => $change) {
                 if ($chid !== $change['change_id']) {
                     echo "<tr><th colspan=7>" . date('Y-m-d H:i:s', self::toTimestamp((int)$change['time'])) . ' - ' . safe(perm_username($change['user'])) . " <small>($change[type], uid:$change[user], res:$change[resource_id], change:$change[change_id], time:$change[time])</small></th></tr>";
                     $chid = $change['change_id'];
-                    $flds = ($slice_id = AA_Items::getItem(new zids($change['resource_id'], 'l'))?->getSliceID()) ? \AA_Fields::factoryFor($slice_id) : null;
+                    $flds = ($slice_id = AA_Items::getItem(new zids($change['resource_id'], 'l'))?->getSliceID()) ? AA_Fields::factoryFor($slice_id) : null;
                 }
-                $value = \AA_Adminlink::richValue($change['value']);
-                $field = $change['selector']. ($flds ? \AA_Adminlink::additionalInfo([$flds->getProperty($change['selector'], 'name')]) : '');
+                $value = AA\Util\Adminlink::richValue($change['value']);
+                $field = $change['selector']. ($flds ? AA\Util\Adminlink::additionalInfo([$flds->getProperty($change['selector'], 'name')]) : '');
 
+                $prev_value = $this->findPrevValue($change['selector'], $change['priority'], $arr, $key);
+                $diff = is_null($prev_value) ? '' : Difftext::renderHtml($prev_value,$change['value']);
                 echo sprintf(
-                    "<tr><td>&nbsp;</td><td>$field</td><td><pre>%s</pre></td><td>$change[priority]</td><td>$change[chtype]</td><td>%s</td></tr>",
+                    "<tr><td>&nbsp;</td><td>$field</td><td class='aa-hist-content'><pre>%s</pre><td class='aa-hist-content'>%s</td></td><td>$change[priority]</td><td>$change[chtype]</td><td>%s</td></tr>",
                     $value,
-                    //array_key_exists($key+1,$arr) ? Difftext::renderHtml($change['value'], $arr[$key+1]['value']) : '',
-                    safe($change['resource_id'])
+                    $diff,
+                    safe($change['resource_id']),
                 );
             }
             echo "</table></div>";
@@ -342,6 +370,15 @@ class ChangesMonitor {
         //    print_r(array_keys(reset($arr)));
         //    array_unshift($arr, array_keys(reset($arr)));
         //    echo GetHtmlTable($arr, 'th');
+    }
+
+    private function findPrevValue(string $fld, string $pri, array $arr, int $key): ?string {
+        while (array_key_exists(++$key, $arr)) {
+            if ($arr[$key]['selector'] == $fld AND $arr[$key]['priority'] == $pri) {
+                return $arr[$key]['value'];
+            }
+        }
+        return null;
     }
 
 
@@ -399,7 +436,7 @@ class ChangesMonitor {
      */
     public static function GetHistoryContent($zids): array
     {
-        if (!$zids or $zids->count() < 1) {
+        if (!$zids || $zids->count() < 1) {
             return [];
         }
 

@@ -50,7 +50,8 @@ class Ical extends AbstractGrabber
     /** Possibly preparation of grabber - it is called directly before getItem()
      *  method is called - it means "we are going really to grab the data
      */
-    function prepare() {
+    function prepare(): void
+    {
         // instance of class iCalFile (external file ical.php)
         $this->ical = new iCalFile($this->url);
         // set pointers
@@ -60,7 +61,8 @@ class Ical extends AbstractGrabber
     }
 
     /** Method called by the AA\IO\Saver to get next item from the data input */
-    function getItem() {
+    function getItem(): ItemContent|int
+    {
         // set pointers
         $vCalPos = 0;
         $vComponentsPos = 0;

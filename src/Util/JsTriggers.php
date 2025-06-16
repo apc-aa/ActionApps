@@ -138,7 +138,8 @@ class JsTriggers {
         return $retval;
     }
 
-    public function getJavascriptAndRegisterRequires() {
+    public function getJavascriptAndRegisterRequires(): string
+    {
         $this->loadTriggers();
         if ($this->javascript) {
             // modern version of js for field can use own libs - say {require:aa-fillform@1} - without unnecessary aa-jslib@1

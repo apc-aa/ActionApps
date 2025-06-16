@@ -42,7 +42,8 @@ class PagecachePurge implements LaterInterface
      *  @return string - message about execution to be logged
      *  @see \AA\Later\LaterInterface
      */
-    public function toexecutelater($params= []) {
+    public function toexecutelater($params= []): string
+    {
         [$cache_time] = $params;
         // $tm   = time();
         // we tried to speed up the deletion by multi-table delete:

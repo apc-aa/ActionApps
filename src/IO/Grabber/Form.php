@@ -13,7 +13,9 @@ use AA\Widget\Widget;
 use AA_Fields;
 use AA_Item;
 use AA_Slice;
+use Exception;
 use ItemContent;
+use RuntimeException;
 use zids;
 
 /** AA\IO\AbstractGrabber\AbstractGrabber\Form - Grabs data POSTed by AA form
@@ -96,7 +98,8 @@ class Form extends AbstractGrabber {
         return 'insert';
     }
 
-    private function rearangeAaFilesArray(array $files) {
+    private function rearangeAaFilesArray(array $files): array
+    {
         $ret = [];
         foreach ($files as $type => $items) {
             foreach ($items as $item => $fields) {
@@ -115,7 +118,8 @@ class Form extends AbstractGrabber {
      *  convert it to aa[n1_54343ea876898b6754e3578a8cc544e6][file............][fil][var][]
      * @return true|string - string is error
      */
-    private function fileUploadToNewItem(array &$aa) {
+    private function fileUploadToNewItem(array &$aa): true|string
+    {
         $i = 0;
         foreach ($aa as $type => $file) {
             [$letter, $sid] = explode('_', $type);
@@ -150,7 +154,7 @@ class Form extends AbstractGrabber {
 
     /** Possibly preparation of grabber - it is called directly before getItem()
      *  method is called - it means "we are going really to grab the data
-     * @throws \Exception
+     * @throws Exception
      */
     function prepare() {
 
@@ -185,7 +189,7 @@ class Form extends AbstractGrabber {
             // now process the aa[f_54343ea876898b6754e3578a8cc544e6][file][] type of upload and convert it
             // to aa[n1_54343ea876898b6754e3578a8cc544e6][file............][]
             if (($msg = $this->fileUploadToNewItem($files)) !== true) {
-                throw new \RuntimeException($msg);
+                throw new RuntimeException($msg);
             }
 
             // add it to POSTed variables
@@ -285,12 +289,14 @@ class Form extends AbstractGrabber {
             $this->_items[] = [$item, $store_mode];
         }
         reset($this->_items);
+        return true;
     }
 
     /** Function called by AA\IO\Saver after we get the last item from the data
      *  input
      */
-    function finish() {
+    function finish(): void
+    {
         $this->_items = [];
     }
 

@@ -85,7 +85,9 @@ $frequency['twoweeks']  = 14 * $frequency['daily'];
 $frequency['monthly']   = 31 * $frequency['daily'];
 //$frequency['irregular']  = ...;   // not specified - used for irregular sending - see AA_Response('Alertitem', ...
 
-if (!is_object($db)) $db = new DB_AA(['type' => DB_TYPE, 'host' => DB_HOST, 'database' => DB_NAME, 'user' => DB_USER, 'password' => DB_PASSWORD]);
+if (!is_object( $db )) {
+    $db = getDB();
+}
 
 $howoften_options = get_howoften_options();
 

@@ -37,7 +37,7 @@ https://www.apc.org/
 //  1) in $_POST,$_GET,$_COOKIE,$_REQUEST variables the values are not quoted
 //  2) the variables are imported in global scope and is quoted
 // We are trying to remove any dependecy on the point 2) and use only $_* superglobals
-function AddslashesDeep($value)   { return is_array($value) ? array_map('AddslashesDeep',   $value) : addslashes($value);   }
+function AddslashesDeep($value): array|string { return is_array($value) ? array_map('AddslashesDeep',   $value) : addslashes($value);   }
 
 foreach ($_REQUEST as $k => $v) {
     $$k = AddslashesDeep($v);
@@ -48,7 +48,8 @@ foreach ($_REQUEST as $k => $v) {
 /**
  * PutSearchLog
  */
-function PutSearchLog($searchlog, $found_count=0) {
+function PutSearchLog($searchlog, $found_count=0): void
+{
     $httpquery    = $_SERVER['QUERY_STRING_UNESCAPED'].$_SERVER['REDIRECT_QUERY_STRING_UNESCAPED'];
     $httpquery    = DeBackslash($httpquery);
     $httpquery    = str_replace("'", "\\'", $httpquery);
@@ -79,7 +80,9 @@ require_once __DIR__ . "/include/locsess.php";    // DB_AA object definition
 
 add_vars();
 
-is_object( $db ) || ($db = getDB());
+if (!is_object( $db )) {
+    $db = getDB();
+}
 
 [$usec, $sec]   = explode(" ",microtime());
 $disc_starttime = ((float)$usec + (float)$sec);

@@ -14,7 +14,8 @@ abstract class AbstractAliasgenerator implements LazyloaderInterface {
     protected ?AA_Aliases $add_aliases = null;
 
     /** caches aliases for the same parameters */
-    public function lazyLoad() {
+    public function lazyLoad(): array
+    {
         /** @var AA_Aliases $gen */
         $gen = AA::Contentcache()->get_result([
             static::class,
@@ -37,7 +38,7 @@ abstract class AbstractAliasgenerator implements LazyloaderInterface {
     /** add nonstandard aliases
      * @usage (new AA_Aliasgenerator_Constant)->addAliases((new AA_Aliases)->addTextAlias('_#ITEM_ID_',$for_id))
      */
-    public function addAliases(?AA_Aliases $aliases): AbstractAliasgenerator {
+    public function addAliases(?AA_Aliases $aliases): static {
         $this->add_aliases = $aliases;
         return $this;
     }

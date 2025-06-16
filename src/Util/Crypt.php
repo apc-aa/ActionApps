@@ -10,8 +10,11 @@
 
 namespace AA\Util;
 
+use Exception;
+
 /**
  * Class Crypt
+ *
  * @package AA\Util
  */
 final class Crypt {
@@ -25,7 +28,7 @@ final class Crypt {
      * @param      $text
      * @param      $pass
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     public static function encryptAesGcm($text, $pass): string {
         $key   = self::createKey($pass);
@@ -42,10 +45,10 @@ final class Crypt {
     /** Decrypts the text with password using aes256gcm crypt function. Works from PHP >5.3
      * @param      $text
      * @param      $pass
-     * @return bool|string
-     * @throws \Exception
+     * @throws Exception
      */
-    public static function decryptAesGcm($text, $pass) {
+    public static function decryptAesGcm($text, $pass): false|string
+    {
         if (strlen($text) < self::AES256GCM_NPUBBYTES) {
             return false;
         }
@@ -67,7 +70,8 @@ final class Crypt {
      * @param string $pass
      * @return string - $kay modified to exact self::AES256GCM_KEYBYTES bytes
      */
-    private static function createKey($pass) {
+    private static function createKey($pass): string
+    {
         if (($passlen = strlen($pass)) > self::AES256GCM_KEYBYTES) {
             return pack("H*", hash('sha256', $pass));
         }
@@ -85,7 +89,7 @@ final class Crypt {
      * @param null|string $A Additional Authentication Data
      *
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     private static function encryptWithPHP($K, $key_length, $IV, $P = null, $A = null): string {
         [$J0, $v, $a_len_padding, $H] = self::common($K, $key_length, $IV, $A);
@@ -105,9 +109,10 @@ final class Crypt {
      * @param string|null $A Additional Authentication Data
      *
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
-    private static function decryptWithPHP($K, $key_length, $IV, $message, $A) {
+    private static function decryptWithPHP($K, $key_length, $IV, $message, $A): false|string
+    {
         $C = mb_substr($message, 0, -self::AES256GCM_TAGBYTES, '8bit');
         $T = mb_substr($message, -self::AES256GCM_TAGBYTES, null, '8bit');
 
@@ -128,9 +133,9 @@ final class Crypt {
      * @param $A
      *
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
-    private static function common($K, $key_length, $IV, $A)
+    private static function common($K, $key_length, $IV, $A): array
     {
         $H = openssl_encrypt(str_repeat("\0", 16), 'aes-'.($key_length).'-ecb', $K, OPENSSL_NO_PADDING | OPENSSL_RAW_DATA); //---
         $iv_len = self::getLength($IV);
@@ -139,7 +144,7 @@ final class Crypt {
         } else {
             $s = self::calcVector($IV);
             if (($s + 64) % 8 != 0) {
-                throw new \Exception('Unable to decrypt or to verify the tag.');
+                throw new Exception('Unable to decrypt or to verify the tag.');
             }
             $packed_iv_len = pack('N', $iv_len);
             $iv_len_padding = str_pad($packed_iv_len, 8, "\0", STR_PAD_LEFT);
@@ -155,7 +160,7 @@ final class Crypt {
      *
      * @return int
      */
-    private static function calcVector($value)
+    private static function calcVector($value): float|int
     {
         return (128 * ceil(self::getLength($value) / 128)) - self::getLength($value);
     }
@@ -173,7 +178,7 @@ final class Crypt {
      *
      * @return int
      */
-    private static function getLength($x)
+    private static function getLength($x): float|int
     {
         return mb_strlen($x, '8bit') * 8;
     }
@@ -214,20 +219,21 @@ final class Crypt {
     /**
      * @param string $bin
      *
-     * @return mixed
+     * @return int
      */
     private static function toUInt32Bits($bin)
     {
         [, $h, $l] = unpack('n*', $bin);
         return $l + ($h * 0x010000);
     }
+
     /**
      * @param $X
      * @param $Y
      *
      * @return string
      */
-    private static function getProduct($X, $Y)
+    private static function getProduct($X, $Y): string
     {
         $R = pack('H*', 'E1').str_pad('', 15, "\0");
         $Z = str_pad('', 16, "\0");
@@ -324,7 +330,7 @@ final class Crypt {
      *
      * @return string
      */
-    private static function getBitXor($o1, $o2)
+    private static function getBitXor($o1, $o2): string
     {
         $xorWidth = PHP_INT_SIZE;
         $o1 = str_split($o1, $xorWidth);

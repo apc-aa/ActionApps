@@ -11,6 +11,7 @@ use AA\FormArray;
 use AA_Content;
 use AA_Property;
 use AA_Value;
+use Exception;
 
 /** Multiple Checkboxes widget */
 class MchWidget extends Widget
@@ -41,7 +42,7 @@ class MchWidget extends Widget
     }
 
     /** Returns one checkbox tag - Used in removed inputMultiChBox */
-    function getOneChBoxTag($option, $input_name, $input_id, $add = '')
+    function getOneChBoxTag($option, $input_name, $input_id, $add = ''): string
     {
         $ret = "\n<label class=\"aa-chb\"><input type=\"checkbox\" name=\"$input_name\" id=\"$input_id\" value=\"" . safe($option['k']) . "\" $add";
         if ($option['selected']) {
@@ -59,7 +60,7 @@ class MchWidget extends Widget
      * @param  string       $type  normal|live|ajax
      *
      *  @return array
-     *  @throws \Exception
+     *  @throws Exception
      */
     function _getRawHtml(AA_Property $aa_property, AA_Content $content, string $type = 'normal'): array {
         $base_name = FormArray::getName4Form($aa_property->getId(), $content, $this->item_index);

@@ -40,7 +40,8 @@ class Post2shtmlCleanup implements LaterInterface
      * @return string - message about execution to be logged
      * @see \AA\Later\LaterInterface
      */
-    public function toexecutelater($params= []) {
+    public function toexecutelater($params= []): string
+    {
         $where = [['time', $this->time, '<']];
         return (new TableCleaner('post2shtml', $where))->clean();
     }

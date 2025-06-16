@@ -46,7 +46,8 @@ class AARSS_Parser {
      * @param $name
      * @return string
      */
-    public static function nsName2abbrevname($name) {
+    public static function nsName2abbrevname($name): string
+    {
         preg_match("/(.+):([^:]+)/", $name, $nameparts);
         if ($ab = self::MODULE2ABBREV[$nameparts[1]] ?? false) {
             return $ab . ":" . $nameparts[2];
@@ -55,10 +56,13 @@ class AARSS_Parser {
     }
 
     /** nsAbbrev2name function
-     * @param $abbrev
-     * @return false|int|string
+     *
+     * @param  string  $abbrev
+     *
+     * @return false|string
      */
-    public static function nsAbbrev2name($abbrev) {
+    public static function nsAbbrev2name(string $abbrev): false|string
+    {
         return array_search($abbrev, self::MODULE2ABBREV);
     }
 }
@@ -119,14 +123,16 @@ class AARSS extends AbstractGrabber
      * @param $url
      */
 
-    function setUrl($url) {
+    function setUrl($url): void
+    {
         $this->feed['server_url'] = $url;
     }
 
     /** setTime function
      * @param $time
      */
-    function setTime($time) {
+    function setTime($time): void
+    {
         $this->feed['newest_item'] = $time;
     }
 
@@ -140,7 +146,8 @@ class AARSS extends AbstractGrabber
     /** _getApcData function
      *
      */
-    function _getApcData() {
+    function _getApcData(): string
+    {
         // for APC feeds we need to list all categories, which we want receive
         $this->ext_categs = FeedUtil::GetExternalCategories($this->feed_id); // we will need it later
 
@@ -174,7 +181,8 @@ class AARSS extends AbstractGrabber
     /** _getExactData function
      *
      */
-    function _getExactData() {
+    function _getExactData(): string
+    {
         global $debugfeed;
 
         // get local item list (with last edit times)
@@ -385,12 +393,14 @@ class AARSS extends AbstractGrabber
         if (is_array($this->aa_rss['items'])) {
             reset($this->aa_rss['items']);
         }
+        return true;
     }
 
     /** getItem function
      *
      */
-    function getItem() {
+    function getItem(): false|ItemContent
+    {
         if (!is_array($this->aa_rss['items'])) {
             return false;
         }
@@ -452,7 +462,8 @@ class AARSS extends AbstractGrabber
     /** finish function
      *
      */
-    function finish() {
+    function finish(): void
+    {
         if ($this->feed['feed_type'] == Feed::FEEDTYPE_APC) {
             $db = getDB();
             //update the newest item

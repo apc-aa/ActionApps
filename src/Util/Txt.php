@@ -2,8 +2,39 @@
 
 namespace AA\Util;
 
+use AA;
+
 class Txt {
     public static function decoratedName(string $name, bool $deleted = false): string {
         return $deleted ? (Langs::isUTF() ? "××× $name ×××" : "xxx $name xxx")  : $name;
+    }
+
+    /** shorten with possible ellipsis character */
+    public static function shorten(string $str, int $len=20, string $ellipsis="…"): string
+    {
+        return (aa_strlen($str) > $len) ? aa_substr($str,0,$len-strlen($ellipsis)).$ellipsis : $str;
+    }
+
+    /** small key -> value table for logs, ... */
+    public static function keyValTable(array $arr, bool $html=false): string
+    {
+        $css = <<<CSS
+            .aa-log-entry { display: flex;gap: .5rem;
+              div { position: relative;display: flex;flex-direction: column;align-items: flex-start;
+                label { font-size: 0.7rem; color: #666; margin-bottom: -.5rem; line-height: .9rem;}
+                span { font-size: .8rem; }
+            }}
+            CSS;
+        AA::Stringexpander()->addRequire($css, 'AA_Req_CSScode');
+
+        $ret = '';
+        foreach ($arr as $name => $val) {
+            $name = $html ? $name : safe($name);
+            $val  = $html ? $val : safe(trim($val));
+            if ( $val !== '') {
+                $ret .= "<div class=aa-log-entry><label>$name</label><span>$val</span></div>";
+            }
+        }
+        return '<div class=aa-log-entry>'.$ret.'</div>';
     }
 }

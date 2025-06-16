@@ -2,11 +2,13 @@
 
 namespace AA\Util;
 
+use AA_Requires;
+
 class LibUpdater {
     public function getUpdatedsystemDefinitions(): string {
         $msg     = [];
         $newdefs = [];
-        $defs  = \AA_Requires::systemDefinitions();
+        $defs  = AA_Requires::systemDefinitions();
         foreach ($defs as $name => $req) {
             $pad_name = str_pad("'$name'",29);
             if (!str_contains($url = $req->getUrl(), 'cdn.jsdelivr.net')) {

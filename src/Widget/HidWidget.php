@@ -10,6 +10,7 @@ namespace AA\Widget;
 use AA\FormArray;
 use AA_Content;
 use AA_Property;
+use Exception;
 
 /** Hidden field widget */
 class HidWidget extends Widget
@@ -57,7 +58,7 @@ class HidWidget extends Widget
      * @param  string       $type  normal|live|ajax
      *
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     function _getRawHtml(AA_Property $aa_property, AA_Content $content, string $type='normal'): array {
         $property_id = $aa_property->getId();

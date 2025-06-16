@@ -12,6 +12,7 @@ use AA_Content;
 use AA_Property;
 use AA_Value;
 use datectrl;
+use Exception;
 
 /** Date widget */
 class DteWidget extends Widget
@@ -44,7 +45,7 @@ class DteWidget extends Widget
      * @param  string       $type  normal|live|ajax
      *
      *  @return array
-     *  @throws \Exception
+     *  @throws Exception
      */
     function _getRawHtml(AA_Property $aa_property, AA_Content $content, string $type = 'normal'): array {
         // time parameter==date or all is totally unset - use alternative
@@ -98,9 +99,9 @@ class DteWidget extends Widget
      *  @param \AA_Content  $content
      *  @param string       $type  normal|live|ajax
      *  @return array
-     *  @throws \Exception
+     *  @throws Exception
      */
-    function _getRawHtml_dateinput($aa_property, $content, $type = 'normal')
+    function _getRawHtml_dateinput($aa_property, $content, $type = 'normal'): array
     {
         $base_name = FormArray::getName4Form($aa_property->getId(), $content, $this->item_index);
         $base_id = FormArray::formName2Id($base_name);

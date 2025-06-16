@@ -10,6 +10,9 @@ namespace AA\Widget;
 use AA\FormArray;
 use AA_Content;
 use AA_Property;
+use AA_Value;
+use Exception;
+use ItemContent;
 
 /** Manager widget */
 class MngWidget extends Widget
@@ -45,7 +48,7 @@ class MngWidget extends Widget
      * @param  string       $type  normal|live|ajax
      *
      *  @return array
-     *  @throws \Exception
+     *  @throws Exception
      */
     function _getRawHtml(AA_Property $aa_property, AA_Content $content, string $type = 'normal'): array {
         $property_id = $aa_property->getId();
@@ -71,7 +74,7 @@ class MngWidget extends Widget
                 //if (($type === 'ajax') OR ($type === 'live')) {
                  if (is_long_id($item_id)) {
                     // we have to store the connectorID to the database immediately
-                   UpdateField($item_id, $property_id, new \AA_Value($input_value, FLAG_HTML), \ItemContent::FLAG_JUST_STORE);
+                   UpdateField($item_id, $property_id, new AA_Value($input_value, FLAG_HTML), ItemContent::FLAG_JUST_STORE);
                 }
             }
         }

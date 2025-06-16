@@ -35,7 +35,7 @@ class LogarithmIndex
     /** calculate step for the index
      * for $ln = new AA\Util\LogarithmIndex(0.002, 80, 63) it is 1.183 - so index 1.183 times bigger than previous (18,3 % bigger)
      */
-    function calculateStep()
+    function calculateStep(): float|int
     {
         return ($this->end / $this->start) ** (1 / $this->maxIndex);
     }

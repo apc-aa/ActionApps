@@ -13,6 +13,7 @@ use AA_Content;
 use AA_Formatters;
 use AA_Property;
 use AA_Value;
+use Exception;
 
 /** Multiple Text Field widget */
 class MflWidget extends Widget
@@ -75,7 +76,7 @@ class MflWidget extends Widget
      * @param  string       $type  normal|live|ajax
      *
      *  @return array
-     *  @throws \Exception
+     *  @throws Exception
      */
     function _getRawHtml(AA_Property $aa_property, AA_Content $content, string $type = 'normal'): array {
         $base_name = FormArray::getName4Form($aa_property->getId(), $content, $this->item_index);

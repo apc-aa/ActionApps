@@ -104,7 +104,8 @@ class HitcounterUpdate implements LaterInterface
     /** Plan task for counting statistics fields (hit_1, hit_7, ...)
      *  It is planed as AA\Later\Toexecute jobs
      */
-    function updateDisplayStatistics() {
+    function updateDisplayStatistics(): void
+    {
         $stats2count = GetTable2Array("SELECT id, slice_id FROM field WHERE slice_id <> 'AA_Core_Fields..' AND id LIKE 'hit_%'", '');
 
         if (is_array($stats2count)) {
@@ -113,7 +114,7 @@ class HitcounterUpdate implements LaterInterface
             $timeshift = 0;
             foreach ($stats2count as $to_count) {
                 $count_slice_id = unpack_id($to_count['slice_id']);
-                $field_id       = $to_count['id'];
+                $field_id       = (string)$to_count['id'];
                 $stats_counter  = new HitcounterStats($count_slice_id, $field_id);
 
                 // we plan this tasks for future

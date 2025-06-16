@@ -3,6 +3,7 @@
 namespace AA\Later;
 
 use AA_Object;
+use AA_Plannedtask;
 use AA_Set;
 
 /** Check all AA_Plannedtask and schedule it for execution, if not scheduled
@@ -15,7 +16,7 @@ class PlannedtaskSchedule implements LaterInterface
      * @return string - message about execution to be logged
      * @see \AA\Later\LaterInterface
      */
-    public function toexecutelater($params = [])
+    public function toexecutelater($params = []): string
     {
 
         $ret = '';
@@ -29,7 +30,7 @@ class PlannedtaskSchedule implements LaterInterface
 
         foreach ($zids as $id) {
             $ret .= $id . ';';
-            /** @var \AA_Plannedtask $task */
+            /** @var AA_Plannedtask $task */
             $task = AA_Object::load($id, 'AA_Plannedtask');
             $ret .= get_class($task) . ';';
             $ret .= $task->schedule() . ';';

@@ -62,7 +62,7 @@ class AA_Packtime {
         return $this->index*4 + ($this->cached ? 2 : 0) + ($this->not_modified ? 1 : 0);
     }
 
-    public static function factoryFromInt(int $int): self {
+    public static function factoryFromInt(int $int): static {
         $x = new self(0, ($int & 2) !== 0, ($int & 1) !== 0);
         $x->index = $int >> 2;
         return $x;
@@ -115,7 +115,7 @@ class Hitcounter
      * @param zids $zids
      * @param bool $cached
      */
-    static function hit($zids, bool $cached = false, bool $not_modified = false)
+    static function hit($zids, bool $cached = false, bool $not_modified = false): void
     {
         if (!is_object($zids) || $zids->isEmpty()) {
             return;

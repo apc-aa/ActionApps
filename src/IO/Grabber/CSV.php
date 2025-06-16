@@ -9,6 +9,7 @@
 namespace AA\IO\Grabber;
 
 use AA_Property;
+use ItemContent;
 
 /** AA\IO\AbstractGrabber\AbstractGrabber\CSV - CSV (Comma Separated Values) format grabber */
 class CSV extends AbstractGrabber
@@ -112,7 +113,8 @@ class CSV extends AbstractGrabber
     /** Possibly preparation of grabber - it is called directly before getItem()
      *  method is called - it means "we are going really to grab the data
      */
-    function prepare() {
+    function prepare(): void
+    {
         $this->_items    = [];
         $this->_colnames = [];
         $data = implode('', $this->getSources());
@@ -146,13 +148,14 @@ class CSV extends AbstractGrabber
     }
 
     /** Method called by the AA\IO\Saver to get next item from the data input */
-    function getItem() {
+    function getItem(): false|ItemContent
+    {
         if (false === ($data = current($this->_items))) {
             return false;
         }
         next($this->_items);
 
-        $item = new \ItemContent();
+        $item = new ItemContent();
         foreach ($this->_colnames as $k => $colname) {
             $item->setValue($colname, $data[$k]);    // stav importu
         }

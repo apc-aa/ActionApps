@@ -31,7 +31,8 @@ class CopyItemsFromBackup extends AbstractOptimize {
     /** @inheritDoc */
     public static function types(): array { return ['private_fix']; }
 
-    protected function getDeletedItemIds(string $module_id, string $item_table_bck) {
+    protected function getDeletedItemIds(string $module_id, string $item_table_bck): array
+    {
         if (!DB_AA::exists_table($item_table_bck)) {
             return [];
         }

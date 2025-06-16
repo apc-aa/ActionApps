@@ -1,4 +1,7 @@
 <?php
+
+use AA\Util\SingletonTrait;
+
 /**
  * PHP version 7.2+
  *
@@ -44,7 +47,8 @@ class AA_Supertree {
     /** load function
      * @param $force
      */
-    function load( $id ) {
+    function load( $id ): void
+    {
         if (isset($this->_i[$id])) {
             return;
         }
@@ -197,7 +201,8 @@ class AA_Supertree_Reverse extends AA_Supertree {
     /** load function
      * @param string $id long_item_id
      */
-    function load( $id ) {
+    function load( $id ): void
+    {
         if (isset($this->_i[$id])) {
             return;
         }
@@ -246,7 +251,7 @@ class AA_Supertree_Reverse extends AA_Supertree {
  */
 class AA_Trees {
 
-    use \AA\Util\SingletonTrait;
+    use SingletonTrait;
 
     /** parent->child trees */
     protected $a   = [];
@@ -267,9 +272,10 @@ class AA_Trees {
     /** getTree function
      *  main factory static method
      * @param $id
-     * @return mixed
+     * @return array
      */
-    static function getIds($id, $relation_field, $reverse=false, $sort=null, $slices=null) {
+    static function getIds($id, $relation_field, $reverse=false, $sort=null, $slices=null): array
+    {
         return self::getSupertree($relation_field, $reverse, $sort, $slices)->getIds($id);
     }
 
@@ -277,10 +283,12 @@ class AA_Trees {
      * @param       $relation_field
      * @param       $reverse
      * @param       $sort
-     * @param array $slices
-     * @return AA_Supertree|AA_Supertree_Reverse
+     * @param array  $slices
+     *
+     * @return AA_Supertree
      */
-    static function getSupertree($relation_field, $reverse, $sort, $slices= []) {
+    static function getSupertree($relation_field, $reverse, $sort, $slices = []): AA_Supertree
+    {
         $trees = self::singleton();
         $key   = get_hash($relation_field, $reverse, $sort, $slices);
         if (!isset($trees->a[$key])) {

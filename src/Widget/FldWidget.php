@@ -11,6 +11,7 @@ use AA\FormArray;
 use AA_Content;
 use AA\Util\Langs;
 use AA_Property;
+use Exception;
 
 
 /** Text Field widget */
@@ -50,7 +51,7 @@ class FldWidget extends Widget
      * @param  string       $type  normal|live|ajax
      *
      *  @return array
-     *  @throws \Exception
+     *  @throws Exception
      */
     function _getRawHtml(AA_Property $aa_property, AA_Content $content, string $type = 'normal'): array {
         $base_name = FormArray::getName4Form($aa_property->getId(), $content, $this->item_index);
@@ -140,7 +141,7 @@ class FldWidget extends Widget
      * @param $base
      * @return string
      */
-    protected function getOneInput($input_name, $i, $val, $attr_string, $autofocus, $base_id, $type, $widget_add, $required, $base)
+    protected function getOneInput($input_name, $i, $val, $attr_string, $autofocus, $base_id, $type, $widget_add, $required, $base): string
     {
         $input_id = FormArray::formName2Id($input_name);
         $input_value = safe($val);

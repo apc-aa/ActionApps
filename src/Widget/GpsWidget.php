@@ -13,6 +13,7 @@ use AA_Content;
 use AA_Formatters;
 use AA_Property;
 use AA_Value;
+use Exception;
 
 /** GPS coords widget */
 class GpsWidget extends Widget
@@ -337,7 +338,7 @@ class GpsWidget extends Widget
      * @param  string       $type  normal|live|ajax
      *
      *  @return array
-     *  @throws \Exception
+     *  @throws Exception
      */
     function _getRawHtml(AA_Property $aa_property, AA_Content $content, string $type = 'normal'): array {
         $field_id = $aa_property->getId();

@@ -9,7 +9,10 @@
 namespace AA\IO\Grabber;
 
 use AA_Property;
+use Exception;
+use ItemContent;
 use PDO;
+use PDOException;
 
 /** SQL database query grabber
  *  // ----- example of importer.php for this grabber ----
@@ -111,13 +114,14 @@ class SQL extends AbstractGrabber
 
     /** Possibly preparation of grabber - it is called directly before getItem()
      *  method is called - it means "we are going really to grab the data
-     * @throws \Exception
+     * @throws Exception
      */
-    function prepare() {
+    function prepare(): void
+    {
         try {
             $this->db       = new PDO($this->dsn, $this->username, $this->password);
-        } catch (\PDOException $e) {
-            throw new \Exception('not possible to connect to DB', $e->getCode(), $e);
+        } catch (PDOException $e) {
+            throw new Exception('not possible to connect to DB', $e->getCode(), $e);
 	    }
         $this->message('connected');
 	    $this->dbresult = $this->db->query($this->sql);
@@ -125,11 +129,12 @@ class SQL extends AbstractGrabber
     }
 
     /** Method called by the AA\IO\Saver to get next item from the data input */
-    function getItem() {
+    function getItem(): false|ItemContent
+    {
         if (!$this->dbresult || false === ($data = $this->dbresult->fetch(PDO::FETCH_ASSOC))) {
             return false;
         }
-        $item = new \ItemContent();
+        $item = new ItemContent();
         foreach ($data as $k => $v) {
             $item->setValue($k, $v);
         }
@@ -140,7 +145,8 @@ class SQL extends AbstractGrabber
      *  Function called by AA\IO\Saver after we get the last item from the data
      *  input
      */
-    function finish() {
+    function finish(): void
+    {
         // close connections
         $this->dbresult = null;
         $this->db       = null;

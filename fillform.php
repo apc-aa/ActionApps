@@ -87,7 +87,9 @@ https://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-if (!isset($form)) $form = "f";
+if (!isset($form)) {
+    $form = "f";
+}
 $encap = ( array_key_exists('encap', $_REQUEST) && ($_REQUEST['encap']==="false") ) ? false : true;
 
 /** APC-AA configuration file */

@@ -77,7 +77,8 @@ require_once __DIR__ . "/include/util.php";
 store_vars();
 
 // Store variables, set $GLOBALS[post2shtml_id] or generate Location header
-function store_vars() {
+function store_vars(): void
+{
     global $shtml_page;
 
     $vars = [
@@ -110,7 +111,8 @@ function store_vars() {
     }
 }
 
-function md5_array(&$array) {
+function md5_array(&$array): void
+{
     // uses crypt() instead of md5() - Change by honza 06/19/2003 (see top)
     if (is_array($array)) {
         foreach ($array as $key => $foo) {
@@ -125,7 +127,8 @@ function md5_array(&$array) {
 /** Adds all values from the $source array to the $dest array. Follows all paths
 * in order that all values present in $dest and not in $source are kept.
 */
-function add_var2(&$source, &$dest) {
+function add_var2(&$source, &$dest): void
+{
     if (is_array($source)) {
         foreach ($source as $key => $foo) {
             add_var3($key, $source[$key], $dest);
@@ -136,7 +139,8 @@ function add_var2(&$source, &$dest) {
 /** Recursively adds all values from the $source array to the $dest array. Follows all paths
 * in order that all values present in $dest and not in $source are kept.
 */
-function add_var3($varname, &$source, &$dest) {
+function add_var3($varname, &$source, &$dest): void
+{
     if (is_array($source)) {
         foreach ($source as $key => $foo) {
             add_var3($key, $source[$key], $dest[$varname]);

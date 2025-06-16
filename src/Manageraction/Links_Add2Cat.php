@@ -9,7 +9,7 @@ use zids;
 class Links_Add2Cat extends AbstractManageraction {
 
     /** Constructor - fills the information about the target bin */
-    function __construct($id, $url) {
+    function __construct($id, string $url) {
         parent::__construct($id);
         $this->setOpenUrl($url);
     }

@@ -37,9 +37,8 @@ class Object_Delete extends AbstractManageraction {
         // we delete one after another
 
         /** @var AA_Object $class */
-        if ($class = $manager->getManaged()->getClass()) {
+        if ($class = $manager->getManaged()?->getClass()) {
             if ($zids2delete = $class::querySet($class, new AA_Set(), $item_zids)) {  // test if all zids are of correct type
-                //huhl($class, $item_zids, $zids2delete);
                 $class::deleteObjects($zids2delete->getArray());
             }
         }
@@ -48,7 +47,7 @@ class Object_Delete extends AbstractManageraction {
 
     /** Checks if the user have enough permission to perform the action
      *
-     * @param \AA\Manager  $manager
+     * @param  Manager  $manager
      *
      * @return bool
      */

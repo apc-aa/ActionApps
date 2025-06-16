@@ -78,7 +78,8 @@ class Widget extends AA_Object implements NamedInterface {
 
 
     /** register Requires - internal */
-    protected function registerRequires($aa_property, $winfo) {
+    protected function registerRequires($aa_property, $winfo): void
+    {
         $libs = $this->requireLibs($aa_property, $winfo);
         foreach ($libs as $lib) {
             AA::Stringexpander()->addRequire($lib);
@@ -119,14 +120,16 @@ class Widget extends AA_Object implements NamedInterface {
     //}
 
     /** set index of the item in new-item form */
-    public function setIndex($item_index = null) {
+    public function setIndex($item_index = null): void
+    {
         $this->item_index = ctype_digit((string)$item_index) ? (int)$item_index : 1;
     }
 
     /**  get Slice for constants or empty string
      * @return string slice with constants | ""
      */
-    public function getConstSlice() {
+    public function getConstSlice(): string
+    {
         return (str_starts_with($constgroup = $this->getProperty('const'), "#sLiCe-")) ? substr($constgroup, 7) : '';
     }
 
@@ -227,7 +230,8 @@ class Widget extends AA_Object implements NamedInterface {
     /** returns $ret_val if given $option is selected for current field
      *  This method is rewritten if_selected() method form formutil.php
      */
-    public function ifSelected($option, $ret_val) {
+    public function ifSelected($option, $ret_val): string
+    {
         if (!strlen($option)) {
             return empty($this->_selected) ? $ret_val : '';
         }
@@ -238,7 +242,8 @@ class Widget extends AA_Object implements NamedInterface {
      *  This method is rewritten _fillSelected() method form formutil.php
      * @param $aa_value AA_Value
      */
-    public function _fillSelected($aa_value) {
+    public function _fillSelected($aa_value): void
+    {
         $this->_selected = [];
         //if ( is_null($this->_selected) ) {  // not cached yet => create selected array
         if (is_object($aa_value)) {
@@ -390,7 +395,8 @@ class Widget extends AA_Object implements NamedInterface {
         return $ret;
     }
 
-    public static function _saveIcon($base_id, $cond = true, $pos = 'right', $offset = -12) {
+    public static function _saveIcon($base_id, $cond = true, $pos = 'right', $offset = -12): string
+    {
         return !$cond ? '' : '<img width=16 height=16 title="' . _m('To save changes click here or outside the field.') . '" alt="' . _m('Save') . '" class="' . $base_id . 'ico" src="' . AA_INSTAL_PATH . "images/px.gif\" style=\"position:absolute; $pos:$offset" . "px; top:-3px;\">";
     }
 
@@ -549,7 +555,8 @@ class Widget extends AA_Object implements NamedInterface {
      * @return string - widget HTML for using as Live component (in place editing)
      * @throws Exception
      */
-    public function getLiveHtml(AA_Property $aa_property, AA_Content $content, $function = null) {
+    public function getLiveHtml(AA_Property $aa_property, AA_Content $content, $function = null): string
+    {
         // add JS OK Function
         return str_replace('AA_LIVE_OK_FUNC', $function ?: "''", $this->_finalizeLiveHtml($this->_getRawHtml($aa_property, $content, 'live'), $aa_property));
     }

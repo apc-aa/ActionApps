@@ -58,7 +58,8 @@ class Slice extends AbstractGrabber
     /** Possibly preparation of grabber - it is called directly before getItem()
      *  method is called - it means "we are going really to grab the data
      */
-    function prepare() {
+    function prepare(): void
+    {
         $zids = $this->set->query($this->restrict_zids);
         if ($this->restrict_zids && $zids->count() !== $this->restrict_zids->count()) {
             warn('Not all restrict_zids found - '.$this->restrict_zids->count().' vs '.$zids->count().' found');
@@ -70,7 +71,8 @@ class Slice extends AbstractGrabber
     }
 
     /** Method called by the AA\IO\Saver to get next item from the data input */
-    function getItem() {
+    function getItem(): false|ItemContent
+    {
         if (!($longid = $this->_longids[$this->_index])) {
             return false;
         }
@@ -83,7 +85,8 @@ class Slice extends AbstractGrabber
     }
 
     /** speedup */
-    function _fillCache() {
+    function _fillCache(): void
+    {
         // read next 100 items (we can laborate with cache size in future to get even better performance)
         $this->_content_cache = GetItemContent(new zids(array_slice($this->_longids, $this->_index, 100), 'l'), '', false, $this->restrict_fields);
     }
@@ -97,7 +100,8 @@ class Slice extends AbstractGrabber
         return 'utf-8';
     }
 
-    function finish() {
+    function finish(): void
+    {
         $this->_longids = [];
     }
 }

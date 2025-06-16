@@ -3,6 +3,8 @@
 namespace AA\Optimize;
 
 use AA;
+use AA_Metabase;
+
 use function _m;
 
 /** Drop all bck_* tables
@@ -32,7 +34,7 @@ class DropBackupTables extends \AA\Optimize\AbstractOptimize {
      * @return bool
      */
     public function repair(): bool {
-        $current_metabase = new \AA_Metabase();  // call contructor here is OK - we need to load structure from current db, not modify AA ideal strusture defined in AA::Metabase()
+        $current_metabase = new AA_Metabase();  // call contructor here is OK - we need to load structure from current db, not modify AA ideal strusture defined in AA::Metabase()
         $current_metabase->loadFromDb();
         $tablenames = $current_metabase->getTableNames();
 

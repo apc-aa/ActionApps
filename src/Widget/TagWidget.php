@@ -10,8 +10,10 @@ namespace AA\Widget;
 use AA\FormArray;
 use AA_Content;
 use AA_Property;
+use AA_Requires;
 use AA_Validate;
 use AA_Value;
+use Exception;
 use zids;
 
 /** Tag input - in fact the result is very similar to related item window - it adds related items */
@@ -55,7 +57,7 @@ class TagWidget extends Widget
      * @param  string       $type  normal|live|ajax
      *
      *  @return array
-     *  @throws \Exception
+     *  @throws Exception
      */
     function _getRawHtml(AA_Property $aa_property, AA_Content $content, string $type = 'normal'): array {
         $def_field_id = $aa_property->getId();
@@ -147,7 +149,7 @@ class TagWidget extends Widget
         // maybe we can change it to async / await / Promises
         $widget .="
             <script> 
-              AA_LoadJs( jQuery.fn.select2, function() {aa_maketags('$input_id', '$def_slice_id', '$def_field_id', $max_values, '$def_item_id');}, '".\AA_Requires::getUrl4Lib('select2@4')."');
+              AA_LoadJs( jQuery.fn.select2, function() {aa_maketags('$input_id', '$def_slice_id', '$def_field_id', $max_values, '$def_item_id');}, '".AA_Requires::getUrl4Lib('select2@4')."');
             </script>";
 
         return ['html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired()];

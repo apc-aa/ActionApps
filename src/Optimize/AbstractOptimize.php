@@ -2,14 +2,18 @@
 
 namespace AA\Optimize;
 
+use AA\Util\NamedInterface;
+use AA\Util\ReportTrait;
 use AA_Content;
 use AA_Property;
 use AA_Value;
+use RuntimeException;
+
 use function getDB;
 use function safe;
 
-abstract class AbstractOptimize implements \AA\Util\NamedInterface {
-    use \AA\Util\ReportTrait;
+abstract class AbstractOptimize implements NamedInterface {
+    use ReportTrait;
 
     /** @var array used in manager to store test results in order we can use it in alias _#RESULT__ */
     public static array $action_results = [];
@@ -89,7 +93,8 @@ abstract class AbstractOptimize implements \AA\Util\NamedInterface {
     }
 
     /** function to add content fields to getContent of Component for each type of Components (for Manager)*/
-    public static function contentAdd(AA_Content $content) {
+    public static function contentAdd(AA_Content $content): void
+    {
         $content->setAaValue('name',        new AA_Value(static::name()));
         $content->setAaValue('description', new AA_Value(static::description()));
         $content->setAaValue('actions',     new AA_Value(static::actions()));
@@ -120,7 +125,7 @@ abstract class AbstractOptimize implements \AA\Util\NamedInterface {
     /** $db->query wrapper - always use it to not execute the command and just
      *  display it, ...
      *
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public function query($SQL): bool {
         $this->message(safe($SQL));
@@ -136,7 +141,7 @@ abstract class AbstractOptimize implements \AA\Util\NamedInterface {
         $db = $this->db;
 
         if (!($ret = $db->query($SQL))) {
-            throw new \RuntimeException('db err');  // @todo - better exception text
+            throw new RuntimeException('db err');  // @todo - better exception text
         }
         return $ret;
     }

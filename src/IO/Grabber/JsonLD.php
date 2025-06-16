@@ -105,12 +105,13 @@ class JsonLD extends AbstractGrabber
      * @param string|null $item_splitter
      * @return JsonLD
      */
-    public function setItemSplitter(string $item_splitter = null): self {
+    public function setItemSplitter(string $item_splitter = null): static {
         $this->item_splitter = $item_splitter;
         return $this;
     }
 
-    protected function splitter($json) {
+    protected function splitter($json): array
+    {
         $ret = [];
 
         // for now just one splitter type - FeatureCollection
@@ -127,7 +128,7 @@ class JsonLD extends AbstractGrabber
     /**
      * @param string|null $next_func
      */
-    public function setNextFunc(string $next_func = null): self {
+    public function setNextFunc(string $next_func = null): static {
         $this->next_func = $next_func;
         return $this;
     }
@@ -153,7 +154,7 @@ class JsonLD extends AbstractGrabber
     }
 
     /** You can get token dynamically, so you weill set it through  setAuth, or you already have token, then you setToken directly */
-    public function setAuth(array $authdata): self {
+    public function setAuth(array $authdata): static {
         $this->authdata['username'] = $authdata['username'];
         $this->authdata['password'] = $authdata['password'];
         $this->authdata['tokenurl'] = $authdata['tokenurl'];
@@ -171,16 +172,18 @@ class JsonLD extends AbstractGrabber
     }
 
     /** You can get token dynamically, so you weill set it through  setAuth, or you already have token, then you setToken directly */
-    public function setToken(string $token): self {
+    public function setToken(string $token): static {
         $this->token = $token;
         return $this;
     }
 
 
     /** the real low level get data from url - used in loadData() as higher level function
-     * @param string      $url
-     * @param string|null $post_body
-     * @return false|string data
+     *
+     * @param  string       $url
+     * @param  string|null  $post_body
+     *
+     * @return string data
      */
     protected function loadUrl(string $url, ?string $post_body = ''): string {
         $header =  "Content-Type: application/json";
@@ -231,7 +234,8 @@ class JsonLD extends AbstractGrabber
      *  method is called - it means "we are going really to grab the data
      * @throws Exception
      */
-    function prepare() {
+    function prepare(): void
+    {
         $this->_items = [];
         $data = $this->getSources();
         foreach ($data as $chunk) {
@@ -263,7 +267,8 @@ class JsonLD extends AbstractGrabber
     }
 
     /** Method called by the AA\IO\Saver to get next item from the data input */
-    function getItem() {
+    function getItem(): false|ItemContent
+    {
         if (false === ($data = current($this->_items))) {
             return false;
         }

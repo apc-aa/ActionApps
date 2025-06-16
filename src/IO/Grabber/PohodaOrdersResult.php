@@ -38,7 +38,8 @@ class PohodaOrdersResult extends AA\IO\Grabber\AbstractGrabber {
     /** Possibly preparation of grabber - it is called directly before getItem()
      *  method is called - it means "we are going really to grab the data
      */
-    function prepare() {
+    function prepare(): void
+    {
         $data = file_get_contents($this->file);
         // remove namespaces (it is pain to work with it in simple XML interface)
         $data = str_replace(['<rsp:', '</rsp:'], ['<rsp_', '</rsp_'], $data);
@@ -52,7 +53,8 @@ class PohodaOrdersResult extends AA\IO\Grabber\AbstractGrabber {
     }
 
     /** Method called by the AA\IO\Saver to get next item from the data input */
-    function getItem() {
+    function getItem(): false|ItemContent
+    {
         if (!($polozka = current($this->_items))) {
             return false;
         }

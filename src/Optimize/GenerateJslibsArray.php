@@ -2,6 +2,8 @@
 
 namespace AA\Optimize;
 
+use AA\Util\LibUpdater;
+
 use function _m;
 
 /** Prints out the JS library definition array used in include/stringexpand.php for update to last version of libs on jsDeliver CDN
@@ -30,7 +32,7 @@ class GenerateJslibsArray extends AbstractOptimize {
      * @return bool
      */
     public function repair(): bool {
-        $libupdater = new \AA\Util\LibUpdater();
+        $libupdater = new LibUpdater();
         $this->message($libupdater->getUpdatedsystemDefinitions());
         return true;
     }

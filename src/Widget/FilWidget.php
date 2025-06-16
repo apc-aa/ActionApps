@@ -13,6 +13,7 @@ use AA_Content;
 use AA_Property;
 use AA_Validate;
 use AA_Value;
+use Exception;
 
 /** File Upload widget */
 class FilWidget extends Widget
@@ -119,7 +120,7 @@ class FilWidget extends Widget
      * @param  string       $type  normal|live|ajax
      *
      *  @return array
-     *  @throws \Exception
+     *  @throws Exception
      */
     function _getRawHtml(AA_Property $aa_property, AA_Content $content, string $type = 'normal'): array {
         $base_name = FormArray::getName4Form($aa_property->getId(), $content, $this->item_index);
@@ -207,9 +208,9 @@ class FilWidget extends Widget
      * @param  null         $function
      *
      * @return string - widget HTML for using as Live component (in place editing)
-     * @throws \Exception
+     * @throws Exception
      */
-    function getLiveHtml(AA_Property $aa_property, AA_Content $content, $function = null)
+    function getLiveHtml(AA_Property $aa_property, AA_Content $content, $function = null): string
     {
         //return $this->getAjaxHtml($aa_property, $content);
         // this is not standard implementation - we reuse Ajax function instead of Live function, because it is more natural for file upload

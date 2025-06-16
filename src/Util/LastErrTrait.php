@@ -25,7 +25,8 @@ trait LastErrTrait {
      * @param bool   $getmsg
      * @return int|string
      */
-    public static function lastErr( ?int $err_id = null, ?string $err_msg = null, bool $getmsg = false) {
+    public static function lastErr( ?int $err_id = null, ?string $err_msg = null, bool $getmsg = false): int|string
+    {
         static $lastErr;
         static $lastErrMsg;
         if (!is_null($err_id)) {
@@ -35,3 +36,15 @@ trait LastErrTrait {
         return $getmsg ? (string)$lastErrMsg : (int)$lastErr;
     }
 }
+
+/* just idea - not finished, Honza 2025
+trait AllErrTrait {
+    private array $allErrs = [];
+
+    public function writeErr(int $err_id, string $err_msg, ): void {
+        $this->allErrs[] = [$err_id, $err_msg];
+    }
+
+
+}
+*/

@@ -40,7 +40,8 @@ class Paramwizard {
      *  (replaces array in constants_param_wizard.php)
      *  called as AA\Widget\Widget::getParamWizardArr('fld');
      */
-    public function getParamWizardArr($type, $class_mask) {
+    public function getParamWizardArr($type, $class_mask): array
+    {
         $ret = [];
 
         /** @var NamedInterface $class */
