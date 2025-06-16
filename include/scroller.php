@@ -149,7 +149,8 @@ class AA_Scroller extends AA_Storable {
     /** checkBounds function
      * Keep current page within bounds
      */
-    function checkBounds() {
+    function checkBounds(): void
+    {
         $this->current = max(1, min($this->current, $this->pageCount()));
     }
 
@@ -167,7 +168,8 @@ class AA_Scroller extends AA_Storable {
      *  Process query string and execute commands for this scroller
      *  (based on $itmcnt)
      */
-    function update() {
+    function update(): void
+    {
         if ($_GET["scr_{$this->id}_Go"]) {
             $this->go2page((int)$_GET["scr_{$this->id}_Go"]);
         }
@@ -418,8 +420,10 @@ class AA_Scroller_View extends AA_Scroller_Sitemodule {
 
     /** Return part of a query string for move to absolute position $page
      *  used by navarray
+     *
      * @param $page
-     * @return mixed|null|string|string[]
+     *
+     * @return string
      */
     protected function absolute($page): string
     {

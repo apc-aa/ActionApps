@@ -36,7 +36,6 @@
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
  * @link      https://www.apc.org/ APC
  *
- * @return array|string
  */
 
 use AA\Doit\RequestMonitor;

@@ -36,11 +36,14 @@
 
 /** AddUser function
  *  Creates new person in LDAP permission system
+ *
  * @param $user
  * @param $flags
- * @return bool|string
+ *
+ * @return false|string
  */
-function AddUser($user, $flags = 0) {
+function AddUser($user, $flags = 0): false|string
+{
     if (! AA::$perm->isUsernameFree($user["uid"])) {
         return false;
     }
@@ -81,7 +84,8 @@ function AddUser($user, $flags = 0) {
  * @param int $flags
  * @return bool
  */
-function DelUser($user_id, $flags = 3) {
+function DelUser($user_id, $flags = 3): bool
+{
     $aa_default_ldap = AA_Permsystem_Ldap::getLdap();
     if ( !($ds=InitLDAP()) ) {
         return false;
@@ -123,7 +127,8 @@ function DelUser($user_id, $flags = 3) {
  * @param $flags
  * @return bool
  */
-function ChangeUser($user, $flags = 0) {
+function ChangeUser($user, $flags = 0): bool
+{
     if ( !($ds = InitLDAP()) ) {
         return false;
     }
@@ -150,11 +155,14 @@ function ChangeUser($user, $flags = 0) {
 
 /** AddGroup function
  *  Creates new group in LDAP permission system
+ *
  * @param $group array ("name", "description", ...)
  * @param $flags
- * @return bool|string
+ *
+ * @return false|string
  */
-function AddGroup($group, $flags = 0) {
+function AddGroup($group, $flags = 0): false|string
+{
     $aa_default_ldap = AA_Permsystem_Ldap::getLdap();
     if ( !($ds=InitLDAP()) ) {
         return false;
@@ -185,7 +193,8 @@ function AddGroup($group, $flags = 0) {
  * @param int $flags
  * @return bool
  */
- function DelGroup($group_id, $flags = 3) {
+ function DelGroup($group_id, $flags = 3): bool
+ {
      $aa_default_ldap = AA_Permsystem_Ldap::getLdap();
      if ( !($ds=InitLDAP()) ) {
          return false;
@@ -228,7 +237,8 @@ function AddGroup($group, $flags = 0) {
  * @param $flags
  * @return bool
  */
-function ChangeGroup($group, $flags = 0) {
+function ChangeGroup($group, $flags = 0): bool
+{
     if ( !($ds=InitLDAP()) ) {
         return false;
     }
@@ -251,7 +261,8 @@ function ChangeGroup($group, $flags = 0) {
  * @param $flags
  * @return bool
  */
-function AddGroupMember($group_id, $id, $flags = 0) {
+function AddGroupMember($group_id, $id, $flags = 0): bool
+{
     if ( !($ds=InitLDAP()) ) {
         return false;
     }
@@ -267,7 +278,8 @@ function AddGroupMember($group_id, $id, $flags = 0) {
  * @param $flags
  * @return bool
  */
-function DelGroupMember($group_id, $id, $flags = 0) {
+function DelGroupMember($group_id, $id, $flags = 0): bool
+{
     if ( !($ds=InitLDAP()) ) {
         return false;
     }
@@ -307,7 +319,8 @@ function DelGroupMember($group_id, $id, $flags = 0) {
  * @param $flags
  * @return bool
  */
-function AddPermObject($objectID, $objectType, $flags = 0) {
+function AddPermObject($objectID, $objectType, $flags = 0): bool
+{
     $aa_default_ldap = AA_Permsystem_Ldap::getLdap();
 
     if ( !($ds=InitLDAP()) ) {
@@ -333,7 +346,8 @@ function AddPermObject($objectID, $objectType, $flags = 0) {
  * @param $flags
  * @return bool
  */
-function DelPermObject($objectID, $objectType, $flags = 0) {
+function DelPermObject($objectID, $objectType, $flags = 0): bool
+{
     $aa_default_ldap = AA_Permsystem_Ldap::getLdap();
     if (!($ds=InitLDAP())) {
         return false;
@@ -354,7 +368,8 @@ function DelPermObject($objectID, $objectType, $flags = 0) {
  * @param $flags
  * @return bool
  */
-function AddPerm($id, $objectID, $objectType, $perm, $flags = 0) {
+function AddPerm($id, $objectID, $objectType, $perm, $flags = 0): bool
+{
     $aa_default_ldap = AA_Permsystem_Ldap::getLdap();
     if (!($ds=InitLDAP())) {
         return false;
@@ -404,25 +419,31 @@ function AddPerm($id, $objectID, $objectType, $perm, $flags = 0) {
 }
 
 /** DelPerm function
- * @param $id
- * @param $objectID
- * @param $objectType
- * @param $flags
- * @return
+ *
+ * @param       $id
+ * @param       $objectID
+ * @param       $objectType
+ * @param  int  $flags
+ *
+ * @return bool
  */
-function DelPerm($id, $objectID, $objectType, $flags = 0) {
+function DelPerm($id, $objectID, $objectType, $flags = 0): bool
+{
     return AddPerm($id, $objectID, $objectType, false);
 }
 
 /** ChangePerm function
- * @param $id
- * @param $objectID
- * @param $objectType
- * @param $perm
- * @param $flags
- * @return
+ *
+ * @param       $id
+ * @param       $objectID
+ * @param       $objectType
+ * @param       $perm
+ * @param  int  $flags
+ *
+ * @return bool
  */
-function ChangePerm($id, $objectID, $objectType, $perm, $flags = 0) {
+function ChangePerm($id, $objectID, $objectType, $perm, $flags = 0): bool
+{
     return AddPerm($id, $objectID, $objectType, $perm);
 }
 
@@ -450,19 +471,25 @@ function InitLDAP() {
 
 /** ParseApcAci function
  *  Parse apcaci LDAP entry
+ *
  * @param $str
- * @return array|bool
+ *
+ * @return false|array
  */
-function ParseApcAci($str) {
+function ParseApcAci($str): false|array
+{
     $foo = explode(':', $str);
     return ((count($foo) < 2) ? false : ["dn"=>$foo[0], "perm"=>$foo[1]]);
 }
 
 /** GetApcAciPerm function
+ *
  * @param $str
- * @return
+ *
+ * @return string
  */
-function GetApcAciPerm($str) {
+function GetApcAciPerm($str): string
+{
     $foo = explode(':', $str);
     return $foo[1];         // permission string
 }
@@ -484,7 +511,8 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
      * @param $org
      * @return array
      */
-    static function getLdap($org='') {
+    static function getLdap($org=''): array
+    {
         // default ldap server for all searches
         return [
             "host"   => LDAP_HOST,
@@ -506,7 +534,8 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
     function isUserEditable(): bool { return true; }
 
     /** Creates a password hash for given Permsystem */
-    public static function generatePasswordHash($password): string {
+    public static function generatePasswordHash($password): string
+    {
         // $hash = "{md5}". base64_encode(pack("H*",md5($user["userpassword"])));  // old version
 
         // new version of password hash - sha-512 - 2019-01-15 HM
@@ -532,7 +561,8 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
      * @param string $code2fa
      * @return false|string - uid if user is authenticated, else false.
      */
-    public function authenticateUsername($username, $password, $code2fa = '') {
+    public function authenticateUsername($username, $password, $code2fa = ''): false|string
+    {
         if (!$username || !$password) {         // no password => anonymous in LDAP
             return false;
         }
@@ -585,10 +615,13 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
     }
 
     /** findUsers function
-     *  @param $pattern
-     *  @return - list of users which corresponds to mask $pattern
+     *
+     * @param $pattern
+     *
+     * @return array|string - list of users which corresponds to mask $pattern
      */
-    function findUsernames($pattern) {
+    function findUsernames($pattern): array|string
+    {
         $aa_default_ldap = self::getLdap();
         if ( !($ds=InitLDAP()) ) {
             return [];
@@ -612,7 +645,9 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
     }
 
     /** find_user_by_login function
-     * @param $login
+     *
+     * @param $user_login
+     *
      * @return array
      */
     function findUserByLogin($user_login): array {
@@ -655,7 +690,8 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
      *  @param $group_id
      *  @return false|array - (uid, name, description)
      */
-    function getGroup($group_id) {
+    function getGroup($group_id): false|array
+    {
         if ( !($ds=InitLDAP()) ) {
             return false;
         }
@@ -682,18 +718,21 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
     }
 
     /** getIDsInfo function
-     * @param $id
+     *
+     * @param $uid
+     *
      * @return false|array - array containing basic information on $id (user DN or group DN)
      * or false if ID does not exist
      * array("mail" => $mail, "name" => $cn, "type" => "User" : "Group")
      */
-    function getIDsInfo($id) {
+    function getIDsInfo($uid): false|array
+    {
         if ( !($ds=InitLDAP()) ) {
             return false;
         }
 
         $filter = "(|(objectclass=groupOfNames)(objectclass=inetOrgPerson))";
-        $result = @ldap_read($ds, $id, $filter, ["objectclass","mail","cn","sn","givenname"]);
+        $result = @ldap_read($ds, $uid, $filter, ["objectclass", "mail", "cn", "sn", "givenname"]);
         if (!$result) {
             return false;
         }
@@ -704,8 +743,8 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
             $arr["objectclass"] = $arr["objectClass"];
         }
 
-        $res = [];
-        $res['id'] = $id;
+        $res       = [];
+        $res['id'] = $uid;
         for ($i=0; $i < $arr["objectclass"]["count"]; ++$i) {
             if (stripos($arr["objectclass"][$i], "groupofnames") !== false) {
                 $res["type"] = "Group";
@@ -859,8 +898,10 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
     }
 
     /** getObjectsPerms function
+     *
      * @param $objectID
-     * @param $ojectType
+     * @param $objectType
+     *
      * @return array of user/group identities and their permissions
      *  granted on specified object $objectID
      */

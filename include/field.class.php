@@ -1189,7 +1189,7 @@ class AA_Fields implements Iterator, Countable {
     /** Converts real field id into field id as used in the AA form, like:
      *  post_date......1  ==>  post_date______1
      */
-    public static function getVarFromFieldId($field_id): array|string
+    public static function getVarFromFieldId($field_id): string
     {
         return str_replace('.', '_', $field_id);
     }
@@ -1197,7 +1197,7 @@ class AA_Fields implements Iterator, Countable {
     /** Converts field id as used in the AA form to real field id, like:
      *  post_date______1  ==>  post_date......1
      */
-    public static function getFieldIdFromVar($dirty_field_id): array|string
+    public static function getFieldIdFromVar(string $dirty_field_id): string
     {
         return str_replace(['__', '._'], '..', $dirty_field_id);
     }

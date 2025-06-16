@@ -35,7 +35,11 @@
 // go to the database when something is needed.
 
 use AA\IO\DB\DB_AA;
+use AA\Util\ArrTrait;
+use AA\Util\ChangesMonitor;
 use AA\Util\Langs;
+use AA\Util\Searchfields;
+use AA\Util\SingletonTrait;
 use AA\Util\Txt;
 use AA\Widget\Widget;
 
@@ -63,7 +67,7 @@ class AA_Moduleconfig {
 }
 
 class AA_Moduleregistry implements Iterator, ArrayAccess, Countable {
-    use \AA\Util\ArrTrait, \AA\Util\SingletonTrait;
+    use ArrTrait, SingletonTrait;
 
     /** array of the values */
     protected array $arr = [];
@@ -145,8 +149,10 @@ abstract class AA_Module {
      *   $site        = AA_Module_Site::getModule($module_id)
      *   $slice       = AA_Slice::getModule($module_id)
      *   $some_module = AA_Module::getModule($module_id)  // this is not recommended - we usually know which module it should be
-     *  @param string $module_id
-     * @return AA_Module|AA_Slice|AA_Module_Site|AA_Module_Alerts|AA_Module_Links|AA_Module_Polls|null
+     *
+     * @param  string  $module_id
+     *
+     * @return AA_Module|null
      */
     public static function getModule($module_id): ?AA_Module {
         if (!is_long_id($module_id)) {
@@ -209,7 +215,8 @@ abstract class AA_Module {
      * @param $module_id
      * @return string     - S | W | Alerts | J | P | Links
      */
-    public static function getModuleType($module_id) {
+    public static function getModuleType($module_id): string
+    {
         return self::getModuleInfo('type', $module_id);
     }
 
@@ -244,13 +251,13 @@ abstract class AA_Module {
      *  static function
      * @param $module_id
      * @param $prop
-     * @return bool|mixed|null
      */
     public static function getModuleProperty($module_id, $prop) {
         return static::getModule($module_id)?->getProperty($prop);
     }
 
-    protected function _isModuleTableProperty($prop) {
+    protected function _isModuleTableProperty($prop): bool
+    {
         return AA::Metabase()->isColumn('module', $prop);
     }
 
@@ -261,7 +268,8 @@ abstract class AA_Module {
         return $this->module_setting[$prop] ?? false;
     }
 
-    protected function _isSpecificTableProperty($prop) {
+    protected function _isSpecificTableProperty($prop): bool
+    {
         return static::SETTING_TABLE && AA::Metabase()->isColumn(static::SETTING_TABLE, $prop);
     }
 
@@ -275,7 +283,8 @@ abstract class AA_Module {
         return $this->table_setting[$prop] ?? false;
     }
 
-    protected function _isModuleObjectProperty($prop) {
+    protected function _isModuleObjectProperty($prop): ?bool
+    {
         /** @var class-string<AA_AbstractModulesettings> $class name - it is string name of class */
         $class = static::SETTING_CLASS;
         return empty($class) ? null : $class::isProperty($prop);
@@ -295,7 +304,8 @@ abstract class AA_Module {
         return is_null($this->moduleobject_setting) ? null : $this->moduleobject_setting->getProperty($prop);
     }
 
-    public static function processModuleObject($module_id) {
+    public static function processModuleObject($module_id): void
+    {
         /** @var class-string<AA_AbstractModulesettings> $class name - it is string name of class */
         $class = static::SETTING_CLASS;
         if ($module_id && !empty($class)) {
@@ -340,7 +350,8 @@ abstract class AA_Module {
     }
 
     /** Checks, if the module_id is OK and the slice is not deleted */
-    function isValid() {
+    function isValid(): bool
+    {
         return !$this->deleted() && $this->module_setting; // $this->deleted() loads also $this->module_setting and we have to test if the module even exists
     }
 
@@ -378,7 +389,8 @@ abstract class AA_Module {
         return Langs::getCharset($this->getLang());   // like 'windows-1250'
     }
 
-    function getDefaultLang() {
+    function getDefaultLang(): string
+    {
         return $this->getLang();
     }
 
@@ -386,12 +398,13 @@ abstract class AA_Module {
         return array_unique(array_merge(self::$_used4cache, array_keys(AA_Module::$_modules)));
     }
 
-    /** @return array id => name of current user's modules
-     *  @param $module_type
-     *  @param $perm
-     *  @param $user_id
+    /**
+     * @param  string  $module_type
+     *
+     * @return array id => name of current user's modules
      */
-    public static function getUserModules( $module_type = '') {
+    public static function getUserModules( $module_type = ''): array
+    {
 
         $all_modules = self::getModules($module_type, true);
         $user_id     =  AuthGetUid();
@@ -433,8 +446,9 @@ class AA_Slice extends AA_Module {
 
     // computed values form slice fields
     var $show_func_used; // used show functions in the input form
-    /** AA_Slice function
-     * @param $module_id
+
+    /**
+     * @param  string  $module_id
      */
     function __construct(string $module_id) {
         $this->fields         = AA_Fields::factoryFor($module_id);
@@ -464,7 +478,8 @@ class AA_Slice extends AA_Module {
      *  Load $this from the DB for any of $fields not already loaded
      * @param $force
      */
-    function loadsettingfields($force=false) {
+    function loadsettingfields($force=false): void
+    {
         if ( !$force && is_object($this->dynamic_setting) ) {
             return;
         }
@@ -485,8 +500,9 @@ class AA_Slice extends AA_Module {
     }
 
     /** getProperty function
-     * @param $fname
-     * @return bool|mixed|null
+     *
+     * @param $prop
+     *
      */
     function getProperty($prop) {
         $ret = parent::getProperty($prop);
@@ -507,7 +523,8 @@ class AA_Slice extends AA_Module {
      * @param bool $fname
      * @return bool
      */
-    function isField($fname) {
+    function isField($fname): bool
+    {
         return $this->fields->isField($fname);
     }
 
@@ -543,14 +560,16 @@ class AA_Slice extends AA_Module {
     /**
      * @return bool
      */
-    function isExpiredContentAllowed() {
+    function isExpiredContentAllowed(): bool
+    {
         return ($this->getProperty('flag') & SLICE_ALLOW_EXPIRED_CONTENT) == SLICE_ALLOW_EXPIRED_CONTENT;
     }
 
     /**
      * @return bool
      */
-    function isPendingContentAllowed() {
+    function isPendingContentAllowed(): bool
+    {
         return ($this->getProperty('flag') & SLICE_ALLOW_PENDING_CONTENT) == SLICE_ALLOW_PENDING_CONTENT;
     }
 
@@ -563,7 +582,8 @@ class AA_Slice extends AA_Module {
 
     /** Should we use expired bin condition - based on nocheck_expired slice setting?
      */
-    function noCheckExpired(bool $suggestion=false) {
+    function noCheckExpired(bool $suggestion=false): bool
+    {
         $expr = (string)$this->getProperty('nocheck_expired');
         return !strlen($expr) ? $suggestion : ($expr === "1" || AA::Un($expr) === "1");
     }
@@ -652,8 +672,13 @@ class AA_Slice extends AA_Module {
         return $this->fields->getField($field_id);
     }
 
-    /** @return Widget */
-    function getWidget($field_id) {
+    /**
+     * @param $field_id
+     *
+     * @return Widget|null
+     */
+    function getWidget($field_id): ?Widget
+    {
         return $this->getField($field_id)?->getWidget();
     }
 
@@ -664,7 +689,7 @@ class AA_Slice extends AA_Module {
     }
 
     /** for translated fields - if not translated, use default language of the module */
-    function getDefaultLang() {
+    function getDefaultLang(): string  {
         return is_array($translations = $this->getTranslations()) ? $translations[0] : $this->getLang();
     }
 
@@ -679,9 +704,10 @@ class AA_Slice extends AA_Module {
     // function sql_id()      { return q_pack_id($this->module_id); }
 
     /**
-     * @return \AA\Util\Searchfields
+     * @return Searchfields
      */
-    function getSearchfields() {
+    function getSearchfields(): Searchfields
+    {
         return $this->fields->getSearchfields();
     }
 
@@ -690,7 +716,8 @@ class AA_Slice extends AA_Module {
      * @param $ignore_reading_password
      * @return null|ItemContent
      */
-    function get_dynamic_setting_content($ignore_reading_password = false) {
+    function get_dynamic_setting_content($ignore_reading_password = false): ?ItemContent
+    {
         if (!$ignore_reading_password) {
             if (!AA_Credentials::singleton()->checkCryptedPassword($this->getProperty('reading_password'))) {   // $this->getProperty('reading_password') is encrypted
                 if ($GLOBALS['errcheck'] || $GLOBALS['debug']) {
@@ -705,7 +732,8 @@ class AA_Slice extends AA_Module {
 
     /** Get the base for the file uploads
      */
-    function getUploadBase() {
+    function getUploadBase(): array
+    {
         $ret = [];
         $fileman_dir = $this->getProperty('fileman_dir');
         if ($fileman_dir && is_dir(FILEMAN_BASE_DIR.$fileman_dir)) {
@@ -725,7 +753,8 @@ class AA_Slice extends AA_Module {
      * @param $filename
      * @return string
      */
-    function getUrlFromPath($filename) {
+    function getUrlFromPath($filename): string
+    {
         $upload = $this->getUploadBase();
         if (str_starts_with($filename, $upload['path'])) {
             return $upload['url']. substr($filename,strlen($upload['path']));
@@ -736,7 +765,8 @@ class AA_Slice extends AA_Module {
     /** get_format_strings function
      *  Returns array of admin format strings as used in manager class
      */
-    function get_format_strings() {
+    function get_format_strings(): array
+    {
         // additional string for compact_top and compact_bottom needed
         // for historical reasons (not manager.class version of item manager)
         return [
@@ -893,10 +923,10 @@ class AA_Module_Site extends AA_Module {
     protected const SETTING_CLASS = 'AA_Modulesettings_Site';
     protected const SETTING_TABLE = 'site';
 
-    const FLAG_DISABLE   = 1;   // deactivated spot
-    const FLAG_JUST_TEXT = 2;   // not used - planed for site speedup
+    public const FLAG_DISABLE    = 1;   // deactivated spot
+    private const FLAG_JUST_TEXT = 2;   // not used - planed for site speedup
     // (= flag means "don't stringexpand text)"
-    const FLAG_COLLAPSE  = 4;   // (visualy) Collapsed spot
+    public const FLAG_COLLAPSE = 4;   // (visualy) Collapsed spot
 
 
     /** all modules config function
@@ -905,19 +935,20 @@ class AA_Module_Site extends AA_Module {
      */
     public static function getModuleconfig(): AA_Moduleconfig {
         return new AA_Moduleconfig('W', _m('Site'), 'AA_Module_Site',  'modules/site/',   'modules/site/menu.php', ['en-utf8_site_lang.php' => 'EN Site',
-                                                                                                                             'en_site_lang.php'      => 'EN Site (old - 8bit)',
-                                                                                                                             'es-utf8_site_lang.php' => 'ES Site',
-                                                                                                                             'es_site_lang.php'      => 'ES Site (old - 8bit)',
-                                                                                                                             'cz-utf8_site_lang.php' => 'CZ Site',
-                                                                                                                             'cz_site_lang.php'      => 'CZ Site (old - 8bit)',
-                                                                                                                             'sk-utf8_site_lang.php' => 'SK Site',
+                                                                                                                    'en_site_lang.php'      => 'EN Site (old - 8bit)',
+                                                                                                                    'es-utf8_site_lang.php' => 'ES Site',
+                                                                                                                    'es_site_lang.php'      => 'ES Site (old - 8bit)',
+                                                                                                                    'cz-utf8_site_lang.php' => 'CZ Site',
+                                                                                                                    'cz_site_lang.php'      => 'CZ Site (old - 8bit)',
+                                                                                                                    'sk-utf8_site_lang.php' => 'SK Site',
         ], true);
     }
 
     /** get current site id
      *  @return string|false site_id
      */
-    public static function getIdFromUrl() {
+    public static function getIdFromUrl(): false|string
+    {
         $host2  = str_starts_with($host = $_SERVER['HTTP_HOST'], 'www.') ? substr($host,4) : 'www.'.$host;
         $domain_arr = ["http://$host/", "https://$host/","http://$host", "https://$host","http://$host2/", "https://$host2/","http://$host2", "https://$host2"];
         if ($id = DB_AA::select1('unpackid', "SELECT LOWER(HEX(id)) AS unpackid FROM `module`", [ ['type', 'W'], ['deleted', '0', 'i'], ['slice_url', $domain_arr] ]) ) {
@@ -931,7 +962,8 @@ class AA_Module_Site extends AA_Module {
 
 
     /** for translated fields - if not translated, use default language of the module */
-    function getDefaultLang() {
+    public function getDefaultLang(): string
+    {
         if (($translate_slice = $this->getProperty('translate_slice')) && is_array($translations = AA_Slice::getModuleProperty($translate_slice,'translations'))) {
             return $translations[0];
         }
@@ -944,7 +976,8 @@ class AA_Module_Site extends AA_Module {
      * @param string|null $item - item for whit we evaluate
      * @return string
      */
-    static function spotsOutput($module_id, $spot_ids, $item = null) {
+    public static function spotsOutput($module_id, $spot_ids, $item = null): string
+    {
         $out = '';
         $spots =  DB_AA::select(['spot_id'=> []], 'SELECT spot_id, content, flag from site_spot', [['site_id', $module_id, 'l'], ['spot_id', $spot_ids, 'i']]);
 
@@ -955,7 +988,9 @@ class AA_Module_Site extends AA_Module {
     }
 
     function getSite($apc_state) {
-        $tree        = $this->getTree();   // new sitetree();
+        if (is_null($tree = $this->getTree())) {   // new sitetree();
+            exit;
+        }
         $show_ids    = [];
 
         // it fills $show_ids array
@@ -986,10 +1021,11 @@ class AA_Module_Site extends AA_Module {
     }
 
     /**
-     * @param      $tree
-     * @param bool $clean_unused
+     * @param  sitetree  $tree
+     * @param  bool      $clean_unused
      */
-    public function saveTree($tree, $clean_unused=false) {
+    public function saveTree(sitetree $tree, bool $clean_unused=false): void
+    {
         DB_AA::update('site', [['structure', serialize($tree)]], [['id',$this->module_id, 'l']]);
         if ($clean_unused) {
             $this->cleanTree($tree);
@@ -997,9 +1033,11 @@ class AA_Module_Site extends AA_Module {
     }
 
     /** Delete all unused spots in the site
-     * @param sitetree $tree
+     *
+     * @param  sitetree  $tree
      */
-    public function cleanTree($tree) {
+    private function cleanTree(sitetree $tree): void
+    {
         $show_ids  = $tree->getAllSpotIds();
         $all_spots = DB_AA::select(['id'=>'spot_id'], 'SELECT id, spot_id FROM site_spot', [['site_id', $this->module_id, 'l']]);
         if ( $ids2delete = array_keys(array_diff($all_spots, $show_ids)) ) {
@@ -1011,7 +1049,8 @@ class AA_Module_Site extends AA_Module {
 
 
 
-    public function showSpot(sitetree $tree, $spot_id) {
+    public function showSpot(sitetree $tree, $spot_id): void
+    {
         $spot_data = DB_AA::select1('', 'SELECT id, content FROM site_spot', [
             ['site_id', $this->module_id, 'l'],
             ['spot_id', $spot_id, 'i'],
@@ -1028,7 +1067,7 @@ class AA_Module_Site extends AA_Module {
         $form_buttons= ['submit',
                         "cancel"=> [
                             'value'=>_m('Show History'),
-                            "url"  =>\AA\Util\ChangesMonitor::getHistoryUrl("S.$spot_data[id]"),
+                            "url"  => ChangesMonitor::getHistoryUrl("S.$spot_data[id]"),
                         ],
         ];
 
@@ -1046,7 +1085,8 @@ class AA_Module_Site extends AA_Module {
     /**
      * @return AA_Router|null
      */
-    public function getRouter() {
+    public function getRouter(): ?AA_Router
+    {
         if ($this->_getSpecificTableProperty('flag') == 1) {    // 1 - Use AA_Router_Seo
             // home can contain some logic like: {ifin:{server:SERVER_NAME}:czechweb.cz:/cz/home:/en/home}
             $home       = AA::Un(trim($this->_getSpecificTableProperty('state_file'))) ?: '/' .substr($this->_getModuleTableProperty('lang_file'),0,2). '/';

@@ -44,7 +44,8 @@ class AA_Table {
         $this->id       = $id;
     }
 
-    function set($r, $c, $value, $attribute='') {
+    function set($r, $c, $value, $attribute=''): void
+    {
         if (!isset($this->rows[$r])) {
             $this->rows[$r] = [];
         }
@@ -67,13 +68,15 @@ class AA_Table {
         $this->attrs[$attribute] = true;
     }
 
-    function addset($r, $c, $value) {
+    function addset($r, $c, $value): void
+    {
         $cur = $this->getOne($r, $c);
         $val = ((float) str_replace(',', '.', $cur)) + ((float) str_replace(',', '.', $value));
         $this->set($r, $c, $val);
     }
 
-    function joinset($r, $c, $value, $delimiter) {
+    function joinset($r, $c, $value, $delimiter): void
+    {
         $cur = $this->getOne($r, $c);
         $val = strlen($cur) ? $cur. $delimiter. $value : $value;
         $this->set($r, $c, $val);
@@ -87,7 +90,8 @@ class AA_Table {
         return '';
     }
 
-    function get($r, $c, $exp="_#1") {
+    function get($r, $c, $exp="_#1"): string
+    {
         $cols = explode('-',$c);
         $ret  = '';
 
@@ -124,7 +128,8 @@ class AA_Table {
         return str_replace('_#1', $ret, $exp);
     }
 
-    function gethtml() {
+    function gethtml(): string
+    {
         $ret = '';
         foreach ($this->rows as $row => $cols) {
             $ret .= '<tr>';
@@ -156,7 +161,8 @@ class AA_Array {
         $this->id      = $id;
     }
 
-    function set($i, $value) {
+    function set($i, $value): void
+    {
         if ((string)$i == '') {
             $this->arr[] = $value;
         } else {
@@ -164,15 +170,18 @@ class AA_Array {
         }
     }
 
-    function addmulti($values, $delimiter) {
+    function addmulti($values, $delimiter): void
+    {
         array_push($this->arr, ...AA_Stringexpand::explode2array($values, $delimiter));
     }
 
-    function addset($i, $value) {
+    function addset($i, $value): void
+    {
         $this->arr[(string)$i] = ((float)str_replace(',', '.',$this->arr[(string)$i])) + ((float) str_replace(',', '.', $value));
     }
     
-    function joinset($i, $value, $delimiter) {
+    function joinset($i, $value, $delimiter): void
+    {
         $cur = $this->get($i);
         $this->arr[(string)$i] = strlen($cur) ? $cur. $delimiter. $value : $value;
     }

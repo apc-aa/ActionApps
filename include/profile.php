@@ -55,7 +55,8 @@ class AA_Profile_Rule {
  * @param $col3
  * @param $col4
  */
-function PrintRuleRow($rid, $prop, $col1="", $col2="", $col3="", $col4="") {
+function PrintRuleRow($rid, $prop, $col1="", $col2="", $col3="", $col4=""): void
+{
   global $uid;
   echo "<tr>
           <td>$prop&nbsp;</td>
@@ -71,7 +72,8 @@ function PrintRuleRow($rid, $prop, $col1="", $col2="", $col3="", $col4="") {
 /** PrintRule function
  * @param $rule
  */
-function PrintRule($rule, $fields) {
+function PrintRule($rule, $fields): void
+{
     global $PROPERTY_TYPES, $SORTORDER_TYPES;
     $INPUT_DEFAULT_TYPES = AA_Components::getClassArray('AA_Generator_');
 
@@ -131,7 +133,8 @@ function PrintRule($rule, $fields) {
  * @param $shtml   bool - show HTML checkbox
  * @param $desc    string - description
  */
-function PrintSetRule($n, $rule, $sfld, $func, $sparam, $shtml, $desc) {
+function PrintSetRule($n, $rule, $sfld, $func, $sparam, $shtml, $desc): void
+{
     global $PROPERTY_TYPES, $lookup_fields;
     echo "<tr>
            <td>". $PROPERTY_TYPES[$rule]. "<input type=\"hidden\" name=\"prop$n\" value=\"$rule\"></td>

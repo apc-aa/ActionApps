@@ -1,4 +1,7 @@
 <?php
+
+use AA\Util\LastErrTrait;
+
 /**
  * This file could be used inside AA as well as outside of the AA.
  * You can just copy the file to your website and use it for client
@@ -42,7 +45,7 @@ https://www.apc.org/
 
 class AA_Http {
 
-    use \AA\Util\LastErrTrait;
+    use LastErrTrait;
 
     /** Move to another page
      *  new version of go_url() - could use POST redirect
@@ -55,7 +58,8 @@ class AA_Http {
      *                      we do not want to try it, when database connection
      *                      error occurs, for example
      */
-    public static function go(string $url, array $parameters, string $type='GET', bool $sess_close=true) {
+    public static function go(string $url, array $parameters, string $type='GET', bool $sess_close=true): void
+    {
         global $sess;
 
         if (is_object($sess) && $sess_close) {
@@ -83,7 +87,8 @@ class AA_Http {
     }
 
     /** Move (redirect) to page $url using javascript */
-    protected static function _goJs($url, array $parameters= []) {
+    private static function _goJs($url, array $parameters= []): void
+    {
         $url = get_url( $url, $parameters);
         echo '
         <script>
@@ -151,10 +156,10 @@ class AA_Http {
 
 class AA_Response {
 
-    protected $response;
+    private mixed $response;  // could be string, array, object, etc. - depends on the request
 
     /** @var int */
-    protected $error;
+    private int $error;
 
     static $Response_type = 'serialize';
 
@@ -163,7 +168,8 @@ class AA_Response {
         $this->error = $error;
     }
 
-    function getResponse() {
+    function getResponse(): mixed
+    {
         return $this->response;
     }
 
@@ -179,7 +185,8 @@ class AA_Response {
         return ($this->error > 0);
     }
 
-    function respond() {
+    function respond(): void
+    {
         switch (self::$Response_type) {
             case 'serialize':
                 echo serialize($this);
@@ -194,12 +201,14 @@ class AA_Response {
     }
 
     /// Static functions
-    public static function error($err, int $err_code = 1) {
+    public static function error($err, int $err_code = 1): void
+    {
         $response = new AA_Response($err, $err_code);
         $response->respond();
     }
 
-    public static function ok($ret) {
+    public static function ok($ret): void
+    {
         $response = new AA_Response($ret);
         $response->respond();
     }
@@ -282,7 +291,7 @@ class AA_ClientAuth {
     /** caches remote auth object */
     var $_auth = null;
 
-    protected $_reader_slices = [];
+    private $_reader_slices = [];
 
     function __construct($options= []) {
         if (!is_array($options)) {
@@ -293,7 +302,8 @@ class AA_ClientAuth {
         $this->_reader_slices       = $options['reader_slices'] ?? [];
     }
 
-    function checkAuth() {
+    function checkAuth(): false
+    {
         // we are trying to login
         $request = new AA_Request('Get_Sessionid');
         $params  = [];
@@ -338,7 +348,8 @@ class AA_ClientAuth {
         return $this->_auth;
     }
 
-    function logout() {
+    function logout(): void
+    {
         $request  = new AA_Request('Logout');
         $params   = ['AA_CP_Session'=>$_COOKIE['AA_Sess']];
         $response = $request->ask($this->_aa_responder_script, $params);

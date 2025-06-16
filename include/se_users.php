@@ -41,14 +41,16 @@ $editor_perms = AA::$perm->getModulePerms(AuthGetUid(), $slice_id);
  * @param $role_perm
  * @return bool
  */
-function CanChangeRole($user_perm, $editor_perm, $role_perm) {
+function CanChangeRole($user_perm, $editor_perm, $role_perm): bool
+{
     return (AA_Perm::compare($editor_perm, $user_perm)==="G" && AA_Perm::compare($editor_perm, $role_perm)==="G");
 }
 
 /** ChangeRole function
  *
  */
-function ChangeRole($UsrAdd, $UsrDel, $slice_id, $editor_perms, $role) {
+function ChangeRole($UsrAdd, $UsrDel, $slice_id, $editor_perms, $role): void
+{
     if ( $UsrAdd ) {
         if ( CanChangeRole( AA::$perm->getModulePerms($UsrAdd, $slice_id, false), $editor_perms, AA_Perm::ROLES[$role]['perm']) ) {
             AddPerm($UsrAdd, $slice_id, "slice", AA_Perm::ROLES[$role]['id']);
@@ -75,7 +77,8 @@ function ChangeRole($UsrAdd, $UsrDel, $slice_id, $editor_perms, $role) {
  * @param $editor_role
  * @param $new_usr=true
  */
-function PrintAddableUser($usr, $usr_id, $editor_role, $new_usr=true) {
+function PrintAddableUser($usr, $usr_id, $editor_role, $new_usr=true): void
+{
     // $usr_id is DN in LDAP
     $username = perm_username($usr_id);
 

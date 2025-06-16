@@ -52,9 +52,11 @@ class AA_Searchbar_Row extends AA_Storable {
             'readonly'  => new AA_Property( 'readonly'   , _m('Readonly' ), 'bool',         false, true)
         ];
     }
+
     /** AA_Searchbar_Row function
-     * @param $condition AA_Condition
-     * @param $readonly bool
+     *
+     * @param  AA_Condition|null  $condition  AA_Condition
+     * @param                     $readonly   bool
      */
     function __construct(AA_Condition $condition=null, $readonly=false) {
         $this->condition = $condition;
@@ -76,7 +78,8 @@ class AA_Searchbar_Row extends AA_Storable {
     /** getOperator function
      *  Access function to searchbar_row operator
      */
-    function getOperator() {
+    function getOperator(): string
+    {
         return ( is_null($this->condition) ? '' : $this->condition->getOperator() );
     }
 
@@ -87,15 +90,20 @@ class AA_Searchbar_Row extends AA_Storable {
         return ( is_null($this->condition) ? '' : $this->condition->getValue() );
     }
 
-    /** getCondsArray function - @return AA_Condition object or null  */
-    function getCondition() {
+    /** getCondsArray function -
+     *
+     * @return AA_Condition|null object or null
+     */
+    function getCondition(): ?AA_Condition
+    {
         return $this->condition;
     }
 
     /** isReadonly function
      *  Returns, if the search row is marked as readonly
      */
-    function isReadonly() {
+    function isReadonly(): bool
+    {
         return $this->readonly;
     }
 }
@@ -164,7 +172,8 @@ class AA_Searchbar extends AA_Storable {
      * Updates internal search_row and order_row variables from data posted from
      * form (in $_POST[])
      */
-    function update() {
+    function update(): void
+    {
         $srchbr_akce     = $_GET['srchbr_akce'];
         $srchbr_bookmark = (string)$_GET['srchbr_bookmark'];
         if ( !$srchbr_akce ) {     // no searchbar action
@@ -217,7 +226,8 @@ class AA_Searchbar extends AA_Storable {
     /** resetSearchAndOrder function
      *  Resets the searchbar (both - Search as well as Order)
      */
-    function resetSearchAndOrder() {
+    function resetSearchAndOrder(): void
+    {
         $this->resetSearch();
         $this->resetOrder();
     }
@@ -225,7 +235,8 @@ class AA_Searchbar extends AA_Storable {
     /** resetSearch function
      *  Resets the searchbar's Search
      */
-    function resetSearch() {
+    function resetSearch(): void
+    {
         $search_row = [];
         foreach ( $this->search_row as $row ) {
             if ($row->isReadonly()) {
@@ -239,7 +250,8 @@ class AA_Searchbar extends AA_Storable {
     /** resetOrder function
      *  Resets the searchbar's Order
      */
-    function resetOrder() {
+    function resetOrder(): void
+    {
         unset($this->order_row);
         $this->order_row = [];
     }
@@ -247,7 +259,8 @@ class AA_Searchbar extends AA_Storable {
     /** setFromForm function
      *  Set searchbar state from form
      */
-    function setFromForm() {
+    function setFromForm(): void
+    {
         if ($this->show & MGR_SB_SEARCHROWS) {
             // cleaning all searchrows except 'readonly' searches
             $this->resetSearch();
@@ -291,11 +304,14 @@ class AA_Searchbar extends AA_Storable {
 
     /** convertState function
      *  Setting state from previous versions of state
+     *
      * @param $version
      * @param $state
-     * @return
+     *
+     * @return array
      */
-    function &convertState($version, &$state) {
+    function &convertState($version, &$state): array
+    {
         /* Current state store structure
                                 [search_row] => Array (
                                     [0] => Array (
@@ -345,7 +361,8 @@ class AA_Searchbar extends AA_Storable {
     /** version function
      *  Searchbar version 2 - we have stored state in older verion
      *  (through stored seaches feature), which do not use AA_Searchbar_Row
-     * @return 2
+     *
+     * @return int 2
      */
     static function version(): int {
         return 2;
@@ -356,7 +373,8 @@ class AA_Searchbar extends AA_Storable {
      * @param  array $sort[] = array( <field> => <a|d> )
      *               value other than 'a' means DESCENDING
      */
-    function addOrder( $sort ) {
+    function addOrder( $sort ): void
+    {
         // fill order_row variable
         if (isset($sort) && is_array($sort)) {
             foreach ( $sort as $s ) {
@@ -376,7 +394,8 @@ class AA_Searchbar extends AA_Storable {
      *                                  'value'    => <search_string> )
      * @param $readonly
      */
-    function addSearch($conds, $readonly=false) {
+    function addSearch($conds, $readonly=false): void
+    {
         // fill search_row variable
         if (isset($conds) && is_array($conds)) {
             foreach ( $conds as $cond ) {
@@ -398,7 +417,8 @@ class AA_Searchbar extends AA_Storable {
 
     /** setDefaultOrder function
     */
-    function setDefaultOrder() {
+    function setDefaultOrder(): void
+    {
         // global $auth, $slice_id;  // @todo - tried to set right order after searchbox is cleaned, but it shows some errors. I have to look on it later. Honza 6.9.2012
         // $profile = AA_Profile::getProfile(AuthGetUid(), $slice_id); // current user settings
         // $this->setFromProfile($profile);
@@ -411,7 +431,8 @@ class AA_Searchbar extends AA_Storable {
     /** setFromProfile function
      * @param AA_Profile $profile
      */
-    function setFromProfile($profile) {
+    function setFromProfile($profile): void
+    {
         // admin_order is in 'publish_date....+' format
         $set        = new AA_Set;
         $orderstrings = $profile->get('admin_order', '*');
@@ -444,7 +465,8 @@ class AA_Searchbar extends AA_Storable {
 
     /** @return AA_Set object - should be used instead of getConds and getSort
      */
-    function getSet() {
+    function getSet(): AA_Set
+    {
         $set = new AA_Set;
         foreach ($this->search_row as $row) {
             $set->addCondition($row->getCondition());
@@ -479,8 +501,10 @@ class AA_Searchbar extends AA_Storable {
 
     /** get_search_bar function
      * Get one search bar (one row)
-     * @param int $bar which bar to print (index)
-     * @return bool true, if the printed searchrow is not empty
+     *
+     * @param  int  $bar  which bar to print (index)
+     *
+     * @return string true, if the printed searchrow is not empty
      */
     function get_search_bar($bar): string {
 
@@ -621,7 +645,7 @@ class AA_Searchbar extends AA_Storable {
         $ret .= '</div>';
 
         if ($this->show & MGR_SB_BOOKMARKS) {
-            if ( $this->bookmarks->count() > 0 ) {
+            if ( $this->bookmarks->count() ) {
             $ret .= $this->get_bar_bookmarks();
         }
         }
@@ -729,7 +753,8 @@ class AA_Bookmarks {
     /**
      * @param  string  $last_used
      */
-    function setLastUsed(string $last_used="none") {
+    function setLastUsed(string $last_used="none"): void
+    {
         $this->active_bookmark = $last_used;
     }
     /**
@@ -824,7 +849,8 @@ class AA_Bookmarks {
      * @param $key
      * @return bool
      */
-    function is_global($key) {
+    function is_global($key): bool
+    {
         return $this->bookmarks[$key]['type'] === '*';
     }
 

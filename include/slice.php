@@ -29,7 +29,8 @@ use AA\IO\DB\DB_AA;
 /** Page_HTML_Begin function
  * @param $title
  */
-function Page_HTML_Begin($title="") {
+function Page_HTML_Begin($title=""): void
+{
     HtmlPageBegin();
     echo '
       <title>'.$title.'</title>
@@ -40,7 +41,8 @@ function Page_HTML_Begin($title="") {
 /** Page_HTML_End function
  *  print closing HTML tags for page
  */
-function Page_HTML_End(){
+function Page_HTML_End(): void
+{
     echo '
     </body>
     </html>';
@@ -51,7 +53,8 @@ function Page_HTML_End(){
  * @param $sli_id
  * @deprecated - used only on not encapsulated slice.php which nobody uses
  */
-function pCatSelector($url, $sli_id){
+function pCatSelector($url, $sli_id): void
+{
 
     // was GetCategories() - strange to search for packed slice id in gropup_id - HM 2024
     $cats = DB_AA::select(['pvalue'=>'name'], 'SELECT LOWER(HEX(`value`)) AS pvalue, `name` FROM `constant`', [['group_id',$sli_id,'l']]);
@@ -79,7 +82,8 @@ function pCatSelector($url, $sli_id){
 /** ExitPage function
  *
  */
-function ExitPage($msg='') {
+function ExitPage($msg=''): void
+{
     global $encap, $r_packed_state_vars, $r_state_vars;
     if ($msg) {
         echo $msg;
@@ -95,7 +99,8 @@ function ExitPage($msg='') {
 /** SotreVariables function
  *
  */
-function StoreVariables( array $vars ) {
+function StoreVariables( array $vars ): array
+{
     $state_vars = [];
     foreach ($vars as $v) {
         $state_vars[$v] = $GLOBALS[$v];
@@ -106,7 +111,8 @@ function StoreVariables( array $vars ) {
 /** PutSearchLog function
  *
  */
-function PutSearchLog($searchlog, $found_count=0) {
+function PutSearchLog($searchlog, $found_count=0): void
+{
     $httpquery = $_SERVER['QUERY_STRING_UNESCAPED'].$_SERVER['REDIRECT_QUERY_STRING_UNESCAPED'];
     $httpquery = DeBackslash($httpquery);
     $httpquery = str_replace("'", "\\'", $httpquery);

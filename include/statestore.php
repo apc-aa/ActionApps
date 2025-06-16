@@ -33,6 +33,7 @@
 use AA\IO\DB\DB_AA;
 use AA\IO\Grabber\ObjectForm;
 use AA\Managed;
+use AA\Managed_Object;
 use AA\Manageraction\Manageractions;
 use AA\Manageraction\Object_Delete;
 use AA\Util\AbstractAliasgenerator;
@@ -47,7 +48,7 @@ abstract class AA_Serializable {
     /** factory function
      * @param string $classname
      * @param array $params
-     * @return AA_Serializable
+     * //  return AA_Serializable  - wrong - AA_Stringexpand is not AA_Serializable for example
      */
     static function factory($classname, $params=null) {
         return class_exists($classname) ? new $classname($params) : null;
@@ -58,7 +59,7 @@ abstract class AA_Serializable {
      * @param string $name
      * @param array  $params
      * @param null $class_mask
-     * @return AA_Serializable
+     * //  return AA_Serializable  - wrong - AA_Stringexpand is not AA_Serializable for example
      */
     static function factoryByName($name, $params=null, $class_mask=null) {
         return self::factory(static::constructClassName($name, $class_mask), $params);
@@ -72,7 +73,6 @@ abstract class AA_Serializable {
      *  and the properties are filled with values 1, 10 and 1 (in this order)
      *
      * @param string $string     like dte:1:10:1 in field.input_show_func
-     * @return AA_Serializable
      */
     static function factoryByString($string) {
         $params = static::parseClassProperties($string);
@@ -91,7 +91,8 @@ abstract class AA_Serializable {
     /**
      * @param array $params
      */
-    function setProperties($params= []) {
+    function setProperties($params= []): void
+    {
         $class = get_class($this);
         $props = $class::getClassProperties();
         foreach (array_keys($props) as $name) {
@@ -233,7 +234,8 @@ class AA_Storable extends AA_Serializable {
      * @param array $state
      * @return array state transformed
      */
-    function &convertState($version, &$state) {
+    function &convertState($version, &$state): array
+    {
         return $state;
     }
 
@@ -243,7 +245,8 @@ class AA_Storable extends AA_Serializable {
      * @param  array $state state array which stores object's data. The array
      *                      you will get by getState() method.
      */
-    function setFromState(&$state) {
+    function setFromState(&$state): void
+    {
         // first - deal with versioning
         // convert state to last version
         $object_version = max($state['aa_version'], 1);
@@ -279,7 +282,6 @@ class AA_Storable extends AA_Serializable {
      * @param $obj
      * @param $property
      * @param $state
-     * @return
      */
     function _oneStatePropertyValue($obj, $property, $state) {
         if (!$property->isObject()) {
@@ -309,7 +311,8 @@ class AA_Storable extends AA_Serializable {
      * Returns state array of the object - stores object's data for leter
      * restoring (by setFromState() method)
      */
-    function getState() {
+    function getState(): array
+    {
         $ret   = [];
         $props = static::getPersistentProperties();
         foreach ($props as $property) {
@@ -340,7 +343,8 @@ class AA_Storable extends AA_Serializable {
      *  Used for getting state from data, which was stored sometimes in
      *  the history, so the inner structure of the class was changed
      */
-    static function version() {
+    static function version(): int
+    {
         return 1;
     }
 }
@@ -365,7 +369,8 @@ class AA_Object extends AA_Storable implements AA_iEditable {
      *   aa_subobjects - helper field used for quicker load of object
      */
 
-    function setNew($id, $owner, $name='') {
+    function setNew($id, $owner, $name=''): void
+    {
         $this->aa_id    = $id;
         $this->aa_owner = $owner;
         $this->aa_name  = $name;
@@ -374,7 +379,8 @@ class AA_Object extends AA_Storable implements AA_iEditable {
     /** setOwnerId function
      * @param $owner_id
      */
-    function setOwnerId($owner_id) {
+    function setOwnerId($owner_id): static
+    {
         $this->aa_owner = $owner_id;
         return $this;
     }
@@ -382,7 +388,8 @@ class AA_Object extends AA_Storable implements AA_iEditable {
     /** setName function
      * @param $name
      */
-    function setName($name) {
+    function setName($name): static
+    {
         $this->aa_name = $name;
         return $this;
     }
@@ -390,7 +397,8 @@ class AA_Object extends AA_Storable implements AA_iEditable {
     /** setId function
      * @param $id
      */
-    function setId($id) {
+    function setId($id): static
+    {
         $this->aa_id = $id;
         return $this;
     }
@@ -415,7 +423,8 @@ class AA_Object extends AA_Storable implements AA_iEditable {
     }
 
     /** getObjectType */
-    function getObjectType() {
+    function getObjectType(): string
+    {
         // return $this->aa_type;     // no aa_type here
         return static::class;
     }
@@ -424,16 +433,19 @@ class AA_Object extends AA_Storable implements AA_iEditable {
         return is_null($default) ? $this->$property_id : (($this->$property_id == '') ? $default : $this->$property_id);
     }
 
-    function setProperty($property_id, $value) {
+    function setProperty($property_id, $value): static
+    {
         $this->$property_id = $value;
         return $this;
     }
 
     /** AA_iEditable method - save the object to the database
-     * @return string|bool - id of saved data or false
+     *
+     * @return string|false - id of saved data or false
      * @throws Exception
      */
-    public function save() {
+    public function save(): false|string
+    {
         if ( !$this->aa_owner ) {
             throw new \RuntimeException('No owner set for property '. $this->aa_id. ' - '. $this->aa_name);
         }
@@ -504,7 +516,8 @@ class AA_Object extends AA_Storable implements AA_iEditable {
         };
     }
 
-    protected function sanitizeProperties() {
+    protected function sanitizeProperties(): void
+    {
         $props = static::getClassProperties();
         foreach ($props as $var => $property) {
             $this->$var = $property->sanitizeValue($this->$var);
@@ -514,7 +527,8 @@ class AA_Object extends AA_Storable implements AA_iEditable {
     /** delete function
      *  Deletes the object from the database including all the subobjects
      */
-    function delete() {
+    function delete(): void
+    {
         self::deleteObjects([$this->getId()]);
     }
 
@@ -537,14 +551,16 @@ class AA_Object extends AA_Storable implements AA_iEditable {
     }
 
     /** Get all Owners objects (for deletion) */
-    public static function getOwnersObjects($owner_id) {
+    public static function getOwnersObjects($owner_id): array
+    {
         return is_long_id($owner_id) ? DB_AA::select( '', 'SELECT object_id FROM `object_text`', [['property', 'aa_owner'], ['value', $owner_id]]) : [];
     }
 
     /** _getSubObjects function
      *  Get all object ids which is inside this object
      */
-    function _getSubObjects() {
+    function _getSubObjects(): array
+    {
         $ret   = [];
         $props = static::getClassProperties();
         foreach ($props as $property) {
@@ -574,9 +590,9 @@ class AA_Object extends AA_Storable implements AA_iEditable {
     /** getNameArray function
      * @param $obj_type
      * @param $owner
-     * @return array|bool|string
      */
-    static function getNameArray($obj_type, $owner) {
+    static function getNameArray($obj_type, $owner): array
+    {
         if ( empty($owner) ) {
             return [];
         }
@@ -596,7 +612,8 @@ class AA_Object extends AA_Storable implements AA_iEditable {
     /** called as AA_Object::loadProperties($ids, 'name')
      *  @return array - properties always in array   ['obj1'=>[valA,valB,...], 'obj2'=>[valC], ...]
      */
-    static function loadProperties($ids, $property) {
+    static function loadProperties($ids, $property): array
+    {
         return DB_AA::select( ['object_id'=> '+value'], 'SELECT object_id, value FROM `object_text`', [['object_id', $ids], ['property', $property]]);
     }
 
@@ -606,7 +623,8 @@ class AA_Object extends AA_Storable implements AA_iEditable {
      * @static
      * @return AA_Object | null
      */
-    static function load($id, $type=null) {
+    static function load($id, $type=null): ?AA_Object
+    {
         static $cache = []; // cache for loaded objects - AA_Plannedtask was loaded multiple times for multiple storeItem() -> executeForEvent()
 
         // AA::$dbg->log($id, $type);
@@ -873,7 +891,8 @@ class AA_Object extends AA_Storable implements AA_iEditable {
     /**
      *
      */
-    public static function getContent($zids, $settings=[]) {
+    public static function getContent($zids, $settings=[]): array
+    {
         $ret        = [];
         $class      = $settings['class'];
         $properties = $class::getClassProperties();
@@ -918,7 +937,8 @@ class AA_Object extends AA_Storable implements AA_iEditable {
      * @param AA\Util\Searchfields $fields
      * @return string
      */
-    protected static function getManagerTopHtml($fields) {
+    protected static function getManagerTopHtml($fields): string
+    {
         return '
           <table>
           <thead>
@@ -936,7 +956,8 @@ class AA_Object extends AA_Storable implements AA_iEditable {
      * @param $buttons
      * @return string
      */
-    protected static function getManagerRowHtml($fields, $aliases, $buttons) {
+    protected static function getManagerRowHtml($fields, $aliases, $buttons): string
+    {
         return '
             <tr>
               <td><input name="chb[x_#AA_ID___]" value="" type="checkbox"></td>
@@ -947,9 +968,12 @@ class AA_Object extends AA_Storable implements AA_iEditable {
     }
 
     /** generate manager from object structure
+     *
      * @static
-     * @param Manageractions? $actions
-     * @param Manageractions? $switches
+     *
+     * @param  Manageractions|null  $actions  ? $actions
+     * @param  Manageractions|null  $switches
+     *
      * @return Managed
      */
     static function getManagerConf(Manageractions $actions=null, Manageractions $switches=null): Managed {
@@ -1014,7 +1038,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
              'bin'       => 'app',
         ];
 
-        return (new \AA\Managed_Object(static::class))->setSettings($manager_settings);
+        return (new Managed_Object(static::class))->setSettings($manager_settings);
     }
 
     /** AA_iEditable method - creates Object from the form data */
@@ -1095,9 +1119,10 @@ interface AA_iEditable {
     /** AA_iEditable method - creates Object from the form data */
     public static function factoryFromForm($oowner, $otype=null);
     /** AA_iEditable method - save the object to the database
-     *  @return string|bool - id of saved data or false
+     *
+     *  @return string|false - id of saved data or false
      */
-    public        function save();
+    public        function save(): false|string;
 }
 
 /** Components (plugins) manipulation class */
@@ -1180,7 +1205,8 @@ class AA_Components {
      * @param $params
      * @return string
      */
-    static function getSelectionCode($mask, $input_id, &$params) {
+    static function getSelectionCode($mask, $input_id, &$params): string
+    {
         $options      = ['AA_Empty' => _m('select ...')];
         $html_options = ['AA_Empty' => ''];
         foreach (self::getClassNames($mask) as $selection_class) {
@@ -1348,8 +1374,7 @@ class AA_Temporary_Table {
     }
 
     /**
-     * @param AA_Property[] $properties
-     * @return void
+     * @return array
      */
     private function fieldsFromProperties(): array {
         $fields = [];
@@ -1369,7 +1394,8 @@ class AA_Temporary_Table {
      * @param AA_Content[] $contents
      * @return void
      */
-    private function create(array $contents) {
+    private function create(array $contents): void
+    {
         $fields = implode(',', $this->fieldsFromProperties());
         $SQL = "CREATE TEMPORARY TABLE IF NOT EXISTS {$this->tablename} ({$fields})";
         DB_AA::sql($SQL);

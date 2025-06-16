@@ -45,7 +45,8 @@ const SLICE_FIELDS_NUM = ["deleted", "export_to_all", "template", "even_odd_diff
  * @param $role
  * @return string
  */
-function add_user_and_welcome($welcome_id, $user_login, $slice_id, $role) {
+function add_user_and_welcome($welcome_id, $user_login, $slice_id, $role): string
+{
 
     // 1. Assign user privileges
     $userinfo = AA::$perm->findUserByLogin($user_login);
@@ -132,7 +133,8 @@ function add_user_and_welcome($welcome_id, $user_login, $slice_id, $role) {
  * @param string $user_role
  * @return array
  */
-function SliceEditProcess($slice_id, $user_firstname, $user_surname, $err, $add_submit, $user_login, $user_password1, $user_password2, $user_mail1, $user_mail2, $user_mail3, $user_super, $um_uedit_no_go_url, $selected_user, ?string $posted_groups, $sel_groups, $perm_mod, $new_module, $new_module_role, $add, $update, $owner, $new_owner, $new_owner_email, $name, $slice_url, $slice_type, $upload_url, $priority, $permit_anonymous_post, $permit_anonymous_edit, $permit_offline_fill, $lang_file, $d_listlen, $mlxctrl, $fileman_access, $fileman_dir, $template, $deleted, $flag_allow_expired, $auth_field_group, $mailman_field_lists, $reading_password, $flag_allow_pending, $set_template_id, $wiz, $user_role) {
+function SliceEditProcess($slice_id, $user_firstname, $user_surname, $err, $add_submit, $user_login, $user_password1, $user_password2, $user_mail1, $user_mail2, $user_mail3, $user_super, $um_uedit_no_go_url, $selected_user, ?string $posted_groups, $sel_groups, $perm_mod, $new_module, $new_module_role, $add, $update, $owner, $new_owner, $new_owner_email, $name, $slice_url, $slice_type, $upload_url, $priority, $permit_anonymous_post, $permit_anonymous_edit, $permit_offline_fill, $lang_file, $d_listlen, $mlxctrl, $fileman_access, $fileman_dir, $template, $deleted, $flag_allow_expired, $auth_field_group, $mailman_field_lists, $reading_password, $flag_allow_pending, $set_template_id, $wiz, $user_role): array
+{
     if ($slice_id) {
         // edit slice
         if (!IfSlPerm(PS_EDIT)) {

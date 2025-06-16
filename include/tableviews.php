@@ -30,7 +30,8 @@
  * @param $viewID
  * @return array
  */
-function GetTableView($viewID) {
+function GetTableView($viewID): array
+{
     global $slice_id;
 
     $attrs_edit = [
@@ -118,5 +119,6 @@ function GetTableView($viewID) {
         ];
         return $retval;
     }
+    return [];
 } // end of GetTableView
 

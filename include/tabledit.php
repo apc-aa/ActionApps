@@ -112,7 +112,8 @@ class tabledit {
     /** UpdateCmd function
      *  exchanges data between session-stored cmd (as tabledit_cmd) and current URL cmd
      */
-    function UpdateCmd() {
+    function UpdateCmd(): void
+    {
         if (is_object($this->sess)) {
             $this->sess->register("tabledit_cmd");
         }
@@ -170,9 +171,9 @@ class tabledit {
     /** view function
      *  shows the complete table
      * @param $where
-     * @return mixed
      */
-    function view($where = "(1=1)") {
+    function view($where = "(1=1)"): string
+    {
 
         /*
         echo "<table><tr><td width='50%'>&nbsp;</td><td><span class=te_help_link>";
@@ -324,13 +325,15 @@ class tabledit {
                     echo "<tr><td colspan=\"100\">";
                     $this->ShowButtons($new_record, $key, $fnname, $formname, $irow, "down", $all_keys, $record_count);
                     echo "</td></tr></form></table>";
-                    if (is_array($this->view["children"]) && !$new_record)
+                    if (is_array($this->view["children"]) && !$new_record) {
                         $err = $this->ShowChildren($record);
+                    }
                 }
             }
             if ($this->type === "browse") {
-                if (!$this->show_new)
+                if (!$this->show_new) {
                     $this->showBrowseFooter($formname, $all_keys, $record_count, $scroll);
+                }
                 echo "</form>";
                 echo "</table>";
             }
@@ -346,14 +349,15 @@ class tabledit {
             }
         }
 
-        return $err;
+        return $err ?? '';
     }
 
     // -----------------------------------------------------------------------------------
     /** showBrowseHeader function
      * @param $record_count
      */
-    function showBrowseHeader($record_count) {
+    function showBrowseHeader($record_count): void
+    {
         echo "<tr>";
         if (is_array($this->view["buttons_left"])) {
             $left_buttons_count = 0;
@@ -387,16 +391,20 @@ class tabledit {
                          ."[orderby][$colname]=1\"><span class=\"te_b_col_head\">$caption</span>";
                      if ($this->orderby == $colname) {
                          echo "&nbsp;<img src=\"".$this->imagepath;
-                         if ($this->orderdir === 'd')
-                              echo "down.gif\" alt=\""._m("order ascending")."\"";
-                         else echo "up.gif\" alt=\""._m("order descending")."\"";
+                         if ($this->orderdir === 'd') {
+                             echo "down.gif\" alt=\""._m("order ascending")."\"";
+                         } else {
+                             echo "up.gif\" alt=\""._m("order descending")."\"";
+                         }
                          echo ">";
                      }
                      echo "</a>";
+                } else {
+                    echo "$td<span class=\"te_b_col_head\">$caption</span>\n";
                 }
-                else echo "$td<span class=\"te_b_col_head\">$caption</span>\n";
-                if ($column["hint"])
+                if ($column["hint"]) {
                     echo "<br>\n<span class=\"te_b_col_hint\">".$column["hint"]."</span>";
+                }
                 echo "</td>\n";
             }
         }
@@ -411,7 +419,8 @@ class tabledit {
      * @param $record_count
      * @param $scroll
      */
-    function showBrowseFooter($formname, $all_keys, $record_count, $scroll) {
+    function showBrowseFooter($formname, $all_keys, $record_count, $scroll): void
+    {
         echo "<tr><td colspan=\"100\"><table>
             <tr><td class=\"te_b_col_head\" width=\"100\">";
         // icon explanation ("= update" etc.)
@@ -423,8 +432,9 @@ class tabledit {
                 $img = '<img src="'.$this->imagepath.$bt["img"].'.gif" alt="'.$bt["alt"].'">';
                 echo "<span class=\"te_button_text\">$img = $alt</span><br>";
             }
+        } else {
+            echo "&nbsp;";
         }
-        else echo "&nbsp;";
         $space = $scroll->pageCount() > 1 ? 20 : 50;
         echo '</td><td width="'.$space.'">&nbsp;</td>';
 
@@ -446,7 +456,8 @@ class tabledit {
      * @param $viewID
      * @return string
      */
-    function getAction($viewID) {
+    function getAction($viewID): string
+    {
         return $this->action. (str_contains($this->action, "?") ? "&" : "?") . "set_tview=".$viewID
             .($this->is_child ? "#" . $this->viewID : "");
     }
@@ -455,7 +466,8 @@ class tabledit {
     /** SetViewDefaults function
      *
      */
-    function SetViewDefaults() {
+    function SetViewDefaults(): void
+    {
         if (!$this->view["type"]) {
             $err[] = "Missing type.";
         }
@@ -508,7 +520,7 @@ class tabledit {
      * @param $where
      * @return string
      */
-    function GetWhere($where)
+    function GetWhere($where): string
     {
         //echo "edit ".$this->cmd["edit"]." show new ".$this->cmd["show_new"]." readonly ".$this->view["readonly"]." addrecord ".$this->view["addrecord"]." gotoview ".$this->view["gotoview"];
         $this->show_new = false;
@@ -562,7 +574,7 @@ class tabledit {
     /** ShowSearchRow function
      *
      */
-    function ShowSearchRow()
+    function ShowSearchRow(): void
     {
         $td = "<td class=\"te_search_td\">";
         $tdd = "</span></td>";
@@ -596,7 +608,7 @@ class tabledit {
      *  prints javascript for input validation
      * @param $fnname
      */
-    function ShowProoveFields($fnname)
+    function ShowProoveFields($fnname): void
     {
         PrintJavaScript_Validate();
         echo "
@@ -635,7 +647,7 @@ class tabledit {
      * @param $key
      * @param $irow
      */
-    function ShowColumnValues($record, $new_record, $key, $irow)
+    function ShowColumnValues($record, $new_record, $key, $irow): void
     {
         $td ='';
         if ($this->type === "browse") {
@@ -732,7 +744,7 @@ class tabledit {
     /** SetDefaultButtons function
      *
      */
-    function setDefaultButtons()
+    function setDefaultButtons(): void
     {
         $bl = $this->view["buttons_left"];
         $bd = $this->view["buttons_down"];
@@ -785,9 +797,9 @@ class tabledit {
 
     /** ButtonsText function
      * @param $new_record
-     * @return mixed
      */
-    function ButtonsText($new_record) {
+    function ButtonsText($new_record): array
+    {
         // "new" is label for new record, "new_name" is command for new record,
         // "view" is view on which $this->cmd operates, "gotoview" is view which will be shown
         $buttons_text["edit"] = [
@@ -862,7 +874,8 @@ class tabledit {
      * @param $all_keys
      * @param $record_count
      */
-    function ShowButtons($new_record, $key, $fnname, $formname, $irow, $place="left", $all_keys="", $record_count=0) {
+    function ShowButtons($new_record, $key, $fnname, $formname, $irow, $place="left", $all_keys="", $record_count=0): void
+    {
         if (!is_array($this->view["buttons_$place"])) {
             return;
         }
@@ -889,7 +902,8 @@ class tabledit {
         }
     }
 
-    function ShowButton($bt, $new_record, $key, $fnname, $formname, $place, $all_keys, $record_count) {
+    function ShowButton($bt, $new_record, $key, $fnname, $formname, $place, $all_keys, $record_count): void
+    {
         if ($place !== "left") {
             $big = "_big";
         }
@@ -964,9 +978,9 @@ class tabledit {
      *  shows children forms
      *
      * @param $record - identification of the parent row
-     * @return mixed
      */
-    function ShowChildren($record) {
+    function ShowChildren($record): string
+    {
         foreach ($this->view["children"] as $chview => $child) {
             $fn = $this->getTableViewsFn;
             $chtv = $fn($chview);
@@ -1009,6 +1023,7 @@ class tabledit {
                 return $err;
             }
         }
+        return '';
     }
 }
 // END of class tabledit

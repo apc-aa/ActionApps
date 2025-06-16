@@ -90,7 +90,8 @@ class AA_Profile {
      *  @param bool $force - if true, reread the profile from database even if
      *                       profile is already loaded
      */
-    function loadprofile( $force=false ) {
+    function loadprofile( $force=false ): void
+    {
         if ( $force ) {
             unset( $this->properties );  // refresh from database
         }
@@ -144,7 +145,8 @@ class AA_Profile {
      * @param $id
      * @param $uid
      */
-    function set($property, $selector, $value, $type='u', $id='', $uid='') {
+    function set($property, $selector, $value, $type='u', $id='', $uid=''): void
+    {
         $this->properties[$property][$selector] = [(string)$value, (string)$type, (string)$id, (string)$uid];
     }
 
@@ -187,7 +189,8 @@ class AA_Profile {
      * @param $field_id
      * @return AA_Value|null
      */
-    function getFormFieldValue($field_id) {
+    function getFormFieldValue($field_id): ?AA_Value
+    {
         if ($profile_value = $this->getProperty('hide&fill',$field_id)) {
             return $this->parseContentProperty($profile_value);
         }
@@ -216,7 +219,8 @@ class AA_Profile {
      *  Deletes all rules for the user
      *  (used on revoking the perms for user on a slice)
      */
-    function delUserProfile() {
+    function delUserProfile(): void
+    {
         $this->do_sql("DELETE FROM profile WHERE uid='". $this->user_id ."' AND slice_id=". xpack_id($this->module_id), "Can't delete profile");
     }
 
@@ -227,7 +231,8 @@ class AA_Profile {
      * @param $global
      * @return bool
      */
-    function insertProperty($property, $selector, $value, $global=false) {
+    function insertProperty($property, $selector, $value, $global=false): bool
+    {
         $property = quote($property); $selector = quote($selector); $value = quote($value);
         $last_id = $this->do_sql("INSERT INTO profile (slice_id, uid, property, selector, value)
                                          VALUES (". xpack_id($this->module_id) .",'". ($global ? '*' : $this->user_id) ."','$property','$selector','$value')",
@@ -239,7 +244,8 @@ class AA_Profile {
      * @param $selector
      * @param $global
      */
-    function deleteProperty($property, $selector="", $global=false) {
+    function deleteProperty($property, $selector="", $global=false): void
+    {
         $property = quote($property); $selector = quote($selector);
         $this->do_sql("DELETE FROM profile WHERE property='$property'
                                              AND      uid='". ($global ? '*' : $this->user_id) ."'
@@ -250,7 +256,8 @@ class AA_Profile {
 
     /** Copies the profile form one user to another
      */
-    static function copyProfile($slice_id, $from_uid, $to_uid) {
+    static function copyProfile($slice_id, $from_uid, $to_uid): void
+    {
         $p_slice_id = xpack_id($slice_id);
         $rules      = GetTable2Array("SELECT * FROM profile WHERE slice_id=$p_slice_id AND (uid='$from_uid')");
         $varset     = new CVarset;
@@ -263,13 +270,14 @@ class AA_Profile {
     }
 
     /** updateProperty function
+     *
      * @param $property
-     * @param $selctor
+     * @param $selector
      * @param $value
-     * @param $global
      * @param $id
      */
-    function updateProperty($property, $selector, $value, $id) {
+    function updateProperty($property, $selector, $value, $id): void
+    {
         $property = quote($property); $selector = quote($selector); $value=quote($value);
         $SQL = "UPDATE profile SET";
         if ($selector != "") {
@@ -296,7 +304,8 @@ class AA_Profile {
      * @param $err
      * @return bool
      */
-    function do_sql($SQL, $err="") {
+    function do_sql($SQL, $err=""): bool
+    {
         if ( !$this->module_id || !$this->user_id ) {
             return false;
         }
@@ -320,7 +329,8 @@ class AA_Profile {
      * @param $html
      * @return string
      */
-    static function addProfileProperty($uid, $slice_id, $property, $field_id, $fnction, $param, $html) {
+    static function addProfileProperty($uid, $slice_id, $property, $field_id, $fnction, $param, $html): string
+    {
         $profile = self::getProfile($uid, $slice_id); // user settings
         switch($property) {
             case 'listlen':

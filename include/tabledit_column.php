@@ -34,7 +34,8 @@
 /** gdf_error function
  * @param $x
  */
-function gfd_error($x) {
+function gfd_error($x): void
+{
     echo "Unrecognized date format charcacter $x";
     exit;
 }
@@ -48,7 +49,8 @@ function gfd_error($x) {
  *   Uses non-format letters as separators only,
  *   i.e. "2.3.2002" is parsed the same as "2/3/2002" or even "2;3#2002".
  */
-function get_formatted_date($datestring, $format) {
+function get_formatted_date($datestring, $format): string
+{
     // don't work with empty string
     if (!$datestring) {
         return "";
@@ -129,14 +131,14 @@ function get_formatted_date($datestring, $format) {
     // mktime replaces missing values by today's values
     if (!isset($year)) {
         if (!isset($day)) {
-        if (!isset($month)) {
-            return mktime( $hour, $minute, $second);
+            if (!isset($month)) {
+                return mktime( $hour, $minute, $second);
+            }
+            return mktime($hour, $minute, $second, $month);
         }
-            else return mktime( $hour, $minute, $second, $month);
+        return mktime($hour, $minute, $second, $month, $day);
     }
-        else return mktime( $hour, $minute, $second, $month, $day);
-    }
-    else return mktime( $hour, $minute, $second, $month, $day, $year);
+    return mktime($hour, $minute, $second, $month, $day, $year);
 }
 
 /** ColumnFunctions function
@@ -151,7 +153,8 @@ function get_formatted_date($datestring, $format) {
  * @return void
  */
 
-function ColumnFunctions($cview, &$val, $function, $name="", $new_record=false, $record="") {
+function ColumnFunctions($cview, &$val, $function, $name="", $new_record=false, $record=""): void
+{
     global $err;
     // value to be shown if the requested value is not a part of the select box array
     $unknown_select_value = "????????";
@@ -236,7 +239,9 @@ function ColumnFunctions($cview, &$val, $function, $name="", $new_record=false, 
 
         switch ($function) {
         case 'show':
-            if ($val) $val = date($cview["format"], $val);
+            if ($val) {
+                $val = date($cview["format"], $val);
+            }
             $maxlen = $column["len"] ? "maxlength=".$column['len'] : "";
             echo "<input type=\"text\" $maxlen size=\"".$cview["size"]["cols"]."\" name=\"$name\"
                 value=\"".$val."\">";
@@ -326,7 +331,8 @@ function ColumnFunctions($cview, &$val, $function, $name="", $new_record=false, 
  * @param $val
  * @param string $name if given, a hidden box with the field value will be added
  */
-function ShowColumnValueReadOnly($cview, $show_val, $val, $name="") {
+function ShowColumnValueReadOnly($cview, $show_val, $val, $name=""): void
+{
     if ($name) {
         echo "<input type=\"hidden\" name=\"$name\" value=\"".
             str_replace ('"', '&quot;',$val)."\">\n";

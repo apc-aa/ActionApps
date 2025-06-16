@@ -58,7 +58,8 @@ users        membership     perms
  * creates new person in permission system
  * @return bool
  */
-function AddUser($user, $flags = 0) {
+function AddUser($user, $flags = 0): bool
+{
     if (! AA::$perm->isUsernameFree($user["uid"])) {
         return false;
     }
@@ -72,8 +73,7 @@ function AddUser($user, $flags = 0) {
         ['description', ''],
         ['password'   , AA_Permsystem_Sql::generatePasswordHash($user["userpassword"])]
     ]);
-    $varset->doInsert('users');
-    return $varset->last_insert_id();
+    return $varset->doInsert('users');  // last_insert_id
 }
 
 /** DelUser function
@@ -125,11 +125,14 @@ function ChangeUser($user, $flags = 0): bool {
 
 /** AddGroup function
  * creates new group in permission system
- * @param array $group is an array ("name", "description", ...)
- * @param int $flags
- * @return
+ *
+ * @param  array  $group  is an array ("name", "description", ...)
+ * @param  int    $flags
+ *
+ * @return false|string
  */
-function AddGroup($group, $flags = 0) {
+function AddGroup($group, $flags = 0): false|string
+{
     // creates new person in permission system
     $varset = new CVarset([
         ['type'       , 'Group'],
@@ -141,8 +144,7 @@ function AddGroup($group, $flags = 0) {
                                 ['description', $group['description']],
                                 ['password'   , 'crypt will never return this']
     ]);
-    $varset->doInsert('users');
-    return $varset->last_insert_id();
+    return $varset->doInsert('users'); // last_insert_id
 }
 
 /** DelGroup function
@@ -193,7 +195,8 @@ function ChangeGroup($group, $flags = 0): bool {
  * @param $id
  * @param $flags
  */
-function AddGroupMember($group_id, $id, $flags = 0) {
+function AddGroupMember($group_id, $id, $flags = 0): void
+{
     if ($group_id && $id) {
         DelGroupMember($group_id, $id);
         $varset = new CVarset([['groupid',$group_id], ['memberid',$id]]);
@@ -206,7 +209,8 @@ function AddGroupMember($group_id, $id, $flags = 0) {
  * @param $id
  * @param $flags
  */
-function DelGroupMember($group_id, $id, $flags = 0) {
+function DelGroupMember($group_id, $id, $flags = 0): void
+{
     DB_AA::delete('membership', [['groupid', $group_id], ['memberid', $id]]);
 }
 
@@ -238,14 +242,17 @@ function DelPermObject($objectID, $objectType, $flags = 0): bool {
 
 /** AddPerm function
  * append permission to existing object
- * @param $id
- * @param $objectID
- * @param $objectType
- * @param $perm
- * @param $flags
+ *
+ * @param       $id
+ * @param       $objectID
+ * @param       $object_type
+ * @param       $perm
+ * @param  int  $flags
+ *
  * @return bool
  */
-function AddPerm($id, $objectID, $object_type, $perm, $flags = 0) {
+function AddPerm($id, $objectID, $object_type, $perm, $flags = 0): bool
+{
     DelPerm($id, $objectID, $object_type);
     $varset = new CVarset([
         ['object_type',$object_type],
@@ -257,12 +264,14 @@ function AddPerm($id, $objectID, $object_type, $perm, $flags = 0) {
 }
 
 /** DelPerm function
- * @param $id
- * @param $objectID
- * @param $objectType
- * @param $flags
+ *
+ * @param       $id
+ * @param       $objectID
+ * @param       $object_type
+ * @param  int  $flags
  */
-function DelPerm($id, $objectID, $object_type, $flags = 0) {
+function DelPerm($id, $objectID, $object_type, $flags = 0): void
+{
     DB_AA::delete('perms', [['object_type', $object_type], ['objectid', $objectID], ['userid', $id]]);
 }
 
@@ -273,7 +282,8 @@ function DelPerm($id, $objectID, $object_type, $flags = 0) {
  * @param $perm
  * @param $flags
  */
-function ChangePerm($id, $objectID, $objectType, $perm, $flags = 0) {
+function ChangePerm($id, $objectID, $objectType, $perm, $flags = 0): bool
+{
     return AddPerm($id, $objectID, $objectType, $perm);
 }
 
@@ -305,7 +315,8 @@ class AA_Permsystem_Sql extends AA_Permsystem {
      * @param string $code2fa
      * @return false|string uid if user is authenticated, else false.
      */
-    public function authenticateUsername($username, $password, $code2fa = '') {
+    public function authenticateUsername($username, $password, $code2fa = ''): false|string
+    {
         if ($user = DB_AA::select1('', 'SELECT id, password FROM `users`', [[strpos($username, "@") ? 'mail' : 'uid', $username]])) {
             return AA_Perm::comparePwds($password, $user['password']) ? $user['id'] : false;
         }
@@ -322,10 +333,13 @@ class AA_Permsystem_Sql extends AA_Permsystem {
     }
 
     /** findUsernames function
+     *
      * @param $pattern
-     * @return - list of users which corresponds to mask $pattern
+     *
+     * @return array|string - list of users which corresponds to mask $pattern
      */
-    function findUsernames($pattern) {
+    function findUsernames($pattern): array|string
+    {
         $pattern = quote($pattern);
         return DB_AA::select(['id'=> ['name','mail']], "SELECT id, CONCAT(givenname, ' ', sn) AS name, mail FROM `users` WHERE ( name  LIKE '%$pattern%' OR mail LIKE '%$pattern%' OR uid LIKE '%$pattern%') AND ( type = '".quote(_m("User"))."' OR type = 'User')");
     }
@@ -352,19 +366,22 @@ class AA_Permsystem_Sql extends AA_Permsystem {
      *  @param $user_id
      *  @return array(uid, name, description) or false if not found
      */
-    function getGroup($group_id) {
+    function getGroup($group_id): array
+    {
         return DB_AA::select1('', 'SELECT id AS uid, name, description FROM `users`', [['id', $group_id, 'i']]);
     }
 
     /** getIDsInfo function
-     * @param $id
-     * @param $ds
+     *
+     * @param $uid
+     *
      * @return false|array containing basic information on $id (user DN or group DN)
      * or false if ID does not exist
      * array("mail" => $mail, "name" => $cn, "type" => "User" : "Group")
      */
-    function getIDsInfo($id) {
-        if ($this->userIdFormatMatches($id) && ($user = DB_AA::select1('', 'SELECT id, name, givenname, uid AS login, sn, mail, type FROM `users`', [['id', $id, 'i']]))) {
+    function getIDsInfo($uid): false|array
+    {
+        if ($this->userIdFormatMatches($uid) && ($user = DB_AA::select1('', 'SELECT id, name, givenname, uid AS login, sn, mail, type FROM `users`', [['id', $uid, 'i']]))) {
             if ($user['type'] == _m("User") || $user['type'] === "User") {
                 $user['type'] = 'User';
                 $user['name'] = $user['givenname']." ".$user['sn'];
@@ -456,8 +473,10 @@ class AA_Permsystem_Sql extends AA_Permsystem {
     }
 
     /** getObjectsPerms function
-     * @param $obejctID
+     *
+     * @param $objectID
      * @param $objectType
+     *
      * @return array of user/group identities and their permissions
      * granted on specified object $objectID
      *
