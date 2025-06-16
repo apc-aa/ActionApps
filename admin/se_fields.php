@@ -30,6 +30,9 @@
 // optional slice_fields = 1 (for slice fields)
 
 use AA\IO\DB\DB_AA;
+use AA\Optimize\ChangeF_h2F_1;
+use AA\Optimize\ChangeF_t2F_1;
+use AA\Optimize\ChangeF_t2F__;
 use AA\Util\InputVars;
 
 // const  AA_REGISTER_GLOBALS = true;
@@ -72,7 +75,7 @@ try {
     $cancel = InputVars::boolPOST('cancel');
     
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception) {}
+} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
 if ($cancel) {
     go_url( StateUrl(self_base() . "index.php"));
@@ -93,8 +96,10 @@ $varset = new Cvarset();
  * @param      $slice_id
  * @param bool $slice_fields
  */
-function ShowNewField($from_slice, $slice_id, bool $slice_fields): void
+function ShowNewField($from_slice, $slice_id, bool $slice_fields): string
 {
+    $ret = '';
+
     $id       = 'New_Field';
     $name     = '';
     $show     = true;
@@ -102,16 +107,18 @@ function ShowNewField($from_slice, $slice_id, bool $slice_fields): void
     $pri      = 1000;
 
     // --------------- from template --------------------------
-    echo '<tr class="aa-tab-title aa-tab-separate"><td colspan="8">'. _m('Add new field from template') .'</td></tr>';
-    echo "\n<tr class=bg-clr-opacity-dark>
+    $ret .= '<tr class="aa-tab-title aa-tab-separate"><td colspan="8">'. _m('Add new field from template') .'</td></tr>';
+    $ret .= "\n<tr class=bg-clr-opacity-dark>
           <td colspan=\"8\">". _m('Slice') .' ';
-          $template_id = unpack_id('AA_Core_Fields..');
-          $from_slice  = get_if($from_slice, $template_id);
-          $slice_array = AA_Module::getUserModules('S');
-          unset($slice_array[$template_id], $slice_array[$slice_id]);
-          $slice_array = array_merge( [$template_id => '* Action Aplication Core', $slice_id => '* '.AA_Slice::getModuleName($slice_id)._m(' (this)')], $slice_array);
-          FrmSelectEasy('from_slice', $slice_array, $from_slice, ['onchange' => "DisplayAaResponse('fieldselection', 'Get_Fields', {slice_id:this.value,slice_fields:" . ($slice_fields ? 1 : 0) . "})"]);
-    echo "\n</td>
+
+    $template_id = unpack_id('AA_Core_Fields..');
+    $from_slice  = get_if($from_slice, $template_id);
+    $slice_array = AA_Module::getUserModules('S');
+    unset($slice_array[$template_id], $slice_array[$slice_id]);
+    $slice_array = array_merge( [$template_id => '* Action Aplication Core', $slice_id => '* '.AA_Slice::getModuleName($slice_id)._m(' (this)')], $slice_array);
+
+    $ret .= getFrmSelectEasy('from_slice', $slice_array, $from_slice, ['onchange' => "DisplayAaResponse('fieldselection', 'Get_Fields', {slice_id:this.value,slice_fields:" . ($slice_fields ? 1 : 0) . "})"]);
+    $ret .= "\n</td>
           </tr>
           <tr class=bg-clr-opacity-dark>
           <td><input type=\"Text\" name=\"name[$id]\" size=50 maxlength=254 value=\"$name\"></td>
@@ -120,8 +127,10 @@ function ShowNewField($from_slice, $slice_id, bool $slice_fields): void
         <td><input type=\"checkbox\" name=\"req[$id]\"". ($required ? " checked" : "") ."></td>
         <td><input type=\"checkbox\" name=\"shw[$id]\"". ($show ? " checked" : "") ."></td>";
 
-    echo "<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>";
-    echo "</tr>\n";
+    $ret .= "<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>";
+    $ret .= "</tr>\n";
+
+    return $ret;
 }
 
 
@@ -283,26 +292,38 @@ foreach ($s_fields as $fld) {
 $QUESTION = _m("Do you really want to move alias to another field?");
 $MOD_ID = AA::$module_id;
 $aliasmovejs = <<<JS
-    document.querySelectorAll('td.aa-flds-aliases').forEach(td => {
-    Sortable.create(td, {
-    group: 'alias-group',  // same group allows movement across cells
-    animation: 150,
-    draggable: '.aa-moveable',
-    ghostClass: 'orderableghost',
-    swapThreshold: 0.5,
-    handle: 'i',
-    onAdd: function (e) {
-      if (confirm("$QUESTION")) {
-          window.location='?' + new URLSearchParams({ module_id: '$MOD_ID', move_als: e.item.textContent+'|'+e.item.dataset.fld, move_als_to: e.target.dataset.fld}).toString();
+        document.querySelectorAll('td.aa-flds-aliases').forEach(td => {
+        Sortable.create(td, {
+        group: 'alias-group',  // same group allows movement across cells
+        animation: 150,
+        draggable: '.aa-moveable',
+        ghostClass: 'orderableghost',
+        swapThreshold: 0.5,
+        handle: 'i',
+        onAdd: function (e) {
+          if (confirm("$QUESTION")) {
+              window.location='?' + new URLSearchParams({ module_id: '$MOD_ID', move_als: e.item.textContent+'|'+e.item.dataset.fld, move_als_to: e.target.dataset.fld}).toString();
+          }
       }
-  }
-  });
-});
-JS;
+      });
+    });
+    JS;
+
+$headcode = <<<HTML
+    <script>
+      function DeleteField(id) {
+        if ( !confirm("<?php echo _m("Do you really want to delete this field from this slice?"); ?>")) {
+            return;
+        }
+        const url = "<?php echo get_url('', ["del" => 1, "analyze" => ($analyze || $fix)] + ($slice_fields ? ['slice_fields' => 1] : []), true); ?>";
+        window.location=url + "&fid=" + encodeURIComponent(id);
+      }
+    </script>
+    HTML;
 
 $css = <<<CSS
-  .orderableghost  { opacity: 0.5; }
-  CSS;
+    .orderableghost  { opacity: 0.5; }
+    CSS;
 
 
 $apage = new AA_Adminpageutil('sliceadmin',$slice_fields ? 'slice_fields' : 'fields');
@@ -312,22 +333,23 @@ $apage->addRequire('aa-jslib');
 $apage->addRequire('orderable');
 $apage->addRequire($css, 'AA_Req_CSScode');
 $apage->addRequire($aliasmovejs, 'AA_Req_Load');
+$apage->addRequire($headcode, 'AA_Req_Headcode');
+
 
 //$apage->addRequire("DisplayAaResponse('fieldselection', 'Get_Fields', {slice_id:'". get_if($from_slice, unpack_id('AA_Core_Fields..')) ."'});", 'AA_Req_Load');
 $apage->addRequire("document.querySelector('select[name=from_slice]').dispatchEvent(new Event('change'));", 'AA_Req_Load');
-$apage->printHead($err, $Msg);
 
 if ($analyze) {
     $to_fix = false;
-    if ( !($optimizer = new \AA\Optimize\ChangeF_h2F_1())->test4modules([AA::$module_id])) {
+    if ( !($optimizer = new ChangeF_h2F_1())->test4modules([AA::$module_id])) {
         echo $optimizer->report();
         $to_fix = true;
     }
-    if ( !($optimizer = new \AA\Optimize\ChangeF_t2F_1())->test4modules([AA::$module_id])) {
+    if ( !($optimizer = new ChangeF_t2F_1())->test4modules([AA::$module_id])) {
         echo $optimizer->report();
         $to_fix = true;
     }
-    if ( !($optimizer = new \AA\Optimize\ChangeF_t2F__())->test4modules([AA::$module_id])) {
+    if ( !($optimizer = new ChangeF_t2F__())->test4modules([AA::$module_id])) {
         echo $optimizer->report();
         $to_fix = true;
     }
@@ -335,55 +357,40 @@ if ($analyze) {
         echo "<div><input type='submit' value='"._m('change all')."' name='fix'>";
     }
 }
+$code = '';
 
 if ($fix) {
-    ($optimizer = new \AA\Optimize\ChangeF_h2F_1())->repair4modules([AA::$module_id]);
-    echo $optimizer->report();
-    ($optimizer = new \AA\Optimize\ChangeF_t2F_1())->repair4modules([AA::$module_id]);
-    echo $optimizer->report();
-    ($optimizer = new \AA\Optimize\ChangeF_t2F__())->repair4modules([AA::$module_id]);
-    echo $optimizer->report();
+    ($optimizer = new ChangeF_h2F_1())->repair4modules([AA::$module_id]);
+    $code .= $optimizer->report();
+    ($optimizer = new ChangeF_t2F_1())->repair4modules([AA::$module_id]);
+    $code .= $optimizer->report();
+    ($optimizer = new ChangeF_t2F__())->repair4modules([AA::$module_id]);
+    $code .= $optimizer->report();
 }
 
 $form_buttons = ["update", "analyze" => ["type"=>"submit", "value"=>_m("Analyze")], "cancel"=> ["url"=>"se_fields.php"]];
-FrmTabCaption('', $form_buttons);
-?>
-<thead>
-<tr>
- <th scope=col><?php echo _m("Field") ?></th>
- <th scope=col><?php echo _m("Id") ?></th>
- <th scope=col><?php echo _m("Priority") ?></th>
- <th scope=col><?php echo _m("Required") ?></th>
- <th scope=col><?php echo _m("Show") ?></th>
- <th scope=col colspan="2">&nbsp;</th>
- <th scope=col><?php echo _m("Aliases")?></th>
-</tr>
-</thead>
-<tbody>
-<?php
+
+$code = getFrmTabCaption('', $form_buttons);
+$code .= "<thead>
+    <tr>
+     <th scope=col>". _m("Field") ."</th> 
+     <th scope=col>". _m("Id") ."</th>  
+     <th scope=col>". _m("Priority") ."</th>  
+     <th scope=col>". _m("Required") ."</th>  
+     <th scope=col>". _m("Show") ."</th>  
+     <th scope=col colspan=2>&nbsp;</th>
+     <th scope=col>". _m("Aliases") ."</th>
+    </tr>
+    </thead>
+    <tbody>";
 foreach ( $s_fields as $fld) {
-    $fld->showFieldAdminRow($analyze || $fix);
+    $code .= $fld->showFieldAdminRow($analyze || $fix);
 }
 $form_buttons['slice_fields'] = ['value' => ($slice_fields ? 1 : 0)];
 
 // one row for possible new field
-ShowNewField($from_slice, AA::$module_id, $slice_fields);
-?>
-</tbody>
-<?php
-FrmTabEnd( $form_buttons);
+$code .= ShowNewField($from_slice, AA::$module_id, $slice_fields);
+$code .= '</tbody>';
+$code .= getFrmTabEnd( $form_buttons);
 
-?>
-<script>
-    function DeleteField(id) {
-        if ( !confirm("<?php echo _m("Do you really want to delete this field from this slice?"); ?>")) {
-            return;
-        }
-        const url = "<?php echo get_url('', ["del" => 1, "analyze" => ($analyze || $fix)] + ($slice_fields ? ['slice_fields' => 1] : []), true); ?>";
-        window.location=url + "&fid=" + encodeURIComponent(id);
-    }
-</script>
-
-<?php
-$apage->printFoot();
-
+$apage->printAllPage($code, $err, $Msg);

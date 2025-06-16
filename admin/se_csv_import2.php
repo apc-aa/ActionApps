@@ -79,7 +79,7 @@ try {
     $cancel = InputVars::boolPOST('cancel');
     
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception) {}
+} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
 /** findNearestText function
  * Returns key of the $array, which value is most similar to given $text
@@ -127,7 +127,7 @@ class AA_Csv_Importer {
     var $actionIfItemExists;
 
     /** @var bool Do not send mails to readers from Alerts, do not update mailinglists, ... */
-    protected bool $insertSilent = false;
+    private bool $insertSilent = false;
 
     var $auth_uid;
 
@@ -348,9 +348,10 @@ class AA_Csv_Importer {
         // end preview
     }
 
-/** printForm function
- * @param $set_default
- */
+    /** printForm function
+     *
+     * @param  bool  $set_default
+     */
     public function printForm(bool $set_default): void
     {
         //----------------------------------------------------------------------------
@@ -418,8 +419,14 @@ class AA_Csv_Importer {
                    FrmSelectEasy("actions[$f_id]", $actionList, $set_default ? "default" : $this->actions[$f_id]);
                    echo "</td>";
 
-                   echo "<td><input type=\"checkbox\" name=\"html[$f_id]\" "; if (!$set_default && $this->html[$f_id]) echo  "checked";  echo  "></td>";
-                   echo "<td><input type=\"text\" name=\"params[$f_id]\" value=\""; if (!$set_default) echo stripslashes($this->params[$f_id]);  echo "\"></td>";
+                   echo "<td><input type=\"checkbox\" name=\"html[$f_id]\" "; if (!$set_default && $this->html[$f_id]) {
+                       echo "checked";
+                   }
+                   echo  "></td>";
+                   echo "<td><input type=\"text\" name=\"params[$f_id]\" value=\""; if (!$set_default) {
+                       echo stripslashes($this->params[$f_id]);
+                   }
+                   echo "\"></td>";
                    echo "<td class=\"tabhlp\">". getParamWizardLink("TRANS_ACTIONS","actions[$f_id]","params[$f_id]"). "</td>";
                    echo "</tr>\n";
                }
@@ -428,11 +435,15 @@ class AA_Csv_Importer {
 
                <tr><td colspan="2">Setting item id:</td><tr>
 
-               <tr><td><input type="radio" <?php if ($this->itemId === "new") echo "CHECKED"; ?> name="itemId" value="new"></td>
+               <tr><td><input type="radio" <?php if ($this->itemId === "new") {
+                           echo "CHECKED";
+                       } ?> name="itemId" value="new"></td>
                 <td>Create new id</td>
                </tr>
                <tr>
-               <td><input type="radio" <?php if ($this->itemId === "old") echo "CHECKED"; ?> name="itemId" value="old"></td>
+               <td><input type="radio" <?php if ($this->itemId === "old") {
+                       echo "CHECKED";
+                   } ?> name="itemId" value="old"></td>
                <td><?php
                  echo _m("Map item id from"). '&nbsp';
                  FrmSelectEasy("itemIdMappedFrom", $inFields, $this->itemIdMappedFrom ?: ($set_default ? $inFields[0] : ''));
