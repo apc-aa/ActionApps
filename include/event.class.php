@@ -45,8 +45,10 @@ require_once __DIR__."/mlx.php";
  * the function invoking
  */
 class aahandler {
-    protected $funct;       // handler function - function to call is conditions are met - should be callable, but PHP do not allow it here (7.4)
-    protected array $conds;
+
+    /** @var callable */
+    private $funct;       // handler function - function to call is conditions are met - should be callable, but PHP do not allow it here (7.4)
+    private array $conds;
 
     /** aahandler function
      * @param callable $funct
@@ -83,7 +85,6 @@ class aahandler {
      * @param $ret_params
      * @param $params
      * @param $params2
-     * @return
      */
     function process($type, $slice, $slice_type, &$ret_params, $params, $params2) {
         $function = $this->funct;
@@ -106,8 +107,8 @@ class aaevent {
     use SingletonTrait;
 
     /** @var aahandler[]|null  */
-    protected ?array $handlers = null;    // array of aahandler objects
-    protected array  $returns = [];       // array of return values of last event
+    private ?array $handlers = null;    // array of aahandler objects
+    private array  $returns = [];       // array of return values of last event
 
     /** Main event function - called when any event ocures. The method then
      *  search all handlers and calls all that matches all criteria
@@ -198,7 +199,7 @@ class aaevent {
  *  get_handlers() method above
  */
 class NewDiscussionCommentEvent {
-    var $email;
+    private $email;
     /** NewDiscussionCommentEvent function
      * @param $params
      * @param $type
@@ -267,7 +268,8 @@ class NewDiscussionCommentEvent {
  * @param $params
  * @return array
  */
-function GetNotifications($type, $class, $selector, $reaction=null, $params=null) {
+function GetNotifications($type, $class, $selector, $reaction=null, $params=null): array
+{
     $type     = quote($type);
     $class    = quote($class);
     $selector = quote($selector);
@@ -290,7 +292,8 @@ function GetNotifications($type, $class, $selector, $reaction=null, $params=null
  * @param $reaction
  * @param $params
  */
-function AddNotification($type, $class, $selector, $reaction, $params) {
+function AddNotification($type, $class, $selector, $reaction, $params): void
+{
 
     // check if user already is not set for this item
     if ( !count(GetNotifications($type, $class, $selector, $reaction, $params)) ) {
@@ -339,9 +342,9 @@ function Event_ItemNewComment( $type, $item_id, $slice_type, $disc_id, $foo, $fo
 
     // if the view vid is assigned to fulltext view, take the e-mail template
     // from that view
-    $view_id     = AA_Slice::getModuleProperty($slice_id,'vid');
+    $view_id     = (int)AA_Slice::getModuleProperty($slice_id,'vid');
 
-    if ( $view_id > 0 ) {
+    if ( $view_id ) {
         // get id of e-mail template (stored in aditional6 field of view definition)
         $mail_id = AA_Views::getViewField($view_id, 'aditional6');
     } else {
@@ -434,8 +437,8 @@ function Event_ItemAfterUpdate( $type, $slice_id, $slice_type, $itemContent, $ol
  * @param ItemContent $oldItemContent
  * @param $foo2
  */
-function Event_CommentAfterInsert( $type, $slice_id, $slice_type, &$itemContent, $oldItemContent, $foo2 ) {
-
+function Event_CommentAfterInsert( $type, $slice_id, $slice_type, &$itemContent, $oldItemContent, $foo2 ): bool {
+    return true;
 }
 
 /** Event_ItemBeforeUpdate
@@ -475,7 +478,7 @@ function Event_ItemBeforeInsert( $type, $slice_id, $slice_type, &$itemContent, $
  * @param        $type
  * @param        $slice_id
  * @param        $slice_type
- * @param zids   $item_ids is sent by reference but for better performance only
+ * @param zids   $zids
  * @param        $foo
  * @param        $foo2
  * @return bool
@@ -501,10 +504,12 @@ function Event_ItemsBeforeDelete( $type, $slice_id, $slice_type, $zids, $foo, $f
  * @param $new_status
  * @param $foo2
  */
-function Event_ItemsMoved( $type, $slice_id, $slice_type, $item_ids, $new_status, $foo2 ) {
+function Event_ItemsMoved( $type, $slice_id, $slice_type, $item_ids, $new_status, $foo2 ): bool
+{
     AA_Mysqlauth::updateReaders( $item_ids, $slice_id ); // maybe not necessary - AA_Mysqlauth_Maintain probably solves it HM 2024-01-16
     (new AA_Mysqlauth_Maintain())->schedule();  // plan or replan the maintenance to be run earlier
     AA_Mailman::createSynchroFiles( $slice_id );
+    return true;
 }
 
 /** Event_ConstantBeforeUpdate function
@@ -530,8 +535,10 @@ function Event_ConstantBeforeUpdate( $type, $slice_id, $slice_type, &$newvalue, 
  * @param $oldvalue
  * @param string $constant_id Unpacked ID of constant from the constant table.
  */
-function Event_ConstantUpdated( $type, $slice_id, $slice_type, $newvalue, $oldvalue, $constant_id ) {
+function Event_ConstantUpdated( $type, $slice_id, $slice_type, $newvalue, $oldvalue, $constant_id ): bool
+{
     AA_Mysqlauth::changeGroups($constant_id, $oldvalue, $newvalue);
+    return true;
 }
 
 /**
@@ -546,8 +553,10 @@ function Event_ConstantUpdated( $type, $slice_id, $slice_type, $newvalue, $oldva
  *
  * @return void
  */
-function Event_ConstantGroupUpdated($type, $slice_id, $slice_type, $ret_params, $constant_id, $param_2 ) {
+function Event_ConstantGroupUpdated($type, $slice_id, $slice_type, $ret_params, $constant_id, $param_2 ): bool
+{
     AA_Mailman::constantsChanged( $constant_id );
+    return true;
 }
 
 
@@ -680,14 +689,16 @@ function Event_AddLinkGlobalCat( $type, $slice, $slice_type, &$ret_params, $para
 
 /**
  * @param $type
- * @param $slice
+ * @param $slice_id
  * @param $slice_type
  * @param $ret_params
  * @param $foo
  * @param $foo2
+ *
  * @return bool
  */
-function Event_ItemUpdated_Efekt( $type, $slice_id, $slice_type, $ret_params, $foo, $foo2 ) {
+function Event_ItemUpdated_Efekt( $type, $slice_id, $slice_type, $ret_params, $foo, $foo2 ): bool
+{
     $short_id   = $ret_params->getValue('short_id........');              // item's short_id is in params
 
     if (!$ret_params->getValue('switch.........2')) {
@@ -712,14 +723,16 @@ function Event_ItemUpdated_Efekt( $type, $slice_id, $slice_type, $ret_params, $f
 
 /**
  * @param $type
- * @param $slice
+ * @param $slice_id
  * @param $slice_type
  * @param $ret_params
  * @param $foo
  * @param $foo2
+ *
  * @return bool
  */
-function Event_ItemInserted_Efekt( $type, $slice_id, $slice_type, $ret_params, $foo, $foo2 ) {
+function Event_ItemInserted_Efekt( $type, $slice_id, $slice_type, $ret_params, $foo, $foo2 ): bool
+{
     $short_id = $ret_params->getValue('short_id........');              // item's short_id is in params
     $ekis_id  = $ret_params->getValue('relation.......1');              // item's short_id is in params
 

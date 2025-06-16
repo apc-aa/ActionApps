@@ -42,7 +42,8 @@ require_once __DIR__ . "/mail.php";
  * @param int    $event
  * @param string $item_id
  */
-function email_notify($slice_id, $event, $item_id) {
+function email_notify($slice_id, $event, $item_id): void
+{
     $slice      = AA_Slice::getModule($slice_id);
 
     // select the text templates

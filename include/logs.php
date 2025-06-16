@@ -1,7 +1,9 @@
 <?php
 
+use AA\Expand\InternalExpandInterface;
 use AA\IO\DB\DB_AA;
 use AA\Later\Toexecute;
+use AA\Util\Txt;
 
 /** Logging functions
  *
@@ -52,9 +54,10 @@ LOGIN           module_id:field_id              msg:url                        /
 AA_WARN
 */
 
-class AA_Log implements \AA\Expand\InternalExpandInterface {
+class AA_Log implements InternalExpandInterface {
 
-    static function warn(array $params = []) {
+    static function warn(array $params = []): void
+    {
         self::write('AA_WARN', self::context(), array_merge($params, [self::backtrack(2)]));
     }
 
@@ -136,6 +139,7 @@ class AA_Log implements \AA\Expand\InternalExpandInterface {
            // PWD_REHASH
            // VIEW
            // SYS_STAT
+           // PAGE_PARAM_ERR
         ];
         return !in_array($event_type, $DO_NOT_LOG);
     }
@@ -170,12 +174,13 @@ class AA_Log implements \AA\Expand\InternalExpandInterface {
      *
      * @return array
      */
-    public static function getLastLogEvents(string $event, string $selector = "") {
+    public static function getLastLogEvents(string $event, string $selector = ""): array
+    {
         $conds = [['type', $event, (str_contains($event, '%')) ? 'LIKE' : '=']];
         if ($selector !== "") {
             $conds[] = ['selector', $selector];
         }
-        return DB_AA::select1('', 'SELECT * FROM log', $conds, ['id-']);
+        return DB_AA::select1('', 'SELECT * FROM log', $conds, ['id-']) ?: [];
     }
 
     /** Get first 20 rows from log table with possible link to Log page */
@@ -232,15 +237,7 @@ class AA_Log implements \AA\Expand\InternalExpandInterface {
                 return (!$type || !$selector) ? '' : (string)DB_AA::select1('cnt', "SELECT count(*) as cnt FROM `log`", [['type', $type], ['selector', $selector], ['time', time() - $seconds, '>=']]);
             case 'print':  // print entries for type / selector in last seconds
                 if ($content && ($logEntry = AA_Logentry::factoryByString($content->getValue('params')))) {
-                    $css = <<<CSScode
-                        .aa-log-entry { display: flex;gap: .5rem;
-                          & div { position: relative;display: flex;flex-direction: column;align-items: flex-start;
-                            & label { font-size: 0.7rem; color: #666; margin-bottom: -.5rem; line-height: .9rem;}
-                            & span { font-size: .8rem; }
-                        }}
-                        CSScode;
-                    AA::Stringexpander()->addRequire($css, 'AA_Req_CSScode');
-                    return $logEntry->getPrintRow();
+                    return $logEntry->getPrintRow(); // also adds CSS to header
                 }
                 return '';
         }
@@ -259,7 +256,7 @@ class AA_Log implements \AA\Expand\InternalExpandInterface {
 //        $this->id = $id;
 //    }
 //
-//    public function factoryFromArray(array $arr): AA_Propset {
+//    public function factoryFromArray(array $arr): static {
 //        foreach ($arr as $k => $v) {
 //            $this->arr[$k] = new AA_Property(...$v);
 //        }
@@ -272,17 +269,12 @@ abstract class AA_Logentry extends AA_Serializable {
     public function getPrintRow(): string
     {
         $props = $this::getClassProperties();
-        $ret = '';
+        $arr = [];
         foreach ($props as $id => $prop) {
-            $name = safe($prop->name);
-            $val  = safe(trim($this->$id));
-            if ( $val !== '') {
-                $ret .= "<div class=aa-log-entry><label>$name</label><span>$val</span></div>";
-            }
+            $arr[$prop->name] = $this->$id;
         }
-        return '<div class=aa-log-entry>'.$ret.'</div>';
+        return Txt::keyValTable($arr);
     }
-
 }
 
 /** Mail Template log entry - description */

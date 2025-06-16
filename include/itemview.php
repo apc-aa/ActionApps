@@ -57,8 +57,8 @@ class itemview {
   var $fields;             // array of fields used in this slice  // not used
   //protected $aliases;      // array of alias definitions. @deprecated
                            //  If used with multi-slice, this variable contains an array of aliases for all slices aliases[slice_id0] are aliases for slice 0 etc - Do we still use it HM 2025-01-27
-    protected AA_Aliases $aa_aliases;   // new aliases AA_Aliases object
-    protected array $multi_aliases = [];   // array of slice_id => AA_Aliases for multislice itemviews
+    private AA_Aliases $aa_aliases;   // new aliases AA_Aliases object
+    private array $multi_aliases = [];   // array of slice_id => AA_Aliases for multislice itemviews
 
     var $clean_url;          // url of slice page with session id and encap.. - used mainly in discussion views
   var $group_fld;          // id of field for grouping
@@ -69,7 +69,7 @@ class itemview {
   var $parameters;         // optional asociative array of additional parameters
                            // - used for category_id (in Links module) ...
                            // - filed by parameter() method
-  private $_content;       // stores item contents to be used for display
+  private array $_content = [];       // stores item contents to be used for display
 
     /** itemview function
      * @param        $slice_info
@@ -132,7 +132,7 @@ class itemview {
      *
      * @param  AA_Aliases[] $multi_aliases
      */
-    public function setMultiAliases(array $multi_aliases): itemview
+    public function setMultiAliases(array $multi_aliases): static
     {
         $this->multi_aliases = $multi_aliases;
         return $this;
@@ -142,7 +142,7 @@ class itemview {
      * @param string|array $content_funct callable function
      * @return $this
      */
-    public function setContentFunct($content_funct): itemview
+    public function setContentFunct($content_funct): static
     {
         $this->get_content_funct = $content_funct ?: 'GetItemContent';
         return $this;
@@ -155,7 +155,8 @@ class itemview {
    * @param $property
    * @param $value
    */
-  function parameter($property, $value ) {
+  function parameter($property, $value ): void
+  {
       $this->parameters[$property] = $value;
   }
 
@@ -168,7 +169,6 @@ class itemview {
 
     /** get_output_cached function
      * @param $view_type
-     * @return bool|mixed|null|string|string[]|void
      */
     function get_output_cached($view_type="") {
         //create keystring from values, which exactly identifies resulting content
@@ -224,18 +224,16 @@ class itemview {
       if (is_array($this->disc['disc_ids'])) {
           $zids = new zids($this->disc['disc_ids'], 'l');
           $this->_content = GetDiscussionContent($zids, true, $this->disc['html_format'], $this->clean_url);
-          if (is_array($this->_content)) {
-              foreach ( $this->_content as $id => $disc) {
-                  $CurItem->set_data($disc);
-                  // print top HTML with aliases
-                  if ( !$top_html_already_printed ) {
-                      $CurItem->setformat($this->slice_info['d_top']);
-                      $out = $CurItem->get_item();
-                      $top_html_already_printed = true;
-                  }
-                  $CurItem->setformat($this->slice_info['d_compact']);
-                  $out .= $CurItem->get_item();
+          foreach ( $this->_content as $id => $disc) {
+              $CurItem->set_data($disc);
+              // print top HTML with aliases
+              if ( !$top_html_already_printed ) {
+                  $CurItem->setformat($this->slice_info['d_top']);
+                  $out = $CurItem->get_item();
+                  $top_html_already_printed = true;
               }
+              $CurItem->setformat($this->slice_info['d_compact']);
+              $out .= $CurItem->get_item();
           }
       }
       if ( !$top_html_already_printed ) {  // print top HTML even no item found
@@ -358,10 +356,10 @@ class itemview {
       $zids           = QueryDiscussionZIDs($this->disc['item_id'], $this->disc['ids']);
       $this->_content = GetDiscussionContent($zids, true, $this->disc['html_format'], $this->clean_url);
       $d_tree         = GetDiscussionTree($this->_content);
-      if ($this->disc['ids'] && is_array($this->disc['ids']) && is_array($this->_content)) {  // show selected cooments
+      if ($this->disc['ids'] && is_array($this->disc['ids']) && $this->_content) {  // show selected cooments
           foreach ($this->_content as $id => $val) {
               // if hidden => skip  OR if the comment is already in the outcome => skip
-              if ($val["hide"] == true || $outcome[$id]) {
+              if ($val["hide"] || $outcome[$id]) {
                   continue;
               }
               GetDiscussionThread($d_tree, $id, 1, $outcome);
@@ -375,12 +373,10 @@ class itemview {
           foreach( $outcome as $d_id => $images ) {
               $this->setColumns($CurItem, $d_id);
               $depth = count($images)-1;
-              $spacer = "";
               $out.= '
               <table class="discrow" id="disc'.$d_id.'">
                 <tr>';
-              for ( $i=0; $i<$depth; $i++)
-              $spacer .= $this->slice_info['d_spacer'];
+              $spacer = str_repeat($this->slice_info['d_spacer'], $depth);
               if ($spacer) {
                   $out .= "
                       <td class=\"discspacer\">$spacer</td>";
@@ -456,7 +452,8 @@ class itemview {
    * @param AA_Item $CurItem
    * @param string  $iid
    */
-  function setColumns(AA_Item $CurItem, string $iid) {
+  function setColumns(AA_Item $CurItem, string $iid): void
+  {
       // hack for searching in multiple slices. This is not so nice part
       // of code - we mix there $aliases[<alias>] with $aliases[<p_slice_id>][<alias>]
       // used (filled) in slice.php
@@ -881,11 +878,12 @@ class itemview {
 
         if ($this->slice_info['calendar_type'] === 'mon_table') {
             for ($cell = 7 - $firstday; $cell <= $max_cell; $cell += $row_len) {
-                for ($ievent = 0; $ievent < $max_events; ++$ievent)
+                for ($ievent = 0; $ievent < $max_events; ++$ievent) {
                     if ($calendar[$cell][$ievent]["iid"]) {
                         $calendar[$cell][$ievent]["start"] = 1;
-                        $calendar[$cell][$ievent]["span"] = min ($calendar[$cell][$ievent]["span"],$row_len);
+                        $calendar[$cell][$ievent]["span"]  = min($calendar[$cell][$ievent]["span"], $row_len);
                     }
+                }
             }
 
             // go throgh all weeks

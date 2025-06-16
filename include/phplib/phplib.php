@@ -93,11 +93,12 @@ class Session {
     /**
     * Register the variable(s) that should become persistent.
     *
-    * @param   mixed String with the name of one or more variables seperated by comma
-    *                 or a list of variables names: "foo"/"foo,bar,baz"/{"foo","bar","baz"}
+    * @param   array|string $var_names  String with the name of one or more variables seperated by comma
+    *                             or a list of variables names: "foo"/"foo,bar,baz"/{"foo","bar","baz"}
     * @access public
     */
-    function register($var_names) {
+    function register($var_names): void
+    {
         if (!is_array($var_names)) {
             // spaces spoil everything
             $var_names = trim($var_names);
@@ -119,7 +120,8 @@ class Session {
     * @return false if variable not registered true on success.
     * @access public
     */
-    public function is_registered($var_name) {
+    public function is_registered($var_name): bool
+    {
         return isset($_SESSION[trim($var_name)]);
     }
 
@@ -127,12 +129,12 @@ class Session {
     /**
      * Recall the session registration for named variable(s)
      *
-     * @param      mixed   String with the name of one or more variables separated by comma
-     *                   or a list of variables names: "foo"/"foo,bar,baz"/{"foo","bar","baz"}
-     * @access public
+     * @param  string  $var_names  String with the name of one or more variables separated by comma
+     *                             or a list of variables names: "foo"/"foo,bar,baz"/{"foo","bar","baz"}
      * @return bool
      */
-    public function unregister($var_names) {
+    public function unregister($var_names): bool
+    {
         foreach (explode (',', $var_names) as $var_name) {
             $var_name=trim($var_name);
             unset($_SESSION[$var_name]);  // unset is no more a function in php4
@@ -143,7 +145,8 @@ class Session {
     /**
     * @access public
     */
-    public function id() {
+    public function id(): false|string
+    {
         return session_id();
     }
 
@@ -158,7 +161,8 @@ class Session {
     *
     * @deprec $Id$
     */
-    protected function put_id() {
+    protected function put_id(): void
+    {
         if (get_cfg_var('session.use_cookies') == 1) {
             $cookie_params = session_get_cookie_params();
             setcookie($this->name, '', 0, $cookie_params['path'], $cookie_params['domain']);
@@ -176,7 +180,8 @@ class Session {
     * @return boolean session_destroy return value
     * @access public
     */
-    public function delete() {
+    public function delete(): bool
+    {
         $this->put_id();
         return session_destroy();
     } // end func delete
@@ -193,7 +198,8 @@ class Session {
     * @deprec $Id$
     * @access public
     */
-    public function url($url) {
+    public function url($url): string
+    {
         return $url;
     } // end func url
 
@@ -209,7 +215,8 @@ class Session {
     * @global $REQUEST_URI
     * @access public
     */
-    public function self_url() {
+    public function self_url(): string
+    {
       if ($_SERVER['REQUEST_URI'] && strpos($_SERVER['REQUEST_URI'],'?')) {
           $qs = substr($_SERVER['REQUEST_URI'],strpos($_SERVER['REQUEST_URI'], '?'));
       } else {
@@ -233,11 +240,12 @@ class Session {
     *
     * If id is specified, it will replace the current session id.
     *
-    * @param  string  If given, sets the new session id
+    * @param  string  $sid  If given, sets the new session id
     * @return string  current session id
     * @access public
     */
-    function set_id($sid = '') {
+    function set_id($sid = ''): string
+    {
         if ($sid = (string)$sid) {
             return session_id($sid);
         }
@@ -252,7 +260,8 @@ class Session {
     *
     *
     */
-    function freeze() {
+    function freeze(): void
+    {
         foreach (array_keys($_SESSION) as $key) {
             $_SESSION[$key] = $GLOBALS[$key];
         }
@@ -261,7 +270,8 @@ class Session {
     /** lifetime in seconds
      * @return int
      */
-    function get_sec_lifetime() {
+    function get_sec_lifetime(): int
+    {
         // day or more - the day added, because we experienced some relogin requests, so we are trying to check, if this doesn't help
         return ($this->lifetime > 0) ? max($this->lifetime*60, 24*3600) :  0;
     }
@@ -270,7 +280,8 @@ class Session {
     * ?
     *
     */
-    protected function set_tokenname(){
+    protected function set_tokenname(): void
+    {
         session_name($this->name);
 
         if (!$this->cookie_domain) {
@@ -294,7 +305,8 @@ class Session {
     * How to deal with caching
     *
     */
-    protected function put_headers() {
+    protected function put_headers(): void
+    {
         // set session.cache_limiter corresponding to $this->allowcache.
         switch ($this->allowcache) {
             case 'passive':
@@ -308,7 +320,8 @@ class Session {
     /** get configuration array for session or cookies
      * @return array
      */
-    protected function session_setup() {
+    protected function session_setup(): array
+    {
         $ret = [];
         $ret['use_only_cookies'] = 1;
         $ret['use_trans_sid']    = 0;
@@ -322,7 +335,8 @@ class Session {
         return $ret;
     }
 
-    protected function cookie_setup() {
+    protected function cookie_setup(): array
+    {
         $ret = [];
         $ret['httponly']  = 1;
         if (isset($_SERVER['HTTPS'])) {
@@ -338,7 +352,8 @@ class Session {
     * @return boolean   session_start() return value
     * @access public
     */
-    function start() {
+    function start(): bool
+    {
 
         $start_array = $this->session_setup();
         $this->set_tokenname();
@@ -446,7 +461,8 @@ class Auth {
     //
     // Initialization
     //
-    function start() {
+    function start(): void
+    {
         global $sess;
 
         $sess->register("auth");
@@ -465,7 +481,7 @@ class Auth {
         //  2) Logged in (valid auth info)
         //  3) Login in progress (if $this->cancel_login, revert to state 1)
         if ($this->is_authenticated()) {
-            if ( 'form' == ($uid = $this->auth["uid"]) ) {
+            if ( 'form' === ($uid = $this->auth["uid"]) ) {
                 // Set state to "Login in progress"
                 // Login in progress, check results and act accordingly
                 if ( $uid = $this->auth_validatelogin() ) {
@@ -521,7 +537,8 @@ class Auth {
         exit;
     }
 
-  function unauth($nobody = false) {
+  function unauth($nobody = false): void
+  {
     $this->auth["uid"]   = "";
     $this->auth["uname"] = "";
     $this->auth["perm"]  = "";
@@ -537,7 +554,8 @@ class Auth {
   }
 
 
-  function logout() {
+  function logout(): void
+  {
         global $sess;
 
     $sess->unregister("auth");
@@ -579,7 +597,8 @@ class Auth {
     // (i.e. nobody IS NOT a valid uid) just like auth_validatelogin,
     // else it shall return false.
 
-    function auth_preauth() {
+    function auth_preauth(): false|string
+    {
         return false;
     }
 
@@ -590,16 +609,13 @@ class Auth {
     }
 
     /**
-     * @return string uid
      */
-    function auth_validatelogin() {
-    }
+    function auth_validatelogin(): string|false  { return ''; }
 
     /**
      * @return bool
      */
-    function auth_refreshlogin() {
-    }
+    function auth_refreshlogin() { return false; }
 
     function auth_registerform() {
     }
@@ -608,7 +624,8 @@ class Auth {
     }
 }
 
-function page_close() {
+function page_close(): void
+{
     global $sess;
 
     if (is_object($sess)) {

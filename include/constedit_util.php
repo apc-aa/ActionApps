@@ -54,7 +54,8 @@ $hcCol = [
  * @param  $admin = true - if true, send all info (for constants admin)
  * @return string
  */
-function getHierConstInitJavaScript($hcid, $group_id, $levelCount=3, $formName='f', $admin=true) {
+function getHierConstInitJavaScript($hcid, $group_id, $levelCount=3, $formName='f', $admin=true): string
+{
     global $hcCol;
     $js = "
         hcEasyDelete[$hcid] = 0;     // if set to 1, doesn't uncheck the confirmation check box
@@ -81,16 +82,18 @@ function getHierConstInitJavaScript($hcid, $group_id, $levelCount=3, $formName='
 
 /** getHierConstBoxes function
  *     paints horizontally or vertically the level boxes in a table. Params:
- * @param  $hcid
- * @param  $levelCount - count of boxes
- * @param  $horizontal = 0 - should be the boxes placed horizontal?
- * @param  $targetBox = "" - where to put selected values (useful by admin=false)
- * @param  $admin = true - are the boxes in admin interface?
- *           if yes, buttons are "Add new" and "Select",
- *           else, buttons are "Select" - moves to the targetBox
- * @param  $minLevelSelect = 0 - from which level should be the "Select" button shown
- * @param  $boxwidth = 0
- * @param  $levelNames = array() - names for the level boxes (if you don't like Level 0, Level 1, etc.)
+ *
+ * @param          $hcid
+ * @param  int     $levelCount      - count of boxes
+ * @param  bool    $horizontal      = 0 - should be the boxes placed horizontal?
+ * @param  string  $targetBox       = "" - where to put selected values (useful by admin=false)
+ * @param  bool    $admin           = true - are the boxes in admin interface?
+ *                                  if yes, buttons are "Add new" and "Select",
+ *                                  else, buttons are "Select" - moves to the targetBox
+ * @param  int     $minLevelSelect  = 0 - from which level should be the "Select" button shown
+ * @param  int     $boxWidth
+ * @param  array   $levelNames      = array() - names for the level boxes (if you don't like Level 0, Level 1, etc.)
+ *
  * @return string
  */
 function getHierConstBoxes($hcid, int $levelCount, bool $horizontal=false, string $targetBox="", $admin=true, $minLevelSelect=0, int $boxWidth=0, array $levelNames= []): string {
@@ -157,7 +160,8 @@ function getHierConstBoxes($hcid, int $levelCount, bool $horizontal=false, strin
 /** showHierConstInitJavaScript function
  *
  */
-function showHierConstInitJavaScript($hcid, $group_id, $levelCount=3, $formName='f', $admin=true) {
+function showHierConstInitJavaScript($hcid, $group_id, $levelCount=3, $formName='f', $admin=true): void
+{
     echo getHierConstInitJavaScript($hcid, $group_id, $levelCount, $formName, $admin);
 }
 /** showHierConstBoxes function
@@ -198,7 +202,7 @@ function createConstsJavaScript($group_id, $admin): string
  *  @param $admin
  *  @param $consts (by link)
  */
-function createConstsArray($group_id, $admin, &$consts)
+function createConstsArray($group_id, $admin, &$consts): void
 {
     global $get_method;
     $dbc = getDB();
@@ -277,11 +281,11 @@ function createConstsArray($group_id, $admin, &$consts)
     if ($ok_data) {
         $consts .= ")";
     }
-    for ($i = 0; $i < $depth; ++$i) {
-        $consts .= "))";
-    }
+    $consts .= str_repeat("))", $depth);
     if (count($error_data)) {
-        if ($ok_data) $consts .= ",";
+        if ($ok_data) {
+            $consts .= ",";
+        }
         foreach ( $error_data as $col) {
             $consts .= "array($col),";
         }
@@ -292,24 +296,27 @@ function createConstsArray($group_id, $admin, &$consts)
 }
 
 /** hcCompareConstants function
+ *
  * @param $a
  * @param $b
- * @return bool|int
+ *
+ * @return int
  */
-function hcCompareConstants($a, $b) {
+function hcCompareConstants($a, $b): int
+{
     global $hcCol;
-    if ($a[$hcCol["Prior"]] > $b[$hcCol["Prior"]]) {
-        return 1;
+    $cmp = $a[$hcCol["Prior"]] <=> $b[$hcCol["Prior"]];
+    if ($cmp !== 0) {
+        return $cmp;
     }
-    if ($a[$hcCol["Prior"]] < $b[$hcCol["Prior"]]) {
-        return -1;
-    }
-    return $a[$hcCol["Name"]] > $b[$hcCol["Name"]];
+    return $a[$hcCol["Name"]] <=> $b[$hcCol["Name"]];
 }
+
 /** hcSortArray function
  * @param $arr (by link)
  */
-function hcSortArray(&$arr) {
+function hcSortArray(&$arr): void
+{
     global $hcCol;
     usort($arr, "hcCompareConstants");
     foreach ($arr as $iValue) {
@@ -363,7 +370,8 @@ function printConstsArray(&$arr, $admin): string {
 /** hcUpdate function
  *
  */
-function hcUpdate() {
+function hcUpdate(): void
+{
     global $levelCount, $hide_value, $levelsHorizontal, $group_id, $p_slice_id;
 
     $qgroup_id = quote($group_id);
@@ -425,8 +433,9 @@ function hcUpdate() {
 
     if (is_array($changes)) {
         $db->query("SELECT id, short_id FROM constant;");
-        while ($db->next_record())
+        while ($db->next_record()) {
             $shortIDmap[$db->f("short_id")] = addslashes($db->f("id"));
+        }
 
         $db->query("SELECT propagate FROM constant_slice WHERE group_id='$qgroup_id'");
         $propagate_changes = $db->next_record() ? $db->f("propagate") : false;
@@ -605,7 +614,7 @@ function get_unique_group_id(string $group_id): string {
 *   @return true|string - true on success or error string if it fails
 *@author Jakub Adamek, Econnect, January 2003
 */
-function add_constant_group(string $group_id, $constants2import)
+function add_constant_group(string $group_id, $constants2import): true|string
 {
     $db = getDB();
 
@@ -660,7 +669,8 @@ function add_constant_group(string $group_id, $constants2import)
 *   @param string $group_id packed group ID
 *   @param string $slice_id  unpacked slice ID
 *   @return bool  @c true if group was deleted, @c false otherwise	*/
-function delete_constant_group($group_id, $slice_id = "") {
+function delete_constant_group($group_id, $slice_id = ""): bool
+{
     $qgrouip_id = quote($group_id);
     if ($slice_id && (false === DB_AA::select1('', "SELECT slice.id FROM slice INNER JOIN field ON slice.id = field.slice_id WHERE field.input_show_func LIKE '%$qgrouip_id%' AND slice.id <> " . xpack_id($slice_id)))) {
         return false;
@@ -678,7 +688,8 @@ function delete_constant_group($group_id, $slice_id = "") {
 *   @param $items
 *   @return bool true if the group existed
 */
-function refresh_constant_group($group_id, $items) {
+function refresh_constant_group($group_id, $items): bool
+{
     $db = getDB();
 
     $varset = new CVarset;

@@ -41,9 +41,9 @@ const UPDATE = 2;
  * @param        $handle
  * @param string $delimiter
  * @param string $enclosure
- * @return array|false|null
  */
-function getCSV($handle, $delimiter = ';', $enclosure = '"') {
+function getCSV($handle, $delimiter = ';', $enclosure = '"'): array
+{
     if ($delimiter === '\t') {
         $delimiter = chr(9);  // tabulator ascii
     }
@@ -51,7 +51,7 @@ function getCSV($handle, $delimiter = ';', $enclosure = '"') {
         $enclosure = 0x00;  // unlikely character (not possible to use '' with fgetcsv) - @todo - test it
     }
 
-    return fgetcsv($handle,0,$delimiter, $enclosure);
+    return fgetcsv($handle,0,$delimiter, $enclosure) ?: [];
 }
 
 /** createFieldNames function
@@ -63,14 +63,15 @@ function getCSV($handle, $delimiter = ';', $enclosure = '"') {
  * @param $addParams
  * @return array
  */
-function createFieldNames($fileName, $addParams) {
+function createFieldNames($fileName, $addParams): array
+{
     $handle = fopen($fileName, 'rb');
     $fn = getCSV($handle,$addParams['delimiter'],$addParams['enclosure']);
     fclose($handle);
-    if (!is_array($fn)) {
-        return $addParams['caption'] ? [$fn=>$fn] : ["Field 1"=>"Field 1"];
+    if (!$fn) {
+        return $addParams['caption'] ? [] : ["Field 1"=>"Field 1"];
     }
-
+    $fieldNames = [];
     if ($addParams['caption']) {
         foreach ($fn as $v) {
             $fieldNames[$v] = $v;
@@ -196,7 +197,8 @@ class Actions {
     /** getHtml function
      *
      */
-    function getHtml() {
+    function getHtml(): array
+    {
         foreach ( $this->actions as $v ) {
             $f[] = $v['action']->getHtml();
         }
@@ -212,10 +214,6 @@ class Actions {
         }
         return $f;
     }
-}
-
-function nszmOldId2New($id) {
-    return unpack_id(substr('i'.$id.'-08-08-31xxxxxxxxxx',0,16));
 }
 
 /** Represents an action, which transform a field from an input ItemContent to
@@ -259,19 +257,23 @@ class Action {
     /** setAction function
      * @param $action
      */
-    function setAction($action) {
+    function setAction($action): void
+    {
         $this->action = $action;
     }
 
     /** transform function
      *  transforms a value from $itemContent[$from] to $fvalues
-     * @param $itemcontent
-     * @param $from
-     * @param $globalParams
-     * @param $fvalues
+     *
+     * @param  AA_Content  $itemContent
+     * @param              $from
+     * @param              $globalParams
+     * @param              $fvalues
+     *
      * @return string
      */
-    function transform(AA_Content $itemContent, $from, $globalParams, &$fvalues ) {
+    function transform(AA_Content $itemContent, $from, $globalParams, &$fvalues ): string
+    {
         switch ( $this->action) {
             case "expression": {
                 $fvalues[]['value'] = $itemContent->unalias(str_replace('_#this','{'.$from.'}',$this->params));
@@ -300,8 +302,9 @@ class Action {
             }
             case "formatdate": {
                 $v = strtotime($itemContent->GetValue($from));
-                if ($v == -1)
+                if ($v == -1) {
                     return "Invalid date: ".$itemContent->GetValue($from);
+                }
                 $fvalues[]['value'] = $v;
                 break;
             }
@@ -312,7 +315,7 @@ class Action {
             }
             case "web": {
                 $value = $itemContent->GetValue($from);
-                if ( $value && strtolower(substr($value, 0, 4)) !== "http" ) {
+                if ( $value && stripos($value, "http") !== 0) {
                     $value = "https://". $value;
                 }
                 $fvalues[]['value'] = $value;
@@ -320,7 +323,9 @@ class Action {
                 }
             case "storemultiasone" : {
                 // $param is delimiter
-                if (!is_array($from)) $from = [$from];
+                if (!is_array($from)) {
+                    $from = [$from];
+                }
                 $save = "";
                 foreach ( $from as $tostore ) {
                     $savenext = trim($itemContent->GetValue($tostore));
@@ -335,7 +340,9 @@ class Action {
                 break;
             }
             case "storeasmulti": {
-                if (!is_array($from)) $from = [$from];
+                if (!is_array($from)) {
+                    $from = [$from];
+                }
                 foreach ( $from as $tostore ) {
                     $save = trim($itemContent->GetValue($tostore));
                     $fvalues[]['value'] = $save;
@@ -366,17 +373,6 @@ class Action {
                 }
                 break;
             }
-            case "nszmmultiidunpacked": {
-                $items = explode($this->params,trim($itemContent->GetValue($from)));
-                foreach ( $items as $save ) {
-                    $fvalues[]['value'] = nszmOldId2New(trim($save));
-                }
-                break;
-            }
-            case "nszmnewidunpacked": {
-                $fvalues[]['value'] = nszmOldId2New($itemContent->GetValue($from));		// todo - pokud neexistuje pole s $from , co delat?                $items = explode($this->params,trim($itemContent->GetValue($from)));
-                break;
-            }
             case "string2id": {
                 // from the same string we create always the same id. This is
                 // true in case user provide param (which is strongly
@@ -391,27 +387,6 @@ class Action {
             }
             case "value" : {
                 $fvalues[0]['value'] = $this->params;
-                break;
-            }
-            case "nszmciselnik": {
-                $from = ['c1','c2','c3','c4','c5','c6'];
-                foreach ( $from as $tostore ) {
-                    $save = $GLOBALS['nszmciselnik'][(string)trim($itemContent->GetValue($tostore))];
-                    if ( $save ) {
-                        $fvalues[]['value'] = $save;
-                    }
-                }
-                break;
-            }
-            case "nszmmesta": {
-                $save = $GLOBALS['nszmmesta'][(string)trim($itemContent->GetValue($from))];
-                if ( $save ) {
-                    $fvalues[]['value'] = $save;
-                }
-                break;
-            }
-            case "nszmstav": {
-                $fvalues[]['value'] = get_if($itemContent->GetValue($from), 1);
                 break;
             }
             case "password": {
@@ -435,122 +410,12 @@ class Action {
     }
 }
 
-$nszmciselnik = [
-'1'=>'1.',
-'11'=>'1.1',
-'12'=>'1.2',
-'13'=>'1.3',
-'14'=>'1.4',
-'15'=>'1.5',
-'16'=>'1.6',
-'17'=>'1.7',
-'18'=>'1.8',
-'19'=>'1.9',
-'2'=>'2.',
-'21'=>'2.1',
-'22'=>'2.2',
-'23'=>'2.3',
-'24'=>'2.4',
-'25'=>'2.5',
-'26'=>'2.6',
-'27'=>'2.7',
-'28'=>'2.8',
-'29'=>'2.9',
-'3'=>'3.',
-'31'=>'3.1',
-'32'=>'3.2',
-'33'=>'3.3',
-'34'=>'3.4',
-'35'=>'3.5',
-'36'=>'3.6',
-'37'=>'3.7',
-'38'=>'3.8',
-'39'=>'3.9',
-'4'=>'4.',
-'41'=>'4.1',
-'42'=>'4.2',
-'43'=>'4.3',
-'44'=>'4.4',
-'45'=>'4.5',
-'46'=>'4.6',
-'47'=>'4.7',
-'48'=>'4.8',
-'49'=>'4.9',
-'5'=>'5.',
-'51'=>'5.1',
-'52'=>'5.2',
-'53'=>'5.3',
-'54'=>'5.4',
-'55'=>'5.5',
-'56'=>'5.6',
-'57'=>'5.7',
-'58'=>'5.8',
-'59'=>'5.9',
-'6'=>'6.',
-'61'=>'6.1',
-'62'=>'6.2',
-'63'=>'6.3',
-'64'=>'6.4',
-'65'=>'6.5',
-'66'=>'6.6',
-'67'=>'6.7',
-'68'=>'6.8',
-'69'=>'6.9',
-'7'=>'7.',
-'71'=>'7.1',
-'72'=>'7.2',
-'73'=>'7.3',
-'74'=>'7.4',
-'75'=>'7.5',
-'76'=>'7.6',
-'77'=>'7.7',
-'78'=>'7.8',
-'79'=>'7.9',
-'8'=>'8.',
-'81'=>'8.1',
-'82'=>'8.2',
-'83'=>'8.3',
-'84'=>'8.4',
-'85'=>'8.5',
-'86'=>'8.6',
-'87'=>'8.7',
-'88'=>'8.8',
-'89'=>'8.9',
-'9'=>'9.',
-'91'=>'9.1',
-'92'=>'9.2',
-'93'=>'9.3',
-'94'=>'9.4',
-'95'=>'9.5',
-'96'=>'9.6',
-'97'=>'9.7',
-'98'=>'9.8',
-'99'=>'9.9'
-];
-
-$nszmmesta = [
-    '���r nad S�zavou'         => '5f3e1d8a5654bcbec5aebc18802cc3ab',
-    'Velk� Mezi����'           => '6bfe94a7be75cba6bf4d382d2cfa56c3',
-    'T�eb��'                   => 'f2fab2ff86ab58626148f7b7d8141f92',
-    'Tel�'                     => 'fb0c96998a51b0d4865a8bf3681f89f2',
-    'Sv�tl� nad S�zavou'       => '3ea61bd532190e35b145c6dfe0d33075',
-    'Pelh�imov'                => '88eb421653b38c4bdd4ea3e1b94253da',
-    'Pacov'                    => 'ff46f6e1b2999a09ddbf4776d4d985e7',
-    'Nov� M�sto na Morav�'     => '0e51a3726c152f17a6b18f81adfa85a3',
-    'N�m칻 nad Oslavou'       => '57c4724b65aa8a9c191a4bc069b6b0e5',
-    'Moravsk� Bud�jovice'      => 'dd35b973320dcb5ee70ea1dfd566465c',
-    'Jihlava'                  => 'da4dcfdf17cb9b5a0e3ba37e7a9799e6',
-    'Humpolec'                 => '358bd219028e31e6612d607bc79cd058',
-    'Havl��k�v Brod'           => 'ede15d796d90d4c6ce6180d48a7aecbd',
-    'Chot�bo�'                 => '135e12ccfa199f24e3ce9e9d7a6e46aa',
-    'Byst�ice nad Pern�tejnem' => '7723d9023b66ad5a950fb2d945fadfcb'
-];
-
 /** getActions function
  *  Get List of actions
  */
-function getActions() {
-    $a = ["expression", "store","removestring","formatdate", "web", "storeparsemulti","storeparsemultiunpack",'nszmnewidunpacked', 'nszmmultiidunpacked', "value","string2id", 'nszmstav', 'nszmciselnik', 'nszmmesta', 'password', "default"];
+function getActions(): array
+{
+    $a = ["expression", "store","removestring","formatdate", "web", "storeparsemulti","storeparsemultiunpack", "value","string2id", 'password', "default"];
     // not used:  "convertvalue","storemultiasone", "storeasmulti", "not map"
     foreach ( $a as $v ) { $actions[$v] = $v; }
     return $actions;

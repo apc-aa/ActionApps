@@ -55,13 +55,15 @@ class AA_Auth extends Auth {
         return (string)$this->auth["uname"];
     }
 
-    function set_nobody($state = true) {
+    function set_nobody($state = true): void
+    {
         $this->nobody = $state;
     }
 
     /** former relogin_if function
      */
-    function relogin() {
+    function relogin(): void
+    {
         $this->unauth();
         $this->start();
     }
@@ -69,7 +71,8 @@ class AA_Auth extends Auth {
     /** auth_loginform
      *
      */
-    function auth_loginform($login_msg = '') {
+    function auth_loginform($login_msg = ''): void
+    {
         global $sess, $_PHPLIB, $anonymous_user;
         $username = $_POST["username"];  // there was problem with variables
         $password = $_POST["password"];  // in cookies - if someone writes
@@ -79,7 +82,7 @@ class AA_Auth extends Auth {
         bind_mgettext_domain(DEFAULT_LANG_INCLUDE);
 
         if (!$login_msg && $username) {
-            $login_msg = '<div style="color:red;"><b>' . _m("Either your username or your password is not valid") . '</b></div>';
+            $login_msg = '<div style="color:red;" class="aa-err-login"><b>' . _m("Either your username or your password is not valid") . '</b></div>';
             $login_msg .= '<div>' . _m("Please try again!") . '</div>';
             $login_msg .= '<div>' . _m("If you are sure you have typed the correct password, please e-mail <a href=mailto:%1>%1</a>", [ERROR_REPORTING_EMAIL]) . '</div>';
         }
@@ -88,9 +91,11 @@ class AA_Auth extends Auth {
     }
 
     /** auth_validatelogin function
-     * @return string uid
+     *
+     * @return string|false uid
      */
-    function auth_validatelogin() {
+    function auth_validatelogin(): string|false
+    {
         $username = $_POST["username"];  // there was problem with variables
         $password = $_POST["password"];  // in cookies - if someone writes
         $code2fa  = $_POST["code2fa"];
@@ -105,14 +110,16 @@ class AA_Auth extends Auth {
         return $this->_validatelogin($username, $password, $code2fa);
     }
 
-    protected function _validatelogin($username, $password, $code2fa='') {
+    protected function _validatelogin($username, $password, $code2fa=''): false|string
+    {
         $this->auth['uname'] = ($uid = AA::$perm->authenticateUsername($username, $password, $code2fa)) ? $username : '';
         $this->auth['uid']   = $uid ?: '';
         AA_Log::write('LOGIN', AA_Log::context($uid), $username);
         return $uid;
     }
 
-    public static function use2FA() {
+    public static function use2FA(): bool
+    {
         $readerslices = AA_Reader::getReaderSlices();
 
         return DB_AA::test(['content', 'item'], [
@@ -123,7 +130,8 @@ class AA_Auth extends Auth {
         ]);
     }
 
-    function auth_preauth() {
+    function auth_preauth(): false|string
+    {
         if (isset($_POST['username']) && isset($_POST['password'])) {
             return $this->_validatelogin($_POST['username'], $_POST['password'], $_POST['code2fa']);
         }

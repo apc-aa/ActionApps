@@ -162,7 +162,7 @@ class AA_Slice_Exporter {
      * @param $slice_id
      * @param $export_slices
      * @param $new_slice_id
-     * @return bool|resource
+     * @return resource
      */
     function exporter($slice_id, $export_slices, $new_slice_id) {
         $temp_file = tmpfile();
@@ -399,7 +399,7 @@ class AA_Slice_Documentator extends AA_Slice_Exporter {
      * @param $slice_id
      * @param $export_slices
      * @param $new_slice_id
-     * @return bool|resource
+     * @return resource
      */
     function exporter($slice_id, $export_slices, $new_slice_id) {
         $temp_file = tmpfile();

@@ -38,21 +38,22 @@ require_once __DIR__ . "/menu_util.php";
  *  Used for slower move towards more radical AA_Adminpage approach below...
  */
 class AA_Adminpageutil {
-    protected $modulemenu = 'include';
-    protected $menu       = '';
-    protected $submenu    = '';
-    protected $title      = '';
-    protected $subtitle   = '';
-    protected $require    = [];
-    protected $form       = ['name' => 'f', 'id'=>'', 'method'=>'post', 'action' => '', 'enctype'=>'', 'onsubmit'=>''];
-    protected $helpboxes  = [];
+    private string $modulemenu = 'include';
+    private string $menu       = '';
+    private string $submenu    = '';
+    private string $title      = '';
+    private string $subtitle   = '';
+    private array $require     = [];
+    private array $form        = ['name' => 'f', 'id' =>'', 'method' =>'post', 'action' => '', 'enctype' =>'', 'onsubmit' =>''];
+    private array $helpboxes   = [];
 
     /**
      * AA_Adminpageutil constructor.
-     * @param string $menu
-     * @param string $submwenu
+     *
+     * @param  string  $menu
+     * @param  string  $submenu
      */
-    public function __construct($menu='', $submenu='')
+    public function __construct(string $menu = '', string $submenu='')
     {
         $this->menu    = $menu;
         $this->submenu = $submenu;
@@ -60,10 +61,20 @@ class AA_Adminpageutil {
         $this->addRequire($formsetup, 'AA_Req_Load');
     }
 
+    // #[NoReturn]
+    public static function pageParameterError(Exception $e): void
+    {
+        $msg = $e->getMessage();
+        $param_name = substr($e->getMessage(), 0, strpos($e->getMessage(), ':'));
+        AA_Log::write('PAGE_PARAM_ERR', AA_Log::context($param_name), $msg);
+        self::MsgPageMenu(StateUrl(''), _m("Error in page parameter: %1", [$msg]), 'standalone');
+        exit;
+    }
+
     /**
-     * @param string $title
+     * @param  string  $title
      */
-    public function setTitle($title)
+    public function setTitle(string $title): void
     {
         $this->title = $title;
     }
@@ -71,7 +82,7 @@ class AA_Adminpageutil {
     /**
      * @param array $settings  // like: ['action'=>'se_mapping2.php', 'enctype'=>'multipart/form-data', 'id'=>'formf','onsubmit'=>"return validate2()"]
      */
-    public function setForm(array $settings= [])
+    public function setForm(array $settings= []): void
     {
         if ( empty($settings) ) {
             $this->form = [];
@@ -83,25 +94,28 @@ class AA_Adminpageutil {
     }
 
     /**
-     * @param string $modulemenu
+     * @param  string  $modulemenu
      */
-    public function setModuleMenu($modulemenu)
+    public function setModuleMenu(string $modulemenu): void
     {
         $this->modulemenu = $modulemenu;
     }
 
     /**
-     * @param string $subtitle
+     * @param  string  $subtitle
      */
-    public function setSubtitle($subtitle)
+    public function setSubtitle(string $subtitle): void
     {
         $this->subtitle = $subtitle;
     }
 
     /**
-     * @param string $class
+     * @param  Manager  $manager
+     *
+     * @throws Exception
      */
-    public function printWithManager(Manager $manager) {
+    public function printWithManager(Manager $manager): void
+    {
         $manager->performActions();
 
         //$zids = $manager->getZids();
@@ -115,10 +129,12 @@ class AA_Adminpageutil {
 
     /**
      * displayed at the end of page or in the right column (later)
-     * @param string $name
-     * @param string $html
+     *
+     * @param  string  $name
+     * @param string   $html
      */
-    public function addHelpbox($name, $html, bool $packed=false) {
+    public function addHelpbox(string $name, $html, bool $packed=false): void
+    {
         $this->helpboxes[] = ['name'=>$name, 'html'=>$html, 'packed'=>$packed];
     }
 
@@ -126,7 +142,7 @@ class AA_Adminpageutil {
      * @param string $require
      * @param string $type
      */
-    public function addRequire($require, $type='')
+    public function addRequire($require, $type=''): void
     {
         $this->require[] = [$require, $type];
     }
@@ -159,7 +175,7 @@ class AA_Adminpageutil {
         return $ret. '</div></div>{generate:FOOT}</body></html>';
     }
 
-    public function printHead($err=[], $Msg='')
+    public function printHead($err=[], $Msg=''): void
     {
         AA::sendAdminHeaders();
 
@@ -219,7 +235,8 @@ class AA_Adminpageutil {
         }
     }
 
-    public function printHelpbox() {
+    public function printHelpbox(): void
+    {
         foreach ($this->helpboxes as $helpbox) {
             $tab = '<div class=aa-helpbox-container>';
             if ($helpbox['name']) {
@@ -238,7 +255,8 @@ class AA_Adminpageutil {
         }
     }
 
-    public function printFoot() {
+    public function printFoot(): void
+    {
         $this->printHelpbox();
         $html_end = $this->getPageEnd();
         $html_end = AA::Un($html_end);
@@ -247,7 +265,8 @@ class AA_Adminpageutil {
         page_close();
     }
 
-    public function printAllPage($body_html, $err, $Msg) {
+    public function printAllPage($body_html, $err, $Msg): void
+    {
         $this->printHead($err, $Msg);
         echo $body_html;
         $this->printFoot();
@@ -260,7 +279,8 @@ class AA_Adminpageutil {
      * @param $mode - items/admin/standalone for surrounding of message
      * @param $menu
      */
-    public static function MsgPageMenu($url, $msg, $mode, $menu = "") {
+    public static function MsgPageMenu($url, $msg, $mode, $menu = ""): void
+    {
         global $sess;
 
         if (!isset($sess)) {

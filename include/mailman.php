@@ -40,7 +40,8 @@ class AA_Mailman {
      *   Creates one file for each mailing list, named the same as the list.
      *   If no users are subscribed to a list, an empty file is created.
      */
-    public static function createSynchroFiles($slice_id) {
+    public static function createSynchroFiles($slice_id): void
+    {
         global $MAILMAN_SYNCHRO_DIR;
 
         if ( !$MAILMAN_SYNCHRO_DIR) {
@@ -74,7 +75,8 @@ class AA_Mailman {
     /** AA_Mailman::_createOneFile function
      *   Creates one file for each mailing list, named the same as the list.
      */
-    private static function _createOneFile($slice_id, $field_id, $listname) {
+    private static function _createOneFile($slice_id, $field_id, $listname): void
+    {
         global $MAILMAN_SYNCHRO_DIR;
         if ($slice_id && $field_id && $listname) {
             $mails = implode("\n",AA_Validate::filter(explode('|',str_replace([' ', "\t"], ['', ''],AA::Un("{item:{ids:$slice_id:d-$field_id-=-".str_replace('-', '--',$listname)."}:".FIELDID_EMAIL.":|}"))), 'email'));
@@ -94,7 +96,8 @@ class AA_Mailman {
     /** constantsChanged function
      * @param $constant_id
      */
-    static function constantsChanged( $constant_id) {
+    static function constantsChanged( $constant_id): void
+    {
         global $MAILMAN_SYNCHRO_DIR;
         if ( !$MAILMAN_SYNCHRO_DIR) {
             return;

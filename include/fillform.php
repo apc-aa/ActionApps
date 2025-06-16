@@ -45,9 +45,10 @@ function fillFormFromVars($fillConds): string {
     return $res;
 }
 
-/** GetTimeZone function *
+/** hours difference from GMT - 0, 1, -2, but could be also float - 5.5 for India
  */
-function GetTimeZone() {
+function GetTimeZone(): float|int
+{
     $d = getdate();
     return (mktime($d['hours'],$d['minutes'],$d['seconds'],$d['mon'],$d['mday'],$d['year']) - gmmktime($d['hours'],$d['minutes'],$d['seconds'],$d['mon'],$d['mday'],$d['year'])) / 3600;
 }
@@ -59,7 +60,8 @@ function GetTimeZone() {
  * @param $str
  * @return string
  */
-function safeChars($str) {
+function safeChars($str): string
+{
     for ( $i=0, $ino=strlen($str); $i<$ino; ++$i) {
         if ($str[$i] === "\n") {
             $retVal .= "\\n";
@@ -285,14 +287,14 @@ function fillConds() {
         $timezone = GetTimeZone();
         foreach ($dateConds as $i => $dateField) {
             if (isset($conds[$i]['value']) && $conds[$i]['value']) {
-                $js .= "setControlOrAADate ('$form','$dateField','". strtotime($conds[$i]['value'])."','',0,$timezone);\n";
+                $js .= "setControlOrAADate('$form','$dateField','". strtotime($conds[$i]['value'])."','',0,$timezone);\n";
             }
         }
     }
     $js .= "\n}\n";
 
     if (!isset($GLOBALS["notrun"])) {
-        $js .= "\n fillConds ();\n";
+        $js .= "\n fillConds();\n";
     }
     return getFrmJavascript($js);
 }

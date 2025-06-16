@@ -28,6 +28,7 @@
 use AA\IO\DB\DB_AA;
 use AA\Util\Imgfunc;
 use AA\Util\Langs;
+use AA\Util\NamedInterface;
 
 require_once __DIR__ . "/varset.php";
 require_once __DIR__ . "/notify.php";
@@ -267,7 +268,7 @@ class AA_Generator_Mul extends AA_Generator {
  *          $string   = AA_Generator::factoryByString('uid')->generate()->getValue();
  * @method  static AA_Inserter factoryByString($string)
  */
-abstract class AA_Inserter extends AA_Serializable implements \AA\Util\NamedInterface {
+abstract class AA_Inserter extends AA_Serializable implements NamedInterface {
 
     /** @var AA_Field */
     protected $field;         // additional variable common to all AA_Inserters - not filled by standard factoryByString
@@ -309,7 +310,8 @@ abstract class AA_Inserter extends AA_Serializable implements \AA\Util\NamedInte
      * @param $item_id
      * @param $field_id
      */
-    protected function _clear_field($item_id, $field_id) {
+    protected function _clear_field($item_id, $field_id): void
+    {
         // delete content just for displayed fields
         DB_AA::delete('content', [['item_id', $item_id, 'l'], ['field_id', $field_id]]);
     }
@@ -317,12 +319,14 @@ abstract class AA_Inserter extends AA_Serializable implements \AA\Util\NamedInte
     /** Returns true, if the content of this field is always generated (so it is OK to have this field unfilled)
      * @return bool
      */
-    public function isContentSelfGenerated() {
+    public function isContentSelfGenerated(): bool
+    {
         return false;
     }
 
     /** used for additional changes in other fields during item storage */
-    protected function addToChangedFields(string $field_id, $value, int $order, int $flag) {
+    protected function addToChangedFields(string $field_id, $value, int $order, int $flag): void
+    {
         if ( array_key_exists($field_id, $this->change_fields) ) {
             $this->change_fields[$field_id][$order] = $value;   // using array access to AA_Value
         } else {
@@ -330,7 +334,8 @@ abstract class AA_Inserter extends AA_Serializable implements \AA\Util\NamedInte
         }
     }
 
-    public function executeMulti(AA_Field_Writer $field_writer, string $item_id, AA_Value $cont) {
+    public function executeMulti(AA_Field_Writer $field_writer, string $item_id, AA_Value $cont): void
+    {
         global $err;
 
         // this check is maybe no necessary
@@ -367,7 +372,8 @@ abstract class AA_Inserter extends AA_Serializable implements \AA\Util\NamedInte
      * @param  int              $order
      * @param  int              $flag
      */
-    public function execute(AA_Field_Writer $fieldwriter, $item_id, $value, int $order = 0, int $flag = 0) {
+    public function execute(AA_Field_Writer $fieldwriter, $item_id, $value, int $order = 0, int $flag = 0): void
+    {
 
         $varset = new Cvarset();
         // if input function is 'selectbox with presets' and add2connstant flag is set,
@@ -459,7 +465,8 @@ class AA_Inserter_Boo extends AA_Inserter {
     public static function name(): string        { return _m("Boolean = store 0 or 1");  }             // see NamedInterface
     public static function description(): string { return _m('');  }      // see NamedInterface
 
-    public function execute(AA_Field_Writer $fieldwriter, $item_id, $value, int $order = 0, int $flag = 0) {
+    public function execute(AA_Field_Writer $fieldwriter, $item_id, $value, int $order = 0, int $flag = 0): void
+    {
         parent::execute($fieldwriter, $item_id, ($value ? 1 : 0), $order, $flag);
     }
 }
@@ -469,7 +476,8 @@ class AA_Inserter_Flo extends AA_Inserter {
     public static function name(): string        { return _m("Float");  }             // see NamedInterface
     public static function description(): string { return _m('Real float - could convert big numbers to scientific notation (1.23E+29)');  }      // see NamedInterface
 
-    public function execute(AA_Field_Writer $fieldwriter, $item_id, $value, int $order = 0, int $flag = 0) {
+    public function execute(AA_Field_Writer $fieldwriter, $item_id, $value, int $order = 0, int $flag = 0): void
+    {
         parent::execute($fieldwriter, $item_id, PhpFloat($value), $order, $flag);   // converts also 12345678901234567890 to 1.2345678901235E+29
     }
 }
@@ -479,7 +487,8 @@ class AA_Inserter_Dec extends AA_Inserter {
     public static function name(): string        { return _m("Decimal");  }             // see NamedInterface
     public static function description(): string { return _m('The same as Float, but do not convert big numbers to  scientific notation (1.23E+29)');  }      // see NamedInterface
 
-    public function execute(AA_Field_Writer $fieldwriter, $item_id, $value, int $order = 0, int $flag = 0) {
+    public function execute(AA_Field_Writer $fieldwriter, $item_id, $value, int $order = 0, int $flag = 0): void
+    {
         parent::execute($fieldwriter, $item_id, str_replace(',', '.', $value), $order, $flag); // Phpfloat does not work for long integers like 12345678901234567890
     }
 }
@@ -489,7 +498,8 @@ class AA_Inserter_Trm extends AA_Inserter {
     public static function name(): string        { return _m("Trim");  }             // see NamedInterface
     public static function description(): string { return _m('Remove whitespaces from begin and end and also normalize UTF (NFC)');  }      // see NamedInterface
 
-    public function execute(AA_Field_Writer $fieldwriter, $item_id, $value, int $order = 0, int $flag = 0) {
+    public function execute(AA_Field_Writer $fieldwriter, $item_id, $value, int $order = 0, int $flag = 0): void
+    {
         $value = Langs::isUTF() ? aa_trim(Normalizer::normalize($value)) : aa_trim($value);
         parent::execute($fieldwriter, $item_id, $value, $order, $flag);
     }
@@ -500,7 +510,8 @@ class AA_Inserter_Ids extends AA_Inserter {
     public static function name(): string        { return _m("Item IDs");  }             // see NamedInterface
     public static function description(): string { return _m('');  }      // see NamedInterface
 
-    public function execute(AA_Field_Writer $fieldwriter, $item_id, $value, int $order = 0, int $flag = 0) {
+    public function execute(AA_Field_Writer $fieldwriter, $item_id, $value, int $order = 0, int $flag = 0): void
+    {
 
         $fid         = $this->field->getId();
         $text_stored = $this->field->getProperty("text_stored");
@@ -566,7 +577,8 @@ class AA_Inserter_Uid extends AA_Inserter {
     public static function name(): string        { return _m("User ID = always store current user ID");  }             // see NamedInterface
     public static function description(): string { return _m('Inserts the identity of the current user, no matter what the user sets.');  }      // see NamedInterface
 
-    public function execute(AA_Field_Writer $fieldwriter, $item_id, $value, int $order = 0, int $flag = 0) {
+    public function execute(AA_Field_Writer $fieldwriter, $item_id, $value, int $order = 0, int $flag = 0): void
+    {
         $val = ($value and IsSuperadmin()) ? $value
                                            : ((AuthGetUid() ?: (strlen($value) ? $value : '9999999999')));
         parent::execute($fieldwriter, $item_id, $val, $order, $flag);
@@ -575,7 +587,8 @@ class AA_Inserter_Uid extends AA_Inserter {
     /** Returns true, if the content of this field is always generated (so it is OK to have this field unfilled)
      * @return bool
      */
-    public function isContentSelfGenerated() {
+    public function isContentSelfGenerated(): bool
+    {
         return true;
     }
 }
@@ -585,7 +598,8 @@ class AA_Inserter_Log extends AA_Inserter {
     public static function name(): string        { return _m("Login name");  }             // see NamedInterface
     public static function description(): string { return _m('');  }      // see NamedInterface
 
-    public function execute(AA_Field_Writer $fieldwriter, $item_id, $value, int $order = 0, int $flag = 0) {
+    public function execute(AA_Field_Writer $fieldwriter, $item_id, $value, int $order = 0, int $flag = 0): void
+    {
         // if not $auth, it is from anonymous posting
         $val = (AuthGetUname() ?: (strlen($value) ? $value : 'anonymous'));
         parent::execute($fieldwriter, $item_id, $val, $order, $flag);
@@ -594,7 +608,8 @@ class AA_Inserter_Log extends AA_Inserter {
     /** Returns true, if the content of this field is always generated (so it is OK to have this field unfilled)
      * @return bool
      */
-    public function isContentSelfGenerated() {
+    public function isContentSelfGenerated(): bool
+    {
         return true;
     }
 }
@@ -604,14 +619,16 @@ class AA_Inserter_Now extends AA_Inserter {
     public static function name(): string        { return _m("Now = always store current time");  }             // see NamedInterface
     public static function description(): string { return _m('Inserts the current time, no matter what the user sets.');  }      // see NamedInterface
 
-    public function execute(AA_Field_Writer $fieldwriter, $item_id, $value, int $order = 0, int $flag = 0) {
+    public function execute(AA_Field_Writer $fieldwriter, $item_id, $value, int $order = 0, int $flag = 0): void
+    {
         parent::execute($fieldwriter, $item_id, time(), $order, $flag);
     }
 
     /** Returns true, if the content of this field is always generated (so it is OK to have this field unfilled)
      * @return bool
      */
-    public function isContentSelfGenerated() {
+    public function isContentSelfGenerated(): bool
+    {
         return true;
     }
 }
@@ -648,7 +665,8 @@ class AA_Inserter_Co2 extends AA_Inserter {
     /** Returns true, if the content of this field is always generated (so it is OK to have this field unfilled)
      * @return bool
      */
-    public function isContentSelfGenerated() {
+    public function isContentSelfGenerated(): bool
+    {
         return true;  // @todo - maybe better check - it could be generated, but who knows
     }
 }
@@ -673,7 +691,8 @@ class AA_Inserter_Com extends AA_Inserter {
     /** Returns true, if the content of this field is always generated (so it is OK to have this field unfilled)
      * @return bool
      */
-    public function isContentSelfGenerated() {
+    public function isContentSelfGenerated(): bool
+    {
         return true;  // @todo - maybe better check - it could be generated, but who knows
     }
 }
@@ -700,7 +719,8 @@ class AA_Inserter_Seo extends AA_Inserter {
     /** Returns true, if the content of this field is always generated (so it is OK to have this field unfilled)
      * @return bool
      */
-    public function isContentSelfGenerated() {
+    public function isContentSelfGenerated(): bool
+    {
         return true;
     }
 }
@@ -748,7 +768,8 @@ class AA_Inserter_Fil extends AA_Inserter {
         ];
     }
 
-    public function execute(AA_Field_Writer $fieldwriter, $item_id, $value, int $order = 0, int $flag = 0) {
+    public function execute(AA_Field_Writer $fieldwriter, $item_id, $value, int $order = 0, int $flag = 0): void
+    {
         global $err;
 
         $fid = $this->field->getId();
@@ -824,7 +845,7 @@ class AA_Inserter_Fil extends AA_Inserter {
     /**
      * @return bool|string
      */
-    protected function uploadFile(array $up_file, $item_id, $slice, $fid)
+    protected function uploadFile(array $up_file, $item_id, $slice, $fid): bool|string
     {
         // determine filename ----
         $filename = null;
@@ -915,7 +936,8 @@ class AA_Inserter_Pwd extends AA_Inserter {
         ];
     }
 
-    public function execute(AA_Field_Writer $fieldwriter, $item_id, $value, int $order = 0, int $flag = 0) {
+    public function execute(AA_Field_Writer $fieldwriter, $item_id, $value, int $order = 0, int $flag = 0): void
+    {
         [$aa_const, $password] = ParamExplode($value);
 
         if ($aa_const === 'AA_PASSWD') {
@@ -953,12 +975,13 @@ class AA_Inserter_2fa extends AA_Inserter {
         ];
     }
 
-    public function execute(AA_Field_Writer $fieldwriter, $item_id, $value, int $order = 0, int $flag = 0) {
+    public function execute(AA_Field_Writer $fieldwriter, $item_id, $value, int $order = 0, int $flag = 0): void
+    {
         [$aa_const, $username, $password, $code2fa] = ParamExplode($value);
 
         if ($aa_const === 'AA_2FASECRET') {
             if ($username === '' || !($uid = AA::$perm->authenticateUsername($username, $password, $code2fa)) || ($uid != AuthGetUid())) {
-                return '';
+                return;
             }
             $ga = new PHPGangsta_GoogleAuthenticator();
             $secret = $ga->createSecret();
@@ -986,7 +1009,8 @@ class AA_Inserter_2fa extends AA_Inserter {
     /** Returns true, if the content of this field is always generated (so it is OK to have this field unfilled)
      * @return bool
      */
-    public function isContentSelfGenerated() {
+    public function isContentSelfGenerated(): bool
+    {
         return true;
     }
 }
@@ -996,7 +1020,8 @@ class AA_Inserter_Unq extends AA_Inserter {
     public static function name(): string        { return _m("");  }             // see NamedInterface
     public static function description(): string { return _m('');  }      // see NamedInterface
 
-    public function execute(AA_Field_Writer $fieldwriter, $item_id, $value, int $order = 0, int $flag = 0) {
+    public function execute(AA_Field_Writer $fieldwriter, $item_id, $value, int $order = 0, int $flag = 0): void
+    {
         parent::execute($fieldwriter, $item_id, StrExp('finduniq', [$value, $this->field->getId(), empty($unique_slices) ? $fieldwriter->getSliceId() : $unique_slices, $item_id]), $order, $flag);
     }
 }
@@ -1006,13 +1031,13 @@ class AA_Inserter_Nul extends AA_Inserter {
     public static function name(): string        { return _m("");  }             // see NamedInterface
     public static function description(): string { return _m('');  }      // see NamedInterface
 
-    public function execute(AA_Field_Writer $fieldwriter, $item_id, $value, int $order = 0, int $flag = 0) {
-    }
+    public function execute(AA_Field_Writer $fieldwriter, $item_id, $value, int $order = 0, int $flag = 0): void {}
 
     /** Returns true, if the content of this field is always generated (so it is OK to have this field unfilled)
      * @return bool
      */
-    public function isContentSelfGenerated() {
+    public function isContentSelfGenerated(): bool
+    {
         return true;
     }
 }
@@ -1041,19 +1066,22 @@ class AA_Field_Writer {
     /** The content fields are already written, but the fields in item table still probably waits - get them for update
       * @return Cvarset
       */
-    public function getItemVarset() {
+    public function getItemVarset(): Cvarset
+    {
         return $this->item_varset;
     }
 
     /** Adds item field */
-    public function addItemField($varname, $type, $value) {
+    public function addItemField($varname, $type, $value): void
+    {
         $this->item_varset->add($varname, $type, $value);
     }
 
     /**
      * @return null|string
      */
-    public function getSliceId() {
+    public function getSliceId(): ?string
+    {
         return $this->slice_id;
     }
 
@@ -1109,9 +1137,10 @@ function IsEditable(int $fieldflag, AA_Field $field, AA_Profile $profile): bool 
  * @param bool   $invalidatecache
  * @param bool   $feed
  * @param string $context       special parameter used for thumbnails - ''|feed
- * @return true on success, false otherwise
+ * @return false|string item id or false on error
  */
-function StoreItem( $id, $slice_id, $content4id, $insert, $invalidatecache=true, $feed=true, $context='' ) {
+function StoreItem( $id, $slice_id, $content4id, $insert, $invalidatecache=true, $feed=true, $context='' ): false|string
+{
     $content4id = new ItemContent($content4id);
     $content4id->setItemID($id);
     $content4id->setSliceID($slice_id);

@@ -43,7 +43,6 @@ const D_ITEM = 6;
 
 /** GetImageSrc function
  * @param $img
- * @return
  */
 function GetImageSrc($img) {
     $imgsrc = [
@@ -60,14 +59,17 @@ function GetImageSrc($img) {
 
 /** QueryDiscussionZIDs function
  *  Get discussion content from database belong to item_id
+ *
  * @param $item_id
- * @param $ids = ""
- * @param $order = 'timeorder'
- * @return bool|zids
+ * @param $ids    = ""
+ * @param $order  = 'timeorder'
+ *
+ * @return zids|null
  */
-function QueryDiscussionZIDs($item_id, $ids="", $order='timeorder') {
+function QueryDiscussionZIDs($item_id, $ids="", $order='timeorder'): ?zids
+{
     if ( !$item_id ) {
-        return false;
+        return null;
     }
     $p_item_id = xpack_id($item_id);
     $SQL = "SELECT id FROM discussion WHERE item_id=$p_item_id ORDER BY date";
@@ -90,16 +92,19 @@ function QueryDiscussionZIDs($item_id, $ids="", $order='timeorder') {
 }
 
 /** GetDiscussionContent function
- * @param $zids
- * @param $state = true
- * @param $html_flag = false
- * @param $clean_url = ''
- * @return array|bool
+ *
+ * @param  zids|null  $zids
+ * @param  bool       $state      = true
+ * @param             $html_flag  = false
+ * @param             $clean_url  = ''
+ *
+ * @return array
  */
-function GetDiscussionContent($zids, $state=true, $html_flag=false, $clean_url='') {
+function GetDiscussionContent(?zids $zids, bool $state=true, $html_flag=false, $clean_url = ''): array
+{
     /** Fills Abstract data srtructure for Constants */
     if ( !$zids ) {
-        return false;
+        return [];
     }
     $db = getDB();
 
@@ -151,7 +156,8 @@ function GetDiscussionContent($zids, $state=true, $html_flag=false, $clean_url='
  * @param $item_id
  * @param $d_id = null
  */
-function setDiscUrls(&$col, $clean_url, $item_id, $d_id=null) {
+function setDiscUrls(&$col, $clean_url, $item_id, $d_id=null): void
+{
     // $tmp_disc_url = get_url($clean_url,"nocache=invalidate&sh_itm=$item_id");
     $tmp_disc_url = $GLOBALS['apc_state']['router'] ? $clean_url : get_url($clean_url, ["sh_itm"=>$item_id]);     // removed nocache=invalidate - testing - Honza 2011-01-19
     $col["d_disc_url......"][0]['value'] = $tmp_disc_url."#disc";
@@ -169,7 +175,8 @@ function setDiscUrls(&$col, $clean_url, $item_id, $d_id=null) {
  * @param $d_id
  * @param $cnt
  */
-function SetCheckboxContent(&$content, $d_id, $cnt) {
+function SetCheckboxContent(&$content, $d_id, $cnt): void
+{
     $content[$d_id]["d_checkbox......"][0]['value'] = "<input type=\"checkbox\" name=\"c_".$cnt."\" ><input type=\"hidden\" name=\"h_".$cnt."\" value=\"x".$d_id."\"> ";
 }
 
@@ -181,7 +188,8 @@ function SetCheckboxContent(&$content, $d_id, $cnt) {
  * @param $showimages
  * @param $imgtags
  */
-function SetImagesContent(&$content, $d_id, $images, $showimages, $imgtags) {
+function SetImagesContent(&$content, $d_id, $images, $showimages, $imgtags): void
+{
     if ($showimages) {
         foreach($images as $img) {
             $imgs.= $imgtags[$img];
@@ -194,9 +202,9 @@ function SetImagesContent(&$content, $d_id, $images, $showimages, $imgtags) {
 
 /** GetdiscussionFormat function
  * @param $view_info
- * @return mixed
  */
-function GetDiscussionFormat($view_info) {
+function GetDiscussionFormat($view_info): array
+{
     $view_type_info = getViewTypesInfo('discus');
 
     $format['d_name']       = $view_info['name'];
@@ -222,15 +230,18 @@ function GetDiscussionFormat($view_info) {
 }
 
 /** Create discussion tree from d_content
- * @param $d_content
+ *
+ * @param  array  $d_content
+ *
  * @return array
  */
-function GetDiscussionTree($d_content) {
+function GetDiscussionTree(array $d_content): array
+{
     if (!$d_content) {
         return [];
     }
     foreach($d_content as $d_id => $val) {
-        if ($val["hide"] == true) {                  // if hidden => skip
+        if ($val["hide"]) {                  // if hidden => skip
             continue;
         }
         $id = $d_id;                                // searching approved parent disc. comment for $d_id
@@ -255,7 +266,8 @@ function GetDiscussionTree($d_content) {
  * @param $outcome
  * @param $images = ""
  */
-function GetDiscussionThread(&$tree, $d_id, $depth, &$outcome, $images="") {
+function GetDiscussionThread(&$tree, $d_id, $depth, &$outcome, $images=""): void
+{
     if ($d_id != "0") {
         for ($i=1; $i<$depth-1; ++$i) {
             $outcome[$d_id][] = $images[$i];
@@ -286,7 +298,8 @@ function GetDiscussionThread(&$tree, $d_id, $depth, &$outcome, $images="") {
  * @param $tree
  * @param $d_id
  */
-function DeleteTree(&$tree, $d_id) {
+function DeleteTree(&$tree, $d_id): void
+{
     DB_AA::delete('discussion', [['id', $d_id, 'l']]);
     if (!($nodes = $tree[$d_id])) {
         return;
@@ -296,33 +309,14 @@ function DeleteTree(&$tree, $d_id) {
     }
 }
 
-/** GetParent function
- * get parent of node $d_id in tree
- * @param $tree
- * @param $d_id
- * @return bool|int|string
- */
-function GetParent($tree, $d_id) {
-    if (!$tree) {
-        return false;
-    }
-    foreach ($tree as $source_id => $foo ) {
-        foreach($tree[$source_id] as $dest_id => $foo2) {
-            if ($dest_id == $d_id) {
-                return $source_id;
-            }
-        }
-    }
-    return false;
-}
-
 /** DeleteNode function
  * Delete one comment
  * @param $tree
  * @param $d_content
  * @param $d_id
  */
-function DeleteNode($tree, $d_content, $d_id) {
+function DeleteNode($tree, $d_content, $d_id): void
+{
     DB_AA::delete('discussion', [['id', $d_id, 'l']]);
     if (!$tree[$d_id]) {
         return;
@@ -341,7 +335,8 @@ function DeleteNode($tree, $d_content, $d_id) {
  * @param $item_id
  * @param $slice_id
  */
-function DeleteDiscForItem($item_id, $slice_id, $state=99999) {
+function DeleteDiscForItem($item_id, $slice_id, $state=99999): void
+{
     $p_item_id = xpack_id($item_id);
 
     // 99999 - just unused number (state is 0-shown or 1-hidden)
@@ -363,7 +358,8 @@ function DeleteDiscForItem($item_id, $slice_id, $state=99999) {
  * (called after adding|deleting|hiding|approving comment)
  * @param $item_id
  */
-function updateDiscussionCount($item_id) {
+function updateDiscussionCount($item_id): void
+{
     $all       = $hide = 0;
     $p_item_id = xpack_id($item_id);
     $db = getDB();
@@ -391,7 +387,8 @@ function updateDiscussionCount($item_id) {
  * @param $d_item_id
  * @param $new_id
  */
-function send2mailList($d_item_id, $new_id) {
+function send2mailList($d_item_id, $new_id): void
+{
     $db = getDB();
     $db->query("SELECT content.text FROM
                  content INNER JOIN item ON item.id = content.item_id INNER JOIN

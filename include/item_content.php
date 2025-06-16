@@ -1163,6 +1163,7 @@ class ItemContent extends AA_Content {
      *                  $flags[2] - throw_events    - issue update/insert event?                       - default true (if not mode=update_silent)
      *                  $flags[3] - allow_last_edit - allow rewrite last_edit field from $this content - default false (works for true in mode=update_silent)
      * @param string $context special parameter used for thumbnails - ''|feed
+     * @return string|false - item id or false on error
      */
     function storeItem( $mode, $flags = [], string $context='' ): string|false
     {
@@ -1305,7 +1306,7 @@ class ItemContent extends AA_Content {
         $item_varset = $this->_store_fields($id, $fields, $context);
 
         // Alerts module uses moved2active as the time when an item was moved to the active bin
-        if ($mode==='insert' || $item_varset->get('status_code') != $oldItemContent->getStatusCode() && $item_varset->get('status_code') >= 1) {
+        if ($mode==='insert' || ($item_varset->get('status_code') != $oldItemContent->getStatusCode() && $item_varset->get('status_code') >= 1)) {
             $item_varset->add("moved2active", "number", $item_varset->get('status_code') > 1 ? 0 : time());
         }
 

@@ -16,7 +16,7 @@ class htmlMimeMail {
      * The html part of the message
      * @var string
      */
-	private $html;
+	private string $html;
     /**
      * The text part of the message(only used in TEXT only messages)
      * @var string
@@ -270,7 +270,7 @@ class htmlMimeMail {
      */
 	public function setHtml($html, $text = null, $images_dir = null): void
     {
-        $this->html      = $html;
+        $this->html      = (string)$html;
         $this->html_text = $text;
         $this->_findHtmlImages($images_dir);
         // original code from the library, but not OK for us - we are looking for much more image sources, than original, so it makes sense to call it even without $images_dir - HM 2024-03-15
@@ -382,8 +382,8 @@ class htmlMimeMail {
         if (is_object($obj)) {
             return $obj->addSubpart($text, $params);
         }
-
-        return new Mail_mimePart($text, $params);
+        $ret = new Mail_mimePart($text, $params);
+        return $ret;
     }
 
     /**
@@ -398,7 +398,8 @@ class htmlMimeMail {
             return $obj->addSubpart($this->html, $params);
         }
 
-        return new Mail_mimePart($this->html, $params);
+        $ret = new Mail_mimePart($this->html, $params);
+        return $ret;
     }
 
     /**
@@ -422,7 +423,8 @@ class htmlMimeMail {
             return $obj->addSubpart('', $params);
         }
 
-        return new Mail_mimePart('', $params);
+        $ret = new Mail_mimePart('', $params);
+        return $ret;
     }
 
     /**
@@ -434,8 +436,9 @@ class htmlMimeMail {
         if (is_object($obj)) {
             return $obj->addSubpart('', $params);
         }
+        $return = new Mail_mimePart('', $params);
 
-        return new Mail_mimePart('', $params);
+        return $return;
     }
 
     /**
@@ -494,7 +497,7 @@ class htmlMimeMail {
             foreach ($this->html_images as $value) {
                 $quoted = preg_quote($value['name'], '/');
                 $cid    = $value['cid']; // Do not preg_quote the CID - it is just hexadecimals
-                $this->html = preg_replace( "/(src|background)=(\"|')$quoted\\2/i", "$1=$2cid:$cid$2", $this->html);
+                $this->html = (string)preg_replace( "/(src|background)=(\"|')$quoted\\2/i", "$1=$2cid:$cid$2", $this->html);
             }
         }
 

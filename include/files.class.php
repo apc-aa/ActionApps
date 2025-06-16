@@ -28,6 +28,7 @@
 */
 
 use AA\Util\Langs;
+use AA\Util\LastErrTrait;
 
 const FILE_ERROR_NO_SOURCE        = 100;
 const FILE_ERROR_COPY_FAILED      = 101;
@@ -46,7 +47,7 @@ const AA_DIRECTORY_WRAPPER_ERROR_NOT_DIR = 150;
 
 class Files {
 
-    use \AA\Util\LastErrTrait;
+    use LastErrTrait;
 
     /** destinationDir function
      *  Prepares slice directories for uploaded file and returns destination
@@ -54,7 +55,8 @@ class Files {
      * @param $slice
      * @return bool
      */
-    static function destinationDir($slice) {
+    static function destinationDir($slice): bool
+    {
         $upload = $slice->getUploadBase();
         return self::_destinationDirCreate($upload['path'], $upload['perms']);
     }
@@ -63,7 +65,8 @@ class Files {
      *  Prepares global AA directory for uploaded file and returns destination
      *  dir name
      */
-    static function aadestinationDir() {
+    static function aadestinationDir(): bool
+    {
         return self::_destinationDirCreate(IMG_UPLOAD_PATH. AA_ID, (int)IMG_UPLOAD_DIR_MODE);
     }
 
@@ -73,7 +76,8 @@ class Files {
      * @param $perms
      * @return bool
      */
-    static function _destinationDirCreate($path, $perms) {
+    static function _destinationDirCreate($path, $perms): bool
+    {
         if (!$path || !is_dir($path)) {
             if (!self::createFolder($path, $perms)) {
             self::lastErr(FILE_ERROR_DIR_CREATE, _m("Can't create directory for image uploads"));
@@ -115,10 +119,13 @@ class Files {
     /** getUploadedFile function
      *  Returns all content of the uploaded file as the string.
      *  The file is deleted after read
-     * @param string $filevarname - name of form variable, where the file is stored
-     * @return bool|string
+     *
+     * @param  string  $filevarname  - name of form variable, where the file is stored
+     *
+     * @return false|string
      */
-    static function getUploadedFile($filevarname) {
+    public static function getUploadedFile(string $filevarname): false|string
+    {
         $file_name  = self::getTmpFilename('tmp');
 
         // upload file - todo: error is not returned, if not exist
@@ -140,21 +147,24 @@ class Files {
 
     /** uploadFile function
      *  Uploads file to slice's directory
-     * @param $filevarname - name of form variable containing the uploaded data
+     *
+     * @param $filevarname                      - name of form variable containing the uploaded data
      *                        (like "upfile") or array with uploaded file
      *                        parameters as provided by $_FILES
      * @param $dest_dir
-     * @param $type - allowed file types (like 'image/jpeg', 'image/*')
-     * @param $replacemethod - how to handle conflicts with existing file
+     * @param $type                             - allowed file types (like 'image/jpeg', 'image/*')
+     * @param $replacemethod                    - how to handle conflicts with existing file
      *                            'new'       - stored as new (unused) filename
      *                            'overwrite' - the old file is overwriten
      *                            'backup'    - old file is backuped to new
      *                                          (unused) filename
-     * @param $filename - the name of file as you want to store it (if you
+     * @param $filename                         - the name of file as you want to store it (if you
      *                        do not want to use original name)
-     * @return bool|string
+     *
+     * @return false|string
      */
-    static function uploadFile($filevarname, $dest_dir, $type='', $replacemethod='new', $filename=null) {
+    static function uploadFile($filevarname, $dest_dir, $type='', $replacemethod='new', $filename = null): false|string
+    {
         $up_file = is_array($filevarname) ? $filevarname : $_FILES[$filevarname];
 
         if (!$dest_dir) {
@@ -214,12 +224,15 @@ class Files {
 
     /** createFileFromString function
      *  Creates or rewrites file in slice's directory and stores there the $text
+     *
      * @param $text
      * @param $dest_dir
      * @param $filename
-     * @return bool|string
+     *
+     * @return false|string
      */
-    static function createFileFromString($text, $dest_dir, $filename) {
+    public static function createFileFromString($text, $dest_dir, $filename): false|string
+    {
         $dest_file = self::makeFile($dest_dir, self::escape($filename));
         if ($dest_file === '') {
             // lastErr is already set from destinationFile ?;
@@ -255,7 +268,8 @@ class Files {
      * @param $ident
      * @param $slice
      */
-    static function deleteTmpFiles($ident, $slice=null) {
+    static function deleteTmpFiles($ident, $slice=null): void
+    {
         if ( !$slice ) {
             $upload_dir = IMG_UPLOAD_PATH. AA_ID;
         } else {
@@ -294,7 +308,8 @@ class Files {
      *  @return false|string - whole filename of the backup file (or empty string, if
      *           the source file do not exists; returns false if backup fails
      */
-    static function backupFile($source) {
+    static function backupFile($source): false|string
+    {
         if (!is_file($source)) {
             return "";
         }
@@ -309,19 +324,21 @@ class Files {
     }
 
 
-
     /** copyFile function
      * Copy a file from source to destination. If unique == true, then if
      * the destination exists, it will be renamed by appending an increamenting
      * counting number.
-     * @param string $source where the file is from, full path to the files required
-     * @param string $destination_file name of the new file, just the filename
-     * @param string $destination_dir where the files, just the destination dir,
-     *                  e.g., /www/html/gallery/
-     * @param boolean $unique create unique destination file if true.
-     * @return string the new copied filename, else error if anything goes bad.
+     *
+     * @param  string   $source            where the file is from, full path to the files required
+     * @param  string   $destination_dir   where the files, just the destination dir,
+     *                                     e.g., /www/html/gallery/
+     * @param  string   $destination_file  name of the new file, just the filename
+     * @param  boolean  $unique            create unique destination file if true.
+     *
+     * @return int|string the new copied filename, else error if anything goes bad.
      */
-    function copyFile($source, $destination_dir, $destination_file, $unique=true) {
+    function copyFile($source, $destination_dir, $destination_file, $unique=true): int|string
+    {
         if (!(file_exists($source) && is_file($source))) {
             return FILE_ERROR_NO_SOURCE;
         }
@@ -365,7 +382,8 @@ class Files {
      * @param string $filename the orginal filename
      * @return string the escaped safe filename
      */
-    static function escape($filename) {
+    static function escape($filename): string
+    {
         return ConvertCharset::singleton()->escape($filename, Langs::getCharset(), true);
     }
 
@@ -374,7 +392,8 @@ class Files {
      * @param string $file file to be deleted
      * @return boolean true if deleted, false otherwise.
      */
-    static function delFile($file) {
+    static function delFile($file): bool
+    {
         return @is_file($file) ? @unlink($file) : false;
     }
 
@@ -386,7 +405,8 @@ class Files {
      * error if the directory is not empty.
      * @return boolean true if deleted.
      */
-    function delFolder($folder, $recursive=false) {
+    function delFolder($folder, $recursive=false): bool
+    {
         $deleted = true;
         if ($recursive) {
             $d = dir($folder);
@@ -458,9 +478,15 @@ class Files {
      * @return string FILE, HTTP, HTTPS, ...
      */
      static function sourceType($filename): string {
-         if ( strtoupper(substr($filename,0,5)) === 'HTTPS') return 'HTTPS';
-         if ( strtoupper(substr($filename,0,4)) === 'HTTP')  return 'HTTP';
-         if ( strtoupper(substr($filename,0,3)) === 'FTP')   return 'FTP';
+         if (stripos($filename, 'HTTPS') === 0) {
+             return 'HTTPS';
+         }
+         if (stripos($filename, 'HTTP') === 0) {
+             return 'HTTP';
+         }
+         if (stripos($filename, 'FTP') === 0) {
+             return 'FTP';
+         }
          return 'FILE';
      }
 }
@@ -516,7 +542,8 @@ class AA_File_Wrapper {
      * Read and return the contents of the file (like file_get_contents()).
      * @return string
      */
-    function contents() {
+    function contents(): string
+    {
         return trim($this->url) !== '' ? file_get_contents($this->url) : '';
     }
 
@@ -524,10 +551,9 @@ class AA_File_Wrapper {
      * Open the file.
      *
      * @param $mode string only 'r' (read-only) is currently supported
-     *
-     * @return boolean
      */
-    function open(string $mode = 'rb') {
+    function open(string $mode = 'rb')
+    {
         $this->fp = null;
         try {
             $this->fp = fopen($this->url, $mode);
@@ -540,7 +566,8 @@ class AA_File_Wrapper {
 	/**
      * Close the file.
      */
-    function close() {
+    function close(): void
+    {
         fclose($this->fp);
         unset($this->fp);
     }
@@ -549,34 +576,40 @@ class AA_File_Wrapper {
      * @param $len int
      * @return string
      */
-    function read($len = 8192) {
+    function read($len = 8192): string
+    {
         return fread($this->fp, $len);
     }
 	/**
      * Check for end-of-file.
      * @return boolean
      */
-    function eof() {
+    function eof(): bool
+    {
         return feof($this->fp);
     }
 
-    function getUrl(){
+    function getUrl(): string
+    {
         return $this->url;
     }
 
-    function getMimeType(){
+    function getMimeType(): false|string
+    {
         return mime_content_type($this->fp);
     }
 
     //
     // Static
     //
-	/**
+    /**
      * Return instance of a class for reading the specified URL.
-	 * @param $source mixed; URL, filename, or resources
-     * @return AA_File_Wrapper
+     *
+     * @param $url
+     *
      */
-    static function wrapper($url) {
+    static function wrapper($url): AA_File_HTTPS_Wrapper|AA_File_Wrapper|AA_File_HTTP_Wrapper|AA_File_FTP_Wrapper
+    {
         $info = parse_url($url);
         if (ini_get('allow_url_fopen')) {
             return new AA_File_Wrapper($url, $info);
@@ -597,7 +630,8 @@ class AA_File_Wrapper_Ext extends AA_File_Wrapper {
      * Read and return the contents of the file (like file_get_contents()).
      * @return string
      */
-    function contents() {
+    function contents(): string
+    {
         $contents = '';
         if ($retval = $this->open()) {
             if (is_object($retval)) { // It may be a redirect
@@ -638,26 +672,34 @@ class AA_File_HTTP_Wrapper extends AA_File_Wrapper_Ext {
     /** setDefaultPort function
      * @param $port
      */
-    function setDefaultPort($port) {
+    function setDefaultPort($port): void
+    {
         $this->defaultPort = $port;
     }
+
     /** setDefaultHost function
-     * @param $port
+     *
+     * @param $host
      */
-    function setDefaultHost($host) {
+    function setDefaultHost($host): void
+    {
         $this->defaultHost = $host;
     }
+
     /** setDefaultPath function
-     * @param $port
+     *
+     * @param $path
      */
-    function setDefaultPath($path) {
+    function setDefaultPath($path): void
+    {
         $this->defaultPath = $path;
     }
     /** addHeader function
      * @param $name
      * @param $value
      */
-    function addHeader($name, $value) {
+    function addHeader($name, $value): void
+    {
         if (!isset($this->headers)) {
             $this->headers = [];
         }
@@ -668,7 +710,8 @@ class AA_File_HTTP_Wrapper extends AA_File_Wrapper_Ext {
      * Read and return the contents of the file (like file_get_contents()).
      * @return string
      */
-    function contents() {
+    function contents(): string
+    {
         $contents = '';
         if ($retval = $this->open()) {
             if (is_object($retval)) { // It may be a redirect
@@ -701,8 +744,10 @@ class AA_File_HTTP_Wrapper extends AA_File_Wrapper_Ext {
         }
 
         $additionalHeadersString = '';
-        if (is_array($this->headers)) foreach ($this->headers as $name => $value) {
-            $additionalHeadersString .= "$name: $value\r\n";
+        if (is_array($this->headers)) {
+            foreach ($this->headers as $name => $value) {
+                $additionalHeadersString .= "$name: $value\r\n";
+            }
         }
 
         $request = "GET $path HTTP/1.0\r\n" .
@@ -715,11 +760,15 @@ class AA_File_HTTP_Wrapper extends AA_File_Wrapper_Ext {
         $rc = 0;
         sscanf($response, "HTTP/%*s %u %*[^\r\n]\r\n", $rc);
         if ($rc == 200) {
-            while(fgets($this->fp, 4096) !== "\r\n");
+            while(fgets($this->fp, 4096) !== "\r\n") {
+                ;
+            }
             return true;
         }
 		if(preg_match('!^3\d\d$!', $rc) && $this->redirects >= 1) {
-			for($response = '', $time = time(); !feof($this->fp) && $time >= time() - 15; ) $response .= fgets($this->fp, 128);
+			for($response = '', $time = time(); !feof($this->fp) && $time >= time() - 15; ) {
+                $response .= fgets($this->fp, 128);
+            }
 			if (preg_match('!^(?:(?:Location)|(?:URI)|(?:location)): ([^\s]+)[\r\n]!m', $response, $matches)) {
 				$this->close();
 				$location = $matches[1];
@@ -738,11 +787,13 @@ class AA_File_HTTP_Wrapper extends AA_File_Wrapper_Ext {
         $this->close();
         return false;
     }
-	function glue_url ($parsed)
+	function glue_url ($parsed): false|string
     {
         // Thanks to php dot net at NOSPAM dot juamei dot com
         // See http://www.php.net/manual/en/function.parse-url.php
-        if (!is_array($parsed)) return false;
+        if (!is_array($parsed)) {
+            return false;
+        }
         $uri = isset($parsed['scheme']) ? $parsed['scheme'] . ':' . ((strtolower($parsed['scheme']) === 'mailto') ? '' : '//') : '';
         $uri .= isset($parsed['user']) ? $parsed['user'] . ($parsed['pass'] ? ':' . $parsed['pass'] : '') . '@' : '';
         $uri .= $parsed['host'] ?? '';
@@ -785,7 +836,7 @@ class AA_File_FTP_Wrapper extends AA_File_Wrapper_Ext {
 	 *
 	 * @return boolean True iff success.
      */
-    function open(string $mode = 'rb'): bool {
+    function open(string $mode = 'rb') {
         $user = $this->info['user'] ?? 'anonymous';
         $pass = $this->info['pass'] ?? 'user@example.com';
         $host = $this->info['host'] ?? 'localhost';
@@ -806,7 +857,8 @@ class AA_File_FTP_Wrapper extends AA_File_Wrapper_Ext {
 	/**
 	 * Close an open file.
      */
-    function close() {
+    function close(): void
+    {
         if ($this->fp) {
             parent::close();
             $rc = $this->_receive(); // FIXME Check rc == 226 ?
@@ -882,14 +934,16 @@ class AA_File_FTP_Wrapper extends AA_File_Wrapper_Ext {
 	 * @param $data string FTP data
 	 * @return boolean True iff success
      */
-    function _send($command, $data = '') {
+    function _send($command, $data = ''): bool
+    {
         return fwrite($this->ctrl, $command . (empty($data) ? '' : ' ' . $data) . "\r\n");
     }
 	/**
 	 * Internal function to read a line from the connection.
 	 * @return string|false Resulting string, or false indicating error
      */
-    function _receive() {
+    function _receive(): false|string
+    {
         return $this->_receiveLine($line);
     }
 	/**
@@ -939,7 +993,7 @@ class AA_File_FTP_Wrapper extends AA_File_Wrapper_Ext {
  */
 class AA_Directory_Wrapper {
 
-    use \AA\Util\LastErrTrait;
+    use LastErrTrait;
 
     /** @var $url string URL to the directory */
     var $url;
@@ -994,7 +1048,8 @@ class AA_Directory_Wrapper {
      * Open the dir.
      * @return int directory descriptor or false if $url id not directory
      */
-    function open() {
+    function open()
+    {
         if ($this->dp) {
             $this->close();
         }
@@ -1011,7 +1066,8 @@ class AA_Directory_Wrapper {
     /**
      * Close the dir.
      */
-    function close() {
+    function close(): void
+    {
         if ($this->dp) {
             closedir($this->dp);
         }
@@ -1022,7 +1078,8 @@ class AA_Directory_Wrapper {
      * Read one item from dir.
      * @return string next file in directory
      */
-    function read() {
+    function read(): string
+    {
         return readdir($this->dp);
     }
 
@@ -1054,7 +1111,8 @@ class AA_Directory_Wrapper {
     /**
      * Reload dir to class arrays
      */
-    function reloadWholeDir() {
+    function reloadWholeDir(): void
+    {
         $this->is_read = false;
         $this->subdir_names = [];
         $this->file_names = [];
@@ -1065,7 +1123,8 @@ class AA_Directory_Wrapper {
      * Make file wrapper from file array
      * @return array of AA_File_Wrapper instances
      */
-    function makeFileWrappers() {
+    function makeFileWrappers(): array
+    {
         foreach ($this->file_names as $file_name) {
             $return_array[] = AA_File_Wrapper::wrapper($file_name);
         }
@@ -1076,7 +1135,8 @@ class AA_Directory_Wrapper {
      * Make subdir wrapper from subdir array
      * @return AA_Directory_Wrapper[] instances
      */
-    function makeSubdirWrappers() {
+    function makeSubdirWrappers(): array
+    {
         foreach ($this->subdir_names as $subdir_name) {
             $return_array[] = self::wrapper($subdir_name);
         }
@@ -1087,7 +1147,8 @@ class AA_Directory_Wrapper {
      * Read and return the contents of the directory.
      * @return false|AA_File_Wrapper[] instances
      */
-    function getFiles() {
+    function getFiles(): array|false
+    {
         if ($this->readWholeDir()) {
             return $this->makeFileWrappers();
         }
@@ -1099,7 +1160,8 @@ class AA_Directory_Wrapper {
      * Read and return wrapped subdirs
      * @return false|AA_Directory_Wrapper[] (type by my type)
      */
-    function getSubdirs() {
+    function getSubdirs(): false|array
+    {
         if ($this->readWholeDir()) {
             return $this->makeSubdirWrappers();
         }
@@ -1112,7 +1174,8 @@ class AA_Directory_Wrapper {
      * @param bool $full_path
      * @return false|string[] - of strings file names
      */
-    function getFileNames($full_path = false) {
+    function getFileNames($full_path = false): array|false
+    {
         if ($this->readWholeDir()) {
             if ($full_path) {
                 foreach ($this->file_names as $file_name) {
@@ -1132,7 +1195,8 @@ class AA_Directory_Wrapper {
      * @param $full_path
      * @return false|string[] - of strings filtered file names
      */
-    function getRegFilteredFileNames($full_path = false) {
+    function getRegFilteredFileNames($full_path = false): array|false
+    {
         if (!is_array($all_file_names = $this->getFileNames($full_path))) {
             return false;
         }
@@ -1154,7 +1218,8 @@ class AA_Directory_Wrapper {
      * @param $full_path
      * @return array of strings subdir names
      */
-    function getSubdirNames($full_path = false) {
+    function getSubdirNames($full_path = false): array
+    {
         if ($this->readWholeDir()) {
             if ($full_path) {
                 foreach ($this->subdir_names as $subdir_name) {
@@ -1171,7 +1236,8 @@ class AA_Directory_Wrapper {
      * Read and return complete subdirtree
      * @return array of arrays indexed by values
      */
-    function getSubdirTree() {
+    function getSubdirTree(): array
+    {
         return $this->getSubdirNamesRecur();
     }
 
@@ -1179,7 +1245,8 @@ class AA_Directory_Wrapper {
      * Read and return complete subdirtree - internal
      * @return array of arrays indexed by values
      */
-    function  getSubdirNamesRecur() {
+    function  getSubdirNamesRecur(): array
+    {
         $return_array = [];
         if ($this->readWholeDir()) {
             //compare if is it prefered subdir
@@ -1205,7 +1272,8 @@ class AA_Directory_Wrapper {
      * Return file names in specified directory
      * @return array of string
      */
-    function getSubdirFileNames() {
+    function getSubdirFileNames(): array
+    {
         return self::_getStatic('subdir_file_names');
     }
 
@@ -1213,7 +1281,8 @@ class AA_Directory_Wrapper {
      * Set the $reg_file_filter variable
      * @param $filter string
      */
-    function setRegFileFilter($filter = false) {
+    function setRegFileFilter($filter = false): void
+    {
         $this->reg_file_filter = $filter;
     }
 
@@ -1221,7 +1290,8 @@ class AA_Directory_Wrapper {
      * Set the $needed_subdir_name variable
      * @param $name string
      */
-    function setNeededSubdir($name) {
+    function setNeededSubdir($name): void
+    {
         self::_setStatic('needed_subdir_name', $name);
     }
 
@@ -1234,7 +1304,8 @@ class AA_Directory_Wrapper {
      * @param string $url
      * @return AA_Directory_Wrapper directory wrapper (type by $url)
      */
-    static function &wrapper($url) {
+    static function &wrapper($url): AA_Directory_Wrapper
+    {
         $info = parse_url($url);
         /*if (ini_get('allow_url_fopen')) {
             $wrapper = new AA_File_Wrapper($url, $info);

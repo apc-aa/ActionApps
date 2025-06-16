@@ -29,6 +29,8 @@
  *
 */
 
+use AA\Util\Langs;
+
 /** bind_mgettext_domain function
  *  Reads language constants from given file/
  *   @param string $filename  in include/lang directory
@@ -41,7 +43,8 @@
  *                     translations from the previous lang file. You do so by
  *                     sending the language shortcut.
  */
-function bind_mgettext_domain($filename, $cache = false, $lang = "") {
+function bind_mgettext_domain($filename, $cache = false, $lang = ""): void
+{
     global $_m, $mgettext_lang, $mgettext_domain;     //    $mgettext_lang must be here for some reason... hm-2020-08-10
 
     static $_m_backup = [];
@@ -60,20 +63,23 @@ function bind_mgettext_domain($filename, $cache = false, $lang = "") {
     $mgettext_domain = $filename;
     if ($cache) {
         $_m = $_m_backup[$mgettext_domain];
-        if ($_m) return;
+        if ($_m) {
+            return;
+        }
     }
 
     if ( !is_file($filename)) {
         echo "<h1>WRONG MGETTEXT DOMAIN $filename</h1>";
     } else {
-        if ($lang != \AA\Util\Langs::currentLang()) {
+        if ($lang != Langs::currentLang()) {
             $_m = [];
         }
         include $filename;
     }
 }
 
-function mgettext_bind($lang, $section, $cache=false) {
+function mgettext_bind($lang, $section, $cache=false): void
+{
     bind_mgettext_domain( $lang.'_'.$section.'_lang.php', $cache, $lang);
 }
 

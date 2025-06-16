@@ -1,6 +1,7 @@
 <?php
 
 use AA\IO\DB\DB_AA;
+use AA\Util\Langs;
 
 /** This script shows the top menu (navigation bar) and second level menu (left bar)
  *   by the function showMenu ($activeMain, $activeSubmenu = "", $showMain = 1, $showSub = 1).
@@ -136,11 +137,12 @@ function GetCommonMenu(AA_Profile $profile): array {
 
 
 /**
- * @param AA_Profile $profile
- * @param string     $property
- * @param string     $selector
- * @param string     $default_text
- * @param string     $ico
+ * @param  AA_Profile   $profile
+ * @param  string       $property
+ * @param  string       $selector
+ * @param  string|null  $default_text
+ * @param  string       $ico
+ *
  * @return string
  */
 function GetLabel(AA_Profile $profile, string $property, string $selector, ?string $default_text, string $ico=''): string {
@@ -278,10 +280,10 @@ function getMenu($activeMain, $activeSubmenu = ""): string {
 
         // HACKISH: aaadmin menu needs always the _news_ lang file, even in other than slice modules
         if ($activeMain === "aaadmin") {
-            mgettext_bind(\AA\Util\Langs::currentLang(), 'news');
+            mgettext_bind(Langs::currentLang(), 'news');
         }
 
-        $nb_logo = GetLabel($profile, 'ui_manager', 'top_logo', '<a href="'. AA_INSTAL_PATH .'">'. GetAAImage('action.gif', aa_version(), 106, 73). '</a>');
+        $nb_logo = GetLabel($profile, 'ui_manager', 'top_logo', '<a href="'. AA_INSTAL_PATH .'">'. GetAAImage('action-apps.png', aa_version(), 106, 50). '</a>');
 
         // --- showMain menu -----
         // Show the Alerts and Reader management images in the header
@@ -303,12 +305,12 @@ function getMenu($activeMain, $activeSubmenu = ""): string {
         $prop_logout = $profile->getProperty('ui_manager', 'top_logout');
 
         $logout_out = match ($prop_logout) {
-            false   => '<input type="submit" name="logout" value="'._m('logout').'">',
+            false   => '<input type="submit" name="logout" class="aa-off" value="'._m('logout').'">',
             ''      => '',
-            default => '<input type="submit" name="logout" value="'.$profile->getProperty('ui_manager', 'top_logout').'">',
+            default => '<input type="submit" name="logout"  class="aa-off" value="'.$profile->getProperty('ui_manager', 'top_logout').'">',
         };
 
-        $user_out = GetLabel($profile, 'ui_manager', 'top_userinfo', GetMenuLink('userinfo' == $activeMain, AuthGetUname(), IfSlPerm(PS_EDIT_SELF_USER_DATA), 'admin/um_passwd.php', '', '', 'aa-ui-userinfo'));
+        $user_out = GetLabel($profile, 'ui_manager', 'top_userinfo', GetMenuLink('userinfo' === $activeMain, AuthGetUname(), IfSlPerm(PS_EDIT_SELF_USER_DATA), 'admin/um_passwd.php', '', '', 'aa-ui-userinfo'));
 
         // @todo change it to method=get (+ hidden fields or so) in order the Back button in browser works there better
         $search_out = IsSuperadmin() ? "<form name=aasearchform action=\"".get_admin_url('aafinder.php')."\">".StateHidden()."<input type=search name=search value=\"".safe($_REQUEST['findtext'])."\" placeholder=\"". _m('Search..') ."\"><input type=hidden name=searchinview value=1><input type=hidden name=searchinslice value=1><input type=hidden name=searchinfield value=1><input type=hidden name=searchinspot value=1><input type=hidden name=searchinobject value=1><input type=hidden name=searchincodeitems value=1><input type=hidden name=go_search value=1></form>"  : '';
@@ -317,16 +319,7 @@ function getMenu($activeMain, $activeSubmenu = ""): string {
           <div class="aa-ui-top noprint" id="aa_top">
             <div class="nblogo">'.$nb_logo.'</div>
             <div class="aa-ui-nav">
-              <div class="flex f-between">
-                <div class="slicehead">'. $title_out .'</div>
-                <div class="aa-ui-custom-nav">'. $search_out .'
-                  <form name=logoutform method="post" action="'. get_admin_url('logout.php').'">
-                   '. $user_out .' '. $logout_out .'&nbsp;
-                  </form>
-                </div>
-              </div>
-              <div class="flex f-between">
-                <nav class="navbar">
+              <nav class="navbar">
         ';
 
         $links = [];
@@ -346,11 +339,16 @@ function getMenu($activeMain, $activeSubmenu = ""): string {
                 <div class="aa-ui-modules">'.$viewlink.'
                   <form name="aanbform" id="aanbform" enctype="multipart/form-data" method="post" action="'. StateUrl() .'">'."\n";
         $ret .= GetModuleSelection();
-        $ret .= "\n</form>
+        $ret .= '</form>
                 </div>
-              </div>
+                <div class="aa-ui-custom-nav">'. $search_out .'
+                  <form name=logoutform method="post" action="'. get_admin_url('logout.php').'">
+                   '. $user_out .' '. $logout_out .'
+                  </form>
+                </div>
             </div>
-          </div>\n";
+          </div>
+          ';
 
         // showMain menu end -----
 
@@ -379,7 +377,8 @@ function getMenu($activeMain, $activeSubmenu = ""): string {
  * @param string $ico
  * @return string
  */
-function GetMenuLink($active, $label, $cond, $aa_href, $exact_href='', $ico='', $add_css='') {
+function GetMenuLink($active, $label, $cond, $aa_href, $exact_href='', $ico='', $add_css=''): string
+{
 
     $cssclass  = $active ? 'nbactive' : 'nbenable';
     $cssclass .= $add_css ? ' '.$add_css : '';
@@ -481,6 +480,7 @@ function getSubmenu($aamenu, $active): string {
  * @param $cond
  * @return array
  */
-function CreateMenuItem( $label, $href, $cond = true ) {
+function CreateMenuItem( $label, $href, $cond = true ): array
+{
     return ['label' => $label, 'href' => $href, 'cond' => $cond];
 }

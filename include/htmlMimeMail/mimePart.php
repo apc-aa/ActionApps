@@ -82,27 +82,27 @@ class Mail_mimePart {
     * The encoding type of this part
     * @var string
     */
-	protected $_encoding;
+	protected string $_encoding;
    /**
     * An array of subparts
     * @var array
     */
-    protected $_subparts;
+    protected array $_subparts = [];
+
    /**
     * The output of this part after being built
-    * @var string
     */
-    protected $_encoded;
+    protected array $_encoded = [];
    /**
     * Headers for this part
     * @var array
     */
-    protected $_headers;
+    protected array $_headers = [];
    /**
     * The body of this part (not encoded)
     * @var string
     */
-    protected $_body;
+    protected string $_body;
     /**
      * Constructor.
      *
@@ -131,7 +131,7 @@ class Mail_mimePart {
                     break;
 
                 case 'encoding':
-                    $this->_encoding = $value;
+                    $this->_encoding = (string)$value;
                     $headers['Content-Transfer-Encoding'] = $value;
                     break;
 
@@ -178,7 +178,7 @@ class Mail_mimePart {
         // Assign stuff to member variables
         $this->_encoded  = [];
         $this->_headers  = $headers;
-        $this->_body     = $body;
+        $this->_body     = (string)$body;
     }
 
     /**
@@ -187,11 +187,11 @@ class Mail_mimePart {
      * Encodes and returns the email. Also stores
      * it in the encoded member variable
      *
-     * @return string[] - An associative array containing two elements,
-	*  body and headers. The headers element is itself an indexed array.
+     * @return array - An associative array containing two elements,
+     *  body and headers. The headers element is itself an indexed array.
      * @access public
      */
-	public function encode()
+	public function encode(): array
     {
         $encoded =& $this->_encoded;
 
@@ -238,7 +238,7 @@ class Mail_mimePart {
      *         otherwise you will not be able to add further subparts.
      * @access public
      */
-	public function &addSubPart($body, $params)
+	public function &addSubPart($body, $params): Mail_mimePart
     {
         $this->_subparts[] = new Mail_mimePart($body, $params);
         return $this->_subparts[count($this->_subparts) - 1];
@@ -249,9 +249,10 @@ class Mail_mimePart {
      *
      * @param $data     string - The data to encode.
      * @param $encoding string - The encoding type to use, 7bit, base64, or quoted-printable.
-     * @return bool|string
+     *
+     * @return string
      */
-    private function _getEncodedData($data, $encoding)
+    private function _getEncodedData(string $data, $encoding): string
     {
         return match ($encoding) {
             '8bit', '7bit'     => $data,
@@ -266,11 +267,11 @@ class Mail_mimePart {
      *
      * Encodes data to quoted-printable standard.
      *
-     * @param string $input    The data to encode
-     * @param int    $line_max Optional max line length. Should not be more than 76 chars
+     * @param  string  $input     The data to encode
+     * @param  int     $line_max  Optional max line length. Should not be more than 76 chars
      *
+     * @return string
      * @access private
-     * @return bool|string
      */
     function _quotedPrintableEncode($input , $line_max = 76): string
     {

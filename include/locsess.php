@@ -35,7 +35,9 @@
 
 use AA\Cache\PageCache;
 use AA\IO\DB\DB_AA;
+use AA\IO\DB\DB_PDO;
 use AA\Util\Langs;
+use AA\Util\Txt;
 
 // supress PHP notices
 error_reporting(error_reporting() & ~(E_WARNING | E_NOTICE | E_DEPRECATED | E_STRICT));
@@ -219,7 +221,8 @@ class AA_Debug {
         return true;
     }
 
-    function tracestart($func, $text='') {
+    function tracestart($func, $text=''): void
+    {
         if ($func==='Query') {
             $this->_check_repeated($text);
         }
@@ -227,7 +230,8 @@ class AA_Debug {
         $this->_tracestack[] = count($this->_calls)-1;
     }
 
-    function traceend(string $func, string $text='') {
+    function traceend(string $func, string $text=''): void
+    {
         $time = microtime(true);
         $indx = array_pop($this->_tracestack);
         $this->_calls[$indx][] = $time;
@@ -240,7 +244,8 @@ class AA_Debug {
         $this->_duration[$func][] = $time-$this->_calls[$indx][4];
     }
 
-    function tracepoint($func, $text='') {
+    function tracepoint($func, $text=''): void
+    {
         $text = IsStringable($text) ? (string)$text : print_r($text, true);
         $this->_calls[]      = [count($this->_tracestack), $func, $this->shorten_message($text), strlen($text),microtime(true), microtime(true),'',0];
     }
@@ -255,7 +260,7 @@ class AA_Debug {
         $ret .= '<tr><th>Page generation time</th><td>'. sprintf('%.3g',timestartdiff()).'</td></tr>';
         $ret .= "<tr><th>Memory usage (actual)</th><td>$mem_usage MiB</td></tr>";
         $ret .= "<tr><th>Memory usage (peak)</th><td>$mem_peak MiB</td></tr>";
-        $ret .= '<tr><th>Dababase instances</th><td>'. DB_AA::$_instances_no.' ('. DB_AA::getDbType() .')</td></tr>';
+        $ret .= '<tr><th>Dababase instances</th><td>'. DB_PDO::$_instances_no.' ('. DB_AA::getDbType() .')</td></tr>';
         $ret .= '<tr><th>(spareDBs)</th><td>'. count($spareDBs).'</td></tr>';
         return $ret.'</table>';
     }
@@ -370,20 +375,22 @@ EOF;
     protected function shorten_message(string $txt): string
     {
         if (!(AA::$debug & 128)) {
-            $txt = substr($txt, 0, 200);
+            $txt = Txt::shorten($txt, 200);
         }
         if (AA::$debug&256) {
             $txt .= "\n<br>".AA_Log::backtrack();
-            $txt .= "\n<br>DBs ".DB_AA::$_instances_no;
+            $txt .= "\n<br>DBs ".DB_PDO::$_instances_no;
         }
         return $txt;
     }
 
-    function _check_repeated($txt) {
+    function _check_repeated($txt): void
+    {
         ++$this->_repeated[$txt];
     }
 
-    function _do($func, $params) {
+    function _do($func, $params): void
+    {
         $time = microtime(true) - $this->_starttime['main'];
         echo "<small><em>$time</em></small><br>\n";
 
@@ -397,16 +404,19 @@ EOF;
         }
     }
 
-    function _groupstart($group) {
+    function _groupstart($group): void
+    {
         echo "\n<div style='border: 1px #AAA solid; margin: 6px 1px 6px 12px'>";
         $this->_do('log', [$group]);
     }
 
-    function _groupend($group) {
+    function _groupend($group): void
+    {
         echo "\n</div>";
     }
 
-    function _logtime($group) {
+    function _logtime($group): void
+    {
         $time = microtime(true) - $this->_starttime[$group];
         $this->_do(($time > 1.0) ? 'warn' : 'log', ["$group time: $time"]);
     }
@@ -455,7 +465,8 @@ class AA {
 
     /** @usage AA::setEncoding($module->getCharset());
      */
-    static function setEncoding($encoding) {
+    static function setEncoding($encoding): void
+    {
         AA::$encoding = $encoding;
         mb_internal_encoding(Langs::isUTF($encoding) ? 'UTF-8' : '8bit');
     }
@@ -500,7 +511,8 @@ class AA {
      *  @deprecated 
      *  @return  AA_Session
      */
-    static function Session() {
+    static function Session(): AA_Session
+    {
         return $GLOBALS['sess'];
         //return AA::$session ?: (AA::$session = ($GLOBALS['sess'] ?: new AA_Session));
     }
@@ -570,16 +582,18 @@ function getDB() {
             'collation'     => (defined('DB_COLLATION_CONNECTION') && DB_COLLATION_CONNECTION && DB_COLLATION_CONNECTION !== 'latin1') ? DB_COLLATION_CONNECTION : '',   // for some old AAs there was latin1, which is not valid in PDO - use latin1_swedish_ci or we take the default
             'persistent'    => (defined('AA_USE_NON_PERSISTENT_CONNECT') && AA_USE_NON_PERSISTENT_CONNECT) ? false : true
         ];
-        $db = new DB_AA($connection);
+        $db = new DB_PDO($connection);
     }
     return $db;
 }
 
-/** freeDB function
+/** store the db to db storage and disallow to use it further
  * @param $db
  */
-function freeDB($db) {
+function freeDB(&$db): void
+{
     $GLOBALS['spareDBs'][] = $db;
+    $db = null;  // quite important - otherwise you can use it again and when needed second db, we getDB return the same on (stored as $spareDBs) - (aafinder fields search)
 }
 
 /** @deprecated GetTable2Array function
@@ -594,7 +608,8 @@ function freeDB($db) {
  *                                 true
  * @return array|bool|string
  */
-function GetTable2Array($SQL, $key="id", $values='aa_all') {
+function GetTable2Array($SQL, $key="id", $values='aa_all'): bool|array|string
+{
     $db = getDB();
     $db->query($SQL);
 
@@ -650,7 +665,8 @@ class AA_Session extends Session {
     }
 }
 
-function pageOpen($type = '') {
+function pageOpen($type = ''): void
+{
     global $sess, $auth;
 
     $sess = new AA_Session;

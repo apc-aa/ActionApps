@@ -51,7 +51,8 @@ require_once __DIR__ . "/mgettext.php";
 /** get_aamenus function
  *
  */
-function get_aamenus() {
+function get_aamenus(): array
+{
     global $r_state, $bookmarks;
 
     $profile = AA_Profile::getProfile(AuthGetUid(), AA::$module_id); // current user settings
@@ -231,12 +232,14 @@ function get_aamenus() {
 }
 
 /** AddAlertsModules function
+ *
  * @param $submenu
- * @param $db
+ * @param $collections
  * @param $header
  * @param $help
  */
-function AddAlertsModules(&$submenu, $collections, $header, $help) {
+function AddAlertsModules(&$submenu, $collections, $header, $help): void
+{
     if (count($collections)) {
         $submenu["header3"] = ['label'=> $header, 'title'=> $help, 'ico'=>'ico-send-emails.png'];
         $i = 100;

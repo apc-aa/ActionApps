@@ -99,24 +99,12 @@ define ('MLX_HTML_TABFT',"\n"
 ."</tr>\n");
 
 const MLX_NOTRANSLATION = 'eMpTy';
-/** __mlx_dbg function
- * @param $v
- * @param $label
- */
-function __mlx_dbg($v,$label="")
-{
-    echo "<pre>$label\n";
-    if (is_array($v))
-        print_r($v);
-    else
-        print($v);
-    echo "</pre>";
-}
 
 /** __mlx_fatal function
  * @param $msg
  */
-function __mlx_fatal($msg) {
+function __mlx_fatal($msg): void
+{
     global $err;
     if (is_array($msg)) {
         $msg = implode("<br>",$msg);
@@ -128,10 +116,13 @@ function __mlx_fatal($msg) {
 
 /** MLXSlice function
  * returns unpacked mlx slice id - works also as test if the slice is MLX enabled
+ *
  * @param $slice
- * @return bool|string
+ *
+ * @return false|string
  */
-function MLXSlice($slice) {
+function MLXSlice($slice): false|string
+{
     return ($p_mlxslice = $slice->getProperty('mlxctrl')) ? unpack_id($p_mlxslice) : false;
 }
 
@@ -142,9 +133,11 @@ class MLXCtrl {
 
     var $itemid;       /** itemid in MLX control slice */
     var $translations; /** (0=>("EN"=>"itemid"),..) */
-    /** MLXCtrl function
-     * @param $itemid
-     * @param $mlxObj
+
+    /**
+     *
+     * @param       $itemid
+     * @param  MLX  $mlxObj
      */
     function __construct($itemid, MLX $mlxObj) {
         $this->itemid = $itemid;
@@ -236,7 +229,8 @@ class MLX {
      *   @param $mlxl        - language of current item
      *   @param $mlxid       - id of control item in MLX control slice
      */
-    function update($content4id, $cntitemid, $action, $mlxl, $mlxid) {
+    function update($content4id, $cntitemid, $action, $mlxl, $mlxid): void
+    {
 
         $content4mlxid    = [];
         $oldcontent4mlxid = [];
@@ -265,18 +259,11 @@ class MLX {
             }
         }
 
-        //huhl("update(", $content4mlxid, "$id, $lang, $qp_cntitemid, $cntitemid, ".unpack_id($qp_cntitemid)." ".strlen($qp_cntitemid)." ".pack_id($content4id->getItemID()));
-        //die;
         if (empty($content4mlxid)) {
             $this->fatal("Creating the Control Language Data failed. "
                 ."Maybe you have to select a Language Code, "
                 ."or create the chosen Language Code in the Control Slice Fields.");
         }
-        //      			echo "<pre>"; print_r($content4mlxid); echo "</pre>";
-        //      			die;
-        //$this->dbg($content4mlxid);
-        //$GLOBALS[errcheck] = 1;
-        //$GLOBALS[debugsi] = 5;
 
         $content4mlxid["publish_date...."][0]['value'] = time();
         $content4mlxid["expiry_date....."][0]['value'] = time() + 200*365*24*60*60;
@@ -293,20 +280,21 @@ class MLX {
     }
 
     /** itemform function
-     * @param $lang_control
+     *
      * @param $params
      * @param $content4id
      * @param $action
      * @param $lang
      * @param $mlxid
-     *   Returns array of:
-     *     - HTML code which will be displayed at the top of the form with
+     *       Returns array of:
+     *       - HTML code which will be displayed at the top of the form with
      *       language selections,
-     *     - language
-     *     - mlxid - id of the main mlx artice (where other items are joined)
-     * @return array
+     *       - language
+     *       - mlxid - id of the main mlx artice (where other items are joined)
+     *
+     * @return string[]
      */
-    function itemform($params, $content4id, $action, $lang, $mlxid)
+    function itemform($params, $content4id, $action, $lang, $mlxid): array
     {
         global $DOCUMENT_URI;
         global $PHP_SELF;
@@ -337,7 +325,6 @@ class MLX {
                         if (!$fld->getProperty('input_show')) {
                             continue;
                         }
-//						$this->dbg($slfield);
                         $itcnt = $content4form[$fid];
                         $GLOBALS[$kstr."html"] = ($v[0]['flag']==65 ? 1 : 0); //TODO fix
                         if ($fld->getProperty('multiple') && is_array($itcnt)) {
@@ -348,13 +335,10 @@ class MLX {
                             $GLOBALS[$kstr] = addslashes($itcnt[0]['value']);
                         }
                     }
-                    //$this->dbg($GLOBALS);
                 }
                 $GLOBALS['v'. unpack_id(MLX_CTRLIDFIELD)]= q_pack_id($mlxid);
                 //check if lang is set, set to default from MLX
                 $GLOBALS['v'. unpack_id('lang_code.......')] = $lang ? $lang : $mlxCtrl->getDefLangName();
-                //$this->dbg($GLOBALS['v'. unpack_id('lang_code.......')]);
-                //$this->dbg(GetItemContent($mlxid));
                 break;
         }
         if (!$GLOBALS['g_const_Lang']) {
@@ -414,18 +398,20 @@ class MLX {
     // helper functions
     //protected:
     /** getLangItem function
+     *
      * @param $lang
      * @param $content4id
      * @param $content4mlxid
-     * @return bool|string
+     *
+     * @return false|string
      */
-    function getLangItem($lang, $content4id, &$content4mlxid) {
+    function getLangItem($lang, $content4id, &$content4mlxid): false|string
+    {
         $mlxid = is_array($content4id) ? unpack_id($content4id[MLX_CTRLIDFIELD][0]['value']) : $content4id;
         //mlxid should now hold the itemid of the mlx info
         if (!$mlxid) {
             return false;
         }
-        //__mlx_dbg($mlxid,"mlxid");
         if (empty($content4mlxid)) {
             $content = GetItemContent($mlxid);
             //var_dump($content);
@@ -449,7 +435,7 @@ class MLX {
      * @param $params
      * @return string
      */
-    function getparamstring($params)
+    function getparamstring($params): string
     {
         foreach($params as $k => $v) {
             $mlx_url .= "$k=";
@@ -464,15 +450,11 @@ class MLX {
     /** fatal function
      * @param $msg
      */
-    function fatal($msg) {
+    function fatal($msg): void
+    {
         __mlx_fatal($msg);
     }
-    /** dbg function
-     * @param $v
-     */
-    function dbg($v) {
-        __mlx_dbg($v);
-    }
+
     /** trace function
      * @param $v
      */
@@ -499,7 +481,6 @@ class MLXView {
         if ($slice_id) {
             unset($GLOBALS['MLX_TRANSLATIONS'][(string)$slice_id]);
         }
-//          __mlx_dbg(var_dump(func_get_args(),true),__FUNCTION__);
         $supported_modes = ["MLX","ONLY","ALL"];
         if ($mlx) {
             $arr = explode("-",$mlx);
@@ -516,45 +497,38 @@ class MLXView {
             $this->language = array_keys($aPrio);
         }
     }
+
     /** preQueryZIDs function
+     *
      * @param $ctrlSliceID
      * @param $conds
-     * @param $slices
      */
-    function preQueryZIDs($ctrlSliceID, &$conds) {
+    function preQueryZIDs($ctrlSliceID, &$conds): void
+    {
         switch($this->mode) {
             case 'ONLY': //add to conds
                 $translations = $this->getPrioTranslationFields($ctrlSliceID);
                 $value = key($translations);
                 $conds[] = ['lang_code.......'=>$value, 'value'=>$value, 'operator'=>"="];
                 break;
-                // 		__mlx_dbg($conds,"conds".__FUNCTION__);
             default:
-                //      __mlx_dbg(var_dump(func_get_args(),true),__FUNCTION__);
                 break;
         }
     }
+
     /** postQueryZIDs function
      *   optimised postQueryZIDs -- using join and tagging minimises SQL queries
      *
      *   This filters a list of item_ids by checking translations
      *   and removing duplicates, only keeping either desired or
      *   prioritised translation
+     *
      * @param $zidsObj
      * @param $ctrlSliceID
      * @param $slice_id
-     * @param $conds
-     * @param $sort
-     * @param $group_by
-     * @param $type
-     * @param $slices
-     * @param $neverAllItems
-     * @param $restrict_zids
-     * @param $defaultCondsOperator
-     * @param $nocache
-     * @param $cachekeyextra
      */
-    function postQueryZIDs($zidsObj, $ctrlSliceID, $slice_id) {
+    function postQueryZIDs($zidsObj, $ctrlSliceID, $slice_id): void
+    {
         global $QueryIDsCount;
 
         if ($this->mode !== "MLX") {
@@ -573,23 +547,9 @@ class MLXView {
         $db = getDB();
         foreach ($arr as $upContId => $count) {
             if ($count > 1) // already primary
+            {
                 continue;
-            //speedup
-//             if (MLX_OPTIMIZE > 5) {
-//                 reset($translations);
-//                 $sql = "SELECT * from `content`"
-//                     ." WHERE `text`='".quote($upContId)."'"
-//                     ." AND field_id='".current($translations)."' LIMIT 1";
-//                 $db->query($sql);
-//                 if ($db->num_rows() > 0) {
-//                     if ($GLOBALS['mlxdbg']) {
-//                         huhl($sql);
-//                         __mlx_dbg($db->Record,"MLXQUICK");
-//                     }
-//                     $arr[(string)$upContId]++;
-//                     continue;
-//                 }
-//             }
+            }
             //conservative
             $sql = "SELECT  c2.field_id,c2.text FROM `content` AS c1" //`field_id`,`text`
 //				." LEFT JOIN `content` AS c2 ON ("
@@ -603,26 +563,20 @@ class MLXView {
             while( $db->next_record() ) { //get all translations
                 $aMlxCtrl[(string)$db->record(0)] = $db->record(1);
             }
-            //__mlx_dbg($aMlxCtrl,"aMlxCtrl");
             $bFound = false;
             foreach($translations as $tr) {
                 $fieldSearch = $aMlxCtrl[$tr];
                 if (!$fieldSearch) {
                     continue;
                 }
-                /*$GLOBALS['MLX_ALT'][(string)unpack_id($fieldSearch)][] = array($l=>
-                    unpack_id($upContId));
-                */
                 if ($bFound) {
                     unset($arr[(string)$fieldSearch]);
-                    //__mlx_dbg($arr,"arr");
                 } else {
                     $arr[(string)$fieldSearch]++; //tag as primary
                     $bFound = true;
                 }
             }
         }
-        //__mlx_dbg($arr,"return");
         freeDB($db);
         $QueryIDsCount = count($arr);
         $zidsObj->clear();
@@ -639,7 +593,8 @@ class MLXView {
      * @param $slice_id
      * @return string
      */
-    function getAlternatives($p_itemid,$slice_id) {
+    function getAlternatives($p_itemid,$slice_id): string
+    {
         if (!$p_itemid) {
             if ($GLOBALS['errcheck']) {
                 huhl("MLXView::getAlternatives zero id passed");
@@ -671,8 +626,6 @@ class MLXView {
             }
             $o .= array_search((string)$db->record(1),$translations)."=";
             $o .= unpack_id($db->record(0));
-            //__mlx_dbg($db->record());
-            //__mlx_dbg(unpack_id($db->record(1)));
         }
         return $o;
     }
@@ -684,18 +637,16 @@ class MLXView {
      * @param $params
      * @return string
      */
-    function getTranslations($p_itemid,$slice_id,$params) {
-        //__mlx_dbg(unpack_id($p_itemid),"itemid");
-        //__mlx_dbg(unpack_id($slice_id),"slice_id");
-        //__mlx_dbg($params,"params");
+    function getTranslations($p_itemid,$slice_id,$params): string
+    {
         if (!$p_itemid) {
-            if ($GLOBALS['errcheck']) huhl("MLXView::getAlternatives zero id passed");
+            if ($GLOBALS['errcheck']) {
+                huhl("MLXView::getAlternatives zero id passed");
+            }
             return "";
         }
         $ctrlSliceID = $GLOBALS['MLX_TRANSLATIONS'][(string)unpack_id($slice_id)];
         if (!$ctrlSliceID) {
-//             $GLOBALS['errcheck'] = true;
-//              __mlx_dbg(func_get_args(),__FUNCTION__);
             $ctrlSliceID = MLXSlice(AA_Slice::getModule(unpack_id($slice_id)));
             if (!$ctrlSliceID) {
                 return "MLXView::getTranslations no ctrlSliceID";
@@ -727,17 +678,19 @@ class MLXView {
             $itemid  = unpack_id($db->record(0));
             $o      .= str_replace(["%lang","%itemid"], [$lang,$itemid],
                 $tmpl);
-            //__mlx_dbg($db->record());
         }
         return $o;
     }
 
     /** getPrioTranslationFields function
-     * @param $ctrlsliceID
-     * @param $slice_id
+     *
+     * @param       $ctrlSliceID
+     * @param  int  $slice_id
+     *
      * @return array
      */
-    function getPrioTranslationFields($ctrlSliceID,$slice_id=0) {
+    function getPrioTranslationFields($ctrlSliceID,$slice_id=0): array
+    {
         if ($GLOBALS['MLX_TRANSLATIONS'][(string)$ctrlSliceID]) {
             return $GLOBALS['MLX_TRANSLATIONS'][(string)$ctrlSliceID];
         }
@@ -770,7 +723,6 @@ class MLXView {
 
     /** getLangByIdx function
      * @param $idx
-     * @return bool|mixed
      */
     function getLangByIdx($idx) {
         if ($idx > count($this->language)) {
@@ -791,7 +743,8 @@ class MLXEvents {
      * @param $item_ids
      * @param $slice_id
      */
-    function itemsBeforeDelete($item_ids, $slice_id) {
+    function itemsBeforeDelete($item_ids, $slice_id): void
+    {
 
         if (empty($item_ids)) {
             return;
@@ -851,13 +804,9 @@ class MLXGetText
     /** translate function
      * @param $args
      * @param $lang
-     * @return mixed
      */
     function translate(&$args, $lang) {
-//		__mlx_dbg($args,"translate args");
-//		__mlx_dbg($slice_id,"translate slice");
         $retval = $this->currentDomainRef[$lang][$args[0]];
-        //__mlx_dbg("retval",$retval);
         if (($this->currentDomainRef['mode'] && 1)
             && ($lang == $this->currentDomainRef['defaultLang'])) {
             if ($retval == MLX_NOTRANSLATION) {
@@ -884,8 +833,6 @@ class MLXGetText
      * @return string
      */
     function command(&$args,$slice_id=0): string {
-//		__mlx_dbg($args,"command args");
-//		__mlx_dbg($slice_id,"command slice");
         call_user_func_array([&$this, $args[0]], [&$args,&$slice_id]);
         return "";
     }
@@ -896,22 +843,22 @@ class MLXGetText
     ///\param mode 		mode=learn automatically add items for
     ///			unknown texts (also set nocache=1, and be in default language)
     /** addslice function
+     *  called in command() througg MLXGetText::command() in stringexpand_mlx())
      * @param $args
      */
-    function addslice($args) {
+    function addslice($args): void {
         //xdebug_start_profiling();
         [,$slice2add,$lang,$domain,$mode] = $args;
         $scda = [$domain];
         $this->setdomain($scda);
         if ($this->currentDomainRef['slices'][$slice2add]) {
-            return $slice2add;
+            return; // $slice2add;
         }
         $mode = ($mode==='learn'?1:0);
         $isModeActive = ($mode && 1);
         $this->currentDomainRef['mode'] = $mode;
         $this->currentDomainRef['slices'][$slice2add] = [];
         $fields = AA_Slice::getModule($slice2add)->getFields()->getNameArray();
-        //__mlx_dbg($fields);
         $lang = strtoupper($lang);
         foreach($fields as $fid => $fname) {
             if ($fid === 'headline........') {
@@ -969,14 +916,13 @@ class MLXGetText
             }
         }
         freeDB($db);
-//		__mlx_dbg($current);
-//		__mlx_dbg($this->domains);
     }
 
     /** setdomain function
      * @param $args
      */
-    function setdomain($args) {
+    function setdomain($args): void
+    {
         if ( $args[1] ) { // make sure we stay in a domain
             $this->currentDomain = $args[1];
         }
@@ -987,28 +933,22 @@ class MLXGetText
      *  set the current language in case we are not in a view
      * @param $args
      */
-    function setlang($args) {
+    function setlang($args): void
+    {
         $this->currentLang = strtoupper($args[1]);
         if ($GLOBALS['mlxdbg']) {
             huhl("MLX setting language to <b>".$this->currentLang."</b>");
         }
     }
 
-    /** debug function
-     * @param $args
-     */
-    function debug(&$args) {
-        __mlx_dbg($this->domains);
-    }
 
     /** addtext function
      *  we are adding the item to the last slice added
      *  this could also be used for manually adding items
      * @param $args
      */
-    function addtext($args) {
-        __mlx_dbg($this->domains);
-        __mlx_dbg($args,__function__);
+    function addtext($args): void
+    {
         $old_varset = $GLOBALS['varset'];
         if (!is_callable('StoreItem')) {
             require_once(__DIR__ . '/itemfunc.php');
@@ -1018,7 +958,6 @@ class MLXGetText
         if (!$sliceid) {
             return;
         }
-        //__mlx_dbg($sliceid);
         if ($GLOBALS['mlxdbg']) {
             huhl("MLX adding translateable item for <b>".$args[0]."</b> to $sliceid");
             $GLOBALS['debugsi'] = 1;
@@ -1057,7 +996,8 @@ function stringexpand__m(...$arg_list) { //the second _ is not pretty here, but 
 /** stringexpand_mlx function
  *
  */
-function stringexpand_mlx(...$arg_list) {
+function stringexpand_mlx(...$arg_list): string
+{
     global $errcheck;
     if (!$GLOBALS['mlxGetText']) {
         $GLOBALS['mlxGetText'] = new MLXGetText;

@@ -29,7 +29,9 @@
 // (c) Jakub Adamek, Econnect, December 2002
 
 use AA\IO\DB\DB_AA;
+use AA\Later\LaterInterface;
 use AA\Later\Toexecute;
+use AA\Managed;
 use AA\Util\Langs;
 
 require_once __DIR__ . "/item.php";
@@ -98,7 +100,8 @@ class AA_Mailtemplate implements AA_iEditable, ArrayAccess, Countable, Iterator 
         return AA::Metabase()->getColumnProperties('email');
     }
 
-    public static function load($id, $type=null) {
+    public static function load($id, $type=null): AA_Mailtemplate
+    {
         return new AA_Mailtemplate($id);
     }
 
@@ -106,16 +109,16 @@ class AA_Mailtemplate implements AA_iEditable, ArrayAccess, Countable, Iterator 
     /** AA_iEditable method - creates Object from the form data */
     public static function factoryFromForm($oowner, $otype=null) {}
     /** AA_iEditable method - save the object to the database */
-    public        function save() {}
+    public        function save(): false|string { return false; }
 
     // Array Access implementation is in the DataArrayAccessTrait  --------------------------
 }
 
-class AA_Mail extends htmlMimeMail implements \AA\Later\LaterInterface {
+class AA_Mail extends htmlMimeMail implements LaterInterface {
 
     /** $template_id and $reader_id is mainly for getId() used in AA_Log after toexecute */
-    protected $template_id = '';
-    protected $reader_id   = '';
+    private $template_id = '';
+    private $reader_id   = '';
 
     /** used in AA_Log after toexecute */
     function getId(): string {
@@ -130,7 +133,8 @@ class AA_Mail extends htmlMimeMail implements \AA\Later\LaterInterface {
      * @param $item
      * @return bool
      */
-    function setFromTemplate($mail_id, $item=null) {
+    function setFromTemplate($mail_id, $item=null): bool
+    {
 
         $this->template_id = $mail_id;
         if (is_object($item)) {
@@ -207,11 +211,13 @@ class AA_Mail extends htmlMimeMail implements \AA\Later\LaterInterface {
     }
 
     /** Adds attachments to the e-mail
-     * @param string $string either colon separated list of files (https#://test.org/img1.png:https#://test.org/img2.png)
+     *
+     * @param string  $string  either colon separated list of files (https#://test.org/img1.png:https#://test.org/img2.png)
      *                       or json array of files (["https://test.org/img1.png","https://test.org/img2.png"])
      *                       or json object of files ({"filename1.png":"https://test.org/img1.png","filename2.png":"https://test.org/img2.png"})
      */
-    protected function addAttachmentFromString(string $string) {
+    private function addAttachmentFromString(string $string): void
+    {
         $attachments = self::parseAttachmentsFromString($string);
         foreach ($attachments as $attachment) {
             $this->addAttachment($attachment['data'], $attachment['name']);
@@ -242,7 +248,8 @@ class AA_Mail extends htmlMimeMail implements \AA\Later\LaterInterface {
             if (!$all_later && ++$send_mails_total < 3) {
                 $this->send([$to]);
                 ++$sent;
-            } elseif ($toexecute->later($this, [[$to]], 'AA_Mail'.$this->getId())) {
+            } else {
+                $toexecute->later($this, [[$to]], 'AA_Mail'.$this->getId());
                 // Yes, two nested arrays - mail->send() accepts array($to) and
                 // all parameters to later must be in another only one array
                 ++$sent;
@@ -253,10 +260,12 @@ class AA_Mail extends htmlMimeMail implements \AA\Later\LaterInterface {
 
     /** setBasicHeaders function
      *  This function fits a record from the @c email table.
-     * @param $record
-     * @param $default
+     *
+     * @param  array  $record
+     * @param  array  $default
      */
-    function setBasicHeaders(array $record= [], array $default= []) {
+    function setBasicHeaders(array $record= [], array $default= []): void
+    {
         $headers = [
             "From"        => "header_from",
             "Reply-To"    => "reply_to",
@@ -280,8 +289,10 @@ class AA_Mail extends htmlMimeMail implements \AA\Later\LaterInterface {
 
     /** Extracts e-mail from the string:
      *  Econnect <info@ecn.cz>  -> info@ecn.cz
+     *  @retrun string[]
      */
-    function extractEmails($string){
+    function extractEmails($string): array
+    {
         preg_match_all("/[._a-zA-Z0-9-]+@[._a-zA-Z0-9-]+/i", $string, $matches);
         return $matches[0];
     }
@@ -299,7 +310,8 @@ class AA_Mail extends htmlMimeMail implements \AA\Later\LaterInterface {
     /** setCharset function
      * @param $charset
      */
-    function setCharset($charset) {
+    function setCharset($charset): void
+    {
         $this->setHeadCharset($charset);
         $this->setHtmlCharset($charset);
         $this->setTextCharset($charset);
@@ -311,7 +323,8 @@ class AA_Mail extends htmlMimeMail implements \AA\Later\LaterInterface {
      *  @return string - message about execution to be logged
      *  @see \AA\Later\LaterInterface
      */
-    public function toexecutelater($params= []) {
+    public function toexecutelater($params= []): string
+    {
         [$to] = $params;
         return $this->send($to);
     }
@@ -325,13 +338,13 @@ class AA_Mail extends htmlMimeMail implements \AA\Later\LaterInterface {
      * @param $later bool|null
      *
      * Called as AA_Mail::sendTemplate($mail_id,$to,$item=null)
-     * @return bool|int|mixed
      */
-     static function sendTemplate($mail_id, $to, $item=null, $later=null) {
+     static function sendTemplate($mail_id, $to, $item=null, $later=null): int
+     {
         // email has the templates in it
         $mail = new AA_Mail;
         if (!$mail->setFromTemplate($mail_id, $item)) {
-            return false;
+            return 0;
         }
 
          if (is_null($later)) {
@@ -343,7 +356,7 @@ class AA_Mail extends htmlMimeMail implements \AA\Later\LaterInterface {
          }
 
          $tos  = array_unique(array_map('trim', is_array($to) ? $to : [$to]));
-        return $mail->send($tos);
+        return $mail->send($tos);  // send directly
     }
 
     /** Sends mail defined in e-mail template id $mail_id to all zids (Readers).
@@ -377,14 +390,14 @@ class AA_Mail extends htmlMimeMail implements \AA\Later\LaterInterface {
  *  there were problems with more than 1000 mails - it wasn't possible to plan it in one shot
  *  @see AA_Mail::sendToReader();
  */
-class AA_Mail_Scheduler implements \AA\Later\LaterInterface {
-    protected int $mail_id;
+class AA_Mail_Scheduler implements LaterInterface {
+    private int $mail_id;
 
     /** @var array $reader_ids - array of reader ids (longId) */
-    protected array $reader_ids;
+    private array $reader_ids;
 
     /** @var string $slice_id slice of the Readers - used for slice credentials */
-    protected $slice_id;
+    private $slice_id;
 
     function __construct(int $mail_id, array $reader_ids, $slice_id) {
         $this->mail_id    = $mail_id;
@@ -398,7 +411,8 @@ class AA_Mail_Scheduler implements \AA\Later\LaterInterface {
        return $this->mail_id;
     }
 
-    function schedule() {
+    function schedule(): string
+    {
         // Allow using current slice data without slice_pwd
         AA_Credentials::singleton()->loadFromSlice($this->slice_id);
 
@@ -410,7 +424,7 @@ class AA_Mail_Scheduler implements \AA\Later\LaterInterface {
                 $mail_count += AA_Mail::sendTemplate($this->mail_id, $to, $item, true);
             }
         }
-        return $mail_count;
+        return (string)$mail_count;
     }
 
     /** special function called from AA\Later\Toexecute class - used for queued tasks (ran form cron)
@@ -418,7 +432,8 @@ class AA_Mail_Scheduler implements \AA\Later\LaterInterface {
      *  @return string - message about execution to be logged
      *  @see \AA\Later\LaterInterface
      */
-    public function toexecutelater($params= []) {
+    public function toexecutelater($params= []): string
+    {
         return $this->schedule();
     }
 }
@@ -426,9 +441,9 @@ class AA_Mail_Scheduler implements \AA\Later\LaterInterface {
 /** Strips the HTML tags and a lot more to get a plain text mail version.
  *   Replaces URL links by the link in compound brackets behind the linked text.
  * @param $html string
- * @return null|string|string[]
  */
-function html2text($html, $encoding='utf-8') {
+function html2text($html, $encoding='utf-8'): string
+{
 
     $html = html_entity_decode(str_ireplace(['&nbsp;','&ensp;','&emsp;','&thinsp;'], [' ',' ',' ',' '], $html));
 
@@ -518,7 +533,7 @@ function html2text($html, $encoding='utf-8') {
     return preg_replace($search, $replace, $html);
 }
 
-function GetMailManaged(): \AA\Managed {
+function GetMailManaged(): Managed {
     $managed = AA::Metabase()->getManagerConf('email');
     $managed->setColumns2show(['id', 'type', 'subject', 'description']);
     $managed->setWidgetSetting('html', ['type' => 'bool', 'name' => _m('Use HTML')]);

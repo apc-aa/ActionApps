@@ -28,7 +28,9 @@
 
 use AA\IO\DB\DB_AA;
 use AA\Managed;
+use AA\Managed_Table;
 use AA\Manageraction\Manageractions;
+use AA\Manageraction\Table_Row_Delete;
 use AA\Util\Searchfields;
 
 /** AA_Metabase holds the database structure of AA
@@ -94,7 +96,8 @@ class AA_MbC {
     }
 
     /** @return string - database field type - 'float' | 'int' | 'string' | 'text' */
-    public function getFieldType() {
+    public function getFieldType(): string
+    {
         // Used in AA database
         // bigint(20)
         // bigint(30)
@@ -176,7 +179,8 @@ class AA_MbC {
         return (str_contains($this->_getBaseType(), 'binary') || str_contains($this->_getBaseType(), 'blob'));
     }
 
-    private function _getSearchType() {
+    private function _getSearchType(): string
+    {
         return match ($this->_getBaseType()) {
             'float', 'double', 'int', 'mediumint', 'bigint', 'smallint', 'tinyint' => 'numeric',
             'timestamp'                                                            => 'date',
@@ -258,7 +262,8 @@ class AA_MbC {
         return GetFieldDef( $this->c[0], $this->c[0], $this->_getSearchType(), false, 1, 1);
     }
 
-    function getEmptyValue() {
+    function getEmptyValue(): int|string
+    {
         return in_array($this->_getSearchType(), ['numeric','date']) ? 0 : '';
     }
 }
@@ -279,11 +284,13 @@ class AA_MbI {
         $this->s = $sort;
     }
 
-    function addColumn($position, $column, $sub_part='') {
+    function addColumn($position, $column, $sub_part=''): void
+    {
         $this->c[(int)$position] = $sub_part ? [$column, $sub_part] : $column;
     }
 
-    function getCreateSql() {
+    function getCreateSql(): string
+    {
         $cols = [];
         foreach ($this->c as $col) {
             $cols[] = is_array($col) ? '`'.$col[0].'`('.$col[1].')' : "`$col`";
@@ -343,7 +350,8 @@ class AA_MbT implements Iterator, ArrayAccess, Countable {
         }
     }
 
-    static function factoryFromDb($tablename) {
+    static function factoryFromDb($tablename): AA_MbT
+    {
         $columns = GetTable2Array("SHOW FULL COLUMNS FROM `$tablename`", 'Field');
         $indexes = GetTable2Array("SHOW INDEX FROM `$tablename`", '');
         return new AA_MbT($tablename, $columns, $indexes);
@@ -354,26 +362,30 @@ class AA_MbT implements Iterator, ArrayAccess, Countable {
         return $this->t;
     }
 
-    function getColumnNames() {
+    function getColumnNames(): array
+    {
         return array_keys($this->c);
     }
 
     /** Is the $columnname the column in this table? */
-    function isColumn($columnname) {
+    function isColumn($columnname): bool
+    {
         return isset($this->c[$columnname]);
     }
 
     /** get array of Column objects
      *  @return AA_MbC[]
      */
-    function getColumns() {
+    function getColumns(): array
+    {
         return $this->c;
     }
 
     /** get Column objects
      *  @return AA_MbC
      */
-    function getColumn($columnname) {
+    function getColumn($columnname): AA_MbC
+    {
         return $this->c[$columnname];
     }
 
@@ -630,30 +642,35 @@ class AA_Metabase {
     }
 
     /** Returns array of all table names */
-    function getTableNames() {
+    function getTableNames(): array
+    {
         return array_keys($this->tables);
     }
 
     /** Returns array of keys for given table */
-    function getKeys($tablename) {
+    function getKeys($tablename): array
+    {
         $table = $this->tables[$tablename];
         return is_object($table) ? $table->getKeys() : [];
     }
 
     /** is the $columnname the key for given table */
-    function isKey($tablename, $columnname) {
+    function isKey($tablename, $columnname): bool
+    {
         $table = $this->tables[$tablename];
         return is_object($table) ? $table->isKey($columnname) : false;
     }
 
     /** Returns array of all columns */
-    function getColumnNames($tablename) {
+    function getColumnNames($tablename): array
+    {
         $table = $this->tables[$tablename];
         return is_object($table) ? $table->getColumnNames() : [];
     }
 
     /** Is the $columnname the column in the $tablename? */
-    function isColumn($tablename, $columnname) {
+    function isColumn($tablename, $columnname): bool
+    {
         $table = $this->tables[$tablename];
         return is_object($table) ? $table->isColumn($columnname) : false;
     }
@@ -662,7 +679,8 @@ class AA_Metabase {
      * @param $tablename
      * @return AA_MbC[]
      */
-    function getColumns($tablename) {
+    function getColumns($tablename): array
+    {
         return $this->tables[$tablename]->getColumns();
     }
 
@@ -670,7 +688,8 @@ class AA_Metabase {
      * @param $data
      * @param $identifier
      */
-    function fillKeys(&$data, $identifier) {
+    function fillKeys(&$data, $identifier): void
+    {
 
         $module_id  = $identifier->getModuleId();
         $tablename  = $identifier->getTable();
@@ -701,7 +720,8 @@ class AA_Metabase {
      *  belongs. That way you just move the data to another module
      *  It modifies $data parameter
      */
-    function reassignModule(&$data, $tablename, $module_id) {
+    function reassignModule(&$data, $tablename, $module_id): void
+    {
         $module_field = self::getModuleField($tablename);
         if ($module_field) {
             $data[$module_field] = self::isPacked($tablename, $module_field) ? pack_id($module_id) : $module_id;
@@ -715,7 +735,7 @@ class AA_Metabase {
             // single keys
             'alerts_collection',
             'alerts_filter',
-            'auth_log',
+            // 'auth_log',  // removed table HM 2025
             'auth_user',
             'change',
             'change_record',
@@ -785,7 +805,8 @@ class AA_Metabase {
     }
 
     /** get type of the column in the table */
-    function getFieldType($tablename, $column) {
+    function getFieldType($tablename, $column): string
+    {
         return $this->tables[$tablename]->getColumn($column)->getFieldType();
     }
 
@@ -793,7 +814,8 @@ class AA_Metabase {
     const AUTO_KEYS = ['polls_design' => 'id'];
 
     /** static method */
-    static function getModuleFields() {
+    static function getModuleFields(): array
+    {
         static $MODULE_KEYS = [
             'alerts_collection'   => 'module_id',
             'constant_slice'      => 'slice_id',
@@ -818,7 +840,8 @@ class AA_Metabase {
     }
 
     /** static method */
-    static function getModuleField($tablename) {
+    static function getModuleField($tablename): ?string
+    {
         $fields = self::getModuleFields();
         return $fields[$tablename];
     }
@@ -827,7 +850,8 @@ class AA_Metabase {
      *  @todo - would be probably better to move it to AA_MbT
      *  @todo - convert to static class members for PHP5
      */
-    static function getPacked($tablename) {
+    static function getPacked($tablename): array
+    {
         static $PACKED = [
             'alerts_collection'   => ['module_id','slice_id'],
             'constant'            => ['id','ancestors'], // ancestors are multiple - joined!
@@ -871,7 +895,8 @@ class AA_Metabase {
      * @param  string[] $data[]    data array - all data unpacked. The values are converted to correct ones
      * @return bool|int   0|false on error
      */
-    function doUpdate($tablename, $data) {
+    function doUpdate($tablename, $data): bool|int
+    {
         if ( ($varset = $this->getVarset4Data($tablename, $data)) && $this->isKeysFilled($tablename, $varset)) {
             return $varset->doUpdate($tablename);
         }
@@ -880,13 +905,17 @@ class AA_Metabase {
 
     /** The best (most safe) low-level approach to store data in the AA table - the data are checked before storing against database schema
      *  - the packed data are packed automatically, the integer data are typecast to numbers, ...
+     *
      * @usage AA::Metabase()->doInsert('log', ['time'=>time(),'user'=>$uid, 'type'=>$event, 'selector'=>$selector, 'params'=>$params]);
-     * @param  string   $tablename - table, where to store data
-     * @param  string[] $data      - data array - all data unpacked. The values are converted to correct ones
-     * @param  string   $nohalt  'nohalt' - do not halt on database error
+     *
+     * @param  string       $tablename  - table, where to store data
+     * @param  string[]     $data       - data array - all data unpacked. The values are converted to correct ones
+     * @param  string|null  $nohalt     'nohalt' - do not halt on database error
+     *
      * @return bool|int   0|false on error, int on success. If INSERT, returns last inserted id or PHP_INT_MAX if not provided
      */
-    function doInsert($tablename, $data, $nohalt=null) {
+    function doInsert(string $tablename, array $data, ?string $nohalt=null): bool|int
+    {
         if ($varset = $this->getVarset4Data($tablename, $data)) {
             return $varset->doInsert($tablename, $nohalt);
         }
@@ -912,7 +941,8 @@ class AA_Metabase {
      * @param  string   $nohalt  'nohalt' - do not halt on database error
      * @return bool|int   0|false on error
      */
-    function doReplace($tablename, $data, $nohalt=null) {
+    function doReplace($tablename, $data, $nohalt=null): bool|int
+    {
         if ( ($varset = $this->getVarset4Data($tablename, $data)) && $this->isKeysFilled($tablename, $varset)) {
             return $varset->doTrueReplace($tablename, $nohalt);
         }
@@ -929,7 +959,8 @@ class AA_Metabase {
      * @return bool|int   0|false on error
      * @todo   process it as one SQL insert statement
      */
-    function doInsertMulti($tablename, $data, $nohalt=null) {
+    function doInsertMulti($tablename, $data, $nohalt=null): bool|int
+    {
         $table = $this->tables[$tablename];
 
         $chunkSize  = 1000;           // Define chunk size
@@ -961,7 +992,8 @@ class AA_Metabase {
      * @param string[] $keydata
      * @return bool|int   0|false on error
      */
-    function doDelete(string $tablename, array $keydata) {
+    function doDelete(string $tablename, array $keydata): bool|int
+    {
         if ( ($varset = $this->getVarset4Data($tablename, $keydata)) && $this->isKeysFilled($tablename, $varset)) {
             return $varset->doDelete($tablename);
         }
@@ -974,7 +1006,8 @@ class AA_Metabase {
      * @param  string[] $data    data array - all data unpacked. The values are converted to correct ones
      * @return Cvarset|null
      */
-    private function getVarset4Data(string $tablename, array $data) {
+    private function getVarset4Data(string $tablename, array $data): ?Cvarset
+    {
         return $this->tables[$tablename]->getVarset4Data($data);
     }
 
@@ -999,7 +1032,8 @@ class AA_Metabase {
      * @param bool  $regular
      * @param array $only_tables
      */
-    function loadFromDb(bool $regular=false, array $only_tables=[]) {
+    function loadFromDb(bool $regular=false, array $only_tables=[]): void
+    {
         $db     = getDb();
         $tables = $db->table_names();
         foreach ($tables as $table) {
@@ -1134,7 +1168,8 @@ class AA_Metabase {
         return $ret;
     }
 
-    function unpackIds($tablename, &$data) {
+    function unpackIds($tablename, &$data): void
+    {
         $packed_columns = self::getPacked($tablename);
         foreach ($packed_columns as $column) {
             foreach ($data as $k => $v) {
@@ -1143,7 +1178,8 @@ class AA_Metabase {
         }
     }
 
-    function packIds($tablename, &$data) {
+    function packIds($tablename, &$data): void
+    {
         $packed_columns = self::getPacked($tablename);
         foreach ($packed_columns as $column) {
             foreach ($data as $k => $v) {
@@ -1259,7 +1295,8 @@ class AA_Metabase {
      * @global bool  $debug =1       - many debug messages
      * @return zids
      */
-    function queryZids($settings, $set) {
+    function queryZids($settings, $set): zids
+    {
         global $debug;                 // displays debug messages
 
         $tablename = $settings['table'];
@@ -1272,7 +1309,9 @@ class AA_Metabase {
         $conds     = $set->getConds();
         $sort      = $set->getSort();
 
-        if ( $debug ) huhl( "<br>Conds:", $conds, "<br>--<br>Sort:", $sort, "<br>--");
+        if ( $debug ) {
+            huhl("<br>Conds:", $conds, "<br>--<br>Sort:", $sort, "<br>--");
+        }
 
         $fields      = $this->getSearchArray($tablename);
         $join_tables = [];   // not used in this function
@@ -1392,7 +1431,7 @@ class AA_Metabase {
         // for now, we support only tables with 1-column key, but it could be extended to id|module type of id later
         if (count($keys)===1) {
             if ( $addbuttons['Delete'] ?? true ) {    // not ['Edit'=>false]
-                $actions->addAction(new \AA\Manageraction\Table_Row_Delete('DeleteTRow'));
+                $actions->addAction(new Table_Row_Delete('DeleteTRow'));
             }
             // $key_alias = $aliases->getNamesForField($keys[0])[0];
             $key_alias = "{rawurlencode:{".$keys[0]."}}";
@@ -1441,7 +1480,7 @@ class AA_Metabase {
             'bin'       => 'app',
         ];
 
-        $managed = (new \AA\Managed_Table($tablename))->setSettings($manager_settings)->setColumns($columns)->setTitle(_m('Manage %1', [$tablename]));
+        $managed = (new Managed_Table($tablename))->setSettings($manager_settings)->setColumns($columns)->setTitle(_m('Manage %1', [$tablename]));
         if (array_key_exists('edit_url', $set)) {
             $managed->setUrl($set['edit_url']);
         }
