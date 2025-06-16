@@ -68,7 +68,7 @@ try {
     $cancel = InputVars::boolPOST('cancel');
     
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception) {}
+} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
 
 // FilemanPerms() is defined in perm_core.php, it sets $fileman_dir
@@ -220,8 +220,9 @@ echo "<tr><td colspan=\"2\"></td></tr>";
 $db->query("SELECT * FROM wizard_template");
 if ($db->num_rows()) {
     $i = "<select name=\"arg[copytmp]\">";
-    while ($db->next_record())
-        $i.="<option value=\"".$db->f("dir")."\">".$db->f("dir")." (".$db->f("description").")";
+    while ($db->next_record()) {
+        $i .= "<option value=\"".$db->f("dir")."\">".$db->f("dir")." (".$db->f("description").")";
+    }
     $i .= "</select>";
     echo uilr($i,fileAction("copytmp",_m("Copy template dir")));
 }

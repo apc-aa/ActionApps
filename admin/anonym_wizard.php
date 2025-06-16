@@ -50,7 +50,7 @@ try {
     $cancel = InputVars::boolPOST('cancel');
     
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception) {}
+} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
 
 /** GetAnonymousForm function
@@ -231,8 +231,9 @@ if ( is_array($s_fields)) {
                 <td>'.$field["id"].'</td>
                 <td>
                     <input type="checkbox" name="show['.$field["id"].']"';
-            if (! $show || $show[$field["id"]])
+            if (! $show || $show[$field["id"]]) {
                 echo " checked";
+            }
             echo "></td>
                 <td>v".unpack_id($field["id"])."</td>
             </tr>";

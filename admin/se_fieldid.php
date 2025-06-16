@@ -56,7 +56,7 @@ try {
     $cancel = InputVars::boolPOST('cancel');
     
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception) {}
+} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
 
 MoreTimeLimit(600); // set_time_limit to 10 minutes (at least)
@@ -188,7 +188,7 @@ function ChangeFieldID($old_id, $new_id): void
                         $varset->set($field, $cont, "text");
                     }
                 }
-                if ($varset->vars) {
+                if (!$varset->isEmpty()) {
                     $SQL = "UPDATE $table SET ".$varset->makeUPDATE();
                     $SQL .= " WHERE $keyfield = ";
                     if ($settings['primary_type'] === "text") {

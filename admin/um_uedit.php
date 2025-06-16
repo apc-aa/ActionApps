@@ -101,7 +101,7 @@ try {
     $cancel = InputVars::boolPOST('cancel');
     
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception) {}
+} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
 if ($cancel) {
     go_url( StateUrl(self_base() . "index.php"));
@@ -332,14 +332,14 @@ if ( !$add_submit && !$usr_new) {
     // User - group membership -----------------------------------------
 
     FrmTabSeparator(_m("Groups"));
-    array_walk($all_groups, static function (&$v, $k) {$v = ((($userlogin = AA::$perm->getUserLoginName($k)) == $v['name']) || !$userlogin) ? $v['name'] : $v['name']. " ($userlogin)";});
+    array_walk($all_groups, static function (&$v) {$v = $v['name'];});
     $writable_groups        = array_filter($all_groups, [AA::$perm, 'isGroupWritable'], ARRAY_FILTER_USE_KEY);
     $user_writable_groups   = array_filter($sel_groups, [AA::$perm, 'isGroupWritable'], ARRAY_FILTER_USE_KEY);
     $user_unwritable_groups = array_diff_key($sel_groups, $user_writable_groups);
 
     FrmTwoBox('sel_groups_sel', _m("Groups"), $writable_groups, array_keys($user_writable_groups), 8, false, _m("All Writable Groups"), _m("User's Groups"));
 
-    array_walk($user_unwritable_groups, static function (&$v, $k) {$v = (($userlogin = AA::$perm->getUserLoginName($k)) == $v['name'] || !$userlogin) ? $v['name'] : $v['name']. " ($userlogin)";});
+    array_walk($user_unwritable_groups, static function (&$v, $k) {$v = (($userlogin = AA::$perm->getUserLoginName($k)) === $v['name'] || !$userlogin) ? $v['name'] : $v['name']. " ($userlogin)";});
 
     if ($user_unwritable_groups) {
         FrmStaticText(_m("Member of Unwritable Groups"), implode("<br>\n", $user_unwritable_groups), '', '', false);

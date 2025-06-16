@@ -26,6 +26,7 @@
  *
 */
 
+use AA\Managed;
 use AA\Manager;
 use AA\Manageraction\Item_DeleteTrash;
 use AA\Manageraction\Item_Duplicate;
@@ -76,7 +77,7 @@ try {
     $cancel = InputVars::boolPOST('cancel');
     
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception) {}
+} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
 
 
@@ -176,7 +177,7 @@ $manager_settings = [
      'bin'         => 'app'
 ];
 
-$managed = (new \AA\Managed())->setSettings($manager_settings);
+$managed = (new Managed())->setSettings($manager_settings);
 $managed->setTitle($slice->getName(). ' - '. (($slice->type() === 'ReaderManagement') ? _m('ActionApps - Reader Manager') : _m('ActionApps - Item Manager')));
 $manager = new Manager('item'.$module_id, $managed);
 

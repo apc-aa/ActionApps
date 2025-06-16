@@ -39,7 +39,7 @@ try {
     $date_from  = InputVars::stringPOST('date_from');
     $for_module = InputVars::stringPOST('for_module');
     $show       = InputVars::boolPOST('show');
-} catch (Exception) {}
+} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
 if (!IfSlPerm(PS_EDIT_ALL_ITEMS)) {
     AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You have not permissions to see statistics"), "admin");

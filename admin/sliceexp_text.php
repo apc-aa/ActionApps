@@ -195,7 +195,7 @@ class AA_Slice_Exporter {
 
         foreach ($export_slices as $sid) {
             $slobj = AA_Slice::getModule($sid);
-            $this->prepareEncoder($slobj->getCharset());
+            $this->prepareEncoder($slobj?->getCharset());
 
             if ($this->type !== 'backup') {
                 if (strlen($new_slice_id) !== 16) {
@@ -296,7 +296,7 @@ class AA_Slice_Exporter {
             </tr></td>";
     }
 
-    function prepareEncoder($charset): void
+    function prepareEncoder(?string $charset): void
     {
         if ($this->to_utf) {
             $this->_encoder = new ConvertCharset($charset, 'utf-8');
@@ -389,9 +389,9 @@ class AA_Slice_Documentator extends AA_Slice_Exporter {
      * @param          $temp_file
      * Writes to file
      */
-    function exportOneSliceViews(AA_Slice $slobj, $temp_file) {}
+    function exportOneSliceViews(AA_Slice $slobj, $temp_file): void {}
 
-    function exportOneSliceData($slobj, $temp_file)  {}
+    function exportOneSliceData($slobj, $temp_file): void {}
 
     /** exporter function
      *  Generate the output and write to a temporary file
@@ -415,7 +415,7 @@ class AA_Slice_Documentator extends AA_Slice_Exporter {
 
         foreach ($export_slices as $sid) {
             $slobj = AA_Slice::getModule($sid);
-            $this->prepareEncoder($slobj->getCharset());
+            $this->prepareEncoder($slobj?->getCharset());
 
             fwrite($temp_file, "<h2>".safe($slobj->getName())."</h2>\n");
             fwrite($temp_file, "<p><b>ID:</b> ".$slobj->getId(). "</p>\n");

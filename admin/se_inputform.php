@@ -26,12 +26,14 @@
 */
 
 use AA\IO\DB\DB_AA;
+use AA\Util\ChangesMonitor;
 use AA\Util\InputVars;
+use AA\Util\Langs;
 use AA\Widget\Widget;
 
 // const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
-mgettext_bind(\AA\Util\Langs::currentLang(), 'param_wizard');
+mgettext_bind(Langs::currentLang(), 'param_wizard');
 require_once __DIR__ . "/../include/constants_param_wizard.php";
 require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/varset.php";
@@ -108,7 +110,7 @@ try {
     $cancel = InputVars::boolPOST('cancel');
     
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception) {}
+} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
 $slice_fields = AA_Fields::isSliceField($fid);
 
@@ -131,10 +133,11 @@ $err = [];          // error array (Init - just for initializing variable
 $varset = new Cvarset();
 
 /** QVaidateInput function
- * @param $variabeName
+ *
+ * @param $variableName
  * @param $inputName
  * @param $variable
- * @param $err (by link)
+ * @param $err  (by link)
  * @param $needed
  * @param $type
  */
@@ -396,7 +399,7 @@ $form_buttons = [
     "fid"      => ["type"=>"hidden", "value"=>$fid],
     "update",
     "upd_edit" => ["type"=>"submit", "value"=>_m("Update & Edit")],
-    "cancel2"  => ['value'=>_m('Show History'), "url"=>\AA\Util\ChangesMonitor::getHistoryUrl("F".AA_Fields::createShortId($fid).'@'.pack_id(AA::$module_id))],
+    "cancel2"  => ['value'=>_m('Show History'), "url"=> ChangesMonitor::getHistoryUrl("F".AA_Fields::createShortId($fid).'@'.pack_id(AA::$module_id))],
     "cancel"   => ["url"=>"se_fields.php" .($slice_fields ? '?slice_fields=1':'')]
 ];
 

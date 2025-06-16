@@ -27,6 +27,7 @@
 // expected $view_id for editing specified view or $new
 
 use AA\IO\DB\DB_AA;
+use AA\Util\ChangesMonitor;
 use AA\Util\InputVars;
 
 require_once __DIR__ . "/../include/init_page.php";
@@ -97,7 +98,7 @@ try {
     $cancel = InputVars::boolPOST('cancel');
     
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception) {}
+} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
 // ----------------------------------------------------------------------------
 /** get_row_count function
@@ -374,12 +375,9 @@ if ( $update ) {
                 $err["DB"] = MsgErr( _m("Can't change slice settings") );
                 break;   // not necessary - we have set the halt_on_error
             }
-        } else {
-            if ( !$varset->doInsert('view')) {
-                $err["DB"] = MsgErr( _m("Can't insert into view.") );
-                break;   // not necessary - we have set the halt_on_error
-            }
-            $view_id = $varset->last_insert_id();
+        } elseif ( !($view_id = $varset->doInsert('view')) ) {
+            $err["DB"] = MsgErr( _m("Can't insert into view.") );
+            break;   // not necessary - we have set the halt_on_error
         }
         AA::Pagecache()->invalidateFor(AA::$module_id);  // invalidate old cached values
 
@@ -532,7 +530,7 @@ $apage->printHead($err, $Msg);
 
 $form_buttons              = ['update'];
 if ($view_id) {
-    $form_buttons['cancel2']   = ['value'=>_m('Show History'), "url"=>\AA\Util\ChangesMonitor::getHistoryUrl("V.".$view_id)];
+    $form_buttons['cancel2']   = ['value'=>_m('Show History'), "url"=> ChangesMonitor::getHistoryUrl("V.".$view_id)];
     $form_buttons['asnew'] = ['js'=> '$(\'input[name=&quot;view_id&quot;]\').val(\'\'); $(\'input[name=&quot;update&quot;]\').click();', 'value'=>_m('Save as new')];
 }
 $form_buttons['cancel']    = ["url"=>"se_views.php"];

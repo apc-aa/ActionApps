@@ -57,7 +57,7 @@ try {
     $cancel = InputVars::stringGETPOST('cancel');
 
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception) {}
+} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
 
 if (!CheckPerms( AuthGetUid(), "aa", AA_ID, PS_ADD) ) {
@@ -450,13 +450,15 @@ foreach ($data_conflicts_ID as $c_id => $name) {
     }
     ?>
     <p>
-        <textarea name="slice_def" rows="10" cols="100"><?php if ($IDconflict || $data_IDconflict)
-// Be careful here, $slice_def_bck contains structures line
-// <xxx>&lt;BR&gt;some content</xxx>
-// Which the browser will convert to <xxx><br>some content</xxx>
-// which is invalid XML. So, convert & to &amp; first, so pass through
-// htmlspecialchars, which browser will undo.
-            echo safe($slice_def_bck) ?></textarea>
+        <textarea name="slice_def" rows="10" cols="100"><?php
+            if ($IDconflict || $data_IDconflict) {
+                // Be careful here, $slice_def_bck contains structures line
+                // <xxx>&lt;BR&gt;some content</xxx>
+                // Which the browser will convert to <xxx><br>some content</xxx>
+                // which is invalid XML. So, convert & to &amp; first, so pass through
+                // htmlspecialchars, which browser will undo.
+                echo safe($slice_def_bck);
+            } ?></textarea>
     <p>
     <?php
     if (!$IDconflict || !$data_IDconflict) {

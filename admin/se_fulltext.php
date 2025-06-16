@@ -56,7 +56,7 @@ try {
     $cancel = InputVars::boolPOST('cancel');
     
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception) {}
+} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
 $err = [];          // error array (Init - just for initializing variable
 $varset      = new Cvarset();

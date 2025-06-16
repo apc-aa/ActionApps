@@ -77,7 +77,7 @@ try {
     $cancel = InputVars::boolPOST('cancel');
 
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception) {}
+} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
 
 if ($cancel) {
@@ -157,7 +157,9 @@ function propagateChanges($group_id, $constant_id, $newvalue, $oldvalue): void
 {
     global $Msg;
 
-    if ($oldvalue == $newvalue) return;
+    if ($oldvalue == $newvalue) {
+        return;
+    }
 
     $event = aaevent::singleton();
     $event->comes('CONSTANT_BEFORE_UPDATE', AA::$module_id, 'S', $newvalue, $oldvalue, $constant_id);

@@ -26,6 +26,7 @@
  *
 */
 
+use AA\Managed;
 use AA\Manager;
 use AA\Util\InputVars;
 
@@ -53,7 +54,7 @@ try {
 
     $cancel = InputVars::boolPOST('cancel');
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception) {}
+} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
 
 // new manager class approach ------------------------------------------------
@@ -115,7 +116,7 @@ $manager_settings = [
      ]
 ];
 
-$manager = new Manager('users'.AA::$module_id, (new \AA\Managed())->setSettings($manager_settings)->setTitle(_m("Show selected users")));
+$manager = new Manager('users'.AA::$module_id, (new Managed())->setSettings($manager_settings)->setTitle(_m("Show selected users")));
 
 // r_userstate array holds all configuration of Manager
 // the configuration then could be Bookmarked

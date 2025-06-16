@@ -39,7 +39,7 @@ require_once __DIR__ . "/../include/init_page.php";
 try {
     $return_url = InputVars::stringGET('return_url'); // empty
     $sh_itm = InputVars::idGET('sh_itm', true);
-} catch (Exception) {}
+} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
 $sh_itm     = $_GET['sh_itm'];
 $return_url = $_GET['return_url'];

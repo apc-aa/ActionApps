@@ -31,6 +31,7 @@
 */
 
 
+use AA\Managed;
 use AA\Manager;
 use AA\Util\InputVars;
 
@@ -180,7 +181,7 @@ $manager_settings = [
      ]
 ];
 
-$managed = (new \AA\Managed())->setSettings($manager_settings);
+$managed = (new Managed())->setSettings($manager_settings);
 $managed->setTitle(_m("Editor window - item manager, related selection window"));
 $manager = new Manager($manager_id, $managed);
 if (ctype_digit((string)$frombins)) {

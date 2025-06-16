@@ -43,13 +43,13 @@ try {
     // array ( 'category...…' => 2, )
     $field_name = InputVars::stringGET('field_name', true);
     // array ( '' => 1, '"windows-12…' => 1, )
-    $sel_text = InputVars::stringGET('sel_text', true); // empty
+    $sel_text = InputVars::stringGET('sel_text'); // empty
     // array ( 'srchbr_valu…' => 2, )
     $var_id = InputVars::stringGET('var_id', true);
     $cancel = InputVars::boolPOST('cancel');
     
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception) {}
+} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
 
 

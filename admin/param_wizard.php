@@ -44,9 +44,11 @@
 
 // const  AA_REGISTER_GLOBALS = true;
 use AA\Util\InputVars;
+use AA\Util\Langs;
+use AA\Util\Paramwizard;
 
 require_once __DIR__ . "/../include/init_page.php";
-mgettext_bind(\AA\Util\Langs::currentLang(), 'param_wizard');
+mgettext_bind(Langs::currentLang(), 'param_wizard');
 require_once __DIR__ . "/../include/constants_param_wizard.php";
 
 try {
@@ -58,11 +60,11 @@ try {
     $list = InputVars::stringGET('list', true);
     // array ( 'input_valid…' => 7, 'input_show_…' => 1, )
     $text_param = InputVars::stringGET('text_param', true);
-    $codemirror = InputVars::stringGET('codemirror', true);
+    $codemirror = InputVars::stringGET('codemirror');
     $cancel = InputVars::boolPOST('cancel');
     
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception) {}
+} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
@@ -130,7 +132,7 @@ $CLASS_WIZARDS = [
 ];
 
 if ($_GET['list'] && $CLASS_WIZARDS[$_GET['list']]) {
-    $pw = new \AA\Util\Paramwizard();
+    $pw = new Paramwizard();
     $desc = $pw->getParamWizardArr($item, $CLASS_WIZARDS[$_GET['list']]);
 } else {
     $desc = $$list;
@@ -182,8 +184,8 @@ if (is_array($desc['params'])) {
             }
             function fillParams(params) {
                 params = params.replace(/#:/g,"#~") + ":";
-<?php if ($allow_quote)
-    echo "params = params.replace(/'/g,\":\");" ?>
+<?php if ($allow_quote) {
+    echo "params = params.replace(/'/g,\":\");"; } ?>
                 let str;
                 for (let i = 0; i < <?php echo count($desc['params']) ?>; i++) {
                     if (params > "") {
@@ -286,14 +288,16 @@ for ($i = 0; $i < $ino; ++$i) {
                     echo $what['hint'];
                     echo '
 <p>';
-                    if (is_array($desc['params']))
+                    if (is_array($desc['params'])) {
                         echo '
-    <input type="button" value="' . _m("OK - Save") . '" onclick="writeParams(); self.close()">&nbsp;&nbsp;
-    <input type="button" value="' . _m("Cancel") . '" onclick="self.close()">&nbsp;&nbsp;
-    <input type="button" value="' . _m("Show example params") . '" onclick="fillParams(\'' . processJavaScript($example) . '\')">';
-                    else
+    <input type="button" value="'._m("OK - Save").'" onclick="writeParams(); self.close()">&nbsp;&nbsp;
+    <input type="button" value="'._m("Cancel").'" onclick="self.close()">&nbsp;&nbsp;
+    <input type="button" value="'._m("Show example params").'" onclick="fillParams(\''.processJavaScript($example).'\')">';
+                    }
+                    else {
                         echo '
-    <input type="button" value="' . _m("OK") . '" onclick="self.close()">';
+    <input type="button" value="'._m("OK").'" onclick="self.close()">';
+                    }
                     echo '
 </p>
 </td></tr></table>

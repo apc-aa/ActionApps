@@ -48,7 +48,7 @@ try {
     $exact_copy       = InputVars::boolPOST('exact_copy');
     $aa_rss           = unserialize(InputVars::stringPOST('aa'));
     
-} catch (Exception) {}
+} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
 
 $l_categs = FeedUtil::GetGroupConstants(AA::$module_id);        // get all categories belong to local slice

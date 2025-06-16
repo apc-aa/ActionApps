@@ -54,7 +54,7 @@ try {
     $cancel = InputVars::boolPOST('cancel');
     
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception) {}
+} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
 if (!IfSlPerm(PS_USERS)) {
     AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You have not permissions to manage users"), "admin");
@@ -71,7 +71,8 @@ function IfLink( $cond, $url, $txt, $class='btn btn-secondary'): string {
 }
 
 /** PrintUser function
- * @param $usr
+ *
+ * @param $perm
  * @param $usr_id
  * @param $editor_perm
  */

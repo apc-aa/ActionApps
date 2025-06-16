@@ -1,6 +1,2 @@
 <?php
-if ($_GET["value"] != "")
-header ("Location: ".$_GET["value"]);
-else
-header ("Location: ".$_GET["url"]);
-    
+header("Location: " . (($_GET["value"] != "") ? $_GET["value"] : $_GET["url"]));

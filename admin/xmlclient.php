@@ -1,6 +1,7 @@
 <?php
 
 use AA\IO\DB\DB_AA;
+use AA\IO\Feed;
 use AA\Later\Toexecute;
 use AA\Util\InputVars;
 
@@ -73,7 +74,7 @@ try {
     $feed_id    = InputVars::intGET('feed_id');
     $rssfeed_id = InputVars::intGET('rssfeed_id');
     $cancel = InputVars::boolPOST('cancel');
-} catch (Exception) {}
+} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
 ($debugfeed >= 8) && print("\n<br>XMLCLIENT STARTING");
 
@@ -88,12 +89,12 @@ if ( $_GET['display'] ) {
 
 
 if ($feed_id) {          // just one specified APC feed
-    $feed = new \AA\IO\Feed();
+    $feed = new Feed();
     $feed->loadAAFeed($feed_id, $_GET['time']);
     ($debugfeed>8) && huhl('aafeed', $fire, $feed);
     $feed->feed($fire);
 } elseif ($rssfeed_id) { // just one specified RSS feed
-    $feed = new \AA\IO\Feed();
+    $feed = new Feed();
     $feed->loadRSSFeed($rssfeed_id, $_GET['url']);
     ($debugfeed>8) && huhl('rssfeed', $fire, $feed);
     $feed->feed($fire);
@@ -126,11 +127,11 @@ if ($feed_id) {          // just one specified APC feed
     foreach ($todo_feed as $feed_seting) {
         switch ($feed_seting['type']) {
             case 'aarss':
-                $feed = new \AA\IO\Feed();
+                $feed = new Feed();
                 $feed->loadAAFeed($feed_seting['id']);
                 break;
             case 'rss':
-                $feed = new \AA\IO\Feed();
+                $feed = new Feed();
                 $feed->loadRSSFeed($feed_seting['id']);
                 break;
             default:

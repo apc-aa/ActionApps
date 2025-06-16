@@ -28,12 +28,14 @@
 */
 
 use AA\IO\DB\DB_AA;
+use AA\Managed;
 use AA\Manager;
 use AA\Manageraction\AbstractManageraction;
 use AA\Manageraction\Manageractions;
 use AA\Util\AbstractAliasgenerator;
 use AA\Util\ChangesMonitor;
 use AA\Util\InputVars;
+use AA\Util\Searchfields;
 
 // const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
@@ -43,7 +45,7 @@ require_once __DIR__ . "/../include/item.php";     // GetAliasesFromField funct 
 
 try {
     $cancel = InputVars::boolPOST('cancel');
-} catch (Exception) {}
+} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
 if ($cancel) {
     go_url( StateUrl(self_base() . "index.php"));
@@ -124,7 +126,7 @@ class Manageraction_History_Apply extends AbstractManageraction {
  * List of fields, which will be listed in searchbar in Manager (search)
  * @return AA\Util\Searchfields
  */
-function GetHistoryFields(): \AA\Util\Searchfields
+function GetHistoryFields(): Searchfields
 {  // function - we need trnslate _m() on use (not at include time)
     $searchfields = new AA\Util\Searchfields();
     //   id                     $name,                        $field,                 operators='text', $table=false, $search_pri=false, $order_pri=false
@@ -206,7 +208,7 @@ $manager_settings = [
 
 $apage = new AA_Adminpageutil('sliceadmin', 'history');
 $apage->setTitle(_m('ActionApps - History Manager'));
-$apage->printWithManager(new Manager('history'. AA::$module_id, (new \AA\Managed())->setSettings($manager_settings)->setTitle(_m('ActionApps - History Manager'))));
+$apage->printWithManager(new Manager('history'. AA::$module_id, (new Managed())->setSettings($manager_settings)->setTitle(_m('ActionApps - History Manager'))));
 
 
 

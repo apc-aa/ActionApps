@@ -39,7 +39,7 @@ require_once __DIR__ . "/../modules/alerts/util.php";
 require_once __DIR__ . "/../include/varset.php";
 
 try {
-    /** @var $chb array send to selected users */
+    // $chb - arr send to selected users
     $chb = InputVars::arrayPOST('chb');
     // array ( '' => 1, )
     // $aa_akce_all = InputVars::nonePOST('aa_akce_all'); // empty // not necessary
@@ -84,7 +84,7 @@ try {
     $cancel = InputVars::boolPOST('cancel');
     
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception) {}
+} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
 $err = [];          // error array (Init - just for initializing variable
 
@@ -158,9 +158,7 @@ if ( !$send ) {               // for the first time - directly from item manager
         }
         $varset->add('html', 'number', $html);
 
-        $varset->doINSERT('email');
-
-        $mail_id = $varset->last_insert_id();  // get mail template id
+        $mail_id = $varset->doINSERT('email');  // get mail template id - last_insert_id
 
         if ( !ctype_digit((string)$mail_id) )  {
             $err["mail"] = MsgErr( _m("No template set (which is strange - template was just written to the database") );
@@ -243,7 +241,7 @@ if ($user_templates) {
     FrmInputSelect('template_id', _m('Email template'), $user_templates,  $_POST['template_id']);
 }
 
-FrmTextarea('body', _m('Body'), $_POST['body'], 30, 80, true, '', '', '', true);
+FrmTextarea('body', _m('Body'), $_POST['body'], 30, 80, true, '', '', '', true);  // enable rich text area
 FrmInputEmail(  'header_from', _m('From (email)'),      $_POST['header_from'], 254, 80, true );
 FrmInputEmail(  'reply_to',    _m('Reply to (email)'),  $_POST['reply_to'],    254, 80);
 FrmInputEmail(  'errors_to',   _m('Errors to (email)'), $_POST['errors_to'],   254, 80);

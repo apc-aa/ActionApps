@@ -43,6 +43,7 @@
 //   reset       - reset  - "Reset form"
 //   cancel      - button - "Cancel"
 
+use AA\IO\OnPageChanger;
 use AA\Util\Langs;
 use AA\Util\InputVars;
 
@@ -98,7 +99,7 @@ try {
     $cancel = InputVars::boolGET('cancel');
     
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception) {}
+} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
 
 
@@ -215,7 +216,7 @@ $content_function = static function () use (&$content4id, $slice_id, $edit) {
     return (new inputform([]))->dryEvaluate($content4id, AA_Slice::getModule($slice_id), $edit);
 };
 
-$page_changer = new \AA\IO\OnPageChanger($content_function);
+$page_changer = new OnPageChanger($content_function);
 $page_changer->checkAndProcessCall();
 
 

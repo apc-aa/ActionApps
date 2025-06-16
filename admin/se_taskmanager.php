@@ -51,7 +51,7 @@ if ( !IsSuperadmin() ) {
 //     *  @return string - message about execution to be logged
 //     *  @see \AA\Later\LaterInterface
 //     */
-//    public function toexecutelater($params=array()) {
+//    public function toexecutelater($params=array()): string {
 //        // synchronize accepts array of sync_actions, so it is possible
 //        // to do more action by one call
 //        echo time(). " ";

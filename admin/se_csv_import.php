@@ -87,7 +87,7 @@ try {
     $cancel = InputVars::boolPOST('cancel');
 
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception) {}
+} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
 
 const FILE_PREFIX = 'importdata';
@@ -251,7 +251,9 @@ if ($preview) { // file preview
     <tr><td>
             <table>
                 <tr>
-                    <td><label><input type="radio" <?php if (!$dataType || $dataType === "file") echo "checked"; ?> name="dataType" value="file">&nbsp;file</label></td>
+                    <td><label><input type="radio" <?php if (!$dataType || $dataType === "file") {
+                                echo "checked";
+                            } ?> name="dataType" value="file">&nbsp;file</label></td>
                     <td><input type="file" name="upfile"></td>
                 </tr>
                 <tr>
@@ -259,7 +261,9 @@ if ($preview) { // file preview
                     <td><input type="text" name="url" value="<?php echo $url ?>" placeholder="https://" style="width: 98%;"></td>
                 </tr>
                 <tr>
-                    <td><label><input type="radio" <?php if ($dataType === "text") echo "checked"; ?> name="dataType" value="text">&nbsp;text</label></td>
+                    <td><label><input type="radio" <?php if ($dataType === "text") {
+                                echo "checked";
+                            } ?> name="dataType" value="text">&nbsp;text</label></td>
                     <td><textarea name="text" rows="5"><?php echo $text ?></textarea></td>
                 </tr>
             </table>

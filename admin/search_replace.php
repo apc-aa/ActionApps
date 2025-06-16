@@ -28,6 +28,7 @@
 */
 
 // const  AA_REGISTER_GLOBALS = true;
+use AA\Later\Toexecute;
 use AA\Util\InputVars;
 
 require_once __DIR__ . "/../include/init_page.php";
@@ -66,7 +67,7 @@ try {
     $cancel = InputVars::boolPOST('cancel');
     
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception) {}
+} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
 
 
@@ -96,12 +97,11 @@ if ( !$fill ) {               // for the first time - directly from item manager
         $transformator  = new AA_Transformator($transformation, $field_id, null, $silent, ($silent && $field_id === 'last_edit.......' && IsSuperadmin()));
         if ($tasks>0) {
             $zids_chunked = $zids->chunk($tasks);
-            $toexecute = new \AA\Later\Toexecute();
+            $toexecute = new Toexecute();
 
             foreach ($zids_chunked as $chunk) {
-                if ($toexecute->later($transformator->setZids($chunk),[],'ModifyItemContent')) {
-                    $planned += $chunk->count();
-                }
+                $toexecute->later($transformator->setZids($chunk),[],'ModifyItemContent');
+                $planned += $chunk->count();
             }
         } else {
             $updated_items = $transformator->setZids($zids)->transform();

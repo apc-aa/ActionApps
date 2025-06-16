@@ -49,7 +49,7 @@ try {
     $cancel = InputVars::boolPOST('cancel');
     
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception) {}
+} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
 if (!IfSlPerm(PS_FEEDING)) {
   MsgPage(_m("You have not permissions to change feeding setting"));
@@ -89,7 +89,9 @@ foreach ($fmap as $to_field_id => $val) {
         case _m("-- RSS field or expr --"):
             $flag = FEEDMAP_FLAG_RSS;
             $catVS->add("value", "quoted", $fval[$to_field_id]);
-            if (! $map_to[$val]) $catVS->add("from_field_name", "quoted", $fval[$to_field_id]);
+            if (! $map_to[$val]) {
+                $catVS->add("from_field_name", "quoted", $fval[$to_field_id]);
+            }
             unset($map_to[$val]);
             break;
         case  FEEDMAP_FLAG_EXTMAP :
