@@ -70,7 +70,7 @@ if ($do==="chu") { //CHeck User
         $by = "con_email.......";
         $id = $email;
     }
-    // check if we can find the user either by username (preffered as it's unique) or email address
+    // check if we can find the user either by username (preferred as it's unique) or email address
     if (!$userdata=GetUserData($id,$by)) {
         die("Can't find the user, sorry. Check the spelling and try again !!!");
     }

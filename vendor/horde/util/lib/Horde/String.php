@@ -116,13 +116,15 @@ class Horde_String
              !Horde_Util::extensionExists('iconv') ||
              !Horde_Util::extensionExists('mbstring'))) {
             if (($to == 'utf-8') &&
+                function_exists('utf8_encode') &&
                 in_array($from, array('iso-8859-1', 'us-ascii', 'utf-8'))) {
-                return utf8_encode($input);
+                return @utf8_encode($input);
             }
 
             if (($from == 'utf-8') &&
+                function_exists('utf8_decode') &&
                 in_array($to, array('iso-8859-1', 'us-ascii', 'utf-8'))) {
-                return utf8_decode($input);
+                return @utf8_decode($input);
             }
         }
 
@@ -326,11 +328,15 @@ class Horde_String
 
         /* Try mbstring. */
         if (Horde_Util::extensionExists('mbstring')) {
-            $ret = @mb_substr($string, $start, $length, self::_mbstringCharset($charset));
+            $supported_encodings = mb_list_encodings();
+            if(in_array($charset, $supported_encodings))
+            {
+                $ret = @mb_substr($string, $start, $length, self::_mbstringCharset($charset));
 
-            /* mb_substr() returns empty string on failure. */
-            if (strlen($ret)) {
-                return $ret;
+                /* mb_substr() returns empty string on failure. */
+                if (strlen($ret)) {
+                    return $ret;
+                }
             }
             $error = true;
         }
@@ -384,7 +390,12 @@ class Horde_String
         $charset = self::lower($charset);
 
         if ($charset == 'utf-8' || $charset == 'utf8') {
-            return strlen(utf8_decode($string));
+            if (Horde_Util::extensionExists('mbstring')) {
+                return strlen(mb_convert_encoding($string, 'ISO-8859-1', 'UTF-8'));
+
+            } else if (function_exists('utf8_decode')) {
+                return strlen(@utf8_decode($string));
+            }
         }
 
         if (Horde_Util::extensionExists('mbstring')) {

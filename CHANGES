@@ -1771,7 +1771,7 @@ The changes could be tracked on:
              <div class=mybox style="color:_#P2">_#P1</div>
          - new possibility to write {xseo:1} {xseo:2} instead of {xseo1}
            and {xseo2}. It is for compatibility with {xid:1}, {xid:2}.
-           The new way is {xseo:1} preffered, but the old one works as well
+           The new way is {xseo:1} preferred, but the old one works as well
          - {xseo} gives you just the first id, if more than one matches
          - new {index:<field-id>[:<index>]} - which returns the value
            at position <index> for multivalue fields,
@@ -2761,7 +2761,7 @@ The changes could be tracked on:
          - new {itree:<tree-string>:<nested_top>[:<content>[:<delimiter>[:<nested_bottom>]]]}
            Displays field/alias of given item(s) in tree. It wors exactly as
            {item} but the parameter order is more logical, so the {itree} is
-           the preffered way of displaying trees and breadscrumbs...
+           the preferred way of displaying trees and breadscrumbs...
          - new {treestring:<item_id>[:<relation_field>]}
              {treestring:2a4352366262227383484784635362ab:relation.......1}
            generates tree-string (as used in {itree}) based on item and its

@@ -2,6 +2,7 @@
 
 namespace AA\IO\DB;
 
+use AA;
 use PDO;
 use PDOException;
 use PDOStatement;
@@ -37,21 +38,17 @@ class DB_PDO  {
     protected $revision = "1.0";
 
     /* private: link and query handles */
-    /**
-     * @var int|PDO
-     */
-    protected $dbh = 0;
+    protected PDO|false          $dbh = false;
 
-    /**
-     * @var int|PDOStatement
-     */
-    protected $sth = 0;
+    protected PDOStatement|false $sth = false;
 
-    public function quote($str) {
-        if (!$this->connect()) {
-            return 0;
-        }
-        return $this->dbh->quote($str);
+    public static int $_instances_no = 0;
+    public int $dbg_id;
+
+
+    public function quote($str): false|string
+    {
+        return !$this->connect() ? false : $this->dbh->quote($str);
     }
 
     /** Quotes table name or column name */
@@ -60,11 +57,37 @@ class DB_PDO  {
         return $char. implode("$char.$char", explode(".", $str)) . $char;
     }
 
+    /** just for debug purposes */
+    public function getType() {
+        return get_class_name($this);
+    }
+
+    /**
+     * @deprecated Used just as compatibility layer for external scripts calling $db->Record['name']
+     * @param $name
+     */
+    public function __get($name) {
+        if ($name === 'Record') {
+            return $this->record();
+        }
+        return null;
+    }
+
+
+
     /**
      * DB_PDO constructor.
      * @param array $connection
      */
     function __construct(array $connection) {
+
+        // in reality, we switched all the databases to PDO
+        if (in_array($connection['type'], ['db_mysql', 'db_mysqli'])) {
+            $connection['type'] = 'db_pdo:mysql';
+        }
+        [$type,$driver] = explode(':',$connection['type'].':');  // $driver used in  PDO: db_pdo:mysql, ...
+        $connection['driver'] = $driver;
+
         $this->Database   = $connection['database']   ?? '';
         $this->Host       = $connection['host']       ?? '';
         $this->User       = $connection['user']       ?? '';
@@ -74,16 +97,19 @@ class DB_PDO  {
         $this->charset    = $connection['charset']    ?? '';
         $this->collation  = $connection['collation']  ?? '';
         $this->persistent = $connection['persistent'] ?? false;
+        $this->dbg_id     = ++self::$_instances_no;
     }
 
-    function beginTransaction() {
+    function beginTransaction(): bool
+    {
         if (!$this->connect()) {
             return false;
         }
         return $this->dbh->beginTransaction();
     }
 
-    function prepare($query = "") {
+    function prepare($query = ""): false|PDOStatement
+    {
         if (!$this->connect()) {
             return false;
         }
@@ -91,17 +117,20 @@ class DB_PDO  {
         return $this->sth;
     }
 
-    function commit() {
+    function commit(): bool
+    {
         return $this->dbh->commit();
     }
 
-    function rollback() {
+    function rollback(): bool
+    {
         return $this->dbh->rollback();
     }
 
-    function execute(array $param=[]) {
+    function execute(array $param=[]): bool
+    {
         if (!$this->connect()) {
-            return 0;
+            return false;
         }
         if (!array_filter(array_keys($param), 'is_string')) { // this is NOT an associative array, so we cannot bindValue or bindParams
             if (!$status = $this->sth->execute($param)) {
@@ -131,7 +160,8 @@ class DB_PDO  {
     }
 
     /* public: connection management */
-    public function connect() {
+    public function connect(): PDO|false
+    {
         $Database = $this->Database;
         $Host     = $this->Host;
         $User     = $this->User;
@@ -230,13 +260,22 @@ class DB_PDO  {
     }
 
     /* public: discard the query result */
-    public function free() {
+    public function free(): void
+    {
         $this->sth->closeCursor();
     }
 
+    public function query($Query_String): bool {
+        AA::$debug & 16 && AA::$dbg->tracestart('Query', $Query_String);
+        $ret = $this->query_internal($Query_String);
+        AA::$debug & 16 && AA::$dbg->traceend('Query', (stripos($Query_String, "SELECT") === 0) ? $this->num_rows() : $this->affected_rows());
+        return $ret;
+    }
+
     /* public: perform a query */
-    public function query($Query_String): bool
+    private function query_internal($Query_String): bool
     {
+
         /* No empty queries, please, since PHP4 chokes on them. */
         if ($Query_String == "") {
             /* The empty query string is passed on from the constructor,
@@ -344,7 +383,6 @@ class DB_PDO  {
     /* public: walk result set */
     public function next_record(): bool
     {
-        $fetch_style = PDO::FETCH_ASSOC; // use as function parameter?
         if (!$this->sth) {
             $this->halt("next_record called with no query pending.");
             return false;
@@ -354,18 +392,15 @@ class DB_PDO  {
             echo ".";
         }
 
-        $this->Record = $this->sth->fetch($fetch_style);
+        $this->Record = $this->sth->fetch(PDO::FETCH_ASSOC);
         ++$this->Row;
         $this->getErrorInfo();
 
         $stat = is_array($this->Record);
-        if ($stat) {
-            return $stat;
+
+        if (!$stat && $this->Auto_Free) {
+            $this->free();
         }
-        if (!$this->Auto_Free) {
-            return $stat;
-        }
-        $this->free();
         return $stat;
     }
 
@@ -703,7 +738,8 @@ class DB_PDO  {
         return false;
     }
 
-    function getErrorInfo() {
+    function getErrorInfo(): void
+    {
         if (is_object($this->dbh)) {
             $e = $this->dbh->errorInfo();
             $this->Error = $e[2];
@@ -713,7 +749,8 @@ class DB_PDO  {
     }
 
     /* private: error handling */
-    public function halt($msg) {
+    public function halt($msg): void
+    {
         $this->getErrorInfo();
         if ($this->Debug) {
             echo $this->Server . "(pdo) error(" . $this->ErrCode . "):" . $this->Errno . " " . $this->Error . $msg;
@@ -750,7 +787,8 @@ class DB_PDO  {
         }
     }
 
-    public function haltmsg($msg) {
+    public function haltmsg($msg): void
+    {
         printf("<p><b>Database error:</b> %s<br>\n", safe($msg));
         printf("<b>%s Error</b>: %s (%s)</p>\n", get_class_name($this), $this->Errno, $this->Error);
     }
@@ -768,7 +806,8 @@ class DB_PDO  {
     }
 
 
-    public function query_halt(string $Query_String, string $mode) {
+    public function query_halt(string $Query_String, string $mode): bool
+    {
         $store = $this->Halt_On_Error;
         $this->set_halt($mode);
         $ret = $this->query($Query_String);

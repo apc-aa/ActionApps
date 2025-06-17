@@ -7,29 +7,10 @@ use AA;
 use AA_Http;
 
 /** proxy class for other db engines */
-class DB_AA
+final class DB_AA
 {
-
-    /** @var string database link  */
-    protected $dbase;
-
-    public static $_instances_no = 0;
-
-
-    /* public: constructor */
-    function __construct(array $connection) {
-
-        // in reality, we switched all the databases to PDO
-        if (in_array($connection['type'], ['db_mysql', 'db_mysqli'])) {
-            $connection['type'] = 'db_pdo:mysql';
-        }
-
-        [$type,$driver] = explode(':',$connection['type'].':');  // $driver used in  PDO: db_pdo:mysql, ...
-
-        self::$_instances_no++;
-        $connection['driver'] = $driver;
-        $this->dbase = new DB_PDO($connection);
-    }
+    /* private: constructor - NO INSTANCES! */
+    private function __construct(array $connection) {}
 
     /** just for debug purposes */
      public static function getDbType(): string {
@@ -38,23 +19,6 @@ class DB_AA
          freeDB($db);
          return $type;
     }
-
-    /** just for debug purposes */
-    public function getType() {
-         return get_class_name($this->dbase);
-    }
-
-    /**
-     * @deprecated Used just as compatibility layer for external scripts calling $db->Record['name']
-     * @param $name
-     * @return array|mixed
-     */
-    public function __get($name) {
-        if ($name === 'Record') {
-            return $this->record();
-        }
-    }
-
 
     /**
      *  used as: $sdata = DB_AA::select1('', 'SELECT * FROM `slice`', [['id',$long_id, 'l']]));
@@ -67,7 +31,6 @@ class DB_AA
      * @param array $where
      * @param array $order
      * @param int $row
-     * @return array|false|mixed
      */
     public static function select1($column, $query, $where = [], $order = [], int $row=1) {
         $db = getDB();
@@ -194,7 +157,8 @@ class DB_AA
      *  used as: DB_AA::sql("INSERT SELECT id FROM `change` WHERE ...");
      * @return false|int - number of affected rows (useful for INSERT/UPDATE/DELETE) or false on problem
     */
-    static function sql($query, $where = null) {
+    static function sql($query, $where = null): false|int
+    {
         $db = getDB();
         $query .= is_array($where) ? ' ' . self::makeWhere($where) : '';
         $ret = $db->query($query) ? $db->affected_rows() : false;
@@ -207,7 +171,8 @@ class DB_AA
      * @param array $where
      * @return false|int
      */
-    static function delete($table, $where = null) {
+    static function delete($table, $where = null): false|int
+    {
         return self::sql("DELETE FROM `$table` ", $where);
     }
 
@@ -216,7 +181,8 @@ class DB_AA
      * @param array $where
      * @return false|int
      */
-    static function delete_low_priority($table, $where = null) {
+    static function delete_low_priority($table, $where = null): false|int
+    {
         return self::sql("DELETE LOW_PRIORITY FROM `$table` ", $where);
     }
 
@@ -319,10 +285,10 @@ class DB_AA
      *     NOT LIKE -                   NOT LIKE         single             ['id', '\_%', 'NOT LIKE']
      *     FILLED   -                   > ''             single             ['field3', '', 'FILLED']     // not null, not empty, not any whitespace character(s)
      *
-     * @param $tablename
      * @return string
      */
-    public static function makeWhere($varlist) {
+    public static function makeWhere($varlist): string
+    {
         $where = [];
         foreach ($varlist as $vardef) {
             // $vardef is array(varname, type, value)
@@ -435,7 +401,8 @@ class DB_AA
      * @param $orderarr  array of order fields - ['id','time-']
      * @return string
      */
-    protected static function makeOrder($orderarr) {
+    protected static function makeOrder($orderarr): string
+    {
         $order = [];
         foreach ($orderarr as $sort) {
             $order[] = match (substr($sort, -1)) {
@@ -455,49 +422,9 @@ class DB_AA
         return 'GROUP BY ' . implode(',', $group);
     }
 
-    /** query function
-     *
-     * @param $SQL
-     *
-     * @return bool
-     */
-    public function query($SQL): bool {
-        AA::$debug & 16 && AA::$dbg->tracestart('Query', $SQL);
-        $ret = $this->dbase->query($SQL);
-        AA::$debug & 16 && AA::$dbg->traceend('Query', (stripos($SQL, "SELECT") === 0) ? $this->dbase->num_rows() : $this->dbase->affected_rows());
-        return $ret;
-    }
-
-    function quote(string $string) { return $this->dbase->quote($string); }
-
     public static function quoteIdentifier(string $str): string {
         $char = in_array(DB_TYPE, ['db_mysql','db_mysqli','db_pdo:mysql']) ? '`' : '"';   // in original was used just '"' character (which is SQL standard and could be OK), but using PDO with mysql needs '`' character
         return $char. implode("$char.$char", explode(".", $str)) . $char;
     }
 
-    public function next_record(): bool { return $this->dbase->next_record(); }
-
-    /* public: return all the results */
-    public function fetch_column($col): array { return $this->dbase->fetch_column($col); }
-
-    /** public: evaluate the result (size, width)
-     * @return int
-     */
-    public function affected_rows(): int { return $this->dbase->affected_rows(); }
-
-    public function num_rows(): int { return $this->dbase->num_rows(); }
-
-    public function last_insert_id(): false|string { return $this->dbase->last_insert_id(); }
-
-    public function f($Name) { return $this->dbase->f($Name); }
-
-    public function record($Name = null) { return $this->dbase->record($Name); }
-
-    public function metadata(string $table=""): false|array { return $this->dbase->metadata($table); }
-
-    public function table_names(): array { return $this->dbase->table_names(); }
-
-    public function set_halt(string $mode): bool { return $this->dbase->set_halt($mode); }
-
-    public function query_halt(string $Query_String, string $mode): bool { return $this->dbase->query_halt($Query_String, $mode); }
 }
