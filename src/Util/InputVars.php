@@ -2,118 +2,160 @@
 
 namespace AA\Util;
 
+use RuntimeException;
+
 class InputVars {
-    protected static function inpuCheck($source, $var, $type, $required) {
-        switch ($type) {
-            case 'int': $ret = (int)$source[$var]; break;
+
+    /** @throws RuntimeException */
+    private static function inputCheck(string $name, $value, string $type, bool $required): string|int|bool|array
+    {
+        $valid = !$required || match ($type) {
+                'int'    => is_numeric($value) && (int)$value == $value,
+                'bool'   => in_array((string)$value, ['0', '1'], true),
+                'string' => is_string($value) && strlen(trim($value)),
+                'quoted' => is_string($value) && strlen(trim($value)),    // @deprecated - use string
+                'id'     => is_long_id((string)$value),
+                'array'  => is_array($value),
+                'qarray' => is_array($value),                             // @deprecated - use array
+                default  => false,
+        };
+        if (!$valid) {
+            $report_val = Txt::shorten( is_array($value) ? print_r($value, true) : (string)$value, 20);
+            throw new RuntimeException("$name/$type ($report_val): Required, but not filed.");
         }
-        return $ret;
-    }
-
-
-    public static function intPOST(string $name, bool $required = false): int {
-        return self::inpuCheck($_POST, $name, 'int', $required);
-    }
-
-    public static function boolPOST(string $name, bool $required = false): bool {
-        return (bool)$_POST[$name];
-    }
-
-    /* @deprecated - use rather stringPOST - without adding artificial quotes */
-    public static function stringSlashedPOST(string $name, bool $required = false): string {
-        return addslashes($_POST[$name]);
-    }
-
-    public static function stringPOST(string $name, bool $required = false): string {
-        return (string)$_POST[$name];
-    }
-
-    public static function idPOST(string $name, bool $required = false): string {
-        return is_long_id((string)$_POST[$name]) ? (string)$_POST[$name] : '';
-    } // long id
-
-    /* @deprecated - use rather arrayPOST - without adding artificial quotes */
-    public static function arraySlashedPOST(string $name, bool $required = false): array {
-        return (array)self::AddslashesArray($_POST[$name]);
-    }
-
-    // --- GET ---
-
-    public static function arrayPOST(string $name, bool $required = false): array {
-        return (array)$_POST[$name];
-    }
-
-    public static function intGET(string $name, bool $required = false): int {
-        return (int)$_GET[$name];
-    }
-
-    public static function boolGET(string $name, bool $required = false): bool {
-        return (bool)$_GET[$name];
-    }
-
-    /* @deprecated - use rather stringGET - without adding artificial quotes */
-    public static function stringSlashedGET(string $name, bool $required = false): string {
-        return addslashes($_GET[$name]);
-    }
-
-    public static function stringGET(string $name, bool $required = false): string {
-        return (string)$_GET[$name];
-    }
-
-    /**
-     * @throws \Exception
-     */
-    public static function idGET(string $name, bool $required = false): string {
-        $ret = is_long_id((string)$_GET[$name]) ? (string)$_GET[$name] : '';
-        if ($required && !$ret) {
-            throw new \Exception('Required, but not filed.');
-        }
-        return $ret;
-    }
-
-    /* @deprecated - use rather arrayGET - without adding artificial quotes */
-    public static function arraySlashedGET(string $name, bool $required = false): array {
-        return (array)self::AddslashesArray($_GET[$name]);
+        return match ($type) {
+             'int'    => (int)$value,
+             'bool'   => (bool)$value,
+             'string' => (string)$value,
+             'quoted' => addslashes((string)$value),                      // @deprecated - use string
+             'id'     => is_long_id((string)$value) ? (string)$value : '',
+             'array'  => is_array($value) ? $value : [],
+             'qarray' => (array)self::AddslashesArray($value),            // @deprecated - use array
+             default  => $value, // fallback for other types
+        };
     }
 
     // --- POST ---
 
+    /** @throws RuntimeException */
+    public static function intPOST(string $name, bool $required = false): int {
+        return self::inputCheck($name, $_POST[$name], 'int', $required);
+    }
+
+    /** @throws RuntimeException */
+    public static function boolPOST(string $name, bool $required = false): bool {
+        return self::inputCheck($name, $_POST[$name], 'bool', $required);
+    }
+
+    /** @deprecated - use rather stringPOST - without adding artificial quotes
+     *  @throws RuntimeException
+     */
+    public static function stringSlashedPOST(string $name, bool $required = false): string {
+        return self::inputCheck($name, $_POST[$name], 'quoted', $required);
+    }
+
+    /** @throws RuntimeException */
+    public static function stringPOST(string $name, bool $required = false): string {
+        return self::inputCheck($name, $_POST[$name], 'string', $required);
+    }
+
+    /** Long ID
+     *  @throws RuntimeException
+     */
+    public static function idPOST(string $name, bool $required = false): string {
+        return self::inputCheck($name, $_POST[$name], 'id', $required);
+    } // long id
+
+    /** @deprecated - use rather arrayPOST - without adding artificial quotes
+     *  @throws RuntimeException
+     */
+    public static function arraySlashedPOST(string $name, bool $required = false): array {
+        return self::inputCheck($name, $_POST[$name], 'qarray', $required);
+    }
+
+    /** @throws RuntimeException */
+    public static function arrayPOST(string $name, bool $required = false): array {
+        return self::inputCheck($name, $_POST[$name], 'array', $required);
+    }
+
+    // --- GET ---
+
+    /** @throws RuntimeException */
+    public static function intGET(string $name, bool $required = false): int {
+        return self::inputCheck($name, $_GET[$name], 'int', $required);
+    }
+
+    /** @throws RuntimeException */
+    public static function boolGET(string $name, bool $required = false): bool {
+        return self::inputCheck($name, $_GET[$name], 'bool', $required);
+    }
+
+    /** @deprecated - use rather stringGET - without adding artificial quotes
+     *  @throws RuntimeException
+     */
+    public static function stringSlashedGET(string $name, bool $required = false): string {
+        return self::inputCheck($name, $_GET[$name], 'quoted', $required);
+    }
+
+    /** @throws RuntimeException */
+    public static function stringGET(string $name, bool $required = false): string {
+        return self::inputCheck($name, $_GET[$name], 'string', $required);
+    }
+
+    /** Long ID
+     *  @throws RuntimeException
+     */
+    public static function idGET(string $name, bool $required = false): string {
+        return self::inputCheck($name, $_GET[$name], 'id', $required);
+    }
+
+    /** @deprecated - use rather arrayGET - without adding artificial quotes
+     *  @throws RuntimeException
+     */
+    public static function arraySlashedGET(string $name, bool $required = false): array {
+        return self::inputCheck($name, $_GET[$name], 'qarray', $required);
+    }
+
+    /** @throws RuntimeException */
     public static function arrayGET(string $name, bool $required = false): array {
-        return (array)$_GET[$name];
-    }
-
-    public static function boolGETPOST(string $name, bool $required = false): bool {
-        return isset($_GET[$name]) ? (bool)$_GET[$name] : (bool)$_POST[$name];
-    }
-
-    /* @deprecated - use rather stringGETPOST - without adding artificial quotes */
-    public static function stringSlashedGETPOST(string $name, bool $required = false): string {
-        return isset($_GET[$name]) ? addslashes($_GET[$name]) : addslashes($_POST[$name]);
-    }
-
-    public static function stringGETPOST(string $name, bool $required = false): string {
-        return isset($_GET[$name]) ? (string)$_GET[$name] : (string)$_POST[$name];
+        return self::inputCheck($name, $_GET[$name], 'array', $required);
     }
 
     // --- GET + POST ---
 
-    /**
-     * @throws \Exception
+    /** @throws RuntimeException */
+    public static function boolGETPOST(string $name, bool $required = false): bool {
+        return self::inputCheck($name, $_GET[$name] ?? $_POST[$name], 'bool', $required);
+
+    }
+
+    /** @throws RuntimeException */
+    public static function intGETPOST(string $name, bool $required = false): int {
+        return self::inputCheck($name, $_GET[$name] ?? $_POST[$name], 'int', $required);
+    }
+
+    /** @deprecated - use rather stringGETPOST - without adding artificial quotes
+     *  @throws RuntimeException
+     */
+    public static function stringSlashedGETPOST(string $name, bool $required = false): string {
+        return self::inputCheck($name, $_GET[$name] ?? $_POST[$name], 'quoted', $required);
+    }
+
+    /** @throws RuntimeException */
+    public static function stringGETPOST(string $name, bool $required = false): string {
+        return self::inputCheck($name, $_GET[$name] ?? $_POST[$name], 'string', $required);
+    }
+
+    /** Long ID
+     *  @throws RuntimeException
      */
     public static function idGETPOST(string $name, bool $required = false): string {
-        $ret = is_long_id((string)$_GET[$name]) ? (string)$_GET[$name] : (is_long_id((string)$_POST[$name]) ? (string)$_POST[$name] : '');
-        if ($required && !$ret) {
-            throw new \Exception('Required, but not filed.');
-        }
-        return $ret;
+        return self::inputCheck($name, $_GET[$name] ?? $_POST[$name], 'id', $required);
     }
 
+    /** @throws RuntimeException */
     public static function arrayGETPOST(string $name, bool $required = false): array {
-        return isset($_GET[$name]) ? (array)$_GET[$name] : (array)$_POST[$name];
-    }
-
-    public static function intGETPOST(string $name, bool $required = false): int {
-        return isset($_GET[$name]) ? (int)$_GET[$name] : (int)$_POST[$name] ;
+        return self::inputCheck($name, $_GET[$name] ?? $_POST[$name], 'array', $required);
     }
 
 
@@ -123,12 +165,14 @@ class InputVars {
      * @param $value
      * @return array|string
      */
-    public static function AddslashesArray($value) {
-        return is_array($value) ? array_map(["\AA\Util\InputVars", "AddslashesArray"], $value) : addslashes($value);
+    public static function AddslashesArray($value): array|string
+    {
+        return is_array($value) ? array_map([__CLASS__, "AddslashesArray"], $value) : addslashes($value);
     }
 
-    public static function StripslashesArray($value) {
-        return is_array($value) ? array_map(["\AA\Util\InputVars", "StripslashesArray"], $value) : stripslashes($value);
+    public static function StripslashesArray($value): array|string
+    {
+        return is_array($value) ? array_map([__CLASS__, "StripslashesArray"], $value) : stripslashes($value);
     }
 
     /** function for processing posted or get variables
@@ -137,7 +181,8 @@ class InputVars {
      * @param string $method
      * @param array  $skip
      */
-    public static function QuoteVars(string $method = "get", array $skip = []) {
+    public static function QuoteVars(string $method = "get", array $skip = []): void
+    {
         $arr = ($method === "get") ? $_GET : $_POST;
         foreach ($arr as $k => $v) {
             if (!isset($skip[$k])) {
