@@ -690,7 +690,7 @@ class AA_Slice extends AA_Module {
 
     /** for translated fields - if not translated, use default language of the module */
     function getDefaultLang(): string  {
-        return is_array($translations = $this->getTranslations()) ? $translations[0] : $this->getLang();
+        return ($translations = $this->getTranslations()) ? $translations[0] : $this->getLang();
     }
 
     /** find default field for upload to - first file...........x or img_upload.....x or img_src........x field
