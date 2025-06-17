@@ -6,8 +6,5 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
-    'Horde_Translation' => array($vendorDir . '/horde/translation/lib'),
-    'Horde_Text_Diff' => array($vendorDir . '/horde/text_diff/lib'),
-    'Horde_Exception' => array($vendorDir . '/horde/exception/lib'),
     'Detection' => array($vendorDir . '/mobiledetect/mobiledetectlib/namespaced'),
 );

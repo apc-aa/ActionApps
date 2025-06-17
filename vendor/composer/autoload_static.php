@@ -12,16 +12,14 @@ class ComposerStaticInit43e15006db6c3041e7b8c7c57cf04d54
     );
 
     public static $prefixLengthsPsr4 = array (
+        'J' => 
+        array (
+            'Jfcherng\\Utility\\' => 17,
+            'Jfcherng\\Diff\\' => 14,
+        ),
         'I' => 
         array (
             'Iban\\Validation\\' => 16,
-        ),
-        'H' => 
-        array (
-            'Horde\\Util\\' => 11,
-            'Horde\\Translation\\' => 18,
-            'Horde\\Text\\Diff\\' => 16,
-            'Horde\\Exception\\' => 16,
         ),
         'F' => 
         array (
@@ -36,25 +34,19 @@ class ComposerStaticInit43e15006db6c3041e7b8c7c57cf04d54
     );
 
     public static $prefixDirsPsr4 = array (
+        'Jfcherng\\Utility\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/jfcherng/php-mb-string/src',
+            1 => __DIR__ . '/..' . '/jfcherng/php-color-output/src',
+        ),
+        'Jfcherng\\Diff\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/jfcherng/php-diff/src',
+            1 => __DIR__ . '/..' . '/jfcherng/php-sequence-matcher/src',
+        ),
         'Iban\\Validation\\' => 
         array (
             0 => __DIR__ . '/..' . '/honzito/iban-validation/src',
-        ),
-        'Horde\\Util\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/horde/util/src',
-        ),
-        'Horde\\Translation\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/horde/translation/src',
-        ),
-        'Horde\\Text\\Diff\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/horde/text_diff/src',
-        ),
-        'Horde\\Exception\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/horde/exception/src',
         ),
         'Flow\\JSONPath\\' => 
         array (
@@ -75,21 +67,6 @@ class ComposerStaticInit43e15006db6c3041e7b8c7c57cf04d54
     );
 
     public static $prefixesPsr0 = array (
-        'H' => 
-        array (
-            'Horde_Translation' => 
-            array (
-                0 => __DIR__ . '/..' . '/horde/translation/lib',
-            ),
-            'Horde_Text_Diff' => 
-            array (
-                0 => __DIR__ . '/..' . '/horde/text_diff/lib',
-            ),
-            'Horde_Exception' => 
-            array (
-                0 => __DIR__ . '/..' . '/horde/exception/lib',
-            ),
-        ),
         'D' => 
         array (
             'Detection' => 
@@ -290,11 +267,12 @@ class ComposerStaticInit43e15006db6c3041e7b8c7c57cf04d54
         'AA\\Optimize\\UpdateDbStructure' => __DIR__ . '/../..' . '/src/Optimize/UpdateDbStructure.php',
         'AA\\Util\\AA_Packtime' => __DIR__ . '/../..' . '/src/Util/Hitcounter.php',
         'AA\\Util\\AbstractAliasgenerator' => __DIR__ . '/../..' . '/src/Util/AbstractAliasgenerator.php',
+        'AA\\Util\\Adminlink' => __DIR__ . '/../..' . '/src/Util/Adminlink.php',
         'AA\\Util\\ArrTrait' => __DIR__ . '/../..' . '/src/Util/ArrTrait.php',
         'AA\\Util\\ChangeProposal' => __DIR__ . '/../..' . '/src/Util/ChangeProposal.php',
         'AA\\Util\\ChangesMonitor' => __DIR__ . '/../..' . '/src/Util/ChangesMonitor.php',
         'AA\\Util\\Crypt' => __DIR__ . '/../..' . '/src/Util/Crypt.php',
-        'AA\\Util\\DataArrayAccessTrait' => __DIR__ . '/../..' . '/src/Util/DataArrayAccessTraitTrait.php',
+        'AA\\Util\\DataArrayAccessTrait' => __DIR__ . '/../..' . '/src/Util/DataArrayAccessTrait.php',
         'AA\\Util\\Difftext' => __DIR__ . '/../..' . '/src/Util/Difftext.php',
         'AA\\Util\\Hitcounter' => __DIR__ . '/../..' . '/src/Util/Hitcounter.php',
         'AA\\Util\\Imgfunc' => __DIR__ . '/../..' . '/src/Util/Imgfunc.php',
@@ -619,6 +597,7 @@ class ComposerStaticInit43e15006db6c3041e7b8c7c57cf04d54
         'AA_Stringexpand_Lazy' => __DIR__ . '/../..' . '/include/stringexpand.php',
         'AA_Stringexpand_Lcfirst' => __DIR__ . '/../..' . '/include/stringexpand.php',
         'AA_Stringexpand_Limit' => __DIR__ . '/../..' . '/include/stringexpand.php',
+        'AA_Stringexpand_Linkcheck' => __DIR__ . '/../..' . '/include/stringexpand.php',
         'AA_Stringexpand_Live' => __DIR__ . '/../..' . '/include/stringexpand.php',
         'AA_Stringexpand_Livesearch' => __DIR__ . '/../..' . '/include/stringexpand.php',
         'AA_Stringexpand_Log' => __DIR__ . '/../..' . '/include/stringexpand.php',
@@ -873,59 +852,6 @@ class ComposerStaticInit43e15006db6c3041e7b8c7c57cf04d54
         'Flow\\JSONPath\\JSONPathLexer' => __DIR__ . '/..' . '/softcreatr/jsonpath/src/JSONPathLexer.php',
         'Flow\\JSONPath\\JSONPathToken' => __DIR__ . '/..' . '/softcreatr/jsonpath/src/JSONPathToken.php',
         'FormrowWidget' => __DIR__ . '/../..' . '/include/form.class.php',
-        'Horde\\Exception\\HordeException' => __DIR__ . '/..' . '/horde/exception/src/HordeException.php',
-        'Horde\\Exception\\LastError' => __DIR__ . '/..' . '/horde/exception/src/LastError.php',
-        'Horde\\Exception\\NotFound' => __DIR__ . '/..' . '/horde/exception/src/NotFound.php',
-        'Horde\\Exception\\Pear' => __DIR__ . '/..' . '/horde/exception/src/Pear.php',
-        'Horde\\Exception\\PermissionDenied' => __DIR__ . '/..' . '/horde/exception/src/PermissionDenied.php',
-        'Horde\\Exception\\Translation' => __DIR__ . '/..' . '/horde/exception/src/Translation.php',
-        'Horde\\Exception\\Wrapped' => __DIR__ . '/..' . '/horde/exception/src/Wrapped.php',
-        'Horde\\Translation\\AbstractTranslation' => __DIR__ . '/..' . '/horde/translation/src/AbstractTranslation.php',
-        'Horde\\Translation\\Autodetect' => __DIR__ . '/..' . '/horde/translation/src/Autodetect.php',
-        'Horde\\Translation\\GettextHandler' => __DIR__ . '/..' . '/horde/translation/src/GettextHandler.php',
-        'Horde\\Translation\\Handler' => __DIR__ . '/..' . '/horde/translation/src/Handler.php',
-        'Horde\\Translation\\Translation' => __DIR__ . '/..' . '/horde/translation/src/Translation.php',
-        'Horde\\Translation\\TranslationException' => __DIR__ . '/..' . '/horde/translation/src/TranslationException.php',
-        'Horde_Array' => __DIR__ . '/..' . '/horde/util/lib/Horde/Array.php',
-        'Horde_Array_Sort_Helper' => __DIR__ . '/..' . '/horde/util/lib/Horde/Array/Sort/Helper.php',
-        'Horde_Domhtml' => __DIR__ . '/..' . '/horde/util/lib/Horde/Domhtml.php',
-        'Horde_Exception' => __DIR__ . '/..' . '/horde/exception/lib/Horde/Exception.php',
-        'Horde_Exception_LastError' => __DIR__ . '/..' . '/horde/exception/lib/Horde/Exception/LastError.php',
-        'Horde_Exception_NotFound' => __DIR__ . '/..' . '/horde/exception/lib/Horde/Exception/NotFound.php',
-        'Horde_Exception_Pear' => __DIR__ . '/..' . '/horde/exception/lib/Horde/Exception/Pear.php',
-        'Horde_Exception_PermissionDenied' => __DIR__ . '/..' . '/horde/exception/lib/Horde/Exception/PermissionDenied.php',
-        'Horde_Exception_Translation' => __DIR__ . '/..' . '/horde/exception/lib/Horde/Exception/Translation.php',
-        'Horde_Exception_Wrapped' => __DIR__ . '/..' . '/horde/exception/lib/Horde/Exception/Wrapped.php',
-        'Horde_String' => __DIR__ . '/..' . '/horde/util/lib/Horde/String.php',
-        'Horde_String_Transliterate' => __DIR__ . '/..' . '/horde/util/lib/Horde/String/Transliterate.php',
-        'Horde_Text_Diff' => __DIR__ . '/..' . '/horde/text_diff/lib/Horde/Text/Diff.php',
-        'Horde_Text_Diff_Engine_Native' => __DIR__ . '/..' . '/horde/text_diff/lib/Horde/Text/Diff/Engine/Native.php',
-        'Horde_Text_Diff_Engine_Shell' => __DIR__ . '/..' . '/horde/text_diff/lib/Horde/Text/Diff/Engine/Shell.php',
-        'Horde_Text_Diff_Engine_String' => __DIR__ . '/..' . '/horde/text_diff/lib/Horde/Text/Diff/Engine/String.php',
-        'Horde_Text_Diff_Engine_Xdiff' => __DIR__ . '/..' . '/horde/text_diff/lib/Horde/Text/Diff/Engine/Xdiff.php',
-        'Horde_Text_Diff_Exception' => __DIR__ . '/..' . '/horde/text_diff/lib/Horde/Text/Diff/Exception.php',
-        'Horde_Text_Diff_Mapped' => __DIR__ . '/..' . '/horde/text_diff/lib/Horde/Text/Diff/Mapped.php',
-        'Horde_Text_Diff_Op_Add' => __DIR__ . '/..' . '/horde/text_diff/lib/Horde/Text/Diff/Op/Add.php',
-        'Horde_Text_Diff_Op_Base' => __DIR__ . '/..' . '/horde/text_diff/lib/Horde/Text/Diff/Op/Base.php',
-        'Horde_Text_Diff_Op_Change' => __DIR__ . '/..' . '/horde/text_diff/lib/Horde/Text/Diff/Op/Change.php',
-        'Horde_Text_Diff_Op_Copy' => __DIR__ . '/..' . '/horde/text_diff/lib/Horde/Text/Diff/Op/Copy.php',
-        'Horde_Text_Diff_Op_Delete' => __DIR__ . '/..' . '/horde/text_diff/lib/Horde/Text/Diff/Op/Delete.php',
-        'Horde_Text_Diff_Renderer' => __DIR__ . '/..' . '/horde/text_diff/lib/Horde/Text/Diff/Renderer.php',
-        'Horde_Text_Diff_Renderer_Context' => __DIR__ . '/..' . '/horde/text_diff/lib/Horde/Text/Diff/Renderer/Context.php',
-        'Horde_Text_Diff_Renderer_Inline' => __DIR__ . '/..' . '/horde/text_diff/lib/Horde/Text/Diff/Renderer/Inline.php',
-        'Horde_Text_Diff_Renderer_Unified' => __DIR__ . '/..' . '/horde/text_diff/lib/Horde/Text/Diff/Renderer/Unified.php',
-        'Horde_Text_Diff_Renderer_Unified_Colored' => __DIR__ . '/..' . '/horde/text_diff/lib/Horde/Text/Diff/Renderer/Unified/Colored.php',
-        'Horde_Text_Diff_ThreeWay' => __DIR__ . '/..' . '/horde/text_diff/lib/Horde/Text/Diff/ThreeWay.php',
-        'Horde_Text_Diff_ThreeWay_BlockBuilder' => __DIR__ . '/..' . '/horde/text_diff/lib/Horde/Text/Diff/ThreeWay/BlockBuilder.php',
-        'Horde_Text_Diff_ThreeWay_Op_Base' => __DIR__ . '/..' . '/horde/text_diff/lib/Horde/Text/Diff/ThreeWay/Op/Base.php',
-        'Horde_Text_Diff_ThreeWay_Op_Copy' => __DIR__ . '/..' . '/horde/text_diff/lib/Horde/Text/Diff/ThreeWay/Op/Copy.php',
-        'Horde_Translation' => __DIR__ . '/..' . '/horde/translation/lib/Horde/Translation.php',
-        'Horde_Translation_Autodetect' => __DIR__ . '/..' . '/horde/translation/lib/Horde/Translation/Autodetect.php',
-        'Horde_Translation_Exception' => __DIR__ . '/..' . '/horde/translation/lib/Horde/Translation/Exception.php',
-        'Horde_Translation_Handler' => __DIR__ . '/..' . '/horde/translation/lib/Horde/Translation/Handler.php',
-        'Horde_Translation_Handler_Gettext' => __DIR__ . '/..' . '/horde/translation/lib/Horde/Translation/Handler/Gettext.php',
-        'Horde_Util' => __DIR__ . '/..' . '/horde/util/lib/Horde/Util.php',
-        'Horde_Variables' => __DIR__ . '/..' . '/horde/util/lib/Horde/Variables.php',
         'Iban\\Validation\\CountryInfo' => __DIR__ . '/..' . '/honzito/iban-validation/src/CountryInfo.php',
         'Iban\\Validation\\Exception\\CanNotBeNormalizedException' => __DIR__ . '/..' . '/honzito/iban-validation/src/Exception/CanNotBeNormalizedException.php',
         'Iban\\Validation\\Exception\\InvalidChecksumException' => __DIR__ . '/..' . '/honzito/iban-validation/src/Exception/InvalidChecksumException.php',
@@ -941,6 +867,38 @@ class ComposerStaticInit43e15006db6c3041e7b8c7c57cf04d54
         'Iban\\Validation\\Swift\\RegistryLoaderInterface' => __DIR__ . '/..' . '/honzito/iban-validation/src/Swift/RegistryLoaderInterface.php',
         'Iban\\Validation\\Validator' => __DIR__ . '/..' . '/honzito/iban-validation/src/Validator.php',
         'ItemContent' => __DIR__ . '/../..' . '/include/item_content.php',
+        'Jfcherng\\Diff\\DiffHelper' => __DIR__ . '/..' . '/jfcherng/php-diff/src/DiffHelper.php',
+        'Jfcherng\\Diff\\Differ' => __DIR__ . '/..' . '/jfcherng/php-diff/src/Differ.php',
+        'Jfcherng\\Diff\\Exception\\FileNotFoundException' => __DIR__ . '/..' . '/jfcherng/php-diff/src/Exception/FileNotFoundException.php',
+        'Jfcherng\\Diff\\Exception\\UnsupportedFunctionException' => __DIR__ . '/..' . '/jfcherng/php-diff/src/Exception/UnsupportedFunctionException.php',
+        'Jfcherng\\Diff\\Factory\\LineRendererFactory' => __DIR__ . '/..' . '/jfcherng/php-diff/src/Factory/LineRendererFactory.php',
+        'Jfcherng\\Diff\\Factory\\RendererFactory' => __DIR__ . '/..' . '/jfcherng/php-diff/src/Factory/RendererFactory.php',
+        'Jfcherng\\Diff\\Renderer\\AbstractRenderer' => __DIR__ . '/..' . '/jfcherng/php-diff/src/Renderer/AbstractRenderer.php',
+        'Jfcherng\\Diff\\Renderer\\Html\\AbstractHtml' => __DIR__ . '/..' . '/jfcherng/php-diff/src/Renderer/Html/AbstractHtml.php',
+        'Jfcherng\\Diff\\Renderer\\Html\\Combined' => __DIR__ . '/..' . '/jfcherng/php-diff/src/Renderer/Html/Combined.php',
+        'Jfcherng\\Diff\\Renderer\\Html\\Inline' => __DIR__ . '/..' . '/jfcherng/php-diff/src/Renderer/Html/Inline.php',
+        'Jfcherng\\Diff\\Renderer\\Html\\Json' => __DIR__ . '/..' . '/jfcherng/php-diff/src/Renderer/Html/Json.php',
+        'Jfcherng\\Diff\\Renderer\\Html\\JsonHtml' => __DIR__ . '/..' . '/jfcherng/php-diff/src/Renderer/Html/JsonHtml.php',
+        'Jfcherng\\Diff\\Renderer\\Html\\LineRenderer\\AbstractLineRenderer' => __DIR__ . '/..' . '/jfcherng/php-diff/src/Renderer/Html/LineRenderer/AbstractLineRenderer.php',
+        'Jfcherng\\Diff\\Renderer\\Html\\LineRenderer\\Char' => __DIR__ . '/..' . '/jfcherng/php-diff/src/Renderer/Html/LineRenderer/Char.php',
+        'Jfcherng\\Diff\\Renderer\\Html\\LineRenderer\\Line' => __DIR__ . '/..' . '/jfcherng/php-diff/src/Renderer/Html/LineRenderer/Line.php',
+        'Jfcherng\\Diff\\Renderer\\Html\\LineRenderer\\LineRendererInterface' => __DIR__ . '/..' . '/jfcherng/php-diff/src/Renderer/Html/LineRenderer/LineRendererInterface.php',
+        'Jfcherng\\Diff\\Renderer\\Html\\LineRenderer\\None' => __DIR__ . '/..' . '/jfcherng/php-diff/src/Renderer/Html/LineRenderer/None.php',
+        'Jfcherng\\Diff\\Renderer\\Html\\LineRenderer\\Word' => __DIR__ . '/..' . '/jfcherng/php-diff/src/Renderer/Html/LineRenderer/Word.php',
+        'Jfcherng\\Diff\\Renderer\\Html\\SideBySide' => __DIR__ . '/..' . '/jfcherng/php-diff/src/Renderer/Html/SideBySide.php',
+        'Jfcherng\\Diff\\Renderer\\RendererConstant' => __DIR__ . '/..' . '/jfcherng/php-diff/src/Renderer/RendererConstant.php',
+        'Jfcherng\\Diff\\Renderer\\RendererInterface' => __DIR__ . '/..' . '/jfcherng/php-diff/src/Renderer/RendererInterface.php',
+        'Jfcherng\\Diff\\Renderer\\Text\\AbstractText' => __DIR__ . '/..' . '/jfcherng/php-diff/src/Renderer/Text/AbstractText.php',
+        'Jfcherng\\Diff\\Renderer\\Text\\Context' => __DIR__ . '/..' . '/jfcherng/php-diff/src/Renderer/Text/Context.php',
+        'Jfcherng\\Diff\\Renderer\\Text\\JsonText' => __DIR__ . '/..' . '/jfcherng/php-diff/src/Renderer/Text/JsonText.php',
+        'Jfcherng\\Diff\\Renderer\\Text\\Unified' => __DIR__ . '/..' . '/jfcherng/php-diff/src/Renderer/Text/Unified.php',
+        'Jfcherng\\Diff\\SequenceMatcher' => __DIR__ . '/..' . '/jfcherng/php-sequence-matcher/src/SequenceMatcher.php',
+        'Jfcherng\\Diff\\Utility\\Arr' => __DIR__ . '/..' . '/jfcherng/php-diff/src/Utility/Arr.php',
+        'Jfcherng\\Diff\\Utility\\Language' => __DIR__ . '/..' . '/jfcherng/php-diff/src/Utility/Language.php',
+        'Jfcherng\\Diff\\Utility\\ReverseIterator' => __DIR__ . '/..' . '/jfcherng/php-diff/src/Utility/ReverseIterator.php',
+        'Jfcherng\\Diff\\Utility\\Str' => __DIR__ . '/..' . '/jfcherng/php-diff/src/Utility/Str.php',
+        'Jfcherng\\Utility\\CliColor' => __DIR__ . '/..' . '/jfcherng/php-color-output/src/CliColor.php',
+        'Jfcherng\\Utility\\MbString' => __DIR__ . '/..' . '/jfcherng/php-mb-string/src/MbString.php',
         'LazyloadTrait' => __DIR__ . '/../..' . '/include/constants.php',
         'LazyloaderInterface' => __DIR__ . '/../..' . '/include/constants.php',
         'MLX' => __DIR__ . '/../..' . '/include/mlx.php',

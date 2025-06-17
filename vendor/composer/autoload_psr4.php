@@ -6,11 +6,9 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
+    'Jfcherng\\Utility\\' => array($vendorDir . '/jfcherng/php-mb-string/src', $vendorDir . '/jfcherng/php-color-output/src'),
+    'Jfcherng\\Diff\\' => array($vendorDir . '/jfcherng/php-diff/src', $vendorDir . '/jfcherng/php-sequence-matcher/src'),
     'Iban\\Validation\\' => array($vendorDir . '/honzito/iban-validation/src'),
-    'Horde\\Util\\' => array($vendorDir . '/horde/util/src'),
-    'Horde\\Translation\\' => array($vendorDir . '/horde/translation/src'),
-    'Horde\\Text\\Diff\\' => array($vendorDir . '/horde/text_diff/src'),
-    'Horde\\Exception\\' => array($vendorDir . '/horde/exception/src'),
     'Flow\\JSONPath\\' => array($vendorDir . '/softcreatr/jsonpath/src'),
     'Firebase\\JWT\\' => array($vendorDir . '/firebase/php-jwt/src'),
     'Defr\\QRPlatba\\' => array($vendorDir . '/honzito/qr-platba/src'),
