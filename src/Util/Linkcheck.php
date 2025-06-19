@@ -122,13 +122,10 @@ class Linkcheck {
         '510'   => [ "comment" => "Not Extended",                     "weight" => 5 ], // RFC2774
         '511'   => [ "comment" => "Network Authentication Required",  "weight" => 5 ], // RFC6585
     ];
-    /** check url - returns error codes, content type, error weight and comment
-     * @param $url
-     * @return array
-     */
-    public function check_url(string $url): array
+
+    private static function get_empty_ressult(): array
     {
-        $result = [
+        return [
             'code'         => null,
             'comment'      => null,
             'weight'       => null,
@@ -141,25 +138,54 @@ class Linkcheck {
             'http_codes'   => [],
             'error'        => null,
         ];
+    }
 
-        // mailto nebo ne-HTTP link
+    /** check url - returns error codes, content type, error weight and comment
+     * @param $url
+     * @return array
+     */
+    public function check_url(string $url): array
+    {
+        $result = self::get_empty_ressult(); // initialize result array
+
+        // mailto or ne-HTTP link
         $url_lower = strtolower(substr($url, 0, 10));
         if (!str_starts_with($url_lower, 'http://') && !str_starts_with($url_lower, 'https://')) {
             if (str_starts_with($url_lower, 'mailto:')) {
                 $email = trim(preg_replace("/^mailto:(.+)/i", "\\1", $url));
                 [$username, $host] = explode("@", $email);
                 $dnsCheck = checkdnsrr($host, "MX");
-                $code = $dnsCheck ? "OK" : "ERROR";
-                $result['code'] = $code;
-                $result['comment'] = self::HTTP_ERROR_CODES[$code]['comment'] ?? 'Unknown';
-                $result['weight']  = self::HTTP_ERROR_CODES[$code]['weight'] ?? 5;
+                $result['code'] = ($dnsCheck ? "OK" : "ERROR");
             } else {
                 $result['code'] = "N/A";
             }
-            $result['comment'] = self::HTTP_ERROR_CODES['N/A']['comment'];
-            $result['weight']  = self::HTTP_ERROR_CODES['N/A']['weight'];
+            $result['comment'] = self::HTTP_ERROR_CODES[$result['code']]['comment'];
+            $result['weight']  = self::HTTP_ERROR_CODES[$result['code']]['weight'];
             return $result;
         }
+
+        // 1. Try HEAD
+        $result = $this->url_request($url);
+
+        // 2. If 405, try GET (with body)
+        if ($result['code'] === '405' || $result['code'] === '501') {   // Method Not Allowed or Not Implemented
+            $result = $this->url_request($url, false);
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param  string  $url
+     * @param  array   $result
+     * @param          $matches
+     * @param          $m
+     *
+     * @return array
+     */
+    private function url_request(string $url, bool $head = true): array
+    {
+        $result = self::get_empty_ressult(); // initialize result array
 
         // --- cURL inicializace ---
         $ch = curl_init();
@@ -167,7 +193,7 @@ class Linkcheck {
         // get chain redirects using callback (PHP 7.1+)
         curl_setopt_array($ch, [
             CURLOPT_URL            => $url,
-            CURLOPT_NOBODY         => true, // HEAD request (do not fetch body)
+            CURLOPT_NOBODY         => $head,           // true = HEAD, false = GET  // HEAD request (do not fetch body)
             CURLOPT_HEADER         => true, // we want headers
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_FOLLOWLOCATION => true,
@@ -191,10 +217,10 @@ class Linkcheck {
         $response = curl_exec($ch);
 
         if ($response === false) {
-            $result['code'] = "999";
-            $result['comment'] = 'No response (' . curl_error($ch) . ')';
-            $result['weight'] = 5;
-            $result['error'] = curl_error($ch);
+            $result['code']    = "999";
+            $result['comment'] = 'No response ('.curl_error($ch).')';
+            $result['weight']  = 5;
+            $result['error']   = curl_error($ch);
             curl_close($ch);
             return $result;
         }
@@ -206,10 +232,11 @@ class Linkcheck {
         $contentType = $info['content_type'] ?? null;
 
         curl_close($ch);
-        
+
         // get all codes from Location chain from response headers
-        $headers = explode("\r\n\r\n", trim($response));
+        $headers    = explode("\r\n\r\n", trim($response));
         $http_codes = [];
+        $matches    = [];
         foreach ($headers as $headerBlock) {
             if (preg_match('~HTTP/\d+\.\d+\s+(\d{3})~', $headerBlock, $matches)) {
                 $http_codes[] = $matches[1];
@@ -218,33 +245,32 @@ class Linkcheck {
 
         $result['content_type'] = $contentType;
 
-        [$type, $params]        = explode(';', $contentType . ';', 2);
-        $result['mime']         = trim($type);
-        $result['charset']      = preg_match('/charset\s*=\s*"?([^\s;"]+)"?/i', $params, $m) ? strtolower($m[1]) : '';
+        [$type, $params] = explode(';', $contentType.';', 2);
+        $result['mime']    = trim($type);
+        $result['charset'] = preg_match('/charset\s*=\s*"?([^\s;"]+)"?/i', $params, $matches) ? strtolower($matches[1]) : '';
 
         if ($chain) {  // redirects
             $result['redir_chain'] = $chain;
-            $result['http_codes'] = $http_codes;
-            $result['redir']  = $finalUrl;
-            $result['code'] = $http_codes ? (string) $http_codes[0] : (string) $http_code;
-            $result['comment'] = self::HTTP_ERROR_CODES[$result['code']]['comment'] ?? 'Unknown';
-            $result['weight']  = self::HTTP_ERROR_CODES[$result['code']]['weight'] ?? 5;
+            $result['http_codes']  = $http_codes;
+            $result['redir']       = $finalUrl;
+            $result['code']        = $http_codes ? (string)$http_codes[0] : (string)$http_code;
+            $result['comment']     = self::HTTP_ERROR_CODES[$result['code']]['comment'] ?? 'Unknown';
+            $result['weight']      = self::HTTP_ERROR_CODES[$result['code']]['weight'] ?? 5;
 
             // modify weight by the status of the final url
 
             // last value of http_codes is the last code
-            $last_code = end($http_codes);
-            $result['weight'] = min( 5, max( $result['weight'], self::HTTP_ERROR_CODES[$last_code]['weight']));  // weight not 0 but taken from last code
+            $last_code         = end($http_codes);
+            $result['weight']  = min(5, max($result['weight'], self::HTTP_ERROR_CODES[$last_code]['weight']));  // weight not 0 but taken from last code
             $result['comment'] .= " - Redirected [$last_code]";
             return $result;
-        } 
+        }
 
-        $result['code'] = (string) $http_code;
+        $result['code']    = (string)$http_code;
         $result['comment'] = self::HTTP_ERROR_CODES[$http_code]['comment'] ?? 'Unknown';
         $result['weight']  = self::HTTP_ERROR_CODES[$http_code]['weight'] ?? 5;
         return $result;
     }
-
 
     /** checking function
      *  checking - runs check_url for links (count defined in LINKS_VALIDATION_COUNT)
@@ -341,11 +367,10 @@ class Linkcheck {
             $n1  = (self::HTTP_ERROR_CODES[$arr[$i]["code"]]["weight"] / ($i + 1));
             $num += $n1;
         }
-        // returned number - 1000 is the biggest number, with worst error codes, we want to return
+        // returned number - 1000 is the biggest number, with the worst error codes, we want to return
         // 14.64... is the count of linear function with the worst error code weights
         return round($num * (1000 / 14.644841269841));
     }
-
 } // end - class AA_Linkcheck
 
 
