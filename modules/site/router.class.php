@@ -562,7 +562,7 @@ class AA_Stringexpand_Xid extends AA_Stringexpand_Nevercache {
     {
         $router_class = $GLOBALS['apc_state']['router'];
         if (empty($router_class)) {
-            return '<div class="aa-error">Err in {xid} - router not found - {xid} is designed for site modules</div>';
+            return MsgErr('Err in {xid} - router not found - {xid} is designed for site modules');
         }
         $router = AA_Router::singleton($router_class);
         if (empty($param) || ctype_digit((string)$param) || $param==='path' || $param==='list' || is_long_id($param)) {
