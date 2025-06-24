@@ -537,7 +537,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
     {
         // objects consists from object itself and subobjects
         $subobjects_props = self::loadProperties($object_ids, 'aa_subobjects');
-        $object_ids = array_merge($object_ids, ...$subobjects_props);
+        $object_ids = array_merge($object_ids, ...array_values($subobjects_props));
         if (count($object_ids = array_unique($object_ids))) {
             $cond = [['object_id', $object_ids]];
             if ($properties) {
