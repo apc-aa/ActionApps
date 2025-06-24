@@ -1548,9 +1548,9 @@ function calculate($exp): string
     $replaces = 1;
     $exp = "($exp)";
     while ($replaces) {
-        $exp = str_replace(['{', '}', ' ',"\t", "\r", "\n", '&#8239;', ',', '(+', '(-', '(*', '(/', '(%', '(&', '(|', '+)', '-)', '*)', '/)', '%)', '&)', '|)', '()', '++', '--', '**'], ['(', ')', '', '', '', '', '', '.', '(0+', '(0-', '(0*', '(0/', '(0%', '(0&', '(0|', '+0)', '-0)', '*0)', '/0)', '%0)', '&0)', '|0)', '0', '+', '-', '*'], $exp, $replaces);
+        $exp = str_replace(['{', '}', ' ',"\t", "\r", "\n", '&#8239;', ',', '(+', '(-', '(*', '(/', '(%', '(&', '(|', '(^', '+)', '-)', '*)', '/)', '%)', '&)', '|)', '^)', '()', '++', '--', '**'], ['(', ')', '', '', '', '', '', '.', '(0+', '(0-', '(0*', '(0/', '(0%', '(0&', '(0|', '(0^', '+0)', '-0)', '*0)', '/0)', '%0)', '&0)', '|0)', '^0)', '0', '+', '-', '*'], $exp, $replaces);
     }
-    if (strspn($exp, '0123456789.+-*/%&|()E') !== strlen($exp)) {
+    if (strspn($exp, '0123456789.+-*/%&|^()E') !== strlen($exp)) {
         return 'wrong characters';
     }
     try {
@@ -3926,11 +3926,7 @@ class AA_Stringexpand_Set extends AA_Stringexpand {
     function expand($set_id=''): string {
         /** @var AA_Set $set */
         $set = AA_Object::load($set_id, 'AA_Set');
-        if (!is_object($set)) {
-            return '';
-        }
-        $zids = $set->query();
-        return implode($zids->longids(), '-');
+        return $set ? implode('-', $set->query()->longids()) : '';
     }
 }
 
@@ -9347,6 +9343,7 @@ class AA_Stringexpand_Decrypt extends AA_Stringexpand {
      * @param string $key
      * @param null $output_type
      * @return string|void
+     * @see {encode}
      */
     function expand($text='', $key='', $output_type=null): string
     {
@@ -9615,7 +9612,7 @@ class AA_Stringexpand_Array extends AA_Stringexpand_Nevercachenotrim {
             return '';
         }
         if (!isset($arrays[$id])) {
-            $arrays[$id] = new AA_Array($id);
+            $arrays[$id] = new AA_Array();
         }
         $arr = $arrays[$id];
         $ret   = '';
@@ -9956,7 +9953,7 @@ class AA_Password_Manager_Reader {
     }
 
     private static function bad($text) : string {
-        return '<div class="aa-err">'.$text.'</div>'.self::getFirstForm();
+        return MsgErr($text).self::getFirstForm();
     }
 
     /**
@@ -9964,7 +9961,7 @@ class AA_Password_Manager_Reader {
      * @return string
      */
     private static function ok($text) :string {
-        return '<div class="aa-ok">'.$text.'</div>';
+        return MsgOk($text);
     }
 
     /** we need to check, if the text answer means OK or Bad */
@@ -10685,7 +10682,11 @@ class AA_Stringexpand_Form extends AA_Stringexpand_Nevercache {
         }
         //return $form->getAjaxHtml($ret_code);
         AA::Stringexpander()->addRequire('aa-jslib');  // for {AA_AjaxSendForm}
-        return $form->getAjaxHtml($ok_code, 'inplace');
+        try {
+            return $form->getAjaxHtml($ok_code, 'inplace');
+        } catch (Exception $e) {
+            return MsgErr($e->getMessage());
+        }
     }
 }
 
@@ -10710,7 +10711,11 @@ class AA_Stringexpand_Formedit extends AA_Stringexpand_Nevercache {
         }
         $form->setObject('AA_Item', $item_id, $item->getOwnerId());
 
-        return $form->getEditFormHtml('ajax');
+        try {
+            return $form->getEditFormHtml('ajax');
+        } catch (Exception $e) {
+            return MsgErr($e->getMessage());
+        }
     }
 }
 
@@ -11074,6 +11079,7 @@ class AA_Stringexpand_Generate extends AA_Stringexpand_Nevercache {
  * {require:/js/myscript.js defer} - js with defer
  * {require:/js/myscript.js defer sha256-ri1AEoNtgONXOIJ0k7p9HoQHGq6MEDsjPPYZh7NWpu0=} - js with defer and SRI integrity
  * {require::document.querySelector('#mydiv').innerHTML='Hi';}
+ * @see {css} for CSS code
  */
 class AA_Stringexpand_Require extends AA_Stringexpand {
     /** expand function
@@ -11094,6 +11100,26 @@ class AA_Stringexpand_Require extends AA_Stringexpand {
         return '';
     }
 }
+
+/**
+ * usage:
+ * {css::.wrapper { display: grid; }}
+ * @see {require} for file loading and JS code
+ */
+class AA_Stringexpand_Css extends AA_Stringexpand {
+
+    /** expand function
+     * @param string $reserved - reserved for future use - priority of the CSS code, layer, ...
+     * @param string $css      - sylesheet
+     */
+    function expand($reserved='', $css=''): string {
+        if ($css) {
+            AA::Stringexpander()->addRequire($css, 'AA_Req_CSScode');
+        }
+        return '';
+    }
+}
+
 
 /**
  * Class AA_Stringexpand_Postreplace
@@ -11376,7 +11402,7 @@ class AA_Stringexpand_Go extends AA_Stringexpand_Nevercache {
     {
         $router_class = $GLOBALS['apc_state']['router'];
         if (empty($router_class)) {
-            return '<div class="aa-error">Err in {go} - router not found - {go} is designed for site modules</div>';
+            return MsgErr('Err in {go} - router not found - {go} is designed for site modules');
         }
         $router = AA_Router::singleton($router_class);
         $url = $router->go2url($query_string);
