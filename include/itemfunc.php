@@ -799,8 +799,6 @@ class AA_Inserter_Fil extends AA_Inserter {
             return;
         }
 
-
-
         if (!($slice = $fieldwriter->getSlice())) {
             return;
         }
@@ -843,9 +841,9 @@ class AA_Inserter_Fil extends AA_Inserter {
     }
 
     /**
-     * @return bool|string
+     * @return false|string
      */
-    protected function uploadFile(array $up_file, $item_id, $slice, $fid): bool|string
+    protected function uploadFile(array $up_file, $item_id, $slice, $fid): false|string
     {
         // determine filename ----
         $filename = null;

@@ -52,38 +52,42 @@ class Files {
     /** destinationDir function
      *  Prepares slice directories for uploaded file and returns destination
      *  dir name
+     *
      * @param $slice
-     * @return bool
+     *
+     * @return string|false
      */
-    static function destinationDir($slice): bool
+    static function destinationDir($slice): string|false
     {
         $upload = $slice->getUploadBase();
-        return self::_destinationDirCreate($upload['path'], $upload['perms']);
+        return self::_destinationDirCreate((string)$upload['path'], $upload['perms']);
     }
 
     /** aadestinationDir
      *  Prepares global AA directory for uploaded file and returns destination
      *  dir name
      */
-    static function aadestinationDir(): bool
+    static function aadestinationDir(): string|false
     {
         return self::_destinationDirCreate(IMG_UPLOAD_PATH. AA_ID, (int)IMG_UPLOAD_DIR_MODE);
     }
 
     /** _destinationDirCreate function
      *  Prepares directory for uploaded file and returns destination dir name
-     * @param $path
+     *
+     * @param  string  $path
      * @param $perms
-     * @return bool
+     *
+     * @return string|false
      */
-    static function _destinationDirCreate($path, $perms): bool
+    static function _destinationDirCreate(string $path, $perms): string|false
     {
         if (!$path || !is_dir($path)) {
             if (!self::createFolder($path, $perms)) {
-            self::lastErr(FILE_ERROR_DIR_CREATE, _m("Can't create directory for image uploads"));
-            // set error code
-            return false;
-        }
+                self::lastErr(FILE_ERROR_DIR_CREATE, _m("Can't create directory for image uploads"));
+                // set error code
+                return false;
+            }
         }
         return $path;
     }
@@ -151,7 +155,7 @@ class Files {
      * @param $filevarname                      - name of form variable containing the uploaded data
      *                        (like "upfile") or array with uploaded file
      *                        parameters as provided by $_FILES
-     * @param $dest_dir
+     * @param string|bool $dest_dir
      * @param $type                             - allowed file types (like 'image/jpeg', 'image/*')
      * @param $replacemethod                    - how to handle conflicts with existing file
      *                            'new'       - stored as new (unused) filename
