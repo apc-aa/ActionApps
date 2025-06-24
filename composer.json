@@ -44,7 +44,8 @@
     "ext-intl": "*",
     "ext-pdo": "*",
     "ext-fileinfo": "*",
-    "ext-curl": "*"
+    "ext-curl": "*",
+    "ext-sodium": "*"
   }
   ,
   "require-dev": {
