@@ -545,19 +545,19 @@ function GetPrintArray($a): string
 }
 
 /** Prepare OK Message
- * @param $txt
+ * @param  string  $txt
  * @return string
  */
-function MsgOk($txt): string {
-    return "<div class=\"okmsg\">$txt</div>";
+function MsgOk(string $txt): string {
+    return "<div class=\"aa-ok\">$txt</div>";
 }
 
 /** Prepare Err Message
- * @param $txt
+ * @param  string  $txt
  * @return string
  */
-function MsgErr($txt): string {
-    return "<div class=\"err\">$txt</div>";
+function MsgErr(string $txt): string {
+    return "<div class=\"aa-err\">$txt</div>";
 }
 
 /** Fills the array from constants table
