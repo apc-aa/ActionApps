@@ -147,7 +147,7 @@ $actions->addAction(new Optimize_Action_Repair4modules('OptimizeRepair4modules')
 $actions->addAction(new Optimize_Action_Revert('OptimizeRevert'));
 
 $managed = AA_Components::getManagerConf('AA\\Optimize\\', 'AA\\Optimize\\AbstractOptimize', $actions);
-$managed->setColumn('name', '<b class="{ifeq:{result}:OK:okmsg:ERR:err}">{name}</b><div>{description}</div>{ifset:{resulttxt}:<div><em>_#1</em></div>}' );
+$managed->setColumn('name', '<b class="{ifeq:{result}:OK:aa-ok:ERR:aa-err}">{name}</b><div>{description}</div>{ifset:{resulttxt}:<div><em>_#1</em></div>}' );
 $managed->setColumns2show(['name','types']);
 
 $apage->printWithManager(new Manager('optimize' . AA::$module_id, $managed));
