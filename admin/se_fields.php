@@ -309,17 +309,17 @@ $aliasmovejs = <<<JS
     });
     JS;
 
-$headcode = <<<HTML
+$headcode = '
     <script>
       function DeleteField(id) {
-        if ( !confirm("<?php echo _m("Do you really want to delete this field from this slice?"); ?>")) {
+        if ( !confirm("'. _m("Do you really want to delete this field from this slice?") .'")) {
             return;
         }
-        const url = "<?php echo get_url('', ["del" => 1, "analyze" => ($analyze || $fix)] + ($slice_fields ? ['slice_fields' => 1] : []), true); ?>";
+        const url = "'. get_url('', ["del" => 1, "analyze" => ($analyze || $fix)] + ($slice_fields ? ['slice_fields' => 1] : []), true). '";
         window.location=url + "&fid=" + encodeURIComponent(id);
       }
     </script>
-    HTML;
+    ';
 
 $css = <<<CSS
     .orderableghost  { opacity: 0.5; }
