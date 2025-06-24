@@ -344,14 +344,12 @@ class AA_Content implements Iterator, ArrayAccess, Countable {
 
     /** set object id based on id_field setting for this content */
     function setId($id): static {
-        $this->setAaValue($this->id_field, new AA_Value( $id ));
-        return $this;
+        return $this->setAaValue($this->id_field, new AA_Value( $id ));
     }
 
     /** set object id based on id_field setting for this content */
     function setOwnerId($id): static {
-        $this->setAaValue($this->owner_field, new AA_Value( $id ));
-        return $this;
+        return $this->setAaValue($this->owner_field, new AA_Value($id));
     }
 
     /** setFromCSVArray function
@@ -868,17 +866,16 @@ class ItemContent extends AA_Content {
      *  You can specify bin AA_BIN_ACTIVE or AA_BIN_HOLDING or AA_BIN_TRASH or AA_BIN_ALL or its bitwise combination (the trash and pending is not supported, now)
      */
     function isActive($bin=AA_BIN_ACTIVE): bool {
-
-        if ( ($status=$this->getStatusCode()) == 1 && $bin & AA_BIN_ACTIVE) {
+        if ( ($status=$this->getStatusCode()) === 1 && $bin & AA_BIN_ACTIVE) {
             $now = now('step');
             if (($this->getPublishDate() <= $now) OR (($slice = AA_Slice::getModule($this->getSliceID())) AND $slice->isPendingContentAllowed())) {
                 if (($this->getExpiryDate() > $now) OR (($slice = $slice ?: AA_Slice::getModule($this->getSliceID())) AND $slice->isExpiredContentAllowed())) {
                     return true;
                 }
             }
-        } elseif ($status==2 && $bin & AA_BIN_HOLDING) {
+        } elseif ($status===2 && $bin & AA_BIN_HOLDING) {
             return true;
-        } elseif ($status==3 && $bin & AA_BIN_TRASH) {
+        } elseif ($status===3 && $bin & AA_BIN_TRASH) {
             return true;
         }
         return false;

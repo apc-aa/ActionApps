@@ -151,19 +151,13 @@ class AA_Table {
  */
 class AA_Array {
 
-    var $id;
-    var $arr = [];
+    private array $arr = [];
 
-    /** Constructor
-     * @param $id
-     */
-    function __construct($id) {
-        $this->id      = $id;
-    }
+    function __construct() {}
 
     function set($i, $value): void
     {
-        if ((string)$i == '') {
+        if ((string)$i === '') {
             $this->arr[] = $value;
         } else {
             $this->arr[(string)$i] = $value;

@@ -266,18 +266,6 @@ TD.leftmenuy {
   background: #A8C8B0;
 }
 
-.err {
-  font-family: Verdana, Arial, Helvetica, sans-serif;
-  font-size: x-small;
-  color: red;
-}
-
-.okmsg {
-  font-family: Verdana, Arial, Helvetica, sans-serif;
-  font-size: x-small;
-  color: green;
-}
-
 .copymsg {
   background: #213F21;
   font-family: Verdana, Arial, Helvetica, sans-serif;

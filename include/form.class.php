@@ -325,7 +325,7 @@ class AA_Form extends AA_Object implements NamedInterface {
      */
     function getObjectEditHtml(): string
     {
-        $content = $this->_getContent();
+        $content = $this->loadContent();
 
         $html    = $this->getRowsHtml($content);
         $html   .= (new HidWidget )->getHtml(AA_Object::getPropertyObject('aa_owner'), $content);
@@ -350,7 +350,7 @@ class AA_Form extends AA_Object implements NamedInterface {
         $this->object_owner = $this->getOwnerId();                          // slice_id is the same as the slice_id of the form (where it is defined)
 
         $id  = get_if($this->object_id, new_id());
-        $content = $this->_getContent();
+        $content = $this->loadContent();
 
         $html  = "\n  <fieldset id=\"form$id\">";
         $html .= "\n    ". '<input id="inline" name="inline" value="1" type="hidden">';
@@ -382,7 +382,7 @@ class AA_Form extends AA_Object implements NamedInterface {
         if (!$this->object_id) {
             return '';
         }
-        $content = $this->_getContent();
+        $content = $this->loadContent();
 
         $html  = "\n  <fieldset id=\"form".$this->object_id."\">";
         $html .= $this->getRowsHtml($content, $type);
@@ -409,20 +409,22 @@ class AA_Form extends AA_Object implements NamedInterface {
     }
 
     /**
+     * @throws \RuntimeException
      * @return AA_Content
-     * @throws Exception
      */
-    private function _getContent(): AA_Content
+    private function loadContent(): AA_Content
     {
         if (empty($this->object_id)) {
-            $content = new AA_Content();
-            $content->setOwnerId($this->object_owner);
+            $content = (new AA_Content())->setOwnerId($this->object_owner);
         } else {
             $managed  = Managed::factoryFromType($this->object_type);
             $contents = $managed->getContent(new zids($this->object_id, $managed->getZidsType()));
 
             // $contents = call_user_func_array([$this->object_type, 'getContent'], [['class'=>$this->object_type, 'owner'=>$this->object_owner], new zids($this->object_id)]);
             //$contents = AA_Object::getContent(['class'=>$this->object_type], new zids($this->object_id));
+            if (empty($contents) || !isset($contents[$this->object_id])) {
+                throw new \RuntimeException("Content for object {$this->object_type} with id {$this->object_id} not found.");
+            }
             $content = $contents[$this->object_id];
         }
         $content->setAaValue('aa_type', new AA_Value($this->object_type));

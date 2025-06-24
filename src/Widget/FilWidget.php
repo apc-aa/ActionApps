@@ -162,7 +162,7 @@ class FilWidget extends Widget
 //            huhl($display_url, $widget, $value, $value->count(), $content, $this);
 //        }
         // no input was printed, we need to print one
-        if (!$widget && $display_url == 0) {
+        if (!$widget && $display_url === 0) {
             $input_name = $base_name . "[fil][url][0]";
             $input_id = FormArray::formName2Id($input_name);
             $widget = "\n<input type=\"text\" size=\"$width\" maxlength=\"$max_characters\" name=\"$input_name\" id=\"$input_id\" value=\"\"$widget_add>";

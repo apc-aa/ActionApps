@@ -1013,12 +1013,6 @@ td.scroller {background: #a0a0a0;}
 .change {
     color: red;
 }
-.err {
-    color: red;
-}
-.okmsg {
-    color: #00a148;
-}
 /* multiple selecty */
 .sel_on {
     background: #dbe6f9;

@@ -836,9 +836,10 @@ class Manager extends AA_Storable {
     /** Displays the manager. This function joins together some common method
      *  calls, which was separate. We should use display, now. We plan to move
      *  even more methods here
-     * @param zids $zids
+     *
+     * @param  zids  $zids
      */
-    function getManagerCode($zids): string {
+    function getManagerCode(zids $zids): string {
         global $r_err, $r_msg;          // @todo - check if it is still needed
         $ret = '';
 
@@ -878,16 +879,17 @@ class Manager extends AA_Storable {
             $form = $this->managed->getForm($_GET['id'], $this->module_id);
             $form_buttons = [ "update", "cancel"];
 
-            $html = '<form name="f" method="post" action="'. StateUrl() .'">';
-            $html .= getFrmTabCaption(_m("Edit id").': '.$_GET['id'], $form_buttons);
-            $html .= '<tr><td colspan="2">';
-            $html .= $form->getObjectEditHtml();
-//            $html .= $form->getEditFormHtml();
-            $html .= '</td></tr>';
-
-            $html .= getFrmTabEnd($form_buttons);
-            $html .= '</form>';
-
+            try {
+                $html = '<form name="f" method="post" action="'.StateUrl().'">';
+                $html .= getFrmTabCaption(_m("Edit id").': '.$_GET['id'], $form_buttons);
+                $html .= '<tr><td colspan="2">';
+                $html .= $form->getObjectEditHtml();//            $html .= $form->getEditFormHtml();
+                $html .= '</td></tr>';
+                $html .= getFrmTabEnd($form_buttons);
+                $html .= '</form>';
+            } catch (Exception $e) {
+                $html = MsgErr($e->getMessage());
+            }
             // echo $form->getAjaxHtml('xxx'); // ($_GET['ret_code']);
         } else {
             AA::Stringexpander()->addRequire(get_aa_url('javascript/manager.min.js', ['v'=>AA_JS_VERSION]));

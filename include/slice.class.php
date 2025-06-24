@@ -327,7 +327,11 @@ abstract class AA_Module {
         /** @var class-string<AA_AbstractModulesettings> $class name - it is string name of class */
         $class = static::SETTING_CLASS;
         if ($module_id && !empty($class)) {
-            return AA_Form::factoryForm($class, static::getModuleObjectId($module_id), $module_id)->getObjectEditHtml();
+            try {
+                return AA_Form::factoryForm($class, static::getModuleObjectId($module_id), $module_id)->getObjectEditHtml();
+            } catch (Exception $e) {
+                return MsgErr( _m('Error while loading module settings form:') . ' ' . $e->getMessage());
+            }
         }
         return '';
     }
@@ -562,7 +566,7 @@ class AA_Slice extends AA_Module {
      */
     function isExpiredContentAllowed(): bool
     {
-        return ($this->getProperty('flag') & SLICE_ALLOW_EXPIRED_CONTENT) == SLICE_ALLOW_EXPIRED_CONTENT;
+        return (($this->getProperty('flag') & SLICE_ALLOW_EXPIRED_CONTENT) == SLICE_ALLOW_EXPIRED_CONTENT) || $this->noCheckExpired();  // noCheckExpired is stronger Rule - it disables expired completely
     }
 
     /**
@@ -570,7 +574,7 @@ class AA_Slice extends AA_Module {
      */
     function isPendingContentAllowed(): bool
     {
-        return ($this->getProperty('flag') & SLICE_ALLOW_PENDING_CONTENT) == SLICE_ALLOW_PENDING_CONTENT;
+        return (($this->getProperty('flag') & SLICE_ALLOW_PENDING_CONTENT) == SLICE_ALLOW_PENDING_CONTENT) || $this->noCheckPending();  // noCheckPending is stronger Rule - it disables pending completely
     }
 
     /** Should we use pending bin condition - based on nocheck_pending slice setting?
