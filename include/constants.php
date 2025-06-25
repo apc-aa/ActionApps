@@ -353,7 +353,7 @@ class AA_Aliases implements Iterator, ArrayAccess, Countable {
 /** any string - used as parameter to included JS files in order browser can
  *  use newer version of JS libs. Feel free to increase it
  */
-const AA_JS_VERSION = 22;
+const AA_JS_VERSION = 23;
 
 /** API url used for JS libs updates */
 const JS_UPDATE_API_URL = 'https://data.jsdelivr.com/v1/package/';

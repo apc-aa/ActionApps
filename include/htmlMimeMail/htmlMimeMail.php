@@ -61,7 +61,7 @@ class htmlMimeMail {
     /**
      * Array of attachments
      */
-	private array $attachments = [];
+	private ?array $attachments = [];   // @todo remove null after upgrade - used just for already planed task mails from older version - HM 2025-06-25
     /**
      * The main message headers
      */
