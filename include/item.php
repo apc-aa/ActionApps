@@ -640,14 +640,12 @@ class AA_Item {
      *
      * @param $col
      *
-     * @return false|string
+     * @return string
      */
-    function col2Html($col): false|string
+    function col2Html(string $col): string
     {
-        if ($this->getFlag($col) & FLAG_HTML) {
-            return $txt;
-        }
-        if (!strlen($txt = $this->getval($col))) {
+        $txt = (string)$this->getval($col);
+        if (($txt === '') || ($this->getFlag($col) & FLAG_HTML)) {
             return $txt;
         }
         return StrExp('text2html', [$txt]);
