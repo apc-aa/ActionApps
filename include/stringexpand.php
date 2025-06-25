@@ -1861,7 +1861,7 @@ class AA_Stringexpand_Cookie extends AA_Stringexpand_Nevercache {
      */
     function expand($name=''): string
     {
-        return $name ? $_COOKIE[$name] : json_encode($_COOKIE);
+        return $name ? ($_COOKIE[$name] ?? '') : json_encode($_COOKIE);
     }
 }
 
@@ -11419,7 +11419,6 @@ class AA_Stringexpand_Go extends AA_Stringexpand_Nevercache {
     }
 }
 
-
 /** {linkcheck:<url>[:format>]}
  * @usage {linkcheck:{url............}}  - the same as {linkcheck:{url............}:_#code}
  * @usage {linkcheck:{url............}:_#span}
@@ -11453,4 +11452,3 @@ class AA_Stringexpand_Linkcheck extends AA_Stringexpand_Nevercache {
         return str_replace(['_#span', '_#code', '_#text', '_#weight', '_#color', '_#redir', '_#hops', '_#mime', '_#charset', '_#duration'], ['<span style="background-color:_#color" title="_#text">_#code</span>', $status['code'], $status['comment'], $status['weight'], self::STATUCOLORS[$status['weight']], $status['redir'], count($status['redir_chain']) ?: '', $status['mime'], $status['charset'], $time], $format);
     }
 }
-
