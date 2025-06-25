@@ -444,15 +444,16 @@ class FeedUtil {
     }
 
     /** map1field function
-     *  @param $value
+     *
+     * @param $value
      * @param $item
      * @param $channel
-     *@return array suitable for insertion into content4id[aaa....]
+     *
+     * @return array|null suitable for insertion into content4id[aaa....]
      * Recognized special cases of values to tell it how to find, the field, or
      * how to interpret it.
      */
-
-    public static function map1field($value, $item, $channel): array
+    public static function map1field($value, $item, $channel): ?array
     {
         global $debugfeed;
         if ($debugfeed >= 8) {
