@@ -511,9 +511,8 @@ class AA_Item {
      *
      * @param $field_id
      *
-     * @return bool
      */
-    function getFlag($field_id): bool
+    function getFlag($field_id): int
     {
         return $this->content4id->getFlag($field_id);
     }
