@@ -545,13 +545,16 @@ class Cvarset {
     function makeINSERTorUPDATE($tablename): string
     {
         $where = $this->makeWHERE();
-        $rows = DB_AA::select1('cnt', "SELECT count(*) as cnt FROM `$tablename`", $where ? " WHERE $where" : "");
+        $SQL = "SELECT count(*) as cnt FROM `$tablename`". ($where ? " WHERE $where" : "");
+        $rows = DB_AA::select1('cnt', $SQL);
+
+        if ($rows > 1) {
+            throw new RuntimeException("Error using makeINSERTorUPDATE: $rows rows match the query for $tablename");
+        }
 
         return match ($rows) {
             0       => $this->makeINSERT($tablename),
-            1       => $this->makeUPDATE($tablename),
-                       // Error: there are several rows with the same key variables
-            default => "Error using makeINSERTorUPDATE: $rows rows match the query",
+            1       => $this->makeUPDATE($tablename)
         };
     }
 
