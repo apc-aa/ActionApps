@@ -56,10 +56,11 @@ class Cvariable {
         $this->value = $value;
         $this->iskey = $iskey;
     }
+
     /** getValue function
      *
      */
-    function getValue(): string
+    function getValue()
     {
         return ($this->type === 'quoted') ? stripslashes($this->value) : $this->value;
     }
