@@ -133,7 +133,7 @@ class AA_Formrow_Field extends AA_Formrow {
         return $this->_getField()?->getWidget();
     }
 
-    private function _getField(): null
+    private function _getField(): ?AA_Field
     {
         return AA_Slice::getModule($this->slice_id)?->getFields()->getField($this->field_id);
     }
