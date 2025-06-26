@@ -436,7 +436,7 @@ class ChangesMonitor {
      */
     public static function GetHistoryContent($zids): array
     {
-        if (!$zids || $zids->count() < 1) {
+        if (!$zids || $zids->isEmpty()) {
             return [];
         }
 

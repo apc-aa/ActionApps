@@ -724,7 +724,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
         $conds  = $set->getConds();
         $sort   = $set->getSort();
 
-        if (is_object($restrict_zids) && !$restrict_zids->count()) {
+        if (is_object($restrict_zids) && $restrict_zids->isEmpty()) {
             return new zids(); // restrict_zids defined but empty - no result
         }
 

@@ -77,7 +77,7 @@ class Manageraction_History_Apply extends AbstractManageraction {
             return _m("You have not permissions to change items");
         }
 
-        if ($item_zids->count()< 1) {
+        if ($item_zids->isEmpty()) {
             return false;     // OK - no errors
         }
 

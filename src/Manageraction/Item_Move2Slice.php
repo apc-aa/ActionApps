@@ -86,7 +86,7 @@ class Item_Move2Slice extends AbstractManageraction {
             return _m("You have not permissions to move items");
         }
 
-        if ($item_zids->count() < 1) {
+        if ($item_zids->isEmpty()) {
             return false;     // OK
         }
 

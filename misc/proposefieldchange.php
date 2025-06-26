@@ -154,7 +154,7 @@ elseif ( AA_V::P('assignment') == 1 ) {
         $set->addCondition(new AA_Condition('relation.......3', '==', AA_V::P('asdestplan')));
         $zids = $set->query();
 
-        if ($zids->count() ) {
+        if ( !$zids->isEmpty() ) {
             $now  = now();
 
             $SQL  = "UPDATE item SET status_code = '3', last_edit   = '$now', edited_by   = '". quote(AuthGetUid() ?: '9999999999')."'";

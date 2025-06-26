@@ -29,7 +29,7 @@ class Object_Delete extends AbstractManageraction {
     function perform(Manager $manager, zids $item_zids, $action_param): string|false
     {
 
-        if ($item_zids->count() < 1) {
+        if ($item_zids->isEmpty()) {
             return false;     // OK
         }
 

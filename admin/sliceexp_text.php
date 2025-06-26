@@ -141,7 +141,7 @@ class AA_Slice_Exporter {
             $conds="";
         }
         $zids=QueryZids([$slobj->getId()], $conds, "", "ALL");
-        if (!$zids->count()) {
+        if ($zids->isEmpty()) {
             if ($this->spec_date) {
                 fwrite($temp_file, "<comment>\nThere are no data in selected days (from ".$this->from_date." to ".$this->to_date.").\n</comment>\n");
             } else {

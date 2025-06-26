@@ -844,7 +844,7 @@ class AA_Fields implements Iterator, Countable {
         if ( str_starts_with($fid, 'text..') && is_long_id($fields_slice = AA_Slice::getModuleProperty($this->master_id, 'fieldslice')) ) {
             $set = new AA_Set([$fields_slice], new AA_Condition(FIELDID_DYNAMIC_ID, '==', self::getFieldNo($fid)));     // FIELDID_DYNAMIC_ID = 'source..........'
             $zids = $set->query();
-            $this->fields[$fid] = $zids->count() ? new AA_Field_Slicedef($zids->zid(0), $this->master_id) : '';
+            $this->fields[$fid] = $zids->isEmpty() ? '' : new AA_Field_Slicedef($zids->zid(0), $this->master_id);
         } else {
             $this->fields[$fid] = AA_Field::factoryFromDb($fid, $this->master_id) ?? '';
         }

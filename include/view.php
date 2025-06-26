@@ -446,7 +446,7 @@ class AA_Showview {
                 $itemview->parameter('category_id', $category_id);
                 $itemview->parameter('start_cat',   $this->_view_param['start_cat']);
 
-                if ( !isset($zids) || $zids->count() <= 0) {
+                if ( !isset($zids) || $zids->isEmpty()) {
                     $ret = $itemview->unaliasWithScroller($noitem_msg);
                     break;
                 }
@@ -457,11 +457,11 @@ class AA_Showview {
             case 'full':  // parameters: zids, als
                 $format = $view->getViewFormat($selected_item);
                 AA::$debug&8 && AA::$dbg->log("view type - full - zids",$zids);
-                if ( isset($zids) && $zids->count() && ($slice = AA_Slice::getModule($slice_id))) {
+                if ( isset($zids) && !$zids->isEmpty() && ($slice = AA_Slice::getModule($slice_id))) {
                     $bins   = AA_BIN_ACTIVE | ($slice->isExpiredContentAllowed() ? AA_BIN_EXPIRED : 0) | ($slice->isPendingContentAllowed() ? AA_BIN_PENDING : 0);
                     $zids  = QueryZids([], '', '', $bins, 0, $zids);
                     AA::$debug&8 && AA::$dbg->log("view type - full - cleanzids",$zids);
-                    if ( $zids->count() ) {
+                    if ( !$zids->isEmpty() ) {
                         //mlx stuff
                         if ($mlxslice = MLXSlice($slice)) {  //mlx stuff, display the item's translation
                             $mlx = ($this->_view_param["mlx"]?: $this->_view_param["MLX"]);

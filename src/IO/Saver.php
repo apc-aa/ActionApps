@@ -218,7 +218,7 @@ class Saver implements AA\Later\LaterInterface {
                             $this->message($set,2);
                             $this->message($zids,2);
                         }
-                        if ($zids->count()) {
+                        if (!$zids->isEmpty()) {
                             if (!str_contains($store_mode, 'update')) {
                                 continue 2; // another item
                             }

@@ -34,7 +34,7 @@ class View_Move2slice extends \AA\Manageraction\Item_Move2Slice {
             return _m("You have not permissions to move views");
         }
 
-        if ($item_zids->count() < 1) {
+        if ($item_zids->isEmpty()) {
             return false;     // OK
         }
 

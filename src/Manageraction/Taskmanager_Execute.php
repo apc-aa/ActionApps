@@ -25,7 +25,7 @@ class Taskmanager_Execute extends AbstractManageraction {
             return _m("You have not permissions to remove items");
         }
 
-        if ($item_zids->count() < 1) {
+        if ($item_zids->isEmpty()) {
             return false;     // OK
         }
 

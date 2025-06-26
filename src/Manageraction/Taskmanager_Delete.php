@@ -23,7 +23,7 @@ class Taskmanager_Delete extends AbstractManageraction {
             return _m("You have not permissions to remove tasks");
         }
 
-        if ($item_zids->count() < 1) {
+        if ($item_zids->isEmpty()) {
             return false;     // OK
         }
 

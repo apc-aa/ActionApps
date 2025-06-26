@@ -111,7 +111,7 @@ class PohodaStocks extends AbstractGrabber
         }
 
         // new PLUs INSERT into database - current just update (price, stock)
-        if ($zids->count()) {
+        if (!$zids->isEmpty()) {
             $this->_last_store_mode = 'update';
             $item_id = $zids->longids(0);
         } else {

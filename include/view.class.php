@@ -465,7 +465,7 @@ class AA_View {
 
                     // This is bizarre code, just incrementing the first item, left as it is
                     // but questioned on apc-aa-coders - mitra
-                    if ($command->getCommand() === 'x' && $zids->count()) {
+                    if ($command->getCommand() === 'x' && !$zids->isEmpty()) {
                         Hitcounter::hit($zids->slice(0));
                     }
                     break;

@@ -215,7 +215,7 @@ function Inputform_url($add, $iid, $sid='', ?string $ret_url='', $vid = null, $v
 function GetFormattedItems($zids, $format, $crypted_additional_slice_pwd=null, $tagprefix=null): array
 {
     $ret  = [];
-    if ( $zids->count() <= 0 ) {
+    if ( $zids->isEmpty() ) {
         return $ret;
     }
 
@@ -277,7 +277,7 @@ function GetFormatedConstants($constgroup, $format, $restrict_zids, $conds, $sor
     $conds = String2Conds( $conds );
     $sort  = String2Sort( $sort ?: 'sort[0][const_pri]=a');
     $zids  = QueryConstantZIDs($constgroup, $conds, $sort, $restrict_zids, 'RLIKE', $limit);
-    if ( $zids->count() <= 0 ) {
+    if ( $zids->isEmpty() ) {
         return [];
     }
 

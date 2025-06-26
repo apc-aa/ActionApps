@@ -43,7 +43,7 @@ class Item_DeleteTrash extends AbstractManageraction {
 
         // restrict the deletion only to selected items
         if ($this->selected) {
-            if ($item_zids->count() < 1) {
+            if ($item_zids->isEmpty()) {
                 return false;     // OK
             }
             $items_to_delete = new zids(DB_AA::select('id', 'SELECT id FROM `item`', [

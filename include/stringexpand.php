@@ -4378,7 +4378,7 @@ class AA_Stringexpand_Finduniq extends AA_Stringexpand {
             for ($i=2; $i < 100000; $i++) {
                 $set  = new AA_Set($slices, new AA_Condition($field_id, '==', $string.$add), null, AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING);
                 $zids = $set->query();
-                if (!$zids->count() || in_array($ignore_item_id, $zids->longids())) {
+                if ($zids->isEmpty() || in_array($ignore_item_id, $zids->longids())) {
                     break;   // we found unique seo-name
                 }
                 $add = $i;
@@ -10436,7 +10436,7 @@ class AA_Stringexpand_Rotator extends AA_Stringexpand_Nevercache {
         $frames = [];
         $lis    = [];
         $zids = new zids(explode_ids($ids));
-        if ( $zids->count() <= 0 ) {
+        if ( $zids->isEmpty() ) {
             return '';
         }
 
@@ -10967,7 +10967,7 @@ class AA_Stringexpand_Tr extends AA_Stringexpand {
                     $set  = new AA_Set([$translate_slice_id], new AA_Condition('headline........', '==', $text));
                     $zids = $set->query();
 
-                    if ($zids->count()) {
+                    if (!$zids->isEmpty()) {
                         return AA_Items::getItem($zids[0])->f_2('headline........');
                     }
                     // if not present - translate to default language of the slice

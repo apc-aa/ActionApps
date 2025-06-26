@@ -27,7 +27,7 @@ class Table_Row_Delete extends AbstractManageraction {
     /** @inheritDoc */
     function perform(Manager $manager, zids $item_zids, $action_param): string|false
     {
-        if ($item_zids->count() < 1) {
+        if ($item_zids->isEmpty()) {
             return false;     // OK
         }
 

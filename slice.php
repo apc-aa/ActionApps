@@ -585,7 +585,7 @@ if ( !$srch && !$encap && !$easy_query ) {
     pCatSelector(MyUrl($encap, $scr_url), $slice_id);
 }
 
-if ($zids->count()) {
+if (!$zids->isEmpty()) {
 
     $itemview = new itemview($slice_info, $aliases, $zids, $scr->getListlen() * ($scr->getCurrent() - 1), ($group_n ? -$group_n : $scr->getListlen()));
     $itemview->setMultiAliases($multi_aliases);

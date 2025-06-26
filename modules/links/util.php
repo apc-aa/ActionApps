@@ -160,7 +160,7 @@ function Links_SliceID2Category($sl_id): int {
  */
 function Links_GetLinkContent($zids): array
 {
-    if (!$zids || $zids->count()<1) {
+    if (!$zids || $zids->isEmpty()) {
         return [];
     }
 
@@ -428,7 +428,7 @@ function Links_getUrlReport($url, $format_strings, $checked_id, $tree_start=fals
     // url nahore
     // zarazeno v kategorii
     $out = "";
-    if ( $links_zids->count() ) {
+    if ( !$links_zids->isEmpty() ) {
         // function - we need trnslate _m() on use (not at include time)
         $itemview = (new itemview($format_strings, new AA_Aliases(new AA_Aliasgenerator_Link), $links_zids, 0, 100))->setContentFunct('Links_GetLinkContent');
         $out      = $itemview->get_output("view");

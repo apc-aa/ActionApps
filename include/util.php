@@ -753,7 +753,7 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
         $zids = new zids( $zids, 'l' );
     }
 
-    if (!$zids->count()) {
+    if ($zids->isEmpty()) {
         return [];
     }
 

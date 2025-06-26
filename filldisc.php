@@ -155,7 +155,7 @@ if ($ip_banned_slice_id) {
     $subnet_ip_address = substr($ip_address,0,strrpos($ip_address, '.'));
     $aa_set = new AA_Set($ip_banned_slice_id, new AA_Condition('ip..............', '=', "\"$ip_address\" OR \"$subnet_ip_address\""));
     $zids   = $aa_set->query();
-    if ($zids->count()) {
+    if (!$zids->isEmpty()) {
         $found_evil = $zids->slice(0);
     } else {
         // try text analysis

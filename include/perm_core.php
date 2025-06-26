@@ -1227,7 +1227,7 @@ class AA_Permsystem_Reader extends AA_Permsystem {
             $zids = QueryZids([$reader_slice_id], $set->getConds(), '', 'ACTIVE', 0, $restrict_zids);
 
             // reader is in this reader set
-            if ($zids->count()) {
+            if (!$zids->isEmpty()) {
                 $ret[] = $set->getId();
             }
         }
